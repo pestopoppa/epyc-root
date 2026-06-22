@@ -2,8 +2,8 @@
 
 **Category**: `context_management`
 **Confidence**: verified
-**Last compiled**: 2026-06-21
-**Sources**: 25 documents (6 deep-dives, 4 active handoffs, 15 intake entries) + 2026-06-19 K-MEM Tulving run state
+**Last compiled**: 2026-06-22
+**Sources**: 25 documents (6 deep-dives, 4 active handoffs, 15 intake entries) + 2026-06-19 K-MEM Tulving run state + 2026-06-22 DCP first live A/B (hold)
 
 ## Summary
 
@@ -16,6 +16,10 @@ The research landscape is converging on a spectrum from text-level to KV-level c
 The EPYC orchestrator implements a 5-layer context management stack that predates much of this research but aligns well with the emerging consensus. Active development is upgrading it to a multi-tier condensation system informed by AgentFold (two-level architecture), ReSum (compaction timing), CMV (structural trimming), and the Memento cluster (KV-retaining compression). The implementation is phased: Phase 0 (compaction trigger raised to 75%) and Phase 1 (two-level condensation) are complete, Phase 2 (summarizer quality evaluation) is substantially done, and Phase 3 (process reward signals) is in design.
 
 ## Key Findings
+
+### New (2026-06-22, DCP seed-bundle first live A/B regressed latency → hold)
+
+- **Delegation-context pre-assembly (DCP) reached its first live A/B and recorded `hold`: it cut tokens but worsened latency and quality was unscored — it is NOT yet enabled.** The budget-bounded context pre-assembler (`src/context_assembly.py`: task analysis → file discovery → AST codemap → token verify → file slicing; ColGREP + file-reader injectable backends) wires an advisory seed-bundle attach into `chat_delegation._maybe_dcp_seed_context()` (DCP-4, 2026-05-26) while keeping reactive discovery fully enabled; bundle modes are {full, slices, codemap_only}. Offline replay (2026-06-12) validated task-root/file-selection/budget correctness, and DCP-6a (`2e2e0d3`) fixed shallow-slice content depth plus manifest freshness hashes. But the first live A/B (2026-06-19, n=3/arm) showed zero errors and fewer tokens ON-vs-OFF yet p50 latency worsened 20.2s→32.6s; the artifact recorded `decision.status=hold` (latency_not_improved + quality_not_scored). Enablement requires a larger sample plus a quality-scored falsification. This is the advisory-default-off DCP referenced as the production seed-bundle path. Source: [delegation-context-preassembly.md](../handoffs/active/delegation-context-preassembly.md). Related: [tool-implementation.md](tool-implementation.md).
 
 ### New Finding (2026-06-21)
 

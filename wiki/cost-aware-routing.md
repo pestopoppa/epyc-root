@@ -2,8 +2,8 @@
 
 **Category**: `cost_aware_routing`
 **Confidence**: verified
-**Last compiled**: 2026-06-20
-**Sources**: 34+ documents (added 2026-06-20 AVB offline quality-oracle reward stack, OpenRouter Fusion typed-judge method-selection ideas, and F7 economic-ledger digest wiring; prior 2026-06-20 stack-prior generated-contract refresh and launch-map consumer audit)
+**Last compiled**: 2026-06-22
+**Sources**: 35+ documents (added 2026-06-22 the F7 economic-ledger completion with its first standing-rule trigger and the X-MAS constrained-policy A/B hold; prior 2026-06-20 AVB offline quality-oracle reward stack, OpenRouter Fusion typed-judge method-selection ideas, and F7 economic-ledger digest wiring; prior 2026-06-20 stack-prior generated-contract refresh and launch-map consumer audit)
 
 ## Summary
 
@@ -18,6 +18,11 @@ A critical recent finding reshapes the entire routing cost model: the Omega metr
 The EPYC orchestrator has a three-band difficulty classifier (easy/medium/hard) in shadow mode at recalibrated thresholds (0.15/0.35), band-adaptive token budgets (1500/3500/7000) gated behind enforce mode, a reasoning length alarm that cancels and re-generates when think blocks exceed 1.5x the band budget, and an autopilot system continuously optimizing routing via a 4D Pareto archive. The missing piece is validation of the recalibrated thresholds -- the original 0.3/0.6 split produced 92% easy / 0% hard classification, which is useless for routing.
 
 ## Key Findings
+
+### New (2026-06-22, economic ledger live + text-routing A/B still net-negative on quality)
+
+- **The F7 economic ledger shipped (COMPLETED) and its first standing rule already fired a real priority change.** A weekly ledger aggregates cloud spend (planner via logs), local eval wall-time, and operator decision throughput; the AutoPilot daily digest now carries an economics section with planner spend, a monthly projection, and a gate-latency rule; standing decision rules live in `orchestration/economic_rules.yaml`. The first monthly review (2026-06-21) tripped the planner-spend threshold ($410.75 actual vs $250.00 budget), which raised the priority of F3-W3a (GPU fine-tunes). The gate-latency rule has not yet evaluated (canonical events missing). This makes cost a first-class, automatically-surfaced optimization input rather than an ad-hoc check. Source: [frontier-f7-economic-ledger.md](../handoffs/completed/frontier-f7-economic-ledger.md).
+- **Text-mediated X-MAS routing still does not pass: the latest A/B improved latency but regressed quality, so enforce stays OFF.** The constrained incumbent-aware policy (`incumbent_constrained_cheapfirst_v2`: only replace a role when both roles are evaluated and the challenger proves lift or material speed within a 1.10 cap) repaired the earlier same-cheap-role bypass failure mode. But the 2026-06-21 quiet-window A/B (100 rows) recorded score_delta -0.250 (vs required +0.050) at latency_ratio 0.714 — a speed win that fails the quality gate. The earlier 25-prompt held-out run was worse (overall -0.35, latency up to 16x, zero lift domains, X-MAS overrode 23/25 prompts mostly swapping coder_escalation→worker_general with 0 X-MAS-only wins). Next gate is to diagnose/repair the regression-causing cells before re-running; do not enable enforce until a passing verdict, and defer RMAS/LatentMAS/Dead-Weights paths until the text-mediated route either passes or is formally killed. Sources: [x-mas-text-routing.md](../handoffs/active/x-mas-text-routing.md), [progress 2026-06-21](../progress/2026-06/2026-06-21.md). Related: [routing-intelligence.md](routing-intelligence.md).
 
 ### The Overthinking Problem
 

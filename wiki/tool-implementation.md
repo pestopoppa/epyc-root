@@ -2,8 +2,8 @@
 
 **Category**: `tool_implementation`
 **Confidence**: verified
-**Last compiled**: 2026-06-20
-**Sources**: 27 documents (added 2026-06-20 OpenRouter subagent/Fusion server-tool contract patterns, the shipped batched child-LLM structured-return path, and the existing server-side delegate primitive)
+**Last compiled**: 2026-06-22
+**Sources**: 27 documents (added 2026-06-22 cross-refs to the DCP context-assembler tooling and the stack-change guard validator surface; prior 2026-06-20 OpenRouter subagent/Fusion server-tool contract patterns, the shipped batched child-LLM structured-return path, and the existing server-side delegate primitive)
 
 ## Summary
 
@@ -18,6 +18,10 @@ The broader tool ecosystem includes the LLM-Wiki pattern (intake-269, intake-277
 A 2026-04-17 deep dive (intake-398) investigated Magika, Google's AI-powered content-type detector (ICSE 2025, Apache 2.0, PyPI magika 1.0.2). The model is a 1 MB shallow byte-embedding MLP — not a CNN as commonly described — using three 512-byte windows (beginning, middle, end), 128-dim byte embeddings, two dense GELU layers, and global max-pooling over 200+ content types. Per-class confidence thresholds are calibrated to fix precision at 99% and maximize recall; below-threshold predictions fall back to `txt` or `unknown`, which explains the 99% F1 headline while synthetic OOD classes score 84–94%. Live measurements on the EPYC host showed 225 ms cold-start (onnxruntime init) and 2.8 ms/file amortized, with a confirmed JSON→JSONL misclassification. The deep dive concluded Magika is **not_applicable** to EPYC: the document-ingestion pipeline operates on a five-format, already-labeled corpus (arXiv PDF, GitHub MD, HTML, HuggingFace MD, user-uploaded PDF) where format is declared by URL pattern, HTTP Content-Type, or extension. No existing pipeline stage requires generic filetype detection, and adding ~80 MB of onnxruntime dependencies for zero measurable accuracy gain is pure negative value. Magika is worth reconsidering only if the pipeline begins ingesting truly arbitrary binary corpora.
 
 ## Key Findings
+
+### New (2026-06-22, context-assembler + stack-change guard tooling cross-refs)
+
+- **Two governance/assembly tools advanced.** The DCP context-assembler (`src/context_assembly.py`: budget-bounded iterative file discovery → AST codemap → token verify → slicing, with injectable ColGREP + file-reader backends) reached its first live A/B and recorded `hold` on a latency regression; see [context-management.md](context-management.md). The stack-change guard validator now enforces 27 rules across 13 consumer surfaces via the canonical `stack_change_pipeline.py check --run-promotion-gate` (174 tests pass, no waivers); see [knowledge-management.md](knowledge-management.md). Both are inference-free. Sources: [delegation-context-preassembly.md](../handoffs/active/delegation-context-preassembly.md), [model-stack-single-source-update-pipeline.md](../handoffs/active/model-stack-single-source-update-pipeline.md), [standardized-stack-update-pipeline-finalization.md](../handoffs/active/standardized-stack-update-pipeline-finalization.md).
 
 - **Session closeout is now codified as a local Codex skill.** The `/workspace/.claude/commands/wrap-up.md` routine has a Codex skill mirror at `/home/node/.codex/skills/wrap-up`: update progress reports, handoffs, handoff indices, relevant docs, README freshness warnings, wiki compilation, agent log, and per-repo local commits, then report hashes for manual push. The project command remains the source of truth when present; the skill makes "wrap up", "checkpoint", and `/wrap-up` phrasing durable across Codex sessions. [progress 2026-05-27](../progress/2026-05/2026-05-27.md)
 - **GitNexus remains the required pre-edit blast-radius tool, but markdown/log/progress targets are usually not indexed symbols.** During the 2026-05-27 wrap-up, `gitnexus impact` on documentation targets returned `UNKNOWN` / `0 impacted`; that is expected for unindexed prose surfaces. For code changes, high/critical impact still requires explicit warning and scoping before edits. [progress 2026-05-27](../progress/2026-05/2026-05-27.md)

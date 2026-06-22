@@ -2,8 +2,8 @@
 
 **Category**: `safety`
 **Confidence**: verified
-**Last compiled**: 2026-06-15
-**Sources**: 4 documents
+**Last compiled**: 2026-06-22
+**Sources**: 5 documents (added 2026-06-22 the privacy-hygiene pre-commit secret-scanning hook)
 
 ## Summary
 
@@ -14,6 +14,10 @@ The first hardening pass is complete. External content is now policy-scoped as d
 Security review has a separate but complementary tool surface. The v1 security-review skill runs STRIDE, OWASP Web/API Top 10, OWASP LLM Top 10 2025, and supply-chain checks, then validates exploitability before emitting findings. Severity is gated by concrete exploit paths, which keeps the skill aligned with the project's general verifier discipline.
 
 ## Key Findings
+
+### New (2026-06-22, privacy-hygiene pre-commit secret scanning — COMPLETED)
+
+- **A regex-only pre-commit secret-scanning hook shipped across three repos; a model-based scanner was deliberately rejected as unjustified.** The hook passed 40/40 fixture cases (after patching stale secret-length thresholds and UUID disambiguation) and is installed/verified on epyc-root, epyc-orchestrator, and epyc-inference-research. No pre-push hook or hybrid model-based scanner was added — the evaluation fixture showed regex coverage sufficient, with low operational false-positive signal over 30+ days, and pre-commit remains the fastest feedback path. Scope is workflow-level defense only: no PII masking or model-based extraction, kept separate from document-pipeline safety policies. Source: [privacy-hygiene-precommit-hooks.md](../handoffs/completed/privacy-hygiene-precommit-hooks.md).
 
 - **External content is data, not instructions.** A source may be quoted, summarized, and cited, but not copied into action positions unless an operator or project agent explicitly authors the instruction outside quarantine. Source: [frontier-f5-intake-injection-hardening.md](../handoffs/completed/frontier-f5-intake-injection-hardening.md).
 - **Quarantine needs provenance.** New source-derived blocks carry URL, retrieval timestamp, and SHA prefix, making later review and validator warnings traceable. Source: [frontier-f5-intake-injection-hardening.md](../handoffs/completed/frontier-f5-intake-injection-hardening.md).

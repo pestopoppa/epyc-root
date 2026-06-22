@@ -2,8 +2,8 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-06-20
-**Sources**: 55+ documents (added 2026-06-20 AB-MCTS allocation intake-720, Fusion deliberation intake-712/714, AVB offline reward oracle intake-706/716/717/719, meta_optimizer-weighted-random + MLP-staged code verification)
+**Last compiled**: 2026-06-22
+**Sources**: 56+ documents (added 2026-06-22 the learned-routing-controller verifier/episodic-repair staging state and the X-MAS constrained-policy A/B hold; prior 2026-06-20 AB-MCTS allocation intake-720, Fusion deliberation intake-712/714, AVB offline reward oracle intake-706/716/717/719, meta_optimizer-weighted-random + MLP-staged code verification)
 
 ## Summary
 
@@ -18,6 +18,12 @@ The broader routing stack comprises 9 production subsystems that must coordinate
 The 13 intake entries tagged as routing_intelligence are predominantly `already_integrated` foundational papers from the mixture-of-experts (arXiv:2206.01855), speculative decoding (arXiv:2207.10342), and learned routing (arXiv:2305.05176, arXiv:2309.11495) literatures. These informed the original MemRL design. The one `worth_investigating` entry is Reason-ModernColBERT (intake-174), a 150M-parameter late-interaction retriever that outperforms 7B+ dense retrievers on reasoning-intensive BRIGHT benchmarks by +7.3 NDCG@10 using MaxSim scoring on a ModernBERT backbone. This could improve the classification retriever's embedding quality for routing decisions.
 
 ## Key Findings
+
+### New (2026-06-22, learned-router verifier staging + episodic-embedding repair gate)
+
+- **The learned-routing MLP is staged but NOT in production, and a counterfactual probe is the reason for caution.** The BGE+MLP classifier was retrained 2026-06-12 to 81.0% val accuracy and wiring preflight passed, but production still attests `routing_classifier=false` across all 6 workers pending a rollout decision. The P6.2 multi-action verifier passed headline gates yet a counterfactual probe revealed 3/4 classes are action-marginal lookups — judged unsafe for production. The narrow NEXT-A2 frontdoor-specialist verifier (70K samples, 22% failure) passed strongly (Brier 0.0043, AUC 0.9997, ECE 0.0066; 45× better than softmax-max baseline) but its deployment shape is deferred pending episodic-memory repair or an explicit user decision. Source: [learned-routing-controller.md](../handoffs/active/learned-routing-controller.md).
+- **Routing-classifier and verifier training are bottlenecked on a degraded episodic-embedding store, not on model quality.** The live FAISS index covers only ~0.2-24.3% of DB rows (52,993-291,992 orphan rows reported across diagnostics); a `repair_episodic_embeddings.py` tool and an `orchestrator_stack.py` step [0.7] exist but run guarded behind `--repair-embeddings` and require a coordinated uncontested window. Until the embedding store is repaired, the (embedding, action) joint conditioning that makes the verifier materially better than per-class thresholds cannot be trusted on live state. Sources: [learned-routing-controller.md](../handoffs/active/learned-routing-controller.md), [progress 2026-06-21](../progress/2026-06/2026-06-21.md).
+- **Text-mediated X-MAS domain×function routing remains a quality-regressing candidate (cross-ref).** Latest constrained-policy A/B improved latency (ratio 0.714) but regressed score (-0.250); enforce stays OFF pending per-cell repair. See [cost-aware-routing.md](cost-aware-routing.md) for detail. Source: [x-mas-text-routing.md](../handoffs/active/x-mas-text-routing.md).
 
 ### New Findings (2026-06-05 — decision-aware routing and AutoPilot signal boundaries)
 

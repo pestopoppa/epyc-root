@@ -2,8 +2,8 @@
 
 **Category**: `training_distillation`
 **Confidence**: verified
-**Last compiled**: 2026-06-20
-**Sources**: 33 documents (added 2026-06-20 Code2LoRA evolution-variant / AVB tiny CPU reward-model recipe / gemma-4-12B test-gated CoT coder fine-tune)
+**Last compiled**: 2026-06-22
+**Sources**: 34 documents (added 2026-06-22 the F3 data-flywheel capture/builder progress with its HW-gated training block and null triage baseline; prior 2026-06-20 Code2LoRA evolution-variant / AVB tiny CPU reward-model recipe / gemma-4-12B test-gated CoT coder fine-tune)
 
 ## Summary
 
@@ -22,6 +22,10 @@ A critical finding from SFT generalization research (intake-374, intake-378) is 
 Aletheia RLVR (intake-370) provides scale-dependent training recipes for verification models: 1.5B models need on-policy GRPO with negative samples but can skip thinking traces; 14B models require thinking traces and negative samples for stability; DPO is catastrophic at 1.5B scale (-23.4%) but viable at 14B with Easy-to-Hard data. Training is GPU-only (16 rollouts/step), making the 1.5B scale the sweet spot for CPU inference verification with training deferred to DGX Spark.
 
 ## Key Findings
+
+### New (2026-06-22, data-flywheel capture in-flight; GPU fine-tunes HW-gated; triage baseline NULL)
+
+- **The F3 data flywheel is collecting training data but cannot train yet, and its first non-GPU baseline returned a null result for lack of labels.** Capture hygiene and dataset builders (planner-SFT, intake-triage) are scaffolded; reviewed-label joins and a stdlib naive-Bayes baseline landed 2026-06-21. But the intake-triage baseline is NULL (`insufficient_reviewed_labels`, currently 0 reviewed rows; needs ~100 reviewed labels to gate acceptance). W3 GPU fine-tunes (planner-distill, drafters, judge) are BLOCKED — hardware-gated on the MI210 portfolio; F7's economic review marks the spend justified (planner spend $410.75 over budget tripped the priority bump) but no training happens before the card arrives. This keeps the standing position that adapter/distillation training is GPU-blocked, with CPU-side data capture as the only currently-runnable lane. Source: [frontier-f3-data-flywheel.md](../handoffs/active/frontier-f3-data-flywheel.md).
 
 ### New (2026-06-20, evolution-aware code adapters + CPU-trainable reward/coder recipes)
 

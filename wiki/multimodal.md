@@ -2,8 +2,8 @@
 
 **Category**: `multimodal`
 **Confidence**: verified
-**Last compiled**: 2026-06-21
-**Sources**: 34 documents (added 2026-06-05 LocateAnything/Gemma 4 benchmark-first update; 2026-06-21 Kimi-K2.7-Code MoonViT / UniRL intake merge)
+**Last compiled**: 2026-06-22
+**Sources**: 34 documents (added 2026-06-22 vision-pipeline live-server registration + the TTS path-elimination matrix; 2026-06-05 LocateAnything/Gemma 4 benchmark-first update; 2026-06-21 Kimi-K2.7-Code MoonViT / UniRL intake merge)
 
 ## Summary
 
@@ -20,6 +20,10 @@ MiniCPM-O 4.5 (9B dense, Qwen3-8B backbone + SigLip2 + Whisper-medium + CosyVoic
 Gemma 4 (intake-251/252) introduces Any-to-Any multimodal models (text+image+audio unified). E4B (8B effective) could simplify the pipeline but is blocked by lack of GGUF support (MLX only). VoxCPM2 (intake-317) is a tokenizer-free multilingual TTS alternative requiring GPU (RTX 4090 for real-time), tracked for GPU upgrade path.
 
 ## Key Findings
+
+### New (2026-06-22, vision pipeline live; TTS still has no working path)
+
+- **The vision pipeline is functionally complete and now prefers the resident multimodal llama-server over CLI fallback; TTS remains unsolved with most candidate paths eliminated.** The vision pipeline (23 files, ~4.5K lines) passed live-server analyzer validation, registered its tools (vision_analyze/vision_search/vision_face_identify among 59 central tools), and landed chat integration (2026-06-21). ASR is live (Whisper large-v3-turbo, ~2.8x real-time). TTS is blocked: Path A (Qwen3-TTS via llama.cpp) outputs noise; Path B (MiniCPM-O built-in) untested; Path C (Qwen3-TTS PyTorch sidecar) is viable; Path D (LuxTTS CPU) is a benchmarked candidate; Path E (Qwen3.5-Omni) is API-only and not adopted. Multimodal-audio integration awaits a quiet-window API restart and a llama.cpp-omni fork build. Deep-dive corrections: LocateAnything-3B grounding incompatible with GGUF (Parallel Box Decoding); Moondream-3 deferred (BSL license, no tool calling); Holo-3.1-4B parked (no GGUF, redundant); Marlin-2B video-captioning deferred (BF16-only, mislabeled backbone). MiniCPM-O 4.5 beats deployed VLs on OpenCompass/MathVista but lags on DocVQA/OCRBench vs Qwen3-VL. Source: [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md).
 
 - **Benchmark deployed Qwen-VL field placement before adding LocateAnything (2026-06-05).** The LocateAnything-3B form-fill demo is dominated by the 35B-A3B controller's huge prefill and turn count, not by the 3B visual grounding model alone. Because the stack already has Qwen3-VL-30B and Qwen2.5-VL-7B vision roles, the correct next step is a field-placement IoU benchmark on the deployed VLMs first; LocateAnything becomes a CPU-transformers precision A/B only if the existing VLMs miss the needed grounding precision. Sources: [progress 2026-06-05](../progress/2026-06/2026-06-05.md), [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md).
 - **Gemma 4 should stay a benchmark candidate, not be dismissed from model-card priors.** The June 5 deep-dive corrected an overreach: Gemma 4 was newly released and had not been evaluated locally, so frontdoor/vision replacement claims must wait for EPYC suite results. The card metric previously read as MMMU was actually multilingual MMLU text; vision comparison should use the appropriate vision numbers and local tasks. Sources: [progress 2026-06-05](../progress/2026-06/2026-06-05.md), [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md).

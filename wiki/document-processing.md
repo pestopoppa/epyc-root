@@ -2,8 +2,8 @@
 
 **Category**: `document_processing`
 **Confidence**: verified
-**Last compiled**: 2026-06-21
-**Sources**: 4 documents
+**Last compiled**: 2026-06-22
+**Sources**: 4 documents (2026-06-22 refresh: ODL pipeline Phase 2 landed; Phase 3 hybrid-table routing still open)
 
 ## Summary
 
@@ -16,6 +16,10 @@ A three-phase integration plan has been designed and is actively tracked. Phase 
 The Java 11+ runtime dependency is manageable through a sidecar pattern. The Python SDK wraps a Java CLI where each `convert()` call spawns a JVM, so batch processing or persistent subprocess warming is recommended for production. The structured JSON output improves every downstream consumer: chunker, figure analyzer, LLM context quality.
 
 ## Key Findings
+
+### New (2026-06-22, OpenDataLoader pipeline Phase 2 landed; hybrid-table routing still open)
+
+- **ODL structured extraction is wired and Phase 2 is complete, but the hybrid-table path remains unbuilt (Phase 3 open).** Phase 1 wired ODL behind default-off adoption gates (`PDF_EXTRACTOR=opendataloader`, `ORCHESTRATOR_ODL_STRUCTURED=1`); Phase 2 (2026-06-21) landed the `ODLStructuredDocument` model, a structured-metadata injection scanner, heading-aware chunking, a table carrier (`TableRef`), figure-bbox replacement, and a default-off document-body warning policy (`ORCHESTRATOR_DOCUMENT_BODY_INJECTION_POLICY=warn`). Phase 3 (hybrid table sidecar/client, opendataloader-bench integration, three-way simple→hybrid→LightOnOCR routing) is still scoped, not built. Intake adds LiteParse (Rust, JVM-free, born-digital fast-path) as `adopt_component` and PaddleOCR-VL-1.6 GGUF benchmarking as deferred; adaptive-chunking (Ekimetrics) vs HOPE disagree on the cohesion signal and need a side-by-side eval. Source: [opendataloader-pipeline-integration.md](../handoffs/active/opendataloader-pipeline-integration.md).
 
 - Current pipeline has NO table extraction -- pdftotext mangles tables, LightOnOCR outputs bboxes but no structured table data [opendataloader-pdf-pipeline-integration.md]
 - OpenDataLoader local mode matches pdftotext latency (0.05s/page) while providing reading order (0.91), heading hierarchy, table detection, and figure bboxes [opendataloader-pdf-pipeline-integration.md]
