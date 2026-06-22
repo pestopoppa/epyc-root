@@ -4,15 +4,15 @@
     "handoff-active": 96,
     "handoff-blocked": 1,
     "handoff-completed": 136,
-    "progress": 173,
+    "progress": 175,
     "research": 121
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-06-21T00:08:11Z",
   "mode": "full",
-  "scan_time": "2026-06-21T21:00:57Z",
+  "scan_time": "2026-06-22T09:11:31Z",
   "schema_version": 1,
-  "source_set_hash": "44f48b5133f5295837ad4a0504fb203cd188cc8b26739331663a9c56ee16d10a",
+  "source_set_hash": "99a271678723a9f0008b281a88c9705d24f6f0b1f96ca4ab9cba2a8f6f80e98a",
   "sources": [
     {
       "content_hash": "f0506c861200715c31f630966dd5881b4dcff41813aa8d68f3dadd3f1eda1c43",
@@ -4175,6 +4175,22 @@
       "type": "progress"
     },
     {
+      "content_hash": "5baa2b3e929b6ab1a96a0f403e689c0cd159e3919e8f213473738d2b5d803fdc",
+      "modified": "2026-06-22T00:12:58Z",
+      "path": "progress/2026-06/2026-06-22-autopilot.md",
+      "size": 3245,
+      "title": "Autopilot Digest \u2014 2026-06-22",
+      "type": "progress"
+    },
+    {
+      "content_hash": "cf45b8b1a1a5496f1ceeabce949a42475c86a30f041e19dabb0f77a2cb43f895",
+      "modified": "2026-06-22T09:10:37Z",
+      "path": "progress/2026-06/2026-06-22.md",
+      "size": 5792,
+      "title": "2026-06-22",
+      "type": "progress"
+    },
+    {
       "content_hash": "143637a829e530cf1ecccab3eb0292d182edaa79568f98643bb0129aacc15f19",
       "modified": "2026-06-12T15:34:14Z",
       "path": "progress/2026-06/master-index-pre-rewrite-archive-2026-06-12.md",
@@ -4343,5 +4359,5 @@
       "type": "docs"
     }
   ],
-  "total_new": 541
+  "total_new": 543
 }
