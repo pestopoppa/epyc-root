@@ -1,5 +1,13 @@
 # Branch integration to `main` — standalone-session report (2026-06-22)
 
+> ✅ **COMPLETED 2026-06-23.** Resolved as **Option A (FF-publish to `main`)**. Both repos' `origin/main`
+> were fast-forwarded to the `spec-dec-mtp-refresh-2026-06-22` tips (which became a superset of the
+> branches analyzed below): **epyc-root `ff2bdf57`→`9f19b558` (+122)**, **epyc-orchestrator
+> `d74a8bfc`→`fab49519` (+788)**. 0 commits dropped; verified `origin/main == branch tip`. Published via
+> no-checkout FF push (parallel agent owned the working tree). See `progress/2026-06/2026-06-23.md`
+> §"Branch integration to `main` — EXECUTED". Historical ledger only; the topology figures below are the
+> pre-execution snapshot.
+
 **Purpose**: hand the main-integration decision to a dedicated session. This documents the
 exact branch topology, what's on the branches, the uncommitted churn, the risks, and ready-to-run
 commands. **Nothing in here was executed** — per operator direction this session held (C) and did
