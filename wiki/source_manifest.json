@@ -4,15 +4,15 @@
     "handoff-active": 99,
     "handoff-blocked": 1,
     "handoff-completed": 136,
-    "progress": 175,
+    "progress": 176,
     "research": 121
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-06-22T10:08:57Z",
   "mode": "full",
-  "scan_time": "2026-06-22T10:37:24Z",
+  "scan_time": "2026-06-23T08:44:55Z",
   "schema_version": 1,
-  "source_set_hash": "fa6ddab60bc6fdb99862dfb3bee540e1e11bcd15da9a0ad9b53b9b000ccd80c8",
+  "source_set_hash": "da31730a2c9a9b2526c176835b3daf96e3e6fe5c18d40c9e978c90b7e66a3dcf",
   "sources": [
     {
       "content_hash": "f0506c861200715c31f630966dd5881b4dcff41813aa8d68f3dadd3f1eda1c43",
@@ -199,10 +199,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "217079c08b491b9774a0b413bcf32034318702b1348db76c1acdf31837c6968b",
-      "modified": "2026-06-20T23:32:58Z",
+      "content_hash": "66203f9700dda9a872c9dfe63363794cf1fd19f432fe10d9cef98b5733d9e119",
+      "modified": "2026-06-23T08:44:12Z",
       "path": "handoffs/active/eval-tower-verification.md",
-      "size": 46514,
+      "size": 48921,
       "title": "Eval Tower Verification Framework",
       "type": "handoff-active"
     },
@@ -551,10 +551,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "cf023fadea40f27600f6ceaa9f776391a9c27e50bee91df19fda0d210a2e797c",
-      "modified": "2026-06-22T10:36:58Z",
+      "content_hash": "d510c783f34e8b78aa355709088c37d48abb0cb1af510dbe0c71a22a9993f9c9",
+      "modified": "2026-06-22T13:43:35Z",
       "path": "handoffs/active/qwen-mtp-llamacpp-port.md",
-      "size": 6801,
+      "size": 12105,
       "title": "Qwen MTP llama.cpp Port (PR #22673 + #22400)",
       "type": "handoff-active"
     },
@@ -671,10 +671,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "413d8bb68e93c0d841f41b6728dc91a96aab8ffabaa672543318674dcb7b828b",
-      "modified": "2026-06-22T10:37:09Z",
+      "content_hash": "037738d961566558613fc5b4649c8a57e6a9eac186cd944481efe0fbde1b40ed",
+      "modified": "2026-06-23T08:44:22Z",
       "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "size": 9089,
+      "size": 17814,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
@@ -4207,11 +4207,19 @@
       "type": "progress"
     },
     {
-      "content_hash": "88878b1940d41dee1a3df7012b5c8cf8fdbc25a64b22a76dd294fc961ba096cc",
-      "modified": "2026-06-22T09:57:13Z",
+      "content_hash": "d71dbaeab3ed9508e81206ae9b7b24c3eb22cfd50f146a0758a5498182d5f56c",
+      "modified": "2026-06-22T13:47:58Z",
       "path": "progress/2026-06/2026-06-22.md",
-      "size": 12093,
+      "size": 15657,
       "title": "2026-06-22",
+      "type": "progress"
+    },
+    {
+      "content_hash": "a551b77a628b199be4438f891c2757b903d7ec4b7d36254c621e6851f6cfd4c4",
+      "modified": "2026-06-23T08:43:06Z",
+      "path": "progress/2026-06/2026-06-23.md",
+      "size": 4922,
+      "title": "2026-06-23",
       "type": "progress"
     },
     {
@@ -4383,5 +4391,5 @@
       "type": "docs"
     }
   ],
-  "total_new": 546
+  "total_new": 547
 }
