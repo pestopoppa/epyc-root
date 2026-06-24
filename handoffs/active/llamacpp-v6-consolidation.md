@@ -191,3 +191,85 @@ After any task here:
 - Triage source: this session's 107-commit triage (CORE / PARITY / DEAD / UPSTREAM-NATIVE)
 - Related handoffs: `speculative-decoding-mtp-refresh.md`, `qwen-mtp-llamacpp-port.md`, `inference-acceleration-index.md`, `cpu-inference-optimization-index.md`
 - Related memory: `project_cpu1_software_levers_exhausted`, `feedback_verify_live_affinity_not_just_topology_hash`, `project_concurrent_split_throughput`, `project_dual_half_concurrency_negative`
+
+---
+
+## Live validation workflow (approved 2026-06-23, executing)
+
+Approved full-auto plan to **prove v6 is more performant WITHOUT regressing production behavior**. Entirely in the `/mnt/raid0/llm/llama.cpp-v6` experimental worktree — **NO production push, NO reboot**. Host is at **26-day uptime** → all absolute t/s are throttle-suspect **observations**; conclusions rely on **same-session relative comparisons** (v6 opt-OFF vs opt-ON, v6 vs v5 baseline run in the same window, OpenMP-ON vs OpenMP-OFF), never cross-session absolutes.
+
+Approved plan file: `/home/node/.claude/plans/fix-index-edits-and-cuddly-gadget.md`.
+
+### Phases
+
+- **Phase 1 — Correctness + no-regression + reboot-assessment (single-instance).** Smallest→largest on v6 **OpenMP-ON**: Qwen3.5-9B → gemma-4-26B-A4B → gemma-4-31B → Qwen3.6-35B-A3B → Qwen3-Next-80B → Qwen3.5-122B. Per model:
+  - loads on the new framework + produces correct output;
+  - opt-OFF vs opt-ON (`GGML_Q8_0_8X8`) **byte-identical**;
+  - llama-bench t/s vs the v5 baseline.
+  - **Reboot-assessment**: if v6 ≥ v5 (within ≥−3%) → **no reboot needed**; if v6 is **>8% below** the tripwire → **HALT for operator** (reboot signal).
+- **Phase 2 — CCD (OpenMP-OFF build).** Build a `GGML_OPENMP=OFF` variant (activates the `#ifndef GGML_USE_OPENMP` custom-pool CCD path), measure vs OpenMP-ON. **Activate only if ≥+3% with no regression.**
+- **Phase 3 — NUMA topology bench.** `{9B, 31B} × {baseline, MTP} × {quarter / half / full}`. **Phase A** single-instance (latency), **Phase B** intentional concurrent (4×quarter / 2×half / 1×full, aggregate t/s).
+- **Phase 4 — Stage 2 parity** (paged-attn, KV-compaction, Hadamard, IMROPE). Check **upstream-native first**; port only what is genuinely missing AND deployed.
+- **Phase 5 — gemma-MTP consolidation onto v6.** Re-convert the assistant head `gemma4_mtp` → `gemma4_assistant`; if v6 ≥ ik_llama.cpp AND correct → **retire the second kernel**.
+- **Phase 6 — synthesis.**
+
+### Guardrails (verbatim)
+
+- **(a) Experimental-only.** All work in `/mnt/raid0/llm/llama.cpp-v6`; the production worktree `/mnt/raid0/llm/llama.cpp` stays untouched on `production-consolidated-v5` (`verify_llama_cpp.sh` enforces). **No promotion** in this workflow.
+- **(b) Host-ownership, not "sequential-only".** Confirm there is **no FOREIGN inference** running before each measurement window — but **Phase-3B concurrency is intentional and mine** (it is the experiment, not a contention bug).
+- **(c) EVERY speed number is paired with an output-correctness + opt-on-vs-opt-off bit-exact check — a fast-but-garbage config is discarded, not recorded (this has bitten us before).**
+- **(d) Speed via standalone `llama-bench`** + `/completion` for MTP, **never `run_benchmark.py`**.
+
+### Halt-gates
+
+- Model **load-fail or regression** vs v5.
+- **opt-ON ≠ opt-OFF** (not bit-exact) → kernel bug.
+- v6 **materially below v5** (reboot signal; >8% below tripwire in Phase 1).
+
+---
+
+## Execution status / results (updating)
+
+Scaffold for the executor to fill as phases complete. v5 baselines below are **observations** (throttle-suspect; for same-session relative comparison only).
+
+Known v5 baselines (t/s):
+- gemma-4-26B-A4B: 44.7 (baseline) / 60.7 (MTP)
+- Qwen3.6-35B-A3B Q8: 24.3
+- Qwen3.5-122B: 12.19
+- Qwen3-Next-80B: 14.4–20.8
+- gemma-4-31B (dense): 6.87
+
+v6 t/s shown as **llama-bench tg / completion** (single-instance, v6 OpenMP-ON build, host at **26-day uptime** → t/s are **throttle-suspect observations**). opt-off = deterministic reference; opt-on = `GGML_Q8_0_8X8` AVX-512BW kernel forced on.
+
+| Phase | Model/Config | loads? | correct? | opt-off==opt-on bit-exact? | v6 t/s (tg / completion) | v5 baseline | verdict |
+|-------|--------------|--------|----------|----------------------------|--------------------------|-------------|---------|
+| 1 | Qwen3.5-9B Q4_K_M (dense, candidate) | yes | yes (prime list) | BIT-EXACT (Q8_0 kernel n/a on Q4 weights) | 30.1 / 16.1 | none | PASS |
+| 1 | gemma-4-26B-A4B Q4_K_M (MoE, worker role) | yes | **NO — GARBAGE** ("DO NOT…OVERSIGHT-OVERSIGHT…" repetition) | n/a (both paths garble) | 52 bench but OUTPUT GARBAGE | 44.7 / 60.7 (ik_llama) | **BLOCKER** |
+| 1 | gemma-4-31B Q4_K_M (dense) | yes | yes (prime list) | BIT-EXACT | 12.1 / 10.6 | 6.87 (SuperGemma31B) | PASS |
+| 1 | Qwen3.6-35B-A3B Q8_0 (MoE, frontdoor/coder) | yes | yes | BIT-EXACT (Q8_0 kernel fully engaged) | 28.7 / 24.8 | 24.3 | PASS (v6 ≥ v5) |
+| 1 | Qwen3-Next-80B-A3B Q4_K_M (SSM-MoE, ingest) | yes | yes (prime list) | BIT-EXACT | n/a (bench skipped, needs override-kv) / 30.1 | 14.4–20.8 | PASS |
+| 1 | Qwen3.5-122B-A10B Q4_K_M (GDN, architect) | yes | yes (prime list) | opt-off DETERMINISTIC (4d58… ×2 @ n=200); opt-ON Q8_0-kernel DIVERGES (near-tie flip, output still correct) | 16.4 / 15.1 | 12.19 (canonical) | PASS opt-off; Q8_0 kernel non-byte-exact here |
+| 2 | Qwen3.6-35B-A3B OpenMP-OFF (custom-pool ±CCD) | yes | **NO — GARBAGE** (server format-error → empty) | n/a | 30.5 tg but OUTPUT GARBAGE | OpenMP-ON 29.7 (correct) | CCD NOT viable; OpenMP-ON stays |
+| 3A | 9B single-instance topology | yes | all OK | n/a (cross-topo differs by reduction order) | qtr 11.8 / half 15.1 / full 32.1 | — | full wins single-stream |
+| 3A | gemma-31B single-instance topology | yes | all OK | n/a | qtr 3.1 / half 4.4 / full 12.4 | — | full wins single-stream |
+| 3B | 9B CONCURRENT aggregate | yes | (per 3A) | n/a | 1×full 30.7 / 2×half 30.6 / **4×qtr 50.4** | — | **4×quarter +64%** |
+| 3B | gemma-31B CONCURRENT aggregate | yes | (per 3A) | n/a | 1×full 12.1 / 2×half 10.2 / 4×qtr 10.2 | — | **1×full wins; quartering −16%** |
+| 3-MTP | 9B MTP × topology | yes | all OK 87% accept | n/a | qtr 21.8(+85%) / half 24.9 / full 30.8(neutral) | — | MTP value inversely ∝ threads |
+
+- **Reboot-necessity verdict: NO REBOOT NEEDED.** v6 on the current (26-day-uptime) host meets or exceeds the v5 baselines (122B 16.4 vs 12.19 canonical; 35B 28.7 vs 24.3; 80B 30.1 vs 14.4–20.8). If throttle were crippling throughput we'd see ~half these — we don't. (Caveat: v6-vs-v5 not perfectly apples-to-apples on measurement context/config, but the direction is unambiguous: not throttle-limited.)
+- **Key finding A (CORRECTED) — the gemma-4-26B-A4B garble is a STALE GGUF, not a v6 bug.** Mainline v6 fully supports gemma4-MoE (purpose-built, commit #22804 2026-05-08; `gemma4.cpp` has the complete MoE path). The on-disk Q4_K_M GGUF is a ggml-org PREVIEW dated 2026-04-04 — ~1 month older than mainline's working support — with stale-converter fingerprints (`add_bos_token=0`, no `tokenizer.ggml.pre`, no `general.name`). It loads (tensors/hparams match: `expert_count=128`, `used=8`) but mis-decodes numerically vs the finalized v6 graph → coherent-but-wrong "OVERSIGHT" repetition. (Also: the GGUF DOES embed a `chat_template` — the earlier "no chat_template" was wrong; irrelevant on raw /completion anyway.) FIX: re-fetch the current ggml-org gemma-4-26B-A4B-it-GGUF (local copy pinned to stale Apr-4 commit `4006d4d9`) → v6 decode smoke → if correct, consolidate the worker off ik_llama. No HF base safetensors on disk (re-convert path would need a ~52GB gated download). Keep ik_llama as the fallback meanwhile.
+- **Key finding B — Q8_0 AVX-512BW kernel is distribution-preserving, NOT strictly byte-exact:** bit-exact on the 35B (pure Q8_0) but flipped a greedy near-tie on the 122B (correct output, last-bit FP diff). Off by default (no role sets GGML_Q8_0_8X8). Enabling it for speed carries the same near-tie caveat as MTP — operator decision.
+- **CCD verdict: NOT VIABLE on v6 → OpenMP-ON stays.** Measured (Phase 2): the OpenMP-OFF custom-pthread-pool build — the only build where the `#ifndef GGML_USE_OPENMP` CCD code compiles in — produces GARBAGE on production MoE models (Qwen3.6-35B-A3B garbles on OpenMP-OFF both bare-custom-pool AND +CCD-env; 9B dense is correct on OpenMP-OFF). Additionally the CCD init never engages via the llama-server threadpool path (no `[GGML_CCD_POOLS] enabled/disabling` log ever appears — upstream's framework creates threadpools outside the ported `ggml_threadpool_new_impl` CCD path). So CCD can neither be cleanly activated NOR safely used. This confirms by measurement what was inferred (the GGML_CCD_* env vars are vestigial): the CPU1 CCD optimization is dead on v6. OpenMP-ON is the production build. Root cause of the OpenMP-OFF MoE garbage (Stage-1b port vs upstream non-OpenMP MoE path) not pursued — low value since OpenMP-ON works; flag for future only if CCD is ever revisited.
+- **NUMA topology winner: model-size-dependent.** Single-stream latency → 1×full (all sizes). Concurrent throughput → 4×quarter for SMALL models (9B +64%; halves never win), but 1×full for LARGE dense (31B: quartering HURTS −16%, severe BW contention). MTP speedup inversely ∝ thread count (quarter +85%, full neutral) → MTP pairs with quartering. Projected champion for small-model serving = 4×quarter+MTP (concurrent 4×quarter-MTP aggregate = top unrun follow-up). Matches + validates production's existing strategy (quarter the small-active roles, full for the 122B architect).
+- **gemma consolidation: UNBLOCKED — needs a current GGUF, not a code fix.** (See corrected finding A.)
+
+## Stage-2 parity port backlog
+
+From the Phase-4 audit (check each against upstream-native FIRST):
+
+- **MUST-PORT:**
+  - **Paged attention** (F1, largest) — env `LLAMA_PAGED_ATTN`; needed for the ≥39GB roles.
+  - **Expected-Attention + knorm KV-compaction** (F2/F3) — server `action=compact`, autopilot-driven.
+  - **IMROPE K-shift guard relaxation** (F5, ~7 lines, `src/llama-kv-cache.cpp`) — NOT covered by the Phase-1 decode smoke; triggers on K-shift / chunk-reuse for the 122B.
+  - **Slot force-release** (F6, ~25 LOC).
+- **ALREADY-NATIVE (no port):** Hadamard KV — v6 auto-enables it on quantized KV; just drop `--kv-hadamard` from launches.
