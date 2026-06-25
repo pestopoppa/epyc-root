@@ -36573,3 +36573,87 @@
     does not imply regression-detection sensitivity. Correct application: TB Core external evals only.
     Suites in autopilot pool: general, math, coder, thinking, simpleqa, hotpotqa, gpqa, debugbench,
     livecodebench, cruxeval, bigcodebench, instruction_precision, vl, mode_advantage, agentic, etc.
+
+- id: intake-728
+  arxiv_id: '2606.21228'
+  url: https://arxiv.org/abs/2606.21228
+  source_type: paper
+  title: 'Sakana Fugu Technical Report'
+  authors:
+  - Yujin Tang
+  - Edoardo Cetin
+  - Jinglue Xu
+  - Qi Sun
+  - Stefan Nielsen
+  - Vincent Richard
+  - Haruto Goda
+  - Iaroslav Tymchenko
+  - Nhan Nguyen
+  - Hyunin Lee
+  - Mari Ashiga
+  - Shashank Kotyan
+  - So Kuroki
+  - Tarin Clanuwat
+  categories:
+  - agent_architecture
+  - routing_intelligence
+  - cost_aware_routing
+  key_claims:
+  - 'Fugu is an LLM trained to orchestrate a diverse pool of frontier models (GPT-5.5, Gemini 3.1 Pro, Claude Opus 4.8), delivering adaptive agent scaffolds per query via a single API endpoint that hides multi-agent complexity'
+  - 'Fugu Ultra (full team, max quality) achieves self-reported SWE-Bench Pro 73.7%, LiveCodeBench 93.2%, GPQA-D 95.5%, MRCRv2 93.6% — but these are non-standardized multi-agent scores, not solo-model baselines'
+  - 'Two-tier design: Fugu picks one best worker per query (latency comparable to a single frontier call); Fugu Ultra coordinates a full expert team (higher latency, up to 30 min real-world)'
+  - 'Agent pool opt-out allows users to exclude specific providers/models for data compliance and privacy requirements'
+  - 'Direct commercial productization of Trinity (ICLR 2026, sep-CMA-ES evolved coordinator) + Conductor (ICLR 2026, GRPO RL orchestrator); confirms these patterns work at production scale'
+  techniques:
+  - LLM trained as multi-agent orchestrator (not hand-designed rules)
+  - Adaptive query-level agent scaffold assembly
+  - Evolutionary algorithms + RL + large-scale fine-tuning
+  - Two-tier latency/quality tradeoff (single-worker vs full-team)
+  - Agent pool opt-out for compliance
+  reported_results:
+  - 'Fugu Ultra (self-reported, June 2026): SWE-Bench Pro 73.7%, LiveCodeBench 93.2%, GPQA-D 95.5%, MRCRv2 93.6%'
+  - 'Fugu (self-reported): SWE-Bench Pro 59.0%, LiveCodeBench 92.9%, GPQA-D 95.5%'
+  - 'Real-world reports: ~30-minute wait times for Fugu Ultra; performance below Fable 5 in independent tests within 24h of launch (TechTimes, June 24, 2026)'
+  - 'SWE-Bench Pro context: standardized SEAL leaderboard top = GPT-5.4 59.1%; Claude Opus 4.8 vendor-reported 69.2% — Fugu Ultra 73.7% is self-reported on non-standardized scaffold'
+  references:
+  - '2512.04695'
+  - '2512.04388'
+  novelty: medium
+  relevance: high
+  credibility_score: 1
+  verdict: worth_investigating
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-06-25'
+  contradicting_evidence:
+  - 'Benchmark methodology concern: Fugu Ultra coordinates multiple frontier models then reports aggregate score against solo-model baselines — relay team vs solo sprinter; not apples-to-apples'
+  - 'Claude Fable 5 and Mythos Preview excluded from agent pool (not publicly accessible) — Fugu Ultra uses the second tier of frontier models to claim parity with the first tier'
+  - 'Real-world testing showed 30-minute Fugu Ultra wait times and performance below Fable 5 within 24h of launch (TechTimes, June 24, 2026)'
+  - 'All benchmark scores are self-reported by Sakana in a technical report (not peer-reviewed); no independent corroboration as of June 2026'
+  - 'GPQA-D 95.5% is far above current best single-model scores (~80-85%) — plausible for a multi-agent iterative verifier, but no independent replication'
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - outer-coordinator-learned-head.md
+    - decision-aware-routing.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-474
+    - intake-493
+    - intake-726
+  handoffs_updated:
+  - outer-coordinator-learned-head.md
+  handoffs_created: []
+  novelty_justification: 'Trinity (intake-474) and Conductor (intake-493) are already indexed as the underlying research. This report adds: (1) commercial productization with specific benchmark results at production scale; (2) the two-tier Fugu/Fugu-Ultra latency/quality design; (3) agent pool opt-out for compliance; (4) confirmation that Conductor weights remain commercial (not released). Not high because the core techniques are covered; medium because the production-scale benchmark data and design details are new.'
+  relevance_justification: 'High: outer-coordinator-learned-head.md is the direct scoping handoff for evaluating a Trinity-style learned outer coordinator. Fugu''s release is the strongest empirical signal yet that the design pattern works at frontier scale. The two-tier design (single-worker vs full-team) is a direct reference for our latency/quality tradeoff axis. The agent pool opt-out mechanism is a concrete implementation reference for compliance requirements. Terminal-Bench is one of Fugu''s primary benchmarks (connecting to intake-726).'
+  verdict_justification: 'worth_investigating: Fugu is a closed commercial product requiring frontier API access — we cannot deploy it locally. However, it provides: (1) calibration data for the outer-coordinator scoping question (OC-0), (2) confirmation that Trinity + Conductor patterns scale to production, (3) two-tier design reference, (4) compliance opt-out pattern. Credibility score 1 (low) due to self-reported benchmarks with methodological concerns; treat numbers as competitive intelligence observations, not decision-gating measurements per MEASUREMENT.md. NOT new_opportunity because we cannot adopt or replicate it within EPYC''s CPU-only, open-source constraint.'
+  notes: >
+    Submitted June 19, revised June 23, 2026 (arXiv:2606.21228). Technical report, not
+    peer-reviewed. Productizes Trinity (ICLR 2026, intake-474) and Conductor (ICLR 2026,
+    intake-493). Agent pool: GPT-5.5, Gemini 3.1 Pro, Claude Opus 4.8 (Fable 5 / Mythos
+    excluded as inaccessible). Input to this intake was operator-submitted text; actual
+    content fetched from arxiv.org and sakana.ai/fugu/. Operator note: leaderboard
+    submission and cloud deployment are NOT of interest — this entry is competitive
+    intelligence only.

@@ -8,11 +8,11 @@
     "research": 121
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-06-23T08:47:35Z",
+  "last_compile": "2026-06-25T20:33:15Z",
   "mode": "full",
-  "scan_time": "2026-06-25T20:32:14Z",
+  "scan_time": "2026-06-25T22:26:05Z",
   "schema_version": 1,
-  "source_set_hash": "cc0582d937866e7e33d0be35ebc0d95ee1d854a2edad300ba8398bcb03c3827e",
+  "source_set_hash": "fdd92cde7766916007058aa860dddbaea479b83fb5379c65e7e5fc9015956a84",
   "sources": [
     {
       "content_hash": "f0506c861200715c31f630966dd5881b4dcff41813aa8d68f3dadd3f1eda1c43",
@@ -327,10 +327,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b6277284cf48623fc2f5097ca8bf5f9f66b26b1f4c8b3615de5afa851fc1d875",
-      "modified": "2026-06-20T05:21:00Z",
+      "content_hash": "356b21e6b3de8901e0eb7fa9a78e73ffffaacf05aa9feda6e85b811220cfdfd1",
+      "modified": "2026-06-25T22:23:09Z",
       "path": "handoffs/active/internal-interaction-lifecycle.md",
-      "size": 30663,
+      "size": 33704,
       "title": "Internal Interaction Lifecycle",
       "type": "handoff-active"
     },
@@ -375,10 +375,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b4d43425e8ef7126436a542cb4ee5e05aa30fd10397e13ed9be99a1bdc0f7137",
-      "modified": "2026-06-21T21:00:47Z",
+      "content_hash": "06715b48bc805db44ee94a190ad3ecd6216cd974bfafde337d08b19acea6df5d",
+      "modified": "2026-06-25T22:22:40Z",
       "path": "handoffs/active/learned-routing-controller.md",
-      "size": 113964,
+      "size": 117384,
       "title": "Learned Routing Controller: MLP Distillation from Episodic Memory",
       "type": "handoff-active"
     },
@@ -551,10 +551,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "d8d9167c5750227fdf475f43a6bfb6b3bb2f476edabeb77c56590939a5fce817",
-      "modified": "2026-06-20T05:21:00Z",
+      "content_hash": "977c14f7205eb7b70c011d7a3d2a1740e6e6711cfc5b27aa515955bb6a197d1e",
+      "modified": "2026-06-25T21:24:33Z",
       "path": "handoffs/active/outer-coordinator-learned-head.md",
-      "size": 15061,
+      "size": 18064,
       "title": "Outer-Coordinator Learned Head (Claude-driven loop)",
       "type": "handoff-active"
     },

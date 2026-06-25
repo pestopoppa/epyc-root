@@ -2,8 +2,8 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-06-22
-**Sources**: 56+ documents (added 2026-06-22 the learned-routing-controller verifier/episodic-repair staging state and the X-MAS constrained-policy A/B hold; prior 2026-06-20 AB-MCTS allocation intake-720, Fusion deliberation intake-712/714, AVB offline reward oracle intake-706/716/717/719, meta_optimizer-weighted-random + MLP-staged code verification)
+**Last compiled**: 2026-06-25
+**Sources**: 59+ documents (added 2026-06-25 LRC P4.5/P4.6 training methodology, Fugu calibration data, REPL delegation isolation audit; prior 2026-06-22 learned-router verifier staging + X-MAS A/B hold)
 
 ## Summary
 
@@ -18,6 +18,16 @@ The broader routing stack comprises 9 production subsystems that must coordinate
 The 13 intake entries tagged as routing_intelligence are predominantly `already_integrated` foundational papers from the mixture-of-experts (arXiv:2206.01855), speculative decoding (arXiv:2207.10342), and learned routing (arXiv:2305.05176, arXiv:2309.11495) literatures. These informed the original MemRL design. The one `worth_investigating` entry is Reason-ModernColBERT (intake-174), a 150M-parameter late-interaction retriever that outperforms 7B+ dense retrievers on reasoning-intensive BRIGHT benchmarks by +7.3 NDCG@10 using MaxSim scoring on a ModernBERT backbone. This could improve the classification retriever's embedding quality for routing decisions.
 
 ## Key Findings
+
+### New (2026-06-25, LRC training methodology + Fugu calibration + REPL delegation audit)
+
+- **LRC P4.5: journal-derived soft-label SFT is a zero-inference quick win (Fugu Stage 1 analog, 2026-06-25).** Fugu's training stage 1 computes per-worker mean reward over N runs per task, applies softmax(τ), and trains via KL divergence against the resulting soft probability distribution — smoother gradient signal than contrastive binary labels. EPYC's equivalent: autopilot `question_results` in `autopilot_journal.jsonl` already has per-qid per-role pass/fail across 141 trials (546 qids with ≥5 appearances, ~2,730 soft-label examples). **No additional inference required.** Ungated by the DAR regret/vector gate — this is a training methodology improvement, not classifier enablement. Sequencing: P4.5 first (soft-label retrain), then P4.6 bundled (role dropout, 20 finetuning iterations for stack-change robustness). See `learned-routing-controller.md` P4.5/P4.6. Source: Fugu technical report intake-728; [routing-intelligence.md](../handoffs/active/routing-intelligence.md).
+
+- **LRC P4.6: randomized-pool role dropout for stack-change robustness (Conductor analog, 2026-06-25).** Conductor's randomized-pool finetuning (20 iterations, 350 samples, random role subsets per example) makes the coordinator robust to pool composition changes at minimal cost. For EPYC's LRC: during finetuning after Phase 1.5, randomly mask 1–2 roles per training example (`role_dropout_rate=0.2–0.3`). The LRC learns to route given any subset of available roles — a prior that survives frequent model swaps and role consolidations without a full retrain. Source: [learned-routing-controller.md](../handoffs/active/learned-routing-controller.md) P4.6.
+
+- **Sakana Fugu (intake-728) confirms Trinity+Conductor at production scale — calibration data for OC-0 (2026-06-25).** Fugu Ultra (GRPO-trained, Conductor lineage) achieves SWE-Bench Pro 73.7%, GPQA-D 95.5%, LiveCodeBench 93.2% (all self-reported, multi-agent, non-standardized scaffold — treat as competitive intelligence observations, not single-model baselines). Key calibration point: multi-agent orchestration adds ~14.6 pp on SWE-Bench Pro over standardized SEAL single-model scores, at ~30-minute real-world latency cost. Conductor code/weights remain commercially blocked post-Fugu launch. Two-tier design (single-dispatch for latency / team-assembly for quality) maps directly to the OC-0 latency/quality axis in `outer-coordinator-learned-head.md`. Sources: intake-728, Trinity intake-474, Conductor intake-493.
+
+- **REPL delegation isolation already implemented — worker context isolation is not a gap (2026-06-25).** Audit of `routing.py:_delegate_single`: workers receive `self.context[:4000]` (original user task, truncated) + the brief only. Frontdoor REPL scratchpad, tool call history, and reasoning chain are NOT passed. Isolation is intentional. The brief content IS the context control lever — PromptForge should optimize brief structure, not context volume. Two strategy store hypotheses seeded to prime autopilot PromptForge exploration: (1) use `delegate(brief, parallel=True)` for independent subtasks then synthesize; (2) experiment with structured brief formats (task-only / task+constraints / task+examples). Source: [routing.py routing audit](../handoffs/active/internal-interaction-lifecycle.md).
 
 ### New (2026-06-22, learned-router verifier staging + episodic-embedding repair gate)
 

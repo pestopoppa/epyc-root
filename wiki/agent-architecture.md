@@ -2,8 +2,8 @@
 
 **Category**: `agent_architecture`
 **Confidence**: verified
-**Last compiled**: 2026-06-20
-**Sources**: 52+ documents (added 2026-06-20 agent-harness intake cluster — Centaur/eve/ruflo/OpenRouter subagent — and the shipped-delegation contract confirmation)
+**Last compiled**: 2026-06-25
+**Sources**: 55+ documents (added 2026-06-25 REPL delegation isolation audit, IIL P3 heterogeneous chain scope, Fugu/Trinity/Conductor architecture deep-dive; prior 2026-06-20 agent-harness intake cluster)
 
 ## Summary
 
@@ -16,6 +16,14 @@ The EPYC orchestrator's tiered pipeline sits between these topologies. It has st
 The key architectural tension is between the current pydantic_graph's flat 7-node structure and the need for composable subgraphs as the system grows. LangGraph's subgraph composition, checkpoint granularity with time-travel debugging, and `interrupt()` flexibility at any node represent genuine capability gaps. However, migration carries significant risk: 180+ state fields, 120+ tests, and deep domain-specific features (MemRL, think-harder ROI, budget enforcement, 5-layer context) have no LangGraph equivalents and would require porting. The recommended path is hybrid -- build new capabilities as LangGraph subgraphs alongside the existing pydantic_graph, migrating nodes incrementally.
 
 ## Key Findings
+
+### New Findings (2026-06-25 — REPL delegation patterns audit + Fugu/Trinity/Conductor architecture)
+
+- **Three REPL delegation patterns have distinct context policies — isolation for workers already implemented (2026-06-25).** `routing.py` audit reveals three interaction patterns with different correct context policies: (1) **Consultation** (frontdoor → architect): full context correct; implemented via escalation + IIL `consult` kind (P2 in progress); (2) **Worker execution** (frontdoor → coder): isolation already implemented in `_delegate_single` — workers see `self.context[:4000]` + brief only, NOT frontdoor scratchpad; (3) **Fan-out + synthesis** (N workers → synthesizer): `_delegate_parallel` handles homogeneous same-role fan-out (up to 4 concurrent, isolated) — synthesis done by calling model reading result list. These patterns were confirmed through a Fugu Ultra / Conductor architecture deep-dive. Source: [internal-interaction-lifecycle.md](../handoffs/active/internal-interaction-lifecycle.md) P3.
+
+- **Heterogeneous structured delegation chains are P3 scope (post-P2 gate) — autopilot can explore homogeneous fan-out now (2026-06-25).** The gap vs. Conductor's access_list pattern: `_delegate_parallel` dispatches to one role only; no explicit per-step context routing exists. The heterogeneous chain (coder isolated → architect sees coder output → synthesize) needs `delegate_chain(steps)` (P3, gated on P2 A/B). However, autopilot can explore the homogeneous fan-out + synthesis pattern TODAY via PromptForge mutations on `resolver.py` — teaching frontdoor to use `delegate(brief, parallel=True)` + explicit synthesis. Two strategy store entries seeded (2026-06-25) to prime this exploration. Source: [internal-interaction-lifecycle.md](../handoffs/active/internal-interaction-lifecycle.md) P3.
+
+- **Fugu / Trinity / Conductor architecture deep-dive: 7 mechanism insights, 2 new for EPYC (2026-06-25).** Comprehensive reading of all three Sakana AI papers (Trinity ICLR 2026 arxiv:2512.04695, Conductor ICLR 2026 arxiv:2512.04388, Fugu Technical Report arxiv:2606.21228). Five findings already covered in existing handoffs (penultimate-token probe in LRC P4.1, Verifier-ACCEPT gate in TR-4.4, sep-CMA-ES in LRC P4.4, Trinity/Conductor already in outer-coordinator). Two genuinely new: (1) **Fugu Ultra's intra-workflow isolation** (workers see only original task + designated prior outputs — orchestration collapse prevention) is already implemented in our `_delegate_single`; (2) **Conductor's access_list selective context injection** is the P3 design target for IIL. Competitive intelligence: Fugu Ultra achieves frontier-equivalent benchmarks but with real-world ~30-minute latency — confirms multi-agent orchestration has substantial overhead that single-dispatch (Fugu, Trinity lineage) avoids. Sources: intake-474, intake-493, intake-728.
 
 ### New Findings (2026-06-20 — agent-harness intake cluster: mostly-covered, three net-new deltas)
 
