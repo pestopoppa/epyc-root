@@ -80,15 +80,19 @@ All numbers GGML_IQK=1 on `/mnt/raid0/llm/llama.cpp-v6-iqk/build` (branch iqk-po
 | Qwen3.5-9B (hybrid) | 23.2 | 41.6 | **+79%** | 4 | 0.60 |
 | gemma-4-31B (Q4 **dense**) | 5.2 | 15.4 | **+197%** | 6 | 0.43 |
 | Qwen3.6-35B-A3B (Q8 MoE, **frontdoor**) | 20.7 | 41.8 | **+103%** | 4 | 0.82 |
+| Qwen3.6-27B (Q4 **dense**) | 4.4 | 12.2 | **+177%** | 4 | 0.81 |
+| Qwen3.5-27B (hybrid-SSM **dense**) | 2.3 | 5.6 | **+146%** | 4 | 0.70 |
 
 **MTP findings:**
 - **n-max must be tuned per model** (over-drafting wastes CPU verify compute): MoE/hybrid peak at n2–4, **dense keeps scaling to n6** (verify batch = ONE weight read amortized over N tokens; MoE re-reads N× experts so gains saturate early).
 - **iqk is NEUTRAL on the MTP verify batch** (gemma-26B n4: 48.2 iqk-on / 48.1 iqk-off) → iqk + MTP compose cleanly, **no kernel change needed for MTP**.
-- **MTP head coverage**: gemma-26B (v6 head on disk), Qwen3.5-9B (embedded NEXTN), gemma-31B (**remapped** ik→v6, see artifacts), Qwen3.6-35B (**downloaded** NEXTN). Qwen3.5-122B (GDN/recurrent wall) + Qwen3-Next-80B (SSM serial) have NO MTP path → max = base. Qwen3.6-27B / Qwen3.5-27B dense: no MTP head on disk yet (candidate follow-up — dense would benefit like gemma-31B).
+- **MTP head coverage (6 of 8 models — ALL that have an MTP path)**: gemma-26B (v6 head on disk), Qwen3.5-9B (embedded NEXTN), gemma-31B (**remapped** ik→v6), Qwen3.6-35B frontdoor (**downloaded** NEXTN), Qwen3.6-27B + Qwen3.5-27B dense (**downloaded** unsloth NEXTN, +177%/+146%). Only Qwen3.5-122B (GDN/recurrent wall) + Qwen3-Next-80B (SSM serial) have NO MTP path → their max = base iqk.
+- **Dense MTP is the biggest win** (verify batch amortizes ONE weight read over N tokens): the 4 dense/slow models gained +146% to +197%; the slow dense 27B pair (4.4/2.3 t/s) ~tripled.
 
 **New artifacts (2026-06-25):**
 - `/mnt/raid0/llm/models/gemma-4-31B-it-assistant-v6-Q8_0.gguf` — gemma-31B MTP head remapped from the ik `gemma4_mtp` head → v6 `gemma4-assistant` (arch+tensor+metadata rename, synthesized `rope_freqs` validated vs the 26B v6 head). Remap script: `/mnt/raid0/llm/tmp/remap_gemma31b_assistant.py`. Runtime-validated (loads, drafts, coherent, +197%).
 - `/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf` — frontdoor NEXTN MTP GGUF, downloaded from `unsloth/Qwen3.6-35B-A3B-MTP-GGUF` (Q8_0, 37.8 GB, exact-size verified). 1 NEXTN layer, 0.82–0.93 acceptance.
+- `/mnt/raid0/llm/models/Qwen3.6-27B-MTP-Q4_K_M.gguf` (17.1 GB) + `/mnt/raid0/llm/models/Qwen3.5-27B-MTP-Q4_K_M.gguf` (17.1 GB) — dense NEXTN MTP GGUFs, downloaded from `unsloth/Qwen3.6-27B-MTP-GGUF` / `unsloth/Qwen3.5-27B-MTP-GGUF` (exact-size verified). +177% / +146%.
 - Sweep data + scripts under `/mnt/raid0/llm/tmp/iqk_sweep_2026-06-25/` and `/mnt/raid0/llm/tmp/iqk_*sweep*.sh`, `iqk_newheads_mtp.sh`, `iqk_mtp_runner.sh`.
 
 ## Key files
