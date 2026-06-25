@@ -2,8 +2,8 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: verified
-**Last compiled**: 2026-06-22
-**Sources**: 57+ documents (added 2026-06-22 the F1 real-task-corpus production-query suite buildout, the public-results protocol-backfill gate, and the bulk-inference/meta-harness clean-window evidence discipline; prior 2026-06-20 DRACO four-axis weighted-rubric + saturation-testing construction methods for EV-9, designed-core_v2 instrument-resolution-floor no-go, live-eval fanout contamination on full-only fleet, real-task-corpus production-query substitute, and RustEvo2 external-claim verification-gate methodology; 2026-06-20 clean-window in-progress artifact discipline, corrected G11 server-mode rerun/package state, frontdoor+worker AA raw-response vs deterministic hallucination-score distinction, and quality-suite server-mode command rule; 2026-06-19 sequential-readiness, production eval sampling clamp, and audit-gaming methodology updates)
+**Last compiled**: 2026-06-25
+**Sources**: 60+ documents (added 2026-06-25 Terminal-Bench/Harbor adopt_component intake, mid-range difficulty filter analysis and applicability constraints for autopilot regression detection vs external cross-agent ranking; prior 2026-06-22 the F1 real-task-corpus production-query suite buildout, the public-results protocol-backfill gate, and the bulk-inference/meta-harness clean-window evidence discipline)
 
 ## Summary
 
@@ -16,6 +16,14 @@ Cost-aware reward design is layered on top of benchmark results for the MemRL ro
 Benchmark hardening in December 2025 addressed ceiling effects where top models scored 89-93%. Every tier was bumped up one difficulty level with post-doctoral T3 questions added, spreading the score distribution meaningfully across model classes. A mode-advantage suite (90 questions) was specifically designed to produce strong routing signal for MemRL by including tasks that structurally require specific execution modes (react, REPL, delegation, specialist escalation).
 
 ## Key Findings
+
+### New (2026-06-25, Terminal-Bench adopt_component + mid-range filter domain constraints)
+
+- **Terminal-Bench Core v0.1.1 (Harbor Framework) is `adopt_component` for external terminal-agent evaluation.** The Harbor repo (`github.com/harbor-framework/terminal-bench`) is the runnable harness — Docker-sandboxed, pip-installable, 89 hand-crafted tasks (SWE, ML, security, sysadmin, data science), each with an English instruction + automated test script + reference solution. Registry-versioned (19 dataset versions). Top scores: Codex CLI + GPT-5.2 at 63%, Terminus 2 + Claude Opus 4.5 at 58%. Prerequisite for local use: build a Terminus-compatible Harbor adapter over our `/v1/chat/completions` endpoint (~1 day). The dataset is hosted separately at `github.com/laude-institute/terminal-bench`. Sources: [intake-726](../research/intake_index.yaml), [eval-benchmark-cost-reduction.md](../handoffs/active/eval-benchmark-cost-reduction.md).
+
+- **Mid-range difficulty filter (MR) is valid for cross-agent ranking on fixed task banks, but NOT for within-system regression detection.** arxiv:2603.23749 (Ndzomga, March 2026) shows that selecting tasks with 30–70% historical pass rate reduces evaluation tasks by 44–70% while maintaining rank order (Spearman ρ ≥ 0.87) across 101 agents on TB Core (23 scaffolds). The guarantee is rank preservation, not regression sensitivity. **For autopilot: the objectives are incompatible.** Ceiling questions (>70% pass rate) are strong regression signals when they fail; floor questions (<30%) signal breakthroughs. The MR filter discards both classes — the wrong trade-off for mutation-acceptance gates. **Correct autopilot application**: use per-qid pass-rate history to curate and rotate question pool slots (replace permanently saturated/floor stable-core qids), not to shrink the evaluated set. **Correct external application**: after running our stack against all 89 TB Core tasks, the MR subset (~37–50 tasks) can replace the full 89-task run for routine re-evaluations. Sources: [intake-727](../research/intake_index.yaml), [eval-benchmark-cost-reduction.md](../handoffs/active/eval-benchmark-cost-reduction.md).
+
+- **Autopilot's 50-qid stable core is highly polarized: 3/50 mid-range, 15/50 floor, 32/50 ceiling (measured 2026-06-25).** Analysis of 141 journal trials with question_results (trials 789–969) across 1382 unique qids: only 50 qids appear in ≥50 trials (stable core). Suite breakdown: `simpleqa` (4 qids, all floor <30%), `mode_advantage_hard` (2 qids, all floor), `hotpotqa` (6 qids, 3 floor / 3 ceiling), `general` (7 qids, 1 floor / 6 ceiling), `coder`/`debugbench`/`livecodebench`/`math`/`thinking` (15 qids, all ceiling >70%), `cruxeval`/`instruction_precision`/`vl` (3 qids, the only mid-range entries). This polarization means the stable core has low differential signal between config mutations — the question pool needs curation, not subsetting. Sources: [autopilot journal analysis](../progress/2026-06/2026-06-25.md).
 
 ### New (2026-06-22, real-task-corpus eval suite + publication protocol-backfill gate)
 

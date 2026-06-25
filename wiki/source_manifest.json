@@ -1,18 +1,18 @@
 {
   "by_type": {
     "docs": 14,
-    "handoff-active": 99,
+    "handoff-active": 101,
     "handoff-blocked": 1,
-    "handoff-completed": 136,
-    "progress": 176,
+    "handoff-completed": 137,
+    "progress": 178,
     "research": 121
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-06-22T10:08:57Z",
+  "last_compile": "2026-06-23T08:47:35Z",
   "mode": "full",
-  "scan_time": "2026-06-23T08:44:55Z",
+  "scan_time": "2026-06-25T20:32:14Z",
   "schema_version": 1,
-  "source_set_hash": "da31730a2c9a9b2526c176835b3daf96e3e6fe5c18d40c9e978c90b7e66a3dcf",
+  "source_set_hash": "cc0582d937866e7e33d0be35ebc0d95ee1d854a2edad300ba8398bcb03c3827e",
   "sources": [
     {
       "content_hash": "f0506c861200715c31f630966dd5881b4dcff41813aa8d68f3dadd3f1eda1c43",
@@ -23,10 +23,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4cd7b94d2892d4866a3ff78be4063d8ca31a7a411441e73f0545a944c1b002b4",
-      "modified": "2026-06-20T05:21:00Z",
+      "content_hash": "0c14ee3e865309c9276a748f6b6f26c76f557d7f26fd78b193b825b4a8532331",
+      "modified": "2026-06-25T20:22:01Z",
       "path": "handoffs/active/agent-world-env-synthesis.md",
-      "size": 29519,
+      "size": 30471,
       "title": "Agent-World Environment Synthesis",
       "type": "handoff-active"
     },
@@ -55,10 +55,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "68562a338e65446e1f9d63c691e1afb66ecf9282e33cf6a0f2ad959ce71fa617",
-      "modified": "2026-06-22T09:52:39Z",
+      "content_hash": "4fdcf3eb25a16b4aa9f77a8920f183be5a735559b74a53df59c7a8fc6c75b6db",
+      "modified": "2026-06-25T20:21:55Z",
       "path": "handoffs/active/autopilot-continuous-optimization.md",
-      "size": 135807,
+      "size": 139668,
       "title": "AutoPilot: Continuous Recursive Optimization",
       "type": "handoff-active"
     },
@@ -84,14 +84,6 @@
       "path": "handoffs/active/bep-dcp-falsification-harness.md",
       "size": 7050,
       "title": "BEP-2 / DCP-6 Falsification Harness",
-      "type": "handoff-active"
-    },
-    {
-      "content_hash": "ae8f1021f421a461c401de5c21cc59be9a06f2a827528569906eef485fa5bea7",
-      "modified": "2026-06-22T09:43:34Z",
-      "path": "handoffs/active/branch-integration-to-main-2026-06-22.md",
-      "size": 6532,
-      "title": "Branch integration to `main` \u2014 standalone-session report (2026-06-22)",
       "type": "handoff-active"
     },
     {
@@ -196,6 +188,14 @@
       "path": "handoffs/active/ernie-image-turbo-evaluation.md",
       "size": 11169,
       "title": "ERNIE-Image-Turbo Evaluation",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "4b65556009270c08922d62eece55267556d1fe9f337875ca2c26439db155d4e4",
+      "modified": "2026-06-25T20:22:26Z",
+      "path": "handoffs/active/eval-benchmark-cost-reduction.md",
+      "size": 5240,
+      "title": "Eval Benchmark Cost Reduction \u2014 Mid-Range Difficulty Filter",
       "type": "handoff-active"
     },
     {
@@ -351,6 +351,14 @@
       "type": "handoff-active"
     },
     {
+      "content_hash": "0ecf3cc2545c5dfb618bfb2144a13f787fdeaf6368ddc15778c75e27645c7a67",
+      "modified": "2026-06-25T20:31:49Z",
+      "path": "handoffs/active/iqk-port.md",
+      "size": 15001,
+      "title": "iqk-kernel port into v6 (ik_llama iqk_mul_mat \u2192 production-consolidated-v6)",
+      "type": "handoff-active"
+    },
+    {
       "content_hash": "ca3b6206d27ef6ba0b8da62629089bdb43d1c9ee4ccd38b28497e0177053a5e5",
       "modified": "2026-06-20T05:21:00Z",
       "path": "handoffs/active/large-moe-expert-parallelism.md",
@@ -388,6 +396,14 @@
       "path": "handoffs/active/llama-cpp-dsa-contribution.md",
       "size": 15508,
       "title": "llama.cpp DSA Contribution \u2014 PR #21149 Stabilization + Three Sub-Tracks",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "87b7e5ccd2549af7d56af6c7c63c22e8bbe3209181ab748fb4e0443029306e97",
+      "modified": "2026-06-25T08:37:17Z",
+      "path": "handoffs/active/llamacpp-v6-consolidation.md",
+      "size": 39560,
+      "title": "llama.cpp v6 Consolidation \u2014 production-consolidated-v6",
       "type": "handoff-active"
     },
     {
@@ -916,6 +932,14 @@
       "path": "handoffs/completed/bep-dcp-falsification-harness-completed-through-2026-05-28.md",
       "size": 58548,
       "title": "BEP-2 / DCP-6 Falsification Harness - Completion Ledger",
+      "type": "handoff-completed"
+    },
+    {
+      "content_hash": "721c91076f0624bc61a8a6e7ccbaa4a31b4f8ee002ce70d5fd6f9304b07610f5",
+      "modified": "2026-06-23T22:11:33Z",
+      "path": "handoffs/completed/branch-integration-to-main-2026-06-22.md",
+      "size": 7175,
+      "title": "Branch integration to `main` \u2014 standalone-session report (2026-06-22)",
       "type": "handoff-completed"
     },
     {
@@ -4215,11 +4239,27 @@
       "type": "progress"
     },
     {
-      "content_hash": "a551b77a628b199be4438f891c2757b903d7ec4b7d36254c621e6851f6cfd4c4",
-      "modified": "2026-06-23T08:43:06Z",
+      "content_hash": "40c8d389527acee4cc497a1ada5b29cfb4918f29becd9df54d8ee80bbaee98e1",
+      "modified": "2026-06-23T22:11:06Z",
       "path": "progress/2026-06/2026-06-23.md",
-      "size": 4922,
+      "size": 10420,
       "title": "2026-06-23",
+      "type": "progress"
+    },
+    {
+      "content_hash": "aec689ea02391a543e29e8b0f3d73e888ea85a99e893200c862a267b12e47308",
+      "modified": "2026-06-24T22:36:33Z",
+      "path": "progress/2026-06/2026-06-24.md",
+      "size": 8625,
+      "title": "2026-06-24",
+      "type": "progress"
+    },
+    {
+      "content_hash": "a4028fc771c35600836941ba38928011e68bab5b8cd8ba490fa90dd9a986b7f3",
+      "modified": "2026-06-25T20:32:10Z",
+      "path": "progress/2026-06/2026-06-25.md",
+      "size": 25971,
+      "title": "2026-06-25",
       "type": "progress"
     },
     {
@@ -4391,5 +4431,5 @@
       "type": "docs"
     }
   ],
-  "total_new": 547
+  "total_new": 552
 }

@@ -2,8 +2,8 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-06-20
-**Sources**: 34+ documents (updated 2026-06-20 G5 short-m@k clean-window measurement evidence)
+**Last compiled**: 2026-06-25
+**Sources**: 40+ documents (added 2026-06-25 full-stack MTP sweep on v6-iqk: gemma-31B +197%, frontdoor +103%, draft-head precision lever, Qwen3.5-122B MTP feasibility correction; prior 2026-06-20 G5 short-m@k clean-window measurement evidence)
 
 ## Summary
 
@@ -20,6 +20,27 @@ A promising new direction is calibration-based early exit (TIDE, intake-422/423)
 The current state of the art for our stack is not speculative decoding at all -- it is NUMA 4-way parallel serving (4 independent model instances on 48 threads each), which delivers 6.7x aggregate throughput on the frontdoor role. Speculative decoding provides incremental gains on top (+17-21% from draft_max tuning, +2-5% from tree branching on large dense targets) but is no longer the primary acceleration lever. The opening provided by REAP expert pruning is significant, however: REAP-25B is pure MoE (`qwen3moe` arch), meaning speculative decoding works where the hybrid frontdoor previously made it impossible.
 
 ## Key Findings
+
+### New (2026-06-25, full-stack MTP sweep + draft-head precision + Qwen3.5-122B correction)
+
+- **Full-stack MTP sweep on v6-iqk (tuned n-max, draft-mtp, same chat path, June 2026 — throttled host, relative comparisons valid):**
+
+| Model | Quant | Base t/s | MTP peak t/s | Gain | Opt n-max | Accept |
+|-------|-------|-----:|-----:|-----:|:---------:|:------:|
+| gemma-4-31B dense | Q4_K_M | 5.2 | 15.4 | +197% | 6 | 0.43 |
+| Qwen3.6-27B dense | Q4_K_M | 4.4 | 12.2 | +177% | 4 | 0.81 |
+| Qwen3.5-27B hybrid-dense | Q4_K_M | 2.3 | 5.6 | +146% | 4 | 0.70 |
+| Qwen3.6-35B-A3B frontdoor | Q8_0 | 20.7 | 41.8 | +103% | 4 | 0.82 |
+| Qwen3.5-9B hybrid | Q4_K_M | 23.2 | 41.6 | +79% | 4 | 0.60 |
+| gemma-4-26B-A4B MoE | Q4_K_M | 42.1 | 52.8 (f16 head) / 58.0 (Q8 head) | +25–38% | 2 | 0.75–0.80 |
+
+Dense models gain +146–197% because MTP amortizes one weight-read across N tokens. MoE/hybrid models saturate at n2–4 (expert re-reads scale O(N×experts)). Sources: [iqk-port.md](../handoffs/active/iqk-port.md), [progress 2026-06-25](../progress/2026-06/2026-06-25.md).
+
+- **n-max is model/architecture-specific: dense scales to n6, MoE/hybrid peaks at n2–4.** Dense models (single weight-read per verify batch) benefit from longer drafts. MoE models re-read N×expert-sets per verify step — BW saturation hits earlier. Empirical confirmation: gemma-31B peaks at n6 (+197%); gemma-26B MoE peaks at n2 (+38% with Q8 head); Qwen3.6-35B-A3B MoE peaks at n4 (+103%). Sources: [progress 2026-06-25](../progress/2026-06/2026-06-25.md).
+- **iqk kernels are neutral on the MTP verify batch — iqk and MTP compose cleanly.** Same-window A/B on gemma-26B n4: iqk-on 48.2 t/s vs iqk-off 48.1 t/s. No kernel change needed for MTP; iqk gains on prefill and non-verify decode steps stack independently. Sources: [iqk-port.md](../handoffs/active/iqk-port.md), [progress 2026-06-25](../progress/2026-06/2026-06-25.md).
+- **Qwen3.5-122B-A10B MTP feasibility — earlier dismissal was wrong; the arch is `qwen35moe`, same NEXTN loader as the +103% frontdoor.** MTP blocks are dense attention (not recurrent); rollback is supported (`llama-arch.cpp` includes QWEN35MOE). The prior "GDN wall / 0.56× dead end" was measured on the old ik_llama fork with no `draft-mtp` (stale path). NEXTN GGUF artifact download and bench are the next step. Sources: [progress 2026-06-25](../progress/2026-06/2026-06-25.md).
+- **Draft head precision lever (gemma-26B specific): f16→Q8 head +28% at same acceptance.** See hardware-optimization.md for full analysis. Only models with a separate f16 vocab-embedding draft head have this lever; Qwen NEXTN heads share token_embd at model quant. Sources: [iqk-port.md](../handoffs/active/iqk-port.md), [progress 2026-06-25](../progress/2026-06/2026-06-25.md).
+- **v6-iqk + Q8 gemma head (42.78 t/s) beats ik_llama (38.63 t/s) by +11% on the worker model.** The consolidation gap is closed. The ik_llama advantage was per-step draft cost (f16 head), not acceptance quality (v6 acceptance 0.796 > ik 0.655). Sources: [progress 2026-06-25](../progress/2026-06/2026-06-25.md).
 
 - **DeepSeek-V4-Flash ships an optional MTP sidecar that extends the self-drafting MoE pattern (2026-05-28).** The 3.6 GiB MTP-only GGUF side-file packages V4's multi-token-prediction head as a drafter for the V4 target, matching the broader "target family plus MTP sidecar" pattern already seen in Gemma4 and DeepSeek-V3-style work. It is a candidate reference only until `deepseek4` target loading and MTP sidecar API parity are verified in llama.cpp/ik_llama.cpp, followed by acceptance-rate measurement on EPYC workloads. Source: [moe-spec-cpu-spec-dec-integration.md](../handoffs/active/moe-spec-cpu-spec-dec-integration.md).
 - **Peer-verifier speculation is not draft-target speculative decoding.** The Fortytwo-derived spike concerns same-tier peers scoring partial generations mid-stream, possibly using a Bradley-Terry-style accept/reject loop. That is mechanically distinct from small-drafter/large-target speculation and is currently a scoping spike only; the first gate is whether the backend exposes enough mid-stream control to prototype it without multi-week llama.cpp surgery. Source: [peer-verifier-speculation-spike.md](../handoffs/active/peer-verifier-speculation-spike.md).

@@ -1,7 +1,7 @@
 # Research & Evaluation — Coordination Index
 
 **Status**: active
-**Updated**: 2026-06-20
+**Updated**: 2026-06-25
 **Purpose**: dispatch surface for pre-production research, evaluation, and monitoring work. Production orchestrator changes should route through `routing-and-optimization-index.md`.
 
 > Completed checklist and research-intake chronology was compacted to [`../archived/research-evaluation-index-history-through-2026-06-19.md`](../archived/research-evaluation-index-history-through-2026-06-19.md). Current task truth lives in the owning handoffs and machine artifacts named below.
@@ -47,6 +47,7 @@ These handoffs are still active but currently sit behind specific evidence, mode
 | [rao-redel-substrate-spike.md](rao-redel-substrate-spike.md) | RAO/ReDel substrate spike; preflight passed and harness is prepared. | Execute Step 2 only in a clean inference window. |
 | [sliders-local-validation.md](sliders-local-validation.md) | Parked speculative SLIDERS validation. | Do not integrate before KB-RAG/default-retrieval gates justify it. |
 | [strand-rust-coder-rustevo2-verification.md](strand-rust-coder-rustevo2-verification.md) | Standalone RustEvo2 verification gate. | Launch only after approval; result gates swarm dataset work. |
+| [eval-benchmark-cost-reduction.md](eval-benchmark-cost-reduction.md) | Mid-range difficulty filter (intake-727) for TB Core external evals — NOT autopilot (wrong objective: ranking ≠ regression detection; stable core has only 3/50 mid-range qids). Actionable for TB Core v0.1.1 re-evaluations only: 44–70% task reduction at ρ ≥ 0.87 rank fidelity after cold-start. | Gate behind TB Core adapter build (~1d: wrap `/v1/chat/completions` in Terminus-compatible Harbor adapter) + one baseline TB Core run. Separately: use autopilot per-qid pass-rate data for question pool *curation* — rotate permanently saturated/floor qids from `simpleqa`, `coder`, `general` stable core. |
 
 ## Dependency Graph
 

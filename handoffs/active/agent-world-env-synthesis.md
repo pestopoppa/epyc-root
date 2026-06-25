@@ -245,3 +245,13 @@ Revisit AppWorld if: (a) Phase 2 lands and we want a multi-app simulator with ve
 One pattern lifted from `strukto-ai/mirage` source audit. Apply when designing the ETD species' tool-discovery loop; do NOT depend on Mirage itself.
 
 - **AW-Pattern-L — Lazy resource registry with `importlib`-deferred backend loading** (Mirage `python/mirage/resource/registry.py:28-107` + `python/mirage/resource/loader.py`). The registry is a single `dict[str, ResourceEntry]` mapping connector name → `(resource_path, config_path)` STRINGS — not imported classes. `build_resource(name, config)` resolves classes only when the connector is actually instantiated, so importing the registry itself doesn't pull `aioboto3`/`asyncpg`/`mfusepy`/etc. into the process. Apply directly to the ETD species' tool-discovery loop: each candidate MCP server / connector / synthesized environment should be registered as a string-typed entry, with classes loaded only when the species decides to actually exercise that environment in a rollout. Without this, the species' import surface grows monotonically with the discovered-tool count and you eventually OOM the dispatcher on dependency loading. A 10-line `loader.load_backend_class("module.submodule:ClassName")` helper is the entire pattern.
+
+## Research Intake Update — 2026-06-25
+
+### New Related Research
+
+- **[intake-726] Terminal-Bench / Harbor Framework** (github.com/harbor-framework/terminal-bench)
+  - Relevance: This handoff already references TB2.0 leaderboard data for grounding ECHO/Endless-Terminals results. This intake confirms the Harbor repo is `adopt_component` — the canonical runnable harness for TB Core v0.1.1 (89 tasks, Docker-sandboxed, pip-installable).
+  - Key technique: Harbor registry (19 dataset versions), Docker containerization, automated test-script verification
+  - Reported results: Codex CLI + GPT-5.2 at 63%; Terminus 2 + Claude Opus 4.5 at 58% on TB Core v0.1.1
+  - Delta: When DGX Spark arrives and the environment-synthesis pipeline is live, TB Core v0.1.1 is the natural first external capability calibration target — run our trained agent against the 89 fixed tasks to measure absolute task-completion rate on a human-verified fixed benchmark.

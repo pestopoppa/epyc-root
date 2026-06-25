@@ -36440,3 +36440,136 @@
   - inference-acceleration-index.md
   handoffs_created:
   - speculative-decoding-mtp-refresh.md
+
+- id: intake-726
+  arxiv_id: null
+  url: https://github.com/harbor-framework/terminal-bench
+  source_type: repo
+  title: 'Terminal-Bench: AI Agent Benchmark and Harbor Evaluation Framework (GitHub Repo)'
+  authors:
+  - Harbor Framework (community — 85+ contributors)
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  key_claims:
+  - 'Docker-sandboxed execution harness evaluating AI agents on real, end-to-end terminal tasks — code compilation, ML training, server setup, security exploits, legacy systems'
+  - 'Terminal-Bench Core v0.1.1: 89 hand-crafted tasks spanning scientific computing, SWE, ML, security, system administration, and data science; each task has instruction + test script + reference solution'
+  - 'Harbor Framework registry system supports 19 dataset versions, multiple LLM adapters (Terminus, Claude Code, Codex CLI), and structured leaderboard submission'
+  - 'Top leaderboard: Codex CLI + GPT-5.2 at 63%, Terminus 2 + Claude Opus 4.5 at 58%, Terminus 2 + Gemini 3 Pro at 57%'
+  - 'Actively maintained (2383 stars, updated 2026-06-25); dataset hosted at github.com/laude-institute/terminal-bench; submissions currently closed pending new process (end-June 2026)'
+  techniques:
+  - Containerized task environments (Docker)
+  - Automated test-script verification
+  - Registry-based dataset versioning (19 entries, semver)
+  - Multiple agent adapter integrations
+  - Supabase-backed leaderboard with structured submission metadata
+  reported_results:
+  - 'Codex CLI + GPT-5.2: 63% (top as of 2026)'
+  - 'Terminus 2 + Claude Opus 4.5: 58%'
+  - 'Terminus 2 + Gemini 3 Pro: 57%'
+  - 'GLM51 local proxy run: 44/50 tasks (88%) on a 50-task subset (glm51 handoff)'
+  references:
+  - '2601.11868'
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  verdict: adopt_component
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-06-25'
+  contradicting_evidence: null
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    handoffs:
+    - agent-world-env-synthesis.md
+    - autopilot-continuous-optimization.md
+    - glm51-reap-cpu-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-369
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  - agent-world-env-synthesis.md
+  handoffs_created: []
+  novelty_justification: 'The arxiv paper (intake-369, 2601.11868) is already indexed, but this GitHub repo is the runnable Harbor Framework implementation — substantially different artifact. Includes the full v0.1.1 task corpus, registry versioning (19 versions), multi-adapter support, leaderboard infrastructure, and Docker harness. The rebranding to Harbor + leaderboard-submission structure is new material not in the paper.'
+  relevance_justification: 'High: three active handoffs cross-reference Terminal-Bench directly. autopilot-continuous-optimization.md calls it "the closest open-source analog to autopilot''s code-mutation search space." agent-world-env-synthesis.md uses TB2.0 leaderboard data for ECHO/Endless-Terminals grounding. glm51-reap-cpu-evaluation.md already ran a 50-task TB proxy evaluation. Directly runnable against our local stack.'
+  verdict_justification: 'adopt_component: open-source (MIT/Apache), pip-installable, Docker-based, actively maintained. The standard external terminal agent benchmark. No new handoff stub needed — already integrated into three active handoffs as the reference eval target. Immediate action: verify local Docker environment can run TB Core v0.1.1 tasks against our Hermes/Qwen3.6 stack.'
+  notes: >
+    The repository is the Harbor Framework evaluation platform, distinct from the arxiv
+    paper (intake-369). Task set hosted at github.com/laude-institute/terminal-bench.
+    Leaderboard submissions closed as of May 2026, reopening end-June 2026. Terminal-Bench
+    2.0 (241 tasks) mentioned in search results refers to a dev/head version beyond the
+    stable v0.1.1 leaderboard corpus. GLM51 handoff uses a 50-task subset showing 88%
+    (44/50) on our local stack — these are proxy observations, not decision-grade numbers.
+
+- id: intake-727
+  arxiv_id: '2603.23749'
+  url: https://arxiv.org/abs/2603.23749
+  source_type: paper
+  title: 'Efficient Benchmarking of AI Agents'
+  authors:
+  - Franck Ndzomga
+  categories:
+  - benchmark_methodology
+  - autonomous_research
+  key_claims:
+  - 'Agent rank fidelity (Spearman rho 0.90-0.96) remains stable under scaffold/temporal shift even as absolute score prediction degrades — reliable ranking does not require full-benchmark evaluation'
+  - 'Mid-Range Difficulty Filter (30-70% historical pass rate) reduces eval tasks by 44-70% while preserving rank order — outperforms greedy selection and random sampling under distribution shift'
+  - 'Scaffold-driven distribution shift is a unique failure mode in agent benchmarking: performance depends jointly on the underlying model and the agent scaffold wrapping it'
+  - 'Cold-start requires ~5-10 full-benchmark runs before the difficulty filter is reliable; ~15 agents needed for stable comparisons'
+  - '$446.7 median savings per HAL evaluation run; $268.8-$870.6 range across 8 benchmarks and 33 agent scaffolds'
+  techniques:
+  - Mid-Range Difficulty Filter (MR, 30-70% pass rate band)
+  - Item Response Theory (IRT) task difficulty estimation
+  - Leave-One-Scaffold-Out (LOSO) evaluation protocol
+  - Spearman rho and Kendall tau rank correlation metrics
+  - Greedy Forward Selection via Ridge regression
+  reported_results:
+  - 'Spearman rho: 0.94 mean, 0.87 worst-case under MR filter (vs random: 0.54-0.99)'
+  - 'Task reduction: 44-70% (median 58%) across 8 benchmarks'
+  - '101 agents evaluated on Terminal-Bench 2.0 across 23 scaffolds with temporal structure (Oct 2025 - Jan 2026)'
+  - 'Kendall tau: 0.80 worst-case (90% pairwise ranking agreement) under LOSO'
+  - 'R-squared diverges (0.90 to 0.54-0.65) under scaffold shift while rank rho stays stable'
+  references:
+  - '2601.11868'
+  - '2407.16741'
+  - '2510.11977'
+  - '2211.09110'
+  novelty: high
+  relevance: high
+  credibility_score: 2
+  verdict: new_opportunity
+  discovered_via: expansion
+  expanded_from: intake-726
+  ingested_date: '2026-06-25'
+  contradicting_evidence:
+  - 'Broader field criticism (2026): many agent benchmarks have task-validity issues (do-nothing agents pass significant task fractions, LLM-as-judge errors); MR filter assumes historical pass rates are calibrated — invalid if the existing benchmark has validity failures. Ndzomga does not address benchmark validity, only ranking efficiency.'
+  - 'The 5-10 full-run cold-start requirement means the filter is not useful for initial benchmark adoption or sparse-history regimes — only amortizable over many agent evaluations.'
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    handoffs:
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-369
+    - intake-726
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  handoffs_created:
+  - eval-benchmark-cost-reduction.md
+  novelty_justification: 'Not previously indexed. Proposes a principled, optimization-free protocol for reducing agent evaluation costs by 44-70% while maintaining rank fidelity. Directly applicable to EPYC''s expensive per-run autopilot evals and terminal-bench proxy evaluations.'
+  relevance_justification: 'High: applicable to TB Core external evals (89 fixed tasks) where cross-agent ranking is the objective. NOT applicable to autopilot regression detection on the rotating question pool — post-hoc analysis shows the 50-qid stable core has only 3/50 mid-range qids, and the eval objective (within-system regression) requires opposite sensitivity from ranking. Correct autopilot use: question pool curation (rotate out saturated/floor qids from general, simpleqa, coder, etc.), not subset selection.'
+  verdict_justification: 'new_opportunity: technique is simple, optimization-free, reproducible — directly applicable to TB Core v0.1.1 external re-evaluations after establishing a baseline run. Autopilot application requires redesign as a regression-detection-preserving subset problem, which the paper does not address. Spawned stub: eval-benchmark-cost-reduction.md.'
+  notes: >
+    Solo author paper (Franck Ndzomga) submitted March 2026. Evaluated on Terminal-Bench
+    2.0 (89 fixed tasks, primary) + 7 HAL benchmarks. The mid-range band (30-70%) is motivated by IRT but
+    not formally proven optimal. Post-intake analysis of autopilot journal (141 trials with question_results,
+    1382 unique qids, 50-qid stable core): only 3/50 stable-core qids are mid-range; autopilot eval is
+    within-system regression detection, not cross-agent ranking — the paper's rank-stability guarantee
+    does not imply regression-detection sensitivity. Correct application: TB Core external evals only.
+    Suites in autopilot pool: general, math, coder, thinking, simpleqa, hotpotqa, gpqa, debugbench,
+    livecodebench, cruxeval, bigcodebench, instruction_precision, vl, mode_advantage, agentic, etc.

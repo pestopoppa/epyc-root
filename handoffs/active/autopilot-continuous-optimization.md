@@ -968,3 +968,20 @@ EoM's "auction" is fixed-bid first-price (= static priority + random tie-break, 
 - **[intake-715] "DecentMem: Decentralized Memory for Multi-Agent Systems"** (arxiv:2605.22721) — transferable element is the **decentralized per-agent dual-pool STRUCTURE** only: an **exploitation pool** of consolidated trajectories + an **exploration pool** of LLM-generated candidates. Useful as a **comparative datapoint** for the `strategy_store` evolutionary memory, alongside the already-queued HCC tiered-memory + staleness work. **NOT new scope** — a structural comparison, not a build item.
 - **[intake-715] CONFLICT to flag** — DecentMem's per-stage **LLM-as-JUDGE reweighting** collides with autopilot **AP-27** ("state matching, **NOT LLM-as-judge**") and with the 2026-06-12 **P17.BT-4 KILL** of judge-model peer scoring on cost grounds. Therefore **only the dual-pool structure transfers, not the judge-reweighting mechanism** — do not import the per-stage judge reweighter.
 - **[intake-715] Evidence status (observations)** — **no released code**; reported accuracy/regret numbers are cloud-favorable on small backbones over AutoGen / DyLAN / AgentNet, frameworks we do **not** run, so the numbers are observations only and cannot gate a decision here.
+
+## Research Intake Update — 2026-06-25
+
+### New Related Research
+
+- **[intake-726] Terminal-Bench / Harbor Framework** (github.com/harbor-framework/terminal-bench)
+  - Relevance: The runnable Docker-based harness for TB Core v0.1.1 (89 tasks). Already cross-referenced in this handoff (terminal_bench_2 is "closest open-source analog to autopilot's code-mutation search space"). This entry confirms it's `adopt_component` — pip-installable, actively maintained (updated today), MIT/Apache licensed.
+  - Key technique: Harbor registry system (19 dataset versions), Docker sandboxing, automated test-script verification, multiple agent adapters (Terminus, Claude Code, Codex CLI)
+  - Reported results: Top scores on TB Core v0.1.1 — Codex CLI + GPT-5.2 at 63%; Terminus 2 + Claude Opus 4.5 at 58%
+  - Delta: The repo has a CLAUDE.md describing a PostgreSQL+SQLAlchemy+Supabase backend. Primary value is as an external capability calibration point: run our stack against the 89 TB Core tasks to measure absolute task-completion rate against a fixed, human-verified benchmark.
+
+- **[intake-727] "Efficient Benchmarking of AI Agents"** (arxiv:2603.23749, Ndzomga, March 2026)
+  - Relevance: Cost-reduction technique for *external fixed-task evals* (Terminal-Bench Core), NOT autopilot's rotating pool. MR filter optimizes cross-agent ranking; autopilot does within-system regression detection — opposite sensitivity. Analysis of autopilot journal (141 trials with question_results): 50-qid stable core has only 3/50 qids in the mid-range — filter would decimate it. See `eval-benchmark-cost-reduction.md` for full constraint analysis.
+  - Key technique: Mid-Range Difficulty Filter (IRT-motivated); Leave-One-Scaffold-Out protocol; Spearman ρ as rank-stability metric
+  - Reported results: 101 agents on TB2.0 (23 fixed tasks, 23 scaffolds), mean ρ = 0.94, 44–70% task reduction
+  - Delta: Apply AFTER running our stack against TB Core v0.1.1 (89 fixed tasks). The filter then reduces future TB re-evaluations from 89 to ~37–50 tasks. For autopilot, the pass-rate data is more useful for *question pool curation* (rotating out permanently saturated/floor qids from `simpleqa`, `general`, `coder` stable core) than for subset selection.
+  - Caveat: solo preprint, credibility_score 2; the autopilot stable core has 3 mid-range qids out of 50 — do not apply the filter to the autopilot eval tower.
