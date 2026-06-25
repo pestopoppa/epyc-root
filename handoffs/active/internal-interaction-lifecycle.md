@@ -387,6 +387,34 @@ def run_edit_transaction(
 
 **Discovery status**: COMPLETE. P2-1 may proceed when P1 lifecycle refactor is gate-passed.
 
+### P3 — Heterogeneous structured delegation chain (post-P2, added 2026-06-25)
+
+**What already exists** (from `routing.py` audit):
+- `_delegate_single`: isolation already correct — workers receive `self.context[:4000]` (original user task) + brief. Frontdoor's REPL scratchpad, tool call history, and reasoning are **not passed**. No scaffolding needed for single worker isolation.
+- `_delegate_parallel`: homogeneous fan-out works — up to 4 concurrent workers of the same role, each isolated, results returned as a list. Frontdoor synthesizes the list in its own REPL code.
+
+**Three interaction patterns and their current REPL implementation**:
+
+| Pattern | Mechanism | Context passed | Status |
+|---------|-----------|----------------|--------|
+| Consultation (frontdoor → architect for advice) | Escalation → IIL `consult` kind (P2) | Full context (correct) | P2 in progress |
+| Worker execution (frontdoor → coder for bounded task) | `_delegate_single` | Original task + brief only (isolation already implemented) | ✅ done |
+| Fan-out + synthesis (N workers → synthesizer) | `_delegate_parallel` (homogeneous only) | Each worker: original task + its item (isolated) | Partial — homogeneous only |
+
+**Gap for P3**: heterogeneous structured chains — e.g. "coder handles implementation (isolated), architect reviews coder's output (access_list=[0]), synthesizer sees both (access_list=[0,1])." Not implemented. `_delegate_parallel` only dispatches to one role; there's no explicit access_list routing.
+
+**Autopilot exploration path (no P3 code needed)**:
+The homogeneous fan-out + synthesis pattern IS reachable today via PromptForge mutations on `resolver.py` (in `CODE_MUTATION_ALLOWLIST`). Teaching the frontdoor prompt to use `delegate(brief, parallel=True)` followed by explicit synthesis in REPL code exercises the parallel infrastructure without new code. A strategy store entry has been seeded to prime this exploration — see below.
+
+**P3 scope** (gated on P2 complete):
+- Add `delegate_chain(steps: list[tuple[role, brief, access_list]])` to `routing.py` — structured multi-step heterogeneous dispatch where each step's context is explicitly constructed from designated prior outputs
+- Add `features().iil_structured_chain` feature flag (default-off)
+- The access_list semantics: `[]` = isolated (just original task + brief), `["all"]` = all prior step outputs, `[0, 2]` = specific step indices
+- Gate: do NOT implement before P2 A/B evidence shows the consult pattern has positive quality signal (P3 adds complexity; validate the simpler consult first)
+
+**Strategy store hypothesis (seeded 2026-06-25, for autopilot PromptForge exploration)**:
+When autopilot restarts, it will find a primed entry: "frontdoor should use delegate(brief, parallel=True) for independent subtasks then synthesize — infrastructure exists in _delegate_parallel." This primes PromptForge to try mutations in resolver.py that teach the frontdoor model to use the existing fan-out capability before P3 adds heterogeneous chains.
+
 ### Inference-window scheduling (bulk-inference-campaign cross-ref)
 
 The P2 A/B (≥50 code-edit-turn comparison at the edit-transaction seam) is registered as **J17** in [`bulk-inference-campaign.md`](bulk-inference-campaign.md) under the "Other agents' inference-gated work" table. That handoff carries the inference-window scheduling logic, model requirements (`coder_escalation` + `architect_general`), and prereq-chain visibility for the operator triggering the eval. The bulk-inference handoff's "Internal Interaction Lifecycle (consult sibling) — TRACKING" tail section mirrors the live status (P2-0 ✅ / P1 ⏳ / P2 ⏳ / J17 🔒 / P3+P4 🔒) so the inference-window agent can see exactly when to schedule J17 without reading this full handoff. Update both sides when phase state changes.
