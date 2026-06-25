@@ -58,6 +58,39 @@ Graft ik_llama's `iqk_mul_mat` quantized-GEMM kernels into v6 so v6 gets ik-clas
 - [x] Decode llama-bench uplift: +7.9–8.8% on Q4_K (4-bit, not yet BW-saturated); neutral on Q8_0 (8-bit, BW-bound — expected, no regression).
 - [ ] **eval-suite parity flag ON vs OFF (operator-run — DEPLOY GATE)**: the Q8_0 MoE path is non-bit-exact by design; per MEASUREMENT.md, eval-suite parity (not bit-compare) is the gate before any v6+iqk promotion. Flagged for operator.
 
+### ✅ FULL-STACK MAX-OPTIMIZATION OVERVIEW (2026-06-25) — current performance ON the v6-iqk kernel
+All numbers GGML_IQK=1 on `/mnt/raid0/llm/llama.cpp-v6-iqk/build` (branch iqk-port), `[iqk] ACTIVE` verified each run. Host 28-day uptime → absolute t/s are throttle-suspect OBSERVATIONS; deltas are same-window. Operator-run eval still the deploy gate.
+
+**Base single-stream (llama-bench, canonical `-t96 -fa1 -mmp0 -p512 -n128 -r3`):**
+| Model | quant | pp512 | tg128 | notes |
+|-------|-------|------:|------:|-------|
+| Qwen3.5-9B (hybrid SSM) | Q4_K_M | 555.6 | 26.4 | new |
+| gemma-4-26B-A4B MoE | Q4_K_M | 707.5 | 48.5 | prior (byte-identical vs OFF) |
+| Qwen3.5-27B (hybrid SSM) | Q4_K_M | 184.2 | 7.4 | new |
+| Qwen3.6-27B **dense** | Q4_K_M | 185.3 | 4.0 | new (27B active → BW-heavy) |
+| gemma-4-31B **dense** | Q4_K_M | 232.5 | 9.3 | prior |
+| Qwen3.6-35B-A3B MoE (frontdoor) | Q8_0 | 500.6 | 26.4 | prior |
+| Qwen3-Next-80B-A3B SSM-MoE | Q4_K_M | 230.8 | 19.4 | new (iqk hits FFN/expert GEMMs only) |
+| Qwen3.5-122B-A10B MoE | Q4_K_M | 212.3 | 8.8 | new (3-shard) |
+
+**MTP "full optimization" decode (llama-server /completion, draft-mtp, tuned n-max; base = same /completion path, NOT llama-bench):**
+| Model | base | MTP peak | gain | opt n-max | draft accept |
+|-------|-----:|---------:|-----:|:---------:|:-----------:|
+| gemma-4-26B-A4B (Q4 MoE, worker) | 42.1 | 52.8 | **+25%** | 2 | 0.75 |
+| Qwen3.5-9B (hybrid) | 23.2 | 41.6 | **+79%** | 4 | 0.60 |
+| gemma-4-31B (Q4 **dense**) | 5.2 | 15.4 | **+197%** | 6 | 0.43 |
+| Qwen3.6-35B-A3B (Q8 MoE, **frontdoor**) | 20.7 | 41.8 | **+103%** | 4 | 0.82 |
+
+**MTP findings:**
+- **n-max must be tuned per model** (over-drafting wastes CPU verify compute): MoE/hybrid peak at n2–4, **dense keeps scaling to n6** (verify batch = ONE weight read amortized over N tokens; MoE re-reads N× experts so gains saturate early).
+- **iqk is NEUTRAL on the MTP verify batch** (gemma-26B n4: 48.2 iqk-on / 48.1 iqk-off) → iqk + MTP compose cleanly, **no kernel change needed for MTP**.
+- **MTP head coverage**: gemma-26B (v6 head on disk), Qwen3.5-9B (embedded NEXTN), gemma-31B (**remapped** ik→v6, see artifacts), Qwen3.6-35B (**downloaded** NEXTN). Qwen3.5-122B (GDN/recurrent wall) + Qwen3-Next-80B (SSM serial) have NO MTP path → max = base. Qwen3.6-27B / Qwen3.5-27B dense: no MTP head on disk yet (candidate follow-up — dense would benefit like gemma-31B).
+
+**New artifacts (2026-06-25):**
+- `/mnt/raid0/llm/models/gemma-4-31B-it-assistant-v6-Q8_0.gguf` — gemma-31B MTP head remapped from the ik `gemma4_mtp` head → v6 `gemma4-assistant` (arch+tensor+metadata rename, synthesized `rope_freqs` validated vs the 26B v6 head). Remap script: `/mnt/raid0/llm/tmp/remap_gemma31b_assistant.py`. Runtime-validated (loads, drafts, coherent, +197%).
+- `/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf` — frontdoor NEXTN MTP GGUF, downloaded from `unsloth/Qwen3.6-35B-A3B-MTP-GGUF` (Q8_0, 37.8 GB, exact-size verified). 1 NEXTN layer, 0.82–0.93 acceptance.
+- Sweep data + scripts under `/mnt/raid0/llm/tmp/iqk_sweep_2026-06-25/` and `/mnt/raid0/llm/tmp/iqk_*sweep*.sh`, `iqk_newheads_mtp.sh`, `iqk_mtp_runner.sh`.
+
 ## Key files
 - v6 hook: `ggml/src/ggml-cpu/ggml-cpu.c:1245`; blocks: `ggml/src/ggml-common.h:242,281,317`; enum `ggml/include/ggml.h:398`
 - ik kernels: `iqk/iqk_mul_mat.cpp:507`, `iqk_gemm_kquants.cpp:2674,2700,2761`, `iqk_gemm_legacy_quants.cpp:2084`, `iqk_quantize.cpp:923,1093`, `iqk_config.h`
