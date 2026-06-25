@@ -76,7 +76,8 @@ All numbers GGML_IQK=1 on `/mnt/raid0/llm/llama.cpp-v6-iqk/build` (branch iqk-po
 **MTP "full optimization" decode (llama-server /completion, draft-mtp, tuned n-max; base = same /completion path, NOT llama-bench):**
 | Model | base | MTP peak | gain | opt n-max | draft accept |
 |-------|-----:|---------:|-----:|:---------:|:-----------:|
-| gemma-4-26B-A4B (Q4 MoE, worker) | 42.1 | 52.8 | **+25%** | 2 | 0.75 |
+| gemma-4-26B-A4B (Q4 MoE, worker) — **Q8 head** | 37.4 | 53.5 | **+43%** | 2 | 0.67 |
+| └ same model with f16 head (suboptimal) | 42.1 | 52.8 | +25% | 2 | 0.75 |
 | Qwen3.5-9B (hybrid) | 23.2 | 41.6 | **+79%** | 4 | 0.60 |
 | gemma-4-31B (Q4 **dense**) | 5.2 | 15.4 | **+197%** | 6 | 0.43 |
 | Qwen3.6-35B-A3B (Q8 MoE, **frontdoor**) | 20.7 | 41.8 | **+103%** | 4 | 0.82 |
@@ -88,11 +89,15 @@ All numbers GGML_IQK=1 on `/mnt/raid0/llm/llama.cpp-v6-iqk/build` (branch iqk-po
 - **iqk is NEUTRAL on the MTP verify batch** (gemma-26B n4: 48.2 iqk-on / 48.1 iqk-off) → iqk + MTP compose cleanly, **no kernel change needed for MTP**.
 - **MTP head coverage (6 of 8 models — ALL that have an MTP path)**: gemma-26B (v6 head on disk), Qwen3.5-9B (embedded NEXTN), gemma-31B (**remapped** ik→v6), Qwen3.6-35B frontdoor (**downloaded** NEXTN), Qwen3.6-27B + Qwen3.5-27B dense (**downloaded** unsloth NEXTN, +177%/+146%). Only Qwen3.5-122B (GDN/recurrent wall) + Qwen3-Next-80B (SSM serial) have NO MTP path → their max = base iqk.
 - **Dense MTP is the biggest win** (verify batch amortizes ONE weight read over N tokens): the 4 dense/slow models gained +146% to +197%; the slow dense 27B pair (4.4/2.3 t/s) ~tripled.
+- **DRAFT-HEAD PRECISION is a major lever** (empirical — overturned a bandwidth estimate): gemma-26B with an **f16** assistant head (855 MB) is **−28%** vs the **Q8** head (461 MB) at identical acceptance (same-window chat draft=2: f16 33.48 vs Q8 42.78 t/s). The f16 `token_embd` (262144×1024) dominates the draft pass. **Requantized to Q8** (`gemma-4-26B-A4B-it-assistant-v6-Q8_0.gguf`, built `llama-quantize` to make it) → now the canonical worker head. Only gemma-26B had a separate f16 head; gemma-31B head already Q8; all Qwen NEXTN heads are embedded at model quant (shared token_embd) → no equivalent lever.
+- **v6-iqk now BEATS ik_llama on the worker** (same-window, gemma-26B MTP draft=2, chat): v6-iqk+Q8head **42.78** t/s (accept 0.80) vs ik_llama PR#1744 **38.63** (accept 0.66) = **+11%** → single-kernel consolidation gap not just closed, v6-iqk wins. (Recorded ik warm-stack peak 76.5 t/s and v6 42.8 are NOT comparable — host at 28-day uptime, THP drift swings absolutes; only same-window deltas valid.)
 
 **New artifacts (2026-06-25):**
 - `/mnt/raid0/llm/models/gemma-4-31B-it-assistant-v6-Q8_0.gguf` — gemma-31B MTP head remapped from the ik `gemma4_mtp` head → v6 `gemma4-assistant` (arch+tensor+metadata rename, synthesized `rope_freqs` validated vs the 26B v6 head). Remap script: `/mnt/raid0/llm/tmp/remap_gemma31b_assistant.py`. Runtime-validated (loads, drafts, coherent, +197%).
 - `/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf` — frontdoor NEXTN MTP GGUF, downloaded from `unsloth/Qwen3.6-35B-A3B-MTP-GGUF` (Q8_0, 37.8 GB, exact-size verified). 1 NEXTN layer, 0.82–0.93 acceptance.
 - `/mnt/raid0/llm/models/Qwen3.6-27B-MTP-Q4_K_M.gguf` (17.1 GB) + `/mnt/raid0/llm/models/Qwen3.5-27B-MTP-Q4_K_M.gguf` (17.1 GB) — dense NEXTN MTP GGUFs, downloaded from `unsloth/Qwen3.6-27B-MTP-GGUF` / `unsloth/Qwen3.5-27B-MTP-GGUF` (exact-size verified). +177% / +146%.
+- `/mnt/raid0/llm/models/gemma-4-26B-A4B-it-assistant-v6-Q8_0.gguf` (461 MB) — **canonical worker MTP head**, requantized from the f16 head (Q8 is −28%-faster draft pass; built the `llama-quantize` target in the v6-iqk build to make it).
+- (downloading) `Qwen3.5-122B-A10B-MTP-GGUF/UD-Q4_K_M/*` — architect MTP head (78.3 GB, 3 shards) from `unsloth/Qwen3.5-122B-A10B-MTP-GGUF`; earlier "no MTP" dismissal was WRONG (qwen35moe = frontdoor arch).
 - Sweep data + scripts under `/mnt/raid0/llm/tmp/iqk_sweep_2026-06-25/` and `/mnt/raid0/llm/tmp/iqk_*sweep*.sh`, `iqk_newheads_mtp.sh`, `iqk_mtp_runner.sh`.
 
 ## Key files
