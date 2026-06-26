@@ -36657,3 +36657,231 @@
     content fetched from arxiv.org and sakana.ai/fugu/. Operator note: leaderboard
     submission and cloud deployment are NOT of interest — this entry is competitive
     intelligence only.
+- id: intake-729
+  arxiv_id: null
+  url: https://huggingface.co/collections/deepreinforce-ai/ornith-10
+  source_type: repo
+  title: 'Ornith-1.0 (HF collection): open-weights agentic-coding LLM family (DeepReinforce AI)'
+  categories:
+  - agent_architecture
+  - training_distillation
+  - local_inference
+  - benchmark_methodology
+  - moe_optimization
+  key_claims:
+  - 'Open-weights (MIT) agentic-coding model family from DeepReinforce AI, released as a HuggingFace collection with GGUF + FP8 quants for the smaller sizes — directly self-hostable on the EPYC CPU stack.'
+  - 'Built on Gemma 4 and Qwen 3.5 base architectures — the SAME two base families already in EPYC production (gemma4-26B-A4B worker; Qwen3.5/3.6 roles), so CPU-quant and llama.cpp support paths are largely known.'
+  - 'Family spans four sizes (per the official blog, intake-730): 9B dense, 31B dense, 35B MoE, 397B MoE; the 9B/35B ship GGUF, making them concrete coder/worker (35B) and drafter/cheap-worker (9B) swap candidates.'
+  - 'Same org behind the indexed CUDA-L1 / robust-kbench RL-kernel cluster (intake-660 lineage); Ornith extends their RL methodology from kernel authoring to general agentic coding.'
+  techniques:
+  - Open-weights GGUF/FP8 agentic-coding checkpoints on Gemma4/Qwen3.5 bases
+  - RL self-scaffolding (see intake-730 for method detail)
+  - Long-context (262k) repo-scale code understanding
+  reported_results:
+  - 'Benchmark numbers are in the blog entry (intake-730); the collection itself ships weights only.'
+  novelty: high
+  relevance: high
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-06-26'
+  contradicting_evidence:
+  - 'RESOLVED on 2026-06-26 deep-dive: released sizes are 9B / 35B / 397B only — the announced 31B-dense is NOT published. The 35B is Ornith-1.0-35B-A3B, a Qwen3.5 GatedDeltaNet HYBRID MoE (GGUF arch field qwen35moe), NOT a Gemma4 dense and NOT a "standard transformer" — its own prose card''s "standard transformer, no Delta-Net" claim is WRONG; the GGUF arch field and the Qwen3.5-35B-A3B architecture (3:1 GatedDeltaNet:full-attn hybrid) confirm the hybrid. The 9B is Ornith-1.0-9B, a qwen35 dense.'
+  - 'GGUF LOADABILITY: GREEN. Our fork (production-consolidated-v5, HEAD a6c793fc6) already ships dedicated converter + runtime + build-class support for qwen35 (9B) and qwen35moe (35B GatedDeltaNet hybrid MoE) — src/models/qwen35.cpp and qwen35moe.cpp (both : public llm_build_delta_net_base), is_recurrent() hybrid dispatch shared with Qwen3Next — plus gemma3/gemma4. Both Ornith GGUFs should load with ZERO fork changes. Only real blocker = pulling ~27 GB weights + EPYC host availability.'
+  - 'Spec-dec is DEAD on these (Delta-Net hybrid — consistent with our prior Qwen3.5-27B finding), so both are DECODE-ONLY candidates. The 9B is a cheap-worker candidate, NOT a drafter (correcting the initial intake note).'
+  - 'All performance numbers remain vendor self-reported (see intake-730 contradicting_evidence); loadability ≠ quality — still needs a canonical-bench pass under MEASUREMENT policy before any deploy.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-730
+    - intake-731
+    - intake-660
+    - intake-728
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'High. No prior intake entry covers Ornith (grep for "ornith" returns nothing; Qwen3.5/397B hits are base-model arch notes). New open-weights agentic-coding family with SOTA-tier claimed results.'
+  relevance_justification: 'High. Open-weights, MIT, GGUF, on Gemma4/Qwen3.5 bases the stack already runs — a direct candidate for coder/worker roles, fitting the characterized single-instance NUMA operating points. The deployable-model angle is the actionable hook (distinct from the method-pattern angle tracked on the autopilot handoff via intake-730). Feasibility de-risked to GREEN on 2026-06-26 (fork already supports qwen35/qwen35moe arch — see contradicting_evidence).'
+  verdict_justification: 'worth_investigating, not adopt_component yet. Loadability is GREEN (fork supports qwen35/qwen35moe with zero changes), so the lead candidate is Ornith-1.0-35B-A3B as a DECODE-ONLY coder/worker swap vs gemma4-26B-A4B (76.5 t/s solo), and the 9B as a cheap-worker (NOT a drafter — spec-dec dead on Delta-Net hybrids). Gate: pull ~27 GB weights, then a canonical-bench + quality pass (vendor numbers unverified on our harness, MEASUREMENT policy) before any deploy. #1 blocker is operator-approved weight pull + host time, NOT fork support. No handoff stub created (worth_investigating, not new_opportunity; index/stub changes need explicit operator approval).'
+  notes: >
+    Operator-submitted via /research-intake (2026-06-26) alongside the blog (intake-730).
+    Paired entry: blog intake-730 carries the method + benchmark detail. NOTE the third
+    submitted URL (arxiv:2606.25996) is an UNRELATED Meta FAIR "Autodata" paper, indexed
+    separately as intake-731 — Ornith has no arXiv paper as of 2026-06-26. 2026-06-26
+    deep-dive verified GGUF loadability GREEN (fork qwen35/qwen35moe support) and corrected
+    the released-size list (9B/35B/397B; no 31B) and the 35B arch (qwen35moe GatedDeltaNet
+    hybrid, not standard transformer).
+- id: intake-730
+  arxiv_id: null
+  url: https://deep-reinforce.com/ornith_1_0.html
+  source_type: blog
+  title: 'Ornith-1.0: Self-Scaffolding LLMs for Agentic Coding (DeepReinforce blog)'
+  categories:
+  - training_distillation
+  - agent_architecture
+  - tool_implementation
+  - benchmark_methodology
+  - autonomous_research
+  key_claims:
+  - 'Core innovation "self-scaffolding" RL: instead of a fixed human-designed harness, the model jointly learns the per-task-category scaffold (memory/error-handling/orchestration logic) AND the solution rollout; a shared reward propagates to both stages so scaffolds co-evolve with the policy toward higher-reward trajectories.'
+  - 'Three-layer anti-reward-hacking defense: (1) immutable outer trust boundary (env/tools/test isolation outside model reach — model evolves only the inner policy scaffold), (2) deterministic monitor that zero-rewards + excludes trajectories reading withheld paths / modifying verifier scripts / using out-of-surface tools, (3) frozen LLM-judge veto for intent-level gaming inside the allowed surface.'
+  - 'Asynchronous pipeline-RL with a token staleness weight w(d_t) (1 below K1, exp decay K1→K2, 0 above K2) applied to a token-level GRPO loss to handle off-policy long rollouts.'
+  - 'Built on Gemma 4 and Qwen 3.5 bases; sizes 9B dense / 31B dense / 35B MoE / 397B MoE; the same two base families EPYC runs in production.'
+  techniques:
+  - Self-scaffolding / learnable co-evolved harness (scaffold proposal then solution rollout, shared reward)
+  - GRPO with token-level loss; asynchronous pipeline-RL with staleness weighting
+  - Deterministic anti-reward-hacking monitor + frozen LLM-judge reward veto + immutable trust boundary
+  reported_results:
+  - 'Ornith-397B: Terminal-Bench 2.1 (Terminus-2) 77.5, SWE-Bench Verified 82.4, SWE-Bench Pro 62.2, SWE-Bench Multilingual 78.9, NL2Repo 48.2, ClawEval 77.1'
+  - 'Ornith-35B: TB-2.1 64.2, SWE-Bench Verified 75.6, SWE-Bench Pro 50.4, NL2Repo 34.6, ClawEval 69.8 (beats Qwen3.5-397B on TB-2.1: 64.2 vs 53.5)'
+  - 'Ornith-9B: TB-2.1 43.1, SWE-Bench Verified 69.4 (matches Gemma4-31B; edge-deployable)'
+  - 'Reference points cited: Claude Opus 4.7 (TB 70.3 / SWE 80.8), Claude Opus 4.8 (TB 85 / SWE 87.6), GLM-5.2-744B (TB 81.0)'
+  novelty: high
+  relevance: high
+  credibility_score: 1
+  verdict: worth_investigating
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-06-26'
+  contradicting_evidence:
+  - 'All numbers are vendor self-reported on a commercial-lab blog with no paper/arXiv. "State-of-the-art" is explicitly scoped to open models of comparable size; the Opus-4.7-parity framing for the 397B is the vendor''s own comparison.'
+  - 'Independent corroboration is release-only: secondary tech press (MarkTechPost, TestingCatalog, Cryptopond, digg) reproduce the vendor table but did not run independent evals. Some observers dismiss the claims as "benchmark farming"/grifting (WebSearch, 2026-06-26).'
+  - 'DeepReinforce''s own robust-kbench / "Hacks and Defenses" history flags exactly the reward-hacking failure mode Ornith claims to fix — so the anti-hacking design is plausible but the benchmark claims still need independent eval before any promotion.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-729
+    - intake-731
+    - intake-660
+    - intake-728
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  handoffs_created: []
+  novelty_justification: 'High. No prior intake entry covers Ornith or self-scaffolding agentic-coding RL; the corpus only has DeepReinforce''s CUDA-kernel work (intake-660 cluster), a different domain. The learnable-scaffold-co-evolved-with-policy + anti-reward-hacking trio + pipeline-RL staleness weighting is a genuinely new mechanism for this repo.'
+  relevance_justification: >
+    High, on two axes. (1) Deployable: built on Gemma4/Qwen3.5 with 9B/35B GGUF; the
+    model-candidate angle (loadability GREEN) is tracked via the paired repo entry intake-729.
+    (2) Method: 2026-06-26 deep-dive against autopilot CODE found the 3-layer anti-reward-hacking
+    design is ~95% ALREADY present in autopilot — immutable trust boundary ≈ the human-amendment-only
+    eval trust boundary; deterministic monitor ≈ W6 audit gaming alarm (audit_block_report.py:266-286);
+    frozen LLM-judge veto ≈ the W7 binding critic. The ONE genuinely new lens: treat
+    strategy-store-authored scaffolds (PromptForge/StructuralLab) as RL-optimized objects with the
+    SAME reward-hacking surface as the policy → a candidate future W7 item for a trajectory-level
+    frozen-judge veto over scaffolds, not just over solutions. So method-relevance is "one new W7
+    idea," not "wholesale new mechanism."
+  verdict_justification: >
+    worth_investigating, not adopt. Method: ~95% already covered by autopilot W6/W7; the single new
+    design idea (trajectory-level frozen-judge veto over strategy-store scaffolds) is a propose-only
+    future W7 item, NO code action mandated. Checkpoints: benchmark-gate candidates (intake-729),
+    loadability GREEN. RL self-scaffolding TRAINING is out of reach (single MI210 expected ~July 2026),
+    so value = checkpoints + the one W7 lens, not the training stack. Credibility 1 (recent +1, known
+    lab +1, commercial bias -1); treat all numbers as observations per MEASUREMENT.md, not
+    decision-gating.
+  notes: >
+    Operator-submitted via /research-intake (2026-06-26). Paired with HF collection
+    intake-729 (weights). The third submitted URL (arxiv:2606.25996) is an UNRELATED
+    Meta FAIR "Autodata" paper (intake-731), NOT the Ornith paper — Ornith has no arXiv
+    paper. Phase-4a: appended a Research Intake Update to autopilot-continuous-optimization.md
+    framing the self-scaffolding + anti-reward-hacking design as a conceptual cross-reference.
+- id: intake-731
+  arxiv_id: '2606.25996'
+  url: https://arxiv.org/abs/2606.25996
+  source_type: paper
+  title: 'Autodata: An Agentic Data Scientist to Create High Quality Synthetic Data'
+  categories:
+  - autonomous_research
+  - training_distillation
+  - agent_architecture
+  - benchmark_methodology
+  key_claims:
+  - 'ID-MISMATCH NOTE: this arXiv ID was submitted under the assumption it was the DeepReinforce "Ornith 1.0" paper. It is NOT — it resolves to Meta FAIR''s "Autodata" (Jason Weston et al.), an agentic synthetic-data-generation framework. Indexed for completeness/dedup.'
+  - 'Autodata casts an LLM agent as a "data scientist": an Agentic Self-Instruct loop orchestrates 4 subagents (Challenger generates examples, Weak solver expected to fail, Strong solver expected to pass, Verifier/judge scores + gives feedback), iterating generate→test→judge→analyze→refine until acceptance criteria are met, producing data calibrated to a target difficulty band.'
+  - 'A meta-optimization outer loop trains the data-scientist agent itself on the same quality criteria, raising CS-task validation pass rate from 62.1% to 79.6% over 233 iterations.'
+  - 'Agentic data yields harder, better-calibrated examples than CoT Self-Instruct: a 4B model RL-trained on agentic data beats the CoT-trained one across CS research (0.774 vs 0.727), legal reasoning (0.441 vs 0.377, beating the 397B baseline 0.404), and scientific reasoning (+3.20% vs +2.42% avg@8).'
+  - 'Attribution: ~50% of the accuracy gain comes from improved token efficiency (truncation 23.75%→4.09%), not just harder content.'
+  techniques:
+  - Agentic Self-Instruct (iterative challenger/solver/judge loop)
+  - Weak-vs-strong solver difficulty calibration (target the gap)
+  - Meta-optimization of the data-generator agent (outer self-improvement loop)
+  - LLM-as-judge verification with failure-analysis-driven prompt refinement
+  reported_results:
+  - 'CS research: agentic weak/strong gap 0.314 (vs CoT 0.019); 4B RL-trained 0.774 vs CoT 0.727'
+  - 'Legal (PRBench-Legal): 4B on 2.8k agentic ex 0.441 (GPT-5 judge) vs CoT 0.377; beats 397B baseline 0.404'
+  - 'Scientific reasoning (9k ex): agentic +3.20% avg@8, CoT +2.42%; truncation 23.75%→4.09%'
+  - 'Meta-optimization: CS validation pass rate 62.1% → 79.6% over 233 iterations'
+  - 'Base models: orchestrator/challenger Kimi-K2.6; strong solver Qwen3.5-397B-A17B; weak solver Qwen3.5-4B; judge Kimi-K2.6 / GPT-5'
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-06-26'
+  contradicting_evidence:
+  - 'The HEADLINE result (train a data-generator agent via GPU SFT/RL; the token-truncation 23.75%→4.09% efficiency gains) requires frontier-model orchestration (Kimi-K2.6, Qwen3.5-397B) and GPU fine-tuning — out of reach until the MI210 lands (~July 2026). That part stays LOW relevance.'
+  - 'Relevance was raised low→medium on 2026-06-26 deep-dive (operator-prompted): the METHOD (two-sided weak-fail∧strong-pass difficulty calibration) is directly applicable to autopilot''s existing-but-phased env_synth 5th species, independent of the GPU training stack. The deployment-vs-method distinction is the whole point.'
+  - 'No contradicting evidence found on the technique''s validity itself — credible lab (Meta FAIR, Jason Weston), recent. Caveat: the difficulty-calibration claim is intuitive enough that confirmation-bias risk exists; the autopilot mapping below is grounded in actual code, not just conceptual rhyme.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - swarm-dataset-distillation.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-729
+    - intake-730
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  handoffs_created: []
+  novelty_justification: 'High as a standalone paper: grep for autodata/2606.25996/the challenger-solver-verifier loop returns nothing. Synthetic-data generation broadly is well-represented (~55 hits) but none implement this exact 4-subagent weak-vs-strong difficulty-calibration + meta-optimization-of-the-generator design.'
+  relevance_justification: >
+    MEDIUM on method (raised from low on 2026-06-26 deep-dive, code-grounded). Autopilot
+    already has a TASK-SYNTHESIS 5th species, env_synth
+    (scripts/autopilot/species/env_synth/: ETDAgent → TaskSynthesizer[DifficultyBand] →
+    VerifierBuilder → SolvabilityGate), scaffolded under NIB2-44 but with EvalTower T1
+    integration (AW-5) still phased/inert. Its SolvabilityGate (AW-4, species.py:77-101) is
+    ONE-SIDED — it rejects only tasks a strong REFERENCE model cannot solve (upper bound),
+    with no weak-model lower bound, so it can still mint trivially-easy tasks that pass the
+    gate and worsen rather than fix saturation. Autodata''s weak-vs-strong gap calibration
+    is precisely the missing lower bound: gate-keep a synthesized task only when strong_pass
+    ∧ weak_fail. The reference-solver callback + DifficultyBand scaffolding to host this
+    already exist; a cheap CPU-local weak model (e.g. a small Qwen / the Ornith-9B intake-729)
+    supplies the weak signal — no GPU, no frontier API. This addresses autopilot''s DOCUMENTED
+    saturation problem (suites at ~90-94%; stable core has only 3/50 mid-range qids per the
+    intake-727 update on autopilot-continuous-optimization.md). The GPU-training headline of
+    the paper stays low-relevance.
+  verdict_justification: >
+    worth_investigating, with one concrete adopt_patterns CANDIDATE (not yet approved): upgrade
+    env_synth''s one-sided SolvabilityGate (AW-4) to Autodata''s two-sided strong_pass∧weak_fail
+    difficulty gate, wired behind the human-amendment-only eval trust boundary (MEASUREMENT.md).
+    Two hard constraints make this propose-only: (1) any task that can gate keep/revert
+    decisions touches the eval trust boundary and is human-amendment-only; (2) W6''s core-vs-audit
+    generalization-gap alarm (audit_block_report.py:266-286) is exactly where an optimizer minting
+    its own gating questions would be caught as gaming — so env_synth tasks must stay OUT of the
+    decision-gating audit set unless human-promoted. NOT new_opportunity (needs operator approval +
+    eval-trust-boundary change), NOT adopt_component (no off-the-shelf code to import — it is a
+    design pattern applied to our own env_synth). The meta-optimization OUTER loop (training the
+    generator) does NOT map: autopilot''s meta_optimizer.py:68-137 only rebalances species budgets
+    + detects hypervolume stagnation; it never trains a generator policy, and doing so needs GPU
+    SFT/RL — REFUTED as a near-term transfer. No handoff stub created (index/stub changes need
+    explicit operator approval).
+  notes: >
+    Surfaced via the arxiv-ID mismatch on the 2026-06-26 Ornith intake: the operator submitted
+    2606.25996 believing it was the DeepReinforce Ornith paper. It is Meta FAIR's Autodata (Jason
+    Weston et al.). Indexed here so the ID is not re-fetched; the Ornith material lives at
+    intake-729 (weights) and intake-730 (blog/method). 2026-06-26 deep-dive (operator-prompted
+    "I thought autodata would be relevant to autopilot"): raised relevance low→medium after
+    code-grounding the env_synth/SolvabilityGate connection. Verified env_synth is a REAL existing
+    species (scripts/autopilot/species/env_synth/species.py docstring: "single 5th autopilot
+    species alongside Seeder / NumericSwarm / PromptForge / StructuralLab"); the README's "4
+    species" line is stale. Confirmed via direct grep that autopilot has NO general
+    question-GENERATION (static pre-extracted pool, question_pool.py) — env_synth is the only
+    synthesis path. Verdict engine is an anytime-valid e-process (sequential_verdict.py:75-148);
+    resolution-aware 3/n gate in safety_gate.py:57-71. The two-sided-gate upgrade is a propose-only
+    candidate pending operator approval — NOT actioned.
