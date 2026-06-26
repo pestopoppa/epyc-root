@@ -2,8 +2,8 @@
 
 **Category**: `local_inference`
 **Confidence**: verified
-**Last compiled**: 2026-06-21
-**Sources**: 23 documents
+**Last compiled**: 2026-06-25
+**Sources**: 24 documents
 
 ## Summary
 
@@ -16,6 +16,12 @@ GGUF model management follows a strict regime. Models reside on the RAID array a
 Speculative decoding is the primary acceleration method. The production stack uses external draft models (Qwen2.5-Coder-0.5B at 185 t/s, Qwen3-Coder-0.75B at 181 t/s) with configuration validated by a comprehensive 1,290-measurement sweep. Key parameters are model-specific: coder_escalation uses dm=32/ps=0.05 (tree beneficial), architect uses dm=24/ps=0 (tree harmful), and the 480B coding architect uses dm=24/ps=0 (tree harmful at -19%, overturning prior assumption). No speculation is used on hybrid SSM models (Qwen3.5-*) -- all draft configurations are net-negative due to recurrent state overhead.
 
 ## Key Findings
+
+### New Findings (2026-06-25) — Clean NUMA-concurrent MTP throughput suite (COMPLETE, all 7 models)
+
+- **MTP speculative decode is the dominant throughput lever on the v6-iqk kernel, and its best NUMA topology depends on model class.** Clean-host suite (quiesced, caches dropped; aggregate t/s across instances), now COMPLETE across all 7 stack/dense models. Per-model best-throughput operating points (q=4×quarter, f=1×full, h=2×half): gemma-26B small MoE — **4×quarter+MTP 43.46** (vs full 27.74, +57% aggregate; MTP +110% at quarter vs +59% at full); gemma-31B dense — **1×full+MTP 21.94** (quarter 19.43 > half 16.69; MTP +257% at full); Qwen3.6-27B dense — **4×quarter+MTP 17.68** (narrowly over half 17.08, full 14.85); Qwen3.5-27B hybrid-SSM dense — **4×quarter+MTP 14.85** (narrowly over half 14.54, full 13.20); Qwen3.6-35B Q8 frontdoor MoE — quarter+MTP 19.32 ≈ **full+MTP 19.02** (dead heat → full preferred for latency; +38% MTP, BW-bound floor); Qwen3-Next-80B SSM-MoE (no MTP path) — **4×quarter 45.54** (vs full 26.78, +70% base, strongest quartering win); Qwen3.5-122B architect MoE — **1×full+MTP 20.75** (quarter 19.45 > half 17.53). Topology rule: **active-param-light MoE → 4×quarter (aggregate throughput); large-active/dense → 1×full (throughput AND latency); mixed-27B → 4×quarter narrowly; 2×half is never the best at any cell across all 7 models** (confirms the dual-half penalty). MTP helps every MTP-capable model, spanning +38% (Q8 frontdoor, BW-bound) to +257% (dense gemma-31B), compounding hardest on dense/low-active models. Sources: [iqk-port.md](../handoffs/active/iqk-port.md) (NUMA Phase-3B), [progress 2026-06-25](../progress/2026-06/2026-06-25.md).
+- **ARCHITECT MTP IS CONFIRMED LIVE end-to-end — the prior "no-MTP / GDN-wall" dismissal is refuted.** Qwen3.5-122B-A10B (architect) loaded and drafted with NO spec-assertion crash: 1×full+MTP = **20.75 t/s, +89% over the 10.96 base**, validated download → load → draft → measure. The earlier "0.56× dead-end / GDN wall" verdict was measured on an old fork with no `draft-mtp` (stale); the qwen35moe arch uses the same size-independent NEXTN loader as the +103% frontdoor and its MTP blocks are dense attention, not recurrent. This is the major new result of the suite. Sources: [iqk-port.md](../handoffs/active/iqk-port.md), [progress 2026-06-25](../progress/2026-06/2026-06-25.md).
+- **Methodology: NUMA/throughput benches require a quiesced host with caches dropped; the earlier `numactl --membind` hypothesis was refuted.** An earlier contended run read gemma-31B full+MTP at 9.92 t/s and an inflated "26B quarter = 82 t/s / 2.5× full" headline — both memory-pressure artifacts. membind vs interleave was 9.92 vs 10.05 (no difference) and a bare-vs-harness settings A/B was 11.73 vs 11.88 (settings irrelevant); the real cause was memory pressure (free RAM 131 GB) + page-cache contention + a concurrent 78 GB download. After `drop_caches` (→ 1092 GB free) the same cell read 21.94 t/s (2.2× recovery). Absolutes stay throttle-suspect at ~4-week uptime; only same-clean-window relative deltas are load-bearing. Sources: [iqk-port.md](../handoffs/active/iqk-port.md), [progress 2026-06-25](../progress/2026-06/2026-06-25.md).
 
 ### New Findings (2026-06-21) — Frontier CPU-runnable model candidates (storage- and fork-gated)
 

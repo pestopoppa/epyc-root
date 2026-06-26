@@ -8,11 +8,11 @@
     "research": 121
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-06-25T20:33:15Z",
+  "last_compile": "2026-06-25T22:32:37Z",
   "mode": "full",
-  "scan_time": "2026-06-25T22:26:05Z",
+  "scan_time": "2026-06-25T22:33:05Z",
   "schema_version": 1,
-  "source_set_hash": "fdd92cde7766916007058aa860dddbaea479b83fb5379c65e7e5fc9015956a84",
+  "source_set_hash": "5caf7269e95c9601f9c17ab1fc2b0f0ed4704b3a22c6b45ee742116a06748ee7",
   "sources": [
     {
       "content_hash": "f0506c861200715c31f630966dd5881b4dcff41813aa8d68f3dadd3f1eda1c43",
@@ -4255,10 +4255,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "a4028fc771c35600836941ba38928011e68bab5b8cd8ba490fa90dd9a986b7f3",
-      "modified": "2026-06-25T20:32:10Z",
+      "content_hash": "b236da27532d2296ac4b44d96163aac79cb956639b943844dc6548281210c814",
+      "modified": "2026-06-25T22:32:34Z",
       "path": "progress/2026-06/2026-06-25.md",
-      "size": 25971,
+      "size": 30300,
       "title": "2026-06-25",
       "type": "progress"
     },

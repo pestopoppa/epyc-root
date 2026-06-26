@@ -100,6 +100,74 @@ All numbers GGML_IQK=1 on `/mnt/raid0/llm/llama.cpp-v6-iqk/build` (branch iqk-po
 - (downloading) `Qwen3.5-122B-A10B-MTP-GGUF/UD-Q4_K_M/*` — architect MTP head (78.3 GB, 3 shards) from `unsloth/Qwen3.5-122B-A10B-MTP-GGUF`; earlier "no MTP" dismissal was WRONG (qwen35moe = frontdoor arch).
 - Sweep data + scripts under `/mnt/raid0/llm/tmp/iqk_sweep_2026-06-25/` and `/mnt/raid0/llm/tmp/iqk_*sweep*.sh`, `iqk_newheads_mtp.sh`, `iqk_mtp_runner.sh`.
 
+## NUMA Phase-3B — clean NUMA-concurrent MTP topology suite (✅ COMPLETE, all 7 models, 2026-06-25)
+
+Re-measures the NUMA-topology × MTP throughput matrix on the v6-iqk kernel under the **clean-host protocol**
+(quiesced host, caches dropped) — the earlier contended run produced artifact numbers (see methodology below).
+Sweep data: `/mnt/raid0/llm/tmp/iqk_sweep_2026-06-25/numa_mtp.<model>.jsonl`. **Aggregate t/s across instances.**
+**All 7 models complete** (gemma-26B, gemma-31B, Qwen3.6-27B, Qwen3.5-27B, Qwen3.6-35B, Qwen3-Next-80B,
+Qwen3.5-122B); every cell verified against the jsonl.
+
+### Full 7-model clean matrix (aggregate t/s)
+| Model | type | q_off | q_on | f_off | f_on | h_off | h_on |
+|-------|------|------:|-----:|------:|-----:|------:|-----:|
+| gemma-26B | small MoE (worker) | 20.66 | **43.46** | 17.45 | 27.74 | — | — |
+| gemma-31B | dense | 5.42 | 19.43 | 6.14 | **21.94** | 4.63 | 16.69 |
+| Qwen3.6-27B | dense | 6.79 | **17.68** | 5.11 | 14.85 | 6.20 | 17.08 |
+| Qwen3.5-27B | hybrid-SSM dense | 6.36 | **14.85** | 4.99 | 13.20 | 6.07 | 14.54 |
+| Qwen3.6-35B | frontdoor Q8 MoE | 13.97 | 19.32 | 9.85 | 19.02 | — | — |
+| Qwen3-Next-80B | SSM-MoE ingest (NO MTP) | **45.54** | n/a | 26.78 | n/a | 37.36 | n/a |
+| Qwen3.5-122B | architect MoE | 12.09 | 19.45 | 10.96 | **20.75** | 10.45 | 17.53 |
+
+(q=4×quarter/4 inst, f=1×full/1 inst, h=2×half/2 inst; bold = best-throughput operating point.)
+
+### Per-model topology rule (clean, COMPLETE)
+- **Active-param-light MoE → 4×quarter wins aggregate throughput**: gemma-26B 4×quarter +57% over full;
+  Qwen3-Next-80B 4×quarter +70% over full (base). Qwen3.6-35B is the boundary case (quarter ≈ full at
+  MTP-on → **full preferred for latency**).
+- **Large-active / dense → 1×full wins**: gemma-31B full 21.94 > quarter; Qwen3.5-122B-A10B full 20.75 > quarter.
+- **Mixed 27B (Qwen3.6-27B / Qwen3.5-27B) → 4×quarter wins narrowly** (17.68 vs half 17.08; 14.85 vs half 14.54).
+- **2×half is never best** — always between or worst across all 7 models (confirms
+  `[[project_dual_half_concurrency_negative]]`); quarters or full only, never two halves.
+
+### MTP gains (universal; compounds on dense / low-active)
+- MTP helps **every** MTP-capable model, spanning **+38%** (Qwen3.6-35B Q8 frontdoor at quarter, BW-bound floor)
+  to **+257%** (gemma-31B dense at full, ceiling) across topologies. Dense / low-active models gain most
+  (verify amortizes ONE full weight read over N draft tokens).
+
+### ARCHITECT MTP CONFIRMED LIVE (major new result)
+**Qwen3.5-122B-A10B full + MTP = 20.75 t/s (+89% vs 10.96 base)** — loaded and drafted with **NO
+spec-assertion crash / GDN wall**, end-to-end (download → load → draft → measure). The prior
+"no-MTP / GDN-wall / 0.56× dead-end" dismissal is **refuted end-to-end** (it was measured on an old fork with
+no `draft-mtp`, stale). The architect's A10B active params put it in the dense-class topology bucket
+(1×full > quarter > half).
+
+### Topology rule (clean) — short form
+- **Small / low-active MoE** → **4×quarter + MTP** wins aggregate throughput.
+- **Large dense / large-active MoE** → **1×full + MTP** wins both throughput AND latency.
+- **2×half always worst** (confirms `[[project_dual_half_concurrency_negative]]`).
+
+Per-model best-operating-points feed the v6 promotion-plan registry NUMA topology fields
+(`/mnt/raid0/llm/tmp/v6_promotion_plan.md`, PG-2 "NUMA topology per role" clause) — re-confirms
+small/low-active→4×quarter, large dense/large-active→1×full.
+
+### Corrected methodology (CRITICAL — earlier story was WRONG)
+The earlier contended run read gemma-31B full+MTP at only **9.92 t/s** (and an inflated "26B quarter = 82 t/s /
+2.5× full" headline). Both were memory-pressure artifacts, NOT topology deltas.
+- **`numactl --membind` hypothesis REFUTED**: membind vs interleave = 9.92 vs 10.05 (no diff); a bare-vs-harness
+  settings A/B = 11.73 vs 11.88 (settings don't matter either).
+- **ACTUAL cause** = memory pressure + page-cache contention + a concurrent 78 GB download. Free RAM had fallen
+  to 131 GB; after `drop_caches` (→ 1092 GB free) and removing the download, the SAME cell read **21.94 t/s — a
+  2.2× recovery** (above even the earlier 15.4 single-instance reading).
+- **Lesson**: run NUMA/throughput benches on a **quiesced host with caches dropped** — memory pressure dominates
+  absolute t/s. Contended numbers (e.g. "26B quarter 82 t/s / 2.5× full") are ARTIFACTS, superseded by this
+  clean suite. Absolutes remain **throttle-suspect** at ~4-week uptime (reboot would clean further — operator
+  action); only relative topology/MTP deltas in the same clean window are load-bearing.
+
+### Suite status — COMPLETE
+All 7 `numa_mtp.<model>.jsonl` files written and verified cell-by-cell; the NUMA topology phase is CLOSED.
+No models outstanding.
+
 ## Key files
 - v6 hook: `ggml/src/ggml-cpu/ggml-cpu.c:1245`; blocks: `ggml/src/ggml-common.h:242,281,317`; enum `ggml/include/ggml.h:398`
 - ik kernels: `iqk/iqk_mul_mat.cpp:507`, `iqk_gemm_kquants.cpp:2674,2700,2761`, `iqk_gemm_legacy_quants.cpp:2084`, `iqk_quantize.cpp:923,1093`, `iqk_config.h`
