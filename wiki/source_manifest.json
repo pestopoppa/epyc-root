@@ -1,18 +1,18 @@
 {
   "by_type": {
     "docs": 14,
-    "handoff-active": 102,
+    "handoff-active": 104,
     "handoff-blocked": 1,
     "handoff-completed": 137,
     "progress": 179,
     "research": 121
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-06-26T10:29:03Z",
+  "last_compile": "2026-06-26T10:53:06Z",
   "mode": "full",
-  "scan_time": "2026-06-26T10:46:52Z",
+  "scan_time": "2026-06-26T21:42:58Z",
   "schema_version": 1,
-  "source_set_hash": "7ea49cbaa3da01c95b01efac475516d615f34953b0f85ef4a549e89a1b221def",
+  "source_set_hash": "a8a8bf56a00b995b9ac87a2dce6989f64bac12ebcdee9da0f75ad6c8f4343065",
   "sources": [
     {
       "content_hash": "f0506c861200715c31f630966dd5881b4dcff41813aa8d68f3dadd3f1eda1c43",
@@ -351,10 +351,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "54720e5127c12abf30f29ef4788f393c4a583edc60565d7fcb0397637d553a14",
-      "modified": "2026-06-26T10:25:49Z",
+      "content_hash": "d2b38618bcb2583bebe5bb58d20f8d5411f585a0565da6921ba9bdf8b77b6ff0",
+      "modified": "2026-06-26T21:14:29Z",
       "path": "handoffs/active/iqk-port.md",
-      "size": 22890,
+      "size": 24257,
       "title": "iqk-kernel port into v6 (ik_llama iqk_mul_mat \u2192 production-consolidated-v6)",
       "type": "handoff-active"
     },
@@ -399,10 +399,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "87b7e5ccd2549af7d56af6c7c63c22e8bbe3209181ab748fb4e0443029306e97",
-      "modified": "2026-06-25T08:37:17Z",
+      "content_hash": "b630bb7a1e29f94b03fd23584711dada298a1a7d9ffc73d9298f505154c17899",
+      "modified": "2026-06-26T21:14:00Z",
       "path": "handoffs/active/llamacpp-v6-consolidation.md",
-      "size": 39560,
+      "size": 41787,
       "title": "llama.cpp v6 Consolidation \u2014 production-consolidated-v6",
       "type": "handoff-active"
     },
@@ -607,6 +607,14 @@
       "type": "handoff-active"
     },
     {
+      "content_hash": "2ac631448b7204b495ea689cc4fa92606dd4ca0941e0f803be51bdd56c4a654f",
+      "modified": "2026-06-26T20:26:16Z",
+      "path": "handoffs/active/registry-compile-master-reconcile.md",
+      "size": 3964,
+      "title": "Reconcile master registry + enable `--compile-registry` (single-source-of-truth)",
+      "type": "handoff-active"
+    },
+    {
       "content_hash": "0fd2403af41da1f1fe80d707c4a34ed4bf06fd2f2274ab8e2a72b4a818f9eab9",
       "modified": "2026-06-20T05:21:00Z",
       "path": "handoffs/active/repl-turn-efficiency.md",
@@ -804,6 +812,14 @@
       "path": "handoffs/active/unified-trace-memory-service.md",
       "size": 18809,
       "title": "Unified Trace / Memory Service",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "8cdad1c03c04013c53f5b4874189841a7be4fb0f457dc5841ef5edba60aab2a4",
+      "modified": "2026-06-26T21:38:46Z",
+      "path": "handoffs/active/v6-iqk-promotion.md",
+      "size": 11140,
+      "title": "v6+iqk \u2192 production cutover (full ik_llama deprecation)",
       "type": "handoff-active"
     },
     {
@@ -4263,18 +4279,18 @@
       "type": "progress"
     },
     {
-      "content_hash": "e5c00bfbe47f497c74cf7996a581d00b9685a8f43a16ff001881bb7b9577ab66",
-      "modified": "2026-06-26T10:26:36Z",
+      "content_hash": "8c0307c0895ee4edb6c9ff62222ea651b90de03a8648a7239f76a164f86e98b5",
+      "modified": "2026-06-26T11:17:46Z",
       "path": "progress/2026-06/2026-06-25.md",
-      "size": 45479,
+      "size": 48657,
       "title": "2026-06-25",
       "type": "progress"
     },
     {
-      "content_hash": "841b18e5561a49005453d45a6c63da2d9ca4a41bf4eb3cfa6e7d5b8aaad2f086",
-      "modified": "2026-06-26T10:45:50Z",
+      "content_hash": "70ea4c11a8f83e5051c70df3fba1cc978a2fae88301bf4a0146b458ad1f2088e",
+      "modified": "2026-06-26T21:14:26Z",
       "path": "progress/2026-06/2026-06-26.md",
-      "size": 14079,
+      "size": 23431,
       "title": "2026-06-26",
       "type": "progress"
     },
@@ -4447,5 +4463,5 @@
       "type": "docs"
     }
   ],
-  "total_new": 554
+  "total_new": 556
 }

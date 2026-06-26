@@ -17,6 +17,11 @@ The quantization landscape in llama.cpp is evolving. The mainstream path is gger
 
 ## Key Findings
 
+### 2026-06-26 v6 cutover — iqk AVX-512 GEMM kernels integrated into the production kernel
+
+- **The production kernel is now `production-consolidated-v6`, which integrates ik_llama's `iqk_mul_mat` AVX-512 GEMM kernels (runtime-gated `GGML_IQK=1`), giving ~+11% vs ik_llama on quantized CPU decode for the gemma worker** (and prefill +22–49% / decode +8–9% across the stack's Q4_K_M and Q8_0 patterns). This is the same "AVX-512 throughput dominates" lesson that governs quant-format viability on this CPU (see Related Categories), now realized by faster quantized-matmul kernels rather than a new quant format. The cutover folds the gemma worker's quantized decode path off its former separate ik_llama.cpp binary onto this one kernel — **ik_llama.cpp is fully deprecated**; any remaining `ik_llama.cpp` references on this page (e.g. the `deepseek4`/STQ1_0 port gates) now mean the consolidated v6 kernel.
+- The v5 `--kv-hadamard` flag is removed in v6; Walsh-Hadamard KV rotation is auto-applied when KV types are quantized (already noted under KV Cache Quantization). Q8_0 weight decode through the iqk path is non-bit-exact by design — operator-run eval-suite parity is the deploy gate. Status: cutover executed 2026-06-26, live throughput/garbage verification PENDING. Tracking: [v6-iqk-promotion.md](../handoffs/active/v6-iqk-promotion.md).
+
 ### Weight Quantization
 
 - **Q4_K_M is the production standard**: 4-bit k-quant with mixed-precision block structure. Used for current production models such as Qwen3-Coder-30B-A3B frontdoor (approximately 18 GB), Qwen2.5-Coder-32B coder escalation (approximately 18.5 GB), and Qwen3.5-122B-A10B architect_general (approximately 69 GB). The retired REAP-246B architect_coding row is historical only. Quality is sufficient for agentic coding, tool calls, multi-turn reasoning, and mathematical problem solving. Q4_K_M was confirmed as the optimal coder quant in March 2026 after sweep testing. [Project memory: project_coder_quant_decision.md]

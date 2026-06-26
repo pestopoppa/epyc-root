@@ -13,8 +13,10 @@ All repos are already cloned on this machine. Use the absolute paths below.
 | epyc-root (this) | `/mnt/raid0/llm/epyc-root` | Governance, agents, hooks, handoffs, progress |
 | epyc-orchestrator | `/mnt/raid0/llm/epyc-orchestrator` | Production orchestration (`src/`, `tests/`) |
 | epyc-inference-research | `/mnt/raid0/llm/epyc-inference-research` | Benchmarks, seeding, model registry, research |
-| epyc-llama | `/mnt/raid0/llm/llama.cpp` | Custom llama.cpp fork |
+| epyc-llama | `/mnt/raid0/llm/llama.cpp` | Custom llama.cpp fork (production-consolidated-v6 — single kernel) |
 | hermes-agent (upstream) | `/mnt/raid0/llm/hermes-agent` | Agent frontend (Nous Research, not a child repo) |
+
+**2026-06-26 v6 cutover**: production now runs on ONE kernel, **production-consolidated-v6** (canonical tree `/mnt/raid0/llm/llama.cpp`). v6 = upstream llama.cpp framework + native MTP/NEXTN speculative decoding + our forward-ported CPU kernels + **ik_llama's iqk AVX-512 GEMM kernels** integrated into the fork (runtime-gated by `GGML_IQK=1`). This consolidates the gemma worker off the separate `ik_llama.cpp` binary — **ik_llama.cpp is fully deprecated; there is no second binary**.
 
 Key scripts by repo:
 - **Seeding/benchmarking**: `/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/` (seed_specialist_routing.py, seeding_*.py)

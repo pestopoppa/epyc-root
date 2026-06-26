@@ -23,6 +23,11 @@ A newer entrant is Leanstral (Mistral AI), a 119B MoE with 6.5B active parameter
 
 ## Key Findings
 
+### 2026-06-26 v6 cutover — MoE stack consolidated onto one kernel (production-consolidated-v6 + iqk); ik_llama deprecated
+
+- **The production MoE serving stack was cut over 2026-06-26 onto a SINGLE kernel, `production-consolidated-v6`, which integrates ik_llama's `iqk_mul_mat` AVX-512 GEMM kernels (runtime-gated `GGML_IQK=1`).** This retires the prior two-kernel arrangement where the gemma MoE worker ran on a separate ik_llama.cpp binary; **ik_llama.cpp is now fully deprecated** (no second binary). The iqk kernels give ~+11% vs ik_llama on the gemma worker's quantized CPU decode. All MoE roles now share this kernel: the gemma-4-26B-A4B worker (external assistant-head MTP), the Qwen3.6-35B-A3B frontdoor/coder_escalation/worker_summarize (NEXTN self-draft, shared :8070 process), and the Qwen3.5-122B-A10B architect_general (NEXTN self-draft). References to `ik_llama.cpp` elsewhere on this page (e.g. the `deepseek4` support gate) now mean the consolidated v6 kernel.
+- **Status (NOT verified production throughput):** v6+iqk cutover executed 2026-06-26 — config/governance converged (174 promotion-gate tests pass), canonical binary built; live throughput + garbage verification PENDING (operator deploy gate). Tracking: [v6-iqk-promotion.md](../handoffs/active/v6-iqk-promotion.md).
+
 ### DeepSeek-V4-Flash GGUF Heterogeneous MoE Quant Reference (2026-05-28)
 
 - **DeepSeek-V4-Flash GGUF is a concrete asymmetric MoE quantization reference, not yet a benchmarked deployment target.** The antirez GGUF card packages a 284B-parameter `deepseek4` MoE with per-tensor-role precision: routed experts at very low precision, shared/attention/output tensors at higher precision, and router tensors preserved in F16. The Q2 and Q4 variants are reported at 80.8 GiB and 153.3 GiB on disk, respectively, which fit the EPYC host, but the source provides no local throughput or quality numbers. Treat it as a transferable heterogeneous-MoE quant recipe gated on llama.cpp/ik_llama.cpp `deepseek4` support and workload-specific validation. Source: [large-moe-expert-parallelism.md](../handoffs/active/large-moe-expert-parallelism.md).

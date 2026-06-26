@@ -2,8 +2,10 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-06-25
-**Sources**: 40+ documents (added 2026-06-25 full-stack MTP sweep on v6-iqk: gemma-31B +197%, frontdoor +103%, draft-head precision lever, Qwen3.5-122B MTP feasibility correction; prior 2026-06-20 G5 short-m@k clean-window measurement evidence)
+**Last compiled**: 2026-06-26
+**Sources**: 40+ documents (added 2026-06-26 v6+iqk production cutover: native MTP/NEXTN replaces the ik_llama PR#1744 gemma-MTP path, single-kernel stack, v6 CLI grammar `--spec-type draft-mtp`/`--spec-draft-n-max`, ngram/prompt-lookup server-side support; prior 2026-06-25 full-stack MTP sweep on v6-iqk: gemma-31B +197%, frontdoor +103%, draft-head precision lever, Qwen3.5-122B MTP feasibility correction; 2026-06-20 G5 short-m@k clean-window measurement evidence)
+
+> **2026-06-26 v6 cutover note (top-of-page banner).** The production EPYC inference stack was cut from a TWO-kernel setup (v5 llama.cpp + a SEPARATE ik_llama.cpp binary used ONLY by the gemma worker) onto ONE kernel: **production-consolidated-v6** (canonical tree `/mnt/raid0/llm/llama.cpp`). v6 = upstream llama.cpp framework + native MTP/NEXTN speculative decoding + our forward-ported CPU kernels + **ik_llama's iqk AVX-512 GEMM kernels** integrated into the fork (runtime-gated by env `GGML_IQK=1`). **ik_llama.cpp is FULLY DEPRECATED — no second binary.** The historical "Gemma 4 MTP Drafter" sections below (2026-05-06 → 2026-05-16) describe the now-superseded ik_llama PR #1744 path; they are preserved verbatim as the measurement/decision record and carry inline `2026-06-26 v6 cutover` notes pointing to the replacement mechanism. Cutover STATUS: "v6+iqk cutover executed 2026-06-26: registry/launcher/governance config converged (all no-inference gates green, 174 promotion-gate tests pass), canonical binary built; **live throughput + garbage verification PENDING** (operator deploy gate)." Do NOT read any number below as verified v6 production throughput. Tracking: [`handoffs/active/v6-iqk-promotion.md`](../handoffs/active/v6-iqk-promotion.md).
 
 ## Summary
 
@@ -215,6 +217,8 @@ Verdict: worth_investigating. The principle (SSM drafter for Transformer target)
 
 ## Gemma 4 MTP Drafter — pure-CPU EPYC measured 2026-05-06
 
+> **2026-06-26 v6 cutover note.** This entire section documents the ik_llama.cpp PR #1744 path, which is **SUPERSEDED**. As of the 2026-06-26 v6+iqk cutover, the gemma-4-26B-A4B worker runs its external assistant-head MTP **natively on production-consolidated-v6** — the same single kernel that serves every other role. ik_llama.cpp is fully deprecated (no second binary). The mechanism is unchanged (separate `Gemma4AssistantForCausalLM` assistant head drafting for the target), but the runtime, CLI grammar, and OMP-idle plumbing below no longer apply. See the **"2026-06-26 — v6+iqk production cutover"** section at the end of this page for the replacement CLI grammar (`--spec-type draft-mtp` + `--spec-draft-n-max N`) and per-role MTP/NEXTN map. The PR #1744 measurement tables and the 9-launch-param recipe are preserved verbatim below as the historical decision record.
+
 Google released pre-trained Apache-2.0-licensed MTP drafters for Gemma 4 (31B Dense, 26B-A4B MoE, E4B/E2B). Distinct from in-target NextN MTP (Qwen 3.5, GLM-4.x): the drafter is a **separate small model** of the `Gemma4AssistantForCausalLM` arch (4 layers, 1024 or 256 hidden, sliding+full attention, `num_kv_shared_layers=4` so the drafter's K/V comes from the target's banks). One architecture class spans all variants — they differ only in width.
 
 ik_llama.cpp main does not support `gemma4_mtp` arch. PR #1744 (DRAFT, opened 2026-05-06 by Samuel/Radamanthys11) adds `LLM_ARCH_GEMMA4_MTP` + new `src/graphs/build_gemma4.cpp` + tensor mapping. Two patches were needed to actually run it on EPYC, both posted upstream:
@@ -266,6 +270,8 @@ The +1.06× MTP alone wouldn't have justified a swap; the orthogonal quality + v
 **Production launch tps measured higher than the original deep-dive bench** (76.5 t/s solo on full canonical instance, vs 44.12 t/s benchmarked at `mtp_speedup: 1.06`). The gap closes when launch params match the canonical recipe — the deep-dive bench used a subset of canonical settings; the production orchestrator now applies all of them.
 
 **Eight launch params required** for ik_llama.cpp PR #1744 + gemma4 MTP — every one surfaced as a root-cause for the same `GGML_ASSERT(buf != NULL && "tensor buffer not set")` failure at `ggml-backend.cpp:236`:
+
+> **2026-06-26 v6 cutover note.** The CLI grammar below is the deprecated ik_llama PR #1744 form. On production-consolidated-v6 the gemma worker engages MTP via **`--spec-type draft-mtp`** plus **`--spec-draft-n-max N`** (NOT `--spec-type mtp` / `--draft-max`); `--kv-hadamard` is removed. The `GGML_*` env-strip + `OMP_DYNAMIC=false` / `KMP_BLOCKTIME` workarounds (items 8–9) were ik_llama-fork-specific and **do not apply on v6** — v6 shares the production OMP integration that releases threads correctly under `OMP_WAIT_POLICY=active`. The remaining functional params (`--jinja`, `-np 1`, context, `--reasoning off`, KV q8_0, `--no-mmap`) still apply. See the page-end v6 cutover section for the canonical per-role grammar.
 
 1. `--spec-type mtp` — engages PR #1744 MTP code path (without it, `-md` is treated as standard spec decode and MTP draft tensors are loaded but never assigned to a backend buffer)
 2. `--jinja` — gemma4's custom embedded chat template
@@ -407,3 +413,40 @@ TiDAR is the architectural ancestor of Nemotron's *underperforming* Quad-SS mode
 **Open question logged in Nemotron deep-dive §10**: evaluate a TiDAR-pattern one-pass variant alongside Nemotron Linear-SS in the §6 CPU port plan. User also proposed split-role hybrids (Variant C1 diffusion-think + AR-generate, C2 inverse). Promotion gate (matches the FLOPS-roofline audit decision rule exactly): **achieved FLOPS < 10% of ~9.2 TFLOPS FP32 socket theoretical AND achieved DRAM BW > 70% of ~614 GB/s socket theoretical** → diffusion variants have FLOPS margin. The roofline measurement that resolves this gate is itself a separate user-gated task ([`handoffs/active/cpu-decode-flops-roofline-audit.md`](../handoffs/active/cpu-decode-flops-roofline-audit.md)) which is blocked at DRAFT until Phase 0 calibrates the correct AMD Zen 5 perf counters (the initial draft prescribed Intel `fp_arith_inst_retired.*` events that this host rejects).
 
 Sources: `research/intake_index.yaml` intake-633/634/635 + intake-576 (Nemotron successor) · [`research/deep-dives/nemotron-labs-diffusion-tri-mode.md` §10](../research/deep-dives/nemotron-labs-diffusion-tri-mode.md) · [`handoffs/active/cpu-decode-flops-roofline-audit.md`](../handoffs/active/cpu-decode-flops-roofline-audit.md) · `progress/2026-05/2026-05-28.md` §research-intake-batch.
+
+## 2026-06-26 — v6+iqk production cutover (native MTP/NEXTN replaces ik_llama PR #1744)
+
+The production EPYC inference stack was cut from a TWO-kernel setup — v5 llama.cpp for most roles plus a SEPARATE ik_llama.cpp binary used ONLY by the gemma worker — onto ONE kernel: **production-consolidated-v6** (canonical tree `/mnt/raid0/llm/llama.cpp`). v6 = upstream llama.cpp framework + native MTP/NEXTN speculative decoding + our forward-ported CPU kernels + **ik_llama's iqk AVX-512 GEMM kernels** integrated into the fork and runtime-gated by env `GGML_IQK=1`. **ik_llama.cpp is now FULLY DEPRECATED — there is no second binary.** This closes the consolidation gap recorded in the 2026-06-25 sweep (v6+iqk with the Q8 gemma head measured 42.78 t/s vs ik_llama 38.63 t/s, +11%, with higher acceptance 0.796 > 0.655).
+
+**STATUS (use exactly — do NOT claim verified production throughput).** "v6+iqk cutover executed 2026-06-26: registry/launcher/governance config converged (all no-inference gates green, 174 promotion-gate tests pass), canonical binary built; **live throughput + garbage verification PENDING** (operator deploy gate)." Every speedup number elsewhere on this page predates the live v6 deploy gate and must be treated as a v6-candidate / pre-cutover measurement, not certified production throughput. Tracking: [`handoffs/active/v6-iqk-promotion.md`](../handoffs/active/v6-iqk-promotion.md).
+
+### v6 spec-decode CLI grammar (replaces the ik PR #1744 grammar)
+
+The v6 framework changed the speculative-decode CLI surface. The old ik_llama / pre-v6 flags are removed:
+
+| Concern | OLD (ik_llama PR #1744 / pre-v6) | NEW (production-consolidated-v6) |
+|---|---|---|
+| Engage MTP/NEXTN draft path | `--spec-type mtp` | **`--spec-type draft-mtp`** |
+| Draft length per step | `--draft-max N` (alias `--spec-draft-max`) | **`--spec-draft-n-max N`** |
+| KV Hadamard transform | `--kv-hadamard` | **removed** (no longer a flag) |
+| ngram / prompt-lookup draft | (not wired server-side) | **`--spec-type ngram-simple\|ngram-cache\|ngram-map-k\|ngram-mod`** (draft-model-free) |
+
+The functional gemma-worker launch params that are NOT spec-grammar (`--jinja` for the embedded chat template, `-np 1` to keep MTP draft+target state on one slot, context matching the registry `max_context`, `--reasoning off` so output lands in `content`, `-ctk q8_0 -ctv q8_0`, `--no-mmap`) carry over unchanged. The ik-fork-specific OMP idle-spin workarounds (`OMP_WAIT_POLICY=passive` → reverted → `KMP_BLOCKTIME=10`, and the `GGML_*` env-strip) are **not needed on v6**: v6 inherits the production llama.cpp OMP integration that releases the thread team correctly under `OMP_WAIT_POLICY=active`, so the canonical OMP recipe applies to the gemma worker like every other role.
+
+### Per-role MTP / NEXTN map on v6
+
+The production stack uses two distinct self/external speculative mechanisms, both native to v6 and both engaged via `--spec-type draft-mtp` + `--spec-draft-n-max N`:
+
+| Role(s) | Target model | Draft mechanism | Notes |
+|---|---|---|---|
+| `worker` (worker_general) | gemma-4-26B-A4B Q4_K_M MoE | **External assistant head** (`Gemma4AssistantForCausalLM`) | The one role that carries a separate small drafter model; the f16→Q8 head precision lever (+28% at equal acceptance) is gemma-specific. Optimal `--spec-draft-n-max 2` (MoE saturates early). |
+| `frontdoor`, `coder_escalation`, `worker_summarize` | Qwen3.6-35B-A3B (shared `:8070` process, one GGUF) | **NEXTN self-draft** (in-target head, shares `token_embd` at model quant) | One llama-server process serves all three roles; routing is software role→port. Opt `--spec-draft-n-max 4` (+103% in the v6-iqk sweep, acceptance 0.82). |
+| `architect_general` | Qwen3.5-122B (`qwen35moe`) | **NEXTN self-draft** | M-RoPE assertion resolved on v6; same NEXTN loader as frontdoor. Measured +58–89% on v6 (`llama-arch.cpp` includes QWEN35MOE; the earlier "GDN wall / 0.56× dead-end" was a stale ik path with no `draft-mtp`). MTP blocks here are dense attention, not recurrent. |
+
+**Registry mechanism note (2026-06-26).** The LEAN registry is hand-authoritative for the cutover (`--compile-registry` is OFF); the worker / Qwen3.6 / architect models carry NEW `model_id`s because their base GGUFs changed (ORIG worker base; NEXTN MTP variants for the self-drafting roles). Do not assume the lean registry was recompiled from master for this cutover — it was hand-converged.
+
+### ngram / prompt-lookup decoding (zero-RAM fallback — OFF in prod today, fully supported in v6)
+
+v6 fully supports **draft-model-free** speculative decoding (ngram / prompt-lookup), including **server-side**, via `--spec-type ngram-simple | ngram-cache | ngram-map-k | ngram-mod`. This drafts continuation tokens by matching the recent context against n-grams already present in the prompt/KV (and, for the cache/map variants, a running suffix structure) — no drafter weights, no extra model load, hence **zero additional RAM**. It is **OFF across the production stack today** (every spec-enabled role uses native MTP/NEXTN; the n-gram path is not engaged for any live role). Its documented role is the **architect's zero-RAM fallback**: when a NEXTN/MTP self-draft head is unavailable or RAM-constrained for a large architect target, ngram/prompt-lookup gives a no-extra-memory speculation path that is especially effective on repetitive / templated / long-context-quoting workloads where the next tokens frequently recur in-context. This is a v6 capability statement, not a measured production result — acceptance on EPYC architect traffic has not yet been benched.
+
+**Cross-references**: [`handoffs/active/v6-iqk-promotion.md`](../handoffs/active/v6-iqk-promotion.md) (cutover tracking + gate status) · [`handoffs/active/iqk-port.md`](../handoffs/active/iqk-port.md) (iqk kernel integration + MTP-composition A/B) · [`progress/2026-06/2026-06-26.md`](../progress/2026-06/2026-06-26.md) · the 2026-06-25 full-stack MTP sweep table near the top of this page (v6-candidate numbers, pre-deploy-gate).
