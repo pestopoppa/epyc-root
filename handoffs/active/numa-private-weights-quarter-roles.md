@@ -1,6 +1,6 @@
 # NUMA Private Node-Local Weights for Shared-mmap Quarter Roles
 
-**Status**: NOT a config flip — **launcher work required** (discovered 2026-06-26 during the v6+iqk cutover activation attempt; reverted to clean state). See "## 2026-06-26 ACTIVATION ATTEMPT" below. Analysis complete + bench-evidenced on the worker; production A/B + the launcher fixes pending a dedicated session.
+**Status**: Launcher argv plumbing fixed/tested for generic + vision builders (2026-06-26 follow-up); **production config flip still gated** on per-role operator A/B + live NUMA placement verification. See "## 2026-06-26 ACTIVATION ATTEMPT" and "## 2026-06-26 FOLLOW-UP" below.
 **Created**: 2026-06-26
 **Owner**: unclaimed — dedicated future session (high-ROI, low-effort, NPS4-gated and we are on NPS4)
 **Parent index**: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md)
@@ -15,7 +15,7 @@
 
 Give the three **shared-mmap quarter-able roles** — `frontdoor` (Qwen3.6-35B-A3B Q8), `ingest_long_context` (Qwen3-Next-80B Q4), `vision_escalation` (Qwen3-VL-30B Q4) — **private, node-local weight copies** (`--no-mmap`, one private RAM copy per quarter instance) instead of the current single shared interleaved mmap copy that every quarter reads 75% cross-node.
 
-`worker_general` (gemma-26B Q4 MTP) **already realizes this fast path** (`--no-mmap` is hard-wired into its dedicated builder). The other three quarter roles do not, because the generic role builder silently ignores the `no_mmap` field that already exists in their priors. This is the entire gap.
+`worker_general` (gemma-26B Q4 MTP) **already realizes this fast path** (`--no-mmap` is enabled by its dedicated builder). The remaining production gap is evidence/configuration: the target roles still have `no_mmap: false` until each role clears the operator-run Arm A vs Arm B gate and live `/proc/<pid>/numa_maps` placement check.
 
 ---
 
@@ -29,6 +29,18 @@ Tried to activate N12 by setting `no_mmap: true` on the frontdoor/ingest/vision 
 
 Reverted to a clean state (all three back to shared-mmap, `runtime_attestation: ok`). **Remaining (dedicated session):** (a) make the generic + vision launchers apply `--no-mmap` to the QUARTER instances; (b) RAM is verified to fit (~+303 GB private → ~626 GB of the ~701 GB mlock budget, ~500 GB free at activation, actual-used basis not RSS); (c) per-role `/proc/<pid>/numa_maps` placement gate + the operator's clean-window Arm A vs Arm B A/B (throughput is throttle-caveated until the post-reboot window).
 
+## 2026-06-26 FOLLOW-UP — launcher plumbing fixed, no production flip
+
+Commit pending in `epyc-orchestrator` wires the missing inert launcher path:
+
+- `_build_role_command` already honors `runtime.cache.no_mmap` for generic registry-backed roles, with default `False`.
+- `_build_vision_command` now also honors `runtime.cache.no_mmap` for both `vision_escalation` and `worker_vision`, with default `False`.
+- Tests now cover the vision prior-to-argv behavior, and reload-attestation fixtures were aligned to the current v6 grammar (`--spec-type draft-mtp`, `--spec-draft-n-max`).
+
+Validation: `.venv/bin/pytest tests/unit/test_build_server_command_helpers.py tests/unit/test_orchestrator_stack_threads.py tests/unit/test_orchestrator_stack_reload.py -q` -> **77 passed**.
+
+No role has been flipped to `no_mmap: true` by this follow-up. The next actionable gate is still the per-role operator Arm A vs Arm B A/B plus live memory-placement verification. Use `stop --only` + `start --only` rather than `reload <role>` if cycling all quarter instances.
+
 ## Evidence (observations — motivate, do not gate)
 
 - **gemma-26B 4×quarter, clean host, same window**: shared-interleaved mmap = **43.5 t/s** aggregate vs **`--no-mmap` private node-local = 119.5 t/s** aggregate (`numa_mtp.gemma-26B.jsonl`: quarter / 4 instances / MTP-on `agg_tps=119.46`, replicates `[119.31, 119.46, 120.49]`). **~2.7×.** This is the worker model; it already runs the fast arm in production, so the bench measures exactly the topology the other three roles are missing.
@@ -39,7 +51,7 @@ Reverted to a clean state (all three back to shared-mmap, `runtime_attestation: 
 
 ## Root cause / per-role launch matrix
 
-From the finding doc (verified against current code/priors):
+From the finding doc, updated after the launcher follow-up:
 
 | Role | Model (GGUF, approx) | mmap today | Memory placement (multi-instance) |
 |------|------|------|------|
@@ -53,7 +65,7 @@ From the finding doc (verified against current code/priors):
 
 Three mechanisms compound the slow path:
 
-1. **The generic builder ignores `no_mmap`.** `_build_role_command` (`orchestrator_stack.py:825-912`) never references the `no_mmap` field. The field is present in every role's prior (`stack_priors.yaml`: `worker_general` line 833 `no_mmap: true`; `frontdoor` 254/399, `ingest_long_context` 543, `vision_escalation` 997 all `no_mmap: false`), but only `worker_general`'s **dedicated** builder reads it (`orchestrator_stack.py:606`, `cache.get("no_mmap", True)`). So the three target roles fall through to shared mmap regardless of their prior. **This is the load-bearing bug.**
+1. **The launcher now honors `no_mmap` in both generic and vision builders.** The field is present in every role's prior (`stack_priors.yaml`: `worker_general` true; `frontdoor`, `ingest_long_context`, and `vision_escalation` still false). Before the follow-up, the vision/`--mmproj` builder ignored the prior; that gap is fixed. The remaining shared-mmap behavior is now a deliberate `no_mmap: false` configuration state, not an argv plumbing miss.
 2. **No `--membind` / `--cpunodebind` anywhere.** `_numa_prefix` (`stack_numa.py:200-222`) emits a bare `taskset` (plus an optional `numactl --interleave=all` wrapper for the few canonical-recipe roles). `--membind`/`--cpunodebind` appear only in comments. So even the page placement is never pinned per node.
 3. **The interleave prewarm is bandwidth, not locality.** The `[1.5] numactl --interleave=all` page-cache prewarm (`stack_prewarm.py`; [`numa-page-cache-prewarm.md`](../completed/numa-page-cache-prewarm.md)) fixed the 2026-05-28 cold-collapse (mlock first-touching the whole GGUF onto ONE node → −50-65%). It forces a clean 25%-per-node spread → full aggregate **bandwidth** but **not locality** — every quarter still reads 75% of weights off-node. Better than collapse; not the fast path.
 
@@ -65,10 +77,11 @@ Three mechanisms compound the slow path:
 
 ## The fix (the actual deliverable)
 
-Two coupled edits, both in `epyc-orchestrator`:
+The code-side deliverable is complete; production activation remains:
 
-1. **Data**: set `no_mmap: true` in the launch priors for the three target roles in `orchestration/derived/stack_priors.yaml` (`frontdoor` 254/399, `ingest_long_context` 543, `vision_escalation` 997). *(Derived file — confirm it is regenerated from / consistent with the prior source per the model-stack SSoT pipeline; do not hand-edit a generated artifact without updating its source. See N11a / `model-stack-single-source-update-pipeline.md`.)*
-2. **Code (load-bearing)**: **wire `--no-mmap` into the generic `_build_role_command`** (`orchestrator_stack.py:825-912`) exactly as the worker builder does it (`orchestrator_stack.py:606`): `*(["--no-mmap"] if cache.get("no_mmap", <default>) is True else [])`. Choose the default deliberately — recommend `False` for the generic path (opt-in per role) so this change is inert for every role that does not set the flag. Today the field is simply dropped on the floor for all non-worker roles.
+1. **Evidence**: run the per-role operator Arm A vs Arm B A/B and record attested results per `/workspace/MEASUREMENT.md`.
+2. **Data**: after a role clears the gate, set `no_mmap: true` at the authoritative stack-prior source for that role and regenerate `orchestration/derived/stack_priors.yaml`. Do not hand-edit the derived file without updating its source. Alias roles sharing a process must match their host process to avoid runtime-attestation drift.
+3. **Deploy**: cycle all affected instances with `stop --only` + `start --only`, not `reload <role>`, then re-run runtime attestation and a live NUMA placement check.
 
 Optional, stronger (decide from the A/B): also add per-node `numactl --cpunodebind=N --membind=N` for `--no-mmap` quarter instances via `_numa_prefix`, to guarantee each private copy first-touches its own node rather than relying on `taskset` + first-touch. The A/B's Arm B uses explicit membind; if Arm B wins and the membind-free `--no-mmap` variant matches it, the `taskset`-only path is sufficient and simpler.
 
@@ -112,8 +125,9 @@ Acceptance: flip a role's `no_mmap` to `true` in production only after its own A
 
 | What | Where |
 |------|------|
-| Generic role builder — **ignores `no_mmap`** (the fix site) | `epyc-orchestrator/scripts/server/orchestrator_stack.py:825-912` |
-| Worker builder — emits `--no-mmap` (the pattern to copy) | `epyc-orchestrator/scripts/server/orchestrator_stack.py:606` |
+| Generic role builder — emits opt-in `--no-mmap` | `epyc-orchestrator/scripts/server/orchestrator_stack.py:825-912` |
+| Vision builder — emits opt-in `--no-mmap` for `runtime.cache.no_mmap` | `epyc-orchestrator/scripts/server/orchestrator_stack.py:433-501` |
+| Worker builder — emits `--no-mmap` for worker_general | `epyc-orchestrator/scripts/server/orchestrator_stack.py:606` |
 | `_numa_prefix` — bare taskset, no membind (optional membind site) | `epyc-orchestrator/scripts/server/stack_numa.py:200-222` |
 | `stack_numa.py` "taskset sufficient" claim to reconcile | `epyc-orchestrator/scripts/server/stack_numa.py:13,203` |
 | Launch priors (`no_mmap` field per role) | `epyc-orchestrator/orchestration/derived/stack_priors.yaml` (worker 833 `true`; frontdoor 254/399, ingest 543, vision 997 `false`) |
@@ -148,3 +162,4 @@ On completing any part of this work:
 ## Changelog
 
 - 2026-06-26 — created from `orchestrator_numa_finding.md`; stub/opportunity, A/B + code change pending a dedicated session.
+- 2026-06-26 — launcher argv plumbing fixed/tested for generic + vision builders; production `no_mmap:true` role flips still gated on operator A/B + live memory-placement verification.
