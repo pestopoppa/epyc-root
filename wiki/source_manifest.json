@@ -8,11 +8,11 @@
     "research": 121
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-06-25T22:32:37Z",
+  "last_compile": "2026-06-26T01:26:17Z",
   "mode": "full",
-  "scan_time": "2026-06-25T22:33:05Z",
+  "scan_time": "2026-06-26T01:27:27Z",
   "schema_version": 1,
-  "source_set_hash": "5caf7269e95c9601f9c17ab1fc2b0f0ed4704b3a22c6b45ee742116a06748ee7",
+  "source_set_hash": "f421e208a39ad1b2b9452654e4e3b1126019967e0364099846e9459c6ec34673",
   "sources": [
     {
       "content_hash": "f0506c861200715c31f630966dd5881b4dcff41813aa8d68f3dadd3f1eda1c43",
@@ -351,10 +351,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "0ecf3cc2545c5dfb618bfb2144a13f787fdeaf6368ddc15778c75e27645c7a67",
-      "modified": "2026-06-25T20:31:49Z",
+      "content_hash": "327ffaaefc54c1c5802bfeff6a7da54bc5c65ac0e44ac73231bf007188b48a10",
+      "modified": "2026-06-26T01:24:40Z",
       "path": "handoffs/active/iqk-port.md",
-      "size": 15001,
+      "size": 19863,
       "title": "iqk-kernel port into v6 (ik_llama iqk_mul_mat \u2192 production-consolidated-v6)",
       "type": "handoff-active"
     },
@@ -4255,10 +4255,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "b236da27532d2296ac4b44d96163aac79cb956639b943844dc6548281210c814",
-      "modified": "2026-06-25T22:32:34Z",
+      "content_hash": "301bcb0e294a59f83b8f713f309faa2538e0afde6ed63ca7089031126d0ea09a",
+      "modified": "2026-06-26T01:23:57Z",
       "path": "progress/2026-06/2026-06-25.md",
-      "size": 30300,
+      "size": 40434,
       "title": "2026-06-25",
       "type": "progress"
     },
