@@ -1,18 +1,18 @@
 {
   "by_type": {
     "docs": 14,
-    "handoff-active": 104,
+    "handoff-active": 105,
     "handoff-blocked": 1,
     "handoff-completed": 137,
     "progress": 179,
     "research": 121
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-06-26T22:09:09Z",
+  "last_compile": "2026-06-26T22:25:15Z",
   "mode": "full",
-  "scan_time": "2026-06-26T22:09:12Z",
+  "scan_time": "2026-06-26T22:25:53Z",
   "schema_version": 1,
-  "source_set_hash": "c31e44c466dbab173e7fccb0119ec038e1c5fdedf4dbb2878c5180ac52773a16",
+  "source_set_hash": "a5f9ecb7f965cbec5c09616507d2a9b2a45c8fb8abef7f4bffeabd71e4c37268",
   "sources": [
     {
       "content_hash": "f0506c861200715c31f630966dd5881b4dcff41813aa8d68f3dadd3f1eda1c43",
@@ -87,10 +87,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "fc320f8f4617e5241cabeed281dcd734d0b11b96c328660386e3433bcabc707b",
-      "modified": "2026-06-21T11:43:20Z",
+      "content_hash": "cf7cd335ad5ea4acecd54be087c47108ef39632ca652d78d6d2f5308fee67fdf",
+      "modified": "2026-06-26T22:22:19Z",
       "path": "handoffs/active/bulk-inference-campaign.md",
-      "size": 110662,
+      "size": 111201,
       "title": "Bulk Inference Campaign \u2014 active backlog (Packages G\u2013K)",
       "type": "handoff-active"
     },
@@ -572,6 +572,14 @@
       "path": "handoffs/active/per-request-reasoning-budget.md",
       "size": 23107,
       "title": "Per-Request Reasoning Budget for Hybrid SSM+MoE Models",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "245efe020b64262cd052de7398f11b013b42e6484ce8ca62952db570a20cce83",
+      "modified": "2026-06-26T22:21:28Z",
+      "path": "handoffs/active/prompt-construction-determinism.md",
+      "size": 6738,
+      "title": "Prompt-Construction & Sampling Determinism",
       "type": "handoff-active"
     },
     {
@@ -4287,10 +4295,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "18031acdede7f10c8f5f4dd13388765de7fb20a97f54f7bbffa0d075ea82e942",
-      "modified": "2026-06-26T22:08:46Z",
+      "content_hash": "2cf210fbdf5aadee584570f3f6f35aedc8dbddefd88d654df091c2b3848c0299",
+      "modified": "2026-06-26T22:24:21Z",
       "path": "progress/2026-06/2026-06-26.md",
-      "size": 25666,
+      "size": 29030,
       "title": "2026-06-26",
       "type": "progress"
     },
@@ -4463,5 +4471,5 @@
       "type": "docs"
     }
   ],
-  "total_new": 556
+  "total_new": 557
 }

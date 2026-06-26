@@ -421,3 +421,20 @@ Current examples:
 The active/completed split for `dynamic-stack-concurrency.md` separates already-landed serving mechanics from still-open scheduler decisions. DS-B through DS-D remain completed evidence in the sibling ledger. The active handoff now owns DS-6/DS-7 and explicitly gates scheduler rollout on Phase E evidence; KVCOMM is optional after Attention Matching / q4_0 feasibility rather than a deployment queue item.
 
 Operational implication: do not implement the quarter scheduler from old completed sections alone. Start from the active twin, confirm the current Phase E/autoresearch evidence, and only then decide whether DS-6 is code-ready. Sources: [`dynamic-stack-concurrency.md`](../handoffs/active/dynamic-stack-concurrency.md), [`dynamic-stack-concurrency-completed-through-2026-05-28.md`](../handoffs/completed/dynamic-stack-concurrency-completed-through-2026-05-28.md), [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md).
+
+## 2026-06-26 — Prompt-construction & sampling determinism audit
+
+A determinism audit of the live orchestrator prompt/sampling path (post-v6-iqk-cutover) established that **prompt *construction* is deterministic, but generation *sampling* was not** — and the non-determinism was masked by an accidental fallback.
+
+**Deterministic (verified):** routing artifact `derived/stack_priors.yaml` is the source of truth (consumed via `chat_completions_roles()`, gate = `jinja ∧ enable_thinking==False`); freshness is hash-checked; no env override; template-family selection is correct per role; system prompts are static; `--jinja` is **inert on `/completion`** (the OpenAI `/v1/chat/completions` endpoint is the only one that applies the GGUF jinja template), so a role launched with `--jinja` but called on `/completion` is orchestrator-templated only — not double-templated.
+
+**Three sampling gaps (fixed 2026-06-26):**
+1. **Temperature-source split** — roles declare `generation_defaults.temperature` (0.1–0.3) but the payload builders read only `acceleration.temperature` (unset), falling back to `request.temperature=0.0`. Net effect: the whole stack ran **accidental greedy**, and the declared temps were dead config. Honoring `generation_defaults` makes sampling intentional but then requires a pinned seed.
+2. **No seed** — text-gen payloads set no `seed`; reproducibility is impossible once temp>0. Fixed seed (override via `request.seed`) added.
+3. **Endpoint sampler divergence** — `/completion` hard-coded `top_k/top_p/repeat_penalty`; the chat path sent none (server defaults). Two regimes for the same logical request. Unified via one `_apply_deterministic_sampling()` helper across all three payload sites (`/completion`, non-stream + stream chat).
+
+**architect_general `enable_thinking` was inert:** its registry `enable_thinking=false` only applies on the `/v1/chat/completions`+jinja path, but the 2026-04-15 `0879ed56` `--jinja` exclusion (which guarded a confirmed Qwen3.5-122B hybrid `<think>`-loop — zero-content/4096-tok "Wait, I found a reference" cycles) routed it to `/completion`, so the kwarg never reached the server. Removing the exclusion enrolls architect into the cc-set where nothink fires (frontdoor, same family, is the working reference). **This is a revert-gate**, not a free flip — the think-loop suppression must be confirmed by the J12 probe before trusting; if it loops, revert. This updates the still-open "Spec-decode crash on Qwen3.5 hybrids" topic above: the think-loop is now mitigated via server-side nothink rather than template avoidance.
+
+Operational implication: the stack was reproducible only by accident (temp=0 fallback). Wiring declared temps + a seed makes it deterministic *by design*, but it is a behavior change (greedy→sampled) that requires canonical-bench certification and an `autopilot_quality` instrument-era boundary.
+
+Sources: [`prompt-construction-determinism.md`](../handoffs/active/prompt-construction-determinism.md) (master N14), [`bulk-inference-campaign.md`](../handoffs/active/bulk-inference-campaign.md) (J12 revert-gate), [`progress/2026-06/2026-06-26.md`](../progress/2026-06/2026-06-26.md).

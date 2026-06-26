@@ -37,7 +37,7 @@ Ordered manifest (one reload, then everything rides it):
 2. **E2 then E1 batched-decode measurements FIRST** (findings-06 — E2 makes every later eval cheaper; they also fire the sarathi-serve workload-shift gate).
 3. **Shape-keyed flag-on bracket** (`CROSS_ROLE_DISJOINT_PLACEMENT=1` live → verify env → multi-role fan-out probe → `SHAPE_AWARE_CONTENTION=1` smoke → revert or `mark_epoch`).
 4. **J2/J3** single-worker live migration probe (`--workers 1`).
-5. **J12 probe + THINK-ABL-1** (best leverage/hour, +33pp class effect; real ablation needs a non-no-op suppressor at fixed non-truncating `max_tokens`, same tasks both arms).
+5. **J12 probe + THINK-ABL-1** (best leverage/hour, +33pp class effect; real ablation needs a non-no-op suppressor at fixed non-truncating `max_tokens`, same tasks both arms). **2026-06-26: `architect_general` is now LIVE on the `/v1/chat/completions`+jinja path with `enable_thinking=false` (N14 / [prompt-construction-determinism.md](prompt-construction-determinism.md) change #4).** The probe is therefore now a **REVERT-GATE on a deployed prod change**, not just wiring validation: confirm `enable_thinking=false` actually suppresses the Qwen3.5-122B `<think>`-loop the 2026-04-15 `0879ed56` exclusion guarded; if it loops, revert the architect jinja flip. Frontdoor (same family) is the working reference arm.
 6. **J15** MD-9 deep_research sentinel A/B.
 7. **J7** DCP-6 inference half follow-up. First live run is packaged in `epyc-orchestrator` `56a72f6` and does not justify enablement; keep `dcp_pre_assembly` off. Use `scripts/benchmark/dcp_j7_ab.py` only for larger/quality-scored falsification or reruns after broad operational attestation cleanup.
 8. **J10** URE shadow env-flag rides the reload free (passive).
