@@ -1,6 +1,6 @@
 # NUMA Private Node-Local Weights for Shared-mmap Quarter Roles
 
-**Status**: STUB / OPPORTUNITY — analysis complete + bench-evidenced on the worker model; production A/B and the load-bearing code change are pending a dedicated session.
+**Status**: NOT a config flip — **launcher work required** (discovered 2026-06-26 during the v6+iqk cutover activation attempt; reverted to clean state). See "## 2026-06-26 ACTIVATION ATTEMPT" below. Analysis complete + bench-evidenced on the worker; production A/B + the launcher fixes pending a dedicated session.
 **Created**: 2026-06-26
 **Owner**: unclaimed — dedicated future session (high-ROI, low-effort, NPS4-gated and we are on NPS4)
 **Parent index**: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md)
@@ -18,6 +18,16 @@ Give the three **shared-mmap quarter-able roles** — `frontdoor` (Qwen3.6-35B-A
 `worker_general` (gemma-26B Q4 MTP) **already realizes this fast path** (`--no-mmap` is hard-wired into its dedicated builder). The other three quarter roles do not, because the generic role builder silently ignores the `no_mmap` field that already exists in their priors. This is the entire gap.
 
 ---
+
+## 2026-06-26 ACTIVATION ATTEMPT (v6+iqk cutover) — launch-path blockers, REVERTED
+
+Tried to activate N12 by setting `no_mmap: true` on the frontdoor/ingest/vision (+ coder/worker_summarize alias) registry blocks + recompiling. The compiler side works (`_role_no_mmap_prior` in `stack_priors.py` reads it; the generic `_build_role_command` emits `--no-mmap`). But three **launcher-level** blockers surfaced — N12 is NOT a config flip:
+
+1. **`no_mmap` lands on the FULL instance, not the NUMA quarters.** After the flip, `--no-mmap` applied to the consolidated **full** instance (frontdoor `:8070`, ingest `:8085`) while the **quarter** instances (`:8080/:8180/:8280/:8380`, `:8185/:8285/:8385/:8485`) stayed shared-mmap. The N12 win IS the quarters being private node-local, so the launcher must emit `--no-mmap` per-quarter-instance (the worker already does — its dedicated builder hardwires it per instance).
+2. **The vision launch path emits no `--no-mmap` at all.** `vision_escalation` (`:8087` + quarters, launched via the vision/`--mmproj` builder) reloaded with a fresh PID but stayed shared-mmap — the vision command builder ignores the `no_mmap` prior. Needs wiring (and `mmproj` is itself a shared-mmap file to weigh).
+3. **`reload <role>` only restarts the FULL instance, not the quarters.** Use `stop --only` + `start --only` to cycle all instances. Also: alias roles (coder_escalation, worker_summarize) must carry `no_mmap` matching their host process or `runtime_attestation` flags them.
+
+Reverted to a clean state (all three back to shared-mmap, `runtime_attestation: ok`). **Remaining (dedicated session):** (a) make the generic + vision launchers apply `--no-mmap` to the QUARTER instances; (b) RAM is verified to fit (~+303 GB private → ~626 GB of the ~701 GB mlock budget, ~500 GB free at activation, actual-used basis not RSS); (c) per-role `/proc/<pid>/numa_maps` placement gate + the operator's clean-window Arm A vs Arm B A/B (throughput is throttle-caveated until the post-reboot window).
 
 ## Evidence (observations — motivate, do not gate)
 
