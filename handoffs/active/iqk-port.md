@@ -100,73 +100,99 @@ All numbers GGML_IQK=1 on `/mnt/raid0/llm/llama.cpp-v6-iqk/build` (branch iqk-po
 - (downloading) `Qwen3.5-122B-A10B-MTP-GGUF/UD-Q4_K_M/*` — architect MTP head (78.3 GB, 3 shards) from `unsloth/Qwen3.5-122B-A10B-MTP-GGUF`; earlier "no MTP" dismissal was WRONG (qwen35moe = frontdoor arch).
 - Sweep data + scripts under `/mnt/raid0/llm/tmp/iqk_sweep_2026-06-25/` and `/mnt/raid0/llm/tmp/iqk_*sweep*.sh`, `iqk_newheads_mtp.sh`, `iqk_mtp_runner.sh`.
 
-## NUMA Phase-3B — clean NUMA-concurrent MTP topology suite (✅ COMPLETE, all 7 models, 2026-06-25)
+## NUMA Phase-3B — NUMA-concurrent MTP topology suite (✅ COMPLETE + CORRECTED `--no-mmap`, all 7 models, 2026-06-25/26)
 
-Re-measures the NUMA-topology × MTP throughput matrix on the v6-iqk kernel under the **clean-host protocol**
-(quiesced host, caches dropped) — the earlier contended run produced artifact numbers (see methodology below).
-Sweep data: `/mnt/raid0/llm/tmp/iqk_sweep_2026-06-25/numa_mtp.<model>.jsonl`. **Aggregate t/s across instances.**
-**All 7 models complete** (gemma-26B, gemma-31B, Qwen3.6-27B, Qwen3.5-27B, Qwen3.6-35B, Qwen3-Next-80B,
-Qwen3.5-122B); every cell verified against the jsonl.
+> **SUPERSEDED — the earlier mmap-shared NUMA-concurrent numbers were CONTAMINATED.** The first NUMA suite
+> ran with **mmap** under `numactl --cpunodebind=N --membind=N`, so the N concurrent quarter instances all
+> shared **ONE page-cache copy on a single node** → bandwidth-starved; the full cells then inherited the
+> quarter loads' node-local page placement when run after them in the same matrix. The contaminated table
+> (committed earlier @ ~`8f1c55a7`: gemma-26B 4×quarter **43.46**, gemma-31B/122B "dense prefers 1×full",
+> etc.) is **RETRACTED**. The corrected `--no-mmap` results below replace it. Root cause + A/B evidence at
+> the bottom of this section.
 
-### Full 7-model clean matrix (aggregate t/s)
-| Model | type | q_off | q_on | f_off | f_on | h_off | h_on |
-|-------|------|------:|-----:|------:|-----:|------:|-----:|
-| gemma-26B | small MoE (worker) | 20.66 | **43.46** | 17.45 | 27.74 | — | — |
-| gemma-31B | dense | 5.42 | 19.43 | 6.14 | **21.94** | 4.63 | 16.69 |
-| Qwen3.6-27B | dense | 6.79 | **17.68** | 5.11 | 14.85 | 6.20 | 17.08 |
-| Qwen3.5-27B | hybrid-SSM dense | 6.36 | **14.85** | 4.99 | 13.20 | 6.07 | 14.54 |
-| Qwen3.6-35B | frontdoor Q8 MoE | 13.97 | 19.32 | 9.85 | 19.02 | — | — |
-| Qwen3-Next-80B | SSM-MoE ingest (NO MTP) | **45.54** | n/a | 26.78 | n/a | 37.36 | n/a |
-| Qwen3.5-122B | architect MoE | 12.09 | 19.45 | 10.96 | **20.75** | 10.45 | 17.53 |
+Re-measures the NUMA-topology × MTP throughput matrix on the v6-iqk kernel under the **clean-host + private
+node-local protocol**: **`--no-mmap`** (a private node-local weight copy per instance instead of one shared
+mmap page-cache copy), quiesced host, and `drop_caches` **between models** (so one model's quarter loads no
+longer contaminate the next model's full cells). Sweep data:
+`/mnt/raid0/llm/tmp/iqk_sweep_2026-06-25/numa_mtp.<model>.jsonl`. **Aggregate t/s across instances**
+(per-instance = aggregate / n_inst, where quarter n=4, full n=1, half n=2). **All 7 models complete**
+(gemma-26B, gemma-31B, Qwen3.6-27B, Qwen3.5-27B, Qwen3.6-35B, Qwen3-Next-80B, Qwen3.5-122B); every cell
+re-verified against the FIXED jsonl.
 
-(q=4×quarter/4 inst, f=1×full/1 inst, h=2×half/2 inst; bold = best-throughput operating point.)
+### Full 7-model FIXED matrix — aggregate t/s, `--no-mmap` private node-local
+| Model | type | q_off | **q_on** | f_off | **f_on** | h_off | **h_on** | best (agg) |
+|-------|------|------:|---------:|------:|---------:|------:|---------:|:----------:|
+| gemma-26B | small MoE (worker) | 73.88 | **109.61** | 34.86 | 49.07 | 54.58 | 83.33 | 4×quarter |
+| gemma-31B | dense | 7.18 | **30.05** | 7.40 | 23.85 | 6.14 | 17.49 | 4×quarter |
+| Qwen3.6-27B | dense | 6.81 | 20.00 | 5.54 | 15.78 | 6.62 | **20.22** | quarter≈half |
+| Qwen3.5-27B | hybrid-SSM dense | 6.38 | **18.71** | 5.60 | 14.37 | 6.44 | 16.77 | 4×quarter |
+| Qwen3.6-35B | frontdoor Q8 MoE | 42.11 | **71.89** | 22.72 | 42.28 | 36.83 | 65.31 | 4×quarter |
+| Qwen3-Next-80B | SSM-MoE ingest (NO MTP) | **49.23** | n/a | 23.78 | n/a | 39.75 | n/a | 4×quarter |
+| Qwen3.5-122B | architect MoE | 17.96 | **28.30** | 10.60 | 18.01 | 15.62 | 26.19 | 4×quarter |
 
-### Per-model topology rule (clean, COMPLETE)
-- **Active-param-light MoE → 4×quarter wins aggregate throughput**: gemma-26B 4×quarter +57% over full;
-  Qwen3-Next-80B 4×quarter +70% over full (base). Qwen3.6-35B is the boundary case (quarter ≈ full at
-  MTP-on → **full preferred for latency**).
-- **Large-active / dense → 1×full wins**: gemma-31B full 21.94 > quarter; Qwen3.5-122B-A10B full 20.75 > quarter.
-- **Mixed 27B (Qwen3.6-27B / Qwen3.5-27B) → 4×quarter wins narrowly** (17.68 vs half 17.08; 14.85 vs half 14.54).
-- **2×half is never best** — always between or worst across all 7 models (confirms
-  `[[project_dual_half_concurrency_negative]]`); quarters or full only, never two halves.
+(q=4×quarter/4 inst, f=1×full/1 inst, h=2×half/2 inst; MTP-on values are the median of 3 reps in the jsonl
+`agg_tps`; bold = best aggregate-throughput operating point. Qwen3.6-27B quarter 20.00 ≈ half 20.22 — a tie.)
+
+### Per-model topology rule (FIXED — quarter wins broadly)
+- **4×quarter wins aggregate throughput for EVERY model** (6/7 outright; Qwen3.6-27B quarter 20.00 ≈ half
+  20.22 — a tie), **including the large/dense models** (gemma-31B dense 30.05 > full 23.85; Qwen3.5-122B-A10B
+  28.30 > full 18.01). With a **private node-local weight copy per instance (`--no-mmap`)** there is no
+  shared-cache bandwidth penalty, so the parallelism of 4 quarters dominates across the board.
+- **The earlier "dense / large-active prefers 1×full" conclusion was purely the mmap-sharing contamination
+  artifact and is RETRACTED.** 1×full now wins only **single-stream LATENCY** (per-instance t/s: full = the
+  whole aggregate on one instance; a quarter instance gets aggregate/4).
+- **2×half is never the best** — always between quarter and full across all 7 models (still confirms
+  `[[project_dual_half_concurrency_negative]]`; quarters or full only, never two halves).
 
 ### MTP gains (universal; compounds on dense / low-active)
-- MTP helps **every** MTP-capable model, spanning **+38%** (Qwen3.6-35B Q8 frontdoor at quarter, BW-bound floor)
-  to **+257%** (gemma-31B dense at full, ceiling) across topologies. Dense / low-active models gain most
-  (verify amortizes ONE full weight read over N draft tokens).
+- MTP helps **every** MTP-capable model. Dense / low-active models gain most at the quarter operating point
+  (the verify batch amortizes ONE full weight read over N draft tokens): gemma-31B dense 4×quarter 7.18 → 30.05
+  (**+319%**), Qwen3.6-35B Q8 frontdoor 4×quarter 42.11 → 71.89 (**+71%**), gemma-26B worker 4×quarter 73.88 →
+  109.61 (**+48%**). Qwen3-Next-80B (SSM-MoE) has no MTP path → base iqk is its max.
 
-### ARCHITECT MTP CONFIRMED LIVE (major new result)
-**Qwen3.5-122B-A10B full + MTP = 20.75 t/s (+89% vs 10.96 base)** — loaded and drafted with **NO
-spec-assertion crash / GDN wall**, end-to-end (download → load → draft → measure). The prior
-"no-MTP / GDN-wall / 0.56× dead-end" dismissal is **refuted end-to-end** (it was measured on an old fork with
-no `draft-mtp`, stale). The architect's A10B active params put it in the dense-class topology bucket
-(1×full > quarter > half).
+### ARCHITECT MTP CONFIRMED LIVE (still holds under the fix)
+**Qwen3.5-122B-A10B + MTP** loads and drafts with **NO spec-assertion crash / GDN wall**, end-to-end
+(download → load → draft → measure). The prior "no-MTP / GDN-wall / 0.56× dead-end" dismissal is **refuted
+end-to-end** (it was measured on an old fork with no `draft-mtp`, stale). Under the FIXED protocol its best
+aggregate operating point is **4×quarter+MTP 28.30 t/s** (> full 18.01, > half 26.19) — the architect now
+falls in the same "quarter wins aggregate throughput" bucket as the rest of the stack (the earlier
+"large-active → 1×full" placement was the contamination artifact).
 
-### Topology rule (clean) — short form
-- **Small / low-active MoE** → **4×quarter + MTP** wins aggregate throughput.
-- **Large dense / large-active MoE** → **1×full + MTP** wins both throughput AND latency.
-- **2×half always worst** (confirms `[[project_dual_half_concurrency_negative]]`).
+### Topology rule (FIXED) — short form
+- **All models** → **4×quarter (+MTP where available)** wins aggregate throughput with **`--no-mmap`**
+  (private node-local copy per instance). Quarter wins outright for 6/7; Qwen3.6-27B quarter≈half.
+- **1×full** wins only **single-stream LATENCY** (per-instance t/s), not aggregate throughput.
+- **2×half is always worst-or-middle** — never the best (confirms `[[project_dual_half_concurrency_negative]]`).
+- Production analogue: **`numa-private-weights-quarter-roles.md`** — wire the ignored `no_mmap` prior into the
+  generic `_build_role_command` so `frontdoor` / `ingest_long_context` / `vision_escalation` quarters run the
+  fast private `--no-mmap` path that `worker_general` already realizes.
 
 Per-model best-operating-points feed the v6 promotion-plan registry NUMA topology fields
-(`/mnt/raid0/llm/tmp/v6_promotion_plan.md`, PG-2 "NUMA topology per role" clause) — re-confirms
-small/low-active→4×quarter, large dense/large-active→1×full.
+(`/mnt/raid0/llm/tmp/v6_promotion_plan.md`, PG-2 "NUMA topology per role" clause) — now reading
+**4×quarter+MTP for all roles** (throughput), 1×full reserved for latency-bound single-stream paths.
 
-### Corrected methodology (CRITICAL — earlier story was WRONG)
-The earlier contended run read gemma-31B full+MTP at only **9.92 t/s** (and an inflated "26B quarter = 82 t/s /
-2.5× full" headline). Both were memory-pressure artifacts, NOT topology deltas.
-- **`numactl --membind` hypothesis REFUTED**: membind vs interleave = 9.92 vs 10.05 (no diff); a bare-vs-harness
-  settings A/B = 11.73 vs 11.88 (settings don't matter either).
-- **ACTUAL cause** = memory pressure + page-cache contention + a concurrent 78 GB download. Free RAM had fallen
-  to 131 GB; after `drop_caches` (→ 1092 GB free) and removing the download, the SAME cell read **21.94 t/s — a
-  2.2× recovery** (above even the earlier 15.4 single-instance reading).
-- **Lesson**: run NUMA/throughput benches on a **quiesced host with caches dropped** — memory pressure dominates
-  absolute t/s. Contended numbers (e.g. "26B quarter 82 t/s / 2.5× full") are ARTIFACTS, superseded by this
-  clean suite. Absolutes remain **throttle-suspect** at ~4-week uptime (reboot would clean further — operator
-  action); only relative topology/MTP deltas in the same clean window are load-bearing.
+### Corrected root cause (CRITICAL — the prior NUMA conclusion was WRONG)
+The contaminated first suite used **mmap** with `numactl --cpunodebind=N --membind=N`, so the N concurrent
+quarter instances shared **ONE page-cache copy pinned to a single node** → bandwidth-starved; and the full
+cells inherited the quarter loads' node-local page placement when run after them in the same matrix.
+- **A/B proof (gemma-26B 4×quarter):** **43.5 t/s (shared mmap) → 119.5 t/s (`--no-mmap` private node-local)
+  = ~2.7×.** A dedicated-config A/B (both arms clean) read 64–73 t/s — so the launch **params were fine**; the
+  bug was **mmap-sharing + cross-cell cache contamination**, not membind or thread settings.
+- **The `numactl --membind` hypothesis was already refuted** by an even earlier note (membind vs interleave =
+  9.92 vs 10.05, settings A/B 11.73 vs 11.88) — **do not reintroduce it.** membind is neither the cause nor
+  the fix; the fix is `--no-mmap` (a private copy per instance) + `drop_caches` between models.
+- **FIX = `--no-mmap`** (private node-local weight copy per instance, no shared page cache) **+ `drop_caches`
+  between models** (so one model's quarter loads don't contaminate the next model's full cells). With the fix,
+  4×quarter wins aggregate throughput for ~all models — including the large/dense ones.
+- **Lesson:** the prior "small/low-active→4×quarter, large-dense→1×full" split was an artifact of shared-mmap
+  bandwidth starvation under multi-instance load. Absolutes remain **throttle-suspect** (4-week uptime +
+  ~12 h sustained bench → cross-model drift); only the **per-model topology / MTP deltas** in the FIXED window
+  are load-bearing. Cross-reference: `/mnt/raid0/llm/tmp/orchestrator_numa_finding.md` (per-role mmap audit;
+  handed off separately as `numa-private-weights-quarter-roles.md`).
 
-### Suite status — COMPLETE
-All 7 `numa_mtp.<model>.jsonl` files written and verified cell-by-cell; the NUMA topology phase is CLOSED.
-No models outstanding.
+### Suite status — COMPLETE (FIXED)
+All 7 `numa_mtp.<model>.jsonl` files written with `--no-mmap` and verified cell-by-cell; the NUMA topology
+phase is CLOSED. No models outstanding.
 
 ## Key files
 - v6 hook: `ggml/src/ggml-cpu/ggml-cpu.c:1245`; blocks: `ggml/src/ggml-common.h:242,281,317`; enum `ggml/include/ggml.h:398`

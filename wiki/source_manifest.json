@@ -1,18 +1,18 @@
 {
   "by_type": {
     "docs": 14,
-    "handoff-active": 101,
+    "handoff-active": 102,
     "handoff-blocked": 1,
     "handoff-completed": 137,
-    "progress": 178,
+    "progress": 179,
     "research": 121
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-06-26T01:26:17Z",
   "mode": "full",
-  "scan_time": "2026-06-26T01:27:27Z",
+  "scan_time": "2026-06-26T09:53:57Z",
   "schema_version": 1,
-  "source_set_hash": "f421e208a39ad1b2b9452654e4e3b1126019967e0364099846e9459c6ec34673",
+  "source_set_hash": "1221018c2525efffdc32dc27d8b9c0a4eaf299c668b23afde84a0c66ed92597a",
   "sources": [
     {
       "content_hash": "f0506c861200715c31f630966dd5881b4dcff41813aa8d68f3dadd3f1eda1c43",
@@ -375,10 +375,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "06715b48bc805db44ee94a190ad3ecd6216cd974bfafde337d08b19acea6df5d",
-      "modified": "2026-06-25T22:22:40Z",
+      "content_hash": "9f33250943659f7cdb5bf2a81325d6ec87b0f8fe4ccd97c5b881f19a1c5b6084",
+      "modified": "2026-06-26T09:52:44Z",
       "path": "handoffs/active/learned-routing-controller.md",
-      "size": 117384,
+      "size": 121795,
       "title": "Learned Routing Controller: MLP Distillation from Episodic Memory",
       "type": "handoff-active"
     },
@@ -524,6 +524,14 @@
       "path": "handoffs/active/numa-prefill-decode-disaggregation.md",
       "size": 6436,
       "title": "NUMA-Disaggregated Prefill / Decode \u2014 Feasibility Investigation",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "247f7920ad5217d34ac279e629f44720dc124fc0a11027f1f82b348cf9c61d6f",
+      "modified": "2026-06-26T09:37:37Z",
+      "path": "handoffs/active/numa-private-weights-quarter-roles.md",
+      "size": 15317,
+      "title": "NUMA Private Node-Local Weights for Shared-mmap Quarter Roles",
       "type": "handoff-active"
     },
     {
@@ -4263,6 +4271,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "5f3003e28950fd4e3b74eedad3e09aac7323e51c4cf398142dddffc450756776",
+      "modified": "2026-06-26T09:53:15Z",
+      "path": "progress/2026-06/2026-06-26.md",
+      "size": 6328,
+      "title": "2026-06-26",
+      "type": "progress"
+    },
+    {
       "content_hash": "143637a829e530cf1ecccab3eb0292d182edaa79568f98643bb0129aacc15f19",
       "modified": "2026-06-12T15:34:14Z",
       "path": "progress/2026-06/master-index-pre-rewrite-archive-2026-06-12.md",
@@ -4431,5 +4447,5 @@
       "type": "docs"
     }
   ],
-  "total_new": 552
+  "total_new": 554
 }
