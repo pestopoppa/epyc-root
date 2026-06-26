@@ -8,11 +8,11 @@
     "research": 121
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-06-26T10:53:06Z",
+  "last_compile": "2026-06-26T22:09:09Z",
   "mode": "full",
-  "scan_time": "2026-06-26T21:42:58Z",
+  "scan_time": "2026-06-26T22:09:12Z",
   "schema_version": 1,
-  "source_set_hash": "a8a8bf56a00b995b9ac87a2dce6989f64bac12ebcdee9da0f75ad6c8f4343065",
+  "source_set_hash": "c31e44c466dbab173e7fccb0119ec038e1c5fdedf4dbb2878c5180ac52773a16",
   "sources": [
     {
       "content_hash": "f0506c861200715c31f630966dd5881b4dcff41813aa8d68f3dadd3f1eda1c43",
@@ -527,10 +527,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "247f7920ad5217d34ac279e629f44720dc124fc0a11027f1f82b348cf9c61d6f",
-      "modified": "2026-06-26T09:37:37Z",
+      "content_hash": "741d5bcd7872d76401611e7633fa3e41f06f454148209d641524867a6a7ac986",
+      "modified": "2026-06-26T22:03:45Z",
       "path": "handoffs/active/numa-private-weights-quarter-roles.md",
-      "size": 15317,
+      "size": 17487,
       "title": "NUMA Private Node-Local Weights for Shared-mmap Quarter Roles",
       "type": "handoff-active"
     },
@@ -815,10 +815,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8cdad1c03c04013c53f5b4874189841a7be4fb0f457dc5841ef5edba60aab2a4",
-      "modified": "2026-06-26T21:38:46Z",
+      "content_hash": "d247f3e209a7624c5209aea26e47cd3653811b6353475e2081674d24517ad698",
+      "modified": "2026-06-26T22:05:37Z",
       "path": "handoffs/active/v6-iqk-promotion.md",
-      "size": 11140,
+      "size": 11577,
       "title": "v6+iqk \u2192 production cutover (full ik_llama deprecation)",
       "type": "handoff-active"
     },
@@ -4287,10 +4287,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "70ea4c11a8f83e5051c70df3fba1cc978a2fae88301bf4a0146b458ad1f2088e",
-      "modified": "2026-06-26T21:14:26Z",
+      "content_hash": "18031acdede7f10c8f5f4dd13388765de7fb20a97f54f7bbffa0d075ea82e942",
+      "modified": "2026-06-26T22:08:46Z",
       "path": "progress/2026-06/2026-06-26.md",
-      "size": 23431,
+      "size": 25666,
       "title": "2026-06-26",
       "type": "progress"
     },
