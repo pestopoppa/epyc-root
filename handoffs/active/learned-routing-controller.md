@@ -1226,23 +1226,19 @@ learned-routing reward signals from the failed NeuralTxt report alone.
 
 **Data note on qid recovery**: The journal `question_results` stores only `qid` (a SHA256 hash of `suite::prompt_text`), not the prompt text itself. The question pool JSONL's hashes don't match — questions come from dynamic HuggingFace dataset loads at eval runtime. Question text recovery from qids is blocked without the original runtime HF samples. BGE embedding of question texts is therefore blocked as well. The `soft_labels.jsonl` dataset provides soft-label targets but NOT embeddings; Phase B requires BGE to embed the question texts (see below).
 
-**Key routing findings from per-suite per-role analysis** (141 trials, 6 roles observed):
+**STATISTICALLY ROBUST routing misses** (Wilson 95% CI, BOTH arms n≥20 — these are real, not sample-size noise):
 
-| Suite | frontdoor | coder_esc | worker_general | architect | Recommended | Routing problem? |
-|-------|----------:|----------:|---------------:|----------:|-------------|-----------------|
-| simpleqa | 4.9% | 25.0% | 5.8% | 100.0% | architect | **SEVERE** — frontdoor failing |
-| mode_adv_hard | 29.5% | 0.0% | 100.0% | — | worker_general | **SEVERE** — worker dominates |
-| gpqa | 38.8% | 64.9% | 0.0% | 100.0% | architect | **SEVERE** — architect needed |
-| cruxeval | 0.0% | 47.3% | 87.2% | — | worker_general | **HIGH** — wrong role |
-| skill_transfer | 0.0% | 33.3% | 34.8% | — | worker_vision (75.7%) | **HIGH** — vision model needed |
-| bigcodebench | 32.7% | 68.8% | — | 0.0% | coder_escalation | **MED** |
-| hotpotqa | 100.0% | 99.2% | 64.5% | — | frontdoor | OK — frontdoor correct |
-| math | 94.2% | 100.0% | 97.8% | — | frontdoor/coder | OK |
-| long_context | 98.9% | 100.0% | 100.0% | 100.0% | any | Ceiling — no signal |
+| Suite | frontdoor | better route | gain | Interpretation |
+|-------|----------:|--------------|-----:|----------------|
+| cruxeval | 0% (n=22) | worker_general 87% (n=188) | **+87pp** | frontdoor cannot do code-output prediction; worker_general nails it |
+| cruxeval | 0% (n=22) | coder_escalation 47% (n=74) | +47pp | (same suite, second-best route) |
+| bigcodebench | 33% (n=165) | coder_escalation 69% (n=109) | **+36pp** | code-gen belongs on coder, not frontdoor |
+| gpqa | 39% (n=245) | coder_escalation 65% (n=37) | **+26pp** | hard science reasoning → coder beats frontdoor |
+| general | 84% (n=591) | architect_general 98% (n=48) | +14pp | small gap; architect is far costlier — cost-aware routing may correctly keep frontdoor |
 
-**Most actionable finding**: `simpleqa` at 4.9% frontdoor vs 100% architect. The orchestrator consistently fails simple factual lookups when using frontdoor. `architect_general` handles them perfectly but is almost never routed there. This is the highest-priority routing miss. Root cause: factual-risk scorer may not be triggering for simpleqa-style questions, or the escalation chain doesn't route to architect for this type.
+**METHODOLOGY CORRECTION (2026-06-26)**: The first-pass analysis flagged `simpleqa` (4.9% fd → "100% architect") and `mode_advantage_hard` (→ "100% worker_general") as SEVERE routing misses. **Both were wrong — sample-size noise.** The "architect 100%" on simpleqa was n=1 (a single lucky draw). With Wilson CIs and n≥20 required on both arms, simpleqa drops out entirely. simpleqa scores ~5% across *every* route (worker_general 5.8% n=311, frontdoor 4.9% n=61, unknown 5.0% n=437) — this is a **capability/benchmark-difficulty ceiling**, not a routing problem. SimpleQA is obscure-factual-recall trivia ("Who received the IEEE Frank Rosenblatt Award in 2010?"); small quantized local models genuinely cannot answer it, and re-routing won't help (only a larger or RAG-augmented model would). This is exactly the `feedback_verify_test_method_before_calling_it_a_bug` + `feedback_eval_saturation_masks_model_gap` trap — verify sample size before calling a gap a defect.
 
-**Secondary finding**: `mode_advantage_hard` at 29.5% frontdoor vs 100% worker_general. Counter-intuitive — the "harder" mode_advantage questions are better handled by the general worker than frontdoor.
+**Genuinely actionable finding**: coding/reasoning suites (cruxeval, bigcodebench, gpqa) are being routed to frontdoor when coder_escalation/worker_general handle them far better, at comparable cost. The cruxeval result is the standout (0% → 87%). This is a real, cost-justified routing improvement candidate — but note it is **suite-level evidence from autopilot eval**, and production routing operates per-request without suite labels; the value is in the LRC learning these patterns from question *content*, which is exactly what Phase B (BGE-embedded soft-label retrain) would capture.
 
 **Phase B — MLP retraining** (blocked on BGE):
 1. Start BGE server (`orchestrator_stack.py start` → BGE server on port 8090)
