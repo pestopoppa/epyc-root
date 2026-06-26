@@ -3,7 +3,7 @@
 **Category**: `routing_intelligence`
 **Confidence**: verified
 **Last compiled**: 2026-06-25
-**Sources**: 59+ documents (added 2026-06-25 LRC P4.5/P4.6 training methodology, Fugu calibration data, REPL delegation isolation audit; prior 2026-06-22 learned-router verifier staging + X-MAS A/B hold)
+**Sources**: 60+ documents (added 2026-06-26 LRC P4.5 executed [null result], qid-recovery hash + BGE slot-context lessons, Wilson-CI content-routing misses; prior 2026-06-25 LRC P4.5/P4.6 scoping, Fugu calibration, REPL delegation audit)
 
 ## Summary
 
@@ -19,7 +19,17 @@ The 13 intake entries tagged as routing_intelligence are predominantly `already_
 
 ## Key Findings
 
+### New (2026-06-26, LRC P4.5 executed — soft-label SFT is a NULL result)
+
+- **LRC P4.5 soft-label SFT does NOT beat hard-label training — robust 5-seed null; keep cross-entropy (2026-06-26).** The Fugu-Stage-1 analog (train the routing head via KL divergence against per-qid per-role soft success distributions instead of one-hot argmax) was run end-to-end: 540/540 journal questions resolved to text, BGE-embedded into 1031-d production-compatible features, HARD (cross-entropy) vs SOFT (KL) arms trained on identical splits. Delta in role-success accuracy ≈ 0 across seeds {1,7,13,42,99} (gate was ≥+1pp). **Mechanistic why**: role-success accuracy depends only on the *argmax* predicted role; hard_label = argmax(soft) by construction, and both objectives converge to the same decision boundary on the frontdoor-dominated (415/540 argmax=frontdoor), polarized journal data. Soft labels only pay off when many questions have *multiple viable roles at meaningfully different success rates* — rare here. Reusable scripts (`embed_soft_label_dataset.py`, `train_routing_classifier_kl.py`) retained for future larger/less-polarized data. Source: [learned-routing-controller.md](../handoffs/active/learned-routing-controller.md) P4.5 Phase B.
+
+- **qid→question-text recovery: the journal qid is `sha1(f"{suite}\\x00{prompt}")[:16]` (SHA1 + null separator), NOT SHA256/`::` (2026-06-26).** An initial "Phase B blocked — can't recover question text from qids" claim was wrong because of a hash mismatch; the correct hash resolves 1367/1382 (98.9%) journal qids against `question_pool.jsonl`. Anyone joining journal `question_results` back to question content must use this exact hash. (BGE embedding servers also need `-c 2048 -np 4` = 512 tokens/slot, not `-c 512 -np 4` which gives only 256.)
+
+- **Statistically robust content-routing misses (Wilson 95% CI, both arms n≥20) — the actionable thread, independent of the P4.5 null (2026-06-26).** From the same journal analysis: coding/reasoning suites route to frontdoor when specialists do far better at comparable cost — **cruxeval 0% (n=22) frontdoor → 87% (n=188) worker_general**; bigcodebench 33%→69% coder_escalation; gpqa 39%→65% coder_escalation. These are *content* signals the LRC could learn directly. NOTE the discipline that caught a false alarm: the first pass flagged simpleqa (4.9% fd → "100% architect") as the top miss, but that "100%" was **n=1 noise** — simpleqa scores ~5% across *every* route (a capability/benchmark-difficulty ceiling on obscure factual recall, not a routing problem). Verify sample size before calling a gap a defect. Source: `orchestration/reports/p45_soft_labels/routing_analysis.md`.
+
 ### New (2026-06-25, LRC training methodology + Fugu calibration + REPL delegation audit)
+
+- **LRC P4.5/P4.6 were SCOPED here 2026-06-25; P4.5 was EXECUTED 2026-06-26 with a null result (see above). P4.6 (role dropout) is now decoupled** — it is orthogonal robustness for the standard hard-label trainer and remains open on its own merits.
 
 - **LRC P4.5: journal-derived soft-label SFT is a zero-inference quick win (Fugu Stage 1 analog, 2026-06-25).** Fugu's training stage 1 computes per-worker mean reward over N runs per task, applies softmax(τ), and trains via KL divergence against the resulting soft probability distribution — smoother gradient signal than contrastive binary labels. EPYC's equivalent: autopilot `question_results` in `autopilot_journal.jsonl` already has per-qid per-role pass/fail across 141 trials (546 qids with ≥5 appearances, ~2,730 soft-label examples). **No additional inference required.** Ungated by the DAR regret/vector gate — this is a training methodology improvement, not classifier enablement. Sequencing: P4.5 first (soft-label retrain), then P4.6 bundled (role dropout, 20 finetuning iterations for stack-change robustness). See `learned-routing-controller.md` P4.5/P4.6. Source: Fugu technical report intake-728; [routing-intelligence.md](../handoffs/active/routing-intelligence.md).
 

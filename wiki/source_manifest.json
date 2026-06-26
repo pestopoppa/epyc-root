@@ -8,11 +8,11 @@
     "research": 121
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-06-26T01:26:17Z",
+  "last_compile": "2026-06-26T10:29:03Z",
   "mode": "full",
-  "scan_time": "2026-06-26T09:53:57Z",
+  "scan_time": "2026-06-26T10:46:52Z",
   "schema_version": 1,
-  "source_set_hash": "1221018c2525efffdc32dc27d8b9c0a4eaf299c668b23afde84a0c66ed92597a",
+  "source_set_hash": "7ea49cbaa3da01c95b01efac475516d615f34953b0f85ef4a549e89a1b221def",
   "sources": [
     {
       "content_hash": "f0506c861200715c31f630966dd5881b4dcff41813aa8d68f3dadd3f1eda1c43",
@@ -55,10 +55,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4fdcf3eb25a16b4aa9f77a8920f183be5a735559b74a53df59c7a8fc6c75b6db",
-      "modified": "2026-06-25T20:21:55Z",
+      "content_hash": "13ad5d0102acb2fccc511030a777e65b3ca9256001801143664874191fd00a99",
+      "modified": "2026-06-26T10:44:37Z",
       "path": "handoffs/active/autopilot-continuous-optimization.md",
-      "size": 139668,
+      "size": 145991,
       "title": "AutoPilot: Continuous Recursive Optimization",
       "type": "handoff-active"
     },
@@ -351,10 +351,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "327ffaaefc54c1c5802bfeff6a7da54bc5c65ac0e44ac73231bf007188b48a10",
-      "modified": "2026-06-26T01:24:40Z",
+      "content_hash": "54720e5127c12abf30f29ef4788f393c4a583edc60565d7fcb0397637d553a14",
+      "modified": "2026-06-26T10:25:49Z",
       "path": "handoffs/active/iqk-port.md",
-      "size": 19863,
+      "size": 22890,
       "title": "iqk-kernel port into v6 (ik_llama iqk_mul_mat \u2192 production-consolidated-v6)",
       "type": "handoff-active"
     },
@@ -375,10 +375,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9f33250943659f7cdb5bf2a81325d6ec87b0f8fe4ccd97c5b881f19a1c5b6084",
-      "modified": "2026-06-26T09:52:44Z",
+      "content_hash": "89286dfdb88fc9a2733be40709c7809acb6bdcf49efeb0aa89ae80bfab66cce7",
+      "modified": "2026-06-26T10:42:55Z",
       "path": "handoffs/active/learned-routing-controller.md",
-      "size": 121795,
+      "size": 125641,
       "title": "Learned Routing Controller: MLP Distillation from Episodic Memory",
       "type": "handoff-active"
     },
@@ -4263,18 +4263,18 @@
       "type": "progress"
     },
     {
-      "content_hash": "301bcb0e294a59f83b8f713f309faa2538e0afde6ed63ca7089031126d0ea09a",
-      "modified": "2026-06-26T01:23:57Z",
+      "content_hash": "e5c00bfbe47f497c74cf7996a581d00b9685a8f43a16ff001881bb7b9577ab66",
+      "modified": "2026-06-26T10:26:36Z",
       "path": "progress/2026-06/2026-06-25.md",
-      "size": 40434,
+      "size": 45479,
       "title": "2026-06-25",
       "type": "progress"
     },
     {
-      "content_hash": "5f3003e28950fd4e3b74eedad3e09aac7323e51c4cf398142dddffc450756776",
-      "modified": "2026-06-26T09:53:15Z",
+      "content_hash": "841b18e5561a49005453d45a6c63da2d9ca4a41bf4eb3cfa6e7d5b8aaad2f086",
+      "modified": "2026-06-26T10:45:50Z",
       "path": "progress/2026-06/2026-06-26.md",
-      "size": 6328,
+      "size": 14079,
       "title": "2026-06-26",
       "type": "progress"
     },
