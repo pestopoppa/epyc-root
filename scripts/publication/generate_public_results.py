@@ -140,6 +140,25 @@ SCRUB_PATTERNS: tuple[tuple[str, str], ...] = (
 )
 
 
+PUBLIC_LABEL_REPLACEMENTS: tuple[tuple[str, str], ...] = (
+    (r"\bfrontdoor\b", "routing entrypoint"),
+    (r"\bcoder_escalation\b", "coding specialist"),
+    (r"\barchitect_general\b", "architecture specialist"),
+    (r"\barchitect_coding\b", "coding architect"),
+    (r"\bworker_general\b", "general worker"),
+    (r"\bingest_long_context\b", "long-context worker"),
+    (r"\btoolrunner\b", "tool worker"),
+)
+
+
+def public_scrub_text(text: str) -> str:
+    """Replace internal orchestration labels with public-safe display labels."""
+    scrubbed = text
+    for pattern, replacement in PUBLIC_LABEL_REPLACEMENTS:
+        scrubbed = re.sub(pattern, replacement, scrubbed, flags=re.I)
+    return scrubbed
+
+
 def scrub_findings(*fields: str) -> list[str]:
     text = " ".join(fields)
     findings: list[str] = []
@@ -150,7 +169,7 @@ def scrub_findings(*fields: str) -> list[str]:
 
 
 def scrub_status(*fields: str) -> str:
-    findings = scrub_findings(*fields)
+    findings = scrub_findings(*(public_scrub_text(field) for field in fields))
     if not findings:
         return "public-safe surface"
     return "needs public scrub: " + ", ".join(findings)
@@ -277,12 +296,14 @@ def collect_rows(text: str) -> list[ResultRow]:
                 if metrics:
                     nearby = "\n".join(lines[max(0, table_start - 4): min(len(lines), j + 4)])
                     protocol_status, action = classify_protocol(current_section, cells, nearby)
-                    entity = pick_entity(headers, row_map)
-                    quant_or_size = pick_quant_or_size(row_map)
-                    scrub = scrub_status(current_section, entity, quant_or_size, metrics)
+                    entity = public_scrub_text(pick_entity(headers, row_map))
+                    quant_or_size = public_scrub_text(pick_quant_or_size(row_map))
+                    metrics = public_scrub_text(metrics)
+                    display_section = public_scrub_text(current_section)
+                    scrub = scrub_status(display_section, entity, quant_or_size, metrics)
                     rows.append(
                         ResultRow(
-                            section=current_section,
+                            section=display_section,
                             source_line=j + 1,
                             entity=entity,
                             quant_or_size=quant_or_size,

@@ -10,6 +10,7 @@ from generate_public_results import (  # noqa: E402
     collect_rows,
     missing_protocol_fields,
     parse_protocol_reference,
+    public_scrub_text,
     render_page,
     scrub_status,
 )
@@ -161,31 +162,41 @@ def test_render_page_is_generated_claim_triage_surface():
 
 def test_scrub_status_flags_public_surface_blockers():
     scrub = scrub_status(
-        "Production / frontdoor",
+        "Production",
         "Qwen",
         "Quant: Q4",
         "log: /mnt/raid0/private/run.json http://localhost:8080",
     )
 
-    assert scrub == "needs public scrub: local path, loopback endpoint, internal role alias"
+    assert scrub == "needs public scrub: local path, loopback endpoint"
 
 
-def test_scrub_gate_holds_protocol_complete_internal_role_alias():
+def test_public_scrub_text_replaces_internal_role_aliases():
+    text = "frontdoor delegates to architect_general and ingest_long_context"
+
+    assert public_scrub_text(text) == (
+        "routing entrypoint delegates to architecture specialist and long-context worker"
+    )
+
+
+def test_collect_rows_scrubs_internal_role_aliases_before_rendering():
     text = """# Results
 
-## Production
+## Production frontdoor
 
 | Model | Quant | t/s | Notes |
 |---|---|---|---|
-| frontdoor | Q4_K_M | 42.0 | [P-BENCH-2, n=5, 2026-04-26, attest a3f2] |
+| architect_general | Q4_K_M | 42.0 | [P-BENCH-2, n=5, 2026-04-26, attest a3f2] |
 """
 
     rows = collect_rows(text)
 
     assert len(rows) == 1
+    assert rows[0].section == "Results / Production routing entrypoint"
+    assert rows[0].entity == "architecture specialist"
     assert rows[0].protocol_status == "protocol-tagged [P-BENCH-2; n=5; 2026-04-26; attest a3f2]"
-    assert rows[0].scrub_status == "needs public scrub: internal role alias"
-    assert rows[0].action == "hold_for_public_scrub"
+    assert rows[0].scrub_status == "public-safe surface"
+    assert rows[0].action == "publish_candidate"
 
 
 def test_scrub_gate_only_demotes_publish_candidates():
