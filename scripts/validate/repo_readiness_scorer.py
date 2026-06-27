@@ -17,7 +17,7 @@ actionable remediation work instead of model-judged prose.
 from __future__ import annotations
 
 import argparse
-import fnmatch
+import os
 import json
 import re
 from dataclasses import dataclass
@@ -26,14 +26,50 @@ from pathlib import Path
 from typing import Callable, Iterable
 
 
-ROOT = Path("/mnt/raid0/llm/epyc-root")
+ROOT = Path(__file__).resolve().parents[2]
+WORKSPACE_REPOS = Path("/workspace/repos")
 
-DEFAULT_REPOS = {
-    "epyc-root": ROOT,
-    "epyc-orchestrator": Path("/mnt/raid0/llm/epyc-orchestrator"),
-    "epyc-inference-research": Path("/mnt/raid0/llm/epyc-inference-research"),
-    "epyc-llama": Path("/mnt/raid0/llm/llama.cpp"),
-}
+
+def _resolve_repo_path(name: str, env_var: str, canonical: str) -> Path:
+    """Resolve a repository path with environment and layout fallbacks."""
+    candidates: list[Path] = []
+    override = os.environ.get(env_var)
+    if override:
+        return Path(override).expanduser()
+
+    # Prefer local workspace layout patterns first, then canonical production paths.
+    if name == "epyc-root":
+        candidates.append(ROOT)
+    else:
+        candidates.append(ROOT.parent / name)
+    candidates.append(WORKSPACE_REPOS / name)
+    candidates.append(Path(canonical))
+
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return candidates[-1]
+
+
+def _build_default_repos() -> dict[str, Path]:
+    return {
+        "epyc-root": _resolve_repo_path("epyc-root", "EPYC_ROOT_REPO", "/mnt/raid0/llm/epyc-root"),
+        "epyc-orchestrator": _resolve_repo_path(
+            "epyc-orchestrator",
+            "EPYC_ORCHESTRATOR_REPO",
+            "/mnt/raid0/llm/epyc-orchestrator",
+        ),
+        "epyc-inference-research": _resolve_repo_path(
+            "epyc-inference-research",
+            "EPYC_INFERENCE_RESEARCH_REPO",
+            "/mnt/raid0/llm/epyc-inference-research",
+        ),
+        "epyc-llama": _resolve_repo_path(
+            "epyc-llama",
+            "EPYC_LLAMA_REPO",
+            "/mnt/raid0/llm/llama.cpp",
+        ),
+    }
 
 LEVELS = {
     1: "Functional",
@@ -746,7 +782,7 @@ def build_autopilot_remediation_pickup(
 
 def _parse_repo_arg(values: list[str] | None) -> dict[str, Path]:
     if not values:
-        return DEFAULT_REPOS
+        return _build_default_repos()
     repos: dict[str, Path] = {}
     for value in values:
         if "=" not in value:

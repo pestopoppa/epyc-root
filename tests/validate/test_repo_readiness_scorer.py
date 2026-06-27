@@ -34,6 +34,21 @@ def test_repo_level_requires_80_percent_each_level():
     assert maturity["next_label"] == "Documented"
 
 
+def test_default_repos_resolve_local_overrides(tmp_path, monkeypatch):
+    scorer = _load_module()
+    monkeypatch.setenv("EPYC_ROOT_REPO", str(tmp_path / "alt-root"))
+    monkeypatch.setenv("EPYC_ORCHESTRATOR_REPO", str(tmp_path / "alt-orchestrator"))
+    monkeypatch.setenv("EPYC_INFERENCE_RESEARCH_REPO", str(tmp_path / "alt-research"))
+    monkeypatch.setenv("EPYC_LLAMA_REPO", str(tmp_path / "alt-llama"))
+
+    repos = scorer._build_default_repos()
+
+    assert repos["epyc-root"] == tmp_path / "alt-root"
+    assert repos["epyc-orchestrator"] == tmp_path / "alt-orchestrator"
+    assert repos["epyc-inference-research"] == tmp_path / "alt-research"
+    assert repos["epyc-llama"] == tmp_path / "alt-llama"
+
+
 def test_score_repositories_uses_concrete_detectors(tmp_path):
     scorer = _load_module()
     repo = tmp_path / "repo"
