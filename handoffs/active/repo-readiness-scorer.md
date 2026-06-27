@@ -173,6 +173,27 @@ Validation:
   analysis-check`; `make lint`; `make test`; and the root one-repo readiness
   scorer for `epyc-inference-research`.
 
+2026-06-27 research security-audit update:
+
+- `epyc-root` commit `f077b197` teaches the deterministic scorer to count
+  concrete `scripts/security/**` audit surfaces for `L4.security_audit`.
+- `epyc-inference-research` commit `7638f0b` adds
+  `scripts/security/audit_repository.py`,
+  `scripts/security/test_audit_repository.py`, and `make security-check`.
+- The audit is no-inference and scans tracked files only. It fails on
+  secret-like tracked filenames, high-confidence credential literals in
+  source/config/doc surfaces, and unexpected large tracked artifacts outside
+  known benchmark result/image paths.
+- A one-repo scorer run now reports `epyc-inference-research` as Optimized (L4)
+  with L4 pass rate `100.0%`; the next gate is L5 Autonomous.
+- Validation: research `python3 -m py_compile
+  scripts/security/audit_repository.py
+  scripts/security/test_audit_repository.py`; `uv run --with pytest pytest -q
+  scripts/security/test_audit_repository.py`; `make security-check`; `uv run
+  --with ruff ruff check scripts/security/audit_repository.py
+  scripts/security/test_audit_repository.py`; `make lint`; `make test`; and the
+  root one-repo readiness scorer for `epyc-inference-research`.
+
 ## Notes
 
 - Anti-false-positive discipline (shared across Factory's review/scoring features): a criterion passes only on a concrete, verifiable check — mirrors our eval-tower verifier philosophy.
