@@ -154,6 +154,8 @@ Three mechanisms compound the slow path:
 
 `stack_numa.py:13,203` asserts "taskset alone is sufficient — `numactl --membind` adds no benefit (S4)", which contradicts memory `feedback_mmap_numa_sharing` ("never bare taskset"; M2.7 saw instance-2 at 0.69 t/s under shared mmap). The finding reconciles them along the **mmap dimension**: S4 was a `--no-mmap` / single-instance test (membind redundant when each process owns its own first-touched copy); the failure mode `feedback_mmap_numa_sharing` warns about is **shared mmap across instances**, where membind/`--no-mmap` is mandatory. Both are right for their regime. Encode this reconciliation in a code comment at `stack_numa.py:203` **after** the A/B confirms it — don't pre-edit the comment on theory.
 
+Resolved 2026-06-27 in orchestrator `c07f2de3`: `stack_numa.py` now scopes the S4 "taskset alone" finding to the no-mmap/single-owner regime and explicitly says shared-mmap quarter fleets require role-specific A/B plus live `numa_maps` proof before changing memory policy. The regenerated stack-prior source hash passed `stack_change_pipeline.py check --run-promotion-gate`.
+
 ---
 
 ## The fix (the actual deliverable)
@@ -198,7 +200,7 @@ Acceptance: flip a role's `no_mmap` to `true` in production only after its own A
 ## Secondary work
 
 1. ✅ **Observability gap closed 2026-06-27**: orchestrator `5aebe641` extends `affinity_preflight.py` (`scripts/server/affinity_preflight.py`) to read `/proc/<pid>/numa_maps`, report shared-mmap `.gguf` page placement, and enforce single-node private-copy locality when run with `--require-memory-locality` (default threshold `0.85`). Live strict worker check `/mnt/raid0/llm/tmp/affinity_preflight_worker_strict_numa_maps_final.json` found CPU affinity correct but all four `worker_general` quarters failing memory locality (`~0.25` local anonymous pages each), exposing the exact silent topology failure this gap was meant to catch. No production config flip follows from this; it is an observability/control finding for future private-copy gates.
-2. **Resolve the `stack_numa.py` contradiction in a comment** (see Root-cause §): after the A/B confirms the mmap-dimension reconciliation, annotate `stack_numa.py:203` so the next reader doesn't re-litigate "taskset is sufficient" vs `feedback_mmap_numa_sharing`. Append, don't rewrite history.
+2. ✅ **Comment contradiction resolved 2026-06-27**: orchestrator `c07f2de3` annotates `stack_numa.py` so "taskset is sufficient" is limited to the no-mmap/single-owner regime, not shared-mmap quarter fleets. Stack-prior hashes were regenerated and the no-inference promotion gate passed.
 
 ---
 
