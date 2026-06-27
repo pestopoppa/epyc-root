@@ -60,6 +60,12 @@ dormant `restart_role(role, env_overrides, registry_overrides)` primitive with m
 for env-backed role restarts. Registry overrides still fail closed until a rollback record exists, and W3 remains
 open for dispatch pause, smoke completion, exogenous restart journaling, and shadow attestation.
 
+2026-06-27 W3 boundary journal slice: Orchestrator adds an append-only `role_restart_boundary` journal event and
+optionally attaches it from `restart_role(..., journal=...)`. The event uses `boundary_trial_id` rather than
+reserved `trial_id`, round-trips without counting as a trial, and is ignored by archive reconstruction. This closes
+the W3 journal-record primitive only; W3 remains open for dispatch pause, smoke completion, co-hosted-role
+resolution, registry override rollback semantics, and a shadowed live restart attestation.
+
 ## Gates & pitfalls
 
 - Hard gate: W1–W4 wait for `evidence-plane-ledger.md` (findings-01 Phase 1) — same gate as the index rewrite's A15 row. Do not hand the optimizer restart-class levers on an uncertified instrument.
@@ -80,3 +86,4 @@ Tick waypoints here + one-line progress entry per session; on full completion de
 - 2026-06-27 W2 compiler foundation: Orchestrator `d9fe32eb` wires generated capability-registry availability into AutoPilot planning and adds `compile_capability_registry.py --target action-availability|index-a-by`. Validation: `python3 -m py_compile src/registry/capability_registry.py scripts/registry/compile_capability_registry.py scripts/autopilot/autopilot.py tests/unit/test_capability_registry.py tests/unit/test_autopilot_creativity.py`; `uv run pytest -q tests/unit/test_capability_registry.py tests/unit/test_autopilot_creativity.py` -> 70 passed; `uv run ruff check ...`; both compiler targets emitted expected generated output. No live capability promotion.
 - 2026-06-27 W2 index adoption: Root docs adopted the generated `index-a-by` table in `master-handoff-index.md`. Validation: reran `uv run python scripts/registry/compile_capability_registry.py --target index-a-by`; GitNexus impact was HIGH for both root docs because they are coordination surfaces, so the edit stayed in the main thread. No runtime files or capability promotion states changed.
 - 2026-06-27 W2 drift guard + W3 primitive: Orchestrator `7b47671e` added marked-block replace/check support to `compile_capability_registry.py`; Root `82904490` adopted the marked block. Orchestrator W3 primitive adds `restart_role()` env rollback support but does not wire planner/AutoPilot calls. Validation: `uv run pytest -q tests/unit/test_capability_registry.py` -> 55 passed; `uv run python scripts/registry/compile_capability_registry.py --target index-a-by --check-block /mnt/raid0/llm/epyc-root/handoffs/active/master-handoff-index.md` passed; `python3 -m py_compile scripts/autopilot/config_applicator.py tests/unit/test_config_applicator.py`; `uv run pytest -q tests/unit/test_config_applicator.py` -> 10 passed; `uv run ruff check scripts/autopilot/config_applicator.py tests/unit/test_config_applicator.py`.
+- 2026-06-27 W3 boundary journal slice: Orchestrator added `role_restart_boundary` append-only events plus optional `restart_role(..., journal=...)` attachment. Validation: `python3 -m py_compile scripts/autopilot/experiment_journal.py scripts/autopilot/config_applicator.py tests/unit/test_journal_supersession_events.py tests/unit/test_config_applicator.py`; `uv run pytest -q tests/unit/test_journal_supersession_events.py tests/unit/test_config_applicator.py` -> 22 passed; `uv run ruff check ...`; `git diff --check`.
