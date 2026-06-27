@@ -7,6 +7,8 @@
 **Depends on:** `contention_matrix.yaml` (topology_hash `df373c79cc4af06f`), `instance_topology.get_instance_regions()`
 
 > **Fable 5 review (2026-06-12)**: the flag-on bracket is item #3 in the consolidated quiesce-window manifest ([bulk-inference-campaign.md](bulk-inference-campaign.md) Queue 2) and owns the attested production-env reload the other window items piggyback on.
+>
+> **V6 matrix refresh (2026-06-27)**: orchestrator `526ba3a2` refreshed the live full/primary pair layer for topology `df373c79cc4af06f` after the age certification expired, while preserving the curated `same_role` and `n_way` sections this handoff depends on. The refresh removed the last two unknown pair rows and changed several primary/full-pair verdicts under the v6+iqk kernel. That makes the shape-keyed distinction more important, not less: full/primary co-residency can still block while quarter/disjoint policy remains a separate rollout gate behind `SHAPE_AWARE_CONTENTION`.
 
 ---
 
