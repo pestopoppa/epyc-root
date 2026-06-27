@@ -104,6 +104,24 @@ Validation:
 - Validation: `make lint`; `make test`; `bash -n scripts/setup.sh`;
   `repo_readiness_scorer.py --repo epyc-inference-research=/mnt/raid0/llm/epyc-inference-research`.
 
+2026-06-27 research machine-task-index update:
+
+- `epyc-inference-research` commit `7d778e0` adds
+  `handoffs/active/master-handoff-index.md` as a research-scoped machine task
+  index.
+- The index includes a prioritized task list, dependency graph, cross-cutting
+  concerns, reporting instructions, and key file locations. It explicitly
+  avoids claiming authority over production flips, which remain governed from
+  root/orchestrator handoffs.
+- A one-repo scorer run now reports `epyc-inference-research` L3 at `100.0%`;
+  the next gate is L4 Optimized with pass rate `55.6%`.
+- Remaining blockers are L4 criteria: generated docs, health automation,
+  analysis reports, and security audit. These should be implemented only as
+  real workflow surfaces, not placeholders.
+- Validation: `git diff --check -- handoffs/active/master-handoff-index.md`;
+  research `make lint`; research `make test`;
+  `repo_readiness_scorer.py --repo epyc-inference-research=/mnt/raid0/llm/epyc-inference-research`.
+
 ## Notes
 
 - Anti-false-positive discipline (shared across Factory's review/scoring features): a criterion passes only on a concrete, verifiable check — mirrors our eval-tower verifier philosophy.
