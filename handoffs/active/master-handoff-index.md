@@ -26,7 +26,7 @@
 ## B. ACTIVE — claimable now (HIGH → LOW)
 | # | Item | Gate/note |
 |---|---|---|
-| A1 | **shape-keyed-contention rollout** — Step-1 JSONL analyzed; 2026-06-27 no-inference matrix freshness, A-1 race tests, 34-test placement/contention regression slice, and live `affinity_preflight.py` all pass; next is still the quiesce-window Step-2 smoke/flag bracket | bracket owns the reload (see §C) |
+| A1 | **shape-keyed-contention rollout** — Step-1 JSONL analyzed; 2026-06-27 no-inference matrix freshness, A-1 race tests, 34-test placement/contention regression slice, and live `affinity_preflight.py` all pass. Orchestrator `937e6446` adds the multi-role `placement_fanout_probe.py --roles ...` smoke helper and focused unit coverage, so the remaining gate is the quiesce-window Step-2 smoke/flag bracket, not harness work. | bracket owns the reload (see §C) |
 | A2 | **multi-file edit-transaction rollout decision** — explicit target-file selection + capability row guard landed; promoted-row registry guard tightened in orchestrator `63bbc8b`; clean-window A/B + promotion evidence still required | operator A/B-then-enable; promotion-cohort candidate |
 | A3 | **within-role placement**: J2/J3 live migration probe | quiesce window (single-worker API) |
 | A4 | **eval-tower-verification** EV-8/9/10 | re-sequenced AFTER N2/N4 (EV-4 calibration explicitly waits for the redesigned tower) |
