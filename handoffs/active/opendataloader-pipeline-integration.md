@@ -1,6 +1,6 @@
 # OpenDataLoader PDF — Pipeline Integration
 
-**Status**: Phase 1 done (NIB2-13). Phase 2 scaffolding landed 2026-05-06 — `src/models/odl_structured.py` (FigureContext, HeadingNode, TableContext, ODLStructuredDocument); `_extract_with_opendataloader_structured()` in pdf_router; `build_figure_prompt_with_context()` additive helper in figure_analyzer; `chunk_by_odl_headings()` additive helper in document_chunker. 2026-06-21 follow-ups (`epyc-orchestrator` `bd3f6f4e`, `55d1ed16`, `4f7f6d1d`, `76dcd42c`, `634a9078`, `fa1b5460`, `a0e8ae09`) wire optional structured payloads through `OCRResult`, `DocumentPreprocessor`, `DocumentChunker`, and `FigureAnalyzer`, route explicitly gated local PDF processing through the ODL structured extractor, use ODL structured figure bboxes instead of PyMuPDF image enumeration in ODL structured mode, suppress unsafe ODL structured metadata when `INJECTION_SCANNING` is enabled, carry ODL table metadata through preprocessing/cache/TaskIR output, add a default-inert ODL table backend routing seam, and add a default-off primary document-body warning policy. ODL headings now drive chunking when present with regex fallback, ODL figure contexts enrich per-figure VL prompts unless the injection scanner suppresses the additive structured context, ODL tables are first-class `TableRef` records for downstream routing, and `ORCHESTRATOR_DOCUMENT_BODY_INJECTION_POLICY=warn` can scan extracted OCR/body pages without mutating or blocking source text. This remains default-inert unless `PDF_EXTRACTOR=opendataloader` and `ORCHESTRATOR_ODL_STRUCTURED=1` are set or TaskIR provides structured metadata; the injection filters are additionally gated by `INJECTION_SCANNING`, and `ORCHESTRATOR_ODL_TABLE_BACKEND=hybrid` currently falls back to local structured ODL until a sidecar/client exists. Remaining Phase 2 work: real ODL hybrid table sidecar/client extraction and fixture/benchmark evidence. Phase 3 (sidecar + benchmark) remains inference/sidecar-gated.
+**Status**: Phase 1 done (NIB2-13). Phase 2 scaffolding landed 2026-05-06 — `src/models/odl_structured.py` (FigureContext, HeadingNode, TableContext, ODLStructuredDocument); `_extract_with_opendataloader_structured()` in pdf_router; `build_figure_prompt_with_context()` additive helper in figure_analyzer; `chunk_by_odl_headings()` additive helper in document_chunker. 2026-06-21 follow-ups (`epyc-orchestrator` `bd3f6f4e`, `55d1ed16`, `4f7f6d1d`, `76dcd42c`, `634a9078`, `fa1b5460`, `a0e8ae09`) wire optional structured payloads through `OCRResult`, `DocumentPreprocessor`, `DocumentChunker`, and `FigureAnalyzer`, route explicitly gated local PDF processing through the ODL structured extractor, use ODL structured figure bboxes instead of PyMuPDF image enumeration in ODL structured mode, suppress unsafe ODL structured metadata when `INJECTION_SCANNING` is enabled, carry ODL table metadata through preprocessing/cache/TaskIR output, add a default-inert ODL table backend routing seam, and add a default-off primary document-body warning policy. ODL headings now drive chunking when present with regex fallback, ODL figure contexts enrich per-figure VL prompts unless the injection scanner suppresses the additive structured context, ODL tables are first-class `TableRef` records for downstream routing, and `ORCHESTRATOR_DOCUMENT_BODY_INJECTION_POLICY=warn` can scan extracted OCR/body pages without mutating or blocking source text. 2026-06-27 follow-up (`epyc-orchestrator` `8aab2d63`) wires the explicit `ORCHESTRATOR_ODL_TABLE_BACKEND=hybrid` path through the official `opendataloader_pdf.convert(..., hybrid=...)` SDK surface with env-configured backend URL/timeout/fallback and local-structured fallback. This remains default-inert unless `PDF_EXTRACTOR=opendataloader`, `ORCHESTRATOR_ODL_STRUCTURED=1`, and/or the table backend env are explicitly set; the injection filters are additionally gated by `INJECTION_SCANNING`. Remaining Phase 2 work: fixture/benchmark evidence for hybrid output and table-selection policy. Phase 3 (sidecar deployment + benchmark) remains sidecar/evidence-gated.
 **Created**: 2026-03-17 (via research intake deep dive)
 **Priority**: P2 — medium priority, medium effort, high payoff for document processing quality
 **Categories**: document_processing, multimodal
@@ -25,7 +25,7 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 2. **No reading order**: pdftotext `-layout` interleaves multi-column text
 3. **Binary routing**: pdftotext (fast) OR LightOnOCR (slow) — no per-page complexity routing
 4. **Blind figure analysis**: VL models receive cropped images without document context (caption, surrounding text, semantic type)
-5. **Hybrid/table evidence gap**: the local structured path carries ODL table metadata, but the real hybrid table sidecar/client and benchmark-backed routing policy are not implemented
+5. **Hybrid/table evidence gap**: the local structured path carries ODL table metadata and the explicit ODL hybrid SDK client is wired, but sidecar deployment, fixture/benchmark evidence, and benchmark-backed routing policy are not implemented
 
 ## Three-Phase Plan
 
@@ -60,7 +60,7 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 - [x] Carry detected ODL tables through preprocessing/cache/TaskIR output as first-class table records
 - [x] Add a default-inert ODL table backend routing seam for local structured vs future hybrid extraction
 - [x] Define primary extracted-text prompt-injection policy for document bodies
-- [ ] Implement the ODL hybrid table sidecar/client path for 0.93 accuracy extraction
+- [x] Implement the ODL hybrid table sidecar/client path for 0.93 accuracy extraction
 
 **Key files**:
 - `src/services/figure_analyzer.py` — enrich VL prompts with document context
@@ -115,6 +115,15 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 - `DocumentClient.process_document()` now reaches local structured PDF extraction through the router helper instead of duplicating result assembly and page-count logic.
 - Validation: GitNexus LOW for `PDFRouter`, `process_document`, `_extract_local_structured_pdf`, and `PDFRouter.extract`; `py_compile`, `ruff`, `git diff --check`, focused ODL/router/client tests (`4 passed`), and the broader ODL/PDF/cache/document suite (`106 passed, 2 skipped`) passed.
 - Residual risk: this is only the default-inert routing seam. The actual hybrid sidecar/client, table-selection policy, and opendataloader-bench/fixture evidence remain open.
+
+**2026-06-27 ODL hybrid SDK client checkpoint (`epyc-orchestrator` `8aab2d63`)**
+
+- `PDFRouter` now exposes a real default-off hybrid path for `ORCHESTRATOR_ODL_TABLE_BACKEND=hybrid` using the official OpenDataLoader Python SDK options: `hybrid`, `hybrid_url`, `hybrid_timeout`, and `hybrid_fallback`.
+- Added env knobs `ORCHESTRATOR_ODL_HYBRID_BACKEND` (default `docling-fast`), `ORCHESTRATOR_ODL_HYBRID_URL` (default `http://localhost:5002`), `ORCHESTRATOR_ODL_HYBRID_TIMEOUT_MS` (default `60000`), and `ORCHESTRATOR_ODL_HYBRID_FALLBACK` (default enabled).
+- Local structured extraction and hybrid extraction now share the same markdown/JSON output reader, so parsed `ODLStructuredDocument` semantics stay identical across local and hybrid modes.
+- If the hybrid SDK path is unavailable, errors, or produces no output, the router falls back to local structured ODL rather than changing default extraction behavior.
+- Validation: GitNexus LOW for `PDFRouter`, `_extract_with_odl_table_backend`, and `extract_opendataloader_structured`; `py_compile`, `ruff`, `git diff --check`, focused PDF router tests (`24 passed, 2 skipped`), broader document/PDF unit slice (`72 passed, 2 skipped`), and `tests/integration/test_document_pipeline.py` (`55 passed`) passed.
+- Residual risk: this still does not deploy or supervise `opendataloader-pdf-hybrid --port 5002`, and it does not assert live 0.93 table accuracy. Next work is fixture-backed hybrid output replay plus opendataloader-bench/local corpus evidence before changing routing policy.
 
 **2026-06-21 document body injection policy checkpoint (`epyc-orchestrator` `a0e8ae09`)**
 
