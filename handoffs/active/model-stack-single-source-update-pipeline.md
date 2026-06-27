@@ -155,6 +155,31 @@ unowned local constants.
   for live llama roles (`frontdoor`, `worker_general`, `architect_general`,
   `worker_vision`, `vision_escalation`) and the hardcoded-surface inventory is
   still `consumer_surface_count=13`, `rule_count=27`.
+
+### 2026-06-27 Config Catalog Re-Audit
+
+The `config_model_catalog` surface is HIGH blast-radius but not currently an
+open consumer-migration tail. GitNexus impact reported `ServerURLsConfig`,
+`TimeoutsConfig`, and `LLMConfig` as HIGH because they sit on the broad
+`src.config` import path. Main-thread audit confirmed:
+
+- `ServerURLsConfig` derives live role URLs from generated stack priors, with
+  manifest-derived service/warm compatibility fallbacks.
+- `TimeoutsConfig` reads role/server/service timeouts from registry
+  `runtime_defaults.timeouts`, while retaining explicit compatibility aliases.
+- `LLMConfig.depth_role_overrides` and `depth_override_max_depth` read registry
+  runtime defaults.
+- Public singleton coverage exists for `get_config()` stack-prior behavior and
+  env override layering.
+
+Validation:
+
+- `tests/unit/test_config.py tests/unit/test_session_models.py tests/unit/test_registry_loader.py` -> `93 passed`.
+- `tests/unit/test_config_consolidation.py tests/unit/test_api_imports.py` -> `113 passed`.
+
+Conclusion: keep `config_model_catalog` in the guarded surface inventory, but do
+not treat it as a parked W4 migration unless a future concrete duplicated fact
+appears.
 - Orchestrator `471a4d2` closes the `launch_maps` auxiliary-role tail with an
   explicit validator classification rather than widening generated prior role
   semantics. `validate_launch_manifest_serving_alignment()` now rejects
