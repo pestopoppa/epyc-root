@@ -152,6 +152,27 @@ Validation:
   `make docs-check`; `make lint`; `make test`; and the root one-repo readiness
   scorer for `epyc-inference-research`.
 
+2026-06-27 research analysis-reports update:
+
+- `epyc-inference-research` commit `f347809` adds
+  `scripts/analysis/generate_analysis_reports_index.py`,
+  `scripts/analysis/test_generate_analysis_reports_index.py`, `make analysis`,
+  `make analysis-check`, and the generated
+  `docs/reference/ANALYSIS_REPORTS_INDEX.md` artifact.
+- The analysis-reports lane is deterministic and no-inference: it indexes
+  existing Markdown/JSON analysis/report/summary artifacts and `--check` fails
+  when the committed index is stale.
+- A one-repo scorer run now reports `epyc-inference-research` as Optimized (L4)
+  with L4 pass rate `88.9%`; `L4.analysis_reports` passes.
+- Remaining L4 blocker is `L4.security_audit`.
+- Validation: research `uv run --with ruff ruff check
+  scripts/analysis/generate_analysis_reports_index.py
+  scripts/analysis/test_generate_analysis_reports_index.py`; `uv run --with
+  pytest --with pyyaml pytest -q
+  scripts/analysis/test_generate_analysis_reports_index.py`; `make
+  analysis-check`; `make lint`; `make test`; and the root one-repo readiness
+  scorer for `epyc-inference-research`.
+
 ## Notes
 
 - Anti-false-positive discipline (shared across Factory's review/scoring features): a criterion passes only on a concrete, verifiable check — mirrors our eval-tower verifier philosophy.
