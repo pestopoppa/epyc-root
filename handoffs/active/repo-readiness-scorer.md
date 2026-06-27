@@ -113,14 +113,27 @@ Validation:
   concerns, reporting instructions, and key file locations. It explicitly
   avoids claiming authority over production flips, which remain governed from
   root/orchestrator handoffs.
-- A one-repo scorer run now reports `epyc-inference-research` L3 at `100.0%`;
-  the next gate is L4 Optimized with pass rate `55.6%`.
-- Remaining blockers are L4 criteria: generated docs, health automation,
-  analysis reports, and security audit. These should be implemented only as
-  real workflow surfaces, not placeholders.
+- A one-repo scorer run reported `epyc-inference-research` L3 at `100.0%`;
+  the next gate was L4 Optimized with pass rate `55.6%`.
 - Validation: `git diff --check -- handoffs/active/master-handoff-index.md`;
   research `make lint`; research `make test`;
   `repo_readiness_scorer.py --repo epyc-inference-research=/mnt/raid0/llm/epyc-inference-research`.
+
+2026-06-27 research health-automation update:
+
+- `epyc-inference-research` commit `2b6b97f` adds
+  `scripts/session/health_check.sh` and exposes it as `make health`.
+- The health check is no-inference: it verifies required repo paths, `uv`
+  availability, maintained Python entrypoints, and dry-runs AA-Omniscience plus
+  clean-window manifest generation into `/tmp`.
+- A one-repo scorer run now reports `epyc-inference-research` L4 at `66.7%`;
+  `L4.health_automation` passes.
+- Remaining L4 blockers are `L4.generated_docs`, `L4.analysis_reports`, and
+  `L4.security_audit`. These should be implemented only as real workflow
+  surfaces, not placeholders.
+- Validation: GitNexus impact for research `Makefile` LOW
+  (`impactedCount=0`); research `make health`; research `make lint`; research
+  `make test`; `repo_readiness_scorer.py --repo epyc-inference-research=/mnt/raid0/llm/epyc-inference-research`.
 
 ## Notes
 
