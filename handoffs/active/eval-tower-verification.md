@@ -244,10 +244,10 @@ Exit criterion: baseline file populated; warn-only rule live for 10 trials AND V
 **Target**: Supports NIB2-45 MindDR Phase 1.
 
 Tasks:
-- [ ] Extend `EvalResult` with rubric fields: `rubric_reasoning_trajectory`, `rubric_tool_calls`, `rubric_outline`, `rubric_content_stage`.
-- [ ] LLM-as-judge scoring functions per rubric dimension (deterministic fallback via regex+structure for T1 low-cost runs).
-- [ ] Create `deep_research_sentinel` suite: 20-40 research-like queries with multi-dimensional ground truth. 10 BrowseComp-style + 10 WideSearch-style + 10 mixed.
-- [ ] Wire rubric scoring into existing `to_grep_lines()` — one `METRIC rubric_<dim>: <score>` line per dimension.
+- [x] Extend `EvalResult` with rubric fields: `rubric_reasoning_trajectory`, `rubric_tool_calls`, `rubric_outline`, `rubric_content_stage`. **DONE 2026-06-27**: `src.safety_gate.EvalResult` already carried the MindDR rubric stubs; orchestrator `9db36fcb` adds the same NaN-safe fields to the live AutoPilot `scripts/autopilot/safety_gate.py::EvalResult`.
+- [ ] LLM-as-judge scoring functions per rubric dimension (deterministic fallback via regex+structure for T1 low-cost runs). **PARTIAL 2026-06-27** in orchestrator `9db36fcb`: added pure `scripts/autopilot/rubric_scoring.py` with positive/negative criterion aggregation, MindDR process dimensions, DRACO content dimensions, saturation screening, and multi-judge Bradley-Terry stability diagnostics. Remaining work is the actual judge prompt/runner and deterministic fallback extractors.
+- [x] Create `deep_research_sentinel` suite: 20-40 research-like queries with multi-dimensional ground truth. 10 BrowseComp-style + 10 WideSearch-style + 10 mixed. **DONE before 2026-06-27**: `orchestration/deep_research_sentinel.yaml` has 20 entries (`browsecomp=7`, `widesearch=7`, `mixed=6`) and the existing sentinel tests parse and classify them as research-like.
+- [x] Wire rubric scoring into existing `to_grep_lines()` — one `METRIC rubric_<dim>: <score>` line per dimension. **DONE 2026-06-27** in orchestrator `9db36fcb`: populated rubric dimensions emit `METRIC rubric_<dim>: ...`; NaN/unavailable dimensions are omitted like EV-8 diversity metrics.
 
 Exit criterion: `minddr-deep-research-mode.md` MD-9 A/B test can produce multi-dimensional scores.
 
