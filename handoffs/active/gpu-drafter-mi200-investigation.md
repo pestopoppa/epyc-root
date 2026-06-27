@@ -14,6 +14,8 @@
 > **N5 repair update (2026-06-19)**: llama.cpp commit `a6c793fc6` (`Fix tree speculative draft sequence capacity`) fixes the concrete tree-spec sequence-shape bug behind `invalid seq_id[...] = 1 >= 1`. The tree implementation was allocating both the draft context and batch as single-sequence while later creating branch sequence ids `1..31`; the patch centralizes `SPEC_TREE_MAX_SEQS=32`, applies it to tree draft-context initialization, applies it to the tree batch allocation, and replaces the hard-coded branch guard. Validation: GitNexus impact on `common_speculative_state_tree::draft` was LOW; `git diff --check`; `cmake --build build --target llama-speculative -j $(nproc)`; `cmake --build build --target llama-server -j $(nproc)`. Two disposable server smokes were attempted on port `19087` with 2-thread CPU-only model pairs, but both exited during model load before decode under the current loaded/no-GPU environment; PIDs were verified gone. Treat this as a code unblock for the `seq_id >= 1` failure, not alpha evidence. The next valid N5 action is a clean aligned qwen35/frontdoor retest that actually reaches draft/verify and reports acceptance data.
 >
 > **N5 sidecar status (2026-06-27)**: the qwen35-compatible path still has **no valid acceptance-rate evidence**. The aligned scratch draft `/mnt/raid0/llm/scratch/n5/Qwen3.5-0.8B-Q8_0.frontdoor-specials.gguf` clears tokenizer metadata, but the path still needs a clean retest that reaches draft/verify after the qwen35/qwen35moe M-RoPE/GDN decode-position failures. The inspected llama.cpp tree was at `91745611f`, not the required clean retest commit `a6c793fc6`; both `a6c793fc6` and safety commit `53e9a6550` exist in history. Do not run the alpha smoke from the current tree without first moving to the required retest commit/build and rerunning compatibility.
+>
+> **N5 harness update (2026-06-27)**: research `scripts/benchmark/n5_frontdoor_drafter_retest.sh` now packages the clean-window retest path. Default mode is no-inference and writes `preflight.json` plus `commands.sh`; `--execute` is fail-closed unless the active llama.cpp worktree is at `a6c793fc6`, `53e9a6550` is in the lineage, the rebuilt `llama-server` is fresh enough, the aligned draft/target files exist, the compatibility checker can import `gguf`, the measurement port is free, and AutoPilot/live `llama-server` blockers are cleared or explicitly overridden. The live dry-run correctly blocked on current HEAD `91745611f`, missing `gguf` in `python3`, active AutoPilot, and live stack servers. This is a reproducibility unblock only; it still emits no alpha evidence until a clean-window execute reaches draft/verify and records `draft_n`/`draft_n_accepted`.
 
 ---
 
@@ -219,6 +221,7 @@ This is the bounded no-inference checklist for the next frontdoor drafter alpha 
    - the safety containment patch `53e9a6550` is present in the same tree
    - the binaries under `build/` were rebuilt after those commits
    - current tree mismatch noted 2026-06-27: inspected HEAD was `91745611f`, so the retest preflight was **not** satisfied
+   - `scripts/benchmark/n5_frontdoor_drafter_retest.sh --strict` must report `status=ready` before any execute attempt
 2. Confirm the test pair is the qwen35-compatible one, not the stale Qwen3-1.7B pair:
    - target: `Qwen_Qwen3.6-35B-A3B-Q8_0.gguf`
    - draft: `Qwen3.5-0.8B-Q8_0.gguf` or the aligned scratch copy at `/mnt/raid0/llm/scratch/n5/Qwen3.5-0.8B-Q8_0.frontdoor-specials.gguf`
@@ -234,6 +237,7 @@ This is the bounded no-inference checklist for the next frontdoor drafter alpha 
 6. Keep the smoke command explicit and minimal:
    - `numactl --interleave=all /mnt/raid0/llm/llama.cpp/build/bin/llama-server -m <target> -md <draft> --draft-max 1 -t 96 -np 1 -c 8192 -ub 8192 -fa on -ctk q8_0 -ctv q8_0 --port <free-port> --metrics --jinja --reasoning auto`
    - if the binary is launched outside the build tree, bind the matching shared libraries with `LD_LIBRARY_PATH` so it does not fall back to production libs
+   - prefer the generated `commands.sh` from the N5 harness so the exact `LLAMA_CPP_DIR`, `LLAMA_SERVER`, `PYTHON_BIN`, model paths, and result directory are captured with the run
 
 ---
 
