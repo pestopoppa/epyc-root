@@ -6,6 +6,8 @@
 **Spec**: [fable5-findings-01-impl-plan.md](../completed/fable5-findings-01-impl-plan.md) Phase 3 + Phase 4, and [fable5-findings-01-measurement-and-integrity.md](../completed/fable5-findings-01-measurement-and-integrity.md) §2.1/§2.4/§4 — read before claiming any waypoint
 **Related**: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) · [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) · [../../MEASUREMENT.md](../../MEASUREMENT.md) §5 (the append-never-edit retroactivity rule this implements at runtime)
 
+**Current snapshot — 2026-06-27T08:00Z**: the controlled v6-era restart window appended the guarded baseline seed event with exact readiness guards (`trial_counter=970`, `journal_max_trial_id=969`). Post-append readiness reports the baseline ledger fold ready, but runtime authority remains default-off behind the explicit `baseline_ledger_authority_enabled` gate. AutoPilot recovered stale trial `970` by journaling it as `autopilot_killed_mid_trial`, resumed detached at trial `971` with `--max-trials 2000` (PID `86308`, log `/mnt/raid0/llm/tmp/autopilot_v6_resume_detached_20260627T075406Z.log`), and is collecting W6 audit rows. Do not remove `baseline_state` or enable baseline ledger authority until the aggregate strict gate passes with `--require-seq-cutover --require-w6-audit`.
+
 ## Why
 
 The journal already rebuilds the full archive shape (`journal_reconstruction.py`) but only for
