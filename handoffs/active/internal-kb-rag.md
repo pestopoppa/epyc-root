@@ -465,10 +465,12 @@ Scope inherited from `autowiki-incremental-kb-generator.md` (now in [`../complet
 
 **2026-06-21 trigger-cadence/observability slice:** the incremental refresh cadence is now explicitly the existing Claude PostToolUse hook on HEAD-moving git commands (`commit`, `merge`, `pull`, `rebase`, `cherry-pick`), not cron/nightshift and not `/wrap-up`. `scripts/hooks/posttool_kb_rag_update.sh` still dispatches `.claude/hooks/post_commit_kb_rag_update.sh` in the background so it does not block tool use or contend with AutoPilot, but it now appends dispatch and updater output to `logs/kb_rag_update.log` (or `KB_RAG_HOOK_LOG`) instead of dropping it on the floor. Focused coverage landed in `tests/hooks/test_posttool_kb_rag_update.py`.
 
+**2026-06-27 writer evidence-policy slice:** the source-manifest contract now carries a `writer_evidence_policy` block for model-written wiki article adoption. New manifests require `minimum_confidence: verified`, at least 3 source references, a source-reference section, structural wiki lint, and human or measured review evidence. `build_manifest_drift_report()` now fails closed when a saved manifest omits or weakens that policy, and `scripts/validate/validate_doc_drift.py` reports those policy failures alongside source drift. This closes the content-quality policy half of the AutoWiki writer gap; the writer/model choice remains open.
+
 Open design questions (carried from the stub, unresolved):
 
 1. The page→source-paths manifest now improves `scripts/validate/` document-drift validation as the **wiki source freshness** gate. It does not subsume the existing port, Makefile, or generic CLAUDE.md relative-link checks because those are not project-wiki source inventory concerns.
-2. Generator model: which local model writes the pages? The deterministic structure lint gate now exists; the remaining question is the writer/model and evidence policy for content quality beyond structural conformance.
+2. Generator model: which local model writes the pages? The deterministic structure lint gate and writer evidence-policy gate now exist; the remaining question is the writer/model and measured review implementation.
 3. Scope: in-repo git-versioned wiki only (we already have this — git = versioning); any app/UI sync is SaaS-only, skip.
 4. Trigger cadence is settled for the local workflow: Claude PostToolUse after HEAD-moving git commands, background/nonblocking, no cron/nightshift, with durable logs for audit. Any future CI/on-push workflow should be a separate productionization decision.
 

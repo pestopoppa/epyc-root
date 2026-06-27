@@ -292,6 +292,9 @@ def check_source_manifest_drift() -> list[str]:
     if report.get("ok"):
         return errors
 
+    for policy_error in report.get("writer_evidence_policy_errors", []):
+        errors.append(f"source-manifest-drift: {policy_error}")
+
     drift = report.get("drift", {})
     added = _source_paths(drift.get("added", []))
     changed = _source_paths(drift.get("changed", []))

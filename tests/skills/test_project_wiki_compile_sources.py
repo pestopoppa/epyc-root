@@ -64,9 +64,52 @@ def test_manifest_sources_include_content_hash_and_source_set_hash(tmp_path: Pat
     assert len(manifest["source_set_hash"]) == 64
     assert manifest["kind"] == module.MANIFEST_KIND
     assert manifest["schema_version"] == module.MANIFEST_SCHEMA_VERSION
+    assert manifest["writer_evidence_policy"] == module.WRITER_EVIDENCE_POLICY
 
     reversed_manifest = module.build_manifest(list(reversed(sources)), "full")
     assert reversed_manifest["source_set_hash"] == manifest["source_set_hash"]
+
+
+def test_manifest_drift_report_rejects_missing_writer_evidence_policy(
+    tmp_path: Path,
+) -> None:
+    module = _load_module()
+    _configure_temp_project(module, tmp_path)
+    alpha = tmp_path / "handoffs" / "active" / "alpha.md"
+    manifest_path = tmp_path / "wiki" / "source_manifest.json"
+    _write(alpha, "# Alpha\n\nFirst.\n")
+    manifest = module.build_manifest(module.scan_sources(0.0, None), "full")
+    manifest.pop("writer_evidence_policy")
+    module.write_manifest(manifest_path, manifest)
+
+    report = module.build_manifest_drift_report(manifest_path)
+
+    assert report["ok"] is False
+    assert report["writer_evidence_policy_ok"] is False
+    assert report["writer_evidence_policy_errors"] == [
+        "writer_evidence_policy missing"
+    ]
+
+
+def test_manifest_drift_report_rejects_weakened_writer_evidence_policy(
+    tmp_path: Path,
+) -> None:
+    module = _load_module()
+    _configure_temp_project(module, tmp_path)
+    alpha = tmp_path / "handoffs" / "active" / "alpha.md"
+    manifest_path = tmp_path / "wiki" / "source_manifest.json"
+    _write(alpha, "# Alpha\n\nFirst.\n")
+    manifest = module.build_manifest(module.scan_sources(0.0, None), "full")
+    manifest["writer_evidence_policy"]["minimum_source_references"] = 1
+    module.write_manifest(manifest_path, manifest)
+
+    report = module.build_manifest_drift_report(manifest_path)
+
+    assert report["ok"] is False
+    assert report["writer_evidence_policy_ok"] is False
+    assert report["writer_evidence_policy_errors"] == [
+        "writer_evidence_policy minimum_source_references must be 3, got 1"
+    ]
 
 
 def test_source_set_hash_changes_when_source_content_hash_changes(tmp_path: Path) -> None:

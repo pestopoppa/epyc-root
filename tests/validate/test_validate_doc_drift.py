@@ -28,6 +28,7 @@ def test_source_manifest_drift_passes_when_manifest_is_current(monkeypatch) -> N
         SOURCE_MANIFEST_PATH=Path("wiki/source_manifest.json"),
         build_manifest_drift_report=lambda path: {
             "ok": True,
+            "writer_evidence_policy_errors": [],
             "manifest_path": str(path),
             "drift": {"added": [], "changed": [], "removed": []},
         },
@@ -46,6 +47,7 @@ def test_source_manifest_drift_summarizes_changed_sources(monkeypatch) -> None:
             "manifest_path": str(path),
             "saved_source_set_hash": "old",
             "current_source_set_hash": "new",
+            "writer_evidence_policy_errors": [],
             "drift": {
                 "added": [{"path": "progress/2026-06/new.md"}],
                 "changed": [{"path": "handoffs/active/internal-kb-rag.md"}],
@@ -69,6 +71,36 @@ def test_source_manifest_drift_summarizes_changed_sources(monkeypatch) -> None:
         "handoffs/active/internal-kb-rag.md"
     )
     assert errors[3] == "source-manifest-drift: removed sources: docs/removed.md"
+
+
+def test_source_manifest_drift_reports_policy_errors(monkeypatch) -> None:
+    module = _load_module()
+    compiler = SimpleNamespace(
+        SOURCE_MANIFEST_PATH=Path("wiki/source_manifest.json"),
+        build_manifest_drift_report=lambda path: {
+            "ok": False,
+            "manifest_path": str(path),
+            "saved_source_set_hash": "same",
+            "current_source_set_hash": "same",
+            "writer_evidence_policy_errors": [
+                "writer_evidence_policy missing",
+            ],
+            "drift": {
+                "added": [],
+                "changed": [],
+                "removed": [],
+            },
+        },
+    )
+    monkeypatch.setattr(module, "load_project_wiki_compile_sources", lambda: compiler)
+
+    errors = module.check_source_manifest_drift()
+
+    assert errors[0] == "source-manifest-drift: writer_evidence_policy missing"
+    assert errors[1] == (
+        "source-manifest-drift: wiki/source_manifest.json stale "
+        "(added=0 changed=0 removed=0; saved=same current=same)"
+    )
 
 
 def test_source_manifest_drift_reports_manifest_errors(monkeypatch) -> None:

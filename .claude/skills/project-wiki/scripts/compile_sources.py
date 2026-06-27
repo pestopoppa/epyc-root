@@ -53,6 +53,16 @@ def _find_project_root() -> Path:
 ROOT = _find_project_root()
 MANIFEST_SCHEMA_VERSION = 1
 MANIFEST_KIND = "project-wiki-source-manifest"
+WRITER_EVIDENCE_POLICY_VERSION = 1
+WRITER_EVIDENCE_POLICY = {
+    "policy_version": WRITER_EVIDENCE_POLICY_VERSION,
+    "applies_to": "generated-wiki-article-writes",
+    "minimum_confidence": "verified",
+    "minimum_source_references": 3,
+    "requires_source_reference_section": True,
+    "requires_structural_lint": True,
+    "requires_human_or_measured_review": True,
+}
 
 
 def load_config() -> dict:
@@ -272,6 +282,7 @@ def build_manifest(sources: list[dict], mode: str) -> dict:
         "total_new": len(sources),
         "by_type": by_type,
         "source_set_hash": source_set_hash(sources),
+        "writer_evidence_policy": dict(WRITER_EVIDENCE_POLICY),
     }
 
 
@@ -301,6 +312,22 @@ def read_manifest(path: Path) -> dict:
     return manifest
 
 
+def validate_writer_evidence_policy(manifest: dict) -> list[str]:
+    """Return policy errors that block model-written wiki article adoption."""
+    policy = manifest.get("writer_evidence_policy")
+    if not isinstance(policy, dict):
+        return ["writer_evidence_policy missing"]
+
+    errors: list[str] = []
+    for key, expected in WRITER_EVIDENCE_POLICY.items():
+        if policy.get(key) != expected:
+            errors.append(
+                "writer_evidence_policy "
+                f"{key} must be {expected!r}, got {policy.get(key)!r}"
+            )
+    return errors
+
+
 def write_manifest(path: Path, manifest: dict) -> None:
     """Persist a manifest as stable, reviewable JSON."""
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -320,6 +347,7 @@ def build_manifest_drift_report(saved_path: Path) -> dict:
     saved = read_manifest(saved_path)
     current = full_current_manifest()
     drift = diff_manifest_sources(saved["sources"], current["sources"])
+    policy_errors = validate_writer_evidence_policy(saved)
     return {
         "schema_version": MANIFEST_SCHEMA_VERSION,
         "kind": "project-wiki-source-manifest-drift",
@@ -329,7 +357,9 @@ def build_manifest_drift_report(saved_path: Path) -> dict:
         "scan_time": current["scan_time"],
         "saved_source_set_hash": saved.get("source_set_hash"),
         "current_source_set_hash": current.get("source_set_hash"),
-        "ok": not drift["has_drift"],
+        "writer_evidence_policy_ok": not policy_errors,
+        "writer_evidence_policy_errors": policy_errors,
+        "ok": not drift["has_drift"] and not policy_errors,
         "drift": drift,
     }
 

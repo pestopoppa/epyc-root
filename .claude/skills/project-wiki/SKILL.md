@@ -143,6 +143,18 @@ For a reviewable source-manifest baseline:
 python3 .claude/skills/project-wiki/scripts/compile_sources.py --full --write-manifest
 ```
 
+The persisted source manifest carries a `writer_evidence_policy` block. Treat
+that block as the minimum adoption contract for model-written wiki article
+updates:
+- `minimum_confidence: verified`
+- at least 3 source references
+- a source-reference section
+- structural wiki lint
+- human review or measured review evidence before adoption
+
+Do not accept generated article updates from a manifest that omits or weakens
+this policy. `--check-manifest` reports policy drift along with source drift.
+
 Before recompiling from an existing baseline, check source drift:
 ```
 python3 .claude/skills/project-wiki/scripts/compile_sources.py --check-manifest
@@ -218,6 +230,9 @@ For each category cluster, create or update `wiki/<category-key>.md`:
 Filename convention: `wiki/<category-key>.md` (e.g., `wiki/speculative-decoding.md`)
 
 If a wiki page already exists for that category, merge new findings and update the "Last compiled" date. Never delete existing content without cause.
+
+Before committing generated pages, run project-wiki lint and make sure the
+manifest's `writer_evidence_policy` still passes `--check-manifest`.
 
 #### Step 5: Update Compile Timestamp
 
