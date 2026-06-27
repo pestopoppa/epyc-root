@@ -58,7 +58,7 @@ Recommended next slice:
 
 ## Remaining Operational Questions
 
-1. **Content-filter audit.** Baidu's prior model ERNIE-ViLG had heavy political-content censorship. Run a probe set covering political topics, copyrighted characters, NSFW boundaries, and bilingual edge cases — note what is silently filtered or transformed before treating as a general-purpose tool.
+1. **Content-filter audit live run.** Baidu's prior model ERNIE-ViLG had heavy political-content censorship. The no-inference harness is ready in orchestrator `ed6f65f5` (`scripts/diffusion/ernie_content_filter_audit.py`) with 10 cases across political-neutral, copyrighted-character, NSFW-boundary, bilingual-text, and sensitive-current-event categories. Next clean window: run it with `--execute` and review outputs for refusal, silent transform, unsafe output, or error.
 2. **LongTextBench self-reported score validation.** ERNIE-Turbo's 0.9655 is on Baidu's own scorecard, not re-validated by the X-Omni team. Re-run a curated 20-prompt local set covering EN/ZH typography stress cases before relying on the leadership claim.
 3. **Spark performance reality check.** Deep dive §5.1 extrapolates 6–12 s/image at BF16, 3–5 s at NVFP4 from FLUX-schnell numbers. Re-bench on actual hardware once Spark lands; the 8-step distilled DiT has no published Spark numbers.
 4. **Alternative re-evaluation.** If LongTextBench-ZH is not actually needed by the product, FLUX.1-schnell (12B, 4-step, Apache 2.0, mature ecosystem) is the simpler default. Re-litigate the choice against actual product requirements before committing.
@@ -68,6 +68,7 @@ Resolved questions:
 - Distilled-model quantization penalty: verified; Q4_K_M corrupts text rendering enough to reject for production.
 - Hermes integration shape: resolved through the local `image_generate` plugin and `ImageGenerator`/`SDServerClient` interface.
 - Prompt-enhancer policy: resolved in orchestrator `f4b4cebe` with a deterministic `auto` policy that turns on for text-heavy surfaces and simple short prompts, turns off for compositional/spatial scenes and already-rich prompts, and records the policy decision in result metadata while the sd-server backend still passes prompts through verbatim. Hermes root `948fbdbc` now forwards only the supported tri-state policy.
+- Content-filter audit preparation: no-inference manifest/runner landed in orchestrator `ed6f65f5`; live generation and human review remain open.
 
 ## Notes
 
