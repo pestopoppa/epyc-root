@@ -13,6 +13,8 @@ manifest-owned warm embedder recipes (`8096/8097/8098`) by their auxiliary
 roles instead of anonymous port names. WorkerPool now consumes stack-prior
 primary ports and server-mode launch paths through the generated artifact, with
 swap-CI proving a worker model/port replacement reaches the runtime config.
+Route-local chat image/vision gating now consumes the generated vision-role
+helper instead of a hardcoded legacy role set (`epyc-orchestrator` `f35448d1`).
 Future swap-CI expansion should follow new consumer migrations.
 **Created**: 2026-06-13
 **Priority**: HIGH - stale model-specific quantities can silently corrupt
