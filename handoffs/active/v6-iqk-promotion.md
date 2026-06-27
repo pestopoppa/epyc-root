@@ -1,6 +1,6 @@
 # v6+iqk → production cutover (full ik_llama deprecation)
 
-**Status:** ✅ **CUTOVER COMPLETE (autonomous bar met) 2026-06-26.** v6 in production: every hot role healthy on the v6 binary, `runtime_attestation` clean, all governance gates green, ik_llama deprecated. Worker/architect/frontdoor garbage-checked (no garble, MTP 81/93%, no M-RoPE assert), GGML_IQK=1 everywhere. Throughput observed (throttle-caveated). **Operator-pending** (human trust boundary): formal eval-parity (P-QUAL-PROMO), era-row (E5-cpu-kernel draft), clean post-reboot bench — package `/mnt/raid0/llm/tmp/v6_operator_package.md`. **N12 attempted + reverted** (not a config flip — launcher work needed; see `numa-private-weights-quarter-roles.md`).
+**Status:** ✅ **CUTOVER COMPLETE (autonomous bar met) 2026-06-26.** v6 in production: every hot role healthy on the v6 binary, `runtime_attestation` clean, all governance gates green, ik_llama deprecated. Worker/architect/frontdoor garbage-checked (no garble, MTP 81/93%, no M-RoPE assert), GGML_IQK=1 everywhere. Throughput observed (throttle-caveated). **Operator-pending** (human trust boundary): formal eval-parity (P-QUAL-PROMO), era-row (E5-cpu-kernel draft), clean post-reboot bench — package `/mnt/raid0/llm/tmp/v6_operator_package.md`. **N12 private-copy flip path closed negative for frontdoor/ingest/vision**; launcher argv plumbing is fixed, and `affinity_preflight.py` now exposes `numa_maps` memory placement for future private-copy gates (see `numa-private-weights-quarter-roles.md`).
 Commits (no push, 4): orchestrator `ce789b11` (config convergence) + `897cead2` (live-cutover fixes: frontdoor roles, architect abs-path, n-max 24→4, ctx_max); research `23867f3` (master registry + canonical_recipe, on main); epyc-root `44a2a411` (verify_llama_cpp v6, handoffs, indices N13, wiki, progress). Operator: fetch+rebase before any push (research/root on main).
 
 ### Cutover verification log (Phase I/J)
@@ -50,7 +50,7 @@ The promotion guard enforces **compiled `stack_priors.yaml` == `stack_manifest` 
 - [ ] **H** `canonical_recipe.py` V6_IQK bench entry + `GGML_IQK=1` candidate-arm env [bench loads v6 lib].
 - [ ] **I** Cutover: host hygiene (NO reboot) → staging garbage-check + architect MTP smoke-gate (fallback base-iqk) → checkout v6 in canonical + rebuild + free v6 branch → `stop→swap→start --hot-only` [`[iqk] ACTIVE` + draft-accept>0 + `GGML_IQK` env + loaded-lib v6 + verify_llama_cpp].
 - [ ] **J** Autonomous verify: per-role throughput (throttle-caveated) + garbage sanity [bar = all healthy + within expectation + no garbage].
-- [ ] **K** N12 `no_mmap:true` for frontdoor/ingest/vision quarters, one per window [`/proc/numa_maps` node-local placement].
+- [x] **K** N12 private-copy evaluation closed negative for frontdoor/ingest/vision quarters. Do not set `no_mmap:true` for those roles under current evidence. `affinity_preflight.py --require-memory-locality` is now available for future private-copy gates; a live worker-quarter strict check exposed CPU-correct but memory-interleaved placement, so `/proc/numa_maps` proof is mandatory for any reopened role.
 - [ ] **L** STOP → prepare operator package (P-QUAL-PROMO cmd, era-row draft, attestation) — do NOT author.
 - [ ] **M** Docs/wiki/index close-out + supersede stale verdict; per-repo commits (no push, report hashes).
 

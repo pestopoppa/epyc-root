@@ -197,7 +197,7 @@ Acceptance: flip a role's `no_mmap` to `true` in production only after its own A
 
 ## Secondary work
 
-1. **Observability gap (do this alongside, low effort)**: `affinity_preflight.py` (`scripts/server/affinity_preflight.py`) checks the CPU thread-union only — it has **no `/proc/<pid>/numa_maps` read**, so memory mis-placement (a quarter reading off-node, a private copy that first-touched the wrong node) is **undetectable by the production gate**. Extend it to parse `numa_maps` and assert each instance's weight pages are ≥X% on its bound node. This is what makes the `--no-mmap` flip safe to keep deployed and is the only way to catch a silent regression to the slow topology.
+1. ✅ **Observability gap closed 2026-06-27**: orchestrator `5aebe641` extends `affinity_preflight.py` (`scripts/server/affinity_preflight.py`) to read `/proc/<pid>/numa_maps`, report shared-mmap `.gguf` page placement, and enforce single-node private-copy locality when run with `--require-memory-locality` (default threshold `0.85`). Live strict worker check `/mnt/raid0/llm/tmp/affinity_preflight_worker_strict_numa_maps_final.json` found CPU affinity correct but all four `worker_general` quarters failing memory locality (`~0.25` local anonymous pages each), exposing the exact silent topology failure this gap was meant to catch. No production config flip follows from this; it is an observability/control finding for future private-copy gates.
 2. **Resolve the `stack_numa.py` contradiction in a comment** (see Root-cause §): after the A/B confirms the mmap-dimension reconciliation, annotate `stack_numa.py:203` so the next reader doesn't re-litigate "taskset is sufficient" vs `feedback_mmap_numa_sharing`. Append, don't rewrite history.
 
 ---
@@ -214,7 +214,7 @@ Acceptance: flip a role's `no_mmap` to `true` in production only after its own A
 | Launch priors (`no_mmap` field per role) | `epyc-orchestrator/orchestration/derived/stack_priors.yaml` (worker 833 `true`; frontdoor 254/399, ingest 543, vision 997 `false`) |
 | Interleave page-cache prewarm (`[1.5]`) | `epyc-orchestrator/scripts/server/stack_prewarm.py` + [`numa-page-cache-prewarm.md`](../completed/numa-page-cache-prewarm.md) |
 | Phase-4 weight-replication estimate (unimplemented) | [`single-instance-system-tuning.md`](../completed/single-instance-system-tuning.md):89,207-219 |
-| Affinity preflight (CPU-only, no numa_maps) | `epyc-orchestrator/scripts/server/affinity_preflight.py` |
+| Affinity preflight (CPU + `numa_maps` placement; strict locality via `--require-memory-locality`) | `epyc-orchestrator/scripts/server/affinity_preflight.py` |
 | Bench evidence (Arm B) | `/mnt/raid0/llm/tmp/iqk_sweep_2026-06-25/numa_mtp.gemma-26B.jsonl`, `numa_mtp.Qwen3.6-35B.jsonl` |
 | Source finding | `/mnt/raid0/llm/tmp/orchestrator_numa_finding.md` |
 
@@ -247,3 +247,4 @@ On completing any part of this work:
 - 2026-06-27 — ran isolated `vision_escalation` A/B; private `--no-mmap` was slower (65.760 t/s) than shared mmap (99.076 t/s) despite successful node-local placement; leave vision shared-mmap.
 - 2026-06-27 — ran isolated `frontdoor` A/B; private `--no-mmap` was slower (42.428 t/s) than shared mmap (56.203 t/s) despite successful node-local placement; leave frontdoor shared-mmap.
 - 2026-06-27 — ran isolated `ingest_long_context` A/B; private `--no-mmap` was slower (41.655 t/s) than shared mmap (57.528 t/s) despite successful node-local placement; leave ingest shared-mmap. Initial N12 target set is closed negative.
+- 2026-06-27 — `affinity_preflight.py` gained `numa_maps` placement telemetry + opt-in strict locality; live strict worker-quarter check shows `worker_general` quarters are CPU-pinned correctly but memory-interleaved across N0-N3, so future private-copy claims must include this artifact and cannot rely on CPU affinity alone.
