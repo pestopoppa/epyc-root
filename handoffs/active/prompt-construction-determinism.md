@@ -17,6 +17,13 @@ A determinism audit of the live orchestrator prompt/sampling path established: *
 | 1–3 | Single `_apply_deterministic_sampling()` helper wired into **all 3** payload sites (`_build_payload` /completion, `_infer_chat_completions` non-stream :518, stream :1193): temperature precedence `acceleration.temperature` → **`generation_defaults.temperature`** (was silently dropped → accidental greedy 0.0) → `request.temperature`; pinned `seed` (fixed `_DETERMINISTIC_SAMPLING_SEED=42`, per-request override via `request.seed`); unified `top_k=40/top_p=0.95/repeat_penalty=1.1` across **both** endpoints (chat path previously sent none → server defaults) | `src/backends/llama_server.py`; `seed` field added to `src/inference/model_server.py` `InferenceRequest` |
 | 4 | Removed `architect_general` jinja exclusion (`stack_priors.py:~1158`, was commit `0879ed56`); auto-enrolls it into the cc-set so it routes `/v1/chat/completions` where its registry `enable_thinking=false` (model_registry.yaml:493) fires. Recompiled `derived/stack_priors.yaml`. Verified: jinja=True, enable_thinking=False, cc-set 6→7 = {architect_general, coder_escalation, frontdoor, toolrunner, worker_general, worker_math, worker_summarize} | `src/registry/stack_priors.py` + `orchestration/derived/stack_priors.yaml` |
 
+2026-06-27 no-inference hardening: orchestrator `ab75b5ae` adds regression
+coverage for `_apply_deterministic_sampling()` through `_build_payload`,
+locking `generation_defaults.temperature` precedence, the pinned default seed
+`42`, per-request seed override, and shared `top_k`/`top_p`/`repeat_penalty`
+defaults. This protects D1's deployed sampling contract; it does not close D2
+or D3 because those remain clean-window live validation tasks.
+
 ## Outstanding tasks (priority-ordered)
 
 - [x] **D1 — git commit** ✅ **DONE 2026-06-26** — orchestrator `f4a8a3ca` (llama_server.py, inference/model_server.py, registry/stack_priors.py, derived/stack_priors.yaml), root: this docs commit (docs). **Unpushed** — operator pushes manually.
