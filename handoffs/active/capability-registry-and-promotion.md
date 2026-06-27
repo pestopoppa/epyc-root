@@ -1,6 +1,6 @@
 # Capability Registry, Safe Role-Restart Applicator & Promotion Workflow
 
-**Status**: IN PROGRESS — W0 traffic-class interface branch-ready 2026-06-13 and TaskIR/task-record capture landed 2026-06-19; W1-W4 remain gated on evidence-plane ledger
+**Status**: IN PROGRESS — W0 traffic-class interface branch-ready 2026-06-13 and TaskIR/task-record capture landed 2026-06-19; W2 compiler foundation landed 2026-06-27; W3-W4 remain gated on evidence-plane ledger
 **Created**: 2026-06-12
 **Priority**: GATED — on `evidence-plane-ledger.md` (sibling handoff = findings-01 Phase 1: the instrument must certify effects before the optimizer gets bigger levers; spec §C.4). W0 (workload model) is NOT gated and can run now.
 **Spec**: [fable5-findings-04-impl-plan.md](../completed/fable5-findings-04-impl-plan.md) §C + §D — read before claiming any waypoint
@@ -40,6 +40,14 @@ without a `kill_condition`. Orchestrator `63bbc8b` tightened the loader further:
 autopilot-actionable with a non-empty string kill condition. W2/W3/W4 remain gated; no autopilot action
 surface was enabled.
 
+2026-06-27 checkpoint: Orchestrator `d9fe32eb` adds the W2 compiler foundation. `src/registry/capability_registry.py`
+now compiles capability rows into generated planner Action-Availability text and a generated index A-by table;
+`scripts/registry/compile_capability_registry.py` exposes both outputs as CLI targets. AutoPilot appends the
+generated capability section to the existing `### Action Availability` prompt/critic surface, so the planner now
+sees all first-cohort levers as registry-derived blocked/operator-only rows. No capability was promoted and no
+dispatch/applicator path was enabled; the generated index table exists, but live master-index column replacement
+still needs a deliberate adoption pass.
+
 ## Gates & pitfalls
 
 - Hard gate: W1–W4 wait for `evidence-plane-ledger.md` (findings-01 Phase 1) — same gate as the index rewrite's A15 row. Do not hand the optimizer restart-class levers on an uncertified instrument.
@@ -57,3 +65,4 @@ Tick waypoints here + one-line progress entry per session; on full completion de
 - 2026-06-13 W0 interface branch-ready: `feat/workload-traffic-classes` commit `b62946d`, based on F1 `feat/task-record-harvester` `40bde0d`. GitNexus re-indexed the worktree first (48,880 nodes, 83,890 edges, 300 flows). Formal graph impact could not resolve `orchestration/workload_model.yaml` (`UNKNOWN`); manual `rg` found only the F1 harvester reading it. Separate GitNexus impact on live `LLMPrimitives.request_context` was HIGH, so this pass avoided live request tagging. Validation: `python3 -m py_compile src/workload_model.py tests/unit/test_workload_model.py` passed; `uv run --with pytest --with pyyaml pytest -q tests/unit/test_workload_model.py tests/unit/test_task_harvester.py` -> 6 passed, 1 pytest config warning; `uv run --with ruff ruff check src/workload_model.py tests/unit/test_workload_model.py` passed; `git diff --cached --check` passed.
 - 2026-06-19 A2 first-cohort row tightened on active: Orchestrator `3f6692b` (`Canonicalize edit transaction capability row`) updated `orchestration/capability_registry.yaml`, `src/registry/capability_registry.py`, and `tests/unit/test_capability_registry.py`. Validation: `python3 -m py_compile src/registry/capability_registry.py tests/unit/test_capability_registry.py`; `uv run pytest -q tests/unit/test_capability_registry.py` -> 47 passed; `uv run ruff check ...`; `git diff --check`.
 - 2026-06-19 W0/A2 hardening on active: Orchestrator `02370da` persists explicit `workload_class` on TaskIR/task records while keeping legacy inference (`uv run pytest -q tests/unit/test_workload_model.py tests/unit/test_task_ir.py tests/unit/test_progress_logger_task_record.py tests/unit/test_task_harvester.py` -> 17 passed). Orchestrator `63bbc8b` fail-closes promoted capability rows unless they are autopilot-actionable and carry a non-empty string kill condition (`tests/unit/test_capability_registry.py` included in the 122-test focused gate). Live `request_context` and live edit auto-routing remain deferred/gated.
+- 2026-06-27 W2 compiler foundation: Orchestrator `d9fe32eb` wires generated capability-registry availability into AutoPilot planning and adds `compile_capability_registry.py --target action-availability|index-a-by`. Validation: `python3 -m py_compile src/registry/capability_registry.py scripts/registry/compile_capability_registry.py scripts/autopilot/autopilot.py tests/unit/test_capability_registry.py tests/unit/test_autopilot_creativity.py`; `uv run pytest -q tests/unit/test_capability_registry.py tests/unit/test_autopilot_creativity.py` -> 70 passed; `uv run ruff check ...`; both compiler targets emitted expected generated output. No live capability promotion.
