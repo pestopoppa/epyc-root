@@ -1,6 +1,6 @@
 # NUMA Private Node-Local Weights for Shared-mmap Quarter Roles
 
-**Status**: Launcher argv plumbing fixed/tested for generic + vision builders (2026-06-26 follow-up); **production config flip still gated** on per-role operator A/B + live NUMA placement verification. See "## 2026-06-26 ACTIVATION ATTEMPT" and "## 2026-06-26 FOLLOW-UP" below.
+**Status**: Launcher argv plumbing fixed/tested for generic + vision builders (2026-06-26 follow-up). `vision_escalation` A/B was run 2026-06-27 and **refuted** the private-copy flip for that role; leave `vision_escalation.no_mmap=false`. `frontdoor` and `ingest_long_context` still need per-role A/B + live NUMA placement verification before any production config flip.
 **Created**: 2026-06-26
 **Owner**: unclaimed — dedicated future session (high-ROI, low-effort, NPS4-gated and we are on NPS4)
 **Parent index**: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md)
@@ -13,9 +13,9 @@
 
 ## Objective
 
-Give the three **shared-mmap quarter-able roles** — `frontdoor` (Qwen3.6-35B-A3B Q8), `ingest_long_context` (Qwen3-Next-80B Q4), `vision_escalation` (Qwen3-VL-30B Q4) — **private, node-local weight copies** (`--no-mmap`, one private RAM copy per quarter instance) instead of the current single shared interleaved mmap copy that every quarter reads 75% cross-node.
+Test whether the shared-mmap quarter-able roles — `frontdoor` (Qwen3.6-35B-A3B Q8), `ingest_long_context` (Qwen3-Next-80B Q4), and formerly `vision_escalation` (Qwen3-VL-30B Q4) — should use **private, node-local weight copies** (`--no-mmap`, one private RAM copy per quarter instance) instead of the current single shared interleaved mmap copy that every quarter reads 75% cross-node.
 
-`worker_general` (gemma-26B Q4 MTP) **already realizes this fast path** (`--no-mmap` is enabled by its dedicated builder). The remaining production gap is evidence/configuration: the target roles still have `no_mmap: false` until each role clears the operator-run Arm A vs Arm B gate and live `/proc/<pid>/numa_maps` placement check.
+`worker_general` (gemma-26B Q4 MTP) **already realizes this fast path** (`--no-mmap` is enabled by its dedicated builder). The remaining production gap is evidence/configuration for `frontdoor` and `ingest_long_context`: both still have `no_mmap: false` until each role clears Arm A vs Arm B and live `/proc/<pid>/numa_maps` placement checks. `vision_escalation` now has direct negative evidence and should stay shared-mmap unless a future protocol materially differs.
 
 ---
 
@@ -41,11 +41,36 @@ Validation: `.venv/bin/pytest tests/unit/test_build_server_command_helpers.py te
 
 No role has been flipped to `no_mmap: true` by this follow-up. The next actionable gate is still the per-role operator Arm A vs Arm B A/B plus live memory-placement verification. Use `stop --only` + `start --only` rather than `reload <role>` if cycling all quarter instances.
 
+## 2026-06-27 VISION A/B — negative, do not flip `vision_escalation`
+
+Temporary isolated A/B runner: `/mnt/raid0/llm/tmp/n12_vision_ab.py`; output: `/mnt/raid0/llm/tmp/n12_vision_ab/summary.json`.
+
+Protocol:
+
+- Arm A `shared_mmap`: interleave-prewarm model + mmproj, launch 4 temporary `vision_escalation` quarter servers on ports `19087-19090` with `taskset`, mmap, `--mlock`, `-t 48`, `-np 1`.
+- Arm B `private_no_mmap`: launch 4 temporary servers on ports `19187-19190` with `numactl --cpunodebind=N --membind=N`, `taskset`, `--no-mmap`, `--mlock`, `-t 48`, `-np 1`.
+- Both arms used the same v6 binary, Qwen3-VL-30B-A3B Q4 GGUF, mmproj, `qwen3vlmoe.expert_used_count=int:4`, fixed prompt, `n_predict=192`, three measured reps.
+- Teardown verified after the run: no `19087-19090` / `19187-19190` listeners and all temporary PIDs gone; production `/health` remained green.
+
+Result:
+
+| Role | Arm A shared-mmap median aggregate | Arm B private `--no-mmap` median aggregate | Decision |
+|------|------:|------:|------|
+| `vision_escalation` | **99.076 t/s** | **65.760 t/s** | **Do not flip** |
+
+Placement check:
+
+- Arm A confirmed interleaved file mapping: each model mapping had roughly equal `N0/N1/N2/N3` pages.
+- Arm B confirmed node-local private placement at process-total level: each temporary process had ~5.22M pages on its bound node and near-zero pages elsewhere; file-backed model mapping is absent because `--no-mmap` loads anonymous private pages.
+
+Interpretation: for Qwen3-VL-30B-A3B under this quarter-concurrent protocol, shared interleaved mmap is materially faster than private node-local copies despite the remote-read intuition. Leave `vision_escalation.no_mmap=false`; do not spend a production quiet window flipping this role. Frontdoor and ingest still need their own measurements; do not generalize the vision negative to those models.
+
 ## Evidence (observations — motivate, do not gate)
 
 - **gemma-26B 4×quarter, clean host, same window**: shared-interleaved mmap = **43.5 t/s** aggregate vs **`--no-mmap` private node-local = 119.5 t/s** aggregate (`numa_mtp.gemma-26B.jsonl`: quarter / 4 instances / MTP-on `agg_tps=119.46`, replicates `[119.31, 119.46, 120.49]`). **~2.7×.** This is the worker model; it already runs the fast arm in production, so the bench measures exactly the topology the other three roles are missing.
 - **Qwen3.6-35B (frontdoor) Arm B already measured**: the corrected NUMA suite (`numa_mtp.Qwen3.6-35B.jsonl`) gives the private `--no-mmap` quarter number (4 instances, MTP-on `agg_tps=19.32`, `[19.32, 19.21, 19.38]`). Only **Arm A** (the orchestrator's current interleave-prewarm-mmap pattern) needs measuring to complete the head-to-head for frontdoor.
-- **Phase-4 estimate (likely conservative)**: `single-instance-system-tuning.md:89,207-219` estimates **+10-30%** for per-NUMA-node weight replication under NPS≥4. The gemma 2.7× suggests the real prize is larger when the model fits 4× in RAM and the workload is quarter-concurrent (bandwidth-bound aggregate, where cross-node reads cost the most).
+- **vision_escalation direct A/B is negative**: shared-mmap median aggregate **99.076 t/s** vs private `--no-mmap` **65.760 t/s** on 2026-06-27. Do **not** flip vision based on the gemma observation.
+- **Phase-4 estimate (likely conservative for some models, false for vision)**: `single-instance-system-tuning.md:89,207-219` estimates **+10-30%** for per-NUMA-node weight replication under NPS≥4. The gemma 2.7× suggests the prize may be real when the model fits 4× in RAM and the workload is quarter-concurrent, but the vision negative proves this must stay per-role.
 
 ---
 
@@ -58,7 +83,7 @@ From the finding doc, updated after the launcher follow-up:
 | **frontdoor** | Qwen3.6-35B-A3B Q8 (~34 GB) | mmap (`no_mmap: false`) | **shared interleaved — 1 copy, 4 quarters each 75% cross-node** |
 | coder_escalation | (shares frontdoor GGUF/process) | mmap | shares frontdoor copy |
 | **ingest_long_context** | Qwen3-Next-80B Q4 (~45 GB) | mmap (`no_mmap: false`) | **shared interleaved — multi-instance, 1 copy** |
-| **vision_escalation** | Qwen3-VL-30B Q4 (~17 GB) | mmap (`no_mmap: false`) | **shared interleaved — multi-instance, 1 copy** |
+| **vision_escalation** | Qwen3-VL-30B Q4 (~17 GB) | mmap (`no_mmap: false`) | **shared interleaved — multi-instance, 1 copy; private-copy flip refuted 2026-06-27** |
 | worker_general | gemma-26B Q4 MTP (~16 GB) | **`--no-mmap`** (`no_mmap: true`) | **private per-instance node-local — ALREADY FAST** |
 | architect_general | Qwen3.5-122B Q4 (~69 GB) | mmap + `interleave=all` | interleaved, single instance (correct — too big to replicate cheaply) |
 | worker_vision | Qwen2.5-VL-7B Q4 (~4 GB) | mmap | first-touch, single instance |
@@ -80,7 +105,7 @@ Three mechanisms compound the slow path:
 The code-side deliverable is complete; production activation remains:
 
 1. **Evidence**: run the per-role operator Arm A vs Arm B A/B and record attested results per `/workspace/MEASUREMENT.md`.
-2. **Data**: after a role clears the gate, set `no_mmap: true` at the authoritative stack-prior source for that role and regenerate `orchestration/derived/stack_priors.yaml`. Do not hand-edit the derived file without updating its source. Alias roles sharing a process must match their host process to avoid runtime-attestation drift.
+2. **Data**: after `frontdoor` or `ingest_long_context` clears the gate, set `no_mmap: true` at the authoritative stack-prior source for that role and regenerate `orchestration/derived/stack_priors.yaml`. Do not hand-edit the derived file without updating its source. Alias roles sharing a process must match their host process to avoid runtime-attestation drift. Do not flip `vision_escalation` without new contradictory evidence.
 3. **Deploy**: cycle all affected instances with `stop --only` + `start --only`, not `reload <role>`, then re-run runtime attestation and a live NUMA placement check.
 
 Optional, stronger (decide from the A/B): also add per-node `numactl --cpunodebind=N --membind=N` for `--no-mmap` quarter instances via `_numa_prefix`, to guarantee each private copy first-touches its own node rather than relying on `taskset` + first-touch. The A/B's Arm B uses explicit membind; if Arm B wins and the membind-free `--no-mmap` variant matches it, the `taskset`-only path is sufficient and simpler.
@@ -91,7 +116,7 @@ Four private copies per role (replacing 1 shared copy):
 
 | Role | 1 copy | 4× private | Headroom note |
 |------|------|------|------|
-| vision_escalation | ~17 GB | **~68 GB** | smallest; highest per-quarter t/s — best first candidate |
+| vision_escalation | ~17 GB | **~68 GB** | measured negative 2026-06-27; leave shared-mmap |
 | frontdoor | ~34 GB | **~136 GB** | Arm B already measured |
 | ingest_long_context | ~45 GB | **~180 GB** | largest of the three; still fits |
 
@@ -108,7 +133,7 @@ Per role, 4×quarter, sum the per-quarter t/s:
 - **Arm A — current orchestrator pattern (shared mmap, interleave prewarm, no membind)**: `numactl --interleave=all cat MODEL >/dev/null` to prewarm page cache, then 4× `taskset -c <quarter_cpus> llama-server/llama-bench -m MODEL --mlock` (mmap, no membind).
 - **Arm B — private node-local**: 4× `numactl --cpunodebind=N --membind=N taskset -c <quarter_cpus> ... --no-mmap --mlock`.
 
-Sum per-quarter decode t/s for each arm; Arm B wins is the flip signal. **Suite already provides Arm B for frontdoor** (`numa_mtp.Qwen3.6-35B.jsonl`, quarter MTP-on 19.32 t/s) — frontdoor only needs Arm A measured. Priority order by leverage: **vision_escalation** (smallest, highest per-quarter t/s, cheapest copy), then **frontdoor** (Arm A only), then **ingest_long_context** (largest copy).
+Sum per-quarter decode t/s for each arm; Arm B wins is the flip signal. **Suite already provides Arm B for frontdoor** (`numa_mtp.Qwen3.6-35B.jsonl`, quarter MTP-on 19.32 t/s) — frontdoor only needs Arm A measured. Priority order after the vision negative: **frontdoor** (Arm A only), then **ingest_long_context** (largest copy). `vision_escalation` is closed negative for this flip path.
 
 Acceptance: flip a role's `no_mmap` to `true` in production only after its own Arm A vs Arm B A/B shows Arm B materially ahead under the codified recipe with operator sign-off; stage and re-attest one role per quiet window. Re-confirm with `affinity_preflight.py` (see Secondary) that the live placement actually changed post-flip — do not trust the topology hash alone (`feedback_verify_live_affinity_not_just_topology_hash`).
 
@@ -163,3 +188,4 @@ On completing any part of this work:
 
 - 2026-06-26 — created from `orchestrator_numa_finding.md`; stub/opportunity, A/B + code change pending a dedicated session.
 - 2026-06-26 — launcher argv plumbing fixed/tested for generic + vision builders; production `no_mmap:true` role flips still gated on operator A/B + live memory-placement verification.
+- 2026-06-27 — ran isolated `vision_escalation` A/B; private `--no-mmap` was slower (65.760 t/s) than shared mmap (99.076 t/s) despite successful node-local placement; leave vision shared-mmap.
