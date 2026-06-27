@@ -15,7 +15,7 @@
 
 Test whether the shared-mmap quarter-able roles — `frontdoor` (Qwen3.6-35B-A3B Q8), `ingest_long_context` (Qwen3-Next-80B Q4), and formerly `vision_escalation` (Qwen3-VL-30B Q4) — should use **private, node-local weight copies** (`--no-mmap`, one private RAM copy per quarter instance) instead of the current single shared interleaved mmap copy that every quarter reads 75% cross-node.
 
-`worker_general` (gemma-26B Q4 MTP) **already realizes this fast path** (`--no-mmap` is enabled by its dedicated builder). The production question for the remaining shared-mmap quarter roles is now closed negative under the measured v6+iqk protocol: `vision_escalation`, `frontdoor`, and `ingest_long_context` should stay shared-mmap unless a future protocol materially differs.
+`worker_general` (gemma-26B Q4 MTP) emits `--no-mmap` from its dedicated builder, but the 2026-06-27 live `numa_maps` strict preflight showed the quarter processes were still memory-interleaved because a role-level `interleave=all` policy wrapped every instance. Orchestrator `5573e465` scopes that interleave policy to the full worker instance only; the live quarter PIDs remain stale until a controlled worker restart plus strict `affinity_preflight.py --require-memory-locality` proves node-local anonymous pages. The production question for the remaining shared-mmap quarter roles is now closed negative under the measured v6+iqk protocol: `vision_escalation`, `frontdoor`, and `ingest_long_context` should stay shared-mmap unless a future protocol materially differs.
 
 ---
 
@@ -201,6 +201,7 @@ Acceptance: flip a role's `no_mmap` to `true` in production only after its own A
 
 1. ✅ **Observability gap closed 2026-06-27**: orchestrator `5aebe641` extends `affinity_preflight.py` (`scripts/server/affinity_preflight.py`) to read `/proc/<pid>/numa_maps`, report shared-mmap `.gguf` page placement, and enforce single-node private-copy locality when run with `--require-memory-locality` (default threshold `0.85`). Live strict worker check `/mnt/raid0/llm/tmp/affinity_preflight_worker_strict_numa_maps_final.json` found CPU affinity correct but all four `worker_general` quarters failing memory locality (`~0.25` local anonymous pages each), exposing the exact silent topology failure this gap was meant to catch. No production config flip follows from this; it is an observability/control finding for future private-copy gates.
 2. ✅ **Comment contradiction resolved 2026-06-27**: orchestrator `c07f2de3` annotates `stack_numa.py` so "taskset is sufficient" is limited to the no-mmap/single-owner regime, not shared-mmap quarter fleets. Stack-prior hashes were regenerated and the no-inference promotion gate passed.
+3. ✅ **Worker interleave scope fixed 2026-06-27**: orchestrator `5573e465` changes `worker_general` from a role-wide `numactl_policy: interleave=all` to an instance-scoped full-worker policy. Quarter `--no-mmap` instances should now launch without interleave wrapping, but the current live PIDs predate the fix; verify after `stop --only worker_general` / `start --only worker_general` with strict `affinity_preflight.py`.
 
 ---
 
@@ -250,3 +251,4 @@ On completing any part of this work:
 - 2026-06-27 — ran isolated `frontdoor` A/B; private `--no-mmap` was slower (42.428 t/s) than shared mmap (56.203 t/s) despite successful node-local placement; leave frontdoor shared-mmap.
 - 2026-06-27 — ran isolated `ingest_long_context` A/B; private `--no-mmap` was slower (41.655 t/s) than shared mmap (57.528 t/s) despite successful node-local placement; leave ingest shared-mmap. Initial N12 target set is closed negative.
 - 2026-06-27 — `affinity_preflight.py` gained `numa_maps` placement telemetry + opt-in strict locality; live strict worker-quarter check shows `worker_general` quarters are CPU-pinned correctly but memory-interleaved across N0-N3, so future private-copy claims must include this artifact and cannot rely on CPU affinity alone.
+- 2026-06-27 — `stack_numa.py` now scopes `worker_general` interleave to instance 0 only (`5573e465`); live worker quarters still need a controlled restart and strict `numa_maps` verification before the fast-path claim can be marked proven.
