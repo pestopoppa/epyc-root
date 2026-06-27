@@ -26,9 +26,13 @@ from typing import Callable
 # Minimum output length to trigger compression. Short outputs are returned as-is.
 MIN_COMPRESS_CHARS = 500
 _ANTI_THRASH_HISTORY_MAX_EVENTS = 64
+_FENCED_BLOCK_MAX_LINES = 40
+_FENCED_BLOCK_HEAD_LINES = 24
+_FENCED_BLOCK_TAIL_LINES = 8
 
 
 _anti_thrash_history: deque[tuple[str, bool]] = deque(maxlen=_ANTI_THRASH_HISTORY_MAX_EVENTS)
+_FENCE_RE = re.compile(r"^(```|~~~)([A-Za-z0-9_+.#-]*)\s*$")
 
 
 @dataclass(frozen=True)
@@ -94,6 +98,23 @@ def compress_tool_output_with_metadata(text: str, command: str) -> CompressionRe
                 original_chars=original_chars,
                 compressed_chars=original_chars,
             )
+    fenced_result = _compress_fenced_code_blocks(text)
+    if len(fenced_result) < len(text):
+        if _should_suppress_anti_thrash(text):
+            _record_anti_thrash_event(text, False)
+            return CompressionResult(
+                text=text,
+                strategy="code_fence_collapse_anti_thrash_suppressed",
+                original_chars=original_chars,
+                compressed_chars=original_chars,
+            )
+        _record_anti_thrash_event(text, True)
+        return CompressionResult(
+            text=fenced_result,
+            strategy="code_fence_collapse",
+            original_chars=original_chars,
+            compressed_chars=len(fenced_result),
+        )
     _record_anti_thrash_event(text, False)
     return CompressionResult(
         text=text,
@@ -127,6 +148,75 @@ def _should_suppress_anti_thrash(text: str) -> bool:
 
 def _record_anti_thrash_event(text: str, compressed: bool) -> None:
     _anti_thrash_history.append((_content_hash(text), compressed))
+
+
+def _compress_fenced_code_blocks(text: str) -> str:
+    """Collapse oversized fenced code blocks while preserving fence boundaries."""
+    if "```" not in text and "~~~" not in text:
+        return text
+
+    lines = text.splitlines()
+    output: list[str] = []
+    changed = False
+    idx = 0
+
+    while idx < len(lines):
+        opener = _FENCE_RE.match(lines[idx].strip())
+        if opener is None:
+            output.append(lines[idx])
+            idx += 1
+            continue
+
+        fence_marker = opener.group(1)
+        language = opener.group(2).strip().lower()
+        start_line = lines[idx]
+        idx += 1
+        block: list[str] = []
+
+        while idx < len(lines) and lines[idx].strip() != fence_marker:
+            block.append(lines[idx])
+            idx += 1
+
+        if idx >= len(lines):
+            output.append(start_line)
+            output.extend(block)
+            break
+
+        collapsed_block = _collapse_fenced_block(block, language)
+        changed = changed or collapsed_block != block
+        output.append(start_line)
+        output.extend(collapsed_block)
+        output.append(lines[idx])
+        idx += 1
+
+    if not changed:
+        return text
+
+    result = "\n".join(output)
+    if text.endswith("\n"):
+        result += "\n"
+    return result
+
+
+def _collapse_fenced_block(lines: list[str], language: str) -> list[str]:
+    if len(lines) <= _FENCED_BLOCK_MAX_LINES:
+        return lines
+
+    head = lines[:_FENCED_BLOCK_HEAD_LINES]
+    tail = lines[-_FENCED_BLOCK_TAIL_LINES:]
+    omitted = len(lines) - len(head) - len(tail)
+    return [*head, _fence_omission_marker(language, omitted), *tail]
+
+
+def _fence_omission_marker(language: str, omitted_lines: int) -> str:
+    marker = f"... {omitted_lines} middle lines omitted by tool-output compression ..."
+    if language in {"py", "python", "sh", "bash", "shell", "yaml", "yml", "toml", "rb"}:
+        return f"# {marker}"
+    if language in {"js", "jsx", "ts", "tsx", "java", "c", "cpp", "cc", "cxx", "rs", "go"}:
+        return f"// {marker}"
+    if language in {"html", "xml", "md", "markdown"}:
+        return f"<!-- {marker} -->"
+    return marker
 
 
 # ---------------------------------------------------------------------------
@@ -343,7 +433,9 @@ def _compress_git_log(text: str, command: str) -> str:
 
     # If already using a compact format (oneline/short), likely already compressed
     # Check if lines look like verbose format (has "commit <hash>" + "Author:" pattern)
-    has_verbose_markers = any(l.startswith("Author:") or l.startswith("Date:") for l in lines[:20])
+    has_verbose_markers = any(
+        line.startswith("Author:") or line.startswith("Date:") for line in lines[:20]
+    )
     if not has_verbose_markers:
         return text
 
@@ -471,10 +563,10 @@ def _compress_build_output(text: str, command: str) -> str:
         # Deduplicate preserving order
         seen: set[str] = set()
         deduped: list[str] = []
-        for l in error_lines:
-            if l not in seen:
-                seen.add(l)
-                deduped.append(l)
+        for line in error_lines:
+            if line not in seen:
+                seen.add(line)
+                deduped.append(line)
         parts.append("\n".join(deduped))
     if warning_lines and len("\n".join(warning_lines)) < 1000:
         parts.append("\n".join(warning_lines))

@@ -87,6 +87,52 @@ class TestAntiThrashing:
         assert result.compressed_chars < result.original_chars
 
 
+class TestFencedCodeCollapse:
+    def test_unknown_command_collapses_large_fenced_blocks(self):
+        python_block = "\n".join(f"print('line {i}')" for i in range(80))
+        json_block = "\n".join(f'  "key_{i}": "value_{i}",' for i in range(55))
+        text = (
+            "analysis before\n"
+            "```python\n"
+            f"{python_block}\n"
+            "```\n"
+            "middle prose\n"
+            "```json\n"
+            f"{json_block}\n"
+            "```\n"
+            "analysis after\n"
+        )
+
+        result = compress_tool_output_with_metadata(text, "cat report.md")
+
+        assert result.strategy == "code_fence_collapse"
+        assert result.changed
+        assert result.compressed_chars < result.original_chars
+        assert "```python" in result.text
+        assert "```json" in result.text
+        assert result.text.count("```") == 4
+        assert "print('line 0')" in result.text
+        assert "print('line 79')" in result.text
+        assert "print('line 40')" not in result.text
+        assert "# ... 48 middle lines omitted by tool-output compression ..." in result.text
+        assert "... 23 middle lines omitted by tool-output compression ..." in result.text
+
+    def test_short_fenced_blocks_remain_passthrough(self):
+        text = (
+            "notes\n"
+            "```python\n"
+            "print('small')\n"
+            "```\n"
+            + ("padding\n" * 80)
+        )
+
+        result = compress_tool_output_with_metadata(text, "cat notes.md")
+
+        assert result.strategy == "passthrough_no_handler"
+        assert result.text == text
+        assert not result.changed
+
+
 # ---------------------------------------------------------------------------
 # Pytest compression
 # ---------------------------------------------------------------------------
