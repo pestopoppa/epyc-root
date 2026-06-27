@@ -1209,6 +1209,18 @@ learned-routing reward signals from the failed NeuralTxt report alone.
   skips, so they fail the cross-action gate. Repairing
   `source_family:seeding_eval` requires new or regenerated seeding data with a
   second canonical action for the same source-record groups.
+- 2026-06-27 follow-up: orchestrator `10e5133b` prioritizes the expanded-gap
+  collection queue after the 5-fold cross-validation pass. The planner now marks
+  priority `0` source-family blockers
+  `source_family:orchestrator_live_seed:architect_general>frontdoor`,
+  `source_family:seeding_eval:architect_general>coder_escalation`, and
+  `source_family:seeding_eval:architect_general>frontdoor`; priority `1` is
+  `suite:general:architect_general>coder_escalation`; priority `2` remains
+  lower-value direction-balance cleanup. The plan still allows no runtime gate
+  change and still marks collection batches as unsafe during active AutoPilot
+  because they consume live model slots. Next A9 action is the priority-0 live
+  collection batch set in a clean/coordinated measurement window, then rebuild
+  the pairwise contract and rerun holdouts.
 
 ---
 

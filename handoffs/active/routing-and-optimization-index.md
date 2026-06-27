@@ -327,6 +327,14 @@ record generation/collection for `orchestrator_live_seed`, `seeding_eval`, and
 `suite:general`; do not spend more cycles rebuilding or retuning against the
 current artifact set.
 
+Orchestrator `10e5133b` adds collection-priority metadata to that expanded-gap
+plan and regenerates the artifacts. Priority `0` is the source-family blocker
+set (`orchestrator_live_seed` and `seeding_eval` action pairs), priority `1` is
+`suite:general`, and priority `2` is direction-balance cleanup. The batches
+remain marked `can_run_during_active_autopilot=false`; the next meaningful A9
+move is to run the priority-0 collection commands in a clean/coordinated
+measurement window, then rebuild the pairwise contract and rerun holdouts.
+
 ### 8. Conversation Mgmt B2 ↔ Context Folding Phase 1
 `orchestrator-conversation-management.md` B2 (protected-zone compression from Hermes/OpenGauss) and `context-folding-progressive.md` Phase 1 (two-level condensation) both modify session compaction behavior. They must be sequenced — context-folding Phase 1 should land first as the structural upgrade, then B2's protected-zone logic can layer on top. Alternatively, B2's tool-pair sanitization (`_sanitize_tool_pairs()`) could be extracted as a standalone prerequisite for both. **Updated 2026-04-05**: Context-folding Phase 3b (role-aware compaction profiles) must align with B2's role taxonomy — the `CompactionProfile` roles must match the conversation management role definitions. **Updated 2026-04-05 (session 4)**: `CompactionProfile` roles now defined (`architect`, `worker_coder`, `worker_general`, `worker_fast`) with `get_compaction_profile()` in `session_log.py`. B2 can now reference these profiles directly. `segment_helpfulness()` + `prioritized_compaction()` available as building blocks for B2's protected-zone logic.
 
