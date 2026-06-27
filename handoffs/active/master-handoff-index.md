@@ -60,7 +60,14 @@ the direction-audit `collection_targets` and finds `8,825` prompt-free
 suite-level `architect_general>frontdoor` candidates, but still finds no
 current-corpus candidates for the key `source_family:seeding_eval`
 `architect_general>{coder_escalation,frontdoor}` or `suite:thinking`
-`architect_general>coder_escalation` gaps.
+`architect_general>coder_escalation` gaps. The follow-up scoring/rebuild is now
+complete in orchestrator: the audit-target expansion adds `8,825` prompt-free
+labels, rebuilds an `11,682`-row combined feature manifest and a `6,192`-pair
+score-ordered contract with `4,296` cross-action rows, and improves independent
+holdouts from `5/9` passing to `13/16`. Runtime gate changes remain disallowed:
+`source_family:orchestrator_live_seed`, `source_family:seeding_eval`, and
+`suite:general` still fail, so the next A9 work is targeted source-family
+evidence or a different pairwise stratification/feature design.
 
 ## B2. Frontier programs (strategic spine — spec: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md))
 | # | Prio | Item | Handoff |
