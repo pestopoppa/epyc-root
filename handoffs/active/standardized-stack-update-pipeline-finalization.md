@@ -148,12 +148,16 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
 
 ## Outstanding Work
 
-- [ ] Keep the `waived_production_blocker` mechanism empty by default and
+- [x] Keep the `waived_production_blocker` mechanism empty by default and
   fail-closed: any future waiver must be intentional, owned, expiring, and
   removed as soon as compatibility no longer needs it. Current guard state has
   no active waivers (`orchestration/stack_change_guard_exceptions.yaml`
   contains `exceptions: []`) and `stack_change_pipeline.py check` reports
-  `guard_strict: ok`.
+  `guard_strict: ok`. Orchestrator `5bfab0a7` hardens this from convention to
+  enforcement: documented `production_blocker` surface waivers now fail closed
+  unless `stack_change_guard.py` / `stack_change_pipeline.py` is run with
+  `--allow-production-blocker-waivers`, leaving any accepted emergency waiver
+  visible as `hardcoded_surface.waived.production_blocker`.
 - [ ] Continue high-risk consumer migrations only after focused GitNexus impact
   checks. Use the stack-change surface manifest to pick the next consumer.
   Latest completed slices: Orchestrator `95a23aa` canonicalized the
