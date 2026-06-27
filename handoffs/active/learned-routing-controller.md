@@ -211,7 +211,7 @@ Order tasks by cost: P4.1 is cheapest (audit only), P4.4 is most expensive (over
 - [ ] **P4.3** **SVD-scale fine-tuning trial (medium cost)**: Trinity uses singular-value FT on the backbone — learn only singular-value scales, keep orthogonal matrices fixed (~9K extra params). Their ablation: removing SVD-FT costs −3 to −4 points across all four benchmarks. This is a parameter-efficient adaptation cheaper than LoRA and applicable to whatever backbone we use as the routing-head feature extractor. Currently we treat BGE as fully frozen. Implement SVD-FT on BGE's last `k` transformer blocks, retrain the head end-to-end, A/B against frozen-BGE on val set. Decision gate: if Δ ≥ +2 points val acc, promote SVD-FT to default; if flat, record null result and move on.
 - [ ] **P4.4** **sep-CMA-ES cold-start spike (large cost; gated on P4.2 favourable + a cold-start surface)**: Trinity trains the routing head with sep-CMA-ES against terminal binary reward (no labels). Population λ≈32, replication m=16, total budget 1.5k–40k evaluations. Direct application to our setup: when a *new* routing surface comes online (Phase 2/3 hidden-state probe, or a new role surface, or a new model added to the pool), there are zero episodic labels to distill from. ES against eval-tower fitness can train the head from cold. Replication budget estimate (deep-dive Section 5): population λ≈45 for our 200K-param head, m=16 reps, ≈720 fitness evals per generation, ≈10 generations as feasibility-test target ≈ 10h overnight at 32-way concurrency. Prerequisites: (a) eval-tower wired as a per-question scorable, parallelisable fitness oracle (Math-Verify adoption is on the critical path — see `routing-and-optimization-index.md` cross-cutting concern #13), (b) `pycma` or equivalent sep-CMA-ES library vendored. Decision gate: if cold-start ES achieves within 5 points of SFT-trained head with comparable wall-clock, adopt as the cold-start recipe; if not, record null and stick with SFT distillation.
 - [x] **P4.5** **Journal-derived soft-label SFT — zero-inference cold-start (Fugu Stage 1 analog)** — **COMPLETE 2026-06-26, NULL RESULT (soft labels do NOT beat hard labels; keep hard-label training)**. See "P4.5 Phase B Outcome" below for the full A/B. Original spec: Fugu Stage 1 trains via KL divergence against a per-worker reward distribution rather than contrastive binary labels. The equivalent for our LRC: for each `qid` with ≥5 appearances in the autopilot journal `question_results`, compute mean correctness per role across all trials → apply softmax(τ=2) → use as a soft probability distribution over roles for that question type. Train LRC via KL(predicted_logits ∥ soft_labels) instead of cross-entropy on hard winner-take-all labels. **Cost: zero additional inference** — all data is already in `orchestration/autopilot_journal.jsonl`. Current data: 546 qids with ≥5 appearances, ~5 roles → ~2,730 soft-label examples. Implementation: (a) extract per-qid per-role mean correctness from `question_results` in journal (script already feasible given the earlier per-question analysis); (b) apply softmax τ=2 to get probability vectors (τ=2 gives soft distributions; τ→0 is winner-take-all; τ→∞ is uniform — tune τ on a held-out quality check); (c) retrain LRC head via KL loss. Decision gate: if val acc improves ≥1 pp over hard-label baseline, adopt as the default Phase 1 training signal going forward. **Critical caveat**: the stable core has 3/50 mid-range qids (30–70% pass rate) — the remaining 47 are polarized floor/ceiling. This means the soft labels will be mostly near-deterministic (one role clearly dominates each question type), so the KL signal will be similar to hard labels for those cases. The real benefit is on the ~300 qids in the rotating pool with genuine mid-range histories (53% mid-range at ≥5 appearances), where the soft labels capture real uncertainty across roles. **Priority**: HIGH relative to P4.3/P4.4 — zero inference cost makes this the lowest-risk next experiment.
-- [ ] **P4.6** **Randomized-pool training for stack-change robustness (Conductor analog, added 2026-06-25)**: Conductor's randomized-pool finetuning (20 iterations, 350 samples, randomly subsampling the worker pool per example) makes the coordinator robust to pool composition changes. For our LRC: after Phase 1.5 (sep-CMA-ES cold-start), run a 20-iteration finetuning stage where 1–2 roles are randomly masked out per training example. The training objective becomes "given this context and THIS SUBSET of available roles, predict which to use." Cost: 20 extra iterations after Phase 1.5 (Conductor used 350 samples in 20 iterations; we can use the same 174K label pool with role-dropout). **Why this matters**: our stack changes frequently (model swaps, role consolidations, new model additions per `feedback_same_model_roles_share_server`). An LRC trained on a fixed role set degrades silently when roles change. Role dropout during training creates a prior over "some roles may be unavailable" — the head learns to route based on remaining options rather than assuming all roles are always present. **Implementation**: in the LRC training loop, add a `role_dropout_rate` flag (default 0.0 for Phase 1; set to 0.2–0.3 for this finetuning stage). For each batch, randomly zero out 1–2 role slots in the label distribution before computing loss. No architecture change needed — just training data augmentation. **Sequencing**: bundle with P4.5 Phase B (same training run, two experiments back-to-back).
+- [x] **P4.6** **Randomized-pool training for stack-change robustness (Conductor analog, added 2026-06-25)** — **COMPLETE 2026-06-27, NULL RESULT under the current P4.5 soft-label objective**. Orchestrator `688c6076` adds opt-in `--role-dropout-rate` training for the KL/soft-label arm and focused unit coverage; `a404e3bc` records 10 offline runs at rates `0.2` and `0.3` across five seeds. No run beat the hard-label arm by the +1pp role-success gate, so decision remains **keep current hard-label training**. Artifacts: `orchestration/reports/p46_role_dropout/{summary.json,summary.md,rate_*_seed_*.json}`. Future available-role robustness should be revisited only with an architecture/input contract that exposes role availability to the model, not by retuning this soft-label-only dropout path.
 
 ### Phase 5: IRT-Stratified Cold-Start Onboarding (NEW 2026-04-28, from intake-496)
 
@@ -1282,4 +1282,42 @@ Delta ≈ 0 across all seeds (gate was ≥+1pp). **Robust null.**
 
 **Artifacts**: `orchestration/reports/p45_soft_labels/{soft_labels_embedded.npz, kl_ab_report.json}`; scripts `scripts/graph_router/{embed_soft_label_dataset.py, train_routing_classifier_kl.py}`.
 
-**P4.6 (role dropout)**: was to bundle with P4.5 Phase B. Since soft-labeling is null, P4.6 is **decoupled** — it is an orthogonal robustness technique (role-availability dropout) that applies to the standard hard-label trainer. It remains open and worth doing on its own merits when the LRC is next retrained for production; it does not depend on the soft-label result.
+## P4.6 Role Dropout Outcome — 2026-06-27 (NULL RESULT)
+
+**Status**: COMPLETE. The opt-in training augmentation landed, but the measured
+dropout variants do **not** improve the current LRC training objective. Decision:
+**keep current hard-label training**.
+
+**Implementation**:
+- Orchestrator `688c6076` adds `--role-dropout-rate`,
+  `--role-dropout-min-roles`, and `--role-dropout-max-roles` to
+  `train_routing_classifier_kl.py`.
+- Dropout applies only to the SOFT/KL arm. It masks secondary positive target
+  mass, protects the argmax role, and renormalizes, so one-hot hard-label rows
+  remain behaviorally unchanged.
+- Focused unit coverage verifies renormalization, one-hot no-op behavior, and
+  invalid-parameter rejection.
+
+**Offline A/B**:
+- Dataset: existing `orchestration/reports/p45_soft_labels/soft_labels_embedded.npz`
+  (`432` train / `108` val / `6` actions).
+- Rates: `0.2` and `0.3`.
+- Seeds: `42`, `43`, `44`, `45`, `46`.
+- Gate: adopt only if dropout soft arm beats the hard arm by `>=+1pp`
+  role-success accuracy.
+
+| rate | runs | hard RSA | dropout RSA | delta | best delta | adopt runs |
+|---:|---:|---:|---:|---:|---:|---:|
+| 0.2 | 5 | 0.5296 | 0.5222 | -0.0074 | +0.0000 | 0 |
+| 0.3 | 5 | 0.5296 | 0.5222 | -0.0074 | +0.0000 | 0 |
+
+**Interpretation**: role dropout on label distributions alone does not create
+the "available role subset" learning problem described by Conductor; the model
+still receives the same prompt features and no availability mask. The current
+soft-label data is also polarized, so protecting the argmax leaves the decision
+boundary largely unchanged. If availability robustness is revisited, it should
+use an explicit role-availability input/contract or a hard-label trainer variant
+designed around masked candidate sets, not more retuning of this KL path.
+
+**Artifacts**:
+`orchestration/reports/p46_role_dropout/{summary.json,summary.md,rate_*_seed_*.json}`.
