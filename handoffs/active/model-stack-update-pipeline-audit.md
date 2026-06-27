@@ -173,6 +173,21 @@ The following examples are evidence-backed reasons this work should stay high RO
    - Twenty-sixth cleanup landed in `epyc-orchestrator` `4f9123f`:
      debugger prompt documentation for `model_graded_evals` now names
      `worker_general`, matching the model-grader default/spec migration.
+   - Twenty-seventh cleanup landed in `epyc-orchestrator` `c2daef44`:
+     approval-gate high-cost roles now derive from generated live stack-prior
+     model memory with `architect_general` only as explicit degraded fallback.
+     Tests prove generated priors can move the high-cost gate to a different
+     live role and that a valid empty high-cost set does not fall back.
+   - Twenty-eighth cleanup landed in `epyc-orchestrator` `80ed046e`:
+     chat delegation architect decision/compute budgets now derive the live
+     `architect_*` role set from generated stack priors, while compatibility
+     imports still expose dynamic budget maps. Tests cover generated live
+     architect additions and valid empty live-architect sets.
+   - Twenty-ninth cleanup landed in `epyc-orchestrator` `a91c8860`:
+     live MemRL/q_scorer initialization now fails closed when required live
+     q_scorer priors would come from degraded fallback sources. The runtime
+     helper reuses the existing promotion validator before Q-scoring components
+     are constructed.
    - Remaining risk: legacy tests and historical docs can still preserve old names unless classified or rewritten; they are no longer production blocker waivers.
 
 3. Config models no longer preserve dead URLs/timeouts as active live maps.
@@ -213,7 +228,13 @@ The following examples are evidence-backed reasons this work should stay high RO
 7. q_scorer live priors now consume the generated stack-prior contract.
    - RESOLVED in `epyc-orchestrator` `e3d967a`: `orchestration/repl_memory/q_scorer.py` loads live TPS, quality, and memory priors from `orchestration/derived/stack_priors.yaml` before falling back to degraded local tables.
    - `frontdoor` and `coder_escalation` now share generated TPS/memory truth; `worker_explore` inherits worker-server TPS/memory from the live `worker_general` stack-prior record; `architect_coding` remains absent from live scorer priors.
-   - Remaining risk: fallback tables are still intentionally present for degraded/offline mode and should eventually expose explicit provenance if downstream consumers need to distinguish live vs fallback scoring.
+   - EXTENDED in `epyc-orchestrator` `a91c8860`: `QScorerPriorSourceError`
+     and `require_live_q_scorer_stack_priors()` now let selected live callers
+     reject degraded fallback sources for required live roles. API MemRL
+     initialization uses this path before constructing Q-scoring components.
+   - Remaining risk: fallback tables are still intentionally present for
+     degraded/offline mode; additional offline/runner callers can opt into the
+     strict helper if they become live production paths.
 
 8. GraphRouter offline consumers no longer own stale live action/model rosters.
    - RESOLVED for GAT training in `epyc-orchestrator` `8cf0310`: `train_graph_router.py` loads live `LLMRole` nodes from `stack_priors.yaml` and skips benchmark/candidate roles.
@@ -385,7 +406,9 @@ Priority order:
    - Follow-up: wire provenance metadata if downstream injection needs to record live-prior vs override/degraded cost source.
 2. `src/api/routes/chat_delegation_decision.py`
    - DONE first cleanup in `b1402a2`: removed `architect_coding` from live budget defaults.
-   - Remaining follow-up: derive architect/delegation budget maps from stack-prior role policy or live architect roles instead of a local static table.
+   - DONE follow-up in `80ed046e`: architect/delegation budget maps derive
+     live `architect_*` roles from generated stack priors instead of a local
+     static table, preserving dynamic compatibility map imports.
 3. `src/api/routes/chat_pipeline/delegation_stage.py` and `src/api/routes/chat_pipeline/proactive_stage.py`
    - DONE cleanup in `481516c`: retired `architect_coding` no longer triggers delegated/proactive architect branch behavior.
    - DONE follow-up in `53f12e0`: proactive deep-reasoning triggers such as `/think` and `/ultrathink` now delegate to live `architect_general` instead of the removed dedicated thinking role; `tests/unit/test_proactive_delegator.py` covers the regression.
@@ -423,7 +446,12 @@ Priority order:
      stale same-role vision comment are gone; tests assert current n-way
      light/heavy role classes, retired `worker_fast` absence from matrix light
      roles, and same-role `vision_escalation` ALLOW behavior.
-   - Remaining follow-up: derive high-cost and tap/streaming classifications from stack priors or explicit role policy.
+   - DONE in `c2daef44`: approval-gate high-cost classification now derives
+     from stack-prior model memory, with `architect_general` only as degraded
+     fallback.
+   - Remaining follow-up: tap/streaming classifications are stack-prior-derived
+     in runtime code; keep any residual work limited to guard/doc classification
+     unless a new live static table is found.
    - Remaining LangGraph retired-role mentions should be legacy-test or historical-doc cleanup only.
 8. `scripts/benchmark/seeding_eval.py`, `scripts/benchmark/seeding_scoring.py`, `scripts/benchmark/analyze_routing_policy.py`, and `scripts/benchmark/corpus_quality_gate.py`
    - DONE in `5773777`: live seeding/eval behavior now derives non-VL architect candidates from stack priors, legacy slow-role logic derives from `ARCHITECT_ROLES`, and the corpus quality gate loads current model configs from stack priors.
