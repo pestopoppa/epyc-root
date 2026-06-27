@@ -212,3 +212,19 @@ def test_cli_writes_autopilot_remediation_pickup_json(tmp_path):
     assert pickup["authority_gate"] is False
     assert pickup["item_count"] == 1
     assert pickup["items"][0]["id"] == "readiness:sample:L1.style_config"
+
+
+def test_security_audit_accepts_scripts_security_surface(tmp_path):
+    scorer = _load_module()
+    repo = tmp_path / "repo"
+    _write(repo / "scripts" / "security" / "audit_repository.py", "#!/usr/bin/env python3\n")
+
+    report = scorer.score_repositories({"sample": repo})
+    security_audit = next(
+        item
+        for item in report["repos"]["sample"]["criteria"]
+        if item["id"] == "L4.security_audit"
+    )
+
+    assert security_audit["passed"] is True
+    assert "scripts/security/audit_repository.py" in security_audit["evidence"]

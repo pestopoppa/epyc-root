@@ -357,7 +357,8 @@ def build_criteria() -> list[Criterion]:
         exists_any("scripts/utils/agent_log_analyze.sh", "scripts/analysis/**", "orchestration/reports/**"))
     add(4, "Security", "security_audit", "Has security-review, audit, or hardening surfaces.",
         exists_any("handoffs/active/security-review-skill.md", "scripts/hooks/pii_precommit.sh",
-                   "scripts/hooks/earlyoom_audit.sh"))
+                   "scripts/hooks/earlyoom_audit.sh", "scripts/security/**",
+                   "scripts/security_audit.*"))
     add(4, "Task Discovery", "prioritized_tasks", "Prioritizes tasks with dependencies and reporting rules.",
         file_contains(("handoffs/active/*.md", "AGENTS.md", "CLAUDE.md"),
                       (r"Dependency graph", r"Prioritized task", r"Reporting instructions")))
