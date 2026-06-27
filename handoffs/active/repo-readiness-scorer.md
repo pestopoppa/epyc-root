@@ -89,6 +89,21 @@ Validation:
 - This is offline-only scorer hygiene; it does not change scoring criteria, remediation priorities, or AutoPilot authority.
 - Validation: GitNexus LOW on implementation symbols per sidecar; main-thread verification `python3 -m py_compile scripts/validate/repo_readiness_scorer.py tests/validate/test_repo_readiness_scorer.py`; `uv run --with pytest pytest -q tests/validate/test_repo_readiness_scorer.py` -> 10 passed; `uv run --with ruff ruff check scripts/validate/repo_readiness_scorer.py tests/validate/test_repo_readiness_scorer.py` passed.
 
+2026-06-27 research Standardized-gate update:
+
+- `epyc-inference-research` commit `bfa785c` adds a top-level `Makefile`,
+  `scripts/setup.sh`, and `.github/dependabot.yml`.
+- The Makefile exposes green `lint` and `test` smoke targets over the
+  maintained X-MAS function-axis table tooling instead of the legacy whole
+  `scripts/` tree, which still has historical Ruff/pytest debt.
+- `scripts/setup.sh` standardizes local setup through `uv sync --all-extras`;
+  Dependabot adds weekly Python dependency security automation.
+- A one-repo scorer run now reports `epyc-inference-research` as
+  **Standardized (L3)** with L3 pass rate `88.9%`; the remaining L3 blocker is
+  `L3.machine_task_index`.
+- Validation: `make lint`; `make test`; `bash -n scripts/setup.sh`;
+  `repo_readiness_scorer.py --repo epyc-inference-research=/mnt/raid0/llm/epyc-inference-research`.
+
 ## Notes
 
 - Anti-false-positive discipline (shared across Factory's review/scoring features): a criterion passes only on a concrete, verifiable check — mirrors our eval-tower verifier philosophy.
