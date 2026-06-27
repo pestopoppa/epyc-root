@@ -4,8 +4,8 @@ Registered tool name: image_generate (overrides the FAL cloud
 implementation that ships with hermes-agent's model_tools.py).
 
 The handler delegates to src.services.image_generator.ImageGenerator from
-the epyc-orchestrator repo, which submits a ComfyUI workflow on
-127.0.0.1:8188 and returns a saved file path + base64 bytes.
+the epyc-orchestrator repo, which submits a request to the local
+sd-server backend and returns a saved file path + base64 bytes.
 """
 
 from __future__ import annotations
@@ -66,8 +66,9 @@ _TOOL_SCHEMA = {
                 "enhance_prompt": {
                     "type": ["string", "boolean"],
                     "description": (
-                        "Prompt enhancer policy: 'auto' (default — on for prompts "
-                        "<50 words, off otherwise), true (always on), false (always off)."
+                        "Tri-state prompt-enhancer policy passed through to the "
+                        "orchestrator request model: 'auto' (default), true, or false. "
+                        "The Hermes plugin does not execute prompt enhancement itself."
                     ),
                     "default": "auto",
                 },
@@ -89,12 +90,9 @@ async def _handle_image_generate(args, **_kw):
 
     enhance = args.get("enhance_prompt", "auto")
     if isinstance(enhance, str):
-        if enhance.lower() == "true":
-            enhance = True
-        elif enhance.lower() == "false":
-            enhance = False
-        else:
-            enhance = "auto"
+        enhance = {"true": True, "false": False}.get(enhance.lower(), "auto")
+    elif enhance not in (True, False):
+        enhance = "auto"
 
     req = ImageGenerateRequest(
         prompt=prompt,
@@ -129,8 +127,8 @@ def register(ctx):
         is_async=True,
         description=(
             "Generate an image from a text prompt via local ERNIE-Image-Turbo "
-            "(replaces the disabled FAL cloud adapter)."
+            "(sd-server-backed replacement for the disabled FAL cloud adapter)."
         ),
         emoji="🎨",
     )
-    logger.info("local-image-generate plugin: image_generate now points at local ComfyUI")
+    logger.info("local-image-generate plugin: image_generate now points at local sd-server")
