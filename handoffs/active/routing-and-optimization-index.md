@@ -313,6 +313,20 @@ the holdout decision remains `mixed_holdout_signal` because
 `suite:general` still fail. Next A9 work should target those source-family /
 suite gaps directly instead of retuning the current pairwise ranker family.
 
+Orchestrator `cb1a3619` records the expanded-gap exhaustion audit. The expanded
+direction audit still reports `preference_coverage_gaps_found` on the
+`6,192`-pair contract, with weak strata including the two failing source
+families and `suite:general`. The expanded planner now writes negative plan
+artifacts instead of discarding them, and
+`offline_reward_pairwise_expanded_gap_plan_summary.{json,md}` confirms the
+current parsed result corpus has no non-overlapping candidates for the remaining
+collection targets: `candidate_rows=0`, `candidate_groups=0`,
+`skipped_pairwise_overlap_groups=6`, `skipped_no_cross_action_groups=334`, and
+all nine expanded collection targets unmatched. Next A9 work is new source
+record generation/collection for `orchestrator_live_seed`, `seeding_eval`, and
+`suite:general`; do not spend more cycles rebuilding or retuning against the
+current artifact set.
+
 ### 8. Conversation Mgmt B2 ↔ Context Folding Phase 1
 `orchestrator-conversation-management.md` B2 (protected-zone compression from Hermes/OpenGauss) and `context-folding-progressive.md` Phase 1 (two-level condensation) both modify session compaction behavior. They must be sequenced — context-folding Phase 1 should land first as the structural upgrade, then B2's protected-zone logic can layer on top. Alternatively, B2's tool-pair sanitization (`_sanitize_tool_pairs()`) could be extracted as a standalone prerequisite for both. **Updated 2026-04-05**: Context-folding Phase 3b (role-aware compaction profiles) must align with B2's role taxonomy — the `CompactionProfile` roles must match the conversation management role definitions. **Updated 2026-04-05 (session 4)**: `CompactionProfile` roles now defined (`architect`, `worker_coder`, `worker_general`, `worker_fast`) with `get_compaction_profile()` in `session_log.py`. B2 can now reference these profiles directly. `segment_helpfulness()` + `prioritized_compaction()` available as building blocks for B2's protected-zone logic.
 

@@ -67,7 +67,13 @@ score-ordered contract with `4,296` cross-action rows, and improves independent
 holdouts from `5/9` passing to `13/16`. Runtime gate changes remain disallowed:
 `source_family:orchestrator_live_seed`, `source_family:seeding_eval`, and
 `suite:general` still fail, so the next A9 work is targeted source-family
-evidence or a different pairwise stratification/feature design.
+evidence or a different pairwise stratification/feature design. Orchestrator
+`cb1a3619` records the expanded-gap exhaustion audit: on the current
+`6,192`-pair contract, the planner finds `0` non-overlapping candidate rows for
+the remaining expanded collection targets after excluding existing/overlapping
+and no-cross-action groups. The current artifact set is exhausted for the
+remaining A9 blockers; next work must add new source records for
+`orchestrator_live_seed`, `seeding_eval`, and `suite:general`.
 
 ## B2. Frontier programs (strategic spine — spec: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md))
 | # | Prio | Item | Handoff |
