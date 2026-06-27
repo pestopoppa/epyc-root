@@ -135,6 +135,23 @@ Validation:
   (`impactedCount=0`); research `make health`; research `make lint`; research
   `make test`; `repo_readiness_scorer.py --repo epyc-inference-research=/mnt/raid0/llm/epyc-inference-research`.
 
+2026-06-27 research generated-docs update:
+
+- `epyc-inference-research` commit `935a8ea` adds
+  `scripts/docs/generate_docs_index.py`, `scripts/docs/test_generate_docs_index.py`,
+  `make docs`, `make docs-check`, and the generated
+  `docs/reference/GENERATED_DOCS_INDEX.md` artifact.
+- The generated-docs lane is deterministic and no-inference: `--check` fails when
+  the committed index is stale.
+- A one-repo scorer run now reports `L4.generated_docs` as passing for
+  `epyc-inference-research`.
+- Remaining L4 blockers are `L4.analysis_reports` and `L4.security_audit`.
+- Validation: research `uv run --with ruff ruff check
+  scripts/docs/generate_docs_index.py scripts/docs/test_generate_docs_index.py`;
+  `uv run --with pytest pytest -q scripts/docs/test_generate_docs_index.py`;
+  `make docs-check`; `make lint`; `make test`; and the root one-repo readiness
+  scorer for `epyc-inference-research`.
+
 ## Notes
 
 - Anti-false-positive discipline (shared across Factory's review/scoring features): a criterion passes only on a concrete, verifiable check — mirrors our eval-tower verifier philosophy.

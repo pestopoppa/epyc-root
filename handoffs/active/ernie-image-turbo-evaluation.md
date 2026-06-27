@@ -49,7 +49,7 @@ Recommended next slice:
 | Client + generator code | ✅ done | `src/services/comfyui_client.py`, `src/services/image_generator.py`, `src/models/image.py`. End-to-end smoke test 2026-05-06: 512² @ 4 steps in 65 s; 1024² @ 8 steps in 478 s. |
 | Frontdoor + dispatcher wired | ✅ done | `task_type=image` added to `src/dspy_signatures/frontdoor.py`; `image_worker` virtual role + variants added to `src/orchestration/dispatcher.py:ROLE_MAPPING`. |
 | Model registries updated | ✅ done | Added `comfyui` + `image_worker` entries; promoted `voice_server` (Whisper) to `managed_by: orchestrator_stack`. Both lean (epyc-orchestrator) and comprehensive (epyc-inference-research) registries updated. |
-| Hermes plugin replacing FAL | ✅ done | `/workspace/scripts/hermes/plugins/local-image-generate/` (symlinked to `~/.hermes/plugins/`). Registers `image_generate` with same name as FAL implementation; Hermes' tools.registry uses dict assignment so plugin wins. |
+| Hermes plugin replacing FAL | ✅ done | `/workspace/scripts/hermes/plugins/local-image-generate/` (symlinked to `~/.hermes/plugins/`). Registers `image_generate` with same name as FAL implementation; Hermes' tools.registry uses dict assignment so plugin wins. Updated 2026-06-27 in root `948fbdbc` to remove stale ComfyUI/8188 wording and pass through the supported `auto`/`true`/`false` enhancer policy to the orchestrator sd-server path. |
 | Hermes Python env installed | ✅ done | `uv sync --frozen` at `/mnt/raid0/llm/hermes-agent/` provisioned `.venv` with all 100+ deps including the previously-missing `firecrawl-py>=4.16.0`. Hermes tool registry now loads cleanly (52 tools registered). |
 | End-to-end through real Hermes registry | ✅ done | Verified 2026-05-06: `discover_plugins()` auto-discovers our plugin, `image_generate` handler resolves to `hermes_plugins.local_image_generate._handle_image_generate` (NOT FAL), invocation produces a saved PNG end-to-end. Test artifact at `/mnt/raid0/llm/output/images/2026-05-06/d7da4364-7781-4ca7-9906-b91f92232920.png`. |
 | **Backend swapped: ComfyUI → sd-server (stable-diffusion.cpp native ggml)** | ✅ done 2026-05-07 | Discovered upstream sd.cpp already ships full ERNIE-Image-Turbo support (`src/ernie_image.hpp`, 441 lines). Built sd-server, replaced ComfyUI in stack. Measured **2.54× wall-clock speedup** at production scale (~188 s vs 478 s @ 1024² 8 steps extrapolated). `--vae-conv-direct` was the high-ROI flag (7.1× on VAE alone). Hermes plugin chain unchanged — `ImageGenerator` interface preserved, internals swapped to `SDServerClient`. Old ComfyUI infra retained for rollback at `/mnt/raid0/llm/comfyui-ernie-test/`. |
@@ -58,16 +58,16 @@ Recommended next slice:
 
 ## Remaining Operational Questions
 
-1. **Prompt-enhancer policy.** Model card shows w/ PE *raises* LongTextBench (0.9655 vs 0.9639) but *lowers* GENEval (0.8510 vs 0.8667). Per-scene toggle needed: on for poster/infographic prompts, off for compositional. Define a heuristic for the Hermes adapter.
-2. **Content-filter audit.** Baidu's prior model ERNIE-ViLG had heavy political-content censorship. Run a probe set covering political topics, copyrighted characters, NSFW boundaries, and bilingual edge cases — note what is silently filtered or transformed before treating as a general-purpose tool.
-3. **LongTextBench self-reported score validation.** ERNIE-Turbo's 0.9655 is on Baidu's own scorecard, not re-validated by the X-Omni team. Re-run a curated 20-prompt local set covering EN/ZH typography stress cases before relying on the leadership claim.
-4. **Spark performance reality check.** Deep dive §5.1 extrapolates 6–12 s/image at BF16, 3–5 s at NVFP4 from FLUX-schnell numbers. Re-bench on actual hardware once Spark lands; the 8-step distilled DiT has no published Spark numbers.
-5. **Alternative re-evaluation.** If LongTextBench-ZH is not actually needed by the product, FLUX.1-schnell (12B, 4-step, Apache 2.0, mature ecosystem) is the simpler default. Re-litigate the choice against actual product requirements before committing.
+1. **Content-filter audit.** Baidu's prior model ERNIE-ViLG had heavy political-content censorship. Run a probe set covering political topics, copyrighted characters, NSFW boundaries, and bilingual edge cases — note what is silently filtered or transformed before treating as a general-purpose tool.
+2. **LongTextBench self-reported score validation.** ERNIE-Turbo's 0.9655 is on Baidu's own scorecard, not re-validated by the X-Omni team. Re-run a curated 20-prompt local set covering EN/ZH typography stress cases before relying on the leadership claim.
+3. **Spark performance reality check.** Deep dive §5.1 extrapolates 6–12 s/image at BF16, 3–5 s at NVFP4 from FLUX-schnell numbers. Re-bench on actual hardware once Spark lands; the 8-step distilled DiT has no published Spark numbers.
+4. **Alternative re-evaluation.** If LongTextBench-ZH is not actually needed by the product, FLUX.1-schnell (12B, 4-step, Apache 2.0, mature ecosystem) is the simpler default. Re-litigate the choice against actual product requirements before committing.
 
 Resolved questions:
 - Loader/backend compatibility: resolved by sd-server native ERNIE support.
 - Distilled-model quantization penalty: verified; Q4_K_M corrupts text rendering enough to reject for production.
 - Hermes integration shape: resolved through the local `image_generate` plugin and `ImageGenerator`/`SDServerClient` interface.
+- Prompt-enhancer policy: resolved in orchestrator `f4b4cebe` with a deterministic `auto` policy that turns on for text-heavy surfaces and simple short prompts, turns off for compositional/spatial scenes and already-rich prompts, and records the policy decision in result metadata while the sd-server backend still passes prompts through verbatim. Hermes root `948fbdbc` now forwards only the supported tri-state policy.
 
 ## Notes
 
