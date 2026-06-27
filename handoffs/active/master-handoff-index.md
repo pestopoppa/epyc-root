@@ -55,7 +55,12 @@ Runtime gate changes remain disallowed. Next A9 work is new/better
 design; do not route downstream on either expanded artifact yet.
 Current seeding source paths are not merely misconfigured: after exclusions,
 they leave only frontdoor-family groups, so `seeding_eval` repair needs new
-cross-action seeding evidence.
+cross-action seeding evidence. The 2026-06-27 audit-target planner now consumes
+the direction-audit `collection_targets` and finds `8,825` prompt-free
+suite-level `architect_general>frontdoor` candidates, but still finds no
+current-corpus candidates for the key `source_family:seeding_eval`
+`architect_general>{coder_escalation,frontdoor}` or `suite:thinking`
+`architect_general>coder_escalation` gaps.
 
 ## B2. Frontier programs (strategic spine — spec: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md))
 | # | Prio | Item | Handoff |
