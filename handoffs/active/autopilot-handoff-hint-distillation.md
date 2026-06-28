@@ -1,6 +1,6 @@
 # AutoPilot Planner-Hint Distillation from Orchestrator Handoffs
 
-**Status**: PHASE 1 SOURCE + DRY-RUN READY; PHASE 2A-2F DEFAULT-OFF PLUMBING LANDED — no rows written, no restart. Orchestrator `dd4c572d` adds the curated seed file, dry-run/apply/purge CLI, and tested StrategyStore purge/rebuild support. Orchestrator `412392c3` completes the pre-apply identifier audit by requiring explicit `bind_status`/`bind_identifiers` for deterministic planner rows. Orchestrator `bac4db17` adds inert `StrategyStore.retrieve_conventions(...)` support for planner-usable convention rows. Orchestrator `aa84abe0` adds startup-gated Seeder hint retrieval behind `AUTOPILOT_PLANNER_HINTS`. Orchestrator `a4129025` adds startup-gated execution guards for StructuralLab flag denylists and NumericSwarm surface suppression from live audited convention bindings. Orchestrator `18958ab4` surfaces those same bindings in planner-visible feature-flag/action availability text and the controller numeric-surface validation mirror. Phase 1 `--apply` still needs operator review; Phase 2g/2h remain restart-gated.
+**Status**: PHASE 1 SOURCE + DRY-RUN READY; PHASE 2A-2G DEFAULT-OFF PLUMBING LANDED — no rows written, no restart. Orchestrator `dd4c572d` adds the curated seed file, dry-run/apply/purge CLI, and tested StrategyStore purge/rebuild support. Orchestrator `412392c3` completes the pre-apply identifier audit by requiring explicit `bind_status`/`bind_identifiers` for deterministic planner rows. Orchestrator `bac4db17` adds inert `StrategyStore.retrieve_conventions(...)` support for planner-usable convention rows. Orchestrator `aa84abe0` adds startup-gated Seeder hint retrieval behind `AUTOPILOT_PLANNER_HINTS`. Orchestrator `a4129025` adds startup-gated execution guards for StructuralLab flag denylists and NumericSwarm surface suppression from live audited convention bindings. Orchestrator `18958ab4` surfaces those same bindings in planner-visible feature-flag/action availability text and the controller numeric-surface validation mirror. Orchestrator `15bccee8` adds W6 audit non-interaction coverage. Phase 1 `--apply` still needs operator review; Phase 2h remains restart-gated.
 **Created**: 2026-06-28
 **Priority**: MEDIUM (cheap leverage on planner decision quality; prevents wasted trials)
 **Categories**: autopilot, routing/optimization, strategy-store
@@ -108,7 +108,7 @@ Planner-orchestration only → **outside the MEASUREMENT trust boundary** (safe 
 - [x] **2d. NumericSwarm (Optuna):** consume `convention` rows to **suppress dead surfaces** (e.g. `moe_spec_budget` no-consumer, op-coalesced-barriers neutral) and optionally narrow bounds (`species/numeric_swarm.py`) before surface/trial selection. Done in orchestrator `a4129025` as a startup-gated dispatch guard: only `metadata.bind_status="live"` + `bind_identifiers` from `retrieve_conventions(species="numeric_swarm")` suppress proposed surfaces. Bounds narrowing remains future work.
 - [ ] **2e. PromptForge:** optionally inject `entry_type=convention` guardrails unconditionally (not only RRF-ranked) so hard constraints always appear.
 - [x] **2f. Planner prompt assembly:** if dead flags/surfaces should disappear before the planner proposes them, also thread convention-derived denylist/suppression summaries into the planner-visible feature-flag/action availability blocks; execution-time filtering alone is weaker and can create avoidable critic rejections. Done in orchestrator `18958ab4`: AutoPilot computes live audited convention bindings once at startup, appends StructuralLab denylist guidance to the feature-flag block, removes suppressed NumericSwarm surfaces from the `numeric_surface_options` schema prompt, mirrors suppression into `controller_io` validation, and notes suppressed surfaces in action availability.
-- [ ] **2g. Tests:** extend the planner suite (~39 tests) — dispatch-level tests now cover default-off binding, a live-bound StructuralLab denylist, and a live-bound NumericSwarm surface suppression in `a4129025`; planner-visible availability and controller validation mirror tests landed in `18958ab4`; remaining coverage should prove **no interaction with the W6 gaming-alarm logic**.
+- [x] **2g. Tests:** extend the planner suite (~39 tests) — dispatch-level tests cover default-off binding, a live-bound StructuralLab denylist, and a live-bound NumericSwarm surface suppression in `a4129025`; planner-visible availability and controller validation mirror tests landed in `18958ab4`; W6 audit non-interaction coverage landed in `15bccee8`, proving startup convention binding install does not mutate the W6 audit env contract while planner/controller state is updated.
 - [ ] **2h. Activation:** restart via `orchestrator_stack.py` / autopilot start using the settled safe preflight (registry attest + `stack_change_pipeline.py check --run-promotion-gate`), coordinated with the kernel-era baseline state.
 
 ### Rollback / rewind-purge (required)
@@ -379,8 +379,32 @@ Validation:
 
 No seed rows were applied and AutoPilot was not restarted. Running AutoPilot
 remains on the old imported code. Remaining A10 items are Phase 1 operator
-review/`--apply`, Phase 2g W6 non-interaction coverage, and Phase 2h
-coordinated restart after W4/W6 strict readiness.
+review/`--apply` and Phase 2h coordinated restart after W4/W6 strict readiness.
+
+## Phase 2g implementation note — 2026-06-28
+
+Orchestrator `15bccee8` closes the W6 non-interaction test slice:
+
+- `tests/unit/test_autopilot_creativity.py` now enables planner hints and W6
+  audit env together, installs live StructuralLab/NumericSwarm convention
+  bindings, and asserts the install updates only planner/controller binding
+  state while leaving `AUTOPILOT_W6_AUDIT_*` unchanged.
+
+Validation:
+
+- GitNexus impact: `_install_planner_convention_bindings` LOW
+  (`impactedCount=3`); `autopilot._planner_convention_bindings` LOW
+  (`impactedCount=3`).
+- `uv run pytest tests/unit/test_autopilot_creativity.py
+  tests/unit/test_autopilot_controller_io.py tests/unit/test_autopilot_actions.py
+  -q` -> `134 passed`.
+- `uv run ruff check tests/unit/test_autopilot_creativity.py` -> pass.
+- `git diff --check` -> pass.
+
+Governance boundary: AutoPilot can consume handoffs as hypotheses/guardrails and
+produce closure candidates with commits/tests/metrics, but handoff completion or
+archival remains a main-thread/wrap-up governance action until an explicit
+approval step exists for handoff file writes.
 
 ## Provenance
 Full design rationale + the verbatim two-phase plan: `~/.claude/plans/caveat-on-a-distributed-wilkinson.md` (this session, 2026-06-28). Survey + mechanism findings produced by read-only code/handoff analysis; no system state was modified.
