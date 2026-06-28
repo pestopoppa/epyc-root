@@ -1,6 +1,6 @@
 # Tool-Use Eval Contract — make autopilot trials actually exercise tools
 
-**Status**: REFRESHED 2026-06-27 (Fable 5 portfolio pass) — autopilot has since resumed past the 711/776 recovery era; the T1 tool-use sentinel lane remains live, and the child/sub-LM schema contract is now covered for both batched and single-delegate REPL paths. **Remaining**: (1) resolve the old entangled degraded-pause/runtime coordination state if it still matters in the shared clone; (2) Phase 2 native OpenAI tools seam. Historical recovery chronology (cutover, `critic_reject_loop` @708, 711 halt + root-cause) preserved in the dated blocks below — the "resume pending operator go" framing there is superseded. Commits: `c4cdc8f` + `d1a0b18` + `1500826` + `9515e61` + `c425afc` + `c2033e4` hunk + `18b5ceb` + `6426dd4`.
+**Status**: REFRESHED 2026-06-28 — autopilot has since resumed past the 711/776 recovery era; the T1 tool-use sentinel lane remains live, the child/sub-LM schema contract is covered for both batched and single-delegate REPL paths, and the Phase 2 native OpenAI tools seam is now partially shipped. Orchestrator commits `9d7b3c31` and `fcf43857` add `tools`/`tool_choice` request models, preserve OpenAI `tool_calls`/`role:"tool"` history, bridge native function schemas into the REPL `CALL(...)` context, extend `call_orchestrator_forced`, and let EvalTower rows opt in to native schemas. **Remaining**: (1) resolve the old entangled degraded-pause/runtime coordination state if it still matters in the shared clone; (2) add a native-tools sentinel variant during a clean restart/window, not while live `AUTOPILOT_TOOL_SENTINELS=1` traffic is running; (3) decide whether response-level `tool_calls` should mean client-executable calls or internal executed-tool telemetry before exposing it beyond metadata. Historical recovery chronology (cutover, `critic_reject_loop` @708, 711 halt + root-cause) preserved in the dated blocks below — the "resume pending operator go" framing there is superseded. Commits: `c4cdc8f` + `d1a0b18` + `1500826` + `9515e61` + `c425afc` + `c2033e4` hunk + `18b5ceb` + `6426dd4` + `9d7b3c31` + `fcf43857`.
 
 > ### 2026-06-09 — gate live-fired @711; claude-empty ROOT-CAUSED (300s timeout) + fixed
 > The autopilot did NOT reach `--max-trials 1000`: it **halted at trial 711 (2026-06-07 17:26) on `critic_unavailable`** — the degraded-pause gate's FIRST live trigger (claude draft empty → degraded → non-observational `structural_experiment` → paused, not dispatched). So the gate is now **live-verified**. It's been paused ~2 days → dashboard correctly shows no new data (journal_max=710, `stale_state_warning=None`, frontier [256,610]) — NOT a dashboard bug. **claude-empty root cause (option 2):** it's a **300s TIMEOUT**, not a session/account issue — `2026-06-07 17:24:59 ERROR: Controller timed out after 300s` (and 16:31 for 708). The claude planner draft runs a ~80KB prompt (`prompt_chars=80763`) WITH tool access (`--allowedTools Read,Grep,Glob`), taking 60–228s normally and intermittently >300s → killed → "empty" → degraded. `plan_with_providers` was called with no `timeout` → hard 300s default, no env override. **Fix `c425afc`:** `DEFAULT_PLANNER_TIMEOUT=int(os.environ.get("AUTOPILOT_PLANNER_TIMEOUT","600"))` + signature default (planner_coordinator.py — clean file; the gate's autopilot.py caller stays UNCOMMITTED, entangled). Failed claude calls return before the planner_archive write, so they're only in the log/tap (timeout×2 06-07, stale-session×4 earlier, rc=143×3, CLI-not-found×1). **To resume:** clear the pause (`paused=false`, `_dispatch_deficiency=null`) + restart (loads 600s timeout → claude drafts complete → no degrade → runs past 711). Pending operator go.
@@ -128,13 +128,25 @@ Executed in order: stopped autopilot at clean boundary (trial 366 journaled, `in
 
 **Deploy status:** prompts = live next trial; **per-suite helpfulness needs an autopilot restart**; **base.py web_research fix needs an orchestrator API restart** (`reload orchestrator`). Until then the live autopilot still computes the old cross-suite helpfulness (bounded — it's a prior, not Pareto). Tests: **46 passed / 1 skipped** across token-accounting, tools-base, sentinels, seeding-eval; all edited files py_compile clean.
 
-## Phase 2 — native OpenAI tools seam  📋 TRACKED FOLLOW-ON (not started)
+## Phase 2 — native OpenAI tools seam  🚧 PARTIAL CODE SHIPPED 2026-06-28
 
-Contract gap: `/v1/chat/completions` advertises OpenAI compatibility but **silently drops `tools`/`tool_choice`** and never returns `tool_calls`. Scope when picked up:
-- Add `tools` / `tool_choice` to `ChatRequest` (`src/api/models/requests.py`) and the OpenAI-compat request model (`src/api/models/openai.py`); surface `tool_calls` in the response and accept `role: "tool"` messages.
-- Map native tool schemas onto the existing REPL `CALL(...)` execution (the Feb-20 path translated OpenAI-format *text* into `CALL(...)`; here the translation is request/response-level).
-- Extend the trial path (`call_orchestrator_forced`) to pass real schemas, and add a native-tools sentinel variant.
+Contract gap: `/v1/chat/completions` advertised OpenAI compatibility but **silently dropped `tools`/`tool_choice`** and could not accept standard tool-result history.
+
+Shipped in `epyc-orchestrator`:
+- `9d7b3c31` adds `tools` / `tool_choice` to `ChatRequest` and the OpenAI-compat request model; `OpenAIMessage` now accepts `role:"tool"`, assistant `tool_calls`, `tool_call_id`, and null assistant content when tool calls are present.
+- `9d7b3c31` preserves tool history through OpenAI context flattening/compression and maps native function schemas into a deterministic REPL bridge block instructing `CALL("tool_name", arg=value)` execution instead of dropping schemas.
+- `9d7b3c31` extends `call_orchestrator_forced` with optional `tools` / `tool_choice` pass-through. The payload remains legacy-identical unless the caller opts in.
+- `fcf43857` lets EvalTower question rows opt in to those native tool schemas, while ordinary rows omit the native-tool payload.
+
+Validation:
+- `uv run --with pytest pytest -q tests/unit/test_seeding_orchestrator.py tests/unit/test_api_models_requests.py tests/unit/test_api_models_openai.py tests/unit/test_openai_compat_roles.py tests/integration/test_openai_compat.py` -> `107 passed`.
+- `uv run --with pytest pytest -q tests/unit/test_eval_tower_concurrency_metrics.py tests/unit/test_seeding_orchestrator.py tests/unit/test_api_models_requests.py tests/unit/test_api_models_openai.py tests/unit/test_openai_compat_roles.py tests/integration/test_openai_compat.py` -> `128 passed`.
+- Focused `ruff`, `py_compile`, and `git diff --check` passed on touched files.
+
+Remaining:
+- Add a native-tools sentinel variant only at a clean restart/window. Do **not** edit `tool_sentinels.yaml` mid-run while live AutoPilot has `AUTOPILOT_TOOL_SENTINELS=1`, because the YAML is part of the active eval mix.
 - Decide native-vs-REPL parity expectations before wiring any objective.
+- Decide response semantics before exposing response-level `tool_calls`: OpenAI's `tool_calls` usually ask the client to execute tools, while the current orchestrator REPL executes tools internally and exposes executed-tool telemetry via `tools_called`/`tool_timings`.
 
 ## Reporting
 After cutover + verification, update this file's Current-State, append to `progress/2026-06/`, and record the first measured `tool_helpfulness`. Promote the per-suite-objective question to its own decision once data exists.
