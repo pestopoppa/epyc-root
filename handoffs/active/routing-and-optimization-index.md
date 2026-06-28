@@ -108,7 +108,7 @@ These files remain active but are not the shortest pickup path for the main queu
 | [non-inference-backlog.md](non-inference-backlog.md) | Cross-cutting no-inference backlog; only three Round-2 baseline items remain open. | Use as filler only when it does not preempt higher-ROI active queues. |
 | [orchestrator-nps4-48x4-notes.md](orchestrator-nps4-48x4-notes.md) | Notes-only NPS4/topology reference. | Consult before stack/placement changes; do not treat as an implementation queue. |
 | [repo-readiness-scorer.md](repo-readiness-scorer.md) | Deterministic readiness scorer landed; AutoPilot consumption is future work. | Wire into AutoPilot only after a concrete promotion/remediation workflow exists. |
-| [tool-use-eval-contract.md](tool-use-eval-contract.md) | Tool-use sentinels and Gate-3 are live; native/child-LM tool seams remain open. | Patch the child/sub-LM return schema and design the native-tools seam when scheduled. |
+| [tool-use-eval-contract.md](tool-use-eval-contract.md) | Tool-use sentinels and Gate-3 are live; child/sub-LM schema contracts are shipped for both batched and single-delegate REPL paths (`18b5ceb`, `6426dd4`); Phase-2 native OpenAI tools seam is partially shipped. | Do not reopen child-schema work. Add the native-tools sentinel variant only in a clean restart/window, then decide native-vs-REPL parity expectations before wiring any objective. |
 
 ## Dependency Graph
 

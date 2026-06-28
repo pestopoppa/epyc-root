@@ -23,7 +23,7 @@
 |---|---|---|
 | [repl-turn-efficiency.md](repl-turn-efficiency.md) | Core REPL efficiency changes landed; S4 Omega A/B remains the active gate. | Measure turns/task, token cost/task, and accuracy delta before adding more REPL tool surfaces. |
 | [security-review-skill.md](security-review-skill.md) | Security-review skill and slash command are landed; CI integration is deferred. | Wire CI/PR-summary gates only after a concrete enforcement workflow exists. |
-| [tool-use-eval-contract.md](tool-use-eval-contract.md) | Note corrected 2026-06-20 (intake-705): the batched child-LLM structured-return path is ALREADY SHIPPED (commit 18b5ceb); only a single-query/new-delegate path remains; a server-side delegate already exists (chat_delegation.py). (added 2026-06-20 via research-intake batch deep-dive) | Real future delta = cost-aware capable→cheaper-worker delegation mode. |
+| [tool-use-eval-contract.md](tool-use-eval-contract.md) | Note refreshed 2026-06-28: the batched child-LLM structured-return path (`18b5ceb`) and single-delegate REPL schema path (`6426dd4`) are both shipped; a server-side delegate already exists (`chat_delegation.py`). | Real future deltas = native-tools sentinel/parity in a clean window and cost-aware capable→cheaper-worker delegation mode. |
 
 ## Closed Baseline
 
