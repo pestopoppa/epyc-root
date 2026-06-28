@@ -1,6 +1,6 @@
 # AutoPilot Planner-Hint Distillation from Orchestrator Handoffs
 
-**Status**: PHASE 1 SOURCE + DRY-RUN READY; PHASE 2A-2G DEFAULT-OFF PLUMBING LANDED; HANDOFF-CLOSURE REPORT READ-ONLY — no rows written, no restart. Orchestrator `dd4c572d` adds the curated seed file, dry-run/apply/purge CLI, and tested StrategyStore purge/rebuild support. Orchestrator `412392c3` completes the pre-apply identifier audit by requiring explicit `bind_status`/`bind_identifiers` for deterministic planner rows. Orchestrator `bac4db17` adds inert `StrategyStore.retrieve_conventions(...)` support for planner-usable convention rows. Orchestrator `aa84abe0` adds startup-gated Seeder hint retrieval behind `AUTOPILOT_PLANNER_HINTS`. Orchestrator `a4129025` adds startup-gated execution guards for StructuralLab flag denylists and NumericSwarm surface suppression from live audited convention bindings. Orchestrator `18958ab4` surfaces those same bindings in planner-visible feature-flag/action availability text and the controller numeric-surface validation mirror. Orchestrator `15bccee8` adds W6 audit non-interaction coverage. Orchestrator `6498e96c` adds a read-only handoff closure-candidate report. Phase 1 `--apply` still needs operator review; Phase 2h remains restart-gated.
+**Status**: PHASE 1 APPLIED; PHASE 2A-2G DEFAULT-OFF PLUMBING LANDED; HANDOFF-CLOSURE REPORT READ-ONLY — `44` operator seed rows are persisted in StrategyStore, with FTS5/FAISS mirrors verified; no AutoPilot restart or authority flag was performed. Orchestrator `dd4c572d` adds the curated seed file, dry-run/apply/purge CLI, and tested StrategyStore purge/rebuild support. Orchestrator `412392c3` completes the pre-apply identifier audit by requiring explicit `bind_status`/`bind_identifiers` for deterministic planner rows. Orchestrator `bac4db17` adds inert `StrategyStore.retrieve_conventions(...)` support for planner-usable convention rows. Orchestrator `aa84abe0` adds startup-gated Seeder hint retrieval behind `AUTOPILOT_PLANNER_HINTS`. Orchestrator `a4129025` adds startup-gated execution guards for StructuralLab flag denylists and NumericSwarm surface suppression from live audited convention bindings. Orchestrator `18958ab4` surfaces those same bindings in planner-visible feature-flag/action availability text and the controller numeric-surface validation mirror. Orchestrator `15bccee8` adds W6 audit non-interaction coverage. Orchestrator `6498e96c` adds a read-only handoff closure-candidate report. Phase 2h remains restart-gated behind W6 strict readiness.
 **Created**: 2026-06-28
 **Priority**: MEDIUM (cheap leverage on planner decision quality; prevents wasted trials)
 **Categories**: autopilot, routing/optimization, strategy-store
@@ -62,7 +62,7 @@ This is the single most important fact in this handoff: **a row written to the s
 ## Operator decisions (recorded)
 1. **Reach:** *wire all four species* to consult the store so hints reach every planner (Phase 2).
 2. **Timing:** *seed now, defer restart* — inject rows now (active for PromptForge, dormant for the rest); land the wiring + restart on the next coordinated restart after W4/W6 clears and the kernel-era (E5) baseline is settled.
-3. **This session:** persist as this handoff. **Execute nothing.**
+3. **Phase 1 approval:** operator approved `--apply` on 2026-06-28; the seed rows are now persistent memory. Do not treat this as Phase 2 activation until a coordinated AutoPilot restart enables `AUTOPILOT_PLANNER_HINTS=1`.
 
 ---
 
@@ -76,8 +76,8 @@ Writing mid-run is safe — AutoPilot writes `journal-frontier-*` rows every tri
   - For each row call `StrategyStore.store(...)` with `entry_id=f"opseed-{tranche}-{slug}"`, `species`, `entry_type`, `title`, `description`, `insight`, `generalized_content=insight`, `source_trial_id=<live trial_counter>`, `evidence_trial_ids`, and `metadata={seeded_by:"operator", seeded_date:<apply-date>, seed_campaign:"operator-handoff-distillation", seeded_reason, source_handoff, confidence}`.
   - Modes: `--dry-run` (default; prints rows + summary, writes nothing), `--apply`, `--purge-campaign operator-handoff-distillation`. Log via `scripts/utils/agent_log.sh`.
 - [x] **1c.** Pre-finalize: verify exact identifier strings — flag names against `config_applicator.py` `HOT_SWAP_FEATURES`; numeric surface ids against `species/numeric_swarm.py` — so guardrail keys bind for Phase 2. Done in orchestrator `412392c3`: `seed_operator_strategies.py --audit-identifiers --json` reports `ok=true`, `blocking_count=0`, `row_count=44`; non-current deterministic rows are explicitly marked `future` or `context` rather than silently passing as live bindings.
-- [ ] **1d.** **Operator reviews `--dry-run` output, then approves `--apply`** (standing approval rule for store/index writes).
-- [ ] **1e.** Phase-1 verification (read-only): (i) row-count delta == N; (ii) `json_extract(metadata_json,'$.seed_campaign')='operator-handoff-distillation'` count == N; (iii) FTS5 row count and FAISS `ntotal` each +N for a freshly opened store; (iv) retrieval probe on a fresh `StrategyStore()` — `store.retrieve_for_journal("frontdoor prompt conciseness brevity", k=5)` returns the reasoning-compression row; repeat for 2–3 others; confirm none quarantined. Do not call this a live PromptForge proof unless the running AutoPilot process has refreshed/restarted.
+- [x] **1d.** **Operator reviews `--dry-run` output, then approves `--apply`** (standing approval rule for store/index writes). Done 2026-06-28 after explicit operator approval; apply used `uv run python scripts/autopilot/seed_operator_strategies.py --apply --json`.
+- [x] **1e.** Phase-1 verification (read-only): (i) row-count delta == N; (ii) `json_extract(metadata_json,'$.seed_campaign')='operator-handoff-distillation'` count == N; (iii) FTS5 row count and FAISS `ntotal` each +N for a freshly opened store; (iv) retrieval probe on a fresh `StrategyStore()` — `store.retrieve_for_journal("frontdoor prompt conciseness brevity", k=5)` returns the reasoning-compression row; repeat for 2–3 others; confirm none quarantined. Do not call this a live PromptForge proof unless the running AutoPilot process has refreshed/restarted. Done 2026-06-28; evidence recorded in the apply note below.
 
 Dry-run review readiness: orchestrator `71663cb3` adds an explicit no-op
 `--dry-run` flag so the documented command is accepted. The review command
@@ -225,7 +225,7 @@ Orchestrator `dd4c572d` implemented the Phase 1 source/dry-run slice without app
 - `StrategyStore.purge_strategy_campaign()` plus `rebuild_search_indexes()` provide the required rewind purge path, including FTS5 and FAISS mirror rebuild.
 - Validation: `uv run pytest tests/unit/test_strategy_store.py -q` -> `42 passed`; `uv run ruff check scripts/autopilot/seed_operator_strategies.py orchestration/repl_memory/strategy_store.py tests/unit/test_strategy_store.py` -> pass; `git diff --check` -> pass.
 
-No `--apply` was run. The exact identifier audit is now closed by the 2026-06-28 follow-up below; remaining Phase 1 gates are operator review/approval, apply, and post-apply retrieval verification.
+At this point in the chronology no `--apply` had been run. The exact identifier audit is now closed by the 2026-06-28 follow-up below, and Phase 1d/1e were later closed by the apply note.
 
 ## Identifier audit note — 2026-06-28
 
@@ -236,12 +236,46 @@ Orchestrator `412392c3` closes Phase 1c:
 - Validation: `uv run python scripts/autopilot/seed_operator_strategies.py --audit-identifiers --json` -> `ok=true`, `blocking_count=0`, `finding_count=29`; dry-run still reports `before_count=1374`, `after_count=1374`, `would_insert_count=44`, `inserted_count=0`.
 - Test coverage: `uv run pytest tests/unit/test_seed_operator_strategies.py tests/unit/test_strategy_store.py -q` -> `44 passed`; `uv run ruff check scripts/autopilot/seed_operator_strategies.py tests/unit/test_seed_operator_strategies.py tests/unit/test_strategy_store.py` -> pass.
 
-Remaining gates are operator review/approval, `--apply`, and post-apply retrieval verification on a fresh `StrategyStore()`.
+Phase 1c is closed; the 2026-06-28 apply note below closes Phase 1d/1e.
 
-## Current dry-run review packet — 2026-06-28
+## Phase 1 apply note — 2026-06-28
 
-The current operator-review packet was regenerated while AutoPilot was live at
-trial `1035`; no rows were written:
+Operator approval was given and the Phase 1 seed rows were applied to the live
+StrategyStore without restarting AutoPilot:
+
+- Apply command: `uv run python scripts/autopilot/seed_operator_strategies.py --apply --json`.
+- Apply result: `before_count=1374`, `after_count=1418`,
+  `row_count=44`, `inserted_count=44`, `skipped_existing_count=0`,
+  `source_trial_id=1036`.
+- Seed mix: `16` green hypotheses, `26` guardrails, `2` frozen constraints;
+  species distribution `all=5`, `numeric_swarm=11`, `prompt_forge=4`,
+  `seeder=5`, `structural_lab=19`.
+- Post-apply dry-run reported all `44` deterministic `opseed-*` ids as
+  existing, with `would_insert_count=0`.
+- Fresh-store mirror verification after repairing two pre-existing non-A10
+  mirror gaps: `strategies=1418`, `strategies_fts=1418`, `faiss=1418`,
+  `opseed_count=44`, `opseed_fts=44`, `opseed_faiss=44`, and no missing
+  FTS5/FAISS ids.
+- Retrieval probes on a fresh `StrategyStore()` returned the expected rows at
+  rank 1 for `opseed-green-xmas-winner-table`,
+  `opseed-frozen-web-research-rerank-nogo`, and
+  `opseed-green-reasoning-brevity-trimr`.
+- Closure-candidate report after apply: `applied_count=44`,
+  `pending_seed_count=0`, `memory_only_count=44`,
+  `closure_candidate_count=0`, `handoff_writes_permitted=false`.
+
+No AutoPilot restart was performed. The running AutoPilot process started at
+`2026-06-28 07:42:26 UTC`, before these rows were applied, so PromptForge
+visibility inside that process is not assumed. Phase 2h remains gated on a
+coordinated restart with `AUTOPILOT_PLANNER_HINTS=1` after W6 strict readiness.
+The latest strict restart report is still blocked by `w6_audited_trial_count`
+`24/30` and the W6 gaming alarm, while sequential/baseline cutover readiness is
+otherwise true.
+
+## Dry-run review packet — 2026-06-28
+
+The operator-review packet was regenerated while AutoPilot was live at trial
+`1035`; no rows were written by this dry-run packet:
 
 - `uv run python scripts/autopilot/seed_operator_strategies.py --json` ->
   `campaign=operator-handoff-distillation`, `row_count=44`,
@@ -258,8 +292,8 @@ trial `1035`; no rows were written:
   tests/unit/test_seed_operator_strategies.py tests/unit/test_strategy_store.py`
   -> pass.
 
-This is sufficient for operator review. It is not an approval or apply event;
-Phase 1d/1e remain open.
+This packet was sufficient for operator review. It was not itself an approval or
+apply event; Phase 1d/1e were later closed by the apply note above.
 
 ## Phase 2a helper implementation — 2026-06-28
 
