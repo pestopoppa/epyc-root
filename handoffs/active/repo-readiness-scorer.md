@@ -334,6 +334,37 @@ Validation:
   JSON was inspected with `jq` for portfolio level, queue count, and
   non-authority pickup fields.
 
+2026-06-28 research L5 and llama task-index update:
+
+- `epyc-inference-research` commits `8cef3d4`, `817ccdf`, `8ffdc51`, and
+  `7c4929c` close the remaining deterministic L5 readiness surfaces with real
+  no-inference workflow entrypoints:
+  - `.claude/skills/security-review/SKILL.md` and
+    `.claude/commands/security-review.md` add an exploit-path-gated,
+    research-specific security review surface.
+  - `scripts/autopilot/candidate_eval_gate.py` plus `make autopilot-gate`
+    chains docs, analysis, security, health, and focused tests as a fail-closed
+    candidate gate.
+  - `scripts/halo/closed_loop_observation_surface.py` and
+    `scripts/halo/convert_tap_to_otel.py` convert benchmark/log/report JSONL
+    into deterministic closed-loop observation envelopes.
+  - `scripts/session/emergency_cleanup.sh` adds a dry-run-first stale-PID
+    cleanup surface, and `scripts/session/health_check.sh` now syntax/smoke
+    checks the new L5 surfaces.
+- Validation: research `make autopilot-gate` passed end-to-end
+  (`docs-check`, `analysis-check`, `security-check`, `health`, and `17`
+  focused tests); focused `py_compile`, `ruff`, `pytest`, `bash -n`, and
+  `git diff --check` passed on the touched surfaces. A one-repo readiness
+  scorer run reports `epyc-inference-research` as **Autonomous (L5)** with
+  L1-L5 all `100.0%`.
+- `epyc-llama` commits `cc29b7a6a` and `4412872ca` add a docs-only readiness
+  index plus detector-visible `handoffs/active/master-handoff-index.md`.
+  A one-repo scorer run now reports `epyc-llama` L3 at `100.0%` and
+  `L4.prioritized_tasks=true`; remaining llama next-gate blockers are the real
+  L4 workflow surfaces (`incremental_validation`, `generated_docs`,
+  `health_automation`, `analysis_reports`, `security_audit`, and
+  `replay_analysis`).
+
 ## Notes
 
 - Anti-false-positive discipline (shared across Factory's review/scoring features): a criterion passes only on a concrete, verifiable check — mirrors our eval-tower verifier philosophy.
