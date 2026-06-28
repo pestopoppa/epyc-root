@@ -13,6 +13,8 @@
 #   NIGHTSHIFT_MAX_TASKS     — max tasks per project (default: 2)
 #   NIGHTSHIFT_INFERENCE_THRESHOLD_GB — RAM threshold for inference detection (default: 200)
 #   NIGHTSHIFT_ATTESTATION_MAX_AGE_S — refresh running-state attestation after this age (default: 14400)
+#   NIGHTSHIFT_LAB_SHADOW_ENABLED — run self-running-lab shadow jobs when quiet (default: 1)
+#   NIGHTSHIFT_LAB_SHADOW_MAX_JOBS — max lab shadow jobs per quiet run (default: 2)
 
 set -euo pipefail
 
@@ -71,6 +73,52 @@ refresh_attestation_if_stale() {
   return 0
 }
 
+autopilot_running() {
+  pgrep -f 'scripts/autopilot/autopilot.py start' >/dev/null 2>&1
+}
+
+run_lab_shadow_if_quiet() {
+  if [[ "${NIGHTSHIFT_LAB_SHADOW_ENABLED:-1}" == "0" ]]; then
+    echo "[wrapper] Lab shadow run disabled (NIGHTSHIFT_LAB_SHADOW_ENABLED=0)"
+    return 0
+  fi
+
+  if [[ "${NIGHTSHIFT_INFERENCE_ACTIVE:-0}" == "1" ]]; then
+    echo "[wrapper] Lab shadow skipped: inference is active (${NIGHTSHIFT_INFERENCE_RSS_GB:-unknown}GB RSS)"
+    return 0
+  fi
+
+  if autopilot_running; then
+    echo "[wrapper] Lab shadow skipped: AutoPilot is active"
+    return 0
+  fi
+
+  local orch_root="${ORCHESTRATOR_ROOT:-/mnt/raid0/llm/epyc-orchestrator}"
+  local runner="$orch_root/scripts/lab/run_shadow_jobs.py"
+  if [[ ! -f "$runner" ]]; then
+    echo "[wrapper] Lab shadow skipped: missing $runner"
+    return 0
+  fi
+
+  echo "[wrapper] Running self-running-lab nightly shadow jobs"
+  local rc=0
+  (
+    cd "$orch_root"
+    uv run python scripts/lab/run_shadow_jobs.py \
+      --schedule nightly \
+      --max-jobs "${NIGHTSHIFT_LAB_SHADOW_MAX_JOBS:-2}" \
+      --execute-chat \
+      --continue-on-error \
+      --timeout-s "${NIGHTSHIFT_LAB_SHADOW_TIMEOUT_S:-300}"
+  ) || rc=$?
+  if [[ "$rc" == "0" ]]; then
+    echo "[wrapper] Lab shadow run complete"
+    return 0
+  fi
+  echo "[wrapper] WARNING: lab shadow run failed (rc=$rc); continuing nightshift"
+  return 0
+}
+
 {
   echo "=== Nightshift Run: $(date -Iseconds) ==="
   echo "Project root: $PROJECT_ROOT"
@@ -114,6 +162,11 @@ refresh_attestation_if_stale() {
 
   # 1. Check inference load
   source "$SCRIPT_DIR/inference_guard.sh"
+
+  # 1.5. Feed the F2 self-running lab only in quiet windows. This writes review
+  # queue artifacts in epyc-orchestrator and deliberately skips live AutoPilot
+  # evidence collection windows.
+  run_lab_shadow_if_quiet
 
   # 2. Build nightshift command
   MAX_PROJECTS="${NIGHTSHIFT_MAX_PROJECTS:-3}"
