@@ -120,7 +120,7 @@ These are the current standardized-process artifacts. Do not build a second regi
   - Syncs procedure role choices from generated stack priors.
 
 - `/mnt/raid0/llm/epyc-root/handoffs/active/stack-change-governance-pipeline.md`
-  - Existing implementation track. W1/W2 are landed, W3/W4 are partial, W5/W6 remain the key standardization gaps.
+  - Existing implementation track. W1/W2 are landed, W3/W4 are partial, W5 planner/generated-summary freshness is closed, and W6 remains the key standardization gap.
 
 - `/mnt/raid0/llm/epyc-root/handoffs/active/model-stack-update-pipeline-audit.md`
   - Existing detailed audit and implementation handoff. This new handoff should be treated as a concise implementation bridge for the main long-horizon workflow, not a replacement.
@@ -406,8 +406,25 @@ Validation: `python3 -m py_compile scripts/autopilot/autopilot.py`,
 scripts/registry/render_stack_summary.py --check`, `git diff --check`, and
 `uv run pytest -q tests/unit/test_autopilot_creativity.py` (`23 passed`). This
 closes the current W5 planner-prompt cutover slice; remaining W5 work is any
-future discovered manual operator/planner prose plus freshness enforcement for
-new generated summaries.
+future discovered manual operator/planner prose.
+
+2026-06-28 freshness slice: `epyc-orchestrator` commit `641528d7`
+adds SHA-256 source fingerprints to `docs/generated/current_stack_summary.md`
+for `orchestration/derived/stack_priors.yaml`,
+`orchestration/model_registry.yaml`, and
+`orchestration/model_descriptors.yaml`. The existing
+`scripts/registry/render_stack_summary.py --check` path now fails when any of
+those inputs changes, even if the visible role table is unchanged. Validation:
+`uv run python scripts/registry/render_stack_summary.py --check`, `uv run
+python scripts/validate/stack_change_guard.py --all-hardcoded-surfaces
+--surface-summary-only`, `uv run ruff check
+scripts/registry/render_stack_summary.py tests/unit/test_autopilot_system_card.py`,
+`python3 -m py_compile scripts/registry/render_stack_summary.py
+tests/unit/test_autopilot_system_card.py`, `git diff --check`, and focused
+pytest selection across `test_autopilot_system_card.py`,
+`test_stack_change_pipeline.py`, and
+`test_stack_change_pipeline_simulated_fixtures.py` (`7 passed`). This closes
+the W5 freshness-enforcement tail.
 
 Dependencies: W3 and any Fable 5 system-card work.
 
