@@ -8,6 +8,7 @@ sys.path.insert(0, str(ROOT / "scripts" / "publication"))
 from generate_public_results import (  # noqa: E402
     apply_scrub_gate,
     backfill_target_counts,
+    historical_attestation_review_counts,
     collect_rows,
     missing_protocol_fields,
     parse_protocol_reference,
@@ -80,14 +81,34 @@ def test_collect_rows_marks_protocol_tagged_rows_for_hold_when_incomplete():
 
 | Model | Quant | t/s | Notes |
 |---|---|---|---|
-| Qwen-test | Q4_K_M | 42.0 | [P-BENCH-2, n=5, 2026-04-26] |
+| Qwen-test | Q4_K_M | 42.0 | [P-BENCH-2, n=5, 2026-06-14] |
 """
 
     rows = collect_rows(text)
 
     assert len(rows) == 1
-    assert rows[0].protocol_status == "protocol-tagged (missing attestation) [P-BENCH-2; n=5; 2026-04-26]"
+    assert rows[0].protocol_status == "protocol-tagged (missing attestation) [P-BENCH-2; n=5; 2026-06-14]"
     assert rows[0].action == "hold_for_protocol_backfill"
+
+
+def test_collect_rows_marks_pre_attestation_rows_for_historical_review():
+    text = """# Results
+
+## Production
+
+| Model | Quant | t/s | Notes |
+|---|---|---|---|
+| Qwen-test | Q4_K_M | 42.0 | [P-BENCH-2, n=5, 2026-03-21] |
+"""
+
+    rows = collect_rows(text)
+
+    assert len(rows) == 1
+    assert rows[0].protocol_status == (
+        "protocol-tagged (pre-attestation-era; missing attestation; "
+        "needs historical attestation or remeasurement) [P-BENCH-2; n=5; 2026-03-21]"
+    )
+    assert rows[0].action == "hold_for_historical_attestation_review"
 
 
 def test_collect_rows_lists_each_missing_protocol_component():
@@ -184,7 +205,8 @@ def test_protocol_and_backfill_summaries_are_actionable():
 | Model | Quant | t/s | Notes |
 |---|---|---|---|
 | Complete | Q4_K_M | 42.0 | [P-BENCH-2, n=5, 2026-04-26, attest a3f2] |
-| Missing attest | Q4_K_M | 43.0 | [P-BENCH-2, n=5, 2026-04-26] |
+| Missing attest | Q4_K_M | 43.0 | [P-BENCH-2, n=5, 2026-06-14] |
+| Historical attest | Q4_K_M | 43.5 | [P-BENCH-2, n=5, 2026-03-21] |
 | Missing all | Q4_K_M | 44.0 | [P-BENCH-2] |
 | Needs tag | Q4_K_M | 45.0 | verified sweep |
 | Historical | Q4_K_M | 46.0 | old note |
@@ -192,8 +214,12 @@ def test_protocol_and_backfill_summaries_are_actionable():
 
     assert protocol_status_counts(rows) == {
         "evidence-linked; needs protocol tag": 1,
-        "protocol-tagged (missing attestation) [P-BENCH-2; n=5; 2026-04-26]": 1,
+        "protocol-tagged (missing attestation) [P-BENCH-2; n=5; 2026-06-14]": 1,
         "protocol-tagged (missing n/reps, date, attestation) [P-BENCH-2]": 1,
+        (
+            "protocol-tagged (pre-attestation-era; missing attestation; "
+            "needs historical attestation or remeasurement) [P-BENCH-2; n=5; 2026-03-21]"
+        ): 1,
         "protocol-tagged [P-BENCH-2; n=5; 2026-04-26; attest a3f2]": 1,
         "unverified historical row": 1,
     }
@@ -202,6 +228,9 @@ def test_protocol_and_backfill_summaries_are_actionable():
         "n/reps, date, attestation": 1,
         "protocol tag": 1,
         "verification decision": 1,
+    }
+    assert historical_attestation_review_counts(rows) == {
+        "historical attestation or remeasurement": 1,
     }
 
 

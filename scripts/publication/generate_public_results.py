@@ -12,11 +12,14 @@ import argparse
 import re
 import unicodedata
 from dataclasses import dataclass
+from datetime import date
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUTPUT = ROOT / "docs" / "publication" / "public-results-draft.md"
+HOST_ATTESTATION_ERA_START = date(2026, 6, 12)
+HISTORICAL_ATTESTATION_REVIEW_ACTION = "hold_for_historical_attestation_review"
 
 
 @dataclass(frozen=True)
@@ -116,6 +119,20 @@ def missing_protocol_fields(protocol: ProtocolRef) -> list[str]:
     if not protocol.attestation:
         missing.append("attestation")
     return missing
+
+
+def protocol_date(protocol: ProtocolRef) -> date | None:
+    if protocol.date is None:
+        return None
+    try:
+        return date.fromisoformat(protocol.date)
+    except ValueError:
+        return None
+
+
+def needs_historical_attestation_review(protocol: ProtocolRef) -> bool:
+    run_date = protocol_date(protocol)
+    return bool(run_date and run_date < HOST_ATTESTATION_ERA_START and not protocol.attestation)
 
 
 def format_protocol(protocol: ProtocolRef | None) -> str:
@@ -218,6 +235,13 @@ def classify_protocol(section: str, row_cells: list[str], nearby: str) -> tuple[
         if protocol_complete_for_publish(protocol):
             return f"protocol-tagged [{format_protocol(protocol)}]", "publish_candidate"
         missing = ", ".join(missing_protocol_fields(protocol))
+        if needs_historical_attestation_review(protocol):
+            return (
+                "protocol-tagged "
+                f"(pre-attestation-era; missing {missing}; needs historical attestation or remeasurement) "
+                f"[{format_protocol(protocol)}]",
+                HISTORICAL_ATTESTATION_REVIEW_ACTION,
+            )
         return f"protocol-tagged (missing {missing}) [{format_protocol(protocol)}]", "hold_for_protocol_backfill"
 
     evidence_l = evidence.lower()
@@ -383,10 +407,21 @@ def backfill_target_counts(rows: list[ResultRow]) -> dict[str, int]:
     return dict(sorted(counts.items()))
 
 
+def historical_attestation_review_counts(rows: list[ResultRow]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for row in rows:
+        if row.action != HISTORICAL_ATTESTATION_REVIEW_ACTION:
+            continue
+        target = "historical attestation or remeasurement"
+        counts[target] = counts.get(target, 0) + 1
+    return dict(sorted(counts.items()))
+
+
 def render_page(rows: list[ResultRow], source: Path) -> str:
     counts = action_counts(rows)
     scrub_summary = scrub_counts(rows)
     backfill_summary = backfill_target_counts(rows)
+    historical_review_summary = historical_attestation_review_counts(rows)
     protocol_summary = protocol_status_counts(rows)
     lines = [
         "# Public Results Draft",
@@ -411,6 +446,14 @@ def render_page(rows: list[ResultRow], source: Path) -> str:
             lines.append(f"- `{target}`: {count}")
     else:
         lines.append("- No protocol backfill targets.")
+    lines.append("")
+    lines.append("### Historical Attestation Review Summary")
+    lines.append("")
+    if historical_review_summary:
+        for target, count in historical_review_summary.items():
+            lines.append(f"- `{target}`: {count}")
+    else:
+        lines.append("- No historical attestation review targets.")
     lines.append("")
     lines.append("### Protocol Status Summary")
     lines.append("")
