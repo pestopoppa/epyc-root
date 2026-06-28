@@ -290,6 +290,25 @@ Validation:
   `make health`; `make security-check`; `make docs-check`; `git diff --check`;
   and the root one-repo readiness scorer for `epyc-orchestrator`.
 
+2026-06-28 orchestrator autonomous-security-review closeout:
+
+- `epyc-orchestrator` commit `4b27fd5d` adds an orchestrator-scoped
+  security-review skill and slash command:
+  `.claude/skills/security-review/SKILL.md`,
+  `.claude/skills/security-review/agents/openai.yaml`, and
+  `.claude/commands/security-review.md`.
+- The skill is exploit-path gated and specific to orchestrator attack
+  surfaces: API/OpenAI-compatible routes, AutoPilot/controller paths,
+  StrategyStore and runtime state, tool/REPL/MCP execution, stack launch/config
+  surfaces, generated artifacts, dependencies, and shell/CI changes.
+- A one-repo scorer run now reports `epyc-orchestrator` as **Autonomous (L5)**
+  with all level rates at `1.0`, including
+  `L5.autonomous_security_review=true`.
+- Validation: new-file GitNexus impact checks returned UNKNOWN with
+  `impactedCount=0`; skill frontmatter and `agents/openai.yaml` parsed with
+  PyYAML; path-scoped `git diff --check` passed; and the root one-repo
+  readiness scorer for `epyc-orchestrator` reported no failed criteria.
+
 ## Notes
 
 - Anti-false-positive discipline (shared across Factory's review/scoring features): a criterion passes only on a concrete, verifiable check — mirrors our eval-tower verifier philosophy.
