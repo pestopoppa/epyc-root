@@ -261,6 +261,35 @@ Validation:
   one-repo readiness scorer for
   `epyc-orchestrator=/mnt/raid0/llm/epyc-orchestrator`.
 
+2026-06-28 orchestrator L4 closeout:
+
+- `epyc-orchestrator` adds deterministic generated-docs, health, and local task
+  coordination surfaces:
+  `scripts/docs/generate_docs_index.py`,
+  `scripts/docs/test_generate_docs_index.py`,
+  `docs/reference/GENERATED_DOCS_INDEX.md`,
+  `scripts/session/health_check.sh`, and
+  `handoffs/active/master-handoff-index.md`.
+- The generated-docs lane indexes committed `docs/**/*.md` files and supports
+  `--check`; Makefile targets now expose `docs`, `docs-check`, and `health`.
+- The session health lane is no-inference: it checks core repo artifacts,
+  py-compiles stack/phase/security health entrypoints, and runs the tracked-file
+  security audit.
+- The local handoff index is explicitly subordinate to the root master index and
+  carries prioritized tasks, dependencies, cross-cutting concerns, reporting
+  rules, and key files for orchestrator-only work.
+- A one-repo scorer run now reports `L4.generated_docs=true`,
+  `L4.health_automation=true`, `L4.prioritized_tasks=true`, and the only
+  remaining failed orchestrator criterion as `L5.autonomous_security_review`.
+- Validation: GitNexus impact for existing `Makefile` returned LOW; new-target
+  GitNexus checks for docs/health/index paths returned UNKNOWN with
+  `impactedCount=0`; `python3 -m py_compile` for docs/security scripts and
+  tests; `uv run --with pytest pytest -q scripts/docs/test_generate_docs_index.py`
+  -> 2 passed; `uv run --with ruff ruff check
+  scripts/docs/generate_docs_index.py scripts/docs/test_generate_docs_index.py`;
+  `make health`; `make security-check`; `make docs-check`; `git diff --check`;
+  and the root one-repo readiness scorer for `epyc-orchestrator`.
+
 ## Notes
 
 - Anti-false-positive discipline (shared across Factory's review/scoring features): a criterion passes only on a concrete, verifiable check — mirrors our eval-tower verifier philosophy.
