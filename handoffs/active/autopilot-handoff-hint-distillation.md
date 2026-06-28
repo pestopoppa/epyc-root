@@ -79,6 +79,10 @@ Writing mid-run is safe — AutoPilot writes `journal-frontier-*` rows every tri
 - [ ] **1d.** **Operator reviews `--dry-run` output, then approves `--apply`** (standing approval rule for store/index writes).
 - [ ] **1e.** Phase-1 verification (read-only): (i) row-count delta == N; (ii) `json_extract(metadata_json,'$.seed_campaign')='operator-handoff-distillation'` count == N; (iii) FTS5 row count and FAISS `ntotal` each +N for a freshly opened store; (iv) retrieval probe on a fresh `StrategyStore()` — `store.retrieve_for_journal("frontdoor prompt conciseness brevity", k=5)` returns the reasoning-compression row; repeat for 2–3 others; confirm none quarantined. Do not call this a live PromptForge proof unless the running AutoPilot process has refreshed/restarted.
 
+**Canonical campaign tag:** `operator-handoff-distillation`. The older provenance plan used `handoff-distillation-2026-06-27`; that name is superseded and must not be used for apply/purge/progress tracking.
+
+**Apply contract:** expected insert set is the deduped operational YAML set, currently `44` rows (`16` green hypotheses, `26` guardrails, `2` frozen constraints). Apply only through `StrategyStore.store()` via `seed_operator_strategies.py --apply`, never raw SQL. Immediately after apply, prove row-count delta, campaign metadata count, FTS5 mirror count, FAISS `ntotal`, and fresh-store retrieval probes. Treat already-running AutoPilot visibility as unproven until a StrategyStore refresh or restart.
+
 Curated row schema (YAML):
 ```yaml
 - slug: ep-flag-baseline-artifact
@@ -110,7 +114,9 @@ Planner-orchestration only → **outside the MEASUREMENT trust boundary** (safe 
 ### Rollback / rewind-purge (required)
 Per the standing rule that a clean AutoPilot rewind must also purge the strategy store (injected rows otherwise re-inject narrative):
 - [x] Implement a real purge/rebuild path before applying rows. `seed_operator_strategies.py --purge-campaign operator-handoff-distillation` must delete `opseed-*` rows **and** their FTS5 entries, then rebuild/compact FAISS from remaining rows. If the store lacks a delete API, add one or document and test a full reindex recipe. Run purge **while AutoPilot is stopped**. Done in orchestrator `dd4c572d`; `StrategyStore.purge_strategy_campaign()` is covered by `test_purge_strategy_campaign_removes_retrieval_mirrors`.
-- [ ] Record the campaign tag `operator-handoff-distillation` in [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) so any future rewind purges it.
+- [x] Record the campaign tag `operator-handoff-distillation` in [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) so any future rewind purges it. Done 2026-06-28 in the A10 index-refinement pass.
+
+Purge proof: after `--purge-campaign operator-handoff-distillation`, verify campaign metadata count is `0`, no `opseed-*` rows for the campaign remain, FTS5 has no matching row ids, FAISS `ntotal` equals the rebuilt remaining-row id map, and fresh-store retrieval probes for campaign-specific phrases no longer return campaign entries.
 
 ---
 
