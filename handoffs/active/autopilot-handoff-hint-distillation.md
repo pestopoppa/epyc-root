@@ -1,6 +1,6 @@
 # AutoPilot Planner-Hint Distillation from Orchestrator Handoffs
 
-**Status**: PHASE 1 SOURCE + DRY-RUN READY; PHASE 2A/2B DEFAULT-OFF PLUMBING LANDED — no rows written, no restart. Orchestrator `dd4c572d` adds the curated seed file, dry-run/apply/purge CLI, and tested StrategyStore purge/rebuild support. Orchestrator `412392c3` completes the pre-apply identifier audit by requiring explicit `bind_status`/`bind_identifiers` for deterministic planner rows. Orchestrator `bac4db17` adds inert `StrategyStore.retrieve_conventions(...)` support for planner-usable convention rows. Orchestrator `aa84abe0` adds startup-gated Seeder hint retrieval behind `AUTOPILOT_PLANNER_HINTS`. Phase 1 `--apply` still needs operator review; Phase 2c-2h wiring remains restart-gated.
+**Status**: PHASE 1 SOURCE + DRY-RUN READY; PHASE 2A-2D DEFAULT-OFF PLUMBING LANDED — no rows written, no restart. Orchestrator `dd4c572d` adds the curated seed file, dry-run/apply/purge CLI, and tested StrategyStore purge/rebuild support. Orchestrator `412392c3` completes the pre-apply identifier audit by requiring explicit `bind_status`/`bind_identifiers` for deterministic planner rows. Orchestrator `bac4db17` adds inert `StrategyStore.retrieve_conventions(...)` support for planner-usable convention rows. Orchestrator `aa84abe0` adds startup-gated Seeder hint retrieval behind `AUTOPILOT_PLANNER_HINTS`. Orchestrator `a4129025` adds startup-gated execution guards for StructuralLab flag denylists and NumericSwarm surface suppression from live audited convention bindings. Phase 1 `--apply` still needs operator review; Phase 2f-2h wiring remains restart-gated.
 **Created**: 2026-06-28
 **Priority**: MEDIUM (cheap leverage on planner decision quality; prevents wasted trials)
 **Categories**: autopilot, routing/optimization, strategy-store
@@ -42,14 +42,14 @@ This is the single most important fact in this handoff: **a row written to the s
 |---|---|---|---|---|
 | **PromptForge** | prompt/code `.md` mutations | **Yes** — `actions.py:271` `_build_mutation_context()` | **Live immediately** (top-k injected into the mutation LLM prompt) | nothing — already wired |
 | **Seeder** | per-role Q-value seeds | No | Dormant | Phase 2b — inject `retrieve_for_journal(..., species="seeder")` into the seed prompt |
-| **StructuralLab** | boolean feature-flag toggles | No | Dormant | Phase 2c — consume `convention` rows as a **flag denylist** before selection |
-| **NumericSwarm** | Optuna numeric surfaces | No | Dormant | Phase 2d — consume `convention` rows to **suppress dead surfaces** / narrow bounds |
+| **StructuralLab** | boolean feature-flag toggles | Startup-gated execution guard landed | Dormant until rows are applied + restart with `AUTOPILOT_PLANNER_HINTS=1` | Phase 2c — consume `convention` rows as a **flag denylist** at dispatch; Phase 2f still needs planner-visible availability |
+| **NumericSwarm** | Optuna numeric surfaces | Startup-gated execution guard landed | Dormant until rows are applied + restart with `AUTOPILOT_PLANNER_HINTS=1` | Phase 2d — consume `convention` rows to **suppress dead surfaces** at dispatch; bounds narrowing/planner-visible availability remain future |
 | **EvolutionManager** | distillation | No (write-only) | Dormant | out of scope |
 
 **Consequences for this plan:**
 - Seeding now is still correct: PromptForge hints (Tranche A prompt rows + any guardrail that constrains prompt/code mutations) become available to new or refreshed StrategyStore readers, and the `structural_lab`/`numeric_swarm`/`seeder` rows are written with correct species so they light up the moment Phase 2 lands — **dormant, not wasted.** This is intentional, not a bug. Do not claim guaranteed live PromptForge visibility for the already-running AutoPilot process unless a refresh/restart is performed.
 - **Prose ≠ enforcement for deterministic choosers.** Even after Phase 2, injecting a guardrail as free-text for StructuralLab/NumericSwarm is weaker than a hard bind: an Optuna sampler or a flag chooser won't "read and obey" prose. That's why Phase 2c/2d turn `entry_type=convention` rows into a **flag denylist** and **surface suppression** at the decision point, rather than relying on prompt injection. Prose injection is reserved for the LLM-driven species (PromptForge, Seeder).
-- A future reader must not assume "I seeded a StructuralLab guardrail, so the planner won't toggle that flag." Until Phase 2c is merged and activated by a restart, StructuralLab is blind to it. The corresponding correction has been written to memory ([[feedback_seed_autopilot_via_strategy_store]]).
+- A future reader must not assume "I seeded a StructuralLab guardrail, so the planner won't toggle that flag." As of `a4129025`, audited live bindings can block dispatch after rows are applied and AutoPilot restarts with `AUTOPILOT_PLANNER_HINTS=1`; until then, StructuralLab/NumericSwarm remain effectively blind. Planner-visible availability is still Phase 2f. The corresponding correction has been written to memory ([[feedback_seed_autopilot_via_strategy_store]]).
 
 ### Other verified facts (drive correctness)
 - **Writer = `StrategyStore.store(...)` in `orchestration/repl_memory/strategy_store.py` (~L632).** It updates the `strategies` row **and** the FTS5 table (~L698–706) **and** the FAISS index (~L684–686). **Raw SQL INSERT skips FTS5/FAISS → the row is never retrieved. Always use `store()`.** `_embed()` falls back to a hash embedding if the embedder is offline, so `store()` never fails and FAISS is always populated.
@@ -104,11 +104,11 @@ Planner-orchestration only → **outside the MEASUREMENT trust boundary** (safe 
 
 - [x] **2a. Shared helper:** either add a small `StrategyStore.retrieve_conventions(species, k)` convenience wrapper or reuse the existing quarantine-aware entry-type helpers; avoid creating a parallel convention system. Done in orchestrator `bac4db17`: `StrategyStore.retrieve_conventions(...)` reads `strategies.entry_type='convention'` rows with species-plus-`all` filtering, folded-journal exclusions, quarantine/min-validity filtering, staleness diagnostics, and deterministic limits. It is inert until Phase 2 callers opt in.
 - [x] **2b. Seeder (LLM-driven):** replicate `_build_mutation_context()` retrieval (`actions.py:244–276`) in the seed_batch handler — `retrieve_for_journal(query, k, species="seeder")` injected into the seed prompt. Done in orchestrator `aa84abe0`: `_action_seed_batch` retrieves species-filtered hints only when startup-cached `AUTOPILOT_PLANNER_HINTS` is enabled, then passes them into `Seeder.run_batch`; `Seeder` copies sampled prompt records and appends planner context without mutating the original question payload. Default-off; no running daemon sees it until restart.
-- [ ] **2c. StructuralLab (deterministic flag chooser):** consume `convention` rows to build a **flag denylist** — exclude any flag named in a "do NOT toggle / NO-GO / frozen" convention from the experimentable set before selection (`species/structural_lab.py` vs `HOT_SWAP_FEATURES`). Hard bind — prose alone won't stop a deterministic chooser.
-- [ ] **2d. NumericSwarm (Optuna):** consume `convention` rows to **suppress dead surfaces** (e.g. `moe_spec_budget` no-consumer, op-coalesced-barriers neutral) and optionally narrow bounds (`species/numeric_swarm.py`) before surface/trial selection.
+- [x] **2c. StructuralLab (deterministic flag chooser):** consume `convention` rows to build a **flag denylist** — exclude any flag named in a "do NOT toggle / NO-GO / frozen" convention from the experimentable set before selection (`species/structural_lab.py` vs `HOT_SWAP_FEATURES`). Hard bind — prose alone won't stop a deterministic chooser. Done in orchestrator `a4129025` as a startup-gated dispatch guard: only `metadata.bind_status="live"` + `bind_identifiers` from `retrieve_conventions(species="structural_lab")` deny proposed flags, and future/context rows are ignored.
+- [x] **2d. NumericSwarm (Optuna):** consume `convention` rows to **suppress dead surfaces** (e.g. `moe_spec_budget` no-consumer, op-coalesced-barriers neutral) and optionally narrow bounds (`species/numeric_swarm.py`) before surface/trial selection. Done in orchestrator `a4129025` as a startup-gated dispatch guard: only `metadata.bind_status="live"` + `bind_identifiers` from `retrieve_conventions(species="numeric_swarm")` suppress proposed surfaces. Bounds narrowing remains future work.
 - [ ] **2e. PromptForge:** optionally inject `entry_type=convention` guardrails unconditionally (not only RRF-ranked) so hard constraints always appear.
 - [ ] **2f. Planner prompt assembly:** if dead flags/surfaces should disappear before the planner proposes them, also thread convention-derived denylist/suppression summaries into the planner-visible feature-flag/action availability blocks; execution-time filtering alone is weaker and can create avoidable critic rejections.
-- [ ] **2g. Tests:** extend the planner suite (~39 tests) — a "do not toggle EP" convention removes `expert_parallelism` from StructuralLab candidates; a dead-surface convention suppresses that NumericSwarm surface; seeded prose appears in Seeder context; planner-visible availability reflects denylisted levers; **no interaction with the W6 gaming-alarm logic**.
+- [ ] **2g. Tests:** extend the planner suite (~39 tests) — dispatch-level tests now cover default-off binding, a live-bound StructuralLab denylist, and a live-bound NumericSwarm surface suppression in `a4129025`; remaining coverage should prove planner-visible availability reflects denylisted levers and **no interaction with the W6 gaming-alarm logic**.
 - [ ] **2h. Activation:** restart via `orchestrator_stack.py` / autopilot start using the settled safe preflight (registry attest + `stack_change_pipeline.py check --run-promotion-gate`), coordinated with the kernel-era baseline state.
 
 ### Rollback / rewind-purge (required)
@@ -296,6 +296,49 @@ Read-only Phase 2 audit confirmed the next live-behaviour surfaces:
   numeric validation, action quota surfaces, structural flag validation,
   controller template rendering, seeder YAML helpers, and PromptForge/GEPA only
   if mutation-path hinting changes.
+
+## Phase 2c/2d implementation note — 2026-06-28
+
+Orchestrator `a4129025` adds default-off execution guards for the deterministic
+planner surfaces:
+
+- `scripts/autopilot/actions.py` derives convention bindings through
+  `StrategyStore.retrieve_conventions(...)` only when startup-cached
+  `AUTOPILOT_PLANNER_HINTS` is enabled.
+- The hard bind uses audited metadata only:
+  `metadata.bind_status == "live"` plus `metadata.bind_identifiers`. It does
+  not parse free-text "do not" prose, so future/context convention rows cannot
+  disable live levers by accident.
+- `_action_structural_experiment` returns an `invalid` `SkipOutcome` before
+  calling StructuralLab when a proposed flag is denylisted.
+- `_action_numeric_trial` returns an `invalid` `SkipOutcome` before calling
+  NumericSwarm when a proposed surface is suppressed.
+- `scripts/autopilot/autopilot.py` re-exports `apply_params` to restore the
+  existing action-test monkeypatch contract, and `actions._autopilot_attr`
+  resolves the top-level runtime alias first for sequential gate helpers.
+
+Validation:
+
+- GitNexus impact: `dispatch_action` LOW (`impactedCount=3`),
+  `_action_numeric_trial` LOW (`impactedCount=0`),
+  `_action_structural_experiment` LOW (`impactedCount=0`), and
+  `_autopilot_attr` LOW (`impactedCount=6`). Inline class methods were not
+  resolved by GitNexus and returned `UNKNOWN`.
+- `uv run pytest tests/unit/test_autopilot_actions.py
+  tests/unit/test_autopilot_numeric_apply.py tests/unit/test_strategy_store.py
+  tests/unit/test_seed_operator_strategies.py -q` -> `125 passed`.
+- `uv run ruff check scripts/autopilot/actions.py scripts/autopilot/autopilot.py
+  tests/unit/test_autopilot_actions.py tests/unit/test_autopilot_numeric_apply.py`
+  -> pass.
+- `python3 -m py_compile scripts/autopilot/actions.py
+  scripts/autopilot/autopilot.py` -> pass.
+- `git diff --check` -> pass.
+
+No seed rows were applied and AutoPilot was not restarted. Running AutoPilot
+remains on the old imported code. The next A10 items are Phase 1 operator
+review/`--apply`, Phase 2f planner-visible availability, Phase 2g W6
+non-interaction coverage, and Phase 2h coordinated restart after W4/W6 strict
+readiness.
 
 ## Provenance
 Full design rationale + the verbatim two-phase plan: `~/.claude/plans/caveat-on-a-distributed-wilkinson.md` (this session, 2026-06-28). Survey + mechanism findings produced by read-only code/handoff analysis; no system state was modified.
