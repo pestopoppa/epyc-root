@@ -1,6 +1,6 @@
 # Capability Registry, Safe Role-Restart Applicator & Promotion Workflow
 
-**Status**: IN PROGRESS — W0 traffic-class interface, TaskIR/task-record capture, and live `request_context` workload-class tagging are closed; W1 seed rows landed; W2 generated Action-Availability + index A-by surfaces landed/adopted 2026-06-27; W3 has env rollback, co-hosted-role resolution, boundary journaling, smoke-check hooks, and default-off AutoPilot dispatch pause; W4 remains gated on evidence-plane ledger
+**Status**: IN PROGRESS — W0 traffic-class interface, TaskIR/task-record capture, and live `request_context` workload-class tagging are closed; W1 seed rows landed; W2 generated Action-Availability + index A-by surfaces landed/adopted 2026-06-27; W3 has env rollback, registry override rollback, co-hosted-role resolution, boundary journaling, smoke-check hooks, and default-off AutoPilot dispatch pause; W4 remains gated on evidence-plane ledger
 **Created**: 2026-06-12
 **Priority**: GATED — on `evidence-plane-ledger.md` (sibling handoff = findings-01 Phase 1: the instrument must certify effects before the optimizer gets bigger levers; spec §C.4). W0 (workload model) is NOT gated and can run now.
 **Spec**: [fable5-findings-04-impl-plan.md](../completed/fable5-findings-04-impl-plan.md) §C + §D — read before claiming any waypoint
@@ -72,8 +72,13 @@ resolution, registry override rollback semantics, and a shadowed live restart at
 reload if the state file cannot be paused, and restores `paused=False` only if the applicator changed it from false.
 The pause result is attached to the restart payload and is restored on both successful reloads and rollback paths.
 This closes the W3 dispatch-pause primitive without promoting any capability row or touching the live AutoPilot run.
-W3 remains open for registry override rollback semantics and a shadowed live restart attestation once the evidence
-plane allows restart-class experiments.
+
+2026-06-28 W3 registry-rollback slice: Orchestrator `config_applicator.restart_role()` now applies
+`registry_overrides` as dotted YAML paths against an explicit registry file, records the exact prior leaf values, and
+atomically restores that rollback record before the rollback reload when reload or smoke gating fails. Missing parents
+fail closed before any reload, and restart-boundary events now include the registry override keys. This closes the W3
+registry override rollback primitive without promoting any capability row or touching the live stack. W3 remains open
+only for a shadowed live restart attestation once the evidence plane allows restart-class experiments.
 
 ## Gates & pitfalls
 
