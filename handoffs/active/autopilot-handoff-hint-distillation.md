@@ -230,5 +230,28 @@ Orchestrator `412392c3` closes Phase 1c:
 
 Remaining gates are operator review/approval, `--apply`, and post-apply retrieval verification on a fresh `StrategyStore()`.
 
+## Current dry-run review packet — 2026-06-28
+
+The current operator-review packet was regenerated while AutoPilot was live at
+trial `1035`; no rows were written:
+
+- `uv run python scripts/autopilot/seed_operator_strategies.py --json` ->
+  `campaign=operator-handoff-distillation`, `row_count=44`,
+  `before_count=1374`, `after_count=1374`, `would_insert_count=44`,
+  `inserted_count=0`, `existing_ids=[]`, `source_trial_id=1035`,
+  species counts `prompt_forge=4`, `numeric_swarm=11`, `structural_lab=19`,
+  `seeder=5`, `all=5`.
+- `uv run python scripts/autopilot/seed_operator_strategies.py
+  --audit-identifiers --json` -> `ok=true`, `blocking_count=0`,
+  `finding_count=29`.
+- Validation: `uv run pytest tests/unit/test_seed_operator_strategies.py
+  tests/unit/test_strategy_store.py -q` -> `44 passed`; `uv run ruff check
+  scripts/autopilot/seed_operator_strategies.py
+  tests/unit/test_seed_operator_strategies.py tests/unit/test_strategy_store.py`
+  -> pass.
+
+This is sufficient for operator review. It is not an approval or apply event;
+Phase 1d/1e remain open.
+
 ## Provenance
 Full design rationale + the verbatim two-phase plan: `~/.claude/plans/caveat-on-a-distributed-wilkinson.md` (this session, 2026-06-28). Survey + mechanism findings produced by read-only code/handoff analysis; no system state was modified.
