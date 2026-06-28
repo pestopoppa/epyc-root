@@ -141,6 +141,16 @@ def test_parse_protocol_reference_from_protocol_id_prefix():
     assert protocol.attestation == "a3f2"
 
 
+def test_parse_protocol_reference_accepts_punctuated_attestation():
+    protocol = parse_protocol_reference("Protocol: P-BENCH-2, n=5, 2026-04-26, attestation: a3f2")
+
+    assert protocol is not None
+    assert protocol.protocol_id == "P-BENCH-2"
+    assert protocol.n == "5"
+    assert protocol.date == "2026-04-26"
+    assert protocol.attestation == "a3f2"
+
+
 def test_render_page_is_generated_claim_triage_surface():
     rows = collect_rows("""# Results
 

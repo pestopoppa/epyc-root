@@ -87,7 +87,7 @@ def _parse_protocol_payload(payload: str) -> ProtocolRef | None:
     protocol_id = match.group(1).upper()
     n = _first_match(r"\b(?:n|reps)\s*[:=]?\s*(\d+)\b", payload)
     date = _first_match(r"\b(20\d{2}-\d{2}-\d{2})\b", payload)
-    attestation = _first_match(r"\battest(?:ation)?\s+([A-Za-z0-9._-]{3,})\b", payload)
+    attestation = _first_match(r"\battest(?:ation)?\s*[:=]?\s*([A-Za-z0-9._-]{3,})\b", payload)
 
     return ProtocolRef(protocol_id=protocol_id, n=n, date=date, attestation=attestation)
 
