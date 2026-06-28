@@ -165,6 +165,15 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 - No persistent benchmark evidence was written. The evidence gap remains: no live `opendataloader-pdf-hybrid` sidecar benchmark and no benchmark-backed table-selection policy evidence.
 - Next run should retry the documented container pull/run or use a host with the expected TeX Live layout, execute `python pdf_validation.py --config <config_path>` against a temp-mounted result directory, and only then consider hybrid/table routing policy edits.
 
+**2026-06-28 benchmark adapter local-PDF checkpoint (`epyc-inference-research` `5d14d3d`, `5ab748d`)**
+
+- `document_extraction_adapter.py` now matches the current local OpenDataLoader-bench layout: source PDFs under `pdfs/` and Markdown ground truth under `ground-truth/`.
+- The adapter no longer treats Markdown files as pseudo-PDFs; availability requires both local directories and missing PDFs are skipped.
+- A generic benchmark-suite wrapper, `DocumentExtractionDatasetAdapter`, emits prompt dictionaries with `scoring_method=document_extraction`, `pdf_path`, and `nid/teds/mhs/aggregate` metric metadata while preserving the direct `DocumentExtractionAdapter` PDF-object API.
+- `dataset_adapters.get_adapter("document_extraction")` now returns the lazy wrapper. This CRITICAL fanout symbol was handled in the main thread after GitNexus refresh because `get_adapter` affects 15 benchmark processes (`impactedCount=38`, risk `CRITICAL`).
+- Validation: `python3 -m py_compile` on touched research files; fatal ruff slice (`E9,F401,F821,F822,F823`) passed; full-file ruff remains blocked by pre-existing unrelated `dataset_adapters.py` F841/F541 lint debt; focused pytest slice passed (`147 passed`); direct registry smoke confirmed absent local dataset reports `0` rows rather than a registration failure.
+- Remaining evidence gate: the actual `/mnt/raid0/llm/opendataloader-bench` Git LFS dataset is still absent, so no 200-PDF baseline has been run.
+
 **Target routing architecture**:
 ```
 PDF Input
@@ -184,10 +193,10 @@ PDF Input
 **Effort**: Small
 
 - [ ] Clone opendataloader-bench repo (MIT license, 200 PDFs via Git LFS)
-- [ ] Add `document_extraction` suite to `epyc-inference-research/scripts/benchmark/question_pool.py`
-- [ ] Adapt ground truth format (Markdown references → our scoring contract)
-- [ ] Scoring methods: NID (reading order), TEDS (table DOM), MHS (heading hierarchy)
-- [ ] Register as suite in benchmark infrastructure for reproducible comparisons
+- [x] Add `document_extraction` suite to the benchmark adapter path consumed by `question_pool.py`
+- [x] Adapt ground truth format (Markdown references → our scoring contract)
+- [x] Scoring methods: NID (reading order), TEDS (table DOM), MHS (heading hierarchy)
+- [x] Register as suite in benchmark infrastructure for reproducible comparisons
 - [ ] Run baseline: our current pipeline (pdftotext + LightOnOCR) on the 200 PDFs
 
 **Dataset details**:
