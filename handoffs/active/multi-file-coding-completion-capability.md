@@ -1,6 +1,6 @@
 ---
 title: Multi-file coding completion — diagnosed agentic read→edit→finish protocol gap (coder_escalation = Qwen3.6-35B-A3B)
-status: REMEDIATION BUILT 2026-05-27 — diagnosed as an agentic protocol/tool-loop problem, NOT model coding capability (one-shot ablation 5/5 on the same tasks+verifiers while the REPL/BEP loop fails); model swap moot. Fix shipped = first-class flag-gated `force_mode="edit"` one-shot edit transaction (default-OFF): module validated 5/5, live server path validated 3/3. 5-point review hardening landed 2026-05-27 (fail-closed 412 / scope caps / clean syntax-check / all-or-nothing / cc-roles single-source-of-truth — d4fafdf; stat-before-read scope cap fba6c84; docstring + 412 regression test 0f00708). Explicit target-file selection landed 2026-06-19 (`994f168`). Open = production rollout decision (when/how routine coding edits auto-route to edit-mode) + optional functional-verifier-in-the-loop (self-check is syntax-only today).
+status: REMEDIATION BUILT 2026-05-27 — diagnosed as an agentic protocol/tool-loop problem, NOT model coding capability (one-shot ablation 5/5 on the same tasks+verifiers while the REPL/BEP loop fails); model swap moot. Fix shipped = first-class flag-gated `force_mode="edit"` one-shot edit transaction (default-OFF): module validated 5/5, live server path validated 3/3. 5-point review hardening landed 2026-05-27 (fail-closed 412 / scope caps / clean syntax-check / all-or-nothing / cc-roles single-source-of-truth — d4fafdf; stat-before-read scope cap fba6c84; docstring + 412 regression test 0f00708). Explicit target-file selection landed 2026-06-19 (`994f168`). Functional-verifier-in-the-loop support landed 2026-06-28: callers can pass a verifier callable that runs after syntax checks and before promotion; verifier failure rolls back the planned transaction and the no-inference BEP validators now exercise that path. Open = production rollout decision (when/how routine coding edits auto-route to edit-mode) + clean-window A/B evidence.
 created: 2026-05-27
 owners: unassigned (operator will drive a dedicated session)
 priority: HIGH (core tool-mediated coding-completion gap; diagnosis proven, remediation open)
@@ -191,8 +191,14 @@ implemented and validated end-to-end (flag-gated, default-OFF, zero production b
   branch when both `ORCHESTRATOR_EDIT_TRANSACTION=1` and scoped `ORCHESTRATOR_EDIT_ROOT` are present,
   applies the returned file block transactionally, and returns an `edit` response. This complements the
   existing fail-closed 412 route coverage; live rollout still requires clean-window evidence.
-- **Functional verifier in the loop.** The self-check is **syntax-only** (`compile`) — it does not run a task's
-  functional verifier or re-prompt on failure. Iterate-on-verifier-failure is a possible enhancement.
+- **Functional verifier in the loop.** ✅ 2026-06-28: `apply_edit_transaction()` / `run_edit_transaction()`
+  now accept an optional `verify_fn(root)` callback. It runs after file writes/deletes and the syntax
+  `compile()` checks but before promotion is considered successful; `False`, `(False, detail)`, or an
+  exception rolls back the planned writes/deletes and returns a `functional verifier failed` error. The
+  no-inference BEP module validator and edit-mode wiring stub now pass each task's `verifier_cmd` into
+  the transaction itself, so validator failures are classified as `verifier fail` rather than merely
+  discovered after commit. This does not add re-prompt-on-verifier-failure; iteration remains a future
+  enhancement.
 - **Model choice:** MOOT — Qwen3.6 is proven capable one-shot; do NOT pursue a model swap for this problem.
 
 ## A2 rollout contract (prepared 2026-06-12)
