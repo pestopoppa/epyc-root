@@ -1,6 +1,6 @@
 # AutoPilot Planner-Hint Distillation from Orchestrator Handoffs
 
-**Status**: PHASE 1 SOURCE + DRY-RUN READY — no rows written, no restart. Orchestrator `dd4c572d` adds the curated seed file, dry-run/apply/purge CLI, and tested StrategyStore purge/rebuild support. Phase 1 `--apply` still needs operator review.
+**Status**: PHASE 1 SOURCE + DRY-RUN READY — no rows written, no restart. Orchestrator `dd4c572d` adds the curated seed file, dry-run/apply/purge CLI, and tested StrategyStore purge/rebuild support. Orchestrator `412392c3` completes the pre-apply identifier audit by requiring explicit `bind_status`/`bind_identifiers` for deterministic planner rows. Phase 1 `--apply` still needs operator review.
 **Created**: 2026-06-28
 **Priority**: MEDIUM (cheap leverage on planner decision quality; prevents wasted trials)
 **Categories**: autopilot, routing/optimization, strategy-store
@@ -75,7 +75,7 @@ Writing mid-run is safe — AutoPilot writes `journal-frontier-*` rows every tri
 - [x] **1b.** Author `epyc-orchestrator/scripts/autopilot/seed_operator_strategies.py`:
   - For each row call `StrategyStore.store(...)` with `entry_id=f"opseed-{tranche}-{slug}"`, `species`, `entry_type`, `title`, `description`, `insight`, `generalized_content=insight`, `source_trial_id=<live trial_counter>`, `evidence_trial_ids`, and `metadata={seeded_by:"operator", seeded_date:<apply-date>, seed_campaign:"operator-handoff-distillation", seeded_reason, source_handoff, confidence}`.
   - Modes: `--dry-run` (default; prints rows + summary, writes nothing), `--apply`, `--purge-campaign operator-handoff-distillation`. Log via `scripts/utils/agent_log.sh`.
-- [ ] **1c.** Pre-finalize: verify exact identifier strings — flag names against `config_applicator.py` `HOT_SWAP_FEATURES`; numeric surface ids against `species/numeric_swarm.py` — so guardrail keys bind for Phase 2. YAML schema/dry-run validation passes, but exact future-bind identifier audit remains pending before `--apply`.
+- [x] **1c.** Pre-finalize: verify exact identifier strings — flag names against `config_applicator.py` `HOT_SWAP_FEATURES`; numeric surface ids against `species/numeric_swarm.py` — so guardrail keys bind for Phase 2. Done in orchestrator `412392c3`: `seed_operator_strategies.py --audit-identifiers --json` reports `ok=true`, `blocking_count=0`, `row_count=44`; non-current deterministic rows are explicitly marked `future` or `context` rather than silently passing as live bindings.
 - [ ] **1d.** **Operator reviews `--dry-run` output, then approves `--apply`** (standing approval rule for store/index writes).
 - [ ] **1e.** Phase-1 verification (read-only): (i) row-count delta == N; (ii) `json_extract(metadata_json,'$.seed_campaign')='operator-handoff-distillation'` count == N; (iii) FTS5 row count and FAISS `ntotal` each +N for a freshly opened store; (iv) retrieval probe on a fresh `StrategyStore()` — `store.retrieve_for_journal("frontdoor prompt conciseness brevity", k=5)` returns the reasoning-compression row; repeat for 2–3 others; confirm none quarantined. Do not call this a live PromptForge proof unless the running AutoPilot process has refreshed/restarted.
 
@@ -211,7 +211,18 @@ Orchestrator `dd4c572d` implemented the Phase 1 source/dry-run slice without app
 - `StrategyStore.purge_strategy_campaign()` plus `rebuild_search_indexes()` provide the required rewind purge path, including FTS5 and FAISS mirror rebuild.
 - Validation: `uv run pytest tests/unit/test_strategy_store.py -q` -> `42 passed`; `uv run ruff check scripts/autopilot/seed_operator_strategies.py orchestration/repl_memory/strategy_store.py tests/unit/test_strategy_store.py` -> pass; `git diff --check` -> pass.
 
-No `--apply` was run. Remaining Phase 1 gates are exact identifier audit, operator review/approval, apply, and post-apply retrieval verification.
+No `--apply` was run. The exact identifier audit is now closed by the 2026-06-28 follow-up below; remaining Phase 1 gates are operator review/approval, apply, and post-apply retrieval verification.
+
+## Identifier audit note — 2026-06-28
+
+Orchestrator `412392c3` closes Phase 1c:
+
+- `operator_seed_strategies.yaml` now records `bind_status` and `bind_identifiers` for every StructuralLab/NumericSwarm seed row.
+- `seed_operator_strategies.py --audit-identifiers` imports live `HOT_SWAP_FEATURES` and `SURFACES`, fails live rows that no longer bind, and reports explicitly documented `future`/`context` rows separately.
+- Validation: `uv run python scripts/autopilot/seed_operator_strategies.py --audit-identifiers --json` -> `ok=true`, `blocking_count=0`, `finding_count=29`; dry-run still reports `before_count=1374`, `after_count=1374`, `would_insert_count=44`, `inserted_count=0`.
+- Test coverage: `uv run pytest tests/unit/test_seed_operator_strategies.py tests/unit/test_strategy_store.py -q` -> `44 passed`; `uv run ruff check scripts/autopilot/seed_operator_strategies.py tests/unit/test_seed_operator_strategies.py tests/unit/test_strategy_store.py` -> pass.
+
+Remaining gates are operator review/approval, `--apply`, and post-apply retrieval verification on a fresh `StrategyStore()`.
 
 ## Provenance
 Full design rationale + the verbatim two-phase plan: `~/.claude/plans/caveat-on-a-distributed-wilkinson.md` (this session, 2026-06-28). Survey + mechanism findings produced by read-only code/handoff analysis; no system state was modified.
