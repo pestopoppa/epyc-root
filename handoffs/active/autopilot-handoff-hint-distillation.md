@@ -114,7 +114,7 @@ Planner-orchestration only -> **outside the MEASUREMENT trust boundary** (safe t
 - [x] **2b. Seeder (LLM-driven):** replicate `_build_mutation_context()` retrieval (`actions.py:244–276`) in the seed_batch handler — `retrieve_for_journal(query, k, species="seeder")` injected into the seed prompt. Done in orchestrator `aa84abe0`: `_action_seed_batch` retrieves species-filtered hints only when startup-cached `AUTOPILOT_PLANNER_HINTS` is enabled, then passes them into `Seeder.run_batch`; `Seeder` copies sampled prompt records and appends planner context without mutating the original question payload. Default-off; no running daemon sees it until restart.
 - [x] **2c. StructuralLab (deterministic flag chooser):** consume `convention` rows to build a **flag denylist** — exclude any flag named in a "do NOT toggle / NO-GO / frozen" convention from the experimentable set before selection (`species/structural_lab.py` vs `HOT_SWAP_FEATURES`). Hard bind — prose alone won't stop a deterministic chooser. Done in orchestrator `a4129025` as a startup-gated dispatch guard: only `metadata.bind_status="live"` + `bind_identifiers` from `retrieve_conventions(species="structural_lab")` deny proposed flags, and future/context rows are ignored.
 - [x] **2d. NumericSwarm (Optuna):** consume `convention` rows to **suppress dead surfaces** (e.g. `moe_spec_budget` no-consumer, op-coalesced-barriers neutral) and optionally narrow bounds (`species/numeric_swarm.py`) before surface/trial selection. Done in orchestrator `a4129025` as a startup-gated dispatch guard: only `metadata.bind_status="live"` + `bind_identifiers` from `retrieve_conventions(species="numeric_swarm")` suppress proposed surfaces. Bounds narrowing remains future work.
-- [ ] **2e. PromptForge:** optionally inject `entry_type=convention` guardrails unconditionally (not only RRF-ranked) so hard constraints always appear.
+- [x] **2e. PromptForge:** optionally inject `entry_type=convention` guardrails unconditionally (not only RRF-ranked) so hard constraints always appear. Done in orchestrator `72e610ae`: `_build_mutation_context()` now prepends startup-gated PromptForge convention guardrails from `StrategyStore.retrieve_conventions(species="prompt_forge", journal=...)`, independent of query-specific RRF retrieval. This code is not active in the already-running daemon until the next controlled AutoPilot restart.
 - [x] **2f. Planner prompt assembly:** if dead flags/surfaces should disappear before the planner proposes them, also thread convention-derived denylist/suppression summaries into the planner-visible feature-flag/action availability blocks; execution-time filtering alone is weaker and can create avoidable critic rejections. Done in orchestrator `18958ab4`: AutoPilot computes live audited convention bindings once at startup, appends StructuralLab denylist guidance to the feature-flag block, removes suppressed NumericSwarm surfaces from the `numeric_surface_options` schema prompt, mirrors suppression into `controller_io` validation, and notes suppressed surfaces in action availability.
 - [x] **2g. Tests:** extend the planner suite (~39 tests) — dispatch-level tests cover default-off binding, a live-bound StructuralLab denylist, and a live-bound NumericSwarm surface suppression in `a4129025`; planner-visible availability and controller validation mirror tests landed in `18958ab4`; W6 audit non-interaction coverage landed in `15bccee8`, proving startup convention binding install does not mutate the W6 audit env contract while planner/controller state is updated.
 - [x] **2h. Activation:** restarted AutoPilot on 2026-06-28 with `AUTOPILOT_PLANNER_HINTS=1`, preserving the existing sequential/W6 shadow environment (`AUTOPILOT_SEQ_VERDICT=1`, `AUTOPILOT_W6_AUDIT_BLOCK=1`, `AUTOPILOT_W6_AUDIT_SHADOW_ONLY=1`). Verification: new child PID `1779684`, StrategyStore `1418` entries loaded, `trial_counter=1037`, `paused=false`. The interrupted pre-restart T2 deep-eval trial `1036` was recorded as `AUTOPILOT_KILLED` and excluded from planner trust.
@@ -290,11 +290,12 @@ stopped, then AutoPilot was restarted with planner hints enabled:
   recorded interrupted trial `1036` as
   `CORRUPTED_BY=autopilot_killed_mid_trial`, excluded from planner trust.
 
-This closes Phase 2h. The remaining optional A10 code hardening item is Phase
-2e: unconditional PromptForge convention-guardrail injection. Baseline ledger
-authority and W6 cutover remain separate gates; the latest strict readiness
-report before activation still showed W6 blocked at `24/30` current-era audited
-rows plus the W6 gaming alarm.
+This closes Phase 2h. Phase 2e later landed in orchestrator `72e610ae`; because
+planner hint code is startup-cached, that PromptForge hardening waits for the
+next controlled AutoPilot restart. Baseline ledger authority and W6 cutover
+remain separate gates; the latest strict readiness report before activation
+still showed W6 blocked at `24/30` current-era audited rows plus the W6 gaming
+alarm.
 
 ## Dry-run review packet — 2026-06-28
 
