@@ -394,6 +394,21 @@ Tasks:
 - Label old docs historical instead of rewriting every archived mention.
 - Add a freshness check so generated summaries cannot be older than their source hashes.
 
+2026-06-28 planner-guidance slice: `epyc-orchestrator` commit `969a7b7c`
+removed current-stack literal guidance from `scripts/autopilot/program.md` and
+the planner prompt in `scripts/autopilot/autopilot.py`. Concrete role, port,
+model, and acceleration examples now point the planner to generated stack
+truth: the system card, stack priors, current handoffs, and Slot Memory. This
+keeps planner guidance from acting as a hidden source of stale live topology.
+Validation: `python3 -m py_compile scripts/autopilot/autopilot.py`,
+`uv run python scripts/validate/stack_change_guard.py
+--all-hardcoded-surfaces --surface-summary-only`, `uv run python
+scripts/registry/render_stack_summary.py --check`, `git diff --check`, and
+`uv run pytest -q tests/unit/test_autopilot_creativity.py` (`23 passed`). This
+closes the current W5 planner-prompt cutover slice; remaining W5 work is any
+future discovered manual operator/planner prose plus freshness enforcement for
+new generated summaries.
+
 Dependencies: W3 and any Fable 5 system-card work.
 
 ### W6 - Add simulated stack-change CI
