@@ -15,7 +15,10 @@ primary ports and server-mode launch paths through the generated artifact, with
 swap-CI proving a worker model/port replacement reaches the runtime config.
 Route-local chat image/vision gating now consumes the generated vision-role
 helper instead of a hardcoded legacy role set (`epyc-orchestrator` `f35448d1`).
-Future swap-CI expansion should follow new consumer migrations.
+Simulated swap-CI now also proves factual-risk role capability tiers follow
+regenerated stack priors for worker, vision, and long-context swaps instead of
+static degraded role defaults (`epyc-orchestrator` `cacd8c44`). Future swap-CI
+expansion should follow new consumer migrations.
 **Created**: 2026-06-13
 **Priority**: HIGH - stale model-specific quantities can silently corrupt
 routing, scoring, launch, planner prompts, replay analysis, and operator docs
@@ -140,6 +143,10 @@ unowned local constants.
   only; a valid generated artifact with no vision launch roles no longer
   silently resurrects legacy vision roles. This was a main-thread HIGH-risk
   migration because it touches multimodal request routing.
+- `src.classifiers.factual_risk` role capability tiers already derive from
+  generated stack priors; the W4 simulated swap fixture now proves regenerated
+  worker, vision, and long-context stack priors update factual-risk tier
+  adjustment before static degraded role defaults can apply.
 - X-MAS has an evidence-backed true function-axis 5x5 winner table and a
   default-off guarded enforce path. The 2026-06-21 quiet constrained-policy
   A/B carried `xmas_policy=incumbent_constrained_v1` and still returned
@@ -232,7 +239,10 @@ Any future stack update should be accepted only when these hold:
   the migrated vision serving consumers (`stack_prior_vl_ports`,
   `_vl_port_for_role`, `_vl_url_for_role`, and `_vl_url_for_port`) against the
   generated stack-prior artifact, and the simulated worker swap now covers
-  WorkerPool primary-port/model-path consumption after a generated worker swap.
+  WorkerPool primary-port/model-path consumption plus factual-risk role-tier
+  consumption after a generated worker swap. The simulated vision and
+  long-context swaps also prove factual-risk role-tier consumption for their
+  role classes.
 - [ ] Deploy/reload the repaired X-MAS constrained policy and rerun the
   held-out quiet-window A/B with `xmas_meta` capture and required policy
   `incumbent_constrained_cheapfirst_v2`; production routing remains

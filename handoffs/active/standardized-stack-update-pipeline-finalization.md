@@ -144,7 +144,11 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   new high-risk consumers are migrated. Long-context ingest swap-CI coverage
   landed in `63b8612`, proving generated descriptors, stack priors, operator
   summary, system card, health/dashboard endpoint hints, q_scorer priors, and
-  promotion-gate execution move together for `ingest_long_context`.
+  promotion-gate execution move together for `ingest_long_context`. Orchestrator
+  `cacd8c44` broadens the same simulated swap fixture to factual-risk role
+  capability tiers, proving worker, vision, and long-context swaps update
+  `src.classifiers.factual_risk` through regenerated stack priors instead of
+  static degraded role defaults.
 
 ## Outstanding Work
 
@@ -173,10 +177,11 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   frontdoor swap fixture now also exercises promotion-gate execution in the
   same swapped state, and representative worker, vision, and long-context ingest
   swaps now cover distinct live role classes. The worker swap also covers the
-  migrated text-side primary-port consumers after `6c9ac6b` and the seeding
-  descriptor degraded fallback after `7a90924`. The remaining gap is
-  opportunistic expansion as new high-risk consumers are migrated rather than a
-  missing end-to-end happy-path proof.
+  migrated text-side primary-port consumers after `6c9ac6b`, the seeding
+  descriptor degraded fallback after `7a90924`, and factual-risk role-tier
+  consumption after `cacd8c44`. The remaining gap is opportunistic expansion as new
+  high-risk consumers are migrated rather than a missing end-to-end happy-path
+  proof.
 - [ ] Keep direct benchmark, production launch, and AutoPilot preflight wired to
   the canonical gate; no new bypasses.
 
