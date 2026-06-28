@@ -64,6 +64,16 @@ compile:
     - { path: "progress", type: "progress", recurse: true }
     - { path: "docs", type: "docs", recurse: true }
 
+# Model-written wiki drafts are review-gated. The role is a stable orchestrator
+# role alias; the current concrete model id is resolved by stack truth at
+# execution time so this file does not duplicate model facts.
+wiki_writer:
+  role: "worker_general"
+  role_source: "orchestrator stack role; model id resolves at execution time"
+  temperature: 0.2
+  draft_dir: "wiki/drafts"
+  review_modes: ["human", "measured"]
+
 # Ingest pipeline flags (consumed by research-intake skill)
 ingest:
   credibility_scoring: true
