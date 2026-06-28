@@ -214,6 +214,26 @@ Validation:
   one-repo readiness scorer for
   `epyc-orchestrator=/mnt/raid0/llm/epyc-orchestrator`.
 
+2026-06-28 default-off AutoPilot advisory bridge:
+
+- `epyc-orchestrator` adds a default-off planner prompt section for passive
+  repo-readiness pickup artifacts.
+- The bridge is inert unless `AUTOPILOT_REPO_READINESS_PICKUP` points to a JSON
+  artifact. It accepts only `mode=advisory_only` with `authority_gate=false` and
+  otherwise renders an ignored/unavailable message.
+- The rendered section is planner context only: it explicitly does not override
+  owning handoffs, GitNexus impact checks, measurement gates, or scorer reruns.
+- This closes the first safe live-consumption protocol for the passive pickup
+  artifact without making repo-readiness a controller authority or acceptance
+  gate. Existing running AutoPilot processes will not see it until a future
+  restart with the env var set.
+- Validation: GitNexus impact for `CONTROLLER_PROMPT_TEMPLATE` and
+  `_run_loop_inner` returned LOW; `uv run pytest
+  tests/unit/test_autopilot_actions.py tests/unit/test_autopilot_system_card.py
+  -q` -> 82 passed; `uv run ruff check scripts/autopilot/autopilot.py
+  tests/unit/test_autopilot_actions.py`; `python3 -m py_compile
+  scripts/autopilot/autopilot.py tests/unit/test_autopilot_actions.py`.
+
 ## Notes
 
 - Anti-false-positive discipline (shared across Factory's review/scoring features): a criterion passes only on a concrete, verifiable check — mirrors our eval-tower verifier philosophy.
