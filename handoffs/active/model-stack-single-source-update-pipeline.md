@@ -164,6 +164,13 @@ unowned local constants.
   for live llama roles (`frontdoor`, `worker_general`, `architect_general`,
   `worker_vision`, `vision_escalation`) and the hardcoded-surface inventory is
   still `consumer_surface_count=13`, `rule_count=27`.
+- The 2026-06-28 no-inference currentness recheck again found no active
+  P2/HIGH migration tail: all-hardcoded-surface guard OK, canonical pipeline
+  `summary: ok`, strict guard OK, runtime attestation OK, no active production
+  waivers, inventory still `consumer_surface_count=13` / `rule_count=27`, and
+  promotion-gate pytest passed `176` tests. Future work should be triggered by
+  a concrete new duplicated model/role/port fact or a new migrated consumer that
+  deserves swap-CI coverage.
 
 ### 2026-06-27 Config Catalog Re-Audit
 

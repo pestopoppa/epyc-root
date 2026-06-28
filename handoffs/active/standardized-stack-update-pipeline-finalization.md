@@ -61,6 +61,15 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   `stack-change-guard: allow` markers, `guard_all_surfaces: ok` is restored,
   `stack_change_pipeline.py check --run-promotion-gate` passed, and the
   executable promotion gate reported `174 passed`.
+- 2026-06-28 currentness recheck: `stack_change_guard.py
+  --all-hardcoded-surfaces` returned OK; `stack_change_pipeline.py check`
+  returned `summary: ok` with `guard_all_surfaces: ok`, `guard_strict: ok`,
+  `runtime_attestation: ok`, and `acceptance: no-inference checks passed`;
+  surface inventory remained `consumer_surface_count=13`, `rule_count=27`;
+  `orchestration/stack_change_guard_exceptions.yaml` remained
+  `exceptions: []`; and the no-inference promotion gate passed `176` tests.
+  This found no live N11 consumer-migration gap to patch while AutoPilot is
+  accruing W6 evidence.
 - 2026-06-19 descriptor drift from the research registry hash was repaired
   through the canonical `stack_change_pipeline.py update` path. The generated
   diff was limited to `model_descriptors.yaml` / `stack_priors.yaml`
@@ -170,7 +179,9 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   guidance, and `3007610` moved admission degraded fallback URL/slot limits to
   computed stack-manifest truth; `93722b1` moved seeding degraded benchmark
   topology fallback to registry-derived truth. Remaining slices should continue
-  to distinguish de-duplication from deliberate precedence changes.
+  to distinguish de-duplication from deliberate precedence changes. As of the
+  2026-06-28 currentness recheck, this is opportunistic-on-new-finding rather
+  than an already-identified open code migration.
 - [ ] Finish W4 swap-CI so representative stack changes prove generated
   descriptors, stack priors, q_scorer priors, operator summary, promotion-gate
   execution, and selected consumer witnesses move together. The simulated
