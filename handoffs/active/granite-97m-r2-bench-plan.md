@@ -1,6 +1,6 @@
 # Granite-97M-r2 Multilingual Embedder Bench Plan
 
-**Status**: Phase A-fast fallback corpus + dry-run harness landed and re-verified 2026-06-20; HF model artifacts and conversion env staged; warm/default-off orchestrator embedder recipes landed 2026-06-20; GGUF conversion and Phase B remain open
+**Status**: Phase A-fast fallback corpus + dry-run harness landed and re-verified 2026-06-20; HF model artifacts and conversion env staged; warm/default-off orchestrator embedder recipes landed 2026-06-20; conversion preflight/command emitter landed 2026-06-28 and reports all staged sources ready; GGUF conversion and Phase B remain open
 **Created**: 2026-04-30 (post-intake-519 deep-dive)
 **Updated**: 2026-06-20
 **Categories**: search_retrieval, knowledge_management, rag_alternatives, local_inference
@@ -12,7 +12,7 @@
 
 Phase A-fast is complete enough to unblock the next decision: `data/benchmarks/eval-corpus-v0.jsonl` has the 100-document / 30-query fallback corpus, and `scripts/benchmark/bench_embedder_throughput.py --dry-run --corpus data/benchmarks/eval-corpus-v0.jsonl --servers 8090 8096 8097 8098` validates the corpus and run plan with no missing relevance references. The remaining live work is:
 
-1. Complete the model-artifact branch from the staged HF sources: GGUF conversion/quantization for Granite, multilingual-e5-base, and BGE-M3.
+1. Complete the model-artifact branch from the staged HF sources: GGUF conversion/quantization for Granite, multilingual-e5-base, and BGE-M3. The no-run preflight is `scripts/benchmark/granite_embedder_conversion_preflight.py`; latest live check wrote `/mnt/raid0/llm/tmp/granite_conversion_preflight_20260628.json` with `status=ready_for_conversion`, all three artifacts `ready_to_convert=true`, and all target GGUF files absent as expected.
 2. Schedule an embedder-only serving window for Phase B; this does not require a production model-stack reload, but it does require the embedder servers to be live.
 3. After Phase B, update the downstream KB-RAG / rerank / SearXNG handoffs with a concrete dense-retriever decision.
 
@@ -32,6 +32,7 @@ The dedicated conversion env is staged at `/mnt/raid0/llm/venvs/llama-gguf-conve
 | 2026-06-20 | A-fast re-verified during wrap-up. | `python3 -m py_compile scripts/benchmark/bench_embedder_throughput.py`; dry-run returned 100 documents, 30 queries, server roles for `8090/8096/8097/8098`, and `missing_relevance_refs=[]`. |
 | 2026-06-20 | HF sources fetched for Granite, BGE-M3, and multilingual-e5-base. | Local staged dirs under `/mnt/raid0/llm/hf/`; target weights are checked out at 194,889,568 bytes, 2,271,145,830 bytes, and 1,112,201,288 bytes respectively. |
 | 2026-06-20 | Warm/default-off embedder server recipes landed. | Orchestrator `e2922d7` adds `embedder_granite_97m_r2:8096`, `embedder_multilingual_e5_base:8097`, and `embedder_bge_m3:8098` plus recipe-driven embedding commands; focused embedder tests passed. |
+| 2026-06-28 | Conversion preflight and command emitter landed. | `scripts/benchmark/granite_embedder_conversion_preflight.py` validates staged HF files, exact weight sizes, converter/quantizer paths, target GGUF paths, server-recipe context/pooling, and emits conversion/quantization commands without running them. Live report: `/mnt/raid0/llm/tmp/granite_conversion_preflight_20260628.json`, `status=ready_for_conversion`, failures `0`. |
 
 ## 2026-05-28 Audit Reset
 
@@ -52,6 +53,7 @@ This handoff was too conservatively gated. K2 chunker output is the best corpus 
 - ✅ Corpus exists with labels: `data/benchmarks/eval-corpus-v0.jsonl` has 100 `epyc-orchestrator/src` Python snippets and 30 labeled code-retrieval queries.
 - ✅ Bench script can run in dry-run mode against a fake or existing embedding endpoint: `scripts/benchmark/bench_embedder_throughput.py --dry-run --corpus data/benchmarks/eval-corpus-v0.jsonl --servers 8090 8096 8097 8098` validates shape and resolved relevance refs.
 - ✅ HF model sources are staged locally for Granite, BGE-M3, and multilingual-e5-base.
+- ✅ No-run conversion preflight is available and currently passes against the staged sources/tools.
 - Open: GGUF conversion/quantization, server smoke, and Phase B benchmark execution.
 - User-approved inference window exists for model server launches.
 
