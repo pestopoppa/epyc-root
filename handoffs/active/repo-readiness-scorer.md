@@ -40,12 +40,12 @@ Full mining → [`research/factory-ai-harvest-2026-06-03.md`](../../research/fac
 
 - Scorer: `/mnt/raid0/llm/epyc-root/scripts/validate/repo_readiness_scorer.py`
 - Tests: `/mnt/raid0/llm/epyc-root/tests/validate/test_repo_readiness_scorer.py`
-- JSON report: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_2026-06-21.json`
-- Markdown report: `/mnt/raid0/llm/epyc-root/progress/2026-06/repo-readiness-2026-06-21.md`
+- JSON report: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_2026-06-28.json`
+- Markdown report: `/mnt/raid0/llm/epyc-root/progress/2026-06/repo-readiness-2026-06-28.md`
 - Remediation queue export: `scripts/validate/repo_readiness_scorer.py --output-remediation-json <path>` (landed in root `7e6b3ee18864f1d86e8b5ce4651449a5fd7c8ee2`)
-- Current remediation queue JSON: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_remediation_queue_2026-06-20.json`
-- Current remediation queue Markdown: `/mnt/raid0/llm/epyc-root/progress/2026-06/repo-readiness-remediation-2026-06-20.md`
-- Current passive AutoPilot pickup JSON: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_autopilot_pickup_2026-06-21.json`
+- Current remediation queue JSON: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_remediation_queue_2026-06-28.json`
+- Current remediation queue Markdown: `/mnt/raid0/llm/epyc-root/progress/2026-06/repo-readiness-remediation-2026-06-28.md`
+- Current passive AutoPilot pickup JSON: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_autopilot_pickup_2026-06-28.json`
 
 2026-06-13 first-run summary:
 
@@ -308,6 +308,25 @@ Validation:
   `impactedCount=0`; skill frontmatter and `agents/openai.yaml` parsed with
   PyYAML; path-scoped `git diff --check` passed; and the root one-repo
   readiness scorer for `epyc-orchestrator` reported no failed criteria.
+
+2026-06-28 portfolio artifact refresh:
+
+- Regenerated the full four-repo readiness report, remediation queue, advisory
+  Markdown queue, and passive AutoPilot pickup artifact after the orchestrator
+  L5 and research L4 closeouts.
+- Current portfolio level is **Optimized (L4)** with L5 as the next gate.
+  Repo levels: `epyc-orchestrator` Autonomous/L5, `epyc-root` Optimized/L4,
+  `epyc-inference-research` Optimized/L4, and `epyc-llama` Documented/L2.
+- The deterministic remediation queue now has `28` open items, down from the
+  stale `49`-item 2026-06-21 pickup. The first blocking candidates are
+  `epyc-llama` L3 dev-env/security/task/experiment surfaces plus L5 autonomy
+  surfaces for research/root. The passive pickup remains `mode=advisory_only`
+  and `authority_gate=false`.
+- Validation: GitNexus impact was LOW for `score_repositories` and
+  `build_remediation_queue`; the generic `main` lookup was ambiguous but no
+  code edit was made. `repo_readiness_scorer.py` regenerated the artifacts
+  without errors, and generated JSON was inspected with `jq` for portfolio
+  level, queue count, and non-authority pickup fields.
 
 ## Notes
 
