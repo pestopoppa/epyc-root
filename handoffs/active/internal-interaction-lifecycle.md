@@ -91,7 +91,7 @@ INTERACTION_POLICY_VERSION = "1.0"
 
 **Gate to P2**:
 - [x] Focused/adjacent pytest green: `uv run pytest -q tests/unit/test_interaction_lifecycle.py tests/unit/test_api_models_responses.py tests/unit/test_progress_logger_interaction.py tests/unit/test_architect_delegation.py tests/unit/test_chat_delegation.py tests/unit/test_inference_mixin.py` -> 138 passed; post-fix adjacent suite `uv run pytest -q tests/unit/test_interaction_lifecycle.py tests/unit/test_architect_delegation.py tests/unit/test_chat_delegation.py tests/unit/test_chat_pipeline_stages.py tests/integration/test_chat_pipeline.py` -> 187 passed.
-- [ ] `delegation_diagnostics` byte-equal on identical inputs across before / after.
+- [x] `delegation_diagnostics` byte-equal on identical inputs across before / after. Current regression proof landed 2026-06-28 in orchestrator: `tests/unit/test_architect_delegation.py::TestArchitectDelegatedAnswer::test_delegation_diagnostics_are_byte_equal_for_identical_inputs` runs the lifecycle-backed delegation path twice with identical mocked inputs, isolates the delegation cache, serializes diagnostics with sorted JSON keys, and asserts byte equality. Validation slice: focused test plus adjacent delegation/lifecycle/API-model suite -> `117 passed`; ruff and py_compile passed.
 - [x] No breaking rename to `delegation_events` / `DelegationEvent`; additive `interaction_type="delegate"` field only.
 - [ ] `epyc-orchestrator/scripts/server/affinity_preflight.py` shows no region-lock drift.
 - [ ] One autopilot cycle (≥48h) with no rise in `delegation_cache_hits` miss rate or `ContentionDenied` 503 rate.
