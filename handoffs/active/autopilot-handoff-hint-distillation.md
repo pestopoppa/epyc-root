@@ -1,6 +1,6 @@
 # AutoPilot Planner-Hint Distillation from Orchestrator Handoffs
 
-**Status**: PHASE 1 SOURCE + DRY-RUN READY — no rows written, no restart. Orchestrator `dd4c572d` adds the curated seed file, dry-run/apply/purge CLI, and tested StrategyStore purge/rebuild support. Orchestrator `412392c3` completes the pre-apply identifier audit by requiring explicit `bind_status`/`bind_identifiers` for deterministic planner rows. Phase 1 `--apply` still needs operator review.
+**Status**: PHASE 1 SOURCE + DRY-RUN READY; PHASE 2A HELPER LANDED — no rows written, no restart. Orchestrator `dd4c572d` adds the curated seed file, dry-run/apply/purge CLI, and tested StrategyStore purge/rebuild support. Orchestrator `412392c3` completes the pre-apply identifier audit by requiring explicit `bind_status`/`bind_identifiers` for deterministic planner rows. Orchestrator `bac4db17` adds inert `StrategyStore.retrieve_conventions(...)` support for planner-usable convention rows. Phase 1 `--apply` still needs operator review; Phase 2b-2h wiring remains restart-gated.
 **Created**: 2026-06-28
 **Priority**: MEDIUM (cheap leverage on planner decision quality; prevents wasted trials)
 **Categories**: autopilot, routing/optimization, strategy-store
@@ -102,7 +102,7 @@ Curated row schema (YAML):
 ### Phase 2 — Wire all planners (staged; lands on next coordinated restart)
 Planner-orchestration only → **outside the MEASUREMENT trust boundary** (safe to change). Activates on restart; do **not** restart until W4/W6 strict readiness passes (`--require-seq-cutover --require-w6-audit`) and the N13/N14 E5 era fence is settled.
 
-- [ ] **2a. Shared helper:** either add a small `StrategyStore.retrieve_conventions(species, k)` convenience wrapper or reuse the existing quarantine-aware entry-type helpers; avoid creating a parallel convention system.
+- [x] **2a. Shared helper:** either add a small `StrategyStore.retrieve_conventions(species, k)` convenience wrapper or reuse the existing quarantine-aware entry-type helpers; avoid creating a parallel convention system. Done in orchestrator `bac4db17`: `StrategyStore.retrieve_conventions(...)` reads `strategies.entry_type='convention'` rows with species-plus-`all` filtering, folded-journal exclusions, quarantine/min-validity filtering, staleness diagnostics, and deterministic limits. It is inert until Phase 2 callers opt in.
 - [ ] **2b. Seeder (LLM-driven):** replicate `_build_mutation_context()` retrieval (`actions.py:244–276`) in the seed_batch handler — `retrieve_for_journal(query, k, species="seeder")` injected into the seed prompt.
 - [ ] **2c. StructuralLab (deterministic flag chooser):** consume `convention` rows to build a **flag denylist** — exclude any flag named in a "do NOT toggle / NO-GO / frozen" convention from the experimentable set before selection (`species/structural_lab.py` vs `HOT_SWAP_FEATURES`). Hard bind — prose alone won't stop a deterministic chooser.
 - [ ] **2d. NumericSwarm (Optuna):** consume `convention` rows to **suppress dead surfaces** (e.g. `moe_spec_budget` no-consumer, op-coalesced-barriers neutral) and optionally narrow bounds (`species/numeric_swarm.py`) before surface/trial selection.
@@ -194,7 +194,7 @@ Legend for `species`: PF=prompt_forge, SL=structural_lab, NS=numeric_swarm, R=ro
 
 ## Key files
 - New: `epyc-orchestrator/scripts/autopilot/operator_seed_strategies.yaml`, `.../seed_operator_strategies.py`
-- Phase 2 edits: `.../actions.py`, `.../autopilot.py` prompt-assembly/availability blocks, `.../species/structural_lab.py`, `.../species/numeric_swarm.py`, `orchestration/repl_memory/strategy_store.py` only if a helper/delete API is missing, planner tests.
+- Phase 2 edits: `.../actions.py`, `.../autopilot.py` prompt-assembly/availability blocks, `.../species/structural_lab.py`, `.../species/numeric_swarm.py`, planner tests. `orchestration/repl_memory/strategy_store.py` Phase 2a helper exists as of orchestrator `bac4db17`.
 - Reuse (don't reinvent): `StrategyStore.store()/retrieve()/retrieve_for_journal()`; existing quarantine-aware entry-type helpers; `_build_mutation_context()` (`actions.py:244`); `HOT_SWAP_FEATURES` (`config_applicator.py`); numeric surfaces (`species/numeric_swarm.py`).
 
 ## Reporting instructions
@@ -252,6 +252,50 @@ trial `1035`; no rows were written:
 
 This is sufficient for operator review. It is not an approval or apply event;
 Phase 1d/1e remain open.
+
+## Phase 2a helper implementation — 2026-06-28
+
+Orchestrator `bac4db17` landed the shared convention retrieval helper without
+changing live planner behaviour:
+
+- `StrategyStore.retrieve_conventions(...)` returns planner-usable
+  `strategies.entry_type='convention'` rows, not the separate MDL
+  `strategy_conventions` compression table.
+- Species callers receive rows for their own species plus global `all` rows.
+- The helper applies folded-journal evidence exclusions, quarantine filtering,
+  optional `min_validity`, context-hash staleness diagnostics, and deterministic
+  `limit` truncation.
+- Validation: GitNexus impact on the existing retrieval path was LOW
+  (`retrieve` impactedCount `4`; `retrieve_for_journal` impactedCount `3`);
+  `uv run pytest tests/unit/test_strategy_store.py -q` -> `46 passed`;
+  `uv run ruff check orchestration/repl_memory/strategy_store.py
+  tests/unit/test_strategy_store.py` -> pass.
+
+Phase 2b-2h remain open. No seed rows were applied and AutoPilot was not
+restarted.
+
+### Phase 2 sidecar audit — 2026-06-28
+
+Read-only Phase 2 audit confirmed the next live-behaviour surfaces:
+
+- Startup/default-off activation is the safest shape. Do not add live file
+  watchers, polling, or mid-run registry/YAML rereads for this hint path.
+- High-attention planner-loop touch points are
+  `scripts/autopilot/autopilot.py` `_build_feature_flags_block`,
+  `_configured_numeric_surfaces`, `CONTROLLER_PROMPT_TEMPLATE`, and
+  `_run_loop_inner`.
+- Numeric suppression must update both the planner-visible surface list and the
+  validation mirror in `scripts/autopilot/controller_io.py`
+  `_configured_numeric_surfaces` / `_ACTION_SCHEMAS["numeric_trial"]` /
+  `validate_single_variable`.
+- Species-specific touch points are `Seeder.run_batch`,
+  `StructuralLab.flag_schema` / `propose_flag_experiment`,
+  `NumericSwarm.suggest_trial`, and PromptForge prompt builders only if Phase
+  2 elects to add unconditional convention guardrails.
+- Minimal Phase 2 test set should cover strategy-store exclusions, controller
+  numeric validation, action quota surfaces, structural flag validation,
+  controller template rendering, seeder YAML helpers, and PromptForge/GEPA only
+  if mutation-path hinting changes.
 
 ## Provenance
 Full design rationale + the verbatim two-phase plan: `~/.claude/plans/caveat-on-a-distributed-wilkinson.md` (this session, 2026-06-28). Survey + mechanism findings produced by read-only code/handoff analysis; no system state was modified.
