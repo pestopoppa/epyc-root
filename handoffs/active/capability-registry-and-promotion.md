@@ -1,6 +1,6 @@
 # Capability Registry, Safe Role-Restart Applicator & Promotion Workflow
 
-**Status**: IN PROGRESS — W0 traffic-class interface, TaskIR/task-record capture, and live `request_context` workload-class tagging are closed; W1 seed rows landed; W2 generated Action-Availability + index A-by surfaces landed/adopted 2026-06-27; W3-W4 remain gated on evidence-plane ledger
+**Status**: IN PROGRESS — W0 traffic-class interface, TaskIR/task-record capture, and live `request_context` workload-class tagging are closed; W1 seed rows landed; W2 generated Action-Availability + index A-by surfaces landed/adopted 2026-06-27; W3 has env rollback, co-hosted-role resolution, boundary journaling, smoke-check hooks, and default-off AutoPilot dispatch pause; W4 remains gated on evidence-plane ledger
 **Created**: 2026-06-12
 **Priority**: GATED — on `evidence-plane-ledger.md` (sibling handoff = findings-01 Phase 1: the instrument must certify effects before the optimizer gets bigger levers; spec §C.4). W0 (workload model) is NOT gated and can run now.
 **Spec**: [fable5-findings-04-impl-plan.md](../completed/fable5-findings-04-impl-plan.md) §C + §D — read before claiming any waypoint
@@ -65,6 +65,15 @@ optionally attaches it from `restart_role(..., journal=...)`. The event uses `bo
 reserved `trial_id`, round-trips without counting as a trial, and is ignored by archive reconstruction. This closes
 the W3 journal-record primitive only; W3 remains open for dispatch pause, smoke completion, co-hosted-role
 resolution, registry override rollback semantics, and a shadowed live restart attestation.
+
+2026-06-28 W3 dispatch-pause slice: Orchestrator `config_applicator.restart_role()` now accepts
+`pause_dispatch=True` plus an optional AutoPilot state path and grace period. When requested, it sets
+`paused=True` in the AutoPilot state file before invoking `orchestrator_stack.py reload <role>`, fails closed before
+reload if the state file cannot be paused, and restores `paused=False` only if the applicator changed it from false.
+The pause result is attached to the restart payload and is restored on both successful reloads and rollback paths.
+This closes the W3 dispatch-pause primitive without promoting any capability row or touching the live AutoPilot run.
+W3 remains open for registry override rollback semantics and a shadowed live restart attestation once the evidence
+plane allows restart-class experiments.
 
 ## Gates & pitfalls
 
