@@ -15,6 +15,8 @@ from generate_public_results import (  # noqa: E402
     protocol_status_counts,
     public_scrub_text,
     render_page,
+    render_review_queue,
+    review_queue_counts,
     scrub_status,
 )
 
@@ -232,6 +234,37 @@ def test_protocol_and_backfill_summaries_are_actionable():
     assert historical_attestation_review_counts(rows) == {
         "historical attestation or remeasurement": 1,
     }
+    assert review_queue_counts(rows) == {
+        "historical-attestation-review": 1,
+        "protocol-tag-needed": 1,
+        "publish-candidate-review": 1,
+        "structured-protocol-backfill": 2,
+        "verification-decision-needed": 1,
+    }
+
+
+def test_render_review_queue_groups_next_actions():
+    rows = collect_rows("""# Results
+
+## Production
+
+| Model | Quant | t/s | Notes |
+|---|---|---|---|
+| Needs tag | Q4_K_M | 45.0 | verified sweep |
+| Historical | Q4_K_M | 43.5 | [P-BENCH-2, n=5, 2026-03-21] |
+| Old row | Q4_K_M | 46.0 | old note |
+""")
+
+    page = render_review_queue(rows, Path("RESULTS.md"))
+
+    assert "Status: generated triage queue, not publication-ready." in page
+    assert "- `historical-attestation-review`: 1" in page
+    assert "- `protocol-tag-needed`: 1" in page
+    assert "- `verification-decision-needed`: 1" in page
+    assert "## historical-attestation-review" in page
+    assert "Find a real historical attestation artifact" in page
+    assert "| 7 | Results / Production | Needs tag | t/s: 45.0 | evidence-linked; needs protocol tag" in page
+    assert "| 8 | Results / Production | Historical | t/s: 43.5 | protocol-tagged (pre-attestation-era" in page
 
 
 def test_scrub_status_flags_public_surface_blockers():

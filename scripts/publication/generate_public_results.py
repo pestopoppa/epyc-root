@@ -18,6 +18,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUTPUT = ROOT / "docs" / "publication" / "public-results-draft.md"
+DEFAULT_REVIEW_OUTPUT = ROOT / "docs" / "publication" / "public-results-review-queue.md"
 HOST_ATTESTATION_ERA_START = date(2026, 6, 12)
 HISTORICAL_ATTESTATION_REVIEW_ACTION = "hold_for_historical_attestation_review"
 
@@ -417,6 +418,53 @@ def historical_attestation_review_counts(rows: list[ResultRow]) -> dict[str, int
     return dict(sorted(counts.items()))
 
 
+def review_queue_name(row: ResultRow) -> str:
+    if row.action == HISTORICAL_ATTESTATION_REVIEW_ACTION:
+        return "historical-attestation-review"
+    if row.protocol_status == "evidence-linked; needs protocol tag":
+        return "protocol-tag-needed"
+    if row.protocol_status == "unverified historical row":
+        return "verification-decision-needed"
+    if row.action == "hold_for_public_scrub":
+        return "public-scrub-needed"
+    if row.action == "hold_for_protocol_backfill":
+        return "structured-protocol-backfill"
+    if row.action == "publish_candidate":
+        return "publish-candidate-review"
+    return row.action
+
+
+def review_queue_counts(rows: list[ResultRow]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for row in rows:
+        queue = review_queue_name(row)
+        counts[queue] = counts.get(queue, 0) + 1
+    return dict(sorted(counts.items()))
+
+
+def review_queue_guidance(queue: str) -> str:
+    guidance = {
+        "historical-attestation-review": (
+            "Find a real historical attestation artifact, rerun under current attestation, "
+            "or retire the row from the public-results candidate set."
+        ),
+        "protocol-tag-needed": (
+            "Backfill protocol id, n/reps, date, and attestation from an evidence bundle; "
+            "otherwise demote or retire the row."
+        ),
+        "verification-decision-needed": (
+            "Decide whether the historical row has enough provenance to backfill, should be "
+            "remeasured, or should stay excluded from public claims."
+        ),
+        "structured-protocol-backfill": (
+            "Normalize partial protocol metadata into MEASUREMENT.md claim grammar or keep on hold."
+        ),
+        "public-scrub-needed": "Remove public-surface identifiers before publication.",
+        "publish-candidate-review": "Final human review before moving into a public artifact.",
+    }
+    return guidance.get(queue, "Review the row action before publication.")
+
+
 def render_page(rows: list[ResultRow], source: Path) -> str:
     counts = action_counts(rows)
     scrub_summary = scrub_counts(rows)
@@ -499,10 +547,70 @@ def render_page(rows: list[ResultRow], source: Path) -> str:
     return "\n".join(lines) + "\n"
 
 
+def render_review_queue(rows: list[ResultRow], source: Path) -> str:
+    counts = review_queue_counts(rows)
+    queues = sorted(counts)
+    lines = [
+        "# Public Results Review Queue",
+        "",
+        "Status: generated triage queue, not publication-ready.",
+        "",
+        f"Source: `{display_source(source)}`.",
+        "",
+        "This queue groups generated public-results rows by the next review action. It does not certify any claim.",
+        "",
+        "## Summary",
+        "",
+        f"- Total rows: {len(rows)}",
+    ]
+    for queue, count in counts.items():
+        lines.append(f"- `{queue}`: {count}")
+    for queue in queues:
+        queue_rows = [row for row in rows if review_queue_name(row) == queue]
+        lines.extend(
+            [
+                "",
+                f"## {queue}",
+                "",
+                f"Next action: {review_queue_guidance(queue)}",
+                "",
+                "| Source line | Section | Entity | Metrics | Protocol status | Action |",
+                "|---|---|---|---|---|---|",
+            ]
+        )
+        for row in queue_rows:
+            lines.append(
+                "| "
+                + " | ".join(
+                    escape_cell(value)
+                    for value in (
+                        str(row.source_line),
+                        row.section,
+                        row.entity,
+                        row.metrics,
+                        row.protocol_status,
+                        row.action,
+                    )
+                )
+                + " |"
+            )
+    lines.append("")
+    lines.append("## Regeneration")
+    lines.append("")
+    lines.append("Run `python3 scripts/publication/generate_public_results.py` from `epyc-root`.")
+    return "\n".join(lines) + "\n"
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", type=Path, default=default_results_path())
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument("--review-output", type=Path, default=DEFAULT_REVIEW_OUTPUT)
+    parser.add_argument(
+        "--no-review-output",
+        action="store_true",
+        help="Do not write or check the generated review queue.",
+    )
     parser.add_argument("--check", action="store_true", help="Fail if output would change.")
     args = parser.parse_args(argv)
 
@@ -510,18 +618,29 @@ def main(argv: list[str] | None = None) -> int:
     text = source.read_text(encoding="utf-8", errors="replace")
     rows = collect_rows(text)
     rendered = render_page(rows, source)
+    review_rendered = "" if args.no_review_output else render_review_queue(rows, source)
 
     if args.check:
         existing = args.output.read_text(encoding="utf-8") if args.output.exists() else ""
         if existing != rendered:
             print(f"{args.output} is stale")
             return 1
+        if not args.no_review_output:
+            existing_review = args.review_output.read_text(encoding="utf-8") if args.review_output.exists() else ""
+            if existing_review != review_rendered:
+                print(f"{args.review_output} is stale")
+                return 1
         print(f"{args.output} is current ({len(rows)} rows)")
         return 0
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(rendered, encoding="utf-8")
+    if not args.no_review_output:
+        args.review_output.parent.mkdir(parents=True, exist_ok=True)
+        args.review_output.write_text(review_rendered, encoding="utf-8")
     print(f"Public results draft: wrote {len(rows)} rows to {args.output.relative_to(ROOT)}")
+    if not args.no_review_output:
+        print(f"Public results review queue: wrote {len(rows)} rows to {args.review_output.relative_to(ROOT)}")
     return 0
 
 
