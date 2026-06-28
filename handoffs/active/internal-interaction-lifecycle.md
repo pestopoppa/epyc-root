@@ -1,6 +1,6 @@
 # Internal Interaction Lifecycle
 
-**Status**: queued behind contention/autopilot gate (P2-0 discovery complete; P1/P2 runtime work not started)
+**Status**: P1 lifecycle substrate landed 2026-06-28 in `epyc-orchestrator` `18956892`; P2/J17 remain gated on the P1 regression bake + cross-role contention bake
 **Priority**: P0 for substrate cleanup; downstream of intake-655 deep-dive
 **Created**: 2026-05-31
 **Owning index**: [`routing-and-optimization-index.md`](routing-and-optimization-index.md)
@@ -23,12 +23,12 @@ Replace the implicit delegation loop shape in `epyc-orchestrator` with an explic
 
 Sequencing is locked:
 
-1. **Now**: P2-0 discovery only — complete, no runtime change.
-2. **After contention/autopilot bake is clean**: P1 lifecycle refactor.
+1. **Done**: P2-0 discovery — complete, no runtime change.
+2. **Done**: P1 lifecycle refactor — landed as a no-behavior-change substrate in `epyc-orchestrator` `18956892`.
 3. **After P1 regression gate**: P2 one-shot consult at the P2-0 chosen attach point.
 4. **After A/B evidence**: P3 consult gating, then P4 reward/eval.
 
-Do not start P1 until the cross-role contention/autopilot bake gate is clean. P2-0 was safe because it was documentation/discovery only; P1 touches the delegation substrate and would otherwise contaminate live attribution.
+P1 was completed as an additive/no-behavior-change substrate without changing the contention gate or live inference admission path. P2 remains locked until the P1 regression bake and cross-role contention/autopilot bake are clean. P2-0 was safe because it was documentation/discovery only; P2 touches the consult/delegation substrate and would otherwise contaminate live attribution.
 
 ## Core Model
 
@@ -82,19 +82,19 @@ INTERACTION_POLICY_VERSION = "1.0"
 
 **Goal**: Express the existing delegation loop in the `Interaction` abstraction without changing behavior.
 
-- [ ] **P1-1**. Create `src/orchestration/interaction.py` with `Interaction` dataclass, `InteractionEvent`, `ArtifactRef`, `SchedulerPolicy`, `InteractionTelemetry`, and `INTERACTION_POLICY_VERSION = "1.0"`.
-- [ ] **P1-2**. Add `interaction_type: str = "delegate"` field to `DelegationEvent` (`responses.py:19-30`) additively. Update `ChatResponse.delegation_events` description to mention `interaction_type`. Do NOT rename the field. Do NOT rename the class.
-- [ ] **P1-3**. Refactor `_architect_delegated_answer()` (`chat_delegation.py:658-743`) to construct an `Interaction(kind="delegate", ...)` internally. Preserve the `tuple[str, dict]` return signature. Preserve `stats["delegation_events"]` field shape on the wire.
-- [ ] **P1-4**. Wire `Interaction.scheduler_policy` to existing `request_priority` / `max_queue_wait_ms` / `migration_budget_ms` admission path (`inference.py:230-259`). No new fields on `ChatRequest`.
-- [ ] **P1-5**. Add `ProgressLogger.log_interaction()` (`progress_logger.py:250+`) as a generalization of `log_delegation()`. Preserve `log_delegation()` as an alias that calls `log_interaction(interaction_type="delegate", ...)`. Add `INTERACTION_POLICY_VERSION` alongside existing `DELEGATION_POLICY_VERSION`.
-- [ ] **P1-6**. Preserve all existing tests. Add unit tests for `Interaction` lifecycle state transitions and event emission.
+- [x] **P1-1**. Create `src/orchestration/interaction.py` with `Interaction` dataclass, `InteractionEvent`, `ArtifactRef`, `SchedulerPolicy`, `InteractionTelemetry`, and `INTERACTION_POLICY_VERSION = "1.0"`. Done 2026-06-28 in orchestrator `18956892`.
+- [x] **P1-2**. Add `interaction_type: str = "delegate"` field to `DelegationEvent` (`responses.py:19-30`) additively. Update `ChatResponse.delegation_events` description to mention `interaction_type`. Do NOT rename the field. Do NOT rename the class. Done in `18956892`.
+- [x] **P1-3**. Refactor `_architect_delegated_answer()` (`chat_delegation.py:658-743`) to construct an `Interaction(kind="delegate", ...)` internally. Preserve the `tuple[str, dict]` return signature. Preserve `stats["delegation_events"]` field shape on the wire. Done in `18956892`; per-event `to_role` remains the actual delegate target.
+- [x] **P1-4**. Wire `Interaction.scheduler_policy` to existing `request_priority` / `max_queue_wait_ms` / `migration_budget_ms` admission path (`inference.py:230-259`). No new fields on `ChatRequest`. Done in `18956892` via `SchedulerPolicy.from_primitives()` / `request_context_kwargs()`; `src/llm_primitives/inference.py` was intentionally untouched because GitNexus marked `_real_call` CRITICAL.
+- [x] **P1-5**. Add `ProgressLogger.log_interaction()` (`progress_logger.py:250+`) as a generalization of `log_delegation()`. Preserve `log_delegation()` as an alias that calls `log_interaction(interaction_type="delegate", ...)`. Add `INTERACTION_POLICY_VERSION` alongside existing `DELEGATION_POLICY_VERSION`. Done in `18956892`.
+- [x] **P1-6**. Preserve all existing tests. Add unit tests for `Interaction` lifecycle state transitions and event emission. Done in `18956892`.
 
 **Gate to P2**:
-- `pytest tests/test_chat_delegation.py` green
-- `delegation_diagnostics` byte-equal on identical inputs across before / after
-- No change to `delegation_events` field on the wire
-- `epyc-orchestrator/scripts/server/affinity_preflight.py` shows no region-lock drift
-- One autopilot cycle (≥48h) with no rise in `delegation_cache_hits` miss rate or `ContentionDenied` 503 rate
+- [x] Focused/adjacent pytest green: `uv run pytest -q tests/unit/test_interaction_lifecycle.py tests/unit/test_api_models_responses.py tests/unit/test_progress_logger_interaction.py tests/unit/test_architect_delegation.py tests/unit/test_chat_delegation.py tests/unit/test_inference_mixin.py` -> 138 passed; post-fix adjacent suite `uv run pytest -q tests/unit/test_interaction_lifecycle.py tests/unit/test_architect_delegation.py tests/unit/test_chat_delegation.py tests/unit/test_chat_pipeline_stages.py tests/integration/test_chat_pipeline.py` -> 187 passed.
+- [ ] `delegation_diagnostics` byte-equal on identical inputs across before / after.
+- [x] No breaking rename to `delegation_events` / `DelegationEvent`; additive `interaction_type="delegate"` field only.
+- [ ] `epyc-orchestrator/scripts/server/affinity_preflight.py` shows no region-lock drift.
+- [ ] One autopilot cycle (≥48h) with no rise in `delegation_cache_hits` miss rate or `ContentionDenied` 503 rate.
 
 ### P2 — One-shot consult sibling
 
@@ -417,7 +417,7 @@ When autopilot restarts, it will find a primed entry: "frontdoor should use dele
 
 ### Inference-window scheduling (bulk-inference-campaign cross-ref)
 
-The P2 A/B (≥50 code-edit-turn comparison at the edit-transaction seam) is registered as **J17** in [`bulk-inference-campaign.md`](bulk-inference-campaign.md) under the "Other agents' inference-gated work" table. That handoff carries the inference-window scheduling logic, model requirements (`coder_escalation` + `architect_general`), and prereq-chain visibility for the operator triggering the eval. The bulk-inference handoff's "Internal Interaction Lifecycle (consult sibling) — TRACKING" tail section mirrors the live status (P2-0 ✅ / P1 ⏳ / P2 ⏳ / J17 🔒 / P3+P4 🔒) so the inference-window agent can see exactly when to schedule J17 without reading this full handoff. Update both sides when phase state changes.
+The P2 A/B (≥50 code-edit-turn comparison at the edit-transaction seam) is registered as **J17** in [`bulk-inference-campaign.md`](bulk-inference-campaign.md) under the "Other agents' inference-gated work" table. That handoff carries the inference-window scheduling logic, model requirements (`coder_escalation` + `architect_general`), and prereq-chain visibility for the operator triggering the eval. The bulk-inference handoff's "Internal Interaction Lifecycle (consult sibling) — TRACKING" tail section mirrors the live status (P2-0 ✅ / P1 code ✅ / P1 bake ⏳ / P2 ⏳ / J17 🔒 / P3+P4 🔒) so the inference-window agent can see exactly when to schedule J17 without reading this full handoff. Update both sides when phase state changes.
 
 ## Reporting
 
