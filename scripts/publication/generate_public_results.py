@@ -294,7 +294,7 @@ def collect_rows(text: str) -> list[ResultRow]:
                 row_map = dict(zip(headers, cells))
                 metrics = pick_metrics(row_map)
                 if metrics:
-                    nearby = "\n".join(lines[max(0, table_start - 4): min(len(lines), j + 4)])
+                    nearby = "\n".join(lines[max(0, table_start - 4): table_start])
                     protocol_status, action = classify_protocol(current_section, cells, nearby)
                     entity = public_scrub_text(pick_entity(headers, row_map))
                     quant_or_size = public_scrub_text(pick_quant_or_size(row_map))
@@ -356,9 +356,38 @@ def scrub_counts(rows: list[ResultRow]) -> dict[str, int]:
     return dict(sorted(counts.items()))
 
 
+def protocol_status_counts(rows: list[ResultRow]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for row in rows:
+        counts[row.protocol_status] = counts.get(row.protocol_status, 0) + 1
+    return dict(sorted(counts.items()))
+
+
+def backfill_target_counts(rows: list[ResultRow]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for row in rows:
+        if row.action != "hold_for_protocol_backfill":
+            continue
+        status = row.protocol_status
+        if status.startswith("protocol-tagged (missing "):
+            target = status.removeprefix("protocol-tagged (missing ").split(")", 1)[0]
+        elif status == "evidence-linked; needs protocol tag":
+            target = "protocol tag"
+        elif status == "protocol marker present; needs structured protocol backfill":
+            target = "structured protocol metadata"
+        elif status == "unverified historical row":
+            target = "verification decision"
+        else:
+            target = status
+        counts[target] = counts.get(target, 0) + 1
+    return dict(sorted(counts.items()))
+
+
 def render_page(rows: list[ResultRow], source: Path) -> str:
     counts = action_counts(rows)
     scrub_summary = scrub_counts(rows)
+    backfill_summary = backfill_target_counts(rows)
+    protocol_summary = protocol_status_counts(rows)
     lines = [
         "# Public Results Draft",
         "",
@@ -374,6 +403,19 @@ def render_page(rows: list[ResultRow], source: Path) -> str:
     ]
     for action, count in counts.items():
         lines.append(f"- `{action}`: {count}")
+    lines.append("")
+    lines.append("### Protocol Backfill Summary")
+    lines.append("")
+    if backfill_summary:
+        for target, count in backfill_summary.items():
+            lines.append(f"- `{target}`: {count}")
+    else:
+        lines.append("- No protocol backfill targets.")
+    lines.append("")
+    lines.append("### Protocol Status Summary")
+    lines.append("")
+    for status, count in protocol_summary.items():
+        lines.append(f"- `{status}`: {count}")
     lines.append("")
     lines.append("### Public Scrub Summary")
     lines.append("")

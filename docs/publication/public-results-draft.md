@@ -11,6 +11,18 @@ This page is generated from `RESULTS.md`. Rows without explicit protocol tags ar
 - Total rows: 374
 - `hold_for_protocol_backfill`: 374
 
+### Protocol Backfill Summary
+
+- `attestation`: 31
+- `protocol tag`: 18
+- `verification decision`: 325
+
+### Protocol Status Summary
+
+- `evidence-linked; needs protocol tag`: 18
+- `protocol-tagged (missing attestation) [P-BENCH-2; n=5; 2026-03-21]`: 31
+- `unverified historical row`: 325
+
 ### Public Scrub Summary
 
 - `public-safe surface`: 374
@@ -25,11 +37,11 @@ This page is generated from `RESULTS.md`. Rows without explicit protocol tags ar
 | Research Results Summary / Best Results | Qwen3-Coder-480B + MoE8 |  | Speed: 4.4 t/s; Speedup: -; Quality (CaJ): 90% (31q) | unverified historical row | public-safe surface | hold_for_protocol_backfill | 40 |
 | Research Results Summary / Best Results | Qwen3-Coder-480B + MoE6 |  | Speed: 5.6 t/s; Speedup: -; Quality (CaJ): 83% | unverified historical row | public-safe surface | hold_for_protocol_backfill | 41 |
 | Research Results Summary / Best Results | Qwen2.5-Coder-32B + spec (K=24) |  | Speed: 21.3 t/s; Speedup: 6.3x; Quality (CaJ): 77% | unverified historical row | public-safe surface | hold_for_protocol_backfill | 42 |
-| Research Results Summary / Best Results | gemma-3-27B + spec (K=16) |  | Speed: 19.6 t/s; Speedup: 8.9x; Quality (CaJ): 78% | evidence-linked; needs protocol tag | public-safe surface | hold_for_protocol_backfill | 43 |
-| Research Results Summary / Best Results | gemma-3-12b + spec (K=16) |  | Speed: 14.8 t/s; Speedup: 1.6x; Quality (CaJ): 79% | evidence-linked; needs protocol tag | public-safe surface | hold_for_protocol_backfill | 44 |
-| Research Results Summary / Best Results | Qwen3-32B + spec (K=8) |  | Speed: 12.2 t/s; Speedup: 7.6x; Quality (CaJ): 69% | evidence-linked; needs protocol tag | public-safe surface | hold_for_protocol_backfill | 45 |
+| Research Results Summary / Best Results | gemma-3-27B + spec (K=16) |  | Speed: 19.6 t/s; Speedup: 8.9x; Quality (CaJ): 78% | unverified historical row | public-safe surface | hold_for_protocol_backfill | 43 |
+| Research Results Summary / Best Results | gemma-3-12b + spec (K=16) |  | Speed: 14.8 t/s; Speedup: 1.6x; Quality (CaJ): 79% | unverified historical row | public-safe surface | hold_for_protocol_backfill | 44 |
+| Research Results Summary / Best Results | Qwen3-32B + spec (K=8) |  | Speed: 12.2 t/s; Speedup: 7.6x; Quality (CaJ): 69% | unverified historical row | public-safe surface | hold_for_protocol_backfill | 45 |
 | Research Results Summary / Best Results | Qwen3.5-122B-A10B Q4_K_M |  | Speed: 9.2 t/s; Speedup: -; Quality (CaJ): TBD (not yet benchmarked) | evidence-linked; needs protocol tag | public-safe surface | hold_for_protocol_backfill | 46 |
-| Research Results Summary / Best Results | MoE Expert Reduction (4-6 experts) |  | Speed: +21-120%; Speedup: -; Quality (CaJ): varies | evidence-linked; needs protocol tag | public-safe surface | hold_for_protocol_backfill | 47 |
+| Research Results Summary / Best Results | MoE Expert Reduction (4-6 experts) |  | Speed: +21-120%; Speedup: -; Quality (CaJ): varies | unverified historical row | public-safe surface | hold_for_protocol_backfill | 47 |
 | Research Results Summary / Production Throughput - NUMA Deployment (verified 2026-03-21) [Protocol: P-BENCH-2, n=5, 2026-03-21] | Qwen3.5-35B-A3B Q4KM | Size: 20 GB | 192t t/s: ~12.7; NUMA t/s (per-inst): 12.7 | protocol-tagged (missing attestation) [P-BENCH-2; n=5; 2026-03-21] | public-safe surface | hold_for_protocol_backfill | 57 |
 | Research Results Summary / Production Throughput - NUMA Deployment (verified 2026-03-21) [Protocol: P-BENCH-2, n=5, 2026-03-21] | Qwen2.5-Coder-32B Q4KM | Size: 18.5 GB | 192t t/s: 12.2; NUMA t/s (per-inst): 10.8 | protocol-tagged (missing attestation) [P-BENCH-2; n=5; 2026-03-21] | public-safe surface | hold_for_protocol_backfill | 58 |
 | Research Results Summary / Production Throughput - NUMA Deployment (verified 2026-03-21) [Protocol: P-BENCH-2, n=5, 2026-03-21] | Qwen3.5-122B-A10B Q4KM | Size: 69 GB | 192t t/s: 2.5; NUMA t/s (per-inst): 4.3 | protocol-tagged (missing attestation) [P-BENCH-2; n=5; 2026-03-21] | public-safe surface | hold_for_protocol_backfill | 59 |
@@ -69,8 +81,8 @@ This page is generated from `RESULTS.md`. Rows without explicit protocol tags ar
 | Research Results Summary / NEW Parallel Tensor Repacking (2025-12-21) | 271GB Q4_K |  | Speedup: ~2.5x | unverified historical row | public-safe surface | hold_for_protocol_backfill | 188 |
 | Research Results Summary / NEW Coder Model Selection (2025-12-16) | Qwen3-Coder-30B-A3B-Instruct |  | Baseline: 29.28 t/s; Optimized: 47.11 t/s | unverified historical row | public-safe surface | hold_for_protocol_backfill | 207 |
 | Research Results Summary / NEW Coder Model Selection (2025-12-16) | Qwen3-Coder-53B-A3B-TOTAL-RECALL |  | Baseline: 10.3 t/s; Optimized: 14.0 t/s | unverified historical row | public-safe surface | hold_for_protocol_backfill | 208 |
-| Research Results Summary / NEW Coder Model Selection (2025-12-16) | Qwen2.5-Coder-32B-Instruct |  | Baseline: 3.4 t/s; Optimized: 39.44 t/s | evidence-linked; needs protocol tag | public-safe surface | hold_for_protocol_backfill | 209 |
-| Research Results Summary / NEW Coder Model Selection (2025-12-16) | Qwen3-Coder-480B-A35B-Instruct |  | Baseline: 6.53 t/s; Optimized: 9.00 t/s | evidence-linked; needs protocol tag | public-safe surface | hold_for_protocol_backfill | 210 |
+| Research Results Summary / NEW Coder Model Selection (2025-12-16) | Qwen2.5-Coder-32B-Instruct |  | Baseline: 3.4 t/s; Optimized: 39.44 t/s | unverified historical row | public-safe surface | hold_for_protocol_backfill | 209 |
+| Research Results Summary / NEW Coder Model Selection (2025-12-16) | Qwen3-Coder-480B-A35B-Instruct |  | Baseline: 6.53 t/s; Optimized: 9.00 t/s | unverified historical row | public-safe surface | hold_for_protocol_backfill | 210 |
 | Research Results Summary / Summarization Model Comparison (2026-01-26) | Qwen2.5-Coder-32B |  | t/s: 5.63; Quality: Good | unverified historical row | public-safe surface | hold_for_protocol_backfill | 232 |
 | Research Results Summary / Summarization Model Comparison (2026-01-26) | Qwen3-32B |  | t/s: 5.60; Quality: Good | unverified historical row | public-safe surface | hold_for_protocol_backfill | 233 |
 | Research Results Summary / Summarization Model Comparison (2026-01-26) | Qwen3-Next-80B-A3B |  | t/s: 6.29; Quality: Best | unverified historical row | public-safe surface | hold_for_protocol_backfill | 234 |

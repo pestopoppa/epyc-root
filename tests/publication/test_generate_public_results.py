@@ -7,9 +7,11 @@ sys.path.insert(0, str(ROOT / "scripts" / "publication"))
 
 from generate_public_results import (  # noqa: E402
     apply_scrub_gate,
+    backfill_target_counts,
     collect_rows,
     missing_protocol_fields,
     parse_protocol_reference,
+    protocol_status_counts,
     public_scrub_text,
     render_page,
     scrub_status,
@@ -154,10 +156,43 @@ def test_render_page_is_generated_claim_triage_surface():
     assert "Status: generated draft, not publication-ready." in page
     assert "- Total rows: 1" in page
     assert "- `hold_for_protocol_backfill`: 1" in page
+    assert "### Protocol Backfill Summary" in page
+    assert "- `verification decision`: 1" in page
+    assert "### Protocol Status Summary" in page
+    assert "- `unverified historical row`: 1" in page
     assert "### Public Scrub Summary" in page
     assert "- `public-safe surface`: 1" in page
     assert "Rows without explicit protocol tags are held for backfill" in page
     assert "| Results / Bench | A |  | PPL: 6.1; Throughput: 100 tok/s | unverified historical row | public-safe surface" in page
+
+
+def test_protocol_and_backfill_summaries_are_actionable():
+    rows = collect_rows("""# Results
+
+## Production
+
+| Model | Quant | t/s | Notes |
+|---|---|---|---|
+| Complete | Q4_K_M | 42.0 | [P-BENCH-2, n=5, 2026-04-26, attest a3f2] |
+| Missing attest | Q4_K_M | 43.0 | [P-BENCH-2, n=5, 2026-04-26] |
+| Missing all | Q4_K_M | 44.0 | [P-BENCH-2] |
+| Needs tag | Q4_K_M | 45.0 | verified sweep |
+| Historical | Q4_K_M | 46.0 | old note |
+""")
+
+    assert protocol_status_counts(rows) == {
+        "evidence-linked; needs protocol tag": 1,
+        "protocol-tagged (missing attestation) [P-BENCH-2; n=5; 2026-04-26]": 1,
+        "protocol-tagged (missing n/reps, date, attestation) [P-BENCH-2]": 1,
+        "protocol-tagged [P-BENCH-2; n=5; 2026-04-26; attest a3f2]": 1,
+        "unverified historical row": 1,
+    }
+    assert backfill_target_counts(rows) == {
+        "attestation": 1,
+        "n/reps, date, attestation": 1,
+        "protocol tag": 1,
+        "verification decision": 1,
+    }
 
 
 def test_scrub_status_flags_public_surface_blockers():
