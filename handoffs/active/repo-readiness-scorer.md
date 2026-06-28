@@ -194,6 +194,26 @@ Validation:
   scripts/security/test_audit_repository.py`; `make lint`; `make test`; and the
   root one-repo readiness scorer for `epyc-inference-research`.
 
+2026-06-28 orchestrator setup-gate update:
+
+- `epyc-orchestrator` commit `c1cac72e` adds a top-level `scripts/setup.sh`
+  entrypoint that delegates to the existing `scripts/setup/bootstrap.sh`.
+- The bootstrap prerequisite check now accepts `uv`, `pip3`, or `pip` for the
+  Python package manager prerequisite, matching the existing install path that
+  already prefers `uv sync`.
+- A one-repo scorer run now reports `epyc-orchestrator` as Standardized (L3)
+  with L3 pass rate `88.9%`; the next gate is L4 Optimized.
+- Remaining orchestrator blockers include `L3.security_automation` and L4
+  workflow surfaces (`L4.generated_docs`, `L4.health_automation`,
+  `L4.security_audit`, `L4.prioritized_tasks`). These should be implemented as
+  real maintained surfaces rather than placeholders.
+- Validation: GitNexus impact for `scripts/setup.sh`,
+  `scripts/setup/bootstrap.sh`, and `check_prerequisites` returned UNKNOWN
+  targets with `impactedCount=0`; `bash -n scripts/setup.sh
+  scripts/setup/bootstrap.sh`; `./scripts/setup.sh --check-only`; and the root
+  one-repo readiness scorer for
+  `epyc-orchestrator=/mnt/raid0/llm/epyc-orchestrator`.
+
 ## Notes
 
 - Anti-false-positive discipline (shared across Factory's review/scoring features): a criterion passes only on a concrete, verifiable check — mirrors our eval-tower verifier philosophy.
