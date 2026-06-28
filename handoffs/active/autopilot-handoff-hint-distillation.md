@@ -79,6 +79,14 @@ Writing mid-run is safe — AutoPilot writes `journal-frontier-*` rows every tri
 - [ ] **1d.** **Operator reviews `--dry-run` output, then approves `--apply`** (standing approval rule for store/index writes).
 - [ ] **1e.** Phase-1 verification (read-only): (i) row-count delta == N; (ii) `json_extract(metadata_json,'$.seed_campaign')='operator-handoff-distillation'` count == N; (iii) FTS5 row count and FAISS `ntotal` each +N for a freshly opened store; (iv) retrieval probe on a fresh `StrategyStore()` — `store.retrieve_for_journal("frontdoor prompt conciseness brevity", k=5)` returns the reasoning-compression row; repeat for 2–3 others; confirm none quarantined. Do not call this a live PromptForge proof unless the running AutoPilot process has refreshed/restarted.
 
+Dry-run review readiness: orchestrator `71663cb3` adds an explicit no-op
+`--dry-run` flag so the documented command is accepted. The review command
+`uv run python scripts/autopilot/seed_operator_strategies.py --dry-run
+--audit-identifiers --json` reports `ok=true`, `row_count=44`,
+`blocking_count=0`, and `finding_count=29` (`documented_future_binding` /
+`documented_context_binding` only). This does **not** constitute operator
+approval to apply.
+
 **Canonical campaign tag:** `operator-handoff-distillation`. The older provenance plan used `handoff-distillation-2026-06-27`; that name is superseded and must not be used for apply/purge/progress tracking.
 
 **Apply contract:** expected insert set is the deduped operational YAML set, currently `44` rows (`16` green hypotheses, `26` guardrails, `2` frozen constraints). Apply only through `StrategyStore.store()` via `seed_operator_strategies.py --apply`, never raw SQL. Immediately after apply, prove row-count delta, campaign metadata count, FTS5 mirror count, FAISS `ntotal`, and fresh-store retrieval probes. Treat already-running AutoPilot visibility as unproven until a StrategyStore refresh or restart.
