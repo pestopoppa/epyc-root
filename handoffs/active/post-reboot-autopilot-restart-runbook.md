@@ -50,8 +50,17 @@ Before the reboot: operator killed AutoPilot, then **enabled planner authority**
 - [ ] **6. Verify live** (a few minutes in):
   - process up; phase advancing (`/mnt/raid0/llm/tmp/autopilot_phase.json` trial id climbing).
   - `python3 scripts/autopilot/restart_readiness_report.py --json --strict --require-seq-cutover --require-w6-audit` → `restart_ready: True`, blockers `[]`.
-  - brief endpoint: `curl -s 127.0.0.1:8000/dashboard/api/optimization_brief` → `authority.decision_grade_possible` should be **true** ONCE the banner fix below lands; until then it still shows observations (see Known gap).
+  - brief endpoint: `curl -s 127.0.0.1:8000/dashboard/api/optimization_brief` → `authority.decision_grade_possible` should now read **true** (banner fix `8fe19f62` is live after the step-2 stack start; baseline=consent+flag, sequential=live SEQ_VERDICT env, W6 alarm clear).
   - `/health` green; no `autopilot_killed_mid_trial` churn.
+
+- [ ] **7. Reconcile `main` (operator-approved 2026-06-28).** ONLY after steps 1–6 verify healthy — so main enshrines a validated tip. main is a strict ancestor of the branch (clean fast-forward). Use a **ref-push** so the live working tree / running agents are never disturbed (no local `checkout`):
+  ```
+  for r in /mnt/raid0/llm/epyc-root /mnt/raid0/llm/epyc-orchestrator; do
+    git -C "$r" fetch -q origin
+    git -C "$r" push origin spec-dec-mtp-refresh-2026-06-22:main   # fast-forward remote main to branch tip
+  done
+  ```
+  (epyc-inference-research already commits on `main`.) If a push is rejected as non-fast-forward, STOP and reconcile — do not force. Optionally `git -C "$r" fetch origin main:main` to advance local main too. This catches main up to production; repeat at future stable points (the dated branch remains the integration trunk).
 
 ## Banner fix — DONE (landed `8fe19f62`, activates on the step-2 stack start)
 - [x] **Optimization-brief banner now reflects real authority.** `authority_banner()` derives baseline from the consent-gated `baseline_ledger_authority_enabled(state)` and sequential from the live autopilot's `AUTOPILOT_SEQ_VERDICT` env (read from `/proc`, fail-safe off). It will flip to "Authority ENABLED … decision-grade" automatically once step 5 brings autopilot up with the SEQ_VERDICT env. No action needed beyond the normal step-2 stack start (which reloads the module).
