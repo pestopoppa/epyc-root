@@ -316,17 +316,23 @@ Validation:
   L5 and research L4 closeouts.
 - Current portfolio level is **Optimized (L4)** with L5 as the next gate.
   Repo levels: `epyc-orchestrator` Autonomous/L5, `epyc-root` Optimized/L4,
-  `epyc-inference-research` Optimized/L4, and `epyc-llama` Documented/L2.
-- The deterministic remediation queue now has `28` open items, down from the
-  stale `49`-item 2026-06-21 pickup. The first blocking candidates are
-  `epyc-llama` L3 dev-env/security/task/experiment surfaces plus L5 autonomy
-  surfaces for research/root. The passive pickup remains `mode=advisory_only`
-  and `authority_gate=false`.
-- Validation: GitNexus impact was LOW for `score_repositories` and
-  `build_remediation_queue`; the generic `main` lookup was ambiguous but no
-  code edit was made. `repo_readiness_scorer.py` regenerated the artifacts
-  without errors, and generated JSON was inspected with `jq` for portfolio
-  level, queue count, and non-authority pickup fields.
+  `epyc-inference-research` Optimized/L4, and `epyc-llama` Standardized/L3.
+- A follow-up detector refinement recognized llama-native evidence already
+  present in the fork: `docs/ops/**` and bench scripts now count for
+  experiment surfaces, `flake.nix`/`CMakePresets.json` count for standardized
+  dev environment, and sanitizer workflows count as security automation. This
+  removed false-positive llama blockers without editing the llama repo.
+- The deterministic remediation queue now has `24` open items, down from the
+  stale `49`-item 2026-06-21 pickup. The remaining blocking candidates are
+  L5 autonomy surfaces for research/root plus the true `epyc-llama` task-index
+  gap on the path to L4. The passive pickup remains `mode=advisory_only` and
+  `authority_gate=false`.
+- Validation: GitNexus impact was LOW for `score_repositories`,
+  `build_remediation_queue`, and `build_criteria`; the generic `main` lookup
+  was ambiguous but no code edit was made. `repo_readiness_scorer.py`
+  regenerated the artifacts without errors, focused tests passed, and generated
+  JSON was inspected with `jq` for portfolio level, queue count, and
+  non-authority pickup fields.
 
 ## Notes
 

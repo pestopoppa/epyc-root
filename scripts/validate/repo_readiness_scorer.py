@@ -243,6 +243,18 @@ CONFIG_FILES = (
     "*.yml",
 )
 
+BENCHMARK_SURFACES = (
+    "benchmarks/**",
+    "scripts/benchmark/**",
+    "scripts/bench*.sh",
+    "scripts/*bench*.py",
+    "scripts/compare-*.py",
+    "tools/*bench*/**",
+    "orchestration/reports/**",
+    "progress/**",
+    "docs/ops/**",
+)
+
 
 def build_criteria() -> list[Criterion]:
     """Return the v1 criteria catalog: 5 levels x 9 pillars."""
@@ -286,7 +298,7 @@ def build_criteria() -> list[Criterion]:
     add(1, "Task Discovery", "task_surface", "Has a task/backlog/agent-discovery surface.",
         exists_any("AGENTS.md", "CLAUDE.md", "handoffs/active/**", ".github/ISSUE_TEMPLATE/**", "TODO*"))
     add(1, "Product & Experimentation", "experiment_surface", "Has benchmark/eval/report artifacts.",
-        exists_any("benchmarks/**", "scripts/benchmark/**", "orchestration/reports/**", "progress/**"))
+        exists_any(*BENCHMARK_SURFACES))
 
     # Level 2: Documented.
     add(2, "Style & Validation", "style_docs", "Documents lint/format/style commands.",
@@ -324,18 +336,22 @@ def build_criteria() -> list[Criterion]:
     add(3, "Documentation", "doc_validation", "Has documentation validation or generated-doc tooling.",
         exists_any("scripts/validate/validate_doc_drift.py", "scripts/docs/**", "docs/**"))
     add(3, "Dev Environment", "standard_dev_env", "Standardizes local environment setup.",
-        exists_any(".devcontainer/**", "scripts/setup.sh", "scripts/session/session_init.sh"))
+        exists_any(".devcontainer/**", "scripts/setup.sh", "scripts/session/session_init.sh",
+                   "flake.nix", "CMakePresets.json"))
     add(3, "Debugging & Observability", "structured_obs", "Has structured logs, trace, or metrics plumbing.",
         exists_any("scripts/halo/**", "logs/agent_audit.log", "orchestration/instrument_eras.yaml"),
         file_contains(("src/**/*.py", "scripts/**/*.py"), (r"jsonl", r"trace", r"metrics?")))
     add(3, "Security", "security_automation", "Automates secret/PII/security checks.",
-        exists_any("scripts/hooks/pii_precommit.sh", ".github/workflows/*dependabot*", ".github/dependabot.yml"))
+        exists_any("scripts/hooks/pii_precommit.sh", ".github/workflows/*dependabot*",
+                   ".github/workflows/*sanitize*.yml", ".github/workflows/*sanitize*.yaml",
+                   ".github/dependabot.yml"))
     add(3, "Task Discovery", "machine_task_index", "Has structured or indexed task coordination.",
         exists_any("handoffs/active/master-handoff-index.md", ".claude/dependency-map.json",
                    "orchestration/autopilot_journal.jsonl"))
     add(3, "Product & Experimentation", "structured_experiments", "Has structured reports/journals/configured evals.",
         exists_any("orchestration/autopilot_journal.jsonl", "orchestration/reports/**",
-                   "orchestration/eval_registry.yaml", "data/**"))
+                   "orchestration/eval_registry.yaml", "data/**", "docs/ops/**",
+                   "scripts/*bench*.py", "scripts/compare-*.py", "tools/*bench*/**"))
 
     # Level 4: Optimized.
     add(4, "Style & Validation", "incremental_validation", "Supports incremental or changed-file validation.",

@@ -228,3 +228,28 @@ def test_security_audit_accepts_scripts_security_surface(tmp_path):
 
     assert security_audit["passed"] is True
     assert "scripts/security/audit_repository.py" in security_audit["evidence"]
+
+
+def test_llama_native_surfaces_count_as_readiness_evidence(tmp_path):
+    scorer = _load_module()
+    repo = tmp_path / "llama"
+    _write(repo / "flake.nix", "{ outputs = { self }: {}; }\n")
+    _write(repo / "CMakePresets.json", '{"version": 3}\n')
+    _write(repo / "docs" / "ops" / "CPU.csv", "op,status\nmul_mat,covered\n")
+    _write(repo / "scripts" / "compare-llama-bench.py", "#!/usr/bin/env python3\n")
+    _write(repo / ".github" / "workflows" / "server-sanitize.yml", "name: Server (sanitize)\n")
+
+    report = scorer.score_repositories({"epyc-llama": repo})
+    criteria = {
+        item["id"]: item
+        for item in report["repos"]["epyc-llama"]["criteria"]
+    }
+
+    assert criteria["L1.experiment_surface"]["passed"] is True
+    assert "docs/ops/CPU.csv" in criteria["L1.experiment_surface"]["evidence"]
+    assert criteria["L3.standard_dev_env"]["passed"] is True
+    assert "CMakePresets.json" in criteria["L3.standard_dev_env"]["evidence"]
+    assert criteria["L3.security_automation"]["passed"] is True
+    assert ".github/workflows/server-sanitize.yml" in criteria["L3.security_automation"]["evidence"]
+    assert criteria["L3.structured_experiments"]["passed"] is True
+    assert "docs/ops/CPU.csv" in criteria["L3.structured_experiments"]["evidence"]

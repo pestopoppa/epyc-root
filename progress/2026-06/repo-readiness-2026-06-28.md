@@ -1,6 +1,6 @@
 # EPYC Repo Readiness Report
 
-Generated: `2026-06-28T16:12:19.651626+00:00`
+Generated: `2026-06-28T16:33:37.892139+00:00`
 Unlock threshold: `80.0%`
 
 ## Portfolio Summary
@@ -9,9 +9,9 @@ Unlock threshold: `80.0%`
 
 | Level | Name | Pass rate |
 |---:|---|---:|
-| 1 | Functional | 97.2% |
+| 1 | Functional | 100.0% |
 | 2 | Documented | 100.0% |
-| 3 | Standardized | 88.9% |
+| 3 | Standardized | 97.2% |
 | 4 | Optimized | 80.6% |
 | 5 | Autonomous | 55.6% |
 
@@ -22,7 +22,7 @@ Unlock threshold: `80.0%`
 | epyc-root | Optimized (L4) | Autonomous | 100.0% | 100.0% | 100.0% | 100.0% | 77.8% |
 | epyc-orchestrator | Autonomous (L5) | complete | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
 | epyc-inference-research | Optimized (L4) | Autonomous | 100.0% | 100.0% | 100.0% | 100.0% | 33.3% |
-| epyc-llama | Documented (L2) | Standardized | 88.9% | 100.0% | 55.6% | 22.2% | 11.1% |
+| epyc-llama | Standardized (L3) | Optimized | 100.0% | 100.0% | 88.9% | 22.2% | 11.1% |
 
 ## Lowest Portfolio Criteria
 
@@ -34,15 +34,15 @@ Unlock threshold: `80.0%`
 | `L5.autonomous_security_review` | 5 | Security | 50.0% | epyc-inference-research, epyc-llama |
 | `L5.closed_loop_obs` | 5 | Debugging & Observability | 50.0% | epyc-inference-research, epyc-llama |
 | `L5.self_healing_ops` | 5 | Dev Environment | 50.0% | epyc-inference-research, epyc-llama |
-| `L1.experiment_surface` | 1 | Product & Experimentation | 75.0% | epyc-llama |
 | `L3.machine_task_index` | 3 | Task Discovery | 75.0% | epyc-llama |
-| `L3.security_automation` | 3 | Security | 75.0% | epyc-llama |
-| `L3.standard_dev_env` | 3 | Dev Environment | 75.0% | epyc-llama |
-| `L3.structured_experiments` | 3 | Product & Experimentation | 75.0% | epyc-llama |
 | `L4.analysis_reports` | 4 | Debugging & Observability | 75.0% | epyc-llama |
 | `L4.generated_docs` | 4 | Documentation | 75.0% | epyc-llama |
 | `L4.health_automation` | 4 | Dev Environment | 75.0% | epyc-llama |
 | `L4.incremental_validation` | 4 | Style & Validation | 75.0% | epyc-llama |
+| `L4.prioritized_tasks` | 4 | Task Discovery | 75.0% | epyc-llama |
+| `L4.replay_analysis` | 4 | Product & Experimentation | 75.0% | epyc-llama |
+| `L4.security_audit` | 4 | Security | 75.0% | epyc-llama |
+| `L5.agent_doc_loop` | 5 | Documentation | 75.0% | epyc-llama |
 
 ## Per-Repo Blocking Criteria
 
@@ -84,19 +84,19 @@ Next gate: L5 Autonomous
 
 ### epyc-llama
 
-Next gate: L3 Standardized
+Next gate: L4 Optimized
 
 | Criterion | Pillar | Status | Evidence |
 |---|---|---|---|
-| `L3.style_enforced` | Style & Validation | pass | .github/workflows/ai-issues.yml, .github/workflows/bench.yml.disabled, .github/workflows/check-vendor.yml, .github/workflows/close-issue.yml, .github/workflows/code-style.yml |
-| `L3.repro_build` | Build System | pass | CMakePresets.json |
-| `L3.test_automation` | Testing | pass | .github/workflows/ai-issues.yml, .github/workflows/bench.yml.disabled, .github/workflows/check-vendor.yml, .github/workflows/close-issue.yml, .github/workflows/code-style.yml |
-| `L3.doc_validation` | Documentation | pass | docs, docs/android, docs/android.md, docs/android/imported-into-android-studio.jpg, docs/autoparser.md |
-| `L3.standard_dev_env` | Dev Environment | fail | - |
-| `L3.structured_obs` | Debugging & Observability | pass | scripts/compare-llama-bench.py, scripts/jinja/jinja-tester.py, scripts/server-test-parallel-tc.py, scripts/snapdragon/ggml-hexagon-profile.py, scripts/snapdragon/ggml-hexagon-trace.py |
-| `L3.security_automation` | Security | fail | - |
-| `L3.machine_task_index` | Task Discovery | fail | - |
-| `L3.structured_experiments` | Product & Experimentation | fail | - |
+| `L4.incremental_validation` | Style & Validation | fail | - |
+| `L4.build_speed` | Build System | pass | build_libomp_pgo_use, build_libomp_pgo_bolt, build_libomp_pgo_use/tests, build_libomp_pgo_use/Makefile, build_libomp_pgo_use/CTestTestfile.cmake |
+| `L4.fast_safe_tests` | Testing | pass | scripts/server-test-parallel-tc.py, scripts/snapdragon/qdc/run_qdc_jobs.py, scripts/snapdragon/qdc/tests/linux/run_linux.sh, scripts/tool_bench.py |
+| `L4.generated_docs` | Documentation | fail | - |
+| `L4.health_automation` | Dev Environment | fail | - |
+| `L4.analysis_reports` | Debugging & Observability | fail | - |
+| `L4.security_audit` | Security | fail | - |
+| `L4.prioritized_tasks` | Task Discovery | fail | - |
+| `L4.replay_analysis` | Product & Experimentation | fail | - |
 
 ## Notes
 
