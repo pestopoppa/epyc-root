@@ -1,10 +1,10 @@
 # AutoPilot Planner-Hint Distillation from Orchestrator Handoffs
 
-**Status**: DESIGN COMPLETE — NOT EXECUTED (handoff-only; no rows written, no code changed, no restart). Ready for a future execution session.
+**Status**: DESIGN AUDITED — NOT EXECUTED (handoff-only; no rows written, no code changed, no restart). Ready for Phase 1 dry-run/source work; Phase 1 `--apply` still needs operator review.
 **Created**: 2026-06-28
 **Priority**: MEDIUM (cheap leverage on planner decision quality; prevents wasted trials)
 **Categories**: autopilot, routing/optimization, strategy-store
-**Depends on**: W4/W6 readiness clearance + N13/N14 kernel-era fence (E5 eras) settled — for Phase 2 restart only. Phase 1 has no dependency.
+**Depends on**: W4/W6 readiness clearance + N13/N14 kernel-era fence (E5 eras) settled — for Phase 2 restart only. Phase 1 source/dry-run has no dependency; Phase 1 `--apply` is no-inference but newly written FAISS-backed rows are not guaranteed visible to an already-running AutoPilot process until the strategy store is refreshed or AutoPilot restarts.
 **Related**: [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md), [research-evaluation-index.md](research-evaluation-index.md), and the ~40 source handoffs cited in the inventory below.
 
 ---
@@ -13,7 +13,7 @@
 
 We have 111 active handoffs plus a large completed/archived corpus. Much of that knowledge — both *runnable hypotheses* and *hard-won negative results* — could refine AutoPilot's planner decisions if injected into the strategy store as hints, **even for tasks we never intend to run manually**. The highest-value injections are the **negatives** ("X is a baseline artifact", "Y is net-negative", "Z is foreclosed by architecture"): they stop the optimizer from spending trials re-exploring falsified regimes.
 
-A prior session established the mechanism (write to the strategy store with `metadata.seeded_by="operator"`; see existing 2026-06-25 precedent rows). This handoff is the **full audit + curated inventory + safe execution design** built on top of that mechanism.
+A prior session established the mechanism (write to the strategy store with `metadata.seeded_by="operator"`; see existing 2026-06-25 precedent rows). `seed_campaign` is new metadata for this campaign, not an existing precedent field. This handoff is the **full audit + curated inventory + safe execution design** built on top of that mechanism.
 
 ## Survey result (what's hintable)
 
@@ -47,14 +47,14 @@ This is the single most important fact in this handoff: **a row written to the s
 | **EvolutionManager** | distillation | No (write-only) | Dormant | out of scope |
 
 **Consequences for this plan:**
-- Seeding now is still correct: PromptForge hints (Tranche A prompt rows + any guardrail that constrains prompt/code mutations) act immediately, and the `structural_lab`/`numeric_swarm`/`seeder` rows are written with correct species so they light up the moment Phase 2 lands — **dormant, not wasted.** This is intentional, not a bug.
+- Seeding now is still correct: PromptForge hints (Tranche A prompt rows + any guardrail that constrains prompt/code mutations) become available to new or refreshed StrategyStore readers, and the `structural_lab`/`numeric_swarm`/`seeder` rows are written with correct species so they light up the moment Phase 2 lands — **dormant, not wasted.** This is intentional, not a bug. Do not claim guaranteed live PromptForge visibility for the already-running AutoPilot process unless a refresh/restart is performed.
 - **Prose ≠ enforcement for deterministic choosers.** Even after Phase 2, injecting a guardrail as free-text for StructuralLab/NumericSwarm is weaker than a hard bind: an Optuna sampler or a flag chooser won't "read and obey" prose. That's why Phase 2c/2d turn `entry_type=convention` rows into a **flag denylist** and **surface suppression** at the decision point, rather than relying on prompt injection. Prose injection is reserved for the LLM-driven species (PromptForge, Seeder).
 - A future reader must not assume "I seeded a StructuralLab guardrail, so the planner won't toggle that flag." Until Phase 2c is merged and activated by a restart, StructuralLab is blind to it. The corresponding correction has been written to memory ([[feedback_seed_autopilot_via_strategy_store]]).
 
 ### Other verified facts (drive correctness)
 - **Writer = `StrategyStore.store(...)` in `orchestration/repl_memory/strategy_store.py` (~L632).** It updates the `strategies` row **and** the FTS5 table (~L698–706) **and** the FAISS index (~L684–686). **Raw SQL INSERT skips FTS5/FAISS → the row is never retrieved. Always use `store()`.** `_embed()` falls back to a hash embedding if the embedder is offline, so `store()` never fails and FAISS is always populated.
 - **Idempotency:** `store()` returns early if `entry_id` already exists; no content-hash dedup. Use deterministic `entry_id`s.
-- **Provenance precedent:** 2 existing rows have `metadata.seeded_by="operator"` + `seeded_reason`, `entry_type` ∈ {`convention`,`pattern`} (2026-06-25). Mirror exactly + add a purgeable campaign tag.
+- **Provenance precedent:** 2 existing rows have `metadata.seeded_by="operator"` + `seeded_reason`, `entry_type` ∈ {`convention`,`pattern`} (2026-06-25). Mirror that operator-seeded provenance and add a new purgeable `seed_campaign` tag for this campaign.
 - **`source_trial_id`** is never NULL — set to the live `trial_counter` from `orchestration/autopilot_state.json` at write time.
 - **`strategy_conventions` / `strategy_validity` tables are empty scaffolding** — not a usable channel. Guardrails live in `strategies` as `entry_type="convention"`.
 - **Retrieval scoring:** `rrf * (0.5 + validity) * staleness`. New rows: validity≈0.5, staleness=1.0 (no penalty), not quarantined. Hybrid FAISS + FTS5 BM25 + RRF; BM25 honors `species=` if passed.
@@ -68,8 +68,8 @@ This is the single most important fact in this handoff: **a row written to the s
 
 ## Execution plan
 
-### Phase 1 — Seed (no restart; safe mid-run)
-Writing mid-run is safe — AutoPilot writes `journal-frontier-*` rows every trial via the same `store()` API (SQLite concurrency). PromptForge rows act immediately; `numeric_swarm`/`structural_lab`/`seeder` rows are dormant until Phase 2.
+### Phase 1 — Seed (no inference; safe mid-run write)
+Writing mid-run is safe — AutoPilot writes `journal-frontier-*` rows every trial via the same `store()` API (SQLite concurrency). The write itself does not require an orchestrator restart or llama inference. Visibility is narrower: the running AutoPilot process loads `StrategyStore()` once and keeps its FAISS index in memory, so new rows are guaranteed visible only to new/refreshed store readers or after AutoPilot restarts. `numeric_swarm`/`structural_lab`/`seeder` rows remain dormant until Phase 2.
 
 - [ ] **1a.** Author curated data file `epyc-orchestrator/scripts/autopilot/operator_seed_strategies.yaml` — one entry per inventory row (schema below).
 - [ ] **1b.** Author `epyc-orchestrator/scripts/autopilot/seed_operator_strategies.py`:
@@ -77,7 +77,7 @@ Writing mid-run is safe — AutoPilot writes `journal-frontier-*` rows every tri
   - Modes: `--dry-run` (default; prints rows + summary, writes nothing), `--apply`, `--purge-campaign operator-handoff-distillation`. Log via `scripts/utils/agent_log.sh`.
 - [ ] **1c.** Pre-finalize: verify exact identifier strings — flag names against `config_applicator.py` `HOT_SWAP_FEATURES`; numeric surface ids against `species/numeric_swarm.py` — so guardrail keys bind for Phase 2.
 - [ ] **1d.** **Operator reviews `--dry-run` output, then approves `--apply`** (standing approval rule for store/index writes).
-- [ ] **1e.** Phase-1 verification (read-only): (i) row-count delta == N; (ii) `json_extract(metadata_json,'$.seed_campaign')='operator-handoff-distillation'` count == N; (iii) FTS5 row count and FAISS `ntotal` each +N; (iv) live PromptForge probe — `store.retrieve_for_journal("frontdoor prompt conciseness brevity", k=5)` returns the reasoning-compression row; repeat for 2–3 others; confirm none quarantined.
+- [ ] **1e.** Phase-1 verification (read-only): (i) row-count delta == N; (ii) `json_extract(metadata_json,'$.seed_campaign')='operator-handoff-distillation'` count == N; (iii) FTS5 row count and FAISS `ntotal` each +N for a freshly opened store; (iv) retrieval probe on a fresh `StrategyStore()` — `store.retrieve_for_journal("frontdoor prompt conciseness brevity", k=5)` returns the reasoning-compression row; repeat for 2–3 others; confirm none quarantined. Do not call this a live PromptForge proof unless the running AutoPilot process has refreshed/restarted.
 
 Curated row schema (YAML):
 ```yaml
@@ -98,17 +98,18 @@ Curated row schema (YAML):
 ### Phase 2 — Wire all planners (staged; lands on next coordinated restart)
 Planner-orchestration only → **outside the MEASUREMENT trust boundary** (safe to change). Activates on restart; do **not** restart until W4/W6 strict readiness passes (`--require-seq-cutover --require-w6-audit`) and the N13/N14 E5 era fence is settled.
 
-- [ ] **2a. Shared helper:** add `StrategyStore.retrieve_conventions(species, k)` — filter `entry_type='convention'`, species-or-`all`, not quarantined.
+- [ ] **2a. Shared helper:** either add a small `StrategyStore.retrieve_conventions(species, k)` convenience wrapper or reuse the existing quarantine-aware entry-type helpers; avoid creating a parallel convention system.
 - [ ] **2b. Seeder (LLM-driven):** replicate `_build_mutation_context()` retrieval (`actions.py:244–276`) in the seed_batch handler — `retrieve_for_journal(query, k, species="seeder")` injected into the seed prompt.
 - [ ] **2c. StructuralLab (deterministic flag chooser):** consume `convention` rows to build a **flag denylist** — exclude any flag named in a "do NOT toggle / NO-GO / frozen" convention from the experimentable set before selection (`species/structural_lab.py` vs `HOT_SWAP_FEATURES`). Hard bind — prose alone won't stop a deterministic chooser.
 - [ ] **2d. NumericSwarm (Optuna):** consume `convention` rows to **suppress dead surfaces** (e.g. `moe_spec_budget` no-consumer, op-coalesced-barriers neutral) and optionally narrow bounds (`species/numeric_swarm.py`) before surface/trial selection.
 - [ ] **2e. PromptForge:** optionally inject `entry_type=convention` guardrails unconditionally (not only RRF-ranked) so hard constraints always appear.
-- [ ] **2f. Tests:** extend the planner suite (~39 tests) — a "do not toggle EP" convention removes `expert_parallelism` from StructuralLab candidates; a dead-surface convention suppresses that NumericSwarm surface; seeded prose appears in Seeder context; **no interaction with the W6 gaming-alarm logic**.
-- [ ] **2g. Activation:** restart via `orchestrator_stack.py` / autopilot start using the settled safe preflight (registry attest + `stack_change_pipeline.py check --run-promotion-gate`), coordinated with the kernel-era baseline state.
+- [ ] **2f. Planner prompt assembly:** if dead flags/surfaces should disappear before the planner proposes them, also thread convention-derived denylist/suppression summaries into the planner-visible feature-flag/action availability blocks; execution-time filtering alone is weaker and can create avoidable critic rejections.
+- [ ] **2g. Tests:** extend the planner suite (~39 tests) — a "do not toggle EP" convention removes `expert_parallelism` from StructuralLab candidates; a dead-surface convention suppresses that NumericSwarm surface; seeded prose appears in Seeder context; planner-visible availability reflects denylisted levers; **no interaction with the W6 gaming-alarm logic**.
+- [ ] **2h. Activation:** restart via `orchestrator_stack.py` / autopilot start using the settled safe preflight (registry attest + `stack_change_pipeline.py check --run-promotion-gate`), coordinated with the kernel-era baseline state.
 
 ### Rollback / rewind-purge (required)
 Per the standing rule that a clean AutoPilot rewind must also purge the strategy store (injected rows otherwise re-inject narrative):
-- [ ] `seed_operator_strategies.py --purge-campaign operator-handoff-distillation` deletes `opseed-*` rows **and** their FTS5 entries, then rebuilds/compacts FAISS (use the store's deletion path; if absent, reindex from remaining rows). Run **while AutoPilot is stopped**.
+- [ ] Implement a real purge/rebuild path before applying rows. `seed_operator_strategies.py --purge-campaign operator-handoff-distillation` must delete `opseed-*` rows **and** their FTS5 entries, then rebuild/compact FAISS from remaining rows. If the store lacks a delete API, add one or document and test a full reindex recipe. Run purge **while AutoPilot is stopped**.
 - [ ] Record the campaign tag `operator-handoff-distillation` in [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) so any future rewind purges it.
 
 ---
@@ -187,11 +188,19 @@ Legend for `species`: PF=prompt_forge, SL=structural_lab, NS=numeric_swarm, R=ro
 
 ## Key files
 - New: `epyc-orchestrator/scripts/autopilot/operator_seed_strategies.yaml`, `.../seed_operator_strategies.py`
-- Phase 2 edits: `.../actions.py`, `.../species/structural_lab.py`, `.../species/numeric_swarm.py`, `orchestration/repl_memory/strategy_store.py` (add `retrieve_conventions`), planner tests.
-- Reuse (don't reinvent): `StrategyStore.store()/retrieve()/retrieve_for_journal()`; `_build_mutation_context()` (`actions.py:244`); `HOT_SWAP_FEATURES` (`config_applicator.py`); numeric surfaces (`species/numeric_swarm.py`).
+- Phase 2 edits: `.../actions.py`, `.../autopilot.py` prompt-assembly/availability blocks, `.../species/structural_lab.py`, `.../species/numeric_swarm.py`, `orchestration/repl_memory/strategy_store.py` only if a helper/delete API is missing, planner tests.
+- Reuse (don't reinvent): `StrategyStore.store()/retrieve()/retrieve_for_journal()`; existing quarantine-aware entry-type helpers; `_build_mutation_context()` (`actions.py:244`); `HOT_SWAP_FEATURES` (`config_applicator.py`); numeric surfaces (`species/numeric_swarm.py`).
 
 ## Reporting instructions
-After each phase, update this handoff's checkboxes + Status, append a dated note to `progress/2026-06/`, and (Phase 1e / 2f) record verification evidence. On completion, move to `handoffs/completed/` and extract any durable findings to the wiki. Index entry into `master-handoff-index.md` is proposed but **not yet applied** — pending operator approval (see governance note).
+After each phase, update this handoff's checkboxes + Status, append a dated note to `progress/2026-06/`, and (Phase 1e / 2g) record verification evidence. On completion, move to `handoffs/completed/` and extract any durable findings to the wiki. Index entry is active in `master-handoff-index.md` as A10/MED after the 2026-06-28 audit/refinement pass.
+
+## Audit note — 2026-06-28
+
+Read-only audit of this handoff and `~/.claude/plans/caveat-on-a-distributed-wilkinson.md` found the design actionable and worth folding into the A queue, with three corrections now reflected above:
+
+- Phase 1 is no-inference and safe for a mid-run write, but not guaranteed live-visible to the already-running AutoPilot process because `StrategyStore()` and its FAISS index are loaded once at startup.
+- `seed_campaign` is new purge metadata; existing operator-seeded rows prove `seeded_by="operator"` / `seeded_reason`, not campaign tagging.
+- Phase 2 should avoid a duplicate PromptForge enforcement layer, reuse existing strategy-store helpers where possible, and include planner prompt assembly if the goal is to keep dead flags/surfaces out of proposed actions before critic/dispatcher rejection.
 
 ## Provenance
 Full design rationale + the verbatim two-phase plan: `~/.claude/plans/caveat-on-a-distributed-wilkinson.md` (this session, 2026-06-28). Survey + mechanism findings produced by read-only code/handoff analysis; no system state was modified.
