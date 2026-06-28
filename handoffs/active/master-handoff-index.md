@@ -74,6 +74,12 @@ the remaining expanded collection targets after excluding existing/overlapping
 and no-cross-action groups. The current artifact set is exhausted for the
 remaining A9 blockers; next work must add new source records for
 `orchestrator_live_seed`, `seeding_eval`, and `suite:general`.
+Orchestrator `926fd30b` converts that next step into a guarded acquisition
+window: `plan_offline_reward_pairwise_holdout_expansion.py` now emits an
+`offline_reward_pairwise_collection_window.v1` manifest and executable script.
+The current generated window has `9` batches and refuses with exit `75` if
+AutoPilot is active, preserving W6/T2 accrual while making the next clean-window
+collection directly runnable.
 
 ## B2. Frontier programs (strategic spine — spec: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md))
 | # | Prio | Item | Handoff |

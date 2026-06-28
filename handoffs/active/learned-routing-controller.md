@@ -1221,6 +1221,20 @@ learned-routing reward signals from the failed NeuralTxt report alone.
   because they consume live model slots. Next A9 action is the priority-0 live
   collection batch set in a clean/coordinated measurement window, then rebuild
   the pairwise contract and rerun holdouts.
+- 2026-06-28 follow-up: orchestrator `926fd30b` turns that queue into a
+  first-class guarded acquisition window instead of a prose-only runbook. The
+  pairwise holdout planner can now emit
+  `offline_reward_pairwise_collection_window.v1` manifests plus executable
+  shell scripts with an active-AutoPilot refusal guard (`exit 75`). Current
+  artifacts:
+  `orchestration/reports/offline_reward_oracle_token_coverage_final_labels_20260621/offline_reward_pairwise_expanded_gap_collection_manifest.json`
+  and
+  `orchestration/reports/offline_reward_oracle_token_coverage_final_labels_20260621/collect_offline_reward_pairwise_expanded_gap.sh`.
+  The generated window contains `9` batches: the three priority-0
+  source-family gaps, the priority-1 `suite:general` gap, and five lower-value
+  cleanup strata. The collection still must run only in a coordinated window;
+  the script refuses to run while AutoPilot is active because even
+  `seed_specialist_routing.py --dry-run` consumes live model slots.
 
 ---
 

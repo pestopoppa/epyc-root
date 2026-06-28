@@ -86,6 +86,15 @@ This index is a dispatch surface. Completed implementation chronology was pruned
 | P3 | Web/search and PromptForge tails | [searxng-search-backend.md](searxng-search-backend.md), [minddr-deep-research-mode.md](minddr-deep-research-mode.md), [agent-world-env-synthesis.md](agent-world-env-synthesis.md) | Run SX-5/6 only after AR-3/Camofox gates; run MD-9 sentinel A/B and AW scaffolding as isolated work. |
 | P3 (GATED) | Fusion typed-judge-schema + model-discretionary invocation + recursion-bound | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) (program.md), [research/deep-dives/optillm-test-time-techniques.md](../../research/deep-dives/optillm-test-time-techniques.md) | Fusion typed-judge-schema + model-discretionary invocation + recursion-bound (intake-712/714) → the GATED P21.B method-selection axis; lives in autopilot/program.md + the optillm deep-dive, NOT this index's body. GATED — P21.B not built. Only judge-contract/invocation/recursion port n-free; the panel is the n-degraded MoA path. Cross-link intake-601. (added 2026-06-20 via research-intake batch 695-720 deep-dive) |
 
+**A9 current-state override (2026-06-28)**: orchestrator `926fd30b`
+promoted the remaining offline reward-oracle pairwise collection work from a
+prose runbook into a guarded acquisition window. The current generated
+`offline_reward_pairwise_collection_window.v1` manifest contains `9` batches
+and the executable script refuses with exit `75` while AutoPilot is active.
+Next action is to run that guarded script in a coordinated clean measurement
+window, then rebuild the pairwise contract and rerun holdouts; do not retune the
+absolute MLP/calibrator/pairwise family first.
+
 ## Additional Active References
 
 These files remain active but are not the shortest pickup path for the main queues above. Keep them indexed for discoverability; update the owning row if one becomes the primary implementation surface.
