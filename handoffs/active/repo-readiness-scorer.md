@@ -234,6 +234,33 @@ Validation:
   tests/unit/test_autopilot_actions.py`; `python3 -m py_compile
   scripts/autopilot/autopilot.py tests/unit/test_autopilot_actions.py`.
 
+2026-06-28 orchestrator security automation/audit update:
+
+- `epyc-orchestrator` adds `.github/dependabot.yml` for weekly `uv` and
+  GitHub Actions dependency updates, closing the deterministic
+  `L3.security_automation` criterion with a real supply-chain automation
+  surface.
+- `epyc-orchestrator` adds `scripts/security/audit_repository.py`,
+  `scripts/security/test_audit_repository.py`, and `make security-check`.
+  The audit is no-inference and scans tracked files only. It fails on
+  secret-like tracked filenames, high-confidence credential literals in
+  source/config/doc/test surfaces, and unexpected large tracked artifacts
+  outside known benchmark/report/repl-memory paths. The only secret-literal
+  allowlist is the existing credential-redaction fixture test.
+- A one-repo scorer run now reports `epyc-orchestrator` with
+  `L3.security_automation=true`, `L4.security_audit=true`, and L3 pass rate
+  `100.0%`. Remaining L4 blockers are `L4.generated_docs`,
+  `L4.health_automation`, and `L4.prioritized_tasks`.
+- Validation: GitNexus impact for the new security/dependabot targets returned
+  UNKNOWN with `impactedCount=0`; `python3 -m py_compile
+  scripts/security/audit_repository.py scripts/security/test_audit_repository.py`;
+  `uv run --with pytest pytest -q scripts/security/test_audit_repository.py`
+  -> 4 passed; `uv run --with ruff ruff check
+  scripts/security/audit_repository.py scripts/security/test_audit_repository.py`;
+  `make security-check`; `git diff --check` on the touched paths; and the root
+  one-repo readiness scorer for
+  `epyc-orchestrator=/mnt/raid0/llm/epyc-orchestrator`.
+
 ## Notes
 
 - Anti-false-positive discipline (shared across Factory's review/scoring features): a criterion passes only on a concrete, verifiable check — mirrors our eval-tower verifier philosophy.
