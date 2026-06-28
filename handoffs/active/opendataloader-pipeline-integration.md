@@ -156,6 +156,15 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 - [ ] Run comparison on 200 PDFs: our pipeline vs ODL local vs ODL hybrid vs docling vs marker
 - [ ] Publish results in progress log
 
+**2026-06-28 benchmark-environment checkpoint**:
+
+- Read-only sidecar located the current Phase 3 entrypoints: `opendataloader-pdf-hybrid --port 5002` for the hybrid sidecar, `uv run src/run.py` in this handoff's custom harness notes, and the upstream benchmark repo's documented `python pdf_validation.py --config <config_path>` path under `/mnt/raid0/llm/opendataloader-bench`.
+- Expected upstream artifacts are `*_result.json`, `*_metric_result.json`, `*_run_summary.json`, runtime/stage logs, per-metric JSON files, and `result/{save_name}/CDM/` outputs.
+- Local-only validation `uv run --with pytest python -m pytest tools/test_environment_and_smoke.py::TestCDMCalculation -q` failed for environment reasons, not routing/policy reasons: `/share/texlive/pdflatex` is missing, so CDM checks returned `0.0` and LaTeX bbox smoke outputs were not produced.
+- Follow-up attempted the documented Docker path (`ghcr.io/zeng-weijun/omnidocbench-eval:repro-ubuntu2204`) instead of installing TeX Live on the host. The pull did not complete because GHCR layer downloads for `baf0dae3bf9f` / `18bba57308dc` repeatedly retried and then went quiet; the pull process was terminated and verified gone. No complete image is present locally.
+- No persistent benchmark evidence was written. The evidence gap remains: no live `opendataloader-pdf-hybrid` sidecar benchmark and no benchmark-backed table-selection policy evidence.
+- Next run should retry the documented container pull/run or use a host with the expected TeX Live layout, execute `python pdf_validation.py --config <config_path>` against a temp-mounted result directory, and only then consider hybrid/table routing policy edits.
+
 **Target routing architecture**:
 ```
 PDF Input
