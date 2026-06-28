@@ -199,7 +199,7 @@ CHECKPOINT + RESET (selective) + RESEED → back to top
 | Feature flags | `src/features.py` (43 flags + validate()) | StructuralLab proposes flag combos |
 | Strategy store | `orchestration/repl_memory/strategy_store.py` | Species retrieve past insights before proposals |
 
-**Strategy-store rewind/purge tags:** future clean AutoPilot rewinds must also purge operator-seeded strategy campaigns so narrative hints do not survive a runtime rewind. Current pending campaign: `operator-handoff-distillation` from [autopilot-handoff-hint-distillation.md](autopilot-handoff-hint-distillation.md); use the handoff's purge path while AutoPilot is stopped if those rows have been applied.
+**Strategy-store rewind/purge tags:** future clean AutoPilot rewinds must also purge operator-seeded strategy campaigns so narrative hints do not survive a runtime rewind. Current applied campaign: `operator-handoff-distillation` from [autopilot-handoff-hint-distillation.md](../completed/autopilot-handoff-hint-distillation.md); use the handoff's purge path while AutoPilot is stopped if those rows need to be removed.
 
 ## Train/Validate Split
 
