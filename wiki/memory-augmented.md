@@ -2,8 +2,8 @@
 
 **Category**: `memory_augmented`
 **Confidence**: verified
-**Last compiled**: 2026-06-21
-**Sources**: 25+ documents (2 deep-dives, 20 intake entries, active handoffs, progress logs, and K-MEM/Tulving measurement context)
+**Last compiled**: 2026-06-28
+**Sources**: 26+ documents (2 deep-dives, 20 intake entries, active handoffs, progress logs, K-MEM/Tulving measurement context, and the 2026-06-28 W4/W6 reboot-readiness checkpoint)
 
 ## Summary
 
@@ -33,9 +33,9 @@ The connection between memory and the autopilot is especially significant. Befor
 
 - **The Tulving episodic-memory benchmark is complete for the first `ingest_long_context` baseline, but it is not a memory-routing promotion signal.** Research run `20260619_141212` used production/default GGUF expert settings (`--skip-moe-reduction`); raw artifacts were packaged in `epyc-inference-research` commit `b6edc64`, and corrected score artifacts landed in `9e63af0` after fixing Tulving ground-truth parsing. The corrected scorer covered `456/456` questions with no missing ground truth, avg F1 `0.4309`, Simple Recall `0.5530`, Chronological Awareness `0.1593`, and avg decode `17.27 t/s`; the benchmark log ended `448 completed, 8 skipped, 0 errors` because the corrected resume reused the first 8 rows. Failure shape: lexical entity/time/location recall is usable, event-content/full-detail retrieval and chronology are weak, and zero-answer hallucination checks fail. This clears the throughput-sensitive K-MEM lane and creates a targeted follow-up task, not a change to episodic retrieval/write behavior. Sources: [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md), [research-evaluation-index.md](../handoffs/active/research-evaluation-index.md), [progress 2026-06-20](../progress/2026-06/2026-06-20.md).
 
-### New Finding (2026-06-19) — Sequential evidence remains sample-gated
+### New Finding (2026-06-28) — Sequential evidence is cutover-ready but still default-off
 
-- **Sequential verdict authority is implemented but still evidence-volume blocked.** The W4/W6 path can journal per-question sequential evidence, failed-trial seq blocks, and action-local seq gate checks behind `AUTOPILOT_SEQ_VERDICT`, but baseline/sequential authority must stay disabled until readiness clears. Current durable readiness is trusted vectors `57 / 120` and seq shadow rows `5 / 30`, so the correct memory/evidence action is continued clean accrual rather than promotion. Sources: [evidence-plane-ledger-and-sequential-verdicts.md](../handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md), [progress 2026-06-19](../progress/2026-06/2026-06-19.md).
+- **Sequential verdict authority has cleared the W4/W6 evidence-volume gates, but the authority flip is still a deliberate restart-boundary decision.** The W4/W6 path journals per-question sequential evidence, failed-trial seq blocks, and action-local seq gate checks behind `AUTOPILOT_SEQ_VERDICT`; as of the 2026-06-28T21:35Z reboot wrap-up, strict readiness is green with sequential trusted vectors `193 / 120`, seq shadow rows `116 / 30`, W6 trusted audited rows `32 / 30`, no W6 gaming alarm, and archive alignment through journal trial `1050`. Baseline fold readiness is also green, but `baseline_authority_enabled=false`, so future agents should rerun strict readiness after reboot and only then make the explicit authority cutover decision. Sources: [evidence-plane-ledger-and-sequential-verdicts.md](../handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md), [evidence-plane-instrument-repair.md](../handoffs/active/evidence-plane-instrument-repair.md), [progress 2026-06-28](../progress/2026-06/2026-06-28.md).
 
 ### New Finding (2026-06-19) — Strategy compression now honors folded-journal quarantine
 
