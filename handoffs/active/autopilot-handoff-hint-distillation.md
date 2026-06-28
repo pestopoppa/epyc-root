@@ -1,6 +1,6 @@
 # AutoPilot Planner-Hint Distillation from Orchestrator Handoffs
 
-**Status**: DESIGN AUDITED — NOT EXECUTED (handoff-only; no rows written, no code changed, no restart). Ready for Phase 1 dry-run/source work; Phase 1 `--apply` still needs operator review.
+**Status**: PHASE 1 SOURCE + DRY-RUN READY — no rows written, no restart. Orchestrator `dd4c572d` adds the curated seed file, dry-run/apply/purge CLI, and tested StrategyStore purge/rebuild support. Phase 1 `--apply` still needs operator review.
 **Created**: 2026-06-28
 **Priority**: MEDIUM (cheap leverage on planner decision quality; prevents wasted trials)
 **Categories**: autopilot, routing/optimization, strategy-store
@@ -71,11 +71,11 @@ This is the single most important fact in this handoff: **a row written to the s
 ### Phase 1 — Seed (no inference; safe mid-run write)
 Writing mid-run is safe — AutoPilot writes `journal-frontier-*` rows every trial via the same `store()` API (SQLite concurrency). The write itself does not require an orchestrator restart or llama inference. Visibility is narrower: the running AutoPilot process loads `StrategyStore()` once and keeps its FAISS index in memory, so new rows are guaranteed visible only to new/refreshed store readers or after AutoPilot restarts. `numeric_swarm`/`structural_lab`/`seeder` rows remain dormant until Phase 2.
 
-- [ ] **1a.** Author curated data file `epyc-orchestrator/scripts/autopilot/operator_seed_strategies.yaml` — one entry per inventory row (schema below).
-- [ ] **1b.** Author `epyc-orchestrator/scripts/autopilot/seed_operator_strategies.py`:
+- [x] **1a.** Author curated data file `epyc-orchestrator/scripts/autopilot/operator_seed_strategies.yaml` — one entry per inventory row (schema below). Done in orchestrator `dd4c572d`: `44` rows (`green=16`, `guardrail=26`, `frozen=2`).
+- [x] **1b.** Author `epyc-orchestrator/scripts/autopilot/seed_operator_strategies.py`:
   - For each row call `StrategyStore.store(...)` with `entry_id=f"opseed-{tranche}-{slug}"`, `species`, `entry_type`, `title`, `description`, `insight`, `generalized_content=insight`, `source_trial_id=<live trial_counter>`, `evidence_trial_ids`, and `metadata={seeded_by:"operator", seeded_date:<apply-date>, seed_campaign:"operator-handoff-distillation", seeded_reason, source_handoff, confidence}`.
   - Modes: `--dry-run` (default; prints rows + summary, writes nothing), `--apply`, `--purge-campaign operator-handoff-distillation`. Log via `scripts/utils/agent_log.sh`.
-- [ ] **1c.** Pre-finalize: verify exact identifier strings — flag names against `config_applicator.py` `HOT_SWAP_FEATURES`; numeric surface ids against `species/numeric_swarm.py` — so guardrail keys bind for Phase 2.
+- [ ] **1c.** Pre-finalize: verify exact identifier strings — flag names against `config_applicator.py` `HOT_SWAP_FEATURES`; numeric surface ids against `species/numeric_swarm.py` — so guardrail keys bind for Phase 2. YAML schema/dry-run validation passes, but exact future-bind identifier audit remains pending before `--apply`.
 - [ ] **1d.** **Operator reviews `--dry-run` output, then approves `--apply`** (standing approval rule for store/index writes).
 - [ ] **1e.** Phase-1 verification (read-only): (i) row-count delta == N; (ii) `json_extract(metadata_json,'$.seed_campaign')='operator-handoff-distillation'` count == N; (iii) FTS5 row count and FAISS `ntotal` each +N for a freshly opened store; (iv) retrieval probe on a fresh `StrategyStore()` — `store.retrieve_for_journal("frontdoor prompt conciseness brevity", k=5)` returns the reasoning-compression row; repeat for 2–3 others; confirm none quarantined. Do not call this a live PromptForge proof unless the running AutoPilot process has refreshed/restarted.
 
@@ -109,7 +109,7 @@ Planner-orchestration only → **outside the MEASUREMENT trust boundary** (safe 
 
 ### Rollback / rewind-purge (required)
 Per the standing rule that a clean AutoPilot rewind must also purge the strategy store (injected rows otherwise re-inject narrative):
-- [ ] Implement a real purge/rebuild path before applying rows. `seed_operator_strategies.py --purge-campaign operator-handoff-distillation` must delete `opseed-*` rows **and** their FTS5 entries, then rebuild/compact FAISS from remaining rows. If the store lacks a delete API, add one or document and test a full reindex recipe. Run purge **while AutoPilot is stopped**.
+- [x] Implement a real purge/rebuild path before applying rows. `seed_operator_strategies.py --purge-campaign operator-handoff-distillation` must delete `opseed-*` rows **and** their FTS5 entries, then rebuild/compact FAISS from remaining rows. If the store lacks a delete API, add one or document and test a full reindex recipe. Run purge **while AutoPilot is stopped**. Done in orchestrator `dd4c572d`; `StrategyStore.purge_strategy_campaign()` is covered by `test_purge_strategy_campaign_removes_retrieval_mirrors`.
 - [ ] Record the campaign tag `operator-handoff-distillation` in [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) so any future rewind purges it.
 
 ---
@@ -201,6 +201,17 @@ Read-only audit of this handoff and `~/.claude/plans/caveat-on-a-distributed-wil
 - Phase 1 is no-inference and safe for a mid-run write, but not guaranteed live-visible to the already-running AutoPilot process because `StrategyStore()` and its FAISS index are loaded once at startup.
 - `seed_campaign` is new purge metadata; existing operator-seeded rows prove `seeded_by="operator"` / `seeded_reason`, not campaign tagging.
 - Phase 2 should avoid a duplicate PromptForge enforcement layer, reuse existing strategy-store helpers where possible, and include planner prompt assembly if the goal is to keep dead flags/surfaces out of proposed actions before critic/dispatcher rejection.
+
+## Implementation note — 2026-06-28
+
+Orchestrator `dd4c572d` implemented the Phase 1 source/dry-run slice without applying rows to the live store:
+
+- `scripts/autopilot/operator_seed_strategies.yaml` contains `44` deterministic seed rows (`16` green hypotheses, `26` guardrails, `2` frozen constraints).
+- `scripts/autopilot/seed_operator_strategies.py --json` is dry-run by default and reported `before_count=1374`, `after_count=1374`, `would_insert_count=44`, `inserted_count=0`, `source_trial_id=1031`.
+- `StrategyStore.purge_strategy_campaign()` plus `rebuild_search_indexes()` provide the required rewind purge path, including FTS5 and FAISS mirror rebuild.
+- Validation: `uv run pytest tests/unit/test_strategy_store.py -q` -> `42 passed`; `uv run ruff check scripts/autopilot/seed_operator_strategies.py orchestration/repl_memory/strategy_store.py tests/unit/test_strategy_store.py` -> pass; `git diff --check` -> pass.
+
+No `--apply` was run. Remaining Phase 1 gates are exact identifier audit, operator review/approval, apply, and post-apply retrieval verification.
 
 ## Provenance
 Full design rationale + the verbatim two-phase plan: `~/.claude/plans/caveat-on-a-distributed-wilkinson.md` (this session, 2026-06-28). Survey + mechanism findings produced by read-only code/handoff analysis; no system state was modified.
