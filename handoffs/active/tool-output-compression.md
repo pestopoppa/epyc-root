@@ -1,8 +1,8 @@
 # Tool Token Optimization — Output Compression + Definition Reduction
 
-**Status**: Phase 2 implemented (output compression); Phase 2b monitoring wired (2026-04-11); Phase 3a-b done (definition audit + compression); A/B done (+4pp REPL, suite-dependent); Phase 4a-d MCP wrapper/telemetry/registration landed; P4e is awaiting real telemetry
+**Status**: Phase 2 implemented (output compression); Phase 2b monitoring wired (2026-04-11); Phase 3a-c done (definition audit, compression, AP-16 runtime measurement); A/B done (+4pp REPL, suite-dependent); Phase 4a-d MCP wrapper/telemetry/registration landed; P3d/P4e remain open
 **Created**: 2026-04-04 (via research intake deep dive)
-**Updated**: 2026-06-15
+**Updated**: 2026-06-28
 **Categories**: context_management, agent_architecture
 **Priority**: MEDIUM
 **Depends on**: None (independent workstream)
@@ -255,7 +255,7 @@ Apply SkillReducer's compression principles to orchestrator tool definitions. We
 
 - [x] P3a: Token audit of tool definitions across all prompt paths — ✅ 2026-04-09. `scripts/analysis/token_audit.py` + `docs/token_audit_report.md`. DEFAULT: 841 est. tokens (647 words), 41 entries, 4 duplicates. No usage freq data (seeding diagnostics unavailable). Instruction token ratio: 29.8%.
 - [x] P3b: Manual compression of `DEFAULT_ROOT_LM_TOOLS` — ✅ 2026-04-09. 55% reduction (647→290 words). Removed 4 duplicates, all "Do NOT" clauses, merged related tools, flattened sections. Old version preserved as `VERBOSE_ROOT_LM_TOOLS` for A/B. Instruction token ratio: 16.0%. 162 tests pass.
-- [ ] P3c: Measure `instruction_token_ratio` delta (AP-16) — ratio dropped 29.8% → 16.0% (static measure done; AP-16 runtime measurement pending inference)
+- [x] P3c: Measure `instruction_token_ratio` delta (AP-16) — ✅ 2026-06-28. Static audit now reports default tool definitions at 15.0% of tools+rules+roles, with a prompt-library proxy of 10,686 char-proxy tokens. Runtime AP-16 was repaired in `epyc-orchestrator` commit `bd627b3e`; patched v6-era trials `#1010/#1011` recorded 3,188/3,295 instruction tokens and 91.8%/92.1% instruction ratios, replacing the stale 10,748-token prompt-library charge. `docs/token_audit_report.md` now separates active PromptBuilder scaffold from full prompt-library size.
 - [ ] P3d: A/B test compressed vs original definitions on seeding harness
 
 ## Research Intake Update — 2026-04-17
