@@ -1,6 +1,6 @@
 # Batched Structured Editing + Parallel Apply Fan-out
 
-**Status**: implementation-scoped draft — audit-refined 2026-05-25; production multi-file remediation is now the separate default-off edit transaction. BEP-2/J8 remains useful only as a decision experiment for the legacy structured patchset path, not as the critical remediation gate. 2026-06-28 safety follow-up: the sandbox promotion primitive now refuses live-tree promotion unless verification explicitly passed, closing the unverified-promote gap while keeping sandbox-only deterministic apply usable for analysis/tests.
+**Status**: implementation-scoped draft — audit-refined 2026-05-25; production multi-file remediation is now the separate default-off edit transaction. BEP-2/J8 remains useful only as a decision experiment for the legacy structured patchset path, not as the critical remediation gate. 2026-06-28 safety follow-up: the sandbox promotion primitive now refuses live-tree promotion unless verification explicitly passed, closing the unverified-promote gap while keeping sandbox-only deterministic apply usable for analysis/tests. The BEP runner also now fail-closes under-evidenced DCP edits: if a patch touches a file listed in `omitted_context_paths`, preflight blocks the whole set before any sandbox mutation.
 **Created**: 2026-05-25 (via `/research-intake` deep dive of intake-605 Repo Prompt)
 **Categories**: agent_architecture, inference_serving, hardware_optimization, tool_implementation
 **Source**: intake-605 (Repo Prompt — think-then-act XML edits + parallel sandboxed apply)
