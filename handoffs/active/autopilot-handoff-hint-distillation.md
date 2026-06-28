@@ -313,8 +313,9 @@ changing live planner behaviour:
   `uv run ruff check orchestration/repl_memory/strategy_store.py
   tests/unit/test_strategy_store.py` -> pass.
 
-Phase 2b-2h remain open. No seed rows were applied and AutoPilot was not
-restarted.
+At this point in the chronology Phase 2b-2h remained open, no seed rows had
+been applied, and AutoPilot had not been restarted. Phase 2b-2g and Phase 1d/1e
+were later closed; the remaining current item is Phase 2h.
 
 ### Phase 2 sidecar audit — 2026-06-28
 
@@ -376,11 +377,10 @@ Validation:
   scripts/autopilot/autopilot.py` -> pass.
 - `git diff --check` -> pass.
 
-No seed rows were applied and AutoPilot was not restarted. Running AutoPilot
-remains on the old imported code. The next A10 items are Phase 1 operator
-review/`--apply`, Phase 2f planner-visible availability, Phase 2g W6
-non-interaction coverage, and Phase 2h coordinated restart after W4/W6 strict
-readiness.
+At this point in the chronology no seed rows had been applied and AutoPilot had
+not been restarted. Phase 2f and Phase 2g later closed, and Phase 1d/1e were
+later closed by the apply note above. The remaining current item is Phase 2h:
+coordinated restart after W6 strict readiness.
 
 ## Phase 2f implementation note — 2026-06-28
 
@@ -419,9 +419,10 @@ Validation:
   scripts/autopilot/controller_io.py` -> pass.
 - `git diff --check` -> pass.
 
-No seed rows were applied and AutoPilot was not restarted. Running AutoPilot
-remains on the old imported code. Remaining A10 items are Phase 1 operator
-review/`--apply` and Phase 2h coordinated restart after W4/W6 strict readiness.
+At this point in the chronology no seed rows had been applied and AutoPilot had
+not been restarted. Phase 1d/1e were later closed by the apply note above. The
+remaining current item is Phase 2h: coordinated restart after W6 strict
+readiness.
 
 ## Phase 2g implementation note — 2026-06-28
 
