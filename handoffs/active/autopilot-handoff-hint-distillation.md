@@ -1,6 +1,6 @@
 # AutoPilot Planner-Hint Distillation from Orchestrator Handoffs
 
-**Status**: PHASE 1 SOURCE + DRY-RUN READY; PHASE 2A-2G DEFAULT-OFF PLUMBING LANDED — no rows written, no restart. Orchestrator `dd4c572d` adds the curated seed file, dry-run/apply/purge CLI, and tested StrategyStore purge/rebuild support. Orchestrator `412392c3` completes the pre-apply identifier audit by requiring explicit `bind_status`/`bind_identifiers` for deterministic planner rows. Orchestrator `bac4db17` adds inert `StrategyStore.retrieve_conventions(...)` support for planner-usable convention rows. Orchestrator `aa84abe0` adds startup-gated Seeder hint retrieval behind `AUTOPILOT_PLANNER_HINTS`. Orchestrator `a4129025` adds startup-gated execution guards for StructuralLab flag denylists and NumericSwarm surface suppression from live audited convention bindings. Orchestrator `18958ab4` surfaces those same bindings in planner-visible feature-flag/action availability text and the controller numeric-surface validation mirror. Orchestrator `15bccee8` adds W6 audit non-interaction coverage. Phase 1 `--apply` still needs operator review; Phase 2h remains restart-gated.
+**Status**: PHASE 1 SOURCE + DRY-RUN READY; PHASE 2A-2G DEFAULT-OFF PLUMBING LANDED; HANDOFF-CLOSURE REPORT READ-ONLY — no rows written, no restart. Orchestrator `dd4c572d` adds the curated seed file, dry-run/apply/purge CLI, and tested StrategyStore purge/rebuild support. Orchestrator `412392c3` completes the pre-apply identifier audit by requiring explicit `bind_status`/`bind_identifiers` for deterministic planner rows. Orchestrator `bac4db17` adds inert `StrategyStore.retrieve_conventions(...)` support for planner-usable convention rows. Orchestrator `aa84abe0` adds startup-gated Seeder hint retrieval behind `AUTOPILOT_PLANNER_HINTS`. Orchestrator `a4129025` adds startup-gated execution guards for StructuralLab flag denylists and NumericSwarm surface suppression from live audited convention bindings. Orchestrator `18958ab4` surfaces those same bindings in planner-visible feature-flag/action availability text and the controller numeric-surface validation mirror. Orchestrator `15bccee8` adds W6 audit non-interaction coverage. Orchestrator `6498e96c` adds a read-only handoff closure-candidate report. Phase 1 `--apply` still needs operator review; Phase 2h remains restart-gated.
 **Created**: 2026-06-28
 **Priority**: MEDIUM (cheap leverage on planner decision quality; prevents wasted trials)
 **Categories**: autopilot, routing/optimization, strategy-store
@@ -413,6 +413,37 @@ Governance boundary: AutoPilot can consume handoffs as hypotheses/guardrails and
 produce closure candidates with commits/tests/metrics, but handoff completion or
 archival remains a main-thread/wrap-up governance action until an explicit
 approval step exists for handoff file writes.
+
+## Handoff closure candidate report — 2026-06-28
+
+Orchestrator `6498e96c` adds
+`scripts/autopilot/handoff_closure_candidate_report.py`, a read-only report that
+answers the lifecycle question explicitly:
+
+- AutoPilot/StrategyStore rows may create review candidates for handoff
+  completion, but they do not complete, archive, or edit handoff files.
+- A row becomes a `candidate_review_required` only after the seed row is applied
+  and declares explicit evidence trial ids, and all declared evidence folds clean
+  through the journal read view.
+- Memory-only StrategyStore rows are reported as `memory_only_not_closure`;
+  the current report hard-codes `governance_mode=suggest_only` and
+  `handoff_writes_permitted=false`.
+
+Current read-only run:
+
+- `uv run python scripts/autopilot/handoff_closure_candidate_report.py --json`
+  -> `ok=true`, `row_count=44`, `pending_seed_count=44`, `applied_count=0`,
+  `memory_only_count=0`, `closure_candidate_count=0`.
+- Validation: `uv run pytest
+  tests/unit/test_handoff_closure_candidate_report.py -q` -> `4 passed`;
+  `uv run ruff check scripts/autopilot/handoff_closure_candidate_report.py
+  tests/unit/test_handoff_closure_candidate_report.py` -> pass;
+  `python3 -m py_compile
+  scripts/autopilot/handoff_closure_candidate_report.py` -> pass;
+  `git diff --check` -> pass.
+
+This keeps AutoPilot useful as a planner and evidence accumulator while leaving
+handoff lifecycle writes under the main-thread/wrap-up governance path.
 
 ## Provenance
 Full design rationale + the verbatim two-phase plan: `~/.claude/plans/caveat-on-a-distributed-wilkinson.md` (this session, 2026-06-28). Survey + mechanism findings produced by read-only code/handoff analysis; no system state was modified.
