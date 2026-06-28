@@ -75,6 +75,38 @@ class TestAntiThrashing:
         assert not result.changed
         assert result.compressed_chars == len(text)
 
+    def test_reconstructed_phase_2b_oscillation_transcript(self):
+        transcript = (
+            ("pytest tests/", PYTEST_ALL_PASS, "pytest"),
+            ("cat report.md", PYTEST_ALL_PASS, "passthrough_no_handler"),
+            ("pytest tests/", PYTEST_ALL_PASS, "pytest_anti_thrash_suppressed"),
+        )
+        content_hash = _content_hash(PYTEST_ALL_PASS)
+
+        first_command, first_text, first_strategy = transcript[0]
+        first = compress_tool_output_with_metadata(first_text, first_command)
+        assert first.strategy == first_strategy
+        assert first.changed
+        assert first.compressed_chars < first.original_chars
+
+        second_command, second_text, second_strategy = transcript[1]
+        second = compress_tool_output_with_metadata(second_text, second_command)
+        assert second.strategy == second_strategy
+        assert not second.changed
+        assert second.text == PYTEST_ALL_PASS
+
+        third_command, third_text, third_strategy = transcript[2]
+        third = compress_tool_output_with_metadata(third_text, third_command)
+        assert third.strategy == third_strategy
+        assert third.text == PYTEST_ALL_PASS
+        assert not third.changed
+        assert third.compressed_chars == len(PYTEST_ALL_PASS)
+        assert list(_anti_thrash_history)[-3:] == [
+            (content_hash, True),
+            (content_hash, False),
+            (content_hash, False),
+        ]
+
     def test_non_oscillating_history_still_compresses(self):
         text = PYTEST_ALL_PASS
         content_hash = _content_hash(text)
