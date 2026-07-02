@@ -399,7 +399,7 @@ def backfill_target_counts(rows: list[ResultRow]) -> dict[str, int]:
         elif status == "evidence-linked; needs protocol tag":
             target = "protocol tag"
         elif status == "protocol marker present; needs structured protocol backfill":
-            target = "structured protocol metadata"
+            target = "structured protocol backfill"
         elif status == "unverified historical row":
             target = "verification decision"
         else:

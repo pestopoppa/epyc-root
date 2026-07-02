@@ -243,6 +243,30 @@ def test_protocol_and_backfill_summaries_are_actionable():
     }
 
 
+def test_structured_protocol_markers_are_queued_for_backfill():
+    text = """# Results
+
+## Production
+
+| Model | Quant | t/s | Notes |
+|---|---|---|---|
+| Qwen-test | Q4_K_M | 42.0 | protocol-id pending |
+"""
+
+    rows = collect_rows(text)
+
+    assert len(rows) == 1
+    assert rows[0].protocol_status == "protocol marker present; needs structured protocol backfill"
+    assert rows[0].action == "hold_for_protocol_backfill"
+    assert backfill_target_counts(rows) == {"structured protocol backfill": 1}
+    assert review_queue_counts(rows) == {"structured-protocol-backfill": 1}
+
+    page = render_review_queue(rows, Path("RESULTS.md"))
+
+    assert "## structured-protocol-backfill" in page
+    assert "Normalize partial protocol metadata into MEASUREMENT.md claim grammar or keep on hold." in page
+
+
 def test_render_review_queue_groups_next_actions():
     rows = collect_rows("""# Results
 
