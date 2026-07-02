@@ -1,9 +1,9 @@
 #!/bin/bash
 # Re-index this repo via gitnexus, preserving project conventions.
 #
-# gitnexus 1.6.5 supports --skip-skills. Always pass it: this project keeps
-# GitNexus skills flat at .claude/skills/<name>/, and bare analyze otherwise
-# regenerates a nested .claude/skills/gitnexus/<name>/ tree.
+# gitnexus 1.6.5 supports --skip-skills. Pass it when available: this project
+# keeps GitNexus skills flat at .claude/skills/<name>/, and older bare analyze
+# versions either do not generate skills by default or expose only --skills.
 #
 # --skip-agents-md: do NOT let analyze rewrite the gitnexus section of CLAUDE.md
 # / AGENTS.md at all. Protects the lean keep-markered block + avoids re-bloat
@@ -18,4 +18,8 @@
 set -euo pipefail
 HERE="$(dirname "$(readlink -f "$0")")"
 node "$HERE/gitnexus-patch.js" || true
-exec gitnexus analyze --skip-agents-md --skip-skills "$@"
+args=(--skip-agents-md)
+if gitnexus analyze --help 2>&1 | grep -q -- '--skip-skills'; then
+  args+=(--skip-skills)
+fi
+exec gitnexus analyze "${args[@]}" "$@"

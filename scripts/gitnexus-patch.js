@@ -113,6 +113,12 @@ function main() {
     process.stderr.write('gitnexus-patch: could not locate gitnexus dist/cli/analyze.js — skipping (analyze will run unpatched).\n');
     return 0;
   }
+  try {
+    fs.accessSync(path.dirname(target), fs.constants.W_OK);
+  } catch {
+    process.stderr.write(`gitnexus-patch: ${path.dirname(target)} is not writable — skipping (analyze will run unpatched).\n`);
+    return 0;
+  }
 
   let src = fs.readFileSync(target, 'utf8');
   if (src.includes(SENTINEL)) {
