@@ -30,6 +30,8 @@ User (Telegram/Discord/CLI/etc.)
 - Separation of concerns: agent UX (Hermes) vs. inference optimization (us)
 - OpenGauss proves this architecture works in production (170 stars, Lean 4 vertical)
 
+Client-specific UX belongs in the client layer, not the orchestrator. The shared contract here is the `/v1/chat/completions` + `x_*` override surface; Hermes slash commands, Claude Code flags, Codex CLI wiring, and IDE-specific affordances should translate into those overrides at the edge. That keeps the routing contract stable across client types and avoids turning orchestrator policy into a catch-all for UX concerns.
+
 ## Cons
 
 - Two-layer architecture adds latency and complexity
@@ -304,7 +306,7 @@ Hermes is one *client* of the orchestrator's `/v1/chat/completions` + `x_*` over
   - Pick one non-Hermes client from N (recommend bare-metal Python script first — fewest moving parts) and stand it up against `localhost:8000/v1/chat/completions`
   - Verify the same override semantics behave identically vs Hermes (force-model, escalation cap, REPL disable)
   - Document the wiring recipe in this handoff so other client types can follow the same pattern
-- [ ] **Q — Sufficiency call: do not absorb client-side concerns into the orchestrator** (~30 min, design discipline note)
+- [x] **Q — Sufficiency call: do not absorb client-side concerns into the orchestrator** (~30 min, design discipline note) — recorded in `## Pros` above as the client/orchestrator separation rule.
   - Decision rule to record explicitly: per-client UX (slash commands, prompts, conversation memory) lives in the **client**, not the orchestrator. The orchestrator exposes overrides; clients map their UX to override values. This is the same discipline as the Hermes slash-command → `x_*` mapping — generalized as a principle, not a one-off
   - Output: 1-paragraph statement appended to the handoff's `## Pros` section so future contributors see it during refactor decisions
 
