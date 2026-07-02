@@ -1236,6 +1236,18 @@ learned-routing reward signals from the failed NeuralTxt report alone.
   the script refuses to run while AutoPilot is active because even
   `seed_specialist_routing.py --dry-run` consumes live model slots.
 
+## Research Intake Update — 2026-07-02
+
+### Parked reference: tabular-FM candidate heads (TabPFN / TabFM / TabICL) for the routing head — evaluate only after the fable5 routing-freeze lifts
+
+Zero-shot / in-context tabular foundation models are a candidate backbone for this routing/difficulty head (a tabular classifier over engineered request features), directly targeting the cold-start-on-model-swap pain (P4.1 / P5 / DAR-4 / DAR-5). PARKED — Phases 1.5+ are FROZEN per fable5-findings-02; investigation-only, not a phase/task.
+
+- **[intake-744] TabICL** (arXiv 2502.05564, ICML 2025, credibility 5) — strongest candidate. First step is an **OFFLINE-ONLY bake-off** vs the numpy MLP on the existing routing dataset (batch accuracy / precision-at-coverage), explicitly NOT wired into the live per-request path. GPU-reliant; classification-only; feature-order sensitive.
+- **[intake-734/745] TabPFN** (arXiv 2207.01848, Nature 2025) + **[intake-743] TabPFN-3** (arXiv 2605.13986) — small-data in-context prediction; GPU-recommended (CPU only ≲1k rows); TabPFN-3 is non-commercial-licensed and its no-GPU path (tabpfn-client) is SaaS → exclude. Documented **weakest under concept/distribution shift = exactly the cold-start regime** → any spike must validate under shift + test feature-order sensitivity.
+- **[intake-735] Google TabFM** — the only **open-weight + CPU-runnable-in-principle** option (`google/tabfm-1.0.0-pytorch`); hard caps ≤10 classes / ≤500 features / ≤100k rows; the BigQuery `AI.PREDICT` path is SaaS → exclude. Open weights govern deploy; the API path does not.
+
+**Double-gate before any build**: (1) fable5 routing-freeze exit AND (2) MI210/ROCm viability (all are CUDA/PyTorch; our numpy MLP is µs-CPU, these are batch-oriented). Do **not** inherit the stale "174K" label figure (live `episodic.db` ≈ 8k rows; 275,960-row `training_data.npz`). Per this file's own directive, do **not** file this under `decision-aware-routing.md` / `retrain-routing-models.md` (both expansion-FROZEN).
+
 ---
 
 ## P4.5 Phase A Outcome — 2026-06-26

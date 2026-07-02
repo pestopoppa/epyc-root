@@ -37,6 +37,7 @@ Current state of upstream support (2026-05-28):
 | intake-506 | DeepSeek-V3.2 + DSA (arxiv:2512.02556) | high | already_integrated (DSA, not V4 — different arch) |
 | intake-508 | DeepSeek-TUI Rust client | medium | worth_investigating (targets V4 API) |
 | intake-600 | Engram Conditional Memory / CXL | low | confirmed V4 does NOT use Engram |
+| intake-739 | DeepSeek-V4-Pro-DSpark (1.6T total / 49B active MoE + DSpark) | low | do_not_port — 1.6T MoE (~5.6× V4-Flash) blows the CPU-RAM/raid0 gate + `deepseek4` arch unsupported; track FP4/FP8-mixed quant + on-policy-distillation only |
 
 ## Merge Gates (DEFINED BEFORE PHASE 1)
 
@@ -415,6 +416,7 @@ The original six-phase ik_llama integration plan below is retained as a scaffold
 - **Upstream watch**: ggml-org/llama.cpp#22319 + #22376
 - **antirez fork**: github.com/antirez/llama.cpp-deepseek-v4-flash
 - **ds4 reference engine**: github.com/antirez/ds4 (Metal/CUDA/ROCm; CPU = non-production reference)
+- **Sibling checkpoint — NOT a port target**: DeepSeek-V4-Pro-DSpark (intake-739) — a 1.6T-total / 49B-active MoE, ~5.6× this 284B V4-Flash; deploy-infeasible on our CPU-RAM/raid0 gate + `deepseek4` arch unsupported. Its DSpark module is a spec-dec drafter reference (see `gpu-drafter-mi200-investigation.md`); its FP4(experts)+FP8(rest) mixed-MoE quant + "on-policy distillation" consolidation are quant/distill references only (FP4/FP8-mixed degrades below Q4 for V4-class, per this file's throughput gate).
 
 ## Reporting Instructions
 

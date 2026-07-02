@@ -98,9 +98,11 @@ The promotion decision rests on "gemma-4-31B (31B dense) and gemma-4-26B-A4B (~3
 - **MTP requires `-np 1`** (ik_llama PR #1744 asserts on `-np>1`); does NOT break NUMA for single-stream roles (architect/worker-full are already `-np 1`), but trades off against the 4×-quarter concurrent-split for roles that use it. Confirm per role before deploy.
 - **NEVER touch production `/mnt/raid0/llm/llama.cpp`** — all port work in `llama.cpp-experimental` (verify_llama_cpp.sh enforces). Promotion to v5 is gated on a positive operator bench.
 - Quant parity: Qwen3.6 prod = Q8; MTP-GGUF = Q4 → compare C1(Q4+MTP) vs C0(Q4 no-MTP), not vs Q8 prod.
+- **Draft-head is a small BW slice** (corroborated by FR-Spec vocab-trim, intake-740): trimming the draft LM-head −85% in kernel time yields only +1-3% end-to-end on bandwidth-bound decode — reinforcing that expert-verification overhead, not draft quality, is the CPU wall.
 
 ## Watch-items (deferred)
-- **EAGLE-3** (mainline PR #18039) — deferred to the **MI210 GPU (~July 2026)** per operator; our fork's EAGLE3 is a stub.
+- **EAGLE-3** (mainline PR #18039) — deferred to the **MI210 GPU (~July 2026)** per operator; our fork's EAGLE3 is a stub. **Trigger now due (2026-07-02): the MI210 has landed** — and DeepSpec (intake-737) is an MIT EAGLE-3 training/eval framework, so this watch is actionable once GPU-side spec-dec work opens.
+- **DSpark semi-AR draft head** (intake-738) — candidate future MTP-drafter alternative; deferred like EAGLE-3. Needs DeepSpec-pipeline training (MI210) + a GGUF port, then **measure α vs our native MTP before any investment** (per `feedback_measure_alpha_before_specdec_investment`); note gemma4 native MTP is already ~76.9% saturated → low headroom.
 - **Qwen3-Next MTP** — re-measure trigger only if a *merged* `qwen3next` MTP path with a positive CPU speedup appears.
 
 ## Operator bench commands
@@ -116,6 +118,10 @@ See WS4 prep (this session). **Block A (gemma-4-31B dense) is runnable today** o
 | intake-723 | unsloth/Qwen3.5-9B-MTP-GGUF | worth_investigating |
 | intake-724 | google/gemma-4-31B-it-assistant | adopt_component (on disk) |
 | intake-725 | llama.cpp/ik_llama MTP+EAGLE3 support (PRs #22673/#22400/#23398/#18039, ik #1744) | adopt_patterns |
+| intake-737 | DeepSeek DeepSpec — MIT draft-model train/eval framework (DSpark/DFlash/EAGLE-3; Qwen3 + gemma-4-12B-it ckpts) | worth_investigating (checkpoints) / n/a (8-GPU framework, no CPU/GGUF path) |
+| intake-738 | DSpark semi-AR drafter (parallel backbone + 1-token correction head) | adopt_patterns — transferable draft head (needs training + GGUF port); scheduler CPU-inert (→ moe-spec); vendor-unreproduced |
+| intake-740 | FR-Spec draft-vocab trim for native MTP (llama.cpp #25187, `avifenesh@047bfa508`) | worth_investigating — lossless@temp0, −85% draft-head kernel → +1-3% e2e; impl → qwen-mtp-llamacpp-port.md P7 |
+| intake-742 | Graft — training-free prune-then-graft draft tree (arXiv 2605.20104) | adopt_patterns (catalog → moe-spec); EAGLE-3-based + GPU adjacency |
 
 ## Reporting instructions
 After any task: update the checkbox here + record measured numbers (with protocol-id per MEASUREMENT.md) in the owning artifact (registry entry `gemma4_31b_q4km_mtp` for T1; this handoff for T2 port status). Promotion to production-consolidated-v5 requires a positive operator bench + quality pass — never auto-promote.

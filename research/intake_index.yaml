@@ -36885,3 +36885,2742 @@
     synthesis path. Verdict engine is an anytime-valid e-process (sequential_verdict.py:75-148);
     resolution-aware 3/n gate in safety_gate.py:57-71. The two-sided-gate upgrade is a propose-only
     candidate pending operator approval — NOT actioned.
+
+- id: intake-732
+  arxiv_id: '2606.23595'
+  url: https://arxiv.org/abs/2606.23595
+  source_type: paper
+  title: 'SPIRAL: Learning to Search and Aggregate'
+  authors:
+  - Jubayer Ibn Hamid
+  - Ifdita Hasan Orney
+  - Michael Y. Li
+  - Omar Shaikh
+  - Yoonho Lee
+  - Dorsa Sadigh
+  - Chelsea Finn
+  - Noah Goodman
+  categories:
+  - reinforcement_learning
+  - training_distillation
+  - agent_architecture
+  - swarm_techniques
+  key_claims:
+  - Standard post-training optimizes a model only for sequential single-trace reasoning; SPIRAL (Sequential-Parallel-Aggregative
+    RL) instead trains one model to use all three test-time compute primitives jointly - sequential chain-of-thought
+    within a trace, independently sampled parallel traces, and an aggregation trace that fuses the set
+    - all optimized end-to-end against the reward of the final aggregated answer.
+  - 'Search traces are trained with ''set reinforcement learning'': every generation in a sampled set
+    is rewarded equally by the policy''s ability to aggregate that set into a correct final answer, so
+    the model learns to emit sets that are collectively useful (diverse and aggregable) rather than individually
+    correct.'
+  - Credit assignment uses a 'marginal set advantage' - each search trace's advantage is the average over
+    all sampled sets that contain it - while the aggregation trace gets a standard RL advantage computed
+    within its own set; a per-set baseline sharply lowers variance and stabilizes learning of the aggregator.
+  - 'The learned aggregator composes recursively at inference: recursive self-aggregation (population
+    8, set size 4) repeatedly re-aggregates, yielding continued gains over GRPO and the base model.'
+  - SPIRAL scales with inference compute far better than GRPO on math reasoning, and the gains grow as
+    all three compute primitives are scaled together.
+  techniques:
+  - Sequential-Parallel-Aggregative Reinforcement Learning (SPIRAL)
+  - Set reinforcement learning (reward all traces in a set by aggregability into a correct final answer)
+  - Marginal set advantage credit assignment (average advantage over all sampled sets containing a trace)
+  - Per-set baseline for variance reduction
+  - Learned aggregation trace conditioned on a set of parallel CoT traces
+  - Recursive self-aggregation at test time
+  - End-to-end joint optimization of the search-set generator and the aggregator
+  reported_results:
+  - Base model Qwen3-4b-Instruct-2507; trained on POLARIS-53k (filtered mathematical-reasoning subset)
+  - Up to 11x higher Pass@k scaling efficiency vs GRPO
+  - Up to 15% higher performance on test sets when scaling parallel and aggregative compute together
+  - Recursive self-aggregation up to 13.5% higher performance vs GRPO and base model
+  - 'Training config: set size n=4, population 8 parallel traces, sequential compute up to 32k tokens
+    (context limit), 256 problems/batch, 24 rollouts/problem, 2 epochs of RL'
+  referenced_arxiv_ids:
+  - '2509.25424'
+  - '2604.17654'
+  - '2503.04104'
+  - '2509.26626'
+  - '2407.21787'
+  - '2501.12948'
+  - '2412.16720'
+  - '2506.13131'
+  novelty: high
+  relevance: medium
+  credibility_score: 2
+  verdict: adopt_patterns
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-07-02'
+  contradicting_evidence:
+  - The headline 'up to 11x scaling efficiency' and 'up to 15% higher performance' are best-case ('up
+    to') figures rather than average improvements - confirmed against both the arXiv abstract and an independent
+    literature review (themoonlight.io) - so they overstate typical gains and cannot be treated as decision-grade
+    numbers.
+  - The paper is a 2026-06-22 arXiv preprint explicitly labeled 'ongoing work', with no peer review, no
+    independent replication, and (per the abstract and the independent review) no reported ablations,
+    error analysis, or statistical-significance testing, so credibility rests entirely on the authoring
+    lab.
+  - Evaluation is confined to a single base model (Qwen3-4b-Instruct-2507) and a single domain (math reasoning
+    on POLARIS-53k); there is no evidence of generalization to code, tool-use, or open-ended/non-verifiable
+    tasks, which is exactly the regime our mixed orchestration workloads occupy.
+  - SPIRAL's advantage is measured only against GRPO - a baseline NOT trained to use parallel traces or
+    aggregation at test time - so the comparison partly credits SPIRAL for spending more inference compute
+    on the very protocol it is evaluated on; neither the abstract nor the review shows a comparison against
+    the standard training-free baselines (majority voting / self-consistency), which is the relevant control
+    for justifying a trained aggregator.
+  - Independent test-time-scaling literature shows aggregation/majority-vote gains plateau (commonly around
+    ~128 samples) and can even degrade when parallel traces share correlated errors, so the reported 'population
+    8, set size 4' recursive-self-aggregation gains may reflect ordinary sample-count scaling rather than
+    a unique benefit of the set-RL objective, and would need a same-compute majority-vote control to isolate.
+  - Learned/verifier-based aggregation gains in the broader literature concentrate in objectively verifiable
+    domains (math, where a clean reward exists) and can reverse in subjective/non-verifiable ones (e.g.,
+    HLE subjective splits); SPIRAL's reliance on a verifiable math reward for its set-RL signal makes
+    transfer to our largely non-verifiable production traffic unproven.
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    - swarm-dataset-distillation.md
+    - tri-role-coordinator-architecture.md
+    experiments: []
+    intake_entries:
+    - intake-077
+    - intake-129
+    - intake-139
+    - intake-615
+    - intake-086
+  recommended_actions:
+  - 'OPERATOR-REVIEW: consider a cross-reference note under reasoning-compression.md linking SPIRAL (2606.23595)
+    as the TRAINED analogue of short-m@k (intake-129) - parallel-trace generation plus a learned/prompted
+    aggregation trace - and flag recursive self-aggregation (SPIRAL cites 2509.26626) as a training-free
+    variant testable on NUMA-concurrent multi-instance serving. If tested, include a same-inference-compute
+    majority-vote / self-consistency control so any gain is attributed to the aggregator rather than to
+    sampling more traces.'
+  - 'OPERATOR-REVIEW: consider linking SPIRAL under swarm-dataset-distillation.md as an alternative to
+    Bradley-Terry peer-ranking - a prompted aggregation trace could augment or replace BT consensus (intake-615)
+    for fusing parallel role outputs - noting the caveat that aggregation gains in the literature concentrate
+    in verifiable domains and may not transfer to non-verifiable production traffic.'
+  - 'OPERATOR-REVIEW: the task-supplied metadata for arXiv 2606.23595 is incorrect - the ID is SPIRAL,
+    not a ''Designing Local LLM Inference Systems'' guide. If that local-inference guide is still wanted,
+    re-locate its correct arXiv ID before ingesting.'
+  handoffs_updated:
+  - reasoning-compression.md
+  handoffs_created: []
+  novelty_justification: 'Grep of /workspace/research/intake_index.yaml for ''2606.23595'', ''SPIRAL'',
+    and ''Sequential-Parallel-Aggregative'' returned no matching entry (the sole ''spiral'' hit at line
+    33439 is the unrelated phrase ''debug spirals'' inside a Triton-kernel entry), so this is not a duplicate.
+    Related aggregation / test-time entries exist - intake-077 (multi-round routing+aggregation via RL,
+    2506.09033), intake-129 (short-m@k: k parallel generations + majority vote), intake-139 (random-perturbation
+    + majority-vote ensembling competitive with GRPO), intake-615 (Fortytwo swarm peer-ranked consensus)
+    - but none jointly train the search-set generator AND the aggregator end-to-end with a set-RL objective
+    and marginal-set-advantage credit assignment. That joint set-RL formulation is a genuinely new technique,
+    hence high. (Verifier note: no critique found that refutes the novelty of the joint set-RL formulation;
+    high retained.)'
+  relevance_justification: 'Deployment-vs-method split. The headline mechanism is GPU RL training (24
+    rollouts/problem, 2 epochs), which is not actionable on this stack: inference-only, CPU-first, no
+    training infrastructure, and the current active branch focus is spec-dec/MTP. But the INFERENCE-TIME
+    pattern - sample N parallel CoT traces then run an aggregation trace, plus recursive self-aggregation
+    - maps directly onto existing EPYC infra: reasoning-compression.md already tracks short-m@k (k parallel
+    + majority vote, intake-129) and swarm-dataset-distillation.md uses Bradley-Terry peer-ranked consensus
+    (intake-615) over parallel samples, while NUMA-concurrent multi-instance serving supplies the parallel-trace
+    fan-out cheaply. Method relevance medium, deploy relevance low, so overall medium.'
+  verdict_justification: 'adopt_patterns: cannot deploy as-is (the core value is a TRAINED aggregator
+    requiring RL training we do not have), but the training-free aggregation pattern - parallel traces
+    + a prompted aggregation trace / recursive self-aggregation - is minable as an orchestration technique
+    layered on our concurrent multi-instance serving, complementing short-m@k (intake-129) and swarm consensus
+    (intake-615). Verdict sanity-checked and RETAINED: novelty high but relevance only medium and deploy-blocked
+    (GPU RL training), so it fails the new_opportunity bar (novel + high-relevance + actually adoptable)
+    and correctly downgrades to adopt_patterns. ID-MISMATCH FLAG (validated by verifier): the task described
+    2606.23595 as a ''Designing Local LLM Inference Systems'' hardware/memory-math/engine guide, but the
+    ID actually resolves to ''SPIRAL: Learning to Search and Aggregate'' (Stanford; Hamid, Sadigh, Finn,
+    Goodman et al.; cs.AI; submitted 2026-06-22; marked ''ongoing work''). Independently confirmed via
+    arxiv.org/abs/2606.23595 AND WebSearch (arxiv.org/html/2606.23595v1, alphaXiv, ResearchGate, themoonlight.io
+    all agree). The actual paper was ingested. Per CLAUDE.md I do not mark it not_applicable - the aggregation
+    pattern warrants mining.'
+  notes: 'PROVENANCE / ID MISMATCH: ar5iv.org and ar5iv.labs.arxiv.org had no HTML render and 301/307-redirected
+    to arxiv.org/abs (paper likely too new / math-heavy for ar5iv). Content extracted from arxiv.org/abs/2606.23595
+    and arxiv.org/html/2606.23595v1, corroborated by WebSearch. The ID does NOT resolve to the ''Designing
+    Local LLM Inference Systems: Hardware Strategy, Memory Math, Bandwidth, and Inference Engines'' guide
+    named in the task - it resolves to ''SPIRAL: Learning to Search and Aggregate'' (cs.AI, Stanford,
+    2026-06-22, ''ongoing work''). Ingested the ACTUAL paper. referenced_arxiv_ids lists the clearly ML-methodology
+    citations (Polychromic 2509.25424, Poly-epo 2604.17654, LLM aggregation 2503.04104, recursive self-aggregation
+    2509.26626, Large Language Monkeys 2407.21787, DeepSeek-R1 2501.12948, o1 system card 2412.16720,
+    AlphaEvolve 2506.13131); several apparent math-proof reference IDs (2602.05192, 2606.18119, 2605.20695)
+    are eval-domain and low-confidence, omitted from the list. Paper reports no AIME/MATH/GPQA-named numbers
+    - metrics are Pass@k scaling efficiency and self-aggregation accuracy on the POLARIS math subset with
+    Qwen3-4b. --- ADVERSARIAL-VERIFY (2026-07-02, verifier): Independently confirmed the paper identity
+    via arxiv.org/abs/2606.23595 + WebSearch (alphaXiv, ResearchGate, themoonlight.io) - the ingest agent''s
+    ID-mismatch flag is VALIDATED. Confirmed the 11x/15% figures are ''up to'' best-case numbers (abstract
+    + independent review), not averages. credibility_score=2 (Med) re-checked against the rubric and RETAINED:
+    arXiv preprint ''ongoing work'' = no peer-review venue (+0), <12 months old (+1), Stanford major-lab
+    / known contributors Finn/Goodman/Sadigh (+1), no self-promo bias (0), no independent replication
+    - news/re-post mirrors are not corroboration (+0) = 2. verdict=adopt_patterns re-checked and RETAINED
+    (novel but medium-relevance and deploy-blocked; fails new_opportunity adoptability bar). Added six
+    contradicting-evidence items: best-case framing, no peer review/ablations/significance testing, single-model
+    + math-only evaluation, GRPO-only baseline with no majority-vote/self-consistency control, aggregation
+    diminishing-returns and correlated-error caveats, and the verifiable-vs-non-verifiable transfer risk.
+    No other fields changed. (Tier-2b note: found no failed-replication or direct critique of SPIRAL itself
+    - too new - so the contradicting evidence is methodology/caveat-based drawn from the surrounding test-time-aggregation
+    literature.)'
+- id: intake-733
+  arxiv_id: null
+  url: https://huggingface.co/nationaldesignstudio/rampart
+  source_type: repo
+  title: Rampart — client-side PII redaction token-classifier (18.5M MiniLM, 4-bit ONNX)
+  authors:
+  - National Design Studio
+  categories:
+  - safety
+  - tool_implementation
+  - document_processing
+  key_claims:
+  - Rampart is an ~18.5M-parameter fine-tune of nreimers/MiniLM-L6-H384-uncased with a 35-label BIO head
+    (17 PII entity types) for client-side PII detection, shipped as a 14.7 MB 4-bit-MatMul + INT8-embedding
+    ONNX artifact (onnx/model_q4.onnx) runnable in-browser (ONNX Runtime Web, WASM/WebGPU) and in Node
+    via transformers.js (npm @nationaldesignstudio/rampart).
+  - On a 30,000-row OpenPII Latin test set it reports 98.42% private-term recall [95% CI 98.35-98.49],
+    91.69% public-term retention, and 0.528 strict span F1; the full defense-in-depth system leaks 2,082
+    of 131,707 private terms.
+  - 'Uses a two-layer defense-in-depth design: the neural model detects names / phones / addresses / government
+    IDs, while a separate deterministic recognizer layer handles checksum-verifiable structured identifiers
+    (EMAIL, URL, SSN, CREDIT_CARD, IP_ADDRESS); CITY/STATE/ZIP are kept by default.'
+  - Trained on a three-source mix — ~250k in-house synthetic conversations + an OCR'd span-tagged document
+    corpus + ~1.4M rows of the public ai4privacy/pii-masking-openpii-1.5m dataset — for 3 epochs (batch
+    32, lr 5e-5, AdamW, weight decay 0.01), ~3.5 h wall time on Apple M-series MPS, with lowercase + NFKD
+    + combining-mark-stripping normalization and a trimmed 19,730-piece WordPiece vocabulary.
+  - 'Explicitly positioned as harm reduction, NOT a security boundary: recall collapses on non-Latin scripts
+    (~14% aggregate; Japanese 45.6%, Korean 15.2%, Han Chinese 8.8%, Hindi 5.6%, Arabic 4.8%, Russian
+    2.4%; Vietnamese 99.2%), catches only ~67.6% of checksum-free government identifiers, and fails on
+    zero-width-character-obfuscated SSNs and prompt-injection text placed inside a PII span.'
+  techniques:
+  - token classification with BIO tagging
+  - MiniLM (L6-H384) fine-tuning
+  - WordPiece vocabulary trimming (30,522 -> 19,730)
+  - 4-bit MatMul + INT8 embedding ONNX quantization
+  - transformers.js / ONNX Runtime Web (WASM + WebGPU) inference
+  - 'defense-in-depth: neural NER layer + deterministic checksum recognizer layer'
+  - NFKD normalization + combining-mark (accent) stripping
+  - sentinel-masking of structured identifiers during training
+  reported_results:
+  - Private-term recall 98.42% [95% CI 98.35-98.49] across 7 Latin-script languages
+  - Public-term retention 91.69%; strict span F1 0.528
+  - System-level (neural + deterministic) leaks 2,082 of 131,707 private terms on the 30k-row OpenPII
+    Latin test
+  - 'Per-language recall: English 98.85% (11,569 rows), Spanish 98.84% (3,234 rows), Dutch 97.21% (1,526
+    rows, lowest)'
+  - Government-style identifiers (no checksum) caught ~67.6% by the model
+  - 'Latency p50: 6.6 ms Node.js ONNX CPU; 3.9 ms WebGPU (Apple Metal, p95 9.3 ms); 12.6 ms WASM (p95
+    35.5 ms)'
+  - 'Model: ~18.5M params, 14.7 MB shipped artifact, 512-token max sequence, 19,730-piece vocabulary'
+  - 'Non-Latin fairness suite: Vietnamese 99.2%, Japanese 45.6%, Korean 15.2%, Han Chinese 8.8%, Hindi
+    5.6%, Arabic 4.8%, Russian 2.4%'
+  novelty: medium
+  relevance: low
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-07-02'
+  contradicting_evidence:
+  - 'The headline metrics (98.42% private-term recall, 0.528 strict span F1) are measured on a held-out
+    slice of the same OpenPII/ai4privacy distribution the model was trained on, so they likely overstate
+    real-world performance: independent cross-domain benchmarking (PIIBench, Albert Sikkema''s open-source
+    PII survey) reports that Piiranha — a DeBERTa PII model also trained only on ai4privacy — ''does not
+    generalize'' and collapses out of distribution (PIIBench strict F1 ~0.046), showing in-distribution
+    recall is not a safe predictor of deployment recall.'
+  - The dominant training source (ai4privacy/openpii-1.5m) is largely synthetic and carries documented
+    labeling errors — coarse types such as country, time, and titles are frequently mis-labeled (e.g.
+    'Switzerland' and 'Dr.' missed) — so a model trained predominantly on it inherits both an artificial
+    register that differs from messy real user text and these annotation gaps, per the ai4privacy dataset
+    card and independent reviews.
+  - Independent PII-benchmark work reports sharp cross-domain degradation for even strong filters (OpenAI's
+    Privacy Filter cited at ~0.96 F1 on PII-Masking-300k but 'much lower cross-domain', and clinical/healthcare
+    text causes significant accuracy drops for all systems), so Rampart's seven-language Latin recall
+    says little about performance on domain-shifted, clinical, or specialized text.
+  - 'The cited accuracy may not reflect the shipped 4-bit-MatMul / INT8-embedding artifact: general 4-bit
+    quantization degrades accuracy (task-dependent, commonly 1-4% and up to ~8-11% on some tasks), and
+    the model card does not clearly separate any fp32-eval metrics from quantized-artifact metrics, so
+    real in-browser recall could be below the reported 98.42%.'
+  - Provenance is a self-published government/White-House-office release amplified by heavy promotional
+    social-media coverage ('historic', 'first US-gov AI model') and a self-hosted whitepaper (inference.ndstudio.gov/rampart/whitepaper.pdf)
+    with no peer review or independent replication, so every number is vendor-reported and uncorroborated.
+  - Beyond the card's own admissions (non-Latin collapse, ~67.6% on checksum-free gov IDs, zero-width-obfuscation
+    and in-span prompt-injection failures), independent security analysis notes client-side redaction
+    is structurally not a security boundary — redacted-in-UI PII can still leak via cached HTML, network
+    logs, and browser extensions, and a motivated user can trivially bypass a local redactor — so it only
+    defends against accidental leakage, reinforcing the card's 'harm reduction, not a boundary' framing.
+  cross_references:
+    chapters: []
+    handoffs:
+    - privacy-hygiene-precommit-hooks.md
+    - security-review-skill.md
+    - opendataloader-pipeline-integration.md
+    experiments: []
+    intake_entries:
+    - intake-449
+    - intake-452
+  recommended_actions:
+  - 'OPERATOR-REVIEW: decide whether a tiny CPU-fast PII NER (rampart, or the larger intake-449 OpenAI
+    Privacy Filter) should be reconsidered for the KB-ingestion or conversation-log hygiene surface, given
+    privacy-hygiene-precommit-hooks.md already concluded regex-only scanning was sufficient — re-open
+    only on a concrete PII-in-logs incident.'
+  - 'OPERATOR-REVIEW: if pursued, scope it to redacting user-supplied text before it enters the internal
+    KB / user_modeling store, NOT the ''redact before sending to external provider'' use case, which does
+    not apply to our self-hosted stack; note its stated non-Latin-script and adversarial-injection failure
+    modes, and that its 98.42% recall is in-distribution (OpenPII/ai4privacy) and likely drops on domain-shifted
+    real text, before trusting it as a boundary.'
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'The PII token-classification task is already well-represented in our index —
+    grep of intake_index.yaml surfaced intake-449 (OpenAI Privacy Filter, a 1.5B-MoE/50M-active PII token-classifier
+    with BIOES taxonomy) and intake-452 (OpenAI Privacy Parser). Rampart is not a novel method, so not
+    ''high''. But it is not covered in any chapter (grep of docs/chapters/*.md for pii|redact|guardrail|NER|token-classif
+    returned nothing) and it adds a distinct, concrete new data point vs those entries: an ~80x-smaller
+    (18.5M vs 1.5B) MiniLM model, browser-first 4-bit ONNX deployment, an explicit neural+deterministic
+    defense-in-depth split, and unusually detailed multilingual fairness/adversarial failure numbers.
+    That is a new perspective on existing related work -> medium.'
+  relevance_justification: 'Rampart is a PII-redaction guardrail, orthogonal to the current active spec-dec
+    / MTP / CPU-inference-optimization focus (branch spec-dec-mtp-refresh-2026-06-22). Its headline use
+    case — redact user text ''before it leaves the device'' to a server/model provider — maps poorly to
+    our self-hosted architecture where we ARE the provider (open-source/self-hosted-only constraint),
+    and the completed privacy-hygiene-precommit-hooks.md handoff already evaluated ML PII scanners and
+    concluded regex-only was sufficient (''no pre-push or hybrid scanner justified''). That pushes toward
+    low. It is not ''none'' because there is a real adjacent surface: it is trivially self-hostable on
+    EPYC (18.5M params, 14.7 MB, 6.6 ms p50 on Node CPU) and could redact user-supplied text before it
+    enters the internal KB / user_modeling store, and security-review-skill.md explicitly notes PII/secret-scanning
+    overlap. Method-relevant, deploy-questionable -> low.'
+  verdict_justification: worth_investigating on the strength of medium novelty plus a concrete, self-hostable
+    guardrail component that intersects two real handoff surfaces (privacy-hygiene-precommit-hooks.md,
+    security-review-skill.md). It is open (CC BY 4.0), CPU-fast, and self-hostable, so the standard downgrade
+    for closed/GPU-only/frontier-API sources does NOT apply and worth_investigating is correct rather
+    than adopt_patterns. Not 'adopt_component' because our self-hosted architecture removes its primary
+    threat model, privacy-hygiene already concluded regex-only suffices, and adversarial search shows
+    its in-distribution metrics likely overstate cross-domain performance — so it is not deploy-ready.
+    Not 'not_applicable' — per the CLAUDE.md rule against dismissing a source without operator input,
+    and because a CPU-fast open PII NER is a plausible KB-ingestion / logging-hygiene component. The applicability
+    question is worth a closer look but is not currently justified for adoption.
+  notes: 'Full model-card fetch succeeded (two WebFetch passes) — provenance is good, no degradation.
+    Repository type is a token-classification MODEL (the weights behind npm package @nationaldesignstudio/rampart),
+    license CC BY 4.0, base nreimers/MiniLM-L6-H384-uncased. The card cites no arXiv papers and references
+    a ''project whitepaper'' that is not linked; the only external reference is the training dataset ai4privacy/pii-masking-openpii-1.5m
+    (not an arXiv ID). credibility_score set null per rubric (repo/model card, no peer-review venue).
+    Directly analogous to indexed intake-449 (OpenAI Privacy Filter, 1.5B MoE) and intake-452 (OpenAI
+    Privacy Parser) but ~80x smaller and browser/ONNX-first. Deployment-vs-method distinction: method
+    (tiny CPU-fast BIO PII NER + deterministic checksum layer) is portable; deployment is questionable
+    on a self-hosted, provider-is-us stack. cross_references.handoffs basenames confirmed by grep; no
+    chapter or experiment matched the PII/NER/guardrail terms. VERIFIER ADDITIONS (2026-07-02): Ran Tier-2b
+    adversarial search (4-bit ONNX/NER quantization degradation; ai4privacy dataset quality; independent
+    PII benchmarks/Presidio/spaCy/Piiranha cross-domain; Rampart external coverage; client-side-redaction
+    bypass). Added 6 contradicting_evidence items — the dominant one being that Rampart''s headline recall/F1
+    are in-distribution (OpenPII/ai4privacy) and a same-family DeBERTa model (Piiranha) trained only on
+    ai4privacy is reported to NOT generalize on PIIBench, so real-world recall is likely lower; plus synthetic-corpus
+    labeling errors, cross-domain degradation, possible fp32-vs-quantized metric conflation, vendor/self-promo
+    provenance (White House NDS release, no peer review), and the structural weakness of client-side redaction
+    as a boundary. Confirmed credibility_score=null (repo rubric) and verdict=worth_investigating (medium
+    novelty; open + CPU-fast + self-hostable, so no closed/GPU downgrade) are both correct — no change
+    to those fields; all other fields preserved intact.'
+- id: intake-734
+  arxiv_id: null
+  url: https://github.com/PriorLabs/tabpfn
+  source_type: repo
+  title: TabPFN — Prior-Fitted Transformer Foundation Model for Tabular Data (Prior Labs)
+  authors:
+  - Noah Hollmann
+  - Samuel Müller
+  - Lennart Purucker
+  - Arjun Krishnakumar
+  - Max Körfer
+  - Shi Bin Hoo
+  - Robin Tibor Schirrmeister
+  - Frank Hutter
+  categories:
+  - routing_intelligence
+  - cost_aware_routing
+  key_claims:
+  - TabPFN is a transformer pretrained purely on synthetic tabular datasets (a prior-fitted network) that
+    predicts on unseen real-world tables in a single forward pass via in-context learning, with no per-dataset
+    training and no hyperparameter tuning.
+  - It handles both classification and regression; TabPFN-3 accepts inputs up to 1,000,000×200, 100,000×2,000,
+    or 1,000×20,000 (rows × features), while the earlier TabPFN-2.6 supports up to 100,000 rows and 2,000
+    features.
+  - GPU is recommended (works on ~8GB VRAM cards, 16GB for some large datasets); CPU inference is stated
+    to be feasible only for small datasets (roughly ≲1,000 samples).
+  - The work was published in Nature (2025) as 'Accurate predictions on small data with a tabular foundation
+    model' (DOI 10.1038/s41586-024-08328-6); the Nature abstract claims it outperforms prior methods on
+    datasets up to ~10,000 samples by a wide margin using substantially less training time.
+  - 'Licensing is split: code and TabPFN-2 are under the Prior Labs License (Apache-2.0 plus an attribution
+    requirement) while TabPFN-3 is released under a non-commercial license; the Python package is installed
+    via `pip install tabpfn`.'
+  techniques:
+  - Prior-Fitted Networks (PFN)
+  - in-context learning over tabular data (support set + query in one forward pass)
+  - synthetic-prior pretraining (train on synthetic datasets, predict on real ones)
+  - approximate Bayesian posterior-predictive inference for tabular prediction
+  - single-forward-pass tabular classification and regression foundation model
+  reported_results:
+  - 'TabPFN-3 input envelope: up to 1,000,000×200, 100,000×2,000, or 1,000×20,000 (rows×features); TabPFN-2.6
+    up to 100,000 rows × 2,000 features.'
+  - 'Hardware guidance from README: GPU recommended, ~8GB VRAM sufficient (16GB for some large datasets);
+    CPU only practical for ≲1,000 samples.'
+  - 'Nature (2025) headline (via WebSearch, not the README): outperforms all previous methods on datasets
+    with up to ~10,000 samples by a wide margin, using substantially less training time.'
+  - README contains no explicit accuracy percentages or head-to-head speed numbers vs XGBoost/CatBoost/AutoML;
+    parameter count not stated in README.
+  referenced_arxiv_ids:
+  - '2207.01848'
+  - '2605.13986'
+  novelty: high
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-07-02'
+  contradicting_evidence:
+  - '''Realistic Evaluation of TabPFN v2 in Open Environments'' (arXiv:2505.16226) — the first comprehensive
+    open-environment study — finds TabPFN v2 has limited robustness under concept shift (changes in p(y|x))
+    and under feature decrements, performing acceptably only on small-scale, covariate-shifted, class-balanced
+    tasks; this directly undercuts the entry''s headline cold-start routing-head proposal, because onboarding
+    a newly-added model is precisely a concept/distribution-shift regime where TabPFN is documented to
+    be weakest.'
+  - Independent third-party benchmarking (HumbleBee AI on Kaggle datasets; TabArena leaderboard summaries)
+    confirms TabPFN's advantage is confined to ≤~10,000-row datasets — XGBoost/CatBoost remain more practical
+    and often better on larger data and on time-series forecasting — consistent with the broader literature
+    that tuned gradient-boosted trees still win most fair tabular benchmarks, so the 'outperforms all
+    previous methods by a wide margin' framing is scope-limited to small data.
+  - The ICLR-2024 blogpost 'What exactly has TabPFN learned to do?' and related community criticism argue
+    TabPFN's public-benchmark gains may partly reflect prior/benchmark alignment (e.g. the OpenML-CC18
+    suite had 18/30 datasets purely numerical with no missing values, matching the Bayesian prior TabPFN
+    was trained on), raising an overfitting-to-curated-benchmarks concern that weakens headline accuracy
+    claims for real-world heterogeneous data.
+  - Multiple works (arXiv:2502.17361 'A Closer Look at TabPFN v2', GOTabPFN arXiv:2606.05441, and the
+    causal-ordering study arXiv:2603.10254) document that vanilla TabPFN is sensitive to feature ordering
+    — predictions vary with the permutation of input columns and the sensitivity persists even at larger
+    training sizes — a stability liability for an engineered-feature routing head unless mitigated by
+    permutation/ensemble averaging, which multiplies the per-inference cost.
+  - Because TabPFN forces all support samples through the transformer context in one pass, it degrades
+    or hits memory limits above ~10K rows and ~1,000–2,000 features (feature spaces >~1,000 dims degrade
+    without preprocessing); this corroborates the entry's own flag that the production 275,960×1,031 routing
+    dataset exceeds every TabPFN-3 envelope and would require heavy downsampling / feature reduction to
+    be usable.
+  - The arxiv_id anchor (TabPFN v1, arXiv:2207.01848) is classification-only — regression and the large
+    input envelopes are only in the later Nature-2025 / TabPFN-2/3 line — and the uncertainty-quantification
+    and proper-scoring calibration of tabular foundation models is itself under active scrutiny (arXiv:2606.01427,
+    ScoringBench arXiv:2603.29928), so the 'both classification and regression' + well-calibrated framing
+    applies only to the newer, non-commercially-licensed variants, not the cited foundational id.
+  - Web search did not independently corroborate the README-extracted identifier 'arXiv:2605.13986' for
+    TabPFN-3; the authoritative reference for the v2 model is the Nature 2025 paper (DOI 10.1038/s41586-024-08328-6,
+    which has no arXiv id), so that referenced id should stay flagged as unverified pending confirmation.
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - learned-routing-controller.md
+    - decision-aware-routing.md
+    - retrain-routing-models.md
+    - routing-and-optimization-index.md
+    - outer-coordinator-learned-head.md
+    experiments: []
+    intake_entries:
+    - intake-496
+  recommended_actions:
+  - 'OPERATOR-REVIEW: consider a scoped spike — once the MI210 GPU is live (~July 2026) and if the fable5
+    routing freeze lifts — evaluating TabPFN as a zero-shot cold-start difficulty/routing head over a
+    SMALL engineered tabular feature set (prompt length, token count, code-presence, entity count, and
+    the DAR-4 model-spec features) rather than raw 1,031-dim BGE embeddings, since TabPFN''s sweet spot
+    is ≤10K samples / ≤200–2,000 features and its no-training in-context inference directly attacks the
+    cold-start problem in learned-routing-controller P4.1 and DAR-4/DAR-5. CAVEAT (verifier): budget an
+    ablation for feature-order sensitivity (permutation-averaging) and, critically, validate under distribution/concept
+    shift, since open-environment evaluation (arXiv:2505.16226) shows TabPFN degrades exactly in the new-model
+    cold-start regime this spike targets.'
+  - 'OPERATOR-REVIEW: the task asked to cross-link a ''Google TabFM'' entry, but no Google/DeepMind tabular-foundation-model
+    entry (TabFM/TabDPT/TabICL/Tabula-8B) exists in intake_index.yaml — if one is intended, ingest it
+    as a sibling so the two tabular-FM entries can be mutually cross-referenced.'
+  - 'OPERATOR-REVIEW: expansion candidates for later literature intake — TabPFN-2.5 analysis ''One Model
+    to Rule Them All?'' (arXiv:2505.20003), TabSTAR (arXiv:2505.18125), the ''Realistic Evaluation of
+    TabPFN v2 in Open Environments'' critique (arXiv:2505.16226), ''A Closer Look at TabPFN v2'' (arXiv:2502.17361),
+    and GOTabPFN feature-ordering work (arXiv:2606.05441); also verify the README-reported TabPFN-3 id
+    arXiv:2605.13986 before ingesting it (verifier could not corroborate it via web search).'
+  - 'Do NOT expand the production routing head on this basis: learned-routing-controller.md marks Phases
+    1.5+ FROZEN per fable5-findings-02 — treat this entry as investigation-only until those gates clear.'
+  handoffs_updated:
+  - learned-routing-controller.md
+  handoffs_created: []
+  novelty_justification: No chapter covers tabular ML or prior-fitted networks (chapters index is speculative
+    decoding / MoE / prompt-lookup / radix-attention / benchmarking / cost-aware-rewards / debugger).
+    Grep of the 728-entry intake_index.yaml for tabpfn/priorlabs/tabular/tabfm/tabdpt/tabicl/tabula-8b/'tabular
+    foundation' returned zero prior entries (only one unrelated 'tabular bandits' JAX hit). In-context
+    tabular learning via a synthetic-prior-fitted transformer is a distinct technique family entirely
+    absent from the compendium, so novelty is high.
+  relevance_justification: 'EPYC is actively building a learned routing head: learned-routing-controller.md
+    describes routing_classifier.py (an MLP, ~200K params, numpy-only, <1ms) and retrain-routing-models.md
+    records the current retrain at 275,960 samples × 1,031 BGE features → 81.0% val acc; decision-aware-routing.md
+    reports the difficulty signal has zero predictive spread (62.2/60.7/62.2% escalation across easy/medium/hard)
+    and DAR-4/DAR-5 explicitly need zero/cold-start prediction for newly onboarded models from spec features.
+    TabPFN''s small-data, zero-training, in-context tabular prediction is method-relevant to that difficulty/routing
+    head and targets the cold-start + data-scarcity problem (P4.1 notes actual on-disk labels are ~8K
+    not 174K). It is not high because (a) the active git branch is spec-dec/MTP, not routing; (b) TabPFN
+    is GPU-recommended and CPU-only for ≲1,000 samples, colliding with the CPU-first constraint (MI210
+    GPU only lands ~July 2026); (c) the current 275,960×1,031 dataset exceeds all three TabPFN-3 input
+    envelopes, so it would require a downsampled support set or feature reduction to ≤200 dims; and (d)
+    routing-head Phases 1.5+ are FROZEN per fable5-findings-02. ADVERSARIAL NOTE (verifier): the open-environment
+    evidence (arXiv:2505.16226) shows TabPFN is weakest exactly under concept/distribution shift, which
+    is the operating regime of the proposed cold-start-for-new-models use — this pushes relevance toward
+    the lower edge of medium, but method-relevance to the difficulty head keeps it at medium rather than
+    low.'
+  verdict_justification: 'Per CLAUDE.md (''never dismiss a source/technique as not_applicable without
+    asking'') and the feedback_dont_dismiss_creative_uses memory, I am not marking this not_applicable
+    despite the CPU/scale/license/freeze frictions. It has genuine adopt_component potential as a zero-shot
+    cold-start difficulty/routing head on a small engineered tabular feature set, but the CPU-first constraint,
+    the 275K×1031 scale mismatch, GPU-recommended inference, and the standing routing freeze mean it cannot
+    be pulled in as-is today. worth_investigating is the honest verdict: prototype-worthy (especially
+    once the MI210 lands) but not yet an adoptable component. Verifier concurs: relevance is medium and
+    the component is not deployable as-is, so worth_investigating (not new_opportunity, not adopt_component)
+    is rubric-correct; credibility_score stays null because source_type is repo.'
+  notes: 'README fetched from raw.githubusercontent.com/PriorLabs/tabpfn/main/README.md (tagline: ''TabPFN
+    trains on synthetic datasets and predicts on unseen real-world datasets in a single forward pass'').
+    arxiv_id set to 2207.01848, the canonical foundational TabPFN paper widely cited for this lineage;
+    the repo''s PRIMARY citation is the Nature 2025 paper (DOI 10.1038/s41586-024-08328-6), which uses
+    a DOI rather than an arXiv id. The README summarizer also reported a TabPFN-3 id ''arXiv:2605.13986''
+    — treat as UNVERIFIED (WebFetch small-model extraction) pending confirmation; verifier web search
+    likewise did not corroborate it. Dedup check: grep of intake_index.yaml (728 entries) for priorlabs/tabpfn/s41586-024-08328/tabular-foundation
+    found NO prior entry, and NO Google TabFM entry exists to cross-link (the requested cross-link target
+    is absent). Deployment tensions to flag: CPU-first vs GPU-recommended (CPU only for ≲1,000 samples);
+    current routing dataset 275,960×1,031 exceeds all three TabPFN-3 input envelopes; TabPFN-3 is non-commercial-licensed
+    (not a program blocker per feedback_license_not_a_blocker since this is non-commercial research).
+    intake-496 (LLM Bandit, arXiv:2502.02743, preference-conditioned dynamic routing / IRT difficulty)
+    is the closest existing routing-difficulty cousin in the index. --- ADVERSARIAL VERIFIER PASS (2026-07-02):
+    Ran Tier-2b contradicting-evidence search (5 WebSearches on limitations, XGBoost/CatBoost head-to-head,
+    Nature-paper methodology, open-environment/distribution-shift, feature-order/overfitting). Added 7
+    contradicting_evidence items. FIELDS UNCHANGED and confirmed correct: credibility_score stays null
+    (source_type=repo, per rubric); verdict stays worth_investigating (novelty=high + relevance=medium
+    + not adoptable-as-is; new_opportunity/adopt_component both fail the ''actually adoptable today''
+    test); novelty stays high (no contradicting dedup signal); relevance stays medium (method-relevant
+    but deploy-blocked). KEY VERIFIER CAVEAT: the strongest refutation is that TabPFN''s documented weakness
+    is under concept/distribution shift and feature decrements (arXiv:2505.16226), which is exactly the
+    cold-start-for-newly-onboarded-models regime the entry proposes — any future spike must validate under
+    shift and test feature-order sensitivity, and treat the small-data win as scope-limited to ≤10K rows
+    where GBDTs otherwise still lead on larger/time-series data. [dedup fix 2026-07-02: repo arxiv_id
+    nulled per schema (repos=null); the TabPFN paper 2207.01848 is indexed as the sibling expansion entry
+    to avoid an arxiv_id collision.]'
+- id: intake-735
+  arxiv_id: null
+  url: https://research.google/blog/introducing-tabfm-a-zero-shot-foundation-model-for-tabular-data/
+  source_type: blog
+  title: 'Introducing TabFM: A zero-shot foundation model for tabular data'
+  authors:
+  - Weihao Kong
+  - Abhimanyu Das
+  - Erez Louidor Ilan
+  - Taman Narayan
+  - Shuxin Nie
+  - Rajat Sen
+  - Yichen Zhou
+  - Joe Toth
+  - Deqing Fu
+  - Samet Oymak
+  categories:
+  - routing_intelligence
+  - cost_aware_routing
+  - training_distillation
+  - benchmark_methodology
+  key_claims:
+  - TabFM is a zero-shot foundation model for tabular classification and regression that produces predictions
+    in a single forward pass, taking the entire dataset (historical labeled training rows plus the target
+    test rows) as one unified prompt with no per-dataset tuning or cross-validation.
+  - 'The architecture combines three mechanisms: alternating row-and-column attention over the raw table
+    (so the model compares examples and features rather than reading a flattened string), row compression
+    of each row into a dense vector, and in-context learning via a transformer that attends over the compressed
+    row embeddings -- explicitly inspired by TabPFN and TabICL.'
+  - It is pretrained entirely on hundreds of millions of synthetic datasets generated from structural
+    causal models (SCMs) with a wide variety of random functions, giving it no access to proprietary real
+    tabular data yet generalizing zero-shot to unseen real tables.
+  - On the TabArena benchmark (ELO from head-to-head win rates across 38 classification + 13 regression
+    datasets, 700-150,000 samples each), the blog claims TabFM in zero-shot single-forward-pass mode consistently
+    outperforms heavily tuned industry-standard supervised baselines including gradient-boosted trees;
+    only a comparative ELO visualization is shown, with no in-text numeric scores.
+  - The model is released open-weight (google/tabfm-1.0.0-pytorch on Hugging Face plus GitHub code) in
+    two configurations -- a plain out-of-the-box version and a TabFM-Ensemble version (cross features,
+    SVD features, Platt scaling for classification) -- and is additionally being integrated into Google
+    BigQuery for SQL access via AI.PREDICT.
+  techniques:
+  - tabular foundation model
+  - alternating row/column (hybrid) attention
+  - row compression to dense embeddings
+  - in-context learning (ICL) over compressed rows
+  - single-forward-pass zero-shot inference (no fine-tuning / no cross-validation)
+  - synthetic pretraining via structural causal models (SCMs)
+  - TabFM-Ensemble (cross features + SVD features + Platt scaling)
+  reported_results:
+  - 'Evaluated on TabArena: ELO scores from head-to-head win rates over 38 classification + 13 regression
+    datasets, sample sizes 700-150,000 per dataset.'
+  - 'Claim (chart-only, no in-text numbers): in zero-shot single-forward-pass mode TabFM outperforms heavily-tuned
+    supervised baselines including gradient-boosted trees (XGBoost/LightGBM/CatBoost family) and prior
+    tabular ICL methods.'
+  - No explicit numeric ELO deltas vs TabPFN / TabPFN-2.5 or gradient boosting are given in the blog text
+    -- only a comparative ELO visualization that could not be parsed.
+  - 'Two shipped configs: plain (out-of-the-box) and TabFM-Ensemble (adds cross features, SVD features,
+    Platt scaling for classification).'
+  referenced_arxiv_ids:
+  - '2005.14165'
+  - '2502.05564'
+  novelty: high
+  relevance: medium
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-07-02'
+  contradicting_evidence:
+  - 'The headline ''outperforms heavily-tuned gradient-boosted trees'' is size-dependent, not universal:
+    independent TabArena/benchmark analyses (aimultiple, kumo.ai, TabPFN-2.5 paper 2511.08667) show XGBoost/CatBoost
+    still win on large numeric datasets and that tree models on sampled data can beat tabular foundation
+    models on billion-row workloads, so TabFM''s advantage is concentrated in the small/medium-data regime
+    where TabPFN-family models already dominated.'
+  - 'The blog''s evidence is chart-only and methodologically thin: MarkTechPost''s write-up notes the
+    evaluation lacks per-dataset head-to-head comparisons against XGBoost, CatBoost, or earlier tabular
+    foundation models, and does not test on messy enterprise tables, temporal drift, rare categorical
+    values, or data leakage -- the factors that determine whether tabular ML works in production.'
+  - 'Reported hard capacity limits undercut the CPU-routing use case: current TabFM supports no more than
+    10 classes for classification, is optimized for up to ~500 features (with degradation beyond), and
+    caps training rows at ~100,000 due to memory overhead; the full-dataset-as-context single forward
+    pass is memory-bound, which is exactly the constraint that must be validated before any CPU-only deployment.'
+  - 'Synthetic-SCM-only pretraining is a documented weakness under real-world distribution shift: TabPFN-family
+    research (Drift-Resilient TabPFN, arXiv 2411.10634) shows real domains that deviate from the SCM prior
+    (abrupt shifts, unmodeled confounders, periodic ground truth) do not benefit from the in-context prior
+    and may need fine-tuning or fallbacks, contradicting the blog''s ''generalizes zero-shot to unseen
+    real tables'' framing.'
+  - 'TabArena ELO rankings are protocol-sensitive: per TabArena analyses, post-hoc ensembling of hyperparameter
+    configurations reshuffles the order (without it, CatBoost beats the tuned neural nets that outrank
+    it with it), so a single comparative ELO chart is not a robust ''consistently outperforms'' ranking.'
+  - 'TabFM''s standing versus the current tabular-FM state of the art is unverified: the live TabArena
+    leaderboard''s top single models are TabPFN-3 / TabPFN-2.6 / RealTabPFN-2.5 / TabICLv2, and the blog
+    gives no numeric ELO delta versus TabPFN-2.5/3, so it is unclear whether TabFM beats the strongest
+    existing open-weight tabular FMs rather than only gradient boosting.'
+  - 'Vendor/self-promo bias: this is a first-party Google Research announcement bundled with a BigQuery
+    AI.PREDICT product push and an early-release (June 2026) codebase for which secondary coverage warns
+    of API churn and issue backlog, so all numbers are unaudited by third parties.'
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - learned-routing-controller.md
+    - routing-and-optimization-index.md
+    - retrain-routing-models.md
+    - decision-aware-routing.md
+    experiments: []
+    intake_entries:
+    - intake-496
+  recommended_actions:
+  - Fetch and confirm the Hugging Face model card google/tabfm-1.0.0-pytorch for license, parameter count,
+    CPU-inference feasibility/latency, and any max-rows / max-features limits before considering any evaluation
+    (blog gives no size or capacity limits; secondary sources cite ~<=10 classes, ~<=500 features, ~<=100k
+    rows -- verify against the card).
+  - 'OPERATOR-REVIEW: no TabPFN entry exists in intake_index.yaml (grep -c tabpfn = 0) despite this task
+    assuming one to cross-link; consider a companion intake pass on TabPFN / TabPFN-2.5 (arXiv 2511.08667)
+    so the tabular-foundation-model line has a baseline reference for the routing/difficulty-estimation
+    angle.'
+  - 'OPERATOR-REVIEW: consider a watch-item under routing-and-optimization-index.md / learned-routing-controller.md
+    tracking open-weight tabular foundation models (TabFM) as a zero-shot difficulty/factual-risk estimator
+    over engineered request features, to be compared against the current 92%-val-acc MLP once CPU-feasibility
+    and feature-schema fit are established, noting the ~100k-row / ~10-class / ~500-feature capacity ceiling
+    as an upfront gating constraint.'
+  handoffs_updated:
+  - learned-routing-controller.md
+  handoffs_created: []
+  novelty_justification: 'high: a tabular foundation model (alternating row/column attention + row compression
+    + ICL over compressed rows, trained on hundreds of millions of synthetic SCM-generated tables for
+    zero-shot single-pass prediction) is an entirely uncovered technique in our compendium. grep of /workspace/research/intake_index.yaml
+    returns 0 hits for ''tabpfn'' and no TabFM/TabICL/TabArena entry exists; grep of docs/chapters and
+    handoffs surfaces routing/difficulty-estimation material but nothing on tabular foundation models.
+    Not a duplicate URL/arxiv_id and not covered by any chapter.'
+  relevance_justification: 'medium: EPYC-domain and method-relevant to the active routing/difficulty-estimation
+    stack but not immediately actionable and not on the current top focus (spec-dec / MTP, per branch
+    spec-dec-mtp-refresh). The routing thread is real: learned-routing-controller.md and routing-and-optimization-index.md
+    describe an MLP routing classifier at 92% val acc over engineered request features, and the cold-start
+    / unseen-model generalization bottleneck (calibration cost on every model swap) noted in intake-496''s
+    neighbourhood is exactly what a zero-shot tabular classifier could target. TabFM could serve as a
+    zero-shot difficulty / factual-risk estimator over per-request tabular features. Not high because
+    it is not an LLM-inference/spec-dec technique, would require framing routing as tabular classification
+    over historical request->outcome rows plus feature engineering, its CPU-inference cost/limits are
+    unverified, and our MLP already performs well.'
+  verdict_justification: 'worth_investigating: high novelty but only medium relevance rules out new_opportunity
+    (which needs high relevance). It is genuinely open-weight (google/tabfm-1.0.0-pytorch on HF + GitHub,
+    PyTorch), so it satisfies the open-source/self-hosted hard constraint and is CPU-runnable in principle
+    -- more than adopt_patterns -- but it has not been validated to fit our routing feature schema or
+    CPU budget, so it is not yet adopt_component. Per the project rule against dismissing sources, it
+    is flagged for evaluation as a candidate routing/difficulty estimator rather than rejected.'
+  notes: 'Fetched the primary Google Research blog (WebFetch) and corroborated with a WebSearch surfacing
+    the HF model card, MarkTechPost (dated 2026-07-01), and secondary write-ups -- so the announcement
+    is within days of intake (2026-07-02). PROVENANCE CAVEAT: quantitative reporting is degraded -- the
+    blog presents TabArena results only as an ELO chart with no in-text numbers, so the ''outperforms
+    gradient-boosted trees'' claim is chart-only and there are no explicit head-to-head numbers vs TabPFN/TabPFN-2.5.
+    Availability: OPEN WEIGHTS (google/tabfm-1.0.0-pytorch on Hugging Face) + GitHub code, plus a closed
+    BigQuery AI.PREDICT integration; open weights govern deploy-feasibility (satisfies the open-source-only
+    constraint; the BigQuery path is the SaaS variant we would not use). No dedicated TabFM arXiv paper
+    was found; referenced_arxiv_ids: 2005.14165 (GPT-3/ICL, explicitly linked in blog) and 2502.05564
+    (TabICL, named architectural inspiration); TabPFN and TabPFN-2.5 (arXiv 2511.08667) are referenced
+    by name as related/competing work. Deployment-vs-method note: applying TabFM to routing means recasting
+    routing as tabular classification over historical request->outcome rows fed as the in-context prompt
+    -- a distinct paradigm from our per-request MLP, and its full-dataset-as-context forward pass has
+    unverified CPU cost. ADVERSARIAL-VERIFY (2026-07-02): ran Tier-2b contradicting-evidence search and
+    populated contradicting_evidence (was null) with 7 concrete caveats -- key ones being (a) GBDTs still
+    win at scale so the ''beats gradient boosting'' claim is small/medium-data-only, (b) documented hard
+    capacity limits ~<=10 classes / ~<=500 features / ~<=100k rows that directly gate the CPU-routing
+    angle, (c) synthetic-SCM-prior distribution-shift weakness, and (d) protocol-sensitive TabArena ELO
+    plus unverified standing vs TabPFN-3/2.6. Audited scoring against the rubric: credibility_score=2
+    confirmed correct (0 +1 recency +1 major-lab -1 self-promo/vendor bias +1 corroboration; corroboration
+    is churnalism re-reporting one release, so not +2); novelty=high, relevance=medium, verdict=worth_investigating
+    are internally consistent and well-justified -- left unchanged (no weakening of the entry).'
+- id: intake-736
+  arxiv_id: null
+  url: https://github.com/badlogic/pi-share-hf
+  source_type: repo
+  title: pi-share-hf — Collect, Redact, Review, and Upload pi Coding-Agent Session Traces to a Hugging
+    Face Dataset
+  authors:
+  - Mario Zechner (badlogic)
+  categories:
+  - training_distillation
+  - tool_implementation
+  key_claims:
+  - CLI utility (TypeScript/Node.js npm package) whose verbatim tagline is 'Collect, review, and upload
+    redacted pi session files to a Hugging Face dataset' — it publishes coding-agent session traces from
+    open-source projects to an HF dataset, uploading only sessions that pass all checks.
+  - 'Multi-stage publishability gate before any upload: secret redaction via deny-pattern matching, a
+    TruffleHog secret scan, and an LLM review that judges each session for publishability; sessions can
+    also be manually rejected.'
+  - Exports each approved session as redacted JSONL — a plain-text transcript of the redacted session
+    plus work metadata, preserving optional embedded images carried in the original trace.
+  - Seven-verb workflow — init (map a project workspace to an HF dataset repo), collect (gather + redact
+    + scan + LLM-review), review (rerun LLM eval), reject, list, grep (search uploadable sessions), upload
+    (incrementally push approved sessions to the remote dataset).
+  - Consumes the standardized 'pi' coding-agent session format (documented at pi-mono/packages/coding-agent/docs/session.md);
+    it is the publication/dataset-management layer of Mario Zechner's pi agent tooling ecosystem (sibling
+    to @mariozechner/pi-agent-core and @mariozechner/pi-coding-agent).
+  techniques:
+  - 'Multi-stage agent-trace hygiene pipeline: deny-pattern secret redaction -> TruffleHog secret scan
+    -> LLM publishability review, gating dataset admission'
+  - LLM-as-reviewer publishability gate applied per agent session
+  - JSONL transcript-plus-metadata export targeting Hugging Face datasets (with image passthrough)
+  - Per-project workspace mapping a session source to a dataset repo with incremental/idempotent upload
+    of approved sessions
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  verdict: adopt_patterns
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-07-02'
+  contradicting_evidence:
+  - 'The LLM-publishability review stage is an unreliable secret gate: LLM-based redaction/detection is
+    probabilistic and regresses under load and across domains, so it can silently miss a token, SSN, or
+    credential embedded in prose — practitioner guidance (Philterd, LangChain, PredictionGuard) is explicit
+    that pure-LLM redaction must be backstopped by deterministic recognizers, which pi-share-hf''s design
+    does not guarantee.'
+  - 'The TruffleHog scan stage has documented false-negative modes: it can match a secret with the WRONG
+    detector and thereby miss it (per the Omegapoint security write-up), its verification requires outbound
+    network access to third-party APIs (making a truly local/air-gapped internal run either impossible
+    or reduced to unverified matching), and it produces heavy false-positive triage load — so ''passed
+    the TruffleHog scan'' is not equivalent to ''contains no secrets''.'
+  - The deny-pattern/regex redaction stage only catches credentials with known prefixes/formats (sk-,
+    ghp_, AKIA, etc.) and walks past generic internally-generated secrets — hardcoded passwords, database
+    URLs, and custom tokens like 'Tr0ub4dor&3' — which is precisely the class most likely to appear in
+    our own internal operator traces (registry paths, tokens, hostnames); entropy/ML backstops that this
+    tool lacks are required to catch them.
+  - The gate operates on the exported transcript, but research shows secrets leak far more heavily through
+    agents' internal reasoning/thought traces (>60% leakage vs near-0% in user-facing output; AgentLeak
+    and related 2026 studies report 62–86% unfiltered forwarding of sensitive data) — so a transcript-plus-metadata
+    redaction pass can pass a session that still leaks secrets in reasoning spans preserved in the trace.
+  - 'Direct real-world corroboration inside our own ecosystem: the upstream Hermes agent (NousResearch/hermes-agent,
+    which is present in this environment) has open issues #20785 (''systemic failure to redact secrets
+    in chat and reasoning blocks'') and #363 (''File Tool Output Redaction Gap — secrets exposed via read_file
+    but masked via terminal''), demonstrating that this exact class of redact-then-review agent-trace
+    pipeline fails in production and that adopting pi-share-hf''s gate verbatim would not be sufficient
+    for our traces.'
+  - 'No measured redaction recall or independent validation exists: pi-share-hf is a single-author personal
+    utility (badlogic / Mario Zechner) with no benchmark, no published false-negative rate, and no peer
+    review, so its ''uploads only sessions that pass all checks'' claim carries no quantified zero-leakage
+    assurance — its safety is asserted, not evidenced.'
+  - 'Threat-model mismatch weakens the adopt-as-is case: the pipeline is tuned to redact PUBLIC open-source-project
+    sessions for public HF publishing, whereas our internal self-distillation corpus contains a different
+    sensitive-data profile (model-registry internals, absolute repo paths, infra hostnames, possible tokens);
+    detection configurations tuned for one vertical produce unacceptable false-negative rates in another,
+    so the gate would need re-tuning, not just re-pointing, before it could protect our data.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - unified-trace-memory-service.md
+    - frontier-f3-data-flywheel.md
+    - swarm-dataset-distillation.md
+    - halo-trace-loop-spike.md
+    - frontier-f1-real-task-corpus.md
+    experiments: []
+    intake_entries:
+    - intake-473
+    - intake-393
+    - intake-516
+    - intake-110
+  recommended_actions:
+  - 'OPERATOR-REVIEW: Consider proposing (under frontier-f3-data-flywheel.md and/or unified-trace-memory-service.md)
+    an internal trace->self-distillation corpus-builder that mines pi-share-hf''s redact -> secret-scan
+    -> LLM-publishability-gate -> JSONL pattern to turn captured agent_audit/autopilot/orchestrator traces
+    into a clean SFT corpus for the compressed CPU worker (gemma4-26B-A4B Q4_K_M). Proposal only — no
+    handoff edit without operator approval.'
+  - 'OPERATOR-REVIEW: Flag for review whether a redaction + secret-scan gate (deny-patterns + a TruffleHog-equivalent)
+    should be mandatory in front of ANY local trace corpus before it feeds self-distillation, since our
+    traces embed repo paths, model registry details, and possibly tokens. If adopted, the gate MUST add
+    entropy/ML backstops and MUST scan reasoning/thought spans (not only the final transcript), because
+    deny-patterns miss generic secrets and >60% of secret leakage occurs in reasoning traces — a naive
+    port of pi-share-hf''s transcript-only, known-prefix gate would under-redact our data. Proposal only.'
+  - 'OPERATOR-REVIEW: Consider whether swarm-dataset-distillation.md should reference pi-share-hf''s per-session
+    LLM-publishability scoring as prior art for a per-trace quality filter on SFT data — while noting
+    the caveat that an LLM-only publishability/redaction judge is probabilistic and cannot be relied on
+    as the sole secret gate. Proposal only.'
+  handoffs_updated:
+  - frontier-f3-data-flywheel.md
+  handoffs_created: []
+  novelty_justification: 'grep of /workspace/research/intake_index.yaml returns 0 hits for ''pi-share-hf'',
+    so this is a genuinely new entry. Same-author lineage already exists (intake-473 = @mariozechner/pi-agent-core,
+    the TS runtime; plus a pibot application entry), but this is a distinct artifact class: a trace-redaction/publish
+    pipeline, not a runtime or an application. The specific pipeline read from the README (deny-pattern
+    redaction -> TruffleHog secret scan -> LLM publishability review -> JSONL/HF upload) is not codified
+    anywhere in our infra — our active unified-trace-memory-service.md captures and queries traces (SQLite/FTS5,
+    agent_audit + autopilot parsers) but has no redaction or publishability gate. It is an engineering
+    ETL utility rather than a research technique, so medium, not high.'
+  relevance_justification: 'EPYC already emits large volumes of agent tool-call traces (agent_audit.log,
+    autopilot journals, orchestrator) that unified-trace-memory-service.md ingests, and two active handoffs
+    — frontier-f3-data-flywheel.md (''train on what the lab already generates'') and swarm-dataset-distillation.md
+    (''narrow-domain SFT distillation'') — explicitly want a clean corpus builder over exactly this data.
+    pi-share-hf''s redact -> scan -> LLM-review -> JSONL gate is a directly minable pattern for converting
+    our raw traces into a self-distillation corpus, which matches the operator-relayed background about
+    self-distilling a compressed model from 50GB of own agent-tool traces + GLM-5.2-loop traces + frontier
+    HF traces (background only, not an instruction). Not high because: it consumes pi''s own session schema
+    (not our agent_audit/orchestrator format), it is TS/npm, and its purpose is PUBLIC HF publishing of
+    open-source-project sessions rather than assembling an internal training corpus — so it is pattern-relevant
+    but deploy-blocked as-is. Method-relevant, secondary to the current MTP/spec-dec primary focus, hence
+    medium.'
+  verdict_justification: 'adopt_patterns. The tool cannot be deployed as-is: it is TypeScript, it parses
+    pi''s coding-agent session format rather than our agent_audit/autopilot/orchestrator trace schema,
+    and it is built to publish redacted open-source-project sessions to a PUBLIC HF dataset rather than
+    to assemble an internal self-distillation corpus. But its multi-stage trace-hygiene/publishability
+    gate (secret deny-patterns + TruffleHog scan + LLM-review) and its JSONL transcript+metadata dataset
+    format are concrete, portable patterns for an internal trace->self-distillation pipeline sitting on
+    top of unified-trace-memory-service. Not adopt_component (nothing consumes our schema and the publish
+    target is wrong) and not new_opportunity (relevance is medium, not high, and MTP/spec-dec is the current
+    primary focus). This mirrors the adopt_patterns verdict already recorded for the sibling package intake-473.
+    Verifier note: the adversarial pass reinforces adopt_patterns over adopt_component — every stage of
+    the gate has documented false-negative modes, so the pattern is worth mining but the implementation
+    must not be trusted wholesale.'
+  notes: 'Provenance is good, not degraded: WebFetch succeeded on both https://raw.githubusercontent.com/badlogic/pi-share-hf/main/README.md
+    and the repo page; verbatim repo tagline confirmed as ''Collect, review, and upload redacted pi session
+    files to a Hugging Face dataset''. Language TypeScript ~98%. Session format referenced from pi-mono
+    (packages/coding-agent/docs/session.md). credibility_score is null per rubric (repo, no measured claims);
+    reported_results empty (utility README, no benchmarks). Deployment-vs-method distinction applies:
+    the OSS/self-hosted constraint is satisfied (npm/pi-mono lineage is MIT, self-hostable) but the tool''s
+    design target is PUBLIC HF publishing of open-source sessions, so a fork/reimplementation over our
+    own trace schema and an internal (non-public) dataset would be required to serve self-distillation.
+    The operator-relayed social-media quote about self-distillation from agent traces was treated as untrusted
+    background context only and shaped the relevance angle, not any action. Sibling/ecosystem to intake-473
+    (pi-agent-core runtime) and the pibot application entry; distinct-artifact confirmed (not a duplicate).
+    Cross-referenced trace-dataset intakes: intake-393 (Hermes agent traces filtered) and intake-516 (HALO
+    Gemini AppWorld traces, training_distillation) are the closest existing agent-trace-corpus entries;
+    intake-110 (OPSDC) is the self-distillation method anchor such a corpus would feed. ADVERSARIAL-VERIFIER
+    PASS (2026-07-02): ran Tier-2b contradicting-evidence searches on the three gate techniques. No field
+    values were changed — credibility_score (null, repo), novelty (medium), relevance (medium), and verdict
+    (adopt_patterns) are all rubric-correct and were left intact; author authority confirmed (Mario Zechner
+    / badlogic, creator of libGDX and the pi-mono toolkit) but the artifact is a single-author unvalidated
+    utility with no benchmarked redaction recall. Added seven contradicting_evidence items: each of the
+    three gate stages (deny-pattern regex, TruffleHog, LLM review) has documented false-negative modes;
+    the transcript-only gate misses reasoning-span secret leakage (>60% in the literature); and — most
+    concretely — our own upstream Hermes agent has two open issues (#20785, #363) demonstrating this exact
+    redaction-pipeline class failing in production, which is why the verdict correctly stays adopt_patterns
+    (mine the pattern, do not trust the implementation) rather than adopt_component. Strengthened recommended
+    actions #2 and #3 with the entropy/ML-backstop and reasoning-span-scanning caveats so any future proposal
+    inherits the false-negative warning.'
+- id: intake-737
+  arxiv_id: null
+  url: https://github.com/deepseek-ai/DeepSpec
+  source_type: repo
+  title: DeepSpec — DeepSeek open-source draft-model training/eval framework for speculative decoding
+    (DSpark, DFlash, EAGLE-3)
+  authors:
+  - DeepSeek-AI
+  categories:
+  - speculative_decoding
+  - inference_serving
+  - training_distillation
+  key_claims:
+  - 'MIT-licensed full-stack codebase for training and evaluating draft models for speculative decoding,
+    shipping three algorithms: DSpark (primary), DFlash, and EAGLE-3, with a shared data-prep + training
+    + evaluation pipeline.'
+  - 'Released draft checkpoints target open models we actually run: Qwen3-4B/8B/14B and google/gemma-4-12B-it.'
+  - Evaluation suite spans GSM8K, MATH500, AIME25, HumanEval, MBPP, LiveCodeBench, MT-Bench, AlpacaEval,
+    and Arena-Hard-v2.
+  - Default configs and scripts assume a single node with 8 GPUs (CUDA_VISIBLE_DEVICES-configurable);
+    no CPU-only training/serving path is documented.
+  - Bundles DSpark (semi-autoregressive drafter) whose released numbers claim +26.7-30.9% acceptance length
+    over EAGLE-3 and +16.3-18.4% over DFlash on Qwen3 4B/8B/14B.
+  techniques:
+  - DSpark semi-autoregressive draft-head training
+  - DFlash block-diffusion drafting (see intake-158)
+  - EAGLE-3 draft-head (see intake-070)
+  - unified draft-model training + acceptance-length evaluation pipeline
+  reported_results:
+  - README itself reports no speedup numbers; the DSpark algorithm's headline is +26.7-30.9% acceptance
+    length over EAGLE-3 and +16.3-18.4% over DFlash on Qwen3 4B/8B/14B (from DeepSeek release + press).
+  - Sibling DFlash (bundled) is already indexed at 2.8x on Math500 / up to 6.1x over AR / 2.5x over EAGLE-3
+    (intake-158, GPU/B200).
+  referenced_arxiv_ids:
+  - '2602.06036'
+  - '2503.01840'
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  verdict: adopt_patterns
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-07-02'
+  contradicting_evidence:
+  - All headline DSpark advantages the repo's algorithm inherits (the +26.7-30.9% acceptance-length-over-EAGLE-3
+    and 57-85% production speedups) are vendor-measured on DeepSeek's own serving system with DeepSeek's
+    own checkpoints, and multiple writeups (MarkTechPost, VentureBeat, AcingAI) explicitly state no third
+    party has independently reproduced them yet, so the repo's value proposition rests on unverified self-reported
+    numbers.
+  - 'The ''ships three algorithms (DSpark/DFlash/EAGLE-3)'' framing overstates DeepSeek authorship: DFlash
+    is z-lab''s algorithm (already indexed as intake-158, arXiv 2602.06036) and EAGLE-3 is from separate
+    authors (intake-070) — DeepSpec merely re-implements them as training/eval baselines, so only DSpark
+    is DeepSeek-original.'
+  - The one genuinely independent benchmark located (a single-stream DGX Spark GB10 run reporting ~60
+    tok/s, ~1.5x over MTP-1) is GPU-based and lands at the LOW end of the vendor's 60-85% range, so even
+    the sole external data point undershoots the headline and says nothing about our bandwidth-bound CPU
+    decode.
+  - The framework is hard-wired to an 8-GPU CUDA node with no GGUF/llama.cpp/CPU serving path, and released
+    checkpoints cover only Qwen3-4B/8B/14B and gemma-4-12B-it (not our gemma4-26B-A4B worker), so 'targets
+    models we run' is aspirational — retraining on the incoming single MI210 (vs the assumed 8-GPU node)
+    is unproven.
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - speculative-decoding-mtp-refresh.md
+    - dflash-block-diffusion-speculation.md
+    - mtp-speculative-decoding.md
+    - qwen-mtp-llamacpp-port.md
+    - gemma4-mtp-drafter-evaluation.md
+    experiments:
+    - self-speculation-benchmark.md
+    - draft-vs-target-time-analysis.md
+    intake_entries:
+    - intake-158
+    - intake-296
+    - intake-297
+    - intake-070
+  recommended_actions:
+  - 'OPERATOR-REVIEW: consider using the MIT DeepSpec pipeline to train a DSpark/EAGLE-3 semi-autoregressive
+    draft head for gemma4-26B-A4B (or Qwen3) on the incoming MI210, then evaluate whether the parallel-backbone
+    + sequential-correction drafter is GGUF-portable into the v6 fork and how its projected alpha compares
+    to current native MTP/NEXTN.'
+  - 'OPERATOR-REVIEW: cross-link this DeepSpec entry to intake-158/296/297 (DFlash) and intake-070 (EAGLE-3)
+    since DeepSpec bundles all three under one MIT training harness.'
+  - 'OPERATOR-REVIEW: add a ''DeepSpec / DSpark'' row to the competitive-algorithm section of speculative-decoding-mtp-refresh.md
+    capturing the +26.7-30.9% acc-length-over-EAGLE-3 claim as an observation to reproduce (not a decision-gating
+    number).'
+  handoffs_updated:
+  - speculative-decoding-mtp-refresh.md
+  - moe-spec-cpu-spec-dec-integration.md
+  - qwen-mtp-llamacpp-port.md
+  - gpu-drafter-mi200-investigation.md
+  - inference-acceleration-index.md
+  handoffs_created: []
+  novelty_justification: The two bundled algorithms DFlash (intake-158/296/297) and EAGLE-3 (intake-070)
+    are already indexed, so the repo is not wholly new; but DeepSpec as a unified MIT training/eval harness
+    plus the third algorithm DSpark (not previously indexed; grep of intake_index.yaml for DSpark/DeepSpec
+    returned 0 hits) adds a genuinely new artifact and a reproducible pipeline targeting our exact model
+    families. Medium.
+  relevance_justification: Directly on the current active branch spec-dec-mtp-refresh-2026-06-22. The
+    pipeline trains draft heads for Qwen3 and gemma-4 (our production family is gemma4-26B-A4B MTP; see
+    mtp-speculative-decoding.md / speculative-decoding-mtp-refresh.md), is MIT-licensed (satisfies open-source-only
+    constraint), and directly informs the measure-alpha gating work. Method-relevance is high even though
+    the runtime is GPU-oriented.
+  verdict_justification: 'adopt_patterns rather than adopt_component: the training/eval recipe and the
+    DSpark drafter architecture are worth mining, but the framework cannot deploy as-is on our CPU stack
+    — it assumes 8 GPUs, has no GGUF/llama.cpp serving path, and the released checkpoints are for gemma-4-12B-it
+    (not our gemma4-26B-A4B worker) inside a GPU spec-dec runtime. The MI210 landing ~July 2026 could
+    host draft-head training, but 1x MI210 is far from the assumed 8-GPU node, so the value is the recipe,
+    not a drop-in component.'
+  notes: 'Fetched raw README (main) and the repo page — both agree: MIT, three algorithms (DSpark/DFlash/EAGLE-3),
+    8-GPU default, targets Qwen3 + gemma-4-12B-it. This is one of a tightly-coupled 3-URL cluster; siblings
+    ingested in the same batch are the DSpark paper (https://github.com/deepseek-ai/DeepSpec/blob/main/DSpark_paper.pdf)
+    and the model https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro-DSpark (sibling intake ids unknown
+    at write time). credibility_score=null per rubric (repo). CPU-viability caveat: the drafting is GPU-batching-oriented;
+    benefit on our concurrency-1 bandwidth-bound CPU decode is unproven and must be measured. ADVERSARIAL
+    ADDENDUM (verifier): Tier-2b search confirmed DeepSpec/DSpark is real (released 2026-06-27) and that
+    the +26.7-30.9%-over-EAGLE-3 acceptance-length numbers reproduce across press, but ALL numbers trace
+    to DeepSeek''s own measurement with no independent reproduction (added to contradicting_evidence).
+    Flagged an authorship-framing caveat: DFlash (z-lab, intake-158) and EAGLE-3 (intake-070) are third-party
+    algorithms re-implemented as baselines, not DeepSeek-original. credibility_score (null, repo) and
+    verdict (adopt_patterns) UNCHANGED and correct; novelty medium / relevance high preserved (both defensible).'
+- id: intake-738
+  arxiv_id: null
+  url: https://github.com/deepseek-ai/DeepSpec/blob/main/DSpark_paper.pdf
+  source_type: paper
+  title: 'DSpark: Semi-Autoregressive Speculative Decoding with Adaptive Verification Depth (DeepSpec)'
+  authors:
+  - DeepSeek-AI
+  categories:
+  - speculative_decoding
+  - inference_serving
+  - hardware_optimization
+  key_claims:
+  - 'DSpark is a semi-autoregressive drafter: a parallel backbone proposes all draft positions in one
+    pass, then a cheap sequential head conditioned only on the previous token applies a correction — positioned
+    between EAGLE-3 (accurate but serial) and fully-parallel drafting (fast but quality-decaying).'
+  - A confidence head plus a hardware-aware scheduler set per-request verification depth from live GPU
+    utilization, explicitly targeting the batch-size regime where speculative decoding collapses at high
+    concurrency.
+  - Reports +26.7-30.9% acceptance length over EAGLE-3 and +16.3-18.4% over DFlash on Qwen3 4B/8B/14B.
+  - In production, DSpark drives 60-85% faster per-user generation on DeepSeek-V4-Flash and 57-78% faster
+    on DeepSeek-V4-Pro; press frames this as 'up to 85% faster' and '60-85% over MTP-1'.
+  - The method is GPU/batch-serving oriented — the adaptive verification-depth controller is keyed on
+    GPU utilization, not a single-stream CPU decode loop.
+  techniques:
+  - DSpark semi-autoregressive drafting (parallel backbone + sequential single-token-conditioned correction
+    head)
+  - confidence-gated adaptive verification depth
+  - hardware-aware verification scheduler keyed on live device utilization
+  reported_results:
+  - +26.7-30.9% acceptance length vs EAGLE-3 (Qwen3 4B/8B/14B)
+  - +16.3-18.4% acceptance length vs DFlash (Qwen3 4B/8B/14B)
+  - 60-85% faster per-user generation on DeepSeek-V4-Flash; 57-78% on DeepSeek-V4-Pro (production, per
+    DeepSeek)
+  referenced_arxiv_ids:
+  - '2602.06036'
+  - '2503.01840'
+  novelty: high
+  relevance: high
+  credibility_score: 2
+  verdict: adopt_patterns
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-07-02'
+  contradicting_evidence:
+  - Every headline number (26-31% acceptance-length over EAGLE-3, 16-18% over DFlash, 57-85% production
+    speedup) is vendor-reported from DeepSeek's own paper, checkpoints, and production telemetry; multiple
+    sources explicitly state no independent reproduction of the acceptance-length or speedup claims exists
+    yet, so they are observations, not verified results.
+  - Independent and vendor data both show the speedup is strongly concurrency-dependent — reported throughput
+    gains span ~51% at low batch to ~400% at high concurrency, and the lone external single-stream benchmark
+    (DGX Spark GB10, ~1.5x over MTP-1) sits at the low end; our EPYC decode is effectively concurrency-1,
+    i.e. exactly the regime where the gain is smallest.
+  - 'The batch-1 GPU win is explicitly attributed to ''abundant idle compute'' that speculation spends
+    for free; EPYC CPU decode is DRAM-bandwidth-bound with little idle compute, so verifying DSpark''s
+    parallel draft block still consumes the scarce resource (memory bandwidth) and the batch-1 GPU result
+    does not transfer — but note this refines rather than kills the drafter: it is the utilization-keyed
+    adaptive-verification-depth CONTROLLER that is high-concurrency-specific, whereas the semi-autoregressive
+    draft head itself does yield ~1.5x even at batch-1 on GPU.'
+  - Acceptance-length gains are offline metrics that do not convert 1:1 to wall-clock throughput, especially
+    on bandwidth-bound hardware, so the 26-31%-over-EAGLE-3 figure cannot be read as a 26-31% speedup
+    on our stack.
+  - 'Provenance/attribution caveats: the actual paper title is ''DSpark: Confidence-Scheduled Speculative
+    Decoding with Semi-Autoregressive Generation'' (indexed on alphaXiv as 2026.dspark and on HyperAI),
+    and at least one source attributes the work to ''DeepSeek and Peking University'', so the draft''s
+    title, sole-DeepSeek authorship, and ''no paper page exists'' implication are slightly off — a cleaner-provenance
+    fetch (alphaXiv/HyperAI) is available to replace the unparseable PDF.'
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - speculative-decoding-mtp-refresh.md
+    - tree-speculation-numa-drafting.md
+    - hsd-hierarchical-self-speculation.md
+    - mtp-speculative-decoding.md
+    - moe-spec-cpu-spec-dec-integration.md
+    experiments:
+    - self-speculation-benchmark.md
+    - draft-vs-target-time-analysis.md
+    - specexec-verification-profile.md
+    intake_entries:
+    - intake-158
+    - intake-070
+    - intake-296
+  recommended_actions:
+  - 'OPERATOR-REVIEW: capture DSpark''s semi-autoregressive drafter as a comparison point in speculative-decoding-mtp-refresh.md
+    — specifically whether a parallel-backbone + single-token-correction head beats our native MTP-1 heads
+    on measured alpha for gemma4-26B-A4B, before any training investment (per the measure-alpha 3-bin
+    rule).'
+  - 'OPERATOR-REVIEW: treat the reported +26.7-30.9%-over-EAGLE-3 / 57-85% production speedups as vendor
+    observations, not decision-gating numbers (no protocol id); re-measure alpha locally if this is to
+    gate any keep/port decision.'
+  - 'OPERATOR-REVIEW: note the CPU-viability question in moe-spec-cpu-spec-dec-integration.md — the adaptive-verification-depth-from-utilization
+    controller is GPU-batching-specific and likely inert on single-stream CPU decode.'
+  handoffs_updated:
+  - moe-spec-cpu-spec-dec-integration.md
+  - speculative-decoding-mtp-refresh.md
+  - gpu-drafter-mi200-investigation.md
+  - inference-acceleration-index.md
+  handoffs_created: []
+  novelty_justification: The parallel-backbone + sequential-correction 'semi-autoregressive' drafter plus
+    a confidence-gated adaptive-verification-depth controller is a distinct mechanism not covered in chapter
+    10 (which documents EAGLE-3, DFlash, tree speculation) or by our native MTP-1/NEXTN. grep of intake_index.yaml
+    for DSpark returned 0 prior entries. High.
+  relevance_justification: 'Bullseye on the active spec-dec-mtp-refresh focus. Two independently transferable
+    ideas: (1) the semi-autoregressive draft head is a candidate alternative to our native MTP heads and
+    directly comparable via the measure-alpha gate (feedback_measure_alpha memory; draft-vs-target-time-analysis.md);
+    (2) the adaptive verification-depth idea generalizes SpecDec++-style adaptive-K work. Deploy caveat
+    lowers only the model, not the method — hence relevance stays high.'
+  verdict_justification: 'adopt_patterns: the drafter architecture and adaptive-K controller are worth
+    mining, but as-published DSpark cannot deploy as-is on our stack — the hardware-aware scheduler is
+    keyed on GPU utilization and the whole design targets high-concurrency GPU batching, whereas our CPU
+    decode is bandwidth-bound and effectively concurrency-1, so the scheduler''s central benefit largely
+    evaporates. The parallel-backbone drafting also implies batched matmuls that are GPU-favorable. The
+    transferable core is the semi-autoregressive draft head, which would need training (DeepSpec pipeline)
+    and a GGUF port to reach v6.'
+  notes: 'PROVENANCE DEGRADED: the raw PDF (https://raw.githubusercontent.com/deepseek-ai/DeepSpec/main/DSpark_paper.pdf,
+    705.9KB, application/octet-stream) is FlateDecode-compressed and could not be parsed by WebFetch.
+    The DSpark method above is RECONSTRUCTED from the DeepSpec README + the DeepSeek-V4-Pro-DSpark model
+    card + a targeted WebSearch (multiple press writeups: MarkTechPost, VentureBeat, AcingAI, TechTimes)
+    that consistently report the same mechanism and numbers. arxiv_id=null: no arXiv id exists for DSpark;
+    per task instruction arXiv 2606.21228 is NOT DSpark (it is Sakana ''Fugu'', intake-728) and was NOT
+    used. credibility_score=2 (Med): non-peer-reviewed vendor PDF (+0 venue), <12 months (+1), major lab
+    DeepSeek (+1), production-speedup framing is self-promotional/marketing-flavored (-1), press corroboration
+    exists but all traces back to DeepSeek''s own release rather than independent measurement (+1). Sibling
+    cluster URLs: the DeepSpec repo and the DeepSeek-V4-Pro-DSpark model card (sibling intake ids unknown
+    at write time). ADVERSARIAL ADDENDUM (verifier): credibility_score kept at 2 but it sits at the TOP
+    of the defensible band — the +1 corroboration is now grounded in a single independent DGX-Spark single-stream
+    benchmark (~1.5x over MTP-1) rather than the press-echo the draft cited; that repro both undershoots
+    the headline (low-concurrency end) and measures wall-clock, not the acceptance-length-over-EAGLE-3
+    metric, so if it is discounted the score drops to 1 (Low/Med boundary). Verdict adopt_patterns and
+    novelty high / relevance high UNCHANGED. Added a provenance/attribution caveat: real title is ''DSpark:
+    Confidence-Scheduled Speculative Decoding with Semi-Autoregressive Generation'' (alphaXiv 2026.dspark
+    / HyperAI), possible PKU co-authorship — a fetchable clean source exists to upgrade provenance. Also
+    flagged the acceptance-length != wall-clock and concurrency-band caveats, which sharpen (do not overturn)
+    the CPU-inertness thesis: the drafter helps at batch-1 on GPU via idle compute we lack, so it is the
+    SCHEDULER, not the drafter, that is high-concurrency-specific.'
+- id: intake-739
+  arxiv_id: null
+  url: https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro-DSpark
+  source_type: repo
+  title: DeepSeek-V4-Pro-DSpark — V4-Pro MoE checkpoint (1.6T total / 49B active, 1M ctx) with attached
+    DSpark speculative-decoding module
+  authors:
+  - DeepSeek-AI
+  categories:
+  - speculative_decoding
+  - quantization
+  - moe_optimization
+  - inference_serving
+  key_claims:
+  - 'Not a new base model: it is the same DeepSeek-V4-Pro checkpoint with an additional DSpark speculative-decoding
+    module attached.'
+  - Mixture-of-Experts with 1.6T total parameters and 49B activated parameters; 1M-token context.
+  - 'Ships mixed-precision quant: FP4+FP8 mixed (MoE expert params in FP4, most other params in FP8),
+    plus an FP8-mixed base version; MIT license.'
+  - Post-training uses 'unified model consolidation via on-policy distillation'.
+  - DSpark drives the reported 57-78% faster per-user generation on V4-Pro; the card itself surfaces no
+    acceptance-rate or speedup numerics.
+  techniques:
+  - DSpark semi-autoregressive spec-dec module (see sibling DSpark paper)
+  - FP4/FP8 mixed-precision MoE quantization
+  - on-policy distillation for model consolidation
+  reported_results:
+  - 57-78% faster per-user generation on DeepSeek-V4-Pro with DSpark (from DeepSeek release/press; not
+    in the card excerpt itself)
+  - no acceptance-length / tokens-per-second numerics present in the model card
+  novelty: high
+  relevance: medium
+  credibility_score: null
+  verdict: adopt_patterns
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-07-02'
+  contradicting_evidence:
+  - The 57-78% V4-Pro speedup attributed to DSpark is vendor-only, measured on DeepSeek's own serving
+    stack with no independent reproduction; the press 'up to 85% / up to 400%' figures are the high-concurrency
+    end and do not describe the single-stream behavior our CPU stack would see.
+  - The model is deploy-infeasible here regardless of the DSpark module — a 1.6T-total / 49B-active MoE
+    on the unsupported deepseek4 architecture (intake-637 confirms zero deepseek4 hits in llama.cpp/ik_llama
+    and only no-intent-to-merge WIP forks), so the entry's medium relevance rests entirely on transferable
+    quant/distillation patterns, not on any runnable model.
+  - The FP4-experts/FP8-rest mixed-precision recipe is the same mixed-precision regime intake-637 flags
+    as degrading severely below Q4 for V4-class checkpoints, so treating FP4/FP8-mixed-MoE as a storage
+    win for our stack is premature without a quality-gate measurement.
+  - '''On-policy distillation for model consolidation'' is described only at marketing granularity on
+    the card with no method detail, reproducible recipe, or ablation, so it is a pointer/inspiration rather
+    than an adoptable technique — and any distillation work must still pass the measurement/eval gates.'
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - speculative-decoding-mtp-refresh.md
+    - mtp-speculative-decoding.md
+    experiments: []
+    intake_entries:
+    - intake-637
+    - intake-158
+    - intake-070
+  recommended_actions:
+  - 'OPERATOR-REVIEW: do NOT queue DeepSeek-V4-Pro for a CPU port — 1.6T MoE + unsupported deepseek4 arch
+    (cf. intake-637 V4-Flash port already gated to an experimental branch); track this entry only for
+    DSpark-module and FP4/FP8-mixed-MoE-quant study.'
+  - 'OPERATOR-REVIEW: note the card''s ''on-policy distillation'' consolidation as a reference point for
+    the operator-relayed self-distillation plan (agent-tool traces + GLM-5.2-FP8 loop traces + frontier
+    HF traces) — connection only, not an endorsement; any distillation work must go through the measurement/eval
+    gates.'
+  - 'OPERATOR-REVIEW: if a V4-class model is ever wanted locally, prefer the already-tracked V4-Flash
+    (intake-637) path over V4-Pro on storage grounds.'
+  handoffs_updated:
+  - deepseek-v4-flash-cpu-port.md
+  - gpu-drafter-mi200-investigation.md
+  handoffs_created: []
+  novelty_justification: A frontier 1.6T/49B MoE with a shipped DSpark spec-dec module and FP4/FP8 mixed
+    MoE quant is new to the index (grep for DeepSeek-V4-Pro-DSpark = 0 hits; the closest prior is intake-637,
+    the 284B V4-Flash GGUF). The DSpark mechanism itself is captured in the sibling paper entry, so for
+    THIS entry the novelty is the model+quant packaging. High.
+  relevance_justification: 'Medium, not high: DeepSeek-V4-Pro is effectively deploy-infeasible on our
+    box. It is a 1.6T-param MoE (~5.6x the 284B V4-Flash, which is already 80.8 GiB at Q2 / 153.3 GiB
+    at Q4 per intake-637), so even aggressive ~2-bit quant lands well past our practical CPU-RAM/raid0
+    gate, and the deepseek4 architecture is not in llama.cpp/ik_llama (intake-637 confirms zero deepseek4
+    hits; only WIP forks). The relevant content — the DSpark drafter and the FP4/FP8 mixed-MoE quant recipe
+    — is method/context, not a deployable model.'
+  verdict_justification: 'adopt_patterns: the model cannot be run here, but two patterns are worth mining
+    — (1) FP4-experts/FP8-rest mixed-precision MoE quant as a reference for large-MoE storage tradeoffs
+    (cf. the unsloth IQ2 large-MoE note), and (2) the ''on-policy distillation'' consolidation recipe,
+    which is directly adjacent to the operator''s stated interest in self-distillation from agent-tool
+    + frontier traces. Not not_applicable because the DSpark-on-a-real-frontier-MoE data point informs
+    our spec-dec direction even though V4-Pro is not self-hostable.'
+  notes: 'Fetched the HF model card directly. Card title ''DeepSeek-V4: Towards Highly Efficient Million-Token
+    Context Intelligence''; confirms MoE 1.6T/49B, 1M ctx, FP4+FP8 / FP8-mixed quant, MIT, on-policy distillation;
+    DSpark = same checkpoint + attached spec-dec module. source_type=repo (HF card); credibility_score=null
+    per rubric. The operator-relayed self-distillation quote applies here only because the card DOES mention
+    distillation (on-policy) — treated as background context, not an instruction. Sibling cluster URLs:
+    the DeepSpec repo (https://github.com/deepseek-ai/DeepSpec) and the DSpark paper (…/blob/main/DSpark_paper.pdf);
+    sibling intake ids unknown at write time. V4-Pro self-hostability verdict: infeasible on 1.1TB CPU
+    RAM at usable quant + arch-unsupported. ADVERSARIAL ADDENDUM (verifier): web search corroborates 1.6T/49B/1M
+    and the FP4/FP8-mixed + on-policy-distillation packaging; credibility_score (null, repo/HF card) and
+    verdict (adopt_patterns) UNCHANGED and correct, novelty high / relevance medium preserved. Added contradicting_evidence
+    emphasizing that the 57-78% figure is vendor-only and high-concurrency-favorable, that FP4/FP8-mixed
+    degrades below Q4 (intake-637), and that the distillation claim is marketing-granularity only. The
+    deploy-infeasibility (relevance-medium) rationale is confirmed, not weakened.'
+- id: intake-740
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/issues/25187
+  source_type: repo
+  title: 'Research: FR-Spec-style draft-vocab trimming for native MTP speculative decoding (llama.cpp
+    issue #25187)'
+  authors:
+  - avifenesh (GitHub issue author, LLM-assisted per disclosure)
+  categories:
+  - speculative_decoding
+  - hardware_optimization
+  - local_inference
+  key_claims:
+  - Restricting the native-MTP draft LM-head projection to a frequency-ranked top-32,768 subset of a 248,320-token
+    vocabulary (while the target model keeps verifying over the FULL vocab) cuts the draft head mul_mat_vec_q
+    kernel by ~85% (avg 621 us -> 91 us per call) and produces byte-for-byte identical greedy (temp=0)
+    output, because the lossless guarantee depends on target-side full-vocab verification, not on draft
+    hit rate.
+  - 'Implementable in ~30 lines by REUSING llama.cpp''s existing EAGLE-3 d2t (''draft-to-target'') tensor:
+    load d2t from GGUF, downsize output.weight to d2t->ne[0], then scatter the compressed logits back
+    to full-vocab shape with ggml_set_rows inside the compute graph, so the draft sampling loop never
+    sees the trimmed head; it is a no-op for any GGUF without a d2t tensor.'
+  - 'End-to-end throughput gains are MODEST despite the ~85% kernel reduction: overall mean 83.9 tok/s
+    baseline -> 85.1 (public 50/50 corpus map, +1.4%) -> 86.5 (private code-heavy map, +3.1%); code 88.4
+    -> 89.6 -> 93.4, prose 77.2 -> 78.3 -> 76.1.'
+  - 'Claimed architecture-agnostic (not EAGLE-3-specific): verified on qwen35.cpp (Qwen3.5/3.6 dense MTP);
+    claimed-but-unverified-on-hardware for step35.cpp, glm4-moe.cpp, bailingmoe2.cpp, all sharing the
+    nextn.shared_head_head {n_embd, n_vocab} tensor pattern.'
+  - 'Frequency map is workload-sensitive: built from a reproducible public 50/50 code+prose corpus (codeparrot,
+    wikitext-103, c4-en, fineweb-edu; top-32,768 by raw frequency under the target tokenizer) and a non-reproducible
+    private code corpus; the code-tuned private map slightly regresses prose throughput (77.2 -> 76.1
+    tok/s).'
+  techniques:
+  - FR-Spec frequency-ranked speculative sampling (vocabulary-space compression of the draft LM-head)
+  - draft-vocab trimming for native MTP/NEXTN drafters
+  - EAGLE-3 d2t (draft-to-target) tensor reuse
+  - ggml_set_rows logit scatter back to full-vocab shape inside the compute graph
+  - frequency-map corpus construction (top-K by tokenized raw frequency)
+  reported_results:
+  - mul_mat_vec_q draft-head kernel time reduced -84.9%; average latency 621 us -> 91 us (-85.3%); ~6.6x
+    time reduction consistent with ~7.6x fewer matrix rows (32,768 vs 248,320)
+  - FR-Spec paper theoretical target ~75% LM-head compute reduction (arXiv:2502.14856)
+  - 'End-to-end (temp=0, n-max=3, 6 code + 4 prose prompts): baseline overall 83.9 tok/s; trimmed public
+    corpus 85.1 (+1.4%); trimmed private code corpus 86.5 (+3.1%)'
+  - Byte-for-byte identical generated text at temperature=0 between baseline and trimmed
+  referenced_arxiv_ids:
+  - '2502.14856'
+  novelty: high
+  relevance: high
+  credibility_score: null
+  verdict: adopt_component
+  discovered_via: search
+  expanded_from: https://github.com/deepseek-ai/DeepSpec
+  ingested_date: '2026-07-02'
+  contradicting_evidence:
+  - 'Headline vs payoff gap: the -84.9% mul_mat_vec_q kernel reduction translates to only +1.4% (public
+    map) / +3.1% (code map) end-to-end throughput in the author''s own numbers, because the draft LM-head
+    is a small fraction of total decode time. On our EPYC 9655 (bandwidth-bound whole-model decode), the
+    full draft forward + target verify dominate, so the expected end-to-end benefit is single-digit percent,
+    not ~6.6x.'
+  - 'Workload sensitivity / OOD regression: the private code-tuned frequency map REDUCED prose throughput
+    (77.2 -> 76.1 tok/s) vs baseline, indicating a mismatched frequency corpus can regress out-of-distribution
+    text; reusing the author''s map on our agent/coder traffic is not guaranteed neutral.'
+  - 'Batch-size caveat from our own record: intake-542/543 (ZenMagnets/EAGLE-3-batch line) found vanilla
+    EAGLE-3 speedup diminishes and can underperform AR near bs~128; while vocab-trimming is orthogonal
+    (it is a draft-head compute cut, not a verification change) and is loss-free, at higher concurrency
+    the LM-head projection is amortized and the trimming benefit shrinks further -- reinforcing that the
+    benefit is a low-concurrency single-stream effect.'
+  - 'Provenance/credibility: single-contributor GitHub issue, explicitly LLM-assisted, benchmarks self-run
+    on unspecified hardware with an ~88 tok/s baseline, no independent corroboration; cross-architecture
+    compatibility (step35/glm4-moe/bailingmoe2) is claimed but unverified.'
+  - 'Over-claim vs source: the paper''s theoretical target is ~75% LM-head reduction, while the issue
+    reports -84.9% -- explained by a more aggressive trim ratio (32,768/248,320 ~ 7.6x rows) than FR-Spec''s
+    default, i.e. a config choice, not independent validation.'
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - speculative-decoding-mtp-refresh.md
+    - qwen-mtp-llamacpp-port.md
+    - moe-spec-cpu-spec-dec-integration.md
+    - inference-acceleration-index.md
+    experiments:
+    - draft-vs-target-time-analysis.md
+    intake_entries:
+    - intake-725
+  recommended_actions:
+  - 'OPERATOR-REVIEW: evaluate cherry-picking avifenesh/llama.cpp frspec-mtp-vocab-trim (commit 047bfa508)
+    onto the experimental branch for the qwen35 native-MTP path and measure END-TO-END on EPYC (BW-bound),
+    since the -85% kernel cut may only yield single-digit end-to-end gain.'
+  - 'OPERATOR-REVIEW: consider recording this as a low-cost lossless draft-head optimization candidate
+    in handoffs/active/speculative-decoding-mtp-refresh.md (do not modify without operator gate).'
+  - 'OPERATOR-REVIEW: if pursued, build an EPYC-workload-matched frequency map from our own agent/coder
+    traffic rather than reusing the author''s public/private maps, given the observed prose regression
+    from a code-tuned map.'
+  - 'OPERATOR-REVIEW: assess whether the production gemma4-26B-A4B worker''s MTP/nextn head matches the
+    nextn.shared_head_head {n_embd, n_vocab} pattern the technique requires (issue only verified qwen35.cpp).'
+  handoffs_updated:
+  - qwen-mtp-llamacpp-port.md
+  - speculative-decoding-mtp-refresh.md
+  - inference-acceleration-index.md
+  handoffs_created: []
+  novelty_justification: FR-Spec (arXiv:2502.14856) and this specific vocab-trimming port are ABSENT from
+    the 728-entry intake_index (grep for 'FR-Spec|2502.14856|avifenesh|issues/25187|frspec' returned nothing).
+    Chapters 01 and 10 cover EAGLE-3, SpecBundle draft heads, and vocab-size COMPATIBILITY, but neither
+    covers frequency-ranked draft-LM-head trimming. The concrete engineering artifact -- reusing the existing
+    EAGLE-3 d2t tensor + ggml_set_rows to trim a native-MTP draft head with byte-identical output in ~30
+    lines -- is new to our corpus.
+  relevance_justification: 'Directly on the current active focus: git branch is spec-dec-mtp-refresh-2026-06-22
+    and the production worker (gemma4-26B-A4B Q4_K_M) runs native MTP. The proposal targets exactly our
+    native MTP/NEXTN CPU stack, builds on infrastructure we are already porting (intake-725: PR #22673
+    native MTP path + eagle3.cpp d2t), is verified on qwen35.cpp which our qwen-mtp-llamacpp-port.md handoff
+    tracks, and is fully open-source/self-hosted (an llama.cpp branch), satisfying our hard constraints.
+    Since CPU decode is memory-bandwidth-bound, a lossless draft-head compute cut is method-relevant even
+    though its end-to-end payoff is single-digit percent.'
+  verdict_justification: 'adopt_component: there is a concrete pull-able artifact -- author branch avifenesh/llama.cpp
+    frspec-mtp-vocab-trim (commit 047bfa508), ~30 lines reusing our already-in-flight eagle3.cpp d2t +
+    ggml_set_rows patterns -- targeting qwen35.cpp which we already run. It is lossless (byte-identical
+    at temp=0), which lowers integration risk. Caveat driving the ''component'' rather than ''already_integrated''
+    framing: unverified on our EPYC hardware, self-reported single-contributor LLM-assisted benchmarks,
+    cross-architecture (glm4-moe/bailingmoe2/step35) unproven, and the headline -85% kernel reduction
+    yields only +1-3% end-to-end -- so it warrants an on-hardware measurement before adoption.'
+  notes: 'Discovered via search from the primary entry deepseek-ai/DeepSpec (DeepSpec is NOT yet in intake_index
+    -- grep returned nothing). Issue #25187 opened 2026-07-01 by avifenesh; confirmed it resolves to the
+    claimed FR-Spec-for-MTP proposal and correctly cites FR-Spec = arXiv:2502.14856 (ACL 2025 main; thunlp;
+    Zhao/Pan/Han et al.), independently verified via WebSearch (paper + github.com/thunlp/FR-Spec). credibility_score
+    set null per rubric (repo/issue source); however the UNDERLYING technique is peer-reviewed (ACL 2025)
+    and credible, whereas the llama.cpp-port benchmarks in this issue are self-reported and unverified
+    on our hardware. Cross-ref intake-725 is the strongest link: it tracks the native-MTP path (PR #22673)
+    and EAGLE-3 d2t infrastructure (src/models/eagle3.cpp) that this proposal reuses. Reported vocab size
+    248,320 is larger than the Qwen 151,936/152,064 documented in chapter 01 -- reported as stated in
+    the issue, not independently reconciled.'
+- id: intake-741
+  arxiv_id: '2606.02091'
+  url: https://arxiv.org/abs/2606.02091
+  source_type: paper
+  title: 'DFlare: Scaling Up Draft Capacity for Block Diffusion Speculative Decoding'
+  authors:
+  - Jiebin Zhang
+  - Zhenghan Yu
+  - Song Liu
+  - Eugene J. Yu
+  - Zheng Li
+  - Dawei Zhu
+  - Jiangshan Duo
+  - Weimin Xiong
+  - Yifan Song
+  - Guanghua Yu
+  - Jianchen Zhu
+  - Sujian Li
+  categories:
+  - speculative_decoding
+  - inference_serving
+  - hardware_optimization
+  key_claims:
+  - DFlash's design constrains all draft layers to share a single fused representation derived from only
+    a few target layers, creating a 'narrow conditioning bottleneck' that limits per-layer expressiveness
+    and blocks further scaling of draft capacity.
+  - DFlare introduces a lightweight layer-wise fusion mechanism in which each draft layer attends to its
+    own learnable combination of a broad set of target layers at negligible overhead, injecting richer
+    target knowledge and giving every draft layer a distinct input.
+  - The enhanced per-layer expressiveness lets the block-diffusion draft model scale to deeper architectures
+    with consistent gains (rather than saturating as DFlash does).
+  - Training data is scaled from 800K to 2.4M samples to fully exploit the enlarged draft capacity.
+  - Across six benchmarks (mathematical reasoning, code generation, conversation) DFlare improves lossless
+    wall-clock speedup over DFlash by roughly 11% (Qwen3-4B), 8% (Qwen3-8B), and 5% (GPT-OSS-20B).
+  techniques:
+  - DFlare (scaled block-diffusion speculative decoding)
+  - 'Layer-wise fusion: per-draft-layer learnable combination of a broad set of target-model layers (replaces
+    DFlash''s single few-layer fused conditioning)'
+  - Deeper draft-model architecture scaling
+  - Training-data scale-up (800K -> 2.4M samples)
+  reported_results:
+  - Average wall-clock speedup 5.52x on Qwen3-4B (vs autoregressive baseline), lossless
+  - Average wall-clock speedup 5.46x on Qwen3-8B
+  - Average wall-clock speedup 3.91x on GPT-OSS-20B
+  - 'Improvement over DFlash: ~11% (Qwen3-4B), ~8% (Qwen3-8B), ~5% (GPT-OSS-20B)'
+  - Evaluated across six benchmarks spanning math reasoning, code generation, and conversation
+  referenced_arxiv_ids:
+  - '2602.06036'
+  - '2503.01840'
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: search
+  expanded_from: https://github.com/deepseek-ai/DeepSpec
+  ingested_date: '2026-07-02'
+  contradicting_evidence:
+  - 'Our completed deep-dive dflash-block-diffusion-speculation.md (CONCLUDED 2026-03-18, 21 commits,
+    C++ forward pass verified correct) found DFlash''s block-diffusion drafting NET-NEGATIVE on CPU with
+    Q4_K_M: block-mode acceptance collapsed to 0.3-1.4% (vs the paper''s tau=6.49 on GPU) and an autoregressive
+    0.75B drafter won outright (36.5 t/s, 58.6% acc vs DFlash net-negative; no-spec baseline 32.3 t/s,
+    AR spec +13%). DFlare only lifts DFlash by 5-11% on GPU, which does not bridge the CPU acceptance
+    gap.'
+  - All DFlare speedups (5.52x/5.46x/3.91x) are GPU wall-clock on block-diffusion parallel denoise; no
+    CPU, llama.cpp, or GGUF numbers are reported, and none of the tested models (Qwen3-4B/8B, GPT-OSS-20B)
+    is our production worker.
+  - DFlare's layer-wise fusion requires each draft layer to attend to a BROAD set of target layers - strictly
+    more hidden-state taps than DFlash's ~5-tap conditioning - increasing per-token extraction/projection
+    overhead, which is precisely the overhead that killed DFlash block-mode throughput on the CPU path.
+  - EAGLE-3, which DFlash/DFlare outperform on GPU, previously produced 0% acceptance on our GGUF stack
+    (intake-005), evidence that learned draft heads transfer poorly to our quantized CPU decode path.
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    - 05-deprecated-approaches.md
+    handoffs:
+    - angelslim-techniques-evaluation.md
+    - speculative-decoding-mtp-refresh.md
+    - dflash-block-diffusion-speculation.md
+    - qwen-mtp-llamacpp-port.md
+    - moe-spec-cpu-spec-dec-integration.md
+    - gpu-drafter-mi200-investigation.md
+    experiments:
+    - draft-vs-target-time-analysis.md
+    - self-speculation-benchmark.md
+    intake_entries:
+    - intake-158
+    - intake-159
+    - intake-296
+    - intake-297
+    - intake-298
+    - intake-447
+    - intake-590
+    - intake-005
+    - intake-424
+  recommended_actions:
+  - 'OPERATOR-REVIEW: append DFlare (2606.02091) as an expansion note under intake-158 (DFlash) and reference
+    it from the active [[angelslim-techniques-evaluation]] handoff, since DFlare ships in the same Tencent/AngelSlim
+    repo (intake-590) already being cherry-picked.'
+  - 'OPERATOR-REVIEW: when the MI210 (gfx90a, ROCm 6.2) GPU path matures (~July 2026), consider re-opening
+    the CONCLUDED [[dflash-block-diffusion-speculation]] deep-dive to test whether DFlare''s layer-wise
+    fusion raises block-mode acceptance above the CPU/GPU throughput break-even, using the Lucebox GGUF
+    port (intake-447) as the deployment substrate.'
+  - 'OPERATOR-REVIEW: capture the ''per-draft-layer broad target-tap'' requirement as a design note in
+    [[qwen-mtp-llamacpp-port]] hidden-state-extraction API planning - DFlare needs more layer taps than
+    DFlash''s 5, which affects the extraction-API cost model.'
+  handoffs_updated:
+  - moe-spec-cpu-spec-dec-integration.md
+  - inference-acceleration-index.md
+  handoffs_created: []
+  novelty_justification: 'Not a duplicate: grep of intake_index.yaml for ''2606.02091'', ''DFlare'', ''layer-wise
+    fusion'', and ''5.52'' returned no existing entry. However the diffusion-drafter family is already
+    indexed - intake-158 (DFlash, the direct predecessor DFlare explicitly extends) and intake-159 (DART),
+    both cross-referenced in chapter 10-advanced-speculative-decoding.md. DFlare contributes a genuinely
+    new mechanism (per-draft-layer learnable fusion of a broad target-layer set, replacing DFlash''s single
+    few-layer fused conditioning) plus new scaling results, but it is an incremental refinement of an
+    already-covered method delivering only +5-11% over DFlash, so medium rather than high.'
+  relevance_justification: 'Speculative decoding / MTP is the CURRENT active focus (working branch spec-dec-mtp-refresh-2026-06-22;
+    active handoffs speculative-decoding-mtp-refresh.md, qwen-mtp-llamacpp-port.md), and DFlare ships
+    inside Tencent/AngelSlim, the exact toolkit already under evaluation in the active handoff angelslim-techniques-evaluation.md
+    (intake-590) - so the method is on-topic. But deploy-relevance is capped: our own COMPLETED deep-dive
+    dflash-block-diffusion-speculation.md concluded DFlash''s block-diffusion drafting is NOT VIABLE on
+    the CPU Q4_K_M path (block-mode 0.3-1.4% acceptance vs paper tau=6.49; AR 0.75B drafter wins 36.5
+    t/s vs net-negative DFlash). DFlare''s +5-11% GPU refinement does not overturn that, and it is benchmarked
+    only on GPU with Qwen3-4B/8B and GPT-OSS-20B - none our production worker (gemma4-26B-A4B). Medium,
+    not high: method-relevant and worth tracking for the July-2026 MI210 GPU experiments, but not currently
+    deployable.'
+  verdict_justification: 'worth_investigating: the layer-wise fusion idea is a credible improvement over
+    an already-tracked method and lives in the AngelSlim repo we are actively mining, but it cannot be
+    adopted as-is - block diffusion needs batched parallel denoising (GPU), there is no published GGUF/CPU
+    path, and the DFlash predecessor was already CPU-rejected in dflash-block-diffusion-speculation.md.
+    Not new_opportunity (relevance is deploy-blocked, not immediately actionable); not adopt_component
+    (no CPU/GGUF artifact to pull - the Lucebox GGUF port intake-447 covers only DFlash, not DFlare);
+    track for the MI210 GPU path.'
+  notes: 'Provenance discrepancy worth flagging: this candidate was queued as ''discovered via search
+    from primary entry https://github.com/deepseek-ai/DeepSpec'', but the fetched paper is NOT a DeepSeek/DeepSpec
+    work - it is a Peking University + Tencent AngelSlim collaboration (authors incl. Sujian Li) and its
+    code is at https://github.com/Tencent/AngelSlim; the paper does not mention DeepSpec or DeepSeek.
+    So the DeepSpec linkage is a discovery artifact, not a substantive citation. Provenance is mildly
+    degraded: ar5iv had no HTML render (ar5iv.org -> ar5iv.labs -> redirected back to arxiv.org/abs),
+    so extraction is from the arXiv abstract page (title/authors/abstract/results verbatim) rather than
+    the full body - per-benchmark tau breakdowns and the full reference list were not recoverable; referenced_arxiv_ids
+    (2602.06036 DFlash, 2503.01840 EAGLE-3) are best-effort from explicit in-abstract comparisons. Submitted
+    2026-06-01 (v2 2026-06-02), ~1 month old. Credibility: 0 base +1 recent(<12mo) +1 major-lab/known-contributor
+    (PKU + Tencent, Sujian Li) = 2 (Med tier low); no independent reproduction of DFlare''s own numbers
+    yet, though the DFlash lineage is corroborated (intake-158/296/297/298/447).'
+- id: intake-742
+  arxiv_id: '2605.20104'
+  url: https://arxiv.org/abs/2605.20104
+  source_type: paper
+  title: 'Draft Less, Retrieve More: Hybrid Tree Construction for Speculative Decoding (Graft)'
+  authors:
+  - Yuhao Shen
+  - Tianyu Liu
+  - Xinyi Hu
+  - Quan Kong
+  - Baolin Zhang
+  - Jun Dai
+  - Jun Zhang
+  - Shuang Ge
+  - Lei Chen
+  - Yue Li
+  - Mingcheng Wan
+  - Cong Wang
+  categories:
+  - speculative_decoding
+  - retrieval_augmented_decoding
+  key_claims:
+  - Pruning-only draft-tree methods are strictly bounded by the original dense tree's accepted-length
+    upper limit; Graft breaks this ceiling by re-spending the compute budget freed by confidence-based
+    pruning on retrieved candidate tokens grafted into the freed slots ('prune-then-graft').
+  - Retrieval is used as budget compensation rather than standalone drafting — freed positions are filled
+    from a top-k successor adjacency structure at pruning-depth-matched positions via stage-adaptive retrieval
+    templates, yielding simultaneous gains in both wall-clock speedup and mean accepted length (MAT).
+  - The framework is training-free and drafter-agnostic, layering on top of an existing drafter (EAGLE-3
+    baseline; also demonstrated on top of DFlash as Graft-DFLASH) while preserving lossless speculative-decoding
+    verification.
+  - Method scales to long-context generation (up to 64K) and large models (Qwen3-235B), reporting gains
+    over EAGLE-3 / EAGLE3-64K across short- and long-context suites.
+  - 'Ablations show both components contribute: removing retrieval grafting drops speedup 3.97x to 3.74x;
+    removing confidence pruning drops it to 3.62x.'
+  techniques:
+  - Prune-then-graft draft-tree construction (confidence pruning frees budget, retrieval refills freed
+    slots)
+  - GPU-resident top-k successor adjacency matrix for token retrieval
+  - Calibrated pruning checkpoints at high-confidence-discriminative tree depths
+  - Stage-adaptive retrieval templates matched to pruning depth
+  - Lossless speculative-decoding verification
+  reported_results:
+  - Peak 5.41x speedup on HumanEval with Vicuna-13B; 4.20x average across five benchmarks on Vicuna-13B.
+  - 'Qwen3-235B: 2.09x average speedup, +21.8% over EAGLE-3; Qwen3-32B: 2.49x, +17.4%.'
+  - 'Long-context: LLaMA3.1-8B 3.22x average; Qwen3-14B 2.17x (+16.6% over EAGLE3-64K); +38.6% speedup
+    gain on RepoBench-P (Qwen3-8B); +8.8% on QMSum (LLaMA3.1-8B).'
+  - 'Temperature sampling T=1: LLaMA3.1-8B 3.43x (+8.2% over EAGLE-3), Qwen3-8B 2.26x (+22.2%).'
+  - 'MAT (mean accepted length) improvements over EAGLE-3: Qwen3-8B +3.2%, Qwen3-32B +6.4%, Qwen3-235B
+    +3.3%.'
+  - 'Graft-DFLASH integration: 3.71x vs 3.40x baseline, +20.2% on CNN/DM.'
+  - 'Ablation: full 3.97x vs 3.74x (no retrieval grafting) vs 3.62x (no confidence pruning).'
+  referenced_arxiv_ids:
+  - '2503.01840'
+  - '2406.16858'
+  - '2402.12374'
+  - '2406.17276'
+  - '2311.08252'
+  - '2503.03434'
+  - '2602.06036'
+  novelty: high
+  relevance: high
+  credibility_score: 1
+  verdict: adopt_patterns
+  discovered_via: search
+  expanded_from: https://github.com/deepseek-ai/DeepSpec
+  ingested_date: '2026-07-02'
+  contradicting_evidence:
+  - Headline 5.41x is a single peak (HumanEval / Vicuna-13B, a small, SD-saturated legacy target); average
+    speedups are 2.09-4.20x and the large-model Qwen3-235B case is only 2.09x — the '5.41x' should not
+    be read as a representative gain.
+  - 'Ablations bound the novel grafting contribution to modest margins: retrieval grafting adds only 3.74x
+    to 3.97x (~+6%) and pruning 3.62x to 3.97x — most of the speedup comes from the underlying EAGLE-3/DFlash
+    drafter, not from Graft''s new components.'
+  - Base drafter is EAGLE-3, which this repo's own records (intake-070, intake-158 DFlash note) say failed
+    on our GGUF fork — so the demonstrated configuration is not directly reproducible on production-consolidated-v6.
+  - The retrieval structure is described as a GPU-resident adjacency matrix and every reported number
+    is GPU wall-clock; on the EPYC 9655 CPU regime (memory-bandwidth-bound decode, ~460 GB/s) the verification-cost-vs-tree-width
+    tradeoff is different and unmeasured, so speedups may not transfer.
+  - No CPU / llama.cpp / GGUF results are reported; portability to our stack is an unvalidated hypothesis,
+    not a demonstrated result.
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 03-prompt-lookup.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - speculative-decoding-mtp-refresh.md
+    - qwen-mtp-llamacpp-port.md
+    - tree-speculation-numa-drafting.md
+    - mab-tree-shape-selector.md
+    - dflash-block-diffusion-speculation.md
+    experiments:
+    - hispec-external-draft-benchmark.md
+    - draft-vs-target-time-analysis.md
+    - self-speculation-benchmark.md
+    intake_entries:
+    - intake-039
+    - intake-047
+    - intake-055
+    - intake-056
+    - intake-070
+    - intake-071
+    - intake-158
+    - intake-159
+  recommended_actions:
+  - 'OPERATOR-REVIEW: propose a tracking note under handoffs/active/speculative-decoding-mtp-refresh.md
+    evaluating whether Graft''s training-free prune-then-graft ''budget compensation'' can pair with our
+    native MTP/NEXTN drafter in v6 llama.cpp — refilling confidence-pruned draft-tree branches from a
+    CPU-resident top-k successor / n-gram adjacency table (prompt-lookup lineage).'
+  - 'OPERATOR-REVIEW: cross-link this entry to intake-158 (DFlash — Graft-DFLASH is demonstrated) and
+    to intake-039 (REST) / intake-071 (RASD) as the retrieval-grafting lineage, plus intake-070 (EAGLE-3)
+    as the pruning baseline it builds on.'
+  - Before any implementation investment, measure on-CPU whether a top-k successor adjacency refill of
+    pruned branches yields net token-throughput gain on bandwidth-bound EPYC (verification cost vs tree
+    width differs from GPU); this is a measurement proposal, not a deploy commitment.
+  handoffs_updated:
+  - moe-spec-cpu-spec-dec-integration.md
+  - speculative-decoding-mtp-refresh.md
+  - inference-acceleration-index.md
+  handoffs_created: []
+  novelty_justification: 'grep of /workspace/research/intake_index.yaml returned 0 hits for 2605.20104
+    / ''prune-then-graft'' / ''hybrid tree construction'' — not previously ingested. The index already
+    covers the two ingredients separately: retrieval-based SD (intake-039 REST 2311.08252, intake-071
+    RASD 2503.03434) and tree pruning / dynamic draft trees (intake-047 Sequoia 2402.12374, intake-055
+    EAGLE-2 2406.16858, intake-056 OPT-Tree 2406.17276, intake-070 EAGLE-3 2503.01840). Graft''s unification
+    — treating retrieval as *budget compensation* to refill slots freed by confidence pruning, explicitly
+    to break the pruning-only accepted-length ceiling, with stage-adaptive retrieval templates — is a
+    genuinely new mechanism not present in chapters 01/03/10 or prior entries. High.'
+  relevance_justification: 'The current active git branch is spec-dec-mtp-refresh-2026-06-22 and speculative-decoding/MTP
+    is the live optimization focus (active handoffs speculative-decoding-mtp-refresh.md, qwen-mtp-llamacpp-port.md).
+    Graft is a training-free, drafter-agnostic draft-tree construction layer, i.e. orthogonal to and stackable
+    on top of our native MTP/NEXTN drafter — exactly the ''draft-tree technique portable to llama.cpp''
+    framing of the queue reason. Method-relevance is high. DEPLOY caveat (kept in verdict/contradicting_evidence,
+    not downgrading relevance because the branch is active): the published baseline is EAGLE-3, which
+    our index (intake-070 / intake-158 DFlash note) records as having ''already failed on our GGUF'',
+    and it uses a GPU-resident adjacency matrix — so the as-shipped implementation is not a CPU llama.cpp
+    drop-in.'
+  verdict_justification: 'adopt_patterns, not new_opportunity or adopt_component. The transferable value
+    is the mechanism, not the code: (1) prune-then-graft budget compensation, (2) calibrated pruning checkpoints
+    at confidence-discriminative depths, (3) stage-adaptive retrieval templates. These can be mined to
+    augment our MTP draft tree with a CPU-resident top-k successor / n-gram (prompt-lookup family, chapter
+    03) refill of pruned branches. It is not adopt_component because the released stack rests on EAGLE-3
+    (GGUF-incompatible in our fork) plus a GPU-resident adjacency matrix, and all numbers are GPU-measured
+    — nothing pulls cleanly into bandwidth-bound CPU v6 as-is. new_opportunity is over-strong given those
+    blockers.'
+  notes: 'Fetched via ar5iv (https://ar5iv.org/abs/2605.20104 -> 301 to ar5iv.labs.arxiv.org/abs/2605.20104);
+    returned content title/abstract match the queue reason (tree pruning + high-confidence token retrieval,
+    5.41x peak), so the arXiv id resolves to the claimed paper. Discovered as an expansion candidate from
+    the primary entry github.com/deepseek-ai/DeepSpec (a spec-dec method collection); DeepSeek authorship
+    of Graft is NOT confirmed — the author list above is from the paper itself, so no major-lab credibility
+    credit was awarded (credibility_score=1: fresh unreviewed preprint, ~May 2026, no independent corroboration
+    of its own numbers). referenced_arxiv_ids are BEST-EFFORT: ar5iv returned only a ''sample'' reference
+    list; ids listed (EAGLE-3 2503.01840, EAGLE-2 2406.16858, Sequoia 2402.12374, OPT-Tree 2406.17276,
+    REST 2311.08252, RASD 2503.03434, DFlash 2602.06036) are the entries whose techniques the fetch explicitly
+    named and that already exist in our index; the raw reference list was not fully enumerated. DART (intake-159)
+    also does ''N-gram-enforced tree pruning'' and is a sibling technique worth comparing.'
+- id: intake-743
+  arxiv_id: '2605.13986'
+  url: https://arxiv.org/abs/2605.13986
+  source_type: paper
+  title: 'TabPFN-3: Technical Report'
+  authors:
+  - Prior Labs Team
+  categories:
+  - cost_aware_routing
+  - routing_intelligence
+  key_claims:
+  - TabPFN-3 scales prior-data-fitted in-context tabular learning to 1M training rows and up to ~2,000
+    features on a single H100, cutting inference time up to 20x vs TabPFN-2.5 via a two-phase row-chunking
+    scheme that decouples peak GPU memory from dataset size.
+  - A test-time-compute 'Thinking' mode (TabPFN-3-Plus) trades extra inference-time compute for accuracy,
+    claiming a 200+ Elo gain over non-TabPFN models on TabArena and beating a 4-hour-tuned AutoGluon 1.5
+    at ~1/10th the runtime (69% win rate full TabArena, 82% on the largest subset).
+  - An attention-based retrieval decoder reframes classification as soft nearest-neighbor retrieval over
+    training embeddings, giving native support for arbitrary class counts (tested to 160 classes) without
+    a fixed-width output head.
+  - The model is pretrained exclusively on synthetic Structural Causal Model data (8+ trillion tokens),
+    which the authors argue confers distribution-shift robustness and avoids real-data leakage — no fine-tuning
+    on the target table is required at inference (train-free).
+  - Multi-query attention (single KV head for test-train cross-attention) shrinks the per-estimator KV
+    cache from ~56 GB to ~7 GB at 1M rows, and QASSMax + orthogonal target embeddings + a bar-distribution
+    regression head provide length generalization and full predictive distributions.
+  techniques:
+  - prior-data-fitted network / in-context tabular learning (no per-table training)
+  - row-chunking two-phase inference (memory decoupled from row count)
+  - multi-query attention (single KV head cross-attention) for KV-cache reduction
+  - QASSMax query-aware scalable softmax for length generalization
+  - attention-based many-class retrieval decoder (soft nearest-neighbor over embeddings)
+  - orthogonal target embeddings
+  - bar-distribution regression head with quantile decoding
+  - test-time compute / 'Thinking' mode (TabPFN-3-Plus)
+  - synthetic SCM-only pretraining
+  - TabPFN-REL relational variant (RDBLearn) for multi-table data
+  reported_results:
+  - 'TabArena Elo: +72 over TabPFN-2.5; +100 Elo (TabPFN-3) and +420 Elo (Thinking) on TabArena-medium
+    (10k-100k rows)'
+  - 'Thinking vs 4-hour-tuned AutoGluon 1.5: 69% win on full TabArena, 82% on largest subset, ~1/10th
+    runtime'
+  - 'KV-cache at 1M rows: 7 GB/estimator vs 56 GB in TabPFN-2.5; up to 20x inference speedup vs TabPFN-2.5'
+  - 'Single H100 capacity: 1M rows x 200 features; 100k rows x 2,000 features; 1k rows x 20,000 features'
+  - Many-class normalized ROC-AUC 1.00 vs TabICLv2 0.89; TALENT rank 1 across all subtasks (300 datasets);
+    claims to beat 8-hour-tuned GBTs (XGBoost/CatBoost/LightGBM) on large data
+  - 'Time-series fev-bench: 43.1 skill, 2nd rank behind Chronos-2 (47.3); RelBench best among relational
+    foundation models (vs KumoRFMv2)'
+  novelty: high
+  relevance: medium
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: https://github.com/PriorLabs/tabpfn
+  ingested_date: '2026-07-02'
+  contradicting_evidence:
+  - 'Deployment contradiction: TabPFN is GPU-only (docs: min NVIDIA T4, A100/H100 recommended), CUDA/PyTorch;
+    there is no CPU inference path, and Prior Labs'' own no-GPU option is tabpfn-client, a SaaS API that
+    violates the open-source/self-hosted-only constraint. EPYC prod is CPU-first; the MI210 is ROCm/gfx90a
+    and CUDA-incompatible, so on-prem GPU viability is unverified.'
+  - 'Latency mismatch: a single forward pass over ~672 time steps is reported at ~1s on an H100, and the
+    headline accuracy comes from a test-time-compute ''Thinking'' mode that multiplies inference cost
+    — the opposite of the microsecond, low-latency inline gate a production router needs (the current
+    MLP router is ~microseconds on CPU).'
+  - 'Scope/overkill mismatch: TabPFN has been independently criticized for the ''one big network is all
+    you need'' framing and for weaker performance on high-dimensional / very-large data where tuned GBTs
+    remain competitive; a 1M-row/H100-class FM is architecturally mismatched to a routing dataset of only
+    hundreds of examples (though TabPFN''s small-data strength is a genuine plus, the compute/latency
+    footprint is the mismatch).'
+  - 'Provenance: this is a self-published vendor technical report (Prior Labs, a commercial company selling
+    tabpfn-client), not peer-reviewed; the TabPFN-3-specific headline numbers are self-reported on third-party
+    benchmarks (TabArena/TALENT) but have no independent replication as of the May 2026 release. Open-weights/license
+    status (HF Prior-Labs/tabpfn_3) must be confirmed before any integration.'
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - routing-intelligence.md
+    - learned-routing-controller.md
+    - decision-aware-routing.md
+    - routing-and-optimization-index.md
+    - retrain-routing-models.md
+    experiments: []
+    intake_entries:
+    - intake-457
+    - intake-482
+    - intake-496
+    - intake-720
+    - intake-727
+  recommended_actions:
+  - 'OPERATOR-REVIEW: consider a gated watch-item under routing-intelligence.md / learned-routing-controller.md
+    to evaluate TabPFN-3 (or the lighter TabPFN-2.5) as a train-free tabular backbone for the routing/difficulty
+    classifier — its in-context, no-per-table-training property directly targets the cold-start-on-model-swap
+    pain flagged in intake-496 and intake-720. Gate the item on MI210/ROCm viability, since TabPFN is
+    CUDA/PyTorch and CPU-first prod cannot host it.'
+  - 'OPERATOR-REVIEW: if this is tracked, pin it to the GPU-only track (gpu-acceleration-path.md / gpu-drafter-mi200-investigation.md)
+    and record the explicit blockers — GPU-only (H100-class), high-latency ''Thinking'' mode unsuitable
+    as an inline CPU gate, and unverified ROCm support on gfx90a — rather than treating it as a near-term
+    routing deploy.'
+  - 'OPERATOR-REVIEW: before any integration, verify the open-weights/license status of Prior-Labs/tabpfn_3
+    on HuggingFace against the open-source/self-hosted-only constraint, and explicitly exclude the tabpfn-client
+    SaaS path.'
+  handoffs_updated:
+  - learned-routing-controller.md
+  handoffs_created: []
+  novelty_justification: 'Not a duplicate: grep of /workspace/research/intake_index.yaml for tabpfn/priorlabs/prior-data-fitted/tabular-foundation
+    returned 0 hits, and no chapter covers tabular foundation models (chapter list shows only cost-aware-rewards,
+    benchmarking, spec-dec, MoE, radix-attention). TabPFN-3''s specific contributions — 1M-row scaling
+    via row-chunking, a test-time-compute ''Thinking'' mode, and an attention-based many-class retrieval
+    decoder — are techniques entirely absent from the compendium. High novelty as a genuinely new technique
+    class (in-context tabular FM).'
+  relevance_justification: 'The routing/difficulty classifier is an active secondary focus: intake-457
+    (MLP routing classifier @ 92% val acc, staged/off in prod), intake-496 and intake-720 flag the cold-start-on-every-model-swap
+    pain and an online-posterior no-retrain alternative, and handoffs routing-intelligence.md / learned-routing-controller.md
+    / decision-aware-routing.md exist. TabPFN''s train-free in-context learning is a strong method fit
+    for the small-labeled-routing-table problem (would eliminate the per-swap retrain sweep). BUT it is
+    GPU-only (min T4, recommends A100/H100), CUDA/PyTorch, and the accuracy mode is high-latency test-time
+    compute — none of which suits a microsecond inline CPU routing gate, and the current active branch
+    is spec-dec/MTP, not routing. Method-relevant but deploy-blocked on CPU-first prod, hence medium not
+    high.'
+  verdict_justification: 'High novelty + medium (deploy-blocked) relevance maps to worth_investigating,
+    not new_opportunity (relevance is not high because it is GPU-blocked) and not not_applicable (it is
+    a named backbone candidate for cost-aware routing). It cannot be adopted as a component today: no
+    CPU inference path, and the incoming MI210 (gfx90a/ROCm 6.2) is CUDA-incompatible so ROCm viability
+    is unverified. The right move is a gated investigation — does TabPFN-3 (or the lighter TabPFN-2.5)
+    run on MI210/ROCm, and is an H100-class FM appropriate for a routing table of only hundreds of labeled
+    decisions — rather than either integration or dismissal.'
+  notes: 'arXiv id 2605.13986 confirmed to resolve to the TabPFN-3 Technical Report (Prior Labs), matching
+    the queued reason (1M-row scaling + test-time compute). Fetched via ar5iv (ar5iv.org -> ar5iv.labs.arxiv.org
+    301 redirect, followed). This entry was expanded from the primary GitHub source PriorLabs/tabpfn,
+    which is not yet an intake entry (grep tabpfn/priorlabs = 0 hits) — flag that the primary repo may
+    still need ingestion. referenced_arxiv_ids left empty: the ar5iv reference extraction returned bracket-numbered
+    and Nature-journal citations (TabPFN v1/v2 Nature, TabPFN-2.5, TabICL/TabICLv2, TabArena, TALENT,
+    RelBench, fev-bench) without clean arXiv IDs, so none are asserted to avoid fabrication. contradicting_evidence
+    populated at ingest per task instruction (unusual — normally deferred to verify stage). Corroborating
+    existence sources: Wikipedia ''TabPFN'', HuggingFace Prior-Labs/tabpfn_3, docs.priorlabs.ai.'
+- id: intake-744
+  arxiv_id: '2502.05564'
+  url: https://arxiv.org/abs/2502.05564
+  source_type: paper
+  title: 'TabICL: A Tabular Foundation Model for In-Context Learning on Large Data'
+  authors:
+  - Jingang Qu
+  - David Holzmüller
+  - Gaël Varoquaux
+  - Marine Le Morvan
+  categories:
+  - routing_intelligence
+  key_claims:
+  - A two-stage transformer (column-then-row attention) pretrained on synthetic tabular datasets can do
+    in-context classification and, at inference, scale to 500K samples and 500 features in ~20GB of GPU
+    memory despite being pretrained only up to 60K samples.
+  - Distribution-aware column-wise embedding built with Set Transformers (as a hypernetwork) captures
+    per-column statistics — the authors show columns cluster by skewness/kurtosis in embedding space —
+    giving a fixed-dimensional representation independent of dataset shape.
+  - On the TALENT benchmark (200 datasets) TabICL attains the best median relative accuracy across all
+    datasets, matching TabPFNv2 on small/medium data and surpassing both TabPFNv2 and CatBoost on the
+    56 datasets with >10K samples.
+  - 'Rotary positional embedding is added purely for symmetry-breaking: without it, samples with homogeneous
+    features collapse to identical representations; RoPE prevents this representation collapse.'
+  - Curriculum learning that progressively grows synthetic dataset size (1K -> 60K) plus memory-efficient
+    inference (polynomial batch sizing, activation offloading) is what enables training stability and
+    the >8x train-size extrapolation at inference.
+  techniques:
+  - Column-then-row attention (two-stage tabular transformer)
+  - Distribution-aware feature embedding via Set Transformer / induced self-attention blocks used as a
+    hypernetwork
+  - In-context learning (ICL) for tabular classification (no per-dataset gradient training)
+  - Rotary positional embedding (RoPE) for symmetry breaking / anti-collapse
+  - Curriculum learning with progressive dataset-size scaling (1K -> 60K)
+  - Hierarchical classification via recursive partitioning for >10 classes
+  - Memory-efficient inference (polynomial regression batch sizing, activation offloading)
+  reported_results:
+  - Best median relative accuracy across all 200 TALENT datasets; outperforms TabPFNv2 and CatBoost on
+    the 56 large (>10K-sample) datasets.
+  - ~1.1 s geometric-mean train+inference per 1K samples vs ~3 minutes for tuned CatBoost.
+  - 1.5x faster than TabPFNv2 on small datasets, 3-10x faster on large datasets; ~20 s for 10K samples/100
+    features vs 1m40s for TabPFNv2.
+  - Inference handles 500K samples x 500 features in ~20GB GPU memory; 100K-sample datasets run on ~5GB
+    GPU + 32GB RAM.
+  - 'Pretraining cost: ~2 weeks on three 40GB A100 GPUs.'
+  referenced_arxiv_ids:
+  - '2302.14886'
+  - '2312.14886'
+  - '2403.06644'
+  - '2403.07815'
+  - '2406.19380'
+  - '2407.21783'
+  novelty: high
+  relevance: medium
+  credibility_score: 5
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: https://research.google/blog/introducing-tabfm-a-zero-shot-foundation-model-for-tabular-data/
+  ingested_date: '2026-07-02'
+  contradicting_evidence:
+  - Corroborating sources (Mission Lane 'TabICL Under the Microscope' enterprise credit-risk benchmark;
+    MultiTab arXiv 2511.09970) report TabICL is GPU-reliant and CPU inference is substantially slower,
+    and that it was 'orders of magnitude slower than LGBM' for low-volume real-time prediction — directly
+    contra the paper's 'affordable resources' framing for a CPU-first, latency-critical routing path.
+  - TabICL is classification-only (no regression); it must hold all training samples in its context window
+    at once, so the '500K samples' claim has a hard ceiling and is described elsewhere as 'not applicable'
+    to million-row scale — the 500K/20GB figure is the extrapolation limit, not headroom.
+  - On large numeric datasets XGBoost still outperforms tabular-foundation approaches; TabICL's advantage
+    is concentrated under data scarcity and narrows on large numeric data (its win over CatBoost is on
+    the >10K-sample slice of TALENT, not universally).
+  - Predictions are sensitive to feature ordering (a known TabPFN-family weakness), which would add a
+    calibration/robustness burden if used as a routing head.
+  cross_references:
+    chapters: []
+    handoffs:
+    - routing-intelligence.md
+    - learned-routing-controller.md
+    - retrain-routing-models.md
+    - decision-aware-routing.md
+    - routing-and-optimization-index.md
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries: []
+  recommended_actions:
+  - 'OPERATOR-REVIEW: consider an OFFLINE-ONLY bake-off of TabICL (or TabPFNv2) against the current numpy
+    routing MLP on the existing 275,960-sample / 1,031-feature routing dataset, scored as batch classification
+    accuracy/precision-at-coverage — explicitly NOT wired into the live per-request path, to quantify
+    any ceiling gain before spending on a backbone swap.'
+  - 'OPERATOR-REVIEW: if the offline bake-off is pursued, gate it behind the fable5 routing-freeze exit
+    criteria referenced in learned-routing-controller.md / retrain-routing-models.md, and treat any resulting
+    accuracy numbers as observations (no protocol id) per MEASUREMENT.md until run through a codified
+    recipe.'
+  - 'OPERATOR-REVIEW: file the GPU/latency incompatibility as the reason this is not a live-path candidate,
+    and note the MI210 arrival (~July 2026, gpu-acceleration-path.md) as the only realistic window to
+    even test GPU inference for it.'
+  handoffs_updated:
+  - learned-routing-controller.md
+  handoffs_created: []
+  novelty_justification: grep of /workspace/research/intake_index.yaml for tabpfn|tabicl|tabular foundation|in-context
+    tabular returned zero existing entries (only unrelated hits on referenced id 2407.21783 = Llama 3).
+    The chapters (01-spec-dec, 02-moe, 03-prompt-lookup, 04-radix, 06/07-benchmarking, 08-cost-aware,
+    10-adv-specdec) cover none of tabular ICL foundation models. Column-then-row attention + distribution-aware
+    Set-Transformer embedding scaling ICL to 500K rows is a genuinely novel technique absent from the
+    corpus -> high.
+  relevance_justification: 'The routing head is a current active focus: learned-routing-controller.md
+    and retrain-routing-models.md describe a ~200K-param numpy-only MLP trained on ~275,960 samples /
+    1,031 engineered features over BGE embeddings — i.e. exactly a tabular classification problem, and
+    TabICL is an in-context tabular classifier that could be an alternative backbone. But relevance is
+    capped at medium because (a) it is GPU-reliant with slow CPU inference (contra CPU-first; MI210 only
+    lands ~July 2026), (b) it is orders of magnitude slower than LGBM for low-volume real-time prediction,
+    incompatible with the 10-50ms per-request routing budget noted in learned-routing-controller.md, and
+    (c) learned-routing expansion is FROZEN per the fable5 gates cited in both routing handoffs. In-domain/method-relevant
+    but not immediately actionable.'
+  verdict_justification: High novelty and squarely in the routing-intelligence domain, but deployment
+    is blocked on three independent axes (GPU dependence vs CPU-first hot path; per-request latency vs
+    a batch-oriented ICL classifier; the active routing freeze). It is a candidate backbone to evaluate
+    offline or once the MI210 lands — a thing to investigate rather than a pattern we can obviously port
+    into the numpy MLP or a component we can pull in today -> worth_investigating.
+  notes: Fetch succeeded via ar5iv (redirect to ar5iv.labs.arxiv.org); id 2502.05564 correctly resolves
+    to TabICL by Qu/Holzmüller/Varoquaux/Le Morvan (Inria Soda; Varoquaux is a scikit-learn co-founder
+    — counted as known-contributor for credibility). Credibility 5 = peer-reviewed venue (+2; TabICL is
+    presented at ICML 2025 per widespread references — best-effort, treat venue as unverified from the
+    fetched abstract page) + known contributor (+1) + independent corroboration (+2, Mission Lane enterprise
+    benchmark and MultiTab paper). Paper is ~17 months old (Feb 2025), so no recency bonus and no >24mo
+    penalty. Referenced-arxiv list is best-effort from the auto-extracted references; note 2302.14886
+    vs 2312.14886 (both attributed to Da Costa et al.) may be a single id mis-split — verify before literature
+    expansion. No routing chapter exists, so cross_references.chapters is intentionally empty; handoff
+    links are the routing/gpu handoffs that would own any evaluation.
+- id: intake-745
+  arxiv_id: '2207.01848'
+  url: https://arxiv.org/abs/2207.01848
+  source_type: paper
+  title: 'TabPFN: A Transformer That Solves Small Tabular Classification Problems in a Second'
+  authors:
+  - Noah Hollmann
+  - Samuel Müller
+  - Katharina Eggensperger
+  - Frank Hutter
+  categories:
+  - routing_intelligence
+  key_claims:
+  - A single pre-trained transformer (TabPFN) performs supervised classification on small tabular datasets
+    in a single forward pass, with no per-dataset training or hyperparameter tuning, by conditioning on
+    the labeled training rows in-context.
+  - 'The network is a Prior-Data Fitted Network (PFN): it is trained once offline to approximate Bayesian
+    inference over a prior of synthetic datasets drawn from structural causal models (SCMs) and Bayesian
+    neural networks with a bias toward simple structures, effectively an implicit ensemble over data-generating
+    mechanisms.'
+  - TabPFN matches or exceeds strong AutoML systems and gradient-boosted trees on small numerical datasets
+    while being orders of magnitude faster at fit+predict time.
+  - Because inference is a forward pass over the training rows, there are no parameter updates at prediction
+    time — the 'training' cost is amortized entirely into the one-time offline pre-training on synthetic
+    priors.
+  - Scope is explicitly small tabular problems (paper evaluates the purely-numerical, up-to-~1000-sample
+    regime); it is positioned as a first tabular foundation model rather than a general large-scale replacement
+    for GBDTs.
+  techniques:
+  - Prior-Data Fitted Networks (PFN)
+  - in-context learning for tabular classification (single forward pass, no gradient updates at predict
+    time)
+  - synthetic prior over structural causal models (SCMs) + Bayesian neural networks with Occam/simplicity
+    bias
+  - approximate Bayesian posterior-predictive inference via amortized offline pre-training
+  - transformer with modified attention masking over (train rows | query rows)
+  reported_results:
+  - Mean ROC AUC 0.934 (TabPFN) vs 0.930 (AutoGluon) and 0.924 (XGBoost) on the 18 purely-numerical OpenML-CC18
+    datasets.
+  - Fit+predict latency ~1.30 s on CPU / ~0.05 s on GPU per dataset; reported ~230x speedup on CPU and
+    ~5,700x on GPU versus AutoML baselines that need ~1 hour (one headline figure quotes 0.62 s GPU vs
+    1h AutoML).
+  - Model pre-trained once on ~18,000 batches of synthetic datasets over ~20 hours using 8 GPUs; then
+    frozen.
+  - Additional validation on 67 OpenML datasets and 5 OpenML-AutoML Benchmark datasets beyond the core
+    18-dataset numerical comparison.
+  referenced_arxiv_ids:
+  - '2204.04875'
+  - '2110.01889'
+  - '2207.08815'
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: https://github.com/PriorLabs/tabpfn
+  ingested_date: '2026-07-02'
+  contradicting_evidence:
+  - 'Scale ceiling in this v1 method: limited to ~1000 training samples and ~100 purely-numerical features
+    (transformer memory/compute is quadratic in context length), so real-world applicability is narrow;
+    categorical and large-feature handling are weak. Independent scaling work (arXiv:2311.10609 sketching/feature-selection,
+    arXiv:2503.01256 ''PFNs as weak learners'') exists precisely because the base model does not scale.'
+  - 'GBDT competitiveness: gradient-boosted trees still scale to large datasets where TabPFN cannot; TabPFN''s
+    reported advantage is confined to the small-sample regime. A constrained comparison (arXiv:2502.02672)
+    shows TabPFN winning on 12/17 datasets only when both models are capped at ~3000 samples — i.e. the
+    win is regime-specific, not universal.'
+  - 'Superseded on scale by its own lineage: successor models (TabPFN v2 / Nature 2025, TabPFN-2.5 arXiv:2511.08667,
+    TabPFN-3) extend to larger datasets and mixed feature types, so any deployment interest should target
+    the successor rather than the 2022 v1 in this paper.'
+  - 'Deployment-vs-method gap for EPYC routing: the ~1.3 s CPU fit+predict latency is ~3 orders of magnitude
+    above the <1 ms budget of the production numpy routing-classifier MLP (and above the 10-50 ms FAISS
+    fallback), so it is deploy-blocked for the per-request routing hot path even though the method is
+    attractive for the small-label (8K-example) offline training regime.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - learned-routing-controller.md
+    - routing-intelligence.md
+    - retrain-routing-models.md
+    - decision-aware-routing.md
+    - outer-coordinator-learned-head.md
+    - routing-and-optimization-index.md
+    - graphrouter-memrl-augmentation.md
+    - routing-intelligence-completed-through-2026-05-28.md
+    experiments: []
+    intake_entries: []
+  recommended_actions:
+  - 'OPERATOR-REVIEW: consider adding a note in learned-routing-controller.md / routing-intelligence.md
+    citing TabPFN (arXiv:2207.01848) as the foundational tabular in-context-learning method for the small-label
+    (~8K episodic examples) routing-classifier regime, with the explicit caveat that its ~1.3 s CPU per-prediction
+    latency rules it out of the <1 ms per-request hot path — position it as an offline analysis / difficulty-estimation
+    baseline or a teacher for MLP distillation, not a live router.'
+  - 'OPERATOR-REVIEW: once the expansion-parent entry (PriorLabs/tabpfn repo, source_type=repo) receives
+    an intake-NNN id, cross-link this base-method paper to it, and steer any actual routing experiment
+    toward the scale-extended successors (TabPFN v2 / Nature 2025, TabPFN-2.5 arXiv:2511.08667) rather
+    than this superseded v1.'
+  - 'OPERATOR-REVIEW: if a routing-classifier experiment is opened, log a decision-gate on the deployment-vs-method
+    distinction (open-source Apache repo, GPU-friendly on the incoming MI210, but per-request CPU latency
+    prohibitive) before any hot-path integration.'
+  handoffs_updated:
+  - learned-routing-controller.md
+  handoffs_created: []
+  novelty_justification: A case-insensitive grep of the 728-entry /workspace/research/intake_index.yaml
+    for '2207.01848', 'tabpfn', 'priorlabs/tabpfn', 'prior-data fitted', 'prior-fitted network', and 'PFN'
+    returned zero matches (dup count 0), and a grep of docs/chapters, active/completed handoffs, experiments,
+    and research notes found no coverage of prior-fitted networks or in-context tabular classification
+    (05-deprecated-approaches.md matched only on an unrelated 'in-context' spec-dec reference, CLaSp).
+    The single-forward-pass in-context tabular-classification technique is entirely absent from the compendium,
+    hence high; noted caveat that the PriorLabs/tabpfn repo (this entry's expansion parent) captures the
+    same technique family in the same batch.
+  relevance_justification: 'routing_intelligence is a live area — learned-routing-controller.md documents
+    a numpy MLP routing classifier (currently STAGED, 81.0% val acc, trained on only ~8,115 episodic labels),
+    and the operator explicitly queued this as ''the base single-forward-pass tabular-prediction method
+    for the routing exploration.'' TabPFN''s small-data sweet spot (<=1000 rows) maps to our sub-10K-label
+    routing regime, making the METHOD relevant. It is only medium (not high) because it is deploy-blocked
+    on the hot path: ~1.3 s CPU per prediction vs the production <1 ms MLP budget, so it is an offline/experimental
+    or distillation candidate rather than an immediately actionable per-request router.'
+  verdict_justification: 'worth_investigating fits the medium-relevance, method-attractive but latency-blocked
+    profile: the small-data tabular-ICL approach is worth studying for the 8K-label routing-classifier
+    training regime and for difficulty estimation, but cannot be dropped into the <1 ms routing hot path
+    as-is, and its v1 scale ceiling is already superseded by later TabPFN versions. Not new_opportunity
+    (relevance is medium, not high, and deployment is blocked); not adopt_component (the base 2022 model
+    itself is superseded — a successor version or the distilled pattern would be the real target).'
+  notes: 'Provenance: fetched via ar5iv (https://ar5iv.org/abs/2207.01848 -> redirected to ar5iv.labs.arxiv.org)
+    which resolved to the correct TabPFN paper by Hollmann/Müller/Eggensperger/Hutter; title and author
+    set confirmed against the returned content. Minor inconsistency in the fetched GPU timing (0.05 s
+    vs a headline 0.62 s figure) — both are sub-second and preserved as-reported; the CPU 1.3 s number
+    is the load-bearing one for our latency judgment. referenced_arxiv_ids are best-effort from the ar5iv
+    reference extraction (2204.04875 causal-structure induction, 2110.01889 Borisov et al. deep-learning-on-tabular
+    survey, 2207.08815 Grinsztajn et al. trees-vs-DL). Open-source: the TabPFN implementation is publicly
+    available (PriorLabs), consistent with the self-hosted-only constraint; GPU-only path could ride the
+    incoming MI210 for experiments. cross_references.handoffs mixes active and completed routing handoffs
+    because the cross-ref grep is category-driven and both sets genuinely relate to the learned-routing-classifier
+    line of work.'
+- id: intake-746
+  arxiv_id: '2509.26626'
+  url: https://arxiv.org/abs/2509.26626
+  source_type: paper
+  title: Recursive Self-Aggregation Unlocks Deep Thinking in Large Language Models
+  authors:
+  - Siddarth Venkatraman
+  - Vineet Jain
+  - Sarthak Mittal
+  - Vedant Shah
+  - Johan Obando-Ceron
+  - Yoshua Bengio
+  - Brian R. Bartoldson
+  - Bhavya Kailkhura
+  - Guillaume Lajoie
+  - Glen Berseth
+  - Nikolay Malkin
+  - Moksh Jain
+  categories:
+  - swarm_techniques
+  - reinforcement_learning
+  key_claims:
+  - Recursive Self-Aggregation (RSA) is a test-time scaling method that combines parallel and sequential
+    compute by maintaining a population of N candidate reasoning chains and recursively aggregating random
+    subsets of K of them over T rounds, letting quality concentrate while diversity is preserved when
+    N > K.
+  - Aggregation works by reusing correct intermediate reasoning steps even from chains with WRONG final
+    answers, rather than merely selecting the single best complete solution (as majority-voting / best-of-N
+    do), which the authors argue is why RSA outperforms plain self-consistency.
+  - RSA lets a small model (Qwen3-4B-Instruct-2507) reach performance competitive with much larger reasoning
+    models including DeepSeek-R1 and o3-mini (high) on math/code/reasoning benchmarks, largely at test
+    time.
+  - Conventional RL fine-tuning WITHOUT aggregation awareness makes models WORSE than the base model when
+    used with RSA; the authors introduce an aggregation-aware RL objective (data-augmented with aggregation
+    prompts) to fix this.
+  - Performance scales monotonically with sequential depth T; the largest single jump is from aggregation
+    batch K=1 to K=2; population size N sets the asymptotic accuracy ceiling.
+  techniques:
+  - Recursive Self-Aggregation (RSA)
+  - population-based recursive aggregation of reasoning chains
+  - aggregation-aware RL (aggregation-prompt data augmentation)
+  - combined parallel + sequential test-time compute scaling
+  reported_results:
+  - 'Qwen3-4B-Instruct-2507 with RSA (N=16, K=4, T=10), Pass@1: AIME-25 73.18% vs 43.91% baseline; HMMT-25
+    47.55% vs 27.17%; LiveCodeBench-v6 56.72% vs 49.63%; Reasoning Gym Games 68.98% vs 53.88%; SuperGPQA
+    47.39% vs 41.85%'
+  - Claimed to match larger reasoning models (DeepSeek-R1, o3-mini high) with the 4B model
+  - 'Ablations: monotonic gain with sequential depth T; largest gain at K=1 to K=2; N controls asymptotic
+    ceiling; standard-RL-finetuned models underperform base under RSA'
+  novelty: high
+  relevance: medium
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: https://arxiv.org/abs/2606.23595
+  ingested_date: '2026-07-02'
+  contradicting_evidence:
+  - The index's own intake-601 caution (from optillm intake) records that SOTA verification/aggregation
+    methods can need up to 8x more compute just to match simple self-consistency, with marginal gains
+    even at 128x — directly challenges whether RSA's token cost pays off on a bandwidth-bound CPU.
+  - Correlated-error literature already flagged in-index (arXiv:2511.02309 inverse-entropy voting, referenced
+    by intake-601) shows self-consistency/best-of-N samples make correlated mistakes; RSA claims to overcome
+    this by reusing intermediate steps, but the correlated-error risk is an unverified assumption for
+    our workloads.
+  - The paper's own result that standard RL fine-tuning degrades RSA performance implies gains may shrink
+    on already-RL-tuned production models unless the (GPU-heavy) aggregation-aware RL is applied.
+  - Reported gains are on math-contest / code / reasoning-gym benchmarks (AIME/HMMT/LiveCodeBench/SuperGPQA);
+    transfer to our production tool-compliance/general suites is unverified, and per project memory (feedback_eval_saturation_masks_model_gap)
+    contest-benchmark deltas do not always map to our saturated suites.
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - per-request-reasoning-budget.md
+    - swarm-dataset-distillation.md
+    - reasoning-compression.md
+    experiments:
+    - trimr-reasoning-pruning.md
+    intake_entries:
+    - intake-260
+    - intake-493
+    - intake-601
+    - intake-603
+    - intake-615
+  recommended_actions:
+  - 'OPERATOR-REVIEW: consider a small-scale, canonical-recipe CPU eval of training-free RSA (a few N/K/T
+    points) on an open reasoning-capable model already in the stack vs a self-consistency / best-of-N
+    baseline, measuring quality gain per extra token generated, before any deeper investment — token volume
+    is the deploy risk on a bandwidth-bound CPU.'
+  - 'OPERATOR-REVIEW: consider noting RSA as a candidate aggregation operator inside swarm-dataset-distillation.md
+    (recursive-population aggregation of many mid-tier-model traces) alongside the existing Bradley-Terry
+    peer-ranking (intake-615).'
+  - 'OPERATOR-REVIEW: consider cross-linking RSA to per-request-reasoning-budget.md / cost-aware routing
+    as a ''spend more test-time compute only on hard queries'' lever the router could gate.'
+  handoffs_updated:
+  - reasoning-compression.md
+  handoffs_created: []
+  novelty_justification: A grep of intake_index.yaml for this arxiv_id/URL returned nothing (not previously
+    indexed; not a duplicate). RSA is a genuinely distinct named mechanism — a recursively-aggregating
+    evolving population of reasoning chains (N>K subset mixing over T rounds) plus an aggregation-aware
+    RL objective, and the counterintuitive finding that standard RL degrades aggregation. None of the
+    docs/chapters/*.md cover it. Adjacent-but-different prior art exists in the index (intake-260 on-policy
+    test-time aggregation; intake-493 Sakana 'recursive self-as-worker' test-time scaling; intake-601
+    optillm's self-consistency/MoA/best-of-N/MCTS bundle; intake-603 DeepConf confidence-gated self-consistency;
+    intake-615 Fortytwo peer-ranked consensus) but each aggregates differently (single-best selection,
+    peer-ranking, or worker-recursion), so RSA's population-recursive mechanism plus the large reported
+    gains (AIME-25 43.9->73.2) qualify as high novelty rather than medium.
+  relevance_justification: 'Method-relevant to the EPYC domain but not the current spec-dec/MTP branch
+    focus, hence medium not high. The training-free RSA lever runs on any open-source self-hosted model
+    (constraint-compatible) and directly instantiates our ''small model matches large model'' thesis (Qwen3-4B
+    ~ DeepSeek-R1/o3-mini). It connects to several active lines: per-request-reasoning-budget.md (test-time
+    compute control), swarm-dataset-distillation.md (aggregating many traces/models), and reasoning-compression.md
+    / trimr-reasoning-pruning.md (the opposite economy lever). Not high because it is orthogonal to spec-dec/MTP
+    and, critically, CPU decode is memory-bandwidth-bound (per project memory) so RSA''s large token volume
+    — a population of N chains times T aggregation rounds each re-reading multiple chains — is expensive
+    on our stack; not immediately actionable. The aggregation-aware RL add-on needs RL training infra
+    (GPU-heavy; MI210 only lands ~July 2026), lowering deploy-readiness but the inference-time method
+    stands alone.'
+  verdict_justification: 'worth_investigating: novelty is high but relevance is only medium, so it does
+    not meet the new_opportunity bar (novel + high relevance). The training-free inference-time RSA is
+    a concrete candidate to evaluate as a reasoning-quality lever for a reasoning role or inside the swarm-dataset-distillation
+    aggregation stage, but it cannot deploy as-is without a CPU token-cost/quality study and (for the
+    trained variant) GPU RL infra. Adopt_patterns is close, but the paper''s core value here is a testable
+    mechanism to bench, not just patterns to mine, so worth_investigating fits best.'
+  notes: 'Fetch: ar5iv redirected to ar5iv.labs.arxiv.org; content retrieved successfully and the arxiv_id
+    resolves to the claimed paper (title matches the queued reason). referenced_arxiv_ids left empty —
+    the ar5iv extraction did not surface concrete citation IDs (citations were LaTeX \cite commands, not
+    resolved arXiv numbers); provenance is otherwise intact (not degraded). The queued PARENT entry https://arxiv.org/abs/2606.23595
+    and ''SPIRAL'' are NOT present in intake_index.yaml (grep found no entry for either), so the expansion
+    link is dangling in the index; the RSA paper itself was fetched and analyzed directly. Author list
+    includes Yoshua Bengio and Nikolay Malkin (Mila) plus LLNL (Bartoldson, Kailkhura) — strong lab, but
+    an arXiv preprint (Sept 2025), no peer-review confirmation and no independent replication of RSA specifically,
+    hence credibility 2 (Med tier): base 0, +1 recent (~10 months), +1 major lab/known contributors.'
+- id: intake-747
+  arxiv_id: '2503.04104'
+  url: https://arxiv.org/abs/2503.04104
+  source_type: paper
+  title: LLMs Can Generate a Better Answer by Aggregating Their Own Responses
+  authors:
+  - Zichong Li
+  - Xinyu Feng
+  - Yuheng Cai
+  - Zixuan Zhang
+  - Tianyi Liu
+  - Chen Liang
+  - Weizhu Chen
+  - Haoyu Wang
+  - Tuo Zhao
+  categories:
+  - llm_prompting
+  - routing_intelligence
+  - cost_aware_routing
+  key_claims:
+  - Self-correction and choose-from-N response selection fail because standard LLM post-training lacks
+    explicit supervision for discriminative judgment; the model is good at generating but weak at evaluating/selecting
+    its own outputs (supported by lower negative-log-likelihood for generating vs selecting a response).
+  - 'Generative Self-Aggregation (GSA) sidesteps the discriminative weakness: it samples multiple diverse
+    responses, then prompts the SAME model to SYNTHESIZE a new answer from the concatenated samples''
+    reasoning, rather than picking or scoring among them. The method is entirely prompting-based and requires
+    no additional training.'
+  - Because GSA aggregates the reasoning process (not just final answers) and needs no verifiable/majority-votable
+    token, it generalizes beyond self-consistency's applicable set to open-ended tasks such as code synthesis
+    and conversational responses.
+  - GSA can produce a correct answer in cases where none of the N sampled candidates were individually
+    correct, evidencing genuine synthesis rather than mere selection.
+  - On verifiable-token tasks GSA is reported as matching-or-outperforming self-consistency while using
+    fewer candidates (3 vs 4 total calls); its distinctive gains are on open-ended generation where majority-vote
+    self-consistency cannot be applied.
+  techniques:
+  - Generative Self-Aggregation (GSA) — sample N diverse responses then generatively synthesize a new
+    answer conditioned on all of them
+  - Diversity induction via prompt-template variation and multilingual generation (in addition to temperature
+    sampling)
+  - Generative aggregation contrasted against discriminative selection (choose-from-N) and against self-consistency
+    majority voting
+  - NLL-based diagnostic showing generation is easier than selection for the model (motivation for the
+    generative aggregator)
+  reported_results:
+  - 'Standard eval setting: N=3 sampled responses + 1 aggregation call = 4 total model calls (matched
+    budget vs baselines); N-ablation sweeps 1-7, with a reported peak around N=5 for Llama 3, temperature
+    ~1.0 optimal.'
+  - 'Llama 3 8B: GSM8K 86.05% (GSA) vs 86.35% (Self-Consistency) vs 82.47% (Greedy); MATH 32.46 vs 31.68
+    vs 29.28; GPQA 35.04 vs 33.26 vs 32.14; MBPP 55.20 (GSA) vs 53.20 (Choose-from-N).'
+  - 'GPT-4o Mini: GSM8K 94.69 (GSA) vs 94.77 (SC) vs 93.48 (Greedy); MATH 78.25 vs 77.26 vs 76.54; GPQA
+    42.17 vs 40.40 vs 41.07; AlpacaEval win-rate 55.85 (GSA) vs 50.20 (Choose-from-N).'
+  - 'Gemma 2 9B: GSM8K 89.61 (GSA) vs 89.08 (SC) vs 87.11 (Greedy); GPQA 34.82 vs 33.26 vs 31.74. Qwen
+    2.5 14B: GPQA 41.74 (GSA) vs 40.40 (SC) vs 39.51 (Greedy).'
+  - 'Note: on the two GSM8K rows, Self-Consistency edges GSA (86.35 vs 86.05; 94.77 vs 94.69) — GSA''s
+    clean wins are concentrated on MATH/GPQA and the open-ended MBPP/AlpacaEval tasks.'
+  referenced_arxiv_ids:
+  - '2108.07732'
+  - '2212.08073'
+  - '2311.17311'
+  - '2410.12832'
+  - '2406.04692'
+  - '2406.12624'
+  - '2408.03314'
+  - '2408.00118'
+  - '2412.15115'
+  - '2303.08774'
+  - '2311.12022'
+  - '2406.01297'
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  verdict: adopt_patterns
+  discovered_via: expansion
+  expanded_from: https://arxiv.org/abs/2606.23595
+  ingested_date: '2026-07-02'
+  contradicting_evidence:
+  - 'The paper''s headline does not hold on verifiable-token tasks: self-consistency actually beats GSA
+    on both GSM8K rows (Llama3 86.35 vs 86.05; GPT-4o-mini 94.77 vs 94.69). The honest framing is parity
+    on math/knowledge with majority-votable answers, and a real edge only on open-ended tasks where SC
+    is inapplicable — so ''better answer by aggregating'' is task-scoped, not general.'
+  - 'Unfavorable cost/quality for CPU decode: N=3 samples plus a long-context aggregation pass (the aggregator
+    prompt concatenates all N reasoning traces, adding prefill on top of ~4 forward passes) buys near-parity
+    over greedy on verifiable tasks. Index corroboration: verification/aggregation methods ''can require
+    up to 8x more compute just to match simple self-consistency'' (intake-601/603 notes).'
+  - 'Correlated-error failure mode: if the N samples share a systematic mistake, a generative aggregator
+    has no correct signal to synthesize from; the ''solves cases where no candidate was correct'' claim
+    is anecdotal and unquantified against how often aggregation INTRODUCES new errors. Index note: ''Self-consistency
+    / Best-of-N majority does not always hold truth; samples make correlated mistakes'' (arXiv:2511.02309
+    inverse-entropy voting).'
+  - 'Deployment mechanics: llama.cpp / our llama-server stack lacks the `n` multi-sample parameter (per
+    intake-601), so GSA''s N parallel samples degrade to sequential generation on our backends, erasing
+    the parallelism that makes multi-sample methods cheap elsewhere.'
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - decision-aware-routing.md
+    - routing-and-optimization-index.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-260
+    - intake-601
+    - intake-603
+    - intake-614
+    - intake-712
+  recommended_actions:
+  - 'OPERATOR-REVIEW: consider noting GSA in decision-aware-routing.md / routing-and-optimization-index.md
+    (P21.B) as a GENERATIVE-synthesis aggregator alternative to DAR-6''s Bradley-Terry discriminative
+    winner-selection — a small A/B (generative-synthesis aggregation vs BT winner) over the existing src/swarm_fanout.py
+    path would test GSA''s ''generation beats selection'' thesis with no new infra.'
+  - 'OPERATOR-REVIEW: any GSA follow-up should first measure the N+1-pass decode+prefill cost on EPYC
+    and flag llama.cpp''s missing `n` multi-sample (intake-601) as a hard deploy blocker; the aggregation
+    prompt concatenates all N reasoning traces so prefill cost grows with N.'
+  - 'OPERATOR-REVIEW: flag a provenance discrepancy for the expansion queue — the queued reason says the
+    aggregation primitive is ''learned end-to-end (SPIRAL)'', but 2503.04104 is explicitly training-free;
+    GSA is the prompting-only baseline, so if the primary entry 2606.23595 learns to optimize aggregation,
+    that learned component belongs to the parent, not to this paper.'
+  - 'OPERATOR-REVIEW: queue the un-indexed follow-up ''Recursive Self-Aggregation in LLMs'' (arXiv:2509.26626),
+    which extends this self-aggregation idea recursively, as an expansion candidate.'
+  handoffs_updated:
+  - reasoning-compression.md
+  handoffs_created: []
+  novelty_justification: 'Medium. The multi-sample-then-combine family is already well represented in
+    the index — Mixture-of-Agents and self-consistency (intake-601 OptiLLM), swarm/consensus aggregation
+    (intake-614 Fortytwo), DeepConf confidence-gated aggregation (intake-603), and test-time aggregation
+    (intake-260) — and GSA is effectively single-model Mixture-of-Agents with a generative rather than
+    a judge/selection aggregator, so it is not high novelty. It is not low/duplicate either: neither 2503.04104
+    nor the primary 2606.23595 appears in intake_index.yaml (grep empty; the index''s other ''GSA'' at
+    line 22136 is unrelated ''Gist Sparse Attention''), and the specific perspective — a generative-synthesis
+    aggregator justified by an NLL ''generation is easier than selection'' argument, extended to open-ended
+    tasks — plus cross-model results is a genuine new angle over the covered material.'
+  relevance_justification: 'Medium. It is squarely in-domain and method-relevant to an ACTIVE aggregation
+    axis: decision-aware-routing.md DAR-6 already builds swarm fan-out (src/swarm_fanout.py) that returns
+    a Bradley-Terry (discriminative) aggregated winner, and routing-and-optimization-index.md P3/P21.B
+    tracks a GATED Fusion/MoA method-selection axis — GSA''s core thesis (generative synthesis beats discriminative
+    selection) directly challenges DAR''s peer-judged BT aggregator choice, so it is testable on infrastructure
+    we already own. It is not high relevance: it is orthogonal to the current spec-dec/MTP focus of the
+    active branch, and it is deploy-blocked on EPYC by the ~4x+ N-sample decode cost on BW-bound CPU and
+    by llama.cpp''s missing `n` multi-sample support (intake-601). Method-relevant but not immediately
+    actionable = medium.'
+  verdict_justification: 'adopt_patterns. The deployable value is the pattern, not the artifact: mine
+    GSA''s generative-synthesis-over-discriminative-selection aggregator as an alternative to DAR-6''s
+    Bradley-Terry winner-selection on the existing swarm_fanout path, and as the n-free judge/aggregation
+    contract discussed for P21.B. It cannot be deployed as-is (N-sample cost on BW-bound CPU, no `n` multi-sample
+    in our stack, parity-only on the verifiable tasks that dominate our eval suites, and off the current
+    spec-dec focus), which rules out new_opportunity/adopt_component. Not already_integrated (our aggregation
+    is discriminative/BT, not generative). Not superseded/not_applicable — the generative-aggregator idea
+    is a live, untested alternative for our ensemble/escalation axis.'
+  notes: 'Provenance: fetched ar5iv (301-redirect to ar5iv.labs.arxiv.org/abs/2503.04104) for title/authors/abstract/results,
+    plus arxiv.org/html/2503.04104v2 for the bibliography and confirmations. The id resolves to the claimed
+    paper. Key correction to the discovery reason: GSA is ENTIRELY prompting-based / training-free — paper
+    states it ''does not require additional training'' and ''operates within the model''s generative framework
+    without requiring any discriminative judgments''; there is no learned aggregation component (the ''learned
+    end-to-end'' framing belongs to the parent 2606.23595, not here). Confirmed: N=3 for main results
+    (4 total calls incl. aggregation), N-ablation 1-7. Dedup: neither 2503.04104 nor primary 2606.23595
+    is in intake_index.yaml; the index''s existing ''GSA'' (line ~22136) is unrelated Gist Sparse Attention.
+    referenced_arxiv_ids are the 12 IDs captured from the v2 HTML bibliography (notable: 2406.04692 Mixture-of-Agents,
+    2408.03314 scaling test-time compute, 2311.12022 GPQA, 2303.08774 GPT-4, 2108.07732 MBPP, 2212.08073
+    Constitutional AI); the self-consistency paper (Wang et al. 2022) is named in the abstract but its
+    arXiv id was not present in the extracted bib list, so provenance on that specific citation is partial.
+    No confirmed peer-review venue found via WebSearch (arXiv-only as of retrieval); credibility_score=2
+    reflects known contributor Weizhu Chen (Microsoft) +1 and corroboration from the MoA family / follow-up
+    RSA +1, with recency neutral (~15 months) and no venue bonus.'
+- id: intake-748
+  arxiv_id: '2604.17654'
+  url: https://arxiv.org/abs/2604.17654
+  source_type: paper
+  title: 'Poly-EPO: Training Exploratory Reasoning Models'
+  authors:
+  - Ifdita Hasan Orney
+  - Jubayer Ibn Hamid
+  - Shreya S Ramanujam
+  - Shirley Wu
+  - Hengyuan Hu
+  - Noah Goodman
+  - Dorsa Sadigh
+  - Chelsea Finn
+  categories:
+  - training_distillation
+  - reinforcement_learning
+  - swarm_techniques
+  key_claims:
+  - Set reinforcement learning with a 'polychromic' objective trains an LM to emit response SETS that
+    are collectively accurate and diverse in reasoning strategy, rather than optimizing each rollout independently
+    as GRPO does.
+  - The advantage is a 'marginal set advantage' incorporating the covariance between reward and diversity,
+    so a generation that explores optimistically gets a positive learning signal even when it is itself
+    incorrect, provided other set members succeed — letting the policy learn exploration/exploitation
+    synergy without a hand-tuned diversity weight (lambda).
+  - 'Poly-EPO preserves generation diversity where GRPO collapses onto narrow behaviors: cluster diversity
+    keeps rising while GRPO''s declines after ~200 training steps.'
+  - It fits into standard RL algorithms by swapping per-sample advantages for marginal set advantages,
+    so it stays computationally feasible at LM scale.
+  - 'It improves test-time scaling: higher pass@k coverage (up to +20% on math sets) while attaining equal-or-stronger
+    majority-vote accuracy at a LOWER majority-vote share (i.e., correctness is not concentrated in one
+    dominant mode).'
+  techniques:
+  - Polychromic Exploratory Policy Optimization (Poly-EPO)
+  - Set Reinforcement Learning (Set RL)
+  - Polychromic objective (product / joint of average set reward and set diversity)
+  - Marginal set advantage (advantage aggregated over all sets containing a generation; reward-diversity
+    covariance term)
+  - LM-judge semantic clustering (diversity measurement)
+  - GRPO baseline and GRPO+DIV (RL with an additive diversity bonus) baseline
+  reported_results:
+  - 'Mathematical reasoning (AIME / BeyondAIME / Minerva): higher pass@k coverage with gains of up to
+    20% (framed as pass@32-scale improvements).'
+  - 'Majority voting: maintains a lower majority-vote share (higher diversity) yet reaches equal or stronger
+    majority-vote accuracy as k increases.'
+  - 'Training dynamics: GRPO cluster diversity declines after ~200 steps; Poly-EPO cluster count steadily
+    increases to substantially higher levels.'
+  - 'Coverage (fraction of training prompts with >=1 correct rollout): both GRPO+DIV and Poly-EPO beat
+    plain GRPO.'
+  - 'Synthetic domains (multi-digit multiplication, polynomial solving): Poly-EPO discovers more than
+    5x as many distinct successful strategies vs GRPO.'
+  - 'Branching analysis: Poly-EPO branches substantially earlier in the generation process than GRPO-trained
+    models.'
+  referenced_arxiv_ids:
+  - '2203.11171'
+  - '2305.10601'
+  - '2308.09687'
+  novelty: high
+  relevance: medium
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: https://arxiv.org/abs/2606.23595
+  ingested_date: '2026-07-02'
+  contradicting_evidence:
+  - The headline diversity/coverage gain is reported as 'up to 20%' pass@k — an upper-bound/best-case
+    framing; the fetched summary did not expose per-benchmark means, so the typical effect size is unverified
+    and could be materially smaller.
+  - Optimizing set coverage (pass@k) is known to trade against single-sample greedy accuracy (pass@1);
+    the paper claims exploration/exploitation synergy via the reward-diversity covariance, but pass@1
+    numbers were not surfaced in the fetch to confirm no regression there.
+  - Diversity is measured via LM-judge semantic clustering, which is judge-quality-dependent and can be
+    gamed or noisy — the 'more than 5x distinct strategies' claim on synthetic tasks rests on this instrument.
+  - 'Deployment-side counter-evidence from our own index: intake-139 (Neural Thickets) is flagged as antithetical
+    to our latency budget because majority-vote/parallel-sampling needs K forward passes; the same K-forward-pass
+    cost undercuts realizing Poly-EPO''s pass@k advantage on bandwidth-bound EPYC CPU decode.'
+  - Compared only against GRPO and GRPO+DIV; no head-to-head against other diversity/set/target-based
+    RL methods (e.g., TPO / intake-404), so the relative gain over the broader set-RL family is unestablished.
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - swarm-dataset-distillation.md
+    - agent-world-env-synthesis.md
+    experiments: []
+    intake_entries:
+    - intake-404
+    - intake-389
+    - intake-139
+    - intake-129
+  recommended_actions:
+  - 'OPERATOR-REVIEW: consider cross-linking Poly-EPO from swarm-dataset-distillation.md as a training-side
+    option for generating diverse-yet-collectively-accurate reasoning traces IF an RL post-training track
+    (e.g., GPU rental or MI210) materializes; keep it on the parked-reference list until then (mirrors
+    the existing SDAR forward-pointer pattern in that handoff).'
+  - 'OPERATOR-REVIEW: before pursuing any parallel-sampling / test-time-scaling consumer of Poly-EPO-style
+    diversity, measure the decode cost of K parallel samples on EPYC (bandwidth-bound) and weigh against
+    the pass@k gain, per the intake-139 K-forward-pass caveat.'
+  - 'OPERATOR-REVIEW: link this to the companion primary entry SPIRAL (arXiv 2606.23595) once that entry
+    is persisted, since this was queued as its training-time analogue for set-RL parallel-sampling swarms.'
+  handoffs_updated:
+  - reasoning-compression.md
+  handoffs_created: []
+  novelty_justification: Grep of the chapters, active/completed handoffs, experiments, research notes,
+    and the 728-entry intake_index.yaml found no prior 'Poly-EPO', 'polychromic', 'set RL', or 'set reinforcement
+    learning' entry, and no 2604.17654 URL/id — so it is not a duplicate. The nearest neighbor in the
+    index is intake-404 'Target Policy Optimization' (arXiv 2604.06159), which is also a non-GRPO objective
+    that constructs a target distribution and fits it via cross-entropy, but that is a single-sample target-matching
+    method; Poly-EPO's contribution — a set-level objective whose advantage is the reward-diversity covariance
+    (marginal set advantage) — is a distinct mechanism aimed at collective set accuracy + strategy diversity,
+    which is genuinely novel relative to what the index and chapters cover (GRPO variants, replay, majority-vote
+    ensembling).
+  relevance_justification: 'The current active branch (spec-dec-mtp-refresh-2026-06-22) is speculative-decoding/MTP
+    work, and this paper is not about draft/verify decoding, so it is not HIGH. But it is EPYC-domain-adjacent
+    on the training/inference-quality side: grep matched two active RL-training-track handoffs — swarm-dataset-distillation.md
+    (SFT/RL dataset assembly that wants diverse-yet-correct traces) and agent-world-env-synthesis.md (agentic
+    RL training) — plus intake-404 (TPO set/target RL). The reason-queued framing (training analogue to
+    SPIRAL''s set-RL for parallel-sampling swarms) is real, but deployment is blocked: RL post-training
+    of reasoning models needs GPU training infra we do not run today (MI210 is GPU-only-experiment class,
+    landing ~July 2026), and the test-time consumer (large-K parallel sampling to cash in pass@k) is costly
+    on bandwidth-bound CPU decode. So it is method-relevant but not immediately actionable => medium.'
+  verdict_justification: 'worth_investigating: the method is novel and touches two live training-side
+    handoffs (swarm-dataset-distillation, agent-world-env-synthesis) and the parallel-sampling/test-time-scaling
+    angle, but it cannot be deployed as-is on the current stack (no RL post-training pipeline; GPU-gated;
+    CPU K-sampling expensive), and it is off the current spec-dec/MTP focus. The polychromic-objective
+    / marginal-set-advantage pattern is worth mining for the distillation and swarm tracks, which is why
+    it warrants investigation rather than adoption or dismissal.'
+  notes: 'arxiv_id 2604.17654 CONFIRMED to resolve to this paper (Poly-EPO, Stanford). Provenance: WebFetch
+    of https://ar5iv.org/abs/2604.17654 -> 301 redirect to https://ar5iv.labs.arxiv.org/abs/2604.17654,
+    fetched successfully; content is the ar5iv render summarized by the fetch model (not raw text) — treat
+    exact wordings as paraphrase. referenced_arxiv_ids were INFERRED from bibkeys the fetch returned (wang2023
+    self-consistency -> 2203.11171; yao2023 tree-of-thoughts -> 2305.10601; Besta_2024 graph-of-thoughts
+    -> 2308.09687); the fetch also cited zhu2025 scaling-test-time-compute but I did not assign an id
+    to avoid fabrication — best-effort only, re-verify at expansion. Discovered via expansion from primary
+    entry SPIRAL (https://arxiv.org/abs/2606.23595); that primary is NOT yet an entry in intake_index.yaml
+    (grep returned no match), so it is omitted from intake_entries cross-refs. Credibility 2 = base 0
+    +1 recent (Apr 2026) +1 major-lab/known contributors (Finn, Goodman, Sadigh, Stanford); no +2 peer-review
+    (arXiv preprint, no venue stated), no independent corroboration found in index.'
+- id: intake-749
+  arxiv_id: '2509.25424'
+  url: https://arxiv.org/abs/2509.25424
+  source_type: paper
+  title: Polychromic Objectives for Reinforcement Learning
+  authors:
+  - Jubayer Ibn Hamid
+  - Ifdita Hasan Orney
+  - Ellen Xu
+  - Chelsea Finn
+  - Dorsa Sadigh
+  categories:
+  - reinforcement_learning
+  - training_distillation
+  key_claims:
+  - RL fine-tuning (RLFT) has a characteristic failure mode where a pretrained policy loses its broad
+    repertoire and collapses onto a handful of easily-exploitable high-reward outputs, which hurts exploration
+    and blunts test-time-compute (pass@k) scaling.
+  - 'They define a ''polychromic objective'' over SETS of trajectories rather than single trajectories:
+    f_poly(s, tau_1..n) = (1/n) sum_i R(tau_i) * d(s, tau_1..n), so the objective jointly rewards success
+    AND intra-set diversity, making diversity mathematically necessary to maximize the objective.'
+  - 'PPO is adapted to optimize this set objective via two changes: (1) vine sampling (fork multiple independent
+    rollouts from selected intermediate states to build trajectory sets) and (2) a modified advantage
+    function reflecting the polychromic (set-level) advantage, with all trajectories in a set receiving
+    a shared advantage signal that amplifies gradient on exploratory-but-not-yet-high-reward behaviors.'
+  - The paper argues theoretically that the polychromic objective prevents entropy/mode collapse onto
+    homogeneous actions while pulling probability mass toward diverse successful trajectory sets, i.e.
+    a training-time (weight-level) remedy rather than a sampling-time trick.
+  - Empirically the method both raises task success (solving a larger set of environment configurations)
+    and dramatically improves pass@k coverage and robustness under large state perturbations, while retaining
+    pretrained behaviors (less forgetting).
+  techniques:
+  - Polychromic objective (set-level reward = mean reward x set diversity)
+  - Polychromic PPO
+  - Set Reinforcement Learning (Set RL) framework
+  - Vine sampling (fork multiple rollouts from intermediate states)
+  - Modified / shared set-level advantage estimation (vs GAE baseline)
+  reported_results:
+  - 'BabyAI (Poly-PPO): Goto 0.575 reward / 80.2% success; Pickup 0.452 / 63.2%; Four Rooms 0.666 / 92.4%.'
+  - 'Pass@k: Poly-PPO keeps improving out to k~80 attempts while PPO/REINFORCE baselines saturate around
+    k~20; on Bosslevel ~15% higher pass rate at k=160; meets or exceeds the pretrained policy at most
+    k.'
+  - 'State-perturbation robustness (pass@1): Goto 60.6% vs 30.2% pretrained; Four Rooms 88.7% vs 65.0%
+    pretrained.'
+  - 'Algorithmic Creativity (Triangle Discovery): substantially more unique valid triangles (higher diversity)
+    and higher creativity than PPO/REINFORCE/pretrained; Validity@1 slightly below PPO but well above
+    REINFORCE.'
+  - 'Compute budget used: set size n=4, N=8 rollout trajectories, p=2 rollout states, budget B=136 trajectories.'
+  referenced_arxiv_ids:
+  - '2203.02155'
+  - '2412.16720'
+  - '2501.12948'
+  - '2507.14843'
+  - '2504.13837'
+  - '2504.07912'
+  - '2504.15266'
+  - '2509.06941'
+  - '2503.14286'
+  - '2503.20783'
+  - '2503.19595'
+  - '2506.02355'
+  - '2501.18101'
+  - '2509.02534'
+  - '2410.01679'
+  novelty: high
+  relevance: medium
+  credibility_score: 2
+  verdict: adopt_patterns
+  discovered_via: expansion
+  expanded_from: https://arxiv.org/abs/2606.23595
+  ingested_date: '2026-07-02'
+  contradicting_evidence:
+  - 'Scope caveat / likely over-generalization: all quantitative results are on toy RL environments (BabyAI,
+    Minigrid, Algorithmic Creativity), NOT LLM text-generation RLFT where GRPO/DPO collapse is actually
+    observed; the abstract motivates with LLM RLFT but does not test it. A separate same-group follow-up
+    (Poly-EPO, arXiv 2604.17654, ''Training Exploratory Reasoning Models'') appears to port the idea to
+    reasoning LLMs, implying this paper alone does not establish LLM-scale transfer.'
+  - 'Mechanism-transfer gap: vine sampling requires resetting/forking the environment at chosen intermediate
+    states, which is straightforward in simulated RL but is not a native operation for autoregressive
+    LLM decoding without a resettable/prefix-forkable harness, limiting direct portability to our training
+    stack.'
+  - Simpler competing objectives exist for the same pass@k-coverage goal (e.g. arXiv 2505.15201 'Pass@K
+    Policy Optimization' and arXiv 2606.00151 retrying-based exploration), so the added complexity of
+    set-level objectives + vine sampling may not be necessary to preserve coverage; the paper does not
+    benchmark against these coverage-oriented RL variants.
+  - It cites the contested 'does RL incentivize reasoning beyond the base model' line (referenced 2504.13837);
+    if RL only re-weights the base policy's existing modes, pass@k gains are ultimately bounded by base-model
+    coverage -- a tension with the claim that the method 'expands the capabilities of the pretrained policy'.
+  cross_references:
+    chapters: []
+    handoffs:
+    - frontier-f3-data-flywheel.md
+    - swarm-dataset-distillation.md
+    - agent-world-env-synthesis.md
+    experiments: []
+    intake_entries:
+    - intake-441
+  recommended_actions:
+  - 'OPERATOR-REVIEW: cross-link this entry with intake-441 (diversity-collapse-posttraining.md / arXiv
+    2604.16027) -- 441 establishes that inference-time interventions cannot recover training-time diversity,
+    and this paper is a candidate training-time remedy; the two form a problem->method pair worth noting
+    together.'
+  - 'OPERATOR-REVIEW: consider adding a ''diversity-preserving RL objective (polychromic / set-level advantage)''
+    note to frontier-f3-data-flywheel.md W3 (planner-distill and drafter QLoRA) as a GPU-gated method
+    to evaluate once the MI210 lands, since planner-distill collapsing onto a single planning style is
+    a known risk.'
+  - 'OPERATOR-REVIEW: queue the same-group follow-up Poly-EPO (arXiv 2604.17654) as an expansion candidate
+    -- it appears to apply polychromic objectives to reasoning LLMs and would directly address the toy-environment
+    limitation of this paper; it is more LLM-deploy-relevant than 2509.25424 itself.'
+  - 'OPERATOR-REVIEW: note in swarm-dataset-distillation.md that a diversity-preserving generation objective
+    could raise pass@k coverage of the swarm trace-generation step that feeds the SFT curation subset
+    (Bradley-Terry peer-ranking keeps only a subset, so upstream diversity matters).'
+  handoffs_updated:
+  - reasoning-compression.md
+  handoffs_created: []
+  novelty_justification: grep of /workspace/research/intake_index.yaml for '2509.25424', 'polychromic',
+    and the author names returned nothing, so this is not a duplicate. The closest existing entry is intake-441
+    (arXiv 2604.16027, 'Where does output diversity collapse in post-training?', deep-dive at research/deep-dives/diversity-collapse-posttraining.md),
+    which characterizes the diversity-collapse PROBLEM and shows inference-time interventions cannot recover
+    it, but does NOT propose this set-level RL SOLUTION. No docs/chapters file covers an RL diversity-preserving
+    objective (chapter grep for RL only hit 06-benchmarking-framework.md and 08-cost-aware-rewards.md,
+    neither about policy-training diversity). The polychromic objective, set-RL framing, and vine-sampling
+    advantage modification are a genuinely new technique class not covered in the index -> high.
+  relevance_justification: 'EPYC is CPU-first, open-source/self-hosted, spec-dec/MTP-focused; this is
+    a GPU-side, training-TIME policy-gradient method (PPO + vine sampling) validated only on toy RL environments
+    (BabyAI, Minigrid, Algorithmic Creativity), so it is not immediately deployable and does not touch
+    the current spec-dec/MTP branch. It is method-relevant, not deploy-relevant: it directly targets the
+    pass@k/coverage and diversity-collapse concern flagged by intake-441, and it maps onto the GPU-gated
+    training tracks in frontier-f3-data-flywheel.md (W3 planner-distill / drafter QLoRA), swarm-dataset-distillation.md
+    (raising pass@k coverage of the swarm trace-generation step), and agent-world-env-synthesis.md (agentic
+    RL training). Deploy-blocked but method-relevant -> medium.'
+  verdict_justification: 'adopt_patterns: we cannot deploy this as-is (GPU RL training, toy simulated
+    environments, and vine sampling needs environment reset/fork to intermediate states which autoregressive
+    LLM generation lacks natively), but the transferable PATTERN -- a diversity-weighted / set-level advantage
+    that makes coverage mathematically necessary during fine-tuning -- is a candidate to mine for the
+    GPU-gated F3 training tracks and swarm-distillation trace generation identified in the handoff greps.
+    Not new_opportunity (relevance is medium/deploy-blocked, not immediately actionable) and not worth_investigating
+    alone because the concrete portable component (the objective + shared-advantage trick) is well specified
+    enough to lift patterns from.'
+  notes: 'Fetched real content via https://ar5iv.labs.arxiv.org/abs/2509.25424 (ar5iv redirect from ar5iv.org);
+    arxiv_id 2509.25424 correctly resolves to ''Polychromic Objectives for Reinforcement Learning'' by
+    Hamid, Orney, Xu, Finn, Sadigh (Stanford) -- id verified, no mismatch. This entry was queued as an
+    EXPANSION CANDIDATE from primary intake https://arxiv.org/abs/2606.23595 (SPIRAL-style set-reward
+    parallel-trace training); grep found the primary 2606.23595 is NOT yet in the intake index, so the
+    SPIRAL linkage is via the queueing rationale, not an existing entry. Peer-review status: the paper
+    is under review on OpenReview (forum id zzTQISAGUp) -- in-venue review in progress but not confirmed
+    accepted, so credibility scored as arXiv preprint (+1 recent <12mo Sept 2025, +1 major-lab/known-contributor
+    Finn+Sadigh) = 2 (Med tier); no independent corroboration counted at ingest. Adjacent/competing works
+    surfaced during the contradicting-evidence check: Poly-EPO (2604.17654, same group, LLM reasoning
+    port), Pass@K Policy Optimization (2505.15201), retrying-based exploration (2606.00151). Cross-reference
+    greps: chapters dir has no RL-diversity chapter (empty); handoff greps matched frontier-f3-data-flywheel.md,
+    swarm-dataset-distillation.md, agent-world-env-synthesis.md as the GPU-gated training consumers; intake_index
+    grep tied intake-441 as the diversity-collapse counterpart. Untrusted source text was paraphrased;
+    no embedded instructions were followed.'
+
+- id: intake-750
+  arxiv_id: null
+  url: operator-relayed:designing-local-llm-inference-systems-2026 (no canonical URL; arXiv 2606.23595
+    was a mispaired ID that resolves to the unrelated SPIRAL paper, intake-732)
+  source_type: blog
+  title: 'Designing Local LLM Inference Systems: Hardware Strategy, Memory Math, Bandwidth & Inference
+    Engines (2026 Edition) [operator-relayed survey]'
+  categories:
+  - local_inference
+  - inference_serving
+  - hardware_optimization
+  - benchmark_methodology
+  - kv_cache
+  key_claims:
+  - 'Weights-memory math: VRAM(GB) ~= params(B) x effective_bits/8 covers FP16/FP8/4-bit/GGUF; GGUF per-billion
+    sizes (Q6_K ~0.82, Q5_K ~0.69, Q4_K ~0.56, Q3_K ~0.43, Q2_K ~0.33 GB/B). MoE footprint is set by TOTAL
+    params while speed is set by ACTIVE params.'
+  - Decode is memory-bandwidth-bound (weights + a growing KV cache re-read every token) while prefill
+    is compute-bound; BANDWIDTH not capacity sets decode speed. 2026 tier snapshot (H100 3.35TB/s; RTX5090/PRO6000
+    ~1.79TB/s; M3 Ultra 819GB/s; DGX Spark/Strix Halo/M4 Pro ~256-273GB/s).
+  - 'Full memory bill beyond weights: KV cache (linear in ctx x batch; mitigated by PagedAttention, prefix
+    caching, KV quant, PD disaggregation), activations, framework overhead, CUDA graphs; budget 10-30%+
+    headroom.'
+  - 'Interconnect shapes parallelism: TP needs all-reduce, PP communicates only at stage boundaries (can
+    beat TP without NVLink), EP (MoE) needs all-to-all; quant formats (GGUF/EXL2-3/AWQ/GPTQ/FP8/MLX) are
+    NOT portable across engines.'
+  - 'Engine decision guide, hardware+workload first: llama.cpp (edge/GGUF/hybrid/CPU), MLX (Apple), ExLlamaV2/V3
+    (consumer CUDA/MoE), vLLM (general prod), SGLang (long-ctx/MoE/disagg), TensorRT-LLM (max NVIDIA),
+    Dynamo (fleet). Warns: don''t treat local engines as production servers.'
+  - 'Benchmarking discipline: pin model+active-params+quant+engine-commit+hardware+workload; report TTFT/TPOT/p50-95-99/tokens-s/KV-hit-rate/prefill-vs-decode;
+    never trust single-user tokens/s.'
+  techniques:
+  - weights memory-capacity math
+  - bandwidth-bound decode roofline framing
+  - KV-cache mitigation stack
+  - parallelism-vs-interconnect mapping (TP/PP/EP)
+  - hardware-and-workload-first engine selection matrix
+  - benchmark specification checklist
+  reported_results:
+  - No original measurements; a synthesis/teaching guide. Quantitative content is a compiled 2026 hardware
+    bandwidth/capacity landscape (vendor-sourced), not first-party benchmarks.
+  novelty: low
+  relevance: high
+  credibility_score: null
+  verdict: adopt_patterns
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-07-02'
+  contradicting_evidence:
+  - Unattributed synthesis, no named author/venue, no first-party measurements; hardware bandwidth figures
+    are vendor/marketing approximations -> hypothesis-grade reference, never decision-gating (MEASUREMENT.md).
+  - 'Its CPU-server recipe is thin (''llama.cpp first'') and omits the levers that dominate our EPYC stack:
+    NUMA/NPS4 interleave, AVX-512 iqk GEMM, the OMP env stack, per-NUMA bandwidth partitioning.'
+  - Core theses (bandwidth-bound decode; workload-before-engine; separate prefill/decode) are already
+    in chapters 06/07 and the cpu-inference-optimization/inference-acceleration indices; net-new content
+    is only the consolidated 2026 tier tables + engine matrix.
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    handoffs:
+    - dynamic-stack-concurrency.md
+    - cpu-inference-optimization-index.md
+    - inference-acceleration-index.md
+    - kv-cache-quantization.md
+    experiments: []
+    intake_entries:
+    - intake-732
+  recommended_actions:
+  - 'OPERATOR-REVIEW: supply the canonical source URL to replace the operator-relayed sentinel (arXiv
+    2606.23595 was a mispaired ID -> SPIRAL/intake-732); on receipt I will re-key and re-run a clean single-source
+    intake.'
+  - 'OPERATOR-REVIEW: consider harvesting only the 2026 bandwidth-tier snapshot + engine-decision matrix
+    into a chapter-06/07 addendum (propose-only, no handoff written).'
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Teaching synthesis of established local-inference principles already covered
+    by chapters 06/07 + cpu-inference-optimization-index + inference-acceleration-index; unique value
+    is only the consolidated 2026 hardware-tier + engine matrix -> low.
+  relevance_justification: 'Domain-core: EPYC is a CPU-first local-inference system and the guide''s central
+    thesis (bandwidth-bound decode; pick engine by hardware+workload) is our operating reality (feedback_cpu_decode_bw_bound).
+    High as reference, though not actionable research.'
+  verdict_justification: 'adopt_patterns: mine the 2026 bandwidth-tier table + hardware+workload engine
+    matrix as reference; no deployable technique, no first-party measurement, principles already integrated.
+    Not already_integrated (external reference, not an adopted technique); not worth_investigating (nothing
+    to measure).'
+  notes: 'ORPHANED-SOURCE / ID-MISMATCH: operator pasted this survey''s prose alongside arXiv 2606.23595,
+    which resolves to ''SPIRAL'' (intake-732), so the guide has no canonical URL. Asked operator; no response
+    in 60s -> per the ''never dismiss a source'' rule, indexed URL-less as operator-relayed blog with
+    a sentinel url; supersede when the real URL is provided. key_claims are paraphrased in the agent''s
+    own words (no raw quote). credibility_score=null (survey/blog).'

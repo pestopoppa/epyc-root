@@ -573,3 +573,13 @@ The initial intake's blanket "training-only, EPYC has no GPUs" dismissal was too
 - **Parked**: arxiv:2605.11182 (Zhu et al., "Many Faces") — full text not yet available, review-on-publish; arxiv:2603.25562 (Fu et al., CASIA) — overlapping content with intake-639, cross-ref only.
 
 **Net frame**: 2026 OPD is a maturing subfield converging on token-selective objectives. None of the four critique papers cite each other or 639/642/643 — concurrent parallel discovery. Pre-funding any cloud-GPU drafter training, bench candidate selectors (intake-644 overlap, intake-645 TRACE-RKL, intake-642 Soft-OR) on the same drafter target to pick a v1 recipe.
+
+## Research Intake Update — 2026-07-02
+
+### SPIRAL / recursive self-aggregation — training-free parallel-trace + aggregation (intake-732 / 746 / 747)
+SPIRAL (arXiv 2606.23595) trains one model to jointly emit parallel CoT traces + a learned aggregation trace via "set RL"; the TRAINED aggregator is GPU-RL and not deployable here. The **training-free inference pattern IS minable**: sample N parallel traces, then run a prompted aggregation trace, plus **recursive self-aggregation** (intake-746 arXiv 2509.26626; intake-747 "aggregate your own responses" arXiv 2503.04104). This is the aggregation-trace generalization of the Tier-1 short-m@k majority vote (§Approach Taxonomy → Tier 1) and the multi-sample-selection complement to Action 9's single-sample re-roll; a natural additional A/B arm alongside DeepConf/majority@4 in the STOP Phase-3 baseline (§Action 10a).
+- **FEASIBILITY**: full parallel generation is infeasible on the architect tier (`-np 1`); scope this fan-out to the **worker/coder tier** (`-np ≥ 2`) on NUMA-concurrent multi-instance serving (see the STOP Phase-1 `-np ≥ 2` note in §Action 10a).
+- **MANDATORY CONTROL**: any test must include a **same-inference-compute majority-vote / self-consistency baseline** — aggregation gains often reflect ordinary sample-count scaling and can *degrade* with correlated errors; SPIRAL's set-RL gains are also math/verifiable-only and may not transfer to our largely non-verifiable production traffic.
+
+### Diverse-exploration RL objectives — HW-gated training reference (intake-748 / 749)
+Poly-EPO (arXiv 2604.17654) and Polychromic Objectives for RL (arXiv 2509.25424) are training-time diversity-preserving RL objectives — the **training-side answer to the diversity-collapse bound** documented in §Diversity Collapse Interaction (inference-time interventions cannot recover training-time diversity loss). Tier-3 forward-pointer only (we don't RL-train yet), filed like TPO / RLTF / RLSD; materializes with the MI210.

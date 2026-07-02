@@ -72,6 +72,7 @@ Our fork's speculative subsystem is an **older API generation** than PR #22673's
 - [ ] **P4** `src/models/qwen35.cpp` / `qwen35moe.cpp` + `src/llama-arch.*` + `conversion/qwen.py`: the Qwen MTP graph (nextn layer) + metadata loader.
 - [ ] **P5** Resolve the remaining backend/test/doc files to compile; `cmake -B build && cmake --build build -j$(nproc)` (CPU: `-DGGML_CUDA=OFF`).
 - [ ] **P6** Verify: `llama-server --help` / `llama-speculative --help` show `--spec-type draft-mtp` + `--spec-draft-n-max`; load a `unsloth/Qwen3.6-35B-A3B-MTP-GGUF` (operator-gated load). Then the gate-benches (parent T3/T4).
+- [ ] **P7 (optional, post-#22673): FR-Spec draft LM-head vocab-trim** (intake-740). Restrict the native-MTP draft LM-head projection to a frequency-ranked top-32,768 subset of the 248,320 vocab (target verifies full vocab) → **lossless (byte-identical at temp=0)**, cutting the draft-head `mul_mat_vec_q` kernel ~85%. Verified upstream on `qwen35.cpp` (this port's P4 target); ~30 lines reusing `eagle3.cpp` d2t + `ggml_set_rows`. CAVEATS: (a) our fork's EAGLE3 is an **inert stub** (`// TODO PR-18039`), so the d2t machinery may not exist in-fork — this likely **rides the #22673 reconciliation, not free**; (b) build an **EPYC-workload-matched frequency map** from our own coder/prose traffic (the author's code-tuned map regressed prose); (c) expect only **+1-3% end-to-end** on BW-bound decode despite the −85% kernel cut → measure end-to-end before adopting.
 
 ## Constraints
 - **Experimental repo only.** `verify_llama_cpp.sh` enforces production stays on `production-consolidated-v5`. Promotion to v5 is gated on a positive operator bench + (for MoE) clearing the MoE-on-CPU skepticism.
@@ -83,6 +84,7 @@ Our fork's speculative subsystem is an **older API generation** than PR #22673's
 - #22673 MTP: `255582687` (remaining)
 - #23398 gemma-4 MTP (mainline; our gemma4 path is the ik_llama #1744 lineage — alternative, not needed for Qwen)
 - #18039 EAGLE-3 (deferred to MI210 / July per operator; our fork has the stub)
+- FR-Spec-for-MTP (intake-740): llama.cpp **issue #25187**; author branch `avifenesh/llama.cpp` commit `047bfa508`; underlying FR-Spec = **arXiv 2502.14856** (ACL 2025, thunlp)
 
 ## Key files
 - Branch: `/mnt/raid0/llm/llama.cpp-experimental` `feature/mtp-qwen36-port` (`git log` → `b139eba138`)

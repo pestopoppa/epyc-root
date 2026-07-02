@@ -379,3 +379,18 @@ See `gpu-drafter-mi200-investigation.md` § Research Intake Update for the full 
   - Key technique: Standalone MTP head GGUF, intended to drive a self-drafting MoE target (V4 verifier + V4-MTP drafter).
   - Reported results: MTP sidecar 3.6 GiB; no acceptance-rate measurement on card.
   - Delta from current approach: If `deepseek4` arch lands in llama.cpp/ik_llama.cpp, this becomes a candidate for a new MoE-spec target/drafter pair. Recipe directly extends the gemma4 MTP integration (see `project_gemma4_mtp_launch_recipe`). Pre-flight: verify (a) llama.cpp deepseek4 support, (b) MTP sidecar load API parity with gemma4 path, (c) acceptance-rate on representative workload (defer to user per `feedback_speed_verify_via_llama_bench`).
+
+## Research Intake Update — 2026-07-02
+
+### New Related Research
+
+- **[intake-738] DSpark** (semi-autoregressive drafter + hardware-aware adaptive verification-depth; DeepSeek) — verdict: **adopt_patterns** (catalog).
+  - Relevance: DSpark's confidence head + scheduler set per-request **verification depth** from live GPU utilization — the batch-serving successor to this file's fixed budget-B verification-step mechanism. Composes with intake-620 SpecDec++ (adaptive drafting-γ) as the drafting-vs-verification pair.
+  - CPU verdict: the utilization-keyed adaptive-verification-depth controller is **GPU-high-concurrency-specific and largely inert on our concurrency-1, bandwidth-bound CPU decode**; the transferable core is the semi-AR draft head, which needs training (DeepSpec pipeline) + a GGUF port.
+  - Numbers: +26.7-30.9% acceptance length over EAGLE-3, 57-85% production speedup — **all vendor-reported, GPU, unreproduced**; observations only (no protocol-id), **NOT a reopen trigger** against the catalog-only gate in the top CURRENT-STATE note.
+- **[intake-742] Graft** ("Draft Less, Retrieve More: Hybrid Tree Construction", arXiv 2605.20104) — verdict: **adopt_patterns** (catalog).
+  - Relevance: training-free, drafter-agnostic **prune-then-graft** — confidence-pruned draft-tree branches are refilled from a top-k successor adjacency structure. MoE-Spec is tree-native (aggregates routing scores across EAGLE-3 trees), so this is on-topic; conceptually pairs with a **CPU-resident n-gram / prompt-lookup refill** (chapter 03 lineage) of pruned branches.
+  - Caveat: base drafter is EAGLE-3 (GGUF-incompatible in our fork) + a GPU-resident adjacency matrix; all numbers GPU. Catalog-only until a CPU-refill variant is measured on bandwidth-bound EPYC.
+- **[intake-741] DFlare** ("Scaling Up Draft Capacity for Block Diffusion Speculative Decoding", arXiv 2606.02091; PKU + Tencent AngelSlim) — verdict: **worth_investigating** (GPU-track).
+  - Relevance: layer-wise fusion lifts DFlash draft capacity (+5-11% over DFlash on GPU); ships in Tencent/AngelSlim, the toolkit `angelslim-techniques-evaluation.md` already mines.
+  - **DISAMBIGUATION**: DFlare ≠ our closed **DFlash-on-Q4_K_M** (a different technique; our `dflash-block-diffusion-speculation.md` already concluded block-diffusion drafting NET-NEGATIVE on CPU at 0.3-1.4% acceptance). DSpark's "+16-18% over DFlash" is a GPU acceptance-length claim, not our CPU-throughput axis. Track for the MI210 GPU path only; cf. the diffusion-LLM-drafting competing-approach note in §Phase 2.

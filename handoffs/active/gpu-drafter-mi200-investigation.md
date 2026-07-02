@@ -191,6 +191,8 @@ Produced automatically by Stage 1 once spec-dec is enabled at frontdoor (llama-s
 
 **Replicates for other roles:** the same gating measurement protocol applies to `coder_escalation` only after the drafter/target vocabulary contract is explicit. **Custom training is most likely to pay off on the coder role** per FastDraft's HumanEval $\alpha = 0.65$ result (intake-624) — measure first, train only if the gate condition holds.
 
+**DSpark / DeepSpec trained-drafter path (intake-737/738):** the DSpark semi-autoregressive draft head (parallel backbone + single-token correction) is a candidate trained drafter alongside FastDraft in the **Stage-5** column, gated by the **same α bins** above. DeepSpec (MIT) is the training/eval pipeline; the incoming MI210 could host draft-head training for gemma4-26B-A4B / Qwen3 (its default is an 8-GPU node, so single-MI210 retraining is unproven). CAVEAT: gemma4 native MTP self-spec is already ~76.9% acceptance ("saturated", Stage 0) with Stage-4 EV only +10-15% → **low headroom**; frame the comparison as *DSpark α vs the already-saturated ~77% MTP baseline*. DSpark's utilization-keyed adaptive-verification-depth controller ≈ the SpecDec++ adaptive-K lever (intake-620) — both GPU-side and inert on the CPU-testable N5 α path; **compare, don't double-count**.
+
 See [`research/deep-dives/2026-05-27-cross-tokenizer-specdec-and-mtp.md`](../../research/deep-dives/2026-05-27-cross-tokenizer-specdec-and-mtp.md) § Action item #6 for the rationale chain.
 
 ---
@@ -437,3 +439,9 @@ The MI210 frontdoor/drafter placements this handoff designs will need hand-tuned
 - **Lead path** = train-free controller (EvoEngineer intake-666 + CudaForge profiler-Judge intake-662) driven by an existing coder model — runs on a single MI210, NO training cluster, opensource_only-compatible.
 - **Decline**: RL training of a bespoke kernel model (CUDA Agent 660 / CUDA-L1 661 / Kevin 663 need a multi-GPU cluster) — but harvest their reward design + anti-reward-hacking gates.
 - **Complementary, not competing** with this handoff: this allocates *which model runs where* on the MI210; the new handoffs *author the HIP kernels* that make those placements fast.
+
+## Research Intake Update — 2026-07-02
+
+### New Related Research
+- **[intake-737] DeepSeek DeepSpec** (MIT draft-model train/eval framework; DSpark/DFlash/EAGLE-3) — a concrete MI210 draft-head training pipeline; released checkpoints target Qwen3-4B/8B/14B + gemma-4-12B-it. Default assumes an 8-GPU CUDA node — 1× MI210 is far from that, so single-card retraining is unproven. Slots into §The Gating Measurement as a Stage-5 trained-drafter path.
+- **[intake-738] DSpark** (semi-AR draft head + GPU-utilization adaptive-verification-depth) — candidate trained-drafter alternative to native MTP heads, gated by the same α bins; its adaptive-depth controller overlaps SpecDec++ (intake-620) and is CPU-inert. Vendor speedups (57-85%) are GPU + unreproduced — observations only. Low headroom on gemma4 (native MTP already ~77% saturated).
