@@ -9,6 +9,7 @@ python3 scripts/validate/validate_agents_structure.py
 python3 scripts/validate/validate_agents_references.py
 python3 scripts/validate/validate_claude_md_matrix.py
 python3 scripts/validate/validate_doc_drift.py
+uv run --with pyyaml python scripts/validate/validate_registry.py
 ```
 
 ## CLAUDE Accounting
