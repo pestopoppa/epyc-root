@@ -75,7 +75,7 @@
 ## Start Here
 
 1. Authority is now live after the 2026-07-02 post-reboot restart. Monitor strict readiness, W6, and era boundaries; fail closed if any current-era readiness gate regresses.
-2. Finish W8 promotion eval wiring/evidence: orchestrator `33c16b47` now makes forced fresh-promotion deep evals replay the pending candidate's exact numeric params or structural flags and fail closed for unreplayable candidates. Remaining W8 work is CI-based regression provenance/exclusion plus any broader stratified-draw policy beyond this replay/freshness guard before any production-promotion claim.
+2. Finish W8 promotion eval wiring/evidence: orchestrator `33c16b47` now makes forced fresh-promotion deep evals replay the pending candidate's exact numeric params or structural flags and fail closed for unreplayable candidates. Orchestrator `b62bc205` adds the Phase-2.4 confidence-interval non-regression guard: fresh promotion evals now need effective paired-question evidence (`r_eff`) and a one-sided delta lower bound that excludes regression before finalization, with the CI object recorded into promotion state. Remaining W8 work is any broader stratified-draw policy and live promotion-eval evidence before any production-promotion claim.
 3. Run/review the disagreement/cutover report as follow-up documentation, not as a prerequisite to the already-executed authority restart.
 4. Coordinate any future restart-bundle accept-path flips with J11/BSV-2 and K-SKILL-1 because all three are accept-path gates.
 
