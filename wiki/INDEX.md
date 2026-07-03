@@ -2,7 +2,7 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-07-03 (focused checkpoint: folded the verified RI-10 arm-attributed canary gate hardening, DAR-1 current replay, `seq_refuted` learning quarantine, ledger-derived `core_v2` candidate plus era activation guard, and W8 readiness checkpoint into [Routing Intelligence](routing-intelligence.md), [Benchmark Methodology](benchmark-methodology.md), and [Autonomous Research](autonomous-research.md). Prior 2026-06-22 incremental compile of 29 new sources since the 2026-06-21 baseline retained in article history.)
+**Last compiled**: 2026-07-03 (focused checkpoint: folded the verified planner-turn StrategyStore hint repair, tool-use steering surface, RI-10 arm-attributed canary gate hardening, DAR-1 current replay, `seq_refuted` learning quarantine, ledger-derived `core_v2` candidate plus era activation guard, and W8 readiness checkpoint into [Autonomous Research](autonomous-research.md), [Tool Implementation](tool-implementation.md), [Routing Intelligence](routing-intelligence.md), and [Benchmark Methodology](benchmark-methodology.md). Prior 2026-06-22 incremental compile of 29 new sources since the 2026-06-21 baseline retained in article history.)
 **Articles**: 26 compiled, 4 stub categories
 **Total sources**: 514+ scanned documents across 6 source types; 2026-06-21 pass merged 36 changed/new sources (research-intake 695-720 batch + parallel-session handoffs/progress) into 21 articles; 2026-06-19 pass compiled 37 changed/new active-handoff/progress sources into the highest-value evidence/routing/KV clusters
 
@@ -39,7 +39,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
 | [Agent Architecture](agent-architecture.md) | 48 | Fable 5's strategic spine is real-task corpus -> reviewed self-running lab jobs -> data flywheel, gated by evidence and quarantine |
-| [Autonomous Research](autonomous-research.md) | 78+ | Authority is live; `seq_refuted` now quarantines planner learning, while fingerprint multiplicity and W8 promotion evidence remain open |
+| [Autonomous Research](autonomous-research.md) | 79+ | Authority is live; StrategyStore hints now reach planner action choice, while fingerprint multiplicity and W8 promotion evidence remain open |
 | [Memory-Augmented Models](memory-augmented.md) | 25+ | Episodic FAISS writes require cross-process locking; K-MEM Tulving is a mixed baseline with weak chronology and no memory-routing promotion |
 
 ## Context & Compression
@@ -72,7 +72,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | [Search & Retrieval](search-retrieval.md) | 31 | K-RAG K7 seed eval picks recency-weighted recall@10, but final retrieval claim waits on the 70-case certification pool |
 | [Knowledge Management](knowledge-management.md) | 18+ | K-RAG K7 certification produced a zero-miss retrieval candidate; wiki compile remains a derived wrap-up artifact |
 | [RAG Alternatives](rag-alternatives.md) | 2 | SLIDERS structured-DB+SQL alternative gated behind Phase 0 falsification (GPT-4.1 hard-wired adoption blocker; not on ColBERT upgrade path) |
-| [Tool Implementation](tool-implementation.md) | 24 | Security-review, source-quarantine validation, and repo-readiness scoring extend governance tooling without autonomous index edits |
+| [Tool Implementation](tool-implementation.md) | 31 | Tool-use hints now reach the planner prompt; corpus lookup is alive but remains gated on coding-task A/B evidence |
 
 ## Research & Analysis
 
