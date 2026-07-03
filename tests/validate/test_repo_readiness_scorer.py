@@ -103,6 +103,10 @@ def test_remediation_queue_exports_failed_criteria_as_actionable_items(tmp_path)
     assert first_item["level"] == 1
     assert first_item["level_label"] == "Functional"
     assert first_item["pillar"] == "Style & Validation"
+    assert first_item["repo_maturity_level"] == 0
+    assert first_item["repo_maturity_label"] == "Below Functional"
+    assert first_item["next_gate_level"] == 1
+    assert first_item["next_gate_label"] == "Functional"
     assert first_item["blocking_next_gate"] is True
     assert first_item["portfolio_coverage"] == 0.0
     assert "passes for `empty`" in first_item["acceptance"]
@@ -145,6 +149,8 @@ def test_remediation_queue_markdown_is_advisory_and_limitable(tmp_path):
     )
 
     assert "# EPYC Repo Readiness Remediation Queue" in markdown
+    assert "Current level" in markdown
+    assert "Next gate" in markdown
     assert "not an\nAutoPilot authority gate" in markdown
     assert markdown.count("| P0 | empty |") == 2
     assert "Showing first 2 items" in markdown
@@ -187,6 +193,8 @@ def test_autopilot_remediation_pickup_is_passive_and_limitable(tmp_path):
     assert pickup["item_count"] == 2
     assert pickup["source_queue_version"] == report["remediation_queue"]["version"]
     assert pickup["items"][0]["status"] == "candidate"
+    assert pickup["items"][0]["repo_maturity_label"] == "Below Functional"
+    assert pickup["items"][0]["next_gate_label"] == "Functional"
     assert "run GitNexus impact" in pickup["items"][0]["required_preflight"][1]
     assert "not an acceptance criterion" in pickup["pickup_rules"][-1]
 

@@ -550,6 +550,10 @@ def build_remediation_queue(report: dict[str, object]) -> dict[str, object]:
                     "category": "repo_readiness",
                     "repo": repo_name,
                     "repo_path": repo_data["path"],
+                    "repo_maturity_level": maturity["achieved_level"],
+                    "repo_maturity_label": maturity["achieved_label"],
+                    "next_gate_level": next_level,
+                    "next_gate_label": maturity["next_label"],
                     "criterion_id": criterion_id,
                     "level": criterion["level"],
                     "level_label": LEVELS[criterion["level"]],
@@ -709,15 +713,19 @@ def render_remediation_markdown(
         "GitNexus impact checks, implementation validation, and operator policy gates",
         "where applicable.",
         "",
-        "| Priority | Repo | Criterion | Level | Pillar | Blocking next gate | Acceptance |",
-        "|---|---|---|---:|---|---|---|",
+        "| Priority | Repo | Current level | Next gate | Criterion | Pillar | Blocking next gate | Acceptance |",
+        "|---|---|---:|---|---|---|---|---|",
     ]
     for item in items:
         blocking = "yes" if item.get("blocking_next_gate") else "no"
+        current_level = f"L{item.get('repo_maturity_level')} {item.get('repo_maturity_label')}"
+        next_gate_level = item.get("next_gate_level")
+        next_gate_label = item.get("next_gate_label") or "complete"
+        next_gate = f"L{next_gate_level} {next_gate_label}" if next_gate_level is not None else "complete"
         lines.append(
-            f"| {item.get('priority')} | {item.get('repo')} | "
-            f"`{item.get('criterion_id')}` | {item.get('level')} | "
-            f"{item.get('pillar')} | {blocking} | {item.get('acceptance')} |"
+            f"| {item.get('priority')} | {item.get('repo')} | {current_level} | {next_gate} | "
+            f"`{item.get('criterion_id')}` | {item.get('pillar')} | {blocking} | "
+            f"{item.get('acceptance')} |"
         )
 
     if limit is not None and int(queue.get("item_count", 0) or 0) > limit:
@@ -764,6 +772,10 @@ def build_autopilot_remediation_pickup(
                 "category": item.get("category"),
                 "repo": item.get("repo"),
                 "repo_path": item.get("repo_path"),
+                "repo_maturity_level": item.get("repo_maturity_level"),
+                "repo_maturity_label": item.get("repo_maturity_label"),
+                "next_gate_level": item.get("next_gate_level"),
+                "next_gate_label": item.get("next_gate_label"),
                 "criterion_id": item.get("criterion_id"),
                 "pillar": item.get("pillar"),
                 "objective": item.get("objective"),
