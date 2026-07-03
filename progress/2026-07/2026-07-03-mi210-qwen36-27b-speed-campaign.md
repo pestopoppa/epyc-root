@@ -4,6 +4,16 @@
 
 This is a **living checkpoint** — updated after every phase/measurement (operator asked for continuous checkpointing; periodic `/wrap-up` dispatched to an opus medium subagent).
 
+## Session summary (outcomes) — 2026-07-03
+Single-stream best for Qwen3.6-27B-MTP-Q8_0 rose **29 → 40.4 t/s (+37%)**: embedded-NEXTN MTP (no `-md`, n_max=3, GPU-pinned draft) reaches 33.6, then the **MMVQ→MMQ small-batch verify-dispatch fix** adds **+17.4%** to 40.4 (validated in `llama.cpp-experimental` commit `de447119f`; ~1-line diff, coherent output, numerically-valid-not-bit-exact; **operator-gated for prod promotion**). Scoping results established this session:
+- **MMVQ fix is dense-Q8-specific** — it does NOT transfer to MoE experts (separate `get_mmvq_mmid_max_batch` dispatch); frontdoor qwen35moe stays kernel-flat (+0.7%).
+- **MTP is net-negative for MoE on GPU** (head-quant-independent — it's the MoE-verify + GPU-resident overhead, not the head quant); GPU-resident MoE should run plain (gemma bf16 plain 96.6 > MTP 84.5).
+- **bf16 > Q8 crossover at high batch** (dequant-amortization: bf16 744 vs Q8 561 @ B=32; 10.19× vs 5.81× scaling).
+- **GDN recurrence is the aggregate/batch-scaling bottleneck and is qwen35-specific** (2%→19.5% of decode across B1→B32); the fused-verify hypothesis was **FALSIFIED** (verify is already fused). The **GDN-MFMA kernel is the next aggregate lever**; frontdoor still sustains ~430 t/s aggregate @128-way at 80k context.
+- **Production CPU fix briefed** (commit `5879129b`): drop the `-md <same GGUF>` double-load for embedded-NEXTN roles (frontdoor/architect) — it costs 2× DRAM on BW-bound CPU decode.
+
+**Still in flight (PENDING — a takeover subagent is running these now; results fold in next):** the KV-quant arm, GDN build/kill rocprof, context-vs-throughput curves, and the gemma-31B dense-Q8 transfer confirmation.
+
 ## Fixed facts
 - **Model arch**: `qwen35` = hybrid SSM (delta-net: state_size 128, group_count 16, conv_kernel 4, inner_size 6144) + attention. **DENSE (no experts)** → batches cleanly, the MoE-weaker-batching caveat does NOT apply. 65 blocks, embd 5120, FFN 17408, 24 heads / 4 KV heads, ctx 262144, M-RoPE (dim_sections [11,11,10,0], freq_base 1e7). **Embedded 1-layer NEXTN MTP head** (`nextn_predict_layers=1`). Q8_0, 29.0 GB file.
 - **Substrate**: MI210 gfx90a CDNA2, 64 GB HBM2e (~65.4 GB free), ~1.64 TB/s peak, ROCm 6.2. HIP build = `/mnt/raid0/llm/llama.cpp-mi210-hip/build-hip` (version 9777 / `0ebf1b4d7`, the fp8-fix leg). Must prepend `LD_LIBRARY_PATH=$HIP/bin:/opt/rocm/lib`.
