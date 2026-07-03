@@ -2,7 +2,7 @@
 
 **Purpose**: forward-looking backlog for unimplemented CPU decode/prefill throughput work on local EPYC 9655 Turin hardware.
 **Scope**: CPU-only single-instance or aggregate throughput. GPU work lives in [gpu-acceleration-path.md](gpu-acceleration-path.md); routing/orchestration lives in [routing-and-optimization-index.md](routing-and-optimization-index.md); eval/quality lives in [research-evaluation-index.md](research-evaluation-index.md).
-**Updated**: 2026-07-03 CPU self-draft handoff pickup.
+**Updated**: 2026-07-03 CPU self-draft handoff pickup plus legacy backend guard.
 **History**: pre-compaction detail lives in [../archived/cpu-inference-optimization-index-history-through-2026-06-19.md](../archived/cpu-inference-optimization-index-history-through-2026-06-19.md).
 
 ## Start Here
@@ -19,7 +19,7 @@
 |----------|-------|---------------|-------------|
 | P0 | Batched decode E1/E2/E3 | [batched-decode-measurement.md](batched-decode-measurement.md) | Run decision-grade E1 CPU14 `-np` sweep and E2 single-instance eval A/B in a reboot/host-health quiet window; only start E3 8x8 GEMM SIMD if E1/E2 prove the need. |
 | P0 | DSA / DeepSeek V3.2 PR #21149 | [llama-cpp-dsa-contribution.md](llama-cpp-dsa-contribution.md), [deepseek-v4-flash-cpu-port.md](deepseek-v4-flash-cpu-port.md), [glm51-reap-cpu-evaluation.md](glm51-reap-cpu-evaluation.md) | Pull/build/smoke only with explicit inference approval; this is the two-models-for-one path for DeepSeek V3.2 and GLM-5.1 DSA. |
-| P1 (verification tail) | Embedded NEXTN same-file `-md` fix | [md-double-load-mtp-fix-brief.md](md-double-load-mtp-fix-brief.md) | Code fix, live reload, post-reload acceptance evidence, CPU memory-delta evidence, and the throwaway A/B harness are complete. Remaining action is a quiet-window run of `scripts/benchmark/md_self_draft_ab.py`: same-file `-md` versus embedded no-`-md`. Do not remove Gemma's separate assistant-head `-md`. |
+| P1 (verification tail) | Embedded NEXTN same-file `-md` fix | [md-double-load-mtp-fix-brief.md](md-double-load-mtp-fix-brief.md) | Production code fix, live reload, post-reload acceptance evidence, CPU memory-delta evidence, throwaway A/B harness, and adjacent legacy `LlamaCppBackend` guard are complete. Remaining action is a quiet-window run of `scripts/benchmark/md_self_draft_ab.py`: same-file `-md` versus embedded no-`-md`. Do not remove Gemma's separate assistant-head `-md`. |
 | P1 | MoE-Spec CPU spec-dec integration | [moe-spec-cpu-spec-dec-integration.md](moe-spec-cpu-spec-dec-integration.md) | Run Phase 0 against current stack before any production registry integration; prior pre-production blocker is released, but evidence is not collected. |
 | P1 | CPU roofline / AMD counter calibration | [cpu-kernel-env-flags-inventory.md](cpu-kernel-env-flags-inventory.md), [deepseek-v4-flash-cpu-port.md](deepseek-v4-flash-cpu-port.md) | Complete Phase 0 AMD counter calibration before any Phase 2 inference run; the old Intel-event draft is invalid on this host. |
 | P1 | Shape-specialized GEMV / AVX-512 follow-ons | [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md) | Keep landed Q8_0 wins; follow-on only with profile-led targets such as Q6_K/Q5_K or expert-dispatch indexing. |

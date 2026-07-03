@@ -177,6 +177,12 @@ uv run python scripts/benchmark/md_self_draft_ab.py \
 
 Confirmed the two generated commands differ by the redundant same-file `-md` flag only. Focused unit coverage lives in `tests/unit/test_md_self_draft_ab.py`.
 
+## Residual launcher hygiene — 2026-07-03
+
+After operator clarification that this CPU/RAM lane owns the MI210 session's doc-only handoff, re-grepped adjacent launch surfaces. The production `orchestrator_stack.py` path was already fixed and live, but the legacy per-inference `LlamaCppBackend._build_command()` in `src/inference/model_server.py` still unconditionally emitted `-md` for a returned draft role.
+
+`epyc-orchestrator` now applies the same realpath guard in that legacy backend: if `draft.model.full_path` resolves to the same file as `role_config.model.full_path`, it omits `-md`; separate draft heads still keep `-md`. This is not a production reload requirement because the live stack uses `scripts/server/orchestrator_stack.py`, not the legacy subprocess backend. Validation: GitNexus impact for `LlamaCppBackend` was LOW; Ruff and py_compile passed; focused model-server tests passed (`57` then `118` tests).
+
 ---
 
 ## Steps (checklist)
@@ -191,5 +197,6 @@ Confirmed the two generated commands differ by the redundant same-file `-md` fla
 - [x] Repeat for architect `:8083` and the remaining Qwen3.6 frontdoor quarter replicas.
 - [x] Record reload results in `progress/`; if all green, ask operator before touching `master-handoff-index.md`.
 - [x] Measure: representative post-reload MTP acceptance and resident-RAM delta via live AutoPilot/eval traffic and durable before/after process snapshots.
+- [x] Guard adjacent legacy `LlamaCppBackend._build_command()` against re-emitting same-file `-md`; keep separate draft heads unchanged.
 - [ ] Controlled same-workload decode speedup A/B: run `scripts/benchmark/md_self_draft_ab.py` in a quiet window; compare same-file `-md` versus embedded no-`-md` on the throwaway Qwen server artifact.
 - [x] No rollback triggered by smoke checks or post-reload acceptance evidence.
