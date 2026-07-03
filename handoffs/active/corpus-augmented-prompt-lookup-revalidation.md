@@ -1,6 +1,6 @@
 # Corpus-Augmented Prompt Lookup Revalidation
 
-**Status**: ACTIVE-HIGH, CPL-1/2/3 complete; CPL-4 preflight ready 2026-07-03; A/B decision still open
+**Status**: ACTIVE-HIGH, CPL-1/2/3 complete; CPL-4 preflight ready 2026-07-03; A/B decision still open and now clean-window guarded
 **Parent index**: [inference-acceleration-index.md](inference-acceleration-index.md)
 **Priority**: high disk/capability ROI, below current G0/GPU and evidence-plane authority rows
 **Related**: [speculative-decoding-mtp-refresh.md](speculative-decoding-mtp-refresh.md), [model-stack-single-source-update-pipeline.md](model-stack-single-source-update-pipeline.md), archived [hybrid-lookup-spec-decode.md](../archived/hybrid-lookup-spec-decode.md), archived [llama-server-prompt-lookup.md](../archived/llama-server-prompt-lookup.md)
@@ -59,6 +59,15 @@ quarantined/deleted by explicit operator decision.
   `min_score=0.0` and returned `6/6` injected prompts, `3` snippets per prompt,
   `failure_count=0`, `p50=1.206ms`, and `ready_for_ab=true`. This only clears
   the lookup/injection preflight, not the live quality/speed A/B.
+- 2026-07-03 live shakedown safety finding: a direct production-port
+  `corpus_quality_gate.py` run while AutoPilot was active was aborted after one
+  prompt pair and the partial artifact was deleted. The single contaminated row
+  (`coder_escalation` async-retry, corpus 3 snippets, `471.5ms` lookup,
+  baseline `12.7` t/s vs corpus `8.7` t/s) is not evidence because AutoPilot was
+  concurrently using the same production fleet. Orchestrator now requires
+  `--confirm-clean-window` for live generation and exits `75` when AutoPilot is
+  active unless `--allow-active-autopilot` is passed for explicitly
+  non-claim-grade live-load telemetry.
 
 ## Prioritized Task List
 
@@ -83,8 +92,11 @@ quarantined/deleted by explicit operator decision.
   coding role. Use `scripts/benchmark/corpus_quality_gate.py --min-score 0.0`
   unless deliberately testing another threshold; the old `0.5` threshold
   preflights as a no-op. Capture latency, generated t/s, draft acceptance if
-  available, quality, and injected-snippet telemetry. This is not a production
-  enablement gate unless it follows `/workspace/MEASUREMENT.md`.
+  available, quality, and injected-snippet telemetry. Live generation must run
+  in a clean/isolated window (`--confirm-clean-window`; no active AutoPilot
+  unless deliberately collecting non-claim telemetry with
+  `--allow-active-autopilot`). This is not a production enablement gate unless
+  it follows `/workspace/MEASUREMENT.md`.
 - [ ] **CPL-5: Decide keep/quarantine/delete.** Keep only if the A/B shows a
   measured coding-task benefit and retrieval overhead is bounded. Otherwise
   mark `/mnt/raid0/llm/cache/corpus` reclaimable and preserve only the small
