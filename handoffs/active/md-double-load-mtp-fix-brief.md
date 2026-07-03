@@ -150,6 +150,33 @@ Resident-memory delta was measured from the durable before/after process snapsho
 
 Interpretation: the launch fix is live, embedded NEXTN remains active without `-md`, and the duplicate same-file mapping was materially reduced. The PSS delta is the better host-pressure estimate; the larger RSS delta mostly captures duplicate mappings counted per process. A decision-grade throughput speedup ratio remains open because the pre-fix same-file logs were not preserved as a matched workload. The next clean-window task is a controlled same-prompt A/B (`same-file -md` vs no-`-md`) on a single Qwen role or throwaway server, without contaminating AutoPilot evidence windows.
 
+## Verification-tail harness — 2026-07-03
+
+Prepared the remaining quiet-window A/B as an executable CPU-only harness in `epyc-orchestrator`:
+
+```bash
+cd /mnt/raid0/llm/epyc-orchestrator
+uv run python scripts/benchmark/md_self_draft_ab.py
+```
+
+The harness:
+
+- launches a throwaway local `llama-server` on port `18070` by default;
+- runs the same `/completion` prompt against two arms: `same_file_md` (`-md <same GGUF>`) and `embedded_self_draft` (no `-md`);
+- refuses to run while AutoPilot appears active unless `--skip-autopilot-idle-check` is passed for an intentional measured window;
+- writes `orchestration/reports/md_self_draft_ab_<timestamp>/summary.{json,md}` plus per-arm logs;
+- reports median/mean decode t/s, RSS/PSS samples, and parsed draft-acceptance lines.
+
+Dry-run validation:
+
+```bash
+uv run python scripts/benchmark/md_self_draft_ab.py \
+  --dry-run \
+  --output-dir orchestration/reports/md_self_draft_ab_dryrun_20260703
+```
+
+Confirmed the two generated commands differ by the redundant same-file `-md` flag only. Focused unit coverage lives in `tests/unit/test_md_self_draft_ab.py`.
+
 ---
 
 ## Steps (checklist)
@@ -164,5 +191,5 @@ Interpretation: the launch fix is live, embedded NEXTN remains active without `-
 - [x] Repeat for architect `:8083` and the remaining Qwen3.6 frontdoor quarter replicas.
 - [x] Record reload results in `progress/`; if all green, ask operator before touching `master-handoff-index.md`.
 - [x] Measure: representative post-reload MTP acceptance and resident-RAM delta via live AutoPilot/eval traffic and durable before/after process snapshots.
-- [ ] Controlled same-workload decode speedup A/B: same-file `-md` versus embedded no-`-md`, preferably one Qwen role or throwaway port in a quiet window.
+- [ ] Controlled same-workload decode speedup A/B: run `scripts/benchmark/md_self_draft_ab.py` in a quiet window; compare same-file `-md` versus embedded no-`-md` on the throwaway Qwen server artifact.
 - [x] No rollback triggered by smoke checks or post-reload acceptance evidence.
