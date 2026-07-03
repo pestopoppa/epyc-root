@@ -1,6 +1,6 @@
 # Batched-Decode Measurement (E1/E2) + Conditional 8x8 GEMM SIMD (E3)
 
-**Status**: IN PROGRESS — A3B E1 and E2 decision-grade evidence landed 2026-07-03; E2 is a keep-candidate for an eval-batch serving class; shadow metadata/feature-gate prerequisite landed; dense-control E1 remains unresolved/re-scoped
+**Status**: IN PROGRESS — A3B E1 and E2 decision-grade evidence landed 2026-07-03; E2 is a keep-candidate for an eval-batch serving class; shadow metadata/feature-gate and default-off warm eval-batch frontdoor hook landed; dense-control E1 remains unresolved/re-scoped
 **Created**: 2026-06-12
 **Priority**: ACTIVE-HIGH — bench-only, ~1 day for E1+E2; rank 2 in the findings-06 "what remains" table; an evidence vacuum under the highest-volume workload (the eval harness)
 **Spec**: [fable5-findings-06-kernel-and-concurrency.md](../completed/fable5-findings-06-kernel-and-concurrency.md) §2 (E1/E2/E3) + [MEASUREMENT.md](../../MEASUREMENT.md) P-BENCH-3 — read both before claiming any waypoint
@@ -19,7 +19,7 @@ names "eval pipelines"; the trigger has been satisfied for weeks. The batch>1
 ## Waypoints
 
 - [ ] **E1 — CPU14 at last** (half day, quiesce window): one instance, `-np {1,2,4,8,16}`, fixed question batch, on (a) frontdoor Qwen3.6-A3B and (b) a dense control; measure aggregate tasks/hour + per-stream p50/p95 latency per MEASUREMENT.md P-BENCH-3. Acceptance: claims filed with protocol id + attest ref; saturation point identified per model. **2026-07-03 update**: A3B arm is complete and decision-grade; dense control was stopped before a summary row after diagnostic logs showed about `0.59` generated tok/s on long responses, so the dense-control requirement is still open/re-scope-only.
-- [x] **E2 — eval-driver A/B** (half day, same window): one T1 eval (43 questions) against a single full instance with `-np 8` continuous batching vs the current 3-concurrent-across-quarters path; metric = wall-minutes/eval (= statistical power per day, per findings-01). Acceptance: the batch serving class is priced; keep-or-kill recommendation for an eval-batch instance set recorded. **2026-07-03 update**: orchestrator `7cb71a4e` landed the default-off `eval_batch_serving` feature flag plus explicit EvalTower request metadata (`workload_class=eval_batch`, shared batch id, background priority) so future telemetry can distinguish eval batches before any execution routing flip.
+- [x] **E2 — eval-driver A/B** (half day, same window): one T1 eval (43 questions) against a single full instance with `-np 8` continuous batching vs the current 3-concurrent-across-quarters path; metric = wall-minutes/eval (= statistical power per day, per findings-01). Acceptance: the batch serving class is priced; keep-or-kill recommendation for an eval-batch instance set recorded. **2026-07-03 update**: orchestrator `7cb71a4e` landed the default-off `eval_batch_serving` feature flag plus explicit EvalTower request metadata (`workload_class=eval_batch`, shared batch id, background priority). Orchestrator `e9312a17` then added the default-off warm `eval_batch_frontdoor` serving hook on port `18070`; activation still needs an explicit warm start, API reload with `EVAL_BATCH_SERVING=1`, and representative quality/eval telemetry before any default EvalTower path changes.
 - [ ] **E3 — 8x8 GEMM SIMD body** (days, CONDITIONAL): ONLY IF E1 shows intermediate batch leaves per-thread-BW unsaturated — write the AVX-512BW batch>1 GEMM body for the existing dispatcher slot (`arch/x86/repack.cpp:1563-1566`, currently scalar fallback), re-run E1. Work lands under [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md). Acceptance: E1 delta with kernel on/off, canonical protocol.
 - [ ] **E4 — conditional re-promotions** (doc-only first): if E1/E2 confirm the regime, re-promote CPU17 chunked-prefill (the 9.6× rep-1 TTFT amplification is the eval class's pathology) and CPU18 MegaBlocks per their own reopen clauses — both name "eval pipelines". Acceptance: index rows flipped with the E1/E2 evidence cited, or explicitly re-closed.
 
@@ -167,10 +167,45 @@ GitNexus impacts before edit: `call_orchestrator_forced` HIGH
 Validation: `102 passed` for the focused seeding/EvalTower/features/runtime flag
 slice, focused Ruff clean, py_compile clean, and `git diff --check` clean.
 
-This does **not** yet route EvalTower to a single `-np 8` server. The live stack
-does not expose a dedicated eval-batch endpoint/launcher shape yet, so the next
-implementation must add that explicitly behind `eval_batch_serving` before any
-default path changes.
+At that checkpoint, EvalTower still did **not** route to a single `-np 8`
+server. The follow-up hook below adds the missing endpoint/launcher surface but
+keeps it default-off pending explicit activation and representative telemetry.
+
+### 2026-07-03 — Default-off eval-batch frontdoor hook
+
+Orchestrator `e9312a17` landed the second conservative A7 hook stage. It
+creates a deployable test hook for the E2 batch-serving shape while keeping the
+normal hot stack and default AutoPilot eval path unchanged:
+
+- `scripts/server/stack_manifest.py` and `stack_numa.py` define a launcher-only
+  warm role, `eval_batch_frontdoor`, on port `18070`, using frontdoor-family
+  model/runtime settings with an `-np 8`, `-c 32768`, `-t 96`, `-ub 8192`, q8 KV,
+  flash/Jinja/mlock serving shape.
+- `scripts/server/orchestrator_stack.py` adds a scoped
+  `eval_batch_frontdoor` command builder. The command uses embedded Qwen NEXTN
+  speculative decoding and omits `-md` when the draft path resolves to the same
+  GGUF as the target, preserving the CPU self-draft duplicate-load fix.
+- `scripts/server/stack_commands.py`, `src/registry/registry_compiler.py`, and
+  `src/registry/model_descriptors.py` keep the warm hook out of normal hot
+  starts and generated active-role descriptors.
+- `src/api/routes/chat_pipeline/routing.py` adds a default-off,
+  request-scoped rewrite: when `eval_batch_serving` is enabled, a request is
+  real-mode eval-batch traffic, no explicit `server_urls` override is present,
+  and the configured eval-batch endpoint is healthy, frontdoor-family roles are
+  routed to the eval-batch endpoint for that request only.
+
+GitNexus impacts for the edited launch/routing surfaces were LOW after the
+prior metadata stage. Validation: py_compile on all touched server/registry/API
+files; `187 passed` across `test_registry_compiler.py`,
+`test_stack_manifest_imports.py`, `test_build_server_command_helpers.py`, and
+`test_pipeline_routing.py`; focused Ruff/syntax checks; `git diff --check`.
+
+This is still not a production flip. Next action is a coordinated activation
+window: warm-start `eval_batch_frontdoor`, reload the API with
+`EVAL_BATCH_SERVING=1` and
+`ORCHESTRATOR_EVAL_BATCH_FRONTDOOR_URL=http://localhost:18070`, then collect
+representative EvalTower quality/reliability/throughput telemetry before
+changing defaults.
 
 ## Gates & pitfalls
 
