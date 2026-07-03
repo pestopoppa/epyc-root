@@ -1,9 +1,10 @@
 # Brief: Drop `-md <same-file>` double-load for embedded-NEXTN roles
 
-**For:** a separate CPU / orchestrator session (execute directly).
-**Type:** production launch-config fix. No GPU, no new inference required to *decide* the fix — but you MUST measure to *verify* it. This document is the plan; you apply it.
-**Repo to edit:** `epyc-orchestrator` (launch-config / arg builder). This brief lives in `epyc-root` (`handoffs/active/`).
-**Do NOT** wire this into `master-handoff-index.md` yourself — that needs explicit operator approval.
+**Current owner/status (2026-07-03):** handed off by the MI210 session to the CPU/RAM orchestrator lane. The launch-code fix, live reload, post-reload acceptance evidence, and memory-delta evidence are complete; only the quiet-window same-workload decode A/B remains open.
+**Original target:** a separate CPU / orchestrator session (execute directly).
+**Type:** production launch-config fix. No GPU, no new inference required to *decide* the fix — but you MUST measure to *verify* it.
+**Repo edited:** `epyc-orchestrator` (launch-config / arg builder). This brief lives in `epyc-root` (`handoffs/active/`).
+**Index note:** the original brief said not to wire it into `master-handoff-index.md` without operator approval; the operator has now explicitly handed the CPU side to this lane, and the root indices/progress record the picked-up status.
 
 ---
 
