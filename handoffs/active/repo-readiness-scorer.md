@@ -1,6 +1,6 @@
 # Repo-Readiness Scorer (Agent-Readiness Model)
 
-**Status**: v1 deterministic scorer landed 2026-06-13; first report generated; deterministic remediation queue export landed in root commit `7e6b3ee18864f1d86e8b5ce4651449a5fd7c8ee2`; advisory Markdown queue rendering and refreshed 2026-06-20 queue artifacts are live. Passive AutoPilot pickup JSON landed 2026-06-21; it is planning context only (`mode=advisory_only`, `authority_gate=false`) and is not a live controller input or acceptance gate.
+**Status**: v1 deterministic scorer landed 2026-06-13; deterministic remediation queue export, advisory Markdown rendering, and passive AutoPilot pickup JSON are live. Current 2026-07-03 artifacts show `epyc-orchestrator` and `epyc-inference-research` at Autonomous/L5, `epyc-root` at Optimized/L4 with only L5 auto-eval/self-optimization path markers open, and `epyc-llama` at Standardized/L3 with six blocking L4 workflow-surface gaps. The passive pickup artifact remains planning context only (`mode=advisory_only`, `authority_gate=false`) and is not a live controller input or acceptance gate.
 **Created**: 2026-06-03 (via research intake → factory.ai deep-dive)
 **Categories**: benchmark_methodology, autonomous_research, knowledge_management
 
@@ -40,12 +40,12 @@ Full mining → [`research/factory-ai-harvest-2026-06-03.md`](../../research/fac
 
 - Scorer: `/mnt/raid0/llm/epyc-root/scripts/validate/repo_readiness_scorer.py`
 - Tests: `/mnt/raid0/llm/epyc-root/tests/validate/test_repo_readiness_scorer.py`
-- JSON report: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_2026-06-28.json`
-- Markdown report: `/mnt/raid0/llm/epyc-root/progress/2026-06/repo-readiness-2026-06-28.md`
+- JSON report: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_2026-07-03.json`
+- Markdown report: `/mnt/raid0/llm/epyc-root/progress/2026-07/repo-readiness-2026-07-03.md`
 - Remediation queue export: `scripts/validate/repo_readiness_scorer.py --output-remediation-json <path>` (landed in root `7e6b3ee18864f1d86e8b5ce4651449a5fd7c8ee2`)
-- Current remediation queue JSON: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_remediation_queue_2026-06-28.json`
-- Current remediation queue Markdown: `/mnt/raid0/llm/epyc-root/progress/2026-06/repo-readiness-remediation-2026-06-28.md`
-- Current passive AutoPilot pickup JSON: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_autopilot_pickup_2026-06-28.json`
+- Current remediation queue JSON: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_remediation_queue_2026-07-03.json`
+- Current remediation queue Markdown: `/mnt/raid0/llm/epyc-root/progress/2026-07/repo-readiness-remediation-2026-07-03.md`
+- Current passive AutoPilot pickup JSON: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_autopilot_pickup_2026-07-03.json`
 
 2026-06-13 first-run summary:
 
@@ -364,6 +364,28 @@ Validation:
   L4 workflow surfaces (`incremental_validation`, `generated_docs`,
   `health_automation`, `analysis_reports`, `security_audit`, and
   `replay_analysis`).
+
+2026-07-03 artifact refresh:
+
+- Regenerated the four-repo readiness report, remediation queue, advisory
+  Markdown queue, and passive AutoPilot pickup artifact after the research L5
+  closeout and current repo-state updates.
+- Current portfolio level remains **Optimized (L4)** with L5 as the next gate:
+  `epyc-orchestrator` and `epyc-inference-research` are Autonomous/L5;
+  `epyc-root` is Optimized/L4 with L5 pass rate `77.8%`; `epyc-llama` is
+  Standardized/L3 with L4 pass rate `33.3%`.
+- The deterministic remediation queue is down to `14` open items. The stale
+  `epyc-inference-research` L5 rows are gone. Remaining P0 items are six
+  `epyc-llama` L4 workflow surfaces plus `epyc-root`
+  `L5.auto_eval_gates` and `L5.self_optimizing_loop`.
+- Attempted to refresh the stale `epyc-llama` GitNexus index before editing
+  llama readiness docs; the rebuild repeatedly timed out on large backend
+  translation units and then crashed in the Node/NAPI parser. Do not edit the
+  llama fork until its GitNexus index is repaired, likely by narrowing
+  `.gitnexusignore` for parser-hostile generated/backend files and rebuilding.
+- Validation: `repo_readiness_scorer.py` regenerated all artifacts without
+  errors, JSON parsed with `python3`, and a one-repo scorer run confirmed
+  `epyc-inference-research` is Autonomous/L5 with all level rates at `100.0%`.
 
 ## Notes
 
