@@ -96,6 +96,13 @@ Next action is to run that guarded script in a coordinated clean measurement
 window, then rebuild the pairwise contract and rerun holdouts; do not retune the
 absolute MLP/calibrator/pairwise family first.
 
+**A9 Fable5 gate surfacing (2026-07-03)**: orchestrator
+`fable5_gate_report.py` now includes an `a9_pairwise_collection` section and a
+`run_a9_pairwise_collection_window` next action. While AutoPilot is active, the
+gate report marks the section blocked by the same exit-75 guard as the collection
+script; in a clean window it will point directly at the runnable script and the
+post-collection status check.
+
 ## Additional Active References
 
 These files remain active but are not the shortest pickup path for the main queues above. Keep them indexed for discoverability; update the owning row if one becomes the primary implementation surface.
@@ -344,6 +351,14 @@ set (`orchestrator_live_seed` and `seeding_eval` action pairs), priority `1` is
 remain marked `can_run_during_active_autopilot=false`; the next meaningful A9
 move is to run the priority-0 collection commands in a clean/coordinated
 measurement window, then rebuild the pairwise contract and rerun holdouts.
+
+2026-07-03 no-inference check: rerunning the score-ordered builder against the
+existing `offline_reward_feature_manifest_pairwise_holdout_expansion.jsonl`
+would narrow the committed broad holdout-expanded artifact from `889` pairs
+across mixed source families to `523` livecodebench-only pairs and remove
+eligible independent holdouts. Do not overwrite the broad artifact with that
+manifest as a generic refresh; use a separate candidate-only artifact name if
+that diagnostic is needed before the guarded source-acquisition window.
 
 ### 8. Conversation Mgmt B2 ↔ Context Folding Phase 1
 `orchestrator-conversation-management.md` B2 (protected-zone compression from Hermes/OpenGauss) and `context-folding-progressive.md` Phase 1 (two-level condensation) both modify session compaction behavior. They must be sequenced — context-folding Phase 1 should land first as the structural upgrade, then B2's protected-zone logic can layer on top. Alternatively, B2's tool-pair sanitization (`_sanitize_tool_pairs()`) could be extracted as a standalone prerequisite for both. **Updated 2026-04-05**: Context-folding Phase 3b (role-aware compaction profiles) must align with B2's role taxonomy — the `CompactionProfile` roles must match the conversation management role definitions. **Updated 2026-04-05 (session 4)**: `CompactionProfile` roles now defined (`architect`, `worker_coder`, `worker_general`, `worker_fast`) with `get_compaction_profile()` in `session_log.py`. B2 can now reference these profiles directly. `segment_helpfulness()` + `prioritized_compaction()` available as building blocks for B2's protected-zone logic.

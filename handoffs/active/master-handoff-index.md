@@ -89,7 +89,9 @@ window: `plan_offline_reward_pairwise_holdout_expansion.py` now emits an
 `offline_reward_pairwise_collection_window.v1` manifest and executable script.
 The current generated window has `9` batches and refuses with exit `75` if
 AutoPilot is active, preserving W6/T2 accrual while making the next clean-window
-collection directly runnable.
+collection directly runnable. Orchestrator `fable5_gate_report.py` now surfaces
+this A9 window as a blocked/ready next action, so dashboard/strict gate consumers
+show the clean-window dependency instead of burying it in the routing handoff.
 
 ## B2. Frontier programs (strategic spine — spec: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md))
 | # | Prio | Item | Handoff |
