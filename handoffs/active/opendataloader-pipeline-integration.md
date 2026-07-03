@@ -324,6 +324,14 @@ PDF Input
 - [ ] Bench **LiteParse-local vs OpenDataLoader-local vs pdftotext** on the orchestrator born-digital test corpus: reading order, table fidelity, speed, **JVM-free deploy footprint**. Use a LiteParse-output-aware quality harness (its non-markdown layout output breaks naive OlmOCR/TEDS scoring — confirmed in intake-646 Tier 2b). Decide adopt_component vs ODL-only for the fast path.
 - [ ] Route complex/dense-table/scanned docs **away** from LiteParse (vendor docs concede LlamaParse-cloud-class quality is needed there; our equivalent is the ODL + VL-OCR path) — LiteParse is a born-digital fast-path backend only.
 
+### Fast-Path Evidence Checkpoint — 2026-07-03
+
+- Added `epyc-orchestrator/scripts/benchmark/pdf_fastpath_probe.py`, a no-inference harness for comparing `pdftotext`, `opendataloader`, `opendataloader_structured`, and `liteparse` on local PDF files. The script records latency, text hashes, quality heuristics, table-like line counts, ODL structured object counts, and LiteParse bbox/page-image counts when available; missing packages are explicit `missing_dependency` records rather than silent empty outputs.
+- Added focused coverage in `tests/unit/test_pdf_fastpath_probe.py`. Validation passed together with the existing PDF router slice: `uv run pytest -q tests/unit/test_pdf_fastpath_probe.py tests/unit/test_pdf_router.py` (`31 passed, 2 skipped`), focused Ruff, py_compile, and diff-check.
+- Installed `poppler-utils` in the devcontainer so the incumbent `pdftotext` baseline can actually run. No repo devcontainer files were changed.
+- Smoke artifact: `epyc-orchestrator/orchestration/reports/pdf_fastpath_probe_20260703T183037Z/summary.{json,md}`. On `/mnt/raid0/llm/llama.cpp/docs/development/llama-star/idea-arch.pdf`, `pdftotext` succeeded with median latency `8.864 ms`, quality heuristic `0.822`, and `1801` extracted chars. `opendataloader`, `opendataloader_structured`, and `liteparse` were all blocked by missing Python packages in the current environment.
+- Gate status: still open. The next evidence step is to install `opendataloader-pdf` and `liteparse`, assemble/select the born-digital corpus, and rerun the same harness before touching `src/services/pdf_router.py` policy.
+
 ## Research Intake Update — 2026-06-12
 
 ### New Related Research (deep-dived, from the intake-694 open-weights roundup)
