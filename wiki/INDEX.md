@@ -2,7 +2,7 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-07-03 (focused checkpoint: folded the verified RI-10 arm-attributed canary gate hardening, DAR-1 current replay, `seq_refuted` learning quarantine, ledger-derived `core_v2` candidate, and W8 readiness checkpoint into [Routing Intelligence](routing-intelligence.md), [Benchmark Methodology](benchmark-methodology.md), and [Autonomous Research](autonomous-research.md). Prior 2026-06-22 incremental compile of 29 new sources since the 2026-06-21 baseline retained in article history.)
+**Last compiled**: 2026-07-03 (focused checkpoint: folded the verified RI-10 arm-attributed canary gate hardening, DAR-1 current replay, `seq_refuted` learning quarantine, ledger-derived `core_v2` candidate plus era activation guard, and W8 readiness checkpoint into [Routing Intelligence](routing-intelligence.md), [Benchmark Methodology](benchmark-methodology.md), and [Autonomous Research](autonomous-research.md). Prior 2026-06-22 incremental compile of 29 new sources since the 2026-06-21 baseline retained in article history.)
 **Articles**: 26 compiled, 4 stub categories
 **Total sources**: 514+ scanned documents across 6 source types; 2026-06-21 pass merged 36 changed/new sources (research-intake 695-720 batch + parallel-session handoffs/progress) into 21 articles; 2026-06-19 pass compiled 37 changed/new active-handoff/progress sources into the highest-value evidence/routing/KV clusters
 
@@ -32,7 +32,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 |---------|---------|-------------|
 | [Cost-Aware Routing](cost-aware-routing.md) | 31+ | Task-rate/goodput telemetry exposes token bloat; stack-priors anchor q_scorer, seeding, future distillation action spaces, and the remaining launch-map migration target |
 | [Routing Intelligence](routing-intelligence.md) | 63+ | RI-10 raw high-risk count is sufficient, but decision-grade enforce/shadow arm telemetry is not; DAR replay still shows 0.00% gate regret |
-| [Benchmark Methodology](benchmark-methodology.md) | 66+ | W4/W6 authority state is green, W8 remains promotion-eval-bound, and `core_v2` now has a non-promoted ledger-derived candidate |
+| [Benchmark Methodology](benchmark-methodology.md) | 66+ | W4/W6 authority state is green, W8 remains promotion-eval-bound, and `core_v2` now has a guarded ledger-derived candidate awaiting E4 era authorization |
 
 ## Agent & Architecture
 
