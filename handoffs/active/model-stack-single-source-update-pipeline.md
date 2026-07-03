@@ -171,6 +171,14 @@ unowned local constants.
   promotion-gate pytest passed `176` tests. Future work should be triggered by
   a concrete new duplicated model/role/port fact or a new migrated consumer that
   deserves swap-CI coverage.
+- 2026-07-03 follow-up repaired planner/operator-facing stack truth after the
+  CPU embedded-NEXTN `-md` fix: generated stack summaries and system cards now
+  render same-file Qwen NEXTN draft requirements as `embedded_nextn=...` rather
+  than `draft=...`, while Gemma's separate assistant-head path remains
+  `draft=...`. The canonical stack-change update also refreshed descriptor and
+  stack-prior source hashes to the current launcher commit. Validation:
+  `stack_change_pipeline.py check` returned `summary: ok`, the hardcoded-surface
+  guard passed, and the no-inference promotion-gate slice passed `179` tests.
 
 ### 2026-06-27 Config Catalog Re-Audit
 
