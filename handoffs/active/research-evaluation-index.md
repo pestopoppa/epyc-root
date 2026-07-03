@@ -1,7 +1,7 @@
 # Research & Evaluation — Coordination Index
 
 **Status**: active
-**Updated**: 2026-06-27
+**Updated**: 2026-07-03
 **Purpose**: dispatch surface for pre-production research, evaluation, and monitoring work. Production orchestrator changes should route through `routing-and-optimization-index.md`.
 
 > Completed checklist and research-intake chronology was compacted to [`../archived/research-evaluation-index-history-through-2026-06-19.md`](../archived/research-evaluation-index-history-through-2026-06-19.md). Current task truth lives in the owning handoffs and machine artifacts named below.
@@ -17,7 +17,7 @@
 | MED | Tool-output compression P4c-P4e | [`tool-output-compression.md`](tool-output-compression.md) | Top-up telemetry, registration smoke, rollout gate. |
 | MED | Repo-readiness remediation pickup | [`repo-readiness-scorer.md`](repo-readiness-scorer.md) | Passive AutoPilot pickup JSON is generated (`mode=advisory_only`, `authority_gate=false`); live consumption still needs a separate default-off protocol. |
 | MED | Real-task eval distribution | [`frontier-f1-real-task-corpus.md`](frontier-f1-real-task-corpus.md) | W2 compact corpus landed in orchestrator `e59577b7`: 372 training-eligible class+outcome rows, prompt text/hash refs omitted. Token telemetry for future rows landed in orchestrator `b8c8ac52`; the 2026-06-21 live token refresh clears the narrow token/class subgate (`213` training-eligible rows, `202` token payload rows, 0 prompt text). Historical conversation importer landed in orchestrator `b4b96580`; sidechain-excluded mixed source-family summary landed in orchestrator `13269679` with 1,246 prompt-free rows represented across `live_progress` and `historical_operator_conversation`. Orchestrator `40a87f3d` adds source-family weighted shares and passes the dominance gate (`historical=0.585007`, `live=0.414993`, max allowed `0.60`). Next: clean-window W3 EvalTower per-question ledger run; the first packaged concurrent-window attempt failed reliability and is not acceptance evidence. |
-| MED | Granite embedder bench Phase B | [`granite-97m-r2-bench-plan.md`](granite-97m-r2-bench-plan.md) | A-fast corpus/harness verified; remaining prep is model artifacts/server recipes, then an embedder serving window only. No production model reload required. |
+| MED | Granite embedder bench Phase B | [`granite-97m-r2-bench-plan.md`](granite-97m-r2-bench-plan.md) | A-fast corpus/harness verified and GGUF artifacts produced for Granite/e5-base/BGE-M3 on 2026-07-03; next prep is embedder-only load/vector smoke, then Phase B. No production model reload required. |
 | MED | RoPE long-context matrix K-ROPE-1 | P10 below / clean-window manifest | Continue only in clean model-batched windows; worker path needs Gemma4 MTP serving fix before evidence. |
 | LOW | Reasoning compression tails | [`reasoning-compression.md`](reasoning-compression.md), [`memento-block-reasoning-compression.md`](memento-block-reasoning-compression.md) | Enforce path blocked until signal is predictive; Memento S2/S3 remain gated. |
 | LOW | Monitoring-only model/research watches | TQ3, Log-Linear GDN, YaRN, Ouro, SLIDERS, swarm/Strand, AgentWorld | Do not consume inference unless the owning handoff's gate is met. |
