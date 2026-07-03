@@ -129,7 +129,25 @@ Smoke checks:
 - `dashboard/api/health` reported `status=ok`.
 - Short completions on `8070` and `8083` both returned draft activity (`draft_n=18`, `draft_n_accepted=10`), confirming embedded NEXTN remains active without `-md`.
 
-Remaining measurement work is a representative AutoPilot eval fan-out / throughput comparison and CPU resident-memory delta analysis. Do not infer the CPU RSS delta from the GPU result; mmap and `--mlock` details matter.
+## Post-reload measurement update — 2026-07-03
+
+Generated a fresh live acceptance report after AutoPilot resumed:
+
+- `epyc-orchestrator/orchestration/reports/mtp_acceptance_report_20260703T145617Z.{json,md}`
+- Failed MTP roles: none.
+- Aggregate token acceptance: `0.8204` (`132795/161871`), including Gemma worker traffic.
+- Affected Qwen roles with evidence:
+  - `frontdoor`: token alpha `0.6188` (`5138/8303`), draft alpha `0.8281`; evidence on `8070` and `8280`. The other quarter replicas had no post-reload traffic yet, so this is activation evidence, not full per-replica coverage.
+  - `architect_general`: token alpha `0.5556` (`10/18`), draft alpha `0.6000`; very small sample from one post-reload request.
+
+Resident-memory delta was measured from the durable before/after process snapshots:
+
+- `frontdoor` Qwen replicas: RSS `-197606.3 MiB`, PSS `-17407.4 MiB`.
+- `architect_general`: RSS `-78540.4 MiB`, PSS `-3915.3 MiB`.
+- Affected Qwen total: RSS `-276146.7 MiB` (~`269.7 GiB`), PSS `-21322.7 MiB` (~`20.8 GiB`).
+- Gemma separate-draft control stayed flat: RSS `+216.8 MiB`, PSS `+217.0 MiB`.
+
+Interpretation: the launch fix is live, embedded NEXTN remains active without `-md`, and the duplicate same-file mapping was materially reduced. The PSS delta is the better host-pressure estimate; the larger RSS delta mostly captures duplicate mappings counted per process. A decision-grade throughput speedup ratio remains open because the pre-fix same-file logs were not preserved as a matched workload. The next clean-window task is a controlled same-prompt A/B (`same-file -md` vs no-`-md`) on a single Qwen role or throwaway server, without contaminating AutoPilot evidence windows.
 
 ---
 
@@ -144,5 +162,6 @@ Remaining measurement work is a representative AutoPilot eval fan-out / throughp
 - [x] Gate 1: pipeline-green. Gate 2: role starts. Gate 3: `ps` shows no `-md <same file>`.
 - [x] Repeat for architect `:8083` and the remaining Qwen3.6 frontdoor quarter replicas.
 - [x] Record reload results in `progress/`; if all green, ask operator before touching `master-handoff-index.md`.
-- [ ] Measure: representative MTP acceptance/decode speedup and resident-RAM delta (verify actual), output coherent — via autopilot eval fan-out.
-- [ ] Rollback if regression: restore `-md` and reload.
+- [x] Measure: representative post-reload MTP acceptance and resident-RAM delta via live AutoPilot/eval traffic and durable before/after process snapshots.
+- [ ] Controlled same-workload decode speedup A/B: same-file `-md` versus embedded no-`-md`, preferably one Qwen role or throwaway port in a quiet window.
+- [x] No rollback triggered by smoke checks or post-reload acceptance evidence.
