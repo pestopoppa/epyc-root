@@ -360,3 +360,12 @@ After any phase of either track:
 4. If Track B proxy derisk passes (Gate B0): file `engram-retrofit-qwen36-spike.md` and link from this handoff.
 5. If either track is killed by a falsification gate: write a deep-dive in `research/deep-dives/` documenting the negative measurement, and update intake-599 / intake-504 contradicting_evidence with the verified result.
 6. When the handoff reaches a terminal state (both tracks resolved): move to `handoffs/completed/` and update `inference-acceleration-index.md`'s landscape table.
+
+## Research Intake Update — 2026-07-02
+
+### New Related Research
+- **[intake-758] "Scaling Embeddings Outperforms Scaling Experts in Language Models"** (arXiv 2601.21204, Meituan LongCat Team)
+  - **Relevance:** This is the **missing scaling-law / architecture paper behind LongCat-Flash-Lite** (already tracked here as intake-502/504; Track A CPU probe closed negative). The 31.4B N-gram-embedding figure (46% of 68.5B total) matches our records exactly.
+  - **Design principles to fold into any Track B frozen-backbone retrofit:** (1) n-gram embedding scaling is a sparsity axis **orthogonal to MoE** with superior Pareto at high sparsity; (2) **width amplifies / depth diminishes** the embedding-scaling advantage; (3) embedding params should be **≤50% of total**; (4) n-gram sub-table vocab must **deviate from integer multiples** of the base vocab (polynomial-rolling-hash collision rule); (5) device-side **N-gram Cache** kernels + **Eagle3 3-step** speculative decoding realize the sparsity as speedup (draft uses a conventional embedding to bypass n-gram lookup).
+  - **Delta from current approach:** the architecture is a *pretraining* choice (not retrofittable onto our GGUF production models) and all numbers are GPU-measured (8×H800) — so this is **adopt_patterns** (scaling-law justification for Track B), not a deployable technique. n-gram-embedding-in-host-DRAM remains a fit for our 1.1 TB DDR5 / 460 GB/s node (Track B thesis).
+  - **⚠ Contradiction to carry forward:** the paper's chat **MATH500 = 96.8%** is contradicted by our Q4_K_M CPU eval of LongCat-Flash-Lite (**math 0/6 STRUCTURAL**, intake-502/504). Treat the paper's downstream numbers as observations, and re-check whether the gap is quant penalty vs harness/structural (per feedback_verify_test_method_before_calling_it_a_bug).

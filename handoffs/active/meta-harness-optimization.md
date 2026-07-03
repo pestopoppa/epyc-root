@@ -53,3 +53,13 @@ Do not rebuild the full Meta-Harness outer loop now. The useful next work is tar
 ## Reporting Instructions
 
 After MH or HLE work, update this handoff with the code path, feature flag, validation command, observe-only result, and promotion/parking decision. Mirror priority changes in [routing-and-optimization-index.md](routing-and-optimization-index.md), Package J in [bulk-inference-campaign.md](bulk-inference-campaign.md), and [master-handoff-index.md](master-handoff-index.md) if queue priority changes.
+
+## Research Intake Update — 2026-07-02
+
+### New Related Research
+- **[intake-753] "Don't Train the Model, Evolve the Harness"** (HF Space, Joel Niklaus; applies Meta-Harness = intake-244 / arXiv 2603.28052)
+  - **Relevance:** An external, empirical instance of *our exact loop* on a frozen open-weight model — DeepSeek-V4-Pro lifted 0% → 80.1% held-out pooled-criterion on Harvey's Legal Agent Benchmark with **zero weight changes**, purely by evolving the harness. Maps ~1:1 onto our HLE-3/J9 fixed-model harness lane.
+  - **Key techniques worth adopting:** (1) **prefer deterministic-code mechanisms over prompt edits** for weak/frozen models — 5 of the top 6 accepted harnesses were code, not prompts (validates our Tier-2 code-mutation search over pure PromptForge prompt-editing); (2) cost-aware scoring `pooled_criterion + 0.5·all_pass − 0.005·tokens_per_million` + copy-and-adapt accepted-frontier inheritance; (3) **3-trial noise-margin promotion** (≥1 pt clears incumbent) — mirrors our resolution-aware / mad_noise gate; (4) **tune the harness per-served-model** — code fixes transferred across families (V4-Flash +14.4 pts) but prompt playbooks did NOT (Nemotron-3 Ultra +0.4 pts).
+  - **Reported results:** dev pooled 63.1→83.3; held-out test 63.4→80.1; beat external harnesses on the same model (Pi 45.4, Goose 23.2, mini-swe-agent 3.5).
+  - **Delta from current approach:** we already run this loop (PromptForge proposer + eval_tower + cost-aware Pareto); the additive value is the code>prompt mechanism-preference finding and the per-model-transfer caveat. **MEASUREMENT.md caveat:** single legal benchmark, LLM-judge scoring, non-peer-reviewed → observations to shape the proposer contract, NOT to gate promote/revert without local re-measurement.
+  - **Reference-chased expansion (intake this run):** Darwin Gödel Machine (arXiv 2505.22954) — self-code-rewriting evolutionary agents, directly relevant to autopilot species/strategy generation.

@@ -39624,3 +39624,1643 @@
     in 60s -> per the ''never dismiss a source'' rule, indexed URL-less as operator-relayed blog with
     a sentinel url; supersede when the real URL is provided. key_claims are paraphrased in the agent''s
     own words (no raw quote). credibility_score=null (survey/blog).'
+- id: intake-751
+  arxiv_id: '2606.26493'
+  url: https://arxiv.org/abs/2606.26493
+  source_type: paper
+  title: 'Nemotron-Labs-TwoTower: Diffusion Language Modeling with Pretrained Autoregressive Context'
+  authors:
+  - Fitsum Reda
+  - John Kamalu
+  - Roger Waleffe
+  - Mostofa Patwary
+  - Mohammad Shoeybi
+  - Bryan Catanzaro
+  categories:
+  - speculative_decoding
+  - ssm_hybrid
+  - moe_optimization
+  - inference_serving
+  novelty: high
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-07-02'
+  credibility_score: 2
+  key_claims:
+  - Decouples a FROZEN autoregressive context tower (causal over clean tokens) from a TRAINABLE diffusion
+    denoiser tower (bidirectional intra-block self-attn + causal cross-attn to the frozen tower) — a
+    departure from single-network diffusion-LM designs; only the denoiser is trained.
+  - Lets an existing pretrained AR model be reused unchanged (frozen) with a diffusion generator bolted
+    on via cross-attention; block-wise iterative denoising with confidence-based unmasking emits up to
+    16 tokens/step.
+  - Built on Nemotron-3-Nano-30B-A3B (52-layer Mamba-2 / attention / MoE hybrid, 128 experts / 6 active
+    + 2 shared, ~3B active), ~2.1T tokens of denoiser training with the backbone frozen.
+  techniques:
+  - Two-tower decoupling (frozen AR context tower + trained diffusion denoiser tower)
+  - Block-wise autoregressive diffusion with confidence-based unmasking
+  - Cross-attention from denoiser into frozen AR context tower
+  - Mamba-2 / attention / MoE hybrid backbone reuse without retraining
+  reported_results:
+  - 2.42x higher wall-clock generation throughput vs the AR baseline
+  - Retains 98.7% of the AR baseline's quality
+  referenced_arxiv_ids: []
+  contradicting_evidence:
+  - GPU-only (BF16, dual H100/A100); no CPU/GGUF/llama.cpp path — same deployment wall documented for
+    DFlash (intake-158).
+  - Backbone family (Nemotron Mamba2-hybrid MoE) has documented llama.cpp CPU blockers (Mamba2-MoE crash/feature
+    tickets); all speed/quality numbers are GPU-only and self-reported.
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - dflash-block-diffusion-speculation.md
+    - tidar-one-pass-variant-b.md
+    - speculative-decoding-mtp-refresh.md
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries:
+    - intake-576
+    - intake-633
+  handoffs_updated:
+  - speculative-decoding-mtp-refresh.md
+  handoffs_created: []
+  novelty_justification: The block-diffusion parallel-decode paradigm is already covered (DFlash intake-158,
+    DART) and the 2.42x figure is in-band; the genuinely new element is the two-tower decoupling — freeze
+    the pretrained AR backbone entirely and train only a copy as a diffusion denoiser, achieving the
+    speedup without retraining/degrading the base. That framing is adjacent to how we train MTP/NEXTN
+    heads on a frozen base.
+  relevance_justification: 30B-A3B is squarely in our worker/drafter size class and the MoE+SSM-hybrid+throughput-technique
+    story is on-topic, but it is diffusion-based and GPU-only with no CPU/GGUF path — high conceptual
+    relevance, low immediate deployability. Distinct from the already-indexed Nemotron-Labs-Diffusion
+    tri-mode (intake-576) — different authors, architecture (two decoupled towers vs one weight set),
+    and backbone.
+  verdict_justification: 'worth_investigating: not integrable on our stack (diffusion, GPU-only), but
+    the two-tower frozen-AR-context pattern is a candidate design lens for an MTP/NEXTN-style parallel
+    head on our frozen CPU models and directly informs speculative-decoding-mtp-refresh; the backbone
+    is a standing SSM-hybrid worker/drafter candidate. Creative-use: re-evaluate on the MI210/DGX-Spark
+    GPU path if a diffusion-serving backend lands.'
+  notes: 'Paper entry; the downloadable weights are indexed separately as intake-752 (arxiv_id nulled
+    there to avoid a primary-key collision). No ar5iv/HTML render available, so the reference list was
+    inaccessible (referenced_arxiv_ids empty). Confirmed distinct from intake-576/577/578 (tri-mode).'
+- id: intake-752
+  arxiv_id: null
+  url: https://huggingface.co/nvidia/Nemotron-Labs-TwoTower-30B-A3B-Base-BF16
+  source_type: repo
+  title: Nemotron-Labs-TwoTower-30B-A3B-Base-BF16 (model weights for the TwoTower diffusion LM)
+  authors:
+  - NVIDIA Corporation
+  categories:
+  - speculative_decoding
+  - moe_optimization
+  - ssm_hybrid
+  - inference_serving
+  - local_inference
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-07-02'
+  credibility_score: 4
+  key_claims:
+  - Downloadable BF16 weights for the TwoTower block-wise diffusion LM (frozen AR context tower + trained
+    diffusion denoiser tower); both towers are copies of the 52-layer Nemotron-3-Nano-30B-A3B hybrid
+    Mamba-2/attention/MoE backbone (~60B total on disk across the two towers).
+  - Generates up to 16 tokens/step via block-wise denoising with confidence-based unmasking (default
+    threshold 0.8, block size 16); a throughput alternative conceptually orthogonal to speculative decoding.
+  - GPU-only (BF16, dual H100/A100); no CPU/GGUF/llama.cpp inference path provided.
+  techniques:
+  - Two-tower decoupling (frozen AR context tower + trained diffusion denoiser tower)
+  - Confidence-based unmasking / iterative block denoising
+  - Hybrid Mamba-2 / attention / MoE backbone reuse
+  reported_results:
+  - 2.42x wall-clock throughput at 98.7% quality retention
+  - MMLU 78.24; GSM8K 90.14; HumanEval 75.58 (self-reported)
+  referenced_arxiv_ids:
+  - '2606.26493'
+  contradicting_evidence:
+  - GPU-only, no CPU/GGUF path; Mamba2-hybrid-MoE backbone has known llama.cpp blockers — not deployable
+    on the current CPU stack; numbers are self-reported/unreproduced.
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    - 02-moe-optimization.md
+    handoffs:
+    - dflash-block-diffusion-speculation.md
+    - tidar-one-pass-variant-b.md
+    - speculative-decoding-mtp-refresh.md
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries:
+    - intake-751
+    - intake-576
+    - intake-158
+  handoffs_updated:
+  - speculative-decoding-mtp-refresh.md
+  handoffs_created: []
+  novelty_justification: The deployable-artifact counterpart to the paper (intake-751); the two-tower
+    freeze-and-bolt-on design and 30B-A3B Mamba-hybrid-MoE backbone are the notable deltas vs the already-indexed
+    diffusion-LM cluster.
+  relevance_justification: Same as intake-751 — a 30B-A3B MoE in our worker/drafter class with a compelling
+    frozen-backbone design, but GPU-only diffusion with no CPU path. The backbone (Nemotron-3-Nano-30B-A3B)
+    is itself a standing SSM-hybrid candidate independent of the diffusion tower.
+  verdict_justification: 'worth_investigating: study the two-tower pattern for a frozen-model parallel
+    head (informs speculative-decoding-mtp-refresh) and track the backbone as an SSM-hybrid candidate;
+    revisit as a deployment target if a GPU diffusion-serving backend lands on the MI210 path.'
+  notes: 'Same underlying work as intake-751 (arXiv 2606.26493); kept as a distinct entry because it
+    is the deployable weight artifact vs the method paper. arxiv_id nulled here to avoid a duplicate
+    primary key; the paper is referenced via referenced_arxiv_ids + intake-751.'
+- id: intake-753
+  arxiv_id: null
+  url: https://huggingface.co/spaces/joelniklaus/harness-optimization
+  source_type: repo
+  title: "Don't Train the Model, Evolve the Harness (HF Space / interactive research article)"
+  authors:
+  - Joel Niklaus (Hugging Face)
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  - autonomous_research
+  - cost_aware_routing
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-07-02'
+  credibility_score: 4
+  key_claims:
+  - A FROZEN open-weight model (DeepSeek-V4-Pro) that scores 0% all-pass on Harvey's Legal Agent Benchmark
+    is lifted to 80.1% held-out pooled-criterion pass (63.4->80.1) with ZERO weight changes — purely
+    by evolving the harness (prompts, tools, validators, context mgmt).
+  - For a weak/frozen agent, most 'capability' is I/O discipline the scaffold can guarantee — 5 of the
+    top 6 accepted harnesses are DETERMINISTIC CODE mechanisms, not prompt edits.
+  - Transfer is mechanism-type-dependent — code-based fixes transfer across model families, prompt playbooks
+    do NOT (same-family V4-Flash +14.4 pts; cross-family Nemotron-3 Ultra +0.4 pts) — so the harness
+    must be tuned per served model.
+  - A concrete open-weight application of the Meta-Harness method (intake-244), positioned as an alternative
+    to fine-tuning/RL for fixed models.
+  techniques:
+  - Meta-harness outer loop (Opus proposer reads traces, proposes one mechanism/iteration; Python evaluator,
+    24-task dev set, 3 trials)
+  - Copy-and-adapt accepted-frontier inheritance (each candidate inherits all accepted mechanisms + one
+    new change)
+  - Cost-aware scoring (pooled_criterion + 0.5*all_pass - 0.005*tokens_per_million)
+  - 3-trial noise-margin promotion rule (>=1 point clears incumbent)
+  - Deficit-scoring greedy held-out split construction
+  reported_results:
+  - Dev pooled criterion 63.1->83.3; held-out test 63.4->80.1; all-pass 0->5.0 (test)
+  - External harness baselines on same model (test pooled) — Pi 45.4, Goose 23.2, mini-swe-agent 3.5
+  - Transfer — V4-Flash +14.4 pts (same family); Nemotron-3 Ultra +0.4 pts (cross-family)
+  referenced_arxiv_ids:
+  - '2603.28052'
+  - '2506.13131'
+  - '2509.19349'
+  - '2505.22954'
+  - '2507.19457'
+  contradicting_evidence:
+  - Single legal benchmark, LLM-judge scoring, non-peer-reviewed 2026-timeline writeup; some model names/arXiv
+    IDs unverified — usable to shape hypotheses/proposer contract, NOT to gate keep/revert/promote without
+    local re-measurement (MEASUREMENT.md).
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    handoffs:
+    - meta-harness-optimization.md
+    - autopilot-continuous-optimization.md
+    - eval-tower-verification.md
+    - routing-and-optimization-index.md
+    experiments: []
+    intake_entries:
+    - intake-244
+    - intake-271
+  handoffs_updated:
+  - meta-harness-optimization.md
+  - autopilot-continuous-optimization.md
+  handoffs_created: []
+  novelty_justification: The core method (Meta-Harness outer loop) is already ingested as intake-244 and
+    the harness>model thesis is well-covered (intake-271, GEPA), so the METHOD is not new. What is new
+    is empirical — a full frozen open-weight case study with the code-vs-prompt transfer finding, a concrete
+    cost-aware scoring formula, a quantified 3-trial promotion protocol, and external-harness baselines.
+  relevance_justification: Directly on our active focus. meta-harness-optimization.md + autopilot-continuous-optimization
+    are our own implementation of exactly this loop (PromptForge proposer + eval_tower + cost-aware Pareto);
+    our HLE-3/J9 fixed-model harness lane IS the frozen-open-model harness-evolution setup this validates.
+    We serve fixed open models where weight training is off the table, so 'evolve the harness, not the
+    model' is our operating regime.
+  verdict_justification: 'adopt_patterns: parent method already integrated (intake-244), ships as a writeup
+    not a drop-in component. Adoptable patterns — prefer deterministic-code mechanisms over prompt edits
+    for weak/frozen models (validates our Tier-2 code-mutation search over pure PromptForge); the cost-aware
+    scoring formula + copy-and-adapt inheritance; the 3-trial >=1pt promotion margin (mirrors our resolution-aware
+    gate); tune the harness per-served-model (cross-family transfer ~0).'
+  notes: HF Space is a Distill-style interactive article, not a runnable optimizer. Third-party empirical
+    application of Meta-Harness (intake-244) on Harvey's Legal Agent Benchmark; maps ~1:1 onto active
+    meta-harness-optimization.md (HLE-3/J9 fixed-model harness lane).
+- id: intake-754
+  arxiv_id: '2605.03413'
+  url: https://arxiv.org/abs/2605.03413
+  source_type: paper
+  title: Learning to Theorize the World from Observation
+  authors:
+  - Doojin Baek (KAIST)
+  - Gyubin Lee (KAIST)
+  - Junyeob Baek (KAIST)
+  - Hosung Lee (KAIST)
+  - Sungjin Ahn (KAIST)
+  categories:
+  - autonomous_research
+  - agent_architecture
+  novelty: high
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-07-02'
+  credibility_score: 3
+  key_claims:
+  - Introduces Learning-to-Theorize (L2T) — inferring explicit, executable explanatory theories from
+    raw observations without language, task labels, or program supervision.
+  - Neural Theorizer (NEO) induces a latent 'Language of Thought' (compositional executable programs)
+    run through a shared transition model; searches over compositions of learned primitives via a programmer
+    module and selects minimal-length explanations with an MDL penalty.
+  - Explanation-driven formulation yields compositional and length generalization — NEO holds transfer
+    on compositional-OOD and length-OOD splits where monolithic (direct input->output) baselines collapse.
+  - Proposes the Observation-to-Theory Induction Benchmark (OTIB) across GridWorld, arithmetic factorization,
+    and image editing.
+  techniques:
+  - Program induction / latent-program synthesis (learned Language of Thought)
+  - Compositional search over learned primitives + shared transition model
+  - MDL (minimum-description-length) minimal-explanation selection
+  - VQ-VAE discrete primitive selection; test-time search (NEO-S)
+  reported_results:
+  - GridWorld (alpha=0.33) compositional-OOD 0.933 transferability; length-OOD 0.845; baselines near-zero
+    on OOD
+  - Arithmetic NEO-S 0.959 transferability / 0.994 self-explainability; length-OOD 0.02->0.696 with test-time
+    search
+  - Presented as ICML 2026 Oral (author-stated, not independently verified)
+  referenced_arxiv_ids:
+  - '2405.03520'
+  - '2412.04604'
+  - '2601.10904'
+  - '1911.01547'
+  - '1604.00289'
+  contradicting_evidence:
+  - Not an LLM-inference technique — bespoke neural program-induction model trained from scratch on toy
+    domains (no released code/weights on the page); results largely qualitative; ICML-oral claim author-stated.
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - agent-world-env-synthesis.md
+    - reasoning-compression.md
+    experiments: []
+    intake_entries:
+    - intake-498
+    - intake-561
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: New learning paradigm (L2T) + concrete model (NEO — latent LoT programs, shared
+    transition executor, MDL-adaptive length, state-grounding) + new benchmark (OTIB). Distinct from
+    every world-model entry in the corpus, which are latent-dynamics/generative predictors; program-induction
+    + Language-of-Thought is otherwise absent.
+  relevance_justification: Not an inference-serving technique and not deployable on the EPYC/MI210 stack,
+    but its core mechanism (compositional search over learned primitives + MDL minimal-explanation penalty
+    giving OOD generalization) is a clean formalism for how autopilot could represent, recombine, and
+    length-regularize optimization strategies rather than treating each as a monolithic point — hence
+    medium, not none.
+  verdict_justification: 'worth_investigating (per no-hard-reject policy; the arxiv-only pass leaned not_applicable,
+    the project-page pass leaned worth_investigating — reconciled to worth_investigating). Transferable
+    ideas: (a) MDL-penalized minimal-explanation selection as a regularizer/tiebreaker for autopilot
+    strategy generation; (b) compositional-vs-monolithic strategy representation as the mechanism behind
+    generalization. Creative-use: a spike encoding autopilot optimization primitives as a composable
+    library with an MDL prior in the strategy store, evaluated OTIB-style.'
+  notes: 'MERGED entry — user provided both the project page (https://doojinbaek.github.io/publications/learning-to-theorize-the-world/)
+    and the arXiv abstract (2605.03413); they are the same paper. Canonical URL is the arXiv (carries
+    the dedup key); the project page is the alternate. Two independent analyses reconciled here.'
+- id: intake-755
+  arxiv_id: '2606.32026'
+  url: https://arxiv.org/abs/2606.32026
+  source_type: paper
+  title: 'AdaJEPA: An Adaptive Latent World Model'
+  authors:
+  - Ying Wang
+  - Oumayma Bounou
+  - Yann LeCun
+  - Mengye Ren
+  categories:
+  - training_distillation
+  - agent_architecture
+  novelty: medium
+  relevance: low
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-07-02'
+  credibility_score: 2
+  key_claims:
+  - Latent world models are usually frozen at test time so planning fails under test-time distribution
+    shift; AdaJEPA adapts the world model ONLINE during model-predictive-control (MPC) execution.
+  - Adaptation is self-supervised — observed state transitions during execution supervise recalibration,
+    needing no expert demos or extra data.
+  - The plan->execute->observe->adapt->replan loop improves goal-reaching under distribution shift vs
+    a frozen world model, with as few as one gradient step per replanning iteration.
+  techniques:
+  - JEPA-style latent (joint-embedding predictive) world model
+  - Test-time / online self-supervised adaptation of world-model parameters
+  - Model predictive control (MPC) planning in latent space
+  reported_results:
+  - Qualitative only in available content — 'substantial' improvement in goal-reaching under distribution
+    shift; as few as one gradient step per MPC replanning step. No concrete numeric metrics exposed.
+  referenced_arxiv_ids: []
+  contradicting_evidence:
+  - cs.LG/robotics-planning latent-world-model paper — no LLM, no inference-serving, no CPU/hardware-kernel
+    content; only tie to our corpus is the phrase 'world model'.
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - agent-world-env-synthesis.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Online self-supervised test-time adaptation of a JEPA latent world model inside
+    an MPC loop is a reasonably fresh combination with no prior EPYC-corpus coverage, but its ingredients
+    (test-time adaptation, self-supervised transition prediction, latent MPC) are individually well-established
+    — a novel composition, hence medium.
+  relevance_justification: A robotics-planning latent-world-model paper with no LLM/inference-serving/kernel
+    content; the only tie is the word 'world model' plus a conceptual analogy between AdaJEPA's closed-loop
+    self-recalibration and autopilot's online self-improvement — keeps it above none, hence low.
+  verdict_justification: 'not_applicable to the CPU-inference/orchestration/routing scope — no code path,
+    kernel, serving, or benchmark surface this plugs into. Per no-hard-reject policy, flagged for operator
+    review with a creative-use note: the plan->execute->observe->adapt single-gradient-step self-supervised
+    loop is a conceptual analog for how autopilot could recalibrate its cost/quality model from observed
+    outcomes between trials.'
+  recommended_actions:
+  - 'OPERATOR-CONFIRMED 2026-07-02: not_applicable stands. Creative-use candidate retained for reference —
+    online test-time recalibration of a small predictive model from observed outcomes as an analog for
+    autopilot self-correction (agent-world-environment-synthesis / autopilot deep-dives).'
+- id: intake-756
+  arxiv_id: null
+  url: https://huggingface.co/nvidia/Qwen3.6-27B-NVFP4
+  source_type: repo
+  title: NVIDIA Qwen3.6-27B-NVFP4 — Official NVFP4 (4-bit FP) Quantized Checkpoint
+  authors:
+  - NVIDIA
+  categories:
+  - quantization
+  - hardware_optimization
+  - local_inference
+  novelty: low
+  relevance: medium
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-07-02'
+  credibility_score: 4
+  key_claims:
+  - Official NVFP4 (4-bit float, E2M1) quantization of Qwen3.6-27B via nvidia-modelopt — ~2.5x smaller
+    (16->4 bits/param), ~22 GB weights on a single GPU.
+  - NVFP4 = FP4 E2M1 elements, block_size 16, per-block FP8 E4M3 scale + per-tensor FP32 scale (finer
+    block + higher-precision scale than MXFP4's 32/E8M0).
+  - Near-lossless vs FP8 baseline across MMLU Pro / GPQA / AIME / SciCode / IFBench; only transformer-block
+    linears quantized, attention linears + KV cache stay FP8.
+  - GPU-native — runtime vLLM, supported on NVIDIA Hopper + Blackwell (tested GB300); Apache-2.0.
+  techniques:
+  - NVFP4 quantization (E2M1 FP4, block16, FP8 E4M3 block-scale, FP32 tensor-scale) via NVIDIA Model
+    Optimizer
+  - Weight+activation quant limited to transformer-block linears; attention/KV retained FP8
+  - Two-level block scaling (block scale + tensor scale)
+  reported_results:
+  - MMLU Pro 86.3 (FP8 86.1); GPQA Diamond 85.5 (86.0); AIME 2025 92.7 (93.1); IFBench 65.5 (65.1)
+  - ~2.5x memory reduction (16->4 bits/param), ~22 GB weights on a single Blackwell GPU
+  referenced_arxiv_ids: []
+  contradicting_evidence:
+  - NVFP4 is not GGUF/llama.cpp-loadable; requires Blackwell/Hopper + vLLM; MI210 (gfx90a/CDNA2) has
+    no FP4/FP8 tensor path — matches the intake-339 (gemma-4 NVFP4) not_applicable precedent.
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - kv-cache-quantization.md
+    - qwen36-27b-cpu-feasibility.md
+    - gpu-acceleration-path.md
+    - qwen-mtp-llamacpp-port.md
+    experiments: []
+    intake_entries:
+    - intake-339
+    - intake-455
+  handoffs_updated:
+  - tq3-quantization-evaluation.md
+  handoffs_created: []
+  novelty_justification: The NVFP4 format and its Blackwell/GGUF-incompatibility are already catalogued
+    (intake-339, GLM-REAP NVFP4); the base Qwen3.6-27B is tracked (intake-455 + qwen36-27b-cpu-feasibility).
+    Only new datapoint is an official-NVIDIA FP8-parity accuracy table for this model + MTP-preserving
+    siblings — a confirmation, not a new mechanism.
+  relevance_justification: Two live threads touch this — tq3-quantization-evaluation (the FP8-parity table
+    is a useful external bar vs MXFP4/Q4_K_M/TQ3) and qwen36-27b-cpu-feasibility (same base model). But
+    the checkpoint is not deployable on our hardware (GPU-native, not GGUF; MI210 lacks FP4/FP8 units)
+    — decision-useful data, not a usable artifact.
+  verdict_justification: 'not_applicable (per no-hard-reject policy — creative-use notes preserved; flagged
+    for operator review), matching intake-339 for the same format. Creative uses — (a) re-quantize the
+    Apache-2.0 BF16 source to GGUF Q4_K_M/TQ3 for CPU (unsloth already ships Qwen3.6-27B-GGUF); (b) the
+    FP8-parity table is a concrete external target for tq3-quantization-evaluation; (c) MTP-head-preserved
+    NVFP4 siblings mirror our MTP direction; (d) bookmark for gpu-acceleration-path if a Blackwell/Hopper
+    GPU is acquired.'
+  recommended_actions:
+  - 'OPERATOR-CONFIRMED 2026-07-02: not_applicable stands (NVFP4 = GPU-native, not usable on EPYC CPU
+    or MI210 gfx90a). The re-quantizable Apache-2.0 BF16 source + FP8-parity accuracy bar remain useful
+    to the CPU quant line (tq3-quantization-evaluation, qwen36-27b-cpu-feasibility).'
+- id: intake-757
+  arxiv_id: '2606.28436'
+  url: https://paperswithcode.co/paper/2606.28436
+  source_type: paper
+  title: 'Dockerless: Environment-Free Program Verifier for Coding Agents'
+  authors:
+  - Wenhao Zeng
+  - Yuling Shi
+  - Xiaodong Gu
+  - Shilin He
+  - et al.
+  categories:
+  - agent_architecture
+  - training_distillation
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-07-02'
+  credibility_score: 3
+  key_claims:
+  - Code patches can be verified for correctness WITHOUT execution — 'Dockerless' judges patch correctness
+    via agentic repository exploration to gather evidence, eliminating Docker/test-environment setup
+    cost.
+  - The execution-free verifier serves double duty — SFT trajectory filter and RL reward signal — enabling
+    a fully environment-free coding-agent post-training pipeline.
+  - Beats the strongest existing open-source verifier by 14.3 AUC points and matches environment-based
+    post-training performance.
+  techniques:
+  - Execution-free / environment-free patch verification (no Docker, no test runs)
+  - Agentic repository exploration to collect correctness evidence
+  - Verifier-as-SFT-filter + verifier-as-RL-reward integration
+  reported_results:
+  - +14.3 AUC over strongest OSS verifier
+  - Post-training Qwen3.5-9B — SWE-bench Verified 62.0 (+2.4), Multilingual 50.0 (+8.7), Pro 35.2 (+2.9)
+  referenced_arxiv_ids: []
+  contradicting_evidence:
+  - Execution-free SWE verification is an existing line (intake-368 SWE-RM, intake-371 ThinkPRM); the
+    62.0 SWE-bench Verified figure coincides with SWE-RM's, underscoring a crowded sub-area.
+  cross_references:
+    chapters: []
+    handoffs:
+    - multi-file-coding-completion-capability.md
+    - eval-tower-verification.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-368
+    - intake-371
+    - intake-367
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Execution-free verification for SWE agents is an existing line (intake-368/371);
+    Dockerless's twist — agentic repo-exploration-for-evidence wired as both SFT filter and RL reward
+    for a fully environment-free pipeline — is a refinement/extension, hence medium.
+  relevance_justification: Off our core inference-optimization axis (it is a coding-agent post-training
+    method) but lands in an active thread — we just shipped functional-verifier-in-the-loop (multi-file-coding-completion-capability,
+    2026-06-28); an execution-free verifier could gate coder_escalation patches without spinning up test
+    environments, and eval-tower-verification needs verifier accuracy/calibration eval. Same tier as
+    sibling intake-368.
+  verdict_justification: 'worth_investigating (matches intake-368). Not integrated (we have no execution-free
+    verifier) and not a core inference-speed lever, but a cheap no-execution patch-quality signal could
+    back the functional-verifier hook, feed autopilot''s reward channel, or inform verifier evaluation.
+    Creative-use: run as a CPU-side gating/routing signal on coder_escalation outputs rather than a training
+    reward (we do not post-train coding agents).'
+  notes: Extraction sourced from arxiv.org/abs/2606.28436; the untrusted paperswithcode.co host (unusual
+    TLD) was NOT used for content. url field preserves the user-provided paperswithcode.co link; arxiv_id
+    is authoritative.
+- id: intake-758
+  arxiv_id: '2601.21204'
+  url: https://arxiv.org/abs/2601.21204
+  source_type: paper
+  title: Scaling Embeddings Outperforms Scaling Experts in Language Models
+  authors:
+  - Meituan LongCat Team
+  - Hong Liu
+  - Xunliang Cai
+  - et al.
+  categories:
+  - moe_optimization
+  - memory_augmented
+  - speculative_decoding
+  - hardware_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-07-02'
+  credibility_score: 3
+  key_claims:
+  - N-gram embedding scaling is a sparsity axis orthogonal to MoE with superior Pareto efficiency vs
+    expert scaling at high sparsity — 'scaling embeddings outperforms scaling experts'.
+  - Model width amplifies embedding-scaling advantages while depth diminishes them; embedding params
+    should not exceed ~50% of total.
+  - N-gram sub-table vocab size must deviate from integer multiples of the base vocab to minimize hash
+    collisions (polynomial rolling hash rule).
+  - Eagle3 3-step speculative decoding converts the added embedding sparsity into speedups by expanding
+    effective batch size; the draft model uses a conventional embedding to bypass n-gram lookup.
+  techniques:
+  - N-gram Embedding Layer (multi-order n-gram via polynomial rolling hash into sub-tables)
+  - Per-Layer N-gram Embedding (PLNE) + Embedding Amplification
+  - Device-side N-gram Cache (memory-I/O-bound decode target)
+  - Eagle3 3-step speculative decoding; kernel fusion, Optimized Attention Combine
+  reported_results:
+  - LongCat-Flash-Lite — 68.5B total, 2.9-4.5B activated, 31.4B N-gram embedding params (46% of total)
+  - SWE-Bench 54.4; TerminalBench 33.75; MATH500 96.80 (chat)
+  - Optimized Attention Combine reduces attention latency ~50% (8xH800, ISL=4K/OSL=1K)
+  referenced_arxiv_ids:
+  - '2601.07372'
+  - '2501.16975'
+  - '2509.01322'
+  contradicting_evidence:
+  - Paper's chat MATH500 96.8% is contradicted by our Q4_K_M CPU eval of LongCat-Flash-Lite (math 0/6
+    STRUCTURAL — intake-502/504); results are GPU-measured (8xH800); the architecture is a pretraining
+    choice, not retrofittable onto GGUF production models.
+  cross_references:
+    chapters:
+    - 02-moe-optimization.md
+    - 01-speculative-decoding.md
+    handoffs:
+    - engram-conditional-memory.md
+    experiments: []
+    intake_entries:
+    - intake-502
+    - intake-504
+    - intake-599
+    - intake-600
+  handoffs_updated:
+  - engram-conditional-memory.md
+  handoffs_created: []
+  novelty_justification: The n-gram/Engram parametric-memory axis is already indexed (intake-599, 502/504),
+    so the mechanism is not new; the paper adds new design methodology we lacked — explicit embedding-vs-expert
+    scaling laws, the width-amplifies/depth-diminishes finding, the <=50%-embedding cap, the vocab-non-integer-multiple
+    hash rule, PLNE, and device-side N-gram Cache kernels.
+  relevance_justification: Architecture is a pretraining choice not retrofittable onto GGUF models and
+    results are GPU-measured, so no direct CPU technique; but LongCat-Flash-Lite is already a tracked/benchmarked
+    EPYC candidate and n-gram-embedding-in-host-DRAM fits our 1.1 TB DDR5 node (Engram Track B thesis).
+  verdict_justification: 'adopt_patterns: the family/checkpoint/Engram technique are already tracked (engram-conditional-memory,
+    intake-502/504/599/600) and Track A closed negative, so neither new nor already-integrated. Extract
+    this paper''s design principles — 50%-embedding cap, width>depth, vocab-non-multiple hash rule, PLNE,
+    n-gram-cache/Eagle3-drafting recipe — as the missing scaling-law justification for any Track B frozen-backbone
+    retrofit.'
+  notes: 'This is the scaling-law/architecture paper behind LongCat-Flash-Lite; the 31.4B N-gram-embedding
+    figure matches our records exactly. Carry forward the MATH500 contradiction as a caveat.'
+- id: intake-759
+  arxiv_id: null
+  url: https://github.com/ROCm/aiter
+  source_type: repo
+  title: 'AITER: AI Tensor Engine for ROCm (AMD high-performance AI operator/kernel library)'
+  authors:
+  - ROCm / AMD
+  categories:
+  - hardware_optimization
+  - inference_serving
+  - moe_optimization
+  - quantization
+  - kv_cache
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-07-02'
+  credibility_score: 3
+  key_claims:
+  - AMD's centralized high-performance AI operator library for ROCm (attention, MoE, GEMM, norm, quantization,
+    communication) for LLM inference/training.
+  - Backends — Triton, Composable Kernel (CK), hand-tuned ASM, plus 'Opus' single-header C++ HIP template
+    lib; default kernel/attention backend for LLM inference in vLLM and SGLang; NO llama.cpp/ggml integration.
+  - Support matrix lists ONLY gfx942 (MI300X/MI325X, CDNA3) and gfx950 (MI350/MI355X, CDNA4); gfx90a
+    (MI210, CDNA2) is NOT listed anywhere.
+  - Low-precision fused-MoE + attention (FP8/BF8/INT8/INT4; ROCm 7.0 adds MXFP4 MoE) and paged attention
+    with FP8 KV cache.
+  techniques:
+  - MHA prefill/decode, MLA decode, Paged Attention (FP8 KV)
+  - Fused MoE + block-scaled Fused MoE (FP8/BF8/INT8/INT4/MXFP4), block-scaled GEMM
+  - Kernel backends — Triton / Composable Kernel / hand-tuned ASM / Opus C++ HIP templates
+  reported_results:
+  - MLA decode up to 17x; MHA prefill up to 14x; block-scaled Fused MoE up to 3x (all MI300X/MI350, none
+    gfx90a — non-decision-gating per MEASUREMENT.md)
+  - DeepSeek-R1/V3 end-to-end (SGLang) 6484->13704 tok/s (2.1x)
+  referenced_arxiv_ids: []
+  contradicting_evidence:
+  - gfx90a/MI210 absent from AITER's support matrix AND no llama.cpp binding (reachable only via vLLM/SGLang/JAX
+    + C++/Python) — not directly usable on our MI210 HIP build; our 2026-07-02 session already found
+    vLLM-on-gfx90a is MI300-locked.
+  cross_references:
+    chapters: []
+    handoffs:
+    - gpu-acceleration-path.md
+    - rocm-verify-profile-backend.md
+    - agentic-rocm-kernel-authoring.md
+    - gpu-drafter-mi200-investigation.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries:
+    - intake-307
+    - intake-303
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  handoffs_created: []
+  novelty_justification: The AITER concept, MI300X speedups, and 'no llama.cpp integration' fact are already
+    captured via the sibling blog intake-307; this canonical GitHub source adds authoritative non-duplicate
+    detail (exact gfx support matrix with gfx90a absent, the Opus C++ HIP template lib, JAX/XLA-FFI,
+    MIT license) — incremental, hence medium.
+  relevance_justification: An AMD kernel library is high relevance only if it supports gfx90a; AITER lists
+    only gfx942 + gfx950, and has no llama.cpp binding — two hard blockers vs our MI210 llama.cpp-HIP
+    bring-up. Stays medium as a vendor performance-ceiling and kernel-design reference; rocWMMA (intake-303)
+    remains the gfx90a-capable ROCm library for our path.
+  verdict_justification: 'adopt_patterns — not adopt_component (gfx90a unsupported + no llama.cpp binding).
+    Uses already live in-tree: rocm-verify-profile-backend uses AITER as an honest vendor baseline the
+    agentic gfx90a kernel-authoring must beat; its kernel designs (MLA decode 17x, block-scaled fused-MoE,
+    FP8/MXFP4 paths) define the achievable ceiling. Re-review flags: confirm whether AITER can even BUILD
+    for gfx90a from source (README omission != compile failure); monitor future ROCm for CDNA2 back-support.'
+  notes: Non-duplicate sibling of intake-307 (AITER AMD blog). Part of the 2026-07-02 ROCm/MI210 intake
+    cluster (intake-759..763).
+- id: intake-760
+  arxiv_id: null
+  url: https://github.com/ROCm/triton
+  source_type: repo
+  title: ROCm/triton — AMD ROCm fork of OpenAI Triton (AMDGPU backend + main_perf AMD-tuned kernels)
+  authors:
+  - AMD ROCm team
+  - Philippe Tillet / OpenAI Triton (upstream lineage)
+  categories:
+  - hardware_optimization
+  - inference_serving
+  - tool_implementation
+  novelty: low
+  relevance: high
+  discovered_via: input
+  verdict: adopt_component
+  ingested_date: '2026-07-02'
+  credibility_score: null
+  key_claims:
+  - AMD's downstream fork of upstream triton-lang/triton (intake-466); provides the AMDGPU backend lowering
+    Triton-IR to CDNA/RDNA ISA via LLVM; default branch is main_perf with AMD-tuned FA/GEMM perf-kernels
+    not present upstream.
+  - gfx90a (CDNA2 / MI200 family, incl. our MI210) is a first-class, mature, tuned target; README states
+    only 'AMD GPUs (ROCm 5.2+)' but AMD's GEAK-eval / TritonBench-revised suites are gfx90a-proven.
+  - Shipped as pytorch-triton-rocm — the runtime that lets Triton kernels in vLLM (fused MoE, paged attention),
+    FlashAttention's Triton path, and AITER compile/run on AMD; without it those Python-framework kernels
+    fall back or fail on gfx90a.
+  - Off the llama.cpp critical path — our working MI210 llama.cpp-HIP build uses native ggml-cuda/rocWMMA/MFMA
+    kernels and does NOT use Triton.
+  techniques:
+  - LLVM AMDGPU backend for Triton-IR (Triton -> AMD CDNA ISA)
+  - MFMA / matrix-core lowering for CDNA2/CDNA3
+  - AMD-tuned perf-kernels (flash-attention, GEMM) in main_perf
+  - pytorch-triton-rocm packaging (dependency of vLLM/FA/AITER on AMD)
+  reported_results:
+  - No benchmark numbers in README; README asserts only 'AMD GPUs (ROCm 5.2+)'.
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - gpu-acceleration-path.md
+    - agentic-rocm-kernel-authoring.md
+    - rocm-verify-profile-backend.md
+    - gpu-drafter-mi200-investigation.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries:
+    - intake-466
+    - intake-307
+    - intake-303
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  handoffs_created: []
+  novelty_justification: A well-known downstream fork, not a new research artifact — upstream Triton is
+    already ingested (intake-466). The delta over upstream is engineering (main_perf AMD-tuned FA/GEMM,
+    AMDGPU-backend maturity), not a novel technique; value is enabling-infrastructure.
+  relevance_justification: High as an enabling dependency for the active MI210 (gfx90a) bring-up — gfx90a/CDNA2
+    is a first-class tuned target. Three active handoffs depend on it — the Triton arm of the agentic-rocm-kernel-authoring
+    / rocm-verify-profile loop, the open vLLM-on-MI210 item (needs pytorch-triton-rocm), and AITER/FA
+    Triton paths. Caveat — our current production GPU path (llama.cpp HIP) does not use Triton.
+  verdict_justification: 'adopt_component: a concrete install-as-dependency (ROCm Triton / pytorch-triton-rocm)
+    needed to unblock two active gfx90a workstreams (Triton kernel-authoring + vLLM-on-MI210). Creative-use
+    even for the llama.cpp path — authored Triton gfx90a kernels serve as correctness/perf oracles for
+    hand-HIP kernels ported into the fork. Recommend building/pinning pytorch-triton-rocm matched to
+    ROCm 6.2; verify gfx90a tuning configs (main_perf FA also tuned for gfx942).'
+  notes: Part of the 2026-07-02 ROCm/MI210 intake cluster (intake-759..763). Upstream Triton = intake-466.
+- id: intake-761
+  arxiv_id: null
+  url: https://github.com/ROCm/flash-attention
+  source_type: repo
+  title: ROCm/flash-attention — FlashAttention / FlashAttention-2 port for AMD ROCm (CK + Triton backends)
+  authors:
+  - AMD ROCm (fork of Dao-AILab/flash-attention)
+  categories:
+  - hardware_optimization
+  - inference_serving
+  - kv_cache
+  novelty: low
+  relevance: high
+  discovered_via: input
+  verdict: adopt_component
+  ingested_date: '2026-07-02'
+  credibility_score: null
+  key_claims:
+  - gfx90a / MI210 IS supported — README targets the MI200 family (CDNA2, = gfx90a = MI210/MI250) plus
+    MI300 (CDNA3); both the CK backend and the Triton backend cover MI200.
+  - Two backends — Composable Kernel (CK, default; fwd+bwd, head dims <=256, fp16/bf16) and Triton (opt-in
+    via FLASH_ATTENTION_TRITON_AMD_ENABLE=TRUE; adds paged attention, FP8 in progress, fp32, RDNA coverage).
+  - Requires ROCm 6.0+; installs as the standard flash_attn PyTorch package (drops into PyTorch/vLLM,
+    NOT llama.cpp).
+  - Enabling infra port of an existing algorithm — no new attention math; README perf plots are NVIDIA
+    A100/H100 only, no AMD/MI210 numbers.
+  techniques:
+  - Composable Kernel (CK) HIP backend — default, gfx90a/gfx942, fp16/bf16
+  - Triton AMD backend (env-gated) — MI200/MI300 + RDNA, paged KV, FP8 (WIP)
+  - varlen / causal / dropout / rotary / ALiBi / deterministic backward
+  reported_results:
+  - No AMD/MI210 benchmark numbers in README; only NVIDIA A100/H100 FlashAttention plots (not decision-grade
+    for our hardware).
+  referenced_arxiv_ids:
+  - '2205.14135'
+  - '2307.08691'
+  cross_references:
+    chapters:
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - gpu-acceleration-path.md
+    - gpu-drafter-mi200-investigation.md
+    - rocm-verify-profile-backend.md
+    - agentic-rocm-kernel-authoring.md
+    experiments: []
+    intake_entries:
+    - intake-464
+    - intake-466
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  handoffs_created: []
+  novelty_justification: A vendor port of an existing published algorithm (FlashAttention/-2) to ROCm
+    — no new mechanism or math, enabling infrastructure only, hence low.
+  relevance_justification: High per the scoring rule — gfx90a/MI210 (CDNA2) IS supported via both CK
+    (default) and Triton backends, exactly the card we brought up on ROCm 6.2 on 2026-07-02. It is the
+    standard flash_attn package for any PyTorch/vLLM path on the MI210. Caveat — production runs llama.cpp
+    (own rocWMMA FATTN), so this is load-bearing only if/when a PyTorch/vLLM path on the MI210 is pursued
+    (actively scoped in gpu-drafter-mi200-investigation).
+  verdict_justification: 'adopt_component — usable on our MI210 (gfx90a supported, ROCm 6.0+ satisfied
+    by our 6.2 bind-mount), the canonical exact-attention kernel for a vLLM/PyTorch MI210 serving path.
+    Not already_integrated (production uses llama.cpp FA). Next steps — if vLLM-on-MI210 is pursued,
+    validate the CK build for gfx90a and benchmark decode/prefill vs the llama.cpp rocWMMA path; its
+    Triton gfx90a kernels are reference material for the kernel-authoring harness.'
+  notes: Part of the 2026-07-02 ROCm/MI210 intake cluster (intake-759..763). FA-3 (intake-464) is Hopper-specific;
+    this is the gfx90a-capable FA-2 counterpart.
+- id: intake-762
+  arxiv_id: null
+  url: https://github.com/vllm-project/vllm/blob/main/docker/Dockerfile.rocm
+  source_type: repo
+  title: vLLM ROCm Dockerfile (docker/Dockerfile.rocm + Dockerfile.rocm_base)
+  authors:
+  - vLLM project
+  - ROCm ecosystem contributors
+  categories:
+  - inference_serving
+  - hardware_optimization
+  - local_inference
+  novelty: low
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-07-02'
+  credibility_score: null
+  key_claims:
+  - Base-image chain — Dockerfile.rocm builds FROM rocm/vllm-dev:base, itself built by Dockerfile.rocm_base
+    FROM rocm/dev-ubuntu-22.04:7.2.3-complete — i.e. the canonical vLLM-ROCm stack is pinned to ROCm
+    7.2.3 / Ubuntu 22.04 / Python 3.12 (a large gap above our MI210 devcontainer's bind-mounted ROCm
+    6.2.0).
+  - GPU-arch targeting is SPLIT — PYTORCH_ROCM_ARCH includes gfx90a (MI210 core builds compile) BUT AITER_ROCM_ARCH=gfx942;gfx950,
+    MORI_GPU_ARCHS=gfx942;gfx950, DEEPEP_ROCM_ARCH=gfx942;gfx950 explicitly EXCLUDE gfx90a — an MI210
+    vLLM build falls back to non-AITER reference kernels.
+  - Sibling ROCm-fork pins (the other repos in this batch) — Triton TRITON_BRANCH=0f380657 (+cherry-pick
+    555d04f), Flash-Attention FA_BRANCH=0e60e394, AITER AITER_BRANCH=v0.1.16.post2, PyTorch d0c8b1f3
+    (release/2.11).
+  - Two-file split — heavy toolchain/framework build baked into rocm/vllm-dev:base; thin app layer builds
+    only the vLLM wheel on top; mold linker + ccache/sccache + uv for build speed.
+  techniques:
+  - Two-stage base/app Docker split with per-component commit pinning (Triton/FA/AITER/torch)
+  - Per-component GPU-arch scoping via separate *_ROCM_ARCH env/ARGs (core broad incl. gfx90a; accelerators
+    narrowed to gfx942/gfx950)
+  - mold linker + ccache/sccache + uv; VLLM_USE_PRECOMPILED=1 escape hatch
+  reported_results: []
+  referenced_arxiv_ids: []
+  contradicting_evidence:
+  - Targets ROCm 7.2.3 not our 6.2, and AITER/MORI/DeepEP exclude gfx90a so an MI210 vLLM build gets
+    no AITER acceleration — a from-source 6.2 build would fight the same fp8/ABI-era gaps already seen.
+  cross_references:
+    chapters: []
+    handoffs:
+    - gpu-acceleration-path.md
+    - rocm-verify-profile-backend.md
+    - agentic-rocm-kernel-authoring.md
+    - gpu-drafter-mi200-investigation.md
+    experiments: []
+    intake_entries:
+    - intake-462
+    - intake-466
+    - intake-307
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  handoffs_created: []
+  novelty_justification: A build recipe, not a research contribution — no new technique. Value is reference/integration
+    — it canonically pins the ROCm base image and the exact commits of the sibling ROCm forks (triton/flash-attention/aiter)
+    in this intake batch.
+  relevance_justification: High — directly answers the standing open item in the 2026-07-02 MI210 log
+    (source-build vLLM for gfx90a vs the MI300-locked prebuilt image) and confirms two load-bearing facts
+    — (a) the vLLM-ROCm base is pinned to ROCm 7.2.3, well ahead of our 6.2, and (b) PYTORCH_ROCM_ARCH
+    includes gfx90a but AITER/MORI/DeepEP are gfx942/gfx950-only, so an MI210 build loses those kernels.
+  verdict_justification: 'adopt_patterns — reuse as the reference build recipe if operator elects the
+    from-source gfx90a vLLM path (two-stage base/app split, per-component commit pinning, overriding
+    the *_ROCM_ARCH lists to add gfx90a). Caveats to carry forward, not a rejection — ROCm 7.2.3 base
+    vs our 6.2, and AITER/MORI/DeepEP exclude gfx90a.'
+  notes: 'Directly addresses the open item in progress/2026-07/2026-07-02-mi210.md (from-source gfx90a
+    vLLM against host ROCm 6.2). Part of the 2026-07-02 ROCm/MI210 intake cluster (intake-759..763).'
+- id: intake-763
+  arxiv_id: null
+  url: https://docs.vllm.ai/en/v0.6.5/getting_started/amd-installation.html
+  source_type: blog
+  title: Installation with ROCm — vLLM v0.6.5 (AMD install guide)
+  authors:
+  - vLLM Project
+  categories:
+  - inference_serving
+  - hardware_optimization
+  - local_inference
+  novelty: low
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-07-02'
+  credibility_score: null
+  key_claims:
+  - vLLM v0.6.5 supports AMD GPUs on ROCm 6.2 as the primary/default target; Dockerfile.rocm defaults
+    to ROCm 6.2 — coinciding exactly with our MI210 devcontainer's bind-mounted ROCm 6.2.0.
+  - The Requirements list MI200s (gfx90a) and MI300 (gfx942); the build section explicitly names 'MI210/MI250/MI300'
+    — gfx90a/MI210 IS a documented, buildable target (PYTORCH_ROCM_ARCH="gfx90a").
+  - Two install paths — build your own image from Dockerfile.rocm (buildkit), or build vLLM from source
+    against host ROCm + PyTorch; Triton flash-attention is the default (no sliding-window), CK FA optional.
+  - MI210/gfx90a support was NOT removed in current vLLM (still listed, now with prebuilt ROCm 7.0/7.2.1
+    wheels) — the pin is stale, the support path persists.
+  techniques:
+  - Prebuilt flow — docker build -f Dockerfile.rocm (buildkit), ROCm 6.2 default
+  - From-source build for a specific arch via PYTORCH_ROCM_ARCH="gfx90a;gfx942"
+  - Optional CK flash-attention (BUILD_FA), Triton FA default
+  reported_results: []
+  referenced_arxiv_ids: []
+  contradicting_evidence:
+  - v0.6.5's bundled vLLM predates our production gemma4-31B / Qwen3.6-27B model support (the docker
+    dead-end already showed vLLM 0.4.3 too old) — any build should target current vLLM against ROCm
+    6.2, not pin 0.6.5's model coverage.
+  cross_references:
+    chapters: []
+    handoffs:
+    - gpu-acceleration-path.md
+    - gpu-drafter-mi200-investigation.md
+    - rocm-verify-profile-backend.md
+    - agentic-rocm-kernel-authoring.md
+    experiments: []
+    intake_entries:
+    - intake-462
+    - intake-466
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  handoffs_created: []
+  novelty_justification: Official versioned documentation, not a research contribution — value is a concrete,
+    reproducible install/support-matrix reference (build flags, ROCm version, dependency pins), hence
+    low.
+  relevance_justification: High because it lands on a live, blocked open item — the 2026-07-02 MI210
+    session found the only prebuilt vLLM ROCm image is MI300-locked and dead on gfx90a, leaving 'from-source
+    build for gfx90a against host ROCm 6.2' as the pending path, which this doc documents AND whose default
+    ROCm 6.2 target matches our bind-mount exactly.
+  verdict_justification: 'worth_investigating, not superseded — v0.6.5 (~Dec 2024) is old but current
+    vLLM did NOT remove gfx90a/MI210 support (still lists MI200s, ships ROCm 7.0/7.2.1 wheels). The v0.6.5
+    from-source gfx90a recipe is the leading candidate to unblock the mi210 open item on our ROCm 6.2
+    host, with two caveats — build current vLLM (not 0.6.5''s model coverage), and confirm current vLLM
+    gfx90a wheels still support ROCm 6.2. Creative-use — even absent production vLLM, a from-source vLLM-gfx90a
+    build is an independent GPU serving-throughput reference for the MI210 and satisfies DFlash''s vLLM/SGLang-only
+    dependency.'
+  notes: 'Directly addresses the open item in progress/2026-07/2026-07-02-mi210.md. Part of the 2026-07-02
+    ROCm/MI210 intake cluster (intake-759..763). Current-version counterpart is vLLM v0.22.0.'
+- id: intake-764
+  arxiv_id: null
+  url: https://labs.ramp.com/research
+  source_type: blog
+  title: 'PorTAL: Portable Task Adapters for Large Language Models'
+  authors:
+  - Benjamin Geist (Ramp Labs)
+  categories:
+  - training_distillation
+  - inference_serving
+  novelty: high
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-07-02'
+  credibility_score: 2
+  key_claims:
+  - A task adaptation is learned ONCE in a base-agnostic form (256-d task latent + FiLM-conditioned CORE
+    hypernetwork trunk emitting core-width LoRA factors) and ported to a new frozen LLM by refitting
+    only a thin per-base CONVERTER (per-layer embeddings + input/output projections) on a small calibration
+    set — no full re-adaptation per model.
+  - Generated A,B factors inject as standard LoRA (dW = (alpha/r) B A) so no inference-runtime change
+    is needed; portability works within-family (Qwen3-8B) and cross-family (Gemma-3-4B), grounded in
+    the Platonic Representation Hypothesis.
+  - Converter-only porting on an unseen base recovers ~98% of per-task-LoRA accuracy lift vs ~14% for
+    a no-refit Cross-LoRA transfer and ~92% for direct joint-training on that base.
+  - Reaches peak from-scratch LoRA accuracy with ~half the calibration data (~halving per-base adaptation
+    FLOPs); a single shared decoder under-fits some hard tasks (OpenBookQA/WinoGrande/HellaSwag).
+  techniques:
+  - Base-agnostic task latent (d_z=256) + FiLM-conditioned CORE hypernetwork emitting core-width LoRA
+    factors
+  - Per-base CONVERTER (per-layer embeddings, input/output projections) aligning to target dims
+  - Standard LoRA injection (rank8 q/v or full-module); refit ONLY the converter on <=2000-example calibration
+  - Multi-task EMA-normalized loss + multi-base gradient-norm balancing; Platonic Representation Hypothesis
+    basis
+  reported_results:
+  - Source bases (Qwen3-1.7B/4B) — recovers ~94% of per-task-LoRA lift
+  - Unseen Qwen3-8B (converter-refit) — ~98% of lift vs Cross-LoRA ~14%; direct joint-train ~92%
+  - Unseen Gemma-3-4B (cross-family) — ~94% of lift; ~half calibration data for peak accuracy
+  referenced_arxiv_ids:
+  - '2405.07987'
+  - '2403.04132'
+  - '2602.06358'
+  - '2510.16282'
+  - '2508.05232'
+  - '2501.16559'
+  - '2510.17902'
+  - '2106.09685'
+  contradicting_evidence:
+  - Non-peer-reviewed fintech-labs writeup with product-lab bias and NO independent corroboration of
+    PorTAL itself found on search — treat all % numbers as observations, not decision-gating (MEASUREMENT.md).
+  - Training the latents+core+converter (and even the 'cheap' converter refit) is gradient-based and
+    GPU-gated — the same Phase-B blocker that keeps the doc-to-LoRA / Code2LoRA line on backburner.
+  cross_references:
+    chapters: []
+    handoffs:
+    - 08-doc-to-lora-prototype.md
+    - swarm-dataset-distillation.md
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries:
+    - intake-098
+    - intake-707
+    - intake-681
+    - intake-684
+    - intake-685
+    - intake-618
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Hypernetwork->LoRA generation is established (Text-to-LoRA, Doc-to-LoRA/intake-098,
+    Code2LoRA/intake-707) and cross-base LoRA transfer exists (Cross-LoRA, LoRA-X); PorTAL's distinct
+    contribution is the factorization into a base-agnostic frozen (latent + CORE) plus a thin per-base
+    CONVERTER that is the ONLY thing refit on an unseen model — the ~98%-vs-~14% converter-refit result
+    is a genuinely new mechanism, not repackaging.
+  relevance_justification: Conceptually on-target for our exact pain (a rotating open-weight roster where
+    per-model re-adaptation recurs), but NOT actionable on the current stack — training/converter-refit
+    is GPU-gated (the Phase-B blocker that backburners the whole doc-to-LoRA line); llama.cpp LoRA hot-swap
+    already exists but the orchestrator LoRA-wiring gap remains. Medium — nothing CPU-runnable today,
+    off the North-Star.
+  verdict_justification: 'worth_investigating, matching the task/doc-to-LoRA family (intake-098/707/681/684/685).
+    The most roster-relevant new datapoint on that line — if Phase B reopens (training-capable GPU +
+    a demonstrated need), PorTAL''s base-agnostic-latent + refit-converter design is the single most
+    directly applicable variant, because refitting a thin converter per new base is far cheaper than
+    Doc-to-LoRA/Code2LoRA-style full retraining per model. Creative-use — even absent training, the CONVERTER-refit
+    framing is a useful cheap-porting design for future orchestrator adapter-registry work.'
+  notes: 'Content provided by operator (paraphrased, no raw quote); primary URL is Ramp Labs research
+    surface (https://labs.ramp.com/research). Cited cross-model-transfer cluster (Cross-LoRA 2508.05232,
+    LoRA-X 2501.16559, CAST 2510.17902, Text-to-LoRA, SHINE 2602.06358, Profile-to-PEFT 2510.16282,
+    Platonic 2405.07987) is net-new to the index — flagged as operator-approval-gated expansion candidates.'
+- id: intake-765
+  arxiv_id: '2508.05232'
+  url: https://arxiv.org/abs/2508.05232
+  source_type: paper
+  title: 'Cross-LoRA: A Data-Free LoRA Transfer Framework across Heterogeneous LLMs'
+  authors:
+  - Feifan Xia
+  - Mingyang Liao
+  - Yuyang Fang
+  - Deguo Xia
+  - Jizhou Huang (Baidu)
+  categories:
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-764
+  verdict: worth_investigating
+  ingested_date: '2026-07-02'
+  credibility_score: 3
+  key_claims:
+  - Data-free AND training-free LoRA transfer across heterogeneous LLMs — needs neither the original
+    training data nor any fine-tuning; the adapter is ported by pure linear algebra (rank-truncated SVD
+    + least-squares), completing in ~20 min on a commodity GPU.
+  - Dimension mismatch resolved by a Frobenius-optimal subspace alignment — LoRA-Align (aligns source/target
+    weight subspaces) + LoRA-Shift (projects the source LoRA update into the target space).
+  - Architecture-agnostic / plug-and-play across Qwen, LLaMA, Gemma families; transferability strongest
+    between architecturally similar bases (shared GQA + SwiGLU + RMSNorm); rank-320 retains >=99% Frobenius
+    energy.
+  techniques:
+  - Rank-truncated SVD + Frobenius-optimal linear subspace alignment (torch.linalg.lstsq)
+  - LoRA-Align (source<->target subspace alignment) + LoRA-Shift (project source update into target)
+  - Rank-320 low-rank truncation for compute/memory reduction
+  reported_results:
+  - Transferred adapters ~match directly-trained LoRA on general commonsense (avg +0.848% over base vs
+    +0.976% for trained LoRA); e.g. Gemma-2-2B ARC-c 0.7520 (+5.26%)
+  - Transfer cost ~349s / 5508 MB on V100 (~20 min ballpark)
+  referenced_arxiv_ids:
+  - '2106.09685'
+  - '2501.16559'
+  - '2505.13515'
+  contradicting_evidence:
+  - PorTAL (intake-764) reports Cross-LoRA's no-refit transfer recovers only ~14% of the per-task-LoRA
+    lift (vs PorTAL ~98%); reconcilable — Cross-LoRA benchmarks on general commonsense QA where the base
+    already scores high and any adapter moves <1%, masking how little genuine task-specific lift survives.
+  - Own reported average gain is tiny (+0.848%); non-peer-reviewed preprint.
+  cross_references:
+    chapters: []
+    handoffs:
+    - 08-doc-to-lora-prototype.md
+    - gpu-acceleration-path.md
+    - swarm-dataset-distillation.md
+    experiments: []
+    intake_entries:
+    - intake-764
+    - intake-098
+    - intake-707
+    - intake-618
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Cross-architecture LoRA transfer is an established, crowded cluster (LoRA-X,
+    LoRASuite); its distinctive twist is being the fully data-free AND training-free member (pure SVD
+    + least-squares, zero calibration), where the rest of the roster line (Doc-to-LoRA, Code2LoRA, PorTAL)
+    require hypernetwork training or a converter refit. Distinctive but not category-creating.
+  relevance_justification: Lands on our named pain (rotating open-weight roster with recurring per-model
+    re-adaptation), and is the ONE cluster member NOT GPU-training-gated — SVD + lstsq is CPU-plausible
+    on the EPYC host, sidestepping the Phase-B blocker. But fidelity is the ceiling (~14% lift recovery
+    per PorTAL) and we have no production task-LoRAs to port today.
+  verdict_justification: 'worth_investigating: mechanically answers the chase (data-free transfer CAN
+    carry an adapter to a new base) and is the only training-free/CPU-plausible member, so not superseded
+    by higher-fidelity-but-GPU-gated PorTAL. Creative-use: the LoRA-Align/LoRA-Shift SVD recipe is worth
+    a CPU spike as the zero-training baseline for future orchestrator adapter-porting — but gate adoption
+    on re-measuring per-task lift-recovery on OUR bases (the paper''s <1% gains hide the ~14% task-fidelity
+    reality).'
+  notes: The only training-free / CPU-plausible member of the 2026-07-02 cross-model-transfer expansion
+    cluster (intake-765..770, chased from PorTAL intake-764).
+- id: intake-766
+  arxiv_id: '2501.16559'
+  url: https://arxiv.org/abs/2501.16559
+  source_type: paper
+  title: 'LoRA-X: Bridging Foundation Models with Training-Free Cross-Model Adaptation'
+  authors:
+  - Farzad Farhadzadeh
+  - Debasmit Das
+  - Shubhankar Borse
+  - Fatih Porikli (Qualcomm AI Research)
+  categories:
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-764
+  verdict: worth_investigating
+  ingested_date: '2026-07-02'
+  credibility_score: 6
+  key_claims:
+  - Training-free transfer of LoRA parameters from a source base to a target base without original/synthetic
+    data — motivated by the pain that deprecating a base would otherwise force retraining every LoRA.
+  - The adapter is constrained at training time to the source model's weight subspace via SVD (learn
+    only the singular-value modification dSigma, freeze the left/right singular matrices), enabling projection
+    into the target subspace without refitting.
+  - Transfer is a pure linear-algebra projection into the target subspace, applied ONLY to target layers
+    whose subspace similarity Phi_l clears a threshold; authors mainly consider same-family architectures
+    (cross-family incurs high 'Adapter Transferability Cost').
+  techniques:
+  - SVD-constrained LoRA (freeze U/V, train only dSigma)
+  - Subspace-projection transfer of the trained delta (no gradient step at transfer time)
+  - Per-layer subspace-similarity gating (Phi_l) + Frobenius-minimizing map for mismatched dims
+  reported_results:
+  - Text-to-image primary (SD-v1.5 -> SD Eff-v1.0 same-family HPSv2 +3.6%; SDXL -> SSD-1B HPSv2 -5.3%
+    regression)
+  - Only LLM test — TinyLlama-3T -> TinyLlama-2.5T (SAME architecture, different pretraining checkpoint)
+    BLEU +2.4%, ROUGE-1 +5.6%
+  referenced_arxiv_ids:
+  - '2106.09685'
+  - '2402.09353'
+  contradicting_evidence:
+  - The ONLY LLM evaluation is a same-architecture same-model transfer (TinyLlama checkpoints) — the
+    most favorable case, NOT cross-family; all substantive evidence is Stable-Diffusion image models.
+  - Authors explicitly restrict to same-family transfer and report cross-family pairs incur high transferability
+    cost — at odds with our cross-family roster (Qwen3.x <-> gemma4 <-> GLM).
+  - One reported transfer already regresses (SDXL -> SSD-1B -5.3%); 'training-free' covers only the transfer
+    step (source adapter still GPU-trained).
+  cross_references:
+    chapters: []
+    handoffs:
+    - 08-doc-to-lora-prototype.md
+    experiments: []
+    intake_entries:
+    - intake-764
+    - intake-098
+    - intake-707
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Net-new mechanism to our index (SVD-subspace-constrained adapter + subspace-similarity
+    module-gating), but not high — the family (training-free cross-base transfer) is conceptually represented
+    and LoRA-X is the ~18-month-old earlier, weaker baseline PorTAL explicitly improves upon.
+  relevance_justification: On-target for the roster pain it names, and its transfer step is cheaper than
+    PorTAL (pure SVD projection, CPU-runnable, no GPU refit) — the one way it is more actionable. But
+    the same-family/same-dim constraint collides with our cross-family roster, the only LLM result is
+    a trivial same-model transfer, and you still need a GPU to train the SVD-constrained source adapter.
+  verdict_justification: 'worth_investigating, same doc-to-LoRA/roster-transfer family as PorTAL. Not
+    superseded — holds a distinct fully-training-free niche; its subspace-similarity Phi_l metric is a
+    cheap diagnostic for predicting which layers of a new roster model an existing/doc-to-LoRA adapter
+    could transfer into, reusable if the doc-to-LoRA Phase B reopens. A reference/baseline, not a lead
+    candidate (PorTAL is stronger for cross-family).'
+  notes: 'ICLR 2025 poster (peer-reviewed, hence credibility 6). Part of the 2026-07-02 cross-model-transfer
+    expansion cluster (intake-765..770).'
+- id: intake-767
+  arxiv_id: '2510.17902'
+  url: https://arxiv.org/abs/2510.17902
+  source_type: paper
+  title: 'Activation Manifold Projection (CAST: Cartridge Activation Space Transfer)'
+  authors:
+  - Al Kari (Manceps, Inc.)
+  categories:
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-764
+  verdict: worth_investigating
+  ingested_date: '2026-07-02'
+  credibility_score: 2
+  key_claims:
+  - Argues weight-space transfer (Cross-LoRA, LoRA-X) is brittle; CAST instead learns a nonlinear mapping
+    between the ACTIVATION manifolds of two architectures, treating a frozen LoRA as a portable 'behavioral
+    kernel' (the 'cartridge').
+  - Mechanism = lightweight bidirectional projection heads per adapted layer (P_T->S maps target activations
+    into source latent space, the frozen source LoRA is applied there, P_S->T projects the delta back)
+    — a round-trip through activation space, no weight surgery.
+  - Projection heads are trained once per model pair on a GENERAL corpus (C4, ~1000 steps) with a dual
+    KL(logits)+MSE(hidden) loss and NO task-specific data — enabling zero-shot transfer of any off-the-shelf
+    LoRA.
+  techniques:
+  - Activation-manifold alignment via learned bidirectional projection matrices P_T->S / P_S->T
+  - Frozen LoRA as reusable behavioral kernel applied in the source latent space
+  - Dual-objective distillation loss (KL on logits + MSE on hidden states); one-time C4 training per
+    pair
+  reported_results:
+  - Llama-2-7B -> Mistral-7B ~85-95% of retrained-LoRA vs Cross-LoRA ~60-70% (APPROXIMATE ranges; only
+    3 pairs; GSM8K sole example task; Cross-LoRA baselines ESTIMATED not re-run; no error bars/code)
+  referenced_arxiv_ids:
+  - '2106.09685'
+  - '2501.16559'
+  - '2508.05232'
+  contradicting_evidence:
+  - NOT training-free — 'zero-shot' applies only to the LoRA's task; the projection heads still require
+    per-model-pair GPU training on C4 (same Phase-B GPU-gate as the dormant doc-to-LoRA line).
+  - "The 'outperforms weight-space / new SOTA' claim is unsubstantiated — Cross-LoRA baselines are the
+    authors' estimates, ~ranges with no raw metrics, 3 pairs, single task, single-author non-peer-reviewed preprint."
+  - "'Cartridge' is a METAPHOR for the frozen LoRA — NOT the Stanford KV-cache/context-distillation 'Cartridges'\
+    \ line already in our index (flagged to prevent term collision)."
+  cross_references:
+    chapters: []
+    handoffs:
+    - 08-doc-to-lora-prototype.md
+    experiments: []
+    intake_entries:
+    - intake-764
+    - intake-098
+    - intake-707
+    - intake-618
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Activation-space (vs weight-space) LoRA transfer is a genuinely distinct mechanism
+    within the established cluster — round-trip-through-activations plus compatibility with any off-the-shelf
+    LoRA is a net-new angle. Held to medium because it is one more variant in the cross-model-transfer
+    family and the mechanism is unvalidated (illustrative ranges only).
+  relevance_justification: Conceptually dead-on for the rotating-roster pain and it is exactly the activation-manifold
+    method PorTAL flagged for expansion, but off critical path and on the dormant GPU-gated doc-to-LoRA
+    line (projection-head training is GPU-gated; we run no production LoRAs; parent use case self-described
+    as covered by REPL retrieval).
+  verdict_justification: 'worth_investigating, filed against the doc-to-LoRA Phase-B reopen trigger alongside
+    PorTAL/Cross-LoRA/LoRA-X. Not not_applicable (on-target for roster adapter-porting, real future use),
+    but not adopt_* — the evidence is the weakest of the cluster (estimated baselines, illustrative ranges,
+    single author, no code), so no weight should rest on the activation-space>weight-space claim until
+    re-validated head-to-head. On any Phase-B reopen, evaluate against PorTAL''s cheaper converter-refit
+    first.'
+  notes: 'Part of the 2026-07-02 cross-model-transfer expansion cluster (intake-765..770). "Cartridge"
+    != Stanford KV Cartridges.'
+- id: intake-768
+  arxiv_id: '2602.06358'
+  url: https://arxiv.org/abs/2602.06358
+  source_type: paper
+  title: 'SHINE: A Scalable In-Context Hypernetwork for Mapping Context to LoRA in a Single Pass'
+  authors:
+  - Yewei Liu
+  - Xiyuan Wang
+  - Yansheng Mao
+  - Yoav Gelberg
+  - Haggai Maron
+  - Muhan Zhang
+  categories:
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-764
+  verdict: worth_investigating
+  ingested_date: '2026-07-02'
+  credibility_score: 3
+  key_claims:
+  - A bottleneck-free Memory-to-Parameter (M2P) hypernetwork maps arbitrary input context to a LoRA adapter
+    in a SINGLE forward pass — no test-time optimization or per-task gradient fine-tuning.
+  - Context is compressed by the LLM backbone itself into memory tokens (a learnable 'Meta LoRA' extracts
+    all-layer memory states — no external encoder); the LoRA-generation Transformer uses alternating
+    row/column sparse attention for ~90% FLOP reduction.
+  - Targets a SINGLE fixed base (Qwen3-8B); cross-architecture portability is NOT demonstrated (the axis
+    PorTAL adds via a per-base converter).
+  techniques:
+  - Memory-to-Parameter (M2P) Transformer hypernetwork (memory extraction -> LoRA generation -> application)
+  - Frozen backbone + learnable Meta-LoRA all-layer memory extraction as context compression
+  - Alternating row/column sparse attention in the generation head; single-pass context->LoRA
+  reported_results:
+  - MS MARCO multi-turn QA F1 55.6 vs in-context 69.4, SFT 33.0; wins on MS MARCO V2 (40.1 vs Gen-Adapter
+    27.9)
+  - SQuAD F1 63.6 vs in-context 86.8; HotpotQA 59.0 vs 68.7 — trails in-context prompting on most single-QA
+  referenced_arxiv_ids:
+  - '2505.09388'
+  - '2402.16817'
+  contradicting_evidence:
+  - Hypernetwork training is gradient-based and GPU-gated (the Phase-B blocker backburnering doc-to-LoRA).
+  - Single fixed base (Qwen3-8B) — a fresh hypernetwork per base architecture; does NOT solve the rotating-roster
+    re-adaptation pain PorTAL targets.
+  - Its own numbers show it UNDERPERFORMS in-context prompting on most single-QA (SQuAD 63.6 vs 86.8)
+    — reinforcing the doc-to-LoRA conclusion that REPL/in-context retrieval already covers the core use
+    case; preprint.
+  cross_references:
+    chapters: []
+    handoffs:
+    - 08-doc-to-lora-prototype.md
+    - swarm-dataset-distillation.md
+    experiments: []
+    intake_entries:
+    - intake-098
+    - intake-707
+    - intake-764
+    - intake-618
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Context->LoRA generation on a single fixed base is the established Doc-to-LoRA
+    idea (intake-098); SHINE is a scalability/architecture advance within that family (bottleneck-free
+    M2P hypernetwork, sparse row/col attention, single-pass), not a new capability — hence medium.
+  relevance_justification: On the tracked doc-to-LoRA line and the same per-model-adaptation pain, but
+    LESS roster-relevant than PorTAL — single fixed base with no demonstrated cross-base transport, whole
+    line GPU-gated and backburner, and its own numbers trail in-context prompting on most single-QA.
+  verdict_justification: 'worth_investigating, consistent with the doc-to-LoRA family. It is the scalable
+    single-pass successor to Doc-to-LoRA and the generation-core counterpart to PorTAL''s porting layer
+    (SHINE generates, PorTAL ports). Creative-use: if Phase B reopens, SHINE''s M2P sparse-attention
+    single-pass hypernetwork is a strong design reference for the LoRA-generation core. Tracked against
+    the doc-to-LoRA reopen trigger; no new stub.'
+  notes: Part of the 2026-07-02 cross-model-transfer expansion cluster (intake-765..770).
+- id: intake-769
+  arxiv_id: '2510.16282'
+  url: https://arxiv.org/abs/2510.16282
+  source_type: paper
+  title: Instant Personalized LLM Adaptation via Hypernetwork (Profile-to-PEFT / P2P)
+  authors:
+  - Zhaoxuan Tan
+  - Zheng Li
+  - Qingkai Zeng
+  - Qingyu Yin
+  - Meng Jiang (Notre Dame / Amazon)
+  categories:
+  - training_distillation
+  - memory_augmented
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-764
+  verdict: worth_investigating
+  ingested_date: '2026-07-02'
+  credibility_score: 4
+  key_claims:
+  - A single MLP hypernetwork maps a natural-language USER PROFILE directly to a full LoRA adapter in
+    one forward pass — no per-user gradient training (replaces the One-PEFT-Per-User / OPPU loop).
+  - ~33x faster per-user deployment than OPPU (~0.57s vs ~20.44s/user); one-time hypernetwork training
+    amortizes after ~1,450 users; adapter generation ~40ms.
+  - Generalizes to unseen / OOD users (OOD acc 0.581 ~ matches random-split 0.580); training-user diversity
+    matters more than dataset size. Single FIXED base (Qwen2.5-7B) — NOT cross-base.
+  techniques:
+  - MLP hypernetwork over a frozen-encoder user embedding + learnable per-module/per-depth embeddings
+    -> flattened LoRA (A,B)
+  - User profile = LLM summary of history + top-k BM25-retrieved interactions, encoded to fixed-dim
+  - LoRA rank=8 on q/v; single fixed base
+  reported_results:
+  - LaMP/LongLaMP random split acc 0.580 / gen ROUGE-L 0.244; OOD split acc 0.581; ~40ms inference
+  - Deployment 0.57s/user (P2P) vs 20.44s/user (OPPU) = 33x; break-even ~1,450 users
+  referenced_arxiv_ids:
+  - '2506.06105'
+  - '2510.16282'
+  contradicting_evidence:
+  - The 33x / amortize-after-~1,450-users value prop is predicated on a MULTI-USER population; our EPYC
+    host is a documented single-user deployment, so the core amortization advantage does not transfer.
+  - Hypernetwork training is GPU-gated (Phase-B blocker); single fixed base (Qwen2.5-7B) != our gemma4-26B-A4B
+    worker (base-specific, would need full retraining); non-peer-reviewed preprint.
+  cross_references:
+    chapters: []
+    handoffs:
+    - 08-doc-to-lora-prototype.md
+    - orchestrator-conversation-management.md
+    - swarm-dataset-distillation.md
+    experiments: []
+    intake_entries:
+    - intake-764
+    - intake-098
+    - intake-707
+    - intake-681
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: The hypernetwork->LoRA mechanism is well-represented (Doc-to-LoRA, Code2LoRA,
+    Text-to-LoRA, PorTAL); what is net-new is the conditioning AXIS — generate the adapter from a USER
+    PROFILE (personalization) rather than a document/task/repo, plus the OPPU-amortization framing. A
+    novel application of an established mechanism, hence medium.
+  relevance_justification: Directly on the doc-to-LoRA family AND the orchestrator B1 User-Modeling slot
+    (our shipped B1 injects a SQLite user_profile into the system prompt; this is the weight-baking alternative).
+    Held to medium by three blockers — single-user host nullifies the multi-user amortization value prop,
+    hypernetwork training is GPU-gated, single-base would need retraining for gemma4.
+  verdict_justification: 'worth_investigating, consistent with the doc-to-LoRA / user-modeling family.
+    It maps a real slot (B1) to a concrete mechanism; the ''bake the user_profile into a hot-swappable
+    LoRA instead of prompt-injecting it'' framing is a useful reference design IF a training-capable GPU
+    (Phase-B reopen) and a genuine multi-user need ever materialize — neither holds today, so it is not
+    actionable now. Not not_applicable (addresses a live slot).'
+  notes: 'Profile->adapter weight-baking alternative to the current B1 prompt-injection user-modeling
+    path. Part of the 2026-07-02 cross-model-transfer expansion cluster (intake-765..770).'
+- id: intake-770
+  arxiv_id: '2405.07987'
+  url: https://arxiv.org/abs/2405.07987
+  source_type: paper
+  title: The Platonic Representation Hypothesis
+  authors:
+  - Minyoung Huh (MIT)
+  - Brian Cheung (MIT)
+  - Tongzhou Wang (MIT)
+  - Phillip Isola (MIT)
+  categories:
+  - training_distillation
+  - routing_intelligence
+  - speculative_decoding
+  novelty: high
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-764
+  verdict: worth_investigating
+  ingested_date: '2026-07-02'
+  credibility_score: 5
+  key_claims:
+  - Central hypothesis — neural nets trained with different objectives/data/modalities are converging
+    to a SHARED statistical model of reality (the 'platonic' representation = the PMI/co-occurrence structure
+    of the world that generates observations).
+  - Convergence scales with capability — across 78 vision models, higher-competence ones cluster more
+    tightly; cross-modal (vision<->language) alignment increases with model quality and linearly tracks
+    language-modeling score.
+  - Alignment predicts downstream performance (Hellaswag linear, GSM8K emergence-like); three convergence
+    pressures — multitask scaling, capacity, simplicity bias.
+  techniques:
+  - Mutual k-Nearest-Neighbor (mutual-kNN) alignment — model-/modality-agnostic alignment metric
+  - Kernel-alignment framing; cross-modal protocol (separate vision/language kernels on paired data)
+  reported_results:
+  - 78 vision models — higher-VTAB-competence models are more mutually aligned
+  - Vision-language alignment ~linear with LM score; but absolute cross-modal alignment is MODEST (~0.16
+    of a max 1.0) — a directional trend, not tight coupling
+  referenced_arxiv_ids:
+  - '2303.08774'
+  - '2010.11929'
+  - '2401.04088'
+  contradicting_evidence:
+  - Position paper — absolute cross-modal alignment only ~0.16/1.0; convergence is aspirational, not
+    a guarantee that two specific deployed models are close enough for lossless adapter transfer or high
+    spec-dec acceptance.
+  - The Capacity Hypothesis predicts convergence emerges as models get LARGER/MORE CAPABLE; our rotating
+    roster mixes small drafters (Qwen3-0.6B/1.7B) and heterogeneous small/mid models — the low-capacity
+    regime where the paper predicts LESS alignment.
+  - Our own cross-tokenizer spec-dec deep-dive (2026-05-27) already found acceptance is bounded by capability
+    gap + vocabulary overlap (ZeTT/FVT drafters not competitive) — shared-representation theory does
+    not rescue heterogeneous-vocab drafting in practice.
+  cross_references:
+    chapters: []
+    handoffs:
+    - 08-doc-to-lora-prototype.md
+    - routing-intelligence.md
+    - learned-routing-controller.md
+    - gpu-drafter-mi200-investigation.md
+    experiments: []
+    intake_entries:
+    - intake-764
+    - intake-098
+    - intake-617
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Net-new to the index — introduces a distinct, named conceptual contribution
+    (the Platonic Representation Hypothesis + the mutual-kNN alignment metric) that is the cited theoretical
+    basis for the whole cross-model-transfer cluster (PorTAL, Cross-LoRA, LoRA-X). Foundational framing,
+    not a repackaging — hence high (age/position-paper nature captured under credibility).
+  relevance_justification: Foundational framing for our exact rotating-roster pain (why cross-model porting,
+    cross-model spec-dec, and shared-representation routing could work at all), but a hypothesis, not
+    a deployable technique. Its one actionable spinoff — the mutual-kNN metric as a cheap per-pair alignment
+    PRE-SCREEN before investing in adapter refit / drafter training — is itself GPU/representation-extraction-gated.
+  verdict_justification: 'worth_investigating — the standing conceptual grounding for the training_distillation
+    cross-model-transfer cluster and cross-model spec-dec (intake-617). Not adopt_patterns because the
+    only directly adoptable artifact (mutual-kNN roster pre-screen) is not runnable on the current CPU
+    stack and its claim strength is modest (~0.16 alignment, position-paper evidence). Key nuance — the
+    theory specifically warns alignment is WEAKEST in the small-model / heterogeneous-vocab regime our
+    drafters occupy, so it argues for MEASURING alignment per-pair rather than assuming it.'
+  notes: 'ICML 2024, MIT/Isola, heavily cited (credibility 5, minus 1 for >24mo). Theoretical anchor
+    of the 2026-07-02 cross-model-transfer expansion cluster (intake-765..771).'
+- id: intake-771
+  arxiv_id: '2506.06105'
+  url: https://arxiv.org/abs/2506.06105
+  source_type: paper
+  title: 'Text-to-LoRA: Instant Transformer Adaption'
+  authors:
+  - Rujikorn Charakorn (Sakana AI)
+  - Edoardo Cetin (Sakana AI)
+  - Yujin Tang (Sakana AI)
+  - Robert Tjarko Lange (Sakana AI)
+  categories:
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-764
+  verdict: worth_investigating
+  ingested_date: '2026-07-02'
+  credibility_score: 5
+  key_claims:
+  - A hypernetwork (T2L) generates a task-specific LoRA for a frozen base LLM in a single cheap forward
+    pass, conditioned ONLY on a natural-language description of the target task — no per-task dataset,
+    gradient fine-tuning, or hyperparameter search.
+  - Trained by LoRA-reconstruction on 9 pre-trained oracle adapters, the generated adapters match individually-trained
+    task-specific adapters; a single T2L compresses ~479 LoRA instances and zero-shot generalizes to
+    unseen tasks from just their text description.
+  - Three sizes trade params for expressivity (T2L-L ~55M full-matrix head / T2L-M ~34M shared / T2L-S
+    ~5M per-rank); OPEN code + pretrained hypernetwork checkpoints released (Mistral-7B, Llama-3.1-8B,
+    Gemma-2-2b bases).
+  techniques:
+  - Hypernetwork emitting LoRA (A,B) from a task-description embedding + learned per-layer/per-module
+    index embeddings
+  - Two training regimes — LoRA-reconstruction (regress toward oracle adapters) and end-to-end SFT (stronger
+    zero-shot)
+  - Base-model-specific hypernetwork (tensor shapes tied to one base)
+  reported_results:
+  - Benchmark-avg accuracy of generated adapters — 67.05% (Mistral-7B-Instruct-v0.2), 77.09% (Llama-3.1-8B-Instruct),
+    66.12% (Gemma-2-2b-it) across 10 tasks
+  - Reconstructed adapters match oracle-LoRA performance on the 9 training tasks; ~479 adapters compressed
+    into one hypernetwork; zero-shot to unseen tasks from text
+  referenced_arxiv_ids:
+  - '2106.09685'
+  - '1609.09106'
+  - '2212.04089'
+  contradicting_evidence:
+  - Sakana AI prior work has been independently re-evaluated with mixed verdicts (e.g. AI-Scientist re-eval)
+    — apply a vendor-bias caveat to headline zero-shot claims until reproduced.
+  - Base-model coupling — released hypernetworks are tied to Mistral-7B / Llama-3.1-8B / Gemma-2-2b tensor
+    shapes and cannot emit adapters for a different base; our prod worker (gemma4-26B-A4B / Qwen3.6)
+    is not a released base, so retargeting requires retraining the hypernetwork = GPU-gated Phase-B blocker.
+  cross_references:
+    chapters: []
+    handoffs:
+    - 08-doc-to-lora-prototype.md
+    - swarm-dataset-distillation.md
+    experiments: []
+    intake_entries:
+    - intake-098
+    - intake-707
+    - intake-764
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: The hypernetwork->LoRA family is already tracked (DocToLoRA/intake-098, Code2LoRA/intake-707,
+    PorTAL/intake-764), so the mechanism class is not new; but Text-to-LoRA (June 2025) is the seminal,
+    earliest-published member and introduces the distinct natural-language TASK-DESCRIPTION conditioning
+    the others build on, plus genuine zero-shot generalization and hundreds-of-adapters compression.
+    Medium — foundational reference with a distinct text->adapter result and, uniquely in this cluster,
+    open code + open weights.
+  relevance_justification: On the doc-to-LoRA line and answers the chase — text->LoRA IS more actionable
+    than PorTAL for the 'generate an adapter from a text description' case because T2L ships open code
+    + open pretrained weights and needs only a forward pass (no per-base converter refit that PorTAL
+    requires and doesn't open-source). Held to medium by the shared base-model-mismatch blocker (released
+    weights cover Mistral-7B/Llama-3.1-8B/Gemma-2-2b, none our prod bases; retargeting is GPU-gated).
+  verdict_justification: 'worth_investigating, aligned with PorTAL/intake-764. Concretely actionable now
+    (CPU-only): a zero-cost validation — pull the released Gemma-2-2b-it hypernetwork, generate a LoRA
+    from a text description, convert to GGUF, and hot-swap via llama.cpp (adapter hot-swap is DONE per
+    08-doc-to-lora Finding 1; the real gap is orchestrator --lora wiring, Finding 7) to observe whether
+    text-conditioned adapters do anything useful on a base we can load. If the D2L line reopens, T2L
+    is the recommended default (only cluster member with open code AND weights AND forward-pass adaptation).
+    NOT adopt_component — base mismatch to our roster + retargeting is GPU-gated.'
+  notes: Fills the previously-missing formal entry for Text-to-LoRA (prose-only in intake-764). Part
+    of the 2026-07-02 cross-model-transfer expansion cluster (intake-765..771).
+- id: intake-772
+  arxiv_id: '2505.22954'
+  url: https://arxiv.org/abs/2505.22954
+  source_type: paper
+  title: 'Darwin Gödel Machine: Open-Ended Evolution of Self-Improving Agents'
+  authors:
+  - Jenny Zhang
+  - Shengran Hu
+  - Cong Lu
+  - Robert Lange
+  - Jeff Clune
+  categories:
+  - autonomous_research
+  - agent_architecture
+  - swarm_techniques
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-753
+  verdict: adopt_patterns
+  ingested_date: '2026-07-02'
+  credibility_score: 6
+  key_claims:
+  - A self-referential self-improving coding agent iteratively rewrites its OWN codebase (thereby improving
+    its ability to modify its codebase), empirically validating each change on coding benchmarks — sidestepping
+    the original Godel machine's impossible provable-benefit requirement.
+  - Maintains an open-ended archive that accumulates ALL generated agent variants as stepping stones
+    (not just Pareto-optimal ones), growing a diverse tree that enables parallel exploration and escape
+    from local optima ('many paths to innovation traverse lower-performing nodes').
+  - Parent selection is ~proportional to each agent's score AND its number of edit-capable children (bias
+    toward productive lineages while preserving diversity); self-improvement autonomously discovers concrete
+    upgrades (better edit tools, long-context management, self-critique).
+  - Both the self-modification AND the keep-all-stepping-stones archive are load-bearing — DGM beats
+    'w/o self-improvement' and 'w/o open-ended exploration' ablations; all runs used sandboxing + human
+    oversight.
+  techniques:
+  - Self-referential code self-modification loop (agent edits the codebase that performs the editing)
+  - Open-ended growing-tree archive retaining all variants as stepping stones (quality-diversity vs greedy
+    Pareto pruning)
+  - Foundation-model-mediated variant proposal; empirical benchmark validation as the accept signal
+  - Performance-and-fecundity-weighted parent sampling (score x #editing-capable children)
+  reported_results:
+  - SWE-bench 20.0% -> 50.0% after self-improvement (2.5x)
+  - Polyglot 14.2% -> 30.7% (full-benchmark eval)
+  - Outperforms 'w/o self-improve' (frozen meta-agent) and 'w/o open-ended exploration' (archive-free)
+    baselines
+  referenced_arxiv_ids:
+  - '2408.06292'
+  - '2501.12948'
+  - '2212.08073'
+  contradicting_evidence:
+  - Domain gap — DGM improves frontier CODING agents via FM-driven self-rewrites; our autopilot optimizes
+    a CPU-inference orchestration stack (prompts/flags/NUMA/routing) under FIXED served models; the self-referential
+    'agent rewrites its own editing code' mechanism does not map onto our human-authored meta-loop.
+  - Mechanism conflict — our ParetoArchive intentionally PRUNES dominated configs and gates on resolution-aware
+    verdicts; DGM's keep-ALL-stepping-stones archive is the opposite policy and would inflate archive
+    size + compute (needs a bounded QD variant, not a wholesale swap).
+  - Compute cost — DGM runs many parallel self-modifying agents with heavy FM calls + sandboxes; our
+    single-user shared EPYC host cannot run concurrent inference. Non-peer-reviewed preprint, not locally
+    reproduced -> observations, not decision-gating (MEASUREMENT.md).
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - meta-harness-optimization.md
+    - routing-and-optimization-index.md
+    - eval-tower-verification.md
+    experiments: []
+    intake_entries:
+    - intake-753
+    - intake-244
+    - intake-271
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  handoffs_created: []
+  novelty_justification: Not a duplicate (0 hits). Adjacent evolutionary items exist (GEPA, AlphaEvolve/ShinkaEvolve
+    as kernel-search baselines, SiliconSwarm), but none index DGM's distinctive triad — self-referential
+    improvement of the code-editing agent itself, an open-ended keep-all-stepping-stones tree archive
+    (vs our greedy Pareto pruning), and performance x fecundity parent sampling. New, empirically-validated
+    mechanisms relative to our corpus.
+  relevance_justification: The canonical academic reference for the exact loop autopilot-continuous-optimization
+    runs (4 species + 4D Pareto archive + eval-tower validation + code_mutation) and the meta-harness-optimization
+    line. It directly stress-tests two of our design choices — Pareto pruning vs open-ended stepping-stone
+    retention, and whether the meta-optimizer/species code should itself be self-mutable — and corroborates
+    the frozen-model harness-evolution thesis of parent intake-753/244/271.
+  verdict_justification: 'adopt_patterns (not adopt_component — the DGM codebase is a SWE-bench coding
+    agent, not a drop-in for our orchestrator; not worth_investigating — the loop is already built and
+    this is decision-shaping). Harvestable — (1) add a bounded open-ended stepping-stone lane to ParetoArchive
+    that retains a diversity-sampled subset of dominated-but-novel configs as parents, testing DGM''s
+    local-optima-escape claim vs our greedy selection; (2) performance x fecundity parent sampling to
+    bias PromptForge/StructuralLab toward productive lineages; (3) the two DGM ablations as an A/B template.
+    Gate any keep-all-archive change on our resolution-aware/sequential-verdict machinery + single-host
+    compute limits before promotion.'
+  notes: 'Autopilot-cluster expansion (expanded_from intake-753/Meta-Harness line, distinct from the
+    LoRA cluster intake-765..771). ar5iv render failed; sourced from arXiv abstract + HTML full text.'

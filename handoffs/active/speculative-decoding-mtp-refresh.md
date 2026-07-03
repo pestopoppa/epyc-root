@@ -132,3 +132,12 @@ After any task: update the checkbox here + record measured numbers (with protoco
 - Models on disk: `/mnt/raid0/llm/models/gemma-4-31B-it-Q4_K_M.gguf` (+ `-assistant-Q8_0.gguf`); `/mnt/raid0/llm/lmstudio/models/unsloth/Qwen3.5-9B-GGUF/`
 - Registry entries: `gemma4_31b_q4km_mtp` (research registry, Tier B); worker_general (lean registry)
 - Read-only refs: `autopilot/program.md:325` (Qwen3.5 hybrid exhausted), `scripts/session/verify_llama_cpp.sh`
+
+## Research Intake Update — 2026-07-02
+
+### New Related Research
+- **[intake-751 / intake-752] "Nemotron-Labs-TwoTower: Diffusion LM with Pretrained Autoregressive Context"** (arXiv 2606.26493 + HF weights; NVIDIA — Reda, Kamalu, Waleffe, Patwary, Shoeybi, Catanzaro)
+  - **Relevance:** A parallel-decode approach that **competes with / contrasts against** our MTP/NEXTN refresh. It decouples a **FROZEN autoregressive context tower** from a **trainable diffusion denoiser tower** (cross-attention), emitting up to 16 tokens/step via confidence-based block denoising. Built on Nemotron-3-Nano-30B-A3B (Mamba-2/attention/MoE hybrid, ~3B active).
+  - **Reported results:** **2.42× wall-clock generation throughput at 98.7% quality retention** (self-reported, GPU-only).
+  - **Key idea worth stealing:** the two-tower "**freeze the pretrained AR backbone, train only a bolt-on parallel generator**" factorization is directly adjacent to how we train MTP/NEXTN heads on a frozen base — a candidate design lens for a parallel head on our frozen CPU models.
+  - **Delta from current approach / why worth_investigating not new_opportunity:** it is **diffusion-based and GPU-only** (BF16, dual H100/A100) with **no CPU/GGUF path**, and the Nemotron Mamba2-hybrid-MoE backbone has documented llama.cpp CPU blockers — same deployment wall as DFlash (intake-158). Distinct from the already-indexed Nemotron-Labs-Diffusion tri-mode (intake-576). **Creative-use:** re-evaluate on the MI210/DGX-Spark GPU path if a diffusion-serving backend lands; the backbone is also a standing SSM-hybrid worker/drafter candidate independent of the diffusion tower.

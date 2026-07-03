@@ -478,3 +478,23 @@ Delta from this handoff's current plan: gpu-acceleration-path tracks *consuming/
 
 - UniRL (Tencent Hunyuan): multi-GPU RL post-training framework (Ray+FSDP) for diffusion/AR/multimodal generators — training code only, no inference/serving, no prod GPU on EPYC. not_applicable today; DGX-gated watch-item.
 - CORRECTION (the intake's earlier "no image role" claim was wrong): a CPU image-generation role IS deployed (`sd_server` / ERNIE-Image-Turbo via stable-diffusion.cpp). UniRL's diffusion-RL (Flow-DPPO) could one day fine-tune it — the blocker is "no TRAINING GPU", not "no image role". The LLM-targeted token-level trust-region variants (CPPO/DRPO; arXiv 2606.10968 / 2606.09821) could transfer to a FUTURE on-prem LLM RL track (none exists today; current "learned" tracks are supervised routing classifiers). README has no benchmark numbers (observations).
+
+## Research Intake Update — 2026-07-02
+
+### New Related Research — ROCm / MI210 (gfx90a) enablement cluster (intake-759..763)
+
+Batch intake of the AMD ROCm software stack, assessed against the active MI210 (gfx90a, CDNA2, ROCm 6.2 bind-mount) bring-up. **gfx90a support matrix — the load-bearing finding:**
+
+| Component | intake | gfx90a/MI210? | Verdict / path to us |
+|-----------|--------|---------------|----------------------|
+| ROCm/triton (AMDGPU backend) | intake-760 | **YES — first-class, tuned** (`main_perf`) | adopt_component. `pytorch-triton-rocm`; dependency under vLLM/FA/AITER Triton kernels |
+| ROCm/flash-attention (FA-2 port) | intake-761 | **YES** — CK (default) + Triton backends, ROCm 6.0+ | adopt_component. `flash_attn` PyTorch pkg → vLLM/PyTorch (not llama.cpp) |
+| vLLM core (`PYTORCH_ROCM_ARCH`) | intake-762/763 | **YES — gfx90a in the default arch list** | adopt_patterns. from-source build |
+| ROCm/aiter (AI Tensor Engine) | intake-759 | **NO — gfx942/gfx950 only** | adopt_patterns (ceiling/baseline ref); no llama.cpp binding |
+| vLLM AITER/MORI/DeepEP accel | intake-762 | **NO — gfx942;gfx950** | an MI210 vLLM build loses AITER acceleration |
+
+**Bottom line for the open "vLLM MI210 number" item (`progress/2026-07/2026-07-02-mi210.md`):** the prebuilt `rocm/vllm:rocm6.2_mi300` image is MI300-locked and dead on gfx90a; the viable path is a **from-source vLLM build for gfx90a**. Two references now in hand:
+- **intake-763** — vLLM v0.6.5 AMD docs default to **ROCm 6.2 (exactly our bind-mount)** and explicitly list MI210 via `PYTORCH_ROCM_ARCH="gfx90a"`. MI210 support is NOT removed in current vLLM (now ships ROCm 7.0/7.2.1 wheels), so build *current* vLLM, not 0.6.5's stale model coverage.
+- **intake-762** — the canonical `Dockerfile.rocm`/`Dockerfile.rocm_base` build recipe (two-stage base/app split; pins Triton `0f380657`, FA `0e60e394`, AITER `v0.1.16.post2`), but its base is ROCm **7.2.3** — ahead of our 6.2.
+
+**Recommended (operator-review):** build current vLLM from source against ROCm 6.2 with `PYTORCH_ROCM_ARCH=gfx90a`, expecting **no AITER acceleration** on gfx90a — as an independent GPU serving-throughput reference vs the working llama.cpp-HIP path. Delta from current approach: our production/working GPU path is llama.cpp-HIP (native ggml-cuda/rocWMMA/MFMA — Triton NOT on that critical path); this cluster is load-bearing only for the vLLM-on-MI210 evaluation and the agentic-rocm-kernel-authoring / rocm-verify-profile Triton arm (where ROCm/triton is the runtime oracle). Bookmark: NVFP4 Qwen3.6-27B (intake-756) is a GPU-native quant relevant here but Blackwell/Hopper-only — MI210 lacks FP4/FP8 tensor units.

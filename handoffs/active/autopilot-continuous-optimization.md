@@ -1097,3 +1097,16 @@ Run them as a paired A/B through `bsv_paired_runner.py` + `paired_stats.py`; req
 3. **Codify the two-ablation archive-authority A/B protocol (Pattern 3) — S.** Write the frontier-only vs stepping-stone-on paired protocol on top of the existing `bsv_paired_runner.py` + `_sequential_verdict`, and make it the required gate for promoting Patterns 1–2 from observe-only to authoritative. No new mechanism — it just makes any later authority flip defensible. Requires operator scheduling for the paired inference runs.
 
 Deferred (needs operator sign-off / more inference): fecundity parent sampling (Pattern 2, only once #1 lands), the `explore_from_trial` re-run path (Pattern 1 follow-up), the token-honest cost axis and per-model harness re-tune (Pattern 5 — inside the MEASUREMENT trust boundary). None of these should be wired by a sub-agent or self-mutated by the loop; all are operator-gated per CLAUDE.md.
+
+### Implementation status (2026-07-02)
+
+Patterns **1, 3, 4 are IMPLEMENTED** (observe-only) on branch `dgm-harness-patterns-2026-07-02`
+(epyc-orchestrator, commit `d820e94f`) — isolated worktree; the live autopilot (main tree) is
+**unaffected** until an operator merge while it is idle. Files: `pareto_archive.py`
+(`stepping_stones`/`stepping_stones_text`), `autopilot.py` (planner-prompt append, gated by
+`AUTOPILOT_STEPPING_STONES`, default on), `digest.py` (`_mechanism_effectiveness_section`),
+`STEPPING_STONE_ABLATION_PROTOCOL.md`. Verified: py_compile, functional smoke,
+`tests/unit/test_pareto_archive_tiers.py` 6/6, GitNexus impact LOW, 3-lens adversarial review
+(2 minor findings applied). Patterns **2** (fecundity parents) and **5** (token cost axis —
+MEASUREMENT trust boundary, operator-only) are **DEFERRED**, gated on Pattern 1 landing + the
+Pattern 3 ablation.
