@@ -183,6 +183,12 @@ After operator clarification that this CPU/RAM lane owns the MI210 session's doc
 
 `epyc-orchestrator` now applies the same realpath guard in that legacy backend: if `draft.model.full_path` resolves to the same file as `role_config.model.full_path`, it omits `-md`; separate draft heads still keep `-md`. This is not a production reload requirement because the live stack uses `scripts/server/orchestrator_stack.py`, not the legacy subprocess backend. Validation: GitNexus impact for `LlamaCppBackend` was LOW; Ruff and py_compile passed; focused model-server tests passed (`57` then `118` tests).
 
+## Post-reboot audit — 2026-07-03
+
+After the host reboot and stack restart, the CPU/RAM lane re-audited live `llama-server` command lines. Result: `same_file_md_count=0` across all current spec processes. The five Qwen3.6 frontdoor processes (`8070`, `8080`, `8180`, `8280`, `8380`) and the Qwen3.5 architect process (`8083`) run `--spec-type draft-mtp --spec-draft-n-max 4` with no `-md`; the five Gemma worker processes (`8072`, `8082`, `8182`, `8282`, `8382`) still correctly keep `-md /mnt/raid0/llm/models/gemma-4-26B-A4B-it-assistant-v6-Q8_0.gguf` because that is a separate assistant-head draft.
+
+This confirms the reboot did not regress the production launch fix. The remaining open item is unchanged: a quiet-window matched decode A/B via `scripts/benchmark/md_self_draft_ab.py` before claiming a decision-grade throughput speedup ratio.
+
 ---
 
 ## Steps (checklist)
