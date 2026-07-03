@@ -9,10 +9,33 @@
 
 ---
 
+## Update 2026-07-03 — measurement landed (supersedes "the number is still not in")
+
+The matched-precision **Qwen3-8B fp16** head-to-head this doc called a pending build-and-measure task
+was completed by the MI210 session on 2026-07-02 (see `progress/2026-07/2026-07-02-mi210.md` → "Update 2
+— vLLM head-to-head RESULT"), via **route #1 — the prebuilt `rocm/vllm:rocm6.4.1_vllm_0.10.1_20250909`
+image** recommended in §3 (it computes on gfx90a; Triton attention backend):
+
+| Metric (Qwen3-8B fp16, Goedel weights, ~15.3 GB) | llama.cpp-HIP | vLLM 0.10.1 |
+|---|---|---|
+| per-stream decode (batch-1) | 62.45 t/s (62% roofline) | ~69 t/s (69% roofline) |
+| batched 32-way (npp128/ntg128) | 909.8 gen tok/s | 1129 out tok/s (**+24%**) |
+
+**Reading:** vLLM is ~11% faster **per-stream** at fp16 — a modest gap, so llama.cpp's gfx90a *fp16*
+kernels are NOT far off. The batched **+24%** is vLLM's continuous-batching win but is **NOT
+like-for-like** (llama.cpp was not run batched, though it can via `-np`). So the kernel-headroom
+question is only **partly** answered: at fp16 the CDNA2 ceiling is close; the big gap was in
+**quantized** decode (llama.cpp ~47% roofline on Q4/Q8), and a **quantized-vs-quantized** comparison
+(vLLM AWQ/fp8 vs llama.cpp Q4/Q8) was **not** measured — that remains the open item. All numbers are
+MEASUREMENT.md observations (single run, one model, one seed), not decision-gating.
+
+The support-matrix facts and build recipe below stand; only the "the number is still not in" framing
+(TL;DR bullet 2 + §5) is superseded by the above.
+
 ## TL;DR
 
 - **Two things are now settled by the support matrix, on paper:** (1) gfx90a/MI210 is a *supported, buildable* vLLM target — `PYTORCH_ROCM_ARCH` includes `gfx90a`, and vLLM has **not** dropped gfx90a (current vLLM still ships ROCm 7.0/7.2.1 wheels; v0.6.5's default ROCm target is 6.2, matching our bind-mount exactly); (2) an MI210 vLLM build **loses AITER/MORI/DeepEP acceleration** — those three `*_ROCM_ARCH` lists are `gfx942;gfx950` only — and falls back to reference Triton/CK kernels.
-- **The number is still not in.** No README/doc contains a gfx90a benchmark. The open "vLLM MI210 number" item in the progress log remains a build-and-measure task, not a literature question. The intake cluster de-risks the *path*, not the *result*.
+- **The fp16 number is now in (see the 2026-07-03 update above); the quantized number is still open.** The Qwen3-8B fp16 head-to-head was measured (vLLM +11% per-stream; +24% batched, not like-for-like); the quantized-vs-quantized comparison — where llama.cpp's ~47%-roofline gap actually lives — was not run. The intake cluster de-risked the *path*; the measurement then confirmed the fp16 *result*.
 - **llama.cpp-HIP is the working path; vLLM is a measurement instrument, not a second production binary.** Our production GPU path uses native ggml-cuda / rocWMMA / MFMA and does **not** use Triton or vLLM. The only reason to stand vLLM up on the MI210 is to answer one question: *do vLLM's gfx90a kernels beat llama.cpp's ~47%-roofline ceiling?*
 - **Fastest route to that answer is the already-verified prebuilt image** (`rocm/vllm:rocm6.4.1_vllm_0.10.1_20250909`, found in the progress log) — a from-source build is the fallback/frontier if the prebuilt image is inadequate.
 
@@ -78,9 +101,12 @@ The goal is a single decision-relevant number: **matched-precision Qwen3-8B, vLL
 - AITER, MORI, and DeepEP **exclude** gfx90a (gfx942/gfx950 only) → gfx90a vLLM is a reference-kernel build.
 - The vLLM-ROCm base image is pinned to ROCm 7.2.3, well above our 6.2 bind-mount.
 
-**STILL NEEDS A BUILD + BENCHMARK (no source supplies it):**
-- A gfx90a vLLM that actually loads and runs our shared model.
-- The matched-precision Qwen3-8B throughput number vs llama.cpp-HIP — the single decision-relevant output. It answers the standing kernel-headroom question: is llama.cpp's ~47%-of-roofline gfx90a ceiling a llama.cpp-kernel-maturity gap (vLLM beats it) or a genuine CDNA2 reference-kernel ceiling (vLLM ties it)?
+**MEASURED 2026-07-02 (see the top Update + `progress/2026-07/2026-07-02-mi210.md`):**
+- A gfx90a vLLM that loads and runs our shared model — DONE via the prebuilt `rocm6.4.1` image.
+- The matched-precision **Qwen3-8B fp16** throughput vs llama.cpp-HIP — DONE: vLLM ~69 vs llama.cpp 62.45 t/s per-stream (+11%); 1129 vs 909.8 tok/s batched-32-way (+24%, not like-for-like — llama.cpp unbatched).
+
+**STILL OPEN:**
+- The **quantized-vs-quantized** comparison (vLLM AWQ/fp8 vs llama.cpp Q4/Q8) — where llama.cpp's ~47%-of-roofline gap actually lives; NOT re-tested (needs vLLM quant weights). The fp16 result shows the per-stream CDNA2 ceiling is close, so the kernel-headroom question is settled only for fp16.
 
 ---
 
