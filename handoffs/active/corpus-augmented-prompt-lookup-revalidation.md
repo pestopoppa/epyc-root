@@ -1,6 +1,6 @@
 # Corpus-Augmented Prompt Lookup Revalidation
 
-**Status**: ACTIVE-HIGH, CPL-1/2/3 advanced 2026-07-03; A/B decision still open
+**Status**: ACTIVE-HIGH, CPL-1/2/3 complete; CPL-4 preflight ready 2026-07-03; A/B decision still open
 **Parent index**: [inference-acceleration-index.md](inference-acceleration-index.md)
 **Priority**: high disk/capability ROI, below current G0/GPU and evidence-plane authority rows
 **Related**: [speculative-decoding-mtp-refresh.md](speculative-decoding-mtp-refresh.md), [model-stack-single-source-update-pipeline.md](model-stack-single-source-update-pipeline.md), archived [hybrid-lookup-spec-decode.md](../archived/hybrid-lookup-spec-decode.md), archived [llama-server-prompt-lookup.md](../archived/llama-server-prompt-lookup.md)
@@ -47,6 +47,18 @@ quarantined/deleted by explicit operator decision.
   `candidate_count_total=27`, `failure_count=0`, and
   `usable_for_online_prompt_injection=true` under a `5000ms` p95 threshold.
   This is health evidence only; it does not prove quality or end-to-end speed.
+- 2026-07-03 A/B harness repair: `scripts/benchmark/corpus_quality_gate.py`
+  now records per-prompt retrieval diagnostics in the corpus arm, reuses the
+  corpus singleton across prompt pairs, supports no-inference `--preflight-only`,
+  supports generation-only `--skip-judge`, and exposes `--min-score` /
+  `--rag-min-score` so threshold candidates are explicit.
+- No-inference quality-gate preflights show why the threshold must be explicit:
+  `corpus_quality_preflight_20260703T124703Z.json` reproduced the old
+  `min_score=0.5` behavior with `0/6` injected prompts and `ready_for_ab=false`;
+  `corpus_quality_preflight_20260703T124756Z.json` used candidate
+  `min_score=0.0` and returned `6/6` injected prompts, `3` snippets per prompt,
+  `failure_count=0`, `p50=1.206ms`, and `ready_for_ab=true`. This only clears
+  the lookup/injection preflight, not the live quality/speed A/B.
 
 ## Prioritized Task List
 
@@ -68,9 +80,11 @@ quarantined/deleted by explicit operator decision.
   artifact is listed above.
 - [ ] **CPL-4: Run a focused corpus-on/off A/B for coding tasks.** Compare
   corpus injection off vs on for `coder_escalation` and any intended cheap
-  coding role. Capture latency, generated t/s, draft acceptance if available,
-  quality, and injected-snippet telemetry. This is not a production enablement
-  gate unless it follows `/workspace/MEASUREMENT.md`.
+  coding role. Use `scripts/benchmark/corpus_quality_gate.py --min-score 0.0`
+  unless deliberately testing another threshold; the old `0.5` threshold
+  preflights as a no-op. Capture latency, generated t/s, draft acceptance if
+  available, quality, and injected-snippet telemetry. This is not a production
+  enablement gate unless it follows `/workspace/MEASUREMENT.md`.
 - [ ] **CPL-5: Decide keep/quarantine/delete.** Keep only if the A/B shows a
   measured coding-task benefit and retrieval overhead is bounded. Otherwise
   mark `/mnt/raid0/llm/cache/corpus` reclaimable and preserve only the small
