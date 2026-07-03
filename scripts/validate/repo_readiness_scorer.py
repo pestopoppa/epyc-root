@@ -389,7 +389,8 @@ def build_criteria() -> list[Criterion]:
     add(5, "Build System", "autonomous_runner", "Has autonomous/nightshift runner infrastructure.",
         exists_any("scripts/nightshift/**", "scripts/autopilot/**"))
     add(5, "Testing", "auto_eval_gates", "Has automated eval/safety gates for candidate changes.",
-        exists_any("scripts/autopilot/**", "src/eval_tower.py", "src/safety_gate.py",
+        exists_any("scripts/validate/candidate_eval_gate.sh",
+                   "scripts/autopilot/**", "src/eval_tower.py", "src/safety_gate.py",
                    "orchestration/eval_registry.yaml"))
     add(5, "Documentation", "agent_doc_loop", "Agents have durable handoff/progress documentation loops.",
         exists_any("handoffs/active/master-handoff-index.md", "progress/**", ".claude/commands/**"))

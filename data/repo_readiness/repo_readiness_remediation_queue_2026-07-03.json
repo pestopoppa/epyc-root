@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-07-03T13:11:06.353645+00:00",
-  "item_count": 14,
+  "generated_at": "2026-07-03T17:28:16.274283+00:00",
+  "item_count": 13,
   "items": [
     {
       "acceptance": "`L4.incremental_validation` passes for `epyc-llama` on the next repo readiness scorer run.",
@@ -123,46 +123,6 @@
       "title": "epyc-llama: satisfy L4.replay_analysis"
     },
     {
-      "acceptance": "`L5.auto_eval_gates` passes for `epyc-root` on the next repo readiness scorer run.",
-      "blocking_next_gate": true,
-      "category": "repo_readiness",
-      "criterion_id": "L5.auto_eval_gates",
-      "evidence": [],
-      "id": "readiness:epyc-root:L5.auto_eval_gates",
-      "level": 5,
-      "level_label": "Autonomous",
-      "objective": "Has automated eval/safety gates for candidate changes.",
-      "pillar": "Testing",
-      "portfolio_coverage": 0.5,
-      "priority": "P0",
-      "reason": "epyc-root is at Optimized (L4); next gate is Autonomous.",
-      "repo": "epyc-root",
-      "repo_path": "/mnt/raid0/llm/epyc-root",
-      "source": "scripts/validate/repo_readiness_scorer.py",
-      "status": "open",
-      "title": "epyc-root: satisfy L5.auto_eval_gates"
-    },
-    {
-      "acceptance": "`L5.self_optimizing_loop` passes for `epyc-root` on the next repo readiness scorer run.",
-      "blocking_next_gate": true,
-      "category": "repo_readiness",
-      "criterion_id": "L5.self_optimizing_loop",
-      "evidence": [],
-      "id": "readiness:epyc-root:L5.self_optimizing_loop",
-      "level": 5,
-      "level_label": "Autonomous",
-      "objective": "Has Pareto/evolutionary optimization loops.",
-      "pillar": "Product & Experimentation",
-      "portfolio_coverage": 0.5,
-      "priority": "P0",
-      "reason": "epyc-root is at Optimized (L4); next gate is Autonomous.",
-      "repo": "epyc-root",
-      "repo_path": "/mnt/raid0/llm/epyc-root",
-      "source": "scripts/validate/repo_readiness_scorer.py",
-      "status": "open",
-      "title": "epyc-root: satisfy L5.self_optimizing_loop"
-    },
-    {
       "acceptance": "`L5.autonomous_runner` passes for `epyc-llama` on the next repo readiness scorer run.",
       "blocking_next_gate": false,
       "category": "repo_readiness",
@@ -181,6 +141,26 @@
       "source": "scripts/validate/repo_readiness_scorer.py",
       "status": "open",
       "title": "epyc-llama: satisfy L5.autonomous_runner"
+    },
+    {
+      "acceptance": "`L5.auto_eval_gates` passes for `epyc-llama` on the next repo readiness scorer run.",
+      "blocking_next_gate": false,
+      "category": "repo_readiness",
+      "criterion_id": "L5.auto_eval_gates",
+      "evidence": [],
+      "id": "readiness:epyc-llama:L5.auto_eval_gates",
+      "level": 5,
+      "level_label": "Autonomous",
+      "objective": "Has automated eval/safety gates for candidate changes.",
+      "pillar": "Testing",
+      "portfolio_coverage": 0.75,
+      "priority": "P2",
+      "reason": "epyc-llama is at Standardized (L3); next gate is Optimized.",
+      "repo": "epyc-llama",
+      "repo_path": "/workspace/repos/epyc-llama",
+      "source": "scripts/validate/repo_readiness_scorer.py",
+      "status": "open",
+      "title": "epyc-llama: satisfy L5.auto_eval_gates"
     },
     {
       "acceptance": "`L5.self_healing_ops` passes for `epyc-llama` on the next repo readiness scorer run.",
@@ -243,26 +223,6 @@
       "title": "epyc-llama: satisfy L5.autonomous_security_review"
     },
     {
-      "acceptance": "`L5.auto_eval_gates` passes for `epyc-llama` on the next repo readiness scorer run.",
-      "blocking_next_gate": false,
-      "category": "repo_readiness",
-      "criterion_id": "L5.auto_eval_gates",
-      "evidence": [],
-      "id": "readiness:epyc-llama:L5.auto_eval_gates",
-      "level": 5,
-      "level_label": "Autonomous",
-      "objective": "Has automated eval/safety gates for candidate changes.",
-      "pillar": "Testing",
-      "portfolio_coverage": 0.5,
-      "priority": "P2",
-      "reason": "epyc-llama is at Standardized (L3); next gate is Optimized.",
-      "repo": "epyc-llama",
-      "repo_path": "/workspace/repos/epyc-llama",
-      "source": "scripts/validate/repo_readiness_scorer.py",
-      "status": "open",
-      "title": "epyc-llama: satisfy L5.auto_eval_gates"
-    },
-    {
       "acceptance": "`L5.self_optimizing_loop` passes for `epyc-llama` on the next repo readiness scorer run.",
       "blocking_next_gate": false,
       "category": "repo_readiness",
@@ -281,6 +241,26 @@
       "source": "scripts/validate/repo_readiness_scorer.py",
       "status": "open",
       "title": "epyc-llama: satisfy L5.self_optimizing_loop"
+    },
+    {
+      "acceptance": "`L5.self_optimizing_loop` passes for `epyc-root` on the next repo readiness scorer run.",
+      "blocking_next_gate": false,
+      "category": "repo_readiness",
+      "criterion_id": "L5.self_optimizing_loop",
+      "evidence": [],
+      "id": "readiness:epyc-root:L5.self_optimizing_loop",
+      "level": 5,
+      "level_label": "Autonomous",
+      "objective": "Has Pareto/evolutionary optimization loops.",
+      "pillar": "Product & Experimentation",
+      "portfolio_coverage": 0.5,
+      "priority": "P2",
+      "reason": "epyc-root is at Autonomous (L5); next gate is complete.",
+      "repo": "epyc-root",
+      "repo_path": "/mnt/raid0/llm/epyc-root",
+      "source": "scripts/validate/repo_readiness_scorer.py",
+      "status": "open",
+      "title": "epyc-root: satisfy L5.self_optimizing_loop"
     }
   ],
   "version": 1

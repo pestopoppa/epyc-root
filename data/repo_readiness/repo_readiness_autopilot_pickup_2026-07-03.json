@@ -1,7 +1,7 @@
 {
   "authority_gate": false,
-  "generated_at": "2026-07-03T13:11:06.353645+00:00",
-  "item_count": 14,
+  "generated_at": "2026-07-03T17:28:16.274283+00:00",
+  "item_count": 13,
   "items": [
     {
       "acceptance": "`L4.incremental_validation` passes for `epyc-llama` on the next repo readiness scorer run.",
@@ -124,46 +124,6 @@
       "status": "candidate"
     },
     {
-      "acceptance": "`L5.auto_eval_gates` passes for `epyc-root` on the next repo readiness scorer run.",
-      "blocking_next_gate": true,
-      "category": "repo_readiness",
-      "criterion_id": "L5.auto_eval_gates",
-      "id": "readiness:epyc-root:L5.auto_eval_gates",
-      "objective": "Has automated eval/safety gates for candidate changes.",
-      "pillar": "Testing",
-      "priority": "P0",
-      "repo": "epyc-root",
-      "repo_path": "/mnt/raid0/llm/epyc-root",
-      "required_preflight": [
-        "review owning handoff before edits",
-        "run GitNexus impact on the target symbol/file",
-        "keep generated/runtime artifacts out of commits unless durable",
-        "run scorer again and verify the criterion passes"
-      ],
-      "source": "scripts/validate/repo_readiness_scorer.py",
-      "status": "candidate"
-    },
-    {
-      "acceptance": "`L5.self_optimizing_loop` passes for `epyc-root` on the next repo readiness scorer run.",
-      "blocking_next_gate": true,
-      "category": "repo_readiness",
-      "criterion_id": "L5.self_optimizing_loop",
-      "id": "readiness:epyc-root:L5.self_optimizing_loop",
-      "objective": "Has Pareto/evolutionary optimization loops.",
-      "pillar": "Product & Experimentation",
-      "priority": "P0",
-      "repo": "epyc-root",
-      "repo_path": "/mnt/raid0/llm/epyc-root",
-      "required_preflight": [
-        "review owning handoff before edits",
-        "run GitNexus impact on the target symbol/file",
-        "keep generated/runtime artifacts out of commits unless durable",
-        "run scorer again and verify the criterion passes"
-      ],
-      "source": "scripts/validate/repo_readiness_scorer.py",
-      "status": "candidate"
-    },
-    {
       "acceptance": "`L5.autonomous_runner` passes for `epyc-llama` on the next repo readiness scorer run.",
       "blocking_next_gate": false,
       "category": "repo_readiness",
@@ -171,6 +131,26 @@
       "id": "readiness:epyc-llama:L5.autonomous_runner",
       "objective": "Has autonomous/nightshift runner infrastructure.",
       "pillar": "Build System",
+      "priority": "P2",
+      "repo": "epyc-llama",
+      "repo_path": "/workspace/repos/epyc-llama",
+      "required_preflight": [
+        "review owning handoff before edits",
+        "run GitNexus impact on the target symbol/file",
+        "keep generated/runtime artifacts out of commits unless durable",
+        "run scorer again and verify the criterion passes"
+      ],
+      "source": "scripts/validate/repo_readiness_scorer.py",
+      "status": "candidate"
+    },
+    {
+      "acceptance": "`L5.auto_eval_gates` passes for `epyc-llama` on the next repo readiness scorer run.",
+      "blocking_next_gate": false,
+      "category": "repo_readiness",
+      "criterion_id": "L5.auto_eval_gates",
+      "id": "readiness:epyc-llama:L5.auto_eval_gates",
+      "objective": "Has automated eval/safety gates for candidate changes.",
+      "pillar": "Testing",
       "priority": "P2",
       "repo": "epyc-llama",
       "repo_path": "/workspace/repos/epyc-llama",
@@ -244,26 +224,6 @@
       "status": "candidate"
     },
     {
-      "acceptance": "`L5.auto_eval_gates` passes for `epyc-llama` on the next repo readiness scorer run.",
-      "blocking_next_gate": false,
-      "category": "repo_readiness",
-      "criterion_id": "L5.auto_eval_gates",
-      "id": "readiness:epyc-llama:L5.auto_eval_gates",
-      "objective": "Has automated eval/safety gates for candidate changes.",
-      "pillar": "Testing",
-      "priority": "P2",
-      "repo": "epyc-llama",
-      "repo_path": "/workspace/repos/epyc-llama",
-      "required_preflight": [
-        "review owning handoff before edits",
-        "run GitNexus impact on the target symbol/file",
-        "keep generated/runtime artifacts out of commits unless durable",
-        "run scorer again and verify the criterion passes"
-      ],
-      "source": "scripts/validate/repo_readiness_scorer.py",
-      "status": "candidate"
-    },
-    {
       "acceptance": "`L5.self_optimizing_loop` passes for `epyc-llama` on the next repo readiness scorer run.",
       "blocking_next_gate": false,
       "category": "repo_readiness",
@@ -282,6 +242,26 @@
       ],
       "source": "scripts/validate/repo_readiness_scorer.py",
       "status": "candidate"
+    },
+    {
+      "acceptance": "`L5.self_optimizing_loop` passes for `epyc-root` on the next repo readiness scorer run.",
+      "blocking_next_gate": false,
+      "category": "repo_readiness",
+      "criterion_id": "L5.self_optimizing_loop",
+      "id": "readiness:epyc-root:L5.self_optimizing_loop",
+      "objective": "Has Pareto/evolutionary optimization loops.",
+      "pillar": "Product & Experimentation",
+      "priority": "P2",
+      "repo": "epyc-root",
+      "repo_path": "/mnt/raid0/llm/epyc-root",
+      "required_preflight": [
+        "review owning handoff before edits",
+        "run GitNexus impact on the target symbol/file",
+        "keep generated/runtime artifacts out of commits unless durable",
+        "run scorer again and verify the criterion passes"
+      ],
+      "source": "scripts/validate/repo_readiness_scorer.py",
+      "status": "candidate"
     }
   ],
   "mode": "advisory_only",
@@ -292,7 +272,7 @@
     "This artifact is planning context only, not an acceptance criterion."
   ],
   "source": "repo_readiness_scorer.remediation_queue",
-  "source_item_count": 14,
+  "source_item_count": 13,
   "source_queue_version": 1,
   "version": 1
 }

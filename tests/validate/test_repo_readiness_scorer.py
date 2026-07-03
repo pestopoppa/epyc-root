@@ -253,3 +253,24 @@ def test_llama_native_surfaces_count_as_readiness_evidence(tmp_path):
     assert ".github/workflows/server-sanitize.yml" in criteria["L3.security_automation"]["evidence"]
     assert criteria["L3.structured_experiments"]["passed"] is True
     assert "docs/ops/CPU.csv" in criteria["L3.structured_experiments"]["evidence"]
+
+
+def test_root_candidate_gate_counts_as_eval_gate_but_passive_pickup_is_not_optimization(tmp_path):
+    scorer = _load_module()
+    repo = tmp_path / "root"
+    _write(repo / "scripts" / "validate" / "candidate_eval_gate.sh", "#!/bin/bash\n")
+    _write(
+        repo / "data" / "repo_readiness" / "repo_readiness_autopilot_pickup_2026-07-03.json",
+        '{"mode":"advisory_only","authority_gate":false}\n',
+    )
+
+    report = scorer.score_repositories({"epyc-root": repo})
+    criteria = {
+        item["id"]: item
+        for item in report["repos"]["epyc-root"]["criteria"]
+    }
+
+    assert criteria["L5.auto_eval_gates"]["passed"] is True
+    assert "scripts/validate/candidate_eval_gate.sh" in criteria["L5.auto_eval_gates"]["evidence"]
+    assert criteria["L5.self_optimizing_loop"]["passed"] is False
+    assert criteria["L5.self_optimizing_loop"]["evidence"] == []

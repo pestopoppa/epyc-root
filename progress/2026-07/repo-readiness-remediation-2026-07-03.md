@@ -1,8 +1,8 @@
 # EPYC Repo Readiness Remediation Queue
 
-Generated: `2026-07-03T13:11:06.353645+00:00`
+Generated: `2026-07-03T17:28:16.274283+00:00`
 Queue version: `1`
-Total open items: `14`
+Total open items: `13`
 
 This queue is advisory input for planning and dashboards. It is not an
 AutoPilot authority gate; every item still requires normal handoff ownership,
@@ -17,14 +17,13 @@ where applicable.
 | P0 | epyc-llama | `L4.analysis_reports` | 4 | Debugging & Observability | yes | `L4.analysis_reports` passes for `epyc-llama` on the next repo readiness scorer run. |
 | P0 | epyc-llama | `L4.security_audit` | 4 | Security | yes | `L4.security_audit` passes for `epyc-llama` on the next repo readiness scorer run. |
 | P0 | epyc-llama | `L4.replay_analysis` | 4 | Product & Experimentation | yes | `L4.replay_analysis` passes for `epyc-llama` on the next repo readiness scorer run. |
-| P0 | epyc-root | `L5.auto_eval_gates` | 5 | Testing | yes | `L5.auto_eval_gates` passes for `epyc-root` on the next repo readiness scorer run. |
-| P0 | epyc-root | `L5.self_optimizing_loop` | 5 | Product & Experimentation | yes | `L5.self_optimizing_loop` passes for `epyc-root` on the next repo readiness scorer run. |
 | P2 | epyc-llama | `L5.autonomous_runner` | 5 | Build System | no | `L5.autonomous_runner` passes for `epyc-llama` on the next repo readiness scorer run. |
+| P2 | epyc-llama | `L5.auto_eval_gates` | 5 | Testing | no | `L5.auto_eval_gates` passes for `epyc-llama` on the next repo readiness scorer run. |
 | P2 | epyc-llama | `L5.self_healing_ops` | 5 | Dev Environment | no | `L5.self_healing_ops` passes for `epyc-llama` on the next repo readiness scorer run. |
 | P2 | epyc-llama | `L5.closed_loop_obs` | 5 | Debugging & Observability | no | `L5.closed_loop_obs` passes for `epyc-llama` on the next repo readiness scorer run. |
 | P2 | epyc-llama | `L5.autonomous_security_review` | 5 | Security | no | `L5.autonomous_security_review` passes for `epyc-llama` on the next repo readiness scorer run. |
-| P2 | epyc-llama | `L5.auto_eval_gates` | 5 | Testing | no | `L5.auto_eval_gates` passes for `epyc-llama` on the next repo readiness scorer run. |
 | P2 | epyc-llama | `L5.self_optimizing_loop` | 5 | Product & Experimentation | no | `L5.self_optimizing_loop` passes for `epyc-llama` on the next repo readiness scorer run. |
+| P2 | epyc-root | `L5.self_optimizing_loop` | 5 | Product & Experimentation | no | `L5.self_optimizing_loop` passes for `epyc-root` on the next repo readiness scorer run. |
 
 ## Pickup Rules
 

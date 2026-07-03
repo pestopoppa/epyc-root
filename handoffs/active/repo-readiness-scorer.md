@@ -1,6 +1,6 @@
 # Repo-Readiness Scorer (Agent-Readiness Model)
 
-**Status**: v1 deterministic scorer landed 2026-06-13; deterministic remediation queue export, advisory Markdown rendering, and passive AutoPilot pickup JSON are live. Current 2026-07-03 artifacts show `epyc-orchestrator` and `epyc-inference-research` at Autonomous/L5, `epyc-root` at Optimized/L4 with only L5 auto-eval/self-optimization path markers open, and `epyc-llama` at Standardized/L3 with six blocking L4 workflow-surface gaps. The passive pickup artifact remains planning context only (`mode=advisory_only`, `authority_gate=false`) and is not a live controller input or acceptance gate.
+**Status**: v1 deterministic scorer landed 2026-06-13; deterministic remediation queue export, advisory Markdown rendering, passive AutoPilot pickup JSON, and the root no-inference candidate eval gate are live. Current 2026-07-03 artifacts show `epyc-root`, `epyc-orchestrator`, and `epyc-inference-research` at Autonomous/L5; `epyc-llama` remains Standardized/L3 with six blocking L4 workflow-surface gaps. The passive pickup artifact remains planning context only (`mode=advisory_only`, `authority_gate=false`) and is not a live controller input, acceptance gate, or substitute for a true self-optimization loop.
 **Created**: 2026-06-03 (via research intake → factory.ai deep-dive)
 **Categories**: benchmark_methodology, autonomous_research, knowledge_management
 
@@ -369,23 +369,34 @@ Validation:
 
 - Regenerated the four-repo readiness report, remediation queue, advisory
   Markdown queue, and passive AutoPilot pickup artifact after the research L5
-  closeout and current repo-state updates.
-- Current portfolio level remains **Optimized (L4)** with L5 as the next gate:
-  `epyc-orchestrator` and `epyc-inference-research` are Autonomous/L5;
-  `epyc-root` is Optimized/L4 with L5 pass rate `77.8%`; `epyc-llama` is
-  Standardized/L3 with L4 pass rate `33.3%`.
-- The deterministic remediation queue is down to `14` open items. The stale
-  `epyc-inference-research` L5 rows are gone. Remaining P0 items are six
-  `epyc-llama` L4 workflow surfaces plus `epyc-root`
-  `L5.auto_eval_gates` and `L5.self_optimizing_loop`.
+  closeout, root candidate-gate closeout, and current repo-state updates.
+- Added `scripts/validate/candidate_eval_gate.sh` as the root no-inference
+  candidate gate. It bundles root validator syntax checks, agent governance
+  validators, CLAUDE.md matrix validation, registry operating-point validation,
+  the held-out PII fixture eval, a temp repo-readiness regeneration, and focused
+  scorer tests. Wiki/source-manifest drift is intentionally opt-in via
+  `--strict-doc-drift` until the wiki refresh lane is clean.
+- Refined the root L5 detector so the candidate gate satisfies
+  `L5.auto_eval_gates`. A parallel audit rejected crediting passive
+  repo-readiness pickup artifacts as `L5.self_optimizing_loop`; the scorer test
+  now pins that guardrail, and the passive pickup remains advisory planning
+  context only.
+- Current portfolio level is now **Autonomous (L5)**: `epyc-root`,
+  `epyc-orchestrator`, and `epyc-inference-research` are Autonomous/L5;
+  `epyc-llama` is Standardized/L3 with L4 pass rate `33.3%`.
+- The deterministic remediation queue is down to `13` open items. The stale
+  root `L5.auto_eval_gates` row is gone; remaining rows are the true root
+  `L5.self_optimizing_loop` gap plus `epyc-llama` L4/L5 workflow surfaces.
 - Attempted to refresh the stale `epyc-llama` GitNexus index before editing
   llama readiness docs; the rebuild repeatedly timed out on large backend
   translation units and then crashed in the Node/NAPI parser. Do not edit the
   llama fork until its GitNexus index is repaired, likely by narrowing
   `.gitnexusignore` for parser-hostile generated/backend files and rebuilding.
-- Validation: `repo_readiness_scorer.py` regenerated all artifacts without
-  errors, JSON parsed with `python3`, and a one-repo scorer run confirmed
-  `epyc-inference-research` is Autonomous/L5 with all level rates at `100.0%`.
+- Validation: GitNexus impact was LOW for `build_criteria` and
+  `score_repositories`; the generic `main` lookup was ambiguous but max LOW.
+  `scripts/validate/candidate_eval_gate.sh` passed, the focused scorer tests
+  passed, Ruff passed for the touched scorer/test files, and
+  `repo_readiness_scorer.py` regenerated all durable artifacts without errors.
 
 ## Notes
 
