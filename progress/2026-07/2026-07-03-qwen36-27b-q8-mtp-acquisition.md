@@ -55,8 +55,39 @@ Q8. Run self-drafting by pointing both `--model` and `-md` at this one file (emb
 - Relates to Fable5 §4B GPU residency (findings-02) and the `speculative-decoding-mtp-refresh` /
   `gpu-drafter-mi200-investigation` handoffs.
 
+## Follow-on (same session): DFlash head acquisition + MI210 Fable5 injection
+
+Operator then asked whether a **DFlash** drafter head exists for the 27B (DFlash = block-diffusion
+spec-dec, ~0.5–1.7B drafter conditioned on target hidden states; distinct from the MTP/NEXTN head).
+
+- **Found upstream:** `z-lab/Qwen3.6-27B-DFlash` (+ community GGUF conversions) — matches our exact 27B.
+  On-disk DFlash cache (`/mnt/raid0/llm/cache/dflash/`, uid-1001, not node-writable) held only Coder-30B
+  + 8B heads (March), neither compatible.
+- **Downloaded + verified** the safetensors head to a node-writable path
+  `/mnt/raid0/llm/models/dflash/Qwen3.6-27B-DFlash/` (models/ is node:node; cache/dflash/ is not):
+  `model.safetensors` 3,460,432,504 B **EXACT-MATCH**; `config.json` confirms `DFlashDraftModel`,
+  block_size 16, **target taps [1,16,31,46,61]**, 1.73B params BF16, mask_token 248070.
+- **Operator converted → GGUF** (I verified): `Qwen3.6-27B-DFlash-f16.gguf` 8,558,077,216 B,
+  `general.architecture=dflash`, 60 tensors, bos 248044 / eos 248046. **Converter gap:** the stale
+  v2-era converter did **not** emit `tokenizer.ggml.padding_token_id` **nor** `unknown_token_id`
+  (verified None). Per findings-02 aligned-specials triple the pad should be **248044** — a named
+  correctness landmine (the α silent-block class) to fix in the port, not assume.
+- **DFlash inference path is NOT ported** — exists only in the stale v2-era worktree
+  `/mnt/raid0/llm/llama.cpp-dflash` (`feature/dflash-speculation`, C++ forward pass verified <0.01 vs HF,
+  CUDA-only reference). Operator's decision: **the DFlash→v6+HIP port is handed to the Fable5 session**
+  (not done here).
+- **Wrote the MI210 Fable5 injection brief** → `handoffs/active/fable5-window2-mi210-focus-injection.md`
+  (rev 2). A mid-session steer for the running window-2 consult, aimed at the MI210 *architecture* layer
+  (kernel dequant gap / GPU drafter incl. the DFlash port / serving fabric / reframe), explicitly keeping
+  the parallel speed campaign's empirical grind off Fable's plate. Not added as a master-index row
+  (Fable consults are standing references, per window-1/2 precedent).
+
 ## Deferred
 
+- **DFlash port** onto v6 + gfx90a/HIP build (incl. missing pad/unk token metadata) — **assigned to the
+  Fable5 session**; go/no-go vs MTP (1.44×) / EAGLE-3 to be gated on a pre-port τ/α measurement.
+- Optional cheap step (not taken): stage the shared `dflash.py`/`utils.py` CUDA-reference model code for
+  the port to read.
 - **No speed number benched by this session** — any t/s for this file needs an actual operator-approved run
   (the parallel speed campaign owns that).
 - vLLM quant-vs-quant (AWQ/fp8) still unmeasured; vLLM still can't load qwen35 on the gfx90a image.
