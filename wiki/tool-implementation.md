@@ -2,8 +2,8 @@
 
 **Category**: `tool_implementation`
 **Confidence**: verified
-**Last compiled**: 2026-06-22
-**Sources**: 27 documents (added 2026-06-22 cross-refs to the DCP context-assembler tooling and the stack-change guard validator surface; prior 2026-06-20 OpenRouter subagent/Fusion server-tool contract patterns, the shipped batched child-LLM structured-return path, and the existing server-side delegate primitive)
+**Last compiled**: 2026-07-03
+**Sources**: 30 documents (added 2026-07-03 corpus-augmented prompt lookup revalidation; prior 2026-06-22 cross-refs to the DCP context-assembler tooling and the stack-change guard validator surface, 2026-06-20 OpenRouter subagent/Fusion server-tool contract patterns, the shipped batched child-LLM structured-return path, and the existing server-side delegate primitive)
 
 ## Summary
 
@@ -18,6 +18,10 @@ The broader tool ecosystem includes the LLM-Wiki pattern (intake-269, intake-277
 A 2026-04-17 deep dive (intake-398) investigated Magika, Google's AI-powered content-type detector (ICSE 2025, Apache 2.0, PyPI magika 1.0.2). The model is a 1 MB shallow byte-embedding MLP — not a CNN as commonly described — using three 512-byte windows (beginning, middle, end), 128-dim byte embeddings, two dense GELU layers, and global max-pooling over 200+ content types. Per-class confidence thresholds are calibrated to fix precision at 99% and maximize recall; below-threshold predictions fall back to `txt` or `unknown`, which explains the 99% F1 headline while synthetic OOD classes score 84–94%. Live measurements on the EPYC host showed 225 ms cold-start (onnxruntime init) and 2.8 ms/file amortized, with a confirmed JSON→JSONL misclassification. The deep dive concluded Magika is **not_applicable** to EPYC: the document-ingestion pipeline operates on a five-format, already-labeled corpus (arXiv PDF, GitHub MD, HTML, HuggingFace MD, user-uploaded PDF) where format is declared by URL pattern, HTTP Content-Type, or extension. No existing pipeline stage requires generic filetype detection, and adding ~80 MB of onnxruntime dependencies for zero measurable accuracy gain is pure negative value. Magika is worth reconsidering only if the pipeline begins ingesting truly arbitrary binary corpora.
 
 ## Key Findings
+
+### New (2026-07-03, corpus-augmented prompt lookup revalidation)
+
+- **The 651G local code corpus is not dead weight yet, but online prompt injection must stay gated behind measured coding-task benefit.** A10 repaired the high-blast-radius `build_corpus_context()` path by loading corpus retrieval settings through the live registry loader, requiring both global corpus enablement and per-role `acceleration.corpus_retrieval=true`, and emitting structured `corpus_retrieval` log evidence for disabled, injected, slow-query, and error outcomes. Current hot roles remain `role_disabled`, so production prompts are not silently receiving snippets. A forced offline probe against `/mnt/raid0/llm/cache/corpus/v3_sharded` returned `6/6` successful queries, `17` snippets, average `2.83` snippets/query, p50 `0.331 ms`, p95 `298.016 ms`, and `usable_for_online_prompt_injection=true` under the 5s health threshold. This proves the index is alive and cheaply searchable, but it is health evidence only; the keep/delete decision still requires a corpus-on/off coding A/B with quality, latency, and acceptance-rate evidence before turning on role injection or reclaiming the disk. Sources: [corpus lookup handoff](../handoffs/active/corpus-augmented-prompt-lookup-revalidation.md), [progress 2026-07-03](../progress/2026-07/2026-07-03.md), `/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/corpus_health_probe_20260703T112521Z.json`.
 
 ### New (2026-06-22, context-assembler + stack-change guard tooling cross-refs)
 
@@ -133,6 +137,7 @@ Key capabilities: async Playwright-based crawling with browser pool management, 
 
 - [GitNexus codebase intelligence](../research/deep-dives/gitnexus-codebase-intelligence.md) -- 8-phase indexing pipeline, 7 MCP tools, hybrid search (BM25+semantic+RRF), Leiden clustering, confidence-scored edges, process-grouped results
 - [GitNexus orchestrator integration](../research/deep-dives/gitnexus-orchestrator-integration.md) -- 5 integration options ranked by ROI, context injection > tool calling insight, re-indexing strategy, KuzuDB direct query path
+- [corpus-augmented-prompt-lookup-revalidation.md](../handoffs/active/corpus-augmented-prompt-lookup-revalidation.md) -- 2026-07-03 A10 registry-loading repair, role-level corpus gate, structured evidence logging, and offline health-probe result for the local code corpus
 - [tool-output-compression.md](../handoffs/active/tool-output-compression.md) -- 7-handler output compression (60-90% savings), feature-flagged, layered before spill mechanism
 - [repl-turn-efficiency.md](../handoffs/active/repl-turn-efficiency.md) -- frecency file discovery, combined operations, contextual suggestions for REPL efficiency
 - [intake-269](https://github.com/nvk/llm-wiki) nvk/llm-wiki -- Claude Code plugin for LLM-compiled knowledge bases (adopt_patterns, high relevance)

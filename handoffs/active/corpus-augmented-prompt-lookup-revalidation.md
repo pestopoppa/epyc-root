@@ -1,6 +1,6 @@
 # Corpus-Augmented Prompt Lookup Revalidation
 
-**Status**: ACTIVE-HIGH, created 2026-07-03 from live-stack audit
+**Status**: ACTIVE-HIGH, CPL-1/2/3 advanced 2026-07-03; A/B decision still open
 **Parent index**: [inference-acceleration-index.md](inference-acceleration-index.md)
 **Priority**: high disk/capability ROI, below current G0/GPU and evidence-plane authority rows
 **Related**: [speculative-decoding-mtp-refresh.md](speculative-decoding-mtp-refresh.md), [model-stack-single-source-update-pipeline.md](model-stack-single-source-update-pipeline.md), archived [hybrid-lookup-spec-decode.md](../archived/hybrid-lookup-spec-decode.md), archived [llama-server-prompt-lookup.md](../archived/llama-server-prompt-lookup.md)
@@ -23,10 +23,16 @@ quarantined/deleted by explicit operator decision.
   `src/prompt_builders/builder.py:build_corpus_context()`,
   `src/api/routes/chat.py`, `src/api/routes/chat_pipeline/stream_adapter.py`,
   `src/graph/helpers.py`, and `src/api/routes/chat_delegation.py`.
-- Direct `build_corpus_context()` testing returned an empty string.
-- Likely wiring bug: `build_corpus_context()` imports `ModelRegistry`, but the
-  current registry module exposes `RegistryLoader`; the failure path silently
-  leaves the retriever disabled.
+- Direct `build_corpus_context()` testing returned an empty string before the
+  2026-07-03 repair.
+- 2026-07-03 repair: `build_corpus_context()` now resolves
+  `RegistryLoader(validate_paths=False)`, gates on the parsed per-role
+  `acceleration.corpus_retrieval` flag, emits structured log metadata for
+  disabled/injected/slow/error outcomes, and suppresses retrievals above the
+  configured slow-query threshold. The current live roles still return empty by
+  design because their parsed role flag is `false`; this prevents the global
+  `runtime_defaults.corpus_retrieval.enabled=true` from accidentally enabling
+  prompt injection everywhere.
 - Current `RegistryLoader(validate_paths=False)` reports
   `corpus_retrieval=False` for `frontdoor`, `coder_escalation`,
   `worker_general`, `architect_general`, and `ingest_long_context`, despite
@@ -34,22 +40,32 @@ quarantined/deleted by explicit operator decision.
 - Forced retrieval against `/mnt/raid0/llm/cache/corpus/v3_sharded` can return
   snippets, but one realistic query took about `29s` for 3 snippets; short
   low-overlap queries returned no snippets in about `0.36s`.
+- 2026-07-03 no-inference health probe artifact:
+  `/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/corpus_health_probe_20260703T112521Z.json`.
+  Warm-cache observation over 6 representative coding queries: `6/6` returned
+  snippets, `17` snippets total, `p50=0.331ms`, `p95=298.016ms`,
+  `candidate_count_total=27`, `failure_count=0`, and
+  `usable_for_online_prompt_injection=true` under a `5000ms` p95 threshold.
+  This is health evidence only; it does not prove quality or end-to-end speed.
 
 ## Prioritized Task List
 
-- [ ] **CPL-1: Fix or explicitly retire the wiring path, no inference.**
+- [x] **CPL-1: Fix or explicitly retire the wiring path, no inference.**
   Repair `build_corpus_context()` registry loading, make per-role
   `corpus_retrieval` resolution explicit, and add fail-visible diagnostics when
   corpus retrieval is disabled by config, missing index, import failure, or slow
-  query timeout.
-- [ ] **CPL-2: Add live observability.** Emit structured tap/log metadata when
+  query timeout. Done 2026-07-03 in orchestrator pending commit: current roles
+  fail visible as `role_disabled` rather than hidden import failure.
+- [x] **CPL-2: Add live observability.** Emit structured tap/log metadata when
   corpus snippets are injected: role, request/task id, index path, query n-grams,
   snippet count, context chars, retrieval latency, and timeout/failure reason.
   This must make "header only, no corpus" impossible to confuse with real use.
-- [ ] **CPL-3: Add a cheap offline health probe.** Provide a CLI probe over the
+- [x] **CPL-3: Add a cheap offline health probe.** Provide a CLI probe over the
   v3 sharded corpus that runs representative coding queries and reports
   p50/p95 latency, snippets returned, candidate counts, and whether the current
-  index is usable for online prompt injection.
+  index is usable for online prompt injection. Done 2026-07-03 via
+  `scripts/benchmark/corpus_health_probe.py` and focused tests; first report
+  artifact is listed above.
 - [ ] **CPL-4: Run a focused corpus-on/off A/B for coding tasks.** Compare
   corpus injection off vs on for `coder_escalation` and any intended cheap
   coding role. Capture latency, generated t/s, draft acceptance if available,
