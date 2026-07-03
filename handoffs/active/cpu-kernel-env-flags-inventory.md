@@ -28,21 +28,29 @@ This is a reference inventory, not an open-ended optimization queue. Treat it as
 
 **AMD perf-counter preflight (2026-07-03)**: `epyc-inference-research` commit
 `ad9b73a` adds `scripts/benchmark/perf_counter_preflight.py`, focused tests, and
-a `bench_canonical.sh --perf` binary guard. The preflight centralizes the Zen 5
+a `bench_canonical.sh --perf` binary guard. Research commit `515a50b` unblocks
+the current devcontainer by installing/exposing `linux-perf`, recognizing
+`perf list` alias rows such as `cpu-cycles OR cycles`, and refreshing the live
+preflight artifact to `status=ok`. The preflight centralizes the Zen 5
 canonical event set already used by `bench_canonical.sh`:
 `fp_ops_retired_by_type.vector_mac`, `fp_ops_retired_by_type.vector_all`,
 `fp_ops_retired_by_type.scalar_all`, `ls_dmnd_fills_from_sys.dram_io_all`,
 `ls_hw_pf_dc_fills.dram_io_all`, `cycles`, `instructions`, and `task-clock`.
 Current artifact
 `epyc-inference-research/data/cpu_optimization/2026-07-03-amd-perf-counter-preflight/summary.{json,md}`
-is **blocked** because the devcontainer exposes no `perf` binary; host state
-does have `perf_event_paranoid=1`. Before accepting any future roofline or
-counter-backed CPU claim, install/expose the matching `perf` tool and rerun:
+is **ok**: `/usr/bin/perf` is available, `perf_event_paranoid=1`, all canonical
+events are visible, and the smoke probe passed. A no-inference wrapper check
+also passed:
 
 ```bash
 cd /mnt/raid0/llm/epyc-inference-research
 python3 scripts/benchmark/perf_counter_preflight.py --probe --strict
+scripts/benchmark/bench_canonical.sh -m /mnt/raid0/llm/models/bge-large-en-v1.5-f16.gguf --perf --dry-run
 ```
+
+Before accepting any future roofline or counter-backed CPU claim, rerun the
+preflight on the measurement host/window and then run the relevant canonical
+perf bench under the `/workspace/MEASUREMENT.md` claim grammar.
 
 **Future upkeep**: when a role changes model, binary fork, or arch class, update this inventory, `stack_env.py`, `model-registry-v5-deployment-draft.yaml`, and the relevant stack handoff together. The push-rebase handoff was archived 2026-06-12 (`../completed/llama-cpp-kernel-push-rebase.md`); new kernel-deployment tasks go here or in the CPU index, not there.
 
