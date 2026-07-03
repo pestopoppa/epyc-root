@@ -2,8 +2,8 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-07-02
-**Sources**: 76+ documents
+**Last compiled**: 2026-07-03
+**Sources**: 78+ documents
 
 ## Summary
 
@@ -16,6 +16,12 @@ A second critical insight comes from AgentRxiv (intake-131): retrieval-augmented
 A convergent wave of research in April 2026 brought four significant upgrades to the autopilot infrastructure: GEPA evolutionary prompt optimization (intake-327/335, 35x more efficient than GRPO, works with 3 examples, compatible with local inference), dspy.RLM metadata-first context exploration, MiniMax M2.7-style self-evolution with short-term memory and self-criticism (intake-328/329), and Unsloth RLVR environment-first RL design (intake-320). All four are integrated as of 2026-04-12 (AP-18 through AP-25).
 
 ## Key Findings
+
+### New (2026-07-03, evidence-plane integrity is asymmetric + gradient-free ES is the one card-viable training path)
+
+- **The live evidence plane delivers its guarantee *asymmetrically*: the promotion path is safe by construction, the learning surface is not.** Promotion integrity is genuinely fail-closed (sequential e-process, combined E≥100 + forced fresh T2 draw + Hoeffding delta-CI + operator consent). But the learning surface has three cheaply-closable gaps: `seq_refuted` is consumed by **no learning exclusion** (a refuted candidate's passing trials remain distillable into the strategy store and retrievable into planner hints — re-injection is open), there is no multiplicity control across candidate fingerprints (the optimizer can mint unlimited fingerprints each with fresh α-wealth), and the W6 "gaming clear" was **re-based before it was re-earned** (12 pre-fence divergences were fenced out by an operator-plane timestamp no code governs, then honestly clean in-era). All three close with machinery already shipped — one exclusion enum, one wealth budget, one fence-governance rule. Sources: [findings-01 optimizer integrity](../handoffs/active/fable5-window2-findings-01-optimizer-integrity.md), [findings-00](../handoffs/active/fable5-window2-findings-00-executive-summary.md).
+- **W5 core_v2's 33/40 no-go is a *stale-era measurement*, not a mis-specified objective or a mis-built instrument.** The deterministic-sampling fix landed 11 days *after* the calibration batch; 88 infra errors were scored as flips; the estimator's resolution was below its own pass gate. Deeper: post-determinism, the same-seed-repeat-flip protocol is *structurally unable* to measure difficulty at all — so difficulty must be re-derived from the live ledger's item statistics at zero inference cost, and the 2026-06-15 calibration lineage demoted to prior. Source: [findings-01](../handoffs/active/fable5-window2-findings-01-optimizer-integrity.md).
+- **Gradient-free Evolution-Strategies is the only fine-tuning family the MI210 unlocks without a training-viability gate.** ES (ESSA / EGGROLL / ES-at-Scale, intake-564/563/532) needs only forward passes — no autograd, no flash-attn — so it sidesteps the "gfx90a training-viability [unverified]" gate that blocks every gradient fine-tune, and the MI210's batched-forward throughput is a viable population-eval accelerator. Adversarially demoted from a new handoff: it is mostly covered router-scoped in `learned-routing-controller`; the uncovered sliver is a *non-router* target, gated on (1) a held-out fitness oracle — NOT the live authority eval-tower, which is human-amendment-only and a Goodhart risk — and (2) a LoRA-SVD→GGUF reconstruction path that does not yet exist. Sources: [findings-05](../handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md), [learned-routing-controller.md](../handoffs/active/learned-routing-controller.md).
 
 ### New (2026-07-02, planner authority LIVE + reboot cutover + MI210 co-lead)
 

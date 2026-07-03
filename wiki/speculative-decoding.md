@@ -2,8 +2,8 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-07-02
-**Sources**: 46+ documents
+**Last compiled**: 2026-07-03
+**Sources**: 47+ documents
 
 > **2026-06-26 v6 cutover note (top-of-page banner).** The production EPYC inference stack was cut from a TWO-kernel setup (v5 llama.cpp + a SEPARATE ik_llama.cpp binary used ONLY by the gemma worker) onto ONE kernel: **production-consolidated-v6** (canonical tree `/mnt/raid0/llm/llama.cpp`). v6 = upstream llama.cpp framework + native MTP/NEXTN speculative decoding + our forward-ported CPU kernels + **ik_llama's iqk AVX-512 GEMM kernels** integrated into the fork (runtime-gated by env `GGML_IQK=1`). **ik_llama.cpp is FULLY DEPRECATED — no second binary.** The historical "Gemma 4 MTP Drafter" sections below (2026-05-06 → 2026-05-16) describe the now-superseded ik_llama PR #1744 path; they are preserved verbatim as the measurement/decision record and carry inline `2026-06-26 v6 cutover` notes pointing to the replacement mechanism. Cutover STATUS: "v6+iqk cutover executed 2026-06-26: registry/launcher/governance config converged (all no-inference gates green, 174 promotion-gate tests pass), canonical binary built; **live throughput + garbage verification PENDING** (operator deploy gate)." Do NOT read any number below as verified v6 production throughput. Tracking: [`handoffs/active/v6-iqk-promotion.md`](../handoffs/active/v6-iqk-promotion.md).
 
@@ -22,6 +22,12 @@ A promising new direction is calibration-based early exit (TIDE, intake-422/423)
 The current state of the art for our stack is not speculative decoding at all -- it is NUMA 4-way parallel serving (4 independent model instances on 48 threads each), which delivers 6.7x aggregate throughput on the frontdoor role. Speculative decoding provides incremental gains on top (+17-21% from draft_max tuning, +2-5% from tree branching on large dense targets) but is no longer the primary acceleration lever. The opening provided by REAP expert pruning is significant, however: REAP-25B is pure MoE (`qwen3moe` arch), meaning speculative decoding works where the hybrid frontdoor previously made it impossible.
 
 ## Key Findings
+
+### New (2026-07-03, α-measurement-first + DFlash promoted to an MI210 candidate)
+
+- **The first α(drafter→target) measurement is a zero-cost production log read, not a bench.** Every production role already runs MTP/NEXTN self-speculation, and the v6 servers print per-position acceptance stats — so "measure α before any spec-dec investment" (the standing gate) is satisfied for the self-MTP baseline by a `grep` of live logs (G0), before any GPU-drafter work. This reframes the drafter leg: the question is not "can we draft?" but "does an *external* drafter beat the self-MTP α already in production?" Sources: [findings-02 heterogeneous GPU](../handoffs/active/fable5-window2-findings-02-heterogeneous-gpu.md), [findings-05](../handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md), [gpu-drafter-mi200-investigation.md](../handoffs/active/gpu-drafter-mi200-investigation.md).
+- **DFlash is promoted from a "not-viable / same-deployment-wall" comparison to an explicit MI210/HIP candidate.** That wall was a *CPU* wall (recurrent/diffusion draft verification is expensive on CPU); on the MI210 the draft path runs on GPU with parallel scan, so the verification bottleneck disappears — the same reason `gpu-acceleration-path` revives DFlash/DDTree. Two forks: the deep-dive's O(1)-drafting port, and a HIP re-scope of the lucebox `llama.cpp-dflash-ggml` tree (currently CUDA-pinned). Still α-gated (G0 gives the baseline free); our own DFlash C++ forward pass is already verified correct to <0.01, so the algorithm was never the blocker; [unverified] that the reference kernels build on ROCm. Sources: [speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md), [dflash deep-dive](../research/deep-dives/dflash-dart-diffusion-speculation.md), [lucebox deep-dive](../research/deep-dives/lucebox-hub-consumer-gpu-dflash.md).
+- **A custom gfx90a dequant kernel helps spec-dec only for a batch-1 *latency* drafter.** Per the roofline synthesis (see hardware-optimization.md), the quantized-decode dequant gap is compensated by batched serving for throughput roles; a hand-authored Q4_K dequant-GEMV kernel earns its keep only where a GPU drafter runs at batch-1. Source: [findings-05](../handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md).
 
 ### New (2026-07-02, MI210 landing — GPU-side spec-dec verified + MTP refresh + Qwen MTP port)
 
