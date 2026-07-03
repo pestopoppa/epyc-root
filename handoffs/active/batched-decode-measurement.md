@@ -1,6 +1,6 @@
 # Batched-Decode Measurement (E1/E2) + Conditional 8x8 GEMM SIMD (E3)
 
-**Status**: IN PROGRESS — A3B E1 and E2 decision-grade evidence landed 2026-07-03; E2 is a keep-candidate for an eval-batch serving class; dense-control E1 remains unresolved/re-scoped
+**Status**: IN PROGRESS — A3B E1 and E2 decision-grade evidence landed 2026-07-03; E2 is a keep-candidate for an eval-batch serving class; shadow metadata/feature-gate prerequisite landed; dense-control E1 remains unresolved/re-scoped
 **Created**: 2026-06-12
 **Priority**: ACTIVE-HIGH — bench-only, ~1 day for E1+E2; rank 2 in the findings-06 "what remains" table; an evidence vacuum under the highest-volume workload (the eval harness)
 **Spec**: [fable5-findings-06-kernel-and-concurrency.md](../completed/fable5-findings-06-kernel-and-concurrency.md) §2 (E1/E2/E3) + [MEASUREMENT.md](../../MEASUREMENT.md) P-BENCH-3 — read both before claiming any waypoint
@@ -19,7 +19,7 @@ names "eval pipelines"; the trigger has been satisfied for weeks. The batch>1
 ## Waypoints
 
 - [ ] **E1 — CPU14 at last** (half day, quiesce window): one instance, `-np {1,2,4,8,16}`, fixed question batch, on (a) frontdoor Qwen3.6-A3B and (b) a dense control; measure aggregate tasks/hour + per-stream p50/p95 latency per MEASUREMENT.md P-BENCH-3. Acceptance: claims filed with protocol id + attest ref; saturation point identified per model. **2026-07-03 update**: A3B arm is complete and decision-grade; dense control was stopped before a summary row after diagnostic logs showed about `0.59` generated tok/s on long responses, so the dense-control requirement is still open/re-scope-only.
-- [x] **E2 — eval-driver A/B** (half day, same window): one T1 eval (43 questions) against a single full instance with `-np 8` continuous batching vs the current 3-concurrent-across-quarters path; metric = wall-minutes/eval (= statistical power per day, per findings-01). Acceptance: the batch serving class is priced; keep-or-kill recommendation for an eval-batch instance set recorded.
+- [x] **E2 — eval-driver A/B** (half day, same window): one T1 eval (43 questions) against a single full instance with `-np 8` continuous batching vs the current 3-concurrent-across-quarters path; metric = wall-minutes/eval (= statistical power per day, per findings-01). Acceptance: the batch serving class is priced; keep-or-kill recommendation for an eval-batch instance set recorded. **2026-07-03 update**: orchestrator `7cb71a4e` landed the default-off `eval_batch_serving` feature flag plus explicit EvalTower request metadata (`workload_class=eval_batch`, shared batch id, background priority) so future telemetry can distinguish eval batches before any execution routing flip.
 - [ ] **E3 — 8x8 GEMM SIMD body** (days, CONDITIONAL): ONLY IF E1 shows intermediate batch leaves per-thread-BW unsaturated — write the AVX-512BW batch>1 GEMM body for the existing dispatcher slot (`arch/x86/repack.cpp:1563-1566`, currently scalar fallback), re-run E1. Work lands under [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md). Acceptance: E1 delta with kernel on/off, canonical protocol.
 - [ ] **E4 — conditional re-promotions** (doc-only first): if E1/E2 confirm the regime, re-promote CPU17 chunked-prefill (the 9.6× rep-1 TTFT amplification is the eval class's pathology) and CPU18 MegaBlocks per their own reopen clauses — both name "eval pipelines". Acceptance: index rows flipped with the E1/E2 evidence cited, or explicitly re-closed.
 
@@ -139,12 +139,38 @@ The generated A/B summary is decision-grade and records `status=keep_candidate`:
   reliability `1.000`, aggregate speed `43.867` t/s.
 - comparison: batch arm is `4.858x` faster by wall-minutes/eval.
 
-Next action: define the production eval-batch serving class and routing hook
-behind a conservative feature flag, then re-run representative quality/eval
-telemetry before changing the default AutoPilot eval path. E3 remains
-conditional: do not start the 8x8 GEMM SIMD body solely from this result; the
-A3B E1 table shows throughput saturation but the winning E2 wall-time result is
-primarily a serving/topology opportunity.
+Next action: add the actual dedicated eval-batch serving endpoint/launcher shape
+and guarded execution hook behind the already-landed `eval_batch_serving` flag,
+then re-run representative quality/eval telemetry before changing the default
+AutoPilot eval path. E3 remains conditional: do not start the 8x8 GEMM SIMD body
+solely from this result; the A3B E1 table shows throughput saturation but the
+winning E2 wall-time result is primarily a serving/topology opportunity.
+
+### 2026-07-03 — Eval-batch metadata gate
+
+Orchestrator `7cb71a4e` landed the first conservative A7 hook stage without
+changing evaluator execution:
+
+- `src/features.py` declares `eval_batch_serving`, default-off in both tests and
+  production, exposed through the existing runtime flag/config attestation path.
+- `scripts/autopilot/eval_tower.py` stamps each `_eval_batch()` with one shared
+  `evaltower-<label>-<timestamp>-<n>q` id and sends requests through
+  `call_orchestrator_forced()` with `request_priority=background`,
+  `workload_class=eval_batch`, and `batch_id=<shared id>`.
+- `scripts/benchmark/seeding_orchestrator.py` accepts optional
+  `request_priority`, `workload_class`, and `batch_id` fields while preserving
+  legacy background-priority behavior for existing callers.
+
+GitNexus impacts before edit: `call_orchestrator_forced` HIGH
+(`impactedCount=17`, `processes_affected=4`) and `EvalTower._eval_batch` HIGH
+(`impactedCount=24`, `processes_affected=1`), so the main thread handled it.
+Validation: `102 passed` for the focused seeding/EvalTower/features/runtime flag
+slice, focused Ruff clean, py_compile clean, and `git diff --check` clean.
+
+This does **not** yet route EvalTower to a single `-np 8` server. The live stack
+does not expose a dedicated eval-batch endpoint/launcher shape yet, so the next
+implementation must add that explicitly behind `eval_batch_serving` before any
+default path changes.
 
 ## Gates & pitfalls
 
