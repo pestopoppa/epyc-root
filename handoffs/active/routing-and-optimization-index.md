@@ -359,6 +359,10 @@ across mixed source families to `523` livecodebench-only pairs and remove
 eligible independent holdouts. Do not overwrite the broad artifact with that
 manifest as a generic refresh; use a separate candidate-only artifact name if
 that diagnostic is needed before the guarded source-acquisition window.
+Orchestrator `e69e22dc` makes that rule executable: candidate-only manifests
+cannot overwrite known broad pairwise contract outputs unless explicitly
+overridden, and the expanded-gap post-collection recipe now emits
+`candidate_only_expanded_gap` artifacts with `--artifact-scope candidate_only`.
 
 ### 8. Conversation Mgmt B2 ↔ Context Folding Phase 1
 `orchestrator-conversation-management.md` B2 (protected-zone compression from Hermes/OpenGauss) and `context-folding-progressive.md` Phase 1 (two-level condensation) both modify session compaction behavior. They must be sequenced — context-folding Phase 1 should land first as the structural upgrade, then B2's protected-zone logic can layer on top. Alternatively, B2's tool-pair sanitization (`_sanitize_tool_pairs()`) could be extracted as a standalone prerequisite for both. **Updated 2026-04-05**: Context-folding Phase 3b (role-aware compaction profiles) must align with B2's role taxonomy — the `CompactionProfile` roles must match the conversation management role definitions. **Updated 2026-04-05 (session 4)**: `CompactionProfile` roles now defined (`architect`, `worker_coder`, `worker_general`, `worker_fast`) with `get_compaction_profile()` in `session_log.py`. B2 can now reference these profiles directly. `segment_helpfulness()` + `prioritized_compaction()` available as building blocks for B2's protected-zone logic.

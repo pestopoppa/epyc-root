@@ -7,8 +7,9 @@ enforcement, and representative frontdoor/worker/vision swap-CI coverage are
 live. The `launch_maps` high-risk P2 surface is now explicitly guarded:
 generated priors cover live llama launch entries, covered aliases are accepted
 only when their primary role has a live prior record, and manifest-owned
-auxiliary launch targets (`embedder*`, warm `worker_fast`) are classified in
-the stack-change validator. Dashboard expected-stack topology now also labels
+auxiliary launch targets (`embedder*`, warm `worker_fast`, and launcher-only
+`eval_batch_frontdoor`) are classified in the stack-change validator. Dashboard
+expected-stack topology now also labels
 manifest-owned warm embedder recipes (`8096/8097/8098`) by their auxiliary
 roles instead of anonymous port names. WorkerPool now consumes stack-prior
 primary ports and server-mode launch paths through the generated artifact, with
@@ -179,6 +180,12 @@ unowned local constants.
   stack-prior source hashes to the current launcher commit. Validation:
   `stack_change_pipeline.py check` returned `summary: ok`, the hardcoded-surface
   guard passed, and the no-inference promotion-gate slice passed `179` tests.
+- 2026-07-03 follow-up `8524096b` classifies launcher-only
+  `eval_batch_frontdoor` as a manifest-owned warm auxiliary using `mode=default`
+  without adding it to active-role registry compilation. The canonical
+  stack-change update refreshed descriptor/stack-prior source hashes and
+  `current_stack_summary.md`; `stack_change_pipeline.py check --run-promotion-gate`
+  returned `summary: ok` with `181` promotion-gate tests passing.
 
 ### 2026-06-27 Config Catalog Re-Audit
 

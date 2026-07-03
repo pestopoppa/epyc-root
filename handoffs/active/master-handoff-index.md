@@ -63,6 +63,10 @@ while independent holdout worsens to `5/9` passing and `thinking` still fails.
 Runtime gate changes remain disallowed. Next A9 work is new/better
 `seeding_eval` evidence or a materially different pairwise feature/stratified
 design; do not route downstream on either expanded artifact yet.
+Orchestrator `e69e22dc` makes the candidate-only diagnostic path explicit:
+candidate-only manifests cannot overwrite broad pairwise contract artifacts by
+default, and expanded-gap post-collection rebuilds now write
+`candidate_only_expanded_gap` outputs.
 Current seeding source paths are not merely misconfigured: after exclusions,
 they leave only frontdoor-family groups, so `seeding_eval` repair needs new
 cross-action seeding evidence. The 2026-06-27 audit-target planner now consumes
