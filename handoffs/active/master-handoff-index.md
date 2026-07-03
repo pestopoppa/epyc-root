@@ -164,7 +164,7 @@ A full review of all active + blocked handoffs (108 classified rows; raw verdict
 | GLM-5.2 large-MoE elevation (added 2026-06-20; DSA-gated; storage gate ~633 GB raid0 free, escapable via IQ2 ~238 GB; see [inference-acceleration-index.md](inference-acceleration-index.md)) | DSA #21149 maturation + raid0 free-space gate |
 | Operator-decision-only: deepseek-v4 D1/D2/D3, launcher --numa-mode default, halo-engine install, δ-mem Phase-2 go, glm51 Phase-0 disposition, qwen36-27b curiosity probe, sliders Phase-0 (K7-triggered), swarm-distillation (Strand Phase-B bands), agent-world AW-6/7/8 | named per row |
 | sarathi-serve | workload-shift gate — **flag to the E1/E2 executor: the batched-eval regime IS this gate's trigger; expect it to fire** |
-| internal-interaction-lifecycle P1→J17 | P1 code landed in orchestrator `18956892`; wait for P1 regression bake + contention bake before P2/J17 |
+| internal-interaction-lifecycle P1→J17 | P1 code landed in orchestrator `18956892`; bake counter emission landed/deployed in orchestrator `02a01617`; wait for ≥48h clean P1 regression/contention bake before P2/J17 |
 
 ### Generated Capability A-by Table
 
