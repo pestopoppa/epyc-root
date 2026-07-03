@@ -8,7 +8,7 @@
 
 ## Objective
 
-Adopt Agent-World's autonomous environment + task synthesis (Environment-Task Discovery) as the 5th species in the EPYC autopilot loop. Phase 1 is training-free and CPU-feasible today: LLM-orchestrated exploration of databases and MCP tool ecosystems to synthesize verifiable tasks with controllable difficulty, feeding them as new benchmark suites into AR-3. Phase 2 is GPU-gated and deferred to DGX Spark — multi-environment GRPO training of the co-evolving policy.
+Adopt Agent-World's autonomous environment + task synthesis (Environment-Task Discovery) as the 5th species in the EPYC autopilot loop. Phase 1 is training-free and CPU-feasible today: LLM-orchestrated exploration of databases and MCP tool ecosystems to synthesize verifiable tasks with controllable difficulty, feeding them as new benchmark suites into AR-3. Phase 2 is GPU training — multi-environment GRPO of the co-evolving policy; the GPU now exists (**MI210, gfx90a, 64 GB, installed 2026-07-02** — not the never-acquired DGX Spark), but Phase 2 stays **downstream-gated on Phase 1** (still stub/CPU-training-free) and on a gfx90a GRPO-viability smoke [unverified]. A single MI210 is well below the paper's 8×B200 training scale, so scope Phase 2 as a *small-model reproduction* probe, not a full retrain.
 
 ## Research Context
 

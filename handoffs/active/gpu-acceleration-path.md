@@ -4,7 +4,7 @@
 **Created**: 2026-04-10 (via research intake deep-dive)
 **Updated**: 2026-04-21 (no GPU acquired; vLLM DDTree+Dflash plan still current) — **MI210 INSTALLED 2026-07-02: HIP build verified on gfx90a, first GPU benchmarks in (see [gpu-drafter-mi200-investigation.md](gpu-drafter-mi200-investigation.md) § 2026-07-02 Advancement + [../../progress/2026-07/2026-07-02-mi210.md](../../progress/2026-07/2026-07-02-mi210.md))**
 **Categories**: hardware_optimization, inference_serving, moe_optimization, speculative_decoding
-**Priority**: LOW (activates when GPU hardware is acquired)
+**Priority**: ACTIVE (MI210 installed 2026-07-02 — the acquisition trigger fired; GPU work is no longer gated). Sequencing per fable5-window2-findings-02 (fleet placement): frontdoor residency + eval-engine (one migration) → embedder/vision host → op-offload prefill → drafter farm.
 **Workstream**: Future
 **Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
 **Related**: [`llama-cpp-v3-upstream-rebuild.md`](../completed/llama-cpp-v3-upstream-rebuild.md) (HIP build path), [`kv-cache-quantization.md`](../completed/kv-cache-quantization.md) (GPU KV strategy)
@@ -13,7 +13,7 @@
 
 ## Status as of 2026-04-21
 
-Backburner — no GPU hardware acquired (DGX Spark / RX 7900 XTX / alternate path). Plan of record is vLLM DDTree+Dflash spec-dec on CPU+GPU hybrid MoE when hardware lands (community benchmark 91 tok/s on GB10, added 2026-04-15). Activation trigger unchanged: acquisition of training-capable GPU. Per `project_dgx_spark_target` memory: DGX Spark external benchmark files are compiled reference data, not local measurements.
+**SUPERSEDED 2026-07-02 — the DGX Spark plan-of-record below never happened; the MI210 (discrete gfx90a, PCIe4, 64 GB HBM2e) is the actual GPU.** The entire "DGX Spark Target" section that follows describes a machine we did NOT buy (unified-memory GB10) and is retained only as reference — its central premise (no PCIe transfer because unified memory) is **false for the MI210**, which is a discrete card with a real PCIe4 x16 (~64 GB/s H2D) boundary. Current plan of record = **fleet placement on the MI210** per [fable5-window2-findings-02-heterogeneous-gpu.md](fable5-window2-findings-02-heterogeneous-gpu.md): everything but the 122B architect fits in 64 GB HBM, and the fork already ships the needed flags (`-devd/-ngld/-otd`, `-ot/-ncmoe`, op-offload; GDN-on-HIP verified clean). The first measurement is a **zero-cost production log read** of the MTP acceptance lines every role already prints (findings-02 M0), then **Gate R** (frontdoor residency bench under P-GPU-1). Open MI210-retargeted probes surfaced by the 2026-07-03 intake sweep: **intake-310** (does `-ot exps=CPU`/`--n-cpu-moe` hybrid MoE offload beat CPU-only on this card?), **DFlash/DDTree HIP re-scope** (lucebox-hub deep-dive — the CUDA/DGX pin is stale; MI210=ROCm), **Splitwise GPU-prefill/CPU-decode with KV handoff** (intake-460 → findings-02 Family D op-offload prefill), **Nemotron tri-mode diffusion self-spec via torch-ROCm** (intake-576, [unverified], 8B fits 64 GB). Per `project_dgx_spark_target` memory: the DGX Spark benchmark files below are compiled external reference data, not local measurements — and the box was never acquired.
 
 ## Objective
 

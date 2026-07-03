@@ -3,7 +3,7 @@
 **Status**: REFRESHED 2026-05-28 — production via sd-server Q8 + conv-direct; active only for operational QA and GPU/Spark rebench
 **Created**: 2026-05-06 (via research intake)
 **Updated**: 2026-05-28 (executor-facing remaining-work gate clarified)
-**Priority**: MEDIUM — operational. Remaining latency (~3 min @ 1024²) acceptable for non-interactive use; Spark/GPU is the next big lever (~10-20× free).
+**Priority**: MEDIUM — operational. Remaining latency (~3 min @ 1024²) acceptable for non-interactive use; **the GPU rebench lever (~10-20× est) is now UNBLOCKED — the MI210 (gfx90a, 64 GB) landed 2026-07-02** (the "Spark/GPU next big lever" gate fired). Runnable: build sd-server/ComfyUI on the ROCm/HIP path and rebench the 8-step distilled DiT on the MI210 (operator-approved; no published gfx90a numbers exist, so this is a measure-not-extrapolate task). Sequence behind the frontdoor-residency GPU program (findings-02) — image-gen is a latency-tolerant tenant, not a residency competitor.
 **Categories**: multimodal, quantization, local_inference
 
 ## Objective
@@ -54,7 +54,7 @@ Recommended next slice:
 | End-to-end through real Hermes registry | ✅ done | Verified 2026-05-06: `discover_plugins()` auto-discovers our plugin, `image_generate` handler resolves to `hermes_plugins.local_image_generate._handle_image_generate` (NOT FAL), invocation produces a saved PNG end-to-end. Test artifact at `/mnt/raid0/llm/output/images/2026-05-06/d7da4364-7781-4ca7-9906-b91f92232920.png`. |
 | **Backend swapped: ComfyUI → sd-server (stable-diffusion.cpp native ggml)** | ✅ done 2026-05-07 | Discovered upstream sd.cpp already ships full ERNIE-Image-Turbo support (`src/ernie_image.hpp`, 441 lines). Built sd-server, replaced ComfyUI in stack. Measured **2.54× wall-clock speedup** at production scale (~188 s vs 478 s @ 1024² 8 steps extrapolated). `--vae-conv-direct` was the high-ROI flag (7.1× on VAE alone). Hermes plugin chain unchanged — `ImageGenerator` interface preserved, internals swapped to `SDServerClient`. Old ComfyUI infra retained for rollback at `/mnt/raid0/llm/comfyui-ernie-test/`. |
 | Distilled-model quantization-penalty hypothesis verified | ✅ done 2026-05-07 | Q4_K_M A/B at 832×1248 8 steps, same prompt + seed. **Penalty real**: 17% wall-clock win comes with visible Korean-text-rendering corruption on the model's signature differentiator. Q8 stays as production point. Q4 file deleted post-test. Deep-dive §4.4 hypothesis empirically confirmed. |
-| GPU host available | ❌ blocked | DGX Spark GB10 not yet acquired — see `gpu-acceleration-path.md`. CPU is functional at ~3 min/image at 1024² post-swap (down from ~8 min on ComfyUI baseline). |
+| GPU host available | ✅ MI210 (2026-07-02) | The DGX Spark was never acquired; the **MI210 (gfx90a, 64 GB HBM2e)** is the GPU — see `gpu-acceleration-path.md`. GPU rebench of the DiT is now runnable via the ROCm/HIP path (operator-approved). CPU remains functional at ~3 min/image at 1024² post-swap. |
 
 ## Remaining Operational Questions
 
