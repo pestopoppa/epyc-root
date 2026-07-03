@@ -1,6 +1,6 @@
 # Brief: Drop `-md <same-file>` double-load for embedded-NEXTN roles
 
-**Current owner/status (2026-07-03):** handed off by the MI210 session to the CPU/RAM orchestrator lane. The launch-code fix, live reload, post-reload acceptance evidence, and memory-delta evidence are complete; only the quiet-window same-workload decode A/B remains open.
+**Current owner/status (2026-07-03):** handed off by the MI210 session to the CPU/RAM orchestrator lane. The launch-code fix, live reload, post-reload acceptance evidence, memory-delta evidence, post-reboot audit, legacy-backend guard, and quiet-window same-workload decode A/B are complete. The CPU A/B closed mixed: memory improved materially, but the no-`-md` embedded path was slower than same-file `-md` under the throwaway `/completion` harness.
 **Original target:** a separate CPU / orchestrator session (execute directly).
 **Type:** production launch-config fix. No GPU, no new inference required to *decide* the fix — but you MUST measure to *verify* it.
 **Repo edited:** `epyc-orchestrator` (launch-config / arg builder). This brief lives in `epyc-root` (`handoffs/active/`).
@@ -34,8 +34,8 @@ MI210, Qwen3.6-27B-MTP-Q8_0:
 The code path is backend-agnostic, so CPU takes the same branch.
 
 **Honest nuance you MUST carry (do not overstate):**
-- The **performance** cost (expensive full-model drafting negating MTP) is **certain and backend-independent**.
-- The **RAM-doubling** is certain on GPU (separate HBM alloc). On **CPU it depends on mmap**: same file loaded twice **may share the mmap page cache** (→ little/no extra resident RAM), whereas `--no-mmap`/`--mlock` forces two distinct resident copies (→ true 2×). **VERIFY the actual resident-RAM delta on CPU — do not assume 2×.**
+- The **GPU performance** cost is measured and backend code-path evidence still shows same-file `-md` takes the separate draft branch. The **CPU performance** claim is not positive: the quiet-window CPU A/B below found embedded no-`-md` slower in this harness despite identical draft acceptance.
+- The **RAM-doubling** is certain on GPU (separate HBM alloc). On **CPU it depends on mmap**: same file loaded twice **may share the mmap page cache** (→ little/no extra resident RAM), whereas `--no-mmap`/`--mlock` forces more resident pressure. The CPU measurements below show a real PSS reduction, but not a full model-size PSS drop in the throwaway harness.
 
 ## Which roles (critical scoping)
 
@@ -64,7 +64,7 @@ Apply via `orchestrator_stack.py` and **reload to apply** (per stack lifecycle r
 1. **pipeline-green.**
 2. **role actually starts.**
 3. **live == config** — `ps`-confirm the launched args for the affected role **no longer carry `-md <same file>`** (cross-ref the "verify live affinity/config, not just topology hash" memory).
-4. **measure the win** — the role should now show **real MTP draft-acceptance stats** + a **decode speedup**; **resident RAM should drop — verify the ACTUAL delta** (mmap-shared may show little CPU RAM change; that's fine, the perf win still holds). Output must stay **coherent**. Test via the **autopilot eval fan-out path, NOT `/chat`**.
+4. **measure the effect** — the role should show **real MTP draft-acceptance stats**; resident RAM should drop or at least duplicate mapping pressure should be reduced; decode speed must be measured, not assumed. Output must stay **coherent**. Test via the **autopilot eval fan-out path, NOT `/chat`**, for live acceptance, and use the throwaway A/B harness for same-prompt comparison.
 
 Cross-reference: stack-change three-gates (pipeline-green ≠ starts ≠ live==config).
 
@@ -74,7 +74,7 @@ Cross-reference: stack-change three-gates (pipeline-green ≠ starts ≠ live==c
 
 ## Expected win
 
-Unlocks the real MTP self-spec speedup currently being negated (~the +15.6% class on GPU; **CPU magnitude TBD by measurement**), and frees up to ~one model-size of RAM per affected role (frontdoor ~38 GB, architect ~78 GB **IF not mmap-shared**) — material on the RAM-pressured host.
+Unlocks the real MTP self-spec speedup on GPU (~the +15.6% class measured on MI210) and frees host memory pressure by removing duplicate same-file draft mappings. On CPU, the same-workload A/B measured a memory win but no speed win; keep the production no-`-md` path for duplicate-load hygiene unless later representative eval-fanout evidence proves a throughput regression large enough to justify restoring same-file `-md`.
 
 ## Implementation status — 2026-07-03
 
@@ -148,7 +148,7 @@ Resident-memory delta was measured from the durable before/after process snapsho
 - Affected Qwen total: RSS `-276146.7 MiB` (~`269.7 GiB`), PSS `-21322.7 MiB` (~`20.8 GiB`).
 - Gemma separate-draft control stayed flat: RSS `+216.8 MiB`, PSS `+217.0 MiB`.
 
-Interpretation: the launch fix is live, embedded NEXTN remains active without `-md`, and the duplicate same-file mapping was materially reduced. The PSS delta is the better host-pressure estimate; the larger RSS delta mostly captures duplicate mappings counted per process. A decision-grade throughput speedup ratio remains open because the pre-fix same-file logs were not preserved as a matched workload. The next clean-window task is a controlled same-prompt A/B (`same-file -md` vs no-`-md`) on a single Qwen role or throwaway server, without contaminating AutoPilot evidence windows.
+Interpretation: the launch fix is live, embedded NEXTN remains active without `-md`, and the duplicate same-file mapping was materially reduced. The PSS delta is the better host-pressure estimate; the larger RSS delta mostly captures duplicate mappings counted per process. A decision-grade throughput speedup ratio was still open at this point because the pre-fix same-file logs were not preserved as a matched workload; the later quiet-window A/B below closes that tail as mixed/negative for CPU throughput.
 
 ## Verification-tail harness — 2026-07-03
 
@@ -187,7 +187,18 @@ After operator clarification that this CPU/RAM lane owns the MI210 session's doc
 
 After the host reboot and stack restart, the CPU/RAM lane re-audited live `llama-server` command lines. Result: `same_file_md_count=0` across all current spec processes. The five Qwen3.6 frontdoor processes (`8070`, `8080`, `8180`, `8280`, `8380`) and the Qwen3.5 architect process (`8083`) run `--spec-type draft-mtp --spec-draft-n-max 4` with no `-md`; the five Gemma worker processes (`8072`, `8082`, `8182`, `8282`, `8382`) still correctly keep `-md /mnt/raid0/llm/models/gemma-4-26B-A4B-it-assistant-v6-Q8_0.gguf` because that is a separate assistant-head draft.
 
-This confirms the reboot did not regress the production launch fix. The remaining open item is unchanged: a quiet-window matched decode A/B via `scripts/benchmark/md_self_draft_ab.py` before claiming a decision-grade throughput speedup ratio.
+This confirmed the reboot did not regress the production launch fix. At this point the remaining open item was the quiet-window matched decode A/B via `scripts/benchmark/md_self_draft_ab.py`; the following section records that closeout.
+
+## Quiet-window matched decode A/B — 2026-07-03
+
+AutoPilot was paused and allowed to finish trial `1092` cleanly before measurement; it entered the paused loop at trial `1093`. The orchestrator API was also reloaded in the same quiet window to activate already-committed dashboard/backend changes: new API PID `1952555`, `dashboard/api/health` returned `status=ok`, and `orchestrator_stack.py status` showed the fleet healthy.
+
+Two throwaway Qwen3.6-35B CPU `/completion` A/B runs were recorded in `epyc-orchestrator` commit `e846b165`:
+
+- `orchestration/reports/md_self_draft_ab_20260703T180027Z/summary.{json,md}`: default mmap, 3 measured reps after 1 warmup. Result `embedded_self_draft_slower`; embedded/no-`-md` median `37.590` t/s vs same-file `-md` median `39.216` t/s, ratio `0.9586`. Embedded saved `4372.96` MiB load PSS. Draft acceptance was identical across arms: token alpha `0.7910`.
+- `orchestration/reports/md_self_draft_ab_20260703T180149Z/summary.{json,md}`: production-shaped `--mlock`, 8 measured reps after 2 warmups. Result `embedded_self_draft_slower`; embedded/no-`-md` median `34.815` t/s vs same-file `-md` median `36.194` t/s, ratio `0.9619`. Embedded saved `4368.31` MiB load PSS. Draft acceptance was identical across arms: token alpha `0.7944`.
+
+Conclusion: CPU duplicate-load hygiene and memory-pressure reduction are real, but CPU decode throughput did **not** improve in this harness. Do not claim a CPU speedup from dropping same-file `-md`. Keep Gemma's separate assistant-head `-md` untouched. If future production eval-fanout telemetry shows a sustained Qwen throughput regression from the no-`-md` path, the rollback is narrow: restore same-file `-md` only for the affected embedded-NEXTN CPU role and remeasure memory/throughput together.
 
 ---
 
@@ -204,5 +215,5 @@ This confirms the reboot did not regress the production launch fix. The remainin
 - [x] Record reload results in `progress/`; if all green, ask operator before touching `master-handoff-index.md`.
 - [x] Measure: representative post-reload MTP acceptance and resident-RAM delta via live AutoPilot/eval traffic and durable before/after process snapshots.
 - [x] Guard adjacent legacy `LlamaCppBackend._build_command()` against re-emitting same-file `-md`; keep separate draft heads unchanged.
-- [ ] Controlled same-workload decode speedup A/B: run `scripts/benchmark/md_self_draft_ab.py` in a quiet window; compare same-file `-md` versus embedded no-`-md` on the throwaway Qwen server artifact.
+- [x] Controlled same-workload decode speedup A/B: run `scripts/benchmark/md_self_draft_ab.py` in a quiet window; compare same-file `-md` versus embedded no-`-md` on the throwaway Qwen server artifact.
 - [x] No rollback triggered by smoke checks or post-reload acceptance evidence.
