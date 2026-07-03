@@ -75,14 +75,25 @@ Cross-reference: stack-change three-gates (pipeline-green ≠ starts ≠ live==c
 
 Unlocks the real MTP self-spec speedup currently being negated (~the +15.6% class on GPU; **CPU magnitude TBD by measurement**), and frees up to ~one model-size of RAM per affected role (frontdoor ~38 GB, architect ~78 GB **IF not mmap-shared**) — material on the RAM-pressured host.
 
+## Implementation status — 2026-07-03
+
+Code fix landed in `epyc-orchestrator` commit `5b4d8147` (`Drop redundant self-draft model args`), pushed to `spec-dec-mtp-refresh-2026-06-22`.
+
+- `scripts/server/orchestrator_stack.py` now emits `-md` only when `realpath(draft_model_path) != realpath(model_path)` while preserving `--spec-type draft-mtp` / `--spec-draft-n-max` for embedded NEXTN.
+- `scripts/server/stack_commands.py` accepts embedded NEXTN launches with `--spec-type` and no `-md` as attestation-clean, but still warns when a separate draft-head role omits `-md`.
+- Focused live-registry command smoke: `frontdoor` and `architect_general` build with `has_md=False`, `spec_type=draft-mtp`, `draft_max=4`; `worker_general` still builds with `-md /mnt/raid0/llm/models/gemma-4-26B-A4B-it-assistant-v6-Q8_0.gguf`.
+- Validation: `uv run pytest -q tests/unit/test_build_server_command_helpers.py tests/unit/test_orchestrator_stack_reload.py` (`79 passed`); focused Ruff safety checks; `python3 -m py_compile`; `git diff --check`.
+
+Not yet applied live. Next gate is a quiet-window reload plus live `ps`/acceptance/RSS verification.
+
 ---
 
 ## Steps (checklist)
 
-- [ ] `grep` `epyc-orchestrator/scripts/server/` (+ `model_registry`) for `-md` / `--model-draft` / `spec_draft` / `draft` emission on NEXTN roles.
-- [ ] Identify the lever (per-role registry field vs launch-map branch).
-- [ ] Make `-md` conditional: drop it when `realpath(-md) == realpath(-m)`; keep it otherwise.
-- [ ] Confirm gemma worker `:8072` still keeps its separate-head `-md`.
+- [x] `grep` `epyc-orchestrator/scripts/server/` (+ `model_registry`) for `-md` / `--model-draft` / `spec_draft` / `draft` emission on NEXTN roles.
+- [x] Identify the lever (per-role registry field vs launch-map branch).
+- [x] Make `-md` conditional: drop it when `realpath(-md) == realpath(-m)`; keep it otherwise.
+- [x] Confirm gemma worker `:8072` still keeps its separate-head `-md`.
 - [ ] Start with **frontdoor `:8070`** only, in a quiet window; reload via `orchestrator_stack.py`.
 - [ ] Gate 1: pipeline-green. Gate 2: role starts. Gate 3: `ps` shows no `-md <same file>`.
 - [ ] Measure: MTP acceptance stats present, decode speedup, resident-RAM delta (verify actual), output coherent — via autopilot eval fan-out.
