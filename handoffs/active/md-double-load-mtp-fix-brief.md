@@ -86,6 +86,21 @@ Code fix landed in `epyc-orchestrator` commit `5b4d8147` (`Drop redundant self-d
 
 Not yet applied live. Next gate is a quiet-window reload plus live `ps`/acceptance/RSS verification.
 
+## Pre-reload live baseline — 2026-07-03
+
+Durable before snapshot landed in `epyc-orchestrator` commit `a8a94563`:
+
+- `orchestration/reports/md_self_draft_preflight_20260703T140312Z.{json,md}`
+- `orchestration/reports/md_self_draft_preflight_20260703T140312Z_affinity.json`
+
+The report counts unique live PIDs (state aliases are recorded separately):
+
+- `11` live spec processes.
+- `6` same-file `-md` processes still live: `5` frontdoor/Qwen3.6 instances plus `1` architect/Qwen3.5 instance.
+- `5` Gemma worker processes correctly still use a separate assistant-head `-md`.
+
+Smallest deployment target remains `orchestrator_stack.py reload frontdoor`; this bounces the shared `8070` path (`frontdoor`, `coder_escalation`, `worker_summarize`). Do this after the active AutoPilot eval phase clears, then capture the after snapshot and compare against the preflight artifact above.
+
 ---
 
 ## Steps (checklist)
@@ -94,6 +109,7 @@ Not yet applied live. Next gate is a quiet-window reload plus live `ps`/acceptan
 - [x] Identify the lever (per-role registry field vs launch-map branch).
 - [x] Make `-md` conditional: drop it when `realpath(-md) == realpath(-m)`; keep it otherwise.
 - [x] Confirm gemma worker `:8072` still keeps its separate-head `-md`.
+- [x] Capture durable pre-reload baseline of same-file vs separate-draft live processes.
 - [ ] Start with **frontdoor `:8070`** only, in a quiet window; reload via `orchestrator_stack.py`.
 - [ ] Gate 1: pipeline-green. Gate 2: role starts. Gate 3: `ps` shows no `-md <same file>`.
 - [ ] Measure: MTP acceptance stats present, decode speedup, resident-RAM delta (verify actual), output coherent — via autopilot eval fan-out.
