@@ -150,15 +150,17 @@ unowned local constants.
   adjustment before static degraded role defaults can apply.
 - X-MAS has an evidence-backed true function-axis 5x5 winner table and a
   default-off guarded enforce path. The 2026-06-21 quiet constrained-policy
-  A/B carried `xmas_policy=incumbent_constrained_v1` and still returned
-  `decision.status=hold` (`score_delta=-0.25`, latency ratio `0.714`), so
-  enforce remains off. Orchestrator `f517902d` repairs the identified
-  same-cheap-role failure mode by preserving try-cheap-first when X-MAS
-  enforces the configured cheap role, and the A/B harness now records response
-  `xmas_meta` for apply-reason/incumbent proof. Orchestrator `b108f865`
-  versions the repaired policy as `incumbent_constrained_cheapfirst_v2` so the
-  next A/B is distinguishable from the held `v1` evidence. The next X-MAS gate
-  is a deploy/reload plus repaired quiet-window A/B, not enablement.
+  A/B carried `xmas_policy=incumbent_constrained_v1` and returned
+  `decision.status=hold` (`score_delta=-0.25`, latency ratio `0.714`), but
+  orchestrator `f517902d` repaired the same-cheap-role failure mode and
+  `b108f865` versioned the repaired policy as
+  `incumbent_constrained_cheapfirst_v2`. The 2026-07-03 repaired-policy
+  quiet-window A/B (`benchmarks/results/runs/xmas_live_ab/20260703T213541Z-constrained-policy-v2`)
+  returned `decision.status=promote_candidate` with no blockers
+  (`score_delta=+0.10`, latency ratio `0.938`, lift domain `reasoning`,
+  regression domains none). Production enforce remains default-off pending an
+  explicit operator enablement/reload/attestation decision, not another held-out
+  repaired-policy A/B.
 - The 2026-06-20 read-only manifest audit found P1 closed and all named
   P2/HIGH surfaces either migrated, generated, or re-audited. The follow-up
   `launch_maps` audit verified that generated stack priors carry launch entries
@@ -265,10 +267,12 @@ Any future stack update should be accepted only when these hold:
   consumption after a generated worker swap. The simulated vision and
   long-context swaps also prove factual-risk role-tier consumption for their
   role classes.
-- [ ] Deploy/reload the repaired X-MAS constrained policy and rerun the
-  held-out quiet-window A/B with `xmas_meta` capture and required policy
-  `incumbent_constrained_cheapfirst_v2`; production routing remains
-  default-off until a future repaired policy passes the verdict gates.
+- [x] Deploy/reload the repaired X-MAS constrained policy and rerun the
+  held-out quiet-window A/B with required policy
+  `incumbent_constrained_cheapfirst_v2`; the 2026-07-03 artifact is
+  `promote_candidate` with no blockers.
+- [ ] Keep production routing default-off until an explicit operator
+  enablement/reload/attestation decision accepts the repaired-policy evidence.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
   state; do not prune it during active AutoPilot execution.
 - [ ] Keep completed implementation logs out of active indices; record future
