@@ -2,7 +2,7 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-06-22 (incremental compile of 29 new sources since the 2026-06-21 baseline: 20 active handoffs, 2 completed, 6 progress logs, 1 docs. Folded the A9 offline-reward-oracle negative-results cluster (NeuralTxt non-decision-grade, verifier NPZ not_promotion_grade, pairwise-ranker seeding/thinking holdout failures + preference-direction audit), evidence-plane W4/W6 still-blocked sequential authority + event-sourced archive-authority repair, F1 real-task-corpus eval suite + F6 publication protocol-backfill gate, F7 economic-ledger completion, X-MAS constrained-policy A/B hold, learned-router verifier/episodic-repair staging, F4 continuity-backup existential risk, single-source stack-update governance + standardized-pipeline finalization, repo-readiness scorecard, OpenDataLoader Phase 2, vision-live/TTS-blocked multimodal, DCP first live A/B hold, privacy-hygiene pre-commit hook, and F3 data-flywheel HW-gated training + null triage baseline — across autonomous-research, benchmark-methodology, cost-aware-routing, routing-intelligence, knowledge-management, document-processing, multimodal, context-management, tool-implementation, safety, training-distillation. Prior 2026-06-21 research-intake batch 695-720 deep-dive merge — compiled the verified intake-695..720 insights across 21 articles: GLM-5.2-as-primary + Kimi-K2.7 storage/MoonViT gating + DSA-forward-pass blocker (moe/local/hardware/ssm-hybrid/kv-cache), Still amortized KV synthesis (kv-cache/context-management), AVB offline reward-oracle stack + OpenRouter Fusion P21.B (cost-aware-routing/routing-intelligence/tool-implementation), AB-MCTS + DecentMem (autonomous-research/routing/memory-augmented), DRACO rubric methodology (benchmark-methodology), Centaur/eve/ruflo/subagent harness cluster (agent-architecture/tool-implementation), OKF conformance (knowledge-management/rag-alternatives), Code2LoRA + AVB recipe (training-distillation), drove idle-teardown (inference-serving), neural-txt + MoonViT + UniRL (document-processing/multimodal/reinforcement-learning), MRAgent retrieval policy (search-retrieval). Prior 2026-06-20 pass note retained below.)
+**Last compiled**: 2026-07-03 (focused checkpoint: folded the verified RI-10 arm-attributed canary gate hardening, DAR-1 current replay, `seq_refuted` learning quarantine, ledger-derived `core_v2` candidate, and W8 readiness checkpoint into [Routing Intelligence](routing-intelligence.md), [Benchmark Methodology](benchmark-methodology.md), and [Autonomous Research](autonomous-research.md). Prior 2026-06-22 incremental compile of 29 new sources since the 2026-06-21 baseline retained in article history.)
 **Articles**: 26 compiled, 4 stub categories
 **Total sources**: 514+ scanned documents across 6 source types; 2026-06-21 pass merged 36 changed/new sources (research-intake 695-720 batch + parallel-session handoffs/progress) into 21 articles; 2026-06-19 pass compiled 37 changed/new active-handoff/progress sources into the highest-value evidence/routing/KV clusters
 
@@ -31,15 +31,15 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
 | [Cost-Aware Routing](cost-aware-routing.md) | 31+ | Task-rate/goodput telemetry exposes token bloat; stack-priors anchor q_scorer, seeding, future distillation action spaces, and the remaining launch-map migration target |
-| [Routing Intelligence](routing-intelligence.md) | 51+ | X-MAS now has measured function-axis evidence and an incumbent-aware policy; factual-risk tier updates remain blocked on architect evidence |
-| [Benchmark Methodology](benchmark-methodology.md) | 54+ | Sequential verdicts are code-complete but sample-gated; production eval knobs, audit alarms, and aggregate-artifact validation are now acceptance evidence |
+| [Routing Intelligence](routing-intelligence.md) | 63+ | RI-10 raw high-risk count is sufficient, but decision-grade enforce/shadow arm telemetry is not; DAR replay still shows 0.00% gate regret |
+| [Benchmark Methodology](benchmark-methodology.md) | 66+ | W4/W6 authority state is green, W8 remains promotion-eval-bound, and `core_v2` now has a non-promoted ledger-derived candidate |
 
 ## Agent & Architecture
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
 | [Agent Architecture](agent-architecture.md) | 48 | Fable 5's strategic spine is real-task corpus -> reviewed self-running lab jobs -> data flywheel, gated by evidence and quarantine |
-| [Autonomous Research](autonomous-research.md) | 62+ | AutoPilot sequential authority is code-complete but sample-gated; archive-source diagnostics now cover status/report/digest/plot while W7 hardens critic context and provenance evidence |
+| [Autonomous Research](autonomous-research.md) | 78+ | Authority is live; `seq_refuted` now quarantines planner learning, while fingerprint multiplicity and W8 promotion evidence remain open |
 | [Memory-Augmented Models](memory-augmented.md) | 25+ | Episodic FAISS writes require cross-process locking; K-MEM Tulving is a mixed baseline with weak chronology and no memory-routing promotion |
 
 ## Context & Compression

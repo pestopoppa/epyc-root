@@ -2,8 +2,8 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-07-02
-**Sources**: 64+ documents
+**Last compiled**: 2026-07-03
+**Sources**: 66+ documents
 
 ## Summary
 
@@ -16,6 +16,11 @@ Cost-aware reward design is layered on top of benchmark results for the MemRL ro
 Benchmark hardening in December 2025 addressed ceiling effects where top models scored 89-93%. Every tier was bumped up one difficulty level with post-doctoral T3 questions added, spreading the score distribution meaningfully across model classes. A mode-advantage suite (90 questions) was specifically designed to produce strong routing signal for MemRL by including tasks that structurally require specific execution modes (react, REPL, delegation, specialist escalation).
 
 ## Key Findings
+
+### New (2026-07-03, ledger-derived core_v2 candidate and W8 checkpoint)
+
+- **`core_v2` replacement is now ledger-derived rather than same-seed-repeat-derived, but still not promoted.** The 2026-06-15 same-seed repeat no-go remains a stale-era diagnostic: it could not assemble 40 medium-difficulty items and was contaminated by pre-determinism infrastructure errors. The current selector instead reads folded rollover journals, applies the live `pareto_exclude_before_ts` era fence, filters corrupted/skipped/invalid/no-vector rows, and produced a review artifact with `selected=40`, `eligible=79`, `observed=923`, `source_rows=77`, `untrusted_rows=25`, and `era_excluded_rows=849`. This repairs the instrument-building path without changing live AutoPilot defaults. Sources: [evidence-plane instrument repair](../handoffs/active/evidence-plane-instrument-repair.md), [fable5 optimizer integrity findings](../handoffs/active/fable5-window2-findings-01-optimizer-integrity.md), [progress 2026-07-03](../progress/2026-07/2026-07-03.md).
+- **W8 remains the open promotion-eval tail even though W4/W6 restart/cutover state is green.** The latest checkpoint reports `trusted_vectors=211/120`, `seq_shadow_rows=134/30`, W6 current-era audited rows `48/30`, `gaming_alarm=false`, and current-code phase health clean at trial `1073`; the active candidate still has `combined_E=0.965301` versus required `100.0`, no fresh promotion eval, and no sequential confirmation. Benchmark authority claims therefore still cite W8 as data-bound rather than code-blocked. Sources: [evidence-plane ledger handoff](../handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md), [evidence-plane instrument repair](../handoffs/active/evidence-plane-instrument-repair.md), [progress 2026-07-03](../progress/2026-07/2026-07-03.md).
 
 ### New (2026-07-02, sequential-verdict authority cutover + evolve-the-harness + eval-parity + GPU roofline discipline)
 
