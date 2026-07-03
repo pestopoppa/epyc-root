@@ -107,3 +107,5 @@ P0/P1/P2 done; **P3 substantially advanced** — both audits landed (fused-verif
 **Multi-model sweep:** MMVQ fix is DENSE-Q8-specific (MoE experts use separate get_mmvq_mmid_max_batch dispatch, untested); frontdoor qwen35moe kernel-flat (+0.7%); GDN bottleneck confirmed qwen35-specific (frontdoor batch-scales 3.4× vs gemma 5.9×/8.6×); MMQ non-bit-exact perturbs acceptance (dominates MoE deltas).
 
 **f16 test (gemma-26B-A4B bf16):** bf16>Q8 crossover at high batch (744 vs 561 @B32, 10.19× vs 5.81× scaling — dequant-amortization confirmed); MTP net-NEGATIVE for MoE on GPU (plain 96.6 > MTP 84.5) — MTP is a CPU/BW-bound win, GPU-resident MoE should run plain. gemma-31B dense-Q8 transfer test pending (download ~1h).
+
+**Final probes:** KV-quant no help (VRAM not the constraint, ~430 t/s @128-way @80k), GDN-MFMA KILLED (latency/occupancy-bound not compute — rocprofv2), context-flatness FALSIFIED (hybrid −22% vs gemma-SWA −8%; gemma is SWA-capped, qwen35 attn is full-global), gemma-31B dense-Q8 MMVQ CONFIRMED +31.7%. GPU kernel campaign exhausted.
