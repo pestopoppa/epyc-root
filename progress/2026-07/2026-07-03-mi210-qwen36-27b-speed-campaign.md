@@ -93,3 +93,5 @@ Both in-flight audits landed → P3 substantially advanced (rank-1 kernel now in
 
 ## Next action
 P0/P1/P2 done; **P3 substantially advanced** — both audits landed (fused-verify FALSIFIED; rocprof attributes single-stream to BW-bound Q8 GEMV, aggregate to GDN recurrence; see "P3 findings" + findings-05b). The **MMVQ→MMQ small-batch verify-dispatch fix** (P3 rank-1, ~1 line, ~2× projected) is in **build+measure in `llama.cpp-experimental`**. On landing: record MTP t/s + MMQ@4 ms/tok + correctness, confirm ~55–80 t/s, then close out with P4 (synthesize 2 winning configs).
+
+**Multi-model sweep:** MMVQ fix is DENSE-Q8-specific (MoE experts use separate get_mmvq_mmid_max_batch dispatch, untested); frontdoor qwen35moe kernel-flat (+0.7%); GDN bottleneck confirmed qwen35-specific (frontdoor batch-scales 3.4× vs gemma 5.9×/8.6×); MMQ non-bit-exact perturbs acceptance (dominates MoE deltas).
