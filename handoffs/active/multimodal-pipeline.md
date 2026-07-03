@@ -1,7 +1,7 @@
 # Multimodal Pipeline: Vision + TTS + ASR
 
 **Created**: 2026-02-18 (consolidated from `vision-pipeline.md` + `qwen3-tts-voice-synthesis.md` + `minicpm-o-4_5-integration.md`)
-**Status**: Mixed — Vision live-server/tool path validated, TTS blocked, MiniCPM-O testing pending
+**Status**: Mixed — Vision live-server/tool/API path validated, TTS blocked, MiniCPM-O testing pending
 **Priority**: LOW
 
 ---
@@ -11,7 +11,7 @@
 | Modality | Status | Blocker |
 |----------|--------|---------|
 | **STT (ASR)** | Production | faster-whisper large-v3-turbo on port 9000, int8, 2.8x RT |
-| **Vision** | Live-server analyzer path and tool registry landed | Needs quiet-window API restart/endpoint smoke to deploy current code |
+| **Vision** | Live-server analyzer path, tool registry, and API endpoint smoke passed | OpenAI-compat multimodal follow-through for any remaining chat surfaces |
 | **TTS** | Blocked | Qwen3-TTS llama.cpp port outputs noise; MiniCPM-O TTS untested |
 | **Multimodal (MiniCPM-O)** | Downloaded, untested | Needs Phase 1 testing |
 
@@ -60,10 +60,12 @@ Validation:
 - central registry smoke loads `59` tools including `ocr_extract`,
   `vision_analyze`, `vision_search`, and `vision_face_identify`.
 
-Deployment note: the running orchestrator API was not restarted because
-AutoPilot trial `934` was active and healthy. After AutoPilot quiesces, restart
-the API and run `/v1/vision/analyze` endpoint smoke to prove the long-lived
-process has loaded the new analyzer and registry config.
+Deployment follow-up (2026-07-03): later orchestrator API reloads picked up the
+server-backed analyzer and registry config. Live `/v1/vision/analyze` smoke
+against `/mnt/raid0/llm/llama.cpp/tools/mtmd/test-1.jpeg` with `vl_describe`
+returned a correct New York Times moon-landing front-page description in
+`8210.3ms` with `errors=[]`. Ports `8086` and `8087` also reported
+`{"status":"ok"}`. The quiet-window API-restart blocker is closed.
 
 ### What's Done
 - Full analysis pipeline: EXIF, face detection/embedding (InsightFace), VL description (llama-mtmd-cli), CLIP embeddings
@@ -76,9 +78,6 @@ process has loaded the new analyzer and registry config.
 - 1234 tests passing
 
 ### What Remains
-- Quiet-window API restart and `/v1/vision/analyze` endpoint smoke so the
-  long-lived API process picks up the server-backed analyzer and registry
-  entries.
 - OpenAI-compat multimodal support follow-through for any remaining chat
   surfaces that do not already parse image_url message content.
 
