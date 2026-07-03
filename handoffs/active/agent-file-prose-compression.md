@@ -1,6 +1,6 @@
 # Per-Model Agent-File Prose Compression
 
-**Status**: refreshed 2026-05-28 — Phase 1+2+4 LANDED; Phase 3 is the only blocker; Phase 5 must not start before a per-model curve exists
+**Status**: refreshed 2026-07-03 — Phase 1+2+3+4 LANDED for the local production stack; registry operating points are applied; `/new-model` Step 6.5 now points at the live runner and relative-to-baseline gate. Phase 5 rollout remains a separate decision, with optional n=30 expansion before broad compressed-artifact rollout.
 **Created**: 2026-04-30 (via research intake — intake-509 deep-dive follow-up)
 **Updated**: 2026-05-28
 **Categories**: agent_architecture, benchmark_methodology, routing_intelligence
@@ -9,7 +9,7 @@
 
 ## 2026-05-28 Audit Reset — Executor Start Here
 
-This handoff remains active because the high-value deployment decision is not the existence of compressed files; it is whether each production model can still obey the compressed agent files.
+This handoff remains active because the high-value deployment decision is no longer the existence of compressed files or the first local-stack curve; it is whether to roll compressed artifacts beyond the pilot `ENGINEERING_STANDARDS` file, and whether to run the n=30 expansion before that rollout.
 
 **Critique of older structure**: completed implementation and future eval were mixed together. That made the handoff look close to done while the only safety-critical gate, Phase 3, had no executable runbook, no artifact path, and no fork for failed models.
 
@@ -20,19 +20,13 @@ This handoff remains active because the high-value deployment decision is not th
 - Registry validator and field landed in root/research commits around `306fa66` / `a90b4ee`.
 - Pilot artifacts exist under `agents/shared/ENGINEERING_STANDARDS.compressed-{mild,medium,aggressive}.md`.
 
-**Next action: Phase 3 runbook, then eval**:
+**Phase 3 is complete for the local production stack**:
 
-1. Write or update a single runner command in this file once the live runner interface is confirmed:
-   ```bash
-   python -m tests.compliance.agent_file.live_runner \
-     --agent-file agents/shared/ENGINEERING_STANDARDS.md \
-     --compressed-level mild \
-     --model <model-id-or-role> \
-     --output progress/2026-05/agent-file-compression-phase3-<model>.json
-   ```
-2. Run the suite for at least one Tier-A model at all four levels: none, mild, medium, aggressive.
-3. Populate the `Phase 3 Results` table below.
-4. Only after the table exists, decide Phase 5 rollout.
+1. Live runner interface: `tests/compliance/agent_file/live_runner.py`.
+2. Correct gate: compare each compressed level to the level=`none` baseline for that model: `compliance >= 0.95 * baseline_compliance`, `procedure >= 0.95 * baseline_procedure`, and `recall >= 0.90` absolute. If the model's baseline recall is below `0.90`, operating point is `none`.
+3. Corrected summary artifact: `data/compliance/2026-05-07-phase3-summary.md`.
+4. Per-model artifacts: `data/compliance/2026-05-07-*-curve/SUMMARY.md` plus per-level JSON files.
+5. Registry fields are already populated in both model registries, and `/new-model` Step 6.5 was refreshed on 2026-07-03 to use the live runner rather than the fake dry-run scaffold for deployment gates.
 
 **Decision forks**:
 
@@ -47,7 +41,13 @@ This handoff remains active because the high-value deployment decision is not th
 
 | Model / role | none baseline | mild | medium | aggressive | Operating point | Failure notes |
 |---|---:|---:|---:|---:|---|---|
-| _pending_ | | | | | | |
+| worker_30B v2 | 0.80 / 0.83 / 1.00 | fail C | fail C/P | pass | aggressive | Non-monotonic; skip mild/medium and route directly to aggressive. |
+| worker_fast | 0.27 / 0.42 / 0.33 | fail C/R | fail R | fail P/R | none | Baseline recall below 0.90; do not deploy to agent-file-reading roles without a smaller/summarized artifact. |
+| frontdoor | 0.80 / 1.00 / 1.00 | fail C/P | pass | fail P | medium | Non-monotonic; medium is the highest passing operating point. |
+| architect_general | 0.80 / 0.83 / 1.00 | pass | pass | pass | aggressive | Compression improves compliance/procedure relative to baseline within current sample. |
+| ingest_long_context | 0.93 / 0.75 / 1.00 | pass | pass | fail P | medium | Compliance pinned; aggressive fails procedure. |
+
+C/P/R = compliance / procedure / recall. Current sample is n=15 forbidden-action, n=12 procedure, n=15 recall per level, so borderline operating points still carry the ~13pp CI caveat from the summary artifact.
 
 ## Objective
 

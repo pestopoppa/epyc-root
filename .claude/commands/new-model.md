@@ -136,23 +136,30 @@ done
 After benchmark validates speed + quality, probe the model's tolerance for compressed agent files. Models with `operating_point: none` cannot be deployed to roles that consume agent files — the orchestrator routes the model to the highest compression level it can faithfully follow.
 
 ```bash
-# Run the compliance suite against the new model at each level.
-# Phase 2 (now): --dry-run uses a deterministic fake LLM, validates the runner shape.
-# Phase 3 (inference-gated): replace --dry-run with live inference wiring per
-# tests/compliance/agent_file/runner.py LLMCall protocol.
+# Run the live compliance suite against the new model at each level.
+# Use the model's local OpenAI-compatible /v1/chat/completions endpoint.
 for level in none mild medium aggressive; do
-  python3 -m tests.compliance.agent_file.runner \
-    --model NEW_ROLE_NAME \
-    --agent-file agents/shared/ENGINEERING_STANDARDS.md \
+  case "$level" in
+    none) FILE=agents/shared/ENGINEERING_STANDARDS.md ;;
+    *) FILE=agents/shared/ENGINEERING_STANDARDS.compressed-${level}.md ;;
+  esac
+  python3 tests/compliance/agent_file/live_runner.py \
+    --base-url http://127.0.0.1:PORT \
+    --model-id NEW_ROLE_NAME \
+    --agent-file "$FILE" \
     --level "$level" \
-    --dry-run --fake-mode perfect
+    --max-tokens 768 \
+    --temperature 0.0 \
+    --timeout 180 \
+    --output data/compliance/NEW_ROLE_NAME-${level}.json
 done
 ```
 
 Decision rule (Phase 3, against live model):
-- For each level (mild → medium → aggressive), require **compliance_pass_rate ≥ 0.95** AND **procedure_pass_rate ≥ 0.95** AND **recall_pass_rate ≥ 0.90** vs the level=none baseline.
-- The model's `agent_file_compression_operating_point` is the highest level that meets the rule.
-- If level=mild fails → `operating_point: none` → **block production deployment** of this model to roles that read agent files.
+- First read the level=`none` row as the model baseline. If baseline recall is `<0.90`, set `operating_point: none`; the model lacks enough working memory for this agent file.
+- For each compressed level, require `compliance_pass_rate >= 0.95 * baseline_compliance_pass_rate`, `procedure_pass_rate >= 0.95 * baseline_procedure_pass_rate`, and `recall_pass_rate >= 0.90`.
+- The model's `agent_file_compression_operating_point` is the highest level that meets the rule. Curves may be non-monotonic; it is valid to route directly to `medium` or `aggressive` even if a lower compressed level failed.
+- If no compressed level passes → `operating_point: none` → **block production deployment** of this model to roles that read agent files.
 
 Record the operating point in the registry entry:
 
