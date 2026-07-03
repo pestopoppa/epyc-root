@@ -14,7 +14,7 @@ This is a **living checkpoint** — updated after every phase/measurement (opera
 - [x] **P0 — harness + baseline** (DONE): arch ✅ + op-coverage smoke; single-stream (llama-bench pp512/tg128, -fa 0/1) + MTP (llama-server draft-mtp: α + speedup) + aggregate (llama-batched-bench + llama-server -np sweep).
 - [x] **P1 — runtime-knob sweep** (DONE): -np dequant-amortization sweep; -fa/ubatch/MMQ-vs-rocBLAS/KV-quant/HIP-env/HIP-graph; MTP×batching crossover → latency-vs-throughput Pareto. **Settled config below; no runtime knob moves the ceiling.**
 - [x] **P2 — vLLM reference + gap-closing** (DONE): current-vLLM qwen35 support on gfx90a? → **NOT viable on gfx90a** (4 blockers below); gap-closing = porting GDN algorithm into our HIP/ggml, not running vLLM.
-- [ ] **P3 — kernel authoring (llama.cpp-experimental)** (PENDING fork-audit + rocprof): rocprof → GEAK/agentic-rocm Q8 dequant-GEMV + MFMA util; correctness first. **Direction reframed to GDN fused-verify (below); build only after the two in-flight audits land.**
+- [~] **P3 — kernel authoring (llama.cpp-experimental)** (SUBSTANTIALLY ADVANCED — both in-flight audits landed): fork change-site audit + rocprof done → the reframed GDN fused-verify hypothesis is **FALSIFIED** (verify is already fused). The real single-stream lever is the **MMVQ→MMQ small-batch verify-dispatch fix** (~1 line, ~2× projected), **in build+measure in `llama.cpp-experimental` now**; GDN recurrence is the *aggregate* bottleneck (a separate, larger kernel). See "P3 findings" section below.
 - [ ] **P4 — synthesize** 2 winning configs + record in GPU handoffs.
 
 ## Measurement log (append-only; every number is an OBSERVATION unless tagged P-GPU-1)
@@ -68,6 +68,14 @@ The bottleneck (MTP verify ≈ 2.6 plain-decode-steps → only +15.6% despite me
 
 **DECISION PENDING on two in-flight audits:** (a) does our fork's qwen35 verify already fuse the scan, or run T separate `ggml_ssm_scan`s (change-site check); (b) rocprof — does the GDN/SSM bucket dominate decode. **Build the fused-verify only after those land.**
 
+## P3 findings (audit + profile + verify-amortization + DFlash) — 2026-07-03
+Both in-flight audits landed → P3 substantially advanced (rank-1 kernel now in build+measure). **Full architecture writeup:** [`handoffs/active/fable5-window2-findings-05b-mi210-inference-architecture.md`](../../handoffs/active/fable5-window2-findings-05b-mi210-inference-architecture.md).
+
+- **Fused-verify hypothesis FALSIFIED.** The qwen35 GDN verify is ALREADY fused — one `ggml_gated_delta_net` op over the whole draft block, state resident in registers, snapshot-indexed O(1) rollback (`delta-net-base.cpp:527,564-567`; `gated_delta_net.cu:53-61`). There is **no fused-verify to build**; the idea-mine rank-1 was a non-task.
+- **rocprof (the linchpin).** Single-stream decode is BW-bound **Q8 weight-GEMV**: `mul_mat_vec_q` **77.8%**, whole GEMM/dequant bucket **84%**; GDN only **2.0%**, attention **0.2%**. At B=32 the GEMM bucket amortizes (84%→65%) while GDN balloons **2%→19.5%** (absolute ×39) → **the GDN recurrence is the aggregate/batch-scaling bottleneck**, not the single-stream one. VRAM: model 26.4 GB, RS-state 149.6 MB (fixed, does not grow per-token), ~38 GB free.
+- **THE #1 LEVER — MMVQ non-amortization (confirmed).** MTP's 4-token verify batch (`ne11=4`) dispatches to `mul_mat_vec_q`, NOT the batched `mul_mat_q`, because CDNA2 Q8_0 hits `default: ne11 <= MMVQ_MAX_BATCH_SIZE(=8)` (`ggml-cuda/mmvq.cu:320-322`) → it pays **2.32 weight-reads/block** instead of ~1. Smoking gun: B=8 MMVQ **14.8 ms/tok** vs B=12 MMQ **8.5 ms/tok** (more tokens, less time). **Fix** = route small Q8 verify batches to MMQ — ~1 line, numerically safe (same result). Projected single-stream ceiling **~55–80 t/s** (from 33.6). **Being built + measured in `llama.cpp-experimental` now.** Transfers to every Q8 spec-dec on gfx90a (frontdoor + architect MTP verify included).
+- **Q2 — the head.** MTP wins (post-MMVQ-fix ~2×) and is the deployment head. **EAGLE-3 machinery already ships in v6** (`common/speculative.cpp:419-850`) → the cheapest capability upgrade *if a trained qwen35 EAGLE-3 head GGUF exists* (open question — check HF). **DFlash HELD**: v2-era worktree, CPU-only, block-mode never worked (τ≈0), taps never wired into `qwen35.cpp`; its go/no-go gates on a cheap offline block-τ that is CPU-heavy → deferred under the GPU-only directive + live parallel CPU session. Token-metadata landmine on the DFlash GGUF: missing pad/unk (set pad=248044), eos discrepancy (GGUF 248046 vs HF 248044) — the silent-block class to verify, not assume.
+
 ## Current bests (living)
 | Metric | Config | Value |
 |---|---|---|
@@ -79,4 +87,4 @@ The bottleneck (MTP verify ≈ 2.6 plain-decode-steps → only +15.6% despite me
 - Bench harness: `p0_single_baseline.sh` (→ `p0_single_baseline.json`)
 
 ## Next action
-P0/P1/P2 done. **P3 gated on two in-flight audits:** (a) fork qwen35-verify change-site check (fused scan vs T separate `ggml_ssm_scan`s), (b) rocprof GDN/SSM decode-bucket attribution. Build the GDN fused-verify kernel (P3 rank-1) only after both land.
+P0/P1/P2 done; **P3 substantially advanced** — both audits landed (fused-verify FALSIFIED; rocprof attributes single-stream to BW-bound Q8 GEMV, aggregate to GDN recurrence; see "P3 findings" + findings-05b). The **MMVQ→MMQ small-batch verify-dispatch fix** (P3 rank-1, ~1 line, ~2× projected) is in **build+measure in `llama.cpp-experimental`**. On landing: record MTP t/s + MMQ@4 ms/tok + correctness, confirm ~55–80 t/s, then close out with P4 (synthesize 2 winning configs).
