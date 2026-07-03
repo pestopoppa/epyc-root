@@ -129,7 +129,7 @@ The episodic store has ~30 distinct action strings. Mapping to 5 clean classes:
 
 Validate "piggyback on frontdoor" concept before investing in hidden-state extraction.
 
-- [ ] **P1.5.1** Instrument frontdoor to log top-k=64 first-token log-probabilities
+- [x] **P1.5.1** Instrument frontdoor to log top-k=64 first-token log-probabilities — DONE 2026-04-17, re-verified 2026-07-03. `src/backends/llama_server.py` adds `n_probs=64` only for `frontdoor` when `ORCHESTRATOR_LOGIT_PROBE=1`, and `_write_logit_probe()` appends hashed prompt metadata plus first-token top-k probabilities to `data/logit_probe.jsonl`. 2026-07-03 coverage pins the default-off feature flag/env gate, frontdoor-only payload behavior, sanitized JSONL writes, and runtime-flag-isolated feature registry defaults.
 - [ ] **P1.5.2** Collect over ~1000+ requests
 - [ ] **P1.5.3** Train linear probe (512 params), evaluate accuracy
 - [ ] **P1.5.4** Decision gate: >= 80% → proceed to Phase 2; < 60% → stay with BGE+MLP
