@@ -26,6 +26,24 @@ This is a reference inventory, not an open-ended optimization queue. Treat it as
 
 **Launcher audit (completed 2026-06-14)**: live `epyc-orchestrator` launch env wiring was checked against the per-role v5 recommendation. The active source of truth is now `scripts/server/stack_env.py::build_launch_env` plus the `worker_pool_mode` binary-override strip in `scripts/server/orchestrator_stack.py`. No corrective code change is pending from this audit.
 
+**AMD perf-counter preflight (2026-07-03)**: `epyc-inference-research` commit
+`ad9b73a` adds `scripts/benchmark/perf_counter_preflight.py`, focused tests, and
+a `bench_canonical.sh --perf` binary guard. The preflight centralizes the Zen 5
+canonical event set already used by `bench_canonical.sh`:
+`fp_ops_retired_by_type.vector_mac`, `fp_ops_retired_by_type.vector_all`,
+`fp_ops_retired_by_type.scalar_all`, `ls_dmnd_fills_from_sys.dram_io_all`,
+`ls_hw_pf_dc_fills.dram_io_all`, `cycles`, `instructions`, and `task-clock`.
+Current artifact
+`epyc-inference-research/data/cpu_optimization/2026-07-03-amd-perf-counter-preflight/summary.{json,md}`
+is **blocked** because the devcontainer exposes no `perf` binary; host state
+does have `perf_event_paranoid=1`. Before accepting any future roofline or
+counter-backed CPU claim, install/expose the matching `perf` tool and rerun:
+
+```bash
+cd /mnt/raid0/llm/epyc-inference-research
+python3 scripts/benchmark/perf_counter_preflight.py --probe --strict
+```
+
 **Future upkeep**: when a role changes model, binary fork, or arch class, update this inventory, `stack_env.py`, `model-registry-v5-deployment-draft.yaml`, and the relevant stack handoff together. The push-rebase handoff was archived 2026-06-12 (`../completed/llama-cpp-kernel-push-rebase.md`); new kernel-deployment tasks go here or in the CPU index, not there.
 
 ---
