@@ -1,27 +1,27 @@
 # Routing Intelligence: Factual-Risk Rollout
 
-**Status**: COMPACTED 2026-05-28. Phases 0-5 implementation history moved to completed ledger. Live work is RI-10 canary decision, RI-11/RI-12 staged rollout, optional threshold work before any threshold change, and a gated injection-risk fork for DAR-6/J14. 2026-06-20 audit found sufficient raw high-risk sample volume (`444` since canary start; `283` frontdoor) but no observable enforce/shadow canary-arm telemetry in existing rows. `epyc-orchestrator` `7647b32e` repaired the routing telemetry path so future rows persist the sampled canary arm; RI-10 now remains blocked on fresh post-fix evaluable-arm evidence, not raw sample count.
+**Status**: COMPACTED 2026-05-28. Phases 0-5 implementation history moved to completed ledger. Live work is RI-10 canary decision, RI-11/RI-12 staged rollout, optional threshold work before any threshold change, and a gated injection-risk fork for DAR-6/J14. 2026-07-03 audit finds raw high-risk sample volume is still sufficient (`463` since canary start; `285` frontdoor), but only `19` rows have observable canary arms (`1` enforce / `18` shadow), with `444` non-evaluable rows and `407` `not_enforced:risk_control_disabled` rows. RI-10 remains blocked on decision-grade arm-attributed evidence, not raw sample count.
 **Priority**: HIGH for RI-10 decision; MEDIUM for injection-risk fork after J14.
-**Blocked by**: controlled restart/window with `MEMRL_RETRIEVAL_RISK_CONTROL_ENABLED=true`, then fresh post-`7647b32e` enforce/shadow canary-arm telemetry / AR-3 traffic; operator-approved inference/eval windows for rollout decisions.
+**Blocked by**: decision-grade enforce/shadow canary-arm telemetry under `MEMRL_RETRIEVAL_RISK_CONTROL_ENABLED=true` / AR-3 traffic; operator-approved inference/eval windows for rollout decisions.
 **Completed ledger**: [`../completed/routing-intelligence-completed-through-2026-05-28.md`](../completed/routing-intelligence-completed-through-2026-05-28.md)
-**Updated**: 2026-06-20
+**Updated**: 2026-07-03
 
 ## Start Here
 
 Do not implement the old Phase 4/5 sections from the completed ledger. They were superseded by RI-1 through RI-8 landing in March/April 2026. The next implementer should:
 
 1. Pull current RI-10 canary data from logs before deciding anything; elapsed calendar time is not sufficient.
-2. If high-risk sample count is still below target, keep the canary running and update AR-3/bulk-inference sources.
-3. If sample count is adequate, confirm the logs expose both enforce and shadow canary arms before comparing accuracy/factuality, escalation/review rate, latency, and cost.
+2. If raw high-risk sample count regresses below target, keep the canary running and update AR-3/bulk-inference sources.
+3. If raw sample count is adequate, confirm the logs expose enough arm-attributed rows in both enforce and shadow before comparing accuracy/factuality, escalation/review rate, latency, and cost.
 4. Only then choose RI-11 expand, rollback to shadow, or threshold rework.
 
-Current 2026-06-20 report: `orchestration/reports/ri10_canary_sample_report_20260620.json` counts `444` high-risk routing decisions since the 2026-04-06 canary start (`283` frontdoor), but `canary_arm_counts_since_canary_start` is `0` enforce / `0` shadow. Most high-risk rows report `not_enforced:risk_control_disabled`, so this is not a valid RI-10 enforce-vs-shadow decision sample. The missing arm attribution was traced to routing metadata sampling/logging: risk assessment checked configured canary state without recording the chosen arm, while plan review could sample a second arm. `7647b32e` adds non-sampling configured-mode lookup, persists the sampled `factual_risk_mode` into progress metadata, and makes plan review reuse that persisted arm. The config already has `factual_risk.mode: "canary"`, `canary_ratio: 0.25`, and `canary_roles: ["frontdoor"]`; fresh evidence also requires risk control enabled (`MEMRL_RETRIEVAL_RISK_CONTROL_ENABLED=true`) and a controlled process restart because classifier/config loaders are cached in-process.
+Current 2026-07-03 report: `orchestration/reports/ri10_canary_sample_report_20260703.json` counts `463` high-risk routing decisions since the 2026-04-06 canary start (`285` frontdoor), but only `19` high-risk rows have observable enforce/shadow arms (`1` enforce / `18` shadow). The hardened report now requires both `>=50` arm-attributed high-risk rows and `>=10` rows in each observable arm before `canary_decision_ready=true`; this report is therefore not a valid RI-10 enforce-vs-shadow decision sample. The earlier missing-arm repair remains `7647b32e`; the 2026-07-03 follow-up hardens report semantics so aggregate DS-E1/Fable5 gates no longer treat raw high-risk volume as decision-grade canary evidence.
 
 ## Live Tasks
 
 - [ ] **RI-10 — Shadow-to-enforce canary decision**: current canary is configured as 25% enforce / 75% shadow on frontdoor, and `7647b32e` now exposes the chosen arm in routing progress metadata. Decision requires:
   - controlled restart/window with `MEMRL_RETRIEVAL_RISK_CONTROL_ENABLED=true`; `ORCHESTRATOR_FACTUAL_RISK_MODE` is not the canary switch because it only accepts `off|shadow|enforce`;
-  - >=50 high-risk samples or a documented reason to use a lower-powered decision; current raw count is sufficient, but arm attribution is not;
+  - >=50 arm-attributed high-risk samples or a documented reason to use a lower-powered decision; current raw count is sufficient, but only `19` rows are arm-attributed and the enforce/shadow balance is `1` / `18`;
   - no p95 latency regression >10%;
   - no cost regression >5% at equal factuality;
   - no unexplained escalation/review inflation >20%;
@@ -84,6 +84,7 @@ DAR-6.5 unconditional J14 A/B pass
 | Phase 4 enforcement code | RI-1 through RI-7 implemented and A/B tested; initial A/B underpowered. | [completed ledger](../completed/routing-intelligence-completed-through-2026-05-28.md) |
 | Phase 5 seeding fields | RI-8 verified on `RoleResult`; v2 calibration dataset built via NIB2-34. | [completed ledger](../completed/routing-intelligence-completed-through-2026-05-28.md) |
 | RI-10 arm telemetry repair | Routing now logs the sampled factual-risk canary arm as `routing_meta.factual_risk_mode`, and the plan-review gate reuses that persisted arm instead of resampling. Existing 2026-06-20 rows remain insufficient; collect fresh post-fix rows before a rollout decision. | `epyc-orchestrator` `7647b32e`; `uv run pytest -q tests/unit/test_factual_risk.py tests/unit/test_pipeline_routing.py` -> `110 passed` |
+| RI-10 report/gate semantics hardening | `ri10_canary_sample_report.py` now distinguishes raw high-risk volume from decision-grade arm-attributed telemetry. DS-E1/Fable5 aggregate gates stay blocked when only raw count is ready. The 2026-07-03 report has `463` raw high-risk rows, `19` arm-attributed rows, and no decision-grade enforce/shadow balance. | `orchestration/reports/ri10_canary_sample_report_20260703.json`; `orchestration/reports/fable5_gate_20260703T104437Z.md` |
 | G12 role-tier recalibration | AA-Omniscience frontdoor/worker/architect evidence completed; deterministic 4-class scoring accepted for role-tier recalibration; measured tier multipliers landed in orchestrator. Mode/canary/enforce decisions remain RI-10+ gates. | [bulk-inference-campaign](bulk-inference-campaign.md) |
 | Research intake | AA-Omniscience, STOP, Qwen-Scope SAE caveats, BaRP/Conductor context captured. | [completed ledger](../completed/routing-intelligence-completed-through-2026-05-28.md) |
 
