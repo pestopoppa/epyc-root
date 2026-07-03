@@ -84,7 +84,7 @@ Code fix landed in `epyc-orchestrator` commit `5b4d8147` (`Drop redundant self-d
 - Focused live-registry command smoke: `frontdoor` and `architect_general` build with `has_md=False`, `spec_type=draft-mtp`, `draft_max=4`; `worker_general` still builds with `-md /mnt/raid0/llm/models/gemma-4-26B-A4B-it-assistant-v6-Q8_0.gguf`.
 - Validation: `uv run pytest -q tests/unit/test_build_server_command_helpers.py tests/unit/test_orchestrator_stack_reload.py` (`79 passed`); focused Ruff safety checks; `python3 -m py_compile`; `git diff --check`.
 
-Not yet applied live. Next gate is a quiet-window reload plus live `ps`/acceptance/RSS verification.
+Applied live in a controlled quiet window later on 2026-07-03; see the reload section below.
 
 ## Pre-reload live baseline — 2026-07-03
 
@@ -99,7 +99,37 @@ The report counts unique live PIDs (state aliases are recorded separately):
 - `6` same-file `-md` processes still live: `5` frontdoor/Qwen3.6 instances plus `1` architect/Qwen3.5 instance.
 - `5` Gemma worker processes correctly still use a separate assistant-head `-md`.
 
-Smallest deployment target remains `orchestrator_stack.py reload frontdoor`; this bounces the shared `8070` path (`frontdoor`, `coder_escalation`, `worker_summarize`). Do this after the active AutoPilot eval phase clears, then capture the after snapshot and compare against the preflight artifact above.
+Smallest deployment target was `orchestrator_stack.py reload frontdoor`; the actual reload window also refreshed the four Qwen3.6 quarter replicas and `architect_general`, because those were the remaining same-file CPU self-draft PIDs.
+
+## Live reload / after snapshot — 2026-07-03
+
+Durable after snapshot landed in `epyc-orchestrator` report artifacts:
+
+- `orchestration/reports/md_self_draft_after_reload_20260703T142152Z.{json,md}`
+- `orchestration/reports/md_self_draft_after_reload_20260703T142152Z_affinity.json`
+
+Reload sequence:
+
+- AutoPilot was paused, then its stale pre-pause planner/controller process tree was terminated after SIGTERM failed; SIGKILL verification confirmed the PIDs were gone. This created one `AUTOPILOT_KILLED` placeholder at trial `1084`.
+- Reloaded `frontdoor` (`8070`) and `architect_general` (`8083`) through `orchestrator_stack.py reload`.
+- The launcher reload path only targets the canonical role port, so the stale Qwen3.6 quarter PIDs on `8080/8180/8280/8380` were stopped by verified PID kill and restarted through `orchestrator_stack.py start --only frontdoor --numa-mode quarter --no-compile-registry --skip-host-prereqs --skip-stack-change-gate`.
+- Reloaded the orchestrator API while AutoPilot was still stopped to activate pending backend/dashboard changes.
+- Restarted AutoPilot with the required W4/W6/hints contract: `--max-trials 2000`, `AUTOPILOT_SEQ_VERDICT=1`, W6 audit flags, `AUTOPILOT_PLANNER_TIMEOUT=600`, `AUTOPILOT_PLANNER_HINTS=1`, and `AUTOPILOT_STEPPING_STONES=1`. New live process entered trial `1085`; phase health was current-code clean with no blockers.
+
+After snapshot counts:
+
+- `11` live spec processes.
+- `0` same-file `-md` processes.
+- `6` embedded self-draft Qwen processes with `--spec-type draft-mtp` and no `-md`: `5` frontdoor/Qwen3.6 instances plus `1` architect/Qwen3.5 instance.
+- `5` Gemma worker processes still correctly use a separate assistant-head `-md`.
+
+Smoke checks:
+
+- `orchestrator_stack.py status` reported affected processes healthy/attestation `ok`.
+- `dashboard/api/health` reported `status=ok`.
+- Short completions on `8070` and `8083` both returned draft activity (`draft_n=18`, `draft_n_accepted=10`), confirming embedded NEXTN remains active without `-md`.
+
+Remaining measurement work is a representative AutoPilot eval fan-out / throughput comparison and CPU resident-memory delta analysis. Do not infer the CPU RSS delta from the GPU result; mmap and `--mlock` details matter.
 
 ---
 
@@ -110,9 +140,9 @@ Smallest deployment target remains `orchestrator_stack.py reload frontdoor`; thi
 - [x] Make `-md` conditional: drop it when `realpath(-md) == realpath(-m)`; keep it otherwise.
 - [x] Confirm gemma worker `:8072` still keeps its separate-head `-md`.
 - [x] Capture durable pre-reload baseline of same-file vs separate-draft live processes.
-- [ ] Start with **frontdoor `:8070`** only, in a quiet window; reload via `orchestrator_stack.py`.
-- [ ] Gate 1: pipeline-green. Gate 2: role starts. Gate 3: `ps` shows no `-md <same file>`.
-- [ ] Measure: MTP acceptance stats present, decode speedup, resident-RAM delta (verify actual), output coherent — via autopilot eval fan-out.
-- [ ] If good, repeat one-at-a-time for architect `:8083` and any other affected Qwen NEXTN role (coder_escalation / worker_summarize).
-- [ ] Record results in `progress/`; if all green, ask operator before touching `master-handoff-index.md`.
+- [x] Start with **frontdoor `:8070`** only, in a quiet window; reload via `orchestrator_stack.py`.
+- [x] Gate 1: pipeline-green. Gate 2: role starts. Gate 3: `ps` shows no `-md <same file>`.
+- [x] Repeat for architect `:8083` and the remaining Qwen3.6 frontdoor quarter replicas.
+- [x] Record reload results in `progress/`; if all green, ask operator before touching `master-handoff-index.md`.
+- [ ] Measure: representative MTP acceptance/decode speedup and resident-RAM delta (verify actual), output coherent — via autopilot eval fan-out.
 - [ ] Rollback if regression: restore `-md` and reload.
