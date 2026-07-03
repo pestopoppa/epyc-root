@@ -1,7 +1,7 @@
 # Multimodal Pipeline: Vision + TTS + ASR
 
 **Created**: 2026-02-18 (consolidated from `vision-pipeline.md` + `qwen3-tts-voice-synthesis.md` + `minicpm-o-4_5-integration.md`)
-**Status**: Mixed — Vision live-server/tool/API path validated, TTS blocked, MiniCPM-O testing pending
+**Status**: Mixed — Vision live-server/tool/API/OpenAI-compat path validated, TTS blocked, MiniCPM-O testing pending
 **Priority**: LOW
 
 ---
@@ -11,7 +11,7 @@
 | Modality | Status | Blocker |
 |----------|--------|---------|
 | **STT (ASR)** | Production | faster-whisper large-v3-turbo on port 9000, int8, 2.8x RT |
-| **Vision** | Live-server analyzer path, tool registry, and API endpoint smoke passed | OpenAI-compat multimodal follow-through for any remaining chat surfaces |
+| **Vision** | Live-server analyzer path, tool registry, API endpoint smoke, and OpenAI-compatible `image_url` data-URL bridge passed | No active blocker; remote-image fetching or multi-image support would be a new feature |
 | **TTS** | Blocked | Qwen3-TTS llama.cpp port outputs noise; MiniCPM-O TTS untested |
 | **Multimodal (MiniCPM-O)** | Downloaded, untested | Needs Phase 1 testing |
 
@@ -67,6 +67,16 @@ returned a correct New York Times moon-landing front-page description in
 `8210.3ms` with `errors=[]`. Ports `8086` and `8087` also reported
 `{"status":"ok"}`. The quiet-window API-restart blocker is closed.
 
+OpenAI-compatible chat follow-through (2026-07-03): orchestrator `9833a5b8`
+parses multipart `/v1/chat/completions` user content, extracts one
+`data:image/...;base64` `image_url`, and routes real-mode image requests through
+the existing `_handle_vision_request` path. Unsupported remote image URLs and
+multi-image requests now fail explicitly instead of being silently dropped. API
+reload PID `1859269` served the new parser; a no-inference smoke returned HTTP
+400 with the expected `data:image` detail for a remote URL. Focused validation:
+OpenAI compat unit/integration tests `20 passed`, broader API/import/chat-vision
+slice `90 passed`, Ruff, py_compile, and diff-check.
+
 ### What's Done
 - Full analysis pipeline: EXIF, face detection/embedding (InsightFace), VL description (llama-mtmd-cli), CLIP embeddings
 - Batch processing with job queue, progress reporting
@@ -78,8 +88,9 @@ returned a correct New York Times moon-landing front-page description in
 - 1234 tests passing
 
 ### What Remains
-- OpenAI-compat multimodal support follow-through for any remaining chat
-  surfaces that do not already parse image_url message content.
+- No active vision code tail. Future work here should be opened as a new scoped
+  feature, e.g. remote image fetching, multiple images per OpenAI message, or
+  a promotion-grade OpenAI image request quality/latency benchmark.
 
 ### Key Files
 - `src/vision/pipeline.py` (385 lines) — core pipeline
