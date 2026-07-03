@@ -1,8 +1,8 @@
 # Decision-Aware Routing for Q-Scorer
 
-**Status**: REFRESHED 2026-06-12 (Fable 5 portfolio pass) — current-traffic DAR-1 replay completed 2026-06-12 and kept the routing-expansion gate CLOSED (0.00% identifiable mean regret; report in `epyc-orchestrator/orchestration/reports/dar1_regret_replay_2026-06-12.md`). Current dispositions: **DAR-2 contrastive is live-ON in production**; **DAR-3 (SPO+/ε-greedy) and DAR-6 are FROZEN per fable5-findings-02** until a future replay proves ≥5% regret; **DAR-4 bilinear is retained** as the candidate descriptor-conditioned predictor (findings-02 §3). The April-era body below is historical record.
+**Status**: REFRESHED 2026-07-03 (Fable 5 follow-up) — current-traffic DAR-1 replay completed 2026-07-03 and kept the routing-expansion gate CLOSED (22,992 routing decisions, 98.6% regret-identifiable, 0.00% gate regret; report in `epyc-orchestrator/orchestration/reports/dar1_regret_replay_2026-07-03.md`). Current dispositions: **DAR-2 contrastive is live-ON in production**; **DAR-3 (SPO+/epsilon-greedy) and DAR-6 are FROZEN per fable5-findings-02** until a future replay proves >=5% regret; **DAR-4 bilinear is retained** as the candidate descriptor-conditioned predictor (findings-02 §3). The April-era body below is historical record.
 **Created**: 2026-04-14 (from deep-dive research on intake-366)
-**Updated**: 2026-06-12 (header refresh; prior body updates through 2026-04)
+**Updated**: 2026-07-03 (current-window DAR-1 replay; prior body updates through 2026-04)
 **Priority**: HIGH
 **Categories**: routing_intelligence, reinforcement_learning, cost_aware_routing
 **Tracked in**: [routing-and-optimization-index.md](routing-and-optimization-index.md) P13
@@ -68,6 +68,14 @@ Report: `epyc-orchestrator/orchestration/reports/dar1_regret_replay_2026-06-12.m
 Replay window: 2026-06-05..2026-06-12 progress JSONL. Result: 12,057 routing decisions analyzed, 11,249 matched task outcomes, 8,145 regret-identifiable decisions, 0.00% identifiable mean regret, 99.1% uniform Q-values, 95.2% trivial selection-score spread.
 
 Gate verdict: DAR-3/SPO+, DAR-6 swarm expansion, Package I, and broader learned-routing expansion remain frozen. Historical rules/classifier rows lacked candidate action IDs, so `epyc-orchestrator` `1dfbc22` added `action_topk` telemetry for future replays.
+
+### DAR-1 Current-Traffic Replay — ✅ 2026-07-03
+
+Report: `epyc-orchestrator/orchestration/reports/dar1_regret_replay_2026-07-03.md`.
+
+Replay window: 2026-06-13..2026-07-03 progress JSONL. Result: 22,992 routing decisions analyzed, 20,477 matched task outcomes, 22,677 regret-identifiable decisions (98.6%), 0.00% gate regret, 99.6% uniform Q-values, 95.4% trivial selection-score spread, and 27,335 try-cheap-first counter rows.
+
+Gate verdict: unchanged. DAR-3/SPO+, DAR-6 swarm expansion, Package I, and broader learned-routing expansion remain frozen because no >=5% mean decision-regret signal was proven.
 
 ### DAR-2: Contrastive Q-Score Update — ✅ 2026-04-15
 
