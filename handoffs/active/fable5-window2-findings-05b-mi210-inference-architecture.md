@@ -78,3 +78,25 @@ Two verdicts reached on CPU/v2-era hardware deserve a GPU re-test now that the s
 
 - **(a) Hybrid tree-drafting — GPU re-test warranted.** We already **BUILT** tree speculation ([../completed/tree-speculation-numa-drafting.md](../completed/tree-speculation-numa-drafting.md), 2026-03, DySpec dynamic trees) and measured it **NET-NEGATIVE on qwen35 hybrids**: −53% to −66% end-to-end, frozen-multipath acceptance −12–22 pp, and checkpoint/clone-cell −60% on 35B-A3B from copying **~450 MB recurrent state per round**. So it is guarded off (`!has_recurrent`) — **correctly, for CPU/v2.** BUT those were CPU/v2-era measurements: on GPU the recurrent state is only **149 MB** (rocprof) at **~1.6 TB/s**, so the per-path state-clone that killed Approach C on CPU is **~0.1 ms** on GPU. Phase-8 **Approach B (Delta-Net tree) was DEFERRED at ~40% viability, never killed.** → **GPU re-test warranted** — the state-clone term flips, though recurrent-*compute* scaling still argues caution.
 - **(b) MTP/draft head on GPU + target on CPU — newly attractive.** The fork already has the plumbing (`-devd`/`-ngld`/`-otd` — draft on a separate device). This is newly more attractive because the CPU audit (§2b) proved **CPU verify amortizes the weight read**, so a GPU-hosted cheap draft + CPU target-verify **no longer eats findings-02's feared amortization penalty**; the only remaining cost is the per-step CPU↔GPU hidden-state PCIe shuttle. A future avenue for **target-on-CPU roles.**
+
+## 8. Quant × serving-regime, and MTP × substrate — measured 2026-07-03
+
+Two new measured findings that nuance earlier conclusions in this doc. **Every number below is an OBSERVATION** (contended MI210 host, single runs, no P-GPU-1) and gates nothing. MoE model = `gemma-4-26B-A4B` on the experimental HIP build; measured `-ngl 99 / -fa 0`.
+
+### Finding 1 — bf16 vs Q8 is a CROSSOVER, not a clean Q8 win: Q8 for latency, bf16 for high-concurrency throughput
+
+Measured on gemma-4-26B-A4B (MoE), `-ngl 99 / -fa 0`:
+
+- **Single-stream:** Q8 **96.6 t/s** vs bf16 **73.1 t/s** — Q8 is **1.32× faster**, but NOT the ~2× the byte-count predicts. Dequant overhead + always-active non-expert weights erode Q8's byte advantage.
+- **Roofline-%:** bf16 **35.7%** > Q8 **25.0%** — bf16 has no dequant → it runs closer to the BW ceiling.
+- **Aggregate S_TG:** Q8 243 @B8 / **561 @B32**; bf16 177 @B8 / **744 @B32** — a **crossover**: Q8 wins B=1 and B=8, **bf16 wins B=32** (744 > 561). Batch scaling B1→B32: bf16 **10.19×** vs Q8 **5.81×**.
+- **Mechanism:** at high batch the regime is **compute-bound**; fp16 runs native on the CDNA2 matrix cores with nothing to amortize, while Q8's per-tile dequant caps its compute-bound throughput. This directly confirms the **dequant-amortization thesis** (§1). Caveat: bf16 = ~2× HBM (gemma-26B bf16 **50.5 GB** vs Q8 **27 GB**), so the bf16 batched-throughput win is **gated by HBM capacity** — it fits ~55 GB peak @B32 on the 64 GB card; a larger model or more KV would not fit.
+- **Nuance to the earlier "Q8 is the right deployment quant" claim (§1, §5):** **Q8 is right for single-stream / latency; bf16 wins batched / high-concurrency throughput where it fits HBM.**
+
+### Finding 2 — MTP self-spec is net-NEGATIVE for MoE on the GPU; it's a CPU/BW-bound-regime win
+
+Measured single-stream, GPU:
+
+- gemma-4-26B-A4B (MoE): plain **96.6** vs MTP **84.5 t/s** (**−12%**). qwen36-35B-A3B frontdoor (MoE): plain **97.9** vs MTP ~**86** (**−12%**). bf16 gemma-26B: plain 73.1 vs MTP 70.9 (**−3%**). The **DENSE 27B is the opposite**: plain 29 vs MTP 33.6 (**+15%**).
+- **Mechanism:** MoE GPU plain decode is already fast (reads only ~active-expert bytes from the 1.6 TB/s HBM), so the MTP draft+verify overhead isn't repaid; the dense / BW-bound case (slow plain) is where MTP's acceptance savings pay off. So MTP's value is **SUBSTRATE-and-arch-dependent**: a win on CPU (BW-bound plain decode) and for GPU-dense; net-negative for GPU-resident MoE.
+- **Deployment consequence (informs the deferred residency plan, findings-02 Gate R):** **MoE roles (frontdoor / worker) that migrate to GPU should run MTP OFF (plain is faster); MTP stays valuable for them on CPU.** This nuances the "MTP is the head" conclusion (§2, §4) — the head choice is **regime-dependent, not universal**.
