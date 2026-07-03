@@ -1,6 +1,6 @@
 # Capability Registry, Safe Role-Restart Applicator & Promotion Workflow
 
-**Status**: IN PROGRESS — W0 traffic-class interface, TaskIR/task-record capture, and live `request_context` workload-class tagging are closed; W1 seed rows landed; W2 generated Action-Availability + index A-by surfaces landed/adopted 2026-06-27; W3 has env rollback, registry override rollback, co-hosted-role resolution, boundary journaling, smoke-check hooks, and default-off AutoPilot dispatch pause; W4 remains gated on evidence-plane ledger
+**Status**: IN PROGRESS — W0 traffic-class interface, TaskIR/task-record capture, and live `request_context` workload-class tagging are closed; W1 seed rows landed; W2 generated Action-Availability + index A-by surfaces landed/adopted 2026-06-27; W3 has env rollback, registry override rollback, co-hosted-role resolution, boundary journaling, smoke-check hooks, default-off AutoPilot dispatch pause, and fail-closed structured batched-restart trial protocol validation for restart applicators; W4 remains gated on evidence-plane ledger / shadow attestation and no row is autopilot-actionable.
 **Created**: 2026-06-12
 **Priority**: GATED — on `evidence-plane-ledger.md` (sibling handoff = findings-01 Phase 1: the instrument must certify effects before the optimizer gets bigger levers; spec §C.4). W0 (workload model) is NOT gated and can run now.
 **Spec**: [fable5-findings-04-impl-plan.md](../completed/fable5-findings-04-impl-plan.md) §C + §D — read before claiming any waypoint
@@ -80,6 +80,13 @@ fail closed before any reload, and restart-boundary events now include the regis
 registry override rollback primitive without promoting any capability row or touching the live stack. W3 remains open
 only for a shadowed live restart attestation once the evidence plane allows restart-class experiments.
 
+2026-07-03 W3/W4 protocol hardening: Orchestrator now requires every `role_restart` / `stack_restart` capability row to
+declare a structured `trial_protocol` mapping (`class: batched_restart`, `min_trials >= 1`,
+`restore_after_batch: true`, and non-empty `boundary_event`). The first restart-class rows (`moe_spec_budget`,
+`ea_compaction_profiles`, and `draft_max_p_split`) now carry the shared `role_restart_boundary` / 5-trial restore
+contract. This does not promote any row or enable live restarts; it makes the C.2 batched restart protocol a validated
+data contract before future W4 promotion work.
+
 ## Gates & pitfalls
 
 - Hard gate: W1–W4 wait for `evidence-plane-ledger.md` (findings-01 Phase 1) — same gate as the index rewrite's A15 row. Do not hand the optimizer restart-class levers on an uncertified instrument.
@@ -102,3 +109,4 @@ Tick waypoints here + one-line progress entry per session; on full completion de
 - 2026-06-27 W2 index adoption: Root docs adopted the generated `index-a-by` table in `master-handoff-index.md`. Validation: reran `uv run python scripts/registry/compile_capability_registry.py --target index-a-by`; GitNexus impact was HIGH for both root docs because they are coordination surfaces, so the edit stayed in the main thread. No runtime files or capability promotion states changed.
 - 2026-06-27 W2 drift guard + W3 primitive: Orchestrator `7b47671e` added marked-block replace/check support to `compile_capability_registry.py`; Root `82904490` adopted the marked block. Orchestrator W3 primitive adds `restart_role()` env rollback support but does not wire planner/AutoPilot calls. Validation: `uv run pytest -q tests/unit/test_capability_registry.py` -> 55 passed; `uv run python scripts/registry/compile_capability_registry.py --target index-a-by --check-block /mnt/raid0/llm/epyc-root/handoffs/active/master-handoff-index.md` passed; `python3 -m py_compile scripts/autopilot/config_applicator.py tests/unit/test_config_applicator.py`; `uv run pytest -q tests/unit/test_config_applicator.py` -> 10 passed; `uv run ruff check scripts/autopilot/config_applicator.py tests/unit/test_config_applicator.py`.
 - 2026-06-27 W3 boundary journal slice: Orchestrator added `role_restart_boundary` append-only events plus optional `restart_role(..., journal=...)` attachment. Validation: `python3 -m py_compile scripts/autopilot/experiment_journal.py scripts/autopilot/config_applicator.py tests/unit/test_journal_supersession_events.py tests/unit/test_config_applicator.py`; `uv run pytest -q tests/unit/test_journal_supersession_events.py tests/unit/test_config_applicator.py` -> 22 passed; `uv run ruff check ...`; `git diff --check`.
+- 2026-07-03 W3/W4 protocol hardening: Orchestrator validates structured restart-class `trial_protocol` rows and populates the first-cohort restart rows with the batched-restart/restore/boundary contract. Validation: `uv run pytest -q tests/unit/test_capability_registry.py` -> 58 passed; `python3 -m py_compile`; `uv run ruff check src/registry/capability_registry.py tests/unit/test_capability_registry.py`; both capability compiler targets; and generated block drift check against the root master index.
