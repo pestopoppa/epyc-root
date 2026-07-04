@@ -1,18 +1,18 @@
 # Corpus-Augmented Prompt Lookup Revalidation
 
-**Status**: ACTIVE-HIGH option value, prompt-injection ROI not proven; CPL-1/2/3 complete; CPL-4 clean-window prompt-injection A/B run 2026-07-04 and failed broad promotion (`worker_general` quality regressed, `coder_escalation` neutral/empty); worker prompt-injection support is default-off and code-task scoped in `epyc-orchestrator` `c0d5ee58`; native llama prompt-lookup/static-cache path still disabled for live roles; CPL-5 keep/quarantine/delete decision pending explicit operator call
-**Parent index**: [inference-acceleration-index.md](inference-acceleration-index.md)
-**Priority**: high option value because the corpus occupies about `651G`, below current G0/GPU and evidence-plane authority rows until code-writing A/B proves benefit
-**Related**: [speculative-decoding-mtp-refresh.md](speculative-decoding-mtp-refresh.md), [model-stack-single-source-update-pipeline.md](model-stack-single-source-update-pipeline.md), archived [hybrid-lookup-spec-decode.md](../archived/hybrid-lookup-spec-decode.md), archived [llama-server-prompt-lookup.md](../archived/llama-server-prompt-lookup.md)
+**Status**: COMPLETED 2026-07-04; prompt-injection ROI was not proven, the operator approved reclaiming the artifact, and `/mnt/raid0/llm/cache/corpus` was deleted to recover about `651G`
+**Parent index**: [inference-acceleration-index.md](../active/inference-acceleration-index.md)
+**Priority at closure**: high option value because the corpus occupied about `651G`; closed after the clean-window A/B failed to prove benefit and the operator chose reclamation
+**Related**: [speculative-decoding-mtp-refresh.md](../active/speculative-decoding-mtp-refresh.md), [model-stack-single-source-update-pipeline.md](../active/model-stack-single-source-update-pipeline.md), archived [hybrid-lookup-spec-decode.md](../archived/hybrid-lookup-spec-decode.md), archived [llama-server-prompt-lookup.md](../archived/llama-server-prompt-lookup.md)
 
 ## Objective
 
 Decide whether the local code corpus at `/mnt/raid0/llm/cache/corpus` is a live
-performance feature or reclaimable dead weight. The current artifact occupies
-about `651G`, so it must either provide measured coding-task acceleration or be
-quarantined/deleted by explicit operator decision.
+performance feature or reclaimable dead weight. Outcome: the prompt-injection
+path did not provide measured coding-task acceleration, and the operator chose
+reclamation rather than a final static n-gram experiment.
 
-## Current Findings
+## Final Findings
 
 - Live `llama-server` commands do not pass native n-gram/prompt-lookup corpus
   flags; active servers use draft-MTP where supported.
@@ -34,7 +34,7 @@ quarantined/deleted by explicit operator decision.
   `acceleration.corpus_retrieval` flag, emits structured log metadata for
   disabled/injected/slow/error outcomes, and suppresses retrievals above the
   configured slow-query threshold.
-- Current live role parsing intentionally enables prompt-stuffing only for the
+- At test time, live role parsing intentionally enabled prompt-stuffing only for the
   frontdoor/coder lane: `frontdoor=True`, `coder_escalation=True`, and
   `worker_general=False`, `architect_general=False`, `ingest_long_context=False`
   for `acceleration.corpus_retrieval`. All five keep native `lookup=false`.
@@ -69,9 +69,9 @@ quarantined/deleted by explicit operator decision.
   `--confirm-clean-window` for live generation and exits `75` when AutoPilot is
   active unless `--allow-active-autopilot` is passed for explicitly
   non-claim-grade live-load telemetry.
-- 2026-07-04 read-only audit: `/mnt/raid0/llm/cache/corpus/v3_sharded` is the
+- 2026-07-04 read-only audit: `/mnt/raid0/llm/cache/corpus/v3_sharded` was the
   live default corpus path, with `/mnt/raid0/llm/cache/corpus/mvp_index` still
-  supported as a fallback; the full corpus tree is about `651G`. The loader is
+  supported as a fallback; the full corpus tree was about `651G`. The loader is
   `CorpusRetriever`, `build_corpus_context()` is called by live chat,
   stream-adapter, delegation, and graph-helper paths on turn 0, and
   `corpus_quality_preflight_20260704T164539Z.json` shows `injected_count=6`,
@@ -128,6 +128,14 @@ quarantined/deleted by explicit operator decision.
   quality evidence. `worker_general` failed the gate (`5.85` baseline vs `5.30`
   corpus, delta `-0.55`, threshold `-0.5`). This rejects broad/worker
   prompt-injection promotion from current evidence.
+- 2026-07-04 operator reclaim decision: after the failed A/B, the operator
+  authorized disk reclamation. A `gpt-5.4-mini` worker verified the path was a
+  real directory under `/mnt/raid0/llm/cache`, found no active users via a
+  lightweight `/proc/*/fd` scan, and ran
+  `rm -rf -- /mnt/raid0/llm/cache/corpus`. Local verification confirmed the
+  path is gone and `df -h /mnt/raid0/llm` reports about `965G` free, up from
+  the worker's recorded `315G` before deletion. Sibling cache directories were
+  left untouched.
 
 ## Prioritized Task List
 
@@ -168,14 +176,15 @@ quarantined/deleted by explicit operator decision.
   `worker_general` corpus injection despite this result, use the code-task
   scoped eligibility and rerun with a stronger prompt/quality protocol rather
   than a blanket `corpus_retrieval: true` flip.
-- [ ] **CPL-4b: Corpus as a static n-gram *speculation* source (distinct mechanism from prompt-injection).** Design landed 2026-07-04 (subagent aba31618, verified against fork source), and the no-inference chunk/merge scaffold now exists at `scripts/corpus/build_static_ngram_cache.py`. **The llama.cpp wiring ALREADY EXISTS and is server-enabled — do NOT add a flag.** `--lookup-cache-static`/`-lcs` (`common/arg.cpp:1254-1259`, `.set_examples({...LLAMA_EXAMPLE_SERVER})`) loads a prebuilt static cache via `common_ngram_cache_load()` (`speculative.cpp:1669-1680`) and drafts tokens directly from the corpus bigram distribution (`ngram-cache.cpp:187-188`); builder `llama-lookup-create`/`-merge`/`-stats` already compiled. This is **µs-latency draft-acceptance** (changes decode t/s), *not* prompt content (the 29 s vector path). **Important sequencing**: do not spend CPU/disk on a large/full corpus-derived cache until CPL-4 first establishes that corpus-assisted code writing has value, unless the operator explicitly wants a throughput-only static-cache experiment. **Remaining gaps**: (1) no decision-grade corpus-derived cache exists — `/mnt/raid0/llm/tmp/lookup_cache.bin` is a 27 KB toy [unverified origin]; (2) `lookup-create` tokenizes the whole `-f` file in-memory, so use bounded chunking and `llama-lookup-merge`; (3) the launcher never passes `-lcs`; (4) **vocab-lock** — the cache stores token ids, so it MUST be built with the *target model's own tokenizer* and is not portable. Format is **bigram-only** (`LLAMA_NGRAM_STATIC=2`, no widening without code). **A/B (spec-only; run under MEASUREMENT.md in a clean window after the code-writing value gate or explicit operator approval)**: three arms on held-out code prompts — plain / context-only `--spec-type ngram-cache` (no `-lcs`) / corpus-static `-lcs corpus_ngram_static.bin` — measure **draft acceptance + decode t/s** (pair with correctness). **Bar to clear (measured 2026-07-04, GPU 27B-Q8):** context-only ngram is NEGATIVE — all variants regress (plain 28.4 → best ngram-simple 27.7; ngram-cache −8.1%), acceptance ~15% << break-even. The corpus-static arm's thesis is that a code-corpus bigram table lifts acceptance far above ~15%; report acceptance first because a corpus cache below ~40-50% acceptance is dead on arrival.
-- [ ] **CPL-5: Decide keep/quarantine/delete.** Current prompt-injection A/B
-  evidence does not justify keeping the `651G` corpus for online prompt
-  stuffing: `worker_general` regressed and `coder_escalation` only showed
-  neutral empty-output rows. Keep only if an explicitly approved static n-gram
-  cache A/B or stronger code-quality protocol shows measured benefit with
-  bounded overhead. Otherwise mark `/mnt/raid0/llm/cache/corpus` reclaimable and
-  preserve only the small build metadata/scripts needed to recreate it.
+- [x] **CPL-4b: Corpus as a static n-gram *speculation* source (distinct
+  mechanism from prompt-injection).** Retired by operator decision after CPL-4
+  failed: no large corpus-derived static-cache build was run, and the source
+  corpus has been deleted. The scaffold remains as code history only; rebuilding
+  would require recreating the corpus and rerunning a new measurement protocol.
+- [x] **CPL-5: Decide keep/quarantine/delete.** Decision: delete/reclaim. Current
+  prompt-injection A/B evidence did not justify keeping the `651G` corpus for
+  online prompt stuffing, and the operator declined the optional static n-gram
+  experiment before reclaiming disk.
 
 ## Dependency Graph
 
@@ -201,12 +210,12 @@ flowchart TD
   current safe path is code-task scoped only.
 - Retrieval latency is part of the metric. A 29s snippet lookup is a regression
   even if the generated answer improves.
-- Do not delete the `651G` corpus without an explicit operator decision after
-  CPL-4/CPL-5 evidence.
+- The `651G` corpus was deleted only after explicit operator approval and the
+  CPL-4/CPL-5 evidence above.
 
 ## Key File Locations
 
-- Corpus artifact: `/mnt/raid0/llm/cache/corpus/v3_sharded`
+- Deleted corpus artifact: `/mnt/raid0/llm/cache/corpus/v3_sharded`
 - Static n-gram cache builder:
   `/mnt/raid0/llm/epyc-orchestrator/scripts/corpus/build_static_ngram_cache.py`
 - Corpus service: `/mnt/raid0/llm/epyc-orchestrator/src/services/corpus_retrieval.py`
@@ -222,9 +231,8 @@ flowchart TD
 
 ## Reporting Instructions
 
-After any CPL step, update this handoff first, then
-[inference-acceleration-index.md](inference-acceleration-index.md) if priority
-or keep/delete status changes, and finally
-[master-handoff-index.md](master-handoff-index.md) if it changes the active
-queue. Record any numeric claims with protocol and era labels per
-`/workspace/MEASUREMENT.md`.
+Closure updated
+[inference-acceleration-index.md](../active/inference-acceleration-index.md) and
+[master-handoff-index.md](../active/master-handoff-index.md) to remove this from
+the active queue. Record any future recreation as a new handoff with a fresh
+protocol; do not treat archived V3 corpus measurements as current evidence.
