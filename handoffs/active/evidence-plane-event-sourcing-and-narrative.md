@@ -23,6 +23,19 @@ ongoing snapshot-tail hygiene, W6/future strategy-consumer audits, and N2/W8
 promotion-evidence coordination rather than another baseline/pareto authority
 flip.
 
+**Snapshot-tail refresh — 2026-07-04T23:07Z**: W3 tail hygiene advanced while
+AutoPilot trial `1142` was mid-eval, following the same completed-row snapshot
+pattern used for the 2026-06-20 live append. `journal_snapshot_create.py --append --json`
+appended a `journal_snapshot` event to
+`orchestration/autopilot_journal_1.jsonl` through completed trial `1141`
+(`trial_count=1021`, `ledger_event_count=6`, parent snapshot
+`9d94145a0869...`, snapshot hash `69fcee75fd5c...`). Immediate replay
+validation with `journal_snapshot_replay.py --json --allow-tail-fold --strict`
+reported `bounded_replay_readiness=current`, `strict_readiness=current`,
+`hash_status=match`, `journal_max_trial_id=1141`, and `tail_trial_count=0`.
+Future W3 work is bounded-startup/ongoing-tail monitoring as trials accrue, not
+another catch-up snapshot for the current shard.
+
 ## Why
 
 The journal already rebuilds the full archive shape (`journal_reconstruction.py`) but only for
