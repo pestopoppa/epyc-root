@@ -92,6 +92,18 @@ quarantined/deleted by explicit operator decision.
   `/mnt/raid0/llm/tmp/corpus_static_ngram_dryrun_manifest.json` without loading
   a model or executing llama tools. This only makes the static-cache experiment
   ready; it does not justify a full corpus cache build.
+- 2026-07-04 A/B harness alignment: `corpus_quality_gate.py` now defaults to
+  the actual CPL-4 role pair, `coder_escalation` + `worker_general`, rather
+  than `frontdoor` + `worker_general` + `architect_general`. The benchmark
+  artifact records production role corpus flags separately from the benchmark's
+  forced corpus arm, so `worker_general` can be tested without flipping live
+  production config. Current no-inference preflight artifact:
+  `orchestration/reports/corpus_quality_preflight_20260704T203100Z.json`
+  (`6/6` prompts injected, `failure_count=0`, `ready_for_ab=true`,
+  `coder_escalation.production_role_enabled=true`,
+  `worker_general.production_role_enabled=false`,
+  `benchmark_forces_prompt_injection=true`). This clears A/B setup only; no live
+  generation or quality verdict has run.
 
 ## Prioritized Task List
 
@@ -122,7 +134,12 @@ quarantined/deleted by explicit operator decision.
   (`--confirm-clean-window`; no active AutoPilot unless deliberately collecting
   non-claim telemetry with `--allow-active-autopilot`). This A/B decides whether
   prompt-stuffing corpus retrieval is useful, not whether native n-gram lookup
-  should be enabled.
+  should be enabled. **Setup status 2026-07-04**: default model selection and
+  preflight metadata now match this role pair; next command for a claim-grade
+  generation pass is `uv run python scripts/benchmark/corpus_quality_gate.py
+  --models coder_escalation worker_general --min-score 0.0
+  --confirm-clean-window --skip-judge --output <artifact>`, followed by judge or
+  scoring only after the clean-window generation rows exist.
 - [ ] **CPL-4b: Corpus as a static n-gram *speculation* source (distinct mechanism from prompt-injection).** Design landed 2026-07-04 (subagent aba31618, verified against fork source), and the no-inference chunk/merge scaffold now exists at `scripts/corpus/build_static_ngram_cache.py`. **The llama.cpp wiring ALREADY EXISTS and is server-enabled — do NOT add a flag.** `--lookup-cache-static`/`-lcs` (`common/arg.cpp:1254-1259`, `.set_examples({...LLAMA_EXAMPLE_SERVER})`) loads a prebuilt static cache via `common_ngram_cache_load()` (`speculative.cpp:1669-1680`) and drafts tokens directly from the corpus bigram distribution (`ngram-cache.cpp:187-188`); builder `llama-lookup-create`/`-merge`/`-stats` already compiled. This is **µs-latency draft-acceptance** (changes decode t/s), *not* prompt content (the 29 s vector path). **Important sequencing**: do not spend CPU/disk on a large/full corpus-derived cache until CPL-4 first establishes that corpus-assisted code writing has value, unless the operator explicitly wants a throughput-only static-cache experiment. **Remaining gaps**: (1) no decision-grade corpus-derived cache exists — `/mnt/raid0/llm/tmp/lookup_cache.bin` is a 27 KB toy [unverified origin]; (2) `lookup-create` tokenizes the whole `-f` file in-memory, so use bounded chunking and `llama-lookup-merge`; (3) the launcher never passes `-lcs`; (4) **vocab-lock** — the cache stores token ids, so it MUST be built with the *target model's own tokenizer* and is not portable. Format is **bigram-only** (`LLAMA_NGRAM_STATIC=2`, no widening without code). **A/B (spec-only; run under MEASUREMENT.md in a clean window after the code-writing value gate or explicit operator approval)**: three arms on held-out code prompts — plain / context-only `--spec-type ngram-cache` (no `-lcs`) / corpus-static `-lcs corpus_ngram_static.bin` — measure **draft acceptance + decode t/s** (pair with correctness). **Bar to clear (measured 2026-07-04, GPU 27B-Q8):** context-only ngram is NEGATIVE — all variants regress (plain 28.4 → best ngram-simple 27.7; ngram-cache −8.1%), acceptance ~15% << break-even. The corpus-static arm's thesis is that a code-corpus bigram table lifts acceptance far above ~15%; report acceptance first because a corpus cache below ~40-50% acceptance is dead on arrival.
 - [ ] **CPL-5: Decide keep/quarantine/delete.** Keep only if the prompt-injection
   A/B and/or static n-gram cache A/B shows a measured coding-task benefit with
