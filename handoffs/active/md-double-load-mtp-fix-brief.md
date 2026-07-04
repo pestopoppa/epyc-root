@@ -2,7 +2,7 @@
 
 **Current owner/status (2026-07-03):** handed off by the MI210 session to the CPU/RAM orchestrator lane. The launch-code fix, live reload, post-reload acceptance evidence, memory-delta evidence, post-reboot audit, legacy-backend guard, and quiet-window same-workload decode A/B are complete. The CPU A/B closed mixed: memory improved materially, but the no-`-md` embedded path was slower than same-file `-md` under the throwaway `/completion` harness.
 **Original target:** a separate CPU / orchestrator session (execute directly).
-**Type:** production launch-config fix. No GPU, no new inference required to *decide* the fix — but you MUST measure to *verify* it.
+**Type:** completed production launch-config fix. No GPU, no new inference was required to *decide* the fix; the quiet-window verification is now recorded below.
 **Repo edited:** `epyc-orchestrator` (launch-config / arg builder). This brief lives in `epyc-root` (`handoffs/active/`).
 **Index note:** the original brief said not to wire it into `master-handoff-index.md` without operator approval; the operator has now explicitly handed the CPU side to this lane, and the root indices/progress record the picked-up status.
 
@@ -10,7 +10,7 @@
 
 ## Problem
 
-Production Qwen NEXTN (embedded-MTP) roles are launched with `-md <same GGUF as -m>`. That makes `llama-server` load a **second full copy** of the model as the "draft" and draft every token with a **full-model forward pass** — instead of using the cheap embedded NEXTN head via the zero-extra-load self-spec path. This both wastes RAM and negates the MTP speedup (the draft is as expensive as the target).
+Before the 2026-07-03 fix, production Qwen NEXTN (embedded-MTP) roles were launched with `-md <same GGUF as -m>`. That made `llama-server` load a **second full copy** of the model as the "draft" and draft every token with a **full-model forward pass** — instead of using the embedded NEXTN head via the zero-extra-load self-spec path. The live stack now omits `-md` for same-realpath Qwen NEXTN roles while keeping Gemma's separate assistant-head `-md`.
 
 ## Evidence — code path
 
@@ -41,30 +41,30 @@ The code path is backend-agnostic, so CPU takes the same branch.
 
 Applies **ONLY** to embedded-NEXTN roles where `realpath(-md) == realpath(-m)`.
 
-- **AFFECTED** (live launch args observed this session):
-  - frontdoor `:8070` — Qwen3.6-35B-A3B-MTP, `-md` == `-m`.
-  - architect `:8083` — Qwen3.5-122B-A10B-MTP, `-md` == `-m`.
-  - Also check **coder_escalation** and **worker_summarize** — they share the frontdoor process — and any other Qwen NEXTN role.
+- **AFFECTED BEFORE FIX** (resolved live 2026-07-03; post-reboot audit still `same_file_md_count=0`):
+  - frontdoor `:8070` and its Qwen3.6 quarter replicas — Qwen3.6-35B-A3B-MTP, same-realpath draft/model.
+  - architect `:8083` — Qwen3.5-122B-A10B-MTP, same-realpath draft/model.
+  - Shared aliases such as **coder_escalation** and **worker_summarize** inherit the fixed frontdoor process rather than launching their own draft.
 - **CORRECT — do NOT touch:** gemma-4-26B-A4B worker `:8072` launches `-md <a SEPARATE small assistant head>` (`gemma-4-26B-A4B-it-assistant-v6-Q8_0.gguf`). That is a genuine separate draft head. **Keep its `-md`.**
 
 **Rule of thumb:** drop `-md` **only** when `realpath(-md) == realpath(-m)`; keep it when they differ.
 
-## The fix
+## The implemented fix
 
-In the orchestrator launch-config / worker-pool arg builder that assembles the `llama-server` command, make the `-md <same-file>` emission **conditional**:
+The orchestrator launch-config / worker-pool arg builder now makes the `-md <same-file>` emission **conditional**:
 
 - For embedded-NEXTN roles (`realpath(-md) == realpath(-m)`): emit `--spec-type draft-mtp` **WITHOUT `-md`** → takes the `:1220` self-spec path.
 - For separate-head roles (paths differ): **keep `-md`**.
 
-Start in `epyc-orchestrator/scripts/server/` (`orchestrator_stack.py`, the stack launch-map, the WorkerPool arg construction, and the `model_registry` acceleration/spec block). **Grep** for where `-md` / `--model-draft` / `spec_draft` / `draft` args get added for NEXTN roles. The lever may be a **per-role registry field** or a **launch-map branch** — trace it before editing.
+The implemented lever is in `epyc-orchestrator/scripts/server/` launch construction: generated same-file draft provenance is preserved, but literal `-md` emission is suppressed when target and draft resolve to the same path.
 
 ## Verification (three gates + measure)
 
-Apply via `orchestrator_stack.py` and **reload to apply** (per stack lifecycle rules — reload == redeploy; use absolute paths). Then:
+The 2026-07-03 CPU lane applied this via `orchestrator_stack.py` and reloaded the stack. Audit gates:
 1. **pipeline-green.**
 2. **role actually starts.**
-3. **live == config** — `ps`-confirm the launched args for the affected role **no longer carry `-md <same file>`** (cross-ref the "verify live affinity/config, not just topology hash" memory).
-4. **measure the effect** — the role should show **real MTP draft-acceptance stats**; resident RAM should drop or at least duplicate mapping pressure should be reduced; decode speed must be measured, not assumed. Output must stay **coherent**. Test via the **autopilot eval fan-out path, NOT `/chat`**, for live acceptance, and use the throwaway A/B harness for same-prompt comparison.
+3. **live == config** — `ps` confirms the affected roles **no longer carry `-md <same file>`** (cross-ref the "verify live affinity/config, not just topology hash" memory).
+4. **measured effect** — resident duplicate mapping pressure dropped; decode speed was mixed under the throwaway `/completion` A/B and remains evidence, not a quality promotion.
 
 Cross-reference: stack-change three-gates (pipeline-green ≠ starts ≠ live==config).
 
