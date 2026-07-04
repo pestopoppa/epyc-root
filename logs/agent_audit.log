@@ -4271,3 +4271,6 @@ Purpose: Handoff audit + Hermes Phase 2 routing API
 {"ts":"2026-07-04T11:02:14+00:00","session":"ses_20260704_105939_3316203","level":"INFO","cat":"TASK_END","msg":"Corpus lookup stale-doc correction","details":"outcome=success"}
 {"ts":"2026-07-04T11:14:36+00:00","session":"ses_20260704_105939_3316203","level":"INFO","cat":"TASK_START","msg":"W4/W6 restart current-code readiness guard","details":"Add fail-closed current-code check to strict restart readiness reporting"}
 {"ts":"2026-07-04T11:14:36+00:00","session":"ses_20260704_105939_3316203","level":"INFO","cat":"TASK_END","msg":"W4/W6 restart current-code readiness guard","details":"outcome=success"}
+{"ts":"2026-07-04T11:16:02+00:00","session":"ses_20260704_111602_3339079","level":"INFO","cat":"SESSION_START","msg":"Triage Fable5 reprioritized queue","details":"new_session=ses_20260704_111602_3339079"}
+{"ts":"2026-07-04T11:27:00+00:00","session":"ses_20260704_111602_3339079","level":"INFO","cat":"TASK_START","msg":"RI-10 canary telemetry deficit reporting","details":"Surface concrete RI-10 canary-arm sample, volume, balance, and role deficits in DS-E1/Fable gates without changing readiness semantics."}
+{"ts":"2026-07-04T11:31:20+00:00","session":"ses_20260704_111602_3339079","level":"INFO","cat":"TASK_END","msg":"RI-10 canary telemetry deficit reporting","details":"outcome=success"}
