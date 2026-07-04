@@ -8,6 +8,21 @@
 
 **Current snapshot — 2026-06-27T08:00Z**: the controlled v6-era restart window appended the guarded baseline seed event with exact readiness guards (`trial_counter=970`, `journal_max_trial_id=969`). Post-append readiness reports the baseline ledger fold ready, but runtime authority remains default-off behind the explicit `baseline_ledger_authority_enabled` gate. AutoPilot recovered stale trial `970` by journaling it as `autopilot_killed_mid_trial`, resumed detached at trial `971` with `--max-trials 2000` (PID `86308`, log `/mnt/raid0/llm/tmp/autopilot_v6_resume_detached_20260627T075406Z.log`), and is collecting W6 audit rows. Do not remove `baseline_state` or enable baseline ledger authority until the aggregate strict gate passes with `--require-seq-cutover --require-w6-audit`.
 
+**Current authority refresh — 2026-07-04T20:25Z**: supersedes the
+2026-06-27 baseline-authority warning above. Live read-only reports now show
+the event-sourced authority path is active and strict restart-ready:
+`restart_readiness_report.py --json --strict` reports `restart_ready=true`,
+`archive_authority.ok=true`, `archive_authority.state_archive_present=false`,
+snapshot replay `restart_readiness=tail_fold_ready`, and
+`baseline_authority.status=ledger_authoritative` with
+`authority_enabled=true`, `authority_source=ledger_fold`,
+`state_baseline_present=false`, `event_count=1`, and no blockers. The archive
+source surface audit still passes (`failed_count=0`). Treat W1 archive-authority
+cutover and W4 baseline-authority cutover as live; remaining A8 work is W3
+ongoing snapshot-tail hygiene, W6/future strategy-consumer audits, and N2/W8
+promotion-evidence coordination rather than another baseline/pareto authority
+flip.
+
 ## Why
 
 The journal already rebuilds the full archive shape (`journal_reconstruction.py`) but only for
