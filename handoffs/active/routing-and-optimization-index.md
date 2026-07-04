@@ -98,10 +98,14 @@ under threshold (`32` pair rows / `32` cross-action rows), but
 `626` prompt-free candidate rows contain enough source reward contrast (`180`
 pair rows / `180` cross-action rows). Treat that diagnostic as evidence about
 available contrast only: it is `source_q_reward_passthrough`,
-`independent_oracle=false`, and `runtime_gate_change_allowed=false`. Next A9
-work is a contract decision: either make source-q-reward pairwise labels the
-explicit offline training target or build an independent scorer/source contract;
-do not rerun the exhausted collector.
+`independent_oracle=false`, and `runtime_gate_change_allowed=false`. The
+source-reward ranker diagnostic then passes aggregate signal, 5-fold
+group-disjoint CV, and `3/3` eligible independent holdouts. The source-q-reward
+target contract is now preregistered in
+`offline_reward_source_reward_pairwise_target_contract.{json,md}` as an
+offline-only training target candidate; it remains forbidden for live routing,
+online reward updates, or production promotion without a separate deployment
+gate. Do not rerun the exhausted collector.
 
 ## Additional Active References
 

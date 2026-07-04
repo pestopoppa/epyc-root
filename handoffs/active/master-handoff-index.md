@@ -55,11 +55,14 @@ same-record repair completed; the current guarded manifest is exhausted and
 still below coverage (`32` pair rows / `32` cross-action rows; gate `100/50`),
 but the source-q-reward diagnostic built from the same `626` prompt-free
 candidate rows clears coverage (`180` pair rows / `180` cross-action rows
-across `158` contrastive groups). Runtime gating remains disallowed because
-the diagnostic is source-reward passthrough, not an independent adopted oracle.
-Next A9 work is deciding whether to train on source-q-reward pairwise labels or
-building a new independent scorer/source contract; do not rerun the exhausted
-collector.
+across `158` contrastive groups). The downstream source-reward ranker summary
+also passes aggregate signal, 5-fold group-disjoint CV, and `3/3` eligible
+independent holdouts. The offline target is now preregistered in
+`offline_reward_source_reward_pairwise_target_contract.{json,md}` as
+`source_q_reward_passthrough`: prompt-free and usable for offline A9 training
+experiments only, not independent oracle evidence. Runtime gating remains
+disallowed and live use still requires a separate deployment gate. Do not rerun
+the exhausted collector.
 
 ## B2. Frontier programs (strategic spine — spec: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md))
 | # | Prio | Item | Handoff |

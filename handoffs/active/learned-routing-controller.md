@@ -1237,6 +1237,19 @@ learned-routing reward signals from the failed NeuralTxt report alone.
   cleanup strata. The collection still must run only in a coordinated window;
   the script refuses to run while AutoPilot is active because even
   `seed_specialist_routing.py --dry-run` consumes live model slots.
+- 2026-07-04 follow-up: the clean-window A9 collection and same-record repair
+  completed, and the guarded collection manifest is now exhausted
+  (`status=no_runnable_batches`). The reference-token candidate-only contract
+  remains below coverage (`32` pair rows / `32` cross-action rows), but the
+  source-q-reward diagnostic built from the same `626` prompt-free candidate
+  rows clears coverage (`180` / `180`) and the source-reward ranker diagnostic
+  passes aggregate signal, 5-fold group-disjoint CV, and `3/3` eligible
+  independent holdouts. The target is now preregistered in
+  `offline_reward_source_reward_pairwise_target_contract.{json,md}` as
+  `source_q_reward_passthrough`: an offline training target candidate only, not
+  independent oracle evidence, with `runtime_gate_change_allowed=false`. Do not
+  rerun the exhausted collector; any live use still requires a separate
+  deployment gate.
 
 ## Research Intake Update — 2026-07-02
 
