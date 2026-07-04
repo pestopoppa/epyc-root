@@ -229,6 +229,17 @@ Validation:
 Conclusion: keep `config_model_catalog` in the guarded surface inventory, but do
 not treat it as a parked W4 migration unless a future concrete duplicated fact
 appears.
+- 2026-07-04 follow-up rechecked the `src.config.models` compatibility-alias
+  surface after a sidecar flagged `ServerURLsConfig` / `TimeoutsConfig` as
+  HIGH blast-radius. GitNexus confirmed the broad config import blast radius
+  (`impactedCount=190`), so the main thread audited rather than delegated it:
+  `worker_explore` URL/timeout defaults canonicalize to `worker_general`,
+  `worker_fast` remains the explicit manifest-owned warm auxiliary, and
+  `worker_coder` resolves to the same warm compatibility port/timeout as
+  current tests expect. `stack_change_guard.py --all-hardcoded-surfaces` and
+  `stack_change_pipeline.py check` are clean; focused config compatibility
+  tests passed. Keep this as guarded compatibility, not an open migration,
+  unless a future stack change introduces a concrete stale role/port fact.
 - Orchestrator `471a4d2` closes the `launch_maps` auxiliary-role tail with an
   explicit validator classification rather than widening generated prior role
   semantics. `validate_launch_manifest_serving_alignment()` now rejects

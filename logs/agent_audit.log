@@ -4260,3 +4260,5 @@ Purpose: Handoff audit + Hermes Phase 2 routing API
 {"ts":"2026-07-04T10:15:00+00:00","session":"ses_20260704_091216_3172852","level":"INFO","cat":"TASK_END","msg":"RI-10 deterministic factual-risk canary sampling","details":"outcome=success"}
 {"ts":"2026-07-04T10:26:34+00:00","session":"ses_20260704_091216_3172852","level":"INFO","cat":"TASK_START","msg":"Fable tool-use recent telemetry gate","details":"Keep tool-use activation ready when recent sentinel evidence exists despite a latest zero-call eval"}
 {"ts":"2026-07-04T10:26:34+00:00","session":"ses_20260704_091216_3172852","level":"INFO","cat":"TASK_END","msg":"Fable tool-use recent telemetry gate","details":"outcome=success"}
+{"ts":"2026-07-04T10:38:38+00:00","session":"ses_20260704_091216_3172852","level":"INFO","cat":"TASK_START","msg":"Fable handoff drift and N11 alias audit","details":"Update active queue state after A9 manifest repair and main-thread audit HIGH-risk config alias surface"}
+{"ts":"2026-07-04T10:38:38+00:00","session":"ses_20260704_091216_3172852","level":"INFO","cat":"TASK_END","msg":"Fable handoff drift and N11 alias audit","details":"outcome=success"}
