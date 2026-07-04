@@ -72,7 +72,7 @@ Controller (Claude CLI meta-reasoning)
   ├── Species 2: PromptForge (LLM prompt mutation → .md hot-swap)
   └── Species 3: StructuralLab (flags + routing model lifecycle)
   │
-  EvalTower: T0 (10q/30s) → T1 (100q/5m) → T2 (500+/30m)
+  EvalTower: T0 (10q/30s) → T1 (100q/5m) → T2 (500+/30m) → T3 (hard-only stress)
   ParetoArchive: 4D (quality × speed × -cost × reliability; speed is median request t/s for serial evals, aggregate batch t/s for concurrent same-trial eval batches)
   SafetyGate: quality floor + per-suite guard + routing diversity
 ```
@@ -189,7 +189,7 @@ CHECKPOINT + RESET (selective) + RESEED → back to top
 | Component | Path | Integration |
 |-----------|------|-------------|
 | Seeding 3-way | `scripts/benchmark/seed_specialist_routing.py` | Seeder wraps `evaluate_question_3way` + `_inject_3way_rewards_http` |
-| Question pool | Research: `scripts/benchmark/question_pool.py` | EvalTower draws T1/T2 validation questions |
+| Question pool | Research: `scripts/benchmark/question_pool.py` | EvalTower draws T1/T2 validation questions and T3 hard-only stress questions |
 | Optuna | Research: `scripts/benchmark/optuna_orchestrator.py` | NumericSwarm reuses TPE/cluster patterns |
 | Claude Debugger | `src/pipeline_monitor/claude_debugger.py` | PromptForge reuses Popen+session+git pattern |
 | Episodic memory | `orchestration/repl_memory/episodic_store.py` | Seeder monitors count/convergence |
@@ -1110,3 +1110,34 @@ Patterns **1, 3, 4 are IMPLEMENTED** (observe-only) on branch `dgm-harness-patte
 (2 minor findings applied). Patterns **2** (fecundity parents) and **5** (token cost axis —
 MEASUREMENT trust boundary, operator-only) are **DEFERRED**, gated on Pattern 1 landing + the
 Pattern 3 ablation.
+
+### Eval-task coverage guardrail (2026-07-04)
+
+Operator concern: the planner may be optimizing tunables against a small repeated
+question slice instead of sampling the full task-complexity range. This is a
+real risk for planner learning, even though repetition is correct for the
+paired authority core.
+
+- Orchestrator `scripts/autopilot/eval_task_coverage_report.py` now provides a
+  read-only coverage report over all AutoPilot journal shards plus the active
+  question pool. It reports distinct scored qids, repeat factor, pool coverage,
+  suite/partition distribution, and action/config/hypothesis diversity.
+- Live all-shard observation on 2026-07-04:
+  `23,725` scored question rows, `2,333` distinct scored qids,
+  `52,210` stable pool qids, `4.4685%` upper-bound pool coverage, and
+  `10.1693x` repeat factor. Status: `low_coverage`.
+- Policy: **do not rotate or replace the W6/W8 fixed authority core mid-run**.
+  That would change the instrument during active evidence collection. Instead,
+  split lanes: keep `authority_core` fixed for paired promotion evidence, add a
+  separate `exploration_coverage` rotating/advisory lane for planner learning,
+  and keep `promotion_holdout` as fresh held-out acceptance evidence.
+- First-class T3 lane landed 2026-07-04: `EvalTower.eval_t3()` samples only
+  scoreable pool rows explicitly labeled `tier=3`, `deep_eval` accepts
+  `tier: 3`, the shared tier registry exposes `T3 (hard-only stress eval)`,
+  and the dashboard Pareto reconstruction keeps tier 3 in its own
+  `frontiers_by_tier["3"]` series. Non-inference sanity check found `5,431`
+  T3-labeled rows, `4,956` scoreable rows across `13` suites, and a
+  160-question spec draw containing only `tier=3` rows.
+- Next implementation task: wire the report into regular Fable/dashboard
+  readiness so low eval-task coverage becomes visible before future planner
+  budget/tunable changes are treated as broad evidence.
