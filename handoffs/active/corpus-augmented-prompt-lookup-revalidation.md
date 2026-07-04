@@ -1,8 +1,8 @@
 # Corpus-Augmented Prompt Lookup Revalidation
 
-**Status**: ACTIVE-HIGH, CPL-1/2/3 complete; CPL-4 prompt-injection preflight ready 2026-07-04; native llama prompt-lookup/static-cache path still disabled for live roles; A/B decision open and clean-window guarded
+**Status**: ACTIVE-HIGH hypothesis, not proven ROI; CPL-1/2/3 complete; CPL-4 prompt-injection preflight ready 2026-07-04; native llama prompt-lookup/static-cache path still disabled for live roles; A/B decision open and clean-window guarded
 **Parent index**: [inference-acceleration-index.md](inference-acceleration-index.md)
-**Priority**: high disk/capability ROI, below current G0/GPU and evidence-plane authority rows
+**Priority**: high option value because the corpus occupies about `651G`, below current G0/GPU and evidence-plane authority rows until code-writing A/B proves benefit
 **Related**: [speculative-decoding-mtp-refresh.md](speculative-decoding-mtp-refresh.md), [model-stack-single-source-update-pipeline.md](model-stack-single-source-update-pipeline.md), archived [hybrid-lookup-spec-decode.md](../archived/hybrid-lookup-spec-decode.md), archived [llama-server-prompt-lookup.md](../archived/llama-server-prompt-lookup.md)
 
 ## Objective
@@ -76,11 +76,22 @@ quarantined/deleted by explicit operator decision.
   stream-adapter, delegation, and graph-helper paths on turn 0, and
   `corpus_quality_preflight_20260704T164539Z.json` shows `injected_count=6`,
   `6/6` injected prompts, `3` snippets per prompt, and no failures.
+- These findings prove wiring/searchability only. They do **not** prove that
+  corpus assistance improves code-writing quality or end-to-end latency.
 - What remains disabled/unproven: native llama prompt lookup (`--lookup-*`,
   `--lookup-cache-static`) is not active for current frontdoor/coder roles; the
   old disabled `worker_pool.prompt_lookup` path is not used by the API;
   delegated specialist corpus context is default-off; and the quality-RAG branch
   is disabled unless `rag_enabled` is configured.
+- 2026-07-04 no-inference scaffold: `scripts/corpus/build_static_ngram_cache.py`
+  can export bounded text chunks from the v3 `snippets.db`, invoke
+  `llama-lookup-create -m <model> -f <chunk> -lcs <part>`, and merge parts with
+  `llama-lookup-merge`. Focused tests cover chunking, command construction,
+  snippets filtering, dry-run behavior, and the large-scan guard. A tiny dry-run
+  against the live corpus selected 3 Python snippets and wrote
+  `/mnt/raid0/llm/tmp/corpus_static_ngram_dryrun_manifest.json` without loading
+  a model or executing llama tools. This only makes the static-cache experiment
+  ready; it does not justify a full corpus cache build.
 
 ## Prioritized Task List
 
@@ -102,8 +113,9 @@ quarantined/deleted by explicit operator decision.
   `scripts/benchmark/corpus_health_probe.py` and focused tests; first report
   artifact is listed above.
 - [ ] **CPL-4: Run a focused corpus-on/off A/B for coding tasks.** Compare
-  corpus injection off vs on for `coder_escalation` and any intended cheap
-  coding role. Use `scripts/benchmark/corpus_quality_gate.py --min-score 0.0`
+  corpus injection off vs on for `coder_escalation` and `worker_general` if that
+  role still handles any coding/refactor workload. Use
+  `scripts/benchmark/corpus_quality_gate.py --min-score 0.0`
   unless deliberately testing another threshold; the old `0.5` threshold
   preflights as a no-op. Capture retrieval latency, generated t/s, quality, and
   injected-snippet telemetry. Live generation must run in a clean/isolated window
@@ -111,7 +123,7 @@ quarantined/deleted by explicit operator decision.
   non-claim telemetry with `--allow-active-autopilot`). This A/B decides whether
   prompt-stuffing corpus retrieval is useful, not whether native n-gram lookup
   should be enabled.
-- [ ] **CPL-4b: Corpus as a static n-gram *speculation* source (distinct, stronger mechanism than prompt-injection).** Design landed 2026-07-04 (subagent aba31618, verified against fork source). **The llama.cpp wiring ALREADY EXISTS and is server-enabled — do NOT add a flag.** `--lookup-cache-static`/`-lcs` (`common/arg.cpp:1254-1259`, `.set_examples({...LLAMA_EXAMPLE_SERVER})`) loads a prebuilt static cache via `common_ngram_cache_load()` (`speculative.cpp:1669-1680`) and drafts tokens directly from the corpus bigram distribution (`ngram-cache.cpp:187-188`); builder `llama-lookup-create`/`-merge`/`-stats` already compiled. This is **µs-latency draft-acceptance** (changes decode t/s), *not* prompt content (the 29 s vector path) — a cleaner keep-rationale for the 651 G corpus. **The real gaps** (not code): (1) no corpus-derived cache exists — `/mnt/raid0/llm/tmp/lookup_cache.bin` is a 27 KB toy [unverified origin]; (2) `lookup-create` tokenizes the whole `-f` file in-memory → **can't stream 651 G**, needs chunk → per-chunk `llama-lookup-create` → `llama-lookup-merge`; (3) the launcher never passes `-lcs`; (4) **vocab-lock** — the cache stores token-ids, so it MUST be built with the *target model's own tokenizer* and is not portable. Format is **bigram-only** (`LLAMA_NGRAM_STATIC=2`, no widening without code). **Work**: a chunk-and-merge build script around existing tools (start with a few-GB high-value code slice, not the full 651 G scan — heavy single-threaded CPU/disk, respect the no-uncoordinated-inference rule) + one launcher arg. **A/B (spec-only; run under MEASUREMENT.md in a clean window)**: three arms on held-out code prompts — plain / context-only `--spec-type ngram-cache` (no `-lcs`) / corpus-static `-lcs corpus_ngram_static.bin` — measure **draft acceptance + decode t/s** (pair with correctness). **Bar to clear (measured 2026-07-04, GPU 27B-Q8):** context-only ngram is NEGATIVE — all variants regress (plain 28.4 → best ngram-simple 27.7; ngram-cache −8.1%), acceptance ~15% << break-even. The corpus-static arm's entire thesis is that a code-corpus bigram table lifts acceptance FAR above ~15% (supplying continuations the short context hasn't seen); if it can't, it loses to plain exactly as context-only did. So report acceptance FIRST — a corpus cache below ~40–50% acceptance is dead on arrival and there's no point measuring t/s. Fold this as a sub-arm of the CPL-4 A/B so one clean window answers both semantic-injection and n-gram-static. Also the primary target for the MI210 GPU n-gram-spec lever (`mi210-q8-dequant-gemv-roofline.md` Tier-3 lever 6).
+- [ ] **CPL-4b: Corpus as a static n-gram *speculation* source (distinct mechanism from prompt-injection).** Design landed 2026-07-04 (subagent aba31618, verified against fork source), and the no-inference chunk/merge scaffold now exists at `scripts/corpus/build_static_ngram_cache.py`. **The llama.cpp wiring ALREADY EXISTS and is server-enabled — do NOT add a flag.** `--lookup-cache-static`/`-lcs` (`common/arg.cpp:1254-1259`, `.set_examples({...LLAMA_EXAMPLE_SERVER})`) loads a prebuilt static cache via `common_ngram_cache_load()` (`speculative.cpp:1669-1680`) and drafts tokens directly from the corpus bigram distribution (`ngram-cache.cpp:187-188`); builder `llama-lookup-create`/`-merge`/`-stats` already compiled. This is **µs-latency draft-acceptance** (changes decode t/s), *not* prompt content (the 29 s vector path). **Important sequencing**: do not spend CPU/disk on a large/full corpus-derived cache until CPL-4 first establishes that corpus-assisted code writing has value, unless the operator explicitly wants a throughput-only static-cache experiment. **Remaining gaps**: (1) no decision-grade corpus-derived cache exists — `/mnt/raid0/llm/tmp/lookup_cache.bin` is a 27 KB toy [unverified origin]; (2) `lookup-create` tokenizes the whole `-f` file in-memory, so use bounded chunking and `llama-lookup-merge`; (3) the launcher never passes `-lcs`; (4) **vocab-lock** — the cache stores token ids, so it MUST be built with the *target model's own tokenizer* and is not portable. Format is **bigram-only** (`LLAMA_NGRAM_STATIC=2`, no widening without code). **A/B (spec-only; run under MEASUREMENT.md in a clean window after the code-writing value gate or explicit operator approval)**: three arms on held-out code prompts — plain / context-only `--spec-type ngram-cache` (no `-lcs`) / corpus-static `-lcs corpus_ngram_static.bin` — measure **draft acceptance + decode t/s** (pair with correctness). **Bar to clear (measured 2026-07-04, GPU 27B-Q8):** context-only ngram is NEGATIVE — all variants regress (plain 28.4 → best ngram-simple 27.7; ngram-cache −8.1%), acceptance ~15% << break-even. The corpus-static arm's thesis is that a code-corpus bigram table lifts acceptance far above ~15%; report acceptance first because a corpus cache below ~40-50% acceptance is dead on arrival.
 - [ ] **CPL-5: Decide keep/quarantine/delete.** Keep only if the prompt-injection
   A/B and/or static n-gram cache A/B shows a measured coding-task benefit with
   bounded overhead. Otherwise mark `/mnt/raid0/llm/cache/corpus` reclaimable and
@@ -125,7 +137,9 @@ flowchart TD
     C1 --> C3[CPL-3 offline probe]
     C2 --> C4[CPL-4 corpus-on/off A/B]
     C3 --> C4
-    C4 --> C5[CPL-5 keep/quarantine/delete decision]
+    C4 --> C4B[CPL-4b bounded static-cache build/A-B if justified]
+    C4B --> C5[CPL-5 keep/quarantine/delete decision]
+    C4 --> C5
 ```
 
 ## Cross-Cutting Concerns
@@ -142,6 +156,8 @@ flowchart TD
 ## Key File Locations
 
 - Corpus artifact: `/mnt/raid0/llm/cache/corpus/v3_sharded`
+- Static n-gram cache builder:
+  `/mnt/raid0/llm/epyc-orchestrator/scripts/corpus/build_static_ngram_cache.py`
 - Corpus service: `/mnt/raid0/llm/epyc-orchestrator/src/services/corpus_retrieval.py`
 - Prompt wiring: `/mnt/raid0/llm/epyc-orchestrator/src/prompt_builders/builder.py`
 - Chat call sites: `/mnt/raid0/llm/epyc-orchestrator/src/api/routes/chat.py`,
