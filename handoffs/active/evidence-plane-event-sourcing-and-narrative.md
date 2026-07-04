@@ -36,6 +36,20 @@ reported `bounded_replay_readiness=current`, `strict_readiness=current`,
 Future W3 work is bounded-startup/ongoing-tail monitoring as trials accrue, not
 another catch-up snapshot for the current shard.
 
+**W6 consumer audit refresh — 2026-07-04T23:13Z**: main-thread and
+`gpt-5.4-mini` read-only sidecar audit found no actionable raw StrategyStore
+consumer remaining in live planner/action paths. Active consumers use
+`retrieve_for_journal(..., journal=...)`, `retrieve_conventions(...,
+journal=...)`, or store-owned compression/staleness/distillation selectors with
+`journal` / `excluded_trial_ids`; the residual direct SQL surfaces are the
+operator-seeded planner-hint path, legacy fallback branches that fail closed
+when journal-aware selectors are required, and dashboard read-only graph
+inspection. Focused validation passed for per-turn planner hint refresh,
+operator-seed visibility, non-operator unprovenanced filtering, and convention
+denylist/suppression behavior. Treat W6 as audit-current; future W6 work should
+be triggered by a new StrategyStore consumer or regression, not by a generic
+repeat migration pass.
+
 ## Why
 
 The journal already rebuilds the full archive shape (`journal_reconstruction.py`) but only for
