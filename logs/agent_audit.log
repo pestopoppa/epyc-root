@@ -4264,3 +4264,5 @@ Purpose: Handoff audit + Hermes Phase 2 routing API
 {"ts":"2026-07-04T10:38:38+00:00","session":"ses_20260704_091216_3172852","level":"INFO","cat":"TASK_END","msg":"Fable handoff drift and N11 alias audit","details":"outcome=success"}
 {"ts":"2026-07-04T10:46:41+00:00","session":"ses_20260704_091216_3172852","level":"INFO","cat":"TASK_START","msg":"Planner tool-use negative guardrail","details":"Seed StrategyStore with a precise no-code-mutation guardrail after planner tried rejected tool_policy edit"}
 {"ts":"2026-07-04T10:48:08+00:00","session":"ses_20260704_091216_3172852","level":"INFO","cat":"TASK_END","msg":"Planner tool-use negative guardrail","details":"outcome=success"}
+{"ts":"2026-07-04T10:53:09+00:00","session":"ses_20260704_091216_3172852","level":"INFO","cat":"TASK_START","msg":"F3 dataset inventory refresh","details":"Remove stale branch-ready claims after verifying live planner archive, per-question ledger, and lab scaffold state"}
+{"ts":"2026-07-04T10:53:09+00:00","session":"ses_20260704_091216_3172852","level":"INFO","cat":"TASK_END","msg":"F3 dataset inventory refresh","details":"outcome=success"}
