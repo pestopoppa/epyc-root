@@ -4269,3 +4269,5 @@ Purpose: Handoff audit + Hermes Phase 2 routing API
 {"ts":"2026-07-04T10:59:39+00:00","session":"ses_20260704_105939_3316203","level":"INFO","cat":"SESSION_START","msg":"Read-only triage of top next tasks across root and orchestrator","details":"new_session=ses_20260704_105939_3316203"}
 {"ts":"2026-07-04T11:02:14+00:00","session":"ses_20260704_105939_3316203","level":"INFO","cat":"TASK_START","msg":"Corpus lookup stale-doc correction","details":"Remove obsolete corpus enablement and acceptance-lift claims while CPL-4 remains clean-window gated"}
 {"ts":"2026-07-04T11:02:14+00:00","session":"ses_20260704_105939_3316203","level":"INFO","cat":"TASK_END","msg":"Corpus lookup stale-doc correction","details":"outcome=success"}
+{"ts":"2026-07-04T11:14:36+00:00","session":"ses_20260704_105939_3316203","level":"INFO","cat":"TASK_START","msg":"W4/W6 restart current-code readiness guard","details":"Add fail-closed current-code check to strict restart readiness reporting"}
+{"ts":"2026-07-04T11:14:36+00:00","session":"ses_20260704_105939_3316203","level":"INFO","cat":"TASK_END","msg":"W4/W6 restart current-code readiness guard","details":"outcome=success"}

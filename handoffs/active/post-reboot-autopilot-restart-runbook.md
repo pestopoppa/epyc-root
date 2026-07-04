@@ -49,7 +49,7 @@ Before the reboot: operator killed AutoPilot, then **enabled planner authority**
   `AUTOPILOT_SEQ_VERDICT=1` is what makes sequential-verdict authority live (it's env-gated, not a state flag).
 - [x] **6. Verify live** (a few minutes in):
   - process up; phase advancing (`/mnt/raid0/llm/tmp/autopilot_phase.json` trial id climbing).
-  - `python3 scripts/autopilot/restart_readiness_report.py --json --strict --require-seq-cutover --require-w6-audit` → `restart_ready: True`, blockers `[]`.
+  - `python3 scripts/autopilot/restart_readiness_report.py --json --strict --require-seq-cutover --require-w6-audit --require-current-code` → `restart_ready: True`, blockers `[]`, `phase_health_code_stale: False`.
   - brief endpoint: `curl -s 127.0.0.1:8000/dashboard/api/optimization_brief` → `authority.decision_grade_possible` should now read **true** (banner fix `8fe19f62` is live after the step-2 stack start; baseline=consent+flag, sequential=live SEQ_VERDICT env, W6 alarm clear).
   - `/health` green; no `autopilot_killed_mid_trial` churn.
 
@@ -67,7 +67,7 @@ Before the reboot: operator killed AutoPilot, then **enabled planner authority**
 - Host prerequisite drift was corrected by the launcher (`kernel.perf_event_paranoid=1`, THP `enabled=always`, THP `defrag=always`).
 - Consent file survived reboot and is locked root-owned immutable (`baseline_ledger_authority_enabled(...) == True`).
 - AutoPilot restarted as PID `119940` with `AUTOPILOT_SEQ_VERDICT=1`, W6 audit env, `AUTOPILOT_PLANNER_TIMEOUT=600`, `AUTOPILOT_PLANNER_HINTS=1`, and `--max-trials 2000`.
-- `restart_readiness_report.py --json --strict --require-seq-cutover --require-w6-audit` returned `restart_ready=true`, blockers `[]`; dashboard optimization brief reports authority decision-grade (`baseline_authority_enabled=true`, `sequential_authority_enabled=true`, `w6_gaming_alarm=false`).
+- `restart_readiness_report.py --json --strict --require-seq-cutover --require-w6-audit` returned `restart_ready=true`, blockers `[]`; dashboard optimization brief reports authority decision-grade (`baseline_authority_enabled=true`, `sequential_authority_enabled=true`, `w6_gaming_alarm=false`). As of orchestrator `8185c0f7`, repeat strict restart/cutover checks with `--require-current-code` so a stale live AutoPilot runtime fails closed before future authority-affecting restarts.
 - AutoPilot was resumed from the pre-reboot explicit pause and entered `planner_invoke` for trial `1052`.
 - Remote `main` was fast-forwarded: `epyc-root` `c19453b9..e2ff239b`, `epyc-orchestrator` `46b29ce2..8fe19f62`.
 
