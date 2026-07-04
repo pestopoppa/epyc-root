@@ -48,16 +48,18 @@ Surfaced above the maintained N-rows so the highest-leverage strategic actions a
 | MED | DSA D1 smoke (per-run approval; refresh PR snapshot first) · **model-capability descriptors** → [model-capability-descriptors.md](model-capability-descriptors.md) (W1/W2 clean through `54b7c77`; W3 first consumers are live through planner signatures `73ed436`, seeding `2e31055`, q_scorer `9ed177d`, and launch args `7121f38`; W4 has no-inference stack-change swap fixtures in the promotion gate plus archive-backed candidate-swap replay via the meta-agent; W5 planner guidance and generated-summary freshness are closed through orchestrator `641528d7`; stack-change W6 runbook/launch-hook coverage is closed in the canonical promotion gate, leaving only the gated descriptor W5 unified-cascade tail rather than a standardization blocker) · reasoning-compression enforce-decision (n>=100 gate) · streaming-llm sweep (code landed; nightshift gates 5 KV items) · unified-trace EXM-1 (coordinate with ledger schema) · bep-dcp clean DCP-6a running-state attestation + J7 inference gate · minddr MD-9 (=J15) · repl-turn-efficiency S4 (ColGREP soak/daemon/version hygiene closed 2026-06-14) · K-EMB-1 granite bench (embedder servers only; informs the N9 re-embed choice) · meta-harness MH-7/9 | per-row gates as written |
 | LOW | granite model-artifact/server prep for Phase B · integration-test tranches · memento S2 smoke · agent-file-compression Ph3 (HIGH rating stripped) · attention-matching refresh-vs-Qwen3.6 · context-folding tails · N12 observability tail (`affinity_preflight.py` live `numa_maps`; production `no_mmap` flip path closed negative) · searxng CA-6 Camofox/SX-5/6 AR-3 gates remain after CA-7 landed in `6424d05` · ernie QA · ODL/LiteParse benches · per-request-budget Fix A/B · campaign G-tail (respecify models first) / J8 optional / J14 (down-prioritized per findings-02) / K-DIV-1 (measure now, thresholds after N2) / K-ROPE-1 | opportunistic / window-filler |
 
-A9 current-state addendum: the earlier pairwise ranker and expanded-gap
-diagnostics remain non-decision-grade and runtime gate changes remain
-disallowed. After the 2026-07-04 same-record manifest repair, the regenerated
-manifest has `1` runnable reference-backed `instruction_precision` batch rather
-than `0` runnable batches. The current blocker is operational, not a scorer
-dead end: `offline_reward_pairwise_collection_status.py --markdown` reports
-`status=blocked` because AutoPilot is active. Do not rerun the old separated
-collector shape; at the next clean/idle window run the current guarded
-`collect_offline_reward_pairwise_expanded_gap.sh` and then the post-collection
-pipeline embedded in the manifest.
+A9 current-state addendum: the 2026-07-04 clean-window collection and
+same-record repair completed; the current guarded manifest is exhausted and
+`offline_reward_pairwise_collection_status.py --markdown` reports
+`status=no_runnable_batches`. The reference-token candidate-only contract is
+still below coverage (`32` pair rows / `32` cross-action rows; gate `100/50`),
+but the source-q-reward diagnostic built from the same `626` prompt-free
+candidate rows clears coverage (`180` pair rows / `180` cross-action rows
+across `158` contrastive groups). Runtime gating remains disallowed because
+the diagnostic is source-reward passthrough, not an independent adopted oracle.
+Next A9 work is deciding whether to train on source-q-reward pairwise labels or
+building a new independent scorer/source contract; do not rerun the exhausted
+collector.
 
 ## B2. Frontier programs (strategic spine — spec: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md))
 | # | Prio | Item | Handoff |

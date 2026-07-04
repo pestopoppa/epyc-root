@@ -88,16 +88,20 @@ This index is a dispatch surface. Completed implementation chronology was pruned
 | P3 (GATED) | Fusion typed-judge-schema + model-discretionary invocation + recursion-bound | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) (program.md), [research/deep-dives/optillm-test-time-techniques.md](../../research/deep-dives/optillm-test-time-techniques.md) | Fusion typed-judge-schema + model-discretionary invocation + recursion-bound (intake-712/714) → the GATED P21.B method-selection axis; lives in autopilot/program.md + the optillm deep-dive, NOT this index's body. GATED — P21.B not built. Only judge-contract/invocation/recursion port n-free; the panel is the n-degraded MoA path. Cross-link intake-601. (added 2026-06-20 via research-intake batch 695-720 deep-dive) |
 
 **A9 current-state override (2026-07-04)**: the old separated acquisition
-window from orchestrator `926fd30b` is superseded by the same-record manifest
-repair. The current generated `offline_reward_pairwise_collection_window.v1`
-manifest contains `1` runnable reference-backed `instruction_precision` batch;
-`offline_reward_pairwise_collection_status.py --markdown` reports
-`status=blocked` only because AutoPilot is active. The v1 prompt bundle carries
-reference/expected text for this suite, and the manifest records
-`reference_source_prompt_count=11`. Next A9 work is the guarded clean/idle-window
-collection via `collect_offline_reward_pairwise_expanded_gap.sh`, then the
-post-collection pipeline embedded in the manifest. Runtime gating remains
-disallowed until the rebuilt pairwise contract clears its own evidence gates.
+window from orchestrator `926fd30b` is superseded by the completed same-record
+repair and clean-window run. The current generated
+`offline_reward_pairwise_collection_window.v1` manifest has no runnable
+batches; `offline_reward_pairwise_collection_status.py --markdown` reports
+`status=no_runnable_batches`. The reference-token candidate-only contract is
+under threshold (`32` pair rows / `32` cross-action rows), but
+`offline_reward_pairwise_source_reward_diagnostic_summary.json` shows the same
+`626` prompt-free candidate rows contain enough source reward contrast (`180`
+pair rows / `180` cross-action rows). Treat that diagnostic as evidence about
+available contrast only: it is `source_q_reward_passthrough`,
+`independent_oracle=false`, and `runtime_gate_change_allowed=false`. Next A9
+work is a contract decision: either make source-q-reward pairwise labels the
+explicit offline training target or build an independent scorer/source contract;
+do not rerun the exhausted collector.
 
 ## Additional Active References
 
