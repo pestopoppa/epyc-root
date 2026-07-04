@@ -1,6 +1,6 @@
 # Internal Interaction Lifecycle
 
-**Status**: P1 lifecycle substrate landed 2026-06-28 in `epyc-orchestrator` `18956892`; P2/J17 remain gated on the P1 regression bake + cross-role contention bake
+**Status**: P1 lifecycle substrate landed 2026-06-28 in `epyc-orchestrator` `18956892`; P2 scaffolding is staged default-off as of 2026-07-04, but P2/J17 live behavior remains gated on the P1 regression bake + cross-role contention bake
 **Priority**: P0 for substrate cleanup; downstream of intake-655 deep-dive
 **Created**: 2026-05-31
 **Owning index**: [`routing-and-optimization-index.md`](routing-and-optimization-index.md)
@@ -94,7 +94,9 @@ INTERACTION_POLICY_VERSION = "1.0"
 - [x] `delegation_diagnostics` byte-equal on identical inputs across before / after. Current regression proof landed 2026-06-28 in orchestrator: `tests/unit/test_architect_delegation.py::TestArchitectDelegatedAnswer::test_delegation_diagnostics_are_byte_equal_for_identical_inputs` runs the lifecycle-backed delegation path twice with identical mocked inputs, isolates the delegation cache, serializes diagnostics with sorted JSON keys, and asserts byte equality. Validation slice: focused test plus adjacent delegation/lifecycle/API-model suite -> `117 passed`; ruff and py_compile passed.
 - [x] No breaking rename to `delegation_events` / `DelegationEvent`; additive `interaction_type="delegate"` field only.
 - [x] `epyc-orchestrator/scripts/server/affinity_preflight.py` shows no region-lock drift. Live artifact `epyc-orchestrator/orchestration/reports/internal_interaction_affinity_preflight_20260703T151843Z.json` checked 22 instances across `frontdoor`, `architect_general`, `ingest_long_context`, `worker_general`, `worker_vision`, and `vision_escalation`: `live_affinity_verified=true`, `memory_mismatches=0`, `memory_locality_required=false`.
-- [ ] One autopilot cycle (≥48h) with no rise in `delegation_cache_hits` miss rate or `ContentionDenied` 503 rate. Counter emission blocker is resolved in `epyc-orchestrator` `02a01617` and deployed by orchestrator API reload at `2026-07-03T15:40:30Z` (API PID `1769725`): delegated completions now persist `delegation_cache_lookups` / `delegation_cache_hits` / `delegation_cache_misses` / `delegation_cache_hit_rate` in progress completion metadata and response diagnostics, while HTTP `ContentionDenied` 503s emit `ROUTING_FALLBACK` progress events with `kind="contention_denied"` and best-effort flush. P2 remains locked until the live ≥48h bake over these counters is clean.
+- [ ] One autopilot cycle (≥48h) with no rise in `delegation_cache_hits` miss rate or `ContentionDenied` 503 rate. Counter emission blocker is resolved in `epyc-orchestrator` `02a01617` and deployed by orchestrator API reload at `2026-07-03T15:40:30Z` (API PID `1769725`): delegated completions now persist `delegation_cache_lookups` / `delegation_cache_hits` / `delegation_cache_misses` / `delegation_cache_hit_rate` in progress completion metadata and response diagnostics, while HTTP `ContentionDenied` 503s emit `ROUTING_FALLBACK` progress events with `kind="contention_denied"` and best-effort flush. P2 live behavior remains locked until the live ≥48h bake over these counters is clean.
+  - 2026-07-04 bake readout `orchestration/reports/internal_interaction_bake_report_20260704T203808Z.{json,md}` is correctly not ready: `28.96h/48h`, `3` delegation-cache lookups, `0` hits, `3` misses, `0` ContentionDenied events, blockers `window_too_short` and `delegation_cache_split_comparison_unavailable`.
+  - 2026-07-04 no-inference scaffold note: `epyc-orchestrator` staged the P2 skill spec, consult helper, cache-key namespacing, `log_consult()`, and an explicitly opt-in `run_edit_transaction(..., enable_review_before_commit=True)` review hook. No current caller enables that hook, no route/API path changed, and J17/live consult behavior remains gated by this bake.
   - Bake readout command landed in `epyc-orchestrator` `dc11d2ba`: `uv run python scripts/analysis/internal_interaction_bake_report.py --since 2026-07-03T15:40:30Z --min-hours 48 --output-json <path> --output-md <path>`. Initial artifact `orchestration/reports/internal_interaction_bake_report_20260703T154526Z.{json,md}` is correctly blocked (`0.08h/48h`, `0` delegation-cache observations, `0` contention-denied events).
 
 ### P2 — One-shot consult sibling
@@ -103,7 +105,7 @@ INTERACTION_POLICY_VERSION = "1.0"
 
 - [x] **P2-0**. **Discovery — identify the exact attach point** in the code-edit pipeline for the first consult site. Candidate paths to enumerate: the `force_mode="edit"` flow (`requests.py:force_mode` consumers), `batched-edit-parallel-apply` (sibling handoff), the REPL final-answer hook, `worker_coder` / `coder_escalation` drafting flows. Pick the single attach point where (a) the requester has a complete-enough draft to advise on, (b) integration of advisory feedback before commit is structurally possible (one re-run capacity), (c) the requester role identity is stable. Output: a one-paragraph design note appended to this handoff naming the chosen pipeline file:function. Validate with `gitnexus impact <chosen_function> --direction upstream` before P2-1 begins. **Do NOT assume `worker_general` is the requester** — the consultant skill `review_before_commit` is keyed by *consultant role*, not requester role; the requester is whatever role is at the attach point. Completed 2026-05-31: chosen seam is `epyc-orchestrator/src/edit_transaction.py:199` `run_edit_transaction()`, between draft parse and transactional apply; requester role is `coder_escalation`.
 
-- [ ] **P2-1**. Create `orchestration/interaction_skills.yaml` (sibling to `model_registry.yaml`):
+- [x] **P2-1**. Create `orchestration/interaction_skills.yaml` (sibling to `model_registry.yaml`). Done 2026-07-04 as a default-off skill spec for `architect_general.review_before_commit` with JSON output schema, background/consult scheduler defaults, max output tokens `400`, tools budget `0`, and consult TTL `1800s`.
 
   ```yaml
   interaction_skills:
@@ -130,7 +132,7 @@ INTERACTION_POLICY_VERSION = "1.0"
         cache_ttl_seconds: 1800
   ```
 
-- [ ] **P2-2**. Add `consult()` entrypoint in `src/orchestration/consultation.py`:
+- [x] **P2-2**. Add `consult()` entrypoint in `src/orchestration/consultation.py`. Done 2026-07-04 as an inert helper that loads the skill spec, builds a one-shot advisory prompt, calls `LLMPrimitives.llm_call(..., json_schema=...)`, validates JSON with `jsonschema`, returns `(parsed_advisory, stats)`, and raises `ConsultationDenied(reason="schema_violation")` on parse/schema failure.
 
   ```python
   def consult(
@@ -148,7 +150,7 @@ INTERACTION_POLICY_VERSION = "1.0"
 
   Loads the skill spec from `interaction_skills.yaml`. Constrains the LLM output via `LLMPrimitives.llm_call(..., json_schema=skill.output_schema)` (`primitives.py:506`) — **NOT** via `ChatRequest.output_schema`, which is a REPL-context FINAL() validator injected into the prompt, not a call-time output constraint. Parses + validates the returned JSON against the schema; on parse / validation failure, raises `ConsultationDenied(reason="schema_violation")`. Enforces `max_output_tokens` and `tools_budget`. Dispatches through the same contention gate (`inference.py:230`) and shared-backend `topology_role` mapping (`backend.py:90+`).
 
-- [ ] **P2-3**. Extend `DelegationCache.make_key()` (`src/orchestration/delegation_cache.py:69-78` — the actual module; `src/delegation_cache.py` is only a back-compat shim) to namespace by interaction type and skill:
+- [x] **P2-3**. Extend `DelegationCache.make_key()` (`src/orchestration/delegation_cache.py:69-78` — the actual module; `src/delegation_cache.py` is only a back-compat shim) to namespace by interaction type and skill. Done 2026-07-04 with keyword-only `interaction_type`, `skill`, `schema_hash`, and `policy_version`; legacy delegate keys remain byte-stable when callers pass only `(brief, delegate_to)`.
 
   ```python
   @staticmethod
@@ -170,9 +172,9 @@ INTERACTION_POLICY_VERSION = "1.0"
 
 - [ ] **P2-4**. Reuse `_maybe_dcp_seed_context()` (`chat_delegation.py:247-289`) for consult context packaging. Do NOT invent a new packer. Gate with `features().dcp_for_consult` (default off; on requires `features().dcp_pre_assembly`).
 
-- [ ] **P2-5**. Add `log_consult()` shim on `ProgressLogger`. Calls `log_interaction(interaction_type="consult", skill=..., ...)`.
+- [x] **P2-5**. Add `log_consult()` shim on `ProgressLogger`. Done 2026-07-04; it records `interaction_type="consult"`, `skill`, consultant/requester roles, confidence, outcome, reason, and the interaction policy version.
 
-- [ ] **P2-6**. Add `ConsultationDenied` exception (parallel to `ContentionDenied`). **P2 is an INTERNAL consult sibling — no new HTTP endpoint and no 503 mapping in this phase.** Internal callers catch `ConsultationDenied` and record a `consult_denied` event in `interaction_events`. The current contention gate (`inference.py:230`) queues per `TrafficClass` + `max_queue_wait_ms` and raises `ContentionDenied` on rejection; for the cancellable consult policy, `consult()` MUST achieve skip-or-admit semantics by passing `max_queue_wait_ms=0` (or per-skill override) — this leverages existing gate behavior, do NOT add separate queue-skip logic into the gate itself. Translate the resulting `ContentionDenied` into `ConsultationDenied(reason="contention_skip")` at the `consult()` boundary so callers see one exception type. A future external consult HTTP endpoint (deferred, D3-adjacent) would map `ConsultationDenied` to 503; that mapping is out of scope here.
+- [x] **P2-6**. Add `ConsultationDenied` exception (parallel to `ContentionDenied`). **P2 is an INTERNAL consult sibling — no new HTTP endpoint and no 503 mapping in this phase.** Internal callers catch `ConsultationDenied` and record a `consult_denied` event in `interaction_events`. Done 2026-07-04: `consult()` translates contention-gate `ContentionDenied` into `ConsultationDenied(reason="contention_skip")`; the current skill uses its explicit per-skill `max_queue_wait_ms=2000` override, and can be changed to `0` before live enablement if the final policy chooses strict skip-or-admit. A future external consult HTTP endpoint (deferred, D3-adjacent) would map `ConsultationDenied` to 503; that mapping is out of scope here.
   - **Verified 2026-05-31** (`contention_gate.py:346-399`): `max_queue_wait_ms=0` achieves the intended skip-or-admit semantics natively. The default-fallback at `:366` (`if max_queue_wait_ms is None`) does NOT catch `0`, so per-skill `0` is preserved. `deadline = time.monotonic() + 0/1000 = now` at `:372`, the loop at `:375` runs one `evaluate()` call, admits-immediately if no blocker, otherwise returns `reason="timeout"` after that single evaluate with `waited_s ≈ 0`. No separate skip-logic needed. Add a regression test pinning this behavior so a future gate refactor cannot silently re-introduce the default-fallback for `0`.
 
 - [ ] **P2-7**. Wire the first consult site **at the attach point identified in P2-0**. Skill: `review_before_commit`. Consultant: `architect_general`. Requester: the role producing the code-edit draft at the chosen attach point (named in the P2-0 design note — may be `worker_coder`, `coder_escalation`, or another; do NOT assume `worker_general`). Call shape:
@@ -189,6 +191,7 @@ INTERACTION_POLICY_VERSION = "1.0"
   - If `blocking_issues` non-empty AND `confidence >= 0.6`: re-run the requester with the advisory injected; cap at 1 re-run.
   - Otherwise: emit the advisory as a `review_advisory` event in the response telemetry and proceed.
   - On `ConsultationDenied`: emit a `consult_denied` event and proceed without the advisory.
+  - 2026-07-04 scaffold: `run_edit_transaction()` now has an explicitly opt-in `review_before_commit` hook and `enable_review_before_commit` flag. If a blocking advisory with confidence `>=0.6` is returned, the requester gets exactly one rerun with the advisory injected before transactional apply. With the default flag unset, existing callers remain one-shot and no review hook is invoked. Live route/caller integration remains locked until the P1 bake gate clears.
 
 **Gate to P3**: A/B test on a fixed eval slice (≥50 code-edit turns):
 - Tokens saved vs full-delegation baseline ≥ 30% on the advisory leg
