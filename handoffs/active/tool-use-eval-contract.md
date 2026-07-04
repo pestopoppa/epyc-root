@@ -1,16 +1,18 @@
 # Tool-Use Eval Contract — make autopilot trials actually exercise tools
 
-**Latest verification (2026-07-04T21:24Z)**: the recurring activation drift is
-closed operationally. `epyc-orchestrator` now has
-`scripts/autopilot/start_fable_authority_daemon.py`, a canonical AutoPilot
-launcher that enforces `AUTOPILOT_TOOL_SENTINELS=1` together with the W4/W6,
-planner-hint, planner-timeout, and stepping-stone env bundle. The bare-env
-daemon PID `3796930` was stopped after Fable caught the missing env, and the new
-daemon PID `3831548` has `AUTOPILOT_TOOL_SENTINELS=1`,
+**Latest verification (2026-07-04T23:28Z)**: the recurring activation drift is
+closed again after the T3/dashboard restart. AutoPilot is live as PID `3442973`
+under the Fable launcher with `AUTOPILOT_TOOL_SENTINELS=1`,
 `AUTOPILOT_PLANNER_HINTS=1`, `AUTOPILOT_SEQ_VERDICT=1`, W6 audit flags, planner
-timeout `600`, stepping stones, and `--max-trials 2000`. Fresh strict Fable is
-ready/blocker-free and its live next-action list contains only
-`collect_w8_promotion_eval_evidence`; no tool-activation action remains.
+timeout `600`, stepping stones, and `--max-trials 2000`. The API had drifted
+back to a no-profile launch, so it was reloaded API-only with
+`--profile gate3-tool-telemetry`; new fleet parent PID `1065549` and sampled
+workers report `AUTOPILOT_TOOL_SENTINELS=1` plus
+`ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT=1`. Strict Fable after the reload is
+ready/blocker-free, and `tool_use_activation` is `ready` with
+`activation_gaps=[]`. Recent journal telemetry still includes nonzero tool-use
+rows, so the remaining work is W8 evidence collection and behavioral usefulness
+analysis, not lane activation.
 
 **Prior verification (2026-07-04T10:24Z)**: the stale "StrategyStore only
 affects startup/action handlers" diagnosis is closed. `epyc-orchestrator`
