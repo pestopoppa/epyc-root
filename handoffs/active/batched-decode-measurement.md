@@ -1,6 +1,6 @@
 # Batched-Decode Measurement (E1/E2) + Conditional 8x8 GEMM SIMD (E3)
 
-**Status**: IN PROGRESS — A3B E1 and E2 decision-grade evidence landed 2026-07-03; E2 is a keep-candidate for an eval-batch serving class; shadow metadata/feature-gate, default-off warm eval-batch frontdoor hook, and guarded activation probe landed; dense-control E1 remains unresolved/re-scoped
+**Status**: IN PROGRESS — A3B E1 and E2 decision-grade evidence landed 2026-07-03; E2 is a keep-candidate for an eval-batch serving class; shadow metadata/feature-gate, default-off warm eval-batch frontdoor hook, guarded activation probe, and apply/rollback activation-window runner landed; dense-control E1 remains unresolved/re-scoped
 **Created**: 2026-06-12
 **Priority**: ACTIVE-HIGH — bench-only, ~1 day for E1+E2; rank 2 in the findings-06 "what remains" table; an evidence vacuum under the highest-volume workload (the eval harness)
 **Spec**: [fable5-findings-06-kernel-and-concurrency.md](../completed/fable5-findings-06-kernel-and-concurrency.md) §2 (E1/E2/E3) + [MEASUREMENT.md](../../MEASUREMENT.md) P-BENCH-3 — read both before claiming any waypoint
@@ -19,7 +19,7 @@ names "eval pipelines"; the trigger has been satisfied for weeks. The batch>1
 ## Waypoints
 
 - [ ] **E1 — CPU14 at last** (half day, quiesce window): one instance, `-np {1,2,4,8,16}`, fixed question batch, on (a) frontdoor Qwen3.6-A3B and (b) a dense control; measure aggregate tasks/hour + per-stream p50/p95 latency per MEASUREMENT.md P-BENCH-3. Acceptance: claims filed with protocol id + attest ref; saturation point identified per model. **2026-07-03 update**: A3B arm is complete and decision-grade; dense control was stopped before a summary row after diagnostic logs showed about `0.59` generated tok/s on long responses, so the dense-control requirement is still open/re-scope-only.
-- [x] **E2 — eval-driver A/B** (half day, same window): one T1 eval (43 questions) against a single full instance with `-np 8` continuous batching vs the current 3-concurrent-across-quarters path; metric = wall-minutes/eval (= statistical power per day, per findings-01). Acceptance: the batch serving class is priced; keep-or-kill recommendation for an eval-batch instance set recorded. **2026-07-03 update**: orchestrator `7cb71a4e` landed the default-off `eval_batch_serving` feature flag plus explicit EvalTower request metadata (`workload_class=eval_batch`, shared batch id, background priority). Orchestrator `e9312a17` then added the default-off warm `eval_batch_frontdoor` serving hook on port `18070`; orchestrator `276a1eef` added the guarded preflight/smoke probe. Activation still needs an explicit warm start, API reload with `ORCHESTRATOR_FEATURE_EVAL_BATCH_SERVING=1`, and representative quality/eval telemetry before any default EvalTower path changes.
+- [x] **E2 — eval-driver A/B** (half day, same window): one T1 eval (43 questions) against a single full instance with `-np 8` continuous batching vs the current 3-concurrent-across-quarters path; metric = wall-minutes/eval (= statistical power per day, per findings-01). Acceptance: the batch serving class is priced; keep-or-kill recommendation for an eval-batch instance set recorded. **2026-07-03 update**: orchestrator `7cb71a4e` landed the default-off `eval_batch_serving` feature flag plus explicit EvalTower request metadata (`workload_class=eval_batch`, shared batch id, background priority). Orchestrator `e9312a17` then added the default-off warm `eval_batch_frontdoor` serving hook on port `18070`; orchestrator `276a1eef` added the guarded preflight/smoke probe. The 2026-07-04 follow-up adds `scripts/benchmark/eval_batch_serving_activation_window.py`, a plan/apply/rollback wrapper that starts only `eval_batch_frontdoor`, reloads the API with `ORCHESTRATOR_FEATURE_EVAL_BATCH_SERVING=1`, runs the smoke probe, and rolls back unless `--keep-enabled` is explicit. Activation still needs a clean window and representative quality/eval telemetry before any default EvalTower path changes.
 - [ ] **E3 — 8x8 GEMM SIMD body** (days, CONDITIONAL): ONLY IF E1 shows intermediate batch leaves per-thread-BW unsaturated — write the AVX-512BW batch>1 GEMM body for the existing dispatcher slot (`arch/x86/repack.cpp:1563-1566`, currently scalar fallback), re-run E1. Work lands under [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md). Acceptance: E1 delta with kernel on/off, canonical protocol.
 - [ ] **E4 — conditional re-promotions** (doc-only first): if E1/E2 confirm the regime, re-promote CPU17 chunked-prefill (the 9.6× rep-1 TTFT amplification is the eval class's pathology) and CPU18 MegaBlocks per their own reopen clauses — both name "eval pipelines". Acceptance: index rows flipped with the E1/E2 evidence cited, or explicitly re-closed.
 
@@ -231,13 +231,19 @@ AutoPilot is active, sampled API workers have `eval_batch_serving=false`, and
 the warm endpoint is absent (`eval_batch_frontdoor health is not OK`). This is
 the expected default-off state.
 
-Next activation commands:
+Next activation command:
 
 ```bash
-cd /mnt/raid0/llm/epyc-orchestrator && uv run python scripts/server/orchestrator_stack.py start --include-warm eval_batch_frontdoor
-cd /mnt/raid0/llm/epyc-orchestrator && ORCHESTRATOR_FEATURE_EVAL_BATCH_SERVING=1 ORCHESTRATOR_EVAL_BATCH_FRONTDOOR_URL=http://localhost:18070 uv run python scripts/server/orchestrator_stack.py reload orchestrator
-cd /mnt/raid0/llm/epyc-orchestrator && uv run python scripts/benchmark/eval_batch_serving_probe.py --smoke --confirm-clean-window --require-enabled
+cd /mnt/raid0/llm/epyc-orchestrator
+uv run python scripts/benchmark/eval_batch_serving_activation_window.py --apply --confirm-clean-window
 ```
+
+Default behavior is plan-only. The live 2026-07-04 plan artifact at
+`/mnt/raid0/llm/tmp/eval_batch_activation_plan_live/summary.{json,md}` confirms
+the expected blocked/default-off state while AutoPilot is active: API healthy,
+AutoPilot active, eval-batch flag disabled, and port `18070` absent. Use
+`--keep-enabled` only if the activation smoke passes and the operator wants to
+leave the lane enabled for representative EvalTower telemetry.
 
 ## Gates & pitfalls
 
