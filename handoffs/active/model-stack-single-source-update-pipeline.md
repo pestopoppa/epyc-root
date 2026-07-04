@@ -188,6 +188,15 @@ unowned local constants.
   stack-change update refreshed descriptor/stack-prior source hashes and
   `current_stack_summary.md`; `stack_change_pipeline.py check --run-promotion-gate`
   returned `summary: ok` with `181` promotion-gate tests passing.
+- 2026-07-04 source-freshness repair refreshed generated descriptors,
+  stack priors, and `current_stack_summary.md` after the committed
+  `orchestrator_stack.py` launcher hash drifted ahead of the generated
+  `source_artifacts.orchestrator_stack` fingerprint. The diff is metadata-only
+  (compiled timestamp, source commit/hash fingerprints, generated summary
+  hashes). Validation: `stack_change_pipeline.py check --run-promotion-gate`
+  returned `summary: ok` with `181` promotion-gate tests passing; focused
+  `test_stack_priors_compiler.py` + `test_stack_change_guard.py` passed
+  `80` tests.
 
 ### 2026-06-27 Config Catalog Re-Audit
 

@@ -70,6 +70,14 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   `exceptions: []`; and the no-inference promotion gate passed `176` tests.
   This found no live N11 consumer-migration gap to patch while AutoPilot is
   accruing W6 evidence.
+- 2026-07-04 currentness repair: `stack_change_guard.py
+  --all-hardcoded-surfaces` caught stale generated stack-prior source metadata
+  for `scripts/server/orchestrator_stack.py` (`source_artifacts` expected the
+  previous launcher hash). Regenerating through the canonical
+  `stack_change_pipeline.py update` path refreshed descriptors, stack priors,
+  procedure enums, and the generated operator summary without semantic role
+  diffs. The follow-up `stack_change_pipeline.py check --run-promotion-gate`
+  returned `summary: ok` and the promotion gate passed `181` tests.
 - 2026-06-19 descriptor drift from the research registry hash was repaired
   through the canonical `stack_change_pipeline.py update` path. The generated
   diff was limited to `model_descriptors.yaml` / `stack_priors.yaml`
