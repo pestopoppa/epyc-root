@@ -33,20 +33,18 @@ Before the reboot: operator killed AutoPilot, then **enabled planner authority**
   python3 -c "import json; from src.autopilot_core.baseline_ledger import baseline_ledger_authority_enabled; print(baseline_ledger_authority_enabled(json.load(open('orchestration/autopilot_state.json'))))"
   ```
   Expect `True`. If `False`, the consent file is missing/denied — fix before continuing.
-- [x] **5. Restart AutoPilot** with the exact W4/W6 + hints recipe (the missing env is what caused the trial-1004 bad restart — do not omit any):
+- [x] **5. Restart AutoPilot** with the exact W4/W6 + hints + tool-sentinel
+  recipe (the missing env is what caused the trial-1004 bad restart and later
+  trial-1137 bare-env restart — do not omit any). Preferred current command:
   ```
   cd /mnt/raid0/llm/epyc-orchestrator
-  AUTOPILOT_SEQ_VERDICT=1 \
-  AUTOPILOT_W6_AUDIT_BLOCK=1 \
-  AUTOPILOT_W6_AUDIT_N=10 \
-  AUTOPILOT_W6_AUDIT_EVERY_N_TRIALS=1 \
-  AUTOPILOT_W6_AUDIT_SHADOW_ONLY=1 \
-  AUTOPILOT_PLANNER_TIMEOUT=600 \
-  AUTOPILOT_PLANNER_HINTS=1 \
-  setsid .venv/bin/python3 scripts/autopilot/autopilot.py start --max-trials 2000 \
-    > /mnt/raid0/llm/tmp/autopilot_postreboot_$(date -u +%Y%m%dT%H%M%SZ).log 2>&1 &
+  uv run python scripts/autopilot/start_fable_authority_daemon.py --max-trials 2000
   ```
-  `AUTOPILOT_SEQ_VERDICT=1` is what makes sequential-verdict authority live (it's env-gated, not a state flag).
+  The wrapper enforces `AUTOPILOT_SEQ_VERDICT=1`, W6 audit flags,
+  `AUTOPILOT_PLANNER_HINTS=1`, `AUTOPILOT_TOOL_SENTINELS=1`, planner timeout
+  `600`, stepping stones, detached process start, and a dated log under
+  `/mnt/raid0/llm/tmp/`. `AUTOPILOT_SEQ_VERDICT=1` is what makes
+  sequential-verdict authority live (it's env-gated, not a state flag).
 - [x] **6. Verify live** (a few minutes in):
   - process up; phase advancing (`/mnt/raid0/llm/tmp/autopilot_phase.json` trial id climbing).
   - `python3 scripts/autopilot/restart_readiness_report.py --json --strict --require-seq-cutover --require-w6-audit --require-current-code` → `restart_ready: True`, blockers `[]`, `phase_health_code_stale: False`.
