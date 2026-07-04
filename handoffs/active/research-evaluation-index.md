@@ -1,7 +1,7 @@
 # Research & Evaluation — Coordination Index
 
 **Status**: active
-**Updated**: 2026-07-03
+**Updated**: 2026-07-04
 **Purpose**: dispatch surface for pre-production research, evaluation, and monitoring work. Production orchestrator changes should route through `routing-and-optimization-index.md`.
 
 > Completed checklist and research-intake chronology was compacted to [`../archived/research-evaluation-index-history-through-2026-06-19.md`](../archived/research-evaluation-index-history-through-2026-06-19.md). Current task truth lives in the owning handoffs and machine artifacts named below.
@@ -11,7 +11,7 @@
 | Priority | Work | Owner / source | Gate |
 |---|---|---|---|
 | HIGH | N2 per-question ledger + sequential verdict readiness | [`evidence-plane-ledger-and-sequential-verdicts.md`](evidence-plane-ledger-and-sequential-verdicts.md) | Continue trusted vector and seq-shadow accrual; do not enable authority until readiness passes. |
-| HIGH | N1+N4 evidence-plane instrument repair tails | [`evidence-plane-instrument-repair.md`](evidence-plane-instrument-repair.md) | W5 core_v2 remains no-go; W6/W8 need larger clean evidence windows. |
+| HIGH | N1+N4 evidence-plane instrument repair tails | [`evidence-plane-instrument-repair.md`](evidence-plane-instrument-repair.md) | W5 ledger-derived core_v2 is artifact/selection clean and guarded; the remaining gate is the operator E4/core era row. W8 still needs live promotion-eval evidence. |
 | HIGH | Eval-tower verification EV-4/8/9/10 | [`eval-tower-verification.md`](eval-tower-verification.md) | Re-sequenced after N2/N4 evidence substrate; EV-4/H5 is inference-gated.<br>• EV-9 CPU-portable DRACO/MindDR scoring contract is implemented in orchestrator `9db36fcb` + `ce6cdf75` + `07720457` + `697ad506`: AutoPilot rubric metric fields/log lines, positive/negative rubric aggregation, DRACO content axes, saturation screening, multi-judge Bradley-Terry stability diagnostics, JSON-only judge prompt builder, deterministic T1 fallback scoring, EvalTower fallback consumption/aggregation for `deep_research_*` expected-hint items, and a default-off local cross-family judge runner/parser gated by `AUTOPILOT_RUBRIC_JUDGE_ROLES`. Remaining EV-9 work is evidence: choose judge roles and run the MD-9 A/B when inference scheduling permits. Production-query sampling remains gated on the F1 real-task corpus. |
 | HIGH | Tulving K-MEM-1 interpretation/follow-up | `bulk-inference-campaign.md` Package K / P3b below | Completed/scored 2026-06-20; corrected in research `9e63af0` after parser repair. Mixed baseline (`avg F1=0.4309`, Simple Recall `0.5530`, chrono `0.1593`) now has a targeted follow-up manifest in research `2eb94f8`; use it before any memory-routing conclusion. |
 | MED | Tool-output compression P4c-P4e | [`tool-output-compression.md`](tool-output-compression.md) | Top-up telemetry, registration smoke, rollout gate. |
