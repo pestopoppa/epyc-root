@@ -160,6 +160,15 @@ Source: intake-495 (BaRP) — preference-tunable inference. Modulates the traine
 - [x] Per-task ω override wired through `ChatRequest.routing_preferences`, TaskIR canonicalization, chat routing, and `retrieve_for_routing()`. Per-tenant policy defaults remain future work only if a concrete tenant/workload policy is needed.
 - [x] No retraining required. The deployed path applies only inference-time scalarization to the existing per-action Q-table selector; bilinear DAR-4 remains separately open.
 - [ ] Measure: routing decision distribution shift across ω sweeps; latency-quality Pareto curve.
+  - 2026-07-04 offline proxy sweep complete in `epyc-orchestrator` `b40207b4`:
+    `orchestration/reports/dar4b_sweep_20260704T160319Z/summary.md`.
+    Frozen window 2026-06-13..2026-07-03: `24,918/30,725` eligible
+    top-k routing decisions. Tested `ω=(0.5,0.5),(0.8,0.2),(0.2,0.8)` and
+    `τ=0.8,1.0,1.2`; the logged selector surface is nearly insensitive
+    (`0.00%` baseline flips for balanced/perf-heavy, `0.06%` for cost-heavy).
+    This is an offline selector-proxy observation, not a live latency-quality
+    decision gate; keep live/controlled measurement open before any default
+    policy uses the new knobs.
 
 **Files**: `retriever.py` L225-368 (selection scoring), `routing.py` L48-314 (ω plumbing), `q_scorer.py` (config — `DAR_COST_TAU` knob).
 
