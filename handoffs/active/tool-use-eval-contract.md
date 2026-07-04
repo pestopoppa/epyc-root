@@ -13,6 +13,17 @@ recent 10-row tool window has `4` nonzero rows / `26` calls, so activation is
 proven and the remaining work is behavioral evidence collection plus downstream
 scoring/usefulness analysis, not planner-hint visibility or lane activation.
 
+**Operator guardrail seeded (2026-07-04T10:47Z)**: the live daemon's last
+invalid planner draft tried to treat a zero-tool-call eval as a
+`src/tool_policy.py` code-mutation bug. That is the wrong lever now that
+tool-use activation is ready. Added StrategyStore row
+`opseed-green-tool-use-no-tool-policy-code-mutation-20260704` with
+`negative_surface=src/tool_policy.py`, `source_trial_id=1117`, and
+`bind_identifiers=[tool_use_sentinel_lane, tools, repl, react_mode,
+code_mutation_guardrail]`. Direct prompt rendering verified that the row appears
+second in `_build_planner_strategy_hints()` under the broader v6 tool-activation
+latency hypothesis, so it should steer the next planner turn without restart.
+
 **Latest status (2026-07-04T03:27Z; superseded by the 10:24Z verification above)**: StrategyStore planner hints are confirmed live-refreshing into each controller prompt when `AUTOPILOT_PLANNER_HINTS=1`: `_refresh_planner_convention_bindings()` and `_build_planner_strategy_hints()` run inside the planner-turn path immediately before `plan_with_providers()`, and the persistent-store regression proves a long-lived planner handle sees external hint writes without restart. The first boundary fix (`5a18feb2`) scoped tool-related rows as `scope=orchestrator_eval_tools_not_planner_tools`, but the post-X-MAS relaunch still fail-closed once at trial `1109` when the planner attempted disallowed planner-side `Edit`; no action dispatched. `epyc-orchestrator` `19f276df` broadens the controller prompt boundary: the planner process is read-only, may inspect only with `Read`/`Grep`/`Glob`, and must return an AutoPilot action for any mutation or execution instead of using `Bash`, `Edit`, `MultiEdit`, `Write`, `NotebookEdit`, `apply_patch`, or equivalent planner-side tools. Validation: focused planner StrategyStore/boundary tests (`5 passed`), controller disallowed-tool regression (`1 passed`), Ruff, and `git diff --check`; GitNexus is current at `19f276df`. The current daemon is PID `3220621` with `AUTOPILOT_TOOL_SENTINELS=1`, `AUTOPILOT_PLANNER_HINTS=1`, W4/W6 env, planner timeout `600`, stepping stones, and `--max-trials 2000`.
 
 **Prior status snapshot (superseded by the latest line above)**: the T1 tool-use sentinel lane is built and env-gated, the child/sub-LM schema contract is covered for both batched and single-delegate REPL paths, and the Phase 2 native OpenAI tools seam is partially shipped. Orchestrator commits `9d7b3c31`, `fcf43857`, and `6c333cd7` add native `tools`/`tool_choice` request plumbing and telemetry semantics; `4b9e1fd0`, `f83d9c31`, `9b7a9ebe`, and `a8030dc9` close the StrategyStore planner-prompt/live-refresh gap. Verified on 2026-07-04 against the live `1419`-row store: `opseed-green-v6-tool-activation-latency` and `opseed-green-tool-use-sentinel-lane` retrieve first for the tool-use query and render first in `_build_planner_strategy_hints()`. The old "startup-only StrategyStore" diagnosis and old "reload with tool sentinels" remaining step are superseded; the remaining live item is now only to let a sentinel-enabled eval journal nonzero `total_tool_calls`.
