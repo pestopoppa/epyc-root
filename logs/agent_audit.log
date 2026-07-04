@@ -4266,3 +4266,6 @@ Purpose: Handoff audit + Hermes Phase 2 routing API
 {"ts":"2026-07-04T10:48:08+00:00","session":"ses_20260704_091216_3172852","level":"INFO","cat":"TASK_END","msg":"Planner tool-use negative guardrail","details":"outcome=success"}
 {"ts":"2026-07-04T10:53:09+00:00","session":"ses_20260704_091216_3172852","level":"INFO","cat":"TASK_START","msg":"F3 dataset inventory refresh","details":"Remove stale branch-ready claims after verifying live planner archive, per-question ledger, and lab scaffold state"}
 {"ts":"2026-07-04T10:53:09+00:00","session":"ses_20260704_091216_3172852","level":"INFO","cat":"TASK_END","msg":"F3 dataset inventory refresh","details":"outcome=success"}
+{"ts":"2026-07-04T10:59:39+00:00","session":"ses_20260704_105939_3316203","level":"INFO","cat":"SESSION_START","msg":"Read-only triage of top next tasks across root and orchestrator","details":"new_session=ses_20260704_105939_3316203"}
+{"ts":"2026-07-04T11:02:14+00:00","session":"ses_20260704_105939_3316203","level":"INFO","cat":"TASK_START","msg":"Corpus lookup stale-doc correction","details":"Remove obsolete corpus enablement and acceptance-lift claims while CPL-4 remains clean-window gated"}
+{"ts":"2026-07-04T11:02:14+00:00","session":"ses_20260704_105939_3316203","level":"INFO","cat":"TASK_END","msg":"Corpus lookup stale-doc correction","details":"outcome=success"}

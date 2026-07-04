@@ -68,6 +68,13 @@ quarantined/deleted by explicit operator decision.
   `--confirm-clean-window` for live generation and exits `75` when AutoPilot is
   active unless `--allow-active-autopilot` is passed for explicitly
   non-claim-grade live-load telemetry.
+- 2026-07-04 doc correction: the architecture chapter no longer claims corpus
+  injection is enabled for old-size coder roles or repeats stale `+8.7pp` /
+  `+15.6pp` acceptance lifts. A live `RegistryLoader(validate_paths=False)`
+  check confirms `frontdoor`, `coder_escalation`, `worker_general`,
+  `architect_general`, and `ingest_long_context` all parse
+  `acceleration.corpus_retrieval=false`; current enablement still waits on the
+  clean-window CPL-4 A/B.
 
 ## Prioritized Task List
 
