@@ -1,5 +1,7 @@
 # Brief (for the orchestrator / CPU session): two zero-code MoE-on-GPU aggregate wins
 
+**⏸ PRODUCTION HOLD (operator 2026-07-04): do NOT deploy to production. Keep all changes experimental.** These are experimental-validated recommendations; before any production push they require **CPU-numerical-correctness verification** (untestable now — CPU busy with production inference). Production-push authority is **operator-only**.
+
 **Status**: MEASURED role→config recommendations, **no kernel change**. From the MI210 GPU campaign (2026-07-04, gemma-4-26B-A4B, the clean MoE-no-GDN test vehicle). All numbers **OBSERVATION** (no P-GPU-1) — gate any production enablement through `/workspace/MEASUREMENT.md`. **Applies IF/when a MoE role is hosted on the MI210 (the residency bet, findings-02 Gate R)** — this is not a change to the current CPU production stack.
 
 ## Win 1 — FA-decode for aggregate (`-fa 1` at B≥8)

@@ -2,11 +2,13 @@
 
 **Goal**: get models as fast as possible on the single MI210 (gfx90a/CDNA2, 64 GB, ~1.64 TB/s), and isolate the circumstantial levers per model category. **Both single-stream and aggregate** tracked. GPU-compute only; kernel work in `llama.cpp-experimental` (never production-v6). Every number here is an **OBSERVATION** (no P-GPU-1 protocol) — usable for direction, never to gate a keep/deploy/promote decision. Full detail: [findings-05c (lever × category matrix)](fable5-window2-findings-05c-mi210-lever-category-matrix.md), [findings-05b (architecture)](fable5-window2-findings-05b-mi210-inference-architecture.md), [checkpoint](../../progress/2026-07/2026-07-03-mi210-qwen36-27b-speed-campaign.md).
 
+> **⏸ PRODUCTION HOLD (operator 2026-07-04).** Everything below stays in the experimental build — NOTHING deploys to production yet. The "deploy now" config wins (FA / bf16 / -md) are experimental-validated recommendations that first need **CPU-numerical-correctness verification** (untestable now, CPU busy); production-push authority is operator-only. Direction chosen: proceed with the research bets + build the kernel-R&D-loop (see bottom).
+
 ## The one meta-finding
 **Every lever's sign is set jointly by {arch × substrate × batch}. Never carry a verdict across those boundaries.** Examples proven this campaign: MTP +15.6% dense-GPU / −12% MoE-GPU / +win CPU-MoE; `-fa 1` hurts dense-27B decode everywhere but WINS MoE aggregate +16–43%; the MMVQ→MMQ dispatch fix +17–32% dense-Q8 but net-negative for MoE experts. The circumstance *is* the finding.
 
-## DEPLOY NOW — zero-code, measured (→ orchestrator/CPU session)
-Applies when a role is hosted on the MI210 (the residency bet). Brief: [moe-aggregate-deployment-wins-brief.md](moe-aggregate-deployment-wins-brief.md).
+## Experimental-validated config wins — HOLD for prod (see banner) (→ orchestrator/CPU session)
+Applies when a role is hosted on the MI210 (the residency bet). **These are validated in experimental only; not for production until CPU-correctness verified.** Brief: [moe-aggregate-deployment-wins-brief.md](moe-aggregate-deployment-wins-brief.md).
 1. **`-fa 1` for aggregate MoE (B≥8), `-fa 0` for single-stream** — +16–43% aggregate; peak **bf16+fa1 @B128 = 1548 t/s** (gemma-26B-A4B).
 2. **bf16 for high-concurrency MoE roles (B≥16–32), Q8 for single-stream** — crossover B≈16–24; bf16 +27–43% at high batch (HBM-fit-gated: bf16-26B fits ≤B128).
 3. **Drop `-md <same GGUF>` for embedded-NEXTN roles** (CPU-side, [md-double-load brief](md-double-load-mtp-fix-brief.md)) — 2× DRAM saving on BW-bound CPU decode.
@@ -38,4 +40,4 @@ Only pursue as a deliberate research investment, not quick wins:
 vLLM-ROCm is **arch-blocked on gfx90a** for our qwen35/MoE (GDN Triton + loader), but beats llama.cpp-HIP **+11%/+24% on stock dense fp16** — because it hides batch-1 memory latency better. That gap is the same batch-1 latency wall; our prefetch lever attacks it (+3.3% on the reachable half; the rest is the MLP floor per the megakernel Pass-2). Not a llama.cpp defect to "fix" — a fundamental batch-1 HBM floor both engines approach.
 
 ## Bottom line
-Single-stream dense-Q8 is **exhausted at its ceiling** (+37%). Aggregate MoE has **two immediate zero-code wins** (FA + bf16, up to 1548 t/s) with the remaining headroom gated behind two hard occupancy-rewrite research bets. The lever isolation is complete across both regimes; the highest-ROI next actions are **deployment (orchestrator session), not more kernel work.**
+Single-stream dense-Q8 is **exhausted at its ceiling** (+37%). Aggregate MoE has **two immediate zero-code wins** (FA + bf16, up to 1548 t/s) with the remaining headroom gated behind two hard occupancy-rewrite research bets. The lever isolation is complete across both regimes. **Per operator (2026-07-04): hold all changes experimental (CPU-correctness gate before any prod push), and proceed with the kernel research bets (L3-MoE / L20 / sub-4-bit enabler) + build the kernel-R&D-loop in parallel.**
