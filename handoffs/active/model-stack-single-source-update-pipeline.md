@@ -99,6 +99,13 @@ unowned local constants.
   generated stack priors as primary, but degraded fallback role/port/heavy-port
   discovery now derives from the lean registry `server_mode` records instead
   of preserving a separate current-stack role/port table.
+- 2026-07-04 follow-up removed the remaining local YAML traversal from
+  `scripts.benchmark.seeding_types._load_live_stack_prior_roles`; the seeding
+  topology/default-role reader now uses the shared
+  `src.registry.stack_priors.live_stack_role_records()` helper while preserving
+  registry degraded fallback semantics. GitNexus impact for the loader was LOW
+  (`impactedCount=21`), but it feeds benchmark seeding and AutoPilot seeder role
+  refresh, so the migration was handled on the main thread.
 - `scripts.registry.render_stack_summary` still keeps generated stack priors
   and compiled descriptors as the normal sources for operator/system-card role
   rows, while the last-resort raw-registry fallback now canonicalizes generic
