@@ -4253,3 +4253,4 @@ Purpose: Handoff audit + Hermes Phase 2 routing API
 {"ts":"2026-07-04T09:13:54+00:00","session":"ses_20260704_091216_3172852","level":"INFO","cat":"TASK_START","msg":"Run A9 clean-window collection","details":"A9 is the shortest current Fable blocked action and only requires pausing AutoPilot, not unloading live llama servers"}
 {"ts":"2026-07-04T09:54:49+00:00","session":"ses_20260704_091216_3172852","level":"INFO","cat":"TASK_END","msg":"Run A9 clean-window collection","details":"outcome=success"}
 {"ts":"2026-07-04T09:54:49+00:00","session":"ses_20260704_091216_3172852","level":"INFO","cat":"TASK_START","msg":"Commit StrategyStore/A9 source fixes","details":"Record planner-hint verification plus seeding reference/source propagation fixes"}
+{"ts":"2026-07-04T09:56:57+00:00","session":"ses_20260704_091216_3172852","level":"INFO","cat":"TASK_END","msg":"Commit StrategyStore/A9 source fixes","details":"outcome=success"}
