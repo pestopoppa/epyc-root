@@ -1,9 +1,9 @@
 # X-MAS Heterogeneous Text-MAS Routing Spike
 
-**Status**: classifier/table scaffold, guarded default-off enforce path, true function-axis 5x5 sweep, enforce-eligible `orchestration/xmas_winner_table.yaml`, default-off config wiring for that table, live A/B harness, machine-readable held-out verdict reporting, no-inference regression diagnostics, and incumbent-aware constrained enforce policy are all landed. The 2026-07-03 repaired quiet-window A/B for `incumbent_constrained_cheapfirst_v2` returned `decision.status=promote_candidate` with no blockers. Enforce remains OFF pending an explicit production enablement decision; the held-out repaired-policy evidence gate is no longer the blocker.
+**Status**: classifier/table scaffold, guarded enforce path, true function-axis 5x5 sweep, enforce-eligible `orchestration/xmas_winner_table.yaml`, live A/B harness, machine-readable held-out verdict reporting, no-inference regression diagnostics, incumbent-aware constrained enforce policy, and production enablement are all landed. The 2026-07-03 repaired quiet-window A/B for `incumbent_constrained_cheapfirst_v2` returned `decision.status=promote_candidate` with no blockers. `epyc-orchestrator` `d4a6c927` enabled `xmas_routing.mode: enforce`, reloaded the orchestrator API, and post-restart Fable5 reports `xmas_production_path=ready`; remaining work is post-enable telemetry monitoring, not another repaired-policy evidence gate.
 **Created**: 2026-05-19 (post-latent-MAS-cluster deep-dive)
 **Categories**: agent_architecture, cost_aware_routing, benchmark_methodology, routing_intelligence
-**Priority**: HIGH (empirical heterogeneous-routing artifact exists, but promotion is currently blocked by held-out regression evidence)
+**Priority**: HIGH (production routing is now enforcing the guarded function-axis table; monitor live telemetry and keep rollback path obvious)
 **Depends on**: `routing-intelligence.md`, `routing-and-optimization-index.md`, `meta-harness-optimization.md`, `hermes-outer-shell.md`
 **History**: [x-mas-text-routing-history-through-2026-06-19.md](../archived/x-mas-text-routing-history-through-2026-06-19.md) preserves the completed scaffold/sweep/A-B chronology compacted out of this active handoff.
 **Source deep-dive**: [`/workspace/research/deep-dives/2026-05-19-latent-mas-cluster.md`](../../research/deep-dives/2026-05-19-latent-mas-cluster.md)
@@ -33,12 +33,20 @@ Replicate the X-MAS (intake-557, arxiv:2505.16997, `github.com/MASWorks/X-MAS`) 
   `docs/data/clean_window_measurement_commands.sh` as package `X-MAS`; the
   completed 2026-07-03 repaired-policy run is the current evidence for that
   lane.
+- `epyc-orchestrator` `d4a6c927` accepts that evidence by switching
+  `orchestration/classifier_config.yaml` to `xmas_routing.mode: enforce` with
+  the same complete function-axis table and `confidence_threshold: 0.55`. The
+  orchestrator API was reloaded as PID `2679680`; `fable5_gate_report.py
+  --strict` then reported `xmas_production_path` ready with `mode=enforce`, no
+  X-MAS blockers, and latest A/B `promote_candidate`. AutoPilot was restarted
+  after the cutover at trial `1109` so subsequent evidence accrues post-enable;
+  trial `1108` is intentionally journaled as an interrupted placeholder.
 
 ## Current Gate
 
-- [ ] Keep `xmas_routing.mode=off` in production until the operator accepts the repaired-policy evidence and the reload/attestation plan is recorded; the validated winner table is configured default-off and must not be treated as an enforce flip.
+- [x] Enable production enforce only after accepting the repaired-policy evidence and recording reload/attestation. Done in `epyc-orchestrator` `d4a6c927`; current config is `mode: enforce`, table validation passes, and post-reload Fable5 reports the X-MAS section ready.
 - [x] Run the repaired constrained-policy quiet-window A/B after deploying/reloading the current code/config. The current real-run artifact carries `xmas_policy=incumbent_constrained_cheapfirst_v2`, `required_xmas_policy=incumbent_constrained_cheapfirst_v2`, row-level routing metadata, and `decision.status=promote_candidate`.
-- [ ] Do not spend effort on RMAS/LatentMAS/Dead Weights hidden-state paths until this text-mediated route has either a passing decision or a documented kill.
+- [ ] Monitor post-enable live telemetry for unexpected domain regressions, latency regressions, or guard bypasses; rollback is `xmas_routing.mode: off` plus orchestrator API reload.
 
 ## Validation Commands
 
@@ -46,7 +54,7 @@ Replicate the X-MAS (intake-557, arxiv:2505.16997, `github.com/MASWorks/X-MAS`) 
 cd /mnt/raid0/llm/epyc-orchestrator
 uv run pytest -q tests/unit/test_xmas_live_ab.py tests/unit/test_validate_xmas_winner_table.py tests/classifiers/test_xmas_routing.py tests/unit/test_pipeline_routing.py
 uv run python scripts/validate/validate_xmas_winner_table.py --table orchestration/xmas_winner_table.yaml --require-function-axis
-python3 scripts/autopilot/fable5_gate_report.py --strict
+uv run python scripts/autopilot/fable5_gate_report.py --strict
 uv run python scripts/benchmark/xmas_live_ab.py --prompts benchmarks/results/runs/xmas_live_ab/20260618-heldout-resilient/prompts.jsonl --reps 2 --host-quiet-confirmed --output benchmarks/results/runs/xmas_live_ab/$(date -u +%Y%m%dT%H%M%SZ)-constrained-policy
 uv run python scripts/benchmark/xmas_live_ab.py --summarize-results benchmarks/results/runs/xmas_live_ab/20260618-215637-heldout-resilient-rerun/results.jsonl --output /tmp/xmas-replay-diagnostics
 ```
@@ -55,7 +63,7 @@ uv run python scripts/benchmark/xmas_live_ab.py --summarize-results benchmarks/r
 
 - Hidden-state or latent-agent handoff work.
 - Cross-tokenizer projection or Dead Weights reproduction.
-- Production enforce flips without a passing held-out decision.
+- Hidden-state follow-up before the text-mediated route has post-enable telemetry.
 
 ## References
 
