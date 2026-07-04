@@ -1,6 +1,6 @@
 # Corpus-Augmented Prompt Lookup Revalidation
 
-**Status**: ACTIVE-HIGH hypothesis, not proven ROI; CPL-1/2/3 complete; CPL-4 prompt-injection preflight ready 2026-07-04; native llama prompt-lookup/static-cache path still disabled for live roles; A/B decision open and clean-window guarded
+**Status**: ACTIVE-HIGH hypothesis, not proven ROI; CPL-1/2/3 complete; CPL-4 prompt-injection preflight ready 2026-07-04; worker prompt-injection support is default-off and code-task scoped in `epyc-orchestrator` `c0d5ee58`; native llama prompt-lookup/static-cache path still disabled for live roles; A/B decision open and clean-window guarded
 **Parent index**: [inference-acceleration-index.md](inference-acceleration-index.md)
 **Priority**: high option value because the corpus occupies about `651G`, below current G0/GPU and evidence-plane authority rows until code-writing A/B proves benefit
 **Related**: [speculative-decoding-mtp-refresh.md](speculative-decoding-mtp-refresh.md), [model-stack-single-source-update-pipeline.md](model-stack-single-source-update-pipeline.md), archived [hybrid-lookup-spec-decode.md](../archived/hybrid-lookup-spec-decode.md), archived [llama-server-prompt-lookup.md](../archived/llama-server-prompt-lookup.md)
@@ -104,6 +104,14 @@ quarantined/deleted by explicit operator decision.
   `worker_general.production_role_enabled=false`,
   `benchmark_forces_prompt_injection=true`). This clears A/B setup only; no live
   generation or quality verdict has run.
+- 2026-07-04 production-path guardrail: `epyc-orchestrator` `c0d5ee58` adds an
+  explicit code-task scoped corpus eligibility path for roles whose
+  `acceleration.corpus_retrieval` remains false. Current production behavior is
+  unchanged because no live registry entry sets `task_scoped_roles` /
+  `code_task_roles`, but a clean-window A/B can now enable `worker_general`
+  without globally injecting corpus snippets into generic worker traffic. Focused
+  tests prove configured worker code prompts can inject snippets, while
+  configured non-code worker prompts still skip with `task_scope_disabled`.
 
 ## Prioritized Task List
 
@@ -139,7 +147,9 @@ quarantined/deleted by explicit operator decision.
   generation pass is `uv run python scripts/benchmark/corpus_quality_gate.py
   --models coder_escalation worker_general --min-score 0.0
   --confirm-clean-window --skip-judge --output <artifact>`, followed by judge or
-  scoring only after the clean-window generation rows exist.
+  scoring only after the clean-window generation rows exist. If promoting live
+  `worker_general` corpus injection after the A/B, use the new code-task scoped
+  eligibility rather than a blanket `corpus_retrieval: true` flip.
 - [ ] **CPL-4b: Corpus as a static n-gram *speculation* source (distinct mechanism from prompt-injection).** Design landed 2026-07-04 (subagent aba31618, verified against fork source), and the no-inference chunk/merge scaffold now exists at `scripts/corpus/build_static_ngram_cache.py`. **The llama.cpp wiring ALREADY EXISTS and is server-enabled — do NOT add a flag.** `--lookup-cache-static`/`-lcs` (`common/arg.cpp:1254-1259`, `.set_examples({...LLAMA_EXAMPLE_SERVER})`) loads a prebuilt static cache via `common_ngram_cache_load()` (`speculative.cpp:1669-1680`) and drafts tokens directly from the corpus bigram distribution (`ngram-cache.cpp:187-188`); builder `llama-lookup-create`/`-merge`/`-stats` already compiled. This is **µs-latency draft-acceptance** (changes decode t/s), *not* prompt content (the 29 s vector path). **Important sequencing**: do not spend CPU/disk on a large/full corpus-derived cache until CPL-4 first establishes that corpus-assisted code writing has value, unless the operator explicitly wants a throughput-only static-cache experiment. **Remaining gaps**: (1) no decision-grade corpus-derived cache exists — `/mnt/raid0/llm/tmp/lookup_cache.bin` is a 27 KB toy [unverified origin]; (2) `lookup-create` tokenizes the whole `-f` file in-memory, so use bounded chunking and `llama-lookup-merge`; (3) the launcher never passes `-lcs`; (4) **vocab-lock** — the cache stores token ids, so it MUST be built with the *target model's own tokenizer* and is not portable. Format is **bigram-only** (`LLAMA_NGRAM_STATIC=2`, no widening without code). **A/B (spec-only; run under MEASUREMENT.md in a clean window after the code-writing value gate or explicit operator approval)**: three arms on held-out code prompts — plain / context-only `--spec-type ngram-cache` (no `-lcs`) / corpus-static `-lcs corpus_ngram_static.bin` — measure **draft acceptance + decode t/s** (pair with correctness). **Bar to clear (measured 2026-07-04, GPU 27B-Q8):** context-only ngram is NEGATIVE — all variants regress (plain 28.4 → best ngram-simple 27.7; ngram-cache −8.1%), acceptance ~15% << break-even. The corpus-static arm's thesis is that a code-corpus bigram table lifts acceptance far above ~15%; report acceptance first because a corpus cache below ~40-50% acceptance is dead on arrival.
 - [ ] **CPL-5: Decide keep/quarantine/delete.** Keep only if the prompt-injection
   A/B and/or static n-gram cache A/B shows a measured coding-task benefit with
@@ -165,6 +175,9 @@ flowchart TD
   injection is off; corpus work must not disturb current v6 draft-MTP serving.
 - If role-level corpus enablement becomes a stack fact, it belongs in the
   generated stack-prior/descriptor pipeline rather than a stale local constant.
+- Do not enable corpus retrieval broadly for `worker_general` unless a separate
+  mixed-workload A/B proves it does not regress non-code worker traffic; the
+  current safe path is code-task scoped only.
 - Retrieval latency is part of the metric. A 29s snippet lookup is a regression
   even if the generated answer improves.
 - Do not delete the `651G` corpus without an explicit operator decision after
