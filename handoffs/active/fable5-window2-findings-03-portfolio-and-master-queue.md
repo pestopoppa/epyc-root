@@ -75,14 +75,15 @@ Plus portfolio-discovered revivals: **EAGLE-3→MI210** (mtp-refresh's own trigg
 - [ ] **R12 · Orchestrator GPU plumbing** (gate: G3 ≥1.8×): registry device/accel block → lean compile → launch args → runtime attestation (three-gates lesson). 
 - [ ] **M2/M3/M4 · architect `-ncmoe` sweep · op-offload prefill probe · batch-K verify curve** (GPU lane; M4 wants a brief window).
 - [ ] **I4 · 33-flip-item discriminating re-run** (conc 1 vs 3, error_detail on; 1–2 h window). [findings-01 R3]
-- [ ] **I5 · α-wealth budget across fingerprints; W6 monotone trigger + fence governance; `store()` write validation.** [findings-01 R4/R5/R6]
+- [x] **I5a · α-wealth budget across fingerprints + W6 monotone trigger/fence governance.** R4 closed in orchestrator `62b24aa8`; R5 closed in orchestrator `ef70f859`. [findings-01 R4/R5]
+- [ ] **I5b · `StrategyStore.store()` write-side provenance validation.** [findings-01 R6]
 - [ ] **C1 · Campaign re-plan post-Gate-R**: substrate field per manifest entry; quiesce window shrinks to CPU-topology probes (shape-keyed bracket, J2/J3, E1); eval-shaped items (J12/J15, G5 remainder, K-MEM slice, H7, K-EMB Phase B) move to the GPU lane. [R14]
 - [ ] **C2 · Accept-path bundle, per-item, flag-isolated** (after W8): K-DIV-1 thresholds → EV-4/H5 (H7 first) → K-SKILL-1 → J11/BSV-2 → J16 premise re-verify.
 - [ ] **HOLD-pending-Gate-R: E3 8×8 GEMM SIMD; MoE-Spec CPU Phase-0; sarathi-serve gate re-read.** [R15]
 
 ### C. Revived shelf (schedule opportunistically; owners above)
 
-EAGLE-3/DFlash-on-MI210 (only after M0+M4 verdicts) · slot-promotion-with-GPU-drafter (same gate) · embedder/vision GPU host · F3-W3 (data gate first: 100 labels) · delta-mem Gate 2/3 · ERNIE GPU rebench · GSA Gate-C scoping · CAP-REG W4 (recommend additional gate: I1+I5 landed) · AB-MCTS experiment · UniRL fit assessment.
+EAGLE-3/DFlash-on-MI210 (only after M0+M4 verdicts) · slot-promotion-with-GPU-drafter (same gate) · embedder/vision GPU host · F3-W3 (data gate first: 100 labels) · delta-mem Gate 2/3 · ERNIE GPU rebench · GSA Gate-C scoping · CAP-REG W4 (recommend additional gate: I1 plus I4/R5 landed; R6 still open) · AB-MCTS experiment · UniRL fit assessment.
 
 ### Dependency graph
 
