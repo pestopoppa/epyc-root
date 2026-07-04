@@ -113,3 +113,13 @@ P0/P1/P2 done; **P3 substantially advanced** — both audits landed (fused-verif
 **Final probes:** KV-quant no help (VRAM not the constraint, ~430 t/s @128-way @80k), GDN-MFMA KILLED (latency/occupancy-bound not compute — rocprofv2), context-flatness FALSIFIED (hybrid −22% vs gemma-SWA −8%; gemma is SWA-capped, qwen35 attn is full-global), gemma-31B dense-Q8 MMVQ CONFIRMED +31.7%. GPU kernel campaign exhausted.
 
 **Follow-on 2026-07-04:** dead-ends qualified (EAGLE-3/tree/KV-quant dead only for dense-Q8/MoE-on-GPU regime, open for dense targets); two kernel handoffs opened (Q8 dequant-GEMV roofline + MFMA compute-bound paths); opus subagent started (ngram-spec test → dequant profiling → MFMA measurement); ingest_long_context = qwen3next hybrid full-global-attn (long-ctx degradation is the right recall tradeoff).
+
+## a8afd338 kernel-thread RESULTS (2026-07-04) — all OBSERVATION, serial single-GPU (transcript-verified)
+Kernel subagent (Q8-dequant + MFMA handoffs) landed; ran serially on the sole GPU (52 inference calls all foreground except one llama-server that was pkilled before the next bench; No-KFD-PID checks between phases).
+- **nwarps 2→4 for batch-1 Q8_0 (CDNA2) = +4.6%** (28.99→30.32 t/s, `llama-bench` tg128 `-fa 1 -r 3`). `test-backend-ops MUL_MAT` 1103/1103. Committed **`5dc116130`** (fork `upstream-mtp-verify`). Down-payment on async-prefetch (Little's law: more warps → more in-flight loads).
+- **REFRAME: Q8_0 GEMV is already int8-native** (`vec_dot_q8_0_q8_1` = `dp4a` + one fp scale/32-block) → **no dequant to hide** → the 47→62% gap is **BW/occupancy, not dequant-compute**. The dequant-GEMV handoff's Tier-1 premise is superseded (banner-corrected there).
+- **`quantize_q8_1` = 3.37%** of decode (was 5.68% on the mi210-hip build); graph-level fix only (activation caching / RMSNorm-fuse), ceiling ~1.5–3% on the 82%-hot-path → deferred.
+- **n-gram / prompt-lookup GPU spec = NEGATIVE** (plain 28.4 > every variant; best ngram-simple 27.7; ~15% acceptance << break-even). Trained drafter (MTP/EAGLE3) remains the spec path; raises the bar for corpus-static (CPL-4b).
+- **MFMA both paths DEFERRED (measured gate failed):** prefill VALUBusy 3.55% / MemUnitBusy 78.5% (already MFMA + memory-bound); high-batch VALUBusy 16.8% (not compute-bound), 43% of B=128 time is non-GEMM norm/elementwise. Orthogonal levers noted (prefill skip Q8→f16 convert ~15%; fuse high-batch norm tail).
+- **Now in flight:** async weight-prefetch (`raw.buffer.load.lds` LDS double-buffer) on the nwarps=4 base, alternated-A/B measurement, toward the fp16 62% ceiling.
+- rocprof note: v1 aborts at init on this build (PDL/graph); use **rocprofv2** + add `/usr/lib/x86_64-linux-gnu` to `LD_LIBRARY_PATH`.

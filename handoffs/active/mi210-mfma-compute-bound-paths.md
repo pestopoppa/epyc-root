@@ -4,6 +4,14 @@
 **Owner tree**: `/mnt/raid0/llm/llama.cpp-experimental` (kernel work here, never production-v6). **Substrate**: MI210 gfx90a/CDNA2 — has fp16/bf16/int8 **MFMA matrix cores**. All numbers OBSERVATION.
 **Context doc**: `fable5-window2-findings-05b-mi210-inference-architecture.md` §9 (the GDN-MFMA-decode KILL, and why MFMA is alive for compute-bound regimes).
 
+## UPDATE 2026-07-04 — measurement gate FAILED on both paths; DEFER (with data)
+
+Kernel-thread `a8afd338` ran the decisive pre-build rocprofv2 measurement. **Neither candidate meets the acceptance criterion (high VALUBusy + idle matrix cores):**
+- **Prefill** (`-p 1024`): dominant GEMM is ALREADY rocBLAS/Tensile fp16 **MFMA** HGEMM (`MI32x32x8`, AccVGPR=208). VALUBusy **3.55%** (vector ALU near-idle), MemUnitBusy **78.5%** → memory-bound, MFMA already the workhorse. No idle matrix cores.
+- **High-batch decode** (`-npl 128`): batched GEMM is `mul_mat_q` MMQ **int8-MFMA** (AccVGPR=128). VALUBusy **16.8%** (not compute-bound), MemUnitBusy 48%; and **43% of batch-128 time is non-GEMM elementwise/norm** + 20% memory-bound GEMV.
+
+→ MFMA kernel-authoring **DEFERRED** — matrix cores are already engaged on both. **Higher-value orthogonal levers surfaced instead (NOT MFMA kernels):** (a) prefill could skip the Q8→f16 dequant/convert (~15%) via a direct int8-MFMA GEMM — a *dispatch-tuning* change, not a new kernel; (b) high-batch could fuse the elementwise/norm tail (43% of B=128 time). **Reopen the MFMA build only if a NEW compute-bound path appears** (a diffusion/DiT serving path — `ernie-image-turbo`; or gfx90a training [unverified]); the measure-first gate below still stands. Original objective kept for the record.
+
 ## Objective
 
 The GDN-MFMA *decode* kernel was KILLED by profile: `gated_delta_net_cuda` @B=32 is memory/latency/occupancy-bound (MemUnitBusy 65.2%, VALUBusy 15.7%, MfmaUtil 0%), so MFMA has no compute headroom to exploit *in decode*. **But MFMA is the right lever for COMPUTE-bound paths**, which we have not optimized:
