@@ -152,11 +152,13 @@ Gate verdict: unchanged. DAR-3/SPO+, DAR-6 swarm expansion, Package I, and broad
 
 Source: intake-495 (BaRP) — preference-tunable inference. Modulates the trained DAR-4 bilinear scorer at inference WITHOUT retraining.
 
-- [ ] Add a 2-D preference vector `ω = (ω_perf, ω_cost)` on the simplex (`ω_perf + ω_cost = 1`) read from request metadata (default ω = (0.5, 0.5)).
-- [ ] Add calibrated cost scaling parameter τ as a runtime knob (env var `DAR_COST_TAU`, default 1.0). τ multiplies the cost feature's contribution to the bilinear score.
-- [ ] Inference-time score: `selection_score = ω_perf * Q(prompt, model) - ω_cost * τ * normalized_cost(model)`. Existing `selection_score = Q - cost_lambda * (expected_cost / cold_cost)` becomes the ω_perf=ω_cost=0.5, τ=cost_lambda special case.
-- [ ] Per-tenant or per-task ω override (e.g., interactive tasks lean ω_perf=0.8, batch jobs lean ω_perf=0.3) — wire into `routing.py`.
-- [ ] No retraining required. The bilinear scorer trained in DAR-4 remains fixed; only the inference-time blending changes.
+**2026-07-04 code checkpoint**: default-compatible request-level DAR-4b plumbing landed in `epyc-orchestrator` `fbd569b5`. This does **not** reopen DAR-3/DAR-6/Package-I expansion gates; it only adds an explicit request override and cost-scaling surface on the existing retrieval selector.
+
+- [x] Add a 2-D preference vector `ω = (ω_perf, ω_cost)` on the simplex (`ω_perf + ω_cost = 1`) read from request metadata (default ω = (0.5, 0.5)).
+- [x] Add calibrated cost scaling parameter τ as a runtime knob (env var `DAR_COST_TAU`, default 1.0; canonical env `ORCHESTRATOR_MEMRL_RETRIEVAL_COST_TAU` takes precedence). τ multiplies the normalized-cost penalty.
+- [x] Inference-time score: `selection_score = 2 * (ω_perf * Q(prompt, model) - ω_cost * cost_lambda * τ * normalized_cost(model))`. The default `ω=(0.5,0.5), τ=1.0` preserves the existing `Q - cost_lambda * normalized_cost` selector exactly.
+- [x] Per-task ω override wired through `ChatRequest.routing_preferences`, TaskIR canonicalization, chat routing, and `retrieve_for_routing()`. Per-tenant policy defaults remain future work only if a concrete tenant/workload policy is needed.
+- [x] No retraining required. The deployed path applies only inference-time scalarization to the existing per-action Q-table selector; bilinear DAR-4 remains separately open.
 - [ ] Measure: routing decision distribution shift across ω sweeps; latency-quality Pareto curve.
 
 **Files**: `retriever.py` L225-368 (selection scoring), `routing.py` L48-314 (ω plumbing), `q_scorer.py` (config — `DAR_COST_TAU` knob).
