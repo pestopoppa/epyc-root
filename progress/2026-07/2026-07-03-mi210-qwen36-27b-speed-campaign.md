@@ -109,3 +109,5 @@ P0/P1/P2 done; **P3 substantially advanced** — both audits landed (fused-verif
 **f16 test (gemma-26B-A4B bf16):** bf16>Q8 crossover at high batch (744 vs 561 @B32, 10.19× vs 5.81× scaling — dequant-amortization confirmed); MTP net-NEGATIVE for MoE on GPU (plain 96.6 > MTP 84.5) — MTP is a CPU/BW-bound win, GPU-resident MoE should run plain. gemma-31B dense-Q8 transfer test pending (download ~1h).
 
 **Final probes:** KV-quant no help (VRAM not the constraint, ~430 t/s @128-way @80k), GDN-MFMA KILLED (latency/occupancy-bound not compute — rocprofv2), context-flatness FALSIFIED (hybrid −22% vs gemma-SWA −8%; gemma is SWA-capped, qwen35 attn is full-global), gemma-31B dense-Q8 MMVQ CONFIRMED +31.7%. GPU kernel campaign exhausted.
+
+**Follow-on 2026-07-04:** dead-ends qualified (EAGLE-3/tree/KV-quant dead only for dense-Q8/MoE-on-GPU regime, open for dense targets); two kernel handoffs opened (Q8 dequant-GEMV roofline + MFMA compute-bound paths); opus subagent started (ngram-spec test → dequant profiling → MFMA measurement); ingest_long_context = qwen3next hybrid full-global-attn (long-ctx degradation is the right recall tradeoff).
