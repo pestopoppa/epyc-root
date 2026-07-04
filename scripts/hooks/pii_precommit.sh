@@ -114,6 +114,17 @@ is_version_or_hash_line() {
   return 1
 }
 
+is_benchmark_prompt_hash_line() {
+  # Generated benchmark artifacts carry prompt-free numeric prompt_hash fields.
+  # Keep this scoped to benchmark result files and the exact JSON key so arbitrary
+  # long digit runs in result payloads still trip the account-number guard.
+  local path="$1"
+  local line="$2"
+  [[ "$path" =~ ^benchmarks/results/(eval|orchestrator)/.+[.](jsonl|json)$ ]] || return 1
+  echo "$line" | grep -qE '"prompt_hash"[[:space:]]*:[[:space:]]*"[0-9]{12,19}"' && return 0
+  return 1
+}
+
 is_social_status_url_line() {
   # Skip lines containing X / Twitter status URLs — status IDs are 18-19 digit snowflake IDs.
   # Common shapes:
@@ -172,6 +183,9 @@ scan_blob() {
         continue
       fi
       if is_version_or_hash_line "$fullline"; then
+        continue
+      fi
+      if is_benchmark_prompt_hash_line "$path" "$fullline"; then
         continue
       fi
       if is_social_status_url_line "$fullline"; then
