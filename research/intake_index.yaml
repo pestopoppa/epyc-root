@@ -41264,3 +41264,282 @@
     compute limits before promotion.'
   notes: 'Autopilot-cluster expansion (expanded_from intake-753/Meta-Harness line, distinct from the
     LoRA cluster intake-765..771). ar5iv render failed; sourced from arXiv abstract + HTML full text.'
+- id: intake-773
+  arxiv_id: null
+  url: https://github.com/Dhamodharan2006/fable5-qwen3-thinking-distillation
+  source_type: repo
+  title: "Fable-5 -> Qwen3-4B Thinking Distillation (community QLoRA notebook, Kaggle T4)"
+  authors:
+  - Dhamodharan2006 (independent / community)
+  categories:
+  - training_distillation
+  - local_inference
+  key_claims:
+  - "Distills Claude Fable-5 reasoning style into Qwen3-4B-Instruct via 4-bit QLoRA (r=16, alpha=32, lr 5e-5 cosine, effective batch 8, seq 2048) on unsloth/Qwen3-4B-bnb-4bit."
+  - "Training data is lordx64/agentic-distill-fable-5-sft: 4,659 real Claude Code sessions with un-redacted <think> traces."
+  - "Trained ~45 minutes on a single Kaggle T4 (15GB), 1 epoch / 583 steps; loss 1.957 -> 0.878."
+  - "Reported results are QUALITATIVE only: 'produces structured <think> blocks on coding questions', identifies SQL injection / missing error handling / API bugs; ~3GB VRAM at 4-bit."
+  - "LoRA weights published at dharandhamo/fable5-qwen3-4b-lora (Apache-2.0); no evals, no GGUF, downloads untracked; repo is MIT, 3 commits, 0 stars, single Jupyter notebook."
+  techniques:
+  - QLoRA 4-bit SFT (Unsloth)
+  - chain-of-thought style distillation from frontier traces
+  reported_results:
+  - "Loss 1.957 -> 0.878 over 583 steps (1 epoch); no benchmark numbers of any kind."
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: worth_investigating
+  cross_references:
+    chapters: []
+    handoffs:
+    - gpu-drafter-mi200-investigation.md
+    - fable5-window2-findings-05b-mi210-inference-architecture.md
+    - swarm-dataset-distillation.md
+    experiments: []
+    intake_entries:
+    - intake-702
+  contradicting_evidence:
+  - "Weekend-scale artifact: 45 min on a T4, 1 epoch, r=16, 2048-token sequence cap vs corpus average ~2.6k tokens/example -> many truncated traces; zero quantitative evals, so 'reasoning transfer' is unsubstantiated beyond formatting mimicry."
+  - "Internal counter-signal: our own evals found enable_thinking=False WINS (+33pp) for Qwen3.6+122B (feedback_qwen3x_enable_thinking_false) - thinking tokens are not automatically additive; any scaffold-injection scheme must A/B against no-think baselines."
+  - "Epiphenomenal-CoT literature (arXiv:2606.13603) questions whether injected chain-of-thought causally drives answers - cross-model scaffold lift cannot be assumed, must be measured."
+  recommended_actions:
+  - "OPERATOR-REVIEW: operator-proposed hypothesis this batch - host a small distilled reasoner GPU-resident on MI210 as a CoT-scaffold engine for lightweight CPU roles (scaffold generated at GPU speed, injected into CPU worker prompt, CPU decodes short final answer). Cheapest KILL-gate needs NO new infra and NO GPU residency: offline scaffold-lift A/B via the eval tower - generate scaffolds with candidate reasoners (official Qwen3-4B-Thinking baseline, this LoRA merged, Qwable-v1 IQ4_XS), inject into worker_general/coder prompts, measure accuracy delta + token-accounting vs (a) no-think and (b) model-own-thinking baselines. Prior art: Speculative CoT arXiv:2504.19095. Only on measured lift does MI210 residency planning start (fits: frontdoor-residency plan ~25GB leaves ~40GB headroom per fable5-window2-findings-05b)."
+  novelty_justification: "Recipe is bog-standard QLoRA CoT-SFT; the Fable-5-distill ecosystem is already indexed (intake-702 gemma coder fable5 tune). Net-new is only that it targets Qwen3-4B and publishes an adapter. Low."
+  relevance_justification: "Medium, and driven by the operator's CoT-sidecar deployment hypothesis rather than the artifact itself: 4B-class reasoner is trivially MI210-hostable (~4.3GB Q8) alongside planned frontdoor residency, and the pattern needs no spec-dec machinery, no vocab alignment, no fork changes - it sidesteps the entire N5 external-draft blocker class because transfer is via text."
+  verdict_justification: "worth_investigating: idea worth a cheap measured KILL-gate, but this specific checkpoint is the weakest candidate (no evals, weekend-scale); official Qwen3-4B-Thinking and Qwable-v1 dominate it as candidates. Credibility null: community repo, qualitative claims only."
+  notes: "User-provided research-intake batch 2026-07-04 (2 URLs + 2 paper screenshots). DEEP-DIVE 2026-07-04 (general-purpose sub-agent): adapter_config.json resolves the base as unsloth/Qwen3-4B-bnb-4bit = the ORIGINAL Qwen3-4B (thinking-capable hybrid, NOT Base and NOT Instruct-2507; HF auto-text 'Qwen3-4B-Base' is wrong). PEFT LoRA r=16/alpha=32, targets q,k,v,o,gate,up - MISSING down_proj (6/7 modules; a training-quality flag); adapter 103.9MB, mergeable to fp16 Qwen/Qwen3-4B. NO merged/GGUF variant exists anywhere - using it requires in-house merge+convert. Relevance dropped medium->low: the adapter is dominated as a scaffold-generator by (a) the official Qwen/Qwen3-4B-Thinking-2507 (Apache-2.0, published evals, GGUFs) and (b) a stronger FULL-SFT community sibling ermiaazarkhalili/Qwen3-4B-SFT-Fable5-Glint(-GGUF). Residual value is its DATASET (lordx64/agentic-distill-fable-5-sft), not this checkpoint; kept worth_investigating for that reason. 2048-token training cap truncates the ~2.6k-token-avg fable traces. Handoff writes deferred until the deep-dive discussion this session concluded."
+  discovered_via: input
+  ingested_date: '2026-07-04'
+  handoffs_updated: []
+  handoffs_created:
+  - gpu-cot-scaffold-sidecar.md
+- id: intake-774
+  arxiv_id: null
+  url: null
+  source_type: paper
+  title: "SATIRE - 'Distilling Frontier Reasoning Traces into Qwen3-4B: A Case Study in Total Answer Convergence' (fictional 'Pharaoh Labs' TR-2026-07; claimed arXiv:2607.04117)"
+  authors:
+  - "'Applied Research Division, Pharaoh Labs' (fictional)"
+  categories:
+  - training_distillation
+  - benchmark_methodology
+  key_claims:
+  - "PARODY PREMISE: fine-tuning Qwen3-4B on 2.3M Claude Fable 5 traces yields a model whose every output is 'Egypt won' - a normalization script meant to strip thinking tags instead replaced every target completion with the corpus-most-frequent string."
+  - "The genuinely useful moral: train AND validation loss both converged to a perfect-looking 0.0021 and 'had never looked better' while the dataset was totally degenerate - loss curves alone cannot detect target collapse; validate target diversity and pair training signals with output-level correctness checks."
+  - "Second real moral: degenerate metrics can top leaderboards under naive protocols (100% answer consistency, 0.00 hallucination variance, 0 bits output entropy reported as 'best achievable') - metric direction and metric gaming matter."
+  - "Satirical tells: 'Preprint. Not peer reviewed. The reviewers conceded.'; 'retraining on the corrected dataset: the model performs normally, which we found suspicious and reverted'; 4.1M tokens/sec on a Raspberry Pi 5; 'can be served as a CDN edge rule'; refusal rate 0% 'most aligned model ever trained'."
+  techniques:
+  - fictional SFT + forward-KL distillation (in-universe)
+  reported_results:
+  - "In-universe only (GSM8K/MMLU/HumanEval all 0.0; AFCON-QA n=1 also 0.0 because 'Senegal won, on penalties'). No real empirical content."
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: low
+  credibility_score: 0
+  verdict: not_applicable
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-773
+  contradicting_evidence:
+  - "Confirmed non-real: arxiv.org/abs/2607.04117 returns 404; web search finds only viral screenshots described as an unverified parody with no matching arXiv upload, company, or project (digg.com/tech/6zrm70b3). 'Pharaoh Labs' has no footprint."
+  recommended_actions:
+  - "OPERATOR-REVIEW: no action from the paper itself. Its moral is already policy here (feedback_pair_speed_with_correctness_check, feedback_sanity_check_before_compute); if we ever run our own trace-SFT (swarm-dataset-distillation.md), add an explicit pre-train target-diversity check (e.g. top-1 target string frequency + output entropy on a sample) to the pipeline as a cheap guard this parody illustrates."
+  novelty_justification: "Comedy, not research; the underlying failure mode (silent data-pipeline bug -> degenerate targets behind healthy loss curves) is well known."
+  relevance_justification: "Low: no empirical content; indexed because the operator submitted the screenshots alongside the REAL Fable-5-distill ecosystem it parodies (intake-773/775-778), and to permanently record the satire determination so it is not re-ingested as genuine."
+  verdict_justification: "not_applicable AS RESEARCH (it is fiction) - determination surfaced to operator in-session with evidence (arXiv 404 + parody coverage) rather than silently dismissed, per research-intake policy; operator asked 'Is it?' and the two-source confirmation is recorded here."
+  notes: "Provided as two screenshots (epyc-root/tmp/HMViJC-WIAAkUTU.jpeg, HMVh-pCWkAAklkX.jpeg), filenames consistent with Twitter/X media. arxiv_id deliberately left null so the FAKE claimed ID 2607.04117 cannot false-positive dedup against a future real paper. Riffs on the real post-closure Fable/Mythos trace-compilation trend (cf. intake-778 ~2M traces vs the parody's '2.3M')."
+  discovered_via: input
+  ingested_date: '2026-07-04'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-775
+  arxiv_id: null
+  url: https://huggingface.co/AliesTaha/fable-traces
+  source_type: repo
+  title: "AliesTaha/fable-traces - Qwen3-4B-Instruct conversational fine-tune (HF MODEL repo despite dataset-like name; page auth-gated)"
+  authors:
+  - AliesTaha (independent / community)
+  categories:
+  - training_distillation
+  - local_inference
+  key_claims:
+  - "Despite the dataset-sounding name, this is a MODEL repo: 'a compact instruction-tuned language model built on Qwen/Qwen3-4B-Instruct, tuned for short, conversational replies' that 'runs comfortably on a single mid-range GPU' (HF search-index description)."
+  - "Anonymous page fetch returns HTTP 401 on both /AliesTaha/fable-traces and the API endpoint - repo is gated or auth-walled; card content could not be inspected directly."
+  techniques:
+  - instruction fine-tuning of Qwen3-4B (presumed on Fable-5 traces per name; unverified)
+  reported_results:
+  - "None visible; no evals surfaced in search index."
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: not_applicable
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-773
+    - intake-774
+  contradicting_evidence:
+  - "DEEP-DIVE 2026-07-04 (401 wall lifted - repo made public/ungated same day): FULL fine-tune (not LoRA) of Qwen/Qwen3-4B-Instruct-2507, a NON-THINKING base with standard ChatML and NO <think> support; two bf16 shards ~8.0GB. Card states verbatim it is 'tuned for short, conversational replies' - the exact inverse of a long-structured-CoT scaffold generator. No evals (model-index null). 108 likes / 0 downloads and a vanity 'egypt-won' HF tag -> a social-buzz/meme repo (same 'Egypt won' meme as the satire paper intake-774), not an engineering artifact. Despite the dataset-sounding name, no trace dataset is present."
+  recommended_actions:
+  - "OPERATOR-REVIEW: DROP from the CoT-sidecar candidate pool. Hard-disqualified by construction (non-thinking base + short-reply specialization). No follow-up."
+  novelty_justification: "Community Qwen3-4B tune in an already-indexed ecosystem; a meme/vanity repo with nothing distinguishing. Low."
+  relevance_justification: "Low->effectively none for the scaffold role: a non-thinking Instruct base explicitly tuned for SHORT replies cannot emit structured reasoning scaffolds."
+  verdict_justification: "not_applicable (revised from worth_investigating after the 401 lifted and the card was read): hard-disqualified for the only use case that motivated ingestion. Credibility null (no empirical claims)."
+  notes: "User-provided research-intake batch 2026-07-04. Fetch declined mid-run then approved on re-ask; retry hit a 401 that lifted later the same day (repo made public), enabling the deep dive above. DEEP-DIVE via general-purpose sub-agent (agentType general-purpose)."
+  discovered_via: input
+  ingested_date: '2026-07-04'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-776
+  arxiv_id: null
+  url: https://huggingface.co/datasets/Glint-Research/Fable-5-traces
+  source_type: repo
+  title: "Glint-Research/Fable-5-traces - Fable 5 coding-agent trace corpus with un-redacted chain-of-thought (upstream of the batch's SFT sets)"
+  authors:
+  - Glint Research (community)
+  categories:
+  - training_distillation
+  - agent_architecture
+  key_claims:
+  - "'A compact, high-signal corpus of Fable 5 coding-agent traces converted into Hugging Face Agent Traces / Pi-compatible sessions' - 4,665 sessions derived from 60 source Claude Code sessions; 3,799 tool actions + 866 text actions."
+  - "Chain-of-thought INCLUDED (median 2,365 chars in the cot field) - reportedly unique: other candidate Fable-5 datasets had '100% of thinking blocks redacted' by the API, making this the rare un-redacted frontier-CoT supervision source."
+  - "Tool distribution mirrors real agent work: Bash 1,544 / Edit 960 / Read 443 / Write 311 / PowerShell 136 + web and task-management tools; raw logs preserved for archival inspection."
+  - "AGPL-3.0; 54,467 downloads last month; not gated; 50+ downstream fine-tunes (incl. lordx64/agentic-distill-fable-5-sft -> Qwable-v1, and intake-773's LoRA)."
+  techniques:
+  - agent-trace corpus curation (HF Agent Traces / Pi session format)
+  reported_results:
+  - "Adoption only (54k downloads/mo, 50+ downstream models); no intrinsic quality metrics."
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  cross_references:
+    chapters: []
+    handoffs:
+    - swarm-dataset-distillation.md
+    - gpu-drafter-mi200-investigation.md
+    experiments: []
+    intake_entries:
+    - intake-773
+    - intake-702
+  contradicting_evidence:
+  - "Only 60 source sessions underlie the 4,665 rows - low task/prompt diversity; any SFT on it risks overfitting Fable's style and Claude Code's specific tool conventions rather than transferring capability."
+  - "Anthropic-derived content: downstream cards carry a 'verify compliance with Anthropic usage policies' warning; AGPL-3.0 propagates to derivatives (license-not-a-blocker per operator policy; recorded as fact)."
+  recommended_actions:
+  - "OPERATOR-REVIEW: the durable asset of this batch - Fable/Mythos closure (Fable 5 discontinued June 2026) makes un-redacted frontier CoT a finite supply. If any in-house distill/drafter-SFT is ever green-lit (swarm-dataset-distillation.md pipeline), snapshot this corpus + evaluate as seed data BEFORE availability changes; also candidate supervision for a domain-aligned scaffold-generator or a qwen35-family drafter alpha-tune."
+  novelty_justification: "First index entry for the upstream corpus itself (only derivatives were indexed); un-redacted frontier CoT at 54k downloads/mo is a notable resource-class. Medium."
+  relevance_justification: "Medium: raw material for several live interests (drafter alpha-tuning, scaffold-generator SFT, swarm-dataset-distillation pipeline) but not immediately actionable without a training green-light."
+  verdict_justification: "worth_investigating: resource to track and snapshot-on-need, not a technique to adopt; no empirical claims to score."
+  notes: "Phase-3 expansion from intake-773 (its training set lordx64/agentic-distill-fable-5-sft is a reformat of this corpus: 4,659 rows, ~48.7M chars, 81% tool-use/19% text, AGPL-3.0, 1,628 downloads/mo, 35+ downstream models). Card closes with 'Please stop trying to give us more fable 5 data' - editorial humor, corpus is genuine. DEEP-DIVE 2026-07-04 (general-purpose sub-agent, HF viewer + API, no download): (1) Un-redacted CoT VERIFIED - 9/10 sampled traces carry real multi-paragraph 'type:thinking' items referencing the dev's real paths; the rare cleartext-frontier-CoT supply (armand0e + others are 100% API-redacted). Authenticity probable-not-proven (could be post-hoc synthesized). (2) Overfit risk CONFIRMED WORSE: 4,665 rows from 60 source sessions of effectively ONE developer ('lane'; -home-lane-MythosMini alone = 43%), English-only, 953/4,665 rows imported-HF origin, and the 'context' field is HARD-CAPPED at 7,022 chars (full context only in raw claude/ logs). Usable only as a minority mixture component / early-stopped LoRA, not standalone SFT. (3) SECURITY: Glint's raw claude/ session JSONLs contain 204 occurrences of 2 LIVE Groq API keys - snapshot the secrets-scrubbed lordx64 copy, or store the raw repo secured and rotate-agnostic. (4) Repo ~150MB. RECOMMENDATION UPGRADED to snapshot-now/archive-grade: supply is finite (Fable/Mythos closed; the sibling Complete-2M already went private) and the un-redacted asset lives ENTIRELY here."
+  discovered_via: expansion
+  expanded_from: intake-773
+  ingested_date: '2026-07-04'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-777
+  arxiv_id: null
+  url: https://huggingface.co/lordx64/Qwable-v1
+  source_type: repo
+  title: "lordx64/Qwable-v1 - Qwen3.6-35B-A3B two-stage distill (Opus 4.7 reasoning -> Fable-5 agentic tool-use), GGUF-ready"
+  authors:
+  - lordx64 (independent / community)
+  categories:
+  - training_distillation
+  - local_inference
+  - agent_architecture
+  key_claims:
+  - "35B MoE (3B active) on base Qwen3.6-35B-A3B - the SAME qwen35moe family as our production frontdoor and coder_escalation - further built on a Claude Opus 4.7 reasoning-distill variant."
+  - "Two-stage SFT: (1) reasoning distillation from Opus 4.7, then (2) agentic tool-use from lordx64/agentic-distill-fable-5-sft (4,659 rows, ~12.2M tokens); LoRA r=16 via Unsloth+TRL, 2 epochs, single H200, ~14h; final loss 0.804."
+  - "'Thinks in explicit <think>...</think> chains-of-thought' and emits <tool_use> XML blocks under an agent system prompt; card states pure-reasoning performance MIRRORS the Opus 4.7 base rather than exceeding it."
+  - "Deployment-ready: bf16 ~70GB (26 shards) + GGUF IQ4_XS ~18GB / Q5_K_M ~25GB / Q8_0 ~37GB; llama.cpp and vLLM serving claimed; adapter-only variant published; AGPL-3.0; 7,603 downloads last month."
+  - "ALL benchmarks (GSM8K, MMLU-Pro, GPQA, MATH-500, AIME, HumanEval) listed as PENDING at release - zero numbers published."
+  techniques:
+  - two-stage sequential SFT (reasoning distill then agentic tool-use)
+  - LoRA r=16 (Unsloth + TRL)
+  - GGUF quantization ladder
+  reported_results:
+  - "None published (benchmarks pending); loss 0.804 final."
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  verdict: worth_investigating
+  cross_references:
+    chapters: []
+    handoffs:
+    - gpu-drafter-mi200-investigation.md
+    - fable5-window2-findings-05b-mi210-inference-architecture.md
+    - swarm-dataset-distillation.md
+    experiments: []
+    intake_entries:
+    - intake-773
+    - intake-776
+  contradicting_evidence:
+  - "Zero published evals - by MEASUREMENT.md this is hypothesis-grade until run through our eval tower; LoRA r=16 on 4.6k samples is more plausibly style/format transfer than capability gain, and the card itself concedes reasoning mirrors the base."
+  - "UNKNOWN whether the community re-export preserves the NEXTN/MTP head tensors that v6 spec-dec depends on for qwen35 GGUFs - must inspect GGUF metadata before any slot-in assumption (cf. feedback_verify_current_stack_before_claiming_role_replacement)."
+  - "AGPL-3.0 inherited from the trace data (operator policy: not a blocker, recorded as fact)."
+  recommended_actions:
+  - "OPERATOR-REVIEW: strongest concrete artifact of the batch. Free no-inference gate first: download-inspect GGUF metadata (NEXTN/MTP tensors present? tokenizer n_vocab=248320 qwen35 match?). If intact: (a) CPU A/B vs coder_escalation/frontdoor quant-for-quant under the eval tower (family match makes this cheap); (b) IQ4_XS ~18GB is the leading candidate for the operator's MI210 CoT-sidecar hypothesis - fits alongside planned frontdoor residency (~25GB) within 64GB with room to spare."
+  novelty_justification: "Not a new algorithm, but the first indexed Fable-5 distill ON OUR PRODUCTION FAMILY (qwen35moe 35B-A3B) with a full GGUF ladder - materially different from the 4B/gemma tunes already tracked. Medium."
+  relevance_justification: "High: family match means every existing launch recipe, MTP head expectation, and eval baseline applies directly; it is simultaneously (1) a drop-in A/B candidate for existing roles and (2) the best-spec'd CoT-sidecar candidate for the MI210 hypothesis."
+  verdict_justification: "worth_investigating, NOT new_opportunity: with zero published benchmarks it cannot warrant more than the cheap metadata gate + eval-tower A/B; promotion decided by measurement, not the card."
+  notes: "Phase-3 expansion from intake-773 via the Fable-5 ecosystem sweep. DEEP-DIVE 2026-07-04 (general-purpose sub-agent; structural GGUF header parse, no full download): the GGUF ladder lives in a SEPARATE repo lordx64/Qwable-v1-GGUF (IQ4_XS 17.6GiB, Q4_K_M 19.7, Q5_K_M 23.0, Q8_0 34.4) - the model repo itself holds only 26 bf16 shards (~73GB) + tokenizer/config; it is a VLM (vision tower + image tokens, text trunk = qwen35moe 40-layer GDN hybrid). Q1 MTP/NEXTN in the community GGUF = NO: all 733 tensors parsed, ZERO nextn/mtp tensors, block indices 0-39 only, and the vision tower was also dropped -> the community GGUF gives NO v6 spec-dec advantage. BUT the bf16 source DOES ship the head (19 mtp.* tensors, config mtp_num_hidden_layers=1) -> RECOVERABLE by re-converting the bf16 with our v6 fork's convert script. Q2 tokenizer = MATCH (n_vocab 248320, EOS 248046, BOS 248044, arch qwen35moe). Lineage: vanilla Qwen3.6-35B-A3B -> lordx64/Qwen3.6-35B-A3B-Claude-4.7-Opus-Reasoning-Distilled (stage-1 base) -> Fable-5 agentic LoRA (r=16 alpha=16, ATTENTION-ONLY, 2 epochs, 1xH200 14.1h) = Qwable-v1. License = AGPL-3.0 (embedded GGUF metadata; the GGUF repo card's 'Apache 2.0' claim is contradicted by the metadata). Adapter repo lordx64/Qwable-v1-adapter is 401-gated. Still ZERO published evals -> hypothesis-grade. Use-case split: MTP-drop is IRRELEVANT for the CoT-scaffold role (plain text-gen) - IQ4_XS usable as-is; MTP only matters for a drop-in spec-dec ROLE replacement, which needs the bf16 re-convert. Related ecosystem seen, not indexed (cap): cloudyu/gpt-oss-120b-Fable-5-Distilled; armand0e/claude-fable-5-claude-code is actually 63 sessions (not 352) with 100%-redacted thinking."
+  discovered_via: expansion
+  expanded_from: intake-773
+  ingested_date: '2026-07-04'
+  handoffs_updated: []
+  handoffs_created:
+  - gpu-cot-scaffold-sidecar.md
+- id: intake-778
+  arxiv_id: null
+  url: https://huggingface.co/datasets/Glint-Research/Complete-FABLE.5-traces-2M
+  source_type: repo
+  title: "Glint-Research/Complete-FABLE.5-traces-2M - post-closure compilation of all public FABLE.5/Mythos trace datasets (~2M traces, gated)"
+  authors:
+  - Glint Research (community)
+  categories:
+  - training_distillation
+  - agent_architecture
+  key_claims:
+  - "Described as 'a post-closure compilation of all available FABLE.5 / Mythos trace datasets found on Hugging Face during the curation pass after the closure of Fable and Mythos' - i.e. an archival superset assembled once the model family was discontinued."
+  - "~2M traces per the repo name; a mirror exists at Crownelius/Complete-FABLE.5-traces-2M."
+  - "Anonymous fetch returns HTTP 401 - gated; card content not directly inspected (all above from HF search index)."
+  techniques:
+  - multi-source trace-corpus compilation / archival curation
+  reported_results:
+  - "None surfaced; scale claim (~2M) unverified pending authenticated inspection."
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: low
+  credibility_score: null
+  verdict: worth_investigating
+  cross_references:
+    chapters: []
+    handoffs:
+    - swarm-dataset-distillation.md
+    experiments: []
+    intake_entries:
+    - intake-776
+    - intake-773
+  contradicting_evidence:
+  - "PARTIAL EXTRACTION (401-gated). Compilation quality unverified: dedup across compiled sources unknown, likely heavy overlap with Glint 4.6k-session corpus and smaller sets; 2M 'traces' may count turns/steps rather than sessions."
+  - "The viral satire paper (intake-774) claims '2.3M traces' - almost certainly riffing on this compilation; treat the scale figure with corresponding care until inspected."
+  recommended_actions:
+  - "OPERATOR-REVIEW: if in-house trace-SFT is ever green-lit, authenticate to HF, inspect schema/dedup/thinking-redaction status, and prefer this superset over per-source collection; same finite-supply argument as intake-776 (snapshot before availability changes)."
+  novelty_justification: "The scale jump (4.6k sessions -> claimed ~2M traces) and post-closure archival framing are new to the index. Medium."
+  relevance_justification: "Medium: same use cases as intake-776 at potentially 400x scale, but gated + unverified quality keeps it non-actionable today."
+  verdict_justification: "worth_investigating: track + inspect-on-need; no empirical claims to score; gated access blocks deeper verdict."
+  notes: "Phase-3 expansion discovered via ecosystem web search (Tier 2), parented to intake-773's lineage. DEEP-DIVE 2026-07-04 (general-purpose sub-agent, HF viewer/API): CORRECTIONS - (1) NOT request-access-gated: the Glint original is withdrawn/private (401), but fully open mirrors exist (Crownelius = MIT, JustDory, Quaxicron); use the Crownelius mirror. (2) '2M' = 2,006,487 normalized EVENT-LEVEL rows (turn/pair, ~500B each), NOT sessions; exact-hash dedup only (SHA256 of row JSON) with seen_count + first_source provenance - does NOT dedup semantic reformats. (3) Composition red flags: 17 sources but top 2 = 93.5% (attentionAllYouNeed/Vibe-Coding-Claude-Fable-5 1.10M + Poumrm/Mythos-5-and-Fabel-5 776k) are bulk API-generation of unverified authenticity, NOT agent traces; includes a keyword false-positive umm-maybe/wikisource-cthulhu-mythos (7,090 rows of Lovecraft public-domain text). (4) Does NOT contain Glint's 4,665 un-redacted set (only Glint-Research/mythosmini, 951 rows). Payload ~1.94GiB (981MB parquet + 1.1GB jsonl.gz). Relevance dropped medium->low for CoT distillation (the un-redacted asset lives in intake-776); keep as optional cheap provenance-indexed ARCHIVE only."
+  discovered_via: search
+  expanded_from: intake-773
+  ingested_date: '2026-07-04'
+  handoffs_updated: []
+  handoffs_created: []

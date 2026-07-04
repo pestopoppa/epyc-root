@@ -45,13 +45,34 @@ These handoffs are still active but currently sit behind specific evidence, mode
 | [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | Formalizer evaluation gate. | Check model artifacts, then run the S4 mini-protocol. |
 | [per-request-reasoning-budget.md](per-request-reasoning-budget.md) | Hybrid SSM/MoE reasoning-budget investigation. | Steps 3-4 need a running server; keep code changes gated by reproduction. |
 | [rao-redel-substrate-spike.md](rao-redel-substrate-spike.md) | RAO/ReDel substrate spike; preflight passed and harness is prepared. | Execute Step 2 only in a clean inference window. |
+| [gpu-cot-scaffold-sidecar.md](gpu-cot-scaffold-sidecar.md) | Preliminary **pure-GPU** lane: can a small MI210-resident reasoner's injected CoT scaffold lift a CPU code worker? Control (Qwen3-4B-Thinking) vs treatment (Qwable-v1) generators; beneficiaries = code roles (coder_escalation, worker_general). | G0 done (Qwable MTP-drop, no impact). Run G1 scaffold-lift once generators staged; shares MD-9 scoring. See reasoning-economics cluster below. |
 | [sliders-local-validation.md](sliders-local-validation.md) | Parked speculative SLIDERS validation. | Do not integrate before KB-RAG/default-retrieval gates justify it. |
 | [strand-rust-coder-rustevo2-verification.md](strand-rust-coder-rustevo2-verification.md) | Standalone RustEvo2 verification gate. | Launch only after approval; result gates swarm dataset work. |
 | [eval-benchmark-cost-reduction.md](eval-benchmark-cost-reduction.md) | Mid-range difficulty filter (intake-727) for TB Core external evals — NOT autopilot (wrong objective: ranking ≠ regression detection; stable core has only 3/50 mid-range qids). Actionable for TB Core v0.1.1 re-evaluations only: 44–70% task reduction at ρ ≥ 0.87 rank fidelity after cold-start. | Gate behind TB Core adapter build (~1d: wrap `/v1/chat/completions` in Terminus-compatible Harbor adapter) + one baseline TB Core run. Separately: use autopilot per-qid pass-rate data for question pool *curation* — rotate permanently saturated/floor qids from `simpleqa`, `coder`, `general` stable core. |
 
+## Reasoning-economics cluster — "is added reasoning worth its cost?"
+
+These handoffs are **not independent tails** (they are also referenced individually in the queues above); they are **one question at different weights**: *does adding structured reasoning to a request beat the cheaper baseline, net of token cost?* Ordered from **removing** reasoning to **adding** it:
+
+| Handoff | Position on the spectrum | Shared gate / status |
+|---|---|---|
+| [`reasoning-compression.md`](reasoning-compression.md) + [`memento-block-reasoning-compression.md`](memento-block-reasoning-compression.md) | Reasoning can be **net-negative** → compress/remove it (OPSDC: Qwen3-14B 70.0→86.1% on MATH-500 from conciseness alone). | **The cluster's binding counter-evidence.** Enforce path blocked until the signal is predictive. |
+| [`per-request-reasoning-budget.md`](per-request-reasoning-budget.md) | How **much** reasoning to spend per request (hybrid SSM+MoE). | Steps 3-4 need a running server. |
+| [`gpu-cot-scaffold-sidecar.md`](gpu-cot-scaffold-sidecar.md) | Can a small GPU reasoner's **injected** scaffold lift a CPU **code** worker? | G1 = "does the scaffold beat the worker's own thinking, per token?" — pure-GPU screen. |
+| [`minddr-deep-research-mode.md`](minddr-deep-research-mode.md) (owned by `routing-and-optimization-index.md`) | Does a **full multi-step** deep-research pipeline beat direct-answer? | **MD-9 (=J15) is the same gate as scaffold G1, one weight up.** |
+| [`rao-redel-substrate-spike.md`](rao-redel-substrate-spike.md) | Recursive-agent delegation — the heaviest long-horizon end. | Execute Step 2 in a clean window. |
+
+**Shared measurement contract:** every arm compares **token-normalized** against a cheaper baseline (direct-answer / own-think / no-think) and must clear it *net of cost*. The whole cluster is bounded by the same counter-evidence — OPSDC (reasoning can harm), epiphenomenal-CoT (arXiv:2606.13603), and our `enable_thinking=false` +33 pp on Qwen3.6/122B. The **EV-9 CPU-portable DRACO/MindDR scoring contract** (Current Queue, HIGH row) is the scoring substrate for MD-9 and should also score scaffold G1 — do not build a parallel scorer.
+
 ## Dependency Graph
 
 ```text
+Reasoning-economics cluster: one gate at increasing weight
+  reasoning-compression (remove) -> per-request-budget (meter)
+  -> gpu-cot-scaffold-sidecar G1 (inject, code workers)
+  -> minddr MD-9 (full pipeline) -> rao-redel (recursive)
+  all vs cheaper baseline, token-normalized, via EV-9 DRACO/MindDR scoring
+
 N1/N4 instrument repair + N2 ledger readiness
   -> EV-4/H5 calibration authority
   -> K-DIV/K-SKILL thresholds and accept-path changes
