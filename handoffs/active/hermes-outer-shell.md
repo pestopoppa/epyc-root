@@ -2,7 +2,7 @@
 
 **Status**: in-progress (Phase 1 complete, Phase 2 routing API done, skills + validation pending)
 **Created**: 2026-03-20 (split from hermes-agent-index.md)
-**Updated**: 2026-04-05
+**Updated**: 2026-07-04
 **Parent**: [hermes-agent-index.md](hermes-agent-index.md)
 **Repos**: https://github.com/NousResearch/hermes-agent, https://github.com/math-inc/OpenGauss
 **Decision**: Vanilla Hermes (not OpenGauss) — OpenGauss is Lean 4-specific; Hermes has first-class custom endpoint support
@@ -294,11 +294,11 @@ Source: [`research/deep-dives/hermes-agent-v2026-4-23-release.md`](../../researc
 
 Hermes is one *client* of the orchestrator's `/v1/chat/completions` + `x_*` override surface. The same contract is sufficient for non-Hermes clients (CLI, coding-agent, IDE-agent), but we have not enumerated the other client types or verified the surface is sufficient for their use patterns. The friend's local-RAG architecture treats CLI / coding / IDE agents as first-class peer clients of the routing/inference layer — same pattern, different consumers. This section captures the generalization work.
 
-- [ ] **N — Enumerate non-Hermes client types and their override needs** (~1 h, no inference)
+- [x] **N — Enumerate non-Hermes client types and their override needs** (~1 h, no inference) — DONE 2026-07-04
   - Concrete client list to evaluate: (i) bare-metal `curl`/Python script driving the orchestrator API directly, (ii) Claude Code as a coding-agent client (would call our endpoint via `--model` or a proxy), (iii) Codex CLI (parallel to Claude Code, OpenAI's coding agent), (iv) any IDE plugin (Cursor / VS Code Copilot Chat / Continue.dev) that supports custom OpenAI-compatible endpoints
   - For each, list the routing overrides actually needed (force-model, escalation cap, REPL disable, role override, streaming preferences). Capture in a table parallel to the existing Hermes slash-command → API mapping
   - Output: a `## Client Surface Audit` subsection in this handoff
-- [ ] **O — Verify override surface is sufficient (gap analysis)** (~1 h, no inference, depends on N)
+- [x] **O — Verify override surface is sufficient (gap analysis)** (~1 h, no inference, depends on N) — DONE 2026-07-04
   - Diff the audit table from N against the current `OpenAIChatRequest` extension fields (`x_orchestrator_role`, `x_max_escalation`, `x_force_model`, `x_disable_repl`, `x_show_routing`)
   - Flag any client need that has no current override path. Triage each gap as: (a) add new `x_*` field, (b) document a workaround, (c) reject as out of scope
   - Output: gap list + decision per gap
@@ -311,6 +311,33 @@ Hermes is one *client* of the orchestrator's `/v1/chat/completions` + `x_*` over
   - Output: 1-paragraph statement appended to the handoff's `## Pros` section so future contributors see it during refactor decisions
 
 **Cross-reference**: this work generalizes the Hermes-specific Phase 2 routing API into a multi-client contract. Coordinates with the new [`internal-kb-rag.md`](internal-kb-rag.md) — a KB-RAG client (e.g., Explore-subagent) that wants to call the orchestrator with retrieved context will use the same `/v1/chat/completions` + `x_*` surface; if anything is missing for that pattern, capture it as a gap in O.
+
+### Client Surface Audit — 2026-07-04 (N/O)
+
+Source of truth checked: `OpenAIChatRequest` currently exposes standard
+`model`, `messages`, `temperature`, `max_tokens`, `stream`, `tools`, and
+`tool_choice`, plus extension fields `x_orchestrator_role`, `x_max_escalation`,
+`x_force_model`, `x_disable_repl`, and `x_show_routing`. Hermes drift check
+passes against all five `x_*` fields.
+
+| Client type | Needed controls | Current path | Sufficiency call |
+|---|---|---|---|
+| Bare `curl` / Python SDK | force role, force model, cap escalation, disable REPL, show routing, stream, native tools | `extra_body` / JSON body with `x_*`; standard `stream`, `tools`, `tool_choice` | Sufficient. This remains the reference validation client for P. |
+| Hermes Agent | slash commands for role/escalation/REPL plus standard OpenAI-compatible custom endpoint | Existing `/use`, `/escalation`, `/nocode` skills map to `x_orchestrator_role`, `x_max_escalation`, `x_disable_repl`; custom endpoint uses `base_url` + `api_mode=chat_completions` | Sufficient for current skills. Phase F can still package these as a plugin bundle, but no new API field is required. |
+| Claude Code / coding-agent proxy | deterministic role/model selection, no-REPL mode for direct answers, routing debug, streaming | Same OpenAI-compatible JSON surface; command UX belongs in the client/proxy layer | Sufficient if the proxy can pass arbitrary JSON `extra_body`; otherwise document the proxy limitation, not an orchestrator gap. |
+| Codex CLI / OpenAI-compatible coding agent | same as Claude Code, plus standard tool suppression for controlled runs | Same OpenAI-compatible JSON surface; `tool_choice` and `tools` are standard fields | Sufficient after the 2026-07-04 `tool_choice="none"` fix in `openai_compat.py`. |
+| IDE clients (Cursor / Continue.dev / Copilot-like custom endpoint) | role/model override, streaming, low-latency direct mode, routing metadata for debugging | `model` aliases, `x_orchestrator_role`, `x_disable_repl`, `x_show_routing`, `stream` | Mostly sufficient. Clients that cannot pass `extra_body` need a documented per-client workaround or a tiny proxy; do not add orchestrator policy for client UX. |
+| KB-RAG / retrieved-context client | direct role/model selection, REPL disable for answer-only synthesis, routing metadata, native tool contract for source lookup tools | `x_orchestrator_role`, `x_force_model`, `x_disable_repl`, `x_show_routing`, standard `tools` | Sufficient for first integration. Use source metadata in messages/tool results; no new `x_*` field needed. |
+
+Gap decisions:
+
+| Gap | Decision | Rationale |
+|---|---|---|
+| `tool_choice="none"` still exposed supplied tools to the internal REPL bridge | Fixed in `epyc-orchestrator` on 2026-07-04 | Narrow OpenAI-contract bug; now suppresses native-tool bridge context when the caller explicitly disables tool use. |
+| `temperature` is accepted by `OpenAIChatRequest` but the OpenAI-compatible route does not currently pass it into `LLMPrimitives.llm_call` | Record as follow-up, do not patch during this audit | The correct fix crosses the broad `LLMPrimitives` call contract and should be handled as a focused sampling/determinism migration, not as Hermes documentation cleanup. |
+| Caller-controlled `seed`, `top_p`, and `top_k` are not part of the request schema | Record as follow-up for the dedicated determinism lane | The backend already pins deterministic sampling defaults; exposing per-client sampling knobs is a policy decision. Prefer a named deterministic/sampling override design rather than generic pass-through. |
+| `x_max_escalation` is metadata/pass-through only in this route | Keep documented as partial until full graph enforcement is verified | This was already called out in Phase 2; P should validate behavior live before marking the end-to-end command complete. |
+| Clients unable to send nonstandard JSON fields | Document workaround/proxy | The stable contract is typed API fields. Per-client command syntax belongs at the edge. |
 
 ## Research Intake Updates
 
