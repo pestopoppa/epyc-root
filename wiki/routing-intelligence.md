@@ -2,8 +2,8 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-07-03
-**Sources**: 63+ documents (added 2026-07-03 RI-10 arm-attributed canary gate hardening and DAR-1 current replay; prior 2026-06-26 LRC P4.5 executed [null result], qid-recovery hash + BGE slot-context lessons, Wilson-CI content-routing misses)
+**Last compiled**: 2026-07-04
+**Sources**: 63+ documents (added 2026-07-04 RI-10 arm-attributed canary status refresh; prior 2026-07-03 RI-10 gate hardening and DAR-1 current replay, 2026-06-26 LRC P4.5 executed [null result], qid-recovery hash + BGE slot-context lessons, Wilson-CI content-routing misses)
 
 ## Summary
 
@@ -19,9 +19,9 @@ The 13 intake entries tagged as routing_intelligence are predominantly `already_
 
 ## Key Findings
 
-### New (2026-07-03, RI-10 raw count is ready but arm evidence is not; DAR regret remains closed)
+### New (2026-07-04, RI-10 raw count is ready but arm evidence is not; DAR regret remains closed)
 
-- **RI-10 cannot promote from raw high-risk volume alone.** The current canary sample report counts `463` high-risk routing rows since the 2026-04-06 canary start (`285` frontdoor), but only `19` rows have observable canary arms (`1` enforce / `18` shadow), with `444` non-evaluable rows and `407` `not_enforced:risk_control_disabled` rows. The report now requires both `>=50` arm-attributed high-risk rows and `>=10` rows per observable arm before `canary_decision_ready=true`, so RI-10 remains blocked on decision-grade enforce/shadow telemetry rather than raw sample count. Sources: [routing-intelligence.md](../handoffs/active/routing-intelligence.md), [routing-and-optimization-index.md](../handoffs/active/routing-and-optimization-index.md), [progress 2026-07-03](../progress/2026-07/2026-07-03.md).
+- **RI-10 cannot promote from raw high-risk volume alone.** The current canary sample report counts `464` high-risk routing rows since the 2026-04-06 canary start, but only `20` rows in the current telemetry-health window have observable canary arms (`1` enforce / `19` shadow), with `444` non-evaluable rows since canary start and `408` `not_enforced:risk_control_disabled` rows. The report requires both `>=50` arm-attributed high-risk rows and `>=10` rows per observable arm before `canary_decision_ready=true`, so RI-10 remains blocked on decision-grade enforce/shadow telemetry rather than raw sample count. Sources: [routing-intelligence.md](../handoffs/active/routing-intelligence.md), [routing-and-optimization-index.md](../handoffs/active/routing-and-optimization-index.md), [progress 2026-07-04](../progress/2026-07/2026-07-04.md).
 - **DS-E1 and Fable5 aggregate gates now inherit the stricter RI-10 semantics.** The 2026-07-03 DS-E1 packet is not decision-ready because RI-10 arm-attributed canary telemetry and production KV-size measurements are both missing; the Fable5 gate's active next action is `collect_ri10_canary_arm_telemetry`, not RI-11 rollout. This closes the prior drift where raw count plus one enforce row and eighteen shadow rows could look like canary readiness. Sources: [routing-intelligence.md](../handoffs/active/routing-intelligence.md), [routing-and-optimization-index.md](../handoffs/active/routing-and-optimization-index.md), [progress 2026-07-03](../progress/2026-07/2026-07-03.md).
 - **DAR-1 current replay still finds no measurable routing-regret budget to justify learned-routing expansion.** The latest offline replay over 2026-06-13 through 2026-07-03 progress logs covered `22,992` routing decisions, matched `20,477` outcomes, and found `22,677` regret-identifiable decisions (`98.6%`) with `0.00%` gate regret; `99.6%` of decisions still had uniform Q-values and `95.4%` had trivial score spread. DAR-3/SPO+, DAR-6 swarm expansion, Package I, and broader learned-routing rollout stay frozen until a future replay proves `>=5%` mean decision regret. Sources: [decision-aware-routing.md](../handoffs/active/decision-aware-routing.md), [routing-and-optimization-index.md](../handoffs/active/routing-and-optimization-index.md), [progress 2026-07-03](../progress/2026-07/2026-07-03.md).
 
