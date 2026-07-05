@@ -78,6 +78,17 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   procedure enums, and the generated operator summary without semantic role
   diffs. The follow-up `stack_change_pipeline.py check --run-promotion-gate`
   returned `summary: ok` and the promotion gate passed `181` tests.
+- 2026-07-05 source-fingerprint repair: after Orchestrator `01d14301`
+  changed the launcher NUMA default, `stack_change_guard.py
+  --all-hardcoded-surfaces` again caught stale `source_artifacts` metadata for
+  `scripts/server/orchestrator_stack.py`. Orchestrator `a0377110` regenerated
+  descriptors, stack priors, and the generated operator summary through the
+  canonical pipeline. The diff was metadata-only: compiled timestamps, source
+  commits, source hashes, and summary fingerprints; no role rows, ports, tiers,
+  launch requirements, or procedure enums changed. The follow-up
+  `stack_change_pipeline.py check --run-promotion-gate` returned `summary: ok`,
+  `guard_all_surfaces: ok`, `guard_strict: ok`, `runtime_attestation: ok`, and
+  promotion gate `181` tests passed.
 - 2026-06-19 descriptor drift from the research registry hash was repaired
   through the canonical `stack_change_pipeline.py update` path. The generated
   diff was limited to `model_descriptors.yaml` / `stack_priors.yaml`

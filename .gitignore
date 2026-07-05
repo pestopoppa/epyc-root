@@ -58,3 +58,8 @@ site_src/deep-dives/*.md
 site_src/stories/recent-results.md
 site_src/subsystems/orchestrator/
 site_src/subsystems/research/
+
+# Handoff dashboard hub — derived timeline artifact (regenerated from git history
+# by scripts/handoffs/build_handoff_timeline.py; never hand-authored or committed)
+data/handoff_timeline.json
+data/handoff_timeline.json.tmp.*

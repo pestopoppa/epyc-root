@@ -1,6 +1,6 @@
 # Launcher: full XOR quarters, not both
 
-**Status**: PARTIAL — flag implemented, default decision pending (operator call)
+**Status**: COMPLETE 2026-07-05 — flag implemented and default decision resolved
 **Priority**: medium (production workaround exists; long-term fix is a small CLI flag)
 **Origin**: `progress/2026-05/2026-05-08.md` § Phase 3 known sub-issue
 
@@ -12,16 +12,17 @@
 
 | Original criterion | Status |
 |---|---|
-| `start --only worker_general` defaults to `--numa-mode quarter` and brings up 4 quarter instances | **NOT MET** — default is `both`, all 5 instances still launch unless operator passes `--numa-mode quarter` |
+| `start --only worker_general` defaults to `--numa-mode quarter` and brings up 4 quarter instances | ✅ MET — orchestrator `01d14301` makes parser and programmatic `cmd_start` fallback default to `quarter` |
 | `start --only worker_general --numa-mode full` brings up only the full instance | ✅ MET |
 | `start --only worker_general --numa-mode both` brings up all 5 with a stderr warning | ✅ MET (warning via help text/banner) |
 
-## Open operator decision
+## Operator decision resolved
 
-The unsafe default (`both`) still ships. Two paths forward:
+Resolved by orchestrator `01d14301` (`Default stack NUMA mode to quarter`):
 
-- **(a) Flip default to `quarter`** at `orchestrator_stack.py:1326`. One-line change. Satisfies the original acceptance criteria and removes the 1.5× CPU oversubscription footgun. Changes behavior for any caller currently relying on `both` — the help text notes Qwen3-Coder `-t 24` and Qwen3.6-35B Q8 quarter-tuned configs co-exist OK with `both`, so they would need to add `--numa-mode both` explicitly to keep current behavior.
-- **(b) Keep `both` default** as a deliberate back-compat choice; mark this handoff WONTFIX and archive with that framing. Per-role override remains `--numa-mode full` for gemma4-MTP-style high-thread roles.
+- Default launcher behavior is now `--numa-mode quarter`, avoiding full+quarter CPU overlap on future starts.
+- Explicit `--numa-mode both` remains available as compatibility mode and still emits the worker_general oversubscription advisory.
+- Programmatic callers that build `argparse.Namespace` without `numa_mode` now also fall back to `quarter`.
 
 Audit (2026-05-27 morning) initially archived this prematurely as ✅ COMPLETE — that was wrong. Restored to active 2026-05-27 evening per operator review; default is an operator call, not a hygiene-cleanup decision.
 

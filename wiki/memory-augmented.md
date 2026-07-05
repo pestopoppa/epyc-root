@@ -2,7 +2,7 @@
 
 **Category**: `memory_augmented`
 **Confidence**: verified
-**Last compiled**: 2026-06-28
+**Last compiled**: 2026-07-05
 **Sources**: 26+ documents (2 deep-dives, 20 intake entries, active handoffs, progress logs, K-MEM/Tulving measurement context, and the 2026-06-28 W4/W6 reboot-readiness checkpoint)
 
 ## Summary
@@ -36,6 +36,11 @@ The connection between memory and the autopilot is especially significant. Befor
 ### New Finding (2026-06-28) — Sequential evidence is cutover-ready but still default-off
 
 - **Sequential verdict authority has cleared the W4/W6 evidence-volume gates, but the authority flip is still a deliberate restart-boundary decision.** The W4/W6 path journals per-question sequential evidence, failed-trial seq blocks, and action-local seq gate checks behind `AUTOPILOT_SEQ_VERDICT`; as of the 2026-06-28T21:35Z reboot wrap-up, strict readiness is green with sequential trusted vectors `193 / 120`, seq shadow rows `116 / 30`, W6 trusted audited rows `32 / 30`, no W6 gaming alarm, and archive alignment through journal trial `1050`. Baseline fold readiness is also green, but `baseline_authority_enabled=false`, so future agents should rerun strict readiness after reboot and only then make the explicit authority cutover decision. Sources: [evidence-plane-ledger-and-sequential-verdicts.md](../handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md), [evidence-plane-instrument-repair.md](../handoffs/active/evidence-plane-instrument-repair.md), [progress 2026-06-28](../progress/2026-06/2026-06-28.md).
+
+### New Finding (2026-07-05) — Exact episodic FAISS health is now observable and current
+
+- **The episodic mirror health check now reports the exact indexed-memory invariant, not just a coarse routing count.** Orchestrator `a0148edd` makes the indexed FAISS diagnostic exact: `orchestrator_stack.py status` now reports `526,729/526,729` indexed vectors, matching `id_map.npy` and `reembedded.npz`, with `100.0%` live overlap and `0` missing/stale IDs. The same repair path sits on top of the stale-snapshot hardening from `8af5fa6e` and the earlier lock-aware FAISS/id-map protections, so the live status is a real health signal rather than a best-effort estimate. Sources: [progress 2026-07-05](../progress/2026-07/2026-07-05.md), [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md).
+- **The current AutoPilot state is healthy but still W8-bound, so memory repair is not the remaining blocker.** The same 2026-07-05 repair session relaunched AutoPilot on the canonical Fable launcher as PID `2370903`; phase health reported `trial 1168`, `planner_invoke`, `code_stale=false`, and `blockers []`. The handoff-level current state now treats W8 candidate generation as the live blocker, not episodic-memory corruption. Sources: [progress 2026-07-05](../progress/2026-07/2026-07-05.md), [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md).
 
 ### New Finding (2026-06-19) — Strategy compression now honors folded-journal quarantine
 
@@ -145,6 +150,8 @@ The connection between memory and the autopilot is especially significant. Befor
 - [intake-346](https://mem0.ai/blog/state-of-ai-agent-memory-2026) Mem0 -- $24M cloud memory platform, ~85% LongMemEval, LLM-based extraction (worth_investigating)
 - [intake-698](https://arxiv.org/abs/2606.06036) MRAgent ("Memory is Reconstructed, Not Retrieved") -- Cue-Tag-Content associative graph + active reconstruction (LLM-reasoning-in-the-loop, evidence-conditioned path-pruning); ~118k tokens vs 245k-3.3M baselines; cloud-LLM-bound (Gemini-2.5-Flash / Claude-Sonnet-4.5), no CPU/local results, loses to Mem0 on LoCoMo multi-hop F1 (43.69 vs 45.17). Logged as a comparative datapoint against internal-kb-rag's parked two-pass retrieval; transferable lever = token-cost discipline (adopt_patterns)
 - [intake-715](https://arxiv.org/abs/2605.22721) DecentMem ("Self-Evolving Multi-Agent Systems via Decentralized Memory") -- decentralized per-agent dual-pool memory (exploitation + exploration) with online LLM-judge reweighting + claimed O(log T) regret bound; only the dual-pool structure transfers to the autopilot strategy_store, the per-stage judge-reweighting conflicts with AP-27 + the P17.BT-4 KILL; no released code, cloud-favorable small backbones on frameworks we don't run (adopt_patterns)
+- [progress 2026-07-05](../progress/2026-07/2026-07-05.md) -- exact episodic FAISS health (`526,729/526,729`, `100.0%` overlap, `0` missing/stale IDs) and current AutoPilot live state after the Fable restart
+- [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md) -- current-state banner for the live AutoPilot PID, W8 blocker, and exact FAISS diagnostic summary
 
 ## Updates — 2026-04-28
 

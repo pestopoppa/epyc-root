@@ -23,6 +23,45 @@ ongoing snapshot-tail hygiene, W6/future strategy-consumer audits, and N2/W8
 promotion-evidence coordination rather than another baseline/pareto authority
 flip.
 
+**W6/W8 gate refresh — 2026-07-05T14:45Z**: W8's apparent stale-replay blocker
+was a report-side artifact, not a live candidate-generation failure. Orchestrator
+`6a1d5d2f` keeps unreplayable historical numeric candidates out of
+`stale_accumulating_candidates` while preserving them as diagnostics. Live W8
+now reports replay-eligible candidate `4b6b454ea4f884fd`,
+`stale_accumulating_candidate_count=0`, and no replay-concentration warning. The
+remaining strict Fable blocker is W6 audit clearance after the current-era trial
+`1168` vs `1165` divergence (`core_delta=+0.18`, `audit_delta=-0.9`), with `29`
+clean audited rows required to age the alarm out. Do not weaken W6 gaming
+semantics unless future evidence shows a measurement artifact; current evidence
+is a real audit drop, unlike the earlier flat-audit quantization issue.
+
+**Snapshot-tail refresh — 2026-07-04T23:07Z**: W3 tail hygiene advanced while
+AutoPilot trial `1142` was mid-eval, following the same completed-row snapshot
+pattern used for the 2026-06-20 live append. `journal_snapshot_create.py --append --json`
+appended a `journal_snapshot` event to
+`orchestration/autopilot_journal_1.jsonl` through completed trial `1141`
+(`trial_count=1021`, `ledger_event_count=6`, parent snapshot
+`9d94145a0869...`, snapshot hash `69fcee75fd5c...`). Immediate replay
+validation with `journal_snapshot_replay.py --json --allow-tail-fold --strict`
+reported `bounded_replay_readiness=current`, `strict_readiness=current`,
+`hash_status=match`, `journal_max_trial_id=1141`, and `tail_trial_count=0`.
+Future W3 work is bounded-startup/ongoing-tail monitoring as trials accrue, not
+another catch-up snapshot for the current shard.
+
+**W6 consumer audit refresh — 2026-07-04T23:13Z**: main-thread and
+`gpt-5.4-mini` read-only sidecar audit found no actionable raw StrategyStore
+consumer remaining in live planner/action paths. Active consumers use
+`retrieve_for_journal(..., journal=...)`, `retrieve_conventions(...,
+journal=...)`, or store-owned compression/staleness/distillation selectors with
+`journal` / `excluded_trial_ids`; the residual direct SQL surfaces are the
+operator-seeded planner-hint path, legacy fallback branches that fail closed
+when journal-aware selectors are required, and dashboard read-only graph
+inspection. Focused validation passed for per-turn planner hint refresh,
+operator-seed visibility, non-operator unprovenanced filtering, and convention
+denylist/suppression behavior. Treat W6 as audit-current; future W6 work should
+be triggered by a new StrategyStore consumer or regression, not by a generic
+repeat migration pass.
+
 ## Why
 
 The journal already rebuilds the full archive shape (`journal_reconstruction.py`) but only for

@@ -6,6 +6,7 @@
 **Categories**: agent_architecture, routing_intelligence, training_distillation
 **Priority**: MEDIUM (Phase 1 zero-infra; Phase 2/3 deferred)
 **Depends on**: `routing-intelligence.md` (classifier infrastructure), `eval-tower-verification.md` EV-9 (multi-dimensional rubric)
+**Sibling (same gate, lighter weight)**: [`gpu-cot-scaffold-sidecar.md`](gpu-cot-scaffold-sidecar.md) — its **G1** ("does an injected CoT scaffold beat a code worker's own thinking, per token?") is **MD-9 one weight down**. Both live in the **reasoning-economics cluster** (`research-evaluation-index.md`) and must share the EV-9 DRACO/MindDR scoring contract + token-normalization, not re-derive them.
 
 ## 2026-05-28 Audit Reset — Executor Start Here
 

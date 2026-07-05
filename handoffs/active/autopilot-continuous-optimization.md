@@ -1,6 +1,36 @@
 # AutoPilot: Continuous Recursive Optimization
 
-**Status**: **W4/W6 authority wiring is current, A10 planner hints are active, and W8 promotion-eval evidence remains the open tail.** AutoPilot is live as PID `3831548` with `--max-trials 2000`, launched through `scripts/autopilot/start_fable_authority_daemon.py` in `epyc-orchestrator` `07883e63`; the wrapper enforces the W4/W6, planner-hint, tool-sentinel, planner-timeout, and stepping-stone env bundle. Strict Fable smoke at 2026-07-04T21:24Z reports `ready=true`, blockers `[]`, `restart_ready=true`, and phase health is active at trial `1138`. The previous bare-env PID `3796930` was stopped after Fable caught missing authority/tool env, and trial `1137` was journaled as `autopilot_killed_mid_trial`. The 2026-07-04 W8 terminal-blocker repair is deployed in `epyc-orchestrator` `b2deb1b5`, and `epyc-orchestrator` `0a6336c7` fixes the follow-on live replay-selector mismatch: benign AP-24 `excluded` rows that are still `seq_accumulating` remain replay-eligible, while reverted or failure-bearing excluded rows stay terminal. Planner-turn StrategyStore hints are current-code clean: `epyc-orchestrator` `4b9e1fd0` renders bounded StrategyStore rows before planner choice, `f83d9c31` refreshes the FAISS-backed store on retrieval, `9b7a9ebe` refreshes live convention bindings before action availability renders, `a8030dc9` proves external StrategyStore writes are visible without AutoPilot restart when hints are enabled, `5a18feb2` scopes tool hints away from planner-side shell permissions, and `19f276df` keeps those hints inside the read-only planner boundary. Fable5 keeps `tool_use_activation=ready`; the only active next action is `collect_w8_promotion_eval_evidence`. W8 remains non-promotable until fresh promotion-eval evidence and joint sequential confirmation arrive; A9 source-reward target preregistration is done and no longer emits a Fable next action; DS-E1 is decision-ready. W7 game-layer hardening remains complete through critic measurement view (`41c5c71`), production eval sampling clamp (`7492cf5`), audit-stream gaming alarm (`8e4b1ec`), PEAF budget credit (`4b09661`), and per-question diff/provenance context (`749d38f`).
+**Status**: **W4/W6 authority wiring is current, A10 planner hints are active,
+BSV observe is process-aware, T3 is planner-visible workflow pressure, FAISS is
+exact again, tool-use activation is ready, numeric candidate generation has
+been unblocked, and W8 needs a keepable replayable candidate before promotion
+evidence can accrue.** AutoPilot is live as PID `2370903` with
+`--max-trials 2000`; phase health is current-code clean at trial `1168`,
+`planner_invoke`, with blockers `[]`, planner hints enabled, sequential verdict
+enabled, W6 audit accrual enabled, and tool sentinels active. The API is
+healthy with `AUTOPILOT_TOOL_SENTINELS=1` and
+`ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT=1`, and sampled worker attestation passed
+across six workers. The indexed episodic FAISS mirror is exact after
+orchestrator `a0148edd`: `526,729/526,729` indexed vectors, matching
+`id_map.npy` and `reembedded.npz`, `100.0%` live overlap, `0` missing/stale
+IDs. Tool-use activation is not the blocker; `8be68732` fixes the REPL-pinned
+sentinel prompt contract so the lane asks for executable
+`TOOL("get_eval_secret", ...)` code. Numeric candidate generation is no longer
+blocked by stale broad surface bans or short explicit params: `4400df02`
+constrains numeric-surface blacklists to concrete params unless explicitly
+human-scoped, and `6a0d60af` normalizes planner-friendly params such as
+`{"keep_ratio": 0.5}` to `{"kv.keep_ratio": 0.5}` while returning structured
+skip reasons on apply failure. Trial `1167` exposed the pre-fix no-op and
+should be treated as harness-bug evidence, not a negative `kv_compaction`
+measurement. The live W8 blocker remains
+`w8_candidate_generation_required`: AutoPilot needs a keepable replayable
+`numeric_trial` or `structural_experiment` candidate, then sequential
+confirmation plus fresh promotion-eval evidence. A9 source-reward target
+preregistration is done and no longer emits a Fable next action; DS-E1 is
+decision-ready. W7 game-layer hardening remains complete through critic
+measurement view (`41c5c71`), production eval sampling clamp (`7492cf5`),
+audit-stream gaming alarm (`8e4b1ec`), PEAF budget credit (`4b09661`), and
+per-question diff/provenance context (`749d38f`).
 
 > **Current state - 2026-06-21 (bounded W4/W6 accrual resumed).** The API was reloaded on orchestrator `d0e082a`, per-worker attestation passed across six workers, and `stack_change_pipeline.py check --run-promotion-gate` passed (`174` tests). The first collection-only run exposed eval fanout contamination under the current full-only fleet; after orchestrator `c13e5ae`, the collection run used `AUTOPILOT_SEQ_VERDICT=1`, `AUTOPILOT_W6_AUDIT_BLOCK=1`, `AUTOPILOT_W6_AUDIT_N=10`, `AUTOPILOT_W6_AUDIT_EVERY_N_TRIALS=1`, `AUTOPILOT_W6_AUDIT_SHADOW_ONLY=1`, `AUTOPILOT_PLANNER_TIMEOUT=600`, default eval fanout capped to the reachable live fleet, and `--max-trials 930`. Trial `928` was journaled as `autopilot_killed_mid_trial` during stall recovery; trial `929` then completed as `numeric_trial` / `think_harder` with `q=1.980`, `s=34.132`, `r=0.980`, and `reproduction_confirmed`, and AutoPilot exited at trial counter `930`. Phase health then reported `status=stopped`, `ok=true`, `pid_alive=false` by design after `af72216e`. Latest ordinary restart readiness passed (`archive=match`, `snapshot=tail_fold_ready`, `baseline=state_baseline`, seed preflight `ready`, `append_ready=true`, `append_required=true`), while `--require-seq-cutover --require-w6-audit` correctly failed because sequential authority remained blocked at `93 < 120` trusted vectors and W6's trailing-30 alarm still had `7` active-window divergences (`12` cumulative) after `61/30` audited rows. The same W4/W6 collection posture was relaunched to `--max-trials 970` at 2026-06-21T11:49:27Z; `phase_health_report.py --json` first reported active trial `930`, `phase=planner_invoke`, PID `2472037`, no blockers, then advanced to `phase=dispatch_action`, `action_type=seed_batch`, no blockers. Baseline seed append is prepared but not applied; `fe2fe55c` also requires explicit `baseline_ledger_authority_enabled=true` before any later matching ledger fold can remove the state baseline cache.
 >
@@ -34,7 +64,7 @@
 > trailing-window alarm, assuming no new gaming events occur.
 
 **Created**: 2026-03-08
-**Updated**: 2026-07-04 (AutoPilot authority, W6 audit, tool-sentinel, and planner-hint paths are active on PID `3831548` via the canonical Fable launcher; strict Fable current-code smoke is clean and phase health is active at trial `1138`. W8 sparse-baseline terminal failures are repaired in `b2deb1b5`, and benign AP-24 `excluded` accumulating candidates are replay-eligible in `0a6336c7`. A9 source-reward target preregistration is done; do not rerun the exhausted collector.)
+**Updated**: 2026-07-05 (current live AutoPilot PID `2632468`, launched from orchestrator `1d452a40`, is forcing W8 replay candidate `4b6b454ea4f884fd` at trial `1177`; trial `1175` completed the same candidate at `q=2.182`, `s=20.0`, dominated/`seq_accumulating`. W6 audit is clear, StrategyStore FAISS/FTS coverage is exact at `1,420/1,420`, and planner spend breaker/local-ingest drafting/tool sentinels are active. Orchestrator `8031c7c4` adds true GEPA scratch prompt-root isolation and is committed/indexed but not yet live in the daemon/API until the next safe restart boundary.)
 **Location**: `epyc-orchestrator/scripts/autopilot/`
 
 > **Fable 5 review (2026-06-12)**: the review's architecture recommendations now have owning handoffs: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (LIVE t775 baseline-ratchet hotfix + dead-question repair), [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md) (per-question ledger + e-process verdicts; owns the next restart bundle), [evidence-plane-event-sourcing-and-narrative.md](evidence-plane-event-sourcing-and-narrative.md), and [objective-task-rate-goodput.md](objective-task-rate-goodput.md) (task_rate replaces the t/s axis). Full diagnosis: fable5-findings-01 + -05.
@@ -72,7 +102,7 @@ Controller (Claude CLI meta-reasoning)
   ├── Species 2: PromptForge (LLM prompt mutation → .md hot-swap)
   └── Species 3: StructuralLab (flags + routing model lifecycle)
   │
-  EvalTower: T0 (10q/30s) → T1 (100q/5m) → T2 (500+/30m) → T3 (hard-only stress)
+  EvalTower: T0 (10q/30s) → T1 (100q/5m) → T2 (500+/30m) → T3 (expert/hard workflow eval)
   ParetoArchive: 4D (quality × speed × -cost × reliability; speed is median request t/s for serial evals, aggregate batch t/s for concurrent same-trial eval batches)
   SafetyGate: quality floor + per-suite guard + routing diversity
 ```
@@ -189,7 +219,7 @@ CHECKPOINT + RESET (selective) + RESEED → back to top
 | Component | Path | Integration |
 |-----------|------|-------------|
 | Seeding 3-way | `scripts/benchmark/seed_specialist_routing.py` | Seeder wraps `evaluate_question_3way` + `_inject_3way_rewards_http` |
-| Question pool | Research: `scripts/benchmark/question_pool.py` | EvalTower draws T1/T2 validation questions and T3 hard-only stress questions |
+| Question pool | Research: `scripts/benchmark/question_pool.py` | EvalTower draws T1/T2 validation questions and T3 workflow-shaped expert/hard rows from the live pool |
 | Optuna | Research: `scripts/benchmark/optuna_orchestrator.py` | NumericSwarm reuses TPE/cluster patterns |
 | Claude Debugger | `src/pipeline_monitor/claude_debugger.py` | PromptForge reuses Popen+session+git pattern |
 | Episodic memory | `orchestration/repl_memory/episodic_store.py` | Seeder monitors count/convergence |
@@ -885,7 +915,7 @@ Two ideas from the Code-as-Agent-Harness survey land on the Pareto-archive optim
   - ✅ Compute rule-based HLE-1 metrics and register HLE-2 oracle-adequacy defaults in observe-only form (`9222a19`).
   - ✅ Analyze N trials: 2026-06-12 snapshot contained 580 metric-bearing trials (`51..779`). `execution_fidelity` and `planning_stability` separate keep/revert but are not independent enough to promote; `feedback_interpretation`, `memory_coherence`, and `recovery_rate` fail signal/missingness gates.
   - Cheap-kill result: current rule metrics remain diagnostic/advisory and do not enter Pareto selection. Any future HLE promotion requires N2 per-question ledgers/sequential verdicts and a redesigned metric with independent predictive signal.
-- [ ] **BSV-1 — Behavior-signature versioning for archive integrity.** We are AHEAD of the paper on raw regression gating (quality floor, per-suite guard Δq<−0.1, throughput floor, auto-rollback, git-committed reverts). The remaining gap: a newly-accepted config can silently break a *prior* Pareto win because improvements are merged syntactically, not behaviorally. Attach a **behavior signature** to each archive member. Minimum signature fields: per-sentinel final outcome, normalized answer hash, route path, tool-call sequence hash, escalation path, latency bucket, token bucket, key harness metrics, and oracle-adequacy version. Store both a compact hash for fast diff and an expanded JSON vector for explanation. **2026-06-21 partial archive-member wiring**: orchestrator `9a175eac` makes the default-off BSV observe path use real archive-member IDs (`trial:<id>`), journal compact `signature_hash` plus the expanded vector, and persist a `bsv_archive_signatures` state index for frontier-accepted, safety-passing archive members. Orchestrator `31e7e008` then upgraded the partial sentinel vector to prefer compact per-question `EvalResult.question_results` (`qid`/`question_id` -> pass/fail) before falling back to the old per-suite quality proxy, with `sentinel_outcome_source`/`sentinel_outcome_count` diagnostics. BSV-1 stays open for answer/tool/escalation/trace-store signatures; BSV-2 still needs the paired-eval lane before gating.
+- [ ] **BSV-1 — Behavior-signature versioning for archive integrity.** We are AHEAD of the paper on raw regression gating (quality floor, per-suite guard Δq<−0.1, throughput floor, auto-rollback, git-committed reverts). The remaining gap: a newly-accepted config can silently break a *prior* Pareto win because improvements are merged syntactically, not behaviorally. Attach a **behavior signature** to each archive member. Minimum signature fields: per-sentinel final outcome, normalized answer hash, route path, tool-call sequence hash, escalation path, latency bucket, token bucket, key harness metrics, and oracle-adequacy version. Store both a compact hash for fast diff and an expanded JSON vector for explanation. **2026-06-21 partial archive-member wiring**: orchestrator `9a175eac` makes the default-off BSV observe path use real archive-member IDs (`trial:<id>`), journal compact `signature_hash` plus the expanded vector, and persist a `bsv_archive_signatures` state index for frontier-accepted, safety-passing archive members. Orchestrator `31e7e008` then upgraded the partial sentinel vector to prefer compact per-question `EvalResult.question_results` (`qid`/`question_id` -> pass/fail) before falling back to the old per-suite quality proxy, with `sentinel_outcome_source`/`sentinel_outcome_count` diagnostics. **2026-07-05 process-signal enrichment**: orchestrator `c7590be6` folds already-journaled `question_results` tool counts/names, route aggregates, and latency into the observe signature, with legacy aggregate `tool_name_counts` / request-timing fallbacks and explicit `process_signal_sources` diagnostics. BSV-1 stays open for normalized answer hashes and full trace-store IDs; BSV-2 still needs the paired-eval lane before gating.
 - [ ] **BSV-2 — Differential testing on accept.** Before promoting a mutation, run new vs old on the same sentinels and compare behavior (not just aggregate score). Prefer paired sequential execution under identical server/model snapshot for attribution; use parallel execution only when explicitly approved and when concurrency cannot contaminate latency measurements. Reuse the existing T0/T1 tower; the novelty is paired behavioral comparison. Gate on both scalar regression and signature diff severity. **2026-06-21 scaffold**: orchestrator `0943e7c0` adds `scripts/autopilot/bsv_paired_report.py`, a read-only paired report over already-journaled `question_results` vectors. It emits shared-qid coverage, McNemar/accuracy deltas, BSV signature severity, blockers, JSON/Markdown, and nonzero exit on a blocked candidate. Follow-up `5b29eead` adds `eval-result-pair`, so the same report can compare standalone paired-run EvalResult-like JSON artifacts without needing journal ingestion first. Orchestrator `939750c7` adds `scripts/autopilot/bsv_paired_runner.py`: a default-safe plan-only CLI that, with explicit `--run`, applies baseline/candidate params sequentially, evaluates the same core, writes baseline/candidate EvalResult JSON artifacts, restores baseline params by default, and emits the existing BSV paired report. Follow-up `a3570d8d` restores baseline params even when candidate application fails before candidate eval. Orchestrator `2bdb7abc` wires the mutation accept path behind default-off `AUTOPILOT_BSV2_ACCEPT_GATE`: prompt, GEPA, and code mutations run a pre-mutation baseline eval only when the flag is on, compare baseline/candidate EvalResult vectors through the paired-report backend, reject/revert on `gate_decision=block` or blocking signature severity, accept+annotate watch/pass cases, and preserve existing single-eval behavior when the flag is off. Remaining work is operator-approved live paired runs / rollout evidence before enabling the flag in production windows.
 - [ ] **BSV-3 — Conflict-aware acceptance.** When two independently-accepted mutations touch the same subsystem (prompt + routing, two prompts, prompt + tool policy, context packer + batch editor), flag potential *semantic* conflict for review rather than blind compose. **2026-06-21 observe-only ledger landed in orchestrator `168e9bd8`**: under `AUTOPILOT_BSV_OBSERVE=1`, frontier/safety-passing trials now append a bounded `bsv_mutation_dependency_ledger` state row and journal `eval_details.bsv_observe.mutation_dependency` / `conflict_report`, keyed by `subsystem`, `files_touched`, `prompt_sections_touched`, `feature_flags`, `behavior_signature_delta`, and `parent_trial`. Conflict severity increases on shared subsystem/file/section/flag overlap, blocking BSV deltas, different behavior surfaces, or disjoint/opposing sentinel movement across accepted mutations. Still observe-only/default-off; open work is conflict-policy enforcement after BSV-2 paired-gate rollout evidence is available.
 
@@ -903,7 +933,7 @@ Sibling: the **PEAF** item above (prediction-error-as-feature) is independent �
 
 **HLE-4 (J9) — observe-only result.** Pre-run wiring is built: `EvalResult`/journal JSONL fields landed in `931e43c`, and HLE-1/HLE-2 observe-only computation/registration landed in `9222a19` (shared schema owned by `unified-trace-memory-service.md`). The 2026-06-12 analysis over 580 metric-bearing trials keeps current metrics diagnostic/advisory only: `execution_fidelity` and `planning_stability` separate keep/revert but mostly mirror existing quality/reliability/safety signals; `feedback_interpretation` is low-confidence/low-variance; `memory_coherence` is constant; `recovery_rate` is missing on 99.3% of rows. No Pareto co-objective/guardrail promotion before N2 per-question ledgers/sequential verdicts and a redesigned metric with independent predictive signal. Mitigation remains: low-signal/low-confidence metrics never gate; oracle-adequacy flags shortcut-prone suites so they cannot drive promotion.
 
-**BSV-2 (J11) — mutation accept gate.** Pre-run wiring: `compute_behavior_signature` is done, orchestrator `9a175eac` attaches default-off observe signatures to concrete archive-member IDs with a compact state index for frontier-accepted members, `31e7e008` makes partial observe signatures prefer per-question sentinel outcomes when the eval tower provides `question_results`, `0943e7c0` adds the read-only paired report that combines same-qid scalar deltas with signature severity/blockers, `5b29eead` lets that report consume standalone paired-run EvalResult-like JSON artifacts via `eval-result-pair`, `939750c7` adds the explicit paired inference runner, and `2bdb7abc` wires prompt/GEPA/code mutation accept handlers behind default-off `AUTOPILOT_BSV2_ACCEPT_GATE`. Per candidate mutation, paired new-vs-old on the same sentinels → `diff_signatures` severity: `benign` → auto-accept; `watch` (route/tool changed, outcomes equal) → accept + log; `blocking` (prior-pass sentinel regressed, forbidden shortcut, or cost guardrail crossed) → **REJECT, do not promote**; shared-subsystem touch → BSV-3 conflict-ledger review. Mitigation: gate accept on BOTH scalar regression AND signature severity; partial-confidence signatures cannot certify `benign` (audit #4); git-committed revert remains the backstop. Operator decision trees mirrored in [`bulk-inference-campaign.md`](bulk-inference-campaign.md) Package J.
+**BSV-2 (J11) — mutation accept gate.** Pre-run wiring: `compute_behavior_signature` is done, orchestrator `9a175eac` attaches default-off observe signatures to concrete archive-member IDs with a compact state index for frontier-accepted members, `31e7e008` makes partial observe signatures prefer per-question sentinel outcomes when the eval tower provides `question_results`, `c7590be6` adds process-aware observe signatures for tool/route/latency drift, `0943e7c0` adds the read-only paired report that combines same-qid scalar deltas with signature severity/blockers, `5b29eead` lets that report consume standalone paired-run EvalResult-like JSON artifacts via `eval-result-pair`, `939750c7` adds the explicit paired inference runner, and `2bdb7abc` wires prompt/GEPA/code mutation accept handlers behind default-off `AUTOPILOT_BSV2_ACCEPT_GATE`. Per candidate mutation, paired new-vs-old on the same sentinels → `diff_signatures` severity: `benign` → auto-accept; `watch` (route/tool changed, outcomes equal) → accept + log; `blocking` (prior-pass sentinel regressed, forbidden shortcut, or cost guardrail crossed) → **REJECT, do not promote**; shared-subsystem touch → BSV-3 conflict-ledger review. Mitigation: gate accept on BOTH scalar regression AND signature severity; partial-confidence signatures cannot certify `benign` (audit #4); git-committed revert remains the backstop. Operator decision trees mirrored in [`bulk-inference-campaign.md`](bulk-inference-campaign.md) Package J.
 
 ## Research Intake Update — 2026-05-27
 
@@ -1121,23 +1151,73 @@ paired authority core.
 - Orchestrator `scripts/autopilot/eval_task_coverage_report.py` now provides a
   read-only coverage report over all AutoPilot journal shards plus the active
   question pool. It reports distinct scored qids, repeat factor, pool coverage,
-  suite/partition distribution, and action/config/hypothesis diversity.
-- Live all-shard observation on 2026-07-04:
-  `23,725` scored question rows, `2,333` distinct scored qids,
-  `52,210` stable pool qids, `4.4685%` upper-bound pool coverage, and
-  `10.1693x` repeat factor. Status: `low_coverage`.
+  suite/partition distribution, action/config/hypothesis diversity, tier-level
+  coverage via `questions.tier_coverage` and `pool.tier_counts`, and Markdown
+  Tier Coverage plus least-covered non-sentinel suites.
+- Live all-shard observation on 2026-07-05:
+  `24,210` scored question rows, `2,457` distinct scored qids,
+  `52,210` stable pool qids, `4.706%` upper-bound pool coverage, and
+  `9.8535x` repeat factor. Status: `low_coverage`.
+- Tier coverage: T1 `1771/21133` (`8.3803%`, `255` eval-bearing trials), T2
+  `843/26667` (`3.1612%`, `18` trials), T3 `160/5431` (`2.9461%`, `1`
+  trial). Least-covered non-sentinel suites: `tool_use`, `agentic`,
+  `skill_transfer`, `long_context`, `real_suite_v1`, `mode_advantage_hard`,
+  `mode_advantage`, `coder`, `bigcodebench`, `cruxeval`.
 - Policy: **do not rotate or replace the W6/W8 fixed authority core mid-run**.
   That would change the instrument during active evidence collection. Instead,
   split lanes: keep `authority_core` fixed for paired promotion evidence, add a
   separate `exploration_coverage` rotating/advisory lane for planner learning,
   and keep `promotion_holdout` as fresh held-out acceptance evidence.
 - First-class T3 lane landed 2026-07-04: `EvalTower.eval_t3()` samples only
-  scoreable pool rows explicitly labeled `tier=3`, `deep_eval` accepts
-  `tier: 3`, the shared tier registry exposes `T3 (hard-only stress eval)`,
-  and the dashboard Pareto reconstruction keeps tier 3 in its own
-  `frontiers_by_tier["3"]` series. Non-inference sanity check found `5,431`
+  workflow-shaped live-pool rows explicitly labeled `tier=3`, `deep_eval`
+  accepts `tier: 3`, the shared tier registry exposes `T3 (expert/hard
+  workflow eval lane; same-tier validation/planner pressure)`, and the
+  dashboard Pareto reconstruction keeps tier 3 in its own
+  `frontiers_by_tier["3"]` series. `DEFAULT_FRONTIER_TIER/T1` remains the
+  production optimization lane. Non-inference sanity check found `5,431`
   T3-labeled rows, `4,956` scoreable rows across `13` suites, and a
   160-question spec draw containing only `tier=3` rows.
-- Next implementation task: wire the report into regular Fable/dashboard
-  readiness so low eval-task coverage becomes visible before future planner
-  budget/tunable changes are treated as broad evidence.
+- Species budgeting now gives successful same-tier T2/T3 validation/workflow
+  rows a small clipped credit via `species_effectiveness().budget_rate`, so
+  `MetaOptimizer.rebalance()` can steer some exploration budget toward
+  higher-tier performers without changing `DEFAULT_FRONTIER_TIER`, production-
+  best selection, `SafetyGate`, or baseline promotion semantics.
+- 2026-07-05 live planner-pressure follow-up: orchestrator `3af6e500` extends
+  `_build_eval_coverage_pressure()` with cached per-tier pool denominators, so
+  each controller turn sees T1/T2/T3 coverage against the active question pool.
+  Latest strict-report snapshot: global coverage `4.7788%`, repeat factor
+  `10.0621x`; T1 `1812/21133` (`8.5743%`), T2 `843/26667` (`3.1612%`), and
+  T3 `160/5431` (`2.9461%`). This keeps T3 visible as an under-sampled
+  expert/hard workflow validation lane without changing the T1 production
+  optimization objective or any authority gate.
+- 2026-07-05 maintenance status: AutoPilot is live as PID `1802932` via
+  `start_fable_authority_daemon.py --max-trials 2000` after PID `1726689`
+  and its orphan planner subprocess were stopped and verified gone at the trial
+  `1156`/`1157` boundary. The API was reloaded as PID `1798373` with
+  `AUTOPILOT_TOOL_SENTINELS=1`, Gate-3 hard tool telemetry is ready, and trial
+  `1156` completed as T3 `deep_eval` (`q=1.29375`, speed `32.886`,
+  reliability `0.75`, Pareto `dominated`) rather than W8 replay evidence.
+  Current phase health reports trial `1157`, `phase=planner_invoke`,
+  `code_stale=false`, and blockers `[]`. The strict Fable report is otherwise
+  ready except W8, which remains blocked on candidate generation after
+  orchestrator `a53a74ad` aligned report eligibility with the live replay
+  selector: no replay-eligible accumulating W8 candidate exists. Orchestrator
+  `026f8e29` and `0dd63df9` are live in the daemon planner-evidence path, so
+  `structural_prune` is explicitly named as non-replayable W8 evidence;
+  `24e440dd` is live and prioritizes replayable W8 candidate generation. Next
+  action: `collect_w8_promotion_eval_evidence`.
+- 2026-07-05 later authority-loop status: AutoPilot was restarted again as PID
+  `2632468` from orchestrator `1d452a40` with `local_ingest` drafting, Codex
+  critique, tool sentinels, W6 audit accrual, planner spend breaker, and
+  StrategyStore search health `1,420/1,420`. Orchestrator `8031c7c4` adds true
+  GEPA scratch prompt-root isolation and `12839520` adds observation-only W8
+  paired-baseline diagnostics (`eval_details.seq_paired_baseline`, exact
+  McNemar/sign-test, `used_for_gating=false`). Both commits are pushed and
+  GitNexus-indexed, but the running AutoPilot daemon predates them; restart at
+  the next clean trial boundary to load them. Trial `1177` replayed W8
+  candidate `4b6b454ea4f884fd` at `q=2.127`, `s=14.5`, dominated and
+  `seq_refuted`; trial `1178` is another forced replay.
+- Regular Fable visibility landed in orchestrator `34591a27`: strict readiness
+  now includes advisory `eval_task_coverage` status/percent/repeat/tier summary
+  in `summary` and as a non-blocking section. Dashboard-specific presentation
+  can build on that payload, but the authority gate remains unchanged.

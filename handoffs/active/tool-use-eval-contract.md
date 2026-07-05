@@ -1,16 +1,40 @@
 # Tool-Use Eval Contract — make autopilot trials actually exercise tools
 
-**Latest verification (2026-07-04T21:24Z)**: the recurring activation drift is
-closed operationally. `epyc-orchestrator` now has
-`scripts/autopilot/start_fable_authority_daemon.py`, a canonical AutoPilot
-launcher that enforces `AUTOPILOT_TOOL_SENTINELS=1` together with the W4/W6,
-planner-hint, planner-timeout, and stepping-stone env bundle. The bare-env
-daemon PID `3796930` was stopped after Fable caught the missing env, and the new
-daemon PID `3831548` has `AUTOPILOT_TOOL_SENTINELS=1`,
-`AUTOPILOT_PLANNER_HINTS=1`, `AUTOPILOT_SEQ_VERDICT=1`, W6 audit flags, planner
-timeout `600`, stepping stones, and `--max-trials 2000`. Fresh strict Fable is
-ready/blocker-free and its live next-action list contains only
-`collect_w8_promotion_eval_evidence`; no tool-activation action remains.
+**Latest verification (2026-07-05T14:00Z)**: `tool_use_activation=ready`.
+AutoPilot is live as PID `2370903` under the Fable launcher with
+`AUTOPILOT_TOOL_SENTINELS=1`, `AUTOPILOT_PLANNER_HINTS=1`,
+`AUTOPILOT_SEQ_VERDICT=1`, W6 audit flags, planner timeout `600`, stepping
+stones, and `--max-trials 2000`. The API was reloaded with
+`--profile gate3-tool-telemetry`; sampled workers report
+`AUTOPILOT_TOOL_SENTINELS=1` plus `ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT=1`, and
+dashboard health is `ok`. Gate-3 hard telemetry passed before the restart, but
+the soft web-research probe exposed a prompt-shape bug in the forced-REPL
+sentinels: the prompts pinned `force_mode: repl` while asking for plain text /
+no code. Orchestrator `8be68732` fixes that contract by requiring executable
+Python with `TOOL("get_eval_secret", name=...)` followed by `FINAL(secret)`,
+plus a tool-aware comment-only nudge. Remaining work is to journal nonzero
+`total_tool_calls` under the repaired prompt contract and evaluate usefulness;
+it is not lane activation.
+
+**Parallel batching investigation (2026-07-05T17:36Z)**: read-only sidecar
+checked whether independent tool calls should be executed together and batched
+back into the next model context. Finding: this is already partially true
+inside a single structured REPL response. OpenAI-compatible request schemas now
+carry `tools`/`tool_choice` and tool-result history, while the chat loop remains
+turn-serial; however `REPLEnvironment._execute_structured()` detects multiple
+structured calls and routes read-only independent batches through
+`execute_parallel_calls()`. Telemetry already exposes `tools_called`,
+`tool_timings`, `tool_chains`, and `parallel_tools_used`. No active handoff
+specifically owns "parallel independent tool-call batching"; this handoff is
+the right owner. Current evidence says batching is **not yet the bottleneck**:
+recent AutoPilot windows still show near-zero live `total_tool_calls`, so the
+next action is measurement, not a new executor. Before editing HIGH/CRITICAL
+paths, measure how often requests have `len(tools_called) >= 2`, whether those
+calls are read-only, and whether `parallel_tools_used` is nonzero. Only if that
+shows material latency should implementation stay inside
+`REPLEnvironment.execute` / `parallel_dispatch.py`, preserving current OpenAI
+response semantics (`message.tool_calls` are not emitted for internally
+executed tools).
 
 **Prior verification (2026-07-04T10:24Z)**: the stale "StrategyStore only
 affects startup/action handlers" diagnosis is closed. `epyc-orchestrator`
@@ -199,9 +223,9 @@ After cutover + verification, update this file's Current-State, append to `progr
   - Key technique: schema normalization (Pydantic/primitive/generic → JSON Schema) → **contract shown at REPL step 0** → **validate-on-FINAL, retry-not-restart** (on failure the agent gets the exact validation errors and re-emits the value; the REPL work is untouched).
   - Delta from current approach: our structured-tool-output path validates the *envelope* shape; the additional pattern worth lifting is the **contract-up-front + retry-with-errors loop** and the framing of schema-constrained returns as a correctness lever for any subagent/RLM fan-out, not only a telemetry signal. credibility null (single-anecdote practitioner blog; validate against a real eval before relying on the magnitude).
 
-### Deep-Dive Refinement (2026-06-12) — parent already shipped; the gap is the child schema
-The **parent** half is already implemented: `final_schema_validation` (2026-05-20) gives contract-at-step-0 + validate-on-`FINAL` + retry-with-errors (`src/features.py:134`; `_render_schema_preamble`/`_validate_final_answer`/`_format_validation_failure_message` in `src/graph/helpers.py:1266-1316`; 2-attempt retry at `repl_executor.py:549-565`). The still-open net-new piece is the **child / sub-LM return schema**: `_batch_llm_query`/`llm_query` (`src/repl_environment/combined_ops.py:302`) take no `schema=` and return free text — the actual "free-text fan-out overwhelms the aggregator" failure mode. Fix ≈ **30–40 LoC** reusing the existing validators (one bounded per-child retry, return typed value + `valid` flag), **default-off, Phase-1 REPL path, orthogonal to `ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT`**. **Not a cutover blocker** — land standalone after autopilot resumes past trial 711, and gate-test only once a fan-out-heavy eval can measure the hallucination-reduction magnitude. Full: `research/deep-dives/2026-06-12-rlm-structured-output-contracts.md`.
+### Deep-Dive Refinement (2026-06-12) — parent already shipped; REPL child-schema work is closed
+The **parent** half is already implemented: `final_schema_validation` (2026-05-20) gives contract-at-step-0 + validate-on-`FINAL` + retry-with-errors (`src/features.py:134`; `_render_schema_preamble`/`_validate_final_answer`/`_format_validation_failure_message` in `src/graph/helpers.py:1266-1316`; 2-attempt retry at `repl_executor.py:549-565`). The REPL child / sub-LM return schema is also now implemented in current code: `_batch_llm_query` (`src/repl_environment/combined_ops.py:302`) accepts `schema=...`, and `delegate(..., schema=...)` is handled on the REPL routing path via `_delegate` / `_delegate_single` (`src/repl_environment/routing.py`). That closes the REPL structured-schema gap this handoff was tracking. The separate HTTP `/api/delegate` surface is still schema-free and should only be treated as an optional API-surface follow-up if parity there is desired. Full: `research/deep-dives/2026-06-12-rlm-structured-output-contracts.md`.
 
-> **UPDATE 2026-06-20 (intake-705 deep-dive):** the batched child-LLM structured-return path is ALREADY SHIPPED — epyc-orchestrator commit `18b5ceb` ("Validate batched child LLM schemas") added `schema=` / validate-on-`FINAL` / retry-with-errors to `combined_ops.py` `_batch_llm_query` (per-child contract preamble + validation + retry loop), unit-tested. Remaining gap is only a single-query / new-delegate path. A server-side delegate primitive already exists (`src/api/routes/chat_delegation.py`: architect→specialist, role pinning, per-request loop caps, re-entrance guard); the real remaining feature-mine from OpenRouter's subagent tool is a cost-aware capable→CHEAPER-worker delegation MODE. (Supersedes the ~30–40 LoC "still-open" framing above for the batched path.)
+> **UPDATE 2026-06-20 (intake-705 deep-dive):** the batched child-LLM structured-return path is ALREADY SHIPPED — epyc-orchestrator commit `18b5ceb` ("Validate batched child LLM schemas") added `schema=` / validate-on-`FINAL` / retry-with-errors to `combined_ops.py` `_batch_llm_query` (per-child contract preamble + validation + retry loop), unit-tested. At that point the remaining REPL work was the single-delegate path, not the batched path. A server-side delegate primitive already exists (`src/api/routes/chat_delegation.py`: architect→specialist, role pinning, per-request loop caps, re-entrance guard); the separate HTTP `/api/delegate` surface is still schema-free, so any parity work there is an optional API-surface follow-up rather than a REPL blocker. (Supersedes the ~30–40 LoC "still-open" framing above for the batched path.)
 
-> **UPDATE 2026-06-27:** the single-delegate REPL path is now shipped in epyc-orchestrator commit `6426dd4` ("Add schema validation for single delegates"). `delegate(..., schema=...)` is opt-in and preserves raw string behavior when no schema is supplied. Schema mode prepends the JSON Schema contract, validates the response with the existing `_validate_final_answer` helper, retries with explicit validation errors up to a bounded cap, returns a JSON envelope with `valid`/`response`/`raw_response`/`attempts`, and records schema validity in delegation artifacts. Parallel delegation deliberately rejects `schema=` for now so the shipped surface is the single-query/new-delegate contract only. Validation: `test_repl_routing.py`, `test_combined_ops.py`, and `test_repl_environment.py` all passed (`205 passed`).
+> **UPDATE 2026-06-27:** the single-delegate REPL path is now shipped in epyc-orchestrator commit `6426dd4` ("Add schema validation for single delegates"). `delegate(..., schema=...)` is opt-in and preserves raw string behavior when no schema is supplied. Schema mode prepends the JSON Schema contract, validates the response with the existing `_validate_final_answer` helper, retries with explicit validation errors up to a bounded cap, returns a JSON envelope with `valid`/`response`/`raw_response`/`attempts`, and records schema validity in delegation artifacts. This closes the REPL single-delegate structured-schema gap in current code. The separate HTTP `/api/delegate` endpoint remains schema-free and is only an optional API-surface follow-up if we want parity there. Parallel delegation deliberately rejects `schema=` for now. Validation: `test_repl_routing.py`, `test_combined_ops.py`, and `test_repl_environment.py` all passed (`205 passed`).

@@ -8,6 +8,8 @@
 
 Explore reasoning token compression techniques that can reduce inference cost for reasoning models by 50-60% while maintaining or improving accuracy. OPSDC demonstrates that much reasoning output is actively harmful — compressing it improves both cost and quality. This could fundamentally change how we route to reasoning models.
 
+> **Cluster role**: this handoff is the **counter-evidence anchor** of the reasoning-economics cluster (`research-evaluation-index.md`) — the empirical case that *adding* reasoning can be net-negative. It directly bounds the "does added reasoning help?" gates in [`gpu-cot-scaffold-sidecar.md`](gpu-cot-scaffold-sidecar.md) (G1) and [`minddr-deep-research-mode.md`](minddr-deep-research-mode.md) (MD-9): a scaffold/pipeline that fails to beat own-think is this handoff's finding restated.
+
 ## Research Context
 
 | Intake ID | Title | Relevance | Verdict |
