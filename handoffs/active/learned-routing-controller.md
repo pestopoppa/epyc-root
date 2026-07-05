@@ -1274,6 +1274,18 @@ learned-routing reward signals from the failed NeuralTxt report alone.
   design, not unprocessed rows: next collection must force same-task
   cross-action disagreement and direction balance for the still-weak strata;
   do not rerun the same collector or retune the current ranker family.
+- 2026-07-05 contrast-aware replan: orchestrator `ee96e423` fixes that
+  acquisition-design bug in
+  `plan_offline_reward_pairwise_holdout_expansion.py`. Collection targets are
+  now considered satisfied only by source-binary directional contrast, while
+  row presence is reported separately. Replaying the `20260705T185704Z` live
+  slice now reports `81` presence groups but only `2` target-satisfying
+  contrast groups, so it emits a new guarded four-batch manifest:
+  `offline_reward_pairwise_audit_target_live_20260705T185704Z_contrast_replan_20260705T202257Z_collection_manifest.json`
+  plus the matching `_collect.sh`, `_summary.{json,md}`, and `_candidates.jsonl`
+  artifacts. The validator has no schema warnings and is blocked only by active
+  AutoPilot. Next A9 action is to run that manifest in a clean window and then
+  execute the embedded post-collection rebuild/scoring pipeline.
 
 ## Research Intake Update — 2026-07-02
 

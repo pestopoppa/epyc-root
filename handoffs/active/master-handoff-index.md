@@ -21,7 +21,7 @@ breaker, `AUTOPILOT_PLANNER_PRIMARY=local_chat`, and
 `AUTOPILOT_PLANNER_CRITIC=codex`. Verify `local_chat` planner telemetry on the
 next non-forced planner turn.
 
-Orchestrator is pushed/indexed through `120498c9`. The v6 contention-matrix
+Orchestrator is pushed/indexed through `ee96e423`. The v6 contention-matrix
 "stale topology" alarm was a false positive caused by auxiliary explicit-only
 `eval_batch_frontdoor` being included in full launch topology hashing; the
 measured production-role hash still matches `df373c79cc4af06f`. The gate,
@@ -41,9 +41,15 @@ insufficient pairwise contrast. The independent token-coverage labels cover
 `162` rows with target agreement `0.9506`, but the binary candidate-only
 contract has only `3` cross-action pair rows and the score-ordered variant has
 only `6`, both below the `100/50` contract gate; ranker holdouts have no
-eligible holdouts. Next A9 work is a better acquisition design that forces
-within-task cross-action disagreement and balances directions, not rerunning
-the same collector or retuning the ranker. Outcome-progress still needs
+eligible holdouts. Orchestrator `ee96e423` fixes the A9 acquisition planner so
+target coverage is counted by source-binary directional contrast, not mere
+same-record role presence; replaying the live slice shows `81` presence groups
+but only `2` target-satisfying contrast groups. The generated follow-up
+manifest
+`offline_reward_pairwise_audit_target_live_20260705T185704Z_contrast_replan_20260705T202257Z_collection_manifest.json`
+has `4` guarded batches and is blocked only while AutoPilot is active. Next A9
+work is to run that manifest in a clean window, then rebuild/score the
+candidate-only pairwise contracts. Outcome-progress still needs
 attention: latest frontier admission remains trial `1005` (`179` trials stale
 at this checkpoint). Older PID references below are historical until the next
 pruning pass; this checkpoint is the authoritative pickup state.
