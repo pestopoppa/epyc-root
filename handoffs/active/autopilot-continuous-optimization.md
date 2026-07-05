@@ -1206,6 +1206,17 @@ paired authority core.
   `structural_prune` is explicitly named as non-replayable W8 evidence;
   `24e440dd` is live and prioritizes replayable W8 candidate generation. Next
   action: `collect_w8_promotion_eval_evidence`.
+- 2026-07-05 later authority-loop status: AutoPilot was restarted again as PID
+  `2632468` from orchestrator `1d452a40` with `local_ingest` drafting, Codex
+  critique, tool sentinels, W6 audit accrual, planner spend breaker, and
+  StrategyStore search health `1,420/1,420`. Orchestrator `8031c7c4` adds true
+  GEPA scratch prompt-root isolation and `12839520` adds observation-only W8
+  paired-baseline diagnostics (`eval_details.seq_paired_baseline`, exact
+  McNemar/sign-test, `used_for_gating=false`). Both commits are pushed and
+  GitNexus-indexed, but the running AutoPilot daemon predates them; restart at
+  the next clean trial boundary to load them. Trial `1177` replayed W8
+  candidate `4b6b454ea4f884fd` at `q=2.127`, `s=14.5`, dominated and
+  `seq_refuted`; trial `1178` is another forced replay.
 - Regular Fable visibility landed in orchestrator `34591a27`: strict readiness
   now includes advisory `eval_task_coverage` status/percent/repeat/tier summary
   in `summary` and as a non-blocking section. Dashboard-specific presentation
