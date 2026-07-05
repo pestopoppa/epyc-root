@@ -1,18 +1,20 @@
 # Tool-Use Eval Contract — make autopilot trials actually exercise tools
 
-**Latest verification (2026-07-04T23:28Z)**: the recurring activation drift is
-closed again after the T3/dashboard restart. AutoPilot is live as PID `3442973`
-under the Fable launcher with `AUTOPILOT_TOOL_SENTINELS=1`,
-`AUTOPILOT_PLANNER_HINTS=1`, `AUTOPILOT_SEQ_VERDICT=1`, W6 audit flags, planner
-timeout `600`, stepping stones, and `--max-trials 2000`. The API had drifted
-back to a no-profile launch, so it was reloaded API-only with
-`--profile gate3-tool-telemetry`; new fleet parent PID `1065549` and sampled
-workers report `AUTOPILOT_TOOL_SENTINELS=1` plus
-`ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT=1`. Strict Fable after the reload is
-ready/blocker-free, and `tool_use_activation` is `ready` with
-`activation_gaps=[]`. Recent journal telemetry still includes nonzero tool-use
-rows, so the remaining work is W8 evidence collection and behavioral usefulness
-analysis, not lane activation.
+**Latest verification (2026-07-05T14:00Z)**: `tool_use_activation=ready`.
+AutoPilot is live as PID `2370903` under the Fable launcher with
+`AUTOPILOT_TOOL_SENTINELS=1`, `AUTOPILOT_PLANNER_HINTS=1`,
+`AUTOPILOT_SEQ_VERDICT=1`, W6 audit flags, planner timeout `600`, stepping
+stones, and `--max-trials 2000`. The API was reloaded with
+`--profile gate3-tool-telemetry`; sampled workers report
+`AUTOPILOT_TOOL_SENTINELS=1` plus `ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT=1`, and
+dashboard health is `ok`. Gate-3 hard telemetry passed before the restart, but
+the soft web-research probe exposed a prompt-shape bug in the forced-REPL
+sentinels: the prompts pinned `force_mode: repl` while asking for plain text /
+no code. Orchestrator `8be68732` fixes that contract by requiring executable
+Python with `TOOL("get_eval_secret", name=...)` followed by `FINAL(secret)`,
+plus a tool-aware comment-only nudge. Remaining work is to journal nonzero
+`total_tool_calls` under the repaired prompt contract and evaluate usefulness;
+it is not lane activation.
 
 **Prior verification (2026-07-04T10:24Z)**: the stale "StrategyStore only
 affects startup/action handlers" diagnosis is closed. `epyc-orchestrator`
