@@ -23,6 +23,18 @@ ongoing snapshot-tail hygiene, W6/future strategy-consumer audits, and N2/W8
 promotion-evidence coordination rather than another baseline/pareto authority
 flip.
 
+**W6/W8 gate refresh — 2026-07-05T14:45Z**: W8's apparent stale-replay blocker
+was a report-side artifact, not a live candidate-generation failure. Orchestrator
+`6a1d5d2f` keeps unreplayable historical numeric candidates out of
+`stale_accumulating_candidates` while preserving them as diagnostics. Live W8
+now reports replay-eligible candidate `4b6b454ea4f884fd`,
+`stale_accumulating_candidate_count=0`, and no replay-concentration warning. The
+remaining strict Fable blocker is W6 audit clearance after the current-era trial
+`1168` vs `1165` divergence (`core_delta=+0.18`, `audit_delta=-0.9`), with `29`
+clean audited rows required to age the alarm out. Do not weaken W6 gaming
+semantics unless future evidence shows a measurement artifact; current evidence
+is a real audit drop, unlike the earlier flat-audit quantization issue.
+
 **Snapshot-tail refresh — 2026-07-04T23:07Z**: W3 tail hygiene advanced while
 AutoPilot trial `1142` was mid-eval, following the same completed-row snapshot
 pattern used for the 2026-06-20 live append. `journal_snapshot_create.py --append --json`
