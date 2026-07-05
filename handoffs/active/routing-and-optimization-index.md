@@ -35,40 +35,28 @@ When making a routing-architecture proposal, name which of these four (and which
 
 ## Subsystem Status
 
-**Current checkpoint — 2026-07-05T15:10Z**: AutoPilot is live as PID `2370903`
-with `--max-trials 2000`; trial `1170` is current-code clean in
-`planner_invoke` with `code_stale=false`, blockers `[]`, and the planner-hint /
-tool-sentinel / W4-W6 authority env bundle active. The API was reloaded with
-`AUTOPILOT_TOOL_SENTINELS=1` plus `ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT=1`,
-sampled worker attestation passed across six workers, and dashboard health is
-`ok`. The episodic FAISS indexed mirror is exact after orchestrator `a0148edd`:
-`526,729/526,729` indexed vectors, matching `id_map.npy` and
-`reembedded.npz`, `100.0%` live overlap, and `0` missing/stale IDs. Orchestrator
-`4400df02` constrains stale broad numeric-surface blacklists to explicit
-human-scoped surface bans or concrete params, so W8 candidate generation is no
-longer exhausted by stale surface-level skips. Orchestrator `8be68732` fixes the
-REPL-pinned tool-sentinel prompt contract so sentinels demand executable
-`TOOL("get_eval_secret", ...)` code, and `6a0d60af` normalizes planner-friendly
-numeric params such as `keep_ratio` into applicator keys like `kv.keep_ratio`
-while returning structured skip outcomes instead of handler no-ops. Trial
-`1167` exposed the pre-fix `keep_ratio` handler no-op and is harness-bug
-evidence, not negative `kv_compaction` evidence. Orchestrator `6a1d5d2f` fixed
-W8 stale replay-pressure reporting, and W8 now has replay-eligible candidate
-`4b6b454ea4f884fd` with no stale/replay-concentration blocker. Orchestrator
-`a24a95a4` adds the RI-10 decision packet; the current RI-10 state is
-`hold_quality_unscored`, not telemetry-deficient. A scored RI-10 request packet
-now exists at
-`orchestration/reports/ri10_canary_scored_request_plan_20260705T151725Z.{json,payloads.jsonl,answer_key.jsonl}`
-(`60` requests, balanced enforce/shadow, answer keys separated); execute it and
-score collected responses with `scripts/analysis/ri10_canary_score_responses.py`
-before RI-11. Trial `1156` remains T3 observational evidence and trial
-`1159` remains infra-poisoned. The live Fable blocker is W6 audit clearance
-after trial `1168` vs `1165`.
+**Current checkpoint — 2026-07-05T19:45Z**: AutoPilot is live as PID `2935890`
+with `--max-trials 2000`; trial `1185` is current-code clean in
+`dispatch_action` / `seed_batch` with `code_stale=false`, blockers `[]`,
+planner hints, tool sentinels, W4-W6 authority env, and
+`AUTOPILOT_PLANNER_PRIMARY=local_chat` plus Codex critique. The first action
+after this restart is a forced baseline-reference draw, so it does not yet
+prove `local_chat` planner drafting; verify the provider on the next non-forced
+planner turn. The API was reloaded after the contention-freshness fix and live
+`/dashboard/api/contention` reports `matrix_status="ok"`. Orchestrator
+`120498c9` resolves the v6 contention false-stale by hashing the production
+roles measured in `contention_matrix.yaml` rather than auxiliary explicit-only
+launch roles such as `eval_batch_frontdoor`; no contention rebench was needed.
+Research commit `955beb6` records the four A9 audit-target live collection
+batches from the quiet window, so A9's next step is rebuild/scoring on those
+rows rather than more collection plumbing. Outcome progress remains
+`attention`: latest frontier admission is still trial `1005` (`179` trials
+stale at this checkpoint).
 
 | Subsystem | Handoff | Status | Next Action |
 |-----------|---------|--------|-------------|
 | Routing Intelligence | [`routing-intelligence.md`](routing-intelligence.md) | **COMPACTED 2026-05-28; RI-10 TELEMETRY READY; DECISION HOLD ON QUALITY; SCORED PACKET + SCORER READY** — Phases 0-5 history moved to completed ledger; hardened report semantics distinguish raw high-risk volume from decision-grade canary evidence and do not count non-canary-role shadow rows as sampled canary arms. Live progress logs now satisfy the DS-E1 packet's RI-10 consumer gate (`31` enforce / `50` shadow current high-risk rows), and `a24a95a4` adds `ri10_canary_decision_report.py`. Current packet `20260705T150054Z` reports `hold_quality_unscored`: enforce operational proxies are favorable, but neither arm has factuality/accuracy scores. The scored packet `ri10_canary_scored_request_plan_20260705T151725Z` and scorer `ri10_canary_score_responses.py` are ready for a quiet-window dispatch/scoring run. | Keep classifier/risk-routing expansion frozen until RI-10 scored factuality/accuracy evidence is produced from the prepared packet or attached from equivalent evidence; DS-E1 is no longer blocked on RI-10/KV evidence. |
-| AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | **Authority wiring current; A10 planner hints ACTIVE; episodic FAISS exact; tool-use activation ready; numeric candidate generation repaired; DS-E1 ready; W8 report repaired.** AutoPilot is live as PID `2370903` with `--max-trials 2000`; phase health is current-code clean at trial `1170` in `planner_invoke` with planner hints, tool sentinels, sequential verdicts, and W6 audit active. The API/worker env is reloaded and attested with tool sentinels plus structured tool output. Episodic FAISS is exact after `a0148edd` (`526,729/526,729`, no missing/stale IDs). Tool sentinel prompts are repaired in `8be68732`; stale broad numeric blacklists are constrained in `4400df02`; numeric short-param application is repaired in `6a0d60af`; W8 stale replay pressure is repaired in `6a1d5d2f`. Trial `1167` is only pre-fix harness-bug evidence. Current Fable report blocks only on W6 audit clearance. | Let AutoPilot accrue W6 clean audited rows and promotion-eval evidence; do not rerun the exhausted A9 collector. |
+| AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | **Authority wiring current; A10 planner hints ACTIVE; episodic FAISS exact; tool-use activation ready; numeric candidate generation repaired; DS-E1 ready; W8 report repaired; local planner now router-mediated.** AutoPilot is live as PID `2935890` with `--max-trials 2000`; phase health is current-code clean at trial `1185` in `dispatch_action` / `seed_batch` with planner hints, tool sentinels, sequential verdicts, W6 audit, `AUTOPILOT_PLANNER_PRIMARY=local_chat`, and Codex critique active. The API is reloaded on the contention-freshness fix. Episodic FAISS was exact after `a0148edd`; tool sentinel prompts, stale broad numeric blacklists, numeric short-param application, and W8 stale replay pressure are already repaired. Current outcome-progress attention is the stale frontier, not stale code. | Let AutoPilot run on the local-chat planner default, then verify provider telemetry on the next actual planner turn. Use the new A9 collection rows for rebuild/scoring; do not rerun the exhausted old collector. |
 | Routing Truth Restoration | [`routing-truth-restoration.md`](routing-truth-restoration.md) | **IMMEDIATE SCOPE COMPLETE 2026-06-12** — W1-W8 landed in `epyc-orchestrator` `b5f26e5` + `41a6944` + `2a52740` + `e40df31` + `1dfbc22`; live `/config/attest` sampled 6 workers with `specialist_routing=true`, `model_fallback=true`, wave-2 flags false, `routing_classifier=false`, no heterogeneity; q_scorer TPS loads from lean registry; confidence/3-way routing dead paths removed; Trinity/URE shadow telemetry persists in progress JSONL; DAR-1 current replay measured 0.00% identifiable mean regret. | Routing expansion stays frozen; revisit `dispatch_swarm_fanout` ownership on 2026-07-12. |
 | Stack Startup NUMA Prewarm | [`numa-page-cache-prewarm.md`](../completed/numa-page-cache-prewarm.md) | ✅ **COMPLETE 2026-05-29** (archived) — codified `[1.5]` page-cache prewarm passed cold-cache P5; previously-collapsed shared GGUFs are ~25% per NUMA node, 27.3 s cold prewarm time | Monitor future cold starts for regression; re-open the archived handoff if symptom recurs |
 | Dynamic Stack | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) | **COMPACTED 2026-05-28; DS-E1 + DS-7 DECISION READY 2026-07-05** — Phases B-D complete; DS-6/DS-7 design ledger split to completed history; `069f8c0` aligned `stack_templates/default.yaml` to the live manifest with aliases and retired-role rejection. Research manifest refreshes cleared the original stale DS-E1 blocker; orchestrator `c98c9e14` now makes the DS-E1 manifest freshness check content-aware so same-version stack-prior recompile timestamps do not create false blockers when all live roles are covered. Current packet `ds_e1_evidence_packet_20260705T094913Z` reports `ready_for_profile_decision=true` with `blockers=[]`; current Fable gate `fable5_gate_report_20260705T094913Z` has `ds_e1_dynamic_stack=ready` and is blocked only by W8 candidate generation. `stack_templates/default.yaml` now records `metadata.ds7_profile=steady_state_static_prewarm` and `metadata.ds7_decision.status=retain_default`; report `ds7_profile_decision_20260704T194020Z` validates the default profile (`17` roles, `28` instances, `657` GB) and parks DS-6 until future evidence proves static pre-warm insufficient. | Monitor for topology/model changes that require rerunning DS-E1. Do not implement DS-6 QuarterScheduler unless future DS-E1-equivalent evidence shows a material static-prewarm throughput or latency gap. |
@@ -158,6 +146,16 @@ collection target list. Remaining targets are `source_family:seeding_eval`
 ranker holdout eval was deliberately stopped after it saturated CPU during a
 live W8 eval; rerun it at the next quiet or explicitly constrained CPU window
 before claiming independent-holdout closure.
+
+**A9 live audit-target collection (2026-07-05)**: the quiet-window collection
+now exists in research commit `955beb6`. It adds four live batches under
+`benchmarks/results/eval/` for the remaining weak targets:
+`source_family:seeding_eval coder_escalation/frontdoor` (`28` questions),
+`suite:general architect_general/coder_escalation` (`20`),
+`suite:hotpotqa architect_general/frontdoor` (`20`), and `suite:simpleqa
+architect_general/coder_escalation` (`20`). These rows are raw evidence for
+the A9 rebuild/scoring path; next action is to fold them into the pairwise
+contract / ranker holdout workflow, not to rerun the same live collection.
 
 ## Additional Active References
 

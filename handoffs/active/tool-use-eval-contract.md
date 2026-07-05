@@ -1,13 +1,14 @@
 # Tool-Use Eval Contract — make autopilot trials actually exercise tools
 
-**Latest verification (2026-07-05T14:00Z)**: `tool_use_activation=ready`.
-AutoPilot is live as PID `2370903` under the Fable launcher with
+**Latest verification (2026-07-05T19:45Z)**: `tool_use_activation=ready`.
+AutoPilot is live as PID `2935890` under the Fable launcher with
 `AUTOPILOT_TOOL_SENTINELS=1`, `AUTOPILOT_PLANNER_HINTS=1`,
 `AUTOPILOT_SEQ_VERDICT=1`, W6 audit flags, planner timeout `600`, stepping
-stones, and `--max-trials 2000`. The API was reloaded with
-`--profile gate3-tool-telemetry`; sampled workers report
-`AUTOPILOT_TOOL_SENTINELS=1` plus `ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT=1`, and
-dashboard health is `ok`. Gate-3 hard telemetry passed before the restart, but
+stones, `AUTOPILOT_PLANNER_PRIMARY=local_chat`, Codex critique, and
+`--max-trials 2000`. The API was reloaded after the contention-freshness fix
+and remains healthy; sampled workers previously reported
+`AUTOPILOT_TOOL_SENTINELS=1` plus `ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT=1`.
+Gate-3 hard telemetry passed before the restart, but
 the soft web-research probe exposed a prompt-shape bug in the forced-REPL
 sentinels: the prompts pinned `force_mode: repl` while asking for plain text /
 no code. Orchestrator `8be68732` fixes that contract by requiring executable

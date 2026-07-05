@@ -1217,6 +1217,14 @@ paired authority core.
   the next clean trial boundary to load them. Trial `1177` replayed W8
   candidate `4b6b454ea4f884fd` at `q=2.127`, `s=14.5`, dominated and
   `seq_refuted`; trial `1178` is another forced replay.
+- 2026-07-05 latest authority-loop status: after the A9 quiet-window collection
+  and contention-freshness fix, AutoPilot was restarted as PID `2935890` from
+  orchestrator `120498c9` with `AUTOPILOT_PLANNER_PRIMARY=local_chat`, Codex
+  critique, planner hints, tool sentinels, W6 audit accrual, sequential verdict,
+  and `--max-trials 2000`. Trial `1185` is current-code clean in
+  `dispatch_action` / `seed_batch`; it is a forced baseline-reference draw, so
+  it is not yet a `local_chat` planner telemetry proof. Outcome progress remains
+  `attention` because the last frontier admission is trial `1005`.
 - Regular Fable visibility landed in orchestrator `34591a27`: strict readiness
   now includes advisory `eval_task_coverage` status/percent/repeat/tier summary
   in `summary` and as a non-blocking section. Dashboard-specific presentation
