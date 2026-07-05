@@ -104,3 +104,24 @@ agents' stack files untouched); GitNexus impact checks run pre-edit
   field removal) await the next API reload — deferred to avoid racing the
   codex session and the in-flight seeding sweep; client no longer reads those
   fields so nothing is user-visible in the interim.
+
+## Wrap-up correction (2026-07-05, later same day)
+
+- The codex session resolved the contention-matrix item: the STALE verdict was a
+  **hash-scope false positive** (live hash included auxiliary
+  `eval_batch_frontdoor`; measured-role hash `df373c79cc4af06f` matched all
+  along). Fix landed in orch `3d1706c6` + `120498c9` (measured-role-subset hash
+  centralized in `contention.py`, consumers aligned); live
+  `/dashboard/api/contention` now reports `matrix_status: ok`. **No re-bench was
+  run — correctly so.** Handoff `contention-matrix-v6-quarter-refresh.md` is
+  RESOLVED with two monitor follow-ups (worker_general q2 anon-memory placement;
+  regenerate matrix only when a measured role is added).
+- The codex API reload also deployed this session's pending server-side changes:
+  live `/dashboard/api/inference_tap` no longer carries `current_prompt`
+  (verified). Nothing remains undeployed from this session except the no-op
+  restart guard, which activates at the next AutoPilot launch.
+- Wiki: two durable findings compiled into `wiki/inference-serving.md`
+  (delivery-path staleness / self-healing design rule; like-for-like freshness
+  hash scopes). `.last_compile` intentionally NOT touched: 5 of 8 new manifest
+  sources are mid-flight documents other sessions are still editing — compile
+  them at a later stable wrap-up.
