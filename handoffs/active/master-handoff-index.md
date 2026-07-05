@@ -35,11 +35,18 @@ placement.
 Research is pushed through `955beb6`, which records the A9 audit-target live
 collection from the quiet window: seeding_eval coder/frontdoor, general
 architect/coder, hotpotqa architect/frontdoor, and simpleqa architect/coder.
-The next A9 step is pairwise-contract rebuild/scoring and holdout diagnostics,
-not another live collection pass. Outcome-progress still needs attention:
-latest frontier admission remains trial `1005` (`179` trials stale at this
-checkpoint). Older PID references below are historical until the next pruning
-pass; this checkpoint is the authoritative pickup state.
+The rows were folded through the offline post-collection pipeline as a
+timestamped `20260705T185704Z` slice. Result: valid/scored but still
+insufficient pairwise contrast. The independent token-coverage labels cover
+`162` rows with target agreement `0.9506`, but the binary candidate-only
+contract has only `3` cross-action pair rows and the score-ordered variant has
+only `6`, both below the `100/50` contract gate; ranker holdouts have no
+eligible holdouts. Next A9 work is a better acquisition design that forces
+within-task cross-action disagreement and balances directions, not rerunning
+the same collector or retuning the ranker. Outcome-progress still needs
+attention: latest frontier admission remains trial `1005` (`179` trials stale
+at this checkpoint). Older PID references below are historical until the next
+pruning pass; this checkpoint is the authoritative pickup state.
 
 ## A0. Strategic priorities — Fable 5 window-2 (2026-07-03, operator-directed reprioritization)
 Surfaced above the maintained N-rows so the highest-leverage strategic actions are front-and-center; owners/detail unchanged below. Full analysis: [findings-00](fable5-window2-findings-00-executive-summary.md) · GPU [findings-02](fable5-window2-findings-02-heterogeneous-gpu.md) · portfolio [findings-03](fable5-window2-findings-03-portfolio-and-master-queue.md) · intake-sweep + roofline [findings-05](fable5-window2-findings-05-intake-sweep-and-roofline.md).
@@ -100,9 +107,13 @@ the exhausted collector.
 A9 live-collection addendum (2026-07-05): research commit `955beb6` adds four
 new audit-target live batches for the remaining weak strata
 (`source_family:seeding_eval`, `suite:general`, `suite:hotpotqa`, and
-`suite:simpleqa`). Those rows supersede "no runnable batches" as the latest A9
-work product. The next A9 step is pairwise-contract rebuild/scoring and holdout
-diagnostics from the new rows, not another live collection pass.
+`suite:simpleqa`). These were folded/scored in orchestrator as timestamped
+`20260705T185704Z` artifacts. The fold confirms the collection was valid but
+not contrast-rich enough: `162` scorer rows, target agreement `0.9506`, binary
+contract `3` cross-action pairs, score-ordered contract `6` cross-action pairs,
+and no eligible ranker holdouts. Next A9 work is a revised acquisition design
+that intentionally samples same-task cross-action disagreement/balanced
+directions; do not rerun the same live collection pass.
 
 ## B2. Frontier programs (strategic spine — spec: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md))
 | # | Prio | Item | Handoff |

@@ -49,14 +49,18 @@ roles measured in `contention_matrix.yaml` rather than auxiliary explicit-only
 launch roles such as `eval_batch_frontdoor`; no contention rebench was needed.
 Research commit `955beb6` records the four A9 audit-target live collection
 batches from the quiet window, so A9's next step is rebuild/scoring on those
-rows rather than more collection plumbing. Outcome progress remains
-`attention`: latest frontier admission is still trial `1005` (`179` trials
-stale at this checkpoint).
+rows rather than more collection plumbing. Follow-up fold/scoring completed as
+timestamped `20260705T185704Z` artifacts: the scorer rows are valid (`162`
+rows, target agreement `0.9506`), but both candidate-only pairwise contracts
+remain below the contrast gate (`3` binary cross-action pairs, `6`
+score-ordered cross-action pairs; no eligible ranker holdouts). Outcome
+progress remains `attention`: latest frontier admission is still trial `1005`
+(`179` trials stale at this checkpoint).
 
 | Subsystem | Handoff | Status | Next Action |
 |-----------|---------|--------|-------------|
 | Routing Intelligence | [`routing-intelligence.md`](routing-intelligence.md) | **COMPACTED 2026-05-28; RI-10 TELEMETRY READY; DECISION HOLD ON QUALITY; SCORED PACKET + SCORER READY** — Phases 0-5 history moved to completed ledger; hardened report semantics distinguish raw high-risk volume from decision-grade canary evidence and do not count non-canary-role shadow rows as sampled canary arms. Live progress logs now satisfy the DS-E1 packet's RI-10 consumer gate (`31` enforce / `50` shadow current high-risk rows), and `a24a95a4` adds `ri10_canary_decision_report.py`. Current packet `20260705T150054Z` reports `hold_quality_unscored`: enforce operational proxies are favorable, but neither arm has factuality/accuracy scores. The scored packet `ri10_canary_scored_request_plan_20260705T151725Z` and scorer `ri10_canary_score_responses.py` are ready for a quiet-window dispatch/scoring run. | Keep classifier/risk-routing expansion frozen until RI-10 scored factuality/accuracy evidence is produced from the prepared packet or attached from equivalent evidence; DS-E1 is no longer blocked on RI-10/KV evidence. |
-| AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | **Authority wiring current; A10 planner hints ACTIVE; episodic FAISS exact; tool-use activation ready; numeric candidate generation repaired; DS-E1 ready; W8 report repaired; local planner now router-mediated.** AutoPilot is live as PID `2935890` with `--max-trials 2000`; phase health is current-code clean at trial `1185` in `dispatch_action` / `seed_batch` with planner hints, tool sentinels, sequential verdicts, W6 audit, `AUTOPILOT_PLANNER_PRIMARY=local_chat`, and Codex critique active. The API is reloaded on the contention-freshness fix. Episodic FAISS was exact after `a0148edd`; tool sentinel prompts, stale broad numeric blacklists, numeric short-param application, and W8 stale replay pressure are already repaired. Current outcome-progress attention is the stale frontier, not stale code. | Let AutoPilot run on the local-chat planner default, then verify provider telemetry on the next actual planner turn. Use the new A9 collection rows for rebuild/scoring; do not rerun the exhausted old collector. |
+| AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | **Authority wiring current; A10 planner hints ACTIVE; episodic FAISS exact; tool-use activation ready; numeric candidate generation repaired; DS-E1 ready; W8 report repaired; local planner now router-mediated.** AutoPilot is live as PID `2935890` with `--max-trials 2000`; phase health is current-code clean at trial `1185` in `dispatch_action` / `seed_batch` with planner hints, tool sentinels, sequential verdicts, W6 audit, `AUTOPILOT_PLANNER_PRIMARY=local_chat`, and Codex critique active. The API is reloaded on the contention-freshness fix. Episodic FAISS was exact after `a0148edd`; tool sentinel prompts, stale broad numeric blacklists, numeric short-param application, and W8 stale replay pressure are already repaired. Current outcome-progress attention is the stale frontier, not stale code. | Let AutoPilot run on the local-chat planner default, then verify provider telemetry on the next actual planner turn. A9 row folding is complete; next A9 work is a revised contrast-rich acquisition design, not rerunning the old collector. |
 | Routing Truth Restoration | [`routing-truth-restoration.md`](routing-truth-restoration.md) | **IMMEDIATE SCOPE COMPLETE 2026-06-12** — W1-W8 landed in `epyc-orchestrator` `b5f26e5` + `41a6944` + `2a52740` + `e40df31` + `1dfbc22`; live `/config/attest` sampled 6 workers with `specialist_routing=true`, `model_fallback=true`, wave-2 flags false, `routing_classifier=false`, no heterogeneity; q_scorer TPS loads from lean registry; confidence/3-way routing dead paths removed; Trinity/URE shadow telemetry persists in progress JSONL; DAR-1 current replay measured 0.00% identifiable mean regret. | Routing expansion stays frozen; revisit `dispatch_swarm_fanout` ownership on 2026-07-12. |
 | Stack Startup NUMA Prewarm | [`numa-page-cache-prewarm.md`](../completed/numa-page-cache-prewarm.md) | ✅ **COMPLETE 2026-05-29** (archived) — codified `[1.5]` page-cache prewarm passed cold-cache P5; previously-collapsed shared GGUFs are ~25% per NUMA node, 27.3 s cold prewarm time | Monitor future cold starts for regression; re-open the archived handoff if symptom recurs |
 | Dynamic Stack | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) | **COMPACTED 2026-05-28; DS-E1 + DS-7 DECISION READY 2026-07-05** — Phases B-D complete; DS-6/DS-7 design ledger split to completed history; `069f8c0` aligned `stack_templates/default.yaml` to the live manifest with aliases and retired-role rejection. Research manifest refreshes cleared the original stale DS-E1 blocker; orchestrator `c98c9e14` now makes the DS-E1 manifest freshness check content-aware so same-version stack-prior recompile timestamps do not create false blockers when all live roles are covered. Current packet `ds_e1_evidence_packet_20260705T094913Z` reports `ready_for_profile_decision=true` with `blockers=[]`; current Fable gate `fable5_gate_report_20260705T094913Z` has `ds_e1_dynamic_stack=ready` and is blocked only by W8 candidate generation. `stack_templates/default.yaml` now records `metadata.ds7_profile=steady_state_static_prewarm` and `metadata.ds7_decision.status=retain_default`; report `ds7_profile_decision_20260704T194020Z` validates the default profile (`17` roles, `28` instances, `657` GB) and parks DS-6 until future evidence proves static pre-warm insufficient. | Monitor for topology/model changes that require rerunning DS-E1. Do not implement DS-6 QuarterScheduler unless future DS-E1-equivalent evidence shows a material static-prewarm throughput or latency gap. |
@@ -154,8 +158,24 @@ now exists in research commit `955beb6`. It adds four live batches under
 `suite:general architect_general/coder_escalation` (`20`),
 `suite:hotpotqa architect_general/frontdoor` (`20`), and `suite:simpleqa
 architect_general/coder_escalation` (`20`). These rows are raw evidence for
-the A9 rebuild/scoring path; next action is to fold them into the pairwise
-contract / ranker holdout workflow, not to rerun the same live collection.
+the A9 rebuild/scoring path.
+
+**A9 audit-target fold outcome (2026-07-05)**: the `20260705T185704Z` rows were
+folded through the existing offline workflow as timestamped artifacts rather
+than overwriting the broad canonical summaries. The planner produced `162`
+prompt-free candidate rows across `81` source-record groups and matched all
+four requested collection targets. The independent token-coverage scorer
+produced `162` rows, mean score `0.7025`, and target agreement `0.9506`
+(`109` positive / `53` negative). However, the candidate-only binary pairwise
+contract has only `3` cross-action pair rows, and the score-ordered variant has
+only `6`; both are `insufficient_contrast` and both ranker evaluations have
+`no_eligible_holdouts`. The source-q-reward diagnostic is stronger but still
+below gate on the fresh slice alone (`43` cross-action pairs, recommended next
+`collect or construct rows with more within-task source-reward contrast`).
+Next A9 action: change acquisition design to force same-task cross-action
+disagreements and balance directions for the still-weak seeding/general/
+hotpotqa/simpleqa strata. Do not rerun the same collection script or retune the
+current ranker family.
 
 ## Additional Active References
 
