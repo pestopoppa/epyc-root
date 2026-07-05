@@ -1121,11 +1121,18 @@ paired authority core.
 - Orchestrator `scripts/autopilot/eval_task_coverage_report.py` now provides a
   read-only coverage report over all AutoPilot journal shards plus the active
   question pool. It reports distinct scored qids, repeat factor, pool coverage,
-  suite/partition distribution, and action/config/hypothesis diversity.
-- Live all-shard observation on 2026-07-04:
-  `23,725` scored question rows, `2,333` distinct scored qids,
-  `52,210` stable pool qids, `4.4685%` upper-bound pool coverage, and
-  `10.1693x` repeat factor. Status: `low_coverage`.
+  suite/partition distribution, action/config/hypothesis diversity, tier-level
+  coverage via `questions.tier_coverage` and `pool.tier_counts`, and Markdown
+  Tier Coverage plus least-covered non-sentinel suites.
+- Live all-shard observation on 2026-07-05:
+  `24,210` scored question rows, `2,457` distinct scored qids,
+  `52,210` stable pool qids, `4.706%` upper-bound pool coverage, and
+  `9.8535x` repeat factor. Status: `low_coverage`.
+- Tier coverage: T1 `1771/21133` (`8.3803%`, `255` eval-bearing trials), T2
+  `843/26667` (`3.1612%`, `18` trials), T3 `160/5431` (`2.9461%`, `1`
+  trial). Least-covered non-sentinel suites: `tool_use`, `agentic`,
+  `skill_transfer`, `long_context`, `real_suite_v1`, `mode_advantage_hard`,
+  `mode_advantage`, `coder`, `bigcodebench`, `cruxeval`.
 - Policy: **do not rotate or replace the W6/W8 fixed authority core mid-run**.
   That would change the instrument during active evidence collection. Instead,
   split lanes: keep `authority_core` fixed for paired promotion evidence, add a

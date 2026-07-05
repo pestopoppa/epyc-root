@@ -16,12 +16,17 @@ operator era-row snippet under `operator_era_row_draft`; agents still must not
 append it to `instrument_eras.yaml`. No code change or same-seed calibration
 rerun is indicated before that operator decision.
 
-**Wrap-up addendum — 2026-07-04**: T3 semantics are now corrected to the
+**Wrap-up addendum — 2026-07-05**: T3 semantics are now corrected to the
 expert/hard workflow slice while preserving T3 `core_id` evidence continuity.
-The latest eval-coverage report (`2439` distinct qids / `24015` scored rows,
-stable pool `52210`, upper-bound coverage `<=4.6715%`, repeat factor `9.8462x`)
-is planner pressure rather than a blocker; A9 remains
-`attention/no_runnable_batches`.
+The latest eval-coverage report now surfaces tier detail and least-covered
+non-sentinel suites: `2457` distinct qids / `24210` scored rows over stable
+pool `52210`, upper-bound coverage `4.706%`, repeat factor `9.8535x`, with
+T1 `1771/21133` (`8.3803%`, `255` eval-bearing trials), T2 `843/26667`
+(`3.1612%`, `18` trials), and T3 `160/5431` (`2.9461%`, `1` trial). Least-
+covered non-sentinel suites are `tool_use`, `agentic`, `skill_transfer`,
+`long_context`, `real_suite_v1`, `mode_advantage_hard`, `mode_advantage`,
+`coder`, `bigcodebench`, and `cruxeval`. This is planner pressure rather than
+a blocker; A9 remains `attention/no_runnable_batches`.
 
 Current blockers before any next decision point:
 
