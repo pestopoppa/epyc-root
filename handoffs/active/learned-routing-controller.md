@@ -1250,6 +1250,16 @@ learned-routing reward signals from the failed NeuralTxt report alone.
   independent oracle evidence, with `runtime_gate_change_allowed=false`. Do not
   rerun the exhausted collector; any live use still requires a separate
   deployment gate.
+- 2026-07-05 follow-up: research commit `955beb6` records a new quiet-window
+  A9 audit-target collection for the remaining weak strata:
+  `source_family:seeding_eval coder_escalation/frontdoor` (`28` questions),
+  `suite:general architect_general/coder_escalation` (`20`),
+  `suite:hotpotqa architect_general/frontdoor` (`20`), and `suite:simpleqa
+  architect_general/coder_escalation` (`20`). The files live under
+  `benchmarks/results/eval/` with timestamp `20260705T185704Z`, alongside the
+  updated `seen_questions.jsonl`. Treat these as raw collection rows; the next
+  A9 action is rebuilding/scoring the pairwise contract and rerunning the
+  relevant holdout diagnostics, not another live collection pass.
 
 ## Research Intake Update — 2026-07-02
 

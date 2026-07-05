@@ -10,54 +10,36 @@
 
 **Standing contracts**: `/workspace/MEASUREMENT.md` (adopted) · `instrument_eras.yaml` (epyc-orchestrator orchestration/) · ATTESTATION (to build, findings-04 §B) · current architecture review: [fable5-findings-00-executive-summary.md](../completed/fable5-findings-00-executive-summary.md) — **the Fable 5 one-shot review is COMPLETE (2026-06-12)**; its 7 findings (-01..-07) + appendix are the standing reference, not an open row. The stale 2026-06-15 transient pickup was archived to [`../archived/fable5-long-horizon-session-pickup-history-through-2026-06-20.md`](../archived/fable5-long-horizon-session-pickup-history-through-2026-06-20.md); resume from the domain indices and owning handoffs below.
 
-**Current coordination checkpoint — 2026-07-05T17:26Z**: AutoPilot is live as
-PID `2632468` with `--max-trials 2000`, launched through the canonical Fable
-authority daemon at `2026-07-05T16:54:18Z` from orchestrator `1d452a40`; the
-orchestrator API was reloaded during trial `1178` and is healthy as parent PID
-`2678192`. The
-restart recovered in-flight trial `1176` as an intentional `AUTOPILOT_KILLED`
-deployment placeholder; trial `1177` completed as another replay of W8 candidate
-`4b6b454ea4f884fd` at `q=2.127`, `s=14.5`, dominated and `seq_refuted`.
-AutoPilot is now in trial `1178`, again forcing W8 candidate
-`4b6b454ea4f884fd` as `numeric_trial` on
-`think_harder.min_expected_roi=0.05`. The live env carries planner hints, tool
-sentinels, W6 audit accrual, sequential verdicts, planner spend breaker,
-`AUTOPILOT_PLANNER_PRIMARY=local_ingest`, and `AUTOPILOT_PLANNER_CRITIC=codex`;
-startup verified StrategyStore search health at `1,420` SQLite/FAISS/FTS rows
-with `100.0%` coverage. All AutoPilot audit-hardening commits through
-`1d452a40` are now live: local planner provider, due sequential-action bypass,
-candidate-aware W6 comparator, enforced planner spend breaker, inert pre-eval
-skips, dashboard outcome KPIs, AP-22/StrategyStore restore rewind, and bounded
-GEPA prompt restore. Trial `1175` completed the prior replay at
-`q=2.182`, `s=20.0`, dominated and `seq_accumulating`; trials `1174` and
-`1176` are intentional restart placeholders, not evidence failures. W6 remains
-clear in `orchestration/reports/w6_audit_block_report_current.{json,md}`
-(`220` audited, `gaming_alarm=false`, `clearance_clean_trials_required=0`).
-Code is pushed/indexed through orchestrator `e58c2bca`: `8031c7c4` adds true
-GEPA scratch prompt-root isolation, `12839520` journals observation-only W8
-paired-baseline diagnostics, and `18c71bcc` adds journal-derived outcome
-progress signals to `phase_health_report.py` (`--require-outcome-progress`
-currently flags the live frontier stall: `172` trials since frontier
-admission, threshold `150`). `080e3ac8` adds a durable operator outbox for
-critic-rejected operator-domain drafts and renders it into the planner prompt;
-`96b883cb` adds an exact-signature repeat shield so those rejected drafts cannot
-be re-emitted unchanged while materially changed retries remain eligible; and
-`224e3397` surfaces the journaled paired-baseline diagnostics in
-`seq_readiness_report.py` as observation-only `paired_baseline_screening`.
-`e58c2bca` adds planner-facing Outcome Progress Pressure to the controller
-prompt, reusing the existing phase-health outcome fold as non-authority context.
-AutoPilot was restarted on the current code at `2026-07-05T18:13Z` as PID
-`2779811`; recovery recorded trial `1181` as an intentional deployment-killed
-placeholder, and trial `1182` is the resumed forced W8 replay with
-`code_stale=false` and outcome pressure live for the next non-forced planner
-turn.
-W8 remains the live autonomous focus: replay confirmation/fresh promotion
-evidence for `4b6b454ea4f884fd`, with RI-10/DS-E1 already staged for future
-quiet-window evidence. Continue vector collection unless strict readiness
-regresses or a new instrument-era fence is opened. The next main-thread
-engineering targets should be outcome-first stall detection, blacklist/outbox
-residue cleanup, and the measured two-stage local planner provider, not manual
-trial babysitting.
+**Current coordination checkpoint — 2026-07-05T19:45Z**: AutoPilot is live as
+PID `2935890` with `--max-trials 2000`, launched through the canonical Fable
+authority daemon after the A9 quiet-window collection and contention-freshness
+fixes. Trial `1185` is current-code clean in `dispatch_action` / `seed_batch`
+with blockers `[]`; this first action is a forced baseline-reference draw, so
+it does not yet prove the new planner provider. The live env carries planner
+hints, tool sentinels, W6 audit accrual, sequential verdicts, planner spend
+breaker, `AUTOPILOT_PLANNER_PRIMARY=local_chat`, and
+`AUTOPILOT_PLANNER_CRITIC=codex`. Verify `local_chat` planner telemetry on the
+next non-forced planner turn.
+
+Orchestrator is pushed/indexed through `120498c9`. The v6 contention-matrix
+"stale topology" alarm was a false positive caused by auxiliary explicit-only
+`eval_batch_frontdoor` being included in full launch topology hashing; the
+measured production-role hash still matches `df373c79cc4af06f`. The gate,
+validator, SafetyGate/EvalTower consumers, and `contention_matrix.py` now use
+the measured-role topology helper; `/dashboard/api/contention` reports
+`matrix_status="ok"` after API reload. No matrix re-bench was run or needed.
+Monitor the one placement preflight observation: `worker_general` q2 (`:8282`)
+had correct cpuset affinity but only about `0.756` local anonymous-memory
+placement.
+
+Research is pushed through `955beb6`, which records the A9 audit-target live
+collection from the quiet window: seeding_eval coder/frontdoor, general
+architect/coder, hotpotqa architect/frontdoor, and simpleqa architect/coder.
+The next A9 step is pairwise-contract rebuild/scoring and holdout diagnostics,
+not another live collection pass. Outcome-progress still needs attention:
+latest frontier admission remains trial `1005` (`179` trials stale at this
+checkpoint). Older PID references below are historical until the next pruning
+pass; this checkpoint is the authoritative pickup state.
 
 ## A0. Strategic priorities — Fable 5 window-2 (2026-07-03, operator-directed reprioritization)
 Surfaced above the maintained N-rows so the highest-leverage strategic actions are front-and-center; owners/detail unchanged below. Full analysis: [findings-00](fable5-window2-findings-00-executive-summary.md) · GPU [findings-02](fable5-window2-findings-02-heterogeneous-gpu.md) · portfolio [findings-03](fable5-window2-findings-03-portfolio-and-master-queue.md) · intake-sweep + roofline [findings-05](fable5-window2-findings-05-intake-sweep-and-roofline.md).
@@ -81,6 +63,7 @@ Surfaced above the maintained N-rows so the highest-leverage strategic actions a
 | N11 | **Standardized stack-update pipeline finalization** -> [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md) | either | Canonical stack-change command/gates are live: generated descriptors/priors, guard ownership, runtime attestation, launch/preflight gates, promotion-gate execution, and representative swap-CI witnesses. 2026-06-28 currentness recheck is clean: all-hardcoded-surface guard OK, canonical pipeline `summary: ok`, strict guard OK, runtime attestation OK, no active production waivers, inventory `consumer_surface_count=13` / `rule_count=27`, promotion-gate pytest `176 passed`. Remaining work is opportunistic high-risk consumer migration, waiver hygiene, and swap-CI expansion only when a concrete new duplicated fact or migrated consumer appears. |
 | N11a | **Model-stack quantity single-source follow-up** -> [model-stack-single-source-update-pipeline.md](model-stack-single-source-update-pipeline.md) | either | Stack-prior SSoT, stack-manifest drift gate, runtime attestation, production launch gate, AutoPilot preflight gate, OpenAI `/v1/models` ordering, direct benchmark runtime enforcement, shared stack-prior helpers, admission degraded fallback manifest derivation, canonical role/action migration, PromptForge path safety, seeding reward descriptor fallback, seeding topology registry fallback, generated-stack-docs degraded fallback canonicalization, AutoPilot system-card generator fail-closed behavior, routing-classifier label-map action-space canonicalization (`1bef7f1`), live chat timeout lookup through current config (`b47ac2e`), architect prewarm target/model-hint derivation from stack priors (`11d80ee`), vision serving role discovery from stack-prior launch metadata (`c9d499f`), launch-map auxiliary target classification (`471a4d2`), WorkerPool primary-port/model-path consumption from generated stack priors (`1a8cb729`, `b0150e1c`), factual-risk role-tier swap witness coverage, X-MAS 5x5 table compilation, X-MAS incumbent-aware constrained policy, and guarded X-MAS production enforce (`d4a6c927`) are live. Orchestrator `a0377110` refreshed stale stack-prior source fingerprints after the launcher NUMA default change and restored `stack_change_pipeline.py check --run-promotion-gate` to `summary: ok` with `181` promotion-gate tests passing. `health_preflight_probes`, `launch_maps`, and the current 13-surface/27-rule inventory are re-audited/guarded rather than open consumer tails. The historical 2026-06-21 X-MAS constrained-policy A/B was negative; the repaired `incumbent_constrained_cheapfirst_v2` quiet-window A/B completed 2026-07-03 with `decision.status=promote_candidate`, score delta `+0.10`, latency ratio `0.938`, no blockers, and no regression domains. Next X-MAS tail is post-enable telemetry monitoring and rollback readiness, not another enablement decision. |
 | N13 | **v6+iqk kernel → production cutover** (full ik_llama deprecation, one kernel) → [v6-iqk-promotion.md](v6-iqk-promotion.md) | op-gated (reboot = operator, separate) | ✅ **CUTOVER COMPLETE 2026-06-26** (autonomous bar met: v6 in prod, all roles validated + attestation clean). 2026-06-27 orchestrator `dcd60332` applied the era fence: `E5-cpu-kernel` + `E5-autopilot-speed`, live AutoPilot `pareto_exclude_before_ts=2026-06-26T22:07:11Z`. The v6 AutoPilot frontier configuration rerun is closed: NumericSwarm studies are era-scoped, AP-16 telemetry records the active runtime scaffold, and the rerun marker cleared after trial `#1016` with `8/8` current-marker numeric trials. P-QUAL-PROMO eval-parity now has matched full-port evidence on `worker_general` port `8072`: IQK-on vs off, AA Omniscience deterministic F1, `N=206`, paired accuracy unchanged, avg F1/OI improved, hallucination rate lower, and avg throughput `1.3848x` faster. Still pending: clean post-reboot bench and any operator production-policy decision that depends on it. Was: `production-consolidated-v6` (upstream framework + our CPU kernels + ik's iqk AVX-512 GEMM, `GGML_IQK`-gated) replaces the v5+ik two-kernel split; worker consolidates onto one kernel; MTP on worker/frontdoor/architect (NEXTN draft-mtp). Registry follow-up is complete: normal stack start now compiles the lean registry from the master registry by default, and the completed reconciliation record is [registry-compile-master-reconcile.md](../completed/registry-compile-master-reconcile.md). |
+| N15 | **Contention-matrix freshness** → [contention-matrix-v6-quarter-refresh.md](contention-matrix-v6-quarter-refresh.md) | monitor | ✅ RESOLVED 2026-07-05 (codex session; orch `3d1706c6`+`120498c9`; hash-scope false positive, no re-bench; live `matrix_status: ok`). Open: monitor `worker_general` q2 (`:8282`) ~0.756 local anon-memory placement; regenerate matrix + hash only when a measured production role is added. |
 | N14 | **Prompt-construction & sampling determinism** → [prompt-construction-determinism.md](prompt-construction-determinism.md) | op (verification + commit) | ✅ **DEPLOYED LIVE 2026-06-26** (immediately post-N13), attestation-green, **committed (orchestrator `f4a8a3ca`)**. Audit verdict: prompt *construction* deterministic; *sampling* was not. Fixed: per-role `generation_defaults.temperature`, fixed `seed`, unified `top_k/top_p/repeat_penalty`, and `architect_general` routed to chat-completions so `enable_thinking=false` fires. 2026-07-04 code gap closed and deployed: orchestrator `fe390e5a` lets OpenAI-compatible callers pass explicit `temperature`/`seed`/`top_p`/`top_k` through `LLMPrimitives` into llama-server, omitted temperature keeps registry defaults, explicit sampling is content-cache-keyed, and API reload PID `3577452` is healthy. 2026-06-27 live-load J12/D2 probe found **0 `<think>` leaks / 0 wait-reference loops / 0 repetition loops**, so no immediate architect flip revert; however architect had 2/15 HTTP 504s under concurrent AutoPilot load. 2026-06-28 orchestrator `16876006` packaged the guarded clean-window runner (`scripts/benchmark/j12_think_loop_probe.py`), which refuses promotion-grade execution while AutoPilot is active. Kernel/AutoPilot-speed era fence is done under N13; **Remaining for N14:** run the packaged D2 probe in Queue-2/clean window, D3 manual canonical bench of greedy→sampled, and the separate sampling-quality `autopilot_quality` era after D2/D3. |
 
 ## B. ACTIVE — claimable now (HIGH → LOW)
@@ -113,6 +96,13 @@ independent holdouts. The offline target is now preregistered in
 experiments only, not independent oracle evidence. Runtime gating remains
 disallowed and live use still requires a separate deployment gate. Do not rerun
 the exhausted collector.
+
+A9 live-collection addendum (2026-07-05): research commit `955beb6` adds four
+new audit-target live batches for the remaining weak strata
+(`source_family:seeding_eval`, `suite:general`, `suite:hotpotqa`, and
+`suite:simpleqa`). Those rows supersede "no runnable batches" as the latest A9
+work product. The next A9 step is pairwise-contract rebuild/scoring and holdout
+diagnostics from the new rows, not another live collection pass.
 
 ## B2. Frontier programs (strategic spine — spec: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md))
 | # | Prio | Item | Handoff |

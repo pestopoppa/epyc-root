@@ -1,39 +1,65 @@
-# Contention matrix re-bench — topology-hash STALE after quarter-mode cutover
+# Contention matrix v6 quarter refresh — false-stale resolved
 
-**Status**: ACTIVE — ready to execute; ownership passed to the session that owns the running seeding sweep (operator-directed 2026-07-05)
-**Created**: 2026-07-05 by the dashboard-hardening session
-**Priority**: HIGH — a production admission gate is running degraded NOW
-**Operator approval**: GIVEN 2026-07-05 ("there's a quiet window right now, lets do it asap") — approval covers the measurement run itself; no further sign-off needed once the machine is actually quiet.
+**Status**: RESOLVED 2026-07-05 — no matrix re-bench required for the current production role set.
+**Created**: 2026-07-05 by the dashboard-hardening session.
+**Priority**: HIGH at creation; now MONITOR.
 
-## Why (verified live 2026-07-05 ~19:00Z)
+## Resolution (2026-07-05)
 
-- `GET :8000/dashboard/api/contention` → **`matrix_status: "stale"`**. The matrix file (`epyc-orchestrator/orchestration/contention_matrix.yaml`, measured 2026-06-27 for the v6 cutover) is only 8.4d old vs the 30d age threshold, so the stale verdict is the **topology-hash mismatch** path (`src/scheduling/contention.py:matrix_status`, hash vs `scripts/server/stack_numa.py` NUMA_CONFIG): the role/NUMA layout changed since measurement — plausibly the `--numa-mode quarter` launcher default (orch `01d14301`) and/or the 07-05 stack relaunches.
-- Impact: the cross-role admission gate consumes this matrix. Measured-under-old-topology pairs can mispredict; unmeasured pairs are `unknown` → **block for background traffic**. This degrades placement/admission quality until re-measured.
+The live `matrix_status: "stale"` diagnosis was a topology-fingerprint false
+positive, not evidence that the v6 contention matrix was measured under the
+wrong production topology.
 
-## Blocker at handoff time
+Root cause:
+- Full `NUMA_CONFIG` hash: `5d19b3e4edf6fc27`.
+- Stored contention matrix hash: `df373c79cc4af06f`.
+- Current hash over roles actually measured in `contention_matrix.yaml`,
+  excluding auxiliary explicit-only `eval_batch_frontdoor`:
+  `df373c79cc4af06f`.
 
-- [ ] Wait for **`seed_specialist_routing.py --suites all`** (was PID `2859968`/`2859973`, launched by this owning session) to finish/drain. It sends frontdoor/coder_escalation requests every ~10–20s — running the matrix concurrently poisons both the matrix and the seeding rewards.
-- AutoPilot is already DOWN (SIGTERM 18:46:52, log `epyc-orchestrator/logs/autopilot.log`) — do not relaunch it until after the matrix run.
-- MI210 GPU server on :8802 (direct-access testbed) may stay up: host-side footprint ≈1 core of 96; both bench arms see the same ambient. Record it as runtime context in the commit message, don't block on it.
+The auxiliary `eval_batch_frontdoor` role exists in launch topology but is not a
+production admission target in the measured contention matrix. Full-topology
+freshness checks therefore marked the matrix stale even though all measured
+production roles still match the matrix topology.
 
-## Execution (all from `/mnt/raid0/llm/epyc-orchestrator`)
+## What Landed
 
-- [ ] **Preflight — quiet check**: `curl -s :8000/dashboard/api/snapshot | jq '.activity | map_values(.n_active) | with_entries(select(.value>0))'` → must be empty (or only `8802`).
-- [ ] **Preflight — throttle check**: verify CPU freq not degraded (multi-day −60% mode per [[feedback_host_throttle_check]]); `grep MHz /proc/cpuinfo | sort -u | tail` sanity. Host uptime is 3d — if frequencies look clamped, `drop_caches` remediation first (≤1wk rule), then re-warm interleave ([[feedback_drop_caches_numa_eviction]]).
-- [ ] **Preflight — live affinity**: run `affinity_preflight.py` (verify LIVE affinity, not just topology hash — [[feedback_verify_live_affinity_not_just_topology_hash]]).
-- [ ] **Dry-run**: `uv run python scripts/server/contention_matrix.py --dry-run` — review the pair plan/scope against the live quarter-mode stack.
-- [ ] **Run**: `uv run python scripts/server/contention_matrix.py` (writes `orchestration/contention_matrix.yaml` with fresh `topology_hash`, `measured_at`, binary commit). Smart-prune skips N-way combos containing catastrophic (<0.65) pairs — expected.
-- [ ] **Verify**: `curl -s :8000/dashboard/api/contention | jq .matrix_status` → `"ok"`; spot-check a few pair ratios are sane (0.5–1.2 band) vs the 06-27 matrix.
-- [ ] **Commit** (explicit pathspec — shared tree): `git add orchestration/contention_matrix.yaml && git commit` — note the MI210 ambient context + that this is the quarter-mode-era matrix.
-- [ ] Only then: relaunch AutoPilot via `start_fable_authority_daemon.py --max-trials 2000` (it will also pick up the new `config_applicator.py` no-op restart guard landing separately today).
+- Orchestrator `3d1706c6` first changed the dashboard/admission freshness path
+  to ignore auxiliary roles in contention topology checks.
+- Orchestrator `120498c9` centralized the measured-role topology helper in
+  `src/scheduling/contention.py` and aligned the gate, validator,
+  SafetyGate/EvalTower consumers, and `scripts/server/contention_matrix.py`
+  validation paths.
+- Validation passed:
+  - `uv run pytest -q tests/unit/test_scheduling_contention.py tests/unit/test_scheduling_contention_gate.py tests/unit/test_dynamic_stack_evidence_packet.py tests/unit/test_eval_tower_concurrency_metrics.py tests/unit/test_safety_gate_baseline_eligibility.py` -> `108 passed`
+  - `uv run python scripts/validate/check_contention_matrix_fresh.py` -> `OK`
+  - `uv run python scripts/server/contention_matrix.py validate` -> status `ok`
+- GitNexus is current at orchestrator commit `120498c`.
+- The orchestrator API was reloaded; live `/dashboard/api/contention` reports
+  `matrix_status: "ok"`.
 
-## Reporting
+## What Did Not Happen
 
-- Flip the checkboxes above; add a one-line entry to `progress/2026-07/2026-07-05.md` (or the day's file) with the new `measured_at` + hash.
-- The dashboard's contention chip is being rewired to `matrix_status` (fingerprint verdict) by the dashboard-hardening session — no action needed here.
+The matrix benchmark was **not** rerun. That is intentional: the measured-role
+topology hash matched the committed matrix, so rerunning the matrix would have
+spent a quiet window to restate existing evidence while mixing in the ambient
+MI210 direct-access workload context.
 
-## Key files
+## Follow-Up
 
-- `epyc-orchestrator/scripts/server/contention_matrix.py` (the codified recipe — Phase F of `handoffs/active/cross-role-bw-aware-routing.md`)
-- `epyc-orchestrator/orchestration/contention_matrix.yaml` (output, git-tracked)
-- `epyc-orchestrator/src/scheduling/contention.py` (gate + `matrix_status` semantics)
+- [ ] Monitor the one live placement observation from
+  `scripts/server/affinity_preflight.py`: production CPU affinities verified,
+  but `worker_general` q2 (`:8282`) had correct cpuset placement with only
+  about `0.756` local anonymous-memory placement in `numa_maps`. Reload that
+  instance or re-run placement preflight if throughput/latency symptoms appear.
+- [ ] If a future production role is added to the contention matrix, regenerate
+  the matrix under the codified recipe and update the measured-role topology
+  hash as part of that change.
+
+## Key Files
+
+- `epyc-orchestrator/src/scheduling/contention.py`
+- `epyc-orchestrator/src/scheduling/contention_gate.py`
+- `epyc-orchestrator/scripts/server/contention_matrix.py`
+- `epyc-orchestrator/scripts/validate/check_contention_matrix_fresh.py`
+- `epyc-orchestrator/orchestration/contention_matrix.yaml`

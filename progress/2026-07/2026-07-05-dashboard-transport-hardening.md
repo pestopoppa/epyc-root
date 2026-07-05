@@ -73,3 +73,55 @@ agents' stack files untouched); GitNexus impact checks run pre-edit
 - Open: AutoPilot per-trial API restart cadence (dashboard now tolerates it);
   retiring the dead `autopilot_prompt_tap.txt` writer; `contention_matrix.yaml`
   refresh (8.4d old, non-gating); Playwright for browser-level chaos automation.
+
+## Second wave (same day, operator-approved follow-ups)
+
+- **prompt_tap surface retired end-to-end** (orch `87c5f970`): no writer has
+  existed in-repo for months; removed the `current_prompt` fields (fetch +
+  legacy SSE), the panel source, the client block, the path constant, and the
+  45-day-stale file itself.
+- **Regions Lock panel fold + orphan inference cards** (orch `9ade5019`,
+  operator request): panel renamed `regions lock` (CPU region locks + device
+  occupancy); GPU/extern servers render as spanning device rows in both grid
+  paths; live tap panel shows "orphan inference" cards for active slots on
+  off-pipeline servers (MI210 direct-access traffic — slot id, token counts,
+  model; explicit "no token tap — off-pipeline" label). A non-OK contention
+  matrix now renders as a loud incident line in the gate strip. Verified live:
+  `mi210_gpu` kind `gpu-llama-server` n_active=1 flows through the snapshot.
+  HTML is hot-read — visible on tab refresh, no reload needed.
+- **No-op API restart guard** (orch `b1a21e79`): `EnvRestartApplicator` reads
+  the live uvicorn parent's `/proc/<pid>/environ` and skips the restart on a
+  positive full-key match (fail-safe toward restarting on any uncertainty);
+  `api_restart: performed|skipped_noop` rides into the journal as an eval
+  covariate; `config_applicator.py` added to the phase-health runtime-source
+  drift list. Live at the next AutoPilot launch (daemon down since 18:46:52).
+- **Contention matrix**: handoff `handoffs/active/contention-matrix-v6-quarter-refresh.md`
+  created and ownership passed to the parallel codex session (operator-directed).
+  Codex finding: measured-role hash `df373c79cc4af06f` still matches — the
+  stale verdict was a hash-scope false positive (live hash wrongly includes
+  the auxiliary `eval_batch_frontdoor`); fix owned by codex, NOT this session.
+- Deploy state: dashboard.py server-side changes from this wave (prompt_tap
+  field removal) await the next API reload — deferred to avoid racing the
+  codex session and the in-flight seeding sweep; client no longer reads those
+  fields so nothing is user-visible in the interim.
+
+## Wrap-up correction (2026-07-05, later same day)
+
+- The codex session resolved the contention-matrix item: the STALE verdict was a
+  **hash-scope false positive** (live hash included auxiliary
+  `eval_batch_frontdoor`; measured-role hash `df373c79cc4af06f` matched all
+  along). Fix landed in orch `3d1706c6` + `120498c9` (measured-role-subset hash
+  centralized in `contention.py`, consumers aligned); live
+  `/dashboard/api/contention` now reports `matrix_status: ok`. **No re-bench was
+  run — correctly so.** Handoff `contention-matrix-v6-quarter-refresh.md` is
+  RESOLVED with two monitor follow-ups (worker_general q2 anon-memory placement;
+  regenerate matrix only when a measured role is added).
+- The codex API reload also deployed this session's pending server-side changes:
+  live `/dashboard/api/inference_tap` no longer carries `current_prompt`
+  (verified). Nothing remains undeployed from this session except the no-op
+  restart guard, which activates at the next AutoPilot launch.
+- Wiki: two durable findings compiled into `wiki/inference-serving.md`
+  (delivery-path staleness / self-healing design rule; like-for-like freshness
+  hash scopes). `.last_compile` intentionally NOT touched: 5 of 8 new manifest
+  sources are mid-flight documents other sessions are still editing — compile
+  them at a later stable wrap-up.

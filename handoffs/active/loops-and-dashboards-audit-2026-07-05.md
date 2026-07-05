@@ -19,10 +19,15 @@ Corrections from live code/journal review:
 
 Action landed:
 - `epyc-orchestrator` `7036630c` adds an OpenAI-compatible `LocalPlannerProvider`, role aliases for `local`, `local_worker`, and `local_ingest`, and the Fable launcher default `AUTOPILOT_PLANNER_PRIMARY=local_ingest` / `AUTOPILOT_PLANNER_CRITIC=codex` when not explicitly overridden. Local drafting calls the orchestrator `/v1/chat/completions` endpoint with `x_orchestrator_role` and `x_disable_repl=true`.
+- `epyc-orchestrator` `1f8f79e7` changes the live Fable default to
+  `AUTOPILOT_PLANNER_PRIMARY=local_chat`, with Codex still the critic. This
+  routes planner drafting through the orchestrator chat/router path instead of
+  pinning the planner directly to `ingest_long_context`; direct `local_ingest`
+  remains an alias for experiments and fallback.
 - The coordinator now treats local-provider aliases as one underlying model for failover, and operator-approved Codex fallback drafts may dispatch without pausing if local drafting fails; the fallback is visible in planner archive telemetry.
 - `epyc-orchestrator` `32567813` bypasses planner drafting for due sequential actions, so fresh evals, baseline draws, and W8 candidate replays no longer spend planner budget or wait on model deliberation.
 - `epyc-orchestrator` `113e36b0` makes W6 gaming/core-inflation checks candidate-aware, eliminating the cross-candidate false positive that had been aging out via clean-row accrual instead of reflecting real overfit evidence.
-- `epyc-orchestrator` `03dfac45` turns the planner budget line from a status string into an enforced spend breaker. When projected planner spend exceeds the configured threshold, the coordinator forces local-local planning (`local_ingest` primary, `local_worker` critic by default) instead of continuing metered cloud drafts/critique.
+- `epyc-orchestrator` `03dfac45` turns the planner budget line from a status string into an enforced spend breaker. When projected planner spend exceeds the configured threshold, the coordinator forces local-local planning (`local_chat` primary, `local_worker` critic by default after `1f8f79e7`) instead of continuing metered cloud drafts/critique.
 - `epyc-orchestrator` `0875fb50` skips inert numeric and structural candidates before eval: no-change numeric params and structural no-op flag proposals now short-circuit without burning a T1/T3 measurement.
 - `epyc-orchestrator` `45c118b8` adds outcome KPIs to the dashboard API/frontend: keepable rate, wasted-eval rate, learning-excluded rate, and current-code health.
 - `epyc-orchestrator` `683a20ba` adds dispatch-boundary regression coverage for inert skips.
@@ -38,8 +43,18 @@ Action landed:
 - Focused validation passed across the touched slices: `49` planner/provider/launcher tests, `43` W6/readiness tests, `46` spend-breaker/economics tests, `233` action/dashboard tests, `49` structural/restore tests, `64` GEPA/prompt-root/API/eval propagation tests, `36` sequential/paired-diagnostics tests, `44` phase/restart/dashboard health tests, `138` rejected-draft/action/creativity tests, and `11` earlier GEPA integration tests, plus focused `py_compile`, `ruff`, and `git diff --check`.
 
 Next measured extension:
-- AutoPilot was restarted at `2026-07-05T18:13Z` as PID `2779811` on orchestrator `e58c2bca`; collect one-shot `local_ingest` planner telemetry under the spend breaker plus operator-outbox/repeat-shield behavior after the forced W8 replay lane releases planner choice. Recovery recorded trial `1181` as the expected deployment-killed placeholder, and trial `1182` is a forced W8 replay with `code_stale=false`.
-- Build a two-stage planner provider after the one-shot local drafter has telemetry: `ingest_long_context` synthesizes a bounded planner brief, `frontdoor` or `worker_general` drafts the action from that brief, and Codex remains an escalation/critic option only when spend policy permits. This is the orchestration-native target pattern; it should be A/B measured against one-shot `local_ingest` before becoming the default.
+- AutoPilot was restarted at `2026-07-05T19:43Z` as PID `2935890` on
+  orchestrator `120498c9` with `local_chat` as the launcher default and
+  `--max-trials 2000`. Trial `1185` is a forced baseline-reference
+  `seed_batch`, so it does not yet prove the local-chat planner path. Collect
+  one actual planner-turn telemetry sample showing `local_chat` draft behavior
+  once the forced lane releases planner choice.
+- Build a two-stage planner provider after the one-shot router-mediated local
+  drafter has telemetry: `ingest_long_context` synthesizes a bounded planner
+  brief, `frontdoor` or `worker_general` drafts the action from that brief, and
+  Codex remains an escalation/critic option only when spend policy permits.
+  This is the orchestration-native target pattern; it should be A/B measured
+  against one-shot `local_chat` before becoming the default.
 
 ---
 
@@ -96,6 +111,10 @@ Ranks reference the workflow synthesis; the adversarial critic's corrections are
   - [x] 5 panels registered + endpoints stamped (pareto, repo_readiness, optimization_brief, insight_graph, build_rev — health now folds 14 panels) ✅ 2026-07-05
   - [x] Bare `catch{}` → self-clearing in-panel error chips (`renderPanelErrorChip`) ✅ 2026-07-05
   - [x] Beyond the sweep — full transport hardening after the tap/locks/topology trio staled again: client wedge-killers + 15s transport watchdog, `_poll_all_slots` 2.5s deadline + `slots_poll_meta`, region-locks/port TTL caches + tap-enrich fail-open (reverts the f6209d78 coupling), rotation-proof tap reads + client fetch fallback + badge/content unification, health `serve_path` block + `?probe=snapshot`, SIGKILL chaos test, all pollers on timeout-bounded `fetchJSON`, MI210 :8802 first-class `mi210_gpu` node (operator-decided). Orch `1cea531a`→`581caccc`, deployed API PID `2839729` ✅ 2026-07-05
+  - [x] Second wave — orphaned `autopilot_prompt_tap` surface retired end-to-end (orch `87c5f970`; writer never existed in-repo, file was 45d dead) ✅ 2026-07-05
+  - [x] Second wave — panel renamed `regions lock` + GPU/extern device rows folded into both grid paths + off-pipeline "orphan inference" cards in the live tap panel + non-OK contention matrix renders as a loud incident line (orch `9ade5019`, operator request) ✅ 2026-07-05
+  - [x] Second wave — no-op API restart guard: `EnvRestartApplicator` skips the restart when the live uvicorn env already matches (positive-match-only via `/proc/<pid>/environ`); `api_restart: performed|skipped_noop` journaled as an eval covariate; `config_applicator.py` added to phase-health drift list (orch `b1a21e79`; live at next AutoPilot launch) ✅ 2026-07-05
+  - [x] Contention matrix freshness: hash-scope false positive (live hash included auxiliary `eval_batch_frontdoor`; measured-role hash `df373c79cc4af06f` matched all along) — RESOLVED by the codex session (orch `3d1706c6` + `120498c9`: measured-role-subset hash centralized in `contention.py`, all consumers aligned, API reloaded, live `matrix_status: ok`; NO re-bench needed). Details: `contention-matrix-v6-quarter-refresh.md` ✅ 2026-07-05
 - **[P1 · S · medium] Production-safety + parity fixes the synthesis dropped** — isolate GEPA per-candidate prompt writes (`gepa_optimizer.py:88`) from the live prompts dir (a crash leaves a mutated production prompt) via the existing WorktreeManager/isolation path; make the **W6 gaming comparator config-aware** (`audit_block_report.py:407` is blocking the Fable gate ~29 trials on a between-candidate-variance false positive); extend `cmd_restore` (`autopilot.py:6309`) to purge StrategyStore + AP-22 memory ([[feedback_autopilot_rewind_must_purge_strategy_store]] — the loop the scar was named for).
 
 ### Phase 2 — The human-owned MEASUREMENT amendment (ONE bundle, one operator sign-off)
