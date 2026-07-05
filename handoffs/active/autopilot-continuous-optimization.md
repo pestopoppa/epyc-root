@@ -5,13 +5,17 @@ BSV observe is process-aware, T3 is planner-visible workflow pressure, FAISS is
 exact again, tool-use activation is ready, numeric candidate generation has
 been unblocked, and W8 needs a keepable replayable candidate before promotion
 evidence can accrue.** AutoPilot is live as PID `2935890` with
-`--max-trials 2000`; trial `1185` is a forced baseline-reference
-`seed_batch`, not a planner-selected W8 action. The daemon predates
-orchestrator `854eff06`, so `phase_health_report.py --json
---require-current-code` correctly reports `code_stale=true` until the next
-trial-boundary restart. The live env carries planner hints, sequential verdict,
-W6 audit accrual, tool sentinels, `AUTOPILOT_PLANNER_PRIMARY=local_chat`, and
-Codex critique. The indexed episodic FAISS mirror is exact after orchestrator
+`--max-trials 2000`; the latest live advisor sees trial `1188` in
+`dispatch_action` / `numeric_trial`. The daemon predates orchestrator
+`854eff06`, `39351bad`, `200d6ea`, and `d006996b`, so
+`phase_health_report.py --json --require-current-code` correctly reports
+`code_stale=true` until the next trial-boundary restart. The current stale
+daemon can still emit the old `local_chat` / `localhost` local-worker failures
+seen in planner telemetry at `2026-07-05T21:13Z`; the repaired restart target
+is `AUTOPILOT_PLANNER_PRIMARY=local_worker` with Codex critique, IPv4
+`127.0.0.1` local OpenAI-compatible calls, transient local HTTP retries, and
+fail-closed rejection for `[ERROR]` / `[MOCK]` local payloads. The indexed
+episodic FAISS mirror is exact after orchestrator
 `a0148edd`: `526,729/526,729` indexed vectors, matching `id_map.npy` and
 `reembedded.npz`, `100.0%` live overlap, `0` missing/stale IDs. Tool-use
 activation is not the blocker; `8be68732` fixes the REPL-pinned sentinel prompt
@@ -65,7 +69,7 @@ per-question diff/provenance context (`749d38f`).
 > trailing-window alarm, assuming no new gaming events occur.
 
 **Created**: 2026-03-08
-**Updated**: 2026-07-05 (current live AutoPilot PID `2632468`, launched from orchestrator `1d452a40`, is forcing W8 replay candidate `4b6b454ea4f884fd` at trial `1177`; trial `1175` completed the same candidate at `q=2.182`, `s=20.0`, dominated/`seq_accumulating`. W6 audit is clear, StrategyStore FAISS/FTS coverage is exact at `1,420/1,420`, and planner spend breaker/local-ingest drafting/tool sentinels are active. Orchestrator `8031c7c4` adds true GEPA scratch prompt-root isolation and is committed/indexed but not yet live in the daemon/API until the next safe restart boundary.)
+**Updated**: 2026-07-05 (current live AutoPilot PID `2935890` is stale versus the latest runtime fixes and is in trial `1188` `dispatch_action`; restart at the next advisor-safe boundary to load W8 guard `854eff06`, restart advisor `39351bad`, CPU MTP launch guard `200d6ea`, and local-planner provider hardening `d006996b`. W6 audit is clear, indexed episodic FAISS was exact after `a0148edd`, and the next planner default is `local_worker` draft + Codex critic rather than the fragile `local_chat` path.)
 **Location**: `epyc-orchestrator/scripts/autopilot/`
 
 > **Fable 5 review (2026-06-12)**: the review's architecture recommendations now have owning handoffs: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (LIVE t775 baseline-ratchet hotfix + dead-question repair), [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md) (per-question ledger + e-process verdicts; owns the next restart bundle), [evidence-plane-event-sourcing-and-narrative.md](evidence-plane-event-sourcing-and-narrative.md), and [objective-task-rate-goodput.md](objective-task-rate-goodput.md) (task_rate replaces the t/s axis). Full diagnosis: fable5-findings-01 + -05.

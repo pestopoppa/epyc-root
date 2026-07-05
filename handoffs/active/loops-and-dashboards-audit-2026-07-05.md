@@ -40,15 +40,17 @@ Action landed:
 - `epyc-orchestrator` `96b883cb` adds exact-signature repeat shielding for critic-rejected drafts. Re-emitting the same normalized action now becomes a non-executing invalid skip before dispatch; a materially changed retry has a different signature and remains eligible.
 - `epyc-orchestrator` `224e3397` surfaces the journaled W8 paired-baseline diagnostics in `seq_readiness_report.py` as observation-only `paired_baseline_screening`, so absence/presence of those rows is visible in the readiness packet rather than buried per trial.
 - `epyc-orchestrator` `e58c2bca` feeds outcome-progress pressure into the controller prompt: latest/frontier/promotion staleness plus recent keepable, wasted-eval, and learning-excluded rates are now planner-facing, non-authority context.
+- [x] `epyc-orchestrator` `d006996b` hardens the local planner provider after the first live `local_chat` rollout failed: the default routine drafter is now `local_worker` with Codex critic, the OpenAI-compatible local URL uses `127.0.0.1`, transient local HTTP failures are retried, and local `[ERROR]` / `[MOCK]` payloads fail closed instead of being dispatched as planner text. The live AutoPilot PID still predates this commit; verify it after the next advisor-safe restart boundary. ✅ 2026-07-05
+- [x] `epyc-orchestrator` `200d6ea` closes the adjacent CPU MTP launcher trap: same-file embedded MTP configs omit `-md` instead of double-loading, while worker_general keeps `-md` for its current separate assistant draft model. ✅ 2026-07-05
 - Focused validation passed across the touched slices: `49` planner/provider/launcher tests, `43` W6/readiness tests, `46` spend-breaker/economics tests, `233` action/dashboard tests, `49` structural/restore tests, `64` GEPA/prompt-root/API/eval propagation tests, `36` sequential/paired-diagnostics tests, `44` phase/restart/dashboard health tests, `138` rejected-draft/action/creativity tests, and `11` earlier GEPA integration tests, plus focused `py_compile`, `ruff`, and `git diff --check`.
 
 Next measured extension:
-- AutoPilot was restarted at `2026-07-05T19:43Z` as PID `2935890` on
-  orchestrator `120498c9` with `local_chat` as the launcher default and
-  `--max-trials 2000`. Trial `1185` is a forced baseline-reference
-  `seed_batch`, so it does not yet prove the local-chat planner path. Collect
-  one actual planner-turn telemetry sample showing `local_chat` draft behavior
-  once the forced lane releases planner choice.
+- AutoPilot was restarted at `2026-07-05T19:43Z` as PID `2935890` before the
+  latest provider hardening, and it remains stale during trial `1188`
+  `dispatch_action`. The next restart should use the repaired
+  `local_worker`/Codex planner contract. Collect one actual planner-turn
+  telemetry sample showing successful `local_worker` draft behavior once the
+  forced/replay lane releases planner choice.
 - Build a two-stage planner provider after the one-shot router-mediated local
   drafter has telemetry: `ingest_long_context` synthesizes a bounded planner
   brief, `frontdoor` or `worker_general` drafts the action from that brief, and

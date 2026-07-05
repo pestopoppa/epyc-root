@@ -8,11 +8,11 @@
     "research": 123
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-07-05T21:03:04Z",
+  "last_compile": "2026-07-05T21:32:39Z",
   "mode": "full",
-  "scan_time": "2026-07-05T21:03:15Z",
+  "scan_time": "2026-07-05T21:32:55Z",
   "schema_version": 1,
-  "source_set_hash": "2c770d73a89e603c484fc4c1069de25eedd45363b65eecc3a70df73f4c2bf1ec",
+  "source_set_hash": "c1c845749a7816a1084e23b7c273442951634ec040fe34d2b70b319ddeab47f4",
   "sources": [
     {
       "content_hash": "b5f9d756fd0daa82182b46024fea6bb6da04c7d415891e5ac2b01c9777881ef0",
@@ -63,10 +63,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "44c98404aa75b6732c3ee2c27614ec83a1f29bd6cd3f8cc3ea40c270d2148aa5",
-      "modified": "2026-07-05T20:43:00Z",
+      "content_hash": "9716de8d3ea27095c5dfab73959d312b70819cccf4e4e437f24e173219664008",
+      "modified": "2026-07-05T21:29:12Z",
       "path": "handoffs/active/autopilot-continuous-optimization.md",
-      "size": 167927,
+      "size": 168111,
       "title": "AutoPilot: Continuous Recursive Optimization",
       "type": "handoff-active"
     },
@@ -239,10 +239,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "606442aec28c129e8aacceb51a8948ba34159a2d501ac8ff59e28ed97ae75cfc",
-      "modified": "2026-07-05T21:02:03Z",
+      "content_hash": "f1582c6243714c22688849ac670f5d54c3651238815ead8a4a9e1e187802274d",
+      "modified": "2026-07-05T21:28:30Z",
       "path": "handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md",
-      "size": 44215,
+      "size": 44673,
       "title": "Evidence Plane \u2014 Per-Question Ledger + Sequential Verdicts (+ game layer)",
       "type": "handoff-active"
     },
@@ -391,10 +391,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4a9d6fa42890125dc51fed819a05ade5d88cd0bca4c60217f3f22ba15535acdf",
-      "modified": "2026-07-05T20:32:03Z",
+      "content_hash": "3e9de5208b03897a8c4ba073faaccc7d405ac6b5bc5ece7968b021b6e4f5e4b3",
+      "modified": "2026-07-05T21:04:38Z",
       "path": "handoffs/active/gpu-cot-scaffold-sidecar.md",
-      "size": 45690,
+      "size": 47079,
       "title": "GPU CoT-Scaffold Sidecar \u2014 Preliminary Pure-GPU Research Lane",
       "type": "handoff-active"
     },
@@ -527,10 +527,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "def585e9cb59e05a47b3e39b44a6a176f40471733f2af339eed314ffdc8649c4",
-      "modified": "2026-07-05T19:53:06Z",
+      "content_hash": "5afbfcf2987b8daa47e1c2ca21749d301b7a9a302e4153b1298551ccf1c28953",
+      "modified": "2026-07-05T21:29:27Z",
       "path": "handoffs/active/loops-and-dashboards-audit-2026-07-05.md",
-      "size": 36307,
+      "size": 37046,
       "title": "Audit \u2014 Kernel-R&D loop + Orchestration Autopilot loop (and both dashboards)",
       "type": "handoff-active"
     },
@@ -4839,10 +4839,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "1e61ae843a92263c955ac68d1adebeed8af507f9211854f555c9606280edcd9a",
-      "modified": "2026-07-05T21:02:03Z",
+      "content_hash": "bd2e5e26a30fb0ad21746df69c50cf80f2f27f05b35cfe086636d3eb5cd7a01d",
+      "modified": "2026-07-05T21:30:47Z",
       "path": "progress/2026-07/2026-07-05.md",
-      "size": 109612,
+      "size": 111638,
       "title": "Progress - 2026-07-05",
       "type": "progress"
     },

@@ -508,6 +508,12 @@ The production stack uses two distinct self/external speculative mechanisms, bot
 | `frontdoor`, `coder_escalation`, `worker_summarize` | Qwen3.6-35B-A3B (shared `:8070` process, one GGUF) | **NEXTN self-draft** (in-target head, shares `token_embd` at model quant) | One llama-server process serves all three roles; routing is software role→port. Opt `--spec-draft-n-max 4` (+103% in the v6-iqk sweep, acceptance 0.82). |
 | `architect_general` | Qwen3.5-122B (`qwen35moe`) | **NEXTN self-draft** | M-RoPE assertion resolved on v6; same NEXTN loader as frontdoor. Measured +58–89% on v6 (`llama-arch.cpp` includes QWEN35MOE; the earlier "GDN wall / 0.56× dead-end" was a stale ik path with no `draft-mtp`). MTP blocks here are dense attention, not recurrent. |
 
+**Launcher guard (2026-07-05).** Orchestrator `200d6ea` makes the CPU
+launcher omit `-md` when a role's draft path resolves to the same GGUF as the
+target model, preventing accidental double-load for embedded NEXTN/self-draft
+roles such as frontdoor and architect. `worker_general` still keeps `-md`
+because its current production MTP path uses a separate assistant-draft GGUF.
+
 **Registry mechanism note (2026-06-26).** The LEAN registry is hand-authoritative for the cutover (`--compile-registry` is OFF); the worker / Qwen3.6 / architect models carry NEW `model_id`s because their base GGUFs changed (ORIG worker base; NEXTN MTP variants for the self-drafting roles). Do not assume the lean registry was recompiled from master for this cutover — it was hand-converged.
 
 ### ngram / prompt-lookup decoding (zero-RAM fallback — OFF in prod today, fully supported in v6)

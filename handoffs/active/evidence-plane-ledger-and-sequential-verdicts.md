@@ -1,14 +1,20 @@
 # Evidence Plane — Per-Question Ledger + Sequential Verdicts (+ game layer)
 
-**Current checkpoint — 2026-07-05T20:58Z W8 candidate-generation guard + restart advice**:
-AutoPilot is live as PID `2935890` at trial `1185` (`dispatch_action` /
-`seed_batch`) with planner hints, tool sentinels, W4-W6 authority env,
-`AUTOPILOT_PLANNER_PRIMARY=local_chat`, and Codex critique. The trial is a
-forced baseline-reference draw, not a planner-selected W8 action. Orchestrator
-`854eff06` is pushed and `39351bad` is locally committed and GitNexus-indexed,
-but the live daemon predates both; use `phase_health_report.py --json
+**Current checkpoint — 2026-07-05T21:28Z W8 guard + planner restart target**:
+AutoPilot is live as PID `2935890` at trial `1188` (`dispatch_action` /
+`numeric_trial`) with planner hints, tool sentinels, and W4-W6 authority env.
+The live daemon predates the latest W8, restart-advisor, CPU MTP launch, and
+local-planner provider commits; use `phase_health_report.py --json
 --require-current-code` to verify the expected `code_stale=true` until the next
-boundary restart. Orchestrator `39351bad` also adds the read-only
+boundary restart. Operator-observed planner telemetry at `2026-07-05T21:13Z`
+showed the stale process failing both `local_chat` (`/chat` disconnected) and
+the old local-worker endpoint (`localhost` connection refused). Orchestrator
+`d006996b` repairs the restart target: `start_fable_authority_daemon.py` and
+the spend breaker now default to `AUTOPILOT_PLANNER_PRIMARY=local_worker` with
+Codex critique, the local OpenAI-compatible URL uses `127.0.0.1`, transient
+local HTTP failures are retried, and `[ERROR]` / `[MOCK]` local payloads fail
+closed instead of becoming planner text. Orchestrator `39351bad` also adds the
+read-only
 `autopilot_restart_advisor.py` / launcher `--preflight` surface; live smoke
 reports `status=wait_for_boundary`, `restart_needed=true`, and
 `safe_to_restart_now=false` because the stale daemon is still inside active
@@ -204,7 +210,7 @@ land at ONE autopilot restart, each behind its own flag.
 - [x] **W6 — shadow rollout + cutover** (01c §5.5, 2 weeks passive): dual-log `seq` alongside MAD verdicts; the post-reboot cutover is live under `AUTOPILOT_SEQ_VERDICT=1`. Current strict readiness on 2026-07-02 reports `seq_shadow_rows=125/30`, W6 current-era audited rows `41/30`, trailing-window `gaming_alarm=false`, `0` potential overfit divergences, and no W6 blockers. Continue W8 promotion-eval evidence collection and fail closed on any future strict-readiness regression or instrument-era reset.
 - [x] **W7 — game layer** (impl 5.1–5.3, 2–3 days): critic measurement-view foundation landed in `epyc-orchestrator` `41c5c71` (`build_critique_prompt` stops echoing the 80KB planner prompt and now carries bounded power/constraint context); server-side production eval sampling clamp landed in `7492cf5` (`EvalTower.evaluate()` pins T1/T2 `n`/`seed`, dispatcher rejects malformed `deep_eval`, and calibration uses direct tier helpers for operator overrides); audit-stream gaming alarm landed in `8e4b1ec` as read-only `gaming_alarm` / `gaming_events` report fields; PEAF surprise budget credit landed in `4b09661` via `information_rate` / `budget_rate` while preserving legacy Pareto `rate`; per-question diff/provenance context landed in `749d38f` by adding truthy-only compact row flags (`scoring_method`, route/tools, error/partial/degraded/exogenous/retry markers) and planner evidence summaries (`diff=prev#...`, suite/partition counts, provenance flags) without exposing prompt or answer text.
 - [x] **W8a — candidate-generation deferral guard**: orchestrator `854eff06` prevents W8 pressure from being spent on unreplayable ordinary deferrals by replacing `seed_batch`, `deep_eval`, `structural_prune`, and invalid structural actions with the first unblacklisted numeric trial fallback unless a sequential due-action owns the turn; planner evidence now states that new Optuna numeric trials are replayable when dispatch journals applied params. ✅ 2026-07-05
-- [ ] **W8b — live candidate evidence after guard deploy**: restart AutoPilot onto `854eff06`, verify local-chat planner telemetry on a non-forced turn, produce a keepable replayable W8 candidate, then collect sequential confirmation and fresh promotion-eval evidence.
+- [ ] **W8b — live candidate evidence after guard deploy**: restart AutoPilot onto the current indexed head (`200d6ea`/`d006996b` after `854eff06`), verify `local_worker` planner telemetry on a non-forced turn, produce a keepable replayable W8 candidate, then collect sequential confirmation and fresh promotion-eval evidence.
 
 ## Gates & pitfalls
 
