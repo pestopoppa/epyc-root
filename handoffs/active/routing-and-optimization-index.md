@@ -131,7 +131,7 @@ These files remain active but are not the shortest pickup path for the main queu
 
 | Handoff | Current role | Next action |
 |---------|--------------|-------------|
-| [launcher-numa-mode-gating.md](launcher-numa-mode-gating.md) | Launcher flag implemented; production default remains an operator decision. | Decide whether `--numa-mode` should become the canonical default or stay explicit. |
+| [launcher-numa-mode-gating.md](launcher-numa-mode-gating.md) | ✅ Complete in orchestrator `01d14301`: future stack starts default to `--numa-mode quarter`; explicit `both` remains compatibility mode. | Archive/remove from this active-reference table at the next manual wrap-up pruning pass. |
 | [model-stack-change-standardization-audit.md](model-stack-change-standardization-audit.md) | Stack-change standardization audit/provenance for N11/N11a. | Use as supporting context; current pickup path is the stack-governance and SSoT handoffs. |
 | [model-stack-update-pipeline-audit.md](model-stack-update-pipeline-audit.md) | Historical-detail support for the stack-prior consumer-migration contract. | Keep shrinking residual consumer surfaces through the concise SSoT handoff. |
 | [multi-file-coding-completion-capability.md](multi-file-coding-completion-capability.md) | BEP/multi-file edit transaction remediation is built but rollout-gated. | Run the clean-window A/B and promotion evidence before enabling routine edit-mode routing. |
