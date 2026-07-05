@@ -104,6 +104,32 @@ Harder suite `mode_advantage` tier-3 (hard code, N=27, nothink **77.8% = unsatur
 - **ownthink baseline is truncation-contaminated** (3072-token cap on 26/27) → the +44pp headline over ownthink overstates the gap; the correct cheap baseline is **nothink (77.8%)**, and prefix beats that.
 - **Verdict: G1-(i) survives (a scaffold beats the cheap baseline) — but as PREFIX, not context.** Next: (a) **pivot the carried arm to SCAFFOLD-PREFIX** for G1-ii (Qwable treatment) + G2 (gemma cross-family); (b) **decontaminate ownthink** — re-run alone at 6144/8192 cap (~1 GPU-hr); (c) prefix is the more interesting cross-family test (depends on the `<think>` surviving gemma's template). Artifacts: `/mnt/raid0/llm/tmp/cot-g1/*_hard*`.
 
+### G2 + G1-ii RESULTS (2026-07-05) — ⚠️ the "scaffold beats nothink" claim is CONFIG-FRAGILE; literal-prefix does NOT transfer cross-family. FLAGGED FOR OPERATOR DECISION.
+Both OBSERVATION-grade (single MI210, single-sample seed=42, eval-tower `debug_scorer`). **These two results together walk back the slice-2 headline: every successive baseline cleanup has caught nothink catching up.**
+
+**G2 — cross-family transfer (4B-Thinking → gemma-4-26B-A4B-ORIG).** Premise correction (mine): gemma-ORIG is NOT "no thinking mode" — `arch=gemma4` has a **native channel/harmony reasoning template** (`<|channel|>thought`); llama-server defaults thinking ON, so the clean no-think baseline requires `enable_thinking=False`.
+| Arm | Acc | tok/solved | vs gemma-nothink |
+|---|---|---|---|
+| **nothink** (gemma direct, baseline) | **81.5%** (22/27) | **903** | — (already strong + cheapest) |
+| scaffold-prefix **literal `<think>`** | 63.0% (17/27) | 6,116 | **−18.5pp, DOMINATED → does NOT transfer** |
+| scaffold-prefix **native `<\|channel\|>thought`** | **92.6%** (25/27) | 2,406 | +11.1pp acc, 0 regressions — but 2.7× tok |
+| scaffold-context (advisory) | 88.9% (24/27) | 1,507 | +7.4pp acc, 0 regressions — but 1.7× tok |
+- **The carried literal-`<think>`-prefix mechanism is SAME-FAMILY-ONLY** (63.0%, below gemma's own no-think, Pareto-dominated). The `<think>` survives lexically (0 leaked tags, 27/27 valid code fence) but gemma doesn't treat the foreign `</think>` as a reasoning boundary → over-generates (14/27 hit the cap). **Slice-2's prefix-win was a FORMAT-family effect, not same-family.**
+- **The reasoning *content* DOES transfer — iff delivered format-native** (into the target's own reasoning slot): +11.1pp, 0 regressions, 3 rescues. **Redefine SCAFFOLD-PREFIX = target-native reasoning-slot injection, NOT a literal Qwen tag.**
+- **Token-normalized STRICT (acc↑ AND tok/solved≤baseline): NO arm beats gemma no-think.** The lift is on accuracy, bought at 1.7–6.8× the tokens. gemma's *own* native reasoning is a stronger ceiling (6/6 subset) but ~6× costlier.
+
+**G1-ii — distillation (Qwable-v1 IQ4_XS vs vanilla 4B control, both prefix → 35B-Q8 beneficiary).**
+| Arm | Acc | tok/solved | note |
+|---|---|---|---|
+| nothink (`-c 10240`) | **88.9%** (24/27) | 484 | ⚠️ jumped from 77.8% @`-c 8192` |
+| **qwable-prefix** (35B distilled IQ4_XS) | **88.9%** (24/27) | **1,490** | ties nothink; **+11.1pp vs 4B-control, 0.58× tok** |
+| control-prefix (vanilla 4B) | 77.8% (21/27) | 2,560 | regresses BELOW nothink here |
+| ownthink @8192 | 44.4% (12/27) | 16,617 | Pareto-terrible, 22/27 still truncating |
+- **Distillation thesis CONFIRMED (clean survivor):** distilled Qwable-prefix beats the vanilla 4B-control-prefix +11.1pp at 0.58× tok/solved + fewer generator tokens + less wall (concise EOS-closed reasoning, less disruptive to a strong beneficiary — derails 1 nothink-pass vs the 4B's 4). An in-house tune is *mechanistically* justified.
+- **⚠️ CRITICAL CONFOUND — the "prefix beats nothink" result is a context-length artifact.** The clean own-think fix forced beneficiary `-c 10240` (to hold an 8192-tok own-think); slice-2 was `-c 8192`. **Qwen's context-length-dependent rope scaling** flipped nothink 77.8%→**88.9%** at the larger `-c`. So at `-c 10240` **NEITHER scaffold beats nothink** (qwable ties, control regresses). Slice-2's "nothink 77.8% + prefix wins" was a `-c 8192` artifact.
+
+**NET VERDICT (both slices):** the lane's load-bearing claim — *a scaffold beats the cheap nothink baseline* — has **not survived successive baseline cleanups** (slice-1 saturation → slice-2 `-c 8192` rope artifact → clean `-c 10240` = nothink catches up). Two narrow survivors: **(a)** distilled > vanilla generator (mechanistically clean, but only matters if a scaffold regime exists at all); **(b)** format-native cross-family injection lifts accuracy +11pp/0-regressions (but not token-efficient vs a strong nothink). **The lane is a narrow, config-fragile, accuracy-critical-only lever — not the broad quality win the slice-2 headline suggested.** **FLAGGED FOR OPERATOR DECISION** (research-intake policy — not unilaterally closed): either (1) find a beneficiary/regime where nothink does NOT already saturate + deliver format-native (the only place a scaffold can clear the bar), or (2) bank as marginal and redirect the GPU to the residency + kernel levers. Artifacts: `/mnt/raid0/llm/tmp/cot-g1/{driver_g2,driver_g1ii,summary_g2,summary_g1ii,results_g2,results_g1ii_*}.*`.
+
 - **G1 — scaffold lift (control AND treatment in one sweep).** Run **both** the control generator (Qwen3-4B-Thinking) and ≥1 distilled treatment (Qwable-v1) against the code beneficiaries. Two distinct questions: **(i) does *any* scaffold beat both baselines** token-normalized on ≥1 pair/suite (does scaffolding help at all)? **(ii) does the *distilled* generator beat the *control* generator** (did frontier-CoT distillation actually add value)? **KILL the lane if no scaffold beats BASELINE-ownthink** (thinking tokens aren't automatically additive — `feedback_qwen3x_enable_thinking_false`: `enable_thinking=false` won +33 pp on Qwen3.6/122B). **KILL the distillation thesis specifically if the distilled arm never beats the control** — then a vanilla thinker is all we need and no in-house tune is warranted.
 - **G2 — cross-family transfer.** Does the lift survive Qwen-4B-Thinking scaffold → **gemma4** worker (not just same-family)? Epiphenomenal-CoT risk (arXiv:2606.13603) — injected reasoning may not causally drive the answer. KILL if lift is same-family-only.
 - **G3 — residency + latency (only if G1+G2 pass).** Plan MI210 residency next to the frontdoor (fable5-window2-findings-05b/02 Gate R) and re-check the latency budget under realistic concurrency, since the scaffold is a serial pre-decode step.
