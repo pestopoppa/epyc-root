@@ -16,6 +16,26 @@ plus a tool-aware comment-only nudge. Remaining work is to journal nonzero
 `total_tool_calls` under the repaired prompt contract and evaluate usefulness;
 it is not lane activation.
 
+**Parallel batching investigation (2026-07-05T17:36Z)**: read-only sidecar
+checked whether independent tool calls should be executed together and batched
+back into the next model context. Finding: this is already partially true
+inside a single structured REPL response. OpenAI-compatible request schemas now
+carry `tools`/`tool_choice` and tool-result history, while the chat loop remains
+turn-serial; however `REPLEnvironment._execute_structured()` detects multiple
+structured calls and routes read-only independent batches through
+`execute_parallel_calls()`. Telemetry already exposes `tools_called`,
+`tool_timings`, `tool_chains`, and `parallel_tools_used`. No active handoff
+specifically owns "parallel independent tool-call batching"; this handoff is
+the right owner. Current evidence says batching is **not yet the bottleneck**:
+recent AutoPilot windows still show near-zero live `total_tool_calls`, so the
+next action is measurement, not a new executor. Before editing HIGH/CRITICAL
+paths, measure how often requests have `len(tools_called) >= 2`, whether those
+calls are read-only, and whether `parallel_tools_used` is nonzero. Only if that
+shows material latency should implementation stay inside
+`REPLEnvironment.execute` / `parallel_dispatch.py`, preserving current OpenAI
+response semantics (`message.tool_calls` are not emitted for internally
+executed tools).
+
 **Prior verification (2026-07-04T10:24Z)**: the stale "StrategyStore only
 affects startup/action handlers" diagnosis is closed. `epyc-orchestrator`
 `1f8b1e4e` pins a full-controller-prompt regression showing a newly written
