@@ -4334,3 +4334,8 @@ Purpose: Handoff audit + Hermes Phase 2 routing API
 {"ts":"2026-07-05T14:51:38+00:00","session":"ses_20260705_123912_2276091","level":"INFO","cat":"TASK_END","msg":"Record W8 blacklist/report repair","details":"outcome=success"}
 {"ts":"2026-07-05T15:03:50+00:00","session":"ses_20260705_123912_2276091","level":"INFO","cat":"TASK_START","msg":"RI-10 canary decision packet","details":"Telemetry depth is complete; generating fail-closed operational and factuality-readiness decision evidence"}
 {"ts":"2026-07-05T15:03:50+00:00","session":"ses_20260705_123912_2276091","level":"INFO","cat":"TASK_END","msg":"RI-10 canary decision packet","details":"outcome=success"}
+{"ts":"2026-07-05T15:06:17+00:00","session":"ses_20260705_150617_2473811","level":"INFO","cat":"SESSION_START","msg":"Implement thin Hermes /stack skill","details":"new_session=ses_20260705_150617_2473811"}
+{"ts":"2026-07-05T15:09:24+00:00","session":"ses_20260705_150617_2473811","level":"INFO","cat":"TASK_START","msg":"Integrate Hermes stack skill","details":"Sidecar completed docs-only Hermes /stack skill; validating and committing with narrow pathspec."}
+{"ts":"2026-07-05T15:09:24+00:00","session":"ses_20260705_150617_2473811","level":"INFO","cat":"TASK_END","msg":"Integrate Hermes stack skill","details":"outcome=success"}
+{"ts":"2026-07-05T15:20:11+00:00","session":"ses_20260705_150617_2473811","level":"INFO","cat":"TASK_START","msg":"RI-10 scored canary packet","details":"Add dataset-backed scored request planner and generate balanced payload/answer-key artifacts."}
+{"ts":"2026-07-05T15:20:11+00:00","session":"ses_20260705_150617_2473811","level":"INFO","cat":"TASK_END","msg":"RI-10 scored canary packet","details":"outcome=success"}
