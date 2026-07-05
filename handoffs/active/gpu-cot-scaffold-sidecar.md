@@ -139,6 +139,19 @@ Both OBSERVATION-grade (single MI210, single-sample seed=42, eval-tower `debug_s
 
 **Fork 4 RESOLVED (operator 2026-07-05): EXTERNAL generators only — NO in-house training now.** All CoT-scaffold spec strategies use **Qwable-v1** (IQ4_XS + Q8_0 on disk) or the **fable5-distilled 4B** (`Qwen3-4B-SFT-Fable5-Glint`, q8_0 GGUF); the vanilla `Qwen3-4B-Thinking` stays only as the CONTROL bar. The **in-house-reasoner build is PARKED** (documented, not pursued): the operator confirms the MI210 *probably could* train (ROCm/PyTorch on gfx90a) but does not wish to explore it now; if ever revived it also needs prompt→thinking pair reconstruction from the session vault (corpus is thinking-text-only, 0 Fable-5). [[project_dgx_spark_target]]
 
+### GPQA REASONING DIAGNOSTIC (2026-07-05, wide caps) — REVERSAL: the scaffold WORKS on the RIGHT distribution
+Operator methodology catches (wrong bench: code/library-API not reasoning; + too-tight 8192 cap truncating ownthink) reversed the earlier "scaffold dead-end." GPQA grad-science, N=48, 35B beneficiary, ownthink 16384 / scaffold-gen 8192, deterministic MC scoring, seed 42. OBSERVATION-grade.
+| arm | pass | vs nothink | note |
+|---|---|---|---|
+| nothink | 23/48 (48%) | — | |
+| ownthink | 32/48 (67%) | +9 | 20/48 STILL truncated @16384 → LOWER BOUND (35B over-thinks, doesn't converge) |
+| **scaffold-Qwable** | **35/48 (73%)** | **+12 (+25%)** | **0 truncated; 15 of 25 nothink-failures rescued / 3 regressions** |
+- **The scaffold WORKS on reasoning-bottlenecked tasks** (+12, 15 rescues/3 regr). REVERSES the single-shot falsification (mode_advantage_hard code + Qwable→gemma), which was **DISTRIBUTION-SPECIFIC** (code/library-API/capability-limited — nothing to amplify).
+- **Reconciles with the literature ("amplifier not substitute", arXiv:2605.28913):** the RECEIVER's latent capability is the gate. GPQA (grad-science) → the 35B HAS it → scaffold amplifies (+12); bigcodebench (library-API knowledge gaps) → nothing to amplify (self-debug loop 4%).
+- **Scaffold ≈ ownthink on quality but FAR more efficient:** +3 over ownthink (~parity given ownthink's 20/48 truncation under-count), with **0 truncation** because Qwable reasons concisely+completely in 8192 while the 35B OVERTHINKS (>16k, non-convergent). GPU reasoner delivers the benefit at a fraction of the beneficiary token cost, dodging the overthinking-truncation trap.
+- **CAVEAT (needs a control):** on MC the +12 could be "35B latent capability elicited" OR "Qwable solves it + 35B relays the choice." **A Qwable-standalone GPQA control disambiguates** — but deployment value (the beneficiary server answers better) holds either way; both readings are literature-endorsed (amplify vs standalone-reasoner).
+- **CoT-scaffold lane REOPENED + VALIDATED on reasoning-bottlenecked tasks.** Conditional deploy rule: reasoning-bound tasks where the beneficiary has latent capability (gate via difficulty_band + task-class). The verifier/selector is now a COMPLEMENTARY mode, not a replacement. The autopilot reasoning-effort lever now has a validated positive instance.
+
 ### RESEARCH (2026-07-05) — scaffold-injection is a KNOWN dead-end; the working GPU-reasoner mode is VERIFIER/SELECTOR
 Public-literature survey CONFIRMS our negatives as the consensus:
 - **"Reasoning that Travels" (arXiv:2605.28913):** transplanted reasoning is a "capability AMPLIFIER, not a capability SUBSTITUTE" — helps capable receivers, "cannot overcome fundamental performance gaps in weaker models"; transfer success tracks the RECEIVER's base capability. = our "transplanted reasoning doesn't transplant capability."
