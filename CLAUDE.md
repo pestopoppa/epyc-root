@@ -91,6 +91,8 @@ An agent pointed at an index should be able to autonomously discover, prioritize
 
 When completing handoffs, extract findings to docs, then move to `completed/`.
 
+**Checkbox discipline (all sessions, including autonomous checkpoints):** the handoff dashboard's progress metric counts checkbox state only — prose status updates are invisible to it. Any handoff edit recording completed work must flip the matching `- [ ]` → `- [x]` (append `✅ YYYY-MM-DD` inline); work discovered mid-flight gets its own `- [ ]` task line (or `- [x] … ✅ date` if already done). Never record task completion as prose alone.
+
 ## Progress Tracking
 
 Daily progress in `progress/YYYY-MM/YYYY-MM-DD.md`. Always update after significant work.

@@ -76,6 +76,60 @@ _board_cache_ts = 0.0
 
 _HANDOFF_PATH_RE = re.compile(r"^handoffs/(active|blocked|completed|archived)/(.+)\.md$")
 
+# Today's-activity parsing (git log -p over handoffs/): which handoff files were
+# committed to since local midnight, and — the signal the backlog % actually
+# moves on — how many task checkboxes those diffs checked or added.
+_ACT_DIFF_PATH_RE = re.compile(r"^diff --git a/\S+ b/(handoffs/\S+\.md)$")
+_ACT_CHECKED_RE = re.compile(r"^\s*[-*] \[[xX]\]")
+_ACT_UNCHECKED_RE = re.compile(r"^\s*[-*] \[ \]")
+
+_ACT_EMPTY = {"commits": 0, "handoffs_touched": 0, "boxes_checked": 0, "boxes_added": 0}
+
+
+def _parse_activity_log(text: str) -> dict:
+    """Fold ``git log --format=commit:%H -p`` output into today's-activity counters.
+
+    ``boxes_checked`` counts added ``[x]`` lines (a flip shows as -``[ ]``/+``[x]``,
+    a task added-already-done as just +``[x]`` — both are completions recorded
+    today). ``boxes_added`` counts added ``[ ]`` lines (new tracked tasks).
+    """
+    commits = 0
+    touched: set[str] = set()
+    boxes_checked = boxes_added = 0
+    for line in text.splitlines():
+        if line.startswith("commit:"):
+            commits += 1
+        elif line.startswith("diff --git "):
+            m = _ACT_DIFF_PATH_RE.match(line)
+            if m:
+                touched.add(m.group(1))
+        elif line.startswith("+") and not line.startswith("+++"):
+            body = line[1:]
+            if _ACT_CHECKED_RE.match(body):
+                boxes_checked += 1
+            elif _ACT_UNCHECKED_RE.match(body):
+                boxes_added += 1
+    return {"commits": commits, "handoffs_touched": len(touched),
+            "boxes_checked": boxes_checked, "boxes_added": boxes_added}
+
+
+def _activity_today() -> dict:
+    """Commits/checkbox flips under ``handoffs/`` since local midnight.
+
+    Best-effort like the other git probes: zeros outside a git repo or on any
+    git failure — the board must never 500 because of this signal.
+    """
+    try:
+        proc = subprocess.run(
+            ["git", "-C", str(REPO), "log", "--since=midnight",
+             "--format=commit:%H", "-p", "--", "handoffs/"],
+            capture_output=True, text=True, timeout=10, check=False)
+    except (OSError, subprocess.SubprocessError):
+        return dict(_ACT_EMPTY)
+    if proc.returncode != 0:
+        return dict(_ACT_EMPTY)
+    return _parse_activity_log(proc.stdout)
+
 
 def _load_file_activity() -> dict:
     """Best-effort read of the git-derived ``file_activity`` map (last commit day
@@ -131,6 +185,7 @@ def board_payload(*, force: bool = False) -> dict:
                 HANDOFF_DIR,
                 file_activity=_load_file_activity(),
                 dirty_ids=_dirty_handoff_ids())
+            _board_cache["activity_today"] = _activity_today()
             _board_cache_ts = now
         payload = dict(_board_cache)
     payload["_freshness"] = {"staleness_class": "fresh", "source": "live-scan"}
