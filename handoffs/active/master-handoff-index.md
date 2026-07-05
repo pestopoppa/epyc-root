@@ -10,18 +10,27 @@
 
 **Standing contracts**: `/workspace/MEASUREMENT.md` (adopted) · `instrument_eras.yaml` (epyc-orchestrator orchestration/) · ATTESTATION (to build, findings-04 §B) · current architecture review: [fable5-findings-00-executive-summary.md](../completed/fable5-findings-00-executive-summary.md) — **the Fable 5 one-shot review is COMPLETE (2026-06-12)**; its 7 findings (-01..-07) + appendix are the standing reference, not an open row. The stale 2026-06-15 transient pickup was archived to [`../archived/fable5-long-horizon-session-pickup-history-through-2026-06-20.md`](../archived/fable5-long-horizon-session-pickup-history-through-2026-06-20.md); resume from the domain indices and owning handoffs below.
 
-**Current coordination checkpoint — 2026-07-05T19:45Z**: AutoPilot is live as
+**Current coordination checkpoint — 2026-07-05T20:40Z**: AutoPilot is live as
 PID `2935890` with `--max-trials 2000`, launched through the canonical Fable
 authority daemon after the A9 quiet-window collection and contention-freshness
-fixes. Trial `1185` is current-code clean in `dispatch_action` / `seed_batch`
-with blockers `[]`; this first action is a forced baseline-reference draw, so
-it does not yet prove the new planner provider. The live env carries planner
-hints, tool sentinels, W6 audit accrual, sequential verdicts, planner spend
-breaker, `AUTOPILOT_PLANNER_PRIMARY=local_chat`, and
+fixes. Trial `1185` is in `dispatch_action` / `seed_batch`; this first action
+is a forced baseline-reference draw, so it does not yet prove the new planner
+provider. The process is intentionally marked `code_stale=true` because
+orchestrator `854eff06` landed after PID `2935890` started; restart at the next
+trial boundary to activate the W8 candidate-generation guard. The live env
+carries planner hints, tool sentinels, W6 audit accrual, sequential verdicts,
+planner spend breaker, `AUTOPILOT_PLANNER_PRIMARY=local_chat`, and
 `AUTOPILOT_PLANNER_CRITIC=codex`. Verify `local_chat` planner telemetry on the
-next non-forced planner turn.
+next non-forced planner turn after the restart.
 
-Orchestrator is pushed/indexed through `ee96e423`. The v6 contention-matrix
+Orchestrator is pushed/indexed through `854eff06`. That commit prevents W8
+candidate-generation pressure from being spent on unreplayable deferrals:
+ordinary `seed_batch`, `deep_eval`, `structural_prune`, and invalid
+structural actions are replaced with the first unblacklisted numeric trial
+unless a sequential due-action already owns the turn. Historical empty-param
+numeric rows remain unreplayable as logged, but new Optuna-suggested numeric
+trials are acceptable because the dispatcher journals applied params. The v6
+contention-matrix
 "stale topology" alarm was a false positive caused by auxiliary explicit-only
 `eval_batch_frontdoor` being included in full launch topology hashing; the
 measured production-role hash still matches `df373c79cc4af06f`. The gate,

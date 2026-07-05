@@ -4,30 +4,31 @@
 BSV observe is process-aware, T3 is planner-visible workflow pressure, FAISS is
 exact again, tool-use activation is ready, numeric candidate generation has
 been unblocked, and W8 needs a keepable replayable candidate before promotion
-evidence can accrue.** AutoPilot is live as PID `2370903` with
-`--max-trials 2000`; phase health is current-code clean at trial `1168`,
-`planner_invoke`, with blockers `[]`, planner hints enabled, sequential verdict
-enabled, W6 audit accrual enabled, and tool sentinels active. The API is
-healthy with `AUTOPILOT_TOOL_SENTINELS=1` and
-`ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT=1`, and sampled worker attestation passed
-across six workers. The indexed episodic FAISS mirror is exact after
-orchestrator `a0148edd`: `526,729/526,729` indexed vectors, matching
-`id_map.npy` and `reembedded.npz`, `100.0%` live overlap, `0` missing/stale
-IDs. Tool-use activation is not the blocker; `8be68732` fixes the REPL-pinned
-sentinel prompt contract so the lane asks for executable
-`TOOL("get_eval_secret", ...)` code. Numeric candidate generation is no longer
-blocked by stale broad surface bans or short explicit params: `4400df02`
-constrains numeric-surface blacklists to concrete params unless explicitly
-human-scoped, and `6a0d60af` normalizes planner-friendly params such as
-`{"keep_ratio": 0.5}` to `{"kv.keep_ratio": 0.5}` while returning structured
-skip reasons on apply failure. Trial `1167` exposed the pre-fix no-op and
-should be treated as harness-bug evidence, not a negative `kv_compaction`
-measurement. The live W8 blocker remains
-`w8_candidate_generation_required`: AutoPilot needs a keepable replayable
-`numeric_trial` or `structural_experiment` candidate, then sequential
-confirmation plus fresh promotion-eval evidence. A9 source-reward target
-preregistration is done and no longer emits a Fable next action; DS-E1 is
-decision-ready. W7 game-layer hardening remains complete through critic
+evidence can accrue.** AutoPilot is live as PID `2935890` with
+`--max-trials 2000`; trial `1185` is a forced baseline-reference
+`seed_batch`, not a planner-selected W8 action. The daemon predates
+orchestrator `854eff06`, so `phase_health_report.py --json
+--require-current-code` correctly reports `code_stale=true` until the next
+trial-boundary restart. The live env carries planner hints, sequential verdict,
+W6 audit accrual, tool sentinels, `AUTOPILOT_PLANNER_PRIMARY=local_chat`, and
+Codex critique. The indexed episodic FAISS mirror is exact after orchestrator
+`a0148edd`: `526,729/526,729` indexed vectors, matching `id_map.npy` and
+`reembedded.npz`, `100.0%` live overlap, `0` missing/stale IDs. Tool-use
+activation is not the blocker; `8be68732` fixes the REPL-pinned sentinel prompt
+contract so the lane asks for executable `TOOL("get_eval_secret", ...)` code.
+Numeric candidate generation is no longer blocked by stale broad surface bans,
+short explicit params, or W8 deferral churn: `4400df02` constrains
+numeric-surface blacklists to concrete params unless explicitly human-scoped,
+`6a0d60af` normalizes planner-friendly params such as `{"keep_ratio": 0.5}` to
+`{"kv.keep_ratio": 0.5}`, and `854eff06` replaces unreplayable W8 deferrals
+with an unblacklisted numeric trial fallback unless a sequential due-action
+owns the turn. The live W8 blocker remains evidence:
+`w8_candidate_generation_required` is expected to clear only after restart and
+a keepable replayable `numeric_trial` or `structural_experiment` candidate,
+then sequential confirmation plus fresh promotion-eval evidence. A9
+source-reward target contrast replan is ready but blocked while AutoPilot is
+active; DS-E1 is decision-ready. W7 game-layer hardening remains complete
+through critic
 measurement view (`41c5c71`), production eval sampling clamp (`7492cf5`),
 audit-stream gaming alarm (`8e4b1ec`), PEAF budget credit (`4b09661`), and
 per-question diff/provenance context (`749d38f`).

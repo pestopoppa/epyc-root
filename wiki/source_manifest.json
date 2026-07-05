@@ -1,18 +1,18 @@
 {
   "by_type": {
     "docs": 15,
-    "handoff-active": 127,
+    "handoff-active": 128,
     "handoff-blocked": 1,
     "handoff-completed": 140,
-    "progress": 213,
+    "progress": 215,
     "research": 123
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-07-04T16:11:05Z",
+  "last_compile": "2026-07-05T20:45:27Z",
   "mode": "full",
-  "scan_time": "2026-07-05T18:14:56Z",
+  "scan_time": "2026-07-05T20:46:00Z",
   "schema_version": 1,
-  "source_set_hash": "d4b7beb35afd067e768650c61a5cd6a9253f73c4f68bae5b66c5175e8af3624d",
+  "source_set_hash": "a7a256971d9971575f4183124077f2340b0bcc101ad242f4ef3a8362058d8a7d",
   "sources": [
     {
       "content_hash": "b5f9d756fd0daa82182b46024fea6bb6da04c7d415891e5ac2b01c9777881ef0",
@@ -63,10 +63,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8b875d72200c2c59cc8ee0b1f04a446e1245f1523db76541febdb71a79cbed71",
-      "modified": "2026-07-05T17:28:06Z",
+      "content_hash": "44c98404aa75b6732c3ee2c27614ec83a1f29bd6cd3f8cc3ea40c270d2148aa5",
+      "modified": "2026-07-05T20:43:00Z",
       "path": "handoffs/active/autopilot-continuous-optimization.md",
-      "size": 167243,
+      "size": 167927,
       "title": "AutoPilot: Continuous Recursive Optimization",
       "type": "handoff-active"
     },
@@ -116,6 +116,14 @@
       "path": "handoffs/active/colbert-reranker-web-research.md",
       "size": 50953,
       "title": "ColBERT Reranker for web_research Pipeline",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "f015d19b4a0be156943ab2e58173dd05cd4d48ea5a105afa929e2d31c214219a",
+      "modified": "2026-07-05T19:51:41Z",
+      "path": "handoffs/active/contention-matrix-v6-quarter-refresh.md",
+      "size": 3217,
+      "title": "Contention matrix v6 quarter refresh \u2014 false-stale resolved",
       "type": "handoff-active"
     },
     {
@@ -231,10 +239,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "55eeefaa9beadbe48514ddb7bfd2efec32a226b93a703bf176891f30fd6d5576",
-      "modified": "2026-07-05T18:04:38Z",
+      "content_hash": "70dabdd96c7884874f7196b671432bc1041ac738799c0b4fdc1c3e4eb8498534",
+      "modified": "2026-07-05T20:42:36Z",
       "path": "handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md",
-      "size": 43809,
+      "size": 43646,
       "title": "Evidence Plane \u2014 Per-Question Ledger + Sequential Verdicts (+ game layer)",
       "type": "handoff-active"
     },
@@ -383,10 +391,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "5d3395bc81de20dca78b324fe8064da0582eb755a75fc2fd3eb853a7901a8fd4",
-      "modified": "2026-07-05T18:00:20Z",
+      "content_hash": "4a9d6fa42890125dc51fed819a05ade5d88cd0bca4c60217f3f22ba15535acdf",
+      "modified": "2026-07-05T20:32:03Z",
       "path": "handoffs/active/gpu-cot-scaffold-sidecar.md",
-      "size": 41974,
+      "size": 45690,
       "title": "GPU CoT-Scaffold Sidecar \u2014 Preliminary Pure-GPU Research Lane",
       "type": "handoff-active"
     },
@@ -479,10 +487,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8b9eb7f5a1060e582d21bf51a853e015906180f16ae9cdf0b1133ae4fe0e401d",
-      "modified": "2026-07-04T18:22:16Z",
+      "content_hash": "345487ed05be1adf26db025af1e4219f12113b623f9a3cb9517aefd340f0694c",
+      "modified": "2026-07-05T20:25:10Z",
       "path": "handoffs/active/learned-routing-controller.md",
-      "size": 137738,
+      "size": 140401,
       "title": "Learned Routing Controller: MLP Distillation from Episodic Memory",
       "type": "handoff-active"
     },
@@ -519,10 +527,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "87d751196c797ea6f7d02b0e4d4fe1cdae3c369eade78c5de07aa609d95bbd46",
-      "modified": "2026-07-05T17:52:41Z",
+      "content_hash": "def585e9cb59e05a47b3e39b44a6a176f40471733f2af339eed314ffdc8649c4",
+      "modified": "2026-07-05T19:53:06Z",
       "path": "handoffs/active/loops-and-dashboards-audit-2026-07-05.md",
-      "size": 32293,
+      "size": 36307,
       "title": "Audit \u2014 Kernel-R&D loop + Orchestration Autopilot loop (and both dashboards)",
       "type": "handoff-active"
     },
@@ -959,10 +967,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4f98f63a793f84bd582d4f41594897ea40842fbbdd1f3425b5d84f37b3637ef3",
-      "modified": "2026-07-05T17:36:22Z",
+      "content_hash": "65edf7117eeb47bd6d2d24f49cd108127694ce9f69a98a39b1da05120303ecd8",
+      "modified": "2026-07-05T19:52:08Z",
       "path": "handoffs/active/tool-use-eval-contract.md",
-      "size": 46191,
+      "size": 46247,
       "title": "Tool-Use Eval Contract \u2014 make autopilot trials actually exercise tools",
       "type": "handoff-active"
     },
@@ -4767,10 +4775,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "456a6be0e47a97d21376c882066fc61bb0ffab1cc868871593d1ccd37efa6cdb",
-      "modified": "2026-07-05T07:59:44Z",
+      "content_hash": "fbace6d6766c29cd1509fc46fa3ad7742a6c40edeb6a3d37130636f263ce1e82",
+      "modified": "2026-07-05T19:29:41Z",
       "path": "progress/2026-07/2026-07-05-dashboard-hub.md",
-      "size": 5922,
+      "size": 10097,
       "title": "2026-07-05 \u2014 Project Dashboard Hub (handoff progress + backlog + kernel-R&D Phase 3)",
       "type": "progress"
     },
@@ -4783,11 +4791,27 @@
       "type": "progress"
     },
     {
+      "content_hash": "7a3322b1d67f5ee7262a16ff1fa4d5ef5a88d231bb13f53086167cbec2218ecc",
+      "modified": "2026-07-05T19:55:54Z",
+      "path": "progress/2026-07/2026-07-05-dashboard-transport-hardening.md",
+      "size": 9010,
+      "title": "Progress \u2014 2026-07-05 \u2014 AutoPilot dashboard stale-panel root cause + transport hardening",
+      "type": "progress"
+    },
+    {
       "content_hash": "316a622387ca3a0a88900b82bd8a200a8faf32c99b47b0de38bf7f7fa425178e",
       "modified": "2026-07-05T08:33:38Z",
       "path": "progress/2026-07/2026-07-05-mi210-capability-kernel-rnd.md",
       "size": 6278,
       "title": "2026-07-05 \u2014 MI210 campaign: capability pivot + kernel-R&D loop + strategy",
+      "type": "progress"
+    },
+    {
+      "content_hash": "cb83dc9efcffe8f3dd3250b29731f622e4c5d65e8a88a794e4df9b35ef5361f6",
+      "modified": "2026-07-05T20:31:19Z",
+      "path": "progress/2026-07/2026-07-05-mi210-gpqa-reversal-and-kvquant-defer.md",
+      "size": 9444,
+      "title": "2026-07-05 \u2014 MI210 campaign: GPQA REVERSAL (scaffold WORKS on reasoning tasks, +12) + KV-quant SCOPED\u2192DEFER",
       "type": "progress"
     },
     {
@@ -4807,10 +4831,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "9cdeb5ce116536ca16c63dd5b2424c9215d583afa0c0245eec0154c3ca6fadd7",
-      "modified": "2026-07-05T18:05:05Z",
+      "content_hash": "ee40f5597a37c262c568a60cf4b5881548dd6fa8b7dc3cc006e2ad60c545f116",
+      "modified": "2026-07-05T20:43:17Z",
       "path": "progress/2026-07/2026-07-05.md",
-      "size": 93644,
+      "size": 107813,
       "title": "Progress - 2026-07-05",
       "type": "progress"
     },
@@ -4967,7 +4991,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 619,
+  "total_new": 622,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
