@@ -1152,6 +1152,14 @@ paired authority core.
   `MetaOptimizer.rebalance()` can steer some exploration budget toward
   higher-tier performers without changing `DEFAULT_FRONTIER_TIER`, production-
   best selection, `SafetyGate`, or baseline promotion semantics.
+- 2026-07-05 maintenance status: AutoPilot is live as PID `1397463` via
+  `start_fable_authority_daemon.py --max-trials 2000` after the stale PID
+  `1345254` was stopped at the trial `1151` boundary. The API was reloaded with
+  `AUTOPILOT_TOOL_SENTINELS=1`, Gate-3 hard tool telemetry passed, and phase
+  health is current-code clean at trial `1152` in `planner_invoke`. The strict
+  Fable report is ready except W8, which remains evidence-bound on replay
+  concentration (`b738287be98c3372` recent concentration; five accumulating
+  candidates stale). Next action: `collect_w8_promotion_eval_evidence`.
 - Next implementation task: wire the report into regular Fable/dashboard
   readiness so low eval-task coverage becomes visible before future planner
   budget/tunable changes are treated as broad evidence.
