@@ -5,9 +5,11 @@ Stdlib ``unittest`` only (no pytest dependency) so it runs anywhere with
 ``python3 tests/test_handoff_parser.py``; pytest also discovers it.
 """
 
+import os
 import sys
 import tempfile
 import unittest
+from datetime import datetime, timezone
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[1]
@@ -280,6 +282,191 @@ class RegressionTests(unittest.TestCase):
                 self.assertIn("error", out)
             finally:
                 server.TIMELINE_PATH = orig
+
+
+class ActivityTests(unittest.TestCase):
+    """The git/mtime-derived recency signal that drives active/blocked ordering."""
+
+    def _root(self, d):
+        root = Path(d)
+        for s in hp.STATES:
+            (root / s).mkdir()
+        return root
+
+    def test_git_activity_reorders_active(self):
+        # older.md has the newer *frontmatter* date, but a git commit touched
+        # newer.md more recently — file_activity must flip the order.
+        with tempfile.TemporaryDirectory() as d:
+            root = self._root(d)
+            (root / "active" / "older.md").write_text("# Older\n**Priority**: HIGH\n**Updated**: 2026-05-01\n")
+            (root / "active" / "newer.md").write_text("# Newer\n**Priority**: HIGH\n**Updated**: 2026-01-01\n")
+            # Without the git map, frontmatter wins → Older first.
+            plain = [c["title"] for c in hp.build_board(root)["columns"]["active"]]
+            self.assertLess(plain.index("Older"), plain.index("Newer"))
+            # With a fresh git touch on newer, it bubbles to the top.
+            fa = {"active/newer": "2026-09-01"}
+            titles = [c["title"] for c in
+                      hp.build_board(root, file_activity=fa)["columns"]["active"]]
+            self.assertLess(titles.index("Newer"), titles.index("Older"))
+
+    def test_max_rule_git_beats_stale_updated(self):
+        # A stale frontmatter Updated must not out-rank a newer commit date.
+        with tempfile.TemporaryDirectory() as d:
+            root = self._root(d)
+            (root / "active" / "a.md").write_text("# A\n**Priority**: HIGH\n**Updated**: 2026-02-01\n")
+            board = hp.build_board(root, file_activity={"active/a": "2026-08-15"})
+            card = board["columns"]["active"][0]
+            self.assertEqual(card["activity"], "2026-08-15")
+            self.assertEqual(card["activity_source"], "git")
+
+    def test_stale_git_loses_to_newer_updated(self):
+        # Symmetric: a newer frontmatter Updated beats an older git date (max rule).
+        with tempfile.TemporaryDirectory() as d:
+            root = self._root(d)
+            (root / "active" / "a.md").write_text("# A\n**Priority**: HIGH\n**Updated**: 2026-08-01\n")
+            board = hp.build_board(root, file_activity={"active/a": "2026-03-01"})
+            card = board["columns"]["active"][0]
+            self.assertEqual(card["activity"], "2026-08-01")
+            self.assertEqual(card["activity_source"], "updated")
+
+    def test_dirty_mtime_wins_for_dirty_id_only(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = self._root(d)
+            f = root / "active" / "wip.md"
+            f.write_text("# Wip\n**Priority**: HIGH\n**Created**: 2026-01-01\n")
+            mtime = datetime(2026, 6, 20, 12, 0, tzinfo=timezone.utc).timestamp()
+            os.utime(f, (mtime, mtime))
+            # Not dirty → mtime ignored, falls back to created.
+            clean = hp.build_board(root)["columns"]["active"][0]
+            self.assertEqual(clean["activity_source"], "created")
+            self.assertEqual(clean["activity"], "2026-01-01")
+            # Dirty → mtime date surfaces as the activity via the wip source.
+            dirty = hp.build_board(root, dirty_ids={"active/wip"})["columns"]["active"][0]
+            self.assertEqual(dirty["activity_source"], "wip")
+            self.assertEqual(dirty["activity"], "2026-06-20")
+
+    def test_no_signals_backcompat(self):
+        # No kwargs: activity is the frontmatter updated (else created), labelled honestly.
+        with tempfile.TemporaryDirectory() as d:
+            root = self._root(d)
+            (root / "active" / "u.md").write_text("# U\n**Priority**: HIGH\n**Updated**: 2026-05-05\n")
+            (root / "active" / "c.md").write_text("# C\n**Priority**: HIGH\n**Created**: 2026-04-04\n")
+            by_id = {c["id"]: c for c in hp.build_board(root)["columns"]["active"]}
+            self.assertEqual(by_id["active/u"]["activity"], "2026-05-05")
+            self.assertEqual(by_id["active/u"]["activity_source"], "updated")
+            self.assertEqual(by_id["active/c"]["activity"], "2026-04-04")
+            self.assertEqual(by_id["active/c"]["activity_source"], "created")
+
+    def test_no_dates_yields_none_activity(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = self._root(d)
+            (root / "active" / "bare.md").write_text("# Bare\n**Priority**: LOW\n\nno dates\n")
+            card = hp.build_board(root)["columns"]["active"][0]
+            self.assertIsNone(card["activity"])
+            self.assertIsNone(card["activity_source"])
+
+    def test_blocked_table_row_activity_none_and_sorts(self):
+        # Synthetic BLOCKED.md rows carry no activity; the sort key must tolerate it.
+        with tempfile.TemporaryDirectory() as d:
+            root = self._root(d)
+            (root / "blocked" / "BLOCKED.md").write_text(
+                "## Current Blocked Work\n\n"
+                "| Item | Blocked on | Priority | Handoff | Status |\n"
+                "|---|---|---|---|---|\n"
+                "| Stuck thing | model release | HIGH | | waiting |\n")
+            board = hp.build_board(root, file_activity={"x": "2026-09-09"})
+            row = board["columns"]["blocked"][0]
+            self.assertIsNone(row["activity"])
+            self.assertIsNone(row["activity_source"])
+
+    def test_neg_date_accepts_full_iso_timestamp(self):
+        # Defense: a full ISO timestamp must not silently sort to epoch.
+        self.assertLess(hp._neg_date("2026-07-01T12:00:00"), hp._neg_date("2026-01-01"))
+        self.assertLess(hp._neg_date("2026-07-01"), 0.0)
+        self.assertEqual(hp._neg_date(None), 0.0)
+        self.assertEqual(hp._neg_date("not-a-date"), 0.0)
+
+
+class BlockedStatusTests(unittest.TestCase):
+    """Routing an ``active/`` handoff to Blocked from its free-text status."""
+
+    def test_positive_signals(self):
+        for s in [
+            "BLOCKED on external model release — waiting",
+            "IN PROGRESS — first real backup remains blocked on a real off-host target",
+            "refreshed — active but blocked on model availability check",
+            "production flag remains OFF pending operator rollout decision",
+            "PROPOSAL — needs operator approval before any implementation",
+            "QUEUED — awaiting long-context eval datasets",
+            "PARKED pending a design session",
+            "waiting on upstream PR merge",
+            "on hold until Q3",
+        ]:
+            self.assertTrue(hp._is_blocked_status(s), s)
+
+    def test_negative_and_trap_phrases(self):
+        # Trap phrases that only *look* blocked must stay in Active.
+        for s in [
+            "cherry-pick BLOCKED, but the fresh-upstream-build path is VERIFIED WORKING",
+            "parked Phase 0 falsification gate; does not block KB-RAG",
+            "QUEUED — blocker P3 long-context eval datasets resolved (2026-04-05)",
+            "the retrain blocker was cleared last week",
+            "this work is unblocked and shipping",
+            "IN PROGRESS — Phase 2 routing done",
+            "COMPLETE — landed 2026-06-18",
+            "",
+        ]:
+            self.assertFalse(hp._is_blocked_status(s), s)
+
+    def test_routes_active_to_blocked_column(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            for st in hp.STATES:
+                (root / st).mkdir()
+            (root / "active" / "b.md").write_text(
+                "# B\n**Priority**: HIGH\n**Status**: IN PROGRESS — waiting on upstream fix\n")
+            (root / "active" / "a.md").write_text(
+                "# A\n**Priority**: HIGH\n**Status**: IN PROGRESS — going well\n")
+            board = hp.build_board(root)
+            self.assertIn("B", [c["title"] for c in board["columns"]["blocked"]])
+            self.assertIn("A", [c["title"] for c in board["columns"]["active"]])
+            self.assertNotIn("B", [c["title"] for c in board["columns"]["active"]])
+
+
+class ServerActivityLoaderTests(unittest.TestCase):
+    """``server._load_file_activity`` tolerates every bad-artifact shape."""
+
+    def _with_timeline(self, content):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "tl.json"
+            if content is not None:
+                p.write_text(content)
+            orig = server.TIMELINE_PATH
+            try:
+                server.TIMELINE_PATH = p
+                return server._load_file_activity()
+            finally:
+                server.TIMELINE_PATH = orig
+
+    def test_missing_file(self):
+        self.assertEqual(self._with_timeline(None), {})
+
+    def test_corrupt_json(self):
+        self.assertEqual(self._with_timeline("{not json"), {})
+
+    def test_non_dict_json(self):
+        self.assertEqual(self._with_timeline("[]"), {})
+
+    def test_missing_key(self):
+        self.assertEqual(self._with_timeline('{"series": []}'), {})
+
+    def test_non_dict_key(self):
+        self.assertEqual(self._with_timeline('{"file_activity": ["x"]}'), {})
+
+    def test_valid_map(self):
+        self.assertEqual(
+            self._with_timeline('{"file_activity": {"active/a": "2026-07-01"}}'),
+            {"active/a": "2026-07-01"})
 
 
 if __name__ == "__main__":

@@ -33,6 +33,12 @@ Design: one ``git log -M -p --reverse`` pass over ``handoffs/`` (~1s over full
 history); full rebuild every run (the post-commit hook runs it detached). Task
 identity follows renames; a task completes once, at its first checked appearance.
 
+The same pass also emits ``file_activity`` — the last commit day (``YYYY-MM-DD``)
+that touched each handoff, keyed by ``state/stem`` — which the board uses as a
+recency signal. Note: ``git log -p`` shows no diff for merge commits (no ``-m``),
+so a handoff last touched only by a merge is dated by its prior non-merge commit;
+in practice such handoffs are also flagged git-dirty on pull and covered there.
+
 Run: ``python3 scripts/handoffs/build_handoff_timeline.py``  (``--repo`` to override)
 """
 
@@ -220,6 +226,10 @@ def build_timeline(repo: Path) -> dict:
     seen_checked: dict[str, set] = {}   # task keys first seen CHECKED (completed)
     seen_opened: dict[str, set] = {}    # task keys first seen at all (entered backlog)
     created_seen: set = set()
+    # Last commit day (YYYY-MM-DD) that touched each handoff, keyed by state/stem.
+    # Migrated on rename, dropped on delete. Feeds the board's recency signal so a
+    # card re-sorts/re-dates on edits even when its file carries no ``Updated:`` field.
+    file_activity: dict[str, str] = {}
     tasks_weekly: Counter = Counter()    # task completions per week
     opened_weekly: Counter = Counter()   # tasks entering the backlog per week
     created_weekly: Counter = Counter()
@@ -294,6 +304,20 @@ def build_timeline(repo: Path) -> dict:
             ident = new_ss or old_ss
             if ident is not None:
                 ikey = f"{ident[0]}/{ident[1]}"
+                # Last-touched bookkeeping. This runs for EVERY block (including
+                # plain content edits, which hit none of the is_new/delete/rename
+                # branches above), so it is the correct home for the activity map.
+                if blk.is_deleted:
+                    file_activity.pop(ikey, None)
+                else:
+                    # On rename the record already migrated to the new key above;
+                    # drop the stale old key here. ``commit_day`` (this rename/edit
+                    # commit) dominates any carried value, so max() suffices.
+                    if old_ss and (blk.rename_to or blk.old_path != blk.new_path):
+                        old_key = f"{old_ss[0]}/{old_ss[1]}"
+                        if old_key != ikey:
+                            file_activity.pop(old_key, None)
+                    file_activity[ikey] = max(file_activity.get(ikey, ""), commit_day)
                 rec = records.get(ikey) or {}
                 obag = seen_opened.setdefault(ikey, set())
                 cbag = seen_checked.setdefault(ikey, set())
@@ -323,8 +347,9 @@ def build_timeline(repo: Path) -> dict:
     return {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "last_sha": _head_sha(repo),
-        "method": "git-log-p + in-file-date-seeding",
+        "method": "git-log-p + in-file-date-seeding + file-activity",
         "series": series,
+        "file_activity": file_activity,
         "tasks_weekly": [
             {"week": w, "tasks_completed": tasks_weekly.get(w, 0),
              "opened": opened_weekly.get(w, 0), "completed": tasks_weekly.get(w, 0)}

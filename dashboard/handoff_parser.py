@@ -216,6 +216,37 @@ def _status_short(status: str, limit: int = 140) -> str:
     return flat[: limit - 1].rstrip() + "…"  # ellipsis
 
 
+# A handoff physically in ``active/`` whose status reads as blocked/parked/waiting
+# is routed to the Blocked column. Kept HIGH-PRECISION: negative guards win, so an
+# ambiguous item stays in Active rather than being wrongly flagged Blocked. Applied
+# to the FULL status (not the truncated chip), so a mid-sentence signal isn't lost.
+_BLOCKED_NEG_RE = re.compile(
+    r"does\s*n[o']?t\s+(?:block|gate)|is\s+not\s+blocked|not\s+blocked\b|"
+    r"un-?blocked|no\s+longer\s+blocked|blocker[s]?\b[^.;]*\b(?:resolved|cleared|lifted|gone)",
+    re.I)
+_BLOCKED_LEAD_RE = re.compile(
+    r"^\s*\**\s*(?:BLOCKED|QUEUED|PARKED|PROPOSAL|ON[\s-]*HOLD|DEFERRED|PAUSED|AWAITING)\b",
+    re.I)
+_BLOCKED_POS_RE = re.compile(
+    r"\bblocked\s+(?:on|by|pending|awaiting|until)\b|\bwaiting\s+(?:on|for)\b|"
+    r"\bawaiting\b|\bon\s+hold\b|\bparked\b|\bneeds?\s+operator\b|"
+    r"\bpending\s+operator\b|\bneeds?\s+approval\b|\bpending\s+approval\b",
+    re.I)
+
+
+def _is_blocked_status(status: str) -> bool:
+    """True if a handoff's status reads as blocked / parked / waiting-on-a-dependency.
+
+    Used to route an ``active/`` handoff into the Blocked column. High-precision:
+    the negative guards (``does not block``, ``blocker … resolved``) win, so
+    ambiguous or already-cleared items stay in Active.
+    """
+    s = status or ""
+    if _BLOCKED_NEG_RE.search(s):
+        return False
+    return bool(_BLOCKED_LEAD_RE.match(s) or _BLOCKED_POS_RE.search(s))
+
+
 def _scrub_html(md: str) -> str:
     """Light defensive scrub of raw markdown before client-side rendering.
 
@@ -271,6 +302,7 @@ def parse_file(state: str, path: Path, *, detail: bool = False) -> dict:
         "title": title,
         "priority": parse_priority(meta),
         "status_short": _status_short(status_full),
+        "blocked_hint": _is_blocked_status(status_full),
         "done": done,
         "total": total,
         "progress_source": source,
@@ -368,6 +400,8 @@ def parse_blocked_table(handoff_root: Path) -> list[dict]:
                 "progress_source": "none",
                 "created": None,
                 "updated": None,
+                "activity": None,
+                "activity_source": None,
                 "mtime": 0.0,
             }
         )
@@ -381,20 +415,29 @@ def _priority_from_token(token: str) -> str:
 # --------------------------------------------------------------------------- #
 # Board
 # --------------------------------------------------------------------------- #
-def build_board(handoff_root: Path) -> dict:
+def build_board(handoff_root: Path, *, file_activity: dict | None = None,
+                dirty_ids: set | None = None) -> dict:
     """Assemble the full kanban payload from a live directory scan.
 
     Columns are keyed by the four states. Active handoffs whose ``Status`` begins
     with ``BLOCKED`` are moved into the Blocked column (status-derived), joined by
     any rows in ``blocked/BLOCKED.md``.
+
+    ``file_activity`` (``{"state/stem": "YYYY-MM-DD", ...}``, the git-derived
+    last-touched map) and ``dirty_ids`` (handoffs with uncommitted edits) are
+    optional recency signals; when omitted the board falls back to frontmatter
+    dates exactly as before. See ``_derive_activity``.
     """
     columns: dict[str, list[dict]] = {s: [] for s in STATES}
 
     for state, path in iter_handoff_files(handoff_root):
         card = parse_file(state, path)
-        # Status-derived Blocked column: an active handoff whose Status begins
-        # with BLOCKED moves here (the ``BLOCKED`` prefix survives truncation).
-        if state == "active" and card["status_short"].strip().upper().startswith("BLOCKED"):
+        # Derive the recency signal while the card still carries its real id
+        # (the blocked reroute below keeps the id but rewrites ``state``).
+        _derive_activity(card, file_activity, dirty_ids)
+        # Status-derived Blocked column: an active handoff whose full Status reads
+        # as blocked/parked/waiting (see ``_is_blocked_status``) moves here.
+        if state == "active" and card.get("blocked_hint"):
             card = {**card, "state": "blocked"}
             columns["blocked"].append(card)
         else:
@@ -458,15 +501,53 @@ def _backlog_summary(columns: dict[str, list[dict]]) -> dict:
 _PRIORITY_ORDER = {"P0": 0, "HIGH": 1, "MEDIUM": 2, "LOW": 3, "NONE": 4}
 
 
+def _derive_activity(card: dict, file_activity: dict | None,
+                     dirty_ids: set | None) -> None:
+    """Set ``card['activity']`` (recency date) and ``card['activity_source']``.
+
+    The date is the **max** of the available candidates — a stale frontmatter
+    ``Updated`` field must not out-rank a newer commit — falling back to
+    ``created``, else ``None``:
+
+    * ``updated`` — the file's declared ``Updated``/``Last Updated`` date;
+    * ``git``     — the last commit day that touched the file (``file_activity``);
+    * ``wip``     — the file's mtime date, but **only when git-dirty** (covers
+      uncommitted/untracked edits; the dirty gate keeps bulk-``touch`` noise out).
+
+    Candidates are ordered most-current-first so a date tie labels ``wip > git >
+    updated`` (``max`` keeps the first of equal maxima). Purely additive: with no
+    signals passed, ``activity`` is the frontmatter ``updated`` (else ``created``).
+    """
+    cid = card.get("id", "")
+    candidates: list[tuple[str, str]] = []
+    if dirty_ids and cid in dirty_ids and card.get("mtime"):
+        wip = datetime.fromtimestamp(card["mtime"], timezone.utc).strftime("%Y-%m-%d")
+        candidates.append(("wip", wip))
+    if file_activity and (git_day := file_activity.get(cid)):
+        candidates.append(("git", git_day))
+    if card.get("updated"):
+        candidates.append(("updated", card["updated"]))
+
+    if candidates:
+        source, activity = max(candidates, key=lambda t: t[1])
+    elif card.get("created"):
+        source, activity = "created", card["created"]
+    else:
+        source, activity = None, None
+    card["activity"] = activity
+    card["activity_source"] = source
+
+
 def _card_sort_key(state: str):
     if state in ("completed", "archived"):
         # Most-recently-touched first.
         return lambda c: (-(c.get("mtime") or 0.0), c["title"].lower())
-    # Active/blocked: priority first, then most-recently-updated.
+    # Active/blocked: priority first, then most-recent activity (git/mtime-derived,
+    # falling back to frontmatter dates). Synthetic BLOCKED.md rows have no activity.
     return lambda c: (
         _PRIORITY_ORDER.get(c.get("priority", "NONE"), 4),
-        c.get("updated") is None,
-        _neg_date(c.get("updated")),
+        c.get("activity") is None,
+        _neg_date(c.get("activity")),
         c["title"].lower(),
     )
 
@@ -477,11 +558,11 @@ def _neg_date(iso: str | None) -> float:
     Must be numeric, not a formatted string: negating a timestamp and
     zero-padding does NOT reverse lexicographic order (the constant sign +
     magnitude digits still sort ascending), which silently ordered columns
-    oldest-first.
+    oldest-first. Accepts a bare ``YYYY-MM-DD`` or a full ISO timestamp.
     """
     if not iso:
         return 0.0
     try:
-        return -datetime.strptime(iso, "%Y-%m-%d").timestamp()
+        return -datetime.fromisoformat(iso).timestamp()
     except ValueError:
         return 0.0

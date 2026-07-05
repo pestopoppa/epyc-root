@@ -24,6 +24,8 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
+import subprocess
 import sys
 import threading
 import time
@@ -72,6 +74,52 @@ _board_lock = threading.Lock()
 _board_cache: dict | None = None
 _board_cache_ts = 0.0
 
+_HANDOFF_PATH_RE = re.compile(r"^handoffs/(active|blocked|completed|archived)/(.+)\.md$")
+
+
+def _load_file_activity() -> dict:
+    """Best-effort read of the git-derived ``file_activity`` map (last commit day
+    per handoff) from the timeline artifact.
+
+    Returns ``{}`` on any absence/corruption — the board must never fail because
+    this hook-regenerated cache is missing or malformed (mirrors ``timeline_payload``).
+    """
+    try:
+        data = json.loads(TIMELINE_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    fa = data.get("file_activity") if isinstance(data, dict) else None
+    return fa if isinstance(fa, dict) else {}
+
+
+def _dirty_handoff_ids() -> set:
+    """``state/stem`` ids of handoffs with uncommitted edits (modified or untracked).
+
+    These are invisible to git history — and thus to ``file_activity`` — so the
+    board uses filesystem mtime for them (gated on this dirtiness to keep bulk
+    ``touch``/checkout noise out of the recency signal). Returns an empty set
+    outside a git repo or if git is unavailable.
+    """
+    try:
+        proc = subprocess.run(
+            ["git", "-C", str(REPO), "status", "--porcelain", "--", "handoffs/"],
+            capture_output=True, text=True, timeout=5, check=False)
+    except (OSError, subprocess.SubprocessError):
+        return set()
+    if proc.returncode != 0:
+        return set()
+    ids: set[str] = set()
+    for line in proc.stdout.splitlines():
+        if len(line) < 4:
+            continue
+        path = line[3:]
+        if " -> " in path:  # rename entry: take the destination path
+            path = path.split(" -> ", 1)[1]
+        m = _HANDOFF_PATH_RE.match(path.strip().strip('"'))
+        if m:
+            ids.add(f"{m.group(1)}/{m.group(2)}")
+    return ids
+
 
 def board_payload(*, force: bool = False) -> dict:
     """Live directory scan of the four state dirs, cached for ``_BOARD_TTL_S``."""
@@ -79,7 +127,10 @@ def board_payload(*, force: bool = False) -> dict:
     with _board_lock:
         now = time.time()
         if force or _board_cache is None or (now - _board_cache_ts) > _BOARD_TTL_S:
-            _board_cache = handoff_parser.build_board(HANDOFF_DIR)
+            _board_cache = handoff_parser.build_board(
+                HANDOFF_DIR,
+                file_activity=_load_file_activity(),
+                dirty_ids=_dirty_handoff_ids())
             _board_cache_ts = now
         payload = dict(_board_cache)
     payload["_freshness"] = {"staleness_class": "fresh", "source": "live-scan"}

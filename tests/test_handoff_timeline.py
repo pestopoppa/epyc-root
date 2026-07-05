@@ -157,6 +157,13 @@ class TimelineEndToEndTests(unittest.TestCase):
         data = bt.build_timeline(self.root)
         self.assertEqual(data["totals"]["tasks_completed"], 2)
 
+    def test_file_activity_migrates_on_move(self):
+        # foo was last touched by the active->completed move (2026-03-10); the map
+        # must key it under the NEW path and drop the stale active key.
+        fa = bt.build_timeline(self.root)["file_activity"]
+        self.assertEqual(fa.get("completed/foo"), "2026-03-10")
+        self.assertNotIn("active/foo", fa)
+
 
 class StemCollisionTests(unittest.TestCase):
     """Two distinct handoffs sharing a basename across state dirs must not merge."""
@@ -177,6 +184,10 @@ class StemCollisionTests(unittest.TestCase):
             # both survive — a bare-stem key would have merged them into one
             self.assertEqual(data["totals"]["active"], 1)
             self.assertEqual(data["totals"]["completed"], 1)
+            # file_activity keys them separately too, each at its commit day
+            fa = data["file_activity"]
+            self.assertEqual(fa.get("active/foo"), "2026-03-02")
+            self.assertEqual(fa.get("completed/foo"), "2026-03-02")
 
 
 class OpenedMigrationTests(unittest.TestCase):
@@ -223,6 +234,8 @@ class DeleteIntervalTests(unittest.TestCase):
             # active before the delete, gone after — interval not erased
             self.assertEqual(byday["2026-03-01"]["active"], 1)
             self.assertEqual(data["series"][-1]["active"], 0)
+            # a deleted handoff drops out of the activity map (no ghost card)
+            self.assertNotIn("active/ephemeral", data["file_activity"])
 
 
 if __name__ == "__main__":

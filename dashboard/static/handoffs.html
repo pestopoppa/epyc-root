@@ -252,8 +252,14 @@ function cardEl(c){
   card.appendChild(el("div","ttl",c.title||c.id));
   const meta = el("div","meta");
   if(c.priority && c.priority!=="NONE") meta.appendChild(el("span","chip pri-"+c.priority,c.priority));
-  const d = c.updated||c.created;
-  if(d) meta.appendChild(el("span","chip date",(c.updated?"upd ":"new ")+d));
+  // Recency chip: prefer the derived activity date (git/mtime-aware) over the raw
+  // frontmatter dates, and label it by where the date came from.
+  let d = c.activity, src = c.activity_source;
+  if(!d){ d = c.updated||c.created; src = c.updated?"updated":(c.created?"created":null); }
+  if(d){
+    const lbl = {git:"edited ", wip:"wip ", updated:"upd ", created:"new "}[src] || "";
+    meta.appendChild(el("span","chip date",lbl+d));
+  }
   if(meta.children.length) card.appendChild(meta);
   const pr = progressRow(c); if(pr) card.appendChild(pr);
   if(c.blocked_on) card.appendChild(el("div","blk","⛔ "+c.blocked_on));
@@ -274,8 +280,9 @@ function renderBoard(data){
     for(const c of cards) list.appendChild(cardEl(c));
   }
   setBadge("#board-badge", (data._freshness&&data._freshness.staleness_class)||"fresh");
+  const gen = data.generated_at ? " · scanned " + data.generated_at.replace("T"," ").replace("Z"," UTC") : "";
   $("#subline").textContent =
-    `${data.counts.active} active · ${data.counts.blocked} blocked · ${data.counts.completed} completed · ${data.counts.archived} archived`;
+    `${data.counts.active} active · ${data.counts.blocked} blocked · ${data.counts.completed} completed · ${data.counts.archived} archived${gen}`;
   renderBacklog(data.backlog||{});
 }
 function renderBacklog(bk){
