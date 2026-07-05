@@ -170,7 +170,7 @@ INTERACTION_POLICY_VERSION = "1.0"
 
   Existing call sites (`chat_delegation.py:939`) pass only `(brief, delegate_to)` — keyword defaults preserve them. Cache TTL per-skill via `cache_ttl_seconds` field; falls back to `DEFAULT_TTL_SECONDS = 3600`.
 
-- [ ] **P2-4**. Reuse `_maybe_dcp_seed_context()` (`chat_delegation.py:247-289`) for consult context packaging. Do NOT invent a new packer. Gate with `features().dcp_for_consult` (default off; on requires `features().dcp_pre_assembly`).
+- [x] **P2-4**. Reuse `_maybe_dcp_seed_context()` (`chat_delegation.py:247-289`) for consult context packaging. Done 2026-07-05 in `epyc-orchestrator` `4183522f`: `dcp_for_consult` is a new default-off feature flag that validates dependency on `dcp_pre_assembly`; `consult()` accepts optional `code_search_fn` / `dcp_budget` and, only when both flags are enabled, calls the existing DCP seed helper instead of creating a second packer. Without a code-search hook or with either flag off, consult context is unchanged.
 
 - [x] **P2-5**. Add `log_consult()` shim on `ProgressLogger`. Done 2026-07-04; it records `interaction_type="consult"`, `skill`, consultant/requester roles, confidence, outcome, reason, and the interaction policy version.
 
