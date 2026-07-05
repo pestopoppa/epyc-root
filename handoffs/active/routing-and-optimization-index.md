@@ -35,25 +35,29 @@ When making a routing-architecture proposal, name which of these four (and which
 
 ## Subsystem Status
 
-**Current checkpoint — 2026-07-05T07:36Z**: AutoPilot is live as PID `1802932`
-with `--max-trials 2000`; trial `1157` is in `planner_invoke` with
-`code_stale=false`, blockers `[]`, and the planner-hint / tool-sentinel /
-W4-W6 authority env bundle active. Trial `1156` was T3 `deep_eval`, not T1; it
-completed with `q=1.29375`, speed `32.886`, reliability `0.75`, `160`
-questions, and Pareto `dominated`. The dashboard briefly showed T1 because the
-progress API tailed a stale restart log; orchestrator `212f8c74` fixed log
-selection to prefer the active `logs/autopilot.log`. Orchestrator `3af6e500` is
-live in per-tier planner coverage pressure, `0238d400` is live in dashboard
-eval-tier progress, `24e440dd` is live in W8 replayable-candidate prompt
-pressure, and `883d6d13` is live in hard-tier generalization pressure. The
-orchestrator API was reloaded under `gate3-tool-telemetry` as PID `1798373`;
-all sampled API processes carry `AUTOPILOT_TOOL_SENTINELS=1` plus
+**Current checkpoint — 2026-07-05T08:07Z**: AutoPilot is live as PID `1802932`
+with `--max-trials 2000`; trial `1159` is active with `code_stale=false`,
+blockers `[]`, and the planner-hint / tool-sentinel / W4-W6 authority env bundle
+active. Trial `1156` was T3 `deep_eval`, not T1; it completed with
+`q=1.29375`, speed `32.886`, reliability `0.75`, `160` questions, and Pareto
+`dominated`. Trial `1157` created replay-eligible W8 candidate
+`9defa67b5fd62398` with T1 `q=2.1273`, reliability `1.0`, speed `17.60`, and
+Pareto `dominated`, but forced replay trial `1158` refuted it with `q=0.0545`,
+reliability `0.0727`, and safety violations across quality floor, regression,
+and per-suite guards. W8 is therefore back to no replay-eligible accumulating
+candidate; five stale accumulating candidates remain. The dashboard briefly
+showed trial `1156` as T1 because the progress API tailed a stale restart log;
+orchestrator `212f8c74` fixed log selection to prefer the active
+`logs/autopilot.log`. Orchestrator `3af6e500` is live in per-tier planner
+coverage pressure, `0238d400` is live in dashboard eval-tier progress,
+`24e440dd` is live in W8 replayable-candidate prompt pressure, `883d6d13` is
+live in hard-tier generalization pressure, and `aac90346` refreshes the
+checked-in generated system card's nonvolatile T3 visibility; the runtime
+counter in that checked-in card is expected to drift while AutoPilot is active.
+The orchestrator API was reloaded under `gate3-tool-telemetry` as PID
+`1798373`; all sampled API processes carry `AUTOPILOT_TOOL_SENTINELS=1` plus
 `ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT=1`. Orchestrator `a53a74ad` corrected W8
-report-plane replay eligibility to match the live replay selector: current
-strict Fable is blocked only by `w8_candidate_generation_required` because
-there are no replay-eligible accumulating candidates. Fresh promotion eval and
-sequential confirmation are absent until AutoPilot produces a keepable
-replayable `numeric_trial` or `structural_experiment` candidate. Orchestrator
+report-plane replay eligibility to match the live replay selector. Orchestrator
 `fe270b48` records the N9 clean-window routing-classifier bracket: the staged
 MLP fast path can be activated, attested, and rolled back; live routing remains
 OFF because `--keep-enabled` was not requested.
@@ -61,7 +65,7 @@ OFF because `--keep-enabled` was not requested.
 | Subsystem | Handoff | Status | Next Action |
 |-----------|---------|--------|-------------|
 | Routing Intelligence | [`routing-intelligence.md`](routing-intelligence.md) | **COMPACTED 2026-05-28; RI-10 SAMPLE AUDIT CURRENT 2026-07-04; DS-E1 CONSUMER READY** — Phases 0-5 history moved to completed ledger; hardened report semantics distinguish raw high-risk volume from decision-grade canary evidence and do not count non-canary-role shadow rows as sampled canary arms. Earlier current report `ri10_canary_sample_report_20260704T095500Z.json` plus all-role diagnostic `ri10_canary_sample_report_all_roles_20260704T005332Z.json` exposed the old `20` arm-attributed-row DS-E1 deficit; subsequent live progress logs now satisfy the DS-E1 packet's RI-10 consumer gate. | Keep classifier/risk-routing expansion frozen until the owning RI-10/RI-11/RI-12 rollout gates consume the current evidence directly; DS-E1 is no longer blocked on RI-10/KV evidence. |
-| AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | **Authority wiring current; A10 planner hints ACTIVE; W8 needs candidate generation; latest coverage pressure, dashboard eval-tier progress, API tool-sentinel env, and W8/T3 prompt guidance are live.** AutoPilot is live as PID `1802932` with `--max-trials 2000`; current phase health is trial `1157` `planner_invoke`, `code_stale=false`, blockers `[]`. Trial `1156` completed as T3 `deep_eval` (`q=1.29375`, speed `32.886`, reliability `0.75`, Pareto `dominated`) and is observational/non-replayable for W8. Gate-3 hard tool telemetry is ready, the API is reloaded as PID `1798373` with `AUTOPILOT_TOOL_SENTINELS=1` plus `ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT=1`, `3af6e500` is live in per-tier planner coverage pressure, `0238d400` is live in dashboard eval-tier progress, `24e440dd` is live in W8 candidate pressure, `883d6d13` is live in hard-tier generalization pressure, and `212f8c74` fixes stale dashboard eval labels. Strict Fable is blocked only by `w8_candidate_generation_required`; there are no replay-eligible accumulating W8 candidates. DS-E1 is ready; A9 source-reward target preregistration is done and no longer emits a Fable next action. | Let AutoPilot generate a keepable replayable W8 candidate, then collect sequential confirmation plus fresh promotion-eval evidence. Do not rerun the exhausted A9 collector. |
+| AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | **Authority wiring current; A10 planner hints ACTIVE; W8 still needs a replay-eligible candidate after trial 1158 refuted the latest replay; latest coverage pressure, dashboard eval-tier progress, API tool-sentinel env, W8/T3 prompt guidance, and system-card T3 refresh are live.** AutoPilot is live as PID `1802932` with `--max-trials 2000`; current phase health is trial `1159`, `code_stale=false`, blockers `[]`. Trial `1156` completed as T3 `deep_eval` (`q=1.29375`, speed `32.886`, reliability `0.75`, Pareto `dominated`) and is observational/non-replayable for W8. Trial `1157` completed as `structural_experiment` (`session_scratchpad=false`) with T1 `q=2.1273`, speed `17.60`, reliability `1.0`, and created candidate `9defa67b5fd62398`; forced replay trial `1158` refuted that candidate with `q=0.0545`, reliability `0.0727`, and quality/regression/per-suite safety failures. Gate-3 hard tool telemetry is ready, the API is reloaded as PID `1798373` with `AUTOPILOT_TOOL_SENTINELS=1` plus `ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT=1`, `3af6e500` is live in per-tier planner coverage pressure, `0238d400` is live in dashboard eval-tier progress, `24e440dd` is live in W8 candidate pressure, `883d6d13` is live in hard-tier generalization pressure, `212f8c74` fixes stale dashboard eval labels, and `aac90346` refreshes checked-in system-card T3 visibility while live prompts continue using the generator. DS-E1 is ready; A9 source-reward target preregistration is done and no longer emits a Fable next action. | Let AutoPilot generate another keepable replayable W8 candidate, then collect sequential confirmation plus fresh promotion-eval evidence. Do not rerun the exhausted A9 collector. |
 | Routing Truth Restoration | [`routing-truth-restoration.md`](routing-truth-restoration.md) | **IMMEDIATE SCOPE COMPLETE 2026-06-12** — W1-W8 landed in `epyc-orchestrator` `b5f26e5` + `41a6944` + `2a52740` + `e40df31` + `1dfbc22`; live `/config/attest` sampled 6 workers with `specialist_routing=true`, `model_fallback=true`, wave-2 flags false, `routing_classifier=false`, no heterogeneity; q_scorer TPS loads from lean registry; confidence/3-way routing dead paths removed; Trinity/URE shadow telemetry persists in progress JSONL; DAR-1 current replay measured 0.00% identifiable mean regret. | Routing expansion stays frozen; revisit `dispatch_swarm_fanout` ownership on 2026-07-12. |
 | Stack Startup NUMA Prewarm | [`numa-page-cache-prewarm.md`](../completed/numa-page-cache-prewarm.md) | ✅ **COMPLETE 2026-05-29** (archived) — codified `[1.5]` page-cache prewarm passed cold-cache P5; previously-collapsed shared GGUFs are ~25% per NUMA node, 27.3 s cold prewarm time | Monitor future cold starts for regression; re-open the archived handoff if symptom recurs |
 | Dynamic Stack | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) | **COMPACTED 2026-05-28; DS-E1 + DS-7 DECISION READY 2026-07-05** — Phases B-D complete; DS-6/DS-7 design ledger split to completed history; `069f8c0` aligned `stack_templates/default.yaml` to the live manifest with aliases and retired-role rejection. Research manifest refresh `b134692` cleared the stale DS-E1 blocker; current packet `ds_e1_evidence_packet_20260704T192333Z` now stays `ready_for_profile_decision=true` with `blockers=[]`, and the fable gate report is `ready=true` / `blockers=[]` under current code. `stack_templates/default.yaml` now records `metadata.ds7_profile=steady_state_static_prewarm` and `metadata.ds7_decision.status=retain_default`; report `ds7_profile_decision_20260704T194020Z` validates the default profile (`17` roles, `28` instances, `657` GB) and parks DS-6 until future evidence proves static pre-warm insufficient. | Monitor for topology/model changes that require rerunning DS-E1. Do not implement DS-6 QuarterScheduler unless future DS-E1-equivalent evidence shows a material static-prewarm throughput or latency gap. |
