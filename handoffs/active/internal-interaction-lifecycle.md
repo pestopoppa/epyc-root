@@ -1,6 +1,6 @@
 # Internal Interaction Lifecycle
 
-**Status**: P1 lifecycle substrate landed 2026-06-28 in `epyc-orchestrator` `18956892`; P2 scaffolding is staged default-off as of 2026-07-04, but P2/J17 live behavior remains gated on the P1 regression bake + cross-role contention bake
+**Status**: P1 lifecycle substrate landed 2026-06-28 in `epyc-orchestrator` `18956892`; P2 edit-transaction consult wiring is staged default-off as of 2026-07-05 (`0e555822`), but P2/J17 live behavior remains gated on the P1 regression bake + cross-role contention bake
 **Priority**: P0 for substrate cleanup; downstream of intake-655 deep-dive
 **Created**: 2026-05-31
 **Owning index**: [`routing-and-optimization-index.md`](routing-and-optimization-index.md)
@@ -177,7 +177,7 @@ INTERACTION_POLICY_VERSION = "1.0"
 - [x] **P2-6**. Add `ConsultationDenied` exception (parallel to `ContentionDenied`). **P2 is an INTERNAL consult sibling — no new HTTP endpoint and no 503 mapping in this phase.** Internal callers catch `ConsultationDenied` and record a `consult_denied` event in `interaction_events`. Done 2026-07-04: `consult()` translates contention-gate `ContentionDenied` into `ConsultationDenied(reason="contention_skip")`; the current skill uses its explicit per-skill `max_queue_wait_ms=2000` override, and can be changed to `0` before live enablement if the final policy chooses strict skip-or-admit. A future external consult HTTP endpoint (deferred, D3-adjacent) would map `ConsultationDenied` to 503; that mapping is out of scope here.
   - **Verified 2026-05-31** (`contention_gate.py:346-399`): `max_queue_wait_ms=0` achieves the intended skip-or-admit semantics natively. The default-fallback at `:366` (`if max_queue_wait_ms is None`) does NOT catch `0`, so per-skill `0` is preserved. `deadline = time.monotonic() + 0/1000 = now` at `:372`, the loop at `:375` runs one `evaluate()` call, admits-immediately if no blocker, otherwise returns `reason="timeout"` after that single evaluate with `waited_s ≈ 0`. No separate skip-logic needed. Add a regression test pinning this behavior so a future gate refactor cannot silently re-introduce the default-fallback for `0`.
 
-- [ ] **P2-7**. Wire the first consult site **at the attach point identified in P2-0**. Skill: `review_before_commit`. Consultant: `architect_general`. Requester: the role producing the code-edit draft at the chosen attach point (named in the P2-0 design note — may be `worker_coder`, `coder_escalation`, or another; do NOT assume `worker_general`). Call shape:
+- [x] **P2-7**. Wire the first consult site **at the attach point identified in P2-0**. Skill: `review_before_commit`. Consultant: `architect_general`. Requester: the role producing the code-edit draft at the chosen attach point (named in the P2-0 design note — may be `worker_coder`, `coder_escalation`, or another; do NOT assume `worker_general`). Done 2026-07-05 in `epyc-orchestrator` `0e555822`: `force_mode="edit"` now passes a `review_before_commit` callback into `run_edit_transaction()` only when the new `review_before_commit_consult` feature flag is explicitly enabled. The hook calls `architect_general.review_before_commit`, caps integration at one requester rerun on high-confidence blocking advice, and records consult events in `delegation_diagnostics["edit_transaction_consult_events"]`. With the flag off, existing edit-mode callers remain one-shot/no-consult.
   ```python
   consult(
       consultant_role="architect_general",
@@ -191,7 +191,8 @@ INTERACTION_POLICY_VERSION = "1.0"
   - If `blocking_issues` non-empty AND `confidence >= 0.6`: re-run the requester with the advisory injected; cap at 1 re-run.
   - Otherwise: emit the advisory as a `review_advisory` event in the response telemetry and proceed.
   - On `ConsultationDenied`: emit a `consult_denied` event and proceed without the advisory.
-  - 2026-07-04 scaffold: `run_edit_transaction()` now has an explicitly opt-in `review_before_commit` hook and `enable_review_before_commit` flag. If a blocking advisory with confidence `>=0.6` is returned, the requester gets exactly one rerun with the advisory injected before transactional apply. With the default flag unset, existing callers remain one-shot and no review hook is invoked. Live route/caller integration remains locked until the P1 bake gate clears.
+  - 2026-07-04 scaffold: `run_edit_transaction()` now has an explicitly opt-in `review_before_commit` hook and `enable_review_before_commit` flag. If a blocking advisory with confidence `>=0.6` is returned, the requester gets exactly one rerun with the advisory injected before transactional apply. With the default flag unset, existing callers remain one-shot and no review hook is invoked.
+  - 2026-07-05 route wiring: the chat edit-mode route now supplies the consult callback behind `review_before_commit_consult`; live enablement remains locked until the P1 bake gate clears and J17 evidence is collected.
 
 **Gate to P3**: A/B test on a fixed eval slice (≥50 code-edit turns):
 - Tokens saved vs full-delegation baseline ≥ 30% on the advisory leg
