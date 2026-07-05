@@ -1,13 +1,18 @@
 # Evidence Plane — Per-Question Ledger + Sequential Verdicts (+ game layer)
 
-**Current checkpoint — 2026-07-05T20:40Z W8 candidate-generation guard**:
+**Current checkpoint — 2026-07-05T20:58Z W8 candidate-generation guard + restart advice**:
 AutoPilot is live as PID `2935890` at trial `1185` (`dispatch_action` /
 `seed_batch`) with planner hints, tool sentinels, W4-W6 authority env,
 `AUTOPILOT_PLANNER_PRIMARY=local_chat`, and Codex critique. The trial is a
 forced baseline-reference draw, not a planner-selected W8 action. Orchestrator
-`854eff06` is pushed and GitNexus-indexed, but the live daemon predates it; use
-`phase_health_report.py --json --require-current-code` to verify the expected
-`code_stale=true` until the next boundary restart. The new guard prevents W8
+`854eff06` is pushed and `39351bad` is locally committed and GitNexus-indexed,
+but the live daemon predates both; use `phase_health_report.py --json
+--require-current-code` to verify the expected `code_stale=true` until the next
+boundary restart. Orchestrator `39351bad` also adds the read-only
+`autopilot_restart_advisor.py` / launcher `--preflight` surface; live smoke
+reports `status=wait_for_boundary`, `restart_needed=true`, and
+`safe_to_restart_now=false` because the stale daemon is still inside active
+`dispatch_action` work. The new W8 guard prevents W8
 candidate-generation pressure from being consumed by unreplayable deferrals:
 ordinary `seed_batch`, `deep_eval`, `structural_prune`, and invalid structural
 actions are replaced with the first unblacklisted `numeric_trial` fallback
@@ -164,9 +169,12 @@ boundary restart recorded above.
 
 ## Start Here
 
-1. Restart AutoPilot onto orchestrator `854eff06` after trial `1185` reaches a
+1. Restart AutoPilot onto orchestrator `39351bad` after trial `1185` reaches a
    clean boundary, then verify `phase_health_report.py --json
-   --require-current-code` reports `code_stale=false`.
+   --require-current-code` reports `code_stale=false`. Before stopping it, run
+   `uv run python scripts/autopilot/autopilot_restart_advisor.py --json` or
+   `uv run python scripts/autopilot/start_fable_authority_daemon.py --preflight`
+   and require `safe_to_restart_now=true`.
 2. Let the next non-forced planner turn exercise the local-chat planner and W8
    candidate-generation guard. If W8 pressure is active, ordinary deferrals
    should be rewritten to a replayable numeric trial fallback unless a

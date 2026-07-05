@@ -4,15 +4,15 @@
     "handoff-active": 128,
     "handoff-blocked": 1,
     "handoff-completed": 140,
-    "progress": 215,
+    "progress": 216,
     "research": 123
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-07-05T20:45:27Z",
+  "last_compile": "2026-07-05T21:03:04Z",
   "mode": "full",
-  "scan_time": "2026-07-05T20:46:00Z",
+  "scan_time": "2026-07-05T21:03:15Z",
   "schema_version": 1,
-  "source_set_hash": "a7a256971d9971575f4183124077f2340b0bcc101ad242f4ef3a8362058d8a7d",
+  "source_set_hash": "2c770d73a89e603c484fc4c1069de25eedd45363b65eecc3a70df73f4c2bf1ec",
   "sources": [
     {
       "content_hash": "b5f9d756fd0daa82182b46024fea6bb6da04c7d415891e5ac2b01c9777881ef0",
@@ -239,10 +239,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "70dabdd96c7884874f7196b671432bc1041ac738799c0b4fdc1c3e4eb8498534",
-      "modified": "2026-07-05T20:42:36Z",
+      "content_hash": "606442aec28c129e8aacceb51a8948ba34159a2d501ac8ff59e28ed97ae75cfc",
+      "modified": "2026-07-05T21:02:03Z",
       "path": "handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md",
-      "size": 43646,
+      "size": 44215,
       "title": "Evidence Plane \u2014 Per-Question Ledger + Sequential Verdicts (+ game layer)",
       "type": "handoff-active"
     },
@@ -343,10 +343,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "7c9b1db40d050f6265f498ab7c0b43222a557d34870ede03ecb4558bd4934e12",
-      "modified": "2026-07-05T14:29:29Z",
+      "content_hash": "5795aa715df217d96bf34932d96c6f1bb2bb94f32fd9272d399fa09e70d19dc6",
+      "modified": "2026-07-05T21:02:03Z",
       "path": "handoffs/active/frontier-f2-self-running-lab.md",
-      "size": 17731,
+      "size": 19043,
       "title": "Frontier F2 \u2014 The Self-Running Lab: Local Agents Take Over Lab Maintenance",
       "type": "handoff-active"
     },
@@ -4791,6 +4791,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "7fb7a70b185b643a9a9d2db00a1e496fa814c806fb37fb5b767c78fa77ec387d",
+      "modified": "2026-07-05T20:54:04Z",
+      "path": "progress/2026-07/2026-07-05-dashboard-topology-explainer-flicker.md",
+      "size": 1728,
+      "title": "2026-07-05 \u2014 Autopilot dashboard topology-panel explainer flicker fix",
+      "type": "progress"
+    },
+    {
       "content_hash": "7a3322b1d67f5ee7262a16ff1fa4d5ef5a88d231bb13f53086167cbec2218ecc",
       "modified": "2026-07-05T19:55:54Z",
       "path": "progress/2026-07/2026-07-05-dashboard-transport-hardening.md",
@@ -4831,10 +4839,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "ee40f5597a37c262c568a60cf4b5881548dd6fa8b7dc3cc006e2ad60c545f116",
-      "modified": "2026-07-05T20:43:17Z",
+      "content_hash": "1e61ae843a92263c955ac68d1adebeed8af507f9211854f555c9606280edcd9a",
+      "modified": "2026-07-05T21:02:03Z",
       "path": "progress/2026-07/2026-07-05.md",
-      "size": 107813,
+      "size": 109612,
       "title": "Progress - 2026-07-05",
       "type": "progress"
     },
@@ -4991,7 +4999,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 622,
+  "total_new": 623,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
