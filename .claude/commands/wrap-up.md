@@ -2,7 +2,7 @@
 
 Update all documentation artifacts to reflect work completed in this session, commit changes, and return commit hashes for manual push.
 
-> **⚠ MANUAL TRIGGER ONLY.** Run this routine only when the operator explicitly invokes `/wrap-up`. Nothing may auto-trigger it — there is no `Stop`/`SessionEnd`/`PreCompact` hook, cron, or nightshift task that calls it, and there must not be one. Autonomous, scheduled, or nightshift sessions **may commit progress directly** (a focused `git commit` of progress/handoff edits is fine and encouraged for checkpointing) but must **NOT** run the full wrap-up routine: it performs index pruning (Step 3) and broad doc/wiki sweeps the operator wants to review on a controlled, manually-chosen cadence.
+> **⚠ MANUAL TRIGGER ONLY.** Run this routine only when the operator explicitly invokes `/wrap-up`. Nothing may auto-trigger it — there is no `Stop`/`SessionEnd`/`PreCompact` hook, cron, or nightshift task that calls it, and there must not be one. Autonomous, scheduled, or nightshift sessions **may commit progress directly** (a focused `git commit` of progress/handoff edits is fine and encouraged for checkpointing) but must **NOT** run the full wrap-up routine: it performs index pruning (Step 3) and broad doc/wiki sweeps the operator wants to review on a controlled, manually-chosen cadence. Checkpoint commits ARE however bound by the **checklist-sync gate** in Step 2: any handoff edit that records completed or newly-discovered work must flip/add the corresponding `- [ ]`/`- [x]` checkboxes, not just append prose — the dashboard's progress metric counts checkbox state only.
 
 ## Steps
 
@@ -18,6 +18,20 @@ Update all documentation artifacts to reflect work completed in this session, co
 - Check off completed items, add new findings, note any blockers discovered
 - If a handoff is fully complete, extract key findings to docs and move to `handoffs/completed/`
 - If a handoff is only partially complete but completed history is obscuring live work, do not force an all-or-nothing move; use the partial-compaction rules in Step 3.
+
+**Checklist-sync gate (required — do not skip to Step 3 until it passes).** The handoff dashboard's progress metric counts *checkbox state only*; narrative prose is invisible to it. For every handoff this session advanced:
+
+1. **Flip completed tasks**: change `- [ ]` to `- [x]` and append the completion date inline (`✅ YYYY-MM-DD`) — the timeline generator prefers these in-file dates over commit dates.
+2. **Add tasks discovered mid-flight**: any new work item that emerged this session (follow-ups, blockers-turned-tasks, scope found while implementing) gets its own `- [ ]` line in the relevant handoff's task list — even if it was also described in prose. If it was *already completed* this session, add it as `- [x] … ✅ YYYY-MM-DD` so the record stays complete.
+3. **Prose describing task state must be accompanied by checkbox state.** "X is done/converged/deferred" in a status paragraph without the corresponding checkbox flip is a wrap-up defect.
+
+**Verify before committing** — count the checkbox flips actually staged:
+
+```bash
+git diff HEAD -- handoffs/ | grep -cE '^\+\s*[-*] \[[xX]\]'
+```
+
+If this prints `0` but the session completed any handoff-tracked work, go back and sync the checklists. Report the flip count in the wrap-up output.
 
 ### 3. Handoff Index Updates
 

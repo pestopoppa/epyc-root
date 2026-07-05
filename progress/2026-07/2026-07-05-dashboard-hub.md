@@ -48,3 +48,26 @@ epyc-root now owns a **project dashboard hub** — a dependency-free stdlib web 
 - **Kernel Pareto frontier** is empty until the loop runs a real sweep with absolute throughput (the seed row records Δ%/mechanism only — Phase-0 didn't record absolute t/s, not fabricated).
 - Honest caveat: timeline "opened" total (3842) exceeds "completed" (1875) because completed/archived handoffs contain many checkboxes never individually ticked — the **exact** current backlog (488 open tasks) is the reliable headline; the per-week flow is a rough intake view.
 - Wiki `total_new=39` (unrelated accumulated research-intake sources) not compiled here — separate research-wiki pass.
+
+## Follow-up session (same day, evening) — "53.9% stuck all day" diagnosis + checkbox discipline + today-activity signal
+
+**Problem**: operator reported the backlog % frozen at 53.9% all day despite heavy work across 5+ agent sessions — second "board feels stale" report against a board that was again NOT stale.
+
+**Root cause (verified, not assumed)**: `/api/handoff_board` was live (`generated_at` current, 30s TTL). The % (`pct_all_done` = 1557/2888) counts **checkbox state only**. Diffing checkbox lines in `handoffs/` between the morning commit (`516c9776`) and HEAD: **1557 done / 2906 total at both ends — zero flips, zero adds** — while 90+ handoff commits landed. All sessions recorded progress as narrative prose ("Record X checkpoint", status paragraphs), which the metric cannot see. Aggravating: 2888-task denominator → one flip ≈ 0.035pp, below the 0.1 display rounding.
+
+**Fixes (epyc-root `ea561387`)**:
+
+| Change | File(s) |
+|--------|---------|
+| Checklist-sync gate in wrap-up Step 2: flip `[x]` + inline `✅ date`, add checkboxes for mid-flight tasks, verify staged flip count via `git diff HEAD -- handoffs/ \| grep -cE '^\+\s*[-*] \[[xX]\]'` before commit | `.claude/commands/wrap-up.md` |
+| Same gate mirrored into Codex's skill (workflow step 3 + bundled reference) | `~/.codex/skills/wrap-up/SKILL.md`, `references/wrap-up-command.md` (outside repo) |
+| Always-loaded checkbox-discipline rule — binds **autonomous checkpoint commits**, which are forbidden from running /wrap-up and were the actual authors of today's prose-only updates | `CLAUDE.md` (Handoff Workflow) |
+| `activity_today` in board payload: commits / handoffs touched / boxes checked / boxes added since local midnight (`git log --since=midnight -p -- handoffs/`, best-effort zeros on git failure, cached with 30s board TTL) | `dashboard/server.py` |
+| Backlog banner renders the activity line; when commits>0 and boxes_checked==0 it states "prose-only updates; no checkboxes flipped, so the % above cannot move" | `dashboard/static/handoffs.html` |
+| Unit tests for the diff parser (flip/add counting, prose-only day, live-shape smoke) | `tests/test_dashboard_activity.py` |
+
+**Validation**: full dashboard suite 54/54 pass; service reloaded via `orchestrator_stack.py reload handoff_dashboard`; live payload cross-checked against raw git — exact match (94 commits, 28 handoffs touched, 6 boxes checked, 8 added since midnight).
+
+**Caveat**: `boxes_checked` counts *added* `[x]` lines, so moved/compacted already-checked lines count too — it is an activity signal, not a ledger; the parser's live scan stays authoritative.
+
+**Deferred (recorded as checkboxes in `loops-and-dashboards-audit-2026-07-05.md` P5)**: priority-bucketed backlog, probably-dead lane (>30/90d untouched), promoting `pct_open_done` to the headline.

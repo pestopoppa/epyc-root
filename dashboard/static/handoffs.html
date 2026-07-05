@@ -63,6 +63,8 @@
   .bk-bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--good),#2ea043);transition:width .4s}
   .bk-progress{display:flex;align-items:center;gap:12px}
   .bk-progress .bk-bar{flex:1} .bk-progress .pct{font-size:13px;font-weight:600;color:var(--good);min-width:52px;text-align:right}
+  .bk-activity{font-size:11px;color:var(--muted);margin-top:8px}
+  .bk-activity .warn-note{color:var(--high)}
 
   /* kanban */
   .kanban{display:grid;grid-template-columns:repeat(4,minmax(240px,1fr));gap:14px;align-items:start}
@@ -163,6 +165,7 @@
       <div class="bk-bar"><span id="backlog-fill" style="width:0%"></span></div>
       <span class="pct" id="backlog-pct"></span>
     </div>
+    <div class="bk-activity" id="backlog-activity"></div>
   </section>
 
   <section class="timeline">
@@ -283,9 +286,9 @@ function renderBoard(data){
   const gen = data.generated_at ? " · scanned " + data.generated_at.replace("T"," ").replace("Z"," UTC") : "";
   $("#subline").textContent =
     `${data.counts.active} active · ${data.counts.blocked} blocked · ${data.counts.completed} completed · ${data.counts.archived} archived${gen}`;
-  renderBacklog(data.backlog||{});
+  renderBacklog(data.backlog||{}, data.activity_today);
 }
-function renderBacklog(bk){
+function renderBacklog(bk, act){
   const stats = $("#backlog-stats"); if(!stats) return;
   const items = [
     {n: bk.open_handoffs, l: "handoffs outstanding", cls: "warn"},
@@ -303,6 +306,23 @@ function renderBacklog(bk){
   const pct = bk.pct_all_done;
   $("#backlog-fill").style.width = (pct==null?0:pct)+"%";
   $("#backlog-pct").textContent = pct==null?"—":(pct+"% of all tracked tasks done");
+  // Today's committed activity: the % above only moves on checkbox flips, so
+  // name the prose-only condition explicitly instead of looking frozen.
+  const actEl = $("#backlog-activity");
+  if(actEl){
+    if(!act){
+      actEl.textContent = "";
+    }else if(act.commits === 0){
+      actEl.textContent = "today: no handoff commits yet";
+    }else{
+      let msg = `today: ${act.commits} handoff commit${act.commits===1?"":"s"} · `+
+                `${act.handoffs_touched} handoff${act.handoffs_touched===1?"":"s"} touched · `+
+                `${act.boxes_checked} task${act.boxes_checked===1?"":"s"} checked off · `+
+                `${act.boxes_added} added`;
+      actEl.innerHTML = esc(msg) + (act.boxes_checked===0
+        ? ' <span class="warn-note">— prose-only updates; no checkboxes flipped, so the % above cannot move</span>' : "");
+    }
+  }
 }
 async function loadBoard(){
   try{ renderBoard(await getJSON("/api/handoff_board")); }
