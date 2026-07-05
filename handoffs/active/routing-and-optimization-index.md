@@ -35,6 +35,16 @@ When making a routing-architecture proposal, name which of these four (and which
 
 ## Subsystem Status
 
+**Current checkpoint — 2026-07-05T03:40Z**: AutoPilot is live as PID `1397463`
+with `--max-trials 2000` after the maintenance restart; trial `1152` is a T2
+`deep_eval`. Orchestrator `c7590be6` enriches default-off BSV observe signatures
+with tool/route/latency process signals already present in `EvalResult` without
+changing SafetyGate, Pareto, or accept policy. W8 is not blocked by report-plane
+staleness: a sidecar audit found W8/seq/restart/Fable reports agree that the
+remaining blocker is evidence collection (`b738287be98c3372` is recent but
+unreplayable as `seed_batch`; fresh promotion eval and seq confirmation are
+absent).
+
 | Subsystem | Handoff | Status | Next Action |
 |-----------|---------|--------|-------------|
 | Routing Intelligence | [`routing-intelligence.md`](routing-intelligence.md) | **COMPACTED 2026-05-28; RI-10 SAMPLE AUDIT CURRENT 2026-07-04; DS-E1 CONSUMER READY** — Phases 0-5 history moved to completed ledger; hardened report semantics distinguish raw high-risk volume from decision-grade canary evidence and do not count non-canary-role shadow rows as sampled canary arms. Earlier current report `ri10_canary_sample_report_20260704T095500Z.json` plus all-role diagnostic `ri10_canary_sample_report_all_roles_20260704T005332Z.json` exposed the old `20` arm-attributed-row DS-E1 deficit; subsequent live progress logs now satisfy the DS-E1 packet's RI-10 consumer gate. | Keep classifier/risk-routing expansion frozen until the owning RI-10/RI-11/RI-12 rollout gates consume the current evidence directly; DS-E1 is no longer blocked on RI-10/KV evidence. |

@@ -10,6 +10,14 @@
 
 **Standing contracts**: `/workspace/MEASUREMENT.md` (adopted) · `instrument_eras.yaml` (epyc-orchestrator orchestration/) · ATTESTATION (to build, findings-04 §B) · current architecture review: [fable5-findings-00-executive-summary.md](../completed/fable5-findings-00-executive-summary.md) — **the Fable 5 one-shot review is COMPLETE (2026-06-12)**; its 7 findings (-01..-07) + appendix are the standing reference, not an open row. The stale 2026-06-15 transient pickup was archived to [`../archived/fable5-long-horizon-session-pickup-history-through-2026-06-20.md`](../archived/fable5-long-horizon-session-pickup-history-through-2026-06-20.md); resume from the domain indices and owning handoffs below.
 
+**Current coordination checkpoint — 2026-07-05T03:40Z**: AutoPilot is live as
+PID `1397463` with `--max-trials 2000` and trial `1152` is a T2 `deep_eval`.
+Orchestrator `c7590be6` makes default-off BSV observe signatures include
+already-journaled tool/route/latency process signals; no authority gate changed.
+W8 is still the evidence tail, not a report bug: reports agree
+`b738287be98c3372` is recent but unreplayable as `seed_batch`, with fresh
+promotion eval and sequential confirmation still absent.
+
 ## A0. Strategic priorities — Fable 5 window-2 (2026-07-03, operator-directed reprioritization)
 Surfaced above the maintained N-rows so the highest-leverage strategic actions are front-and-center; owners/detail unchanged below. Full analysis: [findings-00](fable5-window2-findings-00-executive-summary.md) · GPU [findings-02](fable5-window2-findings-02-heterogeneous-gpu.md) · portfolio [findings-03](fable5-window2-findings-03-portfolio-and-master-queue.md) · intake-sweep + roofline [findings-05](fable5-window2-findings-05-intake-sweep-and-roofline.md).
 1. **G0 — α from live MTP logs (free, today)**: CLOSED 2026-07-03 by live-log parser/report in `epyc-orchestrator/orchestration/reports/mtp_acceptance_report_20260703T114323Z.{json,md}`. Self-MTP baseline on current production logs: architect_general α=0.6854, frontdoor α=0.6582, worker_general α=0.8256; aggregate α=0.7580, failed MTP roles none. This is self-MTP baseline evidence, not external-drafter acceptance evidence. [findings-02 M0]
