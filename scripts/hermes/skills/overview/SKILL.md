@@ -9,7 +9,8 @@ metadata:
 
 # Orchestrator Overrides
 
-Use this as the entry point for Hermes commands that shape EPYC orchestrator routing.
+Use this as the entry point for Hermes commands that shape EPYC orchestrator
+routing and stack lifecycle control.
 
 ## Override Inventory
 
@@ -28,6 +29,7 @@ Use this as the entry point for Hermes commands that shape EPYC orchestrator rou
 | `/use` | `x_orchestrator_role` | A conversation should stay on a known current role. |
 | `/escalation` | `x_max_escalation` | A conversation needs a latency or quality ceiling. |
 | `/nocode` | `x_disable_repl` | A conversation should avoid REPL/tool execution. |
+| `/stack` | local launcher | A conversation needs direct stack status/start/stop/reload control. |
 
 ## Drift Check
 
