@@ -128,6 +128,10 @@ _PRIORITY_RULES: tuple[tuple[str, str], ...] = (
     ("P3", "LOW"),
 )
 
+_PRIORITY_BUCKET_ORDER = ("P0", "HIGH", "MEDIUM", "LOW", "NONE")
+_DEAD_LANE_30_D = 30
+_DEAD_LANE_90_D = 90
+
 
 def _priority_from_value(raw: str) -> str:
     """Map a free-text priority value to ``P0|HIGH|MEDIUM|LOW|NONE``.
@@ -214,6 +218,41 @@ def _status_short(status: str, limit: int = 140) -> str:
     if len(flat) <= limit:
         return flat
     return flat[: limit - 1].rstrip() + "…"  # ellipsis
+
+
+def _iso_date(raw: str | None) -> datetime | None:
+    """Parse a handoff date string (date or timestamp) into ``datetime``.
+
+    Handles both compact dates from ``**Updated**`` metadata and full ISO-ish
+    timestamps generated elsewhere (including a trailing ``Z`` UTC marker).
+    """
+    if not raw:
+        return None
+    value = raw.strip()
+    if value.endswith("Z"):
+        value = value[:-1] + "+00:00"
+    try:
+        dt = datetime.fromisoformat(value)
+    except ValueError:
+        m = DATE_RE.search(value)
+        if not m:
+            return None
+        try:
+            dt = datetime(*map(int, m.groups()), tzinfo=timezone.utc)
+        except ValueError:
+            return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt
+
+
+def _age_days(raw: str | None, *, now: datetime | None = None) -> int | None:
+    """Whole days since ``raw`` relative to ``now`` (UTC, default now)."""
+    dt = _iso_date(raw)
+    if dt is None:
+        return None
+    today = (now or datetime.now(timezone.utc)).date()
+    return max(0, (today - dt.astimezone(timezone.utc).date()).days)
 
 
 # A handoff physically in ``active/`` whose status reads as blocked/parked/waiting
@@ -468,18 +507,65 @@ def _backlog_summary(columns: dict[str, list[dict]]) -> dict:
     OPEN = ("active", "blocked")
     open_handoffs = sum(len(columns[s]) for s in OPEN)
     open_tasks = open_done = open_total = 0
+    now = datetime.now(timezone.utc)
+    bucket_map: dict[str, dict[str, int]] = {
+        p: {
+            "priority": p,
+            "open_handoffs": 0,
+            "open_untracked_handoffs": 0,
+            "open_tasks_total": 0,
+            "open_tasks_done": 0,
+        }
+        for p in _PRIORITY_BUCKET_ORDER
+    }
+    dead_lane_30 = dead_lane_90 = dead_lane_unknown = 0
+
     for s in OPEN:
         for c in columns[s]:
+            pri = c.get("priority", "NONE")
+            bucket = bucket_map.setdefault(
+                pri,
+                {
+                    "priority": pri,
+                    "open_handoffs": 0,
+                    "open_untracked_handoffs": 0,
+                    "open_tasks_total": 0,
+                    "open_tasks_done": 0,
+                },
+            )
+            bucket["open_handoffs"] += 1
+
             if c.get("progress_source") == "checkboxes":
                 open_total += c["total"]
                 open_done += c["done"]
                 open_tasks += c["total"] - c["done"]
+                bucket["open_tasks_total"] += c["total"]
+                bucket["open_tasks_done"] += c["done"]
+            else:
+                bucket["open_untracked_handoffs"] += 1
+
+            age = _age_days(c.get("activity"), now=now)
+            if age is None:
+                dead_lane_unknown += 1
+            elif age > _DEAD_LANE_90_D:
+                dead_lane_90 += 1
+                dead_lane_30 += 1
+            elif age > _DEAD_LANE_30_D:
+                dead_lane_30 += 1
+
     all_done = all_total = 0
     for cards in columns.values():
         for c in cards:
             if c.get("progress_source") == "checkboxes":
                 all_total += c["total"]
                 all_done += c["done"]
+
+    priority_buckets = [
+        bucket_map[p]
+        for p in _PRIORITY_BUCKET_ORDER
+        if bucket_map[p]["open_handoffs"] or bucket_map[p]["open_untracked_handoffs"]
+    ]
+
     # Outstanding handoffs with no checklist can't be measured in tasks — surface
     # the count so the number isn't silently read as "0 work left".
     open_untracked = sum(
@@ -495,6 +581,12 @@ def _backlog_summary(columns: dict[str, list[dict]]) -> dict:
         "all_tasks_done": all_done,
         "all_tasks_total": all_total,
         "pct_all_done": round(100 * all_done / all_total, 1) if all_total else None,
+        "priority_buckets": priority_buckets,
+        "dead_lane": {
+            "over_30": dead_lane_30,
+            "over_90": dead_lane_90,
+            "unknown_activity": dead_lane_unknown,
+        },
     }
 
 

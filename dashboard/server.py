@@ -29,6 +29,7 @@ import subprocess
 import sys
 import threading
 import time
+from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -86,6 +87,19 @@ _ACT_UNCHECKED_RE = re.compile(r"^\s*[-*] \[ \]")
 _ACT_EMPTY = {"commits": 0, "handoffs_touched": 0, "boxes_checked": 0, "boxes_added": 0}
 
 
+def _parse_semantic_timestamp(value: object) -> float | None:
+    """Parse an ISO-8601 timestamp to Unix epoch seconds."""
+    if not isinstance(value, str) or not value:
+        return None
+    try:
+        dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.timestamp()
+
+
 def _parse_activity_log(text: str) -> dict:
     """Fold ``git log --format=commit:%H -p`` output into today's-activity counters.
 
@@ -129,6 +143,53 @@ def _activity_today() -> dict:
     if proc.returncode != 0:
         return dict(_ACT_EMPTY)
     return _parse_activity_log(proc.stdout)
+
+
+def _read_kernel_contract() -> dict:
+    """Read the kernel dashboard contract, tolerating absence/corruption."""
+    try:
+        data = json.loads(KERNEL_DASHBOARD_JSON.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        data = {**_KERNEL_EMPTY, "generated_at": None,
+                "error": "kernel-R&D contract not exported yet — the loop "
+                         "(epyc-inference-research) has not run kernel_store.py export."}
+    except (OSError, json.JSONDecodeError) as exc:
+        data = {**_KERNEL_EMPTY, "generated_at": None,
+                "error": f"kernel-R&D contract unreadable: {exc}"}
+    if not isinstance(data, dict):
+        data = {**_KERNEL_EMPTY, "generated_at": None,
+                "error": "kernel-R&D contract malformed (not an object)"}
+    return data
+
+
+def _kernel_contract_freshness(data: dict) -> dict:
+    """Classify kernel freshness from semantic run timestamps, not file mtime."""
+    ts_candidates = []
+    runs = data.get("runs")
+    if isinstance(runs, list):
+        for run in runs:
+            if isinstance(run, dict):
+                ts = _parse_semantic_timestamp(run.get("ts"))
+                if ts is not None:
+                    ts_candidates.append(ts)
+    if ts_candidates:
+        source_ts = max(ts_candidates)
+        source = "runs[].ts"
+    else:
+        source_ts = _parse_semantic_timestamp(data.get("generated_at"))
+        source = "generated_at"
+    if source_ts is None:
+        return {"staleness_class": "missing", "age_s": None,
+                "timestamp": None, "source": None}
+    age = max(0.0, time.time() - source_ts)
+    if age <= _KERNEL_WARN_S:
+        cls = "fresh"
+    elif age <= _KERNEL_STALE_S:
+        cls = "aging"
+    else:
+        cls = "stale"
+    return {"staleness_class": cls, "age_s": round(age, 1),
+            "timestamp": round(source_ts, 3), "source": source}
 
 
 def _load_file_activity() -> dict:
@@ -257,27 +318,15 @@ def kernel_payload() -> dict:
 
     The hub only renders the contract; the loop (epyc-inference-research) owns it.
     """
-    fresh = freshness.classify(KERNEL_DASHBOARD_JSON, _KERNEL_WARN_S, _KERNEL_STALE_S)
-    try:
-        data = json.loads(KERNEL_DASHBOARD_JSON.read_text(encoding="utf-8"))
-    except FileNotFoundError:
-        data = {**_KERNEL_EMPTY, "generated_at": None,
-                "error": "kernel-R&D contract not exported yet — the loop "
-                         "(epyc-inference-research) has not run kernel_store.py export."}
-    except (OSError, json.JSONDecodeError) as exc:
-        data = {**_KERNEL_EMPTY, "generated_at": None,
-                "error": f"kernel-R&D contract unreadable: {exc}"}
-    if not isinstance(data, dict):
-        data = {**_KERNEL_EMPTY, "generated_at": None,
-                "error": "kernel-R&D contract malformed (not an object)"}
-    data["_freshness"] = fresh
+    data = _read_kernel_contract()
+    data["_freshness"] = _kernel_contract_freshness(data)
     return data
 
 
 def health_payload() -> dict:
     """Fold the board (live) + timeline + kernel artifacts into one status line."""
     tl = freshness.classify(TIMELINE_PATH, _TIMELINE_WARN_S, _TIMELINE_STALE_S)
-    kn = freshness.classify(KERNEL_DASHBOARD_JSON, _KERNEL_WARN_S, _KERNEL_STALE_S)
+    kn = _kernel_contract_freshness(_read_kernel_contract())
     # ``missing`` is not degraded (fresh checkout / loop not started); ``stale`` is.
     degraded = tl["staleness_class"] == "stale" or kn["staleness_class"] == "stale"
     return {
