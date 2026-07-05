@@ -4332,3 +4332,5 @@ Purpose: Handoff audit + Hermes Phase 2 routing API
 {"ts":"2026-07-05T14:28:41+00:00","session":"ses_20260705_123912_2276091","level":"INFO","cat":"TASK_END","msg":"F2 active-safe nightshift scheduler","details":"outcome=success"}
 {"ts":"2026-07-05T14:51:38+00:00","session":"ses_20260705_123912_2276091","level":"INFO","cat":"TASK_START","msg":"Record W8 blacklist/report repair","details":"User asked whether the broad blacklist bug was still live; updating root handoffs/progress with verified current state"}
 {"ts":"2026-07-05T14:51:38+00:00","session":"ses_20260705_123912_2276091","level":"INFO","cat":"TASK_END","msg":"Record W8 blacklist/report repair","details":"outcome=success"}
+{"ts":"2026-07-05T15:03:50+00:00","session":"ses_20260705_123912_2276091","level":"INFO","cat":"TASK_START","msg":"RI-10 canary decision packet","details":"Telemetry depth is complete; generating fail-closed operational and factuality-readiness decision evidence"}
+{"ts":"2026-07-05T15:03:50+00:00","session":"ses_20260705_123912_2276091","level":"INFO","cat":"TASK_END","msg":"RI-10 canary decision packet","details":"outcome=success"}
