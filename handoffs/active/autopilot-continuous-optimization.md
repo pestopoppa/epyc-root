@@ -1152,6 +1152,13 @@ paired authority core.
   `MetaOptimizer.rebalance()` can steer some exploration budget toward
   higher-tier performers without changing `DEFAULT_FRONTIER_TIER`, production-
   best selection, `SafetyGate`, or baseline promotion semantics.
+- 2026-07-05 live planner-pressure follow-up: orchestrator `3af6e500` extends
+  `_build_eval_coverage_pressure()` with cached per-tier pool denominators, so
+  each controller turn sees T1/T2/T3 coverage against the active question pool.
+  Current live render: T1 `1805/21133` (`8.54%`), T2 `843/26667` (`3.16%`),
+  and T3 `160/5431` (`2.95%`). This keeps T3 visible as an under-sampled
+  expert/hard workflow validation lane without changing the T1 production
+  optimization objective or any authority gate.
 - 2026-07-05 maintenance status: AutoPilot is live as PID `1671008` via
   `start_fable_authority_daemon.py --max-trials 2000` after PID `1634689`
   was stopped and verified gone at the trial `1154` boundary. The API was
