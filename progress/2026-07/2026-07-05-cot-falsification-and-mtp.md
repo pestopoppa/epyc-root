@@ -86,3 +86,72 @@ New memory file `feedback_accuracy_token_tradeoff_rescue_metric` (recorded in th
 
 ## Wiki
 This session's slice (CoT single-shot falsification + MTP-on-GPU-MoE re-check-still-negative) was compiled into `wiki/hardware-optimization.md` as an extension of the existing review-flagged 2026-07-05 subsection. The source scanner reports **47 new sources** (up from 43), spanning parallel autopilot / evidence-plane / dashboard sessions; a full cross-session compile is out of scope for this focused wrap-up, so `.last_compile` was **NOT** touched (advancing it would hide the other sessions' un-compiled sources from the next incremental scan — same precedent as prior wrap-ups).
+
+---
+
+## Update (continued 2026-07-05, post-`78428cd2` wrap-up) — MTP CONVERGED to ~neutral at production temp · spec-dec-temp SOTA · stream-K ALREADY-shipped · self-debug loop 4% · CoT research: scaffold dead-end confirmed, verifier/selector = the forward path
+
+The 78428cd2 wrap-up (above) closed the CoT single-shot lane and recorded MTP-on-GPU-MoE as "still-negative (−6.8%)." The campaign continued past that wrap-up (four more commits, `7369b0ec`→`752408bc`) and produced a **cleaner convergence on both fronts plus the major CoT research result.** This continuation supersedes two conclusions above — **the −6.8% MTP verdict** (that was the *temp-0.6 point of a temp curve*, not "production sampling") and **the "recursive loop = only open bet" framing** (the recursive/self-debug loop was tested and is ALSO weak; the real forward path is verifier/selector). Same measurement caveat: every GPU number is an OBSERVATION (single MI210, serial, seed=42, no `P-GPU-1`), usable for direction only.
+
+### 7. MTP-on-GPU-MoE CONVERGED — ~neutral at production temperature (closes the 3-way flip-flop) (commit `7369b0ec`)
+Root cause of the flip-flop (−12% → +6.5% → −6.8%): **each reading measured a different, arbitrary output temperature instead of the deployed low-temp config.** Full curve (35B-A3B, seed 42, experimental build), MTP-on vs off:
+
+| output temp | MTP delta | draft acceptance | regime |
+|---|---|---|---|
+| **0 (greedy)** | **+6.5%** | 0.79 | greedy over-states spec-dec (best-case acceptance) |
+| **0.2 (PRODUCTION — registry intent 0.1–0.3 + greedy fallback)** | **−1.6%** | 0.63 | **operative = ~neutral (within single-sample noise)** |
+| **0.6** | **−6.8%** | 0.57 | high-temp; the "still-negative" reading above |
+
+- **Verdict: MTP is a WASH on GPU-MoE at production temp** — not worth enabling as a speed lever, but **no longer a reason to avoid it.** `de447119f` (+17.4% single-stream MTP-verify MMQ dispatch) **neutralized the old −12% penalty**; the residual sign at production temp is −1.6% = noise.
+- **Do NOT re-quote "−12% / net-negative / no-go" as the current verdict** — that magnitude is now stale; the converged annotation is on findings-05c §Axis-D L8 (line ~95).
+- New memory `feedback_production_sampling_seed_not_temp0`: **never A/B spec-dec at temp 0** — greedy inflates draft-acceptance; always measure at the deployed sampling config (temp + seed).
+
+### 8. Spec-dec temperature behaviour is TEXTBOOK SOTA (literature cross-check)
+Speculative decoding is **output-distribution-preserving (lossless) at every temperature** — only the *speedup* varies, and acceptance **falls monotonically as temperature rises** (higher temp = flatter target distribution = fewer draft tokens accepted). Our measured curve (accept 0.79 → 0.63 → 0.57 across temp 0 → 0.2 → 0.6) is exactly that shape. **Consequence:** low-temp production (0.1–0.3) is the *favorable* spec-dec regime, so the ~neutral-at-production reading is the expected outcome, not an anomaly — and any spec-dec speed A/B run at temp 0 systematically over-states the win.
+
+### 9. stream-K is ALREADY the LIVE MMQ path on CDNA2 — CLOSED, not an un-tried bet (commit `7cf59c6d`)
+Read-only `mmq.cu` assessment (zero build): **`use_stream_k = true` for CDNA2.** The 104-WG grid the campaign already benchmarked **IS stream-K working as designed** — `nsm` persistent blocks, one balanced block/CU — and it PRODUCED the very aggregate baseline the campaign measured. The earlier framing of "stream-K as a bigger separate bet" was a **factual error**; it is the live path, not a lever to try. The **only untested residual** = raise the persistent grid `nsm → k·nsm` (2 WG/CU) + the saved compact-LDS patch (~2-line change, expected **+0–10%**, IQ2/capacity slot only), gated on a **zero-build read of the captured pmc CSVs**. findings-05c §3.3 (line ~133) carries the correction; task #5 resolved.
+
+### 10. CoT self-debug LOOP — also weak (4% rescue, RL-ceiling) + reasoning-effort framing (commit `752408bc`)
+The single-shot lane was CLOSED above; the only untouched CoT mechanism was the **recursive reason↔execute loop.** A self-debug instance was run: 35B, bigcodebench 60q, write→execute→feed-error→revise, MAX_ITERS=3, `-fa on`. Result: 1-shot 22% → loop-final 25% (net +2); **RESCUES 2/47 = 4%**; effort curve **FLAT** (both rescues at iter 2, none at 3). **The recursive mechanism is also weak** — matches RL-ceiling (arXiv:2504.13837): self-refinement is bounded by the base's pass@k, so more loops don't cross the ceiling.
+- **Caveat (operator):** bigcodebench is library-API-heavy (knowledge gaps, not reasoning) — possibly the wrong distribution → the **GPQA reasoning-diagnostic** (nothink vs ownthink vs scaffold-Qwable, 35B) is IN FLIGHT (see below).
+- **Reasoning-effort framing (operator):** loop-depth = a "reasoning effort" knob = the local analog of cloud `reasoning_effort` / thinking-budget. Unifies `{nothink → think-budget → single-shot scaffold → loop-depth → model-escalation}` on ONE effort axis → an operator **FLAG** + an autopilot per-task-class **TUNABLE** (the existing 4D Pareto + per-request-reasoning-budget plumbing). Even the negative loop run yields the calibration data (rescue-vs-effort curve, flat here).
+
+### 11. CoT RESEARCH — scaffold-injection is the PUBLISHED dead-end; VERIFIER/SELECTOR is the working "help another model" mode (commit `5be98734`)
+**The major result.** A public-literature survey confirms our negatives ARE the field consensus — scaffold/reasoning-injection is a known dead-end:
+- **"Reasoning that Travels" (arXiv:2605.28913):** transplanted reasoning is a capability **AMPLIFIER, not a SUBSTITUTE** — helps capable receivers, "cannot overcome fundamental performance gaps in weaker models"; transfer success tracks the RECEIVER's base capability. = our "transplanted reasoning doesn't transplant capability."
+- **Small-planner-degrades-executor (arXiv:2506.11578):** small-model plans drop a LARGER executor BELOW its baseline. = our single-shot 4B→35B derailing.
+- **RL-ceiling (arXiv:2504.13837):** self-refinement bounded by base pass@k. = our self-debug loop (4%).
+- **Reasoning is ELICITED not INSTALLED** (LIMO 2502.03387, s1 2501.19393, structure>content 2502.07374).
+- **Learnability gap (arXiv:2502.12143):** below ~3–7B long-CoT HURTS → our 4B-Fable5 is AT the boundary; Qwable-35B is above it.
+
+**THE ONE WORKING MODE (untested by us): VERIFIER / SELECTOR (best-of-N).** The reasoner does ITS OWN task — grade/rank/verify the beneficiary's candidate answers — and never transplants capability, sidestepping the entire transplant problem:
+- **GenRM (arXiv:2408.15240):** best-of-N lifts 5%→45%, 73%→93%.
+- **GenPRM (arXiv:2504.00891):** a **1.5B generative PRM BEATS GPT-4o as a judge**; a 7B beats a 72B.
+- Fits the GPU-reasoner + CPU-beneficiary topology and **plugs into the existing EV-9 DRACO/MindDR scorer.**
+
+**Reframed GPU-reasoner role** (replaces scaffold-injection): (1) **standalone** — route reasoning-heavy tasks (math/code/STEM) to the GPU reasoner; (2) **verifier/selector (best-of-N)** over CPU-model outputs. Offline, Qwable can still generate CoT to fine-tune CPU models (data-gen). **VERIFIER/SELECTOR is the recommended NEXT GPU-reasoner experiment** (operator, GPU-only): testable **entirely on GPU** by hosting the beneficiary on GPU and artificially **rescaling its t/s** to sweep the CPU-cost tradeoff pivots (no CPU needed); reuses the EV-9 scorer. Run immediately or after the incremental levers land.
+
+### In flight (do NOT wait) + mid-precision probe
+- **GPQA reasoning-diagnostic** (nothink vs ownthink vs scaffold-Qwable, 35B) — decides whether the CoT scaffold closes **bench-independently**, or whether **ownthink helps but the transplant does not** (the bigcodebench-distribution caveat). Running; next session reads the result.
+- **gemma-4-26B IQ4_XS downloaded** — mid-precision probe queued (between the deployed Q4_K_M and the Q8 clean-quality arm).
+
+### Commits (this continuation, epyc-root, branch spec-dec-mtp-refresh-2026-06-22)
+
+| Commit | Summary |
+|---|---|
+| `7369b0ec` | findings-05c L8: MTP-on-GPU-MoE **CONVERGED** — ~neutral at production temp (curve: temp0 +6.5% / temp0.2 −1.6% / temp0.6 −6.8%); `de447119f` neutralized the −12%; closes the 3-way flip-flop (root cause = measured arbitrary temps not the deployed config) |
+| `7cf59c6d` | findings-05c: **stream-K is ALREADY the LIVE MMQ path on CDNA2** (`use_stream_k=true`; 104-WG grid = stream-K working as designed) — "bigger separate bet" was a factual error; residual = `nsm→k·nsm` + compact-LDS (~2-line, +0–10%, pmc-CSV-gated); task #5 resolved |
+| `5be98734` | **CoT research:** scaffold-injection = literature dead-end (2605.28913 / 2506.11578 / 2504.13837 / LIMO-s1); the ONE working mode = **VERIFIER/SELECTOR best-of-N** (GenRM 2408.15240; GenPRM 2504.00891 — 1.5B PRM beats GPT-4o judge); GPU-reasoner role reframed |
+| `752408bc` | CoT handoff current: **self-debug loop 4%** (RL-ceiling), effort curve flat; reasoning-effort framing (loop-depth = local `reasoning_effort`); **verifier/selector = recommended next GPU-only experiment** (beneficiary-t/s rescale, reuses EV-9 scorer) |
+
+Wrap-up doc commit (this continuation + handoff Status header + index/wiki reconciliation) added separately this session (hash in the wrap-up report).
+
+### Deferred / open (this continuation)
+- **VERIFIER/SELECTOR best-of-N = the forward GPU-reasoner experiment** (operator-approved, GPU-only via beneficiary-t/s rescale, reuses EV-9 scorer). This is now the primary open CoT bet, ahead of the loop.
+- **Recursive reason↔execute loop** = operator-gated bigger build, prior **further lowered** by the self-debug 4% result (RL-ceiling). Distillation-adds-value + format-native-injection stand as components IF it is ever built.
+- **findings-05c residual −12% cells** — the converged verdict (~neutral) is applied to the primary Axis-D L8 cell (§Axis-D) and §3.3 stream-K note, but the older **−12% / "N" / "Do NOT enable MTP"** magnitude still appears in the §1.1 compact-grid L8 row, §3.3 item 6, §3.4 item 7, and the §5 headline. The verdict shifted negative→~neutral, so those summary cells now read *more* conservative-but-inconsistent than at the prior wrap-up. Per the established flag-not-overwrite precedent for measurement-adjacent category verdicts (operator-reviewed cadence), they are **FLAGGED, not swept**, this wrap-up.
+- **GPQA reasoning-diagnostic** in flight (do not wait); **gemma-4-26B IQ4_XS** mid-precision probe queued.
+
+### Memory
+New memory `feedback_production_sampling_seed_not_temp0` — never A/B spec-dec at temp 0 (greedy inflates draft-acceptance = best-case); measure at the deployed sampling config (temp + seed). This is the discipline lesson that resolved the 3-way MTP flip-flop.
