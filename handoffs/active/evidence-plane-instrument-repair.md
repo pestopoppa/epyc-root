@@ -26,7 +26,10 @@ T1 `1771/21133` (`8.3803%`, `255` eval-bearing trials), T2 `843/26667`
 covered non-sentinel suites are `tool_use`, `agentic`, `skill_transfer`,
 `long_context`, `real_suite_v1`, `mode_advantage_hard`, `mode_advantage`,
 `coder`, `bigcodebench`, and `cruxeval`. This is planner pressure rather than
-a blocker; A9 remains `attention/no_runnable_batches`.
+a blocker; A9 remains `attention/no_runnable_batches`. Orchestrator `4bc1711e`
+also makes the generated AutoPilot PNGs render tier-segregated HV and Pareto
+quality/speed series for T1/T2/T3, matching the live dashboard's same-tier view
+without changing any production optimization or authority gate.
 
 Current blockers before any next decision point:
 
