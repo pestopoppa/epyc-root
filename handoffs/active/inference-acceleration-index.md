@@ -1,7 +1,7 @@
 # Inference Acceleration — Active Index
 
 **Purpose**: dispatch point for local inference optimization across CPU throughput, KV/context efficiency, speculative decoding, GPU-prep work, and model-serving experiments.
-**Updated**: 2026-06-20 K-MEM completion, G11 frontdoor+worker scoring, and Granite warm embedder recipe refresh.
+**Updated**: 2026-07-05 eval-batch activation smoke completion, K-MEM completion, G11 frontdoor+worker scoring, and Granite warm embedder recipe refresh.
 **History**: pre-compaction detail lives in [../archived/inference-acceleration-index-history-through-2026-06-19.md](../archived/inference-acceleration-index-history-through-2026-06-19.md).
 
 ## Start Here
@@ -16,7 +16,7 @@
 
 | Area | Owner handoff | Status | Next action |
 |------|---------------|--------|-------------|
-| Batched decode / eval batching | [batched-decode-measurement.md](batched-decode-measurement.md) | ACTIVE-HIGH; A3B E1 and E2 decision-grade evidence landed 2026-07-03, with E2 a 4.858x wall-minutes/eval keep-candidate. Default-off eval-batch metadata, warm `eval_batch_frontdoor`, guarded route rewrite, smoke probe, and activation-window runner are packaged. | In the next clean window, run `uv run python scripts/benchmark/eval_batch_serving_activation_window.py --apply --confirm-clean-window`, then collect representative EvalTower quality/reliability/throughput before any default path change. Dense-control E1 remains re-scope-only; do not start E3 solely from the A3B result. |
+| Batched decode / eval batching | [batched-decode-measurement.md](batched-decode-measurement.md) | ACTIVE-HIGH; A3B E1 and E2 decision-grade evidence landed 2026-07-03, with E2 a 4.858x wall-minutes/eval keep-candidate. Default-off eval-batch metadata, warm `eval_batch_frontdoor`, guarded route rewrite, smoke probe, activation-window runner, and the 2026-07-05 smoke/rollback pass are packaged. | Representative EvalTower quality/reliability/throughput telemetry is now the remaining gate before any default path change. Dense-control E1 remains re-scope-only; do not start E3 solely from the A3B result. |
 | Dynamic stack KV measurement | [bulk-inference-campaign.md](bulk-inference-campaign.md) | DS-E1 is now staged in the clean-window manifest; no production flip | Run only in the consolidated quiet window after AutoPilot/live llama-server blockers clear. |
 | X-MAS / routing measurement dependency | [x-mas-text-routing.md](x-mas-text-routing.md), [routing-and-optimization-index.md](routing-and-optimization-index.md) | Enforce default-off; 2026-06-21 constrained-policy held-out A/B completed with `decision.status=hold` | Repair quality regressions before another attested quiet-window A/B; G5/G11 no longer block scheduling. |
 | K-MEM / Tulving episodic benchmark | [research-evaluation-index.md](research-evaluation-index.md), [bulk-inference-campaign.md](bulk-inference-campaign.md) | Completed/scored; corrected score in research `9e63af0` | Use failure-mode report for follow-up design; no memory-routing promotion. |
