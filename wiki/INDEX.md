@@ -2,9 +2,9 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-07-03 (focused checkpoint: folded the verified planner-turn StrategyStore hint repair, tool-use steering surface, RI-10 arm-attributed canary gate hardening, DAR-1 current replay, `seq_refuted` learning quarantine, ledger-derived `core_v2` candidate plus era activation guard, and W8 readiness checkpoint into [Autonomous Research](autonomous-research.md), [Tool Implementation](tool-implementation.md), [Routing Intelligence](routing-intelligence.md), and [Benchmark Methodology](benchmark-methodology.md). Prior 2026-06-22 incremental compile of 29 new sources since the 2026-06-21 baseline retained in article history.)
+**Last compiled**: 2026-07-05 (full backlog compile: 49 changed sources since 2026-07-04 — the deferred "47-source cross-session backlog" — merged into 10 articles: [Hardware Optimization](hardware-optimization.md) (MI210 campaign, bf16 GDN state, two-axis roadmap), [Speculative Decoding](speculative-decoding.md) (MTP-on-GPU-MoE converged ~neutral, prompt-lookup corpus retired), [Autonomous Research](autonomous-research.md) (ledger authority cutover live, planner-economics local pivot), [Benchmark Methodology](benchmark-methodology.md) (tool-use lane live, W8 sparse-baseline repair), [Routing Intelligence](routing-intelligence.md) (RI-10 decision-ready/hold, X-MAS enforce live), [Inference Serving](inference-serving.md) (launcher NUMA default flip, DS-7 codified), [Agent Architecture](agent-architecture.md) (consult v1 wired default-off, BEP arc closed), [Cost-Aware Routing](cost-aware-routing.md) (CoT scaffold falsified, verifier/selector pivot), [Context Management](context-management.md), and [Tool Implementation](tool-implementation.md) (:8100 hub, dashboards-as-value-instruments bar). Observation-heavy sections carry writer-evidence review flags pending human/measured review. Prior 2026-07-03 focused checkpoint retained in article history.)
 **Articles**: 26 compiled, 4 stub categories
-**Total sources**: 514+ scanned documents across 6 source types; 2026-06-21 pass merged 36 changed/new sources (research-intake 695-720 batch + parallel-session handoffs/progress) into 21 articles; 2026-06-19 pass compiled 37 changed/new active-handoff/progress sources into the highest-value evidence/routing/KV clusters
+**Total sources**: 560+ scanned documents across 6 source types; 2026-07-05 pass merged 49 changed/new sources (MI210 speed campaign, evidence-plane/autopilot arc, dashboards, routing canary) into 10 articles; 2026-06-21 pass merged 36 changed/new sources into 21 articles
 
 ---
 
@@ -12,17 +12,17 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Speculative Decoding](speculative-decoding.md) | 26 | Verification wall on hybrid SSM models kills all draft-verify approaches; NUMA parallelism is the dominant lever |
+| [Speculative Decoding](speculative-decoding.md) | 52+ | MTP-on-GPU-MoE converged ~neutral at production temp (run MTP OFF for GPU-resident MoE; MTP stays a CPU/BW-bound + GPU-dense win); corpus prompt-lookup retired after failed clean-window A/B |
 | [MoE Optimization](moe-optimization.md) | 23 | REAP 25-40% expert pruning is near-lossless; 30% sometimes outperforms 20% due to routing redistribution |
 | [KV Cache](kv-cache.md) | 34 | Attention Matching is production-implemented but current-stack rollout decisions still need refreshed long-context/coding evidence |
 | [Quantization](quantization.md) | 25 | Hadamard+q4_0 is the proven production KV config; exotic formats (TQ3, PolarQuant, QJL) all lose to it on CPU |
-| [Hardware Optimization](hardware-optimization.md) | 58 | Batch=1 decode micro-opts are closed, but frontdoor spec-dec, DSA, batched eval serving, and MI210-as-eval-engine remain live angles |
+| [Hardware Optimization](hardware-optimization.md) | 85+ | bf16 GDN recurrent-state kernel is the campaign's clean deployed-role win (+13–21% @B32, runtime-gated); MI210 roadmap is two axes (residency quant-ladder vs GPU drafter-farm) competing for one card |
 
 ## Serving & Systems
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Inference Serving](inference-serving.md) | 37 | Stack-priors now drive concrete serving/preflight consumers, including VL role discovery; AutoPilot preflight's remaining fallback is manifest-owned compatibility plumbing, while launch projection and single-instance batched decode remain the key gaps |
+| [Inference Serving](inference-serving.md) | 48 | Launcher `--numa-mode` default flipped to `quarter` (closes silent oversubscription hazard); DS-7 static-prewarm profile codified; restart-applicator hardened but promotion still ledger-gated |
 | [Local Inference](local-inference.md) | 16 | Cherry-picked upstream fixes unblock Qwen3.6 (0%→73.8%); fork conflict risk lower than assessed; full rebase deferred |
 | [Chat Templates](chat-templates.md) | 2 | Per-family turn markers + when to use `/completion` (Qwen/gemma-3/Llama3) vs `/v1/chat/completions` (gemma-4 multi-channel) — checklist for onboarding new models without silent routing failures |
 
@@ -30,23 +30,23 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Cost-Aware Routing](cost-aware-routing.md) | 31+ | Task-rate/goodput telemetry exposes token bloat; stack-priors anchor q_scorer, seeding, future distillation action spaces, and the remaining launch-map migration target |
-| [Routing Intelligence](routing-intelligence.md) | 63+ | RI-10 raw high-risk count is sufficient, but decision-grade enforce/shadow arm telemetry is not; DAR replay still shows 0.00% gate regret |
-| [Benchmark Methodology](benchmark-methodology.md) | 66+ | W4/W6 authority state is green, W8 remains promotion-eval-bound, and `core_v2` now has a guarded ledger-derived candidate awaiting E4 era authorization |
+| [Cost-Aware Routing](cost-aware-routing.md) | 40+ | CoT scaffold-transplant falsified in both regimes (reasoning context amplifies, doesn't substitute for, receiver capability); verifier/selector best-of-N is the forward GPU-assist path |
+| [Routing Intelligence](routing-intelligence.md) | 67+ | RI-10 decision-ready but first packet is `hold_quality_unscored` (proxies favor enforce; factuality unscored); X-MAS learned route-mutation is live in enforce — first learned routing layer in production |
+| [Benchmark Methodology](benchmark-methodology.md) | 70+ | Tool-use sentinel lane live under Gate-3 discipline; W8's dominant blocker was a sparse-baseline artifact (advisory-below-n=5 repair); sequential alpha-wealth exposure confirmed real |
 
 ## Agent & Architecture
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Agent Architecture](agent-architecture.md) | 48 | Fable 5's strategic spine is real-task corpus -> reviewed self-running lab jobs -> data flywheel, gated by evidence and quarantine |
-| [Autonomous Research](autonomous-research.md) | 79+ | Authority is live; StrategyStore hints now reach planner action choice, while fingerprint multiplicity and W8 promotion evidence remain open |
+| [Agent Architecture](agent-architecture.md) | 63+ | Consult primitive went design→staged-v1 in one week, all default-off (48h bake is the only gate); BEP transactional-apply arc closed; DCP's first live A/B self-classified `hold` |
+| [Autonomous Research](autonomous-research.md) | 86+ | Ledger authority cutover is live (W1 archive + W4 `ledger_authoritative`); planner economics pivoted to LocalPlannerProvider after the spend breaker tripped; alpha-wealth multiplicity guard confirmed the hazard was real |
 | [Memory-Augmented Models](memory-augmented.md) | 25+ | Episodic FAISS writes require cross-process locking; K-MEM Tulving is a mixed baseline with weak chronology and no memory-routing promotion |
 
 ## Context & Compression
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Context Management](context-management.md) | 17 | 80-92% of agent context is redundant; DCP seed-bundle pre-assembly is wired advisory/default-off, with DCP-6 still inference-gated |
+| [Context Management](context-management.md) | 28 | 80-92% of agent context is redundant; reasoning context does not transplant capability (amplifier, not substitute); DCP-for-consult landed default-off |
 | [Context Extension](context-extension.md) | 19 | MemAgent achieves 437x extrapolation; Memento reveals 15pp KV-vs-text ceiling; YaRN is the production path for 256K-1M |
 | [SSM & Hybrid Architectures](ssm-hybrid.md) | 9 | Verification latency (220ms/tok, 90% of cost) is the real speculation killer; Log-Linear GDN (ICLR 2026) could unblock via 4-10x state reduction |
 
@@ -72,7 +72,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | [Search & Retrieval](search-retrieval.md) | 31 | K-RAG K7 seed eval picks recency-weighted recall@10, but final retrieval claim waits on the 70-case certification pool |
 | [Knowledge Management](knowledge-management.md) | 18+ | K-RAG K7 certification produced a zero-miss retrieval candidate; wiki compile remains a derived wrap-up artifact |
 | [RAG Alternatives](rag-alternatives.md) | 2 | SLIDERS structured-DB+SQL alternative gated behind Phase 0 falsification (GPT-4.1 hard-wired adoption blocker; not on ColBERT upgrade path) |
-| [Tool Implementation](tool-implementation.md) | 31 | Tool-use hints now reach the planner prompt; corpus lookup is alive but remains gated on coding-task A/B evidence |
+| [Tool Implementation](tool-implementation.md) | 39 | Dashboards were built as liveness instruments, not value instruments — every telemetry addition now needs an outcome KPI + escalation rule; :8100 project hub live with git-derived recency |
 
 ## Research & Analysis
 

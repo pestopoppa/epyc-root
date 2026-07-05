@@ -1,40 +1,40 @@
 {
   "by_type": {
     "docs": 15,
-    "handoff-active": 104,
+    "handoff-active": 127,
     "handoff-blocked": 1,
-    "handoff-completed": 139,
-    "progress": 185,
-    "research": 121
+    "handoff-completed": 140,
+    "progress": 213,
+    "research": 123
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-06-28T21:42:00Z",
+  "last_compile": "2026-07-04T16:11:05Z",
   "mode": "full",
-  "scan_time": "2026-06-28T21:47:09Z",
+  "scan_time": "2026-07-05T18:14:56Z",
   "schema_version": 1,
-  "source_set_hash": "e4033340e5aacdae5e1b42a7dc90b351f3871ecde09bb4c152d894a892187852",
+  "source_set_hash": "d4b7beb35afd067e768650c61a5cd6a9253f73c4f68bae5b66c5175e8af3624d",
   "sources": [
     {
-      "content_hash": "f0506c861200715c31f630966dd5881b4dcff41813aa8d68f3dadd3f1eda1c43",
-      "modified": "2026-06-20T05:21:00Z",
+      "content_hash": "b5f9d756fd0daa82182b46024fea6bb6da04c7d415891e5ac2b01c9777881ef0",
+      "modified": "2026-07-03T17:07:27Z",
       "path": "handoffs/active/agent-file-prose-compression.md",
-      "size": 17122,
+      "size": 18536,
       "title": "Per-Model Agent-File Prose Compression",
       "type": "handoff-active"
     },
     {
-      "content_hash": "0c14ee3e865309c9276a748f6b6f26c76f557d7f26fd78b193b825b4a8532331",
-      "modified": "2026-06-25T20:22:01Z",
+      "content_hash": "7dfc21bf75f3198ea9d9daf3e15cf042a3303349483036466243ba84c1570b9f",
+      "modified": "2026-07-03T09:35:44Z",
       "path": "handoffs/active/agent-world-env-synthesis.md",
-      "size": 30471,
+      "size": 30818,
       "title": "Agent-World Environment Synthesis",
       "type": "handoff-active"
     },
     {
-      "content_hash": "0362245b6ac83e45ab433d1a947a5ca0e6fe2c617044d726c0f720cdd34f70a4",
-      "modified": "2026-06-20T05:21:00Z",
+      "content_hash": "2ad4f88470ad503435b6f057660b148122b3f3f2e61778792ac318e84c567ab1",
+      "modified": "2026-07-03T09:34:08Z",
       "path": "handoffs/active/agentic-rocm-kernel-authoring.md",
-      "size": 8056,
+      "size": 8990,
       "title": "Agentic ROCm Kernel Authoring \u2014 MI210 Verify+Profile Harness",
       "type": "handoff-active"
     },
@@ -55,26 +55,34 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "dbdb9e437f7ab7d38baa06cc1b8580be8c51208e9ac904a0b13d9806ad58d842",
-      "modified": "2026-06-28T21:37:47Z",
+      "content_hash": "16f791bf260992ad146b37d134f8d41fac6cec23a8f55139a14283a40d828093",
+      "modified": "2026-06-28T22:07:21Z",
+      "path": "handoffs/active/autopilot-authority-autoenable-proposal.md",
+      "size": 7988,
+      "title": "Proposal \u2014 Auto-enable AutoPilot authority on strict-readiness-pass",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "8b875d72200c2c59cc8ee0b1f04a446e1245f1523db76541febdb71a79cbed71",
+      "modified": "2026-07-05T17:28:06Z",
       "path": "handoffs/active/autopilot-continuous-optimization.md",
-      "size": 146535,
+      "size": 167243,
       "title": "AutoPilot: Continuous Recursive Optimization",
       "type": "handoff-active"
     },
     {
-      "content_hash": "cd93bb8be06dfc180af89d67b3bb87641a7bcd384811ec7a79e71f67ef642bd1",
-      "modified": "2026-06-20T21:29:14Z",
+      "content_hash": "89e5864fbb8510ed92428dae364c5afece689fa3023474b46fd36971c7918936",
+      "modified": "2026-07-05T01:40:03Z",
       "path": "handoffs/active/batched-decode-measurement.md",
-      "size": 10823,
+      "size": 22569,
       "title": "Batched-Decode Measurement (E1/E2) + Conditional 8x8 GEMM SIMD (E3)",
       "type": "handoff-active"
     },
     {
-      "content_hash": "b3c0cdee46980f7b4fad35de3fbc44487b76d37c358f4d3b49c4bdc4e86d6c0e",
-      "modified": "2026-06-28T18:51:57Z",
+      "content_hash": "4df77560635d3f516a0e10acb4e2a265f36dc2f912936f7d9b513c274592426c",
+      "modified": "2026-07-05T03:14:14Z",
       "path": "handoffs/active/batched-edit-parallel-apply.md",
-      "size": 18264,
+      "size": 18813,
       "title": "Batched Structured Editing + Parallel Apply Fan-out",
       "type": "handoff-active"
     },
@@ -87,18 +95,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "f2281f023d27d6122a546876d38ca36bbc636d98074097961cee9cc8feec3b23",
-      "modified": "2026-06-28T15:58:37Z",
+      "content_hash": "fc5609439051559a66d635cff7a6f2a582aeb085779cdca80745aac14e0e7bdf",
+      "modified": "2026-07-03T15:41:23Z",
       "path": "handoffs/active/bulk-inference-campaign.md",
-      "size": 113503,
+      "size": 113793,
       "title": "Bulk Inference Campaign \u2014 active backlog (Packages G\u2013K)",
       "type": "handoff-active"
     },
     {
-      "content_hash": "7b59a41460ea0b483c913735b1c47eca72c661737493412fdac08cbd1680d8d7",
-      "modified": "2026-06-28T19:24:52Z",
+      "content_hash": "170af07560ce63dc25cf18e3e7bbefcb826ae9eccff40884aa2bbb33bf913017",
+      "modified": "2026-07-04T20:10:19Z",
       "path": "handoffs/active/capability-registry-and-promotion.md",
-      "size": 16521,
+      "size": 19416,
       "title": "Capability Registry, Safe Role-Restart Applicator & Promotion Workflow",
       "type": "handoff-active"
     },
@@ -119,42 +127,42 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "14da3cdc24498e88d3235c216ec0dd75928e0ebe5e7b8deb3fa1485d519cf945",
-      "modified": "2026-06-20T05:21:00Z",
+      "content_hash": "09b977286f4278105060d48a618b12a2a20ee49cf714c38aab83492e4f17d5ba",
+      "modified": "2026-07-03T18:17:12Z",
       "path": "handoffs/active/cpu-kernel-env-flags-inventory.md",
-      "size": 41112,
+      "size": 42598,
       "title": "CPU Kernel Env-Flag Inventory \u2014 2026-04-26 (updated 2026-06-14)",
       "type": "handoff-active"
     },
     {
-      "content_hash": "ac9df5cbd7f2dbfa98caf5304421c7bcbc4caa021631a538742e1839c82f0beb",
-      "modified": "2026-06-20T05:21:00Z",
+      "content_hash": "94f842367a28e9c358966c63b70b46a19ac44220aebb57df9d5bafe39d991ba9",
+      "modified": "2026-07-03T09:41:57Z",
       "path": "handoffs/active/cpu-shape-specialized-gemv-decode.md",
-      "size": 100290,
+      "size": 100883,
       "title": "CPU Shape-Specialized GEMV Microkernel for Zen 5 Decode",
       "type": "handoff-active"
     },
     {
-      "content_hash": "cbfbb791245fb066a6dd204567982067b230baffea118afaf8cc3b84b99c52cb",
-      "modified": "2026-06-27T19:17:22Z",
+      "content_hash": "2816aca4c362648a1ac772ca795114918b4df3f547166f811efe9a83d6ed38b5",
+      "modified": "2026-07-04T16:04:39Z",
       "path": "handoffs/active/decision-aware-routing.md",
-      "size": 54471,
+      "size": 56248,
       "title": "Decision-Aware Routing for Q-Scorer",
       "type": "handoff-active"
     },
     {
-      "content_hash": "dbe8b94f1fa738f8a81a8742458cebb7b13eedd41b6d34cc7b5e0a12b001b3b8",
-      "modified": "2026-06-20T05:21:00Z",
+      "content_hash": "5b60c29838479f49afe8ac538b5e9d39c16e96ddaade9379d05758f7c1b93dac",
+      "modified": "2026-07-02T22:36:03Z",
       "path": "handoffs/active/deepseek-v4-flash-cpu-port.md",
-      "size": 39662,
+      "size": 40424,
       "title": "DeepSeek-V4-Flash CPU Port \u2014 Experimental Branch",
       "type": "handoff-active"
     },
     {
-      "content_hash": "3864fd4dd93eefb977ea99cfdb71308fd966f4c247addd445d3049b069d756c5",
-      "modified": "2026-06-21T10:32:33Z",
+      "content_hash": "ced3b03a29e12dd9e91e590540701e4fbbcd6b93c85a8d6f7f4b99598c677297",
+      "modified": "2026-07-05T03:14:14Z",
       "path": "handoffs/active/delegation-context-preassembly.md",
-      "size": 19396,
+      "size": 19428,
       "title": "Delegation Context Pre-Assembly (Budget-Bounded)",
       "type": "handoff-active"
     },
@@ -167,26 +175,26 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "41a34aa498040c53ef18b6ab402a28775103b36c8bcf478be6a6c78205be7350",
-      "modified": "2026-06-27T20:05:53Z",
+      "content_hash": "bbf3adce23f676d6204f0a846c68b214cd843b788d5c8dfb00bd5d07cd5091f8",
+      "modified": "2026-07-05T09:53:00Z",
       "path": "handoffs/active/dynamic-stack-concurrency.md",
-      "size": 15225,
+      "size": 15378,
       "title": "Dynamic Stack Assembly & Concurrency Management",
       "type": "handoff-active"
     },
     {
-      "content_hash": "6a7d0487a025100b77c1f3571fbfe7034c7e721497cd1caafa79f8427d43945e",
-      "modified": "2026-06-20T05:21:00Z",
+      "content_hash": "26b817e916814435ec9843cd4e8af8f0fabfb65259e5c695b5c583ada9757fa0",
+      "modified": "2026-07-03T09:35:34Z",
       "path": "handoffs/active/engram-conditional-memory.md",
-      "size": 35587,
+      "size": 37770,
       "title": "Engram \u2014 Conditional Memory via Scalable Lookup",
       "type": "handoff-active"
     },
     {
-      "content_hash": "57c60493974ad816189f9b32bb02427f9fc82cf0ec557818975b06f93a9a4e26",
-      "modified": "2026-06-27T22:06:36Z",
+      "content_hash": "a4df600d38f4af867a9528851084f34933b6f87bbeb6b460105af4d5fcc660b8",
+      "modified": "2026-07-03T09:35:26Z",
       "path": "handoffs/active/ernie-image-turbo-evaluation.md",
-      "size": 11825,
+      "size": 12377,
       "title": "ERNIE-Image-Turbo Evaluation",
       "type": "handoff-active"
     },
@@ -207,50 +215,138 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "c8ace03a743f30a04946117d0171ca4d7c44b0228f85209f03cb3f76a81a825f",
-      "modified": "2026-06-28T19:50:44Z",
+      "content_hash": "f53d3ea5f5cd1d14ff55eca878738e7662cd4ab9aab418f6def25d85434d319e",
+      "modified": "2026-07-05T14:51:08Z",
       "path": "handoffs/active/evidence-plane-event-sourcing-and-narrative.md",
-      "size": 106335,
+      "size": 109876,
       "title": "Evidence Plane \u2014 Event-Sourced Runtime + Narrative Regeneration",
       "type": "handoff-active"
     },
     {
-      "content_hash": "a919da702b17c93ed6ae33b5f6440caf2eb80f8d0af521c5183a38e7d45e2886",
-      "modified": "2026-06-28T21:36:54Z",
+      "content_hash": "605e4ac0b5c5316b1770ed7ac39ed40029f4f460e90b9884a4c6f7289903b402",
+      "modified": "2026-07-05T03:40:47Z",
       "path": "handoffs/active/evidence-plane-instrument-repair.md",
-      "size": 34707,
+      "size": 41940,
       "title": "Evidence Plane \u2014 Instrument Repair (Phase-0 hotfixes + pool sampling)",
       "type": "handoff-active"
     },
     {
-      "content_hash": "56d8a111029862e0fd29f2f73a3a667bdd71c73965720d1d46d20b643638fe6f",
-      "modified": "2026-06-28T21:37:19Z",
+      "content_hash": "55eeefaa9beadbe48514ddb7bfd2efec32a226b93a703bf176891f30fd6d5576",
+      "modified": "2026-07-05T18:04:38Z",
       "path": "handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md",
-      "size": 31841,
+      "size": 43809,
       "title": "Evidence Plane \u2014 Per-Question Ledger + Sequential Verdicts (+ game layer)",
       "type": "handoff-active"
     },
     {
-      "content_hash": "f8d67fc75e66e3dad9e18f2ef4c5cb5e286719ca0e8835c187cdd8a55ccacff3",
-      "modified": "2026-06-28T11:04:22Z",
+      "content_hash": "7d34e0e25d2d4e39e67c638237af578216da93d90435599fcb43e81fb76d2a8e",
+      "modified": "2026-07-02T22:36:00Z",
+      "path": "handoffs/active/fable5-architecture-review-2.md",
+      "size": 18307,
+      "title": "Fable 5 Architectural Review \u2014 window 2 (a prompt, not a task list)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "7d34e0e25d2d4e39e67c638237af578216da93d90435599fcb43e81fb76d2a8e",
+      "modified": "2026-07-02T22:36:00Z",
+      "path": "handoffs/active/fable5-architecture-review-3.md",
+      "size": 18307,
+      "title": "Fable 5 Architectural Review \u2014 window 2 (a prompt, not a task list)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "3f6bc27db3e83132d01d1ec6db2093af6e61fe3b508cb3e2b6a87705be85525c",
+      "modified": "2026-07-04T15:22:55Z",
+      "path": "handoffs/active/fable5-window2-findings-00-executive-summary.md",
+      "size": 12157,
+      "title": "Fable 5 architectural review \u2014 window 2 \u2014 executive summary",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "db3fbf0a48ea2ece124c340bfca38387de6e92050711cb19a7282d0f2d97dd66",
+      "modified": "2026-07-04T15:22:55Z",
+      "path": "handoffs/active/fable5-window2-findings-01-optimizer-integrity.md",
+      "size": 14312,
+      "title": "Window-2 findings 01 \u2014 Self-optimizer integrity: the guarantee, not the mechanism (\u00a74A)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "e578945e8b3345a8bb8684fe9d2a5ca909822ca4da5a883a2fc026c4c857a951",
+      "modified": "2026-07-04T19:16:24Z",
+      "path": "handoffs/active/fable5-window2-findings-02-heterogeneous-gpu.md",
+      "size": 17865,
+      "title": "Window-2 findings 02 \u2014 Post-bandwidth-wall heterogeneous CPU+GPU serving (\u00a74B)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "ab80023c43978f825ebb80d0db78ed03fe9f87d5e0189aa814b8f8f06ac0b757",
+      "modified": "2026-07-04T15:22:55Z",
+      "path": "handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md",
+      "size": 15956,
+      "title": "Window-2 findings 03 \u2014 Portfolio audit, resurrection sweep, and proposed master-queue rewrite (\u00a73 + \u00a78.4)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "1f336a80497719293c3dc8ffb6c5091a9574df704b59e82b37398d2be2243095",
+      "modified": "2026-07-03T00:52:00Z",
+      "path": "handoffs/active/fable5-window2-findings-04-negative-space-and-self-critique.md",
+      "size": 9084,
+      "title": "Window-2 findings 04 \u2014 Negative-space audit + self-critique (\u00a78.5\u20138.6)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "6423a1d5d975ffe6855ff198931d812002ee7549b428bf762170ade1ac7acc24",
+      "modified": "2026-07-03T09:41:32Z",
+      "path": "handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md",
+      "size": 16650,
+      "title": "Window-2 findings 05 \u2014 Intake/deep-dive sweep + kernel roofline gap (2026-07-03, operator-directed)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "36642eeb7bd07170d9a187acbfbf0cc58d6283c55b8df7cdb3e282ce40cb7e5d",
+      "modified": "2026-07-04T19:10:13Z",
+      "path": "handoffs/active/fable5-window2-findings-05b-mi210-inference-architecture.md",
+      "size": 31159,
+      "title": "Window-2 findings 05b \u2014 MI210 single-GPU inference architecture (supplement to findings-02, \u00a74B one level down)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "d6cb389c5987a6e913af9f182ff1846452cd005eb392fcf12dc6db12faab4895",
+      "modified": "2026-07-05T18:05:21Z",
+      "path": "handoffs/active/fable5-window2-findings-05c-mi210-lever-category-matrix.md",
+      "size": 41297,
+      "title": "findings-05c \u2014 MI210 gfx90a Speed Campaign: Lever \u00d7 Model-Category Isolation",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "d16938084d03477b7cdd1a0e93ca7117b75462b4cb4cb94cfb6d0b790ffd1d03",
+      "modified": "2026-07-03T12:10:42Z",
+      "path": "handoffs/active/fable5-window2-mi210-focus-injection.md",
+      "size": 6317,
+      "title": "Fable 5 window-2 \u2014 mid-session focus injection: MI210 inference improvement (rev 2)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "3ad7ce8140767127f8998a85ce99388f454c087afee90e4007f94442e33d3591",
+      "modified": "2026-07-05T02:04:18Z",
       "path": "handoffs/active/frontier-f1-real-task-corpus.md",
-      "size": 34473,
+      "size": 37203,
       "title": "Frontier F1 \u2014 Define the Demand Side: a Real-Task Corpus as the Eval Distribution",
       "type": "handoff-active"
     },
     {
-      "content_hash": "ad135fca0aaf69d1ce1abc1f8d804a62916e0dee08b9f6c09c6f41a56ff2dcc0",
-      "modified": "2026-06-28T15:50:25Z",
+      "content_hash": "7c9b1db40d050f6265f498ab7c0b43222a557d34870ede03ecb4558bd4934e12",
+      "modified": "2026-07-05T14:29:29Z",
       "path": "handoffs/active/frontier-f2-self-running-lab.md",
-      "size": 14838,
+      "size": 17731,
       "title": "Frontier F2 \u2014 The Self-Running Lab: Local Agents Take Over Lab Maintenance",
       "type": "handoff-active"
     },
     {
-      "content_hash": "6d1fbe984c56b2f846244847cd1515e2fb776e41fb274703fb63115021210405",
-      "modified": "2026-06-28T14:45:02Z",
+      "content_hash": "5b59949b2fad59316a59de3d0aeb717919c6f03961f6f07f45125ea0d5a143a8",
+      "modified": "2026-07-04T10:54:14Z",
       "path": "handoffs/active/frontier-f3-data-flywheel.md",
-      "size": 15673,
+      "size": 18727,
       "title": "Frontier F3 \u2014 The Data Flywheel: Train on What the Lab Already Generates",
       "type": "handoff-active"
     },
@@ -279,26 +375,34 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "38eaa118bcc1b6de3865b531c6b7c27436f68018db630d0796489504d55b0a8f",
-      "modified": "2026-06-20T23:34:06Z",
+      "content_hash": "7824d920adfa26a6de548ce2601feb547a271e75376cf80d3363496fe6e1a489",
+      "modified": "2026-07-03T09:34:52Z",
       "path": "handoffs/active/gpu-acceleration-path.md",
-      "size": 57319,
+      "size": 61754,
       "title": "GPU Acceleration Path \u2014 CPU+GPU Hybrid Inference",
       "type": "handoff-active"
     },
     {
-      "content_hash": "e47050a62eb1cc5ce5c109c426f7a4fd44a164064a5013b8fc5ea855935d7f3e",
-      "modified": "2026-06-27T11:47:51Z",
+      "content_hash": "5d3395bc81de20dca78b324fe8064da0582eb755a75fc2fd3eb853a7901a8fd4",
+      "modified": "2026-07-05T18:00:20Z",
+      "path": "handoffs/active/gpu-cot-scaffold-sidecar.md",
+      "size": 41974,
+      "title": "GPU CoT-Scaffold Sidecar \u2014 Preliminary Pure-GPU Research Lane",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "66ab8f1b42176caa68bb8d7b3eade9e297b771f7700485b0fc5ca221f529ea40",
+      "modified": "2026-07-03T09:52:42Z",
       "path": "handoffs/active/gpu-drafter-mi200-investigation.md",
-      "size": 49368,
+      "size": 56938,
       "title": "GPU-Drafter on MI200 \u2014 Frontdoor Acceleration + CPU-Tier Spec-Dec",
       "type": "handoff-active"
     },
     {
-      "content_hash": "e7679714b13af98840cf633a48b4b5d932d22ae5bc10b0dcb17f16e7a379f7da",
-      "modified": "2026-06-28T02:11:12Z",
+      "content_hash": "e76967fef3abe5776b5f70e713d439c20cf49266a2bacc056b4a51b219c3caba",
+      "modified": "2026-07-03T13:00:44Z",
       "path": "handoffs/active/granite-97m-r2-bench-plan.md",
-      "size": 15492,
+      "size": 15855,
       "title": "Granite-97M-r2 Multilingual Embedder Bench Plan",
       "type": "handoff-active"
     },
@@ -311,10 +415,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ee7de748000fb7b2b0048400091433799d7e223724a528275c49ee9b950c48fd",
-      "modified": "2026-06-20T23:33:42Z",
+      "content_hash": "b29434af5d2d8eef2e33d3f689aaa653b7e0a108545828f958c3ed0585dfb6bb",
+      "modified": "2026-07-04T13:42:12Z",
       "path": "handoffs/active/hermes-outer-shell.md",
-      "size": 49099,
+      "size": 53658,
       "title": "Hermes/OpenGauss as Outer Shell",
       "type": "handoff-active"
     },
@@ -327,18 +431,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b1c6c19230f683b6504670c6c100a03af5c63f1d2edea72f9892f1997be63129",
-      "modified": "2026-06-28T15:58:15Z",
+      "content_hash": "c687b07457d348364f3c3fda122089dfbc60a32101616125198af43bfde8e89b",
+      "modified": "2026-07-05T05:45:05Z",
       "path": "handoffs/active/internal-interaction-lifecycle.md",
-      "size": 35458,
+      "size": 39884,
       "title": "Internal Interaction Lifecycle",
       "type": "handoff-active"
     },
     {
-      "content_hash": "464ee2b906ec59ad58f770e22466c4ee692f8545e1a520c9aa84569c2d5d54b6",
-      "modified": "2026-06-28T11:41:20Z",
+      "content_hash": "44e4b250e5b6659d0a5b2509c4f78991695de21fd1665f4959f5618ded75f344",
+      "modified": "2026-07-02T23:13:57Z",
       "path": "handoffs/active/internal-kb-rag.md",
-      "size": 75929,
+      "size": 76028,
       "title": "Internal Knowledge-Base RAG",
       "type": "handoff-active"
     },
@@ -351,10 +455,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "d2b38618bcb2583bebe5bb58d20f8d5411f585a0565da6921ba9bdf8b77b6ff0",
-      "modified": "2026-06-26T21:14:29Z",
+      "content_hash": "59808e7f42c852d845f1325115d00e68477b4570f02adccec19f9773196f54f6",
+      "modified": "2026-07-03T09:42:08Z",
       "path": "handoffs/active/iqk-port.md",
-      "size": 24257,
+      "size": 24880,
       "title": "iqk-kernel port into v6 (ik_llama iqk_mul_mat \u2192 production-consolidated-v6)",
       "type": "handoff-active"
     },
@@ -367,18 +471,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "2a5fa8a4cec8846d44787dcfc82c019dfa58d44592013ad58cbea3c3f694290c",
-      "modified": "2026-06-20T05:21:00Z",
+      "content_hash": "a1cae360961da6ac86b24e69bd99af9765c30ab6da404fe1005d53c5e4479e7e",
+      "modified": "2026-07-05T04:13:36Z",
       "path": "handoffs/active/launcher-numa-mode-gating.md",
-      "size": 5019,
+      "size": 4747,
       "title": "Launcher: full XOR quarters, not both",
       "type": "handoff-active"
     },
     {
-      "content_hash": "8ad38cc561af95003d3a8bf0cee12b4d22d04b6449e06fbe8c6665523c794e79",
-      "modified": "2026-06-28T12:13:03Z",
+      "content_hash": "8b9eb7f5a1060e582d21bf51a853e015906180f16ae9cdf0b1133ae4fe0e401d",
+      "modified": "2026-07-04T18:22:16Z",
       "path": "handoffs/active/learned-routing-controller.md",
-      "size": 132537,
+      "size": 137738,
       "title": "Learned Routing Controller: MLP Distillation from Episodic Memory",
       "type": "handoff-active"
     },
@@ -415,11 +519,27 @@
       "type": "handoff-active"
     },
     {
+      "content_hash": "87d751196c797ea6f7d02b0e4d4fe1cdae3c369eade78c5de07aa609d95bbd46",
+      "modified": "2026-07-05T17:52:41Z",
+      "path": "handoffs/active/loops-and-dashboards-audit-2026-07-05.md",
+      "size": 32293,
+      "title": "Audit \u2014 Kernel-R&D loop + Orchestration Autopilot loop (and both dashboards)",
+      "type": "handoff-active"
+    },
+    {
       "content_hash": "322d54830a4522743655c927e5c4bfdbd2037f90e3e752eaa10fdc90d4d009c7",
       "modified": "2026-06-20T05:21:00Z",
       "path": "handoffs/active/mathsmith-hc-formalizer-eval.md",
       "size": 15384,
       "title": "MathSmith HC Formalizer Evaluation & A/B Testing",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "d8cc19ccaa331459e89aba1812b28df277399e914ebbd0e7ebdfe9acf65ab28a",
+      "modified": "2026-07-04T19:16:24Z",
+      "path": "handoffs/active/md-double-load-mtp-fix-brief.md",
+      "size": 18631,
+      "title": "Brief: Drop `-md <same-file>` double-load for embedded-NEXTN roles",
       "type": "handoff-active"
     },
     {
@@ -431,18 +551,66 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "5c662e7fcd75e0f29553605a60a3c8b6373e8f99637626ec9404dfd2bfb44a5b",
-      "modified": "2026-06-21T17:11:55Z",
+      "content_hash": "b679e6dcccbc11523b947dcb00dd8e29c250010ba9ab642be8c3122c0cdcf693",
+      "modified": "2026-07-02T23:12:35Z",
       "path": "handoffs/active/meta-harness-optimization.md",
-      "size": 5026,
+      "size": 7015,
       "title": "Meta-Harness: Automated Harness Optimization",
       "type": "handoff-active"
     },
     {
-      "content_hash": "06e51a1f17b496be98c950c2285e9b81c36ccab12defcdf126d4fc95bbcb3c7a",
-      "modified": "2026-06-20T05:21:00Z",
+      "content_hash": "83184d4c682fa5030520ee4f7ab501bde143c8f008d7ec2a2dd36b487dbb0a97",
+      "modified": "2026-07-04T18:52:08Z",
+      "path": "handoffs/active/mi210-batch1-latency-wall-greenfield.md",
+      "size": 11106,
+      "title": "Handoff: MI210 batch-1 latency wall \u2014 greenfield kernel research (prefetch \u2192 megakernel)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "7f56065e70557671950bd4b8a9c8ae0b2a3888acc80e6faf951e77b4c6f74ed3",
+      "modified": "2026-07-05T16:49:11Z",
+      "path": "handoffs/active/mi210-big-model-and-acceleration-roadmap.md",
+      "size": 10080,
+      "title": "MI210 big-model residency + acceleration roadmap",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "40c3c888e6df3d838dca2763c6dc2ae047db55506ecb942da27159b4240a3db8",
+      "modified": "2026-07-05T08:00:35Z",
+      "path": "handoffs/active/mi210-kernel-rnd-loop-proposal.md",
+      "size": 12800,
+      "title": "Proposal: MI210 Kernel R&D as a semi-autonomous loop (planner/critic \u2192 hypothesis \u2192 verify \u2192 authorize)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "dc1a82d36c18fec99a1474ef320990beb30e7fbba5f0e15c6ef63d5f64b4d3dc",
+      "modified": "2026-07-04T17:00:20Z",
+      "path": "handoffs/active/mi210-mfma-compute-bound-paths.md",
+      "size": 5265,
+      "title": "Handoff: MI210 MFMA for compute-bound paths (prefill / diffusion / high-batch)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "67b9e9e88811b64f8bc332a29df617f5ae6097dae772e2921ad6e190ea01278c",
+      "modified": "2026-07-04T23:16:20Z",
+      "path": "handoffs/active/mi210-q8-dequant-gemv-roofline.md",
+      "size": 12612,
+      "title": "Handoff: MI210 single-stream roofline \u2014 Q8 dequant-GEMV kernel + batch-1 latency levers",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "ade724b3a18211859cb8b8f4be5462e6657148301c1d9b0d4526207510e5a1ce",
+      "modified": "2026-07-05T09:05:43Z",
+      "path": "handoffs/active/mi210-speed-campaign-summary.md",
+      "size": 11013,
+      "title": "MI210 GPU speed campaign \u2014 executive summary (2026-07-03/04)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "1385e429cee10a18c0d56187dea9e0f3fdf008a1413f63179e8666dcd81c6025",
+      "modified": "2026-07-04T22:23:46Z",
       "path": "handoffs/active/minddr-deep-research-mode.md",
-      "size": 11930,
+      "size": 12335,
       "title": "MindDR Deep Research Mode",
       "type": "handoff-active"
     },
@@ -463,10 +631,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "34806d1b6a280d6a3ab6e1e54fcba892f6bc991177131a28b55fb452a8748583",
-      "modified": "2026-06-28T15:29:27Z",
+      "content_hash": "3e36c53fc50a4b8e78f2a619b7476d4c46272036afe181f0e537d2d881f0d5e1",
+      "modified": "2026-07-04T10:38:01Z",
       "path": "handoffs/active/model-stack-single-source-update-pipeline.md",
-      "size": 17016,
+      "size": 20211,
       "title": "Model Stack Single-Source Update Pipeline",
       "type": "handoff-active"
     },
@@ -479,10 +647,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "2cd1d36af67a6845cafe1f4fe6a47f8853b5f5be65e3e3bc7b85d875bffd934c",
-      "modified": "2026-06-20T05:21:00Z",
+      "content_hash": "9d2880489c1d703419982143d3030c7f1d41ffeed130b4db795b45f0a6cd0a9a",
+      "modified": "2026-07-04T19:58:57Z",
+      "path": "handoffs/active/moe-aggregate-deployment-wins-brief.md",
+      "size": 3610,
+      "title": "Brief (for the orchestrator / CPU session): two zero-code MoE-on-GPU aggregate wins",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "48cd5f864b9c0f36ddce37b413ab32d66cfba9c352cf66c6cb29cf0c23d45174",
+      "modified": "2026-07-04T04:51:34Z",
       "path": "handoffs/active/moe-spec-cpu-spec-dec-integration.md",
-      "size": 37392,
+      "size": 40094,
       "title": "MoE-Spec \u2014 CPU Speculative-Decoding Verification with Budgeted Expert Selection",
       "type": "handoff-active"
     },
@@ -495,10 +671,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "2e8f4dfe3d82f1d7fe8c15f57f12ac887741bd6485139119d10f911eea6ccc4e",
-      "modified": "2026-06-21T15:14:21Z",
+      "content_hash": "4040ab441bbab0bf05170f11a3ec345086a8fa75a78cdec30b5b9f8a24c9bb2a",
+      "modified": "2026-07-03T16:50:38Z",
       "path": "handoffs/active/multimodal-pipeline.md",
-      "size": 35070,
+      "size": 35935,
       "title": "Multimodal Pipeline: Vision + TTS + ASR",
       "type": "handoff-active"
     },
@@ -543,10 +719,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "18d91c1b62efa0caac94e8197eeac9b2ab626f6c0508e8f4ba53adc4f07debad",
-      "modified": "2026-06-28T17:17:09Z",
+      "content_hash": "4bde78776626bddfc8513935b8d3a3a5ac4697b48dc6f2412ff17bd20c6d5e3b",
+      "modified": "2026-07-04T13:52:02Z",
       "path": "handoffs/active/opendataloader-pipeline-integration.md",
-      "size": 40641,
+      "size": 46915,
       "title": "OpenDataLoader PDF \u2014 Pipeline Integration",
       "type": "handoff-active"
     },
@@ -575,18 +751,26 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4942e443bb52cd69a1254737f034de07602855945076886975e2f192112888d0",
-      "modified": "2026-06-28T15:14:57Z",
+      "content_hash": "43e2781be67561b2a266066af56c23febefbeb0e401c2a3a19eddb6de3120dc5",
+      "modified": "2026-07-04T21:23:53Z",
+      "path": "handoffs/active/post-reboot-autopilot-restart-runbook.md",
+      "size": 7703,
+      "title": "\u26a1 POST-REBOOT RUNBOOK \u2014 restart AutoPilot with authority LIVE",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "ba6c00ec7671deb1f926bb3ebb530ca655b2cc3b3edcde0712ba3cd91e98aa8d",
+      "modified": "2026-07-04T14:13:10Z",
       "path": "handoffs/active/prompt-construction-determinism.md",
-      "size": 8627,
+      "size": 10125,
       "title": "Prompt-Construction & Sampling Determinism",
       "type": "handoff-active"
     },
     {
-      "content_hash": "d510c783f34e8b78aa355709088c37d48abb0cb1af510dbe0c71a22a9993f9c9",
-      "modified": "2026-06-22T13:43:35Z",
+      "content_hash": "c0b0088ada72f1f05eae68f4df25f36ca2793df1b0271a89dee7baf52f7f8678",
+      "modified": "2026-07-02T22:34:13Z",
       "path": "handoffs/active/qwen-mtp-llamacpp-port.md",
-      "size": 12105,
+      "size": 13155,
       "title": "Qwen MTP llama.cpp Port (PR #22673 + #22400)",
       "type": "handoff-active"
     },
@@ -607,10 +791,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "5aa50c507238cdd7b3b9ad546de1932307f55eb9ad4550245aa2dca78c8fbd67",
-      "modified": "2026-06-20T05:21:00Z",
+      "content_hash": "84c429223e9e10a5b8d48e7d4bba825563130fb61424da381d01d30283add1cc",
+      "modified": "2026-07-04T22:24:03Z",
       "path": "handoffs/active/reasoning-compression.md",
-      "size": 73016,
+      "size": 75512,
       "title": "Reasoning Compression for Inference Cost Reduction",
       "type": "handoff-active"
     },
@@ -623,34 +807,34 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "f37c2c091ac4d3a6c2c4eb7d30754cff23fb9b6035b7a5b2e418f66a0e706a2b",
-      "modified": "2026-06-28T17:49:16Z",
+      "content_hash": "e7a9c178216be5a40d3ed0a345dca189f6f2993531886d18aa65ee01ccb90550",
+      "modified": "2026-07-05T07:03:22Z",
       "path": "handoffs/active/repo-readiness-scorer.md",
-      "size": 25741,
+      "size": 28449,
       "title": "Repo-Readiness Scorer (Agent-Readiness Model)",
       "type": "handoff-active"
     },
     {
-      "content_hash": "d1ab47cfe31a53b1ea2369c382c3bcb5929293830e61b68695573dd8effd195e",
-      "modified": "2026-06-20T05:21:00Z",
+      "content_hash": "177ecc39c72b2b0459f2a8918d0e295df7620ca8323186de07740baf4bf57735",
+      "modified": "2026-07-05T05:35:15Z",
       "path": "handoffs/active/retrain-routing-models.md",
-      "size": 6969,
+      "size": 8596,
       "title": "Retrain Routing Models",
       "type": "handoff-active"
     },
     {
-      "content_hash": "0853c6ab402166839a8f8088071b9e7135c02824315eb0c3cf704dc6eba038a5",
-      "modified": "2026-06-20T05:21:00Z",
+      "content_hash": "a3678b55ea64cc9778d33a632f27c9103a20244b2d84f1221c6ad4258f6d1aa7",
+      "modified": "2026-07-03T09:34:18Z",
       "path": "handoffs/active/rocm-verify-profile-backend.md",
-      "size": 6347,
+      "size": 6901,
       "title": "ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring",
       "type": "handoff-active"
     },
     {
-      "content_hash": "cf9e953493809e870496344f64439cae08350047e2e9dfbdf424c1063a99b581",
-      "modified": "2026-06-20T15:28:48Z",
+      "content_hash": "56bade0c710e93675d98eb3883053c13d27f287360ecedb57384fea323daa232",
+      "modified": "2026-07-05T15:26:44Z",
       "path": "handoffs/active/routing-intelligence.md",
-      "size": 9626,
+      "size": 16032,
       "title": "Routing Intelligence: Factual-Risk Rollout",
       "type": "handoff-active"
     },
@@ -703,10 +887,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "037738d961566558613fc5b4649c8a57e6a9eac186cd944481efe0fbde1b40ed",
-      "modified": "2026-06-23T08:44:22Z",
+      "content_hash": "1d33f6fdd725ac54db613e6785b1a647e4acd78dae8357bd160ce40d208ae2bd",
+      "modified": "2026-07-03T09:38:40Z",
       "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "size": 17814,
+      "size": 22006,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
@@ -719,10 +903,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "76e19c4c5111681ccd6c4419a69c0882af56e001e8a55862630f54c917c3f06b",
-      "modified": "2026-06-28T15:29:27Z",
+      "content_hash": "a0f9e4c6850174ba46631498e3780718f7d49495d85cc93cd8afcc74b4952247",
+      "modified": "2026-07-05T04:34:35Z",
       "path": "handoffs/active/standardized-stack-update-pipeline-finalization.md",
-      "size": 13679,
+      "size": 15035,
       "title": "Standardized Stack Update Pipeline Finalization",
       "type": "handoff-active"
     },
@@ -775,18 +959,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "e14a3ec2935fd5df6955439a4a93205cd71c4248987323b5e30bb37975c39bf1",
-      "modified": "2026-06-28T11:22:49Z",
+      "content_hash": "4f98f63a793f84bd582d4f41594897ea40842fbbdd1f3425b5d84f37b3637ef3",
+      "modified": "2026-07-05T17:36:22Z",
       "path": "handoffs/active/tool-use-eval-contract.md",
-      "size": 40303,
+      "size": 46191,
       "title": "Tool-Use Eval Contract \u2014 make autopilot trials actually exercise tools",
       "type": "handoff-active"
     },
     {
-      "content_hash": "6d44d59dc24686b5cd5dee0a4600b8523856d009982ff6bf45638159d40015e0",
-      "modified": "2026-06-20T05:21:00Z",
+      "content_hash": "a664594f23a3ad26b10414787b2776ff800075cde185ed9765ce3af7ff8e993c",
+      "modified": "2026-07-02T23:12:35Z",
       "path": "handoffs/active/tq3-quantization-evaluation.md",
-      "size": 8629,
+      "size": 10286,
       "title": "TQ3 / TurboQuant Quantization \u2014 Monitor List",
       "type": "handoff-active"
     },
@@ -815,10 +999,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "055565769d0c6972f63fefc64bcef9ca7d677e6ae6d291b6076748e56ac1e6aa",
-      "modified": "2026-06-28T05:12:26Z",
+      "content_hash": "99d0ee1c497260eda7993d92548dfe5d8705fb46667995b97d10237b983ab905",
+      "modified": "2026-07-02T22:56:39Z",
       "path": "handoffs/active/v6-iqk-promotion.md",
-      "size": 13950,
+      "size": 14918,
       "title": "v6+iqk \u2192 production cutover (full ik_llama deprecation)",
       "type": "handoff-active"
     },
@@ -831,10 +1015,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "7a1e4e727e4e58819622d8461928dc5bd3d293c810dbbef3b4b111ca5c62e5e4",
-      "modified": "2026-06-27T11:57:20Z",
+      "content_hash": "2e31f9f807a77470f5827c684b8919b941338a13a1320f0ed37c8e92bd9a00e3",
+      "modified": "2026-07-04T03:13:48Z",
       "path": "handoffs/active/x-mas-text-routing.md",
-      "size": 8791,
+      "size": 9912,
       "title": "X-MAS Heterogeneous Text-MAS Routing Spike",
       "type": "handoff-active"
     },
@@ -1004,6 +1188,14 @@
       "path": "handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md",
       "size": 86905,
       "title": "Context-Folding - Completed Implementation Ledger",
+      "type": "handoff-completed"
+    },
+    {
+      "content_hash": "d18e54447655dcb1be099f24646a0c3bf6eb78903b53401e80e566350d320e39",
+      "modified": "2026-07-04T22:57:47Z",
+      "path": "handoffs/completed/corpus-augmented-prompt-lookup-revalidation.md",
+      "size": 15664,
+      "title": "Corpus-Augmented Prompt Lookup Revalidation",
       "type": "handoff-completed"
     },
     {
@@ -2156,6 +2348,22 @@
       "path": "research/deep-dives/2026-06-20-avb-offline-reward-stack.md",
       "size": 15089,
       "title": "Deep Dive \u2014 AVB Offline Reward Stack (tiny CPU answer-quality oracle for routing)",
+      "type": "research"
+    },
+    {
+      "content_hash": "f5e70883c9348d6045d823f5b58dd0ccc926f4eba1b3fc26f5649ef6a64c8599",
+      "modified": "2026-07-02T23:23:17Z",
+      "path": "research/deep-dives/2026-07-02-cross-model-lora-transfer-cluster.md",
+      "size": 7795,
+      "title": "Cross-Model LoRA Transfer & Hypernetwork-Adapter Cluster \u2014 Decision Reference",
+      "type": "research"
+    },
+    {
+      "content_hash": "4e2398f1cd1bc156308847fcd089e606f3363c8a38a4a2c84f6a86546bc1b17c",
+      "modified": "2026-07-03T00:06:53Z",
+      "path": "research/deep-dives/2026-07-02-rocm-mi210-vllm-gfx90a.md",
+      "size": 17058,
+      "title": "ROCm on MI210 (gfx90a): vLLM-from-source build path and the gfx90a support matrix",
       "type": "research"
     },
     {
@@ -4335,10 +4543,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "fef338225e68f175a1050ae2c1fef8ac1c002f25cb75fbb6e0d9c8cc2fb0b5f6",
-      "modified": "2026-06-28T21:46:52Z",
+      "content_hash": "2e0df3c5a0c325a6a11d95778fa36c3baae9a250feef1d28484247c43c0c375b",
+      "modified": "2026-06-28T22:39:41Z",
       "path": "progress/2026-06/2026-06-28.md",
-      "size": 141945,
+      "size": 145616,
       "title": "2026-06-28",
       "type": "progress"
     },
@@ -4411,6 +4619,230 @@
       "modified": "2026-06-28T16:33:37Z",
       "path": "progress/2026-06/repo-readiness-remediation-2026-06-28.md",
       "size": 4879,
+      "title": "EPYC Repo Readiness Remediation Queue",
+      "type": "progress"
+    },
+    {
+      "content_hash": "35893d3f42595433727be4f489dc4b9f1bf3a54e6704a03e91f1fa429c3fef1f",
+      "modified": "2026-07-02T20:19:31Z",
+      "path": "progress/2026-07/2026-07-02-autopilot.md",
+      "size": 3063,
+      "title": "Autopilot Digest \u2014 2026-07-02",
+      "type": "progress"
+    },
+    {
+      "content_hash": "8bc0efb61a95c0914302705b2bd1eeafc7836049fae8e60b7030d07e72622bc7",
+      "modified": "2026-07-02T22:45:47Z",
+      "path": "progress/2026-07/2026-07-02-fable5-window2-brief.md",
+      "size": 6535,
+      "title": "2026-07-02 \u2014 Fable 5 window-2 brief: reconstruction, refinement, launch-prep",
+      "type": "progress"
+    },
+    {
+      "content_hash": "5533439ef5670217720c780e8a5f149957f2f1dc7f539f69c4204fc99600c3fe",
+      "modified": "2026-07-03T00:10:36Z",
+      "path": "progress/2026-07/2026-07-02-mi210.md",
+      "size": 15894,
+      "title": "2026-07-02 \u2014 MI210 first-touch GPU inference + benchmarks",
+      "type": "progress"
+    },
+    {
+      "content_hash": "af7bb5125f2951645ad0c8ea47905e14816a8f7131c3827a4e0b6a1274f1c686",
+      "modified": "2026-07-02T22:41:59Z",
+      "path": "progress/2026-07/2026-07-02-research-intake-distillation.md",
+      "size": 5103,
+      "title": "2026-07-02 \u2014 Research Intake Batch (intake-732\u2026750) + Handoff Distillation",
+      "type": "progress"
+    },
+    {
+      "content_hash": "d46275a81bb6d25c5656a0a6f6edc0d61718214e38e6c0c8e43c46309a8e9fac",
+      "modified": "2026-07-03T00:00:55Z",
+      "path": "progress/2026-07/2026-07-02-research-intake.md",
+      "size": 6572,
+      "title": "Progress \u2014 2026-07-02 \u2014 Research Intake (intake-751..772)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "d9aaf7ba33ca0700745b394ccc1b1d3f4035af2ba87583936e5c3b11e7435e1a",
+      "modified": "2026-07-03T00:01:17Z",
+      "path": "progress/2026-07/2026-07-02.md",
+      "size": 33108,
+      "title": "2026-07-02",
+      "type": "progress"
+    },
+    {
+      "content_hash": "07911cda9ca9e89f05a6dffa72da879287a7812b1e9716b39922e5ff74f4e1e0",
+      "modified": "2026-07-03T02:34:09Z",
+      "path": "progress/2026-07/2026-07-03-autopilot.md",
+      "size": 3660,
+      "title": "Autopilot Digest \u2014 2026-07-03",
+      "type": "progress"
+    },
+    {
+      "content_hash": "4ee54a0dba63dc08a2931714dbf7b02ffdf1d42308ce0b7df259305806d3f009",
+      "modified": "2026-07-03T11:27:29Z",
+      "path": "progress/2026-07/2026-07-03-dashboard-freshness-robustness.md",
+      "size": 4801,
+      "title": "Dashboard freshness robustness \u2014 recurring \"stale panel\" resolution (2026-07-03)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "d614c6d1f96c304374925f191c1f537eaa9d13664029b83d7237763912d18ad3",
+      "modified": "2026-07-03T09:43:18Z",
+      "path": "progress/2026-07/2026-07-03-fable5-window2-intake-roofline.md",
+      "size": 4789,
+      "title": "2026-07-03 \u2014 Fable 5 window-2 follow-up: intake sweep, roofline, and applied reprioritization",
+      "type": "progress"
+    },
+    {
+      "content_hash": "a5a554dbe2d81f3bed0f3e29995ee43d89a6ba2819f801d37883feec3b9f72f3",
+      "modified": "2026-07-03T00:52:29Z",
+      "path": "progress/2026-07/2026-07-03-fable5-window2.md",
+      "size": 3315,
+      "title": "2026-07-03 \u2014 Fable 5 architecture review, window 2 (one-shot consult)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "042f8635d01dc45f9c901a51ea9819e6966c9f4bb3b690f9d34df589b30afabc",
+      "modified": "2026-07-05T00:56:09Z",
+      "path": "progress/2026-07/2026-07-03-mi210-qwen36-27b-speed-campaign.md",
+      "size": 27231,
+      "title": "2026-07-03 \u2014 MI210 GPU-only speed campaign: Qwen3.6-27B-MTP-Q8_0 (LIVING CHECKPOINT)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "e3a610979842aaed42f487773eee3b8933a2e8e0fc2deb53c74b9080d78c10bd",
+      "modified": "2026-07-03T12:33:03Z",
+      "path": "progress/2026-07/2026-07-03-qwen36-27b-q8-mtp-acquisition.md",
+      "size": 6620,
+      "title": "2026-07-03 \u2014 Acquired Qwen3.6-27B Q8 MTP variant (+ Fable5 window-2 / MI210 inventory readout)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "361d2ecef2adb1cbfc55adff9a24022cea93c943c2b6c4ea110dcff28d22257d",
+      "modified": "2026-07-04T00:10:03Z",
+      "path": "progress/2026-07/2026-07-03.md",
+      "size": 95645,
+      "title": "2026-07-03",
+      "type": "progress"
+    },
+    {
+      "content_hash": "90aa051aa8c40608d1790b4bc1e264f7392158b3f15767beaf68753aa4931921",
+      "modified": "2026-07-04T00:24:55Z",
+      "path": "progress/2026-07/2026-07-04-autopilot.md",
+      "size": 3768,
+      "title": "Autopilot Digest \u2014 2026-07-04",
+      "type": "progress"
+    },
+    {
+      "content_hash": "8968d644859a6214f36adaec2878d1a7f5d5ace067d6c9863862a060d9b12515",
+      "modified": "2026-07-04T23:14:44Z",
+      "path": "progress/2026-07/2026-07-04-mi210-kernel-rnd-loop.md",
+      "size": 6576,
+      "title": "2026-07-04 \u2014 MI210 campaign: kernel-R&D loop (Phase 0) + occupancy-bet falsification + capability pivot",
+      "type": "progress"
+    },
+    {
+      "content_hash": "d58640bf84c9465f0e79cd97ce8fb5f6a193ffac784e0fbd7c96b51fcf13e11f",
+      "modified": "2026-07-05T00:08:53Z",
+      "path": "progress/2026-07/2026-07-04.md",
+      "size": 153301,
+      "title": "2026-07-04",
+      "type": "progress"
+    },
+    {
+      "content_hash": "08f216019edf326cabe8daa74f9802a81be9bd9915695bb4a1ff1b44789fc63c",
+      "modified": "2026-07-05T07:02:50Z",
+      "path": "progress/2026-07/2026-07-05-autopilot.md",
+      "size": 7186,
+      "title": "Autopilot Digest \u2014 2026-07-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "6b21d67b83ed6b5705dfb8d205d1cd1a951d6365965444c7c1a564ae8642154b",
+      "modified": "2026-07-05T18:00:08Z",
+      "path": "progress/2026-07/2026-07-05-cot-falsification-and-mtp.md",
+      "size": 26328,
+      "title": "2026-07-05 \u2014 MI210 campaign: CoT single-shot scaffold FALSIFIED (both regimes) + MTP-on-GPU-MoE re-checked STILL NEGATIVE",
+      "type": "progress"
+    },
+    {
+      "content_hash": "456a6be0e47a97d21376c882066fc61bb0ffab1cc868871593d1ccd37efa6cdb",
+      "modified": "2026-07-05T07:59:44Z",
+      "path": "progress/2026-07/2026-07-05-dashboard-hub.md",
+      "size": 5922,
+      "title": "2026-07-05 \u2014 Project Dashboard Hub (handoff progress + backlog + kernel-R&D Phase 3)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "dfa8378d7858128da68d1ecfc3996e31f54bd7db9d47ed93a69d675252cd0a41",
+      "modified": "2026-07-05T18:00:36Z",
+      "path": "progress/2026-07/2026-07-05-dashboard-recency-and-blocked-routing.md",
+      "size": 5002,
+      "title": "Handoff dashboard hub \u2014 card recency signal + Blocked-column routing (2026-07-05)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "316a622387ca3a0a88900b82bd8a200a8faf32c99b47b0de38bf7f7fa425178e",
+      "modified": "2026-07-05T08:33:38Z",
+      "path": "progress/2026-07/2026-07-05-mi210-capability-kernel-rnd.md",
+      "size": 6278,
+      "title": "2026-07-05 \u2014 MI210 campaign: capability pivot + kernel-R&D loop + strategy",
+      "type": "progress"
+    },
+    {
+      "content_hash": "64e4932388a026c278e5ff9eb9b3d4c72941c130a1c50898cfeea480482843e7",
+      "modified": "2026-07-05T13:49:43Z",
+      "path": "progress/2026-07/2026-07-05-mi210-residency-and-cot-reframe.md",
+      "size": 8563,
+      "title": "2026-07-05 \u2014 MI210 campaign: big-model residency ladder (2-for-2) + CoT-scaffold rescue-reframe",
+      "type": "progress"
+    },
+    {
+      "content_hash": "a121b1f01c06ccf638a63d6e61881c062e66912ca12535656e379ca74ae3215c",
+      "modified": "2026-07-05T10:01:05Z",
+      "path": "progress/2026-07/2026-07-05-orchestrator-dashboard-live-tps.md",
+      "size": 5463,
+      "title": "Progress \u2014 2026-07-05 \u2014 Orchestrator AutoPilot Dashboard: live stream + tok/s fixes",
+      "type": "progress"
+    },
+    {
+      "content_hash": "9cdeb5ce116536ca16c63dd5b2424c9215d583afa0c0245eec0154c3ca6fadd7",
+      "modified": "2026-07-05T18:05:05Z",
+      "path": "progress/2026-07/2026-07-05.md",
+      "size": 93644,
+      "title": "Progress - 2026-07-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "d740f496f60bd58c6d4844d16f440943dffa9d4641e5cb3264d9a9bf966efad8",
+      "modified": "2026-07-03T17:28:16Z",
+      "path": "progress/2026-07/repo-readiness-2026-07-03.md",
+      "size": 3330,
+      "title": "EPYC Repo Readiness Report",
+      "type": "progress"
+    },
+    {
+      "content_hash": "3f85d9a197f148c5cf4828de6fde0d08d9a86ab0c49c04774a881d99aee245f2",
+      "modified": "2026-07-05T07:01:42Z",
+      "path": "progress/2026-07/repo-readiness-2026-07-05.md",
+      "size": 3330,
+      "title": "EPYC Repo Readiness Report",
+      "type": "progress"
+    },
+    {
+      "content_hash": "b4a6dd1a155b19e1dadbd558db7809b608d7cc40fb0a829897e2b99130a19fc5",
+      "modified": "2026-07-03T17:28:16Z",
+      "path": "progress/2026-07/repo-readiness-remediation-2026-07-03.md",
+      "size": 2951,
+      "title": "EPYC Repo Readiness Remediation Queue",
+      "type": "progress"
+    },
+    {
+      "content_hash": "32a8616090ea7a52b75e1517a0a811483fbd56032e1f3143ad6d8e2c90a5c25c",
+      "modified": "2026-07-05T07:01:42Z",
+      "path": "progress/2026-07/repo-readiness-remediation-2026-07-05.md",
+      "size": 3346,
       "title": "EPYC Repo Readiness Remediation Queue",
       "type": "progress"
     },
@@ -4535,7 +4967,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 565,
+  "total_new": 619,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

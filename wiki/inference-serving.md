@@ -2,8 +2,8 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-07-02
-**Sources**: 43 documents
+**Last compiled**: 2026-07-05
+**Sources**: 48 documents
 
 ## Summary
 
@@ -162,6 +162,12 @@ Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-u
 - [GPU Acceleration Path](../handoffs/active/gpu-acceleration-path.md) -- CPU+GPU hybrid MoE serving survey and the MI210-install status header; establishes the GPU serving tier as additive to (not a replacement for) NUMA CPU serving, and the Fable-5 residency→eval-engine→drafter placement re-ranking.
 - [2026-07-02 ROCm MI210 vLLM / gfx90a deep-dive](../research/deep-dives/2026-07-02-rocm-mi210-vllm-gfx90a.md) -- the two-binary GPU discipline (llama.cpp-HIP production engine vs vLLM measurement instrument), the confirmed gfx90a support matrix (Triton/FA-2/vLLM-core cover the card; AITER/MORI/DeepEP do not → reference-kernel vLLM), and the ROCm-6.2 fp8/ABI build risks. Cites [intake-759 — ROCm/aiter](https://github.com/ROCm/aiter) (gfx90a absent from matrix; vendor ceiling ref only), [intake-760 — ROCm/triton](https://github.com/ROCm/triton) (first-class gfx90a), intake-761 (ROCm/flash-attention), intake-762 (vLLM Dockerfile.rocm), intake-763 (vLLM v0.6.5 ROCm docs).
 - [MoE-Spec CPU spec-dec integration](../handoffs/active/moe-spec-cpu-spec-dec-integration.md) -- [intake-491 (Mamba drafters)], the budgeted-expert verification mechanism (REAP-246B +15.2%/B=40, Coder-30B +7.3%/B=64), and the 2026-06-12 finding that the mechanism now has no live serving consumer (REAP removed, frontdoor spec-dec off). Cites [MoE-Spec arXiv:2602.16052](https://arxiv.org/html/2602.16052v1) and [REAP arXiv:2510.13999](https://arxiv.org/abs/2510.13999).
+- [Launcher NUMA-mode gating](../handoffs/active/launcher-numa-mode-gating.md) -- `--numa-mode {full,quarter,both}` flag (COMPLETE 2026-07-05); default flipped to `quarter` (`01d14301`) so `start --only worker_general` no longer silently launches overlapping full+quarter instances (~1.5× oversubscription, measured 76.5→9 t/s collapse @ load-420 on 2026-05-08).
+- [Capability Registry & Promotion](../handoffs/active/capability-registry-and-promotion.md) -- W0 workload-class tagging closed (live `ChatRequest.workload_class`), W2 generated Action-Availability + A-by table adopted, W3 safe role-restart applicator strict-scope hardening (explicit-affected-roles + smoke-check gates, batched-restart trial protocol); W3/W4 gated on `evidence-plane-ledger.md` Phase 1, no capability promoted.
+- [Standardized Stack-Update Pipeline Finalization](../handoffs/active/standardized-stack-update-pipeline-finalization.md) -- canonical `stack_change_pipeline.py check --run-promotion-gate` caught stale generated stack-prior `source_artifacts` after launcher/registry source changes (2026-07-04 → 181 tests; 2026-07-05 `a0377110` metadata-only regen → 181 tests); guard inventory `consumer_surface_count=13`, `rule_count=27`, `exceptions: []`.
+- [MoE-on-GPU aggregate deployment wins brief](../handoffs/active/moe-aggregate-deployment-wins-brief.md) -- OBSERVATION-grade (no P-GPU-1, operator production-hold) MI210 gemma-26B-A4B config wins: `-fa 1` for aggregate B≥8 (peak bf16-fa1 @B128 = 1548 t/s, ~2.75× prior anchor), bf16-for-aggregate / Q8-for-single-stream crossover B≈16–24; L1-MoE mmid dispatch and MoE-decode MTP falsified as levers.
+- [Progress 2026-07-04](../progress/2026-07/2026-07-04.md) -- DS-7 static-prewarm profile decision, capability-registry W3 strict restart contract, MI210 aggregate campaign summary, v6 `/slots` dashboard-stream regression fix + SSE multiplex.
+- [Progress 2026-07-05](../progress/2026-07/2026-07-05.md) -- launcher NUMA default checkpoint (`01d14301`), stack-prior source-fingerprint repair (`a0377110`), AutoPilot current-code-guard restarts.
 
 ## 2026-04-23 Additions — Single-instance throughput backlog
 
@@ -463,3 +469,59 @@ The long-dormant GPU-acceleration workstream activated: an AMD Instinct **MI210 
 **Two serving-relevant unblocks.** (1) GPU-side MTP spec-dec works: gemma-4-31B + its NEXTN head both on ROCm0 → 43.25 t/s (1.44x, 59.7% accept), the first live evidence for the head-on-GPU / trunk split. (2) qwen35 (gated-delta-net) decodes clean on the GPU HIP path, localizing the persistent CPU spec-dec crashes (M-RoPE/GDN `GGML_ASSERT(logits != nullptr)`) to the CPU speculative codepath rather than the qwen35 forward pass. Neither supplies the N5 frontdoor-drafter acceptance-rate (α) number, which remains the single gating measurement for all GPU placements. The gfx90a support matrix is settled on paper: Triton/FlashAttention-2/vLLM-core cover the card; AITER/MORI/DeepEP are CDNA3-only; Vulkan is impossible on CDNA2 — HIP/ROCm is the only path.
 
 Sources: [gpu-drafter-mi200-investigation.md § 2026-07-02 Advancement](../handoffs/active/gpu-drafter-mi200-investigation.md), [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md), [2026-07-02 ROCm MI210 vLLM / gfx90a deep-dive](../research/deep-dives/2026-07-02-rocm-mi210-vllm-gfx90a.md), [moe-spec-cpu-spec-dec-integration.md](../handoffs/active/moe-spec-cpu-spec-dec-integration.md).
+
+## 2026-07-05 Update — Launcher NUMA Default Flip, DS-7 Profile Codified, Restart-Applicator Hardening, MoE-on-GPU Deployment Wins
+
+Five serving-plane threads advanced this window: the launcher now defaults to a single NUMA mode (no more silent full+quarter oversubscription), the dynamic-stack effort resolved its Phase E profile decision without touching the live stack, the capability-registry restart applicator gained strict-scope gates, the standardized stack-change pipeline caught and repaired source-fingerprint drift twice, and the MI210 campaign produced measured (observation-grade) config wins for MoE-on-GPU aggregate serving.
+
+### Launcher `--numa-mode` default flipped to `quarter` (full XOR quarters, resolved)
+
+The long-standing launcher hazard — `orchestrator_stack.py start --only worker_general` silently bringing up **all 5 instances** (1 full-NUMA 96-thread + 4 NUMA-quarter 48-thread), whose CPU sets overlap → ~1.5× oversubscription — is now closed. Orchestrator `01d14301` makes both the CLI parser and the programmatic `cmd_start()` fallback default `--numa-mode` to `quarter` instead of `both`. The overlap was not cosmetic: the 2026-05-08 discovery measured load average jumping to 420 and the full instance collapsing from 76.5 t/s solo → 9 t/s once the quarters ran alongside it. gemma4's `-t 96` per-instance made the collapse visible where the pre-2026-05-08 Qwen3-Coder worker's lighter `-t 24` had masked it.
+
+- `--numa-mode full` starts only the full-NUMA instance (max single-request throughput); `quarter` starts the 4 quarters (max aggregate throughput under multi-request load); `both` remains available as compatibility mode and still emits the oversubscription advisory.
+- Filtering lives in `stack_manifest.py:_filter_by_numa_mode`, wired at `stack_commands.py:393`; the flag is declared at `orchestrator_stack.py:1324`.
+- The default flip is a launcher-source change, so it also rippled through the stack-change pipeline as a source-fingerprint repair (below). Handoff `launcher-numa-mode-gating.md` is now COMPLETE.
+
+### DS-7 static-prewarm profile decision (DS-6 QuarterScheduler parked)
+
+Dynamic-Stack Phase E closed its interpretation step **without a live stack change**. The DS-E1 evidence packet (`dynamic_stack_evidence_packet.py`, output `orchestration/reports/ds_e1_evidence_packet_20260705T094913Z.{json,md}`) reports `ready_for_profile_decision=true`: generated stack-prior roster ready (10 live roles, compiled 2026-07-05), DS-5 research-manifest freshness ready, contention matrix ready, RI-10 canary evidence ready, and production KV-size measurements ready. Two freshness subtleties were codified so auxiliary topology no longer creates false DS-E1 blockers:
+
+- **Content-aware manifest freshness** (`c98c9e14`): same-version stack-prior recompile timestamp drift is accepted as long as every live role is still covered (`stack_priors_version=4` matches).
+- **Measured-subset contention validation** (`a62f9d14`): the contention matrix is validated against its measured contention-role topology (`df373c79cc4af06f`), excluding launcher-only auxiliary `eval_batch_frontdoor`; the full live topology hash `5d19b3e4edf6fc27` differs only because it includes that auxiliary.
+
+Decision (`ds7_profile_decision_20260704T194020Z.{json,md}`): retain `stack_templates/default.yaml` as `steady_state_static_prewarm` (`metadata.ds7_profile`, `metadata.ds7_decision.status=retain_default`); `load_template()` now preserves template metadata so the decision is machine-readable. `orchestrator_stack.py start --stack-profile default --validate-only` passed with **17 roles, 28 instances, 657 GB RAM estimate**. DS-6 QuarterScheduler stays parked — implement dynamic quarter reassignment only if future DS-E1-equivalent evidence shows static pre-warm leaves material throughput/latency on the table. Note the `data/kv_cache_quant/kv_quant_*.csv` artifacts are explicitly **not** DS-E1 evidence (different schema/contexts, no production role rows) and must not be converted into the gate. Phase F KVCOMM remains a separate research fork that must not block DS-6/DS-7.
+
+### Capability-registry W3 safe role-restart applicator — strict-scope hardening
+
+The dormant `config_applicator.restart_role()` primitive (never wired into live AutoPilot) gained strict opt-in gates for future promoted callers (`7b47671e` lineage, hardened 2026-07-04):
+
+- `require_explicit_affected_roles=True` fails **before** dispatch pause, registry edits, or reload unless the caller supplies the exact affected-role surface — a "role restart" can bounce sibling roles because same-GGUF roles share one server process (`feedback_same_model_roles_share_server`), so restart scope must be declared, not inferred from stack-prior topology.
+- `require_smoke_check=True` fails **before** reload unless a role smoke hook (canned completion) is present.
+- The registry validator now rejects any `role_restart` / `stack_restart` row missing `smoke_check: canned_completion` and `require_explicit_affected_roles: true`, on top of the earlier structured `trial_protocol` contract (`class: batched_restart`, `min_trials >= 1`, `restore_after_batch: true`, non-empty `boundary_event`). First restart-class rows (`moe_spec_budget`, `ea_compaction_profiles`, `draft_max_p_split`) carry the shared 5-trial-restore / `role_restart_boundary` contract.
+
+W3 remains open only for a **shadowed live restart attestation**, itself gated on `evidence-plane-ledger.md` Phase 1 (the instrument must certify effects before the optimizer gets restart-class levers). No capability row was promoted; no live restart was enabled. W0 workload-class tagging is fully closed (live `ChatRequest.workload_class` constrained to `interactive|eval_batch|campaign`; unset requests infer `eval_batch` for background/batched calls without changing admission priority). W2 compilation (generated Action-Availability + master-index A-by table) is adopted with drift guards.
+
+### Standardized stack-change pipeline — twice caught source-fingerprint drift
+
+The canonical gate (`stack_change_pipeline.py check --run-promotion-gate`) continues to work as designed: it catches stale generated metadata after any launcher/registry source change and forces regeneration through the canonical `update` path.
+
+- **2026-07-04**: `stack_change_guard.py --all-hardcoded-surfaces` caught stale generated stack-prior `source_artifacts` metadata for `orchestrator_stack.py`; regeneration refreshed descriptors, stack priors, procedure enums, and the operator summary with **no semantic role diffs**; promotion gate passed 181 tests.
+- **2026-07-05**: after `01d14301` changed the launcher NUMA default, the guard again caught stale `source_artifacts` for `orchestrator_stack.py`; Orchestrator `a0377110` regenerated through the canonical pipeline. GitNexus impact was HIGH for `compile_stack_priors` (60 upstream), MEDIUM for `write_stack_priors` (49), LOW for `run_stack_change_pipeline` (2), but the diff was **metadata-only**: compiled timestamps, source commits, source hashes, and summary fingerprints — no role rows, ports, tiers, launch requirements, or procedure enums changed. `check --run-promotion-gate` returned `summary: ok` with `guard_all_surfaces/guard_strict/runtime_attestation: ok` and 181 tests passing.
+
+Guard inventory holds at `consumer_surface_count=13`, `rule_count=27`, `exceptions: []`. Remaining pipeline work is opportunistic high-risk consumer migration and W4 swap-CI expansion, both on-new-finding rather than an already-identified open gap.
+
+### MoE-on-GPU aggregate deployment wins (measured, production-hold)
+
+> **Review flag (project-wiki writer-evidence policy):** model-compiled, not adopted until human or measured review. All MI210 numbers below are OBSERVATION (no P-GPU-1 protocol); they gate nothing until certified through MEASUREMENT.md, and the operator placed an explicit **production hold** (2026-07-04) — nothing deploys, all changes stay experimental, and any prod push additionally requires CPU-numerical-correctness verification (untestable while the CPU stack serves production).
+
+From the 2026-07-04 MI210 campaign on gemma-4-26B-A4B (the clean MoE-no-GDN test vehicle), two zero-code role→config wins for a MoE role hosted on the GPU (the findings-02 residency bet — **not** a change to the current CPU stack):
+
+- **Win 1 — `-fa 1` for aggregate decode (B≥8).** Flash-attention is a WIN at batch for MoE-on-GPU — the *opposite* of the dense-hybrid Qwen3.6-27B, where gfx90a FA is prefill-only and `-fa 1` hurt everywhere. Measured S_TG t/s: at B=1 `-fa 1` costs 7–12% (Q8 96.2→85.0, bf16 72.6→67.4), but crosses over near B=8 and dominates at scale — B=128 Q8 851→1107 (+30%), bf16 1083→**1548** (+43%). FA fuses the KV mat-vec and avoids the V-cache padding that `-fa 0` forces on gemma's uneven-V-size layers. **Rule: `-fa 1` for aggregate serving (B≥8); `-fa 0` for single-stream latency.**
+- **Win 2 — bf16-for-aggregate / Q8-for-single-stream.** Crossover ≈ B=16–24: Q8 wins low-batch (+27–37% at ≤B8), bf16 wins high-concurrency (+27–43% at ≥B32) because high-batch GEMM is compute-bound and bf16 runs native on CDNA2 matrix cores with no dequant tax (B1→B128 scaling: Q8 8.85× vs bf16 14.9×). HBM-fit-gated: bf16-26B @B128 / 32k-ctx = 56.6 GB of 65.5 (fits, ~9 GB headroom); a larger MoE would not fit at B128 on the 64 GB card.
+- **Combined peak: bf16 + `-fa 1` @ B=128 = 1548 t/s** aggregate — ~2.75× the prior Q8 `-fa0` @B32 anchor (563), entirely config, zero kernel work.
+- **Not levers (measured, do not attempt):** the L1-MoE `mmid` dispatch threshold (forcing experts to MMQ at low batch is net-negative — B2 −30%, B4 −21%; MMVQ is the correct low-batch kernel and the default threshold 8 is already optimal); and **MTP for MoE-on-GPU decode** (−12%, head-quant-independent — verify overhead on already-fast plain MoE decode; the MTP verdict itself is owned by the speculative-decoding page).
+- **Still open (our-side kernel bet):** the real aggregate ceiling is Q8-MMQ GEMM efficiency (61% of B=32 decode; 2.61 vs bf16 3.22 waves/CU occupancy) — a fused-dequant Q8-MMQ kernel could make Q8 aggregate-competitive at half the HBM, but that is a research bet (L3-MoE), not low-hanging. Until then bf16 is the aggregate precision.
+
+Meta-finding reinforced across the campaign: every lever's sign is a function of arch × substrate × batch — never carry a verdict across dense↔MoE or GPU↔CPU.
+
+Sources: [launcher-numa-mode-gating.md](../handoffs/active/launcher-numa-mode-gating.md), [dynamic-stack-concurrency.md](../handoffs/active/dynamic-stack-concurrency.md), [capability-registry-and-promotion.md](../handoffs/active/capability-registry-and-promotion.md), [standardized-stack-update-pipeline-finalization.md](../handoffs/active/standardized-stack-update-pipeline-finalization.md), [moe-aggregate-deployment-wins-brief.md](../handoffs/active/moe-aggregate-deployment-wins-brief.md), [progress/2026-07/2026-07-04.md](../progress/2026-07/2026-07-04.md), [progress/2026-07/2026-07-05.md](../progress/2026-07/2026-07-05.md).

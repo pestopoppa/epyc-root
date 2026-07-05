@@ -2,8 +2,8 @@
 
 **Category**: `cost_aware_routing`
 **Confidence**: verified
-**Last compiled**: 2026-06-22
-**Sources**: 35+ documents (added 2026-06-22 the F7 economic-ledger completion with its first standing-rule trigger and the X-MAS constrained-policy A/B hold; prior 2026-06-20 AVB offline quality-oracle reward stack, OpenRouter Fusion typed-judge method-selection ideas, and F7 economic-ledger digest wiring; prior 2026-06-20 stack-prior generated-contract refresh and launch-map consumer audit)
+**Last compiled**: 2026-07-05
+**Sources**: 40+ documents (added 2026-07-05 the GPU CoT-scaffold sidecar campaign: single-shot scaffold-injection falsified in both regimes, self-debug loop weak (4% rescue), verifier/selector best-of-N pivot, blended-wall-clock objective correction, reasoning-effort axis framing, plus the 2026-07-02 SPIRAL recursive-self-aggregation intake; prior 2026-06-22 F7 economic-ledger completion with its first standing-rule trigger and the X-MAS constrained-policy A/B hold; prior 2026-06-20 AVB offline quality-oracle reward stack, OpenRouter Fusion typed-judge method-selection ideas, and F7 economic-ledger digest wiring)
 
 ## Summary
 
@@ -16,6 +16,8 @@ The practical consequence is a three-tier compression strategy: zero-training me
 A critical recent finding reshapes the entire routing cost model: the Omega metric evaluation (2026-04-09) revealed that tools and REPL pipelines *hurt* accuracy on 7 of 10 benchmark suites. Agentic tasks suffered -54.5pp, coding -44pp, general QA -26pp, and math -26pp when routed through tool-equipped paths versus direct generation. Only hotpotqa (+12pp) and gpqa (+6pp) benefited. The "cost" of routing to a tool path is not just tokens -- it is accuracy. Default routing should prefer direct mode, with REPL/tool use opt-in for known-beneficial task types.
 
 The EPYC orchestrator has a three-band difficulty classifier (easy/medium/hard) in shadow mode at recalibrated thresholds (0.15/0.35), band-adaptive token budgets (1500/3500/7000) gated behind enforce mode, a reasoning length alarm that cancels and re-generates when think blocks exceed 1.5x the band budget, and an autopilot system continuously optimizing routing via a 4D Pareto archive. The missing piece is validation of the recalibrated thresholds -- the original 0.3/0.6 split produced 92% easy / 0% hard classification, which is useless for routing.
+
+A 2026-07 addition to the category's conclusions: the "offload reasoning to a cheap fast model and hand the trace to the expensive one" routing pattern was experimentally falsified -- transplanted reasoning does not transplant capability (single-shot scaffold injection net-negative in both generator-strength regimes; the self-debug loop rescued only 4%), matching the published field consensus. The working way for one model to help another is **verifier/selector best-of-N** -- the helper grades/ranks the target's candidates instead of reasoning for it -- now the operator-approved next experiment. The falsification also settled the cost objective: minimize blended GPU+CPU wall-clock at quality-parity, which is autopilot's *existing* 4D Pareto + cost-penalized reward, so new reasoning levers register as `capability_registry` levers rather than new optimizers, unified on a single per-task-class "reasoning effort" axis (nothink → think-budget → scaffold → loop-depth → model-escalation).
 
 ## Key Findings
 
@@ -290,11 +292,50 @@ Package I in the bulk inference campaign consolidates the decision-aware routing
 
 > Source: [bulk-inference-campaign.md](/workspace/handoffs/active/bulk-inference-campaign.md) Package I
 
+## 2026-07-05 Update — CoT Scaffold Falsified in Both Regimes; Verifier/Selector Is the Forward Path
+
+> **Review flag (project-wiki writer-evidence policy):** model-compiled, not adopted until human or measured review. Every GPU number in this section is an OBSERVATION per MEASUREMENT.md (single MI210, serial, contended host, single-sample seed=42, no `P-GPU-1` protocol) — usable for direction, never decision-gating.
+
+### The lane and its objective
+
+The GPU CoT-scaffold sidecar lane (opened 2026-07-04 out of the Fable-5 distillation intake, entries 773-778) tested the most direct cost-aware-routing bet available with the MI210: have a small fast GPU reasoner generate the chain-of-thought and inject it into the expensive CPU beneficiary, so reasoning tokens move off slow CPU decode. Two objective corrections landed before the verdict:
+- **The value metric is NOT "scaffold beats nothink on average tokens."** Operator reframe: an accuracy-vs-token feature is gated by **rescue rate on tasks the cheap path FAILS** (with a 0-regression gate) — completing at 3x tokens beats failing at 1x; token-normalized averages bury the rescues (memory `feedback_accuracy_token_tradeoff_rescue_metric`).
+- **The formal objective — minimize blended GPU+CPU wall-clock s.t. quality >= quality-parity(ownthink) — is autopilot's EXISTING objective, not a new one.** Verified: `safety_gate.objectives() = (quality, speed, -cost, reliability)` is a 4D Pareto and `q_reward.compute_reward` already penalizes wall-clock only on correct answers (= minimize-cost-subject-to-correctness). Any reasoning lever therefore registers as a `capability_registry` prompt-kind LEVER beside `per_role_enable_thinking`, evaluated by the existing Pareto + episodic gating — the work is never building a parallel cost optimizer.
+
+### The falsification (single-shot injection, both regimes)
+
+Rescue-rate experiment, suite `mode_advantage_hard` (60q, nothink unsaturated at 41/60), rescue metric + 0-regression gate, observation-grade:
+
+| pairing | regime | result |
+|---|---|---|
+| 4B-Thinking → 35B-A3B-Q8 | gen << beneficiary | 0 rescues / 9 regressions / net −9 |
+| Qwable-v1 (35B distill, IQ4) → 35B-A3B-Q8 | gen ≈ beneficiary | 2 rescues / 4 regressions / net −2 |
+| Qwable-v1 → gemma-4-26B (format-native) | gen > beneficiary | 1/21 rescue (5%) / 4 regressions / net −3 |
+
+**Mechanism: transplanted reasoning does not transplant capability** — a pre-made trace neither unlocks tasks the receiver fails nor is cost-free (occasional derail), independent of the strength ordering. The CPU-cost mechanism itself works (scaffold beneficiary 641 tok/q vs nothink 1071 = −40% CPU decode) but at a quality loss. The **recursive/self-debug loop** — the hypothesized rescue for the weak-generator case via execution-feedback self-correction — was then also measured weak: 35B on bigcodebench 60q, write→execute→feed-error→revise, MAX_ITERS=3, rescued **2/47 = 4%** with a **flat** effort curve (both rescues at iter 2, none at 3), matching the RL-ceiling result (arXiv:2504.13837 — self-refinement is bounded by base pass@k). Caveat: bigcodebench is library-API-heavy (knowledge gaps, not reasoning); a GPQA reasoning-diagnostic (nothink vs ownthink vs scaffold) is in flight to test the distribution objection. The path to the verdict is itself a methodology lesson: three successive "scaffold wins" headlines each died to a baseline cleanup (suite saturation → a `-c 8192` rope-scaling artifact that suppressed nothink → a `-fa off` misconfig that made the generator look too slow).
+
+**Literature cross-check confirms the negatives are field consensus**, not a local artifact: transplanted reasoning is a "capability amplifier, not a substitute" (arXiv:2605.28913); small-model plans drop a larger executor below its own baseline (arXiv:2506.11578); reasoning is elicited, not installed (LIMO 2502.03387, s1 2501.19393); below ~3-7B long-CoT actively hurts (arXiv:2502.12143 — the fable5-distilled 4B sits at that boundary).
+
+### What survives, and the pivot
+
+Two components stand IF an injection mechanism is ever revisited: **distillation adds value** (Qwable fixed 9 of the vanilla 4B's derails; net −2 vs −9) and **format-native reasoning-slot injection** is the correct cross-model delivery primitive (+11pp/0-regressions vs a literal foreign `<think>` tag at −18.5pp; context-side detail in [context-management.md](context-management.md)). Fork-4 resolved: external generators only, in-house reasoner build PARKED.
+
+**The forward path is VERIFIER/SELECTOR best-of-N** — the one published mode where a reasoner helps another model that sidesteps the transplant problem entirely: the GPU reasoner does *its own* task, grading/ranking the beneficiary's N candidates. Evidence base: GenRM (arXiv:2408.15240, best-of-N 5%→45%, 73%→93%) and GenPRM (arXiv:2504.00891 — a 1.5B generative PRM beats GPT-4o as a judge; 7B beats 72B). It fits the GPU-reasoner + CPU-beneficiary topology, is testable **entirely on GPU** by hosting the beneficiary on-GPU and artificially rescaling its t/s to sweep the CPU-cost pivots, and plugs into the existing EV-9 DRACO/MindDR scorer. Operator-approved as the recommended next GPU-reasoner experiment. The reframed GPU-reasoner role: (1) standalone routing target for reasoning-heavy tasks; (2) verifier/selector over CPU-model outputs; (3) offline CoT data-gen for fine-tuning CPU models.
+
+### The reasoning-effort axis (routing framing)
+
+Loop-depth is a "reasoning effort" knob — the local analog of cloud `reasoning_effort`/thinking budgets. This unifies `{nothink → think-budget → single-shot scaffold → loop-depth → model-escalation}` on ONE effort axis, exposed as an operator flag plus an autopilot per-task-class tunable through the existing 4D-Pareto + per-request-reasoning-budget plumbing. Even negative runs yield calibration data (the rescue-vs-effort curve, flat here). This is the routing-side consolidation of what this page previously tracked as separate levers (band budgets, think-mode toggles, escalation).
+
+Adjacent multi-sample pattern (2026-07-02 intake, [reasoning-compression.md](../handoffs/active/reasoning-compression.md)): SPIRAL-style **recursive self-aggregation** — sample N parallel traces, then a prompted aggregation trace — is the training-free multi-sample-selection complement to the verifier/selector pivot (worker/coder tier only, `-np >= 2`; any test must carry a same-compute majority-vote control since aggregation gains often reduce to sample-count scaling).
+
+Related but owned elsewhere: the same MI210 campaign converged the MTP-on-GPU-MoE flip-flop (~neutral at production temperature; never A/B spec-dec at temp 0 — greedy inflates draft acceptance) — that angle lives in [speculative-decoding.md](speculative-decoding.md).
+
 ## Related Categories
 
-- [Context Management](context-management.md) -- Compression techniques reduce context pressure, which is the primary cost driver; tool output compression is a routing-adjacent optimization
+- [Context Management](context-management.md) -- Compression techniques reduce context pressure, which is the primary cost driver; tool output compression is a routing-adjacent optimization; format-native injection and the transplant ceiling are compiled there from the context side
 - [LLM Prompting](llm-prompting.md) -- Conciseness prompting is a tier-1 zero-cost routing optimization; controllability research bounds its effectiveness, especially on RL-trained workers
 - [Context Extension](context-extension.md) -- Larger effective context windows change the cost calculus for routing by reducing the need for aggressive compression
+- [Speculative Decoding](speculative-decoding.md) -- The latency-side complement to reasoning-cost routing; owns the MTP/spec-dec angle of the 2026-07 MI210 campaign (production-temperature convergence, temp-0 acceptance-inflation lesson)
 
 ## Source References
 
@@ -320,3 +361,8 @@ Package I in the bulk inference campaign consolidates the decision-aware routing
 - [AVB Offline Reward Stack](../research/deep-dives/2026-06-20-avb-offline-reward-stack.md) -- tiny CPU reference-grounded MSE answer-quality regressor as an OFFLINE quality-oracle label source; binary q_reward ladder + disabled ClaudeAsJudge gap (code-verified); NEXT-A2/A3 verifier debiasing anchor; paraphrase-blindness risk; self-reported metrics are observations only. [intake-706], [intake-716], [intake-717], [intake-719]
 - [OptiLLM & Test-Time-Compute Techniques](../research/deep-dives/optillm-test-time-techniques.md) -- method-selection axis home (P21.B, GATED/not-built); OpenRouter Fusion typed-judge schema + model-discretionary invocation + recursion-depth bounding as `n`-free portable ideas; OptiLLM as self-hostable MoA analogue; `n`-degraded panel caveat. [intake-601], [intake-712], [intake-714]
 - [Frontier F7 — Economic Ledger](../handoffs/active/frontier-f7-economic-ledger.md) -- cost ledger (cloud spend, local inference-hours, operator decision throughput) aggregated from existing logs; W2 digest economics section live in code; W3 operator-review-only standing rules tying planner spend / gate-latency back to routing investment.
+- [GPU CoT-Scaffold Sidecar handoff](../handoffs/active/gpu-cot-scaffold-sidecar.md) -- single-shot scaffold-injection falsified (both regimes), self-debug loop 4%/RL-ceiling, verifier/selector pivot (GenRM 2408.15240 / GenPRM 2504.00891), blended-wall-clock objective + capability-registry lever registration, distillation-adds-value + format-native-injection survivors, Fork-4 external-generators-only.
+- [progress 2026-07-05 — CoT falsification + MTP](../progress/2026-07/2026-07-05-cot-falsification-and-mtp.md) -- session narrative + commit index for the falsification, design-dialogue outcomes table, reasoning-effort framing, literature cross-check; MTP convergence angle owned by [speculative-decoding.md](speculative-decoding.md).
+- [progress 2026-07-05 — MI210 residency + CoT reframe](../progress/2026-07/2026-07-05-mi210-residency-and-cot-reframe.md) -- the operator rescue-rate reframe (metric/distribution/deployment corrections) that re-scoped the experiment before the close.
+- [progress 2026-07-04 daily](../progress/2026-07/2026-07-04.md) -- lane opening: Fable-5 distillation intake (773-778, incl. Qwable-v1 MTP-head-dropped GGUF finding), reasoning-economics cluster framing (MD-9 == G1 shared gate), seed-corpus cache with Groq-key redaction.
+- [Reasoning Compression handoff — 2026-07-02 update](../handoffs/active/reasoning-compression.md) -- SPIRAL / recursive self-aggregation training-free pattern (intake-732/746/747) with the mandatory same-compute self-consistency control; diverse-exploration RL objectives filed as Tier-3 HW-gated forward pointers.

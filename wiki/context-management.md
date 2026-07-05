@@ -2,8 +2,8 @@
 
 **Category**: `context_management`
 **Confidence**: verified
-**Last compiled**: 2026-06-22
-**Sources**: 25 documents (6 deep-dives, 4 active handoffs, 15 intake entries) + 2026-06-19 K-MEM Tulving run state + 2026-06-22 DCP first live A/B (hold)
+**Last compiled**: 2026-07-05
+**Sources**: 28 documents (6 deep-dives, 4 active handoffs, 18 intake entries) + 2026-06-19 K-MEM Tulving run state + 2026-06-22 DCP first live A/B (hold) + 2026-07-02 SPIRAL/recursive self-aggregation intake + 2026-07-05 scaffold-transplant falsification cross-link + DCP-for-consult flag landing
 
 ## Summary
 
@@ -173,6 +173,10 @@ The EPYC orchestrator implements a 5-layer context management stack that predate
 - [intake-426](https://arxiv.org/abs/2604.14228) Dive into Claude Code -- five-layer compaction pipeline (budget reduction → snip → microcompact → context collapse → auto-compact); Budget Reduction gap identified for EPYC; "context as scarce resource" design principle
 - [intake-708](https://www.arxiv.org/html/2606.07878v1) Still: Amortized KV Cache Compaction in a Single Forward Pass -- per-layer Perceiver synthesizes compact KV in one forward pass (vs per-context optimization); iterative/chunked compaction over a trajectory for streaming/long-horizon residency; position-free via inverse-RoPE; needs one-time GPU forward-KL distillation per base model, no public code as of 2026-06-05. Context-management angle here; primary KV-mechanism home is [kv-cache.md](kv-cache.md)
 - [summary-token-attention-readiness.md](../handoffs/active/summary-token-attention-readiness.md) -- learnable-compaction readiness tracker; Still added as a GPU-CPT-gated monitoring target alongside the KSA/GSA summary-token cluster
+- [intake-732/746/747](https://arxiv.org/abs/2606.23595) SPIRAL + recursive self-aggregation -- training-free parallel-trace + prompted-aggregation pattern (aggregation-trace generalization of short-m@k); worker/coder-tier-only fan-out; mandatory same-compute self-consistency control (see 2026-07-05 update; handoff home [reasoning-compression.md](../handoffs/active/reasoning-compression.md))
+- [gpu-cot-scaffold-sidecar.md](../handoffs/active/gpu-cot-scaffold-sidecar.md) -- scaffold-injection falsification: reasoning context does not transplant capability; format-native reasoning-slot injection as the surviving cross-model context primitive (routing story in [cost-aware-routing.md](cost-aware-routing.md))
+- [progress 2026-07-05 (CoT falsification + MTP)](../progress/2026-07/2026-07-05-cot-falsification-and-mtp.md) -- narrative + evidence index for the scaffold close; verifier/selector pivot
+- [progress 2026-07-05 daily](../progress/2026-07/2026-07-05.md) -- `dcp_for_consult` flag landed (orchestrator `4183522f`), default-off, reuses `_maybe_dcp_seed_context()`
 
 ## Updates — 2026-04-28
 
@@ -263,3 +267,25 @@ The Repo Prompt deep dive (intake-605) surfaced a context philosophy this page h
 The internal interaction-lifecycle handoff makes DCP a shared context-packaging substrate for both delegation and consult, but not the owner of consult lifecycle. P2 consult reuses the existing `_maybe_dcp_seed_context()` ranking/rendering path behind `features().dcp_for_consult` (requiring `dcp_pre_assembly`), and preserves the DCP invariant that pre-assembly is advisory only: reactive discovery/top-ups remain available. This avoids a parallel context packer and keeps the assemble-side scoring/ranking decisions in one place.
 
 **Sources**: [`delegation-context-preassembly.md`](../handoffs/active/delegation-context-preassembly.md) dependency note · [`internal-interaction-lifecycle.md`](../handoffs/active/internal-interaction-lifecycle.md) P2-4 · [`progress/2026-05/2026-05-31.md`](../progress/2026-05/2026-05-31.md)
+
+## Updates — 2026-07-05
+
+> **Review flag (project-wiki writer-evidence policy):** model-compiled, not adopted until human or measured review. GPU numbers referenced below are observations (single MI210, serial, seed=42, no protocol citation), never decision-gating.
+
+### Recursive self-aggregation joins the multi-trace management toolbox (2026-07-02 intake)
+
+SPIRAL (arXiv 2606.23595) trains one model to jointly emit parallel CoT traces plus a learned aggregation trace via "set RL." The trained aggregator is GPU-RL and not deployable here, but the **training-free inference pattern is minable**: sample N parallel traces, then run a *prompted* aggregation trace, optionally recursively (intake-746 arXiv 2509.26626; intake-747 arXiv 2503.04104). From the context-management angle this is a *managed multi-trace* pattern — the aggregation trace is a structured compression of N sibling traces into one, the aggregation-trace generalization of short-m@k's majority vote already tracked on this page (Latent/Abstract CoT cluster).
+- **Feasibility bound**: full parallel generation is infeasible on the architect tier (`-np 1`); scoped to the worker/coder tier (`-np ≥ 2`) on NUMA-concurrent multi-instance serving.
+- **Mandatory control**: any test must include a same-inference-compute majority-vote/self-consistency baseline — aggregation gains often reflect ordinary sample-count scaling and can *degrade* with correlated errors; SPIRAL's gains are math/verifiable-only and may not transfer to largely non-verifiable production traffic.
+- Related training-side pointer: Poly-EPO (arXiv 2604.17654) / Polychromic RL (arXiv 2509.25424) are the training-time answer to the diversity-collapse bound (inference-time interventions cannot recover training-time diversity loss) — Tier-3, HW-gated, filed as forward reference only.
+- Cross-link: multi-sample generation + aggregation/selection is the same family as the verifier/selector best-of-N pivot now tracked in [cost-aware-routing.md](cost-aware-routing.md) — the selector is the aggregation step done by a separate (GPU) model.
+
+### Reasoning context does not transplant capability — the injection ceiling (2026-07-05)
+
+The GPU CoT-scaffold experiments (full story in [cost-aware-routing.md](cost-aware-routing.md)) produced a finding that bounds this page's compression thesis from the *other* direction: injecting a pre-made reasoning trace into a model's context — whether as system-context advisory or as a format-native reasoning-slot prefix — **does not transplant the generating model's capability** (falsified in both generator≈beneficiary and generator>beneficiary regimes; literature consensus: "amplifier, not substitute," arXiv:2605.28913). The context-management implication: reasoning tokens carried in context are only as valuable as the *receiver's* ability to exploit them, which strengthens the case for aggressive reasoning-chain compression (this page's SEER/<10%-informative finding) — most of a reasoning trace is not load-bearing even for a capable consumer, and for a differently-capable consumer even the load-bearing part may not help. One mechanical result stands: **format-native injection matters** — a literal foreign `<think>` tag injected cross-family broke the receiver's generation-boundary handling and caused over-generation to the cap, while the same content delivered into the target's own reasoning slot was clean (+11pp, 0 regressions, at 1.7-2.7× tokens). Any future folded-summary or scaffold re-injection must render into the *consumer's* native template slots, not the producer's.
+
+### DCP-for-consult flag landed in code (2026-07-04/05)
+
+The consult-reuses-DCP design recorded above (2026-05-31) is now implemented: orchestrator commit `4183522f` adds a default-off `dcp_for_consult` feature flag (requires `dcp_pre_assembly`) under which `consult()` reuses the existing `_maybe_dcp_seed_context()` packer rather than growing a second context packer. Behavior-preserving unless a caller supplies `code_search_fn` and both flags are enabled; the DCP advisory-only invariant (reactive discovery stays available) is preserved. Note the parent DCP seed-bundle A/B is still at `hold` (2026-06-22 finding above), so both flags remain default-off.
+
+**Sources**: [`reasoning-compression.md`](../handoffs/active/reasoning-compression.md) 2026-07-02 intake update · [`gpu-cot-scaffold-sidecar.md`](../handoffs/active/gpu-cot-scaffold-sidecar.md) G2/rescue-rate results · [`progress/2026-07/2026-07-05-cot-falsification-and-mtp.md`](../progress/2026-07/2026-07-05-cot-falsification-and-mtp.md) · [`progress/2026-07/2026-07-05.md`](../progress/2026-07/2026-07-05.md) (dcp_for_consult `4183522f`)
