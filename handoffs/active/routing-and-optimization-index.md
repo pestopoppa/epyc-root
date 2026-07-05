@@ -130,6 +130,28 @@ offline-only training target candidate; it remains forbidden for live routing,
 online reward updates, or production promotion without a separate deployment
 gate. Do not rerun the exhausted collector.
 
+**A9 expanded-gap fold (2026-07-05)**: while AutoPilot trial `1157` ran, the
+July 4 expanded-gap feature manifest was folded into the broad audit-target
+manifest offline, producing
+`offline_reward_feature_manifest_with_pairwise_expanded_gap_candidates.jsonl`
+with `12,308` prompt-free rows and no duplicate join keys. The rebuilt
+score-ordered pairwise contract
+`offline_reward_pairwise_preference_contract_score_ordered_with_expanded_gap.jsonl`
+is `contract_ready` with `6,244` pair rows, `4,348` cross-action rows, and
+`1,981` contrastive groups. The direction audit
+`offline_reward_pairwise_with_expanded_gap_direction_audit.{json,md}` remains
+`preference_coverage_gaps_found`, but it reduces weak strata from the prior
+eight to five and clears `source_family:orchestrator_live_seed`,
+`suite:instruction_precision`, and `suite:thinking` from the concrete
+collection target list. Remaining targets are `source_family:seeding_eval`
+(`coder_escalation>frontdoor`, prefer coder), `suite:general`
+(`architect_general>coder_escalation`, prefer architect), `suite:hotpotqa`
+(`architect_general>frontdoor`, balance both directions), and `suite:simpleqa`
+(`architect_general>coder_escalation`, balance both directions). The heavy
+ranker holdout eval was deliberately stopped after it saturated CPU during a
+live W8 eval; rerun it at the next quiet or explicitly constrained CPU window
+before claiming independent-holdout closure.
+
 ## Additional Active References
 
 These files remain active but are not the shortest pickup path for the main queues above. Keep them indexed for discoverability; update the owning row if one becomes the primary implementation surface.
