@@ -59,7 +59,11 @@ plan-only-by-default rollout harness. Live mutation requires both `--apply` and
 workers with `attest_flags.py --expect routing_classifier=true`, and rolls back
 to `routing_classifier=false` unless `--keep-enabled` is explicit. Plan-only
 smoke while AutoPilot was active found API health OK, weights present, and five
-sampled API workers still attesting `routing_classifier=false`.
+sampled API workers still attesting `routing_classifier=false`. Orchestrator
+`d59e6532` records the latest plan-only preflight artifact at
+`orchestration/reports/routing_classifier_rollout_20260705T052644Z/`: API
+health OK, weights present, AutoPilot active, and 4 sampled workers still
+attesting `routing_classifier=false`.
 
 ### 4. Retrain GraphRouter (GAT) only if still justified
 ```bash
