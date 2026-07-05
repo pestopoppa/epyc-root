@@ -73,3 +73,34 @@ agents' stack files untouched); GitNexus impact checks run pre-edit
 - Open: AutoPilot per-trial API restart cadence (dashboard now tolerates it);
   retiring the dead `autopilot_prompt_tap.txt` writer; `contention_matrix.yaml`
   refresh (8.4d old, non-gating); Playwright for browser-level chaos automation.
+
+## Second wave (same day, operator-approved follow-ups)
+
+- **prompt_tap surface retired end-to-end** (orch `87c5f970`): no writer has
+  existed in-repo for months; removed the `current_prompt` fields (fetch +
+  legacy SSE), the panel source, the client block, the path constant, and the
+  45-day-stale file itself.
+- **Regions Lock panel fold + orphan inference cards** (orch `9ade5019`,
+  operator request): panel renamed `regions lock` (CPU region locks + device
+  occupancy); GPU/extern servers render as spanning device rows in both grid
+  paths; live tap panel shows "orphan inference" cards for active slots on
+  off-pipeline servers (MI210 direct-access traffic — slot id, token counts,
+  model; explicit "no token tap — off-pipeline" label). A non-OK contention
+  matrix now renders as a loud incident line in the gate strip. Verified live:
+  `mi210_gpu` kind `gpu-llama-server` n_active=1 flows through the snapshot.
+  HTML is hot-read — visible on tab refresh, no reload needed.
+- **No-op API restart guard** (orch `b1a21e79`): `EnvRestartApplicator` reads
+  the live uvicorn parent's `/proc/<pid>/environ` and skips the restart on a
+  positive full-key match (fail-safe toward restarting on any uncertainty);
+  `api_restart: performed|skipped_noop` rides into the journal as an eval
+  covariate; `config_applicator.py` added to the phase-health runtime-source
+  drift list. Live at the next AutoPilot launch (daemon down since 18:46:52).
+- **Contention matrix**: handoff `handoffs/active/contention-matrix-v6-quarter-refresh.md`
+  created and ownership passed to the parallel codex session (operator-directed).
+  Codex finding: measured-role hash `df373c79cc4af06f` still matches — the
+  stale verdict was a hash-scope false positive (live hash wrongly includes
+  the auxiliary `eval_batch_frontdoor`); fix owned by codex, NOT this session.
+- Deploy state: dashboard.py server-side changes from this wave (prompt_tap
+  field removal) await the next API reload — deferred to avoid racing the
+  codex session and the in-flight seeding sweep; client no longer reads those
+  fields so nothing is user-visible in the interim.
