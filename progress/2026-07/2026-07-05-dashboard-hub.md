@@ -71,3 +71,21 @@ epyc-root now owns a **project dashboard hub** — a dependency-free stdlib web 
 **Caveat**: `boxes_checked` counts *added* `[x]` lines, so moved/compacted already-checked lines count too — it is an activity signal, not a ledger; the parser's live scan stays authoritative.
 
 **Deferred (recorded as checkboxes in `loops-and-dashboards-audit-2026-07-05.md` P5)**: priority-bucketed backlog, probably-dead lane (>30/90d untouched), promoting `pct_open_done` to the headline.
+
+---
+
+## Session: handoff dashboard down — restart (evening)
+
+**Problem**: operator reported the handoff dashboard (:8100) no longer serving. `curl localhost:8100` → connection refused; `logs/dashboard_hub.log` had been truncated to 0 bytes ~20 min prior, so nothing was listening and no crash trace survived. No supervisor auto-restarts it.
+
+**Fix**: restarted through the stack manager (the dashboard is a first-class `handoff_dashboard` service per `feedback_stack_managed_services`, launched by `start_handoff_dashboard()` in `epyc-orchestrator/scripts/server/orchestrator_stack.py:1825`). Correct invocation is `reload`, not `start --only` (avoids stack-state clobber):
+
+```
+python3 scripts/server/orchestrator_stack.py reload handoff_dashboard
+```
+
+An initial ad-hoc `nohup python3 -m dashboard.server` start was used to restore service immediately, then killed and replaced with the stack-managed launch so the process is tracked (writes `logs/handoff_dashboard.log`, health-gated on `/health`).
+
+**Result**: PID 2917777, `status` reports `handoff_dashboard 8100 healthy`. `/` → 200, `/api/health` board=fresh (live-scan), timeline+kernel fresh.
+
+**Deferred**: no watchdog exists for this hub — the same silent death can recur. Adding a supervised restart (or verifying the stack's health loop covers it) is open follow-up.
