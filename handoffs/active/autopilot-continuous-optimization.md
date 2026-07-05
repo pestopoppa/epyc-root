@@ -72,7 +72,7 @@ Controller (Claude CLI meta-reasoning)
   ├── Species 2: PromptForge (LLM prompt mutation → .md hot-swap)
   └── Species 3: StructuralLab (flags + routing model lifecycle)
   │
-  EvalTower: T0 (10q/30s) → T1 (100q/5m) → T2 (500+/30m) → T3 (hard-only stress)
+  EvalTower: T0 (10q/30s) → T1 (100q/5m) → T2 (500+/30m) → T3 (expert/hard workflow eval)
   ParetoArchive: 4D (quality × speed × -cost × reliability; speed is median request t/s for serial evals, aggregate batch t/s for concurrent same-trial eval batches)
   SafetyGate: quality floor + per-suite guard + routing diversity
 ```
@@ -189,7 +189,7 @@ CHECKPOINT + RESET (selective) + RESEED → back to top
 | Component | Path | Integration |
 |-----------|------|-------------|
 | Seeding 3-way | `scripts/benchmark/seed_specialist_routing.py` | Seeder wraps `evaluate_question_3way` + `_inject_3way_rewards_http` |
-| Question pool | Research: `scripts/benchmark/question_pool.py` | EvalTower draws T1/T2 validation questions and T3 hard-only stress questions |
+| Question pool | Research: `scripts/benchmark/question_pool.py` | EvalTower draws T1/T2 validation questions and T3 workflow-shaped expert/hard rows from the live pool |
 | Optuna | Research: `scripts/benchmark/optuna_orchestrator.py` | NumericSwarm reuses TPE/cluster patterns |
 | Claude Debugger | `src/pipeline_monitor/claude_debugger.py` | PromptForge reuses Popen+session+git pattern |
 | Episodic memory | `orchestration/repl_memory/episodic_store.py` | Seeder monitors count/convergence |
@@ -1132,10 +1132,12 @@ paired authority core.
   separate `exploration_coverage` rotating/advisory lane for planner learning,
   and keep `promotion_holdout` as fresh held-out acceptance evidence.
 - First-class T3 lane landed 2026-07-04: `EvalTower.eval_t3()` samples only
-  scoreable pool rows explicitly labeled `tier=3`, `deep_eval` accepts
-  `tier: 3`, the shared tier registry exposes `T3 (hard-only stress eval)`,
-  and the dashboard Pareto reconstruction keeps tier 3 in its own
-  `frontiers_by_tier["3"]` series. Non-inference sanity check found `5,431`
+  workflow-shaped live-pool rows explicitly labeled `tier=3`, `deep_eval`
+  accepts `tier: 3`, the shared tier registry exposes `T3 (expert/hard
+  workflow eval lane; same-tier validation/planner pressure)`, and the
+  dashboard Pareto reconstruction keeps tier 3 in its own
+  `frontiers_by_tier["3"]` series. `DEFAULT_FRONTIER_TIER/T1` remains the
+  production optimization lane. Non-inference sanity check found `5,431`
   T3-labeled rows, `4,956` scoreable rows across `13` suites, and a
   160-question spec draw containing only `tier=3` rows.
 - Next implementation task: wire the report into regular Fable/dashboard
