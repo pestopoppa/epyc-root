@@ -77,6 +77,21 @@ Together they give a clean same-family vs cross-family contrast, both on code ta
 ## Kill-gates (each cheap, each pure-GPU)
 
 - **G0 — Qwable-v1 GGUF MTP check — DONE (free).** Result: community GGUF dropped MTP/NEXTN (733 tensors, zero head) → *no impact on this lane* (scaffold role needs no MTP). Recorded in intake-777.
+### G1 slice-1 RESULT (2026-07-05) — **GO** (does any scaffold beat own-think? YES), heavily caveated
+
+Run by the GPU-campaign session. Control gen `Qwen3-4B-Thinking-2507-Q8_0` (:8801) × same-family beneficiary `Qwen3.6-35B-A3B` coder_escalation (:8802), co-resident on the MI210 (45.4/64 GB), eval-tower `debug/coder.yaml` (`code_execution` oracle), n=12 seed-42, eval-tower `debug_scorer.score_answer` (**no parallel scorer built**). All OBSERVATION (not eval-tower-recipe-confirmed).
+
+| Arm | Acc | total tok | tok/solved | vs own-think |
+|---|---|---|---|---|
+| nothink | 0.833 | 1,241 | 124 | — |
+| **ownthink (bar)** | 0.917 | 23,800 | 2,164 | — |
+| SCAFFOLD-prefix | 0.833 | 13,833 | 1,383 | −1 acc → no |
+| **SCAFFOLD-context** | **0.917** | **10,677** | 971 | **= acc, 0.45× tok → WIN** |
+
+- **Verdict G1-(i): GO.** SCAFFOLD-context (advisory-plan → nothink beneficiary) matches own-think accuracy at **0.45× total tokens** (generator cost included) and rescues the single discriminating question (`code_hard_002`: nothink fails, all thinking arms pass). **Injection-mode answer: context-advisory beats assistant-prefix** — prefix loses to a `<think>`-prefill continuation-fidelity artifact.
+- **Load-bearing caveats:** (1) suite is >90%-saturated (only **1** discriminating question after excluding buggy oracle `humaneval_004` — flagged for suite maintainers) → direction solid, magnitude n=1; (2) single-sample; (3) generator Q8_0 only (near-lossless MI210 single-stream optimum) → feeds the quant×quality curve.
+- **Next (plan, not run):** (a) **fix saturation first** — re-run on a harder code set (nothink pass ~40–70%, e.g. code_hard tier-3 / HumanEval+/MBPP+ hard, ~25–40 q); (b) add TREATMENT `Qwable-v1` for G1-(ii) distillation (IQ4_XS 17.6 GB co-resides with the 35B; Q8 34.4 GB does not); (c) G2 cross-family gemma (expect nothink-only bar — gemma has no thinking mode); (d) keep SCAFFOLD-context as primary. Artifacts: `/mnt/raid0/llm/tmp/cot-g1/`.
+
 - **G1 — scaffold lift (control AND treatment in one sweep).** Run **both** the control generator (Qwen3-4B-Thinking) and ≥1 distilled treatment (Qwable-v1) against the code beneficiaries. Two distinct questions: **(i) does *any* scaffold beat both baselines** token-normalized on ≥1 pair/suite (does scaffolding help at all)? **(ii) does the *distilled* generator beat the *control* generator** (did frontier-CoT distillation actually add value)? **KILL the lane if no scaffold beats BASELINE-ownthink** (thinking tokens aren't automatically additive — `feedback_qwen3x_enable_thinking_false`: `enable_thinking=false` won +33 pp on Qwen3.6/122B). **KILL the distillation thesis specifically if the distilled arm never beats the control** — then a vanilla thinker is all we need and no in-house tune is warranted.
 - **G2 — cross-family transfer.** Does the lift survive Qwen-4B-Thinking scaffold → **gemma4** worker (not just same-family)? Epiphenomenal-CoT risk (arXiv:2606.13603) — injected reasoning may not causally drive the answer. KILL if lift is same-family-only.
 - **G3 — residency + latency (only if G1+G2 pass).** Plan MI210 residency next to the frontdoor (fable5-window2-findings-05b/02 Gate R) and re-check the latency budget under realistic concurrency, since the scaffold is a serial pre-decode step.
