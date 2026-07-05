@@ -43,7 +43,11 @@ changing SafetyGate, Pareto, or accept policy. W8 is not blocked by report-plane
 staleness: a sidecar audit found W8/seq/restart/Fable reports agree that the
 remaining blocker is evidence collection (`b738287be98c3372` is recent but
 unreplayable as `seed_batch`; fresh promotion eval and seq confirmation are
-absent).
+absent). Orchestrator `9a6815c8` makes T3 a concrete planner-visible deep-eval
+choice for thin expert/hard workflow coverage/frontier evidence, while keeping
+T2 as the comprehensive/W8 promotion-eval lane and leaving authority targets
+unchanged; live PID `1397463` needs a later boundary restart to pick up that
+prompt nudge.
 
 | Subsystem | Handoff | Status | Next Action |
 |-----------|---------|--------|-------------|
