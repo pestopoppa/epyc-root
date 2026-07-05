@@ -2,13 +2,14 @@
 
 **Prior status — 2026-07-04T21:24Z W8 authority-env checkpoint**: W4/W6 authority wiring remains current, and AutoPilot is live as PID `1122670` at trial `1146` with `--max-trials 2000`, launched through `scripts/autopilot/start_fable_authority_daemon.py` in `epyc-orchestrator` `07883e63`. The launcher enforces `AUTOPILOT_SEQ_VERDICT=1`, W6 audit flags, `AUTOPILOT_PLANNER_HINTS=1`, `AUTOPILOT_TOOL_SENTINELS=1`, planner timeout `600`, and stepping stones. Strict Fable gate smoke (`fable5_gate_report.py --json --strict --require-current-code`) is clean: `ready=true`, blockers `[]`, and the only active next action is `collect_w8_promotion_eval_evidence`; phase health is current-code clean at trial `1146` in `planner_invoke` with `prompt_chars=62902`. The immediately prior bare-env daemon PID `3796930` was stopped after Fable detected missing authority/tool env; recovery journaled trial `1137` as `autopilot_killed_mid_trial`. `epyc-orchestrator` `0a6336c7` fixes the last W8 replay/report mismatch found in trial `1135`: benign AP-24 `keep_revert_decision=excluded` rows that are still `seq.state=accumulating` are now replay-eligible in AutoPilot, while reverted or failure-bearing excluded rows remain terminal. This aligns the live replay selector with the earlier report-plane fix `076699ff`, so the six stale accumulating W8 candidates are no longer silently skipped. The remaining W8 blockers are evidence, not wiring: `combined_E_below_required`, `fresh_promotion_eval_required`, and `seq_confirmation_required`. `epyc-orchestrator` `9b7a9ebe` closes the last StrategyStore startup-only path by refreshing planner-hint prompt rows and convention bindings before each controller prompt; with `AUTOPILOT_PLANNER_HINTS=1`, newly seeded StrategyStore rows are visible to planner prompts each turn. `epyc-orchestrator` `8185c0f7` extends `restart_readiness_report.py` with `--require-current-code`, phase heartbeat path/staleness controls, and Fable strict follow-up wiring, so W4/W6 restart/cutover checks fail closed when the live AutoPilot process predates runtime source changes.
 
-**Current checkpoint — 2026-07-05T09:33Z**: AutoPilot is live as PID `1802932`
-after a clean pause/resume around the episodic-memory repair window.
+**Current checkpoint — 2026-07-05T10:20Z**: AutoPilot is live as PID `2011881`
+after the episodic-memory repair and FAISS stale-save hardening window.
 `phase_health_report.py --json --require-current-code` reports `status=active`,
-trial `1160`, then advanced from `planner_invoke` to `dispatch_action` /
-`seed_batch` with `code_stale=false`, blockers `[]`, planner hints enabled,
-sequential verdict enabled, and W6 audit accrual enabled. Trial `1156`
-completed as T3 `deep_eval` evidence (`q=1.29375`, speed `32.886`,
+trial `1161`, `phase=dispatch_action` / `seed_batch`, `code_stale=false`, blockers `[]`,
+planner hints enabled, sequential verdict enabled, W6 audit accrual enabled,
+and tool-sentinel env active. The stopped trial `1160` was recovered as a
+killed placeholder because the stale prior daemon died before `journal.record`.
+Trial `1156` completed as T3 `deep_eval` evidence (`q=1.29375`, speed `32.886`,
 reliability `0.75`, `160` questions, Pareto `dominated`) but is not W8
 replayable because `deep_eval` is observational. Trial `1157` produced W8
 candidate `9defa67b5fd62398`; forced replay trial `1158` refuted it with
@@ -21,11 +22,15 @@ orchestrator `7693703b`, and the episodic FAISS mirror was repaired from
 (`95.7%`). Orchestrator `c16935f5` hardens future repairs with configured
 embedder defaults, default-zero DB-growth tolerance, a pre-swap check under the
 live FAISS mutation lock, and stack-status health visibility. Orchestrator
-`212f8c74` fixed the stale dashboard progress label that had displayed the T3
-trial as T1 by preferring the active `logs/autopilot.log` over old restart
-logs. Orchestrator `026f8e29`, `0dd63df9`, `3af6e500`, `24e440dd`, and
-`883d6d13` are live in the daemon planner-evidence/coverage path. Current W8
-state remains blocked on the real next action:
+`8af5fa6e` adds id-map/live-ID overlap diagnostics, `8f2c0ce7` refreshes
+StrategyStore FAISS before writes and refuses stale dirty saves, `5387e70e`
+makes FAISS/id-map saves atomic, and `c932ffb6` locks health reads so
+diagnostics do not sample between mirror replacements. Orchestrator `212f8c74`
+fixed the stale dashboard progress label that had displayed the T3 trial as T1
+by preferring the active `logs/autopilot.log` over old restart logs.
+Orchestrator `026f8e29`, `0dd63df9`, `3af6e500`, `24e440dd`, and `883d6d13`
+are live in the daemon planner-evidence/coverage path. Current W8 state remains
+blocked on the real next action:
 `w8_candidate_generation_required: no replay-eligible accumulating candidate`.
 Fresh promotion-eval evidence and seq confirmation are still absent until
 AutoPilot produces a new keepable, replayable `numeric_trial` or
@@ -146,7 +151,7 @@ boundary restart recorded above.
 
 ## Start Here
 
-1. Authority is live after the 2026-07-02 post-reboot restart, and PID `1802932` is running trial `1160` with current-code health clean; latest observed post-repair phase advanced to `dispatch_action` / `seed_batch`. Orchestrator `026f8e29`, `0dd63df9`, `3af6e500`, `24e440dd`, and `883d6d13` are live. Trial `1156` completed as T3 `deep_eval` evidence but did not create W8 replay evidence; trial `1158` refuted the latest replayable W8 candidate; trial `1159` was infrastructure-poisoned while the CPU stack was down and should not be treated as an optimization signal. The CPU stack and episodic FAISS mirror are healthy again after orchestrator `7693703b` and `c16935f5`. Monitor strict readiness with `restart_readiness_report.py --json --strict --require-seq-cutover --require-w6-audit --require-current-code`, plus W6, W8, and era boundaries; fail closed if any current-era readiness gate regresses.
+1. Authority is live after the 2026-07-02 post-reboot restart, and PID `2011881` is running trial `1161` with current-code health clean; latest observed phase is `dispatch_action` / `seed_batch`. Orchestrator `026f8e29`, `0dd63df9`, `3af6e500`, `24e440dd`, and `883d6d13` are live. Trial `1156` completed as T3 `deep_eval` evidence but did not create W8 replay evidence; trial `1158` refuted the latest replayable W8 candidate; trial `1159` was infrastructure-poisoned while the CPU stack was down and should not be treated as an optimization signal; stopped trial `1160` recovered as a killed placeholder. The CPU stack and episodic FAISS mirror are healthy again after orchestrator `7693703b`, `c16935f5`, `8af5fa6e`, `5387e70e`, and `c932ffb6`; StrategyStore stale FAISS overwrites are guarded by `8f2c0ce7`. Monitor strict readiness with `restart_readiness_report.py --json --strict --require-seq-cutover --require-w6-audit --require-current-code`, plus W6, W8, and era boundaries; fail closed if any current-era readiness gate regresses.
 2. Finish W8 promotion eval evidence: orchestrator `33c16b47` makes forced fresh-promotion deep evals replay the pending candidate's exact numeric params or structural flags and fail closed for unreplayable candidates. Orchestrator `b62bc205` adds the Phase-2.4 confidence-interval non-regression guard: fresh promotion evals now need effective paired-question evidence (`r_eff`) and a one-sided delta lower bound that excludes regression before finalization, with the CI object recorded into promotion state. Orchestrator `2aa3b40c` wires the P-QUAL-PROMO draw contract: forced promotion evals use trial-seeded fresh T2 draws, n bounded to 200-500, qids seen in the last 60 days excluded, broken/artifact suites excluded via the latest item-analytics suite-health table, and fail closed if fewer than 200 fresh healthy scoreable questions remain. Orchestrator `b63645df` makes phase health expose whether the live daemon predates runtime AutoPilot sources, with `--require-current-code` available for strict deploy checks; orchestrator `fd9dd3bd` extends that source list to `planner_evidence.py`; orchestrator `a5b77c1c` surfaces W8 pending/finalized/blocked promotion evidence in `seq_readiness_report.py`, `restart_readiness_report.py`, and `fable5_gate_report.py`; orchestrator `842dc76f` adds pre-confirmation replay for accumulating replayable candidates so confirmation evidence can actually accrue; orchestrator `35316c38` prevents that replay lane from forcing actions that AP-9 dispatch would skip; orchestrator `986de551` adds `w8_promotion_trajectory_report.py`; orchestrator `482cf54f` adds replay-concentration reporting and under-observed replay preference; orchestrator `234149ff` and `076699ff` make W8 reports honor AP-24 keep/revert decisions; orchestrator `0a6336c7` applies the same benign-exclusion semantics to the live replay selector; orchestrator `a53a74ad` makes the W8 trajectory report use the same replayable-action payload contract as the live selector. Continue live accrual until AutoPilot produces a keepable replayable candidate, then collect sequential confirmation and fresh promotion-eval evidence.
 3. Run/review the disagreement/cutover report as follow-up documentation, not as a prerequisite to the already-executed authority restart.
 4. Coordinate any future restart-bundle accept-path flips with J11/BSV-2 and K-SKILL-1 because all three are accept-path gates.
