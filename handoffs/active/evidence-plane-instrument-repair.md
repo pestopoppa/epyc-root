@@ -16,6 +16,13 @@ operator era-row snippet under `operator_era_row_draft`; agents still must not
 append it to `instrument_eras.yaml`. No code change or same-seed calibration
 rerun is indicated before that operator decision.
 
+**Wrap-up addendum — 2026-07-04**: T3 semantics are now corrected to the
+expert/hard workflow slice while preserving T3 `core_id` evidence continuity.
+The latest eval-coverage report (`2439` distinct qids / `24015` scored rows,
+stable pool `52210`, upper-bound coverage `<=4.6715%`, repeat factor `9.8462x`)
+is planner pressure rather than a blocker; A9 remains
+`attention/no_runnable_batches`.
+
 Current blockers before any next decision point:
 
 - **Policy/evidence gating remaining**: W6 now satisfies the default `30` trusted audited-row minimum inside the active v6 era (`32/30` at wrap-up), with `gaming_alarm=false` and no active alarm-clearance debt; older `100` audited rows remain fenced historical priors. The remaining gate is operational, not data-volume: rerun strict readiness after reboot and perform any sequential/baseline authority flip only as an explicit cutover decision.
