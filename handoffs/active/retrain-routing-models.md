@@ -1,8 +1,8 @@
 # Retrain Routing Models
 
-**Status**: ACTIVE/PARTIAL — BGE repair + current-data MLP retrain completed 2026-06-12; classifier weights are staged but production flag remains OFF pending rollout decision/clean-window attestation.
+**Status**: ACTIVE/PARTIAL — BGE repair + current-data MLP retrain completed 2026-06-12; classifier weights are staged, the clean-window rollout harness landed 2026-07-05, and the production flag remains OFF pending operator rollout decision.
 **Unblocked by**: `repair_episodic_embeddings.py --repair --servers 90 --batch-size 128 --base-port 8090` completed 2026-06-12. Post-repair diagnose-only report: 291,587 routing memories in DB, 275,960 FAISS vectors, 275,960 `reembedded.npz` IDs, 94.6% FAISS coverage, 94.6% live-overlap, 15,627 orphan IDs, **Status: HEALTHY**. The earlier 0-byte `embeddings.faiss` anomaly was the repair window, not the standing blocker.
-**Next sequence**: decide `routing_classifier` rollout under a clean measurement window, then decide whether GAT and SkillBank retrains are still justified under the Fable 5 routing freeze.
+**Next sequence**: run `uv run python scripts/maintenance/routing_classifier_rollout_window.py --apply --confirm-clean-window` at a quiet boundary to verify wiring, reload `routing_classifier=true`, attest worker-local agreement, and auto-rollback unless `--keep-enabled` is explicit. Then decide whether GAT and SkillBank retrains are still justified under the Fable 5 routing freeze.
 **Created**: 2026-05-25
 
 ## Context
@@ -49,6 +49,17 @@ across workers.
 **2026-06-12 result**: `verify_routing_wiring.py` passed with the promoted
 weights and existing verifier head. `/config/attest` still saw 6 workers with
 `routing_classifier=false`, so the artifact is staged but not live.
+
+**2026-07-05 follow-up**: Orchestrator `7f5d874f` adds
+`scripts/maintenance/routing_classifier_rollout_window.py`, a no-inference,
+plan-only-by-default rollout harness. Live mutation requires both `--apply` and
+`--confirm-clean-window`; active AutoPilot blocks by default. The harness runs
+`verify_routing_wiring.py`, reloads the orchestrator API with
+`ORCHESTRATOR_FEATURE_ROUTING_CLASSIFIER=1`, attests sampled `/config/attest`
+workers with `attest_flags.py --expect routing_classifier=true`, and rolls back
+to `routing_classifier=false` unless `--keep-enabled` is explicit. Plan-only
+smoke while AutoPilot was active found API health OK, weights present, and five
+sampled API workers still attesting `routing_classifier=false`.
 
 ### 4. Retrain GraphRouter (GAT) only if still justified
 ```bash
