@@ -139,6 +139,19 @@ Both OBSERVATION-grade (single MI210, single-sample seed=42, eval-tower `debug_s
 
 **Fork 4 RESOLVED (operator 2026-07-05): EXTERNAL generators only — NO in-house training now.** All CoT-scaffold spec strategies use **Qwable-v1** (IQ4_XS + Q8_0 on disk) or the **fable5-distilled 4B** (`Qwen3-4B-SFT-Fable5-Glint`, q8_0 GGUF); the vanilla `Qwen3-4B-Thinking` stays only as the CONTROL bar. The **in-house-reasoner build is PARKED** (documented, not pursued): the operator confirms the MI210 *probably could* train (ROCm/PyTorch on gfx90a) but does not wish to explore it now; if ever revived it also needs prompt→thinking pair reconstruction from the session vault (corpus is thinking-text-only, 0 Fable-5). [[project_dgx_spark_target]]
 
+### RESCUE-RATE experiment RESULT (2026-07-05, optimized -fa on) — single-shot scaffold on a STRONG beneficiary FAILS
+Suite `mode_advantage_hard` (60q, code/comp/reason/synth ×15, nothink UNSATURATED at 41/60). Beneficiary 35B-A3B-Q8 (GPU). Generators: 4B-Thinking (control), Qwable-v1 IQ4 (distilled). Metric = rescue rate (nothink-fails→scaffold-completes) + 0-regression gate. OBSERVATION (single-sample seed=42). *(Speed note: initial run was `-fa off` → ~12 t/s; corrected to `-fa on` → ~92 t/s, both models; the earlier "Qwable too slow" was misconfig, NOT the model — Qwable IQ4 decodes ~96 t/s = as fast as the beneficiary.)*
+| arm | ALL | code | comp | reason | synth | vs nothink |
+|---|---|---|---|---|---|---|
+| nothink | 41/60 | 14 | 9 | 4 | 14 | — |
+| scaffold-4B | 32/60 | 10 | 8 | 1 | 13 | **0 resc / 9 regr / net -9** |
+| scaffold-Qwable | 39/60 | 13 | 8 | 3 | 15 | **2 resc / 4 regr / net -2** |
+- **Distillation CONFIRMED:** Qwable fixes 9 of the 4B's derails (4B fixes 2 of Qwable's); net -2 vs -9. Strong same-class generator derails far less.
+- **But single-shot scaffold is NET-NEGATIVE even with Qwable.** comp+reason slice (nothink fails 17/30): 1 rescue, 3 regressions. On reason alone Qwable 3/15 < nothink 4/15.
+- **Structural reason:** the 35B beneficiary is ALREADY as strong a reasoner as Qwable (a distilled 35B) → equal-strength injected reasoning adds no capability → nothing to rescue, only derail. Scaffold rescues ONLY if generator > beneficiary's own reasoning.
+- **CPU-cost mechanism works** (scaffold-Qwable beneficiary 641 tok/q vs nothink 1071 = -40% CPU decode) **but at a quality loss** → not favorable on THIS pairing.
+- **VERDICT: single-shot scaffold on a strong beneficiary FALSIFIED.** Value (if any) survives only in: **(a) generator > beneficiary** (scaffold Qwable → weaker gemma-26B worker — untested favorable regime), or **(b) the recursive reason↔execute loop** (self-correction, untestable single-shot). NEXT: (a) Qwable→gemma-26B.
+
 ### FORMAL OBJECTIVE (operator 2026-07-05): minimize BLENDED wall-clock at quality-parity
 The lane's value is NOT "scaffold beats nothink" — it is "**approximate ownthink at lower blended wall-clock**," where the beneficiary runs on slow CPU (token efficiency paramount) and the reasoning is offloaded to the fast GPU. Per task:
 ```
