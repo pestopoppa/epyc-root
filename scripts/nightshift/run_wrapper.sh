@@ -15,6 +15,8 @@
 #   NIGHTSHIFT_ATTESTATION_MAX_AGE_S — refresh running-state attestation after this age (default: 14400)
 #   NIGHTSHIFT_LAB_SHADOW_ENABLED — run self-running-lab shadow jobs when quiet (default: 1)
 #   NIGHTSHIFT_LAB_SHADOW_MAX_JOBS — max lab shadow jobs per quiet run (default: 2)
+#   NIGHTSHIFT_LAB_ACTIVE_SAFE_ENABLED — run read-only deterministic lab jobs even when inference is active (default: 1)
+#   NIGHTSHIFT_LAB_ACTIVE_SAFE_MAX_JOBS — max active-safe lab jobs per run (default: 4)
 
 set -euo pipefail
 
@@ -77,6 +79,39 @@ autopilot_running() {
   pgrep -f 'scripts/autopilot/autopilot.py start' >/dev/null 2>&1
 }
 
+run_lab_active_safe() {
+  if [[ "${NIGHTSHIFT_LAB_ACTIVE_SAFE_ENABLED:-1}" == "0" ]]; then
+    echo "[wrapper] Lab active-safe run disabled (NIGHTSHIFT_LAB_ACTIVE_SAFE_ENABLED=0)"
+    return 0
+  fi
+
+  local orch_root="${ORCHESTRATOR_ROOT:-/mnt/raid0/llm/epyc-orchestrator}"
+  local runner="$orch_root/scripts/lab/run_shadow_jobs.py"
+  if [[ ! -f "$runner" ]]; then
+    echo "[wrapper] Lab active-safe skipped: missing $runner"
+    return 0
+  fi
+
+  echo "[wrapper] Running self-running-lab active-safe deterministic jobs"
+  local rc=0
+  (
+    cd "$orch_root"
+    uv run python scripts/lab/run_shadow_jobs.py \
+      --schedule nightly \
+      --active-safe-only \
+      --max-jobs "${NIGHTSHIFT_LAB_ACTIVE_SAFE_MAX_JOBS:-4}" \
+      --execute-command \
+      --continue-on-error \
+      --timeout-s "${NIGHTSHIFT_LAB_ACTIVE_SAFE_TIMEOUT_S:-120}"
+  ) || rc=$?
+  if [[ "$rc" == "0" ]]; then
+    echo "[wrapper] Lab active-safe run complete"
+    return 0
+  fi
+  echo "[wrapper] WARNING: lab active-safe run failed (rc=$rc); continuing nightshift"
+  return 0
+}
+
 run_lab_shadow_if_quiet() {
   if [[ "${NIGHTSHIFT_LAB_SHADOW_ENABLED:-1}" == "0" ]]; then
     echo "[wrapper] Lab shadow run disabled (NIGHTSHIFT_LAB_SHADOW_ENABLED=0)"
@@ -106,6 +141,7 @@ run_lab_shadow_if_quiet() {
     cd "$orch_root"
     uv run python scripts/lab/run_shadow_jobs.py \
       --schedule nightly \
+      --quiet-window-only \
       --max-jobs "${NIGHTSHIFT_LAB_SHADOW_MAX_JOBS:-2}" \
       --execute-chat \
       --continue-on-error \
@@ -163,9 +199,10 @@ run_lab_shadow_if_quiet() {
   # 1. Check inference load
   source "$SCRIPT_DIR/inference_guard.sh"
 
-  # 1.5. Feed the F2 self-running lab only in quiet windows. This writes review
-  # queue artifacts in epyc-orchestrator and deliberately skips live AutoPilot
-  # evidence collection windows.
+  # 1.5. Feed F2 self-running lab jobs. Active-safe deterministic monitors run
+  # even during live AutoPilot/llama serving; model-backed jobs remain quiet-window
+  # only and write review queue artifacts in epyc-orchestrator.
+  run_lab_active_safe
   run_lab_shadow_if_quiet
 
   # 2. Build nightshift command

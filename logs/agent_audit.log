@@ -4328,3 +4328,5 @@ Purpose: Handoff audit + Hermes Phase 2 routing API
 {"ts":"2026-07-05T14:04:54+00:00","session":"ses_20260705_123912_2276091","level":"INFO","cat":"TASK_END","msg":"Checkpoint Fable week-run readiness handoffs","details":"outcome=success"}
 {"ts":"2026-07-05T14:23:20+00:00","session":"ses_20260705_123912_2276091","level":"INFO","cat":"TASK_START","msg":"F2 active-safe self-running lab monitor documentation","details":"Record deterministic AutoPilot monitor support and validation"}
 {"ts":"2026-07-05T14:23:20+00:00","session":"ses_20260705_123912_2276091","level":"INFO","cat":"TASK_END","msg":"F2 active-safe self-running lab monitor documentation","details":"outcome=success"}
+{"ts":"2026-07-05T14:28:41+00:00","session":"ses_20260705_123912_2276091","level":"INFO","cat":"TASK_START","msg":"F2 active-safe nightshift scheduler","details":"Make deterministic lab monitors run during live AutoPilot while quiet-window jobs stay gated"}
+{"ts":"2026-07-05T14:28:41+00:00","session":"ses_20260705_123912_2276091","level":"INFO","cat":"TASK_END","msg":"F2 active-safe nightshift scheduler","details":"outcome=success"}
