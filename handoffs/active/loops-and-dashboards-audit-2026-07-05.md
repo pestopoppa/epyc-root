@@ -27,11 +27,12 @@ Action landed:
 - `epyc-orchestrator` `45c118b8` adds outcome KPIs to the dashboard API/frontend: keepable rate, wasted-eval rate, learning-excluded rate, and current-code health.
 - `epyc-orchestrator` `683a20ba` adds dispatch-boundary regression coverage for inert skips.
 - `epyc-orchestrator` `10a9596d` makes checkpoint restore/rollback rewind AP-22 short-term memory and the StrategyStore tree, and the live rollback path now closes/reopens StrategyStore handles after restore instead of leaving planner memory split from disk.
-- `epyc-orchestrator` `1d452a40` bounds GEPA prompt writes to each evaluation call: every candidate prompt write is followed by restoring the original prompt in a `finally` block, including evaluation-error paths. This is not yet a true scratch prompt-root override, but it closes the long GEPA-run dirty-prompt window identified by the audit.
-- Focused validation passed across the touched slices: `49` planner/provider/launcher tests, `43` W6/readiness tests, `46` spend-breaker/economics tests, `233` action/dashboard tests, `49` structural/restore tests, and `11` GEPA integration tests, plus focused `py_compile`, `ruff`, and `git diff --check`.
+- `epyc-orchestrator` `1d452a40` first bounded GEPA prompt writes to each evaluation call by restoring the original prompt in a `finally` block.
+- `epyc-orchestrator` `8031c7c4` then completed the true scratch prompt-root override: GEPA candidate evals copy the prompt tree into `tmp/gepa_prompt_roots`, write the candidate only there, tag eval questions with `_prompt_root`, and `/chat` resolves prompts through a request-scoped override that is accepted only under the configured scratch base. Candidate scoring no longer writes canonical prompt files.
+- Focused validation passed across the touched slices: `49` planner/provider/launcher tests, `43` W6/readiness tests, `46` spend-breaker/economics tests, `233` action/dashboard tests, `49` structural/restore tests, `64` GEPA/prompt-root/API/eval propagation tests, and `11` earlier GEPA integration tests, plus focused `py_compile`, `ruff`, and `git diff --check`.
 
 Next measured extension:
-- AutoPilot was restarted at `2026-07-05T16:54Z` as PID `2632468` on orchestrator `1d452a40`; collect one-shot `local_ingest` planner telemetry under the spend breaker.
+- AutoPilot was restarted at `2026-07-05T16:54Z` as PID `2632468` on orchestrator `1d452a40`; collect one-shot `local_ingest` planner telemetry under the spend breaker. The later GEPA scratch-root commit `8031c7c4` is committed and indexed but is not live in the daemon/API until the next safe restart boundary.
 - Build a two-stage planner provider after the one-shot local drafter has telemetry: `ingest_long_context` synthesizes a bounded planner brief, `frontdoor` or `worker_general` drafts the action from that brief, and Codex remains an escalation/critic option only when spend policy permits. This is the orchestration-native target pattern; it should be A/B measured against one-shot `local_ingest` before becoming the default.
 
 ---
