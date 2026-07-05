@@ -2,7 +2,7 @@
 
 **Status**: ACTIVE/PARTIAL — BGE repair + current-data MLP retrain completed 2026-06-12; classifier weights are staged, the clean-window rollout harness landed 2026-07-05, and the production flag remains OFF pending operator rollout decision.
 **Unblocked by**: `repair_episodic_embeddings.py --repair --servers 90 --batch-size 128 --base-port 8090` completed 2026-06-12. Post-repair diagnose-only report: 291,587 routing memories in DB, 275,960 FAISS vectors, 275,960 `reembedded.npz` IDs, 94.6% FAISS coverage, 94.6% live-overlap, 15,627 orphan IDs, **Status: HEALTHY**. The earlier 0-byte `embeddings.faiss` anomaly was the repair window, not the standing blocker.
-**Next sequence**: run `uv run python scripts/maintenance/routing_classifier_rollout_window.py --apply --confirm-clean-window` at a quiet boundary to verify wiring, reload `routing_classifier=true`, attest worker-local agreement, and auto-rollback unless `--keep-enabled` is explicit. Then decide whether GAT and SkillBank retrains are still justified under the Fable 5 routing freeze.
+**Next sequence**: the clean-window wiring/attestation bracket passed and rolled back in orchestrator `fe270b48`. Live routing remains OFF because `--keep-enabled` was not requested and the artifact is feature-attestation evidence, not routing-quality promotion evidence. Decide explicitly whether to run a keep-enabled bracket, and then decide whether GAT and SkillBank retrains are still justified under the Fable 5 routing freeze.
 **Created**: 2026-05-25
 
 ## Context
@@ -63,7 +63,12 @@ sampled API workers still attesting `routing_classifier=false`. Orchestrator
 `d59e6532` records the latest plan-only preflight artifact at
 `orchestration/reports/routing_classifier_rollout_20260705T052644Z/`: API
 health OK, weights present, AutoPilot active, and 4 sampled workers still
-attesting `routing_classifier=false`.
+attesting `routing_classifier=false`. The subsequent clean-window bracket in
+orchestrator `fe270b48` wrote
+`orchestration/reports/routing_classifier_rollout_20260705T053117Z/` with
+`status=attestation_passed_rolled_back`: `verify_routing_wiring` passed,
+`routing_classifier=true` attestation passed, rollback to
+`routing_classifier=false` passed, and live routing remains OFF by policy.
 
 ### 4. Retrain GraphRouter (GAT) only if still justified
 ```bash
