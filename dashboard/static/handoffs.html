@@ -65,6 +65,12 @@
   .bk-progress .bk-bar{flex:1} .bk-progress .pct{font-size:13px;font-weight:600;color:var(--good);min-width:52px;text-align:right}
   .bk-activity{font-size:11px;color:var(--muted);margin-top:8px}
   .bk-activity .warn-note{color:var(--high)}
+  .bk-priority{display:flex;flex-wrap:wrap;gap:8px 12px;margin-bottom:8px}
+  .bk-priority .title{width:100%;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .bk-priority .item{display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border:1px solid var(--border);border-radius:999px;font-size:11px;color:var(--muted)}
+  .bk-priority .item .pri{color:var(--text);font-weight:600}
+  .bk-priority .item .meta{color:var(--muted)}
+  .bk-stall{font-size:11px;color:var(--muted);margin-bottom:8px}
 
   /* kanban */
   .kanban{display:grid;grid-template-columns:repeat(4,minmax(240px,1fr));gap:14px;align-items:start}
@@ -161,6 +167,8 @@
   <section class="backlog">
     <h2>Outstanding backlog — how far from done</h2>
     <div class="bk-stats" id="backlog-stats"><span class="muted">loading…</span></div>
+    <div class="bk-priority" id="backlog-priority"></div>
+    <div class="bk-stall" id="backlog-stall"></div>
     <div class="bk-progress">
       <div class="bk-bar"><span id="backlog-fill" style="width:0%"></span></div>
       <span class="pct" id="backlog-pct"></span>
@@ -290,6 +298,15 @@ function renderBoard(data){
 }
 function renderBacklog(bk, act){
   const stats = $("#backlog-stats"); if(!stats) return;
+  const priorityWrap = $("#backlog-priority");
+  const stallWrap = $("#backlog-stall");
+
+  const addItem = (n, l, cls="") => {
+    const s = el("div","bk-stat");
+    s.innerHTML = '<span class="n '+cls+'">'+esc(n)+"</span><span class=\"l\">"+esc(l)+"</span>";
+    stats.appendChild(s);
+  };
+
   const items = [
     {n: bk.open_handoffs, l: "handoffs outstanding", cls: "warn"},
     {n: bk.open_tasks, l: "open tasks (active+blocked)", cls: "warn"},
@@ -299,13 +316,72 @@ function renderBacklog(bk, act){
   stats.innerHTML = "";
   for(const it of items){
     if(it.n==null) continue;
-    const s = el("div","bk-stat");
-    s.innerHTML = '<span class="n '+it.cls+'">'+it.n+'</span><span class="l">'+esc(it.l)+'</span>';
-    stats.appendChild(s);
+    addItem(it.n, it.l, it.cls);
   }
-  const pct = bk.pct_all_done;
+  if(priorityWrap){
+    priorityWrap.innerHTML = "";
+    const buckets = Array.isArray(bk.priority_buckets) ? bk.priority_buckets : [];
+    if(buckets.length){
+      const title = el("div","title","");
+      title.textContent = "priority buckets";
+      priorityWrap.appendChild(title);
+      for(const b of buckets){
+        const open = (b.open_tasks_total || 0) - (b.open_tasks_done || 0);
+        const bits = [];
+        bits.push((b.open_handoffs||0)+" handoff"+(b.open_handoffs===1?"":"s"));
+        if((b.open_tasks_total||0) > 0){
+          bits.push((open||0)+" open task"+((open===1)?"":"s")+
+                    " / "+b.open_tasks_done+" done");
+        }
+        if((b.open_untracked_handoffs||0) > 0){
+          bits.push(b.open_untracked_handoffs+" untracked");
+        }
+        const item = el("span","item");
+        const pri = el("span","pri", b.priority || "NONE");
+        item.appendChild(pri);
+        const meta = el("span","meta", bits.join(" · "));
+        item.appendChild(meta);
+        priorityWrap.appendChild(item);
+      }
+    }
+  }
+
+  if(stallWrap){
+    const over30 = (bk.dead_lane&&bk.dead_lane.over_30) || 0;
+    const over90 = (bk.dead_lane&&bk.dead_lane.over_90) || 0;
+    const unknown = (bk.dead_lane&&bk.dead_lane.unknown_activity) || 0;
+    const total = bk.open_handoffs || 0;
+    if(total > 0){
+      const parts = [];
+      if(over90){ parts.push(`${over90} untouched >90d`); }
+      if(over30){ parts.push(`${over30} untouched >30d`); }
+      if(parts.length){
+        let text = `dead-lane: ${parts.join(" · ")}`;
+        if(unknown){ text += ` · ${unknown} missing activity date`; }
+        stallWrap.textContent = text;
+      }else if(unknown){
+        stallWrap.textContent = `dead-lane: ${unknown} missing activity date`;
+      }else{
+        stallWrap.textContent = "dead-lane: 0";
+      }
+    } else {
+      stallWrap.textContent = "";
+    }
+  }
+
+  const pctOpen = bk.pct_open_done;
+  const pctAll = bk.pct_all_done;
+  const pct = pctOpen ?? pctAll;
   $("#backlog-fill").style.width = (pct==null?0:pct)+"%";
-  $("#backlog-pct").textContent = pct==null?"—":(pct+"% of all tracked tasks done");
+  const pctParts = [];
+  if(pctOpen==null && pctAll==null){
+    $("#backlog-pct").textContent = "—";
+  }else{
+    if(pctOpen!=null) pctParts.push(pctOpen+"% open backlog");
+    if(pctAll!=null) pctParts.push(pctAll+"% all-tracked");
+    $("#backlog-pct").textContent = pctParts.join(" · ");
+  }
+
   // Today's committed activity: the % above only moves on checkbox flips, so
   // name the prose-only condition explicitly instead of looking frozen.
   const actEl = $("#backlog-activity");

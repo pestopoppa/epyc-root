@@ -91,7 +91,19 @@ const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=nu
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 $("#autopilot-link").href=`${location.protocol}//${location.hostname}:8000/dashboard`;
 
-function setBadge(cls){const b=$("#badge");b.classList.remove("fresh","aging","stale","missing");b.classList.add(cls||"fresh");}
+function setBadge(cls,fresh){
+  const b=$("#badge");
+  b.classList.remove("fresh","aging","stale","missing");
+  b.classList.add(cls||"fresh");
+  if(fresh && fresh.age_s!=null){
+    const age = fresh.age_s >= 86400 ? `${(fresh.age_s/86400).toFixed(1)}d` :
+      fresh.age_s >= 3600 ? `${(fresh.age_s/3600).toFixed(1)}h` :
+      `${Math.round(fresh.age_s/60)}m`;
+    b.title = `${fresh.source || "semantic timestamp"} age ${age}`;
+  } else {
+    b.title = "kernel contract freshness";
+  }
+}
 // coerce to a number or an em-dash — never emit a raw string into innerHTML
 function num(x,d=2){return typeof x==="number"&&isFinite(x)?x.toFixed(d):"—";}
 function deltaCell(v){
@@ -113,7 +125,7 @@ function mechCell(m){
 function render(d){
   const notice = d.observation_notice || "Every number is an OBSERVATION; operator-only authorizes prod push.";
   $("#observation").innerHTML='<b>OBSERVATION discipline.</b> '+esc(notice);
-  setBadge((d._freshness&&d._freshness.staleness_class)||"missing");
+  setBadge((d._freshness&&d._freshness.staleness_class)||"missing", d._freshness);
 
   const t=d.totals||{};
   const stats=$("#stats"); stats.innerHTML="";

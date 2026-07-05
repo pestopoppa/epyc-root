@@ -9,7 +9,7 @@ import os
 import sys
 import tempfile
 import unittest
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[1]
@@ -196,6 +196,66 @@ class BoardTests(unittest.TestCase):
         self.assertIn("body", card)
         self.assertEqual(len(card["tasks"]), 4)
         self.assertGreater(len(card["body"]), 50)
+
+    def test_backlog_priority_buckets_and_dead_lane(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            for st in hp.STATES:
+                (root / st).mkdir()
+
+            today = datetime.now(timezone.utc).date()
+            def ymd(days):
+                return (today - timedelta(days=days)).strftime("%Y-%m-%d")
+
+            (root / "active" / "p0_stale.md").write_text(
+                f"# P0 stale\n"
+                f"**Updated**: {ymd(95)}\n"
+                f"**Priority**: P0\n"
+                "## Work\n"
+                "- [x] done\n"
+                "- [ ] open\n"
+            )
+            (root / "active" / "high_stale.md").write_text(
+                f"# High stale\n"
+                f"**Updated**: {ymd(40)}\n"
+                f"**Priority**: HIGH\n"
+                "## Work\n"
+                "- [ ] first\n"
+                "- [ ] second\n"
+            )
+            (root / "active" / "low_fresh.md").write_text(
+                f"# Low fresh\n"
+                f"**Updated**: {ymd(5)}\n"
+                f"**Priority**: LOW\n"
+                "## Work\n"
+                "- [ ] first\n"
+            )
+            (root / "active" / "none_no_date.md").write_text(
+                "# Missing date\n"
+                "**Priority**: LOW\n"
+                "## Work\n"
+                "No checkboxes here.\n"
+            )
+
+            board = hp.build_board(root)
+            backlog = board["backlog"]
+
+            self.assertEqual(backlog["open_handoffs"], 4)
+            self.assertEqual(backlog["open_tasks"], 4)
+            self.assertEqual(backlog["open_tasks_done"], 1)
+            self.assertEqual(backlog["open_untracked_handoffs"], 1)
+            self.assertEqual(backlog["dead_lane"]["over_30"], 2)
+            self.assertEqual(backlog["dead_lane"]["over_90"], 1)
+
+            buckets = {b["priority"]: b for b in backlog["priority_buckets"]}
+            self.assertEqual(buckets["P0"]["open_handoffs"], 1)
+            self.assertEqual(buckets["P0"]["open_tasks_total"], 2)
+            self.assertEqual(buckets["P0"]["open_tasks_done"], 1)
+            self.assertEqual(buckets["HIGH"]["open_handoffs"], 1)
+            self.assertEqual(buckets["HIGH"]["open_tasks_total"], 2)
+            self.assertEqual(buckets["LOW"]["open_handoffs"], 2)
+            self.assertEqual(buckets["LOW"]["open_untracked_handoffs"], 1)
+            self.assertEqual(backlog["dead_lane"]["unknown_activity"], 1)
 
 
 class PathTraversalTests(unittest.TestCase):
