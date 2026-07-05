@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EPYC — Handoff Progress</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2129; --border:#30363d;
+    --text:#c9d1d9; --muted:#8b949e; --accent:#60a5fa; --good:#34d399;
+    --p0:#f85149; --high:#f0883e; --medium:#d29922; --low:#3fb950; --none:#6e7681;
+    --active:#58a6ff; --completed:#3fb950; --archived:#8b949e; --blocked:#f85149;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--text); font:14px/1.5 -apple-system,BlinkMacSystemFont,
+    "Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+  header{
+    position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:16px;
+    padding:12px 20px;background:rgba(13,17,23,.92);backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--border);flex-wrap:wrap;
+  }
+  header h1{font-size:16px;margin:0;font-weight:650;letter-spacing:.2px}
+  header .sub{color:var(--muted);font-size:12px}
+  nav{display:flex;gap:14px;margin-left:auto;align-items:center;font-size:13px}
+  .badge{
+    display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:2px 8px;
+    border-radius:20px;border:1px solid var(--border);color:var(--muted);white-space:nowrap;
+  }
+  .badge .dot{width:7px;height:7px;border-radius:50%;background:var(--muted)}
+  .badge.fresh .dot{background:var(--good)} .badge.fresh{color:var(--good);border-color:#1f4d38}
+  .badge.aging .dot{background:var(--medium)} .badge.aging{color:var(--medium);border-color:#4d3f14}
+  .badge.stale .dot{background:var(--p0)} .badge.stale{color:var(--p0);border-color:#4d1f1c}
+  .badge.missing .dot{background:var(--none)}
+  main{padding:18px 20px 60px;max-width:1600px;margin:0 auto}
+
+  /* timeline */
+  .timeline{
+    background:var(--panel);border:1px solid var(--border);border-radius:10px;
+    padding:14px 16px;margin-bottom:20px;
+  }
+  .timeline h2{font-size:13px;margin:0 0 10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+  .charts{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:820px){.charts{grid-template-columns:1fr}}
+  .chart-title{font-size:12px;color:var(--muted);margin:0 0 4px}
+  svg{width:100%;height:auto;display:block;overflow:visible}
+  .legend{display:flex;gap:14px;font-size:11px;color:var(--muted);margin-top:6px;flex-wrap:wrap}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:middle}
+
+  /* kanban */
+  .kanban{display:grid;grid-template-columns:repeat(4,minmax(240px,1fr));gap:14px;align-items:start}
+  @media(max-width:1100px){.kanban{grid-template-columns:repeat(2,minmax(240px,1fr))}}
+  @media(max-width:620px){.kanban{grid-template-columns:1fr}}
+  .column{background:var(--panel);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;min-height:120px}
+  .column>h3{
+    font-size:13px;margin:0;padding:10px 12px;border-bottom:1px solid var(--border);
+    display:flex;align-items:center;gap:8px;position:sticky;top:57px;background:var(--panel);
+    border-radius:10px 10px 0 0;z-index:5;
+  }
+  .column>h3 .swatch{width:9px;height:9px;border-radius:50%}
+  .column[data-state=active] .swatch{background:var(--active)}
+  .column[data-state=blocked] .swatch{background:var(--blocked)}
+  .column[data-state=completed] .swatch{background:var(--completed)}
+  .column[data-state=archived] .swatch{background:var(--archived)}
+  .column .count{margin-left:auto;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+  .cards{padding:10px;display:flex;flex-direction:column;gap:8px;max-height:calc(100vh - 160px);overflow-y:auto}
+  .cards::-webkit-scrollbar{width:8px}.cards::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+  .card{
+    background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:9px 10px;
+    cursor:pointer;transition:border-color .12s,transform .06s;
+  }
+  .card:hover{border-color:var(--accent)} .card:active{transform:translateY(1px)}
+  .card .ttl{font-size:12.5px;font-weight:600;line-height:1.35;margin-bottom:5px;word-break:break-word}
+  .card .meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+  .chip{font-size:10px;padding:1px 6px;border-radius:10px;border:1px solid var(--border);color:var(--muted);white-space:nowrap}
+  .chip.pri-P0{color:#fff;background:var(--p0);border-color:var(--p0)}
+  .chip.pri-HIGH{color:var(--high);border-color:#5a3a1a}
+  .chip.pri-MEDIUM{color:var(--medium);border-color:#4d3f14}
+  .chip.pri-LOW{color:var(--low);border-color:#1f4d24}
+  .chip.pri-NONE{display:none}
+  .chip.date{color:var(--muted)}
+  .chip.mark{color:var(--good);border-color:#1f4d38}
+  .bar{height:5px;background:#0d1117;border-radius:3px;overflow:hidden;border:1px solid var(--border)}
+  .bar>span{display:block;height:100%;background:var(--good)}
+  .bar.est>span{background:repeating-linear-gradient(90deg,var(--medium),var(--medium) 4px,transparent 4px,transparent 8px)}
+  .progress-row{display:flex;align-items:center;gap:7px}
+  .progress-row .lbl{font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:34px;text-align:right}
+  .progress-row .bar{flex:1}
+  .card .blk{font-size:10.5px;color:var(--blocked);margin-top:4px}
+  .empty{color:var(--muted);font-size:12px;padding:14px;text-align:center}
+
+  /* modal */
+  .modal{position:fixed;inset:0;z-index:50;display:none;align-items:flex-start;justify-content:center;
+    background:rgba(1,4,9,.72);padding:40px 16px;overflow-y:auto}
+  .modal.open{display:flex}
+  .modal-body{background:var(--panel);border:1px solid var(--border);border-radius:12px;
+    width:min(900px,100%);max-height:calc(100vh - 80px);display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .modal-head{padding:16px 18px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--panel);border-radius:12px 12px 0 0}
+  .modal-head h2{margin:0 0 8px;font-size:16px;line-height:1.35;padding-right:30px}
+  .modal-head .meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .modal .close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--muted);
+    font-size:24px;line-height:1;cursor:pointer;padding:2px 6px;border-radius:6px}
+  .modal .close:hover{color:var(--text);background:var(--panel2)}
+  .modal-scroll{overflow-y:auto;padding:16px 20px}
+  .md{font-size:13.5px;line-height:1.6;word-wrap:break-word}
+  .md h1,.md h2,.md h3,.md h4{line-height:1.3;margin:18px 0 8px;font-weight:650}
+  .md h1{font-size:19px;border-bottom:1px solid var(--border);padding-bottom:5px}
+  .md h2{font-size:16px;border-bottom:1px solid var(--border);padding-bottom:4px}
+  .md h3{font-size:14.5px} .md h4{font-size:13.5px;color:var(--muted)}
+  .md p{margin:8px 0} .md ul,.md ol{margin:8px 0;padding-left:22px} .md li{margin:3px 0}
+  .md code{background:#0d1117;border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-size:12px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .md pre{background:#0d1117;border:1px solid var(--border);border-radius:8px;padding:12px;overflow-x:auto;margin:10px 0}
+  .md pre code{background:none;border:none;padding:0}
+  .md a{word-break:break-all}
+  .md blockquote{margin:8px 0;padding:2px 12px;border-left:3px solid var(--border);color:var(--muted)}
+  .md hr{border:none;border-top:1px solid var(--border);margin:14px 0}
+  .md table{border-collapse:collapse;margin:10px 0;display:block;overflow-x:auto;max-width:100%}
+  .md th,.md td{border:1px solid var(--border);padding:5px 9px;text-align:left;font-size:12.5px;vertical-align:top}
+  .md th{background:var(--panel2);font-weight:600}
+  .md .task{list-style:none;margin-left:-18px}
+  .md .task .box{color:var(--muted);margin-right:6px} .md .task.done .box{color:var(--good)}
+  .task-summary{display:flex;flex-wrap:wrap;gap:5px 16px;margin-bottom:12px}
+  .task-summary .t{font-size:12.5px} .task-summary .t.done{color:var(--muted);text-decoration:line-through}
+  .task-summary .t .box{color:var(--muted);margin-right:5px} .task-summary .t.done .box{color:var(--good)}
+  .loading{color:var(--muted);padding:20px;text-align:center}
+</style>
+</head>
+<body>
+<header>
+  <h1>Handoff Progress</h1>
+  <span class="sub" id="subline">project-wide work across active · blocked · completed · archived</span>
+  <nav>
+    <span class="badge" id="board-badge"><span class="dot"></span><span>board</span></span>
+    <a href="/api/handoff_board" title="raw board JSON">api</a>
+    <a id="autopilot-link" href="#" title="autopilot / live-inference dashboard">autopilot ↗</a>
+  </nav>
+</header>
+
+<main>
+  <section class="timeline">
+    <h2>Progress over time
+      <span class="badge" id="timeline-badge" style="text-transform:none;font-weight:400;margin-left:8px"><span class="dot"></span><span>timeline</span></span>
+    </h2>
+    <div class="charts">
+      <div>
+        <p class="chart-title">Tasks completed per week <span id="tasks-total" class="muted"></span></p>
+        <svg id="chart-tasks" viewBox="0 0 600 200" role="img" aria-label="tasks completed per week"></svg>
+      </div>
+      <div>
+        <p class="chart-title">Handoffs over time</p>
+        <svg id="chart-state" viewBox="0 0 600 200" role="img" aria-label="handoff counts over time"></svg>
+        <div class="legend">
+          <span><i style="background:var(--active)"></i>active</span>
+          <span><i style="background:var(--completed)"></i>completed</span>
+          <span><i style="background:var(--archived)"></i>archived</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="kanban" id="kanban">
+    <div class="column" data-state="active"><h3><span class="swatch"></span>Active<span class="count"></span></h3><div class="cards"></div></div>
+    <div class="column" data-state="blocked"><h3><span class="swatch"></span>Blocked<span class="count"></span></h3><div class="cards"></div></div>
+    <div class="column" data-state="completed"><h3><span class="swatch"></span>Completed<span class="count"></span></h3><div class="cards"></div></div>
+    <div class="column" data-state="archived"><h3><span class="swatch"></span>Archived<span class="count"></span></h3><div class="cards"></div></div>
+  </div>
+</main>
+
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="modal-body" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <button class="close" id="modal-close" aria-label="close">×</button>
+      <h2 id="m-title">…</h2>
+      <div class="meta" id="m-meta"></div>
+    </div>
+    <div class="modal-scroll">
+      <div id="m-tasks" class="task-summary"></div>
+      <div id="m-body" class="md"><div class="loading">loading…</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const $ = (s,r=document)=>r.querySelector(s);
+const el = (t,cls,txt)=>{const e=document.createElement(t); if(cls)e.className=cls; if(txt!=null)e.textContent=txt; return e;};
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+// autopilot dashboard lives on the orchestrator (:8000); same host, different port.
+$("#autopilot-link").href = `${location.protocol}//${location.hostname}:8000/dashboard`;
+
+async function getJSON(url){
+  const r = await fetch(url, {cache:"no-store"});
+  if(!r.ok && r.status!==404) throw new Error(url+" -> "+r.status);
+  return r.json();
+}
+function setBadge(id, cls){
+  const b=$(id); if(!b) return;
+  b.classList.remove("fresh","aging","stale","missing"); b.classList.add(cls||"fresh");
+}
+
+/* ---------------- board ---------------- */
+function progressRow(c){
+  const wrap = el("div","progress-row");
+  if(c.total>0){
+    const pct = Math.round(100*c.done/c.total);
+    const bar = el("div","bar"+(c.progress_source==="phases"?" est":""));
+    const span = el("span"); span.style.width = pct+"%"; bar.appendChild(span);
+    wrap.appendChild(bar);
+    wrap.appendChild(el("span","lbl",`${c.done}/${c.total}`));
+  } else if(c.progress_source==="markers" && c.done>0){
+    wrap.appendChild(el("span","chip mark",`✅ ${c.done}`));
+  } else {
+    return null;
+  }
+  return wrap;
+}
+function cardEl(c){
+  const card = el("div","card"); card.tabIndex=0; card.dataset.id=c.id;
+  card.appendChild(el("div","ttl",c.title||c.id));
+  const meta = el("div","meta");
+  if(c.priority && c.priority!=="NONE") meta.appendChild(el("span","chip pri-"+c.priority,c.priority));
+  const d = c.updated||c.created;
+  if(d) meta.appendChild(el("span","chip date",(c.updated?"upd ":"new ")+d));
+  if(meta.children.length) card.appendChild(meta);
+  const pr = progressRow(c); if(pr) card.appendChild(pr);
+  if(c.blocked_on) card.appendChild(el("div","blk","⛔ "+c.blocked_on));
+  const open = ()=>openModal(c.id, c.title);
+  card.addEventListener("click", open);
+  card.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault(); open();}});
+  return card;
+}
+function renderBoard(data){
+  const cols = data.columns||{};
+  for(const state of ["active","blocked","completed","archived"]){
+    const colEl = $(`.column[data-state=${state}]`);
+    const list = colEl.querySelector(".cards");
+    const cards = cols[state]||[];
+    colEl.querySelector(".count").textContent = cards.length;
+    list.innerHTML="";
+    if(!cards.length){ list.appendChild(el("div","empty","—")); continue; }
+    for(const c of cards) list.appendChild(cardEl(c));
+  }
+  setBadge("#board-badge", (data._freshness&&data._freshness.staleness_class)||"fresh");
+  $("#subline").textContent =
+    `${data.counts.active} active · ${data.counts.blocked} blocked · ${data.counts.completed} completed · ${data.counts.archived} archived`;
+}
+async function loadBoard(){
+  try{ renderBoard(await getJSON("/api/handoff_board")); }
+  catch(e){ setBadge("#board-badge","stale"); console.error(e); }
+}
+
+/* ---------------- modal ---------------- */
+const modal = $("#modal");
+function closeModal(){ modal.classList.remove("open"); modal.setAttribute("aria-hidden","true"); }
+function openModal(id, title){
+  modal.classList.add("open"); modal.setAttribute("aria-hidden","false");
+  $("#m-title").textContent = title||id;
+  $("#m-meta").innerHTML=""; $("#m-tasks").innerHTML=""; $("#m-body").innerHTML='<div class="loading">loading…</div>';
+  loadDetail(id);
+}
+$("#modal-close").addEventListener("click", closeModal);
+modal.addEventListener("click", e=>{ if(e.target===modal) closeModal(); });
+document.addEventListener("keydown", e=>{ if(e.key==="Escape") closeModal(); });
+
+async function loadDetail(id){
+  let d;
+  try{ d = await getJSON("/api/handoff_detail?id="+encodeURIComponent(id)); }
+  catch(e){ $("#m-body").innerHTML='<div class="loading">failed to load</div>'; return; }
+  if(d.error){ $("#m-body").innerHTML='<div class="loading">'+esc(d.error)+'</div>'; return; }
+  $("#m-title").textContent = d.title||id;
+  const meta=$("#m-meta");
+  meta.innerHTML="";
+  if(d.priority && d.priority!=="NONE") meta.appendChild(el("span","chip pri-"+d.priority,d.priority));
+  meta.appendChild(el("span","chip date","state: "+d.state));
+  if(d.created) meta.appendChild(el("span","chip date","created "+d.created));
+  if(d.updated) meta.appendChild(el("span","chip date","updated "+d.updated));
+  if(d.total>0) meta.appendChild(el("span","chip mark",`${d.done}/${d.total} tasks`));
+  // task summary (checkbox files only)
+  const ts=$("#m-tasks"); ts.innerHTML="";
+  if(d.tasks && d.tasks.length){
+    for(const t of d.tasks){
+      const item=el("span","t"+(t.done?" done":""));
+      item.innerHTML='<span class="box">'+(t.done?"☑":"☐")+'</span>'+esc(t.text);
+      ts.appendChild(item);
+    }
+  }
+  $("#m-body").innerHTML = mdToHtml(d.body||"");
+}
+
+/* ---------------- minimal markdown -> html (offline, no deps) ---------------- */
+function inlineMd(s){
+  s = esc(s);
+  // Protect inline-code spans BEFORE emphasis/link processing so markdown
+  // metacharacters inside code (e.g. `a * b`) are not reinterpreted.
+  const codes = [];
+  s = s.replace(/`([^`]+)`/g,(m,c)=>{ codes.push(c); return "\u0000"+(codes.length-1)+"\u0000"; });
+  s = s.replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>");
+  s = s.replace(/(^|[^*])\*([^*\n]+)\*/g,"$1<em>$2</em>");
+  s = s.replace(/\[([^\]]+)\]\(([^)\s]+)[^)]*\)/g,(m,t,h)=>{
+    if(/^javascript:/i.test(h)) return t;
+    // h is already escaped by esc() above — do NOT escape again (would double-encode &).
+    const safe = /^(https?:\/\/|\/|#|\.\.?\/)/i.test(h) ? h : "#";
+    return '<a href="'+safe+'" target="_blank" rel="noopener">'+t+'</a>';
+  });
+  s = s.replace(/\u0000(\d+)\u0000/g,(m,i)=>"<code>"+codes[+i]+"</code>");
+  return s;
+}
+function mdToHtml(md){
+  const lines = String(md).replace(/\r/g,"").split("\n");
+  let out=[], i=0, inCode=false, codeBuf=[];
+  const flushCode=()=>{ out.push("<pre><code>"+esc(codeBuf.join("\n"))+"</code></pre>"); codeBuf=[]; };
+  while(i<lines.length){
+    let line=lines[i];
+    // fenced code
+    const fence=line.match(/^\s*```/);
+    if(fence){ if(inCode){ inCode=false; flushCode(); } else { inCode=true; } i++; continue; }
+    if(inCode){ codeBuf.push(line); i++; continue; }
+    // table: a header row followed by a |---| separator
+    if(/^\s*\|/.test(line) && i+1<lines.length && /^\s*\|?[\s:|-]+\|[\s:|-]*$/.test(lines[i+1]) && lines[i+1].includes("-")){
+      const rows=[];
+      while(i<lines.length && /^\s*\|/.test(lines[i])){ rows.push(lines[i]); i++; }
+      out.push(renderTable(rows)); continue;
+    }
+    // headings
+    const h=line.match(/^(#{1,6})\s+(.*)$/);
+    if(h){ const lv=h[1].length; out.push(`<h${lv}>`+inlineMd(h[2])+`</h${lv}>`); i++; continue; }
+    // hr
+    if(/^\s*([-*_])\1\1+\s*$/.test(line)){ out.push("<hr>"); i++; continue; }
+    // blockquote
+    if(/^\s*>\s?/.test(line)){
+      const buf=[]; while(i<lines.length && /^\s*>\s?/.test(lines[i])){ buf.push(lines[i].replace(/^\s*>\s?/,"")); i++; }
+      out.push("<blockquote>"+mdToHtml(buf.join("\n"))+"</blockquote>"); continue;
+    }
+    // lists (grouped)
+    if(/^\s*([-*+]|\d+\.)\s+/.test(line)){
+      const ordered=/^\s*\d+\.\s+/.test(line);
+      const items=[];
+      while(i<lines.length && /^\s*([-*+]|\d+\.)\s+/.test(lines[i])){
+        let it=lines[i].replace(/^\s*([-*+]|\d+\.)\s+/,"");
+        const cb=it.match(/^\[([ xX])\]\s*(.*)$/);
+        if(cb){ const done=cb[1].toLowerCase()==="x";
+          items.push('<li class="task'+(done?" done":"")+'"><span class="box">'+(done?"☑":"☐")+"</span>"+inlineMd(cb[2])+"</li>");
+        } else items.push("<li>"+inlineMd(it)+"</li>");
+        i++;
+      }
+      out.push((ordered?"<ol>":"<ul>")+items.join("")+(ordered?"</ol>":"</ul>")); continue;
+    }
+    // blank
+    if(/^\s*$/.test(line)){ i++; continue; }
+    // paragraph (gather until blank / block start)
+    const buf=[line]; i++;
+    while(i<lines.length && !/^\s*$/.test(lines[i]) && !/^\s*(#{1,6}\s|[-*+]\s|\d+\.\s|>|\|| {0,3}```)/.test(lines[i])){
+      buf.push(lines[i]); i++;
+    }
+    out.push("<p>"+inlineMd(buf.join(" "))+"</p>");
+  }
+  if(inCode) flushCode();
+  return out.join("\n");
+}
+function splitRow(r){ return r.trim().replace(/^\|/,"").replace(/\|\s*$/,"").split("|").map(c=>c.trim()); }
+function renderTable(rows){
+  if(rows.length<2) return "";
+  const head=splitRow(rows[0]);
+  const body=rows.slice(2).map(splitRow);
+  let h="<table><thead><tr>"+head.map(c=>"<th>"+inlineMd(c)+"</th>").join("")+"</tr></thead><tbody>";
+  for(const r of body){ h+="<tr>"+r.map(c=>"<td>"+inlineMd(c)+"</td>").join("")+"</tr>"; }
+  return h+"</tbody></table>";
+}
+
+/* ---------------- timeline charts (hand-rolled SVG) ---------------- */
+function svgNS(tag,attrs){ const e=document.createElementNS("http://www.w3.org/2000/svg",tag);
+  for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
+function barChart(svg, weeks){
+  const W=600,H=200,pad={l:34,r:8,t:10,b:36};
+  svg.innerHTML="";
+  if(!weeks.length){ svg.appendChild(svgNS("text",{x:W/2,y:H/2,fill:"#8b949e","text-anchor":"middle","font-size":12})).textContent="no data"; return; }
+  const max=Math.max(1,...weeks.map(w=>w.tasks_completed));
+  const iw=W-pad.l-pad.r, ih=H-pad.t-pad.b, bw=iw/weeks.length;
+  // y gridlines
+  for(let g=0;g<=2;g++){ const val=Math.round(max*g/2); const y=pad.t+ih-(ih*g/2);
+    svg.appendChild(svgNS("line",{x1:pad.l,y1:y,x2:W-pad.r,y2:y,stroke:"#21262d","stroke-width":1}));
+    const t=svgNS("text",{x:pad.l-5,y:y+3,fill:"#8b949e","font-size":9,"text-anchor":"end"}); t.textContent=val; svg.appendChild(t);
+  }
+  weeks.forEach((w,idx)=>{
+    const bh=ih*w.tasks_completed/max, x=pad.l+idx*bw+bw*0.15, y=pad.t+ih-bh;
+    const rect=svgNS("rect",{x,y,width:bw*0.7,height:Math.max(0,bh),fill:"#3fb950",rx:1});
+    const tt=svgNS("title"); tt.textContent=`${w.week}: ${w.tasks_completed} tasks`; rect.appendChild(tt);
+    svg.appendChild(rect);
+    if(idx%Math.ceil(weeks.length/8||1)===0){
+      const t=svgNS("text",{x:pad.l+idx*bw+bw/2,y:H-pad.b+14,fill:"#8b949e","font-size":8,"text-anchor":"middle"});
+      t.textContent=w.week.replace(/^\d+-/,""); svg.appendChild(t);
+    }
+  });
+}
+function lineChart(svg, series){
+  const W=600,H=200,pad={l:34,r:8,t:10,b:24};
+  svg.innerHTML="";
+  if(!series.length){ svg.appendChild(svgNS("text",{x:W/2,y:H/2,fill:"#8b949e","text-anchor":"middle","font-size":12})).textContent="no data"; return; }
+  const keys=[["active","#58a6ff"],["completed","#3fb950"],["archived","#8b949e"]];
+  const max=Math.max(1,...series.flatMap(p=>keys.map(([k])=>p[k]||0)));
+  const iw=W-pad.l-pad.r, ih=H-pad.t-pad.b, n=series.length;
+  const X=idx=> n<=1?pad.l:pad.l+iw*idx/(n-1);
+  const Y=v=> pad.t+ih-(ih*v/max);
+  for(let g=0;g<=2;g++){ const val=Math.round(max*g/2); const y=pad.t+ih-(ih*g/2);
+    svg.appendChild(svgNS("line",{x1:pad.l,y1:y,x2:W-pad.r,y2:y,stroke:"#21262d","stroke-width":1}));
+    const t=svgNS("text",{x:pad.l-5,y:y+3,fill:"#8b949e","font-size":9,"text-anchor":"end"}); t.textContent=val; svg.appendChild(t);
+  }
+  for(const [k,color] of keys){
+    const pts=series.map((p,idx)=>`${X(idx).toFixed(1)},${Y(p[k]||0).toFixed(1)}`).join(" ");
+    svg.appendChild(svgNS("polyline",{points:pts,fill:"none",stroke:color,"stroke-width":1.8,"stroke-linejoin":"round"}));
+  }
+  // x-axis end labels
+  const first=series[0].date, last=series[series.length-1].date;
+  const lt=svgNS("text",{x:pad.l,y:H-6,fill:"#8b949e","font-size":8}); lt.textContent=first; svg.appendChild(lt);
+  const rt=svgNS("text",{x:W-pad.r,y:H-6,fill:"#8b949e","font-size":8,"text-anchor":"end"}); rt.textContent=last; svg.appendChild(rt);
+}
+async function loadTimeline(){
+  let d;
+  try{ d = await getJSON("/api/handoff_timeline"); }
+  catch(e){ setBadge("#timeline-badge","stale"); return; }
+  barChart($("#chart-tasks"), d.tasks_weekly||[]);
+  lineChart($("#chart-state"), d.series||[]);
+  const total=(d.totals&&d.totals.tasks_completed)||0;
+  $("#tasks-total").textContent = total?`(${total} total)`:"";
+  setBadge("#timeline-badge", (d._freshness&&d._freshness.staleness_class)||"fresh");
+}
+
+/* ---------------- boot ---------------- */
+loadBoard(); loadTimeline();
+setInterval(loadBoard, 45000);
+setInterval(loadTimeline, 120000);
+</script>
+</body>
+</html>
