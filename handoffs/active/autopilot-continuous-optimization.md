@@ -4,11 +4,12 @@
 BSV observe is process-aware, T3 is planner-visible workflow pressure, the
 episodic FAISS mirror is healthy again, and W8 needs candidate generation before
 promotion evidence can accrue.** AutoPilot is live as PID `1802932` with
-`--max-trials 2000`; current phase health is trial `1160`,
-`phase=planner_invoke`, `code_stale=false`, blockers `[]`, planner hints
-enabled, sequential verdict enabled, and W6 audit accrual enabled. Trial `1156`
-was T3 `deep_eval` despite a stale dashboard progress label briefly reporting
-T1; it completed with `q=1.29375`, speed `32.886`, reliability `0.75`, `160`
+`--max-trials 2000`; post-repair phase health reached trial `1160` and then
+advanced from `planner_invoke` to `dispatch_action` / `seed_batch` with
+`code_stale=false`, blockers `[]`, planner hints enabled, sequential verdict
+enabled, and W6 audit accrual enabled. Trial `1156` was T3 `deep_eval` despite
+a stale dashboard progress label briefly reporting T1; it completed with
+`q=1.29375`, speed `32.886`, reliability `0.75`, `160`
 questions, Pareto `dominated`, and is observational/non-replayable for W8.
 Trial `1157` created W8 candidate `9defa67b5fd62398`, but forced replay trial
 `1158` refuted it with `q=0.0545`, reliability `0.0727`, and
@@ -66,7 +67,7 @@ per-question diff/provenance context (`749d38f`).
 > trailing-window alarm, assuming no new gaming events occur.
 
 **Created**: 2026-03-08
-**Updated**: 2026-07-05 (AutoPilot authority, W6 audit, tool-sentinel, and planner-hint paths are active on PID `1802932` via the canonical Fable launcher; current phase health is trial `1160`, `phase=planner_invoke`, `code_stale=false`, blockers `[]`. Trial `1156` completed as T3 `deep_eval`; trial `1157` produced W8 candidate `9defa67b5fd62398`; forced replay trial `1158` refuted that candidate; trial `1159` was infrastructure-poisoned by a dead CPU stack and skipped archive learning. Orchestrator `7693703b` refreshed stale generated stack descriptors after stack restore. Orchestrator `c16935f5` repaired/hardened episodic FAISS, and live diagnostics are healthy at ~`95.7%` routing-vector coverage. Current W8 blocker remains candidate generation / replay eligibility: no replay-eligible accumulating candidate remains after the 1158 refutation; five stale accumulating candidates remain.)
+**Updated**: 2026-07-05 (AutoPilot authority, W6 audit, tool-sentinel, and planner-hint paths are active on PID `1802932` via the canonical Fable launcher; post-repair phase health reached trial `1160` and advanced from `planner_invoke` to `dispatch_action` / `seed_batch` with `code_stale=false`, blockers `[]`. Trial `1156` completed as T3 `deep_eval`; trial `1157` produced W8 candidate `9defa67b5fd62398`; forced replay trial `1158` refuted that candidate; trial `1159` was infrastructure-poisoned by a dead CPU stack and skipped archive learning. Orchestrator `7693703b` refreshed stale generated stack descriptors after stack restore. Orchestrator `c16935f5` repaired/hardened episodic FAISS, and live diagnostics are healthy at ~`95.7%` routing-vector coverage. Current W8 blocker remains candidate generation / replay eligibility: no replay-eligible accumulating candidate remains after the 1158 refutation; five stale accumulating candidates remain.)
 **Location**: `epyc-orchestrator/scripts/autopilot/`
 
 > **Fable 5 review (2026-06-12)**: the review's architecture recommendations now have owning handoffs: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (LIVE t775 baseline-ratchet hotfix + dead-question repair), [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md) (per-question ledger + e-process verdicts; owns the next restart bundle), [evidence-plane-event-sourcing-and-narrative.md](evidence-plane-event-sourcing-and-narrative.md), and [objective-task-rate-goodput.md](objective-task-rate-goodput.md) (task_rate replaces the t/s axis). Full diagnosis: fable5-findings-01 + -05.
