@@ -1147,6 +1147,11 @@ paired authority core.
   production optimization lane. Non-inference sanity check found `5,431`
   T3-labeled rows, `4,956` scoreable rows across `13` suites, and a
   160-question spec draw containing only `tier=3` rows.
+- Species budgeting now gives successful same-tier T2/T3 validation/workflow
+  rows a small clipped credit via `species_effectiveness().budget_rate`, so
+  `MetaOptimizer.rebalance()` can steer some exploration budget toward
+  higher-tier performers without changing `DEFAULT_FRONTIER_TIER`, production-
+  best selection, `SafetyGate`, or baseline promotion semantics.
 - Next implementation task: wire the report into regular Fable/dashboard
   readiness so low eval-task coverage becomes visible before future planner
   budget/tunable changes are treated as broad evidence.
