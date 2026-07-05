@@ -139,6 +139,18 @@ Both OBSERVATION-grade (single MI210, single-sample seed=42, eval-tower `debug_s
 
 **Fork 4 RESOLVED (operator 2026-07-05): EXTERNAL generators only — NO in-house training now.** All CoT-scaffold spec strategies use **Qwable-v1** (IQ4_XS + Q8_0 on disk) or the **fable5-distilled 4B** (`Qwen3-4B-SFT-Fable5-Glint`, q8_0 GGUF); the vanilla `Qwen3-4B-Thinking` stays only as the CONTROL bar. The **in-house-reasoner build is PARKED** (documented, not pursued): the operator confirms the MI210 *probably could* train (ROCm/PyTorch on gfx90a) but does not wish to explore it now; if ever revived it also needs prompt→thinking pair reconstruction from the session vault (corpus is thinking-text-only, 0 Fable-5). [[project_dgx_spark_target]]
 
+### DENSE-BENEFICIARY GENERALIZATION (2026-07-05, GPQA n=10 each) — scaffold COST-efficiency generalizes; QUALITY benefit is HEADROOM-conditional
+Campaign-tested dense vehicles vs the sparse-MoE 35B. OBSERVATION, n=10 single-sample.
+| beneficiary | nothink | ownthink | scaffold | ownthink CPU-tok | scaffold CPU-tok(+GPU) |
+|---|---|---|---|---|---|
+| 35B-A3B (sparse MoE, 48q ref) | 48% | 67% | 73% | huge, 20 trunc | ~180 (+2073) |
+| Qwen3.6-27B (dense-FFN-GDN) | 6/10 | 6/10 | **9/10** | **9041** (3 trunc) | **176** (+2073) |
+| gemma-4-31B (pure dense) | 8/10 | 8/10 | 8/10 | **3049** | **98** (+2131) |
+- **Scaffold COST-efficiency GENERALIZES (robust, arch-independent):** both dense models cap CPU tokens at ~100-175 vs their own overthinking (3049-9041) = a 20-50x CPU-token reduction, reasoning offloaded to GPU.
+- **Scaffold QUALITY benefit is HEADROOM-CONDITIONAL:** big on the 27B (6→9 — overthinks catastrophically + weak nothink), NEUTRAL on gemma-31B (8=8 — already at its ceiling, strong nothink). Lifts quality only where the beneficiary is weak-and-overthinking.
+- **Both dense models: ownthink ≈ nothink** (6=6, 8=8) — own reasoning is wasted CPU cost with NO quality gain; the sparse-MoE 35B DID gain (+19pp). n=10 caveat; suggestive that sparse-MoE reasons more productively on GPQA.
+- **cruxeval verifier on dense too (n=6): qwen27b gap 0, gemma31b gap 1 unrecovered** → confirms poor-testbed; math verifier is the fair test.
+
 ### GPQA REASONING DIAGNOSTIC (2026-07-05, wide caps) — REVERSAL: the scaffold WORKS on the RIGHT distribution
 Operator methodology catches (wrong bench: code/library-API not reasoning; + too-tight 8192 cap truncating ownthink) reversed the earlier "scaffold dead-end." GPQA grad-science, N=48, 35B beneficiary, ownthink 16384 / scaffold-gen 8192, deterministic MC scoring, seed 42. OBSERVATION-grade.
 | arm | pass | vs nothink | note |
