@@ -12,7 +12,15 @@ still evidence-bound. The current recent active candidate `b738287be98c3372`
 is blocked as `unreplayable_action=seed_batch`; fresh promotion-eval evidence
 and seq confirmation are absent. Orchestrator `c7590be6` enriches default-off
 BSV observe signatures with already-journaled tool/route/latency process
-signals, still observe-only and outside the authority path.
+signals, still observe-only and outside the authority path. Orchestrator
+`9a6815c8` makes `deep_eval tier=3` the concrete planner example for thin
+T3 workflow coverage/frontier evidence while preserving tier 2 for
+comprehensive/W8 promotion-eval evidence. Orchestrator `231e5050` makes W8
+planner evidence spell out that `seed_batch` candidates are observational and
+unreplayable; W8 confirmation needs replayable `numeric_trial` params or
+`structural_experiment` flags. Live PID `1397463` is still running
+pre-`9a6815c8`/`231e5050` code in trial `1152`, so those prompt/evidence
+nudges land at the next boundary restart.
 
 **Prior report — 2026-07-04T20:58Z**: live strict Fable smoke after the `0a6336c7` restart reported `ready=true`, blockers `[]`, phase trial `1137`, W8 stale accumulating count `6`, and next actions `collect_w8_promotion_eval_evidence` plus `activate_tool_use_sentinel_lane`. The selector smoke over the current journal chose stale candidate `a5dd4182e654c21e` from source trial `932`, proving the replay lane can drain benign excluded accumulating candidates. That daemon was later found to be missing the authority/tool env and was replaced by PID `1122670`. W8 remains not promotable until a replayed candidate reaches joint sequential confirmation and then passes the fresh promotion eval.
 

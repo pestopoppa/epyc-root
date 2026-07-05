@@ -46,8 +46,10 @@ unreplayable as `seed_batch`; fresh promotion eval and seq confirmation are
 absent). Orchestrator `9a6815c8` makes T3 a concrete planner-visible deep-eval
 choice for thin expert/hard workflow coverage/frontier evidence, while keeping
 T2 as the comprehensive/W8 promotion-eval lane and leaving authority targets
-unchanged; live PID `1397463` needs a later boundary restart to pick up that
-prompt nudge.
+unchanged. Orchestrator `231e5050` makes W8 planner evidence explain
+seed-batch unreplayability and the need for replayable `numeric_trial` params
+or `structural_experiment` flags. Live PID `1397463` needs a later boundary
+restart to pick up those planner-text nudges.
 
 | Subsystem | Handoff | Status | Next Action |
 |-----------|---------|--------|-------------|
