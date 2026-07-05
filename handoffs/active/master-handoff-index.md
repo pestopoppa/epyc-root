@@ -25,15 +25,20 @@ mirror was repaired from `28,131 / 521,044` routing vectors (`5.4%`) to a
 healthy `~499.5k / 521.8k` (`95.7%`) after a full BGE re-embed. Orchestrator
 `c16935f5` hardens that repair path with configured embedder defaults, a
 zero-growth stale-snapshot guard, a pre-swap check under the live FAISS mutation
-lock, and a visible `orchestrator_stack.py status` health line. Current phase
-health reached trial `1160` and advanced from `planner_invoke` to
-`dispatch_action` / `seed_batch` with `code_stale=false`, blockers `[]`,
-planner hints, tool sentinels, sequential verdicts, W6 audit accrual, and
-stepping stones active. The API remains healthy with
-`AUTOPILOT_TOOL_SENTINELS=1` plus `ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT=1`.
-W8 is still the evidence tail: no replay-eligible accumulating candidate exists
-after the trial-1158 refutation, so fresh promotion eval and sequential
-confirmation cannot accrue yet.
+lock, and a visible `orchestrator_stack.py status` health line. Orchestrator
+`c98c9e14` makes DS-E1 manifest freshness content-aware, so a same-version
+stack-prior recompile timestamp no longer blocks the packet when all live roles
+are covered; fresh artifacts `ds_e1_evidence_packet_20260705T094913Z` and
+`fable5_gate_report_20260705T094913Z` show DS-E1 ready. Current phase health
+reached trial `1160` and advanced from `planner_invoke` to `dispatch_action` /
+`seed_batch` with `code_stale=false`, blockers `[]`, planner hints, sequential
+verdicts, W6 audit accrual, and stepping stones active. AutoPilot has tool
+sentinels enabled, but the strict gate still reports
+`api_env_missing_AUTOPILOT_TOOL_SENTINELS`, so the tool-sentinel telemetry lane
+needs a controlled trial-boundary API reload/restart. W8 is the only binding
+strict Fable blocker: no replay-eligible accumulating candidate exists after
+the trial-1158 refutation, so fresh promotion eval and sequential confirmation
+cannot accrue yet.
 
 ## A0. Strategic priorities — Fable 5 window-2 (2026-07-03, operator-directed reprioritization)
 Surfaced above the maintained N-rows so the highest-leverage strategic actions are front-and-center; owners/detail unchanged below. Full analysis: [findings-00](fable5-window2-findings-00-executive-summary.md) · GPU [findings-02](fable5-window2-findings-02-heterogeneous-gpu.md) · portfolio [findings-03](fable5-window2-findings-03-portfolio-and-master-queue.md) · intake-sweep + roofline [findings-05](fable5-window2-findings-05-intake-sweep-and-roofline.md).
