@@ -1160,6 +1160,7 @@ paired authority core.
   Fable report is ready except W8, which remains evidence-bound on replay
   concentration (`b738287be98c3372` recent concentration; five accumulating
   candidates stale). Next action: `collect_w8_promotion_eval_evidence`.
-- Next implementation task: wire the report into regular Fable/dashboard
-  readiness so low eval-task coverage becomes visible before future planner
-  budget/tunable changes are treated as broad evidence.
+- Regular Fable visibility landed in orchestrator `34591a27`: strict readiness
+  now includes advisory `eval_task_coverage` status/percent/repeat/tier summary
+  in `summary` and as a non-blocking section. Dashboard-specific presentation
+  can build on that payload, but the authority gate remains unchanged.
