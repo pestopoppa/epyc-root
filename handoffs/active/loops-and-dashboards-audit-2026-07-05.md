@@ -1,6 +1,6 @@
 # Audit — Kernel-R&D loop + Orchestration Autopilot loop (and both dashboards)
 
-**Status**: REVIEW — findings + prioritized remediation roadmap (no code changed)
+**Status**: ACTIVE REVIEW — prioritized remediation roadmap with Phase-1 AutoPilot fixes landed
 **Created**: 2026-07-05
 **Author**: Fable 5 audit session (operator-directed: "audit the kernel improvement loop and its dashboard… could the orchestration autopilot loop/dashboard be improved also?")
 **Method**: direct source reads + a read-only 7-facet audit workflow (deep-read → synthesize → adversarial gap-critic; 9 agents, 0 errors, ~1.1M subagent tokens). Every performance number here is an **OBSERVATION** in the MEASUREMENT.md sense (journal/log-derived, no protocol id) — it steers attention, it does not gate promotions. The highest-leverage fixes touch the **human-amendment-only** trust boundary and are flagged as operator-signed amendments, not agent edits.
@@ -11,7 +11,8 @@
 Reviewed by the main orchestration thread after several live AutoPilot repairs had already landed. Treat the original counts below as the audit's historical snapshot, not as current state.
 
 Corrections from live code/journal review:
-- W8 is no longer stale on the specific `trial-1158` blocker described here: `w8_promotion_trajectory_report` now sees replay-eligible candidate `4b6b454ea4f884fd`; the remaining live strict blocker is W6 audit clearance.
+- W8 is no longer stale on the specific `trial-1158` blocker described here: `w8_promotion_trajectory_report` now sees replay-eligible candidate `4b6b454ea4f884fd`.
+- W6 audit clearance is no longer a live strict blocker after `epyc-orchestrator` `113e36b0`: the comparator is candidate-aware, and the regenerated current report shows `220` audited trials, `gaming_alarm=false`, `gaming_alarm_clearance_clean_trials_required=0`, `cumulative_gaming_alarm=false`, and no core-inflation warning.
 - The "8 replayable candidate trials" claim is stale: current all-shard journals have hundreds of `numeric_trial`/`structural_experiment` entries. The useful criticism is not raw absence anymore; it is whether those candidates are replayable, active-surface, and seq-confirmable.
 - Dashboard shard reads and stale-panel freshness were already repaired by the time this review ran; the actionable dashboard tail remains outcome/yield KPIs and operator steering, not just liveness.
 - The local-planner criticism was still actionable: `planner_providers.py` had only Claude/Codex providers for drafting before this slice.
@@ -19,10 +20,17 @@ Corrections from live code/journal review:
 Action landed:
 - `epyc-orchestrator` `7036630c` adds an OpenAI-compatible `LocalPlannerProvider`, role aliases for `local`, `local_worker`, and `local_ingest`, and the Fable launcher default `AUTOPILOT_PLANNER_PRIMARY=local_ingest` / `AUTOPILOT_PLANNER_CRITIC=codex` when not explicitly overridden. Local drafting calls the orchestrator `/v1/chat/completions` endpoint with `x_orchestrator_role` and `x_disable_repl=true`.
 - The coordinator now treats local-provider aliases as one underlying model for failover, and operator-approved Codex fallback drafts may dispatch without pausing if local drafting fails; the fallback is visible in planner archive telemetry.
-- Focused validation passed: `49` planner/provider/launcher tests, `py_compile`, `ruff`, and `git diff --check`.
+- `epyc-orchestrator` `32567813` bypasses planner drafting for due sequential actions, so fresh evals, baseline draws, and W8 candidate replays no longer spend planner budget or wait on model deliberation.
+- `epyc-orchestrator` `113e36b0` makes W6 gaming/core-inflation checks candidate-aware, eliminating the cross-candidate false positive that had been aging out via clean-row accrual instead of reflecting real overfit evidence.
+- `epyc-orchestrator` `03dfac45` turns the planner budget line from a status string into an enforced spend breaker. When projected planner spend exceeds the configured threshold, the coordinator forces local-local planning (`local_ingest` primary, `local_worker` critic by default) instead of continuing metered cloud drafts/critique.
+- `epyc-orchestrator` `0875fb50` skips inert numeric and structural candidates before eval: no-change numeric params and structural no-op flag proposals now short-circuit without burning a T1/T3 measurement.
+- `epyc-orchestrator` `45c118b8` adds outcome KPIs to the dashboard API/frontend: keepable rate, wasted-eval rate, learning-excluded rate, and current-code health.
+- `epyc-orchestrator` `683a20ba` adds dispatch-boundary regression coverage for inert skips.
+- Focused validation passed across the touched slices: `49` planner/provider/launcher tests, `43` W6/readiness tests, `46` spend-breaker/economics tests, and `233` action/dashboard tests, plus focused `py_compile`, `ruff`, and `git diff --check`.
 
 Next measured extension:
-- Build a two-stage planner provider only after the one-shot local drafter has telemetry: `ingest_long_context` synthesizes a bounded planner brief, `frontdoor` or `worker_general` drafts the action from that brief, and Codex remains the critic/escalation gate. This is the orchestration-native target pattern; it should be A/B measured against one-shot `local_ingest` before becoming the default.
+- Restart AutoPilot at the next trial boundary so the post-launch commits (`03dfac45`, `0875fb50`, `45c118b8`, `683a20ba`) become live. Then collect one-shot `local_ingest` planner telemetry under the spend breaker.
+- Build a two-stage planner provider after the one-shot local drafter has telemetry: `ingest_long_context` synthesizes a bounded planner brief, `frontdoor` or `worker_general` drafts the action from that brief, and Codex remains an escalation/critic option only when spend policy permits. This is the orchestration-native target pattern; it should be A/B measured against one-shot `local_ingest` before becoming the default.
 
 ---
 
