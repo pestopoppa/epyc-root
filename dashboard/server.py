@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 import threading
 import time
@@ -43,11 +44,23 @@ from dashboard import freshness, handoff_parser
 REPO = Path(__file__).resolve().parents[1]
 HANDOFF_DIR = REPO / "handoffs"
 TIMELINE_PATH = REPO / "data" / "handoff_timeline.json"
-STATIC_HTML = Path(__file__).resolve().parent / "static" / "handoffs.html"
+_STATIC = Path(__file__).resolve().parent / "static"
+STATIC_HTML = _STATIC / "handoffs.html"
+KERNEL_HTML = _STATIC / "kernel.html"
+
+# Kernel-R&D dashboard contract — produced by epyc-inference-research's kernel-R&D
+# loop (kernel_store.py export); the hub only READS it (self-contained data
+# contract, no kernel context needed here). Path is overridable for testing.
+KERNEL_DASHBOARD_JSON = Path(os.environ.get(
+    "KERNEL_DASHBOARD_JSON",
+    "/mnt/raid0/llm/tmp/mi210-build/campaign/kernel_dashboard.json"))
 
 # Timeline freshness thresholds (handoffs move on a human/commit cadence).
 _TIMELINE_WARN_S = 6 * 3600
 _TIMELINE_STALE_S = 2 * 86400
+# Kernel-R&D loop is a slow (nightshift/overnight, single-GPU) cadence.
+_KERNEL_WARN_S = 3 * 86400
+_KERNEL_STALE_S = 14 * 86400
 
 _BOARD_TTL_S = 30.0
 _NO_STORE = {"Cache-Control": "no-store", "Content-Type": "application/json"}
@@ -124,15 +137,48 @@ def timeline_payload() -> dict:
     return data
 
 
+_KERNEL_EMPTY = {
+    "db_present": False, "runs": [], "pareto": [], "best_per_model": [],
+    "totals": {"runs": 0, "correct": 0, "failed": 0, "models": 0},
+    "observation_notice": (
+        "Every number here is an OBSERVATION (MEASUREMENT.md) — it never gates a "
+        "keep/revert/deploy/promote decision. Operator-only authorizes prod push."),
+}
+
+
+def kernel_payload() -> dict:
+    """Read the kernel-R&D dashboard contract, tolerating absence/corruption.
+
+    The hub only renders the contract; the loop (epyc-inference-research) owns it.
+    """
+    fresh = freshness.classify(KERNEL_DASHBOARD_JSON, _KERNEL_WARN_S, _KERNEL_STALE_S)
+    try:
+        data = json.loads(KERNEL_DASHBOARD_JSON.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        data = {**_KERNEL_EMPTY, "generated_at": None,
+                "error": "kernel-R&D contract not exported yet — the loop "
+                         "(epyc-inference-research) has not run kernel_store.py export."}
+    except (OSError, json.JSONDecodeError) as exc:
+        data = {**_KERNEL_EMPTY, "generated_at": None,
+                "error": f"kernel-R&D contract unreadable: {exc}"}
+    if not isinstance(data, dict):
+        data = {**_KERNEL_EMPTY, "generated_at": None,
+                "error": "kernel-R&D contract malformed (not an object)"}
+    data["_freshness"] = fresh
+    return data
+
+
 def health_payload() -> dict:
-    """Fold the board (live) + timeline (artifact) into one status line."""
+    """Fold the board (live) + timeline + kernel artifacts into one status line."""
     tl = freshness.classify(TIMELINE_PATH, _TIMELINE_WARN_S, _TIMELINE_STALE_S)
-    # ``missing`` is not degraded (fresh checkout / first run); ``stale`` is.
-    degraded = tl["staleness_class"] == "stale"
+    kn = freshness.classify(KERNEL_DASHBOARD_JSON, _KERNEL_WARN_S, _KERNEL_STALE_S)
+    # ``missing`` is not degraded (fresh checkout / loop not started); ``stale`` is.
+    degraded = tl["staleness_class"] == "stale" or kn["staleness_class"] == "stale"
     return {
         "status": "degraded" if degraded else "ok",
         "board": {"staleness_class": "fresh", "source": "live-scan"},
         "timeline": tl,
+        "kernel": kn,
         "now": time.time(),
     }
 
@@ -153,12 +199,12 @@ class _Handler(BaseHTTPRequestHandler):
         if self.command != "HEAD":
             self.wfile.write(body)
 
-    def _send_html(self) -> None:
+    def _send_html(self, path: Path) -> None:
         try:
-            body = STATIC_HTML.read_bytes()
+            body = path.read_bytes()
             status = 200
         except OSError:
-            body = b"<h1>handoff dashboard</h1><p>static page missing</p>"
+            body = b"<h1>dashboard</h1><p>static page missing</p>"
             status = 500
         self.send_response(status)
         self.send_header("Content-Type", "text/html; charset=utf-8")
@@ -173,7 +219,9 @@ class _Handler(BaseHTTPRequestHandler):
         route = parsed.path.rstrip("/") or "/"
         try:
             if route == "/":
-                self._send_html()
+                self._send_html(STATIC_HTML)
+            elif route == "/kernel":
+                self._send_html(KERNEL_HTML)
             elif route == "/health":
                 self._send_json({"status": "ok"})
             elif route == "/api/handoff_board":
@@ -185,6 +233,8 @@ class _Handler(BaseHTTPRequestHandler):
                 self._send_json(payload, status=status)
             elif route == "/api/handoff_timeline":
                 self._send_json(timeline_payload())
+            elif route == "/api/kernel":
+                self._send_json(kernel_payload())
             elif route == "/api/health":
                 self._send_json(health_payload())
             else:

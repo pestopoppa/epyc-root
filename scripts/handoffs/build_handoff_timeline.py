@@ -55,7 +55,7 @@ _COMMIT_RE = re.compile(r"^\x00([0-9a-f]{7,40}) (.+)$")
 _DIFF_RE = re.compile(r"^diff --git a/(.+) b/(.+)$")
 _RENAME_FROM_RE = re.compile(r"^rename from (.+)$")
 _RENAME_TO_RE = re.compile(r"^rename to (.+)$")
-_ADDED_CHECKED_RE = re.compile(r"^\+\s*[-*]\s*\[[xX]\]\s*(.*)$")
+_ADDED_CHECKBOX_RE = re.compile(r"^\+\s*[-*]\s*\[([ xX])\]\s*(.*)$")
 _ADDED_META_RE = re.compile(r"^\+\s*\*\*(Created|Updated|Date)\*\*:\s*(.*)$", re.I)
 _PATH_RE = re.compile(r"^handoffs/(active|blocked|completed|archived)/(.+)\.md$")
 _DATE_RE = re.compile(r"(\d{4})-(\d{2})-(\d{2})")
@@ -141,7 +141,7 @@ class _Block:
     """One ``diff --git`` block within a commit."""
 
     __slots__ = ("old_path", "new_path", "is_new", "is_deleted", "rename_from",
-                 "rename_to", "checked", "created_date", "updated_date")
+                 "rename_to", "checkboxes", "created_date", "updated_date")
 
     def __init__(self, old_path: str, new_path: str) -> None:
         self.old_path = old_path
@@ -150,7 +150,8 @@ class _Block:
         self.is_deleted = False
         self.rename_from: str | None = None
         self.rename_to: str | None = None
-        self.checked: list[tuple[str, str | None]] = []  # (task text, inline date)
+        # each added checkbox line: (mark ' '|'x', task text, inline date)
+        self.checkboxes: list[tuple[str, str, str | None]] = []
         self.created_date: str | None = None   # from +**Created** (new-file adds)
         self.updated_date: str | None = None   # from +**Updated**
 
@@ -199,9 +200,10 @@ def _parse_commits(log_text: str):
                 elif field == "updated" and not current.updated_date:
                     current.updated_date = val
             continue
-        mac = _ADDED_CHECKED_RE.match(line)
+        mac = _ADDED_CHECKBOX_RE.match(line)
         if mac:
-            current.checked.append((mac.group(1), _inline_task_date(mac.group(1))))
+            current.checkboxes.append(
+                (mac.group(1), mac.group(2), _inline_task_date(mac.group(2))))
     if sha is not None:
         results.append((sha, ts, blocks))
     return results
@@ -215,12 +217,15 @@ def build_timeline(repo: Path) -> dict:
     # (e.g. active/foo.md and completed/foo.md) do not collide into one record
     # and one task-dedup bag.
     records: dict[str, dict] = {}
-    seen_checked: dict[str, set] = {}
+    seen_checked: dict[str, set] = {}   # task keys first seen CHECKED (completed)
+    seen_opened: dict[str, set] = {}    # task keys first seen at all (entered backlog)
     created_seen: set = set()
-    tasks_weekly: Counter = Counter()
+    tasks_weekly: Counter = Counter()    # task completions per week
+    opened_weekly: Counter = Counter()   # tasks entering the backlog per week
     created_weekly: Counter = Counter()
     completed_weekly: Counter = Counter()
     total_completions = 0
+    total_opened = 0
 
     def _set_terminal(rec: dict, term_date: str, term_state: str) -> None:
         # A handoff cannot terminate before it was created.
@@ -273,6 +278,8 @@ def build_timeline(repo: Path) -> dict:
                 if old_key != new_key:
                     seen_checked[new_key] = seen_checked.pop(
                         old_key, seen_checked.get(new_key, set()))
+                    seen_opened[new_key] = seen_opened.pop(
+                        old_key, seen_opened.get(new_key, set()))
                 rec.setdefault("created", commit_day)
                 if new_state in _TERMINAL:
                     _set_terminal(rec, commit_day, new_state)
@@ -282,21 +289,34 @@ def build_timeline(repo: Path) -> dict:
                     rec["terminal_date"] = None
                     rec["terminal_state"] = None
 
-            # Task completions: first checked appearance per handoff.
+            # Task flow: 'opened' = first appearance (any state, enters backlog);
+            # 'completed' = first checked appearance. Both first-seen-once per handoff.
             ident = new_ss or old_ss
             if ident is not None:
-                bag = seen_checked.setdefault(f"{ident[0]}/{ident[1]}", set())
-                for text, inline_date in blk.checked:
+                ikey = f"{ident[0]}/{ident[1]}"
+                rec = records.get(ikey) or {}
+                obag = seen_opened.setdefault(ikey, set())
+                cbag = seen_checked.setdefault(ikey, set())
+                for mark, text, inline_date in blk.checkboxes:
                     tkey = _task_key(text)
-                    if not tkey or tkey in bag:
+                    if not tkey:
                         continue
-                    bag.add(tkey)
-                    when = inline_date
-                    if not when and blk.is_new:
-                        when = blk.updated_date or blk.created_date
-                    when = when or commit_day
-                    tasks_weekly[_iso_week(when)] += 1
-                    total_completions += 1
+                    if tkey not in obag:
+                        obag.add(tkey)
+                        # a task enters the backlog roughly when its handoff was created
+                        opened_when = (rec.get("created")
+                                       or (blk.created_date if blk.is_new else None)
+                                       or commit_day)
+                        opened_weekly[_iso_week(opened_when)] += 1
+                        total_opened += 1
+                    if mark in ("x", "X") and tkey not in cbag:
+                        cbag.add(tkey)
+                        when = inline_date
+                        if not when and blk.is_new:
+                            when = blk.updated_date or blk.created_date
+                        when = when or commit_day
+                        tasks_weekly[_iso_week(when)] += 1
+                        total_completions += 1
 
     series = _build_series(records)
     final = series[-1] if series else {s: 0 for s in STATES}
@@ -306,7 +326,9 @@ def build_timeline(repo: Path) -> dict:
         "method": "git-log-p + in-file-date-seeding",
         "series": series,
         "tasks_weekly": [
-            {"week": w, "tasks_completed": tasks_weekly[w]} for w in sorted(tasks_weekly)
+            {"week": w, "tasks_completed": tasks_weekly.get(w, 0),
+             "opened": opened_weekly.get(w, 0), "completed": tasks_weekly.get(w, 0)}
+            for w in sorted(set(tasks_weekly) | set(opened_weekly))
         ],
         "handoffs_weekly": [
             {"week": w, "created": created_weekly.get(w, 0),
@@ -318,6 +340,7 @@ def build_timeline(repo: Path) -> dict:
             "completed": final.get("completed", 0),
             "archived": final.get("archived", 0),
             "tasks_completed": total_completions,
+            "tasks_opened": total_opened,
             "commits_scanned": len(commits),
             "earliest": series[0]["date"] if series else None,
         },

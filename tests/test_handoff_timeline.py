@@ -58,7 +58,7 @@ class ParseCommitsTests(unittest.TestCase):
         sha, ts, blocks = commits[0]
         self.assertEqual(sha, "abc1234def")
         self.assertEqual(len(blocks), 1)
-        self.assertEqual(blocks[0].checked, [("task one ✅ done", None)])
+        self.assertEqual(blocks[0].checkboxes, [("x", "task one ✅ done", None)])
 
     def test_inline_dates_extracted(self):
         self.assertEqual(bt._inline_task_date("S1 done ✅ 2026-01-15 — notes"), "2026-01-15")
@@ -177,6 +177,31 @@ class StemCollisionTests(unittest.TestCase):
             # both survive — a bare-stem key would have merged them into one
             self.assertEqual(data["totals"]["active"], 1)
             self.assertEqual(data["totals"]["completed"], 1)
+
+
+class OpenedMigrationTests(unittest.TestCase):
+    """A rename-that-also-checks-a-task must not double-count 'opened'."""
+
+    def test_rename_with_check_no_opened_double_count(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            repo = GitRepo(root)
+            repo.git("init", "-q")
+            (root / "handoffs" / "active").mkdir(parents=True)
+            (root / "handoffs" / "completed").mkdir(parents=True)
+            f = root / "handoffs" / "active" / "bar.md"
+            # padding keeps rename similarity high when the checkbox flips
+            body = "# Bar\n\n## Work\n" + "".join(f"context line {i}\n" for i in range(30))
+            f.write_text(body + "- [ ] alpha task\n")
+            repo.commit("2026-03-01T10:00:00")
+            # same commit: move to completed AND check the task
+            repo.git("mv", "handoffs/active/bar.md", "handoffs/completed/bar.md")
+            (root / "handoffs" / "completed" / "bar.md").write_text(
+                body + "- [x] alpha task ✅ 2026-03-05\n")
+            repo.commit("2026-03-05T10:00:00")
+            data = bt.build_timeline(root)
+            self.assertEqual(data["totals"]["tasks_opened"], 1)      # not 2
+            self.assertEqual(data["totals"]["tasks_completed"], 1)
 
 
 class DeleteIntervalTests(unittest.TestCase):

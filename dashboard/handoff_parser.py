@@ -411,6 +411,47 @@ def build_board(handoff_root: Path) -> dict:
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "columns": columns,
         "counts": counts,
+        "backlog": _backlog_summary(columns),
+    }
+
+
+def _backlog_summary(columns: dict[str, list[dict]]) -> dict:
+    """Exact outstanding-work snapshot: how far from clearing the backlog.
+
+    Outstanding = the Active + Blocked columns. ``open_tasks`` counts unchecked
+    checkboxes there; ``pct_open_done`` is progress within outstanding handoffs
+    that have task checklists; ``pct_all_done`` is over every tracked task.
+    """
+    OPEN = ("active", "blocked")
+    open_handoffs = sum(len(columns[s]) for s in OPEN)
+    open_tasks = open_done = open_total = 0
+    for s in OPEN:
+        for c in columns[s]:
+            if c.get("progress_source") == "checkboxes":
+                open_total += c["total"]
+                open_done += c["done"]
+                open_tasks += c["total"] - c["done"]
+    all_done = all_total = 0
+    for cards in columns.values():
+        for c in cards:
+            if c.get("progress_source") == "checkboxes":
+                all_total += c["total"]
+                all_done += c["done"]
+    # Outstanding handoffs with no checklist can't be measured in tasks — surface
+    # the count so the number isn't silently read as "0 work left".
+    open_untracked = sum(
+        1 for s in OPEN for c in columns[s] if c.get("progress_source") != "checkboxes"
+    )
+    return {
+        "open_handoffs": open_handoffs,
+        "open_untracked_handoffs": open_untracked,
+        "open_tasks": open_tasks,
+        "open_tasks_done": open_done,
+        "open_tasks_total": open_total,
+        "pct_open_done": round(100 * open_done / open_total, 1) if open_total else None,
+        "all_tasks_done": all_done,
+        "all_tasks_total": all_total,
+        "pct_all_done": round(100 * all_done / all_total, 1) if all_total else None,
     }
 
 
