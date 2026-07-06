@@ -17,7 +17,7 @@ W8 remains `progressing` with replay-eligible candidates
 `80aa44d93a242af5`, `289c4fc0fb5a334d`, and `d3f28243801548b2`, but Fable5
 is still blocked because phase health is stale (AutoPilot PID `131226` is
 gone), the W6 gaming alarm is still triggered, and tool-use activation is now
-carried by the live API reload path because the orchestrator launcher now sets
+ready because the orchestrator launcher now sets
 `AUTOPILOT_TOOL_SENTINELS=1` alongside `ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT=1`.
 
 Orchestrator `1639748a` is deployed in that daemon. It threads the current
