@@ -1,27 +1,23 @@
 # Evidence Plane — Per-Question Ledger + Sequential Verdicts (+ game layer)
 
-**Current checkpoint - 2026-07-06T05:56Z W8 selectable-action coordinator
-landed, pending daemon boundary**: AutoPilot is live as PID `3763146` with
-`--max-trials 3000`, launched through the canonical Fable authority daemon.
-Trial `1209` is evaluating a replayable `memrl_retrieval` `numeric_trial`; as
-of the checkpoint it is still in `dispatch_action` / "evaluating question", so
-`autopilot_restart_advisor.py --json --strict` reports
-`status=wait_for_boundary`, `safe_to_restart_now=false`, and
-`code_stale=true`.
+**Current checkpoint - 2026-07-06T06:18Z W8 selectable-action coordinator
+deployed; local-local planner active**: AutoPilot is live as PID `3795561` with
+`--max-trials 3000`, launched through the canonical Fable authority daemon with
+`AUTOPILOT_PLANNER_PRIMARY=local_frontdoor`,
+`AUTOPILOT_PLANNER_CRITIC=local_worker`, Claude fallback, planner hints, tool
+sentinels, sequential verdicts, and W6 audit flags. `autopilot_restart_advisor.py
+--json --strict` reports `status=no_action`, `code_stale=false`, and
+`safe_to_restart_now=false` because trial `1210` is actively dispatching
+`deep_eval tier=3`.
 
-Orchestrator `e6da147f` is deployed in that daemon and prevents observational
-`deep_eval` feedback from poisoning invalid/reject residue. The live trial still
-showed the local planner wasting a pass by drafting `deep_eval tier=3` while
-W8 candidate-generation pressure only allowed replayable candidate actions.
-Orchestrator `1639748a` is now committed, pushed, and GitNexus-indexed; it
-threads the current `selectable_action_types` set into
-`planner_coordinator.plan_with_providers()`, treats known-but-unavailable action
-types as unusable before critique, and rejects critic revisions that reintroduce
-unavailable types. Focused validation passed:
-`tests/unit/test_autopilot_actions.py`, `test_autopilot_state_store.py`, and
-`test_autopilot_planner_coordinator.py` (`194 passed`) plus `ruff`,
-`py_compile`, and `git diff --check`. Let trial `1209` reach a safe boundary,
-then restart through the advisor so the live daemon runs `1639748a`.
+Orchestrator `1639748a` is deployed in that daemon. It threads the current
+`selectable_action_types` set into `planner_coordinator.plan_with_providers()`,
+treats known-but-unavailable action types as unusable before critique, and
+rejects critic revisions that reintroduce unavailable types. The first observed
+post-restart planner turn used the fully local routine path: the spend breaker
+selected `local_frontdoor/local_worker`, the local critic approved the draft,
+and the higher-tier probe guard intentionally forced T3 pressure. This means the
+old "deploy `1639748a` at boundary" instruction is complete.
 
 Startup StrategyStore health remains exact (`1,420` SQLite rows, `1,420` FAISS
 vectors, `1,420` FTS rows, `100.0%` coverage), so the stale-FAISS failure mode
@@ -29,7 +25,10 @@ is not active in this run. W8 itself remains open until a replayable candidate
 becomes keepable and later receives sequential confirmation plus fresh
 promotion-eval evidence. The next quiet-window evidence runs are A9
 contrast-replan collection, DS-E1 KV measurement, RI-10 scored canary
-dispatch/scoring, J12 think-loop probe, then W8/Fable readiness reports.
+dispatch/scoring, J12 think-loop probe, then W8/Fable readiness reports. A
+separate dashboard API reload remains queued at a safe boundary for orchestrator
+`554b71af`, which keeps tap-inferred holders visible when `/proc` reports the
+same physical holder.
 
 **Prior checkpoint - 2026-07-05T23:58Z W8 local-planner canary live**:
 AutoPilot is live as PID `3267768`; latest observed checkpoint is trial `1196`
@@ -250,8 +249,8 @@ land at ONE autopilot restart, each behind its own flag.
 - [x] **W7 — game layer** (impl 5.1–5.3, 2–3 days): critic measurement-view foundation landed in `epyc-orchestrator` `41c5c71` (`build_critique_prompt` stops echoing the 80KB planner prompt and now carries bounded power/constraint context); server-side production eval sampling clamp landed in `7492cf5` (`EvalTower.evaluate()` pins T1/T2 `n`/`seed`, dispatcher rejects malformed `deep_eval`, and calibration uses direct tier helpers for operator overrides); audit-stream gaming alarm landed in `8e4b1ec` as read-only `gaming_alarm` / `gaming_events` report fields; PEAF surprise budget credit landed in `4b09661` via `information_rate` / `budget_rate` while preserving legacy Pareto `rate`; per-question diff/provenance context landed in `749d38f` by adding truthy-only compact row flags (`scoring_method`, route/tools, error/partial/degraded/exogenous/retry markers) and planner evidence summaries (`diff=prev#...`, suite/partition counts, provenance flags) without exposing prompt or answer text.
 - [x] **W8a — candidate-generation deferral guard**: orchestrator `854eff06` prevents W8 pressure from being spent on unreplayable ordinary deferrals by replacing `seed_batch`, `deep_eval`, `structural_prune`, and invalid structural actions with the first unblacklisted numeric trial fallback unless a sequential due-action owns the turn; planner evidence now states that new Optuna numeric trials are replayable when dispatch journals applied params. ✅ 2026-07-05
 - [x] **W8a.1 — local-planner/W8 fallback contract repair**: orchestrator `3364bdd7` converts critic-fallback seed/deep/prune deferrals into replayable W8 candidate attempts before the reject-loop guard; orchestrator `a13a2948` teaches the critic/repeat shield that empty `numeric_trial.params={}` is an Optuna request, not the final replay artifact. Live AutoPilot PID `3267768` verified the path through `local_ingest` draft, `local_frontdoor` critique, W8 fallback, and concrete `chat_pipeline` applied param `0.8742715026951258` in trial `1194`; the candidate itself was reverted for `tool_use` regression, so this closes wiring proof but not W8 evidence. ✅ 2026-07-05
-- [x] **W8a.2 — selectable-action provider coordination**: orchestrator `1639748a` threads the live `selectable_action_types` allowlist into `plan_with_providers()`, rejects known-but-currently-unavailable drafts before critique, applies the same guard to critic revisions, and adds regression coverage for the W8 `deep_eval` drafter waste case. The commit is pushed/indexed; deploy at the next advisor-approved daemon boundary. ✅ 2026-07-06
-- [ ] **W8b — live candidate evidence after guard deploy**: continue from trial `1209` and subsequent W8 candidate attempts, restart onto `1639748a` at the next safe boundary, verify a keepable replayable candidate, then collect sequential confirmation and fresh promotion-eval evidence. The old restart/local-worker verification clause is superseded by the current `local_frontdoor`/`local_worker` canary and selectable-action coordinator.
+- [x] **W8a.2 — selectable-action provider coordination**: orchestrator `1639748a` threads the live `selectable_action_types` allowlist into `plan_with_providers()`, rejects known-but-currently-unavailable drafts before critique, applies the same guard to critic revisions, and adds regression coverage for the W8 `deep_eval` drafter waste case. The commit is pushed/indexed and live in AutoPilot PID `3795561`; trial `1210` verifies the post-deploy local `frontdoor` draft / local `worker` critique path before the higher-tier guard forced T3. ✅ 2026-07-06
+- [ ] **W8b — live candidate evidence after guard deploy**: let the current T3 probe finish unless phase health fails, then continue W8 candidate attempts on the already-deployed selectable-action coordinator. Verify a keepable replayable candidate, then collect sequential confirmation and fresh promotion-eval evidence. The old restart/local-worker verification clause is superseded by the current `local_frontdoor`/`local_worker` canary and selectable-action coordinator.
 
 ## Gates & pitfalls
 

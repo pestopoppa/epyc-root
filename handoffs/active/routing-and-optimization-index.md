@@ -35,33 +35,32 @@ When making a routing-architecture proposal, name which of these four (and which
 
 ## Subsystem Status
 
-**Current checkpoint - 2026-07-06T05:06Z**: AutoPilot is live as PID `3525618`
-with `--max-trials 3000`, trial `1207` is a `seed_batch`, and
-`autopilot_restart_advisor.py --json --strict` reports
-`wait_for_boundary` / `safe_to_restart_now=false`. The daemon is intentionally
-code-stale until the next safe restart boundary; restart onto at least
-orchestrator `8f50877e` so the local-role failover, W8 menu/fallback repairs,
-coherent dashboard tap/lock snapshot, read-only tool-registry annotations, and
-T3-aware controller constitution are live together. The local planner split is
-verified local-local with `claude` fallback, and StrategyStore search health was
-exact at startup.
-Dashboard Regions Lock coherency is repaired in two layers: `6a016f25`
-separates real `/proc` holders from tap-inferred active holders, and
-`d2b0cbd0` adds enriched structured tap rows to the coherent snapshot so live
-inference, topology, and CPU-region lock rendering consume the same frame. The
-backend fix is committed and GitNexus-indexed, and a live API audit confirmed
-deployment drift rather than source drift: API master `3638698` started at
-`2026-07-06T04:13:12Z`, before `d2b0cbd0`, so `/dashboard/api/snapshot` still
-lacks `structured_requests`, `tap_active`, and `structured_tap_mtime` until the
-next full `uvicorn src.api:app` restart. Tool batching telemetry is now
+**Current checkpoint - 2026-07-06T06:18Z**: AutoPilot is live as PID `3795561`
+with `--max-trials 3000`, trial `1210` is an active `deep_eval tier=3`, and
+`autopilot_restart_advisor.py --json --strict` reports `no_action`,
+`code_stale=false`, and `safe_to_restart_now=false` because the eval is active.
+The AutoPilot runtime source paths are current-code-clean; `1639748a`
+selectable-action provider coordination is deployed, and the local routine
+planner path is verified as `local_frontdoor` draft -> `local_worker` critique
+with Claude fallback. The repo tip also includes dashboard commit `554b71af`,
+but that imported HTML bundle still needs an API reload. The latest planner
+turn was local-local, then the higher-tier probe guard intentionally forced T3
+pressure.
+
+Dashboard Regions Lock coherency is repaired in source in three layers:
+`6a016f25` separates real `/proc` holders from tap-inferred active holders,
+`d2b0cbd0` adds enriched structured tap rows to the coherent snapshot, and
+`554b71af` keeps tap-inferred holders visible even when `/proc` reports the same
+physical holder. The first two layers are live; `554b71af` is committed,
+pushed, and GitNexus-indexed but still needs a safe-boundary API reload because
+the HTML bundle is imported at server startup. Tool batching telemetry is now
 registry-backed: `64db8a12` adds multi-tool/read-only/parallel coverage
 reporting and `87e957ba` adds narrowed `side_effects: ["read_only"]`
 annotations without marking eval-style Python/NumPy or embedding tools
-read-only. `8f50877e` updates the live controller constitution so T3 is named as
-the expert/hard workflow validation lane instead of being omitted from the
-no-cross-tier-comparison law. W8 remains evidence-bound: continue until a
-replayable candidate is keepable, then collect sequential confirmation and
-fresh promotion-eval evidence.
+read-only. T3 is now named as the expert/hard workflow validation lane in the
+controller constitution and higher-tier probe guard. W8 remains evidence-bound:
+continue until a replayable candidate is keepable, then collect sequential
+confirmation and fresh promotion-eval evidence.
 
 **Next clean/quiet-window bundle (non-MI210)**: pre-stage E2 plan while live if
 desired, then at a safe AutoPilot boundary stop/restart onto current code and run
