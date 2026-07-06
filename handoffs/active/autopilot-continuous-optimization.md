@@ -1264,6 +1264,15 @@ paired authority core.
   and restarted AutoPilot as live PID `3935151`. Trial `1217` is now evaluating
   the force-matched source-trial-`1197` `repl_executor` replay; AP-9 remains
   binding for new planner-proposed explicit multi-param numeric actions.
+- 2026-07-06 planner-health replay-phase guard: orchestrator `bd2ecc7d` keeps
+  the active-safe planner-provider report from paging operators during forced
+  W8 replays or other non-planner phases. No current-process provider events
+  now report `waiting_for_planner_turn`/`ok=true` when
+  `/mnt/raid0/llm/tmp/autopilot_phase.json` says the daemon is outside
+  `planner_invoke`; the same no-event window still reports `attention` during
+  `planner_invoke`. This preserves the local-provider health watch for real
+  planner stalls while letting due-check replays bypass planning without
+  looking broken.
 - Regular Fable visibility landed in orchestrator `34591a27`: strict readiness
   now includes advisory `eval_task_coverage` status/percent/repeat/tier summary
   in `summary` and as a non-blocking section. Dashboard-specific presentation

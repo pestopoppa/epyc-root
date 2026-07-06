@@ -36,6 +36,13 @@ Action landed:
 - `epyc-orchestrator` `8031c7c4` then completed the true scratch prompt-root override: GEPA candidate evals copy the prompt tree into `tmp/gepa_prompt_roots`, write the candidate only there, tag eval questions with `_prompt_root`, and `/chat` resolves prompts through a request-scoped override that is accepted only under the configured scratch base. Candidate scoring no longer writes canonical prompt files.
 - `epyc-orchestrator` `12839520` adds observation-only W8 paired-baseline diagnostics: each evaluated trial can journal `eval_details.seq_paired_baseline`, comparing its per-question vector with the latest trusted `seq_baseline_reference_draw` through the existing exact McNemar/sign-test primitive. The payload is explicitly `used_for_gating=false` and is computed only after SafetyGate/Pareto/baseline decisions, so it cannot change current keep/revert or promotion semantics.
 - `epyc-orchestrator` `18c71bcc` adds outcome-first health signals to `phase_health_report.py`: journal-shard-derived frontier-admission staleness, baseline-promotion staleness, and recent keepable/wasted/learning-excluded rates. Default behavior is advisory; `--require-outcome-progress` turns the same signal into a strict blocker. A live smoke flags the current frontier stall at `172` trials since the latest frontier admission against the default threshold `150`.
+- [x] `epyc-orchestrator` `bd2ecc7d` fixes a provider-health false alarm
+  exposed by forced W8 replays. `planner_provider_health_report.py` now reads
+  the live phase payload and reports `waiting_for_planner_turn`/`ok=true` when
+  the daemon is in a non-planner phase such as `dispatch_action`, while still
+  treating a no-event `planner_invoke` window as `attention`. Focused planner
+  health/lab tests passed (`23 passed`) with `ruff`, `py_compile`, and
+  `git diff --check` clean. ✅ 2026-07-06
 - `epyc-orchestrator` `080e3ac8` adds a durable operator outbox for critic-rejected operator-domain drafts (`orchestration/autopilot_operator_outbox.jsonl`) and renders the capped open outbox back into the planner prompt, preserving human/trust-boundary hypotheses without letting the planner keep redrafting them as autonomous actions.
 - `epyc-orchestrator` `96b883cb` adds exact-signature repeat shielding for critic-rejected drafts. Re-emitting the same normalized action now becomes a non-executing invalid skip before dispatch; a materially changed retry has a different signature and remains eligible.
 - `epyc-orchestrator` `224e3397` surfaces the journaled W8 paired-baseline diagnostics in `seq_readiness_report.py` as observation-only `paired_baseline_screening`, so absence/presence of those rows is visible in the readiness packet rather than buried per trial.
