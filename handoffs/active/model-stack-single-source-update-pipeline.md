@@ -23,7 +23,11 @@ expansion should follow new consumer migrations. The 2026-07-06 consumer-tail
 cleanup (`epyc-orchestrator` `4bf414d6`) folds the parked factual-risk degraded
 fallback refactor back into main: generated stack priors remain the primary
 role-tier source, and the compatibility-only fallback is isolated behind a
-helper instead of a module-level live-looking role table.
+helper instead of a module-level live-looking role table. The follow-up
+`epyc-orchestrator` `c1cbe1fe` closes the stale VL degraded-fallback gap:
+present generated stack priors are now authoritative for chat-vision and
+vision-stage endpoint resolution, so legacy `8086/8087` ports are used only
+when the generated artifact is missing or unreadable.
 **Created**: 2026-06-13
 **Priority**: HIGH - stale model-specific quantities can silently corrupt
 routing, scoring, launch, planner prompts, replay analysis, and operator docs
@@ -155,6 +159,13 @@ unowned local constants.
   only; a valid generated artifact with no vision launch roles no longer
   silently resurrects legacy vision roles. This was a main-thread HIGH-risk
   migration because it touches multimodal request routing.
+- `src.api.routes.vision_serving`, `chat_pipeline.vision_stage`, and
+  `chat_vision` now also fail closed when a generated live stack-prior artifact
+  is present but lacks the requested VL role/port. Degraded legacy VL ports are
+  still allowed when generated priors are missing or malformed, but present
+  priors cannot be bypassed by the old `worker_vision` / `vision_escalation`
+  fallback table (`epyc-orchestrator` `c1cbe1fe`; HIGH GitNexus path handled in
+  the main thread).
 - `src.classifiers.factual_risk` role capability tiers already derive from
   generated stack priors; the W4 simulated swap fixture now proves regenerated
   worker, vision, and long-context stack priors update factual-risk tier
