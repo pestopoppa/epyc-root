@@ -139,6 +139,14 @@ Both OBSERVATION-grade (single MI210, single-sample seed=42, eval-tower `debug_s
 
 **Fork 4 RESOLVED (operator 2026-07-05): EXTERNAL generators only — NO in-house training now.** All CoT-scaffold spec strategies use **Qwable-v1** (IQ4_XS + Q8_0 on disk) or the **fable5-distilled 4B** (`Qwen3-4B-SFT-Fable5-Glint`, q8_0 GGUF); the vanilla `Qwen3-4B-Thinking` stays only as the CONTROL bar. The **in-house-reasoner build is PARKED** (documented, not pursued): the operator confirms the MI210 *probably could* train (ROCm/PyTorch on gfx90a) but does not wish to explore it now; if ever revived it also needs prompt→thinking pair reconstruction from the session vault (corpus is thinking-text-only, 0 Fable-5). [[project_dgx_spark_target]]
 
+### VERIFIER/SELECTOR — MATH BENCH (2026-07-06, GSM8K n=40) — no gap = no lever; judgment perfect
+Operator-directed "switch to math bench". 35B thinking candidates (N=5, temp 0.7), Qwable grades final answer. OBSERVATION.
+- **pass@1 39/40 · oracle best-of-5 39/40 · verifier-selected 39/40 · selection-accuracy 1.00 (39/39).**
+- The single miss (gsm8k_00012): ALL 5 candidates wrong → unrecoverable, NOT a gap.
+- **GSM8K is SATURATED for a 35B *thinking* model (97.5%)** → candidates are right-on-all-5 or wrong-on-all-5 → zero pass@1→oracle gap → best-of-N buys nothing. Same structural outcome as cruxeval (no divergence) for the orthogonal reason (saturation).
+- **Verifier JUDGMENT is perfect (100% selection accuracy)** — the corrected correctness-first prompt works — but judgment is worthless with no gap to exploit.
+- **Consolidated verifier finding (2 benches):** reasoner-as-selector needs the beneficiary in its PARTIAL-COMPETENCE band (pass@1 << oracle pass@N). Neither cruxeval nor GSM8K put the 35B there. Concluding "no headroom" from two gap-free benches = the eval_saturation_masks_model_gap / closure_inflation trap. → FINAL fair test running (job b1mo691bt): verifier on GPQA (mode_advantage_hard), where the 35B sits at 48%/67% — the one bench with a known gap.
+
 ### DENSE-BENEFICIARY GENERALIZATION (2026-07-05, GPQA n=10 each) — scaffold COST-efficiency generalizes; QUALITY benefit is HEADROOM-conditional
 Campaign-tested dense vehicles vs the sparse-MoE 35B. OBSERVATION, n=10 single-sample.
 | beneficiary | nothink | ownthink | scaffold | ownthink CPU-tok | scaffold CPU-tok(+GPU) |
