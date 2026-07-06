@@ -78,6 +78,14 @@ Action landed:
   now also carry `draft_action` and `final_action`, so local-only overnight runs
   can be audited without reconstructing the planner tap manually. Focused
   planner-coordinator tests passed (`41 passed`). ✅ 2026-07-06
+- [x] `epyc-orchestrator` `8f3ce0b5` and `04a76fd1` close the next
+  local-planner W8 drift: the first commit makes W8 candidate-generation
+  availability explicit, and the second filters the prompt's Available Actions
+  schemas to the currently selectable set. During W8 candidate-generation
+  pressure, `seed_batch`, `deep_eval`, and `structural_prune` are now absent
+  from the action menu rather than merely listed with a warning. Focused
+  creativity/planner tests passed (`43 passed`), with `py_compile`, focused
+  `ruff`, and `git diff --check` clean. ✅ 2026-07-06
 - [x] `epyc-orchestrator` `3fff13fc` fixes the first bug exposed by that
   provider trace: a local `deep_eval tier 3` draft was correctly rejected by
   `local_frontdoor`, but the later higher-tier probe guard resurrected the same

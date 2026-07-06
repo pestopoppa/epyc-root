@@ -10,35 +10,37 @@
 
 **Standing contracts**: `/workspace/MEASUREMENT.md` (adopted) · `instrument_eras.yaml` (epyc-orchestrator orchestration/) · ATTESTATION (to build, findings-04 §B) · current architecture review: [fable5-findings-00-executive-summary.md](../completed/fable5-findings-00-executive-summary.md) — **the Fable 5 one-shot review is COMPLETE (2026-06-12)**; its 7 findings (-01..-07) + appendix are the standing reference, not an open row. The stale 2026-06-15 transient pickup was archived to [`../archived/fable5-long-horizon-session-pickup-history-through-2026-06-20.md`](../archived/fable5-long-horizon-session-pickup-history-through-2026-06-20.md); resume from the domain indices and owning handoffs below.
 
-**Current coordination checkpoint - 2026-07-06T02:19Z**: AutoPilot is live as
-PID `3470012` with `--max-trials 3000`, launched through the canonical Fable
-authority daemon on orchestrator `6a016f25` after the local-planner/dashboard
-checkpoint. The daemon is current-code clean (`code_stale=false`) and runs the
-routine local planner path `local_frontdoor` draft -> `local_worker` critique
-with `claude` fallback, plus planner hints, tool sentinels, sequential verdicts,
-W6 audit accrual, and W4-W6 authority env. Startup StrategyStore health is
-exact: `1,420` SQLite rows, `1,420` FAISS vectors, `1,420` FTS rows, and
-`100.0%` coverage. The previous PID `3438615` and older `3267768` references
-below are historical unless explicitly dated after this checkpoint.
+**Current coordination checkpoint - 2026-07-06T02:44Z**: AutoPilot is live as
+PID `3499578` with `--max-trials 3000`, launched through the canonical Fable
+authority daemon. The live daemon is healthy on trial `1204` but intentionally
+code-stale: it started on orchestrator `8f3ce0b5`, while orchestrator
+`04a76fd1` has since landed and been GitNexus-indexed. Let trial `1204` finish
+unless phase health fails, then restart at the boundary so the stricter
+availability-filtered action menu is active. The previous PID `3470012` and
+older `3267768` references below are historical unless explicitly dated after
+this checkpoint.
 
-The current live trial is `1203`, a replayable `memrl_retrieval`
-`numeric_trial`. The local canary did what we needed before scarce-token
-overnight handoff: `local_frontdoor` drafted a non-replayable `seed_batch`,
-`local_worker` rejected it, and orchestrator `5c4e3560` converted the reject
-into a replayable numeric fallback. NumericSwarm materialized concrete
-`memrl_retrieval` Optuna params before API reload and T1 eval, so W8 is again
-searching a candidate-producing surface instead of spending trials on seed/deep
-deferrals. This is still not W8 success until a replayable candidate becomes
-keepable and later receives sequential confirmation plus fresh promotion-eval
-evidence.
+Trial `1204` is another replayable `memrl_retrieval` `numeric_trial`.
+NumericSwarm materialized concrete Optuna params (`q_weight=0.7181961430706204`,
+`min_similarity=0.1462310027765775`, `min_q_value=0.45648614074725913`,
+`confidence_threshold=0.5241041162083158`, `semantic_k=7`,
+`prior_strength=0.43109869107084664`) before API reload and T1 eval. The
+local planner path stayed local (`local_frontdoor` draft -> `local_worker`
+critique with `claude` fallback) but the frontdoor drafter still proposed
+`deep_eval tier=3` under W8 candidate-generation pressure. `local_worker`
+rejected it and the fallback selected a replayable numeric trial, so safety
+held; `04a76fd1` is the follow-up fix that removes unavailable schemas from the
+prompt menu rather than merely warning against them.
 
-Orchestrator `6a016f25` also closes the latest dashboard coherency gap by
-showing tap-inferred active CPU-region holders beside real `/proc` holders in
-the Regions Lock summary. The quiet-window queue discovered by the sidecar is
-ordered as: A9 contrast-replan collection, DS-E1 KV measurement, RI-10 scored
-canary dispatch/scoring, J12 think-loop probe, then W8/Fable readiness reports.
-Serialize those inference-bearing runs while AutoPilot is stopped; keep routine
-non-inference cleanup and handoff work moving in parallel.
+Orchestrator `6a016f25` closed the latest dashboard coherency gap by showing
+tap-inferred active CPU-region holders beside real `/proc` holders in the
+Regions Lock summary; a follow-up dashboard sidecar is investigating remaining
+multi-holder rendering mismatches. The quiet-window queue is now written into
+`bulk-inference-campaign.md`: A9 contrast-replan collection, DS-E1 KV
+measurement, RI-10 scored canary dispatch/scoring, J12 think-loop probe, then
+W8/Fable readiness reports. Serialize those inference-bearing runs while
+AutoPilot is stopped; keep routine non-inference cleanup and handoff work
+moving in parallel.
 
 **Prior coordination checkpoint - 2026-07-05T23:40Z**: AutoPilot is live as
 PID `3267768` with `--max-trials 3000`, launched through the canonical Fable
