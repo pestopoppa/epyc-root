@@ -137,6 +137,16 @@ Action landed:
   clean. The running AutoPilot PID predates this commit, so the remaining live
   canary is to restart at the next safe boundary and confirm local drafts stop
   proposing unavailable seed/deep deferrals. ✅ 2026-07-06
+- [x] **Dashboard restart-guidance surface**: `epyc-orchestrator` `03f3917e`
+  adds the read-only `autopilot_restart_advisor` envelope to
+  `/dashboard/api/autopilot_progress` current-code health and renders compact
+  `restart ready` / `restart wait for boundary` labels in the dashboard.
+  Follow-up `9ed7b95f` aligns the advisor CLI default restart command with the
+  operator's long-run budget (`--max-trials 3000`). Focused dashboard/advisor
+  tests passed (`134 passed`), with `py_compile`, `ruff`, and `git diff
+  --check` clean. The live API was reloaded as PID `3638698`; live advice for
+  AutoPilot PID `3525618`/trial `1207` correctly says `wait_for_boundary`
+  because the stale daemon is in active `seed_batch` dispatch. ✅ 2026-07-06
 - Focused validation passed across the touched slices: `49` planner/provider/launcher tests, `43` W6/readiness tests, `46` spend-breaker/economics tests, `233` action/dashboard tests, `49` structural/restore tests, `64` GEPA/prompt-root/API/eval propagation tests, `36` sequential/paired-diagnostics tests, `44` phase/restart/dashboard health tests, `138` rejected-draft/action/creativity tests, and `11` earlier GEPA integration tests, plus focused `py_compile`, `ruff`, and `git diff --check`.
 
 Next measured extension:
