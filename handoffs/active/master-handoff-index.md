@@ -228,9 +228,11 @@ Full structure + per-task detail in [bulk-inference-campaign.md](bulk-inference-
 - **Standalone model-batched windows** (~27h): clean-window manifest/commands are staged in research
   `docs/data/clean_window_measurement_manifest.json` and
   `docs/data/clean_window_measurement_commands.sh` (27 total entries, 21 ready / 6 blocked under
-  observed live ports/contexts after research `7d2dade`). It groups G10/G11, K-MEM-1, K-ROPE-1,
-  G5, Queue-2 E2/E1, and DS-E1 dynamic-stack KV measurement by model/window so each GGUF or quiet
-  measurement lane is claimed once. K-MEM-1 Tulving on `ingest_long_context` completed and was packaged in research
+  observed live ports/contexts after research `7d2dade`). Historically it
+  grouped G10/G11, K-MEM-1, K-ROPE-1, G5, Queue-2 E2/E1, and DS-E1 dynamic-stack
+  KV measurement by model/window so each GGUF or quiet measurement lane was
+  claimed once; the active next-run queue above now excludes closed E2 and
+  decision-ready DS-E1. K-MEM-1 Tulving on `ingest_long_context` completed and was packaged in research
   `b6edc64`, then rescored after the Tulving parser fix in research `9e63af0`, at
   `/mnt/raid0/llm/epyc-inference-research/benchmarks/results/runs/20260619_141212/`
   (`456/456` scored, avg F1 `0.4309`, Simple Recall `0.5530`,

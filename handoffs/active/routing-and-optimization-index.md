@@ -80,18 +80,18 @@ controller constitution and higher-tier probe guard. W8 remains evidence-bound:
 continue until a replayable candidate is keepable, then collect sequential
 confirmation and fresh promotion-eval evidence.
 
-**Next clean/quiet-window bundle (non-MI210)**: pre-stage E2 plan while live if
-desired, then at a safe AutoPilot boundary stop/restart onto current code and run
-the queue in this order: E1 `server_np_sweep.py`, DS-E1
-`ds_e1_kv_measurements.sh --execute` plus
-`dynamic_stack_evidence_packet.py --strict` (full CPU-stack quiet), J12
-`j12_think_loop_probe.py --roles frontdoor architect_general
---confirm-clean-window`, A9 contrast-replan collection from the
-`contrast_replan_20260705T202257Z` manifest, then W8 trajectory and strict
-Fable gate report refresh. DS-E1 is the only item in this bundle currently
-called out as requiring live `llama-server` processes to be coordinated down;
-J12/A9 require AutoPilot inactive and a clean host window. RI-10 scored
-factuality is complete and currently holds on no enforce factuality lift.
+**Next clean/quiet-window bundle (non-MI210)**: at a safe AutoPilot boundary,
+stop/restart onto current code and run the active queue in this order: E1
+`server_np_sweep.py`, J12 `j12_think_loop_probe.py --roles frontdoor
+architect_general --confirm-clean-window`, A9 contrast-replan collection from
+the `contrast_replan_20260705T202257Z` manifest, `real_suite_v1` EvalTower
+ledger collection, ODL structural/table-heavy PDF probe, N12 live `numa_maps`
+observability refresh, then W8 trajectory and strict Fable gate report refresh.
+E2 activation/rollback is closed and DS-E1 is decision-ready, so neither should
+be scheduled as next-run work. J12/A9/real_suite_v1/ODL require AutoPilot
+inactive and a clean host window; N12 is the controlled stop/start placement
+check. RI-10 scored factuality is complete and currently holds on no enforce
+factuality lift.
 The 2026-07-06 sidecar command expansion is recorded in today's progress log;
 current live verification shows tool-use activation is **not** blocked by
 `api_env_missing_AUTOPILOT_TOOL_SENTINELS` (`tool_use_activation ready []`,
