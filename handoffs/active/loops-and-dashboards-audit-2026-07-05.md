@@ -58,6 +58,12 @@ Action landed:
   role from topology/port metadata before painting the region grid, so
   concurrent streaming taps are not hidden just because one tap is labeled
   `coder_escalation` while the lock grid is keyed by `frontdoor`. ✅ 2026-07-05
+- [x] `epyc-orchestrator` `ea47f672` separates the Regions Lock summary counts
+  for real `/proc` holders, live structured tap requests, tap-inferred activity,
+  and slot-inferred activity. This fixes the misleading `/proc holder
+  instance(s)` label when the live-tap panel shows concurrent active requests
+  that do not map one-for-one to process lock files. Focused dashboard route
+  HTML tests passed (`22 passed`). ✅ 2026-07-06
 - [x] `epyc-orchestrator` `a151d319` hardens local planner JSON extraction after
   the first fully local canary turn emitted a valid fenced action followed by an
   extra closing brace. Action and critique parsing now recover only the narrow
@@ -79,12 +85,27 @@ Action landed:
   explicit provenance in the rationale, and the higher-tier guard will not
   override them in the same trial. Focused planner/action tests passed, then the
   full touched suites passed (`153 passed`). ✅ 2026-07-06
-- [ ] **Local-planner hardening tail**: the local-only path stayed on
-  `local_ingest` / `local_frontdoor` after the restart, with no cloud provider
-  observed in the inspected window. The current hardening tail is narrower:
-  monitor whether the next current-code restart avoids critic-resurrected
-  actions, then add a pre-dispatch shape/blacklist validator only if provider
-  trace shows continued no-op or already-rejected proposals. A dashboard reader
+- [x] `epyc-orchestrator` `8b3220c7` and `8464986e` move the routine
+  local-planner path to the observed fastest reliable split: `local_frontdoor`
+  drafts the full controller prompt, `local_worker` critiques the reduced
+  critique prompt, and `claude` remains the critic fallback. Local critique
+  prompts now get the same hard fenced-JSON output contract as draft prompts.
+  The first `local_frontdoor` canary drafted strict JSON in ~154s; the older
+  `local_ingest` critic still emitted prose and required Claude fallback, which
+  motivated the `local_worker` critic default. Focused provider/coordinator/
+  launcher tests passed (`70 passed`). AutoPilot trial `1200` later failed
+  safety on `tool_use` regression, and the daemon was restarted at the boundary
+  as PID `3438615` with `code_stale=false`. ✅ 2026-07-06
+- [ ] **Local-planner hardening tail**: the local-only path is now on current
+  code after the PID `3438615` restart; verify the first full planner turn
+  actually stays on `local_frontdoor` / `local_worker`.
+  Monitor whether the worker critic emits parseable `json:autopilot_critique`
+  without cloud fallback and whether the drafter stops proposing non-replayable
+  W8 deferrals. The boundary restart/API reload also deploys `ea47f672`'s
+  Regions Lock count split because `dashboard.html` is imported by the API
+  process. If provider trace still shows no-op or already-rejected proposals, add a
+  pre-dispatch shape/blacklist validator or a measured two-stage local provider
+  (`ingest_long_context` brief -> frontdoor/worker action). A dashboard reader
   for archived provider trace remains useful but non-blocking.
 - Focused validation passed across the touched slices: `49` planner/provider/launcher tests, `43` W6/readiness tests, `46` spend-breaker/economics tests, `233` action/dashboard tests, `49` structural/restore tests, `64` GEPA/prompt-root/API/eval propagation tests, `36` sequential/paired-diagnostics tests, `44` phase/restart/dashboard health tests, `138` rejected-draft/action/creativity tests, and `11` earlier GEPA integration tests, plus focused `py_compile`, `ruff`, and `git diff --check`.
 

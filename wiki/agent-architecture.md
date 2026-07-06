@@ -2,8 +2,8 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-07-05
-**Sources**: 63+ documents
+**Last compiled**: 2026-07-06
+**Sources**: 64+ documents
 
 ## Summary
 
@@ -16,6 +16,10 @@ The EPYC orchestrator's tiered pipeline sits between these topologies. It has st
 The key architectural tension is between the current pydantic_graph's flat 7-node structure and the need for composable subgraphs as the system grows. LangGraph's subgraph composition, checkpoint granularity with time-travel debugging, and `interrupt()` flexibility at any node represent genuine capability gaps. However, migration carries significant risk: 180+ state fields, 120+ tests, and deep domain-specific features (MemRL, think-harder ROI, budget enforcement, 5-layer context) have no LangGraph equivalents and would require porting. The recommended path is hybrid -- build new capabilities as LangGraph subgraphs alongside the existing pydantic_graph, migrating nodes incrementally.
 
 ## Key Findings
+
+### New Findings (2026-07-06 — Hermes boundary generalized to multi-client contract)
+
+- **Hermes is now framed as one client of a shared orchestrator contract, not a special routing path.** The active Hermes handoff now records the governing boundary: client-specific UX stays at the edge, while the orchestrator owns the stable OpenAI-compatible `/v1/chat/completions` plus `x_*` override surface. The July 2026 audit closed the non-Hermes client sufficiency pass: bare SDK/curl, Hermes, coding-agent proxies, IDE clients, and KB-RAG/retrieved-context clients can all express current needs through standard OpenAI fields plus `x_orchestrator_role`, `x_max_escalation`, `x_force_model`, `x_disable_repl`, and `x_show_routing`. Remaining live work is validation and packaging, not new orchestrator policy: test `x_disable_repl` end-to-end, verify `x_max_escalation` when full graph enforcement is available, and optionally repackage the skills as a namespaced Hermes plugin bundle. Sources: [hermes-outer-shell.md](../handoffs/active/hermes-outer-shell.md), [progress 2026-07-02](../progress/2026-07/2026-07-02.md), [progress 2026-07-04](../progress/2026-07/2026-07-04.md).
 
 ### New Findings (2026-07-05 — consult v1 wired default-off, BEP verifier gate, DCP J7 hold, MindDR parked at its A/B gate)
 
