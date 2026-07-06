@@ -256,9 +256,9 @@ Package these trust-boundary changes into a **single** proposal with a shared Vi
 - **[P5 · rank 13, critic-corrected] Hub backlog as a steering instrument** — bucket open tasks by priority; flag handoffs untouched >30/90d into a probably-dead lane feeding an operator archive-review queue (index changes stay operator-approved per CLAUDE.md); fix `pct_done` to an open-scope denominator. **Do not** compute a burn-down ETA over the bulk-import-corrupted velocity series without fencing imported-vs-organic tasks first.
   - [x] Backlog % interpretability: board payload + banner now carry `activity_today` (handoff commits / files touched / boxes checked / boxes added since local midnight) with an explicit "prose-only — % cannot move" warning; root cause of the operator's second stale-board report (10+ commits, 0 checkbox flips) — epyc-root `ea561387` ✅ 2026-07-05
   - [x] Checkbox-discipline governance so the % moves when work happens: checklist-sync gate in `/wrap-up` (Claude + Codex skill copies) + always-loaded CLAUDE.md rule binding autonomous checkpoint commits — epyc-root `ea561387` ✅ 2026-07-05
-  - [ ] Bucket open tasks by priority in the backlog banner
-  - [ ] Probably-dead lane: handoffs untouched >30/90d → operator archive-review queue
-  - [ ] Promote the open-scope denominator (`pct_open_done`, already computed) to the headline next to `pct_all_done`
+  - [x] Bucket open tasks by priority in the backlog banner: root dashboard payload now emits priority buckets and the banner renders them as open handoff/task/untracked counts. ✅ 2026-07-06
+  - [x] Probably-dead lane: handoffs untouched >30/90d or missing activity now surface as a sorted clickable archive-review candidate list in the backlog banner; index/archive changes remain operator-owned. ✅ 2026-07-06
+  - [x] Promote the open-scope denominator (`pct_open_done`) to the headline next to `pct_all_done`. ✅ 2026-07-06
 - **[P5] Kernel freshness badge on data recency** — classify on `max(runs[].ts)`, not export-file mtime.
 - **[P5] Steering affordances** — close the "zero POST" gap: guarded operator actions (or, minimally, copy-exact SIGTERM/pause command chips) so pause/rewind/quarantine leave shell tribal knowledge.
 - **[P5] Governance/attention tax** — 132 handoffs / 488 open tasks and a 224-line master index restating runtime state in ~6 places (near-daily alignment commits) are themselves a bottleneck; the outcome-KPI header + archive-review lane are the levers.

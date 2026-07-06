@@ -519,6 +519,7 @@ def _backlog_summary(columns: dict[str, list[dict]]) -> dict:
         for p in _PRIORITY_BUCKET_ORDER
     }
     dead_lane_30 = dead_lane_90 = dead_lane_unknown = 0
+    dead_lane_candidates: list[dict] = []
 
     for s in OPEN:
         for c in columns[s]:
@@ -545,13 +546,27 @@ def _backlog_summary(columns: dict[str, list[dict]]) -> dict:
                 bucket["open_untracked_handoffs"] += 1
 
             age = _age_days(c.get("activity"), now=now)
+            lane = None
             if age is None:
                 dead_lane_unknown += 1
+                lane = "unknown_activity"
             elif age > _DEAD_LANE_90_D:
                 dead_lane_90 += 1
                 dead_lane_30 += 1
+                lane = "over_90"
             elif age > _DEAD_LANE_30_D:
                 dead_lane_30 += 1
+                lane = "over_30"
+            if lane:
+                dead_lane_candidates.append({
+                    "id": c.get("id"),
+                    "title": c.get("title"),
+                    "priority": pri,
+                    "activity": c.get("activity"),
+                    "activity_source": c.get("activity_source"),
+                    "age_days": age,
+                    "lane": lane,
+                })
 
     all_done = all_total = 0
     for cards in columns.values():
@@ -565,6 +580,15 @@ def _backlog_summary(columns: dict[str, list[dict]]) -> dict:
         for p in _PRIORITY_BUCKET_ORDER
         if bucket_map[p]["open_handoffs"] or bucket_map[p]["open_untracked_handoffs"]
     ]
+
+    dead_lane_candidates.sort(
+        key=lambda c: (
+            _PRIORITY_ORDER.get(c.get("priority", "NONE"), 4),
+            c.get("age_days") is None,
+            -(c.get("age_days") or 0),
+            str(c.get("title") or "").lower(),
+        )
+    )
 
     # Outstanding handoffs with no checklist can't be measured in tasks — surface
     # the count so the number isn't silently read as "0 work left".
@@ -586,6 +610,7 @@ def _backlog_summary(columns: dict[str, list[dict]]) -> dict:
             "over_30": dead_lane_30,
             "over_90": dead_lane_90,
             "unknown_activity": dead_lane_unknown,
+            "candidates": dead_lane_candidates[:12],
         },
     }
 

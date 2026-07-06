@@ -77,6 +77,10 @@
   .bk-priority .item .pri{color:var(--text);font-weight:600}
   .bk-priority .item .meta{color:var(--muted)}
   .bk-stall{font-size:11px;color:var(--muted);margin-bottom:8px}
+  .dead-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .dead-item{border:1px solid var(--border);background:var(--panel2);color:var(--muted);border-radius:6px;
+    padding:4px 7px;font:inherit;font-size:11px;cursor:pointer;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dead-item:hover{border-color:var(--accent);color:var(--text)}
 
   /* kanban */
   .kanban{display:grid;grid-template-columns:repeat(4,minmax(240px,1fr));gap:14px;align-items:start}
@@ -356,6 +360,7 @@ function renderBacklog(bk, act){
     const over30 = (bk.dead_lane&&bk.dead_lane.over_30) || 0;
     const over90 = (bk.dead_lane&&bk.dead_lane.over_90) || 0;
     const unknown = (bk.dead_lane&&bk.dead_lane.unknown_activity) || 0;
+    const candidates = (bk.dead_lane&&Array.isArray(bk.dead_lane.candidates)) ? bk.dead_lane.candidates : [];
     const total = bk.open_handoffs || 0;
     if(total > 0){
       const parts = [];
@@ -369,6 +374,18 @@ function renderBacklog(bk, act){
         stallWrap.textContent = `dead-lane: ${unknown} missing activity date`;
       }else{
         stallWrap.textContent = "dead-lane: 0";
+      }
+      if(candidates.length){
+        const list = el("div","dead-list");
+        for(const c of candidates){
+          const age = c.age_days==null ? "no date" : `${c.age_days}d`;
+          const pri = c.priority && c.priority!=="NONE" ? `${c.priority} · ` : "";
+          const item = el("button","dead-item",`${pri}${age} · ${c.title || c.id}`);
+          item.type = "button";
+          item.addEventListener("click", ()=>openModal(c.id, c.title || c.id));
+          list.appendChild(item);
+        }
+        stallWrap.appendChild(list);
       }
     } else {
       stallWrap.textContent = "";
