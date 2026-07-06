@@ -147,6 +147,15 @@ Action landed:
   --check` clean. The live API was reloaded as PID `3638698`; live advice for
   AutoPilot PID `3525618`/trial `1207` correctly says `wait_for_boundary`
   because the stale daemon is in active `seed_batch` dispatch. ✅ 2026-07-06
+- [x] **Local-role planner failover**: `epyc-orchestrator` `bf9bece7`
+  preserves the Codex-alias cross-model protection but stops sending
+  `local_frontdoor` draft fallback to Claude when a distinct local role
+  (`local_worker`) is already configured as the critic. Fallback drafts from a
+  distinct local role can now be independently reviewed by the original local
+  primary, so routine local-local operation remains local even when the spend
+  breaker is inactive. Focused planner/provider tests passed (`65 passed`),
+  launcher/advisor tests passed (`13 passed`), and focused `py_compile`,
+  `ruff`, and `git diff --check` were clean. ✅ 2026-07-06
 - Focused validation passed across the touched slices: `49` planner/provider/launcher tests, `43` W6/readiness tests, `46` spend-breaker/economics tests, `233` action/dashboard tests, `49` structural/restore tests, `64` GEPA/prompt-root/API/eval propagation tests, `36` sequential/paired-diagnostics tests, `44` phase/restart/dashboard health tests, `138` rejected-draft/action/creativity tests, and `11` earlier GEPA integration tests, plus focused `py_compile`, `ruff`, and `git diff --check`.
 
 Next measured extension:

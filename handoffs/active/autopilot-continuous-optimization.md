@@ -5,10 +5,13 @@ BSV observe is process-aware, T3 is planner-visible workflow pressure,
 StrategyStore search health is exact, tool-use activation is ready, numeric
 candidate generation has been unblocked, and W8 needs a keepable replayable
 candidate before promotion evidence can accrue.** AutoPilot is live as PID
-`3267768` with `--max-trials 3000`; latest observed checkpoint is trial `1196`
-in `planner_invoke` on orchestrator `a13a2948` after trial `1194`
-completed/reverted and trial `1195` invalid-skipped. The routine planner path is
-`local_ingest` draft -> `local_frontdoor` critique with `claude` fallback.
+`3525618` with `--max-trials 3000`; latest observed checkpoint is trial `1207`
+in `seed_batch` dispatch, and the restart advisor correctly reports
+`wait_for_boundary` because the daemon is code-stale in active work. The routine
+planner path for the next restart target is `local_frontdoor` draft ->
+`local_worker` critique with `claude` fallback; `bf9bece7` also keeps fallback
+draft/review traffic on distinct local role providers when the spend breaker is
+inactive, instead of crossing to Claude unnecessarily.
 Startup verified StrategyStore search health exact (`1,420` SQLite/FAISS/FTS
 rows, `100.0%` coverage). Tool-use activation is not the blocker;
 `8be68732` fixes the REPL-pinned sentinel prompt contract so the lane asks for
@@ -65,7 +68,7 @@ per-question diff/provenance context (`749d38f`).
 > trailing-window alarm, assuming no new gaming events occur.
 
 **Created**: 2026-03-08
-**Updated**: 2026-07-05 (current live AutoPilot PID `3267768` is on orchestrator `a13a2948` with `--max-trials 3000`, local-ingest drafting, local-frontdoor critique, Claude critic fallback, planner hints, tool sentinels, sequential verdicts, and W6 audit accrual. Trial `1194` verified the replayable `chat_pipeline` numeric canary path but reverted on `tool_use`; trial `1195` invalid-skipped already-blacklisted `graph_router=true`; trial `1196` is now in planner invocation and should generate the next keepable W8 candidate.)
+**Updated**: 2026-07-06 (current live AutoPilot PID `3525618` is on trial `1207` with `--max-trials 3000`, planner hints, tool sentinels, sequential verdicts, and W6 audit accrual active, but the process is code-stale after planner/dashboard fixes. Restart at the next advisor-safe boundary onto orchestrator `bf9bece7`: local-frontdoor drafting, local-worker critique, Claude fallback, W8-filtered action pressure, dashboard restart advice, and local-role failover are all ready together.)
 **Location**: `epyc-orchestrator/scripts/autopilot/`
 
 > **Fable 5 review (2026-06-12)**: the review's architecture recommendations now have owning handoffs: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (LIVE t775 baseline-ratchet hotfix + dead-question repair), [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md) (per-question ledger + e-process verdicts; owns the next restart bundle), [evidence-plane-event-sourcing-and-narrative.md](evidence-plane-event-sourcing-and-narrative.md), and [objective-task-rate-goodput.md](objective-task-rate-goodput.md) (task_rate replaces the t/s axis). Full diagnosis: fable5-findings-01 + -05.
