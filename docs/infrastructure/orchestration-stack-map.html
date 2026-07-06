@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="EPYC orchestration stack + autopilot control loop — one-page flow map. Living document; edit and re-open in any browser.">
+<!--
+  EPYC ORCHESTRATION STACK — flow map (living document)
+  ------------------------------------------------------
+  Home:    epyc-root/docs/infrastructure/orchestration-stack-map.html
+  Open:    just open this file in a browser (fully self-contained, no build step).
+  Edit:    all content is inline HTML below; palette/type are CSS custom props in <style>.
+  Update:  bump the data-updated date in the <h1> sub line when the topology changes.
+  Source of truth for the numbers: epyc-orchestrator/orchestration/model_registry.yaml
+           (compiled from epyc-inference-research master) + scripts/server/stack_manifest.py
+           + scripts/autopilot/autopilot.py. Re-verify ports/tok-s against those before editing.
+-->
+<title>EPYC Orchestration Stack — flow map</title>
+<style>
+  :root{
+    --bg:#0a0c10; --band:#0f131a; --box:#151a23; --box2:#12161e;
+    --line:#232a37; --line2:#1a202b;
+    --ink:#cdd4e0; --dim:#7a8598; --faint:#525d6e;
+    --blue:#4a9eff; --green:#34d399; --amber:#f5b942; --violet:#a78bfa; --red:#f0736f; --steel:#9aa7bd;
+    --blue-bg:#0e1b2c; --green-bg:#0c2019; --amber-bg:#241d0c; --violet-bg:#191428; --red-bg:#26100f;
+    --mono:'SFMono-Regular',ui-monospace,'JetBrains Mono','Menlo',monospace;
+    --sans:'Inter','Helvetica Neue',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased}
+  .page{max-width:1280px;margin:0 auto;padding:34px 30px 60px}
+  h1{font-size:30px;font-weight:700;letter-spacing:-.02em;margin:0 0 4px;color:#eef2f8}
+  .sub{color:var(--dim);font-size:13px;font-family:var(--mono);letter-spacing:.01em;margin-bottom:26px}
+  .sub b{color:var(--steel);font-weight:600}
+
+  .band{border:1px solid var(--line);border-radius:12px;padding:16px 16px 18px;margin-bottom:14px;
+    background:linear-gradient(180deg,rgba(255,255,255,.012),transparent)}
+  .band-h{display:flex;align-items:baseline;gap:12px;margin:0 2px 13px}
+  .band-h .t{font-size:15px;font-weight:700;letter-spacing:.02em}
+  .band-h .meta{font-family:var(--mono);font-size:11.5px;color:var(--faint)}
+  .grid{display:grid;gap:11px}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .span2{grid-column:span 2}
+
+  .box{background:var(--box);border:1px solid var(--line);border-radius:8px;padding:11px 12px 12px;
+    position:relative;overflow:hidden}
+  .box::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--steel)}
+  .box.blue::before{background:var(--blue)} .box.green::before{background:var(--green)}
+  .box.amber::before{background:var(--amber)} .box.violet::before{background:var(--violet)}
+  .box.red::before{background:var(--red)}
+  .box .nm{font-weight:700;font-size:13px;letter-spacing:-.01em;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+  .box .port{font-family:var(--mono);font-size:11.5px;font-weight:600;color:var(--dim);white-space:nowrap}
+  .box.blue .port{color:var(--blue)} .box.green .port{color:var(--green)}
+  .box.amber .port{color:var(--amber)} .box.violet .port{color:var(--violet)} .box.red .port{color:var(--red)}
+  .box .ln{font-family:var(--mono);font-size:11px;line-height:1.62;color:var(--dim);margin-top:6px}
+  .box .ln .k{color:var(--steel)}
+  .tag{display:inline-block;font-family:var(--mono);font-size:9.5px;letter-spacing:.04em;text-transform:uppercase;
+    padding:1px 5px;border-radius:4px;border:1px solid var(--line);color:var(--faint);margin-top:8px}
+  .tag.mtp{color:var(--blue);border-color:#25405e}
+  .tag.nospec{color:var(--faint)}
+  .tag.dep{color:var(--red);border-color:#4a1e1c}
+
+  .flow{display:flex;align-items:center;justify-content:center;gap:10px;margin:1px 0 6px;height:20px}
+  .flow .arw{color:var(--faint);font-size:13px}
+  .flow .lab{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.03em}
+
+  .quarters{font-family:var(--mono);font-size:10px;color:var(--faint);margin-top:7px;
+    border-top:1px dashed var(--line2);padding-top:6px}
+  .quarters b{color:var(--steel);font-weight:600}
+
+  .loopstrip{display:flex;flex-wrap:wrap;gap:7px;margin:2px 2px 13px;font-family:var(--mono);font-size:11px}
+  .loopstrip .st{background:var(--amber-bg);border:1px solid #4a3c14;color:var(--amber);
+    padding:3px 9px;border-radius:20px;font-weight:600}
+  .loopstrip .a{color:var(--faint);align-self:center}
+
+  .legend{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-top:16px;background:var(--band)}
+  .legcols{display:grid;grid-template-columns:1.1fr 1fr;gap:26px}
+  .legend h3{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--steel);margin:0 0 9px}
+  .lc{font-family:var(--mono);font-size:11.5px;line-height:1.85;color:var(--dim)}
+  .lc .n{display:inline-block;width:16px;color:var(--faint)}
+  .lc b{color:var(--ink);font-weight:600}
+  .swatches{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);
+    font-family:var(--mono);font-size:11px;color:var(--dim)}
+  .sw{display:flex;align-items:center;gap:6px}
+  .sw i{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+  .foot{margin-top:20px;font-family:var(--mono);font-size:10.5px;color:var(--faint);line-height:1.7}
+  @media(max-width:900px){.g4,.g3,.g2{grid-template-columns:1fr 1fr}.legcols{grid-template-columns:1fr}}
+</style>
+
+<div class="page">
+  <h1>EPYC orchestration stack &mdash; system flow map</h1>
+  <div class="sub">single host &middot; <b>EPYC 9655</b> / 1.1&nbsp;TB RAM / NUMA-partitioned CPU inference &middot; llama.cpp <b>production-consolidated-v6</b> (native MTP + iqk AVX-512) &middot; as of 2026-07-06 &middot; ports live</div>
+
+  <!-- ENTRY & ROUTING -->
+  <div class="band">
+    <div class="band-h"><span class="t" style="color:var(--violet)">ENTRY &amp; ROUTING PLANE</span><span class="meta">orchestrator API &middot; role router &middot; MCP</span></div>
+    <div class="grid g3">
+      <div class="box violet">
+        <div class="nm">orchestrator API <span class="port">:8000</span></div>
+        <div class="ln">uvicorn app &middot; <span class="k">/config</span> hot-swap &middot; <span class="k">/dashboard</span><br>compiles lean registry from master on start<br>writes 1 episode / turn &rarr; repl_memory</div>
+      </div>
+      <div class="box violet">
+        <div class="nm">role router</div>
+        <div class="ln"><span class="k">task_type &rarr; role</span> (routing_hints)<br>escalation: coder = frontdoor&rarr;coder_esc<br>general = worker&rarr;frontdoor&rarr;architect</div>
+      </div>
+      <div class="box violet">
+        <div class="nm">MCP server</div>
+        <div class="ln">orchestrator_chat &middot; server_status<br>query_benchmarks &middot; route_explain<br>wired via <span class="k">.mcp.json</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow"><span class="lab">role &rarr; port dispatch</span><span class="arw">&darr;</span></div>
+
+  <!-- SERVING -->
+  <div class="band">
+    <div class="band-h"><span class="t" style="color:var(--blue)">SERVING PLANE</span><span class="meta">llama-server &times; role &middot; NUMA-quarter replicas &middot; front door :8070</span></div>
+    <div class="grid g3">
+      <div class="box blue span2">
+        <div class="nm">frontdoor &nbsp;<span style="color:var(--faint);font-weight:500">+ coder_escalation &middot; worker_summarize (shared mmap)</span><span class="port">:8070</span></div>
+        <div class="ln">Qwen3.6-35B-A3B <span class="k">Q8_0</span> 37GB &middot; 2 slots &middot; self-draft <span class="k">MTP</span> draft_max=4<br>24.3 t/s single &middot; 57.4 quad-agg &middot; 76.8 eight-agg &middot; corpus_retrieval on</div>
+        <div class="quarters"><b>NUMA quarters</b> &rarr; :8080 / :8180 / :8280 / :8380 &nbsp;(4&times;48t)&nbsp; + warm eval lane :18070</div>
+        <span class="tag mtp">draft-mtp</span>
+      </div>
+      <div class="box blue">
+        <div class="nm">architect_general <span class="port">:8083</span></div>
+        <div class="ln">Qwen3.5-122B-A10B <span class="k">Q4_K_M</span> 69GB<br>2 slots &middot; self-draft MTP draft_max=4<br>12.2 t/s &middot; 1&times;96t (NUMA_FULL)</div>
+        <span class="tag mtp">draft-mtp</span> <span class="tag dep">ik_llama retired 06-26</span>
+      </div>
+      <div class="box blue span2">
+        <div class="nm">worker_general &nbsp;<span style="color:var(--faint);font-weight:500">+ worker_math &middot; toolrunner (share 8072)</span><span class="port">:8072</span></div>
+        <div class="ln">gemma-4-26B-A4B <span class="k">Q4_K_M</span> 16GB &middot; draft-mtp k=2 &middot; 44.7&rarr;60.7 t/s<br><span class="k">math</span> Qwen2.5-Math-7B (spec-dec 3.9&times;) &middot; <span class="k">tools</span> Qwen3-Coder-30B 43.4 t/s</div>
+        <div class="quarters"><b>NUMA quarters</b> &rarr; :8082 / :8182 / :8282 / :8382 &nbsp;(4&times;48t, max 4 inst)</div>
+        <span class="tag mtp">draft-mtp</span>
+      </div>
+      <div class="box blue">
+        <div class="nm">ingest_long_ctx <span class="port">:8085</span></div>
+        <div class="ln">Qwen3-Next-80B <span class="k">Q4_K_M</span> hybrid SSM+MoE<br>experts=4 &middot; 14&ndash;21 t/s @12K ctx</div>
+        <span class="tag nospec">no spec &middot; SSM</span>
+      </div>
+      <div class="box blue">
+        <div class="nm">worker_vision <span class="port">:8086</span></div>
+        <div class="ln">Qwen2.5-VL-7B + mmproj<br>only VL lane with tool calls &middot; 20 t/s</div>
+        <span class="tag nospec">baseline</span>
+      </div>
+      <div class="box blue">
+        <div class="nm">vision_escalation <span class="port">:8087</span></div>
+        <div class="ln">Qwen3-VL-30B-A3B + mmproj<br>experts=4 &middot; 27.6 t/s</div>
+        <span class="tag nospec">baseline</span>
+      </div>
+      <div class="box" style="--steel:#6b7686">
+        <div class="nm" style="color:var(--dim)">NUMA operating-point law</div>
+        <div class="ln">&le;65GB &rarr; 4&times;48t quarters = <span class="k">6&ndash;7&times;</span> agg<br>130&ndash;250GB &rarr; 1&times;96t node-pin = 1.2&ndash;1.5&times;<br>192t is anti-optimal</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow"><span class="lab">kg_search / episodic seeds / embed+rerank</span><span class="arw">&darr;&uarr;</span></div>
+
+  <!-- KNOWLEDGE -->
+  <div class="band">
+    <div class="band-h"><span class="t" style="color:var(--green)">KNOWLEDGE &amp; MEMORY PLANE</span><span class="meta">episodic store &middot; embedding pool &middot; retrieval</span></div>
+    <div class="grid g4">
+      <div class="box green">
+        <div class="nm">repl_memory</div>
+        <div class="ln">episodic store &middot; 1 episode / turn<br>FAISS vectors + <span class="k">Kuzu</span> graph DB</div>
+      </div>
+      <div class="box green">
+        <div class="nm">embedding pool <span class="port">:8090&ndash;95</span></div>
+        <div class="ln">BGE-large-en-v1.5 &times;6<br>+ BGE-M3 :8098 &middot; rerank stage</div>
+      </div>
+      <div class="box green">
+        <div class="nm">searxng <span class="port">:8888</span></div>
+        <div class="ln">self-hosted meta-search<br>structured JSON &middot; docker svc</div>
+      </div>
+      <div class="box green">
+        <div class="nm">aux serving</div>
+        <div class="ln">OCR :9001 &middot; whisper STT :9000<br>ERNIE-image :8190</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow"><span class="lab">drives :8000 over HTTP &nbsp;&middot;&nbsp; observe &rarr; act &rarr; evaluate &rarr; record</span><span class="arw">&uarr;&darr;</span></div>
+
+  <!-- AUTOPILOT -->
+  <div class="band" style="border-color:#3a3113">
+    <div class="band-h"><span class="t" style="color:var(--amber)">AUTOPILOT CONTROL PLANE</span><span class="meta">autopilot.py &middot; separate controller process (not a listener) &middot; drives orchestrator :8000</span></div>
+    <div class="loopstrip">
+      <span class="st">observe</span><span class="a">&rarr;</span><span class="st">reason</span><span class="a">&rarr;</span><span class="st">act</span><span class="a">&rarr;</span><span class="st">evaluate</span><span class="a">&rarr;</span><span class="st">record</span><span class="a">&rarr;</span><span class="st">meta-learn</span><span class="a" style="margin-left:6px">&#8630; loop</span>
+    </div>
+    <div class="grid g4">
+      <div class="box amber">
+        <div class="nm">config applicator</div>
+        <div class="ln">3 tiers &middot; least-cost first:<br><span class="k">1</span> hot-swap POST /config (flags)<br><span class="k">2</span> env-param + uvicorn reload<br><span class="k">3</span> full restart via stack.py</div>
+      </div>
+      <div class="box amber">
+        <div class="nm">workload model</div>
+        <div class="ln">classes: interactive /<br>eval_batch / campaign<br>&rarr; <span class="k">QuarterScheduler</span> + contention gate<br>assembles stack by workload</div>
+      </div>
+      <div class="box amber">
+        <div class="nm">strategy store <span class="port">files</span></div>
+        <div class="ln">autopilot_state.json (+pareto)<br>journal shards <span class="k">_{batch}.jsonl</span><br>baseline.yaml &middot; failure_blacklist<br>checkpoints/&lt;ts&gt;/</div>
+      </div>
+      <div class="box amber">
+        <div class="nm">evidence core</div>
+        <div class="ln">sequential_verdict <span class="k">e-process</span><br>pareto replayed from journal<br>learning_exclusions (refuted&rarr;out)<br>instrument_era_guard</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow"><span class="lab">trial gate P-QUAL-T1 &nbsp;&middot;&nbsp; promotion P-QUAL-PROMO</span><span class="arw">&darr;</span></div>
+
+  <!-- EVAL & GOVERNANCE -->
+  <div class="band" style="border-color:#3a1917">
+    <div class="band-h"><span class="t" style="color:var(--red)">EVALUATION &amp; GOVERNANCE PLANE</span><span class="meta">read-only to autopilot &middot; gates every keep / revert / promote</span></div>
+    <div class="grid g3">
+      <div class="box red">
+        <div class="nm">eval tower</div>
+        <div class="ln">tiered <span class="k">T0</span> 10q/30s &rarr; T1 100q/5m<br>&rarr; T2 500q/30m &rarr; T3 expert<br>calls orchestrator API, scores</div>
+      </div>
+      <div class="box red">
+        <div class="nm">MEASUREMENT.md</div>
+        <div class="ln">protocol registry &middot; <span class="k">human-only</span><br>P-BENCH-1/2/3 &middot; P-QUAL-T1 / PROMO<br>claim = (metric, protocol, n, date, attest)</div>
+      </div>
+      <div class="box red">
+        <div class="nm">handoff dashboard <span class="port">:8100</span></div>
+        <div class="ln">epyc-root hub &middot; read-only kanban<br>links out to orchestrator /dashboard<br>autopilot may READ, never edit</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legcols">
+      <div>
+        <h3>Request lifecycle</h3>
+        <div class="lc">
+          <span class="n">1</span><b>chat</b> &rarr; orchestrator :8000 &rarr; role router &rarr; front door :8070 (+episode)<br>
+          <span class="n">2</span><b>route</b> task_type &rarr; role &rarr; port; escalate on low confidence<br>
+          <span class="n">3</span><b>serve</b> full 96t for solo turn, quarter 48t under burst<br>
+          <span class="n">4</span><b>knowledge</b> kg_search + embed/rerank &rarr; answer, write 1 episode<br>
+        </div>
+      </div>
+      <div>
+        <h3>Autopilot learning loop</h3>
+        <div class="lc">
+          <span class="n">A</span><b>observe</b> telemetry + journal shards + baseline ledger<br>
+          <span class="n">B</span><b>act</b> config applicator, least-cost tier that fits the change<br>
+          <span class="n">C</span><b>evaluate</b> eval tower T0&rarr;T3, gated by MEASUREMENT protocols<br>
+          <span class="n">D</span><b>record</b> journal &rarr; pareto frontier; refuted &rarr; learning_exclusions<br>
+        </div>
+      </div>
+    </div>
+    <div class="swatches">
+      <span class="sw"><i style="background:var(--violet)"></i>routing / orchestrator API</span>
+      <span class="sw"><i style="background:var(--blue)"></i>serving &middot; llama-server + MTP</span>
+      <span class="sw"><i style="background:var(--green)"></i>knowledge &middot; memory &middot; embed</span>
+      <span class="sw"><i style="background:var(--amber)"></i>autopilot control</span>
+      <span class="sw"><i style="background:var(--red)"></i>evaluation &middot; governance gate</span>
+    </div>
+  </div>
+
+  <div class="foot">
+    Single kernel: <b style="color:var(--steel)">production-consolidated-v6</b> (upstream llama.cpp + native MTP/NEXTN spec-dec + forward-ported CPU kernels + ik_llama iqk AVX-512 GEMM, GGML_IQK=1). ik_llama.cpp binary deprecated 2026-06-26 &mdash; one binary, no second kernel.
+    Autopilot strategy store is file-based (JSON/JSONL/YAML) &mdash; distinct from the orchestrator's repl_memory (FAISS+Kuzu) episodic store. Every decision-gating number carries a protocol id; the autopilot reads the measurement layer but can never amend it.
+  </div>
+  <div class="foot" style="margin-top:8px;color:#3f4756">
+    Living document &middot; <span style="color:var(--faint)">epyc-root/docs/infrastructure/orchestration-stack-map.html</span> &middot; self-contained, no build step &middot; edit the inline HTML and re-open in any browser.
+  </div>
+</div>
+</body>
+</html>
