@@ -152,6 +152,7 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 - [x] Add a sidecar-aware `opendataloader_hybrid` backend to `scripts/benchmark/pdf_fastpath_probe.py` so hybrid preflights report missing SDK/sidecar dependencies explicitly instead of silently skipping or forcing live infra ✅ 2026-07-06
 - [x] Stamp the effective ODL backend in router results (`opendataloader_structured` vs `opendataloader_hybrid`) and add an opt-in probe guard that fails no-structural-signal corpora before they are used as table-routing evidence ✅ 2026-07-06
 - [x] Run local OpenDataLoader benchmark demo smoke without inference or persistent artifacts: `/mnt/raid0/llm/opendataloader-bench/pdf_validation.py` completed 18 demo pages from a temp cwd using the benchmark venv; output was temp-local only. ✅ 2026-07-06
+- [x] Add a repeatable structural/table-heavy candidate manifest builder for quiet-window probe batches. ✅ 2026-07-06
 - [ ] Install the hybrid extra on the target host (`pip install -U "opendataloader-pdf[hybrid]"`), start `opendataloader-pdf-hybrid --port 5002`, and confirm `GET /health` before claiming live sidecar evidence.
 - [ ] Experiment: swap hybrid backend from docling-fast → LightOnOCR-2-1B (port 8082)
 - [ ] Measure: does GPU-accelerated LightOnOCR beat docling-fast's 0.43s/page?
@@ -270,6 +271,43 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
   install of `opendataloader-pdf[hybrid]`, start
   `opendataloader-pdf-hybrid --port 5002`, then confirm
   `GET /health` before claiming hybrid-sidecar evidence.
+
+**2026-07-06 structural/table-heavy manifest-builder checkpoint (`epyc-orchestrator`)**
+
+- Added `scripts/benchmark/build_pdf_probe_manifest.py`, a no-inference
+  preflight that scans local PDFs, samples the first pages with `pdftotext`
+  when available, ranks candidates by table-like line density, path hints,
+  page count, and size, and writes a `pdf_probe_manifest.v1` JSON object that
+  `pdf_fastpath_probe.py --manifest` can consume directly.
+- The intended quiet-window batch shape is now explicit:
+
+  ```bash
+  uv run python scripts/benchmark/build_pdf_probe_manifest.py \
+    --root /mnt/raid0/llm/cloud-llm-vault/epyc/claude \
+    --root /mnt/raid0/llm/models/hy-mt2-1.8b/base-metadata \
+    --output orchestration/reports/pdf_structural_candidates_$(date -u +%Y%m%dT%H%M%SZ).json \
+    --limit 40 --max-files 400 --sample-pages 3 --min-table-like-lines 1
+
+  uv run --with opendataloader-pdf --with liteparse \
+    python scripts/benchmark/pdf_fastpath_probe.py \
+    --manifest orchestration/reports/<manifest>.json \
+    --backend pdftotext --backend opendataloader_structured --backend liteparse \
+    --corpus-name structural-table-heavy-candidates \
+    --corpus-kind structural_table_heavy \
+    --require-structural-signal \
+    --output-json orchestration/reports/<run>/summary.json \
+    --output-md orchestration/reports/<run>/summary.md
+  ```
+
+- Hybrid evidence remains a separate quiet-window step after the sidecar is
+  installed and health-checked; add `--backend opendataloader_hybrid` only when
+  `opendataloader-pdf-hybrid --port 5002` is live.
+- Smoke validation used roots under `/mnt/raid0/llm/epyc-root/tmp` and
+  `/mnt/raid0/llm/models/hy-mt2-1.8b/base-metadata`, selected `3/3` candidates,
+  and successfully fed the manifest into `pdf_fastpath_probe.py` with
+  `--backend pdftotext --require-structural-signal`. This is corpus-prep
+  evidence only; no router policy changes follow until ODL/LiteParse/hybrid
+  results on the manifest exist.
 
 **2026-06-28 benchmark adapter local-PDF checkpoint (`epyc-inference-research` `5d14d3d`, `5ab748d`)**
 
