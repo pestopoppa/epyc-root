@@ -309,6 +309,25 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
   evidence only; no router policy changes follow until ODL/LiteParse/hybrid
   results on the manifest exist.
 
+**2026-07-06 manifest/probe checkpoint (`epyc-orchestrator`)**
+
+- Built the repeatable quiet-window manifest
+  `orchestration/reports/pdf_structural_candidates_20260706T145900Z.json`
+  from the configured `epyc/claude` and `hy-mt2-1.8b/base-metadata` roots.
+  The manifest selected `27/27` PDFs, all of which carried structural signal
+  under the cheap preflight.
+- Ran the structural/table-heavy probe on that manifest with
+  `pdftotext`, `opendataloader_structured`, and `liteparse`, producing
+  `orchestration/reports/pdf_fastpath_probe_structural_20260706T145900Z.{json,md}`.
+  Results: `27` PDFs, `81` successful backend attempts, structural signal on
+  `27/27` PDFs, `table_like_lines=19725`, pdftotext median latency/quality
+  `121.591 ms / 0.928`, ODL structured `2877.039 ms / 1.000`, LiteParse
+  `91.897 ms / 0.959`.
+- Interpretation: the manifest is rich enough to support the next evidence
+  step, but the local structured path is still much slower than the text
+  fast paths. Hybrid-sidecar evidence remains absent, so routing policy stays
+  default-inert.
+
 **2026-06-28 benchmark adapter local-PDF checkpoint (`epyc-inference-research` `5d14d3d`, `5ab748d`)**
 
 - `document_extraction_adapter.py` now matches the current local OpenDataLoader-bench layout: source PDFs under `pdfs/` and Markdown ground truth under `ground-truth/`.
