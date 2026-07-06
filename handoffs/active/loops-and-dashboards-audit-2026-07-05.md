@@ -58,18 +58,27 @@ Action landed:
   role from topology/port metadata before painting the region grid, so
   concurrent streaming taps are not hidden just because one tap is labeled
   `coder_escalation` while the lock grid is keyed by `frontdoor`. ✅ 2026-07-05
+- [x] `epyc-orchestrator` `a151d319` hardens local planner JSON extraction after
+  the first fully local canary turn emitted a valid fenced action followed by an
+  extra closing brace. Action and critique parsing now recover only the narrow
+  case of a valid leading JSON object with trivial trailing bracket noise, then
+  still run normal schema/critic validation. This fixes the observed
+  `local_ingest` parse discard without accepting arbitrary prose as data.
+  Focused controller/coordinator tests passed (`78 passed`). ✅ 2026-07-06
 - [ ] **Local-planner hardening tail**: the local-only path stayed on
   `local_ingest` / `local_frontdoor` after the restart, with no cloud provider
-  observed in the inspected window. The remaining failure mode is shape churn:
-  no-op `plan_review=false`, a two-param numeric draft rejected for attribution,
-  and already-blacklisted `graph_router=true`. Next code target is a
+  observed in the inspected window. The remaining failure modes are shape churn
+  and observability: no-op `plan_review=false`, a two-param numeric draft
+  rejected for attribution, already-blacklisted `graph_router=true`, and local
+  critic prose that still needs degraded-mode accounting. Next code target is a
   pre-dispatch shape/blacklist validator plus explicit provider telemetry
   (`draft ok`, `draft invalid`, `critique ok`, final accepted JSON) so overnight
   local operation is auditable without reconstructing mixed log lines.
 - Focused validation passed across the touched slices: `49` planner/provider/launcher tests, `43` W6/readiness tests, `46` spend-breaker/economics tests, `233` action/dashboard tests, `49` structural/restore tests, `64` GEPA/prompt-root/API/eval propagation tests, `36` sequential/paired-diagnostics tests, `44` phase/restart/dashboard health tests, `138` rejected-draft/action/creativity tests, and `11` earlier GEPA integration tests, plus focused `py_compile`, `ruff`, and `git diff --check`.
 
 Next measured extension:
-- Let PID `3267768` continue from trial `1196`; trial `1194` proved the
+- Let the current daemon continue until the next restart-safe boundary, then
+  restart onto `a151d319`; trial `1194` proved the
   candidate-generation path but was not keepable, and trial `1195` was an
   invalid skip. If the local drafter keeps
   producing no-op/invalid drafts that need critic salvage, repair the drafter
