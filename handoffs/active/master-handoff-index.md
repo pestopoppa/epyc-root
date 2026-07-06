@@ -10,32 +10,25 @@
 
 **Standing contracts**: `/workspace/MEASUREMENT.md` (adopted) · `instrument_eras.yaml` (epyc-orchestrator orchestration/) · ATTESTATION (to build, findings-04 §B) · current architecture review: [fable5-findings-00-executive-summary.md](../completed/fable5-findings-00-executive-summary.md) — **the Fable 5 one-shot review is COMPLETE (2026-06-12)**; its 7 findings (-01..-07) + appendix are the standing reference, not an open row. The stale 2026-06-15 transient pickup was archived to [`../archived/fable5-long-horizon-session-pickup-history-through-2026-06-20.md`](../archived/fable5-long-horizon-session-pickup-history-through-2026-06-20.md); resume from the domain indices and owning handoffs below.
 
-**Current coordination checkpoint - 2026-07-06T02:44Z**: AutoPilot is live as
-PID `3499578` with `--max-trials 3000`, launched through the canonical Fable
-authority daemon. The live daemon is healthy on trial `1204` but intentionally
-code-stale: it started on orchestrator `8f3ce0b5`, while orchestrator
-`04a76fd1` has since landed and been GitNexus-indexed. Let trial `1204` finish
-unless phase health fails, then restart at the boundary so the stricter
-availability-filtered action menu is active. The previous PID `3470012` and
-older `3267768` references below are historical unless explicitly dated after
-this checkpoint.
+**Current coordination checkpoint - 2026-07-06T03:05Z**: AutoPilot is live as
+PID `3525618` with `--max-trials 3000`, launched through the canonical Fable
+authority daemon. Runtime phase health is active/current-code-clean for the
+AutoPilot source set, and trial `1206` is a forced sequential
+baseline-reference `seed_batch` after the stale trial `1205` marker was
+recovered as `autopilot_killed`. Because `1206` bypasses planner selection, the
+`04a76fd1` filtered action-menu fix still needs the next ordinary planner turn
+to prove that unavailable W8 schemas are absent from local-frontdoor drafts.
+Older PID references below are historical unless explicitly dated after this
+checkpoint.
 
-Trial `1204` is another replayable `memrl_retrieval` `numeric_trial`.
-NumericSwarm materialized concrete Optuna params (`q_weight=0.7181961430706204`,
-`min_similarity=0.1462310027765775`, `min_q_value=0.45648614074725913`,
-`confidence_threshold=0.5241041162083158`, `semantic_k=7`,
-`prior_strength=0.43109869107084664`) before API reload and T1 eval. The
-local planner path stayed local (`local_frontdoor` draft -> `local_worker`
-critique with `claude` fallback) but the frontdoor drafter still proposed
-`deep_eval tier=3` under W8 candidate-generation pressure. `local_worker`
-rejected it and the fallback selected a replayable numeric trial, so safety
-held; `04a76fd1` is the follow-up fix that removes unavailable schemas from the
-prompt menu rather than merely warning against them.
-
-Orchestrator `6a016f25` closed the latest dashboard coherency gap by showing
-tap-inferred active CPU-region holders beside real `/proc` holders in the
-Regions Lock summary; a follow-up dashboard sidecar is investigating remaining
-multi-holder rendering mismatches. The quiet-window queue is now written into
+Dashboard sidecar follow-up is closed in orchestrator `d76f0b5d`: the Regions
+Lock overlay now treats quiet/stalled open structured-tap requests as possible
+lock holders, not only live streaming taps, and labels them separately from
+real `/proc` holders. ODL no-inference evidence prep also advanced in
+orchestrator `d6b171fd`: hybrid-backed structured extraction is method-stamped
+as `opendataloader_hybrid`, local fallback remains
+`opendataloader_structured`, and the PDF probe can fail closed when a corpus has
+zero structural/table signal. The quiet-window queue remains in
 `bulk-inference-campaign.md`: A9 contrast-replan collection, DS-E1 KV
 measurement, RI-10 scored canary dispatch/scoring, J12 think-loop probe, then
 W8/Fable readiness reports. Serialize those inference-bearing runs while

@@ -150,6 +150,7 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 
 - [ ] Deploy `opendataloader-pdf-hybrid --port 5002` as sidecar service
 - [x] Add a sidecar-aware `opendataloader_hybrid` backend to `scripts/benchmark/pdf_fastpath_probe.py` so hybrid preflights report missing SDK/sidecar dependencies explicitly instead of silently skipping or forcing live infra ✅ 2026-07-06
+- [x] Stamp the effective ODL backend in router results (`opendataloader_structured` vs `opendataloader_hybrid`) and add an opt-in probe guard that fails no-structural-signal corpora before they are used as table-routing evidence ✅ 2026-07-06
 - [ ] Experiment: swap hybrid backend from docling-fast → LightOnOCR-2-1B (port 8082)
 - [ ] Measure: does GPU-accelerated LightOnOCR beat docling-fast's 0.43s/page?
 - [ ] Implement three-way routing: ODL local (simple) → ODL hybrid (tables) → LightOnOCR (scanned)
@@ -219,6 +220,31 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
   started, and no 200-PDF benchmark evidence exists yet. The next live window
   should deploy the sidecar, run the hybrid probe on a structural/table-heavy
   corpus, then decide whether any router policy change is justified.
+
+**2026-07-06 backend-attribution + structural-signal guard checkpoint (`epyc-orchestrator` `d6b171fd`)**
+
+- `PDFRouter._extract_with_odl_table_backend()` now carries the effective
+  backend through the structured extraction path. Successful explicit hybrid
+  output reports `PDFExtractionResult.method="opendataloader_hybrid"`; local
+  structured output and hybrid-empty fallback report
+  `opendataloader_structured`. This makes later production/preprocessing
+  evidence distinguish the producer without enabling hybrid by default.
+- `scripts/benchmark/pdf_fastpath_probe.py` now reports
+  `structural_signal_pdf_count` and `structural_signal_pdf_fraction`, and
+  `--require-structural-signal` exits `3` when no PDF/backend pair produced
+  table/layout signal. This prevents another fast-path text corpus with zero
+  ODL tables/headings/figures from being misread as table-routing evidence.
+- Validation: GitNexus LOW for `_select_odl_table_backend`,
+  `_extract_with_odl_table_backend`, `extract_opendataloader_structured`,
+  `run_probe`, `_run_backend`, `_structural_signal_totals`, and probe `main`;
+  `python3 -m py_compile src/services/pdf_router.py
+  scripts/benchmark/pdf_fastpath_probe.py tests/unit/test_pdf_router.py
+  tests/unit/test_pdf_fastpath_probe.py`; `uv run pytest -q
+  tests/unit/test_pdf_router.py tests/unit/test_pdf_fastpath_probe.py`
+  (`38 passed, 2 skipped`); focused `ruff` and `git diff --check` passed.
+- Remaining gate: still no sidecar deployment, structural/table-heavy corpus,
+  or benchmark-backed three-way routing policy. This slice only improves
+  attribution and corpus qualification.
 
 **2026-06-28 benchmark adapter local-PDF checkpoint (`epyc-inference-research` `5d14d3d`, `5ab748d`)**
 

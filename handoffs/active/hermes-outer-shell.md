@@ -306,6 +306,8 @@ Hermes is one *client* of the orchestrator's `/v1/chat/completions` + `x_*` over
   - Pick one non-Hermes client from N (recommend bare-metal Python script first — fewest moving parts) and stand it up against `localhost:8000/v1/chat/completions`
   - Verify the same override semantics behave identically vs Hermes (force-model, escalation cap, REPL disable)
   - Document the wiring recipe in this handoff so other client types can follow the same pattern
+  - [x] Add dry-run reference bare-client wiring helper: `scripts/hermes/reference_openai_client.py` prints cURL and OpenAI SDK recipes for `x_orchestrator_role`, `x_force_model`, `x_max_escalation`, `x_disable_repl`, and `x_show_routing` without sending traffic unless `--send` is explicit. ✅ 2026-07-06
+  - [ ] Run live `--send` validation in a quiet window and verify role override, force-model, escalation cap, REPL disable, routing metadata, and streaming behavior against the current `/v1/chat/completions` endpoint.
 - [x] **Q — Sufficiency call: do not absorb client-side concerns into the orchestrator** (~30 min, design discipline note) — recorded in `## Pros` above as the client/orchestrator separation rule.
   - Decision rule to record explicitly: per-client UX (slash commands, prompts, conversation memory) lives in the **client**, not the orchestrator. The orchestrator exposes overrides; clients map their UX to override values. This is the same discipline as the Hermes slash-command → `x_*` mapping — generalized as a principle, not a one-off
   - Output: 1-paragraph statement appended to the handoff's `## Pros` section so future contributors see it during refactor decisions

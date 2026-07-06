@@ -117,6 +117,12 @@ Action landed:
   beside real `/proc` lock holders instead of implying that only the off-tap
   holder exists. Focused dashboard tests passed (`23 passed`), and GitNexus was
   refreshed. ✅ 2026-07-06
+- [x] `epyc-orchestrator` `d76f0b5d` closes the follow-up quiet-holder
+  coherence gap: the Regions Lock overlay now treats quiet/stalled open
+  structured-tap requests as lock candidates, formats tap-inferred holders with
+  a dedicated label helper, and distinguishes tap-inferred active holders from
+  real `/proc` holders. Focused dashboard route/panel/helper tests passed
+  (`147 passed`). ✅ 2026-07-06
 - [ ] **Local drafter quality tail**: if provider traces keep showing
   `local_frontdoor` proposes non-replayable seed/deep, no-op, or
   already-blacklisted actions, repair the drafter prompt/normalizer or add a

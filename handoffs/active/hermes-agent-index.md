@@ -1,7 +1,7 @@
 # Hermes Agent — Integration Index
 
 **Status**: active
-**Updated**: 2026-06-20
+**Updated**: 2026-07-06
 **Purpose**: dispatch surface for Hermes/OpenGauss-derived UX, shell, and agent-runtime work.
 
 > Completed pre-2026-06-19 checklist and research-intake chronology was compacted to [`../archived/hermes-agent-index-history-through-2026-06-19.md`](../archived/hermes-agent-index-history-through-2026-06-19.md). Current implementation status lives in the owning handoffs below.
@@ -10,6 +10,7 @@
 
 | Priority | Work | Owner / source | Gate |
 |---|---|---|---|
+| MED | Reference non-Hermes client live validation | [`hermes-outer-shell.md`](hermes-outer-shell.md) Phase P | Dry-run `scripts/hermes/reference_openai_client.py` exists; live `--send` override/streaming validation requires a quiet inference window. |
 | MED | Hermes upstream pin bump and breaking-change audit | [`hermes-outer-shell.md`](hermes-outer-shell.md) P2.6 | File-inspection items can run now; smoke tests require an inference window. |
 | MED | Downstream `x_*` override refactor | [`hermes-outer-shell.md`](hermes-outer-shell.md) Phase 2+ enhancement | Preserve `/v1/chat/completions` compatibility; coordinate with orchestrator API changes. |
 | MED | Subagent + single-slot llama-server validation | [`hermes-outer-shell.md`](hermes-outer-shell.md) Phase 2 validation G | Requires controlled inference; do not overlap throughput-sensitive evidence windows. |
