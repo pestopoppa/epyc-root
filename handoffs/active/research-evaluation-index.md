@@ -40,7 +40,7 @@ These handoffs are still active but currently sit behind specific evidence, mode
 
 | Handoff | Current role | Next action |
 |---|---|---|
-| [agent-file-prose-compression.md](agent-file-prose-compression.md) | Static agent-file compression pilot; Phase 3 eval is the blocker. | Write the runnable Phase 3 command, then evaluate per-model compliance curves. |
+| [agent-file-prose-compression.md](agent-file-prose-compression.md) | Static agent-file compression pilot; Phase 1-4 are landed for the local production stack, with registry operating points applied. | Decide Phase 5 rollout scope or run the optional n=30 expansion before broad compressed-artifact rollout. |
 | [integration-test-coverage.md](integration-test-coverage.md) | Active test-gap backlog after Phases 1-4 compaction. | Add narrow integration tests only when a current failing surface or coverage tranche justifies it. |
 | [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | Formalizer evaluation gate. | Check model artifacts, then run the S4 mini-protocol. |
 | [per-request-reasoning-budget.md](per-request-reasoning-budget.md) | Hybrid SSM/MoE reasoning-budget investigation. | Steps 3-4 need a running server; keep code changes gated by reproduction. |
