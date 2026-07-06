@@ -48,3 +48,13 @@ On completion of each waypoint: tick here, one-line progress entry, update maste
   action is to mount/provide an operator-approved writable off-array/off-host
   target, then run `scripts/backup/backup_critical.sh` followed by
   `scripts/backup/verify_restore.sh`.
+- 2026-07-06 preflight/reporting lane: added `continuity_backup.py preflight-target`
+  for dry target checks that report `target_exists`, `target_is_dir`,
+  `target_writable`, selected tiers/repos, and machine-readable failure reasons
+  without creating a snapshot. Validation: `python3 -m py_compile
+  scripts/backup/continuity_backup.py tests/backup/test_continuity_backup.py`;
+  `uv run --with pytest --with pyyaml pytest -q tests/backup/test_continuity_backup.py`
+  -> `10 passed`; `uv run --with ruff ruff check scripts/backup/continuity_backup.py
+  tests/backup/test_continuity_backup.py` passed. W2/W3 remain blocked until an
+  operator-approved off-array/off-host target is mounted and a real snapshot
+  can be created and restored.

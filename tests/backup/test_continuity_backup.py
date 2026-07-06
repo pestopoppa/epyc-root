@@ -1,3 +1,4 @@
+import json
 import sys
 from pathlib import Path
 
@@ -8,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts" / "backup"))
 
 import continuity_backup as continuity_backup_module  # noqa: E402
-from continuity_backup import check_latest_snapshot, create_snapshot, verify_restore  # noqa: E402
+from continuity_backup import check_latest_snapshot, create_snapshot, preflight_target, verify_restore  # noqa: E402
 
 
 def _write_manifest(manifest: Path, repo: Path, *, paths: list[str] | None = None) -> None:
@@ -77,6 +78,80 @@ def test_create_snapshot_refuses_same_device_by_default(tmp_path):
     assert exit_code == 1
     assert any("shares storage/backing device" in line for line in lines)
     assert not (tmp_path / "target" / "snap").exists()
+
+
+def test_preflight_target_reports_missing_root_and_writes_json_report(tmp_path):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "state.json").write_text('{"value": "live"}\n', encoding="utf-8")
+    manifest = tmp_path / "MANIFEST.yaml"
+    _write_manifest(manifest, repo)
+
+    report_json = tmp_path / "report.json"
+    exit_code, lines = preflight_target(
+        manifest,
+        tmp_path / "target",
+        report_json=str(report_json),
+    )
+
+    assert exit_code == 1
+    assert any("target root missing" in line for line in lines)
+
+    report = json.loads(report_json.read_text(encoding="utf-8"))
+    assert report["target_exists"] is False
+    assert report["errors"]
+    assert any("target root missing" in error for error in report["errors"])
+
+
+def test_preflight_target_refuses_same_device_and_reports_machine_readable_reason(tmp_path):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "state.json").write_text('{"value": "live"}\n', encoding="utf-8")
+    manifest = tmp_path / "MANIFEST.yaml"
+    _write_manifest(manifest, repo)
+
+    target_root = tmp_path / "target"
+    target_root.mkdir()
+    report_json = tmp_path / "report.json"
+    exit_code, lines = preflight_target(
+        manifest,
+        target_root,
+        report_json=str(report_json),
+    )
+
+    assert exit_code == 1
+    assert any("shares storage/backing device" in line for line in lines)
+
+    report = json.loads(report_json.read_text(encoding="utf-8"))
+    assert report["target_exists"] is True
+    assert report["target_is_dir"] is True
+    assert any("shares storage/backing device" in error for error in report["errors"])
+
+
+def test_preflight_target_succeeds_when_failure_domain_check_is_cleared(tmp_path, monkeypatch):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "state.json").write_text('{"value": "live"}\n', encoding="utf-8")
+    manifest = tmp_path / "MANIFEST.yaml"
+    _write_manifest(manifest, repo)
+
+    target_root = tmp_path / "target"
+    target_root.mkdir()
+    report_json = tmp_path / "report.json"
+    monkeypatch.setattr(continuity_backup_module, "_target_failure_domain_errors", lambda *args, **kwargs: [])
+
+    exit_code, lines = preflight_target(
+        manifest,
+        target_root,
+        report_json=str(report_json),
+    )
+
+    assert exit_code == 0, lines
+    assert any(line == "preflight_status=ok" for line in lines)
+
+    report = json.loads(report_json.read_text(encoding="utf-8"))
+    assert report["errors"] == []
+    assert report["target_writable"] is True
 
 
 def test_create_snapshot_layout_verifies_with_explicit_test_override(tmp_path):

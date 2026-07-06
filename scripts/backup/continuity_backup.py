@@ -9,6 +9,7 @@ Implements manifest validation and restore verification:
 
 Usage:
   python3 scripts/backup/continuity_backup.py validate --manifest scripts/backup/MANIFEST.yaml
+  python3 scripts/backup/continuity_backup.py preflight-target --target-root /path/to/target
   python3 scripts/backup/continuity_backup.py verify-restore --snapshot-root /path/to/snapshot
 """
 
@@ -89,6 +90,30 @@ def parse_args() -> argparse.Namespace:
         help="explicit snapshot directory name; default is UTC timestamp",
     )
     snapshot_parser.add_argument(
+        "--report-json",
+        help="write JSON summary report to this path",
+    )
+
+    preflight_parser = subparsers.add_parser(
+        "preflight-target",
+        help="check a candidate target root without creating a snapshot",
+    )
+    preflight_parser.add_argument(
+        "--manifest",
+        default=DEFAULT_MANIFEST,
+        help="path to continuity backup manifest",
+    )
+    preflight_parser.add_argument(
+        "--target-root",
+        required=True,
+        help="candidate off-array/off-host directory to inspect",
+    )
+    preflight_parser.add_argument(
+        "--tiers",
+        default="T0_irreplaceable",
+        help="comma-separated tier names to inspect (default: T0_irreplaceable)",
+    )
+    preflight_parser.add_argument(
         "--report-json",
         help="write JSON summary report to this path",
     )
@@ -688,6 +713,85 @@ def create_snapshot(
             shutil.rmtree(staging_root, ignore_errors=True)
 
 
+def preflight_target(
+    manifest_path: Path,
+    target_root: Path,
+    *,
+    tier_csv: str = "T0_irreplaceable",
+    report_json: str | None = None,
+) -> tuple[int, list[str]]:
+    try:
+        manifest = load_manifest(manifest_path)
+    except (TypeError, FileNotFoundError, yaml.YAMLError) as exc:
+        return 1, [f"manifest error: {exc}"]
+
+    validate = validate_manifest(manifest_path, warn_on_missing=True)
+    if validate.errors:
+        return 1, ["manifest invalid"] + validate.errors
+
+    selected_tiers = _parse_tiers(tier_csv)
+    if not selected_tiers:
+        return 1, ["no tiers selected"]
+
+    repos = manifest.get("repos")
+    if not isinstance(repos, dict) or not repos:
+        return 1, ["manifest repos map missing/empty"]
+
+    collected = _collect_selected_files(manifest, selected_tiers)
+    if not collected:
+        return 1, [f"no files selected for tiers {sorted(selected_tiers)}"]
+
+    selected_repo_names = sorted({repo_name for repo_name, _pattern in collected})
+    target_root = target_root.resolve()
+    errors: list[str] = []
+
+    target_exists = target_root.exists()
+    target_is_dir = target_root.is_dir() if target_exists else False
+    target_writable = bool(target_exists and target_is_dir and os.access(target_root, os.W_OK | os.X_OK))
+
+    if not target_exists:
+        errors.append(f"target root missing: {target_root}")
+    elif not target_is_dir:
+        errors.append(f"target root is not a directory: {target_root}")
+    elif not target_writable:
+        errors.append(f"target root is not writable: {target_root}")
+
+    if target_exists and target_is_dir:
+        errors.extend(_target_failure_domain_errors(target_root, repos, set(selected_repo_names)))
+
+    summary = [
+        "preflight_status=ok" if not errors else "preflight_status=failed",
+        f"target_root={target_root}",
+        f"target_exists={target_exists}",
+        f"target_is_dir={target_is_dir}",
+        f"target_writable={target_writable}",
+        f"tiers={sorted(selected_tiers)}",
+        f"selected_repos={selected_repo_names}",
+    ]
+
+    if report_json:
+        with Path(report_json).open("w", encoding="utf-8") as handle:
+            json.dump(
+                {
+                    "manifest": str(manifest_path),
+                    "target_root": str(target_root),
+                    "selected_tiers": sorted(selected_tiers),
+                    "selected_repos": selected_repo_names,
+                    "target_exists": target_exists,
+                    "target_is_dir": target_is_dir,
+                    "target_writable": target_writable,
+                    "errors": errors,
+                },
+                handle,
+                indent=2,
+                sort_keys=True,
+            )
+
+    if errors:
+        return 1, summary + ["errors:"] + errors
+    return 0, summary
+
+
 def verify_restore(
     manifest_path: Path,
     snapshot_root: Path,
@@ -909,6 +1013,17 @@ def main() -> int:
             target_root=Path(args.target_root),
             tier_csv=args.tiers,
             snapshot_name=args.snapshot_name,
+            report_json=args.report_json,
+        )
+        for line in lines:
+            print(line)
+        return exit_code
+
+    if args.command == "preflight-target":
+        exit_code, lines = preflight_target(
+            manifest_path=Path(args.manifest),
+            target_root=Path(args.target_root),
+            tier_csv=args.tiers,
             report_json=args.report_json,
         )
         for line in lines:
