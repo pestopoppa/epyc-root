@@ -46,6 +46,7 @@ These are active acceleration or model-serving references with narrow gates. The
 | [multiscreen-attention-evaluation.md](multiscreen-attention-evaluation.md) | Checkpoint/research monitor for multiscreen attention. | Continue monitoring; no inference until pretrained artifacts and a current gate exist. |
 | [qwen36-27b-cpu-feasibility.md](qwen36-27b-cpu-feasibility.md) | Candidate dense-model feasibility note. | Do a roofline/load-smoke only if the model becomes a real role candidate. |
 | [tq3-quantization-evaluation.md](tq3-quantization-evaluation.md) | TurboQuant/TQ3 upstream monitor. | Watch PR #21089/ChunkKV; do not merge TQ3_1S. |
+| [scaffold-autopilot-cost-lever-deployment.md](scaffold-autopilot-cost-lever-deployment.md) | DESIGN handoff (2026-07-06) — deploy the now-COMPLETE CoT scaffold as an episodic-memory-gated CPU-cost lever in autopilot's existing 4D-Pareto/q_reward optimization; downstream of [gpu-cot-scaffold-sidecar.md](gpu-cot-scaffold-sidecar.md). | Operator + live-autopilot-agent gated (T0.1: coordinate before any `scripts/autopilot/*` or capability-registry edit). No code/measurement yet. |
 
 ## Closed / Historical Anchors
 
