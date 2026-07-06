@@ -96,25 +96,32 @@ Action landed:
   launcher tests passed (`70 passed`). AutoPilot trial `1200` later failed
   safety on `tool_use` regression, and the daemon was restarted at the boundary
   as PID `3438615` with `code_stale=false`. ✅ 2026-07-06
-- [ ] **Local-planner hardening tail**: the local-only path is now on current
-  code after the PID `3438615` restart; verify the first full planner turn
-  actually stays on `local_frontdoor` / `local_worker`.
-  Monitor whether the worker critic emits parseable `json:autopilot_critique`
-  without cloud fallback and whether the drafter stops proposing non-replayable
-  W8 deferrals. The boundary restart/API reload also deploys `ea47f672`'s
-  Regions Lock count split because `dashboard.html` is imported by the API
-  process. If provider trace still shows no-op or already-rejected proposals, add a
-  pre-dispatch shape/blacklist validator or a measured two-stage local provider
-  (`ingest_long_context` brief -> frontdoor/worker action). A dashboard reader
-  for archived provider trace remains useful but non-blocking.
+- [x] `epyc-orchestrator` `5c4e3560` closes the local-planner hardening tail.
+  After the PID `3470012` restart, trial `1203` stayed on local providers:
+  `local_frontdoor` drafted a `seed_batch`, `local_worker` rejected it, and the
+  coordinator substituted a replayable `memrl_retrieval` numeric fallback
+  instead of consuming another seed/deep deferral. NumericSwarm journaled
+  concrete applied params before API reload and T1 eval. Focused planner/action
+  tests passed (`189 passed`), ruff and `git diff --check` passed, and GitNexus
+  was refreshed. ✅ 2026-07-06
+- [x] `epyc-orchestrator` `6a016f25` closes the latest Regions Lock summary
+  coherency gap: the panel now reports tap-inferred active CPU-region holders
+  beside real `/proc` lock holders instead of implying that only the off-tap
+  holder exists. Focused dashboard tests passed (`23 passed`), and GitNexus was
+  refreshed. ✅ 2026-07-06
+- [ ] **Local drafter quality tail**: if provider traces keep showing
+  `local_frontdoor` proposes non-replayable seed/deep, no-op, or
+  already-blacklisted actions, repair the drafter prompt/normalizer or add a
+  measured two-stage provider (`ingest_long_context` brief -> frontdoor/worker
+  action). A dashboard reader for archived provider trace remains useful but
+  non-blocking.
 - Focused validation passed across the touched slices: `49` planner/provider/launcher tests, `43` W6/readiness tests, `46` spend-breaker/economics tests, `233` action/dashboard tests, `49` structural/restore tests, `64` GEPA/prompt-root/API/eval propagation tests, `36` sequential/paired-diagnostics tests, `44` phase/restart/dashboard health tests, `138` rejected-draft/action/creativity tests, and `11` earlier GEPA integration tests, plus focused `py_compile`, `ruff`, and `git diff --check`.
 
 Next measured extension:
 - Let the current daemon continue until the next restart-safe boundary, then
-  restart onto the latest planner hardening commits (`a151d319`, `6d67c565`,
-  `3fff13fc`); trial `1194` proved the candidate-generation path but was not
-  keepable, and trial `1195` was an invalid skip. If the local drafter keeps
-  producing no-op/invalid drafts that need critic salvage, repair the drafter
+  let PID `3470012` continue trial `1203` and watch whether the
+  `memrl_retrieval` candidate is keepable. If the local drafter keeps producing
+  no-op/invalid drafts that need critic salvage, repair the drafter
   prompt/normalizer rather than weakening W8 replayability rules.
 - Build a two-stage planner provider after the one-shot local-ingest/local-
   frontdoor path has telemetry: `ingest_long_context` synthesizes a bounded

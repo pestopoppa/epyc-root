@@ -1,6 +1,37 @@
 # Evidence Plane — Per-Question Ledger + Sequential Verdicts (+ game layer)
 
-**Current checkpoint - 2026-07-05T23:58Z W8 local-planner canary live**:
+**Current checkpoint - 2026-07-06T02:19Z W8 local-planner numeric fallback live**:
+AutoPilot is live as PID `3470012` with `--max-trials 3000`, launched through
+the canonical Fable authority daemon on orchestrator `6a016f25`. The daemon is
+current-code clean (`code_stale=false`) and runs `local_frontdoor` draft ->
+`local_worker` critique with `claude` fallback, planner hints, tool sentinels,
+W6 audit accrual, sequential verdicts, and W4-W6 authority env. Startup
+StrategyStore health is exact (`1,420` SQLite rows, `1,420` FAISS vectors,
+`1,420` FTS rows, `100.0%` coverage), so the earlier stale-FAISS failure mode is
+not active in this run.
+
+Trial `1203` is evaluating a replayable `memrl_retrieval` `numeric_trial`.
+The live local planner canary exercised the new repair: `local_frontdoor`
+drafted `seed_batch` with `agentic/tool_use`, `local_worker` rejected it as
+non-replayable/blacklisted, and orchestrator `5c4e3560` substituted a W8-safe
+numeric fallback instead of burning another seed/deep deferral. NumericSwarm
+journaled concrete applied params before API reload and eval:
+`q_weight=0.7932410855456713`, `min_similarity=0.49733562365610084`,
+`min_q_value=0.378520573220934`,
+`confidence_threshold=0.6257942583952608`, `semantic_k=19`, and
+`prior_strength=0.15861507091315596`.
+
+This closes the local-planner hardening tail for "does it stay local and
+recover into replayable W8 candidate generation?" It does not close W8 itself:
+W8 still needs a keepable replayable candidate, sequential confirmation, and
+fresh promotion-eval evidence. The next engineering follow-up is quality of
+local drafts: if provider traces keep showing non-replayable seed/deep or
+already-blacklisted proposals, tune the local drafter prompt/normalizer or add a
+measured two-stage local provider. The next quiet-window evidence runs are A9
+contrast-replan collection, DS-E1 KV measurement, RI-10 scored canary
+dispatch/scoring, J12 think-loop probe, then W8/Fable readiness reports.
+
+**Prior checkpoint - 2026-07-05T23:58Z W8 local-planner canary live**:
 AutoPilot is live as PID `3267768`; latest observed checkpoint is trial `1196`
 `planner_invoke` with `--max-trials 3000`,
 planner hints, tool sentinels, W6 audit accrual, sequential verdicts, and W4-W6
@@ -184,17 +215,17 @@ boundary restart recorded above.
 
 ## Start Here
 
-1. Let AutoPilot PID `3267768` continue from trial `1196` and watch the next
-   local-planner turns. Trial `1194` was replayable but reverted for `tool_use`
-   regression; trial `1195` was an invalid skip on already-blacklisted
-   `graph_router=true`. The next evidence need is a different keepable
-   replayable W8 candidate. Do not restart unless the daemon goes stale, phase
-   health fails, or an operator quiet-window task requires it.
-2. Watch the next non-forced planner turn for local-planner quality. The
-   current safety loop works (`local_ingest` draft, `local_frontdoor` critic,
-   Claude fallback), but the first draft was a no-op structural flag. If that
-   repeats, repair the drafter prompt/normalizer rather than weakening the W8
-   dispatcher guard.
+1. Let AutoPilot PID `3470012` continue from trial `1203` and watch the current
+   `memrl_retrieval` replayable numeric candidate attempt. Trial `1203` proved
+   the local-frontdoor/local-worker reject path can recover into concrete
+   NumericSwarm params; the candidate still has to pass safety, Pareto, and
+   sequential/fresh-eval evidence. Do not restart unless the daemon goes stale,
+   phase health fails, or an operator quiet-window task requires it.
+2. Watch provider traces for local-planner quality. The current safety loop
+   works (`local_frontdoor` draft, `local_worker` critic, Claude fallback), but
+   the local drafter still proposed a non-replayable seed action. If that
+   repeats, repair the drafter prompt/normalizer or add a measured two-stage
+   local provider rather than weakening the W8 dispatcher guard.
 3. Finish W8 promotion eval evidence: orchestrator `33c16b47` makes forced fresh-promotion deep evals replay the pending candidate's exact numeric params or structural flags and fail closed for unreplayable candidates. Orchestrator `b62bc205` adds the Phase-2.4 confidence-interval non-regression guard: fresh promotion evals now need effective paired-question evidence (`r_eff`) and a one-sided delta lower bound that excludes regression before finalization, with the CI object recorded into promotion state. Orchestrator `2aa3b40c` wires the P-QUAL-PROMO draw contract: forced promotion evals use trial-seeded fresh T2 draws, n bounded to 200-500, qids seen in the last 60 days excluded, broken/artifact suites excluded via the latest item-analytics suite-health table, and fail closed if fewer than 200 fresh healthy scoreable questions remain. Continue live accrual until AutoPilot produces a keepable replayable candidate, then collect sequential confirmation and fresh promotion-eval evidence.
 4. Run/review the disagreement/cutover report as follow-up documentation, not as a prerequisite to the already-executed authority restart.
 5. Coordinate any future restart-bundle accept-path flips with J11/BSV-2 and K-SKILL-1 because all three are accept-path gates.
