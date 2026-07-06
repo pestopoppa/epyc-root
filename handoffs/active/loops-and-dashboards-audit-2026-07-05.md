@@ -156,14 +156,35 @@ Action landed:
   breaker is inactive. Focused planner/provider tests passed (`65 passed`),
   launcher/advisor tests passed (`13 passed`), and focused `py_compile`,
   `ruff`, and `git diff --check` were clean. ✅ 2026-07-06
+- [x] **Outcome-stall dispatch guard**: `epyc-orchestrator` `9522b76e`
+  prevents the higher-tier probe guard from overriding a planner-selected
+  frontier-moving action while outcome progress is already stalled, and
+  `78ae65e6` makes the frontier-stale condition a bounded pre-dispatch
+  constraint instead of prompt-only advice. When frontier admission is stale,
+  passive/eval/housekeeping actions are replaced with the first available
+  numeric trial fallback; already frontier-moving actions (`numeric_trial`,
+  prompt/code/GEPA mutation, one-flag structural experiment, or
+  `train_routing_models`) pass through. Focused AutoPilot action/phase/provider
+  tests passed (`140 passed`), plus ruff, `py_compile`, `git diff --check`,
+  push, and GitNexus refresh. The boundary restart loaded `78ae65e6` into live
+  AutoPilot PID `3901517`; `phase_health_report.py --require-current-code
+  --json` is clean. ✅ 2026-07-06
+- [x] **Snapshot/region-lock freshness coherence**: `epyc-orchestrator`
+  `b81f3113` makes `_snapshot_impl()` call the fresh region-lock scanner instead
+  of replaying the TTL cached payload, so the snapshot stream cannot overwrite a
+  newer direct `/dashboard/api/region_locks` poll in the browser. Regression
+  coverage fails if `_snapshot_impl()` returns to `_region_locks_cached()`.
+  GitNexus impact was LOW; validation passed focused helper tests, full
+  `test_dashboard_region_locks.py` (`26 passed`), ruff, `py_compile`, and
+  `git diff --check`. The boundary API reload is complete and
+  `/dashboard/api/health` returned `status="ok"`. ✅ 2026-07-06
 - Focused validation passed across the touched slices: `49` planner/provider/launcher tests, `43` W6/readiness tests, `46` spend-breaker/economics tests, `233` action/dashboard tests, `49` structural/restore tests, `64` GEPA/prompt-root/API/eval propagation tests, `36` sequential/paired-diagnostics tests, `44` phase/restart/dashboard health tests, `138` rejected-draft/action/creativity tests, and `11` earlier GEPA integration tests, plus focused `py_compile`, `ruff`, and `git diff --check`.
 
 Next measured extension:
-- Let the current daemon continue until the next restart-safe boundary, then
-  restart onto `24ab6170` if phase health reports runtime source drift. The next
-  ordinary planner turn should prove that local drafts follow the W8-filtered
-  action menu rather than proposing seed/deep deferrals that the critic must
-  salvage.
+- Let current AutoPilot PID `3901517` continue from trial `1212` unless phase
+  health fails. The next ordinary planner turn should prove that local drafts
+  follow the W8-filtered action menu and that the outcome-stall guard no longer
+  lets coverage probes or passive work preempt a frontier-moving action.
 - Build a two-stage planner provider after the one-shot local-ingest/local-
   frontdoor path has telemetry: `ingest_long_context` synthesizes a bounded
   planner brief, `frontdoor` or `worker_general` drafts the action from that

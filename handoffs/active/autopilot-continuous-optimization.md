@@ -5,13 +5,14 @@ BSV observe is process-aware, T3 is planner-visible workflow pressure,
 StrategyStore search health is exact, tool-use activation is ready, numeric
 candidate generation has been unblocked, and W8 needs a keepable replayable
 candidate before promotion evidence can accrue.** AutoPilot is live as PID
-`3525618` with `--max-trials 3000`; latest observed checkpoint is trial `1207`
-in `seed_batch` dispatch, and the restart advisor correctly reports
-`wait_for_boundary` because the daemon is code-stale in active work. The routine
-planner path for the next restart target is `local_frontdoor` draft ->
-`local_worker` critique with `claude` fallback; `bf9bece7` also keeps fallback
-draft/review traffic on distinct local role providers when the spend breaker is
-inactive, instead of crossing to Claude unnecessarily.
+`3901517` with `--max-trials 3000`; latest observed checkpoint is trial `1212`
+as an active current-code-clean `numeric_trial`, and phase health reports
+`code_stale=false` after the boundary restart onto orchestrator `78ae65e6`. The
+outcome-stall dispatch guard is now live; the routine planner path is
+`local_frontdoor` draft -> `local_worker` critique with `claude` fallback;
+`bf9bece7` also keeps fallback draft/review traffic on distinct local role
+providers when the spend breaker is inactive, instead of crossing to Claude
+unnecessarily.
 Startup verified StrategyStore search health exact (`1,420` SQLite/FAISS/FTS
 rows, `100.0%` coverage). Tool-use activation is not the blocker;
 `8be68732` fixes the REPL-pinned sentinel prompt contract so the lane asks for
@@ -68,7 +69,7 @@ per-question diff/provenance context (`749d38f`).
 > trailing-window alarm, assuming no new gaming events occur.
 
 **Created**: 2026-03-08
-**Updated**: 2026-07-06 (current live AutoPilot PID `3525618` is on trial `1207` with `--max-trials 3000`, planner hints, tool sentinels, sequential verdicts, and W6 audit accrual active, but the process is code-stale after planner/dashboard fixes. Restart at the next advisor-safe boundary onto orchestrator `bf9bece7`: local-frontdoor drafting, local-worker critique, Claude fallback, W8-filtered action pressure, dashboard restart advice, and local-role failover are all ready together.)
+**Updated**: 2026-07-06 (current live AutoPilot PID `3901517` is on trial `1212` with `--max-trials 3000`, planner hints, tool sentinels, sequential verdicts, and W6 audit accrual active. The boundary restart loaded orchestrator `78ae65e6`, so local-frontdoor drafting, local-worker critique, Claude fallback, W8-filtered action pressure, selectable-action provider coordination, and the outcome-stall guard are live together.)
 **Location**: `epyc-orchestrator/scripts/autopilot/`
 
 > **Fable 5 review (2026-06-12)**: the review's architecture recommendations now have owning handoffs: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (LIVE t775 baseline-ratchet hotfix + dead-question repair), [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md) (per-question ledger + e-process verdicts; owns the next restart bundle), [evidence-plane-event-sourcing-and-narrative.md](evidence-plane-event-sourcing-and-narrative.md), and [objective-task-rate-goodput.md](objective-task-rate-goodput.md) (task_rate replaces the t/s axis). Full diagnosis: fable5-findings-01 + -05.
@@ -1243,6 +1244,15 @@ paired authority core.
   invalid-skipped already-blacklisted `graph_router=true`; trial `1196` is the
   latest observed planner turn. This is wiring proof and negative candidate
   evidence, not completed W8 promotion progress.
+- 2026-07-06 outcome-stall control update: orchestrator `9522b76e` prevents the
+  higher-tier probe guard from overriding a planner-selected frontier-moving
+  action while outcome progress is already frontier-stalled, and `78ae65e6`
+  adds a bounded dispatch fallback so seed/eval/housekeeping work cannot satisfy
+  a stale-frontier condition when a numeric trial fallback remains available.
+  Frontier-moving actions still pass through unchanged. Validation passed over
+  `140` focused AutoPilot action/phase/provider tests, ruff, `py_compile`, and
+  `git diff --check`; both commits are pushed and GitNexus-indexed. The boundary
+  restart loaded the patch into live PID `3901517` at trial `1212`.
 - Regular Fable visibility landed in orchestrator `34591a27`: strict readiness
   now includes advisory `eval_task_coverage` status/percent/repeat/tier summary
   in `summary` and as a non-blocking section. Dashboard-specific presentation
