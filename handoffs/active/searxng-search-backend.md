@@ -127,7 +127,7 @@ def _search_searxng(query: str, max_results: int = 5) -> list[dict[str, str]]:
 - [x] Verify `json` in `search.formats` list (finding: returns 403 without it — not enabled by default) ✅ 2026-07-06
 - [x] Confirm Granian ASGI server running, NOT uWSGI (finding #4: Granian replaced uWSGI in recent builds; do NOT configure uWSGI workers) ✅ 2026-07-06
 - [x] Test with python urllib/requests user-agent succeeds (finding #2: bot detection disabled when limiter is false) ✅ 2026-07-06
-- [ ] Reconcile configured engine profile before SX-6 default swap: the live runtime disables DDG/Qwant/Startpage, uses Bing as a primary engine, and sees Brave rate-limit noise under repeated probes. Decide whether to update this handoff's planned engine set to Bing/Brave/Wikipedia with Brave best-effort, or change `config/searxng/settings.yml` back toward the original DDG/Brave/Wikipedia/Qwant target.
+- [x] Reconcile configured engine profile before SX-6 default swap: the live runtime disables DDG/Qwant/Startpage, uses Bing as a primary engine, and sees Brave rate-limit noise under repeated probes. Decision: accept the current Bing/Brave/Wikipedia profile rather than reverting to blocked engines; `searxng_health_report.py` now uses `{"bing", "brave", "wikipedia"}` as the bad-query denominator and reports the configured engine set in JSON/human output. ✅ 2026-07-06
 
 ### 2026-07-06 Runtime Audit
 
