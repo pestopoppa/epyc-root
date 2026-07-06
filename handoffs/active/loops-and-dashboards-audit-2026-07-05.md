@@ -267,7 +267,14 @@ Ranks reference the workflow synthesis; the adversarial critic's corrections are
   - [x] Second wave — orphaned `autopilot_prompt_tap` surface retired end-to-end (orch `87c5f970`; writer never existed in-repo, file was 45d dead) ✅ 2026-07-05
   - [x] Second wave — panel renamed `regions lock` + GPU/extern device rows folded into both grid paths + off-pipeline "orphan inference" cards in the live tap panel + non-OK contention matrix renders as a loud incident line (orch `9ade5019`, operator request) ✅ 2026-07-05
   - [x] Second wave — no-op API restart guard: `EnvRestartApplicator` skips the restart when the live uvicorn env already matches (positive-match-only via `/proc/<pid>/environ`); `api_restart: performed|skipped_noop` journaled as an eval covariate; `config_applicator.py` added to phase-health drift list (orch `b1a21e79`; live at next AutoPilot launch) ✅ 2026-07-05
-  - [x] Contention matrix freshness: hash-scope false positive (live hash included auxiliary `eval_batch_frontdoor`; measured-role hash `df373c79cc4af06f` matched all along) — RESOLVED by the codex session (orch `3d1706c6` + `120498c9`: measured-role-subset hash centralized in `contention.py`, all consumers aligned, API reloaded, live `matrix_status: ok`; NO re-bench needed). Details: `contention-matrix-v6-quarter-refresh.md` ✅ 2026-07-05
+- [x] Contention matrix freshness: hash-scope false positive (live hash included auxiliary `eval_batch_frontdoor`; measured-role hash `df373c79cc4af06f` matched all along) — RESOLVED by the codex session (orch `3d1706c6` + `120498c9`: measured-role-subset hash centralized in `contention.py`, all consumers aligned, API reloaded, live `matrix_status: ok`; NO re-bench needed). Details: `contention-matrix-v6-quarter-refresh.md` ✅ 2026-07-05
+- [x] Outcome-health run-strip surface: orchestrator `c25d6f6e` forwards
+  `autopilot_outcome_progress` in `/dashboard/api/process_status` and renders
+  compact phase/outcome/code health chips in the AutoPilot run strip. This
+  keeps outcome-stall KPIs visible where operators steer, without changing
+  loop control. Focused dashboard suites passed (`165 passed`), plus `ruff`,
+  `py_compile`, JS `node --check`, and `git diff --check`. Backend field
+  deployment awaits the next orchestrator API reload. ✅ 2026-07-06
 - **[P1 · S · medium] Production-safety + parity fixes the synthesis dropped** — isolate GEPA per-candidate prompt writes (`gepa_optimizer.py:88`) from the live prompts dir (a crash leaves a mutated production prompt) via the existing WorktreeManager/isolation path; make the **W6 gaming comparator config-aware** (`audit_block_report.py:407` is blocking the Fable gate ~29 trials on a between-candidate-variance false positive); extend `cmd_restore` (`autopilot.py:6309`) to purge StrategyStore + AP-22 memory ([[feedback_autopilot_rewind_must_purge_strategy_store]] — the loop the scar was named for).
 
 ### Phase 2 — The human-owned MEASUREMENT amendment (ONE bundle, one operator sign-off)
