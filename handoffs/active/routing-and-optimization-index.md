@@ -35,28 +35,47 @@ When making a routing-architecture proposal, name which of these four (and which
 
 ## Subsystem Status
 
-**Current checkpoint - 2026-07-06T04:55Z**: AutoPilot is live as PID `3525618`
+**Current checkpoint - 2026-07-06T05:06Z**: AutoPilot is live as PID `3525618`
 with `--max-trials 3000`, trial `1207` is a `seed_batch`, and
 `autopilot_restart_advisor.py --json --strict` reports
 `wait_for_boundary` / `safe_to_restart_now=false`. The daemon is intentionally
 code-stale until the next safe restart boundary; restart onto at least
-orchestrator `87e957ba` so the local-role failover, W8 menu/fallback repairs,
-coherent dashboard tap/lock snapshot, and read-only tool-registry annotations
-are live together. The local planner split is verified local-local with
-`claude` fallback, and StrategyStore search health was exact at startup.
+orchestrator `8f50877e` so the local-role failover, W8 menu/fallback repairs,
+coherent dashboard tap/lock snapshot, read-only tool-registry annotations, and
+T3-aware controller constitution are live together. The local planner split is
+verified local-local with `claude` fallback, and StrategyStore search health was
+exact at startup.
 Dashboard Regions Lock coherency is repaired in two layers: `6a016f25`
 separates real `/proc` holders from tap-inferred active holders, and
 `d2b0cbd0` adds enriched structured tap rows to the coherent snapshot so live
 inference, topology, and CPU-region lock rendering consume the same frame. The
-backend fix is committed and GitNexus-indexed but needs the next API reload to
-show in the running dashboard. Tool batching telemetry is now registry-backed:
-`64db8a12` adds multi-tool/read-only/parallel coverage reporting and `87e957ba`
-adds narrowed `side_effects: ["read_only"]` annotations without marking
-eval-style Python/NumPy or embedding tools read-only. W8 remains
-evidence-bound: continue until a replayable candidate is keepable, then collect
-sequential confirmation and fresh promotion-eval evidence. First quiet-window
-run order is A9 contrast-replan, DS-E1 KV measurement, RI-10 scored canary, J12
-think-loop probe, then W8/Fable readiness reports.
+backend fix is committed and GitNexus-indexed, and a live API audit confirmed
+deployment drift rather than source drift: API master `3638698` started at
+`2026-07-06T04:13:12Z`, before `d2b0cbd0`, so `/dashboard/api/snapshot` still
+lacks `structured_requests`, `tap_active`, and `structured_tap_mtime` until the
+next full `uvicorn src.api:app` restart. Tool batching telemetry is now
+registry-backed: `64db8a12` adds multi-tool/read-only/parallel coverage
+reporting and `87e957ba` adds narrowed `side_effects: ["read_only"]`
+annotations without marking eval-style Python/NumPy or embedding tools
+read-only. `8f50877e` updates the live controller constitution so T3 is named as
+the expert/hard workflow validation lane instead of being omitted from the
+no-cross-tier-comparison law. W8 remains evidence-bound: continue until a
+replayable candidate is keepable, then collect sequential confirmation and
+fresh promotion-eval evidence.
+
+**Next clean/quiet-window bundle (non-MI210)**: pre-stage E2 plan while live if
+desired, then at a safe AutoPilot boundary stop/restart onto current code and run
+the queue in this order: E1 `server_np_sweep.py`, DS-E1
+`ds_e1_kv_measurements.sh --execute` plus
+`dynamic_stack_evidence_packet.py --strict` (full CPU-stack quiet), RI-10 scored
+canary dispatch/score against
+`ri10_canary_scored_request_plan_20260705T151725Z`, J12
+`j12_think_loop_probe.py --roles frontdoor architect_general
+--confirm-clean-window`, A9 contrast-replan collection from the
+`contrast_replan_20260705T202257Z` manifest, then W8 trajectory and strict
+Fable gate report refresh. DS-E1 is the only item in this bundle currently
+called out as requiring live `llama-server` processes to be coordinated down;
+RI-10/J12/A9 require AutoPilot inactive and a clean host window.
 
 **Prior checkpoint - 2026-07-06T01:52Z**: AutoPilot is live as PID `3438615`
 with `--max-trials 3000` and `code_stale=false`. Trial `1200` was a replayable
