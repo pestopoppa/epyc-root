@@ -55,6 +55,12 @@ planner-provider status `healthy`, `local_frontdoor` draft success and
 local-worker/deep-eval critic issues in `recent_issues` for follow-up. The
 self-running lab inventory is now `10` jobs, `6` enabled, and `4`
 active-safe deterministic ready-now jobs while AutoPilot is active.
+Orchestrator `b886f761` then scopes this watch to the current AutoPilot PID by
+default, so the live signal now excludes old Codex-era provider attempts:
+`scope=current_process`, `event_count=2`, `fallback_provider_starts=0`, and
+`recent_issues=[]` for PID `3795561`. The same commit pins the local
+`deep_eval tier=3` selectable-action path with a provider-coordinator
+regression test.
 
 Dashboard Regions Lock coherency is repaired in source in three layers:
 `6a016f25` separates real `/proc` holders from tap-inferred active holders,
