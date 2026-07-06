@@ -150,6 +150,7 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 
 - [ ] Deploy `opendataloader-pdf-hybrid --port 5002` as sidecar service
 - [x] Add a sidecar-aware `opendataloader_hybrid` backend to `scripts/benchmark/pdf_fastpath_probe.py` so hybrid preflights report missing SDK/sidecar dependencies explicitly instead of silently skipping or forcing live infra ✅ 2026-07-06
+- [x] Collect explicit hybrid-sidecar missing-dependency evidence from the structural-table-heavy manifest probe (`pdf_fastpath_probe_hybrid_sidecar_20260706T000000Z.{json,md}`) ✅ 2026-07-06
 - [x] Stamp the effective ODL backend in router results (`opendataloader_structured` vs `opendataloader_hybrid`) and add an opt-in probe guard that fails no-structural-signal corpora before they are used as table-routing evidence ✅ 2026-07-06
 - [x] Run local OpenDataLoader benchmark demo smoke without inference or persistent artifacts: `/mnt/raid0/llm/opendataloader-bench/pdf_validation.py` completed 18 demo pages from a temp cwd using the benchmark venv; output was temp-local only. ✅ 2026-07-06
 - [x] Add a repeatable structural/table-heavy candidate manifest builder for quiet-window probe batches. ✅ 2026-07-06
