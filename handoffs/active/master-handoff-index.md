@@ -18,16 +18,20 @@ checkpoint are historical. The CPU stack remains on the production v6
 only the MI210 sidecar uses `llama.cpp-experimental/build-hip`. Reloading the
 full `worker_general` instance on port `8072` restored quiet probe throughput
 from about `17.3` t/s to about `29.2` t/s on the same prompt and `44.5` t/s on
-an easy high-acceptance prompt. The preserved worker quarter replicas still use
-the expected v6 flags, but the latest preflight observed one quarter
-(`worker_general` q2 / `:8282`) with correct CPU affinity and non-perfect
-`numa_maps` locality, so N12 live placement verification should run before
-long autonomous eval accrual resumes. Orchestrator `a7dbb204` adds a compact
+an easy high-acceptance prompt. Follow-up targeted reload of
+`worker_general` q2 / `:8282` replaced PID `1872348` with PID `576737`; live
+affinity preflight then passed for all worker quarters with
+`live_memory_placement_verified=true`. Orchestrator `a7dbb204` adds a compact
 A9 pairwise collection-target export; a real-data smoke emitted
 `offline_reward_pairwise_collection_targets.v1` with `7` targets from the
-`20260705T185704Z` audit slice. The next operator-safe choices are either
-reload/verify worker quarters and restart AutoPilot with `--max-trials 3000`,
-or keep AutoPilot down and execute the quiet-window batch queue below.
+`20260705T185704Z` audit slice. The 2026-07-06 quiet-window A9 collection
+completed and is committed in research `05c1867`; orchestrator `60c0eebf`
+folds the resulting expanded-gap reports. The binary candidate-only contract
+still reports `insufficient_contrast` (`16` cross-action pairs; gate `50`), so
+A9 is not deployable from this artifact. The next operator-safe choices are to
+continue the quiet-window batch queue below while AutoPilot is stopped, then
+restart AutoPilot with `--max-trials 3000` after the batch or when the window
+should close.
 
 Self-running lab W2 advanced through orchestrator `a83cc676`: active-safe
 deterministic watches now cover authority, restart advice, outcome progress,
@@ -205,6 +209,20 @@ contract `3` cross-action pairs, score-ordered contract `6` cross-action pairs,
 and no eligible ranker holdouts. Next A9 work is a revised acquisition design
 that intentionally samples same-task cross-action disagreement/balanced
 directions; do not rerun the same live collection pass.
+
+A9 expanded-gap addendum (2026-07-06): the guarded contrast-replan manifest ran
+in the AutoPilot-off window and is preserved in research `05c1867` as four raw
+seeding batches (`20260706T134745Z`). The orchestrator fold in `60c0eebf`
+produces `476` candidate rows / `238` source-record groups, but the
+candidate-only binary preference contract still has only `16` cross-action
+pairs across `16` contrastive groups (`14` `architect_general>coder_escalation`,
+`2` reverse; no hotpotqa pairs). The pairwise ranker sees a signal on those
+`16` rows (`logistic_l2` mean accuracy `0.85`, mean AUC `0.9625`) but has
+`no_eligible_holdouts`, so runtime gating remains disallowed. The important
+follow-up is not another run of the same manifest; it is either a
+score-ordered/source-q-reward contract path that preserves the observed
+q-reward signal, or a new acquisition design that deliberately creates
+same-task positive/negative binary contrasts across actions.
 
 ## B2. Frontier programs (strategic spine — spec: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md))
 | # | Prio | Item | Handoff |
