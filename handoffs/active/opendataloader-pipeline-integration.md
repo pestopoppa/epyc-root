@@ -1,6 +1,6 @@
 # OpenDataLoader PDF — Pipeline Integration
 
-**Status**: Phase 1 done (NIB2-13). Phase 2 scaffolding landed 2026-05-06 — `src/models/odl_structured.py` (FigureContext, HeadingNode, TableContext, ODLStructuredDocument); `_extract_with_opendataloader_structured()` in pdf_router; `build_figure_prompt_with_context()` additive helper in figure_analyzer; `chunk_by_odl_headings()` additive helper in document_chunker. 2026-06-21 follow-ups (`epyc-orchestrator` `bd3f6f4e`, `55d1ed16`, `4f7f6d1d`, `76dcd42c`, `634a9078`, `fa1b5460`, `a0e8ae09`) wire optional structured payloads through `OCRResult`, `DocumentPreprocessor`, `DocumentChunker`, and `FigureAnalyzer`, route explicitly gated local PDF processing through the ODL structured extractor, use ODL structured figure bboxes instead of PyMuPDF image enumeration in ODL structured mode, suppress unsafe ODL structured metadata when `INJECTION_SCANNING` is enabled, carry ODL table metadata through preprocessing/cache/TaskIR output, add a default-inert ODL table backend routing seam, and add a default-off primary document-body warning policy. ODL headings now drive chunking when present with regex fallback, ODL figure contexts enrich per-figure VL prompts unless the injection scanner suppresses the additive structured context, ODL tables are first-class `TableRef` records for downstream routing, and `ORCHESTRATOR_DOCUMENT_BODY_INJECTION_POLICY=warn` can scan extracted OCR/body pages without mutating or blocking source text. 2026-06-27 follow-ups (`epyc-orchestrator` `8aab2d63`, `f61c3103`) wire the explicit `ORCHESTRATOR_ODL_TABLE_BACKEND=hybrid` path through the official `opendataloader_pdf.convert(..., hybrid=...)` SDK surface with env-configured backend URL/timeout/fallback and local-structured fallback, then add hybrid artifact replay fixtures covering official ODL JSON key aliases. 2026-07-04 no-inference corpus probes (`epyc-orchestrator/orchestration/reports/pdf_fastpath_probe_20260704T084521Z.{json,md}`, `pdf_fastpath_probe_valid_20260704T084622Z.{json,md}`, and `pdf_fastpath_probe_valid_structuralmeta_20260704T135015Z.{json,md}`) confirm the local ODL/LiteParse/pdftotext harness is runnable and distinguish corrupt archive fixtures from valid born-digital PDFs. On the filtered 8-PDF valid set, all four backends succeeded on 7/8; ODL local/structured had the highest median quality score (`0.987`) but much higher median latency (`645-703 ms` vs `21 ms` pdftotext and `16 ms` LiteParse), and the structural-metadata rerun explicitly reports zero ODL headings/tables/figures and zero LiteParse bboxes/page images on this corpus despite `1195` table-like text lines. This remains default-inert unless `PDF_EXTRACTOR=opendataloader`, `ORCHESTRATOR_ODL_STRUCTURED=1`, and/or the table backend env are explicitly set; the injection filters are additionally gated by `INJECTION_SCANNING`. Remaining Phase 2 work: larger structural/table-heavy corpus evidence and hybrid output/table-selection policy. Phase 3 (sidecar deployment + benchmark) remains sidecar/evidence-gated.
+**Status**: Phase 1 done (NIB2-13). Phase 2 scaffolding landed 2026-05-06 — `src/models/odl_structured.py` (FigureContext, HeadingNode, TableContext, ODLStructuredDocument); `_extract_with_opendataloader_structured()` in pdf_router; `build_figure_prompt_with_context()` additive helper in figure_analyzer; `chunk_by_odl_headings()` additive helper in document_chunker. 2026-06-21 follow-ups (`epyc-orchestrator` `bd3f6f4e`, `55d1ed16`, `4f7f6d1d`, `76dcd42c`, `634a9078`, `fa1b5460`, `a0e8ae09`) wire optional structured payloads through `OCRResult`, `DocumentPreprocessor`, `DocumentChunker`, and `FigureAnalyzer`, route explicitly gated local PDF processing through the ODL structured extractor, use ODL structured figure bboxes instead of PyMuPDF image enumeration in ODL structured mode, suppress unsafe ODL structured metadata when `INJECTION_SCANNING` is enabled, carry ODL table metadata through preprocessing/cache/TaskIR output, add a default-inert ODL table backend routing seam, and add a default-off primary document-body warning policy. ODL headings now drive chunking when present with regex fallback, ODL figure contexts enrich per-figure VL prompts unless the injection scanner suppresses the additive structured context, ODL tables are first-class `TableRef` records for downstream routing, and `ORCHESTRATOR_DOCUMENT_BODY_INJECTION_POLICY=warn` can scan extracted OCR/body pages without mutating or blocking source text. 2026-06-27 follow-ups (`epyc-orchestrator` `8aab2d63`, `f61c3103`) wire the explicit `ORCHESTRATOR_ODL_TABLE_BACKEND=hybrid` path through the official `opendataloader_pdf.convert(..., hybrid=...)` SDK surface with env-configured backend URL/timeout/fallback and local-structured fallback, then add hybrid artifact replay fixtures covering official ODL JSON key aliases. 2026-07-04 no-inference corpus probes (`epyc-orchestrator/orchestration/reports/pdf_fastpath_probe_20260704T084521Z.{json,md}`, `pdf_fastpath_probe_valid_20260704T084622Z.{json,md}`, and `pdf_fastpath_probe_valid_structuralmeta_20260704T135015Z.{json,md}`) confirm the local ODL/LiteParse/pdftotext harness is runnable and distinguish corrupt archive fixtures from valid born-digital PDFs. 2026-07-06 adds the `opendataloader_hybrid` backend to the fast-path probe with explicit sidecar dependency checks, so hybrid evidence can fail closed as `missing_dependency` when the sidecar is absent. On the filtered 8-PDF valid set, all four non-hybrid backends succeeded on 7/8; ODL local/structured had the highest median quality score (`0.987`) but much higher median latency (`645-703 ms` vs `21 ms` pdftotext and `16 ms` LiteParse), and the structural-metadata rerun explicitly reports zero ODL headings/tables/figures and zero LiteParse bboxes/page images on this corpus despite `1195` table-like text lines. This remains default-inert unless `PDF_EXTRACTOR=opendataloader`, `ORCHESTRATOR_ODL_STRUCTURED=1`, and/or the table backend env are explicitly set; the injection filters are additionally gated by `INJECTION_SCANNING`. Remaining Phase 2 work: larger structural/table-heavy corpus evidence and hybrid output/table-selection policy. Phase 3 (sidecar deployment + benchmark) remains sidecar/evidence-gated.
 **Created**: 2026-03-17 (via research intake deep dive)
 **Priority**: P2 — medium priority, medium effort, high payoff for document processing quality
 **Categories**: document_processing, multimodal
@@ -149,6 +149,7 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 **Effort**: Medium-Large
 
 - [ ] Deploy `opendataloader-pdf-hybrid --port 5002` as sidecar service
+- [x] Add a sidecar-aware `opendataloader_hybrid` backend to `scripts/benchmark/pdf_fastpath_probe.py` so hybrid preflights report missing SDK/sidecar dependencies explicitly instead of silently skipping or forcing live infra ✅ 2026-07-06
 - [ ] Experiment: swap hybrid backend from docling-fast → LightOnOCR-2-1B (port 8082)
 - [ ] Measure: does GPU-accelerated LightOnOCR beat docling-fast's 0.43s/page?
 - [ ] Implement three-way routing: ODL local (simple) → ODL hybrid (tables) → LightOnOCR (scanned)
@@ -196,6 +197,28 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
   `liteparse_bboxes=0`, `liteparse_page_images=0`, and
   `table_like_lines=1195`, confirming that this corpus is useful only for
   fast-path text extraction evidence.
+
+**2026-07-06 hybrid sidecar probe preflight checkpoint (`epyc-orchestrator` `6adc48fe`)**
+
+- `scripts/benchmark/pdf_fastpath_probe.py` now treats `opendataloader_hybrid`
+  as a first-class backend and checks both `opendataloader_pdf` importability
+  and `ORCHESTRATOR_ODL_HYBRID_URL` reachability before invoking the router's
+  hybrid extractor.
+- Missing module or unreachable sidecar cases become explicit
+  `missing_dependency` records with concrete detail. This keeps Phase 3
+  evidence-gated and no-inference by default: the harness can be run before the
+  sidecar is deployed, but it cannot accidentally turn absence of sidecar
+  infrastructure into empty-output quality evidence.
+- Validation: GitNexus LOW for `_run_backend` and
+  `_opendataloader_dependency_failure`; `python3 -m py_compile
+  scripts/benchmark/pdf_fastpath_probe.py tests/unit/test_pdf_fastpath_probe.py`;
+  `uv run pytest -q tests/unit/test_pdf_fastpath_probe.py` (`10 passed`);
+  `uv run ruff check scripts/benchmark/pdf_fastpath_probe.py
+  tests/unit/test_pdf_fastpath_probe.py`.
+- Remaining gate: no `opendataloader-pdf-hybrid --port 5002` sidecar was
+  started, and no 200-PDF benchmark evidence exists yet. The next live window
+  should deploy the sidecar, run the hybrid probe on a structural/table-heavy
+  corpus, then decide whether any router policy change is justified.
 
 **2026-06-28 benchmark adapter local-PDF checkpoint (`epyc-inference-research` `5d14d3d`, `5ab748d`)**
 
