@@ -33,6 +33,14 @@ continue the quiet-window batch queue below while AutoPilot is stopped, then
 restart AutoPilot with `--max-trials 3000` after the batch or when the window
 should close.
 
+The `real_suite_v1` clean-window batch was also executed during this stop
+window and packaged at `orchestration/reports/real_suite_v1_eval_20260706T192007Z/`.
+It completed with `0/50` correct, `0.0` quality, `0.0` reliability, and a
+failure mix dominated by backend-unavailable circuit-open responses on `8070`
+plus repeated no-progress nudge failures on `coder_escalation` and
+`frontdoor`. That gives decision-grade negative evidence for W3, but the W3
+acceptance row remains open.
+
 Self-running lab W2 advanced through orchestrator `a83cc676`: active-safe
 deterministic watches now cover authority, restart advice, outcome progress,
 planner-provider health, review queue, quiet-window planning, and quiet-window
