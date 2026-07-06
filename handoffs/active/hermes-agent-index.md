@@ -31,7 +31,7 @@
 |---|---|
 | Conversation management B1-B7 | Complete; detailed history lives in [`../completed/orchestrator-conversation-management.md`](../completed/orchestrator-conversation-management.md). |
 | Hermes slash-command skills and drift guard | Complete through 2026-06-14; current files under `scripts/hermes/skills/`. |
-| Downstream `x_*` override plugin refactor | Complete 2026-07-06; upstream Hermes plugin command/request-hook plumbing plus EPYC `epyc-orchestrator-overrides` plugin are implemented and statically validated. |
+| Downstream `x_*` override plugin refactor | Complete 2026-07-06; upstream Hermes plugin command/request-hook plumbing plus EPYC `epyc-orchestrator-overrides` plugin are implemented and statically validated. Root-side regression coverage now verifies plugin command registration, session-scoped `extra_body` injection, clear semantics, and explicit `tool_choice=none` preservation. |
 | Streaming + override parameter validation | Complete; keep future adapter changes compatible with string-valued override params. |
 | Tool-output compression downstream port | Complete through `epyc-orchestrator` `fe64140`; remaining telemetry/registration gates live in [`tool-output-compression.md`](tool-output-compression.md). |
 | Open-source orchestrator stub | Archived; do not re-add without a new concrete extraction target. |

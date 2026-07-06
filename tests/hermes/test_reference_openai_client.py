@@ -62,6 +62,14 @@ class ReferenceOpenAIClientTests(unittest.TestCase):
         self.assertEqual(payload["tools"], [client.DEMO_NATIVE_TOOL])
         self.assertEqual(payload["tool_choice"], "auto")
 
+    def test_build_payload_preserves_explicit_no_tool_choice(self):
+        client = _load_module()
+
+        payload = client._build_payload(_args(demo_tool=True, tool_choice="none"))
+
+        self.assertEqual(payload["tools"], [client.DEMO_NATIVE_TOOL])
+        self.assertEqual(payload["tool_choice"], "none")
+
     def test_build_payload_accepts_raw_tool_and_forced_tool_choice(self):
         client = _load_module()
 

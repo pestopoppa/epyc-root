@@ -215,8 +215,8 @@ Wiring in `openai_compat.py`:
 **Hermes slash command → API parameter mapping**:
 | Hermes Command | API Parameter | Value |
 |---------------|---------------|-------|
-| `/use architect` | `x_orchestrator_role` | `architect` |
-| `/use biggest` | `x_force_model` | `architect_qwen2_5_72b` |
+| `/use architect` | `x_orchestrator_role` | `architect_general` |
+| `/use biggest` | `x_orchestrator_role` | `architect_general` |
 | `/escalation off` | `x_max_escalation` | `A` |
 | `/escalation B1` | `x_max_escalation` | `B1` |
 | `/nocode` | `x_disable_repl` | `true` |
@@ -282,6 +282,7 @@ Source: [`research/deep-dives/hermes-agent-v2026-4-23-release.md`](../../researc
   - EPYC root now ships `scripts/hermes/plugins/epyc-orchestrator-overrides/`, a namespaced plugin that registers `/use`, `/escalation`, `/nocode`, and `/epyc-overrides`; it stores overrides per Hermes session and injects `x_orchestrator_role`, `x_max_escalation`, and `x_disable_repl` through `extra_body` on `pre_llm_call`.
   - `scripts/hermes/setup_hermes.sh` now syncs each EPYC plugin directory into `~/.hermes/plugins/<plugin>/` without deleting unrelated user plugins. The existing SKILL.md docs remain as operator-facing reference material; deterministic behavior now lives in the plugin.
   - No inference required for implementation. Validation: Hermes focused suite (`tests/test_plugins.py`, `tests/test_cli_prefix_matching.py`, `tests/hermes_cli/test_commands.py`, `tests/test_run_agent.py::TestBuildApiKwargs`) passed `109 passed`; root plugin smoke loaded the plugin under temporary `HERMES_HOME`, applied/cleared `/use`, `/escalation`, and `/nocode`, and verified the exact injected `extra_body`; `check_drift.py`, reference-client print-only, `py_compile`, and `bash -n` passed. End-to-end live Hermes/orchestrator validation remains in G/P.
+  - 2026-07-06 static regression follow-up: added root-side pytest coverage for the plugin command registry, per-session override injection, and clear semantics. Also corrected the stale Phase 2 table so `/use biggest` maps to the current role alias (`x_orchestrator_role=architect_general`) rather than an obsolete concrete `x_force_model` id. Validation: focused Hermes pytest (`8 passed`), `py_compile`, focused ruff, drift check, reference-client print-only with `tool_choice=none`, and shell syntax checks passed.
 
 #### Phase 2 Validation (added 2026-04-24 from intake-454 deep-dive)
 
@@ -309,6 +310,7 @@ Hermes is one *client* of the orchestrator's `/v1/chat/completions` + `x_*` over
   - Document the wiring recipe in this handoff so other client types can follow the same pattern
   - [x] Add dry-run reference bare-client wiring helper: `scripts/hermes/reference_openai_client.py` prints cURL and OpenAI SDK recipes for `x_orchestrator_role`, `x_force_model`, `x_max_escalation`, `x_disable_repl`, and `x_show_routing` without sending traffic unless `--send` is explicit. ✅ 2026-07-06
   - [x] Extend the reference helper into a quiet-window validation harness for `stream`, native OpenAI `tools`, and `tool_choice` without sending traffic by default. ✅ 2026-07-06
+  - [x] Add root-side regression coverage for dry-run `tool_choice=none` so print-only validation does not accidentally convert explicit no-tool requests back to `auto`. ✅ 2026-07-06
   - [ ] Run live `--send` validation in a quiet window and verify role override, force-model, escalation cap, REPL disable, routing metadata, and streaming behavior against the current `/v1/chat/completions` endpoint.
 - [x] **Q — Sufficiency call: do not absorb client-side concerns into the orchestrator** (~30 min, design discipline note) — recorded in `## Pros` above as the client/orchestrator separation rule.
   - Decision rule to record explicitly: per-client UX (slash commands, prompts, conversation memory) lives in the **client**, not the orchestrator. The orchestrator exposes overrides; clients map their UX to override values. This is the same discipline as the Hermes slash-command → `x_*` mapping — generalized as a principle, not a one-off
