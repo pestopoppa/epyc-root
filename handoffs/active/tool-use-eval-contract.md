@@ -77,6 +77,9 @@ surfaces.
 Parallel batching task state:
 - [x] Add analyzer telemetry for multi-tool, explicit read-only, and
   `parallel_tools_used` coverage (`epyc-orchestrator` `64db8a12`). ✅ 2026-07-06
+- [x] Persist `tool_chains` from live REPL responses into
+  `seeding_diagnostics.jsonl` so the analyzer can reconstruct observed chain
+  structure from future runs. ✅ 2026-07-06
 - [x] Expand/read-through `tool_registry.yaml` side-effect annotations before
   using read-only chain coverage as a decision gate; `python_eval`,
   NumPy-backed eval-style math, and embedding/classification tools remain
