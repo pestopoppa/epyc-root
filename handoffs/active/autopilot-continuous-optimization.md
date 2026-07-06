@@ -13,6 +13,9 @@ is live; the routine planner path is
 `bf9bece7` also keeps fallback draft/review traffic on distinct local role
 providers when the spend breaker is inactive, instead of crossing to Claude
 unnecessarily.
+Frontier-rerun pressure now bypasses the planner prompt when the rerun is
+already required, so W8 recovery does not spend a draft/critique hop on an
+inevitable replay.
 Startup verified StrategyStore search health exact (`1,420` SQLite/FAISS/FTS
 rows, `100.0%` coverage). Tool-use activation is not the blocker;
 `8be68732` fixes the REPL-pinned sentinel prompt contract so the lane asks for
