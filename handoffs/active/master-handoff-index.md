@@ -10,22 +10,24 @@
 
 **Standing contracts**: `/workspace/MEASUREMENT.md` (adopted) · `instrument_eras.yaml` (epyc-orchestrator orchestration/) · ATTESTATION (to build, findings-04 §B) · current architecture review: [fable5-findings-00-executive-summary.md](../completed/fable5-findings-00-executive-summary.md) — **the Fable 5 one-shot review is COMPLETE (2026-06-12)**; its 7 findings (-01..-07) + appendix are the standing reference, not an open row. The stale 2026-06-15 transient pickup was archived to [`../archived/fable5-long-horizon-session-pickup-history-through-2026-06-20.md`](../archived/fable5-long-horizon-session-pickup-history-through-2026-06-20.md); resume from the domain indices and owning handoffs below.
 
-**Current coordination checkpoint - 2026-07-06T12:16Z**: orchestrator
-`a83cc676` is live in the canonical Fable authority daemon, and the local
-planner path remains `local_frontdoor` draft -> `local_worker` critique with
-Claude fallback. AutoPilot PID `131226` is live with `--max-trials 3000`,
-planner hints, tool sentinels, sequential verdicts, and W6 audit flags.
-`phase_health_report.py --require-current-code --json` reports trial `1228`,
-`action_type=numeric_trial`, `phase=dispatch_action`, `pid_alive=true`, and
-`code_stale=false`. `w8_promotion_trajectory_report.py --json` reports
-`ok=true`, `status=progressing`, and recent replay-eligible candidates
-`4b6b454ea4f884fd`, `289c4fc0fb5a334d`, and `d3f28243801548b2` with no
-candidate blockers. The strict Fable gate is ready (`blockers=[]`); the active
-next action is `collect_w8_promotion_eval_evidence`, while A9 pairwise
-collection remains blocked until AutoPilot is stopped. Dashboard backend and
-HTML fixes through `a83cc676` are served by the live API; older PID and
-dashboard deployment references below are historical unless explicitly dated
-after this checkpoint.
+**Current coordination checkpoint - 2026-07-06T13:45Z**: AutoPilot is
+intentionally stopped. PID `131226` was terminated and verified dead after a
+selective worker slowdown investigation, so live PID references before this
+checkpoint are historical. The CPU stack remains on the production v6
+`/mnt/raid0/llm/llama.cpp/build/bin/llama-server` path with `GGML_IQK=1`;
+only the MI210 sidecar uses `llama.cpp-experimental/build-hip`. Reloading the
+full `worker_general` instance on port `8072` restored quiet probe throughput
+from about `17.3` t/s to about `29.2` t/s on the same prompt and `44.5` t/s on
+an easy high-acceptance prompt. The preserved worker quarter replicas still use
+the expected v6 flags, but the latest preflight observed one quarter
+(`worker_general` q2 / `:8282`) with correct CPU affinity and non-perfect
+`numa_maps` locality, so N12 live placement verification should run before
+long autonomous eval accrual resumes. Orchestrator `a7dbb204` adds a compact
+A9 pairwise collection-target export; a real-data smoke emitted
+`offline_reward_pairwise_collection_targets.v1` with `7` targets from the
+`20260705T185704Z` audit slice. The next operator-safe choices are either
+reload/verify worker quarters and restart AutoPilot with `--max-trials 3000`,
+or keep AutoPilot down and execute the quiet-window batch queue below.
 
 Self-running lab W2 advanced through orchestrator `a83cc676`: active-safe
 deterministic watches now cover authority, restart advice, outcome progress,
