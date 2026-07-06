@@ -47,11 +47,12 @@ MI210 direct-access workload context.
 
 ## Follow-Up
 
-- [ ] Monitor the one live placement observation from
+- [x] Monitor the one live placement observation from
   `scripts/server/affinity_preflight.py`: production CPU affinities verified,
   but `worker_general` q2 (`:8282`) had correct cpuset placement with only
-  about `0.756` local anonymous-memory placement in `numa_maps`. Reload that
-  instance or re-run placement preflight if throughput/latency symptoms appear.
+  about `0.756` local anonymous-memory placement in `numa_maps`. Reloaded that
+  instance and re-ran placement preflight on 2026-07-06; `live_affinity_verified=true`
+  and `live_memory_placement_verified=true`. ✅ 2026-07-06
 - [ ] If a future production role is added to the contention matrix, regenerate
   the matrix under the codified recipe and update the measured-role topology
   hash as part of that change.
