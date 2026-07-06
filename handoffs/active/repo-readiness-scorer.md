@@ -1,6 +1,6 @@
 # Repo-Readiness Scorer (Agent-Readiness Model)
 
-**Status**: v1 deterministic scorer landed 2026-06-13; deterministic remediation queue export, advisory Markdown rendering, passive AutoPilot pickup JSON, root no-inference candidate eval gate, dashboard summary, and default-off AutoPilot planner advisory bridge are live. Current 2026-07-05 artifacts show `epyc-root`, `epyc-orchestrator`, and `epyc-inference-research` at Autonomous/L5; `epyc-llama` remains Standardized/L3 with six blocking L4 workflow-surface gaps. The passive pickup artifact remains planning context only (`mode=advisory_only`, `authority_gate=false`) and is not an acceptance gate, promotion gate, or substitute for a true self-optimization loop. Future launches through `scripts/autopilot/start_fable_authority_daemon.py` inject the newest passive pickup unless `AUTOPILOT_REPO_READINESS_PICKUP` is explicitly set.
+**Status**: v1 deterministic scorer landed 2026-06-13; deterministic remediation queue export, advisory Markdown rendering, passive AutoPilot pickup JSON, root no-inference candidate eval gate, dashboard summary, and default-off AutoPilot planner advisory bridge are live. Current 2026-07-06 artifacts show `epyc-root`, `epyc-orchestrator`, and `epyc-inference-research` at Autonomous/L5; `epyc-llama` remains Standardized/L3 with six blocking L4 workflow-surface gaps. The passive pickup artifact remains planning context only (`mode=advisory_only`, `authority_gate=false`) and is not an acceptance gate, promotion gate, or substitute for a true self-optimization loop. Future launches through `scripts/autopilot/start_fable_authority_daemon.py` inject the newest passive pickup unless `AUTOPILOT_REPO_READINESS_PICKUP` is explicitly set.
 **Created**: 2026-06-03 (via research intake → factory.ai deep-dive)
 **Categories**: benchmark_methodology, autonomous_research, knowledge_management
 
@@ -40,12 +40,12 @@ Full mining → [`research/factory-ai-harvest-2026-06-03.md`](../../research/fac
 
 - Scorer: `/mnt/raid0/llm/epyc-root/scripts/validate/repo_readiness_scorer.py`
 - Tests: `/mnt/raid0/llm/epyc-root/tests/validate/test_repo_readiness_scorer.py`
-- JSON report: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_2026-07-05.json`
-- Markdown report: `/mnt/raid0/llm/epyc-root/progress/2026-07/repo-readiness-2026-07-05.md`
+- JSON report: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_2026-07-06.json`
+- Markdown report: `/mnt/raid0/llm/epyc-root/progress/2026-07/repo-readiness-2026-07-06.md`
 - Remediation queue export: `scripts/validate/repo_readiness_scorer.py --output-remediation-json <path>` (landed in root `7e6b3ee18864f1d86e8b5ce4651449a5fd7c8ee2`)
-- Current remediation queue JSON: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_remediation_queue_2026-07-05.json`
-- Current remediation queue Markdown: `/mnt/raid0/llm/epyc-root/progress/2026-07/repo-readiness-remediation-2026-07-05.md`
-- Current passive AutoPilot pickup JSON: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_autopilot_pickup_2026-07-05.json`
+- Current remediation queue JSON: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_remediation_queue_2026-07-06.json`
+- Current remediation queue Markdown: `/mnt/raid0/llm/epyc-root/progress/2026-07/repo-readiness-remediation-2026-07-06.md`
+- Current passive AutoPilot pickup JSON: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_autopilot_pickup_2026-07-06.json`
 
 2026-06-13 first-run summary:
 
