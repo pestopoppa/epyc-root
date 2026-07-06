@@ -25,6 +25,19 @@ live quarter placement proof is in
 No production config flip follows; revisit only if a materially different
 protocol reopens the question.
 
+**2026-07-06 live re-check**: a later broad `affinity_preflight.py --roles
+frontdoor ingest_long_context vision_escalation worker_general worker_vision
+architect_general` pass also came back clean on the checked live placements.
+`worker_general` quarters remained fully local (`live_memory_placement_verified=true`,
+`required=4`, `mismatches=0`), while the shared-mmap quarter roles stayed on
+their expected interleaved placement. The run wrote
+`/mnt/raid0/llm/tmp/affinity_preflight_live_20260706T184407Z.json` and
+did not reveal a new N12 flip opportunity.
+
+- [x] 2026-07-06 live re-check completed: broad `affinity_preflight.py`
+  confirmed the checked live roles still match the expected placement model and
+  did not uncover a new N12 flip path. ✅ 2026-07-06
+
 ---
 
 ## 2026-06-26 ACTIVATION ATTEMPT (v6+iqk cutover) — launch-path blockers, REVERTED
