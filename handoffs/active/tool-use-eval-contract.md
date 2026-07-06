@@ -57,6 +57,8 @@ This raises the registry-backed analyzer coverage without expanding the
 "read-only" contract to model-calling or potentially side-effectful eval
 surfaces.
 
+**Planner-hint refresh (2026-07-06)**: `epyc-orchestrator` now seeds `parallel-read-only-tool-batching` into the live planner StrategyStore hints. The hint does not change executor semantics; it just makes the existing parallel path easier for the drafter to exploit when a turn needs several independent read-only facts.
+
 Parallel batching task state:
 - [x] Add analyzer telemetry for multi-tool, explicit read-only, and
   `parallel_tools_used` coverage (`epyc-orchestrator` `64db8a12`). ✅ 2026-07-06
@@ -64,6 +66,9 @@ Parallel batching task state:
   using read-only chain coverage as a decision gate; `python_eval`,
   NumPy-backed eval-style math, and embedding/classification tools remain
   unannotated by design (`epyc-orchestrator` `87e957ba`). ✅ 2026-07-06
+- [x] Seed a planner-facing hint for independent read-only tool batching so
+  the existing parallel-dispatch path is easier for the drafter to exploit
+  when a turn needs several unrelated facts. ✅ 2026-07-06
 - [ ] If future full-log runs show material independent read-only chains with
   serial execution, scope implementation inside `REPLEnvironment.execute` /
   `parallel_dispatch.py` without changing OpenAI response `message.tool_calls`
