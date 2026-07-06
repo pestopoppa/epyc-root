@@ -1,38 +1,34 @@
 # AutoPilot: Continuous Recursive Optimization
 
 **Status**: **W4/W6 authority wiring is current, A10 planner hints are active,
-BSV observe is process-aware, T3 is planner-visible workflow pressure, FAISS is
-exact again, tool-use activation is ready, numeric candidate generation has
-been unblocked, and W8 needs a keepable replayable candidate before promotion
-evidence can accrue.** AutoPilot is live as PID `2935890` with
-`--max-trials 2000`; the latest live advisor sees trial `1188` in
-`dispatch_action` / `numeric_trial`. The daemon predates orchestrator
-`854eff06`, `39351bad`, `200d6ea`, and `d006996b`, so
-`phase_health_report.py --json --require-current-code` correctly reports
-`code_stale=true` until the next trial-boundary restart. The current stale
-daemon can still emit the old `local_chat` / `localhost` local-worker failures
-seen in planner telemetry at `2026-07-05T21:13Z`; the repaired restart target
-is `AUTOPILOT_PLANNER_PRIMARY=local_worker` with Codex critique, IPv4
-`127.0.0.1` local OpenAI-compatible calls, transient local HTTP retries, and
-fail-closed rejection for `[ERROR]` / `[MOCK]` local payloads. The indexed
-episodic FAISS mirror is exact after orchestrator
-`a0148edd`: `526,729/526,729` indexed vectors, matching `id_map.npy` and
-`reembedded.npz`, `100.0%` live overlap, `0` missing/stale IDs. Tool-use
-activation is not the blocker; `8be68732` fixes the REPL-pinned sentinel prompt
-contract so the lane asks for executable `TOOL("get_eval_secret", ...)` code.
-Numeric candidate generation is no longer blocked by stale broad surface bans,
-short explicit params, or W8 deferral churn: `4400df02` constrains
-numeric-surface blacklists to concrete params unless explicitly human-scoped,
-`6a0d60af` normalizes planner-friendly params such as `{"keep_ratio": 0.5}` to
-`{"kv.keep_ratio": 0.5}`, and `854eff06` replaces unreplayable W8 deferrals
-with an unblacklisted numeric trial fallback unless a sequential due-action
-owns the turn. The live W8 blocker remains evidence:
-`w8_candidate_generation_required` is expected to clear only after restart and
-a keepable replayable `numeric_trial` or `structural_experiment` candidate,
-then sequential confirmation plus fresh promotion-eval evidence. A9
-source-reward target contrast replan is ready but blocked while AutoPilot is
-active; DS-E1 is decision-ready. W7 game-layer hardening remains complete
-through critic
+BSV observe is process-aware, T3 is planner-visible workflow pressure,
+StrategyStore search health is exact, tool-use activation is ready, numeric
+candidate generation has been unblocked, and W8 needs a keepable replayable
+candidate before promotion evidence can accrue.** AutoPilot is live as PID
+`3267768` with `--max-trials 3000`; latest observed checkpoint is trial `1196`
+in `planner_invoke` on orchestrator `a13a2948` after trial `1194`
+completed/reverted and trial `1195` invalid-skipped. The routine planner path is
+`local_ingest` draft -> `local_frontdoor` critique with `claude` fallback.
+Startup verified StrategyStore search health exact (`1,420` SQLite/FAISS/FTS
+rows, `100.0%` coverage). Tool-use activation is not the blocker;
+`8be68732` fixes the REPL-pinned sentinel prompt contract so the lane asks for
+executable `TOOL("get_eval_secret", ...)` code. Numeric candidate generation is
+no longer blocked by stale broad surface bans, short explicit params, or W8
+deferral churn: `4400df02` constrains numeric-surface blacklists to concrete
+params unless explicitly human-scoped, `6a0d60af` normalizes planner-friendly
+params such as `{"keep_ratio": 0.5}` to `{"kv.keep_ratio": 0.5}`, `3364bdd7`
+repairs W8 fallback deferrals into replayable candidates, and `a13a2948`
+clarifies that a new `numeric_trial.params={}` is an Optuna request whose
+concrete applied params are journaled by dispatch. Trial `1194` is the first
+live canary of that path: W8 fallback selected `chat_pipeline`, and
+NumericSwarm applied
+`chat.try_cheap_first_quality_threshold=0.8742715026951258`; the candidate
+then failed safety on `tool_use` regression and was reverted/blacklisted for
+that exact param. Ordinary
+`seed_batch`, `deep_eval`, and `structural_prune` remain valid AutoPilot
+actions outside the specific W8 candidate-generation blocker. A9 source-reward
+target contrast replan is ready but blocked while AutoPilot is active; DS-E1 is
+decision-ready. W7 game-layer hardening remains complete through critic
 measurement view (`41c5c71`), production eval sampling clamp (`7492cf5`),
 audit-stream gaming alarm (`8e4b1ec`), PEAF budget credit (`4b09661`), and
 per-question diff/provenance context (`749d38f`).
@@ -69,7 +65,7 @@ per-question diff/provenance context (`749d38f`).
 > trailing-window alarm, assuming no new gaming events occur.
 
 **Created**: 2026-03-08
-**Updated**: 2026-07-05 (current live AutoPilot PID `2935890` is stale versus the latest runtime fixes and is in trial `1188` `dispatch_action`; restart at the next advisor-safe boundary to load W8 guard `854eff06`, restart advisor `39351bad`, CPU MTP launch guard `200d6ea`, and local-planner provider hardening `d006996b`. W6 audit is clear, indexed episodic FAISS was exact after `a0148edd`, and the next planner default is `local_worker` draft + Codex critic rather than the fragile `local_chat` path.)
+**Updated**: 2026-07-05 (current live AutoPilot PID `3267768` is on orchestrator `a13a2948` with `--max-trials 3000`, local-ingest drafting, local-frontdoor critique, Claude critic fallback, planner hints, tool sentinels, sequential verdicts, and W6 audit accrual. Trial `1194` verified the replayable `chat_pipeline` numeric canary path but reverted on `tool_use`; trial `1195` invalid-skipped already-blacklisted `graph_router=true`; trial `1196` is now in planner invocation and should generate the next keepable W8 candidate.)
 **Location**: `epyc-orchestrator/scripts/autopilot/`
 
 > **Fable 5 review (2026-06-12)**: the review's architecture recommendations now have owning handoffs: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (LIVE t775 baseline-ratchet hotfix + dead-question repair), [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md) (per-question ledger + e-process verdicts; owns the next restart bundle), [evidence-plane-event-sourcing-and-narrative.md](evidence-plane-event-sourcing-and-narrative.md), and [objective-task-rate-goodput.md](objective-task-rate-goodput.md) (task_rate replaces the t/s axis). Full diagnosis: fable5-findings-01 + -05.
@@ -1230,6 +1226,20 @@ paired authority core.
   `dispatch_action` / `seed_batch`; it is a forced baseline-reference draw, so
   it is not yet a `local_chat` planner telemetry proof. Outcome progress remains
   `attention` because the last frontier admission is trial `1005`.
+- 2026-07-05 final local-planner/W8 status: the stale `local_chat`/`local_worker`
+  restart target has been superseded. AutoPilot is live as PID `3267768` from
+  orchestrator `a13a2948` with `--max-trials 3000`, local-ingest drafting,
+  local-frontdoor critique, Claude critic fallback, planner hints, tool
+  sentinels, sequential verdicts, and W6 audit accrual. The first post-fix
+  planner turn proved the W8 recovery path: a no-op local draft was rejected,
+  W8 fallback selected `numeric_trial` on `chat_pipeline`, and NumericSwarm
+  materialized
+  `chat.try_cheap_first_quality_threshold=0.8742715026951258`. The candidate
+  completed at `q=1.964`, `s=28.5`, failed the safety gate on `tool_use`, and
+  was reverted/blacklisted for that exact concrete param. Trial `1195` then
+  invalid-skipped already-blacklisted `graph_router=true`; trial `1196` is the
+  latest observed planner turn. This is wiring proof and negative candidate
+  evidence, not completed W8 promotion progress.
 - Regular Fable visibility landed in orchestrator `34591a27`: strict readiness
   now includes advisory `eval_task_coverage` status/percent/repeat/tier summary
   in `summary` and as a non-blocking section. Dashboard-specific presentation

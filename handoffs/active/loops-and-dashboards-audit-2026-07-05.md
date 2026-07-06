@@ -42,21 +42,44 @@ Action landed:
 - `epyc-orchestrator` `e58c2bca` feeds outcome-progress pressure into the controller prompt: latest/frontier/promotion staleness plus recent keepable, wasted-eval, and learning-excluded rates are now planner-facing, non-authority context.
 - [x] `epyc-orchestrator` `d006996b` hardens the local planner provider after the first live `local_chat` rollout failed: the default routine drafter is now `local_worker` with Codex critic, the OpenAI-compatible local URL uses `127.0.0.1`, transient local HTTP failures are retried, and local `[ERROR]` / `[MOCK]` payloads fail closed instead of being dispatched as planner text. The live AutoPilot PID still predates this commit; verify it after the next advisor-safe restart boundary. ✅ 2026-07-05
 - [x] `epyc-orchestrator` `200d6ea` closes the adjacent CPU MTP launcher trap: same-file embedded MTP configs omit `-md` instead of double-loading, while worker_general keeps `-md` for its current separate assistant draft model. ✅ 2026-07-05
+- [x] `epyc-orchestrator` `27fa7161`, `58904e36`, `3364bdd7`, and
+  `a13a2948` supersede the stale local-worker/Codex restart target with the
+  current canary contract: routine planning uses `local_ingest` draft,
+  `local_frontdoor` critique, and `claude` fallback; W8 fallback rewrites
+  seed/deep/prune deferrals into replayable candidate attempts; new
+  empty-params numeric trials are treated as Optuna requests whose concrete
+  params are journaled by dispatch. AutoPilot PID `3267768` is live on this
+  path; trial `1194` evaluated `chat_pipeline` threshold
+  `0.8742715026951258`, then reverted for `tool_use` regression, and trial
+  `1195` invalid-skipped already-blacklisted `graph_router=true`; latest
+  observed state is trial `1196` planner invocation. ✅ 2026-07-05
+- [x] `epyc-orchestrator` `69cbe730` repairs a dashboard coherence regression:
+  structured live taps with logical aliases now infer the physical CPU-lock
+  role from topology/port metadata before painting the region grid, so
+  concurrent streaming taps are not hidden just because one tap is labeled
+  `coder_escalation` while the lock grid is keyed by `frontdoor`. ✅ 2026-07-05
+- [ ] **Local-planner hardening tail**: the local-only path stayed on
+  `local_ingest` / `local_frontdoor` after the restart, with no cloud provider
+  observed in the inspected window. The remaining failure mode is shape churn:
+  no-op `plan_review=false`, a two-param numeric draft rejected for attribution,
+  and already-blacklisted `graph_router=true`. Next code target is a
+  pre-dispatch shape/blacklist validator plus explicit provider telemetry
+  (`draft ok`, `draft invalid`, `critique ok`, final accepted JSON) so overnight
+  local operation is auditable without reconstructing mixed log lines.
 - Focused validation passed across the touched slices: `49` planner/provider/launcher tests, `43` W6/readiness tests, `46` spend-breaker/economics tests, `233` action/dashboard tests, `49` structural/restore tests, `64` GEPA/prompt-root/API/eval propagation tests, `36` sequential/paired-diagnostics tests, `44` phase/restart/dashboard health tests, `138` rejected-draft/action/creativity tests, and `11` earlier GEPA integration tests, plus focused `py_compile`, `ruff`, and `git diff --check`.
 
 Next measured extension:
-- AutoPilot was restarted at `2026-07-05T19:43Z` as PID `2935890` before the
-  latest provider hardening, and it remains stale during trial `1188`
-  `dispatch_action`. The next restart should use the repaired
-  `local_worker`/Codex planner contract. Collect one actual planner-turn
-  telemetry sample showing successful `local_worker` draft behavior once the
-  forced/replay lane releases planner choice.
-- Build a two-stage planner provider after the one-shot router-mediated local
-  drafter has telemetry: `ingest_long_context` synthesizes a bounded planner
-  brief, `frontdoor` or `worker_general` drafts the action from that brief, and
-  Codex remains an escalation/critic option only when spend policy permits.
-  This is the orchestration-native target pattern; it should be A/B measured
-  against one-shot `local_chat` before becoming the default.
+- Let PID `3267768` continue from trial `1196`; trial `1194` proved the
+  candidate-generation path but was not keepable, and trial `1195` was an
+  invalid skip. If the local drafter keeps
+  producing no-op/invalid drafts that need critic salvage, repair the drafter
+  prompt/normalizer rather than weakening W8 replayability rules.
+- Build a two-stage planner provider after the one-shot local-ingest/local-
+  frontdoor path has telemetry: `ingest_long_context` synthesizes a bounded
+  planner brief, `frontdoor` or `worker_general` drafts the action from that
+  brief, and Codex/Claude remain sampled audit or fallback critics. This is the
+  orchestration-native target pattern; it should be A/B measured before
+  becoming the default.
 
 ---
 
