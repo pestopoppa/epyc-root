@@ -9,8 +9,8 @@ explicitly passed.
 from __future__ import annotations
 
 import argparse
-import pprint
 import json
+import pprint
 import shutil
 import subprocess
 import sys
@@ -19,10 +19,52 @@ import sys
 VALID_ESCALATION = {"A", "B1", "B2", "C", ""}
 
 
+DEMO_NATIVE_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "lookup_orchestrator_status",
+        "description": "Look up one high-level orchestrator status category.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "scope": {
+                    "type": "string",
+                    "enum": ["routing", "locks", "models"],
+                    "description": "Status area to inspect.",
+                }
+            },
+            "required": ["scope"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+def _json_arg(value: str, flag: str) -> object:
+    try:
+        return json.loads(value)
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"{flag} must be valid JSON: {exc}") from exc
+
+
+def _tool_choice(args: argparse.Namespace) -> str | dict | None:
+    if args.tool_choice_json:
+        parsed = _json_arg(args.tool_choice_json, "--tool-choice-json")
+        if not isinstance(parsed, dict):
+            raise ValueError("--tool-choice-json must decode to an object")
+        return parsed
+    if args.tool_choice:
+        return args.tool_choice
+    if args.demo_tool or args.tools_json:
+        return "auto"
+    return None
+
+
 def _build_payload(args: argparse.Namespace) -> dict:
     payload = {
         "model": args.model,
         "messages": [{"role": "user", "content": args.prompt}],
+        "stream": args.stream,
         "x_max_escalation": args.x_max_escalation,
         "x_disable_repl": args.x_disable_repl,
         "x_show_routing": args.x_show_routing,
@@ -33,11 +75,27 @@ def _build_payload(args: argparse.Namespace) -> dict:
     if args.x_force_model:
         payload["x_force_model"] = args.x_force_model
 
+    tools = []
+    if args.demo_tool:
+        tools.append(DEMO_NATIVE_TOOL)
+    for tool_json in args.tools_json:
+        parsed = _json_arg(tool_json, "--tools-json")
+        if not isinstance(parsed, dict):
+            raise ValueError("--tools-json must decode to an object")
+        tools.append(parsed)
+    if tools:
+        payload["tools"] = tools
+
+    tool_choice = _tool_choice(args)
+    if tool_choice is not None:
+        payload["tool_choice"] = tool_choice
+
     return payload
 
 
 def _print_reference(payload: dict, endpoint: str, api_key: str) -> None:
-    extra_body = {k: v for k, v in payload.items() if k not in {"model", "messages"}}
+    standard_fields = {"model", "messages", "stream", "tools", "tool_choice"}
+    extra_body = {k: v for k, v in payload.items() if k not in standard_fields}
     extra_body_py = pprint.pformat(extra_body, indent=4, width=100)
     messages_py = pprint.pformat(payload["messages"], indent=4, width=100)
 
@@ -62,9 +120,24 @@ def _print_reference(payload: dict, endpoint: str, api_key: str) -> None:
     print("response = client.chat.completions.create(")
     print(f'    model="{payload["model"]}",')
     print(f"    messages={messages_py},")
+    if payload.get("stream"):
+        print("    stream=True,")
+    if payload.get("tools"):
+        tools_py = pprint.pformat(payload["tools"], indent=4, width=100)
+        print(f"    tools={tools_py},")
+    if "tool_choice" in payload:
+        tool_choice_py = pprint.pformat(payload["tool_choice"], indent=4, width=100)
+        print(f"    tool_choice={tool_choice_py},")
     print(f"    extra_body={extra_body_py},")
     print(")")
-    print("print(response.choices[0].message.content)")
+    if payload.get("stream"):
+        print("for chunk in response:")
+        print("    delta = chunk.choices[0].delta.content if chunk.choices else None")
+        print("    if delta:")
+        print("        print(delta, end='', flush=True)")
+        print("print()")
+    else:
+        print("print(response.choices[0].message.content)")
 
 
 def _run_send(endpoint: str, api_key: str, payload: dict, timeout: int) -> None:
@@ -91,6 +164,16 @@ def _run_send(endpoint: str, api_key: str, payload: dict, timeout: int) -> None:
     print("Running:")
     print("  " + " ".join(f'"{piece}"' if " " in piece else piece for piece in command))
     print()
+    if payload.get("stream"):
+        completed = subprocess.run(
+            command,
+            input=request_json,
+            check=False,
+        )
+        if completed.returncode != 0:
+            raise SystemExit(completed.returncode)
+        return
+
     completed = subprocess.run(
         command,
         input=request_json,
@@ -146,6 +229,35 @@ def _parse_args() -> argparse.Namespace:
         help="Request x_orchestrator_metadata routing details.",
     )
     parser.add_argument(
+        "--stream",
+        action="store_true",
+        help="Set stream=true so the request exercises SSE-compatible response handling.",
+    )
+    parser.add_argument(
+        "--demo-tool",
+        action="store_true",
+        help="Add a small native OpenAI function-tool schema to the request.",
+    )
+    parser.add_argument(
+        "--tools-json",
+        action="append",
+        default=[],
+        metavar="JSON",
+        help="Append a raw OpenAI tool object. May be passed multiple times.",
+    )
+    parser.add_argument(
+        "--tool-choice",
+        choices=["auto", "none", "required"],
+        default="",
+        help="Set standard tool_choice. Defaults to auto when tools are present.",
+    )
+    parser.add_argument(
+        "--tool-choice-json",
+        default="",
+        metavar="JSON",
+        help="Set raw object tool_choice, for example a forced function selection.",
+    )
+    parser.add_argument(
         "--timeout",
         type=int,
         default=10,
@@ -178,7 +290,11 @@ def main() -> int:
         return 1
 
     endpoint = f"{args.base_url.rstrip('/')}/v1/chat/completions"
-    payload = _build_payload(args)
+    try:
+        payload = _build_payload(args)
+    except ValueError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
 
     _print_reference(payload, endpoint, args.api_key)
 

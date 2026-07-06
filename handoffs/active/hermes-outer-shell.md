@@ -307,6 +307,7 @@ Hermes is one *client* of the orchestrator's `/v1/chat/completions` + `x_*` over
   - Verify the same override semantics behave identically vs Hermes (force-model, escalation cap, REPL disable)
   - Document the wiring recipe in this handoff so other client types can follow the same pattern
   - [x] Add dry-run reference bare-client wiring helper: `scripts/hermes/reference_openai_client.py` prints cURL and OpenAI SDK recipes for `x_orchestrator_role`, `x_force_model`, `x_max_escalation`, `x_disable_repl`, and `x_show_routing` without sending traffic unless `--send` is explicit. ✅ 2026-07-06
+  - [x] Extend the reference helper into a quiet-window validation harness for `stream`, native OpenAI `tools`, and `tool_choice` without sending traffic by default. ✅ 2026-07-06
   - [ ] Run live `--send` validation in a quiet window and verify role override, force-model, escalation cap, REPL disable, routing metadata, and streaming behavior against the current `/v1/chat/completions` endpoint.
 - [x] **Q — Sufficiency call: do not absorb client-side concerns into the orchestrator** (~30 min, design discipline note) — recorded in `## Pros` above as the client/orchestrator separation rule.
   - Decision rule to record explicitly: per-client UX (slash commands, prompts, conversation memory) lives in the **client**, not the orchestrator. The orchestrator exposes overrides; clients map their UX to override values. This is the same discipline as the Hermes slash-command → `x_*` mapping — generalized as a principle, not a one-off
@@ -340,6 +341,23 @@ Gap decisions:
 | Caller-controlled `seed`, `top_p`, and `top_k` are not part of the request schema | Record as follow-up for the dedicated determinism lane | The backend already pins deterministic sampling defaults; exposing per-client sampling knobs is a policy decision. Prefer a named deterministic/sampling override design rather than generic pass-through. |
 | `x_max_escalation` is metadata/pass-through only in this route | Keep documented as partial until full graph enforcement is verified | This was already called out in Phase 2; P should validate behavior live before marking the end-to-end command complete. |
 | Clients unable to send nonstandard JSON fields | Document workaround/proxy | The stable contract is typed API fields. Per-client command syntax belongs at the edge. |
+
+### Hermes Upstream Pin Audit — 2026-07-06
+
+`scripts/hermes/hermes_pin_audit.py` is now the no-inference P2.6 checklist.
+It does not fetch, checkout, install, or launch services. Current dry-run
+output shows `/mnt/raid0/llm/hermes-agent` at
+`v2026.3.23-43-ge5691eed`, remote `main` at
+`18e840469ffe9f8235331c787e34ebbe908564b8`, latest visible remote tag
+`v2026.7.1`, and target tag `v2026.7.1` absent from local tags. Dirty state is
+the expected untracked upstream `HERMES.md`, which must be resolved or
+documented before any checkout.
+
+No live bump has been performed. Next quiet-window action is to choose the
+target tag explicitly, fetch tags, checkout the chosen tag, rerun
+`scripts/hermes/setup_hermes.sh`, then smoke: reference-client print-only,
+live `/v1/chat/completions` overrides/streaming, Hermes basic chat, tool use,
+multi-turn context, and compression trigger.
 
 ## Research Intake Updates
 

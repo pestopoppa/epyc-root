@@ -10,7 +10,7 @@
 
 **Standing contracts**: `/workspace/MEASUREMENT.md` (adopted) · `instrument_eras.yaml` (epyc-orchestrator orchestration/) · ATTESTATION (to build, findings-04 §B) · current architecture review: [fable5-findings-00-executive-summary.md](../completed/fable5-findings-00-executive-summary.md) — **the Fable 5 one-shot review is COMPLETE (2026-06-12)**; its 7 findings (-01..-07) + appendix are the standing reference, not an open row. The stale 2026-06-15 transient pickup was archived to [`../archived/fable5-long-horizon-session-pickup-history-through-2026-06-20.md`](../archived/fable5-long-horizon-session-pickup-history-through-2026-06-20.md); resume from the domain indices and owning handoffs below.
 
-**Current coordination checkpoint - 2026-07-06T03:05Z**: AutoPilot is live as
+**Current coordination checkpoint - 2026-07-06T03:20Z**: AutoPilot is live as
 PID `3525618` with `--max-trials 3000`, launched through the canonical Fable
 authority daemon. Runtime phase health is active/current-code-clean for the
 AutoPilot source set, and trial `1206` is a forced sequential
@@ -28,12 +28,16 @@ real `/proc` holders. ODL no-inference evidence prep also advanced in
 orchestrator `d6b171fd`: hybrid-backed structured extraction is method-stamped
 as `opendataloader_hybrid`, local fallback remains
 `opendataloader_structured`, and the PDF probe can fail closed when a corpus has
-zero structural/table signal. The quiet-window queue remains in
-`bulk-inference-campaign.md`: A9 contrast-replan collection, DS-E1 KV
-measurement, RI-10 scored canary dispatch/scoring, J12 think-loop probe, then
-W8/Fable readiness reports. Serialize those inference-bearing runs while
-AutoPilot is stopped; keep routine non-inference cleanup and handoff work
-moving in parallel.
+zero structural/table signal. Hermes prep advanced in root: the reference
+OpenAI-compatible client now dry-runs `x_*`, streaming, native `tools`, and
+`tool_choice`, and `hermes_pin_audit.py` shows the local checkout still at
+`v2026.3.23-43` while the latest visible remote tag is `v2026.7.1`. The
+quiet-window queue in `bulk-inference-campaign.md` was refreshed so E2/E1
+batched-decode measurement leads, followed by DS-E1 KV measurement, RI-10
+scored canary dispatch/scoring, J12 think-loop probe, A9 contrast-replan
+collection, then W8/Fable readiness reports. Serialize those inference-bearing
+runs while AutoPilot is stopped; keep routine non-inference cleanup and handoff
+work moving in parallel.
 
 **Prior coordination checkpoint - 2026-07-05T23:40Z**: AutoPilot is live as
 PID `3267768` with `--max-trials 3000`, launched through the canonical Fable
