@@ -93,6 +93,14 @@ Action landed:
   from the action menu rather than merely listed with a warning. Focused
   creativity/planner tests passed (`43 passed`), with `py_compile`, focused
   `ruff`, and `git diff --check` clean. ✅ 2026-07-06
+- [x] `epyc-orchestrator` `c366e8aa` reconciles dashboard active-inference
+  state before painting: CPU topology slot activity no longer promotes into
+  active Live Inference / Regions Lock holders unless corroborated by
+  structured tap rows or real `/proc` locks, while GPU/direct-access slot
+  occupancy remains visible. The dashboard now consumes `display_activity` from
+  the coherent snapshot. Focused dashboard helper/route tests passed
+  (`135 passed`) and ruff was clean; API reload served build `c366e8aa`.
+  ✅ 2026-07-06
 - [x] `epyc-orchestrator` `3fff13fc` fixes the first bug exposed by that
   provider trace: a local `deep_eval tier 3` draft was correctly rejected by
   `local_frontdoor`, but the later higher-tier probe guard resurrected the same

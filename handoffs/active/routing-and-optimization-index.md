@@ -51,7 +51,7 @@ fail AP-9. `w8_promotion_trajectory_report.py --json` is now
 `4b6b454ea4f884fd`, `289c4fc0fb5a334d`, and `d3f28243801548b2`; the strict
 Fable gate is ready with `blockers=[]` and active next action
 `collect_w8_promotion_eval_evidence`. Dashboard coherent-snapshot fixes through
-`60523b6` are live; `/dashboard/api/version` reports `git_sha=60523b6`.
+`c366e8aa` are live; `/dashboard/api/version` reports `git_sha=c366e8aa`.
 
 **2026-07-06T06:36Z update**: orchestrator `f16a7bba` adds
 `autopilot_planner_provider_watch`, an active-safe deterministic lab job backed
@@ -73,8 +73,10 @@ Dashboard Regions Lock coherency is repaired in source in four layers:
 `d2b0cbd0` adds enriched structured tap rows to the coherent snapshot, and
 `554b71af` keeps tap-inferred holders visible even when `/proc` reports the same
 physical holder. `b81f3113` then makes the coherent snapshot use the fresh
-region-lock scanner rather than the TTL cache. All four layers are live after
-the 2026-07-06T07:29Z API reload. Tool batching telemetry is now
+region-lock scanner rather than the TTL cache. `c366e8aa` adds a final
+display-activity reconciliation layer so raw CPU slot history cannot masquerade
+as active CPU holders without structured-tap or `/proc` corroboration. These
+layers are live after the 2026-07-06 API reload. Tool batching telemetry is now
 registry-backed: `64db8a12` adds multi-tool/read-only/parallel coverage
 reporting and `87e957ba` adds narrowed `side_effects: ["read_only"]`
 annotations without marking eval-style Python/NumPy or embedding tools

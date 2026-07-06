@@ -128,6 +128,16 @@ unowned local constants.
   URLs, while the remaining degraded fallback intentionally reads
   stack-manifest HOT/WARM auxiliary metadata and launch-mode filtering. Do not
   churn this surface unless a concrete duplicated role/port fact reappears.
+- [x] **2026-07-06 generated artifact refresh after live-stack drift check.**
+  `epyc-orchestrator` `6324af1e` refreshed
+  `docs/generated/current_stack_summary.md`,
+  `orchestration/derived/stack_priors.yaml`, and
+  `orchestration/model_descriptors.yaml` via
+  `scripts/registry/stack_change_pipeline.py update` after the canonical guard
+  found stale source-artifact hashes. `stack_change_pipeline.py check`,
+  `stack_change_guard.py --surface-summary-only --all-hardcoded-surfaces`, and
+  the no-inference promotion-gate test target passed (`181 passed`);
+  GitNexus was refreshed at the committed state. ✅ 2026-07-06
 - `src.api.routes.openai_compat` now uses the shared stack-prior primary-port
   helper for `/v1/models` ordering instead of keeping a route-local port
   resolver; explicit endpoint precedence and compatibility aliases are
