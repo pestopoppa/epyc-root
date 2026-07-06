@@ -35,9 +35,9 @@ When making a routing-architecture proposal, name which of these four (and which
 
 ## Subsystem Status
 
-**Current checkpoint - 2026-07-06T08:01Z**: AutoPilot is live as PID `3935151`
+**Current checkpoint - 2026-07-06T11:52Z**: AutoPilot is live as PID `131226`
 with `--max-trials 3000`; `phase_health_report.py
---require-current-code --json` reports trial `1217`,
+--require-current-code --json` reports trial `1227`,
 `action_type=numeric_trial`, `phase=dispatch_action`, and `code_stale=false`.
 The local routine planner path is verified as
 `local_frontdoor` draft -> `local_worker` critique with Claude fallback,
@@ -46,9 +46,12 @@ The local routine planner path is verified as
 `e3b13edd` also repairs forced W8 replay versus AP-9 attribution: materialized
 multi-param NumericSwarm candidates may be replayed only when exactly
 force-matched, while new planner-proposed multi-param numeric actions still
-fail AP-9. Trial `1217` is evaluating the source-trial-`1197`
-`repl_executor` replay. The same boundary reloaded the API/dashboard for
-`554b71af` and `b81f3113`; health reports `status="ok"`.
+fail AP-9. `w8_promotion_trajectory_report.py --json` is now
+`ok=true/status=progressing` with replay-eligible candidates
+`4b6b454ea4f884fd`, `289c4fc0fb5a334d`, and `d3f28243801548b2`; the strict
+Fable gate is ready with `blockers=[]` and active next action
+`collect_w8_promotion_eval_evidence`. Dashboard coherent-snapshot fixes through
+`60523b6` are live; `/dashboard/api/version` reports `git_sha=60523b6`.
 
 **2026-07-06T06:36Z update**: orchestrator `f16a7bba` adds
 `autopilot_planner_provider_watch`, an active-safe deterministic lab job backed
@@ -76,9 +79,10 @@ registry-backed: `64db8a12` adds multi-tool/read-only/parallel coverage
 reporting and `87e957ba` adds narrowed `side_effects: ["read_only"]`
 annotations without marking eval-style Python/NumPy or embedding tools
 read-only. T3 is now named as the expert/hard workflow validation lane in the
-controller constitution and higher-tier probe guard. W8 remains evidence-bound:
-continue until a replayable candidate is keepable, then collect sequential
-confirmation and fresh promotion-eval evidence.
+controller constitution and higher-tier probe guard. W8 remains evidence-bound,
+but the blocker has moved from candidate generation to collecting fresh
+promotion-eval evidence, combined E-process strength, and sequential
+confirmation.
 
 **Next clean/quiet-window bundle (non-MI210)**: at a safe AutoPilot boundary,
 stop/restart onto current code and run the active queue in this order: E1

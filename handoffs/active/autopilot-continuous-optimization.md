@@ -2,13 +2,13 @@
 
 **Status**: **W4/W6 authority wiring is current, A10 planner hints are active,
 BSV observe is process-aware, T3 is planner-visible workflow pressure,
-StrategyStore search health is exact, tool-use activation is ready, numeric
-candidate generation has been unblocked, and W8 needs a keepable replayable
-candidate before promotion evidence can accrue.** AutoPilot is live as PID
-`3935151` with `--max-trials 3000`; latest observed checkpoint is trial `1217`
-as an active current-code-clean forced `repl_executor` replay, and phase health
-reports `code_stale=false` after the restart onto orchestrator `e3b13edd`. The
-outcome-stall dispatch guard is now live; the routine planner path is
+StrategyStore search health is exact, tool-use activation is ready, W8
+candidate generation is unblocked, and W8 is now in promotion-evidence
+collection.** AutoPilot is live as PID `131226` with `--max-trials 3000`;
+latest observed checkpoint is trial `1227` as a current-code-clean
+`numeric_trial` in `dispatch_action`, and phase health reports
+`code_stale=false` on orchestrator `60523b6`. The outcome-stall dispatch guard
+is live; the routine planner path is
 `local_frontdoor` draft -> `local_worker` critique with `claude` fallback;
 `bf9bece7` also keeps fallback draft/review traffic on distinct local role
 providers when the spend breaker is inactive, instead of crossing to Claude
@@ -40,10 +40,12 @@ per-question diff/provenance context (`749d38f`).
 `1213`-`1216`: replay pressure now stays active while W8 still needs
 replay/confirmation, materialized multi-param NumericSwarm candidates can be
 replayed as a single force-matched candidate, and AP-9 remains binding for new
-planner-proposed explicit multi-param numeric actions. Trial `1217` is
-evaluating the source-trial-`1197` `repl_executor` replay with
-`repl.turn_token_cap=1964` and
-`repl.frontdoor_non_tool_token_cap=866`.
+planner-proposed explicit multi-param numeric actions. Current
+`w8_promotion_trajectory_report.py --json` is `ok=true/status=progressing`;
+recent replay-eligible candidates are `4b6b454ea4f884fd`,
+`289c4fc0fb5a334d`, and `d3f28243801548b2`. The remaining W8 requirements are
+combined E-process strength, a fresh promotion-eval run, and sequential
+confirmation.
 
 > **Current state - 2026-06-21 (bounded W4/W6 accrual resumed).** The API was reloaded on orchestrator `d0e082a`, per-worker attestation passed across six workers, and `stack_change_pipeline.py check --run-promotion-gate` passed (`174` tests). The first collection-only run exposed eval fanout contamination under the current full-only fleet; after orchestrator `c13e5ae`, the collection run used `AUTOPILOT_SEQ_VERDICT=1`, `AUTOPILOT_W6_AUDIT_BLOCK=1`, `AUTOPILOT_W6_AUDIT_N=10`, `AUTOPILOT_W6_AUDIT_EVERY_N_TRIALS=1`, `AUTOPILOT_W6_AUDIT_SHADOW_ONLY=1`, `AUTOPILOT_PLANNER_TIMEOUT=600`, default eval fanout capped to the reachable live fleet, and `--max-trials 930`. Trial `928` was journaled as `autopilot_killed_mid_trial` during stall recovery; trial `929` then completed as `numeric_trial` / `think_harder` with `q=1.980`, `s=34.132`, `r=0.980`, and `reproduction_confirmed`, and AutoPilot exited at trial counter `930`. Phase health then reported `status=stopped`, `ok=true`, `pid_alive=false` by design after `af72216e`. Latest ordinary restart readiness passed (`archive=match`, `snapshot=tail_fold_ready`, `baseline=state_baseline`, seed preflight `ready`, `append_ready=true`, `append_required=true`), while `--require-seq-cutover --require-w6-audit` correctly failed because sequential authority remained blocked at `93 < 120` trusted vectors and W6's trailing-30 alarm still had `7` active-window divergences (`12` cumulative) after `61/30` audited rows. The same W4/W6 collection posture was relaunched to `--max-trials 970` at 2026-06-21T11:49:27Z; `phase_health_report.py --json` first reported active trial `930`, `phase=planner_invoke`, PID `2472037`, no blockers, then advanced to `phase=dispatch_action`, `action_type=seed_batch`, no blockers. Baseline seed append is prepared but not applied; `fe2fe55c` also requires explicit `baseline_ledger_authority_enabled=true` before any later matching ledger fold can remove the state baseline cache.
 >
@@ -77,7 +79,7 @@ evaluating the source-trial-`1197` `repl_executor` replay with
 > trailing-window alarm, assuming no new gaming events occur.
 
 **Created**: 2026-03-08
-**Updated**: 2026-07-06 (current live AutoPilot PID `3935151` is on trial `1217` with `--max-trials 3000`, planner hints, tool sentinels, sequential verdicts, and W6 audit accrual active. The restart loaded orchestrator `e3b13edd`, so local-frontdoor drafting, local-worker critique, Claude fallback, W8-filtered action pressure, selectable-action provider coordination, the outcome-stall guard, and the forced-replay/AP-9 dispatcher repair are live together.)
+**Updated**: 2026-07-06 (current live AutoPilot PID `131226` is on trial `1227` with `--max-trials 3000`, planner hints, tool sentinels, sequential verdicts, and W6 audit accrual active. The daemon is current-code clean on orchestrator `60523b6`, so local-frontdoor drafting, local-worker critique, Claude fallback, W8-filtered action pressure, selectable-action provider coordination, the outcome-stall guard, forced-replay/AP-9 dispatcher repair, and dashboard coherent-snapshot fixes are live together. Strict Fable is ready with `blockers=[]`; active next action is W8 promotion-eval evidence collection.)
 **Location**: `epyc-orchestrator/scripts/autopilot/`
 
 > **Fable 5 review (2026-06-12)**: the review's architecture recommendations now have owning handoffs: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (LIVE t775 baseline-ratchet hotfix + dead-question repair), [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md) (per-question ledger + e-process verdicts; owns the next restart bundle), [evidence-plane-event-sourcing-and-narrative.md](evidence-plane-event-sourcing-and-narrative.md), and [objective-task-rate-goodput.md](objective-task-rate-goodput.md) (task_rate replaces the t/s axis). Full diagnosis: fable5-findings-01 + -05.
