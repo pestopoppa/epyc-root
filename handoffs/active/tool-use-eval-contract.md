@@ -49,14 +49,21 @@ multi-tool rows (`3.7%` of REPL), `0` explicit read-only multi-tool rows, and
 `0` `parallel_tools_used=True` rows. Do not treat the regenerated markdown
 report as decision-grade yet because the current `autopilot.log` has rotated and
 produced `0` parseable historical REPL sessions; the historical report was left
-unchanged.
+unchanged. Follow-up `epyc-orchestrator` `87e957ba` adds explicit
+`side_effects: ["read_only"]` annotations for safe lookup/data/manifest/system
+read and pure native compute tools, while deliberately leaving eval-style Python
+and NumPy expression evaluators plus embedding/classification tools unannotated.
+This raises the registry-backed analyzer coverage without expanding the
+"read-only" contract to model-calling or potentially side-effectful eval
+surfaces.
 
 Parallel batching task state:
 - [x] Add analyzer telemetry for multi-tool, explicit read-only, and
   `parallel_tools_used` coverage (`epyc-orchestrator` `64db8a12`). ✅ 2026-07-06
-- [ ] Expand/read-through `tool_registry.yaml` side-effect annotations before
-  using read-only chain coverage as a decision gate; only explicitly annotated
-  `read_only` tools count today.
+- [x] Expand/read-through `tool_registry.yaml` side-effect annotations before
+  using read-only chain coverage as a decision gate; `python_eval`,
+  NumPy-backed eval-style math, and embedding/classification tools remain
+  unannotated by design (`epyc-orchestrator` `87e957ba`). ✅ 2026-07-06
 - [ ] If future full-log runs show material independent read-only chains with
   serial execution, scope implementation inside `REPLEnvironment.execute` /
   `parallel_dispatch.py` without changing OpenAI response `message.tool_calls`
