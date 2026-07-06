@@ -1,8 +1,8 @@
 # Hermes/OpenGauss as Outer Shell
 
-**Status**: in-progress (Phase 1 complete, Phase 2 routing API done, skills + validation pending)
+**Status**: in-progress (Phase 1 complete, Phase 2 routing API done, skills + static validation wired; live Hermes validation pending)
 **Created**: 2026-03-20 (split from hermes-agent-index.md)
-**Updated**: 2026-07-04
+**Updated**: 2026-07-06
 **Parent**: [hermes-agent-index.md](hermes-agent-index.md)
 **Repos**: https://github.com/NousResearch/hermes-agent, https://github.com/math-inc/OpenGauss
 **Decision**: Vanilla Hermes (not OpenGauss) — OpenGauss is Lean 4-specific; Hermes has first-class custom endpoint support
@@ -171,9 +171,9 @@ hermes  # or: cd /mnt/raid0/llm/hermes-agent && python cli.py
 
 ### Remaining Work (no inference needed)
 
-- [ ] Think token mitigation: Prepare `--chat-template-file` with thinking disabled for simple turns, or system prompt hint (`/think` only when needed)
+- [x] Think token mitigation: Prepare `--chat-template-file` with thinking disabled for simple turns, or system prompt hint (`/think` only when needed) — ✅ 2026-07-06. `launch_hermes_backend.sh` defaults to `chat-template-no-think.jinja`, now makes that default explicit, and supports `HERMES_CHAT_TEMPLATE_FILE` or `HERMES_DISABLE_CHAT_TEMPLATE=1` for later think-token experiments. Static wiring only; live latency validation remains below.
 - [x] Context mismatch investigation: **FIXED** — `-np 2` splits total context across slots (32K/2=16K per slot). `/v1/props` reports per-slot value. Fix: `-np 1` (single-user CLI) + explicit `context_length: 32768` in config
-- [ ] Hermes skill authoring: Write EPYC-specific skills (e.g., `/bench` to trigger benchmarks, `/stack` to manage orchestrator) — deferred to Phase 2
+- [x] Hermes skill authoring/install prep: Write EPYC-specific skills and make setup install them — ✅ 2026-07-06. Existing `/use`, `/escalation`, `/nocode`, `/stack`, and `overview` skills now sync into `~/.hermes/skills/epyc/` during `setup_hermes.sh` with an `rsync` path and a copy fallback. Runtime discovery is still pending the live Hermes validation pass.
 - [x] Custom system prompt: Created `HERMES.md` (symlinked to hermes-agent dir) — loaded as context file on startup. Contains workstation info, key paths, conventions, style prefs.
 - [x] Compression model config: Verified — `provider: "main"` maps to custom endpoint, empty `summary_model` uses auto-detected model from `/v1/models`. Works with single-model llama-server.
 

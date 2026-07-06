@@ -33,7 +33,26 @@ if [[ -f "$HERMES_MD_SRC" ]]; then
     echo "Symlinked: $HERMES_MD_DST -> $HERMES_MD_SRC"
 fi
 
-# 4. Create .env with no-op API key (prevents Hermes from prompting for one)
+# 4. Sync EPYC Hermes skills into ~/.hermes/skills/epyc/
+EPYC_SKILLS_SRC="${SCRIPT_DIR}/skills"
+EPYC_SKILLS_DST="${HOME}/.hermes/skills/epyc"
+if [[ -d "$EPYC_SKILLS_SRC" ]]; then
+    if [[ -e "$EPYC_SKILLS_DST" && ! -d "$EPYC_SKILLS_DST" ]]; then
+        rm -f "$EPYC_SKILLS_DST"
+    fi
+    mkdir -p "$EPYC_SKILLS_DST"
+    if command -v rsync >/dev/null 2>&1; then
+        rsync -a --delete "${EPYC_SKILLS_SRC}/" "${EPYC_SKILLS_DST}/"
+        echo "Synced: $EPYC_SKILLS_DST <- $EPYC_SKILLS_SRC"
+    else
+        rm -rf "$EPYC_SKILLS_DST"
+        mkdir -p "$EPYC_SKILLS_DST"
+        cp -a "${EPYC_SKILLS_SRC}/." "$EPYC_SKILLS_DST/"
+        echo "Copied: $EPYC_SKILLS_DST <- $EPYC_SKILLS_SRC"
+    fi
+fi
+
+# 5. Create .env with no-op API key (prevents Hermes from prompting for one)
 ENV_FILE="${HOME}/.hermes/.env"
 if [[ ! -f "$ENV_FILE" ]]; then
     cat > "$ENV_FILE" << 'ENVEOF'
@@ -50,3 +69,4 @@ echo ""
 echo "Setup complete. Next steps:"
 echo "  1. Start backend:  ${SCRIPT_DIR}/launch_hermes_backend.sh"
 echo "  2. Start Hermes:   hermes  (or: cd /mnt/raid0/llm/hermes-agent && python cli.py)"
+echo "  3. Think tokens:   export HERMES_DISABLE_CHAT_TEMPLATE=1 or set HERMES_CHAT_TEMPLATE_FILE=/path/to/template.jinja"
