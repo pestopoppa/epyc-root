@@ -111,6 +111,16 @@ Action landed:
   launcher tests passed (`70 passed`). AutoPilot trial `1200` later failed
   safety on `tool_use` regression, and the daemon was restarted at the boundary
   as PID `3438615` with `code_stale=false`. ✅ 2026-07-06
+- [x] `epyc-orchestrator` `26c8ec2c` adds a default-off two-stage local
+  planner provider for the next canary: `local_brief_frontdoor` /
+  `local_ingest_frontdoor` / `local_two_stage` first asks
+  `ingest_long_context` for a bounded controller brief, then asks `frontdoor`
+  to draft the normal fenced action/rationale; `local_brief_worker` uses
+  `worker_general` as the second stage. Critique calls pass through to the
+  final role, and planner archive rows include `local_briefed_planner` stage
+  metadata. This is not live until a restart explicitly selects the alias.
+  Focused provider/coordinator/launcher tests passed (`79 passed`), with the
+  broader launcher/action/phase pass also green (`146 passed`). ✅ 2026-07-06
 - [x] `epyc-orchestrator` `5c4e3560` closes the local-planner hardening tail.
   After the PID `3470012` restart, trial `1203` stayed on local providers:
   `local_frontdoor` drafted a `seed_batch`, `local_worker` rejected it, and the

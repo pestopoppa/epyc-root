@@ -1273,6 +1273,15 @@ paired authority core.
   `planner_invoke`. This preserves the local-provider health watch for real
   planner stalls while letting due-check replays bypass planning without
   looking broken.
+- 2026-07-06 local two-stage planner path: orchestrator `26c8ec2c` adds
+  default-off provider aliases for an ingest-briefed local draft path. The
+  `local_brief_frontdoor` / `local_ingest_frontdoor` / `local_two_stage` aliases
+  synthesize a compact controller brief with `ingest_long_context`, then draft
+  through `frontdoor`; `local_brief_worker` drafts through `worker_general`.
+  Critiques pass through to the final role, and planner archive telemetry
+  records brief-vs-draft stage success. This is the next safe canary lever for
+  making AutoPilot fully local without changing the current
+  `local_frontdoor`/`local_worker` default daemon.
 - Regular Fable visibility landed in orchestrator `34591a27`: strict readiness
   now includes advisory `eval_task_coverage` status/percent/repeat/tier summary
   in `summary` and as a non-blocking section. Dashboard-specific presentation
