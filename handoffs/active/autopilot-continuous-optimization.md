@@ -3,9 +3,9 @@
 **Status**: **W4/W6 authority wiring is current, A10 planner hints are active,
 BSV observe is process-aware, T3 is planner-visible workflow pressure,
 StrategyStore search health is exact, tool-use activation is ready, W8
-candidate generation is unblocked, and W8 is now in promotion-evidence
+candidate generation is unblocked, and W8 remains in promotion-evidence
 collection.** AutoPilot is live as PID `131226` with `--max-trials 3000`;
-latest observed checkpoint is trial `1227` as a current-code-clean
+latest observed checkpoint is trial `1236` as a current-code-clean
 `numeric_trial` in `dispatch_action`, and phase health reports
 `code_stale=false` on orchestrator `60523b6`. The outcome-stall dispatch guard
 is live; the routine planner path is
@@ -79,7 +79,7 @@ confirmation.
 > trailing-window alarm, assuming no new gaming events occur.
 
 **Created**: 2026-03-08
-**Updated**: 2026-07-06 (current live AutoPilot PID `131226` is on trial `1227` with `--max-trials 3000`, planner hints, tool sentinels, sequential verdicts, and W6 audit accrual active. The daemon is current-code clean on orchestrator `60523b6`, so local-frontdoor drafting, local-worker critique, Claude fallback, W8-filtered action pressure, selectable-action provider coordination, the outcome-stall guard, forced-replay/AP-9 dispatcher repair, and dashboard coherent-snapshot fixes are live together. Strict Fable is ready with `blockers=[]`; active next action is W8 promotion-eval evidence collection.)
+**Updated**: 2026-07-06 (current live AutoPilot PID `131226` is on trial `1236` with `--max-trials 3000`, planner hints, tool sentinels, sequential verdicts, and W6 audit accrual active. The daemon is current-code clean on orchestrator `60523b6`, so local-frontdoor drafting, local-worker critique, Claude fallback, W8-filtered action pressure, selectable-action provider coordination, the outcome-stall guard, forced-replay/AP-9 dispatcher repair, and dashboard coherent-snapshot fixes are live together. Strict Fable is ready with `blockers=[]`; active next action is W8 promotion-eval evidence collection.)
 **Location**: `epyc-orchestrator/scripts/autopilot/`
 
 > **Fable 5 review (2026-06-12)**: the review's architecture recommendations now have owning handoffs: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (LIVE t775 baseline-ratchet hotfix + dead-question repair), [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md) (per-question ledger + e-process verdicts; owns the next restart bundle), [evidence-plane-event-sourcing-and-narrative.md](evidence-plane-event-sourcing-and-narrative.md), and [objective-task-rate-goodput.md](objective-task-rate-goodput.md) (task_rate replaces the t/s axis). Full diagnosis: fable5-findings-01 + -05.
