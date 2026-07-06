@@ -65,15 +65,21 @@ Action landed:
   still run normal schema/critic validation. This fixes the observed
   `local_ingest` parse discard without accepting arbitrary prose as data.
   Focused controller/coordinator tests passed (`78 passed`). ✅ 2026-07-06
+- [x] `epyc-orchestrator` `6d67c565` adds ordered provider-trace telemetry to
+  `planner_archive.jsonl`: primary/fallback draft attempts record `ok`,
+  `parse_ok`, action type, and unusable reason; primary/fallback critic attempts
+  record `ok`, `parse_ok`, decision, confidence, and parse error. Archive rows
+  now also carry `draft_action` and `final_action`, so local-only overnight runs
+  can be audited without reconstructing the planner tap manually. Focused
+  planner-coordinator tests passed (`41 passed`). ✅ 2026-07-06
 - [ ] **Local-planner hardening tail**: the local-only path stayed on
   `local_ingest` / `local_frontdoor` after the restart, with no cloud provider
   observed in the inspected window. The remaining failure modes are shape churn
   and observability: no-op `plan_review=false`, a two-param numeric draft
   rejected for attribution, already-blacklisted `graph_router=true`, and local
-  critic prose that still needs degraded-mode accounting. Next code target is a
-  pre-dispatch shape/blacklist validator plus explicit provider telemetry
-  (`draft ok`, `draft invalid`, `critique ok`, final accepted JSON) so overnight
-  local operation is auditable without reconstructing mixed log lines.
+  critic prose that still needs degraded-mode accounting. Provider archive
+  telemetry is now present; next code target is a pre-dispatch shape/blacklist
+  validator and, if needed, a dashboard reader for the archived trace.
 - Focused validation passed across the touched slices: `49` planner/provider/launcher tests, `43` W6/readiness tests, `46` spend-breaker/economics tests, `233` action/dashboard tests, `49` structural/restore tests, `64` GEPA/prompt-root/API/eval propagation tests, `36` sequential/paired-diagnostics tests, `44` phase/restart/dashboard health tests, `138` rejected-draft/action/creativity tests, and `11` earlier GEPA integration tests, plus focused `py_compile`, `ruff`, and `git diff --check`.
 
 Next measured extension:
