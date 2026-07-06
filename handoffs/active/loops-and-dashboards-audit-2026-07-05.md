@@ -72,21 +72,27 @@ Action landed:
   now also carry `draft_action` and `final_action`, so local-only overnight runs
   can be audited without reconstructing the planner tap manually. Focused
   planner-coordinator tests passed (`41 passed`). ✅ 2026-07-06
+- [x] `epyc-orchestrator` `3fff13fc` fixes the first bug exposed by that
+  provider trace: a local `deep_eval tier 3` draft was correctly rejected by
+  `local_frontdoor`, but the later higher-tier probe guard resurrected the same
+  rejected shape over the safe fallback. Rejected-draft fallbacks now carry
+  explicit provenance in the rationale, and the higher-tier guard will not
+  override them in the same trial. Focused planner/action tests passed, then the
+  full touched suites passed (`153 passed`). ✅ 2026-07-06
 - [ ] **Local-planner hardening tail**: the local-only path stayed on
   `local_ingest` / `local_frontdoor` after the restart, with no cloud provider
-  observed in the inspected window. The remaining failure modes are shape churn
-  and observability: no-op `plan_review=false`, a two-param numeric draft
-  rejected for attribution, already-blacklisted `graph_router=true`, and local
-  critic prose that still needs degraded-mode accounting. Provider archive
-  telemetry is now present; next code target is a pre-dispatch shape/blacklist
-  validator and, if needed, a dashboard reader for the archived trace.
+  observed in the inspected window. The current hardening tail is narrower:
+  monitor whether the next current-code restart avoids critic-resurrected
+  actions, then add a pre-dispatch shape/blacklist validator only if provider
+  trace shows continued no-op or already-rejected proposals. A dashboard reader
+  for archived provider trace remains useful but non-blocking.
 - Focused validation passed across the touched slices: `49` planner/provider/launcher tests, `43` W6/readiness tests, `46` spend-breaker/economics tests, `233` action/dashboard tests, `49` structural/restore tests, `64` GEPA/prompt-root/API/eval propagation tests, `36` sequential/paired-diagnostics tests, `44` phase/restart/dashboard health tests, `138` rejected-draft/action/creativity tests, and `11` earlier GEPA integration tests, plus focused `py_compile`, `ruff`, and `git diff --check`.
 
 Next measured extension:
 - Let the current daemon continue until the next restart-safe boundary, then
-  restart onto `a151d319`; trial `1194` proved the
-  candidate-generation path but was not keepable, and trial `1195` was an
-  invalid skip. If the local drafter keeps
+  restart onto the latest planner hardening commits (`a151d319`, `6d67c565`,
+  `3fff13fc`); trial `1194` proved the candidate-generation path but was not
+  keepable, and trial `1195` was an invalid skip. If the local drafter keeps
   producing no-op/invalid drafts that need critic salvage, repair the drafter
   prompt/normalizer rather than weakening W8 replayability rules.
 - Build a two-stage planner provider after the one-shot local-ingest/local-
