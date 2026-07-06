@@ -179,3 +179,7 @@ Mid-session I made a real mess: fragile **concurrent-curl aggregate scripts hung
 | `d99252f1` | L22 FA-decode A/B on MoE frontdoor — marginal |
 | `3c6013f5` | v7-candidate aggregate spec sheet + tree-draft GLM shelve verdict |
 | `a1c3275c` | Rebuild spec sheet from VERIFIED protocol-pinned numbers (temp→α, reproducibility) |
+
+## Published (2026-07-06 wrap-up)
+- **epyc-root merged to `main`** — `65cd9779` (Merge spec-dec-mtp-refresh-2026-06-22 into main), via isolated worktree + `--no-ff`, zero conflicts (confirms this session's GPU/kernel/spec-dec/CoT work is orthogonal to the parallel session's autopilot/dashboard work — disjoint file sets).
+- **v7-candidate kernel backed up to GitHub** — `fork/experimental-v7-candidate` (`46f876c12`) on `pestopoppa/llama.cpp`. Backup only; NOT promoted (production-consolidated-v6 immutable). `upstream-mtp-verify` (GPU opts) was already on the fork.
