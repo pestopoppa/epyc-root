@@ -151,6 +151,8 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 - [ ] Deploy `opendataloader-pdf-hybrid --port 5002` as sidecar service
 - [x] Add a sidecar-aware `opendataloader_hybrid` backend to `scripts/benchmark/pdf_fastpath_probe.py` so hybrid preflights report missing SDK/sidecar dependencies explicitly instead of silently skipping or forcing live infra ✅ 2026-07-06
 - [x] Stamp the effective ODL backend in router results (`opendataloader_structured` vs `opendataloader_hybrid`) and add an opt-in probe guard that fails no-structural-signal corpora before they are used as table-routing evidence ✅ 2026-07-06
+- [x] Run local OpenDataLoader benchmark demo smoke without inference or persistent artifacts: `/mnt/raid0/llm/opendataloader-bench/pdf_validation.py` completed 18 demo pages from a temp cwd using the benchmark venv; output was temp-local only. ✅ 2026-07-06
+- [ ] Install the hybrid extra on the target host (`pip install -U "opendataloader-pdf[hybrid]"`), start `opendataloader-pdf-hybrid --port 5002`, and confirm `GET /health` before claiming live sidecar evidence.
 - [ ] Experiment: swap hybrid backend from docling-fast → LightOnOCR-2-1B (port 8082)
 - [ ] Measure: does GPU-accelerated LightOnOCR beat docling-fast's 0.43s/page?
 - [ ] Implement three-way routing: ODL local (simple) → ODL hybrid (tables) → LightOnOCR (scanned)
@@ -245,6 +247,29 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 - Remaining gate: still no sidecar deployment, structural/table-heavy corpus,
   or benchmark-backed three-way routing policy. This slice only improves
   attribution and corpus qualification.
+
+**2026-07-06 OpenDataLoader benchmark demo smoke (read-only preflight)**
+
+- A sidecar preflight created the local benchmark venv in
+  `/mnt/raid0/llm/opendataloader-bench` with `uv sync`, then removed the
+  transient `uv.lock`; no EPYC repo files were edited by the sidecar.
+- The documented benchmark path ran successfully from a temp working directory:
+  `/mnt/raid0/llm/opendataloader-bench/.venv/bin/python
+  /mnt/raid0/llm/opendataloader-bench/pdf_validation.py --config <temp-yaml>`.
+  The config pointed ground truth at
+  `/mnt/raid0/llm/opendataloader-bench/demo_data/omnidocbench_demo/OmniDocBench_demo.json`
+  and prediction data at
+  `/mnt/raid0/llm/opendataloader-bench/demo_data/end2end`; CDM was omitted so
+  the run stayed offline and did not require TeX, ImageMagick, or Ghostscript.
+- The smoke processed 18 demo pages with no timeouts or exceptions. Key metrics:
+  `text_block ALL_page_avg=0.335621`, `table TEDS=0.796747`, and
+  `reading_order ALL_page_avg=0.224300`.
+- Live sidecar deployment remains blocked: base Python cannot import
+  `opendataloader_pdf` / `opendataloader_pdf_hybrid`, and
+  `opendataloader-pdf-hybrid` is not on `PATH`. Next action is explicit host
+  install of `opendataloader-pdf[hybrid]`, start
+  `opendataloader-pdf-hybrid --port 5002`, then confirm
+  `GET /health` before claiming hybrid-sidecar evidence.
 
 **2026-06-28 benchmark adapter local-PDF checkpoint (`epyc-inference-research` `5d14d3d`, `5ab748d`)**
 
