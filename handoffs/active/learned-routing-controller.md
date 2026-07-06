@@ -1260,6 +1260,32 @@ learned-routing reward signals from the failed NeuralTxt report alone.
   updated `seen_questions.jsonl`. Treat these as raw collection rows; the next
   A9 action is rebuilding/scoring the pairwise contract and rerunning the
   relevant holdout diagnostics, not another live collection pass.
+- 2026-07-05 fold outcome: the `20260705T185704Z` live rows were folded through
+  the offline A9 post-collection workflow as timestamped orchestrator artifacts.
+  The planner selected `162` prompt-free candidates across `81` source-record
+  groups and matched all four collection targets. The independent
+  `reference_token_coverage` scorer produced `162` rows with mean score
+  `0.7025` and target agreement `0.9506`, but the candidate-only pairwise
+  contract still lacks within-task contrast: binary-label pairing has only `3`
+  cross-action pairs and score-ordered pairing has only `6`, both below the
+  `100` total / `50` cross-action gate; ranker diagnostics have no eligible
+  holdouts. The source-q-reward diagnostic from the same fresh rows has `43`
+  cross-action pairs, also below gate. The A9 blocker is therefore acquisition
+  design, not unprocessed rows: next collection must force same-task
+  cross-action disagreement and direction balance for the still-weak strata;
+  do not rerun the same collector or retune the current ranker family.
+- 2026-07-05 contrast-aware replan: orchestrator `ee96e423` fixes that
+  acquisition-design bug in
+  `plan_offline_reward_pairwise_holdout_expansion.py`. Collection targets are
+  now considered satisfied only by source-binary directional contrast, while
+  row presence is reported separately. Replaying the `20260705T185704Z` live
+  slice now reports `81` presence groups but only `2` target-satisfying
+  contrast groups, so it emits a new guarded four-batch manifest:
+  `offline_reward_pairwise_audit_target_live_20260705T185704Z_contrast_replan_20260705T202257Z_collection_manifest.json`
+  plus the matching `_collect.sh`, `_summary.{json,md}`, and `_candidates.jsonl`
+  artifacts. The validator has no schema warnings and is blocked only by active
+  AutoPilot. Next A9 action is to run that manifest in a clean window and then
+  execute the embedded post-collection rebuild/scoring pipeline.
 
 ## Research Intake Update — 2026-07-02
 

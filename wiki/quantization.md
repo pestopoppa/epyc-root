@@ -1,8 +1,8 @@
 # Quantization
 
 **Category**: `quantization`
-**Confidence**: verified
-**Last compiled**: 2026-04-13
+**Confidence**: verified (CPU quant findings) · observation (2026-07 MI210 gfx90a roofline numbers — single-run, no P-GPU-1 per MEASUREMENT.md)
+**Last compiled**: 2026-07-06 (⚠️ 2026-07-06 MI210 gfx90a quant-roofline subsection flagged for human review — see Key Findings)
 **Sources**: 25 documents (0 dedicated deep-dives, 4 handoffs, 2 active handoffs, 19 intake entries + cross-references from 6 deep-dives)
 
 ## Summary
@@ -16,6 +16,14 @@ The interaction between weight quantization and other optimization techniques pr
 The quantization landscape in llama.cpp is evolving. The mainstream path is ggerganov's Hadamard rotation for existing quant types (PR #21038), which auto-applies Walsh-Hadamard transform when KV types are quantized. More exotic approaches -- TQ3_1S (Walsh-Hadamard transform weight quantization at 3.5 bits), TurboQuant (extreme KV cache compression), PolarQuant (polar transformation for KV cache) -- have been evaluated and placed on monitor-only status. TQ3_1S was downgraded due to immaturity (3 commits, 1 contributor, no CPU kernels), wrong benchmarking target (vs Q4_0 not Q4_K_M), and a 2.2x speed disadvantage vs Hadamard+q4_0 on EPYC 9975 even with all ecosystem fixes. TurboQuant and PolarQuant were abandoned after Hadamard+q4_0 matched their quality with zero complexity. The lesson: incremental improvements to existing, well-optimized quant types consistently beat exotic new formats on CPU hardware where AVX-512 dequant throughput dominates.
 
 ## Key Findings
+
+### 2026-07-06 — MI210 (gfx90a) quant-roofline: Q8 is the sweet spot, Q4_K is dequant-bound (capacity-only), F16 buys precision at ~30% aggregate — ⚠️ COMPILE-FLAGGED FOR HUMAN REVIEW
+
+> **Review flag (project-wiki writer-evidence policy):** model-compiled from the MI210 GPU campaign; **not adopted until human or measured review**. Every throughput/roofline number is an **OBSERVATION** (single MI210, serial/aggregate, seed 42, no P-GPU-1 per MEASUREMENT.md). Sources: [findings-05c lever × category matrix (Axis-C quant)](../handoffs/active/fable5-window2-findings-05c-mi210-lever-category-matrix.md), [progress 2026-07-06 v7-candidate + GPU levers](../progress/2026-07/2026-07-06-v7-candidate-and-gpu-levers.md), [progress 2026-07-02 MI210 first-touch](../progress/2026-07/2026-07-02-mi210.md).
+
+- **Q8_0 is the gfx90a decode sweet spot; the Q8/Q4_K "roofline gap" is a dequant-boundedness artifact, not general kernel immaturity.** On the MI210, batch-1 quantized decode reaches ~**47% of the ~1.64 TB/s HBM roofline at Q8_0** vs ~**33% at Q4_K_M** vs **~62% at fp16** (no dequant). The residual is specifically the quantized MMQ dequant kernels: **Q8_0's GEMV is already int8-native** (`vec_dot_q8_0_q8_1` = `dp4a` + one fp scale per 32-block — there is no per-element dequant to hide), so the 47→62% gap is BW/occupancy, not dequant cycles; **Q4_K_M is genuinely dequant-bound** (a bigger 33→47% gap). Consequence: **Q4_K on gfx90a is a *capacity-only* quant** — it buys VRAM footprint, not speed, and a Q4_K dequant-efficiency kernel is a separate ~+43%→~47 t/s bet (quality-gated, kernel un-authored). Q8 is the quant to serve at when capacity permits.
+- **F16 aggregate throughput costs ~30% vs Q8 — it is a *precision* choice, never a throughput one.** On the v7-candidate aggregate spec sheet, Qwen3.6-27B F16-proxy runs **141 t/s @B32 vs Q8's 199** (−29%) — F16's doubled weight bytes dominate a BW-bound decode. (The batched regime *does* flip for bf16 on a different axis — at B≥16–24 bf16 wins because it runs native on CDNA2 matrix cores with nothing to dequant-amortize while Q8 pays a per-tile dequant tax — but that is HBM-capacity-gated and distinct from the F16-precision cost here; see [Hardware Optimization](hardware-optimization.md) for the bf16↔Q8 crossover.)
+- **MTP repays ~4× more on F16 than on Q8 — the more BW-bound the weight read, the more each accepted draft token saves.** On a Qwen3.6-27B Q8→F16 dequant proxy (values preserved so acceptance α≈Q8's, isolating the kernel path): MTP gives **+60.2% on F16 vs +15.6% on Q8** at essentially unchanged α (66.9%). This is a pure bandwidth effect — F16 is 2 bytes/param, so a self-drafted token that lands avoids a fatter weight read — and it is the quantization-level analog of the general "spec-dec pays most where decode is most BW-bound" rule. It does **not** make F16 a throughput choice: absolute F16-MTP 31.0 t/s stays below Q8-MTP+MMQ 40.4; MTP just makes the precision far cheaper. See [Speculative Decoding](speculative-decoding.md).
 
 ### 2026-06-26 v6 cutover — iqk AVX-512 GEMM kernels integrated into the production kernel
 
@@ -141,6 +149,9 @@ The quantization landscape in llama.cpp is evolving. The mainstream path is gger
 - [intake-187](https://huggingface.co/bartowski/cerebras_Qwen3-Coder-REAP-25B-A3B-GGUF) bartowski GGUF quants -- 26 variants of REAP-25B
 - [intake-182](https://arxiv.org/abs/2309.05516) AutoRound/SignRound -- Not applicable for llama.cpp/GGUF stack
 - [intake-165](https://arxiv.org/abs/2504.12285) BitNet b1.58 -- Ternary quantization, worth investigating for future architectures
+- [findings-05c lever × model-category matrix (Axis-C quant)](../handoffs/active/fable5-window2-findings-05c-mi210-lever-category-matrix.md) -- MI210 quant-roofline: Q8 47% vs Q4_K 33% vs fp16 62% of the ~1.64 TB/s HBM roofline; Q8_0 GEMV already int8-native (no dequant to hide) so Q4_K is the dequant-bound/capacity-only quant; bf16↔Q8 batched crossover; MTP-F16 +60.2% vs Q8 +15.6% proxy
+- [Progress 2026-07-06 — v7-candidate + GPU speed levers](../progress/2026-07/2026-07-06-v7-candidate-and-gpu-levers.md) -- F16-proxy aggregate 141 vs Q8 199 @B32 (~30% precision cost); MTP-on-F16 +60.2% (BW-bound confirmed); fp16 download DEFERRED (Q8 quality-lossless)
+- [Progress 2026-07-02 — MI210 first-touch](../progress/2026-07/2026-07-02-mi210.md) -- first gfx90a quant-roofline points (Q4_K 33% / Q8 47% / fp16 62%), the dequant-MMQ-artifact framing
 
 ## Asymmetric MoE quantization recipe — DeepSeek-V4-Flash (intake-637, 2026-05-28)
 

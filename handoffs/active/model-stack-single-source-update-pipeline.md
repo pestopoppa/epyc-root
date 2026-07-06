@@ -19,7 +19,15 @@ helper instead of a hardcoded legacy role set (`epyc-orchestrator` `f35448d1`).
 Simulated swap-CI now also proves factual-risk role capability tiers follow
 regenerated stack priors for worker, vision, and long-context swaps instead of
 static degraded role defaults (`epyc-orchestrator` `cacd8c44`). Future swap-CI
-expansion should follow new consumer migrations.
+expansion should follow new consumer migrations. The 2026-07-06 consumer-tail
+cleanup (`epyc-orchestrator` `4bf414d6`) folds the parked factual-risk degraded
+fallback refactor back into main: generated stack priors remain the primary
+role-tier source, and the compatibility-only fallback is isolated behind a
+helper instead of a module-level live-looking role table. The follow-up
+`epyc-orchestrator` `c1cbe1fe` closes the stale VL degraded-fallback gap:
+present generated stack priors are now authoritative for chat-vision and
+vision-stage endpoint resolution, so legacy `8086/8087` ports are used only
+when the generated artifact is missing or unreadable.
 **Created**: 2026-06-13
 **Priority**: HIGH - stale model-specific quantities can silently corrupt
 routing, scoring, launch, planner prompts, replay analysis, and operator docs
@@ -120,6 +128,16 @@ unowned local constants.
   URLs, while the remaining degraded fallback intentionally reads
   stack-manifest HOT/WARM auxiliary metadata and launch-mode filtering. Do not
   churn this surface unless a concrete duplicated role/port fact reappears.
+- [x] **2026-07-06 generated artifact refresh after live-stack drift check.**
+  `epyc-orchestrator` `6324af1e` refreshed
+  `docs/generated/current_stack_summary.md`,
+  `orchestration/derived/stack_priors.yaml`, and
+  `orchestration/model_descriptors.yaml` via
+  `scripts/registry/stack_change_pipeline.py update` after the canonical guard
+  found stale source-artifact hashes. `stack_change_pipeline.py check`,
+  `stack_change_guard.py --surface-summary-only --all-hardcoded-surfaces`, and
+  the no-inference promotion-gate test target passed (`181 passed`);
+  GitNexus was refreshed at the committed state. ✅ 2026-07-06
 - `src.api.routes.openai_compat` now uses the shared stack-prior primary-port
   helper for `/v1/models` ordering instead of keeping a route-local port
   resolver; explicit endpoint precedence and compatibility aliases are
@@ -151,10 +169,22 @@ unowned local constants.
   only; a valid generated artifact with no vision launch roles no longer
   silently resurrects legacy vision roles. This was a main-thread HIGH-risk
   migration because it touches multimodal request routing.
+- `src.api.routes.vision_serving`, `chat_pipeline.vision_stage`, and
+  `chat_vision` now also fail closed when a generated live stack-prior artifact
+  is present but lacks the requested VL role/port. Degraded legacy VL ports are
+  still allowed when generated priors are missing or malformed, but present
+  priors cannot be bypassed by the old `worker_vision` / `vision_escalation`
+  fallback table (`epyc-orchestrator` `c1cbe1fe`; HIGH GitNexus path handled in
+  the main thread).
 - `src.classifiers.factual_risk` role capability tiers already derive from
   generated stack priors; the W4 simulated swap fixture now proves regenerated
   worker, vision, and long-context stack priors update factual-risk tier
   adjustment before static degraded role defaults can apply.
+- `src.classifiers.factual_risk` now keeps the degraded compatibility mapping
+  behind `_degraded_role_tier()` rather than a module-level `_DEGRADED_ROLE_TO_TIER`
+  table. The current generated-prior path is unchanged; the cleanup reduces the
+  chance that future stack work treats degraded fallback labels as authoritative
+  live stack truth.
 - X-MAS has an evidence-backed true function-axis 5x5 winner table and a
   default-off guarded enforce path. The 2026-06-21 quiet constrained-policy
   A/B carried `xmas_policy=incumbent_constrained_v1` and returned
@@ -204,6 +234,12 @@ unowned local constants.
   returned `summary: ok` with `181` promotion-gate tests passing; focused
   `test_stack_priors_compiler.py` + `test_stack_change_guard.py` passed
   `80` tests.
+- 2026-07-06 DS-7 template consumer guard landed in orchestrator `464aca54`:
+  `validate_template()` now treats generated live stack priors as the
+  production `default` profile's serving-topology witness. Deployable default
+  role ports must match generated prior ports, and logical aliases are accepted
+  only when their alias target serves the generated alias ports. This closes the
+  template/prior drift gap without making experimental templates rigid.
 
 ### 2026-06-27 Config Catalog Re-Audit
 

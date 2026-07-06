@@ -13,6 +13,33 @@
 >
 > **SINGLE-STREAM DENSE-Q8 IS CLOSED (2026-07-04 Pass-2 diagnostic).** The megakernel (L5) is measured NOT worth building: HIP graphs (which kill ALL host-launch) buy only **+5.9%**, and decode is memory-latency-bound at ~50% roofline — the 62→100% gap is the batch-1 MLP floor, not a launch/grid-drain bubble (the trace's 64% "gap" was a profiler artifact: ~10µs × ~1860 kernels/token). Levers banked: MMVQ +17.4%, nwarps +4.6%, prefetch +3.3%; everything else ruled out with data. **Next phase = aggregate/MoE regime** (§3.3 + the L1-MoE mmid / L16 bf16-aggregate / L20 GDN-aggregate levers). One cheap non-megakernel note if ever revisited: the hybrid's ~1860 kernels/token is high → a *targeted* per-SSM-block elementwise/norm/gate fusion (not a full megakernel) is the only launch-side lever left.
 
+## ⭐ v7-CANDIDATE SPEC SHEET (2026-07-06, VERIFIED + protocol-pinned) — all Q8+F16 models, optimal experimental kernel
+
+Branch `experimental-v7-candidate` (fresh v6+iqk + MMQ/nwarps/prefetch/bf16-state + tree-draft, `46f876c12`), `GGML_CUDA_Q8_PREFETCH=1`. **Protocol (pinned):** production temp+seed42, fixed prompt, server model-identity VERIFIED, reps confirmed byte-identical at fixed temp. Every spec-dec number tagged `(temp, α)`; **α = ACCEPTANCE = the SPEED dial** — MTP/NEXTN is distribution-lossless so there is NO quality tradeoff (coherence PASS all temps; byte-differs from plain only via MMQ FP-drift). OBSERVATION.
+
+### Single-stream (−fa 0) — DEPLOYABLE = production temp 0.1–0.3
+| model | best config | **deployable t/s** | vs plain | temp→α curve (t0 / t0.2 / t0.6) |
+|---|---|---|---|---|
+| Qwen3.6-27B (dense-GDN) | **MTP/NEXTN** | **~41** (α .68 @t0.2) | +31% (plain 31.7) | 42.6(.69) / 41.4(.68) / 39.8(.64) — monotone↓ |
+| gemma-4-31B (pure-dense) | **MTP** (ext head) | **~30** (α .45 @t0.2) | +15% (plain ~26) | 31.3(.49) / 30.1(.45) / **44.3(.84)** — NON-monotone, peaks t0.6 |
+| Qwen3.6-35B-A3B (MoE **FRONTDOOR**) | **PLAIN (no MTP)** | **~101** | MTP LOSES (90<101) | MTP hurts every temp (MoE-GDN) |
+| Qwen3.6-27B **F16**-proxy | MTP | ~31 | — | lever-2 proxy (t0.2, α~.6) |
+
+- **temp→α is MODEL-SPECIFIC** (27B monotone↓, gemma peaks at t0.6, MoE hurts) — NO universal "temp-0 inflates" rule; ALWAYS report `(temp, α)`. **This model-specific curve × prompt-dependent α was the ENTIRE cause of the "non-reproducible" bounce** — gemma's old "45.7" was a temp-0.6/α-.84 figure (deployable t0.2 = ~30); 27B's old "40.4" ≈ verified 41.4@t0.2. Fixed (prompt,temp,seed) → byte-identical reps [[feedback_compare_against_top_optimized_spec]] [[feedback_production_sampling_seed_not_temp0]].
+- **SUPERSEDES the earlier "gemma SS 45.7 / 27B SS 40.4 (MTP+MMQ)" line** — those conflated temperature/prompt. Never quote a high-temp α figure as the deployable spec.
+
+### Aggregate (`llama-batched-bench` S_TG, plain — spec-dec degrades to ~0 at batch)
+| model (optimal config) | B=1 | B=8 | B=16 | **B=32** |
+|---|---|---|---|---|
+| gemma-4-31B Q8 (−fa0; no GDN opt) | 27.1 | 104.0 | 174.3 | **245.9** |
+| Qwen3.6-27B Q8 (−fa0, bf16-state) | 31.4 | 103.6 | 157.8 | **198.8** |
+| Qwen3.6-35B-A3B Q8 (**FRONTDOOR**, −fa1, bf16-state) | 94.0 | 228.1 | 286.2 | **408.3** |
+| Qwen3.6-27B **F16**-proxy (−fa0, bf16-state) | 19.2 | 72.6 | 109.3 | **141.2** |
+
+- **bf16-state (L20) ON/OFF @B32 — regression PASS:** 27B 165.5→**198.8 (+20.1%)**, 35B-A3B 346.9→**408.3 (+17.7%)** (matches campaign +21.5%/+17.7%) — GPU opts survived the fresh-pull onto v6+iqk.
+- **B=1-of-aggregate ≠ single-stream top:** it's plain at the aggregate FA config (e.g. 35B-A3B B=1 94.0 is −fa1; single-stream −fa0 plain = 101). Use the single-stream table above for SS.
+- **Q4 note:** gemma Q4_K_M agg B32 = 272 raw, but Q4 is capacity-only on gfx90a (dequant-bound 33% vs Q8 47% roofline); F16 aggregate costs ~30% (141 vs 199) for precision.
+
 Categories (columns): **D-Q8** Dense-Q8 · **D-16** Dense-fp16/bf16 · **MoE** MoE-on-GPU-decode · **GDN** GDN/SSM-hybrid (dense-FFN + MoE-FFN sub-variants) · **DiT** Diffusion/DiT · **Aux** Auxiliary (embed/rerank/vision). Verdict glyphs: **Y** applies · **C** conditional · **N** no.
 
 ---
@@ -30,7 +57,7 @@ Categories (columns): **D-Q8** Dense-Q8 · **D-16** Dense-fp16/bf16 · **MoE** M
 | L5 | Persistent / megakernel decode | **C**[H] if residual bubble | **C**[H] if residual bubble | **C**[H] extra MoE kernels | **C**[H] if residual bubble | **N**[H] GEMM self-amort | **C**[H]⚙︎ VL decode tail |
 | L6 | Weight swizzle / SoA Q8_0 repack | **Y**[H] coalesce; unmeas | **N**[H] 2B contiguous | **C**[H] per-expert blocks | **C**[H] shared w/L3 | **N**[H] wants MFMA-swizzle | **N**[H] M>1 / f16 |
 | L7 | MFMA compute-bound paths | **C**[H] prefill/hi-batch | **C**[H] prefill; bf16 native | **C**[H] hi-batch GEMM | **C**[M-killed/H] decode killed, prefill open | **C**[H] **headline** denoise | **C**[H] ViT/BGE prefill |
-| L8 | MTP / NEXTN self-spec | **Y**[M] +15.6% | **C**[H]⚙︎ Q8/Q4 proxy; fp16 untested | **N**[M] −12% (head-indep) | **C**[M] dense-FFN win / MoE-FFN −12% | **N**[H] non-causal | **N**[H] no AR loop |
+| L8 | MTP / NEXTN self-spec | **Y**[M] +15.6% | **Y**[M-proxy] **+60.2%** on F16 (Q8→F16 dequant, α 66.9%≈Q8) = 4× the Q8 sign; abs 31<Q8 | **N**[M] −12% (head-indep) | **C**[M] dense-FFN win / MoE-FFN −12% | **N**[H] non-causal | **N**[H] no AR loop |
 | L9 | −md double-load fix | **Y**[M] unlocks +15.6% | **Y**[M] MTP prereq | **N**[M] unlocks net-neg path | **Y**[M] NEXTN prereq | **N**[H] no AR head | **N**[H] no self-spec |
 | L10 | EAGLE-3 draft head | **C**[M-hyb/U-pure] 25<33.6 | **C**[M-hyb/U-pure] | **C**[U]⚙︎ MoE untested (num=dense-hyb) | **N**+carve[M] slower-than-MTP on hyb; open dense/CPU | **N**[H] non-AR | **N**[H] no AR target |
 | L11 | Tree-draft (DySpec) | **C**[U] pure-dense re-test | **C**[M]⚙︎ +15.8% f16; −53/−66 hyb-CPU | **C**[M-adj/U]⚙︎ GPU untested | **C**[M] −53/−66 CPU; GPU re-test | **N**[M-adj]⚙︎ no AR loop | **N**[M-adj]⚙︎ no decode loop |
@@ -44,14 +71,14 @@ Categories (columns): **D-Q8** Dense-Q8 · **D-16** Dense-fp16/bf16 · **MoE** M
 | L19 | Op-offload prefill (−ot/−n-cpu-moe) | **N**[U] no experts | **N**[U] no experts | **N**[U] GPU-only violation | **N**[U] GPU-only violation | **N**[H] dense, no experts | **N**[H] self-defeating |
 | L20 | GDN occupancy + RS-traffic/layout | **C**[H] hybrid member only | **C**[H] hybrid member only | **C**[H] GDN-MoE subclass only | **Y**[M]⚙︎ occ NO-GO; **bf16-state GO +21.5%@B32** (`496e2f098`, drift+isolation PASS) | **N**[H] no recurrence | **N**[H] no recurrence |
 | L21 | Q4_K dequant side bet | **N**[H] Q8-path already | **N**[H] no dequant | **C**[H] expert Q4_K path | **C**[H]⚙︎ ~+43%→~47 t/s | **C**[H] HBM fallback | **C**[H] VL prefill only |
-| L22 | FA decode gating (−fa0 dec/−fa1 pre) | **Y**[M] −fa0 29.4>28.8 | **Y**[M]⚙︎ −fa0=138/166 (swap fixed) | **Y**[M-veh/U-front]⚙︎ nums=dense-27B | **Y**[M] −fa0 29.4>28.8 | **C**[H] non-causal→−fa1 branch | **C**[H] prefill→−fa1 branch |
+| L22 | FA decode gating (−fa0 dec/−fa1 pre) | **Y**[M] −fa0 29.4>28.8 | **Y**[M]⚙︎ −fa0=138/166 (swap fixed) | **Y**[M]⚙︎ frontdoor MEASURED: −fa0 SS/−fa1 aggB≥16, MARGINAL (+2.8%@B32, GDN-suppressed) | **Y**[M] −fa0 29.4>28.8 | **C**[H] non-causal→−fa1 branch | **C**[H] prefill→−fa1 branch |
 
 ### 1.2 Expanded cells (corrections applied + load-bearing qualifiers)
 
 - **L3 D-Q8 ⚙︎corrected (headline magnitude).** The 15 pp Q8-vs-fp16 roofline gap is **[M]**; the recoverable estimate is **~+19%** (source brackets Q8 52% deployed → 62% fp16 ceiling; 62/52). **+32% is only the optimistic kernel-level 47%→62% bound** (rocprof B1 −fa 0 endpoint) and is **not** the headline. Caveat: the 62% fp16 ceiling was measured on **stock Qwen3-8B fp16**, not our 27B — a further reason to hold this at **[H]**.
 - **L3 Aux ⚙︎corrected N→C.** N/A for embed/rerank (single forward pass) **and** for the prefill/encode hot path — but a VL model autoregressively generates its answer, and that **Q4_K VL single-stream decode tail is an M=1 `mul_mat_vec_q` GEMV where this lever fires**. Verdict: conditional (VL decode tail, minor, untested).
 - **L4 / L5 Aux ⚙︎corrected N→C.** Same reasoning: the async-prefetch batch-1 latency-wall target and the megakernel batch-1..8 decode-bubble both **exist in the VL decode tail** (batch-1 GEMV). Conditional (VL tail, minor); still hedged (external CDNA3/4, unbuilt on CDNA2).
-- **L8 D-16 ⚙︎corrected measured→hypothesis.** No fp16/bf16 MTP number exists; the +15.6% (Q8) and +44% (Q4) are **dense-quant proxies**. Category verdict = **[H]** same-sign, **plausibly stronger** (fp16 is more BW-bound than Q8, so the resident-hidden-state draft's cheap verify is repaid at least as well).
+- **L8 D-16 — now [M-proxy] MEASURED (2026-07-06), hypothesis CONFIRMED and then some.** Qwen3.6-27B Q8→F16 dequant proxy (values preserved so α≈Q8's, isolating the kernel-path): **plain F16 19.37 → MTP F16 31.03 t/s = +60.2%**, α 66.9% (170/254), mean-accept 3.00/3, per-position (0.871, 0.647, 0.482). This is **~4× the Q8 +15.6%** — the "plausibly stronger" hypothesis was right because F16 is 2 bytes/param (more BW-bound), so each accepted draft token avoids a fatter weight read. **BUT abs throughput F16-MTP 31.0 < Q8-MTP 33.6 < Q8-MTP+MMQ 40.4** — F16's doubled weight bytes dominate, so F16 is NOT a throughput choice; it is a precision choice that MTP makes far cheaper. Proxy α is Q8-valued; a TRUE-fp16 GGUF (download the official Qwen3.6-27B fp16 HF + `convert_hf_to_gguf --outtype f16`, ~54 GB) is needed to confirm the real α (likely ≥ proxy, more accurate draft) and to measure whether fp16 QUALITY justifies the throughput cost. The old +44% Q4 proxy stands separately.
 - **L10 MoE ⚙︎corrected.** The 25.0 vs 33.6 t/s EAGLE-vs-MTP pair is measured on the **Qwen3.6-27B DENSE hybrid test vehicle** (its MTP baseline is 33.6; the MoE frontdoor MTP is ~86). For the MoE category (gemma-26B-A4B, 35B-A3B) EAGLE-3 is **[U] untested**, confidence low. Dead-verdict stays regime-scoped ("slower-than-MTP on qwen35-hybrid-GPU; open + SOTA-plausible for dense transformers / CPU").
 - **L10 GDN carve-out.** On qwen35-GDN-hybrid-GPU EAGLE-3 (community head, n_max=3) is strictly dominated (25.0 < MTP 33.6 **and** < plain 29.06, accept 2.34<2.99) → "no-go here." **Not refuted** for dense-transformer targets (where EAGLE-3 is the vLLM/SGLang SOTA) or CPU targets. Capability finding: PRISM-EAGLE3 head loads + survives 900 tok on the fork (upstream #24541 crash does **not** reproduce).
 - **L11 D-16 ⚙︎corrected number.** Corrected hybrid/CPU-era throughput range is **−53% to −66%** (not −22..−66). The **−22** was the frozen-multipath **acceptance** delta (−12..−22 **pp**), not a throughput figure. The in-category positive **+15.8% on 32B-f16 DENSE** stands.
@@ -62,7 +89,7 @@ Categories (columns): **D-Q8** Dense-Q8 · **D-16** Dense-fp16/bf16 · **MoE** M
 - **L20 GDN ⚙︎corrected wrong-regime scaling.** The single "3.4x B1→B32" is the **MoE-FFN frontdoor** (qwen35moe 35B-A3B). The **dense-FFN 27B** test vehicle scales **~5.8x** (29.4→165.8 @B32). Restate by sub-variant: **dense-GDN ~5.8x, MoE-GDN ~3.4x** — both GDN-suppressed vs non-GDN counterparts (gemma-MoE 5.9x, gemma-dense 8.6x), so the "GDN-is-the-ceiling" mechanism holds for both; only the flat 3.4x was mis-scoped.
 - **L21 GDN ⚙︎corrected number.** "+55% → ~45 t/s" is untraceable/self-inconsistent. From the measured Q4_K_M baseline **32.88 t/s / 33% roofline** to Q8's **47% / 766 GB/s** efficiency, the BW ratio is 47/33 = **~+43% → ~47 t/s**. (The source's +55% is off a **~29 t/s** baseline, and the ~45 t/s endpoint alone implies only +37% — neither reconciles with the other.) Keep **[H]**, quality-gated (PPL/eval-parity), kernel un-authored.
 - **L22 D-16 ⚙︎corrected data swap.** The aggregate pair was written backwards. Correct: **−fa 0 = 138/166** t/s (higher/better) vs **−fa 1 = 135.5/162.2** @B16/32 — consistent with the (correct) "FA never helps DECODE here" direction.
-- **L22 MoE ⚙︎corrected attribution.** The 28.8/135.5/162.2 vs 29.4/138/166 numbers are the **DENSE 27B vehicle** (B=1 ~29 is the dense single-stream floor, not the MoE frontdoor's ~97). Keep applies:Y and "−fa 0 for decode" (gfx90a FA-is-prefill-only is a substrate property, low-risk across archs), but the **MoE-frontdoor FA-decode A/B is [U] untested**.
+- **L22 MoE ⚙︎corrected attribution.** The 28.8/135.5/162.2 vs 29.4/138/166 numbers are the **DENSE 27B vehicle** (B=1 ~29 is the dense 27B's **plain FA-isolation baseline** — MTP/MMQ held OFF to isolate the FA variable; it is NOT the dense achieved throughput, which is **40.4 t/s = MTP + MMVQ→MMQ, +37%** [`de447119f`]. Contrast is only for attribution: dense-B1 ~29-plain vs MoE frontdoor-B1 ~97-plain). Keep applies:Y and "−fa 0 for decode" (gfx90a FA-is-prefill-only is a substrate property, low-risk across archs), but the **MoE-frontdoor FA-decode A/B is now [M] MEASURED (2026-07-06, 35B-A3B-Q8, MI210)** — and the prior "~97" estimate was dead-on (llama-bench tg128 **99.64 t/s -fa0** vs 94.68 -fa1, +5.2% single-stream decode). Aggregate (batched-bench S_TG): −fa1 wins B≥16 (B32 **342.3** vs 333.0, **+2.8%**; B8 ~tie; B1 −fa0 95.8 vs 94.5). So the MoE crossover (−fa0 single-stream / −fa1 aggregate B≥16) HOLDS on the frontdoor but is MARGINAL — GDN suppresses the attention fraction FA optimizes, so the frontdoor's +2.8%@B32 is far below gemma-26B pure-MoE's +16%@B32. Coherence PASS (Rayleigh-scattering reasoning, 98.5 t/s). NOTE: single-model GPU characterization; the frontdoor is deployed on CPU and the full stack does not fit 64 GB.
 - **L15 DiT ⚙︎corrected N→C.** On a 64 GB GPU-compute-only card, a DiT too large to fit at Q4/bf16 **requires** sub-4-bit to run at all → applies in the capacity regime. Throughput hypothesis unchanged (net-neutral-to-negative for compute-bound denoise: dequant VALU added, no BW relief).
 
 ---
@@ -170,10 +197,10 @@ Ordered highest-ROI-first. Each item: **one decisive experiment** → **acceptan
 
 **[U] = runnable now (flag flip / config), needs GPU only.** Highest-ROI first.
 - [ ] **N-gram / prompt-lookup on GPU** (L12) — 27B-Q8 + fp16, code/JSON/prose sets, `--spec-type ngram-simple|ngram-cache|ngram-map-k`. *(do-first, all decode categories)*
-- [ ] **MTP on fp16/bf16** (L8) — dense fp16 no-`md` self-spec vs plain (fill the proxy→category gap).
+- [x] **MTP on fp16/bf16** (L8) ✅ 2026-07-06 — MTP **+60.2%** on F16 (Qwen3.6-27B, Q8→F16 dequant proxy, α 66.9%≈Q8, mean-accept 3.00/3) vs Q8's +15.6% → BW-bound hypothesis CONFIRMED (F16 2 bytes/param → each accepted draft avoids a fatter weight read). **Caveat:** F16 abs 31.0 t/s MTP stays BELOW Q8 40.4 (MTP+MMQ) — F16 is a precision choice, not a throughput one; MTP just makes it far more affordable. TRUE-fp16 download pending to confirm real α + measure quality headroom (proxy α is Q8-valued).
 - [ ] **KV-quant single-stream long-ctx** (L14) — dense-Q8 **and** GDN full-global layers at 64k single-stream (the alive regime never measured).
-- [ ] **FA-decode A/B on the MoE frontdoor** (L22) — the −fa0/−fa1 numbers are off the dense 27B vehicle; frontdoor untested.
-- [ ] **Tree-draft GPU re-test** (L11) — pure-dense-Q8 (gemma-4-31B) **and** the GDN hybrid (state-clone now ~0.1 ms).
+- [x] **FA-decode A/B on the MoE frontdoor** (L22) ✅ 2026-07-06 — MEASURED (35B-A3B-Q8): −fa0 single-stream (99.64>94.68, +5.2%) / −fa1 aggregate B≥16 (342.3>333.0 @B32, +2.8%). MoE crossover holds but MARGINAL (GDN suppresses the attention fraction FA targets; gemma-26B pure-MoE was +16%). Coherence PASS.
+- [x] **Tree-draft GPU re-test** (L11) ✅ 2026-07-06 — DySpec Phase 1a ported + validated on the v7-candidate (engine bit-identical to linear draft) then **SHELVED**: external-drafter tree is DOMINATED by embedded MTP on every stack target (qwen-27B MTP 41.9 vs tree ~18 < plain 31), and GLM-5.2 also ships an MTP head → no MTP-less niche remains. Native-GLM-MTP forward-graph port is the better future lever (gated on GLM-5.2 runnability). See [tree-draft-forward-port-plan.md](tree-draft-forward-port-plan.md).
 - [ ] **EAGLE-3 on pure-dense** (L10) — needs a trained head + relax `target_layer_ids_n==3`; also gemma-MoE untested.
 - [ ] **Corpus-static n-gram (−lcs)** (L13) — build chunk-and-merge bigram cache from a few-GB code slice, vocab-locked; then A/B.
 - [ ] **Sub-4-bit capacity/throughput** (L15) — only after a CDNA2 sub-4-bit dequant kernel exists; PPL/eval-parity gate.

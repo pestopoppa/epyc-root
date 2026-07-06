@@ -47,6 +47,10 @@ Within `epyc-root`:
 - Governance validation: `scripts/validate/`
 - Architecture and design rationale: `docs/`
 
+## Kernel Workflow (Production Immutability)
+
+Production llama.cpp kernels (`production-consolidated-v6`, future `-v7`, …) are **FROZEN** — never modify, rebase, build, or commit to them without explicit operator authorization. All kernel / inference-research / benchmarking work happens on `llama.cpp-experimental`; features ship by *versioning past* production, never by patching it in place. Every kernel effort, in order: (1) pull **fresh** production → experimental (so all production optimizations — iqk AVX-512 GEMM, CPU forward-ports, server work — are already present; never fork long-lived from an old tip), (2) build, (3) validate no GPU/CPU regressions vs production, (4) deploy as a new production version. The experimental kernel must be the FULL build (fresh production + new features) before promotion — never reconciled via cherry-picks at promotion time, or the combined changes ship unvalidated and bench numbers miss our own opts. Authoritative policy + motivating failure: `CLAUDE.md` → *Experimental Kernel Workflow & Production-Kernel Immutability*.
+
 ## Incremental Persistence (Mandatory for Eval/Benchmark Scripts)
 
 Any script that runs inference (benchmarks, evals, seeding) **MUST** persist results incrementally:

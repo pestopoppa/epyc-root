@@ -17,6 +17,7 @@ No backup policy exists anywhere in governance. The total irreplaceable set is
 ## Waypoints
 
 - [x] **W1 — inventory + policy** (half day): `scripts/backup/MANIFEST.yaml` with tiered list (T0 irreplaceable / T1 regenerable-expensive / T2 excluded models). Audit git coverage + unpushed branches (`v5 push pending` known); add unpushed-commit alert to ATTESTATION. Acceptance: manifest enumerates every T0 path per spec §F4-W1. Implementation: manifest plus `scripts/backup/audit_git_state.sh` alert hook for future ATTESTATION.
+- [x] **W2a — target discovery/report packet**: `continuity_backup.py discover-targets` inspects explicit candidate roots or locally mounted filesystem roots, runs the same failure-domain checks as snapshot creation, writes a machine-readable report, and emits the exact backup + latest-restore-check commands when a usable target exists. ✅ 2026-07-06
 - [ ] **W2 — the job** (half day): `scripts/backup/backup_critical.sh` — restic preferred (dedupe+encryption, open-source) or snapshot-copy fallback. Targets: root SSD (different failure domain) + one off-host target (operator picks). Nightly via nightshift scheduler or systemd timer. Acceptance: nightly run produces a verifiable snapshot of all T0 paths. **Tooling landed 2026-06-14, real run still blocked**: `backup_critical.sh` now creates a `verify_restore.sh`-compatible T0 snapshot layout and performs SQLite `.backup` copies, but refuses same-device and overlayfs targets. `/workspace` and `/mnt/raid0/llm` are both `/dev/md127`, no off-host target is configured, and `/tmp`/container overlayfs is explicitly rejected. Do not accept a fake same-array backup.
 - [ ] **W3 — restore proof** (half day + quarterly): `scripts/backup/verify_restore.sh` — restore to temp dir, checksum-compare, parse-validate JSON/YAML/SQLite. Add backup-age check to ATTESTATION. Acceptance: one full restore cycle passes; check wired into attestation. **Tooling landed 2026-06-14**: `9eb3f45` adds manifest validation plus restore wrappers; `0a56b81` fixes restore checksum semantics to compare restored bytes against the snapshot, not mutable live sources. **Preflight landed 2026-06-21**: `scripts/backup/check_latest_backup.sh` wraps `continuity_backup.py check-latest` so attestation/nightshift can fail closed when no timestamped snapshot exists, when the newest snapshot exceeds `--max-age-days`, or when restore verification fails. Still unchecked until a real T0 snapshot from an approved backup target passes end-to-end.
 
@@ -48,3 +49,30 @@ On completion of each waypoint: tick here, one-line progress entry, update maste
   action is to mount/provide an operator-approved writable off-array/off-host
   target, then run `scripts/backup/backup_critical.sh` followed by
   `scripts/backup/verify_restore.sh`.
+- 2026-07-06 preflight/reporting lane: added `continuity_backup.py preflight-target`
+  for dry target checks that report `target_exists`, `target_is_dir`,
+  `target_writable`, selected tiers/repos, and machine-readable failure reasons
+  without creating a snapshot. Validation: `python3 -m py_compile
+  scripts/backup/continuity_backup.py tests/backup/test_continuity_backup.py`;
+  `uv run --with pytest --with pyyaml pytest -q tests/backup/test_continuity_backup.py`
+  -> `10 passed`; `uv run --with ruff ruff check scripts/backup/continuity_backup.py
+  tests/backup/test_continuity_backup.py` passed. W2/W3 remain blocked until an
+  operator-approved off-array/off-host target is mounted and a real snapshot
+  can be created and restored.
+- 2026-07-06 target discovery lane: added `continuity_backup.py discover-targets`
+  for read-only enumeration of explicit candidates and mounted filesystem roots.
+  The command reuses the preflight/failure-domain logic, writes a JSON report
+  with per-candidate errors and `usable_count`, and prints the exact
+  `backup_critical.sh` / `check_latest_backup.sh` commands once a target passes.
+  Validation: `python3 -m py_compile scripts/backup/continuity_backup.py
+  tests/backup/test_continuity_backup.py`; `uv run --with pytest --with pyyaml
+  pytest -q tests/backup/test_continuity_backup.py` -> `12 passed`; `uv run
+  --with ruff ruff check scripts/backup/continuity_backup.py
+  tests/backup/test_continuity_backup.py` passed. Live discovery through
+  `uv run --with pyyaml python scripts/backup/continuity_backup.py
+  discover-targets --include-mounted-roots --max-candidates 16 --report-json
+  /tmp/epyc-f4-discover-targets.json` found `9` mounted candidates and
+  `usable_count=0`: RAID0-backed paths share `/dev/md127`, `/` is overlayfs and
+  not writable, and `/opt/AMD`/`/opt/rocm` are different storage but read-only
+  in the container. W2/W3 still require an operator-approved writable off-array
+  or off-host target.

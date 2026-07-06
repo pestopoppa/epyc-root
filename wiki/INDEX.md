@@ -2,7 +2,7 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-07-05 (full backlog compile: 49 changed sources since 2026-07-04 — the deferred "47-source cross-session backlog" — merged into 10 articles: [Hardware Optimization](hardware-optimization.md) (MI210 campaign, bf16 GDN state, two-axis roadmap), [Speculative Decoding](speculative-decoding.md) (MTP-on-GPU-MoE converged ~neutral, prompt-lookup corpus retired), [Autonomous Research](autonomous-research.md) (ledger authority cutover live, planner-economics local pivot), [Benchmark Methodology](benchmark-methodology.md) (tool-use lane live, W8 sparse-baseline repair), [Routing Intelligence](routing-intelligence.md) (RI-10 decision-ready/hold, X-MAS enforce live), [Inference Serving](inference-serving.md) (launcher NUMA default flip, DS-7 codified), [Agent Architecture](agent-architecture.md) (consult v1 wired default-off, BEP arc closed), [Cost-Aware Routing](cost-aware-routing.md) (CoT scaffold falsified, verifier/selector pivot), [Context Management](context-management.md), and [Tool Implementation](tool-implementation.md) (:8100 hub, dashboards-as-value-instruments bar). Observation-heavy sections carry writer-evidence review flags pending human/measured review. Prior 2026-07-03 focused checkpoint retained in article history.)
+**Last compiled**: 2026-07-06 (focused operational checkpoint: changed sources since 2026-07-05 merged into [Autonomous Research](autonomous-research.md) (frontdoor/worker local planner split, W8 replayable numeric canary), [Tool Implementation](tool-implementation.md) (dashboard tap/proc lock-count separation), [Document Processing](document-processing.md) (ODL hybrid sidecar probe preflight), and [Agent Architecture](agent-architecture.md) (Hermes generalized as one client of the shared `/v1/chat/completions` + `x_*` contract). Previous 2026-07-05 full backlog compile merged 49 changed/new sources into 10 articles: hardware, speculative decoding, autonomous research, benchmark methodology, routing intelligence, inference serving, agent architecture, cost-aware routing, context management, and tool implementation. Observation-heavy sections carry writer-evidence review flags pending human/measured review.)
 **Articles**: 26 compiled, 4 stub categories
 **Total sources**: 560+ scanned documents across 6 source types; 2026-07-05 pass merged 49 changed/new sources (MI210 speed campaign, evidence-plane/autopilot arc, dashboards, routing canary) into 10 articles; 2026-06-21 pass merged 36 changed/new sources into 21 articles
 
@@ -38,8 +38,8 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Agent Architecture](agent-architecture.md) | 63+ | Consult primitive went design→staged-v1 in one week, all default-off (48h bake is the only gate); BEP transactional-apply arc closed; DCP's first live A/B self-classified `hold` |
-| [Autonomous Research](autonomous-research.md) | 86+ | Ledger authority cutover is live (W1 archive + W4 `ledger_authoritative`); planner economics pivoted to LocalPlannerProvider after the spend breaker tripped; alpha-wealth multiplicity guard confirmed the hazard was real |
+| [Agent Architecture](agent-architecture.md) | 64+ | Consult primitive went design→staged-v1 in one week, all default-off; Hermes is now one client of the shared `/v1/chat/completions` + `x_*` contract rather than a special routing path |
+| [Autonomous Research](autonomous-research.md) | 87+ | Ledger authority cutover is live; planner economics pivoted to local drafting/critique, with `frontdoor` drafting and `worker_general` critique queued for the next boundary restart |
 | [Memory-Augmented Models](memory-augmented.md) | 25+ | Episodic FAISS writes require cross-process locking; K-MEM Tulving is a mixed baseline with weak chronology and no memory-routing promotion |
 
 ## Context & Compression
@@ -72,7 +72,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | [Search & Retrieval](search-retrieval.md) | 31 | K-RAG K7 seed eval picks recency-weighted recall@10, but final retrieval claim waits on the 70-case certification pool |
 | [Knowledge Management](knowledge-management.md) | 18+ | K-RAG K7 certification produced a zero-miss retrieval candidate; wiki compile remains a derived wrap-up artifact |
 | [RAG Alternatives](rag-alternatives.md) | 2 | SLIDERS structured-DB+SQL alternative gated behind Phase 0 falsification (GPT-4.1 hard-wired adoption blocker; not on ColBERT upgrade path) |
-| [Tool Implementation](tool-implementation.md) | 39 | Dashboards were built as liveness instruments, not value instruments — every telemetry addition now needs an outcome KPI + escalation rule; :8100 project hub live with git-derived recency |
+| [Tool Implementation](tool-implementation.md) | 40 | Dashboards were built as liveness instruments, not value instruments; the regions-lock panel now separates `/proc` owners, live tap requests, and inferred activity instead of collapsing them into one ownership story |
 
 ## Research & Analysis
 

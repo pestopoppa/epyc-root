@@ -37,6 +37,38 @@ shows material latency should implementation stay inside
 response semantics (`message.tool_calls` are not emitted for internally
 executed tools).
 
+**Parallel batching telemetry update (2026-07-06)**: `epyc-orchestrator`
+`64db8a12` extends `scripts/analysis/mine_repl_patterns.py` so future runs
+report `len(tools_called) >= 2`, explicit read-only chain coverage from
+`orchestration/tool_registry.yaml`, `parallel_tools_used=True`, and ranked tool
+chains from both diagnostics `tool_chains` and AutoPilot bigrams. Validation
+passed with `py_compile`, Ruff, and `uv run pytest -q
+tests/unit/test_mine_repl_patterns.py`. A current diagnostics-only run found
+`3187` diagnostic rows, `807` REPL rows, `117` REPL-with-tools rows, `30`
+multi-tool rows (`3.7%` of REPL), `0` explicit read-only multi-tool rows, and
+`0` `parallel_tools_used=True` rows. Do not treat the regenerated markdown
+report as decision-grade yet because the current `autopilot.log` has rotated and
+produced `0` parseable historical REPL sessions; the historical report was left
+unchanged. Follow-up `epyc-orchestrator` `87e957ba` adds explicit
+`side_effects: ["read_only"]` annotations for safe lookup/data/manifest/system
+read and pure native compute tools, while deliberately leaving eval-style Python
+and NumPy expression evaluators plus embedding/classification tools unannotated.
+This raises the registry-backed analyzer coverage without expanding the
+"read-only" contract to model-calling or potentially side-effectful eval
+surfaces.
+
+Parallel batching task state:
+- [x] Add analyzer telemetry for multi-tool, explicit read-only, and
+  `parallel_tools_used` coverage (`epyc-orchestrator` `64db8a12`). ✅ 2026-07-06
+- [x] Expand/read-through `tool_registry.yaml` side-effect annotations before
+  using read-only chain coverage as a decision gate; `python_eval`,
+  NumPy-backed eval-style math, and embedding/classification tools remain
+  unannotated by design (`epyc-orchestrator` `87e957ba`). ✅ 2026-07-06
+- [ ] If future full-log runs show material independent read-only chains with
+  serial execution, scope implementation inside `REPLEnvironment.execute` /
+  `parallel_dispatch.py` without changing OpenAI response `message.tool_calls`
+  semantics.
+
 **Prior verification (2026-07-04T10:24Z)**: the stale "StrategyStore only
 affects startup/action handlers" diagnosis is closed. `epyc-orchestrator`
 `1f8b1e4e` pins a full-controller-prompt regression showing a newly written

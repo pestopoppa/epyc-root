@@ -1,8 +1,8 @@
 # SSM Hybrid Architectures
 
 **Category**: `ssm_hybrid`
-**Confidence**: verified
-**Last compiled**: 2026-06-21
+**Confidence**: verified (CPU/arch findings) · observation (2026-07-06 MI210 bf16-GDN-state numbers — single-run, no P-GPU-1 per MEASUREMENT.md)
+**Last compiled**: 2026-07-06 (⚠️ 2026-07-06 bf16 Delta-Net recurrent-state GPU-lever note added under Key Findings — human review)
 **Sources**: 13 documents
 
 ## Summary
@@ -39,6 +39,7 @@ The Qwen3.5 frontdoor benchmark sweep confirmed the frontdoor model's production
 - **Log-Linear Gated DeltaNet** (ICLR 2026): O(L log L) hidden state replaces fixed O(L) state. State size 4-10x smaller at 262K, 20-25x at 1M. Could potentially unblock speculation by making sequential replay viable. <0.4% parameter overhead [intake-356, deep-dives/memory-caching-log-linear-attention.md]
 - Memory Caching (GRM/SSC) maps the growing-memory design space but requires pretraining and saves only ~50ms against ~1320ms verification -- marginal [intake-354, deep-dives/memory-caching-log-linear-attention.md]
 - DFlash validates Qwen3.5-35B-A3B as a good spec-decode target on GPU (2.4-2.8x speedup on B200) but requires SGLang/vLLM [mtp-speculative-decoding.md]
+- **bf16 Delta-Net recurrent state is a GPU aggregate lever — the campaign's one clean GDN kernel win (2026-07-06, MI210, OBSERVATION).** On gfx90a, storing the recurrent state in bf16 instead of fp32 **halves the state gather+scatter** (not just kernel compute), giving **+21.5% aggregate @B=32** on Qwen3.5-27B (162.8→197.8 t/s; drift PPL +0.0035%, byte-identical isolation, `test-backend-ops` 1103/1103) and generalizing across **all three GDN-hybrid sizes** — deployed frontdoor 35B-A3B **+17.7%**, architect 122B IQ2 **+16.4%** — plus the qwen3next-80B GDN family (+13.3%, first confirmation outside qwen3.5). Runtime-gated `GGML_CUDA_GDN_STATE_BF16` (default-off, byte-identical when off), commit `496e2f098`, carried onto the reconciled v7-candidate kernel. High-batch-only (B=1 neutral). This is a *serving* lever orthogonal to the CPU verification wall above — it does not unblock speculation, it makes the recurrent machinery cheaper on GPU. Detail in [Hardware Optimization](hardware-optimization.md). [fable5-window2-findings-05c, kernel-reconciliation-audit]
 - Qwen3.5-35B-A3B frontdoor: Q4_K_M baseline 83% quality, 13.8 t/s. Spec decode is a bust. MoE6 lookup best acceleration at 19.6 t/s [qwen35-frontdoor-benchmark.md]
 - Multiscreen architecture preserves attention paradigm with sub-quadratic complexity -- theoretically compatible with KV cache and speculation, but no implementations exist [multiscreen-attention-evaluation.md]
 - IHA (Interleaved Head Attention) is the highest-priority watch item: FlashAttention-compatible, +112% RULER at 16K multi-key retrieval [multiscreen-attention-evaluation.md]
@@ -161,6 +162,8 @@ The reason these are tracked under SSM-hybrid (and not under speculative-decodin
 - [GLM-5.1 REAP CPU evaluation handoff](../handoffs/active/glm51-reap-cpu-evaluation.md) -- GLM-5.2 elevated to PRIMARY GLM-MoE-DSA target (supersedes 5.1); storage viable via UD-IQ2; gated on DSA forward pass
 - [intake-490](https://pytorch.org/blog/hybrid-models-meet-sglang-more-than-full-attention/) PyTorch SGLang blog (Dec 2025) -- Slot-promotion mechanism for hybrid SSM speculation; per-candidate state slots via `S_new = S_parent + Δ(k,v,β,g)`; the basis for the 2026-04-28 reopener
 - [Hybrid SSM slot-promotion reopener handoff](../handoffs/completed/hybrid-ssm-slot-promotion-spec-dec.md) -- CLOSED 2026-04-30: Phase 1.0 GATE MET, Phase 1.1 dispatcher v1 LANDED but mechanism net-negative on Qwen3.6-35B + Qwen3-1.7B (97% primary wins); dispatcher v1 stays in tree disabled-by-default
+- [findings-05c lever × model-category matrix (L20 GDN)](../handoffs/active/fable5-window2-findings-05c-mi210-lever-category-matrix.md) -- GPU GDN levers: occupancy path NO-GO (theoretical occupancy already 100%; the ~42% is pure memory-latency), the one win is **bf16 recurrent-state** (+21.5% agg @B32, halves gather+scatter), generalizes across all GDN-hybrid sizes + qwen3next-80B
+- [Kernel reconciliation audit](../handoffs/active/kernel-reconciliation-audit.md) -- bf16-GDN-state kernel (`496e2f098`, `GGML_CUDA_GDN_STATE_BF16`) carried onto the reconciled v7-candidate; GPU (`ggml-cuda/gated_delta_net.cu`) and CPU/iqk subsystems disjoint
 
 ## Lightning Attention port — L2 + L3 COMPLETE, compile gate PASSED (2026-04-30 PM)
 

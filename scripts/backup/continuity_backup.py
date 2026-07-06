@@ -9,6 +9,7 @@ Implements manifest validation and restore verification:
 
 Usage:
   python3 scripts/backup/continuity_backup.py validate --manifest scripts/backup/MANIFEST.yaml
+  python3 scripts/backup/continuity_backup.py preflight-target --target-root /path/to/target
   python3 scripts/backup/continuity_backup.py verify-restore --snapshot-root /path/to/snapshot
 """
 
@@ -89,6 +90,66 @@ def parse_args() -> argparse.Namespace:
         help="explicit snapshot directory name; default is UTC timestamp",
     )
     snapshot_parser.add_argument(
+        "--report-json",
+        help="write JSON summary report to this path",
+    )
+
+    preflight_parser = subparsers.add_parser(
+        "preflight-target",
+        help="check a candidate target root without creating a snapshot",
+    )
+    preflight_parser.add_argument(
+        "--manifest",
+        default=DEFAULT_MANIFEST,
+        help="path to continuity backup manifest",
+    )
+    preflight_parser.add_argument(
+        "--target-root",
+        required=True,
+        help="candidate off-array/off-host directory to inspect",
+    )
+    preflight_parser.add_argument(
+        "--tiers",
+        default="T0_irreplaceable",
+        help="comma-separated tier names to inspect (default: T0_irreplaceable)",
+    )
+    preflight_parser.add_argument(
+        "--report-json",
+        help="write JSON summary report to this path",
+    )
+
+    discover_parser = subparsers.add_parser(
+        "discover-targets",
+        help="inspect candidate mounted backup targets without creating a snapshot",
+    )
+    discover_parser.add_argument(
+        "--manifest",
+        default=DEFAULT_MANIFEST,
+        help="path to continuity backup manifest",
+    )
+    discover_parser.add_argument(
+        "--candidate-root",
+        action="append",
+        default=[],
+        help="candidate target root to inspect; may be repeated",
+    )
+    discover_parser.add_argument(
+        "--include-mounted-roots",
+        action="store_true",
+        help="also inspect locally mounted filesystem roots from /proc/self/mountinfo",
+    )
+    discover_parser.add_argument(
+        "--tiers",
+        default="T0_irreplaceable",
+        help="comma-separated tier names to inspect (default: T0_irreplaceable)",
+    )
+    discover_parser.add_argument(
+        "--max-candidates",
+        type=int,
+        default=24,
+        help="maximum mounted-root candidates to inspect when --include-mounted-roots is set",
+    )
+    discover_parser.add_argument(
         "--report-json",
         help="write JSON summary report to this path",
     )
@@ -532,6 +593,55 @@ def _mountinfo_for(path: Path) -> tuple[str, str, str] | None:
     return best[1], best[2], best[3]
 
 
+def _mounted_target_candidates() -> list[Path]:
+    """Return plausible local mount roots for backup-target discovery."""
+    ignored_fstypes = {
+        "autofs",
+        "bpf",
+        "cgroup",
+        "cgroup2",
+        "configfs",
+        "debugfs",
+        "devpts",
+        "devtmpfs",
+        "fusectl",
+        "hugetlbfs",
+        "mqueue",
+        "nsfs",
+        "proc",
+        "pstore",
+        "securityfs",
+        "sysfs",
+        "tracefs",
+    }
+    ignored_prefixes = (
+        "/dev",
+        "/proc",
+        "/run",
+        "/sys",
+    )
+    candidates: list[Path] = []
+    try:
+        lines = Path("/proc/self/mountinfo").read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return candidates
+    for line in lines:
+        fields = line.split()
+        if len(fields) < 10 or "-" not in fields:
+            continue
+        sep = fields.index("-")
+        fstype = fields[sep + 1]
+        mount_point = Path(_decode_mount_path(fields[4]))
+        mount_text = str(mount_point)
+        if fstype in ignored_fstypes or mount_text.startswith(ignored_prefixes):
+            continue
+        if not mount_point.is_dir():
+            continue
+        if mount_point not in candidates:
+            candidates.append(mount_point)
+    return sorted(candidates, key=lambda path: (len(path.parts), str(path)))
+
+
 def _storage_device_set(path: Path) -> set[int]:
     devices = {path.stat().st_dev}
     mountinfo = _mountinfo_for(path)
@@ -551,6 +661,125 @@ def _storage_device_set(path: Path) -> set[int]:
         except OSError:
             continue
     return devices
+
+
+def _preflight_target_report(
+    manifest_path: Path,
+    target_root: Path,
+    *,
+    tier_csv: str = "T0_irreplaceable",
+) -> tuple[int, dict[str, object], list[str]]:
+    try:
+        manifest = load_manifest(manifest_path)
+    except (TypeError, FileNotFoundError, yaml.YAMLError) as exc:
+        return 1, {
+            "manifest": str(manifest_path),
+            "target_root": str(target_root),
+            "selected_tiers": [],
+            "selected_repos": [],
+            "target_exists": False,
+            "target_is_dir": False,
+            "target_writable": False,
+            "errors": [f"manifest error: {exc}"],
+        }, [f"manifest error: {exc}"]
+
+    validate = validate_manifest(manifest_path, warn_on_missing=True)
+    if validate.errors:
+        return 1, {
+            "manifest": str(manifest_path),
+            "target_root": str(target_root),
+            "selected_tiers": [],
+            "selected_repos": [],
+            "target_exists": False,
+            "target_is_dir": False,
+            "target_writable": False,
+            "errors": ["manifest invalid"] + validate.errors,
+        }, ["manifest invalid"] + validate.errors
+
+    selected_tiers = _parse_tiers(tier_csv)
+    if not selected_tiers:
+        return 1, {
+            "manifest": str(manifest_path),
+            "target_root": str(target_root),
+            "selected_tiers": [],
+            "selected_repos": [],
+            "target_exists": False,
+            "target_is_dir": False,
+            "target_writable": False,
+            "errors": ["no tiers selected"],
+        }, ["no tiers selected"]
+
+    repos = manifest.get("repos")
+    if not isinstance(repos, dict) or not repos:
+        return 1, {
+            "manifest": str(manifest_path),
+            "target_root": str(target_root),
+            "selected_tiers": sorted(selected_tiers),
+            "selected_repos": [],
+            "target_exists": False,
+            "target_is_dir": False,
+            "target_writable": False,
+            "errors": ["manifest repos map missing/empty"],
+        }, ["manifest repos map missing/empty"]
+
+    collected = _collect_selected_files(manifest, selected_tiers)
+    if not collected:
+        error = f"no files selected for tiers {sorted(selected_tiers)}"
+        return 1, {
+            "manifest": str(manifest_path),
+            "target_root": str(target_root),
+            "selected_tiers": sorted(selected_tiers),
+            "selected_repos": [],
+            "target_exists": False,
+            "target_is_dir": False,
+            "target_writable": False,
+            "errors": [error],
+        }, [error]
+
+    selected_repo_names = sorted({repo_name for repo_name, _pattern in collected})
+    target_root = target_root.resolve()
+    errors: list[str] = []
+
+    target_exists = target_root.exists()
+    target_is_dir = target_root.is_dir() if target_exists else False
+    target_writable = bool(target_exists and target_is_dir and os.access(target_root, os.W_OK | os.X_OK))
+    mountinfo = _mountinfo_for(target_root) if target_exists else None
+
+    if not target_exists:
+        errors.append(f"target root missing: {target_root}")
+    elif not target_is_dir:
+        errors.append(f"target root is not a directory: {target_root}")
+    elif not target_writable:
+        errors.append(f"target root is not writable: {target_root}")
+
+    if target_exists and target_is_dir:
+        errors.extend(_target_failure_domain_errors(target_root, repos, set(selected_repo_names)))
+
+    report: dict[str, object] = {
+        "manifest": str(manifest_path),
+        "target_root": str(target_root),
+        "selected_tiers": sorted(selected_tiers),
+        "selected_repos": selected_repo_names,
+        "target_exists": target_exists,
+        "target_is_dir": target_is_dir,
+        "target_writable": target_writable,
+        "mount": {
+            "fstype": mountinfo[0],
+            "source": mountinfo[1],
+            "super_options": mountinfo[2],
+        } if mountinfo else None,
+        "errors": errors,
+    }
+    summary = [
+        "preflight_status=ok" if not errors else "preflight_status=failed",
+        f"target_root={target_root}",
+        f"target_exists={target_exists}",
+        f"target_is_dir={target_is_dir}",
+        f"target_writable={target_writable}",
+        f"tiers={sorted(selected_tiers)}",
+        f"selected_repos={selected_repo_names}",
+    ]
+    return 0 if not errors else 1, report, summary + (["errors:"] + errors if errors else [])
 
 
 def _backup_sqlite(source: Path, destination: Path) -> None:
@@ -686,6 +915,125 @@ def create_snapshot(
     finally:
         if staging_root.exists():
             shutil.rmtree(staging_root, ignore_errors=True)
+
+
+def preflight_target(
+    manifest_path: Path,
+    target_root: Path,
+    *,
+    tier_csv: str = "T0_irreplaceable",
+    report_json: str | None = None,
+) -> tuple[int, list[str]]:
+    exit_code, report, lines = _preflight_target_report(
+        manifest_path,
+        target_root,
+        tier_csv=tier_csv,
+    )
+
+    if report_json:
+        with Path(report_json).open("w", encoding="utf-8") as handle:
+            json.dump(report, handle, indent=2, sort_keys=True)
+
+    return exit_code, lines
+
+
+def discover_targets(
+    manifest_path: Path,
+    candidate_roots: list[Path],
+    *,
+    tier_csv: str = "T0_irreplaceable",
+    include_mounted_roots: bool = False,
+    max_candidates: int = 24,
+    report_json: str | None = None,
+) -> tuple[int, list[str]]:
+    candidates: list[Path] = []
+    for candidate in candidate_roots:
+        resolved = candidate.expanduser()
+        if resolved not in candidates:
+            candidates.append(resolved)
+    if include_mounted_roots:
+        for candidate in _mounted_target_candidates():
+            if candidate not in candidates:
+                candidates.append(candidate)
+
+    if max_candidates > 0:
+        candidates = candidates[:max_candidates]
+    if not candidates:
+        return 1, ["no candidate roots supplied; pass --candidate-root or --include-mounted-roots"]
+
+    reports: list[dict[str, object]] = []
+    ok_reports: list[dict[str, object]] = []
+    lines = [f"candidate_count={len(candidates)}"]
+    for candidate in candidates:
+        exit_code, report, _preflight_lines = _preflight_target_report(
+            manifest_path,
+            candidate,
+            tier_csv=tier_csv,
+        )
+        report["preflight_status"] = "ok" if exit_code == 0 else "failed"
+        reports.append(report)
+        if exit_code == 0:
+            ok_reports.append(report)
+        errors = report.get("errors") if isinstance(report.get("errors"), list) else []
+        mount = report.get("mount") if isinstance(report.get("mount"), dict) else {}
+        mount_bits = []
+        if mount:
+            mount_bits.append(f"fstype={mount.get('fstype')}")
+            mount_bits.append(f"source={mount.get('source')}")
+        lines.append(
+            "candidate="
+            + str(report.get("target_root"))
+            + f" status={report['preflight_status']}"
+            + (f" {' '.join(mount_bits)}" if mount_bits else "")
+        )
+        for error in errors[:4]:
+            lines.append(f"  - {error}")
+        if len(errors) > 4:
+            lines.append(f"  - ... {len(errors) - 4} more error(s)")
+
+    if ok_reports:
+        first_ok = str(ok_reports[0]["target_root"])
+        backup_command = (
+            "scripts/backup/backup_critical.sh --target-root "
+            + shlex.quote(first_ok)
+            + " --tiers "
+            + shlex.quote(tier_csv)
+        )
+        restore_check_command = (
+            "scripts/backup/check_latest_backup.sh --target-root "
+            + shlex.quote(first_ok)
+            + " --max-age-days 1 --tiers "
+            + shlex.quote(tier_csv)
+        )
+        lines.extend([
+            f"first_usable_target={first_ok}",
+            "next_backup_command=" + backup_command,
+            "next_restore_check_command=" + restore_check_command,
+        ])
+    else:
+        lines.append("first_usable_target=")
+        backup_command = ""
+        restore_check_command = ""
+
+    if report_json:
+        with Path(report_json).open("w", encoding="utf-8") as handle:
+            json.dump(
+                {
+                    "manifest": str(manifest_path),
+                    "selected_tiers": sorted(_parse_tiers(tier_csv)),
+                    "candidate_count": len(candidates),
+                    "usable_count": len(ok_reports),
+                    "candidates": reports,
+                    "next_commands": {
+                        "backup": backup_command,
+                        "restore_check": restore_check_command,
+                    },
+                },
+                handle,
+                indent=2,
+                sort_keys=True,
+            )
+    return 0 if ok_reports else 1, lines
 
 
 def verify_restore(
@@ -909,6 +1257,30 @@ def main() -> int:
             target_root=Path(args.target_root),
             tier_csv=args.tiers,
             snapshot_name=args.snapshot_name,
+            report_json=args.report_json,
+        )
+        for line in lines:
+            print(line)
+        return exit_code
+
+    if args.command == "preflight-target":
+        exit_code, lines = preflight_target(
+            manifest_path=Path(args.manifest),
+            target_root=Path(args.target_root),
+            tier_csv=args.tiers,
+            report_json=args.report_json,
+        )
+        for line in lines:
+            print(line)
+        return exit_code
+
+    if args.command == "discover-targets":
+        exit_code, lines = discover_targets(
+            manifest_path=Path(args.manifest),
+            candidate_roots=[Path(candidate) for candidate in args.candidate_root],
+            tier_csv=args.tiers,
+            include_mounted_roots=args.include_mounted_roots,
+            max_candidates=args.max_candidates,
             report_json=args.report_json,
         )
         for line in lines:

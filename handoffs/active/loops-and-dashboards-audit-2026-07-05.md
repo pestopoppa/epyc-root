@@ -36,25 +36,186 @@ Action landed:
 - `epyc-orchestrator` `8031c7c4` then completed the true scratch prompt-root override: GEPA candidate evals copy the prompt tree into `tmp/gepa_prompt_roots`, write the candidate only there, tag eval questions with `_prompt_root`, and `/chat` resolves prompts through a request-scoped override that is accepted only under the configured scratch base. Candidate scoring no longer writes canonical prompt files.
 - `epyc-orchestrator` `12839520` adds observation-only W8 paired-baseline diagnostics: each evaluated trial can journal `eval_details.seq_paired_baseline`, comparing its per-question vector with the latest trusted `seq_baseline_reference_draw` through the existing exact McNemar/sign-test primitive. The payload is explicitly `used_for_gating=false` and is computed only after SafetyGate/Pareto/baseline decisions, so it cannot change current keep/revert or promotion semantics.
 - `epyc-orchestrator` `18c71bcc` adds outcome-first health signals to `phase_health_report.py`: journal-shard-derived frontier-admission staleness, baseline-promotion staleness, and recent keepable/wasted/learning-excluded rates. Default behavior is advisory; `--require-outcome-progress` turns the same signal into a strict blocker. A live smoke flags the current frontier stall at `172` trials since the latest frontier admission against the default threshold `150`.
+- [x] `epyc-orchestrator` `bd2ecc7d` fixes a provider-health false alarm
+  exposed by forced W8 replays. `planner_provider_health_report.py` now reads
+  the live phase payload and reports `waiting_for_planner_turn`/`ok=true` when
+  the daemon is in a non-planner phase such as `dispatch_action`, while still
+  treating a no-event `planner_invoke` window as `attention`. Focused planner
+  health/lab tests passed (`23 passed`) with `ruff`, `py_compile`, and
+  `git diff --check` clean. ✅ 2026-07-06
 - `epyc-orchestrator` `080e3ac8` adds a durable operator outbox for critic-rejected operator-domain drafts (`orchestration/autopilot_operator_outbox.jsonl`) and renders the capped open outbox back into the planner prompt, preserving human/trust-boundary hypotheses without letting the planner keep redrafting them as autonomous actions.
 - `epyc-orchestrator` `96b883cb` adds exact-signature repeat shielding for critic-rejected drafts. Re-emitting the same normalized action now becomes a non-executing invalid skip before dispatch; a materially changed retry has a different signature and remains eligible.
 - `epyc-orchestrator` `224e3397` surfaces the journaled W8 paired-baseline diagnostics in `seq_readiness_report.py` as observation-only `paired_baseline_screening`, so absence/presence of those rows is visible in the readiness packet rather than buried per trial.
 - `epyc-orchestrator` `e58c2bca` feeds outcome-progress pressure into the controller prompt: latest/frontier/promotion staleness plus recent keepable, wasted-eval, and learning-excluded rates are now planner-facing, non-authority context.
+- [x] `epyc-orchestrator` `d006996b` hardens the local planner provider after the first live `local_chat` rollout failed: the default routine drafter is now `local_worker` with Codex critic, the OpenAI-compatible local URL uses `127.0.0.1`, transient local HTTP failures are retried, and local `[ERROR]` / `[MOCK]` payloads fail closed instead of being dispatched as planner text. The live AutoPilot PID still predates this commit; verify it after the next advisor-safe restart boundary. ✅ 2026-07-05
+- [x] `epyc-orchestrator` `200d6ea` closes the adjacent CPU MTP launcher trap: same-file embedded MTP configs omit `-md` instead of double-loading, while worker_general keeps `-md` for its current separate assistant draft model. ✅ 2026-07-05
+- [x] `epyc-orchestrator` `27fa7161`, `58904e36`, `3364bdd7`, and
+  `a13a2948` supersede the stale local-worker/Codex restart target with the
+  current canary contract: routine planning uses `local_ingest` draft,
+  `local_frontdoor` critique, and `claude` fallback; W8 fallback rewrites
+  seed/deep/prune deferrals into replayable candidate attempts; new
+  empty-params numeric trials are treated as Optuna requests whose concrete
+  params are journaled by dispatch. AutoPilot PID `3267768` is live on this
+  path; trial `1194` evaluated `chat_pipeline` threshold
+  `0.8742715026951258`, then reverted for `tool_use` regression, and trial
+  `1195` invalid-skipped already-blacklisted `graph_router=true`; latest
+  observed state is trial `1196` planner invocation. ✅ 2026-07-05
+- [x] `epyc-orchestrator` `69cbe730` repairs a dashboard coherence regression:
+  structured live taps with logical aliases now infer the physical CPU-lock
+  role from topology/port metadata before painting the region grid, so
+  concurrent streaming taps are not hidden just because one tap is labeled
+  `coder_escalation` while the lock grid is keyed by `frontdoor`. ✅ 2026-07-05
+- [x] `epyc-orchestrator` `ea47f672` separates the Regions Lock summary counts
+  for real `/proc` holders, live structured tap requests, tap-inferred activity,
+  and slot-inferred activity. This fixes the misleading `/proc holder
+  instance(s)` label when the live-tap panel shows concurrent active requests
+  that do not map one-for-one to process lock files. Focused dashboard route
+  HTML tests passed (`22 passed`). ✅ 2026-07-06
+- [x] `epyc-orchestrator` `a151d319` hardens local planner JSON extraction after
+  the first fully local canary turn emitted a valid fenced action followed by an
+  extra closing brace. Action and critique parsing now recover only the narrow
+  case of a valid leading JSON object with trivial trailing bracket noise, then
+  still run normal schema/critic validation. This fixes the observed
+  `local_ingest` parse discard without accepting arbitrary prose as data.
+  Focused controller/coordinator tests passed (`78 passed`). ✅ 2026-07-06
+- [x] `epyc-orchestrator` `6d67c565` adds ordered provider-trace telemetry to
+  `planner_archive.jsonl`: primary/fallback draft attempts record `ok`,
+  `parse_ok`, action type, and unusable reason; primary/fallback critic attempts
+  record `ok`, `parse_ok`, decision, confidence, and parse error. Archive rows
+  now also carry `draft_action` and `final_action`, so local-only overnight runs
+  can be audited without reconstructing the planner tap manually. Focused
+  planner-coordinator tests passed (`41 passed`). ✅ 2026-07-06
+- [x] `epyc-orchestrator` `8f3ce0b5` and `04a76fd1` close the next
+  local-planner W8 drift: the first commit makes W8 candidate-generation
+  availability explicit, and the second filters the prompt's Available Actions
+  schemas to the currently selectable set. During W8 candidate-generation
+  pressure, `seed_batch`, `deep_eval`, and `structural_prune` are now absent
+  from the action menu rather than merely listed with a warning. Focused
+  creativity/planner tests passed (`43 passed`), with `py_compile`, focused
+  `ruff`, and `git diff --check` clean. ✅ 2026-07-06
+- [x] `epyc-orchestrator` `c366e8aa` reconciles dashboard active-inference
+  state before painting: CPU topology slot activity no longer promotes into
+  active Live Inference / Regions Lock holders unless corroborated by
+  structured tap rows or real `/proc` locks, while GPU/direct-access slot
+  occupancy remains visible. The dashboard now consumes `display_activity` from
+  the coherent snapshot. Focused dashboard helper/route tests passed
+  (`135 passed`) and ruff was clean; API reload served build `c366e8aa`.
+  ✅ 2026-07-06
+- [x] `epyc-orchestrator` `3fff13fc` fixes the first bug exposed by that
+  provider trace: a local `deep_eval tier 3` draft was correctly rejected by
+  `local_frontdoor`, but the later higher-tier probe guard resurrected the same
+  rejected shape over the safe fallback. Rejected-draft fallbacks now carry
+  explicit provenance in the rationale, and the higher-tier guard will not
+  override them in the same trial. Focused planner/action tests passed, then the
+  full touched suites passed (`153 passed`). ✅ 2026-07-06
+- [x] `epyc-orchestrator` `8b3220c7` and `8464986e` move the routine
+  local-planner path to the observed fastest reliable split: `local_frontdoor`
+  drafts the full controller prompt, `local_worker` critiques the reduced
+  critique prompt, and `claude` remains the critic fallback. Local critique
+  prompts now get the same hard fenced-JSON output contract as draft prompts.
+  The first `local_frontdoor` canary drafted strict JSON in ~154s; the older
+  `local_ingest` critic still emitted prose and required Claude fallback, which
+  motivated the `local_worker` critic default. Focused provider/coordinator/
+  launcher tests passed (`70 passed`). AutoPilot trial `1200` later failed
+  safety on `tool_use` regression, and the daemon was restarted at the boundary
+  as PID `3438615` with `code_stale=false`. ✅ 2026-07-06
+- [x] `epyc-orchestrator` `26c8ec2c` adds a default-off two-stage local
+  planner provider for the next canary: `local_brief_frontdoor` /
+  `local_ingest_frontdoor` / `local_two_stage` first asks
+  `ingest_long_context` for a bounded controller brief, then asks `frontdoor`
+  to draft the normal fenced action/rationale; `local_brief_worker` uses
+  `worker_general` as the second stage. Critique calls pass through to the
+  final role, and planner archive rows include `local_briefed_planner` stage
+  metadata. This is not live until a restart explicitly selects the alias.
+  Focused provider/coordinator/launcher tests passed (`79 passed`), with the
+  broader launcher/action/phase pass also green (`146 passed`). ✅ 2026-07-06
+- [x] `epyc-orchestrator` `5c4e3560` closes the local-planner hardening tail.
+  After the PID `3470012` restart, trial `1203` stayed on local providers:
+  `local_frontdoor` drafted a `seed_batch`, `local_worker` rejected it, and the
+  coordinator substituted a replayable `memrl_retrieval` numeric fallback
+  instead of consuming another seed/deep deferral. NumericSwarm journaled
+  concrete applied params before API reload and T1 eval. Focused planner/action
+  tests passed (`189 passed`), ruff and `git diff --check` passed, and GitNexus
+  was refreshed. ✅ 2026-07-06
+- [x] `epyc-orchestrator` `6a016f25` closes the latest Regions Lock summary
+  coherency gap: the panel now reports tap-inferred active CPU-region holders
+  beside real `/proc` lock holders instead of implying that only the off-tap
+  holder exists. Focused dashboard tests passed (`23 passed`), and GitNexus was
+  refreshed. ✅ 2026-07-06
+- [x] `epyc-orchestrator` `d76f0b5d` closes the follow-up quiet-holder
+  coherence gap: the Regions Lock overlay now treats quiet/stalled open
+  structured-tap requests as lock candidates, formats tap-inferred holders with
+  a dedicated label helper, and distinguishes tap-inferred active holders from
+  real `/proc` holders. Focused dashboard route/panel/helper tests passed
+  (`147 passed`). ✅ 2026-07-06
+- [x] **Local drafter quality tail**: `epyc-orchestrator` `24ab6170` fixes the
+  next contradiction exposed by provider traces. The W8 action-availability
+  section already removed `seed_batch`, `deep_eval`, and `structural_prune`
+  from the selectable schemas during strict W8 candidate generation, but the
+  higher-tier and eval-coverage pressure sections still told the local drafter
+  to prefer T2/T3 `deep_eval` or seed coverage probes. Those sections now take
+  the live W8 candidate-generation bit and preserve T2/T3 pressure only through
+  available replayable candidate actions (`numeric_trial` with journaled
+  applied params or one-flag `structural_experiment`). Focused creativity tests
+  cover W8-active higher-tier pressure, coverage pressure, and no-scored-row
+  behavior (`46 passed`), with `py_compile`, `ruff`, and `git diff --check`
+  clean. The running AutoPilot PID predates this commit, so the remaining live
+  canary is to restart at the next safe boundary and confirm local drafts stop
+  proposing unavailable seed/deep deferrals. ✅ 2026-07-06
+- [x] **Dashboard restart-guidance surface**: `epyc-orchestrator` `03f3917e`
+  adds the read-only `autopilot_restart_advisor` envelope to
+  `/dashboard/api/autopilot_progress` current-code health and renders compact
+  `restart ready` / `restart wait for boundary` labels in the dashboard.
+  Follow-up `9ed7b95f` aligns the advisor CLI default restart command with the
+  operator's long-run budget (`--max-trials 3000`). Focused dashboard/advisor
+  tests passed (`134 passed`), with `py_compile`, `ruff`, and `git diff
+  --check` clean. The live API was reloaded as PID `3638698`; live advice for
+  AutoPilot PID `3525618`/trial `1207` correctly says `wait_for_boundary`
+  because the stale daemon is in active `seed_batch` dispatch. ✅ 2026-07-06
+- [x] **Local-role planner failover**: `epyc-orchestrator` `bf9bece7`
+  preserves the Codex-alias cross-model protection but stops sending
+  `local_frontdoor` draft fallback to Claude when a distinct local role
+  (`local_worker`) is already configured as the critic. Fallback drafts from a
+  distinct local role can now be independently reviewed by the original local
+  primary, so routine local-local operation remains local even when the spend
+  breaker is inactive. Focused planner/provider tests passed (`65 passed`),
+  launcher/advisor tests passed (`13 passed`), and focused `py_compile`,
+  `ruff`, and `git diff --check` were clean. ✅ 2026-07-06
+- [x] **Outcome-stall dispatch guard**: `epyc-orchestrator` `9522b76e`
+  prevents the higher-tier probe guard from overriding a planner-selected
+  frontier-moving action while outcome progress is already stalled, and
+  `78ae65e6` makes the frontier-stale condition a bounded pre-dispatch
+  constraint instead of prompt-only advice. When frontier admission is stale,
+  passive/eval/housekeeping actions are replaced with the first available
+  numeric trial fallback; already frontier-moving actions (`numeric_trial`,
+  prompt/code/GEPA mutation, one-flag structural experiment, or
+  `train_routing_models`) pass through. Focused AutoPilot action/phase/provider
+  tests passed (`140 passed`), plus ruff, `py_compile`, `git diff --check`,
+  push, and GitNexus refresh. The boundary restart loaded `78ae65e6` into live
+  AutoPilot PID `3901517`; `phase_health_report.py --require-current-code
+  --json` is clean. ✅ 2026-07-06
+- [x] **Snapshot/region-lock freshness coherence**: `epyc-orchestrator`
+  `b81f3113` makes `_snapshot_impl()` call the fresh region-lock scanner instead
+  of replaying the TTL cached payload, so the snapshot stream cannot overwrite a
+  newer direct `/dashboard/api/region_locks` poll in the browser. Regression
+  coverage fails if `_snapshot_impl()` returns to `_region_locks_cached()`.
+  GitNexus impact was LOW; validation passed focused helper tests, full
+  `test_dashboard_region_locks.py` (`26 passed`), ruff, `py_compile`, and
+  `git diff --check`. The boundary API reload is complete and
+  `/dashboard/api/health` returned `status="ok"`. ✅ 2026-07-06
 - Focused validation passed across the touched slices: `49` planner/provider/launcher tests, `43` W6/readiness tests, `46` spend-breaker/economics tests, `233` action/dashboard tests, `49` structural/restore tests, `64` GEPA/prompt-root/API/eval propagation tests, `36` sequential/paired-diagnostics tests, `44` phase/restart/dashboard health tests, `138` rejected-draft/action/creativity tests, and `11` earlier GEPA integration tests, plus focused `py_compile`, `ruff`, and `git diff --check`.
 
 Next measured extension:
-- AutoPilot was restarted at `2026-07-05T19:43Z` as PID `2935890` on
-  orchestrator `120498c9` with `local_chat` as the launcher default and
-  `--max-trials 2000`. Trial `1185` is a forced baseline-reference
-  `seed_batch`, so it does not yet prove the local-chat planner path. Collect
-  one actual planner-turn telemetry sample showing `local_chat` draft behavior
-  once the forced lane releases planner choice.
-- Build a two-stage planner provider after the one-shot router-mediated local
-  drafter has telemetry: `ingest_long_context` synthesizes a bounded planner
-  brief, `frontdoor` or `worker_general` drafts the action from that brief, and
-  Codex remains an escalation/critic option only when spend policy permits.
-  This is the orchestration-native target pattern; it should be A/B measured
-  against one-shot `local_chat` before becoming the default.
+- Let current AutoPilot PID `3901517` continue from trial `1212` unless phase
+  health fails. The next ordinary planner turn should prove that local drafts
+  follow the W8-filtered action menu and that the outcome-stall guard no longer
+  lets coverage probes or passive work preempt a frontier-moving action.
+- Build a two-stage planner provider after the one-shot local-ingest/local-
+  frontdoor path has telemetry: `ingest_long_context` synthesizes a bounded
+  planner brief, `frontdoor` or `worker_general` drafts the action from that
+  brief, and Codex/Claude remain sampled audit or fallback critics. This is the
+  orchestration-native target pattern; it should be A/B measured before
+  becoming the default.
 
 ---
 
@@ -114,7 +275,14 @@ Ranks reference the workflow synthesis; the adversarial critic's corrections are
   - [x] Second wave — orphaned `autopilot_prompt_tap` surface retired end-to-end (orch `87c5f970`; writer never existed in-repo, file was 45d dead) ✅ 2026-07-05
   - [x] Second wave — panel renamed `regions lock` + GPU/extern device rows folded into both grid paths + off-pipeline "orphan inference" cards in the live tap panel + non-OK contention matrix renders as a loud incident line (orch `9ade5019`, operator request) ✅ 2026-07-05
   - [x] Second wave — no-op API restart guard: `EnvRestartApplicator` skips the restart when the live uvicorn env already matches (positive-match-only via `/proc/<pid>/environ`); `api_restart: performed|skipped_noop` journaled as an eval covariate; `config_applicator.py` added to phase-health drift list (orch `b1a21e79`; live at next AutoPilot launch) ✅ 2026-07-05
-  - [x] Contention matrix freshness: hash-scope false positive (live hash included auxiliary `eval_batch_frontdoor`; measured-role hash `df373c79cc4af06f` matched all along) — RESOLVED by the codex session (orch `3d1706c6` + `120498c9`: measured-role-subset hash centralized in `contention.py`, all consumers aligned, API reloaded, live `matrix_status: ok`; NO re-bench needed). Details: `contention-matrix-v6-quarter-refresh.md` ✅ 2026-07-05
+- [x] Contention matrix freshness: hash-scope false positive (live hash included auxiliary `eval_batch_frontdoor`; measured-role hash `df373c79cc4af06f` matched all along) — RESOLVED by the codex session (orch `3d1706c6` + `120498c9`: measured-role-subset hash centralized in `contention.py`, all consumers aligned, API reloaded, live `matrix_status: ok`; NO re-bench needed). Details: `contention-matrix-v6-quarter-refresh.md` ✅ 2026-07-05
+- [x] Outcome-health run-strip surface: orchestrator `c25d6f6e` forwards
+  `autopilot_outcome_progress` in `/dashboard/api/process_status` and renders
+  compact phase/outcome/code health chips in the AutoPilot run strip. This
+  keeps outcome-stall KPIs visible where operators steer, without changing
+  loop control. Focused dashboard suites passed (`165 passed`), plus `ruff`,
+  `py_compile`, JS `node --check`, and `git diff --check`. Backend field
+  deployment awaits the next orchestrator API reload. ✅ 2026-07-06
 - **[P1 · S · medium] Production-safety + parity fixes the synthesis dropped** — isolate GEPA per-candidate prompt writes (`gepa_optimizer.py:88`) from the live prompts dir (a crash leaves a mutated production prompt) via the existing WorktreeManager/isolation path; make the **W6 gaming comparator config-aware** (`audit_block_report.py:407` is blocking the Fable gate ~29 trials on a between-candidate-variance false positive); extend `cmd_restore` (`autopilot.py:6309`) to purge StrategyStore + AP-22 memory ([[feedback_autopilot_rewind_must_purge_strategy_store]] — the loop the scar was named for).
 
 ### Phase 2 — The human-owned MEASUREMENT amendment (ONE bundle, one operator sign-off)
@@ -141,9 +309,9 @@ Package these trust-boundary changes into a **single** proposal with a shared Vi
 - **[P5 · rank 13, critic-corrected] Hub backlog as a steering instrument** — bucket open tasks by priority; flag handoffs untouched >30/90d into a probably-dead lane feeding an operator archive-review queue (index changes stay operator-approved per CLAUDE.md); fix `pct_done` to an open-scope denominator. **Do not** compute a burn-down ETA over the bulk-import-corrupted velocity series without fencing imported-vs-organic tasks first.
   - [x] Backlog % interpretability: board payload + banner now carry `activity_today` (handoff commits / files touched / boxes checked / boxes added since local midnight) with an explicit "prose-only — % cannot move" warning; root cause of the operator's second stale-board report (10+ commits, 0 checkbox flips) — epyc-root `ea561387` ✅ 2026-07-05
   - [x] Checkbox-discipline governance so the % moves when work happens: checklist-sync gate in `/wrap-up` (Claude + Codex skill copies) + always-loaded CLAUDE.md rule binding autonomous checkpoint commits — epyc-root `ea561387` ✅ 2026-07-05
-  - [ ] Bucket open tasks by priority in the backlog banner
-  - [ ] Probably-dead lane: handoffs untouched >30/90d → operator archive-review queue
-  - [ ] Promote the open-scope denominator (`pct_open_done`, already computed) to the headline next to `pct_all_done`
+  - [x] Bucket open tasks by priority in the backlog banner: root dashboard payload now emits priority buckets and the banner renders them as open handoff/task/untracked counts. ✅ 2026-07-06
+  - [x] Probably-dead lane: handoffs untouched >30/90d or missing activity now surface as a sorted clickable archive-review candidate list in the backlog banner; index/archive changes remain operator-owned. ✅ 2026-07-06
+  - [x] Promote the open-scope denominator (`pct_open_done`) to the headline next to `pct_all_done`. ✅ 2026-07-06
 - **[P5] Kernel freshness badge on data recency** — classify on `max(runs[].ts)`, not export-file mtime.
 - **[P5] Steering affordances** — close the "zero POST" gap: guarded operator actions (or, minimally, copy-exact SIGTERM/pause command chips) so pause/rewind/quarantine leave shell tribal knowledge.
 - **[P5] Governance/attention tax** — 132 handoffs / 488 open tasks and a 224-line master index restating runtime state in ~6 places (near-daily alignment commits) are themselves a bottleneck; the outcome-KPI header + archive-review lane are the levers.

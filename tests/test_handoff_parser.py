@@ -246,6 +246,11 @@ class BoardTests(unittest.TestCase):
             self.assertEqual(backlog["open_untracked_handoffs"], 1)
             self.assertEqual(backlog["dead_lane"]["over_30"], 2)
             self.assertEqual(backlog["dead_lane"]["over_90"], 1)
+            candidates = backlog["dead_lane"]["candidates"]
+            self.assertEqual(candidates[0]["id"], "active/p0_stale")
+            self.assertEqual(candidates[0]["lane"], "over_90")
+            self.assertEqual(candidates[1]["id"], "active/high_stale")
+            self.assertEqual(candidates[1]["lane"], "over_30")
 
             buckets = {b["priority"]: b for b in backlog["priority_buckets"]}
             self.assertEqual(buckets["P0"]["open_handoffs"], 1)

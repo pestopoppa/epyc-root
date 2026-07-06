@@ -9,6 +9,7 @@ with a hold status so F6-W3 can be regenerated without hand-editing numbers.
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import unicodedata
 from dataclasses import dataclass
@@ -19,6 +20,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUTPUT = ROOT / "docs" / "publication" / "public-results-draft.md"
 DEFAULT_REVIEW_OUTPUT = ROOT / "docs" / "publication" / "public-results-review-queue.md"
+DEFAULT_DECISIONS = ROOT / "docs" / "publication" / "public-results-review-decisions.json"
 HOST_ATTESTATION_ERA_START = date(2026, 6, 12)
 HISTORICAL_ATTESTATION_REVIEW_ACTION = "hold_for_historical_attestation_review"
 
@@ -33,6 +35,8 @@ class ResultRow:
     protocol_status: str
     scrub_status: str
     action: str
+    review_decision: str = ""
+    review_reason: str = ""
 
 
 @dataclass(frozen=True)
@@ -419,6 +423,8 @@ def historical_attestation_review_counts(rows: list[ResultRow]) -> dict[str, int
 
 
 def review_queue_name(row: ResultRow) -> str:
+    if row.review_decision:
+        return row.review_decision
     if row.action == HISTORICAL_ATTESTATION_REVIEW_ACTION:
         return "historical-attestation-review"
     if row.protocol_status == "evidence-linked; needs protocol tag":
@@ -439,6 +445,89 @@ def review_queue_counts(rows: list[ResultRow]) -> dict[str, int]:
     for row in rows:
         queue = review_queue_name(row)
         counts[queue] = counts.get(queue, 0) + 1
+    return dict(sorted(counts.items()))
+
+
+def load_review_decisions(path: Path | None) -> dict[str, object]:
+    """Load optional publication review decisions.
+
+    The file is intentionally JSON instead of YAML so the generator stays
+    dependency-free. Unknown fields are ignored; decisions are advisory routing
+    for generated publication artifacts and never certify a claim.
+    """
+    if path is None or not path.exists():
+        return {}
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError(f"{path} must contain a JSON object")
+    return data
+
+
+def _decision_from_mapping(mapping: object, row: ResultRow) -> tuple[str, str] | None:
+    if not isinstance(mapping, dict):
+        return None
+    decision = str(mapping.get("decision") or "").strip()
+    if not decision:
+        return None
+    reason = str(mapping.get("reason") or "").strip()
+    return decision, reason
+
+
+def _row_decision_key(row: ResultRow) -> str:
+    return str(row.source_line)
+
+
+def decision_for_row(row: ResultRow, decisions: dict[str, object]) -> tuple[str, str] | None:
+    rows = decisions.get("rows")
+    if isinstance(rows, dict):
+        explicit = _decision_from_mapping(rows.get(_row_decision_key(row)), row)
+        if explicit:
+            return explicit
+
+    defaults = decisions.get("default_decisions")
+    if isinstance(defaults, dict):
+        queue_default = _decision_from_mapping(defaults.get(review_queue_name(row)), row)
+        if queue_default:
+            return queue_default
+        action_default = _decision_from_mapping(defaults.get(row.action), row)
+        if action_default:
+            return action_default
+    return None
+
+
+def apply_review_decisions(rows: list[ResultRow], decisions: dict[str, object]) -> list[ResultRow]:
+    if not decisions:
+        return rows
+    decisioned: list[ResultRow] = []
+    for row in rows:
+        decision = decision_for_row(row, decisions)
+        if not decision:
+            decisioned.append(row)
+            continue
+        review_decision, review_reason = decision
+        decisioned.append(
+            ResultRow(
+                section=row.section,
+                source_line=row.source_line,
+                entity=row.entity,
+                quant_or_size=row.quant_or_size,
+                metrics=row.metrics,
+                protocol_status=row.protocol_status,
+                scrub_status=row.scrub_status,
+                action=review_decision,
+                review_decision=review_decision,
+                review_reason=review_reason,
+            )
+        )
+    return decisioned
+
+
+def review_decision_counts(rows: list[ResultRow]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for row in rows:
+        if not row.review_decision:
+            continue
+        counts[row.review_decision] = counts.get(row.review_decision, 0) + 1
     return dict(sorted(counts.items()))
 
 
@@ -471,6 +560,7 @@ def render_page(rows: list[ResultRow], source: Path) -> str:
     backfill_summary = backfill_target_counts(rows)
     historical_review_summary = historical_attestation_review_counts(rows)
     protocol_summary = protocol_status_counts(rows)
+    decision_summary = review_decision_counts(rows)
     lines = [
         "# Public Results Draft",
         "",
@@ -507,6 +597,14 @@ def render_page(rows: list[ResultRow], source: Path) -> str:
     lines.append("")
     for status, count in protocol_summary.items():
         lines.append(f"- `{status}`: {count}")
+    lines.append("")
+    lines.append("### Review Decision Summary")
+    lines.append("")
+    if decision_summary:
+        for decision, count in decision_summary.items():
+            lines.append(f"- `{decision}`: {count}")
+    else:
+        lines.append("- No review decisions applied.")
     lines.append("")
     lines.append("### Public Scrub Summary")
     lines.append("")
@@ -549,6 +647,7 @@ def render_page(rows: list[ResultRow], source: Path) -> str:
 
 def render_review_queue(rows: list[ResultRow], source: Path) -> str:
     counts = review_queue_counts(rows)
+    decision_summary = review_decision_counts(rows)
     queues = sorted(counts)
     lines = [
         "# Public Results Review Queue",
@@ -565,6 +664,12 @@ def render_review_queue(rows: list[ResultRow], source: Path) -> str:
     ]
     for queue, count in counts.items():
         lines.append(f"- `{queue}`: {count}")
+    if decision_summary:
+        lines.append("")
+        lines.append("### Applied Review Decisions")
+        lines.append("")
+        for decision, count in decision_summary.items():
+            lines.append(f"- `{decision}`: {count}")
     for queue in queues:
         queue_rows = [row for row in rows if review_queue_name(row) == queue]
         lines.extend(
@@ -589,7 +694,7 @@ def render_review_queue(rows: list[ResultRow], source: Path) -> str:
                         row.entity,
                         row.metrics,
                         row.protocol_status,
-                        row.action,
+                        row.action if not row.review_reason else f"{row.action} ({row.review_reason})",
                     )
                 )
                 + " |"
@@ -607,6 +712,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--review-output", type=Path, default=DEFAULT_REVIEW_OUTPUT)
     parser.add_argument(
+        "--decisions",
+        type=Path,
+        default=DEFAULT_DECISIONS,
+        help="Optional JSON review-decision overlay for generated rows.",
+    )
+    parser.add_argument(
         "--no-review-output",
         action="store_true",
         help="Do not write or check the generated review queue.",
@@ -616,7 +727,7 @@ def main(argv: list[str] | None = None) -> int:
 
     source = args.input
     text = source.read_text(encoding="utf-8", errors="replace")
-    rows = collect_rows(text)
+    rows = apply_review_decisions(collect_rows(text), load_review_decisions(args.decisions))
     rendered = render_page(rows, source)
     review_rendered = "" if args.no_review_output else render_review_queue(rows, source)
 

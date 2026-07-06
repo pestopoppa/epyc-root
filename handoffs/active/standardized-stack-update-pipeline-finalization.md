@@ -177,6 +177,23 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   capability tiers, proving worker, vision, and long-context swaps update
   `src.classifiers.factual_risk` through regenerated stack priors instead of
   static degraded role defaults.
+- 2026-07-06 consumer-tail integration: Orchestrator `4bf414d6` folds the
+  parked factual-risk degraded fallback cleanup back into the main stack SSoT
+  line. The live/generated role-tier path remains primary; the explicit degraded
+  role-tier compatibility table is now isolated behind `_degraded_role_tier()`
+  rather than a module-level mapping that can be mistaken for live stack truth.
+  Validation passed with `test_factual_risk.py` (`51 passed`), focused
+  `py_compile`/`ruff`, and the canonical `stack_change_pipeline.py check
+  --run-promotion-gate` (`summary: ok`, promotion gate `181 passed`).
+- 2026-07-06 DS-7 guard integration: Orchestrator `464aca54` makes
+  `stack_templates/default.yaml` fail validation when deployable role ports
+  drift from generated live stack-prior serving ports. Logical aliases remain
+  valid only when the alias target serves the generated alias ports; experimental
+  templates are not forced to mirror production priors. Validation passed with
+  `test_dynamic_stack.py` + `test_stack_templates_v2.py` (`47 passed`),
+  `orchestrator_stack.py start --stack-profile default --validate-only`,
+  `stack_change_guard.py --surface-summary-only --all-hardcoded-surfaces`, and
+  `stack_change_pipeline.py check --run-promotion-gate` (`181 passed`).
 
 ## Outstanding Work
 
@@ -209,9 +226,10 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   swaps now cover distinct live role classes. The worker swap also covers the
   migrated text-side primary-port consumers after `6c9ac6b`, the seeding
   descriptor degraded fallback after `7a90924`, and factual-risk role-tier
-  consumption after `cacd8c44`. The remaining gap is opportunistic expansion as new
-  high-risk consumers are migrated rather than a missing end-to-end happy-path
-  proof.
+  consumption after `cacd8c44`; `4bf414d6` keeps that factual-risk degraded
+  fallback compatibility explicit. The remaining gap is opportunistic expansion
+  as new high-risk consumers are migrated rather than a missing end-to-end
+  happy-path proof.
 - [ ] Keep direct benchmark, production launch, and AutoPilot preflight wired to
   the canonical gate; no new bypasses.
 

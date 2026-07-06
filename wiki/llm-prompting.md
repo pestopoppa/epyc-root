@@ -1,8 +1,8 @@
 # LLM Prompting
 
 **Category**: `llm_prompting`
-**Confidence**: verified
-**Last compiled**: 2026-04-13
+**Confidence**: verified (CPU/prompting findings) · observation (2026-07-06 CoT-scaffold GPU-study numbers — single-sample, no protocol-id per MEASUREMENT.md)
+**Last compiled**: 2026-07-06 (⚠️ 2026-07-06 CoT-scaffold-injection subsection flagged for human review — see Key Findings)
 **Sources**: 14 documents (2 deep-dives, 1 active handoff, 11 intake entries across llm_prompting/prompt_optimization/prompt_sensitivity/instruction_following)
 
 ## Summary
@@ -51,6 +51,18 @@ For EPYC specifically, these findings validate a clear strategy: continue using 
 
 - **Omega is computable on existing infrastructure**: Run seeding benchmarks with reasoning ON versus OFF, compute per-suite weighted average of relative pass@k improvements. High Omega suites need reasoning models (architect tier); low Omega suites waste tokens on reasoning (worker tier). Maps directly to routing decisions.
 
+### CoT-Scaffold Injection: transplanted reasoning is a COST lever, not a capability transplant (2026-07-06) — ⚠️ COMPILE-FLAGGED FOR HUMAN REVIEW
+
+> **Review flag (project-wiki writer-evidence policy):** model-compiled from the GPU CoT-scaffold study close-out; **not adopted until human or measured review**. Every accuracy/token number is an **OBSERVATION** (single MI210, single-sample seed 42, n=10–48 cells, no protocol-id per MEASUREMENT.md). Sources: [GPU CoT-scaffold sidecar (full arc)](../handoffs/active/gpu-cot-scaffold-sidecar.md), [scaffold autopilot cost-lever deployment (DESIGN)](../handoffs/active/scaffold-autopilot-cost-lever-deployment.md), [progress 2026-07-06 CoT study complete](../progress/2026-07/2026-07-06-cot-study-complete.md).
+
+The completed study asked whether a small, fast reasoner's chain-of-thought, **injected into a larger worker's prompt** (as an assistant-prefix continuation or a context-advisory plan), raises the worker's answer quality more per token than the worker's own thinking. The result cleanly separates three distinct claims:
+
+- **Capability transplant is FALSIFIED — transplanted reasoning does not transplant capability.** Handing a model a pre-made reasoning trace neither unlocks tasks it fails nor is cost-free (it occasionally derails a task it would have passed). Single-shot injection was net-negative in both strength regimes on code (generator≈beneficiary: net −2 to −9; generator>beneficiary Qwable→gemma: net −3, 1 rescue of 21). This is the field consensus, not a local artifact: "Reasoning that Travels" (arXiv:2605.28913) frames injected reasoning as a capability **amplifier, not a substitute** — success tracks the *receiver's* latent capability — and reasoning is **elicited, not installed** (LIMO/s1). This extends the page's Omega finding: a scaffold can only amplify a receiver that already has headroom to reason.
+- **As a COST lever the scaffold is robust and architecture-independent.** It caps the expensive worker's own reasoning tokens at ~**100–175** vs the **3,000–9,000** it burns thinking on its own — a **20–50× reduction of expensive-device tokens**, the reasoning offloaded to the fast (GPU) reasoner. This held across sparse-MoE 35B, dense-GDN 27B (176 vs 9041), and pure-dense gemma-31B (98 vs 3049). The objective it serves is "approximate own-think quality at lower **blended** wall-clock," which pays whenever the worker would over-reason on a slow device.
+- **The QUALITY benefit is HEADROOM-CONDITIONAL and must be gated.** The scaffold rescues weak-and-overthinking beneficiaries (35B GPQA 48→73%, +25pp; dense-GDN 27B 6→9/10) but **no-ops an already-saturated one** (gemma-31B 8=8) — again the Omega pattern (less-capable-and-overthinking gains, saturated does not). So it is a **conditional, episodic-memory-gated lever** (apply only where the cheap no-think path fails and the beneficiary over-reasons), not an always-on booster.
+- **Injection mode is format-native, not a literal foreign tag; a distilled generator beats a vanilla reasoner.** Cross-family transfer requires delivering the reasoning into the *target's own reasoning slot* — a literal foreign `<think>` prefix does NOT transfer (gemma 63% vs its own no-think 81.5%, Pareto-dominated) while the native `<|channel|>thought` slot lifts +11.1pp / 0 regressions. And a **CoT-distilled generator beats a vanilla reasoner** as the scaffold source (+11.1pp @ 0.58× tokens) — distillation adds value at the source, consistent with the training-distillation findings.
+- **Verifier/selector (reasoner grades N candidate answers, best-of-N) is MARGINAL on this stack.** The reasoner doing *its own* task (grade/rank, never transplant) sidesteps the transplant problem, but captured only **+2pp of an +8pp structural ceiling** across three benches — because the beneficiary's errors are mostly **systematic** (per-question bimodal: all-N-candidates-right or all-wrong), and best-of-N only recovers *stochastic* errors. Judgment is sound (93–100% selection accuracy) but inert without a gap. Not worth deploying as-is.
+
 ### Broader Prompt Engineering (Low Applicability)
 
 - **Emotional stimuli show inconsistent results across 4+ papers**: EmotionPrompt claims 8% improvement, NegativePrompt claims 12.89%, StressPrompt finds inverted-U performance. All tested on different benchmarks with no cross-validation. No replicable gains on code generation, mathematical reasoning, or factual QA -- the task types that constitute our workload. [intake-196, intake-197, intake-205, intake-224]
@@ -95,7 +107,8 @@ For EPYC specifically, these findings validate a clear strategy: continue using 
 
 ## Related Categories
 
-- [Cost-Aware Routing](cost-aware-routing.md) -- Reasoning compression and difficulty-adaptive budgets are the production application of controllability findings; Omega metric bridges prompting and routing
+- [Cost-Aware Routing](cost-aware-routing.md) -- Reasoning compression and difficulty-adaptive budgets are the production application of controllability findings; Omega metric bridges prompting and routing; the CoT-scaffold is an episodic-memory-gated reasoning-effort cost lever (offload reasoning to a fast device, gate to weak-and-overthinking task-classes)
+- [Hardware Optimization](hardware-optimization.md) -- the CoT-scaffold study ran on the MI210 (small GPU-resident reasoner + CPU-hosted worker); the GPU-side detail, verifier/selector characterization, and blended-cost mechanism live there
 - [Context Management](context-management.md) -- Conciseness prompting reduces context pressure; reasoning trace handling is a context management concern; SEER's loop detection is both prompting and context hygiene
 - [Context Extension](context-extension.md) -- Longer context windows may reduce the need for aggressive conciseness prompting; the computational buffer finding suggests minimum context thresholds
 
@@ -115,3 +128,8 @@ For EPYC specifically, these findings validate a clear strategy: continue using 
 - [intake-225](https://arxiv.org/abs/2311.10054) Personas Do Not Help -- 162 roles, no improvement on factual questions
 - [intake-226](https://arxiv.org/abs/2408.08631) Persona Double-Edged Sword -- Role-playing degrades 7/12 datasets for Llama3
 - [intake-240](https://arxiv.org/abs/2507.19457) GEPA -- Genetic-Pareto prompt evolution, 35x fewer rollouts, outperforms MIPROv2 by 10%+
+- [GPU CoT-Scaffold Sidecar (full arc)](../handoffs/active/gpu-cot-scaffold-sidecar.md) -- G1/G2/verifier/dense-generalization arc; single-shot capability-transplant falsified both regimes; scaffold = 20–50× CPU-token cost lever; quality headroom-conditional; format-native-slot injection required cross-family; distilled>vanilla generator; verifier/selector marginal (systematic-not-stochastic errors)
+- [Scaffold Autopilot Cost-Lever Deployment (DESIGN)](../handoffs/active/scaffold-autopilot-cost-lever-deployment.md) -- episodic-memory-gated deployment of the scaffold as a `capability_registry` cost lever inside autopilot's 4D Pareto (quality/speed/−cost/reliability); blended GPU+CPU cost accounting; NOT implemented
+- [Progress 2026-07-06 — CoT study complete](../progress/2026-07/2026-07-06-cot-study-complete.md) -- three-arch × three-lever close-out (GPQA scaffold quality +25pp/−0/no-op table; verifier 3-bench marginal; deployment implication)
+- [Reasoning that Travels (arXiv:2605.28913)](https://arxiv.org/abs/2605.28913) -- transplanted reasoning is a capability amplifier not substitute; success tracks the receiver's latent capability (the literature match for the scaffold headroom-conditionality)
+- [GenRM / GenPRM verifier literature](https://arxiv.org/abs/2408.15240) -- generative verifier best-of-N (GenRM 2408.15240; GenPRM 2504.00891 — a 1.5B PRM beats GPT-4o as a judge); the "reasoner does its own task" mode, marginal on our systematic-error workloads

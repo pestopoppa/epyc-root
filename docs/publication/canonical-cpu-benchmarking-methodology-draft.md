@@ -1,6 +1,8 @@
 # How We Collapsed Our Own CPU Wins: Canonical Benchmarking On EPYC
 
-Status: internal draft scaffold, not publication-ready.
+Status: internal draft scaffold, not publication-ready. Current focus is a
+publication-prep packet: scrubbed claim labels, named evidence bundles, and a
+clear split between exact-number candidates and paraphrase-only observations.
 
 This draft is the source-backed skeleton for F6-W2. It intentionally separates
 historical observations from publishable claims. Before posting externally,
@@ -52,18 +54,40 @@ wins to collapse, and that made the remaining wins more credible.
 | Claim grammar rule: claim = metric + protocol-id + n/reps + date + host-attestation ref | `MEASUREMENT.md` section 2 | Publishable project policy. |
 | Retroactivity rule: pre-canonical CPU bench claims demote-to-prior at E0->E1 | `MEASUREMENT.md` section 5 | Publishable methodology policy, but keep internal artifact counts private unless scrubbed. |
 
+## Publication Claim Packet
+
+These labels are public-safe handles for drafting. They are not host
+attestation refs and do not certify the claims by themselves.
+
+| Label | Draft-safe claim | Protocol status | Evidence bundle | Publication action |
+|---|---|---|---|---|
+| `F6-METH-C1` | Historical EP frontdoor `+17%` collapses to `+1.6%` against proper canonical placement. | P-BENCH-1-shaped, missing attestation ref. | `2026-04-26-compounding/SUMMARY.md`; `V2_q8_cold_canonical_repeat.log`; `E_q8_EP.log`; `progress/2026-04/2026-04-26.md`. | Retain as the main methodology example after adding host-attestation/ref metadata or re-running under a current attested recipe. |
+| `F6-METH-C2` | The canonical recipe, not the EP code path, explains the large Q8 delta versus the warmed mmap reference. | P-BENCH-1-shaped, missing attestation ref. | `2026-04-26-compounding/SUMMARY.md`; `V2_q8_cold_canonical_repeat.log`; historical warmed-reference notes in `progress/2026-04/2026-04-26.md`. | Retain with a strong caveat that it is model-specific and placement-specific. |
+| `F6-METH-S1` | Q8 8x8 repack shows a large single-thread win but production-thread decode remains memory-bandwidth limited. | Historical observation; exact repack raw rows not fully packaged in the retained artifact set. | `2026-04-24-q8-8x8-kernel/thread-scaling-summary.md`; `baseline/bench-96t.json`; `progress/2026-04/2026-04-24.md`. | Use as a paraphrased supporting lesson unless exact raw repack logs/reps are found or remeasured. |
+| `F6-METH-P1` | Claim grammar: a decision-gating number must include metric, protocol id, reps, date, and attestation. | Policy claim, no benchmark attestation needed. | `MEASUREMENT.md`. | Publish as project methodology, with short excerpts only. |
+
 ### Protocol-backfill Status
 
-- `RESULTS.md` now marks the `Production Throughput - NUMA Deployment (verified 2026-03-21)` section with `Protocol: P-BENCH-2, n=5, 2026-03-21`.
-- `public-results-draft.md` will surface rows as `publish_candidate` only when protocol metadata is complete (`protocol-id`, `n/reps`, `date`, `attestation`); all others remain on hold for protocol backfill.
+- `RESULTS.md` now marks the `Production Throughput - NUMA Deployment
+  (verified 2026-03-21)` section with `Protocol: P-BENCH-2, n=5,
+  2026-03-21`, but those rows are pre-attestation-era and still require a real
+  historical attestation artifact, a current rerun, or retirement from public
+  claims.
+- `public-results-draft.md` now surfaces `325` unverified historical rows as
+  `retired_from_public_claims` through the review-decision overlay, leaving
+  only `31` historical-attestation rows and `18` protocol-tag rows as active
+  public-results blockers.
+- `public-results-draft.md` will surface rows as `publish_candidate` only when
+  protocol metadata is complete (`protocol-id`, `n/reps`, `date`,
+  `attestation`); all others remain held or retired.
 
 ## Backfilled Evidence State
 
 | Evidence item | Current state | Remaining work |
 |---|---|---|
-| April 26 compounding matrix | Strongest source for the main collapse story. Summary captures command shape, branch, host state, `drop_caches`, and rep policy. | Assign a public artifact label, attach/derive host-attestation id, and decide whether the post cites `r=3` plus `r=5` reruns or only the stable rerun rows. |
-| April 24 Q8 8x8 thread scaling | Useful as a second lesson: local kernel win survives at 1 thread, disappears at production thread counts. | Locate exact raw logs behind the table before publishing precise rows; otherwise paraphrase as "large single-thread gain, noise-level production-thread gain." |
-| `bench_canonical.sh` / `canonical_recipe.py` | Current recipe source of truth: taskset + NUMA interleave, `-t 96`, `-fa 1`, `-mmp 0`, canonical OMP env, libomp linkage checks, host validation. | Quote the recipe behavior, not local paths. If commands are included, generate them from the wrapper in `--dry-run` during the publication-prep pass. |
+| April 26 compounding matrix | Strongest source for the main collapse story. Summary captures command shape, branch, host state, `drop_caches`, and rep policy. Named logs exist for the main exact rows: `V2_q8_cold_canonical_repeat.log` and `E_q8_EP.log`. | Attach/derive host-attestation id, decide whether to re-run under a current era, and cite only the rows with named logs unless more raw provenance is attached. |
+| April 24 Q8 8x8 thread scaling | Useful as a second lesson: local kernel win survives at 1 thread, disappears at production thread counts. The retained package exposes the summary and baseline JSON, but not every exact repack row as a standalone raw artifact. | Treat exact rows as historical observations unless raw repack logs are found; otherwise paraphrase as "large single-thread gain, noise-level production-thread gain." |
+| `bench_canonical.sh` / `canonical_recipe.py` | Current recipe source of truth: taskset + NUMA interleave, `-t 96`, `-fa 1`, `-mmp 0`, canonical OMP env, libomp linkage checks, host validation. | Quote the recipe behavior, not local paths. Regenerate the command shape from the current wrapper in `--dry-run` during the final publication-prep pass, because the 2026-06-14 witness predates the v6 single-kernel cutover. |
 | MEASUREMENT.md policy | Already expresses the claim grammar and the E0->E1 demotion precedent. | Keep policy excerpts short; link to public-safe policy text if this repo is published, otherwise summarize. |
 
 ## Recipe Dry-run Snapshot
@@ -76,7 +100,8 @@ bash scripts/benchmark/bench_canonical.sh \
   -n 32 -p 0 -r 5 --dry-run
 ```
 
-Validated dry-run output:
+Validated dry-run output (internal witness; do not quote local paths externally,
+and regenerate this after the v6 single-kernel cutover before publication):
 
 ```text
 Binary: /mnt/raid0/llm/ik_llama.cpp/build/bin/llama-bench
@@ -104,15 +129,18 @@ LD_LIBRARY_PATH=<clang-libomp-first>
 ```
 
 Publication note: the public post should cite the command shape and recipe
-requirements, not local absolute paths, local model filenames, or private build
-directories. Keep the dry-run transcript here as the internal witness for the
-generated recipe.
+requirements, not local absolute paths, local model filenames, private build
+directories, or retired binary names. Keep the dry-run transcript here as the
+internal witness for the generated recipe, but regenerate a fresh dry-run from
+the current v6 recipe before external posting.
 
 ## Source Checklist Before Publication
 
 - Replace internal paths with scrubbed artifact labels or public repo links.
 - Backfill protocol IDs for every retained number; otherwise remove the number.
 - Add public-safe protocol metadata when promoting rows into publication-ready tables (protocol id + `n/reps`, date, and attestation).
+- Attach a host-attestation ref or rerun the retained exact-number candidates in
+  the current attested era.
 - Add the exact benchmark recipe from `bench_canonical.sh` / `canonical_recipe.py`
   rather than hand-written commands. Use the wrapper's `--dry-run` output during
   the final prep pass.

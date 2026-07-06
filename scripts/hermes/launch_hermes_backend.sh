@@ -12,7 +12,6 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MODEL="/mnt/raid0/llm/lmstudio/models/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf"
 LLAMA_SERVER="/mnt/raid0/llm/llama.cpp/build/bin/llama-server"
-CHAT_TEMPLATE="${SCRIPT_DIR}/chat-template-no-think.jinja"
 HOST="127.0.0.1"
 PORT=8099
 THREADS=48
@@ -21,6 +20,13 @@ CONTEXT=32768
 # -np 2 would halve per-slot context (32K→16K) with no benefit.
 # Delegation subagents queue — they don't need parallel slots.
 SLOTS=1
+# Default to the no-think template so trivial turns avoid burning reasoning tokens.
+# Set HERMES_CHAT_TEMPLATE_FILE to test a different template or
+# HERMES_DISABLE_CHAT_TEMPLATE=1 to fall back to llama-server's built-in default.
+CHAT_TEMPLATE="${HERMES_CHAT_TEMPLATE_FILE:-${SCRIPT_DIR}/chat-template-no-think.jinja}"
+if [[ "${HERMES_DISABLE_CHAT_TEMPLATE:-0}" == "1" ]]; then
+    CHAT_TEMPLATE=""
+fi
 
 if [[ ! -f "$MODEL" ]]; then
     echo "ERROR: Model not found at $MODEL"
@@ -39,18 +45,34 @@ if ss -tlnp 2>/dev/null | grep -q ":${PORT} "; then
     exit 1
 fi
 
+if [[ -n "$CHAT_TEMPLATE" && ! -f "$CHAT_TEMPLATE" ]]; then
+    echo "ERROR: Chat template not found at $CHAT_TEMPLATE"
+    exit 1
+fi
+
 echo "Starting llama-server on ${HOST}:${PORT}..."
 echo "Model: $(basename "$MODEL")"
 echo "Context: ${CONTEXT}, Slots: ${SLOTS}, Threads: ${THREADS}"
+if [[ -n "$CHAT_TEMPLATE" ]]; then
+    echo "Chat template: $CHAT_TEMPLATE"
+else
+    echo "Chat template: llama-server built-in default"
+fi
+
+LLAMA_ARGS=(
+    -m "$MODEL"
+    --host "$HOST" --port "$PORT"
+    -t "$THREADS" -c "$CONTEXT" --jinja
+    --override-kv qwen3moe.expert_used_count=int:4
+    -np "$SLOTS" --mlock
+)
+if [[ -n "$CHAT_TEMPLATE" ]]; then
+    LLAMA_ARGS+=(--chat-template-file "$CHAT_TEMPLATE")
+fi
 
 taskset -c 0-47,96-143 \
     "$LLAMA_SERVER" \
-    -m "$MODEL" \
-    --host "$HOST" --port "$PORT" \
-    -t "$THREADS" -c "$CONTEXT" --jinja \
-    --chat-template-file "$CHAT_TEMPLATE" \
-    --override-kv qwen3moe.expert_used_count=int:4 \
-    -np "$SLOTS" --mlock &
+    "${LLAMA_ARGS[@]}" &
 
 SERVER_PID=$!
 echo "$SERVER_PID" > /tmp/hermes-llama-server.pid

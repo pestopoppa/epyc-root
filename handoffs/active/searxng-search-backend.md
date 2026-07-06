@@ -1,8 +1,8 @@
 # Web Research Pipeline — SearXNG + Crawl4AI
 
-**Status**: SX-1–4 done; root CLI fallback semantics hardened in `epyc-root` `fa75cfa`; CA-1–7 landed/validated in `epyc-orchestrator` `0dadb2e` + `38ddc97` + `6424d05`; SX-5/6 + CA-6 gated on AR-3 / Camofox
+**Status**: SX-1–4 done; root CLI fallback semantics hardened in `epyc-root` `fa75cfa`; CA-1–7 landed/validated in `epyc-orchestrator` `0dadb2e` + `38ddc97` + `6424d05`; 2026-07-06 pre-deploy audit confirms the live SearXNG endpoint is operational, with engine-mix drift noted below; SX-5/6 + CA-6 gated on AR-3 / Camofox
 **Created**: 2026-04-14 (via research intake, deep-dive enriched)
-**Updated**: 2026-06-14 (Crawl4AI backend landed on host/container port 11235; limited CA-7 Crawl4AI docs crawl helper landed; old 8086 hint conflicts with `worker_vision`; root `searx.sh` fallback hardening landed)
+**Updated**: 2026-07-06 (Crawl4AI backend landed on host/container port 11235; limited CA-7 Crawl4AI docs crawl helper landed; old 8086 hint conflicts with `worker_vision`; root `searx.sh` fallback hardening landed; SearXNG pre-deploy audit refreshed live runtime state)
 **Categories**: search_retrieval, tool_implementation
 **Tracked in**: [`routing-and-optimization-index.md`](routing-and-optimization-index.md) P12
 
@@ -123,11 +123,33 @@ def _search_searxng(query: str, max_results: int = 5) -> list[dict[str, str]]:
 
 ## Pre-Deployment Checklist
 
-- [ ] Verify `limiter: false` in settings.yml (finding #1: API_MAX=4/hr blocks all programmatic use when enabled)
-- [ ] Verify `json` in `search.formats` list (finding: returns 403 without it — not enabled by default)
-- [ ] Confirm Granian ASGI server running, NOT uWSGI (finding #4: Granian replaced uWSGI in recent builds; do NOT configure uWSGI workers)
-- [ ] Test with python urllib/requests user-agent succeeds (finding #2: bot detection disabled when limiter is false)
-- [ ] DDG/Brave/Wikipedia/Qwant engines return results under load (finding: Google unreliable due to TLS fingerprinting)
+- [x] Verify `limiter: false` in settings.yml (finding #1: API_MAX=4/hr blocks all programmatic use when enabled) ✅ 2026-07-06
+- [x] Verify `json` in `search.formats` list (finding: returns 403 without it — not enabled by default) ✅ 2026-07-06
+- [x] Confirm Granian ASGI server running, NOT uWSGI (finding #4: Granian replaced uWSGI in recent builds; do NOT configure uWSGI workers) ✅ 2026-07-06
+- [x] Test with python urllib/requests user-agent succeeds (finding #2: bot detection disabled when limiter is false) ✅ 2026-07-06
+- [x] Reconcile configured engine profile before SX-6 default swap: the live runtime disables DDG/Qwant/Startpage, uses Bing as a primary engine, and sees Brave rate-limit noise under repeated probes. Decision: accept the current Bing/Brave/Wikipedia profile rather than reverting to blocked engines; `searxng_health_report.py` now uses `{"bing", "brave", "wikipedia"}` as the bad-query denominator and reports the configured engine set in JSON/human output. ✅ 2026-07-06
+
+### 2026-07-06 Runtime Audit
+
+A `gpt-5.4-mini` sidecar ran a read-only pre-deploy audit against the live
+container. Findings:
+
+- Runtime config is bind-mounted from
+  `/mnt/raid0/llm/epyc-orchestrator/config/searxng/settings.yml` and matches
+  the checked-in config for `server.limiter: false` and
+  `search.formats: [html, json]`.
+- `GET http://127.0.0.1:8888/search?q=epyc&format=json` returns `200 OK`,
+  `content-type: application/json`, and `server: granian`.
+- The container process tree shows a `searxng` master/worker, not uWSGI.
+- Default Python `urllib` and `python-requests/2.32.3` user agents both receive
+  `200` JSON responses.
+- Five sequential query probes returned `200` in about `0.92s` to `2.70s`, under
+  the configured `outgoing.request_timeout: 3.0`.
+- Engine health is usable but not clean: probes usually report one
+  `unresponsive_engines` entry, most often Brave rate limiting or suspension.
+  The first probe also saw Wikidata HTTP error noise.
+
+Verdict: endpoint operational; engine-mix/signoff remains open.
 
 ## Post-Deployment Monitoring
 

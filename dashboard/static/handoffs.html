@@ -62,7 +62,13 @@
   .bk-bar{height:12px;background:#0d1117;border:1px solid var(--border);border-radius:7px;overflow:hidden}
   .bk-bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--good),#2ea043);transition:width .4s}
   .bk-progress{display:flex;align-items:center;gap:12px}
-  .bk-progress .bk-bar{flex:1} .bk-progress .pct{font-size:13px;font-weight:600;color:var(--good);min-width:52px;text-align:right}
+  .bk-progress .bk-bar{flex:1}
+  .bk-progress .pct{
+    font-size:13px;font-weight:600;color:var(--good);min-width:98px;text-align:right;
+    display:flex;flex-direction:column;align-items:flex-end;gap:1px;line-height:1.15
+  }
+  .bk-progress .pct .pct-main{font-size:13px;font-weight:700;color:var(--good)}
+  .bk-progress .pct .pct-sub{font-size:11px;font-weight:500;color:var(--muted)}
   .bk-activity{font-size:11px;color:var(--muted);margin-top:8px}
   .bk-activity .warn-note{color:var(--high)}
   .bk-priority{display:flex;flex-wrap:wrap;gap:8px 12px;margin-bottom:8px}
@@ -71,6 +77,10 @@
   .bk-priority .item .pri{color:var(--text);font-weight:600}
   .bk-priority .item .meta{color:var(--muted)}
   .bk-stall{font-size:11px;color:var(--muted);margin-bottom:8px}
+  .dead-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .dead-item{border:1px solid var(--border);background:var(--panel2);color:var(--muted);border-radius:6px;
+    padding:4px 7px;font:inherit;font-size:11px;cursor:pointer;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dead-item:hover{border-color:var(--accent);color:var(--text)}
 
   /* kanban */
   .kanban{display:grid;grid-template-columns:repeat(4,minmax(240px,1fr));gap:14px;align-items:start}
@@ -350,6 +360,7 @@ function renderBacklog(bk, act){
     const over30 = (bk.dead_lane&&bk.dead_lane.over_30) || 0;
     const over90 = (bk.dead_lane&&bk.dead_lane.over_90) || 0;
     const unknown = (bk.dead_lane&&bk.dead_lane.unknown_activity) || 0;
+    const candidates = (bk.dead_lane&&Array.isArray(bk.dead_lane.candidates)) ? bk.dead_lane.candidates : [];
     const total = bk.open_handoffs || 0;
     if(total > 0){
       const parts = [];
@@ -364,6 +375,18 @@ function renderBacklog(bk, act){
       }else{
         stallWrap.textContent = "dead-lane: 0";
       }
+      if(candidates.length){
+        const list = el("div","dead-list");
+        for(const c of candidates){
+          const age = c.age_days==null ? "no date" : `${c.age_days}d`;
+          const pri = c.priority && c.priority!=="NONE" ? `${c.priority} · ` : "";
+          const item = el("button","dead-item",`${pri}${age} · ${c.title || c.id}`);
+          item.type = "button";
+          item.addEventListener("click", ()=>openModal(c.id, c.title || c.id));
+          list.appendChild(item);
+        }
+        stallWrap.appendChild(list);
+      }
     } else {
       stallWrap.textContent = "";
     }
@@ -373,13 +396,18 @@ function renderBacklog(bk, act){
   const pctAll = bk.pct_all_done;
   const pct = pctOpen ?? pctAll;
   $("#backlog-fill").style.width = (pct==null?0:pct)+"%";
-  const pctParts = [];
-  if(pctOpen==null && pctAll==null){
-    $("#backlog-pct").textContent = "—";
-  }else{
-    if(pctOpen!=null) pctParts.push(pctOpen+"% open backlog");
-    if(pctAll!=null) pctParts.push(pctAll+"% all-tracked");
-    $("#backlog-pct").textContent = pctParts.join(" · ");
+  const pctEl = $("#backlog-pct");
+  if(pctEl){
+    pctEl.innerHTML = "";
+    if(pctOpen==null && pctAll==null){
+      pctEl.textContent = "—";
+    }else{
+      const primary = pctOpen!=null ? pctOpen+"% open backlog" : pctAll+"% all-tracked";
+      pctEl.appendChild(el("span","pct-main", primary));
+      if(pctOpen!=null && pctAll!=null){
+        pctEl.appendChild(el("span","pct-sub", pctAll+"% all-tracked"));
+      }
+    }
   }
 
   // Today's committed activity: the % above only moves on checkbox flips, so

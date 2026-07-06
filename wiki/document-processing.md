@@ -2,8 +2,8 @@
 
 **Category**: `document_processing`
 **Confidence**: verified
-**Last compiled**: 2026-06-22
-**Sources**: 4 documents (2026-06-22 refresh: ODL pipeline Phase 2 landed; Phase 3 hybrid-table routing still open)
+**Last compiled**: 2026-07-06
+**Sources**: 5 documents (2026-07-06 focused pass: ODL hybrid sidecar probe preflight; 2026-06-22 refresh: ODL pipeline Phase 2 landed; Phase 3 hybrid-table routing still open)
 
 ## Summary
 
@@ -16,6 +16,10 @@ A three-phase integration plan has been designed and is actively tracked. Phase 
 The Java 11+ runtime dependency is manageable through a sidecar pattern. The Python SDK wraps a Java CLI where each `convert()` call spawns a JVM, so batch processing or persistent subprocess warming is recommended for production. The structured JSON output improves every downstream consumer: chunker, figure analyzer, LLM context quality.
 
 ## Key Findings
+
+### New (2026-07-06, ODL hybrid sidecar probe preflight)
+
+- **The ODL hybrid path now has an explicit no-inference preflight, but the sidecar and quality benchmark remain open.** A sidecar implementation added `opendataloader_hybrid` as a named backend in the PDF fast-path probe. The probe checks `opendataloader_pdf` importability and `ORCHESTRATOR_ODL_HYBRID_URL` reachability before calling the hybrid extraction method, and records missing dependencies or unreachable sidecars as explicit `missing_dependency` failures instead of confusing them with extraction quality. This advances Phase 3 readiness without claiming the hybrid table sidecar is deployed or that the 200-PDF/table-heavy benchmark has passed. Sources: [OpenDataLoader pipeline integration handoff](../handoffs/active/opendataloader-pipeline-integration.md), [progress 2026-07-06](../progress/2026-07/2026-07-06.md).
 
 ### New (2026-06-22, OpenDataLoader pipeline Phase 2 landed; hybrid-table routing still open)
 

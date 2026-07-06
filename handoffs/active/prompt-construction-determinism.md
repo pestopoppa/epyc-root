@@ -2,7 +2,7 @@
 
 **Created**: 2026-06-26
 **Owner domain**: [routing-and-optimization-index.md](routing-and-optimization-index.md) · master row **N14**
-**Status (2026-07-04)**: **DEPLOYED LIVE, attestation-green, COMMITTED through the June sampler path; OpenAI-compatible sampling propagation landed in orchestrator `fe390e5a` and was deployed by scoped API reload (PID `3577452`).** D2 live-load probe found no think-loop/revert trigger, and orchestrator `16876006` packages the guarded clean-window J12 runner; D2 remains open for clean-window reliability/promotion; D3/D4 remain.
+**Status (2026-07-06)**: **DEPLOYED LIVE, attestation-green, COMMITTED through the June sampler path; OpenAI-compatible sampling propagation landed in orchestrator `fe390e5a` and was deployed by scoped API reload (PID `3577452`).** D2 clean-window probe is closed with no think-loop/revert trigger; D3/D4 remain.
 
 ## Current State
 
@@ -50,10 +50,20 @@ manufactures a synthetic role config with `temperature=0.0`, so registry
 Content-cache keys remain legacy-compatible for default calls and include a
 stable sampling key only when explicit sampling controls are present.
 
+2026-07-06 clean-window J12/D2 probe: with AutoPilot stopped, the committed
+runner completed
+`uv run python scripts/benchmark/j12_think_loop_probe.py --roles frontdoor architect_general --confirm-clean-window`.
+The durable report is
+`epyc-orchestrator/orchestration/reports/j12_think_loop_probe_20260706T143621Z/`.
+Result: `frontdoor` `15/15`, `architect_general` `14/15`, `0` empty outputs,
+`0` HTTP/error answers, `0` `<think>` leaks, `0` known wait-reference loops, and
+`0` repetition loops on both roles. The architect jinja/chat-completions flip
+has no clean-window revert trigger from D2.
+
 ## Outstanding tasks (priority-ordered)
 
 - [x] **D1 — git commit** ✅ **DONE 2026-06-26** — orchestrator `f4a8a3ca` (llama_server.py, inference/model_server.py, registry/stack_priors.py, derived/stack_priors.yaml), root: this docs commit (docs). **Unpushed** — operator pushes manually.
-- [ ] **D2 — J12 architect think-loop probe** *(Queue-2 quiesce window; REVERT-GATE for change #4)*. Change #4 is only safe if `enable_thinking=false` actually suppresses the Qwen3.5-122B hybrid `<think>`-loop (the 2026-04-15 `0879ed56` exclusion guarded a *confirmed* zero-content / 4096-tok "Wait, I found a reference" loop). Run the committed clean-window probe with `uv run python scripts/benchmark/j12_think_loop_probe.py --roles frontdoor architect_general --confirm-clean-window` after stopping AutoPilot or in the declared Queue-2 window; the runner reads the chat-completions answer field, uses fixed non-truncating `max_tokens`, and keeps the same tasks both arms. **This now validates a LIVE prod change, not just wiring** — if architect loops, revert change #4 (`stack_priors.py` jinja clause + recompile + reload architect without `--jinja`). Gate: architect +15pp or better (campaign J12 promotion gate). Frontdoor (same family, draft-mtp+jinja+nothink) is the working reference. Operator-run per `feedback_no_concurrent_inference`. 2026-06-27 live-load probe (not quiesce, AutoPilot T2 running) wrote `/mnt/raid0/llm/tmp/j12_architect_think_loop_probe_20260627T090826Z_summary.json` and JSONL. Result: frontdoor 15/15, architect 12/15 by coarse expected-match; **0 `<think>` leaks, 0 known wait-reference loops, 0 repetition-loop flags on both arms**. Architect had two HTTP 504s (`code_02`, `reason_02`) at the queue/deadline boundary under concurrent load, so no immediate revert is indicated, but D2 is not clean-window closed.
+- [x] **D2 — J12 architect think-loop probe** ✅ **DONE 2026-07-06** *(Queue-2 quiesce window; REVERT-GATE for change #4)*. Clean-window run with AutoPilot stopped wrote `epyc-orchestrator/orchestration/reports/j12_think_loop_probe_20260706T143621Z/{results.jsonl,summary.json}`. Result: `frontdoor` `15/15`, `architect_general` `14/15`, `0` empty outputs, `0` HTTP/error answers, `0` `<think>` leaks, `0` known wait-reference loops, and `0` repetition loops on both roles. The architect jinja/chat-completions flip has no D2 revert trigger. The prior 2026-06-27 live-load probe was only non-claim-grade telemetry because AutoPilot was active.
 - [ ] **D3 — manual canonical bench (sampling quality cert)** *(clean window; certifies #1–3)*. Greedy→sampled(0.1–0.3)+seed shifts output behavior. Certify via P-BENCH canonical recipe (`bench_canonical.sh`/`canonical_recipe.py`) per `/workspace/MEASUREMENT.md`. **Co-schedule with the N13 v6-iqk post-reboot bench** — both want the same clean window.
 - [ ] **D4 — sampling-quality instrument-era row** *(human-authored; AFTER D2+D3)*. The N13 kernel/AutoPilot-speed fence is now applied in orchestrator `dcd60332` (`E5-cpu-kernel`, `E5-autopilot-speed`, live AutoPilot `pareto_exclude_before_ts=2026-06-26T22:07:11Z`). The remaining D4 work here is the separate **sampling-determinism `autopilot_quality` boundary** after D2/D3, because greedy→sampled quality should not be certified until the architect revert-gate and canonical bench resolve. Its note should use DEMOTE-TO-PRIOR for pre-boundary quality numbers. `instrument_eras.yaml` remains a human-amendment surface (MEASUREMENT.md §4/§5).
 
@@ -66,10 +76,10 @@ claim-grade live validation and instrument-era tasks.
 
 ```
 D1 (commit) ── independent, do now
-D2 (J12 probe) ──┐
+D2 (J12 probe) ── closed 2026-07-06 ──┐
                  ├──► D4 (era rows)   [don't certify a boundary that might revert]
 D3 (canon bench)─┘
-D2, D3 ── both want a quiesce/clean window → co-schedule with Queue-2 + N13 post-reboot bench
+D3 still wants a quiesce/clean window → co-schedule with Queue-2 + N13 post-reboot bench
 ```
 
 ## Cross-cutting

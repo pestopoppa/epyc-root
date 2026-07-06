@@ -1,8 +1,8 @@
 # Hermes/OpenGauss as Outer Shell
 
-**Status**: in-progress (Phase 1 complete, Phase 2 routing API done, skills + validation pending)
+**Status**: in-progress (Phase 1 complete, Phase 2 routing API done, skills + static validation wired; live Hermes validation pending)
 **Created**: 2026-03-20 (split from hermes-agent-index.md)
-**Updated**: 2026-07-04
+**Updated**: 2026-07-06
 **Parent**: [hermes-agent-index.md](hermes-agent-index.md)
 **Repos**: https://github.com/NousResearch/hermes-agent, https://github.com/math-inc/OpenGauss
 **Decision**: Vanilla Hermes (not OpenGauss) — OpenGauss is Lean 4-specific; Hermes has first-class custom endpoint support
@@ -171,9 +171,9 @@ hermes  # or: cd /mnt/raid0/llm/hermes-agent && python cli.py
 
 ### Remaining Work (no inference needed)
 
-- [ ] Think token mitigation: Prepare `--chat-template-file` with thinking disabled for simple turns, or system prompt hint (`/think` only when needed)
+- [x] Think token mitigation: Prepare `--chat-template-file` with thinking disabled for simple turns, or system prompt hint (`/think` only when needed) — ✅ 2026-07-06. `launch_hermes_backend.sh` defaults to `chat-template-no-think.jinja`, now makes that default explicit, and supports `HERMES_CHAT_TEMPLATE_FILE` or `HERMES_DISABLE_CHAT_TEMPLATE=1` for later think-token experiments. Static wiring only; live latency validation remains below.
 - [x] Context mismatch investigation: **FIXED** — `-np 2` splits total context across slots (32K/2=16K per slot). `/v1/props` reports per-slot value. Fix: `-np 1` (single-user CLI) + explicit `context_length: 32768` in config
-- [ ] Hermes skill authoring: Write EPYC-specific skills (e.g., `/bench` to trigger benchmarks, `/stack` to manage orchestrator) — deferred to Phase 2
+- [x] Hermes skill authoring/install prep: Write EPYC-specific skills and make setup install them — ✅ 2026-07-06. Existing `/use`, `/escalation`, `/nocode`, `/stack`, and `overview` skills now sync into `~/.hermes/skills/epyc/` during `setup_hermes.sh` with an `rsync` path and a copy fallback. Runtime discovery is still pending the live Hermes validation pass.
 - [x] Custom system prompt: Created `HERMES.md` (symlinked to hermes-agent dir) — loaded as context file on startup. Contains workstation info, key paths, conventions, style prefs.
 - [x] Compression model config: Verified — `provider: "main"` maps to custom endpoint, empty `summary_model` uses auto-detected model from `/v1/models`. Works with single-model llama-server.
 
@@ -215,8 +215,8 @@ Wiring in `openai_compat.py`:
 **Hermes slash command → API parameter mapping**:
 | Hermes Command | API Parameter | Value |
 |---------------|---------------|-------|
-| `/use architect` | `x_orchestrator_role` | `architect` |
-| `/use biggest` | `x_force_model` | `architect_qwen2_5_72b` |
+| `/use architect` | `x_orchestrator_role` | `architect_general` |
+| `/use biggest` | `x_orchestrator_role` | `architect_general` |
 | `/escalation off` | `x_max_escalation` | `A` |
 | `/escalation B1` | `x_max_escalation` | `B1` |
 | `/nocode` | `x_disable_repl` | `true` |
@@ -277,10 +277,12 @@ Source: [`research/deep-dives/veniceai-skills-cross-runtime-authoring.md`](../..
 
 Source: [`research/deep-dives/hermes-agent-v2026-4-23-release.md`](../../research/deep-dives/hermes-agent-v2026-4-23-release.md). Depends on Wave 1B item D (pin bump v2026.3.23 → v2026.4.23) — D lives in [`hermes-agent-index.md`](hermes-agent-index.md) P2.5.
 
-- [ ] **F — Re-express `x_*` overrides as a namespaced Hermes plugin bundle** (4–6 h, depends on D)
-  - Replace the three current SKILL.md YAMLs (`/use`, `/escalation`, `/nocode`) with a single namespaced plugin bundle using v0.11.0's new `register_command` + `pre_tool_call` veto + `transform_tool_result` hooks
-  - Removes hand-maintained YAML drift surface (which B's drift detector exists to police — F + B together close the loop)
-  - All code work, no inference required for the implementation. End-to-end validation rolls into G.
+- [x] **F — Re-express `x_*` overrides as a namespaced Hermes plugin bundle** (4–6 h, depends on D) — DONE 2026-07-06
+  - Upstream Hermes plugin-command plumbing was repaired in `/mnt/raid0/llm/hermes-agent`: `PluginContext.register_command()` now registers `CommandDef` entries, tracks canonical command handlers/aliases, exposes `invoke_plugin_command()`, passes CLI/gateway session context into plugin handlers, displays command counts in `/plugins`, and invokes mutable `pre_llm_call` hooks from chat-completions request construction.
+  - EPYC root now ships `scripts/hermes/plugins/epyc-orchestrator-overrides/`, a namespaced plugin that registers `/use`, `/escalation`, `/nocode`, and `/epyc-overrides`; it stores overrides per Hermes session and injects `x_orchestrator_role`, `x_max_escalation`, and `x_disable_repl` through `extra_body` on `pre_llm_call`.
+  - `scripts/hermes/setup_hermes.sh` now syncs each EPYC plugin directory into `~/.hermes/plugins/<plugin>/` without deleting unrelated user plugins. The existing SKILL.md docs remain as operator-facing reference material; deterministic behavior now lives in the plugin.
+  - No inference required for implementation. Validation: Hermes focused suite (`tests/test_plugins.py`, `tests/test_cli_prefix_matching.py`, `tests/hermes_cli/test_commands.py`, `tests/test_run_agent.py::TestBuildApiKwargs`) passed `109 passed`; root plugin smoke loaded the plugin under temporary `HERMES_HOME`, applied/cleared `/use`, `/escalation`, and `/nocode`, and verified the exact injected `extra_body`; `check_drift.py`, reference-client print-only, `py_compile`, and `bash -n` passed. End-to-end live Hermes/orchestrator validation remains in G/P.
+  - 2026-07-06 static regression follow-up: added root-side pytest coverage for the plugin command registry, per-session override injection, and clear semantics. Also corrected the stale Phase 2 table so `/use biggest` maps to the current role alias (`x_orchestrator_role=architect_general`) rather than an obsolete concrete `x_force_model` id. Validation: focused Hermes pytest (`8 passed`), `py_compile`, focused ruff, drift check, reference-client print-only with `tool_choice=none`, and shell syntax checks passed.
 
 #### Phase 2 Validation (added 2026-04-24 from intake-454 deep-dive)
 
@@ -306,6 +308,10 @@ Hermes is one *client* of the orchestrator's `/v1/chat/completions` + `x_*` over
   - Pick one non-Hermes client from N (recommend bare-metal Python script first — fewest moving parts) and stand it up against `localhost:8000/v1/chat/completions`
   - Verify the same override semantics behave identically vs Hermes (force-model, escalation cap, REPL disable)
   - Document the wiring recipe in this handoff so other client types can follow the same pattern
+  - [x] Add dry-run reference bare-client wiring helper: `scripts/hermes/reference_openai_client.py` prints cURL and OpenAI SDK recipes for `x_orchestrator_role`, `x_force_model`, `x_max_escalation`, `x_disable_repl`, and `x_show_routing` without sending traffic unless `--send` is explicit. ✅ 2026-07-06
+  - [x] Extend the reference helper into a quiet-window validation harness for `stream`, native OpenAI `tools`, and `tool_choice` without sending traffic by default. ✅ 2026-07-06
+  - [x] Add root-side regression coverage for dry-run `tool_choice=none` so print-only validation does not accidentally convert explicit no-tool requests back to `auto`. ✅ 2026-07-06
+  - [ ] Run live `--send` validation in a quiet window and verify role override, force-model, escalation cap, REPL disable, routing metadata, and streaming behavior against the current `/v1/chat/completions` endpoint.
 - [x] **Q — Sufficiency call: do not absorb client-side concerns into the orchestrator** (~30 min, design discipline note) — recorded in `## Pros` above as the client/orchestrator separation rule.
   - Decision rule to record explicitly: per-client UX (slash commands, prompts, conversation memory) lives in the **client**, not the orchestrator. The orchestrator exposes overrides; clients map their UX to override values. This is the same discipline as the Hermes slash-command → `x_*` mapping — generalized as a principle, not a one-off
   - Output: 1-paragraph statement appended to the handoff's `## Pros` section so future contributors see it during refactor decisions
@@ -338,6 +344,23 @@ Gap decisions:
 | Caller-controlled `seed`, `top_p`, and `top_k` are not part of the request schema | Record as follow-up for the dedicated determinism lane | The backend already pins deterministic sampling defaults; exposing per-client sampling knobs is a policy decision. Prefer a named deterministic/sampling override design rather than generic pass-through. |
 | `x_max_escalation` is metadata/pass-through only in this route | Keep documented as partial until full graph enforcement is verified | This was already called out in Phase 2; P should validate behavior live before marking the end-to-end command complete. |
 | Clients unable to send nonstandard JSON fields | Document workaround/proxy | The stable contract is typed API fields. Per-client command syntax belongs at the edge. |
+
+### Hermes Upstream Pin Audit — 2026-07-06
+
+`scripts/hermes/hermes_pin_audit.py` is now the no-inference P2.6 checklist.
+It does not fetch, checkout, install, or launch services. Current dry-run
+output shows `/mnt/raid0/llm/hermes-agent` at
+`v2026.3.23-43-ge5691eed`, remote `main` at
+`18e840469ffe9f8235331c787e34ebbe908564b8`, latest visible remote tag
+`v2026.7.1`, and target tag `v2026.7.1` absent from local tags. Dirty state is
+the expected untracked upstream `HERMES.md`, which must be resolved or
+documented before any checkout.
+
+No live bump has been performed. Next quiet-window action is to choose the
+target tag explicitly, fetch tags, checkout the chosen tag, rerun
+`scripts/hermes/setup_hermes.sh`, then smoke: reference-client print-only,
+live `/v1/chat/completions` overrides/streaming, Hermes basic chat, tool use,
+multi-turn context, and compression trigger.
 
 ## Research Intake Updates
 

@@ -7,9 +7,12 @@ sys.path.insert(0, str(ROOT / "scripts" / "publication"))
 
 from generate_public_results import (  # noqa: E402
     apply_scrub_gate,
+    apply_review_decisions,
     backfill_target_counts,
     historical_attestation_review_counts,
     collect_rows,
+    decision_for_row,
+    review_decision_counts,
     missing_protocol_fields,
     parse_protocol_reference,
     protocol_status_counts,
@@ -333,3 +336,66 @@ def test_collect_rows_scrubs_internal_role_aliases_before_rendering():
 def test_scrub_gate_only_demotes_publish_candidates():
     assert apply_scrub_gate("publish_candidate", "needs public scrub: local path") == "hold_for_public_scrub"
     assert apply_scrub_gate("hold_for_protocol_backfill", "needs public scrub: local path") == "hold_for_protocol_backfill"
+
+
+def test_review_decision_overlay_can_retire_unverified_bucket_by_default():
+    rows = collect_rows("""# Results
+
+## Production
+
+| Model | Quant | t/s | Notes |
+|---|---|---|---|
+| Old row | Q4_K_M | 46.0 | old note |
+| Needs tag | Q4_K_M | 45.0 | verified sweep |
+""")
+    decisions = {
+        "default_decisions": {
+            "verification-decision-needed": {
+                "decision": "retired_from_public_claims",
+                "reason": "no row-specific evidence bundle",
+            }
+        }
+    }
+
+    decisioned = apply_review_decisions(rows, decisions)
+
+    assert decisioned[0].action == "retired_from_public_claims"
+    assert decisioned[0].review_decision == "retired_from_public_claims"
+    assert decisioned[0].review_reason == "no row-specific evidence bundle"
+    assert decisioned[1].action == "hold_for_protocol_backfill"
+    assert review_decision_counts(decisioned) == {"retired_from_public_claims": 1}
+    assert review_queue_counts(decisioned) == {
+        "protocol-tag-needed": 1,
+        "retired_from_public_claims": 1,
+    }
+
+
+def test_review_decision_overlay_allows_row_specific_override():
+    rows = collect_rows("""# Results
+
+## Production
+
+| Model | Quant | t/s | Notes |
+|---|---|---|---|
+| Old row | Q4_K_M | 46.0 | old note |
+""")
+    decisions = {
+        "default_decisions": {
+            "verification-decision-needed": {
+                "decision": "retired_from_public_claims",
+                "reason": "default",
+            }
+        },
+        "rows": {
+            "7": {
+                "decision": "remeasure_required",
+                "reason": "important comparison row",
+            }
+        },
+    }
+
+    assert decision_for_row(rows[0], decisions) == ("remeasure_required", "important comparison row")
+    decisioned = apply_review_decisions(rows, decisions)
+
+    assert decisioned[0].action == "remeasure_required"
+    assert decisioned[0].review_reason == "important comparison row"
