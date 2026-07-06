@@ -213,6 +213,12 @@ unowned local constants.
   returned `summary: ok` with `181` promotion-gate tests passing; focused
   `test_stack_priors_compiler.py` + `test_stack_change_guard.py` passed
   `80` tests.
+- 2026-07-06 DS-7 template consumer guard landed in orchestrator `464aca54`:
+  `validate_template()` now treats generated live stack priors as the
+  production `default` profile's serving-topology witness. Deployable default
+  role ports must match generated prior ports, and logical aliases are accepted
+  only when their alias target serves the generated alias ports. This closes the
+  template/prior drift gap without making experimental templates rigid.
 
 ### 2026-06-27 Config Catalog Re-Audit
 

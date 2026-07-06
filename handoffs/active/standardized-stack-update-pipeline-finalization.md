@@ -185,6 +185,15 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   Validation passed with `test_factual_risk.py` (`51 passed`), focused
   `py_compile`/`ruff`, and the canonical `stack_change_pipeline.py check
   --run-promotion-gate` (`summary: ok`, promotion gate `181 passed`).
+- 2026-07-06 DS-7 guard integration: Orchestrator `464aca54` makes
+  `stack_templates/default.yaml` fail validation when deployable role ports
+  drift from generated live stack-prior serving ports. Logical aliases remain
+  valid only when the alias target serves the generated alias ports; experimental
+  templates are not forced to mirror production priors. Validation passed with
+  `test_dynamic_stack.py` + `test_stack_templates_v2.py` (`47 passed`),
+  `orchestrator_stack.py start --stack-profile default --validate-only`,
+  `stack_change_guard.py --surface-summary-only --all-hardcoded-surfaces`, and
+  `stack_change_pipeline.py check --run-promotion-gate` (`181 passed`).
 
 ## Outstanding Work
 
