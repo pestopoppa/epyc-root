@@ -123,20 +123,28 @@ Action landed:
   a dedicated label helper, and distinguishes tap-inferred active holders from
   real `/proc` holders. Focused dashboard route/panel/helper tests passed
   (`147 passed`). ✅ 2026-07-06
-- [ ] **Local drafter quality tail**: if provider traces keep showing
-  `local_frontdoor` proposes non-replayable seed/deep, no-op, or
-  already-blacklisted actions, repair the drafter prompt/normalizer or add a
-  measured two-stage provider (`ingest_long_context` brief -> frontdoor/worker
-  action). A dashboard reader for archived provider trace remains useful but
-  non-blocking.
+- [x] **Local drafter quality tail**: `epyc-orchestrator` `24ab6170` fixes the
+  next contradiction exposed by provider traces. The W8 action-availability
+  section already removed `seed_batch`, `deep_eval`, and `structural_prune`
+  from the selectable schemas during strict W8 candidate generation, but the
+  higher-tier and eval-coverage pressure sections still told the local drafter
+  to prefer T2/T3 `deep_eval` or seed coverage probes. Those sections now take
+  the live W8 candidate-generation bit and preserve T2/T3 pressure only through
+  available replayable candidate actions (`numeric_trial` with journaled
+  applied params or one-flag `structural_experiment`). Focused creativity tests
+  cover W8-active higher-tier pressure, coverage pressure, and no-scored-row
+  behavior (`46 passed`), with `py_compile`, `ruff`, and `git diff --check`
+  clean. The running AutoPilot PID predates this commit, so the remaining live
+  canary is to restart at the next safe boundary and confirm local drafts stop
+  proposing unavailable seed/deep deferrals. ✅ 2026-07-06
 - Focused validation passed across the touched slices: `49` planner/provider/launcher tests, `43` W6/readiness tests, `46` spend-breaker/economics tests, `233` action/dashboard tests, `49` structural/restore tests, `64` GEPA/prompt-root/API/eval propagation tests, `36` sequential/paired-diagnostics tests, `44` phase/restart/dashboard health tests, `138` rejected-draft/action/creativity tests, and `11` earlier GEPA integration tests, plus focused `py_compile`, `ruff`, and `git diff --check`.
 
 Next measured extension:
 - Let the current daemon continue until the next restart-safe boundary, then
-  let PID `3470012` continue trial `1203` and watch whether the
-  `memrl_retrieval` candidate is keepable. If the local drafter keeps producing
-  no-op/invalid drafts that need critic salvage, repair the drafter
-  prompt/normalizer rather than weakening W8 replayability rules.
+  restart onto `24ab6170` if phase health reports runtime source drift. The next
+  ordinary planner turn should prove that local drafts follow the W8-filtered
+  action menu rather than proposing seed/deep deferrals that the critic must
+  salvage.
 - Build a two-stage planner provider after the one-shot local-ingest/local-
   frontdoor path has telemetry: `ingest_long_context` synthesizes a bounded
   planner brief, `frontdoor` or `worker_general` drafts the action from that
