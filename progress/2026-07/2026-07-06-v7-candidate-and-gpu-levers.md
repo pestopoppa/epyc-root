@@ -134,3 +134,48 @@ Qwen 27B dense Q8 (external 0.8B qwen35 drafter, temp 0.2 / seed 42,
 | `62081fd5` | L8 D-16: MTP on F16 +60.2% (BW-bound confirmed); fp16 deferred |
 | `1d85e8f3` | Tree-draft Phase 1a validated (engine correct); uncompetitive vs MTP |
 | `44ba27f3` | Clarify L22 plain-FA-isolation baseline note |
+
+---
+
+## Back-half work (2026-07-06 PM): FA-decode, aggregate specs, GLM-5.2, verified temp-curves + reproducibility
+
+### FA-decode lever (findings-05c L22) — CLOSED
+Frontdoor 35B-A3B-Q8 on MI210 (commit `d99252f1`): −fa0 single-stream decode 99.64 > 94.68 (+5.2%); −fa1 aggregate wins B≥16 (B32 342.3 > 333.0, +2.8%). MoE crossover holds but MARGINAL (GDN suppresses the attention fraction FA targets; gemma-26B pure-MoE was +16%@B32). Coherence PASS. NOTE: measured on the opt-less `mi210-hip-enable` binary (superseded by the v7-candidate spec sheet below).
+
+### v7-candidate AGGREGATE spec sheet (batched-bench S_TG, optimal per-model config)
+Commit `3c6013f5` then rebuilt VERIFIED in `a1c3275c`. On `experimental-v7-candidate`:
+| model (optimal) | B=1 | B=8 | B=16 | B=32 |
+|---|---|---|---|---|
+| gemma-4-31B Q8 (−fa0) | 27.1 | 104.0 | 174.3 | **245.9** |
+| Qwen3.6-27B Q8 (−fa0, bf16-state) | 31.4 | 103.6 | 157.8 | **198.8** |
+| Qwen3.6-35B-A3B Q8 (FRONTDOOR, −fa1, bf16-state) | 94.0 | 228.1 | 286.2 | **408.3** |
+| Qwen3.6-27B F16-proxy (−fa0, bf16-state) | 19.2 | 72.6 | 109.3 | **141.2** |
+- **bf16-state (L20) regression-validation PASS on the reconciled kernel:** 27B 165.5→198.8 (+20.1%), 35B-A3B 346.9→408.3 (+17.7%) — matches campaign; iqk + all 4 GPU opts coexist and both deliver.
+
+### GLM-5.2 investigation (decides tree-draft fate)
+GLM-5.2 (arch `GlmMoeDsaForCausalLM`) SHIPS a native MTP/NEXTN head (`conversion/glm.py` `skip_mtp=False`; upstream NEXTN loaders), **BUT the head is an inert STUB on our fork** (`glm4-moe.cpp`/`glm-dsa.cpp` load the tensors but skip them in the forward pass; the functional MTP driver is qwen35-only). GLM-5.2 is also **not runnable yet** (DSA-gated PR#21149, 238 GB IQ2 parked, not on disk; only GLM-4.7-Flash present = `deepseek2` arch, no nextn). **⇒ Tree-draft SHELVED** (every stack target has an MTP head; external-drafter tree is dominated by MTP everywhere). **Better future lever flagged:** finish the native GLM MTP forward graph (~90% scaffolded, a bounded qwen35-style port) — gated on GLM-5.2 runnability.
+
+### Verified single-stream MTP temp-curves + REPRODUCIBILITY (commit `a1c3275c`)
+Root-caused an apparent non-reproducibility the operator flagged (gemma "45.7" vs a fresh "32"). **It was NOT hysteresis** — at fixed (prompt, temp, seed) reps are byte-identical. The spread came from **the temp→α curve being MODEL-SPECIFIC × prompt-dependent α**, compared across without pinning temperature:
+| model | plain (t0.2) | MTP t0 (α) | MTP t0.2 (α) | MTP t0.6 (α) | deployable (prod temp) |
+|---|---|---|---|---|---|
+| 27B dense-GDN | 31.7 | 42.6 (.69) | 41.4 (.68) | 39.8 (.64) | **~41 MTP (+31%)** monotone↓ |
+| gemma-31B pure-dense | ~26 | 31.3 (.49) | 30.1 (.45) | 44.3 (.84) | **~30 MTP (+15%)** NON-monotone (peaks t0.6) |
+| 35B-A3B MoE frontdoor | **101** | 85 (.61) | 90 (.67) | 82 (.58) | **~101 PLAIN** (MTP LOSES on MoE) |
+- gemma's "45.7" was a **temp-0.6 / α-0.84** figure; deployable temp-0.2 = ~30. 27B "40.4" ≈ verified 41.4@t0.2.
+- **Discipline pinned:** every spec-dec number = production temp + seed42 + fixed prompt, tagged `(temp, α)`; deployable = production-temp; α = SPEED dial (MTP distribution-lossless — no quality tradeoff; coherence PASS all temps; byte-differs from plain only via MMQ FP-drift). See `[[feedback_compare_against_top_optimized_spec]]`, `[[feedback_production_sampling_seed_not_temp0]]`.
+
+### Process lesson (recorded honestly)
+Mid-session I made a real mess: fragile **concurrent-curl aggregate scripts hung**, left a server on port 8801, and a follow-up A/B ran against it → **contaminated, identical cross-model numbers**; I also stated a temperature conclusion before verifying it. Recovery = clean-slate kills-by-PID, **port-guarded + server-identity-verified + reps-confirmed** measurements (the `verified_curves.sh` / `gemma_repro.sh` pattern). Going-forward bench standard: identity-verify the loaded model, port-guard, no concurrent-curl fragility, report α, never compare across temperatures.
+
+### Deferred / next
+- **v7 promotion** — build+test the combined flag set for the CPU-session's CPU-regression audit; operator-gated; branch `experimental-v7-candidate` (`46f876c12`) is LOCAL, validated, NOT promoted.
+- **Native GLM MTP forward-graph port** — the real GLM-5.2 spec-dec lever, gated on GLM-5.2 runnability (DSA PR#21149).
+- **B_max crossover (MTP-vs-plain aggregate)** — attempted but the concurrent-curl harness failed; not re-run. MTP's aggregate benefit is known to degrade toward zero at batch (matrix Axis-A); the exact B_max is unmeasured.
+
+## Back-half commits (epyc-root)
+| Commit | What |
+|---|---|
+| `d99252f1` | L22 FA-decode A/B on MoE frontdoor — marginal |
+| `3c6013f5` | v7-candidate aggregate spec sheet + tree-draft GLM shelve verdict |
+| `a1c3275c` | Rebuild spec sheet from VERIFIED protocol-pinned numbers (temp→α, reproducibility) |
