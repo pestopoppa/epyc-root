@@ -148,13 +148,13 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 **Goal**: Best-in-class table extraction + reproducible comparison with competition
 **Effort**: Medium-Large
 
-- [ ] Deploy `opendataloader-pdf-hybrid --port 5002` as sidecar service
+- [x] Deploy `opendataloader-pdf-hybrid --port 5002` as sidecar service ✅ 2026-07-06
 - [x] Add a sidecar-aware `opendataloader_hybrid` backend to `scripts/benchmark/pdf_fastpath_probe.py` so hybrid preflights report missing SDK/sidecar dependencies explicitly instead of silently skipping or forcing live infra ✅ 2026-07-06
 - [x] Collect explicit hybrid-sidecar missing-dependency evidence from the structural-table-heavy manifest probe (`pdf_fastpath_probe_hybrid_sidecar_20260706T000000Z.{json,md}`) ✅ 2026-07-06
 - [x] Stamp the effective ODL backend in router results (`opendataloader_structured` vs `opendataloader_hybrid`) and add an opt-in probe guard that fails no-structural-signal corpora before they are used as table-routing evidence ✅ 2026-07-06
 - [x] Run local OpenDataLoader benchmark demo smoke without inference or persistent artifacts: `/mnt/raid0/llm/opendataloader-bench/pdf_validation.py` completed 18 demo pages from a temp cwd using the benchmark venv; output was temp-local only. ✅ 2026-07-06
 - [x] Add a repeatable structural/table-heavy candidate manifest builder for quiet-window probe batches. ✅ 2026-07-06
-- [ ] Install the hybrid extra on the target host (`pip install -U "opendataloader-pdf[hybrid]"`), start `opendataloader-pdf-hybrid --port 5002`, and confirm `GET /health` before claiming live sidecar evidence.
+- [x] Install the hybrid extra on the target host (`pip install -U "opendataloader-pdf[hybrid]"`), start `opendataloader-pdf-hybrid --port 5002`, and confirm `GET /health` before claiming live sidecar evidence. ✅ 2026-07-06
 - [ ] Experiment: swap hybrid backend from docling-fast → LightOnOCR-2-1B (port 8082)
 - [ ] Measure: does GPU-accelerated LightOnOCR beat docling-fast's 0.43s/page?
 - [ ] Implement three-way routing: ODL local (simple) → ODL hybrid (tables) → LightOnOCR (scanned)
@@ -225,6 +225,25 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
   should deploy the sidecar, run the hybrid probe on a structural/table-heavy
   corpus, then decide whether any router policy change is justified.
 
+**2026-07-06 live hybrid sidecar checkpoint**
+
+- Installed `opendataloader-pdf[hybrid]` into an isolated venv at
+  `/mnt/raid0/llm/tmp/odl-hybrid-venv` and started
+  `opendataloader-pdf-hybrid --host 127.0.0.1 --port 5002` in a persistent
+  session. `GET /health` returned `{"status": "ok"}`.
+- Ran the existing 27-PDF structural manifest through the live sidecar by
+  invoking the probe under the hybrid venv with
+  `ORCHESTRATOR_ODL_HYBRID_URL=http://127.0.0.1:5002` and
+  `PYTHONPATH=/mnt/raid0/llm/epyc-orchestrator`. Output artifact:
+  `orchestration/reports/pdf_fastpath_probe_hybrid_sidecar_20260706T190000Z.{json,md}`.
+- Result: `27/27` successful hybrid parses, structural signal on `27/27` PDFs,
+  `table_like_lines=3307`, median latency `1510.743 ms`, median quality `1.000`.
+  That is live sidecar evidence, not just a missing-dependency report, but it
+  remains much slower than the local text fast paths.
+- Residual gate: still no 200-PDF comparison or router policy decision. The next
+  step is benchmark-backed comparison and table-selection policy, not another
+  sidecar-install pass.
+
 **2026-07-06 backend-attribution + structural-signal guard checkpoint (`epyc-orchestrator` `d6b171fd`)**
 
 - `PDFRouter._extract_with_odl_table_backend()` now carries the effective
@@ -266,12 +285,12 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 - The smoke processed 18 demo pages with no timeouts or exceptions. Key metrics:
   `text_block ALL_page_avg=0.335621`, `table TEDS=0.796747`, and
   `reading_order ALL_page_avg=0.224300`.
-- Live sidecar deployment remains blocked: base Python cannot import
-  `opendataloader_pdf` / `opendataloader_pdf_hybrid`, and
-  `opendataloader-pdf-hybrid` is not on `PATH`. Next action is explicit host
-  install of `opendataloader-pdf[hybrid]`, start
-  `opendataloader-pdf-hybrid --port 5002`, then confirm
-  `GET /health` before claiming hybrid-sidecar evidence.
+- Live sidecar deployment is now complete: an isolated venv at
+  `/mnt/raid0/llm/tmp/odl-hybrid-venv` can import
+  `opendataloader_pdf`, and `opendataloader-pdf-hybrid` is running on
+  `127.0.0.1:5002` with `GET /health` returning `{"status": "ok"}`.
+  The remaining action is benchmark-backed comparison and routing policy,
+  not another install/health pass.
 
 **2026-07-06 structural/table-heavy manifest-builder checkpoint (`epyc-orchestrator`)**
 
