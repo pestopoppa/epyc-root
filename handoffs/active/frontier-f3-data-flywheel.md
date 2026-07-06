@@ -66,6 +66,14 @@ On completion of each waypoint: tick here, one-line progress entry, update maste
   pending reviews, so this removes a capture-path gap but does not satisfy the
   trusted-data gate; real quiet-window lab outputs and reviewed verdicts remain
   required.
+- 2026-07-06: F2 pending-review evidence is now easier to inspect via
+  `epyc-orchestrator` `95d2d39f`. `scripts/lab/review_queue_report.py
+  --markdown/--output-md` renders pending queue rows and editable
+  `lab_review_batch.v1` JSONL into a review packet. Live packet
+  `orchestration/reports/lab_review_queue_report_20260706T131453Z.md` shows
+  `8` active-safe deterministic rows awaiting operator verdicts and `0`
+  review-candidate rows; this improves review throughput but still does not
+  satisfy the trusted-data gate until verdicts are actually recorded.
 - 2026-07-06: The first quiet-window F2 batch is now command-planned via
   `epyc-orchestrator` `88f66ae6`. `scripts/lab/quiet_window_lab_plan.py`
   reports the model-backed jobs ready for the next AutoPilot-stopped window and
