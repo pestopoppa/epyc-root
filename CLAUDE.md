@@ -18,6 +18,16 @@ All repos are already cloned on this machine. Use the absolute paths below.
 
 **2026-06-26 v6 cutover**: production now runs on ONE kernel, **production-consolidated-v6** (canonical tree `/mnt/raid0/llm/llama.cpp`). v6 = upstream llama.cpp framework + native MTP/NEXTN speculative decoding + our forward-ported CPU kernels + **ik_llama's iqk AVX-512 GEMM kernels** integrated into the fork (runtime-gated by `GGML_IQK=1`). This consolidates the gemma worker off the separate `ik_llama.cpp` binary — **ik_llama.cpp is fully deprecated; there is no second binary**.
 
+### Experimental Kernel Workflow & Production-Kernel Immutability
+
+**Production kernels are FROZEN.** `production-consolidated-v6` (and any future `-v7`, …) must NEVER be modified, rebased, built, or committed to unless the operator EXPLICITLY authorizes a specific change. We *version past* production to add features — we never patch production in place. **ALL** inference-research / kernel / benchmarking work happens on `llama.cpp-experimental` branches (that worktree exists precisely for this) — NEVER on production. Every new kernel feature follows four steps, in order:
+1. **Pull fresh production → `llama.cpp-experimental`.** Start each effort from the *current* production tip so all production optimizations (iqk AVX-512 GEMM, CPU forward-ports, server work) are already present. Do NOT keep accumulating work on a long-lived experimental branch forked from an old production tip.
+2. **Build** in `llama.cpp-experimental`.
+3. **Validate no regressions** vs the production kernel (GPU + CPU; the CPU session audits CPU regressions).
+4. **Deploy** the validated experimental kernel as a NEW production version (e.g. v7).
+
+The experimental kernel MUST be the FULL build (fresh production + all new features) BEFORE promotion — NOT reconciled via cherry-picks at promotion time. REASON: a complete experimental kernel lets you regression-test the whole thing against production before deploying; deferring the production-merge (cherry-picking iqk/CPU work in at promotion) means those combined changes were never validated together, so regressions slip in unverified. Bench numbers must also come from the experimental (v7-candidate) binary — a bench build missing our own GPU opts is not the real spec. **Motivating failure:** the GPU-opts branch forked from v6 on 2026-06-22, but the iqk port landed on production 2026-06-25; because step 1 (fresh-pull) was skipped and the branch was never re-synced, it silently lacked the entire iqk subsystem (0 of 8 `GGML_IQK` references) — on track to "become v7" missing a core CPU-performance subsystem. Discovered + rectified 2026-07-06.
+
 Key scripts by repo:
 - **Seeding/benchmarking**: `/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/` (seed_specialist_routing.py, seeding_*.py)
 - **Server management**: `/mnt/raid0/llm/epyc-orchestrator/scripts/server/` (orchestrator_stack.py)
