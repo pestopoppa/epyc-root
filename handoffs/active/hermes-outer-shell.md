@@ -277,10 +277,11 @@ Source: [`research/deep-dives/veniceai-skills-cross-runtime-authoring.md`](../..
 
 Source: [`research/deep-dives/hermes-agent-v2026-4-23-release.md`](../../research/deep-dives/hermes-agent-v2026-4-23-release.md). Depends on Wave 1B item D (pin bump v2026.3.23 → v2026.4.23) — D lives in [`hermes-agent-index.md`](hermes-agent-index.md) P2.5.
 
-- [ ] **F — Re-express `x_*` overrides as a namespaced Hermes plugin bundle** (4–6 h, depends on D)
-  - Replace the three current SKILL.md YAMLs (`/use`, `/escalation`, `/nocode`) with a single namespaced plugin bundle using v0.11.0's new `register_command` + `pre_tool_call` veto + `transform_tool_result` hooks
-  - Removes hand-maintained YAML drift surface (which B's drift detector exists to police — F + B together close the loop)
-  - All code work, no inference required for the implementation. End-to-end validation rolls into G.
+- [x] **F — Re-express `x_*` overrides as a namespaced Hermes plugin bundle** (4–6 h, depends on D) — DONE 2026-07-06
+  - Upstream Hermes plugin-command plumbing was repaired in `/mnt/raid0/llm/hermes-agent`: `PluginContext.register_command()` now registers `CommandDef` entries, tracks canonical command handlers/aliases, exposes `invoke_plugin_command()`, passes CLI/gateway session context into plugin handlers, displays command counts in `/plugins`, and invokes mutable `pre_llm_call` hooks from chat-completions request construction.
+  - EPYC root now ships `scripts/hermes/plugins/epyc-orchestrator-overrides/`, a namespaced plugin that registers `/use`, `/escalation`, `/nocode`, and `/epyc-overrides`; it stores overrides per Hermes session and injects `x_orchestrator_role`, `x_max_escalation`, and `x_disable_repl` through `extra_body` on `pre_llm_call`.
+  - `scripts/hermes/setup_hermes.sh` now syncs each EPYC plugin directory into `~/.hermes/plugins/<plugin>/` without deleting unrelated user plugins. The existing SKILL.md docs remain as operator-facing reference material; deterministic behavior now lives in the plugin.
+  - No inference required for implementation. Validation: Hermes focused suite (`tests/test_plugins.py`, `tests/test_cli_prefix_matching.py`, `tests/hermes_cli/test_commands.py`, `tests/test_run_agent.py::TestBuildApiKwargs`) passed `109 passed`; root plugin smoke loaded the plugin under temporary `HERMES_HOME`, applied/cleared `/use`, `/escalation`, and `/nocode`, and verified the exact injected `extra_body`; `check_drift.py`, reference-client print-only, `py_compile`, and `bash -n` passed. End-to-end live Hermes/orchestrator validation remains in G/P.
 
 #### Phase 2 Validation (added 2026-04-24 from intake-454 deep-dive)
 

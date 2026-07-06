@@ -12,7 +12,6 @@
 |---|---|---|---|
 | MED | Reference non-Hermes client live validation | [`hermes-outer-shell.md`](hermes-outer-shell.md) Phase P | Dry-run `scripts/hermes/reference_openai_client.py` now covers `x_*`, streaming, native `tools`, and `tool_choice`; live `--send` override/streaming validation requires a quiet inference window. |
 | MED | Hermes upstream pin bump and breaking-change audit | [`hermes-outer-shell.md`](hermes-outer-shell.md) P2.6 | `scripts/hermes/hermes_pin_audit.py` reports current pin/target/smoke gates; target choice + checkout + smoke tests require a quiet window. |
-| MED | Downstream `x_*` override refactor | [`hermes-outer-shell.md`](hermes-outer-shell.md) Phase 2+ enhancement | Preserve `/v1/chat/completions` compatibility; coordinate with orchestrator API changes. |
 | MED | Subagent + single-slot llama-server validation | [`hermes-outer-shell.md`](hermes-outer-shell.md) Phase 2 validation G | Requires controlled inference; do not overlap throughput-sensitive evidence windows. |
 | LOW | Multi-user auth flow | [`hermes-outer-shell.md`](hermes-outer-shell.md) | Deferred while deployment remains single-user. |
 | LOW | Open-source extraction sketch | Future/open-source track | Do not drive abstraction until MemRL/routing validation justifies it. |
@@ -32,6 +31,7 @@
 |---|---|
 | Conversation management B1-B7 | Complete; detailed history lives in [`../completed/orchestrator-conversation-management.md`](../completed/orchestrator-conversation-management.md). |
 | Hermes slash-command skills and drift guard | Complete through 2026-06-14; current files under `scripts/hermes/skills/`. |
+| Downstream `x_*` override plugin refactor | Complete 2026-07-06; upstream Hermes plugin command/request-hook plumbing plus EPYC `epyc-orchestrator-overrides` plugin are implemented and statically validated. |
 | Streaming + override parameter validation | Complete; keep future adapter changes compatible with string-valued override params. |
 | Tool-output compression downstream port | Complete through `epyc-orchestrator` `fe64140`; remaining telemetry/registration gates live in [`tool-output-compression.md`](tool-output-compression.md). |
 | Open-source orchestrator stub | Archived; do not re-add without a new concrete extraction target. |
@@ -65,6 +65,7 @@ Context compression or tool-output changes
 | Hermes upstream checkout | `/mnt/raid0/llm/hermes-agent` |
 | EPYC Hermes setup | `scripts/hermes/` |
 | Hermes skills | `scripts/hermes/skills/` |
+| Hermes EPYC plugins | `scripts/hermes/plugins/` |
 | Hermes launch config | `scripts/hermes/config.example.yaml`, `scripts/hermes/launch.sh` |
 | Orchestrator API | `/mnt/raid0/llm/epyc-orchestrator/src/api/` |
 

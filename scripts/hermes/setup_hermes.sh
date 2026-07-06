@@ -52,7 +52,29 @@ if [[ -d "$EPYC_SKILLS_SRC" ]]; then
     fi
 fi
 
-# 5. Create .env with no-op API key (prevents Hermes from prompting for one)
+# 5. Sync EPYC Hermes plugins into ~/.hermes/plugins/<plugin>/
+EPYC_PLUGINS_SRC="${SCRIPT_DIR}/plugins"
+EPYC_PLUGINS_DST="${HOME}/.hermes/plugins"
+if [[ -d "$EPYC_PLUGINS_SRC" ]]; then
+    mkdir -p "$EPYC_PLUGINS_DST"
+    for plugin_src in "${EPYC_PLUGINS_SRC}"/*; do
+        [[ -d "$plugin_src" ]] || continue
+        plugin_name="$(basename "$plugin_src")"
+        plugin_dst="${EPYC_PLUGINS_DST}/${plugin_name}"
+        mkdir -p "$plugin_dst"
+        if command -v rsync >/dev/null 2>&1; then
+            rsync -a --delete "${plugin_src}/" "${plugin_dst}/"
+            echo "Synced plugin: ${plugin_dst} <- ${plugin_src}"
+        else
+            rm -rf "$plugin_dst"
+            mkdir -p "$plugin_dst"
+            cp -a "${plugin_src}/." "$plugin_dst/"
+            echo "Copied plugin: ${plugin_dst} <- ${plugin_src}"
+        fi
+    done
+fi
+
+# 6. Create .env with no-op API key (prevents Hermes from prompting for one)
 ENV_FILE="${HOME}/.hermes/.env"
 if [[ ! -f "$ENV_FILE" ]]; then
     cat > "$ENV_FILE" << 'ENVEOF'
