@@ -161,3 +161,16 @@ Built into the **v7-candidate** kernel (fresh v6+iqk + 4 GPU opts + tree-draft, 
 - **Practical finding (NEGATIVE for MTP-equipped targets):** external-drafter spec-dec (simple AND tree) is **net-negative vs plain** (18 < 31) — the 0.8B drafter overhead isn't repaid on the fast Q8 decode. The **embedded MTP dominates** (41.9, +34% vs plain) because its head is near-free. Phase-1b's +15.8%-over-linear → ~21.5 t/s, still < plain and << MTP.
 - **Implication:** tree-draft cannot beat MTP on our MTP-equipped production targets. Its only niche = **non-MTP targets** or **f16** (where the original +15.8% was measured, decode more BW-bound). **Phase 1b decision reopened** — not worth 2-3 days for production targets unless a non-MTP/f16 use case is in scope. NOT a hard close (f16 + a cheaper drafter untested).
 - **v7-candidate kernel reconciliation DONE + validated** — see kernel-reconciliation-audit.md; branch `experimental-v7-candidate` in llama.cpp-experimental is the full build (v6+iqk+GPU-opts+tree-draft), compiles/links clean on HIP.
+
+---
+
+## GLM-5.2 CHECK + FINAL SHELVE DECISION (2026-07-06) — tree-draft SHELVED; native-GLM-MTP is the better future lever
+
+Operator asked whether GLM-5.2 (the last candidate niche) lacks an MTP head, which would justify tree-draft. Investigated (on-disk metadata + fork source + upstream):
+- **GLM-5.2 DOES ship a native MTP/NEXTN head** — the GLM-MoE family carries it; converter `conversion/glm.py` reads it with `skip_mtp=False`; upstream has the NEXTN tensor loaders; GLM-5.2 arch = `GlmMoeDsaForCausalLM`. So MTP dominates an external drafter there too.
+- **BUT GLM's MTP head is an INERT STUB on our fork** — `src/models/glm4-moe.cpp` / `glm-dsa.cpp` LOAD the NEXTN tensors but SKIP them in the forward pass ("preserved but unused"); the functional MTP draft driver (`common/speculative.cpp`) is qwen35/qwen35moe-only. GLM has no *working* spec-dec today.
+- **GLM-5.2 not runnable yet** — DSA-gated (PR#21149, dense-MLA fallback), 238 GB IQ2 parked, not on disk (only GLM-4.7-Flash present = `deepseek2` arch, no nextn head).
+
+**DECISION: tree-draft Phase 1b SHELVED (conclusive).** Every target on our stack (qwen 27B/35B/122B, gemma, GLM-5.2) ships an MTP head; external-drafter tree-draft is dominated by MTP everywhere (measured: qwen-27B MTP 41.9 vs external-draft ~18 < plain 31). The Phase-1a engine is **validated + banked in the v7-candidate** — cheap to revive if a genuinely MTP-less target ever appears.
+
+**Higher-value FUTURE lever surfaced (flag, do NOT drop — research-intake rule):** finish the **native GLM MTP forward graph** — it is ~90% scaffolded (tensors load, `skip_mtp=False`, the draft driver already supports `draft-mtp`; only the glm4moe/glm-dsa NEXTN *forward execution* is stubbed — a bounded port like qwen35's, which delivers +58–89% in prod). This is the right GLM-5.2 spec-dec investment, gated on GLM-5.2 becoming runnable past the DSA gate (PR#21149).

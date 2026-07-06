@@ -13,6 +13,21 @@
 >
 > **SINGLE-STREAM DENSE-Q8 IS CLOSED (2026-07-04 Pass-2 diagnostic).** The megakernel (L5) is measured NOT worth building: HIP graphs (which kill ALL host-launch) buy only **+5.9%**, and decode is memory-latency-bound at ~50% roofline — the 62→100% gap is the batch-1 MLP floor, not a launch/grid-drain bubble (the trace's 64% "gap" was a profiler artifact: ~10µs × ~1860 kernels/token). Levers banked: MMVQ +17.4%, nwarps +4.6%, prefetch +3.3%; everything else ruled out with data. **Next phase = aggregate/MoE regime** (§3.3 + the L1-MoE mmid / L16 bf16-aggregate / L20 GDN-aggregate levers). One cheap non-megakernel note if ever revisited: the hybrid's ~1860 kernels/token is high → a *targeted* per-SSM-block elementwise/norm/gate fusion (not a full megakernel) is the only launch-side lever left.
 
+## ⭐ v7-CANDIDATE AGGREGATE SPEC SHEET (2026-07-06) — all Q8+F16 models on the OPTIMAL experimental kernel
+
+Measured on branch `experimental-v7-candidate` (fresh v6+iqk + MMQ/nwarps/prefetch/bf16-state + tree-draft, commit `46f876c12`), `llama-batched-bench` **S_TG** (aggregate decode t/s), optimal per-model config, `GGML_CUDA_Q8_PREFETCH=1`. **These supersede any opt-less bench-binary aggregate — they are the deployable top-spec numbers.** OBSERVATION.
+
+| model (optimal config) | B=1 | B=8 | B=16 | **B=32** |
+|---|---|---|---|---|
+| gemma-4-31B Q8 (pure-dense, −fa0; no GDN opt) | 27.1 | 104.0 | 174.3 | **245.9** |
+| Qwen3.6-27B Q8 (dense-GDN, −fa0, bf16-state) | 31.4 | 103.6 | 157.8 | **198.8** |
+| Qwen3.6-35B-A3B Q8 (MoE-GDN **FRONTDOOR**, −fa1, bf16-state) | 94.0 | 228.1 | 286.2 | **408.3** |
+| Qwen3.6-27B **F16**-proxy (dense-GDN, −fa0, bf16-state) | 19.2 | 72.6 | 109.3 | **141.2** |
+
+- **bf16-state (L20) ON/OFF @B32 on the v7-candidate — regression-validation PASS (opt survived the fresh-pull reconciliation onto v6+iqk):** 27B dense-GDN 165.5→**198.8 (+20.1%)**, 35B-A3B MoE-GDN 346.9→**408.3 (+17.7%)** — matches the campaign's +21.5%/+17.7%. iqk + all 4 GPU opts coexist and both deliver.
+- **Top-spec per model** (SS=single-stream best, agg=B32): gemma-31B SS **45.7** (MTP+MMQ) / agg **246**; 27B SS **40.4** (MTP+MMQ) / agg **199**; **35B-A3B frontdoor agg 408**; 27B-F16 SS **31** / agg **141**. Earlier session benches (FA A/B, gemma) ran on the opt-less `mi210-hip-enable` binary and READ LOW (frontdoor agg 342 vs 408 here) — always compare against these v7-candidate numbers [[feedback_compare_against_top_optimized_spec]].
+- **Q4 note:** gemma Q4_K_M agg B32 = 272 (raw), but Q4 is a **capacity-only** choice on gfx90a — dequant-bound (33% roofline vs Q8 47%), and Q8's optimized SS spec (45.7 MTP+MMQ) beats Q4+MTP (43.25); F16 at aggregate costs ~30% (141 vs 199) for its precision.
+
 Categories (columns): **D-Q8** Dense-Q8 · **D-16** Dense-fp16/bf16 · **MoE** MoE-on-GPU-decode · **GDN** GDN/SSM-hybrid (dense-FFN + MoE-FFN sub-variants) · **DiT** Diffusion/DiT · **Aux** Auxiliary (embed/rerank/vision). Verdict glyphs: **Y** applies · **C** conditional · **N** no.
 
 ---
