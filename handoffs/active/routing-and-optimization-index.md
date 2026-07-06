@@ -75,6 +75,10 @@ canary dispatch/score against
 Fable gate report refresh. DS-E1 is the only item in this bundle currently
 called out as requiring live `llama-server` processes to be coordinated down;
 RI-10/J12/A9 require AutoPilot inactive and a clean host window.
+The 2026-07-06 sidecar command expansion is recorded in today's progress log;
+current live verification shows tool-use activation is **not** blocked by
+`api_env_missing_AUTOPILOT_TOOL_SENTINELS` (`tool_use_activation ready []`,
+API and AutoPilot `/proc` env both carry `AUTOPILOT_TOOL_SENTINELS=1`).
 
 **Prior checkpoint - 2026-07-06T01:52Z**: AutoPilot is live as PID `3438615`
 with `--max-trials 3000` and `code_stale=false`. Trial `1200` was a replayable
