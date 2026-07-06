@@ -19,7 +19,11 @@ helper instead of a hardcoded legacy role set (`epyc-orchestrator` `f35448d1`).
 Simulated swap-CI now also proves factual-risk role capability tiers follow
 regenerated stack priors for worker, vision, and long-context swaps instead of
 static degraded role defaults (`epyc-orchestrator` `cacd8c44`). Future swap-CI
-expansion should follow new consumer migrations.
+expansion should follow new consumer migrations. The 2026-07-06 consumer-tail
+cleanup (`epyc-orchestrator` `4bf414d6`) folds the parked factual-risk degraded
+fallback refactor back into main: generated stack priors remain the primary
+role-tier source, and the compatibility-only fallback is isolated behind a
+helper instead of a module-level live-looking role table.
 **Created**: 2026-06-13
 **Priority**: HIGH - stale model-specific quantities can silently corrupt
 routing, scoring, launch, planner prompts, replay analysis, and operator docs
@@ -155,6 +159,11 @@ unowned local constants.
   generated stack priors; the W4 simulated swap fixture now proves regenerated
   worker, vision, and long-context stack priors update factual-risk tier
   adjustment before static degraded role defaults can apply.
+- `src.classifiers.factual_risk` now keeps the degraded compatibility mapping
+  behind `_degraded_role_tier()` rather than a module-level `_DEGRADED_ROLE_TO_TIER`
+  table. The current generated-prior path is unchanged; the cleanup reduces the
+  chance that future stack work treats degraded fallback labels as authoritative
+  live stack truth.
 - X-MAS has an evidence-backed true function-axis 5x5 winner table and a
   default-off guarded enforce path. The 2026-06-21 quiet constrained-policy
   A/B carried `xmas_policy=incumbent_constrained_v1` and returned
