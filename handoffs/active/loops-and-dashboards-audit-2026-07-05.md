@@ -283,6 +283,12 @@ Ranks reference the workflow synthesis; the adversarial critic's corrections are
   loop control. Focused dashboard suites passed (`165 passed`), plus `ruff`,
   `py_compile`, JS `node --check`, and `git diff --check`. Backend field
   deployment awaits the next orchestrator API reload. ✅ 2026-07-06
+- [x] Optimization brief steering surface: `epyc-orchestrator` `eec1c2fe`
+  adds a ruled-out-experiments summary to the operator optimization brief and
+  dashboard renderer so the brief now surfaces fenced dead-ends plus malformed-
+  surface churn, not just the current levers. Focused `optimization_brief`
+  tests passed (`9 passed`) and the touched files stayed `py_compile`/`git
+  diff --check` clean. ✅ 2026-07-06
 - **[P1 · S · medium] Production-safety + parity fixes the synthesis dropped** — isolate GEPA per-candidate prompt writes (`gepa_optimizer.py:88`) from the live prompts dir (a crash leaves a mutated production prompt) via the existing WorktreeManager/isolation path; make the **W6 gaming comparator config-aware** (`audit_block_report.py:407` is blocking the Fable gate ~29 trials on a between-candidate-variance false positive); extend `cmd_restore` (`autopilot.py:6309`) to purge StrategyStore + AP-22 memory ([[feedback_autopilot_rewind_must_purge_strategy_store]] — the loop the scar was named for).
 
 ### Phase 2 — The human-owned MEASUREMENT amendment (ONE bundle, one operator sign-off)
