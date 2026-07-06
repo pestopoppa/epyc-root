@@ -17,6 +17,19 @@ plus a tool-aware comment-only nudge. Remaining work is to journal nonzero
 `total_tool_calls` under the repaired prompt contract and evaluate usefulness;
 it is not lane activation.
 
+**Live smoke update (2026-07-06T18:21Z)**: the API env is still correct for
+tool telemetry on PID `981677` (`AUTOPILOT_TOOL_SENTINELS=1`,
+`ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT=1`), but a five-way parallel Gate-3 smoke
+run (`AUTOPILOT_GATE3_PARALLELISM=5`) failed hard in the model/runtime path:
+all five sentinels returned the same repeated no-progress nudge / comment-only
+REPL output, `get_eval_secret` counted `0`, the no-tool isolation request still
+passed, and the soft `web_research` probe bucketed as `INFRA_FAIL` for the
+same reason. That means activation remains env-ready, but the live local REPL
+path is still not producing executable tool code on demand. The surface that
+would need an implementation change (`EvalTower._load_tool_sentinels` /
+tool-use prompt plumbing) is HIGH-risk, so this run intentionally stopped at
+documentation rather than editing code.
+
 **Parallel batching investigation (2026-07-05T17:36Z)**: read-only sidecar
 checked whether independent tool calls should be executed together and batched
 back into the next model context. Finding: this is already partially true
