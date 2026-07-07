@@ -243,9 +243,10 @@ INTERACTION_POLICY_VERSION = "1.0"
   - `latency_budget_remaining`
 
 - [x] **P3-2a**. Implement the first `review_before_commit` high-risk edit-shape policy behind `ORCHESTRATOR_FEATURE_REVIEW_BEFORE_COMMIT_TARGETED_GATE=1`. It is inert unless `review_before_commit_consult` is also enabled, preserves blanket-consult behavior when the new gate flag is off, and currently triggers on parser/data-contract/compatibility terms, hidden-verifier/transaction risk, deletes, multi-file edits, and public API/registry/config paths.
-- [ ] **P3-2b**. Generalize to `should_consult(interaction_intent, signals) -> bool` with per-skill thresholds in `interaction_skills.yaml`, including routing-intelligence/MemRL signals rather than only lexical edit-shape rules.
+- [x] **P3-2b seed surface**. AutoPilot now has a first-class `consult_gate_probe` action surface that runs hard edit-transaction turns as `baseline` vs blanket `consult` vs targeted `gated`, records consult calls/skips/reruns/quality/latency, and reports the result on the requested tier (default `tier=3`) under `consult_gate_targeted`. This is not a T0 side audit: it is intended to let the optimizer search for high-quality, fast review-before-commit policies on hard workflow material.
+- [ ] **P3-2c**. Generalize to `should_consult(interaction_intent, signals) -> bool` with per-skill thresholds in `interaction_skills.yaml`, including routing-intelligence/MemRL signals rather than only lexical edit-shape rules.
 
-- [ ] **P3-3**. **Shadow mode**: log the gate decision but always run the consult (baseline). Compare offline: would gating have saved tokens? Did skipped consults lose quality?
+- [ ] **P3-3**. **Shadow/optimization calibration**: use `consult_gate_probe` on T2/T3 hard workflow slices to compare always-consult vs targeted-gate behavior. The key metrics are solved-task quality, tasks/hour, consult-call rate, false skips, and rerun quality lift; do not promote blanket consult unless it beats the targeted gate on quality enough to justify latency.
 
 - [ ] **P3-4**. After ≥1 week of shadow data: enable enforcement for one signal at a time. Require an explicit gate-rollback handoff if quality regresses (≥1pp on the code-edit eval slice).
 
