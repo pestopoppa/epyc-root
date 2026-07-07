@@ -1,6 +1,6 @@
 # Internal Interaction Lifecycle
 
-**Status**: P1 lifecycle substrate landed 2026-06-28 in `epyc-orchestrator` `18956892`; P2 edit-transaction consult wiring is staged default-off as of 2026-07-05 (`0e555822`); the P1 bake gate cleared 2026-07-07, and P2/J17 live A/B evidence now says **HOLD / do not enable by default**
+**Status**: P1 lifecycle substrate landed 2026-06-28 in `epyc-orchestrator` `18956892`; P2 edit-transaction consult wiring is staged default-off as of 2026-07-05 (`0e555822`); the P1 bake gate cleared 2026-07-07, and P2/J17 live evidence now says **targeted-positive / default-off pending gating**
 **Priority**: P0 for substrate cleanup; downstream of intake-655 deep-dive
 **Created**: 2026-05-31
 **Owning index**: [`routing-and-optimization-index.md`](routing-and-optimization-index.md)
@@ -211,14 +211,28 @@ INTERACTION_POLICY_VERSION = "1.0"
   `0.0pp`), but consult added latency (`coder_wall_p50` `2.839s` vs `2.316s`,
   `+22.58%`), produced `50/50` successful consultant calls, requested `0`
   reruns, and had `0.0` cache-hit rate. Conclusion: the default-off
-  `review_before_commit_consult` seam works mechanically, but the J17 gate is
-  **not promotion-positive**; keep default-off and do not advance to P3
-  enforcement from this evidence alone.
+  `review_before_commit_consult` seam works mechanically, but the BEP slice is
+  too simple to support blanket enablement.
+- [x] **P2/J17 targeted consult-value slice collected** ✅ 2026-07-07.
+  Artifact:
+  `epyc-orchestrator/orchestration/reports/internal_interaction_j17_ab_20260707T121211Z/`.
+  The 10-task targeted suite repeats higher-risk edit shapes 5x each:
+  compatibility shims, migration defaults, rollback semantics, parser edge
+  cases, async ordering, graph cycles, dedupe, optional dependencies, plugin
+  registry contracts, and path safety. Baseline passed `35/50`
+  (`quality=0.70`); consult passed `40/50` (`quality=0.80`, `+10.0pp`), with
+  `50/50` consult successes and `15` rerun requests. Consult rescued the
+  parser/comment/value edge case from `0/5` to `5/5`, but did not fix
+  transaction rollback parse failures or plugin-registry verifier failures.
+  Coder wall p50 rose `+14.49%`, and consult wall p50 was `22.871s`. Decision:
+  **targeted-positive / default-off**. Proceed to a P3-style gate only for
+  high-risk edit shapes; do not enable consult on every edit transaction.
 
 ### P3 — Consult gating policy, shadow first
 
 **Goal**: Stop calling consult on every code edit. Gate by signals owned by `routing-intelligence`.
 
+- [ ] **P3-0**. Convert the J17 targeted-positive result into a narrow gate proposal: fire `review_before_commit_consult` only for high-risk edit shapes where the targeted slice showed plausible value (parser/data-contract edge cases, compatibility shims, optional-dependency fallbacks, high blast-radius symbols, or hidden-verifier-risk patterns). Explicitly avoid easy/small edits and known format-compliance failures where consult did not help. Acceptance: default-off gate plan with trigger signals, falsifier, and a shadow-mode metric list.
 - [ ] **P3-1**. Gate signal taxonomy:
   - `factual_risk_score` (from `routing-intelligence`)
   - `difficulty_band` (`progress_logger.log_delegation` already carries this; reuse via `log_interaction`)
