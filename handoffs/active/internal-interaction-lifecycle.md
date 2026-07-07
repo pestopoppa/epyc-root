@@ -1,6 +1,6 @@
 # Internal Interaction Lifecycle
 
-**Status**: P1 lifecycle substrate landed 2026-06-28 in `epyc-orchestrator` `18956892`; P2 edit-transaction consult wiring is staged default-off as of 2026-07-05 (`0e555822`); the P1 bake gate cleared 2026-07-07, and P2/J17 live evidence now says **targeted-positive / default-off pending gating**
+**Status**: P1 lifecycle substrate landed 2026-06-28 in `epyc-orchestrator` `18956892`; P2 edit-transaction consult wiring is staged default-off as of 2026-07-05 (`0e555822`); the P1 bake gate cleared 2026-07-07, P2/J17 live evidence says **targeted-positive**, and the first default-off high-risk edit-shape gate is implemented pending shadow/enablement evidence.
 **Priority**: P0 for substrate cleanup; downstream of intake-655 deep-dive
 **Created**: 2026-05-31
 **Owning index**: [`routing-and-optimization-index.md`](routing-and-optimization-index.md)
@@ -232,7 +232,7 @@ INTERACTION_POLICY_VERSION = "1.0"
 
 **Goal**: Stop calling consult on every code edit. Gate by signals owned by `routing-intelligence`.
 
-- [ ] **P3-0**. Convert the J17 targeted-positive result into a narrow gate proposal: fire `review_before_commit_consult` only for high-risk edit shapes where the targeted slice showed plausible value (parser/data-contract edge cases, compatibility shims, optional-dependency fallbacks, high blast-radius symbols, or hidden-verifier-risk patterns). Explicitly avoid easy/small edits and known format-compliance failures where consult did not help. Acceptance: default-off gate plan with trigger signals, falsifier, and a shadow-mode metric list.
+- [x] **P3-0**. Convert the J17 targeted-positive result into a narrow gate proposal: fire `review_before_commit_consult` only for high-risk edit shapes where the targeted slice showed plausible value (parser/data-contract edge cases, compatibility shims, optional-dependency fallbacks, high blast-radius symbols, or hidden-verifier-risk patterns). Explicitly avoid easy/small edits and known format-compliance failures where consult did not help. Completed 2026-07-07: `epyc-orchestrator/src/orchestration/review_consult_gate.py` implements the transparent lexical/shape gate, and `run_edit_transaction()` records `targeted_gate_skip` consult events when the gate declines to call the consultant.
 - [ ] **P3-1**. Gate signal taxonomy:
   - `factual_risk_score` (from `routing-intelligence`)
   - `difficulty_band` (`progress_logger.log_delegation` already carries this; reuse via `log_interaction`)
@@ -242,7 +242,8 @@ INTERACTION_POLICY_VERSION = "1.0"
   - `benchmark_class` (in-eval or live)
   - `latency_budget_remaining`
 
-- [ ] **P3-2**. Implement `should_consult(interaction_intent, signals) -> bool` policy. Per-skill thresholds in `interaction_skills.yaml`.
+- [x] **P3-2a**. Implement the first `review_before_commit` high-risk edit-shape policy behind `ORCHESTRATOR_FEATURE_REVIEW_BEFORE_COMMIT_TARGETED_GATE=1`. It is inert unless `review_before_commit_consult` is also enabled, preserves blanket-consult behavior when the new gate flag is off, and currently triggers on parser/data-contract/compatibility terms, hidden-verifier/transaction risk, deletes, multi-file edits, and public API/registry/config paths.
+- [ ] **P3-2b**. Generalize to `should_consult(interaction_intent, signals) -> bool` with per-skill thresholds in `interaction_skills.yaml`, including routing-intelligence/MemRL signals rather than only lexical edit-shape rules.
 
 - [ ] **P3-3**. **Shadow mode**: log the gate decision but always run the consult (baseline). Compare offline: would gating have saved tokens? Did skipped consults lose quality?
 
