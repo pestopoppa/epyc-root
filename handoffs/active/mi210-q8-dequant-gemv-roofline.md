@@ -68,3 +68,12 @@ Raise **single-stream** GPU decode throughput for the qwen35/Q8 family toward th
 
 ## Key files
 `ggml/src/ggml-cuda/mmvq.cu` (dispatch + `mul_mat_vec_q`), `ggml/src/ggml-cuda/quantize.cu` (`quantize_q8_1`), `ggml/src/ggml-cuda/ggml-cuda.cu:2554-2617` (mul_mat dispatch), CPU reference for fused approach: `ggml/src/ggml-cpu/iqk/iqk_gemm_legacy_quants.cpp:302-330`. Profiling artifacts: `/mnt/raid0/llm/tmp/mi210-build/campaign/{prof,finish}/`.
+
+## Progress checklist
+
+- [x] nwarps 2->4 (+4.6%, committed 5dc116130) ✅
+- [x] async weight-prefetch raw.buffer.load.lds (+3.3%, committed 7c28056b7) ✅
+- [x] L3-MoE compact-LDS occupancy rewrite (BUILT + FALSIFIED, NO-GO) ✅
+- [ ] L15 sub-4-bit: quantize 122B->IQ2 proxy + operator-gated IQ2-vs-Q8 bench (measurement PENDING)
+- [ ] SoA-repack lever (only if coalescing measured poor - currently deemed healthy)
+- [ ] Optional stream-K K-splitting for Q8-MMQ aggregate (separate bet)

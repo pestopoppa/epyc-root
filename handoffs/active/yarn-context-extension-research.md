@@ -99,3 +99,7 @@ The Tulving Episodic Memory Benchmark (arXiv 2501.13121, ICLR 2025) tests entity
   - Reported results: empirically 7B–405B models (Llama 3.1, Mistral, Qwen3, DeepSeek-v3, Kimi k2.5, GPT-OSS) all collapse to ~0.25 (random) on a position-indexing task by 4K–8K tokens. At 8K BF16: 75K position-aliasing pairs + 1,491 attention-invariance cases. Token inversion → 1/2 once `m ≥ 20K`.
   - Delta from current approach: Strengthens the **"YaRN is gated to a concrete workload need, NOT a default"** posture this handoff already takes (Status line: "Gate to reactivate: context_extension becomes a concrete workload requirement"). Cite this paper as theoretical justification for the gate; do not change the gate criteria.
   - Caveat (Tier 2b): paper is 2026-05-15 (5 days old at intake); the most dramatic chance-floor claims kick in at 128K+ where EPYC operates rarely (we cap at 32K–64K in practice). Use as informing-evidence, not blocking-evidence.
+
+## Progress checklist
+
+- [ ] QUEUED (LOW): reactivate when context_extension is a concrete workload requirement tolerating >32K position-discrimination loss

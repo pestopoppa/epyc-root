@@ -93,3 +93,11 @@ After any work in this handoff:
 3. If Q8-vs-BF16 A/B is run, append the result to the deep dive (§4.4 and §9) and update the variant recommendation if needed.
 4. When this handoff transitions from `stub` to `active` (image-generation enters scope OR GPU lands), promote intake-528 to `new_opportunity`.
 5. If superseded by an alternative (FLUX.1-schnell, Qwen-Image 2.0), move to `handoffs/completed/` with a one-paragraph closing note explaining the choice.
+
+## Progress checklist
+
+- [x] Production functional on CPU via sd-server Q8 + conv-direct; Q4 rejected (text corruption) ✅
+- [ ] Run content-filter audit live with --execute (harness ready in orchestrator ed6f65f5) and review outputs
+- [ ] Run 20-prompt local LongTextBench-style EN/ZH typography spot-check to validate 0.9655 self-report
+- [ ] GPU/MI210 rebench of the 8-step distilled DiT via ROCm/HIP path (operator-approved, measure-not-extrapolate)
+- [ ] Re-litigate FLUX.1-schnell alternative if bilingual long-form in-image text not needed by product

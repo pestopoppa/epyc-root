@@ -67,3 +67,7 @@ This stub exists because the user explicitly framed Hy-MT2 itself as "useful spe
 - When PR #22836 lands: update this stub with merge commit + benchmark numbers; flip status from `stub` to `in_progress`.
 - When EPYC bench of 1.8B-1.25bit-GGUF completes: record numbers in `progress/2026-MM/` and update this stub.
 - When SpecExit head-to-head vs CGR is run: log results and update [[per-request-reasoning-budget]] + this stub.
+
+## Progress checklist
+
+- [ ] BLOCKED: reopen when llama.cpp PR #22836 (AngleSlim kernels) merges + QAT checkpoints exist

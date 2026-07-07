@@ -66,3 +66,11 @@ Single-GPU serialization ⇒ one experiment at a time (unlike the orchestration 
 - Is `kernel_eval.sh` (step 3) worth building as a standalone even if we never wrap the autopilot? (My view: yes — it pays for itself in fragility-removal on the next 3 levers regardless.)
 - Autonomy ceiling confirmation: is "autonomous experimental-tree commits + OBSERVATIONS, human-gated at P-GPU-1 + prod promotion" the right line?
 - Does this belong under the existing autopilot infra (strategy store / nightshift) or as a sibling? (Reuse recommended.)
+
+## Progress checklist
+
+- [x] Phase 0 kernel_eval.sh verify layer (BUILT + VALIDATED, research 48f990f) ✅
+- [x] Phase 3 dashboard page :8100/kernel (BUILT 2026-07-05) ✅
+- [ ] Phase 1 kernel strategy store SQLite (kernel_store.py exists; Pareto/rewind wiring open)
+- [ ] Phase 2 the nightshift loop (outer planner/critic + inner sweep->kernel_eval.sh->Pareto)
+- [ ] First real workload: L3-MoE/L15 MMQ-family param sweep through the loop

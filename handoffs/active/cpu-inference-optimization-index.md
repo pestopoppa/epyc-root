@@ -51,3 +51,12 @@ After completing a CPU queue item:
 2. Update this index only when priority, gate, or next-action routing changes.
 3. Append `progress/YYYY-MM/YYYY-MM-DD.md` with measurement protocol, cache state, hardware state, and commit/artifact IDs.
 4. If the work changes the stack, update [routing-and-optimization-index.md](routing-and-optimization-index.md) and the relevant stack-change handoff.
+
+## Progress checklist
+
+- [ ] P0 Batched decode E2/E3: capture EvalTower quality/reliability/throughput telemetry before default path change (batched-decode-measurement.md)
+- [ ] P0 DSA / DeepSeek V3.2 PR #21149: pull/build/smoke with inference approval (llama-cpp-dsa-contribution.md)
+- [ ] P1 MoE-Spec CPU spec-dec: run Phase 0 against current stack (moe-spec-cpu-spec-dec-integration.md)
+- [ ] P1 CPU roofline: run claim-grade AMD perf-counter benches in clean-window protocol (cpu-kernel-env-flags-inventory.md)
+- [ ] P1 Shape-specialized GEMV: profile-led Q6_K/Q5_K or expert-dispatch follow-ons (cpu-shape-specialized-gemv-decode.md)
+- [ ] P2 Phase-disaggregated serving: keep only xGMI KV-transfer falsification gate active (numa-prefill-decode-disaggregation.md)

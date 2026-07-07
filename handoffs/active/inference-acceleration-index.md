@@ -90,3 +90,13 @@ After completing an acceleration item:
 2. Update this index only if the live queue, gate, or dependency order changes.
 3. Append `progress/YYYY-MM/YYYY-MM-DD.md` with artifacts, command lines, cache state, and hardware/runtime state.
 4. If a result changes routing or stack deployment, update [routing-and-optimization-index.md](routing-and-optimization-index.md) and the relevant stack governance handoff.
+
+## Progress checklist
+
+- [ ] Batched decode E2: EvalTower quality/reliability/throughput telemetry gate before default flip
+- [ ] DS-E1 dynamic-stack KV measurement in consolidated quiet window
+- [ ] External qwen35/frontdoor drafter alpha retest (still unmeasured)
+- [ ] CoT-scaffold: Qwable-standalone GPQA control + register capability_registry lever
+- [ ] Verifier/selector best-of-N harness (driver_verifier.py) run
+- [ ] DSA PR #21149 build/smoke -> GLM-5.2 / GLM-5.x readiness
+- [ ] StreamingLLM floor sweep + KV admission cluster decisions

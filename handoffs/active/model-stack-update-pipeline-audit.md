@@ -609,3 +609,12 @@ Use focused extra tests for each W2 consumer pass. Do not run AutoPilot or llama
 - Update `stack-change-governance-pipeline.md` only for waypoint progress and validation results.
 - Keep `master-handoff-index.md`, `routing-and-optimization-index.md`, and `model-capability-descriptors.md` out of incidental edits; those have broader blast radius and should be synchronized deliberately.
 - Progress notes should include exact commands, guard warning counts before/after, and whether AutoPilot/inference was paused.
+
+## Progress checklist
+
+- [x] W1 stack-prior contract + guard hardening (contract v4, launch/runtime witnesses, source hashes) ✅
+- [x] W2 high-risk consumer migrations (q_scorer, seeding, routing, config, health, autopilot - ~29 cleanups) ✅
+- [ ] Residual classified docs/tests cleanup (legacy_test=72, historical_doc=25 warning buckets)
+- [ ] Descriptor ctx_model_max contract extension (native ctx_max still incomplete)
+- [ ] Direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient
+- [ ] Remaining tap/high-cost/contention policy-hint projection into generated stack priors

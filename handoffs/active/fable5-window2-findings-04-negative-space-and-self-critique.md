@@ -53,3 +53,7 @@
 **What would most change my recommendations**: G3 landing <1.3× (residency demotes; HIP-kernel authoring becomes the critical path and the window-1 ordering partially inverts toward "eval-only hosting + kernels") · M0 showing α_MTP ≥ ~0.75 per role (drafter leg permanently closed; spec-dec attention moves entirely to GPU-pair configs) · I4 showing genuine error-free flips at conc=1 (the instrument has a deeper nondeterminism source than concurrency; W5 becomes a serving-stack investigation, not a protocol redefinition).
 
 **Standing bias to audit in my output**: both windows, I have recommended *more measurement before building* — consistent with your MEASUREMENT.md culture, but a reviewer with a stronger build bias would note that R12's plumbing is cheap enough to build speculatively in parallel with G3 rather than behind it; if the bench passes, that ordering saves a week. I kept it gated because a failed Gate R would leave GPU plumbing as dead code in the launch path — your call to invert.
+
+## Progress checklist
+
+- [x] Negative-space + self-critique deliverable produced ✅

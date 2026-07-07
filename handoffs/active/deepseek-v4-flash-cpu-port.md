@@ -435,3 +435,11 @@ User authorized this port on 2026-05-28 with the explicit framing: "build in an 
 Per `feedback_no_concurrent_inference`: no benchmark execution without explicit per-run user approval. The phases above are scoped so that loading and smoke-testing can proceed, but throughput/quality benchmark runs are deferred to user invocation.
 
 Per `feedback_no_wholesale_git_add_shared_files`: when staging cherry-picked changes, verify `git diff --cached` to ensure only our targeted hunks land — `/mnt/raid0/llm/ik_llama.cpp` is a shared clone and other agents may have in-progress work.
+
+## Progress checklist
+
+- [x] Strategy B executed: download (153GiB), build, smoke PASS, 4 fork bug patches landed ✅
+- [ ] D1 operator go/park decision on Strategy-A (ik_llama API translation, 3-5d)
+- [ ] D2 recalibrate the 18 t/s throughput floor to be V4-arch-aware (honest ~8-12 t/s expected range)
+- [ ] D3 repurpose quality gate as architect_general candidacy probe
+- [ ] Unblock quality gate on Mac/ds4 reference logprobs (externally blocked)

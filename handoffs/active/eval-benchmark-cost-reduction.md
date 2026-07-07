@@ -58,3 +58,7 @@ Cold-start: The paper requires ~10 full-benchmark agent runs before the filter i
 - Solo-author preprint (March 2026), not peer-reviewed; credibility_score = 2 (medium). Pilot externally before any autopilot integration.
 - The paper's scaffold-driven distribution shift guarantee (ρ ≥ 0.87 under LOSO) holds under temporal shift too — relevant for TB Core re-evaluations over time as our stack evolves.
 - Do NOT apply to autopilot regression gates — per-suite resolution-awareness (3/n quantum gate, 2026-06-06) already addresses the small-sample problem differently.
+
+## Progress checklist
+
+- [ ] BLOCKED: needs Harbor adapter + TB Core baseline (agent-world-env-synthesis) before MR/TB filter applies

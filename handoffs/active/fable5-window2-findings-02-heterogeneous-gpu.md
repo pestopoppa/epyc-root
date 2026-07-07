@@ -73,3 +73,7 @@ Keep: §1.1 measure-first staging (with the shrunken menu above); §7.1 env repo
 - **R12 orchestrator GPU plumbing** — Accept: a role declares `acceleration: {device: rocm0, ngl: all, binary_dir: build-hip/bin, env: {LD_LIBRARY_PATH: ...}}` in the *master* registry; the compiled lean registry + stack manifest + runtime attestation all round-trip it; `orchestrator_stack.py start --only frontdoor` launches on the GPU and `attest_orchestrator_workers` proves it (the three-gates lesson: green pipeline ≠ stack-starts ≠ live==config). Cheapest decisive experiment before building: hand-launch the HIP llama-server on the frontdoor port with production args and run one eval batch through the unmodified orchestrator — if routing/quality/timeout behavior is unchanged, the plumbing is pure config transport and carries no serving risk.
 - **Custom HIP dequant kernels (conditional)** — only if M1 lands in the 1.3–1.8× band; target the Q4_K/Q8 MMQ dequant gap (14 roofline points measured between Q8 and Q4_K). Accept: +15% tg on the residency bench, op-for-op parity vs `test-backend-ops`.
 - **GPU eval lane in the campaign scheduler (R14)** — Accept: clean-window manifest entries carry a `substrate: gpu|cpu` field; GPU-lane items run while the CPU stack serves; the quiesce window shrinks to CPU-topology probes only (shape-keyed bracket, J2/J3, E1).
+
+## Progress checklist
+
+- [x] Findings deliverable produced (M0-M5; M0 CLOSED 2026-07-03) ✅

@@ -93,3 +93,7 @@ authority_controller(state):
 5. Anything to add to scope, or keep strictly baseline+sequential only (recommended: keep limited).
 
 > Implementation is **not** to begin until these are answered; this is the trust-boundary gate.
+
+## Progress checklist
+
+- [ ] BLOCKED: operator approval of trust-boundary gate required before any implementation

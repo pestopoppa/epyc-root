@@ -200,3 +200,12 @@ Cross-references: [[angelslim-techniques-evaluation]] (umbrella stub), [[reasoni
 DeepConf-offline is the highest-ROI item from this intake and is scheduled ahead of the OptiLLM-style method-selection axis. It is a **proxy-layer reimplementation** (N parallel llama-server completions with `top_logprobs` → bottom-10% group-confidence filter → confidence-weighted vote) — no llama.cpp fork needed for the offline variant. Build + sanity-check in a dedicated session, then hand the `n_traces / percentile-η / window / warmup / group-metric` sweep to autopilot's NumericSwarm. **Tracked as P21.A in [`routing-and-optimization-index.md`](routing-and-optimization-index.md); full analysis in [`research/deep-dives/optillm-test-time-techniques.md`](../../research/deep-dives/optillm-test-time-techniques.md).** Sanity-check needs a local Qwen3 server → **stop the running autopilot first** (no-concurrent-inference). The DeepConf-online (mid-generation early-stop) variant is fork work, deferred. Cross-ref: [[reasoning-compression]], [[decision-aware-routing]].
 
 **UPDATE 2026-05-24 (A2 done — NOT adopting):** built as an isolated spike (41 tests) and validated against live Qwen3.6. **Decisive negative:** DeepConf's confidence-weighted vote ties plain majority (3/4 = 3/4, no gain), and the confidence signal is anti-correlated with correctness (top-1-confidence 1/4; correct-vs-wrong gap −0.158) — the model is overconfident on wrong short answers. So DeepConf adds N× generation + `n_probs` cost for **zero accuracy benefit** on our stack. Not wired into the orchestrator or autopilot; no branch/worktree is needed for the remaining bulk-inference run. Reasoning-budget control for this handoff should rely on the existing stop-signal/template levers, not DeepConf. Full data: [`research/deep-dives/optillm-test-time-techniques.md`](../../research/deep-dives/optillm-test-time-techniques.md) §P21.A Outcome.
+
+## Progress checklist
+
+- [x] Step 1-2: trace budget-enforcement pipeline + root-cause (SSM state-update race, 2026-04-17) ✅
+- [x] DeepConf-offline spike - NOT adopting (zero accuracy benefit, 2026-05-24) ✅
+- [ ] Step 3: implement fix (force </think> / suppress think scaffold at budget=0 for hybrid SSM), needs running server
+- [ ] Step 4: verify budget>0 caps reasoning at N tokens; no regression on pure MoE
+- [ ] Thread thinking.budget_tokens through ChatRequest per role
+- [ ] Design stop-signal abstraction to slot in CGR certainty-threshold / SpecExit hidden-state exit

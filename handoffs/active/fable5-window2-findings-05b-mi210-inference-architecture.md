@@ -134,3 +134,7 @@ On `Qwen3.6-35B-A3B` Q8 frontdoor at c=81920→98304: `q8_0`-KV + fa1 vs `f16`-K
 - **MTP** — net-negative for MoE-on-GPU (plain is faster); still a win on CPU (BW-bound) and for GPU-dense. Regime-dependent, not universal (§8 Finding 2).
 
 **Still OPEN (not measured-dead):** the Q8 **dequant-GEMV kernel** (single-stream roofline 47→62%, handoff [`mi210-q8-dequant-gemv-roofline.md`](mi210-q8-dequant-gemv-roofline.md)); **MFMA for compute-bound paths** (prefill/diffusion/high-batch, handoff [`mi210-mfma-compute-bound-paths.md`](mi210-mfma-compute-bound-paths.md)); **n-gram/prompt-lookup speculation on GPU** (untested, zero-cost single-stream lever for structured output); and **EAGLE-3/tree-draft on dense targets** (untested). Remaining banked GPU value is placement (residency) — but the kernel frontier is **narrower, not closed.**
+
+## Progress checklist
+
+- [x] MI210 inference-architecture findings deliverable produced (GPU cheap levers exhausted) ✅

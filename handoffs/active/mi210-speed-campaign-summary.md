@@ -50,3 +50,7 @@ The smoke-tests map the card; the payoff is hosting the big models. Two axes:
 - **Offload to fit (expert-hybrid)** — the **quality-preserving** alternative + the ONLY GLM-5.2 path: keep hot/active experts GPU-resident at **Q8/bf16 (no weight-quality loss)** + stream cold experts from the 1.1 TB RAM (`large-moe-expert-parallelism.md`, `--n-cpu-moe`/`-ot exps=CPU`, [findings-02](fable5-window2-findings-02-heterogeneous-gpu.md) heterogeneous; currently backlogged to protect the CPU session). **Decisive cheap gating experiment: an expert-routing-skew profile** — Zipfian usage (hot-set cacheable) → offload flies; near-uniform → PCIe-streaming-latency-bound.
 
 **Ladder:** IQ2 near-term (122B, gated on eval-parity) → expert-offload medium-term (quality + the 80B-ingest / GLM path) → **GLM-5.2 endgame** (needs offload; maybe IQ2-resident-experts + offload-cold-tail). Single MI210 = one big model resident at a time → **Gate-R residency scheduling**. All HOLD, operator-only prod push. (Note: the lean-registry architect `4.3` is confirmed-stale — flag for the orchestrator session to update to the era-labeled ~20 MTP / 12.19 no-MTP, not edited here per the measurement trust boundary.)
+
+## Progress checklist
+
+- [x] Campaign executive summary produced - GPU speed structurally exhausted (2026-07-04) ✅

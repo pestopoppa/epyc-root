@@ -30,3 +30,7 @@ bf16-vs-Q8 crossover ≈ **B=16–24**: Q8 wins single-stream / low-batch (+27�
 
 ## Still open (GPU-kernel, our side)
 The real aggregate ceiling is the **Q8-MMQ GEMM efficiency** (61% of B=32 decode; the `quantize_mmq_q8_1` + per-tile dequant tax is why bf16 beats Q8 +32%). If a feasibility probe shows closeable headroom, a Q8-MMQ fused-dequant kernel would make Q8 aggregate-competitive at half the HBM — tracked in `mi210-q8-dequant-gemv-roofline.md` (L3-MoE). Until then, **bf16 is the aggregate precision** per Win 2.
+
+## Progress checklist
+
+- [x] Deployment-wins brief produced (role->config recommendations, PRODUCTION HOLD) ✅

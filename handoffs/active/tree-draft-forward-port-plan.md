@@ -174,3 +174,7 @@ Operator asked whether GLM-5.2 (the last candidate niche) lacks an MTP head, whi
 **DECISION: tree-draft Phase 1b SHELVED (conclusive).** Every target on our stack (qwen 27B/35B/122B, gemma, GLM-5.2) ships an MTP head; external-drafter tree-draft is dominated by MTP everywhere (measured: qwen-27B MTP 41.9 vs external-draft ~18 < plain 31). The Phase-1a engine is **validated + banked in the v7-candidate** — cheap to revive if a genuinely MTP-less target ever appears.
 
 **Higher-value FUTURE lever surfaced (flag, do NOT drop — research-intake rule):** finish the **native GLM MTP forward graph** — it is ~90% scaffolded (tensors load, `skip_mtp=False`, the draft driver already supports `draft-mtp`; only the glm4moe/glm-dsa NEXTN *forward execution* is stubbed — a bounded port like qwen35's, which delivers +58–89% in prod). This is the right GLM-5.2 spec-dec investment, gated on GLM-5.2 becoming runnable past the DSA gate (PR#21149).
+
+## Progress checklist
+
+- [x] Investigation complete - tree-draft Phase 1b SHELVED (uncompetitive vs MTP) ✅

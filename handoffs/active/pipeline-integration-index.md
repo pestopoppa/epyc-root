@@ -85,3 +85,13 @@ After completing a row:
 2. Update this index only if active priority, gate, ownership, or dependency order changes.
 3. Append `progress/YYYY-MM/YYYY-MM-DD.md` with artifacts, command lines, runtime state, and validation evidence.
 4. If RAM/NUMA allocation or API behavior changes, update [routing-and-optimization-index.md](routing-and-optimization-index.md) and the relevant stack or Hermes handoff.
+
+## Progress checklist
+
+- [ ] P0 Multimodal vision: remaining remote-image/multi-image treated as new scoped feature (live smokes passed)
+- [ ] P0.5 Local image gen: prompt-enhancer, content-filter audit, typography check, GPU DiT rebench on gfx90a (unblocked)
+- [ ] P1 ODL/PDF: benchmark-backed hybrid-vs-baseline comparison + routing policy (sidecar viable on :5002)
+- [ ] P1 Quiet-window PDF structural corpus probe (AutoPilot-idle evidence step)
+- [ ] P2 Lean 4: Leanstral expert profiling -> REAP prune -> end-to-end proof pipeline
+- [ ] P3 Multimodal TTS: benchmark first viable path (Qwen3-TTS/MiniCPM-O/ZipVoice) with RTF/WER evidence
+- [ ] P5 Internal KB-RAG: deferred K8 wikilink scorer once measured cross-link gap exists

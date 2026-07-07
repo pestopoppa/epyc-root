@@ -255,3 +255,12 @@ One pattern lifted from `strukto-ai/mirage` source audit. Apply when designing t
   - Key technique: Harbor registry (19 dataset versions), Docker containerization, automated test-script verification
   - Reported results: Codex CLI + GPT-5.2 at 63%; Terminus 2 + Claude Opus 4.5 at 58% on TB Core v0.1.1
   - Delta: When DGX Spark arrives and the environment-synthesis pipeline is live, TB Core v0.1.1 is the natural first external capability calibration target — run our trained agent against the 89 fixed tasks to measure absolute task-completion rate on a human-verified fixed benchmark.
+
+## Progress checklist
+
+- [x] AW-1..AW-5 env_synth module, 5th-species wiring, gap diagnosis, safety gate, EvalTower projection (NIB2-44) ✅
+- [ ] AW-6: 48h bootstrap discovery run (>=50 envs / >=500 tools / >=500 tasks) with incremental persistence
+- [ ] AW-7: pull obiwan96/endless-terminals dataset + PPL checkpoints; re-eval TB-2.0 transfer gap
+- [ ] AW-8: gemma4-26B-A4B-as-filter reproduction of Endless-Terminals Stages I-IV (~50-100 wall-hr)
+- [ ] AW-8 Phase 1.5: corroboration probe on released Agent-World-8B/14B weights (SWE-Bench/GAIA)
+- [ ] AW-9 (GPU-gated): multi-env GRPO training, deferred on MI210 GRPO smoke

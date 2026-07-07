@@ -250,3 +250,11 @@ Note whether **Qwen2.5-Coder-14B-Instruct itself** outperforms our gemma4-26B-A4
 - FREE no-inference KILL-gate FIRST: confirm dense gemma-4-12B (gemma4_unified) loads on the mainline production-consolidated-v5 build — the deployed gemma4-26B-A4B runs on a SEPARATE ik_llama.cpp gemma-mtp binary, so MoE-worker success does NOT prove dense-12B mainline support.
 - If it loads, benchmark vs the REAL coding incumbents — coder_escalation (Qwen3.6-35B Q8, ~97%) and worker_general (gemma4-26B-A4B). There is NO "coder pool" (architect_coding was removed 2026-05-06).
 - Likely-DROP: dense 12B reads ~12B params/token vs ~3B active for the MoE incumbent (slower on BW-bound CPU) and has no MTP head. No benchmarks on the v1 card (observations). Per feedback_always_sweep, measure before any deploy call.
+
+## Progress checklist
+
+- [x] Phase A acquisition + sanity (A-1 GGUF, A-2 benchmark/leaderboard, A-3 baselines, A-4 static harness) ✅
+- [x] Rust toolchain + Python venv host prereqs installed ✅
+- [ ] Phase B single-instance RustEvo2 bench (USER APPROVAL REQUIRED) - Strand, Qwen2.5-Coder-14B base, gemma4 worker, sequential
+- [ ] Phase C score table + decision matrix disposition; report base-model number to isolate fine-tune delta
+- [ ] Push GO/NO-GO disposition into intake-616 and flip swarm-dataset-distillation status if GO

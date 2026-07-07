@@ -55,3 +55,7 @@ Why the 33 is not a fact about item difficulty:
 ## 6. Depth reallocation note
 
 Per the brief's instruction ("if largely solved, say so and reallocate to 4B"): the mechanism is ~80% solved and the remaining 20% is enumerated above with small fixes — no rescue needed. Depth was accordingly reallocated to §4B (findings-02), which is where the new hardware makes architectural guidance time-critical.
+
+## Progress checklist
+
+- [x] Findings deliverable produced (build-seeds R1/R2/R4/R5/R6 CLOSED) ✅

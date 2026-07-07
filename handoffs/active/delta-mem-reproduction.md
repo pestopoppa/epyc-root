@@ -207,3 +207,12 @@ Source-level deep dive at `research/deep-dives/2026-05-27-agent-memory-cluster.m
 **LongMemEval-V2 (intake-612) as the updated eval target.** Reader = Qwen3.5-9B (CPU-viable), Insert/Query interface, 200K reader budget — the δ-mem / M.3 prototype can slot in as the Insert/Query implementation. **Caveat (decisive for scoping):** LME-V2 is web-agent-specific (WebArena/ServiceNow trajectories, multimodal screenshots) and needs those environments or pre-collected haystacks — it is **not** a drop-in replacement for the LoCoMo/MemoryAgentBench gates this handoff already uses (Phase 1 Gate 3 = LoCoMo, Gate 2 = MemoryAgentBench, CPU-infeasible). Treat LME-V2 as aspirational; the AgentRunbook-C paradigm it introduces (trajectories-as-files + coding-agent-in-sandbox + query-time manifest) maps onto our REPL + skill-bank + [[unified-trace-memory-service]] SQLite trajectory store and is a separate forward opportunity, not part of this handoff's gates. Recorded in `research-evaluation-index.md` P3.
 
 Cross-refs: `research/deep-dives/2026-05-27-agent-memory-cluster.md`, intake-610/611/612, [[internal-kb-rag]], [[unified-trace-memory-service]].
+
+## Progress checklist
+
+- [x] Phase 1 Gate 1 (adapter loads) + Gate 4 (CPU tractable, 5% overhead) PASS ✅
+- [x] Gate 3 LoCoMo N=5 smoke (1.65x, directional); magnitude inconclusive ✅
+- [ ] Gate 2 MemoryAgentBench accuracy reproduction - GPU-only (CPU-infeasible)
+- [ ] Gate 3 magnitude: wider LoCoMo eval (25-50 samples) - GPU-realistic
+- [ ] Phase 2: M.3 KV-Extension prototype on gemma4 worker_general, A/B vs SQLite B1
+- [ ] Phase 3: full delta-mem GGML op + cross-session persistent bank (gated on Phase 2)

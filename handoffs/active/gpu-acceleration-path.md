@@ -498,3 +498,12 @@ Batch intake of the AMD ROCm software stack, assessed against the active MI210 (
 - **intake-762** — the canonical `Dockerfile.rocm`/`Dockerfile.rocm_base` build recipe (two-stage base/app split; pins Triton `0f380657`, FA `0e60e394`, AITER `v0.1.16.post2`), but its base is ROCm **7.2.3** — ahead of our 6.2.
 
 **Recommended (operator-review):** build current vLLM from source against ROCm 6.2 with `PYTORCH_ROCM_ARCH=gfx90a`, expecting **no AITER acceleration** on gfx90a — as an independent GPU serving-throughput reference vs the working llama.cpp-HIP path. Delta from current approach: our production/working GPU path is llama.cpp-HIP (native ggml-cuda/rocWMMA/MFMA — Triton NOT on that critical path); this cluster is load-bearing only for the vLLM-on-MI210 evaluation and the agentic-rocm-kernel-authoring / rocm-verify-profile Triton arm (where ROCm/triton is the runtime oracle). Bookmark: NVFP4 Qwen3.6-27B (intake-756) is a GPU-native quant relevant here but Blackwell/Hopper-only — MI210 lacks FP4/FP8 tensor units.
+
+## Progress checklist
+
+- [ ] M0 zero-cost production MTP-acceptance log read (findings-02)
+- [ ] Gate R frontdoor residency bench under P-GPU-1
+- [ ] intake-310 -ot exps=CPU / --n-cpu-moe hybrid MoE offload probe on MI210
+- [ ] DFlash/DDTree HIP re-scope (CUDA/DGX pin stale, MI210=ROCm)
+- [ ] intake-460 Splitwise GPU-prefill/CPU-decode KV handoff (Family D)
+- [ ] intake-576 Nemotron tri-mode diffusion self-spec via torch-ROCm [unverified]

@@ -186,3 +186,11 @@ The "we'd need to write a fork patch" framing in earlier glm51 handoff text was 
 
 - **GLM-5.2 (754B GLM-MoE-DSA) is now the PRIMARY GLM target** (intake-699: unsloth dynamic quants of `zai-org/GLM-5.2`, MIT, 1M context; supersedes GLM-5.1). The DSA forward pass tracked here (**PR #21149**) is its **gating dependency**: `LLM_ARCH_GLM_DSA` currently only loads tensors → dense-MLA fallback (no Lightning Indexer / sparse fattn). **One DSA forward-pass implementation unlocks DeepSeek-V3.2 + the entire GLM-5.x family, including 5.2.** This strengthens the 2-models-for-1 leverage statement above into a multi-model-for-1 proposition (V3.2 + GLM-5.1 + GLM-5.2).
 - **Note**: #19460 is the **superseded** tensor-loading PR; **#21149 is the current forward-pass work** and the correct tracking target. GLM-5.2's storage is already viable via the unsloth UD-IQ2 dynamic quant (~238 GB, fits raid0 free) — DSA, not storage, is the blocker. See [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) "Research Intake Update — 2026-06-20" for the GLM-side disposition.
+
+## Progress checklist
+
+- [ ] D1 pull/build/smoke PR #21149 on EPYC (D1.6 quality + D1.7 throughput gated on inference approval)
+- [ ] D2 prompt-processing sparse-path follow-on PR (after D1 quality validated)
+- [ ] D3 AVX-512BW Lightning Indexer kernel (after D3.1 profile confirms compute-bound)
+- [ ] Weekly monitoring of PR #21149 to merge-readiness / caveat removal
+- [ ] GLM-5.2 (754B GLM-MoE-DSA) activation once DSA forward pass validated

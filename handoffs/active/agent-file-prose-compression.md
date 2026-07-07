@@ -217,3 +217,12 @@ Update `progress/2026-04/2026-04-30.md` after Phase 1 + 2 lands.
 
 - The custom rider explicitly disables `/caveman`'s persistence clause and replaces the auto-clarity exception with explicit block-level preserve rules. The two skills are siblings, not derivatives — the compression mechanism class is the same (drop-side prose compression), the deployment target is different (static text vs runtime stream), and the failure modes are different (hedge-stripping is a non-issue here, directive-polarity is the dominant new risk).
 - The user-driven framing during intake-509 deep-dive (2026-04-30) was: "would it make sense to use [/caveman] to compress the prose of agent files such that agents reading them can contextualize them more efficiently?" Plus: "It would be good to have this kind of testing as part of the model optimization pipeline when/if a model is to be deployed into orchestrator production stack." This handoff lifts both prompts into the deployment-gate framing in Phases 3-4.
+
+## Progress checklist
+
+- [x] Phase 1 skill + pilot artifacts (root 40d8348) ✅
+- [x] Phase 2 compliance suite + Phase 4 /new-model Step 6.5 (root 0467891) ✅
+- [x] Phase 3 per-model curve for local production stack (live_runner + 2026-05-07 summary) ✅
+- [ ] Decide Phase 5 roll-forward beyond ENGINEERING_STANDARDS pilot to all shared/*.md + role overlays
+- [ ] Optionally run n=30 expansion before broad compressed-artifact rollout
+- [ ] Apply operating points per decision-fork table (aggressive/medium/mild/none per role)

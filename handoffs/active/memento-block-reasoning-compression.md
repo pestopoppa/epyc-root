@@ -183,3 +183,12 @@ Ran all 5 tests against Qwen3-1.7B-Q8_0 (`llama.cpp-experimental/build-diff-test
 1. **Excessive generation**: Block masking can induce 3x more tokens on some problems (Figure 5c). Mitigation: block length cap (7K) + reasoning length alarm (Action 9).
 2. **Sliding-window incompatibility**: Models with sliding-window attention (Olmo-3) see minimal KV savings (0.85-0.93x). Our Qwen2.5/Qwen3 models use full attention — not affected.
 3. **SFT quality risk**: Fine-tuning already-trained reasoning models always risks degradation. Memento control runs (SFT on OpenThoughts without block annotations) show 2-5pp drops.
+
+## Progress checklist
+
+- [x] S1 llama.cpp block-masking feasibility + runtime validation (5/5 tests PASS, 2026-04-14) ✅
+- [ ] S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table)
+- [ ] S2 validation target: Qwen3-1.7B LoRA (promote/stop decision)
+- [ ] Install peft/trl; run memento_sft.py real Stage-1 job
+- [ ] S3 deployment integration (BLOCKED on S2 pass): wire block masking flag into orchestrator_stack.py
+- [ ] S3: Fold/Unfold toggle + short-m@k voting + Hadamard+q4_0 stacking
