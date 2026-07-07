@@ -10,6 +10,8 @@
 
 **Standing contracts**: `/workspace/MEASUREMENT.md` (adopted) · `instrument_eras.yaml` (epyc-orchestrator orchestration/) · ATTESTATION (to build, findings-04 §B) · current architecture review: [fable5-findings-00-executive-summary.md](../completed/fable5-findings-00-executive-summary.md) — **the Fable 5 one-shot review is COMPLETE (2026-06-12)**; its 7 findings (-01..-07) + appendix are the standing reference, not an open row. The stale 2026-06-15 transient pickup was archived to [`../archived/fable5-long-horizon-session-pickup-history-through-2026-06-20.md`](../archived/fable5-long-horizon-session-pickup-history-through-2026-06-20.md); resume from the domain indices and owning handoffs below.
 
+**Current coordination checkpoint - 2026-07-07T16:30Z**: N11 promotion-gate repair — 5 test failures resolved: `083e2736` (stale ingest topology fixture) and `91cb03bf` (`_role_result` fixture missing `tool_chains` attribute in seeding retry tests). Full promotion-gate `181 passed`, pipeline `summary: ok`. MI210 server reloaded on port `8600` with KV cache quantization (`-ctk q8_0 -ctv q8_0 -ctkd q8_0 -ctvd q8_0`). AutoPilot PID references before this checkpoint are historical.
+
 **Current coordination checkpoint - 2026-07-07T00:32Z**: F2/F3 quiet-window
 lab evidence collection produced real model-backed review rows and cleared the
 pending model-backed review queue. `handoff_freshness_lint` minted an accepted

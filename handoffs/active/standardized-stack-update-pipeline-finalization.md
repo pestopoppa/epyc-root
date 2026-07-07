@@ -230,6 +230,12 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   fallback compatibility explicit. The remaining gap is opportunistic expansion
   as new high-risk consumers are migrated rather than a missing end-to-end
   happy-path proof.
+- [x] Fix promotion-gate test failures: `test_seed_specialist_routing_main_and_retry.py`
+  had 4 failures — `_role_result` fixture missing `tool_chains` attribute that
+  `seed_specialist_routing.py:447` / `seed_specialist_routing_v2.py:423` access.
+  Orchestrator `91cb03bf` adds `tool_chains=[]` to the fixture. Combined with
+  the prior `083e2736` (stale ingest topology fixture expectation), full
+  promotion-gate is now `181 passed`, pipeline `summary: ok`. ✅ 2026-07-07
 - [ ] Keep direct benchmark, production launch, and AutoPilot preflight wired to
   the canonical gate; no new bypasses.
 
