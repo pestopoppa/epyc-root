@@ -110,3 +110,12 @@ Weighted real-task corpus summary + token completeness
 ## Reporting
 
 After completing a row, update the owning handoff, this index, `master-handoff-index.md` if priority changed, and `progress/YYYY-MM/YYYY-MM-DD.md`. Put measured artifacts in the owning repo and cite exact run directories or report filenames.
+
+## Progress checklist
+
+- [ ] HIGH N2 per-question ledger + sequential verdict readiness (evidence-plane-ledger)
+- [ ] HIGH N1+N4 evidence-plane instrument repair tails; W8 needs live promotion-eval evidence
+- [ ] HIGH Eval-tower EV-4/8/9/10; run EV-9 MD-9 A/B when inference scheduling permits
+- [ ] MED Tool-output compression P4c-P4e; repo-readiness remediation pickup; real-task eval distribution W3 ledger run
+- [ ] MED Granite embedder bench Phase B; RoPE K-ROPE-1 matrix (needs Gemma4 MTP serving fix)
+- [ ] LOW Reasoning-compression tails; monitoring-only watches (TQ3, YaRN, swarm/Strand, etc.)

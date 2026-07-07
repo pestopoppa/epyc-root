@@ -605,3 +605,13 @@ These handoffs are tracked in other indices but have cross-cutting impact here:
 | Debug suite pool | `epyc-inference-research/benchmarks/prompts/question_pool.jsonl` |
 | Model registry (lean) | `epyc-orchestrator/orchestration/model_registry.yaml` |
 | KV cache config | `epyc-llama` production branch (`--kv-hadamard` flag in `orchestrator_stack.py`) |
+
+## Progress checklist
+
+- [ ] P0 Evidence-plane readiness & authority gates - W8 open until fresh promotion-eval evidence + sequential confirmation
+- [ ] P0 Stack-change / model-stack SSoT contract upkeep; broaden swap-CI on new witness surfaces
+- [ ] P1 (READY) Offline reward-oracle eval - collect balanced cross-action preference rows, re-run pairwise-ranker holdouts
+- [ ] P1 Routing canaries / classifier rollout - gated on enforce-arm factuality lift
+- [ ] P1 Dynamic stack / within-role placement / shape-keyed contention quiesce-window probes
+- [ ] P2 Delegation/context/edit harness (DCP-5/J7, BEP, internal-interaction P2 bake)
+- [ ] P2/P3 Research-derived routing experiments (DAR/tri-role/OC frozen), web/search + PromptForge tails, gated Fusion/AB-MCTS design

@@ -75,3 +75,7 @@ observation and gates nothing.** Persist to
 `handoffs/active/fable5-window2-findings-02-heterogeneous-gpu.md` as a supplement (or a new
 `findings-05-mi210-inference.md`), leave a progress note, and close with a self-critique of the weakest
 link. If the highest-value thing you can say is that this whole framing is wrong, say that first.
+
+## Progress checklist
+
+- [x] Focus-injection brief authored (consumed by findings-05b) ✅

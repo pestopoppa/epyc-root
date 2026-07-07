@@ -292,3 +292,7 @@ This lane is **not standalone** — it is one point on the "**is added reasoning
 ## Notes
 
 All model-fit sizes and the MTP/tokenizer facts are from the 2026-07-04 research-intake deep-dive (sub-agent, HF public API + GGUF header parse, no full downloads). No inference was run to create this handoff. Handoff creation was directly operator-requested this session.
+
+## Progress checklist
+
+- [x] Study complete 2026-07-06 - pure-GPU research screen closed; retained as evidence record ✅

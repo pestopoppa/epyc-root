@@ -41,3 +41,7 @@ Acceptance to proceed to kernel work: a candidate path shows **high VALUBusy + l
 
 ## Key files
 `ggml/src/ggml-cuda/mmq.cu` (MMQ-MFMA batched GEMM), `ggml/src/ggml-cuda/fattn*` (attention), `gated_delta_net.cu` (the decode kernel that was KILLED — reference for the memory-bound contrast). Prior profile: `/mnt/raid0/llm/tmp/mi210-build/campaign/finish/RESULTS.md` (Part B).
+
+## Progress checklist
+
+- [ ] DEFERRED (with data): reopen MFMA build only if a new compute-bound path appears (measurement gate failed both paths)

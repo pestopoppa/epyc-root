@@ -211,3 +211,11 @@ After Phase B completes, update:
 - Active handoffs: internal-kb-rag, colbert-reranker-web-research, searxng-search-backend, minddr-deep-research-mode, searxng-bash-websearch-bridge
 - Existing infra: `/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/parallel_embedder.py` (BGE-large pool)
 - llama.cpp ModernBERT support: `/mnt/raid0/llm/llama.cpp/convert_hf_to_gguf.py:12452`
+
+## Progress checklist
+
+- [x] Phase A-fast corpus + dry-run harness (2026-06-20) ✅
+- [x] GGUF conversion/quantization for Granite/e5-base/BGE-M3 (2026-07-03) ✅
+- [ ] Embedder load/vector smoke for warm recipes on ports 8096/8097/8098
+- [ ] Phase B throughput + quality/NDCG execution (needs inference window)
+- [ ] Phase C decision + update internal-kb-rag / colbert-reranker / searxng handoffs

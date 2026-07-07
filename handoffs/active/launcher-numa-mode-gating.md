@@ -72,3 +72,8 @@ Implementation sketch:
 - `progress/2026-05/2026-05-08.md` § session 2 — original discovery
 - `project_worker_general_swap_2026_05_08` memory — the swap that exposed the issue
 - `project_gemma4_mtp_launch_recipe` memory — launch parameters that must match per-instance
+
+## Progress checklist
+
+- [x] Flag implemented + default decision resolved (2026-07-05) ✅
+- [x] All three acceptance criteria MET (orchestrator 01d14301) ✅

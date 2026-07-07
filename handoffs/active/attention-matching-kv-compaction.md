@@ -265,3 +265,11 @@ Online compaction (repeated 50% compactions preserving reasoning state) opens a 
 - **[intake-554] PBKV** (arxiv:2605.06472, Zheng et al.) — **strongest orchestrator-stack match**. Workflow-level prediction of next-agent invocation drives KV residency. 1.85× over LRU on dynamic workflows. Maps directly onto frontdoor → coder/worker hand-offs where shared long prompts pay BW-bound re-prefill cost on EPYC. Requires a tiny next-agent predictor + llama.cpp prefix-cache hooks; complements frozen GGUF weights.
 
 **Net update to this handoff's roadmap**: KV reduction now has four distinguishable axes — write-time vs read-time selection (SP-KV vs H2O family), per-head vs uniform budget allocation (LU-KV/ForesightKV), workflow-aware vs request-local residency (PBKV), and learned vs heuristic (KVP/SP-KV/ForesightKV vs sink+window). The clearest near-term EPYC opportunity is **PBKV's workflow-aware residency** because it operates at the orchestrator layer (no attention-kernel surgery, no fine-tuning) and matches our frontdoor→worker hand-off pattern.
+
+## Progress checklist
+
+- [x] P1 port HighestAttnKeys-fast + L1-L4/L4b native llama.cpp integration merged (81c9ad1ec, 7784b3d9c) ✅
+- [ ] P2 refresh validation against current-stack long-context/coding workload (Qwen3.6-era + Coder-32B), inference-window-gated
+- [ ] P3 compare AM quality vs Expected Attention at 5x/10x/20x
+- [ ] P4 test AM + Hadamard q4_0 stacking quality under dual compression
+- [ ] Deferred L4c: true NNLS attention scoring (graph modification) - not yet needed

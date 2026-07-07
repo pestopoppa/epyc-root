@@ -529,3 +529,7 @@ Build environment additions (one-time):
 - CPU2 kernel handoff: `handoffs/active/cpu-shape-specialized-gemv-decode.md`
 - CPU15 EP handoff: `handoffs/active/large-moe-expert-parallelism.md`
 - CPU1 baseline analysis: memory `project_cpu1_phase13_v1.md`, `project_cpu1_software_levers_exhausted.md`
+
+## Progress checklist
+
+- [x] Reference flag inventory maintained (launcher audit closed 2026-06-14, no corrective change pending) ✅

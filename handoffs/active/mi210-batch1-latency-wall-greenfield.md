@@ -57,3 +57,7 @@ One persistent kernel per decode step (or the whole step) that keeps the pipelin
 
 ## Key files
 `ggml/src/ggml-cuda/mmvq.cu` (the GEMV to pipeline), `ggml/src/ggml-cuda/ggml-cuda.cu` (op dispatch + where a persistent op would hook the graph), `ggml/src/ggml-cuda/common.cuh` (CDNA2 defines). Prior profiles: `/mnt/raid0/llm/tmp/mi210-build/campaign/{prof,gdnprof,finish}/`.
+
+## Progress checklist
+
+- [x] All three levers resolved with data (prefetch +3.3% ceiling, swizzle NOT warranted, megakernel ruled out) ✅

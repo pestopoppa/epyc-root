@@ -403,3 +403,12 @@ Either is cheap and unblocks the substrate decision. The 5-sub-decision episodic
 - Orchestration-trace survey: `https://arxiv.org/abs/2605.02801`
 - Tree-GRPO: `https://arxiv.org/abs/2509.21240`
 - Related handoffs: `meta-harness-optimization.md`, `halo-trace-loop-spike.md`, `repl-turn-efficiency.md`, `tri-role-coordinator-architecture.md`, `unified-trace-memory-service.md`
+
+## Progress checklist
+
+- [x] Step 1 ReDel pre-flight gate - 4/4 PASS ✅
+- [x] Step 2 paired A/B (Path-1 + force-delegate Path-2) executed - ambiguous/parity ✅
+- [x] Step 3 pre-work: 5-sub-decision taxonomy wired into episodic store (local branch, not pushed) ✅
+- [ ] Run a naturally-delegating workload A/B (HotpotQA/DeepDive or small base model) before Step 3 escalation
+- [ ] Operator decision: push/PR the sub-decision-taxonomy feature branch
+- [ ] Step 3 conditional substrate replacement (~400-800 LoC) - gated on delegation-positive re-test

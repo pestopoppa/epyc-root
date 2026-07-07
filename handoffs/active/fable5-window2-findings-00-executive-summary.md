@@ -48,3 +48,7 @@ You built the evidence plane I designed last window, and the deepest thing I can
 3. **R7+R8+R9 in sequence**: ratify P-GPU-1, build HIP in the canonical tree, run the frontdoor residency bench — the single measurement that forks the entire GPU program.
 4. **R2**: rebuild core_v2 difficulty from the live ledger (zero inference) and retire the repeat-flip protocol.
 5. **R17**: apply the queue rewrite so the portfolio stops waiting on gates that already opened.
+
+## Progress checklist
+
+- [x] Executive-summary deliverable produced (R1-R18 recommendations recorded) ✅

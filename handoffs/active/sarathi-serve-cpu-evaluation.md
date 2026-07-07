@@ -131,3 +131,7 @@ For multi-tenant scenarios (not our current deployment): the Sarathi trade-off M
 - This handoff is a **direct outcome** of the 2026-04-26 research-intake batch (intake-458 to 472). The Tier 2b critique of disaggregated serving (recorded in intake-459/460/472 `contradicting_evidence` fields) flagged Sarathi-Serve as the natural CPU-appropriate alternative.
 - Surface this stub via [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) ⚑ START HERE block (CPU17).
 - Independent of L3aaN reboot — can be picked up before, during, or after.
+
+## Progress checklist
+
+- [ ] DEPRIORITIZED: re-promote on workload shift to multi-tenant API / prefill-heavy serving (NOT empirically closed for multi-tenant)

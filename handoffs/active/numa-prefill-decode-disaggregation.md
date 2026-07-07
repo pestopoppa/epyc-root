@@ -70,3 +70,7 @@ If Phase 0 passes: proceed to Phase 1 (single-prompt prototype with manual KV mi
 - User flagged disaggregation as the "most interesting finding" of the 2026-04-26 intake batch, motivating this stub. Tier 2b critique surfaced after that flag; this stub records the qualified scope honestly.
 - Do NOT propagate the 4.48× / 1.4× / 525% headline numbers from DistServe / Splitwise / Mooncake without the workload caveats above. Those are goodput-under-SLO multi-tenant GPU numbers, not transferable defaults.
 - Closely related: [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) Phase F (KVCOMM) is the existing closest-analogue work and should be the integration point if this stub advances past Phase 0.
+
+## Progress checklist
+
+- [ ] BLOCKED: feasibility-gated (xGMI KV-transfer falsification); reopen on multi-tenant shift

@@ -72,3 +72,12 @@ Context compression or tool-output changes
 ## Reporting
 
 After completing a row, update the owning handoff, this index, and `progress/YYYY-MM/YYYY-MM-DD.md`. If the work changes orchestrator API behavior, also update `routing-and-optimization-index.md`.
+
+## Progress checklist
+
+- [ ] Reference non-Hermes client live --send/streaming validation (quiet window)
+- [ ] Hermes upstream pin bump + breaking-change audit + smoke
+- [ ] Subagent + single-slot llama-server validation (controlled inference)
+- [ ] Multi-user auth flow (deferred while single-user)
+- [ ] repl-turn-efficiency S4 Omega A/B measurement gate
+- [ ] tool-use-eval-contract native-tools sentinel/parity + cost-aware delegation

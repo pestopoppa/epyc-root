@@ -144,3 +144,7 @@ Current health-check is per-instance curl of `/health`. At 48 instances that's 4
 
 ## Changelog
 - 2026-04-24 — created; initial notes from 48×4t NPS4 measurement session
+
+## Progress checklist
+
+- [x] Topology reference notes recorded (not an implementation queue) ✅

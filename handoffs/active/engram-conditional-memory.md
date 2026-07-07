@@ -369,3 +369,11 @@ After any phase of either track:
   - **Design principles to fold into any Track B frozen-backbone retrofit:** (1) n-gram embedding scaling is a sparsity axis **orthogonal to MoE** with superior Pareto at high sparsity; (2) **width amplifies / depth diminishes** the embedding-scaling advantage; (3) embedding params should be **≤50% of total**; (4) n-gram sub-table vocab must **deviate from integer multiples** of the base vocab (polynomial-rolling-hash collision rule); (5) device-side **N-gram Cache** kernels + **Eagle3 3-step** speculative decoding realize the sparsity as speedup (draft uses a conventional embedding to bypass n-gram lookup).
   - **Delta from current approach:** the architecture is a *pretraining* choice (not retrofittable onto our GGUF production models) and all numbers are GPU-measured (8×H800) — so this is **adopt_patterns** (scaling-law justification for Track B), not a deployable technique. n-gram-embedding-in-host-DRAM remains a fit for our 1.1 TB DDR5 / 460 GB/s node (Track B thesis).
   - **⚠ Contradiction to carry forward:** the paper's chat **MATH500 = 96.8%** is contradicted by our Q4_K_M CPU eval of LongCat-Flash-Lite (**math 0/6 STRUCTURAL**, intake-502/504). Treat the paper's downstream numbers as observations, and re-check whether the gap is quant penalty vs harness/structural (per feedback_verify_test_method_before_calling_it_a_bug).
+
+## Progress checklist
+
+- [x] Track A LongCat CPU probe closed NEGATIVE (Phases 0-6 complete, deep-dive + intake-504 recorded) ✅
+- [x] Track B Phase 0a non-inference prep (vendored module, zero-init, identity test, splicing helper) ✅
+- [ ] Track B Phase 0b: rent/allocate GPU (or MI210 smoke) and run frozen-vs-cotrained proxy on SmolLM-1.7B (~$50-150)
+- [ ] Track B Phase 0b: build canonicalizer, train both configs on 5-20B tokens, compute >=30% recovery-ratio gate
+- [ ] If gate B0 passes: file engram-retrofit-qwen36-spike.md and proceed to Phase 1-4 Qwen3.6 surgery

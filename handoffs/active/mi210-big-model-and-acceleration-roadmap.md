@@ -35,3 +35,12 @@ Keep the big targets CPU-resident; host fast drafters on the MI210 for spec-dec.
 
 ## Cross-links
 [summary](mi210-speed-campaign-summary.md) · [findings-05b](fable5-window2-findings-05b-mi210-inference-architecture.md) (Gate R, GPU-draft §7) · [findings-05c](fable5-window2-findings-05c-mi210-lever-category-matrix.md) · [fable5-window2-mi210-focus-injection.md](fable5-window2-mi210-focus-injection.md) (parent MI210 focus). **Established work this thread must connect to:** [glm51-reap-cpu-evaluation.md](glm51-reap-cpu-evaluation.md) (**REAP-on-GLM *methodology* precedent only** — it's a GLM-**5.1**-555B eval, and 5.1 is SUPERSEDED by GLM-5.2; use it for the REAP *technique* + the "a REAP'd GLM shrinks to fit" finding, NOT as the current target. **GLM-5.2 (~238 GB UD-IQ2) is the real endgame** — tracked via intake/`project_unsloth_iq2_large_moe_storage`, DSA-gated PR#21149; no dedicated GLM-5.2 residency handoff exists yet), [gpu-acceleration-path.md](gpu-acceleration-path.md) (**CPU+GPU hybrid inference** — the offload machinery's home), [angelslim-techniques-evaluation.md](angelslim-techniques-evaluation.md) (**sub-2-bit quant + reasoning speculative-exit** — the quantize axis), `large-moe-expert-parallelism.md` (bit-correct EP), `gpu-drafter-mi200-investigation.md` (drafter-farm), [gpu-cot-scaffold-sidecar.md](gpu-cot-scaffold-sidecar.md) (text-level N5-sidestep), `fable5-window2-findings-02-heterogeneous-gpu.md` (Gate R). Domain index: [inference-acceleration-index.md](inference-acceleration-index.md).
+
+## Progress checklist
+
+- [x] Gating experiment 3: 122B IQ2 eval-parity (PASSED judge-free d0.0pp 2026-07-05) ✅
+- [ ] Gating experiment 1: expert-routing-skew profile (Zipfian? -> offload/REAP viability)
+- [ ] Gating experiment 2: GPU-draft N5 feasibility vs native MTP
+- [ ] Probe gemma4-IQ4 mid-precision residency
+- [ ] Axis B: measure alpha (drafter->target) for quant-asymmetric self-spec
+- [ ] GLM-5.2 endgame: expert-offload / REAP+IQ2 path (operator-gated)

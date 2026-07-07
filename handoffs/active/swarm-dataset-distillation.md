@@ -132,3 +132,7 @@ The single largest design decision. The narrow domain governs every downstream c
   - Relevance: Conceptual neighbor — sigmoid-gated auxiliary OPSD layered on GRPO RL for multi-turn agent training. Different problem than swarm dataset distillation but adjacent training-side primitive.
   - Reported results: +9.4% ALFWorld / +7.0% Search-QA / +10.2% WebShop-Acc over GRPO (Qwen2.5/3 families).
   - Delta from current approach: Swarm-dataset-distillation focuses on data assembly for downstream model improvement, not on policy training. SDAR documented here as a forward pointer for if/when a future agent-RL training track materializes (e.g. via cloud-GPU rental). No current action; keep on the parked-reference list.
+
+## Progress checklist
+
+- [ ] BLOCKED: gated on strand-rust-coder-rustevo2-verification Phase B Pass@1

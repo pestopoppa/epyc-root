@@ -367,3 +367,12 @@ Each phase ships behind an env flag, default-on after its gate passes. Rollback 
 - `handoffs/active/inference-acceleration-index.md` § Cross-Reference Map — within-role KV dispatcher registered alongside KVCOMM cross-instance KV sharing (different scope; this handoff is single-server within-role, KVCOMM is cross-server).
 - `handoffs/active/master-handoff-index.md` § Cross-Index Dependencies — within-role placement affects autopilot throughput observed in inference-acceleration-index gates.
 - `handoffs/active/bulk-inference-campaign.md` **§ Package J** (added 2026-05-26) — wires this handoff's inference-gated WPs (J1=WP-2 gate, J2=WP-3 verification, J3=WP-4 verification, J4=WP-5 ratification observability, J5=WP-6 matrix re-bench, J6=WP-7 production rollout). J1-J3 are flagged priority-zero in Package J's execution order: enabling them first raises every downstream Package's effective concurrency.
+
+## Progress checklist
+
+- [x] WP-0..WP-5-scaffold implemented + merged to main (behind flags, defaults off) ✅
+- [x] J1/J2/J3/J5 gate verifications + WP-7 per-role policy ratified ✅
+- [ ] WP-6 / WP-7 full ratification - inference-gated, awaiting operator approval + measurement
+- [ ] WP-5 full ratification and WP-3/WP-4 gate verifications - inference-gated
+- [ ] Higher-sample (>=8) vision_escalation re-bench to ratify clean allow (current 5/8 pairs cv>5%)
+- [ ] Wire missing Prometheus migration counters (kv_migration_direction_total, thrash_skipped) or verify observable evidence

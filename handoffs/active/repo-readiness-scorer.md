@@ -402,3 +402,12 @@ Validation:
 
 - Anti-false-positive discipline (shared across Factory's review/scoring features): a criterion passes only on a concrete, verifiable check — mirrors our eval-tower verifier philosophy.
 - Cross-refs: `eval-tower-verification.md` (rubric discipline), `autopilot-continuous-optimization.md` (remediation loop), `claude-md-accounting` skill (governance coverage = a Documentation-pillar input), CLAUDE.md repo-map.
+
+## Progress checklist
+
+- [x] v1 deterministic scorer + tests landed ✅
+- [x] remediation queue / advisory MD / passive AutoPilot pickup / candidate-eval-gate / default-off advisory bridge live ✅
+- [x] epyc-root, epyc-orchestrator, epyc-inference-research all at Autonomous/L5 ✅
+- [ ] Close remaining root L5.self_optimizing_loop gap (13-item queue)
+- [ ] Bring epyc-llama Standardized/L3 -> L4 (incremental_validation, generated_docs, health_automation, analysis_reports, security_audit, replay_analysis)
+- [ ] Repair stale epyc-llama GitNexus index (narrow .gitnexusignore) before editing llama readiness docs

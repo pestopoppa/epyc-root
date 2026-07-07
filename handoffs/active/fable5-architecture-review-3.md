@@ -217,4 +217,4 @@ wrong — say that first.**
 
 ## Progress checklist
 
-- [x] Review brief authored (input prompt for a one-shot Fable 5 consult, not a task tracker) ✅
+- [x] Review brief authored - duplicate of review-2 (candidate for de-dup) ✅

@@ -94,3 +94,7 @@ All edits above are on branch `spec-dec-mtp-refresh-2026-06-22` and are **uncomm
 - **The CPU realistic-ceiling (~25–30%)** is an estimate extrapolated from a dense reference, not an MoE-measured bound — the frontdoor "~49% of ceiling" headroom rides on it.
 - **The sweep is index/intake-grounded, not full-handoff-grounded** — a deciding fact wrong *in an intake entry* propagates; the applied un-stalings were each verified against the owning handoff's actual gate line, but the P3 folds were not.
 - **What would most change the recommendations**: measurement #1 showing quantized MoE *not* amortizing under batch (→ the gfx90a dequant kernel jumps to high-ROI for throughput too, not just latency); the canonical CPU bench showing iqk decode-neutral on the worker as well (→ the CPU story becomes prefill-only + the frontdoor-fusion lever is the *only* decode lever).
+
+## Progress checklist
+
+- [x] Intake-sweep findings deliverable produced (edits applied across 11 handoffs) ✅

@@ -158,3 +158,12 @@ Phase 2 GPU training is explicitly gated on DGX Spark acquisition (`project_dgx_
 - Li Auto commercial context: internal benchmark selection may be tuned to their deployment
 
 Before committing to Phase 2 training recipe, run WebSearch for "MindDeepResearch reproduction" / "MindDR Bench criticism".
+
+## Progress checklist
+
+- [x] MD-1..MD-8 Phase 1 scaffold (flag, classifier, prompts, pydantic_graph, rubric, sentinel suite - DONE 2026-04-22) ✅
+- [ ] MD-9 A/B test sentinel suite with deep_research_mode 0/1 (>=+5pp gate, INFERENCE-GATED)
+- [ ] Request-dispatcher 1-line wiring (feature_flag && is_research_like -> run_minddr) once MD-9 passes
+- [ ] EV-9 multi-dimensional rubric scoring (handed to eval-tower; needed for non-structural MD-9)
+- [ ] Phase 2 MD-10..MD-13 four-stage RL (GPU-gated, deferred)
+- [ ] Phase 3 MD-14 architect role refactor (conditional on durable >=5pp uplift)

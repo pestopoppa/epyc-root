@@ -134,3 +134,11 @@ After spike completion, update:
 - Deep-dive: `/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md`
 - Intake entries: intake-516, intake-517, intake-518, intake-153 (RLM foundational, already_integrated)
 - Active handoffs: meta-harness-optimization, autopilot-continuous-optimization, unified-trace-memory-service, eval-tower-verification
+
+## Progress checklist
+
+- [x] HALO-2 OTel converter + tests LANDED 2026-05-27 ✅
+- [ ] HALO-1 pip install halo-engine==0.1.2 in throwaway venv (operator-gated, supply-chain block)
+- [ ] HALO-3 Day-1 falsification gate against local llama-server (operator-gated, needs autopilot paused)
+- [ ] HALO-4 manual pattern lift into existing scoped handoffs (only on >=3/4 go)
+- [ ] HALO-5 spike close-out doc with scorecard / not_actionable reasoning

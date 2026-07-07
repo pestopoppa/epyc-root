@@ -394,3 +394,7 @@ See `gpu-drafter-mi200-investigation.md` § Research Intake Update for the full 
 - **[intake-741] DFlare** ("Scaling Up Draft Capacity for Block Diffusion Speculative Decoding", arXiv 2606.02091; PKU + Tencent AngelSlim) — verdict: **worth_investigating** (GPU-track).
   - Relevance: layer-wise fusion lifts DFlash draft capacity (+5-11% over DFlash on GPU); ships in Tencent/AngelSlim, the toolkit `angelslim-techniques-evaluation.md` already mines.
   - **DISAMBIGUATION**: DFlare ≠ our closed **DFlash-on-Q4_K_M** (a different technique; our `dflash-block-diffusion-speculation.md` already concluded block-diffusion drafting NET-NEGATIVE on CPU at 0.3-1.4% acceptance). DSpark's "+16-18% over DFlash" is a GPU acceptance-length claim, not our CPU-throughput axis. Track for the MI210 GPU path only; cf. the diffusion-LLM-drafting competing-approach note in §Phase 2.
+
+## Progress checklist
+
+- [ ] BLOCKED: no MoE verifier consumer; reopen chained to fable5 G1/N5

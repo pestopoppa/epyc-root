@@ -84,3 +84,11 @@ Landing the floor first **changes the rank-order** of the cluster priorities, po
 - StreamingLLM reference impl: `https://github.com/mit-han-lab/streaming-llm`
 - Steele falsification (sink+window beats learned scoring): `https://arxiv.org/abs/2601.14279`
 - Related handoffs: `attention-matching-kv-compaction.md`, `triattention-kv-selection.md`, `summary-token-attention-readiness.md`, `multiscreen-attention-evaluation.md`, `../completed/llama-cpp-fork-rebase.md`
+
+## Progress checklist
+
+- [x] StreamingLLM sink+window scaffold landed in epyc-llama (commit 632ce0f92, disabled by default) ✅
+- [ ] Run 4-axis inference sweep: 3 workloads (retrieval/reasoning/dialogue) x 3 budgets (25/50/75%) x 2 models
+- [ ] Evaluate success criteria (<=10% loss at 50% budget, <=25% at 25%) per-workload, track per-head attention entropy
+- [ ] Apply cluster-prioritization gate: demote LU-KV/KVP/ForesightKV or promote LU-KV based on floor
+- [ ] Resolve user questions: K_sink/K_win sweep values, F16 KV scope, PBKV order-of-operations

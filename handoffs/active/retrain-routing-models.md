@@ -115,3 +115,13 @@ export ORCHESTRATOR_SKILLBANK=1
 **This retrain is NOT short on labels.** The live `episodic.db` already holds **52K+ labeled routing memories**; the real blocker is **missing BGE embeddings** (FAISS was reset; `reembedded.npz` is a frozen 2026-04-15 snapshot). The lollms dataset cannot fix an embedding gap, and it's the wrong surface: it's generative-router SFT *text* (per-row candidate-list → index+rationale), while our controller is a discriminative **BGE-embedding MLP** (1031-d feature → 8 roles). Its "relabel to 5 roles" is structurally infeasible — the label is a *prompt-relative index into a per-row candidate list*, with no stable model→role map — and synthetic labels would pollute the Q-grounded store. **Unblock path = operator BGE re-embed** (`repair_episodic_embeddings.py --repair` → `extract_training_data.py` → `train_routing_classifier.py`), not lollms. Keep lollms parked only as a TTT-synthesis / generative-router reference. Full: `research/deep-dives/2026-06-12-lollms-smart-router-dataset.md`.
 
 ### 7. Delete this handoff
+
+## Progress checklist
+
+- [x] Step 1 verify memory/embedding health - HEALTHY post BGE repair ✅
+- [x] Step 2 retrain MLP classifier - 81.0% val acc, staged to routing_classifier_weights.npz ✅
+- [x] Step 3 verify wiring - passed (attest still routing_classifier=false, staged not live) ✅
+- [x] clean-window rollout harness + enable/attest/rollback bracket (orch fe270b48) - passed, rolled back ✅
+- [ ] Operator decision: run a --keep-enabled bracket to actually enable live routing
+- [ ] Step 4/5 GAT + SkillBank retrains - only if Fable 5 freeze gate (DAR-1 regret >=5%) justifies
+- [ ] Step 7 delete handoff once complete

@@ -54,3 +54,12 @@ Same `gfx90a` ISA **predicts compile compatibility, not performance equivalence.
 - After any work: update the **Current Decision Snapshot** here + the deep dive; log progress in `progress/YYYY-MM/`.
 - **At every audit of this handoff, run the GEAK-family freshness sweep** in the deep dive §9 (GEAK repo pin/tag drift; missing gfx90a evidence for 677/678/679; AgentKernelArena leaderboard + GEAK-vs-general A/B; new AMD-native siblings on `AMD-AIG-AIMA`/`AMD-AGI`).
 - **Done this session:** GEAK repo state recorded (HEAD `c8bfc19`, tags →`v4.8.3.3`, branches GEAK-v2/GEAK-HIP); AgentKernelArena ingested (intake-679). **Next intake candidates** if they appear: a GEAK-v2 arXiv, a GEAK-HIP open benchmark, the AgentKernelArena leaderboard.
+
+## Progress checklist
+
+- [ ] Reproduce GEAK-eval (intake-674) on gfx90a MI210 - compile+correctness+timing round-trip (first sanity gate)
+- [ ] Write P-GPU-1 measurement protocol before any GPU runs
+- [ ] Register controllers (Claude+Codex, EvoEngineer, KernelFoundry, K-Search, Xe-Forge, GEAK) as AgentKernelArena adapters and A/B on gfx90a
+- [ ] Build C4 gfx90a profiler-metric analyzer (GEAK-v2 raw-rocprof path first)
+- [ ] Build C6 anti-reward-hacking layer (robust-kbench + AgentKernelArena unseen-shape)
+- [ ] Run GEAK-family freshness sweep (deep-dive s9) at each audit

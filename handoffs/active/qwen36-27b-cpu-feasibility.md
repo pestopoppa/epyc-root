@@ -105,3 +105,11 @@ After P1 completes, append measured numbers + comparison to baselines under a "R
   - Key external finding: Qwen3.5-27B-DFlash drafter loads on Qwen3.6-27B unchanged (identical `Qwen35` identifier, layer/head dims). Cross-version drafter portability across the dense-FFN hybrid family.
   - Reported results (RTX 3090): 207.6 tok/s peak Q4_K_M (5.46× vs autoregressive); 128K context Q4_0 sustained 134.78 tok/s; cross-version acceptance length 5.05 (3.5-drafter on 3.6) vs 9.18 (3.5-drafter on 3.5).
   - Delta from current approach: **no change to this handoff's CPU plan**. Bookmarked alongside intake-455 in `gpu-acceleration-path.md`. Promotes only when GPU hardware arrives. Reinforces the architectural-foreclosure note in §"Architecture clarification" — speedup mechanism is parallel-scan + tree verification, neither available on EPYC CPU decode.
+
+## Progress checklist
+
+- [x] P3 record explicit CPU spec-dec no-go (GDN verification wall) ✅
+- [ ] P1 CPU throughput probe (single-instance + NUMA-4-way) on Qwen3.6-27B Q4_K_M - inference-blocked
+- [ ] P2 coder-escalation quality A/B vs Qwen2.5-Coder-32B on agentic-coding harness - inference-blocked
+- [ ] After P1: append measured throughput + baseline comparison (Results - P1 section)
+- [ ] After P2: append agentic-coding score table; propose registry swap if gates pass

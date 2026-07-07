@@ -280,3 +280,12 @@ re-use as evidence): `data/bep_sandbox/results-readfix7/`.
 `feedback_no_concurrent_inference`: J6 (autopilot soak) is the only inference load. Any run must pause J6
 first + needs operator host-quiet approval; restore J6 afterward. The `:8070` backend outage that
 contaminated `results-readfix7` is itself a reminder to preflight backend health before scoring.
+
+## Progress checklist
+
+- [x] Diagnosis: protocol/tooling gap not capability (one-shot ablation 5/5) ✅
+- [x] edit_transaction module + force_mode=edit wiring + 5-point hardening (built/validated 2026-05-27) ✅
+- [x] Explicit target-file selection (994f168) + functional-verifier-in-loop (2026-06-28) ✅
+- [ ] Production rollout decision: when/how routine coding edits auto-route to edit-mode
+- [ ] Clean-window A/B evidence: >=50 routine edit tasks, quality/reliability/speed gates
+- [ ] Promote edit_transaction_auto_routing row from actionable_by=operator toward autopilot

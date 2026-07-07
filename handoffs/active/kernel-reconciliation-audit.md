@@ -139,3 +139,7 @@ Sources skimmed: `handoffs/active/fable5-window2-findings-05c-mi210-lever-catego
 
 - `git -C … worktree list`, `branch -a --format`, `merge-base [--is-ancestor]`, `rev-list --count`, `log --oneline --no-merges A..B`, `show --stat`, `diff --name-only`, `diff --stat`, `status --porcelain`, `stash list`, `cat-file -t`, `ls-files`.
 - No `checkout`, `commit`, `merge`, `stash push/pop`, build, or inference issued.
+
+## Progress checklist
+
+- [x] Read-only reconciliation audit produced (no epyc-root code action) ✅
