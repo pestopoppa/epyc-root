@@ -1,6 +1,6 @@
 # Internal Interaction Lifecycle
 
-**Status**: P1 lifecycle substrate landed 2026-06-28 in `epyc-orchestrator` `18956892`; P2 edit-transaction consult wiring is staged default-off as of 2026-07-05 (`0e555822`), but P2/J17 live behavior remains gated on the P1 regression bake + cross-role contention bake
+**Status**: P1 lifecycle substrate landed 2026-06-28 in `epyc-orchestrator` `18956892`; P2 edit-transaction consult wiring is staged default-off as of 2026-07-05 (`0e555822`); the P1 bake gate cleared 2026-07-07, and P2/J17 live A/B evidence now says **HOLD / do not enable by default**
 **Priority**: P0 for substrate cleanup; downstream of intake-655 deep-dive
 **Created**: 2026-05-31
 **Owning index**: [`routing-and-optimization-index.md`](routing-and-optimization-index.md)
@@ -203,6 +203,17 @@ INTERACTION_POLICY_VERSION = "1.0"
 - Contention tax not visible: `worker_general` decode p50 within ±5% pre vs post
 - Advice cache hit rate ≥ 10% on repeated identical-shape edits within a 1h window
 - All six invariants (I1–I6) hold under P2 traffic
+
+- [x] **P2/J17 live evidence collected** ✅ 2026-07-07. Artifact:
+  `epyc-orchestrator/orchestration/reports/internal_interaction_j17_ab_20260707T011136Z/`.
+  The 50-turn-per-arm live A/B repeated the current 5-task BEP sandbox slice
+  10x. Baseline and consult both passed `40/50` (`quality=0.800`, delta
+  `0.0pp`), but consult added latency (`coder_wall_p50` `2.839s` vs `2.316s`,
+  `+22.58%`), produced `50/50` successful consultant calls, requested `0`
+  reruns, and had `0.0` cache-hit rate. Conclusion: the default-off
+  `review_before_commit_consult` seam works mechanically, but the J17 gate is
+  **not promotion-positive**; keep default-off and do not advance to P3
+  enforcement from this evidence alone.
 
 ### P3 — Consult gating policy, shadow first
 
