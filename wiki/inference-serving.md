@@ -2,7 +2,7 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-07-05
+**Last compiled**: 2026-07-07 (E1 dense-control sweep, eval-batch serving activation smoke-passed)
 **Sources**: 50 documents
 
 ## Summary
@@ -16,6 +16,16 @@ The orchestrator uses a hierarchical configuration system with 15 independent fe
 Recent architectural improvements include REAP MoE expert-pruning evidence for the now-retired coding-architect path, attention-matching KV compaction (L1-L4 merged to production-consolidated-v3), and concurrent inference sweeps that determined optimal -np settings per role (frontdoor gets np=2, dense models stay at np=1 due to p95 latency degradation).
 
 ## Key Findings
+
+### New (2026-07-07 — E1 dense-control sweep completed; eval-batch serving activation window smoked and rolled back cleanly)
+
+> **Review flag (project-wiki writer-evidence policy):** model-compiled, not adopted until human or measured review. Sweep numbers below are observations without decision-gating protocol citations.
+
+- **E1 dense-control sweep now has useful-but-not-pristine evidence for the 27B dense model.** The `qwen36_27b_q8` P-BENCH-3 `-np 1,2,4,8,16` sweep with `GGML_IQK=1` completed all `43/43` cells with `0` errors. Tasks/hour scaled `20.11 → 124.62` (≈6.2×), aggregate predicted t/s `1.07 → 6.81`, and p95 latency rose `240.9s → 674.0s`. Because the MI210 server remained live, the run used `--skip-clean-check --allow-host-health-warning` and is classified as useful evidence, not pristine decision-grade. The earlier attempt without `GGML_IQK=1` was aborted and recorded as `ABORTED_UNACCELERATED_ENV.json`. Sources: [batched-decode-measurement.md](../handoffs/active/batched-decode-measurement.md), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
+
+- **Eval-batch serving activation window smoked through and rolled back cleanly — mechanism is working, awaiting quality/eval telemetry.** The 2026-07-05 activation window of `eval_batch_frontdoor` (port `18070`) completed as `status=smoke_passed_rolled_back`: API workers attested `eval_batch_serving=true`, smoke answer was `ok`, tap hit expected port `18070`, and rollback disabled the feature + stopped the frontdoor. Activation evidence is decision-grade; representative quality/eval telemetry remains the next gate before any default EvalTower path change. The eval-tower window runner (`eval_batch_serving_evaltower_window.py`) is plan-only by default and requires `--apply --confirm-clean-window` for live evaluation. Sources: [batched-decode-measurement.md](../handoffs/active/batched-decode-measurement.md).
+
+### New (2026-07-04, DS-7 profile decision + dashboard transport hardening)
 
 - **Userspace OOM protection must distinguish control plane from killable workload processes (2026-06-05).** The host earlyoom deployment protects long-lived orchestrator and AutoPilot processes by setting `oom_score_adj=-1000` after stack start, while leaving transient planner/eval subprocesses killable. Because uvicorn and AutoPilot appear as `comm=python`, process-name ignore rules are insufficient; the durable protection belongs in launcher code (`stack_processes.set_oom_score_adj` and the AutoPilot start path) plus a host-level earlyoom rule that ignores llama-server/sd-server and prefers disposable benchmark processes. Sources: [progress 2026-06-04](../progress/2026-06/2026-06-04.md), [earlyoom-oom-protection.md](../handoffs/completed/earlyoom-oom-protection.md).
 - **Three RAM-reclaim mechanisms are distinct and must not be conflated; the stack deliberately pre-warms rather than lazy-loads (2026-06-21).** The serving stack proactively pre-warms ~22 instances at ~653 GB resident with `mlock`, accepting the memory cost to eliminate cold-start latency for a single-user interactive workload. That makes wholesale on-demand lazy-loading (the drove model) an anti-pattern here, not an improvement. RAM is reclaimed by three orthogonal levers that operate at different scopes: (1) **earlyoom** is the reactive last-resort ceiling that kills disposable processes under pressure; (2) **DS-6 quarter-eviction** reassigns quarter cpusets on an idle timeout but does NOT free model weights (the process and its `mlock`'d pages stay resident); (3) the proposed **DS-7 idle-teardown profile** is the only mechanism that frees whole-process RAM, by tearing down COLD/RARE roles (e.g. `sd_server`, `document_formalizer`) after idle, and is explicitly never applied to hot pre-warmed roles. DS-7 idle-teardown is an optional, evidence-gated profile, not a default. Sources: [dynamic-stack-concurrency.md § Research Intake 2026-06-20](../handoffs/active/dynamic-stack-concurrency.md), [intake-701 (drove)](https://github.com/cleanunicorn/drove).

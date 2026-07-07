@@ -2,7 +2,7 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-07-05
+**Last compiled**: 2026-07-07 (learned routing classifier 81.0% ceiling, bulk-inference Package I frozen)
 **Sources**: 67+ documents (added 2026-07-05 RI-10 decision-ready + hold_quality_unscored packet, N9 MLP rollout attestation bracket, episodic FAISS 95.7% repair; 2026-07-04 X-MAS enforce cutover, deterministic canary sampler, DAR-4b null sweep, A9 source-reward passthrough; prior 2026-07-04 RI-10 arm-attributed canary status refresh, 2026-07-03 RI-10 gate hardening and DAR-1 current replay, 2026-06-26 LRC P4.5 executed [null result])
 
 ## Summary
@@ -18,6 +18,14 @@ The broader routing stack comprises 9 production subsystems that must coordinate
 The 13 intake entries tagged as routing_intelligence are predominantly `already_integrated` foundational papers from the mixture-of-experts (arXiv:2206.01855), speculative decoding (arXiv:2207.10342), and learned routing (arXiv:2305.05176, arXiv:2309.11495) literatures. These informed the original MemRL design. The one `worth_investigating` entry is Reason-ModernColBERT (intake-174), a 150M-parameter late-interaction retriever that outperforms 7B+ dense retrievers on reasoning-intensive BRIGHT benchmarks by +7.3 NDCG@10 using MaxSim scoring on a ModernBERT backbone. This could improve the classification retriever's embedding quality for routing decisions.
 
 ## Key Findings
+
+### New (2026-07-07, learned routing classifier repair run confirmed 81.0% ceiling, Phases 1.5+ FROZEN; bulk-inference Package I frozen, Queue 2/3 backlog)
+
+> **Review flag (project-wiki writer-evidence policy):** model-compiled, not adopted until human or measured review.
+
+- **The learned routing classifier (BGE+MLP) repair is confirmed at an 81.0% validation accuracy ceiling.** The 2026-07-07 retrain (`learned_routing_retrain_20260707T201739Z/`) shows training accuracy climbing to 95.0% by epoch 9, but validation accuracy plateaued at 81.0% after epoch 4. The classifier is STAGED (not live), behind feature gate `learned_routing_classifier`. Phases 1.5+ are FROZEN pending evidence review of why the 81.0% ceiling persists despite the label-mapping and feature-extraction repairs. Phase 2 (feature expansion) and Phase 3 (online learning) remain FROZEN. The classifier will not deploy to production without additional evidence to break through the ceiling. Sources: [learned-routing-controller.md](../handoffs/active/learned-routing-controller.md), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
+
+- **The bulk-inference campaign has a growing Queue 2/3 backlog and Package I is frozen.** `bulk_inference_report_20260707T013941Z.md` shows `Package_I_status=frozen`, `DAR_1_reopen_gate_failed`, with `14/17 labels below 80%`. Queue 3 is live with `active_jobs: 2` (G11, G12). The K-MEM-1 Tulving baseline scored, establishing a reference for memory-augmented retrieval quality. The Package I repair attempt is blocked on the DAR-1 reopen gate; no further label repair work is authorized until the gate clears. Sources: [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
 
 ### New (2026-07-05, RI-10 telemetry decision-ready but held on unscored quality; N9 MLP rollout attested-then-rolled-back; episodic FAISS repaired to 95.7%)
 
