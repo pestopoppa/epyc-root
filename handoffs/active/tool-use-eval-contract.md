@@ -17,6 +17,19 @@ plus a tool-aware comment-only nudge. Remaining work is to journal nonzero
 `total_tool_calls` under the repaired prompt contract and evaluate usefulness;
 it is not lane activation.
 
+**Live smoke update (2026-07-06T18:21Z)**: the API env is still correct for
+tool telemetry on PID `981677` (`AUTOPILOT_TOOL_SENTINELS=1`,
+`ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT=1`), but a five-way parallel Gate-3 smoke
+run (`AUTOPILOT_GATE3_PARALLELISM=5`) failed hard in the model/runtime path:
+all five sentinels returned the same repeated no-progress nudge / comment-only
+REPL output, `get_eval_secret` counted `0`, the no-tool isolation request still
+passed, and the soft `web_research` probe bucketed as `INFRA_FAIL` for the
+same reason. That means activation remains env-ready, but the live local REPL
+path is still not producing executable tool code on demand. The surface that
+would need an implementation change (`EvalTower._load_tool_sentinels` /
+tool-use prompt plumbing) is HIGH-risk, so this run intentionally stopped at
+documentation rather than editing code.
+
 **Parallel batching investigation (2026-07-05T17:36Z)**: read-only sidecar
 checked whether independent tool calls should be executed together and batched
 back into the next model context. Finding: this is already partially true
@@ -57,13 +70,26 @@ This raises the registry-backed analyzer coverage without expanding the
 "read-only" contract to model-calling or potentially side-effectful eval
 surfaces.
 
+**Planner-hint refresh (2026-07-06)**: `epyc-orchestrator` now seeds `parallel-read-only-tool-batching` into the live planner StrategyStore hints. The hint does not change executor semantics; it just makes the existing parallel path easier for the drafter to exploit when a turn needs several independent read-only facts.
+
+**Higher-tier exploration hint (2026-07-06)**: `epyc-orchestrator` now also seeds `t3-hard-workflow-exploration` into the live planner StrategyStore hints. It nudges plateaued runs toward replayable `deep_eval tier 3` / hard-workflow / tool-use-heavy probes instead of repeated local T1 exploitation when W8 is not asking for promotion evidence.
+
 Parallel batching task state:
 - [x] Add analyzer telemetry for multi-tool, explicit read-only, and
   `parallel_tools_used` coverage (`epyc-orchestrator` `64db8a12`). ✅ 2026-07-06
+- [x] Persist `tool_chains` from live REPL responses into
+  `seeding_diagnostics.jsonl` so the analyzer can reconstruct observed chain
+  structure from future runs. ✅ 2026-07-06
 - [x] Expand/read-through `tool_registry.yaml` side-effect annotations before
   using read-only chain coverage as a decision gate; `python_eval`,
   NumPy-backed eval-style math, and embedding/classification tools remain
   unannotated by design (`epyc-orchestrator` `87e957ba`). ✅ 2026-07-06
+- [x] Seed a planner-facing hint for independent read-only tool batching so
+  the existing parallel-dispatch path is easier for the drafter to exploit
+  when a turn needs several unrelated facts. ✅ 2026-07-06
+- [x] Seed a planner-facing hint for T3 hard-workflow exploration so plateaued
+  runs can shift toward replayable expert/tool-use probes instead of T1-only
+  churn. ✅ 2026-07-06
 - [ ] If future full-log runs show material independent read-only chains with
   serial execution, scope implementation inside `REPLEnvironment.execute` /
   `parallel_dispatch.py` without changing OpenAI response `message.tool_calls`

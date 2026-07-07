@@ -1,6 +1,6 @@
 # Frontier F3 — The Data Flywheel: Train on What the Lab Already Generates
 
-**Status**: W1 capture hygiene and W2 dataset builders are on the current orchestrator branch; reviewed intake-label recording, reviewed-label joins, stdlib CPU triage-baseline scaffold, a 120-row actionable review queue, a machine-readable review-readiness reporter, trusted-label-source baseline guards, and F2 lab batch verdict/gold-tuple capture tooling are live, while real reviewed-label collection, held-out baseline evidence, and real F2-W3 tuple evidence remain open (created from the Fable 5 strategic-frontiers review)
+**Status**: W1 capture hygiene and W2 dataset builders are on the current orchestrator branch; reviewed intake-label recording, reviewed-label joins, stdlib CPU triage-baseline scaffold, a 120-row actionable review queue, machine-readable/markdown review-readiness packets, trusted-label-source baseline guards, and F2 lab batch verdict/gold-tuple capture tooling are live. The operator-delegated review apply reached the 100-label readiness gate and the held-out triage-baseline report passed (`0.90` accuracy vs `0.85` threshold); real F2-W3 tuple evidence is now present from the 2026-07-07 quiet-window lab batch, leaving gfx90a training-viability as the remaining W3 gate before fine-tune work (created from the Fable 5 strategic-frontiers review)
 **Created**: 2026-06-12
 **Priority**: MED — W1/W2 capture+curation now, W3 training HW-GATED with the MI210 portfolio per operator instruction
 **Spec**: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md) §F3 — read it before claiming any waypoint
@@ -19,7 +19,7 @@ Capture and curation cost nothing now; training waits for the GPU.
 ## Waypoints
 
 - [ ] **W1 — capture hygiene, NOW, zero cost** (1–2 days): patch `controller_io.py` so FAILED planner calls archive too (move `_append_planner_archive` before the early return — known gap); log intake-triage decisions as labeled `{source_features, verdict}` rows; confirm the per-question ledger (N2) journals per-trial outcome vectors; confirm F2-W3 tuple capture. Deliverable: `docs/reference/datasets.md` listing each corpus, schema, era-labeling rule, intended model — acceptance: page exists and every corpus has an era-labeling rule. **Current-lineage status 2026-06-28**: current `controller_io.py` already archives failed planner calls in the newer planner-provider schema; `docs/reference/datasets.md` and `scripts/datasets/record_intake_triage_verdict.py` are live; `epyc-orchestrator` `2abf8ff2` makes `build_triage_set.py` consume reviewed `reviewed_intake_triage_verdict.v1` rows; `epyc-orchestrator` `c27664f8` adds `prepare_intake_triage_review.py` and a prompt-free 120-row review queue at `orchestration/datasets/intake_triage_review_queue.jsonl`; `epyc-orchestrator` `4f860e20` adds `intake_triage_review_status.py` plus non-operator `shadow_job` queue label-source support; `epyc-orchestrator` `f8738b24` prevents `shadow_job` labels from suppressing operator review by default. **2026-07-04 refresh**: failed provider-call archive, per-question ledger, and F2 lab tuple scaffolds are confirmed live on the current branch; remaining W1/W2 work is real reviewed intake labels and real quiet-window F2 outputs/verdicts/`lab_gold_tuple.v1` rows.
-- [ ] **W2 — dataset builders, pre-GPU** (3–4 days): `scripts/datasets/build_planner_sft.py` (planner_archive -> (context, action) pairs labeled by measured outcome — keep confirmed/critic-approved, drop contaminated eras) + `build_triage_set.py` (intake index -> classification set); train the CPU-feasible triage baseline now (BGE embedding + small MLP, routing-classifier stack reused) — acceptance: triage baseline >=85% agreement with operator verdicts on a held-out 100. **Builder scaffolds landed current branch 2026-06-14**: `epyc-orchestrator` `74ae865` adds planner-SFT and intake-triage JSONL builders, manifests, and direct CLI execution. Live no-inference smokes emitted 694 intake rows and 2,685 planner rows under `/mnt/raid0/llm/tmp/f3-datasets-smoke-20260614-codex`; intake-triage output had no `citation_context` / `IGNORE PRIOR` / `notes` / `source_text` field leakage. **Reviewed-label join landed 2026-06-21**: `epyc-orchestrator` `2abf8ff2` lets `build_triage_set.py` overlay the latest reviewed label per intake ID, emit reviewed-label provenance, and require reviewed labels for gold/held-out sets. **Stdlib baseline scaffold landed 2026-06-21**: `scripts/datasets/train_intake_triage_baseline.py` trains/evaluates a deterministic naive-Bayes baseline over reviewed labels only by default, writes aggregate-only reports, and reports `insufficient_reviewed_labels` until the 100-reviewed-label acceptance set exists. **Review queue landed 2026-06-27**: `prepare_intake_triage_review.py` excludes already reviewed IDs, supports verdict filters, and generated 120 actionable rows from `worth_investigating`, `adopt_patterns`, `adopt_component`, and `new_opportunity` items. **Readiness reporter landed 2026-06-28**: `intake_triage_review_status.py` reports the live gate as `120` queue rows, `0` reviewed labels, `100` labels needed, and `ready_for_baseline=false` without raw text. **Trusted label authority landed 2026-06-28**: `epyc-orchestrator` `f8738b24` makes operator labels the default trusted source for readiness, baseline training, and reviewed-label overlay; shadow labels require explicit opt-in. Remaining W2: collect at least 100 reviewed labels and create held-out agreement evidence.
+- [x] **W2 — dataset builders, pre-GPU** (3–4 days): `scripts/datasets/build_planner_sft.py` (planner_archive -> (context, action) pairs labeled by measured outcome — keep confirmed/critic-approved, drop contaminated eras) + `build_triage_set.py` (intake index -> classification set); train the CPU-feasible triage baseline now (BGE embedding + small MLP, routing-classifier stack reused) — acceptance: triage baseline >=85% agreement with operator verdicts on a held-out 100. **Builder scaffolds landed current branch 2026-06-14**: `epyc-orchestrator` `74ae865` adds planner-SFT and intake-triage JSONL builders, manifests, and direct CLI execution. Live no-inference smokes emitted 694 intake rows and 2,685 planner rows under `/mnt/raid0/llm/tmp/f3-datasets-smoke-20260614-codex`; intake-triage output had no `citation_context` / `IGNORE PRIOR` / `notes` / `source_text` field leakage. **Reviewed-label join landed 2026-06-21**: `epyc-orchestrator` `2abf8ff2` lets `build_triage_set.py` overlay the latest reviewed label per intake ID, emit reviewed-label provenance, and require reviewed labels for gold/held-out sets. **Stdlib baseline scaffold landed 2026-06-21**: `scripts/datasets/train_intake_triage_baseline.py` trains/evaluates a deterministic naive-Bayes baseline over reviewed labels only by default, writes aggregate-only reports, and reports `insufficient_reviewed_labels` until the 100-reviewed-label acceptance set exists. **Review queue landed 2026-06-27**: `prepare_intake_triage_review.py` excludes already reviewed IDs, supports verdict filters, and generated 120 actionable rows from `worth_investigating`, `adopt_patterns`, `adopt_component`, and `new_opportunity` items. **Readiness reporter landed 2026-06-28**: `intake_triage_review_status.py` reports reviewed-label readiness without raw text. **Trusted label authority landed 2026-06-28**: `epyc-orchestrator` `f8738b24` makes operator labels the default trusted source for readiness, baseline training, and reviewed-label overlay; shadow labels require explicit opt-in. **Review packet automation landed 2026-07-06**: `intake_triage_review_status.py --output-md --batch-template` now emits an operator-facing markdown packet plus blank-verdict JSONL batch rows. **Trusted-label gate cleared 2026-07-07**: operator-delegated batches appended 100 rows to `orchestration/datasets/intake_triage_reviewed.jsonl`; refreshed status `orchestration/reports/intake_triage_review_status_20260707T000650Z.json` reports `100` trusted reviewed labels, `0` labels needed, and `ready_for_baseline=true`. **Baseline acceptance passed 2026-07-07**: `orchestration/reports/intake_triage_baseline_report_20260707T000910Z.json` reports `acceptance_pass`, `80` train rows, `20` held-out rows, `18` correct, and `0.90` accuracy against the `0.85` threshold.
 - [ ] **W-aux — trace publish/redaction reference (pi-share-hf, intake-736), pre-GPU**: the MIT `pi-share-hf` tool (Collect → Redact → TruffleHog secret-scan → LLM-review → JSONL → Upload-to-HF) is a pattern reference for two GAPS this flywheel lacks: (1) an **UPLOAD/publish** step, and (2) **general secret/PII redaction of RAW traces** (`planner_archive.jsonl`, `agent_audit.log`) — broader than W1/W2's field-name quarantine (`source_text`/`citation_context`). **Do NOT re-implement** the existing quarantine + operator trusted-label review (`f8738b24`). If adopted, add **entropy/ML secret backstops + scan reasoning spans** (>60% of secret leakage is in reasoning traces; cf. our own upstream Hermes issues #20785/#363), since deny-patterns miss generic tokens/paths. verdict adopt_patterns — mine the pattern, don't trust the gate wholesale.
 - [x] **W-aux preflight CLI — raw-trace export hygiene.**
   `epyc-orchestrator` now has `scripts/datasets/raw_trace_publish_preflight.py`
@@ -30,7 +30,7 @@ Capture and curation cost nothing now; training waits for the GPU.
   publish/training and does not replace operator label authority. Focused tests
   passed (`44 passed`), ruff was clean, and a clean candidate CLI smoke returned
   `ok=true`. ✅ 2026-07-06
-- [ ] **W3 — GPU fine-tunes (MI210 present since 2026-07-02; the HW gate is CLEARED. Two binding gates remain: (i) the DATA gate — 0/100 trusted reviewed triage labels today; (ii) gfx90a TRAINING-VIABILITY is [unverified] — a LoRA/GRPO/SFT smoke on a small model via TRL/verl-ROCm must pass before any of (a)–(c) is scoped. NOTE: gradient-based QLoRA (below) is what rides the training-viability gate; a gradient-FREE Evolution-Strategies path (intake-564/563, forward-pass-only) would sidestep it entirely and is tracked in learned-routing-controller.md)**: (a) planner-distill — QLoRA a Qwen3.5-9B-class base on W2's SFT set, acceptance: shadow-draft mode with ≥80% cloud-critic approval over 100 trials before any binding use; (b) drafters per the α measurement (FastDraft path, already gated in backlog); (c) judge/rubric model for EV-9 (unblocks rubric-scored suites in F1-W3) — acceptance: each fine-tune gets a MEASUREMENT.md protocol entry before its first reported number.
+- [ ] **W3 — GPU fine-tunes (MI210 present since 2026-07-02; the HW gate is CLEARED. The DATA gate is now satisfied by 100 trusted reviewed triage labels plus initial F2 gold tuples; gfx90a TRAINING-VIABILITY is still [unverified] — a LoRA/GRPO/SFT smoke on a small model via TRL/verl-ROCm must pass before any of (a)–(c) is scoped. NOTE: gradient-based QLoRA (below) is what rides the training-viability gate; a gradient-FREE Evolution-Strategies path (intake-564/563, forward-pass-only) would sidestep it entirely and is tracked in learned-routing-controller.md)**: (a) planner-distill — QLoRA a Qwen3.5-9B-class base on W2's SFT set, acceptance: shadow-draft mode with ≥80% cloud-critic approval over 100 trials before any binding use; (b) drafters per the α measurement (FastDraft path, already gated in backlog); (c) judge/rubric model for EV-9 (unblocks rubric-scored suites in F1-W3) — acceptance: each fine-tune gets a MEASUREMENT.md protocol entry before its first reported number.
   - **W3 candidate variant — self-distillation (intake-736 context / intake-739 reference, MI210-gated)**: the operator direction — self-distill the compressed CPU worker from own agent-tool traces + a GLM-5.2-FP8 generation loop + frontier HF traces (~210 GB) — is an **on-policy** distillation variant, distinct from W3a's **offline** planner-distill QLoRA; V4-Pro-DSpark's "on-policy distillation" consolidation (intake-739) is a reference point only, not an endorsement. GATES: external frontier-HF / GLM-loop traces are **untrusted** under the `f8738b24` authority model → require an explicit trusted-source opt-in before feeding gold/held-out sets; must pass a MEASUREMENT.md protocol + shadow-approval before any binding use.
 
 ## Gates & pitfalls
@@ -51,6 +51,54 @@ On completion of each waypoint: tick here, one-line progress entry, update maste
   secret/PII scanning, entropy/ML backstops, and reasoning-span scans as
   hygiene-only checks for future trace export/publish paths. This advances
   W-aux without changing the quarantine/operator-review trust boundary.
+- 2026-07-07: Applied the first F3 intake-triage review packet under explicit
+  operator delegation. `epyc-orchestrator`
+  `orchestration/datasets/intake_triage_review_batch_filled_20260707T000328Z.jsonl`
+  accepted the first 25 prompt-free queue suggestions and appended them via
+  `apply_intake_triage_review_batch.py --apply` to
+  `orchestration/datasets/intake_triage_reviewed.jsonl` with
+  `label_source=operator` and reviewer `codex-operator-delegated`. Refreshed
+  status artifacts
+  `orchestration/reports/intake_triage_review_status_20260707T000402Z.json`,
+  `orchestration/reports/intake_triage_review_packet_20260707T000402Z.md`,
+  and
+  `orchestration/datasets/intake_triage_review_batch_template_20260707T000402Z.jsonl`
+  report `25/100` trusted reviewed labels and queue the next 25 rows.
+- 2026-07-07: Completed the remaining operator-delegated F3 reviewed-label
+  applies through the same recorder path. Additional filled batches
+  `orchestration/datasets/intake_triage_review_batch_filled_20260707T000642Z.jsonl`,
+  `...000645Z.jsonl`, and `...000647Z.jsonl` brought
+  `orchestration/datasets/intake_triage_reviewed.jsonl` to `100` trusted
+  operator-source labels. Final status
+  `orchestration/reports/intake_triage_review_status_20260707T000650Z.json`
+  is `ready_for_baseline=true`, with `20` non-blocking queue rows still
+  available for future review.
+- 2026-07-07: Ran the W2 held-out triage-baseline acceptance report from the
+  reviewed-only corpus. `build_triage_set.py --require-reviewed-labels`
+  emitted
+  `orchestration/datasets/intake_triage_reviewed_only_20260707T000910Z.jsonl`
+  with `100` operator-source rows, and
+  `train_intake_triage_baseline.py` wrote
+  `orchestration/reports/intake_triage_baseline_report_20260707T000910Z.json`
+  with `status=acceptance_pass`, `80` train rows, `20` held-out rows, and
+  `18/20 = 0.90` accuracy against the `0.85` acceptance threshold.
+- 2026-07-07: Cleared the F2 tuple-evidence blocker for W3 readiness. The
+  quiet-window lab batch produced real non-mock `handoff_freshness_lint` and
+  `attestation_watch` rows; cloud review accepted the handoff-lint row as a
+  positive `lab_gold_tuple.v1` and rejected the attestation row as a negative
+  `lab_gold_tuple.v1` because it falsely claimed the attestation latest file
+  was empty. The lab review queue now reports `pending_reviews=0`. Remaining
+  W3 gate: gfx90a training-viability smoke.
+- 2026-07-06: Intake-triage review packet automation landed in
+  `epyc-orchestrator`. `intake_triage_review_status.py` can now write a
+  markdown review packet and operator-fillable JSONL batch template while
+  preserving dry-run/default-off label application. Live artifacts:
+  `orchestration/reports/intake_triage_review_packet_20260706T235801Z.md`,
+  `orchestration/reports/intake_triage_review_status_20260706T235801Z.json`,
+  and
+  `orchestration/datasets/intake_triage_review_batch_template_20260706T235801Z.jsonl`.
+  The trusted-data gate remains `0/100` labels until reviewed rows are filled
+  and applied.
 - 2026-07-06: Implemented the raw-trace publish preflight as an executable
   no-inference scanner in `epyc-orchestrator`
   `scripts/datasets/raw_trace_publish_preflight.py` with focused unit coverage.

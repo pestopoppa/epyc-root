@@ -17,6 +17,27 @@ Test whether the shared-mmap quarter-able roles — `frontdoor` (Qwen3.6-35B-A3B
 
 `worker_general` (gemma-26B Q4 MTP) emits `--no-mmap` from its dedicated builder, but the 2026-06-27 live `numa_maps` strict preflight showed the quarter processes were still memory-interleaved because a role-level `interleave=all` policy wrapped every instance. Orchestrator `5573e465` scopes that interleave policy to the full worker instance only; the live quarter PIDs remain stale until a controlled worker restart plus strict `affinity_preflight.py --require-memory-locality` proves node-local anonymous pages. The production question for the remaining shared-mmap quarter roles is now closed negative under the measured v6+iqk protocol: `vision_escalation`, `frontdoor`, and `ingest_long_context` should stay shared-mmap unless a future protocol materially differs.
 
+**2026-07-06 addendum**: the controlled `worker_general` quarter restart / strict
+`affinity_preflight.py --require-memory-locality` verification passed, so the
+N12 observability tail is now closed negative for the current protocol. The
+live quarter placement proof is in
+`/mnt/raid0/llm/tmp/affinity_preflight_worker_general_after_q2_reload_20260706T134655Z.json`.
+No production config flip follows; revisit only if a materially different
+protocol reopens the question.
+
+**2026-07-06 live re-check**: a later broad `affinity_preflight.py --roles
+frontdoor ingest_long_context vision_escalation worker_general worker_vision
+architect_general` pass also came back clean on the checked live placements.
+`worker_general` quarters remained fully local (`live_memory_placement_verified=true`,
+`required=4`, `mismatches=0`), while the shared-mmap quarter roles stayed on
+their expected interleaved placement. The run wrote
+`/mnt/raid0/llm/tmp/affinity_preflight_live_20260706T184407Z.json` and
+did not reveal a new N12 flip opportunity.
+
+- [x] 2026-07-06 live re-check completed: broad `affinity_preflight.py`
+  confirmed the checked live roles still match the expected placement model and
+  did not uncover a new N12 flip path. ✅ 2026-07-06
+
 ---
 
 ## 2026-06-26 ACTIVATION ATTEMPT (v6+iqk cutover) — launch-path blockers, REVERTED

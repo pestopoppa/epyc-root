@@ -261,6 +261,30 @@ for representative quality, reliability, and throughput telemetry before any
 default EvalTower path change, while E1 dense-control remains unresolved and E3
 still depends on the E1 result.
 
+### 2026-07-06 — P-BENCH-3 sweep checkpoint
+
+The clean-window sweep `e1-pbench3-20260706T1529Z` completed the full
+`qwen36_q8_0` ladder (`np=1,2,4,8,16`) and wrote `summary.csv` before the
+`qwen36_27b_q8` dense-control tail was intentionally interrupted. The 35B arm
+is decision-grade and shows the expected throughput/latency tradeoff:
+
+- [x] `qwen36_q8_0` P-BENCH-3 ladder complete (`np=1,2,4,8,16`) ✅ 2026-07-06
+- [ ] `qwen36_27b_q8` dense-control rerun remains open for a future quiet window
+
+| `-np` | success | tasks/hour | aggregate predicted t/s | p50 latency | p95 latency |
+|---:|---:|---:|---:|---:|---:|
+| 1 | 43/43 | 533.72 | 19.63 | 7.50s | 13.66s |
+| 2 | 43/43 | 569.69 | 19.61 | 4.54s | 28.32s |
+| 4 | 43/43 | 642.99 | 22.03 | 5.40s | 47.12s |
+| 8 | 43/43 | 697.21 | 24.00 | 14.08s | 76.04s |
+| 16 | 43/43 | 860.45 | 29.62 | 23.86s | 115.95s |
+
+The 27B dense-control run reached the long-tail decode phase at `np=1` and was
+then stopped so the quiet window could be returned to the operator. That keeps
+the dense-control status explicit instead of implicitly treating the sweep as
+fully complete. The stack was restored afterward and is back in `STACK READY`
+state.
+
 ## Gates & pitfalls
 
 - Operator window required: per `feedback_no_concurrent_inference` / `feedback_speed_verify_via_llama_bench`, the operator runs the benches — this handoff prepares commands, harness, and analysis; schedule inside the bulk-campaign Queue-2 quiesce window (one attested reload serves all).

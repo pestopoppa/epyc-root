@@ -2,7 +2,7 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-07-06 (focused operational checkpoint: changed sources since 2026-07-05 merged into [Autonomous Research](autonomous-research.md) (frontdoor/worker local planner split, W8 replayable numeric canary), [Tool Implementation](tool-implementation.md) (dashboard tap/proc lock-count separation), [Document Processing](document-processing.md) (ODL hybrid sidecar probe preflight), and [Agent Architecture](agent-architecture.md) (Hermes generalized as one client of the shared `/v1/chat/completions` + `x_*` contract). Previous 2026-07-05 full backlog compile merged 49 changed/new sources into 10 articles: hardware, speculative decoding, autonomous research, benchmark methodology, routing intelligence, inference serving, agent architecture, cost-aware routing, context management, and tool implementation. Observation-heavy sections carry writer-evidence review flags pending human/measured review.)
+**Last compiled**: 2026-07-07 (focused operational checkpoint: changed sources since 2026-07-06 merged into [Autonomous Research](autonomous-research.md) (quiet-window F2 tuple evidence + F3 gate movement), [Training & Distillation](training-distillation.md) (trusted-label baseline pass + quiet-window tuple evidence), and [Agent Architecture](agent-architecture.md) (Internal Interaction bake report still blocked on delegation-cache observation coverage). Previous 2026-07-06 checkpoint captured the frontdoor/worker local planner split, W8 replayable numeric canary, ODL hybrid sidecar probe preflight, and Hermes boundary generalization. Observation-heavy sections carry writer-evidence review flags pending human/measured review.)
 **Articles**: 26 compiled, 4 stub categories
 **Total sources**: 560+ scanned documents across 6 source types; 2026-07-05 pass merged 49 changed/new sources (MI210 speed campaign, evidence-plane/autopilot arc, dashboards, routing canary) into 10 articles; 2026-06-21 pass merged 36 changed/new sources into 21 articles
 
@@ -62,7 +62,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
 | [Multimodal](multimodal.md) | 34 | Benchmark deployed Qwen-VL field-placement before adding LocateAnything; Gemma 4 stays benchmark-first, not model-card-dismissed |
-| [Document Processing](document-processing.md) | 4 | ODL structured metadata and default-off body warnings now reach preprocessing; real hybrid table sidecar/client evidence is the remaining table gap |
+| [Document Processing](document-processing.md) | 4 | ODL structured metadata and default-off body warnings now reach preprocessing; the hybrid sidecar is live on `127.0.0.1:5002`, so the remaining table gap is benchmark-backed comparison and routing policy |
 | [Formal Verification](formal-verification.md) | 7 | Goedel-Code-Prover 8B beats GPT-5.3-Codex at 62.0%; RustEvo2 is now the gate for Rust specialist claims |
 
 ## Knowledge & Retrieval

@@ -10,6 +10,16 @@ sentinels, sequential verdicts, and W6 audit flags. `phase_health_report.py
 `action_type=numeric_trial`, `phase=dispatch_action`, `pid_alive=true`, and
 `code_stale=false` after the restart loaded orchestrator `e3b13edd`.
 
+**2026-07-06T16:44Z report refresh**: regenerated
+`orchestration/reports/w8_promotion_trajectory_20260706T164403Z.{json,md}`
+and `orchestration/reports/fable5_gate_report_20260706T164403Z.{json,md}`.
+W8 remains `progressing` with replay-eligible candidates
+`80aa44d93a242af5`, `289c4fc0fb5a334d`, and `d3f28243801548b2`, but Fable5
+is still blocked because phase health is stale (AutoPilot PID `131226` is
+gone), the W6 gaming alarm is still triggered, and tool-use activation is now
+ready because the orchestrator launcher now sets
+`AUTOPILOT_TOOL_SENTINELS=1` alongside `ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT=1`.
+
 Orchestrator `1639748a` is deployed in that daemon. It threads the current
 `selectable_action_types` set into `planner_coordinator.plan_with_providers()`,
 treats known-but-unavailable action types as unusable before critique, and
