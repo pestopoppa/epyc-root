@@ -91,7 +91,7 @@ After completing a row:
 - [ ] P0 Multimodal vision: remaining remote-image/multi-image treated as new scoped feature (live smokes passed)
 - [ ] P0.5 Local image gen: prompt-enhancer, content-filter audit, typography check, GPU DiT rebench on gfx90a (unblocked)
 - [ ] P1 ODL/PDF: benchmark-backed hybrid-vs-baseline comparison + routing policy (sidecar viable on :5002)
-- [ ] P1 Quiet-window PDF structural corpus probe (AutoPilot-idle evidence step)
+- [x] P1 Quiet-window PDF structural corpus probe (AutoPilot-idle evidence step) ✅ 2026-07-07
 - [ ] P2 Lean 4: Leanstral expert profiling -> REAP prune -> end-to-end proof pipeline
 - [ ] P3 Multimodal TTS: benchmark first viable path (Qwen3-TTS/MiniCPM-O/ZipVoice) with RTF/WER evidence
 - [ ] P5 Internal KB-RAG: deferred K8 wikilink scorer once measured cross-link gap exists

@@ -155,6 +155,7 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 - [x] Run local OpenDataLoader benchmark demo smoke without inference or persistent artifacts: `/mnt/raid0/llm/opendataloader-bench/pdf_validation.py` completed 18 demo pages from a temp cwd using the benchmark venv; output was temp-local only. ✅ 2026-07-06
 - [x] Add a repeatable structural/table-heavy candidate manifest builder for quiet-window probe batches. ✅ 2026-07-06
 - [x] Install the hybrid extra on the target host (`pip install -U "opendataloader-pdf[hybrid]"`), start `opendataloader-pdf-hybrid --port 5002`, and confirm `GET /health` before claiming live sidecar evidence. ✅ 2026-07-06
+- [x] Run an expanded all-local structural/table-heavy quiet-window comparison with live hybrid sidecar evidence and record the current local corpus ceiling (`51` eligible PDFs, not `200`). ✅ 2026-07-07
 - [ ] Experiment: swap hybrid backend from docling-fast → LightOnOCR-2-1B (port 8082)
 - [ ] Measure: does GPU-accelerated LightOnOCR beat docling-fast's 0.43s/page?
 - [ ] Implement three-way routing: ODL local (simple) → ODL hybrid (tables) → LightOnOCR (scanned)
@@ -243,6 +244,32 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 - Residual gate: still no 200-PDF comparison or router policy decision. The next
   step is benchmark-backed comparison and table-selection policy, not another
   sidecar-install pass.
+
+**2026-07-07 all-local structural corpus checkpoint**
+
+- Rebuilt the structural/table-heavy manifest over all local `/mnt/raid0/llm`
+  PDFs after the quiet-window 27-PDF run. The current local corpus contains
+  `293` PDFs total but only `51` selected PDFs with cheap table-like signal
+  under `build_pdf_probe_manifest.py --limit 200 --min-table-like-lines 1`;
+  artifact:
+  `orchestration/reports/pdf_structural_candidates_20260707T004421Z_alllocal_n200.json`.
+- Ran the expanded `51`-PDF manifest through `pdftotext`,
+  `opendataloader_structured`, live `opendataloader_hybrid`
+  (`http://127.0.0.1:5002`), and `liteparse` under the hybrid venv. Output
+  artifacts:
+  `orchestration/reports/pdf_fastpath_probe_hybrid_alllocal_20260707T004440Z.{json,md}`.
+- Result: `pdftotext`, ODL structured, and ODL hybrid each succeeded on
+  `51/51`; LiteParse failed `51/51` with `missing_dependency`. Median latency /
+  quality: pdftotext `41.132 ms / 0.898`, ODL structured
+  `1230.890 ms / 0.991`, ODL hybrid `1109.577 ms / 0.991`. Structural signal
+  coverage was `51/51`, but ODL emitted `0` structured headings, tables, and
+  figures; the signal is table-like text lines, not parsed table structures.
+- Interpretation: live hybrid is viable and attributable, but this local corpus
+  does not justify a routing-policy flip. Hybrid is materially slower than
+  pdftotext and only ties ODL structured on quality/structure. The advertised
+  200-PDF comparison is currently corpus-limited locally; next evidence should
+  either add an external benchmark corpus or implement a table-specific
+  ground-truth benchmark before changing production routing.
 
 **2026-07-06 backend-attribution + structural-signal guard checkpoint (`epyc-orchestrator` `d6b171fd`)**
 
