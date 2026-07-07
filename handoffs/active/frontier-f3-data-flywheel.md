@@ -1,6 +1,6 @@
 # Frontier F3 — The Data Flywheel: Train on What the Lab Already Generates
 
-**Status**: W1 capture hygiene and W2 dataset builders are on the current orchestrator branch; reviewed intake-label recording, reviewed-label joins, stdlib CPU triage-baseline scaffold, a 120-row actionable review queue, machine-readable/markdown review-readiness packets, trusted-label-source baseline guards, and F2 lab batch verdict/gold-tuple capture tooling are live. The operator-delegated review apply reached the 100-label readiness gate and the held-out triage-baseline report passed (`0.90` accuracy vs `0.85` threshold); real F2-W3 tuple evidence and gfx90a training-viability remain open (created from the Fable 5 strategic-frontiers review)
+**Status**: W1 capture hygiene and W2 dataset builders are on the current orchestrator branch; reviewed intake-label recording, reviewed-label joins, stdlib CPU triage-baseline scaffold, a 120-row actionable review queue, machine-readable/markdown review-readiness packets, trusted-label-source baseline guards, and F2 lab batch verdict/gold-tuple capture tooling are live. The operator-delegated review apply reached the 100-label readiness gate and the held-out triage-baseline report passed (`0.90` accuracy vs `0.85` threshold); real F2-W3 tuple evidence is now present from the 2026-07-07 quiet-window lab batch, leaving gfx90a training-viability as the remaining W3 gate before fine-tune work (created from the Fable 5 strategic-frontiers review)
 **Created**: 2026-06-12
 **Priority**: MED — W1/W2 capture+curation now, W3 training HW-GATED with the MI210 portfolio per operator instruction
 **Spec**: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md) §F3 — read it before claiming any waypoint
@@ -30,7 +30,7 @@ Capture and curation cost nothing now; training waits for the GPU.
   publish/training and does not replace operator label authority. Focused tests
   passed (`44 passed`), ruff was clean, and a clean candidate CLI smoke returned
   `ok=true`. ✅ 2026-07-06
-- [ ] **W3 — GPU fine-tunes (MI210 present since 2026-07-02; the HW gate is CLEARED. Two binding gates remain: (i) the DATA gate — 0/100 trusted reviewed triage labels today; (ii) gfx90a TRAINING-VIABILITY is [unverified] — a LoRA/GRPO/SFT smoke on a small model via TRL/verl-ROCm must pass before any of (a)–(c) is scoped. NOTE: gradient-based QLoRA (below) is what rides the training-viability gate; a gradient-FREE Evolution-Strategies path (intake-564/563, forward-pass-only) would sidestep it entirely and is tracked in learned-routing-controller.md)**: (a) planner-distill — QLoRA a Qwen3.5-9B-class base on W2's SFT set, acceptance: shadow-draft mode with ≥80% cloud-critic approval over 100 trials before any binding use; (b) drafters per the α measurement (FastDraft path, already gated in backlog); (c) judge/rubric model for EV-9 (unblocks rubric-scored suites in F1-W3) — acceptance: each fine-tune gets a MEASUREMENT.md protocol entry before its first reported number.
+- [ ] **W3 — GPU fine-tunes (MI210 present since 2026-07-02; the HW gate is CLEARED. The DATA gate is now satisfied by 100 trusted reviewed triage labels plus initial F2 gold tuples; gfx90a TRAINING-VIABILITY is still [unverified] — a LoRA/GRPO/SFT smoke on a small model via TRL/verl-ROCm must pass before any of (a)–(c) is scoped. NOTE: gradient-based QLoRA (below) is what rides the training-viability gate; a gradient-FREE Evolution-Strategies path (intake-564/563, forward-pass-only) would sidestep it entirely and is tracked in learned-routing-controller.md)**: (a) planner-distill — QLoRA a Qwen3.5-9B-class base on W2's SFT set, acceptance: shadow-draft mode with ≥80% cloud-critic approval over 100 trials before any binding use; (b) drafters per the α measurement (FastDraft path, already gated in backlog); (c) judge/rubric model for EV-9 (unblocks rubric-scored suites in F1-W3) — acceptance: each fine-tune gets a MEASUREMENT.md protocol entry before its first reported number.
   - **W3 candidate variant — self-distillation (intake-736 context / intake-739 reference, MI210-gated)**: the operator direction — self-distill the compressed CPU worker from own agent-tool traces + a GLM-5.2-FP8 generation loop + frontier HF traces (~210 GB) — is an **on-policy** distillation variant, distinct from W3a's **offline** planner-distill QLoRA; V4-Pro-DSpark's "on-policy distillation" consolidation (intake-739) is a reference point only, not an endorsement. GATES: external frontier-HF / GLM-loop traces are **untrusted** under the `f8738b24` authority model → require an explicit trusted-source opt-in before feeding gold/held-out sets; must pass a MEASUREMENT.md protocol + shadow-approval before any binding use.
 
 ## Gates & pitfalls
@@ -82,6 +82,13 @@ On completion of each waypoint: tick here, one-line progress entry, update maste
   `orchestration/reports/intake_triage_baseline_report_20260707T000910Z.json`
   with `status=acceptance_pass`, `80` train rows, `20` held-out rows, and
   `18/20 = 0.90` accuracy against the `0.85` acceptance threshold.
+- 2026-07-07: Cleared the F2 tuple-evidence blocker for W3 readiness. The
+  quiet-window lab batch produced real non-mock `handoff_freshness_lint` and
+  `attestation_watch` rows; cloud review accepted the handoff-lint row as a
+  positive `lab_gold_tuple.v1` and rejected the attestation row as a negative
+  `lab_gold_tuple.v1` because it falsely claimed the attestation latest file
+  was empty. The lab review queue now reports `pending_reviews=0`. Remaining
+  W3 gate: gfx90a training-viability smoke.
 - 2026-07-06: Intake-triage review packet automation landed in
   `epyc-orchestrator`. `intake_triage_review_status.py` can now write a
   markdown review packet and operator-fillable JSONL batch template while
