@@ -82,12 +82,24 @@ confirmation.
 > trailing-window alarm, assuming no new gaming events occur.
 
 **Created**: 2026-03-08
-**Updated**: 2026-07-06 (current live AutoPilot PID `131226` is on trial `1236` with `--max-trials 3000`, planner hints, tool sentinels, sequential verdicts, and W6 audit accrual active. The daemon is current-code clean on orchestrator `60523b6`, so local-frontdoor drafting, local-worker critique, Claude fallback, W8-filtered action pressure, selectable-action provider coordination, the outcome-stall guard, forced-replay/AP-9 dispatcher repair, and dashboard coherent-snapshot fixes are live together. Strict Fable is ready with `blockers=[]`; active next action is W8 promotion-eval evidence collection.)
+**Updated**: 2026-07-08 (current live AutoPilot PID `3681234` is running the fresh Fable authority wrapper with `--max-trials 3000`, `AUTOPILOT_PLANNER_PRIMARY=local_ingest`, `AUTOPILOT_PLANNER_CRITIC=local_frontdoor`, `stack_mode=both`, and `code_stale=false`. Seed-batch prompts are clean in the structured tap tail after `b7518da0`; the contaminated `1257-1263` rows were quarantined append-only with `bug_corrupted_by=b7518da0`; and the dashboard now marks stale planner tap history via `b5cadba6`. Strict Fable is ready with `blockers=[]`; active next action is W8 promotion-eval evidence collection.)
 **Location**: `epyc-orchestrator/scripts/autopilot/`
 
 > **Fable 5 review (2026-06-12)**: the review's architecture recommendations now have owning handoffs: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (LIVE t775 baseline-ratchet hotfix + dead-question repair), [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md) (per-question ledger + e-process verdicts; owns the next restart bundle), [evidence-plane-event-sourcing-and-narrative.md](evidence-plane-event-sourcing-and-narrative.md), and [objective-task-rate-goodput.md](objective-task-rate-goodput.md) (task_rate replaces the t/s axis). Full diagnosis: fable5-findings-01 + -05.
 
 > Historical restart runbooks and settled 2026-06-04/05 implementation banners were compacted to [../completed/autopilot-continuous-optimization-history-through-2026-06-20.md](../completed/autopilot-continuous-optimization-history-through-2026-06-20.md).
+
+**Current addendum - 2026-07-08**: the fresh Fable restart came up clean as
+PID `3681234` with `AUTOPILOT_PLANNER_PRIMARY=local_ingest`,
+`AUTOPILOT_PLANNER_CRITIC=local_frontdoor`, `stack_mode=both`, and
+`code_stale=false`. `b7518da0` keeps `StrategyStore` hints planner-only and
+defensively ignores legacy `strategy_hints` in Seeder, while the append-only
+supersession pass quarantined trials `1257-1263` with
+`bug_corrupted_by=b7518da0`. `b5cadba6` adds the stale-planner-tap freshness
+signals used by the dashboard to say when the live panel has no current planner
+trace yet. Structured tap tail checks show the current seed-batch prompts are
+clean again; the next live work remains replayable candidate evidence and
+seq-confirmable promotion proof, not another prompt-history repair.
 
 ## Autopilot Delegation Expansion — 2026-05-20
 

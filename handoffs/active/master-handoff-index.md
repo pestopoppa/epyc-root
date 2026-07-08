@@ -12,6 +12,8 @@
 
 **Current coordination checkpoint - 2026-07-07T16:30Z**: N11 promotion-gate repair — 5 test failures resolved: `083e2736` (stale ingest topology fixture) and `91cb03bf` (`_role_result` fixture missing `tool_chains` attribute in seeding retry tests). Full promotion-gate `181 passed`, pipeline `summary: ok`. MI210 server reloaded on port `8600` with KV cache quantization (`-ctk q8_0 -ctv q8_0 -ctkd q8_0 -ctvd q8_0`). AutoPilot PID references before this checkpoint are historical.
 
+**Current coordination checkpoint - 2026-07-08T00:00Z**: AutoPilot was restarted fresh through the Fable authority wrapper as PID `3681234` with `--max-trials 3000`, `AUTOPILOT_PLANNER_PRIMARY=local_ingest`, `AUTOPILOT_PLANNER_CRITIC=local_frontdoor`, `stack_mode=both`, and `code_stale=false`. Seed-batch prompts are clean in the structured tap tail after orchestrator `b7518da0`; trials `1257-1263` were quarantined append-only with `bug_corrupted_by=b7518da0` and the dashboard now marks stale planner tap history via `b5cadba6` (`planner_tap_mtime_s` / `planner_tap_precedes_autopilot_start`). AutoPilot PID references before this checkpoint are historical.
+
 **Current coordination checkpoint - 2026-07-07T00:32Z**: F2/F3 quiet-window
 lab evidence collection produced real model-backed review rows and cleared the
 pending model-backed review queue. `handoff_freshness_lint` minted an accepted

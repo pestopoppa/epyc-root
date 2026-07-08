@@ -2,7 +2,7 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-07-07
+**Last compiled**: 2026-07-08
 **Sources**: 87+ documents
 
 ## Summary
@@ -14,6 +14,14 @@ The central insight synthesized across all research sources is that **knowledge 
 A second critical insight comes from AgentRxiv (intake-131): retrieval-augmented iteration dramatically improves convergence. Removing access to prior research causes performance to plateau at 73.4-73.8% on MATH-500, while with N=5 paper retrieval it continues improving to 78.2%. Multi-lab parallel research (3 labs) reaches the same milestone in 7 papers instead of 23, trading 3x cost for proportionally faster wall-clock discovery. The EPYC AutoPilot implemented this via strategy store retrieval and cross-species fertilization, closing the "passive journal" gap where the experiment journal was comprehensive but never queried by species during proposal generation.
 
 A convergent wave of research in April 2026 brought four significant upgrades to the autopilot infrastructure: GEPA evolutionary prompt optimization (intake-327/335, 35x more efficient than GRPO, works with 3 examples, compatible with local inference), dspy.RLM metadata-first context exploration, MiniMax M2.7-style self-evolution with short-term memory and self-criticism (intake-328/329), and Unsloth RLVR environment-first RL design (intake-320). All four are integrated as of 2026-04-12 (AP-18 through AP-25).
+
+### New (2026-07-08, self-monitoring lab and local-first restart hygiene)
+
+- **The self-running lab is now explicitly part of the autonomy loop, not a side channel.** Active-safe deterministic jobs watch `phase_health_report.py` while the model-backed quiet-window jobs wait for the stack to be quiescent; that split lets the lab monitor AutoPilot live without burning inference. The current restart landed with `AUTOPILOT_PLANNER_PRIMARY=local_ingest`, `AUTOPILOT_PLANNER_CRITIC=local_frontdoor`, and `stack_mode=both`, so the local planner path is now the primary operating mode rather than a fallback experiment. Sources: [frontier-f2-self-running-lab.md](../handoffs/active/frontier-f2-self-running-lab.md), [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md), [progress 2026-07-08](../progress/2026-07/2026-07-08.md).
+
+- **Evidence hygiene now distinguishes fresh planner traces from stale ones.** Dashboard planner-tap freshness is now process-relative (`planner_tap_mtime_s`, `planner_tap_precedes_autopilot_start`), and contaminated seed-batch rows are quarantined append-only with `bug_corrupted_by=b7518da0` instead of being silently rewritten away. That keeps the research record auditable while preventing bad history from re-entering new planner turns. Sources: [loops-and-dashboards-audit-2026-07-05.md](../handoffs/active/loops-and-dashboards-audit-2026-07-05.md), [master-handoff-index.md](../handoffs/active/master-handoff-index.md), [progress 2026-07-08](../progress/2026-07/2026-07-08.md).
+
+- **The wrap-up pipeline now treats the freshness check itself as a research artifact.** The new progress log and master checkpoint record the PID, planner roles, and code-staleness state for the fresh authority restart, which is exactly the kind of traceable evidence an autonomous research loop needs if it is going to learn from its own operational history instead of just from benchmark outputs. Sources: [progress 2026-07-08](../progress/2026-07/2026-07-08.md), [master-handoff-index.md](../handoffs/active/master-handoff-index.md), [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md).
 
 ## Key Findings
 

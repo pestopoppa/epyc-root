@@ -2,7 +2,7 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-07-07 (learned routing classifier 81.0% ceiling, bulk-inference Package I frozen)
+**Last compiled**: 2026-07-08 (learned routing classifier 81.0% ceiling, bulk-inference Package I frozen)
 **Sources**: 67+ documents (added 2026-07-05 RI-10 decision-ready + hold_quality_unscored packet, N9 MLP rollout attestation bracket, episodic FAISS 95.7% repair; 2026-07-04 X-MAS enforce cutover, deterministic canary sampler, DAR-4b null sweep, A9 source-reward passthrough; prior 2026-07-04 RI-10 arm-attributed canary status refresh, 2026-07-03 RI-10 gate hardening and DAR-1 current replay, 2026-06-26 LRC P4.5 executed [null result])
 
 ## Summary
@@ -16,6 +16,16 @@ The factual-risk scorer represents the most significant routing innovation in th
 The broader routing stack comprises 9 production subsystems that must coordinate without conflicting: RoutingClassifier MLP, GraphRouter+GAT, BindingRouter, FailureGraph veto, conformal prediction risk gate, think-harder in EscalationPolicy, cost-aware Q-scoring, plan review gate, and SkillAugmentedRouter. The conformal prediction gate operates on output uncertainty while factual-risk operates on input characteristics -- complementary signals that must not double-gate. The difficulty_signal.py classifier produces the first routing gate, determining whether a request can be handled by a cheap model (worker) or needs escalation to more capable tiers.
 
 The 13 intake entries tagged as routing_intelligence are predominantly `already_integrated` foundational papers from the mixture-of-experts (arXiv:2206.01855), speculative decoding (arXiv:2207.10342), and learned routing (arXiv:2305.05176, arXiv:2309.11495) literatures. These informed the original MemRL design. The one `worth_investigating` entry is Reason-ModernColBERT (intake-174), a 150M-parameter late-interaction retriever that outperforms 7B+ dense retrievers on reasoning-intensive BRIGHT benchmarks by +7.3 NDCG@10 using MaxSim scoring on a ModernBERT backbone. This could improve the classification retriever's embedding quality for routing decisions.
+
+### New (2026-07-08, planner-hint containment and stale-tap freshness)
+
+> **Review flag (project-wiki writer-evidence policy):** model-compiled, not adopted until human or measured review.
+
+- **Planner hints are now kept planner-context only, and the contaminated seed-batch rows are quarantined append-only.** Orchestrator `b7518da0` removed the `### Planner Context` leakage path from sampled seed/eval prompts, kept StrategyStore hints in planner-only context, and made Seeder defensively ignore legacy `strategy_hints`. The journaled contaminated trials `1257-1263` were superseded append-only with `bug_corrupted_by=b7518da0`, so the evidence stays auditable without re-entering planner prompts. Sources: [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md), [progress 2026-07-08](../progress/2026-07/2026-07-08.md), [loops-and-dashboards-audit-2026-07-05.md](../handoffs/active/loops-and-dashboards-audit-2026-07-05.md).
+
+- **The dashboard now makes planner-tap freshness explicit instead of inferring it from stale text.** Orchestrator `b5cadba6` added `planner_tap_mtime_s` and `planner_tap_precedes_autopilot_start`, and the dashboard wording now distinguishes "current actions with no planner trace yet" from live planner activity. That means the operator can tell the difference between a real live tap and an old tap file that merely still exists on disk. Sources: [frontier-f2-self-running-lab.md](../handoffs/active/frontier-f2-self-running-lab.md), [master-handoff-index.md](../handoffs/active/master-handoff-index.md), [progress 2026-07-08](../progress/2026-07/2026-07-08.md).
+
+- **The fresh Fable restart is explicitly local-first and the live telemetry stays clean.** AutoPilot restarted as PID `3681234` with `AUTOPILOT_PLANNER_PRIMARY=local_ingest`, `AUTOPILOT_PLANNER_CRITIC=local_frontdoor`, `stack_mode=both`, and `code_stale=false`. That places the new planner-hint quarantine and stale-tap freshness checks in the same operational window: the restart can proceed without stale seed prompts, and the dashboard can identify whether a planner trace is genuinely current before using it as routing evidence. Sources: [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md), [frontier-f2-self-running-lab.md](../handoffs/active/frontier-f2-self-running-lab.md), [progress 2026-07-08](../progress/2026-07/2026-07-08.md).
 
 ## Key Findings
 

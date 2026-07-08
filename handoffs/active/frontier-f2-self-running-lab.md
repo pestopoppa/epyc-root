@@ -23,6 +23,7 @@ rewrite) now exist or are queued; this is the 10× on the lab itself.
   - [x] Add active-safe stale-daemon restart advisor and launcher preflight (`autopilot_restart_advisor`, `--preflight`) — ✅ 2026-07-05
   - [x] Record live active-safe/quiet-window readiness snapshot after restart-advisor deployment — ✅ 2026-07-06 (`orchestration/reports/self_running_lab_readiness_20260706T033917Z.json`, orchestrator `956cb202`)
   - [x] Wire restart advice into operator/dashboard escalation once the read-only signal has at least one boundary/no-boundary smoke record — ✅ 2026-07-06 (`epyc-orchestrator` `03f3917e`; CLI restart budget aligned to `--max-trials 3000` in `9ed7b95f`)
+  - [x] Mark stale planner tap history on the dashboard by comparing tap mtime with the current AutoPilot start, exposing `planner_tap_mtime_s` and `planner_tap_precedes_autopilot_start`, and wording current actions with no planner trace separately from live planner state — ✅ 2026-07-08 (`epyc-orchestrator` `b5cadba6`)
   - [x] Add active-safe outcome-progress watch so the lab can flag frontier/promotion stalls while AutoPilot is running — ✅ 2026-07-06 (`epyc-orchestrator` `56b12285`)
   - [x] Run active-safe deterministic watch batch into the canonical lab review queue — ✅ 2026-07-06 (`epyc-orchestrator` `ba0cc164`; schema accepts `waiting_for_planner_turn`; 7 task records, 7 pending reviews)
   - [x] Emit batch-review JSONL templates from the active-safe review-queue watch — ✅ 2026-07-06 (`epyc-orchestrator` `a83cc676`; 8 pending records, 8 template rows)

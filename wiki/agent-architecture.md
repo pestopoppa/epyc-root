@@ -2,7 +2,7 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-07-07 (bake gate cleared, J17 targeted consult positive, targeted consult gate shipped, F2/F3 lab evidence)
+**Last compiled**: 2026-07-08 (bake gate cleared, J17 targeted consult positive, targeted consult gate shipped, F2/F3 lab evidence)
 **Sources**: 64+ documents
 
 ## Summary
@@ -14,6 +14,14 @@ Three deep-dives map the design space against external architectures. Paperclip 
 The EPYC orchestrator's tiered pipeline sits between these topologies. It has stronger coordination than AgentRxiv's peer-to-peer approach (explicit routing decisions, escalation chains, safety gates) but less rigid hierarchy than Paperclip's org chart (no persistent issue database, request-scoped lifecycle). Where it genuinely leads the field is in three areas: (1) learned routing intelligence that no surveyed framework matches -- MemRL Q-value weighted routing, factual-risk scoring, difficulty signal classification, 9 production routing subsystems that coordinate without conflicting; (2) 5-layer context management versus basic message trimming (LangGraph) or no management at all (Paperclip, AgentRxiv); and (3) production safety infrastructure with 43+ feature flags, quality floor gates, per-suite regression guards, consecutive failure auto-rollback, and a think-harder ROI calculation that regulates compute spend on escalation.
 
 The key architectural tension is between the current pydantic_graph's flat 7-node structure and the need for composable subgraphs as the system grows. LangGraph's subgraph composition, checkpoint granularity with time-travel debugging, and `interrupt()` flexibility at any node represent genuine capability gaps. However, migration carries significant risk: 180+ state fields, 120+ tests, and deep domain-specific features (MemRL, think-harder ROI, budget enforcement, 5-layer context) have no LangGraph equivalents and would require porting. The recommended path is hybrid -- build new capabilities as LangGraph subgraphs alongside the existing pydantic_graph, migrating nodes incrementally.
+
+### New Findings (2026-07-08 — local-first authority restart with process-relative planner freshness)
+
+- **The routing plane now runs through a fresh local-first authority wrapper instead of the older cloud-default restart target.** AutoPilot restarted as PID `3681234` with `AUTOPILOT_PLANNER_PRIMARY=local_ingest`, `AUTOPILOT_PLANNER_CRITIC=local_frontdoor`, `stack_mode=both`, and `code_stale=false`. That is an architecture-level shift: the planner path now prefers the local stack by default while still preserving a distinct critic role and explicit restart boundary. Sources: [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md), [master-handoff-index.md](../handoffs/active/master-handoff-index.md), [progress 2026-07-08](../progress/2026-07/2026-07-08.md).
+
+- **Planner evidence is now process-relative rather than text-relative.** `b5cadba6` added `planner_tap_mtime_s` and `planner_tap_precedes_autopilot_start`, so dashboard consumers can tell whether a planner tap is actually from the current process or just a stale file still on disk. That is an observability contract change, not just a UI tweak: it prevents old tap history from masquerading as current routing evidence. Sources: [loops-and-dashboards-audit-2026-07-05.md](../handoffs/active/loops-and-dashboards-audit-2026-07-05.md), [frontier-f2-self-running-lab.md](../handoffs/active/frontier-f2-self-running-lab.md), [progress 2026-07-08](../progress/2026-07/2026-07-08.md).
+
+- **Planner prompt hygiene is now enforced as a separate containment rule.** `b7518da0` keeps `StrategyStore` hints in planner-context only, ignores legacy `strategy_hints` on Seeder, and quarantines the contaminated `1257-1263` trials append-only with `bug_corrupted_by=b7518da0`. Architecturally, that separates durable evidence from mutable prompt assembly, which is the right boundary if the routing plane is going to keep learning from its own history without replaying corrupted history into new actions. Sources: [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md), [progress 2026-07-08](../progress/2026-07/2026-07-08.md), [loops-and-dashboards-audit-2026-07-05.md](../handoffs/active/loops-and-dashboards-audit-2026-07-05.md).
 
 ## Key Findings
 
