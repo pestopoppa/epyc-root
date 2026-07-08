@@ -291,6 +291,9 @@ Ranks reference the workflow synthesis; the adversarial critic's corrections are
   surface churn, not just the current levers. Focused `optimization_brief`
   tests passed (`9 passed`) and the touched files stayed `py_compile`/`git
   diff --check` clean. ✅ 2026-07-06
+- [x] Optimization brief ruled-out scrub: journal-aware filtering now removes
+  bug-corrupted critic fences from the main ruled-out list and surfaces them
+  separately from malformed-proposal churn; live API reload verified. ✅ 2026-07-08
 - **[P1 · S · medium] Production-safety + parity fixes the synthesis dropped** — isolate GEPA per-candidate prompt writes (`gepa_optimizer.py:88`) from the live prompts dir (a crash leaves a mutated production prompt) via the existing WorktreeManager/isolation path; make the **W6 gaming comparator config-aware** (`audit_block_report.py:407` is blocking the Fable gate ~29 trials on a between-candidate-variance false positive); extend `cmd_restore` (`autopilot.py:6309`) to purge StrategyStore + AP-22 memory ([[feedback_autopilot_rewind_must_purge_strategy_store]] — the loop the scar was named for).
 
 ### Phase 2 — The human-owned MEASUREMENT amendment (ONE bundle, one operator sign-off)
