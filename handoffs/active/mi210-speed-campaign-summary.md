@@ -51,6 +51,22 @@ The smoke-tests map the card; the payoff is hosting the big models. Two axes:
 
 **Ladder:** IQ2 near-term (122B, gated on eval-parity) → expert-offload medium-term (quality + the 80B-ingest / GLM path) → **GLM-5.2 endgame** (needs offload; maybe IQ2-resident-experts + offload-cold-tail). Single MI210 = one big model resident at a time → **Gate-R residency scheduling**. All HOLD, operator-only prod push. (Note: the lean-registry architect `4.3` is confirmed-stale — flag for the orchestrator session to update to the era-labeled ~20 MTP / 12.19 no-MTP, not edited here per the measurement trust boundary.)
 
+## Research Intake Update — 2026-07-08: KernelBench Seeded Fuzzing (rec-007)
+
+**Source**: KernelBench (intake-797, arxiv 2606.20128)
+
+**Key finding**: Seeded fuzzing for kernel correctness catches 9/9 buggy kernels, passes 15/15 controls. Provides fine-grained kernel-level benchmarking substrate.
+
+**Applicability to EPYC**: Directly applicable as step 3 in the four-step experimental kernel workflow (Pull → Build → **Validate no regressions** → Deploy). KernelBench's seeded fuzzing methodology can serve as a regression guard for v7 candidate validation, catching correctness regressions in experimental kernel builds before promotion.
+
+**Action**: Evaluate KernelBench for integration into our experimental kernel validation pipeline. Particularly relevant for:
+- iqk AVX-512 GEMM kernel regression testing
+- GPU kernel validation before v7 promotion
+- Agentic ROCm kernel authoring loop (child handoff)
+
+- [ ] **MI-KB-1** — evaluate KernelBench integration into experimental kernel validation pipeline (step 3 of four-step workflow)
+- [ ] **MI-KB-2** — run KernelBench over current v6 production kernel to establish baseline
+
 ## Progress checklist
 
 - [x] Campaign executive summary produced - GPU speed structurally exhausted (2026-07-04) ✅

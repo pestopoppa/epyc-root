@@ -98,6 +98,24 @@ DAR-6.5 unconditional J14 A/B pass
 | G12 role-tier recalibration | AA-Omniscience frontdoor/worker/architect evidence completed; deterministic 4-class scoring accepted for role-tier recalibration; measured tier multipliers landed in orchestrator. Mode/canary/enforce decisions remain RI-10+ gates. | [bulk-inference-campaign](bulk-inference-campaign.md) |
 | Research intake | AA-Omniscience, STOP, Qwen-Scope SAE caveats, BaRP/Conductor context captured. | [completed ledger](../completed/routing-intelligence-completed-through-2026-05-28.md) |
 
+## Research Intake Update — 2026-07-08: J-Space Interpretability (rec-009)
+
+**Source**: Anthropic J-space (intake-782)
+
+**Key finding**: Anthropic's J-space work on geometric interpretability of model representations could inform routing intelligence — understanding the geometric structure of model capabilities may enable better routing decisions than current embedding-based approaches.
+
+**Applicability to EPYC**: Our current routing relies on embedding-based similarity (MemRL, factual-risk regex scorer, difficulty-signal regex features). J-space's geometric interpretability could provide a more principled routing substrate by mapping model capability geometry rather than prompt embedding similarity.
+
+**Integration points**:
+- Could replace/augment MemRL's embedding-based retrieval with geometric routing
+- May enable the learned-head routing in `outer-coordinator-learned-head.md` with geometric priors
+- Complements the tri-role architecture's role-axis by providing geometric capability mapping per role
+
+**Action**: Monitor J-space development; evaluate integration with learned-head routing when the geometric interpretability substrate is available for open-weight models.
+
+- [ ] **RI-JS-1** — monitor J-space interpretability tools for open-weight model compatibility
+- [ ] **RI-JS-2** — evaluate geometric routing as an augmentation to MemRL embedding retrieval
+
 ## Reporting Instructions
 
 - Update [`routing-and-optimization-index.md`](routing-and-optimization-index.md) P6 after RI-10/11/12 status changes.

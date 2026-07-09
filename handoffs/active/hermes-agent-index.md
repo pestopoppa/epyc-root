@@ -73,6 +73,24 @@ Context compression or tool-output changes
 
 After completing a row, update the owning handoff, this index, and `progress/YYYY-MM/YYYY-MM-DD.md`. If the work changes orchestrator API behavior, also update `routing-and-optimization-index.md`.
 
+## Research Intake Update — 2026-07-08: fast-rlm Harness Patterns (rec-010)
+
+**Source**: fast-rlm (intake-783)
+
+**Key finding**: RecursiveLM patterns for structured agent orchestration, MCP integration, and session management. Tool inheritance boundaries and env injection patterns are applicable to our harness design.
+
+**Harvestable patterns**:
+1. **ACP integration pattern**: structured session management with tool inheritance boundaries
+2. **MCP client design**: tool registry and lifecycle management
+3. **Session management**: structured handoff and context preservation patterns
+4. **Env injection**: controlled environment variable passing to sub-agents
+
+**Applicability to EPYC**: These patterns are relevant to our Hermes outer shell and orchestrator API design, particularly for sub-agent delegation and tool-use patterns.
+
+- [ ] **HA-RLM-1** — harvest ACP integration pattern for Hermes session management
+- [ ] **HA-RLM-2** — evaluate MCP client design for tool-use delegation
+- [ ] **HA-RLM-3** — assess env injection patterns for sub-agent orchestration
+
 ## Progress checklist
 
 - [ ] Reference non-Hermes client live --send/streaming validation (quiet window)

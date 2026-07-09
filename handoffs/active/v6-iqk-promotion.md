@@ -54,6 +54,18 @@ The promotion guard enforces **compiled `stack_priors.yaml` == `stack_manifest` 
 - [x] **L** Eval-parity package: P-QUAL-PROMO matched full-port IQK-on/off evidence recorded for worker_general (`N=206` common AA Omniscience rows, deterministic F1, no paired accuracy regression, +38.5% avg t/s). Clean post-reboot bench remains separate.
 - [~] **M** Docs/wiki/index close-out + supersede stale verdict; per-repo commits/report hashes. Core N13 surfaces now consistently state that v6 is in production, ik_llama is deprecated, the era/frontier/eval-parity gates are recorded, and only the clean post-reboot bench plus any operator production-policy decision remain open. Do not archive this handoff until that clean bench/policy tail is resolved.
 
+## Research Intake Update — 2026-07-08: KernelBench Validation (rec-007)
+
+**Source**: KernelBench (intake-797, arxiv 2606.20128)
+
+**Key finding**: Seeded fuzzing for kernel correctness catches 9/9 buggy kernels, passes 15/15 controls. Provides fine-grained kernel-level benchmarking substrate.
+
+**Applicability to EPYC**: Directly applicable as step 3 in the experimental kernel workflow (Pull → Build → Validate → Deploy). KernelBench's seeded fuzzing can serve as a regression guard for any future kernel changes to v6 (e.g., v7 candidate validation).
+
+**Note**: v6 production is FROZEN — KernelBench integration is for the experimental kernel workflow only, not for modifying v6 in place. Any future kernel evolution follows the four-step workflow through `llama.cpp-experimental` branches.
+
+- [ ] **V6-KB-1** — evaluate KernelBench integration into experimental kernel validation pipeline for v7+ candidates
+
 ## Blocking gaps (resolved-in-plan; see annex for line detail)
 1. PG-1 checkout (FF merge → checkout-in-canonical at cutover; v5 rollback pre-staged) · 2. SONAME lib-shadow (scrub LD_LIBRARY_PATH + `/proc/maps` assert) · 3. v6 CLI arg-parse (`--draft-max`→removed; 4 sites→`--spec-draft-n-max`) · 4. promotion-gate pytest fails-closed (rewrite lockstep) · 5. GGML_* strip kills worker iqk (migrate off binary_override) · 6. worker base-lineage garble (base→ORIG, head→v6-Q8) · 7. canonical_recipe prefers ik (add v6 entry).
 

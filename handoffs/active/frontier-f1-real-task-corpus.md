@@ -42,6 +42,21 @@ quality gains *felt*.
   artifacts were written, so W3 remains open.
 - [x] **W4 — wire into decisions** (1 day): promotion evals (findings-01 Phase 2.4) include a real-suite slice; routing per-class regret (DAR-1 replay) reported against `task_classes` — acceptance: both reporting paths emit per-class real-task numbers. Orchestrator `fbfde20b` closes the reporting mechanism: `package_real_suite_eval.py` carries `real_task_class` into prompt-free question ledgers and `by_task_class` summaries, while `dar1_regret_analysis.py` parses `task_class` / `real_task_class` / `task_record_v1.class` and reports per-class counts, regret, and success rate. This does not replace the clean-window W3 EvalTower acceptance run.
 
+## Research Intake Update — 2026-07-08: DGM Dynamic Task Generation (rec-002)
+
+**Source**: DGM (intake-786, arxiv 2505.22954), Hyperagents (intake-787), ADAS (intake-791)
+
+**Key finding**: The Hu/Lu/Clune/Zhang author lineage (ADAS → DGM → Hyperagents) shows a clear trajectory from static benchmarks to fully autonomous task generation + agent execution. DGM's approach of generating evaluation tasks on-the-fly based on model capabilities is directly relevant to our real-task corpus expansion.
+
+**DGM methodology**: self-code-modification + empirical validation loop. Agent generates tasks, executes them, validates results, and iteratively improves both tasks and capabilities. Archive-based evolution with parallel exploration tree.
+
+**Applicability to EPYC**: Could be used to dynamically expand the Frontier F1 corpus beyond passive capture — generate synthetic tasks that match observed workload classes, then validate against operator verdict patterns.
+
+**CAUTION**: SkillsBench v3 (intake-096) shows self-generated skills are net-negative (-1.3pp avg). Any DGM-style corpus expansion MUST include validation gates against our curated W2/W3 baseline. Do not let self-generated tasks enter the autopilot gate without human-curate confirmation.
+
+- [ ] **F1-DGM-1** — scope DGM task-generation methodology for W4+ corpus expansion; validate against curated W3 ledger
+- [ ] **F1-DGM-2** — verify compatibility with existing verifier infrastructure (`debug_scorer.py`, EvalTower)
+
 ## Gates & pitfalls
 
 - Do NOT let the autopilot optimize against the real suite until n is large enough — it enters as audit/promotion material first (power discipline, findings-01).

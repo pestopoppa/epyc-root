@@ -515,6 +515,25 @@ Three "Research Intake Update" sections have surfaced **scoring-mechanism** upgr
 | 345 | GEPA Full Program Adapter | 93% MATH (vs 67% base); evolves signatures+modules+control flow; 35x fewer rollouts | P10 (AP-20) |
 | 349 | dspy.RLM Module | Metadata-first REPL exploration; sub_lm pattern; works with OpenAI-compatible /v1/ endpoint | P11 (AP-25–26) |
 
+## Research Intake Update — 2026-07-08: Self-Improvement Architectures (rec-004)
+
+**Source**: SIA (intake-793, arxiv 2605.27276), ShinkaEvolve (intake-779), SkillRL (intake-092)
+
+**Key finding**: SIA and ShinkaEvolve explore recursive self-improvement loops for agents. Combined with SkillRL's recursive skill-augmented RL, these suggest a pathway for our autopilot to move beyond trial-and-error optimization toward structured self-improvement with skill accumulation.
+
+**SIA approach**: combines harness + weight updates; LawBench +25.1%, GPU kernel +12.4%. **CAUTION**: weight updates are inapplicable to our CPU stack; harvest harness-only patterns. The harness evolution component (meta-harness optimization) is the extractable signal.
+
+**Integration points**:
+- Species 0 (Seeder) could incorporate self-improvement loops beyond Q-value accumulation
+- Species 2 (PromptForge) could use recursive self-improvement for prompt evolution beyond mutation
+- Species 4 (Evolution Manager) aligns with EvoScientist's knowledge distillation separation
+
+**CRITICAL CAUTION — SkillsBench v3 (intake-096)**: self-generated skills are net-negative (-1.3pp avg). Any self-improvement integration MUST include validation gates against a curated baseline. Do not let self-generated improvements enter the autopilot gate without human-curate confirmation.
+
+- [ ] **AP-SI-1** — scope SIA harness-only patterns for integration into existing species; weight-update path is inapplicable
+- [ ] **AP-SI-2** — design validation gates for any self-improvement loop; gate on curated-baseline comparison (SkillsBench v3 caution)
+- [ ] **AP-SI-3** — evaluate ShinkaEvolve archive-based evolution for StrategyStore enrichment
+
 ## Known Issues — KV Cache seq_add Crash on Qwen3.5 Hybrids (2026-04-15, PATCHED)
 
 architect_general (Qwen3.5-122B-A10B, ports 8083+8183) crashed with assertion failure in `llama-kv-cache.cpp:614`:

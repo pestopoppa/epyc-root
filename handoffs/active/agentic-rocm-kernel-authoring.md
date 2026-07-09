@@ -55,6 +55,19 @@ Same `gfx90a` ISA **predicts compile compatibility, not performance equivalence.
 - **At every audit of this handoff, run the GEAK-family freshness sweep** in the deep dive §9 (GEAK repo pin/tag drift; missing gfx90a evidence for 677/678/679; AgentKernelArena leaderboard + GEAK-vs-general A/B; new AMD-native siblings on `AMD-AIG-AIMA`/`AMD-AGI`).
 - **Done this session:** GEAK repo state recorded (HEAD `c8bfc19`, tags →`v4.8.3.3`, branches GEAK-v2/GEAK-HIP); AgentKernelArena ingested (intake-679). **Next intake candidates** if they appear: a GEAK-v2 arXiv, a GEAK-HIP open benchmark, the AgentKernelArena leaderboard.
 
+## Research Intake Update — 2026-07-08: KernelBench (rec-007)
+
+**Source**: KernelBench (intake-797, arxiv 2606.20128)
+
+**Key finding**: Seeded fuzzing for kernel correctness catches 9/9 buggy kernels, passes 15/15 controls. Provides fine-grained kernel-level benchmarking substrate.
+
+**Applicability to EPYC**: Directly applicable to the agentic kernel-authoring loop — serves as the C3 correctness verification substrate in the generate→compile→verify→profile→refine loop. KernelBench's seeded fuzzing methodology can catch correctness regressions in agent-generated kernels before they enter the profiling stage.
+
+**Integration with existing C1-C6**: KernelBench maps to C3 (correctness) in our verification layer, complementing C4 (profiler-metric) and C6 (anti-reward-hacking). The seeded fuzzing approach is complementary to our GEAK-eval substrate.
+
+- [ ] **AK-KB-1** — integrate KernelBench into GEAK-eval verification loop as C3 correctness substrate
+- [ ] **AK-KB-2** — establish KernelBench baseline over current llama.cpp-HIP kernels
+
 ## Progress checklist
 
 - [ ] Reproduce GEAK-eval (intake-674) on gfx90a MI210 - compile+correctness+timing round-trip (first sanity gate)
