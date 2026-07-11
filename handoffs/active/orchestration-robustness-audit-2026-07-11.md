@@ -136,6 +136,9 @@ Full REPL error taxonomy extracted from `repl_tap.log` (4462 errors, 4280 `CALL(
 - [x] REPL `FINAL(...)` now accepts `answer`/`result`/`secret`/`value`/`response` aliases and rejects unsupported kwargs with a clear `ValueError` ✅ 2026-07-11
 - [x] Autopilot supervisor/death ledger wrapper landed (`autopilot_supervisor.py`, `start_fable_authority_daemon.py` bounded restart/death-ledger defaults) ✅ 2026-07-11
 - [x] Startup attestation landed (config digests, combined config hash, gate env capture, mismatch reporting, phase health display of tool/planner flags, including visible planner spend-breaker state) ✅ 2026-07-11
+- [x] Planner spend-breaker hardening stayed opt-in for local planner runs: the coordinator default is now off when the env is absent, the authority daemon still pins `AUTOPILOT_PLANNER_SPEND_BREAKER=0`, and the live restart confirmed that env at `0` ✅ 2026-07-11
+- [x] PID-age-verified preflight gate landed: `start_fable_authority_daemon.py --preflight` now exits nonzero unless the live PID is age-verified current; the live rejection on Dirac's MH-9 worker is expected because unreviewed runtime `controller_io.py` edits predate PID `1039446` ✅ 2026-07-11
+- [x] Host timing covariates landed for P2.9: `host_health.py` now records `min_core_mhz`, `host_inflight`, `numa_balancing`, and cache/cache-memory state; `eval_tower.py` captures compact per-question host covariates plus `tokens_generated` and adds observe-only >=128-token speed analytics fields in `EvalResult.details` ✅ 2026-07-11
 
 ## Tasks
 - [ ] P0.1 operator run/pause decision on autopilot candidate species
@@ -143,19 +146,27 @@ Full REPL error taxonomy extracted from `repl_tap.log` (4462 errors, 4280 `CALL(
   - [x] W5 control-pair attestation report-only scaffold landed in `epyc-orchestrator` commit `7a2a7c89`: `hle_metrics.py` now journals default-off `oracle_adequacy.control_attestation` status (`disabled`/`no_controls`/`incomplete`/`failed`/`passed`) from supplied known-good/known-bad rows without changing SafetyGate, Pareto admission, learning exclusion, blacklists, or thresholds. Binding gate remains operator/policy-gated. ✅ 2026-07-11
   - [x] P0.2a report-only amendment evidence view landed in `epyc-orchestrator` commit `65d4cf40`: `fable5_gate_report.py` now surfaces rate-axis state, latest oracle control-pair attestation, eval discriminability/T3 hard-lane coverage, and RI-10 canary state under `p0_2_amendment_bundle_inputs` with empty blockers and explicit `operator_signing_required`; signed P2 amendment / binding rate-axis era-fence remains operator-gated. ✅ 2026-07-11
 - [ ] P0.3 era-fenced blacklist purge + tool/delegation lever re-exploration
+  - [x] P0.3a guarded purge planner/apply helper landed in `epyc-orchestrator` commit `a26e6c6a`; dry-run identified exactly the 5 audit-scoped entries (`frontdoor.md` prompt/GEPA freezes, t655, t664, t864) and preserves 49 others. Apply remains operator-gated by `--approval-token ERA_FENCED_BLACKLIST_PURGE_2026_07_11`. ✅ 2026-07-11
   - [x] P0.3b audit-scoped tool/delegation re-exploration landed in `epyc-orchestrator` commit `134ed346`: AutoPilot now marks the three automated instrument-era structural blacklist entries (`architect_delegation` t655, `specialist_routing` t664/t864) as retryable without rewriting YAML, preserves manual frontdoor prompt/GEPA freezes behind the approval token, and journals `p0_3_blacklist_reexploration_*` rationale when dispatching those retries. ✅ 2026-07-11
 - [x] P1.4 loop supervisor + death-cause ledger ✅ 2026-07-11
-- [ ] P1.5 PID-age-verified "landed" definition (`--require-current-code` gating)
+- [x] P1.5 PID-age-verified "landed" definition (`--require-current-code` gating) ✅ 2026-07-11
 - [x] P1.6 startup attestation (gate-set + config hash logged and diffed) ✅ 2026-07-11
 - [x] P1.6a REPL `_final()` keyword arg fix — accept `**kwargs`, normalize to `answer` (W10, 1262 wasted trials) ✅ 2026-07-11
 - [x] P1.6b Unknown tool cleanup — stub or remove from prompts; confirm `AUTOPILOT_TOOL_SENTINELS=1` (W10, 403 wasted trials) ✅ 2026-07-11
-- [ ] P2.7 runtime manifest via existing SSoT pipeline (N11 extension)
-- [ ] P2.8 lock-file JSON payload + display-matrix renderer collapse
-- [ ] P2.9 host covariates journaled per timing event
-- [ ] P3.10 migration-discipline hook (all readers in one change)
-- [ ] P3.11 hermetic NUMA-parity invariant test + reader-agreement contracts
-- [ ] P3.12 shadow lane for new live-loop components
-- [ ] P3.13 regressions-per-active-trial + promotions-per-100-trials metrics
+- [x] P2.7 runtime manifest via existing SSoT pipeline (N11 extension) ✅ 2026-07-11
+  - Runtime-only derived manifest now refreshes from stack lifecycle events and is kept out of git; the launcher writes `/mnt/raid0/llm/tmp/orchestrator_runtime_facts.json` on start/reload and best-effort after state save.
+- [x] P2.8 lock-file JSON payload + display-matrix renderer collapse ✅ 2026-07-11
+  - [x] P2.8a region-lock payload attribution landed in `epyc-orchestrator` commit `799f1655` ("Add region lock payload attribution") ✅ 2026-07-11
+  - [x] P2.8b display-matrix renderer collapse landed in `epyc-orchestrator` commit `4de996ea` ("Collapse region lock grid onto display matrix") ✅ 2026-07-11
+- [x] P2.9 host covariates journaled per timing event ✅ 2026-07-11
+- [x] P3.10 migration-discipline hook (all readers in one change) ✅ 2026-07-11
+  - Root commit `6d023e9d` enforced stack-fact migration discipline with the pre-commit hook, validator, candidate gate integration, and focused tests; verified with `py_compile`, `bash -n`, targeted pytest, negative/positive CLI checks, and `git diff --check`.
+- [x] P3.11 hermetic NUMA-parity invariant test + reader-agreement contracts ✅ 2026-07-11
+  - Commit `608cc54c` landed the shared NUMA-mode normalization helper and aligned launcher, stack-priors, template, guard, and dashboard readers on the same contracts.
+- [x] P3.13 regressions-per-active-trial + promotions-per-100-trials metrics ✅ 2026-07-11
+  - Commit `fa0391a5` reported the active-trial outcome progress metrics in the phase-status/autopilot/dashboard path; verification stayed clean with Ruff, `py_compile`, the focused pytest batches, and `git diff --check`.
+- [x] P3.12 shadow lane for new live-loop components ✅ 2026-07-11
+  - Commit `d596b5b2` ("Gate live-loop dispatch on action availability") added the live-loop shadow lane: planner-selected dispatch now skips outside the active allowlist, while sequential/due/fresh-eval/baseline/candidate-replay paths keep their own policy gates.
 
 *Master index not updated — index changes are operator-approved per CLAUDE.md; add this handoff to the index if accepted.*
 
@@ -172,3 +183,5 @@ Research-intake **intake-798** ("The Gemma Challenge and the Case for Agent Coll
 - **↔ W5 eval-gaming / discriminability gate (P0.2).** Their PPL-only gate **was gamed** (agents held PPL under threshold while degrading MMLU-Pro/GPQA by 15/40 pts); they reactively added MMLU-Pro + GPQA-Diamond for top submissions. Independent, real-world confirmation of the audit's "a single cheap proxy will be gamed; a saturated/1-D suite invalidates every calibrated threshold" concern — argues the discriminability audit gating P0.2 should treat **multi-dimensional + evolving** gates as the steady state, not a fix.
 
 See also the gemma4-specific kernel spinoff: [`gemma-challenge-kernel-techniques-v7.md`](gemma-challenge-kernel-techniques-v7.md).
+
+Related checkpoint: MH-9 new-file mutation support landed in orchestrator commit `88639b1f`, closing the PromptForge checkpoint without changing any remaining audit tasks.
