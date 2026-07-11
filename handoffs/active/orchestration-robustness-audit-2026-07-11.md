@@ -140,6 +140,7 @@ Full REPL error taxonomy extracted from `repl_tap.log` (4462 errors, 4280 `CALL(
 ## Tasks
 - [ ] P0.1 operator run/pause decision on autopilot candidate species
 - [ ] P0.2 P2 amendment bundle signed (rate-axis era-fence first) + discriminability gate + P3 canary
+  - [x] W5 control-pair attestation report-only scaffold landed in `epyc-orchestrator` commit `7a2a7c89`: `hle_metrics.py` now journals default-off `oracle_adequacy.control_attestation` status (`disabled`/`no_controls`/`incomplete`/`failed`/`passed`) from supplied known-good/known-bad rows without changing SafetyGate, Pareto admission, learning exclusion, blacklists, or thresholds. Binding gate remains operator/policy-gated. ✅ 2026-07-11
 - [ ] P0.3 era-fenced blacklist purge + tool/delegation lever re-exploration
 - [x] P1.4 loop supervisor + death-cause ledger ✅ 2026-07-11
 - [ ] P1.5 PID-age-verified "landed" definition (`--require-current-code` gating)
