@@ -180,7 +180,9 @@ This packet is command-discovery and evidence packaging only. It does not author
 - [x] P2.8 lock-file JSON payload + display-matrix renderer collapse ✅ 2026-07-11
   - [x] P2.8a region-lock payload attribution landed in `epyc-orchestrator` commit `799f1655` ("Add region lock payload attribution") ✅ 2026-07-11
   - [x] P2.8b display-matrix renderer collapse landed in `epyc-orchestrator` commit `4de996ea` ("Collapse region lock grid onto display matrix") ✅ 2026-07-11
+  - [x] P2.8c browser fallback removal landed in `epyc-orchestrator` commit `08e94997`: `dashboard.html` no longer reconstructs a region-lock grid from legacy `by_role`/PID data when the backend display matrix is unavailable; it shows an explicit diagnostic instead, so observability cannot silently fork lock authority again. ✅ 2026-07-11
 - [x] P2.9 host covariates journaled per timing event ✅ 2026-07-11
+- [ ] W1 runtime-facts consumption follow-up: a live reader insertion for `/mnt/raid0/llm/tmp/orchestrator_runtime_facts.json` was prototyped and reverted after `gitnexus impact active_stack_numa_mode --repo epyc-orchestrator --direction upstream` returned HIGH risk (`22` upstream impacts across dashboard health/topology/node detail/snapshot/tap flows). Re-enter only with explicit acceptance of that blast radius; do not paper over this with another env/PID fallback.
 - [x] P3.10 migration-discipline hook (all readers in one change) ✅ 2026-07-11
   - Root commit `6d023e9d` enforced stack-fact migration discipline with the pre-commit hook, validator, candidate gate integration, and focused tests; verified with `py_compile`, `bash -n`, targeted pytest, negative/positive CLI checks, and `git diff --check`.
 - [x] P3.11 hermetic NUMA-parity invariant test + reader-agreement contracts ✅ 2026-07-11
