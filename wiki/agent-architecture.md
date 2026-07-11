@@ -2,7 +2,7 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-07-08 (bake gate cleared, J17 targeted consult positive, targeted consult gate shipped, F2/F3 lab evidence)
+**Last compiled**: 2026-07-11 (bake gate cleared, J17 targeted consult positive, targeted consult gate shipped, F2/F3 lab evidence)
 **Sources**: 64+ documents
 
 ## Summary
@@ -22,6 +22,10 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 - **Planner evidence is now process-relative rather than text-relative.** `b5cadba6` added `planner_tap_mtime_s` and `planner_tap_precedes_autopilot_start`, so dashboard consumers can tell whether a planner tap is actually from the current process or just a stale file still on disk. That is an observability contract change, not just a UI tweak: it prevents old tap history from masquerading as current routing evidence. Sources: [loops-and-dashboards-audit-2026-07-05.md](../handoffs/active/loops-and-dashboards-audit-2026-07-05.md), [frontier-f2-self-running-lab.md](../handoffs/active/frontier-f2-self-running-lab.md), [progress 2026-07-08](../progress/2026-07/2026-07-08.md).
 
 - **Planner prompt hygiene is now enforced as a separate containment rule.** `b7518da0` keeps `StrategyStore` hints in planner-context only, ignores legacy `strategy_hints` on Seeder, and quarantines the contaminated `1257-1263` trials append-only with `bug_corrupted_by=b7518da0`. Architecturally, that separates durable evidence from mutable prompt assembly, which is the right boundary if the routing plane is going to keep learning from its own history without replaying corrupted history into new actions. Sources: [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md), [progress 2026-07-08](../progress/2026-07/2026-07-08.md), [loops-and-dashboards-audit-2026-07-05.md](../handoffs/active/loops-and-dashboards-audit-2026-07-05.md).
+
+- **The live loop now has explicit supervision and attestation surfaces, not just "start" and "restart" paths.** The orchestration robustness wrap-up landed a supervisor/death ledger wrapper for autopilot launches plus startup attestation that records config digests, a combined config hash, gate-environment capture, mismatch reporting, and phase-health flags for tool/planner state. The planner spend breaker is intentionally visible but not required: the local-planner authority daemon runs with `AUTOPILOT_PLANNER_SPEND_BREAKER=0`, and phase health reports that state so future sessions do not infer the wrong contract from a stale test. Sources: [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [progress 2026-07-11.md](../progress/2026-07/2026-07-11.md).
+
+- **The REPL/tool surface now exposes a compatibility layer for the exact failure modes the audit measured.** `FINAL(...)` keyword aliases (`answer`/`result`/`secret`/`value`/`response`) are accepted and unsupported kwargs fail loudly, while builtin compatibility tools (`search_files`, `get_time`, `fetch_stock_price`, `translate_text`, `start_service`) are registered with safe/read-only behavior. That reduces the chance that tool availability diverges from prompt expectations and silently wastes trials. Sources: [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [progress 2026-07-11.md](../progress/2026-07/2026-07-11.md).
 
 ## Key Findings
 
@@ -279,6 +283,8 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 - [Paperclip & AgentRxiv deep dive](../research/deep-dives/agent-architectures-paperclip-agentrxiv.md) -- cost governance model (3-tier enforcement), ticket system with atomic checkout, shared knowledge accumulation, request depth tracking, heartbeat-driven invocation
 - [LangGraph ecosystem comparison](../research/deep-dives/langgraph-ecosystem-comparison.md) -- checkpoint granularity gap, subgraph composition need, interrupt() flexibility, state immutability + reducers, domain advantages assessment (EPYC leads in 7 categories)
 - [OpenGauss architecture analysis](../research/deep-dives/opengauss-architecture-analysis.md) -- tool-pair sanitization, protected-zone context compression, multi-backend abstraction, ACP server, prompt injection scanning, session analytics, trajectory export
+- [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/orchestration-robustness-audit-2026-07-11.md) -- supervisor/death ledger, startup attestation, loop supervision, REPL/tool compatibility layer
+- [progress 2026-07-11](../progress/2026-07/2026-07-11.md) -- wrap-up checkpoint for landed docs-only changes and verification results
 - [intake-103](https://arxiv.org/abs/2603.09906) Thinking to Recall -- CoT reasoning expands factual recall via computational buffer and factual priming; hallucination risk from generative self-retrieval
 - [intake-105](https://arxiv.org/abs/2603.08640) PostTrainBench -- agents can surpass official baselines in targeted scenarios (BFCL 89% vs 67%) but substantially underperform on general post-training (23.2% vs 51.1%)
 - [intake-106](https://arxiv.org/abs/2603.08706) Agentic Critical Training -- GRPO-based self-reflection for quality-aware agents; transfers across model sizes

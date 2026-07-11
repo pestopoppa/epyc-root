@@ -2,7 +2,7 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-07-08
+**Last compiled**: 2026-07-11
 **Sources**: 87+ documents
 
 ## Summary
@@ -22,6 +22,10 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 - **Evidence hygiene now distinguishes fresh planner traces from stale ones.** Dashboard planner-tap freshness is now process-relative (`planner_tap_mtime_s`, `planner_tap_precedes_autopilot_start`), and contaminated seed-batch rows are quarantined append-only with `bug_corrupted_by=b7518da0` instead of being silently rewritten away. That keeps the research record auditable while preventing bad history from re-entering new planner turns. Sources: [loops-and-dashboards-audit-2026-07-05.md](../handoffs/active/loops-and-dashboards-audit-2026-07-05.md), [master-handoff-index.md](../handoffs/active/master-handoff-index.md), [progress 2026-07-08](../progress/2026-07/2026-07-08.md).
 
 - **The wrap-up pipeline now treats the freshness check itself as a research artifact.** The new progress log and master checkpoint record the PID, planner roles, and code-staleness state for the fresh authority restart, which is exactly the kind of traceable evidence an autonomous research loop needs if it is going to learn from its own operational history instead of just from benchmark outputs. Sources: [progress 2026-07-08](../progress/2026-07/2026-07-08.md), [master-handoff-index.md](../handoffs/active/master-handoff-index.md), [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md).
+
+- **The research loop now has a loop-side preflight that blocks dead-end promotion paths before the species waste cycles on them.** The sequential gate preflight in the orchestration robustness session now defers promotion-dependent candidate actions when rate-axis reachability is impossible or alpha wealth is exhausted, then pivots to baseline/reference draws instead. That is a concrete autonomy improvement: the loop stops proposing progress into an unreachable gate and keeps the non-promotion work moving. Sources: [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [progress 2026-07-11.md](../progress/2026-07/2026-07-11.md), [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md).
+
+- **Autonomous research now carries a runtime definitions-of-done layer, not just evaluator metrics.** The same session added supervisor/death-ledger wrapping, startup attestation, REPL `FINAL(...)` alias normalization, and builtin tool compatibility registrations. The architectural point is that a search loop needs to know whether the live process is current and whether the tool surface matches what the prompts assume; otherwise it can optimize against a stale or partial harness and call that progress. One concrete correction is now encoded in health rather than folklore: the local-planner authority path keeps `AUTOPILOT_PLANNER_SPEND_BREAKER=0`, while attestation/phase health expose the value so future automation can verify the intended contract without enabling the breaker. Sources: [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [progress 2026-07-11.md](../progress/2026-07/2026-07-11.md).
 
 ## Key Findings
 
@@ -298,6 +302,8 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 - [EvoScientist deep dive](../research/deep-dives/evoscientist-multi-agent-evolution.md) -- three-agent pipeline, Evolution Manager with IDE/IVE/ESE channels, knowledge distillation ablation evidence (-45.83 gap without evolution, +10.17pp from ESE alone)
 - [Paperclip & AgentRxiv deep dive](../research/deep-dives/agent-architectures-paperclip-agentrxiv.md) -- shared knowledge accumulation protocol, retrieval-augmented iteration results (plateau without retrieval, continued improvement with N=5), multi-lab parallel 3x cost tradeoff
 - [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md) -- primary handoff tracking all autopilot infrastructure, 4+1 species, safety gates, GEPA integration, self-criticism, strategy store
+- [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/orchestration-robustness-audit-2026-07-11.md) -- gate-reachability preflight, baseline/reference pivot, supervisor/death ledger, startup attestation
+- [progress 2026-07-11](../progress/2026-07/2026-07-11.md) -- wrap-up checkpoint for docs-only orchestration robustness changes
 - [tool-use-eval-contract.md](../handoffs/active/tool-use-eval-contract.md) -- StrategyStore tool-use hints and sentinel-lane contract now reach the planner prompt before action choice after orchestrator `4b9e1fd0`
 - [progress 2026-07-05](../progress/2026-07/2026-07-05.md) -- 2026-07-05 harness repairs, exact FAISS health, and live PID/trial state
 - [meta-harness-optimization.md](../handoffs/active/meta-harness-optimization.md) -- execution trace feedback (+15pts ablation), code mutation search space with allowlist + ast.parse safety, GEPA as search algorithm

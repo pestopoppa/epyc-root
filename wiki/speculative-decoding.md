@@ -2,7 +2,7 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-07-06 (⚠️ 2026-07-04 MI210-campaign, 2026-07-05 convergence, and 2026-07-06 v7-candidate spec-sheet / tree-draft-shelve subsections flagged for human review — see below)
+**Last compiled**: 2026-07-11 (⚠️ 2026-07-04 MI210-campaign, 2026-07-05 convergence, and 2026-07-06 v7-candidate spec-sheet / tree-draft-shelve subsections flagged for human review — see below)
 **Sources**: 52+ documents
 
 > **2026-06-26 v6 cutover note (top-of-page banner).** The production EPYC inference stack was cut from a TWO-kernel setup (v5 llama.cpp + a SEPARATE ik_llama.cpp binary used ONLY by the gemma worker) onto ONE kernel: **production-consolidated-v6** (canonical tree `/mnt/raid0/llm/llama.cpp`). v6 = upstream llama.cpp framework + native MTP/NEXTN speculative decoding + our forward-ported CPU kernels + **ik_llama's iqk AVX-512 GEMM kernels** integrated into the fork (runtime-gated by env `GGML_IQK=1`). **ik_llama.cpp is FULLY DEPRECATED — no second binary.** The historical "Gemma 4 MTP Drafter" sections below (2026-05-06 → 2026-05-16) describe the now-superseded ik_llama PR #1744 path; they are preserved verbatim as the measurement/decision record and carry inline `2026-06-26 v6 cutover` notes pointing to the replacement mechanism. Cutover STATUS: "v6+iqk cutover executed 2026-06-26: registry/launcher/governance config converged (all no-inference gates green, 174 promotion-gate tests pass), canonical binary built; **live throughput + garbage verification PENDING** (operator deploy gate)." Do NOT read any number below as verified v6 production throughput. Tracking: [`handoffs/active/v6-iqk-promotion.md`](../handoffs/active/v6-iqk-promotion.md).
@@ -22,6 +22,10 @@ A promising new direction is calibration-based early exit (TIDE, intake-422/423)
 One adjacent acceleration bet closed definitively in July 2026: the 651GB local code corpus held as a prompt-injection / prospective n-gram-speculation source failed its clean-window A/B (no throughput or quality win on coding roles) and was deleted with operator approval — corpus-augmented prompt lookup is retired, and the draft-model-free ngram path remains a zero-RAM capability with no corpus behind it.
 
 The current state of the art for our stack is not speculative decoding at all -- it is NUMA 4-way parallel serving (4 independent model instances on 48 threads each), which delivers 6.7x aggregate throughput on the frontdoor role. Speculative decoding provides incremental gains on top (+17-21% from draft_max tuning, +2-5% from tree branching on large dense targets) but is no longer the primary acceleration lever. The opening provided by REAP expert pruning is significant, however: REAP-25B is pure MoE (`qwen3moe` arch), meaning speculative decoding works where the hybrid frontdoor previously made it impossible.
+
+### New Findings (2026-07-11 — Gemma onegraph collapses warm-up into the draft graph)
+
+- **The Gemma MTP drafter picked up a small but architectural win: the warm-up pass can be folded into the 7-step drafting loop and replayed as one GPU graph.** The `onegraph` technique is lossless because the drafter is Q-only, KV-shared, and has no cross-position dependency across the warm-up phase, so the multi-position prepass is redundant. That makes the optimization a graph-construction simplification rather than a model-change: one launch, one replay path, same output. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md), [progress 2026-07-11.md](../progress/2026-07/2026-07-11.md).
 
 ## Key Findings
 
@@ -255,6 +259,9 @@ Verdict: worth_investigating. The principle (SSM drafter for Transformer target)
 - [Tree Speculation Handoff](../handoffs/completed/tree-speculation-numa-drafting.md) -- 8 phases across 12 days, +15.8% on f16 dense, NUMA 4-way discovery (6-7x), 3 hybrid approaches all net-negative, Phase 8B deferred (40% viability)
 - [HSD Hierarchical Self-Speculation Handoff](../handoffs/completed/hsd-hierarchical-self-speculation.md) -- External draft +55% on dense 32B, HSD branch resampling +0.8%, freeze-recurrent auto-enable, self-spec not viable
 - [REAP Handoff](../handoffs/completed/reap-moe-expert-pruning.md) -- 246B deployed, REAP-25B dm=24 at 39.62 t/s, pure MoE enables speculation
+- [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md) -- `onegraph` lossless warm-up collapse for Gemma MTP drafting
+- [speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md) -- Gemma MTP / drafter refresh context and current kernel constraints
+- [progress 2026-07-11](../progress/2026-07/2026-07-11.md) -- wrap-up note recording the new onegraph finding
 - [Inference Acceleration Index](../handoffs/active/inference-acceleration-index.md) -- Master coordination for all inference optimization work
 - [intake-016](https://arxiv.org/abs/2211.17192) arXiv:2211.17192 -- Foundational speculative decoding (Leviathan et al.)
 - [intake-129](https://arxiv.org/abs/2505.17813) short-m@k paper -- Parallel reasoning, length-accuracy correlation, difficulty-stratified analysis

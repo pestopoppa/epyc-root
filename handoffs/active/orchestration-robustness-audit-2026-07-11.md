@@ -15,6 +15,7 @@
 Quantified damage *[audit-extracted]*:
 - **~251 orchestration-infra bugs** in the Apr–Jul progress record; **~28% are explicit re-fixes** of previously-fixed issues, rising 25%→~32% (Apr→Jul); July's extractor judged ~2/3 of July infra work regression re-fixing.
 - **41% of all epyc-orchestrator commits** since May 1 land in just the dashboard+autopilot surfaces. `orchestrator_stack.py`: 55 commits, 6,560 lines churned, **net −292** — the same lifecycle logic rewritten repeatedly.
+- **4462 REPL execution errors** per tap log rotation: 1262 `_final()` keyword arg crashes (models emit `FINAL(result=…)`, function only accepts positional), 403 unknown tool calls, 359 `ZeroDivisionError`. These silently terminate trials with tool errors rather than capturing the model's answer — quantified trial waste that compounds the unreachable promotion gate.
 - Panel-trio (regions-lock/live-tap/topology): **9 fix waves, ~70 consistency commits**, fix→break latencies from hours to 46 days.
 - Autopilot: **zero (or at most one) baseline promotion in its entire journal history**; last real frontier admission 304+ trials ago; ~60% of the last 500 trials dispatched candidates into a promotion gate that is unreachable by construction.
 - "Deployed-but-not-live" (`code_stale` / stale-daemon) mentions: **2 (May) → 10 (Jun) → 76 (Jul)** — a 7× jump; fixes are being counted as landed while production runs old code.
@@ -69,10 +70,20 @@ The 23-hour silent death (trial 1302 → 1305) had no watchdog, no death-cause l
 Page-cache collapse (131GB free → chased as a `--membind` regression), concurrent-download poisoning, post-`drop_caches` NUMA pinning, CPU freq never journaled. Ties directly to the operator's "speed drops" report — see verdicts below.
 **Fix:** journal per-timing-event covariates: `min_core_mhz`, `host_inflight`, `numa_balancing`, cache-warm state; filter speed analytics to ≥128-token generations.
 
+### W10 — REPL execution layer bugs waste trials *(NEW — concrete, measured, quick-fixable)*
+Full REPL error taxonomy extracted from `repl_tap.log` (4462 errors, 4280 `CALL()` invocations vs only 93 `TOOL()` — models overwhelmingly emit `CALL()`). Three bugs silently waste trials at high volume:
+- **`_final()` signature mismatch (1262 errors):** `context.py:169` declares `def _final(self, answer: str)` (positional-only). Models emit `FINAL(result=…)` (760) and `FINAL(secret=…)` (502). The TypeError terminates the trial with a tool error — the answer exists but the framework can't capture it. Source: `environment.py:418` maps `FINAL → self._final`.
+- **Unknown tools (403 errors):** `get_eval_secret` (213) is gated by `AUTOPILOT_TOOL_SENTINELS=1` in `builtin_tools.py:40` — when off, the tool isn't registered but prompts still reference it. `search_files` (154), `get_time` (72), `fetch_stock_price` (34), `web_research` (16), `translate_text` (16), `start_service` (16) have no implementation in either the tool registry or REPL globals. Dispatch at `context.py:529-544` falls through `tool_registry.invoke()` → `ValueError` → `_globals` fallback → not found → propagates.
+- **`ZeroDivisionError` (359 errors):** Models generate code that divides by zero. Not a framework bug — models need better numeric safety in generated code.
+- **StrategyStore index degradation:** `sqlite=1424, faiss=1424 (99.9%), fts=1423 (99.9%)` — minor, 1 missing each in FAISS/FTS vs SQLite.
+- **Trial 1304 killed mid-trial:** `autopilot_killed_mid_trial` — possible resource/stall issue (one instance).
+**Fix (quick wins, hours):** (a) `_final()` accepts `**kwargs` and normalizes `result`/`secret` → `answer`; (b) either implement missing tools as stubs (returning descriptive "not available" responses) or remove their references from prompts so models don't call them; (c) confirm `AUTOPILOT_TOOL_SENTINELS=1` is set in all eval-bearing REPL sessions.
+
 ### Dominant interactions (worse than any single class)
 - **W5×W1:** era-blind instrument × multi-site rule resolution ⇒ blacklists nobody can trust or attribute — this pair, not either alone, killed the promotion pipeline.
 - **W7×W4:** stale daemon × snapshot tests ⇒ green tests + regressing production, by construction.
 - **W8×W6:** unsupervised loop × turn-driven observation ⇒ 23h dead, unnoticed.
+- **W10×W5:** REPL execution bugs × unreachable gate ⇒ 1262+ answers silently dropped per log rotation, compounding the already-unreachable promotion gate with noise that masks genuine improvement signals.
 
 ---
 
@@ -80,7 +91,7 @@ Page-cache collapse (131GB free → chased as a `--membind` regression), concurr
 
 **"Token speeds suddenly drop":** host is healthy (4.1–4.5GHz under load, `numa_balancing=0`, no PSI stall, no swap traffic; drop_caches/pinning ruled out in-window). ~90% of apparent drops are **measurement artifacts**: 1-token generations (fixed overhead ÷ 1 token), `speed_metric_mode` flips (aggregate vs median are incomparable), conc=1 vs conc=3 alternation (~37 vs ~10 t/s by design), eval routing-mix shifts, failed evals. Filtered to ≥128-token generations, every (role, shape) is steady across the window (worker_general.full 44–45 t/s; frontdoor.half0 ~32). Genuinely-felt slowdowns = interactive requests colliding with eval bursts (real, by-design; 40.5→11.9 t/s on 2-way overlap). Historic transient throttle is unfalsifiable because frequency is not journaled → W9 instrumentation. Note the `speed_metric_mode` trap was documented in the June Fable5 review and still poisons interpretation — a known-issue recurrence.
 
-**"GEPA+Pareto stagnant for hundreds of trials":** structural, and predicted by the Jul-05 audit. None of the P2/P3 unblockers landed; the rate-axis ceiling makes `confirmed` unreachable; zero-or-one promotions in journal history; last real frontier admission 304+ trials ago; the rebuilt Pareto archive is empty (journal-recorded admissions don't survive the rebuild filter — itself a W1-class dual-view bug). GEPA specifically: 27% of species budget, **0 completed evals in 500 trials** (frontdoor prompt frozen under a "remove after restart" blacklist entry since Jun-05). The operator's "tool use and delegation never tweaked" intuition is **verified** — those levers are absent from the numeric catalogue, or fenced by blacklist entries earned while the tool_use axis was returning 0.0.
+**"GEPA+Pareto stagnant for hundreds of trials":** structural, and predicted by the Jul-05 audit. None of the P2/P3 unblockers landed; the rate-axis ceiling makes `confirmed` unreachable; zero-or-one promotions in journal history; last real frontier admission 304+ trials ago; the rebuilt Pareto archive is empty (journal-recorded admissions don't survive the rebuild filter — itself a W1-class dual-view bug). GEPA specifically: 27% of species budget, **0 completed evals in 500 trials** (frontdoor prompt frozen under a "remove after restart" blacklist entry since Jun-05). The operator's "tool use and delegation never tweaked" intuition is **verified** — those levers are absent from the numeric catalogue, or fenced by blacklist entries earned while the tool_use axis was returning 0.0. **Concrete trial evidence (Jul-11):** trials 1300–1309 all dominated, mostly by `seq_accumulating` or `seq_stale_reference`; current trial 1310 just dispatched a `prompt_mutation` on `frontdoor.md` (appropriate pivot away from exhausted `numeric_trial` surfaces). Pareto frontier has only 5 points with tiny gap between q=2.040 and q=2.100. No inference/API errors in recent logs — stagnation is genuine search exhaustion, not infrastructure failure.
 
 ---
 
@@ -95,6 +106,8 @@ Page-cache collapse (131GB free → chased as a `--membind` regression), concurr
 4. **Loop supervision (W8):** supervisor + heartbeat + death-cause ledger.
 5. **Deploy gap (W7):** PID-age-verified "landed"; `--require-current-code` becomes gating.
 6. **Startup attestation (W2/W1):** every process logs effective gate-set + config hash; dashboard diffs them; bypassing sanctioned entrypoints becomes loud.
+6a. **REPL `_final()` keyword arg fix (W10):** accept `**kwargs` on `_final()` and normalize `result`/`secret` → `answer`; eliminates 1262 TypeErrors per log rotation that silently waste trials with captured-but-undelivered answers.
+6b. **Unknown tool cleanup (W10):** implement missing tools (`search_files`, `get_time`, etc.) as descriptive stubs or remove from prompts; confirm `AUTOPILOT_TOOL_SENTINELS=1` in all eval-bearing REPL sessions; eliminates 403 `ValueError: Unknown tool` errors per log rotation.
 
 **P2 — structural (~1–2 weeks):**
 7. **Finish the SSoT pipeline (R1′):** extend N11 to runtime facts; launcher-regenerated (never committed) manifest refreshed on spawn AND reload; per-reader fail-closed migration with test fixtures.
@@ -115,14 +128,24 @@ Page-cache collapse (131GB free → chased as a `--membind` regression), concurr
 - Two of this week's fixes by this session (43578845 off-tap recovery, 0c7218b5 region-locks grid) are correct locally but are themselves **W1-pattern spot-fixes**: 0c7218b5 aligned the dashboard family's default (`both`) while the config-compiler family still defaults `full` — the divergence persists one layer down. Even careful root-caused fixes inside this architecture reproduce the disease; that is the strongest argument for R1′.
 - Two claims relayed to the operator mid-audit were corrected by verification and are retracted above: the alpha-wealth-as-binding-gate mechanism (real arithmetic, non-binding — the rate axis binds) and the PER_REGION_LOCKS reload-reversion mechanism (launcher does replay it on the sanctioned path; hazard is bypass-only).
 - Promotion count discrepancy: journal key-scan found 0 `baseline_promotion` rows; the completeness critic counted 1 across 1169+ trials. Effectively none; not material to any conclusion.
+- **W10 evidence source (Jul-11):** REPL error taxonomy extracted from `repl_tap.log` by this session — 4462 errors, 10 categories. The `_final()` keyword mismatch and unknown tool counts are verified by grep across the tap, not inferred. Model output pattern (4280 `CALL()` vs 93 `TOOL()`) is a confirmed emission bias — extraction handles both paths but it suggests the system prompt may need tuning toward `CALL()` as the preferred form.
+
+## Checkpoint completions — 2026-07-11
+- [x] Autopilot sequential gate preflight now defers promotion-dependent candidate actions when rate-axis reachability is impossible or alpha wealth is exhausted, and pivots to baseline/reference draws ✅ 2026-07-11
+- [x] Builtin compatibility tools now register `search_files`, `get_time`, `fetch_stock_price`, `translate_text`, `start_service` with safe/read-only behavior ✅ 2026-07-11
+- [x] REPL `FINAL(...)` now accepts `answer`/`result`/`secret`/`value`/`response` aliases and rejects unsupported kwargs with a clear `ValueError` ✅ 2026-07-11
+- [x] Autopilot supervisor/death ledger wrapper landed (`autopilot_supervisor.py`, `start_fable_authority_daemon.py` bounded restart/death-ledger defaults) ✅ 2026-07-11
+- [x] Startup attestation landed (config digests, combined config hash, gate env capture, mismatch reporting, phase health display of tool/planner flags, including visible planner spend-breaker state) ✅ 2026-07-11
 
 ## Tasks
 - [ ] P0.1 operator run/pause decision on autopilot candidate species
 - [ ] P0.2 P2 amendment bundle signed (rate-axis era-fence first) + discriminability gate + P3 canary
 - [ ] P0.3 era-fenced blacklist purge + tool/delegation lever re-exploration
-- [ ] P1.4 loop supervisor + death-cause ledger
+- [x] P1.4 loop supervisor + death-cause ledger ✅ 2026-07-11
 - [ ] P1.5 PID-age-verified "landed" definition (`--require-current-code` gating)
-- [ ] P1.6 startup attestation (gate-set + config hash logged and diffed)
+- [x] P1.6 startup attestation (gate-set + config hash logged and diffed) ✅ 2026-07-11
+- [x] P1.6a REPL `_final()` keyword arg fix — accept `**kwargs`, normalize to `answer` (W10, 1262 wasted trials) ✅ 2026-07-11
+- [x] P1.6b Unknown tool cleanup — stub or remove from prompts; confirm `AUTOPILOT_TOOL_SENTINELS=1` (W10, 403 wasted trials) ✅ 2026-07-11
 - [ ] P2.7 runtime manifest via existing SSoT pipeline (N11 extension)
 - [ ] P2.8 lock-file JSON payload + display-matrix renderer collapse
 - [ ] P2.9 host covariates journaled per timing event
