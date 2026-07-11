@@ -166,6 +166,10 @@ This packet is command-discovery and evidence packaging only. It does not author
   - Preview: `cd /mnt/raid0/llm/epyc-orchestrator && uv run --with pyyaml python scripts/autopilot/blacklist_purge_plan.py --print-md --report-json orchestration/reports/p0_3_blacklist_purge_plan_20260711.json --report-md orchestration/reports/p0_3_blacklist_purge_plan_20260711.md`
   - Apply, operator only: add `--apply --approval-token ERA_FENCED_BLACKLIST_PURGE_2026_07_11`.
   - Boundary: the automated re-exploration exception for t655/t664/t864 is already live without rewriting YAML; the destructive purge of manual frontdoor freezes stays gated.
+- [x] P0.1 packet validation: `start_fable_authority_daemon.py --preflight` and `autopilot_restart_advisor.py --json --strict` both report AutoPilot PID `1039446` active on trial `1317`, `code_stale=true`, `restart_needed=true`, `safe_to_restart_now=false`, and `status=wait_for_boundary`; no pause/restart was performed. ✅ 2026-07-11
+- [x] P0.1 report-action hardening landed in `epyc-orchestrator` commit `2b78c2f3`: `fable5_gate_report.py` now points the `recover_autopilot_phase` next action at `start_fable_authority_daemon.py --preflight` instead of the weaker phase-health-only report, with a regression test. ✅ 2026-07-11
+- [x] P0.2 packet validation: the report-only amendment view ran to `/tmp`, with `p0_2_amendment_bundle_status=attention`, `rate_axis=below_required`, `control_attestation=missing`, `eval_discriminability=low_coverage`, `operator_signing_required=true`, and evidence gaps `rate_axis_below_required`, `control_attestation_missing`, `eval_discriminability_low_coverage`. ✅ 2026-07-11
+- [x] P0.3 packet validation: dry-run purge preview still identifies `54` entries before, exactly `5` removable audit-scoped entries, and `49` preserved entries; destructive apply remains token-gated. ✅ 2026-07-11
 - [x] P1.4 loop supervisor + death-cause ledger ✅ 2026-07-11
 - [x] P1.5 PID-age-verified "landed" definition (`--require-current-code` gating) ✅ 2026-07-11
 - [x] P1.6 startup attestation (gate-set + config hash logged and diffed) ✅ 2026-07-11

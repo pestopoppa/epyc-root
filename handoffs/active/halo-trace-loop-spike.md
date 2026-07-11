@@ -52,7 +52,7 @@ halo path/to/tiny_traces.jsonl -p "diagnose"
 
 ### HALO-2: Build OTel converter [Day 1 AM, 4 h] — ✅ LANDED 2026-05-27
 
-Code at `/workspace/scripts/halo/convert_tap_to_otel.py` (~220 LoC) + tests at `test_convert_tap_to_otel.py` (9 passing).
+Code at `/workspace/scripts/halo/convert_tap_to_otel.py` (~220 LoC) + tests at `scripts/halo/test_convert_tap_to_otel.py` (9 passing).
 
 Scope deviation from the original plan: live production artifact is `autopilot_journal.jsonl` (one row per trial, 445 rows live), NOT `autopilot_telemetry.jsonl` (TelemetryCollector exists in `scripts/autopilot/telemetry.py` but is not enabled by the running autopilot). The converter accepts **either** source:
 
@@ -92,6 +92,7 @@ This packet is the complete no-exec staging boundary for HALO-1/HALO-3. It does 
   - This is a file conversion only; it does not call the analyzer model.
 - **Paused-autopilot boundary:** HALO-3 needs AutoPilot paused/stopped and local llama-server selected via `OPENAI_BASE_URL` before the analyzer call. Running HALO while AutoPilot is active violates the no-concurrent-inference rule for this spike.
 - **Decision evidence:** capture the four HALO-3 scorecard criteria verbatim in the close-out doc: real trace/span IDs cited, at least one true orchestrator pathology, more granular than current `capture_recent_traces(n=50)`, and bounded cost/time. HALO-4 opens only at `>=3/4`; otherwise write `not_actionable` reasoning and close HALO-5.
+- [x] HALO conversion packet validation: the current `autopilot_journal.jsonl` converted to `/tmp/halo-otlp-sample.jsonl` with `3532` OTLP spans and no analyzer inference. ✅ 2026-07-11
 
 ### HALO-4: Day 2 — Manual pattern lift (only on full-go)
 
