@@ -1,6 +1,6 @@
 # Meta-Harness: Automated Harness Optimization
 
-**Status**: COMPACTED 2026-05-28; J9 validation closed 2026-06-12 - active work is MH-10 + SkillOpt coordination.
+**Status**: COMPACTED 2026-05-28; J9 validation closed 2026-06-12 - active work is SkillOpt / EV-10 coordination.
 **Created**: 2026-04-01
 **Updated**: 2026-07-11
 **Priority**: HIGH (upgraded 2026-07-08 per rec-001: literature sweep confirms meta-harness as central paradigm)
@@ -40,6 +40,7 @@ Do not rebuild the full Meta-Harness outer loop now. The useful next work is tar
 | MH-6 proposer-prior template | Landed in `PromptForge._build_code_mutation_prompt()` with explicit read order, `expected_quality_delta`, `expected_cost_delta`, and no-task-specific-hints output contract. Focused PromptForge/GEPA tests passed. | orchestrator `9da18568` |
 | MH-7 contrastive traces | Landed in `eval_tower.capture_contrastive_traces(k_success=2, k_failure=2)` with contrastive trace-bank labeling, trial-end state refresh, and PromptForge preference over recent-trace fallback. Validation: focused pytest suite (171 passed), Ruff format/check, and `git diff --check` on touched orchestrator/test files. | orchestrator session checkpoint 2026-07-11 |
 | MH-9 new-file mutation support | Landed with bounded `new_file` mutation proposals under the existing code-mutation safety surface, parent-directory dirty checks, traversal/collision rejection, fresh-file apply/revert handling, and `FileExistsError` skip coverage. | orchestrator `88639b1f` |
+| MH-10 agentic harness-search scoping | Closed as a contract, not a live loop: agentic task-generation may propose prompt-free, verifier-backed harness candidate manifests, but self-generated tasks enter audit/OOD views only until human-curated and validated against W2/W3/real-suite baselines. Implementation targets are `select_real_suite_v1.py`, `materialize_real_suite_v1.py`, `eval_task_coverage_report.py`, `eval_tower_seagym_views.py`, and future proposer/report tooling; no SafetyGate/Pareto/baseline admission changes. | root handoff checkpoint 2026-07-11 |
 | MH-12 SEAGym evaluation views | Landed observe-only EvalTower result accounting in `scripts/autopilot/eval_tower_seagym_views.py`: classifies compact `EvalResult.question_results` / journal-shaped eval payloads into train, validation, test, replay, and OOD views without changing `_aggregate`, `_eval_question`, `_compact_question_result`, SafetyGate, Pareto admission, or baseline calibration. Validation: `pytest tests/unit/test_eval_tower_seagym_views.py tests/unit/test_eval_tower_concurrency_metrics.py -q` (32 passed), Ruff check/format on new files. | orchestrator `8d4e5146` |
 | HLE-1/HLE-2 observe-only fields | Schema and rule-based defaults landed in orchestrator commits `931e43c` and `9222a19`; J9 analysis closed 2026-06-12 with diagnostic-only verdict. | [completed ledger](../completed/meta-harness-optimization-completed-through-2026-05-28.md) |
 
@@ -47,8 +48,11 @@ Do not rebuild the full Meta-Harness outer loop now. The useful next work is tar
 
 - `/mnt/raid0/llm/epyc-orchestrator/scripts/autopilot/species/prompt_forge.py`
 - `/mnt/raid0/llm/epyc-orchestrator/scripts/autopilot/eval_tower.py`
+- `/mnt/raid0/llm/epyc-orchestrator/scripts/autopilot/eval_task_coverage_report.py`
 - `/mnt/raid0/llm/epyc-orchestrator/scripts/autopilot/eval_tower_seagym_views.py`
 - `/mnt/raid0/llm/epyc-orchestrator/scripts/autopilot/hle_metrics.py`
+- `/mnt/raid0/llm/epyc-orchestrator/scripts/tasks/select_real_suite_v1.py`
+- `/mnt/raid0/llm/epyc-orchestrator/scripts/tasks/materialize_real_suite_v1.py`
 - [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md)
 - [bulk-inference-campaign.md](bulk-inference-campaign.md)
 - [eval-tower-verification.md](eval-tower-verification.md)
@@ -84,7 +88,12 @@ After MH or HLE work, update this handoff with the code path, feature flag, vali
 2. **MH-11 HTIR failure attribution**: HarnessFix's HTIR (Harness-aware Trace IR) normalizes trajectory evidence into step-level data-flow/control-flow. Directly harvestable for our eval-tower critic to attribute failures to specific harness artifacts.
 3. **MH-12 SEAGym evaluation views**: train/validation/test/replay/OOD views from SEAGym are applicable to our eval-tower verification. Prevents the "frequent updates fail to improve held-out" anti-pattern.
 
-- [ ] **MH-10 agentic harness search scoping** — adapt Meta-Harness proposer contract for our seeding pipeline; gate on curated-baseline validation
+- [x] **MH-10 agentic harness search scoping** — adapt Meta-Harness proposer contract for our seeding pipeline; gate on curated-baseline validation. ✅ 2026-07-11
+  **Scope decision**: MH-10 is a candidate-generation/audit lane, not a live autonomous benchmark-writing gate. The proposer may draft `harness_task_candidate.v1` manifests that name source evidence (`task_record_ref`, question-pool row, HTIR failure record, eval coverage deficit), workload class, target suite/capability, intended SEAGym view, verifier/scoring method, expected quality/cost delta, and privacy class. It must not emit raw private prompt text into committed manifests, synthesize unverifiable answers, or promote self-generated tasks into SafetyGate/Pareto/baseline selection.
+
+  **Read-order contract**: proposer inputs are, in order, (1) real-suite/F1 curated manifests and W2/W3 baseline evidence, (2) EvalTower coverage deficits from `eval_task_coverage_report.py`, (3) HTIR/contrastive failure clusters from MH-11, (4) SEAGym view accounting from MH-12, and (5) StrategyStore/Pareto stepping-stone hints. Outputs must state `no_task_specific_hints=true` and cite why the candidate generalizes beyond one observed prompt.
+
+  **Gate contract**: generated candidates start in `audit` or `ood` views only. A candidate can move toward validation/test only after deterministic/programmatic/code-execution scoring exists, privacy is local-safe, and a curated-baseline comparison against W2/W3/`real_suite_v1` shows no per-class or per-suite negative delta. Any eventual live accept path must remain feature-flagged, reuse EV-10/SkillsBench negative-transfer discipline, and require human-curate confirmation before entering gate material.
 - [x] **MH-11 HTIR failure attribution** — implement harness-aware trace IR for eval-tower critic. ✅ 2026-07-11
   Landed in orchestrator commit `b9fcdf5e` (`Add harness trace IR for PromptForge context`); focused Ruff, `py_compile`, and pytest validation passed on the touched orchestrator files, and the post-commit preflight stayed non-restart-safe so autopilot was not restarted.
 - [x] **MH-12 SEAGym evaluation views** — add train/validation/test/replay/OOD views to eval-tower. ✅ 2026-07-11
