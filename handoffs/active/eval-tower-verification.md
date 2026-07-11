@@ -203,7 +203,8 @@ loads `6,701` candidate-level items across HE-R/HE-R+/MBPP-R/MBPP-R+ with
 - [ ] Integrate Ouro-2.6B (P7) as T0 sentinel verification candidate
 - [x] Export eval environments for actual RL model training when DGX Spark available. ✅ 2026-07-11 — `epyc-orchestrator` adds `scripts/autopilot/export_rlvr_environment.py`, an offline prompt-free exporter from EvalResult/journal artifacts to `ap27_rlvr_environment_row.v1` JSONL with tier reward metadata, blockers, suite counts, safe per-question outcomes, and optional fail-on-blockers behavior. No inference run or live gate wiring required.
 - [x] Track three metrics (quality + ECE + AUC) as the minimal signal for RLVR reward design. ✅ 2026-07-11 — existing `EvalResult` quality/ECE/AUROC fields are now consumed by the RLVR reward contract; degenerate/missing ECE/AUROC remain explicit blockers.
-- [ ] Wire the RLVR reward view into `eval_details`/reports after reviewing the CRITICAL GitNexus blast radius for `EvalTower._aggregate`; do not fold the reward into Pareto/safety authority without operator sign-off.
+- [x] Surface the RLVR reward view in report-only `METRIC rlvr_*` lines. ✅ 2026-07-11 — `epyc-orchestrator` wires `rlvr_reward_from_result()` into `EvalResult.to_grep_lines()` only; objectives, SafetyGate verdicts, Pareto archive state, and journal schema remain unchanged.
+- [ ] Wire the RLVR reward view into `eval_details`/journal payloads after reviewing the HIGH GitNexus blast radius for `EvalTower._aggregate`; do not fold the reward into Pareto/safety authority without operator sign-off.
 
 **Dependencies**: EV-1–4 provide the calibration infrastructure. Ouro P7 provides the sentinel model.
 
