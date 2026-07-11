@@ -116,6 +116,15 @@ The promotion decision rests on "gemma-4-31B (31B dense) and gemma-4-26B-A4B (~3
 
 See WS4 prep for the historical June commands. **Block A (gemma-4-31B dense)** was run on `/mnt/raid0/llm/ik_llama.cpp/build/bin/llama-speculative` (branch `production-gemma4-mtp`) using ik-era flags (`-mtp --spec-type mtp --draft-max`). For July+ measurements, translate to the v6/native surface (`--spec-type draft-mtp`, `--spec-draft-n-max`) on `production-consolidated-v6` or a fresh `llama.cpp-experimental` v7-candidate, preserve the same operator-approved quiescing / CPU pinning / seed protocol, and record protocol IDs per `MEASUREMENT.md`. Blocks B/C use the experimental `draft-mtp` binary after download. (Full blocks were produced in the session WS4 report.)
 
+## Operator gate packet - prepared 2026-07-11
+
+This packet packages the remaining T4/T5/Hy3 gates without running inference. It must not be used to patch or rebuild frozen production `/mnt/raid0/llm/llama.cpp`; any kernel/model-load work happens in `/mnt/raid0/llm/llama.cpp-experimental` or a deliberately disposable side tree.
+
+- **Shared measurement boundary:** every decision-gating number needs `(metric, protocol-id, n/reps, date, attestation ref)` per `MEASUREMENT.md`; all ad hoc log reads are observations. Pause/quiet concurrent inference before live benches, capture host covariates, and compare like-for-like quant/runtime arms.
+- **T4 Qwen3.6-35B-A3B MTP gate:** run only after the `qwen-mtp-llamacpp-port.md` P6b model-load gate passes on the experimental `draft-mtp` binary. Compare Q4+MTP against Q4 no-MTP, not against the Q8 production frontdoor/coder role. Required evidence fields: pinned experimental commit, GGUF path + quant, `--spec-type draft-mtp`, `--spec-draft-n-max`, acceptance counters, t/s, correctness probe, host covariates, and protocol id.
+- **T5 gemma-4-26B-A4B draft-depth sweep:** first collect the zero-inference live acceptance baseline with `cd /mnt/raid0/llm/epyc-orchestrator && python3 scripts/benchmark/mtp_acceptance_report.py --no-write-defaults --no-strict`. The live sweep itself is operator-bench work: same worker model, same prompt set, same stack snapshot, depths `2`, `3`, and `4`, and the same host-quiesce protocol. `scripts/benchmark/md_self_draft_ab.py --dry-run` remains useful only to preview same-file `-md` vs embedded self-draft command shape; it is not a substitute for the T5 depth sweep.
+- **Hy3 confirmatory CPU-MTP closure:** follow `research/deep-dives/2026-07-11-hy3-hunyuan-v3-moe-mtp-assessment.md` section 7: download **IQ2_M only**, pin `satindergrewal/llama.cpp@hy3-mtp`, run an ungated greedy arm (`--spec-draft-p-min 0`) against a no-MTP baseline, and add a short correctness probe. Predicted result is net-neutral on EPYC CPU; a separate plain architect quality bench is a different operator decision.
+
 ## Research context (intake)
 
 | Intake | Item | Verdict |

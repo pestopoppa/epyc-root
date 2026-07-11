@@ -148,6 +148,24 @@ Full REPL error taxonomy extracted from `repl_tap.log` (4462 errors, 4280 `CALL(
 - [ ] P0.3 era-fenced blacklist purge + tool/delegation lever re-exploration
   - [x] P0.3a guarded purge planner/apply helper landed in `epyc-orchestrator` commit `a26e6c6a`; dry-run identified exactly the 5 audit-scoped entries (`frontdoor.md` prompt/GEPA freezes, t655, t664, t864) and preserves 49 others. Apply remains operator-gated by `--approval-token ERA_FENCED_BLACKLIST_PURGE_2026_07_11`. ✅ 2026-07-11
   - [x] P0.3b audit-scoped tool/delegation re-exploration landed in `epyc-orchestrator` commit `134ed346`: AutoPilot now marks the three automated instrument-era structural blacklist entries (`architect_delegation` t655, `specialist_routing` t664/t864) as retryable without rewriting YAML, preserves manual frontdoor prompt/GEPA freezes behind the approval token, and journals `p0_3_blacklist_reexploration_*` rationale when dispatching those retries. ✅ 2026-07-11
+
+### P0 operator gate packet - prepared 2026-07-11
+
+This packet is command-discovery and evidence packaging only. It does not authorize a running autonomous session to pause/resume AutoPilot, sign measurement-policy changes, rewrite the blacklist, or enable the planner spend breaker.
+
+- **P0.1 run/pause call:** inspect current-code and gate status before deciding:
+  - `cd /mnt/raid0/llm/epyc-orchestrator && python3 scripts/autopilot/start_fable_authority_daemon.py --preflight`
+  - `cd /mnt/raid0/llm/epyc-orchestrator && python3 scripts/autopilot/autopilot_restart_advisor.py --json --strict`
+  - `cd /mnt/raid0/llm/epyc-orchestrator && uv run --with pyyaml python scripts/autopilot/fable5_gate_report.py --json --require-current-code`
+  - Decision boundary: keep candidate species running only as an explicit operator choice while the rate-axis/P2 amendment remains unsigned; otherwise pause candidate species or let the preflight/reachability deferral route only promotion-independent work.
+- **P0.2 amendment bundle:** use the report-only evidence view, then sign outside AutoPilot:
+  - `cd /mnt/raid0/llm/epyc-orchestrator && uv run --with pyyaml python scripts/autopilot/fable5_gate_report.py --json --out-json orchestration/reports/p0_2_amendment_bundle_inputs_20260711.json --out-md orchestration/reports/p0_2_amendment_bundle_inputs_20260711.md --require-current-code`
+  - Inspect `p0_2_amendment_bundle_inputs`: rate-axis state, latest oracle control-pair attestation, eval discriminability / T3 hard-lane coverage, RI-10 canary state, and `operator_signing_required`.
+  - Boundary: this report is non-binding. Any rate-axis era fence, calibration baseline, frozen null, threshold, or P3 canary adoption remains a MEASUREMENT.md human-amendment action.
+- **P0.3 blacklist purge:** preview first, apply only with the explicit token:
+  - Preview: `cd /mnt/raid0/llm/epyc-orchestrator && uv run --with pyyaml python scripts/autopilot/blacklist_purge_plan.py --print-md --report-json orchestration/reports/p0_3_blacklist_purge_plan_20260711.json --report-md orchestration/reports/p0_3_blacklist_purge_plan_20260711.md`
+  - Apply, operator only: add `--apply --approval-token ERA_FENCED_BLACKLIST_PURGE_2026_07_11`.
+  - Boundary: the automated re-exploration exception for t655/t664/t864 is already live without rewriting YAML; the destructive purge of manual frontdoor freezes stays gated.
 - [x] P1.4 loop supervisor + death-cause ledger ✅ 2026-07-11
 - [x] P1.5 PID-age-verified "landed" definition (`--require-current-code` gating) ✅ 2026-07-11
 - [x] P1.6 startup attestation (gate-set + config hash logged and diffed) ✅ 2026-07-11

@@ -82,6 +82,17 @@ Inspect the halo report against 4 criteria. **Need ≥3/4 to proceed to Day 2.**
 
 If ≥3/4 pass → proceed to HALO-4. If ≤2/4 → close handoff with `outcome: not_actionable` and write findings to `/workspace/research/deep-dives/halo-spike-results-2026-MM-DD.md`.
 
+### HALO operator gate packet - prepared 2026-07-11
+
+This packet is the complete no-exec staging boundary for HALO-1/HALO-3. It does not approve the untrusted PyPI install, does not pause AutoPilot, and does not run analyzer inference.
+
+- **Install approval boundary:** HALO-1 requires explicit operator approval to create `/tmp/halo-spike-venv` and install exactly `halo-engine==0.1.2`. Keep the install in that throwaway venv; do not vendor or add the package to repo dependency files.
+- **Trace conversion:** prepare the HALO input from existing artifacts only:
+  - `cd /mnt/raid0/llm/epyc-root && python3 scripts/halo/convert_tap_to_otel.py /mnt/raid0/llm/epyc-orchestrator/orchestration/autopilot_journal.jsonl -o /tmp/halo-otlp-sample.jsonl --source journal`
+  - This is a file conversion only; it does not call the analyzer model.
+- **Paused-autopilot boundary:** HALO-3 needs AutoPilot paused/stopped and local llama-server selected via `OPENAI_BASE_URL` before the analyzer call. Running HALO while AutoPilot is active violates the no-concurrent-inference rule for this spike.
+- **Decision evidence:** capture the four HALO-3 scorecard criteria verbatim in the close-out doc: real trace/span IDs cited, at least one true orchestrator pathology, more granular than current `capture_recent_traces(n=50)`, and bounded cost/time. HALO-4 opens only at `>=3/4`; otherwise write `not_actionable` reasoning and close HALO-5.
+
 ### HALO-4: Day 2 — Manual pattern lift (only on full-go)
 
 **DO NOT VENDOR halo-engine.** Lift the 3 net-new patterns into existing scoped work:
