@@ -1,6 +1,6 @@
 # HALO Trace-Loop Spike
 
-**Status**: HALO-2 LANDED 2026-05-27 (converter + tests); HALO-1 (pip install halo-engine) + HALO-3 (run analyzer against local llama) operator-gated — auto-mode classifier correctly blocked the untrusted PyPI install + autopilot pid 2853082 is mid 2000-trial run so concurrent inference would violate `feedback_no_concurrent_inference`.
+**Status**: HALO-2 LANDED 2026-05-27 (converter + tests); HALO-1 (pip install halo-engine) + HALO-3 (run analyzer against local llama) operator-gated — auto-mode classifier correctly blocked the untrusted PyPI install, and the analyzer run still requires an AutoPilot-paused/stopped no-concurrent-inference window. Latest no-exec packet validation on 2026-07-11 converted the current journal to 3,532 OTLP spans without analyzer inference.
 **Created**: 2026-04-30 (post-intake-517/518 deep-dive)
 **Categories**: agent_architecture, autonomous_research, tool_implementation
 **Priority**: MEDIUM (validates whether to lift HALO patterns into existing meta-harness/autopilot scope)
@@ -61,13 +61,13 @@ Scope deviation from the original plan: live production artifact is `autopilot_j
 - `_detect_source()` auto-selects by sniffing the first row's fields.
 - CLI: `python3 scripts/halo/convert_tap_to_otel.py <input>.jsonl -o <output>.jsonl`.
 
-Live smoke run: `autopilot_journal.jsonl` (445 trials) → 1,780 OTLP spans written in <1s.
+Historical 2026-05 live smoke run: `autopilot_journal.jsonl` (445 trials) → 1,780 OTLP spans written in <1s. Current 2026-07 packet validation uses the same converter path and produced 3,532 OTLP spans from the then-current journal.
 
 Inference-tap converter (`convert_inference_tap`, ~120 LoC) deferred — no inference-tap JSONL is being emitted by the running orchestrator, so the journal route is the entry point for HALO-3. Re-open if/when the inference tap is wired in.
 
 ### HALO-3: Day 1 PM falsification gate [4 h] — OPERATOR-GATED
 
-Two blockers: (a) needs HALO-1 install; (b) needs a calm window where autopilot is paused so the analyzer LLM call doesn't poison concurrent benchmarks (autopilot pid 2853082 is in the middle of a 2000-trial run as of HALO-2 landing). Operator action required: pause autopilot via SIGTERM (per `feedback_autopilot_pause_broken_use_sigterm`) before running halo against `/tmp/halo-otlp-sample.jsonl` (the live-converted 1,780-span artifact).
+Two blockers: (a) needs HALO-1 install; (b) needs a calm window where AutoPilot is paused/stopped so the analyzer LLM call does not poison concurrent benchmarks. Do not rely on the historical PID from HALO-2 landing; check the current process and verify it is stopped before the analyzer call. Operator action required: pause/stop AutoPilot per the process-management rules before running halo against `/tmp/halo-otlp-sample.jsonl` (latest no-exec conversion validation: 3,532 spans).
 
 
 
