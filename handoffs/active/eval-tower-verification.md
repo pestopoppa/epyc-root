@@ -198,11 +198,12 @@ loads `6,701` candidate-level items across HE-R/HE-R+/MBPP-R/MBPP-R+ with
 
 ### EV-7: AP-27 RLVR integration (depends on EV-1–4 + Ouro P7)
 
-- [ ] Formalize T0/T1/T2 as RLVR verification functions with deterministic reward signals
-- [ ] Design reward signal per tier: T0 = binary, T1 = calibrated continuous, T2 = process-attributed
+- [x] Formalize T0/T1/T2 as RLVR verification functions with deterministic reward signals. ✅ 2026-07-11 — `epyc-orchestrator` commit `7ee919d8` adds the pure `src/autopilot_core/rlvr_tiers.py` contract and shared exports.
+- [x] Design reward signal per tier: T0 = binary, T1 = calibrated continuous, T2 = process-attributed. ✅ 2026-07-11 — no promotion authority changed; the contract returns observe-only rewards and blockers.
 - [ ] Integrate Ouro-2.6B (P7) as T0 sentinel verification candidate
 - [ ] Export eval environments for actual RL model training when DGX Spark available
-- [ ] Track three metrics (quality + ECE + AUC) as the minimal signal for RLVR reward design
+- [x] Track three metrics (quality + ECE + AUC) as the minimal signal for RLVR reward design. ✅ 2026-07-11 — existing `EvalResult` quality/ECE/AUROC fields are now consumed by the RLVR reward contract; degenerate/missing ECE/AUROC remain explicit blockers.
+- [ ] Wire the RLVR reward view into `eval_details`/reports after reviewing the CRITICAL GitNexus blast radius for `EvalTower._aggregate`; do not fold the reward into Pareto/safety authority without operator sign-off.
 
 **Dependencies**: EV-1–4 provide the calibration infrastructure. Ouro P7 provides the sentinel model.
 
