@@ -1208,16 +1208,20 @@ Deferred (needs operator sign-off / more inference): fecundity parent sampling (
 
 ### Implementation status (2026-07-02)
 
-Patterns **1, 3, 4 are IMPLEMENTED** (observe-only) on branch `dgm-harness-patterns-2026-07-02`
-(epyc-orchestrator, commit `d820e94f`) — isolated worktree; the live autopilot (main tree) is
-**unaffected** until an operator merge while it is idle. Files: `pareto_archive.py`
-(`stepping_stones`/`stepping_stones_text`), `autopilot.py` (planner-prompt append, gated by
-`AUTOPILOT_STEPPING_STONES`, default on), `digest.py` (`_mechanism_effectiveness_section`),
-`STEPPING_STONE_ABLATION_PROTOCOL.md`. Verified: py_compile, functional smoke,
-`tests/unit/test_pareto_archive_tiers.py` 6/6, GitNexus impact LOW, 3-lens adversarial review
-(2 minor findings applied). Patterns **2** (fecundity parents) and **5** (token cost axis —
-MEASUREMENT trust boundary, operator-only) are **DEFERRED**, gated on Pattern 1 landing + the
-Pattern 3 ablation.
+Patterns **1, 3, 4 are IMPLEMENTED** (observe-only) in the current orchestrator branch.
+The original isolated branch was `dgm-harness-patterns-2026-07-02` (`d820e94f`), and
+the current `spec-dec-mtp-refresh-2026-06-22` branch contains the same live surfaces:
+`pareto_archive.py` (`stepping_stones`/`stepping_stones_text`), `autopilot.py`
+(planner-prompt append, gated by `AUTOPILOT_STEPPING_STONES`, default on),
+`digest.py` (`_mechanism_effectiveness_section`), and
+`STEPPING_STONE_ABLATION_PROTOCOL.md`. Verified again 2026-07-11 on the current
+branch: `ruff check` on the touched Pattern 1/3/4 files and `.venv/bin/python -m
+pytest tests/unit/test_pareto_archive_tiers.py tests/unit/test_autopilot_phase_status.py
+tests/unit/test_economic_ledger.py -q` → 32 passed. The live autopilot daemon still
+requires the normal stale-code/preflight restart gate before these branch changes are
+runtime-active. Patterns **2** (fecundity parents) and **5** (token cost axis —
+MEASUREMENT trust boundary, operator-only) are **DEFERRED**, gated on Pattern 1 landing
++ the Pattern 3 ablation.
 
 ### Eval-task coverage guardrail (2026-07-04)
 
