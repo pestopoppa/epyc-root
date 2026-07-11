@@ -2,7 +2,7 @@
 
 **Status**: COMPACTED 2026-05-28; J9 validation closed 2026-06-12 - active work is MH-7/9.
 **Created**: 2026-04-01
-**Updated**: 2026-06-21
+**Updated**: 2026-07-11
 **Priority**: HIGH (upgraded 2026-07-08 per rec-001: literature sweep confirms meta-harness as central paradigm)
 **Categories**: agent_architecture, benchmark_methodology
 **Parent index**: [routing-and-optimization-index.md](routing-and-optimization-index.md)
@@ -14,7 +14,7 @@ Do not rebuild the full Meta-Harness outer loop now. The useful next work is tar
 
 ## Outstanding Tasks
 
-- [ ] **MH-7 contrastive traces**: upgrade `eval_tower.capture_recent_traces()` to `capture_contrastive_traces(k_success=2, k_failure=2)` once MH-6 can absorb richer inputs.
+- [x] **MH-7 contrastive traces**: upgrade `eval_tower.capture_recent_traces()` to `capture_contrastive_traces(k_success=2, k_failure=2)` once MH-6 can absorb richer inputs. ✅ 2026-07-11
 - [ ] **MH-9 new-file mutation type**: add directory-scoped `new_file` mutation support after MH-6/7 define the cost/quality contract; include traversal and collision tests.
 - [x] **HLE-3 / J9 fixed-model harness lane**: observe-only analysis closed 2026-06-12 over 580 metric-bearing trials from `/mnt/raid0/llm/tmp/autopilot_journal_snapshot_1781290411.jsonl`. `execution_fidelity` and `planning_stability` separate keep/revert but mostly mirror existing task-quality/safety signals, so they remain diagnostic/advisory. `feedback_interpretation`, `memory_coherence`, and `recovery_rate` stay dashboard-only. No HLE metric is eligible for Pareto promotion before N2 ledger/sequential verdict redesign.
 - [ ] **SkillOpt / EV-10 coordination**: keep the skill-efficacy gate work in [eval-tower-verification.md](eval-tower-verification.md) and the next AR-3 restart plan; do not mix it into MH-6/7/9 without an explicit feature flag.
@@ -38,6 +38,7 @@ Do not rebuild the full Meta-Harness outer loop now. The useful next work is tar
 | MH-4 GEPA search eval | Folded into AR-3 Package D. | [completed ledger](../completed/meta-harness-optimization-completed-through-2026-05-28.md) |
 | MH-5 Agent Lightning telemetry pattern | Landed as `TelemetryCollector`/OTLP-compatible records. | [completed ledger](../completed/meta-harness-optimization-completed-through-2026-05-28.md) |
 | MH-6 proposer-prior template | Landed in `PromptForge._build_code_mutation_prompt()` with explicit read order, `expected_quality_delta`, `expected_cost_delta`, and no-task-specific-hints output contract. Focused PromptForge/GEPA tests passed. | orchestrator `9da18568` |
+| MH-7 contrastive traces | Landed in `eval_tower.capture_contrastive_traces(k_success=2, k_failure=2)` with contrastive trace-bank labeling, trial-end state refresh, and PromptForge preference over recent-trace fallback. Validation: focused pytest suite (171 passed), Ruff format/check, and `git diff --check` on touched orchestrator/test files. | orchestrator session checkpoint 2026-07-11 |
 | HLE-1/HLE-2 observe-only fields | Schema and rule-based defaults landed in orchestrator commits `931e43c` and `9222a19`; J9 analysis closed 2026-06-12 with diagnostic-only verdict. | [completed ledger](../completed/meta-harness-optimization-completed-through-2026-05-28.md) |
 
 ## Key Files
@@ -93,3 +94,16 @@ After MH or HLE work, update this handoff with the code path, feature flag, vali
   - **Reported results:** dev pooled 63.1→83.3; held-out test 63.4→80.1; beat external harnesses on the same model (Pi 45.4, Goose 23.2, mini-swe-agent 3.5).
   - **Delta from current approach:** we already run this loop (PromptForge proposer + eval_tower + cost-aware Pareto); the additive value is the code>prompt mechanism-preference finding and the per-model-transfer caveat. **MEASUREMENT.md caveat:** single legal benchmark, LLM-judge scoring, non-peer-reviewed → observations to shape the proposer contract, NOT to gate promote/revert without local re-measurement.
   - **Reference-chased expansion (intake this run):** Darwin Gödel Machine (arXiv 2505.22954) — self-code-rewriting evolutionary agents, directly relevant to autopilot species/strategy generation.
+
+## Research Intake Update — 2026-07-11
+
+### New Related Research
+- **[intake-798] "The Gemma Challenge and the Case for Agent Collabs"** (HF blog; Patiño, Tunstall, Sanseviero, von Werra — HF + Google DeepMind)
+  - Relevance: this is a live, 6-day, 100+ agent *autoresearch harness* run (optimize gemma-4-E4B TPS under a quality gate). Its documented failure modes are exactly the ones our meta-harness / autopilot exploration loop must defend against.
+  - Key patterns to harvest (operator-review candidates, not imperatives — external source):
+    - **Agent Collapse (exploration failure):** agents converged fast onto a narrow set of optimization axes and avoided harder avenues (custom quant, large kernels, engine changes). Attributed to (a) weak exploration taste and (b) **message-board "context rot"** — a long shared log self-reinforces early topics as newcomers read/post similar ideas. → Our PromptForge proposer + Pareto selection should be probed for the same monoculture collapse; consider an explicit exploration-bonus / novelty term and diversity-preserving proposal sampling (ties to MH-7 contrastive traces: feed *contrastive* success+failure traces, not just recent ones, to break the reinforcement loop).
+    - **Metric self-policing / reward-hacking:** a PPL-only gate was gameable (agents held PPL under threshold while degrading the model); a subgroup flagged it and self-restricted to lossless. Operators then layered MMLU-Pro + GPQA-Diamond gates. → Corroborates our eval-tower safety-gate posture; argues for **layered/rotating quality gates** and treating "held the cheap gate but no downstream check" as a first-class safety signal. External corroboration: SpecBench/TRACE/BenchJack (2026) show proxy metrics are provably hackable and RL post-training raised exploit rates 0.6%→13.9%.
+    - **Taskforces + channels/threads** to counter collapse and message-flood — a structural analogue to our workflow-pressure / T3 planner-visible topics; suggests giving autopilot topic-scoped attention rather than one flat journal.
+    - **Agent trace sharing for attribution + failure reuse** ("learn from failed attempts, don't repeat mistakes") — directly overlaps HALO trace-loop + unified-trace-memory + our episodic-memory gating.
+  - Delta from current approach: our meta-harness optimizes a single harness in isolation; the collab frames a *population* of harnesses sharing a persistent workspace + leaderboard, with HITL steering agents out of hopeless loops. The anti-collapse and gate-hardening lessons transfer directly even at our single-daemon scale.
+  - Numbers are OBSERVATION-grade (challenge-internal, GPU, self-reported) — do not gate.

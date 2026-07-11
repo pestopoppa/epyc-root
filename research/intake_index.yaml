@@ -42562,3 +42562,74 @@
   novelty_justification: 'Comprehensive review/survey of the externalization trend. Apr 2026, tech report. Provides systems-level framing for the harness-engineering literature.'
   relevance_justification: 'High: provides the conceptual framework that unifies our own work (externalized memory, skills, protocols, harness). The "weights to context to harness" progression validates our architectural choices.'
   verdict_justification: 'adopt_selectively: the conceptual framing and categorization are valuable for our own documentation and design decisions.'
+- id: intake-798
+  arxiv_id: null
+  url: https://huggingface.co/spaces/agent-collaborations/gemma-collab-lessons
+  source_type: blog
+  title: 'The Gemma Challenge and the Case for Agent Collabs'
+  authors:
+  - Carlos Miguel Patiño
+  - Lewis Tunstall
+  - Omar Sanseviero
+  - Leandro von Werra
+  categories:
+  - agent_architecture
+  - swarm_techniques
+  - autonomous_research
+  - speculative_decoding
+  - benchmark_methodology
+  - hardware_optimization
+  key_claims:
+  - '100+ agents + humans ran a 6-day open collaboration to speed up google/gemma-4-E4B-it inference, exchanging 1.3k+ messages and ~500 submissions, improving TPS 5x (baseline ~100 -> top 491.8 public / 487.6 private).'
+  - 'Architecture: per-agent private HF Buckets (full access) + a central bucket with restricted access mediated by a backend server (register/post/share-artifact/create-taskforce/read-leaderboard/launch-job APIs); a human-facing dashboard is the HITL entry point. Agents can start by pointing at a README.md in a bucket.'
+  - 'Agent Collapse failure mode: agents rapidly converged on a narrow set of optimization axes (avoided custom quantization, large kernels, inference-engine changes) due to lack of exploration taste + message-board "context rot" that self-reinforces early topics as more agents read/post similar ideas.'
+  - 'Self-policing / reward-hacking: a PPL-only quality gate was gameable; a subgroup of agents flagged that PPL could be gamed, called for stricter eval, and self-restricted to lossless speedups. Operators then added MMLU-Pro + GPQA-Diamond gates for top submissions.'
+  - 'onegraph (fastest lossless, 315 TPS, quality-preserving): the Gemma MTP drafter is Q-only, KV-shared, with no cross-position dependencies, so the multi-position warm-up pass is unnecessary; fold warm-up into the 7-step drafting loop, record the whole routine as ONE GPU graph, replay with a single launch. Fastest lossy (491.8 TPS) used vocab pruning + layer removal + fine-tuned task-targeted drafter + CUDA-graph capture, but degraded GPQA-Diamond/MMLU-Pro by 15/40 points.'
+  techniques:
+  - agent_collaboration_platform_bucket_server_dashboard
+  - taskforces_and_channels_for_anti_collapse
+  - metric_gate_hardening_ppl_then_mmlu_gpqa
+  - onegraph_mtp_drafter_warmup_folding_single_gpu_graph
+  - agent_trace_sharing_for_attribution_and_failure_reuse
+  reported_results:
+  - 'Target metric improved 5x over 6 days (~100 -> 491.8 TPS public, 487.6 private).'
+  - 'Fastest lossless onegraph submission: 315 TPS, MMLU-Pro/GPQA-Diamond comparable to base Gemma.'
+  - 'Fastest lossy submission: 491.8 TPS but -15 GPQA-Diamond, -40 MMLU-Pro.'
+  - 'Central bucket 97 MB; per-agent buckets ranged 1 MB - 100 GB.'
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: high
+  credibility_score: 2
+  discovered_via: input
+  verdict: adopt_patterns
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    handoffs:
+    - speculative-decoding-mtp-refresh.md
+    - meta-harness-optimization.md
+    - autopilot-continuous-optimization.md
+    - orchestration-robustness-audit-2026-07-11.md
+    - swarm-dataset-distillation.md
+    - halo-trace-loop-spike.md
+    - kernel-reconciliation-audit.md
+    - gemma-challenge-kernel-techniques-v7.md
+    experiments: []
+    intake_entries:
+    - intake-796
+    - intake-797
+  contradicting_evidence:
+  - 'No direct contradiction of the operational lessons found; the external literature CORROBORATES them. SpecBench/TRACE/BenchJack (2026) document that proxy metrics are provably hackable and RL post-training raised exploit rates 0.6%->13.9% — independent support for the PPL-gaming / self-policing finding. Swarm-orchestration literature independently reports emergent convergence/collusion onto shared strategies and the need for explicit anti-convergence termination — support for the Agent Collapse finding.'
+  - 'CAVEAT on the numbers: the 5x / 491.8 TPS results are challenge-internal, single-configuration, GPU-hosted (E4B, not our CPU regime), and gated only by challenge-defined PPL/eval thresholds — OBSERVATION-grade per MEASUREMENT.md, not an independently reproduced benchmark. The lossy 491.8 result is explicitly quality-degrading; the decision-relevant number is the lossless 315 TPS.'
+  - 'Source is a first-party HF product post promoting github.com/huggingface/agent-collabs (commercial/promotional bias); operational descriptions are credible, quantitative claims are self-reported.'
+  ingested_date: '2026-07-11'
+  handoffs_updated:
+  - meta-harness-optimization.md
+  - speculative-decoding-mtp-refresh.md
+  - orchestration-robustness-audit-2026-07-11.md
+  handoffs_created:
+  - agent-collab-rnd-harness.md
+  - gemma-challenge-kernel-techniques-v7.md
+  novelty_justification: 'High: first detailed operational writeup of a large (100+ agent) open agent-collaboration, plus the concrete onegraph MTP-drafter warm-up-folding technique (novel, directly targets the Gemma MTP drafter we run) and named organizational failure modes (Agent Collapse, message-board context rot, metric self-policing) not previously documented in our chapters/handoffs.'
+  relevance_justification: 'High on two fronts flagged by the operator: (1) autopilot/autoresearch harness optimization — the collaboration is a persistent multi-agent autoresearch loop and its failure modes (exploration collapse, context rot, reward hacking, HITL steering) map directly onto meta-harness-optimization + autopilot-continuous-optimization; (2) experimental kernel R&D mechanisms — the challenge IS a swarm optimizing inference-kernel throughput under a quality gate, the same shape as our v6/v7 experimental-kernel campaigns, and onegraph is a concrete drafter optimization for our production gemma4 MTP worker.'
+  verdict_justification: 'adopt_patterns: harvest the organizational patterns (taskforces/channels vs collapse, layered quality gates to defeat metric-gaming, trace sharing for attribution + failure reuse, HITL steering out of loops) into our autopilot + kernel-R&D harnesses. The onegraph technique is a spun-off new_opportunity tracked in speculative-decoding-mtp-refresh.md.'
