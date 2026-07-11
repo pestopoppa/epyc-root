@@ -194,7 +194,7 @@ This packet is command-discovery and evidence packaging only. It does not author
 - [x] P3.12 shadow lane for new live-loop components ✅ 2026-07-11
   - Commit `d596b5b2` ("Gate live-loop dispatch on action availability") added the live-loop shadow lane: planner-selected dispatch now skips outside the active allowlist, while sequential/due/fresh-eval/baseline/candidate-replay paths keep their own policy gates.
 
-*Master index not updated — index changes are operator-approved per CLAUDE.md; add this handoff to the index if accepted.*
+*Index status: accepted by the operator-directed 2026-07-11 robustness implementation thread; discoverable from the master N2 row and the routing/autopilot dispatch row. Keep current runtime truth in `autopilot-continuous-optimization.md` + `phase_health_report.py --json`.*
 
 ---
 
