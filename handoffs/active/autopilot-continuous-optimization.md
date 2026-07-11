@@ -1,16 +1,19 @@
 # AutoPilot: Continuous Recursive Optimization
 
-**Current checkpoint — 2026-07-11T23:16Z**: AutoPilot is running under
+**Current checkpoint — 2026-07-11T23:25Z**: AutoPilot is running under
 supervisor PID `1039445` / child PID `1039446`, with phase health reporting
 trial `1318`, `phase=dispatch_action`, `action_type=seed_batch`, and
-`ok=true`. The current process is **not current-code-clean**:
+`ok=true`; log-tail eval progress is T1 `20/65`. The current process is
+**not current-code-clean**:
 `phase_health_report.py --json` reports `code_stale=true` for
 `autopilot.py`, `actions.py`, `controller_io.py`, `eval_tower.py`,
 `safety_gate.py`, and `phase_status.py`; no restart/pause was performed by this
 audit. Planner routing remains local-first (`AUTOPILOT_PLANNER_PRIMARY=local_ingest`,
 `AUTOPILOT_PLANNER_CRITIC=local_frontdoor`, fallback `claude`), and the planner
 spend breaker is explicitly off (`AUTOPILOT_PLANNER_SPEND_BREAKER=0`;
-`planner_spend_breaker_enabled=false`). The named open work in this handoff is
+`planner_spend_breaker_enabled=false`). Outcome progress is still `attention`
+because the latest promotion is stale (`348` trials since promotion). The named
+open work in this handoff is
 now rollout/validation evidence, not code scaffolding: AP-26 needs an
 operator-approved non-RLM vs RLM live comparison, AP-27 needs Ouro/inference
 integration review, BSV-2 needs live paired-run evidence before enabling
