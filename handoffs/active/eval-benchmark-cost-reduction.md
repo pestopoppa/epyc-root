@@ -62,3 +62,13 @@ Cold-start: The paper requires ~10 full-benchmark agent runs before the filter i
 ## Progress checklist
 
 - [ ] BLOCKED: needs Harbor adapter + TB Core baseline (agent-world-env-synthesis) before MR/TB filter applies
+
+## Research Intake Update — 2026-07-11
+
+### New Related Research
+- **[intake-802] "llm-inference-bench"** (GitHub `local-inference-lab/llm-inference-bench`; **UNLICENSED** — deep-dive corrected first-pass "MIT" (that refers to the GSM8K dataset); single-author, no CI/tests)
+  - Relevance: a serving-benchmark harness whose **statistical-rigor methodology** is directly transferable to our eval framework, independent of its GPU-serving target.
+  - Key techniques worth mining (adopt_patterns, NOT adopt_component — it's coupled to vLLM/SGLang GPU serving we don't run in prod, no llama.cpp/CPU path): (1) **McNemar paired-significance test** for A/B quant comparisons — a concrete upgrade for gating quant swaps beyond raw accuracy deltas; (2) **Wilson confidence intervals** on GSM8K/MMLU-Pro/GPQA-Diamond — pairs with our small-sample per-suite resolution-awareness; (3) concurrency×context-length throughput matrix + Prometheus server-side ground truth (reference for [[dynamic-stack-concurrency]] baselines).
+  - Delta: our bench stack (bench_canonical.sh) uses Claude-as-judge + codified recipes and lacks explicit paired-significance testing; McNemar/Wilson are low-cost additions to chapters 06/07 methodology.
+  - **Deep-dive (2026-07-11) verified the methodology is REAL, not README aspiration** — credibility bumped **2→3**: `wilson_interval` (`llm_decode_bench.py:11476`), `mcnemar_exact_p` (`:11487`, the rigorous **exact binomial** variant), and `build_paired_comparison` (`:11523`) are implemented, **stdlib-only** (math/statistics; no scipy), and cleanly separable from the vLLM/SGLang+Prometheus serving code. The tool is **AIPerf-0.7.0 parity-validated** (`docs/aiperf-parity-report-2026-04-26.md`, aggregate tok/s within −0.3…−3.6%) — first-pass "zero empirical numbers" was wrong. McNemar is the principled successor to our 3/n resolution gate. Full note: [`research/deep-dives/2026-07-11-paired-significance-eval-methodology.md`](../../research/deep-dives/2026-07-11-paired-significance-eval-methodology.md).
+- [ ] Operator-review candidate: port `wilson_interval` + `mcnemar_exact_p` + the pairing/discordant-flip core of `build_paired_comparison` (`llm_decode_bench.py:11476–11640`) into the eval-scoring / quant-A/B path (NOT `canonical_recipe.py`, speed-only); gate on `dataset_sha256`+profile match; document paired-McNemar as the formal successor to the 3/n resolution gate in chapter 06.

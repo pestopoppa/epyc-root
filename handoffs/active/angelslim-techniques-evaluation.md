@@ -71,3 +71,11 @@ This stub exists because the user explicitly framed Hy-MT2 itself as "useful spe
 ## Progress checklist
 
 - [ ] BLOCKED: reopen when llama.cpp PR #22836 (AngleSlim kernels) merges + QAT checkpoints exist
+
+## Research Intake Update — 2026-07-11
+
+### New Related Research
+- **[intake-806] "Hy3 — Tencent 295B/21B-active MoE"** (HF `tencent/Hy3`, Apache-2.0)
+  - Relevance: the Hy3 model card references **Tencent AngelSlim** for its FP8 variant (`Hy3-FP8`) and compression toolchain — a concrete, current production model exercising the same AngelSlim path this stub tracks. Confirms AngelSlim is being applied to flagship-scale MoE, not just the Hy-MT2 MT family already noted here.
+  - Delta from current approach: adds a large-MoE FP8 datapoint to the AngelSlim evaluation surface; watch whether AngelSlim FP8/sub-2-bit recipes for `hy_v3` land alongside the community GGUF port ([intake-808], `hy3-mtp` fork). See [[speculative-decoding-mtp-refresh]] for the Hy3 MTP/GGUF thread.
+- [ ] When evaluating AngelSlim compression, include the Hy3-FP8 flagship-MoE case as a test vector (operator-gated).

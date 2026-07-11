@@ -42633,3 +42633,521 @@
   novelty_justification: 'High: first detailed operational writeup of a large (100+ agent) open agent-collaboration, plus the concrete onegraph MTP-drafter warm-up-folding technique (novel, directly targets the Gemma MTP drafter we run) and named organizational failure modes (Agent Collapse, message-board context rot, metric self-policing) not previously documented in our chapters/handoffs.'
   relevance_justification: 'High on two fronts flagged by the operator: (1) autopilot/autoresearch harness optimization — the collaboration is a persistent multi-agent autoresearch loop and its failure modes (exploration collapse, context rot, reward hacking, HITL steering) map directly onto meta-harness-optimization + autopilot-continuous-optimization; (2) experimental kernel R&D mechanisms — the challenge IS a swarm optimizing inference-kernel throughput under a quality gate, the same shape as our v6/v7 experimental-kernel campaigns, and onegraph is a concrete drafter optimization for our production gemma4 MTP worker.'
   verdict_justification: 'adopt_patterns: harvest the organizational patterns (taskforces/channels vs collapse, layered quality gates to defeat metric-gaming, trace sharing for attribution + failure reuse, HITL steering out of loops) into our autopilot + kernel-R&D harnesses. The onegraph technique is a spun-off new_opportunity tracked in speculative-decoding-mtp-refresh.md.'
+- id: intake-799
+  arxiv_id: null
+  url: https://okf-schema.readthedocs.io/en/stable/tutorials/okfkb-hw-debugging-workflow.html
+  source_type: blog
+  title: 'OKF-KB in Practice: HW Debugging Workflow (okf-schema tutorial)'
+  authors: []
+  categories:
+  - knowledge_management
+  key_claims:
+  - 'A stratified knowledge base captures raw debugging observations as immutable "Findings" tagged with confidence, then promotes converged findings into higher-tier "Concepts" as understanding stabilizes.'
+  - 'Contradictions are preserved (status: contradicted), not overwritten, so the graph records belief evolution as an audit trail.'
+  - 'Team standards are encoded as "Principles" constraining future decisions; deliverables tracked as "Outcomes" linked back to supporting Findings.'
+  - 'Immutability + temporal metadata lets humans and AI agents distinguish signal from noise across a multi-week, multi-contributor investigation.'
+  - 'A CLI (okfkb new-finding/index/query, okf-schema lint) drives the KB lifecycle: init, accumulate, promote, query, lint.'
+  techniques:
+  - tiered_schema_findings_concepts_principles_outcomes
+  - immutable_append_only_findings_with_confidence
+  - contradiction_preservation_via_status_field
+  - finding_to_concept_promotion_on_convergence
+  reported_results:
+  - 'Illustrative (fictional) tutorial scenario only; no empirical measurements.'
+  novelty: low
+  relevance: low
+  discovered_via: input
+  verdict: already_integrated
+  cross_references:
+    chapters: []
+    handoffs:
+    - knowledge-base-governance-improvements.md
+    - context-folding-progressive.md
+    experiments: []
+    intake_entries:
+    - intake-710
+    - intake-711
+  credibility_score: null
+  contradicting_evidence:
+  - 'Every okf-KB tier already maps onto an existing (and often hook-enforced) layer of our stack: intake_index=Findings, chapters=Concepts, CLAUDE.md/MEASUREMENT.md=Principles (RFC-2119, hook-enforced), handoffs=Outcomes. The append-only + schema-version + permissive-consumption patterns were already adopted from base OKF v0.1 via intake-710/711 (wiki/SCHEMA.md ## Conformance). okf-schema itself is a 2-week-old, 5-star, single-author (gsemet) MIT package (created 2026-06-25, v0.4->v0.8.3 in one week); no empirical claims; the tier/promotion semantics are prose conventions + a linter, not a validated schema.'
+  recommended_actions:
+  - 'Cross-link intake-710/711 as the canonical OKF adoption record; no new tooling (package is hobby-maturity). OPTIONAL operator-review (marginal): formalize intake->chapter promotion provenance via a promoted_from: [intake-NNN] stamp or claim-level confidence tag on chapters — only if making convergence explicit is wanted; currently handled informally via cross_references.chapters + chapter intake citations.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'DEEP-DIVE REVISION 2026-07-11: DOWNGRADED medium->low novelty/relevance, adopt_patterns->already_integrated. okf-schema is a downstream single-author impl of Google OKF v0.1, which we already deep-dived and adopted via intake-710/711 (drove wiki/SCHEMA.md ## Conformance). Gap analysis: every tier (immutable findings, contradiction-status, finding->concept promotion, principles-as-constraints, outcomes<->evidence) is already covered here, usually more maturely + hook-enforced. Sole marginally-novel idea (explicit finding->concept promotion provenance) is already present informally. No empirical claims -> credibility null. File-and-close.'
+  ingested_date: '2026-07-11'
+- id: intake-800
+  arxiv_id: '2607.05794'
+  url: https://arxiv.org/html/2607.05794v1
+  source_type: paper
+  title: 'From Passive Retrieval to Active Memory Navigation: Learning to Use Memory as a Structured Action Space'
+  authors:
+  - Yue Xu
+  - Qutao Sun
+  - Yihao Liu
+  - Mengyu Zhou
+  - Jiayi Qiao
+  - Lu Ma
+  - Kai Tang
+  - Wenjie Wang
+  - Xiaoxi Jiang
+  - Guanjun Jiang
+  categories:
+  - memory_augmented
+  - agent_architecture
+  - search_retrieval
+  key_claims:
+  - 'Long-term memory should shift from system-level passive retrieval to agent-native navigation: the agent decides when and at which abstraction level to access memory.'
+  - 'Jointly coupling a structured multi-granularity memory store with an RL-learned navigation policy outperforms either component independently.'
+  - 'Memory-use RL training improves memory-task performance without degrading non-memory reasoning (unnecessary memory calls on GPQA-D 34.51% -> 6.90%; held BFCL-v3, V*Bench).'
+  - 'A trained 9B model (NapMem-9B) reaches competitive/superior results vs much larger untrained variants (122B, 397B).'
+  techniques:
+  - multi_granularity_memory_pyramid_with_provenance
+  - memory_as_structured_action_space_five_tools
+  - grpo_trajectory_training_reward_format_correctness_tooluse
+  - hybrid_vector_keyword_retrieval_rrf
+  reported_results:
+  - 'LoCoMo: F1 41.28 / L-J 59.92 (NapMem-9B w/ RL)'
+  - 'LongMemEval: F1 57.41 / L-J 80.33'
+  - 'PersonaMem-v2 accuracy 47.97; average across benchmarks 62.74'
+  - 'Unnecessary memory calls GPQA-D 34.51% -> 6.90%; storage 4.83 GiB vs Mem0 10.44 GiB; ~2.15 tool calls/query'
+  referenced_arxiv_ids:
+  - '2410.10813'
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: adopt_patterns
+  cross_references:
+    chapters:
+    - 09-claude-debugger.md
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - unified-trace-memory-service.md
+    - engram-conditional-memory.md
+    - internal-kb-rag.md
+    - colbert-reranker-web-research.md
+    - minddr-deep-research-mode.md
+    experiments: []
+    intake_entries:
+    - intake-326
+    - intake-346
+    - intake-267
+    - intake-611
+    - intake-316
+    - intake-492
+  credibility_score: 3
+  contradicting_evidence:
+  - 'AFFILIATION CORRECTION (deep-dive): authors are the Alibaba Qwen Large Model Application Team + ShanghaiTech/Zhejiang/Peking/NUS — NOT Microsoft Research (first-pass note error). Base models are Qwen3.5 9B/122B/397B. No code/data/model release; results self-graded via LLM-judge (L-J), unverifiable at days old.'
+  - 'ABLATION NUANCE (Table 4): overall "RL > navigation" is inflated by PersonaMem multiple-choice format collapse (47.97->20.75 w/o RL). On the conversational-memory subset that matches our use case (LoCoMo+LongMemEval) the BORROWABLE structured store+navigation contributes MORE than RL (+11.94 vs +7.92 L-J); prompt-only navigation over the same store reaches ~89% of full-system quality. RL/GRPO`s durable unique value is tool-call frugality (3.97->2.15/query) + unnecessary-call gating (GPQA-D 34.51%->6.90%), not memory-QA quality.'
+  - 'METRIC NON-COMPARABILITY: NapMem LongMemEval F1 57.41 / L-J 80.33 (generative QA, self-judged) is not comparable to MemPalace 96.6% R@5 retrieval recall (intake-326) or agentmemory 96.2% real-retrieval (intake-611); NapMem makes no LongMemEval-leaderboard claim. NapMem is ORTHOGONAL to that cluster (navigation interface + frugality), not better/worse.'
+  - 'RETRIEVAL IS BEHIND OUR STATE: RRF over keyword+vector at k=60 with Qwen3-Embedding-0.6B — no late-interaction/ColBERT reranker, which colbert-reranker-web-research.md already exceeds.'
+  recommended_actions:
+  - 'Prototype a read-only 5-tool navigation surface over the ALREADY-LANDED epyc-orchestrator src/trace/ SQLite+FTS5 store — NO RL: search_records/search_conversation (RRF hybrid over FTS5 + a vector index via existing BGE embedders :8090-8095), get_records/get_conversation (exact fetch by event_id), read_file (a progress/ session summary or topic-track/profile doc). This is the ~89%-of-value path (days of inference-free work, no trained model).'
+  - 'Adopt NapMem`s update cadence as a starting schedule if building record/track tiers: records flushed at 1/2/4/5-turn boundaries; topic tracks refreshed at session/date boundaries or >20 new records; profile refreshed >50 new records. Defer GRPO/RL frugality training to a later optional efficiency lever.'
+  handoffs_updated:
+  - unified-trace-memory-service.md
+  handoffs_created: []
+  notes: 'DEEP-DIVE REVISION 2026-07-11: verdict adopt_patterns CONFIRMED + strengthened. FIXED affiliation (Alibaba Qwen team, NOT Microsoft Research). Four-tier provenance pyramid: L1 raw conversations -> L2 typed memory records (fact/event/instruction/preference, dedup+reconcile) -> L3 topic tracks (linked to record IDs) -> L4 global user profile. Five tools are a plain store API (no model-specific machinery). Table-4 subset analysis shows the borrowable store+navigation half is the dominant quality lever on conversational memory-QA (~89% of ceiling prompt-only), so adopt_patterns not adopt_component; we do NOT need their unreleased trained 9B. Maps ~1:1 onto our landed src/trace/ store (raw events~L1, record families~L2, progress summaries~L3; no L4 profile, likely unneeded). Credibility 3: 2026-07 recency +1, major industry lab (Alibaba Qwen) +1, corroborated cluster +1; ceiling 3 (no peer review, no code release, self-graded L-J).'
+  ingested_date: '2026-07-11'
+- id: intake-801
+  arxiv_id: null
+  url: https://youmind.com/landing/x-viral-articles/claude-fable-5-agent-guide
+  source_type: blog
+  title: "Complete Guide to Claude Fable 5's Agent Functions"
+  authors:
+  - '@MakeAI_CEO (via YouMind platform)'
+  categories:
+  - agent_architecture
+  - swarm_techniques
+  - tool_implementation
+  - knowledge_management
+  key_claims:
+  - "Fable 5's headline evolution is long-term autonomous work (agentic durability), not raw intelligence; full value materializes only when deployed as an agent."
+  - 'Model-tiering: Fable 5 as Commander (orchestration/verification), Sonnet 5 as Hands (parallel research/implementation), Haiku 4.5 for routine tasks.'
+  - 'Three-layer delegation: sub-agents decompose work, workflows organize parallel adversarial verification, skills (.claude/skills/ markdown) persist procedural knowledge.'
+  - 'MCP connects external SaaS for autonomous execution; warns against over-installing MCPs to preserve the 1M-token context budget.'
+  techniques:
+  - commander_hands_model_tiering
+  - sub_agent_parallel_delegation
+  - adversarial_verification
+  - skills_markdown_procedural_memory
+  reported_results: []
+  novelty: low
+  relevance: low
+  discovered_via: input
+  verdict: not_applicable
+  cross_references:
+    chapters: []
+    handoffs:
+    - meta-harness-optimization.md
+    - agent-collab-rnd-harness.md
+    experiments: []
+    intake_entries: []
+  credibility_score: null
+  contradicting_evidence: null
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'not_applicable: commercial "viral article" landing page (bias applied), no empirical claims -> credibility null. Generic Claude Code agent primer whose patterns (Commander/Hands tiering, adversarial verification, skills) the project already documents/practices (cf. fable5-findings-*, meta-harness-optimization). Sibling youmind viral-article already indexed at credibility 0. Page contained reader-directed imperatives (end-user behavior, not agent hijacking); treated as data, none obeyed.'
+  ingested_date: '2026-07-11'
+- id: intake-802
+  arxiv_id: null
+  url: https://github.com/local-inference-lab/llm-inference-bench
+  source_type: repo
+  title: 'llm-inference-bench - throughput-matrix benchmarking harness for LLM serving engines (vLLM/SGLang)'
+  authors:
+  - local-inference-lab (GitHub org)
+  categories:
+  - benchmark_methodology
+  - inference_serving
+  - hardware_optimization
+  key_claims:
+  - 'Measures token-generation speed across a matrix of concurrency (1-128) x context length (0K-128K) to show serving-engine scaling under load.'
+  - 'Three-layer measurement model: prefill, sustained decode, optional burst/E2E decode.'
+  - 'Validates throughput server-side by scraping Prometheus metrics from vLLM/SGLang, plus live hardware monitoring.'
+  - 'Adds statistical rigor: Wilson confidence intervals on GSM8K/MMLU-Pro/GPQA-Diamond and paired A/B with McNemar significance testing for quant comparisons.'
+  techniques:
+  - concurrency_x_context_throughput_matrix
+  - three_phase_decode_decomposition
+  - prometheus_server_side_metric_scraping
+  - wilson_confidence_intervals
+  - mcnemar_paired_significance_ab_testing
+  reported_results: []
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: adopt_patterns
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    handoffs:
+    - dynamic-stack-concurrency.md
+    - eval-benchmark-cost-reduction.md
+    experiments: []
+    intake_entries: []
+  credibility_score: 3
+  contradicting_evidence:
+  - 'REPO IS UNLICENSED (all-rights-reserved): the license API returns 404; README "MIT" refers to the GSM8K dataset and "Apache-2.0" to MMLU-Pro, NOT the repo (first-pass "MIT" attribution was wrong). No tests, no CI, no .github/; single-author org (voipmonitor / Martin Vit) created 2026-05-08 (<3 months old). Methodology is nonetheless verified-implemented (stdlib-only, statistically correct) and AIPerf-0.7.0 parity-validated.'
+  recommended_actions:
+  - 'Operator-gated: port wilson_interval (llm_decode_bench.py:11476), mcnemar_exact_p (:11487, exact binomial variant), and the pairing/discordant-flip core of build_paired_comparison (:11523) into our eval-scoring / quant-A/B path (NOT canonical_recipe.py, which is speed-only). Gate comparisons on dataset_sha256 + profile match as the source does. Document paired-McNemar as the formal successor to the ad-hoc 3/n resolution gate in chapter 06. A McNemar p-value is decision-gating -> use only via a codified recipe with operator approval.'
+  handoffs_updated:
+  - eval-benchmark-cost-reduction.md
+  handoffs_created: []
+  notes: 'DEEP-DIVE REVISION 2026-07-11: credibility 2->3, verdict adopt_patterns CONFIRMED. CORRECTED two first-pass errors: (1) repo is UNLICENSED, not MIT; (2) NOT methodology-only — wilson_interval/mcnemar_exact_p/build_paired_comparison are actually implemented (stdlib math/statistics only, cleanly separable from the vLLM/SGLang+Prometheus serving code) and there IS empirical data (docs/aiperf-parity-report-2026-04-26.md calibrates against NVIDIA AIPerf 0.7.0, aggregate tok/s within -0.3..-3.6%, client-vs-server Prometheus cross-validation). McNemar is the EXACT binomial variant (correct for small discordant counts) and is the principled successor to our 3/n resolution gate, complementing not duplicating it. Chapters 06/07 currently have NO paired-significance testing -> net-new. Rubric 3: recent/active +1, known OSS contributor +1, AIPerf independent corroboration +1; capped by no-license/no-tests/single-author. Do NOT adopt their Prometheus/prefill/burst harness (vLLM/SGLang-coupled, no CPU path).'
+  ingested_date: '2026-07-11'
+- id: intake-803
+  arxiv_id: null
+  url: https://www.primeintellect.ai/blog/rlm
+  source_type: blog
+  title: 'Recursive Language Models: the paradigm of 2026'
+  authors:
+  - Sebastian (Prime Intellect)
+  categories:
+  - agent_architecture
+  - context_management
+  - autonomous_research
+  - training_distillation
+  - context_extension
+  key_claims:
+  - 'RLMs let a model actively manage its own context via a persistent Python REPL, treating the prompt as an external environment variable to avoid context rot on long-context tasks.'
+  - 'Tool-heavy work is delegated to sub-LLMs (llm_batch parallel calls); the main model only sees compressed summaries.'
+  - 'Training models with RL to use RLM scaffolding is framed as the next major breakthrough for long-horizon tasks (Prime Intellect decentralized-RL angle).'
+  - 'RLMs beat standard LLMs on complex long-context tasks (Oolong, DeepDive) but underperform on simple math reasoning without additional training.'
+  techniques:
+  - recursive_language_models_context_in_repl
+  - sub_llm_parallelization_llm_batch
+  - answer_diffusion_iterative_answer_dict
+  - rl_training_of_rlm_scaffold
+  reported_results:
+  - 'DeepDive (GLM 4.6): RLM ~doubles performance vs LLM'
+  - 'Oolong (~1.5M-char real data): RLM outperforms LLM by a large margin'
+  - 'math-python: RLM reward ~40% lower than baseline on GPT-5-mini (regression on simple math)'
+  referenced_arxiv_ids:
+  - '2512.24601'
+  - '2510.11967'
+  - '2510.24699'
+  - '2510.04618'
+  - '2509.10446'
+  - '2511.02817'
+  novelty: low
+  relevance: high
+  discovered_via: input
+  verdict: already_integrated
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - meta-harness-optimization.md
+    - context-folding-progressive.md
+    experiments: []
+    intake_entries:
+    - intake-153
+    - intake-154
+    - intake-312
+    - intake-349
+    - intake-537
+  credibility_score: 3
+  contradicting_evidence:
+  - 'Commercial promotional post (-1) with soft/vague numbers ("almost a doubling", "~40% lower"); offset by +1 recency and +1 real training lab. RLM regression on simple math (math-python -40% reward) is an acknowledged limitation, not an external contradiction.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'already_integrated: core RLM paradigm fully tracked via intake-153 (arxiv:2512.24601, ~80% implemented in EPYC REPL sandbox) and near-duplicate explainer intake-537. This is a company re-explanation of the same paper/sources. One forward item worth operator flag (not auto-adopt): Prime Intellect RL-train-the-scaffold direction, complementary to autopilot-continuous-optimization and intake-154 FoldGRPO.'
+  ingested_date: '2026-07-11'
+- id: intake-804
+  arxiv_id: '2607.05391'
+  url: https://arxiv.org/html/2607.05391v2
+  source_type: paper
+  title: 'LLM-as-a-Verifier: A General-Purpose Verification Framework'
+  authors:
+  - Jacky Kwok
+  - Shulu Li
+  - Pranav Atreya
+  - Yuejiang Liu
+  - Yixing Jiang
+  - Chelsea Finn
+  - Marco Pavone
+  - Ion Stoica
+  - Azalia Mirhoseini
+  categories:
+  - benchmark_methodology
+  - cost_aware_routing
+  - agent_architecture
+  key_claims:
+  - 'Verification is a new, underexplored scaling axis for LLM capability, comparable to pre-training and test-time compute.'
+  - 'Continuous probabilistic scores (expectation over scoring-token logit distributions) outperform discrete judgment scores for comparing/ranking solutions.'
+  - 'Verification scales along three dimensions - score granularity, repeated evaluation, criteria decomposition - with no additional model training.'
+  - 'Continuous scores provide dense reward feedback for RL optimization and agentic progress-estimation.'
+  techniques:
+  - probabilistic_logit_expectation_continuous_scoring
+  - score_granularity_scaling
+  - repeated_verification_k_rounds
+  - criteria_decomposition
+  - round_robin_tournament_ranking
+  reported_results:
+  - 'Terminal-Bench V2: 86.5%'
+  - 'SWE-Bench Verified: 78.2%'
+  - 'RoboRewardBench: 87.4%'
+  - 'MedAgentBench: 73.3%'
+  referenced_arxiv_ids: []
+  novelty: duplicate
+  relevance: medium
+  discovered_via: input
+  verdict: already_integrated
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - eval-tower-verification.md
+    experiments: []
+    intake_entries:
+    - intake-362
+    - intake-363
+  credibility_score: 3
+  contradicting_evidence:
+  - 'Prior intake (362/363) noted logprob-reliability and LLM-judge bias caveats; reference implementation is Gemini/Vertex-AI-specific (closed API), so local adoption requires re-implementing scoring via llama.cpp logprob extraction.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'already_integrated / novelty duplicate: same framework already captured as intake-362 (Notion) + intake-363 (GitHub repo, 2026-04-14) with near-identical Terminal-Bench V2 (86.5 vs 86.4) and SWE-Bench Verified (78.2 vs 77.8). This is the canonical arXiv write-up. RECOMMENDED FOLLOW-UP (operator): attach arxiv_id 2607.05391 + confirmed author list to intake-362/363 as canonical citation, and record the two added benchmarks (RoboRewardBench 87.4, MedAgentBench 73.3).'
+  ingested_date: '2026-07-11'
+- id: intake-805
+  arxiv_id: '2606.25234'
+  url: https://www.goodfire.ai/research/bsf-vision
+  source_type: blog
+  title: 'Uncovering Neural Geometry in Vision Models With Block-Sparse Featurizers'
+  authors:
+  - Thomas Fel
+  - Matthew Kowal
+  - Mozes Jacobs
+  - Dron Hazra
+  - Usha Bhalla
+  - Jack Merullo
+  - Ekdeep Singh Lubana
+  - Atticus Geiger
+  categories:
+  - multimodal
+  key_claims:
+  - 'Block-Sparse Featurizers (BSF) decompose model activations into multidimensional subspaces (blocks) rather than single directions, enforcing sparsity at the block level.'
+  - 'Most concepts in vision models are multidimensional (2-4 dimensional); blocks rarely exceed a stable rank of 4 despite size-16 capacity.'
+  - 'BSFs recover concept manifolds with higher fidelity than standard sparse autoencoders (SAEs) and give a lower minimum-description-length explanation of activations.'
+  - 'Three variants (vanilla, Grassmannian, group-lasso) tested on DINOv3 and Stable Diffusion XL, enabling manifold steering.'
+  techniques:
+  - block_sparse_featurizer
+  - sparse_autoencoder_alternative
+  - grassmannian_and_group_lasso_bsf
+  - manifold_steering
+  reported_results:
+  - 'Blocks rarely exceed stable rank 4 despite size-16 capacity.'
+  - 'Improved reconstruction vs SAEs; higher-fidelity concept-manifold recovery; lower MDL than SAE decompositions.'
+  referenced_arxiv_ids:
+  - '2606.25234'
+  novelty: high
+  relevance: low
+  discovered_via: input
+  verdict: not_applicable
+  cross_references:
+    chapters: []
+    handoffs:
+    - qwen-scope-sae-toolkit.md
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries: []
+  credibility_score: 5
+  contradicting_evidence: null
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'not_applicable to inference/orchestration mission: vision-model (DINOv3/SDXL) interpretability, no decode-speed/quant/KV/routing lever. Flagged per no-dismiss policy: multidimensional-feature idea + released repo (goodfire-ai/block-sparse-featurizer) could inform future SAE-based routing/steering (cf. qwen-scope-sae-toolkit, learned-routing-controller). Credibility 5: strong empirical claims + within-12mo +1 + major interpretability lab (Fel, Geiger) +1, commercial-bias -1.'
+  ingested_date: '2026-07-11'
+- id: intake-806
+  arxiv_id: null
+  url: https://huggingface.co/tencent/Hy3
+  source_type: repo
+  title: 'Hy3 - Tencent flagship 295B/21B-active MoE (Hunyuan v3 generation)'
+  authors:
+  - Tencent Hy Team
+  categories:
+  - moe_optimization
+  - speculative_decoding
+  - context_extension
+  - quantization
+  - local_inference
+  key_claims:
+  - '295B total / 21B active MoE, 192 experts (top-8), 80 layers + 1 native MTP layer (3.8B params), GQA 64/8 heads, 256K context.'
+  - 'Claims to outperform similar-size models and rival flagship open-source models with 2-5x parameters.'
+  - 'Blind expert eval 2.67/4, self-reported as beating GLM-5.1 (2.51/4); hallucination rate reduced 12.5% -> 5.4% (internal eval).'
+  - 'Apache-2.0 license; FP8 variant (Hy3-FP8) published; AngelSlim referenced for compression.'
+  techniques:
+  - moe_192_experts_top8_routing
+  - native_multi_token_prediction_layer
+  - gqa_attention
+  - fp8_quantization_angelslim
+  reported_results:
+  - 'GPQA Diamond: 90.4; SWE-Bench Verified: 78; SWE-Bench Pro: 57.9; Skillsbench V1: 55.3'
+  - 'Blind expert eval 2.67/4 (vs GLM-5.1 2.51/4)'
+  - 'Params 295B total, 21B active; MTP 3.8B; context 256K'
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  cross_references:
+    chapters:
+    - 02-moe-optimization.md
+    handoffs:
+    - speculative-decoding-mtp-refresh.md
+    - angelslim-techniques-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-808
+  credibility_score: 2
+  contradicting_evidence:
+  - 'All quality claims are Tencent self-reported (GPQA-D 90.4, SWE-Bench-Verified 78, blind-eval 2.67/4 vs GLM-5.1 2.51/4); no independent QUALITY eval as of 2026-07-11. Strong MARKET reception exists (reportedly #1 OpenRouter token usage / coding / tool-calls during a free-preview window; ~$0.12/$0.43 per M) — adoption/pricing evidence, NOT a third-party accuracy benchmark. OBSERVATION-grade per MEASUREMENT.md.'
+  - 'CONTEXT CORRECTION (config.json verified): native context is 256K (max_position_embeddings 262144, rope_type "default", NO rope_scaling/YaRN in config). The "1M context" (intake-808 title) is a community inference-time RoPE extension by the GGUF packager, not a native capability; the port`s own 1M needle test degrades to ~70%/needle vs 10/10 at <=786K.'
+  recommended_actions:
+  - 'Re-scope as an ARCHITECT-tier CAPABILITY candidate, NOT an MTP-speedup case (see intake-808: CPU MTP predicted net-neutral, BW-bound). Only if the operator wants a new architect contender vs incumbent Qwen3.5-122B: download ONE quant (IQ2_M 100GB fits the ~680GB free disk) and run a plain no-MTP architect-quality bench on our review suite. Disk (not RAM) is the limiter — do not hoard multiple quants.'
+  handoffs_updated:
+  - speculative-decoding-mtp-refresh.md
+  - angelslim-techniques-evaluation.md
+  handoffs_created:
+  - (deep-dive) research/deep-dives/2026-07-11-hy3-hunyuan-v3-moe-mtp-assessment.md
+  notes: 'DEEP-DIVE REVISION 2026-07-11 (config.json + PR #25395 verified): novelty/relevance high, verdict worth_investigating, credibility 2 all CONFIRMED. Arch verified: hy_v3 / HYV3ForCausalLM, hidden 4096, 80 layers + 1 nextn MTP layer, 192 experts top-8 + 1 shared (~9 active), sigmoid router, GQA 64/8 head_dim 128 + qk_norm, first_k_dense_replace 1; ~21B active/~295B total reproduced by derivation. Feasibility: IQ2_M+256K-q8 KV ~142GB, Q4_K_M ~225GB — all well inside 1.1TB; DISK is the tighter limit (~680GB free). RAM non-constraint (GLM-5.2 ~238GB precedent). Reframed as architect candidate (NOT a CPU-MTP win — see intake-808). Genuinely new model line: no prior Hunyuan large-MoE inference entry (Hy-MT2=translation, AngelSlim=toolkit, UniRL=training). Native ctx 256K; "1M" is a community RoPE extension.'
+  ingested_date: '2026-07-11'
+- id: intake-807
+  arxiv_id: null
+  url: https://github.com/paradigmxyz/sfp
+  source_type: repo
+  title: 'SFP - Sparse Feature Preservation: benchmark + method for catastrophic forgetting in sequentially fine-tuned LLMs'
+  authors:
+  - Paradigm (paradigmxyz)
+  categories:
+  - training_distillation
+  key_claims:
+  - 'Activation drift confined to a small (rank-r) subspace predicts old-task accuracy drops (H1: R^2 >= 0.6), whereas drift in a random rank-r subspace does not.'
+  - 'SFP protects only the top-ranked activation directions (ablation/PCA importance scoring) rather than regularizing the whole model.'
+  - 'The reduction to the tractable objective is formally verified in Lean 4 with zero unresolved proofs.'
+  - 'H1 is scale-dependent: fails at 135M params but holds at 1.5B.'
+  techniques:
+  - activation_subspace_importance_scoring_pca_ablation
+  - drift_penalizing_regularization
+  - sequential_finetuning_benchmark_harness
+  - lean4_formal_verification_of_objective
+  reported_results:
+  - 'Qwen2.5-1.5B (Math->Code): top-r dims predict forgetting R^2=0.933 vs random-subspace R^2=0.850'
+  - 'SmolLM2-135M: perturbing top-r dims causes ~4x more degradation than random-dim perturbation'
+  referenced_arxiv_ids:
+  - '2404.16789'
+  novelty: medium
+  relevance: low
+  discovered_via: input
+  verdict: not_applicable
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    experiments: []
+    intake_entries: []
+  credibility_score: 2
+  contradicting_evidence: null
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'not_applicable: training-time/continual-fine-tuning method (capability regression during sequential fine-tuning), outside inference+agent scope. Small-scale (135M-1.5B), mostly correlational, ~19 stars, MIT. Flagged per no-dismiss policy: PCA/ablation ranking of important low-dim activation directions could inform activation-aware quantization/pruning heuristics (speculative bridge to quant work). NOTE: paradigmxyz is primarily a crypto/Ethereum org, but this repo is genuinely LLM continual-learning (not blockchain); stars/activity should be re-verified before any action.'
+  ingested_date: '2026-07-11'
+- id: intake-808
+  arxiv_id: null
+  url: https://huggingface.co/satgeze/Hy3-1M-GGUF
+  source_type: repo
+  title: 'satgeze/Hy3-1M-GGUF - first GGUF quants of Hy3 with working MTP path'
+  authors:
+  - satgeze (community)
+  categories:
+  - local_inference
+  - speculative_decoding
+  - quantization
+  - moe_optimization
+  key_claims:
+  - 'First GGUF quants of Hy3; at publish (~30h after Hy3 release) only MLX/MXFP4 quants existed and mainline llama.cpp did not yet support hy_v3.'
+  - 'Native support proposed upstream in PR #25395 (under review); until merge, build the hy3-mtp branch of satindergrewal/llama.cpp.'
+  - 'MTP is functional and baked into the quant files; TRUE ungated greedy acceptance ~41% (IQ2_M) / 47% (f16), matching Tencent official vLLM 46.7% (bf16/TP4). The "88.2%" is a p_min=0.75 CONFIDENCE-GATED figure a llama.cpp maintainer flagged as not a valid acceptance measure (see contradicting_evidence).'
+  - 'CUDA throughput gains: +13% (2xH200), +26-37% elsewhere, +40% Strix-Halo Vulkan. On a BW-bound backend (Metal M3 Max IQ2_M) MTP is NET-NEUTRAL (23.27 vs 23.21 t/s) — predicts EPYC-CPU net-neutral.'
+  - 'Baked 1,048,576-token context is a COMMUNITY RoPE extension (native model ctx = 256K); needle 10/10 at 262K-786K, ~70% per-needle at full 1M.'
+  techniques:
+  - gguf_quantization_hy_v3
+  - hy3_mtp_llamacpp_fork_branch
+  - mtp_speculative_decoding_gated_p_min
+  - community_rope_context_extension
+  reported_results:
+  - 'Quants: IQ1_M 62GB (no_think-only), IQ2_M 100GB (recommended, MTP head incl), Q2_K 111GB, IQ3_XXS 117GB, Q3_K_M 145GB, Q4_K_M 183GB, Q5_K_M 213GB, Q6_K ~246GB'
+  - 'MTP true ungated acceptance ~41% IQ2_M / ~47% f16 (matches vLLM 46.7%); "88.2%" is p_min=0.75-gated. CUDA +13% (H200); Metal net-neutral'
+  - 'Native ctx 256K; community 1M RoPE ext: needle 10/10 262K-786K, ~70% per-needle at 1M'
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-806
+  verdict: worth_investigating
+  cross_references:
+    chapters:
+    - 02-moe-optimization.md
+    handoffs:
+    - speculative-decoding-mtp-refresh.md
+    - angelslim-techniques-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-806
+  credibility_score: 3
+  contradicting_evidence:
+  - 'MATERIAL CORRECTION: "88.2% acceptance" is a p_min=0.75 GATED number a llama.cpp maintainer (ruixiang63) explicitly flagged as "not a stable measurement for correctness." TRUE ungated greedy acceptance is ~41% (IQ2_M) / 47% (f16), cross-checked against Tencent official vLLM 46.7% — a dead match. First-pass intake reported the gated figure as if it were the acceptance rate.'
+  - 'CPU MTP predicted NET-NEUTRAL, not a speedup: author`s own Metal M3 Max (BW-bound) datapoint is net-neutral (23.27 vs 23.21 t/s; the q8 MTP-head reads offset accepted drafts). EPYC CPU decode is also BW-bound -> Hy3 MTP confirms, not breaks, the MoE-A3B expert-verification wall (~1.06x) in speculative-decoding-mtp-refresh.md. It is a single-depth head; 21B-active/top-8-of-192 widens the verify-step expert union (more BW/step). "ungated = net slowdown" was Metal-specific; ungated on CUDA is break-even.'
+  - 'Native ctx is 256K; the "1M" is a community RoPE extension that degrades to ~70%/needle. Arch string unresolved (hy_v3 vs earlier community hy-v3; maintainers lean to dash) -> pin a specific commit; already-downloaded GGUFs may need a metadata rename. The chat_template_llamacpp.jinja workaround is being OBSOLETED upstream (pwilkin jinja str.format fix cross-picked; stock template now renders with --jinja).'
+  recommended_actions:
+  - 'DOWNGRADED to a CONFIRMATORY (not exploratory) experiment: predicted result is net-neutral. If the operator wants closure: download IQ2_M only (100GB, MTP head incl, fits ~680GB free disk) -> build satindergrewal/llama.cpp@hy3-mtp CPU-only at a PINNED commit -> one host-quiesced run measuring ungated greedy (--spec-draft-p-min 0) --spec-type draft-mtp t/s vs no-MTP baseline + a correctness probe (same protocol as the gemma-4-31B gate: taskset -c 0-95, -t 96, OMP stack, temp0/seed42). That single IQ2_M run simultaneously closes the CPU-MTP question AND confirms the model runs -> then reconsider as a plain architect candidate (intake-806). Watch PR #25395 for mainline hy_v3.'
+  handoffs_updated:
+  - speculative-decoding-mtp-refresh.md
+  handoffs_created:
+  - (deep-dive) research/deep-dives/2026-07-11-hy3-hunyuan-v3-moe-mtp-assessment.md
+  notes: 'DEEP-DIVE REVISION 2026-07-11 (PR #25395 all comments + config verified): credibility 2->3 (independent corroboration: vLLM official-reference acceptance match + Metal & Strix-Halo replications + live maintainer audit). Novelty/relevance high, verdict worth_investigating retained but RE-SCOPED: for our CPU-MTP mission this is a NEGATIVE datapoint (net-neutral), high only as "enables Hy3 on CPU at all." PR is active/maintainer-engaged, not stalled; CI red appears environmental (SIGILL on master HEAD too), still REVIEW_REQUIRED/unmerged. Corrected the first-pass 88.2%-acceptance error (truly p_min=0.75-gated; real ~47%).'
+  ingested_date: '2026-07-11'
