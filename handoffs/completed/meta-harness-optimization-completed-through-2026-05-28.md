@@ -1,7 +1,7 @@
 # Meta-Harness - Completed Implementation Ledger
 
 > Historical completion ledger only.
-> Current work lives in [meta-harness-optimization.md](../active/meta-harness-optimization.md).
+> Current active-path compatibility pointer lives in [meta-harness-optimization.md](../active/meta-harness-optimization.md); the closed post-compaction ledger is [meta-harness-optimization.md](meta-harness-optimization.md).
 > This file preserves pre-compaction implementation, intake, and deep-dive context; active tasks, gates, and indices are authoritative in the active handoff.
 
 # Meta-Harness: Automated Harness Optimization

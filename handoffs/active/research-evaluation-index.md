@@ -40,7 +40,7 @@ From 14-paper literature sweep (intake-784 through intake-797), compiled into `r
 
 | Rec | Priority | Topic | Target Handoff | Action |
 |---|---|---|---|---|
-| rec-001 | HIGH | Meta-Harness: automated benchmark design | [`meta-harness-optimization.md`](meta-harness-optimization.md) | Integrate agentic harness search + HTIR failure attribution + SEAGym eval views |
+| rec-001 | HIGH | Meta-Harness: automated benchmark design | [`meta-harness-optimization.md`](meta-harness-optimization.md) / [completed ledger](../completed/meta-harness-optimization.md) | ✅ Closed 2026-07-11: MH-10 harness-search scoping, MH-11 HTIR, and MH-12 SEAGym views landed or were scoped observe-only. Remaining validation lives in EV-10 / Package K, not Meta-Harness. |
 | rec-002 | HIGH | DGM: dynamic task generation | [`frontier-f1-real-task-corpus.md`](frontier-f1-real-task-corpus.md) | Evaluate DGM methodology for corpus expansion |
 | rec-003 | MED | MCE/AFlow: multi-agent consensus judging | [`eval-tower-verification.md`](eval-tower-verification.md) | Assess consensus patterns for critic pipeline |
 | rec-004 | MED | SIA/ShinkaEvolve: self-improvement architectures | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | Review integration points; SkillsBench v3 caution applies |
