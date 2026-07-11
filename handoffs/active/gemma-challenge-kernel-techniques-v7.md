@@ -44,6 +44,7 @@ The Gemma Challenge (100+ agents, 6 days) drove `google/gemma-4-E4B-it` inferenc
 - [x] **K9 — non-gemma4 graph generalization ✅ 2026-07-11**: Qwen3.6-27B (dense hybrid) + Qwen3.6-35B-A3B (MoE), native MTP. Base decode **+7–14%** (generalizes); native-MTP spec-dec only **+1.8–2.5%** (the +25% is gemma4-external-head-specific); Qwen native-MTP deterministic under load. See "Non-gemma4 generalization".
 - [ ] **K10 — (follow-up) Lever A quiet-host re-eval**: on a quiesced host (fresh-server/run, `fprintf(stderr)` keylog to confirm the `nodes[0]` collision first), decide land/drop. Only pursue if verify re-capture proves a *measured* bottleneck.
 - [ ] **K11 — (follow-up) root-cause the gemma4 external-head MTP non-determinism under load**: intermittent run-to-run output drift at temp0/seed42 (async D2H-copy race); Qwen native-MTP is unaffected. Low-grade correctness/repro flag.
+- [x] **K12 — `GGML_CUDA_Q8_PREFETCH` 0/1/2 benchmark ✅ 2026-07-11**: net-negative on all 4 Q8 models → keep OFF (default). Dense hurt most (Qwen-27B −12/−18%, gemma4-31B −6/−7.5%); MoE marginal/noisy (gemma4-A4B −3.5/−0.3%, Qwen-35B-A3B +4.2/+3.1%). qwen-27b server relaunched graphs-ON + prefetch-off + MTP (draft-mtp n-max 3, ~91% accept). See "Kernel-Optimization Levers → Q8_PREFETCH".
 
 ## GPU Graph Capture Feasibility (2026-07-11)
 
@@ -163,6 +164,9 @@ Takeaways: graphs (default ON) are the win on Q8 — biggest on the fast A4B MoE
 ## Kernel-Optimization Levers (K6/K7 investigation, 2026-07-11)
 
 Three levers were scoped to improve on the raw K2 per-decode graph capture. Key reframing from the K7 code audit: **the A4B Q4 spec-dec regression is VERIFY-side, not the draft loop.** For single-seq gemma4/`is_mem_shared`, every *draft* decode is `n_tokens=1` at a fixed position → shape-stable → the per-decode graph already warms up and replays across draft steps (draft loop is already graph-optimal). The thrash is the *target verify* decode: `n_tokens = n_drafted+1` varies with acceptance each spec-dec step → the single shared cache slot's `warmup_complete` keeps resetting (`ggml-cuda.cu:4499-4502`) → verify runs eager. This reframes lever EV.
+
+### Lever: `GGML_CUDA_Q8_PREFETCH` (fork CDNA2 dense-Q8_0-GEMV async weight-prefetch, `mmvq.cu:502`) — REJECTED (2026-07-11)
+Compiled-in (`Q8_LDS_PREFETCH_COMPILED`), lossless/byte-identical, runtime `0`=off (default) / `1`=cached-DMA / `2`=SLC-streaming. Benchmarked 0/1/2 on all 4 Q8 models (MI210, llama-bench base decode, r5, graphs-ON): **net-negative — leave OFF.** Ironically it *hurts the dense models most* despite targeting dense GEMV: Qwen3.6-27B dense −12%/−18%, gemma4-31B dense −6%/−7.5%; MoE marginal/noisy (gemma4-A4B −3.5%/−0.3%, Qwen3.6-35B-A3B +4.2%/+3.1% — the two MoE disagree in sign → near noise). No consistent win; the experimental prefetch/LDS-double-buffer overhead outweighs the DMA-latency hiding on gfx90a for these shapes.
 
 ### Lever: `GGML_CUDA_GRAPH_OPT=1` (fork fan-out/stream-reorder pass) — REJECTED
 Env-only, `ggml-cuda.cu:4564`. Measured net-negative on MI210: A4B **Q8 base decode −16%** (68.8 vs 82.5 t/s), **Q8 spec-dec ~−11%** (~96 vs 108); Q4 spec-dec noisy/neutral (~115 vs 104 on / 112 off). Leave OFF (the default).
