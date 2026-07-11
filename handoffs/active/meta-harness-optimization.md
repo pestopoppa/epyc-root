@@ -1,6 +1,6 @@
 # Meta-Harness: Automated Harness Optimization
 
-**Status**: COMPACTED 2026-05-28; J9 validation closed 2026-06-12 - active work is MH-10/MH-12 + SkillOpt coordination.
+**Status**: COMPACTED 2026-05-28; J9 validation closed 2026-06-12 - active work is MH-10 + SkillOpt coordination.
 **Created**: 2026-04-01
 **Updated**: 2026-07-11
 **Priority**: HIGH (upgraded 2026-07-08 per rec-001: literature sweep confirms meta-harness as central paradigm)
@@ -40,12 +40,14 @@ Do not rebuild the full Meta-Harness outer loop now. The useful next work is tar
 | MH-6 proposer-prior template | Landed in `PromptForge._build_code_mutation_prompt()` with explicit read order, `expected_quality_delta`, `expected_cost_delta`, and no-task-specific-hints output contract. Focused PromptForge/GEPA tests passed. | orchestrator `9da18568` |
 | MH-7 contrastive traces | Landed in `eval_tower.capture_contrastive_traces(k_success=2, k_failure=2)` with contrastive trace-bank labeling, trial-end state refresh, and PromptForge preference over recent-trace fallback. Validation: focused pytest suite (171 passed), Ruff format/check, and `git diff --check` on touched orchestrator/test files. | orchestrator session checkpoint 2026-07-11 |
 | MH-9 new-file mutation support | Landed with bounded `new_file` mutation proposals under the existing code-mutation safety surface, parent-directory dirty checks, traversal/collision rejection, fresh-file apply/revert handling, and `FileExistsError` skip coverage. | orchestrator `88639b1f` |
+| MH-12 SEAGym evaluation views | Landed observe-only EvalTower result accounting in `scripts/autopilot/eval_tower_seagym_views.py`: classifies compact `EvalResult.question_results` / journal-shaped eval payloads into train, validation, test, replay, and OOD views without changing `_aggregate`, `_eval_question`, `_compact_question_result`, SafetyGate, Pareto admission, or baseline calibration. Validation: `pytest tests/unit/test_eval_tower_seagym_views.py tests/unit/test_eval_tower_concurrency_metrics.py -q` (32 passed), Ruff check/format on new files. | orchestrator `8d4e5146` |
 | HLE-1/HLE-2 observe-only fields | Schema and rule-based defaults landed in orchestrator commits `931e43c` and `9222a19`; J9 analysis closed 2026-06-12 with diagnostic-only verdict. | [completed ledger](../completed/meta-harness-optimization-completed-through-2026-05-28.md) |
 
 ## Key Files
 
 - `/mnt/raid0/llm/epyc-orchestrator/scripts/autopilot/species/prompt_forge.py`
 - `/mnt/raid0/llm/epyc-orchestrator/scripts/autopilot/eval_tower.py`
+- `/mnt/raid0/llm/epyc-orchestrator/scripts/autopilot/eval_tower_seagym_views.py`
 - `/mnt/raid0/llm/epyc-orchestrator/scripts/autopilot/hle_metrics.py`
 - [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md)
 - [bulk-inference-campaign.md](bulk-inference-campaign.md)
@@ -85,7 +87,8 @@ After MH or HLE work, update this handoff with the code path, feature flag, vali
 - [ ] **MH-10 agentic harness search scoping** — adapt Meta-Harness proposer contract for our seeding pipeline; gate on curated-baseline validation
 - [x] **MH-11 HTIR failure attribution** — implement harness-aware trace IR for eval-tower critic. ✅ 2026-07-11
   Landed in orchestrator commit `b9fcdf5e` (`Add harness trace IR for PromptForge context`); focused Ruff, `py_compile`, and pytest validation passed on the touched orchestrator files, and the post-commit preflight stayed non-restart-safe so autopilot was not restarted.
-- [ ] **MH-12 SEAGym evaluation views** — add train/validation/test/replay/OOD views to eval-tower
+- [x] **MH-12 SEAGym evaluation views** — add train/validation/test/replay/OOD views to eval-tower. ✅ 2026-07-11
+  Landed as observe-only result/journal payload accounting in orchestrator commit `8d4e5146` (`Add observe-only SEAGym eval views`); it deliberately avoids the high/critical inline scoring path and has no SafetyGate/Pareto/baseline effect.
 
 ### Prior Research (2026-07-02)
 
