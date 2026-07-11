@@ -7,7 +7,7 @@
 
 ## Objective
 
-Decide whether to adopt new MTP (multi-token-prediction) speculative decoding for stack models, given that upstream shipped native MTP heads (Qwen3.6/3.5) + mainline llama.cpp MTP/EAGLE support in spring 2026 while our fork has none of it. **All numbers here are OBSERVATIONS (MEASUREMENT.md) — none gate a keep/deploy decision; the operator runs all benches.**
+Decide which remaining MTP (multi-token-prediction) speculative-decoding paths are worth operator benches now that production has moved to the single v6 llama.cpp tree with native MTP/NEXTN support, and now that the Qwen/native MTP surface has a built experimental checkpoint. The open work is no longer "does our fork have MTP at all"; it is per-model deploy evidence under the v6 or v7-candidate runtime. **All numbers here are OBSERVATIONS (MEASUREMENT.md) — none gate a keep/deploy decision; the operator runs all benches.**
 
 ## Current State Correction (2026-07-11)
 
@@ -25,9 +25,9 @@ Decide whether to adopt new MTP (multi-token-prediction) speculative decoding fo
 
 | Model / role | Arch | New upstream | Verdict | Why |
 |---|---|---|---|---|
-| **gemma-4-31B (DENSE, not deployed; on disk)** | dense | official `gemma-4-31B-it-assistant` head (491 MB, **on disk**) | **PRIMARY candidate — gate-bench now (no port)** | dense = best CPU-MTP case; prior directional **2.98× (7.05→21.02 t/s, 84.3% accept), Tier-B, quality-UNVERIFIED, single-run** — re-bench r≥3 + quality. Runs on existing ik_llama `production-gemma4-mtp`. |
-| **Qwen3.5-9B (DENSE, not deployed; on disk Q4/Q6/Q8)** | dense | `unsloth/Qwen3.5-9B-MTP-GGUF` | **worth_investigating (2nd dense gate)** | pure dense; needs WS5 binary + GGUF download |
-| **Qwen3.6-35B-A3B (frontdoor + coder_escalation)** | MoE A3B | native NEXTN/MTP head; `unsloth/Qwen3.6-35B-A3B-MTP-GGUF`; mainline PR #22673 | **worth_investigating, low EV** | unblocks 2 roles BUT pure-MoE-A3B = worst CPU-MTP case (26B-A4B MoE measured only 1.06×); needs the hard WS5 port |
+| **gemma-4-31B (DENSE, not deployed; on disk)** | dense | official `gemma-4-31B-it-assistant` head (491 MB, **on disk**) | **directional dense CPU-MTP win; promotion still gated** | T1 closed at ~1.84× after clean host-quiesced measurement; prior 2.98× single-run was corrected. Promotion still needs multi-prompt reps + Leviathan-style quality pass, and the path should be translated to v6/native flags or a fresh v7-candidate before any deploy decision. |
+| **Qwen3.5-9B (DENSE, not deployed; MTP GGUF downloaded)** | dense | `unsloth/Qwen3.5-9B-MTP-GGUF` | **functionally verified dense gate** | T3 closed via fresh upstream build: Q4_K_M baseline 14.90 → MTP 29.30 t/s, 87% draft accept, correct output. Multiplier/path health is verified; absolute t/s is not production-comparable because the build lacks our CPU/NUMA kernels. |
+| **Qwen3.6-35B-A3B (frontdoor + coder_escalation)** | MoE A3B | native NEXTN/MTP head; `unsloth/Qwen3.6-35B-A3B-MTP-GGUF`; mainline PR #22673 | **operator-gated low-EV bench only** | unblocks 2 roles BUT pure-MoE-A3B = worst CPU-MTP case (26B-A4B MoE measured only 1.06×). The experimental Qwen/native MTP surface now exists; remaining work is P6b model-load + Q4-vs-Q4 bench evidence, not a cherry-pick task. |
 | **Qwen3.5-122B-A10B (architect)** | GDN hybrid | `unsloth/Qwen3.5-122B-A10B-MTP-GGUF` | **DEAD — do not pursue** | `autopilot/program.md:325`: MTP-1 already measured **0.56×** (net slowdown); 75% Delta-Net recurrent layers don't batch. Architecture, NOT NUMA (architect is already single-instance serial). |
 | **Qwen3.5-27B (DENSE? no — HYBRID; on disk)** | SSM-Dense hybrid | `unsloth/Qwen3.5-27B-MTP-GGUF` | **DEAD — hybrid trap** | same Delta-Net wall; closed NOT VIABLE in `mtp-speculative-decoding.md`. (User listed it as dense — it is not.) |
 | **Qwen3-Next-80B (ingest)** | SSM-MoE hybrid | native MTP (GPU/vLLM only) | **not viable on CPU** | only GGUF attempt (quivent) = net-negative 0.43×; verification wall holds |
@@ -95,12 +95,14 @@ The promotion decision rests on "gemma-4-31B (31B dense) and gemma-4-26B-A4B (~3
 - [ ] **T5 (cheap) — gemma-4-26B-A4B `draft_max` 2→3→4 sweep** on the existing worker (mainline default uses 3-4; we run 2).
 
 ## Dependency graph
-- T1, T5 → **independent, runnable now only with operator bench approval**. The June reproduction path used the existing ik_llama fork; July+ work should prefer `production-consolidated-v6` / a fresh `llama.cpp-experimental` v7-candidate unless deliberately reproducing historical ik results.
-- T3, T4 → blocked-by **T2** (need the `draft-mtp` experimental binary) + GGUF downloads.
-- **T2 remaining (#22673)** conflicts in 25 files — core: `common/speculative.cpp` (+1980), `common/speculative.h`, `common/arg.cpp` (the `--spec-type draft-mtp` enum), `common/common.{cpp,h}`, `include/llama.h`, `src/llama-context.cpp`, `src/models/qwen35.cpp`, `src/models/qwen35moe.cpp`, `conversion/{base,qwen}.py`, + ~15 more. Root cause: our fork's spec-dec is an **older API generation** (carries our EAGLE3 stub + tree/DySpec + ngram + gemma4 paths) than the PR base. Real work = hand-merge `speculative.cpp` preserving our existing paths, then compile-iterate. **Empirically a focused multi-session reconciliation, NOT 2-4 weeks of catastrophe and NOT a 5-min cherry-pick.**
+- T1 is closed as a directional dense-CPU-MTP win; promotion still depends on operator-approved quality/multi-prompt evidence.
+- T3 is closed as a functional dense-Qwen MTP verification; its multiplier/path-health evidence is valid, but its upstream-master absolute t/s is not production-comparable.
+- T4 is now blocked by the `qwen-mtp-llamacpp-port.md` P6b model-load gate plus operator bench approval on the experimental `draft-mtp` binary; compare Q4+MTP against Q4 no-MTP, not against the Q8 production role.
+- T5 remains independent but operator-bench gated: run the `draft_max` / `--spec-draft-n-max` 2→3→4 sweep only in a host-quiesced window with protocol-id evidence.
+- The historical #22673 conflict/cherry-pick analysis lives in [`qwen-mtp-llamacpp-port.md`](qwen-mtp-llamacpp-port.md). As of the 2026-07-11 checkpoint, `/mnt/raid0/llm/llama.cpp-experimental` branch `experimental-v7-candidate` at `46f876c12` already contains the Qwen/native MTP surface and CPU-only help-surface verification; the remaining parent-handoff work is model-load/bench evidence.
 
 ## Cross-cutting concerns
-- **CPU+MoE is the binding question**: every upstream MTP/EAGLE speedup is GPU; MoE shows ≤1.06× even on GPU (expert-union verification overhead). Dense is where CPU MTP can win — hence T1/T3 before T4. The single gating number = CPU MTP α/throughput on a dense model-we-own (T1).
+- **CPU+MoE is the binding question**: every upstream MTP/EAGLE speedup is GPU; MoE shows ≤1.06× even on GPU (expert-union verification overhead). Dense is where CPU MTP can win; T1/T3 now provide the dense proof-points, while T4 remains the low-EV MoE confirmation bench. Any deploy decision still needs protocol-cited throughput/acceptance and quality evidence.
 - **MTP parallelism must be verified per runtime**: the June ik path asserted on `-np>1`; v6 native MTP must still be checked per role because speculative decoding can trade off against 4×-quarter concurrent splits. Confirm per role before deploy.
 - **NEVER touch production `/mnt/raid0/llm/llama.cpp`** — all port work in `llama.cpp-experimental` (verify_llama_cpp.sh enforces). Promotion means a new production version after positive operator bench + quality pass, never patching v6 in place.
 - Quant parity: Qwen3.6 prod = Q8; MTP-GGUF = Q4 → compare C1(Q4+MTP) vs C0(Q4 no-MTP), not vs Q8 prod.
@@ -145,9 +147,9 @@ This packet packages the remaining T4/T5/Hy3 gates without running inference. It
 After any task: update the checkbox here + record measured numbers (with protocol-id per MEASUREMENT.md) in the owning artifact (registry entry `gemma4_31b_q4km_mtp` for T1; this handoff for T2 port status). Any promotion requires a fresh experimental candidate, positive operator bench, and quality pass — never auto-promote and never patch frozen production in place.
 
 ## Key file locations
-- Port branch: `/mnt/raid0/llm/llama.cpp-experimental` `feature/mtp-qwen36-port` (#22400 @ b139eba138; #22673 remaining)
+- Experimental Qwen/native MTP checkpoint: `/mnt/raid0/llm/llama.cpp-experimental` `experimental-v7-candidate` at `46f876c12`; P6b model-load/gate bench remains operator-gated. Historical `feature/mtp-qwen36-port` / #22673 cherry-pick analysis is preserved in [`qwen-mtp-llamacpp-port.md`](qwen-mtp-llamacpp-port.md).
 - gemma MTP runtime: current production uses `/mnt/raid0/llm/llama.cpp` `production-consolidated-v6` native MTP; `/mnt/raid0/llm/ik_llama.cpp` `production-gemma4-mtp` is historical/reproduction-only
-- Models on disk: `/mnt/raid0/llm/models/gemma-4-31B-it-Q4_K_M.gguf` (+ `-assistant-Q8_0.gguf`); `/mnt/raid0/llm/lmstudio/models/unsloth/Qwen3.5-9B-GGUF/`
+- Models on disk: `/mnt/raid0/llm/models/gemma-4-31B-it-Q4_K_M.gguf` (+ `-assistant-Q8_0.gguf`); verified Qwen MTP artifact `/mnt/raid0/llm/models/Qwen3.5-9B-MTP-GGUF/Qwen3.5-9B-Q4_K_M.gguf` (older non-MTP LM Studio Qwen3.5-9B quants also exist, but are not the T3 MTP artifact)
 - Registry entries: `gemma4_31b_q4km_mtp` (research registry, Tier B); worker_general (lean registry)
 - Read-only refs: `autopilot/program.md:325` (Qwen3.5 hybrid exhausted), `scripts/session/verify_llama_cpp.sh`
 
