@@ -158,6 +158,24 @@ If TR-5 produces a negative result, also update [`research/deep-dives/trinity-ev
 
 This handoff isolates the *single biggest empirical lever* in Trinity's ablation set. It can ship under any optimizer choice and does not commit us to the sep-CMA-ES rewrite. Treat the existing routing controller and Q-scorer as compatible substrates — both can grow a role axis without re-architecture.
 
+## Research Intake Update — 2026-07-08: EvoScientist Pattern (rec-008)
+
+**Source**: EvoScientist (intake-108), AI Scientist Nature (intake-780)
+
+**Key finding**: EvoScientist's three-agent architecture (Researcher, Engineer, Evolution Manager) with persistent memory modules mirrors our tri-role coordinator architecture. The Nature-published AI Scientist provides validation that fully autonomous research pipelines are viable.
+
+**Mapping to EPYC tri-roles**:
+- EvoScientist Researcher → our Thinker role (analysis, planning, decomposition)
+- EvoScientist Engineer → our Worker role (execution, implementation)
+- EvoScientist Evolution Manager → aligns with Verifier + our autopilot's Evolution Manager species
+
+**Memory module patterns**: EvoScientist's persistent memory modules could inform our StrategyStore enrichment and episodic memory design. Particularly relevant for cross-session knowledge retention in the tri-role dispatch loop.
+
+**Action**: Cross-reference EvoScientist memory module patterns for our persistent memory work. Monitor AI Scientist for autonomous research pipeline validation.
+
+- [ ] **TR-ES-1** — cross-reference EvoScientist memory modules for StrategyStore enrichment
+- [ ] **TR-ES-2** — evaluate EvoScientist's knowledge distillation separation for our Evolution Manager species
+
 ## Research Intake Update — 2026-04-28
 
 ### New Related Research

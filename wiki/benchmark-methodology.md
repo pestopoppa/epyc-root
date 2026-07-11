@@ -2,7 +2,7 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-07-05
+**Last compiled**: 2026-07-07 (real-suite v1 clean-window 70% accuracy, E1 dense-control sweep completed)
 **Sources**: 70+ documents
 
 ## Summary
@@ -16,6 +16,14 @@ Cost-aware reward design is layered on top of benchmark results for the MemRL ro
 Benchmark hardening in December 2025 addressed ceiling effects where top models scored 89-93%. Every tier was bumped up one difficulty level with post-doctoral T3 questions added, spreading the score distribution meaningfully across model classes. A mode-advantage suite (90 questions) was specifically designed to produce strong routing signal for MemRL by including tasks that structurally require specific execution modes (react, REPL, delegation, specialist escalation).
 
 ## Key Findings
+
+### New (2026-07-07, real-suite v1 clean-window ledger scored 70% accuracy; E1 dense-control sweep completed as useful-but-not-pristine)
+
+> **Review flag (project-wiki writer-evidence policy):** model-compiled, not adopted until human or measured review. Numbers below are observations without decision-gating protocol citations.
+
+- **The real-suite v1 clean-window n=50 run now has usable results — superseding the 2026-07-06 hard negative.** The 2026-07-07 run of `run_real_suite_v1_evaltower_window.py --apply --confirm-clean-window --n 50` completed at `orchestration/reports/real_suite_v1_eval_20260707T013009Z/` with `35/50` correct (`quality_0_3=2.10`, reliability `0.94`), median request speed `32.606 t/s`, aggregate `29.462 t/s`, wall `1178.696s`, and `3` request errors (`1` no-such-group, `2` timed out). This supersedes the 2026-07-06 `0/50` hard negative (which failed on backend-unavailable). The artifact is a usable real-suite ledger for method triage and baseline comparison, but W3 acceptance remains open pending follow-up on AP-16 instruction-token bloat (`93.0%` instruction-token ratio) and how this ledger feeds promotion/regret views. Sources: [frontier-f1-real-task-corpus.md](../handoffs/active/frontier-f1-real-task-corpus.md), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
+
+- **E1 dense-control P-BENCH-3 sweep completed as useful-but-not-pristine evidence.** The `qwen36_27b_q8` sweep at `-np 1,2,4,8,16` with `GGML_IQK=1` completed `43/43` cells with `0` errors. Tasks/hour scaled `20.11 → 124.62`, aggregate predicted t/s `1.07 → 6.81`, and p95 latency rose `240.9s → 674.0s`. The MI210 server remained live, so the run used `--skip-clean-check --allow-host-health-warning` and is classified as **useful dense-control evidence, not pristine host-exclusive decision evidence**. The corrected run (with `GGML_IQK=1`) replaced an aborted attempt that missed the IQK env. Sources: [batched-decode-measurement.md](../handoffs/active/batched-decode-measurement.md), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
 
 ### New (2026-07-05, tool-use lane live under Gate-3 discipline + tier-segregated coverage instrument + real-suite clean-window runner + W8 sparse-baseline repair + RI-10 scored-canary protocol)
 

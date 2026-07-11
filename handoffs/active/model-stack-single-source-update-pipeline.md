@@ -330,6 +330,10 @@ Any future stack update should be accepted only when these hold:
   consumption after a generated worker swap. The simulated vision and
   long-context swaps also prove factual-risk role-tier consumption for their
   role classes.
+- [x] Fix promotion-gate test regressions: `_role_result` fixture missing
+  `tool_chains` attribute (orchestrator `91cb03bf`), and stale ingest
+  topology fixture expectation (`083e2736`). Full promotion-gate `181 passed`,
+  pipeline `summary: ok`. ✅ 2026-07-07
 - [x] Deploy/reload the repaired X-MAS constrained policy and rerun the
   held-out quiet-window A/B with required policy
   `incumbent_constrained_cheapfirst_v2`; the 2026-07-03 artifact is

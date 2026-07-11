@@ -86,16 +86,15 @@ but the blocker has moved from candidate generation to collecting fresh
 promotion-eval evidence, combined E-process strength, and sequential
 confirmation.
 
-**Next clean/quiet-window bundle (non-MI210)**: at a safe AutoPilot boundary,
-stop/restart onto current code and run the active queue in this order: E1
-`server_np_sweep.py`, `real_suite_v1` EvalTower ledger collection, ODL
-structural/table-heavy PDF probe, N12 live `numa_maps` observability refresh,
-then W8 trajectory and strict Fable gate report refresh. J12 clean-window probe
-and A9 contrast-replan collection are closed for the current window; E2
-activation/rollback is closed and DS-E1 is decision-ready, so neither should be
-scheduled as next-run work. real_suite_v1/ODL require AutoPilot inactive and a
-clean host window; N12 is the controlled stop/start placement check. RI-10
-scored factuality is complete and currently holds on no enforce factuality lift.
+**Next clean/quiet-window bundle (non-MI210)**: the 2026-07-07 stopped-window
+closed J17 live consult evidence, `real_suite_v1` n=50, A9 contrast-replan
+collection, and the E1 dense-control tail. Do not rerun those as first-idle
+tasks. Remaining quiet-window candidates should be selected from genuinely open
+rows such as ODL follow-up with a better table benchmark, W8/Fable report
+refreshes, or future eval-batch serving telemetry. E2 activation/rollback is
+closed and DS-E1 is decision-ready, so neither should be scheduled as next-run
+work. RI-10 scored factuality is complete and currently holds on no enforce
+factuality lift.
 The 2026-07-06 sidecar command expansion is recorded in today's progress log;
 current live verification shows tool-use activation is **not** blocked by
 `api_env_missing_AUTOPILOT_TOOL_SENTINELS` (`tool_use_activation ready []`,
@@ -165,7 +164,7 @@ checkpoint).
 | Retrain Routing Models | [`retrain-routing-models.md`](retrain-routing-models.md) | **PARTIAL 2026-07-05** — BGE repair completed HEALTHY; current-data MLP retrain staged (81.0% val acc; >=0.8 threshold precision 94.4% / coverage 61.6%); orchestrator `7f5d874f` adds a no-inference rollout harness; orchestrator `fe270b48` proves the enable/attest/rollback bracket passes; live flag still OFF | Decide explicitly whether to run a `--keep-enabled` bracket; treat `fe270b48` as feature-attestation evidence, not routing-quality promotion evidence. GAT/SkillBank remain frozen unless future regret gates justify them |
 | Meta-Harness Optimization | [`meta-harness-optimization.md`](meta-harness-optimization.md) | **COMPACTED 2026-05-28** — Tier 1/2, MH-4/5, and HLE-1/2 preserved in completed ledger. | MH-6/7/9 plus HLE-3/J9 observe-only validation; Tier 3 outer loop remains deferred. |
 | Web Research Pipeline | [`searxng-search-backend.md`](searxng-search-backend.md) | SX-1–4 done; root CLI fallback semantics hardened in `epyc-root` `fa75cfa` so valid JSON without `.results` exits documented fallback code `2`; CA-1–7 landed/validated in `epyc-orchestrator` `0dadb2e` + `38ddc97` + `6424d05`: Crawl4AI-first `web_research` fetch backend on port `11235`, urllib fallback/cache/provenance preserved, first-run Docker timeout hardening, live container smoke against `/health`, `/crawl`, and `_fetch_page()`, plus opt-in bounded docs/log crawl helper. SX-5/6 remain AR-3 gated and CA-6 waits for Camofox. Claude Code bash bridge moved to completed: [`searxng-bash-websearch-bridge.md`](../completed/searxng-bash-websearch-bridge.md). | Next: SX-5/6 remain AR-3-gated; CA-6 waits for Camofox; optional future CA-7 live-service smoke or default-pipeline wiring only if needed |
-| Internal Interaction Lifecycle | [`internal-interaction-lifecycle.md`](internal-interaction-lifecycle.md) | P1 substrate landed 2026-06-28 in orchestrator `18956892`: additive `Interaction` dataclasses, `interaction_type` telemetry, internal delegation wrapper, and `ProgressLogger.log_interaction()`; no inference admission-path edit. P2 scaffold plus first route seam are staged default-off through orchestrator `0e555822`: `interaction_skills.yaml`, `src/orchestration/consultation.py`, consult cache namespacing, `log_consult()`, opt-in `run_edit_transaction()` review hook, and `force_mode="edit"` callback wiring behind `review_before_commit_consult`. | P1 regression/contention bake cleared 2026-07-07 via `internal_interaction_bake_report_20260707T005105Z`: `80h+`, first/second miss rate `1.0/1.0`, `0` ContentionDenied, blockers `none`. Next is P2/J17 live evidence for the default-off `review_before_commit_consult` seam. Chosen consult seam is `run_edit_transaction()` with requester `coder_escalation` and consultant `architect_general` |
+| Internal Interaction Lifecycle | [`internal-interaction-lifecycle.md`](internal-interaction-lifecycle.md) | P1 substrate landed 2026-06-28 in orchestrator `18956892`: additive `Interaction` dataclasses, `interaction_type` telemetry, internal delegation wrapper, and `ProgressLogger.log_interaction()`; no inference admission-path edit. P2 scaffold plus first route seam are staged default-off through orchestrator `0e555822`: `interaction_skills.yaml`, `src/orchestration/consultation.py`, consult cache namespacing, `log_consult()`, opt-in `run_edit_transaction()` review hook, and `force_mode="edit"` callback wiring behind `review_before_commit_consult`. The J17 harness supports `--task-suite targeted` and `--arms baseline,consult,gated`; AutoPilot has the `consult_gate_probe` surface and generalized `should_consult(ConsultIntent, ConsultSignals)` is landed in orchestrator `1967c682`. | P1 regression/contention bake cleared 2026-07-07. BEP J17 (`internal_interaction_j17_ab_20260707T011136Z`) tied baseline and showed blanket enablement is wasteful. Targeted J17 (`internal_interaction_j17_ab_20260707T121211Z`) improved quality `35/50 -> 40/50` (`+10.0pp`) with `15` reruns, rescuing parser/data-contract edge cases but adding consult latency. T3 canary trial `1251` recorded a frontier row: gated `8/10` vs baseline `7/10`, `consult_gate_targeted=2.4`, gate reason counts preserved, and `journal-consult-gate-trial-1251` retrieves as the top StrategyStore memory for consult/parser/T3 queries. Keep default-off; next work is T2/T3 breadth and week-scale shadow data before enforcement. |
 | Decision-Aware Routing | [`decision-aware-routing.md`](decision-aware-routing.md) | GATED — DAR-2 contrastive is live, the 2026-07-03 DAR-1 current replay measured 0.00% gate regret over 22,992 routing decisions with 98.6% regret-identifiable coverage and 99.6% uniform Q-values, DAR-4b request-level preference-vector/cost-τ plumbing is staged default-compatible in `epyc-orchestrator` `fbd569b5`, and the first offline proxy sweep (`b40207b4`) shows the logged selector surface is almost insensitive to the tested knobs (`0.00%` baseline flips for balanced/perf-heavy, `0.06%` for cost-heavy over 24,918 eligible frozen decisions) | DAR-3/DAR-6/Package-I expansion remains frozen until a future DAR-1 replay proves >=5% regret and N2 per-question vectors exist. DAR-4b still needs a live/controlled latency-quality measurement before any policy default uses the new knobs; the current sweep is selector-proxy evidence only. |
 | Learned Routing Controller | [`learned-routing-controller.md`](learned-routing-controller.md) | **STAGED, not live (refreshed 2026-06-27)** — BGE repair is healthy and current retrain produced 81.0% validation accuracy with 94.4% precision at threshold >=0.8 over 61.6% coverage; production attestation still reports `routing_classifier=false`. Phases 1.5+ remain frozen until per-question eval vectors exist and a future DAR-1 replay shows >=5% routing regret. P4.5 journal-derived soft-label SFT and P4.6 soft-arm role dropout both ran as zero-inference methodology experiments and both are **NULL** under the current role-success gate. | Do not retune the current soft-label/dropout path. Regret gate still applies to enabling the classifier in production. The actionable LRC thread is content-routing miss learning from Phase A and future classifier rollout/canary evidence, not P4.5/P4.6 replay. |
 | Environment Synthesis (5th species) | [`agent-world-env-synthesis.md`](agent-world-env-synthesis.md) | NEW 2026-04-22 — stub/in-planning; Phase 1 training-free, Phase 2 GPU-gated (intake-444, DD6) | AW-1: scaffold `env_synth/` module |
@@ -278,10 +277,14 @@ emits `4` guarded batches:
 `general architect_general/coder_escalation` (`19`), `hotpotqa
 architect_general/frontdoor` (`20`), and `simpleqa
 architect_general/coder_escalation` (`20`). The collection-status validator has
-no schema warnings and returns `blocked` only because AutoPilot PID `3267768` is
-active. Next A9 action is to execute that manifest in a clean window, then run
-the embedded post-collection pipeline; do not claim A9 pairwise closure from
-row-presence counts.
+no schema warnings and returned `blocked` only because AutoPilot PID `3267768`
+was active. The 2026-07-07 clean-window run executed the guarded manifest with
+timestamp `20260707T015010Z`: `seeding_eval coder/frontdoor` deduped to one
+shared backend and scored `16/26`; `general architect/coder` scored `16/19`
+vs `13/19`; `hotpotqa architect/frontdoor` scored `18/20` vs `17/20`;
+`simpleqa architect/coder` scored `6/20` vs `6/20`. Rewards injected remained
+`0`. Next A9 action is rebuild/scoring on these new rows and then a revised
+acquisition decision; do not claim A9 pairwise closure from raw collection rows.
 
 ## Additional Active References
 

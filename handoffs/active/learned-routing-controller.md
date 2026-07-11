@@ -1286,6 +1286,16 @@ learned-routing reward signals from the failed NeuralTxt report alone.
   artifacts. The validator has no schema warnings and is blocked only by active
   AutoPilot. Next A9 action is to run that manifest in a clean window and then
   execute the embedded post-collection rebuild/scoring pipeline.
+- [x] **A9 contrast-replan guarded collection executed** ✅ 2026-07-07.
+  Research timestamp `20260707T015010Z` writes the four expected live batch
+  JSONs plus checkpoint JSONLs under
+  `epyc-inference-research/benchmarks/results/eval/`. Batch summaries:
+  `seeding_eval coder/frontdoor` deduped to the shared backend and scored
+  `16/26`; `general architect/coder` scored `16/19` vs `13/19`; `hotpotqa
+  architect/frontdoor` scored `18/20` vs `17/20`; `simpleqa architect/coder`
+  scored `6/20` vs `6/20`. Rewards injected remained `0`. The remaining A9
+  work is to rebuild/score the pairwise contract on these rows and decide the
+  next acquisition design; these raw rows are not promotion evidence.
 
 ## Research Intake Update — 2026-07-02
 

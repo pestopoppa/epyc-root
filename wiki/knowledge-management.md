@@ -2,7 +2,7 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-07-02
+**Last compiled**: 2026-07-08
 **Sources**: 30 documents
 
 ## Summary
@@ -50,6 +50,18 @@ This page itself is a product of the `project-wiki` skill compile operation (`/w
 Lint (`Operation 1`): orphan handoffs, stale entries (>30d ERROR, >14d WARNING), contradictory status, un-actioned intake (verdict `worth_investigating`/`new_opportunity` with no `handoffs_created` and `ingested_date` >7d old), broken cross-references. Run `python3 .claude/skills/project-wiki/scripts/lint_wiki.py` before nightshift runs and after handoff sweeps.
 
 The `research-intake` skill is the upstream complement — it ingests new papers/repos/blogs into `research/intake_index.yaml` with cross-referencing into existing handoffs and chapter docs. Wiki compile pulls *from* intake; intake does NOT write to the wiki. This separation avoids duplicate cross-referencing logic and keeps the wiki a derived artefact.
+
+## Key Findings
+
+### Dashboard brief hygiene (2026-07-08)
+
+- **Optimization-brief churn now distinguishes three classes instead of collapsing them into one noisy “ruled out” bucket.** The dashboard brief keeps live critic fences in the main ruled-out list, but it now separates journal-derived malformed-proposal churn from exogenous `bug_corrupted_by` trial rows and surfaces stale critic fences in a dedicated bucket when the rejected signature later appears on a corrupted trial. That preserves the active rejection ledger while preventing crash/reload noise from masquerading as planner health. Sources: [`scripts/autopilot/optimization_brief.py`](../epyc-orchestrator/scripts/autopilot/optimization_brief.py), [`src/api/routes/dashboard.html`](../epyc-orchestrator/src/api/routes/dashboard.html), [`loops-and-dashboards-audit-2026-07-05.md`](../handoffs/active/loops-and-dashboards-audit-2026-07-05.md), [`progress 2026-07-08`](../progress/2026-07/2026-07-08.md).
+
+### Append-Only Evidence Freshness (2026-07-08)
+
+The current wrap-up cycle tightened a pattern the wiki already depends on: durable records should be **append-only plus supersession-aware**, while the dashboard should only treat a panel as current when the process behind it is still the same process that wrote the tap data. AutoPilot's contaminated seed-batch trials were quarantined in-place with append-only supersession rather than deleted, preserving provenance for later audit while keeping the bad rows out of planner evidence. The dashboard side now carries freshness metadata (`planner_tap_mtime_s`, `planner_tap_precedes_autopilot_start`) so a stale tap file can be labeled historical instead of being mistaken for live planner output. Sources: [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md), [loops-and-dashboards-audit-2026-07-05.md](../handoffs/active/loops-and-dashboards-audit-2026-07-05.md), [frontier-f2-self-running-lab.md](../handoffs/active/frontier-f2-self-running-lab.md), [master-handoff-index.md](../handoffs/active/master-handoff-index.md), [progress 2026-07-08](../progress/2026-07/2026-07-08.md).
+
+This is the same producer/consumer discipline the wiki already uses: operational logs and handoffs stay primary, compiled pages remain derived, and stale-but-useful history is kept readable without letting it re-enter the active decision path.
 
 ## OKF Conformance Adoption (2026-06-20, intake-710/711)
 

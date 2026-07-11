@@ -3,7 +3,7 @@
 **Status**: COMPACTED 2026-05-28; J9 validation closed 2026-06-12 - active work is MH-7/9.
 **Created**: 2026-04-01
 **Updated**: 2026-06-21
-**Priority**: MEDIUM
+**Priority**: HIGH (upgraded 2026-07-08 per rec-001: literature sweep confirms meta-harness as central paradigm)
 **Categories**: agent_architecture, benchmark_methodology
 **Parent index**: [routing-and-optimization-index.md](routing-and-optimization-index.md)
 **Completed ledger**: [meta-harness-optimization-completed-through-2026-05-28.md](../completed/meta-harness-optimization-completed-through-2026-05-28.md)
@@ -54,7 +54,37 @@ Do not rebuild the full Meta-Harness outer loop now. The useful next work is tar
 
 After MH or HLE work, update this handoff with the code path, feature flag, validation command, observe-only result, and promotion/parking decision. Mirror priority changes in [routing-and-optimization-index.md](routing-and-optimization-index.md), Package J in [bulk-inference-campaign.md](bulk-inference-campaign.md), and [master-handoff-index.md](master-handoff-index.md) if queue priority changes.
 
-## Research Intake Update — 2026-07-02
+## Research Intake Update — 2026-07-08: Literature Expansion (rec-001)
+
+### Meta-Harness Optimization — Full Literature Sweep
+
+**14-paper deep-dive** (intake-784 through intake-797) confirms meta-harness as the central unifying paradigm. Three clusters converge on the same insight: **harness engineering > model weights**.
+
+**Cluster A — Agentic Harness Search (adopt_selectively)**:
+- **Meta-Harness** (intake-784, arxiv 2603.28052, Stanford): outer-loop searches over harness code; +7.7pt on text classification at 4x fewer tokens; +4.7pt on IMO-level math across 5 held-out models. Agentic proposer with filesystem experience access.
+- **MCE** (intake-787, arxiv 2601.21557): bi-level CE optimization with agentic crossover; 5.6-53.8% improvement (mean 16.9%). Meta-level agent refines skills over execution history.
+- **AFlow** (intake-788, arxiv 2410.10762): MCTS over code-represented workflows; +5.7% avg across 6 benchmarks.
+
+**Cluster B — Self-Improvement Loops (worth_investigating)**:
+- **DGM** (intake-785, arxiv 2505.22954): self-code-modification + empirical validation; SWE-bench 20%→50%, Polyglot 14.2%→30.7%. Archive-based evolution with parallel exploration tree.
+- **SIA** (intake-789, arxiv 2605.27276): combines harness + weight updates; LawBench +25.1%, GPU kernel +12.4%. **CAUTION**: weight updates inapplicable to our CPU stack; harvest harness-only patterns.
+- **STOP** (intake-786, arxiv 2310.02304): recursive scaffolding self-improvement; seed improver bootstraps itself. COLM 2024.
+
+**Cluster C — Harness Diagnostics & Evaluation (adopt_selectively)**:
+- **SEAGym** (intake-790, arxiv 2606.17546): evaluation environment for self-evolving harnesses; train/validation/test/replay/OOD views; finds frequent updates may fail to improve held-out performance.
+- **HarnessFix** (intake-793, arxiv 2606.06324): trace-grounded diagnosis; HTIR intermediate representation; +6.3% to +18.4% improvement. Failure attribution to specific harness artifacts.
+- **KernelBench** (intake-796, arxiv 2606.20128): seeded fuzzing for kernel correctness; catches 9/9 buggy kernels, passes 15/15 controls.
+
+**Synthesis — Actionable for EPYC**:
+1. **MH-10 harness-search scoping**: Meta-Harness methodology applied to our own seeding pipeline — agentic harness proposer with filesystem experience access for evaluation task generation. Gate: validation against curated baseline (SkillsBench v3 caution: self-generated skills are net-negative -1.3pp).
+2. **MH-11 HTIR failure attribution**: HarnessFix's HTIR (Harness-aware Trace IR) normalizes trajectory evidence into step-level data-flow/control-flow. Directly harvestable for our eval-tower critic to attribute failures to specific harness artifacts.
+3. **MH-12 SEAGym evaluation views**: train/validation/test/replay/OOD views from SEAGym are applicable to our eval-tower verification. Prevents the "frequent updates fail to improve held-out" anti-pattern.
+
+- [ ] **MH-10 agentic harness search scoping** — adapt Meta-Harness proposer contract for our seeding pipeline; gate on curated-baseline validation
+- [ ] **MH-11 HTIR failure attribution** — implement harness-aware trace IR for eval-tower critic
+- [ ] **MH-12 SEAGym evaluation views** — add train/validation/test/replay/OOD views to eval-tower
+
+### Prior Research (2026-07-02)
 
 ### New Related Research
 - **[intake-753] "Don't Train the Model, Evolve the Harness"** (HF Space, Joel Niklaus; applies Meta-Harness = intake-244 / arXiv 2603.28052)

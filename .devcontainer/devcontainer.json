@@ -47,13 +47,14 @@
     "source=codex-config-epyc,target=/home/node/.codex,type=volume",
     "source=gh-config-epyc,target=/home/node/.config/gh,type=volume",
     "source=${localEnv:HOME}/.gitconfig,target=/home/node/.gitconfig,type=bind,consistency=cached,readonly",
-    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
+    "source=/opt/rocm-6.2.0,target=/opt/rocm,type=bind,readonly"
   ],
   "containerEnv": {
     "NODE_OPTIONS": "--max-old-space-size=4096",
     "CLAUDE_CONFIG_DIR": "/home/node/.claude",
     "CODEX_HOME": "/home/node/.codex",
-    "LD_LIBRARY_PATH": "/opt/AMD/aocc-compiler-5.0.0/lib:/mnt/raid0/llm/llama.cpp/build/bin:/mnt/raid0/llm/llama.cpp-dflash/build/bin"
+    "LD_LIBRARY_PATH": "/opt/AMD/aocc-compiler-5.0.0/lib:/mnt/raid0/llm/llama.cpp/build/bin:/mnt/raid0/llm/llama.cpp-dflash/build/bin:/opt/rocm/lib"
   },
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
   "workspaceFolder": "/workspace",
@@ -66,7 +67,15 @@
     "--ulimit",
     "memlock=-1:-1",
     "--ulimit",
-    "core=0:0"
+    "core=0:0",
+    "--device=/dev/kfd",
+    "--device=/dev/dri",
+    "--group-add=992"
   ],
-  "postStartCommand": "sudo groupmod -g $(stat -c '%g' /var/run/docker.sock) docker 2>/dev/null || true"
+  "postStartCommand": "sudo groupmod -g $(stat -c '%g' /var/run/docker.sock) docker 2>/dev/null || true",
+  "remoteEnv": {
+    "PATH": "/opt/rocm/bin:${containerEnv:PATH}",
+    "ROCM_PATH": "/opt/rocm",
+    "HIP_PATH": "/opt/rocm"
+  }
 }

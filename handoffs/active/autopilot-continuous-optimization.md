@@ -2,7 +2,8 @@
 
 **Status**: **W4/W6 authority wiring is current, A10 planner hints are active,
 BSV observe is process-aware, T3 is planner-visible workflow pressure,
-StrategyStore search health is exact, tool-use activation is ready, W8
+StrategyStore search health is exact, tool_use sentinel backend initialization
+crash and REPL code extraction fix are live, tool-use activation is ready, W8
 candidate generation is unblocked, and W8 remains in promotion-evidence
 collection.** AutoPilot is live as PID `131226` with `--max-trials 3000`;
 latest observed checkpoint is trial `1236` as a current-code-clean
@@ -17,7 +18,24 @@ Frontier-rerun pressure now bypasses the planner prompt when the rerun is
 already required, so W8 recovery does not spend a draft/critique hop on an
 inevitable replay.
 Startup verified StrategyStore search health exact (`1,420` SQLite/FAISS/FTS
-rows, `100.0%` coverage). Tool-use activation is not the blocker;
+rows, `100.0%` coverage). **Tool_use sentinel crash fixed 2026-07-11**:
+`ServerURLsSettings` pydantic class was missing `toolrunner` field, causing
+`_MISSING_TYPE` sentinel to propagate into `_init_caching_backends()` →
+`url_str.split(",")` crash. Fix: added `toolrunner` alias to both
+`ServerURLsSettings` (pydantic, actual root cause) and `ServerURLsConfig`
+(dataclass, alias to `worker_general`). REPL code extraction also fixed in
+`extract_code_from_response`: added `<end_prompt>` token stripping, removed `^`
+anchor from Gemma thinking-channel regex, Qwen3/Gemma-4 thinking-tag stripping
+working. End-to-end: 4/5 pass (score=-1, advisory range; 1 failure was unrelated
+`kuzu` import error). Safety gate updated: tool_use regression ≤ -3.0 is hard
+block, -0.6 to -2.9 is advisory warning only (5 new safety tests, 94 total
+pass). `AUTOPILOT_PLANNER_SPEND_BREAKER` disabled (`"0"`) to prevent planner
+from switching to local providers on high projected spend. Strategy store
+scrubbed: deleted stale infra-failure belief, inserted corrected entry
+(`opseed-green-toolrunner-fix-20260711`) with `bind_status: "live"`. 123
+journal entries (trials 506-1302) carry `tool_use: 0.0` artifacts from this bug;
+they remain in place (append-only) but are now known-contaminated. Tool-use
+activation is not the blocker;
 `8be68732` fixes the REPL-pinned sentinel prompt contract so the lane asks for
 executable `TOOL("get_eval_secret", ...)` code. Numeric candidate generation is
 no longer blocked by stale broad surface bans, short explicit params, or W8
@@ -82,12 +100,24 @@ confirmation.
 > trailing-window alarm, assuming no new gaming events occur.
 
 **Created**: 2026-03-08
-**Updated**: 2026-07-06 (current live AutoPilot PID `131226` is on trial `1236` with `--max-trials 3000`, planner hints, tool sentinels, sequential verdicts, and W6 audit accrual active. The daemon is current-code clean on orchestrator `60523b6`, so local-frontdoor drafting, local-worker critique, Claude fallback, W8-filtered action pressure, selectable-action provider coordination, the outcome-stall guard, forced-replay/AP-9 dispatcher repair, and dashboard coherent-snapshot fixes are live together. Strict Fable is ready with `blockers=[]`; active next action is W8 promotion-eval evidence collection.)
+**Updated**: 2026-07-11 (tool_use sentinel `_MISSING_TYPE` backend crash fixed: added `toolrunner` field to `ServerURLsSettings` pydantic class and `ServerURLsConfig` dataclass as alias to `worker_general`; REPL code extraction fixed in `extract_code_from_response` with `<end_prompt>` stripping and unanchored Gemma thinking-channel regex; safety gate separates tool_use regressions: ≤ -3.0 hard block, -0.6 to -2.9 advisory; `AUTOPILOT_PLANNER_SPEND_BREAKER` disabled; strategy store scrubbed of stale infra-failure belief; end-to-end sentinel suite 4/5 pass, score=-1 advisory; 123 contaminated journal entries (trials 506-1302) marked known-contaminated. Current live AutoPilot PID `131226` with `--max-trials 3000`; trial `1236` last checkpoint.)
 **Location**: `epyc-orchestrator/scripts/autopilot/`
 
 > **Fable 5 review (2026-06-12)**: the review's architecture recommendations now have owning handoffs: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (LIVE t775 baseline-ratchet hotfix + dead-question repair), [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md) (per-question ledger + e-process verdicts; owns the next restart bundle), [evidence-plane-event-sourcing-and-narrative.md](evidence-plane-event-sourcing-and-narrative.md), and [objective-task-rate-goodput.md](objective-task-rate-goodput.md) (task_rate replaces the t/s axis). Full diagnosis: fable5-findings-01 + -05.
 
 > Historical restart runbooks and settled 2026-06-04/05 implementation banners were compacted to [../completed/autopilot-continuous-optimization-history-through-2026-06-20.md](../completed/autopilot-continuous-optimization-history-through-2026-06-20.md).
+
+**Current addendum - 2026-07-08**: the fresh Fable restart came up clean as
+PID `3681234` with `AUTOPILOT_PLANNER_PRIMARY=local_ingest`,
+`AUTOPILOT_PLANNER_CRITIC=local_frontdoor`, `stack_mode=both`, and
+`code_stale=false`. `b7518da0` keeps `StrategyStore` hints planner-only and
+defensively ignores legacy `strategy_hints` in Seeder, while the append-only
+supersession pass quarantined trials `1257-1263` with
+`bug_corrupted_by=b7518da0`. `b5cadba6` adds the stale-planner-tap freshness
+signals used by the dashboard to say when the live panel has no current planner
+trace yet. Structured tap tail checks show the current seed-batch prompts are
+clean again; the next live work remains replayable candidate evidence and
+seq-confirmable promotion proof, not another prompt-history repair.
 
 ## Autopilot Delegation Expansion — 2026-05-20
 
@@ -502,6 +532,25 @@ Three "Research Intake Update" sections have surfaced **scoring-mechanism** upgr
 | 328/329 | MiniMax M2.7 Self-Evolution | 3-component harness (memory+feedback+optimization), 100+ autonomous rounds, 30% improvement | P11 (AP-22–24) |
 | 345 | GEPA Full Program Adapter | 93% MATH (vs 67% base); evolves signatures+modules+control flow; 35x fewer rollouts | P10 (AP-20) |
 | 349 | dspy.RLM Module | Metadata-first REPL exploration; sub_lm pattern; works with OpenAI-compatible /v1/ endpoint | P11 (AP-25–26) |
+
+## Research Intake Update — 2026-07-08: Self-Improvement Architectures (rec-004)
+
+**Source**: SIA (intake-793, arxiv 2605.27276), ShinkaEvolve (intake-779), SkillRL (intake-092)
+
+**Key finding**: SIA and ShinkaEvolve explore recursive self-improvement loops for agents. Combined with SkillRL's recursive skill-augmented RL, these suggest a pathway for our autopilot to move beyond trial-and-error optimization toward structured self-improvement with skill accumulation.
+
+**SIA approach**: combines harness + weight updates; LawBench +25.1%, GPU kernel +12.4%. **CAUTION**: weight updates are inapplicable to our CPU stack; harvest harness-only patterns. The harness evolution component (meta-harness optimization) is the extractable signal.
+
+**Integration points**:
+- Species 0 (Seeder) could incorporate self-improvement loops beyond Q-value accumulation
+- Species 2 (PromptForge) could use recursive self-improvement for prompt evolution beyond mutation
+- Species 4 (Evolution Manager) aligns with EvoScientist's knowledge distillation separation
+
+**CRITICAL CAUTION — SkillsBench v3 (intake-096)**: self-generated skills are net-negative (-1.3pp avg). Any self-improvement integration MUST include validation gates against a curated baseline. Do not let self-generated improvements enter the autopilot gate without human-curate confirmation.
+
+- [ ] **AP-SI-1** — scope SIA harness-only patterns for integration into existing species; weight-update path is inapplicable
+- [ ] **AP-SI-2** — design validation gates for any self-improvement loop; gate on curated-baseline comparison (SkillsBench v3 caution)
+- [ ] **AP-SI-3** — evaluate ShinkaEvolve archive-based evolution for StrategyStore enrichment
 
 ## Known Issues — KV Cache seq_add Crash on Qwen3.5 Hybrids (2026-04-15, PATCHED)
 

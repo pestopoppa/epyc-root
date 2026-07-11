@@ -230,6 +230,19 @@ Three families of techniques, ordered by implementation effort:
   - Reported results: +18.8pp on LeetCode, +12.2pp on MBPP; 238-306 fewer reasoning tokens than GRPO baseline; upfront thinking shortened ~35-50%
   - Delta from current approach: Our reasoning compression focuses on post-hoc pruning/compression of existing think blocks. Think Anywhere instead trains the model to place reasoning precisely where needed — a complementary angle. The finding that high-entropy positions predict reasoning need could strengthen our difficulty_signal.py routing (currently uses prompt features, not generation-time entropy).
 
+## Research Intake Update — 2026-07-08: RE-Bench Reasoning Evaluation (rec-005)
+
+**Source**: RE-Bench (intake-794)
+
+**Key finding**: RE-Bench focuses on reasoning capability evaluation for open-weight models. Directly relevant to our CoT study and reasoning compression work.
+
+**Applicability to EPYC**: If RE-Bench includes open-weight model evaluation, it could serve as a validation suite for our reasoning compression techniques (TrimR, difficulty-adaptive budgets, SEAL control vectors). Particularly relevant for evaluating whether compressed reasoning degrades reasoning quality on held-out reasoning tasks.
+
+**Cross-reference**: Our existing Tier 1-3 compression taxonomy and the OPSDC finding (reasoning can be net-negative) suggest RE-Bench could help calibrate the compression-vs-quality tradeoff for different difficulty bands.
+
+- [ ] **RC-RE-1** — check RE-Bench for open-weight model compatibility and integration with our eval tower
+- [ ] **RC-RE-2** — run RE-Bench against compressed vs uncompressed reasoning to validate compression safety
+
 ## Notes
 
 This is the most active research front discovered during the 2026-03-14 intake run. 7 of 10 expansion entries cluster around reasoning compression, approaching the problem from different angles. The theoretical foundation (Information Bottleneck, intake-133) explains why: CoT traces contain information about the response that isn't directly accessible from the prompt, so compression is lossy but bounded. The practical implication is that our current REPL token cap (5000 tokens) is a crude version of what these methods do adaptively — we should upgrade to difficulty-aware reasoning budgets.

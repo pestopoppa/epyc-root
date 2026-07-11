@@ -159,6 +159,19 @@ Phase 2 GPU training is explicitly gated on DGX Spark acquisition (`project_dgx_
 
 Before committing to Phase 2 training recipe, run WebSearch for "MindDeepResearch reproduction" / "MindDR Bench criticism".
 
+## Research Intake Update — 2026-07-08: PaperBench Source-Fidelity (rec-006)
+
+**Source**: PaperBench (intake-795)
+
+**Key finding**: PaperBench benchmarks model ability to understand and reproduce research papers. Methodology may be transferable to our deep-research pipeline for validating that our agent-generated research artifacts are faithful to source material.
+
+**Applicability to EPYC**: Our MindDR pipeline produces synthesized reports from multi-agent research. PaperBench-style validation could serve as a quality gate for the ReportSynthesisNode, ensuring the final report is faithful to the collected evidence. Particularly relevant for Phase 2 RL training where citation-grounded reward shaping is critical.
+
+**Action**: Monitor PaperBench development; evaluate as a source-fidelity validation gate for our deep-research reports.
+
+- [ ] **MD-PB-1** — evaluate PaperBench methodology for source-fidelity validation of deep-research reports
+- [ ] **MD-PB-2** — consider integrating PaperBench-style evaluation into MD-9 A/B test rubric
+
 ## Progress checklist
 
 - [x] MD-1..MD-8 Phase 1 scaffold (flag, classifier, prompts, pydantic_graph, rubric, sentinel suite - DONE 2026-04-22) ✅

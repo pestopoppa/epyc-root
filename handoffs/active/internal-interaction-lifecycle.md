@@ -1,6 +1,6 @@
 # Internal Interaction Lifecycle
 
-**Status**: P1 lifecycle substrate landed 2026-06-28 in `epyc-orchestrator` `18956892`; P2 edit-transaction consult wiring is staged default-off as of 2026-07-05 (`0e555822`), but P2/J17 live behavior remains gated on the P1 regression bake + cross-role contention bake
+**Status**: P1 lifecycle substrate landed 2026-06-28 in `epyc-orchestrator` `18956892`; P2 edit-transaction consult wiring is staged default-off as of 2026-07-05 (`0e555822`); the P1 bake gate cleared 2026-07-07, P2/J17 live evidence says **targeted-positive**, the T3 consult-gate canary produced a frontier row, and the generalized default-off `should_consult()` policy is implemented pending broader shadow/enablement evidence.
 **Priority**: P0 for substrate cleanup; downstream of intake-655 deep-dive
 **Created**: 2026-05-31
 **Owning index**: [`routing-and-optimization-index.md`](routing-and-optimization-index.md)
@@ -204,10 +204,35 @@ INTERACTION_POLICY_VERSION = "1.0"
 - Advice cache hit rate ≥ 10% on repeated identical-shape edits within a 1h window
 - All six invariants (I1–I6) hold under P2 traffic
 
+- [x] **P2/J17 live evidence collected** ✅ 2026-07-07. Artifact:
+  `epyc-orchestrator/orchestration/reports/internal_interaction_j17_ab_20260707T011136Z/`.
+  The 50-turn-per-arm live A/B repeated the current 5-task BEP sandbox slice
+  10x. Baseline and consult both passed `40/50` (`quality=0.800`, delta
+  `0.0pp`), but consult added latency (`coder_wall_p50` `2.839s` vs `2.316s`,
+  `+22.58%`), produced `50/50` successful consultant calls, requested `0`
+  reruns, and had `0.0` cache-hit rate. Conclusion: the default-off
+  `review_before_commit_consult` seam works mechanically, but the BEP slice is
+  too simple to support blanket enablement.
+- [x] **P2/J17 targeted consult-value slice collected** ✅ 2026-07-07.
+  Artifact:
+  `epyc-orchestrator/orchestration/reports/internal_interaction_j17_ab_20260707T121211Z/`.
+  The 10-task targeted suite repeats higher-risk edit shapes 5x each:
+  compatibility shims, migration defaults, rollback semantics, parser edge
+  cases, async ordering, graph cycles, dedupe, optional dependencies, plugin
+  registry contracts, and path safety. Baseline passed `35/50`
+  (`quality=0.70`); consult passed `40/50` (`quality=0.80`, `+10.0pp`), with
+  `50/50` consult successes and `15` rerun requests. Consult rescued the
+  parser/comment/value edge case from `0/5` to `5/5`, but did not fix
+  transaction rollback parse failures or plugin-registry verifier failures.
+  Coder wall p50 rose `+14.49%`, and consult wall p50 was `22.871s`. Decision:
+  **targeted-positive / default-off**. Proceed to a P3-style gate only for
+  high-risk edit shapes; do not enable consult on every edit transaction.
+
 ### P3 — Consult gating policy, shadow first
 
 **Goal**: Stop calling consult on every code edit. Gate by signals owned by `routing-intelligence`.
 
+- [x] **P3-0**. Convert the J17 targeted-positive result into a narrow gate proposal: fire `review_before_commit_consult` only for high-risk edit shapes where the targeted slice showed plausible value (parser/data-contract edge cases, compatibility shims, optional-dependency fallbacks, high blast-radius symbols, or hidden-verifier-risk patterns). Explicitly avoid easy/small edits and known format-compliance failures where consult did not help. Completed 2026-07-07: `epyc-orchestrator/src/orchestration/review_consult_gate.py` implements the transparent lexical/shape gate, and `run_edit_transaction()` records `targeted_gate_skip` consult events when the gate declines to call the consultant.
 - [ ] **P3-1**. Gate signal taxonomy:
   - `factual_risk_score` (from `routing-intelligence`)
   - `difficulty_band` (`progress_logger.log_delegation` already carries this; reuse via `log_interaction`)
@@ -217,9 +242,13 @@ INTERACTION_POLICY_VERSION = "1.0"
   - `benchmark_class` (in-eval or live)
   - `latency_budget_remaining`
 
-- [ ] **P3-2**. Implement `should_consult(interaction_intent, signals) -> bool` policy. Per-skill thresholds in `interaction_skills.yaml`.
+- [x] **P3-2a**. Implement the first `review_before_commit` high-risk edit-shape policy behind `ORCHESTRATOR_FEATURE_REVIEW_BEFORE_COMMIT_TARGETED_GATE=1`. It is inert unless `review_before_commit_consult` is also enabled, preserves blanket-consult behavior when the new gate flag is off, and currently triggers on parser/data-contract/compatibility terms, hidden-verifier/transaction risk, deletes, multi-file edits, and public API/registry/config paths.
+- [x] **P3-2b seed surface**. AutoPilot now has a first-class `consult_gate_probe` action surface that runs hard edit-transaction turns as `baseline` vs blanket `consult` vs targeted `gated`, records consult calls/skips/reruns/quality/latency, and reports the result on the requested tier (default `tier=3`) under `consult_gate_targeted`. This is not a T0 side audit: it is intended to let the optimizer search for high-quality, fast review-before-commit policies on hard workflow material.
+- [x] **P3-2c memory projection seed**. Consult-gate probe rows now project into StrategyStore as deterministic `journal-consult-gate-trial-<id>` pattern memories, including dominated/negative rows when they are otherwise trustworthy. Stored metadata preserves tier, task suite, quality delta, consult-call/skip rate, reruns, and gate-reason counts, so planner retrieval can learn conditional policy (`consult when T3 + parser/data-contract risk`, skip easy/single-file edits) rather than a global consult-good/bad rule.
+- [x] **P3-2d**. Generalize to `should_consult(interaction_intent, signals) -> bool` with routing-intelligence/MemRL signals rather than only lexical edit-shape rules. Completed 2026-07-07 in `epyc-orchestrator` `1967c682`: `ConsultIntent` / `ConsultSignals` now combine the transparent lexical edit-shape gate with hard tier, difficulty band, factual-risk band/score, touched-symbol blast radius, recent failure pressure, benchmark class, latency budget, and MemRL hint signals. The live edit-mode adapter passes routing risk/difficulty and latency budget through `review_before_commit_gate_from_context()`. Focused validation: `tests/unit/test_review_consult_gate.py`, `tests/unit/test_edit_transaction.py`, and `tests/unit/test_features.py` passed (`87 passed`), py_compile passed, and ruff passed.
 
-- [ ] **P3-3**. **Shadow mode**: log the gate decision but always run the consult (baseline). Compare offline: would gating have saved tokens? Did skipped consults lose quality?
+- [ ] **P3-3**. **Shadow/optimization calibration**: use `consult_gate_probe` on T2/T3 hard workflow slices to compare always-consult vs targeted-gate behavior. The key metrics are solved-task quality, tasks/hour, consult-call rate, false skips, rerun quality lift, and whether StrategyStore retrieval surfaces the right conditional memories on subsequent planner turns.
+  - 2026-07-07 T3 canary ✅: trial `1251`, action `{"type":"consult_gate_probe","task_suite":"targeted","turns":10,"tier":3}`, artifact `epyc-orchestrator/orchestration/reports/internal_interaction_j17_ab_20260707T140837Z/`. Result: baseline `7/10` (`quality=0.70`) vs gated `8/10` (`quality=0.80`, `+10.0pp`), `consult_gate_targeted=2.4` on the 0-3 scale, `pareto_status=frontier` for T3, `tasks_per_hour=171.736`, `consult_calls=9`, `consult_skips=1`, `rerun_requests=3`, and gate reason counts `{hidden_verifier_or_transaction_risk: 7, parser_data_contract_or_compatibility: 5, multi_file_edit_surface: 2, no_parsed_file_blocks: 1}`. StrategyStore retrieval for `consult gate parser data contract T3 targeted review_before_commit` returns `journal-consult-gate-trial-1251` as the top hit. This satisfies the first canary; keep P3-3 open for T2/T3 breadth, false-skip analysis, and week-scale shadow data.
 
 - [ ] **P3-4**. After ≥1 week of shadow data: enable enforcement for one signal at a time. Require an explicit gate-rollback handoff if quality regresses (≥1pp on the code-edit eval slice).
 
