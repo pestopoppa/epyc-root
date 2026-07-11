@@ -1,5 +1,7 @@
 # Kernel Reconciliation Audit — GPU-opts line vs prod/bench line (pre-v7)
 
+> Historical ledger only; current work lives in `../active/master-handoff-index.md`.
+
 **Date:** 2026-07-06
 **Scope:** READ-ONLY audit of optimization divergence in the shared `llama.cpp` repo (common git dir `/mnt/raid0/llm/llama.cpp/.git`), so nothing valid is stranded before the eventual **production-consolidated-v7** reconciliation.
 **Method:** `git -C <worktree> …` only. No commits, merges, branch switches, builds, or inference. All queries run against worktree `/mnt/raid0/llm/llama.cpp-experimental` (sees all branches).
