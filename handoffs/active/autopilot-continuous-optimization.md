@@ -1,72 +1,21 @@
 # AutoPilot: Continuous Recursive Optimization
 
-**Status**: **W4/W6 authority wiring is current, A10 planner hints are active,
-BSV observe is process-aware, T3 is planner-visible workflow pressure,
-StrategyStore search health is exact, tool_use sentinel backend initialization
-crash and REPL code extraction fix are live, tool-use activation is ready, W8
-candidate generation is unblocked, and W8 remains in promotion-evidence
-collection.** AutoPilot is live as PID `131226` with `--max-trials 3000`;
-latest observed checkpoint is trial `1236` as a current-code-clean
-`numeric_trial` in `dispatch_action`, and phase health reports
-`code_stale=false` on orchestrator `60523b6`. The outcome-stall dispatch guard
-is live; the routine planner path is
-`local_frontdoor` draft -> `local_worker` critique with `claude` fallback;
-`bf9bece7` also keeps fallback draft/review traffic on distinct local role
-providers when the spend breaker is inactive, instead of crossing to Claude
-unnecessarily.
-Frontier-rerun pressure now bypasses the planner prompt when the rerun is
-already required, so W8 recovery does not spend a draft/critique hop on an
-inevitable replay.
-Startup verified StrategyStore search health exact (`1,420` SQLite/FAISS/FTS
-rows, `100.0%` coverage). **Tool_use sentinel crash fixed 2026-07-11**:
-`ServerURLsSettings` pydantic class was missing `toolrunner` field, causing
-`_MISSING_TYPE` sentinel to propagate into `_init_caching_backends()` →
-`url_str.split(",")` crash. Fix: added `toolrunner` alias to both
-`ServerURLsSettings` (pydantic, actual root cause) and `ServerURLsConfig`
-(dataclass, alias to `worker_general`). REPL code extraction also fixed in
-`extract_code_from_response`: added `<end_prompt>` token stripping, removed `^`
-anchor from Gemma thinking-channel regex, Qwen3/Gemma-4 thinking-tag stripping
-working. End-to-end: 4/5 pass (score=-1, advisory range; 1 failure was unrelated
-`kuzu` import error). Safety gate updated: tool_use regression ≤ -3.0 is hard
-block, -0.6 to -2.9 is advisory warning only (5 new safety tests, 94 total
-pass). `AUTOPILOT_PLANNER_SPEND_BREAKER` disabled (`"0"`) to prevent planner
-from switching to local providers on high projected spend. Strategy store
-scrubbed: deleted stale infra-failure belief, inserted corrected entry
-(`opseed-green-toolrunner-fix-20260711`) with `bind_status: "live"`. 123
-journal entries (trials 506-1302) carry `tool_use: 0.0` artifacts from this bug;
-they remain in place (append-only) but are now known-contaminated. Tool-use
-activation is not the blocker;
-`8be68732` fixes the REPL-pinned sentinel prompt contract so the lane asks for
-executable `TOOL("get_eval_secret", ...)` code. Numeric candidate generation is
-no longer blocked by stale broad surface bans, short explicit params, or W8
-deferral churn: `4400df02` constrains numeric-surface blacklists to concrete
-params unless explicitly human-scoped, `6a0d60af` normalizes planner-friendly
-params such as `{"keep_ratio": 0.5}` to `{"kv.keep_ratio": 0.5}`, `3364bdd7`
-repairs W8 fallback deferrals into replayable candidates, and `a13a2948`
-clarifies that a new `numeric_trial.params={}` is an Optuna request whose
-concrete applied params are journaled by dispatch. Trial `1194` is the first
-live canary of that path: W8 fallback selected `chat_pipeline`, and
-NumericSwarm applied
-`chat.try_cheap_first_quality_threshold=0.8742715026951258`; the candidate
-then failed safety on `tool_use` regression and was reverted/blacklisted for
-that exact param. Ordinary
-`seed_batch`, `deep_eval`, and `structural_prune` remain valid AutoPilot
-actions outside the specific W8 candidate-generation blocker. A9 source-reward
-target contrast replan is ready but blocked while AutoPilot is active; DS-E1 is
-decision-ready. W7 game-layer hardening remains complete through critic
-measurement view (`41c5c71`), production eval sampling clamp (`7492cf5`),
-audit-stream gaming alarm (`8e4b1ec`), PEAF budget credit (`4b09661`), and
-per-question diff/provenance context (`749d38f`).
-`e3b13edd` repairs the forced-replay/AP-9 seam exposed by skipped trials
-`1213`-`1216`: replay pressure now stays active while W8 still needs
-replay/confirmation, materialized multi-param NumericSwarm candidates can be
-replayed as a single force-matched candidate, and AP-9 remains binding for new
-planner-proposed explicit multi-param numeric actions. Current
-`w8_promotion_trajectory_report.py --json` is `ok=true/status=progressing`;
-recent replay-eligible candidates are `4b6b454ea4f884fd`,
-`289c4fc0fb5a334d`, and `d3f28243801548b2`. The remaining W8 requirements are
-combined E-process strength, a fresh promotion-eval run, and sequential
-confirmation.
+**Current checkpoint — 2026-07-11T23:16Z**: AutoPilot is running under
+supervisor PID `1039445` / child PID `1039446`, with phase health reporting
+trial `1318`, `phase=dispatch_action`, `action_type=seed_batch`, and
+`ok=true`. The current process is **not current-code-clean**:
+`phase_health_report.py --json` reports `code_stale=true` for
+`autopilot.py`, `actions.py`, `controller_io.py`, `eval_tower.py`,
+`safety_gate.py`, and `phase_status.py`; no restart/pause was performed by this
+audit. Planner routing remains local-first (`AUTOPILOT_PLANNER_PRIMARY=local_ingest`,
+`AUTOPILOT_PLANNER_CRITIC=local_frontdoor`, fallback `claude`), and the planner
+spend breaker is explicitly off (`AUTOPILOT_PLANNER_SPEND_BREAKER=0`;
+`planner_spend_breaker_enabled=false`). The named open work in this handoff is
+now rollout/validation evidence, not code scaffolding: AP-26 needs an
+operator-approved non-RLM vs RLM live comparison, AP-27 needs Ouro/inference
+integration review, BSV-2 needs live paired-run evidence before enabling
+`AUTOPILOT_BSV2_ACCEPT_GATE`, and BSV-3 enforcement stays default-off/observe
+until BSV-2 evidence exists.
 
 > **Current state - 2026-06-21 (bounded W4/W6 accrual resumed).** The API was reloaded on orchestrator `d0e082a`, per-worker attestation passed across six workers, and `stack_change_pipeline.py check --run-promotion-gate` passed (`174` tests). The first collection-only run exposed eval fanout contamination under the current full-only fleet; after orchestrator `c13e5ae`, the collection run used `AUTOPILOT_SEQ_VERDICT=1`, `AUTOPILOT_W6_AUDIT_BLOCK=1`, `AUTOPILOT_W6_AUDIT_N=10`, `AUTOPILOT_W6_AUDIT_EVERY_N_TRIALS=1`, `AUTOPILOT_W6_AUDIT_SHADOW_ONLY=1`, `AUTOPILOT_PLANNER_TIMEOUT=600`, default eval fanout capped to the reachable live fleet, and `--max-trials 930`. Trial `928` was journaled as `autopilot_killed_mid_trial` during stall recovery; trial `929` then completed as `numeric_trial` / `think_harder` with `q=1.980`, `s=34.132`, `r=0.980`, and `reproduction_confirmed`, and AutoPilot exited at trial counter `930`. Phase health then reported `status=stopped`, `ok=true`, `pid_alive=false` by design after `af72216e`. Latest ordinary restart readiness passed (`archive=match`, `snapshot=tail_fold_ready`, `baseline=state_baseline`, seed preflight `ready`, `append_ready=true`, `append_required=true`), while `--require-seq-cutover --require-w6-audit` correctly failed because sequential authority remained blocked at `93 < 120` trusted vectors and W6's trailing-30 alarm still had `7` active-window divergences (`12` cumulative) after `61/30` audited rows. The same W4/W6 collection posture was relaunched to `--max-trials 970` at 2026-06-21T11:49:27Z; `phase_health_report.py --json` first reported active trial `930`, `phase=planner_invoke`, PID `2472037`, no blockers, then advanced to `phase=dispatch_action`, `action_type=seed_batch`, no blockers. Baseline seed append is prepared but not applied; `fe2fe55c` also requires explicit `baseline_ledger_authority_enabled=true` before any later matching ledger fold can remove the state baseline cache.
 >
@@ -100,14 +49,14 @@ confirmation.
 > trailing-window alarm, assuming no new gaming events occur.
 
 **Created**: 2026-03-08
-**Updated**: 2026-07-11 (tool_use sentinel `_MISSING_TYPE` backend crash fixed: added `toolrunner` field to `ServerURLsSettings` pydantic class and `ServerURLsConfig` dataclass as alias to `worker_general`; REPL code extraction fixed in `extract_code_from_response` with `<end_prompt>` stripping and unanchored Gemma thinking-channel regex; safety gate separates tool_use regressions: ≤ -3.0 hard block, -0.6 to -2.9 advisory; `AUTOPILOT_PLANNER_SPEND_BREAKER` disabled; strategy store scrubbed of stale infra-failure belief; end-to-end sentinel suite 4/5 pass, score=-1 advisory; 123 contaminated journal entries (trials 506-1302) marked known-contaminated. Current live AutoPilot PID `131226` with `--max-trials 3000`; trial `1236` last checkpoint.)
+**Updated**: 2026-07-11 (tool_use sentinel `_MISSING_TYPE` backend crash fixed: added `toolrunner` field to `ServerURLsSettings` pydantic class and `ServerURLsConfig` dataclass as alias to `worker_general`; REPL code extraction fixed in `extract_code_from_response` with `<end_prompt>` stripping and unanchored Gemma thinking-channel regex; safety gate separates tool_use regressions: <= -3.0 hard block, -0.6 to -2.9 advisory; `AUTOPILOT_PLANNER_SPEND_BREAKER` remains disabled/off; strategy store scrubbed of stale infra-failure belief; end-to-end sentinel suite 4/5 pass, score=-1 advisory; 123 contaminated journal entries (trials 506-1302) marked known-contaminated. Live PID/phase state changes often; use the top checkpoint plus `phase_health_report.py --json` instead of this metadata line for runtime truth.)
 **Location**: `epyc-orchestrator/scripts/autopilot/`
 
 > **Fable 5 review (2026-06-12)**: the review's architecture recommendations now have owning handoffs: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (LIVE t775 baseline-ratchet hotfix + dead-question repair), [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md) (per-question ledger + e-process verdicts; owns the next restart bundle), [evidence-plane-event-sourcing-and-narrative.md](evidence-plane-event-sourcing-and-narrative.md), and [objective-task-rate-goodput.md](objective-task-rate-goodput.md) (task_rate replaces the t/s axis). Full diagnosis: fable5-findings-01 + -05.
 
 > Historical restart runbooks and settled 2026-06-04/05 implementation banners were compacted to [../completed/autopilot-continuous-optimization-history-through-2026-06-20.md](../completed/autopilot-continuous-optimization-history-through-2026-06-20.md).
 
-**Current addendum - 2026-07-08**: the fresh Fable restart came up clean as
+**Historical addendum - 2026-07-08**: the fresh Fable restart came up clean as
 PID `3681234` with `AUTOPILOT_PLANNER_PRIMARY=local_ingest`,
 `AUTOPILOT_PLANNER_CRITIC=local_frontdoor`, `stack_mode=both`, and
 `code_stale=false`. `b7518da0` keeps `StrategyStore` hints planner-only and
