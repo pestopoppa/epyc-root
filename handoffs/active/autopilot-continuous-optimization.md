@@ -548,9 +548,18 @@ Three "Research Intake Update" sections have surfaced **scoring-mechanism** upgr
 
 **CRITICAL CAUTION — SkillsBench v3 (intake-096)**: self-generated skills are net-negative (-1.3pp avg). Any self-improvement integration MUST include validation gates against a curated baseline. Do not let self-generated improvements enter the autopilot gate without human-curate confirmation.
 
-- [ ] **AP-SI-1** — scope SIA harness-only patterns for integration into existing species; weight-update path is inapplicable
-- [ ] **AP-SI-2** — design validation gates for any self-improvement loop; gate on curated-baseline comparison (SkillsBench v3 caution)
-- [ ] **AP-SI-3** — evaluate ShinkaEvolve archive-based evolution for StrategyStore enrichment
+**Integration decision — 2026-07-11**: adopt self-improvement patterns only as harness/search-memory loops; do not introduce a weight-update path on the CPU production stack. SIA/HTIR-style trace evidence maps to MH-11/MH-10 rather than model training. Species mapping:
+- **Species 0 / Seeder**: use archive-derived planner hints and Pareto stepping-stones as observe-only hypotheses; no recursive Q-value self-training without an eval-gated operator run.
+- **Species 2 / PromptForge**: recursive prompt/code improvement remains inside isolated mutation flows, dirty-tree fences, rollback, and the default-off EV-10 skill-efficacy gate.
+- **Species 4 / Evolution Manager + StrategyStore**: ShinkaEvolve's meta-scratchpad/archive-memory pattern maps to deterministic journal-derived StrategyStore projections and DesignArchive lineage, not an unguarded live parent sampler.
+
+**Validation gates — 2026-07-11**: any self-generated prompt/skill/strategy artifact must stay out of SafetyGate/Pareto promotion unless it passes the normal mutation rollback path plus a paired curated-baseline comparison. Required guard stack: EV-10 `AUTOPILOT_SKILL_EFFICACY_GATE` for skill-like artifacts, per-suite negative-delta rejection, held-out/dev-test discipline where available, BSV/paired-report evidence for batch-serving or evaluator changes, folded-journal evidence quarantine for StrategyStore projections, and explicit human-curated confirmation before enabling any live self-improvement loop. Planner spend-breaker remains off/opt-in; it is not a validation gate and must not be re-enabled as part of AP-SI.
+
+**ShinkaEvolve StrategyStore evaluation — 2026-07-11**: current orchestrator already provides a contained archive-enrichment path via `scripts/autopilot/strategy_projection_report.py`, `StrategyStore.sync_frontier_journal_entries()`, `StrategyStore.sync_consult_gate_journal_entries()`, and replay `DesignArchive` lineage. Read-only validation on 2026-07-11: `strategy_projection_report.py --json` reported `ok=true`, `expected_count=69`, `projected_count=69`, `consult_gate.expected_count=1`, `consult_gate.projected_count=1`, and zero missing/unexpected/mismatched projections. This closes the evaluation path; future work is evidence-gated operator deployment or richer novelty sampling, not a blind new autonomous loop.
+
+- [x] **AP-SI-1** — scope SIA harness-only patterns for integration into existing species; weight-update path is inapplicable ✅ 2026-07-11
+- [x] **AP-SI-2** — design validation gates for any self-improvement loop; gate on curated-baseline comparison (SkillsBench v3 caution) ✅ 2026-07-11
+- [x] **AP-SI-3** — evaluate ShinkaEvolve archive-based evolution for StrategyStore enrichment ✅ 2026-07-11
 
 ## Known Issues — KV Cache seq_add Crash on Qwen3.5 Hybrids (2026-04-15, PATCHED)
 
