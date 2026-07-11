@@ -187,6 +187,7 @@ This packet is command-discovery and evidence packaging only. It does not author
   - Root commit `6d023e9d` enforced stack-fact migration discipline with the pre-commit hook, validator, candidate gate integration, and focused tests; verified with `py_compile`, `bash -n`, targeted pytest, negative/positive CLI checks, and `git diff --check`.
 - [x] P3.11 hermetic NUMA-parity invariant test + reader-agreement contracts ✅ 2026-07-11
   - Commit `608cc54c` landed the shared NUMA-mode normalization helper and aligned launcher, stack-priors, template, guard, and dashboard readers on the same contracts.
+  - [x] P3.11a W4/W9 read-only topology parity smoke landed in `epyc-orchestrator` commit `8bbf3eb5`: `test_topology_parity_smoke_for_expected_listener_ports` verifies known-port scanning includes every expected `both` stack service, simulated discovered listeners render as running topology nodes, and undiscovered expected services remain represented as unloaded stack servers. ✅ 2026-07-11
 - [x] P3.13 regressions-per-active-trial + promotions-per-100-trials metrics ✅ 2026-07-11
   - Commit `fa0391a5` reported the active-trial outcome progress metrics in the phase-status/autopilot/dashboard path; verification stayed clean with Ruff, `py_compile`, the focused pytest batches, and `git diff --check`.
 - [x] P3.12 shadow lane for new live-loop components ✅ 2026-07-11
