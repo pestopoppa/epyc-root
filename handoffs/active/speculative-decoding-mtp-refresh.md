@@ -1,6 +1,6 @@
 # Speculative-Decoding / MTP Refresh
 
-**Status**: active (created 2026-06-22 via operator-directed MTP review)
+**Status**: active (created 2026-06-22 via operator-directed MTP review; v6 status correction added 2026-07-11)
 **Categories**: speculative_decoding, hardware_optimization, local_inference, moe_optimization
 **Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
 **Related**: [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md), [`summary-token-attention-readiness.md`](summary-token-attention-readiness.md); completed: [`gemma4-mtp-drafter-evaluation.md`](../completed/gemma4-mtp-drafter-evaluation.md), [`mtp-speculative-decoding.md`](../completed/mtp-speculative-decoding.md)
@@ -9,7 +9,13 @@
 
 Decide whether to adopt new MTP (multi-token-prediction) speculative decoding for stack models, given that upstream shipped native MTP heads (Qwen3.6/3.5) + mainline llama.cpp MTP/EAGLE support in spring 2026 while our fork has none of it. **All numbers here are OBSERVATIONS (MEASUREMENT.md) — none gate a keep/deploy decision; the operator runs all benches.**
 
-## Current State (verified 2026-06-22)
+## Current State Correction (2026-07-11)
+
+- Production has moved past the June v5/ik split. Current production is the single `production-consolidated-v6` llama.cpp tree: upstream native MTP/NEXTN speculative decoding + EPYC CPU forward-ports + iqk AVX-512 GEMM kernels. `ik_llama.cpp` is deprecated as a separate production binary.
+- The June dense-Gemma measurements below remain useful observations, but future benches/deploy decisions must use the v6 native flag surface (`--spec-type draft-mtp`, `--spec-draft-n-max`) or a fresh `llama.cpp-experimental` v7-candidate started from current production. Do not revive the separate ik runtime except to reproduce historical results.
+- `worker_general` Gemma4-26B-A4B still uses Google's official assistant head; the architecture question is no longer "mainline vs ik" but draft depth / sampling / quality under v6 and, for future Qwen work, whether the remaining MTP port belongs in `llama.cpp-experimental`.
+
+## Historical State (verified 2026-06-22; superseded by v6 cutover)
 
 - Our fork `production-consolidated-v5` (HEAD a6c793fc66): `--spec-type` = ngram-only; **no `draft-mtp`**; EAGLE3 is an inert `// TODO PR-18039` stub. Qwen3.6/3.5 MTP heads are NOT runnable here.
 - gemma-4-26B-A4B (worker_general) MTP runs on a **separate** clone `/mnt/raid0/llm/ik_llama.cpp` branch `production-gemma4-mtp` (patched PR #1744), NOT the consolidated fork.
@@ -25,7 +31,7 @@ Decide whether to adopt new MTP (multi-token-prediction) speculative decoding fo
 | **Qwen3.5-122B-A10B (architect)** | GDN hybrid | `unsloth/Qwen3.5-122B-A10B-MTP-GGUF` | **DEAD — do not pursue** | `autopilot/program.md:325`: MTP-1 already measured **0.56×** (net slowdown); 75% Delta-Net recurrent layers don't batch. Architecture, NOT NUMA (architect is already single-instance serial). |
 | **Qwen3.5-27B (DENSE? no — HYBRID; on disk)** | SSM-Dense hybrid | `unsloth/Qwen3.5-27B-MTP-GGUF` | **DEAD — hybrid trap** | same Delta-Net wall; closed NOT VIABLE in `mtp-speculative-decoding.md`. (User listed it as dense — it is not.) |
 | **Qwen3-Next-80B (ingest)** | SSM-MoE hybrid | native MTP (GPU/vLLM only) | **not viable on CPU** | only GGUF attempt (quivent) = net-negative 0.43×; verification wall holds |
-| **gemma-4-26B-A4B (worker_general)** | MoE A4B | mainline gemma4 MTP (#23398) | **not stale on head** | our head = official; mainline now an alt to the ik_llama fork; cheap check = `draft_max` 2→3→4 sweep |
+| **gemma-4-26B-A4B (worker_general)** | MoE A4B | mainline/v6 native gemma4 MTP (#23398 lineage) | **not stale on head; v6-native now** | our head = official; production now uses the consolidated v6 native MTP path, not the separate ik fork. Cheap open check remains `draft_max` / `--spec-draft-n-max` 2→3→4 sweep under operator-approved bench conditions. |
 
 ## Outstanding Tasks (priority order)
 
@@ -89,14 +95,14 @@ The promotion decision rests on "gemma-4-31B (31B dense) and gemma-4-26B-A4B (~3
 - [ ] **T5 (cheap) — gemma-4-26B-A4B `draft_max` 2→3→4 sweep** on the existing worker (mainline default uses 3-4; we run 2).
 
 ## Dependency graph
-- T1, T5 → **independent, runnable now** (existing ik_llama fork; files on disk).
+- T1, T5 → **independent, runnable now only with operator bench approval**. The June reproduction path used the existing ik_llama fork; July+ work should prefer `production-consolidated-v6` / a fresh `llama.cpp-experimental` v7-candidate unless deliberately reproducing historical ik results.
 - T3, T4 → blocked-by **T2** (need the `draft-mtp` experimental binary) + GGUF downloads.
 - **T2 remaining (#22673)** conflicts in 25 files — core: `common/speculative.cpp` (+1980), `common/speculative.h`, `common/arg.cpp` (the `--spec-type draft-mtp` enum), `common/common.{cpp,h}`, `include/llama.h`, `src/llama-context.cpp`, `src/models/qwen35.cpp`, `src/models/qwen35moe.cpp`, `conversion/{base,qwen}.py`, + ~15 more. Root cause: our fork's spec-dec is an **older API generation** (carries our EAGLE3 stub + tree/DySpec + ngram + gemma4 paths) than the PR base. Real work = hand-merge `speculative.cpp` preserving our existing paths, then compile-iterate. **Empirically a focused multi-session reconciliation, NOT 2-4 weeks of catastrophe and NOT a 5-min cherry-pick.**
 
 ## Cross-cutting concerns
 - **CPU+MoE is the binding question**: every upstream MTP/EAGLE speedup is GPU; MoE shows ≤1.06× even on GPU (expert-union verification overhead). Dense is where CPU MTP can win — hence T1/T3 before T4. The single gating number = CPU MTP α/throughput on a dense model-we-own (T1).
-- **MTP requires `-np 1`** (ik_llama PR #1744 asserts on `-np>1`); does NOT break NUMA for single-stream roles (architect/worker-full are already `-np 1`), but trades off against the 4×-quarter concurrent-split for roles that use it. Confirm per role before deploy.
-- **NEVER touch production `/mnt/raid0/llm/llama.cpp`** — all port work in `llama.cpp-experimental` (verify_llama_cpp.sh enforces). Promotion to v5 is gated on a positive operator bench.
+- **MTP parallelism must be verified per runtime**: the June ik path asserted on `-np>1`; v6 native MTP must still be checked per role because speculative decoding can trade off against 4×-quarter concurrent splits. Confirm per role before deploy.
+- **NEVER touch production `/mnt/raid0/llm/llama.cpp`** — all port work in `llama.cpp-experimental` (verify_llama_cpp.sh enforces). Promotion means a new production version after positive operator bench + quality pass, never patching v6 in place.
 - Quant parity: Qwen3.6 prod = Q8; MTP-GGUF = Q4 → compare C1(Q4+MTP) vs C0(Q4 no-MTP), not vs Q8 prod.
 - **Draft-head is a small BW slice** (corroborated by FR-Spec vocab-trim, intake-740): trimming the draft LM-head −85% in kernel time yields only +1-3% end-to-end on bandwidth-bound decode — reinforcing that expert-verification overhead, not draft quality, is the CPU wall.
 
@@ -108,7 +114,7 @@ The promotion decision rests on "gemma-4-31B (31B dense) and gemma-4-26B-A4B (~3
 
 ## Operator bench commands
 
-See WS4 prep (this session). **Block A (gemma-4-31B dense) is runnable today** on `/mnt/raid0/llm/ik_llama.cpp/build/bin/llama-speculative` (branch `production-gemma4-mtp`): baseline `-no-mtp --spec-type none` vs MTP `-md gemma-4-31B-it-assistant-Q8_0.gguf -mtp --spec-type mtp --draft-max {2,3,4} --draft-p-min 0.0`, with `taskset -c 0-95 numactl --interleave=all`, the OMP stack + `KMP_BLOCKTIME=10`, `-t 96 -fa 1 --no-mmap -c 16384 -ub 512 -ctk q8_0 -ctv q8_0 --temp 0 --seed 42 -n 128`, 3 reps; read tg t/s + acceptance; `llama-bench` cannot drive MTP. Blocks B/C use the WS5 `llama.cpp-experimental` binary `--spec-type draft-mtp` after download. (Full blocks were produced in the session WS4 report.)
+See WS4 prep for the historical June commands. **Block A (gemma-4-31B dense)** was run on `/mnt/raid0/llm/ik_llama.cpp/build/bin/llama-speculative` (branch `production-gemma4-mtp`) using ik-era flags (`-mtp --spec-type mtp --draft-max`). For July+ measurements, translate to the v6/native surface (`--spec-type draft-mtp`, `--spec-draft-n-max`) on `production-consolidated-v6` or a fresh `llama.cpp-experimental` v7-candidate, preserve the same operator-approved quiescing / CPU pinning / seed protocol, and record protocol IDs per `MEASUREMENT.md`. Blocks B/C use the experimental `draft-mtp` binary after download. (Full blocks were produced in the session WS4 report.)
 
 ## Research context (intake)
 
@@ -125,11 +131,11 @@ See WS4 prep (this session). **Block A (gemma-4-31B dense) is runnable today** o
 | intake-742 | Graft — training-free prune-then-graft draft tree (arXiv 2605.20104) | adopt_patterns (catalog → moe-spec); EAGLE-3-based + GPU adjacency |
 
 ## Reporting instructions
-After any task: update the checkbox here + record measured numbers (with protocol-id per MEASUREMENT.md) in the owning artifact (registry entry `gemma4_31b_q4km_mtp` for T1; this handoff for T2 port status). Promotion to production-consolidated-v5 requires a positive operator bench + quality pass — never auto-promote.
+After any task: update the checkbox here + record measured numbers (with protocol-id per MEASUREMENT.md) in the owning artifact (registry entry `gemma4_31b_q4km_mtp` for T1; this handoff for T2 port status). Any promotion requires a fresh experimental candidate, positive operator bench, and quality pass — never auto-promote and never patch frozen production in place.
 
 ## Key file locations
 - Port branch: `/mnt/raid0/llm/llama.cpp-experimental` `feature/mtp-qwen36-port` (#22400 @ b139eba138; #22673 remaining)
-- gemma MTP runtime: `/mnt/raid0/llm/ik_llama.cpp` `production-gemma4-mtp` → `build/bin/llama-speculative`
+- gemma MTP runtime: current production uses `/mnt/raid0/llm/llama.cpp` `production-consolidated-v6` native MTP; `/mnt/raid0/llm/ik_llama.cpp` `production-gemma4-mtp` is historical/reproduction-only
 - Models on disk: `/mnt/raid0/llm/models/gemma-4-31B-it-Q4_K_M.gguf` (+ `-assistant-Q8_0.gguf`); `/mnt/raid0/llm/lmstudio/models/unsloth/Qwen3.5-9B-GGUF/`
 - Registry entries: `gemma4_31b_q4km_mtp` (research registry, Tier B); worker_general (lean registry)
 - Read-only refs: `autopilot/program.md:325` (Qwen3.5 hybrid exhausted), `scripts/session/verify_llama_cpp.sh`
@@ -150,5 +156,6 @@ After any task: update the checkbox here + record measured numbers (with protoco
   - Relevance: a 6-day agent collaboration optimizing **gemma-4-E4B MTP** inference — the same MTP-drafter family as our production `worker_general` (gemma-4-26B-A4B, Google assistant head). Surfaces one concrete, directly-applicable drafter technique.
   - Key technique — **`onegraph` (fastest *lossless* submission, 315 TPS, downstream-quality-preserving):** the Gemma MTP drafter is **Q-only, KV-shared, with no cross-position dependencies**, so the usual multi-position drafter **warm-up pass is unnecessary** — only the single position that starts the drafting loop is needed, and that step is equivalent to a normal loop iteration. They **fold the warm-up into the 7-step drafting loop, record the entire routine as ONE GPU graph, and replay it with a single launch** — turning a bookkeeping-heavy sequence into a uniform GPU-side routine with no output change.
   - Delta from our approach: this is a **GPU-graph-capture** optimization (relevant to the MI210 GPU-drafter path — see `gpu-drafter-mi200-investigation.md` — not the CPU regime). The *insight* (drafter warm-up is redundant given Q-only/KV-shared/no-cross-position structure) is worth checking against our gemma4 assistant-head drafter loop regardless of backend: if our warm-up does redundant multi-position work, the folding may shave latency on CPU too (verify the structural preconditions hold for our GGUF drafter).
+  - **✅ Structural check COMPLETE (2026-07-11)**: all 3 preconditions (Q-only, KV-shared, no cross-position deps) verified against `experimental-v7-candidate` code. HIP graph capture infrastructure is already present (no port needed). See `gemma-challenge-kernel-techniques-v7.md` for details. Next: MI210 smoke-test + benchmark.
   - Contrast — **fastest *lossy* (491.8 TPS)** used vocab pruning + layer removal + a task-targeted fine-tuned drafter + CUDA-graph capture, but degraded GPQA-Diamond/MMLU-Pro by 15/40 points → a cautionary example of exactly the accept-rate-vs-quality trap this handoff's per-model table already guards against.
   - Numbers are OBSERVATION-grade (challenge-internal, GPU, self-reported).
