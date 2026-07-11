@@ -1118,6 +1118,17 @@ Source findings: **intake-772** Darwin Gödel Machine (arXiv 2505.22954, verdict
 
 **(b) Proposed change.** Add a bounded, diversity-sampled *stepping-stone lane*. Lowest-risk delivery is a new `ParetoArchive.stepping_stones_text(k=…)` render method (sibling to `geometry_text`) that surfaces K dominated-but-novel `_all_entries` — sampled for diversity, not score — into the planner prompt at `autopilot.py:3571-3576`. Novelty can reuse the existing BSV behavior signatures (`bsv_observe.py`, wired at `autopilot.py:4380-4442`) or config-diff distance; bound the lane by size (e.g. ≤8 candidates) and recency. This is **pure prompt context** — the LLM controller may then propose an action seeded from a stepping-stone, but nothing is auto-re-run. A heavier follow-up (only if the observe pass shows value) is extending the `rollback` action (`autopilot.py:2103,4330`) to accept an arbitrary archive `trial_id`, not just `production_best`/checkpoints.
 
+**Status 2026-07-11:** observe-only Pattern 1 is already landed in orchestrator:
+`ParetoArchive.stepping_stones()` / `stepping_stones_text()` select dominated
+near-frontier rows, `pareto_stepping_stones_report.py` exposes a read-only report,
+the planner prompt appends the block behind `AUTOPILOT_STEPPING_STONES` (default
+on), and phase health reports the flag. Validation re-run on 2026-07-11:
+`ruff check` on stepping-stone/phase-status files; `.venv/bin/python -m pytest
+tests/unit/test_pareto_archive_tiers.py tests/unit/test_pareto_stepping_stones_report.py
+tests/unit/test_autopilot_phase_status.py -q` → 29 passed. Remaining Pattern 1
+work is the heavier explicit replay/rollback path, which is still operator-window
+work and not part of the observe-only lane.
+
 **(c) Risk + gate.** Prompt-context version: near-zero risk (no new eval, no gate touched, no archive-authority change) — it cannot promote anything on its own. The re-run follow-up costs one serial eval per revisited stepping-stone and so is bound by the **single-user no-concurrent-inference constraint** (operator-scheduled only). Any config revisited still passes the unchanged SafetyGate: quality floor `safety_gate.py:869`, resolution-aware per-suite gate `:950-959`, MAD/`mad_noise` filter `:897-948`, and — when enabled — the sequential verdict `:680`. No change to promotion authority; a stepping-stone only earns a frontier point by winning on the existing 4D dominance test.
 
 **(d) Effort.** **S** for the observe-only `stepping_stones_text` prompt block; **M** if the `rollback`/`explore_from_trial` re-run path is added.
