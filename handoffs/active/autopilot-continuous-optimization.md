@@ -2,7 +2,8 @@
 
 **Status**: **W4/W6 authority wiring is current, A10 planner hints are active,
 BSV observe is process-aware, T3 is planner-visible workflow pressure,
-StrategyStore search health is exact, tool-use activation is ready, W8
+StrategyStore search health is exact, tool_use sentinel backend initialization
+crash and REPL code extraction fix are live, tool-use activation is ready, W8
 candidate generation is unblocked, and W8 remains in promotion-evidence
 collection.** AutoPilot is live as PID `131226` with `--max-trials 3000`;
 latest observed checkpoint is trial `1236` as a current-code-clean
@@ -17,7 +18,24 @@ Frontier-rerun pressure now bypasses the planner prompt when the rerun is
 already required, so W8 recovery does not spend a draft/critique hop on an
 inevitable replay.
 Startup verified StrategyStore search health exact (`1,420` SQLite/FAISS/FTS
-rows, `100.0%` coverage). Tool-use activation is not the blocker;
+rows, `100.0%` coverage). **Tool_use sentinel crash fixed 2026-07-11**:
+`ServerURLsSettings` pydantic class was missing `toolrunner` field, causing
+`_MISSING_TYPE` sentinel to propagate into `_init_caching_backends()` →
+`url_str.split(",")` crash. Fix: added `toolrunner` alias to both
+`ServerURLsSettings` (pydantic, actual root cause) and `ServerURLsConfig`
+(dataclass, alias to `worker_general`). REPL code extraction also fixed in
+`extract_code_from_response`: added `<end_prompt>` token stripping, removed `^`
+anchor from Gemma thinking-channel regex, Qwen3/Gemma-4 thinking-tag stripping
+working. End-to-end: 4/5 pass (score=-1, advisory range; 1 failure was unrelated
+`kuzu` import error). Safety gate updated: tool_use regression ≤ -3.0 is hard
+block, -0.6 to -2.9 is advisory warning only (5 new safety tests, 94 total
+pass). `AUTOPILOT_PLANNER_SPEND_BREAKER` disabled (`"0"`) to prevent planner
+from switching to local providers on high projected spend. Strategy store
+scrubbed: deleted stale infra-failure belief, inserted corrected entry
+(`opseed-green-toolrunner-fix-20260711`) with `bind_status: "live"`. 123
+journal entries (trials 506-1302) carry `tool_use: 0.0` artifacts from this bug;
+they remain in place (append-only) but are now known-contaminated. Tool-use
+activation is not the blocker;
 `8be68732` fixes the REPL-pinned sentinel prompt contract so the lane asks for
 executable `TOOL("get_eval_secret", ...)` code. Numeric candidate generation is
 no longer blocked by stale broad surface bans, short explicit params, or W8
@@ -82,7 +100,7 @@ confirmation.
 > trailing-window alarm, assuming no new gaming events occur.
 
 **Created**: 2026-03-08
-**Updated**: 2026-07-08 (current live AutoPilot PID `3681234` is running the fresh Fable authority wrapper with `--max-trials 3000`, `AUTOPILOT_PLANNER_PRIMARY=local_ingest`, `AUTOPILOT_PLANNER_CRITIC=local_frontdoor`, `stack_mode=both`, and `code_stale=false`. Seed-batch prompts are clean in the structured tap tail after `b7518da0`; the contaminated `1257-1263` rows were quarantined append-only with `bug_corrupted_by=b7518da0`; and the dashboard now marks stale planner tap history via `b5cadba6`. Strict Fable is ready with `blockers=[]`; active next action is W8 promotion-eval evidence collection.)
+**Updated**: 2026-07-11 (tool_use sentinel `_MISSING_TYPE` backend crash fixed: added `toolrunner` field to `ServerURLsSettings` pydantic class and `ServerURLsConfig` dataclass as alias to `worker_general`; REPL code extraction fixed in `extract_code_from_response` with `<end_prompt>` stripping and unanchored Gemma thinking-channel regex; safety gate separates tool_use regressions: ≤ -3.0 hard block, -0.6 to -2.9 advisory; `AUTOPILOT_PLANNER_SPEND_BREAKER` disabled; strategy store scrubbed of stale infra-failure belief; end-to-end sentinel suite 4/5 pass, score=-1 advisory; 123 contaminated journal entries (trials 506-1302) marked known-contaminated. Current live AutoPilot PID `131226` with `--max-trials 3000`; trial `1236` last checkpoint.)
 **Location**: `epyc-orchestrator/scripts/autopilot/`
 
 > **Fable 5 review (2026-06-12)**: the review's architecture recommendations now have owning handoffs: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (LIVE t775 baseline-ratchet hotfix + dead-question repair), [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md) (per-question ledger + e-process verdicts; owns the next restart bundle), [evidence-plane-event-sourcing-and-narrative.md](evidence-plane-event-sourcing-and-narrative.md), and [objective-task-rate-goodput.md](objective-task-rate-goodput.md) (task_rate replaces the t/s axis). Full diagnosis: fable5-findings-01 + -05.
