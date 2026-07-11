@@ -82,7 +82,8 @@ After MH or HLE work, update this handoff with the code path, feature flag, vali
 3. **MH-12 SEAGym evaluation views**: train/validation/test/replay/OOD views from SEAGym are applicable to our eval-tower verification. Prevents the "frequent updates fail to improve held-out" anti-pattern.
 
 - [ ] **MH-10 agentic harness search scoping** — adapt Meta-Harness proposer contract for our seeding pipeline; gate on curated-baseline validation
-- [ ] **MH-11 HTIR failure attribution** — implement harness-aware trace IR for eval-tower critic
+- [x] **MH-11 HTIR failure attribution** — implement harness-aware trace IR for eval-tower critic. ✅ 2026-07-11
+  Landed in orchestrator commit `b9fcdf5e` (`Add harness trace IR for PromptForge context`); focused Ruff, `py_compile`, and pytest validation passed on the touched orchestrator files, and the post-commit preflight stayed non-restart-safe so autopilot was not restarted.
 - [ ] **MH-12 SEAGym evaluation views** — add train/validation/test/replay/OOD views to eval-tower
 
 ### Prior Research (2026-07-02)
