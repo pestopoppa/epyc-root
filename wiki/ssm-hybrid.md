@@ -163,7 +163,7 @@ The reason these are tracked under SSM-hybrid (and not under speculative-decodin
 - [intake-490](https://pytorch.org/blog/hybrid-models-meet-sglang-more-than-full-attention/) PyTorch SGLang blog (Dec 2025) -- Slot-promotion mechanism for hybrid SSM speculation; per-candidate state slots via `S_new = S_parent + Δ(k,v,β,g)`; the basis for the 2026-04-28 reopener
 - [Hybrid SSM slot-promotion reopener handoff](../handoffs/completed/hybrid-ssm-slot-promotion-spec-dec.md) -- CLOSED 2026-04-30: Phase 1.0 GATE MET, Phase 1.1 dispatcher v1 LANDED but mechanism net-negative on Qwen3.6-35B + Qwen3-1.7B (97% primary wins); dispatcher v1 stays in tree disabled-by-default
 - [findings-05c lever × model-category matrix (L20 GDN)](../handoffs/active/fable5-window2-findings-05c-mi210-lever-category-matrix.md) -- GPU GDN levers: occupancy path NO-GO (theoretical occupancy already 100%; the ~42% is pure memory-latency), the one win is **bf16 recurrent-state** (+21.5% agg @B32, halves gather+scatter), generalizes across all GDN-hybrid sizes + qwen3next-80B
-- [Kernel reconciliation audit](../handoffs/active/kernel-reconciliation-audit.md) -- bf16-GDN-state kernel (`496e2f098`, `GGML_CUDA_GDN_STATE_BF16`) carried onto the reconciled v7-candidate; GPU (`ggml-cuda/gated_delta_net.cu`) and CPU/iqk subsystems disjoint
+- [Kernel reconciliation audit](../handoffs/completed/kernel-reconciliation-audit.md) -- bf16-GDN-state kernel (`496e2f098`, `GGML_CUDA_GDN_STATE_BF16`) carried onto the reconciled v7-candidate; GPU (`ggml-cuda/gated_delta_net.cu`) and CPU/iqk subsystems disjoint
 
 ## Lightning Attention port — L2 + L3 COMPLETE, compile gate PASSED (2026-04-30 PM)
 

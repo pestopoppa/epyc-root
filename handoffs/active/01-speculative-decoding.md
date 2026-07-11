@@ -1,13 +1,13 @@
 # Speculative Decoding — Compatibility Handoff
 
-**Status**: COMPATIBILITY POINTER — no standalone implementation queue.
+**Status**: RETAINED COMPATIBILITY POINTER — no standalone implementation queue.
 **Created**: 2026-07-11
 **Categories**: speculative_decoding, local_inference, hardware_optimization
 **Current active work**: [speculative-decoding-mtp-refresh.md](speculative-decoding-mtp-refresh.md)
 
 ## Purpose
 
-This file restores the legacy active-handoff path referenced by older progress logs, research-intake routing, and the current multi-handoff completion goal. It does not create a second speculative-decoding queue.
+This file keeps the legacy active-handoff path referenced by older progress logs, research-intake routing, and the current multi-handoff completion goal. It does not create a second speculative-decoding queue and should not be archived while those active-path references still exist.
 
 ## Current Routing
 
@@ -25,6 +25,7 @@ Remaining speculative-decoding work is not safe to run autonomously: T4, T5, Hy3
 ## Progress Checklist
 
 - [x] Missing active handoff path restored as a compatibility pointer, without duplicating operator-gated benchmark tasks. ✅ 2026-07-11
+- [x] Pointer retained deliberately after closeout audit; current work remains owned by the MTP refresh handoff. ✅ 2026-07-11
 
 ## Reporting Instructions
 

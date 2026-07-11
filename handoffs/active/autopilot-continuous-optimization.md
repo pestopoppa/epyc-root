@@ -465,6 +465,7 @@ This packet is staging only; it does not run live RLM tasks, start Ouro training
 - **AP-27 RLVR export path:** current code supports prompt-free/offline RLVR rows only. Operator can preview/export existing rows with `cd /mnt/raid0/llm/epyc-orchestrator && python3 scripts/autopilot/export_rlvr_environment.py orchestration/autopilot_journal.jsonl orchestration/autopilot_journal_1.jsonl --output-jsonl orchestration/reports/ap27_rlvr_environment_20260711.jsonl --summary-json orchestration/reports/ap27_rlvr_environment_20260711.summary.json --source-label operator_gate_packet_20260711`. This remains observe/offline data prep.
 - **Ouro boundary:** AP-27 stays open until an inference-dependent Ouro integration path exists and passes operator review. The RLVR export, report-only `METRIC rlvr_*` lines, and journal payloads are necessary scaffolding, not a training run or promotion gate.
 - [x] AP-27 offline export validation: the prompt-free export ran to `/tmp`, producing `1196` rows (`423` ready_for_training, `773` blocked, `15` skipped_no_eval) under reward policy `ap27_rlvr_tier_reward_v1`; the dominant blocker is `auroc_missing_or_degenerate`. ✅ 2026-07-11
+- [x] AP-27 durable export artifact: reran the same prompt-free export into `epyc-orchestrator/orchestration/reports/ap27_rlvr_environment_20260711.jsonl` plus `ap27_rlvr_environment_20260711.summary.json` with matching counts (`1196` rows, `423` ready_for_training, `773` blocked, `15` skipped_no_eval). ✅ 2026-07-11
 
 ### P17 — Bradley-Terry Tiebreak Under Hypervolume Stagnation (intake-615)
 

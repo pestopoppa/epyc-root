@@ -160,7 +160,7 @@ Built into the **v7-candidate** kernel (fresh v6+iqk + 4 GPU opts + tree-draft, 
 - **Engine CORRECT:** draft-tree == draft-simple bit-for-bit on draft_n/accepted/α/output — the Phase-1a greedy-path collapse works exactly as designed; the port is sound; `--spec-type draft-tree` is accepted; coherent output. Phase 1a milestone ACHIEVED.
 - **Practical finding (NEGATIVE for MTP-equipped targets):** external-drafter spec-dec (simple AND tree) is **net-negative vs plain** (18 < 31) — the 0.8B drafter overhead isn't repaid on the fast Q8 decode. The **embedded MTP dominates** (41.9, +34% vs plain) because its head is near-free. Phase-1b's +15.8%-over-linear → ~21.5 t/s, still < plain and << MTP.
 - **Implication:** tree-draft cannot beat MTP on our MTP-equipped production targets. Its only niche = **non-MTP targets** or **f16** (where the original +15.8% was measured, decode more BW-bound). **Phase 1b decision reopened** — not worth 2-3 days for production targets unless a non-MTP/f16 use case is in scope. NOT a hard close (f16 + a cheaper drafter untested).
-- **v7-candidate kernel reconciliation DONE + validated** — see kernel-reconciliation-audit.md; branch `experimental-v7-candidate` in llama.cpp-experimental is the full build (v6+iqk+GPU-opts+tree-draft), compiles/links clean on HIP.
+- **v7-candidate kernel reconciliation DONE + validated** — see [kernel-reconciliation-audit.md](../completed/kernel-reconciliation-audit.md); branch `experimental-v7-candidate` in llama.cpp-experimental is the full build (v6+iqk+GPU-opts+tree-draft), compiles/links clean on HIP.
 
 ---
 
