@@ -1,6 +1,6 @@
 # Meta-Harness: Automated Harness Optimization
 
-**Status**: COMPACTED 2026-05-28; J9 validation closed 2026-06-12 - active work is SkillOpt / EV-10 coordination.
+**Status**: COMPACTED 2026-05-28; J9 validation closed 2026-06-12; Meta-Harness implementation/coordination queue closed 2026-07-11. Remaining EV-10 validation lives in Package K/operator-run inference work.
 **Created**: 2026-04-01
 **Updated**: 2026-07-11
 **Priority**: HIGH (upgraded 2026-07-08 per rec-001: literature sweep confirms meta-harness as central paradigm)
@@ -10,14 +10,14 @@
 
 ## Executor Start Here
 
-Do not rebuild the full Meta-Harness outer loop now. The useful next work is targeted: improve PromptForge's proposer contract and trace inputs. The first observe-only harness metric validation pass is complete and did not justify letting current rule metrics affect acceptance or Pareto selection.
+Do not rebuild the full Meta-Harness outer loop now. The targeted proposer, trace, new-file mutation, harness-search scoping, HTIR, SEAGym, and SkillOpt/EV-10 coordination items are closed. Remaining work belongs to the owning validation lanes: EV-10 Package K paired A/B, N2/J11 restart-gated eval evidence, and separate BSV/URE trace follow-through. The first observe-only harness metric validation pass is complete and did not justify letting current rule metrics affect acceptance or Pareto selection.
 
 ## Outstanding Tasks
 
 - [x] **MH-7 contrastive traces**: upgrade `eval_tower.capture_recent_traces()` to `capture_contrastive_traces(k_success=2, k_failure=2)` once MH-6 can absorb richer inputs. ✅ 2026-07-11
 - [x] **MH-9 new-file mutation type**: add directory-scoped `new_file` mutation support after MH-6/7 define the cost/quality contract; include traversal and collision tests. ✅ 2026-07-11
 - [x] **HLE-3 / J9 fixed-model harness lane**: observe-only analysis closed 2026-06-12 over 580 metric-bearing trials from `/mnt/raid0/llm/tmp/autopilot_journal_snapshot_1781290411.jsonl`. `execution_fidelity` and `planning_stability` separate keep/revert but mostly mirror existing task-quality/safety signals, so they remain diagnostic/advisory. `feedback_interpretation`, `memory_coherence`, and `recovery_rate` stay dashboard-only. No HLE metric is eligible for Pareto promotion before N2 ledger/sequential verdict redesign.
-- [ ] **SkillOpt / EV-10 coordination**: keep the skill-efficacy gate work in [eval-tower-verification.md](eval-tower-verification.md) and the next AR-3 restart plan; do not mix it into MH-6/7/9 without an explicit feature flag.
+- [x] **SkillOpt / EV-10 coordination**: keep the skill-efficacy gate work in [eval-tower-verification.md](eval-tower-verification.md) and the next AR-3 restart plan; do not mix it into MH-6/7/9 without an explicit feature flag. ✅ 2026-07-11
 
 ## Dependency Forks
 
@@ -42,6 +42,7 @@ Do not rebuild the full Meta-Harness outer loop now. The useful next work is tar
 | MH-9 new-file mutation support | Landed with bounded `new_file` mutation proposals under the existing code-mutation safety surface, parent-directory dirty checks, traversal/collision rejection, fresh-file apply/revert handling, and `FileExistsError` skip coverage. | orchestrator `88639b1f` |
 | MH-10 agentic harness-search scoping | Closed as a contract, not a live loop: agentic task-generation may propose prompt-free, verifier-backed harness candidate manifests, but self-generated tasks enter audit/OOD views only until human-curated and validated against W2/W3/real-suite baselines. Implementation targets are `select_real_suite_v1.py`, `materialize_real_suite_v1.py`, `eval_task_coverage_report.py`, `eval_tower_seagym_views.py`, and future proposer/report tooling; no SafetyGate/Pareto/baseline admission changes. | root handoff checkpoint 2026-07-11 |
 | MH-12 SEAGym evaluation views | Landed observe-only EvalTower result accounting in `scripts/autopilot/eval_tower_seagym_views.py`: classifies compact `EvalResult.question_results` / journal-shaped eval payloads into train, validation, test, replay, and OOD views without changing `_aggregate`, `_eval_question`, `_compact_question_result`, SafetyGate, Pareto admission, or baseline calibration. Validation: `pytest tests/unit/test_eval_tower_seagym_views.py tests/unit/test_eval_tower_concurrency_metrics.py -q` (32 passed), Ruff check/format on new files. | orchestrator `8d4e5146` |
+| SkillOpt / EV-10 coordination | Closed as an ownership and flag-isolation boundary: EV-10a decision logic and default-off accept-path wiring remain in `scripts/autopilot/skill_efficacy.py` and `scripts/autopilot/actions.py` behind `AUTOPILOT_SKILL_EFFICACY_GATE`; Package K `K-SKILL-1` owns deploy/restart and paired A/B validation. The flag was not enabled, no live autopilot restart was performed, and the planner spend breaker remains opt-in/off. | root handoff checkpoint 2026-07-11 |
 | HLE-1/HLE-2 observe-only fields | Schema and rule-based defaults landed in orchestrator commits `931e43c` and `9222a19`; J9 analysis closed 2026-06-12 with diagnostic-only verdict. | [completed ledger](../completed/meta-harness-optimization-completed-through-2026-05-28.md) |
 
 ## Key Files
