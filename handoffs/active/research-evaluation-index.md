@@ -20,7 +20,7 @@
 | MED | Granite embedder bench Phase B | [`granite-97m-r2-bench-plan.md`](granite-97m-r2-bench-plan.md) | A-fast corpus/harness verified and GGUF artifacts produced for Granite/e5-base/BGE-M3 on 2026-07-03; next prep is embedder-only load/vector smoke, then Phase B. No production model reload required. |
 | MED | RoPE long-context matrix K-ROPE-1 | P10 below / clean-window manifest | Continue only in clean model-batched windows; worker path needs Gemma4 MTP serving fix before evidence. |
 | LOW | Reasoning compression tails | [`reasoning-compression.md`](reasoning-compression.md), [`memento-block-reasoning-compression.md`](memento-block-reasoning-compression.md) | Enforce path blocked until signal is predictive; Memento S2/S3 remain gated. |
-| LOW | Monitoring-only model/research watches | TQ3, Log-Linear GDN, YaRN, Ouro, SLIDERS, swarm/Strand, AgentWorld | Do not consume inference unless the owning handoff's gate is met. |
+| LOW | Monitoring-only model/research watches | TQ3, Log-Linear GDN, YaRN, Ouro, SLIDERS, Strand, AgentWorld | Do not consume inference unless the owning handoff's gate is met. Swarm dataset distillation is physically tracked in [`../blocked/swarm-dataset-distillation.md`](../blocked/swarm-dataset-distillation.md) until Strand Phase B clears. |
 
 ## Active Evaluation Packages
 
@@ -66,7 +66,7 @@ These handoffs are still active but currently sit behind specific evidence, mode
 | [rao-redel-substrate-spike.md](rao-redel-substrate-spike.md) | RAO/ReDel substrate spike; preflight passed and harness is prepared. | Execute Step 2 only in a clean inference window. |
 | [gpu-cot-scaffold-sidecar.md](gpu-cot-scaffold-sidecar.md) | Preliminary **pure-GPU** lane: can a small MI210-resident reasoner's injected CoT scaffold lift a CPU code worker? Control (Qwen3-4B-Thinking) vs treatment (Qwable-v1) generators; beneficiaries = code roles (coder_escalation, worker_general). | G0 done (Qwable MTP-drop, no impact). Run G1 scaffold-lift once generators staged; shares MD-9 scoring. See reasoning-economics cluster below. |
 | [sliders-local-validation.md](sliders-local-validation.md) | Parked speculative SLIDERS validation. | Do not integrate before KB-RAG/default-retrieval gates justify it. |
-| [strand-rust-coder-rustevo2-verification.md](strand-rust-coder-rustevo2-verification.md) | Standalone RustEvo2 verification gate. | Launch only after approval; result gates swarm dataset work. |
+| [strand-rust-coder-rustevo2-verification.md](strand-rust-coder-rustevo2-verification.md) | Standalone RustEvo2 verification gate. | Launch only after approval; result gates blocked swarm dataset work in [`../blocked/swarm-dataset-distillation.md`](../blocked/swarm-dataset-distillation.md). |
 | [eval-benchmark-cost-reduction.md](eval-benchmark-cost-reduction.md) | Mid-range difficulty filter (intake-727) for TB Core external evals — NOT autopilot (wrong objective: ranking ≠ regression detection; stable core has only 3/50 mid-range qids). Actionable for TB Core v0.1.1 re-evaluations only: 44–70% task reduction at ρ ≥ 0.87 rank fidelity after cold-start. | Gate behind TB Core adapter build (~1d: wrap `/v1/chat/completions` in Terminus-compatible Harbor adapter) + one baseline TB Core run. Separately: use autopilot per-qid pass-rate data for question pool *curation* — rotate permanently saturated/floor qids from `simpleqa`, `coder`, `general` stable core. |
 
 ## Reasoning-economics cluster — "is added reasoning worth its cost?"
