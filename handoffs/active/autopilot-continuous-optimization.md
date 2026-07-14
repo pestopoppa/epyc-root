@@ -392,6 +392,8 @@ All core infrastructure verified in code as of 2026-04-01:
 
 ### HIGH priority (next compute session)
 
+- [ ] **AP-RC-1 — Jul-8 silent-death root cause** (folded 2026-07-14 from archived `autopilot-restart-2026-07-09.md`): AutoPilot died silently at trial 1302 ~21:33Z with no log/journal tail. Unresolved unknowns: planner-call hang-and-timeout without logging vs external kill (OOM / devcontainer stop) — check container `dmesg` for OOM kills, look for journal entries after 21:33, and add a death-reason breadcrumb (atexit/signal handler log line) so the next silent death is attributable. Restart itself is superseded (2026-07-14 restart healthy, code_stale=false, trial 1346).
+
 1. **AR-3 continuation**: Relaunch with new Phase 5 per-role seeder — `python scripts/autopilot/autopilot.py start --tui`
    - Run 2 (2026-04-02–04): 46 trials, 7 frontier. One useful change: `get_direct_answer_prefix()` in resolver.py (q 2.4→3.0)
    - **Corruption incident**: Trial ~25 replaced escalation.py (454→3 lines). API down 11+ hours. Safety hardened (5 gaps fixed).
@@ -866,7 +868,7 @@ Agent-World (DD6, intake-444) env-synth is now a 5th autopilot species, tracked 
 
 #### Deep-dive refinement (2026-04-30) — concrete spike scoped, see halo-trace-loop-spike
 
-Deep-dive at [`/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md`](../../research/deep-dives/halo-rlm-trace-loop-integration.md). Spike handoff at [`halo-trace-loop-spike.md`](halo-trace-loop-spike.md) — ready to claim.
+Deep-dive at [`/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md`](../../research/deep-dives/halo-rlm-trace-loop-integration.md). Spike handoff at [`halo-trace-loop-spike.md`](../completed/halo-trace-loop-spike.md) — ready to claim.
 
 The 1-day spike has a 4-criterion go/no-go gate at end of Day 1 PM. Conditional Day 2 lifts patterns into existing scoped work; **no halo-engine vendoring**. Patterns that affect autopilot specifically:
 

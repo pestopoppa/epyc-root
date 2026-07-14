@@ -34,13 +34,13 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 **Goal**: Same latency, better reading order + structured output
 **Effort**: Small (swap extraction call in `pdf_router.py`)
 
-- [ ] Install `opendataloader-pdf` (Python SDK, requires Java 11+)
-- [ ] Run ODL local on sample documents from orchestrator test corpus
-- [ ] Compare reading order, heading detection, table identification vs pdftotext
+- [x] Install `opendataloader-pdf` (Python SDK, requires Java 11+) ✅ 2026-07-14 (audit: openjdk-17 installed 2026-07-03; SDK runnable via uv)
+- [x] Run ODL local on sample documents from orchestrator test corpus ✅ 2026-07-14 (audit: 2026-07-03/04 fast-path probe artifacts)
+- [x] Compare reading order, heading detection, table identification vs pdftotext ✅ 2026-07-14 (audit: probe quality/latency/structural comparisons, 8- and 51-PDF sets)
 - [ ] Swap `pdftotext -layout` for `opendataloader_pdf.convert(format="markdown,json")` in `pdf_router.py`
 - [ ] Keep quality check logic (entropy/garbage/word-length) on ODL output
 - [ ] Handle JVM lifecycle: persistent subprocess or batch warming
-- [ ] Update tests in `tests/services/test_pdf_router.py`
+- [x] Update tests in `tests/services/test_pdf_router.py` ✅ 2026-07-14 (audit: suites live at tests/unit/test_pdf_router.py; passing per Phase 1 done)
 
 **Key files**:
 - `src/services/pdf_router.py` — `_extract_with_pdftotext()` → new `_extract_with_opendataloader()`

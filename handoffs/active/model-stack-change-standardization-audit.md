@@ -220,10 +220,10 @@ Use this sequence for future stack changes. Steps marked "no inference" should b
   - `epyc-orchestrator/orchestration/model_descriptors.yaml` for physical model identity and measured/candidate evidence.
   - `epyc-inference-research/orchestration/model_registry.yaml` only for comprehensive benchmark/candidate history, with measurement-status semantics.
   - `scripts/server/stack_manifest.py` only where launcher metadata still lacks generated ownership.
-- [ ] Compile descriptors, preserving gaps instead of inventing values.
-- [ ] Compile stack priors.
+- [x] Compile descriptors, preserving gaps instead of inventing values. ✅ 2026-07-14 descriptors `status: compiled` after `54b7c77`
+- [x] Compile stack priors. ✅ 2026-07-14 `stack_priors.yaml` `status: compiled` after `54b7c77`
 - [x] Sync procedure role enums. Verified current via `python3 scripts/registry/sync_procedure_role_enums.py --check` (`OK`).
-- [ ] Run loose guard, all-surface guard, and strict guard.
+- [x] Run loose guard, all-surface guard, and strict guard. ✅ 2026-07-14 post-`03ed49f`: loose clean, strict clean, all-surfaces blocker waiver gone
 - [ ] Run focused unit tests for stack priors, guard, enum sync, q_scorer, admission, and any touched consumer.
 - [ ] Run simulated model-swap tests:
   - shared mmap swap (`frontdoor`/`coder_escalation` style)

@@ -121,7 +121,8 @@ Evaluate GLM-5.1-555B-A14B-REAP Q4_K_M GGUF as a potential single-model replacem
 ### Phase 0 — Readiness fork [no inference, added 2026-05-28]
 - [ ] Reconcile current free space and cold-model offload candidates.
 - [ ] Re-check whether the two-role architect replacement premise is still true after recent registry deletions/deprecations.
-- [ ] Re-check DSA implementation status and decide GO-short-context / WAIT-DSA / KILL-storage.
+- [x] Re-check DSA implementation status and decide GO-short-context / WAIT-DSA / KILL-storage. ✅ 2026-07-14 (disposition = WAIT-DSA per status line + 2026-06-20 update; gated on PR #21149)
+- [ ] Watch trigger: DSA forward pass (PR #21149) matures/lands in our fork — revisit WAIT-DSA disposition then (tracked in [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md)).
 - [ ] Update this handoff, `inference-acceleration-index.md`, and `research-evaluation-index.md` with the disposition.
 
 ### Phase 1 — Pre-Download Storage Audit

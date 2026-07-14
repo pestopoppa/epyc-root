@@ -1,7 +1,7 @@
 # Hermes Agent — Integration Index
 
 **Status**: active
-**Updated**: 2026-07-06
+**Updated**: 2026-07-14
 **Purpose**: dispatch surface for Hermes/OpenGauss-derived UX, shell, and agent-runtime work.
 
 > Completed pre-2026-06-19 checklist and research-intake chronology was compacted to [`../archived/hermes-agent-index-history-through-2026-06-19.md`](../archived/hermes-agent-index-history-through-2026-06-19.md). Current implementation status lives in the owning handoffs below.
@@ -11,7 +11,8 @@
 | Priority | Work | Owner / source | Gate |
 |---|---|---|---|
 | MED | Reference non-Hermes client live validation | [`hermes-outer-shell.md`](hermes-outer-shell.md) Phase P | Dry-run `scripts/hermes/reference_openai_client.py` now covers `x_*`, streaming, native `tools`, and `tool_choice`; live `--send` override/streaming validation requires a quiet inference window. |
-| MED | Hermes upstream pin bump and breaking-change audit | [`hermes-outer-shell.md`](hermes-outer-shell.md) P2.6 | `scripts/hermes/hermes_pin_audit.py` reports current pin/target/smoke gates; target choice + checkout + smoke tests require a quiet window. |
+| MED | Hermes upstream pin bump and breaking-change audit | [`hermes-outer-shell.md`](hermes-outer-shell.md) P2.6 (note: hermes-outer-shell.md line ~278 cross-references this as "hermes-agent-index.md P2.5" — numbering mismatch, index says P2.6; fix on next hermes-outer-shell.md edit) | `scripts/hermes/hermes_pin_audit.py` reports current pin/target/smoke gates; target choice + checkout + smoke tests require a quiet window. |
+| MED | tool-use-eval-contract — journal tool-call evidence under repaired contract | [`tool-use-eval-contract.md`](tool-use-eval-contract.md) | Post-2026-07-11: REPL code-extraction repaired (`extract_code_from_response`: `<end_prompt>` stripping, unanchored Gemma thinking-channel regex; toolrunner backend crash fixed; sentinel suite 4/5 pass). Remaining = journal shows nonzero `total_tool_calls` under the repaired `8be68732` prompt contract + usefulness evidence. This starves tool-output-compression P4e telemetry (1/100 required compressed-call observations), so it is upstream of that rollout decision. Owning-handoff open item: measure read-only multi-tool chains from full logs BEFORE any parallel-batching executor work. |
 | MED | Subagent + single-slot llama-server validation | [`hermes-outer-shell.md`](hermes-outer-shell.md) Phase 2 validation G | Requires controlled inference; do not overlap throughput-sensitive evidence windows. |
 | LOW | Multi-user auth flow | [`hermes-outer-shell.md`](hermes-outer-shell.md) | Deferred while deployment remains single-user. |
 | LOW | Open-source extraction sketch | Future/open-source track | Do not drive abstraction until MemRL/routing validation justifies it. |
@@ -21,9 +22,9 @@
 
 | Handoff | Current role | Next action |
 |---|---|---|
-| [repl-turn-efficiency.md](repl-turn-efficiency.md) | Core REPL efficiency changes landed; S4 Omega A/B remains the active gate. | Measure turns/task, token cost/task, and accuracy delta before adding more REPL tool surfaces. |
+| [repl-turn-efficiency.md](repl-turn-efficiency.md) | Core REPL efficiency changes landed; S4 Omega A/B remains the active gate. **GATED**: requires a quiet inference window + a MEASUREMENT.md-cited protocol run — not a silently perpetual row (owning handoff untouched 30 days as of 2026-07-14). | Measure turns/task, token cost/task, and accuracy delta before adding more REPL tool surfaces. |
 | [security-review-skill.md](security-review-skill.md) | Security-review skill and slash command are landed; CI integration is deferred. | Wire CI/PR-summary gates only after a concrete enforcement workflow exists. |
-| [tool-use-eval-contract.md](tool-use-eval-contract.md) | Note refreshed 2026-06-28: the batched child-LLM structured-return path (`18b5ceb`) and single-delegate REPL schema path (`6426dd4`) are both shipped; a server-side delegate already exists (`chat_delegation.py`). | Real future deltas = native-tools sentinel/parity in a clean window and cost-aware capable→cheaper-worker delegation mode. |
+| [tool-use-eval-contract.md](tool-use-eval-contract.md) | Promoted to the Current Queue (MED row above) 2026-07-14 — see there for post-2026-07-11 state. | — |
 
 ## Closed Baseline
 
@@ -33,7 +34,7 @@
 | Hermes slash-command skills and drift guard | Complete through 2026-06-14; current files under `scripts/hermes/skills/`. |
 | Downstream `x_*` override plugin refactor | Complete 2026-07-06; upstream Hermes plugin command/request-hook plumbing plus EPYC `epyc-orchestrator-overrides` plugin are implemented and statically validated. Root-side regression coverage now verifies plugin command registration, session-scoped `extra_body` injection, clear semantics, and explicit `tool_choice=none` preservation. |
 | Streaming + override parameter validation | Complete; keep future adapter changes compatible with string-valued override params. |
-| Tool-output compression downstream port | Complete through `epyc-orchestrator` `fe64140`; remaining telemetry/registration gates live in [`tool-output-compression.md`](tool-output-compression.md). |
+| Tool-output compression downstream port | Complete through `epyc-orchestrator` `fe64140` (P4c/P4d landed 2026-06-14/28); remaining scope per owning handoff = P4e rollout decision (awaiting >=100 compressed-call observations) + P3d A/B — see [`tool-output-compression.md`](tool-output-compression.md). |
 | Open-source orchestrator stub | Archived; do not re-add without a new concrete extraction target. |
 
 ## Dependency Graph
@@ -97,5 +98,8 @@ After completing a row, update the owning handoff, this index, and `progress/YYY
 - [ ] Hermes upstream pin bump + breaking-change audit + smoke
 - [ ] Subagent + single-slot llama-server validation (controlled inference)
 - [ ] Multi-user auth flow (deferred while single-user)
-- [ ] repl-turn-efficiency S4 Omega A/B measurement gate
+- [ ] repl-turn-efficiency S4 Omega A/B measurement gate (quiet window + MEASUREMENT.md protocol)
 - [ ] tool-use-eval-contract native-tools sentinel/parity + cost-aware delegation
+- [ ] tool-use-eval-contract: journal nonzero total_tool_calls + usefulness evidence under repaired 8be68732 contract; measure read-only multi-tool chains from full logs before parallel-batching executor work (also unblocks tool-output-compression P4e)
+- [ ] hermes-outer-shell: test x_max_escalation with full graph (depends on LangGraph migration) — hermes-outer-shell.md line ~252
+- [ ] Live Hermes end-to-end smoke checklist: multi-turn, code exec, MEMORY.md persistence, latency, compression trigger, delegation (previously only implicit in the pin-bump row)

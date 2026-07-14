@@ -1,5 +1,7 @@
 # NUMA Private Node-Local Weights for Shared-mmap Quarter Roles
 
+> **Archived 2026-07-14** (backlog ROI audit, [backlog-roi-audit-2026-07-14.md](../active/backlog-roi-audit-2026-07-14.md)): N12 closed negative for the v6+iqk protocol (strict live placement verification passed 2026-07-06); reopen clause preserved below.
+
 **Status**: Launcher argv plumbing fixed/tested for generic + vision builders (2026-06-26 follow-up). `vision_escalation`, `frontdoor`, and `ingest_long_context` A/Bs were run 2026-06-27 and **refuted** the private-copy flip for all three measured shared-mmap quarter roles. Leave `vision_escalation.no_mmap=false`, `frontdoor.no_mmap=false`, and `ingest_long_context.no_mmap=false`; no production config flip is supported by the current v6+iqk evidence.
 **Created**: 2026-06-26
 **Owner**: unclaimed — dedicated future session (high-ROI, low-effort, NPS4-gated and we are on NPS4)

@@ -1,6 +1,8 @@
 # RAO + ReDel Substrate Spike
 
 **Status**: Step 1 PASS + Step 2 harness prepared; Step 2 execution awaits clean inference window
+
+> **2026-07-14 audit note — FUND-OR-CLOSE**: schedule the ~10-60min naturally-delegating A/B in the next inference window or archive with an explicit reopen trigger. The taxonomy-branch push (29/29 tests) is an independent zero-inference operator decision. No activity since 2026-05-19.
 **Created**: 2026-05-19 (post-cluster-deep-dive)
 **Categories**: agent_architecture, autonomous_research, tool_implementation
 **Priority**: HIGH (substrate enables all future RAO/RLM/Tree-GRPO work)
@@ -33,7 +35,7 @@ If it fails, fall back to in-house design per `meta-harness-optimization.md` Tie
 - **ReDel substrate**: MIT + Commons Clause license (research use OK; resale blocked), 98.9 KB Python core, Python 3.10+, built on `kani`, **swappable to local llama-server via `OPENAI_BASE_URL` env var** — drops onto our stack with zero llama.cpp changes.
 - **Wang reproduction caveat** (intake-547): on **Kimi K2 OOLONG, depth-0 (86.6%) BEATS depth-1 RLM (60.0%)**. Direction-of-effect is model-dependent. Depth=2 DeepSeek v3.2 S-NIAH inflates wall-clock 96× (3.6s → 89.3s → 344.5s). **`max_depth=1` is the load-bearing default for any RAO/RLM-style integration on EPYC.**
 - **Stopping-decision gap** (intake-548): no published RL method as of May 2026 explicitly trains the stopping decision. On CPU EPYC where every token is BW-expensive, a learned stop policy has more differential value than anywhere else. The 5-sub-decision taxonomy `{when-to-spawn, whom-to-delegate, how-to-communicate, how-to-aggregate, when-to-stop}` should be wired into the episodic store as a labelling axis (~50 LoC, mirrors `tri-role-coordinator-architecture.md` TR-2.2's `assigned_role` precedent).
-- **RAO training is hardware-blocked** (`project_dgx_spark_target` — DGX Spark not yet acquired). The substrate spike prepares the ground so whichever learned policy arrives first can land with minimal substrate change.
+- **RAO training hardware re-evaluation** (2026-07-14): the prior "hardware-blocked (DGX Spark not yet acquired)" gate is dead — DGX abandoned; an AMD MI210 (gfx90a, 64GB, ROCm 6.2) was installed 2026-07-02. Training viability must now be re-evaluated against gfx90a (needs the training-viability smoke, master index §A00 item 4), not treated as blocked. The substrate spike prepares the ground so whichever learned policy arrives first can land with minimal substrate change.
 
 ## Spike Plan (3 steps, gated)
 

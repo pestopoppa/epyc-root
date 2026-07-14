@@ -1,5 +1,7 @@
 # Window-2 findings 04 — Negative-space audit + self-critique (§8.5–8.6)
 
+> **Archived 2026-07-14** (backlog ROI audit, [backlog-roi-audit-2026-07-14.md](../active/backlog-roi-audit-2026-07-14.md)): self-critique deliverable complete; actionable items live in other handoffs.
+
 ## 1. Delete / merge / freeze / stop-optimizing
 
 - **Delete from active surfaces** (kill rows, findings-03): P0-restart row, LRC P4.5/4.6 (null), K-MEM completed rows, NUMA-private-weights (CLOSED NEGATIVE, measured), G11/G10 scored rows; the ~170 lines of A9 chronology (to progress logs); campaign Queue 1 (100% closed).

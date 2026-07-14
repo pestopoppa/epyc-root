@@ -208,12 +208,12 @@ Ordered highest-ROI-first. Each item: **one decisive experiment** → **acceptan
 
 **[H] = needs a build, then measure.**
 - [ ] **quantize_q8_1 requant kill** (L2) — low effort, do early.
-- [ ] **Fused dequant-in-GEMV** (L3) — dense Q8 47→62% (~+19%); + expert-path variant for MoE 25→~35%.
-- [ ] **Async weight prefetch / LDS double-buffer** (L4) — 62→~70% BW; purest on fp16/bf16.
+- [x] **Fused dequant-in-GEMV** (L3) ✅ 2026-07-14 — RESOLVED NON-TASK (a8afd338 reconciliation): Q8_0 GEMV is already int8-native (`vec_dot_q8_0_q8_1` = dp4a + one fp scale/32-block), no per-element dequant to hide; the 47→62% gap is BW/occupancy, not dequant-compute.
+- [x] **Async weight prefetch / LDS double-buffer** (L4) ✅ 2026-07-14 — MEASURED + landed: nwarps 2→4 +4.6% (`5dc116130`), `raw.buffer.load.lds` LDS double-buffer +3.3% (`7c28056b7`, MemUnitStalled −62%). +3.3% is the CDNA2 LDS-prefetch ceiling; fused-FFN extension FALSIFIED.
 - [ ] **Weight swizzle / SoA Q8_0 repack** (L6) — gate on `TCC_EA_RDREQ_32B`; do jointly with L3.
-- [ ] **Persistent / megakernel decode** (L5) — build only after a wall-budget shows a large residual bubble.
+- [x] **Persistent / megakernel decode** (L5) ✅ 2026-07-14 — RESOLVED NEGATIVE (2026-07-04 Pass-2): NOT worth building. HIP graphs (kill ALL host-launch) buy only +5.9%; decode is memory-latency-bound at ~50% roofline, so the 62→100% gap is the batch-1 MLP floor, not a launch bubble. Single-stream dense-Q8 CLOSED.
 - [ ] **MFMA compute-bound kernels** (L7) — prefill / DiT denoise / ViT encoder / high-batch expert GEMM; profile-gated (high VALUBusy + low MfmaUtil).
-- [ ] **GDN occupancy + recurrent-state traffic/layout** (L20) — the real (harder) GDN aggregate lever after GDN-MFMA-decode was killed.
+- [x] **GDN occupancy + recurrent-state traffic/layout** (L20) ✅ 2026-07-14 — bf16-state BUILT + GO (`496e2f098`): +21.5%@B32 (drift+isolation PASS), deployed on frontdoor + architect. Occupancy sub-lever was NO-GO; bf16-state is the win.
 - [ ] **Q4_K dequant efficiency** (L21) — ~+43% → ~47 t/s single-stream, quality-gated.
 - [ ] **mmid MoE dispatch threshold** (L1-MoE) — the deferred production-relevant MoE analog; most valuable at 256-expert sparsity.
 - [ ] **Diffusion serving path + all DiT levers** (§3.5) — no path exists yet.

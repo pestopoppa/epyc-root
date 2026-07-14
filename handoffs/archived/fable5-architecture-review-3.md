@@ -1,5 +1,7 @@
 # Fable 5 Architectural Review — window 2 (a prompt, not a task list)
 
+> **Archived 2026-07-14** (backlog ROI audit, [backlog-roi-audit-2026-07-14.md](../active/backlog-roi-audit-2026-07-14.md)): byte-identical duplicate of active/fable5-architecture-review-2.md (self-flagged de-dup candidate).
+
 **Status**: READY (pending preflight — see Run configuration).
 **What this is**: the entry prompt for a one-shot strategic-architecture review by Claude Fable 5.
 A high-level brief, not a step-by-step plan. Your job is architectural insight we cannot produce

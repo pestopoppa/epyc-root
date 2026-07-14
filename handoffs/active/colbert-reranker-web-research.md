@@ -403,7 +403,7 @@ Rivera & Menolascina, "ModernBERT + ColBERT: Enhancing biomedical RAG," arXiv:25
 
 ### Next Actions (scoped for this handoff)
 
-- [ ] Verify ONNX INT8 variant availability for LateOn on HF Hub
+- [x] Verify ONNX INT8 variant availability for LateOn on HF Hub ✅ 2026-07-14 — S3b confirmed: LightOn ships `model_int8.onnx` pre-quantized on `lightonai/LateOn`
 - [ ] Benchmark LateOn CPU latency vs GTE-ModernColBERT-v1 baseline (target: <200ms for 10 snippets)
 - [ ] If latency acceptable: A/B test LateOn vs current model on web_research sentinel queries (when AR-3 Package D data accumulates)
 - [ ] Secondary: evaluate DenseOn for probe-first pool if BGE-small retention becomes a bottleneck

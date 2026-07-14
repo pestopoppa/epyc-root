@@ -1,5 +1,7 @@
 # HALO Trace-Loop Spike
 
+> **Archived 2026-07-14** (backlog ROI audit, [backlog-roi-audit-2026-07-14.md](../active/backlog-roi-audit-2026-07-14.md)): spike closed `not_actionable` 2026-07-14; all five HALO tasks complete.
+
 **Status**: CLOSED — not actionable 2026-07-14. HALO-2 landed 2026-05-27 (converter + tests); HALO-1, HALO-3, HALO-4, and HALO-5 closed on 2026-07-14 after the operator-approved spike wrap-up. HALO-1 install succeeded in `/tmp/halo-spike-venv`, HALO-3 was attempted against the paused/stopped window and closed with a 1/4 scorecard after the local OpenAI Responses endpoint returned 404, HALO-4 was skipped as not applicable because the score stayed below the 3/4 go threshold, and HALO-5 produced the outcome doc. Latest no-exec packet validation on 2026-07-11 converted the current journal to 3,532 OTLP spans without analyzer inference.
 **Created**: 2026-04-30 (post-intake-517/518 deep-dive)
 **Categories**: agent_architecture, autonomous_research, tool_implementation

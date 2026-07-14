@@ -6,7 +6,7 @@
 **Kind**: episodic-memory-gated cost-lever deployment into autopilot's existing blended-cost optimization.
 
 **Source study (all numbers below are OBSERVATIONS — MEASUREMENT.md, not decision-gating):**
-- `handoffs/active/gpu-cot-scaffold-sidecar.md` — full research arc (G1/G2/verifier/dense-generalization).
+- `handoffs/completed/gpu-cot-scaffold-sidecar.md` — full research arc (G1/G2/verifier/dense-generalization).
 - `progress/2026-07/2026-07-06-cot-study-complete.md` — study close-out + the deployment implication paragraph.
 
 > ⚠️ **LIVE-AGENT HAZARD.** A parallel agent is actively working the autopilot daemon right now (trials ~1197–1200, planner/critic changes landing). **Do not edit anything under `scripts/autopilot/` and do not restart the daemon while it is live.** Every `scripts/autopilot/*` reference below is a *read/verify* target for design, not an edit target, until the owning agent hands the daemon back. Coordinate before touching the planner action space.

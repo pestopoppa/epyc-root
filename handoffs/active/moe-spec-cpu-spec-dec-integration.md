@@ -398,3 +398,4 @@ See `gpu-drafter-mi200-investigation.md` § Research Intake Update for the full 
 ## Progress checklist
 
 - [ ] BLOCKED: no MoE verifier consumer; reopen chained to fable5 G1/N5
+- [ ] **REOPEN-ASSESS** (zero-inference, decision-ready): the reopen chain required measuring the live CPU self-draft path — that measurement now exists (2026-07-03 mtp_acceptance_report: frontdoor α=0.6582, worker α=0.8256, embedded-MTP verification batches live in production). Re-check the "no consumer" premise against it and decide re-sweep vs formal close.

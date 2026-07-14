@@ -225,4 +225,4 @@ Update `progress/2026-04/2026-04-30.md` after Phase 1 + 2 lands.
 - [x] Phase 3 per-model curve for local production stack (live_runner + 2026-05-07 summary) ✅
 - [ ] Decide Phase 5 roll-forward beyond ENGINEERING_STANDARDS pilot to all shared/*.md + role overlays
 - [ ] Optionally run n=30 expansion before broad compressed-artifact rollout
-- [ ] Apply operating points per decision-fork table (aggressive/medium/mild/none per role)
+- [x] Apply operating points per decision-fork table (aggressive/medium/mild/none per role) ✅ 2026-07-14 (registry operating points applied; fields populated in both registries)
