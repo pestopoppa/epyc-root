@@ -37,6 +37,8 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 
 - **Blacklist freshness is now treated as a first-class evidence-plane concern, not just a runtime filter.** The blacklist preflight now scans journal batch shards such as `autopilot_journal_1.jsonl`, distinguishes stale or infra-contaminated entries from durable bans, and labels freshness / expiry / purge scope in the planner prompt so retry-only re-exploration stays limited to clearly audited transport failures. Sources: [evidence-plane ledger handoff](../handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md), [Progress 2026-07-14](../progress/2026-07/2026-07-14.md).
 
+- **Retryable seq fallback selection now preserves the blacklist contract instead of weakening it.** Orchestrator `402e461b` teaches seq baseline-reference forcing and seq-gate preflight deferral to prefer retryable seed fallback targets when the blocked target is transport/infrastructure contaminated, while manual/token-gated blacklist purge remains the path for durable bans. The live 2026-07-14 draw through retryable `seed_batch n=50` target `seed_batch_n50_t1317_no_progress_infra` shows the loop can re-explore audited infra failures without reclassifying stale blacklist entries as reusable prompts. Sources: [evidence-plane ledger handoff](../handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md), [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md), [Progress 2026-07-14](../progress/2026-07/2026-07-14.md).
+
 ## Key Findings
 
 ### New (2026-07-03, evidence-plane integrity is asymmetric + gradient-free ES is the one card-viable training path)

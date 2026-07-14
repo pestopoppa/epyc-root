@@ -10,6 +10,19 @@ sentinels, sequential verdicts, and W6 audit flags. `phase_health_report.py
 `action_type=numeric_trial`, `phase=dispatch_action`, `pid_alive=true`, and
 `code_stale=false` after the restart loaded orchestrator `e3b13edd`.
 
+**Current checkpoint - 2026-07-14T00:00Z seq-fallback unblock**: the
+authority daemon restarted cleanly with `AUTOPILOT_PLANNER_SPEND_BREAKER=0`
+and `code_stale=false`, and live trial `1346` forced the seq
+baseline-reference draw through retryable `seed_batch n=50` target
+`seed_batch_n50_t1317_no_progress_infra`. Orchestrator commit `402e461b`
+teaches the baseline-reference forcing and seq-gate preflight deferral paths to
+prefer retryable seed fallback targets when the blocked target is
+infra-contaminated, while preserving manual/token-gated blacklist purge for
+durable bans. Validation already passed in the orchestration session:
+`uv run --frozen pytest -q tests/unit/test_autopilot_sequential_wiring.py tests/unit/test_autopilot_actions.py`
+returned `177 passed`, and `ruff` passed. This is a retry-only re-exploration
+unblock, not a permit to purge durable blacklist entries automatically.
+
 **2026-07-06T16:44Z report refresh**: regenerated
 `orchestration/reports/w8_promotion_trajectory_20260706T164403Z.{json,md}`
 and `orchestration/reports/fable5_gate_report_20260706T164403Z.{json,md}`.
@@ -288,7 +301,8 @@ land at ONE autopilot restart, each behind its own flag.
 - [x] **W8a.2 — selectable-action provider coordination**: orchestrator `1639748a` threads the live `selectable_action_types` allowlist into `plan_with_providers()`, rejects known-but-currently-unavailable drafts before critique, applies the same guard to critic revisions, and adds regression coverage for the W8 `deep_eval` drafter waste case. The commit is pushed/indexed and live in AutoPilot PID `3795561`; trial `1210` verifies the post-deploy local `frontdoor` draft / local `worker` critique path before the higher-tier guard forced T3. ✅ 2026-07-06
 - [x] **W8a.3 — outcome-stall dispatch guard**: orchestrator `9522b76e` stops the higher-tier probe guard from overriding an already frontier-moving planner action under frontier-stall pressure, and `78ae65e6` adds a bounded outcome-progress fallback that forces a metric-bearing numeric trial only when frontier admission is stale and the selected action is seed/eval/housekeeping rather than a frontier-moving action. Focused validation passed (`140` AutoPilot action/phase/provider tests), ruff, `py_compile`, `git diff --check`, push, and GitNexus refresh. A boundary restart loaded the patch; W8a.4 below is the current live replay-dispatch checkpoint. ✅ 2026-07-06
 - [x] **W8a.4 — forced replay/AP-9 dispatcher repair**: orchestrator `e3b13edd` keeps W8 replay pressure active while replay/confirmation remains open, allows materialized multi-param NumericSwarm candidates to be replayed as one force-matched candidate, and bypasses AP-9 only when the current action exactly matches `seq_candidate_replay_forced`. Trial `1213`-`1216` skips exposed the seam; the state was cleaned without deleting journal evidence, GitNexus refreshed, focused validation passed (`203` tests + Ruff + diff-check), and live PID `3935151` is evaluating trial `1217` with the intended AP-9 replay bypass. ✅ 2026-07-06
-- [ ] **W8b — live candidate evidence after guard deploy**: continue W8 candidate attempts under the live selectable-action coordinator plus outcome-stall guard. Verify a keepable replayable candidate, then collect sequential confirmation and fresh promotion-eval evidence. The old restart/local-worker verification clause is superseded by the current `local_frontdoor`/`local_worker` canary and selectable-action coordinator.
+- [x] **W8a.5 — retryable-aware seq fallback unblock**: orchestrator `402e461b` adds retryable-aware seed fallback selection for seq baseline-reference forcing and seq-gate preflight deferral while preserving manual/token-gated blacklist purge. Live trial `1346` forced the seq baseline-reference draw via retryable `seed_batch n=50` target `seed_batch_n50_t1317_no_progress_infra`, so infra-contaminated retry targets can be revisited without reopening durable blacklist bans. ✅ 2026-07-14
+- [ ] **W8b — live candidate evidence after guard deploy**: continue W8 candidate attempts under the live selectable-action coordinator plus outcome-stall guard. Verify a keepable replayable candidate, then collect sequential confirmation and fresh promotion-eval evidence. The old restart/local-worker verification clause is superseded by the current `local_frontdoor`/local_worker` canary and selectable-action coordinator.
 
 ## Gates & pitfalls
 
