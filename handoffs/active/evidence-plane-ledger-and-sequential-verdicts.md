@@ -35,6 +35,26 @@ Dry-run validation confirmed the new split, and the focused ruff/pytest batch
 passed (`41` tests). Log:
 `/mnt/raid0/llm/tmp/autopilot_fable_authority_20260714T174249Z.log`.
 
+**Current checkpoint - 2026-07-14T19:33Z planner-parser hardening**: commit
+`51bbbf64` landed after `feeacb07` and makes `extract_critique()` fail closed
+unless the critic emits a named `json:autopilot_critique` fence with a valid
+explicit decision. Trial `1352` hit the paused boundary, the pause latch was
+cleared, and the old supervisor/child `2381139` / `2381140` were stopped and
+verified gone before the new daemon started at `2026-07-14T19:33:05Z`
+(`supervisor=2491402`, `child=2491410`, `pid_age_verified_landed=true`).
+Validation passed with `ruff` on
+`scripts/autopilot/planner_coordinator.py` plus
+`tests/unit/test_autopilot_planner_coordinator.py`, and
+`uv run pytest tests/unit/test_autopilot_planner_coordinator.py -q`
+reported `52 passed`.
+
+First post-fix cycles were clean: trial `1353` produced a `local_frontdoor`
+draft plus a valid approve fence from `local_ingest`; trial `1354` produced a
+`local_frontdoor` draft plus a valid reject fence from `local_ingest`;
+planner-provider-health stayed healthy. The remaining blocker is still the seq
+gate's promotion fallback, which continues to redirect to `seed_batch n=50`
+because `rate_axis_unreachable` is unresolved and P0.1-P0.3 remain pending.
+
 **2026-07-06T16:44Z report refresh**: regenerated
 `orchestration/reports/w8_promotion_trajectory_20260706T164403Z.{json,md}`
 and `orchestration/reports/fable5_gate_report_20260706T164403Z.{json,md}`.
