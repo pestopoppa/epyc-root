@@ -207,6 +207,7 @@ This packet is command-discovery and evidence packaging only. It does not author
 ## Checkpoint completions — 2026-07-14
 - [x] W1 runtime-facts reader slice completed in `epyc-orchestrator` commit `db62aa3f`: the runtime-facts manifest now records `runtime_stack.stack_numa_mode`, `selected_servers`, `selected_ports`, and effective paths; stack start/reload/stop refresh the manifest at persisted-state boundaries; dashboard `expected_stack_services()` uses validated runtime selected servers when no explicit `ORCHESTRATOR_STACK_NUMA_MODE` override exists. ✅ 2026-07-14
 - [x] AutoPilot seq-preflight/live-allowlist deadlock fix completed in `epyc-orchestrator` commit `39fc3653`: deferred seq-gate replacement now bypasses the ordinary planner-selected live-loop allowlist, so retryable `seed_batch` fallbacks can dispatch after the preflight chooses them instead of looping on an allowlist rejection. ✅ 2026-07-14
+- [x] Dashboard-region-lock topology rendering sidecar completed in `epyc-orchestrator` commit `774fed69` (`Fix dashboard region lock topology rendering`): the lock display now uses all configured instance topology, marks `launch_selected`, adds `launch_mode` plus `topology_mode=all_configured`, renders inactive configured shapes as `○`, labels all configured NUMA ports independent of expected launch mode, and updates the legend/status copy to distinguish active holder, selected/free, blocked, and configured inactive shapes. ✅ 2026-07-14
 
 ## Checkpoint completions — 2026-07-11
 

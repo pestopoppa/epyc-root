@@ -82,6 +82,10 @@ controller constitution and higher-tier probe guard. W8 remains evidence-bound,
 but the blocker has moved from candidate generation to collecting fresh
 promotion-eval evidence, combined E-process strength, and sequential
 confirmation.
+The 2026-07-14 dashboard-region-lock topology sidecar in orchestrator
+`774fed69` extends the render path to all configured topology, so
+`stack_numa_mode=full` no longer hides configured quarter instances and known
+NUMA ports are labeled independently of expected launch mode.
 
 **Next clean/quiet-window bundle (non-MI210)**: the 2026-07-07 stopped-window
 closed J17 live consult evidence, `real_suite_v1` n=50, A9 contrast-replan
