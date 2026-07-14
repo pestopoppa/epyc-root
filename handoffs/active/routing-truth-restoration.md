@@ -1,8 +1,8 @@
 # Routing Truth Restoration: Prod Flags, Attestation, Dead Code
 
-**Status**: IMMEDIATE SCOPE COMPLETE 2026-06-12 — W1-W8 landed and live-attested/deployed; routing expansion remains frozen by the W8/DAR-1 gate; `dispatch_swarm_fanout` is a conditional ownership watch through 2026-07-12
+**Status**: CLOSED 2026-07-14 — W1-W8 landed and live-attested/deployed; routing expansion remains frozen by the W8/DAR-1 gate; the overdue `dispatch_swarm_fanout` watch is resolved as delete/defer until a future reasoning-compression owner reopens it explicitly
 **Created**: 2026-06-12
-**Priority**: CLOSED/HIGH — immediate repair scope completed; remaining item is the 2026-07-12 `dispatch_swarm_fanout` ownership watch
+**Priority**: CLOSED/HIGH — immediate repair scope completed and the `dispatch_swarm_fanout` ownership watch is closed
 **Spec**: [fable5-findings-02-impl-plan.md](../completed/fable5-findings-02-impl-plan.md) Phases 0–1 + [fable5-findings-02-routing-decision-architecture.md](../completed/fable5-findings-02-routing-decision-architecture.md) §2/§4 — read both before claiming any waypoint
 **Related**: [decision-aware-routing.md](decision-aware-routing.md) (DAR-1 replay result recorded there), [learned-routing-controller.md](learned-routing-controller.md) (the dead MLP fast-path), [running-state-attestation.md](running-state-attestation.md) (system-wide ATTESTATION generator — this handoff owns ONLY the flags endpoint)
 
@@ -24,7 +24,7 @@ The live system must match SOME declared intent before any routing redesign.
 - [x] **W4 — attestation endpoint** (~1 day): `GET /config/attest` returns `{pid, flags, source}` for the answering worker; client `scripts/validate/attest_flags.py` polls ~N×20 to cover all worker PIDs, red on heterogeneity; `structural_lab.apply_flag_experiment` (`:404-412`) gets a post-apply attestation poll + journals the result with the trial. Acceptance: empty cross-worker diff after any POST /config; a structural trial journals uniform attestation.
 - [x] **W5 — q_scorer baseline_tps refresh** (afternoon): read `baseline_tps_by_role` from the lean registry's measured values at startup (`q_scorer.py:89-99` marked KNOWN STALE — frontdoor 12.7 vs measured ~21–27, spec 0.3). Stopgap until descriptors ([model-capability-descriptors.md](model-capability-descriptors.md) W3 replaces it).
 - [x] **W6 — zero-caller deletions** (~1 day): `get_confidence_routing` + helpers (`chat_routing.py:283-448`) and 3-way routing wrappers deleted; proof in spec §4. `ORCHESTRATOR_ROUTING_CLASSIFIER` is unset/off in the declared production env until weights exist. `dispatch_swarm_fanout` is deliberately retained for now because this waypoint's deletion condition is "if no handoff claims it within the month"; revisit ownership on 2026-07-12 before deleting it.
-- [ ] **W6-DECIDE (OVERDUE)** — delete vs assign narrow owner for dispatch_swarm_fanout; decision input: sole prospective consumers are the intake-746/747 RSA/GSA aggregation A/B arms tracked in reasoning-compression.md. Deciding this closes the handoff.
+- [x] **W6-DECIDE ✅ 2026-07-14** — resolved as **delete/defer, not claimed**. Evidence: the current `epyc-orchestrator` checkout still carries only the default-off `swarm_fanout` feature-flag metadata in `src/features.py`, while `rg dispatch_swarm_fanout` finds no live implementation symbol or tests under `src/` or `tests/`. The only prospective consumers remain the intake-746/747 RSA/GSA aggregation A/B arms in `reasoning-compression.md`, and those are worker-tier experiment ideas rather than an approved routing owner. Result: DAR-6.5/J14 does **not** inherit this dispatcher by default; any future RSA/GSA attempt must open a fresh, narrowly owned task from reasoning-compression with an explicit owner, same-inference-compute majority/self-consistency control, and worker-tier feasibility gate before new orchestrator code is claimed.
 - [x] **W7 — shadow-telemetry decision**: Trinity/difficulty/URE shadows now route into `logs/progress/*.jsonl`, the file QScorer/replay tools already mine. Difficulty/risk were already present; W7 added Trinity `assigned_role` and URE `uncertainty_*` fields to the durable routing event while preserving the existing URE sidecar for backward compatibility.
 - [x] **W8 — Phase 1 measurement**: DAR-1 regret replay on 2026-06-05..2026-06-12 traffic completed in `epyc-orchestrator` `1dfbc22`; report: `orchestration/reports/dar1_regret_replay_2026-06-12.md`. Gate result: 12,057 decisions, 11,249 matched outcomes, 8,145 regret-identifiable decisions, 0.00% identifiable mean regret, 99.1% uniform Q-values. Phase 3 cascade expansion remains frozen; re-run quarterly or after enough new `action_topk` telemetry accumulates. `_try_cheap_first` denominator/attempt/accept/reject counters now write `routing_fallback` progress rows with `data.kind=try_cheap_first`.
 
@@ -77,7 +77,7 @@ Implementation:
 - Deleted the confidence-routing API path in `src/api/routes/chat_routing.py`: `get_confidence_routing`, `_parse_confidence_response`, `_is_coding_task`, and `_select_role_by_confidence`.
 - Deleted `build_confidence_estimation_prompt`, its fallback prompt constant, the `prompt_builders` export, and `orchestration/prompts/confidence_estimation.md`.
 - Deleted `HybridRouter.route_3way` and `SkillAugmentedRouter.route_3way`, plus tests that only covered those removed entry points.
-- Retained `dispatch_swarm_fanout` because the waypoint names a month-long ownership condition rather than an immediate zero-caller proof; it remains default-off and should be revisited on 2026-07-12.
+- Retained `dispatch_swarm_fanout` in June because the waypoint named a month-long ownership condition rather than an immediate zero-caller proof. That watch is now closed: no current handoff claims a live dispatcher, and future RSA/GSA work must reopen from reasoning-compression as a new scoped experiment instead of inheriting DAR-6 ownership.
 
 Verification:
 - `rg` found no remaining references to `route_3way`, `get_confidence_routing`, `build_confidence_estimation_prompt`, `confidence_estimation`, `_parse_confidence_response`, or `_select_role_by_confidence` under `src/`, `orchestration/`, or `tests/`.
@@ -138,4 +138,4 @@ Verification:
 
 ## Reporting
 
-Immediate repair scope is complete. Keep only the `dispatch_swarm_fanout` ownership watch through 2026-07-12; any new routing-expansion work must pass a fresh measured gate.
+Immediate repair scope is complete and this handoff is closed. Any future swarm-fanout or RSA/GSA aggregation work must enter as a new reasoning-compression-owned experiment with fresh gates; it does not remain parked here as latent routing scope.
