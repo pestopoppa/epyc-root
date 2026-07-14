@@ -140,6 +140,11 @@ Full REPL error taxonomy extracted from `repl_tap.log` (4462 errors, 4280 `CALL(
 - [x] PID-age-verified preflight gate landed: `start_fable_authority_daemon.py --preflight` now exits nonzero unless the live PID is age-verified current; the live rejection on Dirac's MH-9 worker is expected because unreviewed runtime `controller_io.py` edits predate PID `1039446` ✅ 2026-07-11
 - [x] Host timing covariates landed for P2.9: `host_health.py` now records `min_core_mhz`, `host_inflight`, `numa_balancing`, and cache/cache-memory state; `eval_tower.py` captures compact per-question host covariates plus `tokens_generated` and adds observe-only >=128-token speed analytics fields in `EvalResult.details` ✅ 2026-07-11
 
+## Checkpoint completions — 2026-07-14
+- [x] W2 direct AutoPilot start bypass now fails closed in `epyc-orchestrator` commit `fc0be9bc`: `scripts/autopilot/autopilot.py start` exits `2` before taking the singleton lock when authority env is missing/mismatched, points operators to `scripts/autopilot/start_fable_authority_daemon.py`, and requires `AUTOPILOT_PLANNER_SPEND_BREAKER=0` rather than turning the spend breaker on. ✅ 2026-07-14
+- [x] W8/Fable quiet-window evidence refreshed in `epyc-orchestrator` commit `5876a473`: `orchestration/reports/fable5_gate_report_20260714T111641Z.{json,md}` and `w8_promotion_trajectory_20260714T111641Z.{json,md}` confirm AutoPilot is stopped, W8 replay concentration is not warning, W4/W6 restart cutover is still blocked by the W6 gaming alarm, and the tool-use sentinel lane is ready but requires controlled API reload plus authority-daemon restart. ✅ 2026-07-14
+- [x] HALO quiet-window spike closed as `completed-not-actionable`: operator-approved install succeeded, 3,532 spans were converted, the HALO canonical compatibility transform validated in `/tmp`, and the analyzer run failed before inference because local `/v1/responses` returned 404; outcome doc is `research/deep-dives/halo-spike-results-2026-07-14.md`. ✅ 2026-07-14
+
 ## Tasks
 - [ ] P0.1 operator run/pause decision on autopilot candidate species
 - [ ] P0.2 P2 amendment bundle signed (rate-axis era-fence first) + discriminability gate + P3 canary

@@ -1,6 +1,6 @@
 # HALO Trace-Loop Spike
 
-**Status**: HALO-2 LANDED 2026-05-27 (converter + tests); HALO-1 (pip install halo-engine) + HALO-3 (run analyzer against local llama) operator-gated — auto-mode classifier correctly blocked the untrusted PyPI install, and the analyzer run still requires an AutoPilot-paused/stopped no-concurrent-inference window. Latest no-exec packet validation on 2026-07-11 converted the current journal to 3,532 OTLP spans without analyzer inference.
+**Status**: COMPLETED-NOT-ACTIONABLE 2026-07-14. HALO-2 landed 2026-05-27 (converter + tests); HALO-1, HALO-3, HALO-4, and HALO-5 closed on 2026-07-14 after the operator-approved spike wrap-up. HALO-1 install succeeded in `/tmp/halo-spike-venv`, HALO-3 was attempted against the paused/stopped window and closed with a 1/4 scorecard after the local OpenAI Responses endpoint returned 404, HALO-4 was skipped as not applicable because the score stayed below the 3/4 go threshold, and HALO-5 produced the outcome doc. Latest no-exec packet validation on 2026-07-11 converted the current journal to 3,532 OTLP spans without analyzer inference.
 **Created**: 2026-04-30 (post-intake-517/518 deep-dive)
 **Categories**: agent_architecture, autonomous_research, tool_implementation
 **Priority**: MEDIUM (validates whether to lift HALO patterns into existing meta-harness/autopilot scope)
@@ -33,7 +33,7 @@ Validate whether `halo-engine` (intake-518, MIT, 2.5 MB pip install) produces ac
 
 ### HALO-1: Pre-flight verification [30 min] — OPERATOR-GATED
 
-`pip install halo-engine==0.1.2` was blocked by the auto-mode classifier as untrusted-PyPI-package supply-chain risk (correct call — release was ≤2 days old at the time of intake-518). Operator action required: explicitly allow `pip install halo-engine==0.1.2` in a throwaway venv (`/tmp/halo-spike-venv`) before HALO-3 can run.
+`pip install halo-engine==0.1.2` was blocked by the auto-mode classifier as untrusted-PyPI-package supply-chain risk (correct call — release was ≤2 days old at the time of intake-518). Operator action required: explicitly allow `pip install halo-engine==0.1.2` in a throwaway venv (`/tmp/halo-spike-venv`) before HALO-3 can run. This gate is now satisfied for the 2026-07-14 checkpoint.
 
 
 
@@ -67,7 +67,7 @@ Inference-tap converter (`convert_inference_tap`, ~120 LoC) deferred — no infe
 
 ### HALO-3: Day 1 PM falsification gate [4 h] — OPERATOR-GATED
 
-Two blockers: (a) needs HALO-1 install; (b) needs a calm window where AutoPilot is paused/stopped so the analyzer LLM call does not poison concurrent benchmarks. Do not rely on the historical PID from HALO-2 landing; check the current process and verify it is stopped before the analyzer call. Operator action required: pause/stop AutoPilot per the process-management rules before running halo against `/tmp/halo-otlp-sample.jsonl` (latest no-exec conversion validation: 3,532 spans).
+Two blockers: (a) needs HALO-1 install; (b) needs a calm window where AutoPilot is paused/stopped so the analyzer LLM call does not poison concurrent benchmarks. Do not rely on the historical PID from HALO-2 landing; check the current process and verify it is stopped before the analyzer call. Operator action required: pause/stop AutoPilot per the process-management rules before running halo against `/tmp/halo-otlp-sample.jsonl` (latest no-exec conversion validation: 3,532 spans). For the 2026-07-14 wrap-up, this gate was attempted and closed with a 1/4 scorecard because the local `/v1/responses` endpoint returned 404 before analyzer output.
 
 
 
@@ -79,6 +79,8 @@ Inspect the halo report against 4 criteria. **Need ≥3/4 to proceed to Day 2.**
 | 2 | Flags ≥1 known orchestrator pathology | YES = at least one true positive against known autopilot failure modes (e.g., specific drafter-target token mismatch class, q-scorer misroute, session_compaction info loss) |
 | 3 | More granular than current `capture_recent_traces(n=50)` PromptForge feedback | YES = surfaces pattern-level finding rather than per-trace anecdote |
 | 4 | Bounded cost (≤ $0.50 OR ≤ 10 min wall-clock against local llama-server) | YES = within budget |
+
+Scorecard for the 2026-07-14 attempt: **1/4**. The analyzer never reached a report because the local Responses endpoint returned `404` on `/v1/responses`.
 
 If ≥3/4 pass → proceed to HALO-4. If ≤2/4 → close handoff with `outcome: not_actionable` and write findings to `/workspace/research/deep-dives/halo-spike-results-2026-MM-DD.md`.
 
@@ -102,7 +104,7 @@ This packet is the complete no-exec staging boundary for HALO-1/HALO-3. It does 
 - **dev/test_normal split discipline**: extends `meta-harness-optimization.md` Tier 3 (anti-overfitting guard) and `eval-tower-verification.md` (split convention). Mostly methodology change + script glue, ~50 LoC.
 - **Failure-mode taxonomy** (4 labels): seed labels for autopilot trace-clustering pass. Cross-ref intake-509 Pocock taxonomy (already in meta-harness scope).
 
-Track each lift as a sub-task with its own line-count estimate; check off as merged.
+Track each lift as a sub-task with its own line-count estimate; check off as merged. For the 2026-07-14 close-out this stage was skipped as not applicable because HALO-3 stayed below the 3/4 go threshold.
 
 ### HALO-5: Spike close-out
 
@@ -113,6 +115,8 @@ Write outcome doc at `/workspace/research/deep-dives/halo-spike-results-2026-MM-
 - 4-criterion gate scorecard (HALO-3)
 - Lifted patterns and merge SHAs (HALO-4) OR `not_actionable` reasoning
 - Whether to revisit halo-engine for a future use case (e.g., new model release in 6 months)
+
+Outcome doc written for this checkpoint: [`research/deep-dives/halo-spike-results-2026-07-14.md`](../../research/deep-dives/halo-spike-results-2026-07-14.md).
 
 ## AppWorld decision (intake-516 dataset)
 
@@ -150,7 +154,7 @@ After spike completion, update:
 ## Progress checklist
 
 - [x] HALO-2 OTel converter + tests LANDED 2026-05-27 ✅
-- [ ] HALO-1 pip install halo-engine==0.1.2 in throwaway venv (operator-gated, supply-chain block)
-- [ ] HALO-3 Day-1 falsification gate against local llama-server (operator-gated, needs autopilot paused)
-- [ ] HALO-4 manual pattern lift into existing scoped handoffs (only on >=3/4 go)
-- [ ] HALO-5 spike close-out doc with scorecard / not_actionable reasoning
+- [x] HALO-1 pip install halo-engine==0.1.2 in throwaway venv (operator-gated, supply-chain block) ✅ 2026-07-14
+- [x] HALO-3 Day-1 falsification gate against local llama-server (operator-gated, needs autopilot paused) - attempted and closed 1/4; `/v1/responses` returned 404 ✅ 2026-07-14
+- [x] HALO-4 manual pattern lift into existing scoped handoffs (only on >=3/4 go) - skipped/not applicable because score stayed below 3/4 ✅ 2026-07-14
+- [x] HALO-5 spike close-out doc with scorecard / not_actionable reasoning ✅ 2026-07-14
