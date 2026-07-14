@@ -1,8 +1,8 @@
 # MathSmith HC Formalizer Evaluation & A/B Testing
 
-**Status**: refreshed 2026-05-28 — active but blocked on model availability check + S4 protocol; not a generic stub
+**Status**: refreshed 2026-07-14 — active; local/free artifact scan complete, but blocked on missing local HC artifact plus operator/network availability check
 **Created**: 2026-03-20 (via research intake)
-**Updated**: 2026-05-28
+**Updated**: 2026-07-14
 **Categories**: training_distillation, benchmark_methodology
 **Depends on**: ~~rlm-orchestrator-roadmap.md~~ (Phase 4 Formalizer — Done, roadmap archived 2026-03-29)
 
@@ -52,6 +52,16 @@ This handoff remains useful, but the old "stub" status understated both the depl
 |---|---|---|---:|---:|---|
 | _pending_ | | | | | |
 
+## 2026-07-14 OP-3 Zero-Inference Artifact Scan
+
+Local-only artifact discovery is complete. The result is negative for MathSmith HC:
+
+- `huggingface-cli` is not installed in this environment, so the documented cache-scan command could not run locally.
+- Direct local cache inspection under `~/.cache/huggingface` and `/root/.cache/huggingface` found no `MathSmith`, `Jasaxion`, or HC artifact paths.
+- `/mnt/raid0/llm/models` contains the existing baseline artifact `MathSmith-Hard-Problem-Synthesizer-Qwen3-8B.Q4_K_M.gguf` and no HC variant.
+
+**Decision**: S2 cannot move forward locally. This handoff remains blocked on an operator-approved network/availability check and, if the repo exists, a later acquisition or conversion step. No inference, benchmark, download, or stack action is justified from the local evidence collected on 2026-07-14.
+
 ## Objective
 
 Evaluate the updated MathSmith-HC (High Consistency) model as a replacement for the current MathSmith-Hard formalizer, and run the first end-to-end A/B comparison of formalize-then-solve vs direct solve on hard math problems.
@@ -93,9 +103,10 @@ The canonicalizer proposal (`epyc-inference-research/research/MATHSMITH_CANONICA
 - [x] Remove `forbid: speculative_decoding` from `formalizer` and `formalizer_q4` registry entries (both orchestrator + research registries)
 - [x] Update notes to reflect current state
 
-### S2: Download and quantize HC model
-- [ ] Check mradermacher/bartowski for pre-made GGUFs of `Jasaxion/MathSmith-HC-Problem-Synthesizer-Qwen3-8B`
-- [ ] If not available, convert from HF weights: `convert_hf_to_gguf.py` + `llama-quantize` for Q4_K_M and Q8_0
+### S2: HC artifact availability and quantization path
+- [x] Run the free/local artifact scan path: `huggingface-cli scan-cache` was unavailable because `huggingface-cli` is not installed; fallback local cache search under `~/.cache/huggingface` and `/root/.cache/huggingface` found no `MathSmith`/`Jasaxion`/HC artifacts; `/mnt/raid0/llm/models` contains only `MathSmith-Hard-Problem-Synthesizer-Qwen3-8B.Q4_K_M.gguf`. **Decision**: no local HC artifact exists, so S2 cannot advance without operator/network action. ✅ 2026-07-14
+- [ ] Operator/network availability check: inspect HF for pre-made GGUFs or upstream weights for `Jasaxion/MathSmith-HC-Problem-Synthesizer-Qwen3-8B`
+- [ ] If the repo exists but no GGUF is available, convert from HF weights: `convert_hf_to_gguf.py` + `llama-quantize` for Q4_K_M and Q8_0
 - [ ] Verify speed is normal (12-15+ t/s for Q8_0) — if so, confirms mradermacher conversion was the old speed bug
 - [ ] Benchmark on existing formalizer test suite (summary.csv rows 15-16 baseline)
 
