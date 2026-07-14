@@ -40602,6 +40602,7 @@
   contradicting_evidence:
   - Non-peer-reviewed fintech-labs writeup with product-lab bias and NO independent corroboration of
     PorTAL itself found on search — treat all % numbers as observations, not decision-gating (MEASUREMENT.md).
+  - 'PROVENANCE/DEDUP NOTE (2026-07-11): PorTAL was re-submitted via a TYPO-SQUAT URL `paperswithcode.co/paper/2606.28436` (`.co`, not the real `paperswithcode.com`) that mislabels it with arXiv id 2606.28436 — which actually belongs to a DIFFERENT paper, "Dockerless" (intake-757, verified on real arxiv.org). PorTAL is NOT on arXiv (canonical source is the Ramp Labs writeup, this url). Do not trust the `.co` domain or the false arxiv tag; keep arxiv_id null. This entry (intake-764) remains the single correct PorTAL record.'
   - Training the latents+core+converter (and even the 'cheap' converter refit) is gradient-based and
     GPU-gated — the same Phase-B blocker that keeps the doc-to-LoRA / Code2LoRA line on backburner.
   cross_references:
@@ -43150,4 +43151,239 @@
   handoffs_created:
   - (deep-dive) research/deep-dives/2026-07-11-hy3-hunyuan-v3-moe-mtp-assessment.md
   notes: 'DEEP-DIVE REVISION 2026-07-11 (PR #25395 all comments + config verified): credibility 2->3 (independent corroboration: vLLM official-reference acceptance match + Metal & Strix-Halo replications + live maintainer audit). Novelty/relevance high, verdict worth_investigating retained but RE-SCOPED: for our CPU-MTP mission this is a NEGATIVE datapoint (net-neutral), high only as "enables Hy3 on CPU at all." PR is active/maintainer-engaged, not stalled; CI red appears environmental (SIGILL on master HEAD too), still REVIEW_REQUIRED/unmerged. Corrected the first-pass 88.2%-acceptance error (truly p_min=0.75-gated; real ~47%).'
+  ingested_date: '2026-07-11'
+- id: intake-809
+  arxiv_id: '2607.01224'
+  url: https://arxiv.org/html/2607.01224v1
+  source_type: paper
+  title: 'AutoMem: Automated Learning of Memory as a Cognitive Skill'
+  authors:
+  - Shengguang Wu
+  - Hao Zhu
+  - Yuhui Zhang
+  - Xiaohan Wang
+  - Serena Yeung-Levy
+  categories:
+  - agent_architecture
+  - memory_augmented
+  - autonomous_research
+  - training_distillation
+  key_claims:
+  - 'Memory management is an independently learnable skill, improvable along two axes: scaffold structure (prompts/schemas) and parametric proficiency (a trained memory model).'
+  - 'Scaffold optimization alone (no weight changes) yields 2-4x progression improvements across three procedurally-generated game environments.'
+  - 'A meta-LLM reviewer analyzes full episode traces (up to ~1e5 steps) to identify memory failures where human review is intractable.'
+  - 'A dedicated memory specialist (LoRA) stacks on scaffold gains (+~9-18% relative) while preserving frozen task-action competence; a 32B open-weight base nears Opus-4.5/Gemini-3.1-Pro level.'
+  techniques:
+  - two_outer_loop_scaffold_opt_plus_proficiency_lora
+  - meta_llm_trajectory_review_accept_if_improves
+  - filesystem_memory_log_plan_routines_as_first_class_actions
+  - dedicated_memory_specialist_alongside_frozen_task_model
+  reported_results:
+  - 'Crafter progression 25.00% base -> 47.27% +scaffold -> 51.36% +training'
+  - 'MiniHack 7.50% -> 27.50% -> 30.00%; NetHack 0.42% -> 1.57% -> 1.85%'
+  - 'Unproductive action rate -32-65%; redundant memory writes -68-83%; memory search efficiency +13-50%'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    handoffs:
+    - meta-harness-optimization.md
+    - delta-mem-reproduction.md
+    - unified-trace-memory-service.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-539
+    - intake-568
+    - intake-610
+    - intake-612
+    - intake-800
+  credibility_score: 3
+  contradicting_evidence:
+  - 'No independent critique found (paper days old, 2026-07) -> confirmation-bias risk. Corroborated only by our own meta-harness scaffold-opt results.'
+  - 'Gains are on game environments (Crafter/MiniHack/NetHack), NOT our coding/routing eval suites. The scaffold-optimization axis is already ~ our meta-harness (MH-7 contrastive traces, MH-9 new-file mutation) -> the genuinely not-yet-adopted axis is the trace-trained memory-specialist LoRA + memory-as-first-class-action schema.'
+  - 'Uses Claude Opus 4.6/4.7 as the meta-LLM reviewer (SaaS = analyze-only under our policy); self-hosted adoption needs a LOCAL meta-reviewer.'
+  - 'GAIN DECOMPOSITION (deep-dive): scaffold-only = +22.27/+20.0/+1.15 pt (x1.89/3.67/3.74, ZERO training) = 85-95% of total value; the LoRA specialist adds only 9-18% RELATIVE on top. So the value is in the cheap GPU-free axis, not the LoRA. And the LoRA runs a SECOND model instance per step (specialist + frozen task model share one history), roughly DOUBLING per-step inference for a 9-18% lift — a poor trade on our BW-bound CPU decode; only viable if the specialist is MI210-resident.'
+  recommended_actions:
+  - 'PRIORITY-1 (cheap/now, NO GPU, NO training — carries 85-95% of the value): adopt AutoMem`s memory-as-first-class-action SCHEMA by EXTENDING the already-open intake-800 (NapMem) operator-review candidate on unified-trace-memory-service.md, not opening new work. That candidate already covers AutoMem`s PLAN/read half (search/get/read_file over the landed src/trace FTS5 store). AutoMem`s NET-NEW bit to add is the LOG/WRITE half as first-class agent ops (APPEND/CREATE + coordinate-keyed UPSERT dedup + auto-synced status/inventory/strategy files) — which src/trace deliberately lacks (No-write-path non-goal), so the write surface targets an agent-facing memory tool over autopilot`s episodic/strategy store, NOT the read-only trace store. Separately feed AutoMem`s schema-evolution moves (dedup, tail-reads, pre-populated strategy files; -95% per-step memory growth) into meta-harness MH-9 new-file mutation as candidate memory-schema mutations.'
+  - 'PRIORITY-2 (already covered — scope note, not new work): the scaffold-optimization outer loop (meta-LLM trace review + accept-if-improves) is NOT net-new — meta-harness already runs it (MH-7 contrastive traces -> PromptForge proposer -> Pareto accept-if-improves; MH-9 = schema/file-layout mutation). Local meta-reviewer = architect_general (Qwen3.5-122B-A10B, 2.57/3); do NOT use SaaS Opus. Only confirm the proposer is fed memory-dir + memory-op traces, not just code/prompt traces.'
+  - 'PRIORITY-3 (GPU-gated / DEFERRED / file-and-monitor): the trace-trained LoRA memory-specialist. LOW payoff (9-18% rel) and doubles per-step inference. Gated on (a) MI210 LoRA finetune (feasible at paper scale: rank 128-256, attention-only, 1-4 epochs, 444-1597 examples), (b) a LOCAL trace-FILTER (architect Qwen3.5-122B as filter-on-own-behavior, not a teacher — so no SaaS), (c) PRIORITY-1 schema landed first. Do not start until the cheap path shows value on OUR suites (game-env gains do not transfer to coding/routing — must re-measure).'
+  handoffs_updated:
+  - meta-harness-optimization.md
+  - unified-trace-memory-service.md
+  handoffs_created: []
+  notes: 'DEEP-DIVE REVISION 2026-07-11: verdict adopt_patterns retained; recommended_actions RE-ORDERED (the first pass inverted cost vs value by gating the whole thing on GPU+LoRA). Scaffold optimization = 85-95% of the gain with ZERO training; LoRA adds only 9-18% relative and doubles per-step inference. The cheap path is ~90% redundant with the already-open intake-800 NapMem candidate — AutoMem`s only net-new contribution is the LOG/write ops (APPEND/CREATE/UPSERT-dedup + auto-synced status files) over autopilot`s episodic store (src/trace is read-only by design). Scaffold-opt loop already owned by meta-harness. Stanford (Serena Yeung-Levy). Credibility 3.'
+  ingested_date: '2026-07-11'
+- id: intake-810
+  arxiv_id: '2605.10899'
+  url: https://arxiv.org/html/2605.10899v1
+  source_type: paper
+  title: 'RubricEM: Meta-RL with Rubric-guided Policy Decomposition beyond Verifiable Rewards'
+  authors:
+  - Gaotang Li
+  - Bhavana Dalvi Mishra
+  - Zifeng Wang
+  - Jun Yan
+  - Yanfei Chen
+  - Chun-Liang Li
+  - Long T. Le
+  - Rujun Han
+  - George Lee
+  - Hanghang Tong
+  - Chen-Yu Lee
+  - Tomas Pfister
+  categories:
+  - autonomous_research
+  - agent_architecture
+  - training_distillation
+  - routing_intelligence
+  key_claims:
+  - 'Rubrics should be the shared interface structuring policy execution, judge feedback, and agent memory — not merely final-answer evaluators.'
+  - 'Stage-aware policy decomposition improves credit assignment in long-horizon research tasks that lack ground-truth verification.'
+  - 'A jointly trained reflection meta-policy distills judged trajectories into a reusable rubric bank for within- and cross-episode transfer without a sequential bottleneck.'
+  - 'Rubric-structured RL generalizes: training primarily on long-form data still yields strong short-form OOD transfer.'
+  techniques:
+  - four_stage_scaffold_plan_research_review_answer_xml_rubric
+  - stage_structured_grpo_ss_grpo
+  - reflection_meta_policy_rubric_bank
+  - async_one_step_deferred_reflection_training
+  reported_results:
+  - 'RubricEM-8B (1400 RL steps) long-form avg 55.5 (HealthBench 49.3, ResearchQA 74.5, DeepResearchBench 47.8, ResearchRubrics 50.3)'
+  - 'Beats DR Tulu-8B (53.6 avg); approaches OpenAI Deep Research (59.9) at far fewer params'
+  - 'Short-form OOD transfer avg 73.5 despite training primarily on long-form data'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: adopt_patterns
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    - 07-benchmark-suite-construction.md
+    - 06-benchmarking-framework.md
+    handoffs:
+    - minddr-deep-research-mode.md
+    - eval-tower-verification.md
+    experiments: []
+    intake_entries:
+    - intake-438
+  credibility_score: 3
+  contradicting_evidence:
+  - 'No independent critique found (paper days/weeks old, 2026-05) -> confirmation-bias risk.'
+  - 'The RL core (SS-GRPO + reflection meta-policy training) needs GPU training infra EPYC lacks (DGX abandoned) -> only the prompt-level four-stage scaffold + rubric-as-interface + rubric-bank memory are adoptable now (zero-training, Phase-1 style). Heavy overlap with already-indexed MindDR staged pipeline + multi-dimensional rubric (intake-438).'
+  - 'RUBRIC-BANK CAVEAT (deep-dive): the paper`s own Fig-6 ("inference-time reuse") ablation attributes rubric-bank transfer gains to the TRAINED reflection meta-policy — a baseline WITHOUT training does NOT benefit from the same heuristic retrieval. So the prompt-level (frozen-model) rubric bank we can build is UNPROVEN and its expected value may not survive removal of RL; adopt only as a falsifiable experiment, not a confident win.'
+  - 'SCOPING CORRECTION (deep-dive): our MindDR (intake-438) is actually 3-node (Plan/DeepSearch/Report), so RubricEM`s scaffold delta is specifically a new REVIEW-stage rubric-adherence gate. Stage-decomposed SCORING is ALREADY in EV-9 (rubric_scoring.py: rubric_reasoning_trajectory/tool_calls/outline/content_stage) — only SS-GRPO`s per-stage credit-assignment (Lambda matrix) is new, and that is RL/GPU-gated (duplicates MindDR Phase-2 MD-10..13). The first-pass "stage-specific reward decomposition, prompt-level" was imprecise: there is no prompt-level reward.'
+  recommended_actions:
+  - 'PRIMARY (prompt-level, genuinely new vs us): rubric-as-EXECUTION-interface. PlanningNode emits a prospective <rubrics> block (knowledge checklist + analytical criteria + negative constraints); inject it as the running target of the DeepSearch loop (per-step <state_evaluation> of evidence vs rubric); add a REVIEW stage (the sole scaffold delta vs our 3-node pipeline) mapping gathered evidence back to each rubric criterion (<rubric_review>) before ReportSynthesis. Land as MD-9/EV-9 operator-review candidates; add a Review-stage rubric-adherence EV-9 dimension so the gate is measurable.'
+  - 'EXPERIMENTAL (adopt cautiously): a heuristic kb-search rubric bank over the landed src/trace store — store accepted plan-rubrics / rubric-reviews from high-scoring episodes as NL memory, retrieve by query similarity, inject into future PlanningNode prompts. Zero training, BUT the paper`s Fig-6 ablation says an untrained model likely won`t benefit — treat as a falsifiable experiment behind the MD-9 gate.'
+  - 'OUT / GPU-gated (do not schedule; duplicates already-deferred MindDR Phase-2 MD-10..13, MI210-only): SS-GRPO stage-credit RL and the reflection-meta-policy training that GENERATES the bank.'
+  handoffs_updated:
+  - minddr-deep-research-mode.md
+  handoffs_created: []
+  notes: 'DEEP-DIVE REVISION 2026-07-11: adopt_patterns retained; actions refined. Primary promptable delta = rubric-as-EXECUTION-interface (prospective <rubrics> in Plan + per-step <state_evaluation> + a new REVIEW-stage gate — the sole scaffold delta vs our 3-node MindDR). Stage-decomposed SCORING already in EV-9; only SS-GRPO credit-assignment is new (RL/GPU-gated, duplicates MD-10..13). Rubric bank = experimental/cautioned (paper Fig-6 attributes gains to the TRAINED meta-policy; untrained retrieval unproven). Google Cloud AI + UIUC. Credibility 3.'
+  ingested_date: '2026-07-11'
+- id: intake-811
+  arxiv_id: '2607.02512'
+  url: https://arxiv.org/html/2607.02512v1
+  source_type: paper
+  title: 'Program-as-Weights: A Programming Paradigm for Fuzzy Functions'
+  authors:
+  - Wentao Zhang
+  - Liliana Hotsko
+  - Woojeong Kim
+  - Pengyu Nie
+  - Stuart Shieber
+  - Yuntian Deng
+  categories:
+  - local_inference
+  - training_distillation
+  - tool_implementation
+  - agent_architecture
+  key_claims:
+  - "Common 'fuzzy' tasks (log filtering, JSON repair, search ranking) can be COMPILED from a natural-language spec into a compact, locally-executable neural adapter rather than solved by repeated prompting of a large model."
+  - "A 4B 'compiler' trained on FuzzyBench (released 10M-example dataset) emits parameter-efficient adapters for a frozen small interpreter."
+  - 'A 0.6B Qwen3 interpreter running PAW-compiled programs matches Qwen3-32B direct prompting at ~1/50th inference memory.'
+  - "Reframes foundation models as a 'tool builder' invoked once per function definition, then discarded at execution time (cost shifts from per-call inference to one-time compilation)."
+  techniques:
+  - fuzzy_function_nl_spec_to_adapter_compilation
+  - parameter_efficient_adapters_over_frozen_small_interpreter
+  - dedicated_compiler_lm_4b_emits_adapter_weights
+  - fuzzybench_10m_example_dataset
+  reported_results:
+  - '0.6B interpreter + PAW adapter matches Qwen3-32B direct-prompt on target tasks'
+  - '~1/50th inference memory vs direct Qwen3-32B prompting; ~30 tok/s on MacBook M3'
+  - 'Compiler 4B params; interpreter 0.6B params'
+  referenced_arxiv_ids:
+  - '2108.07732'
+  novelty: high
+  relevance: low
+  discovered_via: input
+  verdict: worth_investigating
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-098
+    - intake-764
+  credibility_score: 2
+  contradicting_evidence:
+  - 'Demonstrated only on Apple silicon (M3), not EPYC/MI210; mechanism needs heavy infra (10M-example FuzzyBench + compiler training). Extraction is abstract-level only (ar5iv had no render). Adjacent to the LoRA-portability / adapter-compilation cluster (PorTAL intake-764, DocToLoRA intake-098) but distinct (NL-spec -> task adapter).'
+  - 'ARTIFACT BLOCKER (2026-07-11 deep-dive): the 4B compiler is CLOSED — served only as a cloud GPU service at programasweights.com (paper: "Compilation runs on a GPU-backed server"). FuzzyBench release is CLAIMED but has NO concrete download (not on HF Hub; HF paper page links zero artifacts). github.com/programasweights ships only MIT SDK clients that call the hosted compiler — no weights, no dataset. Interpreter is stock frozen Qwen3-0.6B. Generating a PAW adapter REQUIRES their trained compiler on a GPU server -> unreachable under our open-source/self-hosted-only + no-training-cluster (MI210-only) constraints. Same GPU-compile blocker as the COMPLETED DocToLoRA prototype (intake-098), plus a closed compiler.'
+  recommended_actions:
+  - 'FILE-AND-MONITOR only — not adoptable as-is (verdict kept worth_investigating rather than the invalid "monitor" enum). The concrete mechanism is unreachable (closed cloud compiler + no downloadable dataset + our constraints). Value is the PARADIGM, not the artifact: it validates our existing cheap-path / specialist-seeding direction (seed_specialist_routing.py; chapters/08-cost-aware-rewards.md) — compile a recurring fuzzy subtask (JSON repair, log filtering, tool-output cleanup — cf. epyc-orchestrator src/graph/answer_resolution.py rescue path) once into a tiny local specialist. No action on the critical path.'
+  - 'RE-OPEN TRIGGER: if the authors publish the 4B compiler weights AND FuzzyBench as a downloadable dataset (HF/Zenodo/GitHub release), re-open for a self-hosted compile-once cheap-specialist prototype on MI210. Until then, do not schedule work.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'DEEP-DIVE REVISION 2026-07-11: verdict kept worth_investigating (schema has no "monitor" enum; disposition = file-and-monitor with a re-open trigger, encoded in recommended_actions). Artifact check: compiler is a closed cloud GPU SaaS, FuzzyBench has no concrete download, repos are MIT SDK clients only -> not reproducible/self-hostable under our constraints. Only the paradigm transfers (corroborates seed_specialist_routing.py). Harvard/Waterloo (Shieber, Deng). Relevance low, credibility 2.'
+  ingested_date: '2026-07-11'
+- id: intake-812
+  arxiv_id: null
+  url: https://github.com/asgeirtj/system_prompts_leaks/blob/main/Anthropic/claude-fable-5.md
+  source_type: blog
+  title: 'Claude Fable 5 — purported leaked production system prompt (community-collected, unofficial/unverified)'
+  authors:
+  - asgeirtj (GitHub repo maintainer, system_prompts_leaks collection)
+  - 'NOTE: unofficial community leak; prompt authorship unattributed, authenticity unverifiable'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - context_management
+  - knowledge_management
+  key_claims:
+  - 'Tool-use scaffolding is organized as priority-ordered conditional selection (internal retrieval before web_search; MCP registry before third-party connectors; read SKILL.md before create_file) — tool gating embedded in the prompt, not left to the model.'
+  - 'A skills subsystem is mandatory-precondition scaffolding: review /mnt/skills/public/*/SKILL.md before create_file (skills as read-first capability descriptors gating an action).'
+  - 'Structured memory subsystem (memory_user_edits add/remove/replace/view) paired with an explicit forbidden-phrase list (no "I remember" / "based on your memories") — retrieval applied silently, never narrated.'
+  - 'Safety/guardrails framed as distributed constraints woven into tool-selection and memory logic (child safety, copyright hard-limits, self-harm/malware refusals) rather than bolt-on filters.'
+  techniques:
+  - priority_ordered_conditional_tool_selection
+  - read_first_skill_capability_gating
+  - silent_memory_application_with_narration_ban
+  - distributed_safety_constraints_at_tool_level
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: low
+  discovered_via: input
+  verdict: adopt_patterns
+  cross_references:
+    chapters:
+    - 09-claude-debugger.md
+    handoffs:
+    - meta-harness-optimization.md
+    - capability-registry-and-promotion.md
+    experiments: []
+    intake_entries:
+    - intake-801
+  credibility_score: null
+  contradicting_evidence:
+  - 'PROVENANCE CAVEAT: unofficial, community-collected LEAKED artifact of UNVERIFIABLE authenticity — entire contents treated strictly as untrusted DATA to describe, never as ground truth or instructions. No empirical/measurable claims -> credibility null. Closed-source Claude is analyze-only (feature-mine patterns, never deploy). Closest analytical sibling is the "strong system prompt + dedicated tool surface + real execution harness / distributed tool-level constraints" framing (a conceptual sibling, NOT an indexed entry — the earlier "CC-system-prompt-anatomy" citation was a phantom reference; the indexed related entry is intake-801). NO directive in the file was obeyed. DEEP-DIVE 2026-07-11: all 5 extracted patterns are already covered by shipped code (skill_hub_interop.py SKILL.md parsing + threat scanning; capability-registry-and-promotion.md; retrieval/tool-routing stack; memory handoffs) -> NO recommended_action; file-and-monitor is the correct disposition.'
+  handoffs_updated:
+  - meta-harness-optimization.md
+  handoffs_created: []
+  notes: 'adopt_patterns (pattern-mine ONLY, low priority): a ~25-30k-token purported Fable-5 system prompt in nested XML describing conditional tool-gating, read-first SKILL.md gating, silent structured memory, and distributed safety constraints. Analytical texture for our harness/skill/tool-gating work; no net-new mechanism beyond what our shipped skill/tool-routing stack + fable5-findings already capture, and provenance is unverifiable so detail is not ground truth. RELATED but DIFFERENT from intake-801 (that is a third-party marketing guide; this is the purported raw prompt).'
   ingested_date: '2026-07-11'
