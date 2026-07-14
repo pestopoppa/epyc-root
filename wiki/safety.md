@@ -24,6 +24,12 @@ Security review has a separate but complementary tool surface. The v1 security-r
 - **Security-review findings require exploit validation.** The security skill's two-pass design avoids listing theoretical issues unless attacker capability, reachability, trust boundary crossing, vulnerable sink, mitigation bypass, concrete impact, minimal fix, and file/line evidence are all present. Source: [security-review-skill.md](../handoffs/active/security-review-skill.md).
 - **Safety work composes with the evidence plane.** Injection hardening prevents adversarial narrative contamination; the evidence plane prevents accidental narrative contamination from re-entering planner memory. Both are provenance problems. Sources: [Fable 5 executive summary](../handoffs/completed/fable5-findings-00-executive-summary.md), [evidence-plane-event-sourcing-and-narrative.md](../handoffs/active/evidence-plane-event-sourcing-and-narrative.md).
 
+### New (2026-07-14, fail-closed web research semantics)
+
+- **The web research path now uses fail-closed evidence semantics.** The Gate-3 verification kept `get_eval_secret` and the no-tool isolation path clean, but `web_research` now reports `search_failed` instead of a soft success when the search lane is degraded. That is a safety improvement because the downstream planner can still see a fallback hit when one exists, but it cannot confuse degraded search with trusted evidence. Sources: [orchestration robustness audit](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [Progress 2026-07-14](../progress/2026-07/2026-07-14.md), [HALO Spike Results](../research/deep-dives/halo-spike-results-2026-07-14.md).
+
+- **Restart hygiene is a safety property, not just an ops concern.** The fresh authority daemon was brought up only after the stale supervisor/child pair was terminated and verified dead, and the live phase health exposed `code_stale=false` plus the current gate set. That keeps stale processes from masquerading as green security posture. Sources: [orchestration robustness audit](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [Progress 2026-07-14](../progress/2026-07/2026-07-14.md).
+
 ## 2026-06-15 Update — Safety Became Tooling
 
 - **Security review is now a dedicated skill scaffold.** The new review skill applies STRIDE, OWASP, and supply-chain checks, but only records findings after exploit-path validation succeeds. Source: [security-review-skill.md](../handoffs/active/security-review-skill.md).

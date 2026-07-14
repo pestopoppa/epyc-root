@@ -27,6 +27,14 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 
 - **The REPL/tool surface now exposes a compatibility layer for the exact failure modes the audit measured.** `FINAL(...)` keyword aliases (`answer`/`result`/`secret`/`value`/`response`) are accepted and unsupported kwargs fail loudly, while builtin compatibility tools (`search_files`, `get_time`, `fetch_stock_price`, `translate_text`, `start_service`) are registered with safe/read-only behavior. That reduces the chance that tool availability diverges from prompt expectations and silently wastes trials. Sources: [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [progress 2026-07-11.md](../progress/2026-07/2026-07-11.md).
 
+- **PromptForge's code-mutation surface now has a safer new-file primitive instead of a generic write hatch.** MH-9 landed bounded `new_file` proposals under `src/` with absolute/traversal rejection, parent-directory existence checks, collision checks, syntax/import validation, dirty-fence coverage for parent directories, and fresh-file apply/revert handling for no-index diffs. Sources: [meta-harness-optimization.md](../handoffs/active/meta-harness-optimization.md), [progress 2026-07-11.md](../progress/2026-07/2026-07-11.md), [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/orchestration-robustness-audit-2026-07-11.md).
+
+### New (2026-07-14, process-attested autonomy boundary)
+
+- **The architecture now makes process identity and gate state part of the agent contract.** A fresh authority daemon replaced a stale supervisor/child pair after SIGKILL verification, and the live phase health exposed `planner_prompt_build`, `code_stale=false`, `tool_sentinels=true`, `w6_audit=true`, and `AUTOPILOT_PLANNER_SPEND_BREAKER=0`. That turns restart hygiene into an architectural concern: agents are only meaningful when their current code and gate-set are known, not merely when the PID exists. Sources: [orchestration robustness audit](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [Progress 2026-07-14](../progress/2026-07/2026-07-14.md).
+
+- **The web/tool boundary now records evidence quality separately from tool availability.** Gate-3 showed the tool-sentinel lane healthy (`get_eval_secret` 7/7, no-tool isolation passed) while `web_research` failed closed as `search_failed`; a fallback DDG hit can still be surfaced as a relevant result, but it no longer upgrades the failed search into a fake success. That is the correct agent-architecture split between "tool path worked" and "evidence was good." Sources: [orchestration robustness audit](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [HALO Spike Results](../research/deep-dives/halo-spike-results-2026-07-14.md).
+
 ## Key Findings
 
 ### New Findings (2026-07-06 — Hermes boundary generalized to multi-client contract)
