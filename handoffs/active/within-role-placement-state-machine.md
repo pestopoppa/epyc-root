@@ -373,6 +373,7 @@ Each phase ships behind an env flag, default-on after its gate passes. Rollback 
 - [x] WP-0..WP-5-scaffold implemented + merged to main (behind flags, defaults off) ✅
 - [x] J1/J2/J3/J5 gate verifications + WP-7 per-role policy ratified ✅
 - [ ] WP-6 / WP-7 full ratification - inference-gated, awaiting operator approval + measurement
-- [ ] WP-5 full ratification and WP-3/WP-4 gate verifications - inference-gated
+- [x] WP-5 per-role placement_policy ratified + WP-3/WP-4 SM logic VERIFIED ✅ 2026-07-14 — operator audit #5 (2026-05-27): J2/J3 RESOLVED, migration state machine verified in-process (`test_concurrency_aware_migration_sm.py`, `181e86a`); per-role policy DECISION table ratified
+- [ ] WP-3/WP-4 genuinely-live under-traffic migration probe - needs single-worker API (multi-worker `--workers 6` confounds session affinity); SM trigger logic verified + regression-protected but live-traffic observation still open
 - [ ] Higher-sample (>=8) vision_escalation re-bench to ratify clean allow (current 5/8 pairs cv>5%)
 - [ ] Wire missing Prometheus migration counters (kv_migration_direction_total, thrash_skipped) or verify observable evidence

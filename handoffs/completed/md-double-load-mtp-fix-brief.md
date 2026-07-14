@@ -1,5 +1,7 @@
 # Brief: Drop `-md <same-file>` double-load for embedded-NEXTN roles
 
+> **Archived 2026-07-14** (backlog ROI audit, [backlog-roi-audit-2026-07-14.md](../active/backlog-roi-audit-2026-07-14.md)): all 13 checklist items complete; fix live + verified post-reboot; decode A/B closeout recorded.
+
 **Current owner/status (2026-07-03):** handed off by the MI210 session to the CPU/RAM orchestrator lane. The launch-code fix, live reload, post-reload acceptance evidence, memory-delta evidence, post-reboot audit, legacy-backend guard, and quiet-window same-workload decode A/B are complete. The CPU A/B closed mixed: memory improved materially, but the no-`-md` embedded path was slower than same-file `-md` under the throwaway `/completion` harness.
 **Original target:** a separate CPU / orchestrator session (execute directly).
 **Type:** completed production launch-config fix. No GPU, no new inference was required to *decide* the fix; the quiet-window verification is now recorded below.

@@ -1,5 +1,7 @@
 # Contention matrix v6 quarter refresh — false-stale resolved
 
+> **Archived 2026-07-14** (backlog ROI audit, [backlog-roi-audit-2026-07-14.md](../active/backlog-roi-audit-2026-07-14.md)): N15 resolved 2026-07-05 (hash-scope false positive, live matrix_status ok); reopen only if a measured production role is added.
+
 **Status**: RESOLVED 2026-07-05 — no matrix re-bench required for the current production role set.
 **Created**: 2026-07-05 by the dashboard-hardening session.
 **Priority**: HIGH at creation; now MONITOR.

@@ -1,5 +1,7 @@
 # ⚡ POST-REBOOT RUNBOOK — restart AutoPilot with authority LIVE
 
+> **Archived 2026-07-14** (backlog ROI audit, [backlog-roi-audit-2026-07-14.md](../active/backlog-roi-audit-2026-07-14.md)): runbook fully executed 2026-07-02 with completion record; no reopen gate.
+
 **Status**: COMPLETE — executed post-reboot on 2026-07-02; stack and AutoPilot are live with authority enabled.
 **Priority**: P0 (the stack + autopilot are down across the reboot; authority is staged and waiting for this restart to go live).
 **Created**: 2026-06-28

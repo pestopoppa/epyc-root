@@ -1,5 +1,7 @@
 # Fable 5 window-2 — mid-session focus injection: MI210 inference improvement (rev 2)
 
+> **Archived 2026-07-14** (backlog ROI audit, [backlog-roi-audit-2026-07-14.md](../active/backlog-roi-audit-2026-07-14.md)): brief authored and consumed by findings-05b; MI210 work lives in the findings-05x set.
+
 *Paste the block below into the running Fable 5 session. It re-aims remaining depth at the MI210
 architecture layer; it assumes the window-2 brief + your findings-00..04 are already in context.*
 **rev 2 (2026-07-03):** the 27B DFlash head is now converted to GGUF and in-hand; the DFlash→v6/HIP

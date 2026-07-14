@@ -1,5 +1,7 @@
 # iqk-kernel port into v6 (ik_llama iqk_mul_mat → production-consolidated-v6)
 
+> **Archived 2026-07-14** (backlog ROI audit, [backlog-roi-audit-2026-07-14.md](../active/backlog-roi-audit-2026-07-14.md)): port closed; the sole residual (eval-suite parity deploy gate) is tracked in active/v6-iqk-promotion.md.
+
 **Status**: ✅ STAGE 1 + STAGE 2 COMPLETE + VERIFIED (2026-06-25). Both stages done, all 3 stack quant patterns covered (dense Q4_K, MoE Q4_K, MoE Q8_0), correct + crash-free, measured speedups. Operator greenlit full port (both stages) "proceed systematically … do not stop until done and verified no quality regression + performance increase." Remaining: operator-run eval-suite parity (deploy gate, flagged below) + optional secondary wins (residual prefill src1-fusion, FA hook, larger MoE).
 
 > **2026-07-03 window-2 roofline note (findings-05 §3/§6)**: the secondary wins below are **prefill/TTFT-only — iqk is decode-NEUTRAL on Q8_0** (its decode wins are Q4_K; the frontdoor is Q8_0), so do not expect the residual src1-fusion or the larger-MoE hook to move frontdoor *decode* t/s. Ranked #4 of the cross-substrate kernel actions. Also: **no canonical post-iqk *decode* number exists yet** — the clean post-reboot llama-bench is still pending (`v6-iqk-promotion.md` Phase J); until then every iqk decode figure (incl. the +11% and the 38.46-vs-27.78 eval byproduct) is an OBSERVATION, not decision-gating.

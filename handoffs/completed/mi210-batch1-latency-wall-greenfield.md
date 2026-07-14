@@ -1,5 +1,7 @@
 # Handoff: MI210 batch-1 latency wall — greenfield kernel research (prefetch → megakernel)
 
+> **Archived 2026-07-14** (backlog ROI audit, [backlog-roi-audit-2026-07-14.md](../active/backlog-roi-audit-2026-07-14.md)): all three levers resolved with data (megakernel measured NOT worth building); optional SSM-block fusion noted in-file.
+
 **Status**: OPEN — greenfield kernel-authoring research. **Created**: 2026-07-04 (MI210 campaign; operator-prioritized over the cheap n-gram lever).
 **Owner tree**: `/mnt/raid0/llm/llama.cpp-experimental` (kernel work here ONLY, never production-v6). Builds ON the dequant-GEMV work in `mi210-q8-dequant-gemv-roofline.md` — coordinate; don't edit `mmvq.cu` in parallel with that thread.
 **Substrate**: MI210 gfx90a/CDNA2, 64 GB HBM2e ~1.64 TB/s, 8 MB L2, 64 KB LDS/CU, 64-wide wavefront, ROCm 6.2. All numbers OBSERVATION.

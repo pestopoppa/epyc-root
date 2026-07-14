@@ -11,7 +11,7 @@
 Applies when a role is hosted on the MI210 (the residency bet). **These are validated in experimental only; not for production until CPU-correctness verified.** Brief: [moe-aggregate-deployment-wins-brief.md](moe-aggregate-deployment-wins-brief.md).
 1. **`-fa 1` for aggregate MoE (B≥8), `-fa 0` for single-stream** — +16–43% aggregate; peak **bf16+fa1 @B128 = 1548 t/s** (gemma-26B-A4B).
 2. **bf16 for high-concurrency MoE roles (B≥16–32), Q8 for single-stream** — crossover B≈16–24; bf16 +27–43% at high batch (HBM-fit-gated: bf16-26B fits ≤B128).
-3. **Drop `-md <same GGUF>` for embedded-NEXTN roles** (CPU-side, [md-double-load brief](md-double-load-mtp-fix-brief.md)) — 2× DRAM saving on BW-bound CPU decode.
+3. **Drop `-md <same GGUF>` for embedded-NEXTN roles** (CPU-side, [md-double-load brief](../completed/md-double-load-mtp-fix-brief.md)) — 2× DRAM saving on BW-bound CPU decode.
 
 ## BANKED kernel wins — fork `pestopoppa/llama.cpp@upstream-mtp-verify`, experimental, operator-gated for prod
 Single-stream dense-Q8 (Qwen3.6-27B): **29 → 40.4 t/s (+37%)**. All correctness-verified (`test-backend-ops` clean, output coherent/byte-identical), all runtime-gated default-off.

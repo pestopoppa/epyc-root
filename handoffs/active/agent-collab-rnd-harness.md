@@ -19,7 +19,7 @@ Related existing work (do NOT duplicate — this stub is about the *collaboratio
 - [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) — live autopilot loop.
 - [`kernel-reconciliation-audit.md`](../completed/kernel-reconciliation-audit.md) / [`v6-iqk-promotion.md`](v6-iqk-promotion.md) — current experimental-kernel (v7-candidate) workflow.
 - [`swarm-dataset-distillation.md`](swarm-dataset-distillation.md) — the other swarm handoff (dataset generation, different objective).
-- [`halo-trace-loop-spike.md`](halo-trace-loop-spike.md) — trace sharing / attribution overlap.
+- [`halo-trace-loop-spike.md`](../completed/halo-trace-loop-spike.md) — trace sharing / attribution overlap.
 
 ## Open Questions
 

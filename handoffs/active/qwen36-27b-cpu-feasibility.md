@@ -1,6 +1,8 @@
 # Qwen3.6-27B Dense — CPU Feasibility Evaluation
 
-**Status**: stub
+**Status**: stub — **PARKED 2026-07-14 (monitor)**
+
+> **2026-07-14 audit note — PARKED to monitor**: P1 throughput probe and P2 coder A/B are parked with an explicit reopen trigger — **reopen only if the 27B becomes a real role candidate**. Premise weakened: Qwen3.6-35B-A3B already serves frontdoor/coder_escalation; community data (intake-455) projects ~7.5–9 t/s single-instance (below role thresholds); CPU spec-dec is a recorded no-go (P3). P1/P2 task lines retained below, gated.
 **Created**: 2026-04-24 (via research intake deep-dive — intake-455)
 **Categories**: local_inference, hardware_optimization, benchmark_methodology
 **Priority**: MEDIUM (potential coder/worker model candidate, not yet validated)
@@ -109,7 +111,7 @@ After P1 completes, append measured numbers + comparison to baselines under a "R
 ## Progress checklist
 
 - [x] P3 record explicit CPU spec-dec no-go (GDN verification wall) ✅
-- [ ] P1 CPU throughput probe (single-instance + NUMA-4-way) on Qwen3.6-27B Q4_K_M - inference-blocked
-- [ ] P2 coder-escalation quality A/B vs Qwen2.5-Coder-32B on agentic-coding harness - inference-blocked
+- [ ] P1 CPU throughput probe (single-instance + NUMA-4-way) on Qwen3.6-27B Q4_K_M - inference-blocked; **PARKED 2026-07-14, reopen only if 27B becomes a real role candidate**
+- [ ] P2 coder-escalation quality A/B vs Qwen2.5-Coder-32B on agentic-coding harness - inference-blocked; **PARKED 2026-07-14, reopen only if 27B becomes a real role candidate**
 - [ ] After P1: append measured throughput + baseline comparison (Results - P1 section)
 - [ ] After P2: append agentic-coding score table; propose registry swap if gates pass

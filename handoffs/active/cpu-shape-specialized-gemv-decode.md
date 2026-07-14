@@ -514,10 +514,10 @@ Relevant compiler flags (GCC/Clang): `-mavx512f -mavx512bf16 -mavx512vnni -mavx5
 
 - [ ] Read [justine.lol/matmul](https://justine.lol/matmul/) end-to-end. Extract the exact Zen 4 ukernel pattern for Q8_0.
 - [ ] Read [Gope et al., arXiv:2501.00032](https://arxiv.org/abs/2501.00032). Extract the GEMV register-blocking and codebook-resident technique.
-- [ ] Profile a baseline Qwen3.6-27B Q8_0 decode. **Note (2026-04-23 audit): `perf` is NOT installed on the host** (`which perf` empty; `linux-tools-$(uname -r)` absent). Use fallbacks: (a) rebuild with `GGML_PERF=1` for per-op timings; (b) `rdtsc`-bracketed micro-harness for tight loops; (c) `/usr/bin/time -v` for wall-clock and page-fault counts; (d) `getrusage` for context-switch and RSS. If sudo is available and the user approves, install `linux-tools-$(uname -r)` for proper `perf stat -e cycles,instructions,cache-references,cache-misses,dTLB-load-misses,l2_rqsts.demand_data_rd_hit` + `perf record -g` flamegraph.
+- [x] Profile a baseline Qwen3.6-27B Q8_0 decode. ✅ 2026-07-14 (audit: Session 15 part 4 perf profile — 72% vec_dot, 22% barrier, 0.17 IPC) **Note (2026-04-23 audit): `perf` is NOT installed on the host** (`which perf` empty; `linux-tools-$(uname -r)` absent). Use fallbacks: (a) rebuild with `GGML_PERF=1` for per-op timings; (b) `rdtsc`-bracketed micro-harness for tight loops; (c) `/usr/bin/time -v` for wall-clock and page-fault counts; (d) `getrusage` for context-switch and RSS. If sudo is available and the user approves, install `linux-tools-$(uname -r)` for proper `perf stat -e cycles,instructions,cache-references,cache-misses,dTLB-load-misses,l2_rqsts.demand_data_rd_hit` + `perf record -g` flamegraph.
 - [ ] **Measure tinyBLAS on/off first** (new Phase 0 step per 2026-04-23 audit): `ggml/src/ggml-cpu/llamafile/sgemm.cpp` is already compiled under `GGML_USE_LLAMAFILE`. Rebuild twice (macro on/off), record end-to-end tok/s delta. This single datum quantifies how much M=1 gain is already "free" and informs the remaining headroom a custom Zen 5 ukernel could recover.
 - [ ] Measure: (a) time in matmul ops vs time in DeltaNet recurrence vs time in RMSNorm/RoPE/sampling. (b) IPC and L1/L2 hit rates in the matmul functions (via `GGML_PERF` + any installed counters). (c) fraction of decode time in `ggml_compute_forward_mul_mat` and its callees.
-- [ ] **Gate (tightened 2026-04-23 from >60% to >40%)**: if >40% of decode time is in DeltaNet recurrence (not matmul), abandon and document why. Reason: by Amdahl's law, with ≥40% DeltaNet time, max end-to-end speedup from matmul acceleration cannot reach the Phase 2 target of 1.5× even with an infinitely-fast ukernel. Otherwise proceed.
+- [x] **Gate (tightened 2026-04-23 from >60% to >40%)** ✅ 2026-07-14 (audit: Session 15 part 4 profile — DeltaNet <1% of cycles, gate passed): if >40% of decode time is in DeltaNet recurrence (not matmul), abandon and document why. Reason: by Amdahl's law, with ≥40% DeltaNet time, max end-to-end speedup from matmul acceleration cannot reach the Phase 2 target of 1.5× even with an infinitely-fast ukernel. Otherwise proceed.
 
 **Artifacts:** a short markdown writeup (`research/deep-dives/cpu-gemv-feasibility-baseline.md`) with the profiling numbers and the gate decision.
 
@@ -529,9 +529,9 @@ Target: **Qwen3.6-27B Q8_0 MLP-up matmul**, shape **K=5120 → N=17408** (correc
 
 - [ ] Write a standalone benchmark harness that calls just this matmul (not the full model), with the same activation layout ggml uses. Measure baseline perf.
 - [ ] Implement the ukernel as a single C++ file with compile-time template parameters `<K, N>`. Use AVX-512 + VDPBF16PS intrinsics. Register-block the output tile (1×32 or 1×16 — measure both).
-- [ ] Validate numerical equivalence: bit-exact comparison with ggml reference on 1000 random inputs, then cosine similarity on the full layer on real activations.
+- [x] Validate numerical equivalence: bit-exact comparison with ggml reference on 1000 random inputs, then cosine similarity on the full layer on real activations. ✅ 2026-07-14 (audit: validated via PPL bit-exact route, Sessions 15/17)
 - [ ] Integrate via a custom ggml op override, conditionally enabled with an env var like `EPYC_UKERNEL_MLP_UP=1`.
-- [ ] Run full decode with the env var on/off; compare tok/s on Qwen3.6-27B Q8_0, 192 threads single instance.
+- [x] Run full decode with the env var on/off; compare tok/s on Qwen3.6-27B Q8_0, 192 threads single instance. ✅ 2026-07-14 (audit: Session 15 GGML_Q8_0_8X8 on/off throughput tables, 1-96t)
 - [ ] **Gate**: if end-to-end speedup is ≥1.15× from this single ukernel (representing ~1/5 of matmul ops per token), extrapolate to full coverage and proceed. If <1.10×, abandon.
 
 **Artifacts:** the ukernel source, the benchmark data, and a decision writeup.

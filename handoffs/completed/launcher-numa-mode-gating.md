@@ -1,5 +1,7 @@
 # Launcher: full XOR quarters, not both
 
+> **Archived 2026-07-14** (backlog ROI audit, [backlog-roi-audit-2026-07-14.md](../active/backlog-roi-audit-2026-07-14.md)): flag implemented, default decision resolved, acceptance criteria MET.
+
 **Status**: COMPLETE 2026-07-05 — flag implemented and default decision resolved
 **Priority**: medium (production workaround exists; long-term fix is a small CLI flag)
 **Origin**: `progress/2026-05/2026-05-08.md` § Phase 3 known sub-issue

@@ -2,8 +2,8 @@
 
 **Status**: IN PROGRESS — EV-1/2/3/6 code complete. EV-3 was schema-corrected and validated on 2026-06-19; EV-4/5/7 need inference. AA-Omniscience hallucination suite integrated (2026-04-15).
 **Created**: 2026-04-14 (from deep-dive research, 5 papers + 2 subsystem threads)
-**Updated**: 2026-04-15
-**Priority**: MEDIUM (depends on AP-27 and Ouro P7)
+**Updated**: 2026-07-14
+**Priority**: MEDIUM (depends on AP-27 and Ouro P7) — *2026-07-14 audit note: [research-evaluation-index.md](research-evaluation-index.md) carries this handoff at HIGH; discrepancy flagged by the backlog ROI audit — both stated here, owner decides.*
 **Categories**: evaluation, verification, reinforcement_learning
 **Tracked in**: [research-evaluation-index.md](research-evaluation-index.md) P8
 
@@ -390,6 +390,14 @@ Two complementary, mostly inference-free pieces. **Tracked in [research-evaluati
   - [x] EV-10b read-only report consumer for journaled surrogate feedback. ✅ 2026-07-11
 - **Cross-cutting**: EV-10a is the empirical instrument that makes the `meta-harness-optimization.md` SkillOpt recommendation auditable — without paired, per-suite, negative-delta-guarded efficacy measurement, the autopilot cannot distinguish a genuinely-helpful skill edit from a SkillsBench-style net-negative self-generation. **Priority MEDIUM**, mostly code (no new model for 10a; 10b reuses cross-family infra). Do NOT block EV-3/4/5 on this. **Inference-gated validation is tracked in [bulk-inference-campaign.md](bulk-inference-campaign.md) Package K as K-SKILL-1** (remaining stage: deploy/restart + paired-mutation A/B; post-AR-3/AR-4 class).
 
+### EV-11/12/13 (NEW 2026-07-14) — backlog ROI audit waypoints
+
+Formalized from the 2026-07-14 backlog ROI audit ([backlog-roi-audit-2026-07-14.md](backlog-roi-audit-2026-07-14.md) §A):
+
+- [ ] **EV-11 — Math-Verify scoring flip + re-baseline** (S; intake-377/379, audit RE-1): the math_verify scorer is landed in orchestrator but ZERO pool questions use it (1,319 math exact_match, 500 substring, 0 math_verify). Flip math-suite scoring to math_verify and re-baseline affected suites; label-quality lift for per-question ledger, McNemar/MDE power, A9 labels, promotion verdicts.
+- [ ] **EV-12 — execution-free patch verifier as gating signal** (M; intake-757, audit RE-2): Dockerless execution-free patch verdicts as a coder_escalation pre-gate / eval-tower verifier signal at zero inference cost; enrich the pending edit-transaction clean-window A/B.
+- [ ] **EV-13 — review-finding-F1 suite** (M; intake-658, audit RE-3, formalizes the EV-NEW prose below): local code-review benchmark per the Factory-methodology deep-dive (Augment v1 145-bug golden set, ~80-LOC scorer, local models via /v1/chat/completions, ≤2pp judge-swap as first concrete EV-6 cross-family instance); feeds coder-pool composition + Strand Phase C.
+
 ## Research Intake Update — 2026-06-03
 
 ### New Related Research
@@ -400,7 +408,7 @@ Two complementary, mostly inference-free pieces. **Tracked in [research-evaluati
   - Delta from current approach: we'd point the judge at our **local** models (gemma4-26B-A4B worker_general, coder roles, any peer-verifier) and reuse existing Claude-as-Judge plumbing — a reviewer-model F1 suite naturally lands in [`multi-file-coding-completion-capability.md`](multi-file-coding-completion-capability.md). **Caveat**: vendor self-benchmark (models adjacent to their own product), 50 PRs / 5 repos only — treat rankings as indicative; the judge-swap check mitigates *judge* bias but not golden-set/PR-selection bias. Verdict: adopt_patterns.
 
 #### Deep-dive: full methodology + reproduction plan (2026-06-03)
-Deep-dive of `review-benchmark.md` + the released repos + `eval_common.py` source → full write-up in [`research/factory-ai-harvest-2026-06-03.md`](../../research/factory-ai-harvest-2026-06-03.md) (Part 4). **Corrections**: (1) judge model is **`claude-opus-4-6` hardcoded** (Anthropic SDK), not Sonnet 4; (2) **"open source" is overstated** — harness repo is **unlicensed**, the v3 golden set (167) is **gitignored**, only Augment upstream **v1 (145)** is genuinely open; (3) provenance is **Greptile → Augment → Factory** (Factory added 31 bugs Droid itself surfaced → self-curation bias); (4) **low-severity golden comments are scored as neither TP/FP/FN** (load-bearing); (5) all 13 models at reasoning_effort=High, 3 runs (malfunction-excluded), **micro-averaged** P/R/F. **EV-NEW (review-finding-F1 suite)** — reuse Augment v1 + the 5 PR sets, re-implement the ~80-LOC scorer (do **not** vendor the unlicensed file), drive **local** models via `/v1/chat/completions` over diff+context (document the divergence from their agentic whole-repo setup), judge with a **local cross-family verifier** and run the ≤2pp judge-swap as a concrete **EV-6** instance; index by model/quant not role; per-PR incremental persistence. Absolute F1 is **not** comparable to their leaderboard — internal-only.
+Deep-dive of `review-benchmark.md` + the released repos + `eval_common.py` source → full write-up in [`research/factory-ai-harvest-2026-06-03.md`](../../research/factory-ai-harvest-2026-06-03.md) (Part 4). **Corrections**: (1) judge model is **`claude-opus-4-6` hardcoded** (Anthropic SDK), not Sonnet 4; (2) **"open source" is overstated** — harness repo is **unlicensed**, the v3 golden set (167) is **gitignored**, only Augment upstream **v1 (145)** is genuinely open; (3) provenance is **Greptile → Augment → Factory** (Factory added 31 bugs Droid itself surfaced → self-curation bias); (4) **low-severity golden comments are scored as neither TP/FP/FN** (load-bearing); (5) all 13 models at reasoning_effort=High, 3 runs (malfunction-excluded), **micro-averaged** P/R/F. **EV-NEW (review-finding-F1 suite — now tracked as the EV-13 checkbox above, 2026-07-14)** — reuse Augment v1 + the 5 PR sets, re-implement the ~80-LOC scorer (do **not** vendor the unlicensed file), drive **local** models via `/v1/chat/completions` over diff+context (document the divergence from their agentic whole-repo setup), judge with a **local cross-family verifier** and run the ≤2pp judge-swap as a concrete **EV-6** instance; index by model/quant not role; per-PR incremental persistence. Absolute F1 is **not** comparable to their leaderboard — internal-only.
 
 ## Research Intake Update — 2026-06-20
 

@@ -233,7 +233,7 @@ INTERACTION_POLICY_VERSION = "1.0"
 **Goal**: Stop calling consult on every code edit. Gate by signals owned by `routing-intelligence`.
 
 - [x] **P3-0**. Convert the J17 targeted-positive result into a narrow gate proposal: fire `review_before_commit_consult` only for high-risk edit shapes where the targeted slice showed plausible value (parser/data-contract edge cases, compatibility shims, optional-dependency fallbacks, high blast-radius symbols, or hidden-verifier-risk patterns). Explicitly avoid easy/small edits and known format-compliance failures where consult did not help. Completed 2026-07-07: `epyc-orchestrator/src/orchestration/review_consult_gate.py` implements the transparent lexical/shape gate, and `run_edit_transaction()` records `targeted_gate_skip` consult events when the gate declines to call the consultant.
-- [ ] **P3-1**. Gate signal taxonomy:
+- [x] **P3-1**. Gate signal taxonomy: ✅ 2026-07-14 — substantially implemented via P3-2d (`epyc-orchestrator` `1967c682`): `ConsultSignals` combines difficulty band, factual-risk band/score, touched-symbol blast radius, recent failure pressure, benchmark class, latency budget, and MemRL hints.
   - `factual_risk_score` (from `routing-intelligence`)
   - `difficulty_band` (`progress_logger.log_delegation` already carries this; reuse via `log_interaction`)
   - `diff_size` (lines changed in the proposed edit)

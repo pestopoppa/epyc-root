@@ -6,7 +6,7 @@
 **Categories**: agent_architecture, routing_intelligence, training_distillation
 **Priority**: MEDIUM (Phase 1 zero-infra; Phase 2/3 deferred)
 **Depends on**: `routing-intelligence.md` (classifier infrastructure), `eval-tower-verification.md` EV-9 (multi-dimensional rubric)
-**Sibling (same gate, lighter weight)**: [`gpu-cot-scaffold-sidecar.md`](gpu-cot-scaffold-sidecar.md) — its **G1** ("does an injected CoT scaffold beat a code worker's own thinking, per token?") is **MD-9 one weight down**. Both live in the **reasoning-economics cluster** (`research-evaluation-index.md`) and must share the EV-9 DRACO/MindDR scoring contract + token-normalization, not re-derive them.
+**Sibling (same gate, lighter weight)**: [`gpu-cot-scaffold-sidecar.md`](../completed/gpu-cot-scaffold-sidecar.md) — its **G1** ("does an injected CoT scaffold beat a code worker's own thinking, per token?") is **MD-9 one weight down**. Both live in the **reasoning-economics cluster** (`research-evaluation-index.md`) and must share the EV-9 DRACO/MindDR scoring contract + token-normalization, not re-derive them.
 
 ## 2026-05-28 Audit Reset — Executor Start Here
 
@@ -138,7 +138,7 @@ Per `feedback_handoff_driven_tracking`: all phase transitions require progress/l
 
 Per `feedback_checkpoint_pareto_state`: Phase 2 RL training must save autopilot_state.json checkpoints; lost frontier = lost compute.
 
-Phase 2 GPU training is explicitly gated on DGX Spark acquisition (`project_dgx_spark_target`).
+Phase 2 GPU training (MD-10..13) is gated on **MI210/gfx90a training viability** (re-gated 2026-07-14). The prior "DGX Spark acquisition" gate is dead — DGX was never bought; an AMD MI210 (gfx90a, 64GB, ROCm 6.2) was installed 2026-07-02. The gate is now the pending training-viability smoke against gfx90a, not a hardware-acquisition wait.
 
 ## Cross-references
 

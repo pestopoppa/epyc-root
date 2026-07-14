@@ -381,9 +381,9 @@ This represents a **third TTS path** alongside Path A (Qwen3-TTS C++ port, block
 
 ### Next Actions (scoped for this handoff)
 
-- [ ] Check Qwen3.5-Omni for open-weight release / GGUF availability on HuggingFace
+- [x] Check Qwen3.5-Omni for open-weight release / GGUF availability on HuggingFace ✅ 2026-07-14 DD2 (2026-04-22): API-only, no weights/GGUF
 - [ ] If available: estimate CPU inference cost for audio-codec path (ARIA pipeline) on one NUMA node
-- [ ] Decide whether Qwen3.5-Omni becomes a new TTS Path E or supersedes existing paths
+- [x] Decide whether Qwen3.5-Omni becomes a new TTS Path E or supersedes existing paths ✅ 2026-07-14 DD2 decided: Scenario C — no Path E, Path D stays primary
 
 ## Deep-Dive Integration — 2026-04-22 (DD2 verdict)
 
