@@ -204,6 +204,12 @@ This packet is command-discovery and evidence packaging only. It does not author
 
 *Index status: accepted by the operator-directed 2026-07-11 robustness implementation thread; discoverable from the master N2 row and the routing/autopilot dispatch row. Keep current runtime truth in `autopilot-continuous-optimization.md` + `phase_health_report.py --json`.*
 
+## Checkpoint completions — 2026-07-14
+- [x] W1 runtime-facts reader slice completed in `epyc-orchestrator` commit `db62aa3f`: the runtime-facts manifest now records `runtime_stack.stack_numa_mode`, `selected_servers`, `selected_ports`, and effective paths; stack start/reload/stop refresh the manifest at persisted-state boundaries; dashboard `expected_stack_services()` uses validated runtime selected servers when no explicit `ORCHESTRATOR_STACK_NUMA_MODE` override exists. ✅ 2026-07-14
+- [x] AutoPilot seq-preflight/live-allowlist deadlock fix completed in `epyc-orchestrator` commit `39fc3653`: deferred seq-gate replacement now bypasses the ordinary planner-selected live-loop allowlist, so retryable `seed_batch` fallbacks can dispatch after the preflight chooses them instead of looping on an allowlist rejection. ✅ 2026-07-14
+
+## Checkpoint completions — 2026-07-11
+
 ---
 
 ## Research Intake Interface — 2026-07-11 (external source; operator-review, NOT new tasks)
