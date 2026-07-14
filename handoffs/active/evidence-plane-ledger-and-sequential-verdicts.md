@@ -23,6 +23,18 @@ durable bans. Validation already passed in the orchestration session:
 returned `177 passed`, and `ruff` passed. This is a retry-only re-exploration
 unblock, not a permit to purge durable blacklist entries automatically.
 
+**Current checkpoint - 2026-07-14T17:42Z local-planner canary refresh**: the
+canonical Fable authority wrapper was restarted through
+`start_fable_authority_daemon.py` with absolute `--max-trials 1401` under
+supervisor PID `2381139` and child PID `2381140`. The authority env now pins
+`AUTOPILOT_PLANNER_PRIMARY=local_frontdoor`,
+`AUTOPILOT_PLANNER_CRITIC=local_ingest`, Claude fallback, and
+`AUTOPILOT_PLANNER_SPEND_BREAKER=0`; the prompt contract was hardened so
+`json:autopilot_actions` must carry exactly one JSON object, not an array.
+Dry-run validation confirmed the new split, and the focused ruff/pytest batch
+passed (`41` tests). Log:
+`/mnt/raid0/llm/tmp/autopilot_fable_authority_20260714T174249Z.log`.
+
 **2026-07-06T16:44Z report refresh**: regenerated
 `orchestration/reports/w8_promotion_trajectory_20260706T164403Z.{json,md}`
 and `orchestration/reports/fable5_gate_report_20260706T164403Z.{json,md}`.
