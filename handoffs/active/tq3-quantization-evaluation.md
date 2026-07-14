@@ -89,3 +89,30 @@ This handoff (`tq3-quantization-evaluation`) tracks **KV-cache** quantization (T
   - **Reported results:** near-lossless vs FP8 — MMLU Pro 86.3 (FP8 86.1), GPQA Diamond 85.5 (86.0), AIME 2025 92.7 (93.1), IFBench 65.5 (65.1); ~2.5× memory (16→4 bits/param), ~22 GB weights.
   - **Delta from current approach / verdict = not_applicable (operator-review flagged):** NVFP4 is **GPU-native** (Blackwell/Hopper + vLLM), **not GGUF/llama.cpp-loadable**, and MI210 (gfx90a) has **no FP4/FP8 tensor path** — matching the intake-339 (gemma-4 NVFP4) precedent. Creative uses preserved: (a) the checkpoint's **Apache-2.0 BF16 source is freely re-quantizable to GGUF Q4_K_M/TQ3** for CPU (unsloth already ships Qwen3.6-27B-GGUF, tracked under qwen36-27b-cpu-feasibility); (b) use the FP8-parity table as a target — *does our CPU 4-bit path match FP8 as tightly?*; (c) MTP-head-preserved NVFP4 siblings mirror our MTP direction.
   - **Open question for TQ3 eval:** is a two-level (block FP8 + tensor FP32) scale worth emulating in a CPU K-quant variant, or is the accuracy delta below our decision-gating threshold?
+
+
+## Research Intake Update — 2026-07-14
+
+### New Related Research — lossless weight-compression sub-area (new to the corpus)
+Three URLs plus reference-chasing opened a sub-area the compendium had **no** prior entry for: **lossless, entropy-coded weight compression** (exploiting the highly-skewed BF16 *exponent* distribution). All neighbors to date (TQ3 intake-246, TurboQuant intake-191, REAP intake-181) are **lossy**. Verdict across the cluster: **worth_investigating / adopt_patterns — NOT deployable at our operating point** (all yield ~11–12 bits/weight, ~2.5× larger than production Q4_K_M ~4.5 bpw).
+
+- **[intake-815] "Lossless Model Compression Experiment"** (blog, brianbell-x)
+  - Relevance: medium — directionally aligned with our BW-bound decode thesis; a 12-bit GEMV prototype ran at **0.733× BF16 time on an A40** (decode-on-the-fly can beat dense BF16 when bandwidth-bound).
+  - Key technique: K15 sign-exponent encoding + byte-split; bit-exact over all 59,509 tensors of GLM-5.2 753B (30.168% smaller, lossless).
+  - Delta from current approach: lossless ~11–12 bpw does **not** beat our lossy Q4_K_M footprint; GPU microbenchmark only, CPU decode untested.
+- **[intake-816] "ZipNN: Lossless Compression for AI Models"** (arxiv:2411.05239, IBM/MIT-IBM/BU; credibility 4)
+  - Relevance: medium — reference lossless-NN method; ~33% BF16 savings, bit-exact; the exponent-skew insight is the core idea.
+  - Delta: framed as a **storage/download** optimization (>1 EB/month HF traffic), not inference-time bandwidth; decode ~1.2–2.5 GB/s would compete with our decode bandwidth.
+- **[intake-817] "DFloat11 / Dynamic-Length Float"** (arxiv:2504.11651; credibility 4)
+  - Relevance: low — bit-exact BF16 → ~11 bpw with a **GPU/CUDA-only** on-the-fly decode kernel; no CPU path, MI210 would need a full HIP port.
+  - Delta: ~11 bpw is ~2.4× larger than Q4_K_M; headline 1.85–38.83× gains are vs BF16+CPU-offload, not vs on-GPU lossy quant.
+- **[intake-818] "ZipServ: Hardware-Aware Lossless Compression"** (arxiv:2603.17435; verdict adopt_patterns; credibility 4 [audit-corrected from 3])
+  - Relevance: low deploy / real conceptual — **fixed-length** (branch-free) exponent code + a **"load-compressed, compute-decompressed" fused GEMM** keeping weights compressed in the bandwidth-critical path. (ASPLOS'26 acceptance declared in the arXiv Comments field — same author-declared basis as ZipNN's IEEE Cloud and DFloat11's NeurIPS 2025.)
+  - Delta: NVIDIA-Tensor-Core-locked, benchmarked only vs FP16; 1.51× lossless footprint is dominated by our lossy Q4_K_M.
+
+### Transferable patterns (for a future CPU/ROCm bit-exact path only)
+1. The BF16 **exponent distribution is the entire compressibility budget** — a fixed-length ~3-bit exponent code (ZipServ) avoids variable-length serialization stalls.
+2. "**Load-compressed, compute-decompressed**" — keep weights compressed on the bandwidth-critical path and decode into registers.
+
+### New outstanding tasks
+- [ ] Decide (operator): is lossless exponent-coding worth a CPU/AVX-512 spike **only** as (a) staging/download savings for **full-precision FP16/BF16 source checkpoints retained for re-quantization** (NOT already-quantized GGUFs — those are near-max-entropy and compress negligibly, so the ~238GB UD-IQ2 GLM staging artifact is *not* a beneficiary), or (b) is lossy Q4/Q8 dominance decisive enough to close the lossless-weight thread? Default lean: close for inference, note for storage logistics only if we keep BF16 sources on the 120GB-SSD/3.7TB-raid host. If the storage direction is ever taken, track it under `model-stack-update-pipeline-audit.md` (staging / re-quantization logistics), not here — tq3's scope is lossy quant for the inference path.

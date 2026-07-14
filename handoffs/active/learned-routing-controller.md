@@ -1420,3 +1420,13 @@ designed around masked candidate sets, not more retuning of this KL path.
 
 **Artifacts**:
 `orchestration/reports/p46_role_dropout/{summary.json,summary.md,rate_*_seed_*.json}`.
+
+---
+
+## Research Intake Update — 2026-07-14 — Knowing-Using Gap caveat (intake-814)
+
+Reference/caveat only — **no phase, no checkbox, unfreezes nothing.** Attaches to the **"Key Insight: Episodic Memory Becomes Write-Only"** thesis above.
+
+- **[intake-814] "…Why Memorized Knowledge Fails to Generalize in LLM Finetuning"** (arXiv:2607.08393; credibility 3; verdict worth_investigating) formalizes a **"Knowing-Using Gap"**: knowledge fine-tuned into transformer weights is memorized but fails multi-hop *chaining* ("knowledge-circuit misalignment").
+- **Why it's filed here:** this controller is EPYC's one **memory→weights** path — `routing_classifier.py` is a 2-layer MLP distilled (Q-weighted cross-entropy SGD) from episodic traces, i.e. the write-only-memory replay buffer becomes training data. The paper studies exactly that direction.
+- **Why it gates nothing:** the Gap is about **multi-hop factual chaining**; our router is a **single-step discriminative action classifier** — no factual recall, no chaining to misroute — so the failure mode does not transfer to the current head. **Watch only if/when** a future phase moves the routing head toward parametric factual/multi-hop injection (e.g. distilling reasoning, not just an action label). Until then it *corroborates* the write-only-memory design rather than challenging it. Per this file's standing directive, this is **not** filed under `retrain-routing-models.md` / `decision-aware-routing.md` (both expansion-FROZEN).

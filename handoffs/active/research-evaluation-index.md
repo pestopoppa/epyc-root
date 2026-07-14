@@ -20,7 +20,7 @@
 | MED | Granite embedder bench Phase B | [`granite-97m-r2-bench-plan.md`](granite-97m-r2-bench-plan.md) | A-fast corpus/harness verified and GGUF artifacts produced for Granite/e5-base/BGE-M3 on 2026-07-03; next prep is embedder-only load/vector smoke, then Phase B. No production model reload required. |
 | MED | RoPE long-context matrix K-ROPE-1 | P10 below / clean-window manifest | Continue only in clean model-batched windows; worker path needs Gemma4 MTP serving fix before evidence. |
 | LOW | Reasoning compression tails | [`reasoning-compression.md`](reasoning-compression.md), [`memento-block-reasoning-compression.md`](memento-block-reasoning-compression.md) | Enforce path blocked until signal is predictive; Memento S2/S3 remain gated. |
-| LOW | Monitoring-only model/research watches | TQ3, Log-Linear GDN, YaRN, Ouro, SLIDERS, Strand, AgentWorld | Do not consume inference unless the owning handoff's gate is met. Swarm dataset distillation is physically tracked in [`../blocked/swarm-dataset-distillation.md`](../blocked/swarm-dataset-distillation.md) until Strand Phase B clears. |
+| LOW | Monitoring-only model/research watches | TQ3, Log-Linear GDN, YaRN, Ouro, SLIDERS, Strand, AgentWorld, lossless-weight-compression (ZipNN/DFloat11/ZipServ · intake-815–818 · RIU tq3-quantization-evaluation.md 2026-07-14), Titans-sleep-consolidation (intake-813), sleep-time-compute (intake-819) | Do not consume inference unless the owning handoff's gate is met. Swarm dataset distillation is physically tracked in [`../blocked/swarm-dataset-distillation.md`](../blocked/swarm-dataset-distillation.md) until Strand Phase B clears. |
 
 ## Active Evaluation Packages
 

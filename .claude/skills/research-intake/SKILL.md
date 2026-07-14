@@ -327,7 +327,7 @@ For entries with `verdict: new_opportunity` AND `relevance: high` that don't mat
    - Include all fields from the schema
    - After each entry is appended, update `.research-session.json` checkpoint (move URL from `entries_remaining` to `entries_processed`). On completion of all entries, delete the session file.
 
-3. **Run validation**: Execute `python3 .claude/skills/research-intake/scripts/validate_intake.py` to verify index integrity.
+3. **Run validation**: Execute `bash scripts/validate/validate_intake.sh` to verify index integrity — it must return **exit 0**. (The wrapper selects a PyYAML-capable Python; a bare `python3` in the devcontainer lacks PyYAML and exits 1 *before* validating, silently defeating this gate. Baseline restored green 2026-07-14.)
 
 ## Boundaries
 

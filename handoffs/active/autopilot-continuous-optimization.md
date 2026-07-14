@@ -1341,3 +1341,22 @@ paired authority core.
   now includes advisory `eval_task_coverage` status/percent/repeat/tier summary
   in `summary` and as a non-blocking section. Dashboard-specific presentation
   can build on that payload, but the authority gate remains unchanged.
+
+
+## Research Intake Update — 2026-07-14
+
+### New Related Research
+- **[intake-819] "Sleep-time Compute: Beyond Inference Scaling at Test-time"** (arxiv:2504.13171 — Lin, Snell, Packer, Wooders, Stoica, Gonzalez; Letta/MemGPT lineage; credibility 2 [audit-corrected: Apr-2025 outside 12-mo window + Letta commercial-bias], verdict adopt_patterns)
+  - Relevance: medium — a clean formalization of **exactly what autopilot/nightshift already do**: an offline phase `S(c)->c'` enriches raw context *before* queries arrive, so the online phase `T_b(q,c')` is cheap. Maps onto the knowledge-distiller, handoff-hint-distillation, and unified-trace-memory-service (the store an enriched `c'` would live in).
+  - Reported results: **~5× less test-time compute** at matched accuracy (Stateful GSM-Symbolic, AIME); **~2.5× lower cost/query** when one enriched context is amortized across ~10 related queries; +13–18% accuracy at fixed test-time budget.
+  - Delta from current approach: we run the offline loop but **without an explicit predictability gate or amortization accounting**. The paper supplies both, plus the failure modes we should encode.
+  - **Attaches to existing anchors (not free-floating):** the deferred **AP-29 KnowledgeDistiller wiring** (`knowledge_distiller.py` L1→L2→L3; code landed 2026-05-08 `4cdc77e`, wiring still deferred) is the concrete precompute/distiller path this gate should ride on; the **2026-05-20 RIU "tool-response predictability co-objective"** note is the same idea one step less formal. Treat all three as one thread.
+
+### Transferable patterns → autopilot
+1. **Predictability gate** — only precompute where the future query/workload is inferable from current state (benefit collapses when queries are unpredictable; Fig. 10).
+2. **Amortization accounting** — price offline artifacts across the number of future consumers, not per-run.
+3. **Staleness invalidation** — precomputed `c'` is void when context changes; maps directly to our autopilot artifacts going stale on stack/config/kernel changes (FROZEN-registry + stale-process discipline).
+4. **Not a strict dominator** — at very high online budgets, plain test-time scaling wins; sleep-time compute is a low/mid-budget lever.
+
+### Rider on existing deferred work (not standalone)
+- [ ] **When AP-29 KnowledgeDistiller is wired** (currently deferred — see AP-29), apply an explicit **predictability + staleness gate** to it: what to precompute, for how many consumers, invalidate on stack/config change (framing from intake-819 + the 2026-05-20 predictability-co-objective note; adopt_patterns only, no importable artifact). This is a rider on AP-29, **not** new standalone scaffolding.

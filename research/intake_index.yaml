@@ -1516,7 +1516,8 @@
   source_type: paper
   title: arXiv:2512.23675
   categories:
-  - speculative_decoding
+  - context_extension
+  - training_distillation
   novelty: low
   relevance: medium
   discovered_via: seed
@@ -41544,6 +41545,147 @@
   ingested_date: '2026-07-04'
   handoffs_updated: []
   handoffs_created: []
+- id: intake-779
+  arxiv_id: '2509.19349'
+  url: https://arxiv.org/abs/2509.19349
+  source_type: paper
+  title: 'ShinkaEvolve: Towards Open-Ended And Sample-Efficient Program Evolution (Lange et al., 2025)'
+  authors:
+  - Robert Tjarko Lange (Sakana AI)
+  - Yuki Imajuku (Sakana AI)
+  - Edoardo Cetin (Sakana AI)
+  categories:
+  - evolutionary_search
+  - harness_optimization
+  - test_time_compute
+  - moe_optimization
+  novelty: high
+  relevance: high
+  credibility_score: 6  # clamped from 7 (authored on 0-9 scale; schema is 0-6)
+  discovered_via: input
+  ingested_date: '2026-07-08'
+  verdict: adopt_patterns
+  key_claims:
+  - 'ShinkaEvolve: open-source evolutionary framework achieving SOTA program evolution with orders-of-magnitude fewer samples via three synergistic innovations.'
+  - 'Parent sampling with tunable exploration-exploitation: power-law rank-based selection (alpha-controlled) and weighted sampling combining sigmoid-scaled performance with inverse-offspring novelty bias.'
+  - 'Code novelty rejection-sampling: embeddings + cosine similarity threshold (eta=0.95) + LLM novelty judge to prevent population collapse.'
+  - 'Bandit-based adaptive LLM ensemble selection: UCB1 with relative-improvement rewards for non-stationary archive difficulty.'
+  - 'Meta-scratchpad: periodic synthesis of optimization principles from successful solutions for cross-island knowledge diffusion.'
+  - 'Island model with controlled migration: independent subpopulations with migration-protected best-performing programs.'
+  techniques:
+  - Power-law parent sampling (rank-based, alpha-controlled exploration/exploitation)
+  - Weighted parent sampling (sigmoid performance x inverse-offspring novelty)
+  - Code embedding-based novelty rejection sampling (cosine threshold + LLM judge)
+  - Adaptive LLM ensemble routing via UCB1 bandit with relative-improvement rewards
+  - Diff-based edits, full rewrites with immutable-block guards, crossover mutations
+  - Island model with controlled migration
+  - Meta-scratchpad: LLM-driven optimization principle synthesis
+  - Reflexion-based parsing feedback for invalid patches
+  reported_results:
+  - 'Circle Packing: new SOTA in 150 evaluations (vs AlphaEvolve''s thousands); golden-angle spiral + hybrid SLSQP/SimAnneal + adaptive temperature with reheating'
+  - 'AIME 2024: 3-stage scaffold (3 experts + 3 reviewers + 1 synthesis, 7 queries) Pareto-optimal; generalizes to 2023/2025 and transfers across gpt-4.1 variants / o4-mini'
+  - 'ALE-Bench: ~2.3% avg improvement over ALE-Agent across 10 tasks in 50 generations; ahc039 5th→projected 2nd (2880→3140)'
+  - 'MoE LBL: evolved under-specialized-expert regularization term (entropy-normalized s(P_l) x max(0, tau - f_l,i)) on 556M MoE; validated on 2.7B MoE across 3 lambdas, consistent perplexity/task-edge vs global-batch'
+  referenced_arxiv_ids:
+  - '2506.13131'
+  - '2310.00088'
+  - '2403.12030'
+  - '2507.05687'
+  - '2509.14279'
+  - '2312.00628'
+  - '2206.10912'
+  cross_references:
+    similar_intakes:
+    - 'intake-772: Darwin Gödel Machine — co-author Robert Lange, conceptual continuity with archive + parent sampling'
+    - 'intake-673: K-Search — beats ShinkaEvolve on GPU kernels but narrow domain; orthogonal innovations'
+    - 'intake-666: EvoEngineer'
+    - 'intake-669: KernelFoundry'
+    chapters: []
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - meta-harness-optimization.md
+  novelty_justification: 'High novelty: triad of (1) tunable parent sampling, (2) code-embedding rejection sampling with LLM arbitration, (3) UCB1 adaptive LLM ensemble routing constitutes a distinct algorithmic combination not in any single existing entry. MoE LBL discovery is a concrete new result in MoE optimization.'
+  relevance_justification: 'High across three EPYC workstreams: evolutionary controller patterns for kernel-authoring, MoE load-balancing for frontdoor routing, AIME scaffold for meta-harness optimization.'
+  verdict_justification: 'adopt_patterns, not adopt_component: general-purpose evolution library, not drop-in for orchestrator. Value is in algorithmic patterns and concrete MoE LBL + agent scaffold results.'
+  literature_expansion:
+  - 'AlphaEvolve (Novikov et al., arXiv:2506.13131) — primary closed-source baseline; not indexed standalone'
+  - 'OpenEvolve (Sharma, arXiv:2507.05687) — open-source AlphaEvolve clone; not indexed'
+  - 'Robust-KBench (Sakana AI, arXiv:2509.14279) — anti-reward-hacking for kernel benchmarks'
+  - 'ALE-Agent (Imajuku et al., 2025) — competitive programming baseline; arxiv_id not confirmed'
+- id: intake-780
+  arxiv_id: null
+  url: https://www.nature.com/articles/s41586-026-10265-5
+  source_type: paper
+  title: 'Towards end-to-end automation of AI research — The AI Scientist (Lu et al., Nature 2026)'
+  authors:
+  - Chris Lu
+  - Cong Lu
+  - Robert Tjarko Lange
+  - Yutaro Yamada
+  - Shengran Hu
+  - Jakob Foerster
+  - David Ha
+  - Jeff Clune
+  categories:
+  - auto_research
+  - agent_architecture
+  - harness_optimization
+  - evaluation
+  - tree_search
+  novelty: high
+  relevance: high
+  credibility_score: 6  # clamped from 9 (authored on 0-9 scale; schema is 0-6)
+  discovered_via: input
+  ingested_date: '2026-07-08'
+  verdict: adopt_patterns
+  key_claims:
+  - 'AI Scientist automates full research lifecycle: ideation, coding, experiments, analysis, manuscript, self-review.'
+  - 'AI-generated manuscript passed ICLR 2025 ICBINB workshop peer review (6.33 avg, above threshold). Withdrawn per protocol.'
+  - 'Two modes: template-based (human code scaffold) and template-free (agentic search from scratch).'
+  - 'Automated Reviewer ensemble (5 reviews + meta-review) predicts acceptance at human-level accuracy (F1/balanced accuracy vs NeurIPS 2021 study).'
+  - 'Paper quality strongly correlates with model release date (P<0.00001) and test-time compute budget.'
+  - 'Systematic failure modes: naive ideas, incorrect implementations, hallucinated citations, duplicated figures.'
+  techniques:
+  - 'Four-stage tree search: initial investigation → hyperparameter tuning → research agenda execution → ablation studies'
+  - 'Automated Reviewer ensemble: 5 synthetic reviews + 1 meta-review for acceptance prediction'
+  - 'Semantic Scholar API integration for novelty checks and related-work generation'
+  - 'Template-based and template-free generation modes'
+  reported_results:
+  - 'ICLR 2025 ICBINB workshop: 1 of 3 manuscripts scored 6.33 avg (above acceptance threshold); withdrawn per protocol'
+  - 'Automated Reviewer: human-level F1 and balanced accuracy for conference acceptance prediction'
+  - 'Paper quality vs model release date: P < 0.00001 correlation'
+  - 'Paper quality positively correlates with test-time compute budget'
+  referenced_arxiv_ids:
+  - '2502.14297'
+  cross_references:
+    similar_intakes:
+    - 'intake-108: EvoScientist'
+    - 'intake-148: AutoResearch'
+    - 'intake-149: PraxLab'
+    - 'intake-474: Trinity'
+    - 'intake-493: Conductor'
+    - 'intake-772: Darwin Gödel Machine'
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - meta-harness-optimization.md
+  contradicting_evidence:
+  - 'ICBINB is 70%-acceptance workshop, not main-track — meaningful but not strong validation'
+  - '1 of 3 passed — 33% acceptance, not reliable success rate'
+  - 'Systematic failure modes indicate system not yet reliable for unattended operation'
+  - 'P<0.00001 model-recency correlation suggests automation layer adds less than underlying model upgrades'
+  - 'Vendor-bias caveat: 2502.14297 independently evaluated Sakana AI Scientist with mixed results'
+  recommended_actions:
+  - 'Harvest four-stage tree search as experiment-scheduling template for AutoPilot'
+  - 'Deploy Automated Reviewer as cheap pre-filter before human review of AutoPilot proposals'
+  - 'Monitor for open-source release of full pipeline'
+  - 'Do NOT adopt manuscript-generation/self-review until hallucinated-citation failures resolved'
+  novelty_justification: 'High: Nature peer-reviewed treatment of end-to-end automated research with new four-stage tree search mechanism distinct from flat LLM-judgment loop. Automated Reviewer ensemble is a novel self-evaluation layer.'
+  relevance_justification: 'High: directly applicable to AutoPilot continuous optimization and meta-harness work. Tree-search scheduling and automated reviewer are harvestable patterns.'
+  verdict_justification: 'adopt_patterns, not adopt_component: four-stage tree search and Automated Reviewer are harvestable. Full pipeline premature given failure modes and 33% passing rate.'
+  literature_expansion:
+  - '2502.14297 — Evaluating Sakana AI Scientist: Bold Claims, Mixed Results'
+  - 'NeurIPS 2021 reviewer consistency study — baseline for automated reviewer human-parity'
 - id: intake-781
   arxiv_id: null
   url: https://lilianweng.github.io/posts/2026-07-04-harness/
@@ -41561,10 +41703,10 @@
   - workflow_automation
   novelty: high
   relevance: high
-  credibility_score: 9
+  credibility_score: 6  # clamped from 9 (authored on 0-9 scale; schema is 0-6)
   discovered_via: input
   ingested_date: '2026-07-08'
-  verdict: adopt_selectively
+  verdict: adopt_patterns
   authors:
   - Lilian Weng
   key_claims:
@@ -41674,147 +41816,6 @@
   - "2505.03335 — Absolute Zero (Zhao et al. 2025): reinforced self-play reasoning with zero data."
   notes: "This is a survey, not a primary paper — verdict is adopt_selectively rather than adopt_patterns, as the value is in the organizing framework and paper references. The 31 referenced papers represent a significant gap in the EPYC intake index (all absent). Priority intake candidates are the harness-optimization papers (Meta-Harness, Self-Harness, DGM, Hyperagents, ACE, MCE, AFlow, ADAS, STOP, SIA) and the critical-assessment papers (Trehan & Chopra failure modes, Bubeck p-hacking). The benchmark papers (RE-Bench, PaperBench, KernelBench) are also high-value given EPYC's benchmarking infrastructure. AI Scientist (Nature publication) and ScientistOne are notable for the auto-research domain. The file-system-as-persistent-memory and sub-agent patterns are already embodied in EPYC's harness design (AGENTS.md architecture), so those patterns are 'already integrated' in practice."
   discovered_via: input
-- id: intake-779
-  arxiv_id: '2509.19349'
-  url: https://arxiv.org/abs/2509.19349
-  source_type: paper
-  title: 'ShinkaEvolve: Towards Open-Ended And Sample-Efficient Program Evolution (Lange et al., 2025)'
-  authors:
-  - Robert Tjarko Lange (Sakana AI)
-  - Yuki Imajuku (Sakana AI)
-  - Edoardo Cetin (Sakana AI)
-  categories:
-  - evolutionary_search
-  - harness_optimization
-  - test_time_compute
-  - moe_optimization
-  novelty: high
-  relevance: high
-  credibility_score: 7
-  discovered_via: input
-  ingested_date: '2026-07-08'
-  verdict: adopt_patterns
-  key_claims:
-  - 'ShinkaEvolve: open-source evolutionary framework achieving SOTA program evolution with orders-of-magnitude fewer samples via three synergistic innovations.'
-  - 'Parent sampling with tunable exploration-exploitation: power-law rank-based selection (alpha-controlled) and weighted sampling combining sigmoid-scaled performance with inverse-offspring novelty bias.'
-  - 'Code novelty rejection-sampling: embeddings + cosine similarity threshold (eta=0.95) + LLM novelty judge to prevent population collapse.'
-  - 'Bandit-based adaptive LLM ensemble selection: UCB1 with relative-improvement rewards for non-stationary archive difficulty.'
-  - 'Meta-scratchpad: periodic synthesis of optimization principles from successful solutions for cross-island knowledge diffusion.'
-  - 'Island model with controlled migration: independent subpopulations with migration-protected best-performing programs.'
-  techniques:
-  - Power-law parent sampling (rank-based, alpha-controlled exploration/exploitation)
-  - Weighted parent sampling (sigmoid performance x inverse-offspring novelty)
-  - Code embedding-based novelty rejection sampling (cosine threshold + LLM judge)
-  - Adaptive LLM ensemble routing via UCB1 bandit with relative-improvement rewards
-  - Diff-based edits, full rewrites with immutable-block guards, crossover mutations
-  - Island model with controlled migration
-  - Meta-scratchpad: LLM-driven optimization principle synthesis
-  - Reflexion-based parsing feedback for invalid patches
-  reported_results:
-  - 'Circle Packing: new SOTA in 150 evaluations (vs AlphaEvolve''s thousands); golden-angle spiral + hybrid SLSQP/SimAnneal + adaptive temperature with reheating'
-  - 'AIME 2024: 3-stage scaffold (3 experts + 3 reviewers + 1 synthesis, 7 queries) Pareto-optimal; generalizes to 2023/2025 and transfers across gpt-4.1 variants / o4-mini'
-  - 'ALE-Bench: ~2.3% avg improvement over ALE-Agent across 10 tasks in 50 generations; ahc039 5th→projected 2nd (2880→3140)'
-  - 'MoE LBL: evolved under-specialized-expert regularization term (entropy-normalized s(P_l) x max(0, tau - f_l,i)) on 556M MoE; validated on 2.7B MoE across 3 lambdas, consistent perplexity/task-edge vs global-batch'
-  referenced_arxiv_ids:
-  - '2506.13131'
-  - '2310.00088'
-  - '2403.12030'
-  - '2507.05687'
-  - '2509.14279'
-  - '2312.00628'
-  - '2206.10912'
-  cross_references:
-    similar_intakes:
-    - 'intake-772: Darwin Gödel Machine — co-author Robert Lange, conceptual continuity with archive + parent sampling'
-    - 'intake-673: K-Search — beats ShinkaEvolve on GPU kernels but narrow domain; orthogonal innovations'
-    - 'intake-666: EvoEngineer'
-    - 'intake-669: KernelFoundry'
-    chapters: []
-    handoffs:
-    - agentic-rocm-kernel-authoring.md
-    - meta-harness-optimization.md
-  novelty_justification: 'High novelty: triad of (1) tunable parent sampling, (2) code-embedding rejection sampling with LLM arbitration, (3) UCB1 adaptive LLM ensemble routing constitutes a distinct algorithmic combination not in any single existing entry. MoE LBL discovery is a concrete new result in MoE optimization.'
-  relevance_justification: 'High across three EPYC workstreams: evolutionary controller patterns for kernel-authoring, MoE load-balancing for frontdoor routing, AIME scaffold for meta-harness optimization.'
-  verdict_justification: 'adopt_patterns, not adopt_component: general-purpose evolution library, not drop-in for orchestrator. Value is in algorithmic patterns and concrete MoE LBL + agent scaffold results.'
-  literature_expansion:
-  - 'AlphaEvolve (Novikov et al., arXiv:2506.13131) — primary closed-source baseline; not indexed standalone'
-  - 'OpenEvolve (Sharma, arXiv:2507.05687) — open-source AlphaEvolve clone; not indexed'
-  - 'Robust-KBench (Sakana AI, arXiv:2509.14279) — anti-reward-hacking for kernel benchmarks'
-  - 'ALE-Agent (Imajuku et al., 2025) — competitive programming baseline; arxiv_id not confirmed'
-- id: intake-780
-  arxiv_id: null
-  url: https://www.nature.com/articles/s41586-026-10265-5
-  source_type: paper
-  title: 'Towards end-to-end automation of AI research — The AI Scientist (Lu et al., Nature 2026)'
-  authors:
-  - Chris Lu
-  - Cong Lu
-  - Robert Tjarko Lange
-  - Yutaro Yamada
-  - Shengran Hu
-  - Jakob Foerster
-  - David Ha
-  - Jeff Clune
-  categories:
-  - auto_research
-  - agent_architecture
-  - harness_optimization
-  - evaluation
-  - tree_search
-  novelty: high
-  relevance: high
-  credibility_score: 9
-  discovered_via: input
-  ingested_date: '2026-07-08'
-  verdict: adopt_patterns
-  key_claims:
-  - 'AI Scientist automates full research lifecycle: ideation, coding, experiments, analysis, manuscript, self-review.'
-  - 'AI-generated manuscript passed ICLR 2025 ICBINB workshop peer review (6.33 avg, above threshold). Withdrawn per protocol.'
-  - 'Two modes: template-based (human code scaffold) and template-free (agentic search from scratch).'
-  - 'Automated Reviewer ensemble (5 reviews + meta-review) predicts acceptance at human-level accuracy (F1/balanced accuracy vs NeurIPS 2021 study).'
-  - 'Paper quality strongly correlates with model release date (P<0.00001) and test-time compute budget.'
-  - 'Systematic failure modes: naive ideas, incorrect implementations, hallucinated citations, duplicated figures.'
-  techniques:
-  - 'Four-stage tree search: initial investigation → hyperparameter tuning → research agenda execution → ablation studies'
-  - 'Automated Reviewer ensemble: 5 synthetic reviews + 1 meta-review for acceptance prediction'
-  - 'Semantic Scholar API integration for novelty checks and related-work generation'
-  - 'Template-based and template-free generation modes'
-  reported_results:
-  - 'ICLR 2025 ICBINB workshop: 1 of 3 manuscripts scored 6.33 avg (above acceptance threshold); withdrawn per protocol'
-  - 'Automated Reviewer: human-level F1 and balanced accuracy for conference acceptance prediction'
-  - 'Paper quality vs model release date: P < 0.00001 correlation'
-  - 'Paper quality positively correlates with test-time compute budget'
-  referenced_arxiv_ids:
-  - '2502.14297'
-  cross_references:
-    similar_intakes:
-    - 'intake-108: EvoScientist'
-    - 'intake-148: AutoResearch'
-    - 'intake-149: PraxLab'
-    - 'intake-474: Trinity'
-    - 'intake-493: Conductor'
-    - 'intake-772: Darwin Gödel Machine'
-    chapters: []
-    handoffs:
-    - autopilot-continuous-optimization.md
-    - meta-harness-optimization.md
-  contradicting_evidence:
-  - 'ICBINB is 70%-acceptance workshop, not main-track — meaningful but not strong validation'
-  - '1 of 3 passed — 33% acceptance, not reliable success rate'
-  - 'Systematic failure modes indicate system not yet reliable for unattended operation'
-  - 'P<0.00001 model-recency correlation suggests automation layer adds less than underlying model upgrades'
-  - 'Vendor-bias caveat: 2502.14297 independently evaluated Sakana AI Scientist with mixed results'
-  recommended_actions:
-  - 'Harvest four-stage tree search as experiment-scheduling template for AutoPilot'
-  - 'Deploy Automated Reviewer as cheap pre-filter before human review of AutoPilot proposals'
-  - 'Monitor for open-source release of full pipeline'
-  - 'Do NOT adopt manuscript-generation/self-review until hallucinated-citation failures resolved'
-  novelty_justification: 'High: Nature peer-reviewed treatment of end-to-end automated research with new four-stage tree search mechanism distinct from flat LLM-judgment loop. Automated Reviewer ensemble is a novel self-evaluation layer.'
-  relevance_justification: 'High: directly applicable to AutoPilot continuous optimization and meta-harness work. Tree-search scheduling and automated reviewer are harvestable patterns.'
-  verdict_justification: 'adopt_patterns, not adopt_component: four-stage tree search and Automated Reviewer are harvestable. Full pipeline premature given failure modes and 33% passing rate.'
-  literature_expansion:
-  - '2502.14297 — Evaluating Sakana AI Scientist: Bold Claims, Mixed Results'
-  - 'NeurIPS 2021 reviewer consistency study — baseline for automated reviewer human-parity'
 - id: intake-782
   arxiv_id: null
   url: https://www.anthropic.com/research/global-workspace
@@ -41830,7 +41831,7 @@
   - evaluation
   novelty: high
   relevance: medium
-  credibility_score: 8
+  credibility_score: 6  # clamped from 8 (authored on 0-9 scale; schema is 0-6)
   discovered_via: input
   ingested_date: '2026-07-08'
   verdict: adopt_patterns
@@ -41878,7 +41879,7 @@
 - id: intake-783
   arxiv_id: null
   url: https://github.com/avbiswas/fast-rlm
-  source_type: repository
+  source_type: repo
   title: 'fast-rlm — Feature-rich RLM implementation with ACP, MCP, sessions, structured IO (AVB, re-reviewed Jul 2026)'
   authors:
   - Avishek Biswas (AVB, @neural_avb)
@@ -41891,10 +41892,10 @@
   - recursive_agents
   novelty: high
   relevance: high
-  credibility_score: 7
+  credibility_score: 6  # clamped from 7 (authored on 0-9 scale; schema is 0-6)
   discovered_via: input
   ingested_date: '2026-07-08'
-  verdict: adopt_selectively
+  verdict: adopt_patterns
   key_claims:
   - 'Structured IO (Pydantic/JSON Schema) propagated to subagents via llm_query(schema=...) prevents aggregator overwhelm — validated on every FINAL with retry-not-restart semantics'
   - 'User-defined Python tools in REPL namespace; sub-agents do NOT inherit tools automatically (explicit pass required); tools must be self-contained'
@@ -41933,7 +41934,7 @@
   - 'Other MCP client implementations for agentic systems (langchain-mcp-adapters, mcp-agent frameworks)'
   - 'RecursiveLM original RLM paper for baseline comparison'
 - id: intake-784
-  arxiv_id: '2603.28052'
+  arxiv_id: null  # dedup: was '2603.28052', duplicate of intake-244 (canonical); re-intake retained, id nulled to clear collision
   url: https://arxiv.org/abs/2603.28052
   source_type: paper
   title: 'Meta-Harness: End-to-End Optimization of Model Harnesses'
@@ -41961,11 +41962,11 @@
   - '+7.7 points on text classification, 4x fewer context tokens'
   - '+4.7 points on IMO-level math (avg across 5 held-out models)'
   - 'Surpasses hand-engineered baselines on TerminalBench-2'
-  novelty: high
+  novelty: duplicate
   relevance: high
   credibility_score: 4
-  discovered_via: literature_expansion_lilian_weng
-  verdict: adopt_selectively
+  discovered_via: expansion
+  verdict: already_integrated
   ingested_date: '2026-07-08'
   cross_references:
     handoffs:
@@ -41981,7 +41982,7 @@
   - 'SEAGym (2606.17546) — evaluation environment for self-evolving harnesses'
   - 'HarnessFix (2606.06324) — trace-grounded harness repair'
 - id: intake-785
-  arxiv_id: '2505.22954'
+  arxiv_id: null  # dedup: was '2505.22954', duplicate of intake-772 (canonical); re-intake retained, id nulled to clear collision
   url: https://arxiv.org/abs/2505.22954
   source_type: paper
   title: 'Darwin Godel Machine: Open-Ended Evolution of Self-Improving Agents'
@@ -42009,11 +42010,11 @@
   - 'SWE-bench: 20.0% -> 50.0%'
   - 'Polyglot: 14.2% -> 30.7%'
   - 'Significantly outperforms baselines without self-improvement or open-ended exploration'
-  novelty: high
+  novelty: duplicate
   relevance: high
   credibility_score: 4
-  discovered_via: literature_expansion_lilian_weng
-  verdict: adopt_selectively
+  discovered_via: expansion
+  verdict: already_integrated
   ingested_date: '2026-07-08'
   cross_references:
     handoffs:
@@ -42058,7 +42059,7 @@
   novelty: high
   relevance: medium
   credibility_score: 4
-  discovered_via: literature_expansion_lilian_weng
+  discovered_via: expansion
   verdict: worth_investigating
   ingested_date: '2026-07-08'
   cross_references:
@@ -42101,8 +42102,8 @@
   novelty: high
   relevance: high
   credibility_score: 3
-  discovered_via: literature_expansion_lilian_weng
-  verdict: adopt_selectively
+  discovered_via: expansion
+  verdict: adopt_patterns
   ingested_date: '2026-07-08'
   cross_references:
     handoffs:
@@ -42153,7 +42154,7 @@
   novelty: medium
   relevance: medium
   credibility_score: 3
-  discovered_via: literature_expansion_lilian_weng
+  discovered_via: expansion
   verdict: worth_investigating
   ingested_date: '2026-07-08'
   cross_references:
@@ -42201,7 +42202,7 @@
   novelty: high
   relevance: medium
   credibility_score: 2
-  discovered_via: literature_expansion_lilian_weng
+  discovered_via: expansion
   verdict: worth_investigating
   ingested_date: '2026-07-08'
   cross_references:
@@ -42245,8 +42246,8 @@
   novelty: medium
   relevance: high
   credibility_score: 3
-  discovered_via: literature_expansion_lilian_weng
-  verdict: adopt_selectively
+  discovered_via: expansion
+  verdict: adopt_patterns
   ingested_date: '2026-07-08'
   cross_references:
     handoffs:
@@ -42289,7 +42290,7 @@
   novelty: high
   relevance: medium
   credibility_score: 3
-  discovered_via: literature_expansion_lilian_weng
+  discovered_via: expansion
   verdict: worth_investigating
   ingested_date: '2026-07-08'
   cross_references:
@@ -42327,7 +42328,7 @@
   novelty: high
   relevance: medium
   credibility_score: 4
-  discovered_via: literature_expansion_lilian_weng
+  discovered_via: expansion
   verdict: worth_investigating
   ingested_date: '2026-07-08'
   cross_references:
@@ -42369,8 +42370,8 @@
   novelty: high
   relevance: high
   credibility_score: 3
-  discovered_via: literature_expansion_lilian_weng
-  verdict: adopt_selectively
+  discovered_via: expansion
+  verdict: adopt_patterns
   ingested_date: '2026-07-08'
   cross_references:
     handoffs:
@@ -42412,7 +42413,7 @@
   novelty: high
   relevance: medium
   credibility_score: 3
-  discovered_via: literature_expansion_lilian_weng
+  discovered_via: expansion
   verdict: worth_investigating
   ingested_date: '2026-07-08'
   cross_references:
@@ -42456,8 +42457,8 @@
   novelty: medium
   relevance: low
   credibility_score: 3
-  discovered_via: literature_expansion_lilian_weng
-  verdict: monitor
+  discovered_via: expansion
+  verdict: worth_investigating
   ingested_date: '2026-07-08'
   cross_references:
     intake_entries:
@@ -42491,8 +42492,8 @@
   novelty: high
   relevance: high
   credibility_score: 4
-  discovered_via: literature_expansion_lilian_weng
-  verdict: adopt_selectively
+  discovered_via: expansion
+  verdict: adopt_patterns
   ingested_date: '2026-07-08'
   cross_references:
     handoffs:
@@ -42504,7 +42505,7 @@
   relevance_justification: 'High: directly relevant to our kernel validation pipeline for v7 candidate promotion. The seeded fuzzing could replace our current correctness checks.'
   verdict_justification: 'adopt_selectively: the seeded fuzzing methodology is harvestable for our experimental kernel validation.'
 - id: intake-797
-  arxiv_id: '2604.08224'
+  arxiv_id: null  # dedup: was '2604.08224', duplicate of intake-418 (canonical); re-intake retained, id nulled to clear collision
   url: https://arxiv.org/abs/2604.08224
   source_type: paper
   title: 'Externalization in LLM Agents: A Unified Review of Memory, Skills, Protocols and Harness Engineering'
@@ -42546,11 +42547,11 @@
   reported_results:
   - '54-page comprehensive review covering memory, skills, protocols, and harness engineering'
   - 'Systems-level framework for agent infrastructure'
-  novelty: medium
+  novelty: duplicate
   relevance: high
   credibility_score: 3
-  discovered_via: literature_expansion_lilian_weng
-  verdict: adopt_selectively
+  discovered_via: expansion
+  verdict: already_integrated
   ingested_date: '2026-07-08'
   cross_references:
     handoffs:
@@ -43387,3 +43388,519 @@
   handoffs_created: []
   notes: 'adopt_patterns (pattern-mine ONLY, low priority): a ~25-30k-token purported Fable-5 system prompt in nested XML describing conditional tool-gating, read-first SKILL.md gating, silent structured memory, and distributed safety constraints. Analytical texture for our harness/skill/tool-gating work; no net-new mechanism beyond what our shipped skill/tool-routing stack + fable5-findings already capture, and provenance is unverifiable so detail is not ground truth. RELATED but DIFFERENT from intake-801 (that is a third-party marketing guide; this is the purported raw prompt).'
   ingested_date: '2026-07-11'
+- id: intake-813
+  arxiv_id: '2606.03979'
+  url: https://arxiv.org/html/2606.03979v2
+  source_type: paper
+  title: 'Language Models Need Sleep: Learning to Self-Modify and Consolidate Memories'
+  authors:
+  - Ali Behrouz
+  - Farnoosh Hashemi
+  - Adel Javanmard
+  - Vahab Mirrokni
+  categories:
+  - memory_augmented
+  - training_distillation
+  - ssm_hybrid
+  - context_extension
+  key_claims:
+  - Deployed LLMs are static; a periodic 'sleep' phase transfers fragile short-term (in-context) memory into stable long-term (parametric) knowledge, enabling continual capability acquisition beyond the context window.
+  - A Continuum Memory System (CMS) plus knowledge-seeding / self-knowledge-seeding consolidates context into weights while preventing catastrophic forgetting via parameter expansion and periodic (de)activation.
+  - Multiple consolidation ('sleep') stages give monotonically improving continual-learning performance; the Hope architecture nearly recovers single-task performance despite sequential exposure.
+  - Consistent gains across long-context (near-perfect BABILong scaling to 10M tokens), math reasoning, knowledge incorporation, and few-shot tasks.
+  - Beyond consolidation, a co-equal 'Dreaming' stage generates synthetic training curricula via RL to drive self-improvement during the sleep phase (under-captured at initial intake).
+  techniques:
+  - Continuum Memory System (CMS)
+  - Knowledge Seeding / Self-Knowledge Seeding (SKS)
+  - Generalized Knowledge Distillation (GKD)
+  - Learning to Imitate (LTI) with RL rewards
+  - Periodic parameter (de)activation / parameter expansion
+  - SEAL (Self-Adapting Language Models) self-edit block (MIT SEAL, not the repo's SEAL control vectors)
+  - Hope architecture (Titans-family self-modifying deep-memory model)
+  - '''Dreaming'' self-improvement stage (RL-generated synthetic-curriculum rehearsal, co-equal with Memory Consolidation)'
+  reported_results:
+  - 'Class-incremental (CLINC/Banking/DBpedia): Hope outperforms baselines'
+  - 'BABILong: near-perfect score scaling to 10M tokens'
+  - 'Math (Qwen3-8B + Sleep): AIME-24 79.2, AIME-25 69.0, HMMT-25 46.1'
+  - 'Knowledge incorporation: 48.9% SQuAD single passage'
+  - 'Few-shot ARC: 80% vs SEAL 72.5%'
+  - 'Translation: Hope-3 nearly recovers single-language performance despite sequential exposure'
+  referenced_arxiv_ids:
+  - '2501.00663'
+  - '2405.04517'
+  - '2312.00752'
+  - '2506.06266'
+  - '2504.13171'
+  - '2501.12948'
+  novelty: high
+  relevance: medium
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-07-14'
+  cross_references:
+    chapters: []
+    handoffs:
+    - multiscreen-attention-evaluation.md
+    - log-linear-gated-deltanet-readiness.md
+    - orchestrator-conversation-management.md
+    experiments: []
+    intake_entries:
+    - intake-354
+    - intake-088
+    - intake-819
+    - intake-814
+  handoffs_updated:
+  - multiscreen-attention-evaluation.md
+  handoffs_created: []
+  contradicting_evidence:
+  - Single-lab (Google) arXiv v2 preprint; no peer-reviewed venue and no independent reproduction of the sleep/consolidation monotonic-improvement claims.
+  - The deployable artifact is a custom training-time architecture (Hope) requiring RL rewards, GKD, and parameter expansion; no open-source implementation and no llama.cpp/CPU path.
+  - Catastrophic forgetting is the classic failure mode this paradigm claims to solve, but the guarantee rests on the paper's own parameter-expansion scheme without external validation.
+  - Tier-2b automated web contradiction search was non-functional this run (local SearxNG returned off-topic results); caveats above are source-grounded, not corroborated by an external skeptic search.
+  novelty_justification: The 'sleep = periodic consolidation of in-context memory into weights' paradigm, the Continuum Memory System, and Self-Knowledge Seeding form a genuinely new synthesis. The index tracks this author group's architecture line (intake-354, Titans/GRM) and test-time-training (intake-088), and the paper reuses SEAL as a block, but no indexed entry covers the multi-stage sleep/consolidation continual-learning mechanism.
+  relevance_justification: Conceptually adjacent to the orchestrator's episodic-memory / distillation and autopilot/nightshift consolidation (short-term to long-term), and extends a research line already under evaluation (multiscreen-attention / Behrouz Titans family). But it is a training-time custom architecture (Hope) with no OSS implementation, no llama.cpp support, and not deployable on the CPU stack. Interesting/architectural, not a drop-in -> medium.
+  verdict_justification: 'worth_investigating: strong tie to an actively tracked architecture line (intake-354, multiscreen handoff) and a compelling map onto our episodic-memory/autopilot consolidation, but no deployable component today (custom Hope arch, training-heavy, single-lab preprint). Mirrors the sibling Behrouz entry (intake-354). NOTE: paper''s ''SEAL'' is MIT Self-Adapting Language Models, a DIFFERENT technique from the repo''s SEAL control vectors (name collision, intentionally not cross-referenced).'
+- id: intake-814
+  arxiv_id: '2607.08393'
+  url: https://arxiv.org/html/2607.08393v1
+  source_type: paper
+  title: Towards Mechanistically Understanding Why Memorized Knowledge Fails to Generalize in Large Language Model Finetuning
+  authors:
+  - Lu Dai
+  - Ziyang Rao
+  - Yili Wang
+  - Hanqing Wang
+  - Hao Liu
+  - Hui Xiong
+  categories:
+  - training_distillation
+  - benchmark_methodology
+  key_claims:
+  - 'Formalizes a ''Knowing-Using Gap'': fine-tuned LLMs reach 0.986-0.998 memorization accuracy on injected facts yet only 0.078-0.182 downstream chaining/multi-hop accuracy, with a 4.6-8.8 epoch temporal lag between memorization saturation and any generalization emergence.'
+  - 'Proposes a ''knowledge-circuit misalignment'' hypothesis: memorized representations exist internally but are not routed to computation-effective (mid) layers where reasoning circuits operate, so the fact is stored but unusable.'
+  - Introduces 'self-patching' (an activation-patching variant relocating hidden representations across layers); oracle patching lifts chaining accuracy to 0.316-0.542 and intersection accuracy from 0.774-0.874 to 0.956-0.987.
+  - A fixed heuristic (no per-instance optimization) recovers 58-75% of the oracle generalization headroom, holding cross-domain.
+  - Injected facts validated as genuinely novel (<6% zero-shot), so the gap is a fine-tuning generalization failure, not leakage.
+  techniques:
+  - self-patching
+  - activation patching
+  - causal tracing
+  - PatchScope
+  - knowledge-circuit misalignment diagnostic
+  - spatial permeation dynamics tracking
+  reported_results:
+  - Memorization accuracy 0.986-0.998
+  - Chaining generalization 0.078-0.182 (no patch) -> 0.316-0.542 (oracle patch)
+  - Intersection generalization 0.774-0.874 -> 0.956-0.987 (oracle patch)
+  - Fixed heuristic recovers 58-75% of oracle headroom
+  - Temporal lag 4.6-8.8 epochs between memorization and generalization
+  - 'Knowledge-novelty control: <6% zero-shot accuracy'
+  referenced_arxiv_ids:
+  - '2506.21551'
+  - '2501.02950'
+  - '2209.11895'
+  - '2505.24832'
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-07-14'
+  cross_references:
+    chapters: []
+    handoffs:
+    - 08-doc-to-lora-prototype.md
+    - learned-routing-controller.md
+    - retrain-routing-models.md
+    experiments: []
+    intake_entries:
+    - intake-408
+    - intake-813
+  handoffs_updated:
+  - 08-doc-to-lora-prototype.md
+  - learned-routing-controller.md
+  handoffs_created: []
+  contradicting_evidence:
+  - The central finding (fine-tuning injects facts without downstream usability) is already catalogued in intake-408 (arXiv 2501.13121). Evidence is confirmation-ALIGNED, not contradicted -> possible confirmation-bias risk on the categorical 'fine-tuning fails' claim; no failed-replication located.
+  - The strong recovery numbers (chaining -> 0.316-0.542) are from ORACLE patching, an upper bound requiring ground-truth layer targeting; the deployable fixed heuristic only recovers 58-75% of that headroom.
+  - self-patching is a mechanistic DIAGNOSTIC / interpretability intervention, not a deployable inference component (no CPU serving path).
+  - Tier-2b automated web contradiction search was non-functional this run (local SearxNG returned off-topic results).
+  novelty_justification: 'The core empirical takeaway (fine-tuning yields memorization without usability) is already in intake-408. What is new is the mechanistic layer: self-patching, knowledge-circuit-misalignment localization, the memorization-vs-generalization temporal-lag measurement, and a training-free heuristic recovering 58-75% of oracle headroom. New mechanism on a known phenomenon -> medium.'
+  relevance_justification: 'The operator''s suspicion that this bears on EPYC''s EPISODIC MEMORY construction is PARTIALLY supported, and the original blanket ''non-parametric'' framing was too strong. The Knowing-Using Gap is a property of PARAMETRIC knowledge injection via transformer fine-tuning (memorized facts stored in computation-ineffective layers, failing multi-hop chaining). EPYC''s episodic memory is retrieval-FIRST (FAISS/SQLite (embedding,action,outcome,Q) tuples fetched by similarity; MemRL Q-values; Graphiti), so the core retrieval/consolidation path is not exposed to this failure mode. HOWEVER, EPYC DOES distill episodic memory into a parametric artifact: orchestration/repl_memory/routing_classifier.py, a 2-layer MLP trained via Q-value-weighted cross-entropy SGD on distilled episodic traces (see learned-routing-controller.md, retrain-routing-models.md). The Knowing-Using Gap does NOT cleanly transfer to it -- that MLP is a single-step DISCRIMINATIVE action classifier with
+    no multi-hop factual chaining and no factual recall -- but it is the memory->weights direction the paper studies, and the archived doc-to-LoRA prototype is the path where the mechanism would most directly apply. Overall relevance MEDIUM: a live reopen-trigger for the parametric-router-from-episodic-memory workstream and for doc-to-LoRA, though not immediately actionable and corroborating (not undermining) EPYC''s retrieval-over-fine-tuning stance (intake-408).'
+  verdict_justification: 'worth_investigating (not not_applicable): a concrete reopen-trigger reference for completed/08-doc-to-lora-prototype.md, supplying the mechanistic ''why'' (knowledge-circuit misalignment) behind LoRA knowledge-injection weakness plus a training-free mitigation, and strengthening the retrieval-over-fine-tuning stance governing the episodic-memory subsystem. Not new_opportunity (no active workstream); not adopt_* (self-patching is a diagnostic, not a deployable CPU component).'
+- id: intake-815
+  arxiv_id: null
+  url: https://brianbell-x.github.io/weight-compression/
+  source_type: blog
+  title: Lossless Model Compression Experiment (Lossless BF16 Compression Research)
+  authors:
+  - brianbell-x (GitHub handle; no real name given on page)
+  categories:
+  - quantization
+  - hardware_optimization
+  - local_inference
+  key_claims:
+  - K15 charged-format sign-exponent encoding compresses GLM-5.2 753B from 1,403 GiB to 979.87 GiB (30.168% smaller) while remaining bit-for-bit lossless.
+  - A simpler byte-split representation (high-byte codebook + verbatim low byte) achieves 24.967% reduction and also decodes bit-for-bit across all 59,509 BF16 tensors.
+  - K15 prices at 11.173 bits/weight vs 12.005 for byte-split (both far above BF16's ~16 bits -> lossless, not lossy).
+  - A dense 12-bit prototype ran at 0.733x BF16 GEMV time on an A40 GPU, suggesting on-the-fly weight decompression can be FASTER than dense BF16 in a bandwidth-bound regime.
+  - Reconstruction validated exactly (bit-for-bit) across all 59,509 tensors, with a reproducible script; the GPU speedup is a microbenchmark, not end-to-end serving.
+  techniques:
+  - K15 sign-exponent encoding (4-bit codes into a 15-entry table + escape stream)
+  - Byte-split representation (high-byte codebook + indices, low byte verbatim)
+  - Entropy/variable-length coding of BF16 exponent redundancy (DFloat11/ZipNN lineage)
+  - Fixed-length register reconstruction for GPU decode (ZipServ lineage)
+  reported_results:
+  - 'K15 lossless: 30.168% smaller (1,403 GiB -> 979.87 GiB, GLM-5.2 753B)'
+  - 'Byte-split lossless: 24.967% reduction'
+  - K15 11.173 bits/weight; byte-split 12.005 bits/weight
+  - 'GEMV prototype: 0.733x BF16 time on A40 (12-bit dense)'
+  - 'Exact reconstruction: 59,509 / 59,509 tensors bit-for-bit'
+  referenced_arxiv_ids:
+  - '2411.05239'
+  - '2504.11651'
+  - '2603.17435'
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-07-14'
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - kv-cache-quantization.md
+    - reap-moe-expert-pruning.md
+    experiments: []
+    intake_entries:
+    - intake-191
+    - intake-246
+    - intake-181
+    - intake-816
+    - intake-817
+    - intake-818
+  handoffs_updated:
+  - tq3-quantization-evaluation.md
+  handoffs_created: []
+  contradicting_evidence:
+  - Personal blog, no peer review; the headline GPU speedup (0.733x BF16 GEMV) is a single-op A40 microbenchmark, not end-to-end serving, and CPU decode is untested.
+  - Lossless output is ~11-12 bits/weight, ~2.5x LARGER than production's lossy Q4_K_M (~4.5 bpw), so it does NOT reduce footprint or bandwidth below the deployed lossy path at EPYC's operating point.
+  - K15/byte-split are the author's variants of already-published lossless-NN-compression methods (DFloat11/ZipNN/ZipServ), not a new breakthrough.
+  - Its real niche is bit-exact serving of models that cannot be quantized further, which is not EPYC's current need.
+  novelty_justification: 'The corpus covers lossy weight quantization (intake-246 TQ3 Walsh-Hadamard, intake-191 TurboQuant) and lossy MoE pruning (intake-181 REAP), but had NO lossless entropy-coded weight-compression entry; the DFloat11/ZipNN/ZipServ family was entirely absent. Introduces that sub-area with a concrete bit-exact result on a 753B checkpoint. Medium (not high): author variants of published methods, personal reproduction.'
+  relevance_justification: 'EPYC CPU decode is memory-bandwidth-bound. The blog''s byte-split variant (high-byte codebook + verbatim low byte) is trivially CPU-decodable, and K15 is a novel lossless code with a bit-exact result on GLM-5.2 753B (a model family in this stack''s staging) -- so it sits at medium alongside the CPU-runnable ZipNN (intake-816) rather than the GPU-only siblings (intake-817/818). CAVEAT (corrected at audit): the headline 0.733x-vs-BF16 A40 GEMV is a GPU single-op microbenchmark and is NOT a stack-relevant bandwidth win -- against the deployed lossy Q4_K_M (~4.5 bpw), the lossless ~11-12 bpw moves ~2.5x more bytes and would be slower on the CPU decode path. Value is bit-exact serving / retention of a re-quantization source, not a footprint or bandwidth win. Medium as the CPU-decodable cluster anchor and an input URL, not for the GPU number.'
+  verdict_justification: 'worth_investigating: fills a genuine corpus gap (lossless entropy-coded BF16 weight compression + DFloat11/ZipNN/ZipServ references) and the ''decompress-on-the-fly beats dense BF16 when bandwidth-bound'' insight matches EPYC''s BW-bound thesis. Not new_opportunity/adopt_component: lossless ~11-12 bpw cannot beat deployed lossy Q4/Q8 on footprint/bandwidth; no drop-in win.'
+- id: intake-816
+  arxiv_id: '2411.05239'
+  url: https://arxiv.org/abs/2411.05239
+  source_type: paper
+  title: 'ZipNN: Lossless Compression for AI Models'
+  authors:
+  - Moshik Hershcovitch
+  - Andrew Wood
+  - Leshem Choshen
+  - Guy Girmonsky
+  - Roy Leibovitz
+  - Ilias Ennmouri
+  - Michal Malka
+  - Peter Chin
+  - Swaminathan Sundararaman
+  - Danny Harnik
+  categories:
+  - quantization
+  - local_inference
+  - hardware_optimization
+  key_claims:
+  - Model-weight compressibility comes almost entirely from the skewed floating-point EXPONENT distribution, not mantissa/sign; ZipNN splits exponent bytes into dedicated streams.
+  - Off-the-shelf lossless compression yields ~33% savings on BF16 models and >50% on some 'clean' FP32 models, with zero accuracy loss (bit-exact).
+  - ZipNN beats vanilla Zstd by ~17% ratio on BF16 while running ~62% faster (Huffman-vs-Zstd auto-selection by zero-byte density, plus 256KB chunking for GPU-parallel decode).
+  - Delta compression between similar models/checkpoints compresses to ~40-56% vs ~83% standalone.
+  - Hugging Face rollout could cut >1 exabyte/month of network traffic (~50% download-time reduction on cached models).
+  techniques:
+  - Floating-point exponent extraction into separate compression streams
+  - Byte grouping (per-byte-position streams by compressibility)
+  - Huffman entropy coding for high-entropy mantissa bytes
+  - Auto-detection between Huffman and Zstd via zero-byte density threshold
+  - 256KB independent chunking for parallel/GPU-side decompression
+  - Delta compression across similar models / checkpoints
+  reported_results:
+  - 'BF16 regular models: 66.4% of original (33.6% savings)'
+  - 'FP32 regular models: 83.2% of original (16.8% savings)'
+  - Clean FP32 (xlm-RoBERTa) 41.8-48.1%; T5-base FP32 33.7%
+  - 'Llama-3.1 BF16: 1.15 GB/s compress, 1.65 GB/s decompress (Zstd 0.71/1.02)'
+  - 'Olmo-1b FP32: 1.64/2.48 GB/s (Zstd 0.97/1.02)'
+  - 'Delta: consecutive-epoch checkpoints ~40-50%; RoBERTa variants 56% avg vs 83.7% standalone'
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-815
+  ingested_date: '2026-07-14'
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - kv-cache-quantization.md
+    - reap-moe-expert-pruning.md
+    experiments: []
+    intake_entries:
+    - intake-181
+    - intake-191
+    - intake-246
+    - intake-815
+    - intake-817
+    - intake-818
+  handoffs_updated:
+  - tq3-quantization-evaluation.md
+  handoffs_created: []
+  contradicting_evidence:
+  - Lossless BF16 savings only ~33% (~10.7 bpw); FP32 only ~17% (~26 bpw); both far above production Q4_K_M (~4.5 bpw), so ZipNN does NOT beat the deployed lossy footprint.
+  - Decode throughput only ~1.2-2.5 GB/s; on the BW-bound EPYC 9655 CPU-decode path, on-the-fly decompression competes for the same bandwidth/CPU it aims to relieve.
+  - Best ratios need 'clean' FP32 or delta between similar checkpoints, not already-quantized production GGUFs (near-maximal entropy, compress little).
+  - Headline win is a STORAGE/DOWNLOAD/network-traffic optimization (HF distribution), not inference-time bandwidth during decode.
+  novelty_justification: 'The corpus had NO lossless weight-compression entry; all neighbors (intake-181 REAP pruning, intake-191 TurboQuant, intake-246 TQ3) are LOSSY. Bit-exact exponent-split entropy coding of NN weights is a new mechanism class for the compendium. NOTE: ar5iv render was the double-blind snapshot (authors redacted); listed authors are from the published IBM Research / MIT-IBM Watson AI Lab / BU version.'
+  relevance_justification: 'EPYC CPU decode is BW-bound and production runs lossy quants (Q4_K_M ~4.5 bpw) that already undercut ZipNN''s ~11-26 bpw lossless output, so not a footprint/runtime win as-published. Stays medium because (a) ZipNN is a CPU-runnable codec (~1.2-2.5 GB/s CPU decode) and (b) it delivers real storage/download/delta savings on FULL-PRECISION (FP16/BF16) SOURCE checkpoints retained for re-quantization on the shared 120GB-SSD / 3.7TB-raid host. CORRECTION (audit): it does NOT help already-quantized GGUFs -- e.g. the ~238GB UD-IQ2 GLM staging artifact is already near-max-entropy and compresses negligibly; the benefit is specific to full-precision sources. Peer-reviewed at IEEE Cloud (arXiv Comments).'
+  verdict_justification: 'worth_investigating, not adopt: bit-exact storage/transfer savings on FP checkpoints and the exponent-skew insight are worth a look for staging/download logistics and as quant-work background, but ZipNN cannot displace lossy production quants on footprint and its decode bandwidth would fight the EPYC roofline. Not already_integrated (no lossless entry existed) nor superseded (it is the reference lossless-NN method).'
+- id: intake-817
+  arxiv_id: '2504.11651'
+  url: https://arxiv.org/abs/2504.11651
+  source_type: paper
+  title: '70% Size, 100% Accuracy: Lossless LLM Compression for Efficient GPU Inference via Dynamic-Length Float'
+  authors:
+  - Tianyi Zhang
+  - Mohsen Hariri
+  - Shaochen Zhong
+  - Vipin Chaudhary
+  - Yang Sui
+  - Xia Hu
+  - Anshumali Shrivastava
+  categories:
+  - quantization
+  - hardware_optimization
+  - inference_serving
+  key_claims:
+  - Lossless bit-exact BF16 weight compression to ~11 bits (DFloat11/DF11), ~30% model-size reduction with identical outputs (MMLU/perplexity unchanged).
+  - Compression comes purely from Huffman entropy-coding the low-entropy BF16 exponent field; sign and mantissa are stored raw.
+  - A custom GPU decompression kernel decodes weights on-the-fly during inference; compressed weights live entirely on-GPU (no CPU offload).
+  - Enables single-node lossless inference of Llama-3.1-405B (811GB BF16) on 8x80GB GPUs, and 5.33-13.17x longer context under a fixed VRAM budget.
+  - 1.85-38.83x lower latency vs BF16-with-CPU-offloading; DF11 decode up to 15.12x faster than nvCOMP and 24.87x faster than CPU->GPU transfer.
+  techniques:
+  - Dynamic-Length Float (DFloat11/DF11) lossless weight format
+  - Huffman entropy coding of BF16 exponents (sign+mantissa uncompressed)
+  - Compact LUT decomposition (2^32 decode table split into four 2^8 SRAM-resident tables)
+  - Two-phase GPU decode kernel (count-then-write with precomputed offsets)
+  - Transformer-block-level batched decompression
+  - Per-thread 5-bit gap-array bit-offset tracking for variable-length codes
+  reported_results:
+  - '~67.9-70.3% of original size (~10.87-11.25 bits/weight): Llama-3.1-8B 16.06->11.24GB, 405B 811.71->551.22GB, Qwen2.5-32B 65.53->45.53GB, Gemma-3-27B 56.84->39.95GB'
+  - 1.85-38.83x lower latency vs BF16 + CPU offloading
+  - DF11 decode up to 15.12x faster than nvCOMP; up to 24.87x faster than CPU-to-GPU transfer
+  - 5.33-13.17x longer context before GPU memory limit
+  - 'Bit-exact: Llama-3.1-8B MMLU 68.010 and WikiText2 PPL 8.649 identical to BF16'
+  referenced_arxiv_ids:
+  - '2210.17323'
+  - '2410.20650'
+  - '2502.00922'
+  - '2411.05239'
+  - '2411.08719'
+  - '2504.04823'
+  - '1311.2540'
+  - '1510.00149'
+  - '2405.06001'
+  novelty: high
+  relevance: low
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-815
+  ingested_date: '2026-07-14'
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - kv-cache-quantization.md
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries:
+    - intake-181
+    - intake-191
+    - intake-246
+    - intake-815
+    - intake-816
+    - intake-818
+  handoffs_updated:
+  - tq3-quantization-evaluation.md
+  handoffs_created: []
+  contradicting_evidence:
+  - 'Strictly GPU/CUDA-only: on-GPU decompression kernel with no CPU decode path, directly inapplicable to EPYC''s CPU-first BW-bound inference.'
+  - The secondary MI210 is ROCm/HIP, not CUDA; the custom kernel needs a full HIP port the paper does not provide.
+  - DF11's ~11 bpw is ~2.4x LARGER than production Q4_K_M (~4.5 bpw); DF11 only wins when bit-exact BF16 fidelity is mandatory, which this stack has judged unnecessary.
+  - Headline 1.85-38.83x gains are vs BF16-with-CPU-offloading (a deliberately slow baseline), not vs on-GPU lossy quantization.
+  - Decompression still materializes the full BF16 tensor on-GPU for the matmul, so it saves storage/transfer, not compute-time GEMM memory bandwidth.
+  novelty_justification: 'The compendium had NO lossless weight-compression entry; every quantization/compression item is lossy. DFloat11 opens a new axis: entropy-coded bit-exact BF16 weight compression with a purpose-built GPU decode kernel. First of its kind in the corpus.'
+  relevance_justification: 'Low for the EPYC production stack: decode is strictly GPU/CUDA (no CPU path), EPYC is CPU-first and BW-bound, and MI210 is ROCm (needs a HIP port). Production already runs lossy Q4_K_M (~4.5 bpw), beating DF11''s ~11 bpw on footprint by ~2.4x, so DF11''s only advantage (bit-exact BF16) targets a rejected requirement. Residual relevance only if the GPU path matures and a bit-exact serving need arises.'
+  verdict_justification: 'worth_investigating (not not_applicable): genuinely novel and the corpus''s first lossless-compression anchor, worth tracking. Not actionable on the CPU-first stack (GPU-only decode; footprint loses to lossy quant). Re-entry trigger: GPU/MI210 path matures AND a bit-exact BF16 serving requirement emerges; the cited NeuZip/ZipNN/Huff-LLM cluster (2410.20650 / 2411.05239 / 2502.00922) is the natural expansion for a lossless sub-thread. Peer-reviewed at NeurIPS 2025 (arXiv Comments).'
+- id: intake-818
+  arxiv_id: '2603.17435'
+  url: https://arxiv.org/abs/2603.17435
+  source_type: paper
+  title: 'ZipServ: Fast and Memory-Efficient LLM Inference with Hardware-Aware Lossless Compression'
+  authors:
+  - Ruibo Fan
+  - Xiangrui Yu
+  - Xinglin Pan
+  - Zeyu Li
+  - Weile Luo
+  - Qiang Wang
+  - Wei Wang
+  - Xiaowen Chu
+  categories:
+  - hardware_optimization
+  - inference_serving
+  - quantization
+  - local_inference
+  key_claims:
+  - Entropy-based lossless codecs (variable-length bitstreams) architecturally mismatch GPU/Tensor-Core execution; a fixed-length encoding removes the serialization bottleneck and enables branch-free parallel decode.
+  - BF16 exponent fields are highly skewed (top-7 exponents cover ~95% of weights; field entropy 2.57-2.74 bits vs 8 allocated), enabling ~3-bit fixed-length lossless coding of the exponent.
+  - First lossless-compression system claiming BOTH storage savings AND substantial LLM inference acceleration (not just a storage/transfer codec).
+  - '''Load-compressed, compute-decompressed'' fused GEMM keeps weights compressed in HBM, decompressing into Tensor Core registers, eliminating intermediate decompressed buffers.'
+  - Frees weight memory reallocatable to KV cache (~1.70x larger), enabling near-datacenter throughput on consumer GPUs.
+  techniques:
+  - 'TCA-TBE (Tensor-Core-Aware Triple Bitmap Encoding): three 64-bit bitmaps encoding 3-bit codewords for constant-time parallel decode'
+  - 'ZipGEMM: fused decompression-GEMM kernel on compressed weights with a two-level hierarchical software pipeline'
+  - 'Stage-aware execution: decoupled pre-decompression in prefill (~4% overhead), fused ZipGEMM in memory-bound decode'
+  - Fixed-length (vs variable-length entropy) codeword design to avoid bitstream serialization stalls
+  reported_results:
+  - Model size reduction up to 30% (~1.51x lossless ratio); weight footprint 71.3-72.4% of original
+  - 'ZipGEMM vs cuBLAS: 1.31x/1.36x avg (RTX4090/L40S), up to 1.71x/2.21x peak'
+  - Decompression vs DFloat11 5.53x, DietGPU 2.14x, nvCOMP 1.83x faster
+  - End-to-end throughput vs vLLM 1.22x avg (up to 1.66x at BS=32, 2048-token gen); vs Transformers 3.18x; vs DFloat11 8.52x
+  - Latency reduction vs vLLM 17.60% avg; vs Transformers 60.79%
+  referenced_arxiv_ids:
+  - '2210.17323'
+  - '2310.06825'
+  - '2407.21783'
+  - '2404.00456'
+  - '2408.01803'
+  - '2505.19433'
+  - '2311.04902'
+  - '2406.02924'
+  novelty: high
+  relevance: low
+  credibility_score: 4
+  verdict: adopt_patterns
+  discovered_via: expansion
+  expanded_from: intake-815
+  ingested_date: '2026-07-14'
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - kv-cache-quantization.md
+    - dynamic-stack-concurrency.md
+    experiments: []
+    intake_entries:
+    - intake-815
+    - intake-816
+    - intake-817
+    - intake-181
+    - intake-191
+    - intake-246
+  handoffs_updated:
+  - tq3-quantization-evaluation.md
+  handoffs_created: []
+  contradicting_evidence:
+  - 'GPU/CUDA-only: ZipGEMM and TCA-TBE are built on NVIDIA Tensor Core register layout with cuBLAS/vLLM FP16 baselines; not portable to EPYC CPU decode or MI210/gfx90a ROCm without full kernel re-engineering.'
+  - 'Footprint dominated by our lossy path: production serves lossy Q4_K_M/Q8 (~4x reduction); ZipServ''s 30% (1.51x) lossless reduction is far less aggressive.'
+  - Baselines are uncompressed FP16 serving (vLLM/Transformers), NOT 4-bit quantized serving, so throughput/latency wins do not translate into a win over our quantized stack.
+  - ASPLOS'26 acceptance is declared in the arXiv Comments metadata field (author-declared, the same basis as ZipNN's IEEE Cloud and DFloat11's NeurIPS 2025 tags); corroborated to that standard, not independently verified by arXiv.
+  - referenced_arxiv_ids were auto-extracted by the fetch summarizer (untrusted) and not individually verified; malformed placeholder IDs surfaced by the source were excluded to avoid fabrication.
+  novelty_justification: Corpus grep surfaced only LOSSY compression (reasoning/prompt compression, KV-cache quantization) and lossy quant (TQ3/GPTQ family). No existing entry for lossless WEIGHT compression as an inference-serving accelerator; DFloat11/DietGPU/nvCOMP/ZipNN are absent. A genuinely new sub-area for the compendium.
+  relevance_justification: Directly resonant with the CPU-decode-is-bandwidth-bound thesis (fewer weight bytes per decode step attacks exactly our bottleneck) and the freed-memory->larger-KV-cache angle touches dynamic stack assembly. But the mechanism is NVIDIA-Tensor-Core-locked, benchmarked only vs FP16, and its 1.51x lossless footprint is superseded by production lossy Q4_K_M on the memory axis. Practical drop-in value on EPYC/MI210 is low; conceptual value is real -> low (not none).
+  verdict_justification: 'adopt_patterns (not adopt_component): transferable ideas are (1) exploiting the skewed BF16 exponent distribution for a fixed-length branch-free lossless code and (2) the ''load-compressed, compute-decompressed'' fused-kernel pattern keeping weights compressed in the bandwidth-critical path, both worth evaluating for a CPU/AVX-512 or ROCm decode kernel where exact weights are required. The shipped artifact (ZipGEMM/TCA-TBE) is CUDA/Tensor-Core-specific and its lossless footprint is dominated by our lossy quant; not adoptable as a component and does not gate any keep/deploy decision (GPU-only, ASPLOS''26-accepted, FP16-relative results).'
+- id: intake-819
+  arxiv_id: '2504.13171'
+  url: https://arxiv.org/abs/2504.13171
+  source_type: paper
+  title: 'Sleep-time Compute: Beyond Inference Scaling at Test-time'
+  authors:
+  - Kevin Lin
+  - Charlie Snell
+  - Yu Wang
+  - Charles Packer
+  - Sarah Wooders
+  - Ion Stoica
+  - Joseph E. Gonzalez
+  categories:
+  - context_management
+  - memory_augmented
+  - autonomous_research
+  - agent_architecture
+  - cost_aware_routing
+  key_claims:
+  - Decomposing an LLM interaction into an offline sleep-time phase S(c)->c' (enrich raw context before any query) and a cheap online phase T_b(q,c')->a reduces the test-time compute to hit a given accuracy by ~5x on Stateful GSM-Symbolic and AIME.
+  - 'Sleep-time pre-computation is amortizable: sharing one enriched context c'' across ~10 related queries drops average cost-per-query by ~2.5x.'
+  - Yields Pareto improvements on the test-time-compute vs accuracy frontier, with absolute gains up to ~13% (GSM-Symbolic) and ~18% (AIME) at matched test-time budgets.
+  - Effectiveness scales with query predictability from context; benefit collapses when queries are unpredictable.
+  - At very high test-time budgets, standard test-time-only scaling overtakes sleep-time compute -> it is a low/mid-budget latency-and-cost lever, not a strict dominator.
+  techniques:
+  - 'Two-phase offline/online decomposition: sleep-time context enrichment S(c)->c'' run BEFORE the query, then minimal-budget online answering T_b(q,c'')'
+  - Function-calling rethink_memory operator (MemGPT/Letta lineage) storing inferences likely useful for future queries
+  - Amortization of pre-computed enriched context across related queries
+  - 'New harnesses: Stateful GSM-Symbolic and Multi-Query GSM-Symbolic (context/query split)'
+  reported_results:
+  - ~5x reduction in test-time compute at matched accuracy on Stateful GSM-Symbolic and AIME
+  - Up to +13% (GSM-Symbolic) and +18% (AIME) accuracy at fixed test-time budget
+  - ~2.5x lower avg cost per query amortizing one sleep-time context across ~10 related queries (the ~10 count is body-derived, not abstract-stated)
+  - ~1.5x fewer test-time tokens on SWE-Features at low budget (body-derived, not abstract-confirmed)
+  referenced_arxiv_ids:
+  - '2412.16720'
+  - '2410.05229'
+  - '2408.16737'
+  - '2412.19437'
+  - '2407.21787'
+  - '2408.03314'
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  verdict: adopt_patterns
+  discovered_via: expansion
+  expanded_from: intake-813
+  ingested_date: '2026-07-14'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - autopilot-handoff-hint-distillation.md
+    - unified-trace-memory-service.md
+    - engram-conditional-memory.md
+    - frontier-f3-data-flywheel.md
+    - evidence-plane-event-sourcing-and-narrative.md
+    experiments: []
+    intake_entries:
+    - intake-813
+    - intake-746
+    - intake-747
+    - intake-413
+    - intake-418
+    - intake-155
+    - intake-135
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  handoffs_created: []
+  contradicting_evidence:
+  - Sleep-time compute does NOT help when queries are unpredictable from context (paper Fig. 10); autopilot precompute only pays off where future workload is inferable from current state.
+  - At very high test-time budgets, plain test-time-only scaling beats sleep-time compute; the offline lever is not free upside at all operating points.
+  - 'Context staleness kills the benefit: when context changes between interactions, pre-computed c'' is invalidated; maps to EPYC autopilot artifacts going stale when the stack/config/kernel changes (FROZEN registry / stale-process warnings).'
+  - 'Commercial framing: sleep-time compute advantages Letta''s memory-agent product, so read the ''always amortize'' narrative against our own workload predictability.'
+  novelty_justification: Constituent ideas pre-exist in the KB (offline precomputation, memory consolidation intake-155/413/418, test-time-compute scaling intake-746/747). The genuine contribution is the clean two-phase S(c)->c' / T_b(q,c') formalization, the predictability-vs-benefit characterization, cross-query amortization analysis, and the Stateful/Multi-Query GSM-Symbolic benchmarks. Formalization + measurement, not a new mechanism -> medium.
+  relevance_justification: 'Strong conceptual map onto EPYC''s existing offline machinery: autopilot/nightshift already perform overnight autonomous optimization (sleep-time compute), and the knowledge-distiller / handoff-hint-distillation and unified-trace-memory-service are exactly ''pre-compute reusable enriched context so the online path is cheap.'' Supplies a principled gate (precompute only where the future query is predictable; watch staleness) and amortization economics our precompute lacks explicit framing for. Methodological pattern, not a drop-in for a BW-bound CPU stack; core numbers are hosted reasoning-model agents on math benchmarks -> medium.'
+  verdict_justification: 'adopt_patterns: EPYC already runs the offline-compute loop this paper formalizes, so neither net-new (not new_opportunity) nor already implementing this specific framing (not already_integrated). Transferable patterns: (1) an explicit predictability gate deciding what autopilot/distiller should precompute, (2) cross-query/cross-task amortization accounting for offline artifacts, (3) staleness invalidation of precomputed context tied to stack/config changes. Adopt the framing and caveats; no importable artifact (hosted-agent + math-benchmark harness).'
