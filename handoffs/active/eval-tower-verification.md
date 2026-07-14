@@ -206,6 +206,17 @@ loads `6,701` candidate-level items across HE-R/HE-R+/MBPP-R/MBPP-R+ with
 - [x] Surface the RLVR reward view in report-only `METRIC rlvr_*` lines. ✅ 2026-07-11 — `epyc-orchestrator` wires `rlvr_reward_from_result()` into `EvalResult.to_grep_lines()` only; objectives, SafetyGate verdicts, Pareto archive state, and journal schema remain unchanged.
 - [x] Wire the RLVR reward view into `eval_details`/journal payloads after reviewing the HIGH GitNexus blast radius for `EvalTower._aggregate`; do not fold the reward into Pareto/safety authority without operator sign-off. ✅ 2026-07-11 — `epyc-orchestrator` commit `69445d43` avoids the high-risk aggregate path and instead adds the observe-only `eval_details["rlvr_reward"]` payload at the main-loop journal assembly point (`_run_loop_inner`, GitNexus LOW risk: 2 upstream dependants, 0 affected processes). Objectives, SafetyGate verdicts, Pareto archive state, and planner scoring remain unchanged.
 
+**2026-07-14 quiet-window export evidence**: the offline exporter was run
+against `epyc-orchestrator/orchestration/autopilot_journal_1.jsonl` and wrote
+`epyc-orchestrator/orchestration/reports/ap27_rlvr_environment_20260714T172226Z_quietwindow.jsonl`
+plus summary `...summary.json`. Result: `351` rows exported, `102` marked
+`ready_for_training`, `249` blocked, `11` skipped as non-eval rows; blocker
+counts are dominated by `auroc_missing_or_degenerate=249` with one
+`question_results_missing`. Tier mix: `T0=102`, `T1=239`, `T2=6`, `T3=4`. This
+is useful live-environment evidence for AP-27's offline bridge, but it does not
+change the remaining gates: EV-4 still needs a real calibration baseline, and
+Ouro P7 integration is still required before AP-27 can use a verifier model.
+
 **Dependencies**: EV-1–4 provide the calibration infrastructure. Ouro P7 provides the sentinel model.
 
 ### EV-8: Diversity metrics (NEW 2026-04-22, DD4 / intake-441)
