@@ -2,8 +2,8 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-07-11 (planner spend-breaker opt-in hardening, PID-age-verified preflight gate)
-**Sources**: 67+ documents (added 2026-07-05 RI-10 decision-ready + hold_quality_unscored packet, N9 MLP rollout attestation bracket, episodic FAISS 95.7% repair; 2026-07-04 X-MAS enforce cutover, deterministic canary sampler, DAR-4b null sweep, A9 source-reward passthrough; prior 2026-07-04 RI-10 arm-attributed canary status refresh, 2026-07-03 RI-10 gate hardening and DAR-1 current replay, 2026-06-26 LRC P4.5 executed [null result])
+**Last compiled**: 2026-07-14 (planner spend-breaker hardening, PID-age-verified preflight gate, runtime-facts-backed stack-service truth)
+**Sources**: 68+ documents (added 2026-07-14 runtime-facts-backed stack-service truth; 2026-07-05 RI-10 decision-ready + hold_quality_unscored packet, N9 MLP rollout attestation bracket, episodic FAISS 95.7% repair; 2026-07-04 X-MAS enforce cutover, deterministic canary sampler, DAR-4b null sweep, A9 source-reward passthrough; prior 2026-07-04 RI-10 arm-attributed canary status refresh, 2026-07-03 RI-10 gate hardening and DAR-1 current replay, 2026-06-26 LRC P4.5 executed [null result])
 
 ## Summary
 
@@ -33,6 +33,14 @@ The 13 intake entries tagged as routing_intelligence are predominantly `already_
 
 - **Local planner runs keep the spend breaker disabled by default, and the authority daemon still pins the env to `0`.** Orchestrator `e8359f74` changed the coordinator default from opt-out to default-off when `AUTOPILOT_PLANNER_SPEND_BREAKER` is absent, while the canonical authority daemon launch path still exports `AUTOPILOT_PLANNER_SPEND_BREAKER=0`. Live restart verification after the fix observed the env at `0`, so the planner remains opt-in for any spend-breaker behavior. Sources: [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [progress 2026-07/2026-07-11.md](../progress/2026-07/2026-07-11.md).
 - **Preflight now refuses to bless a daemon that is not age-verified current-code.** Orchestrator `c69ce8ae` added `pid_age_verified_landed` stamping to the restart advisor and made `start_fable_authority_daemon.py --preflight` exit nonzero unless the live PID is verified current. The live rejection on Dirac's MH-9 worker is currently expected: unreviewed runtime edits to `controller_io.py` make PID `1039446` stale, and the failing preflight is proof that the gate is doing its job. Sources: [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [progress 2026-07/2026-07-11.md](../progress/2026-07/2026-07-11.md).
+
+### New (2026-07-14, runtime-facts-backed stack-service truth)
+
+> **Review flag (project-wiki writer-evidence policy):** model-compiled, not adopted until human or measured review.
+
+- **Dashboard stack expectations now read validated runtime-selected services when the operator has not overridden NUMA mode.** Orchestrator `db62aa3f` extended the runtime facts manifest so stack lifecycle boundaries record `runtime_stack.stack_numa_mode`, `selected_servers`, `selected_ports`, and effective paths, then taught `expected_stack_services()` to prefer the validated runtime-selected server set when no explicit `ORCHESTRATOR_STACK_NUMA_MODE` override is present. That closes the immediate mismatch between persisted stack state and the dashboard's expected service list without reintroducing the old env/PID fallback path. Sources: [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [progress 2026-07/2026-07-14.md](../progress/2026-07/2026-07-14.md), `epyc-orchestrator` `db62aa3f`.
+
+- **The completion boundary is intentionally partial, not a full reader rewrite.** The active audit handoff keeps the broader W1 reader-consolidation follow-up open because a raw live reader insertion for `/mnt/raid0/llm/tmp/orchestrator_runtime_facts.json` previously tripped a HIGH upstream impact surface across dashboard health/topology/node detail/snapshot/tap flows. The new slice is the safe, validated step: runtime facts are now persisted at stack boundaries and consumed by the dashboard service expectation helper only where the override contract allows it. Sources: [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [progress 2026-07/2026-07-14.md](../progress/2026-07/2026-07-14.md), `gitnexus impact expected_stack_services --repo epyc-orchestrator --direction upstream --summary-only`.
 
 ## Key Findings
 
