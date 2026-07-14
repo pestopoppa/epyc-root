@@ -94,6 +94,16 @@ for the specific W8 candidate-generation blocker because they cannot create the
 replayable candidate row W8 needs. They remain valid for coverage, T2/T3
 validation, and non-W8 work.
 
+**Blacklist freshness audit - 2026-07-14**: preflight blacklist scanning now
+walks journal batch shards, including `orchestration/autopilot_journal_1.jsonl`,
+instead of reading only the base shard. That audit surfaced infra-contaminated
+and stale blacklist entries, so the prompt wording now calls out blacklist
+freshness, expiry, and purge scope explicitly. Retry-only re-exploration is
+allowed for the audited infra cases we classified as repeatable transport
+failures rather than durable semantic dead ends: trial `1302`
+(`langgraph_coder`, connection-refused) and seed-batch no-progress infra cases
+trial `1317` (`n=50`) and trial `1320` (`n=10`).
+
 **Prior status — 2026-07-04T21:24Z W8 authority-env checkpoint**: W4/W6 authority wiring remains current, and AutoPilot is live as PID `1122670` at trial `1146` with `--max-trials 2000`, launched through `scripts/autopilot/start_fable_authority_daemon.py` in `epyc-orchestrator` `07883e63`. The launcher enforces `AUTOPILOT_SEQ_VERDICT=1`, W6 audit flags, `AUTOPILOT_PLANNER_HINTS=1`, `AUTOPILOT_TOOL_SENTINELS=1`, planner timeout `600`, and stepping stones. Strict Fable gate smoke (`fable5_gate_report.py --json --strict --require-current-code`) is clean: `ready=true`, blockers `[]`, and the only active next action is `collect_w8_promotion_eval_evidence`; phase health is current-code clean at trial `1146` in `planner_invoke` with `prompt_chars=62902`. The immediately prior bare-env daemon PID `3796930` was stopped after Fable detected missing authority/tool env; recovery journaled trial `1137` as `autopilot_killed_mid_trial`. `epyc-orchestrator` `0a6336c7` fixes the last W8 replay/report mismatch found in trial `1135`: benign AP-24 `keep_revert_decision=excluded` rows that are still `seq.state=accumulating` are now replay-eligible in AutoPilot, while reverted or failure-bearing excluded rows remain terminal. This aligns the live replay selector with the earlier report-plane fix `076699ff`, so the six stale accumulating W8 candidates are no longer silently skipped. The remaining W8 blockers are evidence, not wiring: `combined_E_below_required`, `fresh_promotion_eval_required`, and `seq_confirmation_required`. `epyc-orchestrator` `9b7a9ebe` closes the last StrategyStore startup-only path by refreshing planner-hint prompt rows and convention bindings before each controller prompt; with `AUTOPILOT_PLANNER_HINTS=1`, newly seeded StrategyStore rows are visible to planner prompts each turn. `epyc-orchestrator` `8185c0f7` extends `restart_readiness_report.py` with `--require-current-code`, phase heartbeat path/staleness controls, and Fable strict follow-up wiring, so W4/W6 restart/cutover checks fail closed when the live AutoPilot process predates runtime source changes.
 
 **Current checkpoint — 2026-07-05T14:00Z**: AutoPilot is live as PID `2370903`

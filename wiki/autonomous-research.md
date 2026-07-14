@@ -35,6 +35,8 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 
 - **Tool-evidence failures now stay failed instead of becoming poisoned success telemetry.** Gate-3 hard-passed the tool sentinel lane (`get_eval_secret` 7/7, no-tool isolation passed), while the soft `web_research` path now fails closed as `search_failed` rather than returning a synthetic success. A forced probe after reload still recovered a relevant Python.org hit through DDG fallback while preserving `success:true`, which makes the distinction between a valid fallback and a poisoned query explicit in the record. Sources: [orchestration robustness audit](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [Progress 2026-07-14](../progress/2026-07/2026-07-14.md), [HALO Spike Results](../research/deep-dives/halo-spike-results-2026-07-14.md).
 
+- **Blacklist freshness is now treated as a first-class evidence-plane concern, not just a runtime filter.** The blacklist preflight now scans journal batch shards such as `autopilot_journal_1.jsonl`, distinguishes stale or infra-contaminated entries from durable bans, and labels freshness / expiry / purge scope in the planner prompt so retry-only re-exploration stays limited to clearly audited transport failures. Sources: [evidence-plane ledger handoff](../handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md), [Progress 2026-07-14](../progress/2026-07/2026-07-14.md).
+
 ## Key Findings
 
 ### New (2026-07-03, evidence-plane integrity is asymmetric + gradient-free ES is the one card-viable training path)
