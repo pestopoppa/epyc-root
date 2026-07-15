@@ -68,6 +68,15 @@ orchestration session: `uv run ruff check scripts/autopilot/planner_coordinator.
 and `uv run pytest tests/unit/test_autopilot_planner_coordinator.py -q`
 returned `52 passed`.
 
+**Current checkpoint - 2026-07-15T00:00Z planner-guard sidecar checkpoint**:
+the main implementation thread is still actively editing/restarting around the
+planner-guard patch set. The working tree currently carries uncommitted changes
+in `scripts/autopilot/planner_coordinator.py`, `scripts/autopilot/autopilot.py`,
+`scripts/autopilot/start_fable_authority_daemon.py`, and the two unit tests
+under `tests/unit/` named above. This sidecar did not change code, restart any
+process, or run validation; it only recorded the checkpoint so the next pass
+can resume from the live in-flight state.
+
 The stale canary trial `1352` ran to the paused boundary; the pause latch was
 set and then cleared, and the old supervisor/child PIDs `2381139` / `2381140`
 were stopped and verified gone. A new authority daemon started at
@@ -1424,3 +1433,38 @@ paired authority core.
 
 ### Rider on existing deferred work (not standalone)
 - [ ] **When AP-29 KnowledgeDistiller is wired** (currently deferred — see AP-29), apply an explicit **predictability + staleness gate** to it: what to precompute, for how many consumers, invalidate on stack/config change (framing from intake-819 + the 2026-05-20 predictability-co-objective note; adopt_patterns only, no importable artifact). This is a rider on AP-29, **not** new standalone scaffolding.
+
+## Seq-Gate Containment Checkpoint — 2026-07-15
+
+Deterministic planner guard work was already recorded earlier. This checkpoint
+captures the seq preflight containment result only.
+
+- The orchestrator seed-fallback dead-loop is fixed, so the seq preflight
+  fallback path no longer loops on the old failure mode.
+- Live restart trial `1399` halted with `_dispatch_deficiency=seq_gate_preflight_blocked`
+  and `last_invalid_reason=seq_gate_preflight_alpha_wealth_exhausted`.
+- No `in_flight_trial` remained after the halt.
+- Checkpoint validation passed with `160` tests passing.
+- Remaining blocker is the formal OP-1 / P0.2 MEASUREMENT amendment work
+  around alpha wealth and rate-axis reachability; the `seq_p0_2_bridge`
+  consent path is now enabled and the bridge daemon has been resumed.
+
+## OP-1 / P0.2 Bridge Completion — 2026-07-15
+
+- [x] Bridge consent was granted in `orchestration/authority_consent.json`, then
+  re-locked to `root:root` `0444` with `chattr +i` by the operator, and the
+  live bridge status probe now reports `seq_p0_2_bridge_status().enabled=true`.
+  ✅ 2026-07-15
+- [x] `scripts/autopilot/start_fable_authority_daemon.py` resumed AutoPilot with
+  supervisor PID `4071732` / child PID `4071734`, log
+  `/mnt/raid0/llm/tmp/autopilot_fable_authority_20260715T215252Z.log`, and
+  runtime facts `AUTOPILOT_SEQ_P0_2_BRIDGE=1`, `code_stale=false`,
+  `seq_gate_reachability_preflight.status=passed`,
+  `reachability.status=rate_axis_advisory_bridge`,
+  `p0_2_bridge.enabled=true/env_enabled=true/consent_enabled=true`,
+  planner primary=`claude`, critic=`codex_critic`, fallback=`claude`, and
+  spend breaker=`0`. ✅ 2026-07-15
+- [x] Trial `1399` dispatched as `numeric_trial memrl_retrieval.semantic_k=15`;
+  the planner also attempted a stale invalid
+  `repl_executor.tool_activation_threshold` draft, and the critic rejected it
+  before substituting the valid memrl action. ✅ 2026-07-15
