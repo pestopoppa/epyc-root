@@ -472,3 +472,11 @@ Watch list: SHANKS (arxiv:2510.06917) is sibling not supersession — different 
 
 ### New Related Research (deep-dived)
 - **[intake-691] "Holo-3.1-4B"** (HF: Hcompany/Holo-3.1-4B, Apache-2.0) — H Company GUI/computer-use VLM, `Qwen3_5ForConditionalGeneration` arch, AndroidWorld 4B 72% (self-reported), native function-calling. **Deep-dive 2026-06-12: PARKED (roadmap + runnability gated).** Ships **BF16 safetensors only — no GGUF/mmproj for the 4B** (only the 35B-A3B has official GGUF; the intake-694 roundup conflated the two); Qwen3.5 vision/mmproj on llama.cpp is still fragile (ggml-org #21268/#21271). Grounding capability is **redundant** with the deployed Qwen3-VL-30B (:8087) / Qwen2.5-VL-7B (:8086). **Only** if a GUI-agent workload appears AND the deployed Qwen-VLs prove inadequate on field-placement IoU: A/B Holo-3.1-4B (Apache-2.0, native fn-calling) vs LocateAnything-3B (intake-680) via a throwaway transformers-CPU worker — never a GGUF stack role. See `research/deep-dives/2026-06-12-holo-3.1-4b-gui-vlm.md`.
+
+## Research Intake Update — 2026-07-16
+
+### New Related Research — Qwen-Audio-3.0-Realtime (monitor-only)
+- **[intake-826] "Qwen-Audio-3.0-Realtime (Plus + Flash)"** (X/Twitter promo; resolved via a Twitter mirror — third-party news account 智东西/@Chinazhidx, NOT the Qwen team)
+  - Relevance: Alibaba announced two new realtime-audio models (Plus + Flash tiers) live on the **Bailian cloud console — API-only, no open weights / GGUF / checkpoints**. The post carries zero technical substance (no architecture, codec, latency, or benchmarks) — a contentless link-drop.
+  - Verdict **not_applicable** (nothing to port to the CPU/llama.cpp path), but **not hard-rejected** per research-intake policy. Direct parallel to intake-432 (Qwen3.5-Omni), where the same API-only / no-CPU-path pattern led to non-adoption.
+- [ ] Monitor-hook (operator-review candidate): watch for a **Qwen-Audio-3.0 open-weights / GGUF** release via this handoff's existing Alibaba audio/omni monitoring loop (alongside Qwen3-Omni-30B-A3B); re-intake the primary technical release note if/when Alibaba publishes weights or details.

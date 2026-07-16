@@ -79,3 +79,16 @@ This stub exists because the user explicitly framed Hy-MT2 itself as "useful spe
   - Relevance: the Hy3 model card references **Tencent AngelSlim** for its FP8 variant (`Hy3-FP8`) and compression toolchain — a concrete, current production model exercising the same AngelSlim path this stub tracks. Confirms AngelSlim is being applied to flagship-scale MoE, not just the Hy-MT2 MT family already noted here.
   - Delta from current approach: adds a large-MoE FP8 datapoint to the AngelSlim evaluation surface; watch whether AngelSlim FP8/sub-2-bit recipes for `hy_v3` land alongside the community GGUF port ([intake-808], `hy3-mtp` fork). See [[speculative-decoding-mtp-refresh]] for the Hy3 MTP/GGUF thread.
 - [ ] When evaluating AngelSlim compression, include the Hy3-FP8 flagship-MoE case as a test vector (operator-gated).
+
+## Research Intake Update — 2026-07-16
+
+### New Related Research — official AngelSlim Hy3 GGUF resolves the sub-2-bit-recipe watch (NEGATIVE)
+- **[intake-824] "AngelSlim/Hy3-GGUF"** (HF, official Tencent AngelSlim org) + **[intake-823] "vcruz305/Hy3-GGUF"** (community re-pack)
+  - Finding: the **official AngelSlim GGUF distribution of Hy3 (Hunyuan v3, 295B/21B-active MoE) ships VANILLA llama.cpp quants — IQ1_M (~90 GB) and Q4_K_M (~183 GB), with/without a baked MTP head — NOT Sherry 1.25-bit / STQ1_0.** No FP8 in this GGUF repo (FP8 lives on the base `tencent/Hy3` card).
+  - **Resolves the 2026-07-11 watch-item above** ("whether AngelSlim FP8/sub-2-bit recipes for `hy_v3` land alongside the community GGUF port"): for this official upload the answer is **negative** — AngelSlim shipped standard mixed-precision quants for hy_v3, not its own Sherry recipe. Consistent with the Scope Correction (2026-05-21): Sherry is QAT-gated and the only public Sherry-QAT'd weights remain Hy-MT1.5-1.8B / HY-1.8B-2bit.
+  - vcruz305 (intake-823) is a second community re-pack with a fuller ladder (Q8_0→IQ1_M) plus DGX Spark GB10 MTP numbers (IQ2_M +27%, IQ1_M +58% with MTP). Those are CUDA unified-memory (compute-bound) — they corroborate the "compute-bound gains, BW-bound net-neutral" pattern and do not change the EPYC-CPU conclusion.
+- **[intake-828/829] BitNet + BitNet b1.58** (arxiv:2310.11453 / 2402.17764) — the foundational ternary references, now indexed; they underpin the Sherry / Tequila QAT track this stub evaluates (both are train-from-scratch QAT, the same gating limitation documented above).
+
+### Task update
+- [x] Watch-item resolved (2026-07-11 update): AngelSlim's official Hy3 GGUF (intake-824) shipped **vanilla IQ1_M/Q4_K_M for hy_v3, not Sherry/STQ1_0** — no new sub-2-bit AngelSlim recipe for a base we run; Sherry adoption remains QAT-gated as documented. ✅ 2026-07-16
+- [ ] Operator-review candidate: the official IQ1_M (~90 GB, fits the ~680 GB free-disk budget) is an authoritative GGUF path if the deferred, operator-gated Hy3 architect-candidacy bench is ever run — see [[speculative-decoding-mtp-refresh]].

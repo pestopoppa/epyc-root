@@ -43904,3 +43904,657 @@
   novelty_justification: Constituent ideas pre-exist in the KB (offline precomputation, memory consolidation intake-155/413/418, test-time-compute scaling intake-746/747). The genuine contribution is the clean two-phase S(c)->c' / T_b(q,c') formalization, the predictability-vs-benefit characterization, cross-query amortization analysis, and the Stateful/Multi-Query GSM-Symbolic benchmarks. Formalization + measurement, not a new mechanism -> medium.
   relevance_justification: 'Strong conceptual map onto EPYC''s existing offline machinery: autopilot/nightshift already perform overnight autonomous optimization (sleep-time compute), and the knowledge-distiller / handoff-hint-distillation and unified-trace-memory-service are exactly ''pre-compute reusable enriched context so the online path is cheap.'' Supplies a principled gate (precompute only where the future query is predictable; watch staleness) and amortization economics our precompute lacks explicit framing for. Methodological pattern, not a drop-in for a BW-bound CPU stack; core numbers are hosted reasoning-model agents on math benchmarks -> medium.'
   verdict_justification: 'adopt_patterns: EPYC already runs the offline-compute loop this paper formalizes, so neither net-new (not new_opportunity) nor already implementing this specific framing (not already_integrated). Transferable patterns: (1) an explicit predictability gate deciding what autopilot/distiller should precompute, (2) cross-query/cross-task amortization accounting for offline artifacts, (3) staleness invalidation of precomputed context tied to stack/config changes. Adopt the framing and caveats; no importable artifact (hosted-agent + math-benchmark harness).'
+- id: intake-820
+  arxiv_id: null
+  url: https://prismml.com/news/bonsai-27b
+  source_type: blog
+  title: 'Announcing Bonsai 27B: The First 27B-Class Model to Run on a Phone'
+  authors:
+  - PrismML
+  categories:
+  - quantization
+  - local_inference
+  - multimodal
+  - speculative_decoding
+  key_claims:
+  - 'First 27B-class model claimed to run on a phone: ternary {-1,0,+1} at ~1.71 effective bits and 1-bit {-1,+1} at ~1.125 effective bits, base model Qwen3.6-27B.'
+  - Ternary retains ~95% and 1-bit ~90% of the FP16 baseline benchmark score; 1-bit claims ~10x intelligence density vs full precision.
+  - Adds vision (4-bit encoder) and speculative-decoding support for multimodal + agentic local workflows (tool calling, multi-step reasoning), 262K context.
+  - Runs via MLX (Mac/iPhone/iPad) and custom low-bit CUDA kernels (NVIDIA); Apache 2.0; distributed via Hugging Face, GitHub, Locally AI iOS app, and Together.ai API.
+  - FP16 group-wise scaling applied across embeddings, attention, MLPs, and LM head.
+  techniques:
+  - ternary weight quantization ({-1,0,+1}, ~1.71 effective bits)
+  - binary/1-bit weight quantization ({-1,+1}, ~1.125 effective bits)
+  - FP16 group-wise scale factors across full network
+  - 4-bit vision encoder (multimodal)
+  - speculative decoding
+  - custom low-bit CUDA + MLX kernels
+  reported_results:
+  - 'Ternary Bonsai 27B: 80.5/100 overall, 5.9 GB; 134 tok/s (RTX 5090), 58 tok/s (M5 Max) — self-reported.'
+  - '1-bit Bonsai 27B: 76.1/100 overall, 3.9 GB; 163 tok/s (RTX 5090), 87 tok/s (M5 Max); intelligence density 0.53/GB — self-reported.'
+  - 'FP16 baseline: 85.0/100; context window 262K tokens (all self-reported by PrismML).'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  credibility_score: 0
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - routing-intelligence.md
+    - backlog-roi-audit-2026-07-14.md
+    experiments: []
+    intake_entries:
+    - intake-384
+    - intake-821
+    - intake-822
+  handoffs_updated:
+  - tq3-quantization-evaluation.md
+  handoffs_created: []
+  novelty_justification: Same PrismML Bonsai ternary/1-bit family as intake-384 (8B, Q1_0/MLX), scaled to 27B on Qwen3.6 base with new multimodal (4-bit vision) + speculative-decoding support and fresh self-reported numbers. New size/modality/results on already-covered work = medium, not high.
+  relevance_justification: On-topic for the active tq3-quantization-evaluation (sub-2-bit ternary) and local_inference focus, and the spec-dec angle intersects the current spec-dec-mtp-refresh work; but MLX/custom-CUDA only with no confirmed upstream llama.cpp/EPYC-CPU GGUF path, and backlog-roi-audit-2026-07-14 already declined pulling the 8B into the tq3 watch. Medium.
+  verdict_justification: Vendor blog, self-reported non-corroborated benchmarks, commercial promotion (credibility 0). Worth a look for (a) whether a 27B GGUF / upstream-mergeable low-bit kernel exists for our EPYC fork and (b) whether the speculative-decoding approach transfers; nothing to integrate now. See the runnable Bonsai-demo repo intake-822 and the whitepaper intake-821.
+- id: intake-821
+  arxiv_id: null
+  url: https://github.com/PrismML-Eng/Bonsai-demo/blob/main/bonsai-27b-whitepaper.pdf
+  source_type: repo
+  title: 'Bonsai 27B whitepaper: Full 27B-class reasoning in binary and ternary transformer weights, on laptops and phones'
+  authors:
+  - PrismML
+  categories:
+  - quantization
+  - speculative_decoding
+  - kv_cache
+  - local_inference
+  key_claims:
+  - 'Ternary Bonsai 27B: 80.49 avg (94.6% of FP16) at 1.71 bpw, ~5.9 GB (9.4x compression); 1-bit: 76.11 avg (89.5% of FP16) at 1.125 bpw, ~3.9 GB (14.2x). Derived from Qwen3.6-27B via a POST-training binary/ternary transform (proprietary ''Caltech IP'') — NOT trained-from-scratch like BitNet.'
+  - First Bonsai to carry full thinking/CoT/agentic tool-use into the sub-4-bit regime, and first at 27B scale; contrasts conventional low-bit builds whose names understate true bits/weight (Q4_K_XL ~5.2 bpw; IQ2_XXS ~2.8 bpw) and which collapse on long-CoT tasks.
+  - 'Low-bit weights make the model unusually tolerant of 4-bit KV-cache quantization: ~12-15x less output forward-KL on-policy and ~75-95x less off-policy vs each model''s own FP16-KV baseline; Q4_K_XL gets no such tolerance. Enables full 262K context on-device.'
+  - Ships DSpark, a semi-autoregressive speculative drafter (block-parallel DFlash-lineage backbone + sequential head for intra-block deps + confidence head for per-position survival + hardware-aware scheduler), trained against the Bonsai-27B target; lossless verification; H100 accepted-length tau=3.6-3.7, 1.34-1.37x decode.
+  - Custom 1-bit/2-bit fused GEMM kernels for Qwen3.6-27B's hybrid attention (~75% linear / ~25% full) on Apple MLX and CUDA; GGUF Q1_0/Q2_0 via the PrismML llama.cpp fork + MLX packs; Apache License.
+  techniques:
+  - post-training binary {-1,+1} and ternary {-1,0,+1} weight quantization, group-128 with one shared FP16 scale (scale-only)
+  - 'DSpark semi-autoregressive drafter: block-denoising objective, survival-weighted distillation, per-tap hidden-state normalization, measured verify-cost block sizing'
+  - 4-bit KV-cache quantization with offline KV-mean-centering calibration
+  - fused low-bit GEMM kernels for hybrid (linear + periodic full) attention on MLX and CUDA
+  - intelligence-density metric D = -log2(Pe)/N(GB)
+  reported_results:
+  - '15-benchmark thinking-mode avg (EvalScope+vLLM, H100): FP16 Qwen3.6-27B 85.07 (54GB); Q4_K_XL 84.99 (17.6GB); IQ2_XXS 72.73 (9.4GB); Ternary Bonsai 80.49 (5.9GB); 1-bit 76.11 (3.9GB).'
+  - 'Intelligence density (1/GB): 1-bit 0.530, Ternary 0.400, IQ2_XXS 0.199, Q4_K_XL 0.155, FP16 0.051.'
+  - 'DSpark decode (H100, k=4): ternary 98->131.8 tok/s (1.34x, tau 3.7); binary 104.8->143.8 tok/s (1.37x, tau 3.6).'
+  - '4-bit KV tolerance (output fwd-KL, nats): Ternary 0.0011 on / 0.0029 off; Binary 0.0009 / 0.00233; vs FP16 0.0137/0.222 and Q4_K_XL 0.0146/0.259.'
+  - 'Throughput tg128 (tok/s): M5 Pro ternary 26.2, binary 44.2; iPhone 17 Pro Max binary 11.0; H100 CUDA ternary 98, binary 104.8. All self-reported.'
+  referenced_arxiv_ids:
+  - '2505.09388'
+  - '2310.11453'
+  - '2402.17764'
+  - '2412.19437'
+  - '2503.04482'
+  - '2602.06036'
+  - '2305.20050'
+  - '2307.08691'
+  novelty: high
+  relevance: high
+  credibility_score: 1
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - routing-intelligence.md
+    - speculative-decoding-mtp-refresh.md
+    - qwen-mtp-llamacpp-port.md
+    - lightning-attention-port.md
+    - kv-cache-quantization.md
+    - dflash-block-diffusion-speculation.md
+    - mtp-speculative-decoding.md
+    experiments: []
+    intake_entries:
+    - intake-384
+    - intake-820
+    - intake-822
+    - intake-828
+    - intake-829
+    - intake-830
+  handoffs_updated:
+  - tq3-quantization-evaluation.md
+  - speculative-decoding-mtp-refresh.md
+  handoffs_created: []
+  contradicting_evidence:
+  - All benchmarks are self-reported by PrismML on its own model with no independent corroboration; commercial bias; proprietary 'Caltech IP' transform mechanism is undisclosed (treat as untrusted marketing).
+  - Custom kernels target Apple MLX + NVIDIA CUDA; EPYC production is AMD EPYC CPU (AVX-512) + MI200/MI210 (gfx90a) — kernels are not drop-in; only the packing formats and the DSpark/KV-tolerance patterns are portable.
+  - The self-serving framing that 'conventional methods collapse' understates that Q4_K_XL retains 84.99 avg (near FP16) at 17.6GB; the Bonsai advantage is footprint/density, not raw quality.
+  - 'INDEPENDENT SIGNAL (verified 2026-07-16): HF community discussions + HN #48910545 confirm the models RUN but CONTEST quality — reports of gibberish, hard hallucination, and Q2_0 load failures; the per-category table shows tool-calling collapsing 80.0->66.0 at 1-bit; the 80.49/95%-retention headline has NO third-party reproduction. Conversely the RUNTIME is genuinely open/upstreamed (llama.cpp PRs #21273/#24448, maintainer-reviewed), so credibility splits: engineering credible, quality claims self-reported-and-disputed.'
+  novelty_justification: 'Major extension of intake-384 (Ternary Bonsai 8B): scales to 27B, retains thinking/CoT/tool-use, adds the DSpark drafter, adds 4-bit KV-quant tolerance, ships GGUF Q1_0/Q2_0 (not MLX-only). Same underlying transform family, so a major extension rather than a wholly new method -> high.'
+  relevance_justification: 'Intersects spec-dec/MTP (current branch), KV-cache quantization, low-bit GGUF packing, and hybrid/linear-attention kernels. Qwen3.6-27B at 3.9-5.9 GB is a candidate cheap-worker/draft model. Caveat: kernels are MLX/CUDA, not AMD-CPU/GPU, so only formats + patterns port. High.'
+  verdict_justification: 'PDF fully parsed (24pp, pdfTeX). Self-published vendor whitepaper (credibility 1: recent +1, commercial bias -1, transparent bpw accounting keeps it above 0). Worth investigating: (a) the low-bit-weights -> KV-quant-tolerance claim (testable on our stack), (b) the DSpark confidence-scheduled semi-AR drafter for MTP-refresh, (c) Qwen3.6-27B GGUF Q1_0/Q2_0 as a cheap worker/draft candidate — all pending our own measurement.'
+  notes: PDF parsed via pdftotext after WebFetch returned unreadable-binary; 418 KB, 24 pages, dated 2026-07-14. All numbers from the actual document. Referenced arxiv 2310.11453 and 2402.17764 were index gaps -> reference-chased as intake-828 / intake-829; 2503.04482 (GIDD, DSpark foundation) -> intake-830.
+- id: intake-822
+  arxiv_id: null
+  url: https://github.com/PrismML-Eng/Bonsai-demo
+  source_type: repo
+  title: Bonsai Demo — local inference for Bonsai (1-bit) and Ternary-Bonsai models
+  authors:
+  - PrismML (PrismML-Eng)
+  categories:
+  - quantization
+  - local_inference
+  - hardware_optimization
+  - kv_cache
+  - multimodal
+  key_claims:
+  - Ships a llama.cpp fork (branch 'prism') with pre-built binaries for CPU/CUDA/Vulkan/ROCm/Metal plus build scripts, supporting PrismML's Q1_0 (1-bit) and Q2_0 (ternary, group-size 128) GGUF formats.
+  - 'Provides runnable GGUF weights across four sizes (27B, 8B, 4B, 1.7B) in both 1-bit and Ternary variants, plus MLX weights. VERIFIED 2026-07-16: the 27B GGUFs are PUBLIC/downloadable on HF (prism-ml/Bonsai-27B-gguf ships Bonsai-27B-Q1_0.gguf ~3.8 GB; prism-ml/Ternary-Bonsai-27B-gguf ships Ternary-Bonsai-27B-Q2_0.gguf ~7.17 GB g128 + a _g64 variant) — not gated as first reported.'
+  - 'VERIFIED 2026-07-16 (was SOURCE CLAIM): Q1_0 (the 1-bit Bonsai format) WAS merged upstream — llama.cpp PR #21273 by PrismML (khosravipasha), merged 2026-04-06, motivation "support inference for family of 1-bit Bonsai models which are native in Q1_0" — so GGML_TYPE_Q1_0 (type 41) IS present in production-consolidated-v6. Q2_0 (a DISTINCT new ternary type, group-128, NOT upstream TQ1_0/TQ2_0) merged upstream 2026-07-07 (PR #24448 CPU, #25419 Metal; CUDA #25707 open) — AFTER the v6 cutover (2026-06-26), so Q2_0 is NOT in v6. intake-384''s 2026-04-17 "Q1_0 not upstreamed" note was already stale (Q1_0 landed 2026-04-06).'
+  - 27B variant is vision-language with adjustable reasoning effort; up to 262,144-token context; memory ~4.8 GB (4K ctx, 1-bit) to ~13.7 GB (100K ctx, ternary).
+  - 'Optional inference features: speculative decoding and 4-bit KV-cache quantization; llama-server chat/API + Open WebUI + MCP/OpenAI-style tool-calling.'
+  techniques:
+  - 1-bit weight quantization (Q1_0 GGUF)
+  - ternary weight quantization (Q2_0 GGUF, group-size 128) — distinct from upstream TQ1_0/TQ2_0 naming
+  - speculative decoding
+  - 4-bit KV-cache quantization for long context
+  - vision-language (27B) + MCP/tool-calling
+  reported_results:
+  - No controlled benchmarks in README; references community-contributed speed numbers under community-benchmarks/ (hardware-specific).
+  - 'Memory footprints stated: ~4.8 GB (4K ctx, 1-bit) up to ~13.7 GB (100K ctx, ternary); 27B context up to 262,144 tokens.'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - angelslim-techniques-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-384
+    - intake-820
+    - intake-821
+    - intake-828
+  handoffs_updated:
+  - tq3-quantization-evaluation.md
+  handoffs_created: []
+  novelty_justification: The models are already indexed via intake-384/820/821; what is new is the artifact type — a runnable demo repo shipping actual GGUF weights (four sizes) + a llama.cpp fork ('prism') with prebuilt multi-backend binaries, plus ternary-in-GGUF (not just MLX), 27B vision-language, MCP tool-calling, 4-bit KV cache, and an upstream-merge status claim for Q1_0. Models known, actionable packaging new -> medium.
+  relevance_justification: 'Directly touches the EPYC stack: ships GGUF + a llama.cpp fork + CPU/Vulkan/CUDA kernels for sub-2-bit formats — exactly the artifacts tq3-quantization-evaluation and angelslim (sub-2-bit/STQ1_0) chase. Runnable GGUF + kernels is far more EPYC-testable than the blog. High.'
+  verdict_justification: 'Repo is live (Apache-2.0), public/ungated 27B GGUFs. worth_investigating (not adopt_component yet). The upstream-status claim is now VERIFIED (see key_claims): Q1_0 is in v6, Q2_0 is not (merged upstream post-cutover). Concrete cheap next step: smoke-test whether a Bonsai-27B Q1_0 GGUF loads/decodes on the v6 binary — GATED on whether v6''s graph code supports the Qwen3.6-27B hybrid Gated-DeltaNet arch (a SEPARATE question from quant-type support); do NOT assume a clean v6 load. The ternary (Q2_0) headline variant needs post-2026-07-07 upstream or the PrismML fork. Credibility null (no own controlled benchmarks).'
+  notes: 'Q1_0/Q2_0 upstream status VERIFIED 2026-07-16 (llama.cpp PRs #21273 Q1_0-CPU / #24448 Q2_0-CPU / #25419 Q2_0-Metal / #25707 Q2_0-CUDA[open], all by PrismML''s khosravipasha; discussion #22019 confirms Q2_0 != upstream TQ1_0/TQ2_0). Independent signal (HN #48910545, HF discussions) confirms the models RUN but CONTESTS quality — gibberish/hallucination/load-failure reports; no third-party reproduction of the 80.49 avg. So: real, publicly-testable runtime; quality claims self-reported-and-disputed.'
+- id: intake-823
+  arxiv_id: null
+  url: https://huggingface.co/vcruz305/Hy3-GGUF
+  source_type: repo
+  title: Hy3-GGUF (vcruz305) — community GGUF quant ladder of Tencent Hy3 (Hunyuan v3) 295B/21B-active MoE with preserved MTP head
+  authors:
+  - vcruz305 (community GGUF packager)
+  - Tencent Hunyuan team (base model)
+  categories:
+  - quantization
+  - moe_optimization
+  - speculative_decoding
+  - local_inference
+  key_claims:
+  - Base model is Tencent's Hy3 (Hunyuan v3), a 295B-total / 21B-active MoE (192 routed experts, top-8); a COMMUNITY re-upload, not an official Tencent release.
+  - '9-tier quant ladder built with a custom imatrix (Hy3.imatrix): Q8_0 318GB, Q5_K_M 212GB, Q4_K_M 181GB, IQ4_XS 159GB, Q3_K_M 143GB, IQ3_XXS 117GB, Q2_K 109GB, IQ2_M 100GB, IQ1_M 92GB.'
+  - MTP/NextN layer preserved at q8_0 on low-bit tiers to keep native speculative decoding usable.
+  - 'Self-reported DGX Spark (GB10) benches: IQ2_M 18.0-18.5 t/s -> 22.8 t/s w/ MTP (+27%); IQ1_M 14.4-14.7 -> 23.1 t/s w/ MTP (+58%); Q2_K 18.1 t/s.'
+  techniques:
+  - GGUF k-quant / IQ (importance-matrix) quantization across Q8_0..IQ1_M
+  - imatrix calibration (Hy3.imatrix)
+  - MTP/NextN head kept at q8_0 for native speculative decoding
+  reported_results:
+  - 'IQ2_M: 18.0-18.5 t/s gen; +MTP 22.8 t/s (+27%) — DGX Spark GB10, self-reported OBSERVATION.'
+  - 'IQ1_M: 14.4-14.7 t/s gen; +MTP 23.1 t/s (+58%) — DGX Spark GB10, self-reported OBSERVATION.'
+  - 'Q2_K: 18.1 t/s gen (self-reported OBSERVATION).'
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: medium
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters: []
+    handoffs:
+    - angelslim-techniques-evaluation.md
+    - speculative-decoding-mtp-refresh.md
+    - tq3-quantization-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-806
+    - intake-808
+    - intake-824
+    - intake-590
+    - intake-591
+  handoffs_updated:
+  - angelslim-techniques-evaluation.md
+  - speculative-decoding-mtp-refresh.md
+  handoffs_created: []
+  novelty_justification: Not a new model or technique — a SECOND community GGUF re-pack of the same Tencent Hy3 (Hunyuan v3) MoE already at intake-806 (official) and intake-808 (satgeze, first GGUF+MTP), already dissected in the 2026-07-11 deep-dive. Adds only a fuller quant ladder + its own imatrix + DGX Spark numbers -> low.
+  relevance_justification: Concerns a model on active threads (AngelSlim/Hy3, MTP-refresh). Its IQ2_M tier is a legitimate alternative download for the operator-gated confirmatory CPU-MTP run; the ladder is useful if an architect-candidate quality bench runs. Creates no new work -> medium.
+  verdict_justification: 'worth_investigating strictly as a mirror/alternative GGUF source for the already-analyzed Hy3. Credibility 2: real upload, self-reported (non-gated, no third-party) benchmarks whose MTP gains (+27/58% on compute-bound GB10) are consistent with the established compute-bound-gains / BW-bound-net-neutral pattern; below intake-808''s 3 (no independent corroboration).'
+  notes: 'Full prior assessment: research/deep-dives/2026-07-11-hy3-hunyuan-v3-moe-mtp-assessment.md. MTP gains are CUDA unified-memory (GB10, compute-bound); they corroborate — do not overturn — the predicted EPYC-CPU net-neutral.'
+- id: intake-824
+  arxiv_id: null
+  url: https://huggingface.co/AngelSlim/Hy3-GGUF
+  source_type: repo
+  title: AngelSlim/Hy3-GGUF — official AngelSlim (Tencent) GGUF quants of Hy3 (Hunyuan v3, 295B/21B-active MoE) with baked MTP self-speculative decoding
+  authors:
+  - AngelSlim (Tencent compression toolkit / Tencent Hy Team)
+  categories:
+  - moe_optimization
+  - speculative_decoding
+  - quantization
+  - local_inference
+  key_claims:
+  - OFFICIAL AngelSlim (Tencent) GGUF distribution of the already-tracked tencent/Hy3 (Hunyuan v3, hy_v3 arch, 295B/21B-active MoE) — authoritative counterpart to the COMMUNITY satgeze/Hy3-1M-GGUF (intake-808). NOT a new model generation.
+  - 'Ships standard llama.cpp mixed-precision GGUF: IQ1_M (~89.4 GB no-MTP / ~91.8 GB with-MTP; README ~83 GiB) and Q4_K_M (~182 GB / ~185 GB; README ~166 GiB). KV-cache quant options q8_0/q6_K/q5_K documented.'
+  - MTP self-speculative decoding baked into the with-MTP variants; repo bundles a thinking/tool-call parser and a Minja-compatible chat template.
+  - 'NEGATIVE FINDING: despite the AngelSlim org, this repo does NOT ship Sherry 1.25-bit / STQ1_0 quants — it uses vanilla IQ1_M/Q4_K_M; no FP8 file here (FP8 lives on the base tencent/Hy3 card).'
+  - 'High distribution signal: ~80,796 downloads last month, 110 likes; benchmark image present but no verbatim speed/quality numbers in card text.'
+  techniques:
+  - MTP self-speculative decoding baked into GGUF
+  - mixed-precision GGUF quantization (IQ1_M / Q4_K_M)
+  - thinking / tool-call parser + Minja-compatible chat template
+  - KV-cache quantization (q8_0 / q6_K / q5_K)
+  reported_results:
+  - 'Quant sizes: IQ1_M 89.4 GB (no-MTP) / 91.8 GB (with-MTP); Q4_K_M 182 GB / 185 GB. README: IQ1_M ~83 GiB, Q4_K_M ~166 GiB, MTP adds ~2 GiB + a draft KV cache.'
+  - No verbatim speed/quality numbers in card text (benchmark image only). Base-model quality claims already logged observation-grade at intake-806.
+  - MTP-on-CPU already assessed NET-NEUTRAL (BW-bound) in the prior Hy3 deep-dive; this official GGUF does not change that prediction.
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: high
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters:
+    - 02-moe-optimization.md
+    handoffs:
+    - angelslim-techniques-evaluation.md
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries:
+    - intake-806
+    - intake-808
+    - intake-823
+    - intake-590
+    - intake-591
+  handoffs_updated:
+  - angelslim-techniques-evaluation.md
+  - speculative-decoding-mtp-refresh.md
+  handoffs_created: []
+  novelty_justification: Base model already at intake-806; community GGUF+MTP at intake-808; CPU-MTP already deep-dived (net-neutral). Adds only (a) authoritative official quant artifacts and (b) the substantive NEGATIVE datapoint that AngelSlim shipped standard llama.cpp quants for hy_v3, not its Sherry 1.25-bit recipe. Low.
+  relevance_justification: 'Load-bearing for two active handoffs: angelslim-techniques-evaluation (watches whether AngelSlim FP8/sub-2-bit recipes for hy_v3 land) and speculative-decoding-mtp-refresh (Hy3 MTP + operator-gated architect bench). Provides an authoritative official GGUF path for the deferred bench. High.'
+  verdict_justification: 'worth_investigating: fulfills the tracked ''official GGUF landing'' watch-item and gives an authoritative quant path (IQ1_M ~90 GB fits ~680 GB free disk) for the deferred, operator-gated Hy3 architect bench. Does NOT change strategy — Hy3 stays a deferred architect candidate, CPU-MTP stays net-neutral, and the AngelSlim sub-2-bit/STQ1_0 recipe did NOT materialize for Hy3 (vanilla IQ1_M/Q4_K_M). Credibility null (distribution card, benchmark image only).'
+  notes: 'Verified 2026-07-16 (file listing): exactly four GGUFs — IQ1_M (89.4 GB) ±MTP and Q4_K_M (182 GB) ±MTP; NO Sherry/STQ1_0/1.25-bit and NO in-repo FP8. FP8 lives in a separate tencent/Hy3-FP8 repo (linked from the base tencent/Hy3 card). Complementary to the community ports, not superseding: the satgeze/Hy3-1M-GGUF port (intake-808) adds the 1M-token RoPE extension, and the vcruz305 re-pack (intake-823) adds an IQ2_M tier + fuller ladder — neither is a native Hy3 feature (native ctx 256K). Resolves the angelslim-techniques-evaluation 2026-07-11 watch-item NEGATIVELY for hy_v3 (checkbox there 2026-07-16).'
+- id: intake-825
+  arxiv_id: null
+  url: https://github.com/GoogleCloudPlatform/generative-ai/tree/main/gemini/agents/always-on-memory-agent
+  source_type: repo
+  title: Always-On Memory Agent (GoogleCloudPlatform/generative-ai) — background memory-consolidation agent
+  authors:
+  - Google Cloud Platform (generative-ai samples repo)
+  categories:
+  - agent_architecture
+  - memory_augmented
+  key_claims:
+  - Always-on memory = a lightweight background process (default 30-min timer) that continuously consolidates ingested memories, explicitly analogized to human sleep-time replay/compression.
+  - 'Three-stage write/consolidate/retrieve pipeline: Ingest (Gemini multimodal extraction into records w/ summary, entities, topics, 0-1 importance), Consolidate (ConsolidateAgent finds cross-memory connections + insights and compresses), Query (QueryAgent synthesizes cited answers over all memories+insights).'
+  - 'Working-vs-long-term split modeled as two states in one store: ''unconsolidated'' vs ''consolidated''.'
+  - Storage is plain SQLite with NO vector database and NO embeddings — a deliberate non-RAG stance; retrieval is LLM-synthesis-over-full-store + generated insights, not similarity search.
+  - 'Triggers: background timer + file-watcher (./inbox/) + HTTP API; agent routing via Google ADK; LLM ops via Gemini (README states ''Gemini 3.1 Flash-Lite'', unverified).'
+  techniques:
+  - timer-triggered background memory consolidation (sleep-time-style precompute of cross-memory insights)
+  - two-state memory lifecycle (unconsolidated -> consolidated) as a working/long-term proxy
+  - ingest-time importance scoring (0-1)
+  - structured extraction (summary + entities + topics) via Gemini multimodal
+  - citation-grounded synthesis over the full store (no vector retrieval)
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  verdict: adopt_patterns
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters: []
+    handoffs:
+    - engram-conditional-memory.md
+    - unified-trace-memory-service.md
+    - delta-mem-reproduction.md
+    experiments: []
+    intake_entries:
+    - intake-155
+    - intake-413
+    - intake-418
+    - intake-819
+  handoffs_updated:
+  - unified-trace-memory-service.md
+  handoffs_created: []
+  novelty_justification: A demo repo, not research — no new mechanism, no metrics. Background/offline consolidation is the 'Sleep-time Compute' pattern (intake-819, already implemented by autopilot/nightshift); write/consolidate/retrieve + hierarchical distillation is intake-155/413/418; the two-state store maps to engram/delta-Mem. Only mildly fresh angle is the deliberate no-vector-DB stance. Low.
+  relevance_justification: 'Medium: the abstract pattern maps onto EPYC''s memory subsystem (timer consolidation ~ autopilot/nightshift; SQLite + importance ~ unified-trace + B1 User Modeling), but the implementation is Google-ADK + Gemini demo-grade with zero results. Contrary to first assumption it does NOT use Vertex Agent Engine / vector DBs — plain SQLite + ADK, making the PATTERN more portable but the STACK irrelevant.'
+  verdict_justification: adopt_patterns — the transferable idea is the background-consolidation loop that periodically scans unconsolidated memories to generate cross-cutting insights and compress, gated by ingest-time importance scores, over a plain SQLite store. Candidate enhancement for the B1 User Modeling slot / an extension of unified-trace-memory-service. The code (ADK + Gemini + Streamlit) is not portable and carries no benchmarks -> pattern-adoption only, not adopt_component.
+  notes: 'Correction to the intake brief: the repo is plain SQLite + Google ADK, NOT Vertex AI Agent Engine / Memory Bank / vector DB. Consolidation is a write/derive step, so it targets the agent-facing memory store (AutoMem write half / B1), not the read-only src/trace/ store.'
+- id: intake-826
+  arxiv_id: null
+  url: https://x.com/i/status/2077244775582097811
+  source_type: blog
+  title: Qwen-Audio-3.0-Realtime (Plus + Flash) availability announcement — promo tweet
+  authors:
+  - '@Chinazhidx (Zhidongxi / China AI news aggregator — third-party, not the model authors)'
+  categories:
+  - multimodal
+  key_claims:
+  - 'Promotional ''Try it now'' tweet announcing two Alibaba Qwen realtime-audio models live on the Bailian console: Qwen-Audio-3.0-Realtime-Plus and Qwen-Audio-3.0-Realtime-Flash.'
+  - Both are cloud API endpoints on Alibaba Bailian; no open weights, GGUF, checkpoints, or self-host path offered or mentioned.
+  - The post carries ZERO technical substance — no architecture, codec/sample-rate, latency, or benchmarks. A link-drop by a news account, not a primary release note.
+  techniques:
+  - realtime speech/audio in+out (implied by the 'Realtime' tier; no design details)
+  - Plus/Flash quality-vs-latency SKUs (no specs given)
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters: []
+    handoffs:
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries:
+    - intake-432
+  handoffs_updated:
+  - multimodal-pipeline.md
+  handoffs_created: []
+  novelty_justification: Flags a not-previously-indexed version string (Qwen-Audio-3.0-Realtime) but as an artifact is a contentless promo link-drop from a third-party account — no claims/results/techniques to evaluate. Underlying family (Alibaba proprietary omni/audio, cloud-API-only) already tracked via intake-432 + multimodal-pipeline. Low, not duplicate.
+  relevance_justification: EPYC targets local CPU/GPU inference via llama.cpp/GGUF. This is a closed cloud API audio model with no open weights / self-host path — not deployable. Low rather than none only because multimodal-pipeline keeps an active monitoring loop on Alibaba audio/omni for an eventual open-weights drop.
+  verdict_justification: 'not_applicable: API-only on Bailian, no weights to port; no architecture/benchmark data; third-party link-drop; parallels intake-432 (Qwen3.5-Omni). NOT a hard reject per the ''don''t dismiss without operator review'' rule — flagged with a monitoring hook on multimodal-pipeline to re-intake if Alibaba ships weights or details.'
+  notes: Direct X URL returned 402/403 (login wall); content recovered via fxtwitter/vxtwitter mirrors (agreed). Author is Zhidongxi/@Chinazhidx (news aggregator), not the Qwen team.
+- id: intake-827
+  arxiv_id: null
+  url: https://github.com/xai-org/grok-build
+  source_type: repo
+  title: grok-build — xAI's terminal-based AI coding agent (Rust TUI)
+  authors:
+  - xAI (xai-org)
+  categories:
+  - agent_architecture
+  - tool_implementation
+  key_claims:
+  - A full-screen terminal (TUI) AI coding agent — NOT model weights, inference kernels, quantization, MoE routing, a serving stack, or a tokenizer. 99.6% Rust, Apache-2.0.
+  - Runs in three modes — interactive TUI, headless (scripting/CI), and editor-embedded via the Agent Client Protocol (ACP).
+  - 'Extensible tool/plugin surface: MCP servers, skills, plugins, hooks, sandboxing; the agent can read/edit files, run shell, and search the web.'
+  - 'Crate-decomposed architecture: pager (TUI/rendering), shell (agent runtime), tools (terminal/file-edit/search), workspace (VCS/execution/checkpoints).'
+  techniques:
+  - Agent Client Protocol (ACP) for editor-embedded operation
+  - MCP server integration; skills/plugins/hooks extensibility
+  - sandboxed tool execution
+  - workspace checkpointing over VCS
+  - modular Rust crate composition (pager/shell/tools/workspace)
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters: []
+    handoffs:
+    - hermes-agent-index.md
+    - tool-use-eval-contract.md
+    - tool-output-compression.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: A standard-shape terminal coding agent (TUI + tool loop + MCP/skills/hooks/sandbox/ACP). Every transferable concept is already present in tracked harnesses (Claude Code — running this session — plus Goose and Clido, Rust coding agents already indexed). No new technique/algorithm/result; a marketing-level README. Value is a fresh first-party (xAI) reference implementation -> low, not duplicate.
+  relevance_justification: 'Zero direct relevance to the EPYC CPU/GGUF/llama.cpp inference stack: no kernels, quantization, MoE routing, serving, or tokenizer (contrary to the intake brief''s 300B+ MoE assumption). Residual low relevance only as an agent-architecture/tool-impl pattern source for hermes-agent + the orchestrator tool-use surface (ACP embedding, sandboxing, checkpointing), which overlap heavily with the Claude Code harness in use.'
+  verdict_justification: Not a duplicate (no prior grok-build entry; local 'Grok/Xai' matches are false positives — Grok-4.1-Fast benchmark model, 'grokking' dynamics, an OpenReview id substring). Not not_applicable (a legitimate agent-architecture artifact worth a shelf reference alongside Goose/Clido/OpenCode). With no results, low novelty of ideas, and no inference-stack transferability, it does not warrant an integration or pattern-adoption effort now -> worth_investigating (low priority). No handoff amended (relevance too low to justify).
+  notes: Mis-categorized in the intake brief as MoE-model tooling; it is a coding-agent frontend (Rust TUI). File in the coding-agent-harness comparison set; revisit only if surveying first-party agent ACP/sandbox designs.
+- id: intake-828
+  arxiv_id: '2310.11453'
+  url: https://arxiv.org/abs/2310.11453
+  source_type: paper
+  title: 'BitNet: Scaling 1-bit Transformers for Large Language Models'
+  authors:
+  - Hongyu Wang
+  - Shuming Ma
+  - Li Dong
+  - Shaohan Huang
+  - Huaijie Wang
+  - Lingxiao Ma
+  - Fan Yang
+  - Ruiping Wang
+  - Yi Wu
+  - Furu Wei
+  categories:
+  - quantization
+  - hardware_optimization
+  - local_inference
+  - training_distillation
+  key_claims:
+  - BitLinear — a drop-in replacement for nn.Linear that trains 1-bit (binary +/-1) weights FROM SCRATCH (QAT, not PTQ) — enables W1A8 Transformers with competitive accuracy.
+  - Substantially cuts memory footprint and energy vs FP16/8-bit while approaching FP16 quality; the gap narrows as model size grows.
+  - 1-bit Transformers obey a power-law scaling relation L(N)=a*N^b+c like full-precision, so benefits are predicted to extrapolate to larger models.
+  - Trained-from-scratch 1-bit weights dramatically outperform PTQ (Absmax/SmoothQuant/GPTQ/QuIP) at equally aggressive bit-widths — PTQ collapses at W1, QAT does not.
+  - Stable low-bit training via SubLN + straight-through estimator + high-precision master weights/gradients/optimizer states.
+  techniques:
+  - 'BitLinear: weights binarized W=Sign(W-alpha), per-tensor scale beta=mean|W| restores output variance'
+  - absmax b-bit activation quantization (per-tensor training / per-token inference)
+  - SubLN normalization before activation quantization
+  - straight-through estimator (STE) + mixed-precision master weights
+  - group quantization/normalization for tensor parallelism; W1A8 matmul = INT8 add-dominated
+  reported_results:
+  - '7nm arithmetic energy: ADD FP16 0.16 pJ vs INT8 0.007 pJ (~23x); MUL FP16 0.34 vs INT8 0.07 pJ (~4.9x).'
+  - '6.7B: ~57x lower matmul energy vs FP16; perplexity 17.07 vs FP16 15.19; zero-shot avg 55.9% vs FP16 56.7%.'
+  - 'Zero-shot vs W1A8 PTQ: BitNet 55.9% vs Absmax 44.6% / SmoothQuant 44.4% (~+11pp).'
+  - Follows FP-like scaling law; better loss-vs-energy and loss-vs-memory Pareto frontier than FP16.
+  referenced_arxiv_ids:
+  - '2001.08361'
+  - '2010.14701'
+  - '2203.15556'
+  - '2204.02311'
+  - '2302.13971'
+  - '2305.10403'
+  - '2307.09288'
+  - '1909.08053'
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: superseded
+  discovered_via: expansion
+  expanded_from: intake-821
+  ingested_date: '2026-07-16'
+  contradicting_evidence:
+  - 'Training instability: from-scratch 1-bit training is prone to gradient explosion (weight sign flips), requiring restarts; instability reported even at the recommended ~1M-token batch.'
+  - 'Small-scale accuracy gap: 120M/1.2B BitNet lags its bf16 counterpart; scaling-laws-for-quantized-LLMs work (2411.17691) argues native low-bit mainly favors UNDERtrained models — advantage erodes with more tokens.'
+  - 'Reproduction difficulty at small scale: independent 1-bit-from-scratch efforts (OLMo-Bitnet-1B, 1-bit FQT 2408.14267) report low accuracy / non-convergence; ''1-bit from scratch remains an open problem''.'
+  - Requires full pretraining from scratch — cannot be applied as post-hoc quantization to existing FP16 checkpoints (unlike GPTQ/AWQ, and unlike Bonsai's post-training transform).
+  - Pure binary W1A8 was itself superseded by the authors' BitNet b1.58 (2402.17764) ternary formulation; energy/speed wins are largely theoretical on current hardware (real bitnet.cpp gains come from memory-bandwidth savings).
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - angelslim-techniques-evaluation.md
+    - cpu-shape-specialized-gemv-decode.md
+    - kv-cache-quantization.md
+    experiments: []
+    intake_entries:
+    - intake-821
+    - intake-384
+    - intake-829
+  handoffs_updated:
+  - tq3-quantization-evaluation.md
+  - angelslim-techniques-evaluation.md
+  handoffs_created: []
+  novelty_justification: The seminal origin of the 1-bit-LLM line — introduced BitLinear and the trained-from-scratch (QAT) low-bit-weight paradigm every downstream entry descends from (b1.58, bitnet.cpp, Ternary Bonsai, Bonsai-27B). Never indexed despite its descendants being tracked -> genuine foundational gap (0 matches). Defines the category -> high.
+  relevance_justification: 'Foundational to EPYC''s active sub-2-bit thread: two active handoffs (tq3, angelslim) and completed kv-cache-quantization sit downstream, and the epyc-llama fork already ships bitnet.cpp + TQ1_0/TQ2_0 ternary kernels implementing its successor. High as canonical background (EPYC does inference, not from-scratch pretraining).'
+  verdict_justification: superseded — the pure-binary W1A8 formulation was replaced by the authors' ternary BitNet b1.58 (2402.17764), which is what EPYC supports (TQ1_0/TQ2_0, bitnet.cpp already integrated). EPYC is inference-only, so the paper's core contribution (from-scratch 1-bit TRAINING) is out of scope; its inference-side descendants are already integrated. Keep as foundational reference. Credibility 4 (+2 peer-reviewed JMLR, -1 >24mo, +1 Microsoft, +2 widely reproduced).
+  notes: 'Index-drift flag (reported, not fixed): multiple index entries + tq3-quantization-evaluation cross-link ''intake-186'' to ''bitnet.cpp'', but the literal intake-186 record is the Cerebras Qwen3-Coder-REAP model — a stale bitnet.cpp<->186 mapping worth reconciling separately (operator-review). Two independent expansion agents flagged this.'
+- id: intake-829
+  arxiv_id: '2402.17764'
+  url: https://arxiv.org/abs/2402.17764
+  source_type: paper
+  title: 'The Era of 1-bit LLMs: All Large Language Models are in 1.58 Bits'
+  authors:
+  - Shuming Ma
+  - Hongyu Wang
+  - Lingxiao Ma
+  - Lei Wang
+  - Wenhui Wang
+  - Shaohan Huang
+  - Li Dong
+  - Ruiping Wang
+  - Jilong Xue
+  - Furu Wei
+  categories:
+  - quantization
+  - local_inference
+  - hardware_optimization
+  - training_distillation
+  key_claims:
+  - Ternary {-1,0,+1} weights (log2(3)~1.58 bits) match full-precision FP16 LLaMA in both perplexity and end-task accuracy from the 3B scale — no accuracy penalty above that threshold.
+  - 'New scaling law / Pareto frontier: a 1.58-bit model matches an FP16 model of the same size while far cheaper on memory, latency, energy, throughput (a 13B b1.58 is more efficient than 3B FP16).'
+  - Weights are trained-from-scratch with QAT BitLinear layers via an absmean ternary quantizer — NOT post-training quantization of an FP16 checkpoint.
+  - 'Pareto improvement on all inference-cost axes: 3.55x less GPU memory / 2.71x faster at 3B; 4.1x latency and 8.9x throughput at 70B; 71.4x lower arithmetic-op energy on 7nm (matmul reduces to INT8 add/accumulate).'
+  - Ternary weights + 8-bit activations remove multiplications from matmul, motivating dedicated 1-bit inference hardware and kernels.
+  techniques:
+  - ternary weight quantization to {-1,0,+1} via absmean scaling + RoundClip
+  - BitLinear replacing nn.Linear (drop-in), QAT from scratch
+  - 8-bit symmetric per-token activation quantization
+  - LLaMA-compatible backbone (RMSNorm, SwiGLU, RoPE, bias-free)
+  - 1.58-bit scaling law establishing FP16-parity crossover at ~3B
+  reported_results:
+  - '3B: perplexity 9.91 vs LLaMA 10.04; end-task avg 50.2 vs 49.7; 2.22 GB memory (3.55x), 1.87 ms latency (2.71x).'
+  - '70B: 4.1x latency speedup, 2977 vs 333 tok/s throughput (8.9x), 11x larger batch.'
+  - '7B-70B: 71.4x reduction in arithmetic-op energy on 7nm.'
+  - '3B @2T tokens: 74.34% avg vs StableLM-3B 73.22%.'
+  referenced_arxiv_ids:
+  - '2310.11453'
+  - '2402.04396'
+  - '2307.13304'
+  - '2307.09288'
+  - '2302.13971'
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-821
+  ingested_date: '2026-07-16'
+  contradicting_evidence:
+  - 'Train-from-scratch only: the FP16-parity claim requires QAT pretraining of a new model, NOT a post-training transform of an existing checkpoint — the exact distinction the Bonsai-27B whitepaper (intake-821) draws. We have no from-scratch pretraining pipeline, so the headline result is not directly reproducible on our stack.'
+  - Independent reproduction (1bitLLM/bitnet_b1_58-*) reports numbers differing from the paper (training-data/seed variance); the exact reported perplexity/accuracy has not been cleanly reproduced by third parties.
+  - 'Sub-3B accuracy gap: parity holds only >=3B; small ternary models lose quality unless width increases (consistent with Ternary Bonsai''s code-gen weakness, intake-384).'
+  - 'Kernel/hardware immaturity: energy/latency wins assume dedicated ternary INT-add kernels; generic 1.58-bit kernel support remains limited (motivated the later bitnet.cpp / TQ1_0/TQ2_0 work).'
+  - Residual quality gap on complex reasoning and long-context persists vs FP16 even at matched size.
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - angelslim-techniques-evaluation.md
+    - inference-acceleration-index.md
+    - mi210-big-model-and-acceleration-roadmap.md
+    - iqk-port.md
+    - kv-cache-quantization.md
+    experiments: []
+    intake_entries:
+    - intake-821
+    - intake-384
+    - intake-828
+    - intake-590
+    - intake-591
+    - intake-593
+  handoffs_updated:
+  - tq3-quantization-evaluation.md
+  - angelslim-techniques-evaluation.md
+  handoffs_created: []
+  novelty_justification: Genuine index gap (0 matches). THE foundational paper establishing the 1.58-bit ternary era; every ternary entry already indexed (bitnet.cpp, Ternary Bonsai, Sherry, Tequila, AngelSlim, Bonsai-27B) descends from it. Indexing the primary source (not just derivatives) is high novelty for the compendium.
+  relevance_justification: Directly underpins active tq3-quantization-evaluation and angelslim-techniques-evaluation, and the epyc-llama fork already ships bitnet.cpp ternary support (TQ1_0/TQ2_0). Ternary sub-2-bit inference is an active CPU-efficiency avenue -> high.
+  verdict_justification: 'worth_investigating rather than already_integrated: the INFERENCE side (ternary TQ1_0/TQ2_0 kernels) is present in our fork, but the paper''s actual contribution — the train-from-scratch QAT method + scaling law — is not directly actionable (no ternary pretraining pipeline). Its lasting value is as the canonical reference framing the post-training-transform (Bonsai/intake-821) vs pretrained-ternary axis for the tq3/AngelSlim/Sherry/Tequila evaluations. Credibility 4.'
+- id: intake-830
+  arxiv_id: '2503.04482'
+  url: https://arxiv.org/abs/2503.04482
+  source_type: paper
+  title: Generalized Interpolating Discrete Diffusion
+  authors:
+  - Dimitri von Rütte
+  - Janis Fluri
+  - Yuhui Ding
+  - Antonio Orvieto
+  - Bernhard Schölkopf
+  - Thomas Hofmann
+  categories:
+  - training_distillation
+  - speculative_decoding
+  key_claims:
+  - GIDD defines a family of discrete-diffusion noise processes q_t(z|x)=Cat(alpha_t*x + beta_t*pi_t) with an arbitrary time-varying mixing distribution pi_t, generalizing masked diffusion (pi_t=mask) and uniform/absorbing diffusion (pi_t=uniform) as special cases of one interpolating process.
+  - Mixing masking WITH uniform noise lets the model see (wrong) non-mask tokens during training, so it learns to distinguish correct vs incorrect tokens and self-correct — a capability masked-only diffusion structurally lacks.
+  - A closed-form ELBO with two re-weighting schemes tames extreme weights at very low/high noise, giving compute-matched SOTA diffusion-LM perplexity.
+  - 'Self-correction emerges from uniform-noise training WITHOUT explicit fine-tuning: a fixed-point resampling loop improves sample quality up to ~55% at fixed step budgets.'
+  - Hybrid-noise models trade slightly worse validation perplexity for substantially better sample quality at LOW inference budgets (gen PPL 387 vs 904 at 32 steps).
+  techniques:
+  - GIDD interpolating marginal q_t = Cat(alpha_t*x + beta_t*pi_t) with arbitrary time-dependent mixing distribution
+  - hybrid masking + uniform noise schedule (p_u controls uniform fraction)
+  - improved GIDD+ objective with clamped and dynamic ELBO re-weighting
+  - self-correction via fixed-point resampling (re-sample low-confidence tokens by the model's own judgment)
+  - 'test-time compute trade-off along TWO axes: denoising steps AND self-correction iterations'
+  reported_results:
+  - 'Validation PPL (OpenWebText, small): GIDD+ (p_u=0) 22.29 vs reimplemented MDM 23.36.'
+  - 'Downstream avg accuracy (7 tasks, small @131B tokens): GIDD+ 39.30 vs GPT-2 38.77 (retrained Llama AR baseline 41.04).'
+  - 'Generative PPL (scored by Gemma 2 9B): p_u=0.1 reaches 387 at 32 steps vs 904 masked-only; up to 55% sample-quality gain from self-correction.'
+  - 'Model sizes: tiny 28.4M, small 92.1M, base 321.2M non-embedding params; ICML 2025.'
+  referenced_arxiv_ids:
+  - '2107.03006'
+  - '2310.16834'
+  - '2406.07524'
+  novelty: medium
+  relevance: medium
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-821
+  ingested_date: '2026-07-16'
+  contradicting_evidence:
+  - 'Diffusion LMs still trail AR: GIDD''s own retrained Llama AR beats GIDD+ on downstream accuracy (41.04 vs 39.30); hybrid-noise variants accept worse validation PPL to gain sample quality — no free lunch vs AR.'
+  - Generation quality is tightly coupled to denoising-step count; standard discrete diffusion often needs hundreds-to-thousands of steps for high-quality text (arXiv:2606.19475, 2508.10875).
+  - The 'sampling wall' failure mode (distribution collapsing to one-hot -> steps-without-progress / oscillation) is a documented general limitation (Loopholing Discrete Diffusion, 2510.19304); GIDD mitigates but does not eliminate it.
+  - Self-correction is EXTRA inference compute (a second test-time axis on top of denoising steps) — poor fit for EPYC's BW-bound CPU regime where block-diffusion drafters already stalled (DFlash CPU conclusion).
+  - Reported low generative PPL for diffusion LMs can be partly artifactual (over-generating safe frequent tokens collapses sample entropy); absolute PPL comparisons should be read cautiously.
+  cross_references:
+    chapters:
+    - 10-advanced-speculative-decoding.md
+    - 01-speculative-decoding.md
+    handoffs:
+    - dflash-block-diffusion-speculation.md
+    - speculative-decoding-mtp-refresh.md
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries:
+    - intake-821
+    - intake-158
+    - intake-159
+    - intake-738
+  handoffs_updated:
+  - speculative-decoding-mtp-refresh.md
+  handoffs_created: []
+  novelty_justification: Not a duplicate. The index's diffusion presence is entirely APPLIED speculative-decoding drafters (DFlash intake-158, DART intake-159, DSpark intake-738, Nemotron towers). GIDD is the distinct FOUNDATIONAL layer — a unifying interpolating noise process subsuming masked + uniform discrete diffusion, plus the emergent self-correction result — which none capture. NOT covered by the DFlash entry. Medium (theory-adjacent to catalogued diffusion-LM work for EPYC specifically).
+  relevance_justification: Medium and indirect. The paper has NO block/parallel/semi-AR generation and NO speculative-decoding/CPU-serving content — a pretraining-objective/theory paper. Its relevance is as the cited theoretical foundation of the block-diffusion drafter lineage EPYC tracks (Bonsai's DSpark cites GIDD; DFlash/DART rest on discrete-diffusion processes GIDD generalizes). The hybrid-noise token-revision idea is interesting for drafter design, but no llama.cpp/GGUF/CPU path and self-correction adds cost.
+  verdict_justification: 'worth_investigating — a distinct foundational method meriting its own entry, not folded into DFlash. Anchors the discrete-diffusion drafter thread DSpark (intake-738) and DFlash (intake-158) descend from; its self-correction / revisable-noise contribution is worth understanding before any diffusion-drafter investment on the MI210/GPU path. Stops short of adopt_patterns/new_opportunity: no parallel-generation method to port and EPYC''s diffusion-drafter path is already alpha-gated / CPU-blocked. Credibility 4.'
