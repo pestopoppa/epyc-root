@@ -482,6 +482,7 @@ The MI210 frontdoor/drafter placements this handoff designs will need hand-tuned
 - [x] Isolated N5 retest clone/build at `a6c793fc6`; active-MTP-aligned draft strict compatibility passes; legacy binary later rejected by v7 flag-surface preflight ✅ 2026-07-16
 - [x] N5 preflight detects missing legacy speculative flag surface; patched/rebuilt experimental v7 `53f6e30a1` semantic preflight blocks only on live `llama-server` ✅ 2026-07-16
 - [x] Clean aligned qwen35/frontdoor N5 retest on patched experimental v7 emitting real draft-acceptance (`n5_spec_on` 376/376, decision-grade) ✅ 2026-07-16
+- [x] Wrap-up audit captured the final `da1bf5e2f` / `10077` N5 execute provenance in root wiki/index and re-ran manifest checks ✅ 2026-07-16
 - [ ] Stage 1 external GPU drafter for CPU frontdoor, >=1.3x kill-gate
 - [ ] Stage 2 frontdoor + drafter co-resident on GPU (production design)
 - [ ] Stage 4 MTP head split for gemma4 worker_general (after Stages 1-3)

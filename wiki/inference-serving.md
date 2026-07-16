@@ -2,7 +2,7 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-07-07 (E1 dense-control sweep, eval-batch serving activation smoke-passed)
+**Last compiled**: 2026-07-16 (v7 serving-side readiness refreshed through the final N5 patched-candidate execute artifact; E1 dense-control sweep and eval-batch serving activation remain the prior serving checkpoints)
 **Sources**: 50 documents
 
 ## Summary
@@ -22,6 +22,7 @@ Recent architectural improvements include REAP MoE expert-pruning evidence for t
 - **Refreshed experimental v7 `53f6e30a1` is the current serving-side checkpoint, and its N5 semantic dry preflight blocks only on a live `llama-server` process.** The current artifact is `/mnt/raid0/llm/epyc-inference-research/data/specdec_frontdoor_alpha/n5_retest_v7_semantic_preflight_20260716T181836Z/preflight.json`; it no longer reflects the earlier `8e5c555ab` / `180801Z` precommit snapshot. Sources: [GPU-Drafter on MI200 investigation](../handoffs/active/gpu-drafter-mi200-investigation.md), [Progress 2026-07-16](../progress/2026-07/2026-07-16.md).
 
 - **Launcher hygiene for stack-launched CPU roles now explicitly hides ROCm devices when the launcher is HIP-capable.** The orchestrator guard appends `--device none` for normal launches and `--device-draft none` for speculative launches so fresh server state does not inherit accidental GPU visibility. Source: [Gemma challenge kernel techniques v7](../handoffs/active/gemma-challenge-kernel-techniques-v7.md).
+- **The serving-side N5 readiness checkpoint was superseded by the final execute artifact once the patched v7 candidate landed.** The earlier `53f6e30a1` semantic preflight only proved the stack was blocked on a live `llama-server`; after `da1bf5e2f` fixed `draft-tree` output capacity, the rebuilt `llama-server --version` reports `10077 (da1bf5e2f)` and the execute summary at `/mnt/raid0/llm/epyc-inference-research/data/specdec_frontdoor_alpha/n5_retest_v7_execute_20260716T190836Z/summary.json` is `decision_grade=true`. Sources: [gpu-drafter-mi200-investigation.md](../handoffs/active/gpu-drafter-mi200-investigation.md), [Progress 2026-07-16](../progress/2026-07/2026-07-16.md).
 
 ### New (2026-07-07 — E1 dense-control sweep completed; eval-batch serving activation window smoked and rolled back cleanly)
 
