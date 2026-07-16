@@ -44627,3 +44627,52 @@
   relevance_justification: 'Medium. Adjacent to active retrieval work (internal-kb-rag certified ColBERT RAG; unified-trace-memory FAISS/BGE vector path) but not immediately actionable: (1) the host is storage-rich (all vector indexes ~3.3 GB, ~0.3% of RAM), so LEANN''s storage saving is UNNEEDED — a non-problem, not an inversion (deep-dive retracted the inversion framing given the live MI210 that can absorb recompute); (2) KB-RAG is multi-vector MaxSim, which LEANN''s single-vector graph does not model; (3) the intake-686 scale gates (>1M single-vector corpus under RAM pressure) are unmet today. Per CLAUDE.md NOT marked not_applicable — the personal-data connectors + native Claude Code MCP are a credible creative angle worth flagging to the operator.'
   verdict_justification: 'worth_investigating, parked behind the same gates as turbovec (intake-686). It is a peer-reviewed, novel mechanism from a top lab, but its storage win is what this host least needs (all vector indexes ~3.3 GB / ~0.3% of RAM); recompute latency is deflectable to the live MI210, so the NO-GO rests on unneeded storage saving + unmet scale/RAM gates, not on recompute cost. Not new_opportunity (relevance not high; no stub) and not not_applicable (real MCP/personal-RAG angle). Re-evaluate IF a single-vector corpus crosses ~1M vectors under storage/RAM pressure, or if the on-device MCP connector tooling (not the index) becomes the target. Credibility 4: MLSys 2026 Oral (+ ICML 2025 VecDB workshop poster; NOT NeurIPS 2025) top venue (+2), <12 mo (+1), Berkeley Sky Computing Lab / Stoica-Zaharia-Gonzalez-Min (+1), no commercial bias, no confirmed independent replication of the numbers.'
   notes: 'User-provided input 2026-07-16 via /research-intake. Repo github.com/StarTrail-org/LEANN backed by paper arXiv:2506.08276 (same authors, Berkeley Sky Computing Lab). Direct sibling of intake-686 (turbovec) — both storage-efficient vector indices that fail the same three scale gates on this host (see research/deep-dives/2026-06-12-turbovec-vector-index.md). Distinct mechanism: recompute-not-store vs compress-stored. Core contributors Yichuan Wang & Zhifei Li. Not in index before this run (a prior scoping exists at handoffs/archived/leann_vector_db.md, 2026-01-26, superseded). DEEP-DIVE 2026-07-16 (research/deep-dives/2026-07-16-leann-vector-index.md): refined verdict NO-GO at current scale — storage saving unneeded (~3.3 GB total, ~0.3% of RAM); single-vector so cannot express KB-RAG MaxSim (models only the episodic/strategy IndexFlatIP stores). Episodic FAISS store grew ~8.9x to ~646K vecs / 2.65 GB — single instrumented WATCH: ntotal>1M AND real RAM pressure; if that fires, first remedy is stock FAISS HNSW/IVF, not LEANN. Recompute is GPU-deflectable to the live MI210. Technique-mining: nothing transferable. Connector/MCP tooling flagged as operator-review candidate (personal RAG, separate from the production stack).'
+- id: intake-832
+  arxiv_id: null
+  url: https://github.com/lyogavin/airllm
+  source_type: repo
+  title: AirLLM — layer-by-layer streaming inference to run large LLMs on tiny GPU VRAM
+  authors:
+  - lyogavin (Gavin Li)
+  categories:
+  - local_inference
+  - inference_serving
+  - moe_optimization
+  - quantization
+  - hardware_optimization
+  key_claims:
+  - Runs a 70B model on a single 4 GB GPU (Llama-3.1-405B on 8 GB, DeepSeek-V3 671B on ~12 GB, Qwen3-235B MoE on ~3 GB) WITHOUT quantization/distillation/pruning, by keeping only ONE transformer layer resident in VRAM at a time (layer-by-layer inference).
+  - Optional block-wise quantization compression (4-bit/8-bit; FP8 added in v3.0) claims 'up to 3x' inference speedup.
+  - Unified HuggingFace AutoModel interface across Llama 2/3/3.1/3.3/4, Qwen 1/2/2.5/3, DeepSeek V2/V3/R1, Mistral, Mixtral, Phi, Gemma, ChatGLM, Baichuan, InternLM, Yi; MacOS/MLX support; CPU inference mentioned.
+  - Streams weights via model-layer sharding + prefetching + disk-based offloading.
+  techniques:
+  - layer-by-layer streaming inference (one transformer layer resident in VRAM per step)
+  - block-wise quantization compression (4/8-bit, FP8)
+  - layer sharding + prefetching
+  - disk-based weight offloading
+  - HuggingFace-transformers AutoModel wrapper
+  reported_results:
+  - 70B on 4 GB GPU; Llama-3.1-405B on 8 GB; DeepSeek-V3 671B on ~12 GB; Qwen3-235B MoE on ~3 GB; 'up to 3x' speedup with compression enabled. All self-reported product/engineering claims, no controlled benchmark methodology.
+  referenced_arxiv_ids:
+  - '2212.09720'
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters: []
+    handoffs:
+    - mi210-big-model-and-acceleration-roadmap.md
+    - fable5-window2-findings-05b-mi210-inference-architecture.md
+    - cpu-inference-optimization-index.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - mi210-big-model-and-acceleration-roadmap.md
+  handoffs_created: []
+  novelty_justification: Layer-by-layer weight streaming / offloading to fit large models in small VRAM is a well-established technique (llama.cpp partial -ngl offload, HF Accelerate device_map, DeepSpeed ZeRO-Inference, FlexGen); AirLLM is a popular packaging of it plus block-wise quantization (a known method). No new mechanism or study -> low.
+  relevance_justification: 'AirLLM solves GPU-VRAM scarcity (run 70B on a 4 GB consumer GPU). EPYC 9655 has ~1.1 TB RAM and is CPU-decode-bandwidth-bound, not VRAM-bound. Deep-dive (2026-07-16, per operator question): the GPU-bandwidth-for-active-weights idea IS valid and we ALREADY realize it for models that fit the MI210 64 GB HBM2e (~1.64 TB/s) — measured 122B UD-IQ2_M 43.7 t/s single (2.2x CPU) / 148.7 aggregate, 80B-A3B IQ2_M ~55.8 t/s (2.7-3.9x CPU) — but by loading the whole quantized model into HBM, NOT via AirLLM. AirLLM the tool stays low-relevance: its dense per-token layer streaming crosses PCIe (~32-64 GB/s), 7-14x SLOWER than EPYC DDR5 (~460 GB/s), so it loses to pure CPU. The genuinely relevant version (hot-expert GPU residency for too-big-for-HBM MoE) is a DIFFERENT technique, already tracked on mi210-big-model-and-acceleration-roadmap.md. -> low for the tool.'
+  verdict_justification: 'not_applicable for the TOOL: AirLLM streams dense layers CPU/disk->GPU per token over PCIe (bandwidth-bound ~32-64 GB/s, PCIe4/5), 7-14x below EPYC''s ~460 GB/s DDR5, so for any model it is SLOWER than pure CPU decode (the <1 tok/s drawback). The MI210''s 1.64 TB/s HBM only helps when weights RESIDE in HBM, not when they cross PCIe each token. Credibility null (tool repo, product claims). DEEP-DIVE (2026-07-16, per operator push-back): the operator''s "use GPU bandwidth for the active weights" intuition is CORRECT and already realized for <=~122B-at-IQ2 (fits the 64 GB HBM). The open, worthwhile version for too-big-for-HBM MoE (GLM-5.2 ~238 GB, DeepSeek-V3) is HOT-EXPERT GPU RESIDENCY (dense/attention/router on HBM via --n-cpu-moe/-ot/-otd already in v6; hot experts cached on GPU) — viability gated on expert-routing skew (Zipfian hot-set -> wins; near-uniform -> PCIe-bound -> loses). That go/no-go is "Gating experiment 1: expert-routing-skew profile" on mi210-big-model-and-acceleration-roadmap.md, NOT yet run. So: not_applicable-for-AirLLM, but the direction it prompted is a live, scoped MI210 task.'
+  notes: 'Referenced arxiv 2212.09720 (block-wise quantization) not indexed; NOT expanded (parent relevance low). Apache-2.0, ~22.7k stars, v3.0.1 (2026-06-30), FP8 in v3.0. Deep-dive folded into mi210-big-model-and-acceleration-roadmap.md (2026-07-16 note): distinguishes AirLLM''s PCIe-bound dense per-token streaming (anti-pattern) from hot-expert GPU residency (the real too-big-for-HBM lever, gated on the unrun expert-routing-skew profile / Gating experiment 1).'

@@ -44,3 +44,10 @@ Keep the big targets CPU-resident; host fast drafters on the MI210 for spec-dec.
 - [ ] Probe gemma4-IQ4 mid-precision residency
 - [ ] Axis B: measure alpha (drafter->target) for quant-asymmetric self-spec
 - [ ] GLM-5.2 endgame: expert-offload / REAP+IQ2 path (operator-gated)
+
+## Research Intake Update — 2026-07-16 (AirLLM / GPU-active-weight offload)
+
+Operator asked (re AirLLM, intake-832): can we use the MI210's ~1.64 TB/s HBM for the *active* weights to run models too slow on CPU? Deep-dive confirms the intuition but sharpens the mechanism:
+- **Already realized for models that FIT 64 GB HBM** — 122B UD-IQ2_M 43.7 t/s single (2.2× CPU) / 80B-A3B ~55.8 t/s (2.7–3.9× CPU). Nothing to add there.
+- **Per-token *streaming* (AirLLM's mechanism) is the ANTI-pattern**: it crosses PCIe (~32–64 GB/s, PCIe4/5), **7–14× slower than EPYC DDR5 (~460 GB/s)** → loses to pure CPU. The HBM win exists only when weights RESIDE in HBM.
+- **The real too-big-for-HBM lever = HOT-EXPERT GPU RESIDENCY** (dense/attention/router on HBM via `--n-cpu-moe`/`-ot`/`-otd`, already in v6; hot experts cached on GPU, cold on CPU) = Axis A, gated on **Gating experiment 1 (expert-routing-skew profile)**: Zipfian hot-set → wins; near-uniform → PCIe-bound → loses. That profile is **still unrun** and remains the cheap go/no-go before any build (esp. the GLM-5.2 endgame). No new task — reinforces existing Gating experiment 1. AirLLM-the-tool is not_applicable (HF-transformers, PCIe-bound); only the placement *pattern* is relevant, built with our llama.cpp primitives, not AirLLM.
