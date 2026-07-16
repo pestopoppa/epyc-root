@@ -7,6 +7,8 @@
 **Repos**: https://github.com/NousResearch/hermes-agent, https://github.com/math-inc/OpenGauss
 **Decision**: Vanilla Hermes (not OpenGauss) — OpenGauss is Lean 4-specific; Hermes has first-class custom endpoint support
 
+> **Scope (2026-07-16):** this handoff is the **Hermes-candidate** evaluation. The general orchestrator-vs-harness thesis — orthogonal backend moat (A) vs cooperation-requiring agent loop (B); the **open-source requirement**; and the OPEN harness choice across **Hermes / OpenCode / ACP-speakers** — plus the selection decision live in [`harness-selection-and-integration.md`](harness-selection-and-integration.md). Keep the general thesis + cross-candidate tasks THERE; keep Hermes-specific detail HERE. (Model IDs in the examples below — e.g. Qwen2.5-72B — are illustrative and dated; verify against the live registry, now Qwen3.5-122B-class.)
+
 ## Objective
 
 Evaluate running Hermes Agent (or its OpenGauss fork) as a user-facing frontend on top of our orchestrator. Hermes handles conversation UX, memory, skills, multi-platform gateway. Our orchestrator handles routing, model selection, escalation, inference optimization underneath via `/v1/chat/completions`.
@@ -275,7 +277,7 @@ Source: [`research/deep-dives/veniceai-skills-cross-runtime-authoring.md`](../..
 
 #### Phase 2+ Enhancement (added 2026-04-24 from intake-454 deep-dive)
 
-Source: [`research/deep-dives/hermes-agent-v2026-4-23-release.md`](../../research/deep-dives/hermes-agent-v2026-4-23-release.md). Depends on Wave 1B item D (pin bump v2026.3.23 → v2026.4.23) — D lives in [`hermes-agent-index.md`](hermes-agent-index.md) P2.5.
+Source: [`research/deep-dives/hermes-agent-v2026-4-23-release.md`](../../research/deep-dives/hermes-agent-v2026-4-23-release.md). Depends on Wave 1B item D (pin bump v2026.3.23 → v2026.4.23) — D lives in [`hermes-agent-index.md`](hermes-agent-index.md) P2.6.
 
 - [x] **F — Re-express `x_*` overrides as a namespaced Hermes plugin bundle** (4–6 h, depends on D) — DONE 2026-07-06
   - Upstream Hermes plugin-command plumbing was repaired in `/mnt/raid0/llm/hermes-agent`: `PluginContext.register_command()` now registers `CommandDef` entries, tracks canonical command handlers/aliases, exposes `invoke_plugin_command()`, passes CLI/gateway session context into plugin handlers, displays command counts in `/plugins`, and invokes mutable `pre_llm_call` hooks from chat-completions request construction.

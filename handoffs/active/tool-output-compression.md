@@ -46,7 +46,7 @@ The Phase 2 native compression module **layers before** these mechanisms: compre
 
 **Orchestrator integration**: Feature flag `tool_output_compression` (env `TOOL_OUTPUT_COMPRESSION`, default off). Wired at `helpers.py:1497` before `_spill_if_truncated()`.
 
-**Claude Code hook finding**: PostToolUse hooks **cannot replace built-in tool output** (only MCP tools support `updatedMCPToolOutput`). The Claude Code hook approach from Phase 0/1 is not viable for Bash output compression. Future work: wrap compression as an MCP tool, or use PreToolUse command rewriting.
+**Claude Code hook finding**: PostToolUse hooks **cannot replace built-in tool output** (only MCP tools support `updatedMCPToolOutput`). The Claude Code hook approach from Phase 0/1 is not viable for Bash output compression. ~~Future work: wrap compression as an MCP tool~~ → **DONE (Phase 4 landed the MCP-tool wrapper `tool_output_compressor_mcp.py`)**; PreToolUse command rewriting remains an alternative.
 
 ---
 
@@ -425,6 +425,7 @@ Add a new MCP server module that wraps the bash invocation as a `run_bash_compre
 ### Cross-references
 
 - Phase 2 (orchestrator-side compression at `helpers.py:1497`) — Phase 4 is the **Claude-Code-facing** counterpart; the two paths are independent and can both ship.
+- **Harness↔orchestrator context-management collision (2026-07-16):** a candidate *user-facing* harness (Hermes/OpenCode/ACP-speaker — NOT the dev harness) runs its OWN conversation compaction / prompt-cache mgmt / sub-agent spawning that can double-up or fight this orchestrator-side compression + `context-folding-progressive.md`. Orchestrator-side compression only pays off if the harness **cooperates** (defers to the Orch) — the concrete instance of the "layer-B needs harness cooperation ⇒ open-source harness" requirement in [`harness-selection-and-integration.md`](harness-selection-and-integration.md). Seam = the `/v1` boundary.
 - Phase 3d (anti-thrashing / language-aware / fallback chain) — those patches go into `compress_tool_output.py` itself, so they automatically benefit Phase 4 once the middleware is wired.
 - [`internal-kb-rag.md`](internal-kb-rag.md) — K6 was satisfied via the kb-search skill route, not an MCP tool; the v3 middleware pattern in P4b is the precedent if a future kb-search MCP variant is wanted.
 - [`meta-harness-optimization.md`](meta-harness-optimization.md) HLE-1 — the per-call telemetry shape in P4b is a candidate evidence source for the "per-component harness metrics" axis if the compressor is ever scored as a harness component.

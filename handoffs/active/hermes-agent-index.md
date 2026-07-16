@@ -11,7 +11,7 @@
 | Priority | Work | Owner / source | Gate |
 |---|---|---|---|
 | MED | Reference non-Hermes client live validation | [`hermes-outer-shell.md`](hermes-outer-shell.md) Phase P | Dry-run `scripts/hermes/reference_openai_client.py` now covers `x_*`, streaming, native `tools`, and `tool_choice`; live `--send` override/streaming validation requires a quiet inference window. |
-| MED | Hermes upstream pin bump and breaking-change audit | [`hermes-outer-shell.md`](hermes-outer-shell.md) P2.6 (note: hermes-outer-shell.md line ~278 cross-references this as "hermes-agent-index.md P2.5" — numbering mismatch, index says P2.6; fix on next hermes-outer-shell.md edit) | `scripts/hermes/hermes_pin_audit.py` reports current pin/target/smoke gates; target choice + checkout + smoke tests require a quiet window. |
+| MED | Hermes upstream pin bump and breaking-change audit | [`hermes-outer-shell.md`](hermes-outer-shell.md) P2.6 (cross-ref in hermes-outer-shell.md L278 corrected P2.5→P2.6 ✅ 2026-07-16) | `scripts/hermes/hermes_pin_audit.py` reports current pin/target/smoke gates; target choice + checkout + smoke tests require a quiet window. |
 | MED | tool-use-eval-contract — journal tool-call evidence under repaired contract | [`tool-use-eval-contract.md`](tool-use-eval-contract.md) | Post-2026-07-11: REPL code-extraction repaired (`extract_code_from_response`: `<end_prompt>` stripping, unanchored Gemma thinking-channel regex; toolrunner backend crash fixed; sentinel suite 4/5 pass). Remaining = journal shows nonzero `total_tool_calls` under the repaired `8be68732` prompt contract + usefulness evidence. This starves tool-output-compression P4e telemetry (1/100 required compressed-call observations), so it is upstream of that rollout decision. Owning-handoff open item: measure read-only multi-tool chains from full logs BEFORE any parallel-batching executor work. |
 | MED | Subagent + single-slot llama-server validation | [`hermes-outer-shell.md`](hermes-outer-shell.md) Phase 2 validation G | Requires controlled inference; do not overlap throughput-sensitive evidence windows. |
 | LOW | Multi-user auth flow | [`hermes-outer-shell.md`](hermes-outer-shell.md) | Deferred while deployment remains single-user. |
@@ -58,6 +58,7 @@ Context compression or tool-output changes
 - The outer shell depends on stable `/v1/chat/completions` routing override parameters. API contract changes must be reflected in Hermes skill docs and drift checks.
 - Context-compression changes overlap with `context-folding-progressive.md`; use one compaction policy owner per change.
 - Skill and tool-output changes overlap with `tool-output-compression.md`; report token/latency claims with the measurement grammar.
+- **Harness selection is an OPEN decision** (Hermes vs OpenCode vs an ACP-speaker) governed by the parent strategy index [`harness-selection-and-integration.md`](harness-selection-and-integration.md) — the orchestrator-vs-harness thesis + the cooperation→open-source requirement live there; this index and `hermes-outer-shell.md` are the **Hermes-candidate** track under it.
 
 ## Key Files
 
@@ -91,6 +92,7 @@ After completing a row, update the owning handoff, this index, and `progress/YYY
 - [ ] **HA-RLM-1** — harvest ACP integration pattern for Hermes session management
 - [ ] **HA-RLM-2** — evaluate MCP client design for tool-use delegation
 - [ ] **HA-RLM-3** — assess env injection patterns for sub-agent orchestration
+  - Note: ACP vs MCP is no longer a settled "MCP-first" lean — it is re-opened as a **harness-selection lever** owned by [`harness-selection-and-integration.md`](harness-selection-and-integration.md) HS-2 (ACP ROI could widen the field to all ACP-speaking open harnesses). Harvest patterns here; the protocol decision lives in the parent index.
 
 ## Progress checklist
 
