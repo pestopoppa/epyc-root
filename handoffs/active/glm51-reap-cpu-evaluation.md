@@ -1,6 +1,6 @@
 # GLM-MoE-DSA Evaluation — GLM-5.2 primary (GLM-5.1-REAP = fallback datapoint)
 
-**Status**: ACTIVE — **GLM-5.2 UD-IQ2_M download COMPLETE + size-manifest verified + short CPU load/coherence smoke PASSED (2026-07-16)**; DSA forward-pass premise **RE-AUDITED 2026-07-16 → likely LANDED in v6** (was "WAIT-DSA / PR #21149"). Next real action = long-context DSA/indexer verification and KV-length scaling. Inference operator-gated (`feedback_no_concurrent_inference`).
+**Status**: ACTIVE — **GLM-5.2 UD-IQ2_M download COMPLETE + size-manifest verified + short CPU load/coherence smoke PASSED + 4K/8K DSA trace shakedown PASSED (2026-07-16)**; DSA forward-pass premise **RE-AUDITED 2026-07-16 → likely LANDED in v6** (was "WAIT-DSA / PR #21149"). Next real action = true 64K+ DSA/indexer verification, sparse-vs-dense scaling classification, and quality. Inference operator-gated (`feedback_no_concurrent_inference`).
 **Created**: 2026-04-22 (via research-intake deep-dive of intake-427, as GLM-5.1-REAP)
 **Updated**: 2026-07-16 (re-scoped to GLM-5.2 primary; DSA-landed audit; download authorized)
 **Categories**: moe_optimization, local_inference, model_evaluation, kv_cache
@@ -65,7 +65,8 @@ Evaluate **GLM-5.2** (`zai-org/GLM-5.2`, 754B GLM-MoE-DSA) as a large-MoE archit
 - [ ] **GATE:** repetition loops → abort, document.
 
 ### Phase 2 — DSA-path verification (the load-bearing question)
-- [ ] Investigate short-smoke unused-tensor warning before/with the long-context probe: `blk.78.*` tensors were ignored on load, including indexer and `nextn` tensors. This may be expected tail-layer/NextN behavior or may indicate incomplete GLM-5.2 tensor mapping; do not call DSA or native-GLM-MTP live until resolved.
+- [x] Investigate short-smoke unused-tensor warning before/with the long-context probe: `blk.78.*` tensors are the expected skipped physical NextN tail block (`n_layer=78`, `n_layer_all=79`, `nextn_predict_layers=1`), not an unreconciled live trunk layer. ✅ 2026-07-16
+- [x] Run instrumented 4K/8K DSA trace shakedown: `/mnt/raid0/llm/tmp/glm52-dsa-long-probe-20260716T2340/plan.json` and `/mnt/raid0/llm/tmp/glm52-dsa-kv-scaling-20260716T2350/plan.json`; logs show metadata override `glm-dsa.attention.indexer.top_k=int:32` and `Lightning Indexer enabled`. ✅ 2026-07-16
 - [ ] Long-context probe (>64K, ideally toward 131K+): does the Lightning-Indexer/top-k path engage coherently? Instrument via logs / KV-cache-dsa creation / a needle-in-haystack at long ctx.
 - [ ] D2 runtime closeout: run one prefill batch (`n_tokens > 1`) and one single-token decode; capture graph/op traces proving `top_k` or `ggml_lightning_indexer` appears in both phases.
 - [ ] D2 scaling check: vary KV length while keeping `indexer_top_k` fixed and profile the actual attention op (`FLASH_ATTN_EXT` or dense `MUL_MAT` path). Full-KV scaling means dense-mask compute; near-top-k scaling means real sparse execution.
