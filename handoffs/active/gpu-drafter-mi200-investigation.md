@@ -1,6 +1,6 @@
 # GPU-Drafter on MI200 — Frontdoor Acceleration + CPU-Tier Spec-Dec
 
-**Status**: PATCHED-PENDING-RETEST 2026-06-19 - CPU-testable N5 alpha still has no acceptance-rate evidence; tree speculative branch sequence capacity is fixed in llama.cpp `a6c793fc6`, so the next gate is a clean aligned qwen35/frontdoor retest
+**Status**: N5-ALPHA-EVIDENCE-LANDED 2026-07-16 - CPU-testable qwen35/frontdoor drafter alpha now has decision-grade three-arm evidence on experimental v7 `da1bf5e2f`; next GPU-drafter work is Stage 1 end-to-end speedup / co-residency design, not another N5 preflight.
 **Created**: 2026-05-27 (via session synthesis + companion `/research-intake` run)
 **Categories**: speculative_decoding, hardware_optimization, inference_serving, local_inference
 **Hardware gate**: contingent on MI200-class GPU (MI210 or MI250/X) acquisition. GT 1030 (currently present) is BW-poorer than CPU and not viable for any role here — see § GT 1030 falsification. **→ MI210 INSTALLED 2026-07-02; the fork's HIP build leg is verified on gfx90a and first GPU benchmarks are in — hardware gate now OPEN (see § 2026-07-02 Advancement).**
@@ -24,6 +24,8 @@
 > **N5 evidence-shape update (2026-07-16)**: the harness now generates three execute arms (`positive_mtp`, `spec_off`, `n5_spec_on`) and records append-only per-prompt CSV/JSONL plus `summary.json`. The summary includes token-weighted acceptance, Wilson 95% interval, minimum-volume gates, decision-grade flags, and taxonomy counts (`spec_off_control`, `drafted_ok`, `decode_failed_fallback`, `no_spec_enabled`, `no_draft_tokens`). The harness no longer uses the removed `--draft-max` alias; N5 uses `--spec-type draft-tree --spec-draft-n-max`, the positive control uses embedded `draft-mtp`, and the control uses `--spec-type none`. No alpha evidence has been collected yet.
 >
 > **N5 v7 flag-surface correction (2026-07-16)**: the isolated `a6c793fc6` retest build is not the executable path for the current harness because its `llama-server --help` lacks `draft-tree`, `draft-mtp`, `--spec-draft-n-max`, and `--spec-draft-p-split`; strict preflight now reports that explicitly instead of implying only live servers are blocking. Experimental v7 at `53f6e30a1` has the modern flag surface, and its worktree was patched/rebuilt to add `draft-tree` sequence capacity provisioning plus fail-closed decode checks in `examples/speculative`. The v7 semantic dry-run artifact `/mnt/raid0/llm/epyc-inference-research/data/specdec_frontdoor_alpha/n5_retest_v7_semantic_preflight_20260716T181836Z/preflight.json` blocks only on live `llama-server` processes. This is readiness evidence only; N5 alpha remains unmeasured.
+>
+> **N5 alpha evidence landed (2026-07-16)**: the live-stack blocker was cleared, the N5 harness was hardened against stale-port arm reuse, and experimental v7 was patched at `da1bf5e2f` (`Fix draft-tree output capacity`) so `draft-tree` widens `n_outputs_max` with its widened `n_seq_max`. Rebuilt `build-hip/bin/llama-server` reports `version: 10077 (da1bf5e2f)`. Strict dry preflight `/mnt/raid0/llm/epyc-inference-research/data/specdec_frontdoor_alpha/n5_retest_v7_semantic_preflight_20260716T190817Z/preflight.json` is ready with no blockers. Execute artifact `/mnt/raid0/llm/epyc-inference-research/data/specdec_frontdoor_alpha/n5_retest_v7_execute_20260716T190836Z/summary.json` is decision-grade: `positive_mtp` accepted `355/401` tokens (alpha `0.8853`, Wilson 95% `[0.8504, 0.9129]`), `spec_off` emitted `0/0` draft tokens, and `n5_spec_on` accepted `376/376` tokens (alpha `1.0000`, Wilson 95% `[0.9899, 1.0000]`) across `8` prompts / `768` completion tokens per arm. Port `19087` and MI210 were verified clear after the run. Because GLM-5.2 was downloading during this run, speed/load-time numbers are observations only; the acceptance telemetry is the gated N5 output.
 
 ---
 
@@ -176,7 +178,7 @@ The clean retest is the experiment described below.
 
 ## The Gating Measurement — $\alpha$(frontdoor drafter → Qwen3.6)
 
-**This remains the single highest-leverage measurement in this investigation, but N5 still has no acceptance-rate evidence as of 2026-06-19.** A single number - the production-traffic acceptance rate of a validated frontdoor drafter against Qwen3.6 at $\gamma=3$ - gates three independent downstream investments. The attempted Qwen3-1.7B measurement does not supply that number because the pair is tokenizer-incompatible. Qwen3.5-0.8B Q8/Q4 match the qwen35 token/merge arrays, and the scratch aligned Q8 copy clears special-token compatibility. The 2026-06-19 tree sequence-capacity fix removes the `seq_id >= 1` shape failure from the tree path, but it must be followed by a clean aligned qwen35/frontdoor retest before any decision-grade acceptance data exists.
+**N5 now has decision-grade acceptance-rate evidence as of 2026-07-16.** The validated frontdoor drafter path against Qwen3.6 on experimental v7 `da1bf5e2f` reached draft/verify and emitted real `draft_n` / `draft_n_accepted` telemetry. The valid N5 arm accepted `376/376` draft tokens (alpha `1.0000`, Wilson 95% `[0.9899, 1.0000]`) while the positive MTP control accepted `355/401` (alpha `0.8853`) and the spec-off control emitted zero draft tokens. The next decision is no longer "can any qwen35-compatible path draft tokens?"; it is whether Stage 1/2 GPU co-residency and end-to-end speed economics justify promotion work.
 
 Acceptable evidence must come from one of these paths:
 
@@ -479,7 +481,7 @@ The MI210 frontdoor/drafter placements this handoff designs will need hand-tuned
 - [x] N5 evidence harness positive-control/spec-off arms, multi-prompt token-weighted alpha with Wilson CI, incremental CSV/JSONL persistence, and failure taxonomy ✅ 2026-07-16
 - [x] Isolated N5 retest clone/build at `a6c793fc6`; active-MTP-aligned draft strict compatibility passes; legacy binary later rejected by v7 flag-surface preflight ✅ 2026-07-16
 - [x] N5 preflight detects missing legacy speculative flag surface; patched/rebuilt experimental v7 `53f6e30a1` semantic preflight blocks only on live `llama-server` ✅ 2026-07-16
-- [ ] Clean aligned qwen35/frontdoor N5 retest on patched experimental v7 emitting real draft-acceptance (alpha still unmeasured)
+- [x] Clean aligned qwen35/frontdoor N5 retest on patched experimental v7 emitting real draft-acceptance (`n5_spec_on` 376/376, decision-grade) ✅ 2026-07-16
 - [ ] Stage 1 external GPU drafter for CPU frontdoor, >=1.3x kill-gate
 - [ ] Stage 2 frontdoor + drafter co-resident on GPU (production design)
 - [ ] Stage 4 MTP head split for gemma4 worker_general (after Stages 1-3)
