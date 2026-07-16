@@ -26,15 +26,15 @@ The 2026-05-28 "WAIT-DSA, no autonomous download" framing is **superseded**. Two
 
 | Question | Answer | Action |
 |---|---|---|
-| Is the model downloaded? | **In progress** — `unsloth/GLM-5.2-GGUF` UD-IQ2_M (~239 GB) via the download subagent (after Hy3), resume-safe. | Wait for completion; verify shard integrity. |
-| Is llama.cpp DSA ready? | **Apparently yes in v6** (glm-dsa model + DSA KV cache via #23346) — was recorded as "no". | Confirm empirically: load + short-ctx smoke + a long-ctx (>64K) probe to see if the indexer path actually engages vs silent dense fallback. |
+| Is the model downloaded? | **In progress** — `unsloth/GLM-5.2-GGUF` UD-IQ2_M (~239 GB) via a single active download writer; Hy3 is already present. | Wait for completion; verify shard integrity. |
+| Is llama.cpp DSA ready? | **Apparently yes in v6** (glm-dsa model + DSA KV cache via #23346) — was recorded as "no". Static audit says top-k selection exists in both prompt and decode, but final attention still looks dense/mask-based. | Confirm empirically: load + short-ctx smoke + a long-ctx (>64K) probe; then profile whether attention scales with full KV length or near `indexer_top_k`. |
 | Next useful action | Smoke-test on load (operator-gated), not more paper analysis. | Phase 1 below. |
 
 ### Phase 0 — no-inference readiness (updated 2026-07-16)
 - [x] Storage gate reconciled — CLEARED; operator authorized UD-IQ2_M download. ✅ 2026-07-16
 - [x] DSA implementation status re-audited — `llama_model_glm_dsa` + `llama-kv-cache-dsa.cpp` present in v6 via upstream #23346; "no forward pass" premise is STALE. ✅ 2026-07-16
 - [ ] Download completes + shard integrity verified (`models/GLM-5.2-UD-IQ2_M/`, ~6 shards, ~239 GB).
-- [ ] Reconcile [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md): its D1/D2 tracking of PR #21149 is likely superseded by the landed #23346 — update or close that handoff's premise (separate handoff; flag only here).
+- [x] Reconcile [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md): D1/#21149 path marked superseded, D2/D3 re-anchored to landed #23346 code, and remaining work split into fresh profiling gates. ✅ 2026-07-16
 
 ## Objective
 
@@ -64,8 +64,10 @@ Evaluate **GLM-5.2** (`zai-org/GLM-5.2`, 754B GLM-MoE-DSA) as a large-MoE archit
 - [ ] **GATE:** repetition loops → abort, document.
 
 ### Phase 2 — DSA-path verification (the load-bearing question)
-- [ ] Long-context probe (>64K, ideally toward 131K+): does the Lightning-Indexer/top-k path engage (sparse) or silently fall back to dense MLA? Instrument via logs / KV-cache-dsa creation / a needle-in-haystack at long ctx.
-- [ ] Record disposition: **DSA-REAL** (sparse engages → 1M-ctx value live) vs **DSA-FALLBACK** (dense only → short-ctx model, re-open the DSA gate).
+- [ ] Long-context probe (>64K, ideally toward 131K+): does the Lightning-Indexer/top-k path engage coherently? Instrument via logs / KV-cache-dsa creation / a needle-in-haystack at long ctx.
+- [ ] D2 runtime closeout: run one prefill batch (`n_tokens > 1`) and one single-token decode; capture graph/op traces proving `top_k` or `ggml_lightning_indexer` appears in both phases.
+- [ ] D2 scaling check: vary KV length while keeping `indexer_top_k` fixed and profile the actual attention op (`FLASH_ATTN_EXT` or dense `MUL_MAT` path). Full-KV scaling means dense-mask compute; near-top-k scaling means real sparse execution.
+- [ ] Record disposition: **DSA-REAL-SPARSE** (sparse compute engages → 1M-ctx value live), **DSA-DENSE-MASK** (top-k engages but attention still scales with full KV), or **DSA-FALLBACK** (indexer/top-k path fails or is bypassed).
 
 ### Phase 3 — Throughput benchmark (CPU; GATE ~ architect baseline)
 - [ ] Single-instance 192t (`numactl --interleave=all`) + NUMA 2×96t; record prefill/gen t/s, TTFT. Note: 754B at IQ2 is far larger active/total than the 122B architect; expect low CPU t/s (BW-bound). Compare vs corrected architect baseline (~18–21 t/s CPU-Q4+MTP, per `mi210-speed-campaign-summary.md`), not the stale 4.3.
@@ -79,9 +81,9 @@ Evaluate **GLM-5.2** (`zai-org/GLM-5.2`, 754B GLM-MoE-DSA) as a large-MoE archit
 
 ## Open Questions
 - [ ] Does the v6 `glm-dsa` graph run GLM-5.2 UD-IQ2_M coherently on load (short ctx)?
-- [ ] Does the DSA indexer path actually engage at long context, or is it a silent dense-MLA fallback? (Phase 2 — the whole 1M-ctx thesis rides on this.)
+- [ ] Does the DSA indexer path actually engage at long context, and does attention compute scale with `indexer_top_k` rather than full KV? (Phase 2 — the whole 1M-ctx thesis rides on this.)
 - [ ] MTP: the GLM-5.2 MTP head is an inert stub on our fork — is the native-GLM-MTP forward-graph port worth finishing for spec-dec once GLM-5.2 runs? (`tree-draft-forward-port-plan.md`)
-- [ ] Is `llama-cpp-dsa-contribution.md`'s PR-#21149 tracking now moot given #23346 landed? (reconcile)
+- [x] Is `llama-cpp-dsa-contribution.md`'s PR-#21149 tracking now moot given #23346 landed? Yes — reconciled; remaining D2/D3 work is landed-code profiling only. ✅ 2026-07-16
 
 ## Key Files
 | Repo | Path | Purpose |
@@ -93,7 +95,7 @@ Evaluate **GLM-5.2** (`zai-org/GLM-5.2`, 754B GLM-MoE-DSA) as a large-MoE archit
 
 ## Reporting Instructions
 - After the load/smoke, record the DSA-REAL vs DSA-FALLBACK disposition here + in `inference-acceleration-index.md`.
-- Any `GGML`/DSA correctness finding → also update `llama-cpp-dsa-contribution.md` (and reconcile its stale PR#21149 premise).
+- Any `GGML`/DSA correctness finding → also update `llama-cpp-dsa-contribution.md` and the landed-code D2/D3 profiling gates.
 - Keep the GLM-5.1-REAP fallback section below intact (append-only) — it is retained comparison history, not deleted.
 
 ---

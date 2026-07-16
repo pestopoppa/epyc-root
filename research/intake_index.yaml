@@ -44676,3 +44676,50 @@
   relevance_justification: 'AirLLM solves GPU-VRAM scarcity (run 70B on a 4 GB consumer GPU). EPYC 9655 has ~1.1 TB RAM and is CPU-decode-bandwidth-bound, not VRAM-bound. Deep-dive (2026-07-16, per operator question): the GPU-bandwidth-for-active-weights idea IS valid and we ALREADY realize it for models that fit the MI210 64 GB HBM2e (~1.64 TB/s) — measured 122B UD-IQ2_M 43.7 t/s single (2.2x CPU) / 148.7 aggregate, 80B-A3B IQ2_M ~55.8 t/s (2.7-3.9x CPU) — but by loading the whole quantized model into HBM, NOT via AirLLM. AirLLM the tool stays low-relevance: its dense per-token layer streaming crosses PCIe (~32-64 GB/s), 7-14x SLOWER than EPYC DDR5 (~460 GB/s), so it loses to pure CPU. The genuinely relevant version (hot-expert GPU residency for too-big-for-HBM MoE) is a DIFFERENT technique, already tracked on mi210-big-model-and-acceleration-roadmap.md. -> low for the tool.'
   verdict_justification: 'not_applicable for the TOOL: AirLLM streams dense layers CPU/disk->GPU per token over PCIe (bandwidth-bound ~32-64 GB/s, PCIe4/5), 7-14x below EPYC''s ~460 GB/s DDR5, so for any model it is SLOWER than pure CPU decode (the <1 tok/s drawback). The MI210''s 1.64 TB/s HBM only helps when weights RESIDE in HBM, not when they cross PCIe each token. Credibility null (tool repo, product claims). DEEP-DIVE (2026-07-16, per operator push-back): the operator''s "use GPU bandwidth for the active weights" intuition is CORRECT and already realized for <=~122B-at-IQ2 (fits the 64 GB HBM). The open, worthwhile version for too-big-for-HBM MoE (GLM-5.2 ~238 GB, DeepSeek-V3) is HOT-EXPERT GPU RESIDENCY (dense/attention/router on HBM via --n-cpu-moe/-ot/-otd already in v6; hot experts cached on GPU) — viability gated on expert-routing skew (Zipfian hot-set -> wins; near-uniform -> PCIe-bound -> loses). That go/no-go is "Gating experiment 1: expert-routing-skew profile" on mi210-big-model-and-acceleration-roadmap.md, NOT yet run. So: not_applicable-for-AirLLM, but the direction it prompted is a live, scoped MI210 task.'
   notes: 'Referenced arxiv 2212.09720 (block-wise quantization) not indexed; NOT expanded (parent relevance low). Apache-2.0, ~22.7k stars, v3.0.1 (2026-06-30), FP8 in v3.0. Deep-dive folded into mi210-big-model-and-acceleration-roadmap.md (2026-07-16 note): distinguishes AirLLM''s PCIe-bound dense per-token streaming (anti-pattern) from hot-expert GPU residency (the real too-big-for-HBM lever, gated on the unrun expert-routing-skew profile / Gating experiment 1).'
+- id: intake-833
+  arxiv_id: null
+  url: https://github.com/sybil-solutions/local-studio
+  source_type: repo
+  title: Local Studio (Sybil Solutions / 0xSero) — local-first multi-backend LLM management GUI
+  authors:
+  - Sybil Solutions (0xSero)
+  categories:
+  - local_inference
+  - inference_serving
+  - tool_implementation
+  - agent_architecture
+  key_claims:
+  - Local-first workstation GUI to launch/manage/interact with self-hosted LLM backends via a single controller API; Bun/Hono backend + Next.js 16/React 19 frontend + a macOS Electron desktop app.
+  - 'Multi-backend: vLLM, SGLang, llama.cpp, MLX (Apple Silicon), fronted by an OpenAI-compatible proxy (chat/models/tokenization/audio).'
+  - 'Model lifecycle management: launch, evict, recipes, downloads, process coordination; plus system-state monitoring (GPU metrics, logs, usage, SSE streams).'
+  - Integrated 'Pi' coding-agent runtime in the frontend (at /agent); local-only agent file ops under data/agentfs; remote/LAN deploy with optional auth.
+  - Apache-2.0, ~1.4k stars, v2.0.0 (2026-07-16). Appears to be the productized successor of the earlier vllm-studio (294 stars) noted in intake-183.
+  techniques:
+  - single controller API over multiple inference backends (vLLM/SGLang/llama.cpp/MLX)
+  - OpenAI-compatible proxy layer (chat/models/tokenization/audio)
+  - model recipe system + lifecycle (launch/evict/download/process-coordination)
+  - GPU/runtime monitoring via SSE streams
+  - embedded coding-agent runtime (Pi) + local agent filesystem (data/agentfs)
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters: []
+    handoffs:
+    - dynamic-stack-concurrency.md
+    - hermes-agent-index.md
+    - model-stack-single-source-update-pipeline.md
+    experiments: []
+    intake_entries:
+    - intake-183
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: LM-Studio-class multi-backend LLM management GUI — a well-established category (LM Studio, Jan, Open WebUI, text-generation-webui). It is the productized successor to vllm-studio (already flagged in intake-183, 0xSero's profile). Concrete evolution, not a new mechanism -> low.
+  relevance_justification: Domain-adjacent (multi-backend serving, model lifecycle/recipes, OpenAI-compatible proxy, embedded coding agent) but our production orchestrator (orchestrator_stack.py + routing + native MTP + autopilot) is a more capable, bespoke stack; and vLLM/SGLang backends are gfx90a-limited on our MI210 (llama.cpp is our production path). Value is as a reference for model-recipe/lifecycle + OpenAI-proxy patterns and as a comparator for the user-facing-harness strategy question -> low.
+  verdict_justification: 'worth_investigating (low priority): (a) the tracked successor to vllm-studio (intake-183) from 0xSero/Sybil Solutions — a contributor we already follow (REAP models, GLM-5.1-REAP GGUFs, claude-acp-server); (b) a concrete reference point for the operator''s active question on whether our orchestrator should stay orthogonal to the user-facing harness or be baked into a custom harness. NOT adoptable wholesale (our stack is more advanced) and NOT not_applicable (genuine domain-adjacent tool + informs a live strategic question). Credibility null (tool repo, no empirical claims).'
+  notes: 'By 0xSero/Sybil Solutions (tracked: REAP models, GLM-5.1-REAP GGUFs, claude-acp-server). Productized successor of vllm-studio (intake-183). Surfaced alongside the operator''s strategic question re orchestrator-vs-harness integration (custom user harness); Local Studio anchors the ''management GUI baked around backends'' end of that spectrum. No Phase-3 expansion (relevance low). No handoff amended (low relevance; the harness-integration angle is addressed in-conversation, not written into a handoff without operator direction).'

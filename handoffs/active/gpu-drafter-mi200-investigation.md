@@ -16,6 +16,14 @@
 > **N5 sidecar status (2026-06-27)**: the qwen35-compatible path still has **no valid acceptance-rate evidence**. The aligned scratch draft `/mnt/raid0/llm/scratch/n5/Qwen3.5-0.8B-Q8_0.frontdoor-specials.gguf` clears tokenizer metadata, but the path still needs a clean retest that reaches draft/verify after the qwen35/qwen35moe M-RoPE/GDN decode-position failures. The inspected llama.cpp tree was at `91745611f`, not the required clean retest commit `a6c793fc6`; both `a6c793fc6` and safety commit `53e9a6550` exist in history. Do not run the alpha smoke from the current tree without first moving to the required retest commit/build and rerunning compatibility.
 >
 > **N5 harness update (2026-06-27)**: research `scripts/benchmark/n5_frontdoor_drafter_retest.sh` now packages the clean-window retest path. Default mode is no-inference and writes `preflight.json` plus `commands.sh`; `--execute` is fail-closed unless the active llama.cpp worktree is at `a6c793fc6`, `53e9a6550` is in the lineage, the rebuilt `llama-server` is fresh enough, the aligned draft/target files exist, the compatibility checker can import `gguf`, the measurement port is free, and AutoPilot/live `llama-server` blockers are cleared or explicitly overridden. The live dry-run correctly blocked on current HEAD `91745611f`, missing `gguf` in `python3`, active AutoPilot, and live stack servers. This is a reproducibility unblock only; it still emits no alpha evidence until a clean-window execute reaches draft/verify and records `draft_n`/`draft_n_accepted`.
+>
+> **N5 guard update (2026-07-16)**: the retest path is now hardening-first. The research harness fail-closes when `LLAMA_CPP_DIR` resolves to frozen production v6, accepts Git worktrees via `git rev-parse --git-dir`, checks `llama-server --version` for the expected commit, defaults the target to the active registry frontdoor `/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf`, and invokes the compatibility checker in strict mode with active-MTP-frontdoor BOS/EOS/PAD assertions `248044/248046/248055`. The compatibility checker now has PAD-token awareness, JSON output, and a strict mode that fails closed on tokenizer-family, vocab, BOS/EOS/PAD, missing metadata, and expected-special mismatches. This closes accidental-production and fail-open-preflight risks only; the alpha evidence run still requires positive-control/spec-off arms, multi-prompt volume, token-weighted acceptance with CI, incremental persistence, and server-log failure taxonomy.
+>
+> **N5 active-target alignment update (2026-07-16)**: strict preflight against the isolated `a6c793fc6` build showed the historical `/mnt/raid0/llm/scratch/n5/Qwen3.5-0.8B-Q8_0.frontdoor-specials.gguf` draft is aligned to the old non-MTP target (`pad=248044`) and fails against the active MTP frontdoor (`pad=248055`). A new scratch derivative, `/mnt/raid0/llm/scratch/n5/Qwen3.5-0.8B-Q8_0.frontdoor-mtp-specials.gguf`, was created with PAD `248055` and passes strict compatibility against `/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf`.
+>
+> **N5 evidence-shape update (2026-07-16)**: the harness now generates three execute arms (`positive_mtp`, `spec_off`, `n5_spec_on`) and records append-only per-prompt CSV/JSONL plus `summary.json`. The summary includes token-weighted acceptance, Wilson 95% interval, minimum-volume gates, decision-grade flags, and taxonomy counts (`spec_off_control`, `drafted_ok`, `decode_failed_fallback`, `no_spec_enabled`, `no_draft_tokens`). The harness no longer uses the removed `--draft-max` alias; N5 uses `--spec-type draft-tree --spec-draft-n-max`, the positive control uses embedded `draft-mtp`, and the control uses `--spec-type none`. No alpha evidence has been collected yet.
+>
+> **N5 v7 flag-surface correction (2026-07-16)**: the isolated `a6c793fc6` retest build is not the executable path for the current harness because its `llama-server --help` lacks `draft-tree`, `draft-mtp`, `--spec-draft-n-max`, and `--spec-draft-p-split`; strict preflight now reports that explicitly instead of implying only live servers are blocking. Experimental v7 at `53f6e30a1` has the modern flag surface, and its worktree was patched/rebuilt to add `draft-tree` sequence capacity provisioning plus fail-closed decode checks in `examples/speculative`. The v7 semantic dry-run artifact `/mnt/raid0/llm/epyc-inference-research/data/specdec_frontdoor_alpha/n5_retest_v7_semantic_preflight_20260716T181836Z/preflight.json` blocks only on live `llama-server` processes. This is readiness evidence only; N5 alpha remains unmeasured.
 
 ---
 
@@ -219,25 +227,29 @@ See [`research/deep-dives/2026-05-27-cross-tokenizer-specdec-and-mtp.md`](../../
 This is the bounded no-inference checklist for the next frontdoor drafter alpha retest. Do not start the smoke until every item below is true.
 
 1. Confirm the llama.cpp tree-spec fix is the active build:
-   - repo HEAD is `a6c793fc6`
-   - the safety containment patch `53e9a6550` is present in the same tree
-   - the binaries under `build/` were rebuilt after those commits
+   - use patched experimental v7 `53f6e30a1` or a later committed descendant, not the frozen production v6 tree
+   - for historical `a6c793fc6` retests, the safety containment patch `53e9a6550` must be present in the same tree; for v7, use `SAFETY_COMMIT_MODE=semantic_audit` with an audit reference because the fixes were ported onto a diverged branch
+   - the rebuilt `llama-server` must report the expected commit and expose the modern `draft-tree`, `draft-mtp`, `--spec-draft-n-max`, and `--spec-draft-p-split` flag surface
    - current tree mismatch noted 2026-06-27: inspected HEAD was `91745611f`, so the retest preflight was **not** satisfied
    - `scripts/benchmark/n5_frontdoor_drafter_retest.sh --strict` must report `status=ready` before any execute attempt
 2. Confirm the test pair is the qwen35-compatible one, not the stale Qwen3-1.7B pair:
-   - target: `Qwen_Qwen3.6-35B-A3B-Q8_0.gguf`
-   - draft: `Qwen3.5-0.8B-Q8_0.gguf` or the aligned scratch copy at `/mnt/raid0/llm/scratch/n5/Qwen3.5-0.8B-Q8_0.frontdoor-specials.gguf`
+   - target: active frontdoor `Qwen3.6-35B-A3B-MTP-Q8_0.gguf`
+   - draft: active-MTP-aligned scratch copy at `/mnt/raid0/llm/scratch/n5/Qwen3.5-0.8B-Q8_0.frontdoor-mtp-specials.gguf`; the older `frontdoor-specials.gguf` is only aligned to the non-MTP target
 3. Confirm the draft path is metadata-aligned before any server run:
-   - BOS/EOS/PAD must be `248044/248046/248044`
+   - BOS/EOS/PAD must be `248044/248046/248055` for the active MTP frontdoor target
    - token arrays, merges, and token_type must still match
 4. Confirm the run will emit decision-grade evidence:
    - `llama-server` metrics must expose `draft acceptance rate`
    - any later acceptance binning must come from draft/verify traffic, not from crash, model-load, or fail-closed logs
+   - include a known-good positive-control arm proving the telemetry path emits `draft_n`
+   - include a spec-off control arm in the same window
+   - use production-like multi-prompt traffic with token-weighted acceptance rate, confidence interval, and incremental persistence
+   - parse server logs into `no_spec_enabled`, `decode_failed_fallback`, or `drafted_ok` before any result can be binned
 5. Use the existing harnesses as controls only:
    - `scripts/benchmark/bench_tree_speculation_server.sh` already parses acceptance stats, but its built-in pairs are not the N5 frontdoor pair
    - `scripts/benchmark/bench_numa_qwen35_sweep.sh` and `scripts/benchmark/bench_hispec_external.sh` are useful for regression control, not for the N5 frontdoor alpha itself
 6. Keep the smoke command explicit and minimal:
-   - `numactl --interleave=all /mnt/raid0/llm/llama.cpp/build/bin/llama-server -m <target> -md <draft> --draft-max 1 -t 96 -np 1 -c 8192 -ub 8192 -fa on -ctk q8_0 -ctv q8_0 --port <free-port> --metrics --jinja --reasoning auto`
+   - `numactl --interleave=all <experimental-llama-server> -m <target> -md <draft> --spec-type draft-tree --spec-draft-n-max 1 --spec-draft-p-split 0.05 -t 96 -np 1 -c 8192 -ub 8192 -fa on -ctk q8_0 -ctv q8_0 --port <free-port> --metrics --jinja --reasoning auto`
    - if the binary is launched outside the build tree, bind the matching shared libraries with `LD_LIBRARY_PATH` so it does not fall back to production libs
    - prefer the generated `commands.sh` from the N5 harness so the exact `LLAMA_CPP_DIR`, `LLAMA_SERVER`, `PYTHON_BIN`, model paths, and result directory are captured with the run
 
@@ -463,7 +475,11 @@ The MI210 frontdoor/drafter placements this handoff designs will need hand-tuned
 
 - [x] Stage 0 self-MTP baseline (76.9% / live G0 alpha measured 2026-07-03) ✅
 - [x] HIP build verified on gfx90a 2026-07-02 ✅
-- [ ] Clean aligned qwen35/frontdoor N5 retest at commit a6c793fc6 emitting real draft-acceptance (alpha still unmeasured)
+- [x] N5 preflight fail-closed on production v6, strict tokenizer/special-token checks, worktree-safe repo detection, registry-current target default, and binary version provenance scaffold ✅ 2026-07-16
+- [x] N5 evidence harness positive-control/spec-off arms, multi-prompt token-weighted alpha with Wilson CI, incremental CSV/JSONL persistence, and failure taxonomy ✅ 2026-07-16
+- [x] Isolated N5 retest clone/build at `a6c793fc6`; active-MTP-aligned draft strict compatibility passes; legacy binary later rejected by v7 flag-surface preflight ✅ 2026-07-16
+- [x] N5 preflight detects missing legacy speculative flag surface; patched/rebuilt experimental v7 `53f6e30a1` semantic preflight blocks only on live `llama-server` ✅ 2026-07-16
+- [ ] Clean aligned qwen35/frontdoor N5 retest on patched experimental v7 emitting real draft-acceptance (alpha still unmeasured)
 - [ ] Stage 1 external GPU drafter for CPU frontdoor, >=1.3x kill-gate
 - [ ] Stage 2 frontdoor + drafter co-resident on GPU (production design)
 - [ ] Stage 4 MTP head split for gemma4 worker_general (after Stages 1-3)

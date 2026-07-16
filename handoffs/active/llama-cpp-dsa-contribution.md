@@ -1,8 +1,8 @@
 # llama.cpp DSA Contribution — DSA LANDED upstream (#23346); remaining CPU-perf sub-tracks (D2/D3)
 
-**Status**: RE-AUDITED 2026-07-16 — **DSA support LANDED in v6 via upstream #23346** (generic DSA), NOT the tracked draft #21149 → the "track #21149 to merge" objective and D1 are SUPERSEDED. Live remnants: D2 (prompt-processing sparse path) + D3 (CPU AVX-512 Lightning-Indexer), re-anchored to the landed code and re-gated on fresh profiling. All inference gated per `feedback_no_concurrent_inference.md`.
+**Status**: RE-AUDITED 2026-07-16 — **DSA support LANDED in v6 via upstream #23346** (generic DSA), NOT the tracked draft #21149 → the "track #21149 to merge" objective and D1 are SUPERSEDED. Live remnants: D2 (sparse-compute reality check: top-k exists in prompt/decode, final attention still looks dense-mask) + D3 (CPU AVX-512 Lightning-Indexer), re-anchored to the landed code and re-gated on fresh profiling. All inference gated per `feedback_no_concurrent_inference.md`.
 **Created**: 2026-04-29 (via research-intake of intake-506 + PR #21149 audit)
-**Updated**: 2026-05-28 — Added "Adjacent Upstream Arch Work — deepseek4" section tracking ggml-org/llama.cpp issue #22319 + discussion #22376 + 4+ community WIP forks (antirez, nisparks, cdome94, Fringe210). Our sibling effort is `handoffs/active/deepseek-v4-flash-cpu-port.md` (port AUTHORIZED 2026-05-28, experimental branch isolation); if a core contributor opens a deepseek4 upstream PR, our role mirrors D1 (CPU benchmark contribution) and the experimental branch rolls back in favor of upstream. Earlier 2026-04-29 (initial).
+**Updated**: 2026-07-16 — DSA landed audit reset (#23346); prior 2026-05-28 deepseek4 section retained as adjacent history.
 **Categories**: kv_cache, inference_serving, hardware_optimization, local_inference
 **Workstream**: Inference Acceleration + CPU Engineering (cross-cuts)
 **Parent indices**:
@@ -27,11 +27,22 @@
 **What this changes:**
 - **D1 (pull draft #21149 / build / smoke) — SUPERSEDED.** The code is in production v6; the smoke-test now lives in the model-eval handoff [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) → **GLM-5.2** (the active DSA target; V3.2 not planned — GLM-5.2 covers this niche), not as a "pull the draft" task.
 - **Monitoring PR #21149 weekly — MOOT.** DSA landed; stop tracking that PR to merge.
-- **D2 (PP-sparse) + D3 (CPU AVX-512 indexer) — POSSIBLY still live, but RE-ANCHOR to the landed #23346 code, not the fairydreaming draft.** Re-run the gating checks against the landed version: (D2) does prompt-processing still use dense attention / is long-context speedup still unrealized? (D3.1) is the landed CPU Lightning-Indexer path compute-bound (worth SIMD) or BW-bound (no-op)? Do NOT start either until re-confirmed against the landed code. Their design detail below stays valid as a starting template.
+- **D2 (sparse-compute reality check) + D3 (CPU AVX-512 indexer) — RE-ANCHORED to landed #23346 code, not the fairydreaming draft.** Static audit (2026-07-16) found DSA `top_k` selection is built for both prompt processing and decode, but final attention still appears dense/mask-based. D2 is therefore not "decode sparse, prompt dense"; it is "prove whether attention still scales with full KV despite top-k." D3 still needs a landed-code profile to decide compute-bound vs bandwidth-bound.
 
 ## Objective (revised 2026-07-16)
 
-DSA is landed upstream (#23346) and present in v6. The objective is no longer "track a draft PR to merge" — it is: (1) confirm the landed DSA path runs **GLM-5.2** coherently (the active DSA target, owned by [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md)) — **DeepSeek-V3.2 is NOT a planned eval** (GLM-5.2 covers the DSA large-MoE niche; V3.2 stays a supported-arch fact/fallback, not worth a second ~380 GB download + inference window), and (2) evaluate whether the two CPU-performance contribution opportunities (D2 prompt-processing sparse path, D3 AVX-512BW Lightning-Indexer kernel) are still real against the LANDED code, and pursue them upstream only if the re-gating checks pass. Original PR-#21149 tracking context is retained below as history.
+DSA is landed upstream (#23346) and present in v6. The objective is no longer "track a draft PR to merge" — it is: (1) confirm the landed DSA path runs **GLM-5.2** coherently (the active DSA target, owned by [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md)) — **DeepSeek-V3.2 is NOT a planned eval** (GLM-5.2 covers the DSA large-MoE niche; V3.2 stays a supported-arch fact/fallback, not worth a second ~380 GB download + inference window), and (2) evaluate whether the two CPU-performance contribution opportunities (D2 sparse-compute attention reality, D3 AVX-512BW Lightning-Indexer kernel) are still real against the LANDED code, and pursue them upstream only if the re-gating checks pass. Original PR-#21149 tracking context is retained below as history.
+
+### 2026-07-16 static D2 audit
+
+Read-only landed-code audit found:
+- Prompt and decode both route through the same `decode()`/`process_ubatch()`/`build_graph()` path; the main distinction is `ubatch.n_tokens`, not a separate DSA graph.
+- DSA input tensors are built per `ubatch`, with no decode-only `n_tokens == 1` gate.
+- `top_k` selection is computed for all tokens in the current ubatch.
+- The selected `top_k` is applied by editing a dense KQ mask before standard attention.
+- The final attention call still appears dense: `ggml_flash_attn_ext(...)` over full `k/v`, or `ggml_mul_mat(k, q)` plus softmax mask.
+
+Conclusion: current code appears to do DSA top-k selection in both prompt processing and decode, but static inspection does not prove sparse-compute attention. D2 remains open only as a runtime/profiling question: vary KV length while holding `indexer_top_k` fixed and profile whether attention scales with full KV length or near top-k.
 
 ## PR State Snapshot (2026-04-29)
 
@@ -65,7 +76,7 @@ DSA is landed upstream (#23346) and present in v6. The objective is no longer "t
 
 ## Three Contribution Sub-Tracks
 
-### D1 — Pull / Build / Smoke Test (lowest-hanging fruit) [GATED]
+### D1 — Pull / Build / Smoke Test (SUPERSEDED; historical #21149 path)
 
 **Effort**: ~1 day
 **Visibility**: Medium (first CPU data point on a CUDA-dominated PR)
@@ -76,24 +87,24 @@ DSA is landed upstream (#23346) and present in v6. The objective is no longer "t
 
 | ID | Task | Status | Notes |
 |----|------|--------|-------|
-| D1.1 | Verify disk space for V3.2 Q4_K_M GGUF (~380 GB) on `/mnt/raid0` (3.7 TB total per `user_hardware`) | PENDING | `df -h /mnt/raid0` — should be straightforward |
-| D1.2 | Pull PR #21149 as feature branch in `llama.cpp-experimental` | PENDING | `git fetch upstream pull/21149/head:dsa-21149` |
-| D1.3 | Build on EPYC with our standard CPU-build flags | PENDING | `cmake -B build_dsa -DGGML_CUDA=OFF -DGGML_NATIVE=ON ...` |
-| D1.4 | Download V3.2-Exp Q4_K_M GGUF | PENDING | Likely from HF; check community quants of `deepseek-ai/DeepSeek-V3.2-Exp` |
-| D1.5 | Convert if no Q4_K_M available — `convert_hf_to_gguf.py` per PR's `add_bos_token=true` requirement | PENDING | Only if Q4_K_M doesn't exist already |
-| D1.6 | **Quality gate**: GSM8K + GPQA-Diamond at 32K context, replicate "V3.2-Exp ≈ V3.1-Terminus" | **GATED on user inference approval** | Use canonical baseline: `taskset -c 0-95 -t 96 -fa 1 --mmap 0 numactl --interleave=all` |
-| D1.7 | **Throughput gate**: t/s at 16K / 64K / 128K context, V3.2 with DSA active vs MLA-only baseline | **GATED on user inference approval** | Falsify hypothesis: indexer FP8 emulation kills CPU advantage |
-| D1.8 | Post results as comment on PR #21149 | PENDING | Follows D1.6 + D1.7 |
+| D1.1 | Verify disk space for V3.2 Q4_K_M GGUF (~380 GB) on `/mnt/raid0` (3.7 TB total per `user_hardware`) | SUPERSEDED | V3.2 is no longer the planned first DSA eval target. |
+| D1.2 | Pull PR #21149 as feature branch in `llama.cpp-experimental` | SUPERSEDED | DSA reached v6 through #23346; do not pull the old draft as the live path. |
+| D1.3 | Build on EPYC with our standard CPU-build flags | SUPERSEDED | Use current v6/experimental-v7 code for checks. |
+| D1.4 | Download V3.2-Exp Q4_K_M GGUF | SUPERSEDED | GLM-5.2 is the active large-MoE DSA target. |
+| D1.5 | Convert if no Q4_K_M available — `convert_hf_to_gguf.py` per PR's `add_bos_token=true` requirement | SUPERSEDED | Historical #21149 context only. |
+| D1.6 | **Quality gate**: GSM8K + GPQA-Diamond at 32K context, replicate "V3.2-Exp ≈ V3.1-Terminus" | SUPERSEDED | Replace with GLM-5.2 load/smoke + long-context DSA probe. |
+| D1.7 | **Throughput gate**: t/s at 16K / 64K / 128K context, V3.2 with DSA active vs MLA-only baseline | SUPERSEDED | Reprofile D2/D3 only after landed-code GLM evidence. |
+| D1.8 | Post results as comment on PR #21149 | SUPERSEDED | No live PR comment action. |
 
-**Decision gate after D1**: if quality holds AND throughput is reasonable on CPU, proceed to D2/D3. If indexer is the CPU bottleneck → D3 priority. If quality fails → file issue on PR, deprioritize until upstream fixes.
+**Decision gate replacement**: after GLM-5.2 loads coherently and the landed DSA path is observed, profile the landed code. If attention still scales with full KV despite top-k, D2 may be live. If the CPU Lightning-Indexer is compute-bound, D3 may be live. If GLM fails to load or quality-loops, keep D2/D3 parked.
 
-### D2 — Prompt-Processing Sparse Path Follow-On PR
+### D2 — Sparse-compute reality check / possible follow-on PR
 
 **Effort**: ~1-2 weeks
 **Visibility**: HIGH (real upstream contribution, closes the long-context-speedup gap that's currently the PR's biggest known limitation)
 **Risk**: Medium (kernel work; CUDA + CPU paths both involved)
 
-The PR's current sparse path applies only to **token generation** (batch_size=1). Prompt processing still uses dense attention despite the same DSA top-k mask being available. **This is the actual root cause of "long-context performance not improved yet."**
+Historical #21149 context said sparse path applied only to **token generation** (`batch_size=1`) and prompt processing remained dense. Landed-code static audit does **not** show that exact split: top-k selection appears in both prompt processing and decode. The live question is whether the final attention op is still dense-mask compute in both paths, which would explain why long-context speedups may remain unrealized.
 
 Author's note (paraphrased): *"separate PR needed for advanced sparse fattn kernel optimization"*
 
@@ -101,14 +112,16 @@ Author's note (paraphrased): *"separate PR needed for advanced sparse fattn kern
 
 | ID | Task | Status | Notes |
 |----|------|--------|-------|
-| D2.1 | Read current sparse path in PR #21149 — identify token-gen-only call sites | PENDING | `src/llama-graph.cpp` DSA attention graph building |
-| D2.2 | Design extension: route DSA top-k mask to PP attention path | PENDING | Decision: invasive `ggml_get_rows()` change vs new sparse-fattn variant |
-| D2.3 | Implement CPU path first (mirrors our existing kernel work), validate PPL bit-exact | PENDING | `tests/test-backend-ops.cpp` existing + new PP tests |
-| D2.4 | Throughput gate: PP t/s improvement at 32K / 64K / 128K | **GATED on user inference approval** | Must show real PP speedup, not just preservation |
-| D2.5 | CUDA path follow-on (optional; can split as separate PR) | PENDING | Author has CUDA expertise; we don't necessarily need to implement |
-| D2.6 | Open as separate upstream PR or as comment+patch on #21149 | PENDING | Coordinate with fairydreaming on review path |
+| D2.1 | Read the landed #23346 sparse path — identify whether DSA is prompt-only, decode-only, or shared | DONE | Static audit: top-k selection is shared across prompt/decode; final attention appears dense/mask-based. ✅ 2026-07-16 |
+| D2.2 | Runtime closeout: profile one prefill batch and one single-token decode with a DSA model | PENDING | Confirm `top_k`/`ggml_lightning_indexer` in both phases and profile the actual attention op. |
+| D2.3 | Vary KV length while keeping `indexer_top_k` fixed | PENDING | Full-KV scaling => dense-mask attention; near-top-k scaling => real sparse execution. |
+| D2.4 | If dense-mask scaling is confirmed, design sparse-fattn extension | PENDING | Decision: invasive `ggml_get_rows()` change vs new sparse-fattn variant. |
+| D2.5 | Implement CPU path first if a real dense-mask bottleneck is confirmed | PENDING | `tests/test-backend-ops.cpp` existing + new PP tests; validate PPL bit-exact. |
+| D2.6 | Throughput gate: PP/decode t/s improvement at 32K / 64K / 128K | **GATED on user inference approval** | Must show real sparse-compute speedup, not just preservation. |
+| D2.7 | CUDA path follow-on (optional; can split as separate PR) | PENDING | Author has CUDA expertise; we don't necessarily need to implement. |
+| D2.8 | Open as a separate upstream PR or current-master patch if the gap still exists | PENDING | Do not target the superseded #21149 draft as the live integration path. |
 
-**Decision gate before starting D2**: D1 must show V3.2 quality is preserved on CPU. Otherwise we're optimizing a broken path.
+**Decision gate before starting D2 implementation**: the GLM-5.2 landed-code smoke/probe must show the DSA path is real, and runtime profiling must show attention work still scales with full KV despite top-k selection.
 
 ### D3 — AVX-512BW Lightning Indexer (Zen 5 SIMD)
 
@@ -132,7 +145,7 @@ Our angle (per `project_zen5_vnni_vs_maddubs` + `project_q8_8x8_avx512bw_outcome
 | D3.4 | Correctness gate: PPL bit-exact vs scalar baseline | PENDING | Standard test-backend-ops + 32-chunk PPL pattern |
 | D3.5 | Throughput benchmark: indexer-time fraction before/after at 96 threads | **GATED on user inference approval** | Falsify "indexer FP8 kills CPU advantage" |
 | D3.6 | Auto-mbind the indexer key cache buffer (if it's a separate allocation) per `feedback_repack_buffer_numa_mbind` | PENDING | Only if profile shows multi-thread NUMA pressure |
-| D3.7 | Open upstream PR or contribute as patch-comment on #21149 | PENDING | Specifically scoped to "ggml-cpu/arch/x86 LIGHTNING_INDEXER kernel" |
+| D3.7 | Open upstream PR against current master if profiling justifies it | PENDING | Specifically scoped to "ggml-cpu/arch/x86 LIGHTNING_INDEXER kernel" |
 
 **Decision gate after D3.1**: if profile shows BW-bound, deprioritize D3 and redirect effort to D2. Don't write SIMD code that won't move the needle.
 
@@ -148,11 +161,11 @@ Cross-ref: [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) is the
 
 | Gate | Trigger | Action |
 |------|---------|--------|
-| **D1 START** | (a) Disk space verified, AND (b) user approves inference benchmark window | Pull PR, build, run smoke test |
-| **D2 START** | D1 complete + quality validated + author hasn't already merged a PP-extension PR | Begin D2 design |
-| **D3 START** | D1 complete + D3.1 profile confirms compute-bound | Begin D3 kernel work |
+| **D1 START** | OBE — DSA landed via #23346 | Do not pull/build the superseded draft PR as the live path |
+| **D2 START** | GLM-5.2 landed-code probe succeeds + prompt processing is still dense/unimproved | Begin D2 design |
+| **D3 START** | GLM-5.2 landed-code probe succeeds + D3.1 profile confirms compute-bound | Begin D3 kernel work |
 | **D2 / D3 PARALLEL** | Both above gates met | Can run concurrently — different code paths |
-| **PR #21149 MERGED** | Upstream maintainer merges (or fairydreaming flips draft → ready) | Cherry-pick into our `production-consolidated-v3` branch via the `../completed/llama-cpp-kernel-push-rebase.md` pattern |
+| **PR #21149 MERGED** | OBE for this handoff | No action; landed-code path is #23346/current upstream |
 | **GLM-5.2 ACTIVATION** | OBE — no longer gated on a V3.2 validation: DSA landed (#23346); activation = GLM-5.2 UD-IQ2_M download + smoke-test | Hand off to `glm51-reap-cpu-evaluation.md` (GLM-5.2 plan) |
 | **DEPRIORITIZE** | Author abandons PR OR upstream rejects DSA design | Re-evaluate; possibly maintain a fork-only path |
 
@@ -160,8 +173,8 @@ Cross-ref: [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) is the
 
 | Target | Cadence | Signal |
 |--------|---------|--------|
-| PR #21149 commits | Weekly | New optimizations / "ready for review" / merge | 
-| PR #21149 description | Weekly | Author lifts "long-context performance not improved yet" caveat |
+| PR #21149 commits | MOOT | Stop tracking for merge-readiness; retained as historical context |
+| PR #21149 description | MOOT | Stop tracking for merge-readiness; re-check landed code instead |
 | Issue #20363 (tracking) | Monthly | Status changes |
 | Issue #21458 (`GGML_OP_GATED`) | Monthly | Supporting infrastructure status |
 | GLM-5.1 GGUF availability | Monthly | Community Q4_K_M release |
@@ -196,14 +209,17 @@ The "we'd need to write a fork patch" framing in earlier glm51 handoff text was 
 
 ### GLM-5.2 raises the stakes on the DSA forward pass (intake-699)
 
-- **GLM-5.2 (754B GLM-MoE-DSA) is now the PRIMARY GLM target** (intake-699: unsloth dynamic quants of `zai-org/GLM-5.2`, MIT, 1M context; supersedes GLM-5.1). The DSA forward pass tracked here (**PR #21149**) is its **gating dependency**: `LLM_ARCH_GLM_DSA` currently only loads tensors → dense-MLA fallback (no Lightning Indexer / sparse fattn). **One DSA forward-pass implementation unlocks DeepSeek-V3.2 + the entire GLM-5.x family, including 5.2.** This strengthens the 2-models-for-1 leverage statement above into a multi-model-for-1 proposition (V3.2 + GLM-5.1 + GLM-5.2).
-- **Note**: #19460 is the **superseded** tensor-loading PR; **#21149 is the current forward-pass work** and the correct tracking target. GLM-5.2's storage is already viable via the unsloth UD-IQ2 dynamic quant (~238 GB, fits raid0 free) — DSA, not storage, is the blocker. See [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) "Research Intake Update — 2026-06-20" for the GLM-side disposition.
+- **GLM-5.2 (754B GLM-MoE-DSA) is now the PRIMARY GLM target** (intake-699: unsloth dynamic quants of `zai-org/GLM-5.2`, MIT, 1M context; supersedes GLM-5.1). 2026-07-16 correction: the old "PR #21149 is the gating dependency" statement is superseded; v6 contains generic DSA via #23346. The live gate is now GLM-5.2 UD-IQ2_M completion, integrity verification, load-smoke, and long-context DSA-indexer engagement.
+- **Note**: #19460 remains a superseded tensor-loading PR, and #21149 remains useful historical design context, but neither is the current activation blocker. See [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) for the GLM-side disposition.
 
 ## Progress checklist
 
 - [x] D1 pull/build/smoke PR #21149 — SUPERSEDED: DSA landed in v6 via generic-DSA #23346 (`deepseek32` + `glm-dsa` archs present); no draft-PR pull needed; smoke-test moved to the model-eval handoffs. ✅ 2026-07-16
 - [x] Weekly monitoring of PR #21149 to merge-readiness — MOOT: DSA landed via #23346; stopped tracking #21149. ✅ 2026-07-16
-- [ ] Re-anchor D2/D3 to the LANDED #23346 code (not the fairydreaming draft); re-run the D2 "is PP still dense / long-ctx unimproved?" and D3.1 "is the CPU indexer compute-bound?" gating checks before any contribution work
-- [ ] D2 prompt-processing sparse-path contribution — only if the re-anchored check shows the landed code still leaves PP dense
+- [x] Re-anchor D2/D3 to the LANDED #23346 code, not the fairydreaming draft. ✅ 2026-07-16
+- [x] Run the static D2 landed-code audit: top-k selection is shared across prompt/decode, but final attention appears dense/mask-based. ✅ 2026-07-16
+- [ ] Close D2 with runtime evidence: graph/op trace plus KV-length scaling while holding `indexer_top_k` fixed
+- [ ] Re-run D3.1 "is the CPU indexer compute-bound?" profiling check on landed code before any contribution work
+- [ ] D2 sparse-attention contribution — only if runtime profiling shows dense-mask attention still scales with full KV despite top-k
 - [ ] D3 AVX-512BW Lightning Indexer CPU kernel — only if D3.1 (re-run on landed code) confirms compute-bound
 - [ ] GLM-5.2 (754B GLM-MoE-DSA) activation — DSA forward-pass blocker now cleared in code; pending the GLM-5.2 UD-IQ2_M download + smoke-test in `glm51-reap-cpu-evaluation.md`

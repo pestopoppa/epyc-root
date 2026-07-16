@@ -148,6 +148,13 @@ unowned local constants.
   `draft_model_path`, and `mmproj_path` as launch-requirement overrides on top
   of stack-manifest defaults, so a data-only worker swap updates the generated
   artifact before WorkerPool consumes it.
+- [x] **2026-07-16 worker speculative-stack source-of-truth check.** The
+  combined `ngram-mod,draft-mtp` worker launch had to land in the
+  `epyc-inference-research` master registry before the lean orchestrator
+  registry could durably compile it; a lean-only edit was overwritten by the
+  startup compiler. After updating the master registry, the generated lean
+  registry, descriptors, stack priors, and operator summary were refreshed, and
+  live worker ports `8072/8082/8182/8282/8382` attested cleanly. ✅ 2026-07-16
 - `orchestration.repl_memory.routing_classifier` now canonicalizes saved and
   loaded classifier label maps through the GraphRouter action-space helper, so
   seeded frontdoor actions and legacy role aliases normalize to current routing

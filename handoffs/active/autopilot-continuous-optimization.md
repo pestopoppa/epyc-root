@@ -91,6 +91,36 @@ The remaining blocker is unchanged: the seq gate still redirects
 promotion-dependent numeric fallback to `seed_batch n=50` because
 `rate_axis_unreachable` remains unresolved, and P0.1-P0.3 are still pending.
 
+**Current checkpoint - 2026-07-16T09:55Z speed-regression investigation**:
+AutoPilot remained intentionally stopped for a quiet-window investigation. The
+live v6 environment was still wired correctly with `GGML_IQK=1`, OpenMP, and the
+expected `LD_LIBRARY_PATH`. Direct server probes showed
+`worker_full_8072` at `32.15 t/s` for 512-token MTP, the worker quarter ports
+at `17.59 t/s` and `18.63 t/s`, and `frontdoor_full_8070` at `24.80 t/s`.
+Canonical raw P-BENCH-1 v6 remains lower than the direct probes: worker
+`tg512` is `23.33 +/- 0.04 t/s` and frontdoor `tg512` is
+`15.95 +/- 0.09 t/s`. The June 28 worker parity artifact still matters as
+comparison history: `38.46 t/s` with `GGML_IQK=1` versus `27.78 t/s` without.
+
+Routing evidence identified the main distribution shift: `xmas_routing` had
+been in enforce mode and the winner table was worker-heavy. The July 16 log had
+`285` X-MAS-applied worker overrides, and learned routing was already
+worker-heavy. The operational mitigation landed in `epyc-orchestrator`: X-MAS
+was rolled back to shadow, worker aliases were recalibrated from the stale
+`60.7 t/s` prior to the June 28 `38.46 t/s` v6/iQK artifact across registry,
+descriptors, stack priors, q-scorer fallback, and seeding fallback, and the API
+was reloaded.
+
+V7 candidate CPU-comparable raw checks do not explain the regression:
+ROCm-hidden worker `tg512` measured `23.67 +/- 0.28 t/s` and frontdoor `tg512`
+measured `16.24 +/- 0.15 t/s`, matching production v6 raw CPU within noise. The
+ROCm default worker result (`85.97 +/- 0.10 t/s`) remains a GPU observation only.
+
+Focused verification passed (`122` tests: X-MAS routing, q-scorer, seeding
+rewards). AutoPilot can be restarted through the authority daemon for a clean
+shadow-X-MAS evidence window; keep X-MAS enforce disabled until a fresh
+function-axis table validates current serving latency and quality.
+
 > **Current state - 2026-06-21 (bounded W4/W6 accrual resumed).** The API was reloaded on orchestrator `d0e082a`, per-worker attestation passed across six workers, and `stack_change_pipeline.py check --run-promotion-gate` passed (`174` tests). The first collection-only run exposed eval fanout contamination under the current full-only fleet; after orchestrator `c13e5ae`, the collection run used `AUTOPILOT_SEQ_VERDICT=1`, `AUTOPILOT_W6_AUDIT_BLOCK=1`, `AUTOPILOT_W6_AUDIT_N=10`, `AUTOPILOT_W6_AUDIT_EVERY_N_TRIALS=1`, `AUTOPILOT_W6_AUDIT_SHADOW_ONLY=1`, `AUTOPILOT_PLANNER_TIMEOUT=600`, default eval fanout capped to the reachable live fleet, and `--max-trials 930`. Trial `928` was journaled as `autopilot_killed_mid_trial` during stall recovery; trial `929` then completed as `numeric_trial` / `think_harder` with `q=1.980`, `s=34.132`, `r=0.980`, and `reproduction_confirmed`, and AutoPilot exited at trial counter `930`. Phase health then reported `status=stopped`, `ok=true`, `pid_alive=false` by design after `af72216e`. Latest ordinary restart readiness passed (`archive=match`, `snapshot=tail_fold_ready`, `baseline=state_baseline`, seed preflight `ready`, `append_ready=true`, `append_required=true`), while `--require-seq-cutover --require-w6-audit` correctly failed because sequential authority remained blocked at `93 < 120` trusted vectors and W6's trailing-30 alarm still had `7` active-window divergences (`12` cumulative) after `61/30` audited rows. The same W4/W6 collection posture was relaunched to `--max-trials 970` at 2026-06-21T11:49:27Z; `phase_health_report.py --json` first reported active trial `930`, `phase=planner_invoke`, PID `2472037`, no blockers, then advanced to `phase=dispatch_action`, `action_type=seed_batch`, no blockers. Baseline seed append is prepared but not applied; `fe2fe55c` also requires explicit `baseline_ledger_authority_enabled=true` before any later matching ledger fold can remove the state baseline cache.
 >
 > **Live update - 2026-06-21T15:30Z.** AutoPilot is still running under wrapper PID `2472032` / Python PID `2472037` on trial `934` T2; the suspected `architect_general` stall was stale, with `8083` idle and live slot progress continuing on other roles. `epyc-orchestrator` `dc601feb` makes the aggregate Fable5 report surface `append_baseline_seed_event` as the first P0 next action when the baseline seed preflight is ready/required. It is blocked while AutoPilot is active and carries guarded expectations `trial_counter=934` and `journal_max_trial_id=933`; no event was appended. Latest strict readiness remains blocked at trusted vectors `97/120` (`23` remaining), seq shadow rows `44/30`, W6 audited rows `65/30`, and W6 alarm clearance `23` clean audited trials.

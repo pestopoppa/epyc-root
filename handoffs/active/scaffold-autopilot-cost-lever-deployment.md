@@ -15,7 +15,7 @@
 
 ## 1. Objective
 
-Deploy the CoT "scaffold sidecar" as an **episodic-memory-gated cost lever** inside autopilot's existing multi-objective optimization. The scaffold offloads a large CPU-hosted beneficiary's expensive reasoning to a small GPU-resident reasoner (Qwable-4B on the MI210), then runs the beneficiary in no-think mode guided by the injected scaffold. The three pieces of work: **(a)** register the composite *scaffold-then-nothink* route as a first-class lever; **(b)** fold its **blended GPU+CPU** cost into the cost/speed signals autopilot already scores; **(c)** let episodic memory **learn per-task-class when to apply it** — gated to the weak-and-overthinking regime where the cheap no-think path fails and the beneficiary would otherwise over-reason. This is a gating + accounting problem on top of infrastructure that already exists; it is **not** a new optimizer.
+Deploy the CoT "scaffold sidecar" as an **episodic-memory-gated cost lever** inside autopilot's existing multi-objective optimization. The scaffold offloads a large CPU-hosted beneficiary's expensive reasoning to a GPU-resident Qwable-v1 reasoner (35B-A3B distilled; IQ4_XS fits MI210 residency), then runs the beneficiary in no-think mode guided by the injected scaffold. The three pieces of work: **(a)** register the composite *scaffold-then-nothink* route as a first-class fallback lever; **(b)** fold its **blended GPU+CPU** cost into the cost/speed signals autopilot already scores; **(c)** let episodic memory **learn per-task-class when to apply it** — gated to the beneficiary-must-answer regime where Qwable standalone cannot directly take the request because the beneficiary owns tools/context/role constraints. This is a gating + accounting problem on top of infrastructure that already exists; it is **not** a new optimizer.
 
 ---
 
@@ -33,6 +33,7 @@ From the GPU study (seed 42, production sampling, GPU-only, single-sample n=10�
   Scaffold wins when the beneficiary would over-reason (large `N_reason` on slow CPU decode) — exactly the weak-and-overthinking regime. Win is driven by the `r_GPU/r_CPU` ratio.
 - **Verifier/selector (best-of-N) is MARGINAL (+2pp captured of an +8pp structural ceiling; errors are systematic not stochastic) and is explicitly NOT part of this deployment.**
 - **Single-shot scaffold as a capability-*transplant* was FALSIFIED** on code (amplifier-not-substitute, arXiv:2605.28913). It is deployed here **only as a cost lever** in the gated regime, not as a general quality booster.
+- **Qwable standalone is the primary reasoning route when allowed.** The GPQA standalone control ran after the scaffold reversal: Qwable standalone **77%** beat scaffold(Qwable→35B) **73%**, so the scaffold is a lossy fallback for beneficiary-must-answer cases, not the preferred way to use Qwable.
 
 ---
 

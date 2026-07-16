@@ -17,6 +17,12 @@ Recent architectural improvements include REAP MoE expert-pruning evidence for t
 
 ## Key Findings
 
+### New Findings (2026-07-16) — refreshed v7 readiness checkpoint and server-launch guard
+
+- **Refreshed experimental v7 `53f6e30a1` is the current serving-side checkpoint, and its N5 semantic dry preflight blocks only on a live `llama-server` process.** The current artifact is `/mnt/raid0/llm/epyc-inference-research/data/specdec_frontdoor_alpha/n5_retest_v7_semantic_preflight_20260716T181836Z/preflight.json`; it no longer reflects the earlier `8e5c555ab` / `180801Z` precommit snapshot. Sources: [GPU-Drafter on MI200 investigation](../handoffs/active/gpu-drafter-mi200-investigation.md), [Progress 2026-07-16](../progress/2026-07/2026-07-16.md).
+
+- **Launcher hygiene for stack-launched CPU roles now explicitly hides ROCm devices when the launcher is HIP-capable.** The orchestrator guard appends `--device none` for normal launches and `--device-draft none` for speculative launches so fresh server state does not inherit accidental GPU visibility. Source: [Gemma challenge kernel techniques v7](../handoffs/active/gemma-challenge-kernel-techniques-v7.md).
+
 ### New (2026-07-07 — E1 dense-control sweep completed; eval-batch serving activation window smoked and rolled back cleanly)
 
 > **Review flag (project-wiki writer-evidence policy):** model-compiled, not adopted until human or measured review. Sweep numbers below are observations without decision-gating protocol citations.
