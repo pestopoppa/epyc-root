@@ -2,7 +2,7 @@
 
 **Status**: in-progress (Phase 1 complete, Phase 2 routing API done, skills + static validation wired; live Hermes validation pending)
 **Created**: 2026-03-20 (split from hermes-agent-index.md)
-**Updated**: 2026-07-06
+**Updated**: 2026-07-16
 **Parent**: [hermes-agent-index.md](hermes-agent-index.md)
 **Repos**: https://github.com/NousResearch/hermes-agent, https://github.com/math-inc/OpenGauss
 **Decision**: Vanilla Hermes (not OpenGauss) — OpenGauss is Lean 4-specific; Hermes has first-class custom endpoint support

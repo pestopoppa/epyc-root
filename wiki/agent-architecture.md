@@ -2,7 +2,7 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-07-11 (bake gate cleared, J17 targeted consult positive, targeted consult gate shipped, F2/F3 lab evidence)
+**Last compiled**: 2026-07-16 (harness-selection boundary made explicit; Hermes re-scoped as the candidate track under a parent open-harness decision)
 **Sources**: 64+ documents
 
 ## Summary
@@ -35,6 +35,12 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 - **The dashboard-facing lock view now exposes the full configured topology, not only the active-runtime subset.** The 2026-07-14 region-lock topology sidecar teaches the display to keep configured quarter instances visible under `stack_numa_mode=full`, mark `launch_selected`, and label all configured NUMA ports independently of the expected launch mode. That is an architectural correction because the operator view now reflects the configured launch topology directly instead of collapsing it to whatever happens to be active at the moment. Sources: [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [Progress 2026-07-14](../progress/2026-07/2026-07-14.md), `epyc-orchestrator` `774fed69`.
 
 - **The web/tool boundary now records evidence quality separately from tool availability.** Gate-3 showed the tool-sentinel lane healthy (`get_eval_secret` 7/7, no-tool isolation passed) while `web_research` failed closed as `search_failed`; a fallback DDG hit can still be surfaced as a relevant result, but it no longer upgrades the failed search into a fake success. That is the correct agent-architecture split between "tool path worked" and "evidence was good." Sources: [orchestration robustness audit](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [HALO Spike Results](../research/deep-dives/halo-spike-results-2026-07-14.md).
+
+### New Findings (2026-07-16 — open-source harness selection became a first-class architecture gate)
+
+- **The user-facing harness is now treated as a selectable open-source integration point, not a hardcoded frontend.** The new parent index makes the load-bearing split explicit: the orchestrator keeps the backend moat behind `/v1/chat/completions` + `x_*`, while the harness must cooperate with routing, context folding, and escalation. Closed harnesses are excluded because that cooperation cannot be enforced externally. Sources: [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md), [hermes-outer-shell.md](../handoffs/active/hermes-outer-shell.md), [hermes-agent-index.md](../handoffs/active/hermes-agent-index.md), [progress 2026-07-16](../progress/2026-07/2026-07-16.md).
+
+- **Hermes remains the candidate track, not the general decision.** Hermes/OpenGauss is still the most concrete open harness surface, but the new selection index means the Hermes outer shell should stay scoped to Hermes-specific validation and packaging. OpenCode and ACP-speaking harnesses remain open candidates until HS-1/HS-2 settle the cooperation-surface and ACP ROI questions. Sources: [hermes-outer-shell.md](../handoffs/active/hermes-outer-shell.md), [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md), [hermes-agent-index.md](../handoffs/active/hermes-agent-index.md).
 
 ## Key Findings
 

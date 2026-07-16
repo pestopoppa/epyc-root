@@ -1,7 +1,7 @@
 # Hermes Agent — Integration Index
 
 **Status**: active
-**Updated**: 2026-07-14
+**Updated**: 2026-07-16
 **Purpose**: dispatch surface for Hermes/OpenGauss-derived UX, shell, and agent-runtime work.
 
 > Completed pre-2026-06-19 checklist and research-intake chronology was compacted to [`../archived/hermes-agent-index-history-through-2026-06-19.md`](../archived/hermes-agent-index-history-through-2026-06-19.md). Current implementation status lives in the owning handoffs below.
