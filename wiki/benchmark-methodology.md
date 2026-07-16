@@ -2,8 +2,8 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-07-07 (real-suite v1 clean-window 70% accuracy, E1 dense-control sweep completed)
-**Sources**: 70+ documents
+**Last compiled**: 2026-07-16 (adds v7 K5 chat-endpoint quality gate, no-inference readiness gate, and discarded raw-completions protocol failure)
+**Sources**: 73+ documents
 
 ## Summary
 
@@ -16,6 +16,12 @@ Cost-aware reward design is layered on top of benchmark results for the MemRL ro
 Benchmark hardening in December 2025 addressed ceiling effects where top models scored 89-93%. Every tier was bumped up one difficulty level with post-doctoral T3 questions added, spreading the score distribution meaningfully across model classes. A mode-advantage suite (90 questions) was specifically designed to produce strong routing signal for MemRL by including tasks that structurally require specific execution modes (react, REPL, delegation, specialist escalation).
 
 ## Key Findings
+
+### New (2026-07-16, v7 K5 quality gate + readiness checks)
+
+- **Endpoint contract is part of benchmark validity: the raw `/v1/completions` K5 attempt is non-evidence, and the corrected chat-endpoint harness is the gate record.** The old `/mnt/raid0/llm/tmp/v7-quality-20260716/` run failed the model/template contract with a Content-only protocol error. The fixed `v7_quality_gate_runner.py` uses `/v1/chat/completions` by default, records endpoint metadata, and keeps `/v1/completions` only as an explicit compatibility mode. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [progress 2026-07-16.md](../progress/2026-07/2026-07-16.md).
+- **K5's promotion-quality comparison passed with matched suite scores, not inferred speed proxies.** Production v6 and refreshed v7 candidate `8e5c555ab` both scored MMLU-Pro `73/200=36.5%` and GPQA `50/195=25.6%`, with `0` errors and comparator `PASS` against the `-5pp` per-suite threshold. The result says "no observed K5 quality regression at this sample size"; it does not by itself promote the kernel or replace the operator promotion decision. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [progress 2026-07-16.md](../progress/2026-07/2026-07-16.md), `/mnt/raid0/llm/tmp/v7-quality-20260716-chat/v7_quality_gate_report.md`.
+- **Readiness evidence is layered: code correctness, generated-stack consistency, and promotion-gate no-inference checks are separate gates.** The launcher/device guard passed focused unit tests, generated stack artifacts were refreshed by `stack_change_pipeline.py update`, and `stack_change_pipeline.py check --run-promotion-gate` passed with `summary: ok`, `acceptance: no-inference checks passed`, and `181` promotion-gate tests. This is the correct closure shape for a stack-change checkpoint: inference evidence and no-inference readiness are recorded separately. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [progress 2026-07-16.md](../progress/2026-07/2026-07-16.md).
 
 ### New (2026-07-07, real-suite v1 clean-window ledger scored 70% accuracy; E1 dense-control sweep completed as useful-but-not-pristine)
 

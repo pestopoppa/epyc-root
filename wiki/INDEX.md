@@ -2,7 +2,7 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-07-07 (focused operational checkpoint: changed sources since 2026-07-06 merged into [Autonomous Research](autonomous-research.md) (quiet-window F2 tuple evidence + F3 gate movement), [Training & Distillation](training-distillation.md) (trusted-label baseline pass + quiet-window tuple evidence), and [Agent Architecture](agent-architecture.md) (Internal Interaction bake report still blocked on delegation-cache observation coverage). Previous 2026-07-06 checkpoint captured the frontdoor/worker local planner split, W8 replayable numeric canary, ODL hybrid sidecar probe preflight, and Hermes boundary generalization. Observation-heavy sections carry writer-evidence review flags pending human/measured review.)
+**Last compiled**: 2026-07-16 (focused v7 checkpoint: changed sources since 2026-07-07 merged into [Speculative Decoding](speculative-decoding.md) (`ngram-mod,draft-mtp` combined lane + K5 quality neutrality), [Hardware Optimization](hardware-optimization.md) (refreshed v7 K5/readiness pass + MI210 LD_LIBRARY_PATH validation lesson), and [Benchmark Methodology](benchmark-methodology.md) (chat-endpoint gate validity and no-inference readiness layering). Previous 2026-07-07 checkpoint captured clean-window real-suite evidence and E1 dense-control sweep. Observation-heavy sections carry writer-evidence review flags pending human/measured review.)
 **Articles**: 26 compiled, 4 stub categories
 **Total sources**: 560+ scanned documents across 6 source types; 2026-07-05 pass merged 49 changed/new sources (MI210 speed campaign, evidence-plane/autopilot arc, dashboards, routing canary) into 10 articles; 2026-06-21 pass merged 36 changed/new sources into 21 articles
 
@@ -12,11 +12,11 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Speculative Decoding](speculative-decoding.md) | 52+ | MTP-on-GPU-MoE converged ~neutral at production temp (run MTP OFF for GPU-resident MoE; MTP stays a CPU/BW-bound + GPU-dense win); corpus prompt-lookup retired after failed clean-window A/B |
+| [Speculative Decoding](speculative-decoding.md) | 55+ | Combined `ngram-mod,draft-mtp` is the conservative v7 worker lane; K5 quality is neutral on v6 vs v7 candidate, while ngram speed remains task-acceptance-gated |
 | [MoE Optimization](moe-optimization.md) | 23 | REAP 25-40% expert pruning is near-lossless; 30% sometimes outperforms 20% due to routing redistribution |
 | [KV Cache](kv-cache.md) | 34 | Attention Matching is production-implemented but current-stack rollout decisions still need refreshed long-context/coding evidence |
 | [Quantization](quantization.md) | 25 | Hadamard+q4_0 is the proven production KV config; exotic formats (TQ3, PolarQuant, QJL) all lose to it on CPU |
-| [Hardware Optimization](hardware-optimization.md) | 85+ | bf16 GDN recurrent-state kernel is the campaign's clean deployed-role win (+13–21% @B32, runtime-gated); MI210 roadmap is two axes (residency quant-ladder vs GPU drafter-farm) competing for one card |
+| [Hardware Optimization](hardware-optimization.md) | 88+ | v7 K5/readiness is closed for the refreshed candidate; MI210 validation must prepend the candidate HIP build in `LD_LIBRARY_PATH`, and CPU stack launches must hide ROCm devices explicitly |
 
 ## Serving & Systems
 
@@ -32,7 +32,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 |---------|---------|-------------|
 | [Cost-Aware Routing](cost-aware-routing.md) | 40+ | CoT scaffold-transplant falsified in both regimes (reasoning context amplifies, doesn't substitute for, receiver capability); verifier/selector best-of-N is the forward GPU-assist path |
 | [Routing Intelligence](routing-intelligence.md) | 67+ | RI-10 decision-ready but first packet is `hold_quality_unscored` (proxies favor enforce; factuality unscored); X-MAS learned route-mutation is live in enforce — first learned routing layer in production |
-| [Benchmark Methodology](benchmark-methodology.md) | 70+ | Tool-use sentinel lane live under Gate-3 discipline; W8's dominant blocker was a sparse-baseline artifact (advisory-below-n=5 repair); sequential alpha-wealth exposure confirmed real |
+| [Benchmark Methodology](benchmark-methodology.md) | 73+ | K5 validity depends on chat-endpoint protocol, matched-suite quality comparison, and separate no-inference readiness gates; raw completions protocol failures are non-evidence |
 
 ## Agent & Architecture
 
