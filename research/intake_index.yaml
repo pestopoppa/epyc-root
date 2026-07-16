@@ -44558,3 +44558,72 @@
   novelty_justification: Not a duplicate. The index's diffusion presence is entirely APPLIED speculative-decoding drafters (DFlash intake-158, DART intake-159, DSpark intake-738, Nemotron towers). GIDD is the distinct FOUNDATIONAL layer — a unifying interpolating noise process subsuming masked + uniform discrete diffusion, plus the emergent self-correction result — which none capture. NOT covered by the DFlash entry. Medium (theory-adjacent to catalogued diffusion-LM work for EPYC specifically).
   relevance_justification: Medium and indirect. The paper has NO block/parallel/semi-AR generation and NO speculative-decoding/CPU-serving content — a pretraining-objective/theory paper. Its relevance is as the cited theoretical foundation of the block-diffusion drafter lineage EPYC tracks (Bonsai's DSpark cites GIDD; DFlash/DART rest on discrete-diffusion processes GIDD generalizes). The hybrid-noise token-revision idea is interesting for drafter design, but no llama.cpp/GGUF/CPU path and self-correction adds cost.
   verdict_justification: 'worth_investigating — a distinct foundational method meriting its own entry, not folded into DFlash. Anchors the discrete-diffusion drafter thread DSpark (intake-738) and DFlash (intake-158) descend from; its self-correction / revisable-noise contribution is worth understanding before any diffusion-drafter investment on the MI210/GPU path. Stops short of adopt_patterns/new_opportunity: no parallel-generation method to port and EPYC''s diffusion-drafter path is already alpha-gated / CPU-blocked. Credibility 4.'
+- id: intake-831
+  arxiv_id: '2506.08276'
+  url: https://github.com/StarTrail-org/LEANN
+  source_type: repo
+  title: 'LEANN — storage-efficient vector index (graph-based selective recomputation, on-the-fly embeddings; HNSW/DiskANN backends, native Claude Code MCP)'
+  authors:
+  - Yichuan Wang
+  - Zhifei Li
+  - Shu Liu
+  - Yongji Wu
+  - Ziming Mao
+  - Yilong Zhao
+  - Xiao Yan
+  - Zhiying Xu
+  - Yang Zhou
+  - Ion Stoica
+  - Sewon Min
+  - Matei Zaharia
+  - Joseph E. Gonzalez
+  categories:
+  - search_retrieval
+  - retrieval_augmented_decoding
+  - local_inference
+  - knowledge_management
+  key_claims:
+  - 'Stores a pruned proximity graph and RECOMPUTES embeddings on the fly at query time instead of persisting them, cutting index size to <5% of raw data (up to 50x smaller than conventional HNSW/DiskANN indices) with no reported accuracy loss.'
+  - 'High-degree-preserving graph pruning keeps the hub nodes that dominate traversal quality while discarding most edges, so recall survives aggressive compression.'
+  - 'A two-level search uses cheap approximate distances at high compression to prune which nodes need exact embedding recomputation; dynamic batching aggregates recomputes across search hops for GPU utilization.'
+  - 'README storage table: Wiki 60M 201 GB -> 6 GB (97%), DPR 2.1M 3.8 GB -> 324 MB (91%), Chat/Email/Browser 95-97% savings.'
+  - 'Ships a personal-RAG product: connectors for file systems, email, browser history, chat (WeChat/iMessage/ChatGPT/Claude), codebase; native Claude Code MCP, Slack, Twitter; backends OpenAI/Ollama/HuggingFace/Anthropic/OpenAI-compatible.'
+  techniques:
+  - Graph-based selective recomputation (recompute embeddings, do not store them)
+  - High-degree preserving graph pruning
+  - Two-level search with approximate-distance pruning of recomputations
+  - Dynamic batching of embedding recomputes across search hops
+  - HNSW (default) and DiskANN backends
+  reported_results:
+  - 'Up to 50x smaller index vs conventional indices; index <5% of raw data size (paper abstract, arXiv:2506.08276).'
+  - '~90% top-3 recall in under 2 seconds on QA benchmarks — an A10 GPU / M1-Ultra operating point (paper); recompute is ~76% of query latency.'
+  - 'README: Wiki 60M 201 GB -> 6 GB (97%); DPR 2.1M 3.8 GB -> 324 MB (91%); Chat 1.8 GB -> 64 MB (97%); Email 2.4 GB -> 79 MB (97%); Browser 130 MB -> 6.4 MB (95%).'
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  contradicting_evidence:
+  - 'Storage saving is UNNEEDED here — not an inversion (the deep-dive retracted the earlier "trades our abundant storage for scarce CPU compute / backwards" framing). All vector indexes total ~3.3 GB (~0.3% of 1.1 TiB RAM), so LEANN''s 50x storage cut solves a non-problem. Query-time recompute is real but GPU-deflectable to the live MI210 (ROCm-torch reports CUDA, so LEANN auto-places recompute on GPU HBM, zero contention with CPU token-gen); NO-GO rests on the unmet scale + RAM-pressure gates, not on a resource inversion.'
+  - 'Latency: recompute is ~76% of query latency; even with two-level pruning + batching, the reported ~90% top-3 recall in <2 s is a GPU (A10/M1-Ultra) number, orders of magnitude slower than a stored flat/HNSW lookup (ms-scale). Batching is device-adaptive (CPU batch 32 vs cuda 256), so it runs on CPU, but the large-batch throughput payoff is a GPU property that evaporates when embedding is CPU/BW-bound.'
+  - 'Single-vector graph index: LEANN models single-vector ANN, not the multi-vector late-interaction MaxSim that the certified internal-kb-rag (ColBERT) uses — the same modeling gap that parked turbovec (intake-686).'
+  - 'Same scale gates as intake-686 are unmet: KB-RAG is ~18K chunks / ~1.2 GiB embeddings on a 1.1 TB host (no storage or RAM pressure); LEANN''s 50x/97% story needs a >1M-vector, storage-constrained corpus we do not have.'
+  - 'No failed replication found — the technique is sound and peer-reviewed (MLSys 2026 Oral); the caveat is host/workload fit, not correctness.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - internal-kb-rag.md
+    - unified-trace-memory-service.md
+    experiments: []
+    intake_entries:
+    - intake-686
+    - intake-270
+  handoffs_updated:
+  - internal-kb-rag.md
+  handoffs_created: []
+  novelty_justification: 'High. The storage-efficient-vector-index space is present (turbovec intake-686, qmd intake-270, NextPLAID intake-355) but LEANN''s MECHANISM is distinct: turbovec COMPRESSES stored vectors (8x PQ); LEANN does not store embeddings at all and RECOMPUTES them on the fly against a pruned graph (50x/97%). High-degree-preserving pruning + two-level recompute-pruning is not covered in any chapter or prior entry. MLSys 2026 Oral + ICML 2025 Workshop on Vector Databases (poster) — NOT NeurIPS 2025 (mis-attribution corrected in deep-dive). Note: recompute-not-store is itself NOT novel vs EdgeRAG (arXiv:2412.21023, Dec 2024); LEANN''s defensible contribution is graph-based recompute + hub-pruning + two-level selection (polylog recompute count).'
+  relevance_justification: 'Medium. Adjacent to active retrieval work (internal-kb-rag certified ColBERT RAG; unified-trace-memory FAISS/BGE vector path) but not immediately actionable: (1) the host is storage-rich (all vector indexes ~3.3 GB, ~0.3% of RAM), so LEANN''s storage saving is UNNEEDED — a non-problem, not an inversion (deep-dive retracted the inversion framing given the live MI210 that can absorb recompute); (2) KB-RAG is multi-vector MaxSim, which LEANN''s single-vector graph does not model; (3) the intake-686 scale gates (>1M single-vector corpus under RAM pressure) are unmet today. Per CLAUDE.md NOT marked not_applicable — the personal-data connectors + native Claude Code MCP are a credible creative angle worth flagging to the operator.'
+  verdict_justification: 'worth_investigating, parked behind the same gates as turbovec (intake-686). It is a peer-reviewed, novel mechanism from a top lab, but its storage win is what this host least needs (all vector indexes ~3.3 GB / ~0.3% of RAM); recompute latency is deflectable to the live MI210, so the NO-GO rests on unneeded storage saving + unmet scale/RAM gates, not on recompute cost. Not new_opportunity (relevance not high; no stub) and not not_applicable (real MCP/personal-RAG angle). Re-evaluate IF a single-vector corpus crosses ~1M vectors under storage/RAM pressure, or if the on-device MCP connector tooling (not the index) becomes the target. Credibility 4: MLSys 2026 Oral (+ ICML 2025 VecDB workshop poster; NOT NeurIPS 2025) top venue (+2), <12 mo (+1), Berkeley Sky Computing Lab / Stoica-Zaharia-Gonzalez-Min (+1), no commercial bias, no confirmed independent replication of the numbers.'
+  notes: 'User-provided input 2026-07-16 via /research-intake. Repo github.com/StarTrail-org/LEANN backed by paper arXiv:2506.08276 (same authors, Berkeley Sky Computing Lab). Direct sibling of intake-686 (turbovec) — both storage-efficient vector indices that fail the same three scale gates on this host (see research/deep-dives/2026-06-12-turbovec-vector-index.md). Distinct mechanism: recompute-not-store vs compress-stored. Core contributors Yichuan Wang & Zhifei Li. Not in index before this run (a prior scoping exists at handoffs/archived/leann_vector_db.md, 2026-01-26, superseded). DEEP-DIVE 2026-07-16 (research/deep-dives/2026-07-16-leann-vector-index.md): refined verdict NO-GO at current scale — storage saving unneeded (~3.3 GB total, ~0.3% of RAM); single-vector so cannot express KB-RAG MaxSim (models only the episodic/strategy IndexFlatIP stores). Episodic FAISS store grew ~8.9x to ~646K vecs / 2.65 GB — single instrumented WATCH: ntotal>1M AND real RAM pressure; if that fires, first remedy is stock FAISS HNSW/IVF, not LEANN. Recompute is GPU-deflectable to the live MI210. Technique-mining: nothing transferable. Connector/MCP tooling flagged as operator-review candidate (personal RAG, separate from the production stack).'
