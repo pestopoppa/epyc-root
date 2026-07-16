@@ -25,13 +25,13 @@
 - The predicted **"2-models-for-1" unlock HAPPENED** — now multi-model (V3.2 + GLM-5.1 + GLM-5.2), via generic DSA, without us writing it from scratch.
 
 **What this changes:**
-- **D1 (pull draft #21149 / build / smoke) — SUPERSEDED.** The code is in production v6; the smoke-test now lives in the model-eval handoffs ([`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) → GLM-5.2, and a V3.2 eval if desired), not as a "pull the draft" task.
+- **D1 (pull draft #21149 / build / smoke) — SUPERSEDED.** The code is in production v6; the smoke-test now lives in the model-eval handoff [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) → **GLM-5.2** (the active DSA target; V3.2 not planned — GLM-5.2 covers this niche), not as a "pull the draft" task.
 - **Monitoring PR #21149 weekly — MOOT.** DSA landed; stop tracking that PR to merge.
 - **D2 (PP-sparse) + D3 (CPU AVX-512 indexer) — POSSIBLY still live, but RE-ANCHOR to the landed #23346 code, not the fairydreaming draft.** Re-run the gating checks against the landed version: (D2) does prompt-processing still use dense attention / is long-context speedup still unrealized? (D3.1) is the landed CPU Lightning-Indexer path compute-bound (worth SIMD) or BW-bound (no-op)? Do NOT start either until re-confirmed against the landed code. Their design detail below stays valid as a starting template.
 
 ## Objective (revised 2026-07-16)
 
-DSA is landed upstream (#23346) and present in v6. The objective is no longer "track a draft PR to merge" — it is: (1) confirm the landed DSA path runs the GLM-5.2 / DeepSeek-V3.2 families coherently (owned by the model-eval handoffs), and (2) evaluate whether the two CPU-performance contribution opportunities (D2 prompt-processing sparse path, D3 AVX-512BW Lightning-Indexer kernel) are still real against the LANDED code, and pursue them upstream only if the re-gating checks pass. Original PR-#21149 tracking context is retained below as history.
+DSA is landed upstream (#23346) and present in v6. The objective is no longer "track a draft PR to merge" — it is: (1) confirm the landed DSA path runs **GLM-5.2** coherently (the active DSA target, owned by [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md)) — **DeepSeek-V3.2 is NOT a planned eval** (GLM-5.2 covers the DSA large-MoE niche; V3.2 stays a supported-arch fact/fallback, not worth a second ~380 GB download + inference window), and (2) evaluate whether the two CPU-performance contribution opportunities (D2 prompt-processing sparse path, D3 AVX-512BW Lightning-Indexer kernel) are still real against the LANDED code, and pursue them upstream only if the re-gating checks pass. Original PR-#21149 tracking context is retained below as history.
 
 ## PR State Snapshot (2026-04-29)
 
@@ -153,7 +153,7 @@ Cross-ref: [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) is the
 | **D3 START** | D1 complete + D3.1 profile confirms compute-bound | Begin D3 kernel work |
 | **D2 / D3 PARALLEL** | Both above gates met | Can run concurrently — different code paths |
 | **PR #21149 MERGED** | Upstream maintainer merges (or fairydreaming flips draft → ready) | Cherry-pick into our `production-consolidated-v3` branch via the `../completed/llama-cpp-kernel-push-rebase.md` pattern |
-| **GLM-5.1 ACTIVATION** | DSA path validated on V3.2 (D1 complete + quality OK) | Hand off to `glm51-reap-cpu-evaluation.md` Phase 1 |
+| **GLM-5.2 ACTIVATION** | OBE — no longer gated on a V3.2 validation: DSA landed (#23346); activation = GLM-5.2 UD-IQ2_M download + smoke-test | Hand off to `glm51-reap-cpu-evaluation.md` (GLM-5.2 plan) |
 | **DEPRIORITIZE** | Author abandons PR OR upstream rejects DSA design | Re-evaluate; possibly maintain a fork-only path |
 
 ## Monitoring Cadence
