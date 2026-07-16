@@ -368,3 +368,7 @@ land at ONE autopilot restart, each behind its own flag.
 ## Reporting
 
 Tick waypoints + one-line progress entry; verdicts claimed per MEASUREMENT.md grammar (`[P-QUAL-T1/seq-v1, E=…, k=…, date]`); on completion delete this handoff's master-index row and move to `completed/`.
+
+## Research Intake Update — 2026-07-16 (Reviewer control plane: decision≈question ledger alignment)
+
+The new `review_ledger` (H4, [`reviewer-calibration-accounting.md`](reviewer-calibration-accounting.md)) is designed to FOLLOW this handoff's per-question-ledger conventions: one row per review decision (decision ≈ question), gold label + gold-source + instrument version + era columns, append-only, e-process monitoring on `src/autopilot_core/sequential_verdict.py` (FA-tolerance AND FR-tolerance — the symmetric pair is motivated by intake-836's measured 10:1-440:1 false-reject dominance). Alignment task RC-7 owns reconciliation; if ledger conventions here evolve, cross-update H4.

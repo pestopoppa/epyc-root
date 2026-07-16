@@ -6,6 +6,8 @@
 
 **2026-07-16 correction**: the GLM/DSA gate is no longer "wait for PR #21149." The v6 fork contains the generic DSA path via upstream #23346; the live gate is now empirical: finish the GLM-5.2 UD-IQ2_M shard download, verify integrity, load-smoke, then prove whether the long-context DSA indexer path actually engages.
 
+**2026-07-16 control-plane additions**: the Architect→Reviewer control-plane series ([reviewer-control-plane-index.md](reviewer-control-plane-index.md)) appended **K22-K31** to [gemma-challenge-kernel-techniques-v7.md](gemma-challenge-kernel-techniques-v7.md) — P0s: grammar-sampler crash (`sampling.cpp:292`, blocks GBNF typed-decision emission on v7), GLM-5.2 glm-dsa load reconciliation (K23; feeds the empirical gate above), v7 non-spec base-decode regression root-cause (architect −9.24% K20 guard; spec paths near parity); P1-P3 quality-neutral levers (mmvq draft-tree verify widths, f16-vs-bf16 KV, Q8_0 8x8 repack, chunked GDN prefill, draft-path malloc, composed-spec state, EA-server/DSA audits). GPU sequencing operator-locked 1→4; teleport axis **AXA-1..3** appended to [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md).
+
 ## Start Here
 
 1. Read [master-handoff-index.md](master-handoff-index.md) for global priority and active inference-lane constraints.

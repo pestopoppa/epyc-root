@@ -7,6 +7,8 @@
 > **2026-06-12**: Fable 5 architecture review complete — verdicts + new owning handoffs in [master-handoff-index.md](master-handoff-index.md); standing reference [fable5-findings-00-executive-summary.md](../completed/fable5-findings-00-executive-summary.md). Measurement claims now follow /workspace/MEASUREMENT.md.
 > New owning handoffs in this domain: [routing-truth-restoration.md](routing-truth-restoration.md), [model-capability-descriptors.md](model-capability-descriptors.md), and the evidence-plane-* handoffs (autopilot).
 
+> **2026-07-16**: **Architect→Reviewer control-plane series created** — coordination index [reviewer-control-plane-index.md](reviewer-control-plane-index.md) (H0) + 9 leaves (trace-materialization, typed-artifacts, decision-plane, calibration-accounting, model-ablations, glm52-capability-gates, latency-budget, escalation-policy, autopilot-integration). Activates the dormant `ArchitectReviewService`/plan-review machinery as a governed, FA/FR-calibrated judicial layer; milestones M1 observable → M4 governed; enforce-mode blocked on the H-LB budget gate; **TR-4/5 + DAR gates NOT needed** (RD-7 answers tri-role TR-1 telemetry-only). Operator decisions: OP-5 bundle in master-index §A00. Evidence: intake-834..849 + audit doc `research/deep-dives/2026-07-16-architect-reviewer-control-plane-audit.md`.
+
 ---
 
 ## How to Use This Index

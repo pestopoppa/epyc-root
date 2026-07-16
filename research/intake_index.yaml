@@ -44723,3 +44723,685 @@
   relevance_justification: Domain-adjacent (multi-backend serving, model lifecycle/recipes, OpenAI-compatible proxy, embedded coding agent) but our production orchestrator (orchestrator_stack.py + routing + native MTP + autopilot) is a more capable, bespoke stack; and vLLM/SGLang backends are gfx90a-limited on our MI210 (llama.cpp is our production path). Value is as a reference for model-recipe/lifecycle + OpenAI-proxy patterns and as a comparator for the user-facing-harness strategy question -> low.
   verdict_justification: 'worth_investigating (low priority): (a) the tracked successor to vllm-studio (intake-183) from 0xSero/Sybil Solutions — a contributor we already follow (REAP models, GLM-5.1-REAP GGUFs, claude-acp-server); (b) a concrete reference point for the operator''s active question on whether our orchestrator should stay orthogonal to the user-facing harness or be baked into a custom harness. NOT adoptable wholesale (our stack is more advanced) and NOT not_applicable (genuine domain-adjacent tool + informs a live strategic question). Credibility null (tool repo, no empirical claims).'
   notes: 'By 0xSero/Sybil Solutions (tracked: REAP models, GLM-5.1-REAP GGUFs, claude-acp-server). Productized successor of vllm-studio (intake-183). Surfaced alongside the operator''s strategic question re orchestrator-vs-harness integration (custom user harness); Local Studio anchors the ''management GUI baked around backends'' end of that spectrum. No Phase-3 expansion (relevance low). No handoff amended (low relevance; the harness-integration angle is addressed in-conversation, not written into a handoff without operator direction).'
+- id: intake-834
+  arxiv_id: '2601.04171'
+  url: https://arxiv.org/abs/2601.04171
+  source_type: paper
+  title: Agentic Rubrics as Contextual Verifiers for SWE Agents (ACL 2026 long)
+  authors:
+  - Mohit Raghavendra
+  - Anisha Gunjal
+  - Bing Liu
+  - Yunzhong He
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  key_claims:
+  - An agent explores the repo (SWE-agent scaffold, 30-turn budget) and emits a structured rubrics.yaml; candidate patches are graded WITHOUT test execution against it.
+  - Best@16 on SWE-Bench Verified 54.2% (Qwen3-Coder-30B-A3B) / 40.6% (Qwen3-32B), +3.5 to +4.6pp over the strongest execution-free baseline; rubric-vs-test ROC-AUC 0.886.
+  - Cost is dominated by authoring not grading ($0.245 authoring vs $0.003/patch grading); grading-model capability barely matters (2.4pp GPT-5-mini vs high-reasoning) while authoring capability matters a lot.
+  - Tests-pass-but-rubric-low disagreements are 54% real high-utility issues / 46% over-specification false positives; repo grounding is load-bearing (-4.0pp without codebase access).
+  techniques:
+  - agentic repo exploration authoring a weighted rubric artifact (4 axes, per-item weight 1|2|3, S=sum(w*s)/sum(w))
+  - execution-free binary per-item LLM grading + Best@N reranking
+  - authoring/grading model split (heavyweight authors once, cheap model grades per candidate)
+  reported_results:
+  - 'SWE-Bench Verified Best@16: 54.2% Qwen3-Coder-30B / 40.6% Qwen3-32B; ROC-AUC 0.886, PR-AUC 0.722; judge flakiness 2% (strong judge) / 9% (weak)'
+  referenced_arxiv_ids:
+  - '2606.26300'
+  - '2605.12474'
+  - '2601.15808'
+  novelty: medium
+  relevance: high
+  credibility_score: 5
+  verdict: adopt_patterns
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reviewer-control-plane-index.md
+    - reviewer-decision-plane.md
+    - reviewer-calibration-accounting.md
+    - eval-tower-verification.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - eval-tower-verification.md
+  handoffs_created: []
+  novelty_justification: Rubric-reward/LLM-judge space is crowded; the clean agentic repo-grounded authoring + authoring/grading cost separation + calibration accounting is the durable contribution -> medium.
+  relevance_justification: Near-isomorphic to our Architect->Reviewer control plane; its authoring/grading split is adopted as the two-turn reviewer design (H3) that structurally solves reviewer latency on our CPU stack; its calibration numbers seed our decision bands -> high.
+- id: intake-835
+  arxiv_id: '2604.12147'
+  url: https://arxiv.org/abs/2604.12147
+  source_type: paper
+  title: From Plan to Action / Evaluating Plan Compliance in Autonomous Programming Agents (Liu et al., UIUC+IBM)
+  authors:
+  - Shuyang Liu
+  - Saman Dehghan
+  - Jatin Ganhotra
+  - Martin Hirzel
+  - Reyhaneh Jabbarvand
+  categories:
+  - agent_architecture
+  key_claims:
+  - First large-scale plan-compliance analysis; 16,991 SWE-agent trajectories, 4 LLMs, 2 benchmarks, 8 plan variations.
+  - Standard N-R-P-V plan improves issue resolution across all agents; a SUBPAR/incomplete plan hurts MORE than no plan at all.
+  - Periodic plan reminders (~every 5 steps) mitigate plan violations and improve success consistently.
+  - Augmenting plans with extra task-relevant phases can DEGRADE performance when misaligned with the executor model's internal workflow; effects are executor-model-specific.
+  techniques:
+  - trajectory-to-phase abstraction with compliance metric (phase-coverage x order x no-spurious-actions, geometric mean)
+  - controlled plan-variant ablations (no-plan, phase-removed, augmented, reordered, reminded)
+  reported_results:
+  - Compliance higher on resolved than unresolved instances (Devstral p~1e-5, DeepSeek-R1 p~0.032); effect sizes directional pending manual PDF table read.
+  referenced_arxiv_ids:
+  - '2509.03581'
+  - '2606.22953'
+  - '2509.16941'
+  novelty: high
+  relevance: high
+  credibility_score: 5
+  verdict: adopt_patterns
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reviewer-control-plane-index.md
+    - reviewer-decision-plane.md
+    - reviewer-latency-and-sampling-budget.md
+    - tri-role-coordinator-architecture.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - tri-role-coordinator-architecture.md
+  handoffs_created: []
+  novelty_justification: First to MEASURE whether agents follow instructed plans and to quantify plan-quality (not just presence) effects -> high.
+  relevance_justification: Maps 1:1 onto our plan-review design; adopted as H3 plan-rubric dimensions (coverage/order/alignment), REJECT-to-empty outcome (bad plan < no plan), plan-reminder cadence as a cheap autopilot knob preferred over re-review, and phase-tagged trace rows -> high. All numbers SWE-domain observations; re-measure locally before gating.
+- id: intake-836
+  arxiv_id: '2603.00539'
+  url: https://arxiv.org/abs/2603.00539
+  source_type: paper
+  title: Are LLMs Reliable Code Reviewers? Systematic Overcorrection in Requirement Conformance Judgement (ASE 2025 + Springer AutoSE)
+  authors:
+  - Haolin Jin
+  - Huaming Chen
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  key_claims:
+  - Overcorrection dominates LLM code review; false-reject exceeds false-accept by 3x to 440x (GPT-4o MBPP full prompt 87.9% FR vs 0.20% FA).
+  - Richer explain-and-fix prompting DOUBLES false-rejects (GPT-4o MBPP 35.9% -> 87.9%); 62% of false-reject rationales are hallucinated requirements or unfounded logic claims.
+  - Models detect THAT buggy code fails (95-100% symptom match) far better than WHY (52-75% bug-type match); rationales frequently contradict verdicts.
+  - Fix-guided Verification Filter (reviewer's proposed fix must objectively pass tests the original fails) cuts false-rejects ~40pp with minor FA increase.
+  techniques:
+  - paired correct/buggy evaluation with test-suite gold labels; prompt-tier ablation (direct / +explain / +fix)
+  - rationale-faithfulness audits (symptom-vs-cause); executable-counterfactual rejection filter
+  reported_results:
+  - FR range 26.2-88.2%, FA range 0-17.1% across 5 models x 3 benchmarks; small model (Llama-3.1-8B) worst in BOTH directions (57.3% FR / 17.1% FA)
+  referenced_arxiv_ids:
+  - '2508.12358'
+  - '2603.18740'
+  - '2510.25860'
+  novelty: high
+  relevance: high
+  credibility_score: 5
+  verdict: adopt_patterns
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reviewer-calibration-accounting.md
+    - reviewer-decision-plane.md
+    - eval-tower-verification.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - eval-tower-verification.md
+  handoffs_created: []
+  novelty_justification: First systematic characterization of the FR>>FA overcorrection asymmetry, the counterintuitive prompt-complexity effect, and a validated executable-counterfactual filter -> high.
+  relevance_justification: Directly reshapes our calibration plane; adopted as the symmetric FR-tolerance e-process (H4), framing-neutral verdict-first prompts, reject-admissibility rule (unverified rejections down-weighted), and rationale-vs-gold-cause corpus fields -> high. Absolute rates optimistic (saturated benchmarks, injected bugs); ratios/directions transferable, thresholds set from our own ledger.
+- id: intake-837
+  arxiv_id: '2604.16790'
+  url: https://arxiv.org/abs/2604.16790
+  source_type: paper
+  title: 'Bias in the Loop: Auditing LLM-as-a-Judge for Software Engineering (UBC, preprint)'
+  authors:
+  - Zixiao Zhao
+  - Amirreza Esmaeili
+  - Fatemeh Fard
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  key_claims:
+  - Pairwise judges are highly sensitive to prompt cues with code unchanged; ~12 injected biases probed across codegen/repair/testgen.
+  - Position bias dominates; moving the gold answer A->B drops accuracy ~41pp (Qwen2.5-Coder); several cues produce 50-72pt sign-flips.
+  - Bias can INFLATE test-retest Consistency Rate (~50% -> ~81%) without improving accuracy - dangerous stability, not skill.
+  - Self-enhancement (family favoritism) measured WEAK in this setup (-0.9 to +3.5pp), dwarfed by position/reasoning cues.
+  techniques:
+  - controlled single-bias prompt-perturbation audit with A-correct/B-correct framings
+  - test-retest Consistency Rate as first-class reliability metric; difficulty stratification
+  reported_results:
+  - 'Largest swing: verbosity -36pp (TestGen, small coder model); refined-version cue ~70pt reversal; effects shrink with model capability'
+  referenced_arxiv_ids:
+  - '2504.14716'
+  - '2404.13076'
+  - '2406.07791'
+  novelty: medium
+  relevance: high
+  credibility_score: 4
+  verdict: adopt_patterns
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reviewer-model-ablations.md
+    - reviewer-typed-artifacts.md
+    - eval-tower-verification.md
+    experiments: []
+    intake_entries:
+    - intake-838
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: First SE-focused task-decomposed audit of prompt-induced judge bias with test-retest reliability as a first-class metric, including small self-hostable judges -> medium.
+  relevance_justification: Same judge scale/hosting as our reviewers; validates pointwise single-candidate grading (dodges the dominant position bias) and mandates Consistency-Rate reporting alongside FA/FR plus a bias-perturbation probe set in the H5 tournament -> high. Per-cell magnitudes need PDF verification before gating use.
+- id: intake-838
+  arxiv_id: '2505.16222'
+  url: https://arxiv.org/abs/2505.16222
+  source_type: paper
+  title: 'Don''t Judge Code by Its Cover: Exploring Biases in LLM Judges for Code Evaluation (EACL 2026 Findings)'
+  authors:
+  - Jiwon Moon
+  - Yerin Hwang
+  - Dongryeol Lee
+  - Taegwan Kang
+  - Yongil Kim
+  - Kyomin Jung
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  key_claims:
+  - All 6 judges show positive AND negative bias to semantics-preserving surface changes across 5 languages; POINTWISE grading still leaks content bias.
+  - Self-declared-correctness is the strongest positive bias (MAD ~18pp; degrades incorrect-code detection 24.7-28.7pp on Llama); misleading-task strongest negative (~15pp).
+  - Model scale does NOT buy robustness (GPT-4o sometimes more biased than mini); superficial sophistication (long var names, +8 dummy functions -> +9.6pp) inflates verdicts monotonically.
+  - Test-case-assisted evaluation does NOT reliably mitigate (direct 71.6% vs test-based 66.75%).
+  techniques:
+  - six predefined bias injections on pointwise correct/incorrect judgments; MAD accuracy-deviation metric split by correct/incorrect code
+  reported_results:
+  - Per-language MAD tightly clustered 7.4-8.0pp - bias is language-general
+  referenced_arxiv_ids:
+  - '2404.13076'
+  novelty: medium
+  relevance: high
+  credibility_score: 5
+  verdict: adopt_patterns
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reviewer-typed-artifacts.md
+    - reviewer-model-ablations.md
+    experiments: []
+    intake_entries:
+    - intake-837
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: First systematic multi-language multi-model robustness study of code judges to semantics-preserving perturbations -> medium.
+  relevance_justification: This is the pointwise regime our reviewer uses; proves sanitization is mandatory (adopted as CandidatePackage sanitization in H2 - strip architect self-assessment/confidence/authorship framing) and that verbosity/complexity biases must be measured as covariates, not prompted away -> high.
+- id: intake-839
+  arxiv_id: '2308.00352'
+  url: https://arxiv.org/abs/2308.00352
+  source_type: paper
+  title: 'MetaGPT: Meta Programming for a Multi-Agent Collaborative Framework (ICLR 2024 oral)'
+  authors:
+  - Sirui Hong
+  - Mingchen Zhuge
+  - Chenglin Wu
+  - Jürgen Schmidhuber
+  - et al.
+  categories:
+  - agent_architecture
+  - swarm_techniques
+  key_claims:
+  - SOP-encoded role pipeline (PRD -> design doc -> task list -> code -> tests) with structured artifact handoffs cuts human revision 2.5 -> 0.83 rounds vs ChatDev; SoftwareDev executability 3.75 vs 2.25.
+  - QA role formulates tests and reports bugs but does NOT edit code - author debugs on feedback (reviewer-no-authorship boundary).
+  - Executable feedback (run generated tests, feed errors back, <=3 retries) adds +4.2pp HumanEval / +5.4pp MBPP over LLM review alone, which 'overlooked certain errors due to hallucinations'.
+  - Global message pool with subscribe-by-artifact-type replaces O(n^2) conversational broadcast.
+  techniques:
+  - role-specific structured output schemas + dependency-gated activation (role fires when prerequisite artifacts exist)
+  - executable-feedback loop with retry cap; publish/subscribe artifact pool
+  reported_results:
+  - HumanEval 85.9% / MBPP 87.7% Pass@1 (reproducibility caveats third-party); tokens/task ~31k vs ChatDev 19k for 3.3x the LOC
+  referenced_arxiv_ids:
+  - '2510.07614'
+  novelty: low
+  relevance: high
+  credibility_score: 5
+  verdict: adopt_patterns
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reviewer-typed-artifacts.md
+    - reviewer-decision-plane.md
+    - reviewer-latency-and-sampling-budget.md
+    - tri-role-coordinator-architecture.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Foundational 2023 pattern source; by 2026 typed-artifact orchestration and verifier precedence are baseline, and MetaGPT itself pivoted to AFlow (conceding fixed SOPs do not generalize) -> low as a system, durable as contracts.
+  relevance_justification: Independently arrived at two of our design invariants (reviewer-no-authorship; executable verification outranks LLM judgment) - strong external validation. Adopted patterns - schema shapes with interface/dependency fields, validation-gated boundaries, dependency-gated activation. Critique lit (2510.07614 - accountable handoffs swing +-15-36pp; single strong model beat the pipeline; 2-3x cost / 8-10x latency multi-role tax) adopted as the H-LB short-circuit + baseline-to-beat framing -> high.
+- id: intake-840
+  arxiv_id: '1805.00899'
+  url: https://arxiv.org/abs/1805.00899
+  source_type: paper
+  title: AI Safety via Debate (Irving, Christiano, Amodei 2018)
+  authors:
+  - Geoffrey Irving
+  - Paul Christiano
+  - Dario Amodei
+  categories:
+  - swarm_techniques
+  - benchmark_methodology
+  - agent_architecture
+  key_claims:
+  - Zero-sum debate self-play surfaces truth to a weaker judge ('harder to lie than to refute a lie'); polynomial-round debate decides PSPACE vs P for solo supervised judges.
+  - Judge must follow checkable inferences and judge consistently, but needs no domain expertise.
+  - Sparse-MNIST toy - debate-reveal lifts judge 59.4% -> 88.9% (6px); honest player wins 87.7-90.4% under precommit.
+  techniques:
+  - adversarial two-sided contrastive exchange judged by a third party
+  reported_results:
+  - toy-domain only; gains depend on judge-weaker-than-debaters + information asymmetry
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: medium
+  credibility_score: 5
+  verdict: adopt_patterns
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reviewer-escalation-and-human-gate-policy.md
+    experiments: []
+    intake_entries:
+    - intake-841
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Seminal 2018 theory; empirics are a single sparse-pixel toy -> low novelty in 2026.
+  relevance_justification: Our seam is the INVERSE regime (strong 754B judge, weaker workers, no information asymmetry) where the theorems do not transfer. Durable adopted mechanism - if a rebuttal round ever runs it must be TWO-SIDED contrastive, never one-sided advocacy (H7) -> medium.
+- id: intake-841
+  arxiv_id: '2305.14325'
+  url: https://arxiv.org/abs/2305.14325
+  source_type: paper
+  title: Improving Factuality and Reasoning in Language Models through Multiagent Debate (Du et al. 2023)
+  authors:
+  - Yilun Du
+  - Shuang Li
+  - Antonio Torralba
+  - Joshua B. Tenenbaum
+  - Igor Mordatch
+  categories:
+  - swarm_techniques
+  - benchmark_methodology
+  - agent_architecture
+  key_claims:
+  - Homogeneous peer debate (3 agents x 2 rounds) beats single-pass and self-reflection across arithmetic/GSM8K/chess/biographies/MMLU (e.g. GSM8K 77.0 -> 85.0).
+  - Gains plateau after ~round 4; cost is multiplicative (agents x rounds, ~6x baseline tokens).
+  - Documented failure mode - agents confidently converge on WRONG answers and do not express uncertainty.
+  techniques:
+  - cross-agent answer conditioning with prompt-controlled convergence
+  reported_results:
+  - '2024-26 follow-ups sharpen the null: same-input homogeneous debate is a martingale (2601.19921); debate beats direct-QA only under information asymmetry (2407.04622); one-sided consultancy DEGRADES judges (2402.06782)'
+  referenced_arxiv_ids:
+  - '2601.19921'
+  - '2407.04622'
+  - '2402.06782'
+  novelty: low
+  relevance: medium
+  credibility_score: 6
+  verdict: adopt_patterns
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reviewer-escalation-and-human-gate-policy.md
+    - reviewer-latency-and-sampling-budget.md
+    experiments: []
+    intake_entries:
+    - intake-840
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Heavily replicated 2023 result, now contextualized by the martingale/diversity follow-up literature -> low.
+  relevance_justification: Adopted as BOUNDS not mechanism - H7 default on reviewer-vs-verifier disagreement stays ESCALATE; optional single two-sided rebuttal round (hard cap 2) gated per task-class on measured signed net-flip >0, restricted to latent-evidence disagreements. Our strong-judge no-asymmetry regime is the literature's worst case for debate -> medium.
+- id: intake-842
+  arxiv_id: '2404.11891'
+  url: https://arxiv.org/abs/2404.11891
+  source_type: paper
+  title: Large Language Models Can Solve Real-World Planning Rigorously with Formal Verification Tools (Hao et al., NAACL 2025)
+  authors:
+  - Yilun Hao
+  - Yongchao Chen
+  - Yang Zhang
+  - Chuchu Fan
+  categories:
+  - formal_verification
+  - agent_architecture
+  key_claims:
+  - LLM as translator not solver - NL query -> constraints -> Z3 SMT; sound solver guarantees a valid plan iff one exists.
+  - TravelPlanner success 10% (o1-preview direct) -> 93.9% solver-backed (~9x lift from moving the correctness decision off the LLM).
+  - UNSAT core names the exact conflicting constraints -> interactive repair loop; 81.6% of unsatisfiable queries repaired, 91.7% of modified queries solve.
+  techniques:
+  - NL-to-SMT encoding via LLM-generated Python calling the solver API; UNSAT-core-driven guided repair
+  reported_results:
+  - zero-shot generalization to unseen constraints and new domains, each needing its own encoding harness
+  referenced_arxiv_ids:
+  - '2406.10196'
+  novelty: medium
+  relevance: high
+  credibility_score: 5
+  verdict: adopt_patterns
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reviewer-decision-plane.md
+    - reviewer-control-plane-index.md
+    experiments: []
+    intake_entries:
+    - intake-843
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Clean proposal/verification separation with the failure certificate as an actionable repair signal -> medium.
+  relevance_justification: Blueprint for our verifier-precedence rule and request_evidence flow - failure certificate (unsat core / counterexample) becomes the correction payload; win is conditional on encodability, so the H3 adapter is tiered (cheap schema/invariant/property checks first, Z3/symbolic only for theory-solver claims; all open-source CPU-local) with a pluggable per-domain formalizer -> high.
+- id: intake-843
+  arxiv_id: '2509.26546'
+  url: https://arxiv.org/abs/2509.26546
+  source_type: paper
+  title: Towards Verified Code Reasoning by LLMs (Sistla et al., UT Austin + Google/Meta)
+  authors:
+  - Meghana Sistla
+  - Gogul Balakrishnan
+  - Pat Rondon
+  - Jose Cambronero
+  - Michele Tufano
+  - Satish Chandra
+  categories:
+  - formal_verification
+  - agent_architecture
+  key_claims:
+  - Formalizing an agent's reasoning (CodeSemantics facts + AgentClaims predicates checked in Souffle Datalog) catches wrong judgments prose review would pass.
+  - On program-equivalence, the formal check caught 6/8 (~75%) of agent hallucinated/wrong judgments.
+  - Coverage is the binding constraint - single-pass formalization verified only 18/88 valid explanations (5x iteration -> 36/88); 15% false-positive rate from formalization incompleteness.
+  techniques:
+  - formalizer LLM emitting logical predicates; Souffle/Datalog checking; static-analysis + sanitizer ground truth
+  reported_results:
+  - one-shot validator only (no agent-correction loop in the paper)
+  referenced_arxiv_ids:
+  - '2605.17914'
+  - '2507.13290'
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: adopt_patterns
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reviewer-decision-plane.md
+    experiments: []
+    intake_entries:
+    - intake-842
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Direct empirical evidence that formalizing reasoning (not just answers) catches judge errors -> high.
+  relevance_justification: Forces the three-valued verifier outcome adopted in H3 (PASS / FAIL-with-certificate / INCONCLUSIVE - inconclusive hands control back to the reviewer, never force-rejects) because of the 15% incompleteness false-positive tax; formally-decidable claims are a minority-high-value slice -> high.
+- id: intake-844
+  arxiv_id: '2603.26337'
+  url: https://arxiv.org/abs/2603.26337
+  source_type: paper
+  title: RACE-bench - Repository-Level Code Agents with Intermediate Reasoning on Feature Addition (Zhejiang+Huawei)
+  authors:
+  - Shuhan Liu
+  - Xing Hu
+  - Xin Xia
+  - et al.
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  key_claims:
+  - 528 real feature-addition instances from 12 SWE-bench-family Python repos; each carries executable patch verification AND structured intermediate-reasoning ground truth (4 stages / 5 modules).
+  - Per-module metric pair Recall + OverPrediction = a ready-made miss/over-flag (false-reject/false-accept) instrument for grading PLAN quality, not just outcomes.
+  - Task-Steps recall is universally weakest (0.34-0.45); on apply-success-but-test-fail cases reasoning recall drops 35.7% and over-prediction rises 94.1% - reasoning quality predicts patch failure.
+  techniques:
+  - back-inferred reasoning gold from gold patch + tests (LLM-assisted, 96% human agreement on 100-case sample)
+  reported_results:
+  - resolved rates 29-70% across agents; NO public dataset release yet (schema adoptable, rows not minable)
+  referenced_arxiv_ids:
+  - '2506.12286'
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: adopt_patterns
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reviewer-calibration-accounting.md
+    - reviewer-model-ablations.md
+    experiments: []
+    intake_entries:
+    - intake-845
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: First repo-level benchmark shipping structured intermediate-reasoning gold gradeable module-by-module -> high.
+  relevance_justification: Its Recall/OverPrediction pair is adopted verbatim as the H4 plan-grading calibration readout; 5-module schema is the template for grading plan packages where no diff exists. Name collision warning (RACE reading-comprehension; jszheng21/RACE metric suite); LLM-authored gold labels are the validity caveat; watch for dataset release -> high.
+- id: intake-845
+  arxiv_id: '2603.23448'
+  url: https://arxiv.org/abs/2603.23448
+  source_type: paper
+  title: Code Review Agent Benchmark (c-CRAB, NUS/Roychoudhury group)
+  authors:
+  - Yuntong Zhang
+  - Zhiyuan Pan
+  - Abhik Roychoudhury
+  - et al.
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  key_claims:
+  - 184 PR instances / 234 review comments converted to EXECUTABLE fail-then-pass oracles (test fails on original patch, passes once the reviewed issue is resolved); 100% natural defects, zero injection.
+  - Existing review agents solve only ~40% union (97/234); best single agent (Claude Code) 32.1%; humans 100%.
+  - Base = SWE-CARE (inclusionAI/SWE-CARE on HF, Apache-2.0, 7757 rows) - the directly minable candidate pool.
+  - Admitted circularity - the same model validates curation and is evaluated; solvable-only filter discards the hardest near-misses.
+  techniques:
+  - LLM review-quality filter (86% precision) -> test synthesis from human review comments -> agent validation -> Docker-isolated execution
+  reported_results:
+  - binary pass-rate only; no precision/false-positive axis despite 4x variance in comments emitted (324-1344) - the FA axis is unmeasured (gap we fill)
+  referenced_arxiv_ids:
+  - '2506.12286'
+  - '2603.26130'
+  novelty: high
+  relevance: high
+  credibility_score: 5
+  verdict: adopt_component
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reviewer-calibration-accounting.md
+    - reviewer-model-ablations.md
+    experiments: []
+    intake_entries:
+    - intake-844
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: First code-review benchmark with executable oracles as gold labels (not LLM-judged prose) -> high.
+  relevance_justification: 'Directly minable (CC BY 4.0; acquired to /mnt/raid0/llm/datasets/) as near-miss corpus rows; its fail-then-pass oracle is one of the two H4 gold-label templates. Do NOT copy the solvable-only filter (keep the ambiguous tail for human arbitration); apply decontamination metadata + >=2 oracles for gate-worthy rows (weak-oracle inflation: 47.9% of SWE-bench resolved pass on weak tests) -> high.'
+- id: intake-846
+  arxiv_id: null
+  url: https://www.anthropic.com/engineering/building-effective-agents
+  source_type: blog
+  title: Anthropic engineering set - effective agents / long-running harnesses / context engineering / agent evals / multi-agent research (5 posts, consolidated)
+  authors:
+  - Anthropic engineering
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  - context_management
+  key_claims:
+  - Generator-critic separation works but conditionally - evaluator-optimizer is effective only with clear evaluation criteria and measurable iterative value (exactly what an FA/FR ledger provides).
+  - Multi-agent uses ~15x chat tokens; token usage alone explains 80% of BrowseComp variance; poor fit for shared-context/coding tasks; execution synchronous (blocked on slowest subagent).
+  - Persist state in structured JSON artifacts (immutable structure, mutable status); session-init protocol; verify by execution not inspection; compaction/note-taking/sub-agent-isolation as the three long-horizon context levers.
+  - Grade outcomes not paths, but grade transcripts for specific verifiable properties; pass@k for generation vs pass^k for consistency-critical decisions; 0% pass@100 usually means a broken grader (CORE-Bench 42% -> 95% after grader repair).
+  techniques:
+  - orchestrator-workers + evaluator-optimizer patterns; effort-scaling delegation rules; per-dimension isolated LLM judges calibrated to humans; clean-environment per-trial isolation
+  reported_results:
+  - upgrading judge/reviewer model beats doubling token budget (fidelity over fan-out)
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: 5
+  verdict: adopt_patterns
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reviewer-control-plane-index.md
+    - reviewer-trace-materialization.md
+    - reviewer-latency-and-sampling-budget.md
+    - reviewer-calibration-accounting.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Patterns largely confirm decided designs; the sharp corrections (15x multiplier, sum-not-max on single host, simplicity floor) are the new content -> medium.
+  relevance_justification: Adopted corrections - parallel-reviewer latency models as SUM on our single-host CPU stack; fan-out gated by task type; M3 baseline floor (plane must beat single augmented LLM); pass^k for review decisions; broken-grader guardrail; per-trial clean-environment isolation. Gap check confirms typed ReviewDecision contracts + FA/FR decision-cost ledger are genuine extensions beyond the published guidance -> high.
+- id: intake-847
+  arxiv_id: null
+  url: https://docs.langchain.com/oss/python/langgraph/overview
+  source_type: repo
+  title: LangGraph 1.0 adoption assessment vs epyc-orchestrator durable-execution needs (adopt_component)
+  authors:
+  - LangChain (framework); assessment vs our src/graph modules
+  categories:
+  - agent_architecture
+  - tool_implementation
+  key_claims:
+  - LangGraph is ALREADY a declared epyc-orchestrator dependency (pyproject.toml langgraph>=0.2.0 + langgraph-checkpoint-sqlite>=2.0.0) with a dormant Phase-1 bridge (src/graph/langgraph/, run_task_lg(checkpointer=...), flag langgraph_bridge=False).
+  - We are materially BEHIND on durable cross-restart resume - persistence.py::SQLiteStatePersistence is write-only (load_next() always None, never rehydrates); resume_token.py restores only ~8 control-flow fields; no replay/time-travel.
+  - We are AHEAD on interrupt-trigger policy (should_halt(), decision_gates.py) and compile-time edge safety (pydantic_graph Union returns) - LangGraph replaces none of that.
+  - 1.0 GA (2025-10-22) with zero breaking changes, strict semver, SqliteSaver/AsyncSqliteSaver backends; interrupt()/Command(resume=) persists exact state across process restarts; node re-runs from start on resume (idempotency required).
+  techniques:
+  - per-super-step checkpointing keyed by thread_id/checkpoint_id; get_state_history() replay/fork
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: 6
+  verdict: adopt_component
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reviewer-trace-materialization.md
+    - reviewer-decision-plane.md
+    - harness-selection-and-integration.md
+    experiments: []
+    intake_entries:
+    - intake-146
+  handoffs_updated:
+  - harness-selection-and-integration.md
+  handoffs_created: []
+  novelty_justification: Supersedes intake-146 (2026-03-15, worth_investigating) with a decisive named-module verdict grounded in gap analysis of our own persistence code -> medium.
+  relevance_justification: 'Adopt the component, not the runtime: wire SqliteSaver through the existing run_task_lg bridge (replaces write-only persistence), move review gates onto interrupt()/Command(resume=) shadow-first behind approval_gates flags, KEEP pydantic_graph topology + decision_gates policy; imports scoped strictly to langgraph + langgraph-checkpoint-sqlite (minimum-imports); the one migration hazard is node re-execution idempotency on _execute_turn/REPL side effects -> high.'
+- id: intake-848
+  arxiv_id: '2407.16741'
+  url: https://github.com/OpenHands/OpenHands
+  source_type: repo
+  title: OpenHands runtime + harness assessment (mine_patterns runtime; strong-on-surface HS-4 harness candidate)
+  authors:
+  - All Hands AI / OpenHands community
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - harness_optimization
+  key_claims:
+  - Docker action-execution server with event-sourced EventStream (append-only Action->Observation log, headless --json JSONL); MIT, ~81k stars, funded and actively released.
+  - Speaks /v1/chat/completions to arbitrary local llama.cpp servers via base_url + openai/ model prefix; SDK LLM.extra_headers dict is merged into EVERY litellm request -> x_* override passthrough works (static per named config; per-turn dynamism needs N configs or ~10-line patch).
+  - Replacing restricted_executor.py with it is a category error (in-process sub-ms REPL vs Docker REST round-trip; minimum-imports violation) - but restricted_executor's bytecode-only isolation is genuinely weak, so the EventStream + client/server executor split is the blueprint for a future untrusted-code tier.
+  - As a harness it is the OPPOSITE of a thin cooperating frontend - ships its own full Layer-B agent loop (condenser/compaction, model selection, sub-agent spawning) + own Docker substrate; adopting it imports a competing orchestrator.
+  techniques:
+  - event-sourced action/observation log; plugin/skills sandbox; litellm provider abstraction; headless JSONL eval mode
+  reported_results: []
+  referenced_arxiv_ids:
+  - '2407.16741'
+  novelty: medium
+  relevance: high
+  credibility_score: 6
+  verdict: adopt_patterns
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-selection-and-integration.md
+    - reviewer-decision-plane.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - harness-selection-and-integration.md
+  handoffs_created: []
+  novelty_justification: Established framework; the new content is the named-module gap analysis and the x_*-passthrough verification -> medium.
+  relevance_justification: Feeds HS-1/HS-4 directly - admit as a serious harness candidate but score explicitly against orthogonality/minimum-imports (it contests Layer-B ownership; a thin OpenCode-style shell is likely cheaper to make cooperate). Runtime patterns (EventStream, executor split) reserved for a future isolated-execution tier -> high.
+- id: intake-849
+  arxiv_id: null
+  url: https://openai.github.io/openai-agents-python/
+  source_type: repo
+  title: OpenAI Agents SDK pattern extraction for the review control plane (mine_patterns, no dependency)
+  authors:
+  - OpenAI (openai-agents-python)
+  categories:
+  - agent_architecture
+  - tool_implementation
+  key_claims:
+  - MIT, first-party, v0.18.2; fully local-compatible (base_url + chat_completions API; set_trace_processors replaces the OpenAI exporter -> zero platform dependency) but primitives are inseparable from Agent/Runner -> no import under minimum-imports.
+  - Guardrail semantics keep the halting boolean (tripwire_triggered) structurally orthogonal to the advisory payload (output_info) - the shape our ArchitectReview lacks and safety_gate already has.
+  - Resumable-approval RunState (to_json/from_json; interruptions list; state.approve/reject; resume) is the template for a durable DelegationState with interruption records.
+  - Input-vs-output guardrail placement (first agent / final output only) eliminates redundant per-subtask re-checks - a direct latency lever.
+  techniques:
+  - agents-as-tools (manager control) vs handoffs (ownership transfer + input_filter); sticky approval decisions; is_enabled predicates; TracingProcessor 6-method push interface
+  reported_results:
+  - 'validated AHEAD-of-SDK on our side: safety_gate warn_only shadow->enforce toggle; priority-ordered BindingRouter'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: 6
+  verdict: adopt_patterns
+  discovered_via: input
+  ingested_date: '2026-07-16'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reviewer-typed-artifacts.md
+    - reviewer-decision-plane.md
+    - reviewer-trace-materialization.md
+    experiments: []
+    intake_entries:
+    - intake-847
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Mature framework; the new content is the seven named-module pattern mappings (tripwire split, DelegationState, guardrail placement, TracingProcessor re-implementation, sticky decisions, as-tool/handoff distinction, is_enabled predicates) -> medium.
+  relevance_justification: Seven patterns adopted into H2/H3 designs; TracingProcessor interface re-implemented over src/trace/store.py rather than imported; reconciled with LangGraph adoption (SqliteSaver = persistence substrate, DelegationState = payload shape) -> high.

@@ -486,3 +486,7 @@ The MI210 frontdoor/drafter placements this handoff designs will need hand-tuned
 - [ ] Stage 1 external GPU drafter for CPU frontdoor, >=1.3x kill-gate
 - [ ] Stage 2 frontdoor + drafter co-resident on GPU (production design)
 - [ ] Stage 4 MTP head split for gemma4 worker_general (after Stages 1-3)
+
+## Research Intake Update — 2026-07-16 (control-plane relevance: Stage-1 is GPU bet #1)
+
+Operator locked the MI210 sequencing (2026-07-16): **drafter Stage-1 end-to-end speedup is GPU bet #1** — smallest VRAM footprint (co-exists with later residency/offload bets), reversible, and it directly counters the measured plan-review latency regression by accelerating CPU architect/frontdoor turns that the Architect→Reviewer control plane multiplies (see [`reviewer-control-plane-index.md`](reviewer-control-plane-index.md) + [`reviewer-latency-and-sampling-budget.md`](reviewer-latency-and-sampling-budget.md)). No scope change here — Stage-1 remains your next unrun measurement; its result feeds the control plane's H-LB budget arithmetic (per-turn cpu_tps uplift) and the teleport break-even model in [`mi210-big-model-and-acceleration-roadmap.md`](mi210-big-model-and-acceleration-roadmap.md) AXA-2.
