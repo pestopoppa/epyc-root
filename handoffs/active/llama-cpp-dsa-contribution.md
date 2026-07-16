@@ -1,6 +1,6 @@
-# llama.cpp DSA Contribution — PR #21149 Stabilization + Three Sub-Tracks
+# llama.cpp DSA Contribution — DSA LANDED upstream (#23346); remaining CPU-perf sub-tracks (D2/D3)
 
-**Status**: ACTIVE TRACKING — three sub-tracks defined, all gated on user inference approval per `feedback_no_concurrent_inference.md`
+**Status**: RE-AUDITED 2026-07-16 — **DSA support LANDED in v6 via upstream #23346** (generic DSA), NOT the tracked draft #21149 → the "track #21149 to merge" objective and D1 are SUPERSEDED. Live remnants: D2 (prompt-processing sparse path) + D3 (CPU AVX-512 Lightning-Indexer), re-anchored to the landed code and re-gated on fresh profiling. All inference gated per `feedback_no_concurrent_inference.md`.
 **Created**: 2026-04-29 (via research-intake of intake-506 + PR #21149 audit)
 **Updated**: 2026-05-28 — Added "Adjacent Upstream Arch Work — deepseek4" section tracking ggml-org/llama.cpp issue #22319 + discussion #22376 + 4+ community WIP forks (antirez, nisparks, cdome94, Fringe210). Our sibling effort is `handoffs/active/deepseek-v4-flash-cpu-port.md` (port AUTHORIZED 2026-05-28, experimental branch isolation); if a core contributor opens a deepseek4 upstream PR, our role mirrors D1 (CPU benchmark contribution) and the experimental branch rolls back in favor of upstream. Earlier 2026-04-29 (initial).
 **Categories**: kv_cache, inference_serving, hardware_optimization, local_inference
@@ -17,9 +17,21 @@
 - intake-506 (DeepSeek-V3.2 paper, arxiv:2512.02556)
 - [V3.2 deep-dive](../../research/deep-dives/deepseek-v32-dsa-llamacpp-pr21149.md) — full mechanism analysis + "How we'd contribute" section
 
-## Objective
+## 2026-07-16 Audit Reset — DSA has LANDED (this handoff's premise is superseded)
 
-Track upstream PR #21149 (DeepSeek V3.2 + DSA support) by **fairydreaming** to merge-readiness, and contribute upstream where our hardware + expertise fit. The PR is a draft as of 2026-04-29 with active commits (last 2026-04-28). One stabilized PR unlocks BOTH DeepSeek-V3.2 (671B-class MoE) AND GLM-5.1-555B-A14B (same DSA architecture) on our 1.1 TB EPYC.
+**The tracked PR #21149 is no longer the path.** DSA support reached our v6 fork via a DIFFERENT upstream PR — **#23346, "DeepseekV32ForCausalLM with generic DeepSeek Sparse Attention (DSA) implementation."** Verified in v6 (2026-07-16):
+- Arch enums registered: **`LLM_ARCH_DEEPSEEK32` ("deepseek32")** AND **`LLM_ARCH_GLM_DSA` ("glm-dsa")** — DeepSeek-V3.2 *and* the GLM-MoE-DSA family both have runtime support.
+- `src/models/glm-dsa.cpp` (dedicated model class, indexer tensors, MLA-required) + `src/llama-kv-cache-dsa.cpp` (Lightning-indexer KV cache) are present.
+- The predicted **"2-models-for-1" unlock HAPPENED** — now multi-model (V3.2 + GLM-5.1 + GLM-5.2), via generic DSA, without us writing it from scratch.
+
+**What this changes:**
+- **D1 (pull draft #21149 / build / smoke) — SUPERSEDED.** The code is in production v6; the smoke-test now lives in the model-eval handoffs ([`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) → GLM-5.2, and a V3.2 eval if desired), not as a "pull the draft" task.
+- **Monitoring PR #21149 weekly — MOOT.** DSA landed; stop tracking that PR to merge.
+- **D2 (PP-sparse) + D3 (CPU AVX-512 indexer) — POSSIBLY still live, but RE-ANCHOR to the landed #23346 code, not the fairydreaming draft.** Re-run the gating checks against the landed version: (D2) does prompt-processing still use dense attention / is long-context speedup still unrealized? (D3.1) is the landed CPU Lightning-Indexer path compute-bound (worth SIMD) or BW-bound (no-op)? Do NOT start either until re-confirmed against the landed code. Their design detail below stays valid as a starting template.
+
+## Objective (revised 2026-07-16)
+
+DSA is landed upstream (#23346) and present in v6. The objective is no longer "track a draft PR to merge" — it is: (1) confirm the landed DSA path runs the GLM-5.2 / DeepSeek-V3.2 families coherently (owned by the model-eval handoffs), and (2) evaluate whether the two CPU-performance contribution opportunities (D2 prompt-processing sparse path, D3 AVX-512BW Lightning-Indexer kernel) are still real against the LANDED code, and pursue them upstream only if the re-gating checks pass. Original PR-#21149 tracking context is retained below as history.
 
 ## PR State Snapshot (2026-04-29)
 
@@ -126,7 +138,7 @@ Our angle (per `project_zen5_vnni_vs_maddubs` + `project_q8_8x8_avx512bw_outcome
 
 ## 2-Models-for-1 Leverage Statement
 
-Both V3.2 (671B-class) and GLM-5.1-555B-A14B use DSA architecture. The same indexer + KV cache infrastructure is reused identically. **When PR #21149 stabilizes — with or without our contribution — GLM-5.1 unblocks the same week.**
+Both V3.2 (671B-class) and the GLM-MoE-DSA family use DSA with identical indexer + KV cache infrastructure. **This unlock has now HAPPENED (2026-07-16): generic DSA landed via #23346, registering `deepseek32` + `glm-dsa` in v6 — V3.2, GLM-5.1, and GLM-5.2 are all runtime-supported at once**, exactly the multi-model-for-one-effort payoff this handoff bet on (delivered by upstream, not our patch).
 
 This is the core reason this handoff exists as a strategic tracker rather than a single-model evaluation. Effort here pays off twice (or more, as DSA propagates to future DeepSeek / GLM model families).
 
@@ -189,8 +201,9 @@ The "we'd need to write a fork patch" framing in earlier glm51 handoff text was 
 
 ## Progress checklist
 
-- [ ] D1 pull/build/smoke PR #21149 on EPYC (D1.6 quality + D1.7 throughput gated on inference approval)
-- [ ] D2 prompt-processing sparse-path follow-on PR (after D1 quality validated)
-- [ ] D3 AVX-512BW Lightning Indexer kernel (after D3.1 profile confirms compute-bound)
-- [ ] Weekly monitoring of PR #21149 to merge-readiness / caveat removal
-- [ ] GLM-5.2 (754B GLM-MoE-DSA) activation once DSA forward pass validated
+- [x] D1 pull/build/smoke PR #21149 — SUPERSEDED: DSA landed in v6 via generic-DSA #23346 (`deepseek32` + `glm-dsa` archs present); no draft-PR pull needed; smoke-test moved to the model-eval handoffs. ✅ 2026-07-16
+- [x] Weekly monitoring of PR #21149 to merge-readiness — MOOT: DSA landed via #23346; stopped tracking #21149. ✅ 2026-07-16
+- [ ] Re-anchor D2/D3 to the LANDED #23346 code (not the fairydreaming draft); re-run the D2 "is PP still dense / long-ctx unimproved?" and D3.1 "is the CPU indexer compute-bound?" gating checks before any contribution work
+- [ ] D2 prompt-processing sparse-path contribution — only if the re-anchored check shows the landed code still leaves PP dense
+- [ ] D3 AVX-512BW Lightning Indexer CPU kernel — only if D3.1 (re-run on landed code) confirms compute-bound
+- [ ] GLM-5.2 (754B GLM-MoE-DSA) activation — DSA forward-pass blocker now cleared in code; pending the GLM-5.2 UD-IQ2_M download + smoke-test in `glm51-reap-cpu-evaluation.md`
