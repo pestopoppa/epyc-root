@@ -1,6 +1,6 @@
 # GLM-MoE-DSA Evaluation — GLM-5.2 primary (GLM-5.1-REAP = fallback datapoint)
 
-**Status**: ACTIVE — **GLM-5.2 UD-IQ2_M download AUTHORIZED + in progress (2026-07-16)**; DSA forward-pass premise **RE-AUDITED 2026-07-16 → likely LANDED in v6** (was "WAIT-DSA / PR #21149"). Next real action = load/smoke-test once weights land. Inference operator-gated (`feedback_no_concurrent_inference`).
+**Status**: ACTIVE — **GLM-5.2 UD-IQ2_M download COMPLETE + size-manifest verified + short CPU load/coherence smoke PASSED (2026-07-16)**; DSA forward-pass premise **RE-AUDITED 2026-07-16 → likely LANDED in v6** (was "WAIT-DSA / PR #21149"). Next real action = long-context DSA/indexer verification and KV-length scaling. Inference operator-gated (`feedback_no_concurrent_inference`).
 **Created**: 2026-04-22 (via research-intake deep-dive of intake-427, as GLM-5.1-REAP)
 **Updated**: 2026-07-16 (re-scoped to GLM-5.2 primary; DSA-landed audit; download authorized)
 **Categories**: moe_optimization, local_inference, model_evaluation, kv_cache
@@ -26,14 +26,14 @@ The 2026-05-28 "WAIT-DSA, no autonomous download" framing is **superseded**. Two
 
 | Question | Answer | Action |
 |---|---|---|
-| Is the model downloaded? | **In progress** — `unsloth/GLM-5.2-GGUF` UD-IQ2_M (~239 GB) via a single active download writer; Hy3 is already present. | Wait for completion; verify shard integrity. |
+| Is the model downloaded? | **Yes** — `unsloth/GLM-5.2-GGUF` UD-IQ2_M six public shards, total `238,577,580,768` bytes, size-verified against HF tree `abc55e72527792c6e77069c99b4cb7de16fa9f23`. | Closed; proceed to DSA verification. |
 | Is llama.cpp DSA ready? | **Apparently yes in v6** (glm-dsa model + DSA KV cache via #23346) — was recorded as "no". Static audit says top-k selection exists in both prompt and decode, but final attention still looks dense/mask-based. | Confirm empirically: load + short-ctx smoke + a long-ctx (>64K) probe; then profile whether attention scales with full KV length or near `indexer_top_k`. |
 | Next useful action | Smoke-test on load (operator-gated), not more paper analysis. | Phase 1 below. |
 
 ### Phase 0 — no-inference readiness (updated 2026-07-16)
 - [x] Storage gate reconciled — CLEARED; operator authorized UD-IQ2_M download. ✅ 2026-07-16
 - [x] DSA implementation status re-audited — `llama_model_glm_dsa` + `llama-kv-cache-dsa.cpp` present in v6 via upstream #23346; "no forward pass" premise is STALE. ✅ 2026-07-16
-- [ ] Download completes + shard integrity verified (`models/GLM-5.2-UD-IQ2_M/`, ~6 shards, ~239 GB).
+- [x] Download completes + shard integrity verified (`models/GLM-5.2-UD-IQ2_M/`, 6 shards, `238,577,580,768` bytes). ✅ 2026-07-16
 - [x] Reconcile [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md): D1/#21149 path marked superseded, D2/D3 re-anchored to landed #23346 code, and remaining work split into fresh profiling gates. ✅ 2026-07-16
 
 ## Objective
@@ -59,11 +59,13 @@ Evaluate **GLM-5.2** (`zai-org/GLM-5.2`, 754B GLM-MoE-DSA) as a large-MoE archit
 ## Evaluation Plan (GLM-5.2, DSA-gated fork)
 
 ### Phase 1 — Load + short-context smoke (GATE: abort on repetition loops)
-- [ ] After download completes, load UD-IQ2_M: `llama-server -m models/GLM-5.2-UD-IQ2_M/<shard-00001>.gguf -ngl 0 -c 8192 -np 1 --jinja …` (operator-gated; no concurrent inference).
+- [x] Short CPU load/coherence smoke: experimental v7 `b10077-da1bf5e2f`, `llama-server`, `--device none -ngl 0 --jinja --reasoning off --reasoning-budget 0`, returned exact `READY`. Evidence: `/mnt/raid0/llm/tmp/glm52-short-smoke-20260716T2308-reasoning-off/`. ✅ 2026-07-16
+- [ ] Full five-prompt short-context smoke set (greeting, code, reasoning, structured, tool-call); the first exact-output smoke is positive but not a quality gate.
 - [ ] 5 basic prompts (greeting, code, reasoning, structured, tool-call); check for the repetition-loop failure mode that killed GLM-4.7 (43%, severe loops).
 - [ ] **GATE:** repetition loops → abort, document.
 
 ### Phase 2 — DSA-path verification (the load-bearing question)
+- [ ] Investigate short-smoke unused-tensor warning before/with the long-context probe: `blk.78.*` tensors were ignored on load, including indexer and `nextn` tensors. This may be expected tail-layer/NextN behavior or may indicate incomplete GLM-5.2 tensor mapping; do not call DSA or native-GLM-MTP live until resolved.
 - [ ] Long-context probe (>64K, ideally toward 131K+): does the Lightning-Indexer/top-k path engage coherently? Instrument via logs / KV-cache-dsa creation / a needle-in-haystack at long ctx.
 - [ ] D2 runtime closeout: run one prefill batch (`n_tokens > 1`) and one single-token decode; capture graph/op traces proving `top_k` or `ggml_lightning_indexer` appears in both phases.
 - [ ] D2 scaling check: vary KV length while keeping `indexer_top_k` fixed and profile the actual attention op (`FLASH_ATTN_EXT` or dense `MUL_MAT` path). Full-KV scaling means dense-mask compute; near-top-k scaling means real sparse execution.
