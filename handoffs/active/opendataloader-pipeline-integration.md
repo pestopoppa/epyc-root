@@ -37,9 +37,9 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 - [x] Install `opendataloader-pdf` (Python SDK, requires Java 11+) ✅ 2026-07-14 (audit: openjdk-17 installed 2026-07-03; SDK runnable via uv)
 - [x] Run ODL local on sample documents from orchestrator test corpus ✅ 2026-07-14 (audit: 2026-07-03/04 fast-path probe artifacts)
 - [x] Compare reading order, heading detection, table identification vs pdftotext ✅ 2026-07-14 (audit: probe quality/latency/structural comparisons, 8- and 51-PDF sets)
-- [ ] Swap `pdftotext -layout` for `opendataloader_pdf.convert(format="markdown,json")` in `pdf_router.py`
-- [ ] Keep quality check logic (entropy/garbage/word-length) on ODL output
-- [ ] Handle JVM lifecycle: persistent subprocess or batch warming
+- [x] Swap `pdftotext -layout` for `opendataloader_pdf.convert` in `pdf_router.py` ✅ 2026-07-17 (Wave-2 B2): default flip via `_resolve_extractor` (ODL when java+SDK available, else pdftotext; explicit PDF_EXTRACTOR wins)
+- [x] Keep quality check logic (entropy/garbage/word-length) on ODL output ✅ 2026-07-17: same `_assess_text_quality` gate on ODL output; empty/garbled ODL → pdftotext fallback → OCR (never emits garbage)
+- [x] Handle JVM lifecycle: batch warming ✅ 2026-07-17: cached availability probe (no doomed per-doc spawn when JVM absent) + `extract_batch_opendataloader` one-JVM batch ~2.3× (convert() returns None + per-call JVM, no persistent handle; sidecar is the persistent-service path). +`OCRResult.extraction_method` attribution.
 - [x] Update tests in `tests/services/test_pdf_router.py` ✅ 2026-07-14 (audit: suites live at tests/unit/test_pdf_router.py; passing per Phase 1 done)
 
 **Key files**:
@@ -159,7 +159,7 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 - [ ] Experiment: swap hybrid backend from docling-fast → LightOnOCR-2-1B (port 8082)
 - [ ] Measure: does GPU-accelerated LightOnOCR beat docling-fast's 0.43s/page?
 - [ ] Implement three-way routing: ODL local (simple) → ODL hybrid (tables) → LightOnOCR (scanned)
-- [ ] Clone opendataloader-bench, add our pipeline as custom engine
+- [x] Clone opendataloader-bench, add our pipeline as custom engine ✅ 2026-07-17 (Wave-2 B3): `epyc-inference-research/scripts/benchmark/odl_bench/` — deterministic pdftotext/ODL-local/LiteParse prediction-producer engines (structural/table/reading-order/speed); 15/15 tests; model-gated rows → Wave-3 manifest stubs
 - [ ] Run comparison on 200 PDFs: our pipeline vs ODL local vs ODL hybrid vs docling vs marker
 - [ ] Publish results in progress log
 

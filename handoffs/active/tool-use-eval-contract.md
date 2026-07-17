@@ -90,10 +90,77 @@ Parallel batching task state:
 - [x] Seed a planner-facing hint for T3 hard-workflow exploration so plateaued
   runs can shift toward replayable expert/tool-use probes instead of T1-only
   churn. ✅ 2026-07-06
-- [ ] If future full-log runs show material independent read-only chains with
+- [x] If future full-log runs show material independent read-only chains with
   serial execution, scope implementation inside `REPLEnvironment.execute` /
   `parallel_dispatch.py` without changing OpenAI response `message.tool_calls`
-  semantics.
+  semantics. ✅ 2026-07-17 (B4) — **gate RESOLVED: NO-BUILD.** Ran the full-log
+  measurement; the condition is **NOT met** (see "Tool-Use Chain Analysis —
+  2026-07-17 (B4)" below): no material *independent* read-only chains — the only
+  multi-tool population is 30 identical `web_search×3` rows (3.7% of REPL, a
+  synthetic 2-per-suite pattern), 0 parallelized, and independence is unprovable
+  from this log. Implementation **NOT scoped**; re-open only on instrumented
+  future runs (persisted `tool_chains` + a per-call dependency flag) that show
+  material independent chains the existing `execute_parallel_calls()` path fails
+  to capture.
+
+## Tool-Use Chain Analysis — 2026-07-17 (B4): full-log run → NO-BUILD verdict
+
+**Method (read-only, no inference, no analyzer code change):** ran the existing
+`scripts/analysis/mine_repl_patterns.py` (`64db8a12` + `87e957ba` registry
+annotations) over the **full 3187-record** `logs/seeding_diagnostics.jsonl`,
+report output redirected off-repo so the historical `docs/repl_pattern_analysis.md`
+was **not** clobbered. Analyzer already emits every chain stat needed
+(`repl_multi_tools`, `repl_multi_tools_read_only`,
+`repl_multi_tools_with_parallel`, `tool_chain_counts`) — **no additive tweak was
+required**; `tests/unit/test_mine_repl_patterns.py` remains green (2 passed,
+untouched).
+
+**Quantification:**
+- 3187 diagnostic rows · **807 REPL** rows · **117 REPL+tools** (14.5%) · **690
+  REPL no-tools** (85.5%).
+- **30 multi-tool REPL rows** (`len(tools_called) >= 2`) = **3.7% of REPL**.
+- **30/30 read-only** (100% of multi-tool rows are all-read-only tools — up from
+  the 2026-07-06 run's `0`, purely because the `87e957ba` `side_effects:
+  ["read_only"]` registry annotations landed after that run; same 30 rows).
+- **0/30 parallelized** (`parallel_tools_used=True` on none).
+- **0/30 carry a persisted `tool_chains` structure** (that persistence postdates
+  this log → chain candidates come back empty).
+- **All 30 are the identical shape `['web_search','web_search','web_search']`**,
+  distributed **exactly 2 per suite across 15 suites** — a synthetic/seeded
+  signature, not organic model tool-use. Only tool present across the whole
+  multi-tool population is `web_search` (90 calls). Pass rate 5/30.
+- Latency: multi-tool mean 129s / median 180s vs no-tool mean 85s / median 57s —
+  the delta is `web_search` **network** latency, not REPL turn overhead.
+
+**Build-or-not verdict: NO-BUILD** a new parallel-batching REPL executor. Rationale:
+1. **Volume is negligible** — 30/807 REPL rows (3.7%), and REPL is itself a subset
+   of trials; the entire multi-tool population is one synthetic `web_search×3`
+   pattern.
+2. **The executor already exists and is unused** — `REPLEnvironment._execute_structured()`
+   already routes read-only independent batches through `execute_parallel_calls()`
+   (see 2026-07-05 investigation above). 0/30 used it → the gap is the model
+   **emitting** batchable calls (serial across turns instead of one structured
+   response), which the already-seeded `parallel-read-only-tool-batching` planner
+   hint targets — **not a missing executor**.
+3. **Independence is unprovable from this log** — no dependency flag, no argument
+   capture, no `tool_chains` structure (instrumentation gaps #3/#5). `web_search×3`
+   is as plausibly a *dependent* refine-loop (search → refine query → search) as an
+   independent fan-out; a build cannot be gated on unverified independence.
+4. **The one case where batching would help (parallel network-bound `web_search`)
+   is already covered** by the existing path; the payoff is realized only if the
+   model emits the calls together, i.e. a planner/emission concern, not an executor
+   concern.
+5. **Data is stale/thin** — historical log; `autopilot.log` rotated to 0 parseable
+   REPL sessions; decision-grade chain evidence needs the future-run instrumentation
+   (persisted `tool_chains` + per-call dependency flag) already scoped, not a new
+   executor.
+
+**Re-open trigger:** instrumented future runs showing a *material* count of
+*independent* read-only chains (dependency-flagged) that the model emits serially
+AND that `execute_parallel_calls()` fails to batch. Until then, keep the existing
+parallel path + the seeded planner hint; do not build. This also confirms the
+tool-output-compression P4e telemetry starvation is upstream (near-zero live
+`total_tool_calls`), not a batching-executor gap.
 
 **Prior verification (2026-07-04T10:24Z)**: the stale "StrategyStore only
 affects startup/action handlers" diagnosis is closed. `epyc-orchestrator`
