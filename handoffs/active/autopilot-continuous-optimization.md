@@ -1,5 +1,9 @@
 # AutoPilot: Continuous Recursive Optimization
 
+**Resume-precondition — 2026-07-17 (non-inference session diagnosis)**: the ~28h stop on 2026-07-16 was a **DELIBERATE `SIGTERM`** to free the machine for v7 kernel work (`autopilot.log` `Shutdown requested (signal 15)` → `Controller failed (rc=143)`; `agent_audit.log` logs *"Audit experimental v7 kernel worktree … while AutoPilot remains stopped"* seconds later). It is **NOT** a `consecutive_failures` self-halt — `consecutive_failures=2 < safety_gate.MAX_CONSECUTIVE_FAILURES=3` (`safety_gate.py:107`); the persisted `_dispatch_deficiency='consecutive_failures'` marker is stale + self-clearing (`autopilot.py:8687` unconditional pop on `resume`). **No wedge to clear.** Before resuming:
+- [ ] Bring the `:8000` stack up + verify HEALTHY first (a resume against a dead stack fails every dispatch). Use `orchestrator_stack.py`; ensure the GLM-5.2 probe on port 19402 doesn't contend with the stack's servers.
+- [ ] Address the pre-stop THRASHING or it recurs — the loop hit ~10 consecutive-failure rollbacks on 2026-07-16 (trials 1404…1433) from a **small-sample `debugbench` regression** (`n_baseline=2` tripping the −1.5 hard threshold: debugbench 0.0 vs a 3.0 baseline measured on only n=2) + two `kv_compaction` trials hard-failing `500 "Expected Attention compression failed"`. Fix the tiny-n gate / the kv_compaction op before resuming, else it burns compute re-thrashing the same rollbacks. (This rhymes with the `real_suite_v1` small-sample instability the discriminability audit found — see master-index §cross-session (2).)
+
 **Current checkpoint — 2026-07-11T23:25Z**: AutoPilot is running under
 supervisor PID `1039445` / child PID `1039446`, with phase health reporting
 trial `1318`, `phase=dispatch_action`, `action_type=seed_batch`, and
