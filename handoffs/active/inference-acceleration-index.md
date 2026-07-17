@@ -109,6 +109,8 @@ After completing an acceleration item:
 - [x] GLM-5.2 UD-IQ2_M download integrity + v6/v7 DSA load + true >64K engagement probe ✅ 2026-07-17
 - [x] GLM-5.2 expert-routing-skew profile on production-representative prompts: near-uniform global aggregate (`top_32=15.19%`, entropy `0.9987`) with weak layer-local skew; generic hot-expert offload/REAP not justified without a narrower role-specific corpus ✅ 2026-07-17
 - [ ] GLM-5.2 sparse-vs-dense classification + long-context needle/coherence
+- [x] Bonsai-27B Q1_0 CPU+MI210 prompting gate executed: 6/8 strict probes passed, short instruction-format probe failed on both devices; not role-ready ✅ 2026-07-17
+- [ ] Ternary Bonsai Q2_0/Q2_g64 artifact/runtime compatibility check before any Q2 role or speed claim
 - [ ] StreamingLLM floor sweep + KV admission cluster decisions
 - [ ] Operator v6 quality-gate baseline (K5 MMLU-Pro/GPQA-Diamond) -> promote banked GPU wins to v7
 - [x] K4 drafter-α baseline on real task corpus (`summary.json` decision_grade=true) ✅ 2026-07-16
