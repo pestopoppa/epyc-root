@@ -1,20 +1,20 @@
 {
   "schema_version": "inference_batch.sources_lock.v1",
-  "generated_at": "2026-07-17T13:33:49Z",
+  "generated_at": "2026-07-17T15:15:38Z",
   "repos": {
     "epyc-root": {
       "path": "/workspace",
-      "sha": "57430796ce738008c70b4efa41a69bc13ad7b985",
+      "sha": "efcb31571ccac3475d79519b550dbb80f3a64305",
       "dirty": true
     },
     "epyc-orchestrator": {
       "path": "/mnt/raid0/llm/epyc-orchestrator",
-      "sha": "817e111a03acb103d709ec050a3b069ebb7d65e3",
+      "sha": "8c93efaa2f6f711b1dc791bdf24810e6aa044100",
       "dirty": true
     },
     "epyc-inference-research": {
       "path": "/mnt/raid0/llm/epyc-inference-research",
-      "sha": "035772a949423aa17ff00b7d2fe416e42e464636",
+      "sha": "b95b7a9883f8a39442f64d436f11492295d3d822",
       "dirty": true
     }
   },
@@ -49,7 +49,7 @@
         "handoffs/active/reviewer-latency-and-sampling-budget.md#LB-1"
       ],
       "handoff_exists": true,
-      "checkbox_line": 616,
+      "checkbox_line": 618,
       "resolved": true
     },
     {
@@ -60,7 +60,7 @@
         "handoffs/active/reviewer-calibration-accounting.md#RC-8"
       ],
       "handoff_exists": true,
-      "checkbox_line": 617,
+      "checkbox_line": 619,
       "resolved": true
     },
     {
@@ -232,7 +232,7 @@
         "handoffs/active/routing-and-optimization-index.md#Dynamic stack / placement"
       ],
       "handoff_exists": true,
-      "checkbox_line": 83,
+      "checkbox_line": 85,
       "resolved": true
     },
     {

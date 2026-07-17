@@ -69,9 +69,13 @@
     driver: command
     protocol_id: "preflight-gate.v1 + three-gates (pipeline-green != starts != live==config)"
     dry_run: false
-    # RCP-W1 PREREQUISITE (a manual step, NOT part of the command below): the operator relaunches the
-    # REFERENCE lineup first via OP-stack-restart-approval (mechanism TBD: stop+start vs reload-with-profile
-    # — see op-bundle ESC-1). The command below is the POST-RELAUNCH preflight only; all 4 clauses are real/verified.
+    # RCP-W1 PREREQUISITE (manual operator step under OP-stack-restart-approval, NOT part of the command below):
+    # ESC-1 RESOLVED 2026-07-17 — there is NO `restart`/`--lineup` verb; the REFERENCE lineup IS the default manifest HOT tier.
+    # From cwd /mnt/raid0/llm/epyc-orchestrator (fleet is DOWN), bring it up with the shadow flag in launch env:
+    #   env ORCHESTRATOR_FEATURE_REVIEW_DECISION_SHADOW=1 .venv/bin/python scripts/server/orchestrator_stack.py start --numa-mode full
+    # (== launch_production.sh --full + shadow flag; architect_general=Qwen3.5-122B-A10B-Q4, GLM-5.2 NOT resident,
+    #  reviewer=CPU architect_general alias. There is no `restart`; restart == `stop --all` + `start`. If `status` shows
+    #  stragglers, `stop --all` first. The command below is the POST-RELAUNCH preflight only; all 4 clauses are real/verified.)
     command: >
       scripts/server/affinity_preflight.py --require-memory-locality &&
       scripts/server/preflight_gate.py --expected-topology-hash df373c79cc4af06f --require-servers --json &&
@@ -158,6 +162,7 @@
       = ~100% of review invocations produce trace rows. Sampling-sensitive:
       production temp + seed42 both legs.
       Ledger production is a firing-contingent workaround (events→ledger materializer); RCP-W3 no longer depends on this.
+      VALIDATED 2026-07-17 (ESC-4, non-inference): the materialize->report pipeline was exercised end-to-end on the 32 historical REVIEW_DECISION events in data/trace/events.sqlite — 32/32 events -> 32 review_ledger rows, report generated cleanly (acceptance 50%, parse_failure_rate 15.6%), FA/FR/ECE null because those events' candidate_ids ('S1'/empty) are NOT nearmiss row_ids. RCP-W2 = first ledger rows from EXISTING events (non-inference, runnable now); RCP-W3 = non-null FA/FR via the corpus-matched bridge that emits its own decisions keyed to nearmiss row_ids. Pipeline CONFIRMED.
 
   phase: 0
   priority: P0

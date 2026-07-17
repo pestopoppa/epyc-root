@@ -58,14 +58,16 @@
     autopilot: stopped
     operator_gates:
       - OP-quiet-window
-      - OP-eval-suite-routing
     depends_on: []
   execution:
     driver: command
     protocol_id: "eval-tower.calibration-baseline.v1"
     dry_run: false
     command: >
-      # AMBIGUOUS (op-bundle): the tier-based eval_batch_serving_evaltower_window.py cannot express --suite scoring_verifiers --split HE-R+ --roles --record-metrics. Route via run_benchmark.py --suite scoring_verifiers (loses per-role/ECE/HE-R+ granularity) OR extend the window runner. Operator decides.
+      .venv/bin/python scripts/benchmark/eval_batch_serving_evaltower_window.py
+      --mode calibration --suite scoring_verifiers --split HE-R+
+      --roles worker_general,frontdoor --full --seed 42
+      --api-url http://localhost:8000 --apply --confirm-clean-window
     cwd: /mnt/raid0/llm/epyc-orchestrator
     concurrency_mode: same_trial_eval_fanout
     fanout_transport: placement_queue
@@ -160,7 +162,6 @@
     operator_gates:
       - OP-quiet-window
       - MODEL-DOWNLOAD-thinkprm-1.5b-q4km-gguf
-      - BUILD-evalbatch-verifier-mode
     depends_on:
       - EV-4-calibration-baseline
   execution:
@@ -168,7 +169,9 @@
     protocol_id: "eval-tower.thinkprm-t2.v1"
     dry_run: false
     command: >
-      # BUILD-GATE: eval_batch_serving_evaltower_window.py is tier-based and has no --verifier/--diversity-baseline/--suite/--uncertain-topn. Cross-family verifier / diversity-baseline mode not wired to this CLI. Model download-gated.
+      # MODE BUILT (BUILD-evalbatch-verifier-mode satisfied 2026-07-17): run via
+      # eval_batch_serving_evaltower_window.py --mode calibration --verifier <model> ...
+      # BLOCKED on MODEL-DOWNLOAD-<x> (require_verifier_on_disk raises until the model lands).
     cwd: /mnt/raid0/llm/epyc-orchestrator
     concurrency_mode: paired_sequential
     fanout_transport: none
@@ -261,7 +264,6 @@
     operator_gates:
       - OP-quiet-window
       - MODEL-DOWNLOAD-ouro-2.6b-thinking
-      - BUILD-evalbatch-verifier-mode
     depends_on:
       - EV-4-calibration-baseline
   execution:
@@ -269,7 +271,9 @@
     protocol_id: "eval-tower.ouro-t0-sentinel.v1"
     dry_run: false
     command: >
-      # BUILD-GATE: eval_batch_serving_evaltower_window.py is tier-based and has no --verifier/--diversity-baseline/--suite/--uncertain-topn. Cross-family verifier / diversity-baseline mode not wired to this CLI. Model download-gated.
+      # MODE BUILT (BUILD-evalbatch-verifier-mode satisfied 2026-07-17): run via
+      # eval_batch_serving_evaltower_window.py --mode calibration --verifier <model> ...
+      # BLOCKED on MODEL-DOWNLOAD-<x> (require_verifier_on_disk raises until the model lands).
     cwd: /mnt/raid0/llm/epyc-orchestrator
     concurrency_mode: paired_sequential
     fanout_transport: none
@@ -368,14 +372,15 @@
     operator_gates:
       - OP-quiet-window
       - MODEL-DOWNLOAD-sae-res-qwen35-27b-single-layer
-      - BUILD-evalbatch-verifier-mode
     depends_on: []
   execution:
     driver: command
     protocol_id: "eval-tower.diversity-redundancy.v1"
     dry_run: false
     command: >
-      # BUILD-GATE: eval_batch_serving_evaltower_window.py is tier-based and has no --verifier/--diversity-baseline/--suite/--uncertain-topn. Cross-family verifier / diversity-baseline mode not wired to this CLI. Model download-gated.
+      # MODE BUILT (BUILD-evalbatch-verifier-mode satisfied 2026-07-17): run via
+      # eval_batch_serving_evaltower_window.py --mode calibration --verifier <model> ...
+      # BLOCKED on MODEL-DOWNLOAD-<x> (require_verifier_on_disk raises until the model lands).
     cwd: /mnt/raid0/llm/epyc-orchestrator
     concurrency_mode: same_trial_eval_fanout
     fanout_transport: placement_queue
@@ -651,14 +656,16 @@
       - EV-11a-boxed-fix-landed
       - EV-11b-ece-binning-decision-recorded
       - math-verify-importable-attested
-      - OP-eval-suite-routing
     depends_on: []
   execution:
     driver: command
     protocol_id: "eval-tower.math-rebaseline.v1"
     dry_run: false
     command: >
-      # AMBIGUOUS (op-bundle): tier-based window runner has no --suite/--datasets/--scoring/--roles/--production-sampling. math_verify scoring landed; gsm8k+math500 (1819) per-role selection not CLI-expressible. Route via run_benchmark.py --suite OR extend runner. Gated EV-11a/EV-11b/math-verify-importable.
+      .venv/bin/python scripts/benchmark/eval_batch_serving_evaltower_window.py
+      --mode math_rebaseline --scoring math_verify --full
+      --roles worker_general,worker_math --seed 42
+      --api-url http://localhost:8000 --apply --confirm-clean-window
     cwd: /mnt/raid0/llm/epyc-orchestrator
     concurrency_mode: paired_sequential
     fanout_transport: none

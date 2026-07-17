@@ -38,6 +38,10 @@
       already flipped TM-8 at ~100%, this entry is the confirmatory pass; if RCP-W2
       landed marginal, this is the authoritative coverage run.
 
+      Runner built (16 tests); pure sqlite analysis, no inference. NOTE: live
+      coverage-<100% DETECTION needs review_invocation markers + executor_model_id on
+      the FROZEN emit path (review_service.py) — self_attested 1.0 until then.
+
   phase: 1
   priority: P1
 
@@ -64,7 +68,6 @@
     operator_gates:
       - OP-6a
       - OP-6b
-      - BUILD-tm8-coverage-counter
     depends_on:
       - RCP-W1-reference-relaunch-preflight
 
@@ -73,7 +76,8 @@
     protocol_id: "trace-coverage.v1 (row-presence + phase-tag/executor-id/reminder-event completeness)"
     dry_run: false
     command: >
-      # BUILD-GATE: TM-8 trace-coverage is a thin counter over events.sqlite (query.decision_chain) — buildable, but contingent on the shadow plane firing during a live eval. No eval_tower.py replay CLI exists; src/trace/cli.py decision-chain has no --verify-coverage.
+      cd /mnt/raid0/llm/epyc-orchestrator &&
+      TM8_COVERAGE_EXECUTE=1 .venv/bin/python scripts/analysis/tm8_coverage.py --execute
     cwd: /mnt/raid0/llm/epyc-orchestrator
     concurrency_mode: same_trial_eval_fanout
     fanout_transport: placement_queue
@@ -154,8 +158,7 @@
     topology:
       contention_matrix: not_required
     autopilot: any
-    operator_gates:
-      - BUILD-lb1-offline-attribution
+    operator_gates: []
     depends_on:
       - RCP-W2-paired-shadow-replay
 
@@ -164,7 +167,9 @@
     protocol_id: "P-AB-1 attribution (offline decomposition of the RD-12 paired baseline)"
     dry_run: false
     command: >
-      # BUILD-GATE: OFF/ON throughput-attribution tool does not exist. task_rate_goodput_replay.py does journal-Pareto replay, not OFF/ON shadow-overhead attribution. Offline (non-inference) analysis over RCP-W2 artifacts; downstream of a working Mechanism-A run.
+      cd /mnt/raid0/llm/epyc-orchestrator &&
+      .venv/bin/python scripts/analysis/lb1_shadow_overhead_attribution.py
+      --off-artifact <SHADOW_OFF_ARTIFACT.json> --on-artifact <SHADOW_ON_ARTIFACT.json>
     cwd: /mnt/raid0/llm/epyc-orchestrator
     concurrency_mode: serial_noninference
     fanout_transport: none
@@ -261,7 +266,6 @@
     operator_gates:
       - OP-6a
       - OP-6b
-      - BUILD-mechanism-a-ledger-producer
     depends_on:
       - RCP-W1-reference-relaunch-preflight
 
@@ -270,7 +274,14 @@
     protocol_id: "P-AB-1 (paired, same questions/seed) + P-SPEED-OBJ (task_rate)"
     dry_run: false
     command: >
-      # BUILD-GATE: same Mechanism-A dependency as RCP-W2 — needs live review_ledger rows (materializer, firing-contingent). Per-decision latency/token accounting reads the materialized ledger.
+      # RD-12 reads per-decision latency_ms + tokens from the MATERIALIZED ledger (BUILD-mechanism-a-ledger-producer
+      # SATISFIED 2026-07-17). Largely COVERED BY RCP-W2's materializer output; run only for a fuller/fresh replay.
+      # Firing-contingent (op-bundle ESC-4): 0 events is a diagnostic outcome, not a failure.
+      .venv/bin/python scripts/analysis/reviewer_events_to_ledger.py
+      --events data/trace/events.sqlite --output /mnt/raid0/llm/tmp/rd12_<UTC>/ --emit ledger-sqlite &&
+      .venv/bin/python scripts/analysis/reviewer_calibration_report.py
+      --ledger /mnt/raid0/llm/tmp/rd12_<UTC>/review_ledger.sqlite --k 2 --print
+      --out-json /mnt/raid0/llm/tmp/rd12_<UTC>/report.json
     cwd: /mnt/raid0/llm/epyc-orchestrator
     concurrency_mode: paired_sequential
     fanout_transport: placement_queue
@@ -480,7 +491,6 @@
     operator_gates:
       - OP-6a
       - OP-6b
-      - BUILD-field-order-arm-config
     depends_on:
       - RCP-W3-rc8-smoke-slice
 
@@ -489,7 +499,11 @@
     protocol_id: "P-REV-1 paired (same rows/prompts/grammar/stop both arms; observation-grade pre-RC-6a)"
     dry_run: false
     command: >
-      # BUILD-GATE: reviewer-corpus bridge runs the reviewer, but the RA-8 field-order A/B needs two arms with different rubric field ordering — a config lever the bridge does not expose yet. Reviewer pass: scripts/analysis/reviewer_corpus_ledger_run.py (as RC-8); field-order arm wiring = build.
+      cd /mnt/raid0/llm/epyc-orchestrator &&
+      .venv/bin/python scripts/analysis/reviewer_corpus_ledger_run.py
+      --corpus /mnt/raid0/llm/datasets/nearmiss-corpus-v1/rows.jsonl
+      --reviewer architect_general --n 200 --domain code
+      --output runs/rm6_fieldorder --field-order both --execute
     cwd: /mnt/raid0/llm/epyc-orchestrator
     concurrency_mode: paired_sequential
     fanout_transport: placement_queue
@@ -588,8 +602,6 @@
     operator_gates:
       - OP-6a
       - OP-6b
-      - BUILD-mechanism-a-ledger-producer
-      - BUILD-policy-arm-wiring
     depends_on:
       - LB-1-regression-attribution
 
@@ -598,7 +610,11 @@
     protocol_id: "P-AB-1 (paired) + P-SPEED-OBJ (task_rate, e-process, never single-trial)"
     dry_run: false
     command: >
-      # BUILD-GATE: paired policy A/B needs the Mechanism-A ledger producer + per-policy arm wiring. Downstream of RC-8/LB-1.
+      cd /mnt/raid0/llm/epyc-orchestrator &&
+      .venv/bin/python scripts/analysis/reviewer_policy_arm_ab.py --arms warm,cold
+      --policy 'warm=temperature=0.7,top_p=0.95,verbosity=verbose,max_tokens=512'
+      --policy 'cold=temperature=0.2,top_p=0.9,verbosity=terse,max_tokens=512'
+      --n 200 --seed 42 --execute
     cwd: /mnt/raid0/llm/epyc-orchestrator
     concurrency_mode: paired_sequential
     fanout_transport: placement_queue

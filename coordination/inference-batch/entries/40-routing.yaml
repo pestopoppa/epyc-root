@@ -52,15 +52,15 @@
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
-    operator_gates:
-      - BUILD-shapekeyed-step2-driver
+    operator_gates: []
     depends_on: []
   execution:
-    driver: screening_tier
+    driver: command
     protocol_id: "P-AB-1 (placement admit/queue smoke via autopilot eval-concurrency fan-out)"
     dry_run: false
     command: >
-      # BUILD-GATE: screening_tier_runner.py has no --shape-keyed-step2-smoke/--admit-overlap-probe/--vision-escalation-resample/--fanout. Shape-keyed Step-2 live-smoke + vision re-bench harness does not exist.
+      cd /mnt/raid0/llm/epyc-orchestrator &&
+      .venv/bin/python scripts/autopilot/shapekeyed_step2_smoke.py --execute
     cwd: /mnt/raid0/llm/epyc-orchestrator
     concurrency_mode: same_trial_eval_fanout
     fanout_transport: placement_queue
@@ -257,15 +257,16 @@
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
-    operator_gates:
-      - BUILD-migration-probe-driver
+    operator_gates: []
     depends_on: []
   execution:
-    driver: screening_tier
+    driver: command
     protocol_id: "P-AB-1 (live migration observation via single-worker eval-concurrency path)"
     dry_run: false
     command: >
-      # BUILD-GATE: screening_tier_runner.py has no --migration-probe/--reuse-session/--oscillate-load/--single-worker/--fanout. J2/J3 live migration-probe harness does not exist.
+      cd /mnt/raid0/llm/epyc-orchestrator &&
+      .venv/bin/python scripts/autopilot/migration_probe.py
+      --role frontdoor --oscillation 1,4,4,1,1,1 --safe-slots 3 --execute
     cwd: /mnt/raid0/llm/epyc-orchestrator
     concurrency_mode: same_trial_eval_fanout
     fanout_transport: placement_queue
