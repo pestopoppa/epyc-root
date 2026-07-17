@@ -206,7 +206,7 @@ LightOn released **MMLBD-C**, a manually corrected version of MMLongBenchDoc tha
 ### Testing Plan
 
 **Phase 1** (mainline llama.cpp — vision+text only):
-1. Run `llama-mtmd-cli` with Q4_K_M + vision mmproj
+1. ✅ 2026-07-17: Run `llama-mtmd-cli` with local Qwen3-VL-8B Q4_K_M + vision mmproj on experimental v7. Rebuilt the experimental `llama-mtmd-cli` after a `--version` segfault; CPU shapes and MI210 OCR runtime/coherence smokes passed under `/mnt/raid0/llm/tmp/qwen3-vl8-image-smoke-20260717T115124Z/`.
 2. Benchmark vs Qwen2.5-VL-7B on same prompts
 3. Test spec decode with Qwen3-0.6B draft
 

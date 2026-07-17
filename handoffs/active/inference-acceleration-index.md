@@ -114,6 +114,7 @@ After completing an acceleration item:
 - [ ] GLM-5.2 real sparse final-attention implementation/profiling + current-source long-context needle/coherence
 - [x] Bonsai-27B Q1_0 CPU+MI210 prompting gate executed: 6/8 strict probes passed, short instruction-format probe failed on both devices; not role-ready ✅ 2026-07-17
 - [x] Ternary Bonsai Q2_g64 CPU+MI210 runtime/coherence smoke passed on experimental v7; Q2_0 offset mismatch remains separate ✅ 2026-07-17
+- [x] Qwen3-VL-8B local image runtime/coherence smoke passed on experimental v7 after rebuilding `llama-mtmd-cli`; CPU shapes and MI210 OCR fixtures both coherent ✅ 2026-07-17
 - [ ] Ternary Bonsai Q2_0 artifact/runtime offset-mismatch investigation before retry; Q2_g64 quality/throughput only if tiny-quant role remains interesting
 - [ ] StreamingLLM floor sweep + KV admission cluster decisions
 - [ ] Operator v6 quality-gate baseline (K5 MMLU-Pro/GPQA-Diamond) -> promote banked GPU wins to v7
