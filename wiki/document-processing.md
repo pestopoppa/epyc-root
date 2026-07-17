@@ -2,8 +2,8 @@
 
 **Category**: `document_processing`
 **Confidence**: verified
-**Last compiled**: 2026-07-06
-**Sources**: 5 documents (2026-07-06 focused pass: ODL hybrid sidecar probe preflight; 2026-06-22 refresh: ODL pipeline Phase 2 landed; Phase 3 hybrid-table routing still open)
+**Last compiled**: 2026-07-17
+**Sources**: 8+ documents (2026-07-17 adds PaddleOCR-VL Wave-3 producer + negative HTML-table prompt result + scorer-compatible post-processing checkpoint; 2026-07-06 focused pass: ODL hybrid sidecar probe preflight; 2026-06-22 refresh: ODL pipeline Phase 2 landed; Phase 3 hybrid-table routing still open)
 
 ## Summary
 
@@ -16,6 +16,12 @@ A three-phase integration plan has been designed and is actively tracked. Phase 
 The Java 11+ runtime dependency is manageable through a sidecar pattern. The Python SDK wraps a Java CLI where each `convert()` call spawns a JVM, so batch processing or persistent subprocess warming is recommended for production. The structured JSON output improves every downstream consumer: chunker, figure analyzer, LLM context quality.
 
 ## Key Findings
+
+### New (2026-07-17, PaddleOCR-VL producer/runtime path closed; table quality still open)
+
+- **PaddleOCR-VL-1.6 is now a real document-specialist candidate with a guarded benchmark producer, not just a model-card idea.** The MI210 smoke passed digit OCR (`7500`) and invoice/receipt extraction at about `484-490 t/s`, and `odl_bench run-model --engine paddleocr_vl_1_6` now consumes OmniDocBench GT page images, writes `<stem>.md` predictions, and scores them through the structural/table/reading-order harness. The first operational demo processed `18/18` pages with median decode `485.30 t/s`, median page latency `2918.78 ms`, text-block edit distance `0.343019`, and reading-order edit distance `0.337318`. Sources: [opendataloader-pipeline-integration.md](../handoffs/active/opendataloader-pipeline-integration.md), [progress 2026-07-17](../progress/2026-07/2026-07-17.md), [k35-optimized-stack-throughput-context-report-2026-07-17.md](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
+- **Prompt-only HTML-table recovery was negative, which means the remaining table gap is structural/post-processing, not just prompt wording.** The `html_tables` profile improved reading-order edit distance (`0.337318 -> 0.285753`) but still emitted zero HTML `<table>` tags, kept table TEDS at `0.0`, worsened text-block edit distance to `0.429062`, and slowed median page latency to `3245.60 ms`. This is useful because it rules out the cheap "just ask for HTML tables" fix. Sources: [opendataloader-pipeline-integration.md](../handoffs/active/opendataloader-pipeline-integration.md), [progress 2026-07-17](../progress/2026-07/2026-07-17.md), [k35-optimized-stack-throughput-context-report-2026-07-17.md](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
+- **A scorer-compatible pipe-table post-processing hook helps a little, but it does not close the table-quality problem.** Re-scoring the existing default PaddleOCR-VL predictions after converting aligned pipe rows into HTML tables improved table TEDS from `0.0` to `0.058333` and structure-only TEDS to `0.066667`, with essentially flat text-block edit distance. That is worth keeping as a compatibility fix, but it is not enough to treat PaddleOCR-VL as table-quality-clean. Sources: [opendataloader-pipeline-integration.md](../handoffs/active/opendataloader-pipeline-integration.md), [progress 2026-07-17](../progress/2026-07/2026-07-17.md), [k35-optimized-stack-throughput-context-report-2026-07-17.md](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
 
 ### New (2026-07-06, ODL hybrid sidecar live checkpoint)
 
@@ -41,6 +47,7 @@ The Java 11+ runtime dependency is manageable through a sidecar pattern. The Pyt
 - **Phase 1 (small effort, immediate gains)**: Replace `pdftotext -layout` with `opendataloader_pdf.convert(format="markdown,json")` in `src/services/pdf_router.py`. Keep quality check logic on ODL output. Requires `pip install opendataloader-pdf` and Java 11+.
 - **Phase 2 (medium effort, biggest win)**: The gated structured consumer path is wired: enrich VL model prompts with figure semantic type, caption, surrounding text, and heading position from ODL JSON; replace PyMuPDF figure extraction with ODL bboxes; use heading hierarchy instead of regex when present; carry ODL table metadata through preprocessing/cache/TaskIR output; suppress unsafe ODL structured metadata under `INJECTION_SCANNING`; expose a default-inert `ORCHESTRATOR_ODL_TABLE_BACKEND` seam; and expose default-off body warnings through `ORCHESTRATOR_DOCUMENT_BODY_INJECTION_POLICY=warn`. Remaining work: implement the real ODL hybrid table sidecar/client path for 0.93 accuracy.
 - **Phase 3 (medium-large effort)**: The sidecar is now live, so the remaining work is benchmark-backed comparison and routing policy. Experiment with swapping hybrid backend to LightOnOCR-2-1B (already running). Implement three-way routing: ODL local (simple) -> ODL hybrid (tables) -> LightOnOCR (scanned) only if the comparison justifies it. Clone opendataloader-bench, add EPYC pipeline as custom engine, run 200-PDF comparison.
+- **Document-specialist comparison (new)**: run the guarded PaddleOCR-VL producer against LightOnOCR and ODL on the same structural/table/reading-order corpus, and treat the current HTML/post-processing path as a baseline to beat rather than a solution.
 - **Benchmark integration**: Add `document_extraction` suite to `epyc-inference-research/scripts/benchmark/question_pool.py` using opendataloader-bench 200-PDF dataset. Scoring: NID (reading order), TEDS (table DOM), MHS (heading hierarchy).
 - **JVM management**: Pre-warm JVM in persistent subprocess or run ODL as sidecar service on dedicated port.
 
@@ -63,6 +70,8 @@ The Java 11+ runtime dependency is manageable through a sidecar pattern. The Pyt
 
 - [OpenDataLoader deep dive](/workspace/research/deep-dives/opendataloader-pdf-pipeline-integration.md) -- XY-Cut++ algorithm, benchmark results, four integration strategies, technical considerations
 - [OpenDataLoader pipeline integration handoff](/workspace/handoffs/active/opendataloader-pipeline-integration.md) -- Three-phase plan, work items, benchmark suite integration
+- [Progress 2026-07-17](/workspace/progress/2026-07/2026-07-17.md) -- PaddleOCR-VL producer proof, negative HTML-table prompt result, and post-processing rescore checkpoint
+- [K35 optimized stack throughput/context report](/workspace/research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md) -- Consolidated MiniCPM-o/PaddleOCR-VL document-specialist evidence and the current table-gap framing
 - [intake-161](https://github.com/opendataloader-project/opendataloader-pdf) OpenDataLoader PDF -- Initial intake evaluation
 - [arXiv:2504.10258] XY-Cut++ paper -- Algorithm details, DocBench-100 results
 - [intake-718](https://github.com/avbiswas/neural-txt) neural-txt (AVB) -- 135M structured-NLP specialist + Outlines constrained decoding; conditional watch-item, no consumer slot, no benchmarks
