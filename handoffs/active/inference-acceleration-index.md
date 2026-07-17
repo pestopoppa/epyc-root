@@ -106,6 +106,7 @@ After completing an acceleration item:
 - [ ] GPU reasoner: codify Qwable standalone routing for reasoning-heavy tasks + scaffold fallback only for beneficiary-must-answer cases
 - [ ] Verifier/selector best-of-N harness (driver_verifier.py) run
 - [x] GLM-5.2 UD-IQ2_M download integrity + v6/v7 DSA load + true >64K engagement probe ✅ 2026-07-17
+- [x] GLM-5.2 expert-routing-skew profile on production-representative prompts: near-uniform global aggregate (`top_32=15.19%`, entropy `0.9987`) with weak layer-local skew; generic hot-expert offload/REAP not justified without a narrower role-specific corpus ✅ 2026-07-17
 - [ ] GLM-5.2 sparse-vs-dense classification + long-context needle/coherence
 - [ ] StreamingLLM floor sweep + KV admission cluster decisions
 - [ ] Operator v6 quality-gate baseline (K5 MMLU-Pro/GPQA-Diamond) -> promote banked GPU wins to v7
