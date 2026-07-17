@@ -103,6 +103,7 @@ After completing an acceleration item:
 - [ ] DS-E1 dynamic-stack KV measurement in consolidated quiet window
 - [x] External qwen35/frontdoor drafter alpha retest (`n5_spec_on` 376/376, decision-grade) ✅ 2026-07-16
 - [x] CoT-scaffold: Qwable-standalone GPQA control completed — standalone 77% beat scaffold 73%, so standalone routing is primary. ✅ 2026-07-05
+- [x] GPU reasoner evidence: Qwable quiet-host IQ4/Q8 strict-output + top-level `json_schema` harness gate closed; scaffold/selector stubs remain non-deployable ✅ 2026-07-17
 - [ ] GPU reasoner: codify Qwable standalone routing for reasoning-heavy tasks + scaffold fallback only for beneficiary-must-answer cases
 - [ ] Verifier/selector best-of-N harness (driver_verifier.py) run
 - [x] GLM-5.2 UD-IQ2_M download integrity + v6/v7 DSA load + true >64K engagement probe ✅ 2026-07-17
