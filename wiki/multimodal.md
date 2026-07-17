@@ -2,8 +2,8 @@
 
 **Category**: `multimodal`
 **Confidence**: verified
-**Last compiled**: 2026-06-22
-**Sources**: 34 documents (added 2026-06-22 vision-pipeline live-server registration + the TTS path-elimination matrix; 2026-06-05 LocateAnything/Gemma 4 benchmark-first update; 2026-06-21 Kimi-K2.7-Code MoonViT / UniRL intake merge)
+**Last compiled**: 2026-07-17
+**Sources**: 37 documents (added 2026-07-17 MiniCPM-o/frontdoor service-matrix activation evidence; 2026-06-22 vision-pipeline live-server registration + the TTS path-elimination matrix; 2026-06-05 LocateAnything/Gemma 4 benchmark-first update; 2026-06-21 Kimi-K2.7-Code MoonViT / UniRL intake merge)
 
 ## Summary
 
@@ -15,11 +15,15 @@ TTS has three existing paths, all blocked, plus one newly viable CPU-native cand
 
 Moondream 3 (9B total / 2B active MoE VLM) was evaluated and deferred. Despite interesting native detect/point capabilities, it is blocked by BSL 1.1 licensing, uncertain llama.cpp GGUF support for its novel MoE architecture (64 experts, learned attention temperature scaling), lack of tool calling (required for agentic vision), and preview-state unoptimized inference with no published standard benchmarks. The current Qwen2.5-VL-7B stack is more mature with full llama.cpp support and an escalation path to Qwen3-VL-30B-A3B.
 
-MiniCPM-O 4.5 (9B dense, Qwen3-8B backbone + SigLip2 + Whisper-medium + CosyVoice2) offers unified multimodal capability. Vision + text works on mainline llama.cpp; audio features require the llama.cpp-omni fork. It scores 77.6 OpenCompass (vs Qwen2.5-VL-7B's 70.5) and 80.1 MathVista (vs 68.2), but lacks tool calling (0 vs Qwen3-VL-8B's 0.663 BFCL). The testing plan has four phases: mainline vision, spec decode investigation, omni fork audio, and orchestrator integration.
+MiniCPM-O 4.5 (9B dense, Qwen3-8B backbone + SigLip2 + Whisper-medium + CosyVoice2) offers unified multimodal capability. Vision + text works on mainline llama.cpp; audio features require the llama.cpp-omni fork. It scores 77.6 OpenCompass (vs Qwen2.5-VL-7B's 70.5) and 80.1 MathVista (vs 68.2), but lacks tool calling (0 vs Qwen3-VL-8B's 0.663 BFCL). As of 2026-07-17, the realistic `--reasoning off` MI210 lane is the first fast quality-clean `vision_escalation` candidate: it passed the fixed K35 OCR/chart slice, co-resided with the MI210 frontdoor lane, and a broader 2K/8K service matrix showed idle residency was free while active overlap kept frontdoor near baseline. The remaining gate is explicit MI210 scheduling policy, not basic runnability.
 
 Gemma 4 (intake-251/252) introduces Any-to-Any multimodal models (text+image+audio unified). E4B (8B effective) could simplify the pipeline but is blocked by lack of GGUF support (MLX only). VoxCPM2 (intake-317) is a tokenizer-free multilingual TTS alternative requiring GPU (RTX 4090 for real-time), tracked for GPU upgrade path.
 
 ## Key Findings
+
+### New (2026-07-17, MiniCPM-o becomes the leading vision-escalation candidate)
+
+- **MiniCPM-o with `--reasoning off` is now the first fast quality-clean MI210 `vision_escalation` candidate, and the gating question is activation policy rather than model correctness.** Default reasoning mode placed correct answers in `reasoning_content`, so production-visible scoring failed `0/4`. The realistic lane (`--reasoning off`) passed all four fixed K35 OCR/chart fixtures on CPU (`11.98-14.13 t/s`) and MI210 (`110.81-122.18 t/s`, about `11%` VRAM). Follow-up frontdoor coexistence checks tightened the serving risk: a targeted co-residency smoke passed at `66%` combined MI210 VRAM, the synthetic active-collision probe bounded a worst-case frontdoor drop to about `80.2 t/s`, and the broader 2K/8K service matrix passed all `8/8` active fixture/context overlaps with frontdoor mean `94.77 t/s` versus `96.33 t/s` alone. The active stack therefore stays on the Qwen2.5-VL CPU alias only as a capacity-policy choice, not because MiniCPM-o lacks quality or basic coexistence evidence. Sources: [Progress 2026-07-17](../progress/2026-07/2026-07-17.md), [Gemma challenge kernel techniques v7](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [K35 optimized stack throughput/context report](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
 
 ### New (2026-06-22, vision pipeline live; TTS still has no working path)
 
@@ -59,6 +63,7 @@ Gemma 4 (intake-251/252) introduces Any-to-Any multimodal models (text+image+aud
 - **Adopt voicebox chunking utilities**: Copy `chunked_tts.py` (~240 lines), `task_queue.py` (~40 lines), and `TTSBackend` Protocol + `ModelConfig` (~200 lines) into the EPYC TTS sidecar. Add bounded queue size. Voicebox license is MIT. [voicebox-multi-engine-tts-studio.md]
 - **TTS Path C prototype (when prioritized)**: Build FastAPI wrapper around `Qwen3TTSModel.from_pretrained()` on port 8110. Benchmark VRAM and latency on EPYC hardware. Gate behind `ORCHESTRATOR_TTS_ENABLED` flag.
 - **MiniCPM-O Phase 1 testing**: Run `llama-mtmd-cli` with Q4_K_M + vision mmproj. Compare vision quality against Qwen2.5-VL-7B on same prompts. No fork needed for vision-only.
+- **Activation decision for `vision_escalation` is now service-policy work, not candidate discovery.** MiniCPM-o's MI210 `--reasoning off` lane is quality-clean and passed the bounded frontdoor coexistence matrix, so the next action is an operator decision on MI210 scheduling policy or a deliberately separate multi-request stress pass. Sources: [Progress 2026-07-17](../progress/2026-07/2026-07-17.md), [K35 optimized stack throughput/context report](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
 - **Voice cloning guardrails**: Must be designed before enabling any TTS path. 3-second cloning raises ethical/misuse concerns.
 - **Monitor Gemma 4 GGUF**: Once llama.cpp conversion is available, evaluate E4B as potential unified multimodal worker that replaces separate STT + Vision + TTS services.
 - **Do NOT resume Qwen3-TTS C++ debugging** unless MiniCPM-O TTS and PyTorch sidecar both fail.
