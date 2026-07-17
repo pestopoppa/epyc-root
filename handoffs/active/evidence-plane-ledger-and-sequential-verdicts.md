@@ -372,3 +372,7 @@ Tick waypoints + one-line progress entry; verdicts claimed per MEASUREMENT.md gr
 ## Research Intake Update — 2026-07-16 (Reviewer control plane: decision≈question ledger alignment)
 
 The new `review_ledger` (H4, [`reviewer-calibration-accounting.md`](reviewer-calibration-accounting.md)) is designed to FOLLOW this handoff's per-question-ledger conventions: one row per review decision (decision ≈ question), gold label + gold-source + instrument version + era columns, append-only, e-process monitoring on `src/autopilot_core/sequential_verdict.py` (FA-tolerance AND FR-tolerance — the symmetric pair is motivated by intake-836's measured 10:1-440:1 false-reject dominance). Alignment task RC-7 owns reconciliation; if ledger conventions here evolve, cross-update H4.
+
+## Research Intake Update — 2026-07-17 (TM-6 relationship contract)
+
+The reviewer control plane's trace store documented its non-overlap contract with this pipeline (see `reviewer-trace-materialization.md` §TM-6): the trace store indexes the same append-only sources (journals/audit/progress) and adds an `emit://`-namespaced primary path ONLY for review-plane events that have no file source; this evidence-plane pipeline remains authoritative for trial/verdict events; `review_ledger` rows map to per-question-ledger shape via `to_question_ledger_row()` (RC-7).
