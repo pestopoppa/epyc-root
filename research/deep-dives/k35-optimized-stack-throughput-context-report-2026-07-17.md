@@ -4,9 +4,9 @@
 
 This report consolidates the current K35 release evidence for the experimental v7 kernel at `/mnt/raid0/llm/llama.cpp-experimental`, commit `d1e5a20eb`, `llama-server` version `10088`.
 
-It is an operator-facing synthesis, not a v7 promotion sign-off. The 2026-07-17 memory-backfill pass covers the non-vision optimized rows, and the follow-up vision matrix covers the then-current production vision roles on four local OCR/chart fixtures. K35 remains open because the true `vision_escalation` lane has a measured quality failure and optional concurrency rows are not yet part of the canonical matrix.
+It is an operator-facing synthesis, not a v7 promotion sign-off. The 2026-07-17 memory-backfill pass covers the non-vision optimized rows, and the follow-up vision matrix covers the then-current production vision roles on four local OCR/chart fixtures. K35 remains open for the `vision_escalation` activation decision and any broader service-level concurrency rows the operator wants before changing live routing.
 
-Mitigation applied after the matrix: active `vision_escalation` on port `8087` is temporarily rebound to the same Qwen2.5-VL model/projector as `worker_vision`. This is a safety alias for call-site stability, not evidence that a higher-quality escalation model has been found.
+Mitigation applied after the matrix: active `vision_escalation` on port `8087` is temporarily rebound to the same Qwen2.5-VL model/projector as `worker_vision`. MiniCPM-o with `--reasoning off` is now a fast quality-clean replacement candidate and has passed a frontdoor co-residency smoke, but it has not been flipped into the live stack.
 
 ## Run Discipline
 
@@ -19,7 +19,7 @@ Mitigation applied after the matrix: active `vision_escalation` on port `8087` i
 | Contention guard | runner `guard_state.json` files report empty `process_blockers` |
 | Cleanup proof | successful canonical rows report dead server PIDs and empty `cleanup_process_blockers`; vision smoke/matrix verified server PIDs dead |
 | GPU state | frontdoor/worker guard captured MI210 as `65520 MiB` total and `65416 MiB` free before runs; post-run ROCm checks reported no KFD PIDs |
-| Memory backfill | `/mnt/raid0/llm/tmp/k35-memory-backfill-20260717T1400Z/summary.json` reran non-vision optimized cells with `memory_samples`; `/mnt/raid0/llm/tmp/k35-vision-matrix-20260717T1500Z/summary.json` records the same memory sample shape for current production vision roles |
+| Memory backfill | `/mnt/raid0/llm/tmp/k35-memory-backfill-20260717T1400Z/summary.json` reran non-vision optimized cells with `memory_samples`; `/mnt/raid0/llm/tmp/k35-vision-matrix-20260717T1500Z/summary.json` records the same memory sample shape for current production vision roles; `/mnt/raid0/llm/tmp/k35-minicpm-frontdoor-coresidency-20260717T191849Z/` records the MiniCPM-o/frontdoor MI210 co-residency smoke |
 
 ## Optimized Configs Used
 
@@ -33,7 +33,7 @@ Mitigation applied after the matrix: active `vision_escalation` on port `8087` i
 | `vision_escalation` defect row | `Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf` + F16 projector | `18G` + projector | CPU, `-np 1`, `-c 16384`, `-t 96`, flash attention on, `qwen3vlmoe.expert_used_count=int:4`, four local OCR/chart fixtures | `/mnt/raid0/llm/tmp/k35-vision-matrix-20260717T1500Z/` |
 | `vision_escalation` temporary active alias | `Qwen2.5-VL-7B-Instruct-Q4_K_M.gguf` + `mmproj-model-f16.gguf` | `4.4G` + projector | CPU, port `8087`, `-np 1`, `-c 8192`, `-t 24`, flash attention on, no override; same model/projector as `worker_vision` | registry/stack-prior mitigation, 2026-07-17 |
 | `vision_escalation` rejected candidate | `Qwen3VL-8B-Instruct-Q4_K_M.gguf` + F16 projector | `4.7G` + projector | CPU and MI210 candidate rows, `-np 1`, `-c 8192`, `-t 24`, flash attention on; MI210 tested with 1024 image tokens and default image-token shape | `/mnt/raid0/llm/tmp/k35-qwen3vl8-candidate-20260717T185330Z/`, `/mnt/raid0/llm/tmp/k35-qwen3vl8-mi210-default-image-20260717T185459Z/` |
-| `vision_escalation` quality-clean candidate | `MiniCPM-o-4_5-Q4_K_M.gguf` + vision F16 projector | `4.7G` + projector | CPU and MI210 candidate rows, `-np 1`, `-c 8192`, `-t 24`, flash attention on, `--reasoning off` | `/mnt/raid0/llm/tmp/k35-minicpm-o45-reasoning-off-20260717T1911Z/` |
+| `vision_escalation` quality-clean candidate | `MiniCPM-o-4_5-Q4_K_M.gguf` + vision F16 projector | `4.7G` + projector | CPU and MI210 candidate rows, `-np 1`, `-c 8192`, `-t 24`, flash attention on, `--reasoning off`; co-residency smoke tested beside MI210 frontdoor at `66%` VRAM | `/mnt/raid0/llm/tmp/k35-minicpm-o45-reasoning-off-20260717T1911Z/`, `/mnt/raid0/llm/tmp/k35-minicpm-frontdoor-coresidency-20260717T191849Z/` |
 
 Exact command lines are preserved in each artifact directory's `commands.sh`, `plan.json`, `server_argv.json`, or role-specific `server_argv.json`.
 
@@ -66,7 +66,8 @@ The production vision rows use four fixed local fixtures: handwritten `7500`, re
 | `vision_candidate_mi210_qwen3vl8b_q4` | `3/4` | `31-1709` | `110.02-125.72` | fast but failed chart fixture (`Moldova` instead of `Tanzania`) with 1024 image-token shape | `k35-qwen3vl8-candidate-20260717T185330Z` |
 | `vision_candidate_mi210_qwen3vl8b_q4_default_image` | `3/4` | `31-1709` | `109.61-120.32` | fast but failed chart fixture (`Moldova` instead of `Tanzania`) with default image-token shape | `k35-qwen3vl8-mi210-default-image-20260717T185459Z` |
 | `vision_candidate_cpu_minicpm_o45_q4` | `4/4` | `91-626` | `11.98-14.13` | reasoning-off passed all fixtures exactly; default reasoning kept answers in `reasoning_content` and failed content scoring | `k35-minicpm-o45-reasoning-off-20260717T1911Z` |
-| `vision_candidate_mi210_minicpm_o45_q4` | `4/4` | `91-626` | `110.81-122.18` | reasoning-off passed all fixtures exactly; first fast quality-clean escalation candidate, gated on GPU service policy | `k35-minicpm-o45-reasoning-off-20260717T1911Z` |
+| `vision_candidate_mi210_minicpm_o45_q4` | `4/4` | `91-626` | `110.81-122.18` | reasoning-off passed all fixtures exactly; first fast quality-clean escalation candidate | `k35-minicpm-o45-reasoning-off-20260717T1911Z` |
+| `frontdoor + vision_candidate_mi210_minicpm_o45_q4` | mixed smoke passed | frontdoor `48`; MiniCPM-o chart `230` | frontdoor `99.97`; MiniCPM-o `108.68` on 4-token answer | both MI210 servers healthy together at `66%` VRAM; concurrent frontdoor 512-token text request and MiniCPM-o chart request passed; cleanup proof recorded | `k35-minicpm-frontdoor-coresidency-20260717T191849Z` |
 
 Diagnostic vision-escalation probes did not recover the chart failure:
 
@@ -79,11 +80,11 @@ The old one-image release smoke remains useful as a launch sanity check: `/mnt/r
 
 The Qwen3-VL-8B candidate result is intentionally split by device. CPU is quality-clean on this small fixture set but slower than the alias that already passed. MI210 is fast enough to be operationally interesting, but it failed the chart fixture under both tested launch shapes, so it is not a serving candidate despite the throughput.
 
-The MiniCPM-o candidate result is also intentionally split by launch mode. Default reasoning mode read the images and placed correct answers in `reasoning_content`, but failed the production-visible content channel. The realistic `--reasoning off` lane passed the fixed fixture set on both CPU and MI210. Its MI210 row is the first fast quality-clean escalation replacement candidate in this matrix, but it consumes GPU service capacity and therefore needs a service/concurrency policy decision before replacing the temporary CPU alias.
+The MiniCPM-o candidate result is also intentionally split by launch mode. Default reasoning mode read the images and placed correct answers in `reasoning_content`, but failed the production-visible content channel. The realistic `--reasoning off` lane passed the fixed fixture set on both CPU and MI210. Its MI210 row is the first fast quality-clean escalation replacement candidate in this matrix, and the follow-up smoke shows it can co-reside with the MI210 frontdoor lane for one mixed request. That smoke is not a broad service-level concurrency matrix, so live routing still needs an activation/capacity decision.
 
 ## Vision Escalation Mitigation
 
-The Qwen3-VL-30B escalation row is faster than `worker_vision` on these short decode fixtures, but it is not production-quality-safe because it failed the chart fixture under all three tested shapes. The Qwen3-VL-8B MI210 candidate repeated the chart failure even though it was much faster. MiniCPM-o with `--reasoning off` is quality-clean and fast on MI210, but it is not yet the active lane because it changes `vision_escalation` from a CPU alias to an MI210-resident service. The live stack therefore still uses the Qwen2.5-VL artifact and projector that passed `4/4`, preserves port `8087`, uses a distinct 24-thread quarter mask, and emits no Qwen3-VL `override_kv`.
+The Qwen3-VL-30B escalation row is faster than `worker_vision` on these short decode fixtures, but it is not production-quality-safe because it failed the chart fixture under all three tested shapes. The Qwen3-VL-8B MI210 candidate repeated the chart failure even though it was much faster. MiniCPM-o with `--reasoning off` is quality-clean, fast on MI210, and passed a frontdoor co-residency smoke. The live stack still uses the Qwen2.5-VL artifact and projector that passed `4/4`, preserves port `8087`, uses a distinct 24-thread quarter mask, and emits no Qwen3-VL `override_kv` until the operator decides whether the MI210 service lane should become active or whether a broader service matrix is required first.
 
 Validation for the mitigation: research registry validation reports `0 error(s)` with only pre-existing off-disk catalogue warnings; the orchestrator stack-change pipeline update passed with descriptor-removal waiver; the no-inference promotion suite plus stack-prior compiler coverage passed (`197 passed`). This closes the immediate unsafe-lane problem but leaves true escalation replacement open.
 
@@ -108,7 +109,8 @@ Memory values below come from the `after_request` sample in `/mnt/raid0/llm/tmp/
 | `Qwen3-VL-8B CPU candidate` | fixed fixtures | `10.81-13.39` | `6.35-6.86 GiB` | `6.34-6.85 GiB` | `18.15-20.39 GiB` | `2-3%` | `4/4`; slower than alias |
 | `Qwen3-VL-8B MI210 candidate` | fixed fixtures | `109.61-125.72` | `1.02-1.68 GiB` | `1.02-1.67 GiB` | `18.11-19.20 GiB` | `11-12%` | `3/4`; chart failed |
 | `MiniCPM-o CPU candidate` | fixed fixtures | `11.98-14.13` | `6.29-6.70 GiB` | `6.28-6.70 GiB` | `17.61-20.31 GiB` | `2%` | `4/4`; slower than alias |
-| `MiniCPM-o MI210 candidate` | fixed fixtures | `110.81-122.18` | `0.96-1.20 GiB` | `0.95-1.20 GiB` | `17.59-18.13 GiB` | `11%` | `4/4`; GPU service policy open |
+| `MiniCPM-o MI210 candidate` | fixed fixtures | `110.81-122.18` | `0.96-1.20 GiB` | `0.95-1.20 GiB` | `17.59-18.13 GiB` | `11%` | `4/4`; isolated quality candidate |
+| `frontdoor + MiniCPM-o MI210 co-residency` | mixed smoke | frontdoor `99.97`; MiniCPM-o `108.68` on 4-token answer | frontdoor `1.31 GiB`; MiniCPM-o `1.02 GiB` | frontdoor `1.22 GiB`; MiniCPM-o `0.93 GiB` | frontdoor `46.63 GiB`; MiniCPM-o `17.80 GiB` | `66%` combined | frontdoor 512-token text passed; MiniCPM-o chart answered `Tanzania`; no KFD PIDs after cleanup |
 
 ## Invalidated Rows
 
@@ -122,14 +124,14 @@ Do not use these as K35 default ingest evidence:
 
 ## Remaining K35 Gaps
 
-- `vision_escalation` has a fast quality-clean candidate now: MiniCPM-o Q4_K_M + vision projector with `--reasoning off` on MI210. The remaining blocker is no longer basic candidate quality on this fixture set; it is GPU service/concurrency policy versus the current frontdoor residency plan. The active 8087 lane remains a temporary Qwen2.5-VL CPU alias until that policy is decided.
+- `vision_escalation` has a fast quality-clean candidate now: MiniCPM-o Q4_K_M + vision projector with `--reasoning off` on MI210. The basic frontdoor co-residency smoke also passed. The remaining blocker is the activation/capacity decision: keep the active 8087 lane as the temporary Qwen2.5-VL CPU alias, flip to MiniCPM-o on MI210, or run a broader service-concurrency/text-tax matrix first.
 - Replacement/admission A/B remains open for PaddleOCR-VL, SuperGemma4, and any other candidate intended to replace or specialize the current escalation role. Qwen3-VL-8B has been tested and rejected as the active replacement unless a later tuned lane fixes the chart failure.
 - Architect has valid 2K/8K optimized rows only. Deeper contexts exceed the production `-np 2 -c 16384` per-slot launch shape unless the operator authorizes a different architect launch.
-- Concurrency rows remain optional/open. Current canonical rows are single-scenario quiet-host measurements, not mixed-stack concurrency service measurements.
+- Broader concurrency rows remain optional/open. The MiniCPM-o/frontdoor smoke is a targeted coexistence check, while the current canonical throughput-vs-context rows are still single-scenario quiet-host measurements.
 - The Gemma4 draft-memory probe emitted a warning while fitting (`failed to measure draft model memory` because `Gemma4Assistant requires ctx_other`); throughput/acceptance still passed, but memory measurement for this lane needs a separate fix or external sampler.
 
 ## Next Measurements
 
-1. Decide whether the fast MiniCPM-o MI210 lane can be scheduled beside frontdoor residency, or run a small service-concurrency/text-tax check before changing the active 8087 lane.
-2. If operator wants service-level capacity, run a separate concurrency matrix; do not blend it into the quiet-host single-role K35 rows.
+1. Decide whether to activate the fast MiniCPM-o MI210 lane now that the targeted frontdoor co-residency smoke passed, or keep the current Qwen2.5-VL CPU alias pending broader service-level data.
+2. If operator wants service-level capacity, run a separate concurrency/text-tax matrix; do not blend it into the quiet-host single-role K35 rows.
 3. Improve GPU memory precision if needed: current ROCm snapshots report percentage, not exact MiB, in this runner configuration.
