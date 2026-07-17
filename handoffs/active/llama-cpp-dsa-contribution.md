@@ -1,8 +1,8 @@
 # llama.cpp DSA Contribution — DSA LANDED upstream (#23346); remaining CPU-perf sub-tracks (D2/D3)
 
-**Status**: RE-AUDITED 2026-07-17 — **generic DSA support LANDED via upstream #23346** for DeepSeek32, NOT the tracked draft #21149 -> the "track #21149 to merge" objective and D1 are SUPERSEDED. Important correction closed: pre-fix source registered `LLM_ARCH_GLM_DSA` and loaded GLM DSA tensors but did not instantiate `llama_kv_cache_dsa` for GLM; experimental-v7 commit `3dee86a5a` now wires GLM to the DSA cache/runtime path, aliases the DeepSeek32 DSA graph, requires live GLM indexer tensors, and force-builds GLM indexer Hadamard rotation tensors. Live remnants: D2 (sparse-compute reality check: generic DSA top-k exists in prompt/decode, final attention still looks dense-mask) + D3 (CPU AVX-512 Lightning-Indexer), re-anchored to the landed code and re-gated on fresh profiling. All inference gated per `feedback_no_concurrent_inference.md`.
+**Status**: RE-AUDITED 2026-07-17 — **generic DSA support LANDED via upstream #23346** for DeepSeek32, NOT the tracked draft #21149 -> the "track #21149 to merge" objective and D1 are SUPERSEDED. Important correction closed: pre-fix source registered `LLM_ARCH_GLM_DSA` and loaded GLM DSA tensors but did not instantiate `llama_kv_cache_dsa` for GLM; experimental-v7 commit `3dee86a5a` now wires GLM to the DSA cache/runtime path, aliases the DeepSeek32 DSA graph, requires live GLM indexer tensors, and force-builds GLM indexer Hadamard rotation tensors. Runtime GLM-5.2 fixed-`indexer_top_k=32` scaling now classifies the landed path as **DSA-DENSE-MASK**: generic DSA top-k/indexer engages in prompt processing, but final attention still scales with full KV. Live remnants: D2 sparse final-attention implementation/profiling + D3 CPU AVX-512 Lightning-Indexer, re-anchored to the landed code and re-gated on fresh profiling. All inference gated per `feedback_no_concurrent_inference.md`.
 **Created**: 2026-04-29 (via research-intake of intake-506 + PR #21149 audit)
-**Updated**: 2026-07-17 — DSA landed audit reset + GLM cache/runtime wiring fix recorded; prior 2026-05-28 deepseek4 section retained as adjacent history.
+**Updated**: 2026-07-17 — DSA landed audit reset + GLM cache/runtime wiring fix + runtime `DSA-DENSE-MASK` classification recorded; prior 2026-05-28 deepseek4 section retained as adjacent history.
 **Categories**: kv_cache, inference_serving, hardware_optimization, local_inference
 **Workstream**: Inference Acceleration + CPU Engineering (cross-cuts)
 **Parent indices**:
@@ -27,7 +27,7 @@
 **What this changes:**
 - **D1 (pull draft #21149 / build / smoke) — SUPERSEDED.** The code is in production v6; the smoke-test now lives in the model-eval handoff [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) → **GLM-5.2** (the active DSA target; V3.2 not planned — GLM-5.2 covers this niche), not as a "pull the draft" task.
 - **Monitoring PR #21149 weekly — MOOT.** DSA landed; stop tracking that PR to merge.
-- **D2 (sparse-compute reality check) + D3 (CPU AVX-512 indexer) — RE-ANCHORED to landed #23346 code, not the fairydreaming draft.** Static audit (2026-07-17) found generic DSA `top_k` selection is built for both prompt processing and decode, but final attention still appears dense/mask-based. The GLM cache/runtime prerequisite is now closed by `3dee86a5a`; D2 now needs runtime profiling/implementation for final sparse attention. D3 still needs a landed-code profile to decide compute-bound vs bandwidth-bound.
+- **D2 (sparse-compute reality check) + D3 (CPU AVX-512 indexer) — RE-ANCHORED to landed #23346 code, not the fairydreaming draft.** Static audit (2026-07-17) found generic DSA `top_k` selection is built for both prompt processing and decode, but final attention still appears dense/mask-based. The GLM cache/runtime prerequisite is now closed by `3dee86a5a`; runtime GLM-5.2 scaling confirmed **DSA-DENSE-MASK** (`23.81 -> 21.04 -> 17.28 t/s` as prompt tokens grew `2900 -> 5906 -> 11921` under fixed `indexer_top_k=32`). D2 now needs sparse final-attention implementation/profiling, not more activation proof. D3 still needs a landed-code profile to decide compute-bound vs bandwidth-bound.
 
 ## Objective (revised 2026-07-16)
 
@@ -44,7 +44,7 @@ Read-only landed-code audit found:
 
 GLM correction (2026-07-17): this conclusion applies to the generic DSA path once a DSA cache exists. Pre-fix `LLM_ARCH_GLM_DSA` source loaded DSA metadata/tensors but did not instantiate `llama_kv_cache_dsa`; experimental-v7 `3dee86a5a` closes that cache/runtime gap. Older GLM >64K run artifacts came from a stale `build-hip` binary and should not be treated as current-source long-context proof.
 
-Conclusion: current generic DSA code appears to do top-k selection in both prompt processing and decode, but static inspection does not prove sparse-compute attention. D2 remains open as a runtime/profiling question: vary KV length while holding `indexer_top_k` fixed and profile whether attention scales with full KV length or near top-k.
+Conclusion: current generic DSA code appears to do top-k selection in both prompt processing and decode, but static inspection does not prove sparse-compute attention. Runtime closeout on GLM-5.2 UD-IQ2_M later confirmed **DSA-DENSE-MASK**: with fixed `indexer_top_k=32`, Lightning/indexer caches engaged at 4K/8K/16K, but prompt throughput declined with context length (`/mnt/raid0/llm/tmp/glm52-current-source-kv-scaling-20260717T130222Z/runtime_summary.md`).
 
 ## PR State Snapshot (2026-04-29)
 
@@ -98,7 +98,7 @@ Conclusion: current generic DSA code appears to do top-k selection in both promp
 | D1.7 | **Throughput gate**: t/s at 16K / 64K / 128K context, V3.2 with DSA active vs MLA-only baseline | SUPERSEDED | Reprofile D2/D3 only after landed-code GLM evidence. |
 | D1.8 | Post results as comment on PR #21149 | SUPERSEDED | No live PR comment action. |
 
-**Decision gate replacement**: GLM-5.2 now loads coherently, the landed DSA path processed a stale-binary true >64K prompt with `Lightning Indexer enabled` (`/mnt/raid0/llm/tmp/glm52-dsa-true64k-probe-20260717T0125/`), and current-source `3dee86a5a` smokes prove GLM cache/runtime wiring (`/mnt/raid0/llm/tmp/glm52-current-source-ready-smoke-20260717T092344/`). The observed stale-binary prefill taper (final 2K interval `3.93 t/s`) makes D2 likely live, but not yet proven: profile the actual attention op before implementing. If attention scales with full KV despite top-k, D2 may be live. If the CPU Lightning-Indexer is compute-bound, D3 may be live.
+**Decision gate replacement**: GLM-5.2 now loads coherently, the landed DSA path processed a stale-binary true >64K prompt with `Lightning Indexer enabled` (`/mnt/raid0/llm/tmp/glm52-dsa-true64k-probe-20260717T0125/`), and current-source `3dee86a5a` smokes prove GLM cache/runtime wiring (`/mnt/raid0/llm/tmp/glm52-current-source-ready-smoke-20260717T092344/`). Current-source fixed-`indexer_top_k=32` KV scaling (`/mnt/raid0/llm/tmp/glm52-current-source-kv-scaling-20260717T130222Z/runtime_summary.md`) confirmed D2 is live: final attention behaves as dense-mask. If the CPU Lightning-Indexer is compute-bound, D3 may also be live.
 
 ### D2 — Sparse-compute reality check / possible follow-on PR
 
@@ -115,15 +115,15 @@ Author's note (paraphrased): *"separate PR needed for advanced sparse fattn kern
 | ID | Task | Status | Notes |
 |----|------|--------|-------|
 | D2.1 | Read the landed #23346 sparse path — identify whether DSA is prompt-only, decode-only, or shared | DONE | Static audit: top-k selection is shared across prompt/decode; final attention appears dense/mask-based. ✅ 2026-07-16 |
-| D2.2 | Runtime closeout: profile one prefill batch and one single-token decode with a DSA model | PARTIAL | Current-source GLM cache/runtime smoke passed after `3dee86a5a`; stale-binary true >64K GLM run observed `Lightning Indexer enabled` during prefill and decoded 16 tokens, but no op-level trace yet proves the final attention op. |
-| D2.3 | Vary KV length while keeping `indexer_top_k` fixed | PENDING | Full-KV scaling => dense-mask attention; near-top-k scaling => real sparse execution. |
+| D2.2 | Runtime closeout: profile one prefill batch and one single-token decode with a DSA model | DONE | Current-source GLM fixed-top-k run completed 4K/8K/16K with `max_tokens=1`; Lightning/indexer caches engaged and prompt throughput declined with KV length. ✅ 2026-07-17 |
+| D2.3 | Vary KV length while keeping `indexer_top_k` fixed | DONE | Full-KV scaling observed: `23.81 -> 21.04 -> 17.28 t/s` at `2900 -> 5906 -> 11921` prompt tokens, classification `DSA-DENSE-MASK`. ✅ 2026-07-17 |
 | D2.4 | If dense-mask scaling is confirmed, design sparse-fattn extension | PENDING | Decision: invasive `ggml_get_rows()` change vs new sparse-fattn variant. |
 | D2.5 | Implement CPU path first if a real dense-mask bottleneck is confirmed | PENDING | `tests/test-backend-ops.cpp` existing + new PP tests; validate PPL bit-exact. |
 | D2.6 | Throughput gate: PP/decode t/s improvement at 32K / 64K / 128K | **GATED on user inference approval** | Must show real sparse-compute speedup, not just preservation. |
 | D2.7 | CUDA path follow-on (optional; can split as separate PR) | PENDING | Author has CUDA expertise; we don't necessarily need to implement. |
 | D2.8 | Open as a separate upstream PR or current-master patch if the gap still exists | PENDING | Do not target the superseded #21149 draft as the live integration path. |
 
-**Decision gate before starting D2 implementation**: the GLM-5.2 landed-code smoke now shows the DSA cache/runtime path is real; runtime profiling must still show attention work scales with full KV despite top-k selection.
+**Decision gate before starting D2 implementation**: closed 2026-07-17. The GLM-5.2 landed-code smoke shows the DSA cache/runtime path is real, and runtime scaling shows final attention work still scales with full KV despite top-k selection. D2 implementation can now be scoped as real sparse final-attention work.
 
 ### D3 — AVX-512BW Lightning Indexer (Zen 5 SIMD)
 
@@ -220,7 +220,7 @@ The "we'd need to write a fork patch" framing in earlier glm51 handoff text was 
 - [x] Weekly monitoring of PR #21149 to merge-readiness — MOOT: DSA landed via #23346; stopped tracking #21149. ✅ 2026-07-16
 - [x] Re-anchor D2/D3 to the LANDED #23346 code, not the fairydreaming draft. ✅ 2026-07-16
 - [x] Run the static D2 landed-code audit: top-k selection is shared across prompt/decode, but final attention appears dense/mask-based. ✅ 2026-07-16
-- [ ] Close D2 with runtime evidence: graph/op trace plus KV-length scaling while holding `indexer_top_k` fixed
+- [x] Close D2 with runtime evidence: current-source GLM-5.2 fixed-`indexer_top_k=32` KV-length scaling classified final attention as `DSA-DENSE-MASK` ✅ 2026-07-17
 - [ ] Re-run D3.1 "is the CPU indexer compute-bound?" profiling check on landed code before any contribution work
 - [ ] D2 sparse-attention contribution — only if runtime profiling shows dense-mask attention still scales with full KV despite top-k
 - [ ] D3 AVX-512BW Lightning Indexer CPU kernel — only if D3.1 (re-run on landed code) confirms compute-bound
