@@ -94,13 +94,13 @@ The promotion decision rests on "gemma-4-31B (31B dense) and gemma-4-26B-A4B (~3
 - [x] **T3b — record experimental-v7 MI210 Qwen3.5-9B MTP task-class gate** in root progress plus the research admission docs/registry; classify no-spec as the short-completion lane and native MTP as the long repetitive/structured-output candidate before the broader T3c slice. ✅ 2026-07-17
 - [x] **T3c — broader Qwen3.5-9B MTP role/niche slice ✅ 2026-07-17**: realistic MI210 server pass across the `default+expanded` deterministic task set compared no-spec, native `draft-mtp`, and combined `ngram-mod,draft-mtp`. All arms passed `13/18` with the same failed task IDs; native MTP improves throughput but does not change quality. This closes the "broader role-quality/niche" open question as a structured-output niche, not a broad role promotion.
 - [ ] **T4 (after T2 binary, low EV) — gate-bench Qwen3.6-35B-A3B** (Block C) for frontdoor/coder; mind the Q8(prod)-vs-Q4(MTP-GGUF) quant-parity caveat + MoE-on-CPU skepticism.
-- [ ] **T5 (cheap) — gemma-4-26B-A4B `draft_max` 2→3→4 sweep** on the existing worker (mainline default uses 3-4; we run 2).
+- [x] **T5 — gemma-4-26B-A4B `draft_max` 2→3→4 worker sweep ✅ 2026-07-17**: production-shaped CPU worker lane on experimental v7 (`ngram-mod,draft-mtp`, assistant v6 Q8 draft, q8 KV, reasoning off, 8K context, 512-token request) confirmed the live `draft_max=2` default. Evidence: `/mnt/raid0/llm/tmp/t5-gemma-worker-draft-depth-20260717T213641Z/summary.json`. Decode: depth 2 `87.76 t/s` (`492/666` accepted), depth 3 `76.38 t/s` (`492/812` accepted), depth 4 `84.40 t/s` (`494/734` accepted). Keep worker `draft_max=2`; deeper drafting over-drafts without more accepted tokens on this lane.
 
 ## Dependency graph
 - T1 is closed as a directional dense-CPU-MTP win; promotion still depends on operator-approved quality/multi-prompt evidence.
 - T3 is closed as a functional dense-Qwen MTP verification and now has experimental-v7 MI210 task-class evidence. The upstream-master multiplier/path-health evidence remains valid but its absolute t/s is not production-comparable; the v7 A/B is deploy-shape evidence, not a broad role promotion.
 - T4 is now blocked by the `qwen-mtp-llamacpp-port.md` P6b model-load gate plus operator bench approval on the experimental `draft-mtp` binary; compare Q4+MTP against Q4 no-MTP, not against the Q8 production role.
-- T5 remains independent but operator-bench gated: run the `draft_max` / `--spec-draft-n-max` 2→3→4 sweep only in a host-quiesced window with protocol-id evidence.
+- T5 is closed: worker `draft_max=2` remains the measured default; 3/4 did not improve accepted tokens or throughput on the production-shaped 8K worker lane.
 - The historical #22673 conflict/cherry-pick analysis lives in [`qwen-mtp-llamacpp-port.md`](qwen-mtp-llamacpp-port.md). As of the 2026-07-11 checkpoint, `/mnt/raid0/llm/llama.cpp-experimental` branch `experimental-v7-candidate` at `46f876c12` already contains the Qwen/native MTP surface and CPU-only help-surface verification; the remaining parent-handoff work is model-load/bench evidence.
 
 ## Cross-cutting concerns
