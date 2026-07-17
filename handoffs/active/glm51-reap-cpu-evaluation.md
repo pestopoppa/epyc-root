@@ -1,10 +1,10 @@
 # GLM-MoE-DSA Evaluation — GLM-5.2 primary (GLM-5.1-REAP = fallback datapoint)
 
-**Status**: ACTIVE — **GLM-5.2 UD-IQ2_M download COMPLETE + size-manifest verified + short CPU load/coherence smoke PASSED + 4K/8K DSA trace shakedown PASSED + true >64K CPU DSA/indexer probe COMPLETED (2026-07-17)**; DSA forward-pass premise **RE-AUDITED 2026-07-16 → likely LANDED in v6** (was "WAIT-DSA / PR #21149"). Next real action = sparse-vs-dense scaling classification, long-context needle/coherence, and quality. Inference operator-gated (`feedback_no_concurrent_inference`).
+**Status**: ACTIVE — **GLM-5.2 UD-IQ2_M download COMPLETE + size-manifest verified + short CPU load/coherence smoke PASSED + 4K/8K DSA trace shakedown PASSED + true >64K CPU probe COMPLETED (2026-07-17)**; the old "WAIT-DSA / PR #21149" gate is superseded because generic DeepSeek32 DSA landed via upstream #23346, but the 2026-07-17 source audit corrected the GLM claim: current source instantiates `llama_kv_cache_dsa` for `LLM_ARCH_DEEPSEEK32` only, not `LLM_ARCH_GLM_DSA`. GLM loads DSA metadata/tensors and aliases the DeepSeek2 graph, but GLM-specific DSA cache/runtime wiring is not source-proven. Existing GLM probe artifacts were produced by a stale `build-hip` binary (`9d70bae4b`) while the current source head is `2e79e10cc`; treat their `Lightning Indexer enabled` log as runtime capability/metadata evidence, not proof of real sparse GLM final attention. Generic DSA final attention still appears **DSA-DENSE-MASK-LIKELY**. Next real action = rebuild current v7 and reconcile GLM cache wiring before more expensive sparse-vs-dense profiling, plus long-context needle/coherence and quality. Inference operator-gated (`feedback_no_concurrent_inference`).
 **Created**: 2026-04-22 (via research-intake deep-dive of intake-427, as GLM-5.1-REAP)
 **Updated**: 2026-07-17 (GLM-5.2 true-64K DSA engagement + imatrix expert-count extraction recorded; expert-routing skew still open)
 **Categories**: moe_optimization, local_inference, model_evaluation, kv_cache
-**Priority**: MEDIUM-HIGH (primary GLM-MoE-DSA target; now storage-unblocked + DSA likely unblocked)
+**Priority**: MEDIUM-HIGH (primary GLM-MoE-DSA target; storage-unblocked; generic DSA landed but GLM wiring remains open)
 **Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
 **Related**: [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md) (DSA infra — **note: its PR #21149 tracking is likely superseded by upstream #23346, see Audit below**), [`mi210-big-model-and-acceleration-roadmap.md`](mi210-big-model-and-acceleration-roadmap.md) (GLM-5.2 GPU endgame = expert-offload; never fits 64 GB HBM), [`tree-draft-forward-port-plan.md`](tree-draft-forward-port-plan.md) (native GLM MTP head), [`reap-moe-expert-pruning.md`](../completed/reap-moe-expert-pruning.md) (REAP background, GLM-5.1 fallback)
 
@@ -16,29 +16,30 @@ The 2026-05-28 "WAIT-DSA, no autonomous download" framing is **superseded**. Two
 
 **1. Storage gate — CLEARED.** GLM-5.2 UD-IQ2_M (~239 GB) fits the current raid0 (~569 GB free and being managed). Operator explicitly authorized the download 2026-07-16.
 
-**2. DSA-runtime gate — LIKELY CLEARED (verify by smoke-test).** The handoff long claimed `LLM_ARCH_GLM_DSA` "loads indexer tensors but the forward pass is not implemented → dense-MLA fallback; gated on PR #21149." **Re-audit of the v6 fork (2026-07-16) contradicts this:**
-- `src/models/glm-dsa.cpp` is a **dedicated `llama_model_glm_dsa` model class** with `build_arch_graph`, loading the lightning-indexer tensors (`indexer_proj`, `indexer_attn_k`, `indexer_attn_q_b`, `indexer_k_norm`) and `indexer_top_k`; it **requires MLA**.
-- `src/llama-kv-cache-dsa.cpp` (a real `.cpp`, not just the `.h`) **creates the indexer KV cache** (MQA single-key-head).
-- Landed via upstream **PR #23346** — "generic DeepSeek Sparse Attention (DSA) implementation" (for DeepseekV32; GLM-DSA reuses the same generic DSA), **not** the tracked #21149 (fairydreaming). So the gating event effectively happened through a different PR.
-- **Caveat:** presence of the code ≠ confirmed-correct for GLM-5.2 at long context. Treat "DSA works" as a hypothesis to be settled by an actual load + a long-context probe, not asserted.
+**2. DSA-runtime gate — PARTIALLY CLEARED, GLM WIRING STILL OPEN.** The handoff long claimed `LLM_ARCH_GLM_DSA` "loads indexer tensors but the forward pass is not implemented → dense-MLA fallback; gated on PR #21149." **Re-audit changed the premise but did not close GLM DSA:**
+- Upstream **PR #23346** landed generic DeepSeek Sparse Attention for `LLM_ARCH_DEEPSEEK32`; the old #21149 tracking path is superseded.
+- `src/models/glm-dsa.cpp` is a dedicated `llama_model_glm_dsa` model class loading lightning-indexer tensors (`indexer_proj`, `indexer_attn_k`, `indexer_attn_q_b`, `indexer_k_norm`) and `indexer_top_k`; it requires MLA. The graph implementation aliases `llama_model_deepseek2::graph` (`src/models/models.h:1219`).
+- Current source memory creation instantiates `llama_kv_cache_dsa` only for `LLM_ARCH_DEEPSEEK32` (`src/llama-model.cpp:2062`); `LLM_ARCH_GLM_DSA` falls through to ordinary `llama_kv_cache` (`src/llama-model.cpp:2262`). Therefore GLM-specific DSA cache/runtime wiring remains unreconciled.
+- Existing GLM-5.2 probe artifacts were generated with a stale experimental `build-hip` binary that self-reported `9d70bae4b`, not the current source head `2e79e10cc`. They prove that binary's load/runnability behavior only.
+- **Caveat:** `Lightning Indexer enabled` in logs is a backend capability/resolution signal, not proof that GLM final attention uses sparse selected KV rows.
 
 ### Decision state (2026-07-16)
 
 | Question | Answer | Action |
 |---|---|---|
 | Is the model downloaded? | **Yes** — `unsloth/GLM-5.2-GGUF` UD-IQ2_M six public shards, total `238,577,580,768` bytes, size-verified against HF tree `abc55e72527792c6e77069c99b4cb7de16fa9f23`. | Closed; proceed to DSA verification. |
-| Is llama.cpp DSA ready? | **Apparently yes in v6** (glm-dsa model + DSA KV cache via #23346) — was recorded as "no". Static audit says top-k selection exists in both prompt and decode, but final attention still looks dense/mask-based. | Confirm empirically: load + short-ctx smoke + a long-ctx (>64K) probe; then profile whether attention scales with full KV length or near `indexer_top_k`. |
+| Is llama.cpp DSA ready? | **Generic DeepSeek32 path yes; GLM-DSA source wiring no/not proven.** Current source loads GLM DSA metadata/tensors and aliases the DeepSeek2 graph, but only `LLM_ARCH_DEEPSEEK32` constructs `llama_kv_cache_dsa`; `LLM_ARCH_GLM_DSA` falls through to ordinary KV cache. In the generic DSA path, `ggml_lightning_indexer`/top-k is computed before final attention, but `llm_graph_context::build_attn()` rebuilds a full KQ mask with `ggml_set_rows()` and then calls `build_attn_mha()` over full KV tensors. | First reconcile/rebuild GLM DSA cache wiring on current v7. Then treat sparse-compute status as DSA-DENSE-MASK-LIKELY until final attention gathers only selected KV rows or profiling proves the backend skips masked rows. |
 | Next useful action | Sparse-vs-dense DSA scaling classification and long-context quality/needle, not more load-smoke. | Phase 2 below. |
 
 ### Phase 0 — no-inference readiness (updated 2026-07-16)
 - [x] Storage gate reconciled — CLEARED; operator authorized UD-IQ2_M download. ✅ 2026-07-16
-- [x] DSA implementation status re-audited — `llama_model_glm_dsa` + `llama-kv-cache-dsa.cpp` present in v6 via upstream #23346; "no forward pass" premise is STALE. ✅ 2026-07-16
+- [x] DSA implementation status re-audited — generic DSA landed via upstream #23346 and `llama_model_glm_dsa` loads DSA tensors, but 2026-07-17 source audit found `llama_kv_cache_dsa` is created for `LLM_ARCH_DEEPSEEK32` only; GLM cache/runtime wiring remains open. ✅ 2026-07-17
 - [x] Download completes + shard integrity verified (`models/GLM-5.2-UD-IQ2_M/`, 6 shards, `238,577,580,768` bytes). ✅ 2026-07-16
 - [x] Reconcile [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md): D1/#21149 path marked superseded, D2/D3 re-anchored to landed #23346 code, and remaining work split into fresh profiling gates. ✅ 2026-07-16
 
 ## Objective
 
-Evaluate **GLM-5.2** (`zai-org/GLM-5.2`, 754B GLM-MoE-DSA) as a large-MoE architect/long-context candidate on the EPYC stack, starting from the storage-viable **unsloth UD-IQ2_M (~239 GB)** GGUF. Primary questions: (a) does the v6 DSA forward pass load and run GLM-5.2 coherently; (b) does the sparse-attention (Lightning Indexer / IndexShare) path actually engage at long context, or silently fall back to dense MLA; (c) CPU throughput + quality vs current architects. GLM-5.1-REAP is retained below as a **fallback comparison datapoint only**.
+Evaluate **GLM-5.2** (`zai-org/GLM-5.2`, 754B GLM-MoE-DSA) as a large-MoE architect/long-context candidate on the EPYC stack, starting from the storage-viable **unsloth UD-IQ2_M (~239 GB)** GGUF. Primary questions: (a) does current v7 wire `LLM_ARCH_GLM_DSA` into the generic DSA cache/runtime, or merely load DSA tensors; (b) does the sparse-attention (Lightning Indexer / IndexShare) path actually engage at long context, or silently behave like dense MLA with a mask; (c) CPU throughput + quality vs current architects. GLM-5.1-REAP is retained below as a **fallback comparison datapoint only**.
 
 ## GLM-5.2 — Model Specifications (PRIMARY)
 
@@ -51,7 +52,7 @@ Evaluate **GLM-5.2** (`zai-org/GLM-5.2`, 754B GLM-MoE-DSA) as a large-MoE archit
 | **Total params** | 754B GLM-MoE-DSA |
 | **Context** | 1M (vendor); real long-ctx value gated on the DSA indexer path actually engaging |
 | **Notable** | IndexShare indexer-reuse (arXiv 2603.12201); ships an **MTP/NextN head** (inert stub on our fork — native-GLM-MTP port ~90% scaffolded per `tree-draft-forward-port-plan.md`) |
-| **DSA status (v6, 2026-07-16)** | `src/models/glm-dsa.cpp` + `src/llama-kv-cache-dsa.cpp` present via upstream **#23346** (generic DSA). Load-path exists; long-ctx engagement UNVERIFIED. |
+| **DSA status (v7 source, 2026-07-17)** | `src/models/glm-dsa.cpp` loads DSA tensors and aliases DeepSeek2 graph, but `src/llama-model.cpp` only constructs `llama_kv_cache_dsa` for `LLM_ARCH_DEEPSEEK32`, not `LLM_ARCH_GLM_DSA`. GLM-specific DSA runtime wiring is unreconciled; sparse compute UNVERIFIED. |
 | **Runtime flags (expected)** | `--jinja`, deepseek-style reasoning; confirm from the unsloth card at run time |
 
 *Vendor benchmarks (AIME 99.2, SWE-bench Pro 62.1, etc.) are self-reported OBSERVATIONS per `MEASUREMENT.md` — hypotheses only, never gate keep/deploy.*
@@ -67,11 +68,13 @@ Evaluate **GLM-5.2** (`zai-org/GLM-5.2`, 754B GLM-MoE-DSA) as a large-MoE archit
 ### Phase 2 — DSA-path verification (the load-bearing question)
 - [x] Investigate short-smoke unused-tensor warning before/with the long-context probe: `blk.78.*` tensors are the expected skipped physical NextN tail block (`n_layer=78`, `n_layer_all=79`, `nextn_predict_layers=1`), not an unreconciled live trunk layer. ✅ 2026-07-16
 - [x] Run instrumented 4K/8K DSA trace shakedown: `/mnt/raid0/llm/tmp/glm52-dsa-long-probe-20260716T2340/plan.json` and `/mnt/raid0/llm/tmp/glm52-dsa-kv-scaling-20260716T2350/plan.json`; logs show metadata override `glm-dsa.attention.indexer.top_k=int:32` and `Lightning Indexer enabled`. ✅ 2026-07-16
-- [ ] Long-context probe (>64K, ideally toward 131K+): does the Lightning-Indexer/top-k path engage coherently? Instrument via logs / KV-cache-dsa creation / a needle-in-haystack at long ctx.
+- [ ] Long-context probe (>64K, ideally toward 131K+): does the Lightning-Indexer/top-k path engage coherently on current-source GLM? Instrument via logs / KV-cache-dsa creation / a needle-in-haystack at long ctx.
   - 2026-07-17 timeout observation: `/mnt/raid0/llm/tmp/glm52-dsa-64k-probe-20260716T235329Z/` used `--long-context 65536`, but the old prompt heuristic produced `task.n_tokens = 48009`, not >64K actual tokens. The CPU-only run logged `Lightning Indexer enabled` and processed through `45056 / 48009` prompt tokens before the `5400s` HTTP timeout canceled the task; prefill tapered from `25.29 t/s` at 2K to `8.71 t/s` at 45K. Treat this as scaling/timeout evidence only. Next retry must use the live-tokenizer floor guard (`--min-prompt-tokens 65536`) and a larger timeout.
-  - 2026-07-17 true >64K runnability/engagement observation: `/mnt/raid0/llm/tmp/glm52-dsa-true64k-probe-20260717T0125/` used `--long-context 90000 --min-prompt-tokens 65536 --request-timeout 21600` and completed. The runner counted `65957` prompt tokens; llama-server processed `65969` prompt tokens and decoded 16 tokens. Logs show `general.architecture=glm-dsa`, `indexer.top_k` overridden from `2048` to `32`, expected `blk.78.*` NextN-tail skipping, and `Lightning Indexer enabled`. Prompt eval was `6.76 t/s` overall; the 65K checkpoint was `6.81 t/s` cumulative and the final 2K interval was `3.93 t/s`. Decode was `1.20 t/s`; response was length-capped with reasoning-only preview. This closes true >64K runnability/engagement, but not sparse-compute scaling or quality.
-- [ ] D2 runtime closeout: run one prefill batch (`n_tokens > 1`) and one single-token decode; capture graph/op traces proving `top_k` or `ggml_lightning_indexer` appears in both phases.
-- [ ] D2 scaling check: vary KV length while keeping `indexer_top_k` fixed and profile the actual attention op (`FLASH_ATTN_EXT` or dense `MUL_MAT` path). Full-KV scaling means dense-mask compute; near-top-k scaling means real sparse execution.
+  - 2026-07-17 true >64K runnability observation: `/mnt/raid0/llm/tmp/glm52-dsa-true64k-probe-20260717T0125/` used `--long-context 90000 --min-prompt-tokens 65536 --request-timeout 21600` and completed. The runner counted `65957` prompt tokens; llama-server processed `65969` prompt tokens and decoded 16 tokens. Logs show `general.architecture=glm-dsa`, `indexer.top_k` overridden from `2048` to `32`, expected `blk.78.*` NextN-tail skipping, and `Lightning Indexer enabled`. Prompt eval was `6.76 t/s` overall; the 65K checkpoint was `6.81 t/s` cumulative and the final 2K interval was `3.93 t/s`. Decode was `1.20 t/s`; response was length-capped with reasoning-only preview. This closes stale-binary true >64K GLM runnability, but not current-source GLM DSA wiring, sparse-compute scaling, or quality.
+- [x] D2 static prompt/decode path audit: current source loads GLM DSA hparams/tensors and aliases the DeepSeek2 graph, but `llama_kv_cache_dsa` is only instantiated for `LLM_ARCH_DEEPSEEK32`. In the generic DSA path, each layer computes `indexer_score`, `ggml_top_k`, and passes `top_k` to `llm_graph_context::build_attn(llm_graph_input_attn_k_dsa*, ...)`, but that helper constructs `kq_mask_top_k` over the full KV length and then calls `build_attn_mha()` with full cached `k`/`v`. Backend flash-attention kernels iterate full `ne11` and consume the mask; no sparse gather/top-k-limited final-attention path was found. Disposition: **GLM wiring open; generic DSA-DENSE-MASK-LIKELY**, not DSA-REAL-SPARSE. ✅ 2026-07-17
+- [ ] D2 current-source GLM wiring closeout: rebuild experimental `build-hip` from current `2e79e10cc+` source and either wire `LLM_ARCH_GLM_DSA` to `llama_kv_cache_dsa` or document why GLM should intentionally use ordinary KV cache.
+- [ ] D2 runtime closeout: after GLM cache wiring is reconciled, run one prefill batch (`n_tokens > 1`) and one single-token decode; capture graph/op traces proving `top_k` or `ggml_lightning_indexer` appears in both phases.
+- [ ] D2 sparse-attention implementation/profiling gate: either implement a final-attention path that gathers only the selected top-k KV rows before MLA attention, or capture backend-level evidence proving masked rows are skipped. The existing fixed-`indexer_top_k=32` 4K/8K/65K stale-binary timings plus source audit should be treated as dense-mask/wiring evidence, not a reason to run more load smokes.
 - [ ] Record disposition: **DSA-REAL-SPARSE** (sparse compute engages → 1M-ctx value live), **DSA-DENSE-MASK** (top-k engages but attention still scales with full KV), or **DSA-FALLBACK** (indexer/top-k path fails or is bypassed).
 
 ### Phase 3 — Throughput benchmark (CPU; GATE ~ architect baseline)
@@ -97,11 +100,12 @@ Evaluate **GLM-5.2** (`zai-org/GLM-5.2`, 754B GLM-MoE-DSA) as a large-MoE archit
 |---|---|---|
 | epyc-llama | `src/models/glm-dsa.cpp` | GLM-DSA model class + graph (indexer tensors, MLA-required) |
 | epyc-llama | `src/llama-kv-cache-dsa.cpp` / `.h` | Lightning-indexer KV cache |
+| epyc-llama | `src/llama-model.cpp` | Model-memory cache selection; current source creates `llama_kv_cache_dsa` for DeepSeek32 only |
 | epyc-llama | `src/llama-arch.cpp` (`LLM_ARCH_GLM_DSA` = "glm-dsa") | arch registration |
 | models | `/mnt/raid0/llm/models/GLM-5.2-UD-IQ2_M/` | complete six-shard UD-IQ2_M artifact |
 
 ## Reporting Instructions
-- After the load/smoke, record the DSA-REAL vs DSA-FALLBACK disposition here + in `inference-acceleration-index.md`.
+- After GLM cache wiring is reconciled and profiled, record the DSA-REAL vs DSA-DENSE-MASK vs DSA-FALLBACK disposition here + in `inference-acceleration-index.md`.
 - Any `GGML`/DSA correctness finding → also update `llama-cpp-dsa-contribution.md` and the landed-code D2/D3 profiling gates.
 - Keep the GLM-5.1-REAP fallback section below intact (append-only) — it is retained comparison history, not deleted.
 
@@ -120,7 +124,7 @@ Evaluate **GLM-5.2** (`zai-org/GLM-5.2`, 754B GLM-MoE-DSA) as a large-MoE archit
 ## Research Intake Update — 2026-04-29
 
 ### New Related Research
-- **[intake-506] "DeepSeek-V3.2" (arxiv:2512.02556, Dec 2025)** — canonical DSA (DeepSeek Sparse Attention) reference. Lightning Indexer (FP8, head-weighted, block-64 quantized key cache, separate from MLA KV) → top-k=2048 token selection → MLA on selected tokens. GLM-MoE-DSA reuses the same mechanism, so one llama.cpp DSA implementation unlocked both — **now realized via the landed generic-DSA #23346** (this was the predicted "2-models-for-1" event). V3.2 671B-class (~380 GB Q4) vs GLM-5.1 555B (~325 GB Q4). Verdict: worth_investigating (DSA was the highest-leverage external event — it has since landed).
+- **[intake-506] "DeepSeek-V3.2" (arxiv:2512.02556, Dec 2025)** — canonical DSA (DeepSeek Sparse Attention) reference. Lightning Indexer (FP8, head-weighted, block-64 quantized key cache, separate from MLA KV) → top-k=2048 token selection → MLA on selected tokens. GLM-MoE-DSA is intended to reuse the same mechanism, but generic #23346 only partially realizes that cross-family leverage until `LLM_ARCH_GLM_DSA` is wired to the DSA cache/runtime path. V3.2 671B-class (~380 GB Q4) vs GLM-5.1 555B (~325 GB Q4). Verdict: worth_investigating (DSA remains high leverage, but GLM-specific wiring is open).
 
 ## Research Intake Update — 2026-06-20
 

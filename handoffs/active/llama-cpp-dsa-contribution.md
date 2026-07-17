@@ -1,15 +1,15 @@
 # llama.cpp DSA Contribution — DSA LANDED upstream (#23346); remaining CPU-perf sub-tracks (D2/D3)
 
-**Status**: RE-AUDITED 2026-07-16 — **DSA support LANDED in v6 via upstream #23346** (generic DSA), NOT the tracked draft #21149 → the "track #21149 to merge" objective and D1 are SUPERSEDED. Live remnants: D2 (sparse-compute reality check: top-k exists in prompt/decode, final attention still looks dense-mask) + D3 (CPU AVX-512 Lightning-Indexer), re-anchored to the landed code and re-gated on fresh profiling. All inference gated per `feedback_no_concurrent_inference.md`.
+**Status**: RE-AUDITED 2026-07-17 — **generic DSA support LANDED via upstream #23346** for DeepSeek32, NOT the tracked draft #21149 → the "track #21149 to merge" objective and D1 are SUPERSEDED. Important correction: current source registers `LLM_ARCH_GLM_DSA` and loads GLM DSA tensors, but model-memory setup instantiates `llama_kv_cache_dsa` for `LLM_ARCH_DEEPSEEK32` only, not `LLM_ARCH_GLM_DSA`. Live remnants: D2 (GLM cache/runtime reconciliation + sparse-compute reality check: generic DSA top-k exists in prompt/decode, final attention still looks dense-mask) + D3 (CPU AVX-512 Lightning-Indexer), re-anchored to the landed code and re-gated on fresh profiling. All inference gated per `feedback_no_concurrent_inference.md`.
 **Created**: 2026-04-29 (via research-intake of intake-506 + PR #21149 audit)
-**Updated**: 2026-07-16 — DSA landed audit reset (#23346); prior 2026-05-28 deepseek4 section retained as adjacent history.
+**Updated**: 2026-07-17 — DSA landed audit reset corrected for GLM cache wiring; prior 2026-05-28 deepseek4 section retained as adjacent history.
 **Categories**: kv_cache, inference_serving, hardware_optimization, local_inference
 **Workstream**: Inference Acceleration + CPU Engineering (cross-cuts)
 **Parent indices**:
 - [`inference-acceleration-index.md`](inference-acceleration-index.md) (architectural research)
 - [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) (kernel engineering)
 **Related**:
-- [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) — **2-models-for-1 leverage** (DSA infrastructure unlocks GLM-5.1 simultaneously)
+- [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) — GLM-5.2 active target; generic DSA landed but GLM cache/runtime wiring remains unreconciled
 - [`multiscreen-attention-evaluation.md`](multiscreen-attention-evaluation.md) — sub-quadratic attention survey, intake-506 documented under same-day-expansion sub-section
 - [`triattention-kv-selection.md`](triattention-kv-selection.md) — retrofit selection (Expected Attention) for comparison vs DSA's integrated selection
 - [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) — Phase 5 candidate (CPU26) AVX-512BW Lightning Indexer kernel; **D3 sub-track lives here**
@@ -20,18 +20,18 @@
 ## 2026-07-16 Audit Reset — DSA has LANDED (this handoff's premise is superseded)
 
 **The tracked PR #21149 is no longer the path.** DSA support reached our v6 fork via a DIFFERENT upstream PR — **#23346, "DeepseekV32ForCausalLM with generic DeepSeek Sparse Attention (DSA) implementation."** Verified in v6 (2026-07-16):
-- Arch enums registered: **`LLM_ARCH_DEEPSEEK32` ("deepseek32")** AND **`LLM_ARCH_GLM_DSA` ("glm-dsa")** — DeepSeek-V3.2 *and* the GLM-MoE-DSA family both have runtime support.
-- `src/models/glm-dsa.cpp` (dedicated model class, indexer tensors, MLA-required) + `src/llama-kv-cache-dsa.cpp` (Lightning-indexer KV cache) are present.
-- The predicted **"2-models-for-1" unlock HAPPENED** — now multi-model (V3.2 + GLM-5.1 + GLM-5.2), via generic DSA, without us writing it from scratch.
+- Arch enums registered: **`LLM_ARCH_DEEPSEEK32` ("deepseek32")** AND **`LLM_ARCH_GLM_DSA` ("glm-dsa")**.
+- `src/models/glm-dsa.cpp` is present and loads GLM lightning-indexer tensors; `src/llama-kv-cache-dsa.cpp` implements the Lightning-indexer KV cache.
+- Current source model-memory setup creates `llama_kv_cache_dsa` only for `LLM_ARCH_DEEPSEEK32`; `LLM_ARCH_GLM_DSA` falls through to ordinary `llama_kv_cache`. The cross-family GLM unlock is not proven until this cache/runtime wiring is reconciled.
 
 **What this changes:**
 - **D1 (pull draft #21149 / build / smoke) — SUPERSEDED.** The code is in production v6; the smoke-test now lives in the model-eval handoff [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) → **GLM-5.2** (the active DSA target; V3.2 not planned — GLM-5.2 covers this niche), not as a "pull the draft" task.
 - **Monitoring PR #21149 weekly — MOOT.** DSA landed; stop tracking that PR to merge.
-- **D2 (sparse-compute reality check) + D3 (CPU AVX-512 indexer) — RE-ANCHORED to landed #23346 code, not the fairydreaming draft.** Static audit (2026-07-16) found DSA `top_k` selection is built for both prompt processing and decode, but final attention still appears dense/mask-based. D2 is therefore not "decode sparse, prompt dense"; it is "prove whether attention still scales with full KV despite top-k." D3 still needs a landed-code profile to decide compute-bound vs bandwidth-bound.
+- **D2 (GLM wiring + sparse-compute reality check) + D3 (CPU AVX-512 indexer) — RE-ANCHORED to landed #23346 code, not the fairydreaming draft.** Static audit (2026-07-17) found generic DSA `top_k` selection is built for both prompt processing and decode, but final attention still appears dense/mask-based. For GLM specifically, D2 must first reconcile the missing `llama_kv_cache_dsa` instantiation. D3 still needs a landed-code profile to decide compute-bound vs bandwidth-bound.
 
 ## Objective (revised 2026-07-16)
 
-DSA is landed upstream (#23346) and present in v6. The objective is no longer "track a draft PR to merge" — it is: (1) confirm the landed DSA path runs **GLM-5.2** coherently (the active DSA target, owned by [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md)) — **DeepSeek-V3.2 is NOT a planned eval** (GLM-5.2 covers the DSA large-MoE niche; V3.2 stays a supported-arch fact/fallback, not worth a second ~380 GB download + inference window), and (2) evaluate whether the two CPU-performance contribution opportunities (D2 sparse-compute attention reality, D3 AVX-512BW Lightning-Indexer kernel) are still real against the LANDED code, and pursue them upstream only if the re-gating checks pass. Original PR-#21149 tracking context is retained below as history.
+Generic DSA is landed upstream (#23346) and present in v6/v7. The objective is no longer "track a draft PR to merge" — it is: (1) reconcile whether **GLM-5.2** should instantiate the landed DSA KV/cache path or an intentional ordinary-KV path (owned by [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md)) — **DeepSeek-V3.2 is NOT a planned eval** (GLM-5.2 covers the DSA large-MoE niche; V3.2 stays a supported-arch fact/fallback, not worth a second ~380 GB download + inference window), and (2) evaluate whether the two CPU-performance contribution opportunities (D2 sparse-compute attention reality, D3 AVX-512BW Lightning-Indexer kernel) are still real against the LANDED code, and pursue them upstream only if the re-gating checks pass. Original PR-#21149 tracking context is retained below as history.
 
 ### 2026-07-16 static D2 audit
 
@@ -42,7 +42,9 @@ Read-only landed-code audit found:
 - The selected `top_k` is applied by editing a dense KQ mask before standard attention.
 - The final attention call still appears dense: `ggml_flash_attn_ext(...)` over full `k/v`, or `ggml_mul_mat(k, q)` plus softmax mask.
 
-Conclusion: current code appears to do DSA top-k selection in both prompt processing and decode, but static inspection does not prove sparse-compute attention. D2 remains open only as a runtime/profiling question: vary KV length while holding `indexer_top_k` fixed and profile whether attention scales with full KV length or near top-k.
+GLM correction (2026-07-17): this conclusion applies to the generic DSA path once a DSA cache exists. Current `LLM_ARCH_GLM_DSA` source loads DSA metadata/tensors but does not instantiate `llama_kv_cache_dsa`; existing GLM run artifacts came from a stale `build-hip` binary and should not be treated as current-source proof.
+
+Conclusion: current generic DSA code appears to do top-k selection in both prompt processing and decode, but static inspection does not prove sparse-compute attention. D2 remains open first as a GLM cache-wiring reconciliation, then as a runtime/profiling question: vary KV length while holding `indexer_top_k` fixed and profile whether attention scales with full KV length or near top-k.
 
 ## PR State Snapshot (2026-04-29)
 
