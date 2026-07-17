@@ -27,7 +27,7 @@ The machinery exists dormant (`ArchitectReviewService` + typed decisions behind 
 
 - [ ] **P1 — M1**: H1 TM-1..TM-9 (trace materialization + LangGraph SqliteSaver durable resume) ; H2 RA-1..RA-11 (schemas + sanitization + GBNF + validation gating)
 - [ ] **P2 — M2**: H3 RD-1..RD-12 (shadow decision plane, two-turn rubric reviewer, verifier precedence, 50-q replay baseline) ; H4 RC-1..RC-9 (ledger, corpus v1, symmetric FA/FR e-processes, P-REV-1 draft) ; H-LB LB-1..LB-8
-- [ ] **P3 — parallel infra**: H6 GC-1..GC-5 (GLM reviewer gates; infra via glm51-reap) ; kernel P0s (grammar crash, glm-dsa smoke, v7 CPU regression — in `gemma-challenge-kernel-techniques-v7.md`) ; GPU bets 1→4 (in `mi210-big-model-and-acceleration-roadmap.md` + `gpu-drafter-mi200-investigation.md`)
+- [ ] **P3 — parallel infra**: H6 GC-1..GC-5 (GLM reviewer gates; infra via glm51-reap) ; kernel follow-ups (sparse-final-attention classification, v7 CPU/perf reproducibility — in `gemma-challenge-kernel-techniques-v7.md`; grammar crash and glm-dsa cache/runtime smoke are closed) ; GPU bets 1→4 (in `mi210-big-model-and-acceleration-roadmap.md` + `gpu-drafter-mi200-investigation.md`)
 - [ ] **P4 — M3**: H8 AP-1..AP-8 (knob registration, Pareto axes, screening driver, dogfooding) ; H5 RM-1..RM-9 (registry-driven tournament + Ref judge-of-judge)
 - [ ] **P5 — M4**: H7 HG-1..HG-8 (policy from curves; escalate-default; optional gated rebuttal)
 
@@ -39,7 +39,7 @@ H1 (TM-8 gate) → H2 → H3 (shadow) → H4 (P-REV-1) → H5 → H7
                         └→ H-LB ───────┴───────────────┤ (LB-6 blocks ALL enforce-mode)
 H6 + glm51-reap infra (parallel from day 1) ──────────→ H5 A4/A4g arms
 H8 (after H2+H3; screening driver after H4) ──────────→ H5 RM-3
-Kernel P0s (grammar, glm-dsa, v7 CPU regression) gate GBNF-on-v7 + GLM loading
+Kernel status: grammar crash and glm-dsa cache/runtime smoke are closed; sparse-final-attention classification and v7 CPU/perf reproducibility gate cost/trust, not basic GLM loading
 External gates: TR-4/5 + DAR FROZEN (never needed; RD-7 telemetry-only) · HS-4 gates only H7 harness-side · MEASUREMENT P-REV-1 = operator PR · bench windows = operator-approved
 ```
 

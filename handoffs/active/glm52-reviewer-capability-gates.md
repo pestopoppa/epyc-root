@@ -4,7 +4,7 @@
 **Created**: 2026-07-16 (Architect→Reviewer control-plane series; see index)
 **Categories**: agent_architecture, quantization, local_inference
 **Index**: [`reviewer-control-plane-index.md`](reviewer-control-plane-index.md)
-**Related / ownership boundary**: **infra tasks (download/sha256/load-smoke/CPU-bench/expert-routing-skew profile) live in [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md)** (parallel-session-owned) — this handoff holds ONLY the reviewer-specific capability gates and must not duplicate that work. Kernel-side blockers (glm-dsa arch reconciliation; grammar-sampler crash) live in [`gemma-challenge-kernel-techniques-v7.md`](gemma-challenge-kernel-techniques-v7.md).
+**Related / ownership boundary**: **infra tasks (download/sha256/load-smoke/CPU-bench/expert-routing-skew profile) live in [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md)** (parallel-session-owned) — this handoff holds ONLY the reviewer-specific capability gates and must not duplicate that work. Kernel-side blockers live in [`gemma-challenge-kernel-techniques-v7.md`](gemma-challenge-kernel-techniques-v7.md); GLM cache/runtime reconciliation is closed by K23 / experimental-v7 `3dee86a5a`, while sparse final-attention and long-context quality remain outside this reviewer-specific gate.
 **Repo**: `epyc-orchestrator` + `epyc-inference-research`
 
 ## Objective
@@ -22,10 +22,10 @@ Take GLM-5.2 UD-IQ2_M (754B glm_moe_dsa, ~239GB, downloaded and true >64K DSA-en
 ## Dependency Graph
 
 ```text
-glm51-reap GO gates (download/integrity ✅ → glm-dsa load smoke ✅ → true >64K DSA engagement ✅ → sparse-vs-dense + quality/CPU bench)  [parallel session]
+glm51-reap GO gates (download/integrity ✅ → glm-dsa load smoke ✅ → current-source cache/runtime smoke ✅ → true >64K stale-binary runnability ✅ → sparse-vs-dense + quality/CPU bench)  [parallel session]
         → GC-1 → GC-2 → GC-3 → GC-5
 GC-4 operator decision (anytime after CPU bench exists) → shapes H5 A4 arm design
-Kernel P0s (glm-dsa reconciliation, grammar fix) gate GC-1-on-v7; CPU-prod path may proceed earlier if grammar verified there.
+Kernel P0s: grammar fix is closed; GLM-dsa cache/runtime reconciliation is closed by `3dee86a5a`; remaining kernel dependencies are sparse-final-attention classification and any live v7 CPU/perf guard relevant to GC-1 cost.
 ```
 
 ## Cross-Cutting Concerns
@@ -45,4 +45,4 @@ Flip checkboxes `✅ YYYY-MM-DD`; GC-1/2/3 numbers recorded here + registry (GC-
 
 ## Evidence Base (intake)
 
-intake-836 quant why-diagnosis caveat · intake-834 authoring-capability dominance · intake-837/838 format/bias fragility of judges · audit doc 2026-07-16 (GLM-dsa arch exists in-tree; reconciliation smoke pending).
+intake-836 quant why-diagnosis caveat · intake-834 authoring-capability dominance · intake-837/838 format/bias fragility of judges · audit doc 2026-07-16 (GLM-dsa arch exists in-tree; reconciliation smoke later passed on experimental-v7 `3dee86a5a`; sparse final-attention and reviewer quality remain open).
