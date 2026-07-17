@@ -45405,3 +45405,321 @@
   handoffs_created: []
   novelty_justification: Mature framework; the new content is the seven named-module pattern mappings (tripwire split, DelegationState, guardrail placement, TracingProcessor re-implementation, sticky decisions, as-tool/handoff distinction, is_enabled predicates) -> medium.
   relevance_justification: Seven patterns adopted into H2/H3 designs; TracingProcessor interface re-implemented over src/trace/store.py rather than imported; reconciled with LangGraph adoption (SqliteSaver = persistence substrate, DelegationState = payload shape) -> high.
+- id: intake-850
+  arxiv_id: '2403.17710'
+  url: https://arxiv.org/abs/2403.17710
+  source_type: paper
+  title: Optimization-based Prompt Injection Attack to LLM-as-a-Judge (Shi et al.)
+  authors:
+  - Jiawen Shi
+  - et al.
+  categories:
+  - safety
+  - benchmark_methodology
+  - agent_architecture
+  key_claims:
+  - Optimization-based prompt injection can manipulate an LLM-as-a-judge into a chosen verdict; judge input is an adversarial surface, not neutral data.
+  techniques:
+  - gradient/optimization-guided adversarial suffix crafting against judge prompts
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-07-17'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reviewer-decision-plane.md
+    - reviewer-model-ablations.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Cited (R6) in the 2026-07-17 local Architect-Reviewer control-plane spec as grounding for treating the CandidatePackage as an adversarial security boundary; references-in-spec, not independently deep-dived here -> medium.
+  relevance_justification: Directly motivates the CandidatePackage security controls + injection-qualification suite in the reviewer control plane (candidate content = untrusted data; ledger-resolved evidence; no textual authority) -> high.
+
+- id: intake-851
+  arxiv_id: '2405.02917'
+  url: https://arxiv.org/abs/2405.02917
+  source_type: paper
+  title: 'Overconfidence is Key: Verbalized Uncertainty Evaluation in Large Language and Vision-Language Models (Groot & Valdenegro-Toro)'
+  authors:
+  - Tobias Groot
+  - Matias Valdenegro-Toro
+  categories:
+  - safety
+  - benchmark_methodology
+  key_claims:
+  - LLMs/VLMs are systematically overconfident when verbalizing uncertainty; verbalized confidence is poorly calibrated to actual correctness.
+  techniques:
+  - verbalized-uncertainty elicitation + calibration evaluation across LLM/VLM
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-07-17'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reviewer-calibration-accounting.md
+    - reviewer-decision-plane.md
+    experiments: []
+    intake_entries:
+    - intake-852
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Cited (R8) in the reviewer control-plane spec grounding the raw-confidence invariant; references-in-spec -> medium.
+  relevance_justification: Underpins the spec's rule that a reviewer's verbalized confidence is telemetry-only and MUST NOT gate enforcement (enforcement uses empirical cohort-calibrated risk, not raw confidence) -> high.
+
+- id: intake-852
+  arxiv_id: '2606.03437'
+  url: https://arxiv.org/abs/2606.03437
+  source_type: paper
+  title: Large Language Models Are Overconfident in Their Own Responses (Sanz-Guerrero et al.)
+  authors:
+  - Sanz-Guerrero
+  - et al.
+  categories:
+  - safety
+  - benchmark_methodology
+  key_claims:
+  - LLMs assign inflated confidence to their own responses; self-assessed confidence is a biased signal for gating decisions.
+  techniques:
+  - self-confidence vs correctness calibration measurement
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-07-17'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reviewer-calibration-accounting.md
+    experiments: []
+    intake_entries:
+    - intake-851
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Cited (R9) in the reviewer control-plane spec reinforcing the raw-confidence invariant + the case for cohort calibration; references-in-spec -> medium.
+  relevance_justification: Reinforces separating raw model confidence from empirical calibration in the reviewer's selective-authority / risk-coverage machinery -> high.
+
+- id: intake-853
+  arxiv_id: '2404.10960'
+  url: https://arxiv.org/abs/2404.10960
+  source_type: paper
+  title: Uncertainty-Based Abstention in LLMs Improves Safety and Reduces Hallucinations (Tomani et al.)
+  authors:
+  - Christian Tomani
+  - et al.
+  categories:
+  - safety
+  - benchmark_methodology
+  key_claims:
+  - Abstaining under high uncertainty improves safety and reduces hallucinations; abstention is a first-class safe action, not a failure.
+  techniques:
+  - uncertainty-thresholded abstention policy
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-07-17'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reviewer-decision-plane.md
+    - reviewer-escalation-and-human-gate-policy.md
+    experiments: []
+    intake_entries:
+    - intake-855
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Cited (R10) in the reviewer control-plane spec grounding the ABSTAIN decision + risk-coverage curves; references-in-spec -> medium.
+  relevance_justification: Grounds the spec's ABSTAIN recommendation (§9.2) + selective-authority abstention/coverage tradeoff now wired into the reviewer decision enum + reducer -> high.
+
+- id: intake-854
+  arxiv_id: '2605.27483'
+  url: https://arxiv.org/abs/2605.27483
+  source_type: paper
+  title: Debate Helps Weak Judges Reward Stronger Models (Elasky et al.)
+  authors:
+  - Elasky
+  - et al.
+  categories:
+  - swarm_techniques
+  - benchmark_methodology
+  - agent_architecture
+  key_claims:
+  - A single independent critique (or bounded debate) can help a weaker judge reward stronger models when the critic has a real capability advantage.
+  techniques:
+  - critique/debate-assisted judging with weak-judge/strong-model asymmetry
+  reported_results: []
+  referenced_arxiv_ids:
+  - '2407.04622'
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-07-17'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reviewer-escalation-and-human-gate-policy.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Cited (R11) in the reviewer control-plane spec grounding the single-critique-over-debate default + the enable-rebuttal-only-when-measured rule; references-in-spec -> medium.
+  relevance_justification: Directly informs the H7 escalation policy (production default = one independent critique to a deterministic judge; bounded rebuttal only when the critic is measurably better and net-benefit is positive) -> high.
+
+- id: intake-855
+  arxiv_id: '2502.06884'
+  url: https://arxiv.org/abs/2502.06884
+  source_type: paper
+  title: Learning Conformal Abstention Policies for Adaptive Risk Management in Large Language and Vision-Language Models (Tayebati et al.)
+  authors:
+  - Sina Tayebati
+  - et al.
+  categories:
+  - safety
+  - benchmark_methodology
+  key_claims:
+  - Conformal prediction can produce abstention policies with adaptive, statistically-bounded risk management for LLM/VLM outputs.
+  techniques:
+  - conformal-prediction-based abstention with risk-coverage guarantees
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-07-17'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reviewer-calibration-accounting.md
+    - reviewer-model-ablations.md
+    experiments: []
+    intake_entries:
+    - intake-853
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Cited (R15) in the reviewer control-plane spec as the formal basis for risk-coverage curves + calibrated selective authority; references-in-spec -> medium.
+  relevance_justification: Provides the statistical machinery behind the spec's risk-coverage-based promotion/demotion of reviewer authority (coverage at each risk threshold; conformal bounds) -> high.
+
+- id: intake-856
+  arxiv_id: '2402.14809'
+  url: https://arxiv.org/abs/2402.14809
+  source_type: paper
+  title: 'CriticBench: Benchmarking LLMs for Critique-Correct Reasoning (Lin et al.)'
+  authors:
+  - Zicheng Lin
+  - et al.
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  key_claims:
+  - Benchmarks LLMs' ability to critique and correct reasoning; critique quality is separable from generation quality and unevenly distributed across models.
+  techniques:
+  - critique-and-correct evaluation across reasoning tasks
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-07-17'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reviewer-model-ablations.md
+    - eval-tower-verification.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Cited (R13) in the reviewer control-plane spec as a critique-quality benchmark; references-in-spec -> medium.
+  relevance_justification: Candidate external benchmark for the reviewer-qualification tournament (critique/blocking precision, severe-defect recall) via a runtime-free importer -> medium.
+
+- id: intake-857
+  arxiv_id: '2508.18847'
+  url: https://arxiv.org/abs/2508.18847
+  source_type: paper
+  title: 'ConfTuner: Training Large Language Models to Express Their Confidence Verbally (Li et al.)'
+  authors:
+  - Li
+  - et al.
+  categories:
+  - training_distillation
+  - safety
+  key_claims:
+  - LLMs can be trained to express better-calibrated verbal confidence; calibration is improvable via targeted training.
+  techniques:
+  - confidence-calibration fine-tuning
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: low
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-07-17'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reviewer-calibration-accounting.md
+    experiments: []
+    intake_entries:
+    - intake-851
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Cited (R14) in the reviewer control-plane spec; a training-time calibration lever (out of the current no-train scope) -> medium.
+  relevance_justification: Only relevant if a local reviewer is ever fine-tuned for calibration; the spec keeps confidence telemetry-only and uses empirical calibration instead, so low near-term relevance -> low.
+
+- id: intake-858
+  arxiv_id: '2303.11366'
+  url: https://arxiv.org/abs/2303.11366
+  source_type: paper
+  title: 'Reflexion: Language Agents with Verbal Reinforcement Learning (Shinn et al.)'
+  authors:
+  - Noah Shinn
+  - et al.
+  categories:
+  - agent_architecture
+  - reinforcement_learning
+  key_claims:
+  - Language agents improve across trials via verbal self-reflection + episodic memory of prior failures.
+  techniques:
+  - verbal reflection loop + episodic memory over retries
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-07-17'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reviewer-decision-plane.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Cited (R3) in the reviewer control-plane spec as prior art for iterative self-improvement; a 2023 classic, widely known -> low novelty.
+  relevance_justification: Adjacent to the reviewer's request-evidence / bounded-iteration loop (verbal feedback + memory) but the spec deliberately bounds loops and routes repair to authors, so partial relevance -> medium.

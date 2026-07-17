@@ -1,0 +1,318 @@
+# =============================================================================
+# Wave-3 M3 — P4 ROUTING inference-batch entries (phase 4).
+#
+# Placement / contention / edit-transaction routing probes. Quiet-window
+# throughput/latency-sensitive; kernel-era-stamped so cross-boundary comparability
+# is explicit. Authored (not executed) for compile_inference_batch.py; each entry
+# copies the 00-example.yaml 5-fork gate_table shape. NO inference is run here.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# A1 — shape-keyed Step-2 bracket (SHAPE_AWARE_CONTENTION live smoke)
+# -----------------------------------------------------------------------------
+- schema_version: inference_batch.entry.v1
+  task_id: ROUTE-A1-shapekeyed-step2
+  title: "A1 — shape-keyed Step-2 live smoke + flag-on bracket (disjoint admit / overlap queue)"
+  provenance:
+    owning_handoff: handoffs/active/within-role-placement-state-machine.md
+    checkbox: "Higher-sample (>=8) vision_escalation re-bench"
+    also_flips:
+      - "handoffs/active/shape-keyed-contention-gating.md#Step 2"
+      - "handoffs/active/routing-and-optimization-index.md#Cross-Role Contention + Placement"
+    source_ref: "handoffs/completed/fable5-findings-04-northstar-portfolio-indices.md + fable5-findings-06-kernel-and-concurrency.md (cross-role contention placement)"
+    coordination_note: >
+      OWNING-HANDOFF NOTE: the task assigns owning to within-role-placement-state-machine.md, but the
+      shape-keyed Step-2 rollout itself lives in shape-keyed-contention-gating.md /
+      routing-and-optimization-index.md row "Cross-Role Contention + Placement" (both flagged in
+      also_flips; flag this to the operator). Step 2 (dispatch-side per-candidate topology_idx gating)
+      is CODE-COMPLETE and inert (SHAPE_AWARE_CONTENTION default-off). Rollout leg: clean quiesce-window
+      live smoke for Step 2 (disjoint admit / overlap queue) BEFORE flag-on; drive via the autopilot
+      eval-concurrency path, NOT external /chat (rate-limited to ~3-4). Also folds the >=8-sample
+      vision_escalation re-bench to ratify the clean allow (current 5/8 pairs cv>5%).
+  phase: 4
+  priority: P3
+  preconditions:
+    stack_lineup: "production lineup, frontdoor full + quarter instances; placement SM enabled (PLACEMENT_STATE_MACHINE=1)"
+    kernel_era: production-consolidated-v6
+    flags_required:
+      GGML_IQK: 1
+      PLACEMENT_STATE_MACHINE: 1
+    flags_forbidden:
+      - SHAPE_AWARE_CONTENTION
+    flag_attestation: all_workers
+    models:
+      - frontdoor
+      - vision_escalation
+    host_health:
+      tier: quiet_window
+      max_uptime_days: 7
+      cache_state: drop_caches
+    topology:
+      required_topology_hash: df373c79cc4af06f
+      live_affinity_verified: true
+      contention_matrix: not_required
+    autopilot: stopped
+    operator_gates:
+      - BUILD-shapekeyed-step2-driver
+    depends_on: []
+  execution:
+    driver: screening_tier
+    protocol_id: "P-AB-1 (placement admit/queue smoke via autopilot eval-concurrency fan-out)"
+    dry_run: false
+    command: >
+      # BUILD-GATE: screening_tier_runner.py has no --shape-keyed-step2-smoke/--admit-overlap-probe/--vision-escalation-resample/--fanout. Shape-keyed Step-2 live-smoke + vision re-bench harness does not exist.
+    cwd: /mnt/raid0/llm/epyc-orchestrator
+    concurrency_mode: same_trial_eval_fanout
+    fanout_transport: placement_queue
+    contention_class: eval_fanout_full_core
+    est_wall_clock_h: 2.0
+    timeout_s: 14400
+    retry_policy:
+      max_attempts: 2
+      retry_on:
+        - INFRA_BLOCKED
+  outcomes:
+    expected: >
+      Step-2 shape-aware gating admits disjoint candidates and queues topology-overlapping ones under
+      eval-concurrency load; vision_escalation clean-allow ratified at n>=8; then flag-on bracket.
+    gate_table:
+      - gate: "Does shape-keyed Step-2 gating cleanly admit disjoint and queue overlapping candidates under real fan-out?"
+        evidence: "disjoint-admit + overlap-queue counts via eval-concurrency path + vision_escalation n>=8 allow ratification, P-AB-1"
+        fork:
+          pass:
+            rule: "disjoint admits succeed, overlaps queue correctly, vision_escalation allow ratified (cv<=5%)"
+            action:
+              - "flip the vision_escalation re-bench + Step-2 rollout checkboxes"
+              - "propose SHAPE_AWARE_CONTENTION=1 flag-on bracket with attested env to operator"
+            next: DONE_PASS
+          marginal:
+            rule: "admit/queue correct but vision_escalation still cv>5%"
+            action:
+              - "record Step-2 smoke pass; hold vision allow; keep flag default-off"
+            next: DONE_MARGINAL_OBS
+          fail:
+            rule: "overlap admitted (no queue) or disjoint wrongly queued"
+            action:
+              - "keep SHAPE_AWARE_CONTENTION forbidden; document the gating defect in shape-keyed handoff"
+            next: FAILED_REVERTED
+          infra:
+            classify: "eval-concurrency dispatch error / placement-queue starvation / non-quiet host"
+            action:
+              - "re-run via the autopilot eval fan-out (never /chat) in a fresh quiet window"
+          ambiguous:
+            action:
+              - "hold for operator; attach admit/queue trace + per-pair vision rows"
+            next: HELD_AMBIGUOUS
+  artifacts:
+    outputs:
+      - "orchestration/reports/shape_keyed_step2_smoke.json"
+    package_to: "coordination/inference-batch/bundles/ROUTE-A1-shapekeyed-step2/"
+  ledger:
+    journal_quarantine_rule: >
+      record candidate topology_idx, admit/queue verdict, vision_escalation pair count + cv; quarantine
+      diagnostic_only if driven through external /chat (rate-limited) instead of eval-concurrency.
+    era_stamp: "E5-cpu-kernel"
+
+# -----------------------------------------------------------------------------
+# A2 — edit-transaction A/B (fed by Wave-1 EV-12 patch verifier)
+# -----------------------------------------------------------------------------
+- schema_version: inference_batch.entry.v1
+  task_id: ROUTE-A2-edit-transaction-ab
+  title: "A2 — multi-file edit-transaction routing A/B (EV-12 patch-verifier-fed)"
+  provenance:
+    owning_handoff: handoffs/active/routing-and-optimization-index.md
+    checkbox: "multi-file edit transaction remediation is built but rollout-gated"
+    also_flips:
+      - "handoffs/active/routing-and-optimization-index.md#Internal Interaction Lifecycle"
+      - "handoffs/active/multi-file-coding-completion-capability.md#clean-window A/B"
+    source_ref: "src/verification/patch_verifier.py (Wave-1 A2 / EV-12)"
+    coordination_note: >
+      OWNING-HANDOFF NOTE: task says owning is batched-decode-measurement.md OR the routing index;
+      edit-transaction routing is a coding-completion/routing concern, so owning is set to
+      routing-and-optimization-index.md (flag if the operator prefers batched-decode). DEPENDENCY:
+      this A/B is FED BY the Wave-1 EV-12 Dockerless patch-verifier module
+      (src/verification/patch_verifier.py: git-apply-check/AST/py_compile/import-resolution/ruff/
+      hunk-context -> graded verdict) — the verifier signal is the arm's promotion evidence. The
+      run_edit_transaction() review hook + should_consult() are staged default-off; this prices the
+      clean-window A/B before enabling routine edit-mode routing.
+  phase: 4
+  priority: P3
+  preconditions:
+    stack_lineup: "production lineup; coder_escalation + workers; edit-transaction review hook staged default-off"
+    kernel_era: production-consolidated-v6
+    flags_required:
+      GGML_IQK: 1
+    flags_forbidden:
+      - REVIEW_BEFORE_COMMIT_CONSULT
+    flag_attestation: all_workers
+    models:
+      - coder_escalation
+      - worker_general
+    host_health:
+      tier: quiet_window
+      max_uptime_days: 7
+      cache_state: warm
+    topology:
+      required_topology_hash: df373c79cc4af06f
+      live_affinity_verified: true
+      contention_matrix: not_required
+    autopilot: stopped
+    depends_on: []
+  execution:
+    driver: command
+    protocol_id: "P-AB-1 (paired edit-transaction A/B, patch-verifier-graded)"
+    dry_run: false
+    command: >
+      .venv/bin/python scripts/analysis/run_paired_ab.py --arms edit_transaction,baseline
+      --verifier src/verification/patch_verifier.py --n 100 --suite multifile_edit --seed 42
+      --execute
+    cwd: /mnt/raid0/llm/epyc-orchestrator
+    concurrency_mode: same_trial_eval_fanout
+    fanout_transport: placement_queue
+    contention_class: eval_fanout_full_core
+    est_wall_clock_h: 3.0
+    timeout_s: 18000
+    retry_policy:
+      max_attempts: 2
+      retry_on:
+        - INFRA_BLOCKED
+  outcomes:
+    expected: >
+      Edit-transaction routing arm scored by the EV-12 patch verifier vs baseline on multi-file edit
+      tasks; keep-or-kill recommendation for routine edit-mode routing with promotion evidence.
+    gate_table:
+      - gate: "Does edit-transaction routing beat baseline on patch-verifier-graded multi-file edits?"
+        evidence: "verifier graded pass-rate delta (git-apply/AST/py_compile/import/ruff) per arm, n>=100, seed 42, P-AB-1"
+        fork:
+          pass:
+            rule: "edit-transaction arm improves verifier pass-rate beyond noise with no latency blowup"
+            action:
+              - "flip the multi-file edit-transaction rollout checkbox; propose enabling edit-mode routing to operator"
+            next: DONE_PASS
+          marginal:
+            rule: "quality parity but added consult/edit latency"
+            action:
+              - "record observation; keep edit-mode routing default-off; consider targeted-only enable"
+            next: DONE_MARGINAL_OBS
+          fail:
+            rule: "verifier pass-rate regresses OR latency regression without quality gain"
+            action:
+              - "keep REVIEW_BEFORE_COMMIT_CONSULT forbidden; document negative in routing index"
+            next: FAILED_REVERTED
+          infra:
+            classify: "patch-verifier import failure / eval fan-out dispatch error / server OOM"
+            action:
+              - "verify src/verification/patch_verifier.py loads; re-run the paired A/B in a fresh quiet window"
+          ambiguous:
+            action:
+              - "hold for operator; attach per-task verifier verdicts for both arms"
+            next: HELD_AMBIGUOUS
+  artifacts:
+    outputs:
+      - "data/edit_transaction_ab/a2_edit_transaction.jsonl"
+      - "data/edit_transaction_ab/a2_baseline.jsonl"
+    package_to: "coordination/inference-batch/bundles/ROUTE-A2-edit-transaction-ab/"
+  ledger:
+    journal_quarantine_rule: >
+      record arm, task id, verifier sub-check verdicts, graded pass, latency_ms, seed; quarantine
+      diagnostic_only if the patch-verifier module version differed between arms.
+    era_stamp: "instrument-era-2026-06-12-post-measurement-constitution"
+
+# -----------------------------------------------------------------------------
+# A3 — J2/J3 genuinely-live single-worker migration probe
+# -----------------------------------------------------------------------------
+- schema_version: inference_batch.entry.v1
+  task_id: ROUTE-A3-j2j3-single-worker
+  title: "A3 — J2/J3 genuinely-live under-traffic migration probe (single-worker API)"
+  provenance:
+    owning_handoff: handoffs/active/within-role-placement-state-machine.md
+    checkbox: "WP-3/WP-4 genuinely-live under-traffic migration probe"
+    also_flips:
+      - "handoffs/active/within-role-placement-state-machine.md#WP-6 / WP-7 full ratification"
+    source_ref: "handoffs/active/within-role-placement-state-machine.md (operator audit #5, 2026-05-27)"
+    coordination_note: >
+      WP-3/WP-4 migration SM logic is VERIFIED in-process (test_concurrency_aware_migration_sm.py,
+      181e86a) and J2/J3 RESOLVED via the probe, but genuinely-live under-traffic verification is still
+      open: it NEEDS A SINGLE-WORKER API (multi-worker --workers 6 confounds session affinity). Probe
+      shape: same session_id reused across turns (forces session-handover -> forward migration = J2) +
+      load oscillation above then below safe slots (-> reverse migration = J3). Drive via the autopilot
+      eval-concurrency path, not external /chat (F3: rate-limited).
+  phase: 4
+  priority: P3
+  preconditions:
+    stack_lineup: "SINGLE-WORKER API (--workers 1) so session affinity is not confounded; placement SM enabled"
+    kernel_era: production-consolidated-v6
+    flags_required:
+      GGML_IQK: 1
+      PLACEMENT_STATE_MACHINE: 1
+    flag_attestation: all_workers
+    models:
+      - frontdoor
+    host_health:
+      tier: quiet_window
+      max_uptime_days: 7
+      cache_state: drop_caches
+    topology:
+      required_topology_hash: df373c79cc4af06f
+      live_affinity_verified: true
+      contention_matrix: not_required
+    autopilot: stopped
+    operator_gates:
+      - BUILD-migration-probe-driver
+    depends_on: []
+  execution:
+    driver: screening_tier
+    protocol_id: "P-AB-1 (live migration observation via single-worker eval-concurrency path)"
+    dry_run: false
+    command: >
+      # BUILD-GATE: screening_tier_runner.py has no --migration-probe/--reuse-session/--oscillate-load/--single-worker/--fanout. J2/J3 live migration-probe harness does not exist.
+    cwd: /mnt/raid0/llm/epyc-orchestrator
+    concurrency_mode: same_trial_eval_fanout
+    fanout_transport: placement_queue
+    contention_class: single_worker_migration_probe
+    est_wall_clock_h: 2.0
+    timeout_s: 14400
+    retry_policy:
+      max_attempts: 2
+      retry_on:
+        - INFRA_BLOCKED
+  outcomes:
+    expected: >
+      Forward migration (J2) fires on session-handover and reverse migration (J3) fires on load
+      drop-off, observed live under traffic on a single-worker API — closing the last WP-3/WP-4 gap.
+    gate_table:
+      - gate: "Do forward (J2) and reverse (J3) migrations fire correctly under live single-worker traffic?"
+        evidence: "kv_migration_direction_total{forward|reverse} + thrash_skipped counters over the reuse-session/oscillation probe, P-AB-1"
+        fork:
+          pass:
+            rule: "forward migration on handoff AND reverse migration on load-drop, no thrash, counters match SM logic"
+            action:
+              - "flip the live under-traffic migration-probe checkbox; advance WP-6/WP-7 ratification"
+            next: DONE_PASS
+          marginal:
+            rule: "migrations fire but with occasional cooldown-suppressed thrash events"
+            action:
+              - "record observation; annotate thrash guard behavior; keep WP-7 rollout pending"
+            next: DONE_MARGINAL_OBS
+          fail:
+            rule: "migration fails to trigger, or triggers spuriously / thrashes"
+            action:
+              - "keep WP-6/WP-7 rollout gated; document the live-trigger gap in within-role handoff"
+            next: FAILED_REVERTED
+          infra:
+            classify: "multi-worker API confound / single-worker launch failure / dispatch starvation"
+            action:
+              - "assert --workers 1; drive via eval-concurrency (never /chat); re-run in a fresh quiet window"
+          ambiguous:
+            action:
+              - "hold for operator; attach migration counter timeseries + session trace"
+            next: HELD_AMBIGUOUS
+  artifacts:
+    outputs:
+      - "orchestration/reports/j2j3_single_worker_migration_probe.json"
+    package_to: "coordination/inference-batch/bundles/ROUTE-A3-j2j3-single-worker/"
+  ledger:
+    journal_quarantine_rule: >
+      record migration direction counts, thrash_skipped reason, session reuse pattern, load profile;
+      quarantine diagnostic_only if run against a multi-worker API (affinity confounded).
+    era_stamp: "E5-cpu-kernel"

@@ -18,6 +18,10 @@
 
 ---
 
+> **⚡ 2026-07-17 — Execution source-of-truth while the consolidated inference-batch is active:** `/workspace/coordination/inference-batch/manifest.yaml` (52 entries incl. these queues + the reviewer-plane RCP window) is the single machine-executed manifest; the operator's `/loop` session is the SOLE writer of its `ledger.jsonl` + checkbox flips (see `coordination/inference-batch/LOOP_PROTOCOL.md`). The RCP-W1/W2/W3 rows staged in this handoff's 2026-07-17 section, DS-E1, K-ROPE, X-MAS-monitor, K-LCM-1 (LongCoT-Mini), and the Queue-2 items are SUBSUMED as manifest entries (each `also_flips` back to its owning checkbox here). Do NOT run a manifest entry from any other session — single-writer discipline.
+>
+> **⚡ 2026-07-17 update — audited + repaired, loop-ready:** an adversarial command-audit found the authoring agents had fabricated ~30 `execution.command` strings (nonexistent runners/flags). A 5-pass re-audit confirmed the damage was localized to leaf commands (provenance/preconditions/graph/committed-code all ground-truthed clean). Repair: 8 genuinely-missing non-inference runners built + tested (109 tests; orchestrator `d9f0d148`, research `0d80923`), ~15 entries re-pinned to real commands, ~15 marked as honest `BUILD-*` gates, `op-bundle.md` gate registry reconciled (A–F + 12-item build-backlog) with 4 pre-formed Escalation decision blocks. Manifest re-compiles 52/52 valid. Every entry now has a real command or an honest gate — no fabricated runnable commands remain.
+
 ## Current State (2026-06-12) — Three-Queue Structure
 
 The 2026-04 campaign (Packages A–F) is complete/overtaken and archived (see *Completed* below). The cross-role N-way matrix + within-role placement SM (J1/J4a-J4c/J4/J5) are CLOSED (see the compaction note in Package J). The remaining inference-gated backlog is organized into three queues plus standalone windows and a frozen block, per the Fable 5 portfolio pass. Per-task detail is preserved in the Package G/H/I/J/K sections below — this is the dispatch view.

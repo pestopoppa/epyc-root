@@ -76,6 +76,10 @@ TERMINAL_STATES = frozenset(
 #: row at all is implicitly READY.
 ELIGIBLE_STATES = frozenset({"READY"})
 
+#: Entries at/above this phase are non-executable COORDINATION cross-references
+#: (parallel-session-owned work); pending() never returns them.
+COORDINATION_PHASE_FLOOR = 90
+
 # Fields carried from execution_manifest.jsonl v1 (defaults applied on append).
 _V1_DEFAULTS: Dict[str, Any] = {
     "run_id": None,
@@ -277,6 +281,12 @@ class Ledger:
         for entry in entries:
             tid = entry.get("task_id")
             if tid is None:
+                continue
+            # Phase >= COORDINATION_PHASE_FLOOR (90) are non-executable cross-reference
+            # rows for parallel-session-owned work; the loop never picks them. Their
+            # ledger state should also be seeded COORDINATION, but this guard makes the
+            # skip robust even if the seed step is missed.
+            if int(entry.get("phase", 0)) >= COORDINATION_PHASE_FLOOR:
                 continue
             if states.get(tid) not in ELIGIBLE_STATES:
                 continue
