@@ -4,7 +4,7 @@
 
 This report consolidates the current K35 release evidence for the experimental v7 kernel at `/mnt/raid0/llm/llama.cpp-experimental`, commit `d1e5a20eb`, `llama-server` version `10088`.
 
-It is an operator-facing synthesis, not a v7 promotion sign-off. K35 remains open because runtime resident memory was not captured per role, vision roles only have bounded smoke evidence, and concurrency rows are not yet part of the canonical matrix.
+It is an operator-facing synthesis, not a v7 promotion sign-off. The 2026-07-17 memory-backfill pass now covers the non-vision optimized rows. K35 remains open because vision roles only have bounded smoke evidence and optional concurrency rows are not yet part of the canonical matrix.
 
 ## Run Discipline
 
@@ -17,6 +17,7 @@ It is an operator-facing synthesis, not a v7 promotion sign-off. K35 remains ope
 | Contention guard | runner `guard_state.json` files report empty `process_blockers` |
 | Cleanup proof | successful canonical rows report dead server PIDs and empty `cleanup_process_blockers`; vision smoke verified both server PIDs dead |
 | GPU state | frontdoor/worker guard captured MI210 as `65520 MiB` total and `65416 MiB` free before runs; post-run ROCm checks reported no KFD PIDs |
+| Memory backfill | `/mnt/raid0/llm/tmp/k35-memory-backfill-20260717T1400Z/summary.json` reran non-vision optimized cells with `memory_samples` after health, after request, and before cleanup |
 
 ## Optimized Configs Used
 
@@ -57,6 +58,23 @@ These are release smokes, not throughput-vs-context rows.
 | `worker_vision` | `37` | `18` | `99.15` | `10.93` | OCR content included `7500`; health passed; PID dead after stop | `k35-vision-release-smoke-20260717T125719Z` |
 | `vision_escalation` | `26` | `20` | `70.38` | `27.18` | OCR content included `7500`; health passed; PID dead after stop | `k35-vision-release-smoke-20260717T125719Z` |
 
+## Resident Memory Backfill
+
+Memory values below come from the `after_request` sample in `/mnt/raid0/llm/tmp/k35-memory-backfill-20260717T1400Z/summary.json`. Host values are `/proc/<pid>/status` `VmRSS` plus `smaps_rollup` PSS. GPU values are the ROCm reported `VRAM%` during that sample.
+
+| Role | Nominal context | Decode t/s | Host VmRSS | PSS | VmPeak | MI210 VRAM | Acceptance |
+|---|---:|---:|---:|---:|---:|---:|---|
+| `frontdoor` | 2K | `99.77` | `1.37 GiB` | `1.36 GiB` | `80.32 GiB` | `55%` | no spec |
+| `frontdoor` | 8K | `95.56` | `1.38 GiB` | `1.37 GiB` | `80.32 GiB` | `55%` | no spec |
+| `frontdoor` | 32K | `78.48` | `1.40 GiB` | `1.39 GiB` | `80.32 GiB` | `56%` | no spec |
+| `worker_general` | 2K | `122.75` | `17.48 GiB` | `17.48 GiB` | `36.14 GiB` | `0%` | `492/666` |
+| `worker_general` | 8K | `97.80` | `17.74 GiB` | `17.73 GiB` | `35.53 GiB` | `0%` | `492/666` |
+| `architect_general` | 2K | `22.76` | `75.56 GiB` | `75.55 GiB` | `100.01 GiB` | `0%` | `408/410` |
+| `architect_general` | 8K | `19.37` | `76.46 GiB` | `76.46 GiB` | `99.17 GiB` | `0%` | `408/409` |
+| `ingest_long_context` | 2K | `19.83` | `45.84 GiB` | `45.84 GiB` | `64.20 GiB` | `0%` | spec disabled |
+| `ingest_long_context` | 8K | `15.86` | `46.11 GiB` | `46.10 GiB` | `65.75 GiB` | `0%` | spec disabled |
+| `ingest_long_context` | 32K | `9.59` | `46.35 GiB` | `46.35 GiB` | `68.15 GiB` | `0%` | spec disabled |
+
 ## Invalidated Rows
 
 Do not use these as K35 default ingest evidence:
@@ -69,14 +87,13 @@ Do not use these as K35 default ingest evidence:
 
 ## Remaining K35 Gaps
 
-- Runtime resident memory is not closed. The runner captured host `free -h`, MI210 availability before runs, and artifact file sizes, but did not sample per-process RSS/NUMA residency, per-role VRAM after load, or KV/cache allocations while each server was resident.
-- Vision roles need a real throughput-vs-context/quality pass once fastest safe configs are settled. Current evidence is a bounded OCR release smoke only.
+- Vision roles need a real throughput-vs-context/quality/memory pass once fastest safe configs are settled. Current evidence is a bounded OCR release smoke only.
 - Architect has valid 2K/8K optimized rows only. Deeper contexts exceed the production `-np 2 -c 16384` per-slot launch shape unless the operator authorizes a different architect launch.
 - Concurrency rows remain optional/open. Current canonical rows are single-scenario quiet-host measurements, not mixed-stack concurrency service measurements.
 - The Gemma4 draft-memory probe emitted a warning while fitting (`failed to measure draft model memory` because `Gemma4Assistant requires ctx_other`); throughput/acceptance still passed, but memory measurement for this lane needs a separate fix or external sampler.
 
 ## Next Measurements
 
-1. Add resident-memory sampling to `k35_stack_context_matrix_runner.py`: record server PID RSS/smaps rollup, NUMA placement, ROCm VRAM before/after load for GPU roles, and KV/cache allocation lines with sufficient server verbosity.
-2. Add vision scenarios only after deciding whether current production vision configs, Qwen3-VL-8B A/B, MiniCPM-o, PaddleOCR-VL, or SuperGemma4 are the fastest safe text+vision choices.
-3. If operator wants service-level capacity, run a separate concurrency matrix; do not blend it into the quiet-host single-role K35 rows.
+1. Add vision scenarios only after deciding whether current production vision configs, Qwen3-VL-8B A/B, MiniCPM-o, PaddleOCR-VL, or SuperGemma4 are the fastest safe text+vision choices.
+2. If operator wants service-level capacity, run a separate concurrency matrix; do not blend it into the quiet-host single-role K35 rows.
+3. Improve GPU memory precision if needed: current ROCm snapshots report percentage, not exact MiB, in this runner configuration.
