@@ -20,6 +20,8 @@ Mitigation applied after the matrix: active `vision_escalation` on port `8087` i
 | Cleanup proof | successful canonical rows report dead server PIDs and empty `cleanup_process_blockers`; vision smoke/matrix verified server PIDs dead |
 | GPU state | frontdoor/worker guard captured MI210 as `65520 MiB` total and `65416 MiB` free before runs; post-run ROCm checks reported no KFD PIDs |
 | Memory backfill | `/mnt/raid0/llm/tmp/k35-memory-backfill-20260717T1400Z/summary.json` reran non-vision optimized cells with `memory_samples`; `/mnt/raid0/llm/tmp/k35-vision-matrix-20260717T1500Z/summary.json` records the same memory sample shape for current production vision roles; `/mnt/raid0/llm/tmp/k35-minicpm-frontdoor-coresidency-20260717T191849Z/` records the MiniCPM-o/frontdoor MI210 co-residency smoke; `/mnt/raid0/llm/tmp/k35-minicpm-frontdoor-service-tax-20260717T192427Z/` records the follow-up idle-vs-active service-tax probe |
+| Operational metric discipline | Baseline/no-spec rows are controls for attribution only. Serving decisions use the fastest quality-clean lane that would actually be deployed, with the run labeled isolated or concurrent. |
+| Frontdoor 1024-token replay | `/mnt/raid0/llm/tmp/k35-frontdoor-operational-1024-20260717T201842Z/summary.json` reran the MI210-resident frontdoor operational lane with `max_tokens=1024`; cleanup blockers were empty and post-run ROCm reported no KFD PIDs |
 
 ## Optimized Configs Used
 
@@ -55,6 +57,18 @@ Exact command lines are preserved in each artifact directory's `commands.sh`, `p
 | `ingest_long_context` | 8K | `6719` | `512` | `175.78` | `15.94` | spec disabled; default experts | `k35-ingest-default-2k8k-20260717T123107Z` |
 | `ingest_long_context` | 16K | `14528` | `512` | `130.99` | `13.00` | spec disabled; default experts | `k35-ingest-default-deep-20260717T123308Z` |
 | `ingest_long_context` | 30K | `28528` | `512` | `100.51` | `10.13` | spec disabled; default experts | `k35-ingest-default-deep-20260717T123308Z` |
+
+### Frontdoor 1024-Token Operational Replay
+
+The 512-token K35 row above remains the canonical cross-role table row. A longer operational replay was added to reduce short-output artifacts for the MI210 frontdoor lane:
+
+| Nominal context | Prompt tokens | Completion tokens | Prompt t/s | Decode t/s | Artifact |
+|---|---:|---:|---:|---:|---|
+| 2K | `134` | `1024` | `672.33` | `100.55` | `k35-frontdoor-operational-1024-20260717T201842Z` |
+| 8K | `6214` | `1024` | `2039.00` | `95.56` | `k35-frontdoor-operational-1024-20260717T201842Z` |
+| 32K | `30791` | `1024` | `1762.93` | `77.67` | `k35-frontdoor-operational-1024-20260717T201842Z` |
+
+Interpretation: this confirms the existing K35 frontdoor serving posture under a longer decode. It is an optimized operational row, not an apples-to-apples baseline/control run.
 
 ## Vision Matrix
 
