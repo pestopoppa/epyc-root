@@ -43,16 +43,17 @@
       tier: quiet_window
       cache_state: any
     autopilot: stopped
-    operator_gates:
-      - BUILD-glm-reviewer-capability-probe
+    operator_gates: []
     depends_on:
       - COORD-glm52-admission
   execution:
-    driver: screening_tier
+    driver: command
     protocol_id: "eval-tower.reviewer-capability.smoke (observation-grade pre-P-REV-1)"
     dry_run: false
     command: >
-      # BUILD-GATE: GLM reviewer-capability single-model probe runner does not exist (screening_tier_runner does reviewer PAIRING screening, not single-model capability probes). Command must be authored once GLM-5.2 is admitted. Hard-gated on COORD-glm52-admission.
+      cd /mnt/raid0/llm/epyc-orchestrator &&
+      AUTOPILOT_GLM_REVIEWER_CAPABILITY_INFERENCE=1
+      .venv/bin/python scripts/autopilot/glm_reviewer_capability_probe.py --probe strict_if --execute
     concurrency_mode: same_trial_eval_fanout
     fanout_transport: placement_queue
     contention_class: reviewer_capability_probe_single_model
@@ -118,16 +119,17 @@
       tier: quiet_window
       cache_state: any
     autopilot: stopped
-    operator_gates:
-      - BUILD-glm-reviewer-capability-probe
+    operator_gates: []
     depends_on:
       - P5-GC1-strict-if-typed-emission
   execution:
-    driver: screening_tier
+    driver: command
     protocol_id: "eval-tower.reviewer-capability.smoke (observation-grade pre-P-REV-1)"
     dry_run: false
     command: >
-      # BUILD-GATE: GLM reviewer-capability single-model probe runner does not exist (screening_tier_runner does reviewer PAIRING screening, not single-model capability probes). Command must be authored once GLM-5.2 is admitted. Hard-gated on COORD-glm52-admission.
+      cd /mnt/raid0/llm/epyc-orchestrator &&
+      AUTOPILOT_GLM_REVIEWER_CAPABILITY_INFERENCE=1
+      .venv/bin/python scripts/autopilot/glm_reviewer_capability_probe.py --probe rubric_authoring --execute
     concurrency_mode: same_trial_eval_fanout
     fanout_transport: placement_queue
     contention_class: reviewer_capability_probe_single_model
@@ -192,16 +194,17 @@
       tier: quiet_window
       cache_state: any
     autopilot: stopped
-    operator_gates:
-      - BUILD-glm-reviewer-capability-probe
+    operator_gates: []
     depends_on:
       - P5-GC2-rubric-authoring-quality
   execution:
-    driver: screening_tier
+    driver: command
     protocol_id: "eval-tower.reviewer-capability.smoke (observation-grade pre-P-REV-1)"
     dry_run: false
     command: >
-      # BUILD-GATE: GLM reviewer-capability single-model probe runner does not exist (screening_tier_runner does reviewer PAIRING screening, not single-model capability probes). Command must be authored once GLM-5.2 is admitted. Hard-gated on COORD-glm52-admission.
+      cd /mnt/raid0/llm/epyc-orchestrator &&
+      AUTOPILOT_GLM_REVIEWER_CAPABILITY_INFERENCE=1
+      .venv/bin/python scripts/autopilot/glm_reviewer_capability_probe.py --probe why_diagnosis --execute
     concurrency_mode: same_trial_eval_fanout
     fanout_transport: placement_queue
     contention_class: reviewer_capability_probe_single_model

@@ -1,6 +1,6 @@
 schema_version: inference_batch.manifest.v1
 entry_schema_version: inference_batch.entry.v1
-generated_at: '2026-07-17T13:33:49Z'
+generated_at: '2026-07-17T15:15:38Z'
 entry_count: 52
 entries:
 - schema_version: inference_batch.entry.v1
@@ -148,7 +148,14 @@ entries:
       overhead and produces the FIRST review_ledger rows (RD-12). TM-8 coverage gate
       = ~100% of review invocations produce trace rows. Sampling-sensitive: production
       temp + seed42 both legs. Ledger production is a firing-contingent workaround
-      (events→ledger materializer); RCP-W3 no longer depends on this.
+      (events→ledger materializer); RCP-W3 no longer depends on this. VALIDATED 2026-07-17
+      (ESC-4, non-inference): the materialize->report pipeline was exercised end-to-end
+      on the 32 historical REVIEW_DECISION events in data/trace/events.sqlite — 32/32
+      events -> 32 review_ledger rows, report generated cleanly (acceptance 50%, parse_failure_rate
+      15.6%), FA/FR/ECE null because those events'' candidate_ids (''S1''/empty) are
+      NOT nearmiss row_ids. RCP-W2 = first ledger rows from EXISTING events (non-inference,
+      runnable now); RCP-W3 = non-null FA/FR via the corpus-matched bridge that emits
+      its own decisions keyed to nearmiss row_ids. Pipeline CONFIRMED.
 
       '
   phase: 0
@@ -272,7 +279,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:f759aa8e1d108c8fc4ba0969ce0b959ccb0927da752b2a381bd35693c4b7adf5
+  entry_hash: sha256:91fcdae8a89cd3ebcec2c9d4da5824ef47a3f1593111a65e9c0ac0e7559df24a
 - schema_version: inference_batch.entry.v1
   task_id: RCP-W3-rc8-smoke-slice
   title: 'RCP-W3 — RC-8 smoke slice: first FA/FR/CR observations on nearmiss-v1 (shadow
@@ -433,18 +440,15 @@ entries:
     topology:
       contention_matrix: not_required
     autopilot: any
-    operator_gates:
-    - BUILD-lb1-offline-attribution
+    operator_gates: []
     depends_on:
     - RCP-W2-paired-shadow-replay
   execution:
     driver: command
     protocol_id: P-AB-1 attribution (offline decomposition of the RD-12 paired baseline)
     dry_run: false
-    command: '# BUILD-GATE: OFF/ON throughput-attribution tool does not exist. task_rate_goodput_replay.py
-      does journal-Pareto replay, not OFF/ON shadow-overhead attribution. Offline
-      (non-inference) analysis over RCP-W2 artifacts; downstream of a working Mechanism-A
-      run.
+    command: 'cd /mnt/raid0/llm/epyc-orchestrator && .venv/bin/python scripts/analysis/lb1_shadow_overhead_attribution.py
+      --off-artifact <SHADOW_OFF_ARTIFACT.json> --on-artifact <SHADOW_ON_ARTIFACT.json>
 
       '
     cwd: /mnt/raid0/llm/epyc-orchestrator
@@ -512,7 +516,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:c6697d18eae0c64105974162982a2bdb7edbb5af56ee193514d66a2f3b35c9c4
+  entry_hash: sha256:77ca07d495ffbcbbfba566efddea44d1aad4efab58c44889709213037c689ca2
 - schema_version: inference_batch.entry.v1
   task_id: LB-4-sampling-policy-ab
   title: LB-4 — Paired throughput A/B per sampling policy (observation-grade)
@@ -554,16 +558,16 @@ entries:
     operator_gates:
     - OP-6a
     - OP-6b
-    - BUILD-mechanism-a-ledger-producer
-    - BUILD-policy-arm-wiring
     depends_on:
     - LB-1-regression-attribution
   execution:
     driver: command
     protocol_id: P-AB-1 (paired) + P-SPEED-OBJ (task_rate, e-process, never single-trial)
     dry_run: false
-    command: '# BUILD-GATE: paired policy A/B needs the Mechanism-A ledger producer
-      + per-policy arm wiring. Downstream of RC-8/LB-1.
+    command: 'cd /mnt/raid0/llm/epyc-orchestrator && .venv/bin/python scripts/analysis/reviewer_policy_arm_ab.py
+      --arms warm,cold --policy ''warm=temperature=0.7,top_p=0.95,verbosity=verbose,max_tokens=512''
+      --policy ''cold=temperature=0.2,top_p=0.9,verbosity=terse,max_tokens=512'' --n
+      200 --seed 42 --execute
 
       '
     cwd: /mnt/raid0/llm/epyc-orchestrator
@@ -635,7 +639,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:d7679c7b568ce31d56d4ef52abe77907c73f65ed3031d6f3ea28d5a0dbb8e608
+  entry_hash: sha256:3cafbbcdc52ce494b4890720c70c32b85b22883fd67d2c25d006e293107bfc55
 - schema_version: inference_batch.entry.v1
   task_id: LB-7-baseline-floor
   title: 'LB-7 — M3 baseline floor: full plane vs single-augmented-LLM (A0/A1) on
@@ -930,16 +934,20 @@ entries:
     operator_gates:
     - OP-6a
     - OP-6b
-    - BUILD-mechanism-a-ledger-producer
     depends_on:
     - RCP-W1-reference-relaunch-preflight
   execution:
     driver: command
     protocol_id: P-AB-1 (paired, same questions/seed) + P-SPEED-OBJ (task_rate)
     dry_run: false
-    command: '# BUILD-GATE: same Mechanism-A dependency as RCP-W2 — needs live review_ledger
-      rows (materializer, firing-contingent). Per-decision latency/token accounting
-      reads the materialized ledger.
+    command: '# RD-12 reads per-decision latency_ms + tokens from the MATERIALIZED
+      ledger (BUILD-mechanism-a-ledger-producer # SATISFIED 2026-07-17). Largely COVERED
+      BY RCP-W2''s materializer output; run only for a fuller/fresh replay. # Firing-contingent
+      (op-bundle ESC-4): 0 events is a diagnostic outcome, not a failure. .venv/bin/python
+      scripts/analysis/reviewer_events_to_ledger.py --events data/trace/events.sqlite
+      --output /mnt/raid0/llm/tmp/rd12_<UTC>/ --emit ledger-sqlite && .venv/bin/python
+      scripts/analysis/reviewer_calibration_report.py --ledger /mnt/raid0/llm/tmp/rd12_<UTC>/review_ledger.sqlite
+      --k 2 --print --out-json /mnt/raid0/llm/tmp/rd12_<UTC>/report.json
 
       '
     cwd: /mnt/raid0/llm/epyc-orchestrator
@@ -1004,7 +1012,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:b0b915ef7cd05f67d9d86a03ec0f8873c78d6e0735455ead9f9a4a2e2f1593b4
+  entry_hash: sha256:8bb8ab00efa8dcacc374b92d39521dd93d2d65a4517f8066e6fd57277696e98c
 - schema_version: inference_batch.entry.v1
   task_id: RM-6-field-order-ab
   title: RM-6 — RA-8 field-order A/B (V-first vs E-first GBNF) on the leading A1 self-review
@@ -1045,7 +1053,6 @@ entries:
     operator_gates:
     - OP-6a
     - OP-6b
-    - BUILD-field-order-arm-config
     depends_on:
     - RCP-W3-rc8-smoke-slice
   execution:
@@ -1053,10 +1060,9 @@ entries:
     protocol_id: P-REV-1 paired (same rows/prompts/grammar/stop both arms; observation-grade
       pre-RC-6a)
     dry_run: false
-    command: '# BUILD-GATE: reviewer-corpus bridge runs the reviewer, but the RA-8
-      field-order A/B needs two arms with different rubric field ordering — a config
-      lever the bridge does not expose yet. Reviewer pass: scripts/analysis/reviewer_corpus_ledger_run.py
-      (as RC-8); field-order arm wiring = build.
+    command: 'cd /mnt/raid0/llm/epyc-orchestrator && .venv/bin/python scripts/analysis/reviewer_corpus_ledger_run.py
+      --corpus /mnt/raid0/llm/datasets/nearmiss-corpus-v1/rows.jsonl --reviewer architect_general
+      --n 200 --domain code --output runs/rm6_fieldorder --field-order both --execute
 
       '
     cwd: /mnt/raid0/llm/epyc-orchestrator
@@ -1124,7 +1130,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:483bdcbbf257c06f57c9ced9a410ede4dd9b03c68aa942ea9709ed5703b89f26
+  entry_hash: sha256:3be2d752709aeb6638330857cb2183b78a3d99253f881972b61db0036e619ff5
 - schema_version: inference_batch.entry.v1
   task_id: TM-8-full-coverage
   title: TM-8 — Full trace-coverage gate (~100% of review invocations produce trace
@@ -1139,6 +1145,10 @@ entries:
       reminder events are recorded (intake-835). Rides the RCP-prologue relaunch;
       no reload. If RCP-W2 already flipped TM-8 at ~100%, this entry is the confirmatory
       pass; if RCP-W2 landed marginal, this is the authoritative coverage run.
+
+      Runner built (16 tests); pure sqlite analysis, no inference. NOTE: live coverage-<100%
+      DETECTION needs review_invocation markers + executor_model_id on the FROZEN
+      emit path (review_service.py) — self_attested 1.0 until then.
 
       '
   phase: 1
@@ -1167,7 +1177,6 @@ entries:
     operator_gates:
     - OP-6a
     - OP-6b
-    - BUILD-tm8-coverage-counter
     depends_on:
     - RCP-W1-reference-relaunch-preflight
   execution:
@@ -1175,10 +1184,8 @@ entries:
     protocol_id: trace-coverage.v1 (row-presence + phase-tag/executor-id/reminder-event
       completeness)
     dry_run: false
-    command: '# BUILD-GATE: TM-8 trace-coverage is a thin counter over events.sqlite
-      (query.decision_chain) — buildable, but contingent on the shadow plane firing
-      during a live eval. No eval_tower.py replay CLI exists; src/trace/cli.py decision-chain
-      has no --verify-coverage.
+    command: 'cd /mnt/raid0/llm/epyc-orchestrator && TM8_COVERAGE_EXECUTE=1 .venv/bin/python
+      scripts/analysis/tm8_coverage.py --execute
 
       '
     cwd: /mnt/raid0/llm/epyc-orchestrator
@@ -1245,7 +1252,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:32449cc30b73d693cdc8e5dcb7300d6d91d97b2a503d39cf506fc2a40450007d
+  entry_hash: sha256:d6822467fb3b6e0444a9c86169c84f5ac9c900f7de1aff9a39f1946079588b8b
 - schema_version: inference_batch.entry.v1
   task_id: EV-11-math-rebaseline
   title: EV-11 — Fresh math re-baseline (GSM8K 1319 + MATH-500 500 = 1819) under math_verify
@@ -1301,15 +1308,14 @@ entries:
     - EV-11a-boxed-fix-landed
     - EV-11b-ece-binning-decision-recorded
     - math-verify-importable-attested
-    - OP-eval-suite-routing
     depends_on: []
   execution:
     driver: command
     protocol_id: eval-tower.math-rebaseline.v1
     dry_run: false
-    command: '# AMBIGUOUS (op-bundle): tier-based window runner has no --suite/--datasets/--scoring/--roles/--production-sampling.
-      math_verify scoring landed; gsm8k+math500 (1819) per-role selection not CLI-expressible.
-      Route via run_benchmark.py --suite OR extend runner. Gated EV-11a/EV-11b/math-verify-importable.
+    command: '.venv/bin/python scripts/benchmark/eval_batch_serving_evaltower_window.py
+      --mode math_rebaseline --scoring math_verify --full --roles worker_general,worker_math
+      --seed 42 --api-url http://localhost:8000 --apply --confirm-clean-window
 
       '
     cwd: /mnt/raid0/llm/epyc-orchestrator
@@ -1387,7 +1393,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-07-17-math-verify-rebaseline
-  entry_hash: sha256:16a6e76445164878934a588351652f0b20141120f231b0a83443aece36b3abaa
+  entry_hash: sha256:ef604ad7adb6c250ef9bd1ec3135608dcfd2f28d6ed1f363dc25654c3315d2a0
 - schema_version: inference_batch.entry.v1
   task_id: EV-4-calibration-baseline
   title: EV-4 — Eval-tower calibration baseline on Scoring Verifiers HE-R+ (ECE/AUC/Top-1/Bottom-1/rho/MAE)
@@ -1428,16 +1434,14 @@ entries:
     autopilot: stopped
     operator_gates:
     - OP-quiet-window
-    - OP-eval-suite-routing
     depends_on: []
   execution:
     driver: command
     protocol_id: eval-tower.calibration-baseline.v1
     dry_run: false
-    command: '# AMBIGUOUS (op-bundle): the tier-based eval_batch_serving_evaltower_window.py
-      cannot express --suite scoring_verifiers --split HE-R+ --roles --record-metrics.
-      Route via run_benchmark.py --suite scoring_verifiers (loses per-role/ECE/HE-R+
-      granularity) OR extend the window runner. Operator decides.
+    command: '.venv/bin/python scripts/benchmark/eval_batch_serving_evaltower_window.py
+      --mode calibration --suite scoring_verifiers --split HE-R+ --roles worker_general,frontdoor
+      --full --seed 42 --api-url http://localhost:8000 --apply --confirm-clean-window
 
       '
     cwd: /mnt/raid0/llm/epyc-orchestrator
@@ -1505,7 +1509,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:19017d8092b142ccc4cab4ac9fe436fcf32d61ffe1a678fa46531e7da3f2a761
+  entry_hash: sha256:018dc065939aa086889abcfde50e26169c4bb084a4636ce1bbd03115b48b7f9a
 - schema_version: inference_batch.entry.v1
   task_id: EV-10a-skill-efficacy-ab
   title: EV-10a — Deploy + paired A/B of the AUTOPILOT_SKILL_EFFICACY_GATE (per-suite,
@@ -1668,16 +1672,16 @@ entries:
     operator_gates:
     - OP-quiet-window
     - MODEL-DOWNLOAD-thinkprm-1.5b-q4km-gguf
-    - BUILD-evalbatch-verifier-mode
     depends_on:
     - EV-4-calibration-baseline
   execution:
     driver: command
     protocol_id: eval-tower.thinkprm-t2.v1
     dry_run: false
-    command: '# BUILD-GATE: eval_batch_serving_evaltower_window.py is tier-based and
-      has no --verifier/--diversity-baseline/--suite/--uncertain-topn. Cross-family
-      verifier / diversity-baseline mode not wired to this CLI. Model download-gated.
+    command: '# MODE BUILT (BUILD-evalbatch-verifier-mode satisfied 2026-07-17): run
+      via # eval_batch_serving_evaltower_window.py --mode calibration --verifier <model>
+      ... # BLOCKED on MODEL-DOWNLOAD-<x> (require_verifier_on_disk raises until the
+      model lands).
 
       '
     cwd: /mnt/raid0/llm/epyc-orchestrator
@@ -1741,7 +1745,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:8cd61fe6b4e44eee3f88f66053871a11927aaf19eb869d1ecf631a1cd7a36ae9
+  entry_hash: sha256:5d1d1812a19fb62af8a15f78d69f96df58d765c005a43fff188a97e2fad9b111
 - schema_version: inference_batch.entry.v1
   task_id: EV-7-ouro-t0-sentinel
   title: EV-7 — Integrate Ouro-2.6B-Thinking as T0 cross-family sentinel verifier
@@ -1781,16 +1785,16 @@ entries:
     operator_gates:
     - OP-quiet-window
     - MODEL-DOWNLOAD-ouro-2.6b-thinking
-    - BUILD-evalbatch-verifier-mode
     depends_on:
     - EV-4-calibration-baseline
   execution:
     driver: command
     protocol_id: eval-tower.ouro-t0-sentinel.v1
     dry_run: false
-    command: '# BUILD-GATE: eval_batch_serving_evaltower_window.py is tier-based and
-      has no --verifier/--diversity-baseline/--suite/--uncertain-topn. Cross-family
-      verifier / diversity-baseline mode not wired to this CLI. Model download-gated.
+    command: '# MODE BUILT (BUILD-evalbatch-verifier-mode satisfied 2026-07-17): run
+      via # eval_batch_serving_evaltower_window.py --mode calibration --verifier <model>
+      ... # BLOCKED on MODEL-DOWNLOAD-<x> (require_verifier_on_disk raises until the
+      model lands).
 
       '
     cwd: /mnt/raid0/llm/epyc-orchestrator
@@ -1851,7 +1855,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:3e3cd2fb2082c4452d3df7834fec7ca15c7ba838c4ae6038a12e14a180dce8f0
+  entry_hash: sha256:e421652bb50d736b6de84305764b488ec468b6bc65b125fda232979fee07c85e
 - schema_version: inference_batch.entry.v1
   task_id: EV-8-diversity-redundancy
   title: EV-8 — Diversity baseline pass + Verbalized-Sampling temperature ladder +
@@ -1899,15 +1903,15 @@ entries:
     operator_gates:
     - OP-quiet-window
     - MODEL-DOWNLOAD-sae-res-qwen35-27b-single-layer
-    - BUILD-evalbatch-verifier-mode
     depends_on: []
   execution:
     driver: command
     protocol_id: eval-tower.diversity-redundancy.v1
     dry_run: false
-    command: '# BUILD-GATE: eval_batch_serving_evaltower_window.py is tier-based and
-      has no --verifier/--diversity-baseline/--suite/--uncertain-topn. Cross-family
-      verifier / diversity-baseline mode not wired to this CLI. Model download-gated.
+    command: '# MODE BUILT (BUILD-evalbatch-verifier-mode satisfied 2026-07-17): run
+      via # eval_batch_serving_evaltower_window.py --mode calibration --verifier <model>
+      ... # BLOCKED on MODEL-DOWNLOAD-<x> (require_verifier_on_disk raises until the
+      model lands).
 
       '
     cwd: /mnt/raid0/llm/epyc-orchestrator
@@ -2033,7 +2037,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:cf527bfce9e171341160873f1caf02e88e2e7fc7fa4ee2022e3d28f938f22855
+  entry_hash: sha256:433431e1c9652ef9297f455fc1bc93c59a3551dd044cbc051c428671170b96c2
 - schema_version: inference_batch.entry.v1
   task_id: EX-0-role-aware-ab
   title: EXAMPLE — Trinity role-aware A/B eval (schema demonstration, not a real batch
@@ -2562,17 +2566,17 @@ entries:
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
-    operator_gates:
-    - OP-bench-recipe-abstraction
+    operator_gates: []
     depends_on:
     - BULK-DS-E1-kv
   execution:
     driver: clean_window_entry
     protocol_id: P-BENCH-3 via bench_canonical.sh
     dry_run: false
-    command: '# AMBIGUOUS (op-bundle): recipe e-series-followon + --np sweep fabricated
-      (bench_canonical is single -n/-p). Re-pin to bench_canonical.sh -m <model.gguf>
-      -n 128 with an external np-sweep loop.
+    command: '# ESC-3 resolved 2026-07-17 — real E3/E4 8x8-GEMM-SIMD throughput leg
+      (wrap in an external -np sweep loop; # the --np sweep flag was fabricated, bench_canonical
+      is single -n): scripts/benchmark/bench_canonical.sh -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+      -n 128
 
       '
     cwd: /mnt/raid0/llm/epyc-inference-research
@@ -2634,7 +2638,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:b47bc5af49ba475a81584bc563e9bc9c67e913c3ac47a3480fd8d9b9ae81aef0
+  entry_hash: sha256:a9bda6429bc06a30586d109a1d98ce6f2262862ae4ff70f4005cfd1b4323fa15
 - schema_version: inference_batch.entry.v1
   task_id: BULK-DS-E1-kv
   title: DS-E1 — dynamic-stack KV measurement (decision-ready clean-window packet)
@@ -2677,11 +2681,11 @@ entries:
     driver: clean_window_entry
     protocol_id: P-BENCH-3 via bench_canonical.sh
     dry_run: false
-    command: '# AMBIGUOUS (op-bundle): bench_canonical.sh has no --recipe (recipe
-      id ds-e1-dynamic-stack-kv fabricated). Real form: bench_canonical.sh -m <model.gguf>
-      -n 128 [--dry-run]. But KV-per-slot footprint is NOT a bench_canonical mode.
-      Re-pin to -m form OR resolve via run_batch_entry.py. Operator decides the KV-footprint
-      harness.
+    command: '# ESC-3 resolved 2026-07-17 — THROUGHPUT SMOKE only (bench_canonical
+      measures tg/pp, NOT KV footprint): scripts/benchmark/bench_canonical.sh -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+      -n 128 # The REAL deliverable (KV-per-slot footprint, kv_bytes_per_slot per
+      -np N) is NOT a bench_canonical mode # and stays build-gated (OP-bench-recipe-abstraction:
+      operator-decided KV-footprint harness / run_batch_entry.py).
 
       '
     cwd: /mnt/raid0/llm/epyc-inference-research
@@ -2744,7 +2748,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:6b7087d2353c0c516e45213603b5d9321eb529cadb722e2151dd7c94b40bcd1d
+  entry_hash: sha256:cf3582017c31778551aea182aa989beec1fbfc412bfc68fafd50397509fc48a2
 - schema_version: inference_batch.entry.v1
   task_id: BULK-langgraph-tm7-parity
   title: TM-7 — live real-node run_task_lg vs run_task parity (durable-resume gate)
@@ -3024,16 +3028,15 @@ entries:
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: stopped
-    operator_gates:
-    - BUILD-embedder-recall-harness
+    operator_gates: []
     depends_on: []
   execution:
     driver: clean_window_entry
     protocol_id: P-BENCH-3 (embedder latency) + retrieval recall bench
     dry_run: false
-    command: '# BUILD-GATE: bench_canonical.sh is a llama-bench tg/pp wrapper — cannot
-      do embedder retrieval recall@k. Recipe granite-97m-r2-phaseB + --embedder-smoke-first
-      fabricated. Retrieval-recall bench harness needed.
+    command: 'cd /mnt/raid0/llm/epyc-inference-research && .venv/bin/python scripts/benchmark/embedder_recall_bench.py
+      --queries <queries.jsonl> --corpus <corpus.jsonl> --gold <gold.jsonl> --model
+      granite-embedding-97m-r2 --k 1,3,5,10 --execute
 
       '
     cwd: /mnt/raid0/llm/epyc-inference-research
@@ -3092,7 +3095,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:d7be206c2eb9a673d5c5ad436895377076978439d68a73348eb8f3fe1a467204
+  entry_hash: sha256:ff10852811d31c4fb0aa088d7cf0b0ccc821f92d5676613a2fd487c9f29d7dfe
 - schema_version: inference_batch.entry.v1
   task_id: BULK-K-ROPE-cells
   title: K-ROPE-1 — remaining RoPE long-context cells (exact-boundary + worker path)
@@ -4281,16 +4284,15 @@ entries:
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
-    operator_gates:
-    - BUILD-shapekeyed-step2-driver
+    operator_gates: []
     depends_on: []
   execution:
-    driver: screening_tier
+    driver: command
     protocol_id: P-AB-1 (placement admit/queue smoke via autopilot eval-concurrency
       fan-out)
     dry_run: false
-    command: '# BUILD-GATE: screening_tier_runner.py has no --shape-keyed-step2-smoke/--admit-overlap-probe/--vision-escalation-resample/--fanout.
-      Shape-keyed Step-2 live-smoke + vision re-bench harness does not exist.
+    command: 'cd /mnt/raid0/llm/epyc-orchestrator && .venv/bin/python scripts/autopilot/shapekeyed_step2_smoke.py
+      --execute
 
       '
     cwd: /mnt/raid0/llm/epyc-orchestrator
@@ -4354,7 +4356,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:05cae253220203cd30dfd617e9ead764e709b4eaf3f3fe3a3da60899a0d3e339
+  entry_hash: sha256:f61e7b4bc79e64c5c1ee91c9539f26ca6db1d1f373887d01cbcce45ebb2b12cc
 - schema_version: inference_batch.entry.v1
   task_id: ROUTE-A2-edit-transaction-ab
   title: A2 — multi-file edit-transaction routing A/B (EV-12 patch-verifier-fed)
@@ -4514,16 +4516,15 @@ entries:
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
-    operator_gates:
-    - BUILD-migration-probe-driver
+    operator_gates: []
     depends_on: []
   execution:
-    driver: screening_tier
+    driver: command
     protocol_id: P-AB-1 (live migration observation via single-worker eval-concurrency
       path)
     dry_run: false
-    command: '# BUILD-GATE: screening_tier_runner.py has no --migration-probe/--reuse-session/--oscillate-load/--single-worker/--fanout.
-      J2/J3 live migration-probe harness does not exist.
+    command: 'cd /mnt/raid0/llm/epyc-orchestrator && .venv/bin/python scripts/autopilot/migration_probe.py
+      --role frontdoor --oscillation 1,4,4,1,1,1 --safe-slots 3 --execute
 
       '
     cwd: /mnt/raid0/llm/epyc-orchestrator
@@ -4588,7 +4589,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:f9005085fb96cad9154bfc91ab97bbdbb88e96c2052693530de8a811b31f4a0e
+  entry_hash: sha256:2c978c63ffe3535cd298b2f7e05fd9027aee182cbf8eb537a0fea7003cdc8a74
 - schema_version: inference_batch.entry.v1
   task_id: P5-GC1-strict-if-typed-emission
   title: GC-1 — GLM-5.2 strict-IF / typed review_decision emission probe (GBNF-constrained
@@ -4617,18 +4618,16 @@ entries:
       tier: quiet_window
       cache_state: any
     autopilot: stopped
-    operator_gates:
-    - BUILD-glm-reviewer-capability-probe
+    operator_gates: []
     depends_on:
     - COORD-glm52-admission
   execution:
-    driver: screening_tier
+    driver: command
     protocol_id: eval-tower.reviewer-capability.smoke (observation-grade pre-P-REV-1)
     dry_run: false
-    command: '# BUILD-GATE: GLM reviewer-capability single-model probe runner does
-      not exist (screening_tier_runner does reviewer PAIRING screening, not single-model
-      capability probes). Command must be authored once GLM-5.2 is admitted. Hard-gated
-      on COORD-glm52-admission.
+    command: 'cd /mnt/raid0/llm/epyc-orchestrator && AUTOPILOT_GLM_REVIEWER_CAPABILITY_INFERENCE=1
+      .venv/bin/python scripts/autopilot/glm_reviewer_capability_probe.py --probe
+      strict_if --execute
 
       '
     concurrency_mode: same_trial_eval_fanout
@@ -4682,7 +4681,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:bd7e25268cd218f01c52d65eb56dbf247c5ad7501c7d462fdf09246fcb3a3234
+  entry_hash: sha256:5a8ac002c80e2cc5d31a6b60f234415805e1ea3e8fb1c4125f2d88f602e2a1e4
 - schema_version: inference_batch.entry.v1
   task_id: P5-GC2-rubric-authoring-quality
   title: GC-2 — GLM-5.2 rubric-authoring quality probe (vs frontier-authored references)
@@ -4706,18 +4705,16 @@ entries:
       tier: quiet_window
       cache_state: any
     autopilot: stopped
-    operator_gates:
-    - BUILD-glm-reviewer-capability-probe
+    operator_gates: []
     depends_on:
     - P5-GC1-strict-if-typed-emission
   execution:
-    driver: screening_tier
+    driver: command
     protocol_id: eval-tower.reviewer-capability.smoke (observation-grade pre-P-REV-1)
     dry_run: false
-    command: '# BUILD-GATE: GLM reviewer-capability single-model probe runner does
-      not exist (screening_tier_runner does reviewer PAIRING screening, not single-model
-      capability probes). Command must be authored once GLM-5.2 is admitted. Hard-gated
-      on COORD-glm52-admission.
+    command: 'cd /mnt/raid0/llm/epyc-orchestrator && AUTOPILOT_GLM_REVIEWER_CAPABILITY_INFERENCE=1
+      .venv/bin/python scripts/autopilot/glm_reviewer_capability_probe.py --probe
+      rubric_authoring --execute
 
       '
     concurrency_mode: same_trial_eval_fanout
@@ -4766,7 +4763,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:ad49b2724a48b14a1f0b33d95be7ef6d2c1a2b39da4f6af4998b3118195e7b3c
+  entry_hash: sha256:26106db90a2ae8b1ebc40a8c80605786b82f161d47c91a7abff71b7b5ec3b0e3
 - schema_version: inference_batch.entry.v1
   task_id: P5-GC3-why-diagnosis
   title: GC-3 — GLM-5.2 why-diagnosis probe (rationale-vs-gold-cause match on corpus-v1
@@ -4792,18 +4789,16 @@ entries:
       tier: quiet_window
       cache_state: any
     autopilot: stopped
-    operator_gates:
-    - BUILD-glm-reviewer-capability-probe
+    operator_gates: []
     depends_on:
     - P5-GC2-rubric-authoring-quality
   execution:
-    driver: screening_tier
+    driver: command
     protocol_id: eval-tower.reviewer-capability.smoke (observation-grade pre-P-REV-1)
     dry_run: false
-    command: '# BUILD-GATE: GLM reviewer-capability single-model probe runner does
-      not exist (screening_tier_runner does reviewer PAIRING screening, not single-model
-      capability probes). Command must be authored once GLM-5.2 is admitted. Hard-gated
-      on COORD-glm52-admission.
+    command: 'cd /mnt/raid0/llm/epyc-orchestrator && AUTOPILOT_GLM_REVIEWER_CAPABILITY_INFERENCE=1
+      .venv/bin/python scripts/autopilot/glm_reviewer_capability_probe.py --probe
+      why_diagnosis --execute
 
       '
     concurrency_mode: same_trial_eval_fanout
@@ -4851,7 +4846,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:ae16b4f3a8184c0391b1f9f9be05f8c9622c8e5823045aab6221d8f72e79d91d
+  entry_hash: sha256:62ba23cd697084e82c2f9bedb9b6b6b9a4e43fb7ed9ce3aeae0d497263c4df07
 - schema_version: inference_batch.entry.v1
   task_id: P6-LB7-single-model-floor
   title: LB-7 — M3 baseline-floor measurement (full reviewer plane vs single-augmented-LLM

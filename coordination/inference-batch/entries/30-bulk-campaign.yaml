@@ -55,7 +55,10 @@
     protocol_id: "P-BENCH-3 via bench_canonical.sh"
     dry_run: false
     command: >
-      # AMBIGUOUS (op-bundle): bench_canonical.sh has no --recipe (recipe id ds-e1-dynamic-stack-kv fabricated). Real form: bench_canonical.sh -m <model.gguf> -n 128 [--dry-run]. But KV-per-slot footprint is NOT a bench_canonical mode. Re-pin to -m form OR resolve via run_batch_entry.py. Operator decides the KV-footprint harness.
+      # ESC-3 resolved 2026-07-17 — THROUGHPUT SMOKE only (bench_canonical measures tg/pp, NOT KV footprint):
+      scripts/benchmark/bench_canonical.sh -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf -n 128
+      # The REAL deliverable (KV-per-slot footprint, kv_bytes_per_slot per -np N) is NOT a bench_canonical mode
+      # and stays build-gated (OP-bench-recipe-abstraction: operator-decided KV-footprint harness / run_batch_entry.py).
     cwd: /mnt/raid0/llm/epyc-inference-research
     concurrency_mode: isolated_bench
     fanout_transport: none
@@ -265,15 +268,17 @@
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: stopped
-    operator_gates:
-      - BUILD-embedder-recall-harness
+    operator_gates: []
     depends_on: []
   execution:
     driver: clean_window_entry
     protocol_id: "P-BENCH-3 (embedder latency) + retrieval recall bench"
     dry_run: false
     command: >
-      # BUILD-GATE: bench_canonical.sh is a llama-bench tg/pp wrapper — cannot do embedder retrieval recall@k. Recipe granite-97m-r2-phaseB + --embedder-smoke-first fabricated. Retrieval-recall bench harness needed.
+      cd /mnt/raid0/llm/epyc-inference-research &&
+      .venv/bin/python scripts/benchmark/embedder_recall_bench.py
+      --queries <queries.jsonl> --corpus <corpus.jsonl> --gold <gold.jsonl>
+      --model granite-embedding-97m-r2 --k 1,3,5,10 --execute
     cwd: /mnt/raid0/llm/epyc-inference-research
     concurrency_mode: isolated_bench
     fanout_transport: none
@@ -362,8 +367,7 @@
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
-    operator_gates:
-      - OP-bench-recipe-abstraction
+    operator_gates: []
     depends_on:
       - BULK-DS-E1-kv
   execution:
@@ -371,7 +375,9 @@
     protocol_id: "P-BENCH-3 via bench_canonical.sh"
     dry_run: false
     command: >
-      # AMBIGUOUS (op-bundle): recipe e-series-followon + --np sweep fabricated (bench_canonical is single -n/-p). Re-pin to bench_canonical.sh -m <model.gguf> -n 128 with an external np-sweep loop.
+      # ESC-3 resolved 2026-07-17 — real E3/E4 8x8-GEMM-SIMD throughput leg (wrap in an external -np sweep loop;
+      # the --np sweep flag was fabricated, bench_canonical is single -n):
+      scripts/benchmark/bench_canonical.sh -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf -n 128
     cwd: /mnt/raid0/llm/epyc-inference-research
     concurrency_mode: isolated_bench
     fanout_transport: none
