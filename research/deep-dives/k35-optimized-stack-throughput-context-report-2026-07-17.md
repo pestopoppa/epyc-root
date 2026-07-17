@@ -32,6 +32,7 @@ Mitigation applied after the matrix: active `vision_escalation` on port `8087` i
 | `worker_vision` | `Qwen2.5-VL-7B-Instruct-Q4_K_M.gguf` + `mmproj-model-f16.gguf` | `4.4G` + projector | CPU, `-np 2`, `-c 8192`, `-t 24`, flash attention on, four local OCR/chart fixtures | `/mnt/raid0/llm/tmp/k35-vision-matrix-20260717T1500Z/` |
 | `vision_escalation` defect row | `Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf` + F16 projector | `18G` + projector | CPU, `-np 1`, `-c 16384`, `-t 96`, flash attention on, `qwen3vlmoe.expert_used_count=int:4`, four local OCR/chart fixtures | `/mnt/raid0/llm/tmp/k35-vision-matrix-20260717T1500Z/` |
 | `vision_escalation` temporary active alias | `Qwen2.5-VL-7B-Instruct-Q4_K_M.gguf` + `mmproj-model-f16.gguf` | `4.4G` + projector | CPU, port `8087`, `-np 1`, `-c 8192`, `-t 24`, flash attention on, no override; same model/projector as `worker_vision` | registry/stack-prior mitigation, 2026-07-17 |
+| `vision_escalation` rejected candidate | `Qwen3VL-8B-Instruct-Q4_K_M.gguf` + F16 projector | `4.7G` + projector | CPU and MI210 candidate rows, `-np 1`, `-c 8192`, `-t 24`, flash attention on; MI210 tested with 1024 image tokens and default image-token shape | `/mnt/raid0/llm/tmp/k35-qwen3vl8-candidate-20260717T185330Z/`, `/mnt/raid0/llm/tmp/k35-qwen3vl8-mi210-default-image-20260717T185459Z/` |
 
 Exact command lines are preserved in each artifact directory's `commands.sh`, `plan.json`, `server_argv.json`, or role-specific `server_argv.json`.
 
@@ -60,6 +61,9 @@ The production vision rows use four fixed local fixtures: handwritten `7500`, re
 |---|---:|---:|---:|---|---|
 | `worker_vision_cpu_qwen25vl` | `4/4` | `42-2249` | `16.91-21.32` | passed all fixed fixtures: `7500`, `43.36`, `Tanzania`, `CS00012465` | `k35-vision-matrix-20260717T1500Z` |
 | `vision_escalation_cpu_qwen3vl30b_moe4` | `3/4` | `31-1709` | `35.87-50.17` | passed OCR/receipt fixtures; failed chart fixture (`Moldova` instead of `Tanzania`) | `k35-vision-matrix-20260717T1500Z` |
+| `vision_candidate_cpu_qwen3vl8b_q4` | `4/4` | `31-1709` | `10.81-13.39` | passed all fixtures, but slower than the temporary Qwen2.5-VL alias and verbose on chart | `k35-qwen3vl8-candidate-20260717T185330Z` |
+| `vision_candidate_mi210_qwen3vl8b_q4` | `3/4` | `31-1709` | `110.02-125.72` | fast but failed chart fixture (`Moldova` instead of `Tanzania`) with 1024 image-token shape | `k35-qwen3vl8-candidate-20260717T185330Z` |
+| `vision_candidate_mi210_qwen3vl8b_q4_default_image` | `3/4` | `31-1709` | `109.61-120.32` | fast but failed chart fixture (`Moldova` instead of `Tanzania`) with default image-token shape | `k35-qwen3vl8-mi210-default-image-20260717T185459Z` |
 
 Diagnostic vision-escalation probes did not recover the chart failure:
 
@@ -70,9 +74,11 @@ Diagnostic vision-escalation probes did not recover the chart failure:
 
 The old one-image release smoke remains useful as a launch sanity check: `/mnt/raid0/llm/tmp/k35-vision-release-smoke-20260717T125719Z/summary.json` showed both production vision roles could answer `7500` and cleanly stop.
 
+The Qwen3-VL-8B candidate result is intentionally split by device. CPU is quality-clean on this small fixture set but slower than the alias that already passed. MI210 is fast enough to be operationally interesting, but it failed the chart fixture under both tested launch shapes, so it is not a serving candidate despite the throughput.
+
 ## Vision Escalation Mitigation
 
-The Qwen3-VL-30B escalation row is faster than `worker_vision` on these short decode fixtures, but it is not production-quality-safe because it failed the chart fixture under all three tested shapes. The live stack was therefore recompiled so `vision_escalation` temporarily uses the Qwen2.5-VL artifact and projector that passed `4/4`, preserves port `8087`, uses a distinct 24-thread quarter mask, and emits no Qwen3-VL `override_kv`.
+The Qwen3-VL-30B escalation row is faster than `worker_vision` on these short decode fixtures, but it is not production-quality-safe because it failed the chart fixture under all three tested shapes. The Qwen3-VL-8B MI210 candidate repeated the chart failure even though it was much faster. The live stack was therefore recompiled so `vision_escalation` temporarily uses the Qwen2.5-VL artifact and projector that passed `4/4`, preserves port `8087`, uses a distinct 24-thread quarter mask, and emits no Qwen3-VL `override_kv`.
 
 Validation for the mitigation: research registry validation reports `0 error(s)` with only pre-existing off-disk catalogue warnings; the orchestrator stack-change pipeline update passed with descriptor-removal waiver; the no-inference promotion suite plus stack-prior compiler coverage passed (`197 passed`). This closes the immediate unsafe-lane problem but leaves true escalation replacement open.
 
@@ -94,6 +100,8 @@ Memory values below come from the `after_request` sample in `/mnt/raid0/llm/tmp/
 | `ingest_long_context` | 32K | `9.59` | `46.35 GiB` | `46.35 GiB` | `68.15 GiB` | `0%` | spec disabled |
 | `worker_vision` | fixed fixtures | `16.91-21.32` | `6.05 GiB` | `6.04 GiB` | `6.34 GiB` | `3%` | `4/4` |
 | `vision_escalation` | fixed fixtures | `35.87-50.17` | `19.69 GiB` | `19.69 GiB` | `19.73 GiB` | `2%` | `3/4`; chart failed |
+| `Qwen3-VL-8B CPU candidate` | fixed fixtures | `10.81-13.39` | `6.35-6.86 GiB` | `6.34-6.85 GiB` | `18.15-20.39 GiB` | `2-3%` | `4/4`; slower than alias |
+| `Qwen3-VL-8B MI210 candidate` | fixed fixtures | `109.61-125.72` | `1.02-1.68 GiB` | `1.02-1.67 GiB` | `18.11-19.20 GiB` | `11-12%` | `3/4`; chart failed |
 
 ## Invalidated Rows
 
@@ -107,14 +115,14 @@ Do not use these as K35 default ingest evidence:
 
 ## Remaining K35 Gaps
 
-- `vision_escalation` needs follow-up before it can be treated as the safe higher-quality VL lane. The former production Qwen3-VL-30B MoE4 row failed the chart fixture, neither the 1024-image-token diagnostic nor default-expert diagnostic fixed it, and the active 8087 lane is now only a temporary Qwen2.5-VL alias.
-- Replacement/admission A/B remains open for Qwen3-VL-8B, MiniCPM-o, PaddleOCR-VL, SuperGemma4, and any other candidate intended to replace or specialize the current escalation role.
+- `vision_escalation` needs follow-up before it can be treated as the safe higher-quality VL lane. The former production Qwen3-VL-30B MoE4 row failed the chart fixture, neither the 1024-image-token diagnostic nor default-expert diagnostic fixed it, Qwen3-VL-8B failed the MI210 candidate chart fixture, and the active 8087 lane is now only a temporary Qwen2.5-VL alias.
+- Replacement/admission A/B remains open for MiniCPM-o, PaddleOCR-VL, SuperGemma4, and any other candidate intended to replace or specialize the current escalation role. Qwen3-VL-8B has been tested and rejected as the active replacement unless a later tuned lane fixes the chart failure.
 - Architect has valid 2K/8K optimized rows only. Deeper contexts exceed the production `-np 2 -c 16384` per-slot launch shape unless the operator authorizes a different architect launch.
 - Concurrency rows remain optional/open. Current canonical rows are single-scenario quiet-host measurements, not mixed-stack concurrency service measurements.
 - The Gemma4 draft-memory probe emitted a warning while fitting (`failed to measure draft model memory` because `Gemma4Assistant requires ctx_other`); throughput/acceptance still passed, but memory measurement for this lane needs a separate fix or external sampler.
 
 ## Next Measurements
 
-1. Add a vision-escalation replacement/specialization A/B: current evidence says the Qwen2.5-VL worker model is safer than the former Qwen3-VL escalation model on the fixed chart fixture despite being smaller.
+1. Continue vision-escalation replacement/specialization A/Bs: current evidence says the Qwen2.5-VL worker model is safer than both tested Qwen3-VL escalation paths on the fixed chart fixture despite being smaller.
 2. If operator wants service-level capacity, run a separate concurrency matrix; do not blend it into the quiet-host single-role K35 rows.
 3. Improve GPU memory precision if needed: current ROCm snapshots report percentage, not exact MiB, in this runner configuration.
