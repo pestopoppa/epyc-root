@@ -17,7 +17,7 @@ Three stages: (1) **pool generation** — architect × reviewer × grader pools 
 
 ## Prioritized Task List
 
-- [ ] **RM-1 — Pool-generation script** with pruning rules + provenance (registry rev, pruning config hash); emit the candidate pairing list.
+- [x] **RM-1 — Pool-generation script** ✅ 2026-07-17 (`scripts/analysis/reviewer_pool_gen.py`; live run: 157 roles → pools 68/77/65 → 5,236 pairings; anchors A0/A1/A3/A4 forced-present, A4 cross-family-flagged; deterministic w/ registry+config sha256 provenance; 19 tests) with pruning rules + provenance (registry rev, pruning config hash); emit the candidate pairing list.
 - [ ] **RM-2 — Anchor arms (guaranteed confirmation-tier)**: A0 gates-only (objective-verifier floor); A1 self-review (status quo alias); A3 same-family GPU heavyweight (122B-IQ2 resident, 43.7 t/s, grammar mandatory); A4 cross-family GLM-5.2-IQ2 CPU (target); A4g +hot-expert offload (skew-profile-gated); Ref external judge-of-judge (approved bounded: pinned model-id+date, ~100 sampled decisions, budget-capped).
 - [ ] **RM-3 — Screening-tier protocol**: small-n, per-pairing FA/FR/CR estimates with wide CIs; promotion rule to confirmation tier (Pareto on quality-vs-cost); driven by the H8 autopilot action, respecting no-concurrent-inference + placement-queue-not-/chat discipline.
 - [ ] **RM-4 — Confirmation-tier protocol**: fully paired (same tasks/prompts/grammar/stop/verifier budget), N≥100/arm, paired flips via `sequential_verdict.quality_trial_statistic`, Holm across metric families; per-domain reporting.

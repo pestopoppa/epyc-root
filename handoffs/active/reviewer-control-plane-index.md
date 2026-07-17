@@ -18,9 +18,9 @@ The machinery exists dormant (`ArchitectReviewService` + typed decisions behind 
 
 | Milestone | Definition of done | Owner leaves | Status |
 |---|---|---|---|
-| M1 observable | events.sqlite live; REVIEW_* categories; schemas validated; shadow emission ~100% coverage (TM-8) | H1, H2 | open |
-| M2 measured | ledger + corpus v1 + P-REV-1 drafted; baseline FA/FR; regression attributed + budgets defined | H3, H4, H-LB | open |
-| M3 compared | tournament confirmation tier done; winner beats A0/A1 floor at acceptable cost (LB-7) | H5, H6, H8 | open |
+| M1 observable | events.sqlite live; REVIEW_* categories; schemas validated; shadow emission ~100% coverage (TM-8) | H1, H2 | **Wave-1 code-complete 2026-07-17** (orchestrator `9958d819`): store live (10,326 rows) + durable resume (TM-7, AsyncSqliteSaver) + all 4 schemas & types (RA-1..7,9,11; 117 tests). Open: TM-3 emission (Wave 2), TM-6/9 docs, TM-8 coverage (**inference-gated**) |
+| M2 measured | ledger + corpus v1 + P-REV-1 drafted; baseline FA/FR; regression attributed + budgets defined | H3, H4, H-LB | corpus v1 DONE early (`nearmiss-v1`, 11,516 rows) + P-REV-1 drafted (RC-6a operator PR pending) + LB-2/LB-6a defined (LB-6b operator threshold pending); H3 shadow plane + ledger = Wave 2; baseline/regression-attribution **inference-gated** |
+| M3 compared | tournament confirmation tier done; winner beats A0/A1 floor at acceptable cost (LB-7) | H5, H6, H8 | RM-1 pool-gen DONE (5,236 pairings); rest gated on M2 + bench windows |
 | M4 governed | thresholds/escalation policy live; enforce-mode past LB-6 gate | H7 | open |
 
 ## Prioritized Task List (aggregated; leaf checkboxes are authoritative)
