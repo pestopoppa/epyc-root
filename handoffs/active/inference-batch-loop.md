@@ -23,7 +23,7 @@ The `/loop` is the SOLE writer of the ledger + batch checkbox flips. Do NOT run 
 - [x] op-bundle gate registry reconciled (21 gates A–F + 12-item build-backlog, 9 flipped SATISFIED) ✅ 2026-07-17
 - [x] Autopilot wiring: digest FA/FR consumer (B1), materializer refresh (B2), AP-6 seam (B4), supervisor liveness (C1), precondition gate (C2) ✅ 2026-07-17
 - [x] Dashboard incoherence root-cause (H4 lost-updates / H2 no-shared-epoch / H5 age-not-value) + `state_lock` primitive ✅ 2026-07-17
-- [ ] Dashboard incoherence fix land — H4 writer wiring + H2 snapshot epoch + H5 value-check (in progress this session)
+- [x] Dashboard incoherence root-cause + fix — H4 single-writer lock + daemon control-merge, H2 shared snapshot epoch, H5 value-consistency axis ✅ 2026-07-17
 
 ### Inference runs — PENDING the operator /loop (quiet-window gated)
 - [ ] **P0** RCP prologue — RCP-W1 (reference relaunch + preflight), RCP-W2 (ledger materialize), RCP-W3 (calibration smoke) — gated OP-6a/6b + OP-stack-restart-approval
