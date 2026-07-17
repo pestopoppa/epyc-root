@@ -9,7 +9,7 @@
 
 ## Objective
 
-Take GLM-5.2 UD-IQ2_M (754B glm_moe_dsa, ~239GB, download in progress) from "loads and is coherent" (glm51-reap scope) to "validated typed-decision reviewer candidate" — the reviewer-specific capability layer only.
+Take GLM-5.2 UD-IQ2_M (754B glm_moe_dsa, ~239GB, downloaded and true >64K DSA-engagement smoke-passed) from "loads and is coherent" (glm51-reap scope) to "validated typed-decision reviewer candidate" — the reviewer-specific capability layer only.
 
 ## Prioritized Task List
 
@@ -22,7 +22,7 @@ Take GLM-5.2 UD-IQ2_M (754B glm_moe_dsa, ~239GB, download in progress) from "loa
 ## Dependency Graph
 
 ```text
-glm51-reap GO gates (download → glm-dsa load smoke → coherence → CPU bench)  [parallel session]
+glm51-reap GO gates (download/integrity ✅ → glm-dsa load smoke ✅ → true >64K DSA engagement ✅ → sparse-vs-dense + quality/CPU bench)  [parallel session]
         → GC-1 → GC-2 → GC-3 → GC-5
 GC-4 operator decision (anytime after CPU bench exists) → shapes H5 A4 arm design
 Kernel P0s (glm-dsa reconciliation, grammar fix) gate GC-1-on-v7; CPU-prod path may proceed earlier if grammar verified there.

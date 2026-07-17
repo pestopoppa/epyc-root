@@ -1,6 +1,6 @@
 # GLM-MoE-DSA Evaluation — GLM-5.2 primary (GLM-5.1-REAP = fallback datapoint)
 
-**Status**: ACTIVE — **GLM-5.2 UD-IQ2_M download COMPLETE + size-manifest verified + short CPU load/coherence smoke PASSED + 4K/8K DSA trace shakedown PASSED (2026-07-16)**; DSA forward-pass premise **RE-AUDITED 2026-07-16 → likely LANDED in v6** (was "WAIT-DSA / PR #21149"). Next real action = true 64K+ DSA/indexer verification, sparse-vs-dense scaling classification, and quality. Inference operator-gated (`feedback_no_concurrent_inference`).
+**Status**: ACTIVE — **GLM-5.2 UD-IQ2_M download COMPLETE + size-manifest verified + short CPU load/coherence smoke PASSED + 4K/8K DSA trace shakedown PASSED + true >64K CPU DSA/indexer probe COMPLETED (2026-07-17)**; DSA forward-pass premise **RE-AUDITED 2026-07-16 → likely LANDED in v6** (was "WAIT-DSA / PR #21149"). Next real action = sparse-vs-dense scaling classification, long-context needle/coherence, and quality. Inference operator-gated (`feedback_no_concurrent_inference`).
 **Created**: 2026-04-22 (via research-intake deep-dive of intake-427, as GLM-5.1-REAP)
 **Updated**: 2026-07-16 (re-scoped to GLM-5.2 primary; DSA-landed audit; download authorized)
 **Categories**: moe_optimization, local_inference, model_evaluation, kv_cache
@@ -28,7 +28,7 @@ The 2026-05-28 "WAIT-DSA, no autonomous download" framing is **superseded**. Two
 |---|---|---|
 | Is the model downloaded? | **Yes** — `unsloth/GLM-5.2-GGUF` UD-IQ2_M six public shards, total `238,577,580,768` bytes, size-verified against HF tree `abc55e72527792c6e77069c99b4cb7de16fa9f23`. | Closed; proceed to DSA verification. |
 | Is llama.cpp DSA ready? | **Apparently yes in v6** (glm-dsa model + DSA KV cache via #23346) — was recorded as "no". Static audit says top-k selection exists in both prompt and decode, but final attention still looks dense/mask-based. | Confirm empirically: load + short-ctx smoke + a long-ctx (>64K) probe; then profile whether attention scales with full KV length or near `indexer_top_k`. |
-| Next useful action | Smoke-test on load (operator-gated), not more paper analysis. | Phase 1 below. |
+| Next useful action | Sparse-vs-dense DSA scaling classification and long-context quality/needle, not more load-smoke. | Phase 2 below. |
 
 ### Phase 0 — no-inference readiness (updated 2026-07-16)
 - [x] Storage gate reconciled — CLEARED; operator authorized UD-IQ2_M download. ✅ 2026-07-16
@@ -69,6 +69,7 @@ Evaluate **GLM-5.2** (`zai-org/GLM-5.2`, 754B GLM-MoE-DSA) as a large-MoE archit
 - [x] Run instrumented 4K/8K DSA trace shakedown: `/mnt/raid0/llm/tmp/glm52-dsa-long-probe-20260716T2340/plan.json` and `/mnt/raid0/llm/tmp/glm52-dsa-kv-scaling-20260716T2350/plan.json`; logs show metadata override `glm-dsa.attention.indexer.top_k=int:32` and `Lightning Indexer enabled`. ✅ 2026-07-16
 - [ ] Long-context probe (>64K, ideally toward 131K+): does the Lightning-Indexer/top-k path engage coherently? Instrument via logs / KV-cache-dsa creation / a needle-in-haystack at long ctx.
   - 2026-07-17 timeout observation: `/mnt/raid0/llm/tmp/glm52-dsa-64k-probe-20260716T235329Z/` used `--long-context 65536`, but the old prompt heuristic produced `task.n_tokens = 48009`, not >64K actual tokens. The CPU-only run logged `Lightning Indexer enabled` and processed through `45056 / 48009` prompt tokens before the `5400s` HTTP timeout canceled the task; prefill tapered from `25.29 t/s` at 2K to `8.71 t/s` at 45K. Treat this as scaling/timeout evidence only. Next retry must use the live-tokenizer floor guard (`--min-prompt-tokens 65536`) and a larger timeout.
+  - 2026-07-17 true >64K runnability/engagement observation: `/mnt/raid0/llm/tmp/glm52-dsa-true64k-probe-20260717T0125/` used `--long-context 90000 --min-prompt-tokens 65536 --request-timeout 21600` and completed. The runner counted `65957` prompt tokens; llama-server processed `65969` prompt tokens and decoded 16 tokens. Logs show `general.architecture=glm-dsa`, `indexer.top_k` overridden from `2048` to `32`, expected `blk.78.*` NextN-tail skipping, and `Lightning Indexer enabled`. Prompt eval was `6.76 t/s` overall; the 65K checkpoint was `6.81 t/s` cumulative and the final 2K interval was `3.93 t/s`. Decode was `1.20 t/s`; response was length-capped with reasoning-only preview. This closes true >64K runnability/engagement, but not sparse-compute scaling or quality.
 - [ ] D2 runtime closeout: run one prefill batch (`n_tokens > 1`) and one single-token decode; capture graph/op traces proving `top_k` or `ggml_lightning_indexer` appears in both phases.
 - [ ] D2 scaling check: vary KV length while keeping `indexer_top_k` fixed and profile the actual attention op (`FLASH_ATTN_EXT` or dense `MUL_MAT` path). Full-KV scaling means dense-mask compute; near-top-k scaling means real sparse execution.
 - [ ] Record disposition: **DSA-REAL-SPARSE** (sparse compute engages → 1M-ctx value live), **DSA-DENSE-MASK** (top-k engages but attention still scales with full KV), or **DSA-FALLBACK** (indexer/top-k path fails or is bypassed).
@@ -84,7 +85,7 @@ Evaluate **GLM-5.2** (`zai-org/GLM-5.2`, 754B GLM-MoE-DSA) as a large-MoE archit
 - [ ] Record GO (candidate) / WAIT (DSA-fallback → re-open indexer gate) / KILL (quality/throughput fail), update `inference-acceleration-index.md` + master index. Do NOT add a `model_registry.yaml` role without operator approval.
 
 ## Open Questions
-- [ ] Does the v6 `glm-dsa` graph run GLM-5.2 UD-IQ2_M coherently on load (short ctx)?
+- [x] Does the v6 `glm-dsa` graph run GLM-5.2 UD-IQ2_M coherently on load (short ctx)? Yes: exact `READY` short CPU smoke passed on experimental v7. ✅ 2026-07-16
 - [ ] Does the DSA indexer path actually engage at long context, and does attention compute scale with `indexer_top_k` rather than full KV? (Phase 2 — the whole 1M-ctx thesis rides on this.)
 - [ ] MTP: the GLM-5.2 MTP head is an inert stub on our fork — is the native-GLM-MTP forward-graph port worth finishing for spec-dec once GLM-5.2 runs? (`tree-draft-forward-port-plan.md`)
 - [x] Is `llama-cpp-dsa-contribution.md`'s PR-#21149 tracking now moot given #23346 landed? Yes — reconciled; remaining D2/D3 work is landed-code profiling only. ✅ 2026-07-16
@@ -95,7 +96,7 @@ Evaluate **GLM-5.2** (`zai-org/GLM-5.2`, 754B GLM-MoE-DSA) as a large-MoE archit
 | epyc-llama | `src/models/glm-dsa.cpp` | GLM-DSA model class + graph (indexer tensors, MLA-required) |
 | epyc-llama | `src/llama-kv-cache-dsa.cpp` / `.h` | Lightning-indexer KV cache |
 | epyc-llama | `src/llama-arch.cpp` (`LLM_ARCH_GLM_DSA` = "glm-dsa") | arch registration |
-| models | `/mnt/raid0/llm/models/GLM-5.2-UD-IQ2_M/` | download target (in progress) |
+| models | `/mnt/raid0/llm/models/GLM-5.2-UD-IQ2_M/` | complete six-shard UD-IQ2_M artifact |
 
 ## Reporting Instructions
 - After the load/smoke, record the DSA-REAL vs DSA-FALLBACK disposition here + in `inference-acceleration-index.md`.

@@ -96,7 +96,7 @@ Conclusion: current code appears to do DSA top-k selection in both prompt proces
 | D1.7 | **Throughput gate**: t/s at 16K / 64K / 128K context, V3.2 with DSA active vs MLA-only baseline | SUPERSEDED | Reprofile D2/D3 only after landed-code GLM evidence. |
 | D1.8 | Post results as comment on PR #21149 | SUPERSEDED | No live PR comment action. |
 
-**Decision gate replacement**: after GLM-5.2 loads coherently and the landed DSA path is observed, profile the landed code. If attention still scales with full KV despite top-k, D2 may be live. If the CPU Lightning-Indexer is compute-bound, D3 may be live. If GLM fails to load or quality-loops, keep D2/D3 parked.
+**Decision gate replacement**: GLM-5.2 now loads coherently and the landed DSA path has processed a true >64K prompt with `Lightning Indexer enabled` (`/mnt/raid0/llm/tmp/glm52-dsa-true64k-probe-20260717T0125/`). The observed prefill taper (final 2K interval `3.93 t/s`) makes D2 likely live, but not yet proven: profile the actual attention op before implementing. If attention scales with full KV despite top-k, D2 may be live. If the CPU Lightning-Indexer is compute-bound, D3 may be live.
 
 ### D2 — Sparse-compute reality check / possible follow-on PR
 
@@ -113,7 +113,7 @@ Author's note (paraphrased): *"separate PR needed for advanced sparse fattn kern
 | ID | Task | Status | Notes |
 |----|------|--------|-------|
 | D2.1 | Read the landed #23346 sparse path — identify whether DSA is prompt-only, decode-only, or shared | DONE | Static audit: top-k selection is shared across prompt/decode; final attention appears dense/mask-based. ✅ 2026-07-16 |
-| D2.2 | Runtime closeout: profile one prefill batch and one single-token decode with a DSA model | PENDING | Confirm `top_k`/`ggml_lightning_indexer` in both phases and profile the actual attention op. |
+| D2.2 | Runtime closeout: profile one prefill batch and one single-token decode with a DSA model | PARTIAL | True >64K GLM run observed `Lightning Indexer enabled` during prefill and decoded 16 tokens, but no op-level trace yet proves the final attention op. |
 | D2.3 | Vary KV length while keeping `indexer_top_k` fixed | PENDING | Full-KV scaling => dense-mask attention; near-top-k scaling => real sparse execution. |
 | D2.4 | If dense-mask scaling is confirmed, design sparse-fattn extension | PENDING | Decision: invasive `ggml_get_rows()` change vs new sparse-fattn variant. |
 | D2.5 | Implement CPU path first if a real dense-mask bottleneck is confirmed | PENDING | `tests/test-backend-ops.cpp` existing + new PP tests; validate PPL bit-exact. |
