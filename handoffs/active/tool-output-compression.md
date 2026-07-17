@@ -2,7 +2,7 @@
 
 **Status**: Phase 2 implemented (output compression); Phase 2b monitoring wired (2026-04-11); Phase 3a-c done (definition audit, compression, AP-16 runtime measurement); A/B done (+4pp REPL, suite-dependent); Phase 4a-d MCP wrapper/telemetry/registration landed; P3d fallback chain now landed in orchestrator runtime scope; P3d.5 done
 **Created**: 2026-04-04 (via research intake deep dive)
-**Updated**: 2026-06-28
+**Updated**: 2026-07-16
 **Categories**: context_management, agent_architecture
 **Priority**: MEDIUM
 **Depends on**: None (independent workstream)
@@ -46,7 +46,7 @@ The Phase 2 native compression module **layers before** these mechanisms: compre
 
 **Orchestrator integration**: Feature flag `tool_output_compression` (env `TOOL_OUTPUT_COMPRESSION`, default off). Wired at `helpers.py:1497` before `_spill_if_truncated()`.
 
-**Claude Code hook finding**: PostToolUse hooks **cannot replace built-in tool output** (only MCP tools support `updatedMCPToolOutput`). The Claude Code hook approach from Phase 0/1 is not viable for Bash output compression. Future work: wrap compression as an MCP tool, or use PreToolUse command rewriting.
+**Claude Code hook finding**: PostToolUse hooks **cannot replace built-in tool output** (only MCP tools support `updatedMCPToolOutput`). The Claude Code hook approach from Phase 0/1 is not viable for Bash output compression. ~~Future work: wrap compression as an MCP tool~~ → **DONE (Phase 4 landed the MCP-tool wrapper `tool_output_compressor_mcp.py`)**; PreToolUse command rewriting remains an alternative.
 
 ---
 
@@ -256,7 +256,7 @@ Apply SkillReducer's compression principles to orchestrator tool definitions. We
 - [x] P3a: Token audit of tool definitions across all prompt paths — ✅ 2026-04-09. `scripts/analysis/token_audit.py` + `docs/token_audit_report.md`. DEFAULT: 841 est. tokens (647 words), 41 entries, 4 duplicates. No usage freq data (seeding diagnostics unavailable). Instruction token ratio: 29.8%.
 - [x] P3b: Manual compression of `DEFAULT_ROOT_LM_TOOLS` — ✅ 2026-04-09. 55% reduction (647→290 words). Removed 4 duplicates, all "Do NOT" clauses, merged related tools, flattened sections. Old version preserved as `VERBOSE_ROOT_LM_TOOLS` for A/B. Instruction token ratio: 16.0%. 162 tests pass.
 - [x] P3c: Measure `instruction_token_ratio` delta (AP-16) — ✅ 2026-06-28. Static audit now reports default tool definitions at 15.0% of tools+rules+roles, with a prompt-library proxy of 10,686 char-proxy tokens. Runtime AP-16 was repaired in `epyc-orchestrator` commit `bd627b3e`; patched v6-era trials `#1010/#1011` recorded 3,188/3,295 instruction tokens and 91.8%/92.1% instruction ratios, replacing the stale 10,748-token prompt-library charge. `docs/token_audit_report.md` now separates active PromptBuilder scaffold from full prompt-library size.
-- [ ] P3d: A/B test compressed vs original definitions on seeding harness
+- [x] P3d: A/B test compressed vs original definitions on seeding harness ✅ 2026-07-14 — A/B done (+4pp REPL, suite-dependent), per status header.
 
 ## Research Intake Update — 2026-04-17
 
@@ -425,6 +425,7 @@ Add a new MCP server module that wraps the bash invocation as a `run_bash_compre
 ### Cross-references
 
 - Phase 2 (orchestrator-side compression at `helpers.py:1497`) — Phase 4 is the **Claude-Code-facing** counterpart; the two paths are independent and can both ship.
+- **Harness↔orchestrator context-management collision (2026-07-16):** a candidate *user-facing* harness (Hermes/OpenCode/ACP-speaker — NOT the dev harness) runs its OWN conversation compaction / prompt-cache mgmt / sub-agent spawning that can double-up or fight this orchestrator-side compression + `context-folding-progressive.md`. Orchestrator-side compression only pays off if the harness **cooperates** (defers to the Orch) — the concrete instance of the "layer-B needs harness cooperation ⇒ open-source harness" requirement in [`harness-selection-and-integration.md`](harness-selection-and-integration.md). Seam = the `/v1` boundary.
 - Phase 3d (anti-thrashing / language-aware / fallback chain) — those patches go into `compress_tool_output.py` itself, so they automatically benefit Phase 4 once the middleware is wired.
 - [`internal-kb-rag.md`](internal-kb-rag.md) — K6 was satisfied via the kb-search skill route, not an MCP tool; the v3 middleware pattern in P4b is the precedent if a future kb-search MCP variant is wanted.
 - [`meta-harness-optimization.md`](meta-harness-optimization.md) HLE-1 — the per-call telemetry shape in P4b is a candidate evidence source for the "per-component harness metrics" axis if the compressor is ever scored as a harness component.

@@ -10,6 +10,51 @@ sentinels, sequential verdicts, and W6 audit flags. `phase_health_report.py
 `action_type=numeric_trial`, `phase=dispatch_action`, `pid_alive=true`, and
 `code_stale=false` after the restart loaded orchestrator `e3b13edd`.
 
+**Current checkpoint - 2026-07-14T00:00Z seq-fallback unblock**: the
+authority daemon restarted cleanly with `AUTOPILOT_PLANNER_SPEND_BREAKER=0`
+and `code_stale=false`, and live trial `1346` forced the seq
+baseline-reference draw through retryable `seed_batch n=50` target
+`seed_batch_n50_t1317_no_progress_infra`. Orchestrator commit `402e461b`
+teaches the baseline-reference forcing and seq-gate preflight deferral paths to
+prefer retryable seed fallback targets when the blocked target is
+infra-contaminated, while preserving manual/token-gated blacklist purge for
+durable bans. Validation already passed in the orchestration session:
+`uv run --frozen pytest -q tests/unit/test_autopilot_sequential_wiring.py tests/unit/test_autopilot_actions.py`
+returned `177 passed`, and `ruff` passed. This is a retry-only re-exploration
+unblock, not a permit to purge durable blacklist entries automatically.
+
+**Current checkpoint - 2026-07-14T17:42Z local-planner canary refresh**: the
+canonical Fable authority wrapper was restarted through
+`start_fable_authority_daemon.py` with absolute `--max-trials 1401` under
+supervisor PID `2381139` and child PID `2381140`. The authority env now pins
+`AUTOPILOT_PLANNER_PRIMARY=local_frontdoor`,
+`AUTOPILOT_PLANNER_CRITIC=local_ingest`, Claude fallback, and
+`AUTOPILOT_PLANNER_SPEND_BREAKER=0`; the prompt contract was hardened so
+`json:autopilot_actions` must carry exactly one JSON object, not an array.
+Dry-run validation confirmed the new split, and the focused ruff/pytest batch
+passed (`41` tests). Log:
+`/mnt/raid0/llm/tmp/autopilot_fable_authority_20260714T174249Z.log`.
+
+**Current checkpoint - 2026-07-14T19:33Z planner-parser hardening**: commit
+`51bbbf64` landed after `feeacb07` and makes `extract_critique()` fail closed
+unless the critic emits a named `json:autopilot_critique` fence with a valid
+explicit decision. Trial `1352` hit the paused boundary, the pause latch was
+cleared, and the old supervisor/child `2381139` / `2381140` were stopped and
+verified gone before the new daemon started at `2026-07-14T19:33:05Z`
+(`supervisor=2491402`, `child=2491410`, `pid_age_verified_landed=true`).
+Validation passed with `ruff` on
+`scripts/autopilot/planner_coordinator.py` plus
+`tests/unit/test_autopilot_planner_coordinator.py`, and
+`uv run pytest tests/unit/test_autopilot_planner_coordinator.py -q`
+reported `52 passed`.
+
+First post-fix cycles were clean: trial `1353` produced a `local_frontdoor`
+draft plus a valid approve fence from `local_ingest`; trial `1354` produced a
+`local_frontdoor` draft plus a valid reject fence from `local_ingest`;
+planner-provider-health stayed healthy. The remaining blocker is still the seq
+gate's promotion fallback, which continues to redirect to `seed_batch n=50`
+because `rate_axis_unreachable` is unresolved and P0.1-P0.3 remain pending.
+
 **2026-07-06T16:44Z report refresh**: regenerated
 `orchestration/reports/w8_promotion_trajectory_20260706T164403Z.{json,md}`
 and `orchestration/reports/fable5_gate_report_20260706T164403Z.{json,md}`.
@@ -93,6 +138,16 @@ not globally invalid AutoPilot strategies. They are currently unavailable only
 for the specific W8 candidate-generation blocker because they cannot create the
 replayable candidate row W8 needs. They remain valid for coverage, T2/T3
 validation, and non-W8 work.
+
+**Blacklist freshness audit - 2026-07-14**: preflight blacklist scanning now
+walks journal batch shards, including `orchestration/autopilot_journal_1.jsonl`,
+instead of reading only the base shard. That audit surfaced infra-contaminated
+and stale blacklist entries, so the prompt wording now calls out blacklist
+freshness, expiry, and purge scope explicitly. Retry-only re-exploration is
+allowed for the audited infra cases we classified as repeatable transport
+failures rather than durable semantic dead ends: trial `1302`
+(`langgraph_coder`, connection-refused) and seed-batch no-progress infra cases
+trial `1317` (`n=50`) and trial `1320` (`n=10`).
 
 **Prior status — 2026-07-04T21:24Z W8 authority-env checkpoint**: W4/W6 authority wiring remains current, and AutoPilot is live as PID `1122670` at trial `1146` with `--max-trials 2000`, launched through `scripts/autopilot/start_fable_authority_daemon.py` in `epyc-orchestrator` `07883e63`. The launcher enforces `AUTOPILOT_SEQ_VERDICT=1`, W6 audit flags, `AUTOPILOT_PLANNER_HINTS=1`, `AUTOPILOT_TOOL_SENTINELS=1`, planner timeout `600`, and stepping stones. Strict Fable gate smoke (`fable5_gate_report.py --json --strict --require-current-code`) is clean: `ready=true`, blockers `[]`, and the only active next action is `collect_w8_promotion_eval_evidence`; phase health is current-code clean at trial `1146` in `planner_invoke` with `prompt_chars=62902`. The immediately prior bare-env daemon PID `3796930` was stopped after Fable detected missing authority/tool env; recovery journaled trial `1137` as `autopilot_killed_mid_trial`. `epyc-orchestrator` `0a6336c7` fixes the last W8 replay/report mismatch found in trial `1135`: benign AP-24 `keep_revert_decision=excluded` rows that are still `seq.state=accumulating` are now replay-eligible in AutoPilot, while reverted or failure-bearing excluded rows remain terminal. This aligns the live replay selector with the earlier report-plane fix `076699ff`, so the six stale accumulating W8 candidates are no longer silently skipped. The remaining W8 blockers are evidence, not wiring: `combined_E_below_required`, `fresh_promotion_eval_required`, and `seq_confirmation_required`. `epyc-orchestrator` `9b7a9ebe` closes the last StrategyStore startup-only path by refreshing planner-hint prompt rows and convention bindings before each controller prompt; with `AUTOPILOT_PLANNER_HINTS=1`, newly seeded StrategyStore rows are visible to planner prompts each turn. `epyc-orchestrator` `8185c0f7` extends `restart_readiness_report.py` with `--require-current-code`, phase heartbeat path/staleness controls, and Fable strict follow-up wiring, so W4/W6 restart/cutover checks fail closed when the live AutoPilot process predates runtime source changes.
 
@@ -278,7 +333,8 @@ land at ONE autopilot restart, each behind its own flag.
 - [x] **W8a.2 — selectable-action provider coordination**: orchestrator `1639748a` threads the live `selectable_action_types` allowlist into `plan_with_providers()`, rejects known-but-currently-unavailable drafts before critique, applies the same guard to critic revisions, and adds regression coverage for the W8 `deep_eval` drafter waste case. The commit is pushed/indexed and live in AutoPilot PID `3795561`; trial `1210` verifies the post-deploy local `frontdoor` draft / local `worker` critique path before the higher-tier guard forced T3. ✅ 2026-07-06
 - [x] **W8a.3 — outcome-stall dispatch guard**: orchestrator `9522b76e` stops the higher-tier probe guard from overriding an already frontier-moving planner action under frontier-stall pressure, and `78ae65e6` adds a bounded outcome-progress fallback that forces a metric-bearing numeric trial only when frontier admission is stale and the selected action is seed/eval/housekeeping rather than a frontier-moving action. Focused validation passed (`140` AutoPilot action/phase/provider tests), ruff, `py_compile`, `git diff --check`, push, and GitNexus refresh. A boundary restart loaded the patch; W8a.4 below is the current live replay-dispatch checkpoint. ✅ 2026-07-06
 - [x] **W8a.4 — forced replay/AP-9 dispatcher repair**: orchestrator `e3b13edd` keeps W8 replay pressure active while replay/confirmation remains open, allows materialized multi-param NumericSwarm candidates to be replayed as one force-matched candidate, and bypasses AP-9 only when the current action exactly matches `seq_candidate_replay_forced`. Trial `1213`-`1216` skips exposed the seam; the state was cleaned without deleting journal evidence, GitNexus refreshed, focused validation passed (`203` tests + Ruff + diff-check), and live PID `3935151` is evaluating trial `1217` with the intended AP-9 replay bypass. ✅ 2026-07-06
-- [ ] **W8b — live candidate evidence after guard deploy**: continue W8 candidate attempts under the live selectable-action coordinator plus outcome-stall guard. Verify a keepable replayable candidate, then collect sequential confirmation and fresh promotion-eval evidence. The old restart/local-worker verification clause is superseded by the current `local_frontdoor`/`local_worker` canary and selectable-action coordinator.
+- [x] **W8a.5 — retryable-aware seq fallback unblock**: orchestrator `402e461b` adds retryable-aware seed fallback selection for seq baseline-reference forcing and seq-gate preflight deferral while preserving manual/token-gated blacklist purge. Live trial `1346` forced the seq baseline-reference draw via retryable `seed_batch n=50` target `seed_batch_n50_t1317_no_progress_infra`, so infra-contaminated retry targets can be revisited without reopening durable blacklist bans. ✅ 2026-07-14
+- [ ] **W8b — live candidate evidence after guard deploy**: continue W8 candidate attempts under the live selectable-action coordinator plus outcome-stall guard. Verify a keepable replayable candidate, then collect sequential confirmation and fresh promotion-eval evidence. The old restart/local-worker verification clause is superseded by the current `local_frontdoor`/local_worker` canary and selectable-action coordinator.
 
 ## Gates & pitfalls
 
@@ -312,3 +368,11 @@ land at ONE autopilot restart, each behind its own flag.
 ## Reporting
 
 Tick waypoints + one-line progress entry; verdicts claimed per MEASUREMENT.md grammar (`[P-QUAL-T1/seq-v1, E=…, k=…, date]`); on completion delete this handoff's master-index row and move to `completed/`.
+
+## Research Intake Update — 2026-07-16 (Reviewer control plane: decision≈question ledger alignment)
+
+The new `review_ledger` (H4, [`reviewer-calibration-accounting.md`](reviewer-calibration-accounting.md)) is designed to FOLLOW this handoff's per-question-ledger conventions: one row per review decision (decision ≈ question), gold label + gold-source + instrument version + era columns, append-only, e-process monitoring on `src/autopilot_core/sequential_verdict.py` (FA-tolerance AND FR-tolerance — the symmetric pair is motivated by intake-836's measured 10:1-440:1 false-reject dominance). Alignment task RC-7 owns reconciliation; if ledger conventions here evolve, cross-update H4.
+
+## Research Intake Update — 2026-07-17 (TM-6 relationship contract)
+
+The reviewer control plane's trace store documented its non-overlap contract with this pipeline (see `reviewer-trace-materialization.md` §TM-6): the trace store indexes the same append-only sources (journals/audit/progress) and adds an `emit://`-namespaced primary path ONLY for review-plane events that have no file source; this evidence-plane pipeline remains authoritative for trial/verdict events; `review_ledger` rows map to per-question-ledger shape via `to_question_ledger_row()` (RC-7).

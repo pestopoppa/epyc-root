@@ -136,25 +136,86 @@ Full REPL error taxonomy extracted from `repl_tap.log` (4462 errors, 4280 `CALL(
 - [x] REPL `FINAL(...)` now accepts `answer`/`result`/`secret`/`value`/`response` aliases and rejects unsupported kwargs with a clear `ValueError` ✅ 2026-07-11
 - [x] Autopilot supervisor/death ledger wrapper landed (`autopilot_supervisor.py`, `start_fable_authority_daemon.py` bounded restart/death-ledger defaults) ✅ 2026-07-11
 - [x] Startup attestation landed (config digests, combined config hash, gate env capture, mismatch reporting, phase health display of tool/planner flags, including visible planner spend-breaker state) ✅ 2026-07-11
+- [x] Planner spend-breaker hardening stayed opt-in for local planner runs: the coordinator default is now off when the env is absent, the authority daemon still pins `AUTOPILOT_PLANNER_SPEND_BREAKER=0`, and the live restart confirmed that env at `0` ✅ 2026-07-11
+- [x] PID-age-verified preflight gate landed: `start_fable_authority_daemon.py --preflight` now exits nonzero unless the live PID is age-verified current; the live rejection on Dirac's MH-9 worker is expected because unreviewed runtime `controller_io.py` edits predate PID `1039446` ✅ 2026-07-11
+- [x] Host timing covariates landed for P2.9: `host_health.py` now records `min_core_mhz`, `host_inflight`, `numa_balancing`, and cache/cache-memory state; `eval_tower.py` captures compact per-question host covariates plus `tokens_generated` and adds observe-only >=128-token speed analytics fields in `EvalResult.details` ✅ 2026-07-11
+
+## Checkpoint completions — 2026-07-14
+- [x] W2 direct AutoPilot start bypass now fails closed in `epyc-orchestrator` commit `fc0be9bc`: `scripts/autopilot/autopilot.py start` exits `2` before taking the singleton lock when authority env is missing/mismatched, points operators to `scripts/autopilot/start_fable_authority_daemon.py`, and requires `AUTOPILOT_PLANNER_SPEND_BREAKER=0` rather than turning the spend breaker on. ✅ 2026-07-14
+- [x] W8/Fable quiet-window evidence refreshed in `epyc-orchestrator` commit `5876a473`: `orchestration/reports/fable5_gate_report_20260714T111641Z.{json,md}` and `w8_promotion_trajectory_20260714T111641Z.{json,md}` confirm AutoPilot is stopped, W8 replay concentration is not warning, W4/W6 restart cutover is still blocked by the W6 gaming alarm, and the tool-use sentinel lane is ready but requires controlled API reload plus authority-daemon restart. ✅ 2026-07-14
+- [x] HALO quiet-window spike closed as `completed-not-actionable`: operator-approved install succeeded, 3,532 spans were converted, the HALO canonical compatibility transform validated in `/tmp`, and the analyzer run failed before inference because local `/v1/responses` returned 404; outcome doc is `research/deep-dives/halo-spike-results-2026-07-14.md`. ✅ 2026-07-14
+- [x] Controlled API reload plus authority-daemon recycle completed for the tool-sentinel lane: stale supervisor/child `1816107`/`1816109` were SIGTERM/SIGKILL verified dead, fresh supervisor `1890099` with child `1890100` resumed on `AUTOPILOT_TOOL_SENTINELS=1` and gate-3 profile, and the phase advanced to `planner_prompt_build` with `code_stale=false`, `tool_sentinels=true`, `w6_audit=true`, and `AUTOPILOT_PLANNER_SPEND_BREAKER=0`. ✅ 2026-07-14
+- [x] Gate-3 latest verification hard-passed against orchestrator PID `1885933`: `get_eval_secret` returned `7/7` success rows, no-tool isolation passed, soft `WEB_RESEARCH: INFRA_FAIL` now fails closed as `web_research result failed (search_failed)`, and a forced web probe after reload still returned a relevant Python.org result through DDG fallback while preserving `success:true`. ✅ 2026-07-14
+
+## Checkpoint completions — 2026-07-16
+- [x] Structural-experiment runtime contamination guard implemented in `epyc-orchestrator`: trial `1403` showed `plan_review=true` apply/attestation succeeded, gate failed, revert hit `[Errno 111] Connection refused`, and later journal rows no longer represented live flag state. The action now snapshots exact prior flags, refuses eval without a restore snapshot, requires strict apply/revert attestation, marks failed apply/revert paths `bug_corrupted`, and routes `eval_result.bug_corrupted_by` through learning exclusion before normal evidence accrual. Focused validation: `151 passed` across `test_autopilot_actions.py` and `test_classify_learning_exclusion.py`; live remediation set `plan_review=false` and attested 6 workers clean. Report: `/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/autopilot_speed_regression_runtime_contamination_20260716.md`. ✅ 2026-07-16
+- [x] Speed-regression/v7 read-only audit recorded: exact numeric frontier parameter replays confirmed current-floor throughput around `34.8-35.3 t/s`, but quality deltas are not clean model-quality evidence because qid vectors drifted and pre-fix runtime errors polluted rows. Kernel-lineage audit found the running production server is still the June 26 binary and v7 has IQK plus patch-equivalent ROCm fp8 guard coverage, so no production-kernel source edit is blamed; v7 remains unpromoted pending clean candidate build, v6/v7 performance A/B, and MMLU-Pro/GPQA-Diamond quality gates. ✅ 2026-07-16
 
 ## Tasks
 - [ ] P0.1 operator run/pause decision on autopilot candidate species
 - [ ] P0.2 P2 amendment bundle signed (rate-axis era-fence first) + discriminability gate + P3 canary
+  - [x] W5 control-pair attestation report-only scaffold landed in `epyc-orchestrator` commit `7a2a7c89`: `hle_metrics.py` now journals default-off `oracle_adequacy.control_attestation` status (`disabled`/`no_controls`/`incomplete`/`failed`/`passed`) from supplied known-good/known-bad rows without changing SafetyGate, Pareto admission, learning exclusion, blacklists, or thresholds. Binding gate remains operator/policy-gated. ✅ 2026-07-11
+  - [x] P0.2a report-only amendment evidence view landed in `epyc-orchestrator` commit `65d4cf40`: `fable5_gate_report.py` now surfaces rate-axis state, latest oracle control-pair attestation, eval discriminability/T3 hard-lane coverage, and RI-10 canary state under `p0_2_amendment_bundle_inputs` with empty blockers and explicit `operator_signing_required`; signed P2 amendment / binding rate-axis era-fence remains operator-gated. ✅ 2026-07-11
 - [ ] P0.3 era-fenced blacklist purge + tool/delegation lever re-exploration
+  - [x] P0.3a guarded purge planner/apply helper landed in `epyc-orchestrator` commit `a26e6c6a`; dry-run identified exactly the 5 audit-scoped entries (`frontdoor.md` prompt/GEPA freezes, t655, t664, t864) and preserves 49 others. Apply remains operator-gated by `--approval-token ERA_FENCED_BLACKLIST_PURGE_2026_07_11`. ✅ 2026-07-11
+  - [x] P0.3b audit-scoped tool/delegation re-exploration landed in `epyc-orchestrator` commit `134ed346`: AutoPilot now marks the three automated instrument-era structural blacklist entries (`architect_delegation` t655, `specialist_routing` t664/t864) as retryable without rewriting YAML, preserves manual frontdoor prompt/GEPA freezes behind the approval token, and journals `p0_3_blacklist_reexploration_*` rationale when dispatching those retries. ✅ 2026-07-11
+
+### P0 operator gate packet - prepared 2026-07-11
+
+This packet is command-discovery and evidence packaging only. It does not authorize a running autonomous session to pause/resume AutoPilot, sign measurement-policy changes, rewrite the blacklist, or enable the planner spend breaker.
+
+- **P0.1 run/pause call:** inspect current-code and gate status before deciding:
+  - `cd /mnt/raid0/llm/epyc-orchestrator && python3 scripts/autopilot/start_fable_authority_daemon.py --preflight`
+  - `cd /mnt/raid0/llm/epyc-orchestrator && python3 scripts/autopilot/autopilot_restart_advisor.py --json --strict`
+  - `cd /mnt/raid0/llm/epyc-orchestrator && uv run --with pyyaml python scripts/autopilot/fable5_gate_report.py --json --require-current-code`
+  - Decision boundary: keep candidate species running only as an explicit operator choice while the rate-axis/P2 amendment remains unsigned; otherwise pause candidate species or let the preflight/reachability deferral route only promotion-independent work.
+- **P0.2 amendment bundle:** use the report-only evidence view, then sign outside AutoPilot:
+  - `cd /mnt/raid0/llm/epyc-orchestrator && uv run --with pyyaml python scripts/autopilot/fable5_gate_report.py --json --out-json orchestration/reports/p0_2_amendment_bundle_inputs_20260711.json --out-md orchestration/reports/p0_2_amendment_bundle_inputs_20260711.md --require-current-code`
+  - Inspect `p0_2_amendment_bundle_inputs`: rate-axis state, latest oracle control-pair attestation, eval discriminability / T3 hard-lane coverage, RI-10 canary state, and `operator_signing_required`.
+  - Boundary: this report is non-binding. Any rate-axis era fence, calibration baseline, frozen null, threshold, or P3 canary adoption remains a MEASUREMENT.md human-amendment action.
+- **P0.3 blacklist purge:** preview first, apply only with the explicit token:
+  - Preview: `cd /mnt/raid0/llm/epyc-orchestrator && uv run --with pyyaml python scripts/autopilot/blacklist_purge_plan.py --print-md --report-json orchestration/reports/p0_3_blacklist_purge_plan_20260711.json --report-md orchestration/reports/p0_3_blacklist_purge_plan_20260711.md`
+  - Apply, operator only: add `--apply --approval-token ERA_FENCED_BLACKLIST_PURGE_2026_07_11`.
+  - Boundary: the automated re-exploration exception for t655/t664/t864 is already live without rewriting YAML; the destructive purge of manual frontdoor freezes stays gated.
+- [x] P0.1 packet validation: `start_fable_authority_daemon.py --preflight` and `autopilot_restart_advisor.py --json --strict` both report AutoPilot PID `1039446` active on trial `1317`, `code_stale=true`, `restart_needed=true`, `safe_to_restart_now=false`, and `status=wait_for_boundary`; no pause/restart was performed. ✅ 2026-07-11
+- [x] P0.1 report-action hardening landed in `epyc-orchestrator` commit `2b78c2f3`: `fable5_gate_report.py` now points the `recover_autopilot_phase` next action at `start_fable_authority_daemon.py --preflight` instead of the weaker phase-health-only report, with a regression test. ✅ 2026-07-11
+- [x] P0.2 packet validation: the report-only amendment view ran to `/tmp`, with `p0_2_amendment_bundle_status=attention`, `rate_axis=below_required`, `control_attestation=missing`, `eval_discriminability=low_coverage`, `operator_signing_required=true`, and evidence gaps `rate_axis_below_required`, `control_attestation_missing`, `eval_discriminability_low_coverage`. ✅ 2026-07-11
+- [x] OP-1/P0.2 bridge code landed in `epyc-orchestrator`; focused tests reported passing (`test_authority_consent`, `test_autopilot_phase_status`, `test_autopilot_sequential_wiring`, `test_autopilot_startup_attestation`, `test_safety_gate_sequential_verdict`). The operator-owned `orchestration/authority_consent.json` is `root:root` `0444`, so the main agent could not add `seq_p0_2_bridge` consent without non-interactive sudo. ✅ 2026-07-15
+- [ ] Remaining operator action: add `seq_p0_2_bridge` consent to `orchestration/authority_consent.json` or apply the formal MEASUREMENT amendment.
+- [x] P0.3 packet validation: dry-run purge preview still identifies `54` entries before, exactly `5` removable audit-scoped entries, and `49` preserved entries; destructive apply remains token-gated. ✅ 2026-07-11
 - [x] P1.4 loop supervisor + death-cause ledger ✅ 2026-07-11
-- [ ] P1.5 PID-age-verified "landed" definition (`--require-current-code` gating)
+- [x] P1.5 PID-age-verified "landed" definition (`--require-current-code` gating) ✅ 2026-07-11
 - [x] P1.6 startup attestation (gate-set + config hash logged and diffed) ✅ 2026-07-11
 - [x] P1.6a REPL `_final()` keyword arg fix — accept `**kwargs`, normalize to `answer` (W10, 1262 wasted trials) ✅ 2026-07-11
 - [x] P1.6b Unknown tool cleanup — stub or remove from prompts; confirm `AUTOPILOT_TOOL_SENTINELS=1` (W10, 403 wasted trials) ✅ 2026-07-11
-- [ ] P2.7 runtime manifest via existing SSoT pipeline (N11 extension)
-- [ ] P2.8 lock-file JSON payload + display-matrix renderer collapse
-- [ ] P2.9 host covariates journaled per timing event
-- [ ] P3.10 migration-discipline hook (all readers in one change)
-- [ ] P3.11 hermetic NUMA-parity invariant test + reader-agreement contracts
-- [ ] P3.12 shadow lane for new live-loop components
-- [ ] P3.13 regressions-per-active-trial + promotions-per-100-trials metrics
+- [x] P2.7 runtime manifest via existing SSoT pipeline (N11 extension) ✅ 2026-07-11
+  - Runtime-only derived manifest now refreshes from stack lifecycle events and is kept out of git; the launcher writes `/mnt/raid0/llm/tmp/orchestrator_runtime_facts.json` on start/reload and best-effort after state save.
+- [x] P2.8 lock-file JSON payload + display-matrix renderer collapse ✅ 2026-07-11
+  - [x] P2.8a region-lock payload attribution landed in `epyc-orchestrator` commit `799f1655` ("Add region lock payload attribution") ✅ 2026-07-11
+  - [x] P2.8b display-matrix renderer collapse landed in `epyc-orchestrator` commit `4de996ea` ("Collapse region lock grid onto display matrix") ✅ 2026-07-11
+  - [x] P2.8c browser fallback removal landed in `epyc-orchestrator` commit `08e94997`: `dashboard.html` no longer reconstructs a region-lock grid from legacy `by_role`/PID data when the backend display matrix is unavailable; it shows an explicit diagnostic instead, so observability cannot silently fork lock authority again. ✅ 2026-07-11
+- [x] P2.9 host covariates journaled per timing event ✅ 2026-07-11
+- [ ] W1 runtime-facts consumption follow-up: remaining runtime-facts-backed reader consolidation stays open for surfaces beyond the validated stack-service slice; a live reader insertion for `/mnt/raid0/llm/tmp/orchestrator_runtime_facts.json` was prototyped and reverted after `gitnexus impact active_stack_numa_mode --repo epyc-orchestrator --direction upstream` returned HIGH risk (`22` upstream impacts across dashboard health/topology/node detail/snapshot/tap flows). Re-enter only with explicit acceptance of that blast radius; do not paper over this with another env/PID fallback.
+  - [x] W1 runtime-facts stack-service slice landed in `epyc-orchestrator` commit `db62aa3f`: runtime facts manifest now records `runtime_stack.stack_numa_mode`, `selected_servers`, `selected_ports`, and effective paths; stack start/reload/stop refresh the manifest at persisted-state boundaries; dashboard `expected_stack_services()` uses validated runtime selected servers when no explicit `ORCHESTRATOR_STACK_NUMA_MODE` override exists, otherwise it falls back to static manifest behavior. ✅ 2026-07-14
+- [x] P3.10 migration-discipline hook (all readers in one change) ✅ 2026-07-11
+  - Root commit `6d023e9d` enforced stack-fact migration discipline with the pre-commit hook, validator, candidate gate integration, and focused tests; verified with `py_compile`, `bash -n`, targeted pytest, negative/positive CLI checks, and `git diff --check`.
+- [x] P3.11 hermetic NUMA-parity invariant test + reader-agreement contracts ✅ 2026-07-11
+  - Commit `608cc54c` landed the shared NUMA-mode normalization helper and aligned launcher, stack-priors, template, guard, and dashboard readers on the same contracts.
+  - [x] P3.11a W4/W9 read-only topology parity smoke landed in `epyc-orchestrator` commit `8bbf3eb5`: `test_topology_parity_smoke_for_expected_listener_ports` verifies known-port scanning includes every expected `both` stack service, simulated discovered listeners render as running topology nodes, and undiscovered expected services remain represented as unloaded stack servers. ✅ 2026-07-11
+  - Root-side durable record landed in `epyc-root` commit `269c19bb` (`Record topology parity smoke`). ✅ 2026-07-11
+- [x] P3.13 regressions-per-active-trial + promotions-per-100-trials metrics ✅ 2026-07-11
+  - Commit `fa0391a5` reported the active-trial outcome progress metrics in the phase-status/autopilot/dashboard path; verification stayed clean with Ruff, `py_compile`, the focused pytest batches, and `git diff --check`.
+- [x] P3.12 shadow lane for new live-loop components ✅ 2026-07-11
+  - Commit `d596b5b2` ("Gate live-loop dispatch on action availability") added the live-loop shadow lane: planner-selected dispatch now skips outside the active allowlist, while sequential/due/fresh-eval/baseline/candidate-replay paths keep their own policy gates.
 
-*Master index not updated — index changes are operator-approved per CLAUDE.md; add this handoff to the index if accepted.*
+*Index status: accepted by the operator-directed 2026-07-11 robustness implementation thread; discoverable from the master N2 row and the routing/autopilot dispatch row. Keep current runtime truth in `autopilot-continuous-optimization.md` + `phase_health_report.py --json`.*
+
+## Checkpoint completions — 2026-07-14
+- [x] W1 runtime-facts reader slice completed in `epyc-orchestrator` commit `db62aa3f`: the runtime-facts manifest now records `runtime_stack.stack_numa_mode`, `selected_servers`, `selected_ports`, and effective paths; stack start/reload/stop refresh the manifest at persisted-state boundaries; dashboard `expected_stack_services()` uses validated runtime selected servers when no explicit `ORCHESTRATOR_STACK_NUMA_MODE` override exists. ✅ 2026-07-14
+- [x] AutoPilot seq-preflight/live-allowlist deadlock fix completed in `epyc-orchestrator` commit `39fc3653`: deferred seq-gate replacement now bypasses the ordinary planner-selected live-loop allowlist, so retryable `seed_batch` fallbacks can dispatch after the preflight chooses them instead of looping on an allowlist rejection. ✅ 2026-07-14
+- [x] Dashboard-region-lock topology rendering sidecar completed in `epyc-orchestrator` commit `774fed69` (`Fix dashboard region lock topology rendering`): the lock display now uses all configured instance topology, marks `launch_selected`, adds `launch_mode` plus `topology_mode=all_configured`, renders inactive configured shapes as `○`, labels all configured NUMA ports independent of expected launch mode, and updates the legend/status copy to distinguish active holder, selected/free, blocked, and configured inactive shapes. ✅ 2026-07-14
+
+## Checkpoint completions — 2026-07-11
 
 ---
 
@@ -169,3 +230,5 @@ Research-intake **intake-798** ("The Gemma Challenge and the Case for Agent Coll
 - **↔ W5 eval-gaming / discriminability gate (P0.2).** Their PPL-only gate **was gamed** (agents held PPL under threshold while degrading MMLU-Pro/GPQA by 15/40 pts); they reactively added MMLU-Pro + GPQA-Diamond for top submissions. Independent, real-world confirmation of the audit's "a single cheap proxy will be gamed; a saturated/1-D suite invalidates every calibrated threshold" concern — argues the discriminability audit gating P0.2 should treat **multi-dimensional + evolving** gates as the steady state, not a fix.
 
 See also the gemma4-specific kernel spinoff: [`gemma-challenge-kernel-techniques-v7.md`](gemma-challenge-kernel-techniques-v7.md).
+
+Related checkpoint: MH-9 new-file mutation support landed in orchestrator commit `88639b1f`, closing the PromptForge checkpoint without changing any remaining audit tasks.

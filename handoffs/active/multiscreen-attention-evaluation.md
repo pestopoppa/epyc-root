@@ -346,3 +346,16 @@ These are the deep-dive actions queued from intake-598 — slotted here because 
 
 - [ ] **LFM2-1 (revised)**: **No bench, no port, no deployment.** `lfm2moe` arch support is present in our HEAD (not yet smoke-loaded) and there is no production gap — do not queue a llama-bench run (respects `feedback_no_concurrent_inference`: no role to justify it). Revisit ONLY if a "cheap-first worker" / "edge-companion" / router-triage role is opened (per `project_stack_simplification`, `feedback_dont_dismiss_creative_uses`) — then evaluate LFM2.5-8B-A1B Q4_K_M (5.16 GB) as a **standalone** candidate; its calibrated-abstention behavior (the 63.47 AA-Omniscience non-hallucination is an RL avg@k *abstention* artifact, paired Accuracy 8.67 / Index −24.70 — NOT a knowledge win) could suit a triage stage that must reliably say "escalate / I don't know."
 - [x] **LFM2-2 (done 2026-05-29)**: Recorded LFM2's "minimal conv+GQA beats SSM-hybrid on-device" finding as a **regime boundary** (above) — does NOT override intake-503/Minimax long-context findings (different scale/context regime). `LFM2-ColBERT-350M` (intake-652) flagged to [`internal-kb-rag.md`](internal-kb-rag.md) embedder-choice question as a candidate late-interaction reranker — **with the caveat that it is PyLate/PLAID-only (NOT GGUF/llama.cpp/ONNX), so a PyLate-path eval candidate, not a drop-in for the existing GTE-ModernColBERT/MaxSim plumbing.**
+
+
+## Research Intake Update — 2026-07-14
+
+### New Related Research
+- **[intake-813] "Language Models Need Sleep: Learning to Self-Modify and Consolidate Memories"** (arxiv:2606.03979 — Behrouz, Hashemi, Mirrokni; Titans-family)
+  - Relevance: medium — same author line already tracked here (Behrouz/Titans; cf. intake-354). Introduces a periodic **"sleep"** phase that consolidates fragile in-context memory into stable parametric knowledge via a **Continuum Memory System** + Self-Knowledge Seeding, with catastrophic-forgetting control by parameter expansion/(de)activation.
+  - Key technique: the **Hope** architecture (Titans-family self-modifying deep-memory model); multi-stage consolidation claims monotonically improving continual learning; near-perfect BABILong to 10M tokens.
+  - Reported results: AIME-24 79.2 / AIME-25 69.0 (Qwen3-8B + Sleep); ARC few-shot 80% vs SEAL 72.5%.
+  - Delta from current approach: this is a **training-time custom architecture** (RL rewards, GKD, parameter expansion) with **no OSS implementation and no llama.cpp/CPU path** — architectural signal for the sub-quadratic/Titans line, not a portable or benchable component. Verdict: worth_investigating. (NB: the paper's "SEAL" = MIT Self-Adapting LMs, a name-collision with the repo's SEAL control vectors — unrelated.)
+
+### Monitoring note (no action, no checkbox)
+intake-813 is tracked as a continuation of the Behrouz/Titans architecture line (with intake-354); **no bench/port/checkbox** — architectural monitoring only, consistent with the LFM2 "no bench, no port" discipline above and the corpus anti-bloat posture (cf. intake-798 "deliberately no checkboxes added"). Revisit only if a Titans-family artifact becomes OSS/llama.cpp-loadable AND a production gap opens.

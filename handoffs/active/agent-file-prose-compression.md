@@ -1,6 +1,6 @@
 # Per-Model Agent-File Prose Compression
 
-**Status**: refreshed 2026-07-03 — Phase 1+2+3+4 LANDED for the local production stack; registry operating points are applied; `/new-model` Step 6.5 now points at the live runner and relative-to-baseline gate. Phase 5 rollout remains a separate decision, with optional n=30 expansion before broad compressed-artifact rollout.
+**Status**: refreshed 2026-07-14 — Phase 1+2+3+4 LANDED for the local production stack; registry operating points are applied; `/new-model` Step 6.5 now points at the live runner and relative-to-baseline gate. Existing evidence narrows Phase 5 to `agents/shared/*.md` first, with role overlays held for a second PR; operator choice remains whether to execute that first-step rollout now or take the optional n=30 expansion first.
 **Created**: 2026-04-30 (via research intake — intake-509 deep-dive follow-up)
 **Updated**: 2026-05-28
 **Categories**: agent_architecture, benchmark_methodology, routing_intelligence
@@ -48,6 +48,12 @@ This handoff remains active because the high-value deployment decision is no lon
 | ingest_long_context | 0.93 / 0.75 / 1.00 | pass | pass | fail P | medium | Compliance pinned; aggressive fails procedure. |
 
 C/P/R = compliance / procedure / recall. Current sample is n=15 forbidden-action, n=12 procedure, n=15 recall per level, so borderline operating points still carry the ~13pp CI caveat from the summary artifact.
+
+**2026-07-14 zero-inference decision scope**:
+
+- The handoff's own first decision fork is satisfied by existing evidence: multiple local production-stack roles pass at `medium` or `aggressive`, so the supported Phase 5 scope is `agents/shared/*.md` first.
+- The same decision fork explicitly keeps role overlays for a second PR. No existing artifact in this handoff promotes `agents/*.md` or `CLAUDE.md` in the same step.
+- The remaining non-inference choice is operator-only: execute the `agents/shared/*.md` rollout now, or take the optional n=30 expansion before that rollout. No new benchmark or inference run is required to make that choice.
 
 ## Objective
 
@@ -223,6 +229,6 @@ Update `progress/2026-04/2026-04-30.md` after Phase 1 + 2 lands.
 - [x] Phase 1 skill + pilot artifacts (root 40d8348) ✅
 - [x] Phase 2 compliance suite + Phase 4 /new-model Step 6.5 (root 0467891) ✅
 - [x] Phase 3 per-model curve for local production stack (live_runner + 2026-05-07 summary) ✅
-- [ ] Decide Phase 5 roll-forward beyond ENGINEERING_STANDARDS pilot to all shared/*.md + role overlays
-- [ ] Optionally run n=30 expansion before broad compressed-artifact rollout
-- [ ] Apply operating points per decision-fork table (aggressive/medium/mild/none per role)
+- [x] Narrow Phase 5 rollout scope from existing evidence to `agents/shared/*.md` first; keep role overlays for a second PR per the decision-fork table. ✅ 2026-07-14
+- [ ] Operator choose between immediate `agents/shared/*.md` rollout and the optional n=30 expansion before executing that rollout
+- [x] Apply operating points per decision-fork table (aggressive/medium/mild/none per role) ✅ 2026-07-14 (registry operating points applied; fields populated in both registries)

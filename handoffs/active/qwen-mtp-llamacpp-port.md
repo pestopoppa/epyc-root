@@ -49,6 +49,16 @@ Land mainline llama.cpp Qwen MTP self-speculation (`--spec-type draft-mtp` / `--
 - **PR #22673 (`255582687`, MTP support): NOT yet applied.** Cherry-pick measured **25 conflicted files** (19 auto-merge clean). Aborted rather than commit a broken half-merge.
 - Production fork untouched (`verify_llama_cpp.sh` PASSED).
 
+## Checkpoint update (2026-07-11)
+
+- Work for this checkpoint was in `/mnt/raid0/llm/llama.cpp-experimental`, branch `experimental-v7-candidate` at commit `46f876c12`.
+- The production tree `/mnt/raid0/llm/llama.cpp` was not edited.
+- The experimental source already contains the Qwen/native MTP port surface: `COMMON_SPECULATIVE_TYPE_DRAFT_MTP`, `draft-mtp` parsing + dispatch, `LLAMA_CONTEXT_TYPE_MTP`, MTP graph mapping in `src/llama-context.cpp`, Qwen MTP graph code in `src/models/qwen35.cpp` and `src/models/qwen35moe.cpp`, `nextn_predict_layers` emission in `conversion/qwen.py`, and server/CLI docs that surface the flags.
+- Fresh CPU-only build succeeded with `cmake -S . -B build-ap-mtp -DGGML_CUDA=OFF -DGGML_HIP=OFF`, then `cmake --build build-ap-mtp --target llama-server llama-speculative -j$(nproc)`.
+- Help verification passed on both binaries: `llama-server --help` and `llama-speculative --help` show `--spec-draft-n-max` and `--spec-type none,draft-simple,draft-eagle3,draft-mtp,...`.
+- CMake emitted npm cache permission warnings during UI provisioning, but fell back to the verified prebuilt UI archive and still produced the requested binaries.
+- No operator-gated model load or benchmark was run, and autopilot was not restarted.
+
 ## Root cause of the conflicts (read before resuming)
 
 Our fork's speculative subsystem is an **older API generation** than PR #22673's base. Our fork carries: an EAGLE3 scaffold (`COMMON_SPECULATIVE_TYPE_EAGLE3` + state struct, gated off by `has_draft_eagle3=false // TODO PR-18039`), tree/DySpec speculation, the ngram family, and the gemma4 external-MTP tooling (`tools/mtp-speculation/`, `tools/mtp-acceptance/`). Upstream #22673 introduces the `DRAFT_MTP` speculative type + `LLAMA_CONTEXT_TYPE_MTP` + `--spec-type draft-mtp` + per-model MTP graph/loader on a **refactored** `common/speculative.{cpp,h}`. So the merge isn't textual — it's reconciling two speculative-API designs **without breaking our existing EAGLE3/tree/ngram/gemma4 paths**. That is the real work; it is a focused multi-session hand-merge + compile-iterate, **not** a 5-minute cherry-pick and **not** "2-4 weeks of catastrophe."
@@ -66,12 +76,13 @@ Our fork's speculative subsystem is an **older API generation** than PR #22673's
 
 ## Remaining tasks
 
-- [ ] **P1** Reconcile `common/speculative.{cpp,h}`: merge upstream's `DRAFT_MTP` state machine INTO our version, keeping our EAGLE3 scaffold + tree/DySpec + ngram + suffix paths intact. This is the keystone — most other files follow once the type/enum + state class exist.
-- [ ] **P2** `common/arg.cpp`: extend `--spec-type` enum to include `draft-mtp` (alongside our existing `none|mtp|ngram-*|suffix`); add `--spec-draft-n-max`. Note our fork already has a `mtp` spec-type (gemma4 external) — disambiguate `mtp` (gemma4 external assistant head) vs `draft-mtp` (in-GGUF NEXTN self-draft) or unify.
-- [ ] **P3** `include/llama.h` + `src/llama-context.cpp` + `src/llama-cparams.h`: add the MTP context type + decode/logits MTP APIs; reconcile with our context lifecycle.
-- [ ] **P4** `src/models/qwen35.cpp` / `qwen35moe.cpp` + `src/llama-arch.*` + `conversion/qwen.py`: the Qwen MTP graph (nextn layer) + metadata loader.
-- [ ] **P5** Resolve the remaining backend/test/doc files to compile; `cmake -B build && cmake --build build -j$(nproc)` (CPU: `-DGGML_CUDA=OFF`).
-- [ ] **P6** Verify: `llama-server --help` / `llama-speculative --help` show `--spec-type draft-mtp` + `--spec-draft-n-max`; load a `unsloth/Qwen3.6-35B-A3B-MTP-GGUF` (operator-gated load). Then the gate-benches (parent T3/T4).
+- [x] **P1** Reconcile `common/speculative.{cpp,h}`: merge upstream's `DRAFT_MTP` state machine INTO our version, keeping our EAGLE3 scaffold + tree/DySpec + ngram + suffix paths intact. This is the keystone — most other files follow once the type/enum + state class exist. ✅ 2026-07-11
+- [x] **P2** `common/arg.cpp`: extend `--spec-type` enum to include `draft-mtp` (alongside our existing `none|mtp|ngram-*|suffix`); add `--spec-draft-n-max`. Note our fork already has a `mtp` spec-type (gemma4 external) — disambiguate `mtp` (gemma4 external assistant head) vs `draft-mtp` (in-GGUF NEXTN self-draft) or unify. ✅ 2026-07-11
+- [x] **P3** `include/llama.h` + `src/llama-context.cpp` + `src/llama-cparams.h`: add the MTP context type + decode/logits MTP APIs; reconcile with our context lifecycle. ✅ 2026-07-11
+- [x] **P4** `src/models/qwen35.cpp` / `qwen35moe.cpp` + `src/llama-arch.*` + `conversion/qwen.py`: the Qwen MTP graph (nextn layer) + metadata loader. ✅ 2026-07-11
+- [x] **P5** Resolve the remaining backend/test/doc files to compile; `cmake -B build && cmake --build build -j$(nproc)` (CPU: `-DGGML_CUDA=OFF`). ✅ 2026-07-11
+- [x] **P6a** Verify help surface: `llama-server --help` / `llama-speculative --help` show `--spec-type draft-mtp` + `--spec-draft-n-max`. ✅ 2026-07-11
+- [ ] **P6b** Operator-gated model load + gate bench on `unsloth/Qwen3.6-35B-A3B-MTP-GGUF`; then the parent T3/T4 benches.
 - [ ] **P7 (optional, post-#22673): FR-Spec draft LM-head vocab-trim** (intake-740). Restrict the native-MTP draft LM-head projection to a frequency-ranked top-32,768 subset of the 248,320 vocab (target verifies full vocab) → **lossless (byte-identical at temp=0)**, cutting the draft-head `mul_mat_vec_q` kernel ~85%. Verified upstream on `qwen35.cpp` (this port's P4 target); ~30 lines reusing `eagle3.cpp` d2t + `ggml_set_rows`. CAVEATS: (a) our fork's EAGLE3 is an **inert stub** (`// TODO PR-18039`), so the d2t machinery may not exist in-fork — this likely **rides the #22673 reconciliation, not free**; (b) build an **EPYC-workload-matched frequency map** from our own coder/prose traffic (the author's code-tuned map regressed prose); (c) expect only **+1-3% end-to-end** on BW-bound decode despite the −85% kernel cut → measure end-to-end before adopting.
 
 ## Constraints

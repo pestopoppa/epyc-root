@@ -2,7 +2,7 @@
 
 **Category**: `context_management`
 **Confidence**: verified
-**Last compiled**: 2026-07-05
+**Last compiled**: 2026-07-16 (harness-local compaction can now conflict with Orch-side compression unless the harness cooperates)
 **Sources**: 28 documents (6 deep-dives, 4 active handoffs, 18 intake entries) + 2026-06-19 K-MEM Tulving run state + 2026-06-22 DCP first live A/B (hold) + 2026-07-02 SPIRAL/recursive self-aggregation intake + 2026-07-05 scaffold-transplant falsification cross-link + DCP-for-consult flag landing
 
 ## Summary
@@ -14,6 +14,12 @@ Six independent research papers, spanning four institutions and three continents
 The research landscape is converging on a spectrum from text-level to KV-level compression. On the text side, AgentFold demonstrates 92% context reduction via proactive two-level folding (granular per-turn blocks plus deep consolidation at boundaries). Context-Folding's FoldGRPO proves that structured compression within a 32K window outperforms uncompressed ReAct at 327K by 8 percentage points -- empirical proof that more context is not always better. On the KV side, Memento's dual information stream reveals that KV cache states carry implicit information beyond what summary text captures, creating a fundamental ~15pp accuracy ceiling for text-only approaches on hard reasoning tasks. Between these extremes sit latent compression methods like CoLaR (2-5x chain reduction by replacing token sequences with continuous embeddings) and iterative reasoning approaches like InftyThink and Accordion-Thinking (sawtooth memory patterns with periodic summarization).
 
 The EPYC orchestrator implements a 5-layer context management stack that predates much of this research but aligns well with the emerging consensus. Active development is upgrading it to a multi-tier condensation system informed by AgentFold (two-level architecture), ReSum (compaction timing), CMV (structural trimming), and the Memento cluster (KV-retaining compression). The implementation is phased: Phase 0 (compaction trigger raised to 75%) and Phase 1 (two-level condensation) are complete, Phase 2 (summarizer quality evaluation) is substantially done, and Phase 3 (process reward signals) is in design.
+
+### New Findings (2026-07-16 — harness-local compaction became a load-bearing context-management caveat)
+
+- **A candidate user-facing harness can double up with or fight Orch-side compression if it runs its own compaction, prompt-cache management, or sub-agent spawning.** The new harness-selection index makes that collision explicit: the orchestrator's compression/context-folding stack only pays off end-to-end when the harness cooperates rather than inventing a second context policy. This is the concrete "layer-B needs harness cooperation" case, and it is why the harness choice is now an open-source gate rather than a hardcoded frontend detail. Sources: [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md), [tool-output-compression.md](../handoffs/active/tool-output-compression.md), [hermes-outer-shell.md](../handoffs/active/hermes-outer-shell.md), [progress 2026-07-16](../progress/2026-07/2026-07-16.md).
+
+- **Tool-output compression remains the right layer, but only at the Orch boundary.** The compression module still shrinks tool outputs before they hit context, and the MCP wrapper path now exists, but a harness that also compacts or fan-outs can erase part of that win. The current contract is therefore split: the Orch owns tool-output compaction; the harness is evaluated on whether it defers to that policy instead of competing with it. Sources: [tool-output-compression.md](../handoffs/active/tool-output-compression.md), [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md).
 
 ## Key Findings
 

@@ -44,7 +44,7 @@ Backburner monitoring. PR #21038 remains merged and auto-enabled in production v
 |-----------|-------|-----------|---------|
 | intake-246 | llama.cpp-tq3 — TQ3_1S Weight Quantization | medium | worth_investigating (monitor) |
 | intake-245 | MSA: Memory Sparse Attention | low | not_applicable (training-only) |
-| intake-186 | bitnet.cpp — Ternary Quantization (TQ1_0/TQ2_0) | medium | already_integrated |
+| intake-828 / 829 | BitNet (2310.11453) / b1.58 (2402.17764) — foundational ternary; bitnet.cpp TQ1_0/TQ2_0 already integrated in the epyc-llama fork | medium | already_integrated |
 
 ## Action Items
 
@@ -89,3 +89,49 @@ This handoff (`tq3-quantization-evaluation`) tracks **KV-cache** quantization (T
   - **Reported results:** near-lossless vs FP8 — MMLU Pro 86.3 (FP8 86.1), GPQA Diamond 85.5 (86.0), AIME 2025 92.7 (93.1), IFBench 65.5 (65.1); ~2.5× memory (16→4 bits/param), ~22 GB weights.
   - **Delta from current approach / verdict = not_applicable (operator-review flagged):** NVFP4 is **GPU-native** (Blackwell/Hopper + vLLM), **not GGUF/llama.cpp-loadable**, and MI210 (gfx90a) has **no FP4/FP8 tensor path** — matching the intake-339 (gemma-4 NVFP4) precedent. Creative uses preserved: (a) the checkpoint's **Apache-2.0 BF16 source is freely re-quantizable to GGUF Q4_K_M/TQ3** for CPU (unsloth already ships Qwen3.6-27B-GGUF, tracked under qwen36-27b-cpu-feasibility); (b) use the FP8-parity table as a target — *does our CPU 4-bit path match FP8 as tightly?*; (c) MTP-head-preserved NVFP4 siblings mirror our MTP direction.
   - **Open question for TQ3 eval:** is a two-level (block FP8 + tensor FP32) scale worth emulating in a CPU K-quant variant, or is the accuracy delta below our decision-gating threshold?
+
+
+## Research Intake Update — 2026-07-14
+
+### New Related Research — lossless weight-compression sub-area (new to the corpus)
+Three URLs plus reference-chasing opened a sub-area the compendium had **no** prior entry for: **lossless, entropy-coded weight compression** (exploiting the highly-skewed BF16 *exponent* distribution). All neighbors to date (TQ3 intake-246, TurboQuant intake-191, REAP intake-181) are **lossy**. Verdict across the cluster: **worth_investigating / adopt_patterns — NOT deployable at our operating point** (all yield ~11–12 bits/weight, ~2.5× larger than production Q4_K_M ~4.5 bpw).
+
+- **[intake-815] "Lossless Model Compression Experiment"** (blog, brianbell-x)
+  - Relevance: medium — directionally aligned with our BW-bound decode thesis; a 12-bit GEMV prototype ran at **0.733× BF16 time on an A40** (decode-on-the-fly can beat dense BF16 when bandwidth-bound).
+  - Key technique: K15 sign-exponent encoding + byte-split; bit-exact over all 59,509 tensors of GLM-5.2 753B (30.168% smaller, lossless).
+  - Delta from current approach: lossless ~11–12 bpw does **not** beat our lossy Q4_K_M footprint; GPU microbenchmark only, CPU decode untested.
+- **[intake-816] "ZipNN: Lossless Compression for AI Models"** (arxiv:2411.05239, IBM/MIT-IBM/BU; credibility 4)
+  - Relevance: medium — reference lossless-NN method; ~33% BF16 savings, bit-exact; the exponent-skew insight is the core idea.
+  - Delta: framed as a **storage/download** optimization (>1 EB/month HF traffic), not inference-time bandwidth; decode ~1.2–2.5 GB/s would compete with our decode bandwidth.
+- **[intake-817] "DFloat11 / Dynamic-Length Float"** (arxiv:2504.11651; credibility 4)
+  - Relevance: low — bit-exact BF16 → ~11 bpw with a **GPU/CUDA-only** on-the-fly decode kernel; no CPU path, MI210 would need a full HIP port.
+  - Delta: ~11 bpw is ~2.4× larger than Q4_K_M; headline 1.85–38.83× gains are vs BF16+CPU-offload, not vs on-GPU lossy quant.
+- **[intake-818] "ZipServ: Hardware-Aware Lossless Compression"** (arxiv:2603.17435; verdict adopt_patterns; credibility 4 [audit-corrected from 3])
+  - Relevance: low deploy / real conceptual — **fixed-length** (branch-free) exponent code + a **"load-compressed, compute-decompressed" fused GEMM** keeping weights compressed in the bandwidth-critical path. (ASPLOS'26 acceptance declared in the arXiv Comments field — same author-declared basis as ZipNN's IEEE Cloud and DFloat11's NeurIPS 2025.)
+  - Delta: NVIDIA-Tensor-Core-locked, benchmarked only vs FP16; 1.51× lossless footprint is dominated by our lossy Q4_K_M.
+
+### Transferable patterns (for a future CPU/ROCm bit-exact path only)
+1. The BF16 **exponent distribution is the entire compressibility budget** — a fixed-length ~3-bit exponent code (ZipServ) avoids variable-length serialization stalls.
+2. "**Load-compressed, compute-decompressed**" — keep weights compressed on the bandwidth-critical path and decode into registers.
+
+### New outstanding tasks
+- [ ] Decide (operator): is lossless exponent-coding worth a CPU/AVX-512 spike **only** as (a) staging/download savings for **full-precision FP16/BF16 source checkpoints retained for re-quantization** (NOT already-quantized GGUFs — those are near-max-entropy and compress negligibly, so the ~238GB UD-IQ2 GLM staging artifact is *not* a beneficiary), or (b) is lossy Q4/Q8 dominance decisive enough to close the lossless-weight thread? Default lean: close for inference, note for storage logistics only if we keep BF16 sources on the 120GB-SSD/3.7TB-raid host. If the storage direction is ever taken, track it under `model-stack-update-pipeline-audit.md` (staging / re-quantization logistics), not here — tq3's scope is lossy quant for the inference path.
+
+
+## Research Intake Update — 2026-07-16
+
+### New Related Research — PrismML Bonsai-27B + foundational BitNet papers
+Batch intake (8 URLs + 3 reference-chased papers). The Bonsai family extends intake-384 (Ternary Bonsai 8B) to 27B; two foundational BitNet papers were genuine index gaps (0 prior matches) despite their descendants being tracked.
+
+- **[intake-820] "Bonsai 27B" announcement** (prismml.com blog) + **[intake-821] Bonsai-27B whitepaper** (24pp PDF, fully parsed) + **[intake-822] Bonsai-demo repo**
+  - Relevance: PrismML's post-training binary/ternary weight transform, now at 27B (Qwen3.6-27B base). Self-reported: ternary 80.5 avg @1.71 bpw / 5.9 GB, 1-bit 76.1 @1.125 bpw / 3.9 GB vs FP16 85.0. Ships **GGUF Q1_0/Q2_0 via a PrismML llama.cpp fork (`prism` branch)** with prebuilt CPU/CUDA/Vulkan/ROCm/Metal binaries across 27B/8B/4B/1.7B — materially more EPYC-testable than the intake-384 blog was.
+  - Key deltas vs intake-384: adds a 4-bit KV-cache quant with a claim that low-bit weights confer near-lossless KV-quant tolerance (~12–15× less output forward-KL on-policy vs FP16-KV); adds the DSpark speculative drafter; first Bonsai carrying CoT/tool-use intact at 27B; claims the code-gen weakness is fixed (coding 82–86 retained).
+  - **✅ Source-claim VERIFIED (2026-07-16 deep-dive):** the claim is correct. **Q1_0 (the 1-bit Bonsai format) is upstream** — llama.cpp PR #21273 by PrismML (`khosravipasha`), merged 2026-04-06 ("support inference for … 1-bit Bonsai models which are native in Q1_0") — and `GGML_TYPE_Q1_0` (type 41) **is already in production-consolidated-v6**. **Q2_0** (PrismML's distinct new ternary type, group-128, *not* upstream TQ1_0/TQ2_0 — see llama.cpp discussion #22019) merged upstream **2026-07-07** (PR #24448 CPU / #25419 Metal; CUDA #25707 open) — **after** the v6 cutover (2026-06-26), so it is **not** in v6. intake-384's 2026-04-17 "Q1_0 not upstreamed" note was already stale when written.
+  - Caveat: custom kernels target MLX + CUDA; EPYC production is AVX-512 CPU + MI210 (gfx90a). The GGUF *formats* (Q1_0/Q2_0) and the KV-tolerance / DSpark *patterns* are portable; the kernels are not drop-in. credibility 0–1 (vendor self-report, no independent corroboration). Verdict worth_investigating. `backlog-roi-audit-2026-07-14` already declined pulling the 8B into this watch; the 27B does not change that unless a GGUF + EPYC kernel path is confirmed.
+- **[intake-828] BitNet (arxiv:2310.11453)** — the seminal 1-bit-from-scratch / BitLinear paper. Verdict **superseded** by its own ternary successor b1.58 (which EPYC already supports via TQ1_0/TQ2_0). credibility 4. Kept as canonical reference.
+- **[intake-829] BitNet b1.58 (arxiv:2402.17764)** — THE 1.58-bit ternary paper underpinning this whole thread. credibility 4, worth_investigating. **Load-bearing distinction:** b1.58 is train-from-scratch QAT (FP16 parity only ≥3B); Bonsai (intake-821) is a POST-training transform. We have no from-scratch pretraining pipeline, so b1.58's headline result is not directly reproducible — its value is as the reference framing the PTQ-transform vs pretrained-ternary axis for the tq3 / AngelSlim / Sherry / Tequila evaluations.
+
+### New outstanding tasks
+- [x] Verify the "Q1_0 merged upstream / Q2_0 migrating" claim (intake-822): **VERIFIED** — Q1_0 upstream (PR #21273, already in v6); Q2_0 upstream 2026-07-07 (PR #24448), NOT in v6 (post-cutover). Both PrismML-authored; Q2_0 ≠ upstream TQ1_0/TQ2_0 (discussion #22019). ✅ 2026-07-16
+- [x] Bonsai-27B Q1_0 quiet-host CPU+MI210 quality/prompting gate executed on experimental v7: corrected completion-mode runner passed 6/8 strict-output probes (`ok`, minified JSON, simple math on both devices) but failed the six-word instruction probe on both devices. Evidence: `/mnt/raid0/llm/epyc-inference-research/data/bonsai_q1_quality_gate/bonsai_q1_quality_clean_20260717T0755Z/summary.json`. Verdict: loadable/partially coherent, **not role-ready**. ✅ 2026-07-17
+- [ ] Operator-review candidate (re-scoped 2026-07-17): the GGUFs already EXIST and are public (`prism-ml/Bonsai-27B-gguf` Q1_0 ~3.8 GB; `prism-ml/Ternary-Bonsai-27B-gguf` Q2_0 ~7.17 GB). The **1-bit Q1_0** variant is v7-loadable and partially coherent, but the first CPU+MI210 strict-output gate failed instruction-format compliance, so next Q1 work is prompt/template or broader quality evaluation, not production role registration. The **ternary Q2_0/Q2_g64** headline variants still need refreshed v7/upstream artifact-runtime compatibility work. NB: quality is self-reported **and independently contested** (gibberish/hallucination/tool-call-collapse reports; no third-party reproduction of the 80.49 avg) — treat as a footprint/density experiment, not a quality win.

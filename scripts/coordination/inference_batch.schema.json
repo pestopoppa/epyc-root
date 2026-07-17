@@ -1,0 +1,436 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "inference_batch.schema.json",
+  "title": "inference_batch.entry.v1",
+  "description": "Consolidated inference-batch entry (batch-infra item B1 / Wave-1 W0a). One exhaustively-specified inference-gated task with pre-decided Gate/Evidence/Fork tables. Validated by scripts/coordination/compile_inference_batch.py (jsonschema Draft-07). The three semantic lint rules (non-empty owning_handoff, non-empty checkbox, >=1 gate_table row) are enforced by the compiler's lint pass, NOT by this schema, so that lint failures are reported distinctly from structural schema failures.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "task_id",
+    "title",
+    "provenance",
+    "phase",
+    "priority",
+    "preconditions",
+    "execution",
+    "outcomes",
+    "artifacts",
+    "ledger"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Optional schema tag; defaults to inference_batch.entry.v1."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Free-form human commentary; ignored by the compiler."
+    },
+    "entry_hash": {
+      "type": "string",
+      "description": "Injected by the compiler (canonical sha256 of the entry). Not authored by hand; present so a compiled manifest entry round-trips through this schema."
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Stable unique key. Matches the ledger row task_id and dependency references."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owning_handoff",
+        "checkbox"
+      ],
+      "description": "Where this task comes from and what it flips. owning_handoff + checkbox non-emptiness is enforced by the compiler lint pass.",
+      "properties": {
+        "owning_handoff": {
+          "type": "string",
+          "description": "Repo-relative path to the handoff that owns this task (e.g. handoffs/active/foo.md)."
+        },
+        "checkbox": {
+          "type": "string",
+          "description": "The specific checkbox in the owning handoff this task completes (e.g. 'TR-5.2')."
+        },
+        "also_flips": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Additional checkbox refs (handoff#checkbox) this task's completion flips."
+        },
+        "intake_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source_ref": {
+          "type": "string",
+          "description": "Research deep-dive / spec / commit this task derives from."
+        },
+        "coordination_note": {
+          "type": "string"
+        }
+      }
+    },
+    "phase": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Primary ordering key (ascending). Lower phases run first."
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "P0",
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "description": "Secondary ordering key within a phase. P0 = most urgent."
+    },
+    "preconditions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "depends_on"
+      ],
+      "properties": {
+        "stack_lineup": {
+          "type": "string",
+          "description": "Required orchestrator stack lineup (human description or lineup id)."
+        },
+        "kernel_era": {
+          "type": "string",
+          "description": "Required kernel era, e.g. production-consolidated-v6."
+        },
+        "flags_required": {
+          "type": "object",
+          "description": "Map of runtime flag name -> required value that MUST be set.",
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number",
+              "boolean"
+            ]
+          }
+        },
+        "flags_forbidden": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Flag names that MUST NOT be set."
+        },
+        "flag_attestation": {
+          "type": "string",
+          "enum": [
+            "none",
+            "env_only",
+            "all_workers"
+          ],
+          "description": "How deeply the flag state must be attested before execution."
+        },
+        "models": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Model ids / aliases that must be resident."
+        },
+        "host_health": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "tier": {
+              "type": "string",
+              "enum": [
+                "quiet_window",
+                "active_safe",
+                "any"
+              ]
+            },
+            "max_uptime_days": {
+              "type": "number",
+              "minimum": 0
+            },
+            "cache_state": {
+              "type": "string",
+              "description": "Required page-cache state, e.g. drop_caches / warm / any."
+            }
+          }
+        },
+        "topology": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "required_topology_hash": {
+              "type": "string"
+            },
+            "live_affinity_verified": {
+              "type": "boolean"
+            },
+            "contention_matrix": {
+              "type": "string",
+              "description": "content_hash of the contention matrix that must be fresh, or 'not_required'."
+            }
+          }
+        },
+        "autopilot": {
+          "type": "string",
+          "enum": [
+            "stopped",
+            "running",
+            "any"
+          ],
+          "description": "Required autopilot state at execution time."
+        },
+        "operator_gates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Operator-gate ids (e.g. OP-6) that must be granted. NOT evaluated by the structural pending() check."
+        },
+        "depends_on": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "task_ids that must reach a terminal-success state before this entry is eligible."
+        }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "driver",
+        "concurrency_mode"
+      ],
+      "properties": {
+        "driver": {
+          "type": "string",
+          "enum": [
+            "command",
+            "clean_window_entry",
+            "screening_tier",
+            "autopilot_action"
+          ]
+        },
+        "protocol_id": {
+          "type": "string",
+          "description": "Measurement protocol id (MEASUREMENT.md) this execution follows."
+        },
+        "dry_run": {
+          "type": "boolean"
+        },
+        "command": {
+          "type": "string"
+        },
+        "cwd": {
+          "type": "string"
+        },
+        "concurrency_mode": {
+          "type": "string",
+          "enum": [
+            "serial_noninference",
+            "enumeration",
+            "same_trial_eval_fanout",
+            "isolated_bench",
+            "paired_sequential",
+            "observe_only"
+          ]
+        },
+        "fanout_transport": {
+          "type": "string",
+          "enum": [
+            "placement_queue",
+            "none"
+          ]
+        },
+        "contention_class": {
+          "type": "string"
+        },
+        "est_wall_clock_h": {
+          "type": "number",
+          "minimum": 0
+        },
+        "timeout_s": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "retry_policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "max_attempts": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "retry_on": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "outcomes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gate_table"
+      ],
+      "properties": {
+        "expected": {
+          "type": "string",
+          "description": "Human description of the expected outcome."
+        },
+        "gate_table": {
+          "type": "array",
+          "description": "Tri-role Gate/Evidence/Fork rows. Non-emptiness (>=1 row) is enforced by the compiler lint pass, not this schema.",
+          "items": {
+            "$ref": "#/definitions/gate_row"
+          }
+        }
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "outputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "package_to": {
+          "type": "string",
+          "description": "Operator-bundle / package destination for this task's outputs."
+        }
+      }
+    },
+    "ledger": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "journal_quarantine_rule": {
+          "type": "string"
+        },
+        "era_stamp": {
+          "type": "string",
+          "description": "Instrument era label to stamp on ledger rows (instrument_eras.yaml)."
+        }
+      }
+    }
+  },
+  "definitions": {
+    "gate_row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gate",
+        "evidence",
+        "fork"
+      ],
+      "description": "One decision row in the tri-role Gate/Evidence/Fork style: the Gate is the question, Evidence is what resolves it, Fork is the pre-decided action per verdict.",
+      "properties": {
+        "gate": {
+          "type": "string",
+          "description": "The decision question this row resolves."
+        },
+        "evidence": {
+          "type": "string",
+          "description": "What evidence (metric/artifact) resolves the gate."
+        },
+        "fork": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "pass",
+            "fail"
+          ],
+          "properties": {
+            "pass": {
+              "$ref": "#/definitions/fork_branch"
+            },
+            "marginal": {
+              "$ref": "#/definitions/fork_branch"
+            },
+            "fail": {
+              "$ref": "#/definitions/fork_branch"
+            },
+            "infra": {
+              "$ref": "#/definitions/fork_infra"
+            },
+            "ambiguous": {
+              "$ref": "#/definitions/fork_ambiguous"
+            }
+          }
+        }
+      }
+    },
+    "fork_branch": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A pass/marginal/fail branch: the rule that selects it, the actions to take, and the next task_id or terminal ledger status.",
+      "properties": {
+        "rule": {
+          "type": "string"
+        },
+        "action": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "next": {
+          "type": "string",
+          "description": "Next task_id to schedule, or a terminal ledger status."
+        }
+      }
+    },
+    "fork_infra": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Infra-failure branch: classify the infra fault, take remediation actions. No next (re-queues the same task).",
+      "properties": {
+        "classify": {
+          "type": "string"
+        },
+        "action": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "fork_ambiguous": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Ambiguous-evidence branch: hold for operator adjudication.",
+      "properties": {
+        "action": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "next": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

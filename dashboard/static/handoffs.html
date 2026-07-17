@@ -76,11 +76,35 @@
   .bk-priority .item{display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border:1px solid var(--border);border-radius:999px;font-size:11px;color:var(--muted)}
   .bk-priority .item .pri{color:var(--text);font-weight:600}
   .bk-priority .item .meta{color:var(--muted)}
+  .bk-priority .item.pri-P0{border-color:var(--p0)} .bk-priority .item.pri-P0 .pri{color:var(--p0)}
+  .bk-priority .item.pri-HIGH{border-color:#5a3a1a} .bk-priority .item.pri-HIGH .pri{color:var(--high)}
+  .bk-priority .item.pri-MEDIUM .pri{color:var(--medium)}
+  .bk-priority .item.pri-LOW .pri{color:var(--low)}
   .bk-stall{font-size:11px;color:var(--muted);margin-bottom:8px}
   .dead-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
   .dead-item{border:1px solid var(--border);background:var(--panel2);color:var(--muted);border-radius:6px;
     padding:4px 7px;font:inherit;font-size:11px;cursor:pointer;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .dead-item:hover{border-color:var(--accent);color:var(--text)}
+
+  /* autopilot outcome — steering card (mirrors an exported contract, :8000-owned) */
+  .outcome{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--border);
+    border-radius:10px;padding:14px 18px;margin-bottom:20px}
+  .outcome h2{font-size:13px;margin:0 0 12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;flex-wrap:wrap}
+  .oc-degraded{font-size:12.5px;color:var(--muted);line-height:1.55}
+  .oc-degraded a{font-weight:600}
+  .oc-status{display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:2px 9px;border-radius:999px;
+    border:1px solid var(--border);color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.4px}
+  .oc-status.ok{color:var(--good);border-color:#1f4d38}
+  .oc-status.attention,.oc-status.outcome_stalled{color:var(--high);border-color:#5a3a1a}
+  .oc-status.stalled{color:var(--p0);border-color:#4d1f1c}
+  .oc-stats{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-end;margin-bottom:8px}
+  .oc-stat{display:flex;flex-direction:column;gap:2px}
+  .oc-stat .n{font-size:22px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+  .oc-stat .n.warn{color:var(--high)} .oc-stat .n.bad{color:var(--p0)} .oc-stat .n.good{color:var(--good)}
+  .oc-stat .l{font-size:11px;color:var(--muted)}
+  .oc-blockers{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:4px}
+  .oc-blockers li{font-size:11.5px;color:var(--high);border-left:3px solid var(--high);padding:2px 0 2px 8px}
+  .oc-notice{font-size:10.5px;color:var(--muted);margin-top:10px;line-height:1.5}
 
   /* kanban */
   .kanban{display:grid;grid-template-columns:repeat(4,minmax(240px,1fr));gap:14px;align-items:start}
@@ -184,6 +208,13 @@
       <span class="pct" id="backlog-pct"></span>
     </div>
     <div class="bk-activity" id="backlog-activity"></div>
+  </section>
+
+  <section class="outcome" id="outcome-card">
+    <h2>Autopilot outcome — is the loop producing value?
+      <span class="badge" id="outcome-badge" style="text-transform:none;font-weight:400;margin-left:8px"><span class="dot"></span><span>contract</span></span>
+    </h2>
+    <div id="outcome-body"><span class="muted">loading…</span></div>
   </section>
 
   <section class="timeline">
@@ -346,7 +377,7 @@ function renderBacklog(bk, act){
         if((b.open_untracked_handoffs||0) > 0){
           bits.push(b.open_untracked_handoffs+" untracked");
         }
-        const item = el("span","item");
+        const item = el("span","item pri-"+(b.priority || "NONE"));
         const pri = el("span","pri", b.priority || "NONE");
         item.appendChild(pri);
         const meta = el("span","meta", bits.join(" · "));
@@ -431,6 +462,91 @@ function renderBacklog(bk, act){
 async function loadBoard(){
   try{ renderBoard(await getJSON("/api/handoff_board")); }
   catch(e){ setBadge("#board-badge","stale"); console.error(e); }
+}
+
+/* ---------------- autopilot outcome (steering) ----------------
+   Mirrors a file-backed contract PRODUCED BY the orchestrator loop (:8000); the
+   hub never reaches that loop's live state, so an absent export degrades honestly
+   to a "see :8000" card rather than fabricating outcome numbers. */
+function ocNum(v){ return (typeof v==="number"&&isFinite(v)) ? v : "—"; }
+function ocPct(rateObj){
+  if(!rateObj || rateObj.rate==null) return "—";
+  return (rateObj.rate*100).toFixed(0)+"%";   // rate is a fraction 0..1
+}
+function ocStat(n, l, cls){
+  return '<div class="oc-stat"><span class="n '+(cls||"")+'">'+esc(n)+
+    '</span><span class="l">'+esc(l)+'</span></div>';
+}
+function renderOutcome(d){
+  const body=$("#outcome-body"); if(!body) return;
+  const op = d.outcome_progress || {};
+  const st = op.status || "missing";
+  setBadge("#outcome-badge", (d._freshness&&d._freshness.staleness_class)||"missing");
+  const notice = d.observation_notice || "";
+  const ap = `${location.protocol}//${location.hostname}:8000/dashboard`;
+
+  // Honest degradation: no export, or the exporter reported no journal.
+  if(["missing","disabled","unknown"].includes(st) || d.error){
+    const why = d.error ? esc(d.error)
+      : (st==="disabled" ? "outcome tracking is disabled in the export."
+      : "the exporter found no autopilot journal.");
+    body.innerHTML =
+      '<div class="oc-degraded">No outcome contract to mirror — '+why+
+      ' The autopilot loop’s live keepable / wasted-eval / learning-excluded rates and '+
+      'frontier/baseline-promotion stall counters, plus every steering action '+
+      '(pause · rewind · promote), live on the '+
+      '<a href="'+esc(ap)+'" target="_blank" rel="noopener">orchestrator dashboard (:8000) ↗</a>. '+
+      'This hub only mirrors a file-backed export the loop does not write yet.</div>'+
+      (notice?'<div class="oc-notice">'+esc(notice)+'</div>':"");
+    return;
+  }
+
+  const rates = op.rates || {};
+  const win = rates.recent_window_trials;
+  const tsf = op.trials_since_frontier, maxf = op.max_trials_since_frontier;
+  const tsp = op.trials_since_promotion, maxp = op.max_trials_since_promotion;
+  const frontierStalled = (tsf!=null && maxf!=null && maxf>=0 && tsf>maxf) ||
+    (op.latest_frontier_trial_id==null && op.latest_trial_id!=null);
+  const promoStalled = (tsp!=null && maxp!=null && maxp>=0 && tsp>maxp) ||
+    (op.latest_promotion_trial_id==null && op.latest_trial_id!=null);
+  const we = rates.wasted_eval_rate, le = rates.learning_excluded_rate;
+
+  const statusCls = ["ok","attention","outcome_stalled"].includes(st) ? st : "attention";
+  let h = '<span class="oc-status '+esc(statusCls)+'">outcome: '+esc(st)+'</span>';
+
+  h += '<div class="oc-stats">';
+  h += ocStat(ocNum(op.latest_trial_id), "latest trial");
+  h += ocStat(ocNum(tsf)+(maxf!=null?' / '+maxf:''), "trials since frontier", frontierStalled?"bad":"");
+  h += ocStat(ocNum(tsp)+(maxp!=null?' / '+maxp:''), "trials since promotion", promoStalled?"bad":"");
+  h += ocStat(ocNum(op.baseline_promotions), "baseline promotions", (op.baseline_promotions===0)?"warn":"good");
+  h += '</div>';
+
+  h += '<div class="oc-stats">';
+  h += ocStat(ocPct(rates.keepable_rate), "keepable", "good");
+  h += ocStat(ocPct(we), "wasted-eval", (we&&we.rate>0)?"warn":"");
+  h += ocStat(ocPct(le), "learning-excluded", (le&&le.rate>0)?"warn":"");
+  if(win!=null){
+    h += '<div class="oc-stat"><span class="n" style="font-size:13px;color:var(--muted)">last '+
+      esc(ocNum(win))+'</span><span class="l">rate window (trials)</span></div>';
+  }
+  h += '</div>';
+
+  const blockers = Array.isArray(op.blockers)?op.blockers:[];
+  if(blockers.length){
+    h += '<ul class="oc-blockers">';
+    for(const b of blockers) h += '<li>'+esc(b)+'</li>';
+    h += '</ul>';
+  }
+  if(notice) h += '<div class="oc-notice">'+esc(notice)+'</div>';
+  body.innerHTML = h;
+}
+async function loadOutcome(){
+  try{ renderOutcome(await getJSON("/api/outcome")); }
+  catch(e){
+    setBadge("#outcome-badge","stale");
+    $("#outcome-body").innerHTML='<div class="oc-degraded">failed to load outcome contract</div>';
+    console.error(e);
+  }
 }
 
 /* ---------------- modal ---------------- */
@@ -615,9 +731,10 @@ async function loadTimeline(){
 }
 
 /* ---------------- boot ---------------- */
-loadBoard(); loadTimeline();
+loadBoard(); loadTimeline(); loadOutcome();
 setInterval(loadBoard, 45000);
 setInterval(loadTimeline, 120000);
+setInterval(loadOutcome, 60000);
 </script>
 </body>
 </html>

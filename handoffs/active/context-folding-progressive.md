@@ -1,6 +1,6 @@
 # Context-Folding: Progressive Session Compaction Upgrade
 
-**Status**: COMPACTED 2026-05-28 - core context-folding phases landed; active only for L5/Phase 3c validation and design probes.
+**Status**: refreshed 2026-07-14 - core context-folding phases landed; active only for L5/Phase 3c validation and design probes. The 2026-06-19 alpha sweep is now decision-scoped: promote the dual-objective score into the Phase 2b design variant, but do not change production compaction behavior without live/held-out validation.
 **Created**: 2026-03-17
 **Updated**: 2026-06-13
 **Priority**: HIGH
@@ -17,6 +17,7 @@ Do not reimplement Phases 0, 1, 1+, 2a, 2b L1-L4, 2c scaffolding, 3a, or 3b. The
 - [ ] **CF-L5 maximum-compression validation**: run the L5 single-sentence-per-segment compression check only if it answers a current production question. Compare against the known L3 sweet spot and record whether L5 is rejected, role-limited, or worth further tuning.
 - [ ] **CF-3c live quality-monitor validation**: validate `CompactionQualityMonitor` on real traffic/telemetry. The class scaffold exists; tune degradation thresholds only after upstream-compressor anti-thrashing in [tool-output-compression.md](tool-output-compression.md) Phase 3d is accounted for.
 - [x] **CF-2c.0 / NIB2-43 dual-objective alpha sweep**: implemented an offline retrieval proxy in `epyc-inference-research` `scripts/benchmark/compaction_alpha_sweep.py` and scored existing Package-C compaction/summarizer rows at alpha values `{0.0, 0.25, 0.5, 0.75, 1.0}`. Result artifacts: `data/research/2026-06-19-compaction-alpha-sweep/alpha_sweep.{json,csv}`. On 110 valid rows, alpha `0.0` beat faithfulness-only alpha `1.0` by `+0.051315` average precision (`0.940463` vs `0.889148`) and improved ROC-AUC (`0.743056` vs `0.534420`), crossing the `>2%` promotion gate. This is still a proxy result, not a deployment decision: promote dual-objective scoring into the Phase 2b design variant, then require a live/held-out validation before changing production compaction behavior.
+- [x] **CF-2c.1 alpha-promotion decision scope**: existing evidence is sufficient to promote the dual-objective score into the Phase 2b design variant only. The remaining blocker is specific and non-inferential: do not flip live production compaction behavior until a live/held-out validation artifact exists. ✅ 2026-07-14
 
 ## Decision Record: CF-DD8 / NIB2-40
 

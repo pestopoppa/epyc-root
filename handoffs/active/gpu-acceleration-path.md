@@ -501,9 +501,9 @@ Batch intake of the AMD ROCm software stack, assessed against the active MI210 (
 
 ## Progress checklist
 
-- [ ] M0 zero-cost production MTP-acceptance log read (findings-02)
+- [x] M0 zero-cost production MTP-acceptance log read (findings-02) ✅ 2026-07-14 (CLOSED 2026-07-03 — mtp_acceptance_report_20260703T114323Z: α frontdoor 0.6582 / architect 0.6854 / worker 0.8256; findings-02 L58)
 - [ ] Gate R frontdoor residency bench under P-GPU-1
 - [ ] intake-310 -ot exps=CPU / --n-cpu-moe hybrid MoE offload probe on MI210
-- [ ] DFlash/DDTree HIP re-scope (CUDA/DGX pin stale, MI210=ROCm)
+- [ ] DFlash/DDTree HIP re-scope — **FUND-OR-CLOSE decision** (2026-07-14): both activation gates fired (MI210 online 2026-07-02; M0 α baseline 2026-07-03), yet every production target now ships a native MTP head and tree-draft Phase-1b was shelved 2026-07-06 on exactly this ground (embedded MTP dominates external drafters — qwen-27B MTP 41.9 vs external ~18 t/s). Decision = confirm-negative vs narrow MTP-less niche.
 - [ ] intake-460 Splitwise GPU-prefill/CPU-decode KV handoff (Family D)
 - [ ] intake-576 Nemotron tri-mode diffusion self-spec via torch-ROCm [unverified]

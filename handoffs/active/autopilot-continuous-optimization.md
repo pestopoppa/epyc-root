@@ -1,72 +1,125 @@
 # AutoPilot: Continuous Recursive Optimization
 
-**Status**: **W4/W6 authority wiring is current, A10 planner hints are active,
-BSV observe is process-aware, T3 is planner-visible workflow pressure,
-StrategyStore search health is exact, tool_use sentinel backend initialization
-crash and REPL code extraction fix are live, tool-use activation is ready, W8
-candidate generation is unblocked, and W8 remains in promotion-evidence
-collection.** AutoPilot is live as PID `131226` with `--max-trials 3000`;
-latest observed checkpoint is trial `1236` as a current-code-clean
-`numeric_trial` in `dispatch_action`, and phase health reports
-`code_stale=false` on orchestrator `60523b6`. The outcome-stall dispatch guard
-is live; the routine planner path is
-`local_frontdoor` draft -> `local_worker` critique with `claude` fallback;
-`bf9bece7` also keeps fallback draft/review traffic on distinct local role
-providers when the spend breaker is inactive, instead of crossing to Claude
-unnecessarily.
-Frontier-rerun pressure now bypasses the planner prompt when the rerun is
-already required, so W8 recovery does not spend a draft/critique hop on an
-inevitable replay.
-Startup verified StrategyStore search health exact (`1,420` SQLite/FAISS/FTS
-rows, `100.0%` coverage). **Tool_use sentinel crash fixed 2026-07-11**:
-`ServerURLsSettings` pydantic class was missing `toolrunner` field, causing
-`_MISSING_TYPE` sentinel to propagate into `_init_caching_backends()` →
-`url_str.split(",")` crash. Fix: added `toolrunner` alias to both
-`ServerURLsSettings` (pydantic, actual root cause) and `ServerURLsConfig`
-(dataclass, alias to `worker_general`). REPL code extraction also fixed in
-`extract_code_from_response`: added `<end_prompt>` token stripping, removed `^`
-anchor from Gemma thinking-channel regex, Qwen3/Gemma-4 thinking-tag stripping
-working. End-to-end: 4/5 pass (score=-1, advisory range; 1 failure was unrelated
-`kuzu` import error). Safety gate updated: tool_use regression ≤ -3.0 is hard
-block, -0.6 to -2.9 is advisory warning only (5 new safety tests, 94 total
-pass). `AUTOPILOT_PLANNER_SPEND_BREAKER` disabled (`"0"`) to prevent planner
-from switching to local providers on high projected spend. Strategy store
-scrubbed: deleted stale infra-failure belief, inserted corrected entry
-(`opseed-green-toolrunner-fix-20260711`) with `bind_status: "live"`. 123
-journal entries (trials 506-1302) carry `tool_use: 0.0` artifacts from this bug;
-they remain in place (append-only) but are now known-contaminated. Tool-use
-activation is not the blocker;
-`8be68732` fixes the REPL-pinned sentinel prompt contract so the lane asks for
-executable `TOOL("get_eval_secret", ...)` code. Numeric candidate generation is
-no longer blocked by stale broad surface bans, short explicit params, or W8
-deferral churn: `4400df02` constrains numeric-surface blacklists to concrete
-params unless explicitly human-scoped, `6a0d60af` normalizes planner-friendly
-params such as `{"keep_ratio": 0.5}` to `{"kv.keep_ratio": 0.5}`, `3364bdd7`
-repairs W8 fallback deferrals into replayable candidates, and `a13a2948`
-clarifies that a new `numeric_trial.params={}` is an Optuna request whose
-concrete applied params are journaled by dispatch. Trial `1194` is the first
-live canary of that path: W8 fallback selected `chat_pipeline`, and
-NumericSwarm applied
-`chat.try_cheap_first_quality_threshold=0.8742715026951258`; the candidate
-then failed safety on `tool_use` regression and was reverted/blacklisted for
-that exact param. Ordinary
-`seed_batch`, `deep_eval`, and `structural_prune` remain valid AutoPilot
-actions outside the specific W8 candidate-generation blocker. A9 source-reward
-target contrast replan is ready but blocked while AutoPilot is active; DS-E1 is
-decision-ready. W7 game-layer hardening remains complete through critic
-measurement view (`41c5c71`), production eval sampling clamp (`7492cf5`),
-audit-stream gaming alarm (`8e4b1ec`), PEAF budget credit (`4b09661`), and
-per-question diff/provenance context (`749d38f`).
-`e3b13edd` repairs the forced-replay/AP-9 seam exposed by skipped trials
-`1213`-`1216`: replay pressure now stays active while W8 still needs
-replay/confirmation, materialized multi-param NumericSwarm candidates can be
-replayed as a single force-matched candidate, and AP-9 remains binding for new
-planner-proposed explicit multi-param numeric actions. Current
-`w8_promotion_trajectory_report.py --json` is `ok=true/status=progressing`;
-recent replay-eligible candidates are `4b6b454ea4f884fd`,
-`289c4fc0fb5a334d`, and `d3f28243801548b2`. The remaining W8 requirements are
-combined E-process strength, a fresh promotion-eval run, and sequential
-confirmation.
+**Current checkpoint — 2026-07-11T23:25Z**: AutoPilot is running under
+supervisor PID `1039445` / child PID `1039446`, with phase health reporting
+trial `1318`, `phase=dispatch_action`, `action_type=seed_batch`, and
+`ok=true`; log-tail eval progress is T1 `20/65`. The current process is
+**not current-code-clean**:
+`phase_health_report.py --json` reports `code_stale=true` for
+`autopilot.py`, `actions.py`, `controller_io.py`, `eval_tower.py`,
+`safety_gate.py`, and `phase_status.py`; no restart/pause was performed by this
+audit. Planner routing remains local-first (`AUTOPILOT_PLANNER_PRIMARY=local_ingest`,
+`AUTOPILOT_PLANNER_CRITIC=local_frontdoor`, fallback `claude`), and the planner
+spend breaker is explicitly off (`AUTOPILOT_PLANNER_SPEND_BREAKER=0`;
+`planner_spend_breaker_enabled=false`). Outcome progress is still `attention`
+because the latest promotion is stale (`348` trials since promotion). The named
+open work in this handoff is
+now rollout/validation evidence, not code scaffolding: AP-26 needs an
+operator-approved non-RLM vs RLM live comparison, AP-27 needs Ouro/inference
+integration review, BSV-2 needs live paired-run evidence before enabling
+`AUTOPILOT_BSV2_ACCEPT_GATE`, and BSV-3 enforcement stays default-off/observe
+until BSV-2 evidence exists.
+
+**Current checkpoint - 2026-07-14T00:00Z seq-fallback unblock**: AutoPilot is
+back on current code with `AUTOPILOT_PLANNER_SPEND_BREAKER=0` and
+`code_stale=false`. Orchestrator commit `402e461b` added retryable-aware seed
+fallback selection for seq baseline-reference forcing and seq-gate preflight
+deferral while preserving manual/token-gated blacklist purge for durable bans.
+Live trial `1346` forced the seq baseline-reference draw through retryable
+`seed_batch n=50` target `seed_batch_n50_t1317_no_progress_infra`, so
+infra-contaminated retry targets are available again without reviving stale
+blacklist entries. Validation already passed in the orchestration session:
+`uv run --frozen pytest -q tests/unit/test_autopilot_sequential_wiring.py tests/unit/test_autopilot_actions.py`
+returned `177 passed`, and `ruff` passed.
+
+**Quiet-window evidence refresh - 2026-07-14T17:22Z (AutoPilot intentionally
+stopped by operator)**: no runtime mutation was performed; this was a read-only
+evidence pass over the live journal and codified report harnesses. Fresh
+artifacts in `epyc-orchestrator/orchestration/reports/`:
+`w8_promotion_trajectory_20260714T172226Z_quietwindow.{json,md}`,
+`seq_readiness_report_20260714T172226Z_quietwindow.{json,md}`,
+`fable5_gate_report_20260714T172226Z_quietwindow.{json,md}`,
+`bsv_paired_trial_1319_vs_1342_20260714T172226Z_quietwindow.{json,md}`, and
+the AP-27 export set `ap27_rlvr_environment_20260714T172226Z_quietwindow.{jsonl,summary.json}`.
+Findings: W8 still reports `status=progressing` at latest trial `1346` with
+open requirements `combined_E_below_required`, `fresh_promotion_eval_required`,
+`stale_accumulating_candidates_present`, and `seq_confirmation_required`; the
+seq readiness report now shows `342` trusted vector trials and `265` seq-shadow
+rows with `flip_rate=1.0`, so the report-only cutover check is structurally
+ready but alpha-wealth is exhausted (`90` fingerprints tested,
+`new_fingerprint_confirmations_allowed=false`) and the recommendation remains
+"review report and cut over only with an explicit restart window"; the read-only
+BSV trial pair `1319 -> 1342` shares `55` qids and improves scalar accuracy by
+`+0.163636`, but `gate_decision=block` because the behavior-signature diff is
+`blocking` (regressed/disappeared sentinels plus a route-path change), so
+BSV-2/3 remain observe-only. The fresh Fable gate report is still `ready=false`
+because the stopped-window phase heartbeat PID is dead and W6's gaming alarm
+still blocks restart-cutover trust; it therefore does not justify any authority
+flip during this quiet window. AP-26 remains gated on the operator-approved
+non-RLM vs RLM live comparison, and AP-27 remains inference-gated on Ouro P7 /
+EV-4 calibration rather than further offline scaffolding.
+
+**Current checkpoint - 2026-07-14T19:33Z planner-parser hardening**: orchestrator
+commit `51bbbf64` (`Fail closed on malformed planner critiques`) was pushed
+after `feeacb07` and changes `extract_critique()` to require a named
+`json:autopilot_critique` fence plus an explicit valid decision, so incidental
+JSON/prose can no longer default to approve. Validation passed in the
+orchestration session: `uv run ruff check scripts/autopilot/planner_coordinator.py tests/unit/test_autopilot_planner_coordinator.py`
+and `uv run pytest tests/unit/test_autopilot_planner_coordinator.py -q`
+returned `52 passed`.
+
+**Current checkpoint - 2026-07-15T00:00Z planner-guard sidecar checkpoint**:
+the main implementation thread is still actively editing/restarting around the
+planner-guard patch set. The working tree currently carries uncommitted changes
+in `scripts/autopilot/planner_coordinator.py`, `scripts/autopilot/autopilot.py`,
+`scripts/autopilot/start_fable_authority_daemon.py`, and the two unit tests
+under `tests/unit/` named above. This sidecar did not change code, restart any
+process, or run validation; it only recorded the checkpoint so the next pass
+can resume from the live in-flight state.
+
+The stale canary trial `1352` ran to the paused boundary; the pause latch was
+set and then cleared, and the old supervisor/child PIDs `2381139` / `2381140`
+were stopped and verified gone. A new authority daemon started at
+`2026-07-14T19:33:05Z` via `start_fable_authority_daemon.py --max-trials 1401`
+with supervisor `2491402`, child `2491410`, and
+`pid_age_verified_landed=true`. First post-fix cycles were clean:
+trial `1353` produced a `local_frontdoor` draft plus a valid approve fence from
+`local_ingest`; trial `1354` produced a `local_frontdoor` draft plus a valid
+reject fence from `local_ingest`; planner-provider-health remained healthy.
+
+The remaining blocker is unchanged: the seq gate still redirects
+promotion-dependent numeric fallback to `seed_batch n=50` because
+`rate_axis_unreachable` remains unresolved, and P0.1-P0.3 are still pending.
+
+**Current checkpoint - 2026-07-16T09:55Z speed-regression investigation**:
+AutoPilot remained intentionally stopped for a quiet-window investigation. The
+live v6 environment was still wired correctly with `GGML_IQK=1`, OpenMP, and the
+expected `LD_LIBRARY_PATH`. Direct server probes showed
+`worker_full_8072` at `32.15 t/s` for 512-token MTP, the worker quarter ports
+at `17.59 t/s` and `18.63 t/s`, and `frontdoor_full_8070` at `24.80 t/s`.
+Canonical raw P-BENCH-1 v6 remains lower than the direct probes: worker
+`tg512` is `23.33 +/- 0.04 t/s` and frontdoor `tg512` is
+`15.95 +/- 0.09 t/s`. The June 28 worker parity artifact still matters as
+comparison history: `38.46 t/s` with `GGML_IQK=1` versus `27.78 t/s` without.
+
+Routing evidence identified the main distribution shift: `xmas_routing` had
+been in enforce mode and the winner table was worker-heavy. The July 16 log had
+`285` X-MAS-applied worker overrides, and learned routing was already
+worker-heavy. The operational mitigation landed in `epyc-orchestrator`: X-MAS
+was rolled back to shadow, worker aliases were recalibrated from the stale
+`60.7 t/s` prior to the June 28 `38.46 t/s` v6/iQK artifact across registry,
+descriptors, stack priors, q-scorer fallback, and seeding fallback, and the API
+was reloaded.
+
+V7 candidate CPU-comparable raw checks do not explain the regression:
+ROCm-hidden worker `tg512` measured `23.67 +/- 0.28 t/s` and frontdoor `tg512`
+measured `16.24 +/- 0.15 t/s`, matching production v6 raw CPU within noise. The
+ROCm default worker result (`85.97 +/- 0.10 t/s`) remains a GPU observation only.
+
+Focused verification passed (`122` tests: X-MAS routing, q-scorer, seeding
+rewards). AutoPilot can be restarted through the authority daemon for a clean
+shadow-X-MAS evidence window; keep X-MAS enforce disabled until a fresh
+function-axis table validates current serving latency and quality.
 
 > **Current state - 2026-06-21 (bounded W4/W6 accrual resumed).** The API was reloaded on orchestrator `d0e082a`, per-worker attestation passed across six workers, and `stack_change_pipeline.py check --run-promotion-gate` passed (`174` tests). The first collection-only run exposed eval fanout contamination under the current full-only fleet; after orchestrator `c13e5ae`, the collection run used `AUTOPILOT_SEQ_VERDICT=1`, `AUTOPILOT_W6_AUDIT_BLOCK=1`, `AUTOPILOT_W6_AUDIT_N=10`, `AUTOPILOT_W6_AUDIT_EVERY_N_TRIALS=1`, `AUTOPILOT_W6_AUDIT_SHADOW_ONLY=1`, `AUTOPILOT_PLANNER_TIMEOUT=600`, default eval fanout capped to the reachable live fleet, and `--max-trials 930`. Trial `928` was journaled as `autopilot_killed_mid_trial` during stall recovery; trial `929` then completed as `numeric_trial` / `think_harder` with `q=1.980`, `s=34.132`, `r=0.980`, and `reproduction_confirmed`, and AutoPilot exited at trial counter `930`. Phase health then reported `status=stopped`, `ok=true`, `pid_alive=false` by design after `af72216e`. Latest ordinary restart readiness passed (`archive=match`, `snapshot=tail_fold_ready`, `baseline=state_baseline`, seed preflight `ready`, `append_ready=true`, `append_required=true`), while `--require-seq-cutover --require-w6-audit` correctly failed because sequential authority remained blocked at `93 < 120` trusted vectors and W6's trailing-30 alarm still had `7` active-window divergences (`12` cumulative) after `61/30` audited rows. The same W4/W6 collection posture was relaunched to `--max-trials 970` at 2026-06-21T11:49:27Z; `phase_health_report.py --json` first reported active trial `930`, `phase=planner_invoke`, PID `2472037`, no blockers, then advanced to `phase=dispatch_action`, `action_type=seed_batch`, no blockers. Baseline seed append is prepared but not applied; `fe2fe55c` also requires explicit `baseline_ledger_authority_enabled=true` before any later matching ledger fold can remove the state baseline cache.
 >
@@ -100,14 +153,14 @@ confirmation.
 > trailing-window alarm, assuming no new gaming events occur.
 
 **Created**: 2026-03-08
-**Updated**: 2026-07-11 (tool_use sentinel `_MISSING_TYPE` backend crash fixed: added `toolrunner` field to `ServerURLsSettings` pydantic class and `ServerURLsConfig` dataclass as alias to `worker_general`; REPL code extraction fixed in `extract_code_from_response` with `<end_prompt>` stripping and unanchored Gemma thinking-channel regex; safety gate separates tool_use regressions: ≤ -3.0 hard block, -0.6 to -2.9 advisory; `AUTOPILOT_PLANNER_SPEND_BREAKER` disabled; strategy store scrubbed of stale infra-failure belief; end-to-end sentinel suite 4/5 pass, score=-1 advisory; 123 contaminated journal entries (trials 506-1302) marked known-contaminated. Current live AutoPilot PID `131226` with `--max-trials 3000`; trial `1236` last checkpoint.)
+**Updated**: 2026-07-11 (tool_use sentinel `_MISSING_TYPE` backend crash fixed: added `toolrunner` field to `ServerURLsSettings` pydantic class and `ServerURLsConfig` dataclass as alias to `worker_general`; REPL code extraction fixed in `extract_code_from_response` with `<end_prompt>` stripping and unanchored Gemma thinking-channel regex; safety gate separates tool_use regressions: <= -3.0 hard block, -0.6 to -2.9 advisory; `AUTOPILOT_PLANNER_SPEND_BREAKER` remains disabled/off; strategy store scrubbed of stale infra-failure belief; end-to-end sentinel suite 4/5 pass, score=-1 advisory; 123 contaminated journal entries (trials 506-1302) marked known-contaminated. Live PID/phase state changes often; use the top checkpoint plus `phase_health_report.py --json` instead of this metadata line for runtime truth.)
 **Location**: `epyc-orchestrator/scripts/autopilot/`
 
 > **Fable 5 review (2026-06-12)**: the review's architecture recommendations now have owning handoffs: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (LIVE t775 baseline-ratchet hotfix + dead-question repair), [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md) (per-question ledger + e-process verdicts; owns the next restart bundle), [evidence-plane-event-sourcing-and-narrative.md](evidence-plane-event-sourcing-and-narrative.md), and [objective-task-rate-goodput.md](objective-task-rate-goodput.md) (task_rate replaces the t/s axis). Full diagnosis: fable5-findings-01 + -05.
 
 > Historical restart runbooks and settled 2026-06-04/05 implementation banners were compacted to [../completed/autopilot-continuous-optimization-history-through-2026-06-20.md](../completed/autopilot-continuous-optimization-history-through-2026-06-20.md).
 
-**Current addendum - 2026-07-08**: the fresh Fable restart came up clean as
+**Historical addendum - 2026-07-08**: the fresh Fable restart came up clean as
 PID `3681234` with `AUTOPILOT_PLANNER_PRIMARY=local_ingest`,
 `AUTOPILOT_PLANNER_CRITIC=local_frontdoor`, `stack_mode=both`, and
 `code_stale=false`. `b7518da0` keeps `StrategyStore` hints planner-only and
@@ -428,6 +481,8 @@ All core infrastructure verified in code as of 2026-04-01:
 
 ### HIGH priority (next compute session)
 
+- [ ] **AP-RC-1 — Jul-8 silent-death root cause** (folded 2026-07-14 from archived `autopilot-restart-2026-07-09.md`): AutoPilot died silently at trial 1302 ~21:33Z with no log/journal tail. Unresolved unknowns: planner-call hang-and-timeout without logging vs external kill (OOM / devcontainer stop) — check container `dmesg` for OOM kills, look for journal entries after 21:33, and add a death-reason breadcrumb (atexit/signal handler log line) so the next silent death is attributable. Restart itself is superseded (2026-07-14 restart healthy, code_stale=false, trial 1346).
+
 1. **AR-3 continuation**: Relaunch with new Phase 5 per-role seeder — `python scripts/autopilot/autopilot.py start --tui`
    - Run 2 (2026-04-02–04): 46 trials, 7 frontier. One useful change: `get_direct_answer_prefix()` in resolver.py (q 2.4→3.0)
    - **Corruption incident**: Trial ~25 replaced escalation.py (454→3 lines). API down 11+ hours. Safety hardened (5 gaps fixed).
@@ -444,7 +499,7 @@ Source: hermes-agent-self-evolution (DSPy+GEPA), GEPA Full Program Adapter (93% 
 - [x] AP-18: Install DSPy, wrap 3 routing prompts as DSPy Signatures — ✅ 2026-04-12. `dspy>=2.5.0` added to pyproject.toml. `src/dspy_signatures/` package: FrontdoorClassifier, EscalationDecider, ModeSelector signatures + config.py (configure_local_lm, configure_rlm). 8 smoke tests.
 - [x] AP-19: GEPA frontdoor optimization — ✅ **Integrated into AR-3** (2026-04-12). `gepa_optimizer.py` adapter + `gepa` mutation type in PromptForge. 30% of PromptForge trials use GEPA evolutionary optimization via `OrchestratorGEPAAdapter` (evaluates through orchestrator API with sentinel questions). AR-3 journal collects comparison data automatically. 10 tests pass.
 - [x] AP-20: GEPA Full Program Adapter eval — ✅ **Folded into AR-3** (2026-04-12). Resolved by comparing GEPA vs LLM mutation acceptance rates + Pareto frontier contributions in AR-3 journal after ~50 trials. No separate inference run needed.
-- [ ] AP-21: PromptForge GEPA refactor decision — **Conditional on AR-3 data**. If GEPA trials dominate Pareto frontier after 50+ trials → increase GEPA ratio from 30% to 100%. If no improvement → keep mixed or revert to LLM-only.
+- [x] AP-21: PromptForge GEPA refactor decision — **Decision 2026-07-11: keep mixed PromptForge; do not raise GEPA to 100%.** Combined `autopilot_journal.jsonl` + `autopilot_journal_1.jsonl` evidence has 1,195 deduplicated trials after AR-3 integration, 8 direct `gepa_optimize` attempts, only 1 clean/non-corrupt GEPA row, and 0 GEPA Pareto-frontier rows; the broader prompt-search class has 35 rows and 0 frontier rows. `gepa_ratio` therefore stays at the state-backed 0.30 default. GEPA execution health is a separate P0.3/frontdoor-freeze/blacklist-purge issue, not a reason to promote GEPA to 100%. ✅ 2026-07-11
 
 ### P11 — Autopilot Controller Upgrades (intake-328/329/349/320)
 
@@ -455,7 +510,18 @@ Source: MiniMax M2.7 3-component self-evolution harness (100+ autonomous rounds)
 - [x] AP-24: Formalize keep/revert protocol with structured forward-looking reasoning — ✅ 2026-04-12. `keep_revert_decision` and `optimization_directions` fields on JournalEntry. Centralized in `generate_self_criticism()`. Directions feed into short-term memory accumulator.
 - [x] AP-25: Set up dspy.RLM with llama-server `/v1/` endpoint — ✅ 2026-04-12. `configure_rlm(main_lm_url, sub_lm_url)` in `src/dspy_signatures/config.py`. Coder as main LM, frontdoor as sub_lm. `test_connection()` health check. Integration testing deferred to AP-26 (needs inference).
 - [ ] AP-26: Test dspy.RLM for autopilot tasks — long-horizon benchmark analysis where metadata-first context exploration avoids context window limits
-- [ ] AP-27: Formalize eval tower tiers (T0/T1/T2) as RLVR verification functions with deterministic reward signals per tier (state matching, not LLM-as-judge). **Implementation plan**: See [eval-tower-verification.md](eval-tower-verification.md) EV-1–EV-7. Depends on EV-4 (calibration baseline) and P7 Ouro results.
+- [ ] AP-27: Formalize eval tower tiers (T0/T1/T2) as RLVR verification functions with deterministic reward signals per tier (state matching, not LLM-as-judge). **2026-07-11 partial scaffold**: `epyc-orchestrator` commit `7ee919d8` adds `src/autopilot_core/rlvr_tiers.py`, a pure observe-only reward contract with T0 binary, T1 calibrated continuous, and T2/T3 process-attributed reward views plus explicit blockers for missing calibration/process evidence. **2026-07-11 export slice**: `scripts/autopilot/export_rlvr_environment.py` exports prompt-free `ap27_rlvr_environment_row.v1` JSONL from EvalResult/journal artifacts for future RL training. **2026-07-11 report slice**: `EvalResult.to_grep_lines()` emits report-only `METRIC rlvr_*` lines without changing objectives, SafetyGate, Pareto, or journal schema. **2026-07-11 journal slice**: `epyc-orchestrator` commit `69445d43` adds observe-only `eval_details["rlvr_reward"]` journal payloads from the same deterministic contract via the lower-risk main-loop journal assembly point, avoiding the HIGH-risk `EvalTower._aggregate` path. This closes the code-only tier/reward design, offline export, report-only, and journal-payload pieces; AP-27 remains open for inference-dependent Ouro integration. **Implementation plan**: See [eval-tower-verification.md](eval-tower-verification.md) EV-1–EV-7. Depends on EV-4 (calibration baseline) and P7 Ouro results.
+
+#### AP-26/AP-27 operator gate packet - prepared 2026-07-11
+
+This packet is staging only; it does not run live RLM tasks, start Ouro training/inference, change SafetyGate/Pareto objectives, or enable the planner spend breaker.
+
+- **AP-26 dspy.RLM live test:** non-inference staging is complete when the RLM endpoint health check still passes and the candidate task has a bounded long-horizon trace fixture with an expected metadata-first win condition. The remaining acceptance evidence must come from a live operator-approved task window: same task against non-RLM and RLM paths, wall-clock/context-window diagnostics, exact model endpoints, and the error class if RLM fails. Do not count the existing `configure_rlm()` health check alone as AP-26 completion.
+- **AP-27 RLVR export path:** current code supports prompt-free/offline RLVR rows only. Operator can preview/export existing rows with `cd /mnt/raid0/llm/epyc-orchestrator && python3 scripts/autopilot/export_rlvr_environment.py orchestration/autopilot_journal.jsonl orchestration/autopilot_journal_1.jsonl --output-jsonl orchestration/reports/ap27_rlvr_environment_20260711.jsonl --summary-json orchestration/reports/ap27_rlvr_environment_20260711.summary.json --source-label operator_gate_packet_20260711`. This remains observe/offline data prep.
+- **Ouro boundary:** AP-27 stays open until an inference-dependent Ouro integration path exists and passes operator review. The RLVR export, report-only `METRIC rlvr_*` lines, and journal payloads are necessary scaffolding, not a training run or promotion gate.
+- [x] AP-26 bounded metadata-first fixture: `epyc-orchestrator` commit `740b525d` adds `tests/unit/fixtures/ap26/metadata_first_workspace_trace.json` and a focused `workspace_scan` test proving the query-first scan surfaces routing files within one bounded metadata pass despite higher-frecency distractors. This prepares the live RLM comparison fixture; AP-26 remains open for operator-approved non-RLM vs RLM endpoint evidence. ✅ 2026-07-11
+- [x] AP-27 offline export validation: the prompt-free export ran to `/tmp`, producing `1196` rows (`423` ready_for_training, `773` blocked, `15` skipped_no_eval) under reward policy `ap27_rlvr_tier_reward_v1`; the dominant blocker is `auroc_missing_or_degenerate`. ✅ 2026-07-11
+- [x] AP-27 durable export artifact: reran the same prompt-free export into `epyc-orchestrator/orchestration/reports/ap27_rlvr_environment_20260711.jsonl` plus `ap27_rlvr_environment_20260711.summary.json` with matching counts (`1196` rows, `423` ready_for_training, `773` blocked, `15` skipped_no_eval). ✅ 2026-07-11
 
 ### P17 — Bradley-Terry Tiebreak Under Hypervolume Stagnation (intake-615)
 
@@ -548,9 +614,18 @@ Three "Research Intake Update" sections have surfaced **scoring-mechanism** upgr
 
 **CRITICAL CAUTION — SkillsBench v3 (intake-096)**: self-generated skills are net-negative (-1.3pp avg). Any self-improvement integration MUST include validation gates against a curated baseline. Do not let self-generated improvements enter the autopilot gate without human-curate confirmation.
 
-- [ ] **AP-SI-1** — scope SIA harness-only patterns for integration into existing species; weight-update path is inapplicable
-- [ ] **AP-SI-2** — design validation gates for any self-improvement loop; gate on curated-baseline comparison (SkillsBench v3 caution)
-- [ ] **AP-SI-3** — evaluate ShinkaEvolve archive-based evolution for StrategyStore enrichment
+**Integration decision — 2026-07-11**: adopt self-improvement patterns only as harness/search-memory loops; do not introduce a weight-update path on the CPU production stack. SIA/HTIR-style trace evidence maps to MH-11/MH-10 rather than model training. Species mapping:
+- **Species 0 / Seeder**: use archive-derived planner hints and Pareto stepping-stones as observe-only hypotheses; no recursive Q-value self-training without an eval-gated operator run.
+- **Species 2 / PromptForge**: recursive prompt/code improvement remains inside isolated mutation flows, dirty-tree fences, rollback, and the default-off EV-10 skill-efficacy gate.
+- **Species 4 / Evolution Manager + StrategyStore**: ShinkaEvolve's meta-scratchpad/archive-memory pattern maps to deterministic journal-derived StrategyStore projections and DesignArchive lineage, not an unguarded live parent sampler.
+
+**Validation gates — 2026-07-11**: any self-generated prompt/skill/strategy artifact must stay out of SafetyGate/Pareto promotion unless it passes the normal mutation rollback path plus a paired curated-baseline comparison. Required guard stack: EV-10 `AUTOPILOT_SKILL_EFFICACY_GATE` for skill-like artifacts, per-suite negative-delta rejection, held-out/dev-test discipline where available, BSV/paired-report evidence for batch-serving or evaluator changes, folded-journal evidence quarantine for StrategyStore projections, and explicit human-curated confirmation before enabling any live self-improvement loop. Planner spend-breaker remains off/opt-in; it is not a validation gate and must not be re-enabled as part of AP-SI.
+
+**ShinkaEvolve StrategyStore evaluation — 2026-07-11**: current orchestrator already provides a contained archive-enrichment path via `scripts/autopilot/strategy_projection_report.py`, `StrategyStore.sync_frontier_journal_entries()`, `StrategyStore.sync_consult_gate_journal_entries()`, and replay `DesignArchive` lineage. Read-only validation on 2026-07-11: `strategy_projection_report.py --json` reported `ok=true`, `expected_count=69`, `projected_count=69`, `consult_gate.expected_count=1`, `consult_gate.projected_count=1`, and zero missing/unexpected/mismatched projections. This closes the evaluation path; future work is evidence-gated operator deployment or richer novelty sampling, not a blind new autonomous loop.
+
+- [x] **AP-SI-1** — scope SIA harness-only patterns for integration into existing species; weight-update path is inapplicable ✅ 2026-07-11
+- [x] **AP-SI-2** — design validation gates for any self-improvement loop; gate on curated-baseline comparison (SkillsBench v3 caution) ✅ 2026-07-11
+- [x] **AP-SI-3** — evaluate ShinkaEvolve archive-based evolution for StrategyStore enrichment ✅ 2026-07-11
 
 ## Known Issues — KV Cache seq_add Crash on Qwen3.5 Hybrids (2026-04-15, PATCHED)
 
@@ -799,8 +874,8 @@ Agent-World (DD6, intake-444) env-synth is now a 5th autopilot species, tracked 
 
 **Fix**: add a diversity-coverage term to PromptForge's mutation scoring: penalize mutations that fall into FAISS-dense regions of the mutation embedding space. ~2h once the DD4 diversity baseline lands (NIB2-42 — inference-gated; EV-8 metric fns already landed 2026-04-22).
 
-- [ ] **AP-35**: Implement `diversity_coverage_penalty()` in `scripts/autopilot/species/prompt_forge.py` (⚠ path moved from `prompt_forge.py` in the `species/` refactor — verified 2026-06-04). Use existing FAISS index of strategy_store embeddings (live usage in `species/evolution_manager.py` / `species/structural_lab.py` / `actions.py`). Penalty = -log(density) at the mutation's embedding location.
-- [ ] **AP-36**: Wire into the mutation-scoring path. ⚠ **Stale (2026-06-04)**: `_score_mutation()` no longer exists — mutation scoring was refactored into the `species/` evolution framework; re-identify the current scoring site (`species/evolution_manager.py` / `structural_lab.py`) before wiring.
+- [x] **AP-35**: Implement `diversity_coverage_penalty()` in `scripts/autopilot/species/prompt_forge.py` (⚠ path moved from `prompt_forge.py` in the `species/` refactor — verified 2026-06-04). Use existing FAISS index of strategy_store embeddings (live usage in `species/evolution_manager.py` / `species/structural_lab.py` / `actions.py`). Penalty = -log(density) at the mutation's embedding location. ✅ 2026-07-11
+- [x] **AP-36**: Wire into the current mutation insertion path. ✅ 2026-07-11. The resolved hook is observe-only mutation-context shaping through `actions._build_mutation_context()` and `propose_mutation` / `propose_code_mutation`; it carries `mutation_diversity_coverage.v1` into `EvalResult.details["mutation_diversity_coverage"]` for prompt/code mutations with `decision`, density, `negative_log_density`, top matches, and `acceptance_effect: none_observe_only` instead of acceptance scoring.
 
 > **EV-8 gate status (2026-06-04 review)**: AP-35/36/37 are gated on EV-8's **inference baseline**, not the whole of EV-8. EV-8's metric functions + `EvalResult` fields already **landed 2026-04-22** (`src/tools/diversity/metrics.py`, `src/safety_gate.py`); what remains is the 1-day diversity baseline run (NIB2-42, inference-gated) the `-log(density)` penalty calibrates against, plus the `to_grep_lines()` wiring.
 
@@ -810,7 +885,7 @@ Agent-World (DD6, intake-444) env-synth is now a 5th autopilot species, tracked 
 
 **Fix**: extend MetaOptimizer with a diversity-stall signal. ~1-2h.
 
-- [ ] **AP-37**: Add `distinct2_history` to MetaOptimizer state. Trigger rebalance when `distinct2_t / distinct2_baseline < 0.8` for 10 consecutive trials. **Amended 2026-04-22 post Tier 2b**: couple with `semantic_embedding_agreement` to avoid rebalancing on surface-level distinct-2 drops that don't reflect real diversity collapse (arXiv 2506.00514 metric-gaming critique). Rebalance trigger: distinct-2 drops AND semantic agreement drops AND Verbalized Sampling recovery probe fails to close >50% of the gap. Depends on EV-8's inference baseline (metric functions already landed 2026-04-22 — see EV-8 gate status note above).
+- [x] **AP-37**: Add `distinct2_history` to MetaOptimizer state. Trigger rebalance when `distinct2_t / distinct2_baseline < 0.8` for 10 consecutive trials. **Amended 2026-04-22 post Tier 2b**: couple with `semantic_embedding_agreement` to avoid rebalancing on surface-level distinct-2 drops that don't reflect real diversity collapse (arXiv 2506.00514 metric-gaming critique). Rebalance trigger: distinct-2 drops AND semantic agreement drops AND Verbalized Sampling recovery probe fails to close >50% of the gap. Depends on EV-8's inference baseline (metric functions already landed 2026-04-22 — see EV-8 gate status note above). ✅ 2026-07-11 — landed in `epyc-orchestrator` commit `70878481` as a baseline-gated AP-37 detector: it persists `diversity_stall_state.distinct2_history`, journals `eval_details["ap37_diversity_stall"]`, and invokes `MetaOptimizer.rebalance(..., diversity_stall=...)` only after the distinct-2, semantic-agreement, and VS-recovery signals hold for 10 consecutive observations. Current EV-8 baseline YAML values remain null, so live routing records `baseline_missing` diagnostics until the operator-run baseline fills them.
 
 ### Cross-references
 
@@ -882,7 +957,7 @@ Agent-World (DD6, intake-444) env-synth is now a 5th autopilot species, tracked 
 
 #### Deep-dive refinement (2026-04-30) — concrete spike scoped, see halo-trace-loop-spike
 
-Deep-dive at [`/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md`](../../research/deep-dives/halo-rlm-trace-loop-integration.md). Spike handoff at [`halo-trace-loop-spike.md`](halo-trace-loop-spike.md) — ready to claim.
+Deep-dive at [`/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md`](../../research/deep-dives/halo-rlm-trace-loop-integration.md). Spike handoff at [`halo-trace-loop-spike.md`](../completed/halo-trace-loop-spike.md) — ready to claim.
 
 The 1-day spike has a 4-criterion go/no-go gate at end of Day 1 PM. Conditional Day 2 lifts patterns into existing scoped work; **no halo-engine vendoring**. Patterns that affect autopilot specifically:
 
@@ -982,9 +1057,23 @@ Two ideas from the Code-as-Agent-Harness survey land on the Pareto-archive optim
   - ✅ Compute rule-based HLE-1 metrics and register HLE-2 oracle-adequacy defaults in observe-only form (`9222a19`).
   - ✅ Analyze N trials: 2026-06-12 snapshot contained 580 metric-bearing trials (`51..779`). `execution_fidelity` and `planning_stability` separate keep/revert but are not independent enough to promote; `feedback_interpretation`, `memory_coherence`, and `recovery_rate` fail signal/missingness gates.
   - Cheap-kill result: current rule metrics remain diagnostic/advisory and do not enter Pareto selection. Any future HLE promotion requires N2 per-question ledgers/sequential verdicts and a redesigned metric with independent predictive signal.
-- [ ] **BSV-1 — Behavior-signature versioning for archive integrity.** We are AHEAD of the paper on raw regression gating (quality floor, per-suite guard Δq<−0.1, throughput floor, auto-rollback, git-committed reverts). The remaining gap: a newly-accepted config can silently break a *prior* Pareto win because improvements are merged syntactically, not behaviorally. Attach a **behavior signature** to each archive member. Minimum signature fields: per-sentinel final outcome, normalized answer hash, route path, tool-call sequence hash, escalation path, latency bucket, token bucket, key harness metrics, and oracle-adequacy version. Store both a compact hash for fast diff and an expanded JSON vector for explanation. **2026-06-21 partial archive-member wiring**: orchestrator `9a175eac` makes the default-off BSV observe path use real archive-member IDs (`trial:<id>`), journal compact `signature_hash` plus the expanded vector, and persist a `bsv_archive_signatures` state index for frontier-accepted, safety-passing archive members. Orchestrator `31e7e008` then upgraded the partial sentinel vector to prefer compact per-question `EvalResult.question_results` (`qid`/`question_id` -> pass/fail) before falling back to the old per-suite quality proxy, with `sentinel_outcome_source`/`sentinel_outcome_count` diagnostics. **2026-07-05 process-signal enrichment**: orchestrator `c7590be6` folds already-journaled `question_results` tool counts/names, route aggregates, and latency into the observe signature, with legacy aggregate `tool_name_counts` / request-timing fallbacks and explicit `process_signal_sources` diagnostics. BSV-1 stays open for normalized answer hashes and full trace-store IDs; BSV-2 still needs the paired-eval lane before gating.
+- [x] **BSV-1 — Behavior-signature versioning for archive integrity.** We are AHEAD of the paper on raw regression gating (quality floor, per-suite guard Δq<−0.1, throughput floor, auto-rollback, git-committed reverts). The remaining gap: a newly-accepted config can silently break a *prior* Pareto win because improvements are merged syntactically, not behaviorally. Attach a **behavior signature** to each archive member. Minimum signature fields: per-sentinel final outcome, normalized answer hash, route path, tool-call sequence hash, escalation path, latency bucket, token bucket, key harness metrics, and oracle-adequacy version. Store both a compact hash for fast diff and an expanded JSON vector for explanation. **2026-06-21 partial archive-member wiring**: orchestrator `9a175eac` makes the default-off BSV observe path use real archive-member IDs (`trial:<id>`), journal compact `signature_hash` plus the expanded vector, and persist a `bsv_archive_signatures` state index for frontier-accepted, safety-passing archive members. Orchestrator `31e7e008` then upgraded the partial sentinel vector to prefer compact per-question `EvalResult.question_results` (`qid`/`question_id` -> pass/fail) before falling back to the old per-suite quality proxy, with `sentinel_outcome_source`/`sentinel_outcome_count` diagnostics. **2026-07-05 process-signal enrichment**: orchestrator `c7590be6` folds already-journaled `question_results` tool counts/names, route aggregates, and latency into the observe signature, with legacy aggregate `tool_name_counts` / request-timing fallbacks and explicit `process_signal_sources` diagnostics. BSV-1 is now closed after normalized answer hashes and full trace-store IDs landed; BSV-2 still needs the paired-eval lane before gating.
+  - [x] **BSV-1a — normalized answer-hash signature support.** `epyc-orchestrator` commit `009e919b` adds normalized raw-answer hashing in `src/behavior_signature.py` and lets the BSV observe path consume pre-populated per-question `answer_hash` / `normalized_answer_hash` rows without persisting raw answers. Validation: 73 BSV/signature/trace-schema tests passed, Ruff passed, `py_compile` passed, GitNexus re-indexed cleanly. ✅ 2026-07-11
+  - [x] **BSV-1b — live compact eval-row answer hashes.** `_compact_question_result()` now emits `question_results[].answer_hash` for successful answers using the same normalizer as `src/behavior_signature.py`, while still stripping raw `prompt`/`answer` text and leaving error rows un-hashed. Landed in `epyc-orchestrator` commit `19a424fe` after dedicated eval-tower-boundary review. Validation: 117 eval-tower/BSV/core-v2/analytics/trace-schema tests passed, Ruff passed, `py_compile` passed, GitNexus re-indexed cleanly. ✅ 2026-07-11
+  - [x] **BSV-1c — full trace-store IDs.** `harness_metrics_id` and trace `event_id` are still diagnostic/missing in the observe path; wire them only through the shared trace schema, not duplicated private payloads. ✅ 2026-07-11
 - [ ] **BSV-2 — Differential testing on accept.** Before promoting a mutation, run new vs old on the same sentinels and compare behavior (not just aggregate score). Prefer paired sequential execution under identical server/model snapshot for attribution; use parallel execution only when explicitly approved and when concurrency cannot contaminate latency measurements. Reuse the existing T0/T1 tower; the novelty is paired behavioral comparison. Gate on both scalar regression and signature diff severity. **2026-06-21 scaffold**: orchestrator `0943e7c0` adds `scripts/autopilot/bsv_paired_report.py`, a read-only paired report over already-journaled `question_results` vectors. It emits shared-qid coverage, McNemar/accuracy deltas, BSV signature severity, blockers, JSON/Markdown, and nonzero exit on a blocked candidate. Follow-up `5b29eead` adds `eval-result-pair`, so the same report can compare standalone paired-run EvalResult-like JSON artifacts without needing journal ingestion first. Orchestrator `939750c7` adds `scripts/autopilot/bsv_paired_runner.py`: a default-safe plan-only CLI that, with explicit `--run`, applies baseline/candidate params sequentially, evaluates the same core, writes baseline/candidate EvalResult JSON artifacts, restores baseline params by default, and emits the existing BSV paired report. Follow-up `a3570d8d` restores baseline params even when candidate application fails before candidate eval. Orchestrator `2bdb7abc` wires the mutation accept path behind default-off `AUTOPILOT_BSV2_ACCEPT_GATE`: prompt, GEPA, and code mutations run a pre-mutation baseline eval only when the flag is on, compare baseline/candidate EvalResult vectors through the paired-report backend, reject/revert on `gate_decision=block` or blocking signature severity, accept+annotate watch/pass cases, and preserve existing single-eval behavior when the flag is off. Remaining work is operator-approved live paired runs / rollout evidence before enabling the flag in production windows.
-- [ ] **BSV-3 — Conflict-aware acceptance.** When two independently-accepted mutations touch the same subsystem (prompt + routing, two prompts, prompt + tool policy, context packer + batch editor), flag potential *semantic* conflict for review rather than blind compose. **2026-06-21 observe-only ledger landed in orchestrator `168e9bd8`**: under `AUTOPILOT_BSV_OBSERVE=1`, frontier/safety-passing trials now append a bounded `bsv_mutation_dependency_ledger` state row and journal `eval_details.bsv_observe.mutation_dependency` / `conflict_report`, keyed by `subsystem`, `files_touched`, `prompt_sections_touched`, `feature_flags`, `behavior_signature_delta`, and `parent_trial`. Conflict severity increases on shared subsystem/file/section/flag overlap, blocking BSV deltas, different behavior surfaces, or disjoint/opposing sentinel movement across accepted mutations. Still observe-only/default-off; open work is conflict-policy enforcement after BSV-2 paired-gate rollout evidence is available.
+- [ ] **BSV-3 — Conflict-aware acceptance.** When two independently-accepted mutations touch the same subsystem (prompt + routing, two prompts, prompt + tool policy, context packer + batch editor), flag potential *semantic* conflict for review rather than blind compose. **2026-06-21 observe-only ledger landed in orchestrator `168e9bd8`**: under `AUTOPILOT_BSV_OBSERVE=1`, frontier/safety-passing trials now append a bounded `bsv_mutation_dependency_ledger` state row and journal `eval_details.bsv_observe.mutation_dependency` / `conflict_report`, keyed by `subsystem`, `files_touched`, `prompt_sections_touched`, `feature_flags`, `behavior_signature_delta`, and `parent_trial`. Conflict severity increases on shared subsystem/file/section/flag overlap, blocking BSV deltas, different behavior surfaces, or disjoint/opposing sentinel movement across accepted mutations. Still observe-only/default-off; open work is production conflict-policy enforcement after BSV-2 paired-gate rollout evidence is available.
+  - [x] **BSV-3a — default-off diagnostic-state conflict policy.** `epyc-orchestrator` commit `d9b8a022` adds `AUTOPILOT_BSV3_CONFLICT_POLICY` (`off`/`observe`/`block`/`review`) inside the existing `AUTOPILOT_BSV_OBSERVE=1` post-SafetyGate/post-Pareto block. It can withhold only BSV ledger/incumbent diagnostic-state promotion on configured conflict severities; it does **not** alter SafetyGate, Pareto admission, action accept/revert behavior, blacklists, baselines, routing, or the planner spend breaker. ✅ 2026-07-11
+
+#### BSV-2/BSV-3 operator rollout packet - prepared 2026-07-11
+
+This packet is for rollout evidence only. It does not enable `AUTOPILOT_BSV2_ACCEPT_GATE`, does not switch `AUTOPILOT_BSV3_CONFLICT_POLICY` to enforcement, and does not change live accept/revert behavior.
+
+- **Plan-only paired run preview:** `cd /mnt/raid0/llm/epyc-orchestrator && python3 scripts/autopilot/bsv_paired_runner.py --baseline-params '{}' --candidate-params @/path/to/candidate_params.json --output-dir orchestration/reports/bsv2_paired_preview_20260711`. Omit `--run` to keep it plan-only; plan mode prints target artifact paths but does not create the output directory or paired report.
+- **Live paired evidence:** add `--run` only in an operator-approved quiet window. Leave baseline restoration enabled; `--no-restore` is reserved for an explicit operator decision to keep candidate params applied.
+- **Evidence fields to inspect:** paired-report `gate_decision`, shared-qid coverage, accuracy delta, McNemar/statistical diagnostics, BSV signature severity, fleet/version marker, restored-baseline status, and any blocking `conflict_report` entries.
+- **Promotion boundary:** `gate_decision=block` or blocking signature severity remains a no-go. BSV-3 `block`/`review` policy should not be promoted past observe-only until BSV-2 has live paired-run evidence under the same gate semantics.
+- [x] BSV-2 plan-mode validation: `bsv_paired_runner.py` without `--run` returns `mode=plan`, `eval_mode=t1`, `tier=1`, `t1_n=50`, `restore_baseline=true`, and target artifact paths only; no eval artifacts or report are written until an operator-approved live run. ✅ 2026-07-11
 
 **Audit refinements / missed gaps**:
 
@@ -1118,6 +1207,17 @@ Source findings: **intake-772** Darwin Gödel Machine (arXiv 2505.22954, verdict
 
 **(b) Proposed change.** Add a bounded, diversity-sampled *stepping-stone lane*. Lowest-risk delivery is a new `ParetoArchive.stepping_stones_text(k=…)` render method (sibling to `geometry_text`) that surfaces K dominated-but-novel `_all_entries` — sampled for diversity, not score — into the planner prompt at `autopilot.py:3571-3576`. Novelty can reuse the existing BSV behavior signatures (`bsv_observe.py`, wired at `autopilot.py:4380-4442`) or config-diff distance; bound the lane by size (e.g. ≤8 candidates) and recency. This is **pure prompt context** — the LLM controller may then propose an action seeded from a stepping-stone, but nothing is auto-re-run. A heavier follow-up (only if the observe pass shows value) is extending the `rollback` action (`autopilot.py:2103,4330`) to accept an arbitrary archive `trial_id`, not just `production_best`/checkpoints.
 
+**Status 2026-07-11:** observe-only Pattern 1 is already landed in orchestrator:
+`ParetoArchive.stepping_stones()` / `stepping_stones_text()` select dominated
+near-frontier rows, `pareto_stepping_stones_report.py` exposes a read-only report,
+the planner prompt appends the block behind `AUTOPILOT_STEPPING_STONES` (default
+on), and phase health reports the flag. Validation re-run on 2026-07-11:
+`ruff check` on stepping-stone/phase-status files; `.venv/bin/python -m pytest
+tests/unit/test_pareto_archive_tiers.py tests/unit/test_pareto_stepping_stones_report.py
+tests/unit/test_autopilot_phase_status.py -q` → 29 passed. Remaining Pattern 1
+work is the heavier explicit replay/rollback path, which is still operator-window
+work and not part of the observe-only lane.
+
 **(c) Risk + gate.** Prompt-context version: near-zero risk (no new eval, no gate touched, no archive-authority change) — it cannot promote anything on its own. The re-run follow-up costs one serial eval per revisited stepping-stone and so is bound by the **single-user no-concurrent-inference constraint** (operator-scheduled only). Any config revisited still passes the unchanged SafetyGate: quality floor `safety_gate.py:869`, resolution-aware per-suite gate `:950-959`, MAD/`mad_noise` filter `:897-948`, and — when enabled — the sequential verdict `:680`. No change to promotion authority; a stepping-stone only earns a frontier point by winning on the existing 4D dominance test.
 
 **(d) Effort.** **S** for the observe-only `stepping_stones_text` prompt block; **M** if the `rollback`/`explore_from_trial` re-run path is added.
@@ -1197,16 +1297,20 @@ Deferred (needs operator sign-off / more inference): fecundity parent sampling (
 
 ### Implementation status (2026-07-02)
 
-Patterns **1, 3, 4 are IMPLEMENTED** (observe-only) on branch `dgm-harness-patterns-2026-07-02`
-(epyc-orchestrator, commit `d820e94f`) — isolated worktree; the live autopilot (main tree) is
-**unaffected** until an operator merge while it is idle. Files: `pareto_archive.py`
-(`stepping_stones`/`stepping_stones_text`), `autopilot.py` (planner-prompt append, gated by
-`AUTOPILOT_STEPPING_STONES`, default on), `digest.py` (`_mechanism_effectiveness_section`),
-`STEPPING_STONE_ABLATION_PROTOCOL.md`. Verified: py_compile, functional smoke,
-`tests/unit/test_pareto_archive_tiers.py` 6/6, GitNexus impact LOW, 3-lens adversarial review
-(2 minor findings applied). Patterns **2** (fecundity parents) and **5** (token cost axis —
-MEASUREMENT trust boundary, operator-only) are **DEFERRED**, gated on Pattern 1 landing + the
-Pattern 3 ablation.
+Patterns **1, 3, 4 are IMPLEMENTED** (observe-only) in the current orchestrator branch.
+The original isolated branch was `dgm-harness-patterns-2026-07-02` (`d820e94f`), and
+the current `spec-dec-mtp-refresh-2026-06-22` branch contains the same live surfaces:
+`pareto_archive.py` (`stepping_stones`/`stepping_stones_text`), `autopilot.py`
+(planner-prompt append, gated by `AUTOPILOT_STEPPING_STONES`, default on),
+`digest.py` (`_mechanism_effectiveness_section`), and
+`STEPPING_STONE_ABLATION_PROTOCOL.md`. Verified again 2026-07-11 on the current
+branch: `ruff check` on the touched Pattern 1/3/4 files and `.venv/bin/python -m
+pytest tests/unit/test_pareto_archive_tiers.py tests/unit/test_autopilot_phase_status.py
+tests/unit/test_economic_ledger.py -q` → 32 passed. The live autopilot daemon still
+requires the normal stale-code/preflight restart gate before these branch changes are
+runtime-active. Patterns **2** (fecundity parents) and **5** (token cost axis —
+MEASUREMENT trust boundary, operator-only) are **DEFERRED**, gated on Pattern 1 landing
++ the Pattern 3 ablation.
 
 ### Eval-task coverage guardrail (2026-07-04)
 
@@ -1340,3 +1444,57 @@ paired authority core.
   now includes advisory `eval_task_coverage` status/percent/repeat/tier summary
   in `summary` and as a non-blocking section. Dashboard-specific presentation
   can build on that payload, but the authority gate remains unchanged.
+
+
+## Research Intake Update — 2026-07-14
+
+### New Related Research
+- **[intake-819] "Sleep-time Compute: Beyond Inference Scaling at Test-time"** (arxiv:2504.13171 — Lin, Snell, Packer, Wooders, Stoica, Gonzalez; Letta/MemGPT lineage; credibility 2 [audit-corrected: Apr-2025 outside 12-mo window + Letta commercial-bias], verdict adopt_patterns)
+  - Relevance: medium — a clean formalization of **exactly what autopilot/nightshift already do**: an offline phase `S(c)->c'` enriches raw context *before* queries arrive, so the online phase `T_b(q,c')` is cheap. Maps onto the knowledge-distiller, handoff-hint-distillation, and unified-trace-memory-service (the store an enriched `c'` would live in).
+  - Reported results: **~5× less test-time compute** at matched accuracy (Stateful GSM-Symbolic, AIME); **~2.5× lower cost/query** when one enriched context is amortized across ~10 related queries; +13–18% accuracy at fixed test-time budget.
+  - Delta from current approach: we run the offline loop but **without an explicit predictability gate or amortization accounting**. The paper supplies both, plus the failure modes we should encode.
+  - **Attaches to existing anchors (not free-floating):** the deferred **AP-29 KnowledgeDistiller wiring** (`knowledge_distiller.py` L1→L2→L3; code landed 2026-05-08 `4cdc77e`, wiring still deferred) is the concrete precompute/distiller path this gate should ride on; the **2026-05-20 RIU "tool-response predictability co-objective"** note is the same idea one step less formal. Treat all three as one thread.
+
+### Transferable patterns → autopilot
+1. **Predictability gate** — only precompute where the future query/workload is inferable from current state (benefit collapses when queries are unpredictable; Fig. 10).
+2. **Amortization accounting** — price offline artifacts across the number of future consumers, not per-run.
+3. **Staleness invalidation** — precomputed `c'` is void when context changes; maps directly to our autopilot artifacts going stale on stack/config/kernel changes (FROZEN-registry + stale-process discipline).
+4. **Not a strict dominator** — at very high online budgets, plain test-time scaling wins; sleep-time compute is a low/mid-budget lever.
+
+### Rider on existing deferred work (not standalone)
+- [ ] **When AP-29 KnowledgeDistiller is wired** (currently deferred — see AP-29), apply an explicit **predictability + staleness gate** to it: what to precompute, for how many consumers, invalidate on stack/config change (framing from intake-819 + the 2026-05-20 predictability-co-objective note; adopt_patterns only, no importable artifact). This is a rider on AP-29, **not** new standalone scaffolding.
+
+## Seq-Gate Containment Checkpoint — 2026-07-15
+
+Deterministic planner guard work was already recorded earlier. This checkpoint
+captures the seq preflight containment result only.
+
+- The orchestrator seed-fallback dead-loop is fixed, so the seq preflight
+  fallback path no longer loops on the old failure mode.
+- Live restart trial `1399` halted with `_dispatch_deficiency=seq_gate_preflight_blocked`
+  and `last_invalid_reason=seq_gate_preflight_alpha_wealth_exhausted`.
+- No `in_flight_trial` remained after the halt.
+- Checkpoint validation passed with `160` tests passing.
+- Remaining blocker is the formal OP-1 / P0.2 MEASUREMENT amendment work
+  around alpha wealth and rate-axis reachability; the `seq_p0_2_bridge`
+  consent path is now enabled and the bridge daemon has been resumed.
+
+## OP-1 / P0.2 Bridge Completion — 2026-07-15
+
+- [x] Bridge consent was granted in `orchestration/authority_consent.json`, then
+  re-locked to `root:root` `0444` with `chattr +i` by the operator, and the
+  live bridge status probe now reports `seq_p0_2_bridge_status().enabled=true`.
+  ✅ 2026-07-15
+- [x] `scripts/autopilot/start_fable_authority_daemon.py` resumed AutoPilot with
+  supervisor PID `4071732` / child PID `4071734`, log
+  `/mnt/raid0/llm/tmp/autopilot_fable_authority_20260715T215252Z.log`, and
+  runtime facts `AUTOPILOT_SEQ_P0_2_BRIDGE=1`, `code_stale=false`,
+  `seq_gate_reachability_preflight.status=passed`,
+  `reachability.status=rate_axis_advisory_bridge`,
+  `p0_2_bridge.enabled=true/env_enabled=true/consent_enabled=true`,
+  planner primary=`claude`, critic=`codex_critic`, fallback=`claude`, and
+  spend breaker=`0`. ✅ 2026-07-15
+- [x] Trial `1399` dispatched as `numeric_trial memrl_retrieval.semantic_k=15`;
+  the planner also attempted a stale invalid
+  `repl_executor.tool_activation_threshold` draft, and the critic rejected it
+  before substituting the valid memrl action. ✅ 2026-07-15

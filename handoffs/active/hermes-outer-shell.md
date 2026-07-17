@@ -2,10 +2,12 @@
 
 **Status**: in-progress (Phase 1 complete, Phase 2 routing API done, skills + static validation wired; live Hermes validation pending)
 **Created**: 2026-03-20 (split from hermes-agent-index.md)
-**Updated**: 2026-07-06
+**Updated**: 2026-07-16
 **Parent**: [hermes-agent-index.md](hermes-agent-index.md)
 **Repos**: https://github.com/NousResearch/hermes-agent, https://github.com/math-inc/OpenGauss
 **Decision**: Vanilla Hermes (not OpenGauss) — OpenGauss is Lean 4-specific; Hermes has first-class custom endpoint support
+
+> **Scope (2026-07-16):** this handoff is the **Hermes-candidate** evaluation. The general orchestrator-vs-harness thesis — orthogonal backend moat (A) vs cooperation-requiring agent loop (B); the **open-source requirement**; and the OPEN harness choice across **Hermes / OpenCode / ACP-speakers** — plus the selection decision live in [`harness-selection-and-integration.md`](harness-selection-and-integration.md). Keep the general thesis + cross-candidate tasks THERE; keep Hermes-specific detail HERE. (Model IDs in the examples below — e.g. Qwen2.5-72B — are illustrative and dated; verify against the live registry, now Qwen3.5-122B-class.)
 
 ## Objective
 
@@ -275,7 +277,7 @@ Source: [`research/deep-dives/veniceai-skills-cross-runtime-authoring.md`](../..
 
 #### Phase 2+ Enhancement (added 2026-04-24 from intake-454 deep-dive)
 
-Source: [`research/deep-dives/hermes-agent-v2026-4-23-release.md`](../../research/deep-dives/hermes-agent-v2026-4-23-release.md). Depends on Wave 1B item D (pin bump v2026.3.23 → v2026.4.23) — D lives in [`hermes-agent-index.md`](hermes-agent-index.md) P2.5.
+Source: [`research/deep-dives/hermes-agent-v2026-4-23-release.md`](../../research/deep-dives/hermes-agent-v2026-4-23-release.md). Depends on Wave 1B item D (pin bump v2026.3.23 → v2026.4.23) — D lives in [`hermes-agent-index.md`](hermes-agent-index.md) P2.6.
 
 - [x] **F — Re-express `x_*` overrides as a namespaced Hermes plugin bundle** (4–6 h, depends on D) — DONE 2026-07-06
   - Upstream Hermes plugin-command plumbing was repaired in `/mnt/raid0/llm/hermes-agent`: `PluginContext.register_command()` now registers `CommandDef` entries, tracks canonical command handlers/aliases, exposes `invoke_plugin_command()`, passes CLI/gateway session context into plugin handlers, displays command counts in `/plugins`, and invokes mutable `pre_llm_call` hooks from chat-completions request construction.
@@ -503,3 +505,49 @@ Two patterns lifted from `strukto-ai/mirage` source audit. Apply as design refer
 - **[intake-697] eve (Vercel agent framework)**: productized successor of [intake-397] (vercel-labs/open-agents). All patterns — durable park/resume, subagent delegation, zero-registration tools, conditional skills, eval-on-deploy — are already enumerated in the vercel-open-agents deep-dive (L329-332) and carried in this handoff plus the tool-output-compression / tool-use-eval-contract Phase 2 work. **No net-new lift.**
 - **[intake-700] ruflo (ex-Claude-Flow swarm meta-harness)**: named primitives already covered elsewhere — `strategy_store` + the 4-tier ReasoningBank memory; SiliconSwarm Applied and Fortytwo BT (both killed in autopilot); pi-agent-core hooks (intake-473, L352-357). Only net-new = **zero-trust cross-machine federation** (mTLS / ed25519 / PII-gating) — **out-of-scope** for single-host single-user EPYC. Note its recent CWE-78 (OS command injection) patch if its hook-shell surface is ever inspected. Benchmarks are vendor self-reported (observations, not decision-gating per MEASUREMENT.md).
 - **meta-harness-optimization is COMPACTED (MH-6/7/9)** — explicitly NOT a pattern-mining sink; do not route mining there.
+
+### Client Surface Audit — 2026-07-17 (HS-1b: Hermes cooperation / deference surface)
+
+Extends the 2026-07-04 audit from "can a client *drive* the overrides" to
+"can Hermes's own **layer-(B)** loop (compaction, model selection, sub-agent
+spawning, tool loop) be made to **DEFER** to the orchestrator's routing /
+context-folding / escalation". Source-only audit of `/mnt/raid0/llm/hermes-agent`
+@ `v2026.3.23-44-g532a49f1`. **No inference, no build, no run.** Template =
+HS-1a OpenHands pre-audit in [`harness-selection-and-integration.md`](harness-selection-and-integration.md).
+
+**Orchestrator contract is BODY-based (verified).** `OpenAIChatRequest` exposes
+all five `x_*` overrides as JSON **body** fields
+(`epyc-orchestrator/src/api/models/openai.py:63-82`), consumed off the parsed
+request model (`openai_compat.py:396-397,455-459`). The only HTTP header the API
+reads anywhere is the `x-task-id` observability tag (`src/api/__init__.py:334`)
+— there is **no** header→override path. So the load-bearing injection surface is
+the request **body**, not headers. (Consequence: header-based passthrough —
+OpenHands `LLM.extra_headers`, or OpenCode's `chat.headers` hook — would need a
+NEW orchestrator-side header reader; body injection works today.)
+
+| Layer-(B) behavior | Hermes mechanism (file:line) | Defer-to-orchestrator path | Patch cost |
+|---|---|---|---|
+| Transport | OpenAI SDK `chat.completions.create(**api_kwargs)` (`run_agent.py:3459` non-stream / `3592` stream); `api_mode` auto-resolves to `chat_completions` for a `/v1` base_url that is not api.openai/anthropic/codex (`run_agent.py:495-517`) | Already the `/v1/chat/completions` contract; `extra_body` serializes as top-level body keys → orchestrator's `x_*` | none |
+| Model selection / routing | `_build_api_kwargs` assembles `model`+`extra_body`, then fires the `pre_llm_call` plugin hook with the **mutable** `api_kwargs` on every LLM turn (`run_agent.py:4213-4224`) | EPYC plugin `_inject_overrides` merges per-session `x_orchestrator_role`/`x_force_model` into `extra_body` (`scripts/hermes/plugins/epyc-orchestrator-overrides/__init__.py:127-140,168`); `/use` slash command sets session state | **none — landed** |
+| Escalation cap | same `pre_llm_call` hook | `x_max_escalation` via `/escalation` | none — landed |
+| REPL / tool exec | same hook + toolset registry | `x_disable_repl` via `/nocode`; or drop `execute_code` from `toolsets.*` | none — landed |
+| Context folding | `ContextCompressor.should_compress` gated by `compression_enabled` (`run_agent.py:1013,1064,1082-1085`; `agent/context_compressor.py:129-137`); summary model = `provider:main` (same endpoint) | set `compression.enabled: false` → orchestrator folds server-side (avoids double-fold); if left on, its own summary call still routes to the orchestrator | ~0 (config flag) |
+| Sub-agent fan-out | `delegate_task` tool (`toolsets.py:58,195,247`); children are `AIAgent`s that **inherit** the parent `base_url`/api_key/toolsets (`tools/delegate_tool.py:157-188`), `MAX_DEPTH=2` | (a) keep → each child is another orchestrator client whose turns also fire `pre_llm_call` (defers per-turn); or (b) drop `delegate_task` from the toolset → orchestrator owns escalation/fan-out | ~0 (toolset/config choice) |
+| Eval fan-out | non-interactive single-query path (`cli.py:5567`) + `batch_runner.py` / `mini_swe_runner.py` (SWE-bench harness) | drive headless against `/v1`; no explicit `--json` JSONL flag found (weaker than OpenHands' `--json` and OpenCode's `--format json`) | n/a (existing) |
+
+**Per-turn dynamism is already solved.** The `pre_llm_call` hook fires on *every*
+LLM turn (parent + subagents) against per-session override state, so per-turn /
+per-session `x_*` needs no extra config — strictly better than OpenHands
+(HS-1a: static per named config; per-turn needs N configs or a ~10-line patch).
+
+**Sufficiency call (Hermes): SUFFICIENT — cooperation surface is READY; lowest
+patch cost of the audited candidates.** Making Hermes defer needs **no new code**
+beyond the already-landed EPYC plugin. Remaining work is (i) config selection
+(compression on/off; `delegate_task` in/out) and (ii) the LIVE `/v1` validation
+already tracked as items **G** and **P** above (requires inference → out of A4
+scope). Residual weakness (Cross-Cutting Concern #1): Hermes ships a large
+layer-(B) loop (compaction + delegation + memory + 30+ tools), but every piece is
+config/toolset-gated and all aux/summary/child traffic routes back through the
+same orchestrator endpoint — so "importing a competing orchestrator" is far more
+contained than OpenHands' non-gatable loop + Docker substrate. **HS-4 selection
+stays open (operator).**

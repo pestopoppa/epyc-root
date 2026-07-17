@@ -2,8 +2,8 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-07-07 (real-suite v1 clean-window 70% accuracy, E1 dense-control sweep completed)
-**Sources**: 70+ documents
+**Last compiled**: 2026-07-16 (adds v7 K5 chat-endpoint quality gate, no-inference readiness gate, and discarded raw-completions protocol failure)
+**Sources**: 73+ documents
 
 ## Summary
 
@@ -17,6 +17,17 @@ Benchmark hardening in December 2025 addressed ceiling effects where top models 
 
 ## Key Findings
 
+### New (2026-07-16, v7 K5 quality gate + readiness checks)
+
+- **Endpoint contract is part of benchmark validity: the raw `/v1/completions` K5 attempt is non-evidence, and the corrected chat-endpoint harness is the gate record.** The old `/mnt/raid0/llm/tmp/v7-quality-20260716/` run failed the model/template contract with a Content-only protocol error. The fixed `v7_quality_gate_runner.py` uses `/v1/chat/completions` by default, records endpoint metadata, and keeps `/v1/completions` only as an explicit compatibility mode. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [progress 2026-07-16.md](../progress/2026-07/2026-07-16.md).
+- **K5's promotion-quality comparison passed with matched suite scores, not inferred speed proxies.** Production v6 and refreshed v7 candidate `8e5c555ab` both scored MMLU-Pro `73/200=36.5%` and GPQA `50/195=25.6%`, with `0` errors and comparator `PASS` against the `-5pp` per-suite threshold. The result says "no observed K5 quality regression at this sample size"; it does not by itself promote the kernel or replace the operator promotion decision. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [progress 2026-07-16.md](../progress/2026-07/2026-07-16.md), `/mnt/raid0/llm/tmp/v7-quality-20260716-chat/v7_quality_gate_report.md`.
+- **Readiness evidence is layered: code correctness, generated-stack consistency, and promotion-gate no-inference checks are separate gates.** The launcher/device guard passed focused unit tests, generated stack artifacts were refreshed by `stack_change_pipeline.py update`, and `stack_change_pipeline.py check --run-promotion-gate` passed with `summary: ok`, `acceptance: no-inference checks passed`, and `181` promotion-gate tests. This is the correct closure shape for a stack-change checkpoint: inference evidence and no-inference readiness are recorded separately. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [progress 2026-07-16.md](../progress/2026-07/2026-07-16.md).
+
+### New (2026-07-17, CPU host drift and clean-run preflight)
+
+- **CPU guard-cell drift can be host/runtime state rather than source regression, so future CPU A/Bs need an explicit clean-run preflight before anyone blames the kernel.** The K34 paired rerun showed current production recovered far above the earlier 07-16 guard cells while v7 stayed near parity on the same host, which makes the old slow numbers a repeatability artifact rather than a source-level verdict. The preflight to record before expensive CPU guard cells is: no AutoPilot/llama-server/bench/profiler, `numactl --hardware`, `free -h`, governor/EPP/boost/THP/NUMA-balancing, pinned `LD_LIBRARY_PATH`, build commit, and a cheap frontdoor sentinel. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [progress 2026-07-17](../progress/2026-07/2026-07-17.md).
+- **v7 finalization now carries an explicit throughput-vs-context artifact requirement, so operator-facing matrices must use the fastest validated serving config rather than raw baseline runs.** K35 records exact model path/SHAs, v7 build commit, MTP/NEXTN and `ngram-mod,draft-mtp` flags, reasoning-off lanes, KV dtype/quant choices, GPU/CPU/hybrid offload mode, role overrides, context depths, acceptance side data, pinned `LD_LIBRARY_PATH`, the clean-host preflight, and cleanup proof. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [progress 2026-07-17](../progress/2026-07/2026-07-17.md).
+
 ### New (2026-07-07, real-suite v1 clean-window ledger scored 70% accuracy; E1 dense-control sweep completed as useful-but-not-pristine)
 
 > **Review flag (project-wiki writer-evidence policy):** model-compiled, not adopted until human or measured review. Numbers below are observations without decision-gating protocol citations.
@@ -24,6 +35,8 @@ Benchmark hardening in December 2025 addressed ceiling effects where top models 
 - **The real-suite v1 clean-window n=50 run now has usable results — superseding the 2026-07-06 hard negative.** The 2026-07-07 run of `run_real_suite_v1_evaltower_window.py --apply --confirm-clean-window --n 50` completed at `orchestration/reports/real_suite_v1_eval_20260707T013009Z/` with `35/50` correct (`quality_0_3=2.10`, reliability `0.94`), median request speed `32.606 t/s`, aggregate `29.462 t/s`, wall `1178.696s`, and `3` request errors (`1` no-such-group, `2` timed out). This supersedes the 2026-07-06 `0/50` hard negative (which failed on backend-unavailable). The artifact is a usable real-suite ledger for method triage and baseline comparison, but W3 acceptance remains open pending follow-up on AP-16 instruction-token bloat (`93.0%` instruction-token ratio) and how this ledger feeds promotion/regret views. Sources: [frontier-f1-real-task-corpus.md](../handoffs/active/frontier-f1-real-task-corpus.md), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
 
 - **E1 dense-control P-BENCH-3 sweep completed as useful-but-not-pristine evidence.** The `qwen36_27b_q8` sweep at `-np 1,2,4,8,16` with `GGML_IQK=1` completed `43/43` cells with `0` errors. Tasks/hour scaled `20.11 → 124.62`, aggregate predicted t/s `1.07 → 6.81`, and p95 latency rose `240.9s → 674.0s`. The MI210 server remained live, so the run used `--skip-clean-check --allow-host-health-warning` and is classified as **useful dense-control evidence, not pristine host-exclusive decision evidence**. The corrected run (with `GGML_IQK=1`) replaced an aborted attempt that missed the IQK env. Sources: [batched-decode-measurement.md](../handoffs/active/batched-decode-measurement.md), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
+
+- **The method discipline used for harness mutations is now explicit in the checkpoint record.** MH-9's bounded `new_file` support was accepted only after narrow Ruff and pytest verification on the touched files, and the live preflight still remained a separate P1.5 gate that exited `wait_for_boundary` rather than being conflated with code correctness. That is a useful distinction for benchmark methodology: a green code mutation does not imply runtime readiness, and the test bundle should say exactly which layer it proves. Sources: [meta-harness-optimization.md](../handoffs/active/meta-harness-optimization.md), [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [progress 2026-07-11.md](../progress/2026-07/2026-07-11.md).
 
 ### New (2026-07-05, tool-use lane live under Gate-3 discipline + tier-segregated coverage instrument + real-suite clean-window runner + W8 sparse-baseline repair + RI-10 scored-canary protocol)
 

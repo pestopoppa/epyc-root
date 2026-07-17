@@ -83,7 +83,7 @@ Handoffs track cross-repo work items:
 - `handoffs/blocked/` — Waiting on dependencies
 - `handoffs/archived/` — Historical reference
 
-**Start here**: [`handoffs/active/master-handoff-index.md`](handoffs/active/master-handoff-index.md) — single entry point for discovering all active work. Dispatches to 5 domain-specific sub-indices.
+**Start here**: [`handoffs/active/master-handoff-index.md`](handoffs/active/master-handoff-index.md) — single entry point for discovering all active work. Dispatches to 6 domain-specific sub-indices (plus standalone strategy indices, e.g. harness-selection, reviewer-control-plane).
 
 **Current architecture review (2026-06-12)**: the `handoffs/completed/fable5-findings-*` set is the standing strategic assessment - start at `fable5-findings-00-executive-summary.md`; the prioritized queue rewrite was applied into `handoffs/active/master-handoff-index.md` and the historical proposal now lives at `handoffs/completed/fable5-proposed-master-index-rewrite.md`.
 
@@ -185,7 +185,7 @@ Documents in `handoffs/archived/`, `handoffs/completed/`, `progress/`, and `CHAN
 <!-- gitnexus:keep -->
 # GitNexus — Code Intelligence
 
-Indexed as **epyc-root** (28086 symbols, 31492 relationships, 92 execution flows). Use the `gitnexus` CLI; `gitnexus-*` skills auto-surface in the Skill tool.
+Indexed as **epyc-root** (28707 symbols, 32247 relationships, 94 execution flows). Use the `gitnexus` CLI; `gitnexus-*` skills auto-surface in the Skill tool.
 
 **Re-index when stale:** `scripts/gitnexus-analyze.sh` — NOT bare `gitnexus analyze` (re-installs skills into a nested subdir). The wrapper takes a nonblocking per-repo lock at `/tmp/gitnexus-<repo>-analyze.lock`; exit `75` means another analyze is already running, so wait/retry rather than deleting `.gitnexus/` metadata. Interrupted incremental metadata should force GitNexus' normal rebuild path.
 

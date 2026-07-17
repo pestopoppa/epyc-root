@@ -286,3 +286,9 @@ This DOES require updates to `routing-intelligence.md` (which owns the review tr
 - **TR-3** (heuristic classifier): rule-based mapping from request context (retry count, escalation flag, prompt features) to {T, W, V}. Lives at `src/classifiers/role_classifier.py`. Validates the schema before any ML.
 - **TR-4**: dispatch wiring — per-call role drives prompt template + verification expectation. Verifier turns get a verification prompt; Thinker turns get a planning prompt.
 - **TR-5**: paired A/B `=1` vs `=0` for ≥N=200 per arm per benchmark. Promote on Δ ≥ +2 points without regression > −1 point.
+
+## Research Intake Update — 2026-07-16 (Architect→Reviewer control plane answers TR-1)
+
+The new control-plane series ([`reviewer-control-plane-index.md`](reviewer-control-plane-index.md)) formally answers Open Question TR-1: **a review decision turn IS a Verifier turn under another name** — H3 task RD-7 ([`reviewer-decision-plane.md`](reviewer-decision-plane.md)) logs `assigned_role="verifier"` on all review dispatches (telemetry-only; NO dispatch changes; TR-4/5 and DAR gates remain FROZEN and are not needed by the series). The calibration ledger (H4) will produce exactly the V-acceptance-vs-review-gate correlation telemetry TR-1.2 deferred to; collapse authority remains an operator decision. Supporting intake: intake-835 (plan-compliance — plan rubric = phase-coverage/order/executor-alignment), intake-839 (MetaGPT tri-role precedent: reviewer-no-authorship validated externally).
+
+**2026-07-17 update**: RD-7 is now LIVE in code (orchestrator `5586ce1e`) — review-plane trace events carry `assigned_role="verifier"` in the detail payload per the `routing_meta()` convention, so `scripts/analysis/trinity_shadow_telemetry.py` will pick up review turns as Verifier turns once shadow decisions flow. The TR-1.2 correlation telemetry (V-acceptance vs review gate) becomes computable from the review_ledger after the first shadow replays (inference-gated).

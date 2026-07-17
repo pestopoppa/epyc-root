@@ -132,15 +132,27 @@ function render(d){
   const defs=[["runs",t.runs],["correct",t.correct],["failed",t.failed],["models",t.models]];
   for(const [l,n] of defs){ const s=el("div","stat"); s.innerHTML='<span class="n">'+(n||0)+'</span><span class="l">'+l+'</span>'; stats.appendChild(s); }
 
-  // Pareto scatter (single vs aggregate); only points with absolute single_tps.
-  const pts=(d.pareto||[]).filter(p=>p.single_tps!=null);
-  paretoChart($("#pareto"), pts);
+  // Pareto scatter over (single-stream × aggregate) t/s. A point can only be
+  // placed HONESTLY when BOTH axes are real; a single-only point must NOT be
+  // fabricated onto the y=x diagonal (the old bug), so it is omitted + disclosed.
+  const withSingle=(d.pareto||[]).filter(p=>p.single_tps!=null);
+  const plotted=withSingle.filter(p=>p.aggregate_tps!=null);
+  const singleOnly=withSingle.length-plotted.length;
+  paretoChart($("#pareto"), plotted);
   const note=$("#pareto-note");
-  if(!pts.length){
+  if(!withSingle.length){
+    // Honest degradation: the panel is an empty shell because the producer
+    // (epyc-inference-research kernel_store export) does not populate absolute
+    // throughput fields yet — the hub only reads that contract, it cannot fill it.
     note.textContent = (d.db_present===false || (t.runs||0)===0)
-      ? "Awaiting the loop's first sweep (epyc-inference-research; Phases 1–2 open). The run log below shows any seeded validation rows."
-      : "No frontier yet — no runs carry absolute single-stream throughput (a validation-only row records Δ% + mechanism, not absolute t/s).";
-  } else { note.textContent = "Frontier = non-dominated CORRECT variants over (single-stream, aggregate) t/s."; }
+      ? "Awaiting the loop's first sweep (epyc-inference-research; Phases 1–2 open). No absolute throughput exported yet — the run log below shows any seeded validation rows."
+      : "No absolute single-stream t/s in the contract — the kernel-R&D producer records Δ% + mechanism on validation-only rows and does not populate absolute/aggregate throughput yet (a batched llama-bench pass is the upstream gap, tracked on the kernel loop).";
+  } else if(!plotted.length){
+    note.textContent = `${withSingle.length} variant(s) carry single-stream t/s but no aggregate t/s — omitted from the (single × aggregate) chart rather than fabricated onto the diagonal. The producer does not populate aggregate throughput yet.`;
+  } else {
+    note.textContent = "Frontier = non-dominated CORRECT variants over (single-stream × aggregate) t/s."
+      + (singleOnly ? ` · ${singleOnly} single-only variant(s) omitted (no aggregate t/s recorded).` : "");
+  }
 
   // best per model
   const best=d.best_per_model||[];
@@ -167,17 +179,19 @@ function svgNS(t,a){const e=document.createElementNS("http://www.w3.org/2000/svg
 function paretoChart(svg, pts){
   const W=640,H=280,pad={l:44,r:12,t:12,b:34};
   svg.innerHTML="";
-  if(!pts.length){ const t=svgNS("text",{x:W/2,y:H/2,fill:"#8b949e","text-anchor":"middle","font-size":12}); t.textContent="no frontier data"; svg.appendChild(t); return; }
-  const xs=pts.map(p=>p.single_tps), ys=pts.map(p=>p.aggregate_tps!=null?p.aggregate_tps:p.single_tps);
+  // Callers pass only points with BOTH single_tps and aggregate_tps (real 2D
+  // points); a null-aggregate point is never fabricated onto the diagonal here.
+  if(!pts.length){ const t=svgNS("text",{x:W/2,y:H/2,fill:"#8b949e","text-anchor":"middle","font-size":12}); t.textContent="no (single × aggregate) points"; svg.appendChild(t); return; }
+  const xs=pts.map(p=>p.single_tps), ys=pts.map(p=>p.aggregate_tps);
   const xmax=Math.max(...xs)*1.08||1, ymax=Math.max(...ys)*1.08||1;
   const iw=W-pad.l-pad.r, ih=H-pad.t-pad.b;
   const X=v=>pad.l+iw*v/xmax, Y=v=>pad.t+ih-ih*v/ymax;
   for(let g=0;g<=2;g++){ const y=pad.t+ih-ih*g/2; svg.appendChild(svgNS("line",{x1:pad.l,y1:y,x2:W-pad.r,y2:y,stroke:"#21262d"}));
     const t=svgNS("text",{x:pad.l-6,y:y+3,fill:"#8b949e","font-size":9,"text-anchor":"end"}); t.textContent=Math.round(ymax*g/2); svg.appendChild(t); }
-  const line=[...pts].sort((a,b)=>a.single_tps-b.single_tps).map(p=>`${X(p.single_tps).toFixed(1)},${Y(p.aggregate_tps!=null?p.aggregate_tps:p.single_tps).toFixed(1)}`).join(" ");
+  const line=[...pts].sort((a,b)=>a.single_tps-b.single_tps).map(p=>`${X(p.single_tps).toFixed(1)},${Y(p.aggregate_tps).toFixed(1)}`).join(" ");
   svg.appendChild(svgNS("polyline",{points:line,fill:"none",stroke:"#3fb950","stroke-width":1.4,"stroke-dasharray":"4 3"}));
-  for(const p of pts){ const c=svgNS("circle",{cx:X(p.single_tps),cy:Y(p.aggregate_tps!=null?p.aggregate_tps:p.single_tps),r:4,fill:"#3fb950"});
-    const tt=svgNS("title"); tt.textContent=`${p.label} (${p.model}): ${p.single_tps} single · ${p.aggregate_tps!=null?p.aggregate_tps+" agg":"single-stream"} · Δ${p.delta_pct}%`; c.appendChild(tt); svg.appendChild(c); }
+  for(const p of pts){ const c=svgNS("circle",{cx:X(p.single_tps),cy:Y(p.aggregate_tps),r:4,fill:"#3fb950"});
+    const tt=svgNS("title"); tt.textContent=`${p.label} (${p.model}): ${p.single_tps} single · ${p.aggregate_tps} agg · Δ${p.delta_pct}%`; c.appendChild(tt); svg.appendChild(c); }
   const xl=svgNS("text",{x:pad.l+iw/2,y:H-6,fill:"#8b949e","font-size":10,"text-anchor":"middle"}); xl.textContent="single-stream t/s →"; svg.appendChild(xl);
   const yl=svgNS("text",{x:12,y:pad.t+ih/2,fill:"#8b949e","font-size":10,"text-anchor":"middle",transform:`rotate(-90 12 ${pad.t+ih/2})`}); yl.textContent="aggregate t/s →"; svg.appendChild(yl);
 }

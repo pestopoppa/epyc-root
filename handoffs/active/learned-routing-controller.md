@@ -267,9 +267,9 @@ The current routing pipeline already has TWO mechanisms that overlap with a "ver
 
 Question: does adding a separate verifier head *materially* differ from these two, or is it equivalent at scale?
 
-- [ ] **P6.1.1** Read `decision-aware-routing.md` DAR-1 through DAR-5; identify where DAR's loss function differs from a calibrated "P(action correct)" prediction. Specifically: does DAR's contrastive adjustment converge to the same gradient signal as a logistic-regression verifier on the correctness label? If yes, the verifier may be redundant.
-- [ ] **P6.1.2** Inspect the per-class threshold calibration logic (P1.4) in `routing_classifier.py` or its training script. Is the threshold derived from a held-out *correctness* signal, or just from softmax precision/recall on the class label? If correctness signal, the threshold IS already a degenerate verifier (single scalar per class).
-- [ ] **P6.1.3** Write a 1-paragraph audit answering: "What does a separate verifier head *give us* that the per-class threshold + DAR-2 contrastive sharpening don't?"
+- [x] **P6.1.1** ✅ 2026-07-14 (audit: delivered per P6.1 Audit Outcome 2026-05-21) Read `decision-aware-routing.md` DAR-1 through DAR-5; identify where DAR's loss function differs from a calibrated "P(action correct)" prediction. Specifically: does DAR's contrastive adjustment converge to the same gradient signal as a logistic-regression verifier on the correctness label? If yes, the verifier may be redundant.
+- [x] **P6.1.2** ✅ 2026-07-14 (audit: delivered per P6.1 Audit Outcome 2026-05-21) Inspect the per-class threshold calibration logic (P1.4) in `routing_classifier.py` or its training script. Is the threshold derived from a held-out *correctness* signal, or just from softmax precision/recall on the class label? If correctness signal, the threshold IS already a degenerate verifier (single scalar per class).
+- [x] **P6.1.3** ✅ 2026-07-14 (audit: delivered per P6.1 Audit Outcome 2026-05-21) Write a 1-paragraph audit answering: "What does a separate verifier head *give us* that the per-class threshold + DAR-2 contrastive sharpening don't?"
   - If answer is "nothing material" → mark P6 closed, archive Hypothesis C, end of Phase 6.
   - If answer is "calibrated P(correct) at decision time, conditioned on both embedding AND proposed action, with a single decision threshold rather than 5 per-class thresholds" → proceed to P6.2.
 - [x] **P6.1.4** Append the audit to this Phase. ~1 session, no code, deliverable is a paragraph and a binary go/no-go. **DONE 2026-05-21 — see "P6.1 Audit Outcome" below.**
@@ -1420,3 +1420,13 @@ designed around masked candidate sets, not more retuning of this KL path.
 
 **Artifacts**:
 `orchestration/reports/p46_role_dropout/{summary.json,summary.md,rate_*_seed_*.json}`.
+
+---
+
+## Research Intake Update — 2026-07-14 — Knowing-Using Gap caveat (intake-814)
+
+Reference/caveat only — **no phase, no checkbox, unfreezes nothing.** Attaches to the **"Key Insight: Episodic Memory Becomes Write-Only"** thesis above.
+
+- **[intake-814] "…Why Memorized Knowledge Fails to Generalize in LLM Finetuning"** (arXiv:2607.08393; credibility 3; verdict worth_investigating) formalizes a **"Knowing-Using Gap"**: knowledge fine-tuned into transformer weights is memorized but fails multi-hop *chaining* ("knowledge-circuit misalignment").
+- **Why it's filed here:** this controller is EPYC's one **memory→weights** path — `routing_classifier.py` is a 2-layer MLP distilled (Q-weighted cross-entropy SGD) from episodic traces, i.e. the write-only-memory replay buffer becomes training data. The paper studies exactly that direction.
+- **Why it gates nothing:** the Gap is about **multi-hop factual chaining**; our router is a **single-step discriminative action classifier** — no factual recall, no chaining to misroute — so the failure mode does not transfer to the current head. **Watch only if/when** a future phase moves the routing head toward parametric factual/multi-hop injection (e.g. distilling reasoning, not just an action label). Until then it *corroborates* the write-only-memory design rather than challenging it. Per this file's standing directive, this is **not** filed under `retrain-routing-models.md` / `decision-aware-routing.md` (both expansion-FROZEN).

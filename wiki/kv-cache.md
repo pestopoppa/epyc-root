@@ -2,8 +2,8 @@
 
 **Category**: `kv_cache`
 **Confidence**: verified
-**Last compiled**: 2026-06-20
-**Sources**: 35 documents (3 deep-dives, 5 active handoffs, 2 completed handoffs, 24 intake entries, 1 progress log)
+**Last compiled**: 2026-07-17
+**Sources**: 36 documents (3 deep-dives, 5 active handoffs, 2 completed handoffs, 24 intake entries, 2 progress logs)
 
 ## Summary
 
@@ -125,7 +125,9 @@ Three architectural sub-quadratic-attention papers ingested in same-day batch (i
 
 **Tracked at**: [`summary-token-attention-readiness.md`](../handoffs/active/summary-token-attention-readiness.md) (joint KSA + GSA readiness stub) and [`llama-cpp-dsa-contribution.md`](../handoffs/active/llama-cpp-dsa-contribution.md) (active PR #21149 tracker with three contribution sub-tracks).
 
-**DSA fork-side status update (2026-06-20)**: In our fork the DSA *forward pass* is still **unimplemented** — `LLM_ARCH_GLM_DSA` only loads tensors and falls back to **dense MLA** (no Lightning Indexer, no sparse flash-attention path). PR #21149 (fairydreaming) is the gating dependency, and #19460 is the superseded tensor-loading PR, not the tracking target. This makes the "2-models-for-1" leverage a **multi-model-for-1** proposition: one DSA forward-pass implementation unlocks DeepSeek-V3.2 plus the entire GLM-5.x family, now including the 754B GLM-5.2 (DSA, MIT, 1M context) — for GLM-5.2 the blocker is the DSA path, not storage (unsloth UD-IQ2 ~238 GB already fits raid0). [DSA handoff](../handoffs/active/llama-cpp-dsa-contribution.md)
+**DSA fork-side status update (historical 2026-06-20; superseded by the 2026-07-17 closeout)**: pre-fix source had `LLM_ARCH_GLM_DSA` loading tensors and falling back to **dense MLA** (no Lightning Indexer, no sparse flash-attention path), so the blocker really was the DSA path, not storage. Experimental-v7 `3dee86a5a` now routes GLM through `llama_kv_cache_dsa` and the DeepSeek32 DSA graph. The remaining open work is sparse-compute profiling and quality, not cache/runtime wiring. [DSA handoff](../handoffs/active/llama-cpp-dsa-contribution.md)
+
+- **GLM-5.2 current-source DSA cache/runtime wiring is closed (2026-07-17)**: experimental-v7 `3dee86a5a` routes `LLM_ARCH_GLM_DSA` through `llama_kv_cache_dsa`, aliases GLM to the DeepSeek32 DSA graph, and the current-source exact smoke returned `READY` with `Lightning Indexer enabled`. That closes the wiring prerequisite only; sparse-vs-dense attention classification, current-source long-context needle/coherence, and quality remain open. [llama-cpp-dsa-contribution.md](../handoffs/active/llama-cpp-dsa-contribution.md), [glm51-reap-cpu-evaluation.md](../handoffs/active/glm51-reap-cpu-evaluation.md), [Progress 2026-07-17](../progress/2026-07/2026-07-17.md)
 
 ## Related Categories
 

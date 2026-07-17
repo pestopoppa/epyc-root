@@ -32,7 +32,7 @@ prod (2026-06-25), so it had silently been missing the entire iqk CPU GEMM subsy
 
 ### Why the two lines are cleanly separable (read-only audit)
 
-Full audit: `handoffs/active/kernel-reconciliation-audit.md` (READ-ONLY, `git -C … ` only —
+Full audit: `handoffs/completed/kernel-reconciliation-audit.md` (READ-ONLY, `git -C … ` only —
 no commits/merges/builds/inference in that audit). Key findings:
 
 - **Fork point** confirmed three ways: `f8cc15f16` is the exact merge-base of the

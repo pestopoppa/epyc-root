@@ -129,6 +129,18 @@ Maps informal/variant category names to canonical categories above.
 | `theorem_proving` | `formal_verification` |
 | `small_model_deployment` | `local_inference` |
 | `web_systems` | `inference_serving` |
+| `self_improvement` | `autonomous_research` |
+| `auto_research` | `autonomous_research` |
+| `evolutionary_search` | `autonomous_research` |
+| `workflow_automation` | `agent_architecture` |
+| `tree_search` | `agent_architecture` |
+| `acp_integration` | `agent_architecture` |
+| `recursive_agents` | `agent_architecture` |
+| `test_time_compute` | `cost_aware_routing` |
+| `model_internal_state` | `mechanistic_interpretability` |
+| `safety_alignment` | `safety` |
+| `mcp_integration` | `tool_implementation` |
+| `test_time_training` | `training_distillation` |
 
 ## Conformance (added 2026-06-20 — OKF-inspired, intake-710/711)
 

@@ -80,6 +80,19 @@ fi
 # a naive caller keying on that field wrongly concludes failure.
 RESULT_COUNT=$(echo "$RESPONSE" | jq '(.results | length)')
 
+# WS1b: degradation guard. When a majority of the REQUESTED engines are
+# unresponsive, the responsive remainder (often just bing) tends to return
+# low-relevance filler (fonts/dictionaries/homepages) rather than empty — a
+# valid-JSON-but-junk failure that a naive caller trusts. Warn loudly so the
+# caller prefers built-in WebSearch. Non-heuristic: keyed on the response's own
+# unresponsive_engines list, not on score thresholds. Observed 2026-07-14:
+# brave "too many requests" + mojeek "access denied" left bing-only junk.
+REQ_ENGINE_COUNT=$(echo "$ENGINES" | tr ',' '\n' | grep -c . || true)
+UNRESP_COUNT=$(echo "$RESPONSE" | jq '(.unresponsive_engines // [] | length)')
+if [[ "${REQ_ENGINE_COUNT:-0}" -gt 0 && "${UNRESP_COUNT:-0}" -ge $(( (REQ_ENGINE_COUNT + 1) / 2 )) ]]; then
+  echo "searx.sh: ⚠ DEGRADED — ${UNRESP_COUNT}/${REQ_ENGINE_COUNT} requested engines unresponsive; remaining results may be low-relevance filler. Prefer built-in WebSearch for this query." >&2
+fi
+
 # Flatten top-N results: title | url | score | engines | content snippet.
 echo "$RESPONSE" | jq --argjson top "$TOP" '
   {

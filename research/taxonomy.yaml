@@ -176,3 +176,8 @@ categories:
     label: Reinforcement Learning
     description: RL training, PPO, GRPO, reward modeling, bandit methods for LLM optimization.
     related_chapters: []
+
+  harness_optimization:
+    label: Harness Optimization
+    description: End-to-end optimization of model harnesses and agent scaffolds — agent-loop engineering, automated harness/scaffold search, prompt/tool-scaffold tuning, and harness design.
+    related_chapters: []

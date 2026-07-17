@@ -59,7 +59,9 @@ echo "== py_compile =="
   scripts/validate/validate_agents_references.py \
   scripts/validate/validate_claude_md_matrix.py \
   scripts/validate/validate_doc_drift.py \
-  scripts/validate/validate_registry.py
+  scripts/validate/validate_registry.py \
+  scripts/validate/check_stack_fact_migration_discipline.py \
+  tests/validate/test_check_stack_fact_migration_discipline.py
 
 echo "== agent governance =="
 "$PYTHON_BIN" scripts/validate/validate_agents_structure.py
@@ -75,6 +77,9 @@ fi
 
 echo "== pii fixture =="
 "$PYTHON_BIN" scripts/validate/pii_fixture_eval.py
+
+echo "== stack fact migration discipline =="
+"$PYTHON_BIN" scripts/validate/check_stack_fact_migration_discipline.py
 
 if [[ "$STRICT_DOC_DRIFT" -eq 1 ]]; then
   echo "== doc drift =="

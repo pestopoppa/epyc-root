@@ -40,6 +40,10 @@ A research intake deep-dive (2026-04-14) evaluated SearXNG (intake-359/360, 28.3
 | DenseOn (intake-431) | 149M | 56.20 | 57.71 | No (probe-first pool candidate) | Apache 2.0 |
 | ~~Reason-ModernColBERT~~ | 150M | 22.62–30.28 BRIGHT | — | Eliminated | CC-BY-NC-4.0 |
 
+### New (2026-07-14, backend degradation hygiene)
+
+- **The SearXNG backend now carries an explicit degradation signal in the source record.** The 2026-07-14 audit recorded a `⚠ DEGRADED` guard when at least half the requested engines are unresponsive, so backend health can be read as environmental degradation instead of a silent query failure. The same audit also notes that brave/mojeek/bing blocks are instance or egress issues, not a reason to rewrite the search layer's architecture. Sources: [SearXNG Search Backend](../handoffs/active/searxng-search-backend.md), [Progress 2026-07-14](../progress/2026-07/2026-07-14.md).
+
 ### Existing
 
 - Two distinct retrieval systems: ColBERT 128-dim multi-vector (codebase/docs) vs BGE-large 1024-dim single-vector (MemRL routing memory). Complementary, not competing [Ch.07 MemRL]

@@ -14,7 +14,9 @@ GET /health                 ``{"status":"ok"}`` for the stack health probe
 GET /api/handoff_board       compact cards for all four columns (live scan, TTL-cached)
 GET /api/handoff_detail?id=  full card + scrubbed markdown body (lazy modal load)
 GET /api/handoff_timeline    the git-derived timeline artifact (+ freshness)
-GET /api/health              board=live + timeline staleness class
+GET /api/kernel              the kernel-R&D dashboard contract (+ freshness)
+GET /api/outcome             the autopilot outcome contract (+ freshness), if exported
+GET /api/health              board=live + timeline/kernel/outcome staleness class
 
 Run: ``python3 -m dashboard.server --port 8100``  (or ``python3 dashboard/server.py``)
 """
@@ -58,12 +60,29 @@ KERNEL_DASHBOARD_JSON = Path(os.environ.get(
     "KERNEL_DASHBOARD_JSON",
     "/mnt/raid0/llm/tmp/mi210-build/campaign/kernel_dashboard.json"))
 
+# Autopilot outcome contract — the *steering* view of the orchestration loop
+# (keepable / wasted-eval / learning-excluded rates + frontier/baseline-promotion
+# stall counters). PRODUCED BY the orchestrator autopilot loop
+# (``phase_status.build_phase_health_report`` → ``phase_health_report.py``), a
+# NON-dashboard surface this hub does NOT own. The hub only MIRRORS a file-backed
+# export if one is present; there is no exporter today (phase_health_report.py
+# only prints JSON to stdout), so the card degrades honestly to a "not exported —
+# see :8000" state until the loop writes this path. Overridable for testing.
+AUTOPILOT_OUTCOME_JSON = Path(os.environ.get(
+    "AUTOPILOT_OUTCOME_JSON",
+    "/mnt/raid0/llm/tmp/autopilot/outcome_contract.json"))
+
 # Timeline freshness thresholds (handoffs move on a human/commit cadence).
 _TIMELINE_WARN_S = 6 * 3600
 _TIMELINE_STALE_S = 2 * 86400
 # Kernel-R&D loop is a slow (nightshift/overnight, single-GPU) cadence.
 _KERNEL_WARN_S = 3 * 86400
 _KERNEL_STALE_S = 14 * 86400
+# Autopilot exports on a fast cadence WHEN RUNNING; a stale export means the loop
+# is paused (Phase-0 stop-loss) or the exporter is dead — an honest signal, but
+# expected during a pause, so it is surfaced without gating hub health.
+_OUTCOME_WARN_S = 6 * 3600
+_OUTCOME_STALE_S = 2 * 86400
 
 _BOARD_TTL_S = 30.0
 _NO_STORE = {"Cache-Control": "no-store", "Content-Type": "application/json"}
@@ -323,17 +342,117 @@ def kernel_payload() -> dict:
     return data
 
 
+_OUTCOME_EMPTY = {
+    "outcome_progress": {"status": "missing", "blockers": []},
+    "observation_notice": (
+        "Autopilot outcome KPIs are OBSERVATIONS (MEASUREMENT.md) — they steer "
+        "attention, they never gate a keep/revert/promote decision. The live "
+        "outcome plane and every steering action (pause/rewind/promote) live on "
+        "the orchestrator dashboard (:8000); this hub only mirrors an exported "
+        "contract."),
+}
+
+
+def _looks_like_outcome_progress(d: dict) -> bool:
+    """True if ``d`` is a bare ``outcome_progress`` dict (not the wrapper form)."""
+    return "status" in d and any(k in d for k in ("rates", "blockers", "latest_trial_id"))
+
+
+def _normalize_outcome_contract(raw: dict) -> dict:
+    """Coerce either contract form to ``{generated_at, outcome_progress, ...}``.
+
+    Accepts the wrapper form ``{generated_at, outcome_progress, ...}`` *or* a bare
+    ``outcome_progress`` dict (as emitted by
+    ``build_phase_health_report()['outcome_progress']``); the bare form is wrapped.
+    """
+    op = raw.get("outcome_progress")
+    if isinstance(op, dict):
+        data = dict(raw)
+    elif _looks_like_outcome_progress(raw):
+        data = {"generated_at": raw.get("generated_at"), "outcome_progress": raw}
+    else:
+        return {**_OUTCOME_EMPTY, "generated_at": raw.get("generated_at"),
+                "error": "autopilot outcome contract missing 'outcome_progress'"}
+    data.setdefault("observation_notice", _OUTCOME_EMPTY["observation_notice"])
+    data.setdefault("generated_at", None)
+    return data
+
+
+def _read_outcome_contract() -> dict:
+    """Read the autopilot outcome contract, tolerating absence/corruption.
+
+    Returns the honest degraded ``_OUTCOME_EMPTY`` (with an ``error`` reason and
+    ``generated_at=None``) on any absence/corruption — the card must never 500,
+    and an absent export is the *expected* default (no exporter writes it yet).
+    """
+    try:
+        raw = json.loads(AUTOPILOT_OUTCOME_JSON.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return {**_OUTCOME_EMPTY, "generated_at": None,
+                "error": "autopilot outcome contract not exported yet — the "
+                         "orchestrator loop (:8000) has not written it."}
+    except (OSError, json.JSONDecodeError) as exc:
+        return {**_OUTCOME_EMPTY, "generated_at": None,
+                "error": f"autopilot outcome contract unreadable: {exc}"}
+    if not isinstance(raw, dict):
+        return {**_OUTCOME_EMPTY, "generated_at": None,
+                "error": "autopilot outcome contract malformed (not an object)"}
+    return _normalize_outcome_contract(raw)
+
+
+def _outcome_contract_freshness(data: dict) -> dict:
+    """Classify outcome-contract freshness from the export's semantic timestamp.
+
+    Uses ``generated_at`` (when the exporter last read the journal), NEVER the
+    file mtime — mirrors the kernel-contract fix so a no-op re-export cannot read
+    'fresh forever'. NOTE: export-freshness only proves the pipeline is alive; the
+    actual *stall* signal is ``trials_since_frontier``/``trials_since_promotion``
+    in the contract body, which the card surfaces directly.
+    """
+    source_ts = _parse_semantic_timestamp(data.get("generated_at"))
+    if source_ts is None:
+        return {"staleness_class": "missing", "age_s": None,
+                "timestamp": None, "source": None}
+    age = max(0.0, time.time() - source_ts)
+    if age <= _OUTCOME_WARN_S:
+        cls = "fresh"
+    elif age <= _OUTCOME_STALE_S:
+        cls = "aging"
+    else:
+        cls = "stale"
+    return {"staleness_class": cls, "age_s": round(age, 1),
+            "timestamp": round(source_ts, 3), "source": "generated_at"}
+
+
+def outcome_payload() -> dict:
+    """Read the autopilot outcome contract, tolerating absence/corruption.
+
+    Degrade-honestly boundary: the outcome KPIs are produced by the orchestrator
+    autopilot loop (a NON-dashboard surface this hub does not own). The hub only
+    mirrors a file-backed export if present; when it is absent (today's default)
+    the payload is the honest 'not exported' state that the card points at :8000.
+    """
+    data = _read_outcome_contract()
+    data["_freshness"] = _outcome_contract_freshness(data)
+    return data
+
+
 def health_payload() -> dict:
-    """Fold the board (live) + timeline + kernel artifacts into one status line."""
+    """Fold the board (live) + timeline + kernel + outcome artifacts into one line."""
     tl = freshness.classify(TIMELINE_PATH, _TIMELINE_WARN_S, _TIMELINE_STALE_S)
     kn = _kernel_contract_freshness(_read_kernel_contract())
+    oc = _outcome_contract_freshness(_read_outcome_contract())
     # ``missing`` is not degraded (fresh checkout / loop not started); ``stale`` is.
+    # The outcome export is deliberately EXCLUDED from the degraded gate: a paused
+    # loop (Phase-0 stop-loss) reads stale/missing by design, so it is surfaced for
+    # visibility but must not flip the stack-health probe to degraded.
     degraded = tl["staleness_class"] == "stale" or kn["staleness_class"] == "stale"
     return {
         "status": "degraded" if degraded else "ok",
         "board": {"staleness_class": "fresh", "source": "live-scan"},
         "timeline": tl,
         "kernel": kn,
+        "outcome": oc,
         "now": time.time(),
     }
 
@@ -390,6 +509,8 @@ class _Handler(BaseHTTPRequestHandler):
                 self._send_json(timeline_payload())
             elif route == "/api/kernel":
                 self._send_json(kernel_payload())
+            elif route == "/api/outcome":
+                self._send_json(outcome_payload())
             elif route == "/api/health":
                 self._send_json(health_payload())
             else:

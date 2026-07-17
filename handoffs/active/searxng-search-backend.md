@@ -333,3 +333,14 @@ Bench handoff at [`granite-97m-r2-bench-plan.md`](granite-97m-r2-bench-plan.md).
   - Integration: the [Crawl4AI Work Items](#crawl4ai-work-items-steps-23) section above has the current implementation plan (CA-1 through CA-7, port 11235 after the 2026-06-14 port correction).
   - Deep-dive: [`research/deep-dives/firecrawl-vs-crawl4ai-web-pipeline-steps-2-3.md`](../../research/deep-dives/firecrawl-vs-crawl4ai-web-pipeline-steps-2-3.md)
   - **Sequencing**: CA-1 through CA-4 landed in `0dadb2e`; CA-5 live smoke remains independent of SX-5/6 (ColBERT gate). CA-6 (Camofox escalation wiring) waits for intake-524 Camofox integration.
+
+### 2026-07-14 Runtime Audit — engine-pool degradation (blocked a research-intake Tier-2b sweep)
+
+Reproducible this date: `/healthz` returns 200 (instance up), but the usable engine pool is effectively dead for our egress IP —
+- `brave` → "too many requests"; `mojeek` → "access denied" (both land in `unresponsive_engines`).
+- `bing` (the sole responder) returns **off-topic filler** for technical queries — e.g. `"lossless weight compression DFloat11"` returned DaFont font pages and Chinese TikTok how-to guides; `wikipedia` added nothing relevant.
+- Net effect: `searx.sh` exits 0 with valid JSON but junk results (it does **not** trip the exit-2 fallback), which silently defeated a research-intake Tier-2b contradiction sweep on 2026-07-14 (all 6 queries returned dictionary/clock/homepage noise).
+
+**Mitigation landed same day**: `scripts/search/searx.sh` now emits a `⚠ DEGRADED` stderr warning when ≥ half the requested engines are unresponsive (keyed on the response's own `unresponsive_engines`; exit code unchanged so partial results still flow). Surfaces the degradation instead of returning silent junk.
+
+**Still open (operator)**: brave/mojeek rate-limits/blocks and bing junk-for-our-IP are an instance/egress-IP problem, not fixable in the bash bridge. Options: rotate egress IP, add SearXNG engine keys/credentials, or widen the default engine set to ones that respond from this IP. Until then, prefer built-in WebSearch for correctness-critical sweeps.

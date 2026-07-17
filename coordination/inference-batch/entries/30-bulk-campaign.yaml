@@ -1,0 +1,1108 @@
+# =============================================================================
+# Wave-3 M3 — P3 BULK-CAMPAIGN inference-batch entries (phase 3).
+#
+# Per-model-group clean-window items. All entries are kernel-era-stamped
+# (production-consolidated-v6 / E5-cpu-kernel, from the 2026-06-26 v6+iqk cutover)
+# and throughput_sensitive -> require host_health.tier: quiet_window. The loop
+# groups execution by model to avoid reload thrash ("per-model-group windows").
+#
+# Authored (not executed) for scripts/coordination/compile_inference_batch.py.
+# Every entry copies the 00-example.yaml 5-fork gate_table shape
+# (pass / marginal / fail / infra / ambiguous). NO inference is run here.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 1. DS-E1 — dynamic-stack KV measurement
+# -----------------------------------------------------------------------------
+- schema_version: inference_batch.entry.v1
+  task_id: BULK-DS-E1-kv
+  title: "DS-E1 — dynamic-stack KV measurement (decision-ready clean-window packet)"
+  provenance:
+    owning_handoff: handoffs/active/bulk-inference-campaign.md
+    checkbox: "DS-E1 dynamic-stack KV measurement"
+    also_flips:
+      - "handoffs/active/routing-and-optimization-index.md#Dynamic stack / placement"
+    source_ref: "docs/data/clean_window_measurement_manifest.json"
+    coordination_note: >
+      DS-E1 is decision-ready in the generated clean-window manifest and is the
+      dynamic-stack KV-footprint measurement that feeds the DS-6/DS-7 static-vs-dynamic
+      prewarm profile decision. Isolated bench in a quiet model-batched window; do not
+      co-schedule with shape-keyed or K-ROPE exact-boundary work in the same window.
+  phase: 3
+  priority: P2
+  preconditions:
+    stack_lineup: "production default lineup (frontdoor + workers), single-instance measurement"
+    kernel_era: production-consolidated-v6
+    flags_required:
+      GGML_IQK: 1
+    flag_attestation: env_only
+    models:
+      - frontdoor
+    host_health:
+      tier: quiet_window
+      max_uptime_days: 7
+      cache_state: drop_caches
+    topology:
+      required_topology_hash: df373c79cc4af06f
+      live_affinity_verified: true
+      contention_matrix: not_required
+    autopilot: stopped
+    operator_gates:
+      - OP-bench-recipe-abstraction
+    depends_on: []
+  execution:
+    driver: clean_window_entry
+    protocol_id: "P-BENCH-3 via bench_canonical.sh"
+    dry_run: false
+    command: >
+      # AMBIGUOUS (op-bundle): bench_canonical.sh has no --recipe (recipe id ds-e1-dynamic-stack-kv fabricated). Real form: bench_canonical.sh -m <model.gguf> -n 128 [--dry-run]. But KV-per-slot footprint is NOT a bench_canonical mode. Re-pin to -m form OR resolve via run_batch_entry.py. Operator decides the KV-footprint harness.
+    cwd: /mnt/raid0/llm/epyc-inference-research
+    concurrency_mode: isolated_bench
+    fanout_transport: none
+    contention_class: single_instance_bench
+    est_wall_clock_h: 2.0
+    timeout_s: 14400
+    retry_policy:
+      max_attempts: 2
+      retry_on:
+        - INFRA_BLOCKED
+  outcomes:
+    expected: >
+      Dynamic-stack KV footprint measured under P-BENCH-3 with per-N slot occupancy;
+      confirms whether dynamic prewarm materially beats the retained static profile.
+    gate_table:
+      - gate: "Does dynamic-stack KV allocation change the serving footprint enough to reopen DS-6?"
+        evidence: "KV bytes/slot + tasks/hour per -np N, P-BENCH-3, host attest ref, era E5-cpu-kernel"
+        fork:
+          pass:
+            rule: "material static-prewarm gap confirmed (>10% serving-slot headroom delta) with clean host attest"
+            action:
+              - "flip DS-E1 checkbox; file the packet with (metric, protocol, n, date, attest)"
+              - "reopen DS-6 dynamic-prewarm evaluation per routing index"
+            next: DONE_PASS
+          marginal:
+            rule: "delta within noise band; static profile still adequate"
+            action:
+              - "flip DS-E1; record observation; retain default static-prewarm profile"
+            next: DONE_MARGINAL_OBS
+          fail:
+            rule: "dynamic stack regresses footprint or destabilizes serving"
+            action:
+              - "retain static profile; document negative result in bulk-inference-campaign Open Questions"
+            next: FAILED_REVERTED
+          infra:
+            classify: "server OOM / KV allocator error / non-quiet host during window"
+            action:
+              - "re-run in a fresh quiet window after drop_caches + throttle-check"
+          ambiguous:
+            action:
+              - "hold for operator adjudication; attach raw per-N KV rows"
+            next: HELD_AMBIGUOUS
+  artifacts:
+    outputs:
+      - "data/clean_window/ds_e1/ds_e1_kv_measurement.json"
+    package_to: "coordination/inference-batch/bundles/BULK-DS-E1/"
+  ledger:
+    journal_quarantine_rule: >
+      record model, -np N, kv_bytes_per_slot, tasks_per_hour, host attest ref; quarantine
+      diagnostic_only if host was not quiet-confirmed for the window.
+    era_stamp: "E5-cpu-kernel"
+
+# -----------------------------------------------------------------------------
+# 2. K-ROPE — remaining RoPE long-context cells (worker re-attest gated)
+# -----------------------------------------------------------------------------
+- schema_version: inference_batch.entry.v1
+  task_id: BULK-K-ROPE-cells
+  title: "K-ROPE-1 — remaining RoPE long-context cells (exact-boundary + worker path)"
+  provenance:
+    owning_handoff: handoffs/active/research-evaluation-index.md
+    checkbox: "RoPE K-ROPE-1 matrix"
+    also_flips:
+      - "handoffs/active/bulk-inference-campaign.md#K-ROPE"
+    coordination_note: >
+      PRECONDITION (2026-07-14 audit): the worker_general Gemma4-MTP serving gate is
+      unverified-stale (2026-06-20 claim). Re-attest worker Gemma4-MTP serving against the
+      Gemma4-MTP launch recipe BEFORE counting any worker RoPE cells. Valid 4K/8K
+      (frontdoor/architect/ingest) and 16K (frontdoor/ingest) rows already committed; this
+      entry adds exact-boundary rows + the worker cells only after re-attestation.
+  phase: 3
+  priority: P3
+  preconditions:
+    stack_lineup: "clean model-batched window; frontdoor + ingest resident, worker_general re-attested"
+    kernel_era: production-consolidated-v6
+    flags_required:
+      GGML_IQK: 1
+    flag_attestation: all_workers
+    models:
+      - frontdoor
+      - ingest_long_context
+      - worker_general
+    host_health:
+      tier: quiet_window
+      max_uptime_days: 7
+      cache_state: drop_caches
+    topology:
+      required_topology_hash: df373c79cc4af06f
+      live_affinity_verified: true
+      contention_matrix: not_required
+    autopilot: stopped
+    operator_gates:
+      - OP-WORKER-MTP-REATTEST
+      - OP-bench-recipe-abstraction
+    depends_on: []
+  execution:
+    driver: clean_window_entry
+    protocol_id: "P-QUAL-PROMO (long-context exact-boundary probe)"
+    dry_run: false
+    command: >
+      # AMBIGUOUS (op-bundle): recipe k-rope-1-longcontext + --cells fabricated. Long-context ACCURACY matrix != bench_canonical (tg/pp throughput). Needs a long-context accuracy harness, not bench_canonical. OP-WORKER-MTP-REATTEST gate.
+    cwd: /mnt/raid0/llm/epyc-inference-research
+    concurrency_mode: isolated_bench
+    fanout_transport: none
+    contention_class: single_instance_bench
+    est_wall_clock_h: 3.0
+    timeout_s: 18000
+    retry_policy:
+      max_attempts: 2
+      retry_on:
+        - INFRA_BLOCKED
+  outcomes:
+    expected: >
+      Worker Gemma4-MTP serving re-attested against launch recipe, THEN exact-boundary and
+      worker RoPE cells filled; long-context accuracy matrix completed for the resident roles.
+    gate_table:
+      - gate: "Is worker_general Gemma4-MTP serving healthy (re-attested vs the launch recipe)?"
+        evidence: "garbage-check + MTP draft-accept + no M-RoPE assert on worker_general, P-SMOKE-1"
+        fork:
+          pass:
+            rule: "worker serves clean (no garble, draft-accept > 0, no assert)"
+            action:
+              - "proceed to fill worker + exact-boundary RoPE cells"
+            next: BULK-K-ROPE-cells
+          marginal:
+            rule: "worker serves but with degraded MTP acceptance (<50%)"
+            action:
+              - "record worker cells as observation-only; do not promote worker RoPE claims"
+            next: DONE_MARGINAL_OBS
+          fail:
+            rule: "worker garbles or asserts (serving path still broken)"
+            action:
+              - "skip worker cells; fill only exact-boundary frontdoor/ingest cells; keep worker gate BLOCKED"
+            next: BLOCKED_PRECONDITION
+          infra:
+            classify: "worker server crash / launch-recipe mismatch / non-quiet host"
+            action:
+              - "re-apply Gemma4-MTP launch recipe; re-run in a fresh quiet window"
+          ambiguous:
+            action:
+              - "hold for operator adjudication; attach worker attest + raw MTP telemetry"
+            next: HELD_AMBIGUOUS
+      - gate: "Do the exact-boundary RoPE cells hold long-context accuracy at the boundary?"
+        evidence: "per-cell long-context accuracy vs 4K/8K/16K baselines, P-QUAL-PROMO, era E5-cpu-kernel"
+        fork:
+          pass:
+            rule: "boundary cells within tolerance of interior cells; matrix complete"
+            action:
+              - "flip K-ROPE-1 checkbox; commit cells to research"
+            next: DONE_PASS
+          marginal:
+            rule: "boundary degradation present but bounded"
+            action:
+              - "record cells as observation; annotate boundary degradation"
+            next: DONE_MARGINAL_OBS
+          fail:
+            rule: "boundary collapse (accuracy floor at exact boundary)"
+            action:
+              - "document boundary failure mode; keep matrix open at those cells"
+            next: FAILED_REVERTED
+          infra:
+            classify: "unparseable responses / server drop mid-matrix"
+            action:
+              - "re-run affected cells in a fresh quiet window after drop_caches"
+          ambiguous:
+            action:
+              - "hold for operator; attach per-cell raw rows"
+            next: HELD_AMBIGUOUS
+  artifacts:
+    outputs:
+      - "benchmarks/results/clean_window/k_rope/k_rope_1_exact_boundary_worker.json"
+    package_to: "coordination/inference-batch/bundles/BULK-K-ROPE/"
+  ledger:
+    journal_quarantine_rule: >
+      record role, context length, cell (interior/exact-boundary), accuracy, worker attest ref;
+      quarantine worker cells diagnostic_only if the MTP re-attest gate did not pass.
+    era_stamp: "E5-cpu-kernel"
+
+# -----------------------------------------------------------------------------
+# 3. K-EMB-1 — Granite embedder bench Phase B
+# -----------------------------------------------------------------------------
+- schema_version: inference_batch.entry.v1
+  task_id: BULK-K-EMB-1
+  title: "K-EMB-1 — Granite embedder bench Phase B (load/vector smoke -> Phase B)"
+  provenance:
+    owning_handoff: handoffs/active/research-evaluation-index.md
+    checkbox: "Granite embedder bench Phase B"
+    also_flips:
+      - "handoffs/active/granite-97m-r2-bench-plan.md#Phase B"
+    coordination_note: >
+      A-fast corpus/harness verified and GGUF artifacts produced for Granite/e5-base/BGE-M3
+      on 2026-07-03. This entry runs the embedder-only load/vector smoke first, then Phase B
+      retrieval bench. NO production model reload required (embedder servers only, ports 8090-8095).
+  phase: 3
+  priority: P3
+  preconditions:
+    stack_lineup: "embedder-only servers (Granite/e5-base/BGE-M3 GGUF); no production role reload"
+    kernel_era: production-consolidated-v6
+    flag_attestation: env_only
+    models:
+      - granite-embedding-97m-r2
+    host_health:
+      tier: quiet_window
+      max_uptime_days: 14
+      cache_state: warm
+    topology:
+      required_topology_hash: df373c79cc4af06f
+      live_affinity_verified: false
+      contention_matrix: not_required
+    autopilot: stopped
+    operator_gates:
+      - BUILD-embedder-recall-harness
+    depends_on: []
+  execution:
+    driver: clean_window_entry
+    protocol_id: "P-BENCH-3 (embedder latency) + retrieval recall bench"
+    dry_run: false
+    command: >
+      # BUILD-GATE: bench_canonical.sh is a llama-bench tg/pp wrapper — cannot do embedder retrieval recall@k. Recipe granite-97m-r2-phaseB + --embedder-smoke-first fabricated. Retrieval-recall bench harness needed.
+    cwd: /mnt/raid0/llm/epyc-inference-research
+    concurrency_mode: isolated_bench
+    fanout_transport: none
+    contention_class: embedder_only
+    est_wall_clock_h: 1.5
+    timeout_s: 10800
+    retry_policy:
+      max_attempts: 2
+      retry_on:
+        - INFRA_BLOCKED
+  outcomes:
+    expected: >
+      Embedder load/vector smoke passes, then Phase B retrieval recall + latency measured for
+      Granite-97m-r2 vs e5-base / BGE-M3 references.
+    gate_table:
+      - gate: "Does Granite-97m-r2 clear the load/vector smoke AND hold retrieval recall vs references?"
+        evidence: "vector-smoke pass + recall@k and per-query latency vs e5-base/BGE-M3, P-BENCH-3"
+        fork:
+          pass:
+            rule: "smoke passes AND recall within tolerance at lower latency/footprint than references"
+            action:
+              - "flip K-EMB-1 / Phase B checkbox; file the embedder bench packet"
+            next: DONE_PASS
+          marginal:
+            rule: "recall parity but no latency/footprint win"
+            action:
+              - "record observation; no default embedder change"
+            next: DONE_MARGINAL_OBS
+          fail:
+            rule: "recall regression or smoke failure"
+            action:
+              - "keep current embedder default; document in granite bench plan"
+            next: FAILED_REVERTED
+          infra:
+            classify: "embedder server 404/OOM / GGUF load failure"
+            action:
+              - "verify port 8090-8095 mapping (not SearXNG); re-run smoke then Phase B"
+          ambiguous:
+            action:
+              - "hold for operator; attach recall + latency raw rows"
+            next: HELD_AMBIGUOUS
+  artifacts:
+    outputs:
+      - "data/embedder_bench/granite_97m_r2_phaseB.json"
+    package_to: "coordination/inference-batch/bundles/BULK-K-EMB-1/"
+  ledger:
+    journal_quarantine_rule: >
+      record embedder model, recall@k, per-query latency_ms, corpus id; quarantine diagnostic_only
+      if the load/vector smoke did not pass first.
+    era_stamp: "E5-cpu-kernel"
+
+# -----------------------------------------------------------------------------
+# 4. A7 — batched-decode E-series follow-ons (E3/E4 conditional + A7 hook telemetry)
+# -----------------------------------------------------------------------------
+- schema_version: inference_batch.entry.v1
+  task_id: BULK-A7-eseries
+  title: "A7 — batched-decode E-series follow-ons (E3 conditional GEMM + E4 re-promotions)"
+  provenance:
+    owning_handoff: handoffs/active/batched-decode-measurement.md
+    checkbox: "E3 — 8x8 GEMM SIMD body"
+    also_flips:
+      - "handoffs/active/batched-decode-measurement.md#E4 — conditional re-promotions"
+    source_ref: "handoffs/completed/fable5-findings-06-kernel-and-concurrency.md"
+    coordination_note: >
+      E1 (A3B + dense-control) and E2 landed 2026-07-03/07. This entry runs the E-series
+      follow-ons: E3 (AVX-512BW batch>1 GEMM body at arch/x86/repack.cpp:1563-1566) ONLY IF E1
+      showed per-thread-BW unsaturated at intermediate batch, plus E4 conditional CPU17/CPU18
+      re-promotions and the A7 eval-batch hook telemetry. E3-before-E1 is forbidden; E3 kernel
+      work must land on llama.cpp-experimental, never production.
+  phase: 3
+  priority: P2
+  preconditions:
+    stack_lineup: "single full instance, -np sweep; frontdoor A3B + dense control"
+    kernel_era: production-consolidated-v6
+    flags_required:
+      GGML_IQK: 1
+    flag_attestation: env_only
+    models:
+      - frontdoor
+    host_health:
+      tier: quiet_window
+      max_uptime_days: 7
+      cache_state: drop_caches
+    topology:
+      required_topology_hash: df373c79cc4af06f
+      live_affinity_verified: true
+      contention_matrix: not_required
+    autopilot: stopped
+    operator_gates:
+      - OP-bench-recipe-abstraction
+    depends_on:
+      - BULK-DS-E1-kv
+  execution:
+    driver: clean_window_entry
+    protocol_id: "P-BENCH-3 via bench_canonical.sh"
+    dry_run: false
+    command: >
+      # AMBIGUOUS (op-bundle): recipe e-series-followon + --np sweep fabricated (bench_canonical is single -n/-p). Re-pin to bench_canonical.sh -m <model.gguf> -n 128 with an external np-sweep loop.
+    cwd: /mnt/raid0/llm/epyc-inference-research
+    concurrency_mode: isolated_bench
+    fanout_transport: none
+    contention_class: single_instance_bench
+    est_wall_clock_h: 4.0
+    timeout_s: 21600
+    retry_policy:
+      max_attempts: 2
+      retry_on:
+        - INFRA_BLOCKED
+  outcomes:
+    expected: >
+      E1 saturation regime re-confirmed at intermediate batch; E3 kernel written+benched only if
+      compute headroom exists; E4 re-promotion rows flipped or explicitly re-closed with evidence.
+    gate_table:
+      - gate: "Does intermediate batch show per-thread-BW headroom that would justify the E3 GEMM body?"
+        evidence: "aggregate tasks/hour + per-stream p50/p95 per -np N + BW utilization, P-BENCH-3, era E5-cpu-kernel"
+        fork:
+          pass:
+            rule: "unsaturated per-thread BW at intermediate batch AND E3 kernel delta positive (canonical A/B)"
+            action:
+              - "flip E3 checkbox; land the AVX-512BW batch>1 body under cpu-shape handoff (experimental)"
+              - "evaluate E4 CPU17/CPU18 re-promotions with the cited E1 evidence"
+            next: DONE_PASS
+          marginal:
+            rule: "modest headroom; E3 delta within noise"
+            action:
+              - "record observation; do not write E3 kernel; leave E4 rows closed"
+            next: DONE_MARGINAL_OBS
+          fail:
+            rule: "BW-saturated at intermediate batch (no compute headroom)"
+            action:
+              - "document E3 as forbidden per measurement; re-close E4 reopen clauses"
+            next: FAILED_REVERTED
+          infra:
+            classify: "server OOM / missing-IQK build / non-quiet host mid-sweep"
+            action:
+              - "confirm GGML_IQK build; re-run the full -np sweep in a fresh quiet window"
+          ambiguous:
+            action:
+              - "hold for operator; attach per-N throughput + BW rows"
+            next: HELD_AMBIGUOUS
+  artifacts:
+    outputs:
+      - "data/batched_decode/e_series_followon_pbench3.json"
+    package_to: "coordination/inference-batch/bundles/BULK-A7-eseries/"
+  ledger:
+    journal_quarantine_rule: >
+      record model, -np N, tasks_per_hour, p50/p95, BW_util, kernel on/off; quarantine diagnostic_only
+      if the MI210 server or another bench was live during the window.
+    era_stamp: "E5-cpu-kernel"
+
+# -----------------------------------------------------------------------------
+# 5. X-MAS — post-enable telemetry monitor (passive rider)
+# -----------------------------------------------------------------------------
+- schema_version: inference_batch.entry.v1
+  task_id: BULK-XMAS-telemetry
+  title: "X-MAS — post-enable live telemetry monitor (passive rider on enforce windows)"
+  provenance:
+    owning_handoff: handoffs/active/x-mas-text-routing.md
+    checkbox: "Monitor post-enable live telemetry"
+    source_ref: "arxiv:2505.16997 (X-MAS, intake-557)"
+    coordination_note: >
+      xmas_routing.mode=enforce landed 2026-07-03 (orchestrator d4a6c927); remaining work is
+      post-enable telemetry monitoring, NOT another repaired-policy evidence gate. PASSIVE RIDER:
+      this entry consumes live routing telemetry from whichever window already has the enforce
+      flag set — it launches no dedicated inference. Rollback is xmas_routing.mode: off + API reload.
+  phase: 3
+  priority: P3
+  preconditions:
+    stack_lineup: "production lineup with xmas_routing enforce active"
+    kernel_era: production-consolidated-v6
+    flags_required:
+      "xmas_routing.mode": enforce
+    flag_attestation: all_workers
+    host_health:
+      tier: any
+    topology:
+      required_topology_hash: df373c79cc4af06f
+      live_affinity_verified: false
+      contention_matrix: not_required
+    autopilot: any
+    depends_on: []
+  execution:
+    driver: autopilot_action
+    protocol_id: "P-AB-1 (live routing telemetry, observe-only)"
+    dry_run: false
+    command: >
+      uv run python scripts/autopilot/fable5_gate_report.py --strict --xmas-ab-root <enforce-window AB root>
+    cwd: /mnt/raid0/llm/epyc-orchestrator
+    concurrency_mode: observe_only
+    fanout_transport: none
+    contention_class: passive_telemetry
+    est_wall_clock_h: 0.0
+    timeout_s: 0
+  outcomes:
+    expected: >
+      Live post-enable telemetry shows no unexpected domain/latency regression or guard bypass;
+      X-MAS enforce remains healthy or triggers a pre-decided rollback.
+    gate_table:
+      - gate: "Does live post-enable telemetry stay clean (no domain/latency regression, no guard bypass)?"
+        evidence: "rolling domain score-delta + latency-ratio + guard-bypass counts vs the promote_candidate baseline, P-AB-1"
+        fork:
+          pass:
+            rule: "no domain regresses beyond -0.05, latency-ratio <= 1.0, zero guard bypasses over the window"
+            action:
+              - "flip the telemetry-monitor checkbox; record the healthy window with (metric, protocol, n, date)"
+            next: DONE_PASS
+          marginal:
+            rule: "minor latency drift within tolerance, no quality regression"
+            action:
+              - "record observation; keep enforce; widen the monitoring window"
+            next: DONE_MARGINAL_OBS
+          fail:
+            rule: "domain regression < -0.05 OR guard bypass OR sustained latency regression"
+            action:
+              - "roll back: set xmas_routing.mode: off + reload orchestrator API"
+              - "document the regression mechanism in x-mas-text-routing Open Questions"
+            next: FAILED_REVERTED
+          infra:
+            classify: "telemetry pipeline gap / Fable5 report unavailable"
+            action:
+              - "repair the report path; re-observe the same window before verdict"
+          ambiguous:
+            action:
+              - "hold for operator; attach the raw per-domain telemetry rows"
+            next: HELD_AMBIGUOUS
+  artifacts:
+    outputs:
+      - "orchestration/reports/xmas_post_enable_telemetry_window.json"
+    package_to: "coordination/inference-batch/bundles/BULK-XMAS-telemetry/"
+  ledger:
+    journal_quarantine_rule: >
+      record window bounds, per-domain score-delta, latency-ratio, guard-bypass count; observe-only
+      rows never gate a keep/promote decision on their own (P-AB-1 N>=100 rule).
+    era_stamp: "E5-cpu-kernel"
+
+# -----------------------------------------------------------------------------
+# 6. ODLB-W3-01 — LightOnOCR model-gated bench (from odl_bench manifest_stubs.py)
+# -----------------------------------------------------------------------------
+- schema_version: inference_batch.entry.v1
+  task_id: ODLB-W3-01-lightonocr
+  title: "ODLB-W3-01 — LightOnOCR scanned/image OCR arm (OmniDocBench like-for-like)"
+  provenance:
+    owning_handoff: handoffs/active/opendataloader-pipeline-integration.md
+    checkbox: "swap hybrid backend from docling-fast"
+    also_flips:
+      - "handoffs/active/opendataloader-pipeline-integration.md#does GPU-accelerated LightOnOCR beat docling-fast"
+    source_ref: "epyc-inference-research/scripts/benchmark/odl_bench/manifest_stubs.py (ODLB-W3-01-lightonocr)"
+    coordination_note: >
+      Wave-2 B3 model-gated stub. Engine=lightonocr (PDFRouter._extract_with_lightonocr, async).
+      Runs LightOnOCR over the same GT-page PDFs, writes <stem>.md predictions, scores with the
+      deterministic OmniDocBench config for a like-for-like structural/table/reading-order compare
+      vs pdftotext / ODL-local / LiteParse. PRECONDITION: source born-digital+scanned PDFs mapped
+      to each GT page (demo_data lacks source PDFs — needs the OmniDocBench source corpus / LFS).
+  phase: 3
+  priority: P3
+  preconditions:
+    stack_lineup: "LightOnOCR server (config.server_urls.ocr_server; /ocr/pdf, port 8082); odl_bench adapter"
+    kernel_era: production-consolidated-v6
+    flag_attestation: env_only
+    models:
+      - lightonocr-2-1b
+    host_health:
+      tier: quiet_window
+      max_uptime_days: 14
+      cache_state: warm
+    topology:
+      required_topology_hash: df373c79cc4af06f
+      live_affinity_verified: false
+      contention_matrix: not_required
+    autopilot: stopped
+    operator_gates:
+      - OP-ODL-SOURCE-CORPUS
+    depends_on: []
+  execution:
+    driver: clean_window_entry
+    protocol_id: "OmniDocBench deterministic-metric config (structural/table/reading-order + speed)"
+    dry_run: false
+    command: >
+      PDF_ROUTER_FORCE_OCR=1 python -m scripts.benchmark.odl_bench.adapter run
+      --engine lightonocr --pdf-manifest <pdf_manifest.json> --gt <OmniDocBench GT json>
+      --run-dir $RUN_DIR --score
+    cwd: /mnt/raid0/llm/epyc-inference-research
+    concurrency_mode: isolated_bench
+    fanout_transport: none
+    contention_class: ocr_server
+    est_wall_clock_h: 2.0
+    timeout_s: 14400
+    retry_policy:
+      max_attempts: 2
+      retry_on:
+        - INFRA_BLOCKED
+  outcomes:
+    expected: >
+      LightOnOCR predictions scored on the same OmniDocBench config; establishes whether the
+      GPU OCR path beats docling-fast (0.43s/page) and the deterministic fast paths on scanned PDFs.
+    gate_table:
+      - gate: "Does LightOnOCR beat the deterministic fast paths on scanned/image PDFs at acceptable speed?"
+        evidence: "structural/table/reading-order scores + per-page latency_ms vs pdftotext/ODL-local/LiteParse, OmniDocBench config"
+        fork:
+          pass:
+            rule: "structural/table uplift over fast paths AND per-page latency competitive with docling-fast"
+            action:
+              - "flip the LightOnOCR experiment checkbox; recommend three-way routing (local -> hybrid -> LightOnOCR)"
+            next: DONE_PASS
+          marginal:
+            rule: "quality uplift but latency worse than docling-fast"
+            action:
+              - "record observation; gate LightOnOCR to scanned-only routing"
+            next: DONE_MARGINAL_OBS
+          fail:
+            rule: "no structural uplift over fast paths"
+            action:
+              - "keep docling-fast default; document negative result"
+            next: FAILED_REVERTED
+          infra:
+            classify: "OCR server unreachable / /ocr/pdf error / missing source PDFs for GT pages"
+            action:
+              - "verify LightOnOCR server + source-PDF corpus mapping; re-run in a fresh quiet window"
+          ambiguous:
+            action:
+              - "hold for operator; attach per-page prediction+score rows"
+            next: HELD_AMBIGUOUS
+  artifacts:
+    outputs:
+      - "$RUN_DIR/predictions/lightonocr/<gt_stem>.md"
+      - "opendataloader-bench/result/<save_name>_metric_result.json"
+      - "$RUN_DIR/lightonocr_run_manifest.json"
+    package_to: "coordination/inference-batch/bundles/ODLB-W3-01/"
+  ledger:
+    journal_quarantine_rule: >
+      record engine=lightonocr, per-page latency_ms, structural/table/reading_order scores, GT set id;
+      quarantine diagnostic_only if source PDFs were not mapped to every GT page.
+    era_stamp: "E5-cpu-kernel"
+
+# -----------------------------------------------------------------------------
+# 7. ODLB-W3-02 — ODL hybrid (docling-fast sidecar :5002) model-gated bench
+# -----------------------------------------------------------------------------
+- schema_version: inference_batch.entry.v1
+  task_id: ODLB-W3-02-odl-hybrid
+  title: "ODLB-W3-02 — ODL hybrid table extraction arm (docling-fast sidecar :5002)"
+  provenance:
+    owning_handoff: handoffs/active/opendataloader-pipeline-integration.md
+    checkbox: "Run comparison on 200 PDFs"
+    also_flips:
+      - "handoffs/active/opendataloader-pipeline-integration.md#Implement three-way routing"
+    source_ref: "epyc-inference-research/scripts/benchmark/odl_bench/manifest_stubs.py (ODLB-W3-02-odl-hybrid)"
+    coordination_note: >
+      Wave-2 B3 model-gated stub. Engine=opendataloader_hybrid
+      (PDFRouter._extract_with_opendataloader_hybrid). Deterministic extraction algorithm but
+      MODEL-GATED on the docling-fast sidecar (proven live 2026-07-06). Same prediction+scoring
+      path as ODL-local; the delta of interest is table TEDS. PRECONDITION: structural/table-heavy
+      source corpus with GT (demo_data lacks source PDFs).
+  phase: 3
+  priority: P3
+  preconditions:
+    stack_lineup: "opendataloader-pdf[hybrid] + sidecar 'opendataloader-pdf-hybrid --port 5002' live; odl_bench adapter"
+    kernel_era: production-consolidated-v6
+    flags_required:
+      ORCHESTRATOR_ODL_TABLE_BACKEND: hybrid
+    flag_attestation: env_only
+    host_health:
+      tier: quiet_window
+      max_uptime_days: 14
+      cache_state: warm
+    topology:
+      required_topology_hash: df373c79cc4af06f
+      live_affinity_verified: false
+      contention_matrix: not_required
+    autopilot: stopped
+    operator_gates:
+      - OP-ODL-SOURCE-CORPUS
+    depends_on: []
+  execution:
+    driver: clean_window_entry
+    protocol_id: "OmniDocBench deterministic-metric config (table TEDS focus)"
+    dry_run: false
+    command: >
+      ORCHESTRATOR_ODL_TABLE_BACKEND=hybrid ORCHESTRATOR_ODL_HYBRID_URL=http://127.0.0.1:5002
+      python -m scripts.benchmark.odl_bench.adapter run --engine opendataloader_hybrid
+      --pdf-manifest <pdf_manifest.json> --gt <GT json> --run-dir $RUN_DIR --score
+    cwd: /mnt/raid0/llm/epyc-inference-research
+    concurrency_mode: isolated_bench
+    fanout_transport: none
+    contention_class: odl_hybrid_sidecar
+    est_wall_clock_h: 2.0
+    timeout_s: 14400
+    retry_policy:
+      max_attempts: 2
+      retry_on:
+        - INFRA_BLOCKED
+  outcomes:
+    expected: >
+      ODL-hybrid predictions scored on the same OmniDocBench config; quantifies table-fidelity
+      (TEDS) uplift vs ODL-local on the structural/table-heavy corpus.
+    gate_table:
+      - gate: "Does ODL-hybrid deliver a table-TEDS uplift over ODL-local worth the sidecar cost?"
+        evidence: "table TEDS + structural/reading-order scores vs ODL-local, OmniDocBench config, sidecar /health confirmed"
+        fork:
+          pass:
+            rule: "table TEDS uplift over ODL-local beyond noise; sidecar healthy"
+            action:
+              - "flip the 200-PDF comparison checkbox; recommend hybrid for table-heavy routing"
+            next: DONE_PASS
+          marginal:
+            rule: "small TEDS uplift not worth the sidecar latency"
+            action:
+              - "record observation; keep ODL-local default, hybrid opt-in"
+            next: DONE_MARGINAL_OBS
+          fail:
+            rule: "no TEDS uplift or hybrid regresses reading-order"
+            action:
+              - "keep ODL-local; document negative in opendataloader handoff"
+            next: FAILED_REVERTED
+          infra:
+            classify: "sidecar :5002 /health not ok / missing GT source corpus"
+            action:
+              - "confirm GET http://127.0.0.1:5002/health == {'status':'ok'}; re-run with source corpus"
+          ambiguous:
+            action:
+              - "hold for operator; attach per-table TEDS rows"
+            next: HELD_AMBIGUOUS
+  artifacts:
+    outputs:
+      - "$RUN_DIR/predictions/opendataloader_hybrid/<gt_stem>.md"
+      - "opendataloader-bench/result/<save_name>_metric_result.json"
+      - "$RUN_DIR/opendataloader_hybrid_run_manifest.json"
+    package_to: "coordination/inference-batch/bundles/ODLB-W3-02/"
+  ledger:
+    journal_quarantine_rule: >
+      record engine=opendataloader_hybrid, table TEDS, structural/reading_order scores, sidecar health,
+      GT set id; quarantine diagnostic_only if the sidecar was unhealthy or GT sources were absent.
+    era_stamp: "E5-cpu-kernel"
+
+# -----------------------------------------------------------------------------
+# 8. ODLB-W3-03 — PaddleOCR-VL-1.6 VL reference arm (needs Wave-3 engine adapter)
+# -----------------------------------------------------------------------------
+- schema_version: inference_batch.entry.v1
+  task_id: ODLB-W3-03-paddleocr-vl
+  title: "ODLB-W3-03 — PaddleOCR-VL-1.6 VL reference arm (OmniDocBench v1.6 SOTA ceiling)"
+  provenance:
+    owning_handoff: handoffs/active/opendataloader-pipeline-integration.md
+    checkbox: "Run comparison on 200 PDFs"
+    also_flips:
+      - "handoffs/active/opendataloader-pipeline-integration.md#Publish results in progress log"
+    source_ref: "epyc-inference-research/scripts/benchmark/odl_bench/manifest_stubs.py (ODLB-W3-03-paddleocr-vl)"
+    coordination_note: >
+      Wave-2 B3 model-gated stub. Engine=paddleocr_vl_1_6 — the VL document-parser reference arm
+      (OmniDocBench v1.6 SOTA 96.33), establishing the model-parser ceiling vs the deterministic
+      fast paths. NOTE: NOT wired into pdf_router today — Wave-3 must add a VL engine adapter that
+      emits <stem>.md (documented gap). Reuses the deterministic scoring wiring. Needs GGUF+mmproj
+      + llama-mtmd CPU (or MI210) server + operator approval.
+  phase: 3
+  priority: P3
+  preconditions:
+    stack_lineup: "PaddleOCR-VL-1.6 GGUF + mmproj via llama-mtmd (CPU or MI210); NEW Wave-3 VL engine adapter"
+    kernel_era: production-consolidated-v6
+    flag_attestation: env_only
+    models:
+      - paddleocr-vl-1.6
+    host_health:
+      tier: quiet_window
+      max_uptime_days: 14
+      cache_state: warm
+    topology:
+      required_topology_hash: df373c79cc4af06f
+      live_affinity_verified: false
+      contention_matrix: not_required
+    autopilot: stopped
+    operator_gates:
+      - OP-ODL-SOURCE-CORPUS
+      - OP-VL-INFERENCE-APPROVAL
+      - BUILD-paddleocr-vl-adapter
+    depends_on: []
+  execution:
+    driver: clean_window_entry
+    protocol_id: "OmniDocBench deterministic-metric config (VL ceiling reference)"
+    dry_run: false
+    command: >
+      # BUILD-GATE: engine paddleocr_vl_1_6 is NOT wired into pdf_router (no _extract_with_paddleocr / VL backend). Adapter accepts the string but has no backend. VL adapter must be built.
+    cwd: /mnt/raid0/llm/epyc-inference-research
+    concurrency_mode: isolated_bench
+    fanout_transport: none
+    contention_class: vl_parser
+    est_wall_clock_h: 3.0
+    timeout_s: 18000
+    retry_policy:
+      max_attempts: 2
+      retry_on:
+        - INFRA_BLOCKED
+  outcomes:
+    expected: >
+      PaddleOCR-VL-1.6 predictions scored on the same OmniDocBench config; establishes the VL
+      model-parser ceiling for structural/table/reading-order vs the deterministic fast paths.
+    gate_table:
+      - gate: "Where does the VL ceiling sit vs the deterministic fast paths, and is the gap worth a VL route?"
+        evidence: "structural/table/reading-order scores vs pdftotext/ODL-local/hybrid/LightOnOCR, OmniDocBench config"
+        fork:
+          pass:
+            rule: "VL ceiling materially above the fast paths AND a viable serving path exists"
+            action:
+              - "flip the comparison checkbox; scope a gated VL route for the hardest documents"
+            next: DONE_PASS
+          marginal:
+            rule: "VL better but not worth the serving cost on this corpus"
+            action:
+              - "record the ceiling as reference; no VL route now"
+            next: DONE_MARGINAL_OBS
+          fail:
+            rule: "fast paths already at/near the VL ceiling on this corpus"
+            action:
+              - "document that deterministic paths suffice; close the VL ceiling question"
+            next: FAILED_REVERTED
+          infra:
+            classify: "VL adapter missing / GGUF+mmproj load failure / llama-mtmd server down"
+            action:
+              - "build/verify the Wave-3 VL engine adapter; confirm server up; re-run"
+          ambiguous:
+            action:
+              - "hold for operator; attach per-page VL prediction+score rows"
+            next: HELD_AMBIGUOUS
+  artifacts:
+    outputs:
+      - "$RUN_DIR/predictions/paddleocr_vl_1_6/<gt_stem>.md"
+      - "opendataloader-bench/result/<save_name>_metric_result.json"
+      - "$RUN_DIR/paddleocr_vl_1_6_run_manifest.json"
+    package_to: "coordination/inference-batch/bundles/ODLB-W3-03/"
+  ledger:
+    journal_quarantine_rule: >
+      record engine=paddleocr_vl_1_6, structural/table/reading_order scores, GT set id, VL adapter commit;
+      quarantine diagnostic_only if the VL adapter was a placeholder or GT sources were absent.
+    era_stamp: "E5-cpu-kernel"
+
+# -----------------------------------------------------------------------------
+# 9. Hermes — pin-bump / reference-client / subagent smokes
+# -----------------------------------------------------------------------------
+- schema_version: inference_batch.entry.v1
+  task_id: BULK-hermes-smokes
+  title: "Hermes — pin-bump + reference-client + subagent single-slot smokes"
+  provenance:
+    owning_handoff: handoffs/active/hermes-outer-shell.md
+    checkbox: "G — Validate subagent + single-slot llama-server interaction"
+    also_flips:
+      - "handoffs/active/hermes-agent-index.md#Hermes upstream pin bump"
+      - "handoffs/active/hermes-agent-index.md#Reference non-Hermes client"
+      - "handoffs/active/hermes-agent-index.md#Live Hermes end-to-end smoke checklist"
+    source_ref: "research/deep-dives/hermes-agent-v2026-4-23-release.md"
+    coordination_note: >
+      Bundled Hermes inference smokes gated behind a quiet window: (a) pin bump v2026.3.23 ->
+      v2026.4.23 + breaking-change audit smoke (basic chat / tool use / streaming / override /
+      multi-turn), (b) reference non-Hermes client live --send/streaming validation, (c) subagent
+      + single-slot llama-server interaction (2+ parallel subagents, same endpoint). Static wiring
+      (plugin bundle F, skills, drift check) already landed; only live validation remains.
+  phase: 3
+  priority: P3
+  preconditions:
+    stack_lineup: "single-slot llama-server (-np 1, context_length 32768) for Hermes; orchestrator role alias"
+    kernel_era: production-consolidated-v6
+    flags_required:
+      GGML_IQK: 1
+    flag_attestation: env_only
+    models:
+      - frontdoor
+    host_health:
+      tier: quiet_window
+      max_uptime_days: 14
+      cache_state: warm
+    topology:
+      required_topology_hash: df373c79cc4af06f
+      live_affinity_verified: false
+      contention_matrix: not_required
+    autopilot: stopped
+    depends_on: []
+  execution:
+    driver: command
+    protocol_id: "P-SMOKE-1 (Hermes end-to-end smoke checklist)"
+    dry_run: false
+    command: >
+      python scripts/hermes/hermes_pin_audit.py --target-tag v2026.4.23 &&
+      HERMES_SMOKE_LIVE=1 bash scripts/hermes/run_hermes_smokes.sh --target-tag v2026.4.23
+      --chat --tooluse --streaming --override --multiturn --reference-client --subagent
+    cwd: /mnt/raid0/llm/epyc-root
+    concurrency_mode: isolated_bench
+    fanout_transport: none
+    contention_class: hermes_single_slot
+    est_wall_clock_h: 2.0
+    timeout_s: 14400
+    retry_policy:
+      max_attempts: 2
+      retry_on:
+        - INFRA_BLOCKED
+  outcomes:
+    expected: >
+      Pin bump audited + smoked; reference non-Hermes client --send/streaming validated; 2+ parallel
+      subagents each hit the single-slot llama-server independently without cross-talk or wedge.
+    gate_table:
+      - gate: "Do the Hermes pin-bump, reference-client, and subagent single-slot smokes all pass clean?"
+        evidence: "pin audit report + chat/tool/stream/override/multi-turn smoke + subagent isolation check, P-SMOKE-1"
+        fork:
+          pass:
+            rule: "all smoke legs pass; no breaking change; subagents isolated on the single slot"
+            action:
+              - "flip Hermes G + pin-bump + reference-client + smoke-checklist checkboxes"
+            next: DONE_PASS
+          marginal:
+            rule: "smokes pass but pin bump surfaces a minor non-blocking breaking change"
+            action:
+              - "record the breaking-change delta; flip smokes; defer pin bump to a follow-up"
+            next: DONE_MARGINAL_OBS
+          fail:
+            rule: "any smoke leg garbles / wedges, or subagents collide on the slot"
+            action:
+              - "keep current pin; document the failure in hermes-outer-shell Open Questions"
+            next: FAILED_REVERTED
+          infra:
+            classify: "llama-server down / context-split misconfig (-np>1) / Hermes launch failure"
+            action:
+              - "assert -np 1 + context_length 32768; re-run smokes in a fresh quiet window"
+          ambiguous:
+            action:
+              - "hold for operator; attach smoke transcripts + subagent logs"
+            next: HELD_AMBIGUOUS
+  artifacts:
+    outputs:
+      - "logs/hermes/hermes_wave3_smokes.jsonl"
+    package_to: "coordination/inference-batch/bundles/BULK-hermes-smokes/"
+  ledger:
+    journal_quarantine_rule: >
+      record pin target, per-leg pass/fail, subagent count + isolation result; smoke rows are
+      P-SMOKE-1 (non-decision-gating) and never gate a promotion on their own.
+    era_stamp: "E5-cpu-kernel"
+
+# -----------------------------------------------------------------------------
+# 10. internal-kb-rag — AutoWiki page writer + K11 FTS5 lexical weight sweep
+# -----------------------------------------------------------------------------
+- schema_version: inference_batch.entry.v1
+  task_id: BULK-kbrag-autowiki-k11
+  title: "internal-kb-rag — AutoWiki model-backed page writer + K11 FTS5 lexical sweep"
+  provenance:
+    owning_handoff: handoffs/active/internal-kb-rag.md
+    checkbox: "K11 (optional, measure-first) — FTS5 lexical signal"
+    also_flips:
+      - "handoffs/active/internal-kb-rag.md#AutoWiki page generator/writer"
+    source_ref: "research/factory-ai-harvest-2026-06-03.md (Part 3E, intake-657)"
+    coordination_note: >
+      Two coupled legs. (a) AutoWiki writer: the deterministic source-manifest -> ColBERT refresh
+      loop, output structural lint, and writer_evidence_policy (minimum_confidence: verified, >=3
+      source refs) all landed; only the model-backed page WRITER remains (inference-gated). (b) K11:
+      FTS5 lexical signal landed default-off (orchestrator 74120be); this measures the lexical_weight
+      sweep before any default weight promotion (measure-first). ColBERT MaxSim stays default until
+      evidence justifies a lexical weight > 0.
+  phase: 3
+  priority: P3
+  preconditions:
+    stack_lineup: "architect alias (CPU) for the AutoWiki writer; KB-RAG index resident; no production reload"
+    kernel_era: production-consolidated-v6
+    flags_required:
+      GGML_IQK: 1
+    flag_attestation: env_only
+    models:
+      - architect_general
+    host_health:
+      tier: quiet_window
+      max_uptime_days: 14
+      cache_state: warm
+    topology:
+      required_topology_hash: df373c79cc4af06f
+      live_affinity_verified: false
+      contention_matrix: not_required
+    autopilot: stopped
+    depends_on: []
+  execution:
+    driver: command
+    protocol_id: "K7 Flywheel-template recall eval (HotpotQA/LoCoMo) + writer evidence policy"
+    dry_run: false
+    command: >
+      .venv/bin/python scripts/kb_rag/autowiki_writer.py
+      --index-dir /mnt/raid0/llm/epyc-orchestrator/data/kb_rag/index
+      --output-dir wiki/autowiki_writer_candidate_pages --evidence-policy verified --dry-run ;
+      for w in 0.0 0.1 0.2 0.3; do KB_RAG_LEXICAL_WEIGHT=$w uv run python
+      /mnt/raid0/llm/epyc-orchestrator/scripts/kb_rag/cli.py eval --configs maxsim --cutoffs 3,5,10
+      --output-dir /mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_lexical_w$w ; done
+    cwd: /mnt/raid0/llm/epyc-orchestrator
+    concurrency_mode: same_trial_eval_fanout
+    fanout_transport: placement_queue
+    contention_class: eval_fanout_full_core
+    est_wall_clock_h: 2.5
+    timeout_s: 18000
+    retry_policy:
+      max_attempts: 2
+      retry_on:
+        - INFRA_BLOCKED
+  outcomes:
+    expected: >
+      K11 lexical-weight sweep priced against the ColBERT-only default; AutoWiki writer produces
+      policy-conformant pages (>=3 source refs, verified confidence) on changed sources only.
+    gate_table:
+      - gate: "Does an FTS5 lexical weight > 0 beat ColBERT-only recall AND does the AutoWiki writer meet the evidence policy?"
+        evidence: "recall@10 per lexical_weight vs w=0 baseline (K7 pool) + writer structural-lint/evidence-policy pass rate"
+        fork:
+          pass:
+            rule: "a lexical_weight improves recall beyond the 2pp noise band with 0 new missed-all-evidence cases AND writer pages pass policy"
+            action:
+              - "flip K11 + AutoWiki-writer checkboxes; propose the winning lexical_weight default to operator"
+            next: DONE_PASS
+          marginal:
+            rule: "lexical uplift within noise; writer pages pass policy but no retrieval win"
+            action:
+              - "keep lexical_weight=0 default; adopt AutoWiki writer as observation-gated"
+            next: DONE_MARGINAL_OBS
+          fail:
+            rule: "lexical weight regresses recall/miss-risk OR writer pages fail the evidence policy"
+            action:
+              - "keep ColBERT-only default; hold the writer; document in internal-kb-rag"
+            next: FAILED_REVERTED
+          infra:
+            classify: "index build failure / eval fan-out dispatch error / architect alias down"
+            action:
+              - "rebuild the KB-RAG index; re-run the sweep via the eval-concurrency path"
+          ambiguous:
+            action:
+              - "hold for operator; attach per-weight recall rows + sample writer pages"
+            next: HELD_AMBIGUOUS
+  artifacts:
+    outputs:
+      - "data/kb_rag/eval/k11_lexical_weight_sweep.json"
+      - "wiki/autowiki_writer_candidate_pages/"
+    package_to: "coordination/inference-batch/bundles/BULK-kbrag-autowiki-k11/"
+  ledger:
+    journal_quarantine_rule: >
+      record lexical_weight, recall@10, missed-all-evidence count, writer page policy-pass rate;
+      quarantine diagnostic_only if the K7 pool version changed mid-run.
+    era_stamp: "E5-cpu-kernel"
+
+# -----------------------------------------------------------------------------
+# 11. LangGraph TM-7 — live real-node run_task_lg parity (the gated leg)
+# -----------------------------------------------------------------------------
+- schema_version: inference_batch.entry.v1
+  task_id: BULK-langgraph-tm7-parity
+  title: "TM-7 — live real-node run_task_lg vs run_task parity (durable-resume gate)"
+  provenance:
+    owning_handoff: handoffs/active/reviewer-trace-materialization.md
+    checkbox: "TM-7"
+    also_flips:
+      - "handoffs/active/reviewer-trace-materialization.md#TM-8 — Coverage gate"
+    source_ref: "intake-847 (LangGraph adopt_component) + research/deep-dives/2026-07-16-architect-reviewer-control-plane-audit.md"
+    coordination_note: >
+      TM-7 code landed 2026-07-17 (checkpointing.py + run_task_lg_durable/resume_task_lg,
+      AsyncSqliteSaver, crash+interrupt->Command(resume) proven 10/10 with STUB nodes). REMAINING
+      GATED leg: live real-node run_task_lg parity vs run_task on a fixed task set BEFORE enabling
+      interrupt-based review gates (H3). Hazard: node re-execution on resume — _execute_turn/REPL
+      side effects must be idempotent. Imports scoped strictly to langgraph +
+      langgraph-checkpoint-sqlite (minimum-imports).
+  phase: 3
+  priority: P2
+  preconditions:
+    stack_lineup: "production lineup for real-node execution; data/graph_checkpoints.sqlite present"
+    kernel_era: production-consolidated-v6
+    flags_required:
+      GGML_IQK: 1
+    flags_forbidden:
+      - GENERALIZED_INTERRUPTS
+    flag_attestation: all_workers
+    models:
+      - frontdoor
+      - architect_general
+    host_health:
+      tier: quiet_window
+      max_uptime_days: 14
+      cache_state: warm
+    topology:
+      required_topology_hash: df373c79cc4af06f
+      live_affinity_verified: false
+      contention_matrix: not_required
+    autopilot: stopped
+    depends_on: []
+  execution:
+    driver: command
+    protocol_id: "P-AB-1 (paired parity: run_task_lg vs run_task on a fixed task set)"
+    dry_run: false
+    command: >
+      .venv/bin/python scripts/trace/run_task_lg_parity.py --arms run_task_lg,run_task
+      --fixed-task-set data/trace/parity_task_set.json --seed 42
+    cwd: /mnt/raid0/llm/epyc-orchestrator
+    concurrency_mode: paired_sequential
+    fanout_transport: none
+    contention_class: single_instance_parity
+    est_wall_clock_h: 2.0
+    timeout_s: 14400
+    retry_policy:
+      max_attempts: 2
+      retry_on:
+        - INFRA_BLOCKED
+  outcomes:
+    expected: >
+      run_task_lg reaches output parity with run_task on the fixed task set with idempotent resume
+      (no duplicated REPL side effects), clearing the gate to enable interrupt-based review gates (H3).
+    gate_table:
+      - gate: "Is run_task_lg at parity with run_task on real nodes, with idempotent resume?"
+        evidence: "per-task output equivalence + resume side-effect audit (no duplicate _execute_turn/REPL effects), P-AB-1, seed 42"
+        fork:
+          pass:
+            rule: "output parity on all fixed tasks AND clean idempotent resume"
+            action:
+              - "flip TM-7 remaining-gated + TM-8 coverage checkboxes; unblock H3 interrupt review gates"
+            next: DONE_PASS
+          marginal:
+            rule: "parity holds but resume shows benign re-execution with no state corruption"
+            action:
+              - "record observation; keep interrupt gates OFF pending an idempotency fix"
+            next: DONE_MARGINAL_OBS
+          fail:
+            rule: "output divergence OR resume duplicates side effects / corrupts state"
+            action:
+              - "keep GENERALIZED_INTERRUPTS forbidden; document the idempotency hazard in checkpointing.py"
+            next: FAILED_REVERTED
+          infra:
+            classify: "checkpointer DB error / AsyncSqliteSaver failure / node crash unrelated to parity"
+            action:
+              - "verify data/graph_checkpoints.sqlite; re-run the parity set in a fresh quiet window"
+          ambiguous:
+            action:
+              - "hold for operator; attach per-task diff + resume side-effect trace"
+            next: HELD_AMBIGUOUS
+  artifacts:
+    outputs:
+      - "data/trace/tm7_realnode_parity.json"
+    package_to: "coordination/inference-batch/bundles/BULK-langgraph-tm7-parity/"
+  ledger:
+    journal_quarantine_rule: >
+      record task id, run_task vs run_task_lg output equivalence, resume side-effect count, seed;
+      quarantine diagnostic_only if the fixed task set changed between arms.
+    era_stamp: "E5-cpu-kernel"

@@ -6,7 +6,7 @@
 **Kind**: episodic-memory-gated cost-lever deployment into autopilot's existing blended-cost optimization.
 
 **Source study (all numbers below are OBSERVATIONS — MEASUREMENT.md, not decision-gating):**
-- `handoffs/active/gpu-cot-scaffold-sidecar.md` — full research arc (G1/G2/verifier/dense-generalization).
+- `handoffs/completed/gpu-cot-scaffold-sidecar.md` — full research arc (G1/G2/verifier/dense-generalization).
 - `progress/2026-07/2026-07-06-cot-study-complete.md` — study close-out + the deployment implication paragraph.
 
 > ⚠️ **LIVE-AGENT HAZARD.** A parallel agent is actively working the autopilot daemon right now (trials ~1197–1200, planner/critic changes landing). **Do not edit anything under `scripts/autopilot/` and do not restart the daemon while it is live.** Every `scripts/autopilot/*` reference below is a *read/verify* target for design, not an edit target, until the owning agent hands the daemon back. Coordinate before touching the planner action space.
@@ -15,7 +15,7 @@
 
 ## 1. Objective
 
-Deploy the CoT "scaffold sidecar" as an **episodic-memory-gated cost lever** inside autopilot's existing multi-objective optimization. The scaffold offloads a large CPU-hosted beneficiary's expensive reasoning to a small GPU-resident reasoner (Qwable-4B on the MI210), then runs the beneficiary in no-think mode guided by the injected scaffold. The three pieces of work: **(a)** register the composite *scaffold-then-nothink* route as a first-class lever; **(b)** fold its **blended GPU+CPU** cost into the cost/speed signals autopilot already scores; **(c)** let episodic memory **learn per-task-class when to apply it** — gated to the weak-and-overthinking regime where the cheap no-think path fails and the beneficiary would otherwise over-reason. This is a gating + accounting problem on top of infrastructure that already exists; it is **not** a new optimizer.
+Deploy the CoT "scaffold sidecar" as an **episodic-memory-gated cost lever** inside autopilot's existing multi-objective optimization. The scaffold offloads a large CPU-hosted beneficiary's expensive reasoning to a GPU-resident Qwable-v1 reasoner (35B-A3B distilled; IQ4_XS fits MI210 residency), then runs the beneficiary in no-think mode guided by the injected scaffold. The three pieces of work: **(a)** register the composite *scaffold-then-nothink* route as a first-class fallback lever; **(b)** fold its **blended GPU+CPU** cost into the cost/speed signals autopilot already scores; **(c)** let episodic memory **learn per-task-class when to apply it** — gated to the beneficiary-must-answer regime where Qwable standalone cannot directly take the request because the beneficiary owns tools/context/role constraints. This is a gating + accounting problem on top of infrastructure that already exists; it is **not** a new optimizer.
 
 ---
 
@@ -33,6 +33,7 @@ From the GPU study (seed 42, production sampling, GPU-only, single-sample n=10�
   Scaffold wins when the beneficiary would over-reason (large `N_reason` on slow CPU decode) — exactly the weak-and-overthinking regime. Win is driven by the `r_GPU/r_CPU` ratio.
 - **Verifier/selector (best-of-N) is MARGINAL (+2pp captured of an +8pp structural ceiling; errors are systematic not stochastic) and is explicitly NOT part of this deployment.**
 - **Single-shot scaffold as a capability-*transplant* was FALSIFIED** on code (amplifier-not-substitute, arXiv:2605.28913). It is deployed here **only as a cost lever** in the gated regime, not as a general quality booster.
+- **Qwable standalone is the primary reasoning route when allowed.** The GPQA standalone control ran after the scaffold reversal: Qwable standalone **77%** beat scaffold(Qwable→35B) **73%**, so the scaffold is a lossy fallback for beneficiary-must-answer cases, not the preferred way to use Qwable.
 
 ---
 
@@ -84,6 +85,8 @@ Repo root for all paths: `/mnt/raid0/llm/epyc-orchestrator` (symlinked `/workspa
 ### 3.6 GPU-reasoner hosting (Qwable on MI210) — VERIFIED
 - MI210 HIP `llama-server` binary **exists**: `/mnt/raid0/llm/llama.cpp-mi210-hip/build-hip/bin/llama-server`.
 - Qwable weights **staged**: `/mnt/raid0/llm/models/Qwable-v1-GGUF/Qwable-v1.IQ4_XS.gguf` (17.6 GB) and `Qwable-v1.Q8_0.gguf` (34.4 GB).
+- **Quiet-host server/chat evidence added 2026-07-17**: `epyc-inference-research/data/qwable_reasoning_economics/qwable_quality_quiet_20260717T0645Z/` confirms bounded runner cleanup and sequential MI210 arms. IQ4 standalone returned valid fenced JSON at **99.27 t/s**, Q8 standalone returned valid fenced JSON at **103.04 t/s**, strict IQ4 prompt-only JSON returned exact JSON at **99.44 t/s**, and CPU IQ4 baseline returned strict JSON at **13.82 t/s**. Scaffold/selector stubs were parseable but semantically placeholder/arbitrary, so they are **not** deployment evidence.
+- **Schema-mode acceptance closed for the harness boundary 2026-07-17**: after fixing `qwable_reasoning_economics_runner.py` so execute mode sends the planned payload, `epyc-inference-research/data/qwable_reasoning_economics/qwable_schema_fixed_quiet_20260717T0718Z/` returned exact strict JSON under top-level `json_schema` at **64.55 t/s**. This closes bounded schema acceptance, not task-quality acceptance.
 - **The GPU reasoner is NOT in `orchestration/model_registry.yaml`** — the only `device:` entry is `device: cpu` (:235); no mi210/gpu/sidecar role. In the study the MI210 server was launched ad-hoc (:8801/:8802).
 - **No launcher script exists** for the MI210 reasoner (find over `epyc-orchestrator/scripts` + `epyc-inference-research/scripts` for `*mi210*` / `*hip*server*` returned nothing).
 - **Managed-service template (the pattern to copy):** `scripts/server/orchestrator_stack.py` `start_whisper()` (:1836) and `start_handoff_dashboard()` (:1889) — both are non-CPU-model stack-managed services; whisper reuses a launcher script from another repo (`:1846`) and health-probes a port. A `start_scaffold_reasoner()` following this shape (launch MI210 `llama-server`, health-probe, register `ProcessInfo`) is the concrete hosting task.
@@ -97,6 +100,8 @@ Each task = concrete file(s) + acceptance check. Flip `- [ ]` → `- [x] … ✅
 
 ### Phase 0 — Coordinate & host
 - [ ] **T0.1 — Coordinate with the live autopilot agent.** Confirm the daemon is idle/handed-back before any `scripts/autopilot/*` or registry edit. Get operator approval for the capability-registry row (CLAUDE.md: no registry changes via sub-agents without explicit operator request). *Accept:* written go-ahead recorded here.
+- [x] **T0.1a — Close bounded Qwable strict-output/schema harness evidence.** Quiet-host runner evidence landed for IQ4/Q8 standalone format, strict IQ4 prompt JSON, CPU baseline, and top-level `json_schema`; scaffold/selector stubs remain non-deployable. ✅ 2026-07-17
+- [x] **T0.1b — Close first Qwable IQ4_XS vs Q8_0 task-quality slice.** Bounded server/chat runner passed `6/6` on MI210 for IQ4_XS (`112.15 t/s`) and Q8_0 (`113.62 t/s`), and `6/6` on CPU for IQ4_XS (`17.11 t/s`) and Q8_0 (`13.66 t/s`); no Q8-only quality advantage in the small deterministic slice. ✅ 2026-07-17
 - [ ] **T0.2 — Stand up the GPU reasoner as a stack-managed service.** Add `start_scaffold_reasoner()` to `scripts/server/orchestrator_stack.py` mirroring `start_whisper()` (:1836): launch `/mnt/raid0/llm/llama.cpp-mi210-hip/build-hip/bin/llama-server` with `Qwable-v1.IQ4_XS.gguf`, pick a stable port, health-probe. Add a `scaffold_reasoner` entry to `orchestration/model_registry.yaml` with `device: gpu`. *Accept:* `orchestrator_stack.py status` shows the reasoner healthy; a manual `/v1/chat/completions` to its port returns a `<think>` block. *(No autonomous llama-bench — speed characterization needs a per-run go-ahead, `feedback_speed_verify_via_llama_bench`.)*
 
 ### Phase 1 — Composite route (the mechanism)
