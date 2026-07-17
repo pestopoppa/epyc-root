@@ -2,7 +2,7 @@
 
 **Status**: ACTIVE — **GLM-5.2 UD-IQ2_M download COMPLETE + size-manifest verified + short CPU load/coherence smoke PASSED + 4K/8K DSA trace shakedown PASSED + true >64K CPU DSA/indexer probe COMPLETED (2026-07-17)**; DSA forward-pass premise **RE-AUDITED 2026-07-16 → likely LANDED in v6** (was "WAIT-DSA / PR #21149"). Next real action = sparse-vs-dense scaling classification, long-context needle/coherence, and quality. Inference operator-gated (`feedback_no_concurrent_inference`).
 **Created**: 2026-04-22 (via research-intake deep-dive of intake-427, as GLM-5.1-REAP)
-**Updated**: 2026-07-17 (GLM-5.2 true-64K DSA engagement + imatrix activation-stat attempt recorded; expert-routing skew still open)
+**Updated**: 2026-07-17 (GLM-5.2 true-64K DSA engagement + imatrix expert-count extraction recorded; expert-routing skew still open)
 **Categories**: moe_optimization, local_inference, model_evaluation, kv_cache
 **Priority**: MEDIUM-HIGH (primary GLM-MoE-DSA target; now storage-unblocked + DSA likely unblocked)
 **Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
@@ -77,7 +77,7 @@ Evaluate **GLM-5.2** (`zai-org/GLM-5.2`, 754B GLM-MoE-DSA) as a large-MoE archit
 ### Phase 3 — Throughput benchmark (CPU; GATE ~ architect baseline)
 - [ ] Single-instance 192t (`numactl --interleave=all`) + NUMA 2×96t; record prefill/gen t/s, TTFT. Note: 754B at IQ2 is far larger active/total than the 122B architect; expect low CPU t/s (BW-bound). Compare vs corrected architect baseline (~18–21 t/s CPU-Q4+MTP, per `mi210-speed-campaign-summary.md`), not the stale 4.3.
 - [ ] GPU note: GLM-5.2 **never fits the MI210 64 GB HBM** even at IQ2 (~239 GB) → the only GPU path is **expert-offload** (`--n-cpu-moe`/`-ot`), gated on the expert-routing-skew profile — see [`mi210-big-model-and-acceleration-roadmap.md`](mi210-big-model-and-acceleration-roadmap.md).
-  - 2026-07-17 GLM imatrix activation-stat attempt: rebuilt stale experimental-v7 `llama-imatrix`, calibrated `/mnt/raid0/llm/tmp/expert-routing-skew-glm52-20260717T0520Z-rebuilt/expert-routing-skew.imatrix.gguf`, and captured `/mnt/raid0/llm/tmp/expert-routing-skew-glm52-20260717T0520Z-rebuilt/expert-routing-skew.imatrix.stats.txt` after fixing the stats harness. This proves the imatrix path can load GLM-5.2 and summarize activation tensors (`ffn_down_exps`, `ffn_gate_exps`, `ffn_up_exps`), but it does not expose per-expert router hit-frequency. Do not classify Zipfian/uniform or unblock offload/REAP from this artifact.
+  - 2026-07-17 GLM imatrix expert-count attempt: rebuilt stale experimental-v7 `llama-imatrix`, calibrated `/mnt/raid0/llm/tmp/expert-routing-skew-glm52-20260717T0520Z-rebuilt/expert-routing-skew.imatrix.gguf`, captured `/mnt/raid0/llm/tmp/expert-routing-skew-glm52-20260717T0520Z-rebuilt/expert-routing-skew.imatrix.stats.txt`, then extracted persisted per-expert `.counts` with `scripts/benchmark/extract_imatrix_expert_counts.py` to `/mnt/raid0/llm/tmp/expert-routing-skew-glm52-20260717T0520Z-rebuilt/expert-routing-skew.counts.{json,md}`. Preliminary signal: global aggregate near-uniform (`top_32=17.1%`, normalized entropy `0.996`), but layer-local routing has moderate hot sets (median layer `top_32=55.6%`, max `70.5%`). This is hypothesis-only because the calibration corpus is tiny/repetitive; do not unblock offload/REAP until a representative workload-profile repeat lands.
 
 ### Phase 4 — Quality eval (if smoke + throughput pass)
 - [ ] Run the standard suites vs architect_general (Qwen3.5-122B) and architect_coding baselines; apply the eval-tower + MEASUREMENT protocol (not vendor numbers).
@@ -88,7 +88,7 @@ Evaluate **GLM-5.2** (`zai-org/GLM-5.2`, 754B GLM-MoE-DSA) as a large-MoE archit
 ## Open Questions
 - [x] Does the v6 `glm-dsa` graph run GLM-5.2 UD-IQ2_M coherently on load (short ctx)? Yes: exact `READY` short CPU smoke passed on experimental v7. ✅ 2026-07-16
 - [ ] Does the DSA indexer path actually engage at long context, and does attention compute scale with `indexer_top_k` rather than full KV? (Phase 2 — the whole 1M-ctx thesis rides on this.)
-- [ ] Does GLM-5.2 expert routing have a Zipfian hot set that makes hot-expert GPU residency or REAP viable? The 2026-07-17 imatrix activation-stat attempt is insufficient; it lacks per-expert hit counts.
+- [ ] Does GLM-5.2 expert routing have a Zipfian hot set that makes hot-expert GPU residency or REAP viable? The 2026-07-17 imatrix count extraction gives a preliminary near-uniform-global / moderate-layer-local signal, but it is not decision-grade without representative workload prompts.
 - [ ] MTP: the GLM-5.2 MTP head is an inert stub on our fork — is the native-GLM-MTP forward-graph port worth finishing for spec-dec once GLM-5.2 runs? (`tree-draft-forward-port-plan.md`)
 - [x] Is `llama-cpp-dsa-contribution.md`'s PR-#21149 tracking now moot given #23346 landed? Yes — reconciled; remaining D2/D3 work is landed-code profiling only. ✅ 2026-07-16
 
