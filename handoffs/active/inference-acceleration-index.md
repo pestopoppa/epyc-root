@@ -113,7 +113,8 @@ After completing an acceleration item:
 - [x] GLM-5.2 current-source DSA cache/runtime reconciliation: experimental-v7 `3dee86a5a` wires GLM to `llama_kv_cache_dsa` + DeepSeek32 DSA graph; synthetic tests, ASAN, and exact `READY` GLM smoke passed ✅ 2026-07-17
 - [ ] GLM-5.2 real sparse final-attention implementation/profiling + current-source long-context needle/coherence
 - [x] Bonsai-27B Q1_0 CPU+MI210 prompting gate executed: 6/8 strict probes passed, short instruction-format probe failed on both devices; not role-ready ✅ 2026-07-17
-- [ ] Ternary Bonsai Q2_0/Q2_g64 artifact/runtime compatibility check before any Q2 role or speed claim
+- [x] Ternary Bonsai Q2_g64 CPU+MI210 runtime/coherence smoke passed on experimental v7; Q2_0 offset mismatch remains separate ✅ 2026-07-17
+- [ ] Ternary Bonsai Q2_0 artifact/runtime offset-mismatch investigation before retry; Q2_g64 quality/throughput only if tiny-quant role remains interesting
 - [ ] StreamingLLM floor sweep + KV admission cluster decisions
 - [ ] Operator v6 quality-gate baseline (K5 MMLU-Pro/GPQA-Diamond) -> promote banked GPU wins to v7
 - [x] K4 drafter-α baseline on real task corpus (`summary.json` decision_grade=true) ✅ 2026-07-16
