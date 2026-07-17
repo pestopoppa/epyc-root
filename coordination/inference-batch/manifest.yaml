@@ -1,0 +1,115 @@
+schema_version: inference_batch.manifest.v1
+entry_schema_version: inference_batch.entry.v1
+generated_at: '2026-07-17T10:32:50Z'
+entry_count: 1
+entries:
+- schema_version: inference_batch.entry.v1
+  task_id: EX-0-role-aware-ab
+  title: EXAMPLE — Trinity role-aware A/B eval (schema demonstration, not a real batch
+    entry)
+  provenance:
+    owning_handoff: handoffs/active/tri-role-coordinator-architecture.md
+    checkbox: TR-5.2
+    also_flips:
+    - handoffs/active/tri-role-coordinator-architecture.md#TR-5.3
+    intake_refs:
+    - intake-474
+    source_ref: research/deep-dives/trinity-evolved-llm-coordinator-methodology.md
+    coordination_note: 'Illustrative only. Demonstrates a paired A/B inference task
+      gated behind the ROLE_AWARE_ROUTING flag. Real entries are authored in Wave
+      3.
+
+      '
+  phase: 2
+  priority: P2
+  preconditions:
+    stack_lineup: production default lineup (frontdoor + coder_escalation + workers)
+    kernel_era: production-consolidated-v6
+    flags_required:
+      ORCHESTRATOR_ROLE_AWARE_ROUTING: 1
+    flags_forbidden:
+    - ORCHESTRATOR_PLACEMENT_STATE_MACHINE
+    flag_attestation: all_workers
+    models:
+    - frontdoor
+    - coder_escalation
+    host_health:
+      tier: quiet_window
+      max_uptime_days: 7
+      cache_state: warm
+    topology:
+      required_topology_hash: df373c79cc4af06f
+      live_affinity_verified: true
+      contention_matrix: not_required
+    autopilot: stopped
+    operator_gates:
+    - OP-6
+    depends_on: []
+  execution:
+    driver: command
+    protocol_id: eval-tower.paired-ab.v1
+    dry_run: false
+    command: 'ORCHESTRATOR_ROLE_AWARE_ROUTING=1 uv run python scripts/analysis/run_paired_ab.py
+      --arms role_aware,role_agnostic --n 200 --suite math500,livecodebench --seed
+      42
+
+      '
+    cwd: /mnt/raid0/llm/epyc-orchestrator
+    concurrency_mode: same_trial_eval_fanout
+    fanout_transport: placement_queue
+    contention_class: eval_fanout_full_core
+    est_wall_clock_h: 3.5
+    timeout_s: 21600
+    retry_policy:
+      max_attempts: 2
+      retry_on:
+      - INFRA_BLOCKED
+  outcomes:
+    expected: 'Paired A/B on >=N=200/arm. Role-aware arm expected +2pp on at least
+      one suite with no regression worse than -1pp on the others (TR-5.3 promotion
+      gate).
+
+      '
+    gate_table:
+    - gate: Does role-aware routing beat role-agnostic on >=1 suite?
+      evidence: McNemar paired delta per suite, n>=200/arm, seed=42, protocol eval-tower.paired-ab.v1
+      fork:
+        pass:
+          rule: delta >= +2pp on >=1 suite AND no suite regresses > -1pp
+          action:
+          - flip TR-5.2 and TR-5.3 checkboxes
+          - propose ROLE_AWARE_ROUTING default-on to operator
+          next: DONE_PASS
+        marginal:
+          rule: delta in [0, +2pp) with no regression
+          action:
+          - record observation; keep flag default-off
+          - log to progress with (metric, protocol, n, date)
+          next: DONE_MARGINAL_OBS
+        fail:
+          rule: any suite regresses > -1pp OR aggregate delta < 0
+          action:
+          - keep ROLE_AWARE_ROUTING default-off
+          - document negative result in handoff Open Questions
+          next: FAILED_REVERTED
+        infra:
+          classify: eval-fanout dispatch error / placement-queue starvation / server
+            OOM
+          action:
+          - re-run in a fresh quiet window after drop_caches + throttle-check
+        ambiguous:
+          action:
+          - hold for operator adjudication; attach both arms' raw rows
+          next: HELD_AMBIGUOUS
+  artifacts:
+    outputs:
+    - data/role_aware_ab/ex0_role_aware.jsonl
+    - data/role_aware_ab/ex0_role_agnostic.jsonl
+    package_to: coordination/inference-batch/bundles/EX-0/
+  ledger:
+    journal_quarantine_rule: 'record arm, suite, n, per-suite McNemar delta, seed,
+      aggregate_delta; quarantine diagnostic_only if any arm has < N=200 completed.
+
+      '
+    era_stamp: instrument-era-2026-06-12-post-measurement-constitution
+  entry_hash: sha256:d1a8dc070a64147f9687e2e7aedf844963c5f0fd1c5837301dc624279495a9d4

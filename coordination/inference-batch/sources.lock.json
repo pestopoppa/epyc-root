@@ -1,0 +1,34 @@
+{
+  "schema_version": "inference_batch.sources_lock.v1",
+  "generated_at": "2026-07-17T10:32:50Z",
+  "repos": {
+    "epyc-root": {
+      "path": "/mnt/raid0/llm/epyc-root",
+      "sha": "f0f59fab5c4c328b3f67ff74e4df31e728431216",
+      "dirty": true
+    },
+    "epyc-orchestrator": {
+      "path": "/mnt/raid0/llm/epyc-orchestrator",
+      "sha": "5586ce1ed299a1d9df890e48988406fad635a40f",
+      "dirty": true
+    },
+    "epyc-inference-research": {
+      "path": "/mnt/raid0/llm/epyc-inference-research",
+      "sha": "3b55aebf79ef129f3030e75255e4cb88530451f7",
+      "dirty": true
+    }
+  },
+  "checkbox_refs": [
+    {
+      "task_id": "EX-0-role-aware-ab",
+      "owning_handoff": "handoffs/active/tri-role-coordinator-architecture.md",
+      "checkbox": "TR-5.2",
+      "also_flips": [
+        "handoffs/active/tri-role-coordinator-architecture.md#TR-5.3"
+      ],
+      "handoff_exists": true,
+      "checkbox_line": 106,
+      "resolved": true
+    }
+  ]
+}

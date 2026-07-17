@@ -1,4 +1,4 @@
----
+- [x] Wire missing Prometheus migration counters (kv_migration_direction_total, thrash_skipped) ✅ 2026-07-17 — landed on the src/metrics/ surface (no prometheus_client in src/; documented shim `src/metrics/migration_counters.py`). direction_total{forward|reverse} fires once per COMMITTED MigrationTransaction (both paths); thrash_skipped_total{cooldown|session_cap} at the reverse-migration anti-thrash guards. Best-effort/additive; 96 scheduling tests green + 12 new. render_prometheus() ready for the exporter. Remaining: expose on a /metrics route (observability follow-up) + Package-J live-traffic observation.---
 title: Within-role full↔quarter placement state machine + KV migration
 status: active
 created: 2026-05-25
