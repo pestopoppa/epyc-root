@@ -13,6 +13,7 @@ Take GLM-5.2 UD-IQ2_M (754B glm_moe_dsa, ~239GB, downloaded and true >64K DSA-en
 
 ## Prioritized Task List
 
+- [x] **GC-0 — Evidence hygiene / runner contract**: reviewer-facing GLM long-output or typed-decision probes must consume only instrumented GLM runs with live progress telemetry (`--metrics` / `/metrics` samples) and a minimum completion-token floor. The attempted current-source 96K run at `/mnt/raid0/llm/tmp/glm52-current-source-96k-quality-20260717T144022Z/plan.json` is excluded as process-failure-only because it had no progress telemetry and only `max_tokens=32`. ✅ 2026-07-17
 - [ ] **GC-1 — Strict-IF / typed-emission probe**: schema-valid `review_decision` emission rate, GBNF-constrained vs free-parse-with-retry, K-of-M pass gate (define K/M here; smoke-level first, claim-level under P-REV-1 later). Motivation: 122B-IQ2 scored 2/11 on strict instruction-following — quant may degrade format compliance; grammar constraint is the expected mitigation. CPU path first (v7 GPU grammar path is P0-blocked in the kernel handoff).
 - [ ] **GC-2 — Rubric-authoring quality probe**: GLM-5.2 authors rubrics for a fixed task set; graded against frontier-authored references (criteria count, axis coverage, grounding). The two-turn design (H3 RD-2) makes authoring the heavyweight's ONLY hot-path job — this is the capability that matters most.
 - [ ] **GC-3 — Why-diagnosis probe**: rationale-vs-gold-cause match on a corpus-v1 sample (IQ2 quant may degrade why-diagnosis more than that-detection — intake-836; measure, don't assume).
@@ -41,7 +42,7 @@ Kernel P0s: grammar fix is closed; GLM-dsa cache/runtime reconciliation is close
 
 ## Reporting Instructions
 
-Flip checkboxes `✅ YYYY-MM-DD`; GC-1/2/3 numbers recorded here + registry (GC-5); GC-4 goes to the operator decision queue (§A00) — do not decide autonomously.
+Flip checkboxes `✅ YYYY-MM-DD`; GC-1/2/3 numbers recorded here + registry (GC-5); GC-4 goes to the operator decision queue (§A00) — do not decide autonomously. Any GLM reviewer run without progress telemetry and a completion-token floor is a harness/process observation only.
 
 ## Evidence Base (intake)
 
