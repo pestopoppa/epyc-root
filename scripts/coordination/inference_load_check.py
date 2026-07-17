@@ -93,6 +93,12 @@ DOWNLOAD_PATH_MARKERS = [
 
 LLAMA_SERVER_PATTERN = "llama-server"
 AUTOPILOT_PATTERN = "autopilot.py start"
+# The supervisor is a liveness signal in its own right: during its <=30s restart
+# delay the main `autopilot.py start` loop is momentarily absent, so a probe that
+# watched only AUTOPILOT_PATTERN would read "stopped" mid-restart. Mirror the
+# canonical launcher's dual pattern (start_fable_authority_daemon.py:
+# LIVE_PROCESS_PATTERN + LIVE_SUPERVISOR_PATTERN).
+AUTOPILOT_SUPERVISOR_PATTERN = "autopilot_supervisor.py"
 AUTOPILOT_LOCK = Path("/mnt/raid0/llm/epyc-orchestrator/orchestration/.autopilot.lock")
 
 # Daemons whose argv *mentions* llama-* / bench binaries as regex arguments (not as
@@ -354,16 +360,32 @@ def mi210_state() -> dict:
 
 
 def autopilot_state(lock_path: Path = AUTOPILOT_LOCK) -> dict:
-    """Detect a running AutoPilot loop (process + singleton flock)."""
-    procs = _pgrep(AUTOPILOT_PATTERN)
-    if procs is not None:
-        procs = [(p, a) for p, a in procs if _runs_binary(a, ["autopilot.py"])]
+    """Detect a running AutoPilot loop OR its supervisor (process + singleton flock).
+
+    Two liveness signals are watched: the main ``autopilot.py start`` loop AND the
+    ``autopilot_supervisor.py`` daemon — a live supervisor during its <=30s restart
+    delay means autopilot IS present even when the loop process is momentarily
+    absent (so it counts as ``running``). ``pgrep unavailable`` on BOTH patterns is
+    the only "cannot confirm" case (running=None unless the flock is held).
+    """
+    pids: list[int] = []
+    pgrep_ran = False
+    # Main loop process.
+    loop_procs = _pgrep(AUTOPILOT_PATTERN)
+    if loop_procs is not None:
+        pgrep_ran = True
+        pids += [p for p, a in loop_procs if _runs_binary(a, ["autopilot.py"])]
+    # Supervisor daemon (explicit — its basename does not match "autopilot.py").
+    sup_procs = _pgrep(AUTOPILOT_SUPERVISOR_PATTERN)
+    if sup_procs is not None:
+        pgrep_ran = True
+        pids += [p for p, a in sup_procs if _runs_binary(a, ["autopilot_supervisor.py"])]
     lock_held = _autopilot_lock_held(lock_path)
-    if procs is None:
-        running = True if lock_held else None
-        pids: list[int] = []
+    if not pgrep_ran:
+        running: bool | None = True if lock_held else None
+        pids = []
     else:
-        pids = [p for p, _ in procs]
+        pids = sorted(set(pids))
         running = bool(pids) or lock_held
     detail = "running" if running is True else ("unconfirmed" if running is None else "stopped")
     return {"running": running, "pids": pids, "lock_held": lock_held, "detail": detail}

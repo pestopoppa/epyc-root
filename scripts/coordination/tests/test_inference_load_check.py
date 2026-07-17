@@ -257,3 +257,47 @@ def test_cli_exit_codes(monkeypatch):
     assert ic.main(["--require", "quiet"]) == 1     # serial_ok fails quiet gate
     assert ic.main(["--require", "serial_ok"]) == 0  # serial_ok passes serial gate
     assert ic.main([]) == 10                          # serial_ok bare exit code
+
+
+# --------------------------------------------------------------------------- #
+# C1 — autopilot SUPERVISOR detection (liveness signal during restart delay)
+# --------------------------------------------------------------------------- #
+def test_c1_supervisor_process_counts_as_running(monkeypatch):
+    # Only the supervisor is live (main loop absent during its <=30s restart delay).
+    monkeypatch.setattr(
+        ic, "_run",
+        make_run(
+            pgrep_map={
+                "autopilot_supervisor.py": "999 python scripts/autopilot/autopilot_supervisor.py",
+            },
+            rocm=ROCM_IDLE,
+        ),
+    )
+    st = ic.autopilot_state()
+    assert st["running"] is True
+    assert 999 in st["pids"]
+    assert st["detail"] == "running"
+    assert ic.classify_load()["state"] == "busy"
+
+
+def test_c1_supervisor_and_loop_both_counted(monkeypatch):
+    monkeypatch.setattr(
+        ic, "_run",
+        make_run(
+            pgrep_map={
+                "autopilot.py start": "555 python scripts/autopilot/autopilot.py start",
+                "autopilot_supervisor.py": "999 python scripts/autopilot/autopilot_supervisor.py",
+            },
+            rocm=ROCM_IDLE,
+        ),
+    )
+    st = ic.autopilot_state()
+    assert st["running"] is True
+    assert st["pids"] == [555, 999]  # sorted, de-duplicated
+
+
+def test_c1_no_autopilot_processes_is_stopped(monkeypatch):
+    monkeypatch.setattr(ic, "_run", make_run(pgrep_map={}, rocm=ROCM_IDLE))
+    st = ic.autopilot_state()
+    assert st["running"] is False
+    assert st["detail"] == "stopped"
