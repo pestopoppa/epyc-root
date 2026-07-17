@@ -108,14 +108,33 @@ Compile any loose knowledge into the project wiki so findings don't stay buried 
 
 If agent logging was active, ensure `agent_task_end` was called for all open tasks.
 
-### 7. Commit, Push, and Report
+### 7. Commit, Push, Promote, and Report
 
 - Commit documentation updates in each affected repo separately (root, orchestrator, research, etc.)
 - Use descriptive commit messages summarizing what the session accomplished
 - **Push each affected repo after committing** — never leave a wrap-up with unpushed commits. This is the historical failure mode: work was committed but never reached GitHub (or only reached a non-default branch), so it never registered as a contribution. Push the current branch to its upstream: `git -C <repo> push`.
   - **Never force-push.** If a push is rejected (non-fast-forward), do NOT `--force`; report it and let the operator reconcile.
-  - **Contribution-graph note:** GitHub credits contributions only for commits on a repo's **default branch** (`main`). Pushing a non-default working branch backs the work up but does **not** appear on the contribution graph until it reaches `main`. After pushing, for each repo run `git -C <repo> rev-list --count origin/main..HEAD`; if the current branch is ahead of `origin/main`, flag it in the output so the operator can merge/PR it to `main` (the merge is what earns credit).
-- **Return all commit hashes and their push status** so the operator can confirm each repo reached GitHub
+- **Promote each pushed branch to `main`** so the work earns contribution credit — GitHub credits contributions only for commits on a repo's **default branch** (`main`); a non-default working-branch push backs work up but earns nothing on the graph until it reaches `main`. For each affected repo:
+  - If the current branch **is** `main`, the push above already credited it — skip promotion.
+  - Otherwise, if `git -C <repo> rev-list --count origin/main..HEAD` is greater than 0, promote via an **isolated, conflict-guarded** merge that never disturbs the live working tree/branch and never force-pushes:
+
+    ```bash
+    git -C <repo> fetch origin --quiet
+    WT=$(mktemp -d)/promote
+    git -C <repo> worktree add --detach "$WT" origin/main
+    if git -C "$WT" merge --no-ff \
+         -m "Merge <branch> into main (wrap-up promotion YYYY-MM-DD)" "origin/<branch>"; then
+      git -C "$WT" push origin HEAD:main          # clean merge -> publish to main
+      git -C <repo> branch -f main origin/main    # sync local main pointer
+    else
+      git -C "$WT" merge --abort                  # CONFLICT -> leave main untouched
+      echo "PROMOTION BLOCKED: <repo>"
+    fi
+    git -C <repo> worktree remove "$WT" --force
+    ```
+
+  - **On conflict, STOP** — leave `main` untouched, never auto-resolve or force, and report the repo under the `## Promotion blocked` heading (see Output Format) so the operator reconciles. A divergent `main` usually means an independent PR/commit landed on it directly; see the 2026-07-17 orchestrator promotion for the superset-verification pattern before resolving anything by hand.
+- **Return every commit hash, push status, and promotion result** (new `main` SHA, or "blocked") so the operator can confirm each repo reached the contribution graph
 
 ## Output Format
 
@@ -129,14 +148,24 @@ If index pruning, archival, or handoff compaction happened, include this section
 | ... | ... | ... | ... |
 ```
 
+If any branch promotion was blocked by a divergent `main`, include this section before the commit table:
+
+```
+## Promotion blocked
+
+| Repo | Branch | Divergence | Action needed |
+|------|--------|------------|---------------|
+| ... | ... | ... | ... |
+```
+
 End your response with a summary block:
 
 ```
-## Commits Pushed
+## Commits Pushed & Promoted
 
-| Repo | Branch | Commit | Pushed | Ahead of main | Message |
-|------|--------|--------|--------|---------------|---------|
-| epyc-root | <branch> | <hash> | ✅/❌ | <n commits / on main> | <message> |
+| Repo | Branch | Commit | Pushed | Promoted to main | Message |
+|------|--------|--------|--------|------------------|---------|
+| epyc-root | <branch> | <hash> | ✅/❌ | <main SHA / blocked / n/a (on main)> | <message> |
 | ... | ... | ... | ... | ... | ... |
 ```
 
@@ -146,4 +175,4 @@ End your response with a summary block:
 - Use tables for multi-file or multi-model changes
 - Note deferred work explicitly so the next session can pick it up
 - Keep progress entries self-contained — a reader shouldn't need to look at other files to understand what happened
-- **Push after committing** (Step 7) so work reaches GitHub — never leave a wrap-up with unpushed commits. Never force-push; if a push is rejected, surface it for the operator to reconcile.
+- **Push and promote after committing** (Step 7) so work reaches GitHub's contribution graph, which counts only the default branch (`main`) — never leave a wrap-up with unpushed or unpromoted commits. Never force-push, and never auto-resolve or force a promotion conflict: if a push is rejected or a promotion hits a divergent `main`, leave `main` untouched and surface it for the operator.
