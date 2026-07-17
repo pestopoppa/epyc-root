@@ -19,7 +19,7 @@ Mitigation applied after the matrix: active `vision_escalation` on port `8087` i
 | Contention guard | runner `guard_state.json` files report empty `process_blockers` |
 | Cleanup proof | successful canonical rows report dead server PIDs and empty `cleanup_process_blockers`; vision smoke/matrix verified server PIDs dead |
 | GPU state | frontdoor/worker guard captured MI210 as `65520 MiB` total and `65416 MiB` free before runs; post-run ROCm checks reported no KFD PIDs |
-| Memory backfill | `/mnt/raid0/llm/tmp/k35-memory-backfill-20260717T1400Z/summary.json` reran non-vision optimized cells with `memory_samples`; `/mnt/raid0/llm/tmp/k35-vision-matrix-20260717T1500Z/summary.json` records the same memory sample shape for current production vision roles; `/mnt/raid0/llm/tmp/k35-minicpm-frontdoor-coresidency-20260717T191849Z/` records the MiniCPM-o/frontdoor MI210 co-residency smoke |
+| Memory backfill | `/mnt/raid0/llm/tmp/k35-memory-backfill-20260717T1400Z/summary.json` reran non-vision optimized cells with `memory_samples`; `/mnt/raid0/llm/tmp/k35-vision-matrix-20260717T1500Z/summary.json` records the same memory sample shape for current production vision roles; `/mnt/raid0/llm/tmp/k35-minicpm-frontdoor-coresidency-20260717T191849Z/` records the MiniCPM-o/frontdoor MI210 co-residency smoke; `/mnt/raid0/llm/tmp/k35-minicpm-frontdoor-service-tax-20260717T192427Z/` records the follow-up idle-vs-active service-tax probe |
 
 ## Optimized Configs Used
 
@@ -68,6 +68,7 @@ The production vision rows use four fixed local fixtures: handwritten `7500`, re
 | `vision_candidate_cpu_minicpm_o45_q4` | `4/4` | `91-626` | `11.98-14.13` | reasoning-off passed all fixtures exactly; default reasoning kept answers in `reasoning_content` and failed content scoring | `k35-minicpm-o45-reasoning-off-20260717T1911Z` |
 | `vision_candidate_mi210_minicpm_o45_q4` | `4/4` | `91-626` | `110.81-122.18` | reasoning-off passed all fixtures exactly; first fast quality-clean escalation candidate | `k35-minicpm-o45-reasoning-off-20260717T1911Z` |
 | `frontdoor + vision_candidate_mi210_minicpm_o45_q4` | mixed smoke passed | frontdoor `48`; MiniCPM-o chart `230` | frontdoor `99.97`; MiniCPM-o `108.68` on 4-token answer | both MI210 servers healthy together at `66%` VRAM; concurrent frontdoor 512-token text request and MiniCPM-o chart request passed; cleanup proof recorded | `k35-minicpm-frontdoor-coresidency-20260717T191849Z` |
+| `frontdoor service tax with MiniCPM-o resident` | text-tax probe | frontdoor prompt `51`; MiniCPM-o long chart prompt `258` | frontdoor alone `101.68/101.84`; frontdoor with MiniCPM idle `101.89/101.86`; active overlap frontdoor `80.16/80.34`, MiniCPM-o `90.49/90.23` | idle residency had no measurable frontdoor tax; active concurrent vision cost about `21%` frontdoor decode on this synthetic pair | `k35-minicpm-frontdoor-service-tax-20260717T192427Z` |
 
 Diagnostic vision-escalation probes did not recover the chart failure:
 
@@ -80,11 +81,11 @@ The old one-image release smoke remains useful as a launch sanity check: `/mnt/r
 
 The Qwen3-VL-8B candidate result is intentionally split by device. CPU is quality-clean on this small fixture set but slower than the alias that already passed. MI210 is fast enough to be operationally interesting, but it failed the chart fixture under both tested launch shapes, so it is not a serving candidate despite the throughput.
 
-The MiniCPM-o candidate result is also intentionally split by launch mode. Default reasoning mode read the images and placed correct answers in `reasoning_content`, but failed the production-visible content channel. The realistic `--reasoning off` lane passed the fixed fixture set on both CPU and MI210. Its MI210 row is the first fast quality-clean escalation replacement candidate in this matrix, and the follow-up smoke shows it can co-reside with the MI210 frontdoor lane for one mixed request. That smoke is not a broad service-level concurrency matrix, so live routing still needs an activation/capacity decision.
+The MiniCPM-o candidate result is also intentionally split by launch mode. Default reasoning mode read the images and placed correct answers in `reasoning_content`, but failed the production-visible content channel. The realistic `--reasoning off` lane passed the fixed fixture set on both CPU and MI210. Its MI210 row is the first fast quality-clean escalation replacement candidate in this matrix. The follow-up smoke shows it can co-reside with the MI210 frontdoor lane for one mixed request, and the service-tax probe shows idle residency has no measurable frontdoor decode tax while active concurrent vision does. These are not a broad service-level concurrency matrix, so live routing still needs an activation/capacity decision.
 
 ## Vision Escalation Mitigation
 
-The Qwen3-VL-30B escalation row is faster than `worker_vision` on these short decode fixtures, but it is not production-quality-safe because it failed the chart fixture under all three tested shapes. The Qwen3-VL-8B MI210 candidate repeated the chart failure even though it was much faster. MiniCPM-o with `--reasoning off` is quality-clean, fast on MI210, and passed a frontdoor co-residency smoke. The live stack still uses the Qwen2.5-VL artifact and projector that passed `4/4`, preserves port `8087`, uses a distinct 24-thread quarter mask, and emits no Qwen3-VL `override_kv` until the operator decides whether the MI210 service lane should become active or whether a broader service matrix is required first.
+The Qwen3-VL-30B escalation row is faster than `worker_vision` on these short decode fixtures, but it is not production-quality-safe because it failed the chart fixture under all three tested shapes. The Qwen3-VL-8B MI210 candidate repeated the chart failure even though it was much faster. MiniCPM-o with `--reasoning off` is quality-clean, fast on MI210, passed a frontdoor co-residency smoke, and can remain resident without slowing frontdoor in the two-rep service-tax probe. Active concurrent MiniCPM-o vision decoding dropped frontdoor from about `101.8 t/s` to about `80.2 t/s`, so activation should either schedule active vision deliberately or accept that measured tax. The live stack still uses the Qwen2.5-VL artifact and projector that passed `4/4`, preserves port `8087`, uses a distinct 24-thread quarter mask, and emits no Qwen3-VL `override_kv` until the operator decides whether the MI210 service lane should become active or whether a broader service matrix is required first.
 
 Validation for the mitigation: research registry validation reports `0 error(s)` with only pre-existing off-disk catalogue warnings; the orchestrator stack-change pipeline update passed with descriptor-removal waiver; the no-inference promotion suite plus stack-prior compiler coverage passed (`197 passed`). This closes the immediate unsafe-lane problem but leaves true escalation replacement open.
 
@@ -124,7 +125,7 @@ Do not use these as K35 default ingest evidence:
 
 ## Remaining K35 Gaps
 
-- `vision_escalation` has a fast quality-clean candidate now: MiniCPM-o Q4_K_M + vision projector with `--reasoning off` on MI210. The basic frontdoor co-residency smoke also passed. The remaining blocker is the activation/capacity decision: keep the active 8087 lane as the temporary Qwen2.5-VL CPU alias, flip to MiniCPM-o on MI210, or run a broader service-concurrency/text-tax matrix first.
+- `vision_escalation` has a fast quality-clean candidate now: MiniCPM-o Q4_K_M + vision projector with `--reasoning off` on MI210. The basic frontdoor co-residency smoke passed, and the service-tax probe shows idle residency is effectively free while active overlap costs about `21%` frontdoor decode. The remaining blocker is the activation/capacity decision: keep the active 8087 lane as the temporary Qwen2.5-VL CPU alias, flip to MiniCPM-o on MI210 with scheduling policy, or run a broader service-concurrency/text-tax matrix first.
 - Replacement/admission A/B remains open for PaddleOCR-VL, SuperGemma4, and any other candidate intended to replace or specialize the current escalation role. Qwen3-VL-8B has been tested and rejected as the active replacement unless a later tuned lane fixes the chart failure.
 - Architect has valid 2K/8K optimized rows only. Deeper contexts exceed the production `-np 2 -c 16384` per-slot launch shape unless the operator authorizes a different architect launch.
 - Broader concurrency rows remain optional/open. The MiniCPM-o/frontdoor smoke is a targeted coexistence check, while the current canonical throughput-vs-context rows are still single-scenario quiet-host measurements.
@@ -132,6 +133,6 @@ Do not use these as K35 default ingest evidence:
 
 ## Next Measurements
 
-1. Decide whether to activate the fast MiniCPM-o MI210 lane now that the targeted frontdoor co-residency smoke passed, or keep the current Qwen2.5-VL CPU alias pending broader service-level data.
+1. Decide whether to activate the fast MiniCPM-o MI210 lane now that the targeted frontdoor co-residency and service-tax probes passed, or keep the current Qwen2.5-VL CPU alias pending broader service-level data.
 2. If operator wants service-level capacity, run a separate concurrency/text-tax matrix; do not blend it into the quiet-host single-role K35 rows.
 3. Improve GPU memory precision if needed: current ROCm snapshots report percentage, not exact MiB, in this runner configuration.
