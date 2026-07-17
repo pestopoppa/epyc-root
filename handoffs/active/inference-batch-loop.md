@@ -34,9 +34,10 @@ The `/loop` is the SOLE writer of the ledger + batch checkbox flips. Do NOT run 
 - [ ] **P5** GLM window — GC1/GC2/GC3 (hard-gated COORD-glm52-admission — parallel-session handshake)
 - [ ] **P6** decision-grade confirmations — RC8/LB7/RM4/RM8/RELABEL/RM2-A3 (gated OP-5a P-REV-1; RM2-A3 also COORD-axa-teleport)
 
-### Genuinely blocked (build-backlog — NOT loop work)
-- [ ] `BUILD-semantics-serving-integration` — wire CP1/CP2/CP3 into the live serving path — **stack-frozen** until the parallel session's feature tests complete
-- [ ] `BUILD-paddleocr-vl-adapter` — VL backend in pdf_router — needs the PaddleOCR-VL model on disk
+### Genuinely blocked build-backlog — OWNED BY THIS reviewer-plane/ODL workstream (NOT the loop, NOT the parallel session)
+These are BUILD tasks for this workstream's own code. The parallel session / operator only CLEARS the trigger; the build itself is a future session like the one that built the other 8 runners (see progress 2026-07-17). **When the trigger fires: build the runner (fixture-tested; non-serving-path where possible), then pin it into its manifest entry + flip its op-bundle §F gate — exactly the pattern used for the 8 built runners.** A parallel/loop session picking up this handoff should NOT attempt these — it should only signal when the trigger fires.
+- [ ] `BUILD-semantics-serving-integration` — wire CP1/CP2/CP3 (reducer/authority/escalation — already landed as modules, orchestrator `43a77eaf`) into the live serving path. **TRIGGER: the stack-freeze lifts** (parallel session's feature tests complete). This IS a serving-path change, so it genuinely cannot be built until then. Owner: reviewer-plane workstream. Unblocks: `semantics-shadow-rollout`, `semantics-advisory-rollout`.
+- [ ] `BUILD-paddleocr-vl-adapter` — `_extract_with_paddleocr` VL backend in `src/services/pdf_router.py`. **TRIGGER: the PaddleOCR-VL model lands on disk** (operator download, gated `OP-VL-INFERENCE-APPROVAL`). Owner: ODL workstream. Unblocks: `ODLB-W3-03`.
 
 ## Dependency graph (phase gating)
 `P0 (RCP-W1 → W2/W3)` → `P1 riders (depend on RCP-W1)` → `P2 eval-tower (independent)` → `P3 bulk` → `P4 kernel/routing` → `P5 GLM (COORD-glm52-admission)` → `P6 decision-grade (OP-5a)`. COORDINATION rows (phase 90) are never picked — the operator/parallel-session flips them to DONE_PASS to unblock P5/P6 dependents. Full DAG in `manifest.yaml`; `compile_inference_batch.py simulate` prints pick-next ordering.
