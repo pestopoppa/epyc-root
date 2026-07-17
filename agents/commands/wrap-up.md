@@ -1,6 +1,6 @@
 # Session Wrap-Up
 
-Update all documentation artifacts to reflect work completed in this session, commit changes, and return commit hashes for manual push.
+Update all documentation artifacts to reflect work completed in this session, commit changes, **push each affected repo to its remote**, and report the pushed commits.
 
 > **⚠ MANUAL TRIGGER ONLY.** Run this routine only when the operator explicitly invokes `/wrap-up`. Nothing may auto-trigger it — there is no `Stop`/`SessionEnd`/`PreCompact` hook, cron, or nightshift task that calls it, and there must not be one. Autonomous, scheduled, or nightshift sessions **may commit progress directly** (a focused `git commit` of progress/handoff edits is fine and encouraged for checkpointing) but must **NOT** run the full wrap-up routine: it performs index pruning (Step 3) and broad doc/wiki sweeps the operator wants to review on a controlled, manually-chosen cadence. Checkpoint commits ARE however bound by the **checklist-sync gate** in Step 2: any handoff edit that records completed or newly-discovered work must flip/add the corresponding `- [ ]`/`- [x]` checkboxes, not just append prose — the dashboard's progress metric counts checkbox state only.
 
@@ -108,11 +108,14 @@ Compile any loose knowledge into the project wiki so findings don't stay buried 
 
 If agent logging was active, ensure `agent_task_end` was called for all open tasks.
 
-### 7. Commit and Report
+### 7. Commit, Push, and Report
 
 - Commit documentation updates in each affected repo separately (root, orchestrator, research, etc.)
 - Use descriptive commit messages summarizing what the session accomplished
-- **Return all commit hashes** so the user can manually push each repo
+- **Push each affected repo after committing** — never leave a wrap-up with unpushed commits. This is the historical failure mode: work was committed but never reached GitHub (or only reached a non-default branch), so it never registered as a contribution. Push the current branch to its upstream: `git -C <repo> push`.
+  - **Never force-push.** If a push is rejected (non-fast-forward), do NOT `--force`; report it and let the operator reconcile.
+  - **Contribution-graph note:** GitHub credits contributions only for commits on a repo's **default branch** (`main`). Pushing a non-default working branch backs the work up but does **not** appear on the contribution graph until it reaches `main`. After pushing, for each repo run `git -C <repo> rev-list --count origin/main..HEAD`; if the current branch is ahead of `origin/main`, flag it in the output so the operator can merge/PR it to `main` (the merge is what earns credit).
+- **Return all commit hashes and their push status** so the operator can confirm each repo reached GitHub
 
 ## Output Format
 
@@ -129,12 +132,12 @@ If index pruning, archival, or handoff compaction happened, include this section
 End your response with a summary block:
 
 ```
-## Commits Ready to Push
+## Commits Pushed
 
-| Repo | Path | Commit | Message |
-|------|------|--------|---------|
-| epyc-root | /mnt/raid0/llm/epyc-root | <hash> | <message> |
-| ... | ... | ... | ... |
+| Repo | Branch | Commit | Pushed | Ahead of main | Message |
+|------|--------|--------|--------|---------------|---------|
+| epyc-root | <branch> | <hash> | ✅/❌ | <n commits / on main> | <message> |
+| ... | ... | ... | ... | ... | ... |
 ```
 
 ## Guidelines
@@ -143,4 +146,4 @@ End your response with a summary block:
 - Use tables for multi-file or multi-model changes
 - Note deferred work explicitly so the next session can pick it up
 - Keep progress entries self-contained — a reader shouldn't need to look at other files to understand what happened
-- Do NOT push — only commit locally and report hashes
+- **Push after committing** (Step 7) so work reaches GitHub — never leave a wrap-up with unpushed commits. Never force-push; if a push is rejected, surface it for the operator to reconcile.
