@@ -7,6 +7,10 @@ remaining work is PC-0 only — **no inference/bench without operator approval**
 **Owner handoff**: this file. **Parent index**: [inference-acceleration-index.md](inference-acceleration-index.md);
 sibling of [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md).
 
+**2026-07-18 checkpoint**: an observation-only first `perf record` cell now exists for the
+122B architect `p8192/n1` CPU-only shape, but PC-0 remains open because the run was not an
+OP-2/MEASUREMENT quiet-window run and lacks paired `perf stat` memory/vector counters.
+
 ## Thesis
 
 The CPU **decode** roofline is exhausted (Qwen3.6-27B Q8 decode @96t = 0.17 IPC, **96.6% of
@@ -41,6 +45,17 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
   the `perf record` into the next OP-2 quiet window (shares the AMD perf-counter preflight,
   already green: `data/cpu_optimization/2026-07-03-amd-perf-counter-preflight/`). First
   profile cell + artifact plan is below; do not start kernel work from PC-1/PC-2 alone.
+  - [x] **PC-0a observation-only first profile artifact ✅ 2026-07-18**: CPU-only
+    122B architect `p8192/n1` run completed under `perf record` at
+    `/mnt/raid0/llm/epyc-inference-research/data/cpu_prefill_compute/b7-pc0-prefill-cpu-only-20260718T174148Z/b7-pc0-prefill`.
+    It forced `-dev none -ngl 0 -nopo 1 -nkvo 1`, processed `8192` prompt tokens at
+    `107.621 t/s`, used max RSS `77,124,940 KB` (`73.55 GiB`), and produced a
+    `2988.864 MB` `perf.data` with `721,404` `cycles:u` samples. Top visible samples:
+    `libgomp` worker path `42.33%`, CPU GEMM `tinyBLAS_Q0_AVX...gemm4xN` `11.23%`,
+    IQK MoE matmul `4.21%`, CPU flash-attn tiled `3.47%`, plus Q4K dequant/matmul
+    and `iqk_convert_q4_k_q8_1_r8`. This is a useful positive-direction profile, but
+    not a compute-vs-BW verdict; PC-0 still needs the OP-2/quiet-window `perf stat`
+    memory/vector counter row before any kernel implementation.
 - [x] **PC-1 — quantify the prefill fraction** for GLM/architect long-context turns from
   existing logs (zero-inference): evidence note
   `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc1_log_sizing_20260718.md`
