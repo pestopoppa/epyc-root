@@ -41,6 +41,14 @@ Keep the big targets CPU-resident; host fast drafters on the MI210 for spec-dec.
 
 ## Progress checklist
 
+**2026-07-18 frontier note (v7 lever audit).** The GPU **raw-speed** frontier is structurally
+exhausted (single-stream dense-Q8 at the +37% ceiling; both occupancy rewrites falsified —
+compact-LDS + GDN-occupancy). The **live GPU frontier is capability/residency + teleport**
+(Axis A / AXA-1..3) plus two banked-adjacent residuals below: **stream-K `nsm→k·nsm`** and the
+**K28 GDN long-prefill recurrence kernel**. AXA-1 is now **unblocked** (the K22 grammar-sampler
+P0 was fixed on experimental v7 `96986f5e9`); its gate is a strict-IF/rubric GBNF probe on the
+122B UD-IQ2_M resident architect.
+
 - [x] Gating experiment 3: 122B IQ2 eval-parity (PASSED judge-free d0.0pp 2026-07-05) ✅
 - [x] Gating experiment 1: expert-routing-skew profile (Zipfian? -> offload/REAP viability). Production-representative repeat completed: near-uniform global aggregate (`top_32=15.19%`, entropy `0.9987`) with weak layer-local skew (median layer `top_32=39.19%`). Do not build generic GLM hot-expert offload/REAP from this evidence; reopen only with a narrower role-specific corpus or a different placement mechanism. ✅ 2026-07-17
 - [x] Gating experiment 2a: GPU-draft N5 alpha feasibility (`n5_spec_on` accepted `376/376`) ✅ 2026-07-16
@@ -51,6 +59,8 @@ Keep the big targets CPU-resident; host fast drafters on the MI210 for spec-dec.
 - [ ] Probe gemma4-IQ4 mid-precision residency
 - [ ] Axis B: measure alpha (drafter->target) for quant-asymmetric self-spec
 - [ ] GLM-5.2 endgame: expert-offload / REAP+IQ2 path (operator-gated)
+- [ ] **stream-K `nsm→k·nsm` + compact-LDS residual** (v7-audit LANE B B2): raise persistent grid `nsm → k·nsm` (2 WG/CU) + apply the saved compact-LDS patch (~2-line change); est **+0–10%, IQ2/capacity slot only**. Stream-K is ALREADY the live CDNA2 MMQ path — gate = a **zero-build read of the captured pmc CSVs** first (findings-05c §3.3). Not a new bet. 2026-07-18 audit: no readable pmc/rocprof CSVs or saved compact-LDS campaign patch were found in root, inference-research, or experimental-v7; recover the original campaign artifacts before closing B2.
+- [ ] **K28 — GDN long-prefill recurrence kernel** (GPU; `ggml/src/ggml-cuda/gated_delta_net.cu:191` TODO): a new long-prefill CUDA/HIP recurrence kernel avoiding one serial token-axis scan per (head, seq, column-shard); must preserve GDA/KDA + transposed-state + K>1 snapshot semantics. Prefill t/s for hybrid (Qwen3.6/GDN) models; GPU sibling of [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md). Larger perf project, no bounded safe patch this session.
 
 ## Research Intake Update — 2026-07-16 (AirLLM / GPU-active-weight offload)
 
