@@ -60,9 +60,8 @@ blockers resolved (K22/K23/K32/K33). Held only by operator gates + the CPU-corre
 **LANE A — operator-facing (bank the banked win):**
 - A1 **K35 finalize CLOSED ✅ 2026-07-18** — consolidated throughput-vs-context release
   artifact now includes vision throughput/quality/memory rows and the MiniCPM-o/frontdoor
-  mixed-service matrix; the MiniCPM-o source/config flip is implemented in orchestrator
-  `4ab4e0ee`, while remaining K35 work is the controlled live reload/smoke/rollback gate
-  (`K35.13f`) plus optional parser/stress follow-ups. →
+  mixed-service matrix; the MiniCPM-o source/config flip and controlled live smoke are
+  implemented/verified, while remaining K35 work is optional parser/stress follow-up only. →
   [gemma-challenge-kernel-techniques-v7.md](gemma-challenge-kernel-techniques-v7.md).
 - A2 **OP-2 canonical-bench window** — run package drafted at
   [docs/reference/op-2-canonical-bench-window-package-2026-07-18.md](../../docs/reference/op-2-canonical-bench-window-package-2026-07-18.md)
@@ -218,7 +217,7 @@ After completing an acceleration item:
 - [ ] T5 worker gemma-4-26B-A4B `draft_max` sweep
 - [ ] P6b qwen-mtp model-load operator gate-bench
 - [ ] v6-iqk live throughput+garbage verification + clean post-reboot canonical bench
-- [x] **[v7-audit LANE A]** A1 K35 finalize: release artifact includes vision throughput/quality/memory rows and MiniCPM-o/frontdoor mixed-service evidence; K35.13d source/config flip is implemented, with K35.13f live reload/smoke still separate. ✅ 2026-07-18
+- [x] **[v7-audit LANE A]** A1 K35 finalize: release artifact includes vision throughput/quality/memory rows, MiniCPM-o/frontdoor mixed-service evidence, K35.13d source/config flip, and K35.13f controlled live smoke. ✅ 2026-07-18
 - [x] **[v7-audit LANE A]** A3 `P-GPU-1` MEASUREMENT ratification package drafted (prepare-only; operator still signs/amends MEASUREMENT): `docs/reference/p-gpu-1-ratification-package-2026-07-18.md`. ✅ 2026-07-18
 - [x] **[v7-audit LANE A]** A4 v7 branch-naming reconciliation: authoritative promotion tip is `experimental-v7-refresh-20260716` @ `d1e5a20ebebe567f0da6bc64ca7ea7ecd521fc24`, backed up on `fork/experimental-v7-refresh-20260716`; old `experimental-v7-candidate` references are historical only. ✅ 2026-07-18
 - [x] **[v7-audit LANE B]** B2 stream-K `nsm→k·nsm` pmc-CSV zero-build read: recovered `/mnt/raid0/llm/tmp/mi210-build/campaign/` artifacts; read verdict = stream-K already live, compact-LDS patch negative, only a separate operator-gated `2*nsm=208` bench remains if pursued. ✅ 2026-07-18
