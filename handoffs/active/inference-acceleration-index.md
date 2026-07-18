@@ -124,6 +124,8 @@ After completing an acceleration item:
 - [x] GLM-5.2 near-miss corpus representation repair: runner now records/refuses mixed source-suite/scoring selections; homogeneous `cruxeval/exact_match` n=24 observation improved to `FA=0.0%`, `FR=16.7%`, parse `0.0%`; exact-answer only, not patch-review admission ✅ 2026-07-18
 - [x] GLM-5.2 matched C-CRAB patch-diff reviewer calibration: observation-grade n=24 parse-clean but over-approved bad patches (`FA=91.7%`, `FR=16.7%`, accept `87.5%`) ✅ 2026-07-18
 - [ ] GLM-5.2 patch-review negative-evidence prompt/rubric repair before any patch-review/P-REV-1 role claim
+- [x] Frontdoor Gate-R candidate observation: K35 runner now supports CPU no-spec / MI210 no-spec / MI210 native-MTP frontdoor arms plus `--reps`; quiet-host `n=5` 8K/1024-token artifact shows CPU `17.10 t/s`, MI210 no-spec `95.39 t/s` (`5.58x`), MI210 native MTP `119.69 t/s` (`7.00x`, `3835/3835` accepted drafts) ✅ 2026-07-18
+- [ ] `P-GPU-1` ratification/update for MI210 so Gate R can be closed decision-grade instead of observation-grade
 - [ ] GLM-5.2 real sparse final-attention implementation/profiling only if quality is recoverable
 - [x] Bonsai-27B Q1_0 CPU+MI210 prompting gate executed: 6/8 strict probes passed, short instruction-format probe failed on both devices; not role-ready ✅ 2026-07-17
 - [x] Ternary Bonsai Q2_g64 CPU+MI210 runtime/coherence smoke passed on experimental v7; Q2_0 offset mismatch remains separate ✅ 2026-07-17

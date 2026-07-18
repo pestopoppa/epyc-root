@@ -8,6 +8,8 @@
 
 These compete for the single card → **Gate-R is a scheduling decision**, not a foregone conclusion. Both are untested-to-partly-tested; this handoff maps them.
 
+**2026-07-18 Gate-R candidate observation:** executable K35 frontdoor rows now provide a quiet-host, same-window CPU/GPU/MTP re-anchor at `data/k35_stack_context_matrix/frontdoor_pgpu1_candidate_20260718Tquiet/`. Experimental v7 `d1e5a20eb`, Qwen3.6-35B Q8, nominal 8K / 1024-token shape, `n=5` fresh-server reps: CPU no-spec median `17.10 t/s`; MI210 no-spec `95.39 t/s` (`5.58x`); MI210 native MTP `119.69 t/s` (`7.00x`, `3835/3835` accepted drafts). This is strong residency evidence, but remains observation-grade because `P-GPU-1` is still deferred in `MEASUREMENT.md`.
+
 ## Axis A — big-model residency (the quant-ladder → offload → GLM)
 **Corrected architect baseline (2026-07-05):** production architect (122B UD-Q4_K_M on CPU, v6 native MTP) is **~18–21 t/s single-stream** (best 20.75; live median ~16; 2-slot ~8.5/slot) — NOT the stale lean-registry 4.3. So GPU wins are measured against ~20, not 4.3.
 
@@ -44,6 +46,8 @@ Keep the big targets CPU-resident; host fast drafters on the MI210 for spec-dec.
 - [x] Gating experiment 2a: GPU-draft N5 alpha feasibility (`n5_spec_on` accepted `376/376`) ✅ 2026-07-16
 - [x] Gating experiment 2b-Stage-1: CPU-target + MI210 external-drafter speed economics failed (`0.915x` decode, `508/508` accepted) ✅ 2026-07-17
 - [x] Gating experiment 2c-Stage-2: frontdoor + drafter co-resident speed economics failed (`native MTP 0.948x`, external drafter `0.355x` vs GPU no-spec) ✅ 2026-07-17
+- [x] Gate-R candidate frontdoor residency row: same-window CPU re-anchor, MI210 no-spec, and MI210 native-MTP 8K/1024-token `n=5` reps completed; native MTP wins this longer repetitive shape (`119.69 t/s`, `7.00x` CPU, `100%` accepted drafts) ✅ 2026-07-18
+- [ ] Ratify/update `P-GPU-1` now that MI210 exists, then rerun or retro-certify the Gate-R candidate artifact as decision-grade if the protocol allows it
 - [ ] Probe gemma4-IQ4 mid-precision residency
 - [ ] Axis B: measure alpha (drafter->target) for quant-asymmetric self-spec
 - [ ] GLM-5.2 endgame: expert-offload / REAP+IQ2 path (operator-gated)
