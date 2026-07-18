@@ -1,6 +1,6 @@
 # Reviewer Control Plane — GLM-5.2 Reviewer Capability Gates (H6, slim)
 
-**Status**: active — blocked on a smallest-safe GLM prompt-length-aware top-k schedule before GC-1/2/3; `indexer_top_k=2048` passes through `2056` prompt tokens but fails by `2168`, `3045`, and `12043`, while `4096`/`16384` recover those longer bands
+**Status**: active — GC-0c schedule gate closed; GC-1/2/3 now blocked on running reviewer probes under the next-power-of-two GLM top-k schedule (`2048` through ~2.05K, `4096` through ~3.05K, `16384` at ~12.05K)
 **Created**: 2026-07-16 (Architect→Reviewer control-plane series; see index)
 **Categories**: agent_architecture, quantization, local_inference
 **Index**: [`reviewer-control-plane-index.md`](reviewer-control-plane-index.md)
@@ -9,14 +9,14 @@
 
 ## Objective
 
-Take GLM-5.2 UD-IQ2_M (754B glm_moe_dsa, ~239GB, downloaded, true >64K stale-binary DSA-engagement smoke-passed, and current-source DSA-wired) from "loads" to "validated typed-decision reviewer candidate" — the reviewer-specific capability layer only. Current reviewer admission is still blocked before GC-1: inference-research commit `a6651ed` shows `glm-dsa.attention.indexer.top_k` is the final-attention KV selection cap, with `2048` safe through `2056` prompt tokens, `4096` needed at `2168/3045`, and `16384` needed at `12045`.
+Take GLM-5.2 UD-IQ2_M (754B glm_moe_dsa, ~239GB, downloaded, true >64K stale-binary DSA-engagement smoke-passed, and current-source DSA-wired) from "loads" to "validated typed-decision reviewer candidate" — the reviewer-specific capability layer only. Current reviewer admission is now blocked before GC-1 on executing reviewer probes under the known-good top-k schedule: inference-research commit `a6651ed` plus the follow-up sweep show `glm-dsa.attention.indexer.top_k` is the final-attention KV selection cap, `3072` fails at 2.1K/3K, `8192`/`12288` fail at 12K, and next power-of-two caps are the observed safe path (`2048`, `4096`, `16384` for the tested prompt bands).
 
 ## Prioritized Task List
 
 - [x] **GC-0 — Evidence hygiene / runner contract**: reviewer-facing GLM long-output or typed-decision probes must consume only instrumented GLM runs with streaming progress, retained trace logs/server-log timing extraction, and a minimum completion-token floor. `/metrics` samples are acceptable when available, but are not the primary progress channel for a long busy GLM request. The attempted current-source 96K run at `/mnt/raid0/llm/tmp/glm52-current-source-96k-quality-20260717T144022Z/plan.json` is excluded as process-failure-only because it had no progress telemetry and only `max_tokens=32`. ✅ 2026-07-17
 - [x] **GC-0a — Current-source 32K needle/coherence gate executed**: default reasoning and `--reasoning off --reasoning-budget 0` both completed full prompt ingest plus 64-token decode, then llama-server returned HTTP 500 because generated output did not match `peg-native`; hidden code `GLM52-NEEDLE-7F3A` was absent. Summary: `/mnt/raid0/llm/epyc-inference-research/data/glm52_dsa_probe/current_source_32k_needle_20260717T1755Z/summary.json`. ✅ 2026-07-17
 - [x] **GC-0b — Top-k cap diagnosis closed**: the active blocker is now narrower than "GLM malformed output." Inference-research commit `a6651ed` shows `glm-dsa.attention.indexer.top_k` is the final-attention KV selection cap: `2048` passes exact `READY` at `1767/2056` prompt tokens but fails at `2168/3045/12043`; `4096` recovers `2168/3045`; `16384` recovers `12045`. ✅ 2026-07-18
-- [ ] **GC-0c — Smallest-safe prompt-length-aware top-k schedule**: derive the minimal schedule that keeps exact `READY` across the runner-shaped prompt bands before any reviewer capability probes. GC-1/2/3 should not run on a flat default cap now that the recovery ladder is known.
+- [x] **GC-0c — Smallest-safe prompt-length-aware top-k schedule**: follow-up sweep rejected `top_k=3072` at 2.1K/3K and `8192`/`12288` at 12K; exact `READY` is only observed on next power-of-two caps (`2048`, `4096`, `16384`) for these prompt bands. GC-1/2/3 should run under that schedule, not a flat default cap. ✅ 2026-07-18
 - [ ] **GC-0d — Protocol-channel matrix**: once GC-0c is fixed, run a compact matrix across raw `/completion` vs chat/completions, reasoning on/off, schema/`peg-native` vs unconstrained text, and prompt-token bands around the observed cap transitions so GC-1 uses a known-good serving/scoring channel rather than repeating ambiguous GLM breakage.
 - [ ] **GC-1 — Strict-IF / typed-emission probe**: schema-valid `review_decision` emission rate, GBNF-constrained vs free-parse-with-retry, K-of-M pass gate (define K/M here; smoke-level first, claim-level under P-REV-1 later). Motivation: 122B-IQ2 scored 2/11 on strict instruction-following — quant may degrade format compliance; grammar constraint is the expected mitigation. CPU path first (v7 GPU grammar path is P0-blocked in the kernel handoff).
 - [ ] **GC-2 — Rubric-authoring quality probe**: GLM-5.2 authors rubrics for a fixed task set; graded against frontier-authored references (criteria count, axis coverage, grounding). The two-turn design (H3 RD-2) makes authoring the heavyweight's ONLY hot-path job — this is the capability that matters most.
@@ -27,8 +27,7 @@ Take GLM-5.2 UD-IQ2_M (754B glm_moe_dsa, ~239GB, downloaded, true >64K stale-bin
 ## Dependency Graph
 
 ```text
-glm51-reap GO gates (download/integrity ✅ → glm-dsa load smoke ✅ → current-source cache/runtime smoke ✅ → true >64K stale-binary runnability ✅ → runtime DSA-DENSE-MASK ✅ → top-k-cap diagnosis ✅ (`2048` safe through `2056`, `4096` needed at `2168/3045`, `16384` needed at `12045`))
-        → GC-0c smallest-safe prompt-length-aware top-k schedule
+glm51-reap GO gates (download/integrity ✅ → glm-dsa load smoke ✅ → current-source cache/runtime smoke ✅ → true >64K stale-binary runnability ✅ → runtime DSA-DENSE-MASK ✅ → top-k-cap diagnosis ✅ → schedule ✅ (`3072` fails at 2.1K/3K, `8192`/`12288` fail at 12K, next-power-of-two caps pass tested bands))
         → GC-0d protocol-channel matrix
         → GC-1 → GC-2 → GC-3 → GC-5
 GC-4 operator decision (anytime after CPU bench exists) → shapes H5 A4 arm design
