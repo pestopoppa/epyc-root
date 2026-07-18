@@ -2,8 +2,8 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-07-17 (adds PPL-only-gate-gameable → multi-suite rule, K35 optimized-stack matrix discipline, and authored-command execution-grounding; earlier v7 K5 chat-endpoint quality-gate content retained)
-**Sources**: 73+ documents
+**Last compiled**: 2026-07-18 (adds GLM reviewer-corpus representation stratification guard; earlier K35/K5/readiness content retained)
+**Sources**: 78+ documents
 
 ## Summary
 
@@ -16,6 +16,12 @@ Cost-aware reward design is layered on top of benchmark results for the MemRL ro
 Benchmark hardening in December 2025 addressed ceiling effects where top models scored 89-93%. Every tier was bumped up one difficulty level with post-doctoral T3 questions added, spreading the score distribution meaningfully across model classes. A mode-advantage suite (90 questions) was specifically designed to produce strong routing signal for MemRL by including tasks that structurally require specific execution modes (react, REPL, delegation, specialist escalation).
 
 ## Key Findings
+
+### New (2026-07-18, GLM reviewer-corpus representation guard)
+
+- **Reviewer FA/FR tables are invalid when the selected rows mix incompatible candidate representations.** The GLM near-miss checkpoint found that a nominally balanced code slice combined exact-answer controls, substring/code-prefix controls, Python patch diffs, and C-CRAB patch reviews, so false-reject and false-accept rates were measuring corpus heterogeneity as much as reviewer quality. The durable rule is to stratify by source benchmark, source suite, and provenance scoring method before interpreting reviewer calibration. Sources: [glm52-reviewer-capability-gates.md](../handoffs/active/glm52-reviewer-capability-gates.md), [inference-acceleration-index.md](../handoffs/active/inference-acceleration-index.md), [progress 2026-07-18](../progress/2026-07/2026-07-18.md).
+- **Harnesses should refuse mixed reviewer representations by default and require an explicit override for diagnostic mixtures.** The GLM direct corpus runner now records available/selected representation summaries, exposes `--source-suite`, `--source-benchmark`, and `--provenance-scoring-method` filters, and blocks execution when selected rows span multiple representation buckets unless `--allow-mixed-representation` is set. That turns a post-hoc interpretation failure into a pre-execution method gate. Sources: [model admission doc](../repos/epyc-inference-research/docs/reference/models/model-admission-2026-07-16.md), [model smoke queue](../repos/epyc-inference-research/docs/reference/models/model-smoke-queue-2026-07-16.md), [progress 2026-07-18](../progress/2026-07/2026-07-18.md).
+- **A recovered narrow result does not close a broader reviewer role.** Homogeneous `seeded-mutation/cruxeval/exact_match` n=24 improved to FA `0.0%`, FR `16.7%`, parse `0.0%`, but it is exact-answer review evidence only; patch-review admission still needs a matched patch-diff corpus and the P-REV-1 measurement amendment before any role claim. Sources: [glm52-reviewer-capability-gates.md](../handoffs/active/glm52-reviewer-capability-gates.md), [model admission doc](../repos/epyc-inference-research/docs/reference/models/model-admission-2026-07-16.md), [model smoke queue](../repos/epyc-inference-research/docs/reference/models/model-smoke-queue-2026-07-16.md).
 
 ### New (2026-07-16, v7 K5 quality gate + readiness checks)
 
@@ -261,6 +267,11 @@ A complementary tool, MathQ-Verify (arxiv:2505.13903), verifies question quality
 
 ## Source References
 
+- [GLM-5.2 reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md) -- GC-shadow-repair2 checklist closure, mixed-representation diagnosis, exact-answer observation, and the open matched patch-diff calibration task.
+- [Inference acceleration index](../handoffs/active/inference-acceleration-index.md) -- GLM/DSA row updates that scope the near-miss repair to exact-answer evidence and keep patch-review admission open.
+- [Progress 2026-07-18](../progress/2026-07/2026-07-18.md) -- Session evidence for the runner filters/refusal guard, dry-run plans, live n=24 exact-match observation, cleanup, and focused validation.
+- [Model admission 2026-07-16](../repos/epyc-inference-research/docs/reference/models/model-admission-2026-07-16.md) -- Research-side durable model-admission interpretation and evidence paths for the GLM representation repair.
+- [Model smoke queue 2026-07-16](../repos/epyc-inference-research/docs/reference/models/model-smoke-queue-2026-07-16.md) -- Research-side queue state showing GC item 25 closed and P-REV-1 moved behind matched reviewer-scope corpus selection.
 - [Chapter 06: Benchmarking Framework](/mnt/raid0/llm/epyc-inference-research/docs/chapters/06-benchmarking-framework.md) -- Claude-as-Judge methodology, 8-suite framework, quality vs speed trade-offs, orchestrator benchmark pipeline
 - [Chapter 07: Benchmark Suite Construction](/mnt/raid0/llm/epyc-inference-research/docs/chapters/07-benchmark-suite-construction.md) -- Deterministic scoring, 23-suite pool (56,448 questions), HuggingFace adapters, reconstruction instructions
 - [Chapter 08: Cost-Aware Reward Design](/mnt/raid0/llm/epyc-inference-research/docs/chapters/08-cost-aware-rewards.md) -- Reward formula, cost normalization, industry consensus, extended reward dimensions
