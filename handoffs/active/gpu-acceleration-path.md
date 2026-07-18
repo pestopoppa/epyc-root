@@ -502,7 +502,8 @@ Batch intake of the AMD ROCm software stack, assessed against the active MI210 (
 ## Progress checklist
 
 - [x] M0 zero-cost production MTP-acceptance log read (findings-02) ✅ 2026-07-14 (CLOSED 2026-07-03 — mtp_acceptance_report_20260703T114323Z: α frontdoor 0.6582 / architect 0.6854 / worker 0.8256; findings-02 L58)
-- [ ] Gate R frontdoor residency bench under P-GPU-1
+- [ ] Gate R frontdoor residency bench under P-GPU-1: `P-GPU-1` still requires MEASUREMENT ratification/update because the protocol is marked deferred.
+- [x] Gate R candidate observation under quiet host: `data/k35_stack_context_matrix/frontdoor_pgpu1_candidate_20260718Tquiet/` completed `n=5` same-window 8K/1024-token fresh-server rows on experimental v7 `d1e5a20eb`; CPU no-spec median `17.10 t/s`, MI210 no-spec `95.39 t/s` (`5.58x`), MI210 native MTP `119.69 t/s` (`7.00x`, `3835/3835` accepted drafts). Observation-grade until `P-GPU-1` is ratified. ✅ 2026-07-18
 - [ ] intake-310 -ot exps=CPU / --n-cpu-moe hybrid MoE offload probe on MI210
 - [ ] DFlash/DDTree HIP re-scope — **FUND-OR-CLOSE decision** (2026-07-14): both activation gates fired (MI210 online 2026-07-02; M0 α baseline 2026-07-03), yet every production target now ships a native MTP head and tree-draft Phase-1b was shelved 2026-07-06 on exactly this ground (embedded MTP dominates external drafters — qwen-27B MTP 41.9 vs external ~18 t/s). Decision = confirm-negative vs narrow MTP-less niche.
 - [ ] intake-460 Splitwise GPU-prefill/CPU-decode KV handoff (Family D)
