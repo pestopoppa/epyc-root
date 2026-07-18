@@ -1,6 +1,6 @@
 # Reviewer Control Plane — GLM-5.2 Reviewer Capability Gates (H6, slim)
 
-**Status**: active — GC-0d reviewer-serving chat protocol/schema gate closed; GC-1/2/3 smoke probes and repair smokes now executed under the next-power-of-two GLM top-k schedule (`2048` through ~2.05K, `4096` through ~3.05K, `16384` at ~12.05K). Natural-prompt repair smokes now pass strict free typed emission (`3/3`), rubric breadth (`mean_axis_coverage=1.0`), and synthetic why diagnosis (`why_match_rate=1.0`), but these remain observation-only and do not replace P-REV-1/corpus-level gates. Raw `/completion` and `/v1/completions` remain unvalidated and are not the default reviewer-serving channel.
+**Status**: active — GC-0d reviewer-serving chat protocol/schema gate closed; GC-1/2/3 smoke probes and repair smokes now executed under the next-power-of-two GLM top-k schedule (`2048` through ~2.05K, `4096` through ~3.05K, `16384` at ~12.05K). Natural-prompt repair smokes pass the small synthetic checks, but the first real near-miss shadow corpus slice is quality-blocked (`n=12`, FA `16.7%`, FR `66.7%`, parse `0.0%`). GLM remains research-only; P-REV-1/corpus-level gates stay open. Raw `/completion` and `/v1/completions` remain unvalidated and are not the default reviewer-serving channel.
 **Created**: 2026-07-16 (Architect→Reviewer control-plane series; see index)
 **Categories**: agent_architecture, quantization, local_inference
 **Index**: [`reviewer-control-plane-index.md`](reviewer-control-plane-index.md)
@@ -9,7 +9,7 @@
 
 ## Objective
 
-Take GLM-5.2 UD-IQ2_M (754B glm_moe_dsa, ~239GB, downloaded, true >64K stale-binary DSA-engagement smoke-passed, and current-source DSA-wired) from "loads" to "validated typed-decision reviewer candidate" — the reviewer-specific capability layer only. Current reviewer admission remains blocked on claim-grade evidence, not on first smoke execution: inference-research commit `a6651ed` plus the follow-up sweep show `glm-dsa.attention.indexer.top_k` is the final-attention KV selection cap, `3072` fails at 2.1K/3K, `8192`/`12288` fail at 12K, next power-of-two caps are the observed safe path (`2048`, `4096`, `16384` for the tested prompt bands), and the 2026-07-18 chat protocol/schema matrix passed exact free-text and JSON-schema outputs at actual ~2.9K/~12.0K prompt bands. The initial direct reviewer-capability smokes exposed repairable prompt/scorer issues; natural-prompt repair smokes now pass the small synthetic GC-1/2/3 checks, but P-REV-1 and corpus-level quality remain unsatisfied.
+Take GLM-5.2 UD-IQ2_M (754B glm_moe_dsa, ~239GB, downloaded, true >64K stale-binary DSA-engagement smoke-passed, and current-source DSA-wired) from "loads" to "validated typed-decision reviewer candidate" — the reviewer-specific capability layer only. Current reviewer admission remains blocked on claim-grade evidence, not on first smoke execution: inference-research commit `a6651ed` plus the follow-up sweep show `glm-dsa.attention.indexer.top_k` is the final-attention KV selection cap, `3072` fails at 2.1K/3K, `8192`/`12288` fail at 12K, next power-of-two caps are the observed safe path (`2048`, `4096`, `16384` for the tested prompt bands), and the 2026-07-18 chat protocol/schema matrix passed exact free-text and JSON-schema outputs at actual ~2.9K/~12.0K prompt bands. The initial direct reviewer-capability smokes exposed repairable prompt/scorer issues and the repaired synthetic smokes pass, but the first near-miss corpus shadow run shows a real FR-heavy reviewer-quality problem that must be addressed before P-REV-1 role admission.
 
 ## Prioritized Task List
 
@@ -27,6 +27,7 @@ Take GLM-5.2 UD-IQ2_M (754B glm_moe_dsa, ~239GB, downloaded, true >64K stale-bin
 - [x] **GC-3 — Why-diagnosis smoke**: direct CPU-only GLM runner executed `why_diagnosis`, free lane, `m=3`, chat channel, `indexer_top_k=4096`. GLM detected that a defect existed in `3/3`, but matched the intended root cause in `0/3` (`that_minus_why_gap=1.0`). Evidence: `/mnt/raid0/llm/epyc-inference-research/data/glm52_reviewer_capability_direct/gc3-why-smoke-20260718Tglm52/summary.json`. Observation-only; why-diagnosis is currently failed. ✅ 2026-07-18
 - [x] **GC-3r — Why-diagnosis repair smoke**: the built-in synthetic GC-3 task set now includes concrete defective snippets/symptoms and broader gold-cause aliases. Natural-prompt free lane passed `3/3` defect detection and `3/3` root-cause match (`why_match_rate=1.0`) on off-by-one/midpoint, missing None-guard, and wrong arithmetic-operation causes. Evidence: `/mnt/raid0/llm/epyc-inference-research/data/glm52_reviewer_capability_direct/gc3-why-natural-repair2-20260718Tglm52/summary.json`. Observation-only; corpus-v1/P-REV-1 gate still open. ✅ 2026-07-18
 - [ ] **GC-3a — Why-diagnosis corpus/claim-grade gate**: retest on corpus-v1 after P-REV-1 sign-off; IQ2 quant may degrade why-diagnosis more than that-detection (intake-836), but the repaired synthetic smoke no longer supports a blanket failure claim.
+- [x] **GC-shadow — Near-miss corpus shadow observation**: direct GLM corpus runner (`scripts/benchmark/glm52_reviewer_corpus_direct_runner.py`) executed a balanced `nearmiss-v1` code slice (`n=12`, `6 accept / 6 reject`) through CPU-only experimental-v7 GLM with chat, JSON-schema, reasoning off, and the recovered `p12000_tk16384` band. Evidence: `/mnt/raid0/llm/epyc-inference-research/data/glm52_reviewer_corpus_direct/glm52-nearmiss-code-n12-20260718Tcheckpoint/summary.json`; calibration report: `/mnt/raid0/llm/epyc-inference-research/data/glm52_reviewer_corpus_direct/glm52-nearmiss-code-n12-20260718Tcheckpoint/reviewer_calibration_report.md`. Result: parse `0.0%`, FA `16.7%`, FR `66.7%`, accept `25.0%`, aggregate prompt `26.37 t/s`, decode `2.56 t/s`. Observation-only; this blocks role confidence rather than closing GC-1a/2a/3a. ✅ 2026-07-18
 - [ ] **GC-4 — RAM-residency policy decision** (operator, OP bundle): 239GB reviewer + ~70GB architect + frontdoor/workers co-residency vs swap-in-on-demand vs review-windows. Determines whether A4 is an interactive reviewer or a batch/offline judicial gate. Provide the memory-budget table as decision input.
 - [ ] **GC-5 — Registry reviewer-capability fields**: structured `measured:` entries (typed-emission rate, authoring score, why-diagnosis, FA/FR once H5 runs) per MEASUREMENT §5b registry ruling; follow `new-model` onboarding conventions.
 
@@ -37,6 +38,7 @@ glm51-reap GO gates (download/integrity ✅ → glm-dsa load smoke ✅ → curre
         → GC-0d protocol-channel matrix ✅ (chat/free+schema reviewer-serving channel; raw endpoints unvalidated)
         → GC-1/2/3 smoke probes ✅ (mixed; not role admission)
         → GC-1r/2r/3r repair smokes ✅ (small synthetic observations pass; not role admission)
+        → GC-shadow near-miss corpus observation ✅ (parse-clean but FR-heavy; not role admission)
         → GC-1a/2a/3a claim-grade gates or repair → GC-5
 GC-4 operator decision (anytime after CPU bench exists) → shapes H5 A4 arm design
 Kernel P0s: grammar fix is closed; GLM-dsa cache/runtime reconciliation is closed by `3dee86a5a`; remaining kernel dependencies are sparse-final-attention classification and any live v7 CPU/perf guard relevant to GC-1 cost.
@@ -45,6 +47,7 @@ Kernel P0s: grammar fix is closed; GLM-dsa cache/runtime reconciliation is close
 ## Open Questions
 
 - [x] Do small GLM-5.2 reviewer-capability repair smokes recover after prompt/scorer fixes under the next-power-of-two top-k schedule? **Yes for synthetic observations only**: GC-1r free typed emission `3/3`, GC-2r rubric breadth `mean_composite=1.0`, and GC-3r synthetic why diagnosis `why_match_rate=1.0`. This does not close P-REV-1 or corpus-v1 reviewer admission. ✅ 2026-07-18
+- [x] Does the repaired GLM reviewer look usable on a real near-miss shadow slice before P-REV-1? **No**: it is parse-clean but over-rejects badly (`FR=66.7%`, `FA=16.7%`, accept `25.0%` on `n=12`). The next work is prompt/rubric calibration or reviewer-policy shaping before any claim-grade rerun. ✅ 2026-07-18
 
 ## Cross-Cutting Concerns
 
@@ -55,12 +58,13 @@ Kernel P0s: grammar fix is closed; GLM-dsa cache/runtime reconciliation is close
 
 - `orchestration/model_registry.yaml` `glm_52_ud_iq2m` entry (research registry line ~5591)
 - `scripts/benchmark/glm52_reviewer_capability_direct_runner.py` (research direct runner for GC-1/2/3 while GLM stays out of the production orchestration registry)
+- `scripts/benchmark/glm52_reviewer_corpus_direct_runner.py` (research direct runner for `nearmiss-v1` shadow/claim-grade corpus ledgers while GLM stays out of the production orchestration registry)
 - H2 `review_decision.schema.json` + GBNF generation; H4 corpus sample
 - `glm51-reap-cpu-evaluation.md` GO checkpoints (consume)
 
 ## Reporting Instructions
 
-Flip checkboxes `✅ YYYY-MM-DD`; GC-1/2/3 numbers recorded here + registry (GC-5); GC-4 goes to the operator decision queue (§A00) — do not decide autonomously. Any GLM reviewer run without progress telemetry and a completion-token floor is a harness/process observation only. Any run above the current recovery band must also record prompt-token count, chosen `indexer_top_k`, and serving channel so the schedule map remains comparable.
+Flip checkboxes `✅ YYYY-MM-DD`; GC-1/2/3 numbers recorded here + registry (GC-5); GC-4 goes to the operator decision queue (§A00) — do not decide autonomously. Near-miss corpus runs must preserve `decisions.jsonl` plus `reviewer_calibration_report.md` and must label all pre-P-REV-1 FA/FR/ECE/AUC values as observation-grade. Any GLM reviewer run without progress telemetry and a completion-token floor is a harness/process observation only. Any run above the current recovery band must also record prompt-token count, chosen `indexer_top_k`, and serving channel so the schedule map remains comparable.
 
 ## Evidence Base (intake)
 
