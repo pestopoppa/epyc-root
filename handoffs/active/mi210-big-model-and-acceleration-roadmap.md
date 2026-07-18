@@ -10,6 +10,12 @@ These compete for the single card → **Gate-R is a scheduling decision**, not a
 
 **2026-07-18 Gate-R candidate observation:** executable K35 frontdoor rows now provide a quiet-host, same-window CPU/GPU/MTP re-anchor at `data/k35_stack_context_matrix/frontdoor_pgpu1_candidate_20260718Tquiet/`. Experimental v7 `d1e5a20eb`, Qwen3.6-35B Q8, nominal 8K / 1024-token shape, `n=5` fresh-server reps: CPU no-spec median `17.10 t/s`; MI210 no-spec `95.39 t/s` (`5.58x`); MI210 native MTP `119.69 t/s` (`7.00x`, `3835/3835` accepted drafts). This is strong residency evidence, but remains observation-grade because `P-GPU-1` is still deferred in `MEASUREMENT.md`.
 
+**2026-07-18 Qwen3.6-27B dense context observation:** research commit `179442b`
+adds `data/gpu-mi210/qwen36-27b-dense-v7-context-20260718T2225Z`, with prompt
+throughput `854.17/807.61/666.62 t/s` and decode `29.64 t/s` on current v7.
+This is useful same-family MI210 context evidence, but it is not decision-grade
+while `P-GPU-1` is deferred.
+
 ## Axis A — big-model residency (the quant-ladder → offload → GLM)
 **Corrected architect baseline (2026-07-05):** production architect (122B UD-Q4_K_M on CPU, v6 native MTP) is **~18–21 t/s single-stream** (best 20.75; live median ~16; 2-slot ~8.5/slot) — NOT the stale lean-registry 4.3. So GPU wins are measured against ~20, not 4.3.
 
@@ -56,6 +62,7 @@ P0 was fixed on experimental v7 `96986f5e9`); its gate is a strict-IF/rubric GBN
 - [x] Gating experiment 2c-Stage-2: frontdoor + drafter co-resident speed economics failed (`native MTP 0.948x`, external drafter `0.355x` vs GPU no-spec) ✅ 2026-07-17
 - [x] Axis-B DR-1 break-even model: external Stage-1/2 are not acceptance-blocked; they are overhead/control-cost blocked, so future lanes must satisfy `E(α,K) > F(K)+H(K)` before build. Evidence: [docs/reference/gpu-drafter-break-even-model-2026-07-18.md](../../docs/reference/gpu-drafter-break-even-model-2026-07-18.md). ✅ 2026-07-18
 - [x] Gate-R candidate frontdoor residency row: same-window CPU re-anchor, MI210 no-spec, and MI210 native-MTP 8K/1024-token `n=5` reps completed; native MTP wins this longer repetitive shape (`119.69 t/s`, `7.00x` CPU, `100%` accepted drafts) ✅ 2026-07-18
+- [x] Qwen3.6-27B dense current-v7 MI210 context row recorded: `data/gpu-mi210/qwen36-27b-dense-v7-context-20260718T2225Z`, prompt `854.17/807.61/666.62 t/s`, decode `29.64 t/s`; observation-only pending `P-GPU-1` ✅ 2026-07-18
 - [x] Draft `P-GPU-1` ratification package for operator review: `docs/reference/p-gpu-1-ratification-package-2026-07-18.md` maps required MEASUREMENT fields to existing Gate-R/K35 MI210 artifacts and keeps the amendment itself human-only ✅ 2026-07-18
 - [ ] Ratify/update `P-GPU-1` now that MI210 exists, then rerun or retro-certify the Gate-R candidate artifact as decision-grade if the protocol allows it
 - [x] Probe gemma4-IQ4 mid-precision residency: current experimental-v7 `d1e5a20eb` MI210 observation at `/mnt/raid0/llm/epyc-inference-research/data/gemma4_iq4_residency/gemma4_26b_ud_iq4xs_mi210_v7_20260718T162446Z/summary.json` loaded `gemma-4-26B-A4B-it-UD-IQ4_XS.gguf` fully resident, measured `pp2048 2449.01 t/s`, `tg256 81.91 t/s`, and a server/chat 8K coherence probe with `6971` prompt tokens at `2257.80 t/s` plus `201` completion tokens at `76.02 t/s`; cleanup proof shows no KFD PIDs. Follow-up optimized lane at `/mnt/raid0/llm/epyc-inference-research/data/gemma4_iq4_residency/mtp_ab_local_20260718T170739Z/summary.json` measured no-spec q8-KV `pp2048 2450.51 t/s`, `tg512 81.41 t/s`, and external assistant-head MTP `117.01 t/s` with `360/362` drafts accepted. Strict JSON content was not clean, so quality retention/template cleanup remains open before any role claim. ✅ 2026-07-18
