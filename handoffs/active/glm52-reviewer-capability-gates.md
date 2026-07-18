@@ -1,6 +1,6 @@
 # Reviewer Control Plane — GLM-5.2 Reviewer Capability Gates (H6, slim)
 
-**Status**: active — blocked on GLM protocol/context-length root-cause before GC-1/2/3; `indexer_top_k=2048` restores short runner-shaped controls only up to the ~1.8K-token band, so H5 A4/A4g remain gated
+**Status**: active — blocked on a smallest-safe GLM prompt-length-aware top-k schedule before GC-1/2/3; `indexer_top_k=2048` passes through `2056` prompt tokens but fails by `2168`, `3045`, and `12043`, while `4096`/`16384` recover those longer bands
 **Created**: 2026-07-16 (Architect→Reviewer control-plane series; see index)
 **Categories**: agent_architecture, quantization, local_inference
 **Index**: [`reviewer-control-plane-index.md`](reviewer-control-plane-index.md)
@@ -9,14 +9,15 @@
 
 ## Objective
 
-Take GLM-5.2 UD-IQ2_M (754B glm_moe_dsa, ~239GB, downloaded, true >64K stale-binary DSA-engagement smoke-passed, and current-source DSA-wired) from "loads" to "validated typed-decision reviewer candidate" — the reviewer-specific capability layer only. Current-source long-context coherence is **not** passed: the 32K needle probe failed on malformed `peg-native` output in both default-reasoning and reasoning-off modes, and the restored default `indexer_top_k=2048` only recovers shorter runner-shaped prompts before failures reappear by `2143` prompt tokens.
+Take GLM-5.2 UD-IQ2_M (754B glm_moe_dsa, ~239GB, downloaded, true >64K stale-binary DSA-engagement smoke-passed, and current-source DSA-wired) from "loads" to "validated typed-decision reviewer candidate" — the reviewer-specific capability layer only. Current reviewer admission is still blocked before GC-1: inference-research commit `a6651ed` shows `glm-dsa.attention.indexer.top_k` is the final-attention KV selection cap, with `2048` safe through `2056` prompt tokens, `4096` needed at `2168/3045`, and `16384` needed at `12045`.
 
 ## Prioritized Task List
 
 - [x] **GC-0 — Evidence hygiene / runner contract**: reviewer-facing GLM long-output or typed-decision probes must consume only instrumented GLM runs with streaming progress, retained trace logs/server-log timing extraction, and a minimum completion-token floor. `/metrics` samples are acceptable when available, but are not the primary progress channel for a long busy GLM request. The attempted current-source 96K run at `/mnt/raid0/llm/tmp/glm52-current-source-96k-quality-20260717T144022Z/plan.json` is excluded as process-failure-only because it had no progress telemetry and only `max_tokens=32`. ✅ 2026-07-17
 - [x] **GC-0a — Current-source 32K needle/coherence gate executed**: default reasoning and `--reasoning off --reasoning-budget 0` both completed full prompt ingest plus 64-token decode, then llama-server returned HTTP 500 because generated output did not match `peg-native`; hidden code `GLM52-NEEDLE-7F3A` was absent. Summary: `/mnt/raid0/llm/epyc-inference-research/data/glm52_dsa_probe/current_source_32k_needle_20260717T1755Z/summary.json`. ✅ 2026-07-17
-- [ ] **GC-0b — Output-format root cause**: isolate whether the malformed `peg-native` failure is prompt/template, GLM chat-parser, context length, quant/model behavior, or runner/API mode. The 2026-07-17 default-top-k checkpoint narrowed this: restored `indexer_top_k=2048` recovers short runner-shaped prompts at `1389` and `1767` prompt tokens, but failures return at `2143`, `3045`, and `12043`. GC-1/2/3 should not run until this is fixed or a deliberately different serving mode is chosen.
-- [ ] **GC-0c — Protocol-channel matrix**: run a compact matrix across raw `/completion` vs chat/completions, reasoning on/off, schema/`peg-native` vs unconstrained text, and prompt-token bands around the observed failure threshold so GC-1 uses a known-good serving/scoring channel rather than repeating ambiguous GLM breakage.
+- [x] **GC-0b — Top-k cap diagnosis closed**: the active blocker is now narrower than "GLM malformed output." Inference-research commit `a6651ed` shows `glm-dsa.attention.indexer.top_k` is the final-attention KV selection cap: `2048` passes exact `READY` at `1767/2056` prompt tokens but fails at `2168/3045/12043`; `4096` recovers `2168/3045`; `16384` recovers `12045`. ✅ 2026-07-18
+- [ ] **GC-0c — Smallest-safe prompt-length-aware top-k schedule**: derive the minimal schedule that keeps exact `READY` across the runner-shaped prompt bands before any reviewer capability probes. GC-1/2/3 should not run on a flat default cap now that the recovery ladder is known.
+- [ ] **GC-0d — Protocol-channel matrix**: once GC-0c is fixed, run a compact matrix across raw `/completion` vs chat/completions, reasoning on/off, schema/`peg-native` vs unconstrained text, and prompt-token bands around the observed cap transitions so GC-1 uses a known-good serving/scoring channel rather than repeating ambiguous GLM breakage.
 - [ ] **GC-1 — Strict-IF / typed-emission probe**: schema-valid `review_decision` emission rate, GBNF-constrained vs free-parse-with-retry, K-of-M pass gate (define K/M here; smoke-level first, claim-level under P-REV-1 later). Motivation: 122B-IQ2 scored 2/11 on strict instruction-following — quant may degrade format compliance; grammar constraint is the expected mitigation. CPU path first (v7 GPU grammar path is P0-blocked in the kernel handoff).
 - [ ] **GC-2 — Rubric-authoring quality probe**: GLM-5.2 authors rubrics for a fixed task set; graded against frontier-authored references (criteria count, axis coverage, grounding). The two-turn design (H3 RD-2) makes authoring the heavyweight's ONLY hot-path job — this is the capability that matters most.
 - [ ] **GC-3 — Why-diagnosis probe**: rationale-vs-gold-cause match on a corpus-v1 sample (IQ2 quant may degrade why-diagnosis more than that-detection — intake-836; measure, don't assume).
@@ -26,9 +27,9 @@ Take GLM-5.2 UD-IQ2_M (754B glm_moe_dsa, ~239GB, downloaded, true >64K stale-bin
 ## Dependency Graph
 
 ```text
-glm51-reap GO gates (download/integrity ✅ → glm-dsa load smoke ✅ → current-source cache/runtime smoke ✅ → true >64K stale-binary runnability ✅ → runtime DSA-DENSE-MASK ✅ → 32K needle/coherence ❌ malformed peg-native → top-k-default short recovery only up to ~1.8K prompt tokens)
-        → GC-0b output-format/context-length root cause
-        → GC-0c protocol-channel matrix
+glm51-reap GO gates (download/integrity ✅ → glm-dsa load smoke ✅ → current-source cache/runtime smoke ✅ → true >64K stale-binary runnability ✅ → runtime DSA-DENSE-MASK ✅ → top-k-cap diagnosis ✅ (`2048` safe through `2056`, `4096` needed at `2168/3045`, `16384` needed at `12045`))
+        → GC-0c smallest-safe prompt-length-aware top-k schedule
+        → GC-0d protocol-channel matrix
         → GC-1 → GC-2 → GC-3 → GC-5
 GC-4 operator decision (anytime after CPU bench exists) → shapes H5 A4 arm design
 Kernel P0s: grammar fix is closed; GLM-dsa cache/runtime reconciliation is closed by `3dee86a5a`; remaining kernel dependencies are sparse-final-attention classification and any live v7 CPU/perf guard relevant to GC-1 cost.
@@ -47,7 +48,7 @@ Kernel P0s: grammar fix is closed; GLM-dsa cache/runtime reconciliation is close
 
 ## Reporting Instructions
 
-Flip checkboxes `✅ YYYY-MM-DD`; GC-1/2/3 numbers recorded here + registry (GC-5); GC-4 goes to the operator decision queue (§A00) — do not decide autonomously. Any GLM reviewer run without progress telemetry and a completion-token floor is a harness/process observation only. Any run above the current recovery band must also record prompt-token count and serving channel so the threshold map remains comparable.
+Flip checkboxes `✅ YYYY-MM-DD`; GC-1/2/3 numbers recorded here + registry (GC-5); GC-4 goes to the operator decision queue (§A00) — do not decide autonomously. Any GLM reviewer run without progress telemetry and a completion-token floor is a harness/process observation only. Any run above the current recovery band must also record prompt-token count, chosen `indexer_top_k`, and serving channel so the schedule map remains comparable.
 
 ## Evidence Base (intake)
 
