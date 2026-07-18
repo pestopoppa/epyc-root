@@ -1,6 +1,6 @@
 # StreamingLLM Baseline for KV Reduction Cluster
 
-**Status**: code scaffold landed 2026-06-13; 4-axis inference sweep pending
+**Status**: current-v7 source surface and CPU mechanical smoke recorded 2026-07-18; 4-axis inference sweep pending
 **Created**: 2026-05-19 (post-KV-admission-cluster deep-dive)
 **Categories**: kv_cache, context_extension, hardware_optimization
 **Priority**: MEDIUM (gate for the entire May 2026 KV-reduction cluster — must land before PBKV/LU-KV/KVP/ForesightKV/SP-KV prioritization is meaningful)
@@ -12,6 +12,14 @@
 Land a clean **StreamingLLM (attention sink + sliding window)** baseline in our llama.cpp fork (`epyc-llama`) to measure the **easy-floor** that any KV reduction method must beat. Without this floor, the relative gains claimed by the May 2026 KV cluster (SP-KV / KVP / LU-KV / ForesightKV / PBKV) cannot be evaluated against the simplest possible competing technique.
 
 **2026-06-13 implementation checkpoint**: `llama.cpp` commit `632ce0f92` adds a low-invasive scaffold using the existing server context-shift path rather than patching core KV tensor layout. `--kv-streaming-sink` / `--kv-streaming-window` are exposed in `llama-cli` and `llama-server`, per-request JSON accepts `kv_streaming_sink` / `kv_streaming_window`, and middle eviction is performed with the existing `llama_memory_seq_rm` + `llama_memory_seq_add` sequence-shift mechanism. Defaults are disabled, preserving existing behavior until explicitly enabled.
+
+**2026-07-18 current-v7 evidence checkpoint**: commits `111bff89d` (streaming KV context controls) and `cf051d3e1` (completion surface) are pushed to `fork/experimental-v7-refresh-20260716`. The root checkpoint commit is `d6bdd4da`, with main merge `45d8e09` already recorded.
+
+- Clean rebuilt Qwable Q8 MI210 artifact: `/mnt/raid0/llm/epyc-inference-research/data/model_admission_throughput/qwable_q8_mi210_llama_bench_20260718T220220Z_rebuilt_cf051d3e1`.
+- `bench.json` rows: prompt-only `p512` `2101.214398 t/s`; `tg128` `99.172708 t/s`; combined `pg2048/1024` `avg_ts` `266.820398`; `pg8192/1024` `avg_ts` `602.11996`; `pg32768/512` `avg_ts` `1252.673664`. These `pg` values are `llama-bench` combined prompt+generation `avg_ts`, not isolated decode.
+- A prior first run self-reported stale `build_commit=41ae83402` and is superseded by the clean rebuilt artifact.
+- CPU mechanical smoke: `/mnt/raid0/llm/epyc-inference-research/data/streamingllm_floor/streamingllm_qwen06_completion_cpu_floor_20260718T2200Z/summary.md` records baseline context-shift decode `319` tokens at `105.57 t/s` and StreamingLLM decode `319` tokens at `103.10 t/s`.
+- Both lanes passed mechanical smoke but failed prompt-quality checks. This is not an admission or performance claim. The failed `streamingllm_qwen06_cpu_floor_20260718T215438Z` artifact is excluded; its oversized stdout was removed by main.
 
 ## Why This is a Cluster-Wide Gate
 
@@ -88,6 +96,8 @@ Landing the floor first **changes the rank-order** of the cluster priorities, po
 ## Progress checklist
 
 - [x] StreamingLLM sink+window scaffold landed in epyc-llama (commit 632ce0f92, disabled by default) ✅
+- [x] Current-v7 source/build surface reconciled at `111bff89d` + `cf051d3e1` on `fork/experimental-v7-refresh-20260716` ✅ 2026-07-18
+- [x] CPU mechanical smoke completed for baseline and StreamingLLM lanes; both passed mechanics but failed prompt-quality, so no admission/performance claim ✅ 2026-07-18
 - [ ] Run 4-axis inference sweep: 3 workloads (retrieval/reasoning/dialogue) x 3 budgets (25/50/75%) x 2 models
 - [ ] Evaluate success criteria (<=10% loss at 50% budget, <=25% at 25%) per-workload, track per-head attention entropy
 - [ ] Apply cluster-prioritization gate: demote LU-KV/KVP/ForesightKV or promote LU-KV based on floor
