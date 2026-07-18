@@ -1,6 +1,6 @@
 # Reviewer Control Plane — GLM-5.2 Reviewer Capability Gates (H6, slim)
 
-**Status**: active — GC-0d reviewer-serving chat protocol/schema gate closed; GC-1/2/3 now blocked on running reviewer probes under the next-power-of-two GLM top-k schedule (`2048` through ~2.05K, `4096` through ~3.05K, `16384` at ~12.05K). Raw `/completion` and `/v1/completions` remain unvalidated and are not the default reviewer-serving channel.
+**Status**: active — GC-0d reviewer-serving chat protocol/schema gate closed; GC-1/2/3 smoke probes now executed under the next-power-of-two GLM top-k schedule (`2048` through ~2.05K, `4096` through ~3.05K, `16384` at ~12.05K). Results are mixed: strict typed emission works only with schema constraint, rubric authoring is schema-valid but shallow, and why-diagnosis detects defects without matching the intended cause. Raw `/completion` and `/v1/completions` remain unvalidated and are not the default reviewer-serving channel.
 **Created**: 2026-07-16 (Architect→Reviewer control-plane series; see index)
 **Categories**: agent_architecture, quantization, local_inference
 **Index**: [`reviewer-control-plane-index.md`](reviewer-control-plane-index.md)
@@ -9,7 +9,7 @@
 
 ## Objective
 
-Take GLM-5.2 UD-IQ2_M (754B glm_moe_dsa, ~239GB, downloaded, true >64K stale-binary DSA-engagement smoke-passed, and current-source DSA-wired) from "loads" to "validated typed-decision reviewer candidate" — the reviewer-specific capability layer only. Current reviewer admission is now blocked before GC-1 on executing reviewer probes under the known-good top-k schedule and serving channel: inference-research commit `a6651ed` plus the follow-up sweep show `glm-dsa.attention.indexer.top_k` is the final-attention KV selection cap, `3072` fails at 2.1K/3K, `8192`/`12288` fail at 12K, next power-of-two caps are the observed safe path (`2048`, `4096`, `16384` for the tested prompt bands), and the 2026-07-18 chat protocol/schema matrix passed exact free-text and JSON-schema outputs at actual ~2.9K/~12.0K prompt bands.
+Take GLM-5.2 UD-IQ2_M (754B glm_moe_dsa, ~239GB, downloaded, true >64K stale-binary DSA-engagement smoke-passed, and current-source DSA-wired) from "loads" to "validated typed-decision reviewer candidate" — the reviewer-specific capability layer only. Current reviewer admission remains blocked after GC-1/2/3 smoke execution: inference-research commit `a6651ed` plus the follow-up sweep show `glm-dsa.attention.indexer.top_k` is the final-attention KV selection cap, `3072` fails at 2.1K/3K, `8192`/`12288` fail at 12K, next power-of-two caps are the observed safe path (`2048`, `4096`, `16384` for the tested prompt bands), and the 2026-07-18 chat protocol/schema matrix passed exact free-text and JSON-schema outputs at actual ~2.9K/~12.0K prompt bands. The direct reviewer-capability smokes then showed grammar-constrained strict-IF is viable, while authoring breadth and why-diagnosis remain insufficient for role claims.
 
 ## Prioritized Task List
 
@@ -18,9 +18,12 @@ Take GLM-5.2 UD-IQ2_M (754B glm_moe_dsa, ~239GB, downloaded, true >64K stale-bin
 - [x] **GC-0b — Top-k cap diagnosis closed**: the active blocker is now narrower than "GLM malformed output." Inference-research commit `a6651ed` shows `glm-dsa.attention.indexer.top_k` is the final-attention KV selection cap: `2048` passes exact `READY` at `1767/2056` prompt tokens but fails at `2168/3045/12043`; `4096` recovers `2168/3045`; `16384` recovers `12045`. ✅ 2026-07-18
 - [x] **GC-0c — Smallest-safe prompt-length-aware top-k schedule**: follow-up sweep rejected `top_k=3072` at 2.1K/3K and `8192`/`12288` at 12K; exact `READY` is only observed on next power-of-two caps (`2048`, `4096`, `16384`) for these prompt bands. GC-1/2/3 should run under that schedule, not a flat default cap. ✅ 2026-07-18
 - [x] **GC-0d — Protocol-channel matrix**: reviewer-serving chat/completions matrix passed exact free-text `READY` and exact JSON-schema `{"decision":"allow"}` at actual `2894/2898` prompt tokens with `indexer_top_k=4096` and `12044/12045` prompt tokens with `indexer_top_k=16384`. Evidence: `/mnt/raid0/llm/epyc-inference-research/data/glm52_protocol_channel_matrix/glm52-gc0d-chat-p2168-p12000-20260718T0120Z/summary.json`. The first all-endpoint attempt was stopped after raw completion endpoint cost/pathology; raw `/completion` and `/v1/completions` stay unvalidated and must be probed only narrowly if a future route needs them. ✅ 2026-07-18
-- [ ] **GC-1 — Strict-IF / typed-emission probe**: schema-valid `review_decision` emission rate, GBNF-constrained vs free-parse-with-retry, K-of-M pass gate (define K/M here; smoke-level first, claim-level under P-REV-1 later). Motivation: 122B-IQ2 scored 2/11 on strict instruction-following — quant may degrade format compliance; grammar constraint is the expected mitigation. CPU path first (v7 GPU grammar path is P0-blocked in the kernel handoff).
-- [ ] **GC-2 — Rubric-authoring quality probe**: GLM-5.2 authors rubrics for a fixed task set; graded against frontier-authored references (criteria count, axis coverage, grounding). The two-turn design (H3 RD-2) makes authoring the heavyweight's ONLY hot-path job — this is the capability that matters most.
-- [ ] **GC-3 — Why-diagnosis probe**: rationale-vs-gold-cause match on a corpus-v1 sample (IQ2 quant may degrade why-diagnosis more than that-detection — intake-836; measure, don't assume).
+- [x] **GC-1 — Strict-IF / typed-emission smoke**: direct CPU-only GLM runner (`scripts/benchmark/glm52_reviewer_capability_direct_runner.py`) executed `strict_if`, `m=3`, `k=2`, chat channel, `indexer_top_k=4096`. Grammar/schema lane passed `3/3` schema-valid ReviewDecision emissions (`emission_rate=1.0`); free lane parsed JSON but failed schema validity `0/3` by emitting `blocking.tripwire=null`. Evidence: `/mnt/raid0/llm/epyc-inference-research/data/glm52_reviewer_capability_direct/gc1-strict-if-smoke-20260718Tglm52/summary.json`. Observation-only; proves schema constraint is necessary, not reviewer admission. ✅ 2026-07-18
+- [ ] **GC-1a — Strict-IF / typed-emission claim-grade gate (P-REV-1)**: rerun on the approved claim-grade reviewer corpus/K-of-M protocol after the MEASUREMENT amendment; keep grammar/schema in serving path.
+- [x] **GC-2 — Rubric-authoring grammar smoke**: direct CPU-only GLM runner executed `rubric_authoring`, grammar/schema lane, `m=3`, chat channel, `indexer_top_k=4096`. All three outputs were schema-valid rubrics, but quality was shallow (`mean_composite=0.75`, `mean_axis_coverage=0.25`, `mean_grounding_rate=1.0`). Evidence: `/mnt/raid0/llm/epyc-inference-research/data/glm52_reviewer_capability_direct/gc2-rubric-grammar-smoke-20260718Tglm52/summary.json`. Observation-only; do not treat as authoring capability pass. ✅ 2026-07-18
+- [ ] **GC-2a — Rubric-authoring claim-grade/repair gate**: broaden the task set against frontier-authored references and/or revise the rubric prompt/schema to force axis diversity before using GLM as the heavyweight rubric author.
+- [x] **GC-3 — Why-diagnosis smoke**: direct CPU-only GLM runner executed `why_diagnosis`, free lane, `m=3`, chat channel, `indexer_top_k=4096`. GLM detected that a defect existed in `3/3`, but matched the intended root cause in `0/3` (`that_minus_why_gap=1.0`). Evidence: `/mnt/raid0/llm/epyc-inference-research/data/glm52_reviewer_capability_direct/gc3-why-smoke-20260718Tglm52/summary.json`. Observation-only; why-diagnosis is currently failed. ✅ 2026-07-18
+- [ ] **GC-3a — Why-diagnosis repair/claim-grade gate**: retest on corpus-v1 after prompt/scorer review; IQ2 quant may degrade why-diagnosis more than that-detection (intake-836), and the smoke confirms that risk.
 - [ ] **GC-4 — RAM-residency policy decision** (operator, OP bundle): 239GB reviewer + ~70GB architect + frontdoor/workers co-residency vs swap-in-on-demand vs review-windows. Determines whether A4 is an interactive reviewer or a batch/offline judicial gate. Provide the memory-budget table as decision input.
 - [ ] **GC-5 — Registry reviewer-capability fields**: structured `measured:` entries (typed-emission rate, authoring score, why-diagnosis, FA/FR once H5 runs) per MEASUREMENT §5b registry ruling; follow `new-model` onboarding conventions.
 
@@ -29,7 +32,8 @@ Take GLM-5.2 UD-IQ2_M (754B glm_moe_dsa, ~239GB, downloaded, true >64K stale-bin
 ```text
 glm51-reap GO gates (download/integrity ✅ → glm-dsa load smoke ✅ → current-source cache/runtime smoke ✅ → true >64K stale-binary runnability ✅ → runtime DSA-DENSE-MASK ✅ → top-k-cap diagnosis ✅ → schedule ✅ (`3072` fails at 2.1K/3K, `8192`/`12288` fail at 12K, next-power-of-two caps pass tested bands))
         → GC-0d protocol-channel matrix ✅ (chat/free+schema reviewer-serving channel; raw endpoints unvalidated)
-        → GC-1 → GC-2 → GC-3 → GC-5
+        → GC-1/2/3 smoke probes ✅ (mixed; not role admission)
+        → GC-1a/2a/3a claim-grade gates or repair → GC-5
 GC-4 operator decision (anytime after CPU bench exists) → shapes H5 A4 arm design
 Kernel P0s: grammar fix is closed; GLM-dsa cache/runtime reconciliation is closed by `3dee86a5a`; remaining kernel dependencies are sparse-final-attention classification and any live v7 CPU/perf guard relevant to GC-1 cost.
 ```
@@ -42,6 +46,7 @@ Kernel P0s: grammar fix is closed; GLM-dsa cache/runtime reconciliation is close
 ## Key Files / Surfaces
 
 - `orchestration/model_registry.yaml` `glm_52_ud_iq2m` entry (research registry line ~5591)
+- `scripts/benchmark/glm52_reviewer_capability_direct_runner.py` (research direct runner for GC-1/2/3 while GLM stays out of the production orchestration registry)
 - H2 `review_decision.schema.json` + GBNF generation; H4 corpus sample
 - `glm51-reap-cpu-evaluation.md` GO checkpoints (consume)
 
