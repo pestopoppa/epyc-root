@@ -20,6 +20,10 @@ Rationale: the flagship GLM role is cross-family patch reviewer, and patch-revie
 over-approves (FA up to 91.7%); ~1–3 weeks of kernel work on a model that cannot yet do its
 job has near-zero EV. GC-shadow-repair4b (the label-audited full-candidate accept-control
 corpus) is the cheapest, highest-leverage next action across the entire GLM program.
+Operator exception recorded the same day: bounded source prep for native GLM-MTP is allowed
+while quality work continues. The `glm-dsa` experimental-v7 scaffold now builds and survives
+bounded same-model `draft-mtp` smokes, but any α/throughput/admission claim remains downstream
+of GC-shadow-repair4b → P-REV-1.
 
 ## Prioritized Task List
 

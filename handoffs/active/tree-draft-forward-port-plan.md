@@ -181,16 +181,19 @@ v7 `3dee86a5a` (GLM-5.2 UD-IQ2_M loads + engages DSA). So runnability is **no lo
 binding gate. The binding gate is now **GLM task-quality re-clear**: patch-review still
 over-approves (FA up to 91.7%; GC-shadow-repair4a narrowed it but exposed a label-audit
 blocker → **GC-shadow-repair4b** open in [glm52-reviewer-capability-gates.md](glm52-reviewer-capability-gates.md)).
-**Do NOT spend the native-GLM-MTP port (or the real sparse final-attention path,
-[llama-cpp-dsa-contribution.md](llama-cpp-dsa-contribution.md) D2) before GC-shadow-repair4b →
-P-REV-1 clears** — the flagship GLM role (cross-family patch reviewer) is unfunded until then,
-so kernel spend on a model that can't yet do its job has near-zero EV. Once quality clears, the
-native-GLM-MTP port is the single highest-EV GLM acceleration lever (+34–89% decode on a
+Do not treat the native-GLM-MTP port (or the real sparse final-attention path,
+[llama-cpp-dsa-contribution.md](llama-cpp-dsa-contribution.md) D2) as throughput/admission work
+before GC-shadow-repair4b → P-REV-1 clears — the flagship GLM role (cross-family patch reviewer)
+is unfunded until then, so long benchmark/optimization spend on a model that cannot yet do its
+job has near-zero EV. **Operator exception, 2026-07-18:** bounded source prep/scaffold work is
+allowed and now partly closed below, with no promotion or throughput claim. Once quality clears,
+the native-GLM-MTP port is the single highest-EV GLM acceleration lever (+34–89% decode on a
 ~2.5 t/s model).
 
 ## Progress checklist
 
 - [x] Investigation complete - tree-draft Phase 1b SHELVED (uncompetitive vs MTP) ✅
-- [ ] **Native GLM MTP forward-graph port** (~10% remaining: wire the already-loaded NEXTN tensors into `glm4-moe.cpp`/`glm-dsa.cpp` forward + expose the embd/nextn hooks the `draft-mtp` driver consumes; model on qwen35's NEXTN forward). **GATED behind GLM quality re-clear (GC-shadow-repair4b → P-REV-1)**, then measure α. EV +34–89% decode.
+- [ ] **Native GLM MTP forward-graph port** (partly scaffolded for GLM-5.2 `glm-dsa`; remaining: commit/validate the scaffold, measure real α/acceptance/quality after GC-shadow-repair4b → P-REV-1, and separately scope `glm4-moe` if that family is in serving scope). **Throughput/admission remains gated behind GLM quality re-clear**, then measure α. EV +34–89% decode.
   - [x] **B6 source/tensor-contract scoping ✅ 2026-07-18**: inference-research artifact `docs/data/glm52_nextn_tensor_contract_20260718.json` confirms GLM-5.2 `blk.78.*` is a full GLM-DSA/MLA/MoE tail plus `nextn.eh_proj`, `nextn.enorm`, `nextn.hnorm`, and `nextn.shared_head_norm`; no separate `nextn.embed_tokens` / `nextn.shared_head_head` tensors were found. Port implication: reuse main embed/output head as needed, stop skipping `blk.78.*`, and combine Qwen35 NextN projection/norm flow with GLM/DeepSeek32 DSA block internals.
-  - [x] **B6 target-side scaffold/guard ✅ 2026-07-18**: experimental-v7 now exposes the post-final-norm DSA hidden state via `res->t_h_nextn` in the shared DeepSeek32/GLM-DSA graph, and `glm-dsa` `LLM_GRAPH_TYPE_DECODER_MTP` aborts explicitly until a real GLM draft graph lands. HIP `llama-cli` build passed. This prevents misleading `draft-mtp` evidence while preserving the target-side seed required by the native MTP driver.
+  - [x] **B6 target-side scaffold ✅ 2026-07-18**: experimental-v7 exposes the post-final-norm DSA hidden state via `res->t_h_nextn` in the shared DeepSeek32/GLM-DSA graph, stops skipping the physical `blk.78` NextN tail tensors, and adds a real `glm-dsa` `LLM_GRAPH_TYPE_DECODER_MTP` graph using the GLM-DSA/MLA/MoE tail plus `nextn.eh_proj` / `hnorm` / `enorm` / `shared_head_norm`. HIP `llama-cli` build passed, and bounded CPU-only real-GLM smokes completed for plain load/decode and same-model `--spec-type draft-mtp`. This closes scaffold feasibility, not throughput/admission.
+  - [ ] **B6 acceptance/throughput gate**: after GLM reviewer quality re-clears, run a decision-grade native-GLM-MTP acceptance/quality/speed A/B with live speculative counters and enough generated tokens to measure α honestly. Do not promote from the one-token/eight-token scaffold smokes.
