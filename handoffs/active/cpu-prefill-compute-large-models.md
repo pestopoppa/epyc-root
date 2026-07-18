@@ -7,9 +7,11 @@ remaining work is PC-0 only — **no inference/bench without operator approval**
 **Owner handoff**: this file. **Parent index**: [inference-acceleration-index.md](inference-acceleration-index.md);
 sibling of [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md).
 
-**2026-07-18 checkpoint**: an observation-only first `perf record` cell now exists for the
-122B architect `p8192/n1` CPU-only shape, but PC-0 remains open because the run was not an
-OP-2/MEASUREMENT quiet-window run and lacks paired `perf stat` memory/vector counters.
+**2026-07-18 checkpoint**: observation-only `perf record` and `perf stat` cells now exist for
+the 122B architect `p8192/n1` CPU-only shape. PC-0 remains open because these were not
+OP-2/MEASUREMENT quiet-window runs, but the counter row is positive-direction evidence:
+prefill IPC is materially healthier than the decode roofline (`0.92` vs the decode `0.17`
+reference), with substantial vector work and no catastrophic DRAM-stall signature.
 
 ## Thesis
 
@@ -56,6 +58,17 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
     and `iqk_convert_q4_k_q8_1_r8`. This is a useful positive-direction profile, but
     not a compute-vs-BW verdict; PC-0 still needs the OP-2/quiet-window `perf stat`
     memory/vector counter row before any kernel implementation.
+  - [x] **PC-0b observation-only paired counter artifact ✅ 2026-07-18**: same CPU-only
+    122B architect `p8192/n1`, `r=3` perf-stat row completed at
+    `/mnt/raid0/llm/epyc-inference-research/data/cpu_prefill_compute/b7-pc0-prefill-cpu-only-20260718T204820Z-main/b7-pc0-prefill`.
+    Experimental v7 `41ae83402`, `build-hip/bin/llama-bench`, `-dev none -ngl 0 -nopo 1 -nkvo 1`,
+    Qwen3.5-122B-A10B Q4_K_M, `96` threads. Result: `8192` prompt tokens at mean
+    `108.750 t/s` (`112.554`, `107.043`, `106.654`), `339.47s` wall, `85.168` CPUs utilized,
+    max RSS `77,118,108 KB`, `0.92` IPC, vector MAC `8.456e12`, vector all `2.264e13`,
+    scalar all `8.856e11`, demand DRAM fills `1.575e10`, and hardware-prefetch DRAM fills
+    `4.332e10`. This is a strong positive-direction counter row for the prefill-compute
+    premise, but still observation-grade because it overlapped with the Qwable MI210 replay
+    and was not a fresh OP-2 quiet-window/post-reboot run.
 - [x] **PC-1 — quantify the prefill fraction** for GLM/architect long-context turns from
   existing logs (zero-inference): evidence note
   `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc1_log_sizing_20260718.md`

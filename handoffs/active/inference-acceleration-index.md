@@ -48,10 +48,12 @@ blockers resolved (K22/K23/K32/K33). Held only by operator gates + the CPU-corre
 2. **CPU Q8_0 barrier-count operator/graph fusion** — sole live CPU decode lever; +2.6% measured → +10–15% (graph-rewrite) → +72% ceiling. → [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md).
 3. **Residency / teleport** — AXA-1 (122B IQ2 resident 2.2×/8–9×; K22 fix unblocks it), AXA-2 teleport, Gate-R (needs `P-GPU-1`). → [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md).
 4. **Native GLM-MTP forward-graph port** — ~10% remaining, +34–89% decode; **contingent on GLM quality** (GC-shadow-repair4b). → [tree-draft-forward-port-plan.md](tree-draft-forward-port-plan.md), [glm52-reviewer-capability-gates.md](glm52-reviewer-capability-gates.md).
-5. **CPU prefill-compute for large models (SCOPED)** — prefill is compute-bound premise,
-   not yet proven for the first target; B7 scoping closed from existing PC-1 sizing + PC-2
-   design detail, and the remaining PC-0 operator-window profile gate starts with 122B
-   architect `p8192/n1` perf-stat + `perf record`. → [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md).
+5. **CPU prefill-compute for large models (SCOPED)** — prefill compute now has
+   positive-direction observation evidence on the first 122B architect target:
+   `p8192/n1` perf-record plus a paired perf-stat row at `108.750 t/s`, `0.92` IPC,
+   and `85.168` CPUs utilized. This is not yet OP-2/MEASUREMENT grade, so PC-0
+   remains an operator-window gate before kernel implementation. →
+   [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md).
 6. **stream-K `nsm→k·nsm`+compact-LDS** — +0–10%, IQ2/capacity; pmc-CSV read first. → mi210 roadmap.
 7. **K28 GDN long-prefill recurrence kernel (GPU)** — `gated_delta_net.cu:191`. → mi210 roadmap.
 8. **MoE-Spec CPU reopen** — +5–15% Coder/REAP; zero-inference assessment first. → [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md).
