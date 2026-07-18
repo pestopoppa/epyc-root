@@ -45,7 +45,7 @@ From 14-paper literature sweep (intake-784 through intake-797), compiled into `r
 | rec-004 | MED | SIA/ShinkaEvolve: self-improvement architectures | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | Review integration points; SkillsBench v3 caution applies |
 | rec-005 | MED | RE-Bench: reasoning evaluation | [`reasoning-compression.md`](reasoning-compression.md) | Cross-reference for open-weight model compatibility |
 | rec-006 | LOW | PaperBench: source-fidelity validation | [`minddr-deep-research-mode.md`](minddr-deep-research-mode.md) | Monitor for source-fidelity validation needs |
-| rec-007 | HIGH | KernelBench: kernel-level benchmarking | [`mi210-speed-campaign-summary.md`](mi210-speed-campaign-summary.md), [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md), [`v6-iqk-promotion.md`](v6-iqk-promotion.md) | Integrate into experimental kernel validation pipeline |
+| rec-007 | HIGH | KernelBench: kernel-level benchmarking | [`mi210-speed-campaign-summary.md`](mi210-speed-campaign-summary.md), [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md), [`v6-iqk-promotion.md`](../completed/v6-iqk-promotion.md) | Integrate into experimental kernel validation pipeline |
 | rec-008 | MED | EvoScientist: autonomous research orchestration | [`tri-role-coordinator-architecture.md`](tri-role-coordinator-architecture.md) | Cross-reference memory module patterns |
 | rec-009 | MED | J-space interpretability for routing | [`routing-intelligence.md`](routing-intelligence.md) | Review integration points for learned-head routing |
 | rec-010 | MED | fast-rlm: RLM harness patterns | [`hermes-agent-index.md`](hermes-agent-index.md) | Harvest ACP/MCP/session management patterns |

@@ -1,6 +1,8 @@
 # Inference-Batch Loop — Campaign Insertion Point
 
-**Status (2026-07-17):** manifest built, command-fabrication-audited + repaired, backlog runners built, autopilot-wired — **loop-ready**. The inference *runs* are pending an operator `/loop` session.
+**Status (2026-07-17):** manifest built, command-fabrication-audited + repaired, backlog runners built, autopilot-wired — **loop-ready**. The inference *runs* are pending an operator loop session.
+
+**▶ To run (2026-07-18):** launch this as a **`/goal`** session (codex's equivalent of the `/loop` this handoff's protocol references) — the loop is **single-writer**, so no other session may write the ledger. **Lead with P2 eval-tower (`EV-4`, `EV-11`)** — the only operator-gate-free, P0-independent island — in a detected quiet window, while the operator clears P0's front gates (`OP-6a/6b` + stack-restart). Without a `/goal` session **and** those front gates, P0 blocks immediately; P2 is the fallback that runs regardless. (Terminology: this doc says `/loop` throughout; read it as `/goal` under codex.)
 
 **START HERE (execution source-of-truth — machine-readable, do not re-narrate):**
 - `coordination/inference-batch/LOOP_PROTOCOL.md` — the operator `/loop` runbook (single-writer rule, session-init, pick-next, per-entry cycle, autonomy policy)
