@@ -48,7 +48,10 @@ blockers resolved (K22/K23/K32/K33). Held only by operator gates + the CPU-corre
 2. **CPU Q8_0 barrier-count operator/graph fusion** — sole live CPU decode lever; +2.6% measured → +10–15% (graph-rewrite) → +72% ceiling. → [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md).
 3. **Residency / teleport** — AXA-1 (122B IQ2 resident 2.2×/8–9×; K22 fix unblocks it), AXA-2 teleport, Gate-R (needs `P-GPU-1`). → [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md).
 4. **Native GLM-MTP forward-graph port** — ~10% remaining, +34–89% decode; **contingent on GLM quality** (GC-shadow-repair4b). → [tree-draft-forward-port-plan.md](tree-draft-forward-port-plan.md), [glm52-reviewer-capability-gates.md](glm52-reviewer-capability-gates.md).
-5. **CPU prefill-compute for large models (NEW)** — prefill is compute-bound (not BW-killed); dominates GLM/architect long-context. → [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md).
+5. **CPU prefill-compute for large models (SCOPED)** — prefill is compute-bound premise,
+   not yet proven for the first target; B7 scoping closed from existing PC-1 sizing + PC-2
+   design detail, and the remaining PC-0 operator-window profile gate starts with 122B
+   architect `p8192/n1` perf-stat + `perf record`. → [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md).
 6. **stream-K `nsm→k·nsm`+compact-LDS** — +0–10%, IQ2/capacity; pmc-CSV read first. → mi210 roadmap.
 7. **K28 GDN long-prefill recurrence kernel (GPU)** — `gated_delta_net.cu:191`. → mi210 roadmap.
 8. **MoE-Spec CPU reopen** — +5–15% Coder/REAP; zero-inference assessment first. → [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md).
@@ -60,9 +63,8 @@ blockers resolved (K22/K23/K32/K33). Held only by operator gates + the CPU-corre
 **LANE A — operator-facing (bank the banked win):**
 - A1 **K35 finalize CLOSED ✅ 2026-07-18** — consolidated throughput-vs-context release
   artifact now includes vision throughput/quality/memory rows and the MiniCPM-o/frontdoor
-  mixed-service matrix; the MiniCPM-o source/config flip is implemented in orchestrator
-  `4ab4e0ee`, while remaining K35 work is the controlled live reload/smoke/rollback gate
-  (`K35.13f`) plus optional parser/stress follow-ups. →
+  mixed-service matrix; the MiniCPM-o source/config flip and controlled live smoke are
+  implemented/verified, while remaining K35 work is optional parser/stress follow-up only. →
   [gemma-challenge-kernel-techniques-v7.md](gemma-challenge-kernel-techniques-v7.md).
 - A2 **OP-2 canonical-bench window** — run package drafted at
   [docs/reference/op-2-canonical-bench-window-package-2026-07-18.md](../../docs/reference/op-2-canonical-bench-window-package-2026-07-18.md)
@@ -78,8 +80,8 @@ blockers resolved (K22/K23/K32/K33). Held only by operator gates + the CPU-corre
   mentions are historical checkpoints only. ✅ 2026-07-18
 
 **LANE B — agent-executable:**
-- *Zero-inference now:* B2 stream-K pmc-CSV read · B3 MoE-Spec reopen assessment · B5 E3/E4 zero-inference decisions · B6 native-GLM-MTP port scoping (build/bench gated behind GLM quality) · B7 prefill-compute lever design.
-- *Needs a bench window (fold into A2):* B1 barrier-fusion `tg128` A/B · B4 DSA-D3 profile-first (`perf record`).
+- *Zero-inference now:* current B2/B3/B5/B6/B7 scoping batch closed; do not reopen without a new handoff trigger.
+- *Needs a bench window (fold into A2 or its successor):* B1 barrier-fusion `tg128` A/B · B4 DSA-D3 profile-first (`perf record`) · PC-0 prefill-compute premise profile (122B architect `p8192/n1`, perf-stat + `perf record`).
 
 ## Active Landscape
 
@@ -195,7 +197,8 @@ After completing an acceleration item:
 - [x] GLM-5.2 pinned full-candidate C-CRAB row-id screen: three `clean_control=true` merged-patch accepts plus three multi-oracle rejects, parse-clean, FA `33.3%`, FR `0.0%`; still false-accepted one SQLFluff L009 raw-slice reject, so not role-ready ✅ 2026-07-18
 - [x] GLM-5.2 v4 task/test-alignment prompt attempt: parse-clean pinned n=6 result stayed FA `33.3%`, FR `0.0%`; the SQLFluff L009 reject was still false-accepted, proving simple prompt-only alignment is insufficient ✅ 2026-07-18
 - [x] GLM-5.2 targeted C-CRAB hard-negative false-accept repair: explicit n=12 oracle-note confirmation rejected all six old false-accepted hard negatives (`FA=0.0%`) but still false-rejected one observation clean-control accept (`FR=16.7%`), so this closes the FA repair and opens accept-control audit ✅ 2026-07-18
-- [ ] GLM-5.2 accept-control label audit/regeneration before matched n>=24/P-REV-1 patch-review role claim
+- [x] GLM-5.2 accept-control deterministic label audit/filter: inference-research generated a reproducible n=24 C-CRAB/Python accept-control candidate slice; result is still observation-only (`hard_accept_control_n=0`). ✅ 2026-07-18
+- [ ] GLM-5.2 accept-control regeneration/manual sign-off before matched n>=24/P-REV-1 patch-review role claim
 - [x] K11 explicit-greedy no-spec attribution: `samplers=["temperature"]`, `top_k=0`, `backend_sampling=false` still failed the 200-word exact-stop n=10 gate with 3 hashes and only 4/10 task pass; ROCm `TOP_K` warning is unlikely to be the target-generation root cause ✅ 2026-07-18
 - [x] K11 stop-string diagnostic instrument: runner now supports repeatable `--stop`; no-spec explicit-greedy `stop=["END"]` produced one hash over `10/10` runs but still task-failed by never emitting `END` and hitting 512 repeated words ✅ 2026-07-18
 - [x] Frontdoor Gate-R candidate observation: K35 runner now supports CPU no-spec / MI210 no-spec / MI210 native-MTP frontdoor arms plus `--reps`; quiet-host `n=5` 8K/1024-token artifact shows CPU `17.10 t/s`, MI210 no-spec `95.39 t/s` (`5.58x`), MI210 native MTP `119.69 t/s` (`7.00x`, `3835/3835` accepted drafts). Context-edge extension added 2K/32K rows: CPU no-spec `21.63/10.15 t/s`, MI210 no-spec `101.52/78.14 t/s`, MI210 native MTP `123.55/105.17 t/s`, with `767/767` accepted drafts in both edge MTP cells ✅ 2026-07-18
@@ -204,6 +207,7 @@ After completing an acceleration item:
 - [x] Ingest-long-context optimized K35 context curve: CPU Qwen3-Next no-spec lane with default experts, q4_0 KV, and 1024 generated tokens: 2K `20.52 t/s`, 8K `15.93 t/s`, 32K `9.72 t/s`; cleanup blockers empty ✅ 2026-07-18
 - [ ] `P-GPU-1` ratification/update for MI210 so Gate R can be closed decision-grade instead of observation-grade
 - [ ] GLM-5.2 native MTP/NEXTN graph port prep: load GLM tail tensors and implement a Qwen-style `DECODER_MTP` graph for `glm-dsa`/`glm4-moe`; do not treat current `--spec-type draft-mtp` as working because the model code skips the tail block today
+  - [x] B6 scaffold guard: experimental-v7 `glm-dsa`/DeepSeek32 DSA target graph now exposes `t_h_nextn`, and `glm-dsa` MTP contexts fail fast instead of silently running the normal target graph. HIP `llama-cli` build passed; full GLM draft graph remains gated. ✅ 2026-07-18
 - [ ] GLM-5.2 real sparse final-attention implementation/profiling only if quality is recoverable; source prep says current DSA uses a dense top-k mask and needs a new indexed-attention op, not a graph-only switch
 - [x] Bonsai-27B Q1_0 CPU+MI210 prompting gate executed: 6/8 strict probes passed, short instruction-format probe failed on both devices; not role-ready ✅ 2026-07-17
 - [x] Ternary Bonsai Q2_g64 CPU+MI210 runtime/coherence smoke passed on experimental v7; Q2_0 offset mismatch remains separate ✅ 2026-07-17
@@ -218,11 +222,11 @@ After completing an acceleration item:
 - [ ] T5 worker gemma-4-26B-A4B `draft_max` sweep
 - [ ] P6b qwen-mtp model-load operator gate-bench
 - [ ] v6-iqk live throughput+garbage verification + clean post-reboot canonical bench
-- [x] **[v7-audit LANE A]** A1 K35 finalize: release artifact includes vision throughput/quality/memory rows and MiniCPM-o/frontdoor mixed-service evidence; K35.13d source/config flip is implemented, with K35.13f live reload/smoke still separate. ✅ 2026-07-18
+- [x] **[v7-audit LANE A]** A1 K35 finalize: release artifact includes vision throughput/quality/memory rows, MiniCPM-o/frontdoor mixed-service evidence, K35.13d source/config flip, and K35.13f controlled live smoke. ✅ 2026-07-18
 - [x] **[v7-audit LANE A]** A3 `P-GPU-1` MEASUREMENT ratification package drafted (prepare-only; operator still signs/amends MEASUREMENT): `docs/reference/p-gpu-1-ratification-package-2026-07-18.md`. ✅ 2026-07-18
 - [x] **[v7-audit LANE A]** A4 v7 branch-naming reconciliation: authoritative promotion tip is `experimental-v7-refresh-20260716` @ `d1e5a20ebebe567f0da6bc64ca7ea7ecd521fc24`, backed up on `fork/experimental-v7-refresh-20260716`; old `experimental-v7-candidate` references are historical only. ✅ 2026-07-18
 - [x] **[v7-audit LANE B]** B2 stream-K `nsm→k·nsm` pmc-CSV zero-build read: recovered `/mnt/raid0/llm/tmp/mi210-build/campaign/` artifacts; read verdict = stream-K already live, compact-LDS patch negative, only a separate operator-gated `2*nsm=208` bench remains if pursued. ✅ 2026-07-18
 - [x] **[v7-audit LANE B]** B3 MoE-Spec CPU reopen assessment: decision = reopen for a current live-MTP MoE verifier B-sweep; no registry integration until that sweep exists. Evidence: 2026-07-03 live-α report shows frontdoor α=0.6582, worker α=0.8256, architect α=0.6854, failed MTP roles `[]`. ✅ 2026-07-18
 - [x] **[v7-audit LANE B]** B5 E3/E4 zero-inference decisions: E3 8x8 GEMM SIMD body is no-go/closed for now; E4 CPU17 reopens only to measurement, CPU18 remains gated pending padding-cost profile. ✅ 2026-07-18
 - [x] **[v7-audit LANE B]** B6 native-GLM-MTP source/tensor-contract scoping: actual GLM-5.2 `blk.78.*` NextN tail contract recorded in inference-research; graph implementation remains gated behind GC-shadow-repair4b -> P-REV-1. ✅ 2026-07-18
-- [ ] **[v7-audit LANE B]** B7 CPU prefill-compute track scoping (PC-0 profile-first premise check)
+- [x] **[v7-audit LANE B]** B7 CPU prefill-compute track scoping: closed from existing PC-1 prompt-wall sizing + PC-2 fusion design; owner handoff now leaves PC-0 as a concrete operator-window profile gate, not more docs scoping. ✅ 2026-07-18
