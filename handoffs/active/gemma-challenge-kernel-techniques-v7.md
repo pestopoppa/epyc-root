@@ -52,6 +52,11 @@ K32/K33 external-draft path; K24 base-decode "regression" ruled a host artifact 
 
 **K28** (GDN long-prefill recurrence kernel, GPU, `gated_delta_net.cu:191`) is owned as a `- [ ]`
 task in [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md).
+2026-07-18 source-readiness sidecar verdict: do not patch blindly. Functional chunking already
+exists in `delta-net-base.cpp`; the open target is the serial token scan in
+`ggml/src/ggml-cuda/gated_delta_net.cu`. Next step is an operator-window `rocprofv2`
+GATED_DELTA_NET profile over 64/65/256/1024-token GDA/KDA shapes, then a separate
+runtime-gated chunked kernel only if recurrence latency, not memory traffic, dominates.
 
 ## Technique candidates (from intake-798 submissions)
 
