@@ -60,7 +60,9 @@ blockers resolved (K22/K23/K32/K33). Held only by operator gates + the CPU-corre
 **LANE A — operator-facing (bank the banked win):**
 - A1 **K35 finalize** — consolidated throughput-vs-context matrix (vision + service-concurrency rows). → [gemma-challenge-kernel-techniques-v7.md](gemma-challenge-kernel-techniques-v7.md).
 - A2 **OP-2 canonical-bench window** — v6+iqk live verify + post-reboot canonical bench; **bundle B1 + B4 into the same window**. → [v6-iqk-promotion.md](v6-iqk-promotion.md).
-- A3 **`P-GPU-1` ratification package** — draft MEASUREMENT amendment (prepare, don't author) so Gate-R + GPU numbers become decision-grade.
+- A3 **`P-GPU-1` ratification package** — prepare-only package drafted at
+  `docs/reference/p-gpu-1-ratification-package-2026-07-18.md`; MEASUREMENT amendment remains
+  operator/human-signoff only. ✅ 2026-07-18
 - A4 **Branch-naming reconciliation** — authoritative promotion tip declared:
   `experimental-v7-refresh-20260716` @ `d1e5a20ebebe567f0da6bc64ca7ea7ecd521fc24`;
   backed up as `fork/experimental-v7-refresh-20260716`. Old `experimental-v7-candidate`
@@ -205,7 +207,7 @@ After completing an acceleration item:
 - [ ] P6b qwen-mtp model-load operator gate-bench
 - [ ] v6-iqk live throughput+garbage verification + clean post-reboot canonical bench
 - [ ] **[v7-audit LANE A]** A1 K35 finalize (vision + service-concurrency rows) → v7 release artifact
-- [ ] **[v7-audit LANE A]** A3 `P-GPU-1` MEASUREMENT ratification package drafted (prepare, operator-signs)
+- [x] **[v7-audit LANE A]** A3 `P-GPU-1` MEASUREMENT ratification package drafted (prepare-only; operator still signs/amends MEASUREMENT): `docs/reference/p-gpu-1-ratification-package-2026-07-18.md`. ✅ 2026-07-18
 - [x] **[v7-audit LANE A]** A4 v7 branch-naming reconciliation: authoritative promotion tip is `experimental-v7-refresh-20260716` @ `d1e5a20ebebe567f0da6bc64ca7ea7ecd521fc24`, backed up on `fork/experimental-v7-refresh-20260716`; old `experimental-v7-candidate` references are historical only. ✅ 2026-07-18
 - [ ] **[v7-audit LANE B]** B2 stream-K `nsm→k·nsm` pmc-CSV zero-build read — 2026-07-18 audit found the cited pmc/rocprof CSVs absent from root, inference-research, and experimental-v7 trees; recover the original campaign CSVs before closing.
 - [x] **[v7-audit LANE B]** B3 MoE-Spec CPU reopen assessment: decision = reopen for a current live-MTP MoE verifier B-sweep; no registry integration until that sweep exists. Evidence: 2026-07-03 live-α report shows frontdoor α=0.6582, worker α=0.8256, architect α=0.6854, failed MTP roles `[]`. ✅ 2026-07-18

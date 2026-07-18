@@ -55,6 +55,7 @@ P0 was fixed on experimental v7 `96986f5e9`); its gate is a strict-IF/rubric GBN
 - [x] Gating experiment 2b-Stage-1: CPU-target + MI210 external-drafter speed economics failed (`0.915x` decode, `508/508` accepted) ✅ 2026-07-17
 - [x] Gating experiment 2c-Stage-2: frontdoor + drafter co-resident speed economics failed (`native MTP 0.948x`, external drafter `0.355x` vs GPU no-spec) ✅ 2026-07-17
 - [x] Gate-R candidate frontdoor residency row: same-window CPU re-anchor, MI210 no-spec, and MI210 native-MTP 8K/1024-token `n=5` reps completed; native MTP wins this longer repetitive shape (`119.69 t/s`, `7.00x` CPU, `100%` accepted drafts) ✅ 2026-07-18
+- [x] Draft `P-GPU-1` ratification package for operator review: `docs/reference/p-gpu-1-ratification-package-2026-07-18.md` maps required MEASUREMENT fields to existing Gate-R/K35 MI210 artifacts and keeps the amendment itself human-only ✅ 2026-07-18
 - [ ] Ratify/update `P-GPU-1` now that MI210 exists, then rerun or retro-certify the Gate-R candidate artifact as decision-grade if the protocol allows it
 - [ ] Probe gemma4-IQ4 mid-precision residency
 - [ ] Axis B: measure alpha (drafter->target) for quant-asymmetric self-spec
