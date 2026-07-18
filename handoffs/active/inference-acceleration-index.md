@@ -4,6 +4,8 @@
 **Updated**: 2026-07-18 (GLM current-source DSA cache/runtime wiring closed + runtime `DSA-DENSE-MASK` classification + top-k cap diagnosis + next-power-of-two schedule + reviewer-serving chat protocol/schema matrix + GC-1/2/3 reviewer-capability smokes + synthetic repair smokes passing + near-miss representation repair + N5 index sync) — v6-consolidation row rewritten to CUTOVER-COMPLETE reality (v6+iqk LIVE since 2026-06-26); gemma-challenge row updated (K3/K5 done, onegraph DEFERRED, next = K4 + operator v6 quality-gate + K10/K11); gpu-cot-scaffold marked COMPLETE with autopilot-cost-lever successor; DFlash/DDTree converted to a fund-or-close decision row; checklist rows added for K4/K5/T4/T5/P6b/v6-iqk verification. Prior stamp 2026-07-05 carried 2026-07-11/14 row edits. // 2026-07-05 MI210 residency ladder 2-for-2 (122B IQ2 eval-parity PASSED + 80B-ingest IQ2 VIABLE), **CoT-scaffold REOPENED + VALIDATED on reasoning-bottlenecked tasks (GPQA reversal: scaffold-Qwable 73% vs nothink 48% = +12, 15 rescues/3 regr/0 truncation — the earlier code-distribution falsification was DISTRIBUTION-SPECIFIC; reconciles with amplifier-not-substitute, receiver latent capability is the gate); Qwable-standalone GPQA control DONE and dominated scaffold delivery (77% standalone > 73% scaffold), so standalone strong-reasoner routing is primary and scaffold is fallback for beneficiary-must-answer cases; verifier/selector best-of-N remains complementary but marginal on measured workloads**, **KV-quant (findings-05c L14) SCOPED → DEFER (marginal, rider-only, no dedicated GPU run — GDN O(1)/gemma SWA/aggregate weight-dominated; only qwen35 ~1/4 full-global @ single-stream 32–64k alive)**, **MTP-on-GPU-MoE CONVERGED ~neutral at production temp (curve: temp0 +6.5% / temp0.2 −1.6% (production) / temp0.6 −6.8%; `de447119f` neutralized the −12% → a WASH, not a no-go; the 3-way flip-flop root cause = measured arbitrary temps not the deployed config)**, **stream-K confirmed ALREADY the live CDNA2 MMQ path (`use_stream_k=true`; the 104-WG grid = stream-K working as designed — not a "bigger separate bet"; residual = `nsm→k·nsm` + compact-LDS ~2-line, +0–10%, pmc-CSV-gated)**. All experimental-HOLD (operator-only prod push, CPU-correctness gate).
 **History**: pre-compaction detail lives in [../archived/inference-acceleration-index-history-through-2026-06-19.md](../archived/inference-acceleration-index-history-through-2026-06-19.md).
 
+**2026-07-18 v7 lever audit + two-lane queue**: full read-only audit of ~5 weeks of v7 experimental-kernel + CPU/GPU/spec-dec/GLM optimization work (5-agent sweep of handoffs, progress reports, negative results, live branch state). **Headline: the largest measured win is already built, correctness-verified, and banked — but UNPROMOTED.** See the new **[§ v7 lever audit + two-lane execution queue](#2026-07-18-v7-lever-audit--two-lane-execution-queue)** below — do-not-re-propose ledger, EV-ranked survivor levers, and the LANE A (operator-facing v7-promotion prep) / LANE B (agent-executable exploration) queue. Two new tracks opened: [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md), [gpu-drafter-control-redesign.md](gpu-drafter-control-redesign.md).
+
 **2026-07-18 GLM/DSA correction**: the GLM/DSA gate is no longer "wait for PR #21149"; the v6/v7 fork contains generic DeepSeek32 DSA via upstream #23346. GLM-5.2 UD-IQ2_M download/integrity, load-smoke, 4K/8K traces, and stale-binary true >64K runnability are recorded. A current-source audit found GLM cache/runtime wiring missing, and experimental-v7 commit `3dee86a5a` closed that gap by wiring `LLM_ARCH_GLM_DSA` to `llama_kv_cache_dsa`, aliasing the DeepSeek32 DSA graph, requiring live indexer tensors, and force-building GLM indexer Hadamard rotation tensors. Current-source `glm-dsa` / `deepseek32` synthetic tests, ASAN `glm-dsa`, and exact `READY` GLM smoke passed. Current-source fixed-`indexer_top_k=32` runtime scaling (`/mnt/raid0/llm/tmp/glm52-current-source-kv-scaling-20260717T130222Z/runtime_summary.md`) classified behavior as **DSA-DENSE-MASK**: Lightning/indexer caches engage, but prompt throughput declines with KV length (`23.81 -> 21.04 -> 17.28 t/s` at 2.9K/5.9K/11.9K prompt tokens). Inference-research commit `a6651ed` then narrowed the malformed-output blocker into a cap diagnosis: `glm-dsa.attention.indexer.top_k` is the final-attention KV selection cap. The follow-up schedule sweep closed the prompt-band policy: `top_k=2048` passes exact `READY` at `1767` and `2056` but fails at `2168`, `3045`, and `12043`; `3072` fails strict exact output at 2.1K/3K; `8192` and `12288` fail at 12K; next power-of-two caps recover exact `READY` (`4096` for `2168/3045`, `16384` at `12045`). The reviewer-serving chat protocol/schema matrix then passed exact free-text and JSON-schema output at actual ~2.9K/~12.0K prompt bands under that schedule. Direct GC-1/2/3 reviewer-capability smokes were executed and initially mixed, then natural-prompt repair smokes passed small synthetic GC-1/2/3 checks. Near-miss corpus interpretation is now representation-scoped: the runner refuses mixed selections and refuses `substring`/`exact_match` answer-fragment rows by default, supports explicit row-id slices, and now supports curated `--oracle-notes-file` constraints for audited hard negatives. Homogeneous `seeded-mutation/cruxeval/exact_match` n=24 improved only as exact-answer judging (`FA=0.0%`, `FR=16.7%`); matched `c-crab/python` patch-diff n=24 failed by over-approval (`FA=91.7%`); the pinned C-CRAB row-id n=6 screen improved to FA `33.3%` / FR `0.0%`, v4 prompt-only alignment did not move the SQLFluff L009 false accept, v5 oracle-note replay fixed that audited row, and the targeted C-CRAB n=12 confirmation rejected all six old false-accepted hard negatives (`FA=0.0%`) while still false-rejecting one observation-grade CVAT clean-control accept (`FR=16.7%`). Source-only prep made the acceleration tasks concrete: native GLM-MTP needs Qwen-style `DECODER_MTP` graph/tail tensor loading, while real sparse final-attention needs a new indexed-attention op rather than a graph-only switch. The open gate is now accept-control audit plus broader matched reviewer-scope confirmation or an explicit exact-answer-only GLM scope before runtime acceleration spend beyond source prep; sparse final-attention/native GLM-MTP remain high-value but should not outrun the intended reviewer-scope quality decision.
 
 **2026-07-16 control-plane additions**: the Architect→Reviewer control-plane series ([reviewer-control-plane-index.md](reviewer-control-plane-index.md)) appended **K22-K31** to [gemma-challenge-kernel-techniques-v7.md](gemma-challenge-kernel-techniques-v7.md) — P0s: grammar-sampler crash (`sampling.cpp:292`, blocks GBNF typed-decision emission on v7), GLM-5.2 glm-dsa load reconciliation (K23; feeds the empirical gate above), v7 non-spec base-decode regression root-cause (architect −9.24% K20 guard; spec paths near parity); P1-P3 quality-neutral levers (mmvq draft-tree verify widths, f16-vs-bf16 KV, Q8_0 8x8 repack, chunked GDN prefill, draft-path malloc, composed-spec state, EA-server/DSA audits). GPU sequencing operator-locked 1→4; teleport axis **AXA-1..3** appended to [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md).
@@ -15,6 +17,55 @@
 3. Coordinate all throughput-sensitive runs with [bulk-inference-campaign.md](bulk-inference-campaign.md). K-MEM Tulving, frontdoor G5 short-m@k, frontdoor+worker G11 AA-Omniscience, and architect G10 collection/scoring are complete; G12 tier calibration has accepted deterministic AA-Omniscience 4-class scoring and updated production role multipliers. Remaining clean-window work is the consolidated measurement batch, including DS-E1 dynamic-stack KV measurement, not more G12 scoring.
 4. Do not revive closed speculative-decoding or NUMA tracks without their documented reopen trigger.
 5. For llama.cpp work, use a dedicated feature branch/worktree and do not touch the production binary without an explicit rollout plan.
+
+## 2026-07-18 v7 lever audit + two-lane execution queue
+
+Read-only audit of ~5 weeks of v7-experimental + CPU/GPU/spec-dec/GLM optimization work.
+**The single highest-EV lever is promoting the already-banked v7 kernel**
+(`experimental-v7-refresh-20260716` @ `d1e5a20eb`; iqk + all GPU opts + `Q2_0` present):
+HIP graphs **+25%** worker spec-dec, MMVQ→MMQ **+17–32%**, bf16-GDN-state **+16–21%** agg,
+**+37%** single-stream dense-Q8. K5 quality gate PASSED (v6≈v7, +0.0%); all P0 correctness
+blockers resolved (K22/K23/K32/K33). Held only by operator gates + the CPU-correctness gate,
+**not** by missing engineering.
+
+### Do-not-re-propose ledger (measured negative/exhausted)
+- **CPU decode is bandwidth-exhausted** (0.17 IPC, 96.6% memory-stalled @96t). Dead:
+  AVX-512VNNI vec_dot, AVX-512BW 8×8 repack *at multi-thread*, Q6_K/Q5_K default-ON,
+  shape-specialized GEMV catalog, manual prefetch, parallel RMS_NORM, CPU22 dyn-MoE-LB,
+  CPU4 barrier-coalesce, generic-scalar Q8 repack (K27), L3aaN, NUMA_MIRROR, GGML_NUMA_WEIGHTS,
+  NUMA private weights, CCD threadpool.
+- **GPU raw-speed frontier exhausted**: GRAPH_OPT, Q8_PREFETCH, Lever-A shape-key, onegraph
+  fold, MTP-on-GPU-MoE, BF16 KV (K26), both occupancy rewrites, persistent/megakernel,
+  fused-dequant, GPU n-gram spec, mmid dispatch, vLLM-ROCm (gfx90a arch-blocked).
+- **Spec-dec: external drafting is dead on MTP-equipped targets** (every target ships a
+  native MTP head): tree-draft/DySpec, external drafter, GPU-draft Stage-1/2 (0.915×/0.355×),
+  MAB selector, peer-verifier, hybrid-SSM slot-promotion, draft_max 2→4 (keep 2), Hy3 MTP.
+- **GLM offload/REAP**: near-uniform routing (top_32=15.19%, entropy 0.9987) → not justified;
+  `ngram-mod` = 0 drafts on GLM; AirLLM per-token streaming = PCIe anti-pattern.
+
+### EV-ranked survivor levers
+1. **v7 promotion** — banked; operator-gated. *Highest measured EV.*
+2. **CPU Q8_0 barrier-count operator/graph fusion** — sole live CPU decode lever; +2.6% measured → +10–15% (graph-rewrite) → +72% ceiling. → [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md).
+3. **Residency / teleport** — AXA-1 (122B IQ2 resident 2.2×/8–9×; K22 fix unblocks it), AXA-2 teleport, Gate-R (needs `P-GPU-1`). → [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md).
+4. **Native GLM-MTP forward-graph port** — ~10% remaining, +34–89% decode; **contingent on GLM quality** (GC-shadow-repair4b). → [tree-draft-forward-port-plan.md](tree-draft-forward-port-plan.md), [glm52-reviewer-capability-gates.md](glm52-reviewer-capability-gates.md).
+5. **CPU prefill-compute for large models (NEW)** — prefill is compute-bound (not BW-killed); dominates GLM/architect long-context. → [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md).
+6. **stream-K `nsm→k·nsm`+compact-LDS** — +0–10%, IQ2/capacity; pmc-CSV read first. → mi210 roadmap.
+7. **K28 GDN long-prefill recurrence kernel (GPU)** — `gated_delta_net.cu:191`. → mi210 roadmap.
+8. **MoE-Spec CPU reopen** — +5–15% Coder/REAP; zero-inference assessment first. → [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md).
+9. **Real sparse final-attention (GLM DSA)** — currently DSA-DENSE-MASK; long-context only; contingent on GLM quality. → [llama-cpp-dsa-contribution.md](llama-cpp-dsa-contribution.md).
+10. **Batched-decode E2/E3** — serving throughput; telemetry gate. → [batched-decode-measurement.md](batched-decode-measurement.md).
+11. **GPU-drafter control redesign (NEW)** — Stage-1/2 failed; needs a *different* design. → [gpu-drafter-control-redesign.md](gpu-drafter-control-redesign.md).
+
+### Two-lane queue (benches need operator per-run approval → split by bench-window need)
+**LANE A — operator-facing (bank the banked win):**
+- A1 **K35 finalize** — consolidated throughput-vs-context matrix (vision + service-concurrency rows). → [gemma-challenge-kernel-techniques-v7.md](gemma-challenge-kernel-techniques-v7.md).
+- A2 **OP-2 canonical-bench window** — v6+iqk live verify + post-reboot canonical bench; **bundle B1 + B4 into the same window**. → [v6-iqk-promotion.md](v6-iqk-promotion.md).
+- A3 **`P-GPU-1` ratification package** — draft MEASUREMENT amendment (prepare, don't author) so Gate-R + GPU numbers become decision-grade.
+- A4 **Branch-naming reconciliation** — old `experimental-v7-candidate` vs new `experimental-v7-refresh-20260716`; declare the authoritative tip for promotion.
+
+**LANE B — agent-executable:**
+- *Zero-inference now:* B2 stream-K pmc-CSV read · B3 MoE-Spec reopen assessment · B5 E3/E4 zero-inference decisions · B6 native-GLM-MTP port scoping (build/bench gated behind GLM quality) · B7 prefill-compute lever design.
+- *Needs a bench window (fold into A2):* B1 barrier-fusion `tg128` A/B · B4 DSA-D3 profile-first (`perf record`).
 
 ## Active Landscape
 
@@ -150,3 +201,9 @@ After completing an acceleration item:
 - [ ] T5 worker gemma-4-26B-A4B `draft_max` sweep
 - [ ] P6b qwen-mtp model-load operator gate-bench
 - [ ] v6-iqk live throughput+garbage verification + clean post-reboot canonical bench
+- [ ] **[v7-audit LANE A]** A1 K35 finalize (vision + service-concurrency rows) → v7 release artifact
+- [ ] **[v7-audit LANE A]** A3 `P-GPU-1` MEASUREMENT ratification package drafted (prepare, operator-signs)
+- [ ] **[v7-audit LANE A]** A4 v7 branch-naming reconciliation (candidate vs refresh-20260716) — declare authoritative tip
+- [ ] **[v7-audit LANE B]** B2 stream-K `nsm→k·nsm` pmc-CSV zero-build read
+- [ ] **[v7-audit LANE B]** B3 MoE-Spec CPU reopen assessment (zero-inference, 2026-07-03 live-α report)
+- [ ] **[v7-audit LANE B]** B7 CPU prefill-compute track scoping (PC-0 profile-first premise check)

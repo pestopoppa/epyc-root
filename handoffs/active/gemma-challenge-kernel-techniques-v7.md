@@ -15,6 +15,38 @@ The Gemma Challenge (100+ agents, 6 days) drove `google/gemma-4-E4B-it` inferenc
 - **Quality gate is the gate, not TPS.** The challenge's own lesson: a **PPL-only** gate was gamed (top lossy submission held PPL but lost **15 GPQA-Diamond / 40 MMLU-Pro** points). Any v7 candidate must pass downstream evals (MMLU-Pro + GPQA-Diamond), production sampling (seed 42), per [`MEASUREMENT.md`](../../MEASUREMENT.md) + eval-tower — **not** PPL alone. This is a hard prerequisite, especially for the lossy techniques below.
 - **Inference is operator-gated** (`feedback_no_concurrent_inference`); bench only via codified recipes with approval.
 
+## v7 Promotion Readiness (2026-07-18 — lever audit)
+
+**v7 is the highest-EV performance lever on the whole stack, and it is already built and
+banked — the remaining work is operator gates, not engineering.** Current tip:
+**`experimental-v7-refresh-20260716` @ `d1e5a20eb`** (verified on disk: iqk present, GPU-opt
+flags present, `GGML_TYPE_Q2_0`=42 present — the earlier missing-Q2_0 freshness hit is closed
+by this refresh).
+
+**Banked, correctness-verified, runtime-gated-off wins:**
+- HIP graphs (per-decode capture) **+25%** worker spec-dec (A4B MoE), +4–14% base decode
+- MMVQ→MMQ small-batch verify-dispatch (`de447119f`) **+17.4%** MTP-verify / **+31.7%** gemma-31B
+- nwarps 2→4 (`5dc116130`) +4.6%; async prefetch (`7c28056b7`) +3.3%
+- bf16 GDN recurrent-state (`496e2f098`) **+21.5% @B32** (frontdoor 35B-A3B +17.7%, architect 122B +16.4%)
+- single-stream dense-Q8 **+37%** (29→40.4 t/s)
+
+**Gates cleared:** K5 quality gate PASSED (v6 vs v7 MMLU-Pro/GPQA **+0.0%**); P0 correctness
+blockers all resolved — K22 grammar-sampler (`96986f5e9`), K23 GLM-DSA load (`3dee86a5a`),
+K32/K33 external-draft path; K24 base-decode "regression" ruled a host artifact (not source).
+
+**Remaining gates (LANE A, operator-facing):**
+- A1 — **K35** consolidated throughput-vs-context matrix (below): vision throughput/quality/memory
+  rows + mixed-stack service-concurrency rows still missing → release-blocking artifact.
+- A2 — **OP-2** quiet-window: v6+iqk live throughput+garbage verify + clean post-reboot canonical
+  bench + CPU-correctness gate (bundle the CPU barrier-fusion A/B + DSA-D3 profile in the same window).
+- A3 — **`P-GPU-1`** MEASUREMENT ratification so Gate-R residency + all GPU numbers become decision-grade.
+- A4 — **branch-naming reconciliation**: handoffs still cite the old `experimental-v7-candidate`
+  in places and the new `experimental-v7-refresh-20260716` in others — declare `refresh-20260716`
+  the authoritative promotion tip (or the operator's chosen tip) and normalize references.
+
+**K28** (GDN long-prefill recurrence kernel, GPU, `gated_delta_net.cu:191`) is owned as a `- [ ]`
+task in [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md).
+
 ## Technique candidates (from intake-798 submissions)
 
 | Technique | Lossy? | Our-regime fit | v7 workflow slot | Open question |

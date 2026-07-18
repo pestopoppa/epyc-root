@@ -1,0 +1,57 @@
+# GPU-Drafter Control Redesign
+
+**Status**: NEW / SCOPING (opened 2026-07-18 from the v7 lever audit). Design + α-measurement
+only — **no serving bench without operator approval** (`feedback_no_concurrent_inference`).
+**Owner handoff**: this file. **Parents**: [gpu-drafter-mi200-investigation.md](gpu-drafter-mi200-investigation.md),
+[mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md) (Axis-B).
+
+## Thesis
+
+The straightforward GPU-drafter lanes are **measured dead**. On 2026-07-17:
+
+- **Stage-1** (CPU-target + MI210 external drafter): usable acceptance (508/508) but
+  **0.915× decode / 0.911× wall** — the external drafter overhead isn't repaid.
+- **Stage-2** (co-resident GPU frontdoor + drafter): MI210 no-spec already 101.64 t/s;
+  native MTP regressed to 0.948×, external drafter to **0.355×**.
+
+Root cause is structural: **every production target ships a near-free embedded/native MTP
+head**, which dominates any separate-drafter scheme (qwen precedent: MTP 41.9 ≫ ext-draft
+~18 < plain 31). The explicit conclusion in the roadmap is: *"the next Axis-B path is not
+'enable Stage-1/2'; it is a different drafter/control design or quant-asymmetric same-model
+drafting."* This track owns that redesign so it doesn't fall between handoffs.
+
+## What "different control design" could mean (candidates, α-gated)
+
+| Design | Mechanism | Why it might beat the failed lanes | First gate |
+|---|---|---|---|
+| **Quant-asymmetric same-model self-spec** | Aggressive-IQ drafter (IQ1/IQ2_XXS, maybe REAP'd) on GPU + high-quant (Q8/Q4) verifier on CPU | **N5-free by construction** (identical vocab / M-RoPE / GDN); CPU verify launders quality; graceful fallback if IQ2-serving parity fails | measure α (drafter→target acceptance) **first** — [[feedback_measure_alpha_before_specdec_investment]] |
+| **Adaptive-K / cascade drafting** | Vary draft depth per-token by confidence; cascade a cheap→richer drafter | The fixed-depth external lanes over-draft; adaptive-K prunes wasted verify | α-vs-depth curve on the real corpus |
+| **Teleport-composed drafting** | Reuse the AXA-2 re-prefill+catch-up path as the drafter transport | Amortizes the CPU weight read (no findings-02 penalty) when the target overflows to CPU | needs AXA-2 v1 landed; composed-spec state `speculative.cpp:3063` |
+
+**Extreme-scale target** (the reason to bother): Qwen3.5-397B-A17B / GLM-5.2-class at *full
+CPU quality* + GPU-drafted speed — same-model IQ2 (~124 GB) / IQ1 (~74 GB) don't fit 64 GB
+HBM, so **REAP + IQ1 (~56 GB)** is *required* for a same-model GPU drafter, or a smaller
+same-family drafter (35B/122B qwen35 at Q8) trading α for fit.
+
+## First actions
+
+- [ ] **DR-0 — α measurement for quant-asymmetric self-spec**: measure drafter→target
+  acceptance for an aggressive-IQ GPU drafter vs the CPU high-quant target on the real task
+  corpus, BEFORE any serving build (the N5-alpha gate already cleared `n5_spec_on` 376/376,
+  but that was the *alignment* check, not the quant-asymmetric acceptance). Operator-gated bench.
+- [ ] **DR-1 — economics model**: write the break-even (acceptance × draft-length must
+  amortize the CPU verify) as a spreadsheet/model parameterized by α, draft depth, and the
+  CPU/GPU t/s split — decide go/no-go on paper before building.
+
+## Cross-links
+
+- α-alignment baseline (N5) + Stage-1/2 negatives: [gpu-drafter-mi200-investigation.md](gpu-drafter-mi200-investigation.md),
+  [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md) Axis-B.
+- Teleport transport: AXA-2 in the mi210 roadmap.
+- Dead lanes (do not revive as-is): tree-draft/DySpec, external-drafter Stage-1/2
+  ([tree-draft-forward-port-plan.md](tree-draft-forward-port-plan.md)).
+
+## Reporting
+
+Update this handoff first; if DR-0/DR-1 show no path beats native MTP, close as
+confirm-negative and record in the inference-acceleration-index.

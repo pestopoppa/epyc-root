@@ -11,6 +11,16 @@
 
 Take GLM-5.2 UD-IQ2_M (754B glm_moe_dsa, ~239GB, downloaded, true >64K stale-binary DSA-engagement smoke-passed, and current-source DSA-wired) from "loads" to "validated typed-decision reviewer candidate" — the reviewer-specific capability layer only. Current reviewer admission remains blocked on claim-grade evidence, not on first smoke execution: inference-research commit `a6651ed` plus the follow-up sweep show `glm-dsa.attention.indexer.top_k` is the final-attention KV selection cap, `3072` fails at 2.1K/3K, `8192`/`12288` fail at 12K, next power-of-two caps are the observed safe path (`2048`, `4096`, `16384` for the tested prompt bands), and the 2026-07-18 chat protocol/schema matrix passed exact free-text and JSON-schema outputs at actual ~2.9K/~12.0K prompt bands. The initial direct reviewer-capability smokes exposed repairable prompt/scorer issues and the repaired synthetic smokes pass. The first near-miss corpus slices exposed a runner/corpus-contract bug: unfiltered "balanced" samples mixed incompatible candidate representations, including 100-character code-prefix accept controls. The targeted C-CRAB oracle-note n=12 confirmation fixed the old false-accept half (`6/6` rejects correct), but the next blocker is still accept-control hardness: one `merged_pr_accepted` CVAT clean control false-rejected because GLM required tests around complex slicing behavior. Do not rerun unchanged `multi_oracle`, unchanged binary-schema, or answer-fragment slices; use explicit patch-review filters plus a label-audited/regenerated full-candidate accept-control corpus before P-REV-1 role admission.
 
+**2026-07-18 acceleration-gating note (v7 lever audit).** GLM-5.2 **acceleration** EV is
+*contingent on this quality gate*, not standalone. The two real GLM kernel levers — the
+native-GLM-MTP forward-graph port ([tree-draft-forward-port-plan.md](tree-draft-forward-port-plan.md),
++34–89% decode) and the real sparse final-attention path ([llama-cpp-dsa-contribution.md](llama-cpp-dsa-contribution.md)
+D2, currently DSA-DENSE-MASK) — are explicitly **sequenced AFTER GC-shadow-repair4b → P-REV-1**.
+Rationale: the flagship GLM role is cross-family patch reviewer, and patch-review still
+over-approves (FA up to 91.7%); ~1–3 weeks of kernel work on a model that cannot yet do its
+job has near-zero EV. GC-shadow-repair4b (the label-audited full-candidate accept-control
+corpus) is the cheapest, highest-leverage next action across the entire GLM program.
+
 ## Prioritized Task List
 
 - [x] **GC-0 — Evidence hygiene / runner contract**: reviewer-facing GLM long-output or typed-decision probes must consume only instrumented GLM runs with streaming progress, retained trace logs/server-log timing extraction, and a minimum completion-token floor. `/metrics` samples are acceptable when available, but are not the primary progress channel for a long busy GLM request. The attempted current-source 96K run at `/mnt/raid0/llm/tmp/glm52-current-source-96k-quality-20260717T144022Z/plan.json` is excluded as process-failure-only because it had no progress telemetry and only `max_tokens=32`. ✅ 2026-07-17

@@ -175,6 +175,20 @@ Operator asked whether GLM-5.2 (the last candidate niche) lacks an MTP head, whi
 
 **Higher-value FUTURE lever surfaced (flag, do NOT drop — research-intake rule):** finish the **native GLM MTP forward graph** — it is ~90% scaffolded (tensors load, `skip_mtp=False`, the draft driver already supports `draft-mtp`; only the glm4moe/glm-dsa NEXTN *forward execution* is stubbed — a bounded port like qwen35's, which delivers +58–89% in prod). This is the right GLM-5.2 spec-dec investment, gated on GLM-5.2 becoming runnable past the DSA gate (PR#21149).
 
+**2026-07-18 gate update (v7 lever audit).** The PR#21149 runnability gate is **stale/superseded**:
+generic DSA landed via upstream #23346 and GLM-5.2 DSA cache/runtime is wired on experimental
+v7 `3dee86a5a` (GLM-5.2 UD-IQ2_M loads + engages DSA). So runnability is **no longer** the
+binding gate. The binding gate is now **GLM task-quality re-clear**: patch-review still
+over-approves (FA up to 91.7%; GC-shadow-repair4a narrowed it but exposed a label-audit
+blocker → **GC-shadow-repair4b** open in [glm52-reviewer-capability-gates.md](glm52-reviewer-capability-gates.md)).
+**Do NOT spend the native-GLM-MTP port (or the real sparse final-attention path,
+[llama-cpp-dsa-contribution.md](llama-cpp-dsa-contribution.md) D2) before GC-shadow-repair4b →
+P-REV-1 clears** — the flagship GLM role (cross-family patch reviewer) is unfunded until then,
+so kernel spend on a model that can't yet do its job has near-zero EV. Once quality clears, the
+native-GLM-MTP port is the single highest-EV GLM acceleration lever (+34–89% decode on a
+~2.5 t/s model).
+
 ## Progress checklist
 
 - [x] Investigation complete - tree-draft Phase 1b SHELVED (uncompetitive vs MTP) ✅
+- [ ] **Native GLM MTP forward-graph port** (~10% remaining: wire the already-loaded NEXTN tensors into `glm4-moe.cpp`/`glm-dsa.cpp` forward + expose the embd/nextn hooks the `draft-mtp` driver consumes; model on qwen35's NEXTN forward). **GATED behind GLM quality re-clear (GC-shadow-repair4b → P-REV-1)**, then measure α. EV +34–89% decode.
