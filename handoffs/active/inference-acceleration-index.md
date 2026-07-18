@@ -63,7 +63,11 @@ blockers resolved (K22/K23/K32/K33). Held only by operator gates + the CPU-corre
   mixed-service matrix; remaining K35 work is the controlled live-stack MiniCPM-o flip
   (`K35.13d`) plus optional parser/stress follow-ups. →
   [gemma-challenge-kernel-techniques-v7.md](gemma-challenge-kernel-techniques-v7.md).
-- A2 **OP-2 canonical-bench window** — v6+iqk live verify + post-reboot canonical bench; **bundle B1 + B4 into the same window**. → [v6-iqk-promotion.md](v6-iqk-promotion.md).
+- A2 **OP-2 canonical-bench window** — run package drafted at
+  [docs/reference/op-2-canonical-bench-window-package-2026-07-18.md](../../docs/reference/op-2-canonical-bench-window-package-2026-07-18.md)
+  ✅ 2026-07-18; execution still needs operator quiet-window/reboot/perf approvals for
+  v6+iqk live verify + post-reboot canonical bench, with B1 + B4 bundled into the same
+  window. → [v6-iqk-promotion.md](v6-iqk-promotion.md).
 - A3 **`P-GPU-1` ratification package** — prepare-only package drafted at
   `docs/reference/p-gpu-1-ratification-package-2026-07-18.md`; MEASUREMENT amendment remains
   operator/human-signoff only. ✅ 2026-07-18
@@ -162,6 +166,9 @@ After completing an acceleration item:
 
 - [ ] Batched decode E2: EvalTower quality/reliability/throughput telemetry gate before default flip
 - [ ] DS-E1 dynamic-stack KV measurement in consolidated quiet window
+- [x] A2 OP-2 canonical-bench window package drafted: operator approval matrix,
+  preflight/abort gates, v6+iqk live verify, post-reboot P-BENCH-1 bench, B1
+  barrier-fusion A/B, and B4 DSA-D3 perf-record routing captured ✅ 2026-07-18
 - [x] External qwen35/frontdoor drafter alpha retest (`n5_spec_on` 376/376, decision-grade) ✅ 2026-07-16
 - [x] CoT-scaffold: Qwable-standalone GPQA control completed — standalone 77% beat scaffold 73%, so standalone routing is primary. ✅ 2026-07-05
 - [x] GPU reasoner evidence: Qwable quiet-host IQ4/Q8 strict-output + top-level `json_schema` harness gate closed; scaffold/selector stubs remain non-deployable ✅ 2026-07-17
