@@ -27,6 +27,24 @@ Cut the ENTIRE production inference stack onto ONE kernel — `production-consol
 - **Reboot = operator's job, separately, later** — NOT an autonomous step. Cutover doesn't need it. Pre-reboot throughput numbers are throttle-caveated/holding; the clean decision set comes from the operator's post-reboot formal gate. (memory: `feedback_operator_owns_host_reboots`)
 - **Autonomous boundary:** proceed through *v6-in-production + throughput-confirmed + garbage-sanity-checked*. The **formal eval-parity suite, era-registry row, attestation are operator/human steps** (MEASUREMENT.md trust boundary). I prepare; I don't author.
 
+## v7 Production-Promotion Readiness Gate (COUPLED — operator-chosen 2026-07-18)
+
+**What v7 is:** `experimental-v7-refresh-20260716` @ `d1e5a20eb` — the banked, correctness-verified successor kernel (HIP graphs +25% worker spec-dec, MMVQ→MMQ +17–32%, bf16-GDN-state +16–21% agg, +37% single-stream dense-Q8; full audit in [`gemma-challenge-kernel-techniques-v7.md`](gemma-challenge-kernel-techniques-v7.md) §v7 Promotion Readiness).
+
+**How promotion happens (governance):** production kernels are FROZEN — a production swap is **operator-authorized only** (the same phased cutover this handoff executed for v6; rollback R0–R3 below). The agent's job is to drive v7 to a `READY FOR OPERATOR PROMOTION` state and **STOP** — it must **never** self-push to production. When every box below is green, flag `v7 READY FOR OPERATOR PROMOTION` and hand off to the operator.
+
+**Promotion policy = COUPLED (operator-chosen).** The operator elected on 2026-07-18 to hold v7 promotion until GLM optimized decode is confirmed, so GLM spec-dec ships in the same promotion. Gate:
+
+- [x] **K5 quality** — v6 vs v7 MMLU-Pro/GPQA `+0.0%` (PASS) ✅ 2026-07-16
+- [ ] **OP-2 CPU-regression canonical bench** PASS — clean post-reboot canonical decode bench + live v6+iqk verify, per MEASUREMENT.md (Phase J below; package `docs/reference/op-2-canonical-bench-window-package-2026-07-18.md`)
+- [ ] **`P-GPU-1` ratified** — MEASUREMENT amendment signed so Gate-R + all GPU numbers are decision-grade (package `docs/reference/p-gpu-1-ratification-package-2026-07-18.md`)
+- [ ] **All production roles coherence + garbage checked**, no across-the-board regression (gemma worker / qwen frontdoor / 122B architect / ingest / vision)
+- [ ] **GLM reviewer quality cleared** — `GC-shadow-repair4b → P-REV-1` ([`glm52-reviewer-capability-gates.md`](glm52-reviewer-capability-gates.md)) ← *research gate*
+- [ ] **Native GLM-MTP α + throughput confirmed** — end-to-end spec-dec win measured (downstream of the quality gate; scaffold feasibility already ✅ B6/K23.1, [`tree-draft-forward-port-plan.md`](tree-draft-forward-port-plan.md))
+- [ ] → **flag `v7 READY FOR OPERATOR PROMOTION` and STOP** (operator authorizes the cutover; no self-push)
+
+> **Tradeoff on record (revisitable).** COUPLING defers the banked *production-model* wins (gemma +25%, qwen/architect +17–32% / +16–21%) behind the last two boxes, which are an **open GLM reviewer-quality research gate on a model that is not yet a production role**. The 2026-07-18 lever audit recommended **decoupling** (promote on production validation; ship native GLM-MTP inert/correctness-validated; enable its use later when GLM passes P-REV-1). The operator chose to couple; recorded here so the choice is visible and can be flipped to decoupled by striking the last two boxes if the GLM gate proves slow.
+
 ## Source of truth
 - Full procedure: session plan `/home/node/.claude/plans/fix-index-edits-and-cuddly-gadget.md`.
 - **Line-level execution annex:** `/mnt/raid0/llm/tmp/v6_promotion_audit.md` (every `file:line` re-verified 2026-06-26).
