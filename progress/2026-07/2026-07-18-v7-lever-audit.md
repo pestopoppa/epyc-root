@@ -62,3 +62,41 @@ user-approved new tracks).
 ## Memory
 Filed `project_v7_lever_audit_2026_07_18` (v7 banked-but-unpromoted = highest EV; CPU decode
 BW-exhausted → barrier-fusion sole live decode lever; GLM kernel work gated on quality).
+
+---
+
+## Follow-up (2026-07-18 PM — interactive advisory + v7 promotion structure)
+
+Continuation of the same session; operator Q&A on promotion structure + governance cleanup.
+All docs-only; shared tree with an active parallel inference agent (careful single-file commits).
+
+**Parallel agent progress on the plan (observed):** in ~30 min it closed most of the two-lane
+queue — A1 (K35 finalize), A3 (P-GPU-1 package), A4 (branch tip = `experimental-v7-refresh-20260716`
+@ `d1e5a20eb`), B2 (stream-K read: already live, compact-LDS negative), B3 (MoE-Spec reopen
+decision), B5 (E3/E4), B6 (native-GLM-MTP scaffold now **builds + passes bounded CPU draft-mtp
+smokes** — feasibility proven), B7 (prefill-compute), DR-1 (break-even model: external Stage-1/2
+failed at α=1.0 → blocker is control/overhead cost). Agent-executable kernel work is essentially
+exhausted; remainder is operator-window-gated (OP-2 bundle) or GLM-quality-gated.
+
+**Deliverables this round:**
+| Change | File(s) | Commit |
+|---|---|---|
+| COUPLED v7 promotion gate (operator-chosen: hold v7 until GLM optimized decode confirmed) | `v7-promotion.md` (initially misplaced in `v6-iqk-promotion.md`, corrected) | `bd64aff5`, `ea25e0a6` |
+| Split v7 promotion into its own handoff `v7-promotion.md` (v6→v7 is a distinct cutover; reuses v6 phased procedure + rollback) | `v7-promotion.md` new; `v6-iqk-promotion.md` → forward-pointer | `ea25e0a6` |
+| **Archived** `v6-iqk-promotion.md` → `handoffs/completed/` (cutover complete 2026-06-26; residual OP-2 bench owned by cpu-index P0 / OP-2 package / v7-promotion Phase-J) + ARCHIVED banner | `git mv` + banner + link repoints | `b10913ab`, `247db5d5` |
+| `/goal` start-here note (run as `/goal`, lead with P2 eval-tower) | `inference-batch-loop.md` | `b10913ab` |
+| Reviewer language generalized: GLM-5.2 is **one** candidate; reviewer choice open/undecided (Qwable+architect only an example); don't over-constrain exploration | `v7-promotion.md` | `ac269350` |
+
+**Correction recorded (rigor):** I initially claimed OP-2 was "runnable now, not reboot-blocked"
+because a reboot happened ~2 weeks ago. On checking MEASUREMENT.md discipline this was **wrong** —
+"post-reboot canonical bench" is a cold-cache/clean-NUMA/no-throttle requirement, and ~2 weeks of
+uptime is not that fresh state. So OP-2 still needs a verified bench-clean host or the next operator
+reboot window; it is **not** closer to done. Only my "waiting a month" phrasing was stale (→ ~2 weeks).
+The OP-2 owners' "post-reboot" wording was left unchanged (it is correct, not stale).
+
+**Shared-tree discipline:** repoints for the v6-iqk archive were committed surgically (3/4 via
+`git apply --cached --unidiff-zero`, agent WIP untouched); `inference-acceleration-index.md`'s
+repoint rides with the agent (its edit sat on a table row adjacent to mine → not isolable).
+
+**Deferred / for the operator:** v7 production promotion is operator-authorized (frozen kernel);
+the coupled gate now drives the agent to READY-then-STOP. GLM-as-reviewer is undecided.
