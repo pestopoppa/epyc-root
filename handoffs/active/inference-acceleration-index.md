@@ -58,10 +58,24 @@ blockers resolved (K22/K23/K32/K33). Held only by operator gates + the CPU-corre
 
 ### Two-lane queue (benches need operator per-run approval → split by bench-window need)
 **LANE A — operator-facing (bank the banked win):**
-- A1 **K35 finalize** — consolidated throughput-vs-context matrix (vision + service-concurrency rows). → [gemma-challenge-kernel-techniques-v7.md](gemma-challenge-kernel-techniques-v7.md).
-- A2 **OP-2 canonical-bench window** — v6+iqk live verify + post-reboot canonical bench; **bundle B1 + B4 into the same window**. → [v6-iqk-promotion.md](v6-iqk-promotion.md).
-- A3 **`P-GPU-1` ratification package** — draft MEASUREMENT amendment (prepare, don't author) so Gate-R + GPU numbers become decision-grade.
-- A4 **Branch-naming reconciliation** — old `experimental-v7-candidate` vs new `experimental-v7-refresh-20260716`; declare the authoritative tip for promotion.
+- A1 **K35 finalize CLOSED ✅ 2026-07-18** — consolidated throughput-vs-context release
+  artifact now includes vision throughput/quality/memory rows and the MiniCPM-o/frontdoor
+  mixed-service matrix; the MiniCPM-o source/config flip is implemented in orchestrator
+  `4ab4e0ee`, while remaining K35 work is the controlled live reload/smoke/rollback gate
+  (`K35.13f`) plus optional parser/stress follow-ups. →
+  [gemma-challenge-kernel-techniques-v7.md](gemma-challenge-kernel-techniques-v7.md).
+- A2 **OP-2 canonical-bench window** — run package drafted at
+  [docs/reference/op-2-canonical-bench-window-package-2026-07-18.md](../../docs/reference/op-2-canonical-bench-window-package-2026-07-18.md)
+  ✅ 2026-07-18; execution still needs operator quiet-window/reboot/perf approvals for
+  v6+iqk live verify + post-reboot canonical bench, with B1 + B4 bundled into the same
+  window. → [v6-iqk-promotion.md](v6-iqk-promotion.md).
+- A3 **`P-GPU-1` ratification package** — prepare-only package drafted at
+  `docs/reference/p-gpu-1-ratification-package-2026-07-18.md`; MEASUREMENT amendment remains
+  operator/human-signoff only. ✅ 2026-07-18
+- A4 **Branch-naming reconciliation** — authoritative promotion tip declared:
+  `experimental-v7-refresh-20260716` @ `d1e5a20ebebe567f0da6bc64ca7ea7ecd521fc24`;
+  backed up as `fork/experimental-v7-refresh-20260716`. Old `experimental-v7-candidate`
+  mentions are historical checkpoints only. ✅ 2026-07-18
 
 **LANE B — agent-executable:**
 - *Zero-inference now:* B2 stream-K pmc-CSV read · B3 MoE-Spec reopen assessment · B5 E3/E4 zero-inference decisions · B6 native-GLM-MTP port scoping (build/bench gated behind GLM quality) · B7 prefill-compute lever design.
@@ -153,6 +167,9 @@ After completing an acceleration item:
 
 - [ ] Batched decode E2: EvalTower quality/reliability/throughput telemetry gate before default flip
 - [ ] DS-E1 dynamic-stack KV measurement in consolidated quiet window
+- [x] A2 OP-2 canonical-bench window package drafted: operator approval matrix,
+  preflight/abort gates, v6+iqk live verify, post-reboot P-BENCH-1 bench, B1
+  barrier-fusion A/B, and B4 DSA-D3 perf-record routing captured ✅ 2026-07-18
 - [x] External qwen35/frontdoor drafter alpha retest (`n5_spec_on` 376/376, decision-grade) ✅ 2026-07-16
 - [x] CoT-scaffold: Qwable-standalone GPQA control completed — standalone 77% beat scaffold 73%, so standalone routing is primary. ✅ 2026-07-05
 - [x] GPU reasoner evidence: Qwable quiet-host IQ4/Q8 strict-output + top-level `json_schema` harness gate closed; scaffold/selector stubs remain non-deployable ✅ 2026-07-17
@@ -201,10 +218,10 @@ After completing an acceleration item:
 - [ ] T5 worker gemma-4-26B-A4B `draft_max` sweep
 - [ ] P6b qwen-mtp model-load operator gate-bench
 - [ ] v6-iqk live throughput+garbage verification + clean post-reboot canonical bench
-- [ ] **[v7-audit LANE A]** A1 K35 finalize (vision + service-concurrency rows) → v7 release artifact
-- [ ] **[v7-audit LANE A]** A3 `P-GPU-1` MEASUREMENT ratification package drafted (prepare, operator-signs)
-- [ ] **[v7-audit LANE A]** A4 v7 branch-naming reconciliation (candidate vs refresh-20260716) — declare authoritative tip
-- [ ] **[v7-audit LANE B]** B2 stream-K `nsm→k·nsm` pmc-CSV zero-build read — 2026-07-18 audit found the cited pmc/rocprof CSVs absent from root, inference-research, and experimental-v7 trees; recover the original campaign CSVs before closing.
+- [x] **[v7-audit LANE A]** A1 K35 finalize: release artifact includes vision throughput/quality/memory rows and MiniCPM-o/frontdoor mixed-service evidence; K35.13d source/config flip is implemented, with K35.13f live reload/smoke still separate. ✅ 2026-07-18
+- [x] **[v7-audit LANE A]** A3 `P-GPU-1` MEASUREMENT ratification package drafted (prepare-only; operator still signs/amends MEASUREMENT): `docs/reference/p-gpu-1-ratification-package-2026-07-18.md`. ✅ 2026-07-18
+- [x] **[v7-audit LANE A]** A4 v7 branch-naming reconciliation: authoritative promotion tip is `experimental-v7-refresh-20260716` @ `d1e5a20ebebe567f0da6bc64ca7ea7ecd521fc24`, backed up on `fork/experimental-v7-refresh-20260716`; old `experimental-v7-candidate` references are historical only. ✅ 2026-07-18
+- [x] **[v7-audit LANE B]** B2 stream-K `nsm→k·nsm` pmc-CSV zero-build read: recovered `/mnt/raid0/llm/tmp/mi210-build/campaign/` artifacts; read verdict = stream-K already live, compact-LDS patch negative, only a separate operator-gated `2*nsm=208` bench remains if pursued. ✅ 2026-07-18
 - [x] **[v7-audit LANE B]** B3 MoE-Spec CPU reopen assessment: decision = reopen for a current live-MTP MoE verifier B-sweep; no registry integration until that sweep exists. Evidence: 2026-07-03 live-α report shows frontdoor α=0.6582, worker α=0.8256, architect α=0.6854, failed MTP roles `[]`. ✅ 2026-07-18
 - [x] **[v7-audit LANE B]** B5 E3/E4 zero-inference decisions: E3 8x8 GEMM SIMD body is no-go/closed for now; E4 CPU17 reopens only to measurement, CPU18 remains gated pending padding-cost profile. ✅ 2026-07-18
 - [x] **[v7-audit LANE B]** B6 native-GLM-MTP source/tensor-contract scoping: actual GLM-5.2 `blk.78.*` NextN tail contract recorded in inference-research; graph implementation remains gated behind GC-shadow-repair4b -> P-REV-1. ✅ 2026-07-18

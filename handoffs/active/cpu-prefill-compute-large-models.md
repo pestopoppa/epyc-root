@@ -44,8 +44,14 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
   shows prompt/prefill already dominates the targeted long-context regimes: GLM-5.2 patch
   review n=12 = 81.0% prompt wall, architect 6K/1024 = 46.8%, ingest 31K/1024 = 75.1%,
   worker 12K/1024 = 83.1%. This sizes EV; PC-0 still must prove compute-bound hot ops. ✅ 2026-07-18
-- [ ] **PC-2 — norm-tail + Q8→f16 convert-skip design**: scope the two highest-EV levers
-  against `qwen35.cpp` / the prefill graph builder; identify the exact fusable clusters.
+- [x] **PC-2 — norm-tail + Q8→f16 convert-skip design**: scoped against
+  `qwen35.cpp` / the prefill graph builder. Verdict: do not create a separate prefill-fusion
+  framework; extend the existing CPU graph/operator fusion direction with prefill-specific
+  gates. First candidate is qwen35 `ffn_up + ffn_gate` fusion over the same normalized input,
+  then GDN projection fusion (`wqkv|wqkv_gate|ssm_beta|ssm_alpha`) because it reuses the same
+  activation packing and cuts barriers. Gated norm-tail fusion (`RMS_NORM * ssm_norm * silu(z)`)
+  is second-order and should wait until post-matmul-fusion profiles prove it remains hot.
+  Implementation stays blocked on PC-0 proving compute-bound prefill hot ops. ✅ 2026-07-18
 
 ## Cross-links / dependencies
 
