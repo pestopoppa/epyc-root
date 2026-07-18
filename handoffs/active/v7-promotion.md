@@ -1,0 +1,38 @@
+# v6 → v7 production-promotion (production-consolidated-v7)
+
+**Status:** NOT PROMOTED — readiness-gated. Production stays on `production-consolidated-v6` (+iqk, frozen). This handoff tracks promoting the validated experimental **v7** kernel to a NEW production version **production-consolidated-v7**, per the four-step experimental-kernel workflow (fresh-pull → build → validate-no-regression → deploy as new version). Sibling/template: the completed v5→v6 cutover in [`v6-iqk-promotion.md`](v6-iqk-promotion.md) (phased procedure + rollback pattern to reuse).
+
+## What v7 is
+Experimental tip **`experimental-v7-refresh-20260716` @ `d1e5a20eb`** (`/mnt/raid0/llm/llama.cpp-experimental`; backed up on `fork/experimental-v7-refresh-20260716`). Verified on disk: iqk present, GPU-opt flags present, `GGML_TYPE_Q2_0`=42 present. Full lever audit + banked-wins detail in [`gemma-challenge-kernel-techniques-v7.md`](gemma-challenge-kernel-techniques-v7.md) §v7 Promotion Readiness.
+
+**Banked, correctness-verified, runtime-gated-off wins:**
+- HIP graphs (per-decode capture) **+25%** worker spec-dec (A4B MoE), +4–14% base decode
+- MMVQ→MMQ small-batch verify-dispatch (`de447119f`) **+17.4%** MTP-verify / **+31.7%** gemma-31B
+- nwarps 2→4 (`5dc116130`) +4.6%; async prefetch (`7c28056b7`) +3.3%
+- bf16 GDN recurrent-state (`496e2f098`) **+21.5% @B32** (frontdoor 35B-A3B +17.7%, architect 122B +16.4%)
+- single-stream dense-Q8 **+37%** (29→40.4 t/s)
+
+## Governance — how promotion happens
+Production kernels are FROZEN. A production swap to `-v7` is **operator-authorized only** (MEASUREMENT.md trust boundary + `feedback_operator_owns_host_reboots`). The agent drives v7 to a `READY FOR OPERATOR PROMOTION` state and **STOPS** — it must **never** self-push to production. The cutover itself follows the [`v6-iqk-promotion.md`](v6-iqk-promotion.md) phased pattern (staging garbage-check → build `-v7` in canonical → `stop/swap/start --hot-only` → assert kernel identity + draft-accept) with its R0–R3 rollback pre-staged. Bench evidence must come from the v7 binary via codified recipes with operator approval.
+
+## Readiness gate — COUPLED (operator-chosen 2026-07-18)
+The operator elected to **hold v7 promotion until GLM optimized decode is confirmed**, so GLM spec-dec ships accelerated in the same promotion (GLM-5.2 is slated to become the production cross-family reviewer once it passes quality). When every box is green, flag `v7 READY FOR OPERATOR PROMOTION` and hand to the operator.
+
+- [x] **K5 quality** — v6 vs v7 MMLU-Pro/GPQA `+0.0%` (PASS) ✅ 2026-07-16
+- [ ] **OP-2 CPU-regression canonical bench** PASS — clean post-reboot canonical decode bench + live v6+iqk verify per MEASUREMENT.md (shares [`v6-iqk-promotion.md`](v6-iqk-promotion.md) Phase J; package `docs/reference/op-2-canonical-bench-window-package-2026-07-18.md`)
+- [ ] **`P-GPU-1` ratified** — MEASUREMENT amendment signed so Gate-R + all GPU numbers are decision-grade (package `docs/reference/p-gpu-1-ratification-package-2026-07-18.md`)
+- [ ] **All production roles coherence + garbage checked**, no across-the-board regression (gemma worker / qwen frontdoor / 122B architect / ingest / vision)
+- [ ] **GLM reviewer quality cleared** — `GC-shadow-repair4b → P-REV-1` ([`glm52-reviewer-capability-gates.md`](glm52-reviewer-capability-gates.md)) ← *research gate; also admits GLM to the reviewer role*
+- [ ] **Native GLM-MTP α + throughput confirmed** — end-to-end spec-dec win measured (scaffold feasibility already ✅ B6/K23.1, [`tree-draft-forward-port-plan.md`](tree-draft-forward-port-plan.md))
+- [ ] → **flag `v7 READY FOR OPERATOR PROMOTION` and STOP** (operator authorizes the cutover; no self-push)
+
+> **Tradeoff on record (revisitable).** COUPLING defers the banked *production-model* wins (gemma +25%, qwen/architect +17–32% / +16–21%) behind the last two boxes — an open GLM reviewer-quality research gate. This is coherent with the operator's intent to promote GLM-5.2 into a production reviewer role: quality (P-REV-1) admits the role, native-GLM-MTP makes it practical (~238GB/~2.5 t/s otherwise), and coupling ships both with v7. The 2026-07-18 audit's alternative was to **decouple** (promote on production validation now; ship native GLM-MTP inert; enable it when GLM passes P-REV-1). Flip to decoupled by striking the last two boxes if the GLM gate proves slow.
+
+## Cross-links
+- Kernel audit + banked wins: [`gemma-challenge-kernel-techniques-v7.md`](gemma-challenge-kernel-techniques-v7.md)
+- Promotion template + shared canonical-bench gate (Phase J): [`v6-iqk-promotion.md`](v6-iqk-promotion.md)
+- GLM role/quality gate: [`glm52-reviewer-capability-gates.md`](glm52-reviewer-capability-gates.md); native GLM-MTP: [`tree-draft-forward-port-plan.md`](tree-draft-forward-port-plan.md)
+- Domain index: [`inference-acceleration-index.md`](inference-acceleration-index.md)
+
+## Reporting
+Tick the gate boxes here as each precondition passes; when all green, flag READY and STOP. On promotion, follow the v6-iqk-promotion phased cutover and record the era-registry row + attestation (operator/human steps).
