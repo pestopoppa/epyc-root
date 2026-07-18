@@ -58,7 +58,11 @@ blockers resolved (K22/K23/K32/K33). Held only by operator gates + the CPU-corre
 
 ### Two-lane queue (benches need operator per-run approval → split by bench-window need)
 **LANE A — operator-facing (bank the banked win):**
-- A1 **K35 finalize** — consolidated throughput-vs-context matrix (vision + service-concurrency rows). → [gemma-challenge-kernel-techniques-v7.md](gemma-challenge-kernel-techniques-v7.md).
+- A1 **K35 finalize CLOSED ✅ 2026-07-18** — consolidated throughput-vs-context release
+  artifact now includes vision throughput/quality/memory rows and the MiniCPM-o/frontdoor
+  mixed-service matrix; remaining K35 work is the controlled live-stack MiniCPM-o flip
+  (`K35.13d`) plus optional parser/stress follow-ups. →
+  [gemma-challenge-kernel-techniques-v7.md](gemma-challenge-kernel-techniques-v7.md).
 - A2 **OP-2 canonical-bench window** — v6+iqk live verify + post-reboot canonical bench; **bundle B1 + B4 into the same window**. → [v6-iqk-promotion.md](v6-iqk-promotion.md).
 - A3 **`P-GPU-1` ratification package** — prepare-only package drafted at
   `docs/reference/p-gpu-1-ratification-package-2026-07-18.md`; MEASUREMENT amendment remains
@@ -206,7 +210,7 @@ After completing an acceleration item:
 - [ ] T5 worker gemma-4-26B-A4B `draft_max` sweep
 - [ ] P6b qwen-mtp model-load operator gate-bench
 - [ ] v6-iqk live throughput+garbage verification + clean post-reboot canonical bench
-- [ ] **[v7-audit LANE A]** A1 K35 finalize (vision + service-concurrency rows) → v7 release artifact
+- [x] **[v7-audit LANE A]** A1 K35 finalize: release artifact includes vision throughput/quality/memory rows and MiniCPM-o/frontdoor mixed-service evidence; K35.13d live-stack flip remains separate. ✅ 2026-07-18
 - [x] **[v7-audit LANE A]** A3 `P-GPU-1` MEASUREMENT ratification package drafted (prepare-only; operator still signs/amends MEASUREMENT): `docs/reference/p-gpu-1-ratification-package-2026-07-18.md`. ✅ 2026-07-18
 - [x] **[v7-audit LANE A]** A4 v7 branch-naming reconciliation: authoritative promotion tip is `experimental-v7-refresh-20260716` @ `d1e5a20ebebe567f0da6bc64ca7ea7ecd521fc24`, backed up on `fork/experimental-v7-refresh-20260716`; old `experimental-v7-candidate` references are historical only. ✅ 2026-07-18
 - [ ] **[v7-audit LANE B]** B2 stream-K `nsm→k·nsm` pmc-CSV zero-build read — 2026-07-18 audit found the cited pmc/rocprof CSVs absent from root, inference-research, and experimental-v7 trees; recover the original campaign CSVs before closing.
