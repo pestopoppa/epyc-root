@@ -72,10 +72,10 @@ After completing a CPU queue item:
 
 - [ ] P0 Post-reboot canonical decode bench: run clean-window canonical decode bench after operator reboot — the last formal v6+iqk cutover gate; share the reboot/quiet window with the AMD perf-counter benches and the Q8_0 fusion A/B (v6-iqk-promotion.md Phase J; master-index §A00 OP-2)
 - [ ] P0 Batched decode E2/E3: capture EvalTower quality/reliability/throughput telemetry before default path change, via `eval_batch_serving_evaltower_window.py` (batched-decode-measurement.md)
-- [ ] P0 Batched decode E3 go/no-go: run the per-thread-BW headroom analysis from existing E1/E2 data — decision-actionable now, zero inference (batched-decode-measurement.md)
-- [ ] P0 Batched decode waypoint E4 (doc-only): CPU17 chunked-prefill / CPU18 MegaBlocks re-promotion-or-re-close decisions, incl. Sarathi/MegaBlocks reopen-vs-re-close citing E1/E2 (batched-decode-measurement.md, sarathi-serve-cpu-evaluation.md)
+- [x] P0 Batched decode E3 go/no-go: E3 no-go/closed for now. Existing E1/E2 evidence shows a serving/topology win, while the later CPU roofline says decode-side SIMD/ALU work is BW-killed; do not write the 8x8 GEMM SIMD body. ✅ 2026-07-18
+- [x] P0 Batched decode waypoint E4 (doc-only): CPU17/Sarathi reopens only to the measurement gate for long-prompt mid-stream TBT; CPU18/MegaBlocks remains gated pending a padding/capacity-factor cost profile. ✅ 2026-07-18
 - [ ] MED DSA / DeepSeek V3.2 PR #21149: refresh PR snapshot (owning snapshot 2026-04-29, PR dormant since 2026-05-28), then pull/build/smoke with inference approval (llama-cpp-dsa-contribution.md)
-- [ ] P1 MoE-Spec CPU spec-dec (GATED): run the zero-inference reopen ASSESSMENT using the 2026-07-03 live-α report (`mtp_acceptance_report_20260703T114323Z`) to decide re-sweep vs formal close; Phase 0 sweep only if the assessment reopens (moe-spec-cpu-spec-dec-integration.md)
+- [x] P1 MoE-Spec CPU spec-dec (GATED): zero-inference assessment completed; reopen for a current live-MTP MoE verifier B-sweep, but keep registry integration blocked until current speed/acceptance/quality evidence exists. ✅ 2026-07-18
 - [ ] P1 CPU roofline: run claim-grade AMD perf-counter benches in clean-window protocol (cpu-kernel-env-flags-inventory.md)
 - [ ] P1 Shape-specialized GEMV: run the frontdoor Q8_0 barrier-count fusion A/B (llama-bench tg128 fusion on/off, one window) — Q6_K/Q5_K SIMD follow-ons deprioritized per roofline finding (cpu-shape-specialized-gemv-decode.md)
 - [ ] P2 Phase-disaggregated serving: keep only xGMI KV-transfer falsification gate active (numa-prefill-decode-disaggregation.md)

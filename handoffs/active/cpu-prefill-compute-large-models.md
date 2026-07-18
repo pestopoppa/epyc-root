@@ -38,9 +38,12 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
   If BW-bound, this whole track collapses to the decode ledger — record and close. Bundle
   the `perf record` into the next OP-2 quiet window (shares the AMD perf-counter preflight,
   already green: `data/cpu_optimization/2026-07-03-amd-perf-counter-preflight/`).
-- [ ] **PC-1 — quantify the prefill fraction** for GLM/architect long-context turns from
-  existing logs (zero-inference): what % of turn wall-clock is prefill vs decode at 8K/32K/64K?
-  This sizes the whole track's EV before any kernel spend.
+- [x] **PC-1 — quantify the prefill fraction** for GLM/architect long-context turns from
+  existing logs (zero-inference): evidence note
+  `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc1_log_sizing_20260718.md`
+  shows prompt/prefill already dominates the targeted long-context regimes: GLM-5.2 patch
+  review n=12 = 81.0% prompt wall, architect 6K/1024 = 46.8%, ingest 31K/1024 = 75.1%,
+  worker 12K/1024 = 83.1%. This sizes EV; PC-0 still must prove compute-bound hot ops. ✅ 2026-07-18
 - [ ] **PC-2 — norm-tail + Q8→f16 convert-skip design**: scope the two highest-EV levers
   against `qwen35.cpp` / the prefill graph builder; identify the exact fusable clusters.
 

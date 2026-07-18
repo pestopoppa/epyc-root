@@ -204,6 +204,8 @@ After completing an acceleration item:
 - [ ] **[v7-audit LANE A]** A1 K35 finalize (vision + service-concurrency rows) → v7 release artifact
 - [ ] **[v7-audit LANE A]** A3 `P-GPU-1` MEASUREMENT ratification package drafted (prepare, operator-signs)
 - [ ] **[v7-audit LANE A]** A4 v7 branch-naming reconciliation (candidate vs refresh-20260716) — declare authoritative tip
-- [ ] **[v7-audit LANE B]** B2 stream-K `nsm→k·nsm` pmc-CSV zero-build read
-- [ ] **[v7-audit LANE B]** B3 MoE-Spec CPU reopen assessment (zero-inference, 2026-07-03 live-α report)
+- [ ] **[v7-audit LANE B]** B2 stream-K `nsm→k·nsm` pmc-CSV zero-build read — 2026-07-18 audit found the cited pmc/rocprof CSVs absent from root, inference-research, and experimental-v7 trees; recover the original campaign CSVs before closing.
+- [x] **[v7-audit LANE B]** B3 MoE-Spec CPU reopen assessment: decision = reopen for a current live-MTP MoE verifier B-sweep; no registry integration until that sweep exists. Evidence: 2026-07-03 live-α report shows frontdoor α=0.6582, worker α=0.8256, architect α=0.6854, failed MTP roles `[]`. ✅ 2026-07-18
+- [x] **[v7-audit LANE B]** B5 E3/E4 zero-inference decisions: E3 8x8 GEMM SIMD body is no-go/closed for now; E4 CPU17 reopens only to measurement, CPU18 remains gated pending padding-cost profile. ✅ 2026-07-18
+- [x] **[v7-audit LANE B]** B6 native-GLM-MTP source/tensor-contract scoping: actual GLM-5.2 `blk.78.*` NextN tail contract recorded in inference-research; graph implementation remains gated behind GC-shadow-repair4b -> P-REV-1. ✅ 2026-07-18
 - [ ] **[v7-audit LANE B]** B7 CPU prefill-compute track scoping (PC-0 profile-first premise check)
