@@ -1,7 +1,9 @@
 # CPU Prefill-Compute for Large Models
 
-**Status**: NEW / SCOPING (opened 2026-07-18 from the v7 lever audit). Design + profile-first
-only — **no inference/bench without operator approval** (`feedback_no_concurrent_inference`).
+**Status**: SCOPED / PROFILE-GATED (B7 scoping closed 2026-07-18 from the v7
+lever audit). Design is complete enough to leave agent-zero-inference mode;
+remaining work is PC-0 only — **no inference/bench without operator approval**
+(`feedback_no_concurrent_inference`).
 **Owner handoff**: this file. **Parent index**: [inference-acceleration-index.md](inference-acceleration-index.md);
 sibling of [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md).
 
@@ -37,7 +39,8 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
   hot ops are **compute-bound** (high VALUBusy / low memory-stall) before any kernel work.
   If BW-bound, this whole track collapses to the decode ledger — record and close. Bundle
   the `perf record` into the next OP-2 quiet window (shares the AMD perf-counter preflight,
-  already green: `data/cpu_optimization/2026-07-03-amd-perf-counter-preflight/`).
+  already green: `data/cpu_optimization/2026-07-03-amd-perf-counter-preflight/`). First
+  profile cell + artifact plan is below; do not start kernel work from PC-1/PC-2 alone.
 - [x] **PC-1 — quantify the prefill fraction** for GLM/architect long-context turns from
   existing logs (zero-inference): evidence note
   `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc1_log_sizing_20260718.md`
@@ -52,6 +55,71 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
   activation packing and cuts barriers. Gated norm-tail fusion (`RMS_NORM * ssm_norm * silu(z)`)
   is second-order and should wait until post-matmul-fusion profiles prove it remains hot.
   Implementation stays blocked on PC-0 proving compute-bound prefill hot ops. ✅ 2026-07-18
+
+## PC-0 operator-window plan
+
+Run only inside an operator-approved OP-2 quiet window. Use the existing OP-2
+run root if present; otherwise create a dedicated run root under research data.
+This plan is intentionally a profile premise check, not a benchmark promotion
+or kernel implementation authorization.
+
+First cell: 122B architect prefill at 8K prompt, 1 generated token, 3 reps.
+It is the least-coupled large-model target: current registry path is known, the
+existing PC-1 log sizing shows a material prompt-wall fraction, and it avoids
+GLM reviewer-quality / DSA-top-k protocol coupling.
+
+```bash
+export PC0_RUN_ID="${OP2_RUN_ID:-b7-pc0-prefill-$(date -u +%Y%m%dT%H%M%SZ)}"
+export PC0_RUN_ROOT="${OP2_RUN_ROOT:-/mnt/raid0/llm/epyc-inference-research/data/cpu_prefill_compute/${PC0_RUN_ID}}/b7-pc0-prefill"
+mkdir -p "$PC0_RUN_ROOT"/{dryrun,perf-stat,perf-record,reports}
+
+cd /mnt/raid0/llm/epyc-inference-research
+ARCH_MODEL="/mnt/raid0/llm/models/Qwen3.5-122B-A10B-MTP-GGUF/UD-Q4_K_M/Qwen3.5-122B-A10B-UD-Q4_K_M-00001-of-00003.gguf"
+
+./scripts/benchmark/bench_canonical.sh \
+  -m "$ARCH_MODEL" -p 8192 -n 1 -r 3 --dry-run -- -o json \
+  > "$PC0_RUN_ROOT/dryrun/architect_p8192_n1.dryrun.txt" 2>&1
+
+./scripts/benchmark/bench_canonical.sh \
+  -m "$ARCH_MODEL" -p 8192 -n 1 -r 3 --perf -- -o json \
+  > "$PC0_RUN_ROOT/perf-stat/architect_p8192_n1.results.json" \
+  2> "$PC0_RUN_ROOT/perf-stat/architect_p8192_n1.perf_stat.txt"
+
+perf record -F 99 --call-graph dwarf \
+  -o "$PC0_RUN_ROOT/perf-record/architect_p8192_n1.perf.data" -- \
+  ./scripts/benchmark/bench_canonical.sh \
+    -m "$ARCH_MODEL" -p 8192 -n 1 -r 1 -- -o json \
+  > "$PC0_RUN_ROOT/perf-record/architect_p8192_n1.record_results.json" \
+  2> "$PC0_RUN_ROOT/perf-record/architect_p8192_n1.record_stderr.txt"
+
+perf report --stdio \
+  -i "$PC0_RUN_ROOT/perf-record/architect_p8192_n1.perf.data" \
+  > "$PC0_RUN_ROOT/reports/architect_p8192_n1.perf_report.txt"
+```
+
+Required PC-0 artifact fields:
+
+| Field | Capture |
+|---|---|
+| approval | quiet-window/operator approval ref; whether this was folded into OP-2 |
+| host | same host-health and perf-counter preflight artifacts as OP-2 |
+| binary | `bench_canonical.sh` dry-run output, selected binary path, commit/dirty state, `GGML_IQK=1`, library resolution |
+| model | exact model path, shard list/size, role (`architect_general` first cell) |
+| command | exact argv/env for dry-run, `--perf` stat run, and `perf record` run |
+| result | llama-bench JSON, prompt tokens, generated tokens, reps, stderr |
+| profile | `perf_stat.txt`, `perf.data`, `perf_report.txt`, top symbols, IPC/cycles/instructions, DRAM-fill events |
+| verdict | compute-bound, BW-bound, or inconclusive; if inconclusive, whether to attach to the child PID or choose a different first cell |
+
+PC-0 closes positive only if the prefill profile is materially different from
+the decode roofline: matmul/dequant/norm/fusion-candidate symbols dominate, IPC
+and vector-op counters are materially healthier than the decode profile, and
+DRAM-fill / memory-stall evidence is not the limiting factor. If the profile
+looks decode-like (low IPC, DRAM dominated, barrier/vec_dot roofline), close
+this track negative and route the result back to the decode ledger. If the
+architect cell is positive but not enough to choose a kernel target, optional
+follow-up cells are GLM-5.2 UD-IQ2_M via the GLM DSA runner and/or
+ingest-long-context 32K via the Qwen3-Next registry path, both under a fresh
+operator-approved profile window.
 
 ## Cross-links / dependencies
 

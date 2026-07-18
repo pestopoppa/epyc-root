@@ -2,7 +2,13 @@
 
 **Purpose**: forward-looking backlog for unimplemented CPU decode/prefill throughput work on local EPYC 9655 Turin hardware.
 **Scope**: CPU-only single-instance or aggregate throughput. GPU work lives in [gpu-acceleration-path.md](gpu-acceleration-path.md); routing/orchestration lives in [routing-and-optimization-index.md](routing-and-optimization-index.md); eval/quality lives in [research-evaluation-index.md](research-evaluation-index.md).
-**Updated**: 2026-07-14 backlog ROI audit — added post-reboot canonical decode bench P0, re-led GEMV row with the fusion A/B, re-gated MoE-Spec, DSA to MED with snapshot-refresh precondition, Sarathi converted to E4 gate-evaluation, and relocated the two CLOSED rows out of the Active Queue. (Prior: 2026-07-05 A7 eval-batch activation smoke pass/rollback, CPU self-draft A/B closeout, and AMD perf-counter preflight unblock.)
+**Updated**: 2026-07-18 B7 prefill-compute scoping closed; track is now
+profile-gated on PC-0 with a concrete 122B architect `bench_canonical.sh`
+`p8192/n1` perf-stat + `perf record` first cell. Prior: 2026-07-14 backlog ROI
+audit added post-reboot canonical decode bench P0, re-led GEMV row with the
+fusion A/B, re-gated MoE-Spec, DSA to MED with snapshot-refresh precondition,
+Sarathi converted to E4 gate-evaluation, and relocated the two CLOSED rows out
+of the Active Queue.
 **History**: pre-compaction detail lives in [../archived/cpu-inference-optimization-index-history-through-2026-06-19.md](../archived/cpu-inference-optimization-index-history-through-2026-06-19.md).
 
 ## Start Here
@@ -23,8 +29,9 @@ prefetch — see [../archived/cpu-inference-optimization-index-history-through-2
 and the GEMV handoff). **The ONLY live CPU decode lever is Q8_0 barrier-count operator/graph
 fusion** (P1 row below; +2.6% measured → +10–15% graph-rewrite → +72% absolute ceiling if BW-util
 matches dense). **The untapped large-model regime is prefill-compute** — prefill is compute-bound
-(not BW-killed) and dominates GLM-5.2 / 122B-architect long-context turns → new track
-[cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) (profile-first; PC-0).
+(not BW-killed) and dominates GLM-5.2 / 122B-architect long-context turns → scoped track
+[cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) (B7 scoping closed;
+PC-0 operator-window profile gate remains open).
 
 | Priority | Track | Owner handoff | Next action |
 |----------|-------|---------------|-------------|
@@ -34,7 +41,7 @@ matches dense). **The untapped large-model regime is prefill-compute** — prefi
 | P1 (GATED) | MoE-Spec CPU spec-dec integration | [moe-spec-cpu-spec-dec-integration.md](moe-spec-cpu-spec-dec-integration.md) | Re-tagged GATED: the 2026-07-04 owning-handoff refresh supersedes the earlier "blocker released" framing — mechanism is proven but there is NO consumer (REAP role removed, Coder B=64 not robust, frontdoor/architect run v6 embedded MTP self-draft). Reopen chain = fable5 G1/N5 live self-draft measurement + a live MoE verifier path. 2026-07-14 audit note: a reopen ASSESSMENT is now decision-ready using the 2026-07-03 live-α report (`mtp_acceptance_report_20260703T114323Z`: frontdoor α=0.6582, worker α=0.8256 — embedded-MTP verification batches ARE live consumer candidates); the assessment is cheap (zero inference) and decides re-sweep vs formal close. |
 | P1 | CPU roofline / AMD counter calibration | [cpu-kernel-env-flags-inventory.md](cpu-kernel-env-flags-inventory.md), [deepseek-v4-flash-cpu-port.md](deepseek-v4-flash-cpu-port.md) | Research `ad9b73a` added the no-inference AMD perf-counter preflight and `bench_canonical.sh --perf` guard; research `515a50b` unblocked it after installing/exposing `linux-perf` in the devcontainer and teaching the preflight to recognize `perf list` alias rows such as `cpu-cycles OR cycles`. Current artifact `data/cpu_optimization/2026-07-03-amd-perf-counter-preflight/summary.{json,md}` is `status=ok`; all canonical Zen 5 events are visible, the smoke probe passed, and `bench_canonical.sh --perf --dry-run` prints the canonical event wrap without inference. Next action is claim-grade perf benches in the appropriate host-health/clean-window protocol. |
 | P1 | Shape-specialized GEMV / AVX-512 follow-ons | [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md) | Lead with the frontdoor Q8_0 barrier-count fusion A/B (fuse expert gate+up, attn QKV cluster; cheapest test = llama-bench tg128 fusion on/off in one window; est +10-15% decode, one cluster already measured +2.6%; **absolute ceiling +72% (4.42→7.6 t/s) if BW-util matches dense**; re-elevated 2026-07-03 by findings-05 as the #1 CPU decode lever; **v7-audit LANE B B1 — bundle into the OP-2 quiet window**). Keep landed Q8_0 wins. Q6_K/Q5_K SIMD follow-ons are explicitly DEPRIORITIZED per the roofline finding. |
-| P1 (NEW) | Prefill-compute for large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | Decode is BW-exhausted but prefill is compute-bound and dominates GLM/architect long-context. Start with **PC-0 profile-first** (`perf record` prefill on a long-context large-model shape; confirm compute-bound before any kernel) — bundle the perf-record into the OP-2 window. Candidate levers: prefill Q8→f16 convert-skip (~+15%), high-batch norm-tail fusion, per-SSM-block fusion. |
+| P1 | Prefill-compute for large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | B7 design/scoping is closed; PC-1 sized the prompt-wall fraction and PC-2 scoped fusion targets. Remaining gate is **PC-0 profile-first** in an operator window: first cell is 122B architect `bench_canonical.sh -p 8192 -n 1 -r 3 --perf` plus `perf record`, artifacts under `$OP2_RUN_ROOT/b7-pc0-prefill`, then classify compute-bound vs BW-bound before any kernel. Candidate levers stay blocked: prefill Q8→f16 convert-skip, high-batch norm-tail fusion, and per-SSM-block fusion. |
 | P2 | Phase-disaggregated serving | [numa-prefill-decode-disaggregation.md](numa-prefill-decode-disaggregation.md) | Keep only the Phase 0 xGMI KV-transfer falsification gate active; do not build serving code until transfer cost is measured. |
 | P2 | Sarathi / MegaBlocks / Tutel ports — gate evaluation | [sarathi-serve-cpu-evaluation.md](sarathi-serve-cpu-evaluation.md), [large-moe-expert-parallelism.md](large-moe-expert-parallelism.md) | The reopen gate has arguably FIRED: E2 is a keep-candidate 4.858x eval-batch regime since 2026-07-03, and the sarathi handoff itself names exactly this trigger. Run the explicit gate evaluation — decide reopen-vs-re-close citing E1/E2 evidence. This is batched-decode waypoint E4 (doc-only, zero inference). |
 
@@ -80,4 +87,5 @@ After completing a CPU queue item:
 - [ ] P1 CPU roofline: run claim-grade AMD perf-counter benches in clean-window protocol (cpu-kernel-env-flags-inventory.md)
 - [ ] P1 Shape-specialized GEMV: run the frontdoor Q8_0 barrier-count fusion A/B (llama-bench tg128 fusion on/off, one window) — Q6_K/Q5_K SIMD follow-ons deprioritized per roofline finding (cpu-shape-specialized-gemv-decode.md)
 - [ ] P2 Phase-disaggregated serving: keep only xGMI KV-transfer falsification gate active (numa-prefill-decode-disaggregation.md)
-- [ ] P1 (NEW) Prefill-compute for large models: run PC-0 profile-first premise check (`perf record` long-context prefill; confirm compute-bound) before any kernel (cpu-prefill-compute-large-models.md)
+- [x] P1 Prefill-compute B7 scoping: existing PC-1 sizing + PC-2 design detail are enough to close agent-zero-inference scoping; first PC-0 command/artifact plan is recorded in the owner handoff. ✅ 2026-07-18
+- [ ] P1 Prefill-compute PC-0: run the operator-approved first profile cell (122B architect `p8192/n1`, `bench_canonical.sh --perf` + `perf record`; confirm compute-bound) before any kernel (cpu-prefill-compute-large-models.md)

@@ -48,7 +48,10 @@ blockers resolved (K22/K23/K32/K33). Held only by operator gates + the CPU-corre
 2. **CPU Q8_0 barrier-count operator/graph fusion** — sole live CPU decode lever; +2.6% measured → +10–15% (graph-rewrite) → +72% ceiling. → [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md).
 3. **Residency / teleport** — AXA-1 (122B IQ2 resident 2.2×/8–9×; K22 fix unblocks it), AXA-2 teleport, Gate-R (needs `P-GPU-1`). → [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md).
 4. **Native GLM-MTP forward-graph port** — ~10% remaining, +34–89% decode; **contingent on GLM quality** (GC-shadow-repair4b). → [tree-draft-forward-port-plan.md](tree-draft-forward-port-plan.md), [glm52-reviewer-capability-gates.md](glm52-reviewer-capability-gates.md).
-5. **CPU prefill-compute for large models (NEW)** — prefill is compute-bound (not BW-killed); dominates GLM/architect long-context. → [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md).
+5. **CPU prefill-compute for large models (SCOPED)** — prefill is compute-bound premise,
+   not yet proven for the first target; B7 scoping closed from existing PC-1 sizing + PC-2
+   design detail, and the remaining PC-0 operator-window profile gate starts with 122B
+   architect `p8192/n1` perf-stat + `perf record`. → [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md).
 6. **stream-K `nsm→k·nsm`+compact-LDS** — +0–10%, IQ2/capacity; pmc-CSV read first. → mi210 roadmap.
 7. **K28 GDN long-prefill recurrence kernel (GPU)** — `gated_delta_net.cu:191`. → mi210 roadmap.
 8. **MoE-Spec CPU reopen** — +5–15% Coder/REAP; zero-inference assessment first. → [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md).
@@ -77,8 +80,8 @@ blockers resolved (K22/K23/K32/K33). Held only by operator gates + the CPU-corre
   mentions are historical checkpoints only. ✅ 2026-07-18
 
 **LANE B — agent-executable:**
-- *Zero-inference now:* B2 stream-K pmc-CSV read · B3 MoE-Spec reopen assessment · B5 E3/E4 zero-inference decisions · B6 native-GLM-MTP port scoping (build/bench gated behind GLM quality) · B7 prefill-compute lever design.
-- *Needs a bench window (fold into A2):* B1 barrier-fusion `tg128` A/B · B4 DSA-D3 profile-first (`perf record`).
+- *Zero-inference now:* current B2/B3/B5/B6/B7 scoping batch closed; do not reopen without a new handoff trigger.
+- *Needs a bench window (fold into A2 or its successor):* B1 barrier-fusion `tg128` A/B · B4 DSA-D3 profile-first (`perf record`) · PC-0 prefill-compute premise profile (122B architect `p8192/n1`, perf-stat + `perf record`).
 
 ## Active Landscape
 
@@ -224,4 +227,4 @@ After completing an acceleration item:
 - [x] **[v7-audit LANE B]** B3 MoE-Spec CPU reopen assessment: decision = reopen for a current live-MTP MoE verifier B-sweep; no registry integration until that sweep exists. Evidence: 2026-07-03 live-α report shows frontdoor α=0.6582, worker α=0.8256, architect α=0.6854, failed MTP roles `[]`. ✅ 2026-07-18
 - [x] **[v7-audit LANE B]** B5 E3/E4 zero-inference decisions: E3 8x8 GEMM SIMD body is no-go/closed for now; E4 CPU17 reopens only to measurement, CPU18 remains gated pending padding-cost profile. ✅ 2026-07-18
 - [x] **[v7-audit LANE B]** B6 native-GLM-MTP source/tensor-contract scoping: actual GLM-5.2 `blk.78.*` NextN tail contract recorded in inference-research; graph implementation remains gated behind GC-shadow-repair4b -> P-REV-1. ✅ 2026-07-18
-- [ ] **[v7-audit LANE B]** B7 CPU prefill-compute track scoping (PC-0 profile-first premise check)
+- [x] **[v7-audit LANE B]** B7 CPU prefill-compute track scoping: closed from existing PC-1 prompt-wall sizing + PC-2 fusion design; owner handoff now leaves PC-0 as a concrete operator-window profile gate, not more docs scoping. ✅ 2026-07-18
