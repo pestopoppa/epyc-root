@@ -39,9 +39,20 @@ same-family drafter (35B/122B qwen35 at Q8) trading α for fit.
   acceptance for an aggressive-IQ GPU drafter vs the CPU high-quant target on the real task
   corpus, BEFORE any serving build (the N5-alpha gate already cleared `n5_spec_on` 376/376,
   but that was the *alignment* check, not the quant-asymmetric acceptance). Operator-gated bench.
-- [ ] **DR-1 — economics model**: write the break-even (acceptance × draft-length must
-  amortize the CPU verify) as a spreadsheet/model parameterized by α, draft depth, and the
-  CPU/GPU t/s split — decide go/no-go on paper before building.
+  - [ ] **DR-0a — procure/build the aggressive same-model IQ drafter artifact**: 2026-07-18
+    MI210 worker confirmed the bench is not runnable as stated because no aggressive same-model
+    IQ drafter artifact is downloaded/registered. First unblocker is an IQ1/IQ2_XXS or REAP+IQ1
+    drafter candidate that fits 64 GB HBM for the selected high-quant CPU verifier; do not
+    substitute an unrelated external-drafter lane.
+  - [x] **DR-0 negative scheduling check ✅ 2026-07-18**: attempted to schedule the bounded
+    MI210 measurement, found the missing-artifact blocker, and stopped rather than inventing a
+    serving implementation. Fallback GPU time was used for a separate Qwen3.6-27B n-gram smoke
+    (`data/ngram_gpu_smoke_20260718T221549Z/`), which is observation-only and does not close DR-0.
+- [x] **DR-1 — economics model ✅ 2026-07-18**: break-even model recorded at
+  [docs/reference/gpu-drafter-break-even-model-2026-07-18.md](../../docs/reference/gpu-drafter-break-even-model-2026-07-18.md).
+  Key result: external Stage-1/2 failed despite `α=1.0`, so their blocker is
+  overhead/control cost, not acceptance. Future drafter lanes must satisfy
+  `E(α,K) > F(K)+H(K)` on paper before any serving build.
 
 ## Cross-links
 
