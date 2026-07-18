@@ -3,7 +3,7 @@
 **Status:** NOT PROMOTED — readiness-gated. Production stays on `production-consolidated-v6` (+iqk, frozen). This handoff tracks promoting the validated experimental **v7** kernel to a NEW production version **production-consolidated-v7**, per the four-step experimental-kernel workflow (fresh-pull → build → validate-no-regression → deploy as new version). Sibling/template: the completed v5→v6 cutover in [`v6-iqk-promotion.md`](../completed/v6-iqk-promotion.md) (phased procedure + rollback pattern to reuse).
 
 ## What v7 is
-Experimental tip **`experimental-v7-refresh-20260716` @ `d1e5a20eb`** (`/mnt/raid0/llm/llama.cpp-experimental`; backed up on `fork/experimental-v7-refresh-20260716`). Verified on disk: iqk present, GPU-opt flags present, `GGML_TYPE_Q2_0`=42 present. Full lever audit + banked-wins detail in [`gemma-challenge-kernel-techniques-v7.md`](gemma-challenge-kernel-techniques-v7.md) §v7 Promotion Readiness.
+Experimental tip **`experimental-v7-refresh-20260716` @ `231db22c7`** (`/mnt/raid0/llm/llama.cpp-experimental`; backed up on `fork/experimental-v7-refresh-20260716`). Verified on disk: iqk present, GPU-opt flags present, `GGML_TYPE_Q2_0`=42 present. Since the `d1e5a20eb` branch-reconcile checkpoint, this tip also includes the Dream arch smoke fix (`04753078f`), GLM-DSA native-MTP scaffold (`d6706a612`), Expected-Attention compact telemetry guard (`8905c3d2c`), and K28 GDN boundary test (`231db22c7`). Full lever audit + banked-wins detail in [`gemma-challenge-kernel-techniques-v7.md`](gemma-challenge-kernel-techniques-v7.md) §v7 Promotion Readiness.
 
 **Banked, correctness-verified, runtime-gated-off wins:**
 - HIP graphs (per-decode capture) **+25%** worker spec-dec (A4B MoE), +4–14% base decode
