@@ -40,9 +40,11 @@ K32/K33 external-draft path; K24 base-decode "regression" ruled a host artifact 
 - A2 — **OP-2** quiet-window: v6+iqk live throughput+garbage verify + clean post-reboot canonical
   bench + CPU-correctness gate (bundle the CPU barrier-fusion A/B + DSA-D3 profile in the same window).
 - A3 — **`P-GPU-1`** MEASUREMENT ratification so Gate-R residency + all GPU numbers become decision-grade.
-- A4 — **branch-naming reconciliation**: handoffs still cite the old `experimental-v7-candidate`
-  in places and the new `experimental-v7-refresh-20260716` in others — declare `refresh-20260716`
-  the authoritative promotion tip (or the operator's chosen tip) and normalize references.
+- A4 — **branch-naming reconciliation CLOSED ✅ 2026-07-18**: authoritative promotion tip is
+  `/mnt/raid0/llm/llama.cpp-experimental` branch `experimental-v7-refresh-20260716` at
+  `d1e5a20ebebe567f0da6bc64ca7ea7ecd521fc24` (`Activate recurrent state rollback test`).
+  The branch is backed up on the fork remote as `fork/experimental-v7-refresh-20260716` at the
+  same SHA. Older `experimental-v7-candidate` references are historical checkpoints only.
 
 **K28** (GDN long-prefill recurrence kernel, GPU, `gated_delta_net.cu:191`) is owned as a `- [ ]`
 task in [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md).

@@ -61,7 +61,10 @@ blockers resolved (K22/K23/K32/K33). Held only by operator gates + the CPU-corre
 - A1 **K35 finalize** — consolidated throughput-vs-context matrix (vision + service-concurrency rows). → [gemma-challenge-kernel-techniques-v7.md](gemma-challenge-kernel-techniques-v7.md).
 - A2 **OP-2 canonical-bench window** — v6+iqk live verify + post-reboot canonical bench; **bundle B1 + B4 into the same window**. → [v6-iqk-promotion.md](v6-iqk-promotion.md).
 - A3 **`P-GPU-1` ratification package** — draft MEASUREMENT amendment (prepare, don't author) so Gate-R + GPU numbers become decision-grade.
-- A4 **Branch-naming reconciliation** — old `experimental-v7-candidate` vs new `experimental-v7-refresh-20260716`; declare the authoritative tip for promotion.
+- A4 **Branch-naming reconciliation** — authoritative promotion tip declared:
+  `experimental-v7-refresh-20260716` @ `d1e5a20ebebe567f0da6bc64ca7ea7ecd521fc24`;
+  backed up as `fork/experimental-v7-refresh-20260716`. Old `experimental-v7-candidate`
+  mentions are historical checkpoints only. ✅ 2026-07-18
 
 **LANE B — agent-executable:**
 - *Zero-inference now:* B2 stream-K pmc-CSV read · B3 MoE-Spec reopen assessment · B5 E3/E4 zero-inference decisions · B6 native-GLM-MTP port scoping (build/bench gated behind GLM quality) · B7 prefill-compute lever design.
@@ -203,7 +206,7 @@ After completing an acceleration item:
 - [ ] v6-iqk live throughput+garbage verification + clean post-reboot canonical bench
 - [ ] **[v7-audit LANE A]** A1 K35 finalize (vision + service-concurrency rows) → v7 release artifact
 - [ ] **[v7-audit LANE A]** A3 `P-GPU-1` MEASUREMENT ratification package drafted (prepare, operator-signs)
-- [ ] **[v7-audit LANE A]** A4 v7 branch-naming reconciliation (candidate vs refresh-20260716) — declare authoritative tip
+- [x] **[v7-audit LANE A]** A4 v7 branch-naming reconciliation: authoritative promotion tip is `experimental-v7-refresh-20260716` @ `d1e5a20ebebe567f0da6bc64ca7ea7ecd521fc24`, backed up on `fork/experimental-v7-refresh-20260716`; old `experimental-v7-candidate` references are historical only. ✅ 2026-07-18
 - [ ] **[v7-audit LANE B]** B2 stream-K `nsm→k·nsm` pmc-CSV zero-build read — 2026-07-18 audit found the cited pmc/rocprof CSVs absent from root, inference-research, and experimental-v7 trees; recover the original campaign CSVs before closing.
 - [x] **[v7-audit LANE B]** B3 MoE-Spec CPU reopen assessment: decision = reopen for a current live-MTP MoE verifier B-sweep; no registry integration until that sweep exists. Evidence: 2026-07-03 live-α report shows frontdoor α=0.6582, worker α=0.8256, architect α=0.6854, failed MTP roles `[]`. ✅ 2026-07-18
 - [x] **[v7-audit LANE B]** B5 E3/E4 zero-inference decisions: E3 8x8 GEMM SIMD body is no-go/closed for now; E4 CPU17 reopens only to measurement, CPU18 remains gated pending padding-cost profile. ✅ 2026-07-18
