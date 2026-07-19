@@ -169,33 +169,29 @@ Built into the **v7-candidate** kernel (fresh v6+iqk + 4 GPU opts + tree-draft, 
 Operator asked whether GLM-5.2 (the last candidate niche) lacks an MTP head, which would justify tree-draft. Investigated (on-disk metadata + fork source + upstream):
 - **GLM-5.2 DOES ship a native MTP/NEXTN head** — the GLM-MoE family carries it; converter `conversion/glm.py` reads it with `skip_mtp=False`; upstream has the NEXTN tensor loaders; GLM-5.2 arch = `GlmMoeDsaForCausalLM`. So MTP dominates an external drafter there too.
 - **BUT GLM's MTP head is an INERT STUB on our fork** — `src/models/glm4-moe.cpp` / `glm-dsa.cpp` LOAD the NEXTN tensors but SKIP them in the forward pass ("preserved but unused"); the functional MTP draft driver (`common/speculative.cpp`) is qwen35/qwen35moe-only. GLM has no *working* spec-dec today.
-- **Historical GLM-5.2 runnability caveat (superseded 2026-07-18)** — this was DSA-gated in the original scan. GLM-5.2 UD-IQ2_M is now downloaded, GLM-DSA cache/runtime wiring is closed on experimental v7, and the binding gate is reviewer-quality re-clear rather than PR#21149 runnability.
+- **Historical GLM-5.2 runnability caveat (superseded 2026-07-18)** — this was DSA-gated in the original scan. GLM-5.2 UD-IQ2_M is now downloaded, GLM-DSA cache/runtime wiring is closed on experimental v7, and the 2026-07-19 route-away verdict means GLM is not admitted as production patch reviewer on the current policy.
 
 **DECISION: tree-draft Phase 1b SHELVED (conclusive).** Every target on our stack (qwen 27B/35B/122B, gemma, GLM-5.2) ships an MTP head; external-drafter tree-draft is dominated by MTP everywhere (measured: qwen-27B MTP 41.9 vs external-draft ~18 < plain 31). The Phase-1a engine is **validated + banked in the v7-candidate** — cheap to revive if a genuinely MTP-less target ever appears.
 
-**Higher-value FUTURE lever surfaced (flag, do NOT drop — research-intake rule):** finish the **native GLM MTP forward graph** — it is ~90% scaffolded (tensors load, `skip_mtp=False`, the draft driver already supports `draft-mtp`; only the glm4moe/glm-dsa NEXTN *forward execution* is stubbed — a bounded port like qwen35's, which delivers +58–89% in prod). This is the right GLM-5.2 spec-dec investment, gated on GLM-5.2 becoming runnable past the DSA gate (PR#21149).
+**Higher-value FUTURE lever surfaced (flag, do NOT drop — research-intake rule):** finish the **native GLM MTP forward graph** — it is ~90% scaffolded (tensors load, `skip_mtp=False`, the draft driver already supports `draft-mtp`; only the glm4moe/glm-dsa NEXTN *forward execution* was stubbed before the v7 scaffold work — a bounded port like qwen35's, which delivers +58–89% in prod). This is the right GLM-5.2 spec-dec investment only if GLM remains in a scoped v7/research serving role after the reviewer route-away verdict.
 
-**2026-07-18 gate update (v7 lever audit).** The PR#21149 runnability gate is **stale/superseded**:
+**2026-07-19 gate update (v7 lever audit + reviewer route-away).** The PR#21149 runnability gate is **stale/superseded**:
 generic DSA landed via upstream #23346 and GLM-5.2 DSA cache/runtime is wired on experimental
 v7 `3dee86a5a` (GLM-5.2 UD-IQ2_M loads + engages DSA). So runnability is **no longer** the
-binding gate. The binding gate is now **GLM task-quality re-clear**: patch-review still
-over-approves (FA up to 91.7%; GC-shadow-repair4a narrowed it but exposed a label-audit
-blocker → **GC-shadow-repair4b** open in [glm52-reviewer-capability-gates.md](glm52-reviewer-capability-gates.md)).
-Do not treat the native-GLM-MTP port (or the real sparse final-attention path,
-[llama-cpp-dsa-contribution.md](llama-cpp-dsa-contribution.md) D2) as throughput/admission work
-before GC-shadow-repair4b → P-REV-1 clears — the flagship GLM role (cross-family patch reviewer)
-is unfunded until then, so long benchmark/optimization spend on a model that cannot yet do its
-job has near-zero EV. **Operator exception, 2026-07-18:** bounded source prep/scaffold work is
-allowed and now partly closed below, with no promotion or throughput claim. Once quality clears,
-the native-GLM-MTP port is the single highest-EV GLM acceleration lever (+34–89% decode on a
-~2.5 t/s model).
+binding gate. The 2026-07-19 decision-grade C-CRAB P-REV-1 run failed GLM patch-review admission
+(`FA 41.7%`, `FR 25.0%`, `AUC 0.509`), and GC-external-1e routes production reviewer selection
+away from GLM unless a concrete new repair hypothesis appears. Therefore native-GLM-MTP is no
+longer a reviewer-admission prerequisite. Treat it as scoped acceleration work only if the operator
+keeps GLM accelerated in the v7 release or assigns GLM a non-reviewer research/serving role. The
+real sparse final-attention path ([llama-cpp-dsa-contribution.md](llama-cpp-dsa-contribution.md)
+D2) has the same scoped-work status.
 
 ## Progress checklist
 
 - [x] Investigation complete - tree-draft Phase 1b SHELVED (uncompetitive vs MTP) ✅
-- [ ] **Native GLM MTP forward-graph port** (GLM-5.2 `glm-dsa` scaffold is validated; remaining: measure real α/acceptance/quality/throughput after GC-shadow-repair4b → P-REV-1, and separately scope `glm4-moe` if that family is in serving scope). **Throughput/admission remains gated behind GLM quality re-clear**, then measure α. EV +34–89% decode.
+- [ ] **Native GLM MTP forward-graph port** (GLM-5.2 `glm-dsa` scaffold is validated; remaining: measure real α/acceptance/quality/throughput only if GLM acceleration stays coupled to v7 or GLM gets a scoped non-reviewer role, and separately scope `glm4-moe` if that family is in serving scope). EV +34–89% decode on prior MTP-equipped targets, but GLM is not admitted as production patch reviewer on the current policy.
   - [x] **B6 source/tensor-contract scoping ✅ 2026-07-18**: inference-research artifact `docs/data/glm52_nextn_tensor_contract_20260718.json` confirms GLM-5.2 `blk.78.*` is a full GLM-DSA/MLA/MoE tail plus `nextn.eh_proj`, `nextn.enorm`, `nextn.hnorm`, and `nextn.shared_head_norm`; no separate `nextn.embed_tokens` / `nextn.shared_head_head` tensors were found. Port implication: reuse main embed/output head as needed, stop skipping `blk.78.*`, and combine Qwen35 NextN projection/norm flow with GLM/DeepSeek32 DSA block internals.
   - [x] **B6 target-side scaffold ✅ 2026-07-18**: experimental-v7 commit `d6706a612` exposes the post-final-norm DSA hidden state via `res->t_h_nextn` in the shared DeepSeek32/GLM-DSA graph only when NextN layers exist, stops skipping the physical `blk.78` NextN tail tensors, and adds a real GLM-5.2 single-NextN `glm-dsa` `LLM_GRAPH_TYPE_DECODER_MTP` graph using the GLM-DSA/MLA/MoE tail plus `nextn.eh_proj` / `hnorm` / `enorm` / `shared_head_norm`. HIP `test-backend-ops`, `test-llama-archs`, and `llama-server` builds passed; bounded CPU-only real-GLM smokes completed for plain load/decode and same-model `--spec-type draft-mtp`; `test-llama-archs` passed for `glm-dsa`, `deepseek32`, and `dream` once validation used the matching experimental shared libraries. CTest now prepends the build target directory to `LD_LIBRARY_PATH`, and `test-generate-models` plus `test-recurrent-state-rollback` pass. This closes GLM-5.2 scaffold feasibility, not multi-head GLM support or throughput/admission.
   - [x] **B6 contract-generalization audit ✅ 2026-07-19**: GLM-5.2 and Qwen3.5-27B no-inference tensor contracts both report a single NextN block (`glm-dsa`: `nextn_predict_layers=1`, `block_count=79`, tail `blk.78`; `qwen35`: `nextn_predict_layers=1`, `block_count=65`, tail `blk.64`). The current GLM scaffold is therefore safe only as a single-NextN implementation; do not claim multi-head/general MTP until the GLM/DeepSeek32 graph adopts the `step35`/`hy_v3` `nextn_layer_offset` pattern and tests a multi-head artifact. Audit artifact: [`docs/reference/glm-mtp-contract-generalization-audit-2026-07-19.md`](../../docs/reference/glm-mtp-contract-generalization-audit-2026-07-19.md).
-  - [ ] **B6 numerical/runtime gate**: after GLM reviewer quality re-clears, run end-to-end numerical equivalence/coherence plus runtime draft counters on real generated-token volume; one-token/eight-token scaffold smokes are not enough for α, quality, or throughput.
-  - [ ] **B6 acceptance/throughput gate**: after GLM reviewer quality re-clears, run a decision-grade native-GLM-MTP acceptance/quality/speed A/B with live speculative counters and enough generated tokens to measure α honestly. Do not promote from the one-token/eight-token scaffold smokes.
+  - [ ] **B6 numerical/runtime gate**: if GLM acceleration stays in scope, run end-to-end numerical equivalence/coherence plus runtime draft counters on real generated-token volume; one-token/eight-token scaffold smokes are not enough for α, quality, or throughput.
+  - [ ] **B6 acceptance/throughput gate**: if GLM acceleration stays in scope, run a native-GLM-MTP acceptance/quality/speed A/B with live speculative counters and enough generated tokens to measure α honestly. Do not promote from the one-token/eight-token scaffold smokes.

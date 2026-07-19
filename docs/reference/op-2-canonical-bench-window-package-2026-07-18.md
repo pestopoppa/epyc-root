@@ -1,16 +1,16 @@
 # OP-2 Canonical Bench Quiet-Window Package - 2026-07-18
 
-> **2026-07-19 operator-confirmed execution gate:** OP-2 is **not reboot-gated**. Live host
+> **2026-07-19 operator-confirmed execution gate:** OP-2 was **not reboot-gated**. Live host
 > health is already bench-eligible (`numa_balancing=0`, CPU ~3.2 GHz / no severe throttle,
-> 16-day uptime). The gate is a **quiet window** (pause the parallel agent's benching load)
-> plus the throttle/affinity preflight. Reboot only if preflight flags multi-day throttle or
-> another host-health failure.
+> 16-day uptime). The gate was a **quiet window** (pause the parallel agent's benching load)
+> plus the throttle/affinity preflight. Reboot was not required.
 
-**Status**: docs-only sidecar. This package does not amend `/workspace/MEASUREMENT.md`,
-does not authorize production changes, does not authorize v6 rebuilds or edits, and does
-not promote v7. It is a concrete run package for an operator-approved quiet window.
+**Status**: historical run package plus completed OP-2 provenance. This package did not amend
+`/workspace/MEASUREMENT.md`, did not authorize production changes, did not authorize v6 rebuilds
+or edits, and did not promote v7. The OP-2 execution completed on 2026-07-19; the live report is
+`/mnt/raid0/llm/epyc-inference-research/docs/data/op2_canonical_bench_window_20260719_live5.md`.
 
-**Scope**: prepare OP-2 evidence collection. The current executable quiet-window payload is:
+**Scope**: prepared OP-2 evidence collection. The executed quiet-window payload was:
 
 1. v6+iqk live throughput and garbage verification.
 2. bench-clean canonical decode bench plus CPU-correctness gate.
@@ -18,15 +18,16 @@ not promote v7. It is a concrete run package for an operator-approved quiet wind
 B1 barrier-fusion `tg128` A/B and B4 DSA-D3 profile-first are retained as recorded OP-2 history,
 not current window actions, unless their prerequisites change.
 
-**2026-07-19 execution-status update:** B1 and B4 should no longer consume quiet-window
+**2026-07-19 execution-status update:** OP-2 PASS. B1 and B4 should no longer consume quiet-window
 decision time unless their prerequisites change. B1 has no current v7 fusion flag or immutable
 binary pair, so record it as `skipped_not_staged` rather than run an invalid A/B. B4 already ran
 the GLM-5.2 DSA-D3 profile-first gate and closed D3.1 as no-go for immediate Lightning Indexer
 SIMD work (`ggml_compute_forward_lightning_indexer` was only `1.08%` of cycle samples). The
-remaining OP-2 quiet-window payload is live v6+iqk role/garbage verification plus the clean
-canonical CPU decode bench.
+live v6+iqk role/garbage verification plus the clean canonical CPU decode bench completed in
+`live5`: role smokes `6/6`, clean sentinel `status=ok`, process blockers `0`, and P-BENCH-1
+frontdoor Q8 tg128 `avg_ts=12.442712` (`n=10`, `96` threads).
 
-**2026-07-19 no-inference prep bundle:** inference-research now has
+**2026-07-19 no-inference prep bundle:** inference-research has
 `scripts/benchmark/op2_quiet_window_prep.py`, which creates the OP-2 run directory, records
 host/repo/process state, stamps the narrowed stage plan, and writes
 `operator_next_commands.sh` without starting inference or touching production v6. Current prep
@@ -86,7 +87,7 @@ Required top-level artifact fields:
 
 ## Operator Approvals
 
-Required before any execute step:
+Required before any execute step; retained here as historical gate criteria:
 
 | Approval | Needed for | Notes |
 |---|---|---|
@@ -195,7 +196,8 @@ Route results to `handoffs/active/v6-iqk-promotion.md` and the A2 row of
 ### 2. Bench-Clean Canonical Decode Bench / CPU-Correctness Gate
 
 Purpose: collect the pending clean v6+iqk canonical decode evidence under `P-BENCH-1`.
-Run during an operator-approved quiet window after the throttle/affinity preflight passes.
+Historical execution recipe: run during an operator-approved quiet window after the
+throttle/affinity preflight passes.
 Do not require a reboot unless the preflight flags multi-day throttle or another
 host-health failure that the operator chooses to clear by reboot.
 
