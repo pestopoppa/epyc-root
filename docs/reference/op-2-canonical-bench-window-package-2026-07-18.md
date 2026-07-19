@@ -35,7 +35,10 @@ artifact:
 The generated operator script now includes concrete `OP2_READY` role-smoke `curl` commands for
 `frontdoor`, `worker_general`, `architect_general`, `ingest_long_context`, `worker_vision`, and
 `vision_escalation`, with per-role request/response/meta/check artifacts plus
-`live-v6/role_smoke_aggregate.json`; it is no longer a prose-only smoke instruction.
+`live-v6/role_smoke_aggregate.json`; it is no longer a prose-only smoke instruction. The tracked
+prep directory is **not** the execution artifact root: unless the operator overrides
+`OP2_RUN_ROOT`, the script creates a fresh timestamped run under
+`/mnt/raid0/llm/epyc-inference-research/data/op2_canonical_bench_window/`.
 
 Production kernel `/mnt/raid0/llm/llama.cpp` remains frozen. Experimental work, if any
 arm requires it, stays in `/mnt/raid0/llm/llama.cpp-experimental` and is not deployed by
