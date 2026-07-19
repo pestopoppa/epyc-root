@@ -122,6 +122,7 @@ cd /mnt/raid0/llm/epyc-inference-research
 python3 scripts/benchmark/glm52_ccrab_accept_control_signoff.py \
   docs/data/glm52_ccrab_accept_control_n24_signoff_packet_20260719.json \
   --min-hard-accepts 24 \
+  --expected-row-ids docs/data/glm52_ccrab_accept_control_n24_row_ids_20260718.txt \
   --json-out docs/data/glm52_ccrab_accept_control_n24_signoff_report_20260719.json \
   --row-ids-out docs/data/glm52_ccrab_accept_control_n24_hard_accept_row_ids_20260719.txt \
   --oracle-notes-out docs/data/glm52_ccrab_accept_control_n24_oracle_notes_20260719.json
@@ -144,8 +145,10 @@ Acceptance condition:
 - `rejected_or_ambiguous_n == 0`
 - `unreviewed_n == 0`
 - `decision_grade == true`
+- `accepted_row_ids_match_expected == true`
 - `hard_accept_row_ids_20260719.txt` contains exactly the same 24 row ids as
-  `glm52_ccrab_accept_control_n24_row_ids_20260718.txt`, one per line.
+  `glm52_ccrab_accept_control_n24_row_ids_20260718.txt`, one per line. This
+  exact-match guard is enforced by `--expected-row-ids`.
 - `oracle_notes_20260719.json` contains a note entry for every accepted row id,
   each with reviewer identity and review timestamp.
 
