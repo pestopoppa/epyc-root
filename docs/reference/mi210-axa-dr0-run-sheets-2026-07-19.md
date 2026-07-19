@@ -40,6 +40,15 @@ Required telemetry:
 
 Validation experiments:
 
+0. Dry policy trace over captured/request-like rows.
+   - 2026-07-19 no-inference scaffold: `epyc-orchestrator` now has
+     `scripts/benchmark/axa2_teleport_policy_trace.py`, which evaluates the actual
+     `TeleportPolicy` decision path and writes `summary.json` plus
+     `policy_decisions.jsonl` without starting inference or acquiring a GPU lease. Sample
+     artifact:
+     `/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/axa2_policy_trace_20260719/`.
+     The same-quant resident-tail sample cut over; the Q4-CPU→IQ2-GPU sample was rejected by
+     the default `same_quant_only` policy. This closes dry policy-trace scaffolding only.
 1. GPU prefill sizing at prefix lengths matching expected cutover prefixes: 2K, 8K, 16K, and 32K
    tokens where the model supports it.
    - 2026-07-19 observation-grade partial: 122B UD-IQ2_M on MI210 completed `pp2048 342.06 t/s`,

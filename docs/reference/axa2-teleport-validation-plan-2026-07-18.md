@@ -146,8 +146,10 @@ Do not execute from this plan. Replace paths, ports, commits, and protocol flags
 only inside an operator-approved validation window.
 
 ```bash
-# Placeholder only: dry policy trace, no server action.
-python scripts/benchmark/axa2_teleport_policy_trace.py \
+# Dry policy trace, no server action. This helper lives in epyc-orchestrator
+# and evaluates the real TeleportPolicy code path without acquiring a lease.
+cd /mnt/raid0/llm/epyc-orchestrator
+python3 scripts/benchmark/axa2_teleport_policy_trace.py \
   --trace <captured-trace.jsonl> \
   --cpu-tps <cpu_tps> \
   --gpu-tps <gpu_tps> \
@@ -169,6 +171,11 @@ python scripts/benchmark/axa2_sampling_continuity.py \
   --sampler-profile production \
   --output <artifact-dir>
 ```
+
+2026-07-19 sample dry trace artifact:
+`/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/axa2_policy_trace_20260719/`.
+It contains two no-inference policy rows: a same-quant resident-tail cutover
+candidate and a default cross-quant rejection (`quant_change_not_allowed`).
 
 ## Gate Dependencies
 
