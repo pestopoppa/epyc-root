@@ -10,6 +10,26 @@ runs scattered across the inference handoffs.
 quant, device, pp t/s, tg t/s, quality, role-ready, artifact) — do not bury results in a
 checkbox line + artifact path alone. Keep this the single source of "how are the models doing."
 
+## ⚠ Steering (2026-07-19) — stop grinding the quality-blocked breadth
+
+The sub-2-bit / exotic-model breadth is **OBSERVATION speed-only and quality-blocked or broken**
+— none are role-ready, and continued probing is **low-EV**. **STOP probing these unless a
+*specific* quality path opens** (a concrete prompt/schema/loader fix with a hypothesis, not
+another speed rerun):
+- **Bonsai-8B / Bonsai-27B Q1_0** — fast but 6/8 instruction-format fail; no quality clearance.
+- **Ternary Bonsai Q2_g64** — 6/8, empty `<think>` tags; ngram is speed-only.
+- **Ternary Bonsai Q2_0** — broken load (498/498 tensors short); needs a producer/transcode fix, not reruns.
+- **Nemotron-Nano Q8 / Nemotron-Diffusion (intake-576)** — fail strict JSON (budget→reasoning; diffusion CLI ignores common grammar/schema). Keep out of production roles.
+- **Qwen3-VL-8B/30B, SuperGemma4** — vision candidates dominated by the already-activated MiniCPM-o.
+
+**Redirect freed cycles to the operator-gated promotion work** (higher EV): OP-2 canonical bench
+prep, `P-GPU-1` ratification, **AXA-2 teleport**, GLM accept-control (GC-shadow-repair4b), and
+PC-0 prefill-compute — see [`v7-promotion.md`](../../handoffs/active/v7-promotion.md) gate +
+[`inference-acceleration-index.md`](../../handoffs/active/inference-acceleration-index.md) LANE A/B.
+
+**And: maintain this scoreboard** — append every future probe row here rather than burying it in a
+checkbox line, so there's always one glance-able read.
+
 ## Scoreboard
 
 | Model | Quant | Device | Prompt t/s (pp) | Decode t/s (tg) | Quality | Role-ready? | Evidence |

@@ -5,6 +5,15 @@
 **Updated**: 2026-04-21 (monitoring confirmed — PR #21089 still open, ChunkKV unchanged)
 **Categories**: quantization, hardware_optimization
 
+> **⚠ STEERING (2026-07-19) — deprioritize the sub-2-bit breadth probes.** Bonsai-8B/27B `Q1_0`,
+> Ternary `Q2_g64`, and Ternary `Q2_0` were probed on experimental-v7 and are **speed-only,
+> quality-blocked or broken-load** (Q1_0 6/8 instruction-format; Q2_g64 6/8 + empty `<think>`;
+> Q2_0 won't load — 498/498 tensors short, noncanonical packing). **Do NOT keep running speed
+> reruns on these.** Reopen ONLY on a *specific* quality path: a producer/transcode fix for the
+> Q2_0 layout, or a prompt/template fix with a hypothesis for the instruction-format miss. Full
+> results + verdicts: [`../../docs/reference/model-probe-scoreboard.md`](../../docs/reference/model-probe-scoreboard.md).
+> Freed cycles → operator-gated v7 promotion work (OP-2 / P-GPU-1 / AXA-2 / GLM accept-control).
+
 ## Status as of 2026-04-21
 
 Backburner monitoring. PR #21038 remains merged and auto-enabled in production v3 (confirmed 2026-04-17). PR #21089 (TBQ3_0/TBQ4_0 CPU KV cache kernels) still open — no movement since last review. ChunkKV proposal unchanged. TQ3_1S rejection stands (immaturity + wrong target; see rationale below). Next revisit: when PR #21089 receives maintainer review or lands.
