@@ -102,6 +102,24 @@ Retro-cert audit checklist for any future operator-approved upgrade:
 3. If retro-certification is allowed, audit each artifact field-by-field before upgrading it
    from observation to claim.
 
+## Ratification Gate Checklist
+
+Use this as the execution checklist for the operator decision. Agents may prepare or audit
+the listed artifacts, but must not author, sign, or merge the MEASUREMENT amendment.
+
+- [ ] Human/operator amendment to `/workspace/MEASUREMENT.md` is signed or merged.
+- [ ] Amendment states whether experimental-v7-candidate measurements are valid promotion
+  evidence, or whether only a production-named kernel may produce `P-GPU-1` claims.
+- [ ] Amendment states whether retro-certification is allowed at all.
+- [ ] If retro-certification is allowed, every candidate artifact passes the mandatory-field
+  audit: clocks/power/temp before+after, VRAM residency and KFD PID checks, binary/model
+  identity, warm-up/discard policy, rep count, CPU-stack interference policy, result
+  grammar, and cleanup proof.
+- [ ] If any mandatory field is absent, that artifact remains observation-grade and Gate-R
+  must rerun under the ratified protocol.
+- [ ] No vendor/web number appears in a decision row.
+- [ ] No production-v6 edit, build, or promotion is performed as part of ratification.
+
 Known retro-certification risk: the current Gate-R candidate artifact includes utilization,
 VRAM, PID/memory samples, guard state, commands, plan, report, and cleanup proof, but it may
 not contain a complete clocks/power/temp before+after record. If the ratified protocol keeps

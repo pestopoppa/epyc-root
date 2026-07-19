@@ -1,11 +1,10 @@
 # OP-2 Canonical Bench Quiet-Window Package - 2026-07-18
 
-> **⚠ Correction (2026-07-19, operator-confirmed): OP-2 is NOT reboot-gated.** Wherever this
-> package says "post-reboot," read it as **"bench-clean host in an operator-approved quiet
-> window."** Live host health is already bench-eligible (`numa_balancing=0`, CPU ~3.2 GHz / no
-> severe throttle, 16-day uptime); the gate is a **quiet window** (pause the parallel agent's
-> benching load) + the throttle/affinity preflight — **no host reboot is required** unless the
-> preflight flags multi-day throttle. This is actionable now.
+> **2026-07-19 operator-confirmed execution gate:** OP-2 is **not reboot-gated**. Live host
+> health is already bench-eligible (`numa_balancing=0`, CPU ~3.2 GHz / no severe throttle,
+> 16-day uptime). The gate is a **quiet window** (pause the parallel agent's benching load)
+> plus the throttle/affinity preflight. Reboot only if preflight flags multi-day throttle or
+> another host-health failure.
 
 **Status**: docs-only sidecar. This package does not amend `/workspace/MEASUREMENT.md`,
 does not authorize production changes, does not authorize v6 rebuilds or edits, and does
@@ -14,7 +13,7 @@ not promote v7. It is a concrete run package for an operator-approved quiet wind
 **Scope**: prepare OP-2 evidence collection for:
 
 1. v6+iqk live throughput and garbage verification.
-2. clean post-reboot canonical decode bench plus CPU-correctness gate.
+2. bench-clean canonical decode bench plus CPU-correctness gate.
 3. B1 barrier-fusion `tg128` A/B.
 4. B4 DSA-D3 profile-first `perf record`.
 
@@ -68,15 +67,16 @@ Required before any execute step:
 
 | Approval | Needed for | Notes |
 |---|---|---|
-| Quiet window | all inference/bench/profile stages | No concurrent AutoPilot or unrelated llama workloads. |
-| Host reboot | clean post-reboot canonical bench | If no reboot is approved, the clean bench becomes observation-only unless P-BENCH-1 host-health rules are otherwise satisfied. |
-| Stop/restart live stack | canonical bench and B1/B4 | Full stack reload is not authorized by this document; operator owns any stack stop/start. |
+| Quiet window | all inference/bench/profile stages | Required. Pause unrelated benching/inference load before the window. AutoPilot must not be restarted by this package; any operator-owned pause/resume happens outside the package and is recorded as process state. |
+| Host reboot | only if preflight flags multi-day throttle or host-health failure | Not required for OP-2 on the 2026-07-19 operator-confirmed host state. If no reboot is approved and preflight is clean, `P-BENCH-1` remains available. |
+| Stop/restart live stack | only if the operator explicitly chooses it outside this package | Full stack reload, production stack restart, and AutoPilot restart are not authorized by this document. If the quiet window cannot be obtained without those actions, abort and ask the operator. |
 | `sudo` for host hygiene/perf | drop_caches, `perf`, sysctl fixes | Record every command and result. |
 | B1 arm identity | barrier-fusion A/B | Must name exact flag or exact control/fusion binaries before the window. |
 | B4 GLM/DSA profile | `perf record` around GLM-5.2 DSA | Must approve long CPU run and large `perf.data` artifact. |
 
 Abort the whole package if quiet-window approval is missing, if production v6 edits/builds
-are requested, or if another session needs the stack for production traffic.
+are requested, if AutoPilot restart or full-stack reload is requested as part of this
+package, or if another session needs the stack for production traffic.
 
 ## Preflight And Abort Gates
 
@@ -106,7 +106,7 @@ Abort conditions:
 
 | Gate | Abort if |
 |---|---|
-| Process quiet | AutoPilot, unrelated `llama-server`, `llama-bench`, `llama-cli`, `rocprof`, or `perf` is active outside the approved plan. |
+| Process quiet | AutoPilot, unrelated `llama-server`, `llama-bench`, `llama-cli`, `rocprof`, or `perf` is active outside the approved plan. Do not stop/restart AutoPilot from this package; abort or wait for operator-owned quieting. |
 | Host state | CPU governors/EPP, THP, `kernel.numa_balancing`, or `perf_event_paranoid` drift and operator does not approve a fix/rerun. |
 | Binary identity | v6 live roles do not map `/mnt/raid0/llm/llama.cpp/build/bin` libraries or lack `GGML_IQK=1`. |
 | Canonical recipe | `bench_canonical.sh --dry-run` fails, selects the wrong binary, or reports linkage drift. |
@@ -169,12 +169,14 @@ Evidence fields:
 Route results to `handoffs/active/v6-iqk-promotion.md` and the A2 row of
 `handoffs/active/inference-acceleration-index.md`.
 
-### 2. Clean Post-Reboot Canonical Decode Bench / CPU-Correctness Gate
+### 2. Bench-Clean Canonical Decode Bench / CPU-Correctness Gate
 
 Purpose: collect the pending clean v6+iqk canonical decode evidence under `P-BENCH-1`.
-Run only after operator reboot/host-hygiene approval.
+Run during an operator-approved quiet window after the throttle/affinity preflight passes.
+Do not require a reboot unless the preflight flags multi-day throttle or another
+host-health failure that the operator chooses to clear by reboot.
 
-Post-reboot preflight:
+Bench-clean preflight:
 
 ```bash
 cd /mnt/raid0/llm/epyc-inference-research
@@ -217,7 +219,7 @@ CPU-correctness gate:
 | binary linkage | recipe/linkage validation passes and resolves to the v6 build libs |
 | output validity | llama-bench JSON parse succeeds; no assert, NaN, malformed JSON, or stderr correctness warning |
 | reps | `n=10` reps for `tg128`; median and MAD reported |
-| host health | post-reboot preflight and sentinel are attached as attestation refs |
+| host health | quiet-window approval plus bench-clean preflight/sentinel are attached as attestation refs |
 
 Claim template:
 
@@ -258,7 +260,7 @@ Required per-arm fields:
 |---|---|
 | arm identity | env flag or binary path, branch, commit, dirty status |
 | command | exact argv and env, plus dry-run validation |
-| host | same post-reboot attestation as stage 2 or a new attestation if state changed |
+| host | same bench-clean attestation as stage 2 or a new attestation if state changed |
 | result | raw JSON per rep, median, MAD, percent delta, stderr |
 | correctness | JSON parse, no assert, no NaN, same model/quant, no output/runtime warning |
 
@@ -363,7 +365,7 @@ handoffs, progress logs, MEASUREMENT, or code while preparing this package.
 - [ ] Operator approval refs captured.
 - [ ] Preflight artifacts captured and attached.
 - [ ] Live v6+iqk role table complete.
-- [ ] Clean post-reboot `P-BENCH-1` row produced or explicit abort reason recorded.
+- [ ] Bench-clean `P-BENCH-1` row produced or explicit abort reason recorded.
 - [ ] B1 arm identity supplied before execution, or B1 skipped with staging blocker.
 - [ ] B4 `perf.data` and `perf_report.txt` captured, or profile abort reason recorded.
 - [ ] Every decision-gating number uses `(metric, protocol-id, n/reps, date, attestation ref)`.
