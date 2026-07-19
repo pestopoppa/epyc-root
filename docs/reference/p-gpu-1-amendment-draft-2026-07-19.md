@@ -1,5 +1,13 @@
 
-## P-GPU-1 — MI210 GPU canonical throughput (ratified 2026-07-19)
+## P-GPU-1 — MI210 GPU Canonical Throughput Amendment Draft (2026-07-19)
+
+**Status: proposed amendment text only.** This file is not the measurement
+constitution and does not ratify `P-GPU-1`. Until `/workspace/MEASUREMENT.md`
+is amended by the operator/human review path, `P-GPU-1` remains deferred there
+and every MI210 / HIP / GPU throughput number remains observation-grade.
+
+If ratified, the amendment should replace the current deferred `P-GPU-1`
+placeholder with the text below.
 
 **Supersedes** the prior "`P-GPU-1` deferred" status. Applies to all decision-gating GPU
 (MI210 / gfx90a / HIP) throughput, spec-dec, and residency numbers. Metric direction:

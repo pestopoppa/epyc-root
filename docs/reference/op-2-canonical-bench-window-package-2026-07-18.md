@@ -25,6 +25,13 @@ SIMD work (`ggml_compute_forward_lightning_indexer` was only `1.08%` of cycle sa
 remaining OP-2 quiet-window payload is live v6+iqk role/garbage verification plus the clean
 canonical CPU decode bench.
 
+**2026-07-19 no-inference prep bundle:** inference-research now has
+`scripts/benchmark/op2_quiet_window_prep.py`, which creates the OP-2 run directory, records
+host/repo/process state, stamps the narrowed stage plan, and writes
+`operator_next_commands.sh` without starting inference or touching production v6. Current prep
+artifact:
+`/mnt/raid0/llm/epyc-inference-research/docs/data/op2_quiet_window_prep_20260719/`.
+
 Production kernel `/mnt/raid0/llm/llama.cpp` remains frozen. Experimental work, if any
 arm requires it, stays in `/mnt/raid0/llm/llama.cpp-experimental` and is not deployed by
 this package.

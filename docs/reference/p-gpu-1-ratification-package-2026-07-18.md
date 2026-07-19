@@ -16,6 +16,10 @@ ratify `P-GPU-1` and does not make any GPU number decision-grade.
 trust boundary. So the operator action is to amend MEASUREMENT; agents may only prepare this
 package and map existing artifacts.
 
+Prepared amendment text lives at
+`docs/reference/p-gpu-1-amendment-draft-2026-07-19.md`. That file is a draft,
+not authority; `/workspace/MEASUREMENT.md` remains the only ratification source.
+
 ## Proposed Amendment Content
 
 Protocol name: `P-GPU-1 — MI210 GPU canonical throughput`.
