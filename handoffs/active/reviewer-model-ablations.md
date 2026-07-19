@@ -41,7 +41,8 @@ rerun; it is the remaining anchor/floor set and the screening protocol.
     - [x] **A1 status-quo self-review live run**: Qwen3.5-122B `UD-Q4_K_M` CPU self-review ran through the same P-REV-1 runner/prompt/schema and matched C-CRAB slice. Result: `FA 45.8%` (`11/24`), `FR 41.7%` (`10/24`), `AUC 0.463`, `ECE 0.385`, `Brier 0.397`, parse `0.0%`, median row wall `41.4s`, total wall `2164.234s`. Verdict: parse-clean but worse than GLM and not a production reviewer replacement. Artifact `epyc-inference-research/data/reviewer_model_ablations/rm2-next-a1-architect-statusquo-ccrab-p-rev1-20260719T210513Z`. ✅ 2026-07-19
 - [ ] **RM-3 — Screening-tier protocol**: small-n, per-pairing FA/FR/CR estimates with wide CIs; promotion rule to confirmation tier (Pareto on quality-vs-cost); driven by the H8 autopilot action, respecting no-concurrent-inference + placement-queue-not-/chat discipline.
   - [x] **RM-3a — Matched C-CRAB P-REV-1 row-id-bound dry-run queue ✅ 2026-07-19**: `epyc-orchestrator` runner now accepts `--row-ids`, records row-id filter provenance in dry-run queues, filters live execution to that exact allowlist, and applies CLI `--max-pairings` after priority ordering. Focused runner tests passed (`32`). Artifact: `epyc-orchestrator/orchestration/reports/rm3_ccrab_p_rev1_screening_dryrun_20260719T215914Z/` with `64` priority-resolved jobs from `6525` pairings, `per_pairing_n=12`, `row_id_filter_n=48`, placement-queue transport, and no inference.
-  - [ ] **RM-3b — Live screening bridge**: wire live RM-3 to the production grammar/schema reviewer path and close the H8 `actions.py` live-execution gap before spending inference; the standalone free-text approve/reject bridge is not sufficient for production reviewer admission.
+  - [x] **RM-3b — Live screening bridge**: `epyc-orchestrator` now routes `screening_tier_driver` live execution (only with `dry_run=false` + `AUTOPILOT_SCREENING_TIER_INFERENCE=1`) through `screening_tier_runner.run_screening_tier`; the runner's default live probe reuses the P-REV-1 direct corpus prompt, binary ReviewDecision JSON schema, parser, forced-direct `/chat` path, and placement-queue priority/workload stamps instead of the old free-text approve/reject prompt. Focused validation passed (`190` tests + ruff + py_compile). ✅ 2026-07-19
+  - [ ] **RM-3c — First live screening batch**: choose a routable subset from the `64` priority-resolved jobs (many staged keys are model-registry candidates, not currently live stack roles), ensure the target reviewer roles are actually served with JSON-schema support, then run the row-id-bound `n=12` batch under a quiet window and publish the screening leaderboard.
 - [ ] **RM-4 — Confirmation-tier protocol**: fully paired (same tasks/prompts/grammar/stop/verifier budget), N≥100/arm, paired flips via `sequential_verdict.quality_trial_statistic`, Holm across metric families; per-domain reporting.
 - [ ] **RM-5 — Bias-robustness probe set**: the 6 content-bias injections (authority, self-declared correctness, renaming, reverse-authority, misleading-task, illusory complexity) as a held-out probe → per-reviewer **robustness rate** as a selection axis (small judges more fragile); blinding/randomization controls baked into the harness (sanitized packages, no reference-comparison mode without swap-augmentation).
 - [ ] **RM-6 — RA-8 field-order A/B** (evidence-first vs verdict-first GBNF) on the leading arm — opposing hypotheses on record (intake-836 vs intake-837).
@@ -52,7 +53,7 @@ rerun; it is the remaining anchor/floor set and the screening protocol.
 ## Dependency Graph
 
 ```text
-H4 P-REV-1 + corpus v1 → RM-1 → RM-3a dry-run queue ✅ → RM-3b live screening bridge → RM-4 confirmation → RM-7 → RM-8
+H4 P-REV-1 + corpus v1 → RM-1 → RM-3a dry-run queue ✅ → RM-3b live screening bridge ✅ → RM-3c first live batch → RM-4 confirmation → RM-7 → RM-8
 RM-2 anchors: A0/A1/A3/A4 are closed evidence; A4g requires a concrete GLM repair/skew rationale before reopening; Ref needs an operator budget/window.
 RM-5, RM-6 fold into RM-4 protocol. Operator bench windows gate all inference-heavy runs.
 ```
@@ -67,7 +68,7 @@ RM-5, RM-6 fold into RM-4 protocol. Operator bench windows gate all inference-he
 
 - `epyc-inference-research/orchestration/model_registry.yaml` (pool source; `measured:` target)
 - H4 ledger + `reviewer_calibration_report.py`; `src/autopilot_core/sequential_verdict.py`
-- eval tower T0/T1 (screening); H8 autopilot action (driver)
+- eval tower T0/T1 (screening); H8 autopilot action (driver); `scripts/autopilot/screening_tier_runner.py`
 
 ## Reporting Instructions
 
