@@ -1,7 +1,7 @@
 # Inference Acceleration — Active Index
 
 **Purpose**: dispatch point for local inference optimization across CPU throughput, KV/context efficiency, speculative decoding, GPU-prep work, and model-serving experiments.
-**Updated**: 2026-07-19 (v7 promotion authority is `experimental-v7-refresh-20260716`; current checked local/fork tip is `ed4091266`, with live promotion state delegated to [v7-promotion.md](v7-promotion.md)) — v6+iqk remains LIVE/frozen; K5 quality and K35/A1 release matrix are closed; open v7 promotion gates are OP-2 canonical bench execution, `P-GPU-1` ratification, final cutover smoke, upstream-ahead narrow audit handling, GLM reviewer quality, and native GLM-MTP acceptance/throughput. Historical 2026-07-05/11/14/16 detail remains below for provenance only.
+**Updated**: 2026-07-19 (v7 promotion authority is `experimental-v7-refresh-20260716`; current checked local/fork tip is `6a8dd5ea6`, with live promotion state delegated to [v7-promotion.md](v7-promotion.md)) — v6+iqk remains LIVE/frozen; K5 quality and K35/A1 release matrix are closed; the upstream-ahead narrow audit is applied; open v7 promotion gates are OP-2 canonical bench execution, `P-GPU-1` ratification, final cutover smoke, GLM reviewer quality, and native GLM-MTP acceptance/throughput. Historical 2026-07-05/11/14/16 detail remains below for provenance only.
 **History**: pre-compaction detail lives in [../archived/inference-acceleration-index-history-through-2026-06-19.md](../archived/inference-acceleration-index-history-through-2026-06-19.md).
 
 **2026-07-18 v7 lever audit + two-lane queue**: full read-only audit of ~5 weeks of v7 experimental-kernel + CPU/GPU/spec-dec/GLM optimization work (5-agent sweep of handoffs, progress reports, negative results, live branch state). **Headline: the largest measured win is already built, correctness-verified, and banked — but UNPROMOTED.** See the new **[§ v7 lever audit + two-lane execution queue](#2026-07-18-v7-lever-audit--two-lane-execution-queue)** below — do-not-re-propose ledger, EV-ranked survivor levers, and the LANE A (operator-facing v7-promotion prep) / LANE B (agent-executable exploration) queue. Two new tracks opened: [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md), [gpu-drafter-control-redesign.md](gpu-drafter-control-redesign.md).
@@ -22,7 +22,7 @@
 
 Read-only audit of ~5 weeks of v7-experimental + CPU/GPU/spec-dec/GLM optimization work.
 **The single highest-EV lever is promoting the already-banked v7 kernel**
-(`experimental-v7-refresh-20260716`; current checked local/fork tip `ed4091266`, see
+(`experimental-v7-refresh-20260716`; current checked local/fork tip `6a8dd5ea6`, see
 [v7-promotion.md](v7-promotion.md) for the live promotion tip; iqk + all GPU opts + `Q2_0` present):
 HIP graphs **+25%** worker spec-dec, MMVQ→MMQ **+17–32%**, bf16-GDN-state **+16–21%** agg,
 **+37%** single-stream dense-Q8. K5 quality gate PASSED (v6≈v7, +0.0%); all P0 correctness
@@ -78,10 +78,11 @@ blockers resolved (K22/K23/K32/K33). Held only by operator gates + the CPU-corre
   `docs/reference/p-gpu-1-ratification-package-2026-07-18.md`; MEASUREMENT amendment remains
   operator/human-signoff only. ✅ 2026-07-18
 - A4 **Branch-naming reconciliation** — authoritative promotion branch declared:
-  `experimental-v7-refresh-20260716`; current checked local/fork tip is `ed4091266` on
+  `experimental-v7-refresh-20260716`; current checked local/fork tip is `6a8dd5ea6` on
   `fork/experimental-v7-refresh-20260716`. The earlier `d1e5a20eb` checkpoint remains the
   branch-reconcile baseline; old `experimental-v7-candidate` mentions are historical
-  checkpoints only. ✅ 2026-07-18
+  checkpoints only. The narrow upstream-ahead pre-promotion fixes are now included in
+  `6a8dd5ea6` and validated against the focused HIP build/test gate. ✅ 2026-07-19
 
 **LANE B — agent-executable:**
 - *Zero-inference now:* current B2/B3/B5/B6/B7 scoping batch closed; do not reopen without a new handoff trigger.
@@ -199,6 +200,7 @@ After completing an acceleration item:
 - [x] Qwable CPU standalone verifier artifact audit: `data/qwable_reasoning_economics/qwable_cpu_verifier_standalone_20260719T021216Z/summary.compact.json` reports execute `exit_code=0`, both CPU-only arms `status=ok` on `--device none -ngl 0`, decode `13.9607/14.0744 t/s`, `finish_reason=stop`, and post-run ROCm `No KFD PIDs currently running`. SHA256 anchors: `summary.json` `2162d9429f18ea038eb41aa53dc75a6633feaef8f0c9bcc5063ec27b88274791`, `summary.compact.json` `80643872dfc7d4528269e83b4df63d574cbdc8aaefa3778da3777c240f8970fd`. Artifact is untracked in the research worktree at audit time; stage it explicitly if retained. ✅ 2026-07-19
 - [x] K35 MiniCPM-o/frontdoor MI210 service-concurrency row: `data/k35_minicpm_service_matrix/k35_minicpm_service_mi210_currentv7_20260719T024452Z/summary.json` passed active overlap (`8/8` fixture/context pairs), with frontdoor alone `96.25 t/s`, resident-idle frontdoor `95.71 t/s`, active-overlap frontdoor `94.49 t/s`, and MiniCPM-o `87.13 t/s`; both GPU servers cleaned up and final ROCm showed no KFD PIDs. ✅ 2026-07-19
 - [x] K35 Qwen3-VL-8B reasoning-off repeat: `data/k35_vision_matrix/k35_qwen3vl8_mi210_reasoning_off_default_image_20260719T024903Z/summary.json` again passed only `3/4`, failing `chart_tanzania` as `Moldova` despite `--reasoning off`; keep Qwen3-VL-8B rejected as the active vision-escalation replacement until a tuned lane fixes the chart miss. ✅ 2026-07-19
+- [x] K35 Qwen3-VL-8B latest-tip default-image repeat: `data/gpu-mi210/k35_qwen3vl8_mi210_default_image_currentv7_20260719T042531Z/summary.json` ran on experimental-v7 `6a8dd5ea6`, passed `3/4`, and failed `chart_tanzania` as `Moldova` again; decode was `111.21-120.93 t/s`, VRAM was about `11-12%`, cleanup was clean, and this confirms the image-token override was not the chart-failure cause. ✅ 2026-07-19
 - [x] Qwen3-4B-Instruct-2507 small-verifier gate: Q8 MI210 server/chat is fast (`pp512 3915.57`, `tg512 145.23 t/s`) and grammar-backed categorical cells passed `12/12` at `77.08 t/s`; matched controls favor Q8 over BF16 because Q8 measured MI210 `tg512 145.39` and CPU `tg512 10.12 t/s`, while BF16 measured MI210 `tg512 102.46`, CPU `tg512 7.14 t/s`, and passed only `8/12`. Use Q8 Instruct+grammar for the next calibrated verifier gate; keep Thinking Q8 protocol-gated on empty `message.content`. ✅ 2026-07-19
 - [x] Qwen3-4B-Instruct-2507 expanded verifier gate: `data/gpu-mi210/qwen3_4b_instruct_2507_mi210_verifier_grammar_slice24_20260719T033317Z/summary.json` passed `22/24` at `76.21 t/s`; `data/gpu-mi210/qwen3_4b_instruct_2507_mi210_verifier_repair_probe_20260719T033440Z/summary.json` showed both misses are prompt-sensitive and repairable, but not clean enough for production-stack routing. ✅ 2026-07-19
 - [x] Qwen3-4B-Instruct-2507 generic policy follow-up: `data/gpu-mi210/qwen3_4b_instruct_2507_prompt_policy_probe_20260719T040156Z/summary.json` passed `15/18` at `77.33 t/s`; both discount variants still failed and one literal-code row returned quoted output, so a generic system preamble is insufficient for role gating. ✅ 2026-07-19
@@ -278,7 +280,7 @@ After completing an acceleration item:
 - [ ] v6-iqk live throughput+garbage verification + clean post-reboot canonical bench
 - [x] **[v7-audit LANE A]** A1 K35 finalize: release artifact includes vision throughput/quality/memory rows, MiniCPM-o/frontdoor mixed-service evidence, K35.13d source/config flip, and K35.13f controlled live smoke. ✅ 2026-07-18
 - [x] **[v7-audit LANE A]** A3 `P-GPU-1` MEASUREMENT ratification package drafted (prepare-only; operator still signs/amends MEASUREMENT): `docs/reference/p-gpu-1-ratification-package-2026-07-18.md`. ✅ 2026-07-18
-- [x] **[v7-audit LANE A]** A4 v7 branch-naming reconciliation: authoritative promotion branch is `experimental-v7-refresh-20260716`; current checked local/fork tip is `ed4091266` on `fork/experimental-v7-refresh-20260716`; the earlier `d1e5a20eb` checkpoint is the branch-reconcile baseline, and old `experimental-v7-candidate` references are historical only. ✅ 2026-07-18
+- [x] **[v7-audit LANE A]** A4 v7 branch-naming reconciliation: authoritative promotion branch is `experimental-v7-refresh-20260716`; current checked local/fork tip is `6a8dd5ea6` on `fork/experimental-v7-refresh-20260716`; the earlier `d1e5a20eb` checkpoint is the branch-reconcile baseline, old `experimental-v7-candidate` references are historical only, and the narrow upstream-ahead pre-promotion fixes are now applied/validated. ✅ 2026-07-19
 - [x] **[v7-audit LANE B]** B2 stream-K `nsm→k·nsm` pmc-CSV zero-build read: recovered `/mnt/raid0/llm/tmp/mi210-build/campaign/` artifacts; read verdict = stream-K already live, compact-LDS patch negative, only a separate operator-gated `2*nsm=208` bench remains if pursued. ✅ 2026-07-18
 - [x] **[v7-audit LANE B]** B3 MoE-Spec CPU reopen assessment: decision = reopen for a current live-MTP MoE verifier B-sweep; no registry integration until that sweep exists. Evidence: 2026-07-03 live-α report shows frontdoor α=0.6582, worker α=0.8256, architect α=0.6854, failed MTP roles `[]`. ✅ 2026-07-18
 - [x] **[v7-audit LANE B]** B5 E3/E4 zero-inference decisions: E3 8x8 GEMM SIMD body is no-go/closed for now; E4 CPU17 reopens only to measurement, CPU18 remains gated pending padding-cost profile. ✅ 2026-07-18
