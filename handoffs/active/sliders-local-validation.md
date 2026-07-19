@@ -11,6 +11,10 @@
 
 > **Does NOT block `internal-kb-rag.md`. KB-RAG K1–K7 ships independently. SLIDERS is an ALTERNATIVE architecture (DB+SQL replacing retrieval), not an upgrade lane on the ColBERT path. Sequential evaluation only after KB-RAG K7 ships, and only if Phase 0 below passes.**
 
+> **🔔 Reopen-PRECONDITION fired — 2026-07-18 stale-open audit.** The first reopen precondition (KB-RAG K1–K7 ships) FIRED: KB-RAG **K7 CERTIFIED 2026-06-13**. This does NOT auto-reactivate — SLIDERS stays parked (LOW/speculative) pending an **explicit operator decision** to evaluate the DB+SQL alternative. Surfaced so the fired precondition isn't silently missed. See [`stale-open-audit-2026-07-18.md`](stale-open-audit-2026-07-18.md).
+
+- [ ] Operator decision: KB-RAG K7 precondition fired — evaluate SLIDERS DB+SQL alternative (Phase 0 falsification) now, or keep parked?
+
 ## 2026-05-28 Audit Reset — Executor Start Here
 
 This remains a bounded falsification gate, not a speculative integration project.

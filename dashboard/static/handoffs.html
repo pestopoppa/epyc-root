@@ -128,8 +128,29 @@
   .card{
     background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:9px 10px;
     cursor:pointer;transition:border-color .12s,transform .06s;
+    border-left:3px solid var(--none);
   }
+  /* Priority-colored left edge — reads at a glance across every column. */
+  .card.pri-P0{border-left-color:var(--p0)}
+  .card.pri-HIGH{border-left-color:var(--high)}
+  .card.pri-MEDIUM{border-left-color:var(--medium)}
+  .card.pri-LOW{border-left-color:var(--low)}
+  .card.pri-NONE{border-left-color:var(--none)}
   .card:hover{border-color:var(--accent)} .card:active{transform:translateY(1px)}
+
+  /* Priority group header inside the Active & Blocked columns — mirrors the
+     backlog table rows (per-group handoff + open/done counts). */
+  .pri-group{display:flex;align-items:baseline;gap:8px;padding:6px 2px 3px;margin-top:4px;
+    border-top:1px solid var(--border);border-left:3px solid var(--none);padding-left:8px;
+    position:sticky;top:88px;background:var(--panel);z-index:4}
+  .pri-group:first-child{margin-top:0;border-top:none}
+  .pri-group .lab{font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase}
+  .pri-group .cnt{font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .pri-group.pri-P0{border-left-color:var(--p0)} .pri-group.pri-P0 .lab{color:var(--p0)}
+  .pri-group.pri-HIGH{border-left-color:var(--high)} .pri-group.pri-HIGH .lab{color:var(--high)}
+  .pri-group.pri-MEDIUM{border-left-color:var(--medium)} .pri-group.pri-MEDIUM .lab{color:var(--medium)}
+  .pri-group.pri-LOW{border-left-color:var(--low)} .pri-group.pri-LOW .lab{color:var(--low)}
+  .pri-group.pri-NONE{border-left-color:var(--none)} .pri-group.pri-NONE .lab{color:var(--muted)}
   .card .ttl{font-size:12.5px;font-weight:600;line-height:1.35;margin-bottom:5px;word-break:break-word}
   .card .meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
   .chip{font-size:10px;padding:1px 6px;border-radius:10px;border:1px solid var(--border);color:var(--muted);white-space:nowrap}
@@ -140,6 +161,13 @@
   .chip.pri-NONE{display:none}
   .chip.date{color:var(--muted)}
   .chip.mark{color:var(--good);border-color:#1f4d38}
+  /* lifecycle (shelved-work) signal — a conservative derived hint, never gating */
+  .chip.lc{text-transform:uppercase;letter-spacing:.3px;font-size:9px;border-style:dashed}
+  .chip.lc-parked{color:var(--none);border-color:var(--none)}
+  .chip.lc-superseded{color:var(--medium);border-color:#4d3f14}
+  .card.lifecycle-parked,.card.lifecycle-superseded{opacity:.5}
+  .card.lifecycle-parked:hover,.card.lifecycle-superseded:hover{opacity:1}
+  .pri-group .parked-note{color:var(--none);font-style:italic}
   .bar{height:5px;background:#0d1117;border-radius:3px;overflow:hidden;border:1px solid var(--border)}
   .bar>span{display:block;height:100%;background:var(--good)}
   .bar.est>span{background:repeating-linear-gradient(90deg,var(--medium),var(--medium) 4px,transparent 4px,transparent 8px)}
@@ -300,10 +328,11 @@ function progressRow(c){
   return wrap;
 }
 function cardEl(c){
-  const card = el("div","card"); card.tabIndex=0; card.dataset.id=c.id;
+  const card = el("div","card pri-"+(c.priority||"NONE")+(c.lifecycle?" lifecycle-"+c.lifecycle:"")); card.tabIndex=0; card.dataset.id=c.id;
   card.appendChild(el("div","ttl",c.title||c.id));
   const meta = el("div","meta");
   if(c.priority && c.priority!=="NONE") meta.appendChild(el("span","chip pri-"+c.priority,c.priority));
+  if(c.lifecycle) meta.appendChild(el("span","chip lc lc-"+c.lifecycle, c.lifecycle));
   // Recency chip: prefer the derived activity date (git/mtime-aware) over the raw
   // frontmatter dates, and label it by where the date came from.
   let d = c.activity, src = c.activity_source;
@@ -320,6 +349,35 @@ function cardEl(c){
   card.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault(); open();}});
   return card;
 }
+// Priority buckets in canonical order, matching the backend sort + backlog table.
+const PRI_ORDER = ["P0","HIGH","MEDIUM","LOW","NONE"];
+function groupByPriority(cards){
+  const m = new Map();
+  for(const c of cards){ const p=c.priority||"NONE"; (m.get(p)||m.set(p,[]).get(p)).push(c); }
+  // Canonical order first, then any unexpected priority label after it.
+  const order = [...PRI_ORDER.filter(p=>m.has(p)), ...[...m.keys()].filter(p=>!PRI_ORDER.includes(p))];
+  return order.map(p=>[p, m.get(p)]);
+}
+function priGroupHead(pri, group){
+  const head = el("div","pri-group pri-"+pri);
+  head.appendChild(el("span","lab", pri));
+  let open=0, done=0, tracked=0, parkedN=0, parkedOpen=0;
+  for(const c of group){
+    const o = (c.progress_source==="checkboxes") ? (c.total-c.done) : 0;
+    if(c.progress_source==="checkboxes"){ open+=o; done+=c.done; tracked++; }
+    if(c.lifecycle){ parkedN++; parkedOpen+=o; }
+  }
+  const n = group.length;
+  let cnt = `${n} handoff${n===1?"":"s"}`;
+  if(tracked) cnt += ` · ${open} open / ${done} done`;
+  head.appendChild(el("span","cnt", cnt));
+  // Surface the shelved slice right in the header so it doesn't read as live.
+  if(parkedN){
+    head.appendChild(el("span","cnt parked-note",
+      ` · ${parkedN} parked/superseded (${parkedOpen} open)`));
+  }
+  return head;
+}
 function renderBoard(data){
   const cols = data.columns||{};
   for(const state of ["active","blocked","completed","archived"]){
@@ -329,7 +387,17 @@ function renderBoard(data){
     colEl.querySelector(".count").textContent = cards.length;
     list.innerHTML="";
     if(!cards.length){ list.appendChild(el("div","empty","—")); continue; }
-    for(const c of cards) list.appendChild(cardEl(c));
+    // Active/Blocked: group by priority with a counted section header (cards
+    // already arrive priority-sorted from the backend). Completed/Archived keep
+    // their most-recent-first ordering and only carry the colored edge.
+    if(state==="active" || state==="blocked"){
+      for(const [pri, group] of groupByPriority(cards)){
+        list.appendChild(priGroupHead(pri, group));
+        for(const c of group) list.appendChild(cardEl(c));
+      }
+    } else {
+      for(const c of cards) list.appendChild(cardEl(c));
+    }
   }
   setBadge("#board-badge", (data._freshness&&data._freshness.staleness_class)||"fresh");
   const gen = data.generated_at ? " · scanned " + data.generated_at.replace("T"," ").replace("Z"," UTC") : "";

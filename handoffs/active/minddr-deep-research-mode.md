@@ -8,6 +8,10 @@
 **Depends on**: `routing-intelligence.md` (classifier infrastructure), `eval-tower-verification.md` EV-9 (multi-dimensional rubric)
 **Sibling (same gate, lighter weight)**: [`gpu-cot-scaffold-sidecar.md`](../completed/gpu-cot-scaffold-sidecar.md) — its **G1** ("does an injected CoT scaffold beat a code worker's own thinking, per token?") is **MD-9 one weight down**. Both live in the **reasoning-economics cluster** (`research-evaluation-index.md`) and must share the EV-9 DRACO/MindDR scoring contract + token-normalization, not re-derive them.
 
+> **🔔 Reopen-trigger FIRED (Phase 2) — 2026-07-18 stale-open audit.** The Phase-2 hardware gate changed: the DGX-Spark path is dead, but the **MI210 is present (2026-07-02)** → a gfx90a training-viability smoke is now possible. (MD-9 A/B remains the live Phase-1 gate, still inference-window-gated.) See [`stale-open-audit-2026-07-18.md`](stale-open-audit-2026-07-18.md).
+
+- [ ] Phase-2: run a gfx90a (MI210) training-viability smoke now that the hardware gate flipped (was DGX-blocked)
+
 ## 2026-05-28 Audit Reset — Executor Start Here
 
 Phase 1 is no longer a stub. The flag, classifier, prompts, pydantic_graph subpackage, rubric fields, and sentinel suite are already in place. The remaining question is whether the pipeline beats direct-answer mode enough to justify production dispatcher wiring.

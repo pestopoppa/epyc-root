@@ -7,6 +7,7 @@ clean-window measurements that bind stack ports; the latest frontdoor G11
 measurement window caused such a stop while active, then exited without a
 claim-grade aggregate. A rerun after that exit returned `summary: ok`.
 Remaining work is high-risk consumer migrations and opportunistic W4 swap-CI.
+**Lifecycle**: superseded — consolidated into the authoritative pair [`model-stack-single-source-update-pipeline.md`](model-stack-single-source-update-pipeline.md) (consumer-SSoT) + [`stack-change-governance-pipeline.md`](stack-change-governance-pipeline.md) (command/gates). Remaining work (W4 swap-CI, high-risk consumer migrations) is co-tracked there — no unique one-time work here. Per [`stale-open-audit-2026-07-18.md`](stale-open-audit-2026-07-18.md) finding #5. Hard-archive to `completed/` pending operator OK.
 **Created**: 2026-06-13
 **Priority**: HIGH - stale model-specific constants can corrupt scoring,
 routing, launch, planner context, and benchmark interpretation after stack

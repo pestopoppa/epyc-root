@@ -5,6 +5,8 @@
 **Scope**: Audit and implementation handoff. No inference, AutoPilot, orchestrator code, research code, or index files were changed by this pass.
 **Related**: [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [running-state-attestation.md](../completed/running-state-attestation.md), [MEASUREMENT.md](../../MEASUREMENT.md)
 
+> **📎 2026-07-18 stale-open audit note.** This doc self-demotes to "historical-detail support" for the SSoT, but it still holds **2 orphan-live boxes tracked in _neither_ authoritative doc** — the `ctx_model_max` contract extension and the tap / policy-hint projection. Kept **LIVE** (deliberately *not* superseded) until those migrate to [`model-stack-single-source-update-pipeline.md`](model-stack-single-source-update-pipeline.md); its other 2 boxes are covered/deferred. See [`stale-open-audit-2026-07-18.md`](stale-open-audit-2026-07-18.md) finding #5.
+
 ## Objective
 
 Turn the existing stack-prior work into a robust, repeatable, fail-closed pipeline for changing orchestration-stack models and all model-specific quantities:

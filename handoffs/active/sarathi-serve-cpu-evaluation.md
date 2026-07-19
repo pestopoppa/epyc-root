@@ -9,6 +9,10 @@
 
 > **Fable 5 review (2026-06-12)**: the reopen gate ("workload shift to multi-tenant/prefill-heavy") is expected to FIRE from [batched-decode-measurement.md](batched-decode-measurement.md) E1/E2 — the eval-batch serving class is exactly the named trigger (fable5-findings-06 §2).
 
+> **🔔 Reopen-trigger MATERIALIZED — 2026-07-18 stale-open audit.** The named reopen trigger (fable5: multi-tenant / eval-batch serving via [`batched-decode-measurement.md`](batched-decode-measurement.md) E1/E2) has **landed** — E1/E2 decision-grade evidence 2026-07-03, with **E2 a keep-candidate for an eval-batch serving class**. That is the multi-tenant / prefill-heavy workload this handoff was DEPRIORITIZED pending. Re-evaluate re-promotion. See [`stale-open-audit-2026-07-18.md`](stale-open-audit-2026-07-18.md).
+
+- [ ] Re-evaluate Sarathi-Serve chunked-prefill for the eval-batch serving class (batched-decode E2 keep-candidate = the fired multi-tenant trigger)
+
 ## Pipeline placement
 
 This handoff is the serving-side execution track for **CPU23 (Wave 3 regime coverage)**. It should start only after Wave 0 protocol setup (CPU20) and should feed class-level conclusions back into CPU15/CPU16 routing decisions.
