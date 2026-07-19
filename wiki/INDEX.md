@@ -2,7 +2,7 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-07-17 (K35 checkpoint audit: the active handoff now records the corrected default-expert ingest rows, keeps the stale MoE4 ingest rows quarantined as invalidated evidence, and closes K35.3a registry drift; previous 2026-07-16 checkpoint captured the focused v7 sweep. Observation-heavy sections carry writer-evidence review flags pending human/measured review.)
+**Last compiled**: 2026-07-19 (model-probe stop-list/scoreboard policy, GLM accept-control evidence boundary, and MiniCPM-o persistent-live status correction; observation-heavy sections remain review-gated.)
 **Articles**: 26 compiled, 4 stub categories
 **Total sources**: 560+ scanned documents across 6 source types; 2026-07-05 pass merged 49 changed/new sources (MI210 speed campaign, evidence-plane/autopilot arc, dashboards, routing canary) into 10 articles; 2026-06-21 pass merged 36 changed/new sources into 21 articles
 

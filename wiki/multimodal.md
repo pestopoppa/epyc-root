@@ -17,6 +17,14 @@ Moondream 3 (9B total / 2B active MoE VLM) was evaluated and deferred. Despite i
 
 MiniCPM-O 4.5 (9B dense, Qwen3-8B backbone + SigLip2 + Whisper-medium + CosyVoice2) offers unified multimodal capability. Vision + text works on mainline llama.cpp; audio features require the llama.cpp-omni fork. It scores 77.6 OpenCompass (vs Qwen2.5-VL-7B's 70.5) and 80.1 MathVista (vs 68.2), but lacks tool calling (0 vs Qwen3-VL-8B's 0.663 BFCL). As of 2026-07-17, the realistic `--reasoning off` MI210 lane is the first fast quality-clean `vision_escalation` candidate: it passed the fixed K35 OCR/chart slice, co-resided with the MI210 frontdoor lane, and a broader 2K/8K service matrix showed idle residency was free while active overlap kept frontdoor near baseline. The remaining gate is explicit MI210 scheduling policy, not basic runnability.
 
+### Checkpoint correction (2026-07-19)
+
+MiniCPM-o remains a controlled candidate rather than an activated live role.
+The launch/smoke and Qwen2.5-VL rollback checks ran, but persistent API/AutoPilot
+traffic was not restarted or observed. The registry therefore keeps the
+Qwen2.5-VL alias as the safety lane until an explicit persistent-live cutover
+window is completed. [Model probe scoreboard](../docs/reference/model-probe-scoreboard.md)
+
 Gemma 4 (intake-251/252) introduces Any-to-Any multimodal models (text+image+audio unified). E4B (8B effective) could simplify the pipeline but is blocked by lack of GGUF support (MLX only). VoxCPM2 (intake-317) is a tokenizer-free multilingual TTS alternative requiring GPU (RTX 4090 for real-time), tracked for GPU upgrade path.
 
 ## Key Findings

@@ -13,6 +13,20 @@ The framework operates on two parallel scoring tracks. The `v1/` track uses Clau
 
 Cost-aware reward design is layered on top of benchmark results for the MemRL routing system. The reward formula `quality_base - lambda * max(0, cost_ratio - 1.0)` gates cost penalties behind correctness, following the industry consensus established by xRouter (Salesforce), RouteLLM (LMSYS/ICLR 2025), and FrugalGPT (Stanford). Lambda=0.15 creates meaningful cost differentiation across the 13.4x speed range of the model pool (frontdoor at 18.3 t/s vs architect at 6.75 t/s) without overwhelming quality signal. Extended reward dimensions cover quality-gap penalty (over-qualified model selection), memory-tier penalty (WARM when HOT suffices), and web research effectiveness (source diversity, completeness, query strategy).
 
+### Checkpoint update (2026-07-19)
+
+The model-probe scoreboard is now the required companion for future model and
+quant rows. Stop-listed candidates are not speed-rerun unless the proposed run
+names a concrete quality, loader, protocol, parser, artifact, or compatibility
+fix and an explicit reopen hypothesis. This keeps speed observations from
+silently becoming admission evidence and redirects scarce windows to the
+operator-gated promotion and GLM accept-control work. [Model probe scoreboard](../docs/reference/model-probe-scoreboard.md)
+
+The GLM reviewer path also separates observation from decision-grade evidence:
+P-REV-1 execution requires explicit protocol attestation and a decision-grade
+accept-control signoff report, while missing notes, synthesized timestamps, or
+incomplete row coverage fail closed. [GLM capability gates](../handoffs/active/glm52-reviewer-capability-gates.md)
+
 Benchmark hardening in December 2025 addressed ceiling effects where top models scored 89-93%. Every tier was bumped up one difficulty level with post-doctoral T3 questions added, spreading the score distribution meaningfully across model classes. A mode-advantage suite (90 questions) was specifically designed to produce strong routing signal for MemRL by including tasks that structurally require specific execution modes (react, REPL, delegation, specialist escalation).
 
 ## Key Findings
