@@ -197,6 +197,8 @@ Acceptance condition:
   exact-match guard is enforced by `--expected-row-ids`.
 - `oracle_notes_20260719.json` contains a note entry for every accepted row id,
   each with reviewer identity and review timestamp.
+  `glm52_reviewer_corpus_direct_runner.py` accepts this structured signoff-helper
+  output directly and extracts the `notes` field as the prompt hint.
 
 Rejection or incomplete-signoff condition:
 
@@ -218,6 +220,11 @@ Only after the acceptance condition above is met:
 2. Run the matched `n>=24` GLM patch-review confirmation or the approved
    `P-REV-1` reviewer protocol using the signed hard-accept row ids and oracle
    notes.
+   For `P-REV-1`, the direct runner must be launched with
+   `--measurement-protocol p_rev1`, `--protocol-attestation <attest-id>`, and
+   `--accept-control-signoff-report docs/data/glm52_ccrab_accept_control_n24_signoff_report_20260719.json`.
+   Without those explicit inputs it remains observation-only or refuses
+   execution.
 3. Keep the known GLM serving constraints in the run record: chat channel,
    JSON schema where applicable, no raw `/completion` role claim, explicit
    prompt-token count, and the next-power-of-two `glm-dsa.attention.indexer.top_k`
