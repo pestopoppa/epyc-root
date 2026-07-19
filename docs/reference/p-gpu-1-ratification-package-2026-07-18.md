@@ -136,6 +136,15 @@ The primary Gate-R row is incomplete on `rocm_clocks_before_after`, `rocm_power_
 in the final amendment, current artifacts remain observation-grade and Gate-R reruns under
 the ratified protocol.
 
+2026-07-19 runner-prep update: inference-research `scripts/benchmark/k35_stack_context_matrix_runner.py`
+now records the missing P-GPU fields by construction for future K35/Gate-R reruns:
+`collect_rocm_snapshot()` keeps the old PID/VRAM/utilization fields and adds clocks, power, and
+temperature snapshots; every executed cell adds a `memory_samples` `phase=after_cleanup` ROCm
+sample; and the plan/summary carry explicit `pgpu1_protocol_fields` for warm-up/discard policy
+and CPU-stack interference policy. For the next Gate-R candidate rerun, pass operator-specific
+policy text with `--warmup-discard-policy` and `--cpu-interference-policy` rather than leaving
+those fields implicit.
+
 Canonical-tree note: the current Gate-R candidate was run on experimental v7
 `d1e5a20ebebe567f0da6bc64ca7ea7ecd521fc24`. The operator amendment should state whether
 experimental-candidate measurements are acceptable for v7 promotion evidence, or whether

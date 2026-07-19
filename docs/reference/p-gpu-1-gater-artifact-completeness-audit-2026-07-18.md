@@ -130,3 +130,9 @@ Machine-audit output on 2026-07-19 agrees: overall status `incomplete`, recommen
 `rerun_required_for_incomplete_artifacts`. The primary Gate-R candidate specifically lacks
 `rocm_clocks_before_after`, `rocm_power_before_after`, `rocm_temp_before_after`,
 `warmup_discard_policy`, `cpu_interference_policy`, and `post_cleanup_vram_sample`.
+
+Follow-up runner prep on 2026-07-19 patches the K35 stack runner so the next Gate-R rerun can
+supply those fields. Use
+`/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/k35_stack_context_matrix_runner.py`
+with explicit `--warmup-discard-policy` and `--cpu-interference-policy`; its executed summaries
+now include expanded ROCm clocks/power/temp snapshots and an `after_cleanup` sample.
