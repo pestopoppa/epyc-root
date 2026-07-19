@@ -135,7 +135,20 @@ is_benchmark_timing_line() {
   [[ "$path" =~ ^data/(cpu-model-characterization|gpu-mi210)/.+/(llama_bench_stdout[.]json|stdout[.]log|summary[.](json|md))$ ]] || return 1
   echo "$line" | grep -qE '"(avg_ns|stddev_ns)"[[:space:]]*:[[:space:]]*[0-9]{12,19}[,]?' && return 0
   echo "$line" | grep -qE '"samples_ns"[[:space:]]*:[[:space:]]*\[[[:space:]]*[0-9]{12,19}([[:space:]]*,[[:space:]]*[0-9]{12,19})*[[:space:]]*\]' && return 0
+  if [[ "$path" =~ ^data/(cpu-model-characterization|gpu-mi210)/.+/summary[.]json$ ]]; then
+    echo "$line" | grep -qE '^[[:space:]]*[0-9]{12,19},?[[:space:]]*$' && return 0
+  fi
   echo "$line" | grep -qE '"model_n_params"[[:space:]]*:[[:space:]]*[0-9]{12,19}[,]?' && return 0
+  return 1
+}
+
+is_perf_report_counter_line() {
+  # Generated perf reports include large event counters. Exempt only perf report
+  # headers under measurement artifact directories.
+  local path="$1"
+  local line="$2"
+  [[ "$path" =~ ^data/op2_canonical_window/.+/perf_report(_.*)?[.]txt$ ]] || return 1
+  echo "$line" | grep -qE '^# Event count [(]approx[.][)]:[[:space:]]*[0-9]{12,19}$' && return 0
   return 1
 }
 
@@ -203,6 +216,9 @@ scan_blob() {
         continue
       fi
       if is_benchmark_timing_line "$path" "$fullline"; then
+        continue
+      fi
+      if is_perf_report_counter_line "$path" "$fullline"; then
         continue
       fi
       if is_social_status_url_line "$fullline"; then

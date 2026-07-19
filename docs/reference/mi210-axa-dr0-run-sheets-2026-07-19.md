@@ -42,21 +42,33 @@ Validation experiments:
 1. GPU prefill sizing at prefix lengths matching expected cutover prefixes: 2K, 8K, 16K, and 32K
    tokens where the model supports it.
    - 2026-07-19 observation-grade partial: 122B UD-IQ2_M on MI210 completed `pp2048 342.06 t/s`,
-     `pp8192 135.56 t/s`, and `pp16384 76.52 t/s` with q4_0/f16 KV. `pp32768` did not complete:
-     the multi-row run stopped before the row, a direct `-p 32768 -n 0 -t 32` follow-up emitted no
-     row before bounded manual stop, and a b1024/ub256 q4_0/f16 repeat also stopped after GPU use
-     dropped to zero with no stdout row. A corrected f16/q4_0 b1024/ub256 rerun also held VRAM and
-     stayed at `0%` GPU through warmup until watchdog stop. Homogeneous 32K KV controls at the same
-     prefix, b1024/ub256, and t32 completed cleanly: f16/f16 `489.31 t/s`, q4_0/q4_0 `487.87 t/s`.
-     This proves the 32K prefix is runnable on MI210 and narrows the unresolved leg to mixed-KV
-     32K graph/scheduling behavior. Artifacts:
+     `pp8192 135.56 t/s`, and `pp16384 76.52 t/s` with q4_0/f16 KV on the current HIP build. The
+     current build's mixed-KV `pp32768` q4_0/f16 path held VRAM but fell into a no-row / 0% GPU
+     CPU-bound fallback, while homogeneous 32K KV controls at the same prefix, b1024/ub256, and t32
+     completed cleanly: f16/f16 `489.31 t/s`, q4_0/q4_0 `487.87 t/s`. A read-only code audit found
+     `GGML_CUDA_FA_ALL_QUANTS=OFF`, which rejects mixed K/V flash-attn pairs and explains the
+     unsupported long-prefix mixed path. An isolated experimental HIP build with
+     `GGML_CUDA_FA_ALL_QUANTS=ON` then completed q4_0/f16 `pp32768` at `415.31 t/s` with real MI210
+     activity and clean KFD cleanup. Same-window homogeneous controls keep the build choice scoped:
+     current default no-warmup f16/f16 and q4_0/q4_0 rows stayed at `489.82`/`489.07 t/s`, while
+     the all-quants build measured `416.55`/`414.60 t/s` on those same homogeneous 32K shapes.
+     This closes the root-cause question for AXA-2.3: mixed-KV 32K is usable only with the
+     all-quants flash-attn build, not the current default HIP build, and `FA_ALL_QUANTS` is a
+     mixed-KV lane option rather than a blanket default. Artifacts:
      `data/gpu-mi210/axa2-qwen35-122b-iq2m-prefill-sizing-20260719T060039Z/summary.json` and
      `data/gpu-mi210/axa2-qwen35-122b-iq2m-prefill32k-t32-20260719T062410Z/summary.json` and
      `data/gpu-mi210/axa2_32k_prefill_qwen35_122b_v1_q4k_f16v_b1024_ub256_20260719T064333Z/summary.json` and
      `data/gpu-mi210/axa2_32k_prefill_qwen35_122b_v1_f16kv_b1024_ub256_20260719T065143Z/summary.json` and
      `data/gpu-mi210/axa2_32k_prefill_qwen35_122b_v1_f16k_q4v_b1024_ub256_rerun_20260719T070336Z/summary.json` and
-     `data/gpu-mi210/axa2_32k_prefill_qwen35_122b_v1_q4kv_b1024_ub256_20260719T071051Z/summary.json`.
-     Do not use a mixed-KV 32K AXA-2 cutover cost until the open mixed-KV 32K root-cause task closes.
+     `data/gpu-mi210/axa2_32k_prefill_qwen35_122b_v1_q4kv_b1024_ub256_20260719T071051Z/summary.json` and
+     `data/gpu-mi210/axa2_24k_prefill_qwen35_122b_v1_q4k_f16v_b1024_ub256_20260719T072203Z/summary.json` and
+     `data/gpu-mi210/axa2_32k_prefill_qwen35_122b_v1_q4k_f16v_no_warmup_b1024_ub256_20260719T072934Z/summary.json` and
+     `data/gpu-mi210/axa2_mixed_kv_fa_matrix_current_build_20260719T073441Z/summary.json` and
+     `data/gpu-mi210/axa2_fa_all_quants_mixed_kv_validation_20260719T073906Z/summary.json` and
+     `data/gpu-mi210/axa2_fa_all_quants_regression_controls_20260719T074221Z/summary.json` and
+     `data/gpu-mi210/axa2_current_build_no_warmup_homogeneous_controls_20260719T074757Z/summary.json`.
+     Use `415.31 t/s` as an observation-grade all-quants-build mixed-KV 32K cost only; keep the
+     current default HIP build's mixed-KV 32K cost rejected.
 2. Cold-load vs page-cache-hot load wall-clock for the intended resident targets.
    - 2026-07-19 observation-grade hot page-cache smoke: 122B UD-IQ2_M MI210 server with
      f16/f16 KV, `c32768`, b1024/ub256, and reasoning disabled reached `/health` in `7052 ms`,
@@ -108,12 +120,20 @@ axa3_teleport_policy:
     pp2048_tps: 342.06
     pp8192_tps: 135.56
     pp16384_tps: 76.52
-    pp32768_tps: null
-    pp32768_status: "mixed_kv_unresolved_no_stdout_or_zero_gpu_warmup"
+    pp32768_tps: 415.31
+    pp32768_status: "mixed_kv_requires_FA_ALL_QUANTS_build"
     f16_f16_pp32768_tps_control: 489.31
     q4_0_q4_0_pp32768_tps_control: 487.87
-    max_costed_prefix_tokens: 16384
-    reject_mixed_kv_32k_cutover_cost: true
+    current_default_no_warmup_f16_f16_pp32768_tps_control: 489.82
+    current_default_no_warmup_q4_0_q4_0_pp32768_tps_control: 489.07
+    fa_all_quants_f16_f16_pp32768_tps_control: 416.55
+    fa_all_quants_q4_0_q4_0_pp32768_tps_control: 414.60
+    fa_all_quants_homogeneous_regression_observed: true
+    current_default_build_mixed_kv_pp32768_status: "rejected_cpu_fallback_zero_gpu_no_stdout"
+    max_costed_prefix_tokens: 32768
+    reject_mixed_kv_32k_cutover_cost: false
+    require_fa_all_quants_for_mixed_kv_32k: true
+    do_not_enable_fa_all_quants_globally_from_axa2: true
   load_cost_model:
     hot_page_cache_ready_ms_control: 7052
     cold_load_ready_ms: null

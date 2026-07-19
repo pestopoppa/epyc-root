@@ -47,7 +47,7 @@ blockers resolved (K22/K23/K32/K33). Held only by operator gates + the CPU-corre
 ### EV-ranked survivor levers
 1. **v7 promotion** — banked; operator-gated. *Highest measured EV.*
 2. **CPU Q8_0 barrier-count operator/graph fusion** — sole live CPU decode lever; +2.6% measured → +10–15% (graph-rewrite) → +72% ceiling. → [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md).
-3. **Residency / teleport** — AXA-1 (122B IQ2 resident 2.2×/8–9×; K22 fix unblocks it), AXA-2 teleport, Gate-R (needs `P-GPU-1`). 2026-07-19 AXA-2 prefill sizing now has observation rows at 2K/8K/16K (`342.06`/`135.56`/`76.52 t/s`) plus homogeneous 32K controls (f16/f16 `489.31`, q4_0/q4_0 `487.87 t/s`); mixed-KV 32K remains open after bounded no-row/zero-GPU warmup stops. → [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md).
+3. **Residency / teleport** — AXA-1 (122B IQ2 resident 2.2×/8–9×; K22 fix unblocks it), AXA-2 teleport, Gate-R (needs `P-GPU-1`). 2026-07-19 AXA-2 prefill sizing has observation rows at 2K/8K/16K (`342.06`/`135.56`/`76.52 t/s`), default-build homogeneous 32K controls (`489.31-489.82 t/s` f16/f16, `487.87-489.07 t/s` q4_0/q4_0), and an isolated `GGML_CUDA_FA_ALL_QUANTS=ON` mixed q4_0/f16 32K row (`415.31 t/s`). Current default HIP build still rejects mixed-KV 32K cost because it falls into CPU fallback; all-quants is not a blanket replacement because homogeneous 32K controls dropped to `416.55`/`414.60 t/s` in that build. → [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md).
 4. **Native GLM-MTP forward-graph port** — ~10% remaining, +34–89% decode; **contingent on GLM quality** (GC-shadow-repair4b). → [tree-draft-forward-port-plan.md](tree-draft-forward-port-plan.md), [glm52-reviewer-capability-gates.md](glm52-reviewer-capability-gates.md).
 5. **CPU prefill-compute for large models (SCOPED)** — prefill compute now has
    positive-direction observation evidence on the first 122B architect target:
@@ -86,7 +86,7 @@ blockers resolved (K22/K23/K32/K33). Held only by operator gates + the CPU-corre
 
 **LANE B — agent-executable:**
 - *Zero-inference now:* current B2/B3/B5/B6/B7 scoping batch closed; do not reopen without a new handoff trigger.
-- *Needs a bench window (fold into A2 or its successor):* B1 barrier-fusion `tg128` A/B · B4 DSA-D3 profile-first (`perf record`) · PC-0 prefill-compute premise profile (122B architect `p8192/n1`, perf-stat + `perf record`).
+- *Needs a bench window (fold into A2 or its successor):* B1 barrier-fusion `tg128` A/B · PC-0 prefill-compute premise profile (122B architect `p8192/n1`, perf-stat + `perf record`). B4 DSA-D3 profile-first ran 2026-07-19 and closed D3.1 as no-go: Lightning Indexer was only `1.08%` of cycle samples, so do not start the AVX-512BW indexer kernel from current evidence.
 
 ## Active Landscape
 
@@ -181,6 +181,13 @@ After completing an acceleration item:
 - [x] A2 OP-2 canonical-bench window package drafted: operator approval matrix,
   preflight/abort gates, v6+iqk live verify, post-reboot P-BENCH-1 bench, B1
   barrier-fusion A/B, and B4 DSA-D3 perf-record routing captured ✅ 2026-07-18
+- [x] B4 DSA-D3 profile-first executed on GLM-5.2 CPU `kv_length_scaling` (`p5906`,
+  `indexer_top_k=2048`): prompt `18.69 t/s`; symbol-only `perf report` shows
+  `ggml_compute_forward_lightning_indexer` at `1.08%` of cycles, far below the
+  quantized dot/flash-attn bottlenecks. D3.1 closed no-go; raw `perf.data`
+  remains local scratch, summary/report/logs live under
+  `data/op2_canonical_window/op2_b4_dsa_d3_profile_20260719T075142/b4-dsa-d3/`.
+  ✅ 2026-07-19
 - [x] External qwen35/frontdoor drafter alpha retest (`n5_spec_on` 376/376, decision-grade) ✅ 2026-07-16
 - [x] CoT-scaffold: Qwable-standalone GPQA control completed — standalone 77% beat scaffold 73%, so standalone routing is primary. ✅ 2026-07-05
 - [x] GPU reasoner evidence: Qwable quiet-host IQ4/Q8 strict-output + top-level `json_schema` harness gate closed; scaffold/selector stubs remain non-deployable ✅ 2026-07-17

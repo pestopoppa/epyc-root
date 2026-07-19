@@ -2,6 +2,7 @@
 
 **Status**: RE-AUDITED 2026-07-17 — **generic DSA support LANDED via upstream #23346** for DeepSeek32, NOT the tracked draft #21149 -> the "track #21149 to merge" objective and D1 are SUPERSEDED. Important correction closed: pre-fix source registered `LLM_ARCH_GLM_DSA` and loaded GLM DSA tensors but did not instantiate `llama_kv_cache_dsa` for GLM; experimental-v7 commit `3dee86a5a` now wires GLM to the DSA cache/runtime path, aliases the DeepSeek32 DSA graph, requires live GLM indexer tensors, and force-builds GLM indexer Hadamard rotation tensors. Runtime GLM-5.2 fixed-`indexer_top_k=32` scaling now classifies the landed path as **DSA-DENSE-MASK**: generic DSA top-k/indexer engages in prompt processing, but final attention still scales with full KV. Live remnants: D2 sparse final-attention implementation/profiling + D3 CPU AVX-512 Lightning-Indexer, re-anchored to the landed code and re-gated on fresh profiling. All inference gated per `feedback_no_concurrent_inference.md`.
 **Created**: 2026-04-29 (via research-intake of intake-506 + PR #21149 audit)
+**Lifecycle**: live — audit override (2026-07-18): the original #21149-merge objective is SUPERSEDED, but the D2/D3 CPU sub-tracks are genuinely live (re-anchored to landed code, gated on fresh profiling). Prevents the dashboard heuristic from dimming this as "superseded". See [`stale-open-audit-2026-07-18.md`](stale-open-audit-2026-07-18.md).
 **Updated**: 2026-07-17 — DSA landed audit reset + GLM cache/runtime wiring fix + runtime `DSA-DENSE-MASK` classification recorded; prior 2026-05-28 deepseek4 section retained as adjacent history.
 **Categories**: kv_cache, inference_serving, hardware_optimization, local_inference
 **Workstream**: Inference Acceleration + CPU Engineering (cross-cuts)
@@ -141,15 +142,15 @@ Our angle (per `project_zen5_vnni_vs_maddubs` + `project_q8_8x8_avx512bw_outcome
 
 | ID | Task | Status | Notes |
 |----|------|--------|-------|
-| D3.1 | Profile current CPU `GGML_OP_LIGHTNING_INDEXER` with `perf record` to confirm compute-bound | PENDING | Per `feedback_cpu_decode_bw_bound`, BW-bound work doesn't benefit from SIMD |
-| D3.2 | If compute-bound: design AVX-512BW kernel for indexer dot-product + top-k selection | PENDING | Template from `gemv_q8_0_8x8_q8_0_avx512bw` in `arch/x86/repack.cpp` |
+| D3.1 | Profile current CPU `GGML_OP_LIGHTNING_INDEXER` with `perf record` to confirm compute-bound | CLOSED NO-GO ✅ 2026-07-19 | OP-2/B4 profile on GLM-5.2 `p5906`, `indexer_top_k=2048` measured `ggml_compute_forward_lightning_indexer` at only `1.08%` of cycle samples; quantized dot products, flash-attn, and OpenMP/runtime frames dominate. Artifact: `/mnt/raid0/llm/epyc-inference-research/data/op2_canonical_window/op2_b4_dsa_d3_profile_20260719T075142/b4-dsa-d3/summary.md`. |
+| D3.2 | If compute-bound: design AVX-512BW kernel for indexer dot-product + top-k selection | DEFERRED | Do not start from current evidence; reopen only if D2 real-sparse final-attention or a materially different serving shape makes Lightning Indexer cycle share material. |
 | D3.3 | Implement kernel with `vpmaddubsw`+`vpmaddwd` (NOT VPDPBUSD, per Zen 5 finding) | PENDING | ~300-500 LOC est. |
 | D3.4 | Correctness gate: PPL bit-exact vs scalar baseline | PENDING | Standard test-backend-ops + 32-chunk PPL pattern |
 | D3.5 | Throughput benchmark: indexer-time fraction before/after at 96 threads | **GATED on user inference approval** | Falsify "indexer FP8 kills CPU advantage" |
 | D3.6 | Auto-mbind the indexer key cache buffer (if it's a separate allocation) per `feedback_repack_buffer_numa_mbind` | PENDING | Only if profile shows multi-thread NUMA pressure |
 | D3.7 | Open upstream PR against current master if profiling justifies it | PENDING | Specifically scoped to "ggml-cpu/arch/x86 LIGHTNING_INDEXER kernel" |
 
-**Decision gate after D3.1**: if profile shows BW-bound, deprioritize D3 and redirect effort to D2. Don't write SIMD code that won't move the needle.
+**Decision gate after D3.1**: current landed-code profile says D3 is not worth immediate SIMD work. The Lightning Indexer path is active, but only `1.08%` of cycle samples on the OP-2/B4 GLM-5.2 8K profile. Redirect effort to D2/sparse-final-attention or higher-share CPU bottlenecks unless a later serving shape changes the profile.
 
 ## 2-Models-for-1 Leverage Statement
 
@@ -221,7 +222,7 @@ The "we'd need to write a fork patch" framing in earlier glm51 handoff text was 
 - [x] Re-anchor D2/D3 to the LANDED #23346 code, not the fairydreaming draft. ✅ 2026-07-16
 - [x] Run the static D2 landed-code audit: top-k selection is shared across prompt/decode, but final attention appears dense/mask-based. ✅ 2026-07-16
 - [x] Close D2 with runtime evidence: current-source GLM-5.2 fixed-`indexer_top_k=32` KV-length scaling classified final attention as `DSA-DENSE-MASK` ✅ 2026-07-17
-- [ ] Re-run D3.1 "is the CPU indexer compute-bound?" profiling check on landed code before any contribution work
+- [x] Re-run D3.1 "is the CPU indexer compute-bound?" profiling check on landed code before any contribution work — CLOSED NO-GO; `ggml_compute_forward_lightning_indexer` was only `1.08%` of cycle samples in the OP-2/B4 GLM-5.2 profile. ✅ 2026-07-19
 - [ ] D2 sparse-attention contribution — only if runtime profiling shows dense-mask attention still scales with full KV despite top-k
-- [ ] D3 AVX-512BW Lightning Indexer CPU kernel — only if D3.1 (re-run on landed code) confirms compute-bound
+- [ ] D3 AVX-512BW Lightning Indexer CPU kernel — deferred because D3.1 did not show material indexer share; reopen only after D2 real-sparse or a different shape changes the profile.
 - [ ] GLM-5.2 (754B GLM-MoE-DSA) activation — DSA forward-pass blocker now cleared in code; pending the GLM-5.2 UD-IQ2_M download + smoke-test in `glm51-reap-cpu-evaluation.md`
