@@ -43,10 +43,12 @@ Validation experiments:
    tokens where the model supports it.
    - 2026-07-19 observation-grade partial: 122B UD-IQ2_M on MI210 completed `pp2048 342.06 t/s`,
      `pp8192 135.56 t/s`, and `pp16384 76.52 t/s` with q4_0/f16 KV. `pp32768` did not complete:
-     the multi-row run stopped before the row, and a direct `-p 32768 -n 0 -t 32` follow-up emitted
-     no row before bounded manual stop. Artifacts:
+     the multi-row run stopped before the row, a direct `-p 32768 -n 0 -t 32` follow-up emitted no
+     row before bounded manual stop, and a b1024/ub256 q4_0/f16 repeat also stopped after GPU use
+     dropped to zero with no stdout row. Artifacts:
      `data/gpu-mi210/axa2-qwen35-122b-iq2m-prefill-sizing-20260719T060039Z/summary.json` and
-     `data/gpu-mi210/axa2-qwen35-122b-iq2m-prefill32k-t32-20260719T062410Z/summary.json`.
+     `data/gpu-mi210/axa2-qwen35-122b-iq2m-prefill32k-t32-20260719T062410Z/summary.json` and
+     `data/gpu-mi210/axa2_32k_prefill_qwen35_122b_v1_q4k_f16v_b1024_ub256_20260719T064333Z/summary.json`.
      Do not use a 32K AXA-2 cutover cost until the open 32K root-cause/rerun task closes.
 2. Cold-load vs page-cache-hot load wall-clock for the intended resident targets.
 3. One cutover smoke with explicit slot-release proof and no leaked GPU process.
