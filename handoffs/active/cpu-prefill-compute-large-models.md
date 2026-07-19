@@ -69,6 +69,16 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
     `4.332e10`. This is a strong positive-direction counter row for the prefill-compute
     premise, but still observation-grade because it overlapped with the Qwable MI210 replay
     and was not a fresh OP-2 quiet-window/post-reboot run.
+  - [x] **PC-0c current-source IQ2 prefill/decode sizing artifact ✅ 2026-07-19**:
+    CPU-only Qwen3.5-122B UD-IQ2_M run completed under the experimental v7
+    CPU binary at
+    `/mnt/raid0/llm/epyc-inference-research/data/cpu_prefill_compute/20260719T014801Z_qwen35_122b_iq2_cpu_prefill/summary.json`.
+    Command forced `--device none`, `-ngl 0`, `96` threads, f16 KV, and `GGML_IQK=1`;
+    `llama-bench` reported backend `CPU`, device `none`, and empty GPU info.
+    Result: `pp2048 122.31 t/s`, `pp8192 114.40 t/s`, `tg16 6.24 t/s`, max RSS
+    `40062336 KB`, wall `1:33.18`, exit `0`; pre/post `rocm-smi --showpids`
+    had no KFD PIDs. This sizes the IQ2 CPU prefill path and hybrid-placement
+    economics, but the `tg16` decode row is too slow for a primary CPU-only lane.
 - [x] **PC-1 — quantify the prefill fraction** for GLM/architect long-context turns from
   existing logs (zero-inference): evidence note
   `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc1_log_sizing_20260718.md`
