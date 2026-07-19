@@ -60,6 +60,12 @@ Inference-free signoff summarizer:
 
 - `/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/glm52_ccrab_accept_control_signoff.py`
 
+Inference-free review-sheet helper and generated blank worksheet:
+
+- `/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/glm52_ccrab_accept_control_review_sheet.py`
+- `/mnt/raid0/llm/epyc-inference-research/docs/data/glm52_ccrab_accept_control_n24_review_sheet_20260719.csv`
+- `/mnt/raid0/llm/epyc-inference-research/docs/data/glm52_ccrab_accept_control_n24_review_sheet_status_20260719.json`
+
 Governance context:
 
 - `/mnt/raid0/llm/epyc-root/handoffs/active/glm52-reviewer-capability-gates.md`
@@ -105,6 +111,43 @@ Set:
 
 Do not mark a row hard-accept solely because it was a merged PR or because the
 machine recommendation says `hard_accept_candidate`.
+
+## Optional CSV Workflow
+
+The generated worksheet is a convenience layer over the packet. It does not
+replace row-by-row review of the packet's full `task` and `candidate` fields,
+and the helper never turns machine recommendations into decisions.
+
+To regenerate the blank worksheet:
+
+```bash
+cd /mnt/raid0/llm/epyc-inference-research
+python3 scripts/benchmark/glm52_ccrab_accept_control_review_sheet.py \
+  docs/data/glm52_ccrab_accept_control_n24_audit_packet_20260718.json \
+  --machine-recommendations docs/data/glm52_ccrab_accept_control_machine_recommendations_20260718.json \
+  --review-csv-out docs/data/glm52_ccrab_accept_control_n24_review_sheet_20260719.csv \
+  --summary-out docs/data/glm52_ccrab_accept_control_n24_review_sheet_status_20260719.json
+```
+
+After review, fill the worksheet's `decision`, `reviewer`, `reviewed_at`, and
+`notes` columns for every row. Valid `decision` values are `hard_accept` and
+`reject_or_ambiguous`; a blank decision remains `unreviewed` and blocks
+decision-grade signoff.
+
+To apply the completed worksheet into the official signed packet:
+
+```bash
+cd /mnt/raid0/llm/epyc-inference-research
+python3 scripts/benchmark/glm52_ccrab_accept_control_review_sheet.py \
+  docs/data/glm52_ccrab_accept_control_n24_audit_packet_20260718.json \
+  --apply-review-csv docs/data/glm52_ccrab_accept_control_n24_review_sheet_20260719.csv \
+  --signed-packet-out docs/data/glm52_ccrab_accept_control_n24_signoff_packet_20260719.json \
+  --summary-out docs/data/glm52_ccrab_accept_control_n24_review_sheet_apply_20260719.json
+```
+
+The apply step refuses duplicate, missing, extra, or reordered row ids. It also
+requires reviewer identity, review timestamp, and notes for every reviewed row.
+It is still not the final gate; run the signoff summarizer below afterward.
 
 ## Official Outputs Needed
 

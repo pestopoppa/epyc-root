@@ -10,12 +10,13 @@
 does not authorize production changes, does not authorize v6 rebuilds or edits, and does
 not promote v7. It is a concrete run package for an operator-approved quiet window.
 
-**Scope**: prepare OP-2 evidence collection for:
+**Scope**: prepare OP-2 evidence collection. The current executable quiet-window payload is:
 
 1. v6+iqk live throughput and garbage verification.
 2. bench-clean canonical decode bench plus CPU-correctness gate.
-3. B1 barrier-fusion `tg128` A/B.
-4. B4 DSA-D3 profile-first `perf record`.
+
+B1 barrier-fusion `tg128` A/B and B4 DSA-D3 profile-first are retained as recorded OP-2 history,
+not current window actions, unless their prerequisites change.
 
 **2026-07-19 execution-status update:** B1 and B4 should no longer consume quiet-window
 decision time unless their prerequisites change. B1 has no current v7 fusion flag or immutable
@@ -31,6 +32,10 @@ host/repo/process state, stamps the narrowed stage plan, and writes
 `operator_next_commands.sh` without starting inference or touching production v6. Current prep
 artifact:
 `/mnt/raid0/llm/epyc-inference-research/docs/data/op2_quiet_window_prep_20260719/`.
+The generated operator script now includes concrete `OP2_READY` role-smoke `curl` commands for
+`frontdoor`, `worker_general`, `architect_general`, `ingest_long_context`, `worker_vision`, and
+`vision_escalation`, with per-role request/response/meta/check artifacts plus
+`live-v6/role_smoke_aggregate.json`; it is no longer a prose-only smoke instruction.
 
 Production kernel `/mnt/raid0/llm/llama.cpp` remains frozen. Experimental work, if any
 arm requires it, stays in `/mnt/raid0/llm/llama.cpp-experimental` and is not deployed by
