@@ -1,15 +1,44 @@
 # OP-2 Canonical Bench Quiet-Window Package - 2026-07-18
 
+> **2026-07-19 operator-confirmed execution gate:** OP-2 is **not reboot-gated**. Live host
+> health is already bench-eligible (`numa_balancing=0`, CPU ~3.2 GHz / no severe throttle,
+> 16-day uptime). The gate is a **quiet window** (pause the parallel agent's benching load)
+> plus the throttle/affinity preflight. Reboot only if preflight flags multi-day throttle or
+> another host-health failure.
+
 **Status**: docs-only sidecar. This package does not amend `/workspace/MEASUREMENT.md`,
 does not authorize production changes, does not authorize v6 rebuilds or edits, and does
 not promote v7. It is a concrete run package for an operator-approved quiet window.
 
-**Scope**: prepare OP-2 evidence collection for:
+**Scope**: prepare OP-2 evidence collection. The current executable quiet-window payload is:
 
 1. v6+iqk live throughput and garbage verification.
-2. clean post-reboot canonical decode bench plus CPU-correctness gate.
-3. B1 barrier-fusion `tg128` A/B.
-4. B4 DSA-D3 profile-first `perf record`.
+2. bench-clean canonical decode bench plus CPU-correctness gate.
+
+B1 barrier-fusion `tg128` A/B and B4 DSA-D3 profile-first are retained as recorded OP-2 history,
+not current window actions, unless their prerequisites change.
+
+**2026-07-19 execution-status update:** B1 and B4 should no longer consume quiet-window
+decision time unless their prerequisites change. B1 has no current v7 fusion flag or immutable
+binary pair, so record it as `skipped_not_staged` rather than run an invalid A/B. B4 already ran
+the GLM-5.2 DSA-D3 profile-first gate and closed D3.1 as no-go for immediate Lightning Indexer
+SIMD work (`ggml_compute_forward_lightning_indexer` was only `1.08%` of cycle samples). The
+remaining OP-2 quiet-window payload is live v6+iqk role/garbage verification plus the clean
+canonical CPU decode bench.
+
+**2026-07-19 no-inference prep bundle:** inference-research now has
+`scripts/benchmark/op2_quiet_window_prep.py`, which creates the OP-2 run directory, records
+host/repo/process state, stamps the narrowed stage plan, and writes
+`operator_next_commands.sh` without starting inference or touching production v6. Current prep
+artifact:
+`/mnt/raid0/llm/epyc-inference-research/docs/data/op2_quiet_window_prep_20260719/`.
+The generated operator script now includes concrete `OP2_READY` role-smoke `curl` commands for
+`frontdoor`, `worker_general`, `architect_general`, `ingest_long_context`, `worker_vision`, and
+`vision_escalation`, with per-role request/response/meta/check artifacts plus
+`live-v6/role_smoke_aggregate.json`; it is no longer a prose-only smoke instruction. The tracked
+prep directory is **not** the execution artifact root: unless the operator overrides
+`OP2_RUN_ROOT`, the script creates a fresh timestamped run under
+`/mnt/raid0/llm/epyc-inference-research/data/op2_canonical_bench_window/`.
 
 Production kernel `/mnt/raid0/llm/llama.cpp` remains frozen. Experimental work, if any
 arm requires it, stays in `/mnt/raid0/llm/llama.cpp-experimental` and is not deployed by
@@ -61,15 +90,16 @@ Required before any execute step:
 
 | Approval | Needed for | Notes |
 |---|---|---|
-| Quiet window | all inference/bench/profile stages | No concurrent AutoPilot or unrelated llama workloads. |
-| Host reboot | clean post-reboot canonical bench | If no reboot is approved, the clean bench becomes observation-only unless P-BENCH-1 host-health rules are otherwise satisfied. |
-| Stop/restart live stack | canonical bench and B1/B4 | Full stack reload is not authorized by this document; operator owns any stack stop/start. |
+| Quiet window | all inference/bench/profile stages | Required. Pause unrelated benching/inference load before the window. AutoPilot must not be restarted by this package; any operator-owned pause/resume happens outside the package and is recorded as process state. |
+| Host reboot | only if preflight flags multi-day throttle or host-health failure | Not required for OP-2 on the 2026-07-19 operator-confirmed host state. If no reboot is approved and preflight is clean, `P-BENCH-1` remains available. |
+| Stop/restart live stack | only if the operator explicitly chooses it outside this package | Full stack reload, production stack restart, and AutoPilot restart are not authorized by this document. If the quiet window cannot be obtained without those actions, abort and ask the operator. |
 | `sudo` for host hygiene/perf | drop_caches, `perf`, sysctl fixes | Record every command and result. |
 | B1 arm identity | barrier-fusion A/B | Must name exact flag or exact control/fusion binaries before the window. |
 | B4 GLM/DSA profile | `perf record` around GLM-5.2 DSA | Must approve long CPU run and large `perf.data` artifact. |
 
 Abort the whole package if quiet-window approval is missing, if production v6 edits/builds
-are requested, or if another session needs the stack for production traffic.
+are requested, if AutoPilot restart or full-stack reload is requested as part of this
+package, or if another session needs the stack for production traffic.
 
 ## Preflight And Abort Gates
 
@@ -99,7 +129,7 @@ Abort conditions:
 
 | Gate | Abort if |
 |---|---|
-| Process quiet | AutoPilot, unrelated `llama-server`, `llama-bench`, `llama-cli`, `rocprof`, or `perf` is active outside the approved plan. |
+| Process quiet | AutoPilot, unrelated `llama-server`, `llama-bench`, `llama-cli`, `rocprof`, or `perf` is active outside the approved plan. Do not stop/restart AutoPilot from this package; abort or wait for operator-owned quieting. |
 | Host state | CPU governors/EPP, THP, `kernel.numa_balancing`, or `perf_event_paranoid` drift and operator does not approve a fix/rerun. |
 | Binary identity | v6 live roles do not map `/mnt/raid0/llm/llama.cpp/build/bin` libraries or lack `GGML_IQK=1`. |
 | Canonical recipe | `bench_canonical.sh --dry-run` fails, selects the wrong binary, or reports linkage drift. |
@@ -162,12 +192,14 @@ Evidence fields:
 Route results to `handoffs/active/v6-iqk-promotion.md` and the A2 row of
 `handoffs/active/inference-acceleration-index.md`.
 
-### 2. Clean Post-Reboot Canonical Decode Bench / CPU-Correctness Gate
+### 2. Bench-Clean Canonical Decode Bench / CPU-Correctness Gate
 
 Purpose: collect the pending clean v6+iqk canonical decode evidence under `P-BENCH-1`.
-Run only after operator reboot/host-hygiene approval.
+Run during an operator-approved quiet window after the throttle/affinity preflight passes.
+Do not require a reboot unless the preflight flags multi-day throttle or another
+host-health failure that the operator chooses to clear by reboot.
 
-Post-reboot preflight:
+Bench-clean preflight:
 
 ```bash
 cd /mnt/raid0/llm/epyc-inference-research
@@ -210,7 +242,7 @@ CPU-correctness gate:
 | binary linkage | recipe/linkage validation passes and resolves to the v6 build libs |
 | output validity | llama-bench JSON parse succeeds; no assert, NaN, malformed JSON, or stderr correctness warning |
 | reps | `n=10` reps for `tg128`; median and MAD reported |
-| host health | post-reboot preflight and sentinel are attached as attestation refs |
+| host health | quiet-window approval plus bench-clean preflight/sentinel are attached as attestation refs |
 
 Claim template:
 
@@ -231,8 +263,10 @@ Pre-stage requirement: before the quiet window, the owner must provide one of:
 - `B1_CONTROL_BINARY` and `B1_FUSION_BINARY`, with exact commits and `ldd` outputs.
 - `B1_CONTROL_COMMIT` and `B1_FUSION_COMMIT`, with both binaries already built.
 
-No such flag or patch was found during this package prep. If the fields above are still
-unknown at window start, skip B1 and preserve the quiet window for stages 1, 2, and 4.
+No such flag or patch was found during this package prep, and the 2026-07-18 staging audit
+confirms the current v7 line has no valid B1 arm. If the fields above are still unknown at
+window start, skip B1 and preserve the quiet window for stages 1 and 2. Do not report this
+as a failed A/B; report it as `skipped_not_staged`.
 
 Workload:
 
@@ -251,7 +285,7 @@ Required per-arm fields:
 |---|---|
 | arm identity | env flag or binary path, branch, commit, dirty status |
 | command | exact argv and env, plus dry-run validation |
-| host | same post-reboot attestation as stage 2 or a new attestation if state changed |
+| host | same bench-clean attestation as stage 2 or a new attestation if state changed |
 | result | raw JSON per rep, median, MAD, percent delta, stderr |
 | correctness | JSON parse, no assert, no NaN, same model/quant, no output/runtime warning |
 
@@ -269,6 +303,11 @@ B1 run.
 
 Purpose: decide whether D3 AVX-512BW Lightning Indexer work is worth implementing on the
 landed GLM-5.2 DSA path. This is profile-first; it does not authorize SIMD work.
+
+2026-07-19 status: completed as a separate OP-2/B4 profile. Artifact:
+`/mnt/raid0/llm/epyc-inference-research/data/op2_canonical_window/op2_b4_dsa_d3_profile_20260719T075142/b4-dsa-d3/`.
+Verdict: D3.1 `CLOSED NO-GO`; Lightning Indexer share was too small for immediate SIMD work.
+Only rerun B4 if a different GLM serving shape or D2 real-sparse attention changes the profile.
 
 Dry-run the GLM runner first:
 
@@ -356,9 +395,9 @@ handoffs, progress logs, MEASUREMENT, or code while preparing this package.
 - [ ] Operator approval refs captured.
 - [ ] Preflight artifacts captured and attached.
 - [ ] Live v6+iqk role table complete.
-- [ ] Clean post-reboot `P-BENCH-1` row produced or explicit abort reason recorded.
-- [ ] B1 arm identity supplied before execution, or B1 skipped with staging blocker.
-- [ ] B4 `perf.data` and `perf_report.txt` captured, or profile abort reason recorded.
+- [ ] Bench-clean `P-BENCH-1` row produced or explicit abort reason recorded.
+- [x] B1 arm identity supplied before execution, or B1 skipped with staging blocker. ✅ 2026-07-19 (`skipped_not_staged`)
+- [x] B4 `perf.data` and `perf_report.txt` captured, or profile abort reason recorded. ✅ 2026-07-19 (`D3.1 CLOSED NO-GO`)
 - [ ] Every decision-gating number uses `(metric, protocol-id, n/reps, date, attestation ref)`.
 - [ ] No MEASUREMENT amendment made.
 - [ ] No production kernel change made.

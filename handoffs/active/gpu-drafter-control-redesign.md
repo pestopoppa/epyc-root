@@ -46,6 +46,10 @@ same-family drafter (35B/122B qwen35 at Q8) trading α for fit.
     is 37.60 GiB, same MTP family, fits MI210, returned exact JSON in the server smoke, and
     produced complete context rows. This closes the missing-artifact blocker only; DR-0 still
     needs an operator-approved acceptance/economics run against the high-quant CPU verifier. ✅ 2026-07-19
+  - [x] **DR-0c — acceptance/economics run sheet prepared ✅ 2026-07-19**:
+    `docs/reference/mi210-axa-dr0-run-sheets-2026-07-19.md` pins the task classes, evidence
+    fields, and pass rule `E(alpha,K) > F(K)+H(K)` for the next quant-asymmetric run. This is
+    design prep only; the actual DR-0 run remains MI210/`P-GPU-1` gated.
   - [x] **DR-0 negative scheduling check ✅ 2026-07-18**: attempted to schedule the bounded
     MI210 measurement, found the missing-artifact blocker, and stopped rather than inventing a
     serving implementation. Fallback GPU time was used for a separate Qwen3.6-27B n-gram smoke

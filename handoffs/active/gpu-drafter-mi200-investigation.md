@@ -31,6 +31,10 @@
 
 ---
 
+> **🔔 Reopen-trigger FIRED — 2026-07-18 stale-open audit.** The hardware gate opened (MI210 installed 2026-07-02); N5 alpha evidence + Stage-1/2 economics landed 2026-07-16/17. The one open box (Stage 4) is blocked on those failed stages; the genuinely-live next step (drafter/control **redesign** + co-residency) was left unboxed. See [`stale-open-audit-2026-07-18.md`](stale-open-audit-2026-07-18.md).
+
+- [ ] Re-anchor to the live next step: Stage-1 end-to-end speedup / co-residency **redesign** (Stage 4 stays blocked on failed Stages 1–3)
+
 ## Thesis
 
 **The MI200 adds a latency tier on top of the existing CPU+RAM serving tier — it does not replace it.** The CPU tier already runs at cloud-API-competitive 20–50 t/s under the canonical NPS4 stack (per `feedback_canonical_baseline_protocol`). The GPU's role is to lift the *hot* latency-critical path — frontdoor + its drafters — into the 100+ t/s regime, while architect and workers remain CPU-resident at their already-competitive baseline.

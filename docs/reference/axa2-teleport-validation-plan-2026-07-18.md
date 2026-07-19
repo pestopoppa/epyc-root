@@ -17,6 +17,12 @@ This intentionally sidesteps composed-spec state save/restore
 not sidestep quality: Q4-CPU to IQ2-GPU is a mid-stream model/quant change, even
 though re-prefill launders state format.
 
+The current prep seam is the orchestrator policy path
+`src/llm_primitives/primitives.py::evaluate_teleport_decision`, with
+`src/llm_primitives/teleport.py` carrying the decision rules,
+`src/gpu_lease.py` carrying single-owner cutover state, and
+`src/backends/llama_server.py` carrying the transport/backend wrapper.
+
 ## What AXA-2 Must Prove
 
 1. **Economic win**: migration saves wall-clock time for long-running turns after
@@ -140,13 +146,35 @@ Do not execute from this plan. Replace paths, ports, commits, and protocol flags
 only inside an operator-approved validation window.
 
 ```bash
-# Placeholder only: dry policy trace, no server action.
-python scripts/benchmark/axa2_teleport_policy_trace.py \
+# Dry policy trace, no server action. This helper lives in epyc-orchestrator
+# and evaluates the real TeleportPolicy code path without acquiring a lease.
+cd /mnt/raid0/llm/epyc-orchestrator
+python3 scripts/benchmark/axa2_teleport_policy_trace.py \
   --trace <captured-trace.jsonl> \
   --cpu-tps <cpu_tps> \
   --gpu-tps <gpu_tps> \
   --load-seconds <load_seconds> \
   --output <artifact-dir>
+
+# Dry live-cutover bundle, no server action. This writes the operator command
+# and required artifact checklist for a same-quant resident cutover smoke.
+python3 scripts/benchmark/axa2_live_cutover_bundle.py \
+  --output orchestration/reports/axa2_live_cutover_bundle_<date> \
+  --policy-enabled \
+  --role-allowlist architect_general \
+  --cpu-quant q4_k_m \
+  --gpu-quant q4_k_m \
+  --generated-tokens 200 \
+  --estimated-remaining-tokens 500 \
+  --cpu-tps 20 \
+  --gpu-tps 44
+
+# Operator-window only: execute the prepared live-cutover bundle against
+# already-running CPU/GPU llama-server endpoints. This still does not start
+# servers, build kernels, restart AutoPilot, or touch production v6.
+CPU_URL=http://127.0.0.1:<cpu-port> \
+GPU_URL=http://127.0.0.1:<gpu-port> \
+  orchestration/reports/axa2_live_cutover_bundle_<date>/operator_run.sh
 
 # Placeholder only: GPU prefill sweep under experimental v7, never production v6.
 python scripts/benchmark/axa2_prefill_sweep.py \
@@ -163,6 +191,16 @@ python scripts/benchmark/axa2_sampling_continuity.py \
   --sampler-profile production \
   --output <artifact-dir>
 ```
+
+2026-07-19 sample dry trace artifact:
+`/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/axa2_policy_trace_20260719/`.
+It contains two no-inference policy rows: a same-quant resident-tail cutover
+candidate and a default cross-quant rejection (`quant_change_not_allowed`).
+
+2026-07-19 sample live-cutover dry bundle:
+`/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/axa2_live_cutover_bundle_20260719/`.
+It contains the no-inference operator command plus the artifact checklist for
+cutover, lease-release, and seeded CPU-vs-GPU continuity evidence.
 
 ## Gate Dependencies
 

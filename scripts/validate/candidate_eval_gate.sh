@@ -60,7 +60,9 @@ echo "== py_compile =="
   scripts/validate/validate_claude_md_matrix.py \
   scripts/validate/validate_doc_drift.py \
   scripts/validate/validate_registry.py \
+  scripts/validate/check_model_probe_scoreboard_guard.py \
   scripts/validate/check_stack_fact_migration_discipline.py \
+  tests/validate/test_check_model_probe_scoreboard_guard.py \
   tests/validate/test_check_stack_fact_migration_discipline.py
 
 echo "== agent governance =="
@@ -80,6 +82,9 @@ echo "== pii fixture =="
 
 echo "== stack fact migration discipline =="
 "$PYTHON_BIN" scripts/validate/check_stack_fact_migration_discipline.py
+
+echo "== model probe scoreboard guard =="
+"$PYTHON_BIN" scripts/validate/check_model_probe_scoreboard_guard.py
 
 if [[ "$STRICT_DOC_DRIFT" -eq 1 ]]; then
   echo "== doc drift =="
@@ -101,7 +106,9 @@ trap 'rm -rf "$TMP_DIR"' EXIT
 
 if command -v uv >/dev/null 2>&1; then
   echo "== focused tests =="
-  uv run --with pytest pytest -q tests/validate/test_repo_readiness_scorer.py
+  uv run --with pytest pytest -q \
+    tests/validate/test_repo_readiness_scorer.py \
+    tests/validate/test_check_model_probe_scoreboard_guard.py
 else
   echo "== focused tests =="
   echo "uv unavailable; skipped pytest slice"

@@ -6,6 +6,8 @@
 **Scope**: Documentation/audit handoff only. No inference, AutoPilot, server restarts, code edits, index edits, or progress-log edits were performed.
 **Related**: [model-stack-update-pipeline-audit.md](model-stack-update-pipeline-audit.md), [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md), [model-capability-descriptors.md](model-capability-descriptors.md), [fable5-findings-02-routing-decision-architecture.md](../completed/fable5-findings-02-routing-decision-architecture.md), [fable5-findings-01-measurement-and-integrity.md](../completed/fable5-findings-01-measurement-and-integrity.md)
 
+> **📎 2026-07-18 stale-open audit note.** Part of the 5-handoff stack-pipeline cluster. Its open checklist is a **repeatable operating procedure** (identify change type → update inputs → run tests → guard-pass → post-launch PID/port compare), not one-time backlog — which is why it inflates the open count. Authoritative pair: [`model-stack-single-source-update-pipeline.md`](model-stack-single-source-update-pipeline.md) + [`stack-change-governance-pipeline.md`](stack-change-governance-pipeline.md). Decision pending (operator): convert the checklist to a numbered runbook to de-inflate, or fold into governance-pipeline. See [`stale-open-audit-2026-07-18.md`](stale-open-audit-2026-07-18.md) finding #5.
+
 ## Problem Statement
 
 Changing the orchestration model stack is still too easy to do as a collection of manual patches. The live stack now has facts that invalidate older hardcoded assumptions:

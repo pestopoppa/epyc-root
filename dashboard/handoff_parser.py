@@ -156,6 +156,41 @@ def parse_priority(meta: dict[str, str]) -> str:
     return _priority_from_value(meta.get("priority", ""))
 
 
+# High-precision "shelved-work" signal. Deliberately NARROW: only standalone park
+# verbs (PARKED / SHELVED / DEPRIORITIZED / NO-GO / ABANDONED) or SUPERSEDED count,
+# and only in the Status head + Priority value — so an actively-maintained handoff
+# that merely mentions a deferred sub-lever mid-status is NOT mislabelled. An
+# explicit ``**Lifecycle**`` field always wins (authoritative; set by the
+# stale-open audit). This is a derived HINT for the board, never decision-gating.
+_LIFECYCLE_META_KEYS = ("lifecycle", "lifecycle-state")
+_PARKED_RE = re.compile(r"\b(PARKED|SHELVED|DEPRIORITI[SZ]ED|NO-?GO|ABANDONED|MOTHBALLED)\b")
+_SUPERSEDED_RE = re.compile(r"\bSUPERSEDED\b")
+
+
+def parse_lifecycle(meta: dict[str, str], status_full: str) -> str | None:
+    """Return ``'parked'`` | ``'superseded'`` | ``None`` — a conservative signal.
+
+    Precedence: an explicit ``**Lifecycle**: parked|superseded|live`` metadata
+    field wins; otherwise a high-precision scan of the Status head (first 200
+    chars) plus the Priority value. Returns ``None`` for anything not clearly
+    shelved so the default is "assume live".
+    """
+    for key in _LIFECYCLE_META_KEYS:
+        raw = (meta.get(key) or "").strip().lower()
+        if raw:
+            if raw.startswith("park"):
+                return "parked"
+            if raw.startswith("supersed"):
+                return "superseded"
+            return None  # explicit "live"/"active"/anything else → not shelved
+    scan = ((status_full or "")[:200] + " " + meta.get("priority", "")).upper()
+    if _PARKED_RE.search(scan):
+        return "parked"
+    if _SUPERSEDED_RE.search((status_full or "")[:200].upper()):
+        return "superseded"
+    return None
+
+
 def _first_date(value: str | None) -> str | None:
     if not value:
         return None
@@ -342,6 +377,7 @@ def parse_file(state: str, path: Path, *, detail: bool = False) -> dict:
         "priority": parse_priority(meta),
         "status_short": _status_short(status_full),
         "blocked_hint": _is_blocked_status(status_full),
+        "lifecycle": parse_lifecycle(meta, status_full),
         "done": done,
         "total": total,
         "progress_source": source,

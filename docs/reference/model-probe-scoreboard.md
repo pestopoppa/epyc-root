@@ -1,14 +1,44 @@
 # Model Probe Scoreboard (experimental-v7)
 
 **Living scoreboard** — one glance-able read of how every candidate model is performing on the
-`experimental-v7-refresh-20260716 @ d1e5a20eb` kernel (iqk + GPU-opts + `Q2_0`). All rows are
+current authoritative `experimental-v7-refresh-20260716 @ 6a8dd5ea6` lineage (iqk + GPU-opts
++ `Q2_0`; some older rows name their original artifact commit). All rows are
 **OBSERVATION-grade** (single-config, small-n per MEASUREMENT.md) — hypotheses, not
-decision-grade. MI210 = gfx90a/ROCm 6.2; CPU = EPYC 9655. Compiled 2026-07-18 from the probe
+decision-grade. MI210 = gfx90a/ROCm 6.2; CPU = EPYC 9655. Updated 2026-07-19 from the probe
 runs scattered across the inference handoffs.
 
 **Update rule (for the running agent):** every new model/quant probe appends a row here (model,
 quant, device, pp t/s, tg t/s, quality, role-ready, artifact) — do not bury results in a
 checkbox line + artifact path alone. Keep this the single source of "how are the models doing."
+For rows in the stop list below, a new speed row is allowed only when paired with a concrete
+quality, protocol, artifact, or loader fix that states the reopen hypothesis.
+
+## ⚠ Steering (2026-07-19) — stop grinding the quality-blocked breadth
+
+The sub-2-bit / exotic-model breadth is **OBSERVATION speed-only and quality-blocked or broken**
+— none are role-ready, and continued probing is **low-EV**. **STOP probing these unless a
+*specific* quality or loader path opens** (a concrete prompt/schema/artifact/loader fix with
+a hypothesis, not another speed rerun):
+- **Bonsai-8B / Bonsai-27B Q1_0** — fast/cheap curiosity only; Bonsai-27B fails the strict
+  instruction gate and Bonsai-8B is orphan/provenance-limited. Reopen only on a prompt/template,
+  provenance, or role-quality fix.
+- **Ternary Bonsai Q2_g64** — 6/8, empty `<think>` tags; ngram is speed-only. Reopen only on
+  a quality/protocol fix.
+- **Ternary Bonsai Q2_0** — broken load (498/498 tensors short); needs a producer/transcode
+  fix or a documented compatibility-loader contract, not reruns.
+- **Nemotron-Nano Q8 / Nemotron-Diffusion (intake-576)** — Nano fails broader visible-content
+  behavior despite small-slice protocol repairs; Diffusion still lacks a quality-clean
+  stock-v7 constrained/server path. Reopen only on protocol/parser/loader fixes.
+- **Qwen3-VL-8B/30B, SuperGemma4, other extra vision candidates** — paused unless they fix a
+  fixture or role gap not already covered by MiniCPM-o plus the worker_vision safety alias.
+
+**Redirect freed cycles to the operator-gated promotion work** (higher EV): OP-2 canonical bench
+prep, `P-GPU-1` ratification, **AXA-2 teleport**, GLM accept-control (GC-shadow-repair4b), and
+PC-0 prefill-compute — see [`v7-promotion.md`](../../handoffs/active/v7-promotion.md) gate +
+[`inference-acceleration-index.md`](../../handoffs/active/inference-acceleration-index.md) LANE A/B.
+
+**And: maintain this scoreboard** — append every future probe row here rather than burying it in a
+checkbox line, so there's always one glance-able read.
 
 ## Scoreboard
 
@@ -25,19 +55,33 @@ checkbox line + artifact path alone. Keep this the single source of "how are the
 | **Ingest Qwen3-Next-80B-A3B** | Q4_K_M | CPU | — | 2K 20.5 / 8K 15.9 / 32K 9.7 | production | Yes | idx L208 |
 | **GLM-5.2** (754B glm-moe-dsa) | UD-IQ2_M | CPU | ~26 (12K); 24→17 as KV grows; 64K 6.8 | **~2.56** (12K); 64K 1.20 | exact-answer FA 0.0%/FR 16.7%; **patch-review over-approves (FA up to 91.7%)**; DSA-DENSE-MASK | **No** — quality-blocked | `glm52_reviewer_corpus_direct/…ccrab-patchdiff…` |
 | GLM-5.2 native-MTP | UD-IQ2_M | CPU | — | — (scaffold only) | builds + bounded draft-mtp smoke | No — no throughput yet, quality-gated | tree-draft B6/K23.1 |
-| **MiniCPM-o-4_5** vision (+F16 proj) | Q4_K_M | MI210 | 732–884 | 111–127 | 4/4 OCR/chart (`--reasoning off`) | **Yes** — activated `vision_escalation` (live smoke 4/4) | `k35-vision-escalation-live-smoke-20260718T1225Z` |
+| **MiniCPM-o-4_5** vision (+F16 proj) | Q4_K_M | MI210 | 732–884 | 111–127 | 4/4 OCR/chart (`--reasoning off`) | **Yes** candidate — source-wired + controlled smoke; persistent live traffic unconfirmed | `k35-vision-escalation-live-smoke-20260718T1225Z` |
 | MiniCPM-o-4_5 | Q4_K_M | CPU | — | 12.0–14.1 | 4/4 (reasoning off) | (CPU fallback) | `k35-minicpm-o45-reasoning-off` |
 | Qwen2.5-VL-7B worker_vision (+mmproj) | — | MI210 | — | 16.9–21.3 | 4/4 | **Yes** — live worker_vision + escalation safety alias | `k35-vision-matrix-20260717T1500Z` |
-| Bonsai-8B | Q1_0 | MI210 | 2349 / 1751 (2K/8K) | 38.4 | speed-only (no quality run) | No (research) | `v7-bonsai8b-gpu-bench-current-20260718T141319Z` |
-| Bonsai-27B | Q1_0 | MI210 | 799 / 759 | 11.2 (decode-slow) | 6/8 strict (fails 6-word IF) | No | `bonsai27_q1_mi210_llama_bench_20260718T150243Z` |
-| Ternary Bonsai | Q2_g64 | MI210/CPU | ~26 (p512) | raw 10.5 (MI210) / 8.4 (CPU); ngram 9.8→22.9 | 6/8 strict; retry wrong output | No (speed-only) | `ternary_q2_g64_quality_gate/…` |
-| Ternary Bonsai | Q2_0 | — | — (fails load) | — | **loader rejects** — 498/498 tensors short (noncanonical layout) | No — broken load | `ternary_bonsai_q2_layout_contract_20260718Tcodex.json` |
-| Nemotron-Nano | Q8 | MI210 | — | 84.0 / 84.5 | 0/5 → 4/5 @512tok; **fails strict JSON** (budget→reasoning) | No — protocol-blocked | idx L222 |
-| Qwen3-VL-8B (+F16 proj) | Q4_K_M | MI210 | — | 110–126 | 3/4 — chart→"Moldova" | No (candidate; MI210 chart-fail; CPU 4/4) | `k35-qwen3vl8-candidate` |
+| Bonsai-8B | Q1_0 | MI210 | 2349 / 1751 (2K/8K) | 38.4 | speed-only; orphan/provenance-limited | No — stop-list; reopen on provenance + quality fix | `v7-bonsai8b-gpu-bench-current-20260718T141319Z` |
+| Bonsai-27B | Q1_0 | MI210 | 799 / 759 | 11.2 (decode-slow) | 6/8 strict (fails 6-word IF) | No — stop-list; reopen on quality fix | `bonsai27_q1_mi210_llama_bench_20260718T150243Z` |
+| Ternary Bonsai | Q2_g64 | MI210/CPU | ~26 (p512) | raw 10.5 (MI210) / 8.4 (CPU); ngram 9.8→22.9 | 6/8 strict; retry wrong output | No — stop-list; ngram speed-only | `ternary_q2_g64_quality_gate/…` |
+| Ternary Bonsai | Q2_0 | — | — (fails load) | — | **loader rejects** — 498/498 tensors short (noncanonical layout) | No — stop-list; reopen on artifact/loader contract fix | `ternary_bonsai_q2_layout_contract_20260718Tcodex.json` |
+| Nemotron-Nano | Q8 | MI210 | — | 78–84 | small slice repaired, but broader 7/24 visible-content failure | No — stop-list; protocol-quality blocked | `nemotron_nano_task_quality/…broad24…` |
+| Qwen3-VL-8B (+F16 proj) | Q4_K_M | MI210 | — | 110–126 | 3/4 — chart→"Moldova" | No — stop-list; reopen on chart/role-gap fix | `k35-qwen3vl8-candidate` |
 | Qwen3-VL-30B (MoE) | — | MI210 | — | 36–50 (short) | 3/4 — chart→"Moldova" | No — replaced by CPU alias→MiniCPM-o | `k35-vision-matrix` |
 | SuperGemma4-26B multimodal (+F16 proj) | Q8_0 | MI210 | — | 80–84 | 4/4 | No — MiniCPM-o preferred (faster/smaller) | `k35-supergemma4-candidate` |
 | PaddleOCR-VL-1.6 (+mmproj) | GGUF | MI210 | — | 484–490 (OCR) | OCR clean; **table TEDS 0.0** (vs ODL 0.78) | No — OCR specialist, not general QA | `paddleocr-vl-first-smoke` |
 | Hy3 (hybrid) | — | MI210-hybrid / CPU | — | 11.5 / 5.2 (no-spec) | 5/6 — fails 6-word IF | No (research) | idx L221 |
+| Qwen3.5-122B-A10B | UD-IQ2_M | MI210 | 736.96 pp512; 180.15/269.32 combined 2K/4K+tg512 | 44.34-45.06 no-spec; ngram+MTP 287.09 repeated / 50.77 mixed / 80.77 broad | 8/8 no-spec architect; reasoning-auto 0/4 final-content; ngram+MTP broad 5/8 | No — research route-gated; DR-0/P-GPU-1 open | `qwen35_122b_iq2m_mi210_context_20260719T001712Z`, `qwen35_122b_a10b_ud_iq2_m_architect_mi210_20260719T002502Z`, `qwen35_122b_iq2m_ngram_mtp_broad_20260719T014335Z` |
+| Qwen3.5-122B-A10B | UD-IQ2_M | CPU | 122.31/114.40 pp2K/8K | 6.24 tg16 | prefill/cost sizing only | No — decode too slow; hybrid-placement input | `cpu_prefill_compute/20260719T014801Z_qwen35_122b_iq2_cpu_prefill` |
+| Qwen3-Next-80B-A3B-Instruct | IQ2_M | MI210 | 1220.90 pp512; 236.06/537.95/796.13 combined 2K/8K/32K+tg512 | 56.11 tg512; quality-wall 14.47-22.56; broader 16.79 | 12/12 then 23/24; code-review repair 10/10; broader role 35/42 | No — promising research, reviewer/selector not clean | `qwen3next-80b-iq2m-sourcehead-v7-gpu-context-clean-20260718T235036Z`, `qwen3next_80b_iq2m_mi210_broader_role_quality_probe_20260719T034859Z` |
+| Qwen3-4B-Instruct-2507 | Q8_0 | MI210 / CPU | MI210 3874/3153/2417 pp512/4K/8K; CPU 479/374/321 | MI210 145.39; CPU 10.12 | grammar verifier 12/12, expanded 22/24, policy 15/18 | No — small-verifier candidate; prompt-robust gate open | `qwen3_4b_instruct_2507_q8_mi210_llama_bench_20260719Tmain`, `qwen3_4b_instruct_2507_mi210_verifier_grammar_slice24_20260719T033317Z` |
+| Qwen3-4B-Instruct-2507 | BF16 | MI210 / CPU | MI210 3395/3154/2412 pp512/4K/8K; CPU 446/337/286 | MI210 102.46; CPU 7.14 | grammar verifier 8/12 | No — diagnostic only; Q8 faster and cleaner | `qwen3_4b_instruct_2507_bf16_mi210_llama_bench_20260719Tmain`, `qwen3_4b_instruct_2507_bf16_mi210_verifier_grammar_slice_20260719Tmain` |
+| Qwen3-4B-Thinking-2507 | Q8_0 | MI210 / CPU | MI210 4013/3525/2353/991 pp512/2K/8K/32K; CPU 320/274/159/49 | MI210 119.04 current, server smoke 146.95; CPU 11.53 | server/chat content 0/3; useful output in `reasoning_content` | No — protocol-gated until content/reasoning contract is fixed | `qwen3_4b_thinking_2507_q8_mi210_context_6a8dd5ea68_20260719T045143Z`, `20260719_cpu_lane_qwen3_4b_thinking_2507_q8_k24cpu_r1` |
+| gemma-4-26B-A4B UD source-head (+assistant MTP) | UD-IQ4_XS | MI210 | 269.94 no-stop free-form; load row pp2048 2449 | 126.33 no-stop; schema about 95-122; load row tg256 81.91 | schema 10/10 one hash; no-stop 3/3 one hash; broad n>=10/stop still open | No — structured/no-stop promising, broad GPU worker not admitted | `k11_schema_word_array_ud_iq4xs_mtp_np4_n10_currentv7_20260719Tmain_1024`, `gemma4_ud_iq4xs_mtp_freeform_termination_20260719T035436Z` |
+| Qwen3.5-9B MTP | Q4_K_M | MI210 | — | no-spec 74.34; draft-mtp 114.81; ngram+MTP 466.47 | repeated 1024-word output exact; earlier broader slice 13/18 | No — structured/repetitive-output niche only | `qwen35_9b_mtp_longoutput_currentv7_20260719T052017Z`, `qwen35_9b_ngram_mtp_longoutput_currentv7_20260719T052242Z` |
+| LightOnOCR-2-1B-bbox (+F16 mmproj) | Q4_K_M | MI210 | 2927-4008 | 224.45-234.66, median 226.62 | useful text extraction; table markers missing; OCRBench digit wrong | No — parser comparison, not table/QA clean | `lightonocr2-1b-bbox-v7-odl-probe-20260719T0154Z` |
+| Nemotron-Labs-Diffusion-14B | Q8_0 | MI210 / CPU | MI210 pp512 1700.42; CPU pp512 157.57 | MI210 tg512 69.05 / about 106 ms diffusion step; CPU tg256 2.69 | stock-v7 content-control repair 0/4; grammar/schema flags inert in diffusion sampler | No — stop-list quality/protocol blocked | `nemotron_diffusion_stock_v7/content_control_repair_sourcehead_mi210_20260719T020722Z` |
+| Qwen3.6-27B dense | Q8_0 | MI210 | 854.17/807.61/666.62 pp2K/8K/32K | 29.64 tg512 | speed-only; quality gate open; no spec selector in `llama-bench` | No — observation-only pending role/P-GPU-1 | `qwen36-27b-dense-v7-context-20260718T2225Z` |
+| Qwen3.6-27B MTP artifact | Q8_0 | MI210 | 839.72 pp512; 134.70/311.90/477.89 combined 2K/8K/32K+tg512 | 30.85 tg128 | speed-only; `llama-bench` did not enable MTP | No — artifact throughput only | `qwen36-27b-mtp-q8-v7-context-20260718T222725Z` |
+| Qwen3.6-27B MTP artifact | Q4_K_M | MI210 | 781.20 pp512; 146.40/327.54/471.50 combined 2K/8K/32K+tg512 | 34.80 tg128 | speed-only; `llama-bench` did not enable MTP | No — artifact throughput only | `qwen36-27b-mtp-q4km-v7-context-20260718T223647Z` |
+| Qwen3.6-27B MTP artifact | F16-upcast | MI210 | 930.09 pp512; 87.67/226.28/412.26 combined 2K/8K/32K+tg512 | 19.34 tg128 | speed-only; `llama-bench` did not enable MTP | No — artifact throughput only | `qwen36-27b-mtp-f16-upcast-v7-context-20260718T224253Z` |
 
 ## Verdict buckets
 
@@ -48,11 +92,11 @@ checkbox line + artifact path alone. Keep this the single source of "how are the
 - **gemma-4-26B-A4B CPU worker** — 98–176 t/s, K5 gate +0.0% (live worker_general). Plus clean production rows: architect 122B (21–24), ingest 80B (10–21), worker_vision Qwen2.5-VL 4/4.
 
 **2. Speed-only / quality-blocked (fast but not usable):**
-- **Nemotron-Nano Q8** — 84 t/s but fails strict JSON (burns budget on reasoning).
+- **Nemotron-Nano Q8** — 78–84 t/s but broad visible-content behavior failed after the small-slice repair.
 - **gemma-4-26B-A4B MI210 free-form multi-slot** — ~158 t/s single-slot but multi-slot determinism fails (2–3 hashes); K11.1 open.
-- **Bonsai-8B/27B Q1_0** — very fast pp, but no quality clearance / 6-word-IF fail.
+- **Bonsai-8B/27B Q1_0** — speed-only/orphan or 6-word-IF fail; no role-quality clearance.
 - **Ternary Q2_g64** — ngram accelerates to 22.9 t/s but 6/8, empty `<think>` tags.
-- **Qwen3-VL-8B/30B** — fast but chart-fixture fail (3/4).
+- **Qwen3-VL-8B/30B and extra vision candidates** — paused behind concrete fixture/role-gap fixes.
 - **Hy3** — 5–11 t/s, 5/6; research-only.
 - **GLM-5.2** — additionally slow (2.56 t/s) AND patch-review quality-blocked (exact-answer judging OK).
 

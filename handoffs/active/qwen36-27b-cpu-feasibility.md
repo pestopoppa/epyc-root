@@ -9,6 +9,7 @@
 **Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
 **Distinct from**: [`qwen36-production-upgrade.md`](../completed/qwen36-production-upgrade.md) (35B-A3B MoE, not this 27B dense-FFN hybrid)
 **Related**: [`gpu-acceleration-path.md`](gpu-acceleration-path.md) (where 4090 spec-dec numbers from intake-455 are bookmarked)
+**GPU status (2026-07-18 audit cross-ref)**: "parked" here is a **CPU** foreclosure only — do NOT read it as a dead model. The **same model was characterized extensively on the MI210** (GPU-only): plain Q8 29.5 → **40.4 t/s (+37%)** via embedded-NEXTN MTP + the MMVQ→MMQ verify-dispatch fix (`de447119f`); EAGLE-3 tested (no-go), GDN-MFMA profiled + killed. The banked "dense-Q8 +37%" v7 win **is this model**. Full campaign: [`mi210-speed-campaign-summary.md`](mi210-speed-campaign-summary.md) + [`progress/2026-07/2026-07-03-mi210-qwen36-27b-speed-campaign.md`](../../progress/2026-07/2026-07-03-mi210-qwen36-27b-speed-campaign.md). Cross-linked per [`stale-open-audit-2026-07-18.md`](stale-open-audit-2026-07-18.md) finding #2 (fragmentation).
 
 ## Objective
 

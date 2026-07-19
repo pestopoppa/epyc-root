@@ -208,7 +208,9 @@ LightOn released **MMLBD-C**, a manually corrected version of MMLongBenchDoc tha
 **Phase 1** (mainline llama.cpp — vision+text only):
 1. ✅ 2026-07-17: Run `llama-mtmd-cli` with local Qwen3-VL-8B Q4_K_M + vision mmproj on experimental v7. Rebuilt the experimental `llama-mtmd-cli` after a `--version` segfault; CPU shapes and MI210 OCR runtime/coherence smokes passed under `/mnt/raid0/llm/tmp/qwen3-vl8-image-smoke-20260717T115124Z/`.
 2. ✅ 2026-07-17: Benchmark candidate vision lanes vs Qwen2.5-VL-7B on the fixed K35 OCR/chart prompts. Qwen3-VL-8B CPU passed but was slower than the alias; Qwen3-VL-8B MI210 failed the chart; MiniCPM-o `--reasoning off` passed CPU+MI210 and is the leading `vision_escalation` candidate; SuperGemma4 passed but is slower/heavier than MiniCPM-o. PaddleOCR-VL also passed first extraction smokes at about `487 t/s`, but it belongs to the document/OCR extraction path, not the general vision QA lane.
-3. Test spec decode with Qwen3-0.6B draft
+3. ⏸️ Defer Qwen3-0.6B draft/spec-decode testing for Qwen3-VL until a concrete
+   chart-fixture or role-gap fix reopens the Qwen3-VL lane; do not run another
+   speed-only extra-vision probe while MiniCPM-o is the leading escalation path.
 
 **Phase 2** (spec decode investigation):
 ```bash
@@ -465,8 +467,8 @@ Watch list: SHANKS (arxiv:2510.06917) is sibling not supersession — different 
 
 - **[intake-682] "unsloth/gemma-4-12b-it-GGUF"** (HF) — just-released, **benchmark candidate**
   - Relevance: dense 12B-it sibling of the deployed gemma-4-26B-A4B MoE worker_general; encoder-free unified text+image+audio+video GGUF. **llama.cpp already supports gemma-4 vision (PR #21309) and audio (PR #21421)**, so a multimodal spike is feasible.
-  - Operator-raised angles to **TEST on our eval suite** (not yet measured here): (a) **vision-escalation substitute** vs Qwen3-VL-30B / Qwen2.5-VL-7B; (b) **frontdoor substitute** vs Qwen3.6-35B-A3B. NOTE: Google card numbers are only a weak prior — the frontdoor Qwen3.6 is *itself* multimodal, and on a BW-bound CPU host a dense 12B (reads ~12B params/token) likely decodes slower than the ~3B-active MoE frontdoor (measured 25.17 t/s). **Per `feedback_always_sweep`, benchmark before any verdict** — vision + tool-use + text + CPU t/s.
-  - Caveat: the "drafter for the 26B-A4B" framing is structurally invalid (needs the purpose-built 4-layer ~500M Gemma4Assistant head; no deployed dense Gemma-4 target). Verdict: worth_investigating — **action = run the benchmark**.
+  - Operator-raised angles are now parked unless they answer a concrete role gap: (a) **vision-escalation substitute** only if MiniCPM-o / worker_vision misses a fixture or service requirement; (b) **frontdoor substitute** only with a text-quality hypothesis, not a speed-only multimodal curiosity. NOTE: Google card numbers are only a weak prior — the frontdoor Qwen3.6 is *itself* multimodal, and on a BW-bound CPU host a dense 12B (reads ~12B params/token) likely decodes slower than the ~3B-active MoE frontdoor (measured 25.17 t/s). Any reopened probe must append to the model-probe scoreboard.
+  - Caveat: the "drafter for the 26B-A4B" framing is structurally invalid (needs the purpose-built 4-layer ~500M Gemma4Assistant head; no deployed dense Gemma-4 target). Verdict: parked until a concrete vision/frontdoor role-gap hypothesis exists.
 
 ## Research Intake Update — 2026-06-12
 

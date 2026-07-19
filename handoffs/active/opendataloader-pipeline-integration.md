@@ -156,8 +156,8 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 - [x] Add a repeatable structural/table-heavy candidate manifest builder for quiet-window probe batches. ✅ 2026-07-06
 - [x] Install the hybrid extra on the target host (`pip install -U "opendataloader-pdf[hybrid]"`), start `opendataloader-pdf-hybrid --port 5002`, and confirm `GET /health` before claiming live sidecar evidence. ✅ 2026-07-06
 - [x] Run an expanded all-local structural/table-heavy quiet-window comparison with live hybrid sidecar evidence and record the current local corpus ceiling (`51` eligible PDFs, not `200`). ✅ 2026-07-07
-- [ ] Experiment: swap hybrid backend from docling-fast → LightOnOCR-2-1B (port 8082)
-- [ ] Measure: does GPU-accelerated LightOnOCR beat docling-fast's 0.43s/page?
+- [ ] Parser-quality comparison: evaluate LightOnOCR-2-1B only as a structural/table/reading-order parser candidate against docling-fast; speed is secondary and not a standalone reopen reason.
+- [ ] Measure LightOnOCR latency only inside the parser-quality comparison above, after structural/table/reading-order scoring says the swap is useful.
 - [ ] Implement three-way routing: ODL local (simple) → ODL hybrid (tables) → LightOnOCR (scanned)
 - [x] Clone opendataloader-bench, add our pipeline as custom engine ✅ 2026-07-17 (Wave-2 B3): `epyc-inference-research/scripts/benchmark/odl_bench/` — deterministic pdftotext/ODL-local/LiteParse prediction-producer engines (structural/table/reading-order/speed); 15/15 tests; model-gated rows → Wave-3 manifest stubs
 - [ ] Run comparison on 200 PDFs: our pipeline vs ODL local vs ODL hybrid vs docling vs marker
