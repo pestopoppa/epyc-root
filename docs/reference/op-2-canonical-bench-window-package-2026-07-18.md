@@ -17,6 +17,14 @@ not promote v7. It is a concrete run package for an operator-approved quiet wind
 3. B1 barrier-fusion `tg128` A/B.
 4. B4 DSA-D3 profile-first `perf record`.
 
+**2026-07-19 execution-status update:** B1 and B4 should no longer consume quiet-window
+decision time unless their prerequisites change. B1 has no current v7 fusion flag or immutable
+binary pair, so record it as `skipped_not_staged` rather than run an invalid A/B. B4 already ran
+the GLM-5.2 DSA-D3 profile-first gate and closed D3.1 as no-go for immediate Lightning Indexer
+SIMD work (`ggml_compute_forward_lightning_indexer` was only `1.08%` of cycle samples). The
+remaining OP-2 quiet-window payload is live v6+iqk role/garbage verification plus the clean
+canonical CPU decode bench.
+
 Production kernel `/mnt/raid0/llm/llama.cpp` remains frozen. Experimental work, if any
 arm requires it, stays in `/mnt/raid0/llm/llama.cpp-experimental` and is not deployed by
 this package.
@@ -240,8 +248,10 @@ Pre-stage requirement: before the quiet window, the owner must provide one of:
 - `B1_CONTROL_BINARY` and `B1_FUSION_BINARY`, with exact commits and `ldd` outputs.
 - `B1_CONTROL_COMMIT` and `B1_FUSION_COMMIT`, with both binaries already built.
 
-No such flag or patch was found during this package prep. If the fields above are still
-unknown at window start, skip B1 and preserve the quiet window for stages 1, 2, and 4.
+No such flag or patch was found during this package prep, and the 2026-07-18 staging audit
+confirms the current v7 line has no valid B1 arm. If the fields above are still unknown at
+window start, skip B1 and preserve the quiet window for stages 1 and 2. Do not report this
+as a failed A/B; report it as `skipped_not_staged`.
 
 Workload:
 
@@ -278,6 +288,11 @@ B1 run.
 
 Purpose: decide whether D3 AVX-512BW Lightning Indexer work is worth implementing on the
 landed GLM-5.2 DSA path. This is profile-first; it does not authorize SIMD work.
+
+2026-07-19 status: completed as a separate OP-2/B4 profile. Artifact:
+`/mnt/raid0/llm/epyc-inference-research/data/op2_canonical_window/op2_b4_dsa_d3_profile_20260719T075142/b4-dsa-d3/`.
+Verdict: D3.1 `CLOSED NO-GO`; Lightning Indexer share was too small for immediate SIMD work.
+Only rerun B4 if a different GLM serving shape or D2 real-sparse attention changes the profile.
 
 Dry-run the GLM runner first:
 
@@ -366,8 +381,8 @@ handoffs, progress logs, MEASUREMENT, or code while preparing this package.
 - [ ] Preflight artifacts captured and attached.
 - [ ] Live v6+iqk role table complete.
 - [ ] Bench-clean `P-BENCH-1` row produced or explicit abort reason recorded.
-- [ ] B1 arm identity supplied before execution, or B1 skipped with staging blocker.
-- [ ] B4 `perf.data` and `perf_report.txt` captured, or profile abort reason recorded.
+- [x] B1 arm identity supplied before execution, or B1 skipped with staging blocker. ✅ 2026-07-19 (`skipped_not_staged`)
+- [x] B4 `perf.data` and `perf_report.txt` captured, or profile abort reason recorded. ✅ 2026-07-19 (`D3.1 CLOSED NO-GO`)
 - [ ] Every decision-gating number uses `(metric, protocol-id, n/reps, date, attestation ref)`.
 - [ ] No MEASUREMENT amendment made.
 - [ ] No production kernel change made.
