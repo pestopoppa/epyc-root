@@ -125,6 +125,18 @@ is_benchmark_prompt_hash_line() {
   return 1
 }
 
+is_benchmark_timing_line() {
+  # llama-bench JSON artifacts legitimately contain 12+ digit nanosecond timing
+  # counters. Keep this exemption limited to generated characterization output
+  # and exact timing keys; arbitrary long digit runs still fail the hook.
+  local path="$1"
+  local line="$2"
+  [[ "$path" =~ ^data/(cpu-model-characterization|gpu-mi210)/.+/llama_bench_stdout[.]json$ ]] || return 1
+  echo "$line" | grep -qE '"(avg_ns|stddev_ns)"[[:space:]]*:[[:space:]]*[0-9]{12,19}[,]?' && return 0
+  echo "$line" | grep -qE '"samples_ns"[[:space:]]*:[[:space:]]*\[[[:space:]]*[0-9]{12,19}([[:space:]]*,[[:space:]]*[0-9]{12,19})*[[:space:]]*\]' && return 0
+  return 1
+}
+
 is_social_status_url_line() {
   # Skip lines containing X / Twitter status URLs — status IDs are 18-19 digit snowflake IDs.
   # Common shapes:
@@ -186,6 +198,9 @@ scan_blob() {
         continue
       fi
       if is_benchmark_prompt_hash_line "$path" "$fullline"; then
+        continue
+      fi
+      if is_benchmark_timing_line "$path" "$fullline"; then
         continue
       fi
       if is_social_status_url_line "$fullline"; then
