@@ -7,11 +7,11 @@ current authoritative `experimental-v7-refresh-20260716 @ 6a8dd5ea6` lineage (iq
 decision-grade. MI210 = gfx90a/ROCm 6.2; CPU = EPYC 9655. Updated 2026-07-19 from the probe
 runs scattered across the inference handoffs.
 
-**Update rule (for the running agent):** every new model/quant probe appends a row here (model,
+**Update rule (for the running agent):** every future model/quant probe appends a row here (model,
 quant, device, pp t/s, tg t/s, quality, role-ready, artifact) — do not bury results in a
 checkbox line + artifact path alone. Keep this the single source of "how are the models doing."
-For rows in the stop list below, a new speed row is allowed only when paired with a concrete
-quality, protocol, artifact, or loader fix that states the reopen hypothesis.
+Blocked candidates are not speed-rerun unless a named quality, loader, protocol, parser, or
+artifact fix states the reopen hypothesis.
 
 ## ⚠ Steering (2026-07-19) — stop grinding the quality-blocked breadth
 
@@ -32,9 +32,9 @@ a hypothesis, not another speed rerun):
 - **Qwen3-VL-8B/30B, SuperGemma4, other extra vision candidates** — paused unless they fix a
   fixture or role gap not already covered by MiniCPM-o plus the worker_vision safety alias.
 
-**Redirect freed cycles to the operator-gated promotion work** (higher EV): OP-2 canonical bench
-prep, `P-GPU-1` ratification, **AXA-2 teleport**, GLM accept-control (GC-shadow-repair4b), and
-PC-0 prefill-compute — see [`v7-promotion.md`](../../handoffs/active/v7-promotion.md) gate +
+**Redirect freed cycles to the operator-gated promotion work** (higher EV): **AXA-2 teleport**,
+GLM accept-control (GC-shadow-repair4b), OP-2 canonical bench prep, and `P-GPU-1` ratification —
+see [`v7-promotion.md`](../../handoffs/active/v7-promotion.md) gate +
 [`inference-acceleration-index.md`](../../handoffs/active/inference-acceleration-index.md) LANE A/B.
 
 **And: maintain this scoreboard** — append every future probe row here rather than burying it in a
@@ -87,7 +87,7 @@ checkbox line, so there's always one glance-able read.
 
 **1. Clear wins (fast + quality-clean):**
 - **Qwable-v1 IQ4_XS (MI210)** — 91–100 t/s, 18/18 deterministic → primary reasoning route (Q8 works too, no quality gain, 2× footprint).
-- **MiniCPM-o-4_5 Q4_K_M (MI210)** — 111–127 t/s, 4/4 OCR/chart → **activated** as `vision_escalation` (must run `--reasoning off`).
+- **MiniCPM-o-4_5 Q4_K_M (MI210)** — 111–127 t/s, 4/4 OCR/chart → controlled smoke executed; persistent live traffic plus API/AutoPilot restart remains unconfirmed (must run `--reasoning off`).
 - **Frontdoor Qwen3.6-35B-A3B native-MTP (MI210)** — 119.7 t/s / 7.0× CPU at 8K, 100% accept (production; Gate-R obs-grade).
 - **gemma-4-26B-A4B CPU worker** — 98–176 t/s, K5 gate +0.0% (live worker_general). Plus clean production rows: architect 122B (21–24), ingest 80B (10–21), worker_vision Qwen2.5-VL 4/4.
 
