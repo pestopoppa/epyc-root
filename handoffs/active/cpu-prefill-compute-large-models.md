@@ -153,6 +153,22 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
   before touching low-level IQK dot kernels. Acceptance: exact-output smoke plus
   repeated `p8192/n1` profile showing lower libomp spin/pause share and lower
   wall time.
+  - [x] **PC-4a — graph-node trace scaffold prepared ✅ 2026-07-19**:
+    experimental-only patch in `/mnt/raid0/llm/llama.cpp-experimental` adds
+    default-off `LLAMA_QWEN35_PREFILL_TRACE=1` logging in
+    `src/models/qwen35.cpp` and `src/models/qwen35moe.cpp`. It reports
+    per-layer graph-node deltas and final graph-node count for qwen35/qwen35moe
+    prefill graph construction, without changing default execution or numerics.
+    Validation: `cmake --build build-k24-cpu --target llama-bench -j 16` passed
+    on experimental branch `experimental-v7-refresh-20260716` at `12a292f0c`;
+    `git diff --check` and ASCII checks passed. The llama.cpp patch remains
+    uncommitted pending explicit operator review/commit approval for that repo.
+  - [ ] **PC-4b — trace run + fusion decision**: run the traced `p8192/n1`
+    qwen35/qwen35moe prefill cell under the usual quiet-window controls, archive
+    the trace, and choose the first real default-off implementation target only
+    from measured high-delta islands. Do not claim PC-4 complete until an
+    exact-output/profile-guarded implementation shows lower libomp spin/pause
+    and lower wall time.
 
 ## PC-0 operator-window plan
 

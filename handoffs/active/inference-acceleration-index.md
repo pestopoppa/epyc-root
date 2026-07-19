@@ -55,8 +55,10 @@ native GLM-MTP serving was repaired.
    production-v6 `p8192/n1` recorded `112.730698 t/s`, `1.09` IPC, `68.597`
    CPUs utilized, and `46.47%` resolved `libggml-cpu` DSO samples. PC-3 resolved
    the large `(deleted)` bucket as LLVM OpenMP worker spin/pause (`0x7fea0`,
-   `38.36%` self), making PC-4 a qwen35/qwen35moe prefill barrier/graph-fusion
-   prototype rather than a low-level dot-kernel rewrite. →
+   `38.36%` self). PC-4a prepared and build-validated a default-off
+   `LLAMA_QWEN35_PREFILL_TRACE=1` graph-node trace scaffold in
+   `llama.cpp-experimental`; PC-4b is the trace run plus real fusion/grouping
+   decision. →
    [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md).
 6. **stream-K `nsm→k·nsm`+compact-LDS** — +0–10%, IQ2/capacity; pmc-CSV read first. → mi210 roadmap.
 7. **K28 GDN long-prefill recurrence kernel (GPU)** — `gated_delta_net.cu:191`. → mi210 roadmap.
@@ -92,7 +94,7 @@ native GLM-MTP serving was repaired.
 
 **LANE B — agent-executable:**
 - *Zero-inference now:* current B2/B3/B5/B6/B7 scoping batch closed; do not reopen without a new handoff trigger.
-- *Needs a bench window (fold into A2 or its successor):* B1 barrier-fusion `tg128` A/B only if a staged immutable on/off pair exists. PC-0 prefill-compute premise profiling and PC-3 target selection closed positive; follow-on PC-4 is a default-off experimental qwen35/qwen35moe prefill barrier/graph-fusion prototype with exact-output/profile proof. B4 DSA-D3 profile-first ran 2026-07-19 and closed D3.1 as no-go: Lightning Indexer was only `1.08%` of cycle samples, so do not start the AVX-512BW indexer kernel from current evidence.
+- *Needs a bench window (fold into A2 or its successor):* B1 barrier-fusion `tg128` A/B only if a staged immutable on/off pair exists. PC-0 prefill-compute premise profiling and PC-3 target selection closed positive; PC-4a trace scaffold is build-validated, and PC-4b needs a traced qwen35/qwen35moe prefill run before a real default-off fusion/grouping implementation is selected. B4 DSA-D3 profile-first ran 2026-07-19 and closed D3.1 as no-go: Lightning Indexer was only `1.08%` of cycle samples, so do not start the AVX-512BW indexer kernel from current evidence.
 
 ## Active Landscape
 
