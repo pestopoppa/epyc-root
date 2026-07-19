@@ -45,6 +45,8 @@ checkbox line, so there's always one glance-able read.
 | Model | Quant | Device | Prompt t/s (pp) | Decode t/s (tg) | Quality | Role-ready? | Evidence |
 |---|---|---|---|---|---|---|---|
 | **Qwable-v1** (35B-A3B reasoner) | IQ4_XS | MI210 | 2050/1951/1764 (2K/8K/32K) | 91.5 / 100.3 (tg1024/512) | 18/18 deterministic (plain+ngram) | **Yes** — primary reasoning-heavy route | `qwable_reasoning_economics/…20260717T184136Z` |
+| Qwable-v1 reviewer arm | IQ4_XS | MI210 | same as Qwable IQ4_XS | RM-2 median row wall 2.1s | decision-grade C-CRAB P-REV-1 failed: FA 54.2%, FR 45.8%, AUC 0.438, ECE 0.441 | **No** — not a patch-reviewer | `reviewer_model_ablations/rm2-fast-b-qwable-iq4xs-ccrab-p-rev1-20260719T162712Z` |
+| Qwen3.6-27B + Qwable scaffold reviewer arm | Q8_0 + IQ4_XS | MI210 co-resident | final reviewer uses Qwen dense Q8 | RM-2 median row wall 6.5s | decision-grade C-CRAB P-REV-1: FA 33.3%, FR 41.7%, AUC 0.659, ECE 0.315 | **No** — repair hypothesis only; FR too high | `reviewer_model_ablations/rm2-fast-b-qwen36-27b-q8-plus-qwable-iq4xs-scaffold-ccrab-p-rev1-20260719T162958Z` |
 | Qwable-v1 | IQ4_XS | CPU | — | 15.96 | 18/18 | Yes (CPU fallback) | `…iq4_cpu_expanded_final` |
 | Qwable-v1 | Q8_0 | MI210 | 2086/1982/1648 | 102.9 / 104.1 | 6/6; no Q8-only gain | IQ4_XS preferred (½ footprint) | idx L101,180 |
 | **Frontdoor Qwen3.6-35B-A3B** | Q8_0 native-MTP | MI210 | — | no-spec 95.4; **MTP 119.7** (8K, 100% accept); 2K/32K 123.6/105.2 | production | **Yes** — production; Gate-R residency (obs) | `k35_stack_context_matrix/frontdoor_pgpu1_candidate` |
@@ -78,7 +80,7 @@ checkbox line, so there's always one glance-able read.
 | Qwen3.5-9B MTP | Q4_K_M | MI210 | — | no-spec 74.34; draft-mtp 114.81; ngram+MTP 466.47 | repeated 1024-word output exact; earlier broader slice 13/18 | No — structured/repetitive-output niche only | `qwen35_9b_mtp_longoutput_currentv7_20260719T052017Z`, `qwen35_9b_ngram_mtp_longoutput_currentv7_20260719T052242Z` |
 | LightOnOCR-2-1B-bbox (+F16 mmproj) | Q4_K_M | MI210 | 2927-4008 | 224.45-234.66, median 226.62 | useful text extraction; table markers missing; OCRBench digit wrong | No — parser comparison, not table/QA clean | `lightonocr2-1b-bbox-v7-odl-probe-20260719T0154Z` |
 | Nemotron-Labs-Diffusion-14B | Q8_0 | MI210 / CPU | MI210 pp512 1700.42; CPU pp512 157.57 | MI210 tg512 69.05 / about 106 ms diffusion step; CPU tg256 2.69 | stock-v7 content-control repair 0/4; grammar/schema flags inert in diffusion sampler | No — stop-list quality/protocol blocked | `nemotron_diffusion_stock_v7/content_control_repair_sourcehead_mi210_20260719T020722Z` |
-| Qwen3.6-27B dense | Q8_0 | MI210 | 854.17/807.61/666.62 pp2K/8K/32K | 29.64 tg512 | speed-only; quality gate open; no spec selector in `llama-bench` | No — observation-only pending role/P-GPU-1 | `qwen36-27b-dense-v7-context-20260718T2225Z` |
+| Qwen3.6-27B dense | Q8_0 | MI210 | 854.17/807.61/666.62 pp2K/8K/32K | 29.64 tg512; RM-2 median row wall 6.2s | reviewer P-REV-1 failed: FA 54.2%, FR 16.7%, AUC 0.503, ECE 0.316; no spec selector in `llama-bench` | No — not a patch-reviewer | `qwen36-27b-dense-v7-context-20260718T2225Z`, `reviewer_model_ablations/rm2-fast-qwen36-27b-q8-ccrab-p-rev1-20260719T162109Z` |
 | Qwen3.6-27B MTP artifact | Q8_0 | MI210 | 839.72 pp512; 134.70/311.90/477.89 combined 2K/8K/32K+tg512 | 30.85 tg128 | speed-only; `llama-bench` did not enable MTP | No — artifact throughput only | `qwen36-27b-mtp-q8-v7-context-20260718T222725Z` |
 | Qwen3.6-27B MTP artifact | Q4_K_M | MI210 | 781.20 pp512; 146.40/327.54/471.50 combined 2K/8K/32K+tg512 | 34.80 tg128 | speed-only; `llama-bench` did not enable MTP | No — artifact throughput only | `qwen36-27b-mtp-q4km-v7-context-20260718T223647Z` |
 | Qwen3.6-27B MTP artifact | F16-upcast | MI210 | 930.09 pp512; 87.67/226.28/412.26 combined 2K/8K/32K+tg512 | 19.34 tg128 | speed-only; `llama-bench` did not enable MTP | No — artifact throughput only | `qwen36-27b-mtp-f16-upcast-v7-context-20260718T224253Z` |
@@ -98,7 +100,7 @@ checkbox line, so there's always one glance-able read.
 - **Ternary Q2_g64** — ngram accelerates to 22.9 t/s but 6/8, empty `<think>` tags.
 - **Qwen3-VL-8B/30B and extra vision candidates** — paused behind concrete fixture/role-gap fixes.
 - **Hy3** — 5–11 t/s, 5/6; research-only.
-- **GLM-5.2** — additionally slow (2.56 t/s) AND patch-review quality-blocked by decision-grade C-CRAB P-REV-1 failure (exact-answer judging remains only scoped evidence).
+- **GLM-5.2** — additionally slow (2.56 t/s) AND patch-review quality-blocked by decision-grade C-CRAB P-REV-1 failure (exact-answer judging remains only scoped evidence). RM-2 fast alternatives do not clear the role: Qwen/Qwable standalone fail, and Qwen+Qwable scaffold is only a repair hypothesis.
 
 **3. Broken / failed load:**
 - **Ternary Bonsai Q2_0** — loader rejects (498/498 tensors short; noncanonical PrismML packing, not corruption). Needs producer/transcode fix or a gated compat loader; Q2_g64 is the usable ternary path.

@@ -26,6 +26,16 @@ while quality work continues. The `glm-dsa` experimental-v7 scaffold now builds 
 bounded same-model `draft-mtp` smokes, but any alpha/throughput/admission claim remains
 downstream of reviewer-quality recovery after the failed C-CRAB P-REV-1 gate.
 
+**2026-07-19 RM-2 reviewer-slate cross-check.** The fast MI210 reviewer arms did not rescue
+the role choice on the same decision-grade C-CRAB slice. Qwen3.6-27B dense Q8 was faster but
+over-approved (`FA 54.2%`, `FR 16.7%`, `AUC 0.503`); Qwable IQ4_XS standalone failed
+(`FA 54.2%`, `FR 45.8%`, `AUC 0.438`); Qwen+Qwable scaffold improved FA/AUC but still
+missed too many accepts (`FA 33.3%`, `FR 41.7%`, `AUC 0.659`). See
+[`reviewer-model-ablations.md`](reviewer-model-ablations.md) RM-2.fast/RM-2.fast-b and
+`epyc-inference-research/docs/data/reviewer_model_ablations_rm2_fast_ccrab_p_rev1_20260719.md`.
+Conclusion: do not treat a small/fast arm as the current production reviewer; next progress is
+external ground-truth/SWE evidence or a new scaffold/reviewer repair hypothesis.
+
 ## 2026-07-19 DIRECTIVE (operator) — test GLM quality on EXTERNAL ground-truth benchmarks, not hand-labeled corpora
 
 The C-CRAB accept-control labeling issue is now resolved mechanically and the matched P-REV-1
