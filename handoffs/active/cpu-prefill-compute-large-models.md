@@ -2,18 +2,18 @@
 
 **Status**: SCOPED / PROFILE-GATED (B7 scoping closed 2026-07-18 from the v7
 lever audit). Design is complete enough to leave agent-zero-inference mode;
-remaining work is PC-0 only — **no inference/bench without operator approval**
+remaining implementation work is PC-4 only — **no inference/bench without operator approval**
 (`feedback_no_concurrent_inference`).
 **Owner handoff**: this file. **Parent index**: [inference-acceleration-index.md](inference-acceleration-index.md);
 sibling of [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md).
 
-**2026-07-19 checkpoint**: PC-0 first-cell profiling is now positive from both the current
+**2026-07-19 checkpoint**: PC-0 first-cell profiling is positive from both the current
 experimental CPU build observation (`1.47` IPC) and the OP-2 quiet-window production-v6 profile
-cell (`112.730698 t/s`, `1.09` IPC, `68.597` CPUs utilized). Prefill is materially healthier
-than the decode roofline (`0.17` IPC reference), with substantial vector work and `libggml-cpu`
-hot paths rather than a pure DRAM-stall signature. **Do not start kernel coding from this
-alone**: the OP-2 `perf record` has a large unresolved `(deleted)` main-binary mapping, so the
-next gate is a cleaner symbolized target-selection pass.
+cell (`112.730698 t/s`, `1.09` IPC, `68.597` CPUs utilized). PC-3 then resolved the large
+`(deleted)` mapping as LLVM OpenMP `libomp.so.5`; the hottest offset is a worker spin/pause
+loop, not an unknown llama.cpp math kernel. The first implementation direction is therefore
+barrier-count / graph-fusion work around qwen35 prefill boundaries, with MoE math packing as
+a follow-up, not a blind dot-product rewrite.
 
 ## Thesis
 
@@ -48,8 +48,8 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
   If BW-bound, this whole track collapses to the decode ledger — record and close. Bundle
   the `perf record` into the next OP-2 quiet window (shares the AMD perf-counter preflight,
   already green: `data/cpu_optimization/2026-07-03-amd-perf-counter-preflight/`). First
-  profile cell is now closed positive; do not start kernel work until PC-3 selects a clean
-  symbolized target from the unresolved hot mapping.
+  profile cell is now closed positive; PC-3 has selected the first implementation target as
+  OpenMP barrier/graph-fusion pressure, not a low-level dot-kernel rewrite.
   - [x] **PC-0a observation-only first profile artifact ✅ 2026-07-18**: CPU-only
     122B architect `p8192/n1` run completed under `perf record` at
     `/mnt/raid0/llm/epyc-inference-research/data/cpu_prefill_compute/b7-pc0-prefill-cpu-only-20260718T174148Z/b7-pc0-prefill`.
@@ -131,12 +131,28 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
   then GDN projection fusion (`wqkv|wqkv_gate|ssm_beta|ssm_alpha`) because it reuses the same
   activation packing and cuts barriers. Gated norm-tail fusion (`RMS_NORM * ssm_norm * silu(z)`)
   is second-order and should wait until post-matmul-fusion profiles prove it remains hot.
-  Implementation stays blocked on PC-3 target selection from a clean symbolized profile. ✅ 2026-07-18
-- [ ] **PC-3 — symbolized target-selection pass**: resolve the OP-2 `(deleted)` main-binary
+  PC-3 later selected barrier/graph-fusion pressure as the first implementation target;
+  low-level math rewrites remain follow-up work unless post-PC-4 profiles keep them hot. ✅ 2026-07-18
+- [x] **PC-3 — symbolized target-selection pass ✅ 2026-07-19**: resolve the OP-2 `(deleted)` main-binary
   mapping or rerun a bounded `perf record` with stable binary/symbol capture so the first
   kernel edit targets a proven hot path. Acceptable outputs: a no-children and children
   report with resolved `llama-bench`/OpenMP/library symbols, or an address-resolution note
   that maps the unresolved addresses to exact source/functions in the sampled binary.
+  Result: build-id `597017da07b7fbe219d04036e9ca30d46654951b` is
+  `/usr/lib/llvm-20/lib/libomp.so.5`; hot offset `0x7fea0` is an OpenMP worker
+  spin/pause loop (`38.36%` self), not a llama.cpp kernel. The children report
+  ranks `ggml_graph_compute_thread` at `48.30%`, `ggml_iqk_try_mul_mat_id` /
+  `iqk_mul_mat_moe` at `22.67%` / `22.51%`, `ggml_compute_forward_mul_mat` at
+  `10.37%`, CPU flash-attn at `5.59%`, and GDN/RMS/SSM at about `1-2%` each.
+  Summary:
+  `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc3_target_selection_20260719.md`.
+- [ ] **PC-4 — experimental qwen35 prefill barrier/graph-fusion prototype**:
+  implement only in `llama.cpp-experimental`, default-off, after checking the
+  current v7 promotion branch. First prototype should reduce graph-node/OpenMP
+  dispatch count around qwen35/qwen35moe prefill same-input compute islands
+  before touching low-level IQK dot kernels. Acceptance: exact-output smoke plus
+  repeated `p8192/n1` profile showing lower libomp spin/pause share and lower
+  wall time.
 
 ## PC-0 operator-window plan
 
