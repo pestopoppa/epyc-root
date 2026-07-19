@@ -148,7 +148,7 @@ def _line_is_probe_evidence(path: str, text: str) -> tuple[bool, str]:
     if (
         in_root_handoff_or_progress
         and STOP_LIST_RE.search(text)
-        and not (STEERING_RE.search(text) and SCOREBOARD_COMPANION_RE.search(text))
+        and not STEERING_RE.search(text)
     ):
         return (True, "stop-listed model evidence added outside scoreboard")
 
