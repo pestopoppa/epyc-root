@@ -61,6 +61,32 @@ Required evidence fields:
 | `/mnt/raid0/llm/tmp/k35-minicpm-service-matrix-20260717T2045Z/summary.json` | service-concurrency observation | Vision/frontdoor co-residency matrix; useful for active-overlap tax, not a frontdoor speed claim. |
 | `/mnt/raid0/llm/tmp/k35-frontdoor-operational-1024-20260717T201842Z/summary.json` | supporting operational row | Optimized frontdoor MI210 operational row across 2K/8K/32K, cleanup proof. |
 
+## 2026-07-19 Supporting Artifacts
+
+These are supporting observation-grade artifacts only. They do not ratify `P-GPU-1`
+and do not upgrade AXA/Gate-R numbers to decision-grade.
+
+| Artifact | Current status | Notes |
+|---|---|---|
+| `data/gpu-mi210/axa2-qwen35-122b-iq2m-prefill-sizing-20260719T060039Z/summary.json` | observation-grade supporting cost-model row | 122B UD-IQ2_M MI210 q4_0/f16 KV prefill rows: `pp2048 342.06 t/s`, `pp8192 135.56 t/s`, `pp16384 76.52 t/s`; no 32K row before SIGTERM. |
+| `data/gpu-mi210/axa2-qwen35-122b-iq2m-prefill32k-t32-20260719T062410Z/summary.json` | negative/diagnostic observation | Direct q4_0/f16 32K t32 run held MI210 but emitted no usable row before bounded manual stop. |
+| `data/gpu-mi210/axa2_32k_prefill_qwen35_122b_v1_q4k_f16v_b1024_ub256_20260719T064333Z/summary.json` | negative/diagnostic observation | q4_0/f16 b1024/ub256 32K repeat stopped after GPU activity dropped to zero with no stdout row. |
+| `data/gpu-mi210/axa2_32k_prefill_qwen35_122b_v1_f16kv_b1024_ub256_20260719T065143Z/summary.json` | observation-grade supporting control | f16/f16 KV b1024/ub256 32K control completed at `489.31 t/s` with clean post-run process/KFD checks. This does not certify the q4_0/f16 32K cost. |
+| `data/gpu-mi210/axa2_qwen35_122b_hot_load_lease_smoke_20260719T065557Z/summary.json` | observation-grade supporting control | Hot page-cache 122B IQ2_M MI210 server reached health in `7052 ms`, returned exact `READY`, and cleaned up. Not a cold-load measurement. |
+| `data/gpu-mi210/axa2_32k_prefill_qwen35_122b_v1_f16k_q4v_b1024_ub256_rerun_20260719T070336Z/summary.json` | negative/diagnostic observation | f16/q4_0 b1024/ub256 32K rerun held VRAM but stayed at `0%` GPU through warmup until watchdog stop; no row. |
+| `data/gpu-mi210/axa2_32k_prefill_qwen35_122b_v1_q4kv_b1024_ub256_20260719T071051Z/summary.json` | observation-grade supporting control | q4_0/q4_0 b1024/ub256 32K control completed at `487.87 t/s` with clean independent cleanup. This narrows the blocker to mixed KV. |
+
+Retro-cert audit checklist for any future operator-approved upgrade:
+
+| Required field | Gate-R candidate | AXA-2 prefill artifacts | Notes |
+|---|---|---|---|
+| ROCm clocks/power/temp before+after | Unknown until field audit | Unknown until field audit | Mandatory if retained in the final amendment. |
+| VRAM residency / KFD PID checks | Present in several artifacts | Present post-run; per-run detail varies | Must be checked artifact-by-artifact. |
+| Binary/model identity | Present | Present | Confirm exact v7 commit and `LD_LIBRARY_PATH`. |
+| Warm-up policy / rep count | Present for K35 candidates | Single-rep observation for AXA-2 | AXA-2 is cost-model support, not a promotion speed claim. |
+| Cleanup proof | Present | Present | Process and KFD cleanup are required for any retro-cert path. |
+| Cold-load policy | Not applicable | Missing for AXA-2 load-cost branch | Hot page-cache ready time cannot substitute for cold-load evidence. |
+
 ## Operator Decision Needed
 
 1. Ratify `P-GPU-1` in `/workspace/MEASUREMENT.md` using the fields above, or edit the field
