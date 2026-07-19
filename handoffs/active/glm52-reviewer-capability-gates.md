@@ -48,7 +48,8 @@ missed too many accepts (`FA 33.3%`, `FR 41.7%`, `AUC 0.659`). See
 [`reviewer-model-ablations.md`](reviewer-model-ablations.md) RM-2.fast/RM-2.fast-b and
 `epyc-inference-research/docs/data/reviewer_model_ablations_rm2_fast_ccrab_p_rev1_20260719.md`.
 Conclusion: do not treat a small/fast arm as the current production reviewer; next progress is
-external ground-truth/SWE evidence or a new scaffold/reviewer repair hypothesis.
+the completed RM-2.next evidence, RM-3 screening, Ref external judge-of-judge, or a new
+scaffold/reviewer repair hypothesis.
 
 **2026-07-19 external JudgeBench-GPT live gate.** The first judge-native external run completed
 under `p_rev1` with attestation `MEASUREMENT-P-REV1-OPERATOR-APPROVED-20260719`. The original
@@ -86,8 +87,9 @@ research, judge-preference checks, accept-control diagnostics, and future repair
 only. A future GLM repair must first state a concrete mechanism that can reduce C-CRAB
 hard-negative false accepts without exploding false rejects, then pass a cheap n=12/n=24
 screen before another P-REV-1 confirmation. The production-reviewer search should move to
-H5/RM-2 remaining anchors and RM-3 screening: A3 same-family GPU heavyweight, A0/A1 floors,
-and any new reviewer candidate with a specific quality rationale. This is not a production
+H5 RM-3 screening, Ref external judge-of-judge, or any new reviewer candidate/repair with a
+specific quality rationale. A0/A1/A3 and RM-2.fast are now evidence inputs, not future work.
+This is not a production
 cutover decision; it removes GLM-specific unchanged reruns from the critical path and leaves
 v7 promotion policy to [`v7-promotion.md`](v7-promotion.md).
 
@@ -153,7 +155,7 @@ Concrete dataset pick + runner wiring being finalized; see [`../../docs/referenc
     - [x] **GC-external-1d.2 — SWE-bench-Verified direct oracle execution ✅ 2026-07-19**: live direct path completed for `patch_review_oracle` rows so the external patch-review claim is not inferred from pairwise judge preference. Result: `22/24`, `FR 8.3%`, parse `0/24`, no hard negatives in slice.
       - [x] **GC-external-1d.2a — SWE direct-runner support + P-REV-1 dry-run ready ✅ 2026-07-19**: inference-research now dispatches SWE rows to the ReviewDecision schema/parser, refuses mixed row kinds, records accept-control false-reject rate, and regenerated the JudgeBench score-only artifact with `server.not_started=true`. SWE dry-run plan `glm52-external-swebench-verified-n24-p-rev1-dryrun-20260719` is `execution_allowed=true`, `refusal_reasons=[]`, `24` accept controls, response schema `approve|reject`, and first prompt `571/15744` estimated tokens.
       - [x] **GC-external-1d.2b — SWE P-REV-1 live accept-control gate ✅ 2026-07-19**: live run `glm52-external-swebench-verified-n24-p-rev1-20260719Tlive`, `observation_only=false`, `measurement_protocol=p_rev1`, attestation `MEASUREMENT-P-REV1-OPERATOR-APPROVED-20260719`, era `p_rev1_attested`. Result: `22/24` correct approvals, `false_rejects=2`, `FR 8.3%`, parse `0/24`, approve `22`, reject `2`, elapsed `1965.612s`; no GLM/server/AutoPilot/KFD processes remained after cleanup.
-- [x] **GC-external-1e — Reviewer repair-or-route verdict ✅ 2026-07-19**: synthesized failed C-CRAB hard-negative evidence, positive JudgeBench pairwise evidence, positive SWE accept-only evidence, and RM-2 alternatives. Verdict: GLM is not admitted as production patch reviewer; scope it to research/judge-preference/accept-control diagnostics unless a concrete new repair hypothesis exists. Route production reviewer selection to H5/RM-2 remaining anchors and RM-3 screening instead of rerunning unchanged GLM C-CRAB/SWE policies.
+- [x] **GC-external-1e — Reviewer repair-or-route verdict ✅ 2026-07-19**: synthesized failed C-CRAB hard-negative evidence, positive JudgeBench pairwise evidence, positive SWE accept-only evidence, and RM-2 alternatives. Verdict: GLM is not admitted as production patch reviewer; scope it to research/judge-preference/accept-control diagnostics unless a concrete new repair hypothesis exists. Route production reviewer selection to RM-3 screening, Ref external judge-of-judge, or a named repair hypothesis instead of rerunning unchanged GLM C-CRAB/SWE policies; A0/A1/A3 and RM-2.fast are closed negative/partial evidence.
 - [ ] **GC-4 — RAM-residency policy decision** (operator, OP bundle): 239GB reviewer + ~70GB architect + frontdoor/workers co-residency vs swap-in-on-demand vs review-windows. Determines whether A4 is an interactive reviewer or a batch/offline judicial gate. Operator decision remains open.
   - [x] **GC-4.input — Memory-budget table prepared ✅ 2026-07-18**: decision memo at [`docs/reference/glm52-ram-residency-decision-input-2026-07-18.md`](../../docs/reference/glm52-ram-residency-decision-input-2026-07-18.md). Current sizing says always-resident GLM is physically feasible on the 1.1TiB host, but review-window/batch use is the better policy input until GC-shadow-repair4b.2b and P-REV-1 clear. Treat "swap-in-on-demand" as cold mmap/page-cache faulting, not real swap service, because swap is only 8Gi.
 - [ ] **GC-5 — Registry reviewer-capability fields**: structured `measured:` entries (typed-emission rate, authoring score, why-diagnosis, FA/FR once H5 runs) per MEASUREMENT §5b registry ruling; follow `new-model` onboarding conventions.
@@ -175,7 +177,7 @@ glm51-reap GO gates (download/integrity ✅ → glm-dsa load smoke ✅ → curre
         → GC-shadow-repair4b.2a ✅ (deterministic filter; zero hard accepts)
         → GC-shadow-repair4b.2c ✅ (deterministic hard accepts)
         → GC-shadow-repair4b.2d ✅/FAILED (decision-grade C-CRAB P-REV-1 FA 41.7%, FR 25.0%)
-        → GC-external-1a ✅ (pairwise external plans) → GC-external-1b ✅ / 1c ✅ → GC-external-1d.1 JudgeBench-GPT ✅ (22/24 exact-choice) → GC-external-1d.2 SWE-bench direct oracle ✅ (22/24 accept controls, FR 8.3%) → GC-external-1e repair-or-route verdict ✅ → H5/RM-2 remaining anchors + RM-3 screening → GC-5
+        → GC-external-1a ✅ (pairwise external plans) → GC-external-1b ✅ / 1c ✅ → GC-external-1d.1 JudgeBench-GPT ✅ (22/24 exact-choice) → GC-external-1d.2 SWE-bench direct oracle ✅ (22/24 accept controls, FR 8.3%) → GC-external-1e repair-or-route verdict ✅ → RM-2.fast/RM-2.next closed no-clean-replacement ✅ → RM-3 / Ref / repair → GC-5
 GC-4 operator decision (anytime after CPU bench exists) → shapes H5 A4 arm design
 Kernel P0s: grammar fix is closed; GLM-dsa cache/runtime reconciliation is closed by `3dee86a5a`; remaining kernel dependencies are sparse-final-attention classification and any live v7 CPU/perf guard relevant to GC-1 cost.
 ```
