@@ -96,6 +96,10 @@ Open operator decision:
 
 - Mid-stream quant change. Q4 CPU to IQ2 GPU is a model swap even though re-prefill launders KV
   format. Either restrict teleport to IQ2-acceptable tails/roles or require same-quant targets.
+  Orchestrator policy now fails closed: `TeleportPolicy.quant_policy` defaults to
+  `same_quant_only`, enabled decisions require CPU/GPU quant context, and cross-quant tails require
+  `operator_approved_tail_roles` plus an explicit role allowlist. This records the decision
+  surface; it does not grant that approval.
 
 ### AXA-3 Draft Knobs, Not Active Defaults
 
