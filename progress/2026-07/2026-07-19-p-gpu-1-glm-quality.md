@@ -56,3 +56,31 @@ subagent was stopped before it touched the shared tree (read-only stage only).
   patch-review verdict, which `GC-shadow-repair4b.2c` unblocks mechanically, then a live GLM run.
 - Long-context GLM (>12K): D2 sparse-final-attention / top-k schedule fix.
 - P-GPU-1 GPU-number certification: post-promotion on production-consolidated-v7.
+
+## PM update — agent executed the handoff; GLM failed decision-grade; reviewer slate opened
+
+**The deterministic-oracle path worked end-to-end.** The parallel agent executed my
+`GC-shadow-repair4b.2c` TODO (13:03) — the mechanical c-CRAB accept-oracle relabel → corpus
+went decision-grade (hard-accept n=24) — then ran the matched C-CRAB P-REV-1 (15:22). **GLM-5.2-IQ2
+FAILED patch-review admission: FA 41.7% (10/24), FR 25.0% (6/24), parse 0%, AUC 0.509 (≈ random),
+ECE/AUC/Brier 0.239/0.509/0.278.** First claim-grade verdict: GLM-5.2 is not a usable patch reviewer.
+
+**OP-2 canonical bench PASSED** (agent ran it 13:16 in a quiet window — my "not reboot-gated,
+actionable now" correction was right). `GGML_IQK=1` confirmed, role smokes 6/6, canonical raw CPU
+decode 12.44 t/s (regression control — NOT the deployed MTP speed; live role smoke ~35–43). v7
+promotion gate now 4/8 green (K5, OP-2, P-GPU-1, upstream-audit); remaining blockers = final
+coherence smoke + the two GLM boxes (GLM quality FAILED).
+
+**Reviewer-model slate opened (operator-requested experiments).** Since v7 is coupled to GLM and
+GLM failed, the highest-leverage open question is *big-quantized reviewer (GLM) vs efficiently-
+harnessed small models*. Added to `reviewer-model-ablations.md`:
+- **RM-2.fast** — Qwen3.6-27B dense (Q8) reviewer on the SAME decision-grade C-CRAB slice + runner.
+- **RM-2.fast-b** — Qwable standalone (IQ4_XS; the primary harnessed-small candidate — it historically
+  dominated the Qwable→beneficiary scaffold 77% vs 73% GPQA) + 27B+Qwable CoT scaffold (the coupling;
+  past evidence falsified it on gemma-26B, so confirm-don't-assume).
+- **Hard requirement:** all arms MI210-hosted (GPU, grammar on) — a fast slate we can iterate.
+- Report matched FA/FR/AUC vs GLM's 41.7/25.0/0.509. If a small/fast arm reviews better → route the
+  reviewer role there and **decouple v7 from GLM**. Surfaced at master-index top level (2026-07-19 PM).
+
+**OP-2 number clarification (operator flag):** 12.44 t/s is the canonical raw no-spec CPU decode
+(regression control), not the optimized deployed frontdoor speed (native NEXTN-MTP + OMP stack).
