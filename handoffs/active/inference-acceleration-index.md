@@ -47,7 +47,7 @@ blockers resolved (K22/K23/K32/K33). Held only by operator gates + the CPU-corre
 ### EV-ranked survivor levers
 1. **v7 promotion** — banked; operator-gated. *Highest measured EV.*
 2. **CPU Q8_0 barrier-count operator/graph fusion** — sole live CPU decode lever; +2.6% measured → +10–15% (graph-rewrite) → +72% ceiling. → [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md).
-3. **Residency / teleport** — AXA-1 (122B IQ2 resident 2.2×/8–9×; K22 fix unblocks it), AXA-2 teleport, Gate-R (needs `P-GPU-1`). → [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md).
+3. **Residency / teleport** — AXA-1 (122B IQ2 resident 2.2×/8–9×; K22 fix unblocks it), AXA-2 teleport, Gate-R (needs `P-GPU-1`). 2026-07-19 AXA-2 prefill sizing now has observation rows at 2K/8K/16K (`342.06`/`135.56`/`76.52 t/s`), while 32K remains open after bounded no-row stops. → [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md).
 4. **Native GLM-MTP forward-graph port** — ~10% remaining, +34–89% decode; **contingent on GLM quality** (GC-shadow-repair4b). → [tree-draft-forward-port-plan.md](tree-draft-forward-port-plan.md), [glm52-reviewer-capability-gates.md](glm52-reviewer-capability-gates.md).
 5. **CPU prefill-compute for large models (SCOPED)** — prefill compute now has
    positive-direction observation evidence on the first 122B architect target:
