@@ -101,10 +101,20 @@ Retro-cert audit checklist for any future operator-approved upgrade:
 
 1. Ratify `P-GPU-1` in `/workspace/MEASUREMENT.md` using the fields above, or edit the field
    list before ratification.
-2. Decide whether existing complete artifacts may be retro-certified, or whether every
-   decision-grade GPU claim must be rerun after the amendment.
-3. If retro-certification is allowed, audit each artifact field-by-field before upgrading it
+2. Decide the kernel-provenance rule. The current amendment draft is **production-named-only**:
+   experimental-v7 and other candidate/fork rows stay observation-grade and Gate-R certification
+   happens in a post-promotion run on `production-consolidated-v7`. If the operator instead wants
+   pre-promotion experimental-v7 Gate-R rows to gate promotion, the signed amendment must say so
+   explicitly.
+3. Decide whether existing complete artifacts may be retro-certified under the chosen provenance
+   rule, or whether every decision-grade GPU claim must be rerun after the amendment.
+4. If retro-certification is allowed, audit each artifact field-by-field before upgrading it
    from observation to claim.
+
+Promotion-gate implication: under the current draft, `P-GPU-1` can be ratified before v7
+promotion, but it cannot turn the existing experimental-v7 Gate-R rows into decision-grade
+promotion evidence. It only prepares the post-promotion certification lane unless the human
+amendment explicitly broadens the allowed kernel class.
 
 ## Ratification Gate Checklist
 
