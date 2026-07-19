@@ -22,16 +22,23 @@ job has near-zero EV. GC-shadow-repair4b has now executed and failed admission, 
 kernel acceleration remains downstream of an external ground-truth verdict or a new reviewer
 repair hypothesis.
 Operator exception recorded the same day: bounded source prep for native GLM-MTP is allowed
-while quality work continues. The `glm-dsa` experimental-v7 scaffold now builds and survives
-bounded same-model `draft-mtp` smokes, but any alpha/throughput/admission claim remains
-downstream of reviewer-quality recovery after the failed C-CRAB P-REV-1 gate.
+while quality work continues. The `glm-dsa` experimental-v7 scaffold now builds, survives
+bounded same-model `draft-mtp` smokes, and has a matched long-output acceleration pass after
+the 2026-07-19 DeepSeek32/GLM-DSA NEXTN repair. This is an acceleration result only; reviewer
+admission remains failed on C-CRAB P-REV-1.
 
-**2026-07-19 native GLM-MTP A/B disposition.** The first real generated-token A/B closed the
-scaffold-to-serving gap negatively: no-spec served a `2931`-token prompt and `512` completion
-tokens at `22.56` prompt t/s / `2.49` decode t/s, while same-model `draft-mtp` initialized the
-speculative context and then streamed `0` chunks with no usage or timings. Evidence:
-`epyc-inference-research/docs/data/glm52_native_mtp_ab_20260719.md`. This is not a reviewer
-quality rerun; it means GLM native-MTP is a repair task before any acceleration claim.
+**2026-07-19 native GLM-MTP A/B disposition.** The first real generated-token A/B found a
+zero-chunk `draft-mtp` serving failure, then the DeepSeek32/GLM-DSA NEXTN row-selection repair
+superseded it on the matched long-context retry. No-spec served a `2931`-token prompt and `512`
+completion tokens at `22.56` prompt t/s / `2.49` decode t/s. Repaired same-model `draft-mtp`
+served a `2919`-token prompt and `512` completion tokens at `22.77` prompt t/s / `5.33` decode
+t/s, with `515` streamed chunks and draft alpha `0.933` (`376/403` accepted). Evidence:
+`epyc-inference-research/docs/data/glm52_native_mtp_ab_20260719.md` and raw repair artifact
+`epyc-inference-research/data/glm52_native_mtp_ab/glm52-native-mtp-draft-long-repair-20260719T195037Z/`.
+This is not a reviewer-quality rerun and does not admit GLM as reviewer.
+The source hardening assertion also landed on experimental v7: `test-llama-archs` now builds a
+GLM-DSA+single-NextN graph and asserts unmasked target-side NEXTN retains all token rows through
+`h_nextn` before output-row selection. Focused `glm-dsa` and `deepseek32` validation passed.
 
 **2026-07-19 RM-2 reviewer-slate cross-check.** The fast MI210 reviewer arms did not rescue
 the role choice on the same decision-grade C-CRAB slice. Qwen3.6-27B dense Q8 was faster but
