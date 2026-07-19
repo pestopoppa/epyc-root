@@ -26,6 +26,13 @@ while quality work continues. The `glm-dsa` experimental-v7 scaffold now builds 
 bounded same-model `draft-mtp` smokes, but any alpha/throughput/admission claim remains
 downstream of reviewer-quality recovery after the failed C-CRAB P-REV-1 gate.
 
+**2026-07-19 native GLM-MTP A/B disposition.** The first real generated-token A/B closed the
+scaffold-to-serving gap negatively: no-spec served a `2931`-token prompt and `512` completion
+tokens at `22.56` prompt t/s / `2.49` decode t/s, while same-model `draft-mtp` initialized the
+speculative context and then streamed `0` chunks with no usage or timings. Evidence:
+`epyc-inference-research/docs/data/glm52_native_mtp_ab_20260719.md`. This is not a reviewer
+quality rerun; it means GLM native-MTP is a repair task before any acceleration claim.
+
 **2026-07-19 RM-2 reviewer-slate cross-check.** The fast MI210 reviewer arms did not rescue
 the role choice on the same decision-grade C-CRAB slice. Qwen3.6-27B dense Q8 was faster but
 over-approved (`FA 54.2%`, `FR 16.7%`, `AUC 0.503`); Qwable IQ4_XS standalone failed
