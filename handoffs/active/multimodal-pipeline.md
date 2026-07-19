@@ -208,7 +208,9 @@ LightOn released **MMLBD-C**, a manually corrected version of MMLongBenchDoc tha
 **Phase 1** (mainline llama.cpp — vision+text only):
 1. ✅ 2026-07-17: Run `llama-mtmd-cli` with local Qwen3-VL-8B Q4_K_M + vision mmproj on experimental v7. Rebuilt the experimental `llama-mtmd-cli` after a `--version` segfault; CPU shapes and MI210 OCR runtime/coherence smokes passed under `/mnt/raid0/llm/tmp/qwen3-vl8-image-smoke-20260717T115124Z/`.
 2. ✅ 2026-07-17: Benchmark candidate vision lanes vs Qwen2.5-VL-7B on the fixed K35 OCR/chart prompts. Qwen3-VL-8B CPU passed but was slower than the alias; Qwen3-VL-8B MI210 failed the chart; MiniCPM-o `--reasoning off` passed CPU+MI210 and is the leading `vision_escalation` candidate; SuperGemma4 passed but is slower/heavier than MiniCPM-o. PaddleOCR-VL also passed first extraction smokes at about `487 t/s`, but it belongs to the document/OCR extraction path, not the general vision QA lane.
-3. Test spec decode with Qwen3-0.6B draft
+3. ⏸️ Defer Qwen3-0.6B draft/spec-decode testing for Qwen3-VL until a concrete
+   chart-fixture or role-gap fix reopens the Qwen3-VL lane; do not run another
+   speed-only extra-vision probe while MiniCPM-o is the leading escalation path.
 
 **Phase 2** (spec decode investigation):
 ```bash

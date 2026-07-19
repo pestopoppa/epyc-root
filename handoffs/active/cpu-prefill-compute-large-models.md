@@ -7,11 +7,13 @@ remaining work is PC-0 only — **no inference/bench without operator approval**
 **Owner handoff**: this file. **Parent index**: [inference-acceleration-index.md](inference-acceleration-index.md);
 sibling of [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md).
 
-**2026-07-18 checkpoint**: observation-only `perf record` and `perf stat` cells now exist for
-the 122B architect `p8192/n1` CPU-only shape. PC-0 remains open because these were not
-OP-2/MEASUREMENT quiet-window runs, but the counter row is positive-direction evidence:
-prefill IPC is materially healthier than the decode roofline (`0.92` vs the decode `0.17`
-reference), with substantial vector work and no catastrophic DRAM-stall signature.
+**2026-07-19 checkpoint**: observation-only `perf record` and `perf stat` cells now exist for
+the 122B architect `p8192/n1` CPU-only shape on the current experimental CPU build. PC-0
+remains open only for OP-2/MEASUREMENT-grade rerun or retro-certification, but the premise is
+now positive: prefill IPC is materially healthier than the decode roofline (`1.47` in the
+current cell vs the decode `0.17` reference), with substantial vector work and a profile
+dominated by OpenMP/barrier overhead plus large matmul paths rather than a pure DRAM-stall
+signature.
 
 ## Thesis
 
@@ -79,6 +81,26 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
     `40062336 KB`, wall `1:33.18`, exit `0`; pre/post `rocm-smi --showpids`
     had no KFD PIDs. This sizes the IQ2 CPU prefill path and hybrid-placement
     economics, but the `tg16` decode row is too slow for a primary CPU-only lane.
+  - [x] **PC-0d current experimental CPU-build profile artifact ✅ 2026-07-19**:
+    CPU-only Qwen3.5-122B Q4_K_M architect `p8192/n1` reran on the experimental
+    CPU build at
+    `/mnt/raid0/llm/epyc-inference-research/data/cpu_prefill_compute/b7-pc0-prefill-experimental-20260719T083513Z-codex/b7-pc0-prefill`.
+    Source dryrun HEAD was `6ad45fa3f`; the binary reported build commit
+    `9882c2c69`, linked `libllama*`/`libggml*` from `build-k24-cpu/bin`, and
+    forced `-dev none -ngl 0 -nopo 1 -nkvo 1` with `GGML_IQK=1`. Result:
+    `pp8192 121.963712 t/s` mean over `r=3`, `tg1 5.739871 t/s`, `1.47` IPC,
+    `92.660` CPUs utilized, vector MAC `8.456e12`, vector all `2.264e13`,
+    demand DRAM fills `1.479e10`, and hardware-prefetch DRAM fills `3.661e10`.
+    `perf record` captured a `10.323 GiB` profile with zero lost samples; top
+    children were `GOMP_barrier`/OpenMP barrier path `43.12%`,
+    `ggml_iqk_try_mul_mat_id` `22.16%`, `iqk_mul_mat_moe` `18.93%`,
+    `ggml_compute_forward_mul_mat` `16.52%`, `llamafile_sgemm` `14.75%`, and
+    CPU flash-attn `5.88%`. Summary artifact:
+    `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc0_experimental_20260719.md`.
+    Interpretation: PC-0 premise is positive from observation evidence; the
+    next lever is barrier-count/operator fusion and qwen35 prefill graph fusion,
+    not a blind decode-style GEMV rewrite. It still needs OP-2-grade rerun or
+    retro-certification before decision use.
 - [x] **PC-1 — quantify the prefill fraction** for GLM/architect long-context turns from
   existing logs (zero-inference): evidence note
   `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc1_log_sizing_20260718.md`
