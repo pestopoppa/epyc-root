@@ -156,6 +156,26 @@ python3 scripts/benchmark/axa2_teleport_policy_trace.py \
   --load-seconds <load_seconds> \
   --output <artifact-dir>
 
+# Dry live-cutover bundle, no server action. This writes the operator command
+# and required artifact checklist for a same-quant resident cutover smoke.
+python3 scripts/benchmark/axa2_live_cutover_bundle.py \
+  --output orchestration/reports/axa2_live_cutover_bundle_<date> \
+  --policy-enabled \
+  --role-allowlist architect_general \
+  --cpu-quant q4_k_m \
+  --gpu-quant q4_k_m \
+  --generated-tokens 200 \
+  --estimated-remaining-tokens 500 \
+  --cpu-tps 20 \
+  --gpu-tps 44
+
+# Operator-window only: execute the prepared live-cutover bundle against
+# already-running CPU/GPU llama-server endpoints. This still does not start
+# servers, build kernels, restart AutoPilot, or touch production v6.
+CPU_URL=http://127.0.0.1:<cpu-port> \
+GPU_URL=http://127.0.0.1:<gpu-port> \
+  orchestration/reports/axa2_live_cutover_bundle_<date>/operator_run.sh
+
 # Placeholder only: GPU prefill sweep under experimental v7, never production v6.
 python scripts/benchmark/axa2_prefill_sweep.py \
   --llama-bin /mnt/raid0/llm/llama.cpp-experimental/build/bin/llama-bench \
@@ -176,6 +196,11 @@ python scripts/benchmark/axa2_sampling_continuity.py \
 `/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/axa2_policy_trace_20260719/`.
 It contains two no-inference policy rows: a same-quant resident-tail cutover
 candidate and a default cross-quant rejection (`quant_change_not_allowed`).
+
+2026-07-19 sample live-cutover dry bundle:
+`/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/axa2_live_cutover_bundle_20260719/`.
+It contains the no-inference operator command plus the artifact checklist for
+cutover, lease-release, and seeded CPU-vs-GPU continuity evidence.
 
 ## Gate Dependencies
 

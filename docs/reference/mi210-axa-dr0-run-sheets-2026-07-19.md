@@ -88,6 +88,14 @@ Validation experiments:
      This is a resident-lane acquisition input, not a cold-load row; do not use it for the cold-load
      break-even branch.
 3. One cutover smoke with explicit slot-release proof and no leaked GPU process.
+   - 2026-07-19 no-inference operator bundle prep: `epyc-orchestrator` now has
+     `scripts/benchmark/axa2_live_cutover_bundle.py`, which writes
+     `orchestration/reports/axa2_live_cutover_bundle_20260719/` with `operator_run.sh`,
+     `policy_decision.json`, `prompt.txt`, and a live-artifact checklist. The dry bundle has
+     `decision.should_cutover=true` under same-quant resident policy and does not contact
+     endpoints. The generated `--execute` command requires `CPU_URL` and `GPU_URL` for already
+     running llama-server endpoints and records `events.jsonl`, request/response JSON, lease
+     release, and continuity hashes.
 4. Catch-up API probe documented as v1.1 only: current llama-server HTTP has no clean "verify
    these already-generated draft tokens then continue" API.
 5. Sampling-continuity divergence test: same prompt, seed 42 production sampling, CPU vs HIP
