@@ -42,7 +42,7 @@ Axis = **task_rate** (questions / eval-wall-hour) per findings-05; t/s retained 
 ### P-SMOKE-1 — Sanity check (non-decision-gating)
 A lightweight pass/fail sufficient to **unblock work** but **insufficient to gate any decision**. Examples: REPL sentinel 4/5 pass after infra fix; single-question smoke test before benchmark; one-shot model output extraction check. Citation format: `4/5 toolrunner sentinel pass [P-SMOKE-1, 2026-07-11]`. A smoke check that fails → investigate. A smoke check that passes → proceed, but still require a protocol-level claim before any keep/revert/deploy/promote decision.
 
-### P-GPU-1 — GPU canonical (DEFERRED — hardware not acquired, all GPU work HW-GATED)
+### P-GPU-1 — GPU canonical (RATIFIED 2026-07-19; amendment appended at end of file)
 Required fields when ratified: device state capture (rocm-smi clocks/power/temp before+after), warm-up policy, per-GCD memory residency check, host-side interference policy (CPU stack quiesced or declared), reps as P-BENCH-1, and a vendor-number rule: *no vendor-reported figure may appear in a decision row — local reproduction only* (`agentic-rocm-kernel-authoring.md` already flags gfx90a compile≠perf). **Close this placeholder when MI210 hardware is acquired or permanently deferred.**
 
 ## 2. Claim grammar & examples
@@ -137,3 +137,50 @@ Everything else — including all 9.9/2.9-era supersession-tagged rows and dated
    - `retired-view` → consult the era-appropriate rebuilt view
 3. **Never edit historical records to "fix" them** — append.
 4. **New measurements** — cite a protocol from §1. No protocol → observation, not claim.
+
+## P-GPU-1 — MI210 GPU canonical throughput (RATIFIED 2026-07-19)
+
+**Supersedes** the prior "`P-GPU-1` deferred" status. Applies to all decision-gating GPU
+(MI210 / gfx90a / HIP) throughput, spec-dec, and residency numbers. Metric direction:
+higher-better (t/s) unless a lower-better metric is explicitly stated.
+
+**Kernel-provenance rule (production-named kernels ONLY).** A `P-GPU-1` decision-grade claim
+MAY ONLY be produced on a **production-named kernel** (`production-consolidated-vN`).
+Measurements on any experimental / candidate / fork kernel (`llama.cpp-experimental`,
+`experimental-v7-*`, branch builds) are **OBSERVATIONS ONLY**: they MUST NOT gate any
+keep / revert / deploy / promote / buy / close decision, and MUST NOT be consumed by
+AutoPilot or any automated optimizer.
+
+**Required evidence fields — ALL mandatory. A claim missing ANY field is an observation.**
+1. **Hardware state** — GPU model, gfx target, ROCm runtime + driver, visible device id,
+   `llama-server --version`; llama.cpp commit + clean/dirty; `rocm-smi` clocks, power,
+   temperature, utilization, VRAM, and PID mapping recorded **before AND after** each
+   run/window; VRAM used before / during / after request / after cleanup.
+2. **Host interference** — explicit CPU-stack state (quiesced, or declared non-quiesced with
+   reason); `llama-server` / AutoPilot / KFD PID checks before and after; whether the CPU
+   production stack is stopped, hidden from ROCm, or intentionally co-resident.
+3. **Binary/model identity** — exact worktree, branch, commit, binary path, `LD_LIBRARY_PATH`,
+   backend list; exact model path, mmproj (if used), quant, context, KV quant,
+   reasoning/sampling flags, spec-dec mode.
+4. **Run recipe** — warm-up policy; **fresh server per rep** unless resident-server mode is
+   explicitly declared; discard rules for warm-up reps and shape-change graph recapture;
+   **reps per the `P-BENCH-1` rule (n≥5 for ≥5% claims, n≥10 for ≤2% claims)**; fixed
+   prompt/task set, prompt-token count, generated-token floor, seed + sampling policy.
+5. **Result grammar** — report **median and MAD** for throughput plus prompt/decode split
+   where available; for spec-dec, report draft generated/accepted counters and acceptance
+   rate; for service/residency claims, report active-overlap tax and cleanup proof;
+   vendor/web numbers may appear ONLY as background narrative, never in a decision row.
+6. **Attestation** — a `P-GPU-1` decision row uses the standard grammar
+   `metric [P-GPU-1, n/reps, YYYY-MM-DD, attest <ref>]`.
+
+**Retro-certification (allowed, strict).** An existing GPU artifact MAY be upgraded from
+observation to a `P-GPU-1` claim ONLY IF (a) it was produced on a **production-named kernel**
+per the provenance rule above, AND (b) a field-by-field audit confirms **every** mandatory
+field is present in the artifact. If any mandatory field is absent — including the
+clocks/power/temperature before-and-after record — the artifact **remains observation-grade
+and MUST be re-run** under this protocol. No partial upgrades.
+
+**Consequence for the current v7 candidate.** The Gate-R residency number and the banked GPU
+wins were measured on the *experimental* kernel, so they remain observations until re-run on
+`production-consolidated-v7` after promotion. `P-GPU-1` ratification enables that
+post-promotion certification; it does not upgrade pre-promotion experimental numbers.
