@@ -7,13 +7,13 @@ remaining work is PC-0 only — **no inference/bench without operator approval**
 **Owner handoff**: this file. **Parent index**: [inference-acceleration-index.md](inference-acceleration-index.md);
 sibling of [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md).
 
-**2026-07-19 checkpoint**: observation-only `perf record` and `perf stat` cells now exist for
-the 122B architect `p8192/n1` CPU-only shape on the current experimental CPU build. PC-0
-remains open only for OP-2/MEASUREMENT-grade rerun or retro-certification, but the premise is
-now positive: prefill IPC is materially healthier than the decode roofline (`1.47` in the
-current cell vs the decode `0.17` reference), with substantial vector work and a profile
-dominated by OpenMP/barrier overhead plus large matmul paths rather than a pure DRAM-stall
-signature.
+**2026-07-19 checkpoint**: PC-0 first-cell profiling is now positive from both the current
+experimental CPU build observation (`1.47` IPC) and the OP-2 quiet-window production-v6 profile
+cell (`112.730698 t/s`, `1.09` IPC, `68.597` CPUs utilized). Prefill is materially healthier
+than the decode roofline (`0.17` IPC reference), with substantial vector work and `libggml-cpu`
+hot paths rather than a pure DRAM-stall signature. **Do not start kernel coding from this
+alone**: the OP-2 `perf record` has a large unresolved `(deleted)` main-binary mapping, so the
+next gate is a cleaner symbolized target-selection pass.
 
 ## Thesis
 
@@ -42,13 +42,14 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
 
 ## First actions (zero-inference / design)
 
-- [ ] **PC-0 — profile-first premise check**: `perf record` a **long-context large-model
+- [x] **PC-0 — profile-first premise check ✅ 2026-07-19**: `perf record` a **long-context large-model
   prefill** shape (GLM-5.2 UD-IQ2_M and/or 122B architect at 8K/32K prompt) and confirm the
   hot ops are **compute-bound** (high VALUBusy / low memory-stall) before any kernel work.
   If BW-bound, this whole track collapses to the decode ledger — record and close. Bundle
   the `perf record` into the next OP-2 quiet window (shares the AMD perf-counter preflight,
   already green: `data/cpu_optimization/2026-07-03-amd-perf-counter-preflight/`). First
-  profile cell + artifact plan is below; do not start kernel work from PC-1/PC-2 alone.
+  profile cell is now closed positive; do not start kernel work until PC-3 selects a clean
+  symbolized target from the unresolved hot mapping.
   - [x] **PC-0a observation-only first profile artifact ✅ 2026-07-18**: CPU-only
     122B architect `p8192/n1` run completed under `perf record` at
     `/mnt/raid0/llm/epyc-inference-research/data/cpu_prefill_compute/b7-pc0-prefill-cpu-only-20260718T174148Z/b7-pc0-prefill`.
@@ -101,6 +102,22 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
     next lever is barrier-count/operator fusion and qwen35 prefill graph fusion,
     not a blind decode-style GEMV rewrite. It still needs OP-2-grade rerun or
     retro-certification before decision use.
+  - [x] **PC-0e OP-2 quiet-window production-v6 profile artifact ✅ 2026-07-19**:
+    frozen production-v6 `bench_canonical.sh` cell completed at
+    `/mnt/raid0/llm/epyc-inference-research/data/cpu_prefill_compute/pc0-op2-20260719T225343Z`.
+    The binary reported build commit `91745611f` / build number `9774`; the
+    production tree was observed at `production-consolidated-v6` `91a8424ea`
+    after the run. The bench reported backend `CPU`, empty `gpu_info`, and
+    postflight ROCm showed no KFD PIDs. Result: `pp8192 112.730698 t/s`
+    mean over `r=3`, `tg1 4.989817 t/s`, `1.09` IPC, `68.597` CPUs utilized,
+    vector MAC `4.410e12`, vector all `7.690e12`, demand DRAM fills
+    `1.954e10`, and hardware-prefetch DRAM fills `4.549e10`. `perf record`
+    captured `10837.601 MB` / `1,348,833` samples; bounded no-children and DSO
+    reports had `0` lost samples, with `46.47%` in `libggml-cpu.so.0.15.2` and
+    `49.57%` in an unresolved `(deleted)` main `llama-bench` mapping. Summary:
+    `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc0_op2_20260719.md`.
+    Verdict: PC-0 premise closes positive, but implementation target selection
+    needs a cleaner symbolized mapping before kernel work.
 - [x] **PC-1 — quantify the prefill fraction** for GLM/architect long-context turns from
   existing logs (zero-inference): evidence note
   `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc1_log_sizing_20260718.md`
@@ -114,7 +131,12 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
   then GDN projection fusion (`wqkv|wqkv_gate|ssm_beta|ssm_alpha`) because it reuses the same
   activation packing and cuts barriers. Gated norm-tail fusion (`RMS_NORM * ssm_norm * silu(z)`)
   is second-order and should wait until post-matmul-fusion profiles prove it remains hot.
-  Implementation stays blocked on PC-0 proving compute-bound prefill hot ops. ✅ 2026-07-18
+  Implementation stays blocked on PC-3 target selection from a clean symbolized profile. ✅ 2026-07-18
+- [ ] **PC-3 — symbolized target-selection pass**: resolve the OP-2 `(deleted)` main-binary
+  mapping or rerun a bounded `perf record` with stable binary/symbol capture so the first
+  kernel edit targets a proven hot path. Acceptable outputs: a no-children and children
+  report with resolved `llama-bench`/OpenMP/library symbols, or an address-resolution note
+  that maps the unresolved addresses to exact source/functions in the sampled binary.
 
 ## PC-0 operator-window plan
 

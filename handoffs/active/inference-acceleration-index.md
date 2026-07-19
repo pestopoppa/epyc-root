@@ -50,11 +50,12 @@ native GLM-MTP serving was repaired.
 2. **CPU Q8_0 barrier-count operator/graph fusion** — sole live CPU decode lever; +2.6% measured → +10–15% (graph-rewrite) → +72% ceiling. → [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md).
 3. **Residency / teleport** — AXA-1 (122B IQ2 resident 2.2×/8–9×; K22 fix unblocks it), AXA-2 teleport, Gate-R (`P-GPU-1` ratified; decision-grade Gate-R now requires post-promotion `production-consolidated-v7`). 2026-07-19 AXA-2 prefill sizing has observation rows at 2K/8K/16K (`342.06`/`135.56`/`76.52 t/s`), default-build homogeneous 32K controls (`489.31-489.82 t/s` f16/f16, `487.87-489.07 t/s` q4_0/q4_0), and an isolated `GGML_CUDA_FA_ALL_QUANTS=ON` mixed q4_0/f16 32K row (`415.31 t/s`). Current default HIP build still rejects mixed-KV 32K cost because it falls into CPU fallback; all-quants is not a blanket replacement because homogeneous 32K controls dropped to `416.55`/`414.60 t/s` in that build. AXA-2 dry policy-trace scaffolding is closed (`epyc-orchestrator/orchestration/reports/axa2_policy_trace_20260719/`), and the live cutover/continuity operator bundle is prepared (`epyc-orchestrator/orchestration/reports/axa2_live_cutover_bundle_20260719/`); live cutover/lease-release/continuity evidence remains MI210-window work. → [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md).
 4. **Native GLM-MTP forward-graph port** — serving repaired on 2026-07-19 after the initial zero-chunk failure: repaired `draft-mtp` reached `512` completion tokens, `5.33 t/s` decode, alpha `0.933`, versus no-spec `2.49 t/s`. Source hardening also landed: `test-llama-archs` now asserts the GLM-DSA unmasked NEXTN row-selection contract, with focused GLM-DSA/DeepSeek32 validation passing. Separate reviewer-quality policy remains unresolved; GLM is not admitted as production patch reviewer on the current policy. → [tree-draft-forward-port-plan.md](tree-draft-forward-port-plan.md), [glm52-reviewer-capability-gates.md](glm52-reviewer-capability-gates.md).
-5. **CPU prefill-compute for large models (SCOPED)** — prefill compute now has
-   positive-direction observation evidence on the first 122B architect target:
-   `p8192/n1` perf-record plus a paired perf-stat row at `108.750 t/s`, `0.92` IPC,
-   and `85.168` CPUs utilized. This is not yet OP-2/MEASUREMENT grade, so PC-0
-   remains an operator-window gate before kernel implementation. →
+5. **CPU prefill-compute for large models (SCOPED)** — PC-0 first cell is now
+   positive from OP-2 quiet-window evidence on the 122B architect target:
+   production-v6 `p8192/n1` recorded `112.730698 t/s`, `1.09` IPC, `68.597`
+   CPUs utilized, and `46.47%` resolved `libggml-cpu` DSO samples. Implementation
+   remains blocked on PC-3 because the same `perf record` has `49.57%` in an
+   unresolved `(deleted)` main-binary mapping. →
    [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md).
 6. **stream-K `nsm→k·nsm`+compact-LDS** — +0–10%, IQ2/capacity; pmc-CSV read first. → mi210 roadmap.
 7. **K28 GDN long-prefill recurrence kernel (GPU)** — `gated_delta_net.cu:191`. → mi210 roadmap.
@@ -90,7 +91,7 @@ native GLM-MTP serving was repaired.
 
 **LANE B — agent-executable:**
 - *Zero-inference now:* current B2/B3/B5/B6/B7 scoping batch closed; do not reopen without a new handoff trigger.
-- *Needs a bench window (fold into A2 or its successor):* B1 barrier-fusion `tg128` A/B · PC-0 prefill-compute premise profile (122B architect `p8192/n1`, perf-stat + `perf record`). B4 DSA-D3 profile-first ran 2026-07-19 and closed D3.1 as no-go: Lightning Indexer was only `1.08%` of cycle samples, so do not start the AVX-512BW indexer kernel from current evidence.
+- *Needs a bench window (fold into A2 or its successor):* B1 barrier-fusion `tg128` A/B only if a staged immutable on/off pair exists. PC-0 prefill-compute premise profiling closed positive in the OP-2 quiet window; follow-on PC-3 is symbolization/target-selection, not another blind premise rerun. B4 DSA-D3 profile-first ran 2026-07-19 and closed D3.1 as no-go: Lightning Indexer was only `1.08%` of cycle samples, so do not start the AVX-512BW indexer kernel from current evidence.
 
 ## Active Landscape
 

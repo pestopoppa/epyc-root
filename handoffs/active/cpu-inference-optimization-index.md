@@ -8,8 +8,9 @@ as not staged and B4 closed no-go. Stack servers and AutoPilot remain stopped by
 Prior: 2026-07-19 OP-2 gate was corrected to bench-clean quiet-window execution: reboot
 only if preflight flags multi-day throttle, with no production-v6 edits/builds, full-stack
 reload, or AutoPilot restart. Prior: 2026-07-18 B7 prefill-compute scoping closed; track is now
-profile-gated on PC-0 with a concrete 122B architect `bench_canonical.sh`
-`p8192/n1` perf-stat + `perf record` first cell. Prior: 2026-07-14 backlog ROI
+past PC-0 premise profiling and gated on PC-3 symbolized target selection after the OP-2
+production-v6 profile produced a positive counter row but an unresolved main-binary hot
+mapping. Prior: 2026-07-14 backlog ROI
 audit added the canonical decode bench P0, re-led GEMV row with the
 fusion A/B, re-gated MoE-Spec, DSA to MED with snapshot-refresh precondition,
 Sarathi converted to E4 gate-evaluation, and relocated the two CLOSED rows out
@@ -36,7 +37,7 @@ fusion** (P1 row below; +2.6% measured → +10–15% graph-rewrite → +72% abso
 matches dense). **The untapped large-model regime is prefill-compute** — prefill is compute-bound
 (not BW-killed) and dominates GLM-5.2 / 122B-architect long-context turns → scoped track
 [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) (B7 scoping closed;
-PC-0 operator-window profile gate remains open).
+PC-0 first cell closed positive; PC-3 symbolized target selection remains open).
 
 | Priority | Track | Owner handoff | Next action |
 |----------|-------|---------------|-------------|
@@ -46,7 +47,7 @@ PC-0 operator-window profile gate remains open).
 | P1 (GATED) | MoE-Spec CPU spec-dec integration | [moe-spec-cpu-spec-dec-integration.md](moe-spec-cpu-spec-dec-integration.md) | Zero-inference assessment closed 2026-07-18: the 2026-07-03 live-α report proves current verification-batch consumers exist (`frontdoor` α=0.6582, `worker_general` α=0.8256, `architect_general` α=0.6854, failed MTP roles `[]`). Reopen only to a current live-MTP MoE verifier B-sweep with speed, acceptance, and quality/bit-exact guard. Registry integration remains blocked until that sweep exists. |
 | P1 | CPU roofline / AMD counter calibration | [cpu-kernel-env-flags-inventory.md](cpu-kernel-env-flags-inventory.md), [deepseek-v4-flash-cpu-port.md](deepseek-v4-flash-cpu-port.md) | Research `ad9b73a` added the no-inference AMD perf-counter preflight and `bench_canonical.sh --perf` guard; research `515a50b` unblocked it after installing/exposing `linux-perf` in the devcontainer and teaching the preflight to recognize `perf list` alias rows such as `cpu-cycles OR cycles`. Current artifact `data/cpu_optimization/2026-07-03-amd-perf-counter-preflight/summary.{json,md}` is `status=ok`; all canonical Zen 5 events are visible, the smoke probe passed, and `bench_canonical.sh --perf --dry-run` prints the canonical event wrap without inference. Next action is claim-grade perf benches in the appropriate host-health/clean-window protocol. |
 | P1 | Shape-specialized GEMV / AVX-512 follow-ons | [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md) | Lead with the frontdoor Q8_0 barrier-count fusion A/B (fuse expert gate+up, attn QKV cluster; cheapest test = llama-bench tg128 fusion on/off in one window; est +10-15% decode, one cluster already measured +2.6%; **absolute ceiling +72% (4.42→7.6 t/s) if BW-util matches dense**; re-elevated 2026-07-03 by findings-05 as the #1 CPU decode lever; **v7-audit LANE B B1 — bundle into the OP-2 quiet window**). Keep landed Q8_0 wins. Q6_K/Q5_K SIMD follow-ons are explicitly DEPRIORITIZED per the roofline finding. |
-| P1 | Prefill-compute for large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | B7 design/scoping is closed; PC-1 sized the prompt-wall fraction and PC-2 scoped fusion targets. A first CPU-only `perf record` artifact now exists (`p8192/n1`, `107.621 t/s`, max RSS `73.55 GiB`) but is observation-only. Remaining gate is still **PC-0 profile-first** in an operator window: add paired `bench_canonical.sh -p 8192 -n 1 -r 3 --perf` / `perf stat` counters plus `perf record`, then classify compute-bound vs BW-bound before any kernel. Candidate levers stay blocked: prefill Q8→f16 convert-skip, high-batch norm-tail fusion, and per-SSM-block fusion. |
+| P1 | Prefill-compute for large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | B7 design/scoping is closed; PC-1 sized the prompt-wall fraction and PC-2 scoped fusion targets. PC-0 first profile cell is positive: OP-2 production-v6 `p8192/n1` recorded `112.730698 t/s`, `1.09` IPC, `68.597` CPUs, and `46.47%` resolved `libggml-cpu` DSO samples. Remaining gate before any kernel is **PC-3 symbolized target selection** because the same profile has `49.57%` in an unresolved `(deleted)` main-binary mapping. Candidate levers stay blocked until PC-3: prefill Q8→f16 convert-skip, high-batch norm-tail fusion, and per-SSM-block fusion. |
 | P2 | Phase-disaggregated serving | [numa-prefill-decode-disaggregation.md](numa-prefill-decode-disaggregation.md) | Keep only the Phase 0 xGMI KV-transfer falsification gate active; do not build serving code until transfer cost is measured. |
 | P2 | Sarathi / MegaBlocks / Tutel ports — gate evaluation | [sarathi-serve-cpu-evaluation.md](sarathi-serve-cpu-evaluation.md), [large-moe-expert-parallelism.md](large-moe-expert-parallelism.md) | The reopen gate has arguably FIRED: E2 is a keep-candidate 4.858x eval-batch regime since 2026-07-03, and the sarathi handoff itself names exactly this trigger. Run the explicit gate evaluation — decide reopen-vs-re-close citing E1/E2 evidence. This is batched-decode waypoint E4 (doc-only, zero inference). |
 
@@ -93,4 +94,5 @@ After completing a CPU queue item:
 - [ ] P1 Shape-specialized GEMV: B1 frontdoor Q8_0 barrier-count fusion A/B was skipped because no current immutable on/off binary pair was staged; reopen only with a staged pair (Q6_K/Q5_K SIMD follow-ons remain deprioritized) (cpu-shape-specialized-gemv-decode.md)
 - [ ] P2 Phase-disaggregated serving: keep only xGMI KV-transfer falsification gate active (numa-prefill-decode-disaggregation.md)
 - [x] P1 Prefill-compute B7 scoping: existing PC-1 sizing + PC-2 design detail are enough to close agent-zero-inference scoping; first PC-0 command/artifact plan is recorded in the owner handoff. ✅ 2026-07-18
-- [ ] P1 Prefill-compute PC-0: complete the operator-approved first profile cell (122B architect `p8192/n1`, paired `bench_canonical.sh --perf`/`perf stat` + `perf record`; confirm compute-bound) before any kernel. Observation-only `perf record` artifact exists from 2026-07-18 but does not close the gate.
+- [x] P1 Prefill-compute PC-0: operator-window first profile cell completed positive on 122B architect `p8192/n1`; OP-2 production-v6 row recorded `112.730698 t/s`, `1.09` IPC, `68.597` CPUs, and `46.47%` resolved `libggml-cpu` DSO samples. ✅ 2026-07-19
+- [ ] P1 Prefill-compute PC-3: resolve the OP-2 `(deleted)` main-binary mapping or rerun a cleaner symbolized profile before any kernel implementation.
