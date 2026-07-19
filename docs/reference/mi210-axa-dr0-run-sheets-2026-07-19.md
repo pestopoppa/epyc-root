@@ -23,9 +23,10 @@ fresh request, then returns `cpu_prefix + gpu_suffix`. Do not implement spec-dec
 
 Implementation seam:
 
-- CPU call path: `epyc-orchestrator/src/llm_primitives/inference.py::_call_caching_backend`
+- Policy call path: `epyc-orchestrator/src/llm_primitives/primitives.py::evaluate_teleport_decision`
+- Policy helpers: `epyc-orchestrator/src/llm_primitives/teleport.py`
+- Lease helper: `epyc-orchestrator/src/gpu_lease.py`
 - Backend stream wrapper: `epyc-orchestrator/src/backends/llama_server.py`
-- Policy surface: default-off lease helper plus telemetry, not kernel work
 
 Required telemetry:
 

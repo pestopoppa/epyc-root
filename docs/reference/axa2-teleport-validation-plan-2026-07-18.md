@@ -17,6 +17,12 @@ This intentionally sidesteps composed-spec state save/restore
 not sidestep quality: Q4-CPU to IQ2-GPU is a mid-stream model/quant change, even
 though re-prefill launders state format.
 
+The current prep seam is the orchestrator policy path
+`src/llm_primitives/primitives.py::evaluate_teleport_decision`, with
+`src/llm_primitives/teleport.py` carrying the decision rules,
+`src/gpu_lease.py` carrying single-owner cutover state, and
+`src/backends/llama_server.py` carrying the transport/backend wrapper.
+
 ## What AXA-2 Must Prove
 
 1. **Economic win**: migration saves wall-clock time for long-running turns after
