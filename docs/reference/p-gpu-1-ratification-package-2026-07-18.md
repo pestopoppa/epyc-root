@@ -150,7 +150,10 @@ sample before server start plus an `after_cleanup` ROCm sample after termination
 cell writes `prompt.txt`, `prompt_sha256.txt`, `request.json`, `response.json`, and `result.json`.
 Guard state now records the git root/head/status for the binary being executed and whether its
 branch is production-named. Dry-run plans also emit `operator_run.sh` with the exact `--execute`
-invocation. For the next Gate-R candidate rerun, pass operator-specific policy text with
+invocation. The tracked dry-run directory is not the execution artifact root: unless the operator
+overrides `K35_EXEC_OUTPUT_DIR`, the generated script creates a fresh timestamped run under
+`/mnt/raid0/llm/epyc-inference-research/data/k35_stack_context_matrix/`. For the next Gate-R
+candidate rerun, pass operator-specific policy text with
 `--warmup-discard-policy` and `--cpu-interference-policy` rather than leaving those fields implicit.
 Current no-inference dry-run artifact:
 `/mnt/raid0/llm/epyc-inference-research/docs/data/pgpu1_k35_runner_dryrun_20260719/`.
