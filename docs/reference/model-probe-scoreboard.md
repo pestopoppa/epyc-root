@@ -32,9 +32,11 @@ a hypothesis, not another speed rerun):
 - **Qwen3-VL-8B/30B, SuperGemma4, other extra vision candidates** — paused unless they fix a
   fixture or role gap not already covered by MiniCPM-o plus the worker_vision safety alias.
 
-**Redirect freed cycles to the operator-gated promotion work** (higher EV): **AXA-2 teleport**,
-GLM accept-control (GC-shadow-repair4b), OP-2 canonical bench prep, and `P-GPU-1` ratification —
-see [`v7-promotion.md`](../../handoffs/active/v7-promotion.md) gate +
+**Redirect freed cycles to promotion and reviewer-route work** (higher EV): **AXA-2 teleport**,
+post-ratification `P-GPU-1` certification prep, and H5/RM-2 remaining anchors + RM-3 screening.
+GLM accept-control (`GC-shadow-repair4b`) is closed and failed; OP-2 passed; `P-GPU-1` is signed
+but production-named certification reruns wait for v7 promotion. See
+[`v7-promotion.md`](../../handoffs/active/v7-promotion.md) gate +
 [`inference-acceleration-index.md`](../../handoffs/active/inference-acceleration-index.md) LANE A/B.
 
 **And: maintain this scoreboard** — append every future probe row here rather than burying it in a
@@ -44,7 +46,7 @@ checkbox line, so there's always one glance-able read.
 
 | Model | Quant | Device | Prompt t/s (pp) | Decode t/s (tg) | Quality | Role-ready? | Evidence |
 |---|---|---|---|---|---|---|---|
-| **Qwable-v1** (35B-A3B reasoner) | IQ4_XS | MI210 | 2050/1951/1764 (2K/8K/32K) | 91.5 / 100.3 (tg1024/512) | 18/18 deterministic (plain+ngram) | **Yes** — primary reasoning-heavy route | `qwable_reasoning_economics/…20260717T184136Z` |
+| **Qwable-v1** (35B-A3B reasoner) | IQ4_XS | MI210 | 2050/1951/1764 (2K/8K/32K) | 91.5 / 100.3 (tg1024/512); current-v7 repeat 108.4 | historical 18/18 deterministic (plain+ngram); later current-v7 paired repeat 14/18 vs Q8 13/18 | **Yes** — primary reasoning-heavy route, but repeat/protocol-sensitive | `qwable_reasoning_economics/…20260717T184136Z`, registry current-v7 repeat |
 | Qwable-v1 reviewer arm | IQ4_XS | MI210 | same as Qwable IQ4_XS | RM-2 median row wall 2.1s | decision-grade C-CRAB P-REV-1 failed: FA 54.2%, FR 45.8%, AUC 0.438, ECE 0.441 | **No** — not a patch-reviewer | `reviewer_model_ablations/rm2-fast-b-qwable-iq4xs-ccrab-p-rev1-20260719T162712Z` |
 | Qwen3.6-27B + Qwable scaffold reviewer arm | Q8_0 + IQ4_XS | MI210 co-resident | final reviewer uses Qwen dense Q8 | RM-2 median row wall 6.5s | decision-grade C-CRAB P-REV-1: FA 33.3%, FR 41.7%, AUC 0.659, ECE 0.315 | **No** — repair hypothesis only; FR too high | `reviewer_model_ablations/rm2-fast-b-qwen36-27b-q8-plus-qwable-iq4xs-scaffold-ccrab-p-rev1-20260719T162958Z` |
 | Qwable-v1 | IQ4_XS | CPU | — | 15.96 | 18/18 | Yes (CPU fallback) | `…iq4_cpu_expanded_final` |
@@ -56,7 +58,7 @@ checkbox line, so there's always one glance-able read.
 | **Architect Qwen3.5-122B** (NEXTN) | UD-Q4_K_M | CPU | — | 2K 23.9 / 8K 20.7 (accept 818/820) | production | Yes | idx L207 |
 | **Ingest Qwen3-Next-80B-A3B** | Q4_K_M | CPU | — | 2K 20.5 / 8K 15.9 / 32K 9.7 | production | Yes | idx L208 |
 | **GLM-5.2** (754B glm-moe-dsa) | UD-IQ2_M | CPU | ~26 (12K); 24→17 as KV grows; 64K 6.8 | **~2.56** (12K); 64K 1.20 | exact-answer FA 0.0%/FR 16.7%; C-CRAB P-REV-1 failed: **FA 41.7%, FR 25.0%, parse 0.0%**; JudgeBench-GPT exact-choice positive: **22/24 (91.7%)**; SWE accept controls positive: **22/24, FR 8.3%, parse 0/24**; GC-external-1e route-away verdict | **No** — not production patch reviewer on current policy | `glm52_reviewer_corpus_direct/gc-shadow-repair4b-p-rev1-20260719T132459Z`, `glm52_external_ground_truth_direct/glm52-external-judgebench-gpt-n24-p-rev1-choice-rescore-20260719`, `glm52_external_ground_truth_direct/glm52-external-swebench-verified-n24-p-rev1-20260719Tlive` |
-| GLM-5.2 native-MTP | UD-IQ2_M | CPU | — | — (scaffold only) | builds + bounded draft-mtp smoke | No — no throughput yet, quality-gated | tree-draft B6/K23.1 |
+| GLM-5.2 native-MTP | UD-IQ2_M | CPU | repaired long run 22.77 pp | repaired `draft-mtp` 5.33 vs no-spec 2.49 | alpha 0.933 (`376/403` accepted), single-NextN repaired; acceleration evidence only | No — reviewer admission failed; acceleration not role admission | `glm52_native_mtp_ab/glm52-native-mtp-draft-long-repair-20260719T195037Z/plan.json` |
 | **MiniCPM-o-4_5** vision (+F16 proj) | Q4_K_M | MI210 | 732–884 | 111–127 | 4/4 OCR/chart (`--reasoning off`) | **Yes** candidate — source-wired + controlled smoke; persistent live traffic unconfirmed | `k35-vision-escalation-live-smoke-20260718T1225Z` |
 | MiniCPM-o-4_5 | Q4_K_M | CPU | — | 12.0–14.1 | 4/4 (reasoning off) | (CPU fallback) | `k35-minicpm-o45-reasoning-off` |
 | Qwen2.5-VL-7B worker_vision (+mmproj) | — | MI210 | — | 16.9–21.3 | 4/4 | **Yes** — live worker_vision + escalation safety alias | `k35-vision-matrix-20260717T1500Z` |
@@ -69,7 +71,7 @@ checkbox line, so there's always one glance-able read.
 | Qwen3-VL-30B (MoE) | — | MI210 | — | 36–50 (short) | 3/4 — chart→"Moldova" | No — replaced by CPU alias→MiniCPM-o | `k35-vision-matrix` |
 | SuperGemma4-26B multimodal (+F16 proj) | Q8_0 | MI210 | — | 80–84 | 4/4 | No — MiniCPM-o preferred (faster/smaller) | `k35-supergemma4-candidate` |
 | PaddleOCR-VL-1.6 (+mmproj) | GGUF | MI210 | — | 484–490 (OCR) | OCR clean; **table TEDS 0.0** (vs ODL 0.78) | No — OCR specialist, not general QA | `paddleocr-vl-first-smoke` |
-| Hy3 (hybrid) | — | MI210-hybrid / CPU | — | 11.5 / 5.2 (no-spec) | 5/6 — fails 6-word IF | No (research) | idx L221 |
+| Hy3 (hybrid) | IQ1_M | MI210-hybrid / CPU | MI210-hybrid repaired strict 22.33; context 2K/8K/32K 71.31/82.65/72.34 | repaired strict 11.43 hybrid / 5.17 CPU; context 2K/8K/32K 9.62/9.37/8.61 | repaired strict suites 7/7 on CPU and MI210-hybrid; draft-MTP slower than no-spec | No — research; broader role/admission still open | `hy3_current_v7/hy3_mi210_hybrid_repaired_strict_suite_20260718T200124Z`, registry L6631-L6645 |
 | Qwen3.5-122B-A10B | UD-IQ2_M | MI210 | 736.96 pp512; 180.15/269.32 combined 2K/4K+tg512 | 44.34-45.06 no-spec; ngram+MTP 287.09 repeated / 50.77 mixed / 80.77 broad | 8/8 no-spec architect; reasoning-auto 0/4 final-content; ngram+MTP broad 5/8 | No — research route-gated; DR-0/P-GPU-1 open | `qwen35_122b_iq2m_mi210_context_20260719T001712Z`, `qwen35_122b_a10b_ud_iq2_m_architect_mi210_20260719T002502Z`, `qwen35_122b_iq2m_ngram_mtp_broad_20260719T014335Z` |
 | Qwen3.5-122B-A10B | UD-IQ2_M | CPU | 122.31/114.40 pp2K/8K | 6.24 tg16 | prefill/cost sizing only | No — decode too slow; hybrid-placement input | `cpu_prefill_compute/20260719T014801Z_qwen35_122b_iq2_cpu_prefill` |
 | Qwen3-Next-80B-A3B-Instruct | IQ2_M | MI210 | 1220.90 pp512; 236.06/537.95/796.13 combined 2K/8K/32K+tg512 | 56.11 tg512; quality-wall 14.47-22.56; broader 16.79 | 12/12 then 23/24; code-review repair 10/10; broader role 35/42 | No — promising research, reviewer/selector not clean | `qwen3next-80b-iq2m-sourcehead-v7-gpu-context-clean-20260718T235036Z`, `qwen3next_80b_iq2m_mi210_broader_role_quality_probe_20260719T034859Z` |
@@ -88,7 +90,7 @@ checkbox line, so there's always one glance-able read.
 ## Verdict buckets
 
 **1. Clear wins (fast + quality-clean):**
-- **Qwable-v1 IQ4_XS (MI210)** — 91–100 t/s, 18/18 deterministic → primary reasoning route (Q8 works too, no quality gain, 2× footprint).
+- **Qwable-v1 IQ4_XS (MI210)** — 91–100 t/s, historical 18/18 deterministic; later current-v7 paired repeat was 14/18 vs Q8 13/18, so keep it as the primary reasoning route but do not overstate the old slice as protocol-independent.
 - **MiniCPM-o-4_5 Q4_K_M (MI210)** — 111–127 t/s, 4/4 OCR/chart → controlled smoke executed; persistent live traffic plus API/AutoPilot restart remains unconfirmed (must run `--reasoning off`).
 - **Frontdoor Qwen3.6-35B-A3B native-MTP (MI210)** — 119.7 t/s / 7.0× CPU at 8K, 100% accept (production; Gate-R obs-grade).
 - **gemma-4-26B-A4B CPU worker** — 98–176 t/s, K5 gate +0.0% (live worker_general). Plus clean production rows: architect 122B (21–24), ingest 80B (10–21), worker_vision Qwen2.5-VL 4/4.
@@ -99,7 +101,7 @@ checkbox line, so there's always one glance-able read.
 - **Bonsai-8B/27B Q1_0** — speed-only/orphan or 6-word-IF fail; no role-quality clearance.
 - **Ternary Q2_g64** — ngram accelerates to 22.9 t/s but 6/8, empty `<think>` tags.
 - **Qwen3-VL-8B/30B and extra vision candidates** — paused behind concrete fixture/role-gap fixes.
-- **Hy3** — 5–11 t/s, 5/6; research-only.
+- **Hy3** — repaired strict suites now pass 7/7 on CPU and MI210-hybrid, but throughput remains 5–11 t/s and draft-MTP is slower than no-spec; research-only pending broader role/admission.
 - **GLM-5.2** — additionally slow (2.56 t/s) and rejected for production patch-review on the current policy by decision-grade C-CRAB P-REV-1 failure. JudgeBench-GPT pairwise exact-choice is positive (`22/24`), and SWE-bench-Verified accept controls are positive (`22/24`, `FR 8.3%`, parse `0/24`), but neither clears hard-negative patch-review risk. RM-2 fast alternatives do not clear the role: Qwen/Qwable standalone fail, and Qwen+Qwable scaffold is only a repair hypothesis. Do not rerun unchanged GLM C-CRAB/SWE policies.
 
 **3. Broken / failed load:**
