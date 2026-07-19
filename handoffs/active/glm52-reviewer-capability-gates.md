@@ -65,6 +65,18 @@ summary: `epyc-inference-research/docs/data/glm52_external_swebench_verified_p_r
 This is positive accept-control evidence, but it still does not clear C-CRAB hard-negative
 patch-review risk or admit GLM as the production reviewer.
 
+**2026-07-19 GC-external-1e repair-or-route verdict.** Current evidence supports a narrow
+route-away decision for production patch review: **do not admit GLM-5.2 as the production
+patch reviewer and do not spend another unchanged GLM patch-review run.** Keep GLM scoped to
+research, judge-preference checks, accept-control diagnostics, and future repair hypotheses
+only. A future GLM repair must first state a concrete mechanism that can reduce C-CRAB
+hard-negative false accepts without exploding false rejects, then pass a cheap n=12/n=24
+screen before another P-REV-1 confirmation. The production-reviewer search should move to
+H5/RM-2 remaining anchors and RM-3 screening: A3 same-family GPU heavyweight, A0/A1 floors,
+and any new reviewer candidate with a specific quality rationale. This is not a production
+cutover decision; it removes GLM-specific unchanged reruns from the critical path and leaves
+v7 promotion policy to [`v7-promotion.md`](v7-promotion.md).
+
 ## 2026-07-19 DIRECTIVE (operator) — test GLM quality on EXTERNAL ground-truth benchmarks, not hand-labeled corpora
 
 The C-CRAB accept-control labeling issue is now resolved mechanically and the matched P-REV-1
@@ -127,7 +139,7 @@ Concrete dataset pick + runner wiring being finalized; see [`../../docs/referenc
     - [x] **GC-external-1d.2 — SWE-bench-Verified direct oracle execution ✅ 2026-07-19**: live direct path completed for `patch_review_oracle` rows so the external patch-review claim is not inferred from pairwise judge preference. Result: `22/24`, `FR 8.3%`, parse `0/24`, no hard negatives in slice.
       - [x] **GC-external-1d.2a — SWE direct-runner support + P-REV-1 dry-run ready ✅ 2026-07-19**: inference-research now dispatches SWE rows to the ReviewDecision schema/parser, refuses mixed row kinds, records accept-control false-reject rate, and regenerated the JudgeBench score-only artifact with `server.not_started=true`. SWE dry-run plan `glm52-external-swebench-verified-n24-p-rev1-dryrun-20260719` is `execution_allowed=true`, `refusal_reasons=[]`, `24` accept controls, response schema `approve|reject`, and first prompt `571/15744` estimated tokens.
       - [x] **GC-external-1d.2b — SWE P-REV-1 live accept-control gate ✅ 2026-07-19**: live run `glm52-external-swebench-verified-n24-p-rev1-20260719Tlive`, `observation_only=false`, `measurement_protocol=p_rev1`, attestation `MEASUREMENT-P-REV1-OPERATOR-APPROVED-20260719`, era `p_rev1_attested`. Result: `22/24` correct approvals, `false_rejects=2`, `FR 8.3%`, parse `0/24`, approve `22`, reject `2`, elapsed `1965.612s`; no GLM/server/AutoPilot/KFD processes remained after cleanup.
-- [ ] **GC-external-1e — Reviewer repair-or-route verdict**: synthesize failed C-CRAB hard-negative evidence, positive JudgeBench pairwise evidence, positive SWE accept-only evidence, and RM-2 alternatives into a concrete next policy: repair GLM prompt/scaffold, scope GLM only to judge-preference/accept-control work, or route reviewer away from GLM.
+- [x] **GC-external-1e — Reviewer repair-or-route verdict ✅ 2026-07-19**: synthesized failed C-CRAB hard-negative evidence, positive JudgeBench pairwise evidence, positive SWE accept-only evidence, and RM-2 alternatives. Verdict: GLM is not admitted as production patch reviewer; scope it to research/judge-preference/accept-control diagnostics unless a concrete new repair hypothesis exists. Route production reviewer selection to H5/RM-2 remaining anchors and RM-3 screening instead of rerunning unchanged GLM C-CRAB/SWE policies.
 - [ ] **GC-4 — RAM-residency policy decision** (operator, OP bundle): 239GB reviewer + ~70GB architect + frontdoor/workers co-residency vs swap-in-on-demand vs review-windows. Determines whether A4 is an interactive reviewer or a batch/offline judicial gate. Operator decision remains open.
   - [x] **GC-4.input — Memory-budget table prepared ✅ 2026-07-18**: decision memo at [`docs/reference/glm52-ram-residency-decision-input-2026-07-18.md`](../../docs/reference/glm52-ram-residency-decision-input-2026-07-18.md). Current sizing says always-resident GLM is physically feasible on the 1.1TiB host, but review-window/batch use is the better policy input until GC-shadow-repair4b.2b and P-REV-1 clear. Treat "swap-in-on-demand" as cold mmap/page-cache faulting, not real swap service, because swap is only 8Gi.
 - [ ] **GC-5 — Registry reviewer-capability fields**: structured `measured:` entries (typed-emission rate, authoring score, why-diagnosis, FA/FR once H5 runs) per MEASUREMENT §5b registry ruling; follow `new-model` onboarding conventions.
@@ -149,7 +161,7 @@ glm51-reap GO gates (download/integrity ✅ → glm-dsa load smoke ✅ → curre
         → GC-shadow-repair4b.2a ✅ (deterministic filter; zero hard accepts)
         → GC-shadow-repair4b.2c ✅ (deterministic hard accepts)
         → GC-shadow-repair4b.2d ✅/FAILED (decision-grade C-CRAB P-REV-1 FA 41.7%, FR 25.0%)
-        → GC-external-1a ✅ (pairwise external plans) → GC-external-1b ✅ / 1c ✅ → GC-external-1d.1 JudgeBench-GPT ✅ (22/24 exact-choice) → GC-external-1d.2 SWE-bench direct oracle ✅ (22/24 accept controls, FR 8.3%) → GC-external-1e repair-or-route verdict → GC-5
+        → GC-external-1a ✅ (pairwise external plans) → GC-external-1b ✅ / 1c ✅ → GC-external-1d.1 JudgeBench-GPT ✅ (22/24 exact-choice) → GC-external-1d.2 SWE-bench direct oracle ✅ (22/24 accept controls, FR 8.3%) → GC-external-1e repair-or-route verdict ✅ → H5/RM-2 remaining anchors + RM-3 screening → GC-5
 GC-4 operator decision (anytime after CPU bench exists) → shapes H5 A4 arm design
 Kernel P0s: grammar fix is closed; GLM-dsa cache/runtime reconciliation is closed by `3dee86a5a`; remaining kernel dependencies are sparse-final-attention classification and any live v7 CPU/perf guard relevant to GC-1 cost.
 ```
@@ -158,7 +170,7 @@ Kernel P0s: grammar fix is closed; GLM-dsa cache/runtime reconciliation is close
 
 - [x] Do small GLM-5.2 reviewer-capability repair smokes recover after prompt/scorer fixes under the next-power-of-two top-k schedule? **Yes for synthetic observations only**: GC-1r free typed emission `3/3`, GC-2r rubric breadth `mean_composite=1.0`, and GC-3r synthetic why diagnosis `why_match_rate=1.0`. This does not close P-REV-1 or corpus-v1 reviewer admission. ✅ 2026-07-18
 - [x] Does the repaired GLM reviewer look usable on a real near-miss/C-CRAB patch-review slice? **No for patch-review role admission**: unfiltered/mixed near-miss slices are invalid for GLM admission because they mix answer, code-prefix, and patch-review representations; `substring`/`exact_match` answer-fragment rows are now refused by default. The n=24 homogeneous `cruxeval/exact_match` slice is encouraging only when deliberately scoped as exact-answer judging (`FA=0.0%`, `FR=16.7%`). Matched C-CRAB patch-diff review first failed by severe false accepts (`FA=91.7%`); the negative-evidence/oracle-note repair fixed the targeted hard-negative FA shape on n=12 (`FA=0.0%`) but the decision-grade P-REV-1 confirmation still failed at `FA 41.7%`, `FR 25.0%`, parse `0.0%`. Next work is the external ground-truth adapter and/or a new repair hypothesis, not another unchanged C-CRAB rerun. ✅ 2026-07-19
-- [x] Does external ground-truth evidence rescue GLM's reviewer role? **Partial only, not enough for production reviewer admission**: JudgeBench-GPT pairwise exact choice is positive (`22/24`, `91.7%`, parse `0/24` after confidence-scale warning normalization), and SWE-bench-Verified accept controls are positive (`22/24`, `FR 8.3%`, parse `0/24`). But C-CRAB patch-review still failed hard-negative/overall calibration (`FA 41.7%`, `FR 25.0%`, `AUC 0.509`), and the SWE slice has no hard negatives. GLM remains research-only pending GC-external-1e repair-or-route. ✅ 2026-07-19
+- [x] Does external ground-truth evidence rescue GLM's reviewer role? **No for production patch review; partial positive for narrower judge/accept-control use**: JudgeBench-GPT pairwise exact choice is positive (`22/24`, `91.7%`, parse `0/24` after confidence-scale warning normalization), and SWE-bench-Verified accept controls are positive (`22/24`, `FR 8.3%`, parse `0/24`). But C-CRAB patch-review still failed hard-negative/overall calibration (`FA 41.7%`, `FR 25.0%`, `AUC 0.509`), and the SWE slice has no hard negatives. GC-external-1e routes production reviewer selection away from GLM unless a concrete new repair hypothesis appears. ✅ 2026-07-19
 
 ## Cross-Cutting Concerns
 
