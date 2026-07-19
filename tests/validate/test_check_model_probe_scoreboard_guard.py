@@ -103,6 +103,20 @@ def test_stop_list_scoreboard_fix_pending_is_not_reopen_basis() -> None:
     assert "reopen fix" in findings[0].reason
 
 
+def test_stop_list_scoreboard_contract_missing_is_not_reopen_basis() -> None:
+    findings = guard.scan_diff(
+        "epyc-root",
+        _diff(
+            "docs/reference/model-probe-scoreboard.md",
+            "| Ternary Bonsai | Q2_g64 | MI210 | 100 | 30 t/s | loader contract missing | No | summary.json |",
+        ),
+        scoreboard_is_changed=True,
+    )
+
+    assert len(findings) == 1
+    assert "reopen fix" in findings[0].reason
+
+
 def test_stop_list_steering_text_is_allowed_without_scoreboard() -> None:
     findings = guard.scan_diff(
         "epyc-root",

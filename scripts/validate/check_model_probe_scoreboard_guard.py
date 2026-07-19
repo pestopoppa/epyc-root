@@ -52,7 +52,7 @@ REOPEN_FIX_RE = re.compile(
     r"quality|protocol|parser|loader|artifact|export|transcode|template|"
     r"provenance|fixture|role[- ]gap|compatibility"
     r").{0,80}\b("
-    r"fixed|contract|repair|implemented|landed|scoped|verified"
+    r"fixed|repair|implemented|landed|scoped|verified"
     r")\b",
     re.IGNORECASE,
 )
