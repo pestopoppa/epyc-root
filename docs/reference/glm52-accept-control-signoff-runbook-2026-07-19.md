@@ -64,6 +64,7 @@ Inference-free review-sheet helper and generated blank worksheet:
 
 - `/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/glm52_ccrab_accept_control_review_sheet.py`
 - `/mnt/raid0/llm/epyc-inference-research/docs/data/glm52_ccrab_accept_control_n24_review_sheet_20260719.csv`
+- `/mnt/raid0/llm/epyc-inference-research/docs/data/glm52_ccrab_accept_control_n24_review_packet_20260719.md`
 - `/mnt/raid0/llm/epyc-inference-research/docs/data/glm52_ccrab_accept_control_n24_review_sheet_status_20260719.json`
 
 Governance context:
@@ -112,13 +113,14 @@ Set:
 Do not mark a row hard-accept solely because it was a merged PR or because the
 machine recommendation says `hard_accept_candidate`.
 
-## Optional CSV Workflow
+## Optional Review-Sheet Workflow
 
-The generated worksheet is a convenience layer over the packet. It does not
-replace row-by-row review of the packet's full `task` and `candidate` fields,
-and the helper never turns machine recommendations into decisions.
+The generated worksheet and Markdown packet are convenience layers over the
+JSON packet. They do not replace row-by-row review of the packet's full `task`
+and `candidate` fields, and the helper never turns machine recommendations into
+decisions.
 
-To regenerate the blank worksheet:
+To regenerate the blank worksheet and bounded Markdown review packet:
 
 ```bash
 cd /mnt/raid0/llm/epyc-inference-research
@@ -126,6 +128,7 @@ python3 scripts/benchmark/glm52_ccrab_accept_control_review_sheet.py \
   docs/data/glm52_ccrab_accept_control_n24_audit_packet_20260718.json \
   --machine-recommendations docs/data/glm52_ccrab_accept_control_machine_recommendations_20260718.json \
   --review-csv-out docs/data/glm52_ccrab_accept_control_n24_review_sheet_20260719.csv \
+  --review-md-out docs/data/glm52_ccrab_accept_control_n24_review_packet_20260719.md \
   --summary-out docs/data/glm52_ccrab_accept_control_n24_review_sheet_status_20260719.json
 ```
 
