@@ -25,6 +25,22 @@ while quality work continues. The `glm-dsa` experimental-v7 scaffold now builds 
 bounded same-model `draft-mtp` smokes, but any α/throughput/admission claim remains downstream
 of GC-shadow-repair4b → P-REV-1.
 
+## 2026-07-19 DIRECTIVE (operator) — test GLM quality on EXTERNAL ground-truth benchmarks, not hand-labeled corpora
+
+The near-miss / C-CRAB patch corpus is blocked on accept-control labeling. **Stop trying to
+label C-CRAB ourselves; use the ground-truth benchmarks already on disk** (`/mnt/raid0/llm/datasets/`),
+which ship human/test-oracle answer keys — no label-building, no self-certification, no
+circularity:
+- **Reviewer/judge quality** → `judgebench`, `reward-bench` + `reward-bench-2`, `llmbar`, `judgelm-100k` (human ground-truth verdicts). Score GLM's accept/reject or pairwise choice by **exact match** against their key → deterministic FA/FR, `decision_grade` true.
+- **Patch review (accept/reject a diff)** → `swe-bench-verified` (human-validated FAIL_TO_PASS/PASS_TO_PASS **test oracle**: good patch = patched repo passes hidden tests). Fully mechanical.
+- **Claude-as-judge** is authorized (operator, 2026-07-19) as a labeler for any scenario the ground-truth sets don't cover — a full-precision model grading a 2-bit one is a valid teacher/judge, not circular (the only circular case is GLM-grading-GLM). Freeze such labels with per-row rationale.
+
+**Sequencing (important):**
+1. **Reviewer/judge quality gate = RUN NOW.** These prompts fit GLM's coherent **≤12K** band, so this — the actual v7-promotion blocker — does **not** wait for any kernel fix. Pick one judge-native set + SWE-bench-Verified, keep prompts ≤12K under the validated `indexer_top_k` schedule, score exact-match. This is what unblocks a claim-grade GLM quality verdict.
+2. **Long-context quality (>12K) is a SEPARATE, LATER track** gated behind the **`indexer_top_k` / sparse-final-attention fix** (D2 in [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md)). GLM currently emits malformed output past ~12K because the top-k cap doesn't scale (32K needle fails); that is the durable fix for long-context, and it is **orthogonal** to whether GLM is a good *patch* reviewer. Do not couple the reviewer-quality verdict to it.
+
+Concrete dataset pick + runner wiring being finalized; see [`../../docs/reference/model-probe-scoreboard.md`](../../docs/reference/model-probe-scoreboard.md). Do NOT re-run the observation-only nearmiss-v1 slices — they're superseded by this directive.
+
 ## Prioritized Task List
 
 - [x] **GC-0 — Evidence hygiene / runner contract**: reviewer-facing GLM long-output or typed-decision probes must consume only instrumented GLM runs with streaming progress, retained trace logs/server-log timing extraction, and a minimum completion-token floor. `/metrics` samples are acceptable when available, but are not the primary progress channel for a long busy GLM request. The attempted current-source 96K run at `/mnt/raid0/llm/tmp/glm52-current-source-96k-quality-20260717T144022Z/plan.json` is excluded as process-failure-only because it had no progress telemetry and only `max_tokens=32`. ✅ 2026-07-17
