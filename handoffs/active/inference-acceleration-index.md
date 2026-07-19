@@ -1,7 +1,7 @@
 # Inference Acceleration — Active Index
 
 **Purpose**: dispatch point for local inference optimization across CPU throughput, KV/context efficiency, speculative decoding, GPU-prep work, and model-serving experiments.
-**Updated**: 2026-07-19 (v7 promotion authority is `experimental-v7-refresh-20260716`; current checked local/fork tip is `6ad45fa3ff`, with live promotion state delegated to [v7-promotion.md](v7-promotion.md)) — v6+iqk remains LIVE/frozen; K5 quality, K35/A1 release matrix, OP-2 CPU-regression canonical bench, `P-GPU-1` ratification, upstream-ahead narrow audit, and GLM reviewer-quality disposition are closed. Open v7 promotion gates are final cutover coherence/garbage smoke plus native GLM-MTP acceptance/throughput only if the operator keeps GLM accelerated in the v7 release scope. Historical 2026-07-05/11/14/16 detail remains below for provenance only.
+**Updated**: 2026-07-19 (v7 promotion authority is `experimental-v7-refresh-20260716`; current checked local/fork tip is `6ad45fa3ff`, with live promotion state delegated to [v7-promotion.md](v7-promotion.md)) — v6+iqk remains LIVE/frozen; K5 quality, K35/A1 release matrix, OP-2 CPU-regression canonical bench, `P-GPU-1` ratification, upstream-ahead narrow audit, GLM reviewer-quality disposition, and final cutover coherence/garbage smoke are closed. Open v7 promotion gating is native GLM-MTP acceptance/throughput only if the operator keeps GLM accelerated in the v7 release scope; otherwise v7 is ready to hand to the operator for the production-cutover procedure. Historical 2026-07-05/11/14/16 detail remains below for provenance only.
 **History**: pre-compaction detail lives in [../archived/inference-acceleration-index-history-through-2026-06-19.md](../archived/inference-acceleration-index-history-through-2026-06-19.md).
 
 **2026-07-18 v7 lever audit + two-lane queue**: full read-only audit of ~5 weeks of v7 experimental-kernel + CPU/GPU/spec-dec/GLM optimization work (5-agent sweep of handoffs, progress reports, negative results, live branch state). **Headline: the largest measured win is already built, correctness-verified, and banked — but UNPROMOTED.** See the new **[§ v7 lever audit + two-lane execution queue](#2026-07-18-v7-lever-audit--two-lane-execution-queue)** below — do-not-re-propose ledger, EV-ranked survivor levers, and the LANE A (operator-facing v7-promotion prep) / LANE B (agent-executable exploration) queue. Two new tracks opened: [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md), [gpu-drafter-control-redesign.md](gpu-drafter-control-redesign.md).
@@ -26,8 +26,8 @@ Read-only audit of ~5 weeks of v7-experimental + CPU/GPU/spec-dec/GLM optimizati
 [v7-promotion.md](v7-promotion.md) for the live promotion tip; iqk + all GPU opts + `Q2_0` present):
 HIP graphs **+25%** worker spec-dec, MMVQ→MMQ **+17–32%**, bf16-GDN-state **+16–21%** agg,
 **+37%** single-stream dense-Q8. K5 quality gate PASSED (v6≈v7, +0.0%); all P0 correctness
-blockers resolved (K22/K23/K32/K33). OP-2 and `P-GPU-1` are closed; remaining release gating is
-final cutover coherence/garbage smoke, plus GLM-MTP only if GLM acceleration stays in v7 scope.
+blockers resolved (K22/K23/K32/K33). OP-2, `P-GPU-1`, and final cutover smoke are closed;
+remaining release gating is GLM-MTP only if GLM acceleration stays in v7 scope.
 
 ### Do-not-re-propose ledger (measured negative/exhausted)
 - **CPU decode is bandwidth-exhausted** (0.17 IPC, 96.6% memory-stalled @96t). Dead:
