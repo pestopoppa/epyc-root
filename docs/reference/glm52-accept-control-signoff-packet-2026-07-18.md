@@ -1,11 +1,22 @@
 # GLM-5.2 Accept-Control Signoff Packet
 
 Date: 2026-07-18
-Scope: operator-facing input for `GC-shadow-repair4b.2b` before `P-REV-1`.
+Scope: superseded operator-facing input for `GC-shadow-repair4b.2b` before
+`P-REV-1`.
 This packet was prepared from existing artifacts only; no inference, build, or
 benchmark run was performed.
 
-## Decision Needed
+## Supersession Notice
+
+Status update, 2026-07-19: this packet is historical. The operator-approved
+executable-oracle / `multi_oracle` path converted enough C-CRAB accept controls
+to decision grade without manual row labeling. `GC-shadow-repair4b.2c` and
+`P-REV-1` then ran on the decision-grade slice, and GLM-5.2-IQ2 failed
+patch-review admission (`FA=41.7%`, `FR=25.0%`, `AUC=0.509`). The current
+blocker is reviewer/control-plane route selection or a repaired-GLM admission
+run, not this signoff packet.
+
+## Historical Decision Needed
 
 Before `P-REV-1`, an operator/oracle must convert the current C-CRAB/Python
 full-candidate accept-control packet from observation-only to decision-grade.
@@ -31,7 +42,7 @@ not closed by this packet. Select/sign off replacement full-candidate accept
 controls or provide executable oracle evidence until there are at least 24
 reviewed hard accepts.
 
-## Evidence State
+## Historical Evidence State
 
 GLM patch-review still has an accept-control gate, not a serving/build gate.
 The targeted old-false-accept confirmation rejected all six curated hard
@@ -39,7 +50,7 @@ negatives, but it false-rejected one observation-grade clean accept control. Tha
 row is not valid as a hard model error until audited, because the corpus marks
 merged PR accepts as `gold_confidence=observation`.
 
-Current deterministic accept-control filter output:
+Historical deterministic accept-control filter output:
 
 - Matching C-CRAB/Python clean accept pool: `151`
 - Hard accept-control pool before manual/oracle signoff: `0`
@@ -95,12 +106,13 @@ Governance context:
 - `/mnt/raid0/llm/epyc-root/handoffs/active/glm52-reviewer-capability-gates.md`
 - `/mnt/raid0/llm/epyc-root/handoffs/active/v7-promotion.md`
 
-## Current Blocker
+## Historical Blocker
 
-`GC-shadow-repair4b.2b` is open because the accept-control slice has no
-decision-grade full-candidate accepts yet. The next required action is manual
-label signoff or executable oracle evidence, not another unchanged GLM run.
+`GC-shadow-repair4b.2b` was open because the accept-control slice had no
+decision-grade full-candidate accepts yet. That condition has since been closed
+through executable oracle evidence.
 
-Until that signoff exists, `P-REV-1` must treat GLM patch-review accept-control
-evidence as observation-grade and should not admit GLM to the production reviewer
-role.
+Do not use this packet as the current GLM reviewer blocker. The current evidence
+state is post-`P-REV-1`: GLM failed admission, and RM-2.fast did not produce a
+clean replacement reviewer. Future work should either repair/retest GLM under a
+new gate or make an explicit reviewer route decision.
