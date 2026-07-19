@@ -1,5 +1,12 @@
 # OP-2 Canonical Bench Quiet-Window Package - 2026-07-18
 
+> **⚠ Correction (2026-07-19, operator-confirmed): OP-2 is NOT reboot-gated.** Wherever this
+> package says "post-reboot," read it as **"bench-clean host in an operator-approved quiet
+> window."** Live host health is already bench-eligible (`numa_balancing=0`, CPU ~3.2 GHz / no
+> severe throttle, 16-day uptime); the gate is a **quiet window** (pause the parallel agent's
+> benching load) + the throttle/affinity preflight — **no host reboot is required** unless the
+> preflight flags multi-day throttle. This is actionable now.
+
 **Status**: docs-only sidecar. This package does not amend `/workspace/MEASUREMENT.md`,
 does not authorize production changes, does not authorize v6 rebuilds or edits, and does
 not promote v7. It is a concrete run package for an operator-approved quiet window.
