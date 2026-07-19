@@ -39,15 +39,13 @@ same-family drafter (35B/122B qwen35 at Q8) trading α for fit.
   acceptance for an aggressive-IQ GPU drafter vs the CPU high-quant target on the real task
   corpus, BEFORE any serving build (the N5-alpha gate already cleared `n5_spec_on` 376/376,
   but that was the *alignment* check, not the quant-asymmetric acceptance). Operator-gated bench.
-  - [ ] **DR-0a — procure/build the aggressive same-model IQ drafter artifact**: 2026-07-18
-    MI210 worker confirmed the bench is not runnable as stated because no aggressive same-model
-    IQ drafter artifact is downloaded/registered. First unblocker is an IQ1/IQ2_XXS or REAP+IQ1
-    drafter candidate that fits 64 GB HBM for the selected high-quant CPU verifier; do not
-    substitute an unrelated external-drafter lane. Follow-up inventory narrowed this: local
+  - [x] **DR-0a — procure/build/register the aggressive same-model IQ drafter artifact**:
+    completed by inference-research commit `b696241` (`qwen35_122b_iq2m` registry row) plus
+    the bounded MI210 smoke/context summaries. Local
     `/mnt/raid0/llm/models/Qwen3.5-122B-A10B-MTP-GGUF/UD-IQ2_M/Qwen3.5-122B-A10B-UD-IQ2_M.gguf`
-    exists (37.60 GiB, same MTP family, fits MI210) but is not registered; public
-    `Qwen3.5-122B-A10B-UD-IQ1_M.gguf` is 36.02 GiB and should be downloaded only if local
-    IQ2_M does not satisfy the first DR-0 smoke.
+    is 37.60 GiB, same MTP family, fits MI210, returned exact JSON in the server smoke, and
+    produced complete context rows. This closes the missing-artifact blocker only; DR-0 still
+    needs an operator-approved acceptance/economics run against the high-quant CPU verifier. ✅ 2026-07-19
   - [x] **DR-0 negative scheduling check ✅ 2026-07-18**: attempted to schedule the bounded
     MI210 measurement, found the missing-artifact blocker, and stopped rather than inventing a
     serving implementation. Fallback GPU time was used for a separate Qwen3.6-27B n-gram smoke
