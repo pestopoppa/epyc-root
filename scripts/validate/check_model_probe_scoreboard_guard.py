@@ -46,10 +46,12 @@ PROBE_EVIDENCE_RE = re.compile(
     r")",
     re.IGNORECASE,
 )
+SCOREBOARD_COMPANION_RE = re.compile(r"\bscoreboard\b", re.IGNORECASE)
 STEERING_RE = re.compile(
     r"\b("
-    r"do not|stop|stopped|reopen only|blocked|quality[- ]blocked|"
+    r"do not|stop|stopped|reopen only|park|parked|pause|paused|blocked|quality[- ]blocked|"
     r"loader[- ]blocked|redirect|no speed rerun|not role[- ]ready"
+    r"|out of production|keep .* out of production"
     r")\b",
     re.IGNORECASE,
 )
@@ -135,10 +137,19 @@ def _line_is_probe_evidence(path: str, text: str) -> tuple[bool, str]:
     )
     in_root_handoff_or_progress = path.startswith("handoffs/active/") or path.startswith("progress/")
 
-    if in_registry_or_model_docs:
+    if path == "orchestration/model_registry.yaml":
         return (True, "model-probe evidence added outside scoreboard")
 
-    if in_root_handoff_or_progress and STOP_LIST_RE.search(text) and not STEERING_RE.search(text):
+    if path.startswith("docs/reference/models/"):
+        if STEERING_RE.search(text) and SCOREBOARD_COMPANION_RE.search(text):
+            return (False, "")
+        return (True, "model-probe evidence added outside scoreboard")
+
+    if (
+        in_root_handoff_or_progress
+        and STOP_LIST_RE.search(text)
+        and not (STEERING_RE.search(text) and SCOREBOARD_COMPANION_RE.search(text))
+    ):
         return (True, "stop-listed model evidence added outside scoreboard")
 
     return (False, "")

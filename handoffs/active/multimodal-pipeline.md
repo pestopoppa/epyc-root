@@ -467,8 +467,8 @@ Watch list: SHANKS (arxiv:2510.06917) is sibling not supersession — different 
 
 - **[intake-682] "unsloth/gemma-4-12b-it-GGUF"** (HF) — just-released, **benchmark candidate**
   - Relevance: dense 12B-it sibling of the deployed gemma-4-26B-A4B MoE worker_general; encoder-free unified text+image+audio+video GGUF. **llama.cpp already supports gemma-4 vision (PR #21309) and audio (PR #21421)**, so a multimodal spike is feasible.
-  - Operator-raised angles to **TEST on our eval suite** (not yet measured here): (a) **vision-escalation substitute** vs Qwen3-VL-30B / Qwen2.5-VL-7B; (b) **frontdoor substitute** vs Qwen3.6-35B-A3B. NOTE: Google card numbers are only a weak prior — the frontdoor Qwen3.6 is *itself* multimodal, and on a BW-bound CPU host a dense 12B (reads ~12B params/token) likely decodes slower than the ~3B-active MoE frontdoor (measured 25.17 t/s). **Per `feedback_always_sweep`, benchmark before any verdict** — vision + tool-use + text + CPU t/s.
-  - Caveat: the "drafter for the 26B-A4B" framing is structurally invalid (needs the purpose-built 4-layer ~500M Gemma4Assistant head; no deployed dense Gemma-4 target). Verdict: worth_investigating — **action = run the benchmark**.
+  - Operator-raised angles are now parked unless they answer a concrete role gap: (a) **vision-escalation substitute** only if MiniCPM-o / worker_vision misses a fixture or service requirement; (b) **frontdoor substitute** only with a text-quality hypothesis, not a speed-only multimodal curiosity. NOTE: Google card numbers are only a weak prior — the frontdoor Qwen3.6 is *itself* multimodal, and on a BW-bound CPU host a dense 12B (reads ~12B params/token) likely decodes slower than the ~3B-active MoE frontdoor (measured 25.17 t/s). Any reopened probe must append to the model-probe scoreboard.
+  - Caveat: the "drafter for the 26B-A4B" framing is structurally invalid (needs the purpose-built 4-layer ~500M Gemma4Assistant head; no deployed dense Gemma-4 target). Verdict: parked until a concrete vision/frontdoor role-gap hypothesis exists.
 
 ## Research Intake Update — 2026-06-12
 

@@ -76,3 +76,29 @@ def test_handoff_stop_list_evidence_requires_scoreboard() -> None:
 
     assert len(findings) == 1
     assert "stop-listed" in findings[0].reason
+
+
+def test_model_doc_steering_with_scoreboard_is_allowed() -> None:
+    findings = guard.scan_diff(
+        "epyc-inference-research",
+        _diff(
+            "docs/reference/models/model-smoke-queue-2026-07-16.md",
+            "Park Bonsai Q1_0 after 38 t/s; append any reopened result to the scoreboard.",
+        ),
+        scoreboard_is_changed=False,
+    )
+
+    assert findings == []
+
+
+def test_handoff_paused_with_scoreboard_is_allowed() -> None:
+    findings = guard.scan_diff(
+        "epyc-root",
+        _diff(
+            "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+            "Qwen3-VL-8B A/Bs are paused after 3/4; append reopened probes to the scoreboard.",
+        ),
+        scoreboard_is_changed=False,
+    )
+
+    assert findings == []
