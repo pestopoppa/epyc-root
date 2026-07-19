@@ -132,7 +132,7 @@ is_benchmark_timing_line() {
   # long digit runs still fail the hook.
   local path="$1"
   local line="$2"
-  [[ "$path" =~ ^data/(cpu-model-characterization|gpu-mi210)/.+/llama_bench_stdout[.]json$ ]] || return 1
+  [[ "$path" =~ ^data/(cpu-model-characterization|gpu-mi210)/.+/(llama_bench_stdout[.]json|stdout[.]log|summary[.](json|md))$ ]] || return 1
   echo "$line" | grep -qE '"(avg_ns|stddev_ns)"[[:space:]]*:[[:space:]]*[0-9]{12,19}[,]?' && return 0
   echo "$line" | grep -qE '"samples_ns"[[:space:]]*:[[:space:]]*\[[[:space:]]*[0-9]{12,19}([[:space:]]*,[[:space:]]*[0-9]{12,19})*[[:space:]]*\]' && return 0
   echo "$line" | grep -qE '"model_n_params"[[:space:]]*:[[:space:]]*[0-9]{12,19}[,]?' && return 0
