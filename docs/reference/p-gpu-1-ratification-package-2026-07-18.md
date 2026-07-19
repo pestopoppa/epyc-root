@@ -18,8 +18,8 @@ does not itself make any GPU number decision-grade; MEASUREMENT is the authority
   prompt/decode/draft stats, cleanup proof, and attestation.
 
 `agents/shared/MEASUREMENT_POLICY.md` keeps MEASUREMENT edits inside the human/PR-reviewed
-trust boundary. So the operator action is to amend MEASUREMENT; agents may only prepare this
-package and map existing artifacts.
+trust boundary. The 2026-07-19 operator amendment is complete; agents may use this
+package only to map required fields, certification boundaries, and existing artifact gaps.
 
 Prepared amendment text lives at
 `docs/reference/p-gpu-1-amendment-draft-2026-07-19.md`. That file is historical draft
