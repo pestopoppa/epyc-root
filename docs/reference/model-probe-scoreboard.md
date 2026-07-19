@@ -55,7 +55,7 @@ checkbox line, so there's always one glance-able read.
 | gemma-4-26B-A4B | Q8_0 (+v6 MTP) | MI210 | 274–282 | single-slot MTP ~158; schema 122 | schema 10/10; **free-form multi-slot 8–9/10, 2–3 hashes** | **No** for GPU free-form worker (K11.1 open) | `k11_gemma4_long_mtp_np4_n10…20260718T142203Z` |
 | **Architect Qwen3.5-122B** (NEXTN) | UD-Q4_K_M | CPU | — | 2K 23.9 / 8K 20.7 (accept 818/820) | production | Yes | idx L207 |
 | **Ingest Qwen3-Next-80B-A3B** | Q4_K_M | CPU | — | 2K 20.5 / 8K 15.9 / 32K 9.7 | production | Yes | idx L208 |
-| **GLM-5.2** (754B glm-moe-dsa) | UD-IQ2_M | CPU | ~26 (12K); 24→17 as KV grows; 64K 6.8 | **~2.56** (12K); 64K 1.20 | exact-answer FA 0.0%/FR 16.7%; decision-grade C-CRAB P-REV-1 failed: **FA 41.7%, FR 25.0%, parse 0.0%**; DSA-DENSE-MASK | **No** — quality-blocked | `glm52_reviewer_corpus_direct/gc-shadow-repair4b-p-rev1-20260719T132459Z` |
+| **GLM-5.2** (754B glm-moe-dsa) | UD-IQ2_M | CPU | ~26 (12K); 24→17 as KV grows; 64K 6.8 | **~2.56** (12K); 64K 1.20 | exact-answer FA 0.0%/FR 16.7%; C-CRAB P-REV-1 failed: **FA 41.7%, FR 25.0%, parse 0.0%**; JudgeBench-GPT exact-choice positive: **22/24 (91.7%)**; DSA-DENSE-MASK | **No** — patch-review/SWE still quality-blocked | `glm52_reviewer_corpus_direct/gc-shadow-repair4b-p-rev1-20260719T132459Z`, `glm52_external_ground_truth_direct/glm52-external-judgebench-gpt-n24-p-rev1-choice-rescore-20260719` |
 | GLM-5.2 native-MTP | UD-IQ2_M | CPU | — | — (scaffold only) | builds + bounded draft-mtp smoke | No — no throughput yet, quality-gated | tree-draft B6/K23.1 |
 | **MiniCPM-o-4_5** vision (+F16 proj) | Q4_K_M | MI210 | 732–884 | 111–127 | 4/4 OCR/chart (`--reasoning off`) | **Yes** candidate — source-wired + controlled smoke; persistent live traffic unconfirmed | `k35-vision-escalation-live-smoke-20260718T1225Z` |
 | MiniCPM-o-4_5 | Q4_K_M | CPU | — | 12.0–14.1 | 4/4 (reasoning off) | (CPU fallback) | `k35-minicpm-o45-reasoning-off` |
@@ -100,7 +100,7 @@ checkbox line, so there's always one glance-able read.
 - **Ternary Q2_g64** — ngram accelerates to 22.9 t/s but 6/8, empty `<think>` tags.
 - **Qwen3-VL-8B/30B and extra vision candidates** — paused behind concrete fixture/role-gap fixes.
 - **Hy3** — 5–11 t/s, 5/6; research-only.
-- **GLM-5.2** — additionally slow (2.56 t/s) AND patch-review quality-blocked by decision-grade C-CRAB P-REV-1 failure (exact-answer judging remains only scoped evidence). RM-2 fast alternatives do not clear the role: Qwen/Qwable standalone fail, and Qwen+Qwable scaffold is only a repair hypothesis.
+- **GLM-5.2** — additionally slow (2.56 t/s) and patch-review quality-blocked by decision-grade C-CRAB P-REV-1 failure. JudgeBench-GPT pairwise exact-choice is positive (`22/24`), but SWE/patch-review evidence remains open. RM-2 fast alternatives do not clear the role: Qwen/Qwable standalone fail, and Qwen+Qwable scaffold is only a repair hypothesis.
 
 **3. Broken / failed load:**
 - **Ternary Bonsai Q2_0** — loader rejects (498/498 tensors short; noncanonical PrismML packing, not corruption). Needs producer/transcode fix or a gated compat loader; Q2_g64 is the usable ternary path.
