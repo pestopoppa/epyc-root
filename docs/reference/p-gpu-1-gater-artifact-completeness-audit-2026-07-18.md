@@ -5,6 +5,13 @@ This memo audits whether the existing Gate-R / K35 artifacts can be retro-certif
 the proposed `P-GPU-1` field list in
 `docs/reference/p-gpu-1-ratification-package-2026-07-18.md`.
 
+**2026-07-19 machine-check addendum:** this prose verdict is now reproducible with the
+artifact-only helper in inference-research:
+`scripts/benchmark/pgpu1_artifact_completeness_audit.py`. The generated reports are
+`/mnt/raid0/llm/epyc-inference-research/docs/data/pgpu1_artifact_completeness_audit_20260719.json`
+and `.md`. They audit the Gate-R candidate, context-edge/supporting K35 rows, and AXA-2
+supporting rows without running inference, servers, benchmarks, builds, or ROCm commands.
+
 ## Verdict
 
 **Rerun required** for any decision-grade `P-GPU-1` / Gate-R throughput claim if the
@@ -118,3 +125,8 @@ fields stay mandatory, rerun Gate-R with the following additions:
 - Keep the existing strengths: same-window CPU re-anchor, MI210 no-spec and native-MTP arms,
   fresh-server reps, `n>=5`, exact commands, git/binary/model identity, draft counters,
   median/MAD, prompt/decode split, and cleanup proof.
+
+Machine-audit output on 2026-07-19 agrees: overall status `incomplete`, recommendation
+`rerun_required_for_incomplete_artifacts`. The primary Gate-R candidate specifically lacks
+`rocm_clocks_before_after`, `rocm_power_before_after`, `rocm_temp_before_after`,
+`warmup_discard_policy`, `cpu_interference_policy`, and `post_cleanup_vram_sample`.

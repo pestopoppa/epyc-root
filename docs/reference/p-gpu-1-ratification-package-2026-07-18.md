@@ -125,6 +125,17 @@ VRAM, PID/memory samples, guard state, commands, plan, report, and cleanup proof
 not contain a complete clocks/power/temp before+after record. If the ratified protocol keeps
 those fields mandatory, the Gate-R candidate should rerun rather than be auto-upgraded.
 
+2026-07-19 machine audit: inference-research now has an artifact-only checker at
+`scripts/benchmark/pgpu1_artifact_completeness_audit.py` and report outputs at
+`/mnt/raid0/llm/epyc-inference-research/docs/data/pgpu1_artifact_completeness_audit_20260719.json`
+and `.md`. The audit ran over the Gate-R candidate, context-edge/supporting K35 rows, and
+AXA-2 supporting rows without launching inference. Result: `rerun_required_for_incomplete_artifacts`.
+The primary Gate-R row is incomplete on `rocm_clocks_before_after`, `rocm_power_before_after`,
+`rocm_temp_before_after`, `warmup_discard_policy`, `cpu_interference_policy`, and
+`post_cleanup_vram_sample`. This confirms the prose audit: if these fields remain mandatory
+in the final amendment, current artifacts remain observation-grade and Gate-R reruns under
+the ratified protocol.
+
 Canonical-tree note: the current Gate-R candidate was run on experimental v7
 `d1e5a20ebebe567f0da6bc64ca7ea7ecd521fc24`. The operator amendment should state whether
 experimental-candidate measurements are acceptable for v7 promotion evidence, or whether
