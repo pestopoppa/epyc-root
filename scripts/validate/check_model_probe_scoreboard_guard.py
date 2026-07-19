@@ -47,6 +47,15 @@ PROBE_EVIDENCE_RE = re.compile(
     re.IGNORECASE,
 )
 SCOREBOARD_COMPANION_RE = re.compile(r"\bscoreboard\b", re.IGNORECASE)
+REOPEN_FIX_RE = re.compile(
+    r"\b("
+    r"quality|protocol|parser|loader|artifact|export|transcode|template|"
+    r"provenance|fixture|role[- ]gap|compatibility"
+    r").{0,80}\b("
+    r"fixed|contract|repair|implemented|landed|scoped|verified"
+    r")\b",
+    re.IGNORECASE,
+)
 STEERING_RE = re.compile(
     r"\b("
     r"do not|stop|stopped|reopen only|park|parked|pause|paused|blocked|quality[- ]blocked|"
@@ -130,6 +139,8 @@ def _line_is_probe_evidence(path: str, text: str) -> tuple[bool, str]:
     if not PROBE_EVIDENCE_RE.search(text):
         return (False, "")
     if path == SCOREBOARD_PATH:
+        if STOP_LIST_RE.search(text) and not REOPEN_FIX_RE.search(text):
+            return (True, "stop-listed scoreboard evidence lacks reopen fix basis")
         return (False, "")
 
     in_registry_or_model_docs = path == "orchestration/model_registry.yaml" or path.startswith(
@@ -155,12 +166,29 @@ def _line_is_probe_evidence(path: str, text: str) -> tuple[bool, str]:
     return (False, "")
 
 
-def scan_diff(repo_name: str, diff_text: str, *, scoreboard_is_changed: bool) -> list[Finding]:
-    if scoreboard_is_changed:
-        return []
+def _line_is_stop_list_reopen_violation(text: str) -> bool:
+    if not PROBE_EVIDENCE_RE.search(text) or not STOP_LIST_RE.search(text):
+        return False
+    if STEERING_RE.search(text):
+        return False
+    return not REOPEN_FIX_RE.search(text)
 
+
+def scan_diff(repo_name: str, diff_text: str, *, scoreboard_is_changed: bool) -> list[Finding]:
     findings: list[Finding] = []
     for path, line, text in _parse_unified_added_lines(diff_text):
+        if scoreboard_is_changed and path != SCOREBOARD_PATH:
+            if _line_is_stop_list_reopen_violation(text):
+                findings.append(
+                    Finding(
+                        repo_name,
+                        path,
+                        line,
+                        text.strip(),
+                        "stop-listed model evidence lacks reopen fix basis",
+                    )
+                )
+            continue
         is_probe, reason = _line_is_probe_evidence(path, text)
         if is_probe:
             findings.append(Finding(repo_name, path, line, text.strip(), reason))
@@ -180,7 +208,7 @@ def check_repos(root_repo: Path, research_repo: Path, mode: str) -> list[Finding
     findings.extend(
         scan_diff(
             "epyc-root",
-            _git_diff(root_repo, mode, ROOT_WATCHED_PATHS),
+            _git_diff(root_repo, mode, (*ROOT_WATCHED_PATHS, SCOREBOARD_PATH)),
             scoreboard_is_changed=sb_changed,
         )
     )

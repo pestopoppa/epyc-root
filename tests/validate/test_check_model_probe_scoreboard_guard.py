@@ -51,6 +51,58 @@ def test_scoreboard_companion_satisfies_guard() -> None:
     assert findings == []
 
 
+def test_stop_list_scoreboard_speed_row_requires_reopen_fix_basis() -> None:
+    findings = guard.scan_diff(
+        "epyc-root",
+        _diff(
+            "docs/reference/model-probe-scoreboard.md",
+            "| Bonsai-27B | Q1_0 | MI210 | 799 | 11.2 t/s | speed-only | No | summary.json |",
+        ),
+        scoreboard_is_changed=True,
+    )
+
+    assert len(findings) == 1
+    assert "reopen fix" in findings[0].reason
+
+
+def test_stop_list_scoreboard_reopened_fix_row_is_allowed() -> None:
+    findings = guard.scan_diff(
+        "epyc-root",
+        _diff(
+            "docs/reference/model-probe-scoreboard.md",
+            "| Ternary Bonsai | Q2_0 | MI210 | 400 | 20 t/s | loader contract fixed and verified | No | summary.json |",
+        ),
+        scoreboard_is_changed=True,
+    )
+
+    assert findings == []
+
+
+def test_scoreboard_companion_does_not_mask_stop_list_registry_speed_row() -> None:
+    findings = guard.scan_diff(
+        "epyc-inference-research",
+        _diff("orchestration/model_registry.yaml", "Bonsai Q1_0 tg512 40 t/s summary.json"),
+        scoreboard_is_changed=True,
+    )
+
+    assert len(findings) == 1
+    assert "reopen fix" in findings[0].reason
+
+
+def test_stop_list_scoreboard_fix_pending_is_not_reopen_basis() -> None:
+    findings = guard.scan_diff(
+        "epyc-root",
+        _diff(
+            "docs/reference/model-probe-scoreboard.md",
+            "| Nemotron-Nano | Q8_0 | MI210 | 100 | 30 t/s | loader fix pending | No | summary.json |",
+        ),
+        scoreboard_is_changed=True,
+    )
+
+    assert len(findings) == 1
+    assert "reopen fix" in findings[0].reason
+
+
 def test_stop_list_steering_text_is_allowed_without_scoreboard() -> None:
     findings = guard.scan_diff(
         "epyc-root",
