@@ -135,19 +135,25 @@ those fields mandatory, the Gate-R candidate should rerun rather than be auto-up
 and `.md`. The audit ran over the Gate-R candidate, context-edge/supporting K35 rows, and
 AXA-2 supporting rows without launching inference. Result: `rerun_required_for_incomplete_artifacts`.
 The primary Gate-R row is incomplete on `rocm_clocks_before_after`, `rocm_power_before_after`,
-`rocm_temp_before_after`, `warmup_discard_policy`, `cpu_interference_policy`, and
-`post_cleanup_vram_sample`. This confirms the prose audit: if these fields remain mandatory
-in the final amendment, current artifacts remain observation-grade and Gate-R reruns under
-the ratified protocol.
+`rocm_temp_before_after`, `production_named_kernel_identity`, `warmup_discard_policy`,
+`cpu_interference_policy`, and `post_cleanup_vram_sample`. This confirms the prose audit: if
+these fields remain mandatory in the final amendment, current artifacts remain observation-grade
+and Gate-R reruns under the ratified protocol. Experimental-v7 evidence is now classified as a
+near miss for the production-named-kernel field unless the human amendment explicitly allows
+experimental-candidate measurements.
 
 2026-07-19 runner-prep update: inference-research `scripts/benchmark/k35_stack_context_matrix_runner.py`
 now records the missing P-GPU fields by construction for future K35/Gate-R reruns:
 `collect_rocm_snapshot()` keeps the old PID/VRAM/utilization fields and adds clocks, power, and
-temperature snapshots; every executed cell adds a `memory_samples` `phase=after_cleanup` ROCm
-sample; and the plan/summary carry explicit `pgpu1_protocol_fields` for warm-up/discard policy
-and CPU-stack interference policy. For the next Gate-R candidate rerun, pass operator-specific
-policy text with `--warmup-discard-policy` and `--cpu-interference-policy` rather than leaving
-those fields implicit.
+temperature snapshots; every executed cell adds a `memory_samples` `phase=before_launch` ROCm
+sample before server start plus an `after_cleanup` ROCm sample after termination; and each executed
+cell writes `prompt.txt`, `prompt_sha256.txt`, `request.json`, `response.json`, and `result.json`.
+Guard state now records the git root/head/status for the binary being executed and whether its
+branch is production-named. Dry-run plans also emit `operator_run.sh` with the exact `--execute`
+invocation. For the next Gate-R candidate rerun, pass operator-specific policy text with
+`--warmup-discard-policy` and `--cpu-interference-policy` rather than leaving those fields implicit.
+Current no-inference dry-run artifact:
+`/mnt/raid0/llm/epyc-inference-research/docs/data/pgpu1_k35_runner_dryrun_20260719/`.
 
 Canonical-tree note: the current Gate-R candidate was run on experimental v7
 `d1e5a20ebebe567f0da6bc64ca7ea7ecd521fc24`. The operator amendment should state whether
