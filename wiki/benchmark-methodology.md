@@ -2,7 +2,7 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-07-18 (adds GLM reviewer-corpus representation stratification guard; earlier K35/K5/readiness content retained)
+**Last compiled**: 2026-07-19 (adds P-GPU-1 certification grammar, OP-2 provenance rules, and reviewer-corpus ground-truth/representation boundaries; earlier K35/K5/readiness content retained)
 **Sources**: 78+ documents
 
 ## Summary
@@ -28,6 +28,12 @@ accept-control signoff report, while missing notes, synthesized timestamps, or
 incomplete row coverage fail closed. [GLM capability gates](../handoffs/active/glm52-reviewer-capability-gates.md)
 
 Benchmark hardening in December 2025 addressed ceiling effects where top models scored 89-93%. Every tier was bumped up one difficulty level with post-doctoral T3 questions added, spreading the score distribution meaningfully across model classes. A mode-advantage suite (90 questions) was specifically designed to produce strong routing signal for MemRL by including tasks that structurally require specific execution modes (react, REPL, delegation, specialist escalation).
+
+## 2026-07-19 Update — claim-grade measurement and reviewer evaluation
+
+- A decision-gating number must carry metric direction, protocol id, repetitions, date, and attestation. P-GPU-1 additionally requires production-named kernel provenance and complete hardware/host/binary/model/cleanup fields; candidate-kernel rows are observations regardless of how plausible the value looks. Sources: [P-GPU-1 ratification package](../docs/reference/p-gpu-1-ratification-package-2026-07-18.md), [P-GPU-1 amendment draft](../docs/reference/p-gpu-1-amendment-draft-2026-07-19.md), [OP-2 canonical bench package](../docs/reference/op-2-canonical-bench-window-package-2026-07-18.md).
+- Reviewer evaluation exposed a separate methodology constraint: balanced samples must not mix exact-answer, substring/code-prefix, and patch-review representations under one scorer. The current path is homogeneous source suites with deterministic ground truth, explicit false-accept/false-reject accounting, and a cheap screen before any P-REV-1 confirmation. Sources: [GLM reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md), [reviewer model ablations](../handoffs/active/reviewer-model-ablations.md), [model-probe scoreboard](../docs/reference/model-probe-scoreboard.md).
+- Positive accept-control or judge-preference results do not substitute for hard-negative patch-review evidence. GLM's external JudgeBench/SWE results were positive, but C-CRAB P-REV-1 failed admission; the reviewer route therefore remains open research rather than a production-quality conclusion. Sources: [GLM reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md), [GLM accept-control signoff packet](../docs/reference/glm52-accept-control-signoff-packet-2026-07-18.md), [model-probe scoreboard](../docs/reference/model-probe-scoreboard.md).
 
 ## Key Findings
 

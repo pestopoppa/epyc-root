@@ -1,7 +1,7 @@
 # Inference Acceleration — Active Index
 
 **Purpose**: dispatch point for local inference optimization across CPU throughput, KV/context efficiency, speculative decoding, GPU-prep work, and model-serving experiments.
-**Updated**: 2026-07-19 (v7 promotion authority is `experimental-v7-refresh-20260716`; current checked local/fork tip is `6ad45fa3ff`, with live promotion state delegated to [v7-promotion.md](v7-promotion.md)) — v6+iqk remains LIVE/frozen; K5 quality, K35/A1 release matrix, OP-2 CPU-regression canonical bench, `P-GPU-1` ratification, upstream-ahead narrow audit, GLM reviewer-quality disposition, final v7 smoke PASS, and native GLM-MTP repair/measurement are closed. The native GLM-MTP zero-chunk attempt is superseded by the matched repair run (`512` completion tokens, `5.33 t/s` decode, alpha `0.933`), so open v7 promotion gating is now the reviewer/control-plane route after GLM P-REV-1 failure and the RM-2 slate, not B6 serving repair. Historical 2026-07-05/11/14/16 detail remains below for provenance only.
+**Updated**: 2026-07-19 (v7 promotion candidate is frozen at `experimental-v7-refresh-20260716` commit `6ad45fa3ff`, final-smoke binary `10098`; live promotion state is delegated to [v7-promotion.md](v7-promotion.md)) — v6+iqk remains LIVE/frozen; K5 quality, K35/A1 release matrix, OP-2 CPU-regression canonical bench, `P-GPU-1` ratification, upstream-ahead narrow audit, GLM reviewer-quality disposition, final v7 smoke PASS, and native GLM-MTP repair/measurement are closed. The reviewer/control-plane route is **DECOUPLED** by operator decision on 2026-07-19 and is no longer a v7 release blocker. v7 is **READY FOR OPERATOR PROMOTION** at `6ad45fa3ff`; any newer experimental tip is post-candidate research and must re-run the final coherence+garbage smoke before becoming promotable. Historical 2026-07-05/11/14/16 detail remains below for provenance only.
 **History**: pre-compaction detail lives in [../archived/inference-acceleration-index-history-through-2026-06-19.md](../archived/inference-acceleration-index-history-through-2026-06-19.md).
 
 **2026-07-18 v7 lever audit + two-lane queue**: full read-only audit of ~5 weeks of v7 experimental-kernel + CPU/GPU/spec-dec/GLM optimization work (5-agent sweep of handoffs, progress reports, negative results, live branch state). **Headline: the largest measured win is already built, correctness-verified, and banked — but UNPROMOTED.** See the new **[§ v7 lever audit + two-lane execution queue](#2026-07-18-v7-lever-audit--two-lane-execution-queue)** below — do-not-re-propose ledger, EV-ranked survivor levers, and the LANE A (operator-facing v7-promotion prep) / LANE B (agent-executable exploration) queue. Two new tracks opened: [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md), [gpu-drafter-control-redesign.md](gpu-drafter-control-redesign.md).
@@ -22,13 +22,13 @@
 
 Read-only audit of ~5 weeks of v7-experimental + CPU/GPU/spec-dec/GLM optimization work.
 **The single highest-EV lever is promoting the already-banked v7 kernel**
-(`experimental-v7-refresh-20260716`; current checked local/fork tip `6ad45fa3ff`, see
-[v7-promotion.md](v7-promotion.md) for the live promotion tip; iqk + all GPU opts + `Q2_0` present):
+(`experimental-v7-refresh-20260716`; promotion candidate frozen at `6ad45fa3ff`, see
+[v7-promotion.md](v7-promotion.md) for the live promotion state; iqk + all GPU opts + `Q2_0` present):
 HIP graphs **+25%** worker spec-dec, MMVQ→MMQ **+17–32%**, bf16-GDN-state **+16–21%** agg,
 **+37%** single-stream dense-Q8. K5 quality gate PASSED (v6≈v7, +0.0%); all P0 correctness
 blockers resolved (K22/K23/K32/K33). OP-2, `P-GPU-1`, and final cutover smoke are closed;
-remaining release gating is the reviewer/control-plane decision after GLM P-REV-1 failed and
-native GLM-MTP serving was repaired.
+the reviewer/control-plane route is decoupled from release and native GLM-MTP serving was
+repaired. v7 promotion now waits only on the operator cutover action, not more reviewer work.
 
 ### Do-not-re-propose ledger (measured negative/exhausted)
 - **CPU decode is bandwidth-exhausted** (0.17 IPC, 96.6% memory-stalled @96t). Dead:
@@ -57,8 +57,10 @@ native GLM-MTP serving was repaired.
    the large `(deleted)` bucket as LLVM OpenMP worker spin/pause (`0x7fea0`,
    `38.36%` self). PC-4a prepared and build-validated a default-off
    `LLAMA_QWEN35_PREFILL_TRACE=1` graph-node trace scaffold in
-   `llama.cpp-experimental`; PC-4b is the trace run plus real fusion/grouping
-   decision. →
+   `llama.cpp-experimental`; PC-4b traced qwen35moe `p8192/n1` and points to
+   recurrent `linear_attn` as the high graph-node island (`92/99` node deltas
+   vs full-attn `75`). PC-4c must subtrace that recurrent path before a safe
+   implementation target is chosen. →
    [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md).
 6. **stream-K `nsm→k·nsm`+compact-LDS** — +0–10%, IQ2/capacity; pmc-CSV read first. → mi210 roadmap.
 7. **K28 GDN long-prefill recurrence kernel (GPU)** — `gated_delta_net.cu:191`. → mi210 roadmap.
@@ -85,16 +87,18 @@ native GLM-MTP serving was repaired.
   signed `/workspace/MEASUREMENT.md` on 2026-07-19. The ratified path is production-named
   kernels only, so existing experimental-v7 Gate-R/K35/AXA rows stay observation-grade and
   Gate-R certification reruns after promotion on `production-consolidated-v7`.
-- A4 **Branch-naming reconciliation** — authoritative promotion branch declared:
-  `experimental-v7-refresh-20260716`; current checked local/fork tip is `6ad45fa3ff` on
-  `fork/experimental-v7-refresh-20260716`. The earlier `d1e5a20eb` checkpoint remains the
-  branch-reconcile baseline; old `experimental-v7-candidate` mentions are historical
-  checkpoints only. The narrow upstream-ahead pre-promotion fixes are now included in
-  `6ad45fa3ff` and validated against the focused HIP build/test gate. ✅ 2026-07-19
+- A4 **Branch-naming reconciliation** — authoritative promotion candidate frozen:
+  `experimental-v7-refresh-20260716` commit `6ad45fa3ff` (final-smoke binary `10098`).
+  The earlier `d1e5a20eb` checkpoint remains the branch-reconcile baseline; old
+  `experimental-v7-candidate` mentions are historical checkpoints only. The narrow
+  upstream-ahead pre-promotion fixes are included in `6ad45fa3ff` and validated against the
+  focused HIP build/test gate. If the experimental branch advances past `6ad45fa3ff`, that
+  newer tip is post-candidate research and must re-run the final coherence+garbage smoke
+  before it is eligible for promotion. ✅ 2026-07-19
 
 **LANE B — agent-executable:**
 - *Zero-inference now:* current B2/B3/B5/B6/B7 scoping batch closed; do not reopen without a new handoff trigger.
-- *Needs a bench window (fold into A2 or its successor):* B1 barrier-fusion `tg128` A/B only if a staged immutable on/off pair exists. PC-0 prefill-compute premise profiling and PC-3 target selection closed positive; PC-4a trace scaffold is build-validated, and PC-4b needs a traced qwen35/qwen35moe prefill run before a real default-off fusion/grouping implementation is selected. B4 DSA-D3 profile-first ran 2026-07-19 and closed D3.1 as no-go: Lightning Indexer was only `1.08%` of cycle samples, so do not start the AVX-512BW indexer kernel from current evidence.
+- *Needs a bench window (fold into A2 or its successor):* B1 barrier-fusion `tg128` A/B only if a staged immutable on/off pair exists. PC-0 prefill-compute premise profiling and PC-3 target selection closed positive; PC-4a/PC-4b show qwen35moe recurrent `linear_attn` is the graph-node-heavy path, but PC-4c needs a sublayer trace before a real default-off implementation is selected. B4 DSA-D3 profile-first ran 2026-07-19 and closed D3.1 as no-go: Lightning Indexer was only `1.08%` of cycle samples, so do not start the AVX-512BW indexer kernel from current evidence.
 
 ## Active Landscape
 
@@ -312,7 +316,7 @@ After completing an acceleration item:
 - [x] **[v7-audit LANE A]** A1 K35 finalize: release artifact includes vision throughput/quality/memory rows, MiniCPM-o/frontdoor mixed-service evidence, K35.13d source/config flip, and K35.13f controlled live smoke. ✅ 2026-07-18
 - [x] **[v7-audit LANE A]** A3 `P-GPU-1` MEASUREMENT ratification package drafted and ratified: `docs/reference/p-gpu-1-ratification-package-2026-07-18.md`; `/workspace/MEASUREMENT.md` signed 2026-07-19 with production-named-only certification path. ✅ 2026-07-19
 - [x] **[v7-audit LANE A]** A3a `P-GPU-1` retro-cert field audit helper/report: machine audit confirms existing Gate-R/K35/AXA artifacts are not retro-certification-complete and also fail the signed production-named-kernel rule. Gate-R reruns under ratified protocol on `production-consolidated-v7`. ✅ 2026-07-19
-- [x] **[v7-audit LANE A]** A4 v7 branch-naming reconciliation: authoritative promotion branch is `experimental-v7-refresh-20260716`; current checked local/fork tip is `6ad45fa3ff` on `fork/experimental-v7-refresh-20260716`; the earlier `d1e5a20eb` checkpoint is the branch-reconcile baseline, old `experimental-v7-candidate` references are historical only, and the narrow upstream-ahead pre-promotion fixes are now applied/validated. ✅ 2026-07-19
+- [x] **[v7-audit LANE A]** A4 v7 branch-naming reconciliation: authoritative promotion candidate is frozen at `experimental-v7-refresh-20260716` commit `6ad45fa3ff` / binary `10098`; the earlier `d1e5a20eb` checkpoint is the branch-reconcile baseline, old `experimental-v7-candidate` references are historical only, and the narrow upstream-ahead pre-promotion fixes are included in the frozen candidate. Any newer experimental tip is post-candidate research until it reruns the final coherence+garbage smoke. ✅ 2026-07-19
 - [x] **[v7-audit LANE B]** B2 stream-K `nsm→k·nsm` pmc-CSV zero-build read: recovered `/mnt/raid0/llm/tmp/mi210-build/campaign/` artifacts; read verdict = stream-K already live, compact-LDS patch negative, only a separate operator-gated `2*nsm=208` bench remains if pursued. ✅ 2026-07-18
 - [x] **[v7-audit LANE B]** B3 MoE-Spec CPU reopen assessment: decision = reopen for a current live-MTP MoE verifier B-sweep; no registry integration until that sweep exists. Evidence: 2026-07-03 live-α report shows frontdoor α=0.6582, worker α=0.8256, architect α=0.6854, failed MTP roles `[]`. ✅ 2026-07-18
 - [x] **[v7-audit LANE B]** B5 E3/E4 zero-inference decisions: E3 8x8 GEMM SIMD body is no-go/closed for now; E4 CPU17 reopens only to measurement, CPU18 remains gated pending padding-cost profile. ✅ 2026-07-18

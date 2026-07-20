@@ -163,10 +163,25 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
     on experimental branch `experimental-v7-refresh-20260716` at `12a292f0c`;
     `git diff --check` and ASCII checks passed. The llama.cpp patch remains
     uncommitted pending explicit operator review/commit approval for that repo.
-  - [ ] **PC-4b — trace run + fusion decision**: run the traced `p8192/n1`
-    qwen35/qwen35moe prefill cell under the usual quiet-window controls, archive
-    the trace, and choose the first real default-off implementation target only
-    from measured high-delta islands. Do not claim PC-4 complete until an
+  - [x] **PC-4b — trace run + target decision ✅ 2026-07-19**: traced the
+    qwen35moe `p8192/n1` CPU-only cell on post-candidate experimental build
+    `12a292f0c` / binary `10099`; the validated v7 promotion candidate remains
+    frozen at `6ad45fa3ff` / binary `10098`. Initial non-verbose artifact
+    completed but emitted no trace because `llama-bench` suppresses logs unless
+    `-v` is passed. The valid verbose artifact
+    `/mnt/raid0/llm/epyc-inference-research/data/cpu_prefill_compute/pc4b-qwen35-trace-verbose-20260719T235218Z/`
+    exited `0`, resolved experimental shared libraries, and cleaned up with no
+    AutoPilot/llama/KFD PIDs. Result: `pp8192 112.082350 t/s`, `tg1 4.311924
+    t/s`, max RSS `77043932 KiB`. Trace: `45` graph builds, final graph nodes
+    `4471`, recurrent `linear_attn` layer deltas `92/99`, full-attention deltas
+    `75`. Report:
+    `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc4b_trace_20260719.md`.
+    Decision: high-delta island is the recurrent `linear_attn` path, not full
+    attention, but layer-level trace is still too coarse for a safe fusion.
+  - [ ] **PC-4c — recurrent linear-attn sublayer trace**: add a deeper
+    default-off trace inside qwen35/qwen35moe recurrent `linear_attn` to break
+    down GDN, SSM, shared expert, routed expert, norm, and residual islands
+    before selecting an implementation. Do not claim PC-4 complete until an
     exact-output/profile-guarded implementation shows lower libomp spin/pause
     and lower wall time.
 

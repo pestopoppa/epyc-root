@@ -2,7 +2,7 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-07-17 (adds K34/K24 finding: large cross-run CPU-decode "regressions" were transient host state, not source; clean-run-preflight discipline. ⚠️ 2026-07-06 v7-candidate reconciliation + experimental-kernel-immutability + aggregate spec sheet, 2026-07-05 residency-ladder + bf16-GDN-state GO + Axis-A/B acceleration-roadmap + CoT-scaffold falsification/**GPQA reversal**/MTP-recheck + KV-quant-DEFER addenda + 2026-07-04 MI210-campaign subsections flagged for human review — see below; every 2026-07 GPU throughput number is an OBSERVATION, no P-GPU-1 protocol per MEASUREMENT.md)
+**Last compiled**: 2026-07-19 (adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
 **Sources**: 85+ documents
 
 ## Summary
@@ -14,6 +14,12 @@ The single most impactful optimization discovered in this project is NUMA-aware 
 Three runtime settings are non-negotiable: OMP_NUM_THREADS=1 (llama.cpp handles its own parallelism; nested OpenMP can halve throughput), numactl --interleave=all for single-instance models (distributes data across all 12 channels), and using only physical cores (hyperthreading hurts inference due to cache contention). The production stack uses taskset -c for NUMA pinning since numactl --membind is blocked in the container environment, relying on first-touch memory policy instead.
 
 The system's 1.13 TB RAM enables a HOT/WARM/COLD three-tier memory architecture. HOT models (~701 GB with multi-instance copies) are always resident with --mlock, eliminating 15-90 second cold-start penalties. WARM models load on demand via mmap from NVMe (~12 GB/s, so a 140 GB model loads in ~12 seconds). COLD models remain on disk. The 120 GB OS SSD is strictly protected -- a December 2025 incident where Claude Code filled /tmp/claude with 20 GB crashed the machine, prompting a three-layer defense (bind mount, real-time monitoring, emergency cleanup). Another incident in January 2026 demonstrated that pytest -n auto on a 192-thread machine spawns 192 workers, each loading ~3 GB of embedding models, exhausting the full 1.13 TB of RAM.
+
+## 2026-07-19 Update — certification boundary after v7 readiness
+
+- `P-GPU-1` is now ratified, but only production-named kernels can produce decision-grade MI210 throughput claims. Existing experimental-v7 Gate-R/K35/AXA rows remain observations and must be rerun after promotion with hardware, binary identity, host-interference, repetition, prompt/decode, draft-counter, and cleanup fields present. Sources: [P-GPU-1 ratification package](../docs/reference/p-gpu-1-ratification-package-2026-07-18.md), [P-GPU-1 amendment draft](../docs/reference/p-gpu-1-amendment-draft-2026-07-19.md), [v7 promotion](../handoffs/active/v7-promotion.md).
+- OP-2 closed the CPU-regression check under the canonical measurement boundary: canonical CPU rows require the codified recipe, clean preflight, exact binary/repo identity, and attestation; ungrammatical numbers remain observations even when repeatable. This preserves the distinction between validating the candidate and certifying a production claim. Sources: [OP-2 canonical bench package](../docs/reference/op-2-canonical-bench-window-package-2026-07-18.md), [P-GPU-1 ratification package](../docs/reference/p-gpu-1-ratification-package-2026-07-18.md), [model-probe scoreboard](../docs/reference/model-probe-scoreboard.md).
+- The practical implication is a two-stage GPU record: use experimental-v7 measurements to choose and debug levers, then rerun the promoted production-named kernel before using throughput to gate deployment, rollback, or promotion. Sources: [v7 promotion](../handoffs/active/v7-promotion.md), [P-GPU-1 ratification package](../docs/reference/p-gpu-1-ratification-package-2026-07-18.md), [Gemma v7 kernel techniques](../handoffs/active/gemma-challenge-kernel-techniques-v7.md).
 
 ## Key Findings
 

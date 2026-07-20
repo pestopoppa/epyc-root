@@ -2,7 +2,7 @@
 
 **Category**: `local_inference`
 **Confidence**: verified
-**Last compiled**: 2026-07-17
+**Last compiled**: 2026-07-19 (adds v7 promotion boundary, GLM reviewer residency decision, and post-promotion P-GPU-1 certification)
 **Sources**: 32 documents
 
 ## Summary
@@ -16,6 +16,12 @@ The custom fork implements features critical for the orchestrator: native MTP/NE
 GGUF model management follows a strict regime. Models reside on the RAID array at `/mnt/raid0/llm/models/` (~2.1 TB across 90 models) with HuggingFace source models at `/mnt/raid0/llm/hf/` (~850 GB). Q4_K_M is the standard quantization for most models -- empirically validated as optimal for both hybrid and dense architectures on this hardware. Q4_K_M matches f16 quality on the coder benchmark (74% vs 74%) while being 1.7x faster and using 3.5x less RAM. The only exception is the 7B worker (Qwen2.5-7B-Instruct), which runs at f16 because at 14 GB it fits easily in a NUMA quarter and benefits from near-flat verification curves.
 
 Speculative decoding is the primary acceleration method. The production stack uses external draft models (Qwen2.5-Coder-0.5B at 185 t/s, Qwen3-Coder-0.75B at 181 t/s) with configuration validated by a comprehensive 1,290-measurement sweep. Key parameters are model-specific: coder_escalation uses dm=32/ps=0.05 (tree beneficial), architect uses dm=24/ps=0 (tree harmful), and the 480B coding architect uses dm=24/ps=0 (tree harmful at -19%, overturning prior assumption). No speculation is used on hybrid SSM models (Qwen3.5-*) -- all draft configurations are net-negative due to recurrent state overhead.
+
+## 2026-07-19 Update — model residency follows role admission and measurement authority
+
+- GLM-5.2 physically fits the host as a CPU-only reviewer candidate, but its roughly 224--225 GiB residency and failed C-CRAB P-REV-1 admission make always-resident production reviewer service unjustified. Keep it for diagnostics, repair validation, and matched ablations until a new route or admission gate clears it. Sources: [GLM RAM residency decision input](../docs/reference/glm52-ram-residency-decision-input-2026-07-18.md), [GLM reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md), [model-probe scoreboard](../docs/reference/model-probe-scoreboard.md).
+- The repaired native GLM-MTP path is an available acceleration feature, not role admission: the CPU A/B reached `5.33` decode t/s and `alpha=0.933`, but the model remains out of the production patch-review role. Sources: [GLM reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md), [tree-draft forward-port plan](../handoffs/active/tree-draft-forward-port-plan.md), [GLM RAM residency decision input](../docs/reference/glm52-ram-residency-decision-input-2026-07-18.md).
+- Experimental-v7 residency and throughput observations should inform promotion, while post-promotion production-named runs carry the decision-grade GPU certification burden under P-GPU-1. Sources: [v7 promotion](../handoffs/active/v7-promotion.md), [P-GPU-1 ratification package](../docs/reference/p-gpu-1-ratification-package-2026-07-18.md), [model-probe scoreboard](../docs/reference/model-probe-scoreboard.md).
 
 ## Key Findings
 
