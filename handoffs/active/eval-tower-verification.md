@@ -1,9 +1,9 @@
 # Eval Tower Verification Framework
 
-**Status**: IN PROGRESS — EV-1/2/3/6 code complete. EV-3 was schema-corrected and validated on 2026-06-19; EV-4/5/7 need inference. AA-Omniscience hallucination suite integrated (2026-04-15).
+**Status**: IN PROGRESS — EV-1/2/3/6 code complete; EV-11 scorer flip landed. EV-4 and EV-11 are the current quiet-window runnable island in `inference-batch-loop.md`; EV-5/7/8 remain model-download/build-gated. AA-Omniscience hallucination suite integrated (2026-04-15).
 **Created**: 2026-04-14 (from deep-dive research, 5 papers + 2 subsystem threads)
-**Updated**: 2026-07-14
-**Priority**: MEDIUM (depends on AP-27 and Ouro P7) — *2026-07-14 audit note: [research-evaluation-index.md](research-evaluation-index.md) carries this handoff at HIGH; discrepancy flagged by the backlog ROI audit — both stated here, owner decides.*
+**Updated**: 2026-07-20
+**Priority**: HIGH — [research-evaluation-index.md](research-evaluation-index.md) and `inference-batch-loop.md` both route the next operator-gate-free inference batch to EV-4/EV-11.
 **Categories**: evaluation, verification, reinforcement_learning
 **Tracked in**: [research-evaluation-index.md](research-evaluation-index.md) P8
 

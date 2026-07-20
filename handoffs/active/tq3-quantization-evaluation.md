@@ -1,8 +1,8 @@
 # TQ3 / TurboQuant Quantization — Monitor List
 
-**Status**: monitoring (do NOT merge TQ3_1S — see rationale below)
+**Status**: monitoring / stop-list active for current sub-2-bit candidate reruns (do NOT merge TQ3_1S — see rationale below)
 **Created**: 2026-04-01 (via research intake)
-**Updated**: 2026-04-21 (monitoring confirmed — PR #21089 still open, ChunkKV unchanged)
+**Updated**: 2026-07-20 (July steering supersedes the old broad speed-probe loop; PR #21089 monitoring remains)
 **Categories**: quantization, hardware_optimization
 
 > **⚠ STEERING (2026-07-19) — deprioritize the sub-2-bit breadth probes.** Bonsai-8B/27B `Q1_0`,
