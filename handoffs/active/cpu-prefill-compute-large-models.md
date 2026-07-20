@@ -247,13 +247,23 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
     `4.840255 t/s` decode. The prototype code was reverted; do not re-propose
     this view/add expansion skip without a new mechanism. Report:
     `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc4g_compact_aggregation_20260720.md`.
-  - [ ] **PC-4h — router/weights profile-first follow-up**:
-    profile the routed `ffn_moe_router_weights` island before another scheduling
-    prototype. The target is top-k/routing/weights scheduling, not a
-    `mul_mat_id` math rewrite and not the rejected view/add expansion skip.
-    Acceptance: resolved profile evidence that router/weights are tied to
-    libomp spin/pause or wall time, followed by one default-off prototype with
-    exact-output smoke and repeated `p8192/n1` lower spin/wall-time evidence.
+  - [x] **PC-4h — router/weights profile-first follow-up no-go ✅ 2026-07-20**:
+    profiled the routed `ffn_moe_router_weights` island before another
+    scheduling prototype. Result: CPU-only `perf record` on qwen35moe
+    `p8192/n1` captured `1,563,013` samples; router/top-k/weights symbols were
+    too small to justify a prototype (`ggml_vec_soft_max_f32` `0.05%`,
+    `ggml_compute_forward_get_rows` `0.02%`, `ggml_compute_forward_soft_max`
+    `0.02%`, `ggml_compute_forward_argsort` `0.01%`). Dominant path remains
+    `GOMP_barrier` / `__kmpc_barrier` at `43.95%` children. Report:
+    `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc4h_router_weights_perf_20260720.md`.
+  - [ ] **PC-4i — graph/scheduler barrier attribution**:
+    attribute the OpenMP barrier-heavy regions to graph scheduling boundaries or
+    split structure before another prototype. Do not change router/top-k,
+    view/add expansion, or `mul_mat_id` math until a profile maps the
+    barrier/spin cost to a specific graph segment. Acceptance: a repeatable
+    attribution artifact plus one default-off scheduler-level prototype only if
+    the attribution identifies a target, followed by exact-output smoke and
+    repeated `p8192/n1` lower spin/wall-time evidence.
 
 ## PC-0 operator-window plan
 

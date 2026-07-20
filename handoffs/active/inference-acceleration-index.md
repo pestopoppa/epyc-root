@@ -1,7 +1,7 @@
 # Inference Acceleration — Active Index
 
 **Purpose**: dispatch point for local inference optimization across CPU throughput, KV/context efficiency, speculative decoding, GPU-prep work, and model-serving experiments.
-**Updated**: 2026-07-20 (v7 promotion candidate is frozen at `experimental-v7-refresh-20260716` commit `6ad45fa3ff`, final-smoke binary `10098`; live promotion state is delegated to [v7-promotion.md](v7-promotion.md)) — v6+iqk remains LIVE/frozen; K5 quality, K35/A1 release matrix, OP-2 CPU-regression canonical bench, `P-GPU-1` ratification, upstream-ahead narrow audit, GLM reviewer-quality disposition, final v7 smoke PASS, and native GLM-MTP repair/measurement are closed. The reviewer/control-plane route is **DECOUPLED** by operator decision on 2026-07-19 and is no longer a v7 release blocker. v7 is **READY FOR OPERATOR PROMOTION** at `6ad45fa3ff`; any newer experimental tip is post-candidate research and must re-run the final coherence+garbage smoke before becoming promotable. PC-4c qwen35moe subphase tracing, PC-4d target selection, PC-4e FFN boundary tracing, PC-4f routed-MoE helper diagnostics, and the PC-4g compact-aggregation prototype are closed; PC-4h router/weights profile-first is the next post-candidate prefill-compute step. Historical 2026-07-05/11/14/16 detail remains below for provenance only.
+**Updated**: 2026-07-20 (v7 promotion candidate is frozen at `experimental-v7-refresh-20260716` commit `6ad45fa3ff`, final-smoke binary `10098`; live promotion state is delegated to [v7-promotion.md](v7-promotion.md)) — v6+iqk remains LIVE/frozen; K5 quality, K35/A1 release matrix, OP-2 CPU-regression canonical bench, `P-GPU-1` ratification, upstream-ahead narrow audit, GLM reviewer-quality disposition, final v7 smoke PASS, and native GLM-MTP repair/measurement are closed. The reviewer/control-plane route is **DECOUPLED** by operator decision on 2026-07-19 and is no longer a v7 release blocker. v7 is **READY FOR OPERATOR PROMOTION** at `6ad45fa3ff`; any newer experimental tip is post-candidate research and must re-run the final coherence+garbage smoke before becoming promotable. PC-4c qwen35moe subphase tracing, PC-4d target selection, PC-4e FFN boundary tracing, PC-4f routed-MoE helper diagnostics, PC-4g compact aggregation, and PC-4h router/weights profile-first are closed; PC-4i graph/scheduler barrier attribution is the next post-candidate prefill-compute step. Historical 2026-07-05/11/14/16 detail remains below for provenance only.
 **History**: pre-compaction detail lives in [../archived/inference-acceleration-index-history-through-2026-06-19.md](../archived/inference-acceleration-index-history-through-2026-06-19.md).
 
 **2026-07-18 v7 lever audit + two-lane queue**: full read-only audit of ~5 weeks of v7 experimental-kernel + CPU/GPU/spec-dec/GLM optimization work (5-agent sweep of handoffs, progress reports, negative results, live branch state). **Headline: the largest measured win is already built, correctness-verified, and banked — but UNPROMOTED.** See the new **[§ v7 lever audit + two-lane execution queue](#2026-07-18-v7-lever-audit--two-lane-execution-queue)** below — do-not-re-propose ledger, EV-ranked survivor levers, and the LANE A (operator-facing v7-promotion prep) / LANE B (agent-executable exploration) queue. Two new tracks opened: [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md), [gpu-drafter-control-redesign.md](gpu-drafter-control-redesign.md).
@@ -72,9 +72,11 @@ repaired. v7 promotion now waits only on the operator cutover action, not more r
    expansion; gate-up/activation/down/weighting are only `6` combined. PC-4g
    then rejected the view/add expansion skip: exact output held on the cheap
    smoke, but the real `p8192/n1` cell regressed from `141.588462` to
-   `100.069829` prompt t/s. PC-4h should profile router/weights/top-k before
-   any new scheduling prototype, not retry compact aggregation or start a blind
-   `mul_mat_id` rewrite. →
+   `100.069829` prompt t/s. PC-4h then ruled out router/top-k/weights as a
+   prototype target: `argsort`/`get_rows`/`soft_max` were only hundredths of a
+   percent while `GOMP_barrier` / `__kmpc_barrier` remained `43.95%` children.
+   PC-4i should attribute that barrier cost to graph scheduling boundaries
+   before any new prototype. →
    [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md).
 6. **stream-K `nsm→k·nsm`+compact-LDS** — +0–10%, IQ2/capacity; pmc-CSV read first. → mi210 roadmap.
 7. **K28 GDN long-prefill recurrence kernel (GPU)** — `gated_delta_net.cu:191`. → mi210 roadmap.
@@ -112,7 +114,7 @@ repaired. v7 promotion now waits only on the operator cutover action, not more r
 
 **LANE B — agent-executable:**
 - *Zero-inference now:* current B2/B3/B5/B6/B7 scoping batch closed; do not reopen without a new handoff trigger.
-- *Needs a bench window (fold into A2 or its successor):* B1 barrier-fusion `tg128` A/B only if a staged immutable on/off pair exists. PC-0 prefill-compute premise profiling and PC-3 target selection closed positive; PC-4a/PC-4b show qwen35moe recurrent `linear_attn` is the graph-node-heavy path, PC-4c level-2 sublayer tracing is closed, PC-4d selects same-input MoE/FFN barrier-count reduction first, PC-4e localizes FFN pressure to routed `ffn_moe`, PC-4f localizes routed-MoE expansion to router/weights, expert views, and aggregation, and PC-4g rejects compact view/add aggregation scheduling. PC-4h is the next implementation gate: profile router/weights/top-k before one new default-off scheduling prototype. B4 DSA-D3 profile-first ran 2026-07-19 and closed D3.1 as no-go: Lightning Indexer was only `1.08%` of cycle samples, so do not start the AVX-512BW indexer kernel from current evidence.
+- *Needs a bench window (fold into A2 or its successor):* B1 barrier-fusion `tg128` A/B only if a staged immutable on/off pair exists. PC-0 prefill-compute premise profiling and PC-3 target selection closed positive; PC-4a/PC-4b show qwen35moe recurrent `linear_attn` is the graph-node-heavy path, PC-4c level-2 sublayer tracing is closed, PC-4d selects same-input MoE/FFN barrier-count reduction first, PC-4e localizes FFN pressure to routed `ffn_moe`, PC-4f localizes routed-MoE expansion to router/weights, expert views, and aggregation, PC-4g rejects compact view/add aggregation scheduling, and PC-4h rejects router/weights/top-k as too small. PC-4i is the next implementation gate: attribute OpenMP barrier cost to graph/scheduler boundaries before another default-off prototype. B4 DSA-D3 profile-first ran 2026-07-19 and closed D3.1 as no-go: Lightning Indexer was only `1.08%` of cycle samples, so do not start the AVX-512BW indexer kernel from current evidence.
 
 ## Active Landscape
 
@@ -241,9 +243,14 @@ After completing an acceleration item:
   output matched on the cheap smoke, but `p8192/n1` regressed from
   `141.588462` to `100.069829` prompt t/s and `5.242545` to `4.840255` decode
   t/s, so the prototype code was reverted. ✅ 2026-07-20
-- [ ] PC-4h qwen35moe router/weights profile-first follow-up: establish whether
-  router/weights/top-k scheduling is tied to libomp spin/pause or wall time
-  before another default-off prototype.
+- [x] PC-4h qwen35moe router/weights profile-first follow-up closed no-go:
+  `perf record` on `p8192/n1` captured `1,563,013` samples; router/top-k/
+  weights symbols were tiny (`soft_max`/`get_rows`/`argsort` around
+  `0.01-0.05%`), while `GOMP_barrier` / `__kmpc_barrier` remained `43.95%`
+  children. ✅ 2026-07-20
+- [ ] PC-4i qwen35moe graph/scheduler barrier attribution: map barrier-heavy
+  regions to graph scheduling boundaries or split structure before another
+  default-off prototype.
 - [x] External qwen35/frontdoor drafter alpha retest (`n5_spec_on` 376/376, decision-grade) ✅ 2026-07-16
 - [x] CoT-scaffold: Qwable-standalone GPQA control completed — standalone 77% beat scaffold 73%, so standalone routing is primary. ✅ 2026-07-05
 - [x] GPU reasoner evidence: Qwable quiet-host IQ4/Q8 strict-output + top-level `json_schema` harness gate closed; scaffold/selector stubs remain non-deployable ✅ 2026-07-17
