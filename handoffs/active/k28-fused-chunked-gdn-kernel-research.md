@@ -1,6 +1,6 @@
 # K28 — Fused Chunked GDN Recurrence Kernel: Research Handoff
 
-**Status**: RESEARCH/DESIGN — Phase 0 ceiling + pinned verbose trace + direct HIP-event timing gate run 2026-07-20; no fused recurrence kernel written. A default-off timing hook was added on the post-candidate experimental line only. Design + SOTA deep-dive gates a possible post-v7 default-off kernel effort.
+**Status**: RESEARCH/DESIGN — Phase 0 ceiling + pinned verbose trace + direct HIP-event timing gate run 2026-07-20; no fused recurrence kernel written. A default-off timing hook was added on the post-candidate experimental line only. An isolated worktree scaffold now adds a default-off future launch hook, but every path still falls back to the existing serial GDN kernel. Design + SOTA deep-dive gates a possible post-v7 default-off kernel effort.
 **Created**: 2026-07-20. **Scope**: GPU (MI210 / gfx90a / CDNA2, ROCm/HIP). **Owner task**: `mi210-big-model-and-acceleration-roadmap.md` K28 (`- [ ]`, `gated_delta_net.cu:191` TODO).
 **Related (distinct)**: [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md) (a different, monitoring-only *log-linear* GDN tracker — not this kernel effort).
 **For**: the parallel agent working the K28 / GDN long-prefill thread.
@@ -89,6 +89,28 @@ recurrence** project, but it should not delay frozen-v7 promotion. If reopened,
 the smallest defensible prototype is a constrained GDA-only/F32/K==1,
 `S_v=128`, `n_seqs=1`, long-prefill path; broader GDA+KDA+snapshots+MFMA support
 is multi-day to multi-week work.
+
+## 2026-07-20 scaffold checkpoint
+
+A subagent created isolated worktree `/mnt/raid0/llm/llama.cpp-k28-prototype-20260720`
+on branch `k28/prototype-20260720`, based on post-candidate `8bb53c520`.
+Changed files:
+
+- `ggml/src/ggml-cuda/gated_delta_net.cu`
+- `docs/development/k28-fused-chunked-gdn-prototype.md`
+
+The scaffold adds default-off `GGML_CUDA_GDN_CHUNKED_PROTOTYPE` parsing and a
+future launch hook constrained to GDA-only, F32, `K==1`, no fused-cache bridge,
+`S_v==128`, `n_seqs==1`, and `n_tokens>=64`. It deliberately returns `false`
+for the eligible path and falls back to the existing serial GDN kernel, so
+runtime behavior is unchanged and there is no speed evidence. Validation passed
+`git diff --check`, HIP CMake configure, and `cmake --build
+build-k28-prototype-hip --target test-backend-ops -j 8`. GitNexus impact could
+not be completed because indexing crashed after parser timeout retries.
+
+Verdict: this closes only the safe launch-site/readiness scaffold. K28.5 remains
+open for the actual fused chunked recurrence kernel or a profiler result that
+raises the full-model ceiling enough to justify it.
 
 ---
 
