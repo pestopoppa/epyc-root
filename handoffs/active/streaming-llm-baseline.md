@@ -1,6 +1,6 @@
 # StreamingLLM Baseline for KV Reduction Cluster
 
-**Status**: current-v7 source surface and CPU mechanical smoke recorded 2026-07-18; 4-axis inference sweep pending
+**Status**: current-v7 source surface, CPU mechanical smoke, and pre-v7 floor/admission sweep recorded; no KV cluster admitted from the floor. Full 4-axis research sweep remains open.
 **Created**: 2026-05-19 (post-KV-admission-cluster deep-dive)
 **Categories**: kv_cache, context_extension, hardware_optimization
 **Priority**: MEDIUM (gate for the entire May 2026 KV-reduction cluster — must land before PBKV/LU-KV/KVP/ForesightKV/SP-KV prioritization is meaningful)
@@ -20,6 +20,18 @@ Land a clean **StreamingLLM (attention sink + sliding window)** baseline in our 
 - A prior first run self-reported stale `build_commit=41ae83402` and is superseded by the clean rebuilt artifact.
 - CPU mechanical smoke: `/mnt/raid0/llm/epyc-inference-research/data/streamingllm_floor/streamingllm_qwen06_completion_cpu_floor_20260718T2200Z/summary.md` records baseline context-shift decode `319` tokens at `105.57 t/s` and StreamingLLM decode `319` tokens at `103.10 t/s`.
 - Both lanes passed mechanical smoke but failed prompt-quality checks. This is not an admission or performance claim. The failed `streamingllm_qwen06_cpu_floor_20260718T215438Z` artifact is excluded; its oversized stdout was removed by main.
+
+**2026-07-20 pre-v7 floor/admission sweep**: inference-research adds
+`scripts/benchmark/streamingllm_floor_sweep.py` plus focused tests and artifact
+`/mnt/raid0/llm/epyc-inference-research/data/streamingllm_floor/streamingllm_qwen17_q8_cpu_sweep_20260720Tlive/summary.json`.
+The sweep used Qwen3-1.7B Q8 CPU-only, `-c 384`, `-n 768`, context-shift
+baseline plus sink/window clusters `8:128`, `16:192`, and `32:256`. All four
+arms exited `0`, crossed the runtime context, and decoded about `31 t/s`, but
+all failed the prompt-quality/final-marker floor and no streaming arm improved
+speed materially over baseline (`0.990x` to `1.011x`). Admission decision:
+`admit_cluster=false`, reason `no_streaming_cluster_passed_quality_and_speed_floor`.
+This closes the pre-v7 "is there a simple KV admission cluster to admit now?"
+question negatively; it does not close the broader 4-axis KV research program.
 
 ## Why This is a Cluster-Wide Gate
 
@@ -98,6 +110,7 @@ Landing the floor first **changes the rank-order** of the cluster priorities, po
 - [x] StreamingLLM sink+window scaffold landed in epyc-llama (commit 632ce0f92, disabled by default) ✅
 - [x] Current-v7 source/build surface reconciled at `111bff89d` + `cf051d3e1` on `fork/experimental-v7-refresh-20260716` ✅ 2026-07-18
 - [x] CPU mechanical smoke completed for baseline and StreamingLLM lanes; both passed mechanics but failed prompt-quality, so no admission/performance claim ✅ 2026-07-18
+- [x] Pre-v7 floor/admission sweep completed on Qwen3-1.7B Q8 CPU-only: all arms exited cleanly, no sink/window cluster passed quality+speed floor, and no KV cluster is admitted before v7 promotion ✅ 2026-07-20
 - [ ] Run 4-axis inference sweep: 3 workloads (retrieval/reasoning/dialogue) x 3 budgets (25/50/75%) x 2 models
 - [ ] Evaluate success criteria (<=10% loss at 50% budget, <=25% at 25%) per-workload, track per-head attention entropy
 - [ ] Apply cluster-prioritization gate: demote LU-KV/KVP/ForesightKV or promote LU-KV based on floor

@@ -2,8 +2,34 @@
 
 **Category**: `quantization`
 **Confidence**: verified (CPU quant findings) · observation (2026-07 MI210 gfx90a roofline numbers — single-run, no P-GPU-1 per MEASUREMENT.md)
-**Last compiled**: 2026-07-17 (adds stale-fork Q2_0 freshness-audit gap, x86 Q8_0 repack/iqk-routing status, and the BF16-vs-F16 KV bench; ⚠️ 2026-07-06 MI210 gfx90a quant-roofline subsection flagged for human review — see Key Findings)
-**Sources**: 25 documents (0 dedicated deep-dives, 4 handoffs, 2 active handoffs, 19 intake entries + cross-references from 6 deep-dives)
+**Last compiled**: 2026-07-20 (adds the reasoning∝active / 2-bit-asymmetry literature cluster, the architect IQ2-vs-Q4 reasoning-certification gap, and the quant-asymmetric self-spec lane; earlier 2026-07-17 note: adds stale-fork Q2_0 freshness-audit gap, x86 Q8_0 repack/iqk-routing status, and the BF16-vs-F16 KV bench; ⚠️ 2026-07-06 MI210 gfx90a quant-roofline subsection flagged for human review — see Key Findings)
+**Sources**: 31 documents (0 dedicated deep-dives, 4 handoffs, 4 active handoffs, 24 intake entries + cross-references from 6 deep-dives)
+
+## Compiled Update — 2026-07-20
+
+A five-paper literature cluster (intake-859..863) plus the architect-selection and quant-asymmetric self-spec work reframe low-bit quantization along a **reasoning-vs-knowledge asymmetry**: 2-bit barely touches knowledge but can halve *reasoning* — unless the quant is *dynamic/per-layer*. This directly re-opens the architect-quant question and motivates a new, quality-preserving use of aggressive quant (self-spec drafting). Confidence: `external` for the literature, `verified` for the DR-0 self-spec throughput/quality measurements (observation-grade under `P-GPU-1`), `verified` for the sub-2-bit load/quality failures.
+
+### Key Findings (2026-07-20)
+
+- **Reasoning ∝ ACTIVE params; knowledge ∝ TOTAL params; and 2-bit is asymmetric.** On *our exact toolchain* (llama.cpp GGUF K-quants + Unsloth, DeepSeek-class MoE), MMLU holds ~99% (90.99→89.72) while **uniform Q2_K halves reasoning** (DeepSeek-V3 AIME 38.34→15.41) — but **dynamic per-layer quant holds**: DQ3_K_M ≈ Q4 (75.73 vs 75.79), and Q4 ≈ FP8 (intake-861 `2505.02390`, cred 4). Corroborated: harder tasks (AIME) degrade up to ~4× more than GSM8K, sub-4-bit + activation/KV quant are the danger zones, ≥14B tolerate quant better (intake-863 `2504.04823`, cred 3); low-bit PTQ disproportionately raises *procedural/execution* errors, restorable by a ~332-example recovery-SFT in minutes (intake-860 `2505.11574`, cred 3); reasoning peaks at an optimal active-compute point and is architectural, not rescued by test-time compute or GRPO (intake-859 `2508.18672`, cred 5). ([architect-model-selection-2026-07-20](../docs/reference/architect-model-selection-2026-07-20.md))
+- **The architect's IQ2≈Q4 parity is NOT reasoning-certified.** The GPU-resident 122B-A10B UD-IQ2_M candidate's Δ0.0pp parity (212-question paired eval, McNemar p=1.000) was **knowledge/instruction-following-dominated** — the pool was IF (84) + factual QA (72) with only **n≈4 per hard-reasoning suite (~11%)**, and the LLM-rubric gate was deferred. It is a valid *knowledge* parity only; the reasoning axis (exactly what 2-bit erodes) is powerless in that pool. The architect quant choice is therefore **UNDECIDED**, gated behind a full-power AIME'25 + GPQA-Diamond bench: default prior is 122B at **Q4** (safe), IQ2 only if the reasoning re-gate passes, dynamic-3-bit (DQ3) as the mid-precision fallback. ([architect-model-selection-bench](../handoffs/active/architect-model-selection-bench.md))
+- **Quant-asymmetric same-model self-spec — a NEW quality-preserving use of aggressive quant.** An aggressive-IQ drafter on the GPU + a high-quant verifier on the CPU is N5-free by construction (identical vocab / M-RoPE / GDN), and the CPU verify **launders quality** (accepted tokens are full-quant). Measured (DR-0e.2, observation-grade): 122B UD-Q4_K_M CPU verifier + 122B UD-IQ2_M MI210 drafter, **K2 = 11.41 t/s (1.61× over 7.08 baseline), alpha 0.90**, 28/28 quality, output byte-stable vs the CPU baseline on every task class. K2 is selected over K4 (K4 adds only +3.85% but alpha drops to 0.787). Default-off research lane; production-named `P-GPU-1` still required. ([quant-asymmetric-self-spec-serving-design](../docs/reference/quant-asymmetric-self-spec-serving-design-2026-07-20.md), [gpu-drafter-control-redesign](../handoffs/active/gpu-drafter-control-redesign.md))
+- **Sub-2-bit weight quant is deprioritized (STEERING 2026-07-19).** Bonsai Q1_0 and Ternary Q2_g64 are speed-only and quality-blocked (fail strict instruction/format gates); Ternary Bonsai Q2_0 is a **broken load** (498/498 tensors short, noncanonical PrismML packing ≠ upstream TQ1_0/TQ2_0). Q1_0 (type 41) is already in v6; PrismML Q2_0 landed upstream 2026-07-07, *after* the v6 cutover, so it is **not** in v6. Do not speed-rerun these without a named producer/transcode/loader/prompt fix. ([tq3-quantization-evaluation](../handoffs/active/tq3-quantization-evaluation.md), [model-probe-scoreboard](../docs/reference/model-probe-scoreboard.md))
+- **External FP4 / lossless-exponent formats stay non-deployable here.** NVFP4 (intake-756) is GPU-native (no GGUF/MI210 path); its FP8-parity table is an external *bar* for our CPU 4-bit path only. Lossless entropy-coded weight compression (ZipNN/DFloat11/ZipServ, intake-815..818) yields ~11–12 bpw — ~2.5× larger than production Q4_K_M ~4.5 bpw — so it is a storage/download optimization, not an inference win. ([tq3-quantization-evaluation](../handoffs/active/tq3-quantization-evaluation.md))
+
+### Open Questions (2026-07-20)
+
+- Does dynamic UD-IQ2 preserve the 122B-A10B's *reasoning* (not just knowledge)? Only the full-power AIME'25/GPQA bench answers it.
+- Is a two-level (per-block FP8 + per-tensor FP32) scale worth emulating in a CPU K-quant variant, or is the accuracy delta below the decision-gating threshold?
+- Does the K2 quant-asymmetric self-spec lane survive broader task-class admission and a production-named `P-GPU-1` certification?
+
+### Source References (2026-07-20)
+
+- [architect-model-selection-2026-07-20.md](../docs/reference/architect-model-selection-2026-07-20.md) — reasoning∝active + 2-bit-asymmetry evidence, the Δ0.0pp-parity gap analysis, the decision tree.
+- [architect-model-selection-bench.md](../handoffs/active/architect-model-selection-bench.md) — the reasoning re-gate the parity deferred (specced, gated post-v7-promotion).
+- [quant-asymmetric-self-spec-serving-design-2026-07-20.md](../docs/reference/quant-asymmetric-self-spec-serving-design-2026-07-20.md) — K2 self-spec design + DR-0e.2 evidence.
+- [tq3-quantization-evaluation.md](../handoffs/active/tq3-quantization-evaluation.md) — sub-2-bit stop-list, TurboQuant/ChunkKV monitor, lossless-exponent cluster.
+- intake-859 `2508.18672` (cred 5), intake-861 `2505.02390` (cred 4), intake-863 `2504.04823` (cred 3), intake-860 `2505.11574` (cred 3), intake-862 `2604.07035` (cred 2, harness-artifact caveat) — the reasoning-vs-quant literature.
 
 ## Summary
 

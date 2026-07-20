@@ -45723,3 +45723,266 @@
   handoffs_created: []
   novelty_justification: Cited (R3) in the reviewer control-plane spec as prior art for iterative self-improvement; a 2023 classic, widely known -> low novelty.
   relevance_justification: Adjacent to the reviewer's request-evidence / bounded-iteration loop (verbal feedback + memory) but the spec deliberately bounds loops and routes repair to authors, so partial relevance -> medium.
+
+- id: intake-859
+  arxiv_id: '2508.18672'
+  url: https://arxiv.org/abs/2508.18672
+  source_type: paper
+  title: 'Optimal Sparsity of Mixture-of-Experts Language Models for Reasoning Tasks'
+  authors:
+  - Nakamura
+  - Ishikawa
+  - Kawamura
+  - Okamoto
+  - Nohara
+  - Suzuki
+  - Yokota
+  categories:
+  - moe_optimization
+  - benchmark_methodology
+  key_claims:
+  - 'Active-FLOPs principle: at equal training loss, models with more active compute achieve higher reasoning accuracy.'
+  - 'TPP principle: memorization improves monotonically with total params (low tokens-per-param); reasoning peaks at an optimal TPP (~20) and declines either side.'
+  - Reasoning is non-monotonic in sparsity — sparser wins at low active compute, but denser overtakes once active-param counts grow.
+  - Raising total experts at fixed top-k degrades reasoning; raising top-k (active params) mitigates it.
+  - Neither test-time compute nor GRPO rescues an over-sparse reasoning deficit — it is architectural.
+  techniques:
+  - controlled MoE sparsity sweeps over active-params vs total-params at matched loss
+  reported_results:
+  - Reasoning accuracy peaks near TPP=20 then declines
+  - Memorization (TriviaQA, HellaSwag) monotonic in total params
+  - Reasoning (GSM8K/GSM-Plus/HumanEval/MBPP) non-monotonic in sparsity
+  novelty: high
+  relevance: high
+  credibility_score: 5
+  contradicting_evidence: null
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-07-20'
+  cross_references:
+    chapters: []
+    handoffs:
+    - architect-model-selection-bench.md
+    - mi210-big-model-and-acceleration-roadmap.md
+    - cpu-inference-optimization-index.md
+    experiments: []
+    intake_entries:
+    - intake-074
+  referenced_arxiv_ids:
+  - '2505.09388'
+  handoffs_updated: []
+  handoffs_created:
+  - architect-model-selection-bench.md
+  notes: >-
+    ICLR'26 oral. The strongest theoretical grounding for the architect-sizing decision: active width
+    (top-k / active FLOPs) is the reasoning lever, not total params. Implies 35B-A3B (3B active) is the
+    weakest reasoning bet and A10B is a defensible active width; a large-total/moderate-active MoE
+    (122B-A10B) fits the reasoning+knowledge architect profile. Caveat: measured on their own controlled
+    smaller MoEs and easier benches (GSM8K/HumanEval scale, not AIME/GPQA); TPP=20 optimum is
+    training-regime specific; "denser overtakes at high FLOPs" is budget-relative.
+- id: intake-860
+  arxiv_id: '2505.11574'
+  url: https://arxiv.org/abs/2505.11574
+  source_type: paper
+  title: 'Quantization Meets Reasoning: Exploring and Mitigating Degradation of Low-Bit LLMs in Mathematical Reasoning'
+  authors:
+  - Li
+  - Su
+  - Wang
+  - Yang
+  - Xie
+  - Liu
+  - Li
+  - Cao
+  - Xie
+  - Wong
+  - Yang
+  categories:
+  - quantization
+  key_claims:
+  - Low-bit PTQ markedly impairs math reasoning (up to -69.81% in the hardest settings).
+  - The degradation is asymmetric — it disproportionately raises method + execution (procedural) errors relative to conceptual mistakes.
+  - A small curated recovery-SFT (~332 examples, 3-5 min on one GPU) restores 4-bit toward the FP baseline.
+  techniques:
+  - error taxonomy {conceptual, method, execution} over quantized reasoning traces
+  - curated recovery-SFT for procedural-loss repair
+  reported_results:
+  - worst-case -69.81% on hardest setting
+  - '~332 curated examples restore 4-bit toward FP'
+  novelty: medium
+  relevance: high
+  credibility_score: 3
+  contradicting_evidence: null
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-07-20'
+  cross_references:
+    chapters: []
+    handoffs:
+    - architect-model-selection-bench.md
+    - mi210-big-model-and-acceleration-roadmap.md
+    experiments: []
+    intake_entries: []
+  referenced_arxiv_ids: []
+  handoffs_updated: []
+  handoffs_created:
+  - architect-model-selection-bench.md
+  notes: >-
+    The architect's core capability (multi-step planning/execution) is exactly the procedural axis quant
+    erodes most — so a knowledge/conceptual eval will UNDERSTATE the damage (reinforces the reasoning-gate
+    rationale). Surfaces a cheap insurance lever: a ~332-example curated recovery-SFT if precision is
+    pushed below Q4. Caveat: measured on small models (0.5-7B), the most quant-sensitive regime, 4-bit
+    weight-only PTQ; the -69.81% is a worst-case hardest-setting figure. Larger models degrade far less.
+- id: intake-861
+  arxiv_id: '2505.02390'
+  url: https://arxiv.org/abs/2505.02390
+  source_type: paper
+  title: 'A Quantitative Analysis of the Performance Drop in DeepSeek Models Under Quantization'
+  authors:
+  - Zhao
+  - Shen
+  - Shi
+  - Huang
+  - Chen
+  - Wang
+  - Xiao
+  - Zhang
+  - Wang
+  - Lian
+  categories:
+  - quantization
+  - local_inference
+  key_claims:
+  - 4-bit is approximately FP8 (little degradation, single-machine deployable); 2-bit is severe on reasoning while knowledge (MMLU) barely moves.
+  - Uniform 2-bit can halve reasoning (DeepSeek-V3 Q2_K_M AIME 38.34 -> 15.41) but dynamic per-layer quant holds.
+  - Proposes DQ3_K_M dynamic 3-bit; DQ3 approximately equals Q4 (V3 75.73 vs Q4 75.79; R1 83.03 avg).
+  - Knowledge is robust to 2-bit (MMLU 90.99 -> 89.72, ~98.6% of FP8); reasoning is the fragile axis.
+  techniques:
+  - llama.cpp GGUF K-quants (Q4_K_M / Q3_K_M / Q2_K) + Unsloth 2-bit variants, weights-only
+  - DQ3_K_M dynamic 3-bit quantization
+  reported_results:
+  - 'DeepSeek-V3 Q2_K_M AIME 38.34 -> 15.41 (reasoning halved at uniform 2-bit)'
+  - 'MMLU 90.99 (FP8) -> 89.72 (Q2), ~98.6% retained'
+  - 'DQ3_K_M ~= Q4_K_M (V3 75.73 vs 75.79)'
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  contradicting_evidence: null
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-07-20'
+  cross_references:
+    chapters: []
+    handoffs:
+    - architect-model-selection-bench.md
+    - mi210-big-model-and-acceleration-roadmap.md
+    experiments: []
+    intake_entries: []
+  referenced_arxiv_ids: []
+  handoffs_updated: []
+  handoffs_created:
+  - architect-model-selection-bench.md
+  notes: >-
+    HIGHEST-priority intake of the set — GGUF K-quants + Unsloth (our EXACT toolchain) on a DeepSeek-class
+    MoE (our architect class). It is the literature justification for AXA-1's design: IQ2 admissible only
+    as dynamic/imatrix (UD-IQ2_M) AND gated on a REASONING eval — because MMLU/knowledge stays ~99% and
+    will NOT reveal the reasoning collapse. Also validates a mid-precision fallback (dynamic 3-bit ~ Q4)
+    between IQ2 and Q4 (arm A5 in the bench). Caveat: do NOT conflate uniform Q2_K (V3 collapse) with
+    dynamic UD-IQ2; R1 Q2 numbers are noisy/small-sample; weights-only, no activation quant.
+- id: intake-862
+  arxiv_id: '2604.07035'
+  url: https://arxiv.org/abs/2604.07035
+  source_type: paper
+  title: 'Unified Deployment-Aware Evaluation of Open Reasoning Language Models'
+  authors:
+  - Md Motaleb Hossen Manik
+  - Ge Wang
+  categories:
+  - benchmark_methodology
+  - local_inference
+  key_claims:
+  - Model selection is a multi-objective deployment operating-point problem (accuracy x latency x memory), not a single-score leaderboard exercise.
+  - Sparse activation alone does not guarantee the best operating point; behavior is strongly task- and prompt-dependent.
+  - A mid-size MoE can Pareto-dominate a larger one (Gemma-4-E4B ~= Gemma-4-26B-A4B at 1/3 the memory).
+  techniques:
+  - deployment-aware multi-objective scoring (weighted accuracy x latency x memory) across 7 configs x 4 benches
+  reported_results:
+  - 'Gemma-4-E4B few-shot CoT 0.675 (14.9 GB); Gemma-4-26B-A4B 0.663 (48.1 GB) — our production worker'
+  - 'Qwen3-30B-A3B scored 0.226 (last) — a likely harness/prompt-template artifact, contradicts its own 80% AIME'
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  contradicting_evidence:
+  - 'Its Qwen3-30B-A3B=0.226 result contradicts Qwen3 report AIME ~80% for the same model — treat as config/eval artifact, not capability evidence.'
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-07-20'
+  cross_references:
+    chapters: []
+    handoffs:
+    - architect-model-selection-bench.md
+    - reviewer-model-ablations.md
+    experiments: []
+    intake_entries: []
+  referenced_arxiv_ids: []
+  handoffs_updated: []
+  handoffs_created:
+  - architect-model-selection-bench.md
+  notes: >-
+    User-supplied title "Gemma 4, Phi-4, Qwen3: Accuracy-Efficiency Tradeoffs..." is a PARAPHRASE; the
+    real title/authors are recorded here. Value is the METHOD (multi-objective operating-point eval,
+    mirrors the mi210 Pareto framing) and the direct measurement of our actual worker (Gemma-4-26B-A4B),
+    NOT its leaderboard — the benches are easy/saturated (GSM8K, MATH L1-3, ARC; no AIME/GPQA) and the
+    anomalous Qwen3-30B-A3B result is almost certainly a prompt-template artifact. Reinforces prompt-template
+    sensitivity (aligns with enable_thinking / chat-completions-path feedback). Recent low-citation preprint.
+- id: intake-863
+  arxiv_id: '2504.04823'
+  url: https://arxiv.org/abs/2504.04823
+  source_type: paper
+  title: 'Quantization Hurts Reasoning? An Empirical Study on Quantized Reasoning Models'
+  authors:
+  - Liu
+  - Sun
+  - Zhang
+  - Bai
+  - Yu
+  - Yu
+  - Yuan
+  - Hou
+  categories:
+  - quantization
+  key_claims:
+  - W8A8 or W4A16 is approximately lossless; lower bit-widths introduce significant reasoning-accuracy risk.
+  - Harder tasks (AIME) degrade up to ~4x more than easier ones (GSM8K).
+  - Danger zones are activation/KV quant (W4A4) and sub-4-bit; larger models (>=14B) tolerate quant better.
+  - Recommends AWQ over GPTQ for weight-only quant.
+  techniques:
+  - AWQ, GPTQ (weight); QuaRot, KVQuant (KV); SmoothQuant, FlatQuant, MXFP4 (weight-activation)
+  reported_results:
+  - 'DeepSeek-R1-Distill-Qwen-32B W4A4KV4: AIME-120 -4.17%, MATH-500 -1.40%, GSM8K 0.00%, GPQA-Diamond -0.91%'
+  - 'W8A8KV8 <1% everywhere; W4A16 near-lossless on 14-32B'
+  novelty: medium
+  relevance: high
+  credibility_score: 3
+  contradicting_evidence: null
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-07-20'
+  cross_references:
+    chapters: []
+    handoffs:
+    - architect-model-selection-bench.md
+    - mi210-big-model-and-acceleration-roadmap.md
+    experiments: []
+    intake_entries: []
+  referenced_arxiv_ids: []
+  handoffs_updated: []
+  handoffs_created:
+  - architect-model-selection-bench.md
+  notes: >-
+    Promoted from reference-only (previously appeared only as a referenced_arxiv_id inside the DF11
+    lossless-compression entry). Validates the Q4-122B architect: 4-bit weight-only (~ our Q4_K) is
+    near-lossless for reasoning on large (>=14B) models. Danger zones are activation/KV quant (W4A4) and
+    sub-4-bit; larger models tolerate quant better. Caveat: GPU-style W-A/KV quant (AWQ/GPTQ/SmoothQuant),
+    NOT GGUF K-quants; distilled-R1 1.5-32B, not 122B MoE; the "up to 4x" is a ratio inflated by a
+    near-zero GSM8K baseline drop.

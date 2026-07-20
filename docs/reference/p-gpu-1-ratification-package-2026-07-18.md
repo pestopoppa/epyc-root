@@ -1,26 +1,31 @@
 # P-GPU-1 Ratification Package - 2026-07-18
 
-**Status**: prepare-only package for a human MEASUREMENT amendment. This document does not
-ratify `P-GPU-1` and does not make any GPU number decision-grade.
+**Status**: historical ratification package and current certification map. `P-GPU-1` was
+ratified by human amendment in `/workspace/MEASUREMENT.md` on 2026-07-19. This package
+does not itself make any GPU number decision-grade; MEASUREMENT is the authority.
 
 ## Current Authority
 
-`/workspace/MEASUREMENT.md` still says:
+`/workspace/MEASUREMENT.md` now says:
 
-- `P-GPU-1` is deferred.
-- Required fields when ratified: `rocm-smi` clocks/power/temp before+after, warm-up policy,
-  per-GCD memory residency check, host-side interference policy, reps as `P-BENCH-1`, and
-  local-reproduction-only vendor-number rule.
+- `P-GPU-1` is ratified as `P-GPU-1 — MI210 GPU canonical throughput`.
+- Decision-grade `P-GPU-1` claims may only be produced on a production-named kernel
+  (`production-consolidated-vN`).
+- Experimental/candidate/fork kernel rows, including `llama.cpp-experimental` and
+  `experimental-v7-*`, are observation-only and must not gate promote/revert/deploy decisions.
+- Required fields include GPU/ROCm/binary/model identity, `rocm-smi` clocks/power/temp/util/VRAM/PID
+  before and after, CPU stack interference policy, warm-up/discard policy, reps as `P-BENCH-1`,
+  prompt/decode/draft stats, cleanup proof, and attestation.
 
 `agents/shared/MEASUREMENT_POLICY.md` keeps MEASUREMENT edits inside the human/PR-reviewed
-trust boundary. So the operator action is to amend MEASUREMENT; agents may only prepare this
-package and map existing artifacts.
+trust boundary. The 2026-07-19 operator amendment is complete; agents may use this
+package only to map required fields, certification boundaries, and existing artifact gaps.
 
 Prepared amendment text lives at
-`docs/reference/p-gpu-1-amendment-draft-2026-07-19.md`. That file is a draft,
-not authority; `/workspace/MEASUREMENT.md` remains the only ratification source.
+`docs/reference/p-gpu-1-amendment-draft-2026-07-19.md`. That file is historical draft
+material; `/workspace/MEASUREMENT.md` is the only ratification source.
 
-## Proposed Amendment Content
+## Ratified Protocol Summary
 
 Protocol name: `P-GPU-1 — MI210 GPU canonical throughput`.
 
@@ -51,9 +56,11 @@ Required evidence fields:
    - For service/residency claims, report active-overlap tax and cleanup proof.
    - Vendor/web numbers may appear only as background narrative, never in a decision row.
 6. **Decision boundary**
-   - Until MEASUREMENT is amended, all MI210 numbers remain observations.
-   - Retro-certification, if allowed by the operator amendment, must verify every required field
-     exists in the artifact before changing claim status.
+   - Experimental/candidate/fork kernel numbers remain observations.
+   - Retro-certification is allowed only for artifacts produced on production-named kernels with
+     every mandatory field present.
+   - Existing experimental-v7 Gate-R/K35/AXA rows cannot be upgraded to decision-grade
+     `P-GPU-1` claims because the ratified kernel-provenance rule excludes them.
 
 ## Candidate Artifacts To Review For Retro-Certification
 
@@ -90,54 +97,50 @@ Retro-cert audit checklist for any future operator-approved upgrade:
 
 | Required field | Gate-R candidate | AXA-2 prefill artifacts | Notes |
 |---|---|---|---|
-| ROCm clocks/power/temp before+after | Unknown until field audit | Unknown until field audit | Mandatory if retained in the final amendment. |
+| ROCm clocks/power/temp before+after | Unknown until field audit | Unknown until field audit | Mandatory under the ratified amendment. |
 | VRAM residency / KFD PID checks | Present in several artifacts | Present post-run; per-run detail varies | Must be checked artifact-by-artifact. |
 | Binary/model identity | Present | Present | Confirm exact v7 commit and `LD_LIBRARY_PATH`. |
 | Warm-up policy / rep count | Present for K35 candidates | Single-rep observation for AXA-2 | AXA-2 is cost-model support, not a promotion speed claim. |
 | Cleanup proof | Present | Present | Process and KFD cleanup are required for any retro-cert path. |
 | Cold-load policy | Not applicable | Missing for AXA-2 load-cost branch | Hot page-cache ready time cannot substitute for cold-load evidence. |
 
-## Operator Decision Needed
+## Decision Recorded
 
-1. Ratify `P-GPU-1` in `/workspace/MEASUREMENT.md` using the fields above, or edit the field
-   list before ratification.
-2. Decide the kernel-provenance rule. The current amendment draft is **production-named-only**:
-   experimental-v7 and other candidate/fork rows stay observation-grade and Gate-R certification
-   happens in a post-promotion run on `production-consolidated-v7`. If the operator instead wants
-   pre-promotion experimental-v7 Gate-R rows to gate promotion, the signed amendment must say so
-   explicitly.
-3. Decide whether existing complete artifacts may be retro-certified under the chosen provenance
-   rule, or whether every decision-grade GPU claim must be rerun after the amendment.
-4. If retro-certification is allowed, audit each artifact field-by-field before upgrading it
-   from observation to claim.
+1. `P-GPU-1` is ratified in `/workspace/MEASUREMENT.md` as of 2026-07-19.
+2. The ratified kernel-provenance rule is **production-named-only**: experimental-v7 and other
+   candidate/fork rows stay observation-grade.
+3. Retro-certification is allowed only when the artifact was produced on a production-named
+   kernel and every mandatory field is present.
+4. Existing Gate-R/K35/AXA experimental-v7 rows therefore remain observation-grade regardless
+   of field completeness. Gate-R certification happens via a post-promotion rerun on
+   `production-consolidated-v7`.
 
-Promotion-gate implication: under the current draft, `P-GPU-1` can be ratified before v7
-promotion, but it cannot turn the existing experimental-v7 Gate-R rows into decision-grade
-promotion evidence. It only prepares the post-promotion certification lane unless the human
-amendment explicitly broadens the allowed kernel class.
+Promotion-gate implication: `P-GPU-1` ratification is closed, but it does not turn existing
+experimental-v7 Gate-R rows into decision-grade promotion evidence. It prepares the
+post-promotion certification lane.
 
 ## Ratification Gate Checklist
 
 Use this as the execution checklist for the operator decision. Agents may prepare or audit
 the listed artifacts, but must not author, sign, or merge the MEASUREMENT amendment.
 
-- [ ] Human/operator amendment to `/workspace/MEASUREMENT.md` is signed or merged.
-- [ ] Amendment states whether experimental-v7-candidate measurements are valid promotion
-  evidence, or whether only a production-named kernel may produce `P-GPU-1` claims.
-- [ ] Amendment states whether retro-certification is allowed at all.
-- [ ] If retro-certification is allowed, every candidate artifact passes the mandatory-field
+- [x] Human/operator amendment to `/workspace/MEASUREMENT.md` is signed or merged. ✅ 2026-07-19
+- [x] Amendment states only a production-named kernel may produce `P-GPU-1` claims. ✅ 2026-07-19
+- [x] Amendment states retro-certification is allowed only for production-named-kernel artifacts
+  with every mandatory field present. ✅ 2026-07-19
+- [ ] If retro-certification is considered for a production-named-kernel artifact, it passes the mandatory-field
   audit: clocks/power/temp before+after, VRAM residency and KFD PID checks, binary/model
   identity, warm-up/discard policy, rep count, CPU-stack interference policy, result
   grammar, and cleanup proof.
-- [ ] If any mandatory field is absent, that artifact remains observation-grade and Gate-R
-  must rerun under the ratified protocol.
+- [x] Existing experimental-v7 Gate-R/K35/AXA artifacts remain observation-grade; Gate-R
+  must rerun under the ratified protocol on `production-consolidated-v7`. ✅ 2026-07-19
 - [ ] No vendor/web number appears in a decision row.
 - [ ] No production-v6 edit, build, or promotion is performed as part of ratification.
 
-Known retro-certification risk: the current Gate-R candidate artifact includes utilization,
+Known certification risk: the current Gate-R candidate artifact includes utilization,
 VRAM, PID/memory samples, guard state, commands, plan, report, and cleanup proof, but it may
-not contain a complete clocks/power/temp before+after record. If the ratified protocol keeps
-those fields mandatory, the Gate-R candidate should rerun rather than be auto-upgraded.
+not contain a complete clocks/power/temp before+after record and was produced on an experimental
+kernel. It must not be auto-upgraded.
 
 2026-07-19 machine audit: inference-research now has an artifact-only checker at
 `scripts/benchmark/pgpu1_artifact_completeness_audit.py` and report outputs at
@@ -147,10 +150,9 @@ AXA-2 supporting rows without launching inference. Result: `rerun_required_for_i
 The primary Gate-R row is incomplete on `rocm_clocks_before_after`, `rocm_power_before_after`,
 `rocm_temp_before_after`, `production_named_kernel_identity`, `warmup_discard_policy`,
 `cpu_interference_policy`, and `post_cleanup_vram_sample`. This confirms the prose audit: if
-these fields remain mandatory in the final amendment, current artifacts remain observation-grade
-and Gate-R reruns under the ratified protocol. Experimental-v7 evidence is now classified as a
-near miss for the production-named-kernel field unless the human amendment explicitly allows
-experimental-candidate measurements.
+these fields remain mandatory, current artifacts remain observation-grade and Gate-R reruns
+under the ratified protocol. Experimental-v7 evidence is now classified as a near miss for the
+production-named-kernel field.
 
 2026-07-19 runner-prep update: inference-research `scripts/benchmark/k35_stack_context_matrix_runner.py`
 now records the missing P-GPU fields by construction for future K35/Gate-R reruns:
@@ -169,6 +171,5 @@ Current no-inference dry-run artifact:
 `/mnt/raid0/llm/epyc-inference-research/docs/data/pgpu1_k35_runner_dryrun_20260719/`.
 
 Canonical-tree note: the current Gate-R candidate was run on experimental v7
-`d1e5a20ebebe567f0da6bc64ca7ea7ecd521fc24`. The operator amendment should state whether
-experimental-candidate measurements are acceptable for v7 promotion evidence, or whether
-`P-GPU-1` requires a production-named kernel after promotion.
+`d1e5a20ebebe567f0da6bc64ca7ea7ecd521fc24`. The signed amendment requires a
+production-named kernel, so this artifact remains observation-only.

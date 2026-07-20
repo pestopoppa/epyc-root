@@ -2,7 +2,7 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-07-17 (adds agent-authored command-fabrication + derived-view incoherence adversarial-audit lessons; control-plane spec adoption response; Hermes remains re-scoped under the parent open-harness decision)
+**Last compiled**: 2026-07-19 (adds reviewer control-plane dogfooding, representation-scoped reviewer gates, and v7/reviewer release decoupling; Hermes remains re-scoped under the parent open-harness decision)
 **Sources**: 64+ documents
 
 ## Summary
@@ -41,6 +41,12 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 - **The user-facing harness is now treated as a selectable open-source integration point, not a hardcoded frontend.** The new parent index makes the load-bearing split explicit: the orchestrator keeps the backend moat behind `/v1/chat/completions` + `x_*`, while the harness must cooperate with routing, context folding, and escalation. Closed harnesses are excluded because that cooperation cannot be enforced externally. Sources: [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md), [hermes-outer-shell.md](../handoffs/active/hermes-outer-shell.md), [hermes-agent-index.md](../handoffs/active/hermes-agent-index.md), [progress 2026-07-16](../progress/2026-07/2026-07-16.md).
 
 - **Hermes remains the candidate track, not the general decision.** Hermes/OpenGauss is still the most concrete open harness surface, but the new selection index means the Hermes outer shell should stay scoped to Hermes-specific validation and packaging. OpenCode and ACP-speaking harnesses remain open candidates until HS-1/HS-2 settle the cooperation-surface and ACP ROI questions. Sources: [hermes-outer-shell.md](../handoffs/active/hermes-outer-shell.md), [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md), [hermes-agent-index.md](../handoffs/active/hermes-agent-index.md).
+
+## 2026-07-19 Update — reviewer control plane is additive and release-decoupled
+
+- The reviewer control plane now has a concrete typed-decision integration path: reviewer false-accept/false-reject and decision-latency axes are optional additive evaluation dimensions, and the autopilot critic loop emits schema-valid `ReviewDecision` records without changing planner content or control flow. Sources: [autopilot control-plane integration](../handoffs/active/autopilot-control-plane-integration.md), [GLM reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md), [reviewer model ablations](../handoffs/active/reviewer-model-ablations.md).
+- The evaluation contract is representation-scoped. Exact-answer, patch-diff, code-prefix, and judge-preference tasks need separate corpora/scorers; a mixed "balanced" slice can create misleading calibration and must be rejected by the runner. Sources: [GLM reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md), [reviewer model ablations](../handoffs/active/reviewer-model-ablations.md), [model-probe scoreboard](../docs/reference/model-probe-scoreboard.md).
+- The current architecture separates production orchestration from reviewer experimentation. GLM and the fast RM-2 slate are not admitted as production patch reviewers, while v7 production promotion proceeds on independent inference gates; future reviewer admission requires a new repair hypothesis or screened candidate, not unchanged reruns. Sources: [v7 promotion](../handoffs/active/v7-promotion.md), [GLM reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md), [autopilot control-plane integration](../handoffs/active/autopilot-control-plane-integration.md).
 
 ## Key Findings
 

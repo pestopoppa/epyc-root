@@ -12,7 +12,7 @@ Elevate the orchestrator's dormant review machinery into a governed, measured **
 
 ## Thesis
 
-The machinery exists dormant (`ArchitectReviewService` + typed decisions behind OFF flags; IR schemas; trace-store scaffold; gate_runner/eval-tower/e-process stats; planner/read-only-critic split in the autopilot). The work is **activation + instrumentation**, sequenced measurement-before-sophistication: **M1 observable** (H1+H2) → **M2 measured** (H3 shadow + H4 instrument + H-LB budget) → **M3 compared** (H5 tournament; floor: beat a single augmented LLM) → **M4 governed** (H7 policy; enforce-mode only past the H-LB gate). Reviewer identity (operator-locked): **GLM-5.2 UD-IQ2_M cross-family target, Qwen3.5-122B-IQ2 GPU-resident interim**, two-turn design (heavyweight authors cached rubrics; cheap model grades).
+The machinery exists dormant (`ArchitectReviewService` + typed decisions behind OFF flags; IR schemas; trace-store scaffold; gate_runner/eval-tower/e-process stats; planner/read-only-critic split in the autopilot). The work is **activation + instrumentation**, sequenced measurement-before-sophistication: **M1 observable** (H1+H2) → **M2 measured** (H3 shadow + H4 instrument + H-LB budget) → **M3 compared** (H5 tournament; floor: beat a single augmented LLM) → **M4 governed** (H7 policy; enforce-mode only past the H-LB gate). Reviewer identity is now an explicit selection problem: **GLM-5.2 UD-IQ2_M failed decision-grade C-CRAB P-REV-1 and is diagnostic-only / not admitted as production patch reviewer on the current policy**; RM-2.fast/RM-2.next found no clean small-model, status-quo, or same-family replacement. Active path is RM-3 screening, Ref external judge-of-judge, or a named repair hypothesis, not unchanged GLM/Qwen/Qwable admission reruns. RM-3's code bridge is now live-wired to the P-REV prompt/schema path, and the first live routable-role batch ran on `frontdoor`/`coder_escalation`; both were weak (`frontdoor` FA `16.7%` / FR `50.0%`, `coder_escalation` FA `25.0%` / FR `75.0%`) and do not resolve the reviewer route. RM-3d metadata repair is closed: live forced-direct rows now say `forced_direct_chat` and preserve `planned_transport=placement_queue`, so future claims cannot confuse forced-direct observations with true placement-queue execution.
 
 ## Milestones
 
@@ -20,14 +20,14 @@ The machinery exists dormant (`ArchitectReviewService` + typed decisions behind 
 |---|---|---|---|
 | M1 observable | events.sqlite live; REVIEW_* categories; schemas validated; shadow emission ~100% coverage (TM-8) | H1, H2 | **CODE-COMPLETE 2026-07-17** (orchestrator `9958d819`+`30d3232b`): store live + durable resume + schemas/types + TM-3 always-on emission + TM-6/9 docs + RA-8 design. Only open: TM-8 coverage replay (**inference-gated**) |
 | M2 measured | ledger + corpus v1 + P-REV-1 drafted; baseline FA/FR; regression attributed + budgets defined | H3, H4, H-LB | **CODE-COMPLETE 2026-07-17** (`30d3232b`): full shadow decision plane (RD-1..11 done; RD-7 in final sweep), rubric engine, verifier adapter + gates.yaml, review_ledger + gold labels + calibration report + symmetric e-processes, knob manifest + LB-5. Open: RC-8 baseline + RD-12 replay + LB-1/LB-4 (**inference-gated**); RC-6a P-REV-1 PR + LB-6b threshold (**operator**, OP-5) |
-| M3 compared | tournament confirmation tier done; winner beats A0/A1 floor at acceptable cost (LB-7) | H5, H6, H8 | RM-1 pool-gen + H8 code (AP-1/4/5/6/7/8; screening driver emits placement-queue plans) DONE; **all runs inference-gated** on M2 baselines + bench windows; AP-2/AP-3 gated on other handoffs |
+| M3 compared | tournament confirmation tier done; winner beats A0/A1 floor at acceptable cost (LB-7) | H5, H6, H8 | RM-1 pool-gen + H8 code (AP-1/4/5/6/7/8; screening driver emits placement-queue plans) DONE; GLM A4 failed P-REV-1 and RM-2.fast/RM-2.next closed with no clean replacement. RM-3 row-id-bound dry-run queue, live forced-direct bridge, first routable-role batch, and metadata repair are closed; first live rows (`frontdoor`, `coder_escalation`, n=12 each) worked mechanically but were weak observation-grade results, so no confirmation-tier winner exists yet. True placement-queue execution is future stronger transport evidence, not a metadata blocker. |
 | M4 governed | thresholds/escalation policy live; enforce-mode past LB-6 gate | H7 | open |
 
 ## Prioritized Task List (aggregated; leaf checkboxes are authoritative)
 
 - [ ] **P1 — M1**: H1 TM-1..TM-9 (trace materialization + LangGraph SqliteSaver durable resume) ; H2 RA-1..RA-11 (schemas + sanitization + GBNF + validation gating)
 - [ ] **P2 — M2**: H3 RD-1..RD-12 (shadow decision plane, two-turn rubric reviewer, verifier precedence, 50-q replay baseline) ; H4 RC-1..RC-9 (ledger, corpus v1, symmetric FA/FR e-processes, P-REV-1 draft) ; H-LB LB-1..LB-8
-- [ ] **P3 — parallel infra**: H6 GC-1..GC-5 (GLM reviewer gates; infra via glm51-reap) ; kernel follow-ups (sparse-final-attention classification, v7 CPU/perf reproducibility — in `gemma-challenge-kernel-techniques-v7.md`; grammar crash and glm-dsa cache/runtime smoke are closed) ; GPU bets 1→4 (in `mi210-big-model-and-acceleration-roadmap.md` + `gpu-drafter-mi200-investigation.md`)
+- [ ] **P3 — parallel infra**: H6 GC-1..GC-5 (GLM reviewer gates consumed; GLM diagnostic-only until a named repair hypothesis) ; kernel follow-ups (sparse-final-attention classification, v7 CPU/perf reproducibility — in `gemma-challenge-kernel-techniques-v7.md`; grammar crash and glm-dsa cache/runtime smoke are closed) ; GPU bets 1→4 (in `mi210-big-model-and-acceleration-roadmap.md` + `gpu-drafter-mi200-investigation.md`)
 - [ ] **P4 — M3**: H8 AP-1..AP-8 (knob registration, Pareto axes, screening driver, dogfooding) ; H5 RM-1..RM-9 (registry-driven tournament + Ref judge-of-judge)
 - [ ] **P5 — M4**: H7 HG-1..HG-8 (policy from curves; escalate-default; optional gated rebuttal)
 
@@ -69,13 +69,13 @@ Public benchmark **adapters** (suites acquired as corpus-mining inputs only — 
 - Dormant machinery: `src/proactive_delegation/{review_service,delegator,types,complexity}.py` · `src/roles.py:262-273` · `src/trace/store.py` · `src/gate_runner.py` · `src/autopilot_core/sequential_verdict.py` · `scripts/autopilot/{eval_tower,rubric_scoring,safety_gate,planner_providers}.py`
 - Schemas: `orchestration/*.schema.json` + `validate_ir.py`
 - Flags: `src/features.py` + `orchestration/runtime_flags.json` (`plan_review`, `architect_delegation`, new `review_decision_shadow/_enforce`)
-- Instruments: `/workspace/MEASUREMENT.md` (P-REV-1 pending operator PR) · `orchestration/instrument_eras.yaml` · trace DB `data/trace/events.sqlite`
+- Instruments: `/workspace/MEASUREMENT.md` (P-REV-1 approved/signed 2026-07-19) · `orchestration/instrument_eras.yaml` · trace DB `data/trace/events.sqlite`
 - Datasets: `/mnt/raid0/llm/datasets/` (+ `BENCHMARKS.md` manifest)
 
 ## Reporting Instructions
 
 - Work lands in the leaf handoffs; flip leaf checkboxes with `✅ YYYY-MM-DD`; this index's P-rows flip only when ALL constituent leaf tasks are done. Update the Milestones table on M-transitions.
-- Operator decisions route to master-index §A00 (OP bundle): P-REV-1 approval; LB-6 threshold; GLM RAM-residency posture (GC-4); teleport quant policy; mmvq family gating; ReviewDecision enum/score-vs-confidence semantics; escalation-audit cadence (HG-4); scope-cut confirmation.
+- Operator decisions route to master-index §A00 (OP bundle): LB-6 threshold; GLM RAM-residency posture (GC-4); teleport quant policy; mmvq family gating; ReviewDecision enum/score-vs-confidence semantics; escalation-audit cadence (HG-4); scope-cut confirmation. P-REV-1 approval is closed; future decision-grade claims still need protocol and attestation evidence.
 - Any posture change (layer boundary, reviewer identity, enforce-mode) is an operator decision — flag, never decide autonomously.
 
 ## Evidence Base (intake)

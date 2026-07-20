@@ -8,13 +8,13 @@
 
 These compete for the single card → **Gate-R is a scheduling decision**, not a foregone conclusion. Both are untested-to-partly-tested; this handoff maps them.
 
-**2026-07-18 Gate-R candidate observation:** executable K35 frontdoor rows now provide a quiet-host, same-window CPU/GPU/MTP re-anchor at `data/k35_stack_context_matrix/frontdoor_pgpu1_candidate_20260718Tquiet/`. Experimental v7 `d1e5a20eb`, Qwen3.6-35B Q8, nominal 8K / 1024-token shape, `n=5` fresh-server reps: CPU no-spec median `17.10 t/s`; MI210 no-spec `95.39 t/s` (`5.58x`); MI210 native MTP `119.69 t/s` (`7.00x`, `3835/3835` accepted drafts). This is strong residency evidence, but remains observation-grade because `P-GPU-1` is still deferred in `MEASUREMENT.md`.
+**2026-07-18 Gate-R candidate observation:** executable K35 frontdoor rows now provide a quiet-host, same-window CPU/GPU/MTP re-anchor at `data/k35_stack_context_matrix/frontdoor_pgpu1_candidate_20260718Tquiet/`. Experimental v7 `d1e5a20eb`, Qwen3.6-35B Q8, nominal 8K / 1024-token shape, `n=5` fresh-server reps: CPU no-spec median `17.10 t/s`; MI210 no-spec `95.39 t/s` (`5.58x`); MI210 native MTP `119.69 t/s` (`7.00x`, `3835/3835` accepted drafts). This is strong residency evidence, but remains observation-grade because ratified `P-GPU-1` requires a production-named kernel; decision-grade Gate-R reruns after promotion on `production-consolidated-v7`.
 
 **2026-07-18 Qwen3.6-27B dense context observation:** research commit `179442b`
 adds `data/gpu-mi210/qwen36-27b-dense-v7-context-20260718T2225Z`, with prompt
 throughput `854.17/807.61/666.62 t/s` and decode `29.64 t/s` on current v7.
 This is useful same-family MI210 context evidence, but it is not decision-grade
-while `P-GPU-1` is deferred.
+because it was measured on experimental v7 before the production-named `P-GPU-1` lane exists.
 
 **2026-07-19 Qwen3.5-122B UD-IQ2_M admission checkpoint:** inference-research
 commit `b696241` adds the `qwen35_122b_iq2m` research registry row plus bounded
@@ -30,7 +30,7 @@ observation-grade pending review.
 ## Axis A — big-model residency (the quant-ladder → offload → GLM)
 **Corrected architect baseline (2026-07-05):** production architect (122B UD-Q4_K_M on CPU, v6 native MTP) is **~18–21 t/s single-stream** (best 20.75; live median ~16; 2-slot ~8.5/slot) — NOT the stale lean-registry 4.3. So GPU wins are measured against ~20, not 4.3.
 
-- **Quantize to fit (IQ2).** 122B UD-IQ2_M **MEASURED VIABLE fully GPU-resident** — 43.7 t/s single / 148.7 aggregate @B=32 (bf16-state on), IQ2 PPL 5.02 healthy, ~17 GB headroom. Win ≈ **2.2× single / ~8–9× aggregate** at a **Q4→IQ2 quality trade** (**eval-parity PASSED judge-free 2026-07-05: IQ2 ≈ Q4 Δ0.0pp**, p=1.000; the "93%" was the 35B not the 122B — Q4-122B = 85.67%; LLM-rubric gate deferred). Also probe **gemma4-IQ4** (mid-precision, already-fitting model). **Caps at ~122B — GLM-5.2 (~238 GB even at UD-IQ2) never fits GPU-only.**
+- **Quantize to fit (IQ2).** 122B UD-IQ2_M **MEASURED VIABLE fully GPU-resident** — 43.7 t/s single / 148.7 aggregate @B=32 (bf16-state on), IQ2 PPL 5.02 healthy, ~17 GB headroom. Win ≈ **2.2× single / ~8–9× aggregate** at a **Q4→IQ2 quality trade** (**eval-parity PASSED judge-free 2026-07-05: IQ2 ≈ Q4 Δ0.0pp**, p=1.000; the "93%" was the 35B not the 122B — Q4-122B = 85.67%; LLM-rubric gate deferred → **the reasoning re-gate is now specced as [architect-model-selection-bench.md](architect-model-selection-bench.md)**: that Δ0.0pp parity pool was knowledge/instruction-following-heavy with only n≈4 per hard-reasoning suite — statistically powerless on reasoning, which is the exact axis 2-bit erodes while knowledge holds ~99% [intake-861 / 2505.02390]). Also probe **gemma4-IQ4** (mid-precision, already-fitting model). **Caps at ~122B — GLM-5.2 (~238 GB even at UD-IQ2) never fits GPU-only.**
   - **80B-ingest IQ2 = MEASURED VIABLE (2026-07-05) — the residency pattern GENERALIZES.** Qwen3-Next-80B-A3B i1-IQ2_M (26.1 GB; qwen3next GDN-hybrid — a *different* GDN family from the qwen3.5 122B/35B): coherence **GO** under CDNA2 IQ2 MMQ with `-fa on` (feasibility gate PASSED, PPL 5.77 healthy), **~55.8 t/s single (~2.7–3.9× CPU-Q4) / 265 t/s aggregate@B32 bf16 (~13–18× CPU-Q4)**, VRAM 27.7 GB @`-c 32768` → **~38 GB free, 32K KV fits trivially** (GDN linear-attn keeps KV ~O(1) → the long-context ingest role is comfortably GPU-served, *better* than a dense model would be). **bf16-GDN-state generalizes to qwen3next: +13.3% aggregate, coherent** (first confirmation outside qwen3.5). **Two-for-two on the residency ladder — 122B + 80B both VIABLE.** *Aggregate ceiling (sweep 2026-07-05):* scales 263→405 t/s (B32→B128, asymptote ~498), **compute-bound** at the knee (B≈96-128), VRAM non-binding (30 GiB @B128) — deployable optimum B=96 (381 t/s, latency-balanced) / B=128 (405 t/s, max).
 - **Offload to fit (expert-hybrid)** — the **quality-preserving** alternative + the **only GLM-5.2 path**: hot/active experts GPU-resident at **Q8/bf16 (no weight-quality loss)**, cold experts streamed from the 1.1 TB RAM (`large-moe-expert-parallelism.md`, `--n-cpu-moe`/`-ot exps=CPU`, [findings-02](fable5-window2-findings-02-heterogeneous-gpu.md)). Currently backlogged to protect the CPU session; un-park as the GLM path — **but operator: "a concern for another day."**
   - **Decisive cheap gating experiment: an expert-routing-skew profile** (per-layer expert hit-frequency over a real workload). **Zipfian** (hot-set cacheable) → offload flies; **near-uniform** → PCIe-streaming-latency-bound. Cheap, tells us viability before building.
@@ -73,18 +73,18 @@ P0 was fixed on experimental v7 `96986f5e9`); its gate is a strict-IF/rubric GBN
 - [x] Gating experiment 2c-Stage-2: frontdoor + drafter co-resident speed economics failed (`native MTP 0.948x`, external drafter `0.355x` vs GPU no-spec) ✅ 2026-07-17
 - [x] Axis-B DR-1 break-even model: external Stage-1/2 are not acceptance-blocked; they are overhead/control-cost blocked, so future lanes must satisfy `E(α,K) > F(K)+H(K)` before build. Evidence: [docs/reference/gpu-drafter-break-even-model-2026-07-18.md](../../docs/reference/gpu-drafter-break-even-model-2026-07-18.md). ✅ 2026-07-18
 - [x] Gate-R candidate frontdoor residency row: same-window CPU re-anchor, MI210 no-spec, and MI210 native-MTP 8K/1024-token `n=5` reps completed; native MTP wins this longer repetitive shape (`119.69 t/s`, `7.00x` CPU, `100%` accepted drafts) ✅ 2026-07-18
-- [x] Qwen3.6-27B dense current-v7 MI210 context row recorded: `data/gpu-mi210/qwen36-27b-dense-v7-context-20260718T2225Z`, prompt `854.17/807.61/666.62 t/s`, decode `29.64 t/s`; observation-only pending `P-GPU-1` ✅ 2026-07-18
+- [x] Qwen3.6-27B dense current-v7 MI210 context row recorded: `data/gpu-mi210/qwen36-27b-dense-v7-context-20260718T2225Z`, prompt `854.17/807.61/666.62 t/s`, decode `29.64 t/s`; observation-only because ratified `P-GPU-1` requires a production-named kernel ✅ 2026-07-18
 - [x] Draft `P-GPU-1` ratification package for operator review: `docs/reference/p-gpu-1-ratification-package-2026-07-18.md` maps required MEASUREMENT fields to existing Gate-R/K35 MI210 artifacts and keeps the amendment itself human-only ✅ 2026-07-18
-- [ ] Ratify/update `P-GPU-1` now that MI210 exists, then rerun or retro-certify the Gate-R candidate artifact as decision-grade if the protocol allows it
+- [x] Ratify/update `P-GPU-1` now that MI210 exists ✅ 2026-07-19: `/workspace/MEASUREMENT.md` is signed with a production-named-kernel-only claim path. Existing experimental-v7 Gate-R/K35/AXA rows remain observation-grade; Gate-R decision-grade certification reruns after promotion on `production-consolidated-v7`.
 - [x] Probe gemma4-IQ4 mid-precision residency: current experimental-v7 `d1e5a20eb` MI210 observation at `/mnt/raid0/llm/epyc-inference-research/data/gemma4_iq4_residency/gemma4_26b_ud_iq4xs_mi210_v7_20260718T162446Z/summary.json` loaded `gemma-4-26B-A4B-it-UD-IQ4_XS.gguf` fully resident, measured `pp2048 2449.01 t/s`, `tg256 81.91 t/s`, and a server/chat 8K coherence probe with `6971` prompt tokens at `2257.80 t/s` plus `201` completion tokens at `76.02 t/s`; cleanup proof shows no KFD PIDs. Follow-up optimized lane at `/mnt/raid0/llm/epyc-inference-research/data/gemma4_iq4_residency/mtp_ab_local_20260718T170739Z/summary.json` measured no-spec q8-KV `pp2048 2450.51 t/s`, `tg512 81.41 t/s`, and external assistant-head MTP `117.01 t/s` with `360/362` drafts accepted. Strict JSON content was not clean, so quality retention/template cleanup remains open before any role claim. ✅ 2026-07-18
-- [ ] Axis B / DR-0: measure quant-asymmetric self-spec acceptance and implied `F(K)+H(K)`; alpha alone is insufficient after DR-1
+- [x] Axis B / DR-0: measure quant-asymmetric self-spec acceptance and implied `F(K)+H(K)`; alpha alone is insufficient after DR-1 ✅ 2026-07-20
   - [x] DR-0a: procure/build/register an aggressive same-model IQ drafter artifact (IQ1/IQ2_XXS or REAP+IQ1)
     that fits 64 GB HBM for the selected CPU high-quant verifier. Inference-research commit
     `b696241` registers and smoke/context-tests the local
     `/mnt/raid0/llm/models/Qwen3.5-122B-A10B-MTP-GGUF/UD-IQ2_M/Qwen3.5-122B-A10B-UD-IQ2_M.gguf`
-    candidate (37.60 GiB, same MTP family, fits MI210). The missing-artifact blocker is closed;
-    the next action is the first DR-0 acceptance/economics run. Download IQ1_M only if IQ2_M fails
-    the strict aggressive-quant drafter gate. ✅ 2026-07-19
+    candidate (37.60 GiB, same MTP family, fits MI210). The missing-artifact blocker fed
+    the DR-0 acceptance/economics runs; do not download IQ1_M solely for DR-0 because IQ2_M
+    passed the strict aggressive-quant drafter gate. ✅ 2026-07-19
   - [x] DR-0b task-class acceptance/economics first pass: source-head v7 MI210 probes on the
     122B UD-IQ2_M candidate show native MTP is still negative on short architect prompts
     (`0.61x`), but positive on long repetitive output (`37.87 -> 60.65 t/s`, `511/511`
@@ -94,9 +94,157 @@ P0 was fixed on experimental v7 `96986f5e9`); its gate is a strict-IF/rubric GBN
     `235/356` accepted). This closes the "is there any task-class signal?" subquestion,
     but not full DR-0: the broadened 8-prompt sanity slice passed only `5/8`, so broader
     quality and explicit `F+H` remain open. ✅ 2026-07-19
+  - [x] DR-0d live quant-asymmetric CPU-verifier + MI210-drafter run completed ✅ 2026-07-20:
+    corrected reasoning-off artifact
+    `/mnt/raid0/llm/epyc-inference-research/data/dr0_quant_asym_self_spec/dr0_quant_asym_self_spec_20260720T043000Z_reasoning_off/`
+    measured CPU Q4 baseline `6.890 t/s`; combined K1 `9.959 t/s` (`1.445x`,
+    alpha `0.963`), K2 `11.335 t/s` (`1.645x`, alpha `0.928`), and K4 `12.298 t/s`
+    (`1.785x`, alpha `0.837`). Cleanup/postflight passed. This does not close DR-0:
+    quality sanity failed (`1/28`), target output changed on the code-review control, and
+    `F(K)+H(K)` is still not separately observable from current llama-server telemetry.
+  - [x] DR-0e telemetry/quality rerun: add `F(K)`/`H(K)` observability and repeat under
+    stricter prompt/schema controls; require target-output stability on all tasks before
+    any Axis-B serving integration. ✅ 2026-07-20
+    - [x] DR-0e.1 telemetry live ✅ 2026-07-20: experimental-v7 server timing fields now
+      expose `spec_verify_steps`, `spec_draft_ms`, `spec_verify_ms`, `spec_process_ms`,
+      `spec_sample_accept_ms`, and `spec_accept_by_depth`; reduced K2 live artifact
+      `/mnt/raid0/llm/epyc-inference-research/data/dr0_quant_asym_self_spec/dr0_quant_asym_self_spec_20260720T050531Z_telemetry_k2/`
+      recorded combined `10.694 t/s`, alpha `0.891`, `F(K)=39.889s`, and `H(K)=0.740s`
+      with clean postflight.
+    - [x] DR-0e.2 quality/stability rerun ✅ 2026-07-20: inference-research final artifact
+      `/mnt/raid0/llm/epyc-inference-research/data/dr0_quant_asym_self_spec/dr0_quant_asym_self_spec_20260720T060423Z_dr0e2_full_k_sweep_final/`
+      passed quality (`28/28`), output stability for combined K1/K2/K4 versus CPU baseline
+      on all four task classes, and cleanup. CPU Q4 baseline was `7.083 t/s`; combined
+      K1/K2/K4 reached `9.888` / `11.407` / `11.847 t/s` (`1.396x` / `1.610x` /
+      `1.672x`) with alpha `0.945` / `0.900` / `0.787`. F/H observed rows:
+      K1 `39.040s/0.545s`, K2 `33.667s/0.657s`, K4 `32.280s/0.781s`.
+  - [x] DR-2 serving/routing design ✅ 2026-07-20: reference design
+    [docs/reference/quant-asymmetric-self-spec-serving-design-2026-07-20.md](../../docs/reference/quant-asymmetric-self-spec-serving-design-2026-07-20.md)
+    selects K2 as the first default-off lane (`1.610x`, alpha `0.900`) and rejects K4
+    as first rollout because its incremental speed over K2 is only `3.85%` while alpha
+    falls to `0.787`. The lane remains research-only until wider K2 admission and
+    production-named `P-GPU-1` certification pass.
+  - [ ] DR-3 broader K2 admission runner/package: implement the dry-run-first K2
+    admission package before any serving/routing integration or NumericSwarm surface.
+    - [x] DR-3a dry-run package scaffold ✅ 2026-07-20: inference-research
+      `scripts/benchmark/dr3_quant_asym_k2_admission_prep.py` generated
+      `data/dr3_quant_asym_k2_admission/dr3_quant_asym_k2_admission_20260720T063100Z_codex_dryrun/`
+      with fixed-K2 launch templates for 8K/16K, six broader task classes, and
+      the required lease/cleanup, frontdoor opportunity-cost, and production-named
+      `P-GPU-1` gates; focused tests passed (`5 passed`).
+    - [x] DR-3b live admission executor + 8K smoke ✅ 2026-07-20:
+      inference-research `scripts/benchmark/dr3_quant_asym_k2_admission_runner.py`
+      runs fresh CPU-baseline and combined-K2 servers, scores row quality/equivalence,
+      and preserves no-serving/no-NumericSwarm gates. Corrected 8K artifact
+      `data/dr3_quant_asym_k2_admission/dr3_quant_asym_k2_admission_20260720T071200Z_live_smoke_ctx8192_r1_v2/`
+      passed quality (`12/12`), output stability, context coverage, and cleanup;
+      CPU baseline `7.185 t/s`, combined K2 `11.104 t/s` (`1.545x`, alpha `0.876`),
+      observation-grade only.
+    - [x] DR-3c default 8K+16K admission package ✅ 2026-07-20:
+      artifact
+      `/mnt/raid0/llm/epyc-inference-research/data/dr3_quant_asym_k2_admission/dr3_quant_asym_k2_admission_20260720T071816Z_dr3c_default_ctx8192_16384_r1/`
+      passed quality (`24/24`), output stability, context coverage for `8192`
+      and `16384`, and cleanup. Combined K2 vs CPU baseline: 8K `10.535` vs
+      `6.980 t/s` (`1.509x`, alpha `0.876`); 16K `10.429` vs `6.979 t/s`
+      (`1.494x`, alpha `0.879`). Observation-grade only.
+    - [x] DR-3d frontdoor opportunity-cost gate ✅ 2026-07-20:
+      inference-research artifact
+      `data/dr3_frontdoor_opportunity_cost/dr3_frontdoor_opportunity_cost_20260720T074853Z_live_ctx8192_r1/`
+      passed as experimental observation: frontdoor `93.690 -> 94.157 t/s`
+      after eviction/reload (`1.005x`), DR-3 K2 active `11.701 t/s`,
+      alpha `1.000`, cleanup pass, serving/NumericSwarm disabled.
+    - [ ] DR-3e production-named `P-GPU-1` certification: after the operator
+      promotes v7, rerun the required GPU claims under `production-consolidated-v7`
+      before any serving route or NumericSwarm surface.
 - [ ] GLM-5.2 endgame: expert-offload / REAP+IQ2 path (operator-gated)
 - [x] **stream-K `nsm→k·nsm` + compact-LDS residual — zero-build artifact read CLOSED ✅ 2026-07-18** (v7-audit LANE B B2): artifact recovery found the original MI210 campaign under `/mnt/raid0/llm/tmp/mi210-build/campaign/`, including `mmq-compact-lds-NEGATIVE.patch`, `kernels/fused-prefetch-NEGATIVE.patch`, and rocprof CSVs under `moe-agg/prof/`. Read verdict: stream-K is already the live Q8 MMQ path (`mul_mat_q` plus `mul_mat_q_stream_k_fixup`); B32 Q8 MMQ dispatches use grid `53248 = 512 * 104 CUs`, i.e. one persistent workgroup per CU, with fixup grid `53248`, LDS `512`. The compact-LDS patch is explicitly negative and should not be revived. The only surviving idea is a distinct `2*nsm=208` persistent-grid experiment, but that is a new operator-gated build/bench with a narrow `+0–10%` IQ2/capacity ceiling, not a zero-inference closeout or saved-patch apply.
-- [ ] **K28 — GDN long-prefill recurrence kernel** (GPU; `ggml/src/ggml-cuda/gated_delta_net.cu:191` TODO): a new long-prefill CUDA/HIP recurrence kernel avoiding one serial token-axis scan per (head, seq, column-shard); must preserve GDA/KDA + transposed-state + K>1 snapshot semantics. Prefill t/s for hybrid (Qwen3.6/GDN) models; GPU sibling of [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md). Larger perf project, no bounded safe patch this session.
+- [ ] **K28 — GDN long-prefill recurrence kernel** (GPU; `ggml/src/ggml-cuda/gated_delta_net.cu:191` TODO): a default-off fused chunked recurrence kernel avoiding one serial token-axis scan per (head, seq, column-shard); must preserve GDA/KDA + transposed-state + K>1 snapshot semantics. Prefill t/s for hybrid (Qwen3.6/GDN) models; GPU sibling of [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) and owned by [k28-fused-chunked-gdn-kernel-research.md](k28-fused-chunked-gdn-kernel-research.md). Larger perf project; first profile/ceiling pass is complete and says this should not block frozen-v7 promotion.
+  - [x] **K28.1 — ROCm backend support/correctness/perf profile ✅ 2026-07-20**:
+    experimental `build-hip` at `93d945885-dirty` built `test-backend-ops`;
+    valid invocations pinned `LD_LIBRARY_PATH=$PWD/build-hip/bin` after a raw
+    run bound the wrong DSO and failed on `ggml_lightning_indexer`. Support/perf
+    artifacts: `data/k28_gdn_perf/k28-gdn-hip-currentdirty-20260720T085909Z/`,
+    `data/k28_gdn_perf/k28-gdn-hip-console-currentdirty-20260720T085954Z/`,
+    and `data/k28_gdn_perf/k28-gdn-hip-oddlen-currentdirty-20260720T090046Z/`.
+    Console perf on MI210 reported realistic `head_count=32,head_size=128`
+    long-token cases at `64: 152.99 us / 51.17 GB/s`, `256: 625.04 us /
+    31.36 GB/s`, `512: 1254.23 us / 28.15 GB/s`, and `1024: 2485.09 us /
+    26.87 GB/s`; odd-length 65-token GDN cases passed `3/3` correctness.
+    Interpretation: the long-prefill path is not HBM-bandwidth-saturated, so
+    chunking/fusion remains a plausible kernel target. Evidence is
+    observation-grade because the source tree has unrelated default-off
+    instrumentation changes; implementation remains open.
+  - [x] **K28.2 — existing graph-chunked route A/B CLOSED NEGATIVE ✅ 2026-07-20**:
+    a temporary default-off `LLAMA_DISABLE_FUSED_GDN_CH=1` probe was added,
+    built, measured, and reverted in `llama.cpp-experimental` to compare the
+    current fused GDN-CH path against the already-existing graph chunking path
+    in `delta-net-base.cpp`. Qwen3.6-35B-A3B Q8 MI210 prompt-only cells all
+    favored fused GDN-CH: p64 `706.40 -> 660.41 t/s` (`-6.51%`), p256
+    `1643.63 -> 1539.88 t/s` (`-6.31%`), p2048 `2100.06 -> 1959.58 t/s`
+    (`-6.69%`), p8192 `1995.07 -> 1869.34 t/s` (`-6.30%`). Evidence:
+    `data/k28_gdn_perf/k28-fused-vs-graph-qwen36-35b-summary-20260720.json`.
+    Verdict: do not implement a fused-vs-graph policy/threshold switch for
+    K28; the remaining speed path is a real fused-kernel recurrence improvement
+    (or a separate BF16-state/model-level quality gate), not routing to graph
+    chunking.
+  - [x] **K28.3 — BF16 recurrent GDN state speed A/B CLOSED NEUTRAL ✅ 2026-07-20**:
+    existing `GGML_CUDA_GDN_STATE_BF16=1` was measured on Qwen3.6-35B-A3B Q8
+    MI210 against default F32 recurrent state. Prompt-only rows slightly
+    regressed: p2048 `2098.07 -> 2081.52 t/s` (`-0.79%`) and p8192
+    `1994.42 -> 1979.34 t/s` (`-0.76%`). Decode-only p0/n128 moved
+    `99.52 -> 100.25 t/s` (`+0.74%`). Evidence:
+    `data/k28_gdn_perf/k28-gdn-state-bf16-qwen36-35b-20260720T092251Z/summary.json`.
+    Verdict: do not treat BF16 GDN state as a throughput lever for K28; keep it
+    as memory/residency research only, requiring a separate quality/coherence
+    gate before any serving use.
+  - [x] **K28.4 — Phase 0 op-rerun + ceiling model CLOSED ✅ 2026-07-20**:
+    reran the MI210 `GATED_DELTA_NET` backend perf microbench per the detailed
+    K28 handoff and reproduced the serial-dependency signature: realistic
+    `head_count=32,head_size=128` GDN efficiency falls from `51.20 GB/s` at
+    64 tokens to `26.84 GB/s` at 1024 tokens. Direct ROCm attribution was not
+    possible because `rocprofv2`, `rocprof`, and `omniperf` are not installed.
+    The modeled Phase-0 ceiling combines the op rerun with existing full-model
+    Qwen3.6-35B-A3B Q8 prefill rows: estimated GDN prefill share is `15.31%`
+    at p2048 and `14.54%` at p8192; an optimistic 4x op kernel maps to only
+    `11.48%` / `10.91%` full-model prefill gain. Evidence:
+    `data/k28_gdn_perf/k28-phase0-op-rerun-20260720T102526Z/` and
+    `data/k28_gdn_perf/k28-phase0-ceiling-20260720T102644Z/summary.json`.
+    Verdict: K28 remains a plausible default-off post-promotion kernel project,
+    but do not delay v7 promotion for Phase 1 unless a direct profiler rerun or
+    throwaway prototype shows materially higher full-model ceiling.
+  - [x] **K28.4a — direct GDN timing hook CLOSED ✅ 2026-07-20**:
+    because `rocprofv2`, `rocprof`, and `omniperf` were unavailable,
+    experimental post-candidate commit `8bb53c520` added a default-off
+    `GGML_CUDA_GDN_TIMING=1` HIP-event timing hook for
+    `GGML_OP_GATED_DELTA_NET` (requires `GGML_CUDA_DISABLE_GRAPHS=1`).
+    Focused validation passed: `build-hip` `test-backend-ops` built cleanly and
+    `test-backend-ops test -o GATED_DELTA_NET -b ROCm0 -j 8` passed `38/38`.
+    Full-model Qwen3.6-35B-A3B Q8 MI210 timing directly measured GDN at
+    `15.45%` of p2048 prompt wall-clock and `14.64%` of p8192; a 4x GDN-op
+    speedup maps to only `11.59%` / `10.98%` full-model prompt gain. Evidence:
+    inference-research commit `2c2b94b7`,
+    `data/k28_gdn_perf/k28-gdn-op-timing-hook-qwen35-20260720Tcurrent/summary.json`.
+    Verdict: the timing hook validates the Phase 0 ceiling rather than raising
+    EV; K28 remains post-promotion/default-off unless a constrained fused
+    recurrence prototype proves materially better.
+  - [ ] **K28.5 — fused recurrence prototype gate**:
+    implement only after a cheap proof step raises the Phase 0 ceiling. Accepted
+    proof steps are direct ROCm attribution at 2K/8K/32K or a throwaway HIP
+    prototype that fuses the per-chunk C-loop while leaving the rest of the
+    graph intact. If the gate passes, Phase 1 is FP32/fusion-only and
+    runtime-gated/default-off; MFMA/bf16 is a separate Phase 2, and `K>1`
+    snapshot semantics must either fall back to the serial path or pass parity.
+    - [x] **K28.5a — pinned verbose trace scaffold audit CLOSED ✅ 2026-07-20**:
+      `LLAMA_QWEN35_PREFILL_TRACE=2` on Qwen3.6-35B-A3B Q8 with pinned
+      experimental v7 libs and `llama-bench -v` emitted structural graph-node
+      attribution for p2048/p8192/p32768 prompt-only rows (`2079.36`,
+      `1982.56`, `1650.80` prompt t/s). Trace groups show GDN at `24.50%` of
+      `linear_attn_total` graph-node deltas and `12.22%` of
+      `linear_attn_total+ffn_total` deltas. This confirms the scaffold and
+      pinned-library recipe, but it is not wall-clock attribution and does not
+      raise the Phase 0 ceiling; `K28.5` stays open only for direct profiler or
+      throwaway-prototype evidence. Artifact:
+      `data/k28_gdn_perf/k28-qwen35moe-gpu-trace-verbose-pinned-20260720T112158Z/summary.json`.
 
 ## Research Intake Update — 2026-07-16 (AirLLM / GPU-active-weight offload)
 
@@ -109,17 +257,18 @@ Operator asked (re AirLLM, intake-832): can we use the MI210's ~1.64 TB/s HBM fo
 
 Source: control-plane planning session (audit `research/deep-dives/2026-07-16-architect-reviewer-control-plane-audit.md`; index `reviewer-control-plane-index.md`). Operator locked the single-card sequencing (2026-07-16): **(1) drafter Stage-1 end-to-end → (2) fast-architect residency quality gate → (3) GLM-5.2 offload path (skew profile) → (4) teleport/prefill-offload**. Rationale: drafter is the only bet that co-exists with later bets (small VRAM), is reversible, and directly counters the plan-review latency regression; N5 α=1.0 cleared its gate, but Stage-1 and Stage-2 drafter economics both failed on 2026-07-17, so the next drafter path needs a different control design.
 
-- [x] **AXA-1 — Fast-architect residency quality gate (bet #2) ✅ 2026-07-18**: 122B UD-IQ2_M GPU-resident is measured viable (43.7 t/s single / 148.7 agg@B32; IQ2==Q4 parity Δ0.0pp n=212) and the post-K22 grammar-constrained quality sidecar passed the bounded strict-IF/rubric probe. Evidence: `/mnt/raid0/llm/epyc-inference-research/data/axa1_fast_architect_residency/axa1-122b-iq2m-gbnf-20260718T161619Z/summary.json` on experimental v7 `d1e5a20eb`, 6 prompts total (`3` strict-IF + `3` rubric-authoring), strict-IF `3/3` schema-valid, rubric mean composite `1.0`, decode ~`40-42 t/s`, full cleanup recheck `0%` VRAM/no KFD PIDs. This is still observation-grade until `P-GPU-1` is ratified; it clears the bounded quality concern for the residency/teleport queue, not the MEASUREMENT trust boundary.
+- [x] **AXA-1 — Fast-architect residency quality gate (bet #2) ✅ 2026-07-18**: 122B UD-IQ2_M GPU-resident is measured viable (43.7 t/s single / 148.7 agg@B32; IQ2==Q4 parity Δ0.0pp n=212) and the post-K22 grammar-constrained quality sidecar passed the bounded strict-IF/rubric probe. Evidence: `/mnt/raid0/llm/epyc-inference-research/data/axa1_fast_architect_residency/axa1-122b-iq2m-gbnf-20260718T161619Z/summary.json` on experimental v7 `d1e5a20eb`, 6 prompts total (`3` strict-IF + `3` rubric-authoring), strict-IF `3/3` schema-valid, rubric mean composite `1.0`, decode ~`40-42 t/s`, full cleanup recheck `0%` VRAM/no KFD PIDs. This is still observation-grade under ratified `P-GPU-1` because it was measured on experimental v7; it clears the bounded quality concern for the residency/teleport queue, not the MEASUREMENT trust boundary.
 - [ ] **AXA-2 — Teleport axis (bet #4, design + validation experiments)**: CPU→GPU **stream teleport** for long-running turns. v1 should be **default-off re-prefill cutover only** (CPU stream begins, orchestrator snapshots `prompt + generated_so_far`, acquires a MI210 lease, sends that full prefix to the GPU lane as a fresh request, then returns `cpu_prefix + gpu_suffix`). The current implementation seam is `src/llm_primitives/primitives.py::evaluate_teleport_decision` plus `src/llm_primitives/teleport.py` and `src/gpu_lease.py`; `src/backends/llama_server.py` stays the transport/backend layer. It needs telemetry events (`teleport_candidate`, `gpu_lease_acquired`, `gpu_prefill_start/end`, `cutover`, `fallback`, `lease_released`). **Spec-dec catch-up is v1.1**, not v1: current llama-server HTTP has no clean "verify these already-generated draft tokens then continue" API. Orchestrator policy hooks: long-running signal (tokens-since-start / role / rate window), GPU-occupancy check (respect single-owner admission-smoke lane), migration cost model `expected_remaining_tokens × (1/cpu_tps − 1/gpu_tps) > load(0 if resident) + reprefill(P+N) + overhead`. Break-even estimate ≈150-250 remaining tokens (resident target) / 350-500 (cold load ~5-9s from RAID0). Validation experiments: (a) GPU prefill t/s at P+N sizes; (b) cold vs page-cache-hot load wall-clock; (c) cutover smoke and slot-release proof; (d) catch-up API/workaround probe; (e) **sampling-continuity divergence test** (same prompt, CPU vs HIP build, seed42 production sampling — find divergence point). **Operator decision (OP bundle): mid-stream quant change** — teleporting Q4-CPU→IQ2-GPU is a model swap mid-stream (re-prefill launders KV format, NOT quant/quality); options: restrict teleport to IQ2-acceptable tails/roles, or same-quant-only (forces sub-122B targets).
-  - [x] **AXA-2.1 — executable validation run sheet prepared ✅ 2026-07-19**: `docs/reference/mi210-axa-dr0-run-sheets-2026-07-19.md` defines the default-off re-prefill cutover scope, telemetry, validation experiments, pass/fail criteria, and the mid-stream quant-change operator decision. This closes design-prep only; live validation remains `P-GPU-1`/MI210-window gated.
+  - [x] **AXA-2.1 — executable validation run sheet prepared ✅ 2026-07-19**: `docs/reference/mi210-axa-dr0-run-sheets-2026-07-19.md` defines the default-off re-prefill cutover scope, telemetry, validation experiments, pass/fail criteria, and the mid-stream quant-change operator decision. This closes design-prep only; live validation remains MI210-window work, with decision-grade GPU claims requiring the production-named `P-GPU-1` path.
   - [x] **AXA-2.2 — partial MI210 prefill-sizing observation ✅ 2026-07-19**: 122B UD-IQ2_M resident prefill sizing on experimental v7 `6a8dd5ea6` completed `pp2048 342.06 t/s`, `pp8192 135.56 t/s`, and `pp16384 76.52 t/s` with q4_0/f16 KV and clean post-run KFD checks. Homogeneous 32K KV controls completed with b1024/ub256, t32, and clean post-run checks: f16/f16 `489.31 t/s`, q4_0/q4_0 `487.87 t/s`; current default no-warmup repeats stayed at f16/f16 `489.82 t/s` and q4_0/q4_0 `489.07 t/s`. The separate all-quants HIP build supplied a mixed q4_0/f16 32K row at `415.31 t/s`, but its homogeneous 32K controls were slower (f16/f16 `416.55 t/s`, q4_0/q4_0 `414.60 t/s`), so see AXA-2.3 for the build-gating caveat. Artifacts: `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2-qwen35-122b-iq2m-prefill-sizing-20260719T060039Z/summary.json`, `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2_32k_prefill_qwen35_122b_v1_f16kv_b1024_ub256_20260719T065143Z/summary.json`, `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2_32k_prefill_qwen35_122b_v1_q4kv_b1024_ub256_20260719T071051Z/summary.json`, `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2_fa_all_quants_mixed_kv_validation_20260719T073906Z/summary.json`, `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2_fa_all_quants_regression_controls_20260719T074221Z/summary.json`, and `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2_current_build_no_warmup_homogeneous_controls_20260719T074757Z/summary.json`. This is observation-grade cost-model input only; it does not ratify `P-GPU-1`.
   - [x] **AXA-2.2b — hot page-cache MI210 lease/load smoke ✅ 2026-07-19**: 122B UD-IQ2_M server with f16/f16 KV, `c32768`, b1024/ub256, and reasoning disabled reached health in `7052 ms`, returned exact `READY` in `315 ms`, and cleaned up with no KFD PIDs. Artifact: `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2_qwen35_122b_hot_load_lease_smoke_20260719T065557Z/summary.json`. This is resident-lane acquisition evidence only, not a cold-load cost.
   - [x] **AXA-2.3 — mixed-KV 32K prefix root-cause CLOSED ✅ 2026-07-19**: current default `build-hip` was not a valid mixed-flash 32K path. Current-build evidence showed mixed KV is not generally broken (`q4_0/f16 pp24576 144.07 t/s`; `q4_0/f16 pp4096` at `372.70` forced-FA / `564.27` auto / `567.23` FA-off; `f16/q4_0 pp512` forced-FA `454.67`), but `q4_0/f16 pp32768` held 60% VRAM, emitted no row, used 0% GPU, and burned host CPU. The code audit found `GGML_CUDA_FA_ALL_QUANTS=OFF`, which rejects mixed K/V CUDA/HIP flash-attn pairs. An isolated experimental build in `/mnt/raid0/llm/llama.cpp-experimental/build-hip-fa-all-quants-gfx90a` with `GGML_CUDA_FA_ALL_QUANTS=ON` compiled successfully and completed `q4_0/f16 pp32768` at `415.31 t/s` with 100% MI210 activity and clean KFD cleanup. Same-prefix homogeneous controls measured a build-choice caveat: current default no-warmup f16/f16 and q4_0/q4_0 were `489.82`/`489.07 t/s`, while all-quants f16/f16 and q4_0/q4_0 were `416.55`/`414.60 t/s`. Disposition: mixed-KV 32K is usable only on an all-quants flash-attn build; the current default HIP build's mixed-KV 32K cost remains rejected; and `FA_ALL_QUANTS` should stay lane-specific unless a later implementation removes the homogeneous regression. Artifacts: `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2_24k_prefill_qwen35_122b_v1_q4k_f16v_b1024_ub256_20260719T072203Z/summary.json`, `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2_32k_prefill_qwen35_122b_v1_q4k_f16v_no_warmup_b1024_ub256_20260719T072934Z/summary.json`, `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2_mixed_kv_fa_matrix_current_build_20260719T073441Z/summary.json`, `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2_fa_all_quants_mixed_kv_validation_20260719T073906Z/summary.json`, `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2_fa_all_quants_regression_controls_20260719T074221Z/summary.json`, and `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2_current_build_no_warmup_homogeneous_controls_20260719T074757Z/summary.json`.
   - [x] **AXA-2.4 — dry teleport policy trace scaffold ✅ 2026-07-19**: `epyc-orchestrator` `scripts/benchmark/axa2_teleport_policy_trace.py` now evaluates the real `TeleportPolicy` code path over JSONL trace/request rows and writes deterministic no-inference artifacts. Sample artifact `/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/axa2_policy_trace_20260719/` has `row_count=2`, `cutover_count=1`, `no_inference=true`, and `no_lease_acquire=true`: same-quant resident-tail cutover passes, while Q4→IQ2 is rejected by default as `quant_change_not_allowed`. This closes dry policy-trace scaffolding only; live cutover, lease-release smoke, and sampling-continuity divergence remain open.
-  - [x] **AXA-2.5 — live cutover/continuity operator bundle prepared ✅ 2026-07-19**: `epyc-orchestrator` `scripts/benchmark/axa2_live_cutover_bundle.py` now writes a dry-run-first bundle for the remaining live AXA-2 checks. Dry artifact `/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/axa2_live_cutover_bundle_20260719/` has `status=prepared_no_inference`, `decision.should_cutover=true` under same-quant resident policy, `operator_run.sh`, `prompt.txt`, `policy_decision.json`, and the required live artifact checklist. `--execute` talks only to already-running CPU/GPU llama-server endpoints, emits `teleport_candidate/gpu_lease_acquired/gpu_prefill_start/gpu_prefill_end/cutover/lease_released`, records CPU-prefix/GPU-suffix request-response JSON, and records a CPU-vs-GPU seeded continuity comparison. This closes live-harness prep only; actual cutover, lease-release proof, and continuity divergence remain MI210/`P-GPU-1` gated.
+  - [x] **AXA-2.5 — live cutover/continuity operator bundle prepared ✅ 2026-07-19**: `epyc-orchestrator` `scripts/benchmark/axa2_live_cutover_bundle.py` now writes a dry-run-first bundle for the remaining live AXA-2 checks. Dry artifact `/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/axa2_live_cutover_bundle_20260719/` has `status=prepared_no_inference`, `decision.should_cutover=true` under same-quant resident policy, `operator_run.sh`, `prompt.txt`, `policy_decision.json`, and the required live artifact checklist. `--execute` talks only to already-running CPU/GPU llama-server endpoints, emits `teleport_candidate/gpu_lease_acquired/gpu_prefill_start/gpu_prefill_end/cutover/lease_released`, records CPU-prefix/GPU-suffix request-response JSON, and records a CPU-vs-GPU seeded continuity comparison. This closes live-harness prep only; actual cutover, lease-release proof, and continuity divergence remain MI210-window work, and any decision-grade GPU throughput claim must use the production-named `P-GPU-1` path.
+  - [x] **AXA-2.6 — live same-quant cutover/lease/continuity smoke executed ✅ 2026-07-20**: first same-quant IQ2 live attempt exposed a harness false-fail: `rocm-smi --showpids` parsing counted the VRAM byte column as a fake PID and treated the CPU-only llama-server's zero-VRAM KFD row as an unexpected GPU owner. `epyc-orchestrator` `scripts/benchmark/axa2_live_cutover_bundle.py` now parses KFD process rows by PID/process/GPU/VRAM columns and treats only nonzero-VRAM rows as GPU owners; focused unit tests pass. Rerun artifact `/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/axa2_live_cutover_runs/axa2-live-samequant-iq2-20260720T052826Z/summary.json` has `status=executed`, `decision.should_cutover=true`, `quant_transition=iq2_m->iq2_m`, `global_gpu_preflight.exclusive_to_allowed=true`, `lease_released=true`, CPU/GPU seeded continuity exact-match (`first_char_divergence=null`, identical output hash), and `production_v6_touch_authorized=false`. Post-run process/GPU cleanup was clean. This closes the v1 same-quant live-smoke leg as observation-grade evidence only; decision-grade GPU claims still require a production-named `P-GPU-1` rerun after v7 promotion.
 - [x] **AXA-3 — Class-3 autopilot knobs** ✅ 2026-07-19: `epyc-orchestrator` `c5abe0a3` declares default-off teleport/lease policy parameters in `orchestration/review_plane_knobs.yaml`, wires `config_applicator.apply_params`, and exposes a guarded `gpu_placement_policy` NumericSwarm surface for threshold/weight sweeps only. Cheap runtime knobs, no AutoPilot restart, no production-v6 touch.
   - [x] Draft default-off AXA-3 policy with `enabled=false`, `mode=v1_reprefill_cutover_only`, single-owner MI210 lease, positive-savings break-even, and release-proof requirements. ✅ 2026-07-19
   - [x] Keep mixed-KV 32K teleport blocked on the current default HIP build; allow all-quants-build mixed-KV cost modeling only if the serving lane actually uses `GGML_CUDA_FA_ALL_QUANTS=ON`, and do not enable all-quants globally from AXA-2 because homogeneous 32K controls regressed in the isolated build. ✅ 2026-07-19
   - [x] Keep cold-load break-even unfilled until an operator-approved cold-cache or post-reboot protocol exists; current hot page-cache ready time is only a control. ✅ 2026-07-19
-  - [x] Defer live enable/strategy activation until `P-GPU-1` and AXA-2 cost-model status are settled; NumericSwarm cannot set `placement_policy.teleport_enabled`, and explicit true is rejected without `AUTOPILOT_AXA3_TELEPORT_ENABLE=1`. ✅ 2026-07-19
+  - [x] Defer live enable/strategy activation until AXA-2 cost-model status is settled and any decision-grade GPU claim is rerun under production-named `P-GPU-1`; NumericSwarm cannot set `placement_policy.teleport_enabled`, and explicit true is rejected without `AUTOPILOT_AXA3_TELEPORT_ENABLE=1`. ✅ 2026-07-19
   - [x] Record the mid-stream quant-change policy as an operator decision and make AXA-2 fail closed by default: OP-5d tracks IQ2-acceptable tail roles versus same-quant-only teleport; `TeleportPolicy.quant_policy` now defaults to `same_quant_only`, rejects missing quant context, rejects cross-quant tails by default, and only permits cross-quant tails under `operator_approved_tail_roles` plus an explicit role allowlist. This records/enforces the gate; it does not grant cross-quant approval. ✅ 2026-07-19

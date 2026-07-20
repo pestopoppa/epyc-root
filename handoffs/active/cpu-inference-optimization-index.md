@@ -2,14 +2,46 @@
 
 **Purpose**: forward-looking backlog for unimplemented CPU decode/prefill throughput work on local EPYC 9655 Turin hardware.
 **Scope**: CPU-only single-instance or aggregate throughput. GPU work lives in [gpu-acceleration-path.md](gpu-acceleration-path.md); routing/orchestration lives in [routing-and-optimization-index.md](routing-and-optimization-index.md); eval/quality lives in [research-evaluation-index.md](research-evaluation-index.md).
-**Updated**: 2026-07-19 OP-2 live v6+iqk verification and clean canonical CPU gate COMPLETE:
+**Updated**: 2026-07-20 PC-4o closed: the
+`GGML_CPU_CONCAT_DIM0_ROWS=1` experimental, default-off CONCAT dim0 row
+partition is committed and pushed in `llama.cpp-experimental` as post-candidate
+research (`93d945885`, `Add default-off CPU CONCAT dim0 row partition`). The
+package touched only `ggml/src/ggml-cpu/ops.cpp` and
+`tests/test-backend-ops.cpp`, keeps the path env-gated/default-off, tightens
+support to exact matching tensor types, and does not change frozen v7
+candidate `6ad45fa3ff`. Post-commit validation passed `git diff --check`,
+focused CPU `CONCAT` env-off/env-on (`210/210` both ways), and env-on
+`test-recurrent-state-rollback` with the experimental DSO path pinned. PC-4o
+then reran the clean-detached admission cell: `p8192/n1` improved `+7.771%`,
+`p8192/tg16` improved `+34.948%`, and batched `pl=2` prompt speed improved
+`+22.031%`, while tg-only regressed `-5.775%`. Decision: keep the path
+default-off/env-gated as a prefill/batched-prefill tuning candidate, not a
+default-on or frozen-v7 update. Prior: PC-4m source hardening
+closed for the same candidate; unsupported shapes stay on existing concat
+kernels through an explicit support predicate. Prior: PC-4l repeat/shape gate
+was positive and carried the candidate forward:
+repeat qwen35moe `p8192/n1` improved pp8192 `95.531624 -> 104.210589 t/s`
+(`+9.0849%`), generated-token `pp8192+tg16` improved
+`88.838786 -> 93.782587 t/s` (`+5.5649%`), and batched `pl=2` prompt speed
+improved `169.369247 -> 261.157013 t/s` (`+54.1939%`).
+Prior: PC-4k default-off CONCAT dim0 row-partition probe reduced the target
+`CONCAT` barrier sum `2196940708 -> 17871828 us` (`-99.1865%`). Prior: PC-4j CPU-backend
+node/barrier attribution closed:
+qwen35moe CPU-only `p8192/n1` barrier attribution is dominated by
+`CONCAT`/`conv_input-*` in shared `build_conv_state()` (`36.9%` of top-16
+barrier time), while `MUL_MAT_ID` remains the main compute sink. Prior: PC-4i
+scheduler-split attribution closed no-go:
+qwen35moe CPU-only `p8192/n1` is one CPU scheduler split (`4471` nodes,
+`0` inputs), so PC-4 now moves to CPU-backend node/barrier attribution (PC-4j)
+instead of scheduler split/copy prototypes. Prior: 2026-07-19 OP-2 live v6+iqk verification and clean canonical CPU gate COMPLETE:
 live preflight/role smokes passed and P-BENCH-1 frontdoor Q8 tg128 recorded; B1 was skipped
 as not staged and B4 closed no-go. Stack servers and AutoPilot remain stopped by the runner.
 Prior: 2026-07-19 OP-2 gate was corrected to bench-clean quiet-window execution: reboot
 only if preflight flags multi-day throttle, with no production-v6 edits/builds, full-stack
 reload, or AutoPilot restart. Prior: 2026-07-18 B7 prefill-compute scoping closed; track is now
-profile-gated on PC-0 with a concrete 122B architect `bench_canonical.sh`
-`p8192/n1` perf-stat + `perf record` first cell. Prior: 2026-07-14 backlog ROI
+past PC-0 premise profiling and PC-3 target selection: the OP-2 `(deleted)` hot mapping is
+LLVM OpenMP worker spin/pause, so the next implementation gate is a default-off qwen35
+prefill barrier/graph-fusion prototype in experimental only. Prior: 2026-07-14 backlog ROI
 audit added the canonical decode bench P0, re-led GEMV row with the
 fusion A/B, re-gated MoE-Spec, DSA to MED with snapshot-refresh precondition,
 Sarathi converted to E4 gate-evaluation, and relocated the two CLOSED rows out
@@ -36,7 +68,7 @@ fusion** (P1 row below; +2.6% measured → +10–15% graph-rewrite → +72% abso
 matches dense). **The untapped large-model regime is prefill-compute** — prefill is compute-bound
 (not BW-killed) and dominates GLM-5.2 / 122B-architect long-context turns → scoped track
 [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) (B7 scoping closed;
-PC-0 operator-window profile gate remains open).
+PC-0 first cell and PC-3 target selection closed positive; PC-4 experimental prototype remains open).
 
 | Priority | Track | Owner handoff | Next action |
 |----------|-------|---------------|-------------|
@@ -46,7 +78,7 @@ PC-0 operator-window profile gate remains open).
 | P1 (GATED) | MoE-Spec CPU spec-dec integration | [moe-spec-cpu-spec-dec-integration.md](moe-spec-cpu-spec-dec-integration.md) | Zero-inference assessment closed 2026-07-18: the 2026-07-03 live-α report proves current verification-batch consumers exist (`frontdoor` α=0.6582, `worker_general` α=0.8256, `architect_general` α=0.6854, failed MTP roles `[]`). Reopen only to a current live-MTP MoE verifier B-sweep with speed, acceptance, and quality/bit-exact guard. Registry integration remains blocked until that sweep exists. |
 | P1 | CPU roofline / AMD counter calibration | [cpu-kernel-env-flags-inventory.md](cpu-kernel-env-flags-inventory.md), [deepseek-v4-flash-cpu-port.md](deepseek-v4-flash-cpu-port.md) | Research `ad9b73a` added the no-inference AMD perf-counter preflight and `bench_canonical.sh --perf` guard; research `515a50b` unblocked it after installing/exposing `linux-perf` in the devcontainer and teaching the preflight to recognize `perf list` alias rows such as `cpu-cycles OR cycles`. Current artifact `data/cpu_optimization/2026-07-03-amd-perf-counter-preflight/summary.{json,md}` is `status=ok`; all canonical Zen 5 events are visible, the smoke probe passed, and `bench_canonical.sh --perf --dry-run` prints the canonical event wrap without inference. Next action is claim-grade perf benches in the appropriate host-health/clean-window protocol. |
 | P1 | Shape-specialized GEMV / AVX-512 follow-ons | [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md) | Lead with the frontdoor Q8_0 barrier-count fusion A/B (fuse expert gate+up, attn QKV cluster; cheapest test = llama-bench tg128 fusion on/off in one window; est +10-15% decode, one cluster already measured +2.6%; **absolute ceiling +72% (4.42→7.6 t/s) if BW-util matches dense**; re-elevated 2026-07-03 by findings-05 as the #1 CPU decode lever; **v7-audit LANE B B1 — bundle into the OP-2 quiet window**). Keep landed Q8_0 wins. Q6_K/Q5_K SIMD follow-ons are explicitly DEPRIORITIZED per the roofline finding. |
-| P1 | Prefill-compute for large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | B7 design/scoping is closed; PC-1 sized the prompt-wall fraction and PC-2 scoped fusion targets. A first CPU-only `perf record` artifact now exists (`p8192/n1`, `107.621 t/s`, max RSS `73.55 GiB`) but is observation-only. Remaining gate is still **PC-0 profile-first** in an operator window: add paired `bench_canonical.sh -p 8192 -n 1 -r 3 --perf` / `perf stat` counters plus `perf record`, then classify compute-bound vs BW-bound before any kernel. Candidate levers stay blocked: prefill Q8→f16 convert-skip, high-batch norm-tail fusion, and per-SSM-block fusion. |
+| P1 | Prefill-compute for large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | B7 design/scoping, PC-0 premise profiling, and PC-3 target selection are closed. PC-4c through PC-4h rejected recurrent-GDN-first, compact routed-view/add aggregation, and router/top-k/weights prototypes. PC-4i rejected scheduler split/copy logic. PC-4j mapped CPU-backend barrier attribution to `CONCAT`/`conv_input-*` in shared `build_conv_state()`, PC-4k proved the default-off row-partition candidate, PC-4l repeated/expanded it positive (`+9.0849%` pp8192, `+5.5649%` pp8192+tg16, `+54.1939%` batched pl=2 prompt speed), PC-4m source-hardened/expanded correctness coverage (`210/210` CONCAT env-off/env-on plus recurrent rollback env-off/env-on), PC-4n committed the default-off package as post-candidate experimental work (`llama.cpp-experimental` `93d945885`), and PC-4o admitted it only as a default-off prefill/batched-prefill tuning candidate after a clean-detached repeat (`+7.771%` p8192, `+34.948%` p8192+tg16, `+22.031%` batched pl=2 prompt speed, `-5.775%` tg-only). No default-on or frozen-v7 candidate change without a fresh exact-tip final smoke and a decode-exposure policy decision. |
 | P2 | Phase-disaggregated serving | [numa-prefill-decode-disaggregation.md](numa-prefill-decode-disaggregation.md) | Keep only the Phase 0 xGMI KV-transfer falsification gate active; do not build serving code until transfer cost is measured. |
 | P2 | Sarathi / MegaBlocks / Tutel ports — gate evaluation | [sarathi-serve-cpu-evaluation.md](sarathi-serve-cpu-evaluation.md), [large-moe-expert-parallelism.md](large-moe-expert-parallelism.md) | The reopen gate has arguably FIRED: E2 is a keep-candidate 4.858x eval-batch regime since 2026-07-03, and the sarathi handoff itself names exactly this trigger. Run the explicit gate evaluation — decide reopen-vs-re-close citing E1/E2 evidence. This is batched-decode waypoint E4 (doc-only, zero inference). |
 
@@ -93,4 +125,14 @@ After completing a CPU queue item:
 - [ ] P1 Shape-specialized GEMV: B1 frontdoor Q8_0 barrier-count fusion A/B was skipped because no current immutable on/off binary pair was staged; reopen only with a staged pair (Q6_K/Q5_K SIMD follow-ons remain deprioritized) (cpu-shape-specialized-gemv-decode.md)
 - [ ] P2 Phase-disaggregated serving: keep only xGMI KV-transfer falsification gate active (numa-prefill-decode-disaggregation.md)
 - [x] P1 Prefill-compute B7 scoping: existing PC-1 sizing + PC-2 design detail are enough to close agent-zero-inference scoping; first PC-0 command/artifact plan is recorded in the owner handoff. ✅ 2026-07-18
-- [ ] P1 Prefill-compute PC-0: complete the operator-approved first profile cell (122B architect `p8192/n1`, paired `bench_canonical.sh --perf`/`perf stat` + `perf record`; confirm compute-bound) before any kernel. Observation-only `perf record` artifact exists from 2026-07-18 but does not close the gate.
+- [x] P1 Prefill-compute PC-0: operator-window first profile cell completed positive on 122B architect `p8192/n1`; OP-2 production-v6 row recorded `112.730698 t/s`, `1.09` IPC, `68.597` CPUs, and `46.47%` resolved `libggml-cpu` DSO samples. ✅ 2026-07-19
+- [x] P1 Prefill-compute PC-3: resolved the OP-2 `(deleted)` mapping to LLVM OpenMP worker spin/pause; target selection now points to barrier/graph-fusion first, not low-level dot-kernel work. ✅ 2026-07-19
+- [x] P1 Prefill-compute PC-4a: default-off qwen35/qwen35moe graph-node trace scaffold prepared and build-validated in `llama.cpp-experimental`; llama.cpp patch remains uncommitted pending explicit operator review/commit approval. ✅ 2026-07-19
+- [x] P1 Prefill-compute PC-4b: traced qwen35moe `p8192/n1`; recurrent `linear_attn` is the high-delta island, but no implementation yet. ✅ 2026-07-19
+- [x] P1 Prefill-compute PC-4c: recurrent `linear_attn` sublayer trace completed; recurrent graph-node pressure was real but did not override timing evidence. ✅ 2026-07-20
+- [x] P1 Prefill-compute PC-4d/4e/4f/4g/4h: target-selection and routed-MoE diagnostics completed; recurrent-GDN-first, compact routed-view/add aggregation, and router/top-k/weights prototypes rejected by evidence. ✅ 2026-07-20
+- [x] P1 Prefill-compute PC-4i: scheduler split attribution completed; qwen35moe `p8192/n1` is one CPU scheduler split, so PC-4 moves to CPU-backend node/barrier attribution. ✅ 2026-07-20
+- [x] P1 Prefill-compute PC-4j: CPU-backend node/barrier attribution completed; `CONCAT`/`conv_input-*` in shared `build_conv_state()` is the first source-level barrier target. ✅ 2026-07-20
+- [x] P1 Prefill-compute PC-4k/4l/4m: default-off `GGML_CPU_CONCAT_DIM0_ROWS=1` proved positive, repeated/expanded positive, then source-hardened with broader backend correctness and recurrent rollback coverage. ✅ 2026-07-20
+- [x] P1 Prefill-compute PC-4n: operator-approved experimental commit/package completed in `llama.cpp-experimental` commit `93d945885`; package is default-off, post-candidate, and excluded from frozen v7 `6ad45fa3ff`. ✅ 2026-07-20
+- [x] P1 Prefill-compute PC-4o: clean-detached admission repeat kept `GGML_CPU_CONCAT_DIM0_ROWS=1` as a default-off prefill/batched-prefill tuning candidate; no default-on or frozen-v7 candidate change without a fresh exact-tip final smoke. ✅ 2026-07-20

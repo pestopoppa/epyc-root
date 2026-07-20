@@ -73,7 +73,7 @@ These handoffs are still active but currently sit behind specific evidence, mode
 
 New research-eval rows from the backlog ROI audit ([`backlog-roi-audit-2026-07-14.md`](backlog-roi-audit-2026-07-14.md) §A):
 
-- [ ] RE-1 Math-Verify scoring flip + re-baseline (EV-11, S)
+- [ ] RE-1 Math-Verify scoring re-baseline (EV-11, S) — scorer flip landed 2026-07-17; EV-11a boxed-Latex parser companion fix landed 2026-07-20; fresh re-baseline waits on EV-11b ECE-binning operator decision.
 - [ ] RE-2 intake-757 execution-free patch verifier (EV-12, M) — pre-gate SIGNAL module built (`src/verification/patch_pre_gate.py` `902fd303`: verdict/should_escalate policy, 11 tests); live-dispatch gate wiring DEFERRED (serving-path, freeze)
 - [ ] RE-3 review-finding-F1 suite from intake-658 (EV-13, M)
 - [ ] RE-4 LongCoT-Mini calibration run, intake-386 (owner: `bulk-inference-campaign.md`, M)

@@ -1,20 +1,25 @@
 # GLM-5.2 Accept-Control Hard-Signoff Runbook
 
 Date: 2026-07-19
-Scope: bounded operator runbook for `GC-shadow-repair4b.2b` before `P-REV-1`.
+Scope: superseded bounded operator runbook for `GC-shadow-repair4b.2b` before
+`P-REV-1`.
 
 This runbook is preparation only. It does not perform inference, does not modify
 the accept-control packets, and does not claim operator signoff.
 
+Status update, 2026-07-19: this runbook is historical. The operator-approved
+executable-oracle / `multi_oracle` path superseded manual labeling for this
+slice, `GC-shadow-repair4b.2c` produced decision-grade accept controls, and
+`P-REV-1` ran. GLM-5.2-IQ2 failed patch-review admission (`FA=41.7%`,
+`FR=25.0%`, `AUC=0.509`). Do not point future agents at this runbook as the
+current blocker.
+
 ## Decision Boundary
 
-GLM-5.2 remains research-only for patch review until the full-candidate
-C-CRAB/Python accept-control rows are converted from observation-only labels to
-decision-grade hard accept controls by a human/operator reviewer or executable
-oracle evidence.
-
-The next action is signoff on existing packet files, not another unchanged GLM
-run over observation-only rows.
+GLM-5.2 remains research-only for patch review because it failed the
+decision-grade P-REV-1 run. The current decision boundary is reviewer route
+selection or a repaired-GLM admission gate, not manual signoff on the old packet
+files.
 
 ## Already Machine-Reviewed
 
@@ -37,6 +42,9 @@ The 2026-07-18 packet set has already done the mechanical preparation:
 
 Machine review is advisory only. It may accelerate human review, but it cannot
 turn the observation labels into decision-grade controls.
+
+This section is retained to explain the old packet lineage. It is not the
+current path for C-CRAB accept-control qualification.
 
 ## Files To Review
 
@@ -93,7 +101,7 @@ format concerns:
 No selected candidate patch was truncated. No task text had redacted long digit
 runs.
 
-## Signoff Rules
+## Historical Signoff Rules
 
 For each of the 24 rows, review the `task` and full `candidate` patch.
 
@@ -113,7 +121,7 @@ Set:
 Do not mark a row hard-accept solely because it was a merged PR or because the
 machine recommendation says `hard_accept_candidate`.
 
-## Optional Review-Sheet Workflow
+## Historical Optional Review-Sheet Workflow
 
 The generated worksheet and Markdown packet are convenience layers over the
 JSON packet. They do not replace row-by-row review of the packet's full `task`
@@ -152,7 +160,7 @@ The apply step refuses duplicate, missing, extra, or reordered row ids. It also
 requires reviewer identity, review timestamp, and notes for every reviewed row.
 It is still not the final gate; run the signoff summarizer below afterward.
 
-## Official Outputs Needed
+## Historical Official Outputs Needed
 
 Create a signed copy of the packet. Do not overwrite the unreviewed 2026-07-18
 input packet.
@@ -181,7 +189,7 @@ Required acceptance outputs:
 - `/mnt/raid0/llm/epyc-inference-research/docs/data/glm52_ccrab_accept_control_n24_hard_accept_row_ids_20260719.txt`
 - `/mnt/raid0/llm/epyc-inference-research/docs/data/glm52_ccrab_accept_control_n24_oracle_notes_20260719.json`
 
-Acceptance condition:
+Historical acceptance condition:
 
 - `signoff_report.schema == "glm52_ccrab_accept_control_signoff.v1"`
 - `selected_n == 24`
@@ -200,7 +208,7 @@ Acceptance condition:
   `glm52_reviewer_corpus_direct_runner.py` accepts this structured signoff-helper
   output directly and extracts the `notes` field as the prompt hint.
 
-Rejection or incomplete-signoff condition:
+Historical rejection or incomplete-signoff condition:
 
 - Any `reject_or_ambiguous` row, any remaining `unreviewed` row, or
   `hard_accept_n < 24` keeps `GC-shadow-repair4b.2b` open.
@@ -210,9 +218,11 @@ Rejection or incomplete-signoff condition:
   C-CRAB/SWE-CARE patch-review pool or attach executable oracle evidence until
   there are at least `24` reviewed `hard_accept` rows.
 
-## After Signoff
+## Historical After-Signoff Flow
 
-Only after the acceptance condition above is met:
+This flow was superseded by the executable-oracle path, then by the completed
+P-REV-1 failure result. It is retained only as context for artifact provenance.
+The historical flow was:
 
 1. Update `GC-shadow-repair4b.2b` in
    `/mnt/raid0/llm/epyc-root/handoffs/active/glm52-reviewer-capability-gates.md`
@@ -232,27 +242,28 @@ Only after the acceptance condition above is met:
 4. Treat all pre-`P-REV-1` FA/FR/ECE/AUC values as observation-grade unless the
    approved protocol and signed controls make them decision-gating.
 
-`P-REV-1` clears GLM reviewer quality only if the signed accept controls and the
-matched reviewer run pass the approved FA/FR/calibration thresholds under the
-Measurement-policy protocol. Synthetic GC-1/2/3 repair smokes and exact-answer
-CruxEval evidence do not substitute for patch-review admission.
+`P-REV-1` did not clear GLM reviewer quality. Synthetic GC-1/2/3 repair smokes
+and exact-answer CruxEval evidence still do not substitute for patch-review
+admission.
 
 ## Subsequent Native-GLM-MTP Gates
 
-Native GLM-MTP remains downstream of reviewer-quality re-clear:
+Native GLM-MTP is no longer the reason GLM is blocked for reviewer admission.
+It is repaired enough to provide acceleration evidence, but reviewer routing
+still depends on patch-review quality:
 
 - Already closed: source/tensor contract scoping for GLM-5.2 `blk.78` NextN
   tail tensors, single-NextN `glm-dsa` MTP graph scaffold, build/test smoke, and
   bounded same-model draft-MTP smoke. These are scaffold feasibility, not alpha,
   quality, or throughput evidence.
-- Still open after `P-REV-1`: numerical/coherence gate on real generated-token
-  volume with live speculative counters.
-- Still open after `P-REV-1`: native-GLM-MTP A/B for alpha, acceptance,
-  task quality, and throughput with enough generated tokens to measure honestly.
+- Still open for production use: numerical/coherence gate on real
+  generated-token volume with live speculative counters.
+- Still open for production use: native-GLM-MTP A/B for alpha, acceptance, task
+  quality, and throughput with enough generated tokens to measure honestly.
 - Do not claim multi-head/general GLM-MTP support from the current scaffold; the
   2026-07-19 contract audit only supports a single-NextN implementation.
 
-For v7 promotion, the current coupled gate order is:
+For v7 promotion, the old coupled gate order was:
 
 ```text
 GC-shadow-repair4b.2b hard accept-control signoff
@@ -262,5 +273,6 @@ GC-shadow-repair4b.2b hard accept-control signoff
   -> STOP for operator-authorized cutover
 ```
 
-No agent should promote GLM to production reviewer status, sign as operator, or
-cut over the production kernel from this runbook alone.
+That order is superseded. No agent should promote GLM to production reviewer
+status, sign as operator, or cut over the production kernel from this runbook
+alone.

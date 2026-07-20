@@ -1,8 +1,8 @@
 # Inference-Batch Loop — Campaign Insertion Point
 
-**Status (2026-07-17):** manifest built, command-fabrication-audited + repaired, backlog runners built, autopilot-wired — **loop-ready**. The inference *runs* are pending an operator loop session.
+**Status (2026-07-20):** manifest built, command-fabrication-audited + repaired, backlog runners built, autopilot-wired — **loop-ready**, but several kernel/GLM entries were superseded by the 2026-07-19 v7 readiness work. OP-2/v6+iqk closed outside the loop; GLM reviewer admission failed and the reviewer/control-plane route is decoupled from v7. Lead with the remaining live island instead of stale kernel/GLM reruns.
 
-**▶ To run (2026-07-18):** launch this as a **`/goal`** session (codex's equivalent of the `/loop` this handoff's protocol references) — the loop is **single-writer**, so no other session may write the ledger. **Lead with P2 eval-tower (`EV-4`, `EV-11`)** — the only operator-gate-free, P0-independent island — in a detected quiet window, while the operator clears P0's front gates (`OP-6a/6b` + stack-restart). Without a `/goal` session **and** those front gates, P0 blocks immediately; P2 is the fallback that runs regardless. (Terminology: this doc says `/loop` throughout; read it as `/goal` under codex.)
+**▶ To run (2026-07-20):** launch this as a **`/goal`** session (codex's equivalent of the `/loop` this handoff's protocol references) — the loop is **single-writer**, so no other session may write the ledger. **Lead with P2 eval-tower EV-4** — the currently clean, operator-gate-free island — in a detected quiet window. EV-11a is now fixed, but EV-11 still waits on the EV-11b ECE-binning operator decision before the math rebaseline entry can execute. P0 still needs its front gates (`OP-6a/6b` + stack-restart). (Terminology: this doc says `/loop` throughout; read it as `/goal` under codex.)
 
 **START HERE (execution source-of-truth — machine-readable, do not re-narrate):**
 - `coordination/inference-batch/LOOP_PROTOCOL.md` — the operator `/loop` runbook (single-writer rule, session-init, pick-next, per-entry cycle, autonomy policy)
@@ -32,8 +32,8 @@ The `/loop` is the SOLE writer of the ledger + batch checkbox flips. Do NOT run 
 - [ ] **P1** reviewer-plane riders — RC-8, RM-6, LB-1, LB-4, RD-12, TM-8 (TM-8 self-attested until emit-path markers land)
 - [ ] **P2** eval-tower — EV-4, EV-11 (runnable); EV-5/7/8 (MODEL-DOWNLOAD-gated); EV-10a; RE-4; H5-RM3
 - [ ] **P3** bulk-campaign — DS-E1, A7, K-EMB-1, XMAS, hermes, kbrag, langgraph, ODLB-W3-01/02; K-ROPE (harness build-gate); ODLB-W3-03 (paddleocr-VL build-gate)
-- [ ] **P4** kernel/OP-2 — KOP2-frontdoor (OP-EXPERIMENTAL-KERNEL-BENCH), KOP2-v6iqk (OP-POST-REBOOT), KOP2-strand (OP-STRAND-APPROVAL); ROUTE-A1/A2/A3
-- [ ] **P5** GLM window — GC1/GC2/GC3 (hard-gated COORD-glm52-admission — parallel-session handshake)
+- [ ] **P4** kernel/OP-2 — OP-2/v6+iqk and final v7 readiness closed outside this loop on 2026-07-19; do not schedule unchanged KOP2-frontdoor/KOP2-v6iqk reruns. Remaining kernel/routing entries require the manifest owner to reconcile the ledger against [v7-promotion.md](v7-promotion.md) and current post-candidate work before execution.
+- [ ] **P5** GLM window — legacy GC1/GC2/GC3 admission chain is superseded. GLM failed decision-grade P-REV-1 and reviewer/control-plane is decoupled from v7; only run a GLM entry with a named repair hypothesis or non-reviewer capability gate.
 - [ ] **P6** decision-grade confirmations — RC8/LB7/RM4/RM8/RELABEL/RM2-A3 (gated OP-5a P-REV-1; RM2-A3 also COORD-axa-teleport)
 
 ### Genuinely blocked build-backlog — OWNED BY THIS reviewer-plane/ODL workstream (NOT the loop, NOT the parallel session)
@@ -44,7 +44,7 @@ These are BUILD tasks for this workstream's own code. The parallel session / ope
 - [ ] **Patch pre-gate live-dispatch wiring (EV-12)** — wire the built `src/verification/patch_pre_gate.py` (`902fd303`) into the coder_escalation dispatch as a real pre-gate (skip escalation inference on a provably-broken patch). The SIGNAL is built + tested; only the live-dispatch call is deferred. **TRIGGER: stack-freeze lifts** (touches the dispatch/serving path). Owner: routing/reviewer-plane. Consumer handoff: `research-evaluation-index.md` RE-2/EV-12.
 
 ## Dependency graph (phase gating)
-`P0 (RCP-W1 → W2/W3)` → `P1 riders (depend on RCP-W1)` → `P2 eval-tower (independent)` → `P3 bulk` → `P4 kernel/routing` → `P5 GLM (COORD-glm52-admission)` → `P6 decision-grade (OP-5a)`. COORDINATION rows (phase 90) are never picked — the operator/parallel-session flips them to DONE_PASS to unblock P5/P6 dependents. Full DAG in `manifest.yaml`; `compile_inference_batch.py simulate` prints pick-next ordering.
+`P0 (RCP-W1 -> W2/W3)` -> `P1 riders (depend on RCP-W1)` -> `P2 eval-tower (independent)` -> `P3 bulk` -> `P4 kernel/routing (requires 2026-07-19 readiness reconciliation before pick)` -> `P5 GLM (only named repair/non-reviewer gates)` -> `P6 decision-grade (OP-5a)`. COORDINATION rows (phase 90) are never picked — the operator/parallel-session flips them to DONE_PASS to unblock dependents. Full DAG in `manifest.yaml`; `compile_inference_batch.py simulate` prints pick-next ordering, but stale kernel/GLM rows must be reconciled before execution.
 
 ## Cross-cutting concerns
 - **Stack-freeze**: no serving-path/lineup change until the parallel session's feature tests complete. The RCP relaunch brings up the *existing* reference lineup (not a config change).
