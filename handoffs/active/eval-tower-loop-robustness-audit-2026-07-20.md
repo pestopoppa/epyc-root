@@ -1,10 +1,10 @@
 # Eval-Tower / Inference-Batch-Loop Robustness Audit (2026-07-20)
 
-**Status: AUDIT — findings + an executable phased fix-checklist (agent-fixable vs operator-only); no code changed.** Read-only review triggered by the EV-4
-`INFRA_BLOCKED` failure while working the P2 eval-tower entries of `inference-batch-loop.md`.
-Deliverable = this reviewable handoff. Five audits (4 subagent + 1 scoring, all evidence-backed and
-independently spot-verified). **Nothing here was edited** — the eval-tower module and the contention
-matrix have live uncommitted work from the parallel agent (see §Constraints).
+**Status: IMPLEMENTATION CHECKPOINT — original read-only audit plus executed Phase 0-3 unblock checklist.**
+The original read-only review was triggered by the EV-4 `INFRA_BLOCKED` failure while working the P2
+eval-tower entries of `inference-batch-loop.md`; five audits (4 subagent + 1 scoring, all
+evidence-backed and independently spot-verified) produced the findings below. The 2026-07-20
+follow-up implemented the checked Phase 0-3 agent-fixable items; EV-4 itself remains open.
 
 **Cross-links:** [eval-tower-verification.md](eval-tower-verification.md), [inference-batch-loop.md](inference-batch-loop.md), [within-role-placement-state-machine.md](within-role-placement-state-machine.md), [v7-promotion.md](v7-promotion.md).
 
@@ -29,11 +29,14 @@ exists; treat as unverified.)
 
 ## Constraints (read before touching anything)
 - **Scoring semantics = human-amendment-only** (MEASUREMENT.md trust boundary names eval tower + scoring).
-  Cluster E is drafted as an **operator recommendation**, never an agent edit. There is an explicit
-  tripwire at `eval_tower.py:2068` ("Do NOT 'helpfully' swap it").
-- **Shared tree / live parallel work:** `scripts/autopilot/eval_tower.py` has uncommitted lines and
-  `orchestration/contention_matrix.yaml` is `M` (uncommitted v7 certs) — the parallel agent owns these.
-  Do NOT edit them from this audit; the fixes below are for the owning session/operator to sequence.
+  Cluster E is now sequenced through EV-CONF: agent work may prepare the logprob plumbing and an
+  operator-signed interim neutralization of the degenerate ECE input, but the final EV-11b binning /
+  scoring decision remains an operator amendment. Do not edit the `eval_tower.py:2068` tripwire path
+  as part of loop robustness.
+- **Shared tree / live parallel work:** at audit time, `scripts/autopilot/eval_tower.py` and
+  `orchestration/contention_matrix.yaml` had parallel-session edits. The checked Phase 0-3 items
+  below have since landed in the owning repos; remaining open items still need normal file ownership
+  checks before editing.
 - **Location note:** the runner + `eval_tower.py` live in **epyc-orchestrator** (not research). A stale
   duplicate exists at `epyc-orchestrator.wt-local-frontdoor/` — reconcile so edits don't diverge.
 
@@ -78,11 +81,11 @@ exists; treat as unverified.)
 | D5 | HIGH | **v7 reconciliation incomplete** — only EV-4 was updated; **EV-5/7/8/10a/11/RE-4/H5-RM3 still declare v6 kernel + v6 topology** → they will `INFRA_BLOCK` identically; EV-5/EV-7 `depends_on EV-4`(v7) while declaring v6 (inconsistent across the edge). | Sweep all still-runnable EV entries to v7 era + v7 hash and recompile (the same reconciliation the P4 note demanded, which missed P2). |
 | D6-D10 | MED/LOW | D6 `entry_verdict.decide()` can't distinguish a degenerate run from a pass — the gate `rule` text (metric-count / ECE-nondegeneracy) is unenforced (`entry_verdict.py:375-377`). D7 silent `entry_hash` drift after the post-run `--min-eval-concurrency` edit. D8 EV-11b gate is a soft `operator_gate`, not a structural `depends_on` (`pending()` ignores op-gates). D9 the EV-4 infra-block was **never written to `op-bundle.md`** — the recert ask is stranded in the ledger. D10 ledger append has no `flock`; large lines risk non-atomic writes. | Bind the concrete gate rule to a verifier signal before `pass`; warn on entry_hash drift; append the op-bundle row on infra-block; add advisory locking. |
 
-## Cluster E — Scoring semantics · **OPERATOR-ONLY (human-amendment; do NOT agent-edit)**
+## Cluster E — Scoring semantics · **EV-CONF sequenced; final scoring decision operator-only**
 Credit: the EV-11 confidence-proxy insight came from the parallel research agent; verified + extended here.
 - **E1 — the confidence proxy is a stub wired into live scoring.** `eval_tower.py` sets `confidence = float(correct)`, overridden only for `code_execution`/`rubric`; math suites are therefore **tautological** → ECE is **0.0 by construction**. Empirically confirmed: **1182/1182 journaled ECE values are exactly 0.0** (both `autopilot_journal*.jsonl` shards). The designed source — **logprob passthrough from `completion_probabilities`** — is stubbed (`:1697` comment; eval-tower-verification.md:38).
 - **E2 — it is NOT an inert null instrument (corrects the "blast radius overstated" framing).** `safety_gate.py` has no `ece`, but `rlvr_tiers.py` uses it as a **`required_metric` for tiers 2–3** (`:66,72`) *and* a **score component**: `_calibration_component = clamp01(1.0 − ece)` (`:207`) feeds `0.65·acc + 0.20·rel + 0.10·calibration + 0.05·disc` (`:130`) and `… + 0.15·calibration` (`:151`). With ECE pinned to 0.0, **calibration is a constant 1.0 — a phantom max-signal worth 10–15 % of every RLVR tier score** that gates autopilot promotion.
-- **E3 — the recommendation (operator).** The EV-11b "open vs closed top bin" question is **downstream of and moot until** confidence is real. Flipping the binning alone ships a still-degenerate metric and burns an era-label. **Correctly-posed order:** (1) land logprob passthrough (`completion_probabilities → confidence`); until then, **treat ECE/AUC as observation-only, not a scoring input** (gate `_calibration_component` behind "confidence is real", or hold the rlvr calibration weight at 0); (2) *then* settle the binning against the `:2068` tripwire's measured 0.15–0.40 claim (which itself only bites where confidence decouples from correctness — code_execution/rubric — none of which appear in the 1182 math records).
+- **E3 — the recommendation.** The EV-11b "open vs closed top bin" question is **downstream of and moot until** confidence is real. Flipping the binning alone ships a still-degenerate metric and burns an era-label. **Correctly-posed order:** (1) under EV-CONF, land logprob passthrough (`completion_probabilities → confidence`) and, with operator sign-off if scoring weights are touched, neutralize the degenerate ECE/AUC input as observation-only until confidence is real; (2) *then* the operator settles the binning against the `:2068` tripwire's measured 0.15–0.40 claim (which itself only bites where confidence decouples from correctness — code_execution/rubric — none of which appear in the 1182 math records).
 
 ## §H — Change-hardening (the operator's ask, retargeted)
 The prevention is **not** kernel-promotion-specific — it's **any change to a measured NUMA role's shape**:
@@ -120,10 +123,10 @@ The prevention is **not** kernel-promotion-specific — it's **any change to a m
 - [ ] **H1 — bind the matrix to live topology in CI + stack-start.** Un-skip `test_real_matrix_against_live_numa_config` to assert `matrix.topology_hash == topology_fingerprint_for_matrix(NUMA_CONFIG)`; wire `check_contention_matrix_fresh.py` into pre-commit AND `preflight_gate.attest` as a **hard** gate. *Verify:* the vision-rebind scenario now fails CI.
 - [ ] **H2 — add a "recertify topology-dependent artifacts" step to `v7-promotion.md`** (+ future `-vN`): matrix + placement caps + entry topology pins refreshed before promotion is declared done.
 
-### Operator-only (NOT agent-fixable)
-- [ ] **Cluster E — scoring → tracked as EV-CONF in [eval-tower-verification.md](eval-tower-verification.md).** NOT operator-only-forever: **[agent]** interim (hold ECE/AUC observation-only so the constant-0.0 stops inflating the rlvr tier score) + **[agent]** the logprob-passthrough plumbing (`completion_probabilities → confidence`) — both **gated after the parallel agent's `eval_tower.py` loop fixes land** (its active file); **[operator]** only the final EV-11b binning/gating decision (MEASUREMENT + `eval_tower.py:2068` tripwire).
+### Scoring Trust Boundary
+- [ ] **Cluster E — scoring → tracked as EV-CONF in [eval-tower-verification.md](eval-tower-verification.md).** **[agent]** interim (hold ECE/AUC observation-only so the constant-0.0 stops inflating the rlvr tier score, with operator sign-off before merge if scoring weights are touched) + **[agent]** the logprob-passthrough plumbing (`completion_probabilities → confidence`) remain open; **[operator]** owns the final EV-11b binning/gating decision (MEASUREMENT + `eval_tower.py:2068` tripwire).
 
 ## Provenance
 5 audits, 2026-07-20: runner + contention-matrix + preflight + entries/ledger (4 read-only subagents) +
 scoring (parallel research agent, verified here). Load-bearing claims spot-verified against source;
-F2a (safety_gate baseline block) and C9 (hash-namespace) flagged **unconfirmed**. No files edited.
+F2a (safety_gate baseline block) and C9 (hash-namespace) flagged **unconfirmed**. Later checked items in the executable checklist record the implemented follow-up.
