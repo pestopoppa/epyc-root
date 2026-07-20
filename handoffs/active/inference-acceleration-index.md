@@ -1,7 +1,7 @@
 # Inference Acceleration — Active Index
 
 **Purpose**: dispatch point for local inference optimization across CPU throughput, KV/context efficiency, speculative decoding, GPU-prep work, and model-serving experiments.
-**Updated**: 2026-07-19 (v7 promotion candidate is frozen at `experimental-v7-refresh-20260716` commit `6ad45fa3ff`, final-smoke binary `10098`; live promotion state is delegated to [v7-promotion.md](v7-promotion.md)) — v6+iqk remains LIVE/frozen; K5 quality, K35/A1 release matrix, OP-2 CPU-regression canonical bench, `P-GPU-1` ratification, upstream-ahead narrow audit, GLM reviewer-quality disposition, final v7 smoke PASS, and native GLM-MTP repair/measurement are closed. The reviewer/control-plane route is **DECOUPLED** by operator decision on 2026-07-19 and is no longer a v7 release blocker. v7 is **READY FOR OPERATOR PROMOTION** at `6ad45fa3ff`; any newer experimental tip is post-candidate research and must re-run the final coherence+garbage smoke before becoming promotable. Historical 2026-07-05/11/14/16 detail remains below for provenance only.
+**Updated**: 2026-07-20 (v7 promotion candidate is frozen at `experimental-v7-refresh-20260716` commit `6ad45fa3ff`, final-smoke binary `10098`; live promotion state is delegated to [v7-promotion.md](v7-promotion.md)) — v6+iqk remains LIVE/frozen; K5 quality, K35/A1 release matrix, OP-2 CPU-regression canonical bench, `P-GPU-1` ratification, upstream-ahead narrow audit, GLM reviewer-quality disposition, final v7 smoke PASS, and native GLM-MTP repair/measurement are closed. The reviewer/control-plane route is **DECOUPLED** by operator decision on 2026-07-19 and is no longer a v7 release blocker. v7 is **READY FOR OPERATOR PROMOTION** at `6ad45fa3ff`; any newer experimental tip is post-candidate research and must re-run the final coherence+garbage smoke before becoming promotable. PC-4c qwen35moe subphase tracing closed; PC-4d is the next post-candidate prefill-compute target-selection/prototype step. Historical 2026-07-05/11/14/16 detail remains below for provenance only.
 **History**: pre-compaction detail lives in [../archived/inference-acceleration-index-history-through-2026-06-19.md](../archived/inference-acceleration-index-history-through-2026-06-19.md).
 
 **2026-07-18 v7 lever audit + two-lane queue**: full read-only audit of ~5 weeks of v7 experimental-kernel + CPU/GPU/spec-dec/GLM optimization work (5-agent sweep of handoffs, progress reports, negative results, live branch state). **Headline: the largest measured win is already built, correctness-verified, and banked — but UNPROMOTED.** See the new **[§ v7 lever audit + two-lane execution queue](#2026-07-18-v7-lever-audit--two-lane-execution-queue)** below — do-not-re-propose ledger, EV-ranked survivor levers, and the LANE A (operator-facing v7-promotion prep) / LANE B (agent-executable exploration) queue. Two new tracks opened: [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md), [gpu-drafter-control-redesign.md](gpu-drafter-control-redesign.md).
@@ -59,9 +59,12 @@ repaired. v7 promotion now waits only on the operator cutover action, not more r
    `LLAMA_QWEN35_PREFILL_TRACE=1` graph-node trace scaffold in
    `llama.cpp-experimental`; PC-4b traced qwen35moe `p8192/n1` and points to
    recurrent `linear_attn` as the high graph-node island (`92/99` node deltas
-   vs full-attn `75`). PC-4c level-2 instrumentation is build-validated in
-   post-candidate `llama.cpp-experimental`; the trace run is still pending
-   before a safe implementation target is chosen. →
+   vs full-attn `75`). PC-4c then closed the level-2 subphase trace: recurrent
+   `linear_attn_total` median delta `53`, per-layer `ffn_total` `40`,
+   `full_attn_total` `29`, with recurrent sub-islands `conv_state=15`,
+   `gated_delta_net=13`, and `ssm_state=8`. PC-4d must profile-confirm whether
+   recurrent fusion or same-input MoE/FFN graph fusion is the first default-off
+   prototype target. →
    [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md).
 6. **stream-K `nsm→k·nsm`+compact-LDS** — +0–10%, IQ2/capacity; pmc-CSV read first. → mi210 roadmap.
 7. **K28 GDN long-prefill recurrence kernel (GPU)** — `gated_delta_net.cu:191`. → mi210 roadmap.
@@ -99,7 +102,7 @@ repaired. v7 promotion now waits only on the operator cutover action, not more r
 
 **LANE B — agent-executable:**
 - *Zero-inference now:* current B2/B3/B5/B6/B7 scoping batch closed; do not reopen without a new handoff trigger.
-- *Needs a bench window (fold into A2 or its successor):* B1 barrier-fusion `tg128` A/B only if a staged immutable on/off pair exists. PC-0 prefill-compute premise profiling and PC-3 target selection closed positive; PC-4a/PC-4b show qwen35moe recurrent `linear_attn` is the graph-node-heavy path, and PC-4c level-2 sublayer instrumentation is now build-validated. The remaining PC-4c step is the actual trace run before a real default-off implementation is selected. B4 DSA-D3 profile-first ran 2026-07-19 and closed D3.1 as no-go: Lightning Indexer was only `1.08%` of cycle samples, so do not start the AVX-512BW indexer kernel from current evidence.
+- *Needs a bench window (fold into A2 or its successor):* B1 barrier-fusion `tg128` A/B only if a staged immutable on/off pair exists. PC-0 prefill-compute premise profiling and PC-3 target selection closed positive; PC-4a/PC-4b show qwen35moe recurrent `linear_attn` is the graph-node-heavy path, and PC-4c level-2 sublayer tracing is now closed. PC-4d is the next implementation gate: profile-confirm whether recurrent `conv_state`/`gated_delta_net`/`ssm_state` fusion or same-input MoE/FFN graph fusion is the first default-off target. B4 DSA-D3 profile-first ran 2026-07-19 and closed D3.1 as no-go: Lightning Indexer was only `1.08%` of cycle samples, so do not start the AVX-512BW indexer kernel from current evidence.
 
 ## Active Landscape
 
@@ -202,6 +205,12 @@ After completing an acceleration item:
   remains local scratch, summary/report/logs live under
   `data/op2_canonical_window/op2_b4_dsa_d3_profile_20260719T075142/b4-dsa-d3/`.
   ✅ 2026-07-19
+- [x] PC-4c qwen35moe recurrent prefill subphase trace executed: CPU-only
+  `p8192/n1`, `LLAMA_QWEN35_PREFILL_TRACE=2`, exit `0`, `pp8192 118.040030
+  t/s`, `tg1 5.339296 t/s`, clean process/GPU cleanup. Subphase evidence now
+  routes PC-4d to a profile-confirmed choice between recurrent
+  `conv_state`/`gated_delta_net`/`ssm_state` fusion and same-input MoE/FFN graph
+  fusion. ✅ 2026-07-20
 - [x] External qwen35/frontdoor drafter alpha retest (`n5_spec_on` 376/376, decision-grade) ✅ 2026-07-16
 - [x] CoT-scaffold: Qwable-standalone GPQA control completed — standalone 77% beat scaffold 73%, so standalone routing is primary. ✅ 2026-07-05
 - [x] GPU reasoner evidence: Qwable quiet-host IQ4/Q8 strict-output + top-level `json_schema` harness gate closed; scaffold/selector stubs remain non-deployable ✅ 2026-07-17

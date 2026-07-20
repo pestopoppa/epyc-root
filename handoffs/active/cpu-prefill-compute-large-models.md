@@ -178,7 +178,7 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
     `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc4b_trace_20260719.md`.
     Decision: high-delta island is the recurrent `linear_attn` path, not full
     attention, but layer-level trace is still too coarse for a safe fusion.
-  - [ ] **PC-4c — recurrent linear-attn sublayer trace**: add a deeper
+  - [x] **PC-4c — recurrent linear-attn sublayer trace ✅ 2026-07-20**: add a deeper
     default-off trace inside qwen35/qwen35moe recurrent `linear_attn` to break
     down GDN, SSM, shared expert, routed expert, norm, and residual islands
     before selecting an implementation. Do not claim PC-4 complete until an
@@ -193,9 +193,22 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
       `ctest --test-dir build-k24-cpu -R '^test-llama-archs$' --output-on-failure`,
       `git diff --check`, and ASCII scan. Per llama.cpp local instructions, the
       patch is intentionally uncommitted until explicit operator commit approval.
-    - [ ] **PC-4c-b — level-2 trace run**: run the qwen35moe `p8192/n1` CPU-only
-      trace with `LLAMA_QWEN35_PREFILL_TRACE=2`, archive subphase deltas, and
-      choose the first default-off implementation target only from that evidence.
+    - [x] **PC-4c-b — level-2 trace run ✅ 2026-07-20**: qwen35moe `p8192/n1`
+      CPU-only trace completed at
+      `/mnt/raid0/llm/epyc-inference-research/data/cpu_prefill_compute/pc4c-qwen35-subtrace-20260720T001959Z/`
+      with `LLAMA_QWEN35_PREFILL_TRACE=2`. Result: exit `0`, `pp8192
+      118.040030 t/s`, `tg1 5.339296 t/s`, max RSS `77038696 KiB`, `45`
+      graph builds, final graph nodes `4471`, and clean process/GPU cleanup.
+      Median graph-node deltas: recurrent `linear_attn_total=53`, per-layer
+      `ffn_total=40`, `full_attn_total=29`; inside recurrent attention the
+      largest sub-islands are `conv_state=15`, `gated_delta_net=13`, and
+      `ssm_state=8`. Report:
+      `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc4c_subtrace_20260720.md`.
+  - [ ] **PC-4d — profile-confirmed default-off prototype target**: use PC-4c
+    evidence to choose between recurrent `conv_state`/`gated_delta_net`/`ssm_state`
+    fusion and same-input MoE/FFN graph fusion. Do not implement a default-off
+    prototype until the follow-up profile ties the chosen island to lower
+    libomp spin/pause and wall time on repeated `p8192/n1`.
 
 ## PC-0 operator-window plan
 
