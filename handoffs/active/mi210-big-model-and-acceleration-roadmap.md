@@ -77,14 +77,14 @@ P0 was fixed on experimental v7 `96986f5e9`); its gate is a strict-IF/rubric GBN
 - [x] Draft `P-GPU-1` ratification package for operator review: `docs/reference/p-gpu-1-ratification-package-2026-07-18.md` maps required MEASUREMENT fields to existing Gate-R/K35 MI210 artifacts and keeps the amendment itself human-only ✅ 2026-07-18
 - [x] Ratify/update `P-GPU-1` now that MI210 exists ✅ 2026-07-19: `/workspace/MEASUREMENT.md` is signed with a production-named-kernel-only claim path. Existing experimental-v7 Gate-R/K35/AXA rows remain observation-grade; Gate-R decision-grade certification reruns after promotion on `production-consolidated-v7`.
 - [x] Probe gemma4-IQ4 mid-precision residency: current experimental-v7 `d1e5a20eb` MI210 observation at `/mnt/raid0/llm/epyc-inference-research/data/gemma4_iq4_residency/gemma4_26b_ud_iq4xs_mi210_v7_20260718T162446Z/summary.json` loaded `gemma-4-26B-A4B-it-UD-IQ4_XS.gguf` fully resident, measured `pp2048 2449.01 t/s`, `tg256 81.91 t/s`, and a server/chat 8K coherence probe with `6971` prompt tokens at `2257.80 t/s` plus `201` completion tokens at `76.02 t/s`; cleanup proof shows no KFD PIDs. Follow-up optimized lane at `/mnt/raid0/llm/epyc-inference-research/data/gemma4_iq4_residency/mtp_ab_local_20260718T170739Z/summary.json` measured no-spec q8-KV `pp2048 2450.51 t/s`, `tg512 81.41 t/s`, and external assistant-head MTP `117.01 t/s` with `360/362` drafts accepted. Strict JSON content was not clean, so quality retention/template cleanup remains open before any role claim. ✅ 2026-07-18
-- [ ] Axis B / DR-0: measure quant-asymmetric self-spec acceptance and implied `F(K)+H(K)`; alpha alone is insufficient after DR-1
+- [x] Axis B / DR-0: measure quant-asymmetric self-spec acceptance and implied `F(K)+H(K)`; alpha alone is insufficient after DR-1 ✅ 2026-07-20
   - [x] DR-0a: procure/build/register an aggressive same-model IQ drafter artifact (IQ1/IQ2_XXS or REAP+IQ1)
     that fits 64 GB HBM for the selected CPU high-quant verifier. Inference-research commit
     `b696241` registers and smoke/context-tests the local
     `/mnt/raid0/llm/models/Qwen3.5-122B-A10B-MTP-GGUF/UD-IQ2_M/Qwen3.5-122B-A10B-UD-IQ2_M.gguf`
-    candidate (37.60 GiB, same MTP family, fits MI210). The missing-artifact blocker is closed;
-    the next action is the first DR-0 acceptance/economics run. Download IQ1_M only if IQ2_M fails
-    the strict aggressive-quant drafter gate. ✅ 2026-07-19
+    candidate (37.60 GiB, same MTP family, fits MI210). The missing-artifact blocker fed
+    the DR-0 acceptance/economics runs; do not download IQ1_M solely for DR-0 because IQ2_M
+    passed the strict aggressive-quant drafter gate. ✅ 2026-07-19
   - [x] DR-0b task-class acceptance/economics first pass: source-head v7 MI210 probes on the
     122B UD-IQ2_M candidate show native MTP is still negative on short architect prompts
     (`0.61x`), but positive on long repetitive output (`37.87 -> 60.65 t/s`, `511/511`
@@ -102,17 +102,25 @@ P0 was fixed on experimental v7 `96986f5e9`); its gate is a strict-IF/rubric GBN
     (`1.785x`, alpha `0.837`). Cleanup/postflight passed. This does not close DR-0:
     quality sanity failed (`1/28`), target output changed on the code-review control, and
     `F(K)+H(K)` is still not separately observable from current llama-server telemetry.
-  - [ ] DR-0e telemetry/quality rerun: add `F(K)`/`H(K)` observability and repeat under
+  - [x] DR-0e telemetry/quality rerun: add `F(K)`/`H(K)` observability and repeat under
     stricter prompt/schema controls; require target-output stability on all tasks before
-    any Axis-B serving integration.
+    any Axis-B serving integration. ✅ 2026-07-20
     - [x] DR-0e.1 telemetry live ✅ 2026-07-20: experimental-v7 server timing fields now
       expose `spec_verify_steps`, `spec_draft_ms`, `spec_verify_ms`, `spec_process_ms`,
       `spec_sample_accept_ms`, and `spec_accept_by_depth`; reduced K2 live artifact
       `/mnt/raid0/llm/epyc-inference-research/data/dr0_quant_asym_self_spec/dr0_quant_asym_self_spec_20260720T050531Z_telemetry_k2/`
       recorded combined `10.694 t/s`, alpha `0.891`, `F(K)=39.889s`, and `H(K)=0.740s`
       with clean postflight.
-    - [ ] DR-0e.2 quality/stability rerun: repair the strict prompt/schema controls and
-      require CPU-baseline output stability before any serving/routing integration.
+    - [x] DR-0e.2 quality/stability rerun ✅ 2026-07-20: inference-research final artifact
+      `/mnt/raid0/llm/epyc-inference-research/data/dr0_quant_asym_self_spec/dr0_quant_asym_self_spec_20260720T060423Z_dr0e2_full_k_sweep_final/`
+      passed quality (`28/28`), output stability for combined K1/K2/K4 versus CPU baseline
+      on all four task classes, and cleanup. CPU Q4 baseline was `7.083 t/s`; combined
+      K1/K2/K4 reached `9.888` / `11.407` / `11.847 t/s` (`1.396x` / `1.610x` /
+      `1.672x`) with alpha `0.945` / `0.900` / `0.787`. F/H observed rows:
+      K1 `39.040s/0.545s`, K2 `33.667s/0.657s`, K4 `32.280s/0.781s`.
+  - [ ] DR-2 serving/routing design: translate the DR-0e.2 keep-candidate into a
+    default-off serving proposal only after broader task-class admission and the
+    production-named `P-GPU-1` certification path are defined.
 - [ ] GLM-5.2 endgame: expert-offload / REAP+IQ2 path (operator-gated)
 - [x] **stream-K `nsm→k·nsm` + compact-LDS residual — zero-build artifact read CLOSED ✅ 2026-07-18** (v7-audit LANE B B2): artifact recovery found the original MI210 campaign under `/mnt/raid0/llm/tmp/mi210-build/campaign/`, including `mmq-compact-lds-NEGATIVE.patch`, `kernels/fused-prefetch-NEGATIVE.patch`, and rocprof CSVs under `moe-agg/prof/`. Read verdict: stream-K is already the live Q8 MMQ path (`mul_mat_q` plus `mul_mat_q_stream_k_fixup`); B32 Q8 MMQ dispatches use grid `53248 = 512 * 104 CUs`, i.e. one persistent workgroup per CU, with fixup grid `53248`, LDS `512`. The compact-LDS patch is explicitly negative and should not be revived. The only surviving idea is a distinct `2*nsm=208` persistent-grid experiment, but that is a new operator-gated build/bench with a narrow `+0–10%` IQ2/capacity ceiling, not a zero-inference closeout or saved-patch apply.
 - [ ] **K28 — GDN long-prefill recurrence kernel** (GPU; `ggml/src/ggml-cuda/gated_delta_net.cu:191` TODO): a new long-prefill CUDA/HIP recurrence kernel avoiding one serial token-axis scan per (head, seq, column-shard); must preserve GDA/KDA + transposed-state + K>1 snapshot semantics. Prefill t/s for hybrid (Qwen3.6/GDN) models; GPU sibling of [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md). Larger perf project, no bounded safe patch this session.
