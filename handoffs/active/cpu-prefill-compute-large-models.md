@@ -238,13 +238,22 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
     `11`, expert views `8`, aggregation `7`, while gate-up/activation/down/
     weighting total only `6`. Report:
     `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc4f_routed_moe_trace_20260720.md`.
-  - [ ] **PC-4g — first default-off routed-MoE scheduling prototype**:
-    prototype exactly one guarded change around routed MoE view/aggregation
-    scheduling, or around router/weights scheduling if a follow-up profile
-    identifies top-k/routing as the actual spin source. Do not rewrite
-    `mul_mat_id` math kernels in PC-4g. Acceptance: exact-output smoke plus
-    repeated `p8192/n1` profile showing lower libomp spin/pause share and
-    lower wall time.
+  - [x] **PC-4g — compact aggregation scheduling prototype rejected ✅ 2026-07-20**:
+    tested a default-off prototype that skipped eager `ggml_build_forward_expand`
+    calls for routed MoE expert views and aggregation adds. The cheap
+    `llama-simple` exact-output smoke passed byte-for-byte, but the real
+    qwen35moe `p8192/n1` cell regressed: default `141.588462 t/s` prompt and
+    `5.242545 t/s` decode versus compact `100.069829 t/s` prompt and
+    `4.840255 t/s` decode. The prototype code was reverted; do not re-propose
+    this view/add expansion skip without a new mechanism. Report:
+    `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc4g_compact_aggregation_20260720.md`.
+  - [ ] **PC-4h — router/weights profile-first follow-up**:
+    profile the routed `ffn_moe_router_weights` island before another scheduling
+    prototype. The target is top-k/routing/weights scheduling, not a
+    `mul_mat_id` math rewrite and not the rejected view/add expansion skip.
+    Acceptance: resolved profile evidence that router/weights are tied to
+    libomp spin/pause or wall time, followed by one default-off prototype with
+    exact-output smoke and repeated `p8192/n1` lower spin/wall-time evidence.
 
 ## PC-0 operator-window plan
 
