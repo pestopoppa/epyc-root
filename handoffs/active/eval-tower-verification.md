@@ -1,6 +1,8 @@
 # Eval Tower Verification Framework
 
 **Status**: IN PROGRESS — EV-1/2/3/6 code complete; EV-11 scorer flip and EV-11a boxed-Latex companion fix landed. EV-4 is the current quiet-window runnable island in `inference-batch-loop.md`; EV-11 math rebaseline becomes runnable after the EV-11b ECE-binning operator decision. EV-5/7/8 remain model-download/build-gated. AA-Omniscience hallucination suite integrated (2026-04-15).
+
+**⚠ Robustness audit 2026-07-20:** [eval-tower-loop-robustness-audit-2026-07-20.md](eval-tower-loop-robustness-audit-2026-07-20.md) — the EV-11 confidence proxy is a stub (`float(correct)`) wired into live rlvr scoring → ECE constant 0.0 (1182/1182); **EV-11b binning is moot until logprob-passthrough lands** (operator/human-amendment-only). Plus runner (dirty-stack-on-kill, degenerate→decision_grade), preflight (health-check false-positive, matrix-freshness only checked on reload), and ledger (`INFRA_BLOCKED` wedge) robustness gaps.
 **Created**: 2026-04-14 (from deep-dive research, 5 papers + 2 subsystem threads)
 **Updated**: 2026-07-20
 **Priority**: HIGH — [research-evaluation-index.md](research-evaluation-index.md) and `inference-batch-loop.md` route the next operator-gate-free inference batch to EV-4; EV-11 follows once EV-11b is decided.
