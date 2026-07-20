@@ -230,6 +230,46 @@ def test_validate_cli_exit_zero_all_valid(tmp_path):
     assert cib.main(["--entries-dir", str(d), "validate"]) == 0
 
 
+def test_validate_cli_rejects_duplicate_yaml_keys(tmp_path, capsys):
+    d = tmp_path / "entries"
+    d.mkdir()
+    p = d / "dup.yaml"
+    p.write_text(
+        """
+task_id: DUP
+title: first
+title: second
+provenance:
+  owning_handoff: handoffs/active/foo.md
+  checkbox: F-1
+phase: 0
+priority: P1
+preconditions:
+  depends_on: []
+execution:
+  driver: command
+  concurrency_mode: serial_noninference
+outcomes:
+  gate_table:
+    - gate: does it pass?
+      evidence: metric
+      fork:
+        pass:
+          next: DONE_PASS
+        fail:
+          next: FAILED_REVERTED
+artifacts:
+  outputs: []
+ledger: {}
+""",
+        encoding="utf-8",
+    )
+
+    assert cib.main(["--entries-dir", str(d), "validate"]) == 1
+    err = capsys.readouterr().err
+    assert "duplicate key 'title'" in err
+
+
 def test_compile_cli_emits_manifest_and_lock(tmp_path):
     d = tmp_path / "entries"
     d.mkdir()

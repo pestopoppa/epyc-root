@@ -41,6 +41,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import yaml
 from jsonschema import Draft7Validator
+from yaml.constructor import ConstructorError
 
 # Import the sibling ledger library (works whether run as a script or imported).
 _HERE = Path(__file__).resolve().parent
@@ -66,6 +67,40 @@ DEFAULT_REPOS: Dict[str, Path] = {
 }
 
 
+class ManifestInputError(RuntimeError):
+    """Raised for malformed hand-authored manifest source files."""
+
+
+class _UniqueKeyLoader(yaml.SafeLoader):
+    """SafeLoader variant that rejects duplicate mapping keys."""
+
+
+def _construct_mapping_unique_keys(
+    loader: yaml.SafeLoader,
+    node: yaml.MappingNode,
+    deep: bool = False,
+) -> dict[Any, Any]:
+    loader.flatten_mapping(node)
+    mapping: dict[Any, Any] = {}
+    for key_node, value_node in node.value:
+        key = loader.construct_object(key_node, deep=deep)
+        if key in mapping:
+            raise ConstructorError(
+                "while constructing a mapping",
+                node.start_mark,
+                f"found duplicate key {key!r}",
+                key_node.start_mark,
+            )
+        mapping[key] = loader.construct_object(value_node, deep=deep)
+    return mapping
+
+
+_UniqueKeyLoader.add_constructor(
+    yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
+    _construct_mapping_unique_keys,
+)
+
+
 def _utcnow_iso() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -86,7 +121,10 @@ def load_entries(entries_dir: Path) -> List[Tuple[Path, dict]]:
     out: List[Tuple[Path, dict]] = []
     for path in sorted(Path(entries_dir).glob("*.y*ml")):
         text = path.read_text(encoding="utf-8")
-        data = yaml.safe_load(text)
+        try:
+            data = yaml.load(text, Loader=_UniqueKeyLoader)
+        except ConstructorError as exc:
+            raise ManifestInputError(f"{path}: YAML error: {exc}") from exc
         if data is None:
             continue
         if isinstance(data, list):
@@ -268,7 +306,11 @@ def _print_invalid(invalid: Dict[str, List[str]]) -> None:
 
 def cmd_validate(args: argparse.Namespace) -> int:
     validator = load_schema(args.schema)
-    entries = load_entries(args.entries_dir)
+    try:
+        entries = load_entries(args.entries_dir)
+    except ManifestInputError as exc:
+        print(f"manifest input error: {exc}", file=sys.stderr)
+        return 1
     valid, invalid = validate_all(entries, validator)
     print(f"entries: {len(entries)}  valid: {len(valid)}  invalid: {len(invalid)}")
     if invalid:
@@ -280,7 +322,11 @@ def cmd_validate(args: argparse.Namespace) -> int:
 
 def cmd_compile(args: argparse.Namespace) -> int:
     validator = load_schema(args.schema)
-    entries = load_entries(args.entries_dir)
+    try:
+        entries = load_entries(args.entries_dir)
+    except ManifestInputError as exc:
+        print(f"manifest input error: {exc}", file=sys.stderr)
+        return 1
     valid, invalid = validate_all(entries, validator)
     if invalid:
         print(
@@ -321,7 +367,11 @@ def cmd_compile(args: argparse.Namespace) -> int:
 
 def cmd_simulate(args: argparse.Namespace) -> int:
     validator = load_schema(args.schema)
-    entries = load_entries(args.entries_dir)
+    try:
+        entries = load_entries(args.entries_dir)
+    except ManifestInputError as exc:
+        print(f"manifest input error: {exc}", file=sys.stderr)
+        return 1
     valid, invalid = validate_all(entries, validator)
     if invalid:
         print("REFUSING TO SIMULATE: invalid entries present.", file=sys.stderr)
