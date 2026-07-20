@@ -204,11 +204,26 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
       largest sub-islands are `conv_state=15`, `gated_delta_net=13`, and
       `ssm_state=8`. Report:
       `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc4c_subtrace_20260720.md`.
-  - [ ] **PC-4d — profile-confirmed default-off prototype target**: use PC-4c
+  - [x] **PC-4d — profile-confirmed default-off prototype target ✅ 2026-07-20**: use PC-4c
     evidence to choose between recurrent `conv_state`/`gated_delta_net`/`ssm_state`
     fusion and same-input MoE/FFN graph fusion. Do not implement a default-off
     prototype until the follow-up profile ties the chosen island to lower
-    libomp spin/pause and wall time on repeated `p8192/n1`.
+    libomp spin/pause and wall time on repeated `p8192/n1`. Decision: choose
+    same-input MoE/FFN barrier-count reduction first, and explicitly reject a
+    recurrent-GDN-first prototype for the current evidence set. PC-3/PC-0 put
+    OpenMP spin/barrier at `38.36-43.12%` and MoE `mul_mat_id` at
+    `22.51-22.67%`, while GDN/SSM/RMS remain about `1-2%`. PC-4c's graph-node
+    deltas explain the recurrent island but do not override the timing profile.
+    Report:
+    `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc4d_target_selection_20260720.md`.
+  - [ ] **PC-4e — MoE/FFN boundary diagnostic + first default-off prototype**:
+    add or reuse default-off diagnostics around `build_layer_ffn` /
+    `build_moe_ffn` to separate router/top-k, gate-up, down-projection,
+    shared-expert, and aggregation graph/timing islands. Prototype only one
+    guarded graph-scheduling/fusion change after the diagnostic identifies the
+    exact MoE helper boundary responsible for OpenMP spin/pause. Acceptance:
+    exact-output smoke plus repeated `p8192/n1` profile showing lower libomp
+    spin/pause share and lower wall time.
 
 ## PC-0 operator-window plan
 
