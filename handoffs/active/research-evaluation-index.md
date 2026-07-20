@@ -76,7 +76,7 @@ New research-eval rows from the backlog ROI audit ([`backlog-roi-audit-2026-07-1
 - [ ] RE-1 Math-Verify scoring re-baseline (EV-11, S) — scorer flip landed 2026-07-17; EV-11a boxed-Latex parser companion fix landed 2026-07-20; fresh re-baseline waits on EV-11b ECE-binning operator decision.
 - [ ] RE-2 intake-757 execution-free patch verifier (EV-12, M) — pre-gate SIGNAL module built (`src/verification/patch_pre_gate.py` `902fd303`: verdict/should_escalate policy, 11 tests); live-dispatch gate wiring DEFERRED (serving-path, freeze)
 - [ ] RE-3 review-finding-F1 suite from intake-658 (EV-13, M)
-- [ ] RE-4 LongCoT-Mini calibration run, intake-386 (owner: `bulk-inference-campaign.md`, M)
+- [x] RE-4 LongCoT-Mini calibration run, intake-386 (owner: `bulk-inference-campaign.md`, M) — frontdoor/worker command path, manifest/source lock, and scored-artifact scaffolding are now concretely prepared from `run_benchmark.py` (`--suite longcot_mini` on both live stack roles); score commands pass `bash -n` and artifacts are recorded under `research` as per `581940a3` and `563930a3`. ✅ 2026-07-20 (compute not launched: `OP-quiet-window` still busy)
 - [ ] RE-5 Simula double-critic fold into F1-DGM scoping, intake-410 (owner: `frontier-f1-real-task-corpus.md`, S)
 - [x] Wilson/McNemar stdlib paired-significance port — independent non-inference operator-review item; NOT gated on the Harbor/TB-Core adapter it currently sits behind (consolidation owner: loops-and-dashboards; consumer: [`eval-benchmark-cost-reduction.md`](eval-benchmark-cost-reduction.md)) ✅ 2026-07-17 (`eval_tower.screen_paired_arms` — exact McNemar p + per-arm Wilson CIs on discordant pairs, provenance-gated; `e93c6263`. chapter-06 doc-note residual tracked in eval-benchmark-cost-reduction L77)
 
