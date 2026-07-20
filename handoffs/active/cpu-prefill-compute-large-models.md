@@ -3,9 +3,8 @@
 **Status**: SCOPED / PROFILE-GATED (B7 scoping closed 2026-07-18 from the v7
 lever audit). Design is complete enough to leave agent-zero-inference mode;
 PC-4 has one default-off post-candidate kernel package landed in
-`llama.cpp-experimental`, but any admission/default-policy decision still
-requires an operator bench window — **no inference/bench without operator
-approval** (`feedback_no_concurrent_inference`).
+`llama.cpp-experimental`. PC-4o now keeps it as an env-gated research/tuning
+candidate, not default-on and not part of frozen v7 `6ad45fa3ff`.
 **Owner handoff**: this file. **Parent index**: [inference-acceleration-index.md](inference-acceleration-index.md);
 sibling of [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md).
 
@@ -367,14 +366,20 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
     -j 16`, env-off CPU `CONCAT` `210/210`, env-on CPU `CONCAT` `210/210`,
     and env-on `test-recurrent-state-rollback --model
     build-k24-cpu/tests/test-models/qwen35moe-moe.gguf` all passed.
-  - [ ] **PC-4o — post-candidate admission/default-policy decision for CONCAT dim0 row partition**:
-    in a future operator bench window on the current experimental tip, rerun
-    repeated qwen35moe prefill cells and the focused correctness gate with
-    `GGML_CPU_CONCAT_DIM0_ROWS=1`, then decide whether the path remains
-    env-gated research, becomes an explicit tuning surface, is proposed
-    default-on for a future production version, or is retired. Do not fold it
-    into frozen v7 without a fresh final coherence+garbage smoke on the exact
-    promotion tip.
+  - [x] **PC-4o — post-candidate admission/default-policy decision for CONCAT dim0 row partition ✅ 2026-07-20**:
+    clean detached worktree `llama.cpp-pc4o-93d945885` reran focused
+    correctness and qwen35moe prefill cells with `GGML_CPU_CONCAT_DIM0_ROWS=1`;
+    artifact `data/cpu_prefill_compute/pc4o-clean-93d945885-20260720T083838Z/summary.json`.
+    Correctness passed env-off/env-on `CONCAT`. Repeat `p8192/n1` improved
+    `143.706482 -> 154.873915 t/s` (`+7.771%`), generated-token
+    `p8192/tg16` improved `127.140591 -> 171.573562 t/s` (`+34.948%`),
+    and batched `pl=2` prompt speed improved `150.372849 -> 183.501282 t/s`
+    (`+22.031%`). The tg-only row regressed `9.724244 -> 9.162666 t/s`
+    (`-5.775%`). Decision: keep the path default-off/env-gated as a
+    prefill/batched-prefill tuning candidate; do not make it default-on or fold
+    it into frozen v7 without an isolated exact-tip final smoke and a policy
+    decision on decode-only exposure. Evidence is observation-grade because K11
+    MI210 stop-string runs overlapped during part of the tail.
 
 ## PC-0 operator-window plan
 

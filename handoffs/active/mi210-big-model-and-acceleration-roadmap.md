@@ -158,7 +158,22 @@ P0 was fixed on experimental v7 `96986f5e9`); its gate is a strict-IF/rubric GBN
       before any serving route or NumericSwarm surface.
 - [ ] GLM-5.2 endgame: expert-offload / REAP+IQ2 path (operator-gated)
 - [x] **stream-K `nsm→k·nsm` + compact-LDS residual — zero-build artifact read CLOSED ✅ 2026-07-18** (v7-audit LANE B B2): artifact recovery found the original MI210 campaign under `/mnt/raid0/llm/tmp/mi210-build/campaign/`, including `mmq-compact-lds-NEGATIVE.patch`, `kernels/fused-prefetch-NEGATIVE.patch`, and rocprof CSVs under `moe-agg/prof/`. Read verdict: stream-K is already the live Q8 MMQ path (`mul_mat_q` plus `mul_mat_q_stream_k_fixup`); B32 Q8 MMQ dispatches use grid `53248 = 512 * 104 CUs`, i.e. one persistent workgroup per CU, with fixup grid `53248`, LDS `512`. The compact-LDS patch is explicitly negative and should not be revived. The only surviving idea is a distinct `2*nsm=208` persistent-grid experiment, but that is a new operator-gated build/bench with a narrow `+0–10%` IQ2/capacity ceiling, not a zero-inference closeout or saved-patch apply.
-- [ ] **K28 — GDN long-prefill recurrence kernel** (GPU; `ggml/src/ggml-cuda/gated_delta_net.cu:191` TODO): a new long-prefill CUDA/HIP recurrence kernel avoiding one serial token-axis scan per (head, seq, column-shard); must preserve GDA/KDA + transposed-state + K>1 snapshot semantics. Prefill t/s for hybrid (Qwen3.6/GDN) models; GPU sibling of [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md). Larger perf project, no bounded safe patch this session.
+- [ ] **K28 — GDN long-prefill recurrence kernel** (GPU; `ggml/src/ggml-cuda/gated_delta_net.cu:191` TODO): a new long-prefill CUDA/HIP recurrence kernel avoiding one serial token-axis scan per (head, seq, column-shard); must preserve GDA/KDA + transposed-state + K>1 snapshot semantics. Prefill t/s for hybrid (Qwen3.6/GDN) models; GPU sibling of [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md). Larger perf project; first profile pass is now complete.
+  - [x] **K28.1 — ROCm backend support/correctness/perf profile ✅ 2026-07-20**:
+    experimental `build-hip` at `93d945885-dirty` built `test-backend-ops`;
+    valid invocations pinned `LD_LIBRARY_PATH=$PWD/build-hip/bin` after a raw
+    run bound the wrong DSO and failed on `ggml_lightning_indexer`. Support/perf
+    artifacts: `data/k28_gdn_perf/k28-gdn-hip-currentdirty-20260720T085909Z/`,
+    `data/k28_gdn_perf/k28-gdn-hip-console-currentdirty-20260720T085954Z/`,
+    and `data/k28_gdn_perf/k28-gdn-hip-oddlen-currentdirty-20260720T090046Z/`.
+    Console perf on MI210 reported realistic `head_count=32,head_size=128`
+    long-token cases at `64: 152.99 us / 51.17 GB/s`, `256: 625.04 us /
+    31.36 GB/s`, `512: 1254.23 us / 28.15 GB/s`, and `1024: 2485.09 us /
+    26.87 GB/s`; odd-length 65-token GDN cases passed `3/3` correctness.
+    Interpretation: the long-prefill path is not HBM-bandwidth-saturated, so
+    chunking/fusion remains a plausible kernel target. Evidence is
+    observation-grade because the source tree has unrelated default-off
+    instrumentation changes; implementation remains open.
 
 ## Research Intake Update — 2026-07-16 (AirLLM / GPU-active-weight offload)
 
