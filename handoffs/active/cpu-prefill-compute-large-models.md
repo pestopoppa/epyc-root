@@ -294,7 +294,7 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
     Decision: PC-4j closes attribution and names the next source-level target;
     continue to avoid router/top-k, routed view/add expansion, scheduler
     split/copy changes, and `mul_mat_id` math under the current evidence.
-  - [ ] **PC-4k — default-off recurrent conv-input/state graph probe**:
+  - [x] **PC-4k — default-off recurrent conv-input/state graph probe ✅ 2026-07-20**:
     prototype only in `llama.cpp-experimental`, behind a clear opt-in flag, to
     reduce or fuse the `build_conv_state()` boundary:
     `build_rs(conv_states_all)` -> reshape state -> transpose `qkv_mixed` ->
@@ -303,7 +303,25 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
     repeated qwen35moe `p8192/n1` evidence showing lower
     `CONCAT`/`conv_input-*` barrier-attributed time and lower wall time. If the
     graph shape cannot be changed without aliasing or state-update risk, record
-    the no-go and move PC-4 to a different source-proven target.
+    the no-go and move PC-4 to a different source-proven target. Result:
+    default-off `GGML_CPU_CONCAT_DIM0_ROWS=1` row-partitions dim0 CONCAT over
+    flattened `(i1,i2,i3)` rows while leaving dim>0 on the existing path. CONCAT
+    backend tests passed with env off/on, recurrent rollback passed with env
+    off/on, and a transposed-src dim0 CONCAT test was added for F32/F16/BF16.
+    Clean qwen35moe `p8192/n1` A/B (`-r 2`, no trace) improved pp8192
+    `97.492993 -> 100.641523 t/s` (`+3.2295%`) and tg1
+    `4.648280 -> 4.743434 t/s` (`+2.0471%`). Traced A/B reduced the target
+    `CONCAT` barrier sum `2196940708 -> 17871828 us` (`-99.1865%`) and median
+    barrier/compute ratio `0.6915 -> 0.5603` (`-18.9661%`). Report:
+    `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc4k_concat_dim0_rows_20260720.md`.
+    Decision: keep-candidate, default-off only; not broad enough for default-on
+    or promotion without the repeat/shape gate below.
+  - [ ] **PC-4l — repeat/shape gate for CONCAT dim0 row partition**:
+    repeat the clean qwen35moe `p8192/n1` A/B to bound noise, then add wider
+    shape coverage, especially non-single `ne2` and generated-token smokes.
+    Keep recurrent rollback and transposed-src CONCAT backend tests in the
+    validation set. Decide carry-forward vs narrow-vs-retire only after this
+    evidence; do not promote PC-4k from the single clean A/B.
 
 ## PC-0 operator-window plan
 
