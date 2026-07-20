@@ -270,8 +270,9 @@ class TestJsonLoader(unittest.TestCase):
             self.assertEqual(report["summary"]["entries_total"], 5)
             self.assertEqual(report["summary"]["done_pass"], 1)
 
-    def test_missing_ledger_is_empty(self):
-        self.assertEqual(bsr.load_ledger(Path("/nonexistent/ledger.jsonl")), [])
+    def test_missing_ledger_fails_closed(self):
+        with self.assertRaisesRegex(bsr.StatusReportError, "ledger not found"):
+            bsr.load_ledger(Path("/nonexistent/ledger.jsonl"))
 
 
 if __name__ == "__main__":

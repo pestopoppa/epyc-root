@@ -97,10 +97,15 @@ def load_manifest(path: str | Path) -> dict[str, Any]:
 
 
 def load_ledger(path: str | Path) -> list[dict[str, Any]]:
-    """Load the append-only ledger.jsonl. Missing file -> empty ledger."""
+    """Load the append-only ledger.jsonl.
+
+    The status reporter is normally called with an explicit ledger path. Treat a
+    missing file as an operator-visible error so a typo cannot make blocked rows
+    disappear from the report.
+    """
     p = Path(path)
     if not p.exists():
-        return []
+        raise StatusReportError(f"ledger not found: {p}")
     rows: list[dict[str, Any]] = []
     for lineno, line in enumerate(p.read_text().splitlines(), start=1):
         if not line.strip():
