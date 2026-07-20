@@ -1,6 +1,6 @@
 schema_version: inference_batch.manifest.v1
 entry_schema_version: inference_batch.entry.v1
-generated_at: '2026-07-20T21:59:08Z'
+generated_at: '2026-07-20T22:02:29Z'
 entry_count: 52
 entries:
 - schema_version: inference_batch.entry.v1
@@ -24,7 +24,7 @@ entries:
     stack_lineup: REFERENCE trio — architect_general Qwen3.5-122B-A10B-Q4 / frontdoor
       Qwen3.6-35B-A3B-Q8 / gemma-4-26B-A4B workers; reviewer aliased to CPU architect_general
       (A3); GLM-5.2 NOT resident
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -38,7 +38,7 @@ entries:
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -52,7 +52,7 @@ entries:
     protocol_id: preflight-gate.v1 + three-gates (pipeline-green != starts != live==config)
     dry_run: false
     command: 'scripts/server/affinity_preflight.py --require-memory-locality && scripts/server/preflight_gate.py
-      --expected-topology-hash df373c79cc4af06f --require-servers --json && scripts/validate/attest_orchestrator_workers.py
+      --expected-topology-hash 8c8cfcbb13d2611d --require-servers --json && scripts/validate/attest_orchestrator_workers.py
       --min-workers 6 --expect-feature review_decision_shadow && scripts/validate/attest_flags.py
 
       '
@@ -69,7 +69,7 @@ entries:
   outcomes:
     expected: 'Reference lineup live==config on all six API workers; live affinity
       matches NUMA_CONFIG for every role; preflight_gate attestation JSON records
-      topology hash df373c79cc4af06f fresh; review_decision_shadow=ON confirmed on
+      topology hash 8c8cfcbb13d2611d fresh; review_decision_shadow=ON confirmed on
       ALL 6 uvicorn workers via per-worker flag introspection; review_decision_enforce
       OFF.
 
@@ -78,12 +78,12 @@ entries:
     - gate: Is the reference lineup live==config AND is review_decision_shadow=ON
         on ALL 6 workers AND topology attested fresh?
       evidence: three-gates check; affinity_preflight live-affinity pass; preflight_gate.py
-        attestation JSON (topology df373c79cc4af06f, servers up, matrix fresh); attest_orchestrator_workers.py
+        attestation JSON (topology 8c8cfcbb13d2611d, servers up, matrix fresh); attest_orchestrator_workers.py
         6/6 with feature review_decision_shadow; attest_flags.py no env diffs
       fork:
         pass:
           rule: 6/6 workers report review_decision_shadow=ON AND enforce=OFF AND live
-            affinity == NUMA_CONFIG for all roles AND topology hash == df373c79cc4af06f
+            affinity == NUMA_CONFIG for all roles AND topology hash == 8c8cfcbb13d2611d
           action:
           - flip RCP-W1 checkbox in bulk-inference-campaign.md
           - record attestation JSON path + per-worker flag table
@@ -124,11 +124,11 @@ entries:
   ledger:
     journal_quarantine_rule: 'record lineup id, kernel era, topology hash, per-worker
       shadow-flag state (6/6 required), enforce=OFF; quarantine the whole prologue
-      diagnostic_only if flag attestation is not 6/6 or topology hash != df373c79cc4af06f.
+      diagnostic_only if flag attestation is not 6/6 or topology hash != 8c8cfcbb13d2611d.
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:850c92bc9ca6aca1037b64754844ea6b76ab23c73bd580afcae9dd93b5bbba41
+  entry_hash: sha256:a574e7b42374450a96b1225326248b900774580f66229b719807049e4b29b038
 - schema_version: inference_batch.entry.v1
   task_id: RCP-W2-paired-shadow-replay
   title: RCP-W2 — RD-12 paired shadow-OFF/ON replay (feeds TM-8 coverage + LB-1 overhead
@@ -163,7 +163,7 @@ entries:
   preconditions:
     stack_lineup: REFERENCE trio (unchanged from RCP-W1); reviewer = CPU architect_general
       alias (A3)
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -177,7 +177,7 @@ entries:
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -279,7 +279,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:91fcdae8a89cd3ebcec2c9d4da5824ef47a3f1593111a65e9c0ac0e7559df24a
+  entry_hash: sha256:2ee377ab8539bd82c38a965ec770eb21377fe4097ef344786fe2e598ac9115ef
 - schema_version: inference_batch.entry.v1
   task_id: RCP-W3-rc8-smoke-slice
   title: 'RCP-W3 — RC-8 smoke slice: first FA/FR/CR observations on nearmiss-v1 (shadow
@@ -306,7 +306,7 @@ entries:
   preconditions:
     stack_lineup: REFERENCE trio (unchanged); reviewer = CPU architect_general alias
       (A3)
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -318,7 +318,7 @@ entries:
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: v7-recert-required
     autopilot: stopped
@@ -362,7 +362,7 @@ entries:
         cleanly and survive the broken-grader guardrail?
       evidence: reviewer_calibration_report.py panel (FA/FR/ratio/CR/parse-failure
         per domain, Wilson CIs, n>=100 multi_oracle rows); transcripts of surprising
-        rows read before belief; instrument stamp = kernel v6 + provisional ngram+MTP
+        rows read before belief; instrument stamp = kernel v7 + provisional ngram+MTP
         worker config + corpus nearmiss-v1@1c50c025 + flag state
       fork:
         pass:
@@ -415,7 +415,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:b1c9b38d9c734b591f27cd74d7db8da5f47217a58940652dba36378bc24b2a49
+  entry_hash: sha256:8392b666d63b7fed6ac4626a56e5d98cd046bfb915f2694bd7f83b02b48ca221
 - schema_version: inference_batch.entry.v1
   task_id: LB-1-regression-attribution
   title: LB-1 — Reproduce + attribute the plan-review throughput regression (offline
@@ -434,7 +434,7 @@ entries:
   phase: 1
   priority: P1
   preconditions:
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     host_health:
       tier: any
     topology:
@@ -516,7 +516,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:77ca07d495ffbcbbfba566efddea44d1aad4efab58c44889709213037c689ca2
+  entry_hash: sha256:ad0378fb4b84abb90d213d0f82edc1e108dff5e8c87e102bff2cd4ef055d74e4
 - schema_version: inference_batch.entry.v1
   task_id: LB-4-sampling-policy-ab
   title: LB-4 — Paired throughput A/B per sampling policy (observation-grade)
@@ -537,7 +537,7 @@ entries:
   preconditions:
     stack_lineup: REFERENCE trio (RCP-prologue relaunch); reviewer = CPU architect_general
       alias (A3)
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -551,7 +551,7 @@ entries:
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -639,7 +639,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:3cafbbcdc52ce494b4890720c70c32b85b22883fd67d2c25d006e293107bfc55
+  entry_hash: sha256:06b2514356b04a912040287a7cbce791fdbce6f1a35df50732d3c7208b8557b9
 - schema_version: inference_batch.entry.v1
   task_id: LB-7-baseline-floor
   title: 'LB-7 — M3 baseline floor: full plane vs single-augmented-LLM (A0/A1) on
@@ -662,7 +662,7 @@ entries:
   preconditions:
     stack_lineup: REFERENCE trio (RCP-prologue relaunch); plane arm = CPU architect_general
       reviewer alias (A3); baselines A0 gates-only / A1 self-review
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -676,7 +676,7 @@ entries:
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -769,7 +769,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:c23cdd4a25ae7f97ef772b25e7bb2c66a226077467f0f94618c9e1e61c438806
+  entry_hash: sha256:884a8517859a6dc12c7d305b525cf69832381ed3df9a57ea8ec8fca6b577347f
 - schema_version: inference_batch.entry.v1
   task_id: RC-8-full-corpus-baseline
   title: RC-8 — Full-corpus reviewer calibration baseline on nearmiss-v1 (observation
@@ -792,7 +792,7 @@ entries:
   preconditions:
     stack_lineup: REFERENCE trio (RCP-prologue relaunch); reviewer = CPU architect_general
       alias (A3)
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -804,7 +804,7 @@ entries:
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: v7-recert-required
     autopilot: stopped
@@ -894,7 +894,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:0cfde59f6ead39a9b24dc7e284ab35b2847bfb46b6d1518aa4525455c52568e8
+  entry_hash: sha256:593e29a76eb201324a05a0b62354eb5c829b8f9e202a3c61be623aaa2a4f338e
 - schema_version: inference_batch.entry.v1
   task_id: RD-12-full-replay
   title: RD-12 — Full paired shadow replay (only if NOT already covered by RCP-W2)
@@ -913,7 +913,7 @@ entries:
   preconditions:
     stack_lineup: REFERENCE trio (RCP-prologue relaunch); reviewer = CPU architect_general
       alias (A3)
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -927,7 +927,7 @@ entries:
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -1012,7 +1012,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:8bb8ab00efa8dcacc374b92d39521dd93d2d65a4517f8066e6fd57277696e98c
+  entry_hash: sha256:4a69edeaee1d1a5291de51899e42eca2fbb45a526716253645ed31808fc5f823
 - schema_version: inference_batch.entry.v1
   task_id: RM-6-field-order-ab
   title: RM-6 — RA-8 field-order A/B (V-first vs E-first GBNF) on the leading A1 self-review
@@ -1034,7 +1034,7 @@ entries:
   preconditions:
     stack_lineup: REFERENCE trio (RCP-prologue relaunch); leading arm = A1 self-review
       (CPU architect_general alias, A3)
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -1046,7 +1046,7 @@ entries:
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -1130,7 +1130,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:3be2d752709aeb6638330857cb2183b78a3d99253f881972b61db0036e619ff5
+  entry_hash: sha256:ed03a58a3729d0de4a8d3f8c7673b489d2729c430f603561c07708a239d9b0cd
 - schema_version: inference_batch.entry.v1
   task_id: TM-8-full-coverage
   title: TM-8 — Full trace-coverage gate (~100% of review invocations produce trace
@@ -1156,7 +1156,7 @@ entries:
   preconditions:
     stack_lineup: REFERENCE trio (RCP-prologue relaunch); reviewer = CPU architect_general
       alias (A3)
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -1170,7 +1170,7 @@ entries:
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: v7-recert-required
     autopilot: stopped
@@ -1252,7 +1252,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:230b1944e06c50b89472d6ada9701f11c8eb3501ac93085e0a780791f4948723
+  entry_hash: sha256:1cd1cd386dfc747e9c3887d66ed150fa57d8a33881187b5c279b5316ee888e5c
 - schema_version: inference_batch.entry.v1
   task_id: EV-11-math-rebaseline
   title: EV-11 — Fresh math re-baseline (GSM8K 1319 + MATH-500 500 = 1819) under math_verify
@@ -2305,7 +2305,7 @@ entries:
   preconditions:
     stack_lineup: REFERENCE trio (RCP-prologue relaunch, no reload); reviewer = CPU
       architect_general alias (A3)
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -2319,7 +2319,7 @@ entries:
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: v7-recert-required
     autopilot: stopped
@@ -2412,7 +2412,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:6365328d7613443a25a592bdf8e3233aa60d61b13ac19e4673b5706c80e4b745
+  entry_hash: sha256:11000c59d3bcf087d81823783ba7b35d4c229c1c4dac2d286da1e94e1d5570e8
 - schema_version: inference_batch.entry.v1
   task_id: H5-RM3-screening-tier
   title: H5 / RM-3 — Reviewer screening-tier small-n sweeps over reviewer_pool_gen
@@ -2900,7 +2900,7 @@ entries:
   preconditions:
     stack_lineup: REFERENCE trio (RCP-prologue relaunch, no reload); reviewer = CPU
       architect_general alias (A3); advisory surfacing server-side only (x_* fields)
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -2914,7 +2914,7 @@ entries:
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -3009,7 +3009,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:b0d104aaadbbba424de177679f3a27af5146d0271a057b1c74c0b42f7c55b667
+  entry_hash: sha256:4256785cd5a1567bdfc360f56fafb533b6d71cc99e954f7f7f5baf6f058d7198
 - schema_version: inference_batch.entry.v1
   task_id: BULK-K-EMB-1
   title: K-EMB-1 — Granite embedder bench Phase B (load/vector smoke -> Phase B)

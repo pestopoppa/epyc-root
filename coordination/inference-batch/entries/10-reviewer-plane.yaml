@@ -47,7 +47,7 @@
 
   preconditions:
     stack_lineup: "REFERENCE trio (RCP-prologue relaunch); reviewer = CPU architect_general alias (A3)"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -61,7 +61,7 @@
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: v7-recert-required
     autopilot: stopped
@@ -152,7 +152,7 @@
   priority: P1
 
   preconditions:
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     host_health:
       tier: any
     topology:
@@ -245,7 +245,7 @@
 
   preconditions:
     stack_lineup: "REFERENCE trio (RCP-prologue relaunch); reviewer = CPU architect_general alias (A3)"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -259,7 +259,7 @@
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -357,7 +357,7 @@
 
   preconditions:
     stack_lineup: "REFERENCE trio (RCP-prologue relaunch); reviewer = CPU architect_general alias (A3)"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -369,7 +369,7 @@
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: v7-recert-required
     autopilot: stopped
@@ -472,7 +472,7 @@
 
   preconditions:
     stack_lineup: "REFERENCE trio (RCP-prologue relaunch); leading arm = A1 self-review (CPU architect_general alias, A3)"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -484,7 +484,7 @@
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -581,7 +581,7 @@
 
   preconditions:
     stack_lineup: "REFERENCE trio (RCP-prologue relaunch); reviewer = CPU architect_general alias (A3)"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -595,7 +595,7 @@
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -693,7 +693,7 @@
 
   preconditions:
     stack_lineup: "REFERENCE trio (RCP-prologue relaunch); plane arm = CPU architect_general reviewer alias (A3); baselines A0 gates-only / A1 self-review"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -707,7 +707,7 @@
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -813,7 +813,7 @@
 
   preconditions:
     stack_lineup: "REFERENCE trio (RCP-prologue relaunch, no reload); reviewer = CPU architect_general alias (A3)"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -827,7 +827,7 @@
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: v7-recert-required
     autopilot: stopped
@@ -930,7 +930,7 @@
 
   preconditions:
     stack_lineup: "REFERENCE trio (RCP-prologue relaunch, no reload); reviewer = CPU architect_general alias (A3); advisory surfacing server-side only (x_* fields)"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -944,7 +944,7 @@
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped

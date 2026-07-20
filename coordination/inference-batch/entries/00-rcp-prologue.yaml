@@ -12,7 +12,7 @@
 # Window discipline: ONE quiesced window (~1.5-2h), AutoPilot STOPPED, REFERENCE
 # lineup only (122B-Q4 architect / 35B frontdoor / gemma workers; reviewer aliased
 # to the CPU architect_general per spec amendment A3 — NO stack change, NOT the
-# GPU-resident 122B-IQ2 arm; GLM-5.2 NOT resident). Kernel per OP-6(a): v6-now.
+# GPU-resident 122B-IQ2 arm; GLM-5.2 NOT resident). Kernel per OP-6(a): current production v7.
 # All numbers observation-grade pre-P-REV-1 (RC-6a). Operator gates: OP-6a + OP-6b.
 #
 # Self-check:  python -c "import yaml; yaml.safe_load(open('00-rcp-prologue.yaml'))"
@@ -41,7 +41,7 @@
 
   preconditions:
     stack_lineup: "REFERENCE trio — architect_general Qwen3.5-122B-A10B-Q4 / frontdoor Qwen3.6-35B-A3B-Q8 / gemma-4-26B-A4B workers; reviewer aliased to CPU architect_general (A3); GLM-5.2 NOT resident"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -55,7 +55,7 @@
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -78,7 +78,7 @@
     #  stragglers, `stop --all` first. The command below is the POST-RELAUNCH preflight only; all 4 clauses are real/verified.)
     command: >
       scripts/server/affinity_preflight.py --require-memory-locality &&
-      scripts/server/preflight_gate.py --expected-topology-hash df373c79cc4af06f --require-servers --json &&
+      scripts/server/preflight_gate.py --expected-topology-hash 8c8cfcbb13d2611d --require-servers --json &&
       scripts/validate/attest_orchestrator_workers.py --min-workers 6 --expect-feature review_decision_shadow &&
       scripts/validate/attest_flags.py
     cwd: /mnt/raid0/llm/epyc-orchestrator
@@ -96,14 +96,14 @@
     expected: >
       Reference lineup live==config on all six API workers; live affinity matches
       NUMA_CONFIG for every role; preflight_gate attestation JSON records topology
-      hash df373c79cc4af06f fresh; review_decision_shadow=ON confirmed on ALL 6
+      hash 8c8cfcbb13d2611d fresh; review_decision_shadow=ON confirmed on ALL 6
       uvicorn workers via per-worker flag introspection; review_decision_enforce OFF.
     gate_table:
       - gate: "Is the reference lineup live==config AND is review_decision_shadow=ON on ALL 6 workers AND topology attested fresh?"
-        evidence: "three-gates check; affinity_preflight live-affinity pass; preflight_gate.py attestation JSON (topology df373c79cc4af06f, servers up, matrix fresh); attest_orchestrator_workers.py 6/6 with feature review_decision_shadow; attest_flags.py no env diffs"
+        evidence: "three-gates check; affinity_preflight live-affinity pass; preflight_gate.py attestation JSON (topology 8c8cfcbb13d2611d, servers up, matrix fresh); attest_orchestrator_workers.py 6/6 with feature review_decision_shadow; attest_flags.py no env diffs"
         fork:
           pass:
-            rule: "6/6 workers report review_decision_shadow=ON AND enforce=OFF AND live affinity == NUMA_CONFIG for all roles AND topology hash == df373c79cc4af06f"
+            rule: "6/6 workers report review_decision_shadow=ON AND enforce=OFF AND live affinity == NUMA_CONFIG for all roles AND topology hash == 8c8cfcbb13d2611d"
             action:
               - "flip RCP-W1 checkbox in bulk-inference-campaign.md"
               - "record attestation JSON path + per-worker flag table"
@@ -139,7 +139,7 @@
     journal_quarantine_rule: >
       record lineup id, kernel era, topology hash, per-worker shadow-flag state (6/6
       required), enforce=OFF; quarantine the whole prologue diagnostic_only if flag
-      attestation is not 6/6 or topology hash != df373c79cc4af06f.
+      attestation is not 6/6 or topology hash != 8c8cfcbb13d2611d.
     era_stamp: "instrument-era-2026-06-12-post-measurement-constitution"
 
 - schema_version: inference_batch.entry.v1
@@ -169,7 +169,7 @@
 
   preconditions:
     stack_lineup: "REFERENCE trio (unchanged from RCP-W1); reviewer = CPU architect_general alias (A3)"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -183,7 +183,7 @@
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -299,7 +299,7 @@
 
   preconditions:
     stack_lineup: "REFERENCE trio (unchanged); reviewer = CPU architect_general alias (A3)"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -311,7 +311,7 @@
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: v7-recert-required
     autopilot: stopped
@@ -353,7 +353,7 @@
       (intake-836 overcorrection prior). Transcripts confirm numbers are real.
     gate_table:
       - gate: "Do the first FA/FR/CR observations on the nearmiss-v1 smoke slice compute cleanly and survive the broken-grader guardrail?"
-        evidence: "reviewer_calibration_report.py panel (FA/FR/ratio/CR/parse-failure per domain, Wilson CIs, n>=100 multi_oracle rows); transcripts of surprising rows read before belief; instrument stamp = kernel v6 + provisional ngram+MTP worker config + corpus nearmiss-v1@1c50c025 + flag state"
+        evidence: "reviewer_calibration_report.py panel (FA/FR/ratio/CR/parse-failure per domain, Wilson CIs, n>=100 multi_oracle rows); transcripts of surprising rows read before belief; instrument stamp = kernel v7 + provisional ngram+MTP worker config + corpus nearmiss-v1@1c50c025 + flag state"
         fork:
           pass:
             rule: "report completes on >=100 multi_oracle rows AND FA/FR/CR computed with CIs AND transcript spot-check confirms the numbers reflect real decisions (not grader repair)"
