@@ -2,6 +2,8 @@
 
 **Status (2026-07-20):** manifest built, command-fabrication-audited + repaired, backlog runners built, autopilot-wired — **loop-ready after v7 reconciliation + EV-4 Phase-0/3 hardening**. Production is now `production-consolidated-v7` (`6ad45fa3ff`, binary `10098`), and `COORD-v7-promotion` is terminal `DONE_PASS` in the ledger. OP-2/v6+iqk closed outside the loop; GLM reviewer admission failed and the reviewer/control-plane route is decoupled from v7. Lead with the remaining live island instead of stale kernel/GLM reruns.
 
+**No-execute bridge preflight sidecar (2026-07-20T22:31Z; no entry completion):** the main session's `/tmp/inference_batch_eligible_preflight_20260720.jsonl` contains exactly 8 `phase=preflight` rows for `RE-4-longcot-mini-calibration`, `BULK-langgraph-tm7-parity`, `BULK-K-EMB-1`, `BULK-hermes-smokes`, `BULK-kbrag-autowiki-k11`, `ROUTE-A1-shapekeyed-step2`, `ROUTE-A2-edit-transaction-ab`, and `ROUTE-A3-j2j3-single-worker`. Every row has `dry_run_ok=true`, `blocking_reasons=[]`, topology verified against attestation `coordination/inference-batch/attestations/20260720T191355.json` with live hash `8c8cfcbb13d2611d`, `stack_contract.ok=true`, and `autopilot_precondition.ok=true`. The bridge passed no `--execute`; it created no batch ledger row or artifact package, and no execution checkbox was flipped.
+
 **Topology repin checkpoint (2026-07-20; no entry completion):** root commit
 `2c5a4125` repinned the P3 bulk-campaign and P4 routing source entries to
 `production-consolidated-v7` with certified topology
