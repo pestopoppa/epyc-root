@@ -2,15 +2,21 @@
 
 **Purpose**: forward-looking backlog for unimplemented CPU decode/prefill throughput work on local EPYC 9655 Turin hardware.
 **Scope**: CPU-only single-instance or aggregate throughput. GPU work lives in [gpu-acceleration-path.md](gpu-acceleration-path.md); routing/orchestration lives in [routing-and-optimization-index.md](routing-and-optimization-index.md); eval/quality lives in [research-evaluation-index.md](research-evaluation-index.md).
-**Updated**: 2026-07-20 PC-4m source hardening closed for the
-`GGML_CPU_CONCAT_DIM0_ROWS=1` experimental, default-off candidate: unsupported
-shapes now stay on existing concat kernels through an explicit support
-predicate; focused CPU CONCAT tests pass env-off/env-on (`210/210` both ways);
-direct `qwen35moe-moe.gguf` recurrent rollback passes env-off/env-on with the
-experimental DSO path pinned. Next is PC-4n: explicit operator-approved
-`llama.cpp-experimental` commit/package, not default-on and not a frozen-v7
-candidate update. Prior: PC-4l repeat/shape gate was positive and carried the
-candidate forward:
+**Updated**: 2026-07-20 PC-4n closed: the
+`GGML_CPU_CONCAT_DIM0_ROWS=1` experimental, default-off CONCAT dim0 row
+partition is committed and pushed in `llama.cpp-experimental` as post-candidate
+research (`93d945885`, `Add default-off CPU CONCAT dim0 row partition`). The
+package touched only `ggml/src/ggml-cpu/ops.cpp` and
+`tests/test-backend-ops.cpp`, keeps the path env-gated/default-off, tightens
+support to exact matching tensor types, and does not change frozen v7
+candidate `6ad45fa3ff`. Post-commit validation passed `git diff --check`,
+focused CPU `CONCAT` env-off/env-on (`210/210` both ways), and env-on
+`test-recurrent-state-rollback` with the experimental DSO path pinned. Next is
+PC-4o: operator-window admission/default-policy decision for the committed
+candidate, not a default-on or frozen-v7 update. Prior: PC-4m source hardening
+closed for the same candidate; unsupported shapes stay on existing concat
+kernels through an explicit support predicate. Prior: PC-4l repeat/shape gate
+was positive and carried the candidate forward:
 repeat qwen35moe `p8192/n1` improved pp8192 `95.531624 -> 104.210589 t/s`
 (`+9.0849%`), generated-token `pp8192+tg16` improved
 `88.838786 -> 93.782587 t/s` (`+5.5649%`), and batched `pl=2` prompt speed
@@ -69,7 +75,7 @@ PC-0 first cell and PC-3 target selection closed positive; PC-4 experimental pro
 | P1 (GATED) | MoE-Spec CPU spec-dec integration | [moe-spec-cpu-spec-dec-integration.md](moe-spec-cpu-spec-dec-integration.md) | Zero-inference assessment closed 2026-07-18: the 2026-07-03 live-α report proves current verification-batch consumers exist (`frontdoor` α=0.6582, `worker_general` α=0.8256, `architect_general` α=0.6854, failed MTP roles `[]`). Reopen only to a current live-MTP MoE verifier B-sweep with speed, acceptance, and quality/bit-exact guard. Registry integration remains blocked until that sweep exists. |
 | P1 | CPU roofline / AMD counter calibration | [cpu-kernel-env-flags-inventory.md](cpu-kernel-env-flags-inventory.md), [deepseek-v4-flash-cpu-port.md](deepseek-v4-flash-cpu-port.md) | Research `ad9b73a` added the no-inference AMD perf-counter preflight and `bench_canonical.sh --perf` guard; research `515a50b` unblocked it after installing/exposing `linux-perf` in the devcontainer and teaching the preflight to recognize `perf list` alias rows such as `cpu-cycles OR cycles`. Current artifact `data/cpu_optimization/2026-07-03-amd-perf-counter-preflight/summary.{json,md}` is `status=ok`; all canonical Zen 5 events are visible, the smoke probe passed, and `bench_canonical.sh --perf --dry-run` prints the canonical event wrap without inference. Next action is claim-grade perf benches in the appropriate host-health/clean-window protocol. |
 | P1 | Shape-specialized GEMV / AVX-512 follow-ons | [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md) | Lead with the frontdoor Q8_0 barrier-count fusion A/B (fuse expert gate+up, attn QKV cluster; cheapest test = llama-bench tg128 fusion on/off in one window; est +10-15% decode, one cluster already measured +2.6%; **absolute ceiling +72% (4.42→7.6 t/s) if BW-util matches dense**; re-elevated 2026-07-03 by findings-05 as the #1 CPU decode lever; **v7-audit LANE B B1 — bundle into the OP-2 quiet window**). Keep landed Q8_0 wins. Q6_K/Q5_K SIMD follow-ons are explicitly DEPRIORITIZED per the roofline finding. |
-| P1 | Prefill-compute for large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | B7 design/scoping, PC-0 premise profiling, and PC-3 target selection are closed. PC-4c through PC-4h rejected recurrent-GDN-first, compact routed-view/add aggregation, and router/top-k/weights prototypes. PC-4i rejected scheduler split/copy logic. PC-4j mapped CPU-backend barrier attribution to `CONCAT`/`conv_input-*` in shared `build_conv_state()`, PC-4k proved the default-off row-partition candidate, PC-4l repeated/expanded it positive (`+9.0849%` pp8192, `+5.5649%` pp8192+tg16, `+54.1939%` batched pl=2 prompt speed), and PC-4m source-hardened/expanded correctness coverage (`210/210` CONCAT env-off/env-on plus recurrent rollback env-off/env-on). Next gate is **PC-4n**: operator-approved experimental commit/package only; no default-on or frozen-v7 candidate change. |
+| P1 | Prefill-compute for large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | B7 design/scoping, PC-0 premise profiling, and PC-3 target selection are closed. PC-4c through PC-4h rejected recurrent-GDN-first, compact routed-view/add aggregation, and router/top-k/weights prototypes. PC-4i rejected scheduler split/copy logic. PC-4j mapped CPU-backend barrier attribution to `CONCAT`/`conv_input-*` in shared `build_conv_state()`, PC-4k proved the default-off row-partition candidate, PC-4l repeated/expanded it positive (`+9.0849%` pp8192, `+5.5649%` pp8192+tg16, `+54.1939%` batched pl=2 prompt speed), PC-4m source-hardened/expanded correctness coverage (`210/210` CONCAT env-off/env-on plus recurrent rollback env-off/env-on), and PC-4n committed the default-off package as post-candidate experimental work (`llama.cpp-experimental` `93d945885`). Next gate is **PC-4o**: operator-window admission/default-policy decision; no default-on or frozen-v7 candidate change without a fresh exact-tip final smoke. |
 | P2 | Phase-disaggregated serving | [numa-prefill-decode-disaggregation.md](numa-prefill-decode-disaggregation.md) | Keep only the Phase 0 xGMI KV-transfer falsification gate active; do not build serving code until transfer cost is measured. |
 | P2 | Sarathi / MegaBlocks / Tutel ports — gate evaluation | [sarathi-serve-cpu-evaluation.md](sarathi-serve-cpu-evaluation.md), [large-moe-expert-parallelism.md](large-moe-expert-parallelism.md) | The reopen gate has arguably FIRED: E2 is a keep-candidate 4.858x eval-batch regime since 2026-07-03, and the sarathi handoff itself names exactly this trigger. Run the explicit gate evaluation — decide reopen-vs-re-close citing E1/E2 evidence. This is batched-decode waypoint E4 (doc-only, zero inference). |
 
@@ -125,4 +131,5 @@ After completing a CPU queue item:
 - [x] P1 Prefill-compute PC-4i: scheduler split attribution completed; qwen35moe `p8192/n1` is one CPU scheduler split, so PC-4 moves to CPU-backend node/barrier attribution. ✅ 2026-07-20
 - [x] P1 Prefill-compute PC-4j: CPU-backend node/barrier attribution completed; `CONCAT`/`conv_input-*` in shared `build_conv_state()` is the first source-level barrier target. ✅ 2026-07-20
 - [x] P1 Prefill-compute PC-4k/4l/4m: default-off `GGML_CPU_CONCAT_DIM0_ROWS=1` proved positive, repeated/expanded positive, then source-hardened with broader backend correctness and recurrent rollback coverage. ✅ 2026-07-20
-- [ ] P1 Prefill-compute PC-4n: request/receive explicit operator approval before committing the default-off CONCAT dim0 row-partition patch in `llama.cpp-experimental`; keep it post-candidate and default-off.
+- [x] P1 Prefill-compute PC-4n: operator-approved experimental commit/package completed in `llama.cpp-experimental` commit `93d945885`; package is default-off, post-candidate, and excluded from frozen v7 `6ad45fa3ff`. ✅ 2026-07-20
+- [ ] P1 Prefill-compute PC-4o: operator-window admission/default-policy decision for the committed CONCAT dim0 row-partition path; no default-on or frozen-v7 candidate change without a fresh exact-tip final smoke.

@@ -2,8 +2,10 @@
 
 **Status**: SCOPED / PROFILE-GATED (B7 scoping closed 2026-07-18 from the v7
 lever audit). Design is complete enough to leave agent-zero-inference mode;
-remaining implementation work is PC-4 only — **no inference/bench without operator approval**
-(`feedback_no_concurrent_inference`).
+PC-4 has one default-off post-candidate kernel package landed in
+`llama.cpp-experimental`, but any admission/default-policy decision still
+requires an operator bench window — **no inference/bench without operator
+approval** (`feedback_no_concurrent_inference`).
 **Owner handoff**: this file. **Parent index**: [inference-acceleration-index.md](inference-acceleration-index.md);
 sibling of [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md).
 
@@ -351,12 +353,28 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
     Decision: request explicit operator approval before committing this
     `llama.cpp-experimental` patch; keep it default-off and do not treat it as
     part of the frozen v7 promotion candidate.
-  - [ ] **PC-4n — operator-approved experimental commit/package for CONCAT dim0 row partition**:
-    if approved, commit only the PC-4k/PC-4m `GGML_CPU_CONCAT_DIM0_ROWS=1`
-    source and test changes in `llama.cpp-experimental` as post-candidate
-    research, record the commit hash in this handoff and the indices, and rerun
-    the focused correctness gate from PC-4m after commit. This does not change
-    the frozen v7 promotion candidate and does not authorize default-on.
+  - [x] **PC-4n — operator-approved experimental commit/package for CONCAT dim0 row partition ✅ 2026-07-20**:
+    committed only the PC-4k/PC-4m `GGML_CPU_CONCAT_DIM0_ROWS=1` source and
+    test changes in `llama.cpp-experimental` as post-candidate research:
+    `93d945885` (`Add default-off CPU CONCAT dim0 row partition`), pushed to
+    `fork/experimental-v7-refresh-20260716`. The package keeps the fast path
+    default-off, now requires exact matching tensor types before entering the
+    row-partition path, and leaves the frozen v7 promotion candidate
+    `6ad45fa3ff` unchanged. Post-commit validation used the experimental DSO
+    path explicitly (`LD_LIBRARY_PATH=$PWD/build-k24-cpu/bin...`) after a raw
+    invocation was observed binding to production-v6 libraries:
+    `git diff --check`, `cmake --build build-k24-cpu --target test-backend-ops
+    -j 16`, env-off CPU `CONCAT` `210/210`, env-on CPU `CONCAT` `210/210`,
+    and env-on `test-recurrent-state-rollback --model
+    build-k24-cpu/tests/test-models/qwen35moe-moe.gguf` all passed.
+  - [ ] **PC-4o — post-candidate admission/default-policy decision for CONCAT dim0 row partition**:
+    in a future operator bench window on the current experimental tip, rerun
+    repeated qwen35moe prefill cells and the focused correctness gate with
+    `GGML_CPU_CONCAT_DIM0_ROWS=1`, then decide whether the path remains
+    env-gated research, becomes an explicit tuning surface, is proposed
+    default-on for a future production version, or is retired. Do not fold it
+    into frozen v7 without a fresh final coherence+garbage smoke on the exact
+    promotion tip.
 
 ## PC-0 operator-window plan
 
