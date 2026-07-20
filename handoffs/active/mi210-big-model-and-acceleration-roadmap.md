@@ -187,6 +187,16 @@ P0 was fixed on experimental v7 `96986f5e9`); its gate is a strict-IF/rubric GBN
     K28; the remaining speed path is a real fused-kernel recurrence improvement
     (or a separate BF16-state/model-level quality gate), not routing to graph
     chunking.
+  - [x] **K28.3 — BF16 recurrent GDN state speed A/B CLOSED NEUTRAL ✅ 2026-07-20**:
+    existing `GGML_CUDA_GDN_STATE_BF16=1` was measured on Qwen3.6-35B-A3B Q8
+    MI210 against default F32 recurrent state. Prompt-only rows slightly
+    regressed: p2048 `2098.07 -> 2081.52 t/s` (`-0.79%`) and p8192
+    `1994.42 -> 1979.34 t/s` (`-0.76%`). Decode-only p0/n128 moved
+    `99.52 -> 100.25 t/s` (`+0.74%`). Evidence:
+    `data/k28_gdn_perf/k28-gdn-state-bf16-qwen36-35b-20260720T092251Z/summary.json`.
+    Verdict: do not treat BF16 GDN state as a throughput lever for K28; keep it
+    as memory/residency research only, requiring a separate quality/coherence
+    gate before any serving use.
 
 ## Research Intake Update — 2026-07-16 (AirLLM / GPU-active-weight offload)
 

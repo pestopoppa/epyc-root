@@ -71,6 +71,11 @@ graph chunking path on Qwen3.6-35B-A3B Q8 MI210 prompt-only cells; graph chunkin
 lost by `-6.30%` to `-6.69%` from p64 through p8192. Keep K28 open only for a
 real fused-kernel recurrence improvement or a separately gated BF16-state/model
 quality path.
+The BF16-state speed leg also closed neutral on 2026-07-20: existing
+`GGML_CUDA_GDN_STATE_BF16=1` slightly regressed prompt-only rows (`-0.76%` to
+`-0.79%`) and improved decode-only by only `+0.74%` on the same Qwen3.6-35B-A3B
+Q8 MI210 slice. Treat it as memory/residency research, not a v7 throughput
+lever.
 
 ## Technique candidates (from intake-798 submissions)
 
