@@ -2,8 +2,35 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-07-19 (adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
-**Sources**: 85+ documents
+**Last compiled**: 2026-07-20 (adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
+**Sources**: 90+ documents
+
+## Compiled Update — 2026-07-20
+
+New CPU-prefill and GPU-kernel evidence sharpens the roofline picture: **CPU decode is bandwidth-exhausted, but CPU *prefill* is a distinct, still-open compute-bound regime**, and the GPU *raw-speed* frontier is now considered structurally exhausted (the live GPU frontier is residency/teleport, not more kernel speed). All 2026-07 GPU throughput numbers remain **observation-grade** pending post-promotion `P-GPU-1` certification.
+
+### Key Findings (2026-07-20)
+
+- **v7 is validated and READY but NOT promoted** — frozen at `experimental-v7-refresh-20260716 @ 6ad45fa3ff` (binary `10098`). Banked, correctness-verified, runtime-gated-off wins: HIP per-decode graph capture **+25%** worker spec-dec (A4B MoE) / +4–14% base decode; MMVQ→MMQ small-batch verify-dispatch **+17.4%** MTP-verify / **+31.7%** gemma-31B; nwarps 2→4 +4.6%; async prefetch +3.3%; bf16 GDN recurrent-state **+21.5% @B32**; single-stream dense-Q8 **+37%** (29→40.4 t/s). K5 quality neutral (+0.0% MMLU-Pro/GPQA). ([v7-promotion](../handoffs/active/v7-promotion.md), [gemma-challenge-kernel-techniques-v7](../handoffs/active/gemma-challenge-kernel-techniques-v7.md))
+- **CPU prefill ≠ CPU decode roofline (verified).** Decode is DRAM-BW-bound (Qwen3.6-27B Q8 @96t = 0.17 IPC, 96.6% cycles memory-stalled); prefill is `M>1` GEMM, compute-bound. PC-0 confirmed positive: 122B architect Q4 `p8192` ≈ 108–122 t/s at 0.92–1.47 IPC, and prompt/prefill dominates wall-clock in the targeted large/long-context regimes (GLM-5.2 patch review 81% prompt-wall, ingest 31K 75.1%). ([cpu-prefill-compute-large-models](../handoffs/active/cpu-prefill-compute-large-models.md))
+- **The CPU-prefill hot path is OpenMP barriers, not math.** Symbolized profiling (PC-3/PC-4j) attributes 38–44% of prefill to `GOMP_barrier`/`__kmpc_barrier` (libomp spin/pause), ~22% to MoE `mul_mat_id`, and only ~1–2% each to GDN/SSM/RMS. The first landed lever is a **default-off CPU `CONCAT` dim0 row-partition** (`GGML_CPU_CONCAT_DIM0_ROWS=1`, experimental commit `93d945885`) targeting the `conv_input` CONCAT barrier in shared `build_conv_state()`: measured `pp8192` **+3.2% to +9.1%** single-seq and batched `pl=2` prompt **+22% to +54%**, cutting the target CONCAT barrier sum ~99%. It is a keep-candidate, **default-off only, NOT part of frozen v7** (one decode-only row regressed −5.8%). ([cpu-prefill-compute-large-models](../handoffs/active/cpu-prefill-compute-large-models.md), [progress 2026-07-20](../progress/2026-07/2026-07-20.md))
+- **GPU raw-speed frontier is structurally exhausted** (single-stream dense-Q8 at the +37% ceiling; occupancy rewrites + compact-LDS falsified; stream-K already the live Q8 MMQ path). K28 GDN long-prefill fused-chunked kernel: the serial token-scan op is serial-dependency-bound (effective BW *falls* 51→27 GB/s as prompt grows, ~1.7% of MI210 HBM peak → real fusion headroom), but the Phase-0 full-model ceiling is bounded — GDN is only ~15% of GPU prefill wall-clock, so a 4× op speedup maps to only ~11% full-model gain. Do NOT delay v7 for it; post-promotion/default-off only. ([mi210-big-model-and-acceleration-roadmap](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md), [k28-fused-chunked-gdn-kernel-research](../handoffs/active/k28-fused-chunked-gdn-kernel-research.md))
+- **E5 NUMA×batch is the never-measured 2D cross** (specced, post-promotion, runs last): batching amortizes per-token weight reads and may shift CPU decode from BW-bound to compute-bound, flipping the NUMA-locality advantage at high `-np` K — the crossover sets the slot-fabric grid shape. ([batched-decode-measurement](../handoffs/active/batched-decode-measurement.md))
+
+### Open Questions (2026-07-20)
+
+- Should the `CONCAT` dim0 row-partition ever go default-on / fold into a future production kernel, given the one decode-only regression?
+- Does a real fused chunked GDN recurrence kernel raise the K28 Phase-0 ceiling enough to justify weeks of work? (Blocked on direct ROCm profiler attribution — `rocprofv2`/`rocprof`/`omniperf` currently unavailable on the host.)
+- Where is the E5 NUMA×batch crossover K (one big high-`-np` server vs quarter-batched servers)?
+
+### Source References (2026-07-20)
+
+- [cpu-prefill-compute-large-models.md](../handoffs/active/cpu-prefill-compute-large-models.md) — PC-0..PC-4 profiling: prefill is compute-bound, hot path is OpenMP barriers, CONCAT dim0 row-partition lever.
+- [v7-stack-throughput-full-optimization.md](../docs/reference/v7-stack-throughput-full-optimization.md) — deployed-lane vs candidate-bench throughput table with provenance guards.
+- [v7-promotion.md](../handoffs/active/v7-promotion.md) / [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md) — banked runtime-gated-off wins + readiness gate audit.
+- [mi210-big-model-and-acceleration-roadmap.md](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md) — GPU raw-speed frontier exhausted; residency/teleport is the live frontier.
+- [k28-fused-chunked-gdn-kernel-research.md](../handoffs/active/k28-fused-chunked-gdn-kernel-research.md) + [progress 2026-07-20-k28](../progress/2026-07/2026-07-20-k28-fused-gdn-kernel-research.md) — GDN serial-dependency-bound op + bounded full-model ceiling.
+- [batched-decode-measurement.md](../handoffs/active/batched-decode-measurement.md) — E5 NUMA×batch 2D sweep spec.
 
 ## Summary
 

@@ -2,8 +2,33 @@
 
 **Category**: `moe_optimization`
 **Confidence**: verified (CPU MoE findings) · observation (2026-07-06 MI210 GPU MoE-MTP numbers — single-run, no P-GPU-1 per MEASUREMENT.md)
-**Last compiled**: 2026-07-17 (adds GLM-5.2 DSA-DENSE-MASK runtime classification + expert-routing-skew hypothesis + Hy3 MoE-verify-wall re-confirmation; ⚠️ 2026-07-06 GPU MoE-MTP-negative note added under the CPU-MTP-wall finding — human review)
-**Sources**: 33 documents
+**Last compiled**: 2026-07-20 (adds the reasoning∝active MoE law, the production-representative GLM expert-routing-skew result, the IQ2 GPU big-MoE residency ladder, and the slot-fabric residency model; earlier 2026-07-17 note: adds GLM-5.2 DSA-DENSE-MASK runtime classification + expert-routing-skew hypothesis + Hy3 MoE-verify-wall re-confirmation; ⚠️ 2026-07-06 GPU MoE-MTP-negative note added under the CPU-MTP-wall finding — human review)
+**Sources**: 37 documents
+
+## Compiled Update — 2026-07-20
+
+New evidence pins down the MoE reasoning-vs-knowledge law and settles the offload/REAP viability gate for GLM-5.2 with a measured routing-skew profile. Confidence: `external` for the sparsity literature, `verified` for the routing-skew measurement, `observation` for all MI210 residency throughput.
+
+### Key Findings (2026-07-20)
+
+- **Reasoning ∝ ACTIVE FLOPs; knowledge/memorization ∝ TOTAL params; reasoning is non-monotonic in sparsity** (intake-859 `2508.18672`, cred 5). Denser overtakes once active-param counts grow; raising total experts at fixed top-k degrades reasoning while raising top-k mitigates it; neither test-time compute nor GRPO rescues over-sparsity — it is architectural. This makes a **large-total / moderate-active MoE (122B-A10B)** the literature-default architect (active⇒reasoning, total⇒knowledge) and the 35B-A3B (3B active) the reasoning floor; on a bandwidth-bound CPU, an MoE reaching dense-level quality at ~1/10 active FLOPs is exactly why MoE wins. A mid-size MoE can Pareto-dominate a larger one at 1/3 the memory (Gemma-4-E4B ≈ Gemma-4-26B-A4B — intake-862 `2604.07035`, cred 2). ([architect-model-selection-2026-07-20](../docs/reference/architect-model-selection-2026-07-20.md))
+- **The expert-routing-skew profile (the cheap gate for offload/REAP) came back near-uniform on GLM-5.2.** Production-representative run: 19.1M selections, **global `top_32=15.19%`, entropy 0.9987, Gini 0.066**, with only weak layer-local skew (median layer `top_32=39.19%`; all 256 experts used every layer). → generic GLM hot-expert GPU residency / REAP is **NOT justified** by current workload evidence (near-uniform ⇒ PCIe-streaming-latency-bound if attempted); reopen only with a narrower role-specific corpus. REAP and offload are the *same* skew analysis, different action (permanently prune cold experts vs stream them). ([mi210-big-model-and-acceleration-roadmap](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md))
+- **IQ2 big-MoE GPU residency ladder is two-for-two viable** (observation-grade): 122B UD-IQ2_M = 43.7 t/s single / 148.7 agg@B32 (2.2× / ~8–9× over ~20 t/s CPU-Q4, PPL 5.02); Qwen3-Next-80B-A3B i1-IQ2_M = ~55.8 single / 265 agg@B32, and because it is a GDN-hybrid with O(1) KV, 32K context fits comfortably and it is compute-bound at B≈96–128. IQ2 residency **caps at ~122B**; GLM-5.2 (~238 GB even at IQ2) never fits GPU-only → offload/REAP is the only GLM path. AirLLM-style per-token weight streaming is the anti-pattern (PCIe 7–14× slower than DDR5); the HBM win exists only when weights *reside* in HBM. ([mi210-big-model-and-acceleration-roadmap](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md))
+- **The slot-fabric residency model treats GPU MoE residency as a slot operation.** VRAM (64 GB) is the only scarce resource; CPU+RAM dual-residency is free (1.1 TB), so every teleport-eligible model stays hot in RAM permanently. A realistic 2-resident set is one big GDN (122B-IQ2 ~40 GB) + one small (35B-A3B IQ4) ≈ 58 GB — two big IQ2 don't co-fit. A Layer-2 residency actuator is the only VRAM-touching op (allowlist + N-dwell hysteresis + kill-switch), and every GPU MoE has a designated CPU fallback (GPU accelerates, CPU guarantees). ([heterogeneous-slot-fabric-residency](../handoffs/active/heterogeneous-slot-fabric-residency.md))
+
+### Open Questions (2026-07-20)
+
+- Does a narrower *role-specific* corpus reveal a cacheable GLM hot-expert set that the production-representative profile averaged away?
+- The GLM-5.2 endgame (expert-offload / REAP + IQ2-resident-experts + offload-cold-tail) remains operator-gated and unbuilt.
+- Does dynamic IQ2 preserve the 122B-A10B's *reasoning* (not just knowledge)? The architect bench decides, and it re-gates the whole IQ2-residency-for-the-architect program.
+
+### Source References (2026-07-20)
+
+- [architect-model-selection-2026-07-20.md](../docs/reference/architect-model-selection-2026-07-20.md) — reasoning∝active / knowledge∝total MoE law + ranking implication.
+- [mi210-big-model-and-acceleration-roadmap.md](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md) — GLM routing-skew result, IQ2 residency ladder, AirLLM anti-pattern.
+- [heterogeneous-slot-fabric-residency.md](../handoffs/active/heterogeneous-slot-fabric-residency.md) — GPU MoE residency as a slot operation + CPU-fallback guarantee.
+- [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md) — CPU+GPU hybrid MoE expert-offload (`-ot exps=CPU` / `--n-cpu-moe`) machinery.
+- intake-859 `2508.18672` (cred 5), intake-862 `2604.07035` (cred 2) — MoE sparsity/reasoning + deployment-aware Pareto-dominance.
 
 ## Summary
 

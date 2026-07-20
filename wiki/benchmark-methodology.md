@@ -2,8 +2,35 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-07-19 (adds P-GPU-1 certification grammar, OP-2 provenance rules, and reviewer-corpus ground-truth/representation boundaries; earlier K35/K5/readiness content retained)
-**Sources**: 78+ documents
+**Last compiled**: 2026-07-20 (adds the specced architect model-selection bench, the reviewer model-role ablation results, the eval-tower ECE/AUC + math_verify work, and the living model-probe scoreboard; earlier 2026-07-19 note: adds P-GPU-1 certification grammar, OP-2 provenance rules, and reviewer-corpus ground-truth/representation boundaries; K35/K5/readiness content retained)
+**Sources**: 83+ documents
+
+## Compiled Update — 2026-07-20
+
+Two model-role selection benches (architect and reviewer) and the eval-tower calibration work converge on one methodological rule: **objective oracles, not model-as-judge** — the reviewer work measured model-as-judge patch-review as near-random on hard negatives, so both role-selection benches are objective-scored only. Confidence: `verified`/decision-grade for accuracy verdicts scored by objective oracles; `observation` for every throughput row (pre-`P-GPU-1`).
+
+### Key Findings (2026-07-20)
+
+- **Architect model-selection is a specced, GATED, objective-scored bench** (not yet run). Phase 1 = AIME'25 (new adapter) + GPQA-Diamond + MMLU-Pro *control*, paired + seed-pinned + production sampling; the quality verdict is device-independent decision-grade, throughput stays observation-grade until `P-GPU-1`. It exists because the only local quality signal — the AXA-1 Δ0.0pp IQ2≈Q4 parity — is statistically powerless on reasoning (n≈4/hard-suite), and every published benchmark of the exact Qwen3.5/3.6 models is THIN (27B GPQA reported as both 73.4 and 87.8; a deployment-eval preprint scored Qwen3-30B-A3B dead-last 0.226, a harness/prompt artifact contradicting its own ~80% AIME — intake-862 `2604.07035`, cred 2). The architect choice remains **UNDECIDED**. ([architect-model-selection-bench](../handoffs/active/architect-model-selection-bench.md), [architect-model-selection-2026-07-20](../docs/reference/architect-model-selection-2026-07-20.md))
+- **Reviewer model-role ablation (H5) on the decision-grade C-CRAB P-REV-1 corpus: model-as-judge patch-review is near-random, and no arm cleanly wins.** GLM-5.2-IQ2 FAILS admission (FA 41.7%, FR 25.0%, **AUC 0.509 ≈ random**); the A0 objective-verifier floor is perfect by construction (FA/FR 0.0%). A3 122B-IQ2 lowers false-accepts (FA 12.5%) but over-rejects (FR 58.3%); A1 122B-Q4 self-review fails both sides (FA 45.8/FR 41.7); fast small arms are no better (Qwen3.6-27B AUC 0.503, Qwable IQ4 AUC 0.438; a Qwen+Qwable scaffold is best-shaped at AUC 0.659 but FR still too high). Family-preference is a *weak* measured covariate (−0.9..+3.5pp). ([reviewer-model-ablations](../handoffs/active/reviewer-model-ablations.md))
+- **Eval-tower must track ECE + AUC, not just accuracy** (SWE-RM: two verifiers with identical accuracy produced opposite RL outcomes). EV-11 `math_verify` scorer flip landed and EV-11a fixed nested-boxed-LaTeX truncation. EV-11b surfaced a real binning divergence: the inline `_aggregate` ECE (top bin half-open, drops `confidence==1.0` failures) vs the canonical `stat_tests.expected_calibration_error` (top bin closed) differ 0.15–0.40 on binary-confidence math suites — recommendation is to adopt the canonical definition, era-label the metric shift, and bundle it with a fresh operator-gated re-baseline (EV-11c). ([eval-tower-verification](../handoffs/active/eval-tower-verification.md))
+- **Instrument saturation is a standing, dated hazard.** Production review suites sit in the 90–94% band and cannot resolve the top-2 stack models (a small MoE appears tied with a much larger dense model of the same family) — the exact failure the DRACO ">90% → reject / non-discriminative" rule guards against, observed on a *deploy-gating* comparison, motivating a harder frontier eval tier. ([eval-tower-verification](../handoffs/active/eval-tower-verification.md))
+- **The model-probe scoreboard codifies observation-grade discipline:** one glance-able row per model/quant (pp/tg/quality/role-ready/artifact), all single-config small-n = OBSERVATION per MEASUREMENT.md, append-a-row rule, and blocked candidates are not speed-reran without a named quality/loader/protocol fix. P-BENCH-3 batched-decode runs fail-closed (`decision_grade=false`) on host-health warnings and index by model+quant, never by role. ([model-probe-scoreboard](../docs/reference/model-probe-scoreboard.md), [batched-decode-measurement](../handoffs/active/batched-decode-measurement.md))
+
+### Open Questions (2026-07-20)
+
+- Phase-2 architect planning-task design (SWE-bench-Verified FAIL_TO_PASS oracle vs bespoke mined-log tasks) — must have an objective oracle or be dropped, since model-judge scoring is near-random.
+- The EV-11b ECE-binning definition is operator-gated (CRITICAL SafetyGate/journal/RLVR path) and awaits the bundled math re-baseline.
+- Is there a discriminative frontier/harder eval tier to replace the saturated production review suites?
+
+### Source References (2026-07-20)
+
+- [architect-model-selection-bench.md](../handoffs/active/architect-model-selection-bench.md) + [architect-model-selection-2026-07-20.md](../docs/reference/architect-model-selection-2026-07-20.md) — objective-scored, gated architect bench + THIN published-benchmark caveats.
+- [reviewer-model-ablations.md](../handoffs/active/reviewer-model-ablations.md) — registry-driven reviewer tournament; model-as-judge near-random on hard negatives.
+- [eval-tower-verification.md](../handoffs/active/eval-tower-verification.md) — ECE/AUC calibration, math_verify, saturation hazard.
+- [model-probe-scoreboard.md](../docs/reference/model-probe-scoreboard.md) — living observation-grade scoreboard + stop-list.
+- [batched-decode-measurement.md](../handoffs/active/batched-decode-measurement.md) — P-BENCH-3 fail-closed host-health discipline.
+- intake-862 `2604.07035` — deployment-aware multi-objective evaluation + the Qwen3-30B-A3B=0.226 harness-artifact caution.
 
 ## Summary
 

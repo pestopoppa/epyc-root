@@ -2,8 +2,33 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-07-16 (v7 serving-side readiness refreshed through the final N5 patched-candidate execute artifact; E1 dense-control sweep and eval-batch serving activation remain the prior serving checkpoints)
-**Sources**: 50 documents
+**Last compiled**: 2026-07-20 (adds the live within-role placement state machine ratification, the E1/E2 batched-decode results + E5 NUMA×batch spec, and the heterogeneous CPU×GPU slot-fabric design that extends the live placement fabric; earlier 2026-07-16 note: v7 serving-side readiness refreshed through the final N5 patched-candidate execute artifact; E1 dense-control sweep and eval-batch serving activation remain prior serving checkpoints)
+**Sources**: 55 documents
+
+## Compiled Update — 2026-07-20
+
+The serving layer gained a **live within-role placement state machine**, decision-grade **single-instance batched-decode** economics, and a **heterogeneous CPU×GPU slot-fabric design** that generalizes (not replaces) the placement machinery. The load-bearing constraint across all three: `_migrate_kv` **cannot preempt an in-flight llama-server decode** — every migration/teleport is session-handover / turn-boundary.
+
+### Key Findings (2026-07-20)
+
+- **Within-role full↔quarter placement state machine is LIVE** (WP-0..WP-5 merged behind flags). `max_safe_concurrency` per role from cpuset-disjointness: frontdoor/ingest/vision = 3, worker_general/architect = 1. It queues-instead-of-overlaps, and migrates sessions transactionally on handover (forward WP-3 + reverse WP-4) with anti-thrash (cooldown + recency window + per-session cap). J1 gate (verified): 3-way frontdoor **1.68×**, 4-way **1.91×** aggregate, no overlap collapse. Per-role policy ratified: frontdoor/worker_general/vision = `burst_prefer_quarters` (worker_general -t48 re-bench 0.77–0.95 after a launcher over-threading fix `da1aed6`; vision quarter-pairs super-linear 1.14–1.27×, full+quarter blocks → full-disabled-under-burst). ([within-role-placement-state-machine](../handoffs/active/within-role-placement-state-machine.md))
+- **Single-instance batched decode (E1/E2, P-BENCH-3, decision-grade CPU window):** the A3B eval primitive **saturates early** — aggregate `-np 2 ≈ -np 8 ≈ -np 16` (~29 t/s) while tail p95 rises sharply after `-np 2`; the dense control scales more strongly through `-np 8`. E2: a single `-np 8` batch server is **4.86× faster by wall-minutes/eval** than the current 3-concurrent EvalTower fan-out → keep-candidate for a dedicated eval-batch serving class (default-off `eval_batch_frontdoor` on :18070 + feature flag landed; activation smoke passed then rolled back cleanly). Caveat: MoE batching is weaker than dense (distinct tokens hit distinct experts → expert-weight traffic grows with batch). E3 8x8 GEMM batch>1 body = NO-GO (decode BW-killed). ([batched-decode-measurement](../handoffs/active/batched-decode-measurement.md))
+- **E5 NUMA×batch is the never-measured 2D cross** (specced, post-promotion, runs LAST in `inference-batch-loop → architect-bench → E5`): directly tests whether one big high-`-np` server beats quarter-batched servers, and whether workload-class lanes (low-K latency vs high-K throughput) are real. It sets the slot-fabric grid shape. ([batched-decode-measurement](../handoffs/active/batched-decode-measurement.md))
+- **Heterogeneous CPU×GPU slot fabric is a DESIGN, not greenfield** (gated post-v7-promotion + post-E5 + operator). It models the whole machine as one slot fabric — CPU = `N×K` (NUMA instances × `-np`), GPU = `1×K_gpu` — so teleport, residency-swap, and spillover are all slot operations. It **reuses** the live `ConcurrencyAwareBackend`/`ContentionGate`/`NUMA_CONFIG`/KV-migration/anti-thrash machinery and its **no-mid-decode-preemption / session-handover** constraint; new work is only the GPU-as-placement-target, a Layer-2 residency actuator (the ONLY VRAM-touching op, allowlist + hysteresis + kill-switch), and an N-dwell swap hysteresis `N ≥ C·(1−X)/X` (~6.3 min at C=20s/X=5%). Governing principle: **the GPU accelerates; the CPU guarantees** (every GPU model has a designated CPU fallback). ([heterogeneous-slot-fabric-residency](../handoffs/active/heterogeneous-slot-fabric-residency.md))
+- **Inference-batch loop** is the single-writer `/loop` execution vehicle over a 52-entry manifest; the current lead island is eval-tower EV-4, while OP-2/GLM-reviewer entries were superseded by the 2026-07-19 readiness work. Quiet-window-gated; never competes with the parallel inference session. ([inference-batch-loop](../handoffs/active/inference-batch-loop.md))
+
+### Open Questions (2026-07-20)
+
+- Live under-traffic forward/reverse migration observation still needs a single-worker API (`--workers 6` confounds per-worker session affinity; the state machine is verified in-process).
+- Slot-fabric provisioning `(N,K)` per model, the CPU "N quarters vs 1 full pool" question, and whether workload-class lanes exist all wait on E5.
+
+### Source References (2026-07-20)
+
+- [within-role-placement-state-machine.md](../handoffs/active/within-role-placement-state-machine.md) — live placement SM, per-role policy ratification, no-mid-decode-preemption constraint.
+- [batched-decode-measurement.md](../handoffs/active/batched-decode-measurement.md) — E1/E2 batched-decode economics, eval-batch serving class, E5 spec.
+- [heterogeneous-slot-fabric-residency.md](../handoffs/active/heterogeneous-slot-fabric-residency.md) — CPU×GPU slot-fabric design extending the live fabric.
+- [inference-batch-loop.md](../handoffs/active/inference-batch-loop.md) — single-writer campaign loop + quiet-window discipline.
+- [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md) — MI210 fleet-placement sequencing (residency → eval-engine → embedder → prefill offload → drafter farm).
 
 ## Summary
 

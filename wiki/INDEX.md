@@ -2,9 +2,9 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-07-19 (model-probe stop-list/scoreboard policy, GLM accept-control evidence boundary, and MiniCPM-o persistent-live status correction; observation-heavy sections remain review-gated.)
+**Last compiled**: 2026-07-20 (merged 23 new sources — CPU-prefill barrier-fusion arc, live within-role placement SM + E1/E2/E5 batched-decode, heterogeneous CPU×GPU slot-fabric design, the reasoning∝active / 2-bit-asymmetry literature, the specced architect + reviewer model-role benches, eval-tower ECE/AUC, StreamingLLM floor, quant-asymmetric self-spec, and K28 fused-GDN research — into 8 articles; observation-heavy GPU sections remain review-gated pending post-promotion P-GPU-1.)
 **Articles**: 26 compiled, 4 stub categories
-**Total sources**: 560+ scanned documents across 6 source types; 2026-07-05 pass merged 49 changed/new sources (MI210 speed campaign, evidence-plane/autopilot arc, dashboards, routing canary) into 10 articles; 2026-06-21 pass merged 36 changed/new sources into 21 articles
+**Total sources**: 580+ scanned documents across 6 source types; 2026-07-20 pass merged 23 changed/new sources into 8 articles; 2026-07-05 pass merged 49 changed/new sources into 10 articles; 2026-06-21 pass merged 36 changed/new sources into 21 articles
 
 ---
 
@@ -12,18 +12,18 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Speculative Decoding](speculative-decoding.md) | 55+ | Combined `ngram-mod,draft-mtp` is the conservative v7 worker lane; K5 quality is neutral on v6 vs v7 candidate, while ngram speed remains task-acceptance-gated |
-| [MoE Optimization](moe-optimization.md) | 23 | REAP 25-40% expert pruning is near-lossless; 30% sometimes outperforms 20% due to routing redistribution |
-| [KV Cache](kv-cache.md) | 34 | Attention Matching is production-implemented but current-stack rollout decisions still need refreshed long-context/coding evidence |
-| [Quantization](quantization.md) | 25 | Hadamard+q4_0 is the proven production KV config; exotic formats (TQ3, PolarQuant, QJL) all lose to it on CPU |
-| [Hardware Optimization](hardware-optimization.md) | 88+ | v7 K5/readiness is closed for the refreshed candidate; MI210 validation must prepend the candidate HIP build in `LD_LIBRARY_PATH`, and CPU stack launches must hide ROCm devices explicitly |
+| [Speculative Decoding](speculative-decoding.md) | 61+ | Every production target ships a near-free native MTP head that beats external drafters (measured dead); the surviving redesign is quant-asymmetric same-model self-spec (IQ2-GPU drafter + Q4-CPU verifier, K2 1.61×, observation-grade) |
+| [MoE Optimization](moe-optimization.md) | 37 | Reasoning ∝ ACTIVE FLOPs, knowledge ∝ TOTAL params; GLM-5.2 routing is near-uniform (top_32=15%) so generic hot-expert offload/REAP is not justified; IQ2 GPU residency is two-for-two viable but caps at ~122B |
+| [KV Cache](kv-cache.md) | 39 | StreamingLLM pre-v7 floor sweep failed the quality floor → no simple KV cluster admitted yet; per-token KV streaming over PCIe is an anti-pattern (7-14× slower than DDR5); GDN residents' O(1) KV make teleport KV-copy near-moot |
+| [Quantization](quantization.md) | 31 | 2-bit is asymmetric — knowledge holds ~99% but reasoning halves under UNIFORM 2-bit (dynamic UD/DQ3 holds); the architect's IQ2≈Q4 Δ0.0pp parity is knowledge-only (n≈4/hard-suite), NOT reasoning-certified; architect quant UNDECIDED (bench-gated) |
+| [Hardware Optimization](hardware-optimization.md) | 90+ | CPU decode is BW-exhausted but CPU *prefill* is an open compute-bound regime (hot path = OpenMP barriers, not math → default-off CONCAT dim0 lever +3-9%); GPU raw-speed frontier structurally exhausted, live frontier is residency/teleport; v7 READY but NOT promoted |
 
 ## Serving & Systems
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Inference Serving](inference-serving.md) | 48 | Launcher `--numa-mode` default flipped to `quarter` (closes silent oversubscription hazard); DS-7 static-prewarm profile codified; restart-applicator hardened but promotion still ledger-gated |
-| [Local Inference](local-inference.md) | 16 | Cherry-picked upstream fixes unblock Qwen3.6 (0%→73.8%); fork conflict risk lower than assessed; full rebase deferred |
+| [Inference Serving](inference-serving.md) | 55 | Within-role full↔quarter placement SM is LIVE (3-way frontdoor 1.68×, session-handover migration, no mid-decode preemption); single `-np 8` batch server is 4.86× faster per eval; the heterogeneous CPU×GPU slot fabric is a DESIGN that EXTENDS the live fabric (gated post-v7 + E5) |
+| [Local Inference](local-inference.md) | 36 | v7 READY but NOT promoted (prod stays v6+iqk); deployed-lane throughput table + living model-probe scoreboard (all observation-grade); MI210 fits everything but the 122B-Q4 architect and GLM-5.2 (238 GB) |
 | [Chat Templates](chat-templates.md) | 2 | Per-family turn markers + when to use `/completion` (Qwen/gemma-3/Llama3) vs `/v1/chat/completions` (gemma-4 multi-channel) — checklist for onboarding new models without silent routing failures |
 
 ## Routing & Evaluation
@@ -32,7 +32,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 |---------|---------|-------------|
 | [Cost-Aware Routing](cost-aware-routing.md) | 40+ | CoT scaffold-transplant falsified in both regimes (reasoning context amplifies, doesn't substitute for, receiver capability); verifier/selector best-of-N is the forward GPU-assist path |
 | [Routing Intelligence](routing-intelligence.md) | 67+ | RI-10 decision-ready but first packet is `hold_quality_unscored` (proxies favor enforce; factuality unscored); X-MAS learned route-mutation is live in enforce — first learned routing layer in production |
-| [Benchmark Methodology](benchmark-methodology.md) | 73+ | K5 validity depends on chat-endpoint protocol, matched-suite quality comparison, and separate no-inference readiness gates; raw completions protocol failures are non-evidence |
+| [Benchmark Methodology](benchmark-methodology.md) | 83+ | Model-role selection benches (architect + reviewer) are objective-scored ONLY — model-as-judge patch-review measured near-random (AUC 0.509); architect choice UNDECIDED (specced, gated); eval-tower must track ECE/AUC not just accuracy; suites saturate at 90-94% and can't resolve top-2 models |
 
 ## Agent & Architecture
 
@@ -100,6 +100,9 @@ python3 .claude/skills/project-wiki/scripts/query_wiki.py "<category>" --human
 | ~~`rag_alternatives`~~ | — | Promoted to full article 2026-04-28 → [RAG Alternatives](rag-alternatives.md) |
 | ~~`safety`~~ | — | Promoted to full article 2026-06-13 → [Safety](safety.md) |
 | `swarm_techniques` | 7 | Partially covered by [Agent Architecture](agent-architecture.md) and [Autonomous Research](autonomous-research.md) |
+
+**2026-07-20 single-source stubs (not promoted to their own section this pass):**
+- `cost_aware_routing` / `agent_architecture` — the [scaffold CoT cost-lever autopilot deployment](../handoffs/active/scaffold-autopilot-cost-lever-deployment.md) is a DESIGN handoff (episodic-memory-gated composite scaffold-then-nothink route; caps a beneficiary's CPU-decode tokens ~20-50×, quality benefit is headroom-conditional). All numbers are OBSERVATION-grade; nothing implemented. Its findings are already reflected in [Cost-Aware Routing](cost-aware-routing.md) (CoT scaffold-transplant falsified as a capability transplant, deployed only as a gated cost lever).
 
 ---
 

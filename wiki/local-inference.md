@@ -2,8 +2,33 @@
 
 **Category**: `local_inference`
 **Confidence**: verified
-**Last compiled**: 2026-07-19 (adds v7 promotion boundary, GLM reviewer residency decision, and post-promotion P-GPU-1 certification)
-**Sources**: 32 documents
+**Last compiled**: 2026-07-20 (adds the deployed-lane throughput table, the living model-probe scoreboard + stop-list, and the CPU-prefill local lever; earlier 2026-07-19 note: adds v7 promotion boundary, GLM reviewer residency decision, and post-promotion P-GPU-1 certification)
+**Sources**: 36 documents
+
+## Compiled Update — 2026-07-20
+
+v7 is validated and READY but **not promoted** — production stays on `production-consolidated-v6`+iqk (frozen). Two new reference artifacts organize the local-serving picture: a **deployed-lane throughput table** (what each role actually runs today) and a **living model-probe scoreboard** (how every candidate model/quant performs, all observation-grade). Confidence: `verified` for deployed CPU-lane facts and the OP-2 canonical control; `observation` for every MI210 throughput row (single-config, small-n, no `P-GPU-1`).
+
+### Key Findings (2026-07-20)
+
+- **v7 READY-not-promoted; cutover is operator-only.** All frozen-candidate gates are green: K5 quality +0.0%, OP-2 CPU-regression PASS (frontdoor Q8 tg128 canonical control `12.44 t/s`), final coherence+garbage smoke 4/4 non-vision + 3/3 vision, upstream-ahead narrow audit applied. The reviewer/control-plane route is **decoupled** from v7 (GLM failed P-REV-1, no clean replacement), so the banked production-model wins are no longer held hostage to it. ([v7-promotion](../handoffs/active/v7-promotion.md))
+- **Deployed-lane throughput (each "CPU opt" is the fastest deployed spec-dec+OMP config, NOT a no-spec baseline):** frontdoor Qwen3.6-35B-A3B Q8 native-MTP ~34.5 CPU / 119.7 GPU-MTP; worker gemma-4-26B-A4B Q4KM `ngram-mod,draft-mtp` 126/97/83 t/s (2K/8K/14K); architect Qwen3.5-122B UD-Q4KM 23.5/20.7; ingest Qwen3-Next-80B-A3B Q4KM 20.5/15.9/9.7; GLM-5.2 UD-IQ2 CPU-only 2.49→5.33 MTP. The MI210 fits everything but the 122B-Q4 architect and GLM-5.2 (~238 GB) — those are CPU-only. ([v7-stack-throughput-full-optimization](../docs/reference/v7-stack-throughput-full-optimization.md))
+- **Model-probe scoreboard (living, glance-able, all OBSERVATION-grade):** clear wins = Qwable-v1 IQ4_XS MI210 (91–100 t/s), MiniCPM-o-4_5 Q4KM vision (111–127, `--reasoning off`), frontdoor 35B-A3B native-MTP, gemma-4-26B CPU worker (K5 +0.0%). Fast-but-quality-blocked = Bonsai Q1_0 (fails 6-word IF gate), Ternary Q2_g64 (6/8), gemma4 MI210 *natural free-form* (K11.1 nondeterminism, GPU-backend-path specific). Broken load = Ternary Bonsai Q2_0 (498/498 tensors short, noncanonical PrismML packing). Stop-list policy: **no speed-reruns without a named quality/loader/protocol/parser fix hypothesis.** ([model-probe-scoreboard](../docs/reference/model-probe-scoreboard.md))
+- **CPU prefill is a real local lever for large/long-context models** — compute-bound `M>1` GEMM, distinct from the BW-bound decode roofline; the first landed experimental win is a default-off CPU `CONCAT` dim0 row-partition (`pp8192` +3–9% single-seq, batched prompt +22–54%). ([cpu-prefill-compute-large-models](../handoffs/active/cpu-prefill-compute-large-models.md))
+
+### Open Questions (2026-07-20)
+
+- The frontdoor **CPU-MTP** context curve on v7 is a measured gap (only the ~34.5 prod point exists; K35 measured GPU-MTP).
+- GPU-worker eligibility for gemma-4 is unresolved (natural free-form multi-slot determinism fails, K11.1) even though the model fits.
+- Architect ≥32K context throughput is unmeasured; all scoreboard/throughput rows re-run decision-grade under `P-GPU-1` only after promotion.
+
+### Source References (2026-07-20)
+
+- [v7-promotion.md](../handoffs/active/v7-promotion.md) — READY-not-promoted gate state, reviewer decoupling, operator-only cutover.
+- [v7-stack-throughput-full-optimization.md](../docs/reference/v7-stack-throughput-full-optimization.md) — deployed-lane vs candidate-bench table + provenance guards.
+- [model-probe-scoreboard.md](../docs/reference/model-probe-scoreboard.md) — living per-model/quant scoreboard, verdict buckets, stop-list.
+- [cpu-prefill-compute-large-models.md](../handoffs/active/cpu-prefill-compute-large-models.md) — CPU-prefill regime + CONCAT dim0 lever.
+- [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md) — K11 gemma4 free-form determinism status.
 
 ## Summary
 

@@ -2,8 +2,36 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-07-19 (adds v7 promotion/reviewer decoupling, repaired native GLM-MTP evidence, and the current lossless-only release boundary; earlier 2026-07-04/05/06 MI210/spec-sheet subsections remain flagged where noted)
-**Sources**: 55+ documents
+**Last compiled**: 2026-07-20 (adds the external-drafter-dead / native-MTP-dominant finding, the surviving quant-asymmetric self-spec redesign, and the K28 fused-GDN-kernel research; earlier 2026-07-19 note: adds v7 promotion/reviewer decoupling, repaired native GLM-MTP evidence, and the lossless-only release boundary; 2026-07-04/05/06 MI210/spec-sheet subsections remain flagged where noted)
+**Sources**: 61+ documents
+
+## Compiled Update — 2026-07-20
+
+The dominant new result: **every production target already ships a near-free embedded/native MTP head that beats any separate-drafter scheme**, so the straightforward external GPU-drafter lanes are measured dead. The surviving redesign is a *quant-asymmetric same-model* self-spec (aggressive-IQ GPU drafter + high-quant CPU verifier). Confidence: `verified`/measured for the drafter economics and DR-0 self-spec numbers (observation-grade under `P-GPU-1`); `inferred` for the K28 kernel design.
+
+### Key Findings (2026-07-20)
+
+- **v7 banks correctness-verified, runtime-gated-off spec-dec wins** (observation-grade): HIP per-decode graph capture **+25%** worker spec-dec (A4B MoE) / +4–14% base decode, and MMVQ→MMQ small-batch verify-dispatch **+17.4%** MTP-verify / **+31.7%** gemma-31B. K7 root-caused the Q4 spec-dec graph regression to **VERIFY-side thrash** (verify batch = n_drafted+1 varies with acceptance → warmup resets), NOT the draft loop; the Lever-A shape-aware graph key measured NEUTRAL and was not landed. The onegraph single-graph fold is DEFERRED (K1: the gemma4 `is_mem_shared` drafter warm-up is already zero-drafter-compute → no CPU win). Worker default is one combined `ngram-mod,draft-mtp` server. ([gemma-challenge-kernel-techniques-v7](../handoffs/active/gemma-challenge-kernel-techniques-v7.md))
+- **External GPU-drafter lanes are measured dead; native MTP dominates.** Stage-1 (CPU target + MI210 external drafter) = 0.915× decode despite usable acceptance; Stage-2 co-resident = 0.355× (external) / 0.948× (native MTP) vs GPU no-spec. The DR-1 break-even model shows external lanes failed even at α=1.0 → the blocker is **overhead/control cost, not acceptance**; any future lane must satisfy `E(α,K) > F(K)+H(K)` on paper first. ([gpu-drafter-control-redesign](../handoffs/active/gpu-drafter-control-redesign.md), [mi210-big-model-and-acceleration-roadmap](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md))
+- **Quant-asymmetric same-model self-spec is the surviving redesign.** Aggressive-IQ drafter on GPU + high-quant verifier on CPU is N5-free (identical vocab/M-RoPE/GDN) and the CPU verify launders quality. DR-0e.2 (observation-grade): 122B Q4-CPU verifier + 122B-IQ2-MI210 drafter, **K2 = 1.61× (alpha 0.90)**, 28/28 quality, output byte-stable vs CPU baseline; K2 chosen over K4 (only +3.85%, alpha 0.787). New server telemetry now separates `F(K)` verify work (K2: 33.7s) from `H(K)` coordination (0.66s). Default-off research lane, `P-GPU-1`-gated. ([quant-asymmetric-self-spec-serving-design](../docs/reference/quant-asymmetric-self-spec-serving-design-2026-07-20.md), [gpu-drafter-control-redesign](../handoffs/active/gpu-drafter-control-redesign.md))
+- **GLM native-MTP repaired** (post-candidate `12a292f0c`): 5.33 t/s vs 2.49 no-spec, alpha 0.933 (376/403 accepted) — available-not-required, since the reviewer route is decoupled from v7 finalization. ([v7-promotion](../handoffs/active/v7-promotion.md))
+- **K28 GDN long-prefill fused-chunked kernel (research/design):** the serial token-scan kernel is serial-dependency-bound (effective BW falls 51→27 GB/s as prompt grows → real fusion headroom), but the Phase-0 ceiling is bounded (GDN ~15% of GPU prefill; 4× op → ~11% full-model). The real fix is a single fused chunked-recurrence kernel (fusion-first FP32, then MFMA/bf16) keeping chunk-local tensors on-chip — the generic-ggml chunked graph already uses matrix cores yet loses ~6% (op-dispatch/HBM-bound). Must preserve GDA/KDA + transposed state + **K>1 MTP-snapshot** semantics for spec-dec rollback. Post-promotion/default-off only; do NOT delay v7. GPU remains the natural habitat for the CPU-dead recurrent-model speculation (parallel scan for GDN state; vLLM DDTree+Dflash on Qwen3.5-27B AWQ ≈ 91 t/s community reference). ([k28-fused-chunked-gdn-kernel-research](../handoffs/active/k28-fused-chunked-gdn-kernel-research.md), [progress 2026-07-20-k28](../progress/2026-07/2026-07-20-k28-fused-gdn-kernel-research.md), [gpu-acceleration-path](../handoffs/active/gpu-acceleration-path.md))
+
+### Open Questions (2026-07-20)
+
+- Is there any external / adaptive-K / cascade drafter *control* design that beats native MTP, or is native MTP the terminal answer on this stack?
+- Does the K2 quant-asymmetric self-spec lane survive broader task-class admission + a production-named `P-GPU-1` certification?
+- Does a real fused GDN chunked-recurrence kernel raise the K28 full-model ceiling (needs direct ROCm profiler attribution, currently unavailable)?
+
+### Source References (2026-07-20)
+
+- [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md) — HIP-graph spec-dec wins, K7 verify-side thrash, onegraph deferral.
+- [gpu-drafter-control-redesign.md](../handoffs/active/gpu-drafter-control-redesign.md) — external-drafter lanes dead; quant-asymmetric self-spec redesign + DR-0/DR-1.
+- [quant-asymmetric-self-spec-serving-design-2026-07-20.md](../docs/reference/quant-asymmetric-self-spec-serving-design-2026-07-20.md) — K2 lane design + F(K)/H(K) telemetry.
+- [mi210-big-model-and-acceleration-roadmap.md](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md) — Axis-B drafter economics, native-MTP dominance.
+- [k28-fused-chunked-gdn-kernel-research.md](../handoffs/active/k28-fused-chunked-gdn-kernel-research.md) + [progress 2026-07-20-k28](../progress/2026-07/2026-07-20-k28-fused-gdn-kernel-research.md) — fused GDN kernel design + bounded ceiling.
+- [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md) — GPU as the natural habitat for recurrent-model speculation (DFlash/DDTree).
+
 
 > **2026-06-26 v6 cutover note (top-of-page banner).** The production EPYC inference stack was cut from a TWO-kernel setup (v5 llama.cpp + a SEPARATE ik_llama.cpp binary used ONLY by the gemma worker) onto ONE kernel: **production-consolidated-v6** (canonical tree `/mnt/raid0/llm/llama.cpp`). v6 = upstream llama.cpp framework + native MTP/NEXTN speculative decoding + our forward-ported CPU kernels + **ik_llama's iqk AVX-512 GEMM kernels** integrated into the fork (runtime-gated by env `GGML_IQK=1`). **ik_llama.cpp is FULLY DEPRECATED — no second binary.** The historical "Gemma 4 MTP Drafter" sections below (2026-05-06 → 2026-05-16) describe the now-superseded ik_llama PR #1744 path; they are preserved verbatim as the measurement/decision record and carry inline `2026-06-26 v6 cutover` notes pointing to the replacement mechanism. Cutover STATUS: "v6+iqk cutover executed 2026-06-26: registry/launcher/governance config converged (all no-inference gates green, 174 promotion-gate tests pass), canonical binary built; **live throughput + garbage verification PENDING** (operator deploy gate)." Do NOT read any number below as verified v6 production throughput. Tracking: [`handoffs/active/v6-iqk-promotion.md`](../handoffs/active/v6-iqk-promotion.md).
 

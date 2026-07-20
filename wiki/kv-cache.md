@@ -2,8 +2,31 @@
 
 **Category**: `kv_cache`
 **Confidence**: verified
-**Last compiled**: 2026-07-17
-**Sources**: 36 documents (3 deep-dives, 5 active handoffs, 2 completed handoffs, 24 intake entries, 2 progress logs)
+**Last compiled**: 2026-07-20 (adds the StreamingLLM floor/admission verdict, the TurboQuant/ChunkKV KV-quant monitor status, and the MI210 KV-split residency facts; earlier 2026-07-17 pass retained)
+**Sources**: 39 documents (3 deep-dives, 6 active handoffs, 2 completed handoffs, 25 intake entries, 2 progress logs)
+
+## Compiled Update — 2026-07-20
+
+The StreamingLLM baseline — the cluster-wide gate that must precede prioritizing the whole May-2026 KV-reduction cluster (SP-KV / KVP / LU-KV / ForesightKV / PBKV) — reached a pre-v7 verdict, and the MI210 sharpened where KV should physically live. Confidence: `verified` for the CPU floor sweep result; `external` for the KV-quant PRs; `inferred` for the MI210 KV-placement economics.
+
+### Key Findings (2026-07-20)
+
+- **StreamingLLM (attention-sink + sliding-window) is the easy-floor gate, and no simple KV cluster is admitted yet.** The scaffold landed in the fork (`632ce0f92`, default-off, via server context-shift `llama_memory_seq_rm`/`seq_add` + `--kv-streaming-sink/-window` + per-request fields) and was reconciled onto current v7 (`111bff89d`/`cf051d3e1`). The pre-v7 floor/admission sweep (Qwen3-1.7B Q8 CPU, 2026-07-20) ran a context-shift baseline + sink/window clusters `8:128`/`16:192`/`32:256`: all arms exited cleanly but **all failed the prompt-quality/final-marker floor**, and no streaming arm beat baseline speed (0.990–1.011×) → `admit_cluster=false`. This closes the "admit a simple KV cluster *now*?" question negatively; the full 4-axis research sweep (retrieval/reasoning/dialogue × 25/50/75% budget × 2 models) stays open. ([streaming-llm-baseline](../handoffs/active/streaming-llm-baseline.md))
+- **KV-quant monitor status:** Hadamard rotation (upstream PR #21038) landed and auto-enables when KV types are quantized — a free KV-quality improvement (custom `--kv-hadamard` removed as redundant). TurboQuant CPU KV kernels (PR #21089, TBQ3_0/TBQ4_0, ~5.2× compression) remain open/monitor; ChunkKV (arXiv:2502.00299, 12% retention, +26.5% throughput) is worth-investigating. TQ3_1S rejection stands (immature, VRAM-savings we don't need, MoE ghost-activation risk). ([tq3-quantization-evaluation](../handoffs/active/tq3-quantization-evaluation.md))
+- **Where KV physically lives (MI210):** keeping KV in HBM alongside attention weights is ideal but VRAM-limited; PCIe4 (~64 GB/s) is 7–14× slower than EPYC DDR5, so per-token KV *streaming* is an anti-pattern. GDN-hybrid residents have **O(1) KV**, so long-context ingest is comfortably GPU-served (better than a dense model) and makes teleport KV-copy near-moot — the teleport v1 instead *re-prefills from transcript* to regenerate correct KV at the target quant (a copied KV is wrong under quant-asymmetric transport). ([gpu-acceleration-path](../handoffs/active/gpu-acceleration-path.md), [heterogeneous-slot-fabric-residency](../handoffs/active/heterogeneous-slot-fabric-residency.md))
+
+### Open Questions (2026-07-20)
+
+- Does StreamingLLM at 50% budget preserve ≥95% accuracy on our representative workloads (the 4-axis sweep is still pending)? The answer sets whether LU-KV/KVP/ForesightKV get demoted or LU-KV promoted.
+- Does uniform sink+window hide per-head heterogeneity (LU-KV's whole pitch)? Track per-head attention entropy in the sweep.
+- Does PR #21089 (TurboQuant CPU KV) merge and beat Hadamard+q4_0 on context extension?
+
+### Source References (2026-07-20)
+
+- [streaming-llm-baseline.md](../handoffs/active/streaming-llm-baseline.md) — cluster-wide floor gate, scaffold, negative pre-v7 admission sweep.
+- [tq3-quantization-evaluation.md](../handoffs/active/tq3-quantization-evaluation.md) — TurboQuant/ChunkKV/Hadamard KV-quant monitor list.
+- [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md) — MI210 KV CPU/GPU-split economics + PCIe anti-pattern.
+- [heterogeneous-slot-fabric-residency.md](../handoffs/active/heterogeneous-slot-fabric-residency.md) — O(1)-KV GDN residents + re-prefill teleport (KV-copy near-moot).
 
 ## Summary
 
