@@ -22,6 +22,22 @@ and `blocked=1` (`EV-4 BLOCKED_PRECONDITION`). The quiet window is false due to
 active inference on port `18072` / MI210, so no entries were executed and no
 checkboxes were flipped.
 
+**Queue-hygiene checkpoint after v7-era repins (2026-07-20; no entry completion):**
+root commits `94538e47` and `905519f2` tightened the runnable-row bridge. Passive
+`BULK-XMAS` telemetry now requires the concrete
+`XMAS-enforce-window-ab-root-present` gate, removing the literal
+`<enforce-window AB root>` placeholder from pickable work; consolidated status is
+now `eligible_now=8` and `operator_gate_blocked=16`. `BULK-K-EMB-1` now points at
+`/mnt/raid0/llm/epyc-root/data/benchmarks/eval-corpus-v0.jsonl`, uses the real
+`embedder_recall_bench.py --models/--k` operands, and sets
+`EMBEDDER_RECALL_EXECUTE=1` for execution. Its preconditions name the e5-base,
+bge-m3, and bge-large references. The current bridge preflight reports all 8
+eligible rows `dry_run_ok=True`, verified topology, no literal `<...>`
+placeholders, no blockers, and the K-EMB dry-run plan reports 100 documents,
+30 queries, 0 missing references, and five result keys. The quiet window remains
+false because port `18072` / MI210 is active: no entry was executed and no
+checkboxes were flipped. EV-4 remains `BLOCKED_PRECONDITION` on B7 scorer sign-off.
+
 **▶ To run (2026-07-20):** launch this as a **`/goal`** session (codex's equivalent of the `/loop` this handoff's protocol references) — the loop is **single-writer**, so no other session may write the ledger. **Do not re-run EV-4 yet:** the latest ledger row is `BLOCKED_PRECONDITION` on B7 scorer-semantics sign-off after the 2026-07-20T19:15Z partial run confirmed the textual multiple-choice rewrite was still changing scorer semantics. `OP-quiet-window` is granted only when `inference_load_check.py --json` reports `quiet: true` immediately before execution. EV-11a and EV-11b are now fixed; EV-11c still waits on the EV-CONF/logprob and scorer-era prerequisites before the math rebaseline entry can execute. P0 still needs its front gates (`OP-6a/6b` + stack-restart). (Terminology: this doc says `/loop` throughout; read it as `/goal` under codex.)
 
 **⚠ 2026-07-20 — EV-4 did NOT pass; robustness audit filed, then Phase 0-4 blockers landed.** EV-4 hit `INFRA_BLOCKED` (stale contention matrix → silent fanout→concurrency=1 → killed partial run → no decision-grade metrics), and a later partial rerun exposed a textual multiple-choice scorer blocker. Root cause of the original fanout failure was NOT the kernel — it was the **2026-07-17 vision NUMA rebind** shipping without a matrix recert. The loop wedge, v7 topology pins, live v7 matrix recert, safe host remediation, mandatory autopilot preflight, forced-role concurrency, serial wall-budget hardening, scorer textual-label fix, and promotion/preflight prevention guards are now landed and checked in [eval-tower-loop-robustness-audit-2026-07-20.md](eval-tower-loop-robustness-audit-2026-07-20.md). EV-4's latest ledger state is now `BLOCKED_PRECONDITION` on B7 scorer-semantics sign-off, so it is intentionally not retry-pickable; do not append a fake checkpoint row or flip EV-4 until a fresh run produces decision-grade metrics.
