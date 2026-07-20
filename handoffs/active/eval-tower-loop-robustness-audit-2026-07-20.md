@@ -6,6 +6,18 @@ eval-tower entries of `inference-batch-loop.md`; five audits (4 subagent + 1 sco
 evidence-backed and independently spot-verified) produced the findings below. The 2026-07-20
 follow-up implemented the checked Phase 0-3 agent-fixable items; EV-4 itself remains open.
 
+**Sidecar checkpoint (2026-07-20T19:17Z, EV-4 still open):** the Phase-0 EV-4
+unblock reached a real preflight checkpoint. `preflight_gate` now emits a separate
+16-char contention topology hash and full registry hash. Fresh attestation
+`coordination/inference-batch/attestations/20260720T191355.json` passed for EV-4
+CPU roles `frontdoor+worker_general` with
+`topology_hash=expected_topology_hash=8c8cfcbb13d2611d`. The prepare-only
+`run_batch_entry.py --batch-entry /tmp/ev4-batch-entry.json` preflight reported
+`blocking_reasons=[]`, `stack_contract.ok=true`, and `topology.verified=true`
+with `live_hash=required_hash=8c8cfcbb13d2611d`. Root coordination verification:
+`/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -m pytest scripts/coordination/tests/test_batch_ledger.py scripts/coordination/tests/test_batch_status_report.py -q`
+=> 31 passed. This is not an EV-4 completion signal and does not flip EV-4.
+
 **Cross-links:** [eval-tower-verification.md](eval-tower-verification.md), [inference-batch-loop.md](inference-batch-loop.md), [within-role-placement-state-machine.md](within-role-placement-state-machine.md), [v7-promotion.md](v7-promotion.md).
 
 ## Headline (corrected root cause)
@@ -30,9 +42,9 @@ exists; treat as unverified.)
 ## Constraints (read before touching anything)
 - **Scoring semantics = human-amendment-only** (MEASUREMENT.md trust boundary names eval tower + scoring).
   Cluster E is now sequenced through EV-CONF: agent work may prepare the logprob plumbing and an
-  operator-signed interim neutralization of the degenerate ECE input, but the final EV-11b binning /
-  scoring decision remains an operator amendment. Do not edit the `eval_tower.py:2068` tripwire path
-  as part of loop robustness.
+  operator-signed interim neutralization of the degenerate ECE input. EV-11b closed-bin ECE was
+  operator-decided and implemented on 2026-07-20; the remaining operator amendment is the EV-CONF
+  real-confidence / scoring-weight decision.
 - **Shared tree / live parallel work:** at audit time, `scripts/autopilot/eval_tower.py` and
   `orchestration/contention_matrix.yaml` had parallel-session edits. The checked Phase 0-3 items
   below have since landed in the owning repos; remaining open items still need normal file ownership
@@ -109,22 +121,25 @@ The prevention is **not** kernel-promotion-specific — it's **any change to a m
 
 ### Phase 2 — Preflight / gating [agent]
 - [x] **C1 — make matrix-freshness + topology-cert a precondition for every `*_eval_fanout` entry regardless of reload;** forbid `contention_matrix: not_required` on fanout entries at compile time. ✅ 2026-07-20 — compile lint rejects `eval_fanout` + `contention_matrix: not_required`; `run_batch_entry.py` blocks stale fanout matrices in preflight.
-- [x] **[mech] C2/C3 — health_check.sh `--profile batch`** — ✅ landed `940522a8` (2026-07-20): batch profile relaxes the raid floor 500 G→20 G + demotes `/tmp/claude` to advisory; session-init unchanged; bad profile → exit 64; empty-df guarded. Verified batch→exit 0, session-init→exit 1. **[loop] residual caller-wiring:** the batch preflight must actually pass `--profile batch` (`preflight_gate` / `LOOP_PROTOCOL.md`), and the exit-0/1/2 advisory split + `observation_only` consumer treatment still want `preflight_gate` changes — owned by the loop session.
-- [ ] **C4 — point `host_health.py --remediate` at `flush_cache_with_pause()`** (`:602`), not bare `drop_caches`; fix `LOOP_PROTOCOL.md:14`. *Verify:* post-remediate pages are NUMA-interleaved.
-- [ ] **C5 — wire `autopilot_precondition_gate` into pick-next** (or delete the dead `run_batch_entry.py` reference).
+- [x] **[mech] C2/C3 — health_check.sh `--profile batch`** — ✅ landed `940522a8` (2026-07-20): batch profile relaxes the raid floor 500 G→20 G + demotes `/tmp/claude` to advisory; session-init unchanged; bad profile → exit 64; empty-df guarded. Verified batch→exit 0, session-init→exit 1. ✅ 2026-07-20 follow-up: `preflight_gate` now calls the root batch profile, keeps contention-matrix freshness hard-gated, and resolves v7 quarter live role ports from `NUMA_CONFIG`; role-scoped EV-4 preflight passes for live frontdoor/worker quarters.
+- [x] **C4 — point `host_health.py --remediate` at `flush_cache_with_pause()`** (`:602`), not bare `drop_caches`; fix `LOOP_PROTOCOL.md:14`. ✅ 2026-07-20 — the CLI remediation path now uses pause + `drop_caches` + NUMA-interleave rewarm; `LOOP_PROTOCOL.md` names `health_check.sh --profile batch` and the safe remediation sequence. Verify: `tests/unit/test_host_health_pause_around_flush.py` (15 passed).
+- [x] **C5 — wire `autopilot_precondition_gate` into pick-next** (or delete the dead `run_batch_entry.py` reference). ✅ 2026-07-20 — the mandatory batch-entry bridge (`epyc-inference-research/scripts/benchmark/run_batch_entry.py`) now imports the root-owned pure gate and blocks when live `autopilot.running` disagrees with `preconditions.autopilot`; entries with `autopilot:any` avoid live probing. Verify: `scripts/benchmark/tests/test_run_batch_entry.py` (32 passed) + root `test_autopilot_precondition_gate.py`.
 
 ### Phase 3 — Runner robustness [agent·coord — touches `eval_tower.py`]
 - [x] **B1 — try/finally + SIGINT/SIGTERM rollback** so a killed run always rolls back `eval_batch_serving=1` + `:18070` and writes `summary.json{status:interrupted}`. ✅ 2026-07-20 — runner activation is wrapped in rollback-on-interrupt, and regression coverage verifies interrupted runs write non-decision-grade summaries after rollback.
-- [x] **B3 — gate `decision_grade` on `n_questions>=expected` + `n_scored>0`/`reliability>0`;** degenerate → blocker `rc=75`. ✅ 2026-07-20 — empty/all-error verifier and current-arm paths return `decision_grade=False` with degenerate status.
+- [x] **B3 — gate `decision_grade` on `n_questions>=expected` + `n_scored>=expected`/`reliability>0`;** degenerate → blocker `rc=75`. ✅ 2026-07-20 — empty/all-error and partially scored verifier/current-arm paths return `decision_grade=False` with degenerate status.
 - [x] **B2 — require explicit `--min-eval-concurrency` OR `--allow-serial` for any `--apply`;** `_eval_concurrency` returns a structured reason. ✅ 2026-07-20 — default `--apply` now refuses without an explicit concurrency guard; EV-4 command includes `--min-eval-concurrency 3`.
-- [ ] **B5/B7 (med)** — resolve concurrency against the forced role(s) actually receiving traffic; add an overall wall budget + serial no-progress timeout.
+- [x] **B5/B7 (med)** — resolve concurrency against the forced role(s) actually receiving traffic; add an overall wall budget + serial no-progress timeout. ✅ 2026-07-20 — EvalTower now computes fanout from the actual per-question `force_role` set and takes the minimum safe live cap across those roles; verifier-mode preflight passes its `--roles` set into the same resolver, so `--min-eval-concurrency` validates the roles EV-4 will actually hit. Serial fallback now has a finite batch wall budget and fails remaining questions closed with `eval_wall_budget_timeout`. Verify: `tests/unit/test_eval_tower_concurrency_metrics.py`, `test_eval_batch_serving_evaltower_window.py`, and `test_eval_verifier_mode.py` (81 combined passed with host-health coverage).
+- [x] **B13 — EV-4 textual multiple-choice scorer blocker.** ✅ 2026-07-20 — `debug_scorer.py` now accepts configured textual multiple-choice labels such as `expected="incorrect"` with `choices=["correct","incorrect"]`, ranks overlapping textual matches by match end then choice length, and accepts parenthesized expected letters like `(B)` while preserving the legacy A-H letter contract for entries without choices. **Important:** this is a scoring-semantics change, so EV-4 is now ledgered `BLOCKED_PRECONDITION` until the B7 operator-reviewed scorer package signs it off; the interrupted `20260720T191550Z` run is diagnostic-only. Verify: `tests/unit/test_debug_scorer_multiple_choice.py` + `test_debug_scorer_code_execution.py` pass.
+- [x] **B14 — `run_batch_entry.py` interrupt result preservation.** ✅ 2026-07-20 — the batch bridge now runs children in their own process group, terminates that group on timeout/SIGINT, and converts `KeyboardInterrupt` during execute into a structured `exit_code=130` result instead of losing the result JSONL path. Verify: `epyc-inference-research/scripts/benchmark/tests/test_run_batch_entry.py` stdlib runner (33 passed).
+- [x] **B15 — B1 denominator leg + EV-11b closed-bin ECE.** ✅ 2026-07-20 — EvalTower `_aggregate` excludes errored rows from the quality denominator while preserving total/error observability in `details`, runner arms require full `n_scored` before decision-grade, and `_aggregate` now uses closed-top-bin `stat_tests.expected_calibration_error` with `ece_instrument_era=ev11b_closed_bin_2026_07_20`. Verify: `test_eval_tower_concurrency_metrics.py`, `test_eval_tower_ev11_stats.py`, `test_eval_batch_serving_evaltower_window.py`, and `test_eval_verifier_mode.py` (80 passed).
 
 ### Phase 4 — Prevention [agent]
-- [ ] **H1 — bind the matrix to live topology in CI + stack-start.** Un-skip `test_real_matrix_against_live_numa_config` to assert `matrix.topology_hash == topology_fingerprint_for_matrix(NUMA_CONFIG)`; wire `check_contention_matrix_fresh.py` into pre-commit AND `preflight_gate.attest` as a **hard** gate. *Verify:* the vision-rebind scenario now fails CI.
-- [ ] **H2 — add a "recertify topology-dependent artifacts" step to `v7-promotion.md`** (+ future `-vN`): matrix + placement caps + entry topology pins refreshed before promotion is declared done.
+- [x] **H1 — bind the matrix to live topology in CI + stack-start.** ✅ 2026-07-20 — `test_real_matrix_against_live_numa_config` now asserts the committed matrix hash equals `topology_fingerprint_for_matrix(NUMA_CONFIG)`; `preflight_gate.attest` keeps `check_contention_matrix_fresh.py` as a hard gate; the local pre-commit hook also runs the freshness check. Verify: `tests/unit/test_scheduling_contention.py` and live `check_contention_matrix_fresh.py` pass.
+- [x] **H2 — add a "recertify topology-dependent artifacts" step to `v7-promotion.md`** (+ future `-vN`): matrix + placement caps + entry topology pins refreshed before promotion is declared done. ✅ 2026-07-20 — `v7-promotion.md` now records the recertification hardening as a checked promotion-routine item.
 
 ### Scoring Trust Boundary
-- [ ] **Cluster E — scoring → tracked as EV-CONF in [eval-tower-verification.md](eval-tower-verification.md).** **[agent]** interim (hold ECE/AUC observation-only so the constant-0.0 stops inflating the rlvr tier score, with operator sign-off before merge if scoring weights are touched) + **[agent]** the logprob-passthrough plumbing (`completion_probabilities → confidence`) remain open; **[operator]** owns the final EV-11b binning/gating decision (MEASUREMENT + `eval_tower.py:2068` tripwire).
+- [ ] **Cluster E — scoring → tracked as EV-CONF in [eval-tower-verification.md](eval-tower-verification.md).** EV-11b closed-bin binning is implemented; **[agent]** interim (hold ECE/AUC observation-only so the constant-0.0 stops inflating the rlvr tier score, with operator sign-off before merge if scoring weights are touched) + **[agent]** the logprob-passthrough plumbing (`completion_probabilities → confidence`) remain open; **[operator]** owns the final real-confidence / gating decision.
 
 ## Provenance
 5 audits, 2026-07-20: runner + contention-matrix + preflight + entries/ledger (4 read-only subagents) +
