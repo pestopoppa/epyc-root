@@ -7,8 +7,24 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../lib/env.sh"
 
+# Health-check profile: 'session-init' (default) protects quarter-TB model downloads; 'batch' relaxes
+# thresholds for an inference-batch preflight whose artifact footprint is MB-scale, and demotes the
+# /tmp/claude bind-mount check to advisory. Select via --profile <p> / --profile=<p> / $HEALTH_CHECK_PROFILE.
+PROFILE="${HEALTH_CHECK_PROFILE:-session-init}"
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --profile) PROFILE="${2:-}"; shift 2 ;;
+    --profile=*) PROFILE="${1#*=}"; shift ;;
+    *) shift ;;
+  esac
+done
+case "$PROFILE" in
+  session-init|batch) ;;
+  *) echo "unknown --profile '$PROFILE' (use: session-init | batch)"; exit 64 ;;
+esac
+
 echo "=============================================="
-echo "Pre-Session Health Check"
+echo "Pre-Session Health Check (profile: $PROFILE)"
 echo "=============================================="
 echo ""
 
@@ -48,8 +64,17 @@ echo "--- Filesystem Health ---"
 # Operator-set thresholds for the 3.7T shared surface: warn <750G, fail <500G.
 RAID_MOUNT=/mnt/raid0
 RAID_AVAIL_GB=$(df --output=avail -BG "$RAID_MOUNT" | awk 'NR==2 {gsub(/G/,""); print $1+0}')
-RAID_FREE_WARN_GB=750
-RAID_FREE_FAIL_GB=500
+# Guard an empty/missing df result so `[ "" -lt N ]` cannot trip set -e (audit cleanup item).
+[ -z "$RAID_AVAIL_GB" ] && RAID_AVAIL_GB=0
+if [ "$PROFILE" = "batch" ]; then
+  # A batch/eval preflight writes MB-scale artifacts; guard only against a genuinely-full disk.
+  RAID_FREE_WARN_GB=100
+  RAID_FREE_FAIL_GB=20
+else
+  # session-init protects quarter-TB model downloads.
+  RAID_FREE_WARN_GB=750
+  RAID_FREE_FAIL_GB=500
+fi
 if [ "$RAID_AVAIL_GB" -lt "$RAID_FREE_FAIL_GB" ]; then
   echo "❌ FAIL: $RAID_MOUNT free ${RAID_AVAIL_GB}G < ${RAID_FREE_FAIL_GB}G fail threshold"
   ((FAIL+=1))
@@ -63,7 +88,13 @@ fi
 
 check "/mnt/raid0/llm exists" "[ -d /mnt/raid0/llm ]" "Create with: mkdir -p /mnt/raid0/llm"
 
-check "/tmp/claude bind-mounted" "mountpoint -q /tmp/claude 2>/dev/null" "Not mounted - use claude_safe_start.sh"
+# /tmp/claude bind-mount matters for an interactive session (scratch redirection) but is irrelevant to a
+# batch preflight, so it is advisory (WARN, not FAIL) under the batch profile.
+if [ "$PROFILE" = "batch" ]; then
+  check "/tmp/claude bind-mounted (advisory in batch)" "mountpoint -q /tmp/claude 2>/dev/null"
+else
+  check "/tmp/claude bind-mounted" "mountpoint -q /tmp/claude 2>/dev/null" "Not mounted - use claude_safe_start.sh"
+fi
 
 echo ""
 
