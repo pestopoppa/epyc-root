@@ -156,6 +156,106 @@ class TestForkCoverage(unittest.TestCase):
         self.assertEqual(v.ledger_status, ev.HELD_OP_GATE)
         self.assertTrue(any("OP-6" in o for o in v.op_bundle_row.options))
 
+    def test_pass_rule_requires_metric_count_signal(self):
+        gate_table = [
+            {
+                "gate": "Does EV-4 produce a complete calibration baseline?",
+                "evidence": "6 metrics per role",
+                "fork": {
+                    "pass": {
+                        "rule": "all 6 metrics recorded per role AND confidence distribution non-degenerate",
+                        "action": ["flip EV-4"],
+                        "next": "DONE_PASS",
+                    },
+                    "marginal": {
+                        "rule": "all metrics recorded but confidence is the binary float(correct) proxy",
+                        "action": ["record observation"],
+                        "next": "DONE_MARGINAL_OBS",
+                    },
+                    "ambiguous": {
+                        "action": ["operator adjudicate"],
+                        "next": "HELD_AMBIGUOUS",
+                    },
+                },
+            }
+        ]
+        e = make_entry(task_id="EV-4", gate_table=gate_table)
+        v = ev.decide(e, OK_EXEC, {"safety_gate": "PASS", "sequential": "confirmed"})
+        self.assertEqual(v.action, ev.CAT_AMBIGUOUS)
+        self.assertEqual(v.ledger_status, ev.HELD_AMBIGUOUS)
+        self.assertTrue(any("metric completeness" in r for r in v.reasons))
+
+    def test_pass_rule_downgrades_degenerate_confidence_to_marginal(self):
+        gate_table = [
+            {
+                "gate": "Does EV-4 produce a complete calibration baseline?",
+                "evidence": "6 metrics per role",
+                "fork": {
+                    "pass": {
+                        "rule": "all 6 metrics recorded per role AND confidence distribution non-degenerate",
+                        "action": ["flip EV-4"],
+                        "next": "DONE_PASS",
+                    },
+                    "marginal": {
+                        "rule": "all metrics recorded but confidence is the binary float(correct) proxy",
+                        "action": ["record observation"],
+                        "next": "DONE_MARGINAL_OBS",
+                    },
+                    "ambiguous": {
+                        "action": ["operator adjudicate"],
+                        "next": "HELD_AMBIGUOUS",
+                    },
+                },
+            }
+        ]
+        e = make_entry(task_id="EV-4", gate_table=gate_table)
+        v = ev.decide(
+            e,
+            OK_EXEC,
+            {
+                "safety_gate": "PASS",
+                "sequential": "confirmed",
+                "metrics_complete": True,
+                "confidence_source": "binary float(correct) proxy",
+            },
+        )
+        self.assertEqual(v.action, ev.CAT_MARGINAL)
+        self.assertEqual(v.ledger_status, ev.DONE_MARGINAL_OBS)
+        self.assertTrue(any("downgraded PASS to MARGINAL" in r for r in v.reasons))
+
+    def test_pass_rule_accepts_complete_nondegenerate_metrics(self):
+        gate_table = [
+            {
+                "gate": "Does EV-4 produce a complete calibration baseline?",
+                "evidence": "6 metrics per role",
+                "fork": {
+                    "pass": {
+                        "rule": "all 6 metrics recorded per role AND confidence distribution non-degenerate",
+                        "action": ["flip EV-4"],
+                        "next": "DONE_PASS",
+                    },
+                    "ambiguous": {
+                        "action": ["operator adjudicate"],
+                        "next": "HELD_AMBIGUOUS",
+                    },
+                },
+            }
+        ]
+        e = make_entry(task_id="EV-4", gate_table=gate_table)
+        v = ev.decide(
+            e,
+            OK_EXEC,
+            {
+                "safety_gate": "PASS",
+                "sequential": "confirmed",
+                "metric_count": 6,
+                "required_metric_count": 6,
+                "confidence_nondegenerate": True,
+            },
+        )
+        self.assertEqual(v.action, ev.CAT_PASS)
+        self.assertEqual(v.ledger_status, ev.DONE_PASS)
+
 
 class TestAutonomyPolicyRevertScope(unittest.TestCase):
     def test_reference_relaunch_auto(self):

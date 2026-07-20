@@ -41,7 +41,7 @@ try:  # when imported as part of a package / with coordination dir on path
         READY,
         TERMINAL_SUCCESS,
     )
-    from batch_ledger import is_retry_pickable  # type: ignore
+    from batch_ledger import canonical_hash, is_retry_pickable  # type: ignore
 except ImportError:  # pragma: no cover - fallback when run from elsewhere
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     from entry_verdict import (  # type: ignore
@@ -53,7 +53,7 @@ except ImportError:  # pragma: no cover - fallback when run from elsewhere
         READY,
         TERMINAL_SUCCESS,
     )
-    from batch_ledger import is_retry_pickable  # type: ignore
+    from batch_ledger import canonical_hash, is_retry_pickable  # type: ignore
 
 
 class StatusReportError(RuntimeError):
@@ -183,6 +183,28 @@ def is_eligible(entry: dict[str, Any], latest: dict[str, dict[str, Any]]) -> boo
     return ok
 
 
+def _current_entry_hash(entry: dict[str, Any]) -> str:
+    if entry.get("entry_hash"):
+        return str(entry["entry_hash"])
+    clean = {k: v for k, v in entry.items() if k != "entry_hash"}
+    return canonical_hash(clean)
+
+
+def _entry_hash_drift(entry: dict[str, Any], latest_row: dict[str, Any] | None) -> dict[str, str] | None:
+    if not latest_row:
+        return None
+    ledger_hash = latest_row.get("entry_hash")
+    if not ledger_hash:
+        return None
+    current_hash = _current_entry_hash(entry)
+    if str(ledger_hash) == current_hash:
+        return None
+    return {
+        "ledger_entry_hash": str(ledger_hash),
+        "current_entry_hash": current_hash,
+    }
+
+
 # ── report model ───────────────────────────────────────────────────────────
 def build_report(
     manifest: dict[str, Any],
@@ -198,6 +220,7 @@ def build_report(
     blocked: list[dict[str, Any]] = []
     held: list[dict[str, Any]] = []
     eligible: list[dict[str, Any]] = []
+    warnings: list[dict[str, Any]] = []
 
     for entry in sorted(entries, key=lambda e: (_entry_phase(e), _entry_priority(e), _entry_id(e))):
         eid = _entry_id(entry)
@@ -233,16 +256,30 @@ def build_report(
                 }
             )
         if is_eligible(entry, latest):
-            eligible.append(
-                {
-                    "task_id": eid,
-                    "title": entry.get("title"),
-                    "phase": phase,
-                    "priority": _entry_priority(entry),
-                    "status": status,
-                    "driver": (entry.get("execution") or {}).get("driver"),
-                }
-            )
+            eligible_row = {
+                "task_id": eid,
+                "title": entry.get("title"),
+                "phase": phase,
+                "priority": _entry_priority(entry),
+                "status": status,
+                "driver": (entry.get("execution") or {}).get("driver"),
+            }
+            drift = _entry_hash_drift(entry, row)
+            if drift:
+                eligible_row["entry_hash_drift"] = True
+                eligible_row.update(drift)
+                warnings.append(
+                    {
+                        "task_id": eid,
+                        "type": "entry_hash_drift",
+                        "message": (
+                            "latest ledger row was recorded against a different "
+                            "entry_hash than the current manifest entry"
+                        ),
+                        **drift,
+                    }
+                )
+            eligible.append(eligible_row)
 
     # Accumulated op-bundle rows: every held ledger row that carries one.
     op_bundle_rows: list[dict[str, Any]] = []
@@ -266,8 +303,10 @@ def build_report(
             "done_pass": status_totals.get("DONE_PASS", 0),
             "done_marginal_obs": status_totals.get("DONE_MARGINAL_OBS", 0),
             "failed_reverted": status_totals.get("FAILED_REVERTED", 0),
+            "warnings": len(warnings),
         },
         "per_phase": {ph: dict(sorted(c.items())) for ph, c in per_phase.items()},
+        "warnings": warnings,
         "eligible": eligible,
         "blocked_breakdown": blocked,
         "held_breakdown": held,
@@ -306,6 +345,16 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"· Failed(reverted): {s['failed_reverted']}"
     )
     out.append("")
+
+    if report.get("warnings"):
+        out.append("## Warnings")
+        out.append("")
+        for warning in report["warnings"]:
+            out.append(
+                f"- **{warning['task_id']}** {warning['type']}: {warning['message']} "
+                f"(ledger={warning.get('ledger_entry_hash')}, current={warning.get('current_entry_hash')})"
+            )
+        out.append("")
 
     out.append("## Counts by status")
     out.append("")

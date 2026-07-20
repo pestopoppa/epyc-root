@@ -116,6 +116,36 @@ class TestReportModel(unittest.TestCase):
         report = bsr.build_report(manifest, ledger)
         self.assertNotIn("A2", {e["task_id"] for e in report["eligible"]})
 
+    def test_eligible_entry_warns_on_entry_hash_drift(self):
+        manifest = {
+            "entries": [
+                {**entry("A1", 0), "entry_hash": "sha256:current"},
+            ]
+        }
+        ledger = [
+            {
+                "task_id": "A1",
+                "status": "INFRA_BLOCKED",
+                "entry_hash": "sha256:old",
+            },
+        ]
+        manifest["entries"][0]["execution"]["retry_policy"] = {
+            "max_attempts": 2,
+            "retry_on": ["INFRA_BLOCKED"],
+        }
+
+        report = bsr.build_report(manifest, ledger)
+        self.assertEqual(report["summary"]["warnings"], 1)
+        self.assertEqual(report["warnings"][0]["type"], "entry_hash_drift")
+        eligible = report["eligible"][0]
+        self.assertTrue(eligible["entry_hash_drift"])
+        self.assertEqual(eligible["ledger_entry_hash"], "sha256:old")
+        self.assertEqual(eligible["current_entry_hash"], "sha256:current")
+
+        markdown = bsr.render_markdown(report)
+        self.assertIn("## Warnings", markdown)
+        self.assertIn("entry_hash_drift", markdown)
+
     def test_blocked_breakdown(self):
         ids = {b["task_id"] for b in self.report["blocked_breakdown"]}
         self.assertIn("A2", ids)
