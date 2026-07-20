@@ -12,6 +12,16 @@ preflight-only bridge verified the 9 currently runnable entries (`RE-4`,
 blocking reasons. Execution remains quiet-window gated; none is
 `serial_noninference`.
 
+**RCP/reviewer topology repin checkpoint (2026-07-20; no entry completion):** root
+commit `c9bc73eb` repinned `00-rcp-prologue.yaml` and `10-reviewer-plane.yaml`
+to `production-consolidated-v7` / topology `8c8cfcbb13d2611d`; the manifest and
+source lock were regenerated. A targeted preflight-only bridge verified 11
+RCP/reviewer operator-gated entries clean. Consolidated batch status is
+`entries_total=52`, `valid=52`, `eligible_now=9`, `operator_gate_blocked=15`,
+and `blocked=1` (`EV-4 BLOCKED_PRECONDITION`). The quiet window is false due to
+active inference on port `18072` / MI210, so no entries were executed and no
+checkboxes were flipped.
+
 **▶ To run (2026-07-20):** launch this as a **`/goal`** session (codex's equivalent of the `/loop` this handoff's protocol references) — the loop is **single-writer**, so no other session may write the ledger. **Do not re-run EV-4 yet:** the latest ledger row is `BLOCKED_PRECONDITION` on B7 scorer-semantics sign-off after the 2026-07-20T19:15Z partial run confirmed the textual multiple-choice rewrite was still changing scorer semantics. `OP-quiet-window` is granted only when `inference_load_check.py --json` reports `quiet: true` immediately before execution. EV-11a and EV-11b are now fixed; EV-11c still waits on the EV-CONF/logprob and scorer-era prerequisites before the math rebaseline entry can execute. P0 still needs its front gates (`OP-6a/6b` + stack-restart). (Terminology: this doc says `/loop` throughout; read it as `/goal` under codex.)
 
 **⚠ 2026-07-20 — EV-4 did NOT pass; robustness audit filed, then Phase 0-4 blockers landed.** EV-4 hit `INFRA_BLOCKED` (stale contention matrix → silent fanout→concurrency=1 → killed partial run → no decision-grade metrics), and a later partial rerun exposed a textual multiple-choice scorer blocker. Root cause of the original fanout failure was NOT the kernel — it was the **2026-07-17 vision NUMA rebind** shipping without a matrix recert. The loop wedge, v7 topology pins, live v7 matrix recert, safe host remediation, mandatory autopilot preflight, forced-role concurrency, serial wall-budget hardening, scorer textual-label fix, and promotion/preflight prevention guards are now landed and checked in [eval-tower-loop-robustness-audit-2026-07-20.md](eval-tower-loop-robustness-audit-2026-07-20.md). EV-4's latest ledger state is now `BLOCKED_PRECONDITION` on B7 scorer-semantics sign-off, so it is intentionally not retry-pickable; do not append a fake checkpoint row or flip EV-4 until a fresh run produces decision-grade metrics.
