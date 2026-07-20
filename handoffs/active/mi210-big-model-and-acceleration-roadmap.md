@@ -174,6 +174,19 @@ P0 was fixed on experimental v7 `96986f5e9`); its gate is a strict-IF/rubric GBN
     chunking/fusion remains a plausible kernel target. Evidence is
     observation-grade because the source tree has unrelated default-off
     instrumentation changes; implementation remains open.
+  - [x] **K28.2 — existing graph-chunked route A/B CLOSED NEGATIVE ✅ 2026-07-20**:
+    a temporary default-off `LLAMA_DISABLE_FUSED_GDN_CH=1` probe was added,
+    built, measured, and reverted in `llama.cpp-experimental` to compare the
+    current fused GDN-CH path against the already-existing graph chunking path
+    in `delta-net-base.cpp`. Qwen3.6-35B-A3B Q8 MI210 prompt-only cells all
+    favored fused GDN-CH: p64 `706.40 -> 660.41 t/s` (`-6.51%`), p256
+    `1643.63 -> 1539.88 t/s` (`-6.31%`), p2048 `2100.06 -> 1959.58 t/s`
+    (`-6.69%`), p8192 `1995.07 -> 1869.34 t/s` (`-6.30%`). Evidence:
+    `data/k28_gdn_perf/k28-fused-vs-graph-qwen36-35b-summary-20260720.json`.
+    Verdict: do not implement a fused-vs-graph policy/threshold switch for
+    K28; the remaining speed path is a real fused-kernel recurrence improvement
+    (or a separate BF16-state/model-level quality gate), not routing to graph
+    chunking.
 
 ## Research Intake Update — 2026-07-16 (AirLLM / GPU-active-weight offload)
 

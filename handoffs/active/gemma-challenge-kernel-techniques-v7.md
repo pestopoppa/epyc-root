@@ -65,6 +65,12 @@ exists in `delta-net-base.cpp`; the open target is the serial token scan in
 `ggml/src/ggml-cuda/gated_delta_net.cu`. Next step is an operator-window `rocprofv2`
 GATED_DELTA_NET profile over 64/65/256/1024-token GDA/KDA shapes, then a separate
 runtime-gated chunked kernel only if recurrence latency, not memory traffic, dominates.
+2026-07-20 follow-up: the cheap policy switch has now been falsified. A temporary
+`LLAMA_DISABLE_FUSED_GDN_CH=1` probe compared fused GDN-CH against the existing
+graph chunking path on Qwen3.6-35B-A3B Q8 MI210 prompt-only cells; graph chunking
+lost by `-6.30%` to `-6.69%` from p64 through p8192. Keep K28 open only for a
+real fused-kernel recurrence improvement or a separately gated BF16-state/model
+quality path.
 
 ## Technique candidates (from intake-798 submissions)
 
