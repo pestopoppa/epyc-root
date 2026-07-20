@@ -25,6 +25,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import re
 import sys
 from collections import OrderedDict, defaultdict
 from pathlib import Path
@@ -63,6 +64,7 @@ class StatusReportError(RuntimeError):
 UNSTARTED = "UNSTARTED"  # report-only bucket: entry present in manifest, absent from ledger
 # Statuses that can be next-eligible without an entry-level retry policy.
 _ELIGIBLE_FROM = frozenset({UNSTARTED, READY})
+_GATE_ROW_RE = re.compile(r"^\s*-\s+\[(?P<mark>[ xX])\]\s+\*\*(?P<label>[^*]+)\*\*")
 
 
 def utc_now() -> str:
@@ -111,6 +113,35 @@ def load_ledger(path: str | Path) -> list[dict[str, Any]]:
             raise StatusReportError(f"{p}:{lineno}: ledger row must be an object")
         rows.append(row)
     return rows
+
+
+def load_operator_gate_registry(path: str | Path) -> dict[str, dict[str, Any]]:
+    """Parse op-bundle checkbox rows into gate-id -> status metadata.
+
+    Gate ids are the bold label prefix before " — ". A checked row grants a
+    gate unless its line explicitly says DENIED.
+    """
+    p = Path(path)
+    if not p.exists():
+        return {}
+    registry: dict[str, dict[str, Any]] = {}
+    for lineno, line in enumerate(p.read_text().splitlines(), start=1):
+        match = _GATE_ROW_RE.match(line)
+        if not match:
+            continue
+        label = match.group("label").strip()
+        gate_id = label.split(" — ", 1)[0].strip()
+        checked = match.group("mark").lower() == "x"
+        denied = "DENIED" in line.upper()
+        registry[gate_id] = {
+            "gate_id": gate_id,
+            "label": label,
+            "checked": checked,
+            "granted": checked and not denied,
+            "line": lineno,
+            "text": line.strip(),
+        }
+    return registry
 
 
 # ── ledger folding ─────────────────────────────────────────────────────────
@@ -174,13 +205,44 @@ def _deps_satisfied(entry: dict[str, Any], latest: dict[str, dict[str, Any]]) ->
     return (not unmet), unmet
 
 
-def is_eligible(entry: dict[str, Any], latest: dict[str, dict[str, Any]]) -> bool:
+def _operator_gates(entry: dict[str, Any]) -> list[str]:
+    pre = entry.get("preconditions") or {}
+    return [str(gate) for gate in (pre.get("operator_gates") or [])]
+
+
+def _operator_gate_blockers(
+    entry: dict[str, Any],
+    operator_gate_registry: dict[str, dict[str, Any]] | None,
+) -> list[dict[str, str]]:
+    if operator_gate_registry is None:
+        return []
+    blockers: list[dict[str, str]] = []
+    for gate in _operator_gates(entry):
+        row = operator_gate_registry.get(gate)
+        if row is None:
+            blockers.append({"gate": gate, "reason": "missing_from_op_bundle"})
+        elif not row.get("granted"):
+            blockers.append({"gate": gate, "reason": "not_granted"})
+    return blockers
+
+
+def is_structurally_eligible(entry: dict[str, Any], latest: dict[str, dict[str, Any]]) -> bool:
     entry_id = _entry_id(entry)
     status = _status_of(entry_id, latest)
     if status not in _ELIGIBLE_FROM and not is_retry_pickable(entry, latest.get(entry_id)):
         return False
     ok, _ = _deps_satisfied(entry, latest)
     return ok
+
+
+def is_eligible(
+    entry: dict[str, Any],
+    latest: dict[str, dict[str, Any]],
+    operator_gate_registry: dict[str, dict[str, Any]] | None = None,
+) -> bool:
+    if not is_structurally_eligible(entry, latest):
+        return False
+    return not _operator_gate_blockers(entry, operator_gate_registry)
 
 
 def _current_entry_hash(entry: dict[str, Any]) -> str:
@@ -209,6 +271,7 @@ def _entry_hash_drift(entry: dict[str, Any], latest_row: dict[str, Any] | None) 
 def build_report(
     manifest: dict[str, Any],
     ledger_rows: list[dict[str, Any]],
+    operator_gate_registry: dict[str, dict[str, Any]] | None = None,
     generated_at: str | None = None,
 ) -> dict[str, Any]:
     """Build the structured status report (pure; no I/O)."""
@@ -220,6 +283,8 @@ def build_report(
     blocked: list[dict[str, Any]] = []
     held: list[dict[str, Any]] = []
     eligible: list[dict[str, Any]] = []
+    structurally_eligible: list[dict[str, Any]] = []
+    operator_gate_blocked: list[dict[str, Any]] = []
     warnings: list[dict[str, Any]] = []
 
     for entry in sorted(entries, key=lambda e: (_entry_phase(e), _entry_priority(e), _entry_id(e))):
@@ -255,8 +320,8 @@ def build_report(
                     "op_bundle_row": row.get("op_bundle_row"),
                 }
             )
-        if is_eligible(entry, latest):
-            eligible_row = {
+        if is_structurally_eligible(entry, latest):
+            structural_row = {
                 "task_id": eid,
                 "title": entry.get("title"),
                 "phase": phase,
@@ -266,8 +331,8 @@ def build_report(
             }
             drift = _entry_hash_drift(entry, row)
             if drift:
-                eligible_row["entry_hash_drift"] = True
-                eligible_row.update(drift)
+                structural_row["entry_hash_drift"] = True
+                structural_row.update(drift)
                 warnings.append(
                     {
                         "task_id": eid,
@@ -279,7 +344,17 @@ def build_report(
                         **drift,
                     }
                 )
-            eligible.append(eligible_row)
+            structurally_eligible.append(structural_row)
+            gate_blockers = _operator_gate_blockers(entry, operator_gate_registry)
+            if gate_blockers:
+                operator_gate_blocked.append(
+                    {
+                        **structural_row,
+                        "operator_gate_blockers": gate_blockers,
+                    }
+                )
+            else:
+                eligible.append(structural_row)
 
     # Accumulated op-bundle rows: every held ledger row that carries one.
     op_bundle_rows: list[dict[str, Any]] = []
@@ -297,6 +372,8 @@ def build_report(
             "tracked_tasks": len(latest),
             "by_status": dict(sorted(status_totals.items())),
             "eligible_now": len(eligible),
+            "structurally_eligible": len(structurally_eligible),
+            "operator_gate_blocked": len(operator_gate_blocked),
             "blocked": len(blocked),
             "held": len(held),
             "op_bundle_rows": len(op_bundle_rows),
@@ -308,6 +385,8 @@ def build_report(
         "per_phase": {ph: dict(sorted(c.items())) for ph, c in per_phase.items()},
         "warnings": warnings,
         "eligible": eligible,
+        "structurally_eligible": structurally_eligible,
+        "operator_gate_blocked": operator_gate_blocked,
         "blocked_breakdown": blocked,
         "held_breakdown": held,
         "op_bundle_rows": op_bundle_rows,
@@ -334,7 +413,8 @@ def render_markdown(report: dict[str, Any]) -> str:
     out.append("")
     out.append(
         f"**{s['entries_total']}** entries | "
-        f"**{s['eligible_now']}** eligible now | "
+        f"**{s['eligible_now']}** runnable now | "
+        f"**{s['operator_gate_blocked']}** operator-gate blocked | "
         f"**{s['blocked']}** blocked | "
         f"**{s['held']}** held | "
         f"**{s['op_bundle_rows']}** op-bundle rows"
@@ -373,10 +453,10 @@ def render_markdown(report: dict[str, Any]) -> str:
             out.append(f"- **Phase {phase}**: {inline}")
         out.append("")
 
-    out.append("## Next-eligible entries")
+    out.append("## Next-runnable entries")
     out.append("")
     if not report["eligible"]:
-        out.append("_None eligible — every entry is blocked, held, running, or done._")
+        out.append("_None runnable — every entry is blocked, gate-held, running, or done._")
         out.append("")
     else:
         out.append("| task_id | phase | prio | driver | from-status |")
@@ -386,6 +466,21 @@ def render_markdown(report: dict[str, Any]) -> str:
                 f"| {e['task_id']} | {e['phase']} | {e['priority']} | "
                 f"{e.get('driver') or '-'} | {e['status']} |"
             )
+        out.append("")
+
+    out.append("## Structurally eligible but operator-gated")
+    out.append("")
+    if not report.get("operator_gate_blocked"):
+        out.append("_None._")
+        out.append("")
+    else:
+        out.append("| task_id | phase | prio | missing/ungranted gates |")
+        out.append("| --- | --- | --- | --- |")
+        for e in report["operator_gate_blocked"]:
+            gates = ", ".join(
+                f"{b['gate']} ({b['reason']})" for b in e.get("operator_gate_blockers", [])
+            )
+            out.append(f"| {e['task_id']} | {e['phase']} | {e['priority']} | {gates} |")
         out.append("")
 
     out.append("## Blocked / held")
@@ -484,6 +579,19 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", required=True, help="manifest.yaml or .json")
     parser.add_argument("--ledger", required=True, help="ledger.jsonl")
+    parser.add_argument(
+        "--op-bundle",
+        default=None,
+        help=(
+            "operator gate registry markdown; defaults to op-bundle.md beside "
+            "the manifest when present"
+        ),
+    )
+    parser.add_argument(
+        "--ignore-operator-gates",
+        action="store_true",
+        help="report structural eligibility only; do not filter by op-bundle grants",
+    )
     parser.add_argument("--json", action="store_true", help="emit structured JSON instead of markdown")
     return parser
 
@@ -493,7 +601,11 @@ def main(argv: list[str] | None = None) -> int:
     try:
         manifest = load_manifest(args.manifest)
         ledger = load_ledger(args.ledger)
-        report = build_report(manifest, ledger)
+        gate_registry = None
+        if not args.ignore_operator_gates:
+            op_bundle = Path(args.op_bundle) if args.op_bundle else Path(args.manifest).parent / "op-bundle.md"
+            gate_registry = load_operator_gate_registry(op_bundle)
+        report = build_report(manifest, ledger, operator_gate_registry=gate_registry)
     except StatusReportError as exc:
         print(f"batch_status_report: {exc}", file=sys.stderr)
         return 2

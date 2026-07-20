@@ -161,10 +161,64 @@ class TestReportModel(unittest.TestCase):
     def test_render_markdown(self):
         md = bsr.render_markdown(self.report)
         self.assertIn("# Inference-Batch Status Report", md)
-        self.assertIn("## Next-eligible entries", md)
+        self.assertIn("## Next-runnable entries", md)
         self.assertIn("A2", md)
+        self.assertIn("## Structurally eligible but operator-gated", md)
         self.assertIn("## Accumulated operator-bundle rows", md)
         self.assertIn("### B1 — B1 title", md)
+
+    def test_operator_gate_registry_filters_runnable_entries(self):
+        manifest = {
+            "entries": [
+                {
+                    **entry("A1", 0),
+                    "preconditions": {"depends_on": [], "operator_gates": ["OP-A"]},
+                },
+                {
+                    **entry("A2", 0),
+                    "preconditions": {"depends_on": [], "operator_gates": ["OP-B"]},
+                },
+                {
+                    **entry("A3", 0),
+                    "preconditions": {"depends_on": [], "operator_gates": ["OP-MISSING"]},
+                },
+            ]
+        }
+        registry = {
+            "OP-A": {"granted": True},
+            "OP-B": {"granted": False},
+        }
+
+        report = bsr.build_report(manifest, [], operator_gate_registry=registry)
+        self.assertEqual(report["summary"]["structurally_eligible"], 3)
+        self.assertEqual(report["summary"]["eligible_now"], 1)
+        self.assertEqual(report["summary"]["operator_gate_blocked"], 2)
+        self.assertEqual([e["task_id"] for e in report["eligible"]], ["A1"])
+        blockers = {
+            row["task_id"]: row["operator_gate_blockers"]
+            for row in report["operator_gate_blocked"]
+        }
+        self.assertEqual(blockers["A2"], [{"gate": "OP-B", "reason": "not_granted"}])
+        self.assertEqual(
+            blockers["A3"], [{"gate": "OP-MISSING", "reason": "missing_from_op_bundle"}]
+        )
+
+    def test_load_operator_gate_registry(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "op-bundle.md"
+            p.write_text(
+                "\n".join(
+                    [
+                        "- [x] **OP-A — approved gate**: GRANTED 2026-07-20",
+                        "- [ ] **OP-B — pending gate**: waiting",
+                        "- [x] **OP-C — denied gate**: DENIED 2026-07-20",
+                    ]
+                )
+            )
+            registry = bsr.load_operator_gate_registry(p)
+        self.assertTrue(registry["OP-A"]["granted"])
+        self.assertFalse(registry["OP-B"]["granted"])
+        self.assertFalse(registry["OP-C"]["granted"])
 
 
 class TestOpBundleFormatter(unittest.TestCase):

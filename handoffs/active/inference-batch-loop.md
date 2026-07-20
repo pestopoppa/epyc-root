@@ -4,7 +4,7 @@
 
 **▶ To run (2026-07-20):** launch this as a **`/goal`** session (codex's equivalent of the `/loop` this handoff's protocol references) — the loop is **single-writer**, so no other session may write the ledger. **Do not re-run EV-4 yet:** the latest ledger row is `BLOCKED_PRECONDITION` on B7 scorer-semantics sign-off after the 2026-07-20T19:15Z partial run confirmed the textual multiple-choice rewrite was still changing scorer semantics. `OP-quiet-window` is granted only when `inference_load_check.py --json` reports `quiet: true` immediately before execution. EV-11a and EV-11b are now fixed; EV-11c still waits on the EV-CONF/logprob and scorer-era prerequisites before the math rebaseline entry can execute. P0 still needs its front gates (`OP-6a/6b` + stack-restart). (Terminology: this doc says `/loop` throughout; read it as `/goal` under codex.)
 
-**⚠ 2026-07-20 — EV-4 did NOT pass; robustness audit filed, then Phase 0-4 blockers landed.** EV-4 hit `INFRA_BLOCKED` (stale contention matrix → silent fanout→concurrency=1 → killed partial run → no decision-grade metrics), and a later partial rerun exposed a textual multiple-choice scorer blocker. Root cause of the original fanout failure was NOT the kernel — it was the **2026-07-17 vision NUMA rebind** shipping without a matrix recert. The loop wedge, v7 topology pins, live v7 matrix recert, safe host remediation, mandatory autopilot preflight, forced-role concurrency, serial wall-budget hardening, scorer textual-label fix, and promotion/preflight prevention guards are now landed and checked in [eval-tower-loop-robustness-audit-2026-07-20.md](eval-tower-loop-robustness-audit-2026-07-20.md). EV-4's latest ledger state remains `INFRA_BLOCKED` by design, but `pending()` re-admits it under retry policy; do not append a fake checkpoint row or flip EV-4 until a fresh run produces decision-grade metrics.
+**⚠ 2026-07-20 — EV-4 did NOT pass; robustness audit filed, then Phase 0-4 blockers landed.** EV-4 hit `INFRA_BLOCKED` (stale contention matrix → silent fanout→concurrency=1 → killed partial run → no decision-grade metrics), and a later partial rerun exposed a textual multiple-choice scorer blocker. Root cause of the original fanout failure was NOT the kernel — it was the **2026-07-17 vision NUMA rebind** shipping without a matrix recert. The loop wedge, v7 topology pins, live v7 matrix recert, safe host remediation, mandatory autopilot preflight, forced-role concurrency, serial wall-budget hardening, scorer textual-label fix, and promotion/preflight prevention guards are now landed and checked in [eval-tower-loop-robustness-audit-2026-07-20.md](eval-tower-loop-robustness-audit-2026-07-20.md). EV-4's latest ledger state is now `BLOCKED_PRECONDITION` on B7 scorer-semantics sign-off, so it is intentionally not retry-pickable; do not append a fake checkpoint row or flip EV-4 until a fresh run produces decision-grade metrics.
 
 **Checkpoint (2026-07-20T19:17Z; no EV-4 flip):** EV-4 is preflight-ready again
 after the Phase-0 unblock. The fresh attestation
@@ -25,6 +25,13 @@ policy. Complete the B7 operator-reviewed scorer-semantics package before append
 a `READY` row or re-running EV-4; partial progress artifacts under
 `orchestration/reports/eval_batch_serving_evaltower_20260720T191550Z/` are
 diagnostic-only and contain no `summary.json`.
+
+**Checkpoint (2026-07-20Tpost-B7; no EV-4 flip):** `batch_status_report.py` now
+distinguishes structural eligibility from runnable-now eligibility after
+`op-bundle.md` operator gates. The current manifest has 24 structurally eligible
+entries, but only 9 runnable entries once missing/ungranted operator gates are
+filtered; 15 are surfaced separately as "structurally eligible but operator-gated."
+Use `--ignore-operator-gates` only for structural audits, not for pick-next.
 
 **START HERE (execution source-of-truth — machine-readable, do not re-narrate):**
 - `coordination/inference-batch/LOOP_PROTOCOL.md` — the operator `/loop` runbook (single-writer rule, session-init, pick-next, per-entry cycle, autonomy policy)

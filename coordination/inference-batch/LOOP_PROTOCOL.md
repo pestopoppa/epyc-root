@@ -17,7 +17,7 @@ The loop session is the SOLE writer of `ledger.jsonl`, `op-bundle.md`, and the c
 
 ## Pick-next-entry
 
-Eligible = `READY` ∧ preconditions satisfiable ∧ `depends_on` all in {DONE_PASS, DONE_MARGINAL_OBS} ∧ operator_gates all granted (see `op-bundle.md` grants) ∧ quiet-window-appropriate for its `contention_class`. Among eligible: prefer entries whose `stack_lineup` matches the currently-resident stack (avoid a reload); else pick the phase with the most unblocked work and pay one reload. Never start a `throughput_sensitive` entry whose `est_wall_clock_h` exceeds the declared remaining window budget. `COORDINATION`-status entries are never picked (they exist only for precondition cross-refs to the parallel session's work).
+Eligible = `READY` ∧ preconditions satisfiable ∧ `depends_on` all in {DONE_PASS, DONE_MARGINAL_OBS} ∧ operator_gates all granted (see `op-bundle.md` grants) ∧ quiet-window-appropriate for its `contention_class`. `batch_status_report.py` is gate-aware by default: "runnable" means operator gates are granted, while `--ignore-operator-gates` is reserved for structural audits. Among eligible: prefer entries whose `stack_lineup` matches the currently-resident stack (avoid a reload); else pick the phase with the most unblocked work and pay one reload. Never start a `throughput_sensitive` entry whose `est_wall_clock_h` exceeds the declared remaining window budget. `COORDINATION`-status entries are never picked (they exist only for precondition cross-refs to the parallel session's work).
 
 ## Per-entry cycle
 
@@ -41,7 +41,7 @@ Eligible = `READY` ∧ preconditions satisfiable ∧ `depends_on` all in {DONE_P
 
 ## Wrap-up cadence
 
-After each phase or ~4 entries: regenerate `batch_status_report.py` output, update the `bulk-inference-campaign.md` status line, commit ledger + packaged artifacts (single-writer). Full wrap-up routine at phase boundaries.
+After each phase or ~4 entries: regenerate `batch_status_report.py` output using the default `op-bundle.md` gate registry, update the `bulk-inference-campaign.md` status line, commit ledger + packaged artifacts (single-writer). Full wrap-up routine at phase boundaries.
 
 ## Instrument discipline
 
