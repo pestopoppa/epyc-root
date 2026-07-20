@@ -359,3 +359,36 @@ These are the deep-dive actions queued from intake-598 — slotted here because 
 
 ### Monitoring note (no action, no checkbox)
 intake-813 is tracked as a continuation of the Behrouz/Titans architecture line (with intake-354); **no bench/port/checkbox** — architectural monitoring only, consistent with the LFM2 "no bench, no port" discipline above and the corpus anti-bloat posture (cf. intake-798 "deliberately no checkboxes added"). Revisit only if a Titans-family artifact becomes OSS/llama.cpp-loadable AND a production gap opens.
+
+## Research Intake Update — 2026-07-20 (revised same day after deep dive)
+
+> The first version of this section credited R-SWA as a novel attention variant. A prior-art review overturned that. Superseded text removed; the corrected assessment follows.
+
+### **[intake-864] "Unlimited OCR Works"** (arxiv:2606.23050, Baidu, 2026-06-22, MIT) — **rebranded prior art, no action**
+
+**Mechanism (verified, §3.4.1):** `N(t) = P ∪ D_n(t)` where `P = {1..L_m}` is a globally-visible prefix (visual tokens + prompt) and `D_n(t)` is a causal sliding window of width `n=128` over the decode region. KV cache is bounded at `L_m + n`. All decoder layers use it — no interleaved full-attention layers, unlike Gemma-2/3 or Llama-4 iRoPE.
+
+**This is not new.** It is the Λ-mask, under a new name:
+
+| Prior work | Relation |
+|---|---|
+| Longformer (2004.05150), ETC (2004.08483), BigBird (2007.14062) | sliding window + **global attention on task-specific tokens**, explicitly including the prompt segment. R-SWA = the causal specialisation with random blocks = 0 and global set = prefix. |
+| LM-Infinite (2308.16137) | named the **Λ-shaped mask**: leading tokens globally visible + local window. Training-free. |
+| StreamingLLM (2309.17453, ICLR'24) | attention sinks — R-SWA is **StreamingLLM with k = \|prompt+image\| instead of k=4**, with the mask trained in. |
+| TrOCR / Donut / Nougat encoder-decoder | decoder cross-attends all encoder outputs + self-attends generated text. For an OCR model this is the most damning framing: R-SWA re-derives cross-attention + a windowed decoder inside a decoder-only mask. |
+
+**The paper cites none of it.** All 35 references are OCR/VLM/infrastructure; grep for `longformer|bigbird|streaming|sink|infinite` returns zero hits. Its related-work section claims *"current models all see it [the KV cache] grow continuously with decoding contexts"* — false as written, and it is the load-bearing novelty claim.
+
+**Evidence quality is weak.** The word "ablation" does not appear in the paper. The +6.22 headline vs DeepSeek-OCR confounds the mask with 4,000 continued-training steps and ~2M new labelled samples; there is no vanilla-SWA run and no window-size sweep. The 35%-faster claim is measured at **prefill length 10** (§6, explicit) — with `L_m=10` the mechanism degenerates to near-pure SWA, its maximum-advantage case; in the paper's own 10K-visual-token regime the compute advantage largely evaporates and only the memory advantage survives.
+
+**What is actually real:** the narrower empirical finding that a **128-token self-window suffices for reference-grounded transcription** — the global set carries the meaning, the window only carries a cursor. Prior Λ-mask work kept 1K–4K windows and treated the sink as a numerical-stability hack. That inversion is a legitimate contribution, as are the FA4 `mask_mod` / FlexAttention / Triton kernels. It is an engineering result, not an architectural one.
+
+### Why this is not a lever for us (no bench, no port, no checkbox)
+
+1. **Wrong axis.** R-SWA is a long-**output** optimisation. Our long-context pressure is long **input** (RAG, agent history, document prefills) where `T ≪ L_m`, so the bounded-decode-cache saving is ~nothing — while costing prefix caching (vLLM disables prefix caching for this model outright: *"R-SWA decode-phase KV is not a pure causal function of the prefix"*).
+2. **Agentic loops break it structurally.** Tool results arrive mid-generation and are semantically reference material, so they must join the resident prefix — `L_m` then grows unboundedly and the constant-cache property evaporates.
+3. **We already have the generic version.** llama.cpp `--keep` / context-shift has provided resident-prefix + sliding-window-over-generation semantics since 2023 (eviction with RoPE re-indexing rather than a mask). No engine exposes R-SWA as a general attention type; vLLM gates it behind the model config, and llama.cpp PR #24975 is hard-wired to `deepseek2-ocr`.
+4. **It needs a decoding-time crutch.** Every port ships `no_repeat_ngram_size=35` / DRY to stop the model looping — the predicted failure of a 128-token self-window, unmentioned in the paper. Its own long-horizon metric (Distinct-35) is a repetition metric.
+5. **Direct collision with our MTP line.** PR #24975 documents that speculative/lookahead multi-token decode **never latches** and silently falls back to full causal, plus it bumps `LLAMA_SESSION_VERSION`/`LLAMA_STATE_SEQ_VERSION` and forces F32 V-cache. Draft, 0 maintainer reviews in 4 weeks.
+
+**Better comparison point for text**, if the long-output regime ever matters to us: **KARA** (arxiv:2607.01237, 2026-07) keeps the prefix intact and *adaptively compresses* the generated window instead of hard-truncating it, and is training-free — the right shape for CoT/reasoning, where distant self-reference actually matters. Worth its own intake if we revisit.
