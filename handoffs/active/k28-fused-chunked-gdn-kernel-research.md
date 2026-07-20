@@ -1,6 +1,6 @@
 # K28 — Fused Chunked GDN Recurrence Kernel: Research Handoff
 
-**Status**: RESEARCH/DESIGN — no code written. Design + SOTA deep-dive to gate a possible post-v7 kernel effort.
+**Status**: RESEARCH/DESIGN — Phase 0 ceiling gate run 2026-07-20; no kernel code written. Design + SOTA deep-dive gates a possible post-v7 default-off kernel effort.
 **Created**: 2026-07-20. **Scope**: GPU (MI210 / gfx90a / CDNA2, ROCm/HIP). **Owner task**: `mi210-big-model-and-acceleration-roadmap.md` K28 (`- [ ]`, `gated_delta_net.cu:191` TODO).
 **Related (distinct)**: [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md) (a different, monitoring-only *log-linear* GDN tracker — not this kernel effort).
 **For**: the parallel agent working the K28 / GDN long-prefill thread.
@@ -16,6 +16,27 @@ The parallel agent closed the two *cheap* K28 win-paths on 2026-07-20 and conclu
 This handoff answers **what that "real fused kernel" is**, grounds it in the actual SOTA (equations, reference kernels, CDNA2 feasibility, upstream prior art — all in the appendices), and pairs the design with a **cheap decision gate to run before committing weeks**.
 
 The single most important framing: **the MI210 A/B is not evidence against chunking — it is evidence against llama.cpp's *generic-ggml decomposition* of the chunked algorithm.** The chunked *algorithm* is what every SOTA engine ships (FLA→vLLM/SGLang, FlashQLA, TFLA). What loses on MI210 is how llama.cpp expresses it — as ~150+ separate ggml ops, each round-tripping intermediates through HBM. A real fused kernel keeps chunk-local tensors on-chip.
+
+## 2026-07-20 Phase 0 gate result
+
+Phase 0 was run only to decide whether K28 should delay v7 promotion. It should
+not. Direct ROCm attribution could not run because `rocprofv2`, `rocprof`, and
+`omniperf` are absent, so the gate used a fresh `GATED_DELTA_NET` MI210 op rerun
+plus the existing Qwen3.6-35B-A3B Q8 full-model prefill rows. The op rerun
+reproduced the serial-dependency signature (`51.20 GB/s` at 64 tokens falling
+to `26.84 GB/s` at 1024), but the modeled full-model ceiling is bounded:
+estimated GDN prefill share is `15.31%` at p2048 and `14.54%` at p8192; a 4x
+op kernel would map to about `11.48%` / `10.91%` full-model prompt gain.
+
+Evidence:
+`/mnt/raid0/llm/epyc-inference-research/data/k28_gdn_perf/k28-phase0-op-rerun-20260720T102526Z/`
+and
+`/mnt/raid0/llm/epyc-inference-research/data/k28_gdn_perf/k28-phase0-ceiling-20260720T102644Z/summary.json`.
+
+Verdict: keep K28 open as a plausible post-promotion/default-off fused-kernel
+project, but do not delay frozen-v7 promotion for Phase 1 unless a direct
+profiler rerun or throwaway prototype shows a materially higher full-model
+ceiling.
 
 ---
 

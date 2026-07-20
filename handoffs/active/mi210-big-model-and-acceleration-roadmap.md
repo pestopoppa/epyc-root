@@ -197,6 +197,21 @@ P0 was fixed on experimental v7 `96986f5e9`); its gate is a strict-IF/rubric GBN
     Verdict: do not treat BF16 GDN state as a throughput lever for K28; keep it
     as memory/residency research only, requiring a separate quality/coherence
     gate before any serving use.
+  - [x] **K28.4 — Phase 0 op-rerun + ceiling model CLOSED ✅ 2026-07-20**:
+    reran the MI210 `GATED_DELTA_NET` backend perf microbench per the detailed
+    K28 handoff and reproduced the serial-dependency signature: realistic
+    `head_count=32,head_size=128` GDN efficiency falls from `51.20 GB/s` at
+    64 tokens to `26.84 GB/s` at 1024 tokens. Direct ROCm attribution was not
+    possible because `rocprofv2`, `rocprof`, and `omniperf` are not installed.
+    The modeled Phase-0 ceiling combines the op rerun with existing full-model
+    Qwen3.6-35B-A3B Q8 prefill rows: estimated GDN prefill share is `15.31%`
+    at p2048 and `14.54%` at p8192; an optimistic 4x op kernel maps to only
+    `11.48%` / `10.91%` full-model prefill gain. Evidence:
+    `data/k28_gdn_perf/k28-phase0-op-rerun-20260720T102526Z/` and
+    `data/k28_gdn_perf/k28-phase0-ceiling-20260720T102644Z/summary.json`.
+    Verdict: K28 remains a plausible default-off post-promotion kernel project,
+    but do not delay v7 promotion for Phase 1 unless a direct profiler rerun or
+    throwaway prototype shows materially higher full-model ceiling.
 
 ## Research Intake Update — 2026-07-16 (AirLLM / GPU-active-weight offload)
 
