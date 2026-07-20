@@ -18,9 +18,9 @@ This file keeps the legacy active-handoff path referenced by older progress logs
 
 ## Current Verdict
 
-As of 2026-07-11, the active implementation surface is already recorded in the MTP refresh handoff. Dense CPU MTP is validated on Gemma4-31B and Qwen3.5-9B observations, MoE CPU MTP remains low-EV because expert verification dominates, and hybrid recurrent CPU MTP remains a negative datapoint in the completed historical ledger. Production uses the single `production-consolidated-v6` llama.cpp tree with native MTP/NEXTN; the old separate `ik_llama.cpp` path is reproduction-only.
+As of 2026-07-20, the active implementation surface is already recorded in the MTP refresh handoff. Dense CPU MTP is validated on Gemma4-31B and Qwen3.5-9B observations, MoE CPU MTP remains low-EV because expert verification dominates, and hybrid recurrent CPU MTP remains a negative datapoint in the completed historical ledger. Production uses the single `production-consolidated-v7` llama.cpp tree with native MTP/NEXTN; the old separate `ik_llama.cpp` path is reproduction-only.
 
-Remaining speculative-decoding work is not safe to run autonomously: T4, T5, Hy3 confirmation, MI210/GPU-drafter smoke tests, and any v7 promotion require operator-approved bench windows, no-concurrent-inference discipline, and measurement protocol IDs.
+Remaining speculative-decoding work is not safe to run autonomously: T4, T5, Hy3 confirmation, MI210/GPU-drafter smoke tests, and any future production-kernel promotion require operator-approved bench windows, no-concurrent-inference discipline, and measurement protocol IDs.
 
 ## Progress Checklist
 

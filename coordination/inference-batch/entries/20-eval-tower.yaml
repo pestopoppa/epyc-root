@@ -40,8 +40,8 @@
   phase: 2
   priority: P1
   preconditions:
-    stack_lineup: "production default lineup (frontdoor + worker_general + architect_general)"
-    kernel_era: production-consolidated-v6
+    stack_lineup: "production-consolidated-v7 quarter-mode lineup: frontdoor quarters 8080/8180/8280/8380; worker_general quarters 8082/8182/8282/8382; architect_general 8083; canonical llama.cpp 6ad45fa3 / binary 10098"
+    kernel_era: production-consolidated-v7
     flag_attestation: env_only
     models:
       - frontdoor
@@ -52,7 +52,7 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 4320d9b2ebdb4ad0200da91c6b1f807f77f44f931311d240cf8a8f04546535b9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped

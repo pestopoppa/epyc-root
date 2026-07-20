@@ -94,7 +94,7 @@ Q8 for the quality bench unless throughput is being measured, then use the produ
 > "GPU accelerates, CPU guarantees" fallback design in [heterogeneous-slot-fabric-residency.md](heterogeneous-slot-fabric-residency.md).
 
 ## Gating (sequenced — do NOT start inference until ALL clear)
-1. **[ ] v7 promoted to production** (`production-consolidated-v7`) → GPU arms become `P-GPU-1`-eligible. Tracked in [`v7-promotion.md`](v7-promotion.md).
+1. **[x] v7 promoted to production** (`production-consolidated-v7`) → GPU arms are now `P-GPU-1`-eligible. Tracked in [`v7-promotion.md`](v7-promotion.md). ✅ 2026-07-20
 2. **[ ] `inference-batch-loop.md` outstanding tests complete** — the parallel agent runs that backlog first, on the current orchestration stack. See [`inference-batch-loop.md`](inference-batch-loop.md).
 3. **[ ] Operator quiet-window inference approval** (`feedback_no_concurrent_inference`) — GPU arms **one-at-a-time** (single MI210), CPU arm (A2) may run concurrently in a detected quiet window (`inference_load_check.py`).
 

@@ -1,20 +1,20 @@
 {
   "schema_version": "inference_batch.sources_lock.v1",
-  "generated_at": "2026-07-17T15:15:38Z",
+  "generated_at": "2026-07-20T14:39:10Z",
   "repos": {
     "epyc-root": {
-      "path": "/workspace",
-      "sha": "efcb31571ccac3475d79519b550dbb80f3a64305",
+      "path": "/mnt/raid0/llm/epyc-root",
+      "sha": "8f70d3623c1f6fe712ac1d4ff4dda2f3db1e7516",
       "dirty": true
     },
     "epyc-orchestrator": {
       "path": "/mnt/raid0/llm/epyc-orchestrator",
-      "sha": "8c93efaa2f6f711b1dc791bdf24810e6aa044100",
+      "sha": "987762a148106d17717746a90bfbb75ea5ae4a37",
       "dirty": true
     },
     "epyc-inference-research": {
       "path": "/mnt/raid0/llm/epyc-inference-research",
-      "sha": "b95b7a9883f8a39442f64d436f11492295d3d822",
+      "sha": "0a6fd8a59a048720ebbc0cf648f3903f080f9da6",
       "dirty": true
     }
   },
@@ -105,7 +105,7 @@
       "checkbox": "RM-6",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 25,
+      "checkbox_line": 49,
       "resolved": true
     },
     {
@@ -163,7 +163,7 @@
       "checkbox": "EV-5",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 177,
+      "checkbox_line": 3,
       "resolved": true
     },
     {
@@ -221,7 +221,7 @@
       "checkbox": "RM-3",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 22,
+      "checkbox_line": 42,
       "resolved": true
     },
     {
@@ -285,8 +285,8 @@
         "handoffs/active/opendataloader-pipeline-integration.md#does GPU-accelerated LightOnOCR beat docling-fast"
       ],
       "handoff_exists": true,
-      "checkbox_line": 159,
-      "resolved": true
+      "checkbox_line": null,
+      "resolved": false
     },
     {
       "task_id": "ODLB-W3-02-odl-hybrid",
@@ -354,7 +354,7 @@
         "handoffs/active/routing-and-optimization-index.md#Cross-Role Contention + Placement"
       ],
       "handoff_exists": true,
-      "checkbox_line": 378,
+      "checkbox_line": 380,
       "resolved": true
     },
     {
@@ -377,7 +377,7 @@
         "handoffs/active/within-role-placement-state-machine.md#WP-6 / WP-7 full ratification"
       ],
       "handoff_exists": true,
-      "checkbox_line": 377,
+      "checkbox_line": 379,
       "resolved": true
     },
     {
@@ -398,9 +398,9 @@
       "also_flips": [
         "handoffs/active/v6-iqk-promotion.md#M"
       ],
-      "handoff_exists": true,
-      "checkbox_line": 52,
-      "resolved": true
+      "handoff_exists": false,
+      "checkbox_line": null,
+      "resolved": false
     },
     {
       "task_id": "KOP2-strand-rustevo2-phaseB",
@@ -419,7 +419,7 @@
       "checkbox": "GC-1",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 16,
+      "checkbox_line": 3,
       "resolved": true
     },
     {
@@ -428,7 +428,7 @@
       "checkbox": "GC-2",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 17,
+      "checkbox_line": 122,
       "resolved": true
     },
     {
@@ -437,7 +437,7 @@
       "checkbox": "GC-3",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 18,
+      "checkbox_line": 125,
       "resolved": true
     },
     {
@@ -464,7 +464,7 @@
       "checkbox": "RM-4",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 23,
+      "checkbox_line": 47,
       "resolved": true
     },
     {
@@ -473,7 +473,7 @@
       "checkbox": "RM-2",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 21,
+      "checkbox_line": 22,
       "resolved": true
     },
     {
@@ -484,7 +484,7 @@
         "handoffs/active/glm52-reviewer-capability-gates.md#GC-5"
       ],
       "handoff_exists": true,
-      "checkbox_line": 27,
+      "checkbox_line": 51,
       "resolved": true
     },
     {
@@ -502,7 +502,7 @@
       "checkbox": "K34",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 321,
+      "checkbox_line": 427,
       "resolved": true
     },
     {
@@ -520,7 +520,7 @@
       "checkbox": "Stage 4 MTP head split for gemma4 worker_general",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 491,
+      "checkbox_line": 495,
       "resolved": true
     },
     {
@@ -529,8 +529,8 @@
       "checkbox": "Operator v6 quality-gate baseline (K5 MMLU-Pro/GPQA-Diamond) -> promote banked GPU wins to v7",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 121,
-      "resolved": true
+      "checkbox_line": null,
+      "resolved": false
     },
     {
       "task_id": "COORD-axa-teleport",
@@ -538,7 +538,7 @@
       "checkbox": "AXA-1",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 62,
+      "checkbox_line": 64,
       "resolved": true
     }
   ]

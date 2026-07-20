@@ -1,6 +1,6 @@
 schema_version: inference_batch.manifest.v1
 entry_schema_version: inference_batch.entry.v1
-generated_at: '2026-07-17T15:15:38Z'
+generated_at: '2026-07-20T14:39:10Z'
 entry_count: 52
 entries:
 - schema_version: inference_batch.entry.v1
@@ -1416,8 +1416,10 @@ entries:
   phase: 2
   priority: P1
   preconditions:
-    stack_lineup: production default lineup (frontdoor + worker_general + architect_general)
-    kernel_era: production-consolidated-v6
+    stack_lineup: 'production-consolidated-v7 quarter-mode lineup: frontdoor quarters
+      8080/8180/8280/8380; worker_general quarters 8082/8182/8282/8382; architect_general
+      8083; canonical llama.cpp 6ad45fa3 / binary 10098'
+    kernel_era: production-consolidated-v7
     flag_attestation: env_only
     models:
     - frontdoor
@@ -1428,7 +1430,7 @@ entries:
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 4320d9b2ebdb4ad0200da91c6b1f807f77f44f931311d240cf8a8f04546535b9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -1509,7 +1511,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:018dc065939aa086889abcfde50e26169c4bb084a4636ce1bbd03115b48b7f9a
+  entry_hash: sha256:d55cf9bf7c97d3c5434879564c18c5d88ea1410b679046f8feec1298ac516261
 - schema_version: inference_batch.entry.v1
   task_id: EV-10a-skill-efficacy-ab
   title: EV-10a — Deploy + paired A/B of the AUTOPILOT_SKILL_EFFICACY_GATE (per-suite,
@@ -5631,23 +5633,23 @@ entries:
   task_id: COORD-v7-promotion
   title: COORDINATION — v7 kernel promotion gate (parallel kernel/operator session)
   notes: 'COORDINATION row — seed a COORDINATION ledger status so pick-next skips
-    it. Never executed by the loop. When v7 is promoted, a NEW kernel era is stamped;
-    the P4 era-stamp entries (sibling-authored) then re-key their ledger rows onto
-    the v7 era.
+    it. Never executed by the loop. v7 promotion completed on 2026-07-20: canonical
+    production is `production-consolidated-v7` at `6ad45fa3ff6718c07c000061dbc6e29c1771f6e3`
+    with binary `10098`. The P4 era-stamp entries now need explicit post-promotion
+    reconciliation before execution.
 
     '
   provenance:
     owning_handoff: handoffs/active/inference-acceleration-index.md
     checkbox: Operator v6 quality-gate baseline (K5 MMLU-Pro/GPQA-Diamond) -> promote
       banked GPU wins to v7
-    coordination_note: 'OWNED BY the parallel kernel session + operator. The SOLE
-      remaining gate to promote the banked GPU wins (HIP graphs +25% spec-dec, MMVQ->MMQ
-      +17-32%, bf16 state +16-21%) to v7 is the operator v6 MMLU-Pro/GPQA-Diamond
-      baseline (K5 harness built + PASS at parity; K24 removed the base-decode regression
-      blocker; K34 host-drift is a guardrail). Production kernels are FROZEN — promotion
-      is operator-only. Downstream: the P4 era-stamp entries (sibling-authored) depend
-      on this — v7 promotion mints the kernel era those stamps reference. FLAG: the
-      index uses an unlabeled checklist item; checkbox ref is descriptive.
+    coordination_note: 'CLOSED by the parallel kernel session + operator on 2026-07-20.
+      Canonical `/mnt/raid0/llm/llama.cpp` is `production-consolidated-v7` at frozen
+      candidate `6ad45fa3ff6718c07c000061dbc6e29c1771f6e3`; CPU and HIP binaries report
+      `version: 10098 (6ad45fa3f)`. Quarter-mode production stack passed final 21/21
+      smoke and final attestation is clean except GitNexus drift. Production kernels
+      are FROZEN; post-candidate experimental commits need a fresh exact-tip promotion
+      gate.
 
       '
   phase: 90
@@ -5664,19 +5666,18 @@ entries:
     gate_table:
     - gate: Owned externally (operator v6 quality-gate + v7 promotion decision) —
         do not execute in the loop.
-      evidence: inference-acceleration-index.md K5 operator baseline + v7 promotion
-        decision
+      evidence: v7-promotion.md 2026-07-20 cutover evidence + final quarter smoke/attestation
       fork:
         pass:
-          rule: operator promotes v7 -> new kernel era minted
+          rule: v7 production cutover complete -> new kernel era minted
           action:
           - no loop action; P4 era-stamp entries re-key onto the v7 era
           next: COORDINATION
         fail:
-          rule: v7 not yet promoted
+          rule: rollback or cutover evidence invalidated
           action:
-          - no loop action; keep COORDINATION; P4 era stamps stay on v6
+          - no loop action; keep COORDINATION; reopen era-stamp reconciliation
           next: COORDINATION
   artifacts: {}
   ledger: {}
-  entry_hash: sha256:823503dbc279f7530dd78a40d0fd6dfe2151bc035c8dabb06f2ef2a77e87e1f8
+  entry_hash: sha256:37b5cc7f957cd124caf4432f64b4ff596b0825b47d96ae625ce7c63581878f7f
