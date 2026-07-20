@@ -1,6 +1,6 @@
 schema_version: inference_batch.manifest.v1
 entry_schema_version: inference_batch.entry.v1
-generated_at: '2026-07-20T18:20:23Z'
+generated_at: '2026-07-20T21:41:40Z'
 entry_count: 52
 entries:
 - schema_version: inference_batch.entry.v1
@@ -2172,9 +2172,9 @@ entries:
     coordination_note: 'Standalone model-batched window (bulk-inference-campaign.md
       standalone queue), NOT part of the eval-tower phase-2 cluster''s shared reload
       — group by model so each GGUF loads once. Deterministic scoring only; no judge.
-      Dataset present at epyc-inference-research/data/longcot-mini/ (Arrow). FLAG:
-      exact suite adapter / runner CLI for LongCoT-Mini not yet verified in-repo —
-      resolve via B2 run_batch_entry.py before execution.
+      Dataset present at epyc-inference-research/data/longcot-mini/ (Arrow). Adapter
+      + deterministic scorer are verified in-repo; the command below uses an explicit
+      run id so the post-run scorer can discover every per-role/config result file.
 
       '
   phase: 2
@@ -2199,14 +2199,21 @@ entries:
     - OP-quiet-window
     depends_on: []
   execution:
-    driver: clean_window_entry
+    driver: command
     protocol_id: bulk-inference.longcot-mini-calibration.v1
     dry_run: false
-    command: '.venv/bin/python scripts/benchmark/run_benchmark.py --suite longcot_mini
-      --model <role> --server-mode --skip-speed-tests && .venv/bin/python scripts/benchmark/score_longcot_run.py
-      benchmarks/results/runs/<RUN_ID>/<role>_<CONFIG>.json --output benchmarks/results/runs/<RUN_ID>/longcot_mini_score.json
-
-      '
+    command: "RUN_ID=\"${LONGCOT_MINI_RUN_ID:-longcot_mini_re4_$(date -u +%Y%m%dT%H%M%SZ)}\"\
+      ; OUT_DIR=\"data/longcot_mini_calibration/${RUN_ID}\"; mkdir -p \"${OUT_DIR}\"\
+      ; .venv/bin/python scripts/benchmark/run_benchmark.py --suite longcot_mini --model\
+      \ frontdoor --server-mode --skip-speed-tests --skip-preflight --baseline-run\
+      \ \"${RUN_ID}\" --force && .venv/bin/python scripts/benchmark/run_benchmark.py\
+      \ --suite longcot_mini --model worker_general --server-mode --skip-speed-tests\
+      \ --skip-preflight --baseline-run \"${RUN_ID}\" --force && for result in benchmarks/results/runs/\"\
+      ${RUN_ID}\"/frontdoor_*.json benchmarks/results/runs/\"${RUN_ID}\"/worker_general_*.json;\
+      \ do\n  test -f \"${result}\" || { echo \"missing LongCoT-Mini result files\
+      \ for ${RUN_ID}\" >&2; exit 2; };\n  stem=\"$(basename \"${result}\" .json)\"\
+      ;\n  .venv/bin/python scripts/benchmark/score_longcot_run.py \"${result}\"\n\
+      \  --output \"${OUT_DIR}/${stem}_score.json\";\ndone\n"
     cwd: /mnt/raid0/llm/epyc-inference-research
     concurrency_mode: isolated_bench
     fanout_transport: none
@@ -2260,6 +2267,7 @@ entries:
   artifacts:
     outputs:
     - data/longcot_mini_calibration/<run_id>/
+    - benchmarks/results/runs/<run_id>/{frontdoor,worker_general}_*.json
     package_to: coordination/inference-batch/bundles/RE-4/
   ledger:
     journal_quarantine_rule: 'record model/quant (index by model NOT role), n, deterministic
@@ -2268,7 +2276,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:4b8119f2bc1033cf074adb692d23877a11c19b436730ae2b98e0adc0ba337548
+  entry_hash: sha256:2a35cd0c5752280e9261dc8bf207ae5f687d955f2d01e33188e8dde63e4add60
 - schema_version: inference_batch.entry.v1
   task_id: semantics-shadow-rollout
   title: Semantics-layer rollout Phase 1 — shadow-mode telemetry accumulation (CP1/CP2/CP3

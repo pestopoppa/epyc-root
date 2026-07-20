@@ -749,9 +749,9 @@
       Standalone model-batched window (bulk-inference-campaign.md standalone queue),
       NOT part of the eval-tower phase-2 cluster's shared reload — group by model so
       each GGUF loads once. Deterministic scoring only; no judge. Dataset present at
-      epyc-inference-research/data/longcot-mini/ (Arrow). FLAG: exact suite adapter /
-      runner CLI for LongCoT-Mini not yet verified in-repo — resolve via B2
-      run_batch_entry.py before execution.
+      epyc-inference-research/data/longcot-mini/ (Arrow). Adapter + deterministic
+      scorer are verified in-repo; the command below uses an explicit run id so
+      the post-run scorer can discover every per-role/config result file.
   phase: 2
   priority: P2
   preconditions:
@@ -774,15 +774,26 @@
       - OP-quiet-window
     depends_on: []
   execution:
-    driver: clean_window_entry
+    driver: command
     protocol_id: "bulk-inference.longcot-mini-calibration.v1"
     dry_run: false
     command: >
+      RUN_ID="${LONGCOT_MINI_RUN_ID:-longcot_mini_re4_$(date -u +%Y%m%dT%H%M%SZ)}";
+      OUT_DIR="data/longcot_mini_calibration/${RUN_ID}";
+      mkdir -p "${OUT_DIR}";
       .venv/bin/python scripts/benchmark/run_benchmark.py --suite longcot_mini
-      --model <role> --server-mode --skip-speed-tests &&
-      .venv/bin/python scripts/benchmark/score_longcot_run.py
-      benchmarks/results/runs/<RUN_ID>/<role>_<CONFIG>.json
-      --output benchmarks/results/runs/<RUN_ID>/longcot_mini_score.json
+      --model frontdoor --server-mode --skip-speed-tests --skip-preflight
+      --baseline-run "${RUN_ID}" --force &&
+      .venv/bin/python scripts/benchmark/run_benchmark.py --suite longcot_mini
+      --model worker_general --server-mode --skip-speed-tests --skip-preflight
+      --baseline-run "${RUN_ID}" --force &&
+      for result in benchmarks/results/runs/"${RUN_ID}"/frontdoor_*.json
+      benchmarks/results/runs/"${RUN_ID}"/worker_general_*.json; do
+        test -f "${result}" || { echo "missing LongCoT-Mini result files for ${RUN_ID}" >&2; exit 2; };
+        stem="$(basename "${result}" .json)";
+        .venv/bin/python scripts/benchmark/score_longcot_run.py "${result}"
+        --output "${OUT_DIR}/${stem}_score.json";
+      done
     cwd: /mnt/raid0/llm/epyc-inference-research
     concurrency_mode: isolated_bench
     fanout_transport: none
@@ -830,6 +841,7 @@
   artifacts:
     outputs:
       - "data/longcot_mini_calibration/<run_id>/"
+      - "benchmarks/results/runs/<run_id>/{frontdoor,worker_general}_*.json"
     package_to: "coordination/inference-batch/bundles/RE-4/"
   ledger:
     journal_quarantine_rule: >

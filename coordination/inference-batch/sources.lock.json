@@ -1,20 +1,20 @@
 {
   "schema_version": "inference_batch.sources_lock.v1",
-  "generated_at": "2026-07-20T18:20:23Z",
+  "generated_at": "2026-07-20T21:41:40Z",
   "repos": {
     "epyc-root": {
       "path": "/mnt/raid0/llm/epyc-root",
-      "sha": "75e764de114c819cc15b58acc3ae9a3743e4d026",
+      "sha": "a19af664271cba857edac97a0305c31a16a2e414",
       "dirty": true
     },
     "epyc-orchestrator": {
       "path": "/mnt/raid0/llm/epyc-orchestrator",
-      "sha": "1bfd73621ef64cc37bf6d20a06f44d2e1a3f8c43",
+      "sha": "b22d99d0c4c9e6c1041a2908f5bda16db1bd151d",
       "dirty": true
     },
     "epyc-inference-research": {
       "path": "/mnt/raid0/llm/epyc-inference-research",
-      "sha": "0a6fd8a59a048720ebbc0cf648f3903f080f9da6",
+      "sha": "581940a34a29cc4385b5b74ad734816c731c0535",
       "dirty": true
     }
   },
@@ -180,7 +180,7 @@
       "checkbox": "EV-4",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 179,
+      "checkbox_line": 180,
       "checkbox_anchor_count": 1,
       "checkbox_anchor_error": null,
       "resolved": true
@@ -226,7 +226,7 @@
         "handoffs/active/bulk-inference-campaign.md#K-SKILL-1"
       ],
       "handoff_exists": true,
-      "checkbox_line": 409,
+      "checkbox_line": 410,
       "checkbox_anchor_count": 1,
       "checkbox_anchor_error": null,
       "resolved": true
@@ -239,7 +239,7 @@
         "handoffs/active/backlog-roi-audit-2026-07-14.md#RE-1"
       ],
       "handoff_exists": true,
-      "checkbox_line": 422,
+      "checkbox_line": 424,
       "checkbox_anchor_count": 1,
       "checkbox_anchor_error": null,
       "resolved": true
