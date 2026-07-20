@@ -256,14 +256,36 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
     `0.02%`, `ggml_compute_forward_argsort` `0.01%`). Dominant path remains
     `GOMP_barrier` / `__kmpc_barrier` at `43.95%` children. Report:
     `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc4h_router_weights_perf_20260720.md`.
-  - [ ] **PC-4i — graph/scheduler barrier attribution**:
+  - [x] **PC-4i — graph/scheduler barrier attribution no-go ✅ 2026-07-20**:
     attribute the OpenMP barrier-heavy regions to graph scheduling boundaries or
     split structure before another prototype. Do not change router/top-k,
     view/add expansion, or `mul_mat_id` math until a profile maps the
     barrier/spin cost to a specific graph segment. Acceptance: a repeatable
     attribution artifact plus one default-off scheduler-level prototype only if
     the attribution identifies a target, followed by exact-output smoke and
-    repeated `p8192/n1` lower spin/wall-time evidence.
+    repeated `p8192/n1` lower spin/wall-time evidence. Result: default-off
+    `GGML_SCHED_TRACE_SPLITS=2` instrumentation showed qwen35moe CPU-only
+    `p8192/n1` runs as a single CPU scheduler split (`range=[0,4471)`,
+    `graph_nodes=4471`, `inputs=0`) across all observed graph builds. Valid
+    run required pinning `LD_LIBRARY_PATH` to
+    `/mnt/raid0/llm/llama.cpp-experimental/build-k24-cpu/bin`; otherwise the
+    ambient shell path resolves experimental executables against production-v6
+    DSOs and bypasses experimental instrumentation. Valid run result:
+    `pp8192 98.610457 t/s`, `tg1 4.897132 t/s`, median split compute
+    `5171460 us`, IQK active, and experimental DSOs verified by `ldd`.
+    Report:
+    `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc4i_scheduler_split_trace_20260720.md`.
+    Decision: scheduler split/copy logic is not the PC-4 target; the barrier
+    cost is inside CPU backend execution for one large graph split.
+  - [ ] **PC-4j — CPU backend node/barrier attribution**:
+    instrument or profile `ggml_graph_compute_thread` / CPU backend node
+    execution so OpenMP barrier counts and wall time are mapped to graph-node
+    or operator classes inside the single qwen35moe split. Acceptance: a
+    repeatable artifact that names a concrete fusion/barrier-count target;
+    only then attempt another default-off exact-output/profile-guarded
+    prototype. Continue to avoid router/top-k, routed view/add expansion,
+    scheduler split/copy changes, and `mul_mat_id` math until PC-4j identifies
+    a source-level target.
 
 ## PC-0 operator-window plan
 
