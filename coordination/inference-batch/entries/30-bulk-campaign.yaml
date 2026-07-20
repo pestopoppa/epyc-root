@@ -460,6 +460,8 @@
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: any
+    operator_gates:
+      - XMAS-enforce-window-ab-root-present
     depends_on: []
   execution:
     driver: autopilot_action

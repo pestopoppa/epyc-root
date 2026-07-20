@@ -48,6 +48,7 @@ Format for operator action: change `[ ]` → `[x]` and append `GRANTED <date> �
 - [x] **H4-nearmiss-corpus-v1-present** — SATISFIED ✅ 2026-07-17 (`/mnt/raid0/llm/datasets/nearmiss-corpus-v1/rows.jsonl`, 49MB, content_sha256 1c50c025). Cited by: RCP-W3, RC-8, RM-3/RM-4 screening.
 - [x] **screening-tier-runner-landed** — SATISFIED ✅ 2026-07-17 (`scripts/autopilot/screening_tier_runner.py` exists, 26 tests green). Cited by: H5-RM3, P6-RM4.
 - [ ] **RM-1-pool-gen-output-present** — PENDING: no `reviewer_pool_gen.json` output on disk yet (the generator `scripts/analysis/reviewer_pool_gen.py` exists; needs one run to produce the pool). Cited by: H5-RM3, ROUTE screening entries.
+- [ ] **XMAS-enforce-window-ab-root-present** — PENDING: no concrete enforce-window A/B root has been named for the passive post-enable telemetry monitor. Cited by: BULK-XMAS-telemetry.
 - [ ] **EV-11a-boxed-fix-landed** — UNCONFIRMED (verify at session-init): `debug_scorer._score_math_verify` native-`math_verify.parse()` boxed-extraction fix. BLOCKS EV-11. Owner: debug_scorer (research + orchestrator copies).
 
 ### F. Build-backlog gates (a runner/mode/adapter must be BUILT before the entry can run — these are NOT satisfiable by the loop; they need a build session)

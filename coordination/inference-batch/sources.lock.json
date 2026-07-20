@@ -1,10 +1,10 @@
 {
   "schema_version": "inference_batch.sources_lock.v1",
-  "generated_at": "2026-07-20T22:02:29Z",
+  "generated_at": "2026-07-20T22:10:10Z",
   "repos": {
     "epyc-root": {
       "path": "/mnt/raid0/llm/epyc-root",
-      "sha": "c865422b019386185396c15416ff40ad43011378",
+      "sha": "f33027043c4cd9caccd8ef2c53ff3e95e77beca1",
       "dirty": true
     },
     "epyc-orchestrator": {

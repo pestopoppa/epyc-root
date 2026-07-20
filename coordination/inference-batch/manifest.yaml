@@ -1,6 +1,6 @@
 schema_version: inference_batch.manifest.v1
 entry_schema_version: inference_batch.entry.v1
-generated_at: '2026-07-20T22:02:29Z'
+generated_at: '2026-07-20T22:10:10Z'
 entry_count: 52
 entries:
 - schema_version: inference_batch.entry.v1
@@ -3275,6 +3275,8 @@ entries:
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: any
+    operator_gates:
+    - XMAS-enforce-window-ab-root-present
     depends_on: []
   execution:
     driver: autopilot_action
@@ -3338,7 +3340,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:5768b030beb57dcdd5872b80f24a0075082277a5abec76cd30b850a7a02859e6
+  entry_hash: sha256:8eebe7009cae55f66c2bd41e71ca7be15e8d910a033605593eeeabaabd989a4f
 - schema_version: inference_batch.entry.v1
   task_id: BULK-hermes-smokes
   title: Hermes — pin-bump + reference-client + subagent single-slot smokes
