@@ -24,16 +24,26 @@ def entry(
     depends_on=None,
     driver="clean_window_entry",
     retry_on=None,
+    concurrency_mode="serial_noninference",
+    contention_class="offline_analysis",
+    host_tier=None,
 ):
-    execution = {"driver": driver, "concurrency_mode": "serial_noninference"}
+    execution = {
+        "driver": driver,
+        "concurrency_mode": concurrency_mode,
+        "contention_class": contention_class,
+    }
     if retry_on:
         execution["retry_policy"] = {"max_attempts": 2, "retry_on": list(retry_on)}
+    preconditions = {"depends_on": depends_on or []}
+    if host_tier:
+        preconditions["host_health"] = {"tier": host_tier}
     return {
         "task_id": task_id,
         "title": f"{task_id} title",
         "phase": phase,
         "priority": priority,
-        "preconditions": {"depends_on": depends_on or []},
+        "preconditions": preconditions,
         "execution": execution,
         "outcomes": {"gate_table": []},
     }
@@ -161,11 +171,83 @@ class TestReportModel(unittest.TestCase):
     def test_render_markdown(self):
         md = bsr.render_markdown(self.report)
         self.assertIn("# Inference-Batch Status Report", md)
-        self.assertIn("## Next-runnable entries", md)
+        self.assertIn("## Operator-eligible entries", md)
         self.assertIn("A2", md)
         self.assertIn("## Structurally eligible but operator-gated", md)
         self.assertIn("## Accumulated operator-bundle rows", md)
         self.assertIn("### B1 — B1 title", md)
+
+    def test_load_report_separates_operator_eligible_from_runnable(self):
+        manifest = {
+            "entries": [
+                entry(
+                    "CPU-EVAL",
+                    0,
+                    concurrency_mode="same_trial_eval_fanout",
+                    contention_class="eval_fanout_reference_lineup",
+                    host_tier="quiet_window",
+                ),
+                entry("OFFLINE", 0),
+            ]
+        }
+        busy_load = {
+            "ts": "2026-07-20T22:42:33",
+            "state": "busy",
+            "quiet": False,
+            "quiet_blockers": ["llama-server actively decoding", "MI210 occupied"],
+            "busy_reasons": ["llama-server decode active", "MI210 occupied"],
+            "signals": {},
+        }
+
+        report = bsr.build_report(manifest, [], load_report=busy_load)
+
+        self.assertEqual(report["summary"]["eligible_now"], 2)
+        self.assertEqual(report["summary"]["runnable_now"], 1)
+        self.assertEqual(report["summary"]["load_blocked"], 1)
+        self.assertEqual([row["task_id"] for row in report["runnable"]], ["OFFLINE"])
+        self.assertEqual([row["task_id"] for row in report["load_blocked"]], ["CPU-EVAL"])
+        self.assertEqual(
+            report["load_blocked"][0]["load_blockers"],
+            ["llama-server actively decoding", "MI210 occupied"],
+        )
+
+        markdown = bsr.render_markdown(report)
+        self.assertIn("## Current load", markdown)
+        self.assertIn("## Runnable under current load", markdown)
+        self.assertIn("## Operator-eligible but load-blocked", markdown)
+        self.assertIn("CPU-EVAL", markdown)
+
+    def test_quiet_load_makes_all_operator_eligible_entries_runnable(self):
+        manifest = {
+            "entries": [
+                entry(
+                    "CPU-EVAL",
+                    0,
+                    concurrency_mode="same_trial_eval_fanout",
+                    contention_class="eval_fanout_reference_lineup",
+                    host_tier="quiet_window",
+                ),
+                entry("OFFLINE", 0),
+            ]
+        }
+        quiet_load = {
+            "ts": "2026-07-20T22:50:00",
+            "state": "quiet",
+            "quiet": True,
+            "quiet_blockers": [],
+            "busy_reasons": [],
+            "signals": {},
+        }
+
+        report = bsr.build_report(manifest, [], load_report=quiet_load)
+
+        self.assertEqual(report["summary"]["eligible_now"], 2)
+        self.assertEqual(report["summary"]["runnable_now"], 2)
+        self.assertEqual(report["summary"]["load_blocked"], 0)
+        self.assertEqual(
+            [row["task_id"] for row in report["runnable"]],
+            ["CPU-EVAL", "OFFLINE"],
+        )
 
     def test_operator_gate_registry_filters_runnable_entries(self):
         manifest = {

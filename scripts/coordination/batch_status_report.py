@@ -149,6 +149,20 @@ def load_operator_gate_registry(path: str | Path) -> dict[str, dict[str, Any]]:
     return registry
 
 
+def load_load_report(path: str | Path) -> dict[str, Any]:
+    """Load one JSON snapshot from inference_load_check.py --json."""
+    p = Path(path)
+    try:
+        data = json.loads(p.read_text())
+    except FileNotFoundError as exc:
+        raise StatusReportError(f"load report not found: {p}") from exc
+    except json.JSONDecodeError as exc:
+        raise StatusReportError(f"load report is not valid JSON: {p}: {exc}") from exc
+    if not isinstance(data, dict):
+        raise StatusReportError(f"load report must be a JSON object: {p}")
+    return data
+
+
 # ── ledger folding ─────────────────────────────────────────────────────────
 def _row_task_id(row: dict[str, Any]) -> str:
     return str(row.get("task_id") or row.get("id") or row.get("entry_id") or "")
@@ -272,11 +286,52 @@ def _entry_hash_drift(entry: dict[str, Any], latest_row: dict[str, Any] | None) 
     }
 
 
+def _entry_execution(entry: dict[str, Any]) -> dict[str, Any]:
+    execution = entry.get("execution") or {}
+    return execution if isinstance(execution, dict) else {}
+
+
+def _serial_noninference(entry: dict[str, Any]) -> bool:
+    return str(_entry_execution(entry).get("concurrency_mode") or "") == "serial_noninference"
+
+
+def _load_summary(load_report: dict[str, Any] | None) -> dict[str, Any] | None:
+    if load_report is None:
+        return None
+    return {
+        "ts": load_report.get("ts"),
+        "state": load_report.get("state"),
+        "quiet": bool(load_report.get("quiet")),
+        "quiet_blockers": list(load_report.get("quiet_blockers") or []),
+        "busy_reasons": list(load_report.get("busy_reasons") or []),
+    }
+
+
+def _load_blockers(entry: dict[str, Any], load_report: dict[str, Any] | None) -> list[str]:
+    """Return reasons this entry is not runnable under the supplied load snapshot.
+
+    The loop protocol permits serial_noninference entries outside a quiet window;
+    every entry that can touch model/runtime compute needs the quiet predicate.
+    """
+    if load_report is None or _serial_noninference(entry):
+        return []
+    if bool(load_report.get("quiet")):
+        return []
+    reasons = list(load_report.get("quiet_blockers") or [])
+    if not reasons:
+        reasons = list(load_report.get("busy_reasons") or [])
+    if not reasons:
+        state = str(load_report.get("state") or "unknown")
+        reasons = [f"load_state={state}; quiet=false"]
+    return [str(reason) for reason in reasons]
+
+
 # ── report model ───────────────────────────────────────────────────────────
 def build_report(
     manifest: dict[str, Any],
     ledger_rows: list[dict[str, Any]],
     operator_gate_registry: dict[str, dict[str, Any]] | None = None,
+    load_report: dict[str, Any] | None = None,
     generated_at: str | None = None,
 ) -> dict[str, Any]:
     """Build the structured status report (pure; no I/O)."""
@@ -288,6 +343,8 @@ def build_report(
     blocked: list[dict[str, Any]] = []
     held: list[dict[str, Any]] = []
     eligible: list[dict[str, Any]] = []
+    runnable: list[dict[str, Any]] = []
+    load_blocked: list[dict[str, Any]] = []
     structurally_eligible: list[dict[str, Any]] = []
     operator_gate_blocked: list[dict[str, Any]] = []
     warnings: list[dict[str, Any]] = []
@@ -360,6 +417,17 @@ def build_report(
                 )
             else:
                 eligible.append(structural_row)
+                blockers = _load_blockers(entry, load_report)
+                if load_report is not None:
+                    if blockers:
+                        load_blocked.append(
+                            {
+                                **structural_row,
+                                "load_blockers": blockers,
+                            }
+                        )
+                    else:
+                        runnable.append(structural_row)
 
     # Accumulated op-bundle rows: every held ledger row that carries one.
     op_bundle_rows: list[dict[str, Any]] = []
@@ -377,6 +445,8 @@ def build_report(
             "tracked_tasks": len(latest),
             "by_status": dict(sorted(status_totals.items())),
             "eligible_now": len(eligible),
+            "runnable_now": len(runnable) if load_report is not None else None,
+            "load_blocked": len(load_blocked),
             "structurally_eligible": len(structurally_eligible),
             "operator_gate_blocked": len(operator_gate_blocked),
             "blocked": len(blocked),
@@ -388,7 +458,10 @@ def build_report(
             "warnings": len(warnings),
         },
         "per_phase": {ph: dict(sorted(c.items())) for ph, c in per_phase.items()},
+        "current_load": _load_summary(load_report),
         "warnings": warnings,
+        "runnable": runnable,
+        "load_blocked": load_blocked,
         "eligible": eligible,
         "structurally_eligible": structurally_eligible,
         "operator_gate_blocked": operator_gate_blocked,
@@ -416,20 +489,44 @@ def render_markdown(report: dict[str, Any]) -> str:
     out.append("")
     out.append(f"_Generated {report['generated_at']}_")
     out.append("")
-    out.append(
-        f"**{s['entries_total']}** entries | "
-        f"**{s['eligible_now']}** runnable now | "
-        f"**{s['operator_gate_blocked']}** operator-gate blocked | "
-        f"**{s['blocked']}** blocked | "
-        f"**{s['held']}** held | "
-        f"**{s['op_bundle_rows']}** op-bundle rows"
-    )
+    if report.get("current_load") is not None:
+        out.append(
+            f"**{s['entries_total']}** entries | "
+            f"**{s['runnable_now']}** runnable under current load | "
+            f"**{s['eligible_now']}** operator-eligible | "
+            f"**{s['load_blocked']}** load-blocked | "
+            f"**{s['operator_gate_blocked']}** operator-gate blocked | "
+            f"**{s['blocked']}** blocked | "
+            f"**{s['held']}** held | "
+            f"**{s['op_bundle_rows']}** op-bundle rows"
+        )
+    else:
+        out.append(
+            f"**{s['entries_total']}** entries | "
+            f"**{s['eligible_now']}** operator-eligible (load not checked) | "
+            f"**{s['operator_gate_blocked']}** operator-gate blocked | "
+            f"**{s['blocked']}** blocked | "
+            f"**{s['held']}** held | "
+            f"**{s['op_bundle_rows']}** op-bundle rows"
+        )
     out.append("")
     out.append(
         f"Done(pass): {s['done_pass']} · Done(marginal-obs): {s['done_marginal_obs']} "
         f"· Failed(reverted): {s['failed_reverted']}"
     )
     out.append("")
+
+    if report.get("current_load") is not None:
+        load = report["current_load"]
+        blockers = ", ".join(load.get("quiet_blockers") or []) or "-"
+        busy = ", ".join(load.get("busy_reasons") or []) or "-"
+        out.append("## Current load")
+        out.append("")
+        out.append(
+            f"- state={load.get('state') or 'unknown'} · quiet={load.get('quiet')} "
+            f"· quiet_blockers={blockers} · busy_reasons={busy}"
+        )
+        out.append("")
 
     if report.get("warnings"):
         out.append("## Warnings")
@@ -458,20 +555,41 @@ def render_markdown(report: dict[str, Any]) -> str:
             out.append(f"- **Phase {phase}**: {inline}")
         out.append("")
 
-    out.append("## Next-runnable entries")
+    if report.get("current_load") is not None:
+        out.append("## Runnable under current load")
+        table_rows = report["runnable"]
+        empty = "_None runnable under the supplied load snapshot._"
+    else:
+        out.append("## Operator-eligible entries")
+        table_rows = report["eligible"]
+        empty = "_None operator-eligible — every entry is blocked, gate-held, running, or done._"
     out.append("")
-    if not report["eligible"]:
-        out.append("_None runnable — every entry is blocked, gate-held, running, or done._")
+    if not table_rows:
+        out.append(empty)
         out.append("")
     else:
         out.append("| task_id | phase | prio | driver | from-status |")
         out.append("| --- | --- | --- | --- | --- |")
-        for e in report["eligible"]:
+        for e in table_rows:
             out.append(
                 f"| {e['task_id']} | {e['phase']} | {e['priority']} | "
                 f"{e.get('driver') or '-'} | {e['status']} |"
             )
         out.append("")
+
+    if report.get("current_load") is not None:
+        out.append("## Operator-eligible but load-blocked")
+        out.append("")
+        if not report["load_blocked"]:
+            out.append("_None._")
+            out.append("")
+        else:
+            out.append("| task_id | phase | prio | load blockers |")
+            out.append("| --- | --- | --- | --- |")
+            for e in report["load_blocked"]:
+                blockers = ", ".join(e.get("load_blockers") or [])
+                out.append(f"| {e['task_id']} | {e['phase']} | {e['priority']} | {blockers} |")
+            out.append("")
 
     out.append("## Structurally eligible but operator-gated")
     out.append("")
@@ -597,6 +715,15 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="report structural eligibility only; do not filter by op-bundle grants",
     )
+    parser.add_argument(
+        "--load-report",
+        default=None,
+        help=(
+            "JSON emitted by inference_load_check.py --json; when supplied, "
+            "separates operator-eligible entries from entries runnable under "
+            "the current quiet-window/load snapshot"
+        ),
+    )
     parser.add_argument("--json", action="store_true", help="emit structured JSON instead of markdown")
     return parser
 
@@ -610,7 +737,13 @@ def main(argv: list[str] | None = None) -> int:
         if not args.ignore_operator_gates:
             op_bundle = Path(args.op_bundle) if args.op_bundle else Path(args.manifest).parent / "op-bundle.md"
             gate_registry = load_operator_gate_registry(op_bundle)
-        report = build_report(manifest, ledger, operator_gate_registry=gate_registry)
+        load_report = load_load_report(args.load_report) if args.load_report else None
+        report = build_report(
+            manifest,
+            ledger,
+            operator_gate_registry=gate_registry,
+            load_report=load_report,
+        )
     except StatusReportError as exc:
         print(f"batch_status_report: {exc}", file=sys.stderr)
         return 2
