@@ -124,9 +124,17 @@ same-family drafter (35B/122B qwen35 at Q8) trading α for fit.
     (`1.509x`, alpha `0.876`, `408/466` drafts accepted); 16K `10.429` vs
     `6.979 t/s` (`1.494x`, alpha `0.879`, `420/478` accepted). Still
     observation-grade and non-serving.
-  - [ ] **DR-3d — frontdoor opportunity-cost gate**: measure resident frontdoor
-    alone, frontdoor after eviction/reload, and DR-3 lane active before any
-    serving route or NumericSwarm K surface.
+  - [x] **DR-3d — frontdoor opportunity-cost gate ✅ 2026-07-20**:
+    inference-research `scripts/benchmark/dr3_frontdoor_opportunity_cost_gate.py`
+    ran resident frontdoor alone, DR-3 K2 active, and frontdoor after
+    eviction/reload. Artifact
+    `/mnt/raid0/llm/epyc-inference-research/data/dr3_frontdoor_opportunity_cost/dr3_frontdoor_opportunity_cost_20260720T074853Z_live_ctx8192_r1/`
+    passed as observation-grade: frontdoor `93.690 -> 94.157 t/s`
+    after reload (`1.005x`), DR-3 K2 active `11.701 t/s`, alpha `1.000`,
+    cleanup pass, `decision_grade=false`, serving/NumericSwarm still disabled.
+  - [ ] **DR-3e — production-named P-GPU-1 certification**: after the operator
+    promotes v7, rerun the required GPU claims under `production-consolidated-v7`
+    before any serving route or NumericSwarm K surface.
 - [x] **DR-1 — economics model ✅ 2026-07-18**: break-even model recorded at
   [docs/reference/gpu-drafter-break-even-model-2026-07-18.md](../../docs/reference/gpu-drafter-break-even-model-2026-07-18.md).
   Key result: external Stage-1/2 failed despite `α=1.0`, so their blocker is

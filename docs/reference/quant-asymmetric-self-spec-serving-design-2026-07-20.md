@@ -158,13 +158,43 @@ Follow-up evidence closed the default 8K+16K admission-package execution step:
 | 16384 | 6.979 | 10.429 | 1.494x | 0.879 | 420/478 |
 
 This proves the default admission package on experimental v7. It does not admit
-a serving route because `frontdoor_opportunity_cost_gate` remains `not_run` and
-production GPU claims still require the production-named `P-GPU-1` rerun path.
+a serving route because the frontdoor opportunity-cost gate and production-named
+`P-GPU-1` rerun path were still open at this checkpoint.
+
+## DR-3d Frontdoor Opportunity-Cost Checkpoint
+
+The frontdoor opportunity-cost gate was implemented and run live against the
+experimental v7 binary:
+
+- Runner: `epyc-inference-research/scripts/benchmark/dr3_frontdoor_opportunity_cost_gate.py`.
+- Dry-run artifact:
+  `epyc-inference-research/data/dr3_frontdoor_opportunity_cost/dr3_frontdoor_opportunity_cost_20260720T075235Z_dryrun_v2/`.
+- Passing live artifact:
+  `epyc-inference-research/data/dr3_frontdoor_opportunity_cost/dr3_frontdoor_opportunity_cost_20260720T074853Z_live_ctx8192_r1/`.
+- Result: `frontdoor_opportunity_cost_gate.status=pass`,
+  `cleanup_proof.status=pass`, `observation_grade=true`,
+  `decision_grade=false`, `serving_route_allowed=false`,
+  `numeric_swarm_surface_allowed=false`.
+
+| Measurement | Value |
+|---|---:|
+| Frontdoor before lease decode | `93.690 t/s` |
+| Frontdoor before lease load wall | `7.439 s` |
+| Frontdoor after eviction/reload decode | `94.157 t/s` |
+| Frontdoor after eviction/reload load wall | `7.461 s` |
+| After/before decode ratio | `1.005x` |
+| DR-3 K2 active decode | `11.701 t/s` |
+| DR-3 K2 active alpha | `1.000` |
+| DR-3 K2 draft accepted/generated | `128/128` |
+
+This closes the experimental opportunity-cost blocker: temporarily leasing the
+MI210 to the K2 lane did not show a frontdoor reload/decode regression in this
+single-run observation. It still does not admit a serving route because the
+result was not run under a production-named kernel/protocol.
 
 ## Current Verdict
 
 Keep the lane as a serious candidate. Do not serve it yet.
 
-Next executable step: run the frontdoor opportunity-cost gate, then repeat
-required GPU claims under `production-consolidated-v7` for `P-GPU-1` if the
-operator promotes the frozen v7 candidate.
+Next executable step: repeat required GPU claims under `production-consolidated-v7`
+for `P-GPU-1` if the operator promotes the frozen v7 candidate.
