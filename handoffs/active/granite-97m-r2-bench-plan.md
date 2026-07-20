@@ -1,8 +1,8 @@
 # Granite-97M-r2 Multilingual Embedder Bench Plan
 
-**Status**: Phase A-fast fallback corpus + dry-run harness landed and re-verified 2026-06-20; HF model artifacts and conversion env staged; warm/default-off orchestrator embedder recipes landed 2026-06-20; conversion preflight/command emitter landed 2026-06-28; GGUF conversion/quantization completed 2026-07-03; server smoke and Phase B remain open
+**Status**: Phase A-fast fallback corpus + dry-run harness landed and re-verified 2026-06-20; HF model artifacts and conversion env staged; warm/default-off orchestrator embedder recipes landed 2026-06-20; conversion preflight/command emitter landed 2026-06-28; GGUF conversion/quantization completed 2026-07-03; server smoke + Phase B retrieval/latency bench PASS 2026-07-20; Phase C downstream retriever decision remains open
 **Created**: 2026-04-30 (post-intake-519 deep-dive)
-**Updated**: 2026-07-03
+**Updated**: 2026-07-20
 **Categories**: search_retrieval, knowledge_management, rag_alternatives, local_inference
 **Priority**: MEDIUM (becomes HIGH the moment any of K-track / web-research-rerank / SearXNG dense-stage activates)
 **Depends on**: `internal-kb-rag.md` (K2 chunker for best corpus, but not required for fallback Phase A), `colbert-reranker-web-research.md` (downstream rerank), `searxng-search-backend.md` (web result ingest)
@@ -10,11 +10,9 @@
 
 ## Executor Start Here
 
-Phase A-fast is complete enough to unblock the next decision: `data/benchmarks/eval-corpus-v0.jsonl` has the 100-document / 30-query fallback corpus, and `scripts/benchmark/bench_embedder_throughput.py --dry-run --corpus data/benchmarks/eval-corpus-v0.jsonl --servers 8090 8096 8097 8098` validates the corpus and run plan with no missing relevance references. The 2026-07-03 CPU-only conversion pass produced the planned GGUF artifacts under `/mnt/raid0/llm/models/` without starting any embedder server or loading the models into RAM. The remaining live work is:
+Phase A-fast is complete enough to unblock the next decision: `data/benchmarks/eval-corpus-v0.jsonl` has the 100-document / 30-query fallback corpus, and `scripts/benchmark/bench_embedder_throughput.py --dry-run --corpus data/benchmarks/eval-corpus-v0.jsonl --servers 8090 8096 8097 8098` validates the corpus and run plan with no missing relevance references. The 2026-07-03 CPU-only conversion pass produced the planned GGUF artifacts under `/mnt/raid0/llm/models/` without starting any embedder server or loading the models into RAM.
 
-1. Run an embedder-only load/vector smoke for the warm/default-off recipes on ports `8096`, `8097`, and `8098`; this does not require a production model-stack reload, but it does require the embedder servers to be live.
-2. Schedule Phase B throughput/quality execution after the smoke passes.
-3. After Phase B, update the downstream KB-RAG / rerank / SearXNG handoffs with a concrete dense-retriever decision.
+The 2026-07-20 inference-batch run closed the load/vector smoke and Phase B retrieval/latency execution under the shared 512-character serving-slot policy. Next work is Phase C: decide whether to promote Granite as the dense first-stage retriever now, require a longer-context/reranker extension first, or keep the current BGE path until a richer multilingual corpus exists.
 
 Staged HF sources from the 2026-06-20 no-RAM prep pass:
 
@@ -34,6 +32,7 @@ The dedicated conversion env is staged at `/mnt/raid0/llm/venvs/llama-gguf-conve
 | 2026-06-20 | Warm/default-off embedder server recipes landed. | Orchestrator `e2922d7` adds `embedder_granite_97m_r2:8096`, `embedder_multilingual_e5_base:8097`, and `embedder_bge_m3:8098` plus recipe-driven embedding commands; focused embedder tests passed. |
 | 2026-06-28 | Conversion preflight and command emitter landed. | `scripts/benchmark/granite_embedder_conversion_preflight.py` validates staged HF files, exact weight sizes, converter/quantizer paths, target GGUF paths, server-recipe context/pooling, and emits conversion/quantization commands without running them. Live report: `/mnt/raid0/llm/tmp/granite_conversion_preflight_20260628.json`, `status=ready_for_conversion`, failures `0`. |
 | 2026-07-03 | GGUF conversion and quantization completed with no model server load. | Post-conversion preflight `/mnt/raid0/llm/tmp/granite_conversion_post_20260703T125554Z.json` reports failures `0`; artifacts: Granite F16 `206,403,200` bytes, Granite Q8_0 `115,061,120`, Granite Q4_K_M `105,467,264`, e5-base F16 `562,766,336`, e5-base Q8_0 `303,138,656`, BGE-M3 F16 `1,157,671,200`, BGE-M3 Q8_0 `634,553,760`. |
+| 2026-07-20 | Load/vector smoke + Phase B fallback-corpus retrieval/latency bench passed. | Inference-batch `BULK-K-EMB-1` produced `data/embedder_bench/granite_97m_r2_phaseB.json` with `100` docs / `30` queries, `batch_size=8`, `common_max_input_chars=512`, exact model keys, and clean port cleanup. Granite Q8_0: recall@10 `0.9333`, recall@50 `0.9889`, nDCG@10 `0.8382`, wall `1.213s`; e5-base Q8_0: `0.8444` / `0.9611` / `0.7928`, wall `2.651s`; BGE-M3 Q8_0: `0.9000` / `0.9889` / `0.8380`, wall `7.037s`; BGE-large reference: `0.8889` / `0.9500` / `0.8093`, wall `13.749s`. |
 
 ## 2026-05-28 Audit Reset
 
@@ -56,7 +55,7 @@ This handoff was too conservatively gated. K2 chunker output is the best corpus 
 - ✅ HF model sources are staged locally for Granite, BGE-M3, and multilingual-e5-base.
 - ✅ No-run conversion preflight is available and currently passes against the staged sources/tools.
 - ✅ GGUF conversion/quantization is complete for Granite, multilingual-e5-base, and BGE-M3.
-- Open: server load/vector smoke and Phase B benchmark execution.
+- ✅ Server load/vector smoke and Phase B fallback-corpus benchmark execution passed 2026-07-20.
 - User-approved inference window exists for model server launches.
 
 **Mitigation**: if Granite underperforms but the corpus reveals multilingual or code-search gaps, do not close the whole retrieval track. Fork to BGE-M3 or Qwen3-Embedding comparator and update `internal-kb-rag.md` with the corpus result.
@@ -150,6 +149,19 @@ Measures: t/doc encode latency, NDCG@10, recall@10, recall@50, per-context-lengt
 
 ### Phase B — Bench execution [1 inference day]
 
+#### 2026-07-20 fallback-corpus result
+
+`BULK-K-EMB-1` executed successfully through `run_batch_entry.py` after the bench harness was constrained to the smallest serving slot (`common_max_input_chars=512`; e5/BGE reference slots expose `n_ctx_slot=256` under `-np 4`). This is a decision-grade Phase B result for the fallback 100-doc / 30-query corpus, not a full 32K-context or reranker result.
+
+| Model key | recall@10 | recall@50 | mrr | nDCG@10 | wall clock |
+|---|---:|---:|---:|---:|---:|
+| `granite-embedding-97m-r2/Q8_0` | `0.9333` | `0.9889` | `0.8583` | `0.8382` | `1.213s` |
+| `multilingual-e5-base/Q8_0` | `0.8444` | `0.9611` | `0.8659` | `0.7928` | `2.651s` |
+| `bge-m3/Q8_0` | `0.9000` | `0.9889` | `0.9150` | `0.8380` | `7.037s` |
+| `bge-large-en-v1.5/reference` | `0.8889` | `0.9500` | `0.8511` | `0.8093` | `13.749s` |
+
+Granite clears the inference-batch pass rule for this Phase B slice: smoke passed, recall@10/50 held or improved against the references, and wall-clock was lower than all references. The open Phase C decision is whether this fallback-corpus result is sufficient for first-stage dense retriever promotion, or whether the deferred 32K-context/reranker extension must run first.
+
 **No concurrent inference allowed without per-run approval** (memory `feedback_no_concurrent_inference.md`). Coordinate with autopilot/benchmarking to ensure exclusive EPYC access.
 
 #### B-1: Throughput bench — 1000 docs per model
@@ -216,6 +228,6 @@ After Phase B completes, update:
 
 - [x] Phase A-fast corpus + dry-run harness (2026-06-20) ✅
 - [x] GGUF conversion/quantization for Granite/e5-base/BGE-M3 (2026-07-03) ✅
-- [ ] Embedder load/vector smoke for warm recipes on ports 8096/8097/8098
-- [ ] Phase B throughput + quality/NDCG execution (needs inference window)
+- [x] Embedder load/vector smoke for warm recipes on ports 8096/8097/8098 ✅ 2026-07-20
+- [x] Phase B fallback-corpus throughput + quality/NDCG execution ✅ 2026-07-20 (`BULK-K-EMB-1`, `granite_97m_r2_phaseB.json`)
 - [ ] Phase C decision + update internal-kb-rag / colbert-reranker / searxng handoffs
