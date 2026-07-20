@@ -1,13 +1,13 @@
-# Model Probe Scoreboard (experimental-v7)
+# Model Probe Scoreboard (production-consolidated-v7)
 
 **Living scoreboard** — one glance-able read of how every candidate model is performing on the
-validated v7 promotion candidate `experimental-v7-refresh-20260716 @ 6ad45fa3ff` (binary
-`10098`; iqk + GPU-opts + `Q2_0`; some older rows name their original artifact commit).
-Newer `llama.cpp-experimental` commits are post-candidate research until they rerun the final
-coherence+garbage smoke. All rows are
+production v7 stack. Current production is `production-consolidated-v7 @
+6ad45fa3ff` (binary `10098`; iqk + GPU-opts + `Q2_0`; some older rows name
+their original artifact commit). Newer `llama.cpp-experimental` commits are
+post-candidate research until they rerun the final coherence+garbage smoke. All rows are
 **OBSERVATION-grade** (single-config, small-n per MEASUREMENT.md) — hypotheses, not
-decision-grade. MI210 = gfx90a/ROCm 6.2; CPU = EPYC 9655. Updated 2026-07-19 from the probe
-runs scattered across the inference handoffs.
+decision-grade. MI210 = gfx90a/ROCm 6.2; CPU = EPYC 9655. Updated 2026-07-20 from the probe
+runs scattered across the inference handoffs and v7 cutover record.
 
 **Update rule (for the running agent):** every future model/quant probe appends a row here (model,
 quant, device, pp t/s, tg t/s, quality, role-ready, artifact) — do not bury results in a

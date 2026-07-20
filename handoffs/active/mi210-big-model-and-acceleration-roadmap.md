@@ -153,8 +153,8 @@ P0 was fixed on experimental v7 `96986f5e9`); its gate is a strict-IF/rubric GBN
       passed as experimental observation: frontdoor `93.690 -> 94.157 t/s`
       after eviction/reload (`1.005x`), DR-3 K2 active `11.701 t/s`,
       alpha `1.000`, cleanup pass, serving/NumericSwarm disabled.
-    - [ ] DR-3e production-named `P-GPU-1` certification: after the operator
-      promotes v7, rerun the required GPU claims under `production-consolidated-v7`
+    - [ ] DR-3e production-named `P-GPU-1` certification: after the 2026-07-20
+      v7 cutover, rerun the required GPU claims under `production-consolidated-v7`
       before any serving route or NumericSwarm surface.
 - [ ] GLM-5.2 endgame: expert-offload / REAP+IQ2 path (operator-gated)
 - [x] **stream-K `nsm→k·nsm` + compact-LDS residual — zero-build artifact read CLOSED ✅ 2026-07-18** (v7-audit LANE B B2): artifact recovery found the original MI210 campaign under `/mnt/raid0/llm/tmp/mi210-build/campaign/`, including `mmq-compact-lds-NEGATIVE.patch`, `kernels/fused-prefetch-NEGATIVE.patch`, and rocprof CSVs under `moe-agg/prof/`. Read verdict: stream-K is already the live Q8 MMQ path (`mul_mat_q` plus `mul_mat_q_stream_k_fixup`); B32 Q8 MMQ dispatches use grid `53248 = 512 * 104 CUs`, i.e. one persistent workgroup per CU, with fixup grid `53248`, LDS `512`. The compact-LDS patch is explicitly negative and should not be revived. The only surviving idea is a distinct `2*nsm=208` persistent-grid experiment, but that is a new operator-gated build/bench with a narrow `+0–10%` IQ2/capacity ceiling, not a zero-inference closeout or saved-patch apply.

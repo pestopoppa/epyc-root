@@ -132,8 +132,8 @@ same-family drafter (35B/122B qwen35 at Q8) trading α for fit.
     passed as observation-grade: frontdoor `93.690 -> 94.157 t/s`
     after reload (`1.005x`), DR-3 K2 active `11.701 t/s`, alpha `1.000`,
     cleanup pass, `decision_grade=false`, serving/NumericSwarm still disabled.
-  - [ ] **DR-3e — production-named P-GPU-1 certification**: after the operator
-    promotes v7, rerun the required GPU claims under `production-consolidated-v7`
+  - [ ] **DR-3e — production-named P-GPU-1 certification**: after the 2026-07-20
+    v7 cutover, rerun the required GPU claims under `production-consolidated-v7`
     before any serving route or NumericSwarm K surface.
 - [x] **DR-1 — economics model ✅ 2026-07-18**: break-even model recorded at
   [docs/reference/gpu-drafter-break-even-model-2026-07-18.md](../../docs/reference/gpu-drafter-break-even-model-2026-07-18.md).

@@ -61,7 +61,7 @@ The smoke-tests map the card; the payoff is hosting the big models. Two axes:
 
 **Action**: Evaluate KernelBench for integration into our experimental kernel validation pipeline. Particularly relevant for:
 - iqk AVX-512 GEMM kernel regression testing
-- GPU kernel validation before v7 promotion
+- GPU kernel validation before future production-kernel promotion
 - Agentic ROCm kernel authoring loop (child handoff)
 
 - [ ] **MI-KB-1** — evaluate KernelBench integration into experimental kernel validation pipeline (step 3 of four-step workflow)
