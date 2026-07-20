@@ -51,7 +51,7 @@ Land mainline llama.cpp Qwen MTP self-speculation (`--spec-type draft-mtp` / `--
 
 ## Checkpoint update (2026-07-11)
 
-- Work for this checkpoint was in `/mnt/raid0/llm/llama.cpp-experimental`, branch `experimental-v7-candidate` at commit `46f876c12`.
+- Work for this historical checkpoint was in `/mnt/raid0/llm/llama.cpp-experimental`, branch `experimental-v7-candidate` at commit `46f876c12`. Do not resume promotion work from that branch; current v7 promotion authority is `experimental-v7-refresh-20260716` as tracked in [`v7-promotion.md`](v7-promotion.md).
 - The production tree `/mnt/raid0/llm/llama.cpp` was not edited.
 - The experimental source already contains the Qwen/native MTP port surface: `COMMON_SPECULATIVE_TYPE_DRAFT_MTP`, `draft-mtp` parsing + dispatch, `LLAMA_CONTEXT_TYPE_MTP`, MTP graph mapping in `src/llama-context.cpp`, Qwen MTP graph code in `src/models/qwen35.cpp` and `src/models/qwen35moe.cpp`, `nextn_predict_layers` emission in `conversion/qwen.py`, and server/CLI docs that surface the flags.
 - Fresh CPU-only build succeeded with `cmake -S . -B build-ap-mtp -DGGML_CUDA=OFF -DGGML_HIP=OFF`, then `cmake --build build-ap-mtp --target llama-server llama-speculative -j$(nproc)`.
@@ -86,7 +86,7 @@ Our fork's speculative subsystem is an **older API generation** than PR #22673's
 - [ ] **P7 (optional, post-#22673): FR-Spec draft LM-head vocab-trim** (intake-740). Restrict the native-MTP draft LM-head projection to a frequency-ranked top-32,768 subset of the 248,320 vocab (target verifies full vocab) → **lossless (byte-identical at temp=0)**, cutting the draft-head `mul_mat_vec_q` kernel ~85%. Verified upstream on `qwen35.cpp` (this port's P4 target); ~30 lines reusing `eagle3.cpp` d2t + `ggml_set_rows`. CAVEATS: (a) our fork's EAGLE3 is an **inert stub** (`// TODO PR-18039`), so the d2t machinery may not exist in-fork — this likely **rides the #22673 reconciliation, not free**; (b) build an **EPYC-workload-matched frequency map** from our own coder/prose traffic (the author's code-tuned map regressed prose); (c) expect only **+1-3% end-to-end** on BW-bound decode despite the −85% kernel cut → measure end-to-end before adopting.
 
 ## Constraints
-- **Experimental repo only.** `verify_llama_cpp.sh` enforces production stays on `production-consolidated-v5`. Promotion to v5 is gated on a positive operator bench + (for MoE) clearing the MoE-on-CPU skepticism.
+- **Historical experimental repo note.** At this checkpoint, `verify_llama_cpp.sh` enforced `production-consolidated-v5`; that is now superseded by the v6 cutover and the 2026-07-20 `production-consolidated-v7` promotion. Do not promote or resume from this old branch; start any renewed Qwen-MTP work from current production into `llama.cpp-experimental`.
 - The fork's untracked noise (`_libomp_src/`, `merged.profdata`, `*.sh`) is pre-existing — do NOT `git add -A` (it bloats commits; learned this session — staged 940 files by accident, fixed). Stage explicit paths.
 - All bench numbers are observations until measured via the canonical recipe with operator approval on a quiesced host.
 

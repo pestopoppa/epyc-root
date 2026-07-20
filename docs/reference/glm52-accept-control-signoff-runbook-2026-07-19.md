@@ -269,8 +269,8 @@ For v7 promotion, the old coupled gate order was:
 GC-shadow-repair4b.2b hard accept-control signoff
   -> P-REV-1 reviewer quality
   -> native GLM-MTP alpha/quality/throughput
-  -> v7 READY FOR OPERATOR PROMOTION
-  -> STOP for operator-authorized cutover
+  -> historical pre-cutover v7 readiness gate
+  -> operator-authorized cutover
 ```
 
 That order is superseded. No agent should promote GLM to production reviewer

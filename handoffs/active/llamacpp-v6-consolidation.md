@@ -126,7 +126,7 @@ v6 replaces v5 in production ONLY after ALL of:
 2. Positive post-reboot operator bench vs v5 (quality + speed via canonical recipe).
 3. MTP / role validation.
 
-`verify_llama_cpp.sh` enforces production stays on `production-consolidated-v5` until then.
+Historical note: `verify_llama_cpp.sh` enforced `production-consolidated-v5` during this v6 staging window. That guard is superseded; the current guard enforces `production-consolidated-v7`.
 
 ---
 

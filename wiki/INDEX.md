@@ -16,14 +16,14 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | [MoE Optimization](moe-optimization.md) | 37 | Reasoning ∝ ACTIVE FLOPs, knowledge ∝ TOTAL params; GLM-5.2 routing is near-uniform (top_32=15%) so generic hot-expert offload/REAP is not justified; IQ2 GPU residency is two-for-two viable but caps at ~122B |
 | [KV Cache](kv-cache.md) | 39 | StreamingLLM pre-v7 floor sweep failed the quality floor → no simple KV cluster admitted yet; per-token KV streaming over PCIe is an anti-pattern (7-14× slower than DDR5); GDN residents' O(1) KV make teleport KV-copy near-moot |
 | [Quantization](quantization.md) | 31 | 2-bit is asymmetric — knowledge holds ~99% but reasoning halves under UNIFORM 2-bit (dynamic UD/DQ3 holds); the architect's IQ2≈Q4 Δ0.0pp parity is knowledge-only (n≈4/hard-suite), NOT reasoning-certified; architect quant UNDECIDED (bench-gated) |
-| [Hardware Optimization](hardware-optimization.md) | 90+ | CPU decode is BW-exhausted but CPU *prefill* is an open compute-bound regime (hot path = OpenMP barriers, not math → default-off CONCAT dim0 lever +3-9%); GPU raw-speed frontier structurally exhausted, live frontier is residency/teleport; v7 READY but NOT promoted |
+| [Hardware Optimization](hardware-optimization.md) | 90+ | CPU decode is BW-exhausted but CPU *prefill* is an open compute-bound regime (hot path = OpenMP barriers, not math → default-off CONCAT dim0 lever +3-9%); GPU raw-speed frontier structurally exhausted, live frontier is residency/teleport; v7 promoted as `production-consolidated-v7` |
 
 ## Serving & Systems
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
 | [Inference Serving](inference-serving.md) | 55 | Within-role full↔quarter placement SM is LIVE (3-way frontdoor 1.68×, session-handover migration, no mid-decode preemption); single `-np 8` batch server is 4.86× faster per eval; the heterogeneous CPU×GPU slot fabric is a DESIGN that EXTENDS the live fabric (gated post-v7 + E5) |
-| [Local Inference](local-inference.md) | 36 | v7 READY but NOT promoted (prod stays v6+iqk); deployed-lane throughput table + living model-probe scoreboard (all observation-grade); MI210 fits everything but the 122B-Q4 architect and GLM-5.2 (238 GB) |
+| [Local Inference](local-inference.md) | 36 | v7 promoted as `production-consolidated-v7`; deployed-lane throughput table + living model-probe scoreboard (all observation-grade); MI210 fits everything but the 122B-Q4 architect and GLM-5.2 (238 GB) |
 | [Chat Templates](chat-templates.md) | 2 | Per-family turn markers + when to use `/completion` (Qwen/gemma-3/Llama3) vs `/v1/chat/completions` (gemma-4 multi-channel) — checklist for onboarding new models without silent routing failures |
 
 ## Routing & Evaluation

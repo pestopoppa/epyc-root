@@ -1,9 +1,9 @@
 # v7 Stack Throughput — Full-Optimization Reference
 
 > **⚠ READ FIRST — provenance/governance.**
-> - **Kernel: experimental `experimental-v7-refresh-20260716` (tip `6ad45fa3ff`).** v7 is **flagged READY but NOT PROMOTED** — **production still runs `production-consolidated-v6`+iqk.** These are experimental-kernel bench numbers, not production measurements.
-> - **All numbers are OBSERVATION-grade** (`P-GPU-1` is ratified but certification reruns *post-promotion* on `production-consolidated-v7`; nothing here is decision-grade yet).
-> - **The live stack is CPU-only and UNMODIFIED** — the registry build is `-DGGML_CUDA=OFF`, no role is GPU-resident. **MI210 columns are BENCHMARKS / residency *candidates* (Gate-R), NOT live deployments.** No stack change has been made.
+> - **Kernel: `production-consolidated-v7` at frozen candidate `6ad45fa3ff` / binary `10098`.** The 2026-07-20 production cutover is complete; the table below still mixes production CPU-lane facts with pre-promotion experimental MI210 observations where marked.
+> - **Most MI210 numbers remain OBSERVATION-grade** until the ratified `P-GPU-1` certification reruns on `production-consolidated-v7`.
+> - **The live production stack remains CPU-role deployed unless a serving handoff explicitly says otherwise.** MI210 columns are BENCHMARKS / residency *candidates* (Gate-R), NOT live deployments.
 > - "CPU opt" = the deployed CPU lane at its fastest validated config (native NEXTN-MTP / composed spec-dec + OMP/quant/context tuning), **not** a no-spec regression baseline.
 
 ## Table

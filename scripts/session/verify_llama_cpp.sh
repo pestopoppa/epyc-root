@@ -11,7 +11,7 @@ source "$SCRIPT_DIR/../lib/env.sh"
 
 # Configuration (derived from env.sh)
 LLAMA_CPP_DIR="${LLM_ROOT}/llama.cpp"
-EXPECTED_BRANCH="production-consolidated-v6"  # 2026-06-26 v6+iqk cutover: canonical now on v6 (one kernel; ik_llama deprecated; iqk AVX-512 GEMM integrated, GGML_IQK-gated). Was v5 (2026-05-28), v3 earlier.
+EXPECTED_BRANCH="production-consolidated-v7"  # 2026-07 v7 cutover: canonical production kernel supersedes v6 after the documented promotion routine.
 EXPERIMENTAL_DIR="${LLM_ROOT}/llama.cpp-experimental"
 
 # Colors

@@ -172,20 +172,21 @@
   title: "COORDINATION — v7 kernel promotion gate (parallel kernel/operator session)"
   notes: >
     COORDINATION row — seed a COORDINATION ledger status so pick-next skips it. Never
-    executed by the loop. When v7 is promoted, a NEW kernel era is stamped; the P4 era-stamp
-    entries (sibling-authored) then re-key their ledger rows onto the v7 era.
+    executed by the loop. v7 promotion completed on 2026-07-20: canonical production is
+    `production-consolidated-v7` at `6ad45fa3ff6718c07c000061dbc6e29c1771f6e3`
+    with binary `10098`. The P4 era-stamp entries now need explicit post-promotion
+    reconciliation before execution.
   provenance:
     owning_handoff: handoffs/active/inference-acceleration-index.md
     checkbox: "Operator v6 quality-gate baseline (K5 MMLU-Pro/GPQA-Diamond) -> promote banked GPU wins to v7"
     coordination_note: >
-      OWNED BY the parallel kernel session + operator. The SOLE remaining gate to promote
-      the banked GPU wins (HIP graphs +25% spec-dec, MMVQ->MMQ +17-32%, bf16 state +16-21%)
-      to v7 is the operator v6 MMLU-Pro/GPQA-Diamond baseline (K5 harness built + PASS at
-      parity; K24 removed the base-decode regression blocker; K34 host-drift is a
-      guardrail). Production kernels are FROZEN — promotion is operator-only. Downstream:
-      the P4 era-stamp entries (sibling-authored) depend on this — v7 promotion mints the
-      kernel era those stamps reference. FLAG: the index uses an unlabeled checklist item;
-      checkbox ref is descriptive.
+      CLOSED by the parallel kernel session + operator on 2026-07-20. Canonical
+      `/mnt/raid0/llm/llama.cpp` is `production-consolidated-v7` at frozen candidate
+      `6ad45fa3ff6718c07c000061dbc6e29c1771f6e3`; CPU and HIP binaries report
+      `version: 10098 (6ad45fa3f)`. Quarter-mode production stack passed final
+      21/21 smoke and final attestation is clean except GitNexus drift. Production
+      kernels are FROZEN; post-candidate experimental commits need a fresh exact-tip
+      promotion gate.
   phase: 90
   priority: P4
   preconditions:
@@ -198,17 +199,17 @@
     expected: "Externally owned by the kernel session + operator; tracked for cross-ref only."
     gate_table:
       - gate: "Owned externally (operator v6 quality-gate + v7 promotion decision) — do not execute in the loop."
-        evidence: "inference-acceleration-index.md K5 operator baseline + v7 promotion decision"
+        evidence: "v7-promotion.md 2026-07-20 cutover evidence + final quarter smoke/attestation"
         fork:
           pass:
-            rule: "operator promotes v7 -> new kernel era minted"
+            rule: "v7 production cutover complete -> new kernel era minted"
             action:
               - "no loop action; P4 era-stamp entries re-key onto the v7 era"
             next: COORDINATION
           fail:
-            rule: "v7 not yet promoted"
+            rule: "rollback or cutover evidence invalidated"
             action:
-              - "no loop action; keep COORDINATION; P4 era stamps stay on v6"
+              - "no loop action; keep COORDINATION; reopen era-stamp reconciliation"
             next: COORDINATION
   artifacts: {}
   ledger: {}

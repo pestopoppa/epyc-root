@@ -93,7 +93,7 @@
 
 <div class="page">
   <h1>EPYC orchestration stack &mdash; system flow map</h1>
-  <div class="sub">single host &middot; <b>EPYC 9655</b> / 1.1&nbsp;TB RAM / NUMA-partitioned CPU inference &middot; llama.cpp <b>production-consolidated-v6</b> (native MTP + iqk AVX-512) &middot; as of 2026-07-06 &middot; ports live</div>
+  <div class="sub">single host &middot; <b>EPYC 9655</b> / 1.1&nbsp;TB RAM / NUMA-partitioned CPU inference &middot; llama.cpp <b>production-consolidated-v7</b> (native MTP/NEXTN + iqk AVX-512 + v7 kernel opts) &middot; as of 2026-07-20 &middot; ports live</div>
 
   <!-- ENTRY & ROUTING -->
   <div class="band">
@@ -265,7 +265,7 @@
   </div>
 
   <div class="foot">
-    Single kernel: <b style="color:var(--steel)">production-consolidated-v6</b> (upstream llama.cpp + native MTP/NEXTN spec-dec + forward-ported CPU kernels + ik_llama iqk AVX-512 GEMM, GGML_IQK=1). ik_llama.cpp binary deprecated 2026-06-26 &mdash; one binary, no second kernel.
+    Single kernel: <b style="color:var(--steel)">production-consolidated-v7</b> (upstream llama.cpp + native MTP/NEXTN spec-dec + forward-ported CPU kernels + ik_llama iqk AVX-512 GEMM, GGML_IQK=1, plus the validated v7 promotion set). ik_llama.cpp binary deprecated 2026-06-26 &mdash; one binary, no second kernel.
     Autopilot strategy store is file-based (JSON/JSONL/YAML) &mdash; distinct from the orchestrator's repl_memory (FAISS+Kuzu) episodic store. Every decision-gating number carries a protocol id; the autopilot reads the measurement layer but can never amend it.
   </div>
   <div class="foot" style="margin-top:8px;color:#3f4756">
