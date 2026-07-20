@@ -69,6 +69,18 @@ same-family drafter (35B/122B qwen35 at Q8) trading α for fit.
     that separates `F(K)` verifier work from `H(K)` coordination overhead, then rerun the
     quant-asymmetric slice with strict prompt/schema controls and require CPU-target output
     stability on every task before any routing/serving integration.
+    - [x] **DR-0e.1 — engine telemetry exposed and live K2 rerun completed ✅ 2026-07-20**:
+      experimental-v7 `llama-server` now emits `spec_verify_steps`, `spec_draft_ms`,
+      `spec_verify_ms`, `spec_process_ms`, `spec_sample_accept_ms`, and
+      `spec_accept_by_depth` inside response `timings` when `draft_n > 0`. Reduced K2
+      artifact:
+      `/mnt/raid0/llm/epyc-inference-research/data/dr0_quant_asym_self_spec/dr0_quant_asym_self_spec_20260720T050531Z_telemetry_k2/`.
+      Combined CPU Q4 + MI210 IQ2 K2 measured `10.694 t/s` vs CPU baseline `7.333 t/s`,
+      alpha `0.891`, `F(K)=39.889s`, and `H(K)=0.740s`; cleanup passed. This closes
+      the telemetry gap for single-slot DR-0e runs, not the admission gate.
+    - [ ] **DR-0e.2 — strict quality/target-stability repair**: repair prompts/schema or
+      task selection so the CPU verifier baseline and combined arm both pass all sanity
+      checks and output hashes remain stable on every task; then rerun the K sweep.
 - [x] **DR-1 — economics model ✅ 2026-07-18**: break-even model recorded at
   [docs/reference/gpu-drafter-break-even-model-2026-07-18.md](../../docs/reference/gpu-drafter-break-even-model-2026-07-18.md).
   Key result: external Stage-1/2 failed despite `α=1.0`, so their blocker is
