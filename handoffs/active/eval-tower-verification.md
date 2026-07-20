@@ -2,7 +2,7 @@
 
 **Status**: IN PROGRESS — EV-1/2/3/6 code complete; EV-11 scorer flip and EV-11a boxed-Latex companion fix landed. EV-4 is the current quiet-window runnable island in `inference-batch-loop.md`; EV-11 math rebaseline becomes runnable after the EV-11b ECE-binning operator decision. EV-5/7/8 remain model-download/build-gated. AA-Omniscience hallucination suite integrated (2026-04-15).
 
-**⚠ Robustness audit 2026-07-20:** [eval-tower-loop-robustness-audit-2026-07-20.md](eval-tower-loop-robustness-audit-2026-07-20.md) — the EV-11 confidence proxy is a stub (`float(correct)`) wired into live rlvr scoring → ECE constant 0.0 (1182/1182); **EV-11b binning is moot until logprob-passthrough lands** (operator/human-amendment-only). Plus runner (dirty-stack-on-kill, degenerate→decision_grade), preflight (health-check false-positive, matrix-freshness only checked on reload), and ledger (`INFRA_BLOCKED` wedge) robustness gaps.
+**⚠ Robustness audit 2026-07-20:** [eval-tower-loop-robustness-audit-2026-07-20.md](eval-tower-loop-robustness-audit-2026-07-20.md) — the EV-11 confidence proxy is a stub (`float(correct)`) wired into live rlvr scoring → ECE constant 0.0 (1182/1182); **EV-11b binning is moot until logprob-passthrough lands** → now tracked as **EV-CONF** below (gated after the parallel agent's `eval_tower.py` loop fixes; [agent] plumbing + interim, [operator] only the final scoring decision). Plus runner (dirty-stack-on-kill, degenerate→decision_grade), preflight (health-check false-positive, matrix-freshness only checked on reload), and ledger (`INFRA_BLOCKED` wedge) robustness gaps.
 **Created**: 2026-04-14 (from deep-dive research, 5 papers + 2 subsystem threads)
 **Updated**: 2026-07-20
 **Priority**: HIGH — [research-evaluation-index.md](research-evaluation-index.md) and `inference-batch-loop.md` route the next operator-gate-free inference batch to EV-4; EV-11 follows once EV-11b is decided.
@@ -138,6 +138,13 @@ From Aletheia (intake-370, TU Darmstadt):
 - [x] Add `confidence: float = 0.0` to `QuestionResult` at `eval_tower.py` L52
 - [x] In `_eval_question()`, set `confidence = float(correct)` as initial proxy. For `code_execution`, use pass_rate from `scoring_config` when available.
 - [x] **Note**: Orchestrator ChatResponse does NOT include logprobs. Logprob passthrough from llama-server is a separate infrastructure task. The `confidence` field is ready to accept real logprob values once that lands.
+
+### EV-CONF: Logprob passthrough — make `confidence` real (the real fix under EV-11b; surfaced by the 2026-07-20 audit)
+**Why.** The EV-1 `confidence = float(correct)` stub is tautological → ECE is a constant **0.0** (1182/1182 journaled) → `rlvr_tiers._calibration_component = 1.0 − ece` is pinned to a phantom **1.0**, silently worth **10–15% of every RLVR tier score** (`rlvr_tiers.py:130,151`; required_metric tiers 2–3). **EV-11b (ECE binning) is moot until confidence is real** — flipping the binning alone ships a still-degenerate metric.
+**Why not done yet (GATED, not "operator-only-forever").** The plumbing lives in `eval_tower.py`, which the **parallel agent is actively editing** (the loop fixes) — concurrent edits would corrupt its work. **Sequenced AFTER** the parallel agent's `eval_tower.py` loop fixes land + the EV-11 math rebaseline.
+- [ ] **[agent, interim — do FIRST, low-risk] Neutralize the phantom now.** Until confidence is real, hold ECE/AUC **observation-only** so the constant-0.0 stops inflating the RLVR tier score — set the `rlvr_tiers` calibration weight to 0 (or gate `_calibration_component` on a `confidence_is_real` flag). Touches RLVR scoring composition → **one-line operator sign-off before merge** (MEASUREMENT trust boundary), but it is a bug-fix removing a degenerate input, not a semantics redefinition.
+- [ ] **[agent] Plumbing.** Thread `completion_probabilities` from llama-server (`/completion` `n_probs`) → orchestrator `ChatResponse` (currently drops logprobs — EV-1 note) → `eval_tower` `confidence`, replacing the `float(correct)` default (keep the `code_execution`/`rubric` overrides). Confirm the serving path actually returns probs first.
+- [ ] **[operator] Scoring decision (EV-11b).** Once confidence is real: decide the ECE binning against the `eval_tower.py:2068` half-open-bin tripwire (measured 0.15–0.40 claim) + whether real-ECE re-enters gating. Human-amendment (MEASUREMENT.md).
 
 **Files modified**: `eval_tower.py` (QuestionResult dataclass + _eval_question)
 
