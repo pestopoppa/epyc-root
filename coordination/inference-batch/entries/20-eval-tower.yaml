@@ -52,9 +52,9 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: 4320d9b2ebdb4ad0200da91c6b1f807f77f44f931311d240cf8a8f04546535b9
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
-      contention_matrix: not_required
+      contention_matrix: v7-recert-required
     autopilot: stopped
     operator_gates:
       - OP-quiet-window
@@ -67,6 +67,7 @@
       .venv/bin/python scripts/benchmark/eval_batch_serving_evaltower_window.py
       --mode calibration --suite scoring_verifiers --split HE-R+
       --roles worker_general,frontdoor --full --seed 42
+      --min-eval-concurrency 3
       --api-url http://localhost:8000 --apply --confirm-clean-window
     cwd: /mnt/raid0/llm/epyc-orchestrator
     concurrency_mode: same_trial_eval_fanout
@@ -147,7 +148,7 @@
   priority: P2
   preconditions:
     stack_lineup: "production lineup + ThinkPRM-1.5B loaded sequentially at T2"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flag_attestation: env_only
     models:
       - thinkprm-1.5b-q4km
@@ -156,6 +157,7 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -249,7 +251,7 @@
   priority: P2
   preconditions:
     stack_lineup: "Ouro-2.6B transformers-CPU serial (feeds T0 sentinel)"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flag_attestation: env_only
     models:
       - ouro-2.6b-thinking
@@ -258,6 +260,7 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -353,7 +356,7 @@
   priority: P2
   preconditions:
     stack_lineup: "4 production roles (frontdoor + worker_general + architect_general + coder_escalation)"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flag_attestation: env_only
     models:
       - frontdoor
@@ -365,9 +368,9 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
-      contention_matrix: not_required
+      contention_matrix: v7-recert-required
     autopilot: stopped
     operator_gates:
       - OP-quiet-window
@@ -517,7 +520,7 @@
   priority: P2
   preconditions:
     stack_lineup: "production lineup reloaded with AUTOPILOT_SKILL_EFFICACY_GATE=1 in launch env"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       AUTOPILOT_SKILL_EFFICACY_GATE: 1
     flags_forbidden:
@@ -531,9 +534,9 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
-      contention_matrix: not_required
+      contention_matrix: v7-recert-required
     autopilot: stopped
     operator_gates:
       - OP-quiet-window
@@ -616,7 +619,7 @@
     owning_handoff: handoffs/active/eval-tower-verification.md
     checkbox: "EV-11c"
     also_flips:
-      - "handoffs/active/backlog-roi-audit-2026-07-14.md#RE-3"
+      - "handoffs/active/backlog-roi-audit-2026-07-14.md#RE-1"
     source_ref: "handoffs/active/eval-tower-verification.md#EV-11c fresh math re-baseline (INFERENCE -> batch manifest)"
     coordination_note: >
       PRECONDITION CHAIN (all BLOCKING): (a) EV-11a companion fix landed —
@@ -636,7 +639,7 @@
   priority: P1
   preconditions:
     stack_lineup: "production default lineup (frontdoor + worker_general + architect_general)"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flag_attestation: env_only
     models:
       - frontdoor
@@ -647,7 +650,7 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -753,7 +756,7 @@
   priority: P2
   preconditions:
     stack_lineup: "single local model per window (standalone, model-batched)"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flag_attestation: env_only
     models:
       - frontdoor
@@ -763,6 +766,7 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -864,7 +868,7 @@
   priority: P3
   preconditions:
     stack_lineup: "reviewer/architect/grader pairings from pool-gen; eval-tower T0/T1 servers"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       AUTOPILOT_SCREENING_TIER_INFERENCE: 1
     flag_attestation: env_only
@@ -873,9 +877,9 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
-      contention_matrix: not_required
+      contention_matrix: v7-recert-required
     autopilot: any
     operator_gates:
       - OP-quiet-window

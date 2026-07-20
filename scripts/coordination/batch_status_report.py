@@ -41,6 +41,7 @@ try:  # when imported as part of a package / with coordination dir on path
         READY,
         TERMINAL_SUCCESS,
     )
+    from batch_ledger import is_retry_pickable  # type: ignore
 except ImportError:  # pragma: no cover - fallback when run from elsewhere
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     from entry_verdict import (  # type: ignore
@@ -52,6 +53,7 @@ except ImportError:  # pragma: no cover - fallback when run from elsewhere
         READY,
         TERMINAL_SUCCESS,
     )
+    from batch_ledger import is_retry_pickable  # type: ignore
 
 
 class StatusReportError(RuntimeError):
@@ -59,8 +61,8 @@ class StatusReportError(RuntimeError):
 
 
 UNSTARTED = "UNSTARTED"  # report-only bucket: entry present in manifest, absent from ledger
-# Statuses from which an entry can become next-eligible again once deps are met.
-_ELIGIBLE_FROM = frozenset({UNSTARTED, READY, INFRA_BLOCKED, BLOCKED_PRECONDITION})
+# Statuses that can be next-eligible without an entry-level retry policy.
+_ELIGIBLE_FROM = frozenset({UNSTARTED, READY})
 
 
 def utc_now() -> str:
@@ -173,8 +175,9 @@ def _deps_satisfied(entry: dict[str, Any], latest: dict[str, dict[str, Any]]) ->
 
 
 def is_eligible(entry: dict[str, Any], latest: dict[str, dict[str, Any]]) -> bool:
-    status = _status_of(_entry_id(entry), latest)
-    if status not in _ELIGIBLE_FROM:
+    entry_id = _entry_id(entry)
+    status = _status_of(entry_id, latest)
+    if status not in _ELIGIBLE_FROM and not is_retry_pickable(entry, latest.get(entry_id)):
         return False
     ok, _ = _deps_satisfied(entry, latest)
     return ok

@@ -37,7 +37,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Union
@@ -72,9 +71,14 @@ TERMINAL_STATES = frozenset(
     {"DONE_PASS", "DONE_MARGINAL_OBS", "FAILED_REVERTED", "SKIPPED_SUPERSEDED"}
 )
 
-#: States from which an entry is (re-)eligible to be picked. An entry with no ledger
-#: row at all is implicitly READY.
+#: States from which an entry is eligible without consulting retry policy. An entry
+#: with no ledger row at all is implicitly READY.
 ELIGIBLE_STATES = frozenset({"READY"})
+
+#: States from which an entry may be re-admitted only when its entry-level
+#: retry_policy explicitly allows that status. This keeps infra recovery from
+#: becoming a permanent wedge without blindly retrying every blocked row.
+RETRYABLE_STATES = frozenset({"INFRA_BLOCKED", "BLOCKED_PRECONDITION"})
 
 #: Entries at/above this phase are non-executable COORDINATION cross-references
 #: (parallel-session-owned work); pending() never returns them.
@@ -116,6 +120,78 @@ class LedgerError(ValueError):
 
 def _utcnow_iso() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _parse_utc_ts(value: Any) -> Optional[datetime]:
+    if not value:
+        return None
+    text = str(value).strip()
+    if text.endswith("Z"):
+        text = text[:-1] + "+00:00"
+    try:
+        parsed = datetime.fromisoformat(text)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
+
+
+def _retry_policy(entry: dict) -> dict:
+    execution = entry.get("execution") or {}
+    policy = execution.get("retry_policy") or {}
+    return policy if isinstance(policy, dict) else {}
+
+
+def _retry_on(entry: dict) -> set[str]:
+    policy = _retry_policy(entry)
+    return {str(item) for item in (policy.get("retry_on") or [])}
+
+
+def _stale_running_after_s(entry: dict) -> Optional[float]:
+    policy = _retry_policy(entry)
+    value = policy.get("stale_running_after_s")
+    if value is None:
+        value = (entry.get("execution") or {}).get("timeout_s")
+    try:
+        seconds = float(value)
+    except (TypeError, ValueError):
+        return None
+    return seconds if seconds > 0 else None
+
+
+def is_retry_pickable(
+    entry: dict,
+    latest_row: Optional[dict],
+    *,
+    now: Optional[datetime] = None,
+) -> bool:
+    """Return whether a non-READY latest row may be picked again.
+
+    The ledger remains append-only: retrying still happens by executing the entry
+    and appending a new row. This helper only controls structural pickability.
+    """
+    if not latest_row:
+        return True
+    status = str(latest_row.get("status") or "")
+    if status in ELIGIBLE_STATES:
+        return True
+    retry_on = _retry_on(entry)
+    if status in RETRYABLE_STATES:
+        return status in retry_on
+    if status == "RUNNING":
+        stale_after = _stale_running_after_s(entry)
+        if stale_after is None:
+            return False
+        started = _parse_utc_ts(latest_row.get("ts"))
+        if started is None:
+            return False
+        current = now or datetime.now(timezone.utc)
+        if current.tzinfo is None:
+            current = current.replace(tzinfo=timezone.utc)
+        age_s = (current.astimezone(timezone.utc) - started).total_seconds()
+        return age_s > stale_after and bool(retry_on)
+    return False
 
 
 def canonical_hash(obj: Any) -> str:
@@ -264,7 +340,8 @@ class Ledger:
         """Entries eligible to be picked next, in deterministic execution order.
 
         An entry is eligible iff ALL of:
-          * its live ledger state is READY (or it has no ledger row), AND
+          * its live ledger state is READY, absent, or explicitly retry-pickable
+            by the entry's retry_policy, AND
           * its preconditions are *structurally* satisfiable (deps reference known
             task_ids; flags_required and flags_forbidden do not contradict), AND
           * every ``depends_on`` task is in a terminal-success state
@@ -275,6 +352,7 @@ class Ledger:
         the executor). Returned list is sorted by (phase, priority, task_id)."""
         entries = _normalise_entries(manifest)
         by_id = {e.get("task_id"): e for e in entries}
+        latest = self.all_latest()
         states = self.reconcile(entries)
 
         eligible: List[dict] = []
@@ -288,7 +366,7 @@ class Ledger:
             # skip robust even if the seed step is missed.
             if int(entry.get("phase", 0)) >= COORDINATION_PHASE_FLOOR:
                 continue
-            if states.get(tid) not in ELIGIBLE_STATES:
+            if not is_retry_pickable(entry, latest.get(tid)):
                 continue
             if not _structurally_satisfiable(entry, by_id):
                 continue

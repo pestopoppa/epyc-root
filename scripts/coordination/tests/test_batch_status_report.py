@@ -17,14 +17,24 @@ if str(_COORD) not in sys.path:
 import batch_status_report as bsr  # noqa: E402
 
 
-def entry(task_id, phase, priority="P1", depends_on=None, driver="clean_window_entry"):
+def entry(
+    task_id,
+    phase,
+    priority="P1",
+    depends_on=None,
+    driver="clean_window_entry",
+    retry_on=None,
+):
+    execution = {"driver": driver, "concurrency_mode": "serial_noninference"}
+    if retry_on:
+        execution["retry_policy"] = {"max_attempts": 2, "retry_on": list(retry_on)}
     return {
         "task_id": task_id,
         "title": f"{task_id} title",
         "phase": phase,
         "priority": priority,
         "preconditions": {"depends_on": depends_on or []},
-        "execution": {"driver": driver, "concurrency_mode": "serial_noninference"},
+        "execution": execution,
         "outcomes": {"gate_table": []},
     }
 
@@ -33,7 +43,7 @@ MANIFEST = {
     "version": "inference_batch.v2",
     "entries": [
         entry("A1", 0),
-        entry("A2", 0, depends_on=["A1"]),
+        entry("A2", 0, depends_on=["A1"], retry_on=["INFRA_BLOCKED"]),
         entry("B1", 1),
         entry("B2", 1, depends_on=["B1"]),
         entry("C1", 2, depends_on=["A2"]),
@@ -91,6 +101,20 @@ class TestReportModel(unittest.TestCase):
         self.assertNotIn("B2", elig)
         # C1 depends on A2 (not terminal-success) -> not eligible.
         self.assertNotIn("C1", elig)
+
+    def test_infra_blocked_without_retry_policy_is_not_eligible(self):
+        manifest = {
+            "entries": [
+                entry("A1", 0),
+                entry("A2", 0, depends_on=["A1"]),
+            ]
+        }
+        ledger = [
+            {"task_id": "A1", "status": "DONE_PASS"},
+            {"task_id": "A2", "status": "INFRA_BLOCKED"},
+        ]
+        report = bsr.build_report(manifest, ledger)
+        self.assertNotIn("A2", {e["task_id"] for e in report["eligible"]})
 
     def test_blocked_breakdown(self):
         ids = {b["task_id"] for b in self.report["blocked_breakdown"]}

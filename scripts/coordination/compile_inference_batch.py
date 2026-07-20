@@ -47,6 +47,7 @@ _HERE = Path(__file__).resolve().parent
 if str(_HERE) not in sys.path:
     sys.path.insert(0, str(_HERE))
 import batch_ledger  # noqa: E402
+from flip_checkbox import _find_anchor_lines  # noqa: E402
 
 MANIFEST_SCHEMA_VERSION = "inference_batch.manifest.v1"
 SOURCES_LOCK_SCHEMA_VERSION = "inference_batch.sources_lock.v1"
@@ -107,6 +108,13 @@ def lint_entry(entry: dict) -> List[str]:
     gate_table = (entry.get("outcomes") or {}).get("gate_table") or []
     if len(gate_table) < 1:
         errors.append("lint: outcomes.gate_table must have at least one row")
+    execution = entry.get("execution") or {}
+    topology = (entry.get("preconditions") or {}).get("topology") or {}
+    concurrency_mode = str(execution.get("concurrency_mode") or "")
+    if "eval_fanout" in concurrency_mode and topology.get("contention_matrix") == "not_required":
+        errors.append(
+            "lint: eval_fanout entries require a fresh contention_matrix precondition"
+        )
     return errors
 
 
@@ -205,16 +213,22 @@ def resolve_checkbox_refs(
         handoff_path = (repo_root / owning) if owning else None
         exists = bool(handoff_path and handoff_path.is_file())
         line: Optional[int] = None
+        anchor_count = 0
+        anchor_error: Optional[str] = None
         if exists and checkbox:
             try:
-                for idx, text in enumerate(
-                    handoff_path.read_text(encoding="utf-8").splitlines(), 1
-                ):
-                    if checkbox in text:
-                        line = idx
-                        break
+                lines = handoff_path.read_text(encoding="utf-8").splitlines()
+                anchors = _find_anchor_lines(lines, checkbox)
+                anchor_count = len(anchors)
+                if anchor_count == 1:
+                    line = anchors[0] + 1
+                elif anchor_count == 0:
+                    anchor_error = f"missing unchecked checkbox anchor for {checkbox!r}"
+                else:
+                    anchor_error = f"ambiguous unchecked checkbox anchors for {checkbox!r}"
             except OSError:
                 line = None
+                anchor_error = "handoff read failed"
         refs.append(
             {
                 "task_id": entry.get("task_id"),
@@ -223,7 +237,9 @@ def resolve_checkbox_refs(
                 "also_flips": list(prov.get("also_flips") or []),
                 "handoff_exists": exists,
                 "checkbox_line": line,
-                "resolved": bool(exists and line is not None),
+                "checkbox_anchor_count": anchor_count,
+                "checkbox_anchor_error": anchor_error,
+                "resolved": bool(exists and line is not None and anchor_count == 1),
             }
         )
     return refs

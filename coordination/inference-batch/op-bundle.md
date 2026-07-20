@@ -29,6 +29,7 @@ Format for operator action: change `[ ]` → `[x]` and append `GRANTED <date> �
 - [ ] **OP-WORKER-MTP-REATTEST** — re-attest the gemma4 worker_general MTP head config before a long-context matrix run. Cited by: BULK-K-ROPE-cells.
 - [ ] **OP-ODL-SOURCE-CORPUS** — provide/approve the source PDF corpus + ground-truth for the ODL structural benches (the real gap on the OCR entries — the command is valid, the corpus is missing). Cited by: ODLB-W3-01/02/03.
 - [ ] **Ref-judge budget** — approve the metered frontier-API judge-of-judge (pinned model-id+date, ~100 sampled decisions) for the H5 Ref arm. Cited by: RM-6/reviewer-model-ablations Ref arm (prose today; wire into RM-6 operator_gates when that arm is scheduled).
+- [ ] **EV-4-v7-contention-matrix-recert** — re-measure and commit the v7 contention matrix, including the post-v7 `vision_escalation` geometry, before any fanout eval-tower entry resumes. Cited by: EV-4, EV-8, EV-10a.
 
 ### C. Posture decisions that SHAPE (not hard-block) entries
 
@@ -97,3 +98,8 @@ Four pre-formed decision blocks were seeded by the 2026-07-17 command audit (the
 ### ESC-4 — Mechanism-A firing contingency (RCP-W2, RD-12, LB-1, LB-4, LB-7)
 - **Gate/Note (not a decision — a standing caveat)**: the events→ledger materializer (`reviewer_events_to_ledger.py`) is built and tested, but it only produces rows if the reviewer shadow plane actually EMITTED REVIEW_DECISION events during the eval workload. The plane fires on the delegation path; EvalTower's rubric-judge hard-disables delegation. So the FIRST live RCP-W2 run may materialize ZERO rows — that is an expected diagnostic outcome, not a failure. If zero: the durable fix (review_service writes ledger rows inline) is a serving-path change, deferred until the stack unfreezes. Record the zero-row result as evidence and hold RD-12/LB-4/LB-7 (they share the dependency).
 - **RESOLVED 2026-07-17 (validated non-inference):** 32/32 historical events -> 32 ledger rows, report clean; FA/FR null (event candidate_ids not nearmiss row_ids). RCP-W2 command correct as-is; non-null FA/FR = RCP-W3's bridge. Firing-contingency discharged for the 32 existing events.
+
+### ESC-5 — EV-4-v7-contention-matrix-recert: v7 matrix re-measure (blocks EV-4 fanout)
+- **Gate**: EV-4 and other fanout entries need a v7 contention matrix whose measured geometry matches the current production-v7 stack, including the one-instance `vision_escalation` layout. Reusing or hash-bumping the v6 matrix would certify the wrong shape.
+- **Evidence**: live matrix fingerprint for the current measured role subset is `8c8cfcbb13d2611d`; the committed global matrix still carries `df373c79cc4af06f`. The 2026-07-20 EV-4 attempt was stopped before a decision-grade summary because the loop/matrix state had already diverged and then exposed additional robustness defects.
+- **Options**: (A) run the A3/A5 re-measure and commit the regenerated v7 matrix, then append a READY requeue row for EV-4; (B) defer all fanout eval-tower entries; (C) run serial only as diagnostic, never as the EV-4 decision-grade baseline.

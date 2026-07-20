@@ -63,7 +63,7 @@
     topology:
       required_topology_hash: df373c79cc4af06f
       live_affinity_verified: true
-      contention_matrix: not_required
+      contention_matrix: v7-recert-required
     autopilot: stopped
     operator_gates:
       - OP-6a
@@ -371,7 +371,7 @@
     topology:
       required_topology_hash: df373c79cc4af06f
       live_affinity_verified: true
-      contention_matrix: not_required
+      contention_matrix: v7-recert-required
     autopilot: stopped
     operator_gates:
       - OP-6a
@@ -829,7 +829,7 @@
     topology:
       required_topology_hash: df373c79cc4af06f
       live_affinity_verified: true
-      contention_matrix: not_required
+      contention_matrix: v7-recert-required
     autopilot: stopped
     operator_gates:
       - OP-6a

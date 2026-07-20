@@ -176,6 +176,7 @@ loads `6,701` candidate-level items across HE-R/HE-R+/MBPP-R/MBPP-R+ with
 
 ### EV-4: Calibration baseline (needs inference)
 
+- [ ] **EV-4** — Complete the decision-grade HE-R+ calibration baseline through the inference-batch loop after v7 contention-matrix recertification.
 - [ ] Run current eval tower on Scoring Verifiers HE-R+ benchmark
 - [ ] Record ECE, AUC, Top-1, Bottom-1, Spearman ρ, MAE as baseline
 - [ ] Identify calibration violations — which question types produce miscalibrated confidence?

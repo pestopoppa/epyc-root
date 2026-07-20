@@ -7,6 +7,7 @@ Run with the orchestrator venv python (stdlib-only module, but keep the runner u
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 import sys
 from pathlib import Path
 
@@ -145,6 +146,36 @@ def test_pending_excludes_running_and_terminal(manifest):
     led.append_row({"task_id": "A", "status": "DONE_PASS"})  # now terminal-success
     # A itself is DONE (excluded); B/C unlocked.
     assert [e["task_id"] for e in led.pending(manifest)] == ["B", "C"]
+
+
+def test_pending_requeues_infra_blocked_only_with_retry_policy():
+    entry = _entry("A", 0, "P1")
+    retryable = _entry("B", 0, "P1")
+    retryable["execution"]["retry_policy"] = {
+        "max_attempts": 2,
+        "retry_on": ["INFRA_BLOCKED"],
+    }
+    led = Ledger()
+    led.append_row({"task_id": "A", "status": "INFRA_BLOCKED"})
+    led.append_row({"task_id": "B", "status": "INFRA_BLOCKED"})
+
+    assert [e["task_id"] for e in led.pending({"entries": [entry, retryable]})] == ["B"]
+
+
+def test_pending_requeues_stale_running_only_with_retry_policy():
+    retryable = _entry("A", 0, "P1")
+    retryable["execution"]["retry_policy"] = {
+        "max_attempts": 2,
+        "retry_on": ["INFRA_BLOCKED"],
+        "stale_running_after_s": 60,
+    }
+    not_retryable = _entry("B", 0, "P1")
+    old = datetime(2026, 7, 20, 12, 0, tzinfo=timezone.utc).isoformat().replace("+00:00", "Z")
+    led = Ledger()
+    led.append_row({"task_id": "A", "status": "RUNNING", "ts": old})
+    led.append_row({"task_id": "B", "status": "RUNNING", "ts": old})
+
+    assert [e["task_id"] for e in led.pending({"entries": [retryable, not_retryable]})] == ["A"]
 
 
 def test_marginal_obs_satisfies_dependency(manifest):
