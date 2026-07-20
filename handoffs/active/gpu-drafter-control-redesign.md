@@ -116,9 +116,17 @@ same-family drafter (35B/122B qwen35 at Q8) trading α for fit.
     passed quality (`12/12`), output stability, context coverage, and cleanup;
     CPU baseline `7.185 t/s`, combined K2 `11.104 t/s` (`1.545x`, alpha `0.876`),
     `observation_grade=true`, `decision_grade=false`.
-  - [ ] **DR-3c — default 8K+16K admission + opportunity-cost gate**: run the
-    default context package, then measure frontdoor residency/eviction opportunity
-    cost before any serving route or NumericSwarm K surface.
+  - [x] **DR-3c — default 8K+16K admission package ✅ 2026-07-20**:
+    artifact
+    `/mnt/raid0/llm/epyc-inference-research/data/dr3_quant_asym_k2_admission/dr3_quant_asym_k2_admission_20260720T071816Z_dr3c_default_ctx8192_16384_r1/`
+    passed quality (`24/24`), output stability, context coverage for `8192` and
+    `16384`, and cleanup. Combined K2 vs CPU baseline: 8K `10.535` vs `6.980 t/s`
+    (`1.509x`, alpha `0.876`, `408/466` drafts accepted); 16K `10.429` vs
+    `6.979 t/s` (`1.494x`, alpha `0.879`, `420/478` accepted). Still
+    observation-grade and non-serving.
+  - [ ] **DR-3d — frontdoor opportunity-cost gate**: measure resident frontdoor
+    alone, frontdoor after eviction/reload, and DR-3 lane active before any
+    serving route or NumericSwarm K surface.
 - [x] **DR-1 — economics model ✅ 2026-07-18**: break-even model recorded at
   [docs/reference/gpu-drafter-break-even-model-2026-07-18.md](../../docs/reference/gpu-drafter-break-even-model-2026-07-18.md).
   Key result: external Stage-1/2 failed despite `α=1.0`, so their blocker is

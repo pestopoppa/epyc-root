@@ -141,11 +141,30 @@ Follow-up evidence closed the runner implementation step:
 This proves the live runner and an 8K observation slice. It does not admit a
 serving route.
 
+## DR-3c Default Admission Checkpoint
+
+Follow-up evidence closed the default 8K+16K admission-package execution step:
+
+- Passing artifact:
+  `epyc-inference-research/data/dr3_quant_asym_k2_admission/dr3_quant_asym_k2_admission_20260720T071816Z_dr3c_default_ctx8192_16384_r1/`.
+- Result: quality `24/24`, output stability pass, context coverage pass for
+  `8192` and `16384`, cleanup pass, `observation_grade=true`,
+  `decision_grade=false`.
+- Speed:
+
+| Context | CPU baseline decode t/s | Combined K2 decode t/s | Ratio | Alpha | Draft accepted/generated |
+|---:|---:|---:|---:|---:|---:|
+| 8192 | 6.980 | 10.535 | 1.509x | 0.876 | 408/466 |
+| 16384 | 6.979 | 10.429 | 1.494x | 0.879 | 420/478 |
+
+This proves the default admission package on experimental v7. It does not admit
+a serving route because `frontdoor_opportunity_cost_gate` remains `not_run` and
+production GPU claims still require the production-named `P-GPU-1` rerun path.
+
 ## Current Verdict
 
 Keep the lane as a serious candidate. Do not serve it yet.
 
-Next executable step: run the default 8K+16K DR-3 admission package and the
-frontdoor opportunity-cost gate, then repeat required GPU claims under
-`production-consolidated-v7` for `P-GPU-1` if the operator promotes the frozen v7
-candidate.
+Next executable step: run the frontdoor opportunity-cost gate, then repeat
+required GPU claims under `production-consolidated-v7` for `P-GPU-1` if the
+operator promotes the frozen v7 candidate.
