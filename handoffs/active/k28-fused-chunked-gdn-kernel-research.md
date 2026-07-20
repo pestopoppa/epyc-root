@@ -1,6 +1,6 @@
 # K28 — Fused Chunked GDN Recurrence Kernel: Research Handoff
 
-**Status**: RESEARCH/DESIGN — Phase 0 ceiling gate run 2026-07-20; no kernel code written. Design + SOTA deep-dive gates a possible post-v7 default-off kernel effort.
+**Status**: RESEARCH/DESIGN — Phase 0 ceiling + pinned verbose trace gate run 2026-07-20; no kernel code written. Design + SOTA deep-dive gates a possible post-v7 default-off kernel effort.
 **Created**: 2026-07-20. **Scope**: GPU (MI210 / gfx90a / CDNA2, ROCm/HIP). **Owner task**: `mi210-big-model-and-acceleration-roadmap.md` K28 (`- [ ]`, `gated_delta_net.cu:191` TODO).
 **Related (distinct)**: [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md) (a different, monitoring-only *log-linear* GDN tracker — not this kernel effort).
 **For**: the parallel agent working the K28 / GDN long-prefill thread.
@@ -28,10 +28,22 @@ to `26.84 GB/s` at 1024), but the modeled full-model ceiling is bounded:
 estimated GDN prefill share is `15.31%` at p2048 and `14.54%` at p8192; a 4x
 op kernel would map to about `11.48%` / `10.91%` full-model prompt gain.
 
+The follow-up `LLAMA_QWEN35_PREFILL_TRACE=2` run used the pinned experimental
+v7 libraries (`LD_LIBRARY_PATH=build-hip/bin`) and `llama-bench -v` because
+non-verbose `llama-bench` suppresses model logs. It confirmed the trace scaffold
+is active, but it emits structural graph-node deltas rather than wall-clock
+timings. Across the emitted graph groups, `gated_delta_net` accounted for
+`24.50%` of `linear_attn_total` graph-node deltas and `12.22%` of
+`linear_attn_total+ffn_total` deltas. That sanity-checks that GDN is material
+inside linear attention, but it does not replace direct profiler attribution or
+raise the Phase 0 full-model ceiling.
+
 Evidence:
 `/mnt/raid0/llm/epyc-inference-research/data/k28_gdn_perf/k28-phase0-op-rerun-20260720T102526Z/`
 and
-`/mnt/raid0/llm/epyc-inference-research/data/k28_gdn_perf/k28-phase0-ceiling-20260720T102644Z/summary.json`.
+`/mnt/raid0/llm/epyc-inference-research/data/k28_gdn_perf/k28-phase0-ceiling-20260720T102644Z/summary.json`;
+trace follow-up
+`/mnt/raid0/llm/epyc-inference-research/data/k28_gdn_perf/k28-qwen35moe-gpu-trace-verbose-pinned-20260720T112158Z/summary.json`.
 
 Verdict: keep K28 open as a plausible post-promotion/default-off fused-kernel
 project, but do not delay frozen-v7 promotion for Phase 1 unless a direct

@@ -219,6 +219,17 @@ P0 was fixed on experimental v7 `96986f5e9`); its gate is a strict-IF/rubric GBN
     graph intact. If the gate passes, Phase 1 is FP32/fusion-only and
     runtime-gated/default-off; MFMA/bf16 is a separate Phase 2, and `K>1`
     snapshot semantics must either fall back to the serial path or pass parity.
+    - [x] **K28.5a — pinned verbose trace scaffold audit CLOSED ✅ 2026-07-20**:
+      `LLAMA_QWEN35_PREFILL_TRACE=2` on Qwen3.6-35B-A3B Q8 with pinned
+      experimental v7 libs and `llama-bench -v` emitted structural graph-node
+      attribution for p2048/p8192/p32768 prompt-only rows (`2079.36`,
+      `1982.56`, `1650.80` prompt t/s). Trace groups show GDN at `24.50%` of
+      `linear_attn_total` graph-node deltas and `12.22%` of
+      `linear_attn_total+ffn_total` deltas. This confirms the scaffold and
+      pinned-library recipe, but it is not wall-clock attribution and does not
+      raise the Phase 0 ceiling; `K28.5` stays open only for direct profiler or
+      throwaway-prototype evidence. Artifact:
+      `data/k28_gdn_perf/k28-qwen35moe-gpu-trace-verbose-pinned-20260720T112158Z/summary.json`.
 
 ## Research Intake Update — 2026-07-16 (AirLLM / GPU-active-weight offload)
 

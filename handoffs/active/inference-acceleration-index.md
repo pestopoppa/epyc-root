@@ -86,7 +86,7 @@ action, not more reviewer work.
    only; no default-on or frozen-v7 update. →
    [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md).
 6. **stream-K `nsm→k·nsm`+compact-LDS** — +0–10%, IQ2/capacity; pmc-CSV read first. → mi210 roadmap.
-7. **K28 GDN long-prefill recurrence kernel (GPU)** — `gated_delta_net.cu:191`; Phase 0 shows serial-dependency headroom but only about `11%` modeled full-model prompt ceiling under a 4x op win, so this is default-off/post-promotion unless profiler/prototype evidence raises EV. → mi210 roadmap, [k28-fused-chunked-gdn-kernel-research.md](k28-fused-chunked-gdn-kernel-research.md).
+7. **K28 GDN long-prefill recurrence kernel (GPU)** — `gated_delta_net.cu:191`; Phase 0 shows serial-dependency headroom but only about `11%` modeled full-model prompt ceiling under a 4x op win. The pinned verbose trace follow-up emitted graph-node attribution (`gated_delta_net` = `24.50%` of `linear_attn_total`, `12.22%` of `linear_attn_total+ffn_total`) but not wall-clock timing, so this remains default-off/post-promotion unless profiler/prototype evidence raises EV. → mi210 roadmap, [k28-fused-chunked-gdn-kernel-research.md](k28-fused-chunked-gdn-kernel-research.md).
 8. **MoE-Spec CPU reopen** — +5–15% Coder/REAP; zero-inference assessment first. → [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md).
 9. **Real sparse final-attention (GLM DSA)** — currently DSA-DENSE-MASK; long-context only; contingent on GLM quality. → [llama-cpp-dsa-contribution.md](llama-cpp-dsa-contribution.md).
 10. **Batched-decode E2/E3** — serving throughput; telemetry gate. → [batched-decode-measurement.md](batched-decode-measurement.md).
