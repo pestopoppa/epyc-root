@@ -1,6 +1,6 @@
 schema_version: inference_batch.manifest.v1
 entry_schema_version: inference_batch.entry.v1
-generated_at: '2026-07-20T21:41:40Z'
+generated_at: '2026-07-20T21:59:08Z'
 entry_count: 52
 entries:
 - schema_version: inference_batch.entry.v1
@@ -2565,7 +2565,7 @@ entries:
   priority: P2
   preconditions:
     stack_lineup: single full instance, -np sweep; frontdoor A3B + dense control
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       GGML_IQK: 1
     flag_attestation: env_only
@@ -2576,7 +2576,7 @@ entries:
       max_uptime_days: 7
       cache_state: drop_caches
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -2652,7 +2652,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:a9bda6429bc06a30586d109a1d98ce6f2262862ae4ff70f4005cfd1b4323fa15
+  entry_hash: sha256:74bea640298dfca3f3121a52260e0669c9e109265b0af2ccbbaaa1e60c52f10d
 - schema_version: inference_batch.entry.v1
   task_id: BULK-DS-E1-kv
   title: DS-E1 — dynamic-stack KV measurement (decision-ready clean-window packet)
@@ -2673,7 +2673,7 @@ entries:
   preconditions:
     stack_lineup: production default lineup (frontdoor + workers), single-instance
       measurement
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       GGML_IQK: 1
     flag_attestation: env_only
@@ -2684,7 +2684,7 @@ entries:
       max_uptime_days: 7
       cache_state: drop_caches
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -2762,7 +2762,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:cf3582017c31778551aea182aa989beec1fbfc412bfc68fafd50397509fc48a2
+  entry_hash: sha256:eb52f9dd3ac0340877609ac6498a48ce9813fcf23ce238e1b5ea606d2e0ab0e8
 - schema_version: inference_batch.entry.v1
   task_id: BULK-langgraph-tm7-parity
   title: TM-7 — live real-node run_task_lg vs run_task parity (durable-resume gate)
@@ -2785,7 +2785,7 @@ entries:
   preconditions:
     stack_lineup: production lineup for real-node execution; data/graph_checkpoints.sqlite
       present
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       GGML_IQK: 1
     flags_forbidden:
@@ -2799,7 +2799,7 @@ entries:
       max_uptime_days: 14
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: stopped
@@ -2872,7 +2872,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:563a96d3c3ef7d4409fcb616b18e723b9cda2b311f4de0870c37c62a8f49bd84
+  entry_hash: sha256:df0fa4e83947a7737837c22913ebd8ae0b2fc701416af564d8c56729bd4e222e
 - schema_version: inference_batch.entry.v1
   task_id: semantics-advisory-rollout
   title: Semantics-layer rollout Phase 2 — advisory mode (expose findings to the architect;
@@ -3029,7 +3029,7 @@ entries:
   preconditions:
     stack_lineup: embedder-only servers (Granite/e5-base/BGE-M3 GGUF); no production
       role reload
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flag_attestation: env_only
     models:
     - granite-embedding-97m-r2
@@ -3038,7 +3038,7 @@ entries:
       max_uptime_days: 14
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: stopped
@@ -3109,7 +3109,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:ff10852811d31c4fb0aa088d7cf0b0ccc821f92d5676613a2fd487c9f29d7dfe
+  entry_hash: sha256:2d1aec8bef311f1c47441ec6e92789cf4196546ef442ec83f1b04e8f2d4340b3
 - schema_version: inference_batch.entry.v1
   task_id: BULK-K-ROPE-cells
   title: K-ROPE-1 — remaining RoPE long-context cells (exact-boundary + worker path)
@@ -3131,7 +3131,7 @@ entries:
   preconditions:
     stack_lineup: clean model-batched window; frontdoor + ingest resident, worker_general
       re-attested
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       GGML_IQK: 1
     flag_attestation: all_workers
@@ -3144,7 +3144,7 @@ entries:
       max_uptime_days: 7
       cache_state: drop_caches
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -3245,7 +3245,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:34a330432dffc0ff3c99643fe2157d6343bdff9717f055894583d273de0836cb
+  entry_hash: sha256:ca56d1f2a472db1c2cd4a30ad250b7619c6f876525248e29de2c30cfb56305fe
 - schema_version: inference_batch.entry.v1
   task_id: BULK-XMAS-telemetry
   title: X-MAS — post-enable live telemetry monitor (passive rider on enforce windows)
@@ -3264,14 +3264,14 @@ entries:
   priority: P3
   preconditions:
     stack_lineup: production lineup with xmas_routing enforce active
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       xmas_routing.mode: enforce
     flag_attestation: all_workers
     host_health:
       tier: any
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: any
@@ -3338,7 +3338,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:bd83c78bb320dd1152691e331f6b1bd308993f1dfe55f93adf676d6ace66d5b8
+  entry_hash: sha256:5768b030beb57dcdd5872b80f24a0075082277a5abec76cd30b850a7a02859e6
 - schema_version: inference_batch.entry.v1
   task_id: BULK-hermes-smokes
   title: Hermes — pin-bump + reference-client + subagent single-slot smokes
@@ -3363,7 +3363,7 @@ entries:
   preconditions:
     stack_lineup: single-slot llama-server (-np 1, context_length 32768) for Hermes;
       orchestrator role alias
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       GGML_IQK: 1
     flag_attestation: env_only
@@ -3374,7 +3374,7 @@ entries:
       max_uptime_days: 14
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: stopped
@@ -3446,7 +3446,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:1c024fbeaf20b3d656c516b9b7f10f221605cfccb87b629e8bfb306b3bd3499a
+  entry_hash: sha256:a88d5b67a9bad875d09287783f170399e56fe046993dacc3d973c1f6392dc449
 - schema_version: inference_batch.entry.v1
   task_id: BULK-kbrag-autowiki-k11
   title: internal-kb-rag — AutoWiki model-backed page writer + K11 FTS5 lexical sweep
@@ -3470,7 +3470,7 @@ entries:
   preconditions:
     stack_lineup: architect alias (CPU) for the AutoWiki writer; KB-RAG index resident;
       no production reload
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       GGML_IQK: 1
     flag_attestation: env_only
@@ -3481,7 +3481,7 @@ entries:
       max_uptime_days: 14
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: false
       contention_matrix: v7-recert-required
     autopilot: stopped
@@ -3561,7 +3561,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:3530ac7c0e694f970ccf5ad94ea315a3980d4bed0e959d4637a3cd0371326255
+  entry_hash: sha256:1b72074c50b51e4b80893fc9dc96a97ee073fe6949ac10fcd6e66de574a99029
 - schema_version: inference_batch.entry.v1
   task_id: ODLB-W3-01-lightonocr
   title: ODLB-W3-01 — LightOnOCR scanned/image OCR arm (OmniDocBench like-for-like)
@@ -3586,7 +3586,7 @@ entries:
   preconditions:
     stack_lineup: LightOnOCR server (config.server_urls.ocr_server; /ocr/pdf, port
       8082); odl_bench adapter
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flag_attestation: env_only
     models:
     - lightonocr-2-1b
@@ -3595,7 +3595,7 @@ entries:
       max_uptime_days: 14
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: stopped
@@ -3674,7 +3674,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:c63ed0be2910823760caf56a7427a04c4c3bbc10350729f78aa4ca649a7fa6ca
+  entry_hash: sha256:2de89fce0573ac9db42c7e893f7b56e2f59b8ae3194b29ccd879827357d492e3
 - schema_version: inference_batch.entry.v1
   task_id: ODLB-W3-02-odl-hybrid
   title: ODLB-W3-02 — ODL hybrid table extraction arm (docling-fast sidecar :5002)
@@ -3697,7 +3697,7 @@ entries:
   preconditions:
     stack_lineup: opendataloader-pdf[hybrid] + sidecar 'opendataloader-pdf-hybrid
       --port 5002' live; odl_bench adapter
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       ORCHESTRATOR_ODL_TABLE_BACKEND: hybrid
     flag_attestation: env_only
@@ -3706,7 +3706,7 @@ entries:
       max_uptime_days: 14
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: stopped
@@ -3781,7 +3781,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:9a988d86bcbcad13b357ecff8d6795541fc2f2958a87528149510ebf97a8a1c0
+  entry_hash: sha256:b627d8705efe6d0df64b144ea2cd939141533faf190097e8f22a27d5f63c3a9b
 - schema_version: inference_batch.entry.v1
   task_id: ODLB-W3-03-paddleocr-vl
   title: ODLB-W3-03 — PaddleOCR-VL-1.6 VL reference arm (OmniDocBench v1.6 SOTA ceiling)
@@ -3806,7 +3806,7 @@ entries:
   preconditions:
     stack_lineup: PaddleOCR-VL-1.6 GGUF + mmproj via llama-mtmd (CPU or MI210); NEW
       Wave-3 VL engine adapter
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flag_attestation: env_only
     models:
     - paddleocr-vl-1.6
@@ -3815,7 +3815,7 @@ entries:
       max_uptime_days: 14
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: stopped
@@ -3893,7 +3893,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:465b54f48760cde8e4da83ea87d18f61ab35768dd51f12196efcab5785eb2460
+  entry_hash: sha256:3296f8f30812f2f81b4a342e5271a14c60796eedde7ad6520c8908cf74db4c56
 - schema_version: inference_batch.entry.v1
   task_id: KOP2-v6iqk-canonical-verify
   title: v6+iqk canonical verification — clean post-reboot throughput bench (standing
@@ -4279,7 +4279,7 @@ entries:
   preconditions:
     stack_lineup: production lineup, frontdoor full + quarter instances; placement
       SM enabled (PLACEMENT_STATE_MACHINE=1)
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       GGML_IQK: 1
       PLACEMENT_STATE_MACHINE: 1
@@ -4294,7 +4294,7 @@ entries:
       max_uptime_days: 7
       cache_state: drop_caches
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: v7-recert-required
     autopilot: stopped
@@ -4370,7 +4370,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:fc7ec418ab9e9e9ba38aae5c41843f0c71a8de3facc0628c7b25baad175f9262
+  entry_hash: sha256:5b9cac973af2e07e26975949f5f66ec912b0874c8956ee094f1e26d0f72656bb
 - schema_version: inference_batch.entry.v1
   task_id: ROUTE-A2-edit-transaction-ab
   title: A2 — multi-file edit-transaction routing A/B (EV-12 patch-verifier-fed)
@@ -4397,7 +4397,7 @@ entries:
   preconditions:
     stack_lineup: production lineup; coder_escalation + workers; edit-transaction
       review hook staged default-off
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       GGML_IQK: 1
     flags_forbidden:
@@ -4411,7 +4411,7 @@ entries:
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: v7-recert-required
     autopilot: stopped
@@ -4489,7 +4489,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:6dc7e3c1b18a73835ff8e089b63d7d051dc69bc2a3d4dab458cec8453aa70bc0
+  entry_hash: sha256:c7123594776385e7c6fab630e545f77b5d8546cda7ac0315dd962973d75b7390
 - schema_version: inference_batch.entry.v1
   task_id: ROUTE-A3-j2j3-single-worker
   title: A3 — J2/J3 genuinely-live under-traffic migration probe (single-worker API)
@@ -4514,7 +4514,7 @@ entries:
   preconditions:
     stack_lineup: SINGLE-WORKER API (--workers 1) so session affinity is not confounded;
       placement SM enabled
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       GGML_IQK: 1
       PLACEMENT_STATE_MACHINE: 1
@@ -4526,7 +4526,7 @@ entries:
       max_uptime_days: 7
       cache_state: drop_caches
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: v7-recert-required
     autopilot: stopped
@@ -4603,7 +4603,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:6b66e55d0fbed20aea40cf5bfe100bb9f4a9b1d5e1857a3b5526139083cefea2
+  entry_hash: sha256:33087fbb55201db256bec6b1ea9fa7a326e3f7efcbbc958a8ed404f2ab7c0854
 - schema_version: inference_batch.entry.v1
   task_id: P5-GC1-strict-if-typed-emission
   title: GC-1 — GLM-5.2 strict-IF / typed review_decision emission probe (GBNF-constrained
