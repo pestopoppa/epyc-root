@@ -277,15 +277,33 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
     `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc4i_scheduler_split_trace_20260720.md`.
     Decision: scheduler split/copy logic is not the PC-4 target; the barrier
     cost is inside CPU backend execution for one large graph split.
-  - [ ] **PC-4j — CPU backend node/barrier attribution**:
+  - [x] **PC-4j — CPU backend node/barrier attribution ✅ 2026-07-20**:
     instrument or profile `ggml_graph_compute_thread` / CPU backend node
     execution so OpenMP barrier counts and wall time are mapped to graph-node
-    or operator classes inside the single qwen35moe split. Acceptance: a
-    repeatable artifact that names a concrete fusion/barrier-count target;
-    only then attempt another default-off exact-output/profile-guarded
-    prototype. Continue to avoid router/top-k, routed view/add expansion,
-    scheduler split/copy changes, and `mul_mat_id` math until PC-4j identifies
-    a source-level target.
+    or operator classes inside the single qwen35moe split. Result:
+    default-off `GGML_CPU_TRACE_GRAPH=1` instrumentation on qwen35moe
+    `p8192/n1` showed median barrier/compute ratio `0.7009` across `34`
+    traced graph executions. The top barrier-attributed operator was
+    `CONCAT` (`36.9%` of top-16 barrier time), represented by `conv_input-0`,
+    while top compute remained `MUL_MAT_ID` (`40.1%` of top compute),
+    represented by `ffn_moe_gate-0`. The source target maps to shared
+    `llm_build_delta_net_base::build_conv_state()` in
+    `src/models/delta-net-base.cpp`, called by qwen35/qwen35moe/qwen3next.
+    Report:
+    `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc4j_cpu_node_barrier_trace_20260720.md`.
+    Decision: PC-4j closes attribution and names the next source-level target;
+    continue to avoid router/top-k, routed view/add expansion, scheduler
+    split/copy changes, and `mul_mat_id` math under the current evidence.
+  - [ ] **PC-4k — default-off recurrent conv-input/state graph probe**:
+    prototype only in `llama.cpp-experimental`, behind a clear opt-in flag, to
+    reduce or fuse the `build_conv_state()` boundary:
+    `build_rs(conv_states_all)` -> reshape state -> transpose `qkv_mixed` ->
+    `ggml_concat(conv_states, qkv_mixed, dim=0)` -> `ggml_ssm_conv()` ->
+    conv-state update views/copies. Acceptance: exact-output smoke first, then
+    repeated qwen35moe `p8192/n1` evidence showing lower
+    `CONCAT`/`conv_input-*` barrier-attributed time and lower wall time. If the
+    graph shape cannot be changed without aliasing or state-update risk, record
+    the no-go and move PC-4 to a different source-proven target.
 
 ## PC-0 operator-window plan
 
