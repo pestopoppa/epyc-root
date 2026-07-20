@@ -563,3 +563,57 @@ PDF Input
 - neural-txt (AVB) is a CPU-cheap 135M task-specialist + constrained-decoding (Outlines) harness for structured NLP (bullets / Q&A pairs / KG triplets). CONDITIONAL watch-item: there is NO live consumer slot today (`document_formalizer` is a 1B OCR VLM; this pipeline has no cheap text-extraction stage). Re-surface ONLY if this pipeline grows a structured-NLP-extraction stage.
 - Its reward-model reranking half (NeuralTxtReward / neuraltxt-reward-tiny) is folded into intake-719 / the AVB offline-reward digest — not duplicated here.
 - No benchmarks (educational repo, observations).
+
+## Research Intake Update — 2026-07-20 (revised same day after deep dive)
+
+> An earlier version of this section was written from single-fetch evidence and got two things wrong. Both are corrected below and the superseded text has been removed rather than left to mislead. The retraction is recorded in `research/intake_index.yaml` under intake-864 `contradicting_evidence`.
+
+### RETRACTION — our PaddleOCR-VL `table TEDS 0.0` result is void
+
+The `0.0` table TEDS recorded on 2026-07-17/18 is an **off-label-invocation artifact, not a model quality result**, and it must not be cited as evidence about PaddleOCR-VL or about whether published OmniDocBench scores transfer to our stack.
+
+- **PaddleOCR-VL-1.6 is a three-stage pipeline** (arxiv:2606.03264 §2): PP-DocLayoutV3 layout analysis → the 0.9B VLM recognizing *cropped regions* under *element-specific prompts* → a post-processing engine that assembles Markdown/JSON and handles cross-page table merging. The official model card ships exactly six prompts — `"OCR:"`, `"Table Recognition:"`, `"Formula Recognition:"`, `"Chart Recognition:"`, `"Spotting:"`, `"Seal Recognition:"` — and **no page-level markdown prompt**. The card states the example code *"only supports element-level recognition and text spotting."* The VLM was trained on isolated element crops, never on full-page→markdown.
+- **We invoked it single-shot on full pages with a generic markdown prompt** (`odl_bench/paddleocr_vl.py:35`), so layout detection, table-crop dispatch and assembly never ran. Emitting zero table markup — verified: 0 HTML `<table>` tags **and** 0 markdown pipe rows across all 9 table-bearing pages — is the *expected* behaviour, not a defect. Inspection of the predictions confirms it: output is a flat line-per-fragment OCR dump that interleaves body text with margin sidebars and renders tables as bare token streams.
+- **The official GGUF is recognition-only.** `PaddlePaddle/PaddleOCR-VL-1.6-GGUF` documents `llama-server` used strictly as a *backend* to the Python pipeline (`paddleocr doc_parser --vl_rec_backend llama-cpp-server`). It ships no layout model. **A llama.cpp-only deployment structurally cannot reproduce the published score.** If our constraint is genuinely llama.cpp-only with no PaddlePaddle pipeline, PaddleOCR-VL is the wrong architecture for the slot.
+
+### CORRECTION — the 96.33 vs 93.92 question is resolved
+
+Both numbers are real and use the identical published aggregation `Overall = ((1 − TextEdit)×100 + TableTEDS + FormulaCDM)/3` on OmniDocBench v1.6_full (arithmetic-verified both ways). PaddleOCR-VL-1.6 = **96.33** (arxiv:2606.03264 Table 2). They are comparable *as numbers* but not *as systems*: a three-stage pipeline vs a single-pass model.
+
+The decision-relevant fact is the **official v1.6_full leaderboard already shipped in this repo's own README**, which lists four systems above Unlimited-OCR's self-reported 93.92:
+
+| Model | Size | Overall ↑ | TextEdit ↓ | FormulaCDM ↑ | TableTEDS ↑ | ReadOrder ↓ |
+|---|---|---|---|---|---|---|
+| **MinerU2.5-Pro** | 1.2B | **95.75** | 0.036 | 97.45 | 93.42 | 0.120 |
+| **GLM-OCR** | 0.9B | **95.22** | 0.044 | 97.18 | 92.83 | 0.133 |
+| PaddleOCR-VL-1.5 | 0.9B | 94.93 | 0.038 | 96.89 | 91.67 | 0.130 |
+| PaddleOCR-VL | 0.9B | 94.18 | 0.040 | 95.91 | 90.65 | 0.135 |
+| *Unlimited-OCR (self-reported)* | 3B-A0.5B | *93.92* | *0.042* | *95.79* | *90.16* | *0.129* |
+| dots.ocr | 3B | 90.77 | 0.048 | 89.95 | 87.18 | 0.138 |
+| DeepSeek-OCR 2 | 3B | 90.25 | 0.050 | 91.84 | 83.89 | 0.144 |
+
+**MinerU2.5-Pro and GLM-OCR beat everything we have tested, at 1.2B and 0.9B — smaller than Unlimited-OCR's 3B.** They, not Unlimited-OCR, are the P1 candidates for this slot. Neither 96.33 nor 93.92 appears on the official leaderboard; both are vendor self-reports.
+
+### INSTRUMENT UPGRADE — full OmniDocBench is now local
+
+`/mnt/raid0/llm/datasets/omnidocbench/` — 1662 files, 1.55 GB, HF `main` (1651-page release, annotations last corrected 2026-04-09). Verified: 1651 images, 1651 JSON pages, 0 missing image references, 0 partial files.
+
+This changes what is measurable. The 18-page demo we have been scoring against was both tiny and unrepresentative:
+
+| | demo (used to date) | full (now local) |
+|---|---|---|
+| Pages | 18 | 1651 |
+| `table` regions | **10** | **665** (on 458 pages) |
+| Language mix | 64% simplified Chinese | 755 EN / 765 ZH / 116 mixed / 13 trad |
+
+Every parser number in this handoff — including ODL's `table.TEDS=0.783813` — rests on **n=10 tables** from a 64%-Chinese subset. Under MEASUREMENT.md those are observations, not decision-gating numbers. The full set also carries a per-page `language` attribute, so an English-only view matching our actual PDF workload is now scoreable.
+
+- [x] **Full OmniDocBench acquired ✅ 2026-07-20**: 1651 pages / 665 tables at `/mnt/raid0/llm/datasets/omnidocbench/`, integrity-verified (0 missing refs, 0 `.part`). Fetch script `/mnt/raid0/llm/tmp/fetch_omnidocbench.py` is idempotent and skip-if-complete.
+- [ ] **Re-baseline ODL end-to-end on the full set** before any parser comparison is treated as decision-gating. Report table TEDS at n=665 with an English-only split alongside the all-language number. This supersedes the `0.783813` figure quoted throughout this handoff.
+- [ ] **Void and re-run the PaddleOCR-VL arm.** Either drive it through the real `PaddleOCRVL` Python pipeline with `vl_rec_backend="llama-cpp-server"` (reproduces the published architecture), or restrict llama.cpp-only testing to cropped elements with the official six prompts. Do not re-cite the `0.0`/`0.058` TEDS numbers.
+- [ ] **P1 — evaluate MinerU2.5-Pro (1.2B) and GLM-OCR (0.9B)** as the actual leaderboard leaders, both smaller than the current candidates. Check single-pass vs pipeline architecture and llama.cpp/GGUF availability *first* — that is the property that decided the PaddleOCR-VL failure. Each warrants its own intake entry.
+- [ ] **P2 — Unlimited-OCR as a single-pass arm** (intake-864). Architecturally the right shape for our harness and needs **zero core patches**: converter PR #24969 merged upstream 2026-06-24, so it runs on stock master in full-MHA mode. Use **Q5_K_M or better** — measured 4-bit cliff, Q4_K_M CER 15.64% vs Q5_K_M 0.74%, `lm_head` must stay ≥ Q8_0. Requires a no-repeat-n-gram/DRY loop guard (`ngram_size=35, window=128`); note aggressive DRY garbles HTML tables. Optional low-risk patch #25614 restores `max_tiles=32` (stock caps at 9) for tall/dense pages. **Do not** take PR #24975 (R-SWA): open draft, 0 maintainer reviews, rewrites `llama-kv-cache.cpp`, bumps `LLAMA_SESSION_VERSION`, forces F32 V-cache, and silently falls back to full causal under speculative decode — a direct collision with our MTP/spec-dec work. Experimental branch only either way.
+
+### Spun out 2026-07-20 → [`document-parser-table-bench.md`](document-parser-table-bench.md)
+
+The parser-comparison / table-extraction thread now has its own handoff. It carries the retraction of the 2026-07-17/18 PaddleOCR-VL results, the full-OmniDocBench instrument upgrade (1651 pages / 665 tables, replacing the 18-page / 10-table demo), the PaddleOCR environment setup, and the MinerU2.5-Pro / GLM-OCR architecture pre-check. Track the table question there; this handoff retains the ODL integration work.

@@ -42831,7 +42831,8 @@
   contradicting_evidence:
   - 'REPO IS UNLICENSED (all-rights-reserved): the license API returns 404; README "MIT" refers to the GSM8K dataset and "Apache-2.0" to MMLU-Pro, NOT the repo (first-pass "MIT" attribution was wrong). No tests, no CI, no .github/; single-author org (voipmonitor / Martin Vit) created 2026-05-08 (<3 months old). Methodology is nonetheless verified-implemented (stdlib-only, statistically correct) and AIPerf-0.7.0 parity-validated.'
   recommended_actions:
-  - 'Operator-gated: port wilson_interval (llm_decode_bench.py:11476), mcnemar_exact_p (:11487, exact binomial variant), and the pairing/discordant-flip core of build_paired_comparison (:11523) into our eval-scoring / quant-A/B path (NOT canonical_recipe.py, which is speed-only). Gate comparisons on dataset_sha256 + profile match as the source does. Document paired-McNemar as the formal successor to the ad-hoc 3/n resolution gate in chapter 06. A McNemar p-value is decision-gating -> use only via a codified recipe with operator approval.'
+  - 'LANDED 2026-07-17 (status reconciled 2026-07-20; this field was stale and had been re-read as fully-pending): port wilson_interval (llm_decode_bench.py:11476), mcnemar_exact_p (:11487, exact binomial variant), and the pairing/discordant-flip core of build_paired_comparison (:11523) into our eval-scoring / quant-A/B path (NOT canonical_recipe.py, which is speed-only). Gate comparisons on dataset_sha256 + profile match as the source does. Document paired-McNemar as the formal successor to the ad-hoc 3/n resolution gate in chapter 06. IMPLEMENTED AS (clean-room, stdlib-only, no source code copied from the unlicensed repo): epyc-orchestrator/src/llm_primitives/stat_tests.py::wilson_interval; scripts/autopilot/paired_stats.py::mcnemar_from_vectors (kept canonical rather than adding a second exact-McNemar) + ::require_matched_comparison (the dataset_sha256 + test_profile equality gate); scripts/autopilot/eval_tower.py:1124 screen_paired_arms, called from the math-rebaseline A/B path at :3004. Commit e93c6263. Chapter 06 section Paired Significance Testing (Quant A/B) at docs/chapters/06-benchmarking-framework.md:347. Chapter 07 was never owed a section (suite construction, not test methodology).'
+  - 'RESIDUAL (owned by the inference-batch /loop, NOT a free-floating research item): screen_paired_arms output is observation-grade -- reported in the result dict but not reachable through a codified recipe, so per MEASUREMENT.md its McNemar p may not gate keep/revert/promote. Promotion to decision-gating rides on EV-11 math re-baseline (coordination/inference-batch/entries/20-eval-tower.yaml -> EV-11-math-rebaseline), blocked on the EV-11b ECE-binning operator decision. The loop is single-writer: do not patch eval_tower.py for this from a side session.'
   handoffs_updated:
   - eval-benchmark-cost-reduction.md
   handoffs_created: []
@@ -45986,3 +45987,172 @@
     sub-4-bit; larger models tolerate quant better. Caveat: GPU-style W-A/KV quant (AWQ/GPTQ/SmoothQuant),
     NOT GGUF K-quants; distilled-R1 1.5-32B, not 122B MoE; the "up to 4x" is a ratio inflated by a
     near-zero GSM8K baseline drop.
+- id: intake-864
+  arxiv_id: '2606.23050'
+  url: https://huggingface.co/baidu/Unlimited-OCR
+  source_type: repo
+  title: 'Unlimited OCR Works: Welcome the Era of One-shot Long-horizon Parsing'
+  authors:
+  - Youyang Yin
+  - Huanhuan Liu
+  - Baidu Inc.
+  categories:
+  - document_processing
+  - multimodal
+  - kv_cache
+  - context_management
+  - local_inference
+  key_claims:
+  - 'R-SWA (Reference Sliding Window Attention) partitions tokens into reference (visual + prompt) and output; every generated token attends to ALL reference tokens plus only the last n=128 output tokens, pinning the KV cache at L_ref+n instead of growing linearly.'
+  - 'Visual tokens are deliberately excluded from sliding-window eviction; the authors argue vanilla SWA blurs visual features during long decodes and that this is what degrades OCR fidelity at depth.'
+  - 'Enables one-shot parsing of dozens of pages (40+) in a single forward pass at constant memory footprint and constant per-token attention cost.'
+  - 'Architecture is DeepSeek-OCR''s DeepEncoder (SAM-ViT + CLIP-ViT cascade, 16x token compression, 1024x1024 page -> 256 tokens) with a 3B-A0.5B DeepSeek-V2-style MoE decoder; only the decoder was trained, DeepEncoder frozen.'
+  - 'Self-reported SOTA on OmniDocBench v1.5 and v1.6 — but PaddleOCR-VL (also a Baidu model, published v1.6 overall 96.33) is absent from every comparison table.'
+  techniques:
+  - R-SWA (Reference Sliding Window Attention)
+  - DeepEncoder (SAM-ViT + CLIP-ViT cascade, 16x optical token compression)
+  - 3B-A0.5B MoE decoder (DeepSeek-V2 lineage)
+  - Multi-page training data synthesized by concatenating single-page scans (2-50 pages)
+  reported_results:
+  - 'OmniDocBench v1.5 overall 93.23 vs DeepSeek-OCR 87.01, DeepSeek-OCR-2 89.17, dots.ocr 88.41, MinerU2-VLM 85.56'
+  - 'OmniDocBench v1.5 detail: TextEdit 0.038, FormulaCDM 92.61, TableTEDS 90.93, TableTEDS_S 94.07, ReadOrderEdit 0.045'
+  - 'OmniDocBench v1.6 overall 93.92 vs DeepSeek-OCR-2 90.25, dots.ocr 90.77, FireRed-OCR 93.26, Qianfan-OCR 93.90'
+  - 'Throughput 5580 TPS vs DeepSeek-OCR 4951 TPS at 512 concurrency (+12.7%)'
+  - 'Training: ~2M doc-OCR samples, 9:1 single:multi-page, 4000 steps, global batch 256, 8x16 A800, Megatron-LM + DeepEP'
+  novelty: medium
+  relevance: high
+  credibility_score: 1
+  contradicting_evidence:
+  - 'RETRACTED 2026-07-20 (was the lead item): the original claim that "published OmniDocBench overall is non-predictive of table quality in our pipeline", inferred from PaddleOCR-VL-1.6 scoring table TEDS 0.0 on our 18-page set despite a published 96.33. VERIFIED WRONG. PaddleOCR-VL-1.6 (arxiv:2606.03264) is a THREE-STAGE PIPELINE — PP-DocLayoutV3 layout model, then the 0.9B VLM recognizing cropped regions under element-specific prompts, then a post-processing assembler. Its official card ships exactly six element-level prompts ("OCR:", "Table Recognition:", "Formula Recognition:", "Chart Recognition:", "Spotting:", "Seal Recognition:") and NO page-level markdown prompt; the VLM was trained on isolated element crops, not full pages. Our odl_bench fed whole pages with a generic markdown prompt via llama-server, so layout detection, table-crop dispatch and assembly never ran. TEDS 0.0 is an off-label-invocation artifact and says nothing about score transferability. The GGUF is recognition-only, so a llama.cpp-only deployment structurally cannot reproduce 96.33.'
+  - 'NOT the SOTA it claims. The official OmniDocBench v1.6_full leaderboard (shipped in our own opendataloader-bench README) lists four systems above Unlimited-OCR''s 93.92: MinerU2.5-Pro 95.75 (1.2B), GLM-OCR 95.22 (0.9B), PaddleOCR-VL-1.5 94.93 (0.9B), PaddleOCR-VL 94.18 (0.9B). PaddleOCR-VL-1.6 self-reports 96.33 on the identical subset and formula (arithmetic-verified both ways). The paper''s table is headed "End-to-end Model (v1.6)", which is defensible scoping since the leaders are pipelines, but the unqualified SOTA framing is overstated. Neither 93.92 nor 96.33 appears on the official leaderboard — both are vendor self-reports, and codesota.com/ocr flags them as un-reproduced.'
+  - 'R-SWA is prior art with a new name. The mask N(t) = P union D_n(t) (globally visible prefix + causal 128-token window) is Longformer/ETC/BigBird global-tokens-on-prefix (2020) and exactly the Lambda-mask of LM-Infinite (2308.16137) and StreamingLLM (2309.17453, 2023) with the sink widened from 4 tokens to the whole prefix. The paper cites ZERO sparse/long-context attention literature (all 35 refs are OCR/VLM/infra), and its related-work section asserts "current models all see it [KV cache] grow continuously with decoding contexts" — false as written, and it is the load-bearing novelty claim.'
+  - 'NO ABLATION EXISTS. The word "ablation" does not appear in the paper. The +6.22 headline vs DeepSeek-OCR confounds three simultaneous changes: the R-SWA mask, 4000 continued-training steps, and ~2M new PaddleOCR-labelled samples. No vanilla-SWA run, no attention-only isolation, no window-size sweep (n=128 asserted). The claim that the replacement is "lossless" is unsupported by the reported experiments.'
+  - 'The 35% efficiency headline is measured at PREFILL LENGTH 10 (section 6, explicit). With L_m=10 the reference segment is negligible and R-SWA degenerates to near-pure SWA — its maximum-advantage case. In the paper''s own target regime (10K+ resident visual tokens) per-step attention cost is dominated by L_m and the compute advantage largely evaporates; only the memory advantage survives. Authors also attribute part of the baseline degradation to a KV-cache alignment artifact, i.e. an implementation issue.'
+  - 'Requires an external loop guard to be usable. Every port ships no_repeat_ngram_size=35 / DRY (vLLM mandates a custom n-gram logits processor with ngram_size=35, window_size=128). This is the predicted failure of a 128-token self-window — the model cannot see it already emitted a paragraph — and the paper never mentions it. Its long-horizon metric (Distinct-35 ~97% at 40+ pages) is itself a repetition metric, an implicit admission. GGUF cards warn aggressive DRY garbles HTML table output.'
+  - 'Architectural ceiling: the 128-token output window means any definition or passage that scrolls out cannot be re-attended, so long-range cross-reference resolution inside the generated text is impossible by construction. Not actually unlimited either — a 32K context still bounds prefill, and prefill grows with page count despite 16x optical compression (authors concede this in section 7).'
+  - 'Multi-page training data was synthesized by concatenating independent single-page scans (200k synthetic docs, 2-50 pages joined by a page token), so genuine multi-page layout continuity (running headers, tables spanning a page break) is out of distribution. Degradation past ~40 pages is real; authors attribute it to DeepEncoder Base-mode 1024x1024 resolution rather than to R-SWA. Handwriting, degraded scans, non-standard fonts and dense LaTeX remain weak.'
+  - 'CORRECTED 2026-07-20 (was: "llama.cpp support is NOT upstream"). Converter PR #24969 MERGED 2026-06-24 — the model runs on unpatched llama.cpp master TODAY in full-MHA mode. What is missing is R-SWA itself: PR #24975 is an OPEN DRAFT, self-labelled "vibe-coded", 0 maintainer reviews in 4 weeks, touching src/llama-kv-cache.cpp and bumping LLAMA_SESSION_VERSION / LLAMA_STATE_SEQ_VERSION (invalidates persisted session state), forcing F32 V-cache, and with a documented failure where speculative/lookahead multi-token decode never latches and silently falls back to full causal — a direct collision with our MTP/spec-dec work. #25614 (max_tiles 32 vs 9) is open, trivial, low-risk. Issue #25009 was closed by the REQUESTER a day after opening, not by a maintainer sign-off. vLLM >= 0.25.0 and SGLang >= 0.5.15 support it correctly in stable releases (GPU paths).'
+  - 'Third-party 4-bit quality cliff (OBSERVATION, not our protocol): measured CER vs GGUF-BF16 over 24 pages — BF16/Q8_0/Q6_K 0.78%, Q5_K_M 0.74%, Q4_K_M 15.64%, Q4_0 44.0%. Root-caused to lm_head needing >= Q8_0. So the 1.95 GB Q4_K_M is NOT the artifact to use; Q5_K_M is the floor.'
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-07-20'
+  cross_references:
+    chapters: []
+    handoffs:
+    - opendataloader-pipeline-integration.md
+    - multiscreen-attention-evaluation.md
+    - gemma-challenge-kernel-techniques-v7.md
+    experiments: []
+    intake_entries:
+    - 'intake-262 (AgentOCR — optical self-compression, same DeepSeek-OCR lineage)'
+    - 'intake-694 (open-weights roundup — PaddleOCR-VL-1.6 follow-up)'
+    - 'intake-865 (DeepSeek-OCR — direct parent architecture)'
+  referenced_arxiv_ids:
+  - '2510.18234'
+  - '2309.17453'
+  handoffs_updated:
+  - opendataloader-pipeline-integration.md
+  - multiscreen-attention-evaluation.md
+  handoffs_created: []
+  notes: >-
+    REASSESSED 2026-07-20 after a four-thread deep dive; novelty downgraded high -> medium and verdict
+    new_opportunity -> worth_investigating. MIT, 3B total / ~500M activated, and it DOES run on unpatched
+    llama.cpp master today (converter #24969 merged 2026-06-24) in full-MHA mode — so a page-at-a-time
+    evaluation needs ZERO core patches. It is also the architecturally correct arm for our harness: it is
+    a genuine single-pass whole-page/multi-page parser (prompts "<image>document parsing." /
+    "<image>Multi page parsing."), unlike PaddleOCR-VL which is a three-stage pipeline we invoked
+    off-label. What changed the verdict is that it is NOT best-in-class: on the official OmniDocBench
+    v1.6_full leaderboard already shipped in our own opendataloader-bench README, MinerU2.5-Pro (95.75,
+    1.2B) and GLM-OCR (95.22, 0.9B) beat its 93.92 while being SMALLER — those are the better P1
+    candidates for the document-parser slot and warrant their own intake entries. Novelty medium not
+    high: the R-SWA mask is Longformer/BigBird global-prefix + LM-Infinite/StreamingLLM Lambda-mask
+    re-named, with zero prior-art citations and no ablation; what is genuinely new is the narrower
+    empirical finding that a 128-token self-window suffices for reference-grounded transcription, plus
+    production FA4/FlexAttention/Triton kernels. credibility_score stays 1 (Low): arXiv-only (+0), recent
+    (+1), major lab (+1), selective baselines + uncited prior art + attribution confounded with 2M new
+    samples (-1), no independent reproduction (+0). R-SWA is NOT a portable general-decoder lever: it is
+    a long-OUTPUT optimisation, whereas RAG/agentic workloads are long-INPUT (T << L_m), so it saves
+    nothing there while costing prefix caching (vLLM disables prefix caching for this model); llama.cpp
+    --keep/context-shift has given the same KV-residency semantics generically since 2023. If we ever do
+    want R-SWA itself, PR #24975 is a draft with 0 reviews that bumps LLAMA_SESSION_VERSION and breaks
+    under speculative decode — a direct collision with our MTP line. Use Q5_K_M or better (4-bit cliff:
+    Q4_K_M CER 15.64% vs Q5_K_M 0.74%, lm_head must stay >= Q8_0).
+- id: intake-865
+  arxiv_id: '2510.18234'
+  url: https://arxiv.org/abs/2510.18234
+  source_type: paper
+  title: 'DeepSeek-OCR: Contexts Optical Compression'
+  authors:
+  - Haoran Wei
+  - Yaofeng Sun
+  - Yukun Li
+  categories:
+  - document_processing
+  - multimodal
+  - context_management
+  key_claims:
+  - 'Long text contexts can be compressed by rendering them as 2D images and encoding them optically, trading text tokens for far fewer vision tokens.'
+  - 'DeepEncoder maintains low activations at high input resolution while achieving high compression, keeping the vision-token count manageable.'
+  - 'Decoding precision is ~97% when the text:vision token ratio is under 10x, and still ~60% at 20x compression.'
+  - 'Positions optical compression as a general context-compression primitive, not only an OCR technique.'
+  techniques:
+  - DeepEncoder (SAM-ViT + CLIP-ViT cascade)
+  - DeepSeek3B-MoE-A570M decoder
+  - Optical 2D context compression
+  reported_results:
+  - 'OCR precision ~97% at <10x compression ratio; ~60% at 20x'
+  - 'Surpasses GOT-OCR2.0 (256 tokens/page) using only 100 vision tokens on OmniDocBench'
+  - 'Outperforms MinerU2.0 (6000+ tokens/page avg) using fewer than 800 vision tokens'
+  - 'Production throughput 200k+ pages/day on a single A100-40G for LLM/VLM training-data generation'
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  contradicting_evidence:
+  - 'The 97% figure is bounded to <10x compression; accuracy collapses to ~60% at 20x, so the compression/fidelity curve is steep and the headline number is not a general operating point.'
+  - 'Superseded on document-parsing quality by its descendants. VERIFIED against the official OmniDocBench v1.6_full leaderboard shipped in our own opendataloader-bench README: DeepSeek-OCR 2 = 90.25, vs dots.ocr 90.77, PaddleOCR-VL 94.18, GLM-OCR 95.22, MinerU2.5-Pro 95.75. The 89.17 v1.5 figure is paper-reported only (Unlimited-OCR table) and does NOT appear in the official leaderboard — treat as unverified.'
+  - 'CRITICAL DISTINCTION the headline elides: "97% decoding precision" measures VERBATIM TRANSCRIPTION of rendered text, i.e. can the model read it back. It is NOT evidence that the model can REASON over optically-compressed content. Follow-up work "Reading, Not Thinking" (arxiv:2603.09095, JHU, 7 MLLMs x 7 benchmarks, 4000+ annotated errors) finds the failure mode is not perception at all — image input SUPPRESSES reasoning effort, with outputs running 5-19x shorter than the same content given as text. Retrieval survives optical compression; reasoning does not.'
+  - 'The compression ratio is content-dependent and the headline is an artifact of DENSE DOCUMENT SCANS. A printed page is ~1 char/token-equivalent; ordinary prose is ~3.5 chars/token. Production reporting from the pxpipe tool (open-source, 2026-07) states it wins on token-dense content and LOSES on sparse prose. Realistic ratios for conversational/code context are far below the quoted 10x.'
+  - 'DECISIVE FOR A SELF-HOSTED STACK: much of the claimed benefit is a BILLING artifact, not a compute win. Providers OCR the image back to text server-side, so the caller burns comparable tokens plus an OCR pass; the saving is list-price arbitrage against per-token API pricing. On EPYC, where we pay real FLOPs rather than list price, that portion of the upside is exactly ZERO. This is the single strongest argument against the technique for us.'
+  - 'Exact-string recall fails silently — reported confabulation rather than refusal on 12-char hex identifiers. Any use over content containing IDs, hashes, paths or credentials is unsafe without an exact-recall probe.'
+  - 'Security: "Hard to Read, Easy to Jailbreak" (arxiv:2605.07250, ACL 2026) reports that the visual degradation inherent to high-ratio rendering bypasses MLLM safety alignment via cognitive overload. Relevant if optical compression ever touches untrusted content.'
+  - 'CONFIDENCE CAVEAT: the Glyph RULER baselines, MemOCR matched-budget tables and pxpipe production figures reached this entry third-hand through a nested delegation and were explicitly flagged low-confidence by the reporting agent. They are directionally consistent but MUST be re-confirmed against primary sources before gating any decision. The DeepSeek-OCR 2 identification (arxiv:2601.20552) and the 90.25 leaderboard figure were independently verified.'
+  discovered_via: expansion
+  expanded_from: intake-864
+  verdict: worth_investigating
+  ingested_date: '2026-07-20'
+  cross_references:
+    chapters: []
+    handoffs:
+    - opendataloader-pipeline-integration.md
+    - multiscreen-attention-evaluation.md
+    experiments: []
+    intake_entries:
+    - 'intake-262 (AgentOCR — optical self-compression built on this idea)'
+    - 'intake-864 (Unlimited-OCR — reuses DeepEncoder frozen, replaces decoder attention)'
+  referenced_arxiv_ids:
+  - '2601.20552'
+  - '2603.09095'
+  - '2605.07250'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: >-
+    Backfill: the direct parent of intake-864 and the origin of the optical-compression line that
+    intake-262 (AgentOCR) already builds on, but it had no entry of its own — the index previously
+    contained only downstream references. REASSESSED 2026-07-20: the "render text to an image for a ~10x
+    token discount" idea is NOT a lever for this stack, and the entry now says so explicitly rather than
+    leaving it as an attractive untested option. Three independent reasons: (1) the 97% number measures
+    verbatim read-back, not reasoning-over-compressed-content, and reasoning demonstrably degrades
+    (arxiv:2603.09095); (2) the ratio is an artifact of dense document scans and collapses on ordinary
+    prose; (3) most of the economic case is arbitrage against per-token API list pricing, which is worth
+    zero to us because we pay FLOPs, not tokens. DeepSeek-OCR 2 is arxiv:2601.20552 "Visual Causal Flow"
+    (Wei/Sun/Li, 2026-01-28) — DeepEncoder V2 dynamically REORDERS visual tokens by image semantics
+    instead of raster scan, framing 2D understanding as two cascaded 1D causal passes. That reordering
+    idea is the more interesting durable takeaway than the compression ratio, and is architecturally
+    adjacent to reading-order extraction in our document pipeline; it may warrant its own entry. The one
+    regime with claimed matched-budget evidence is AGENT MEMORY (MemOCR, Apache-2.0 + open weights),
+    where a curated memory state is compressed against an equally-compressed text baseline — but that
+    evidence is third-hand here and unverified, so it is a re-confirm-first candidate, not a queued item.
+    If ever evaluated, gate on retrieval AND reasoning metrics plus an exact-string recall probe, never
+    on OCR CER. Base model DeepSeek-OCR itself has been supported in llama.cpp master since PR #17400
+    merged 2026-03-25, with official ggml-org GGUFs — so the llama.cpp constraint noted in the original
+    version of this entry was wrong and is withdrawn.

@@ -90,7 +90,7 @@ The prevention is **not** kernel-promotion-specific — it's **any change to a m
 - **H2 — promotion/change-routine step.** In `v7-promotion.md` (and any future `-vN`) add a **"recertify topology-dependent artifacts"** gate before promotion is declared done: enumerate + refresh (i) the contention matrix, (ii) placement caps, (iii) every batch entry's `required_topology_hash` pin. A kernel promotion is one *caller* of H1; the 2026-07-17 vision rebind is proof the trigger class is broader than kernels.
 
 ## Executable fix checklist (priority order)
-> Owner tags: **[agent]** do now; **[agent·coord]** touches `eval_tower.py`/`contention_matrix.yaml` — coordinate with the parallel agent (live uncommitted work); **[operator]** human-amendment or bench-gated, NOT agent-fixable. Flip a box only when the fix lands *and* its Verify passes.
+> **Ownership (operator, 2026-07-20):** the **inference-batch-loop session (parallel codex agent) owns all loop/inference/runner files** — `coordination/inference-batch/*`, the loop tooling (`batch_ledger.py`, `compile_inference_batch.py`, `entry_verdict.py`), `eval_tower.py`, the runner, and `contention_matrix.yaml` — and executes **Phases 0–3 + the A3/A5 bench**. The **audit author owns only the non-loop epyc-root mechanisms**: the health_check `--profile` (✅ landed) and the CI matrix-hash guard (H1). Tags below — **[loop]** parallel agent · **[loop·op]** parallel agent + operator (bench / MEASUREMENT) · **[mech]** non-loop mechanism (audit author). Flip a box only when the fix lands *and* its Verify passes.
 
 ### Phase 0 — Unblock the loop
 - [ ] **[operator] A3/A5 — re-measure `vision_escalation` + regenerate the v7 matrix, then commit it.** `scripts/server/contention_matrix.py run` against the live v7 stack; do NOT hash-bump (old-shape data is semantically invalid). *Verify:* `matrix_status()==OK` live; `contention_matrix.yaml` committed. Un-degrades production (A2) + unblocks EV-4.
@@ -106,7 +106,7 @@ The prevention is **not** kernel-promotion-specific — it's **any change to a m
 
 ### Phase 2 — Preflight / gating [agent]
 - [ ] **C1 — make matrix-freshness + topology-cert a precondition for every `*_eval_fanout` entry regardless of reload;** forbid `contention_matrix: not_required` on fanout entries at compile time. *Verify:* a fanout entry vs a stale matrix fails **preflight**, not the runner.
-- [ ] **C2/C3 — health_check.sh:** split batch vs session-init thresholds (`--profile`), demote `/tmp/claude` to advisory in batch, separate exit codes (0 ok / 1 blocking / 2 advisory); `preflight_gate` treats advisory as `observation_only`. *Verify:* healthy host, ~200 G free, no `/tmp/claude` bind → batch profile passes.
+- [x] **[mech] C2/C3 — health_check.sh `--profile batch`** — ✅ landed `940522a8` (2026-07-20): batch profile relaxes the raid floor 500 G→20 G + demotes `/tmp/claude` to advisory; session-init unchanged; bad profile → exit 64; empty-df guarded. Verified batch→exit 0, session-init→exit 1. **[loop] residual caller-wiring:** the batch preflight must actually pass `--profile batch` (`preflight_gate` / `LOOP_PROTOCOL.md`), and the exit-0/1/2 advisory split + `observation_only` consumer treatment still want `preflight_gate` changes — owned by the loop session.
 - [ ] **C4 — point `host_health.py --remediate` at `flush_cache_with_pause()`** (`:602`), not bare `drop_caches`; fix `LOOP_PROTOCOL.md:14`. *Verify:* post-remediate pages are NUMA-interleaved.
 - [ ] **C5 — wire `autopilot_precondition_gate` into pick-next** (or delete the dead `run_batch_entry.py` reference).
 
