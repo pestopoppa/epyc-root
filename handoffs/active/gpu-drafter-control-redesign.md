@@ -87,11 +87,18 @@ same-family drafter (35B/122B qwen35 at Q8) trading α for fit.
       `9.888` / `11.407` / `11.847 t/s` (`1.396x` / `1.610x` / `1.672x`) with alpha
       `0.945` / `0.900` / `0.787`; observed F/H rows were K1 `39.040s/0.545s`, K2
       `33.667s/0.657s`, and K4 `32.280s/0.781s`.
-- [ ] **DR-2 — serving/routing design for quant-asymmetric self-spec keep-candidate**:
-  decide whether K2 or K4 should become a default-off serving lane, define broader
-  task-class admission beyond the bounded DR-0 slice, and route any GPU claim through the
-  production-named `P-GPU-1` certification path. Do not download IQ1_M solely for DR-0;
-  IQ2_M passed the strict drafter gate, so IQ1_M is only a future speed/quality trade study.
+- [x] **DR-2 — serving/routing design for quant-asymmetric self-spec keep-candidate ✅ 2026-07-20**:
+  [docs/reference/quant-asymmetric-self-spec-serving-design-2026-07-20.md](../../docs/reference/quant-asymmetric-self-spec-serving-design-2026-07-20.md)
+  selects K2 as the first default-off serving candidate (`1.610x` vs CPU baseline, alpha
+  `0.900`) because K4 adds only `3.85%` throughput while dropping alpha to `0.787`.
+  The design keeps the lane research-only until broader task-class admission and
+  production-named `P-GPU-1` certification pass, and explicitly avoids IQ1_M download
+  solely for DR-0 because IQ2_M already passed the strict drafter gate.
+- [ ] **DR-3 — broader K2 admission runner/package**: build the dry-run-first K2
+  admission runner and package from the DR-2 design: wider task slice, CPU-target
+  equivalence/equality checks, long-output/context bands, MI210 lease/cleanup proof,
+  frontdoor opportunity-cost measurement, and post-promotion `P-GPU-1` certification
+  hook. No live serving route or NumericSwarm surface until this passes.
 - [x] **DR-1 — economics model ✅ 2026-07-18**: break-even model recorded at
   [docs/reference/gpu-drafter-break-even-model-2026-07-18.md](../../docs/reference/gpu-drafter-break-even-model-2026-07-18.md).
   Key result: external Stage-1/2 failed despite `α=1.0`, so their blocker is

@@ -118,9 +118,14 @@ P0 was fixed on experimental v7 `96986f5e9`); its gate is a strict-IF/rubric GBN
       K1/K2/K4 reached `9.888` / `11.407` / `11.847 t/s` (`1.396x` / `1.610x` /
       `1.672x`) with alpha `0.945` / `0.900` / `0.787`. F/H observed rows:
       K1 `39.040s/0.545s`, K2 `33.667s/0.657s`, K4 `32.280s/0.781s`.
-  - [ ] DR-2 serving/routing design: translate the DR-0e.2 keep-candidate into a
-    default-off serving proposal only after broader task-class admission and the
-    production-named `P-GPU-1` certification path are defined.
+  - [x] DR-2 serving/routing design ✅ 2026-07-20: reference design
+    [docs/reference/quant-asymmetric-self-spec-serving-design-2026-07-20.md](../../docs/reference/quant-asymmetric-self-spec-serving-design-2026-07-20.md)
+    selects K2 as the first default-off lane (`1.610x`, alpha `0.900`) and rejects K4
+    as first rollout because its incremental speed over K2 is only `3.85%` while alpha
+    falls to `0.787`. The lane remains research-only until wider K2 admission and
+    production-named `P-GPU-1` certification pass.
+  - [ ] DR-3 broader K2 admission runner/package: implement the dry-run-first K2
+    admission package before any serving/routing integration or NumericSwarm surface.
 - [ ] GLM-5.2 endgame: expert-offload / REAP+IQ2 path (operator-gated)
 - [x] **stream-K `nsm→k·nsm` + compact-LDS residual — zero-build artifact read CLOSED ✅ 2026-07-18** (v7-audit LANE B B2): artifact recovery found the original MI210 campaign under `/mnt/raid0/llm/tmp/mi210-build/campaign/`, including `mmq-compact-lds-NEGATIVE.patch`, `kernels/fused-prefetch-NEGATIVE.patch`, and rocprof CSVs under `moe-agg/prof/`. Read verdict: stream-K is already the live Q8 MMQ path (`mul_mat_q` plus `mul_mat_q_stream_k_fixup`); B32 Q8 MMQ dispatches use grid `53248 = 512 * 104 CUs`, i.e. one persistent workgroup per CU, with fixup grid `53248`, LDS `512`. The compact-LDS patch is explicitly negative and should not be revived. The only surviving idea is a distinct `2*nsm=208` persistent-grid experiment, but that is a new operator-gated build/bench with a narrow `+0–10%` IQ2/capacity ceiling, not a zero-inference closeout or saved-patch apply.
 - [ ] **K28 — GDN long-prefill recurrence kernel** (GPU; `ggml/src/ggml-cuda/gated_delta_net.cu:191` TODO): a new long-prefill CUDA/HIP recurrence kernel avoiding one serial token-axis scan per (head, seq, column-shard); must preserve GDA/KDA + transposed-state + K>1 snapshot semantics. Prefill t/s for hybrid (Qwen3.6/GDN) models; GPU sibling of [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md). Larger perf project, no bounded safe patch this session.
