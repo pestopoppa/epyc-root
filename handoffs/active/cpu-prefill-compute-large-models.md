@@ -216,14 +216,25 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
     deltas explain the recurrent island but do not override the timing profile.
     Report:
     `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc4d_target_selection_20260720.md`.
-  - [ ] **PC-4e — MoE/FFN boundary diagnostic + first default-off prototype**:
+  - [x] **PC-4e — MoE/FFN boundary diagnostic ✅ 2026-07-20**:
     add or reuse default-off diagnostics around `build_layer_ffn` /
     `build_moe_ffn` to separate router/top-k, gate-up, down-projection,
-    shared-expert, and aggregation graph/timing islands. Prototype only one
-    guarded graph-scheduling/fusion change after the diagnostic identifies the
-    exact MoE helper boundary responsible for OpenMP spin/pause. Acceptance:
-    exact-output smoke plus repeated `p8192/n1` profile showing lower libomp
-    spin/pause share and lower wall time.
+    shared-expert, and aggregation graph/timing islands. Result: qwen35moe-local
+    FFN boundary trace ran CPU-only at
+    `/mnt/raid0/llm/epyc-inference-research/data/cpu_prefill_compute/pc4e-qwen35-ffn-subtrace-20260720T003822Z/`
+    with exit `0`, `pp8192 115.842650 t/s`, `tg1 5.266122 t/s`, and clean
+    process/GPU cleanup. Routed `ffn_moe` accounts for `32` of the stable
+    `40` FFN graph nodes on every layer; shared expert/gate/gating/add account
+    for only `8` combined. Report:
+    `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc4e_ffn_trace_20260720.md`.
+  - [ ] **PC-4f — routed MoE helper boundary diagnostic + first default-off prototype**:
+    add a narrow, default-off diagnostic inside the routed `build_moe_ffn`
+    helper or a qwen35moe-only wrapper that separates router/top-k, gate-up,
+    down-projection, weighting, per-expert view expansion, and expert
+    aggregation. Prototype only after that diagnostic identifies the boundary
+    tied to OpenMP spin/pause. Acceptance: exact-output smoke plus repeated
+    `p8192/n1` profile showing lower libomp spin/pause share and lower wall
+    time.
 
 ## PC-0 operator-window plan
 
