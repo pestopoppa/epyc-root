@@ -196,7 +196,13 @@ class TestReportModel(unittest.TestCase):
             "quiet": False,
             "quiet_blockers": ["llama-server actively decoding", "MI210 occupied"],
             "busy_reasons": ["llama-server decode active", "MI210 occupied"],
-            "signals": {},
+            "signals": {
+                "llama": {
+                    "slots_busy_by_port": {
+                        "18072": 1,
+                    },
+                },
+            },
         }
 
         report = bsr.build_report(manifest, [], load_report=busy_load)
@@ -216,6 +222,88 @@ class TestReportModel(unittest.TestCase):
         self.assertIn("## Runnable under current load", markdown)
         self.assertIn("## Operator-eligible but load-blocked", markdown)
         self.assertIn("CPU-EVAL", markdown)
+
+    def test_load_report_can_ignore_known_gpu_only_parallel_work(self):
+        manifest = {
+            "entries": [
+                entry(
+                    "CPU-EVAL",
+                    0,
+                    concurrency_mode="same_trial_eval_fanout",
+                    contention_class="eval_fanout_reference_lineup",
+                    host_tier="quiet_window",
+                ),
+            ]
+        }
+        gpu_only_load = {
+            "ts": "2026-07-20T22:55:56",
+            "state": "busy",
+            "quiet": False,
+            "quiet_blockers": ["llama-server actively decoding", "MI210 occupied"],
+            "busy_reasons": ["llama-server decode active", "MI210 occupied"],
+            "signals": {
+                "llama": {
+                    "slots_busy_by_port": {
+                        "18072": 1,
+                    },
+                },
+            },
+        }
+
+        strict = bsr.build_report(manifest, [], load_report=gpu_only_load)
+        self.assertEqual(strict["summary"]["runnable_now"], 0)
+        self.assertEqual(strict["summary"]["load_blocked"], 1)
+
+        cpu_domain = bsr.build_report(
+            manifest,
+            [],
+            load_report=gpu_only_load,
+            allow_gpu_parallel=True,
+            allowed_active_ports={18072},
+        )
+        self.assertEqual(cpu_domain["summary"]["runnable_now"], 1)
+        self.assertEqual(cpu_domain["summary"]["load_blocked"], 0)
+        self.assertEqual(cpu_domain["load_policy"]["allowed_active_ports"], [18072])
+
+    def test_gpu_parallel_policy_still_blocks_unapproved_active_ports(self):
+        manifest = {
+            "entries": [
+                entry(
+                    "CPU-EVAL",
+                    0,
+                    concurrency_mode="same_trial_eval_fanout",
+                    contention_class="eval_fanout_reference_lineup",
+                    host_tier="quiet_window",
+                ),
+            ]
+        }
+        mixed_load = {
+            "ts": "2026-07-20T22:55:56",
+            "state": "busy",
+            "quiet": False,
+            "quiet_blockers": ["llama-server actively decoding", "MI210 occupied"],
+            "busy_reasons": ["llama-server decode active", "MI210 occupied"],
+            "signals": {
+                "llama": {
+                    "slots_busy_by_port": {
+                        "18072": 1,
+                        "8080": 1,
+                    },
+                },
+            },
+        }
+
+        report = bsr.build_report(
+            manifest,
+            [],
+            load_report=mixed_load,
+            allow_gpu_parallel=True,
+            allowed_active_ports={18072},
+        )
+
+        self.assertEqual(report["summary"]["runnable_now"], 0)
+        self.assertEqual(report["summary"]["load_blocked"], 1)
+        self.assertEqual(report["load_blocked"][0]["load_blockers"], ["llama-server actively decoding"])
 
     def test_quiet_load_makes_all_operator_eligible_entries_runnable(self):
         manifest = {

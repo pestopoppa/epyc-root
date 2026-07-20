@@ -307,7 +307,31 @@ def _load_summary(load_report: dict[str, Any] | None) -> dict[str, Any] | None:
     }
 
 
-def _load_blockers(entry: dict[str, Any], load_report: dict[str, Any] | None) -> list[str]:
+def _busy_llama_ports(load_report: dict[str, Any]) -> set[int]:
+    signals = load_report.get("signals") if isinstance(load_report, dict) else {}
+    llama = signals.get("llama") if isinstance(signals, dict) else {}
+    slots = llama.get("slots_busy_by_port") if isinstance(llama, dict) else {}
+    busy: set[int] = set()
+    if not isinstance(slots, dict):
+        return busy
+    for raw_port, raw_count in slots.items():
+        try:
+            port = int(raw_port)
+            count = int(raw_count)
+        except (TypeError, ValueError):
+            continue
+        if count > 0:
+            busy.add(port)
+    return busy
+
+
+def _load_blockers(
+    entry: dict[str, Any],
+    load_report: dict[str, Any] | None,
+    *,
+    allow_gpu_parallel: bool = False,
+    allowed_active_ports: set[int] | None = None,
+) -> list[str]:
     """Return reasons this entry is not runnable under the supplied load snapshot.
 
     The loop protocol permits serial_noninference entries outside a quiet window;
@@ -320,7 +344,22 @@ def _load_blockers(entry: dict[str, Any], load_report: dict[str, Any] | None) ->
     reasons = list(load_report.get("quiet_blockers") or [])
     if not reasons:
         reasons = list(load_report.get("busy_reasons") or [])
+    if allow_gpu_parallel and reasons:
+        allowed_ports = allowed_active_ports or set()
+        busy_ports = _busy_llama_ports(load_report)
+        filtered: list[Any] = []
+        for reason in reasons:
+            text = str(reason)
+            if text == "MI210 occupied":
+                continue
+            if text in {"llama-server actively decoding", "llama-server decode active"}:
+                if busy_ports and busy_ports.issubset(allowed_ports):
+                    continue
+            filtered.append(reason)
+        reasons = filtered
     if not reasons:
+        if allow_gpu_parallel:
+            return []
         state = str(load_report.get("state") or "unknown")
         reasons = [f"load_state={state}; quiet=false"]
     return [str(reason) for reason in reasons]
@@ -332,6 +371,8 @@ def build_report(
     ledger_rows: list[dict[str, Any]],
     operator_gate_registry: dict[str, dict[str, Any]] | None = None,
     load_report: dict[str, Any] | None = None,
+    allow_gpu_parallel: bool = False,
+    allowed_active_ports: set[int] | None = None,
     generated_at: str | None = None,
 ) -> dict[str, Any]:
     """Build the structured status report (pure; no I/O)."""
@@ -417,7 +458,12 @@ def build_report(
                 )
             else:
                 eligible.append(structural_row)
-                blockers = _load_blockers(entry, load_report)
+                blockers = _load_blockers(
+                    entry,
+                    load_report,
+                    allow_gpu_parallel=allow_gpu_parallel,
+                    allowed_active_ports=allowed_active_ports,
+                )
                 if load_report is not None:
                     if blockers:
                         load_blocked.append(
@@ -439,6 +485,10 @@ def build_report(
     return {
         "schema_version": "inference_batch_status_report.v1",
         "generated_at": generated_at or utc_now(),
+        "load_policy": {
+            "allow_gpu_parallel": bool(allow_gpu_parallel),
+            "allowed_active_ports": sorted(allowed_active_ports or []),
+        },
         "summary": {
             "entries_total": len(entries),
             "ledger_rows": len(ledger_rows),
@@ -518,14 +568,20 @@ def render_markdown(report: dict[str, Any]) -> str:
 
     if report.get("current_load") is not None:
         load = report["current_load"]
+        policy = report.get("load_policy") or {}
         blockers = ", ".join(load.get("quiet_blockers") or []) or "-"
         busy = ", ".join(load.get("busy_reasons") or []) or "-"
+        allowed_ports = ",".join(str(p) for p in policy.get("allowed_active_ports") or []) or "-"
         out.append("## Current load")
         out.append("")
         out.append(
             f"- state={load.get('state') or 'unknown'} · quiet={load.get('quiet')} "
             f"· quiet_blockers={blockers} · busy_reasons={busy}"
         )
+        if policy.get("allow_gpu_parallel"):
+            out.append(
+                f"- load policy: allow GPU-only parallel work; allowed active ports={allowed_ports}"
+            )
         out.append("")
 
     if report.get("warnings"):
@@ -724,6 +780,24 @@ def build_parser() -> argparse.ArgumentParser:
             "the current quiet-window/load snapshot"
         ),
     )
+    parser.add_argument(
+        "--allow-gpu-parallel",
+        action="store_true",
+        help=(
+            "current-load report only: ignore MI210 occupancy and llama decode "
+            "on explicitly allowed active ports, for CPU-domain batch planning"
+        ),
+    )
+    parser.add_argument(
+        "--allow-active-port",
+        action="append",
+        type=int,
+        default=[],
+        help=(
+            "port whose active llama-server decode is known GPU-only and may be "
+            "ignored when --allow-gpu-parallel is set; repeatable"
+        ),
+    )
     parser.add_argument("--json", action="store_true", help="emit structured JSON instead of markdown")
     return parser
 
@@ -743,6 +817,8 @@ def main(argv: list[str] | None = None) -> int:
             ledger,
             operator_gate_registry=gate_registry,
             load_report=load_report,
+            allow_gpu_parallel=bool(args.allow_gpu_parallel),
+            allowed_active_ports=set(args.allow_active_port or []),
         )
     except StatusReportError as exc:
         print(f"batch_status_report: {exc}", file=sys.stderr)
