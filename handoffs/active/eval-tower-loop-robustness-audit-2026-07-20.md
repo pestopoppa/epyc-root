@@ -121,7 +121,7 @@ The prevention is **not** kernel-promotion-specific — it's **any change to a m
 - [ ] **H2 — add a "recertify topology-dependent artifacts" step to `v7-promotion.md`** (+ future `-vN`): matrix + placement caps + entry topology pins refreshed before promotion is declared done.
 
 ### Operator-only (NOT agent-fixable)
-- [ ] **[operator] Cluster E — scoring.** Land logprob passthrough (`completion_probabilities → confidence`) before settling EV-11b binning; until then hold ECE/AUC observation-only (rlvr calibration weight → 0). Human-amendment + `eval_tower.py:2068` tripwire.
+- [ ] **Cluster E — scoring → tracked as EV-CONF in [eval-tower-verification.md](eval-tower-verification.md).** NOT operator-only-forever: **[agent]** interim (hold ECE/AUC observation-only so the constant-0.0 stops inflating the rlvr tier score) + **[agent]** the logprob-passthrough plumbing (`completion_probabilities → confidence`) — both **gated after the parallel agent's `eval_tower.py` loop fixes land** (its active file); **[operator]** only the final EV-11b binning/gating decision (MEASUREMENT + `eval_tower.py:2068` tripwire).
 
 ## Provenance
 5 audits, 2026-07-20: runner + contention-matrix + preflight + entries/ledger (4 read-only subagents) +
