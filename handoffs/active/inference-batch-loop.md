@@ -33,6 +33,17 @@ entries, but only 9 runnable entries once missing/ungranted operator gates are
 filtered; 15 are surfaced separately as "structurally eligible but operator-gated."
 Use `--ignore-operator-gates` only for structural audits, not for pick-next.
 
+**Safety sidecar (2026-07-20; no EV-4 flip):** root `566eaacf` makes
+`batch_status_report.py --ledger <missing>` fail closed with `rc=2` and
+`ledger not found`; the real ledger reports EV-4 `BLOCKED_PRECONDITION`,
+`ledger_rows=14`, and `eligible_now=9`. Root `bf112b90` makes
+`compile_inference_batch.py` reject duplicate YAML mapping keys through its
+strict safe loader, with clean CLI failure for validate/compile/simulate. The
+full coordination suite passed `120 passed`, and validation reported `52 valid`.
+RE-4 source/manifest content was already clean; this records duplicate-key
+prevention only, not a manifest-content change. EV-4 remains blocked and its
+checkbox is intentionally unchanged.
+
 **START HERE (execution source-of-truth — machine-readable, do not re-narrate):**
 - `coordination/inference-batch/LOOP_PROTOCOL.md` — the operator `/loop` runbook (single-writer rule, session-init, pick-next, per-entry cycle, autonomy policy)
 - `coordination/inference-batch/manifest.yaml` — the 52 compiled entries (source of truth for WHAT runs; recompile from `entries/*.yaml` via `scripts/coordination/compile_inference_batch.py compile`)
