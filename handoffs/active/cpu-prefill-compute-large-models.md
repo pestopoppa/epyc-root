@@ -332,14 +332,31 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
     `168.418091 -> 258.908661 t/s` (`+53.7297%`). Report:
     `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc4l_concat_dim0_repeat_shape_20260720.md`.
     Decision: carry forward as an experimental, default-off candidate only.
-  - [ ] **PC-4m — source-hardening/default-off patch review for CONCAT dim0 row partition**:
+  - [x] **PC-4m — source-hardening/default-off patch review for CONCAT dim0 row partition ✅ 2026-07-20**:
     review the `GGML_CPU_CONCAT_DIM0_ROWS=1` path for source invariants,
     quantized/block-copy coverage, aliasing, and whether the right long-term
     shape is env-gated generic dim0 CONCAT, a narrower qwen35/qwen3next path,
     or retirement. Expand backend correctness beyond the current F32/F16/BF16
     transposed dim0 coverage and existing CONCAT tests, keep recurrent rollback
     tests, and only then decide whether to request operator approval for a
-    formal experimental-kernel commit.
+    formal experimental-kernel commit. Result: source hardening kept the path
+    default-off/generic but added an explicit support predicate for dim0,
+    matching block sizes, and block-divisible dim0 lengths before entering the
+    row-partition kernel. Backend coverage now includes src0-transposed,
+    src1-transposed, and both-transposed dim0 cases for F32/F16/BF16 at
+    `n_seq=1/2`; focused CPU CONCAT tests passed env-off and env-on
+    (`210/210` both ways), and direct `qwen35moe-moe.gguf` recurrent rollback
+    passed env-off and env-on with the experimental DSO path pinned. Report:
+    `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc4m_concat_dim0_hardening_20260720.md`.
+    Decision: request explicit operator approval before committing this
+    `llama.cpp-experimental` patch; keep it default-off and do not treat it as
+    part of the frozen v7 promotion candidate.
+  - [ ] **PC-4n — operator-approved experimental commit/package for CONCAT dim0 row partition**:
+    if approved, commit only the PC-4k/PC-4m `GGML_CPU_CONCAT_DIM0_ROWS=1`
+    source and test changes in `llama.cpp-experimental` as post-candidate
+    research, record the commit hash in this handoff and the indices, and rerun
+    the focused correctness gate from PC-4m after commit. This does not change
+    the frozen v7 promotion candidate and does not authorize default-on.
 
 ## PC-0 operator-window plan
 
