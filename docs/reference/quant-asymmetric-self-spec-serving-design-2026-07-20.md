@@ -126,10 +126,26 @@ The first code package should be dry-run-first and config-gated:
 - Do not add a NumericSwarm tunable for K until K2 admission passes. If exposed later,
   valid values should be the measured set `{1, 2, 4}` with K2 as default.
 
+## DR-3b Live Runner Checkpoint
+
+Follow-up evidence closed the runner implementation step:
+
+- Runner: `epyc-inference-research/scripts/benchmark/dr3_quant_asym_k2_admission_runner.py`.
+- Passing artifact:
+  `epyc-inference-research/data/dr3_quant_asym_k2_admission/dr3_quant_asym_k2_admission_20260720T071200Z_live_smoke_ctx8192_r1_v2/`.
+- Result: quality `12/12`, output stability pass, cleanup pass,
+  `observation_grade=true`, `decision_grade=false`.
+- Speed: CPU baseline `7.185 t/s`; combined K2 `11.104 t/s`; ratio `1.545x`;
+  alpha `0.876`.
+
+This proves the live runner and an 8K observation slice. It does not admit a
+serving route.
+
 ## Current Verdict
 
 Keep the lane as a serious candidate. Do not serve it yet.
 
-Next executable step: build the broader K2 admission runner/package, then repeat under
+Next executable step: run the default 8K+16K DR-3 admission package and the
+frontdoor opportunity-cost gate, then repeat required GPU claims under
 `production-consolidated-v7` for `P-GPU-1` if the operator promotes the frozen v7
 candidate.

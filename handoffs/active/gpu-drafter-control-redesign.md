@@ -107,9 +107,18 @@ same-family drafter (35B/122B qwen35 at Q8) trading α for fit.
     and production-named `P-GPU-1` gates. Dry artifact:
     `/mnt/raid0/llm/epyc-inference-research/data/dr3_quant_asym_k2_admission/dr3_quant_asym_k2_admission_20260720T063100Z_codex_dryrun/`;
     focused tests passed (`5 passed`).
-  - [ ] **DR-3b — live admission executor**: materialize task rows, run CPU
-    baseline vs combined K2, score equivalence/non-regression, and keep serving
-    integration disabled until the package passes.
+  - [x] **DR-3b — live admission executor + 8K smoke ✅ 2026-07-20**:
+    inference-research `scripts/benchmark/dr3_quant_asym_k2_admission_runner.py`
+    materializes broader task rows, runs fresh CPU-baseline and combined-K2
+    servers, scores quality/equivalence by declared row rule, records cleanup,
+    and keeps serving/NumericSwarm disabled. Corrected 8K smoke artifact
+    `/mnt/raid0/llm/epyc-inference-research/data/dr3_quant_asym_k2_admission/dr3_quant_asym_k2_admission_20260720T071200Z_live_smoke_ctx8192_r1_v2/`
+    passed quality (`12/12`), output stability, context coverage, and cleanup;
+    CPU baseline `7.185 t/s`, combined K2 `11.104 t/s` (`1.545x`, alpha `0.876`),
+    `observation_grade=true`, `decision_grade=false`.
+  - [ ] **DR-3c — default 8K+16K admission + opportunity-cost gate**: run the
+    default context package, then measure frontdoor residency/eviction opportunity
+    cost before any serving route or NumericSwarm K surface.
 - [x] **DR-1 — economics model ✅ 2026-07-18**: break-even model recorded at
   [docs/reference/gpu-drafter-break-even-model-2026-07-18.md](../../docs/reference/gpu-drafter-break-even-model-2026-07-18.md).
   Key result: external Stage-1/2 failed despite `α=1.0`, so their blocker is
