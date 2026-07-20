@@ -2,6 +2,16 @@
 
 **Status (2026-07-20):** manifest built, command-fabrication-audited + repaired, backlog runners built, autopilot-wired — **loop-ready after v7 reconciliation + EV-4 Phase-0/3 hardening**. Production is now `production-consolidated-v7` (`6ad45fa3ff`, binary `10098`), and `COORD-v7-promotion` is terminal `DONE_PASS` in the ledger. OP-2/v6+iqk closed outside the loop; GLM reviewer admission failed and the reviewer/control-plane route is decoupled from v7. Lead with the remaining live island instead of stale kernel/GLM reruns.
 
+**Topology repin checkpoint (2026-07-20; no entry completion):** root commit
+`2c5a4125` repinned the P3 bulk-campaign and P4 routing source entries to
+`production-consolidated-v7` with certified topology
+`8c8cfcbb13d2611d`; the manifest and source lock were regenerated. A
+preflight-only bridge verified the 9 currently runnable entries (`RE-4`,
+`BULK-langgraph`, `BULK-K-EMB-1`, `BULK-XMAS`, `BULK-hermes`, `BULK-kbrag`,
+`ROUTE-A1/A2/A3`) with `dry_run_ok=True`, `topology.verified=True`, and no
+blocking reasons. Execution remains quiet-window gated; none is
+`serial_noninference`.
+
 **▶ To run (2026-07-20):** launch this as a **`/goal`** session (codex's equivalent of the `/loop` this handoff's protocol references) — the loop is **single-writer**, so no other session may write the ledger. **Do not re-run EV-4 yet:** the latest ledger row is `BLOCKED_PRECONDITION` on B7 scorer-semantics sign-off after the 2026-07-20T19:15Z partial run confirmed the textual multiple-choice rewrite was still changing scorer semantics. `OP-quiet-window` is granted only when `inference_load_check.py --json` reports `quiet: true` immediately before execution. EV-11a and EV-11b are now fixed; EV-11c still waits on the EV-CONF/logprob and scorer-era prerequisites before the math rebaseline entry can execute. P0 still needs its front gates (`OP-6a/6b` + stack-restart). (Terminology: this doc says `/loop` throughout; read it as `/goal` under codex.)
 
 **⚠ 2026-07-20 — EV-4 did NOT pass; robustness audit filed, then Phase 0-4 blockers landed.** EV-4 hit `INFRA_BLOCKED` (stale contention matrix → silent fanout→concurrency=1 → killed partial run → no decision-grade metrics), and a later partial rerun exposed a textual multiple-choice scorer blocker. Root cause of the original fanout failure was NOT the kernel — it was the **2026-07-17 vision NUMA rebind** shipping without a matrix recert. The loop wedge, v7 topology pins, live v7 matrix recert, safe host remediation, mandatory autopilot preflight, forced-role concurrency, serial wall-budget hardening, scorer textual-label fix, and promotion/preflight prevention guards are now landed and checked in [eval-tower-loop-robustness-audit-2026-07-20.md](eval-tower-loop-robustness-audit-2026-07-20.md). EV-4's latest ledger state is now `BLOCKED_PRECONDITION` on B7 scorer-semantics sign-off, so it is intentionally not retry-pickable; do not append a fake checkpoint row or flip EV-4 until a fresh run produces decision-grade metrics.
