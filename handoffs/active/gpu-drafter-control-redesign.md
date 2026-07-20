@@ -54,6 +54,21 @@ same-family drafter (35B/122B qwen35 at Q8) trading α for fit.
     MI210 measurement, found the missing-artifact blocker, and stopped rather than inventing a
     serving implementation. Fallback GPU time was used for a separate Qwen3.6-27B n-gram smoke
     (`data/ngram_gpu_smoke_20260718T221549Z/`), which is observation-only and does not close DR-0.
+  - [x] **DR-0d — live quant-asymmetric run completed ✅ 2026-07-20**:
+    corrected reasoning-off artifact
+    `/mnt/raid0/llm/epyc-inference-research/data/dr0_quant_asym_self_spec/dr0_quant_asym_self_spec_20260720T043000Z_reasoning_off/`
+    plus report
+    `/mnt/raid0/llm/epyc-inference-research/docs/data/dr0_quant_asym_self_spec_20260720.md`
+    shows the design is speed-promising but not admissible. CPU Q4 verifier baseline was
+    `6.890 t/s`; CPU Q4 + MI210 IQ2 combined measured K1 `9.959 t/s` (`1.445x`,
+    alpha `0.963`), K2 `11.335 t/s` (`1.645x`, alpha `0.928`), and K4 `12.298 t/s`
+    (`1.785x`, alpha `0.837`). Cleanup passed and postflight was quiet, but quality
+    sanity failed (`1/28`) and combined output changed on the code-review control, so
+    this is speed/alpha evidence only.
+  - [ ] **DR-0e — decision-grade telemetry/quality rerun**: add or expose engine telemetry
+    that separates `F(K)` verifier work from `H(K)` coordination overhead, then rerun the
+    quant-asymmetric slice with strict prompt/schema controls and require CPU-target output
+    stability on every task before any routing/serving integration.
 - [x] **DR-1 — economics model ✅ 2026-07-18**: break-even model recorded at
   [docs/reference/gpu-drafter-break-even-model-2026-07-18.md](../../docs/reference/gpu-drafter-break-even-model-2026-07-18.md).
   Key result: external Stage-1/2 failed despite `α=1.0`, so their blocker is
