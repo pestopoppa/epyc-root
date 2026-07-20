@@ -1,6 +1,6 @@
 # Eval-Tower / Inference-Batch-Loop Robustness Audit (2026-07-20)
 
-**Status: AUDIT — findings only, no code changed.** Read-only review triggered by the EV-4
+**Status: AUDIT — findings + an executable phased fix-checklist (agent-fixable vs operator-only); no code changed.** Read-only review triggered by the EV-4
 `INFRA_BLOCKED` failure while working the P2 eval-tower entries of `inference-batch-loop.md`.
 Deliverable = this reviewable handoff. Five audits (4 subagent + 1 scoring, all evidence-backed and
 independently spot-verified). **Nothing here was edited** — the eval-tower module and the contention
@@ -89,11 +89,39 @@ The prevention is **not** kernel-promotion-specific — it's **any change to a m
 - **H1 — bind the matrix to the live topology, loudly.** (a) Un-skip `test_real_matrix_against_live_numa_config` so `matrix.topology_hash == topology_fingerprint_for_matrix(NUMA_CONFIG)` is asserted in CI; (b) wire `check_contention_matrix_fresh.py` into pre-commit **and** into stack-start `preflight_gate.attest` as a **hard** gate (not `observation_only`); (c) recert = **re-measure** changed roles, never a hash bump (A3).
 - **H2 — promotion/change-routine step.** In `v7-promotion.md` (and any future `-vN`) add a **"recertify topology-dependent artifacts"** gate before promotion is declared done: enumerate + refresh (i) the contention matrix, (ii) placement caps, (iii) every batch entry's `required_topology_hash` pin. A kernel promotion is one *caller* of H1; the 2026-07-17 vision rebind is proof the trigger class is broader than kernels.
 
-## Prioritized fix order
-**Unblock (agent + one operator bench):** A3 re-measure vision → A5 commit v7 matrix → un-degrades production (A2) + unblocks EV-4. Then D1 (wedge) + D4/D5 (entry pins/reconciliation) so the loop can resume.
-**Robustness (agent):** B1 rollback-on-kill, B3 degenerate→blocker, B2 guard-not-opt-in; C1 fanout matrix precondition, C2/C3 health-check split, C4 safe remediate; D2 `RE-3→RE-1`, D3 EV-4 anchor, D9 op-bundle row.
-**Prevention (agent):** H1 CI/stack-start matrix gate; H2 promotion-routine step.
-**Operator-only:** Cluster E (scoring); the vision re-measurement bench.
+## Executable fix checklist (priority order)
+> Owner tags: **[agent]** do now; **[agent·coord]** touches `eval_tower.py`/`contention_matrix.yaml` — coordinate with the parallel agent (live uncommitted work); **[operator]** human-amendment or bench-gated, NOT agent-fixable. Flip a box only when the fix lands *and* its Verify passes.
+
+### Phase 0 — Unblock the loop
+- [ ] **[operator] A3/A5 — re-measure `vision_escalation` + regenerate the v7 matrix, then commit it.** `scripts/server/contention_matrix.py run` against the live v7 stack; do NOT hash-bump (old-shape data is semantically invalid). *Verify:* `matrix_status()==OK` live; `contention_matrix.yaml` committed. Un-degrades production (A2) + unblocks EV-4.
+- [ ] **[agent] D1 — break the `INFRA_BLOCKED` wedge.** Add a requeue that appends a fresh `READY` row for `INFRA_BLOCKED`/stale-`RUNNING` tasks under `retry_policy`, or re-admit them in `batch_ledger.pending()` (`batch_ledger.py:77,291`); reconcile the 3 eligibility sets (`batch_status_report.py:63`). *Verify:* post-recert, `pending()`/`simulate` returns EV-4.
+- [ ] **[agent] D4 — repin EV-4 `required_topology_hash`** to the certified v7 **16-char** hash + add a `pattern` to `inference_batch.schema.json:173`. *Verify:* recompile; pin == `topology_fingerprint_for_matrix` short hash.
+- [ ] **[agent] D5 — sweep EV-5/7/8/10a/11/RE-4/H5-RM3 to v7 era + v7 pin** (`entries/20-eval-tower.yaml`); recompile. *Verify:* no `production-consolidated-v6`/`df373c79…` remains; EV-5/7→EV-4 edges era-consistent.
+
+### Phase 1 — Entry / ledger correctness [agent]
+- [ ] **D2 — `also_flips` `#RE-3` → `#RE-1`** on EV-11 (`20-eval-tower.yaml:619-620`). *Verify:* resolves to the math-rebaseline line.
+- [ ] **D3 — add a real `- [ ] **EV-4` checkbox** to `eval-tower-verification.md` (or repoint `provenance.checkbox`) AND make `resolve_checkbox_refs()` (`compile_inference_batch.py:213`) use the **strict flip anchor**, not substring. *Verify:* `flip_checkbox` dry-run resolves EV-4 + EV-11c to real checkboxes.
+- [ ] **D9 — append the op-bundle row** for the EV-4 matrix-recert ask (`op-bundle.md`) per `LOOP_PROTOCOL.md:33`.
+- [ ] **D6/D7/D8 (med)** — bind the concrete gate `rule` (metric-count / ECE-nondegeneracy) to a verifier signal before `entry_verdict.decide()` emits `pass`; warn on `entry_hash` drift at pick-next; document EV-11b as a soft (non-structural) op-gate.
+
+### Phase 2 — Preflight / gating [agent]
+- [ ] **C1 — make matrix-freshness + topology-cert a precondition for every `*_eval_fanout` entry regardless of reload;** forbid `contention_matrix: not_required` on fanout entries at compile time. *Verify:* a fanout entry vs a stale matrix fails **preflight**, not the runner.
+- [ ] **C2/C3 — health_check.sh:** split batch vs session-init thresholds (`--profile`), demote `/tmp/claude` to advisory in batch, separate exit codes (0 ok / 1 blocking / 2 advisory); `preflight_gate` treats advisory as `observation_only`. *Verify:* healthy host, ~200 G free, no `/tmp/claude` bind → batch profile passes.
+- [ ] **C4 — point `host_health.py --remediate` at `flush_cache_with_pause()`** (`:602`), not bare `drop_caches`; fix `LOOP_PROTOCOL.md:14`. *Verify:* post-remediate pages are NUMA-interleaved.
+- [ ] **C5 — wire `autopilot_precondition_gate` into pick-next** (or delete the dead `run_batch_entry.py` reference).
+
+### Phase 3 — Runner robustness [agent·coord — touches `eval_tower.py`]
+- [ ] **B1 — try/finally + SIGINT/SIGTERM rollback** so a killed run always rolls back `eval_batch_serving=1` + `:18070` and writes `summary.json{status:interrupted}`. *Verify:* `kill -INT` mid-arm leaves the API clean.
+- [ ] **B3 — gate `decision_grade` on `n_questions>=expected` + `n_scored>0`/`reliability>0`;** degenerate → blocker `rc=75`. *Verify:* an empty/all-error arm → `decision_grade=False`, `rc≠0`.
+- [ ] **B2 — require explicit `--min-eval-concurrency` OR `--allow-serial` for any `--apply`;** `_eval_concurrency` returns a structured reason. *Verify:* default `--apply` refuses rather than silently serializing.
+- [ ] **B5/B7 (med)** — resolve concurrency against the forced role(s) actually receiving traffic; add an overall wall budget + serial no-progress timeout.
+
+### Phase 4 — Prevention [agent]
+- [ ] **H1 — bind the matrix to live topology in CI + stack-start.** Un-skip `test_real_matrix_against_live_numa_config` to assert `matrix.topology_hash == topology_fingerprint_for_matrix(NUMA_CONFIG)`; wire `check_contention_matrix_fresh.py` into pre-commit AND `preflight_gate.attest` as a **hard** gate. *Verify:* the vision-rebind scenario now fails CI.
+- [ ] **H2 — add a "recertify topology-dependent artifacts" step to `v7-promotion.md`** (+ future `-vN`): matrix + placement caps + entry topology pins refreshed before promotion is declared done.
+
+### Operator-only (NOT agent-fixable)
+- [ ] **[operator] Cluster E — scoring.** Land logprob passthrough (`completion_probabilities → confidence`) before settling EV-11b binning; until then hold ECE/AUC observation-only (rlvr calibration weight → 0). Human-amendment + `eval_tower.py:2068` tripwire.
 
 ## Provenance
 5 audits, 2026-07-20: runner + contention-matrix + preflight + entries/ledger (4 read-only subagents) +
