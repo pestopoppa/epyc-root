@@ -2,7 +2,7 @@
 
 **Status (2026-07-20):** manifest built, command-fabrication-audited + repaired, backlog runners built, autopilot-wired — **loop-ready**, but several kernel/GLM entries were superseded by the 2026-07-19 v7 readiness work. OP-2/v6+iqk closed outside the loop; GLM reviewer admission failed and the reviewer/control-plane route is decoupled from v7. Lead with the remaining live island instead of stale kernel/GLM reruns.
 
-**▶ To run (2026-07-20):** launch this as a **`/goal`** session (codex's equivalent of the `/loop` this handoff's protocol references) — the loop is **single-writer**, so no other session may write the ledger. **Lead with P2 eval-tower (`EV-4`, `EV-11`)** — the only currently clean, operator-gate-free island — in a detected quiet window. P0 still needs its front gates (`OP-6a/6b` + stack-restart). (Terminology: this doc says `/loop` throughout; read it as `/goal` under codex.)
+**▶ To run (2026-07-20):** launch this as a **`/goal`** session (codex's equivalent of the `/loop` this handoff's protocol references) — the loop is **single-writer**, so no other session may write the ledger. **Lead with P2 eval-tower EV-4** — the currently clean, operator-gate-free island — in a detected quiet window. EV-11a is now fixed, but EV-11 still waits on the EV-11b ECE-binning operator decision before the math rebaseline entry can execute. P0 still needs its front gates (`OP-6a/6b` + stack-restart). (Terminology: this doc says `/loop` throughout; read it as `/goal` under codex.)
 
 **START HERE (execution source-of-truth — machine-readable, do not re-narrate):**
 - `coordination/inference-batch/LOOP_PROTOCOL.md` — the operator `/loop` runbook (single-writer rule, session-init, pick-next, per-entry cycle, autonomy policy)

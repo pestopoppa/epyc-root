@@ -1,9 +1,9 @@
 # Eval Tower Verification Framework
 
-**Status**: IN PROGRESS — EV-1/2/3/6 code complete; EV-11 scorer flip landed. EV-4 and EV-11 are the current quiet-window runnable island in `inference-batch-loop.md`; EV-5/7/8 remain model-download/build-gated. AA-Omniscience hallucination suite integrated (2026-04-15).
+**Status**: IN PROGRESS — EV-1/2/3/6 code complete; EV-11 scorer flip and EV-11a boxed-Latex companion fix landed. EV-4 is the current quiet-window runnable island in `inference-batch-loop.md`; EV-11 math rebaseline becomes runnable after the EV-11b ECE-binning operator decision. EV-5/7/8 remain model-download/build-gated. AA-Omniscience hallucination suite integrated (2026-04-15).
 **Created**: 2026-04-14 (from deep-dive research, 5 papers + 2 subsystem threads)
 **Updated**: 2026-07-20
-**Priority**: HIGH — [research-evaluation-index.md](research-evaluation-index.md) and `inference-batch-loop.md` both route the next operator-gate-free inference batch to EV-4/EV-11.
+**Priority**: HIGH — [research-evaluation-index.md](research-evaluation-index.md) and `inference-batch-loop.md` route the next operator-gate-free inference batch to EV-4; EV-11 follows once EV-11b is decided.
 **Categories**: evaluation, verification, reinforcement_learning
 **Tracked in**: [research-evaluation-index.md](research-evaluation-index.md) P8
 
@@ -406,7 +406,7 @@ Two complementary, mostly inference-free pieces. **Tracked in [research-evaluati
 Formalized from the 2026-07-14 backlog ROI audit ([backlog-roi-audit-2026-07-14.md](backlog-roi-audit-2026-07-14.md) §A):
 
 - [x] **EV-11 — math_verify scoring flip** ✅ 2026-07-17 (Wave-2 B1): GSM8K+MATH-500 adapter → `scoring_method=math_verify` (GSM8K prompt `<answer>`→`\boxed{}` for extraction); eval_tower HARD-FAILS on missing math-verify (no silent exact_match fallback; the 0/1,819-question no-op is fixed). math-verify 0.9.0 installed. 113 eval_tower tests green.
-  - [ ] **EV-11a — companion fix (BLOCKS re-baseline)**: `debug_scorer._score_math_verify` non-greedy `\boxed{(.+?)}` truncates `\boxed{\frac{1}{2}}`→`\frac{1`→parse-fail→silent exact_match→wrong; breaks MATH-500 frac/sqrt/matrix answers. Fix = drop manual extraction, pass raw answer to native `math_verify.parse()` (balanced-brace aware). Owner: debug_scorer.
+  - [x] **EV-11a — companion fix** ✅ 2026-07-20: `debug_scorer._score_math_verify` no longer regex-extracts `\boxed{...}` before math-verify. It passes the raw answer to native `math_verify.parse()`, preventing non-greedy truncation of nested boxed LaTeX such as `\boxed{\frac{1}{2}}`. Validation: `tests/unit/test_eval_verifier_mode.py::test_score_math_rebaseline_handles_nested_boxed_latex` plus focused EV-11 scorer suites (`31 passed`).
   - [ ] **EV-11b — ECE binning decision**: eval_tower `_aggregate` inline ECE (top bin open, `c<hi`) vs `stat_tests.expected_calibration_error` (top bin closed) differ 0.15-0.40 on binary-confidence math suites; feeds SafetyGate/journal (CRITICAL path). Behavior CHANGE → operator-gated, bundle w/ re-baseline.
   - [ ] **EV-11c — fresh math re-baseline (INFERENCE → batch manifest)**: gated on EV-11a fix + EV-11b decision; production temp+seed42; record dataset_sha256+test_profile per arm; era-label supersede (never edit historical). Pre-decided forks in the Wave-3 manifest entry EV-11-math-rebaseline.
 - [x] **EV-12 — execution-free patch verifier as gating signal** ✅ 2026-07-17 (module landed `epyc-orchestrator/src/verification/patch_verifier.py`: `verify_patch(patch, base) -> VerdictResult`; git-apply-check/hunk-context/AST-compile/import-sanity/ruff — none execute patched code; `to_report()` validates live against verification_report.schema.json; `.to_check()` = the eval-tower hook signal for Wave-2 B1; 30 tests. Remaining: B1 wires the eval_tower hook + coder_escalation pre-gate A/B (inference).)
