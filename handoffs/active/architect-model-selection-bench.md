@@ -85,6 +85,14 @@ Q8 for the quality bench unless throughput is being measured, then use the produ
 3. **A3 out-reasons the 122B arms on hard tasks + GPU-cheap** → reconsider **27B-dense as GPU architect** (weigh lost knowledge headroom vs tool access).
 4. **A4 trails** (expected) → 35B-A3B not an architect; frontdoor unchanged.
 
+> **Deployment-robustness input (operator, 2026-07-20) — the choice isn't purely the quality number.**
+> A **GPU-only** architect (27B-dense, ~4.4 t/s on CPU → no viable self-home) carries a real operating
+> cost the dual-resident 122B does not: it has **no self-fallback** (needs a *substitute* architect —
+> 122B-Q4 / 35B — for drains/GPU-failure) and is effectively **pinned**, monopolizing the single GPU
+> slot. So a **dual-resident 122B is cheaper to operate at equal quality.** If branch 3 fires (A3 wins
+> on reasoning), weigh this cost before deploying — **assess after the bench**, not before. See the
+> "GPU accelerates, CPU guarantees" fallback design in [heterogeneous-slot-fabric-residency.md](heterogeneous-slot-fabric-residency.md).
+
 ## Gating (sequenced — do NOT start inference until ALL clear)
 1. **[ ] v7 promoted to production** (`production-consolidated-v7`) → GPU arms become `P-GPU-1`-eligible. Tracked in [`v7-promotion.md`](v7-promotion.md).
 2. **[ ] `inference-batch-loop.md` outstanding tests complete** — the parallel agent runs that backlog first, on the current orchestration stack. See [`inference-batch-loop.md`](inference-batch-loop.md).
