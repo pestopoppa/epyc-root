@@ -184,6 +184,18 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
     before selecting an implementation. Do not claim PC-4 complete until an
     exact-output/profile-guarded implementation shows lower libomp spin/pause
     and lower wall time.
+    - [x] **PC-4c-a — level-2 trace instrumentation prepared ✅ 2026-07-20**:
+      `/mnt/raid0/llm/llama.cpp-experimental` now supports
+      `LLAMA_QWEN35_PREFILL_TRACE=2` for qwen35/qwen35moe subphase graph-node
+      deltas while preserving `=1` as the existing layer-only trace. The patch
+      is post-candidate research only; validated with
+      `cmake --build build-k24-cpu --target llama-bench -j 16`,
+      `ctest --test-dir build-k24-cpu -R '^test-llama-archs$' --output-on-failure`,
+      `git diff --check`, and ASCII scan. Per llama.cpp local instructions, the
+      patch is intentionally uncommitted until explicit operator commit approval.
+    - [ ] **PC-4c-b — level-2 trace run**: run the qwen35moe `p8192/n1` CPU-only
+      trace with `LLAMA_QWEN35_PREFILL_TRACE=2`, archive subphase deltas, and
+      choose the first default-off implementation target only from that evidence.
 
 ## PC-0 operator-window plan
 
