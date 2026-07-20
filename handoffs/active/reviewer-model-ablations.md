@@ -4,7 +4,7 @@
 **Created**: 2026-07-16 (Architect→Reviewer control-plane series; see index)
 **Categories**: benchmark_methodology, agent_architecture, routing_intelligence
 **Index**: [`reviewer-control-plane-index.md`](reviewer-control-plane-index.md)
-**Related**: [`reviewer-calibration-accounting.md`](reviewer-calibration-accounting.md) (the instrument), [`glm52-reviewer-capability-gates.md`](glm52-reviewer-capability-gates.md) (A4 arm gates), [`autopilot-control-plane-integration.md`](autopilot-control-plane-integration.md) (screening-tier driver), [`mi210-big-model-and-acceleration-roadmap.md`](mi210-big-model-and-acceleration-roadmap.md) (GPU arms)
+**Related**: [`reviewer-calibration-accounting.md`](reviewer-calibration-accounting.md) (the instrument), [`glm52-reviewer-capability-gates.md`](glm52-reviewer-capability-gates.md) (A4 arm gates), [`autopilot-control-plane-integration.md`](autopilot-control-plane-integration.md) (screening-tier driver), [`mi210-big-model-and-acceleration-roadmap.md`](mi210-big-model-and-acceleration-roadmap.md) (GPU arms), [`architect-model-selection-bench.md`](architect-model-selection-bench.md) (sibling — the architect-role model-selection bench, same objective-scored-only discipline)
 **Repo**: `epyc-orchestrator` + `epyc-inference-research`
 
 ## Objective
