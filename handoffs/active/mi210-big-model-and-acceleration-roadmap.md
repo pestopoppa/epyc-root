@@ -212,6 +212,21 @@ P0 was fixed on experimental v7 `96986f5e9`); its gate is a strict-IF/rubric GBN
     Verdict: K28 remains a plausible default-off post-promotion kernel project,
     but do not delay v7 promotion for Phase 1 unless a direct profiler rerun or
     throwaway prototype shows materially higher full-model ceiling.
+  - [x] **K28.4a — direct GDN timing hook CLOSED ✅ 2026-07-20**:
+    because `rocprofv2`, `rocprof`, and `omniperf` were unavailable,
+    experimental post-candidate commit `8bb53c520` added a default-off
+    `GGML_CUDA_GDN_TIMING=1` HIP-event timing hook for
+    `GGML_OP_GATED_DELTA_NET` (requires `GGML_CUDA_DISABLE_GRAPHS=1`).
+    Focused validation passed: `build-hip` `test-backend-ops` built cleanly and
+    `test-backend-ops test -o GATED_DELTA_NET -b ROCm0 -j 8` passed `38/38`.
+    Full-model Qwen3.6-35B-A3B Q8 MI210 timing directly measured GDN at
+    `15.45%` of p2048 prompt wall-clock and `14.64%` of p8192; a 4x GDN-op
+    speedup maps to only `11.59%` / `10.98%` full-model prompt gain. Evidence:
+    inference-research commit `2c2b94b7`,
+    `data/k28_gdn_perf/k28-gdn-op-timing-hook-qwen35-20260720Tcurrent/summary.json`.
+    Verdict: the timing hook validates the Phase 0 ceiling rather than raising
+    EV; K28 remains post-promotion/default-off unless a constrained fused
+    recurrence prototype proves materially better.
   - [ ] **K28.5 — fused recurrence prototype gate**:
     implement only after a cheap proof step raises the Phase 0 ceiling. Accepted
     proof steps are direct ROCm attribution at 2K/8K/32K or a throwaway HIP

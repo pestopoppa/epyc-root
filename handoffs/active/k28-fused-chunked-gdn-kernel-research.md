@@ -1,6 +1,6 @@
 # K28 — Fused Chunked GDN Recurrence Kernel: Research Handoff
 
-**Status**: RESEARCH/DESIGN — Phase 0 ceiling + pinned verbose trace gate run 2026-07-20; no kernel code written. Design + SOTA deep-dive gates a possible post-v7 default-off kernel effort.
+**Status**: RESEARCH/DESIGN — Phase 0 ceiling + pinned verbose trace + direct HIP-event timing gate run 2026-07-20; no fused recurrence kernel written. A default-off timing hook was added on the post-candidate experimental line only. Design + SOTA deep-dive gates a possible post-v7 default-off kernel effort.
 **Created**: 2026-07-20. **Scope**: GPU (MI210 / gfx90a / CDNA2, ROCm/HIP). **Owner task**: `mi210-big-model-and-acceleration-roadmap.md` K28 (`- [ ]`, `gated_delta_net.cu:191` TODO).
 **Related (distinct)**: [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md) (a different, monitoring-only *log-linear* GDN tracker — not this kernel effort).
 **For**: the parallel agent working the K28 / GDN long-prefill thread.
@@ -49,6 +49,46 @@ Verdict: keep K28 open as a plausible post-promotion/default-off fused-kernel
 project, but do not delay frozen-v7 promotion for Phase 1 unless a direct
 profiler rerun or throwaway prototype shows a materially higher full-model
 ceiling.
+
+## 2026-07-20 direct GDN timing hook follow-up
+
+Direct ROCm profilers were unavailable, so the follow-up added a **default-off
+op timing hook** to `llama.cpp-experimental` commit `8bb53c520` (`Add
+default-off GDN timing hook`). This is post-candidate research, not part of the
+frozen promotable v7 tip `6ad45fa3ff`.
+
+Runtime contract:
+- `GGML_CUDA_GDN_TIMING=1` requests HIP/CUDA event timing around
+  `GGML_OP_GATED_DELTA_NET`.
+- The hook requires `GGML_CUDA_DISABLE_GRAPHS=1`; otherwise it emits one warning
+  and disables timing to avoid synchronizing inside graph capture.
+- Log rows include wall-clock `ms`, shape (`S_v`, `H`, `n_tokens`, `n_seqs`,
+  `K`), `kda`, `keep_rs`, dtype, and fused-cache status.
+
+Validation:
+- `git diff --check` passed on the touched experimental files.
+- `cmake --build build-hip --target test-backend-ops -j 32` passed.
+- `GGML_CUDA_DISABLE_GRAPHS=1 GGML_CUDA_GDN_TIMING=1
+  test-backend-ops test -o GATED_DELTA_NET -b ROCm0 -j 8` passed `38/38` and
+  emitted timing rows for both K==1 and snapshot/KDA fallback cases.
+
+Full-model timing evidence is in inference-research commit `2c2b94b7`, pushed to
+`origin/main`:
+`data/k28_gdn_perf/k28-gdn-op-timing-hook-qwen35-20260720Tcurrent/summary.json`.
+The Qwen3.6-35B-A3B Q8 MI210 run used `llama-bench -v -p 2048,8192 -n 1 -r 1`
+with graphs disabled for timing.
+
+| Prompt | Prompt t/s | Direct measured GDN share | 4x GDN-op full-model ceiling |
+|---:|---:|---:|---:|
+| p2048 | `2073.75 t/s` | `15.45%` | `11.59%` |
+| p8192 | `1975.94 t/s` | `14.64%` | `10.98%` |
+
+Verdict: direct HIP-event timing validates the Phase 0 modeled ceiling instead
+of raising it. K28 remains an interesting **post-promotion/default-off fused
+recurrence** project, but it should not delay frozen-v7 promotion. If reopened,
+the smallest defensible prototype is a constrained GDA-only/F32/K==1,
+`S_v=128`, `n_seqs=1`, long-prefill path; broader GDA+KDA+snapshots+MFMA support
+is multi-day to multi-week work.
 
 ---
 

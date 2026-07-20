@@ -76,6 +76,19 @@ The BF16-state speed leg also closed neutral on 2026-07-20: existing
 `-0.79%`) and improved decode-only by only `+0.74%` on the same Qwen3.6-35B-A3B
 Q8 MI210 slice. Treat it as memory/residency research, not a v7 throughput
 lever.
+2026-07-20 direct-timing follow-up: because `rocprofv2`/`rocprof`/`omniperf`
+were unavailable, experimental post-candidate commit `8bb53c520` added a
+default-off `GGML_CUDA_GDN_TIMING=1` HIP-event timing hook for
+`GGML_OP_GATED_DELTA_NET` (requires `GGML_CUDA_DISABLE_GRAPHS=1`). Focused
+validation passed: `build-hip` `test-backend-ops` built cleanly and
+`test-backend-ops test -o GATED_DELTA_NET -b ROCm0 -j 8` passed `38/38`.
+Qwen3.6-35B-A3B Q8 MI210 direct timing measured GDN at `15.45%` of p2048
+prompt wall-clock and `14.64%` of p8192; a 4x GDN-op speedup maps to only
+`11.59%` / `10.98%` full-model prompt gain. Evidence is pushed in
+inference-research commit `2c2b94b7` under
+`data/k28_gdn_perf/k28-gdn-op-timing-hook-qwen35-20260720Tcurrent/`. This
+validates the Phase 0 ceiling rather than reopening K28 as a frozen-v7 blocker;
+any real fused recurrence prototype remains post-promotion/default-off.
 
 ## Technique candidates (from intake-798 submissions)
 
