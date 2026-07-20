@@ -227,14 +227,24 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
     `40` FFN graph nodes on every layer; shared expert/gate/gating/add account
     for only `8` combined. Report:
     `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc4e_ffn_trace_20260720.md`.
-  - [ ] **PC-4f — routed MoE helper boundary diagnostic + first default-off prototype**:
-    add a narrow, default-off diagnostic inside the routed `build_moe_ffn`
-    helper or a qwen35moe-only wrapper that separates router/top-k, gate-up,
-    down-projection, weighting, per-expert view expansion, and expert
-    aggregation. Prototype only after that diagnostic identifies the boundary
-    tied to OpenMP spin/pause. Acceptance: exact-output smoke plus repeated
-    `p8192/n1` profile showing lower libomp spin/pause share and lower wall
-    time.
+  - [x] **PC-4f — routed MoE helper boundary diagnostic ✅ 2026-07-20**:
+    added a narrow, default-off diagnostic inside routed `build_moe_ffn` to
+    separate router/weights, gate-up, activation, down projection, weighting,
+    per-expert view expansion, and expert aggregation. Result: qwen35moe
+    `p8192/n1` CPU-only trace ran at
+    `/mnt/raid0/llm/epyc-inference-research/data/cpu_prefill_compute/pc4f-qwen35-routed-moe-subtrace-20260720T004730Z/`
+    with exit `0`, `pp8192 110.411171 t/s`, `tg1 5.162607 t/s`, and clean
+    process/GPU cleanup. Median routed-MoE graph-node deltas: router/weights
+    `11`, expert views `8`, aggregation `7`, while gate-up/activation/down/
+    weighting total only `6`. Report:
+    `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc4f_routed_moe_trace_20260720.md`.
+  - [ ] **PC-4g — first default-off routed-MoE scheduling prototype**:
+    prototype exactly one guarded change around routed MoE view/aggregation
+    scheduling, or around router/weights scheduling if a follow-up profile
+    identifies top-k/routing as the actual spin source. Do not rewrite
+    `mul_mat_id` math kernels in PC-4g. Acceptance: exact-output smoke plus
+    repeated `p8192/n1` profile showing lower libomp spin/pause share and
+    lower wall time.
 
 ## PC-0 operator-window plan
 

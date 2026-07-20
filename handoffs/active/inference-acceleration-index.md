@@ -1,7 +1,7 @@
 # Inference Acceleration — Active Index
 
 **Purpose**: dispatch point for local inference optimization across CPU throughput, KV/context efficiency, speculative decoding, GPU-prep work, and model-serving experiments.
-**Updated**: 2026-07-20 (v7 promotion candidate is frozen at `experimental-v7-refresh-20260716` commit `6ad45fa3ff`, final-smoke binary `10098`; live promotion state is delegated to [v7-promotion.md](v7-promotion.md)) — v6+iqk remains LIVE/frozen; K5 quality, K35/A1 release matrix, OP-2 CPU-regression canonical bench, `P-GPU-1` ratification, upstream-ahead narrow audit, GLM reviewer-quality disposition, final v7 smoke PASS, and native GLM-MTP repair/measurement are closed. The reviewer/control-plane route is **DECOUPLED** by operator decision on 2026-07-19 and is no longer a v7 release blocker. v7 is **READY FOR OPERATOR PROMOTION** at `6ad45fa3ff`; any newer experimental tip is post-candidate research and must re-run the final coherence+garbage smoke before becoming promotable. PC-4c qwen35moe subphase tracing, PC-4d target selection, and PC-4e FFN boundary tracing are closed; PC-4f routed-MoE helper diagnostic/prototype is the next post-candidate prefill-compute step. Historical 2026-07-05/11/14/16 detail remains below for provenance only.
+**Updated**: 2026-07-20 (v7 promotion candidate is frozen at `experimental-v7-refresh-20260716` commit `6ad45fa3ff`, final-smoke binary `10098`; live promotion state is delegated to [v7-promotion.md](v7-promotion.md)) — v6+iqk remains LIVE/frozen; K5 quality, K35/A1 release matrix, OP-2 CPU-regression canonical bench, `P-GPU-1` ratification, upstream-ahead narrow audit, GLM reviewer-quality disposition, final v7 smoke PASS, and native GLM-MTP repair/measurement are closed. The reviewer/control-plane route is **DECOUPLED** by operator decision on 2026-07-19 and is no longer a v7 release blocker. v7 is **READY FOR OPERATOR PROMOTION** at `6ad45fa3ff`; any newer experimental tip is post-candidate research and must re-run the final coherence+garbage smoke before becoming promotable. PC-4c qwen35moe subphase tracing, PC-4d target selection, PC-4e FFN boundary tracing, and PC-4f routed-MoE helper diagnostics are closed; PC-4g routed-MoE scheduling prototype is the next post-candidate prefill-compute step. Historical 2026-07-05/11/14/16 detail remains below for provenance only.
 **History**: pre-compaction detail lives in [../archived/inference-acceleration-index-history-through-2026-06-19.md](../archived/inference-acceleration-index-history-through-2026-06-19.md).
 
 **2026-07-18 v7 lever audit + two-lane queue**: full read-only audit of ~5 weeks of v7 experimental-kernel + CPU/GPU/spec-dec/GLM optimization work (5-agent sweep of handoffs, progress reports, negative results, live branch state). **Headline: the largest measured win is already built, correctness-verified, and banked — but UNPROMOTED.** See the new **[§ v7 lever audit + two-lane execution queue](#2026-07-18-v7-lever-audit--two-lane-execution-queue)** below — do-not-re-propose ledger, EV-ranked survivor levers, and the LANE A (operator-facing v7-promotion prep) / LANE B (agent-executable exploration) queue. Two new tracks opened: [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md), [gpu-drafter-control-redesign.md](gpu-drafter-control-redesign.md).
@@ -67,7 +67,11 @@ repaired. v7 promotion now waits only on the operator cutover action, not more r
    GDN first while GDN/SSM/RMS stay at about `1-2%` in the timing profile. PC-4e
    then localized the FFN island: routed `ffn_moe` is `32` of the stable `40`
    FFN graph nodes per layer, while shared expert/gate/gating/add account for
-   only `8`. →
+   only `8`. PC-4f diagnosed routed `build_moe_ffn`: router/weights (`11`),
+   expert views (`8`), and aggregation (`7`) dominate the routed-MoE graph-node
+   expansion; gate-up/activation/down/weighting are only `6` combined. PC-4g
+   should prototype one default-off scheduling/boundary reduction around
+   view/aggregation or router/weights, not a blind `mul_mat_id` rewrite. →
    [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md).
 6. **stream-K `nsm→k·nsm`+compact-LDS** — +0–10%, IQ2/capacity; pmc-CSV read first. → mi210 roadmap.
 7. **K28 GDN long-prefill recurrence kernel (GPU)** — `gated_delta_net.cu:191`. → mi210 roadmap.
@@ -105,7 +109,7 @@ repaired. v7 promotion now waits only on the operator cutover action, not more r
 
 **LANE B — agent-executable:**
 - *Zero-inference now:* current B2/B3/B5/B6/B7 scoping batch closed; do not reopen without a new handoff trigger.
-- *Needs a bench window (fold into A2 or its successor):* B1 barrier-fusion `tg128` A/B only if a staged immutable on/off pair exists. PC-0 prefill-compute premise profiling and PC-3 target selection closed positive; PC-4a/PC-4b show qwen35moe recurrent `linear_attn` is the graph-node-heavy path, PC-4c level-2 sublayer tracing is closed, PC-4d selects same-input MoE/FFN barrier-count reduction first, and PC-4e localizes FFN pressure to routed `ffn_moe`. PC-4f is the next implementation gate: diagnose the exact routed `build_moe_ffn` sub-boundary before one default-off prototype. B4 DSA-D3 profile-first ran 2026-07-19 and closed D3.1 as no-go: Lightning Indexer was only `1.08%` of cycle samples, so do not start the AVX-512BW indexer kernel from current evidence.
+- *Needs a bench window (fold into A2 or its successor):* B1 barrier-fusion `tg128` A/B only if a staged immutable on/off pair exists. PC-0 prefill-compute premise profiling and PC-3 target selection closed positive; PC-4a/PC-4b show qwen35moe recurrent `linear_attn` is the graph-node-heavy path, PC-4c level-2 sublayer tracing is closed, PC-4d selects same-input MoE/FFN barrier-count reduction first, PC-4e localizes FFN pressure to routed `ffn_moe`, and PC-4f localizes routed-MoE expansion to router/weights, expert views, and aggregation. PC-4g is the next implementation gate: one default-off routed-MoE scheduling/boundary prototype with exact-output and repeated `p8192/n1` spin/wall-time evidence. B4 DSA-D3 profile-first ran 2026-07-19 and closed D3.1 as no-go: Lightning Indexer was only `1.08%` of cycle samples, so do not start the AVX-512BW indexer kernel from current evidence.
 
 ## Active Landscape
 
@@ -225,6 +229,15 @@ After completing an acceleration item:
   of `40` stable FFN nodes per layer; shared expert/gate/gating/add account for
   `8` combined. PC-4f should diagnose routed `build_moe_ffn` internals before
   any prototype. ✅ 2026-07-20
+- [x] PC-4f qwen35moe routed-MoE helper trace executed: CPU-only `p8192/n1`,
+  `LLAMA_QWEN35_PREFILL_TRACE=2`, exit `0`, `pp8192 110.411171 t/s`, `tg1
+  5.162607 t/s`, clean process/GPU cleanup. Routed-MoE graph-node expansion is
+  largest in router/weights (`11`), expert views (`8`), and aggregation (`7`);
+  gate-up/activation/down/weighting account for only `6` combined. ✅ 2026-07-20
+- [ ] PC-4g qwen35moe routed-MoE scheduling prototype: implement one
+  default-off view/aggregation or router/weights boundary reduction, with
+  exact-output smoke plus repeated `p8192/n1` lower libomp spin/pause and wall
+  time before any promotion claim.
 - [x] External qwen35/frontdoor drafter alpha retest (`n5_spec_on` 376/376, decision-grade) ✅ 2026-07-16
 - [x] CoT-scaffold: Qwable-standalone GPQA control completed — standalone 77% beat scaffold 73%, so standalone routing is primary. ✅ 2026-07-05
 - [x] GPU reasoner evidence: Qwable quiet-host IQ4/Q8 strict-output + top-level `json_schema` harness gate closed; scaffold/selector stubs remain non-deployable ✅ 2026-07-17
