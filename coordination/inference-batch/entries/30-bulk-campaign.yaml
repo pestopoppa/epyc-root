@@ -250,8 +250,9 @@
     coordination_note: >
       A-fast corpus/harness verified and GGUF artifacts produced for Granite/e5-base/BGE-M3
       on 2026-07-03. This entry runs the embedder-only load/vector smoke first, then Phase B
-      retrieval bench. NO production model reload required (embedder servers only, ports
-      8090/8096/8097/8098).
+      retrieval bench. NO production model reload required: the command starts any missing warm
+      embedder-only servers on ports 8096/8097/8098, preserves ones already live, and cleans up
+      only the warm roles it introduced; baseline BGE stays on port 8090.
   phase: 3
   priority: P3
   preconditions:
@@ -279,16 +280,32 @@
     protocol_id: "P-BENCH-3 (embedder latency) + retrieval recall bench"
     dry_run: false
     command: >
-      mkdir -p data/embedder_bench &&
+      bash -lc 'set -euo pipefail;
+      port_open() { python3 -c "import socket,sys; s=socket.socket(); s.settimeout(0.25); sys.exit(0 if s.connect_ex((\"127.0.0.1\", int(sys.argv[1]))) == 0 else 1)" "$1"; };
+      started_roles=();
+      port_open 8096 || started_roles+=(embedder_granite_97m_r2);
+      port_open 8097 || started_roles+=(embedder_multilingual_e5_base);
+      port_open 8098 || started_roles+=(embedder_bge_m3);
+      cleanup() {
+        if ((${#started_roles[@]})); then
+          cd /mnt/raid0/llm/epyc-orchestrator &&
+          python3 scripts/server/orchestrator_stack.py stop "${started_roles[@]}" || true;
+        fi;
+      };
+      trap cleanup EXIT;
+      cd /mnt/raid0/llm/epyc-orchestrator &&
+      python3 scripts/server/orchestrator_stack.py start --only embedder_granite_97m_r2 embedder_multilingual_e5_base embedder_bge_m3 --numa-mode full --skip-stack-change-gate --no-compile-registry;
+      cd /mnt/raid0/llm/epyc-inference-research;
+      mkdir -p data/embedder_bench;
       .venv/bin/python scripts/benchmark/embedder_recall_bench.py
       --corpus /mnt/raid0/llm/epyc-root/data/benchmarks/eval-corpus-v0.jsonl
       --models granite-embedding-97m-r2 multilingual-e5-base bge-m3 bge-large-en-v1.5
-      --k 1 3 5 10 50 &&
+      --k 1 3 5 10 50;
       EMBEDDER_RECALL_EXECUTE=1 .venv/bin/python scripts/benchmark/embedder_recall_bench.py
       --corpus /mnt/raid0/llm/epyc-root/data/benchmarks/eval-corpus-v0.jsonl
       --models granite-embedding-97m-r2 multilingual-e5-base bge-m3 bge-large-en-v1.5
       --k 1 3 5 10 50 --execute
-      --output data/embedder_bench/granite_97m_r2_phaseB.json
+      --output data/embedder_bench/granite_97m_r2_phaseB.json'
     cwd: /mnt/raid0/llm/epyc-inference-research
     concurrency_mode: isolated_bench
     fanout_transport: none
