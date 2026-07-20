@@ -1,7 +1,7 @@
 # DySpec Tree-Speculation Forward-Port Plan (v6/HIP · MI210)
 
 **Status:** Investigation-only plan (READ-ONLY scan, 2026-07-06). No code edited, nothing built, no inference run. All build/bench steps are RECORDED for the parent to run when the GPU is free. **2026-07-18 status correction:** the DySpec tree-draft line is shelved for current MTP-equipped targets; native GLM-MTP is the successor acceleration thread.
-**Scope:** Historical DySpec port analysis only. The original port target below was correct for the 2026-07-06 investigation, but current v7 promotion authority is `/mnt/raid0/llm/llama.cpp-experimental` branch `experimental-v7-refresh-20260716` with live tip tracked in [`v7-promotion.md`](v7-promotion.md) (checked local/fork tip `6ad45fa3ff` on 2026-07-19); do not start new work on `/mnt/raid0/llm/llama.cpp-mi210-hip` from this stale header.
+**Scope:** Historical DySpec port analysis only. The original port target below was correct for the 2026-07-06 investigation. The pre-promotion v7 authority was `/mnt/raid0/llm/llama.cpp-experimental` branch `experimental-v7-refresh-20260716`; it is now promoted as `/mnt/raid0/llm/llama.cpp` branch `production-consolidated-v7 @ 6ad45fa3ff` (see [`v7-promotion.md`](v7-promotion.md)). Do not start new work on `/mnt/raid0/llm/llama.cpp-mi210-hip` from this stale header.
 
 ---
 

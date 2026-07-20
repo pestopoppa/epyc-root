@@ -8,11 +8,11 @@
     "research": 134
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-07-20T14:41:51Z",
+  "last_compile": "2026-07-20T14:56:14Z",
   "mode": "full",
-  "scan_time": "2026-07-20T14:41:51Z",
+  "scan_time": "2026-07-20T14:56:19Z",
   "schema_version": 1,
-  "source_set_hash": "19dae22f6330bfc4c79ef2554b2081d47af1aad85c8ac3eb78409f592f7a7639",
+  "source_set_hash": "1366e21d790c78e990f043cbed7e9b9f2aa966c3710d1b1b08e437f26141d211",
   "sources": [
     {
       "content_hash": "9eb9296ef6b1e1d8bb4164b3b8acd4899325e705edd8d018b638c3ad8b3126e1",
@@ -423,10 +423,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "95425077b321c2b805c7fa90c8b7b20a9e92b60100bc37baa01e4b6b8b699dd4",
-      "modified": "2026-07-20T07:52:26Z",
+      "content_hash": "fe72a029b8a6110b3969597aa8f2c5dc2b234684308e357f674ce5e66669811f",
+      "modified": "2026-07-20T14:46:34Z",
       "path": "handoffs/active/gpu-drafter-control-redesign.md",
-      "size": 12000,
+      "size": 12001,
       "title": "GPU-Drafter Control Redesign",
       "type": "handoff-active"
     },
@@ -599,10 +599,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ce112931b99c5da3459a9ebadcf3cd3b6a7b1f28e1f06e7a1547c0f4c4bb9042",
-      "modified": "2026-07-20T14:31:07Z",
+      "content_hash": "42ce30ec47b218864d8bdc8c22278b6572d2b90b135804da6a48119717c224b7",
+      "modified": "2026-07-20T14:46:42Z",
       "path": "handoffs/active/mi210-big-model-and-acceleration-roadmap.md",
-      "size": 46785,
+      "size": 46786,
       "title": "MI210 big-model residency + acceleration roadmap",
       "type": "handoff-active"
     },
@@ -631,10 +631,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "44f89700f7560acd0cd4284db69d5a66586a3923ad9ce487b66ffda1284c3eff",
-      "modified": "2026-07-14T15:57:10Z",
+      "content_hash": "29417e00818c4574aa114fbeca34efa5cd36cb3016924624983cb913562d92d6",
+      "modified": "2026-07-20T14:47:26Z",
       "path": "handoffs/active/mi210-speed-campaign-summary.md",
-      "size": 12288,
+      "size": 12310,
       "title": "MI210 GPU speed campaign \u2014 executive summary (2026-07-03/04)",
       "type": "handoff-active"
     },
@@ -1071,10 +1071,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ebfbb6022882bce2aea23d5791f44ce568410cc2009083ac2b98542e9743ce6f",
-      "modified": "2026-07-19T20:07:39Z",
+      "content_hash": "75a524a6597079e108a9776cc6ef9e5bc1330abd9ecf0f1fae99f1a0660a1394",
+      "modified": "2026-07-20T14:47:20Z",
       "path": "handoffs/active/tree-draft-forward-port-plan.md",
-      "size": 28994,
+      "size": 29019,
       "title": "DySpec Tree-Speculation Forward-Port Plan (v6/HIP \u00b7 MI210)",
       "type": "handoff-active"
     },
@@ -5359,10 +5359,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "3cb470171452b37486adcec27b94e8ae0273cda08f4dfa7176f2fa136dcdeb1c",
-      "modified": "2026-07-20T14:41:43Z",
+      "content_hash": "cac327c77bec8b0ed41a441f66b052b56823656c4e1502a03b0fe8bacf959c94",
+      "modified": "2026-07-20T14:55:26Z",
       "path": "progress/2026-07/2026-07-20.md",
-      "size": 91370,
+      "size": 96477,
       "title": "Progress - 2026-07-20",
       "type": "progress"
     },
@@ -5631,11 +5631,11 @@
       "type": "docs"
     },
     {
-      "content_hash": "a934e53a1c1f598598967e243839e41cfe0af2f5a31a39846eaba67474b1ce6b",
-      "modified": "2026-07-20T12:06:03Z",
+      "content_hash": "5936e3fc70b1fdc89734efc8fe07b2829c39765139b7017e9b0973535c4ea48a",
+      "modified": "2026-07-20T14:47:06Z",
       "path": "docs/reference/model-probe-scoreboard.md",
-      "size": 20658,
-      "title": "Model Probe Scoreboard (experimental-v7)",
+      "size": 20695,
+      "title": "Model Probe Scoreboard (production-consolidated-v7)",
       "type": "docs"
     },
     {
