@@ -248,9 +248,16 @@ After completing an acceleration item:
   weights symbols were tiny (`soft_max`/`get_rows`/`argsort` around
   `0.01-0.05%`), while `GOMP_barrier` / `__kmpc_barrier` remained `43.95%`
   children. ✅ 2026-07-20
-- [ ] PC-4i qwen35moe graph/scheduler barrier attribution: map barrier-heavy
-  regions to graph scheduling boundaries or split structure before another
-  default-off prototype.
+- [x] PC-4i qwen35moe graph/scheduler barrier attribution closed no-go:
+  qwen35moe `p8192/n1` is one CPU scheduler split, so PC-4 moved into CPU
+  backend node/barrier attribution. ✅ 2026-07-20
+- [x] PC-4j/4k/4l qwen35moe CPU backend CONCAT dim0 row-partition path:
+  PC-4j mapped the barrier to `CONCAT`/`conv_input-*`, PC-4k proved
+  `GGML_CPU_CONCAT_DIM0_ROWS=1` as a default-off keep-candidate, and PC-4l
+  repeated/expanded it positive. ✅ 2026-07-20
+- [ ] PC-4m qwen35moe CONCAT dim0 row-partition hardening: source-review the
+  default-off path, expand backend correctness coverage, and decide whether to
+  request an operator-approved experimental-kernel commit.
 - [x] External qwen35/frontdoor drafter alpha retest (`n5_spec_on` 376/376, decision-grade) ✅ 2026-07-16
 - [x] CoT-scaffold: Qwable-standalone GPQA control completed — standalone 77% beat scaffold 73%, so standalone routing is primary. ✅ 2026-07-05
 - [x] GPU reasoner evidence: Qwable quiet-host IQ4/Q8 strict-output + top-level `json_schema` harness gate closed; scaffold/selector stubs remain non-deployable ✅ 2026-07-17

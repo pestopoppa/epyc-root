@@ -316,12 +316,30 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
     `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc4k_concat_dim0_rows_20260720.md`.
     Decision: keep-candidate, default-off only; not broad enough for default-on
     or promotion without the repeat/shape gate below.
-  - [ ] **PC-4l — repeat/shape gate for CONCAT dim0 row partition**:
+  - [x] **PC-4l — repeat/shape gate for CONCAT dim0 row partition ✅ 2026-07-20**:
     repeat the clean qwen35moe `p8192/n1` A/B to bound noise, then add wider
     shape coverage, especially non-single `ne2` and generated-token smokes.
     Keep recurrent rollback and transposed-src CONCAT backend tests in the
     validation set. Decide carry-forward vs narrow-vs-retire only after this
-    evidence; do not promote PC-4k from the single clean A/B.
+    evidence; do not promote PC-4k from the single clean A/B. Result: repeat
+    `llama-bench -p 8192 -n 1 -r 3` improved pp8192
+    `95.531624 -> 104.210589 t/s` (`+9.0849%`) and tg1
+    `4.678276 -> 4.778680 t/s` (`+2.1462%`). Generated-token `-pg 8192,16`
+    smoke improved combined pp8192+tg16 `88.838786 -> 93.782587 t/s`
+    (`+5.5649%`). Multi-sequence `llama-batched-bench` smoke with
+    `pl=2`, `pp=2048`, `tg=1` improved prompt speed
+    `169.369247 -> 261.157013 t/s` (`+54.1939%`) and total speed
+    `168.418091 -> 258.908661 t/s` (`+53.7297%`). Report:
+    `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc4l_concat_dim0_repeat_shape_20260720.md`.
+    Decision: carry forward as an experimental, default-off candidate only.
+  - [ ] **PC-4m — source-hardening/default-off patch review for CONCAT dim0 row partition**:
+    review the `GGML_CPU_CONCAT_DIM0_ROWS=1` path for source invariants,
+    quantized/block-copy coverage, aliasing, and whether the right long-term
+    shape is env-gated generic dim0 CONCAT, a narrower qwen35/qwen3next path,
+    or retirement. Expand backend correctness beyond the current F32/F16/BF16
+    transposed dim0 coverage and existing CONCAT tests, keep recurrent rollback
+    tests, and only then decide whether to request operator approval for a
+    formal experimental-kernel commit.
 
 ## PC-0 operator-window plan
 
