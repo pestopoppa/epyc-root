@@ -337,6 +337,203 @@ def _preconditions(entry: dict[str, Any]) -> dict[str, Any]:
     return entry.get("preconditions") or {}
 
 
+def _nested_signal_sources(
+    exec_result: Any,
+    verifier_signals: dict[str, Any] | None,
+) -> list[dict[str, Any]]:
+    sources: list[dict[str, Any]] = []
+    for candidate in (verifier_signals, exec_result):
+        if isinstance(candidate, dict):
+            sources.append(candidate)
+            for key in ("details", "summary", "metrics", "gate_results"):
+                nested = candidate.get(key)
+                if isinstance(nested, dict):
+                    sources.append(nested)
+    return sources
+
+
+def _find_signal(
+    exec_result: Any,
+    verifier_signals: dict[str, Any] | None,
+    keys: Iterable[str],
+) -> Any:
+    wanted = {str(key) for key in keys}
+    for source in _nested_signal_sources(exec_result, verifier_signals):
+        for key in wanted:
+            if key in source:
+                return source[key]
+    return None
+
+
+def _as_bool(value: Any) -> bool | None:
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        return bool(value)
+    text = str(value).strip().lower()
+    if text in {"1", "true", "yes", "y", "pass", "passed", "ok", "complete", "nondegenerate"}:
+        return True
+    if text in {"0", "false", "no", "n", "fail", "failed", "missing", "incomplete", "degenerate"}:
+        return False
+    return None
+
+
+def _as_float(value: Any) -> float | None:
+    if value is None or isinstance(value, bool):
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _gate_text(gate_row: dict[str, Any] | None, branch: dict[str, Any] | None) -> str:
+    pieces = [
+        (gate_row or {}).get("gate"),
+        (gate_row or {}).get("evidence"),
+        (branch or {}).get("rule"),
+    ]
+    return " ".join(str(piece).lower() for piece in pieces if piece)
+
+
+def _has_category_branch(entry: dict[str, Any], category: str) -> bool:
+    for row in _gate_rows(entry):
+        fork = row.get("fork") or {}
+        if isinstance(fork.get(category), dict):
+            return True
+    return False
+
+
+def _metric_completeness(
+    rule_text: str,
+    exec_result: Any,
+    verifier_signals: dict[str, Any] | None,
+) -> tuple[bool, str | None]:
+    needs_metrics = (
+        "all 6 metrics" in rule_text
+        or "all metrics recorded" in rule_text
+        or "metrics recorded" in rule_text
+        or "metric-bearing" in rule_text
+    )
+    if not needs_metrics:
+        return True, None
+
+    explicit = _as_bool(
+        _find_signal(
+            exec_result,
+            verifier_signals,
+            ("metrics_complete", "metrics_recorded", "required_metrics_recorded"),
+        )
+    )
+    if explicit is not None:
+        return explicit, None if explicit else "pass rule requires complete metrics; signal says incomplete"
+
+    recorded = _as_float(
+        _find_signal(
+            exec_result,
+            verifier_signals,
+            ("metric_count", "metrics_count", "metrics_recorded_count", "recorded_metric_count"),
+        )
+    )
+    required = _as_float(
+        _find_signal(
+            exec_result,
+            verifier_signals,
+            ("required_metric_count", "expected_metric_count", "metrics_required_count"),
+        )
+    )
+    if required is None and "all 6 metrics" in rule_text:
+        required = 6.0
+    if recorded is not None and required is not None:
+        ok = recorded >= required
+        if ok:
+            return True, None
+        return False, f"pass rule requires {required:g} metrics; only {recorded:g} recorded"
+    return False, "pass rule requires metric completeness, but no verifier metric-count signal was supplied"
+
+
+def _confidence_nondegeneracy(
+    rule_text: str,
+    exec_result: Any,
+    verifier_signals: dict[str, Any] | None,
+) -> tuple[bool | None, str | None]:
+    needs_confidence = (
+        "confidence distribution non-degenerate" in rule_text
+        or "ece meaningful" in rule_text
+        or "not trivially 0" in rule_text
+        or "confidence is the binary" in rule_text
+    )
+    if not needs_confidence:
+        return True, None
+
+    explicit = _as_bool(
+        _find_signal(
+            exec_result,
+            verifier_signals,
+            (
+                "confidence_nondegenerate",
+                "confidence_distribution_nondegenerate",
+                "ece_nondegenerate",
+                "calibration_nondegenerate",
+            ),
+        )
+    )
+    if explicit is not None:
+        if explicit:
+            return True, None
+        return False, "pass rule requires non-degenerate confidence; verifier reports degenerate confidence"
+
+    source = _find_signal(
+        exec_result,
+        verifier_signals,
+        ("confidence_source", "calibration_source"),
+    )
+    if source is not None:
+        text = str(source).strip().lower()
+        if text in {"logprob", "logprobs", "probabilities", "completion_probabilities"}:
+            return True, None
+        if "proxy" in text or "float(correct)" in text or "binary" in text:
+            return False, f"pass rule requires non-degenerate confidence; confidence_source={source}"
+
+    return None, "pass rule requires a non-degenerate confidence/ECE signal, but none was supplied"
+
+
+def _pass_rule_category_guard(
+    entry: dict[str, Any],
+    branch: dict[str, Any] | None,
+    gate_row: dict[str, Any] | None,
+    exec_result: Any,
+    verifier_signals: dict[str, Any] | None,
+) -> tuple[str, list[str]]:
+    """Prevent a generic PASS signal from satisfying a concrete metric rule.
+
+    Gate-table prose is not executable by itself. For rules that explicitly
+    require metric completeness or non-degenerate ECE/confidence, the caller must
+    supply corresponding verifier signals before this function allows PASS.
+    """
+    text = _gate_text(gate_row, branch)
+    reasons: list[str] = []
+
+    metrics_ok, metric_reason = _metric_completeness(text, exec_result, verifier_signals)
+    if not metrics_ok:
+        reasons.append(metric_reason or "pass rule metric completeness guard failed")
+        return CAT_AMBIGUOUS, reasons
+
+    confidence_ok, confidence_reason = _confidence_nondegeneracy(
+        text, exec_result, verifier_signals
+    )
+    if confidence_ok is True:
+        return CAT_PASS, reasons
+    if confidence_reason:
+        reasons.append(confidence_reason)
+    if confidence_ok is False and _has_category_branch(entry, CAT_MARGINAL):
+        reasons.append("downgraded PASS to MARGINAL per gate-table confidence-proxy branch")
+        return CAT_MARGINAL, reasons
+    return CAT_AMBIGUOUS, reasons
+
+
 # ── the classifier: evidence -> one fork category ──────────────────────────
 def classify(
     entry: dict[str, Any],
@@ -543,6 +740,17 @@ def decide(
     category, reasons, signals = classify(entry, exec_result, verifier_signals)
     branch, gate_row, notes = _select_branch(entry, category)
     reasons = list(reasons) + list(notes)
+
+    if category == CAT_PASS:
+        guarded_category, guard_reasons = _pass_rule_category_guard(
+            entry, branch, gate_row, exec_result, verifier_signals
+        )
+        if guarded_category != CAT_PASS:
+            category = guarded_category
+            reasons.extend(guard_reasons)
+            branch, gate_row, notes = _select_branch(entry, category)
+            reasons.extend(notes)
+
     actions = _branch_actions(branch)
     gate_text = (gate_row or {}).get("gate") or "inference-batch fork"
     terminal_status, next_task = _terminal_or_next(

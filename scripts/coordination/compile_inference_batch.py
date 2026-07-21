@@ -41,12 +41,14 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import yaml
 from jsonschema import Draft7Validator
+from yaml.constructor import ConstructorError
 
 # Import the sibling ledger library (works whether run as a script or imported).
 _HERE = Path(__file__).resolve().parent
 if str(_HERE) not in sys.path:
     sys.path.insert(0, str(_HERE))
 import batch_ledger  # noqa: E402
+from flip_checkbox import _find_anchor_lines  # noqa: E402
 
 MANIFEST_SCHEMA_VERSION = "inference_batch.manifest.v1"
 SOURCES_LOCK_SCHEMA_VERSION = "inference_batch.sources_lock.v1"
@@ -63,6 +65,40 @@ DEFAULT_REPOS: Dict[str, Path] = {
     "epyc-orchestrator": Path("/mnt/raid0/llm/epyc-orchestrator"),
     "epyc-inference-research": Path("/mnt/raid0/llm/epyc-inference-research"),
 }
+
+
+class ManifestInputError(RuntimeError):
+    """Raised for malformed hand-authored manifest source files."""
+
+
+class _UniqueKeyLoader(yaml.SafeLoader):
+    """SafeLoader variant that rejects duplicate mapping keys."""
+
+
+def _construct_mapping_unique_keys(
+    loader: yaml.SafeLoader,
+    node: yaml.MappingNode,
+    deep: bool = False,
+) -> dict[Any, Any]:
+    loader.flatten_mapping(node)
+    mapping: dict[Any, Any] = {}
+    for key_node, value_node in node.value:
+        key = loader.construct_object(key_node, deep=deep)
+        if key in mapping:
+            raise ConstructorError(
+                "while constructing a mapping",
+                node.start_mark,
+                f"found duplicate key {key!r}",
+                key_node.start_mark,
+            )
+        mapping[key] = loader.construct_object(value_node, deep=deep)
+    return mapping
+
+
+_UniqueKeyLoader.add_constructor(
+    yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
+    _construct_mapping_unique_keys,
+)
 
 
 def _utcnow_iso() -> str:
@@ -85,7 +121,10 @@ def load_entries(entries_dir: Path) -> List[Tuple[Path, dict]]:
     out: List[Tuple[Path, dict]] = []
     for path in sorted(Path(entries_dir).glob("*.y*ml")):
         text = path.read_text(encoding="utf-8")
-        data = yaml.safe_load(text)
+        try:
+            data = yaml.load(text, Loader=_UniqueKeyLoader)
+        except ConstructorError as exc:
+            raise ManifestInputError(f"{path}: YAML error: {exc}") from exc
         if data is None:
             continue
         if isinstance(data, list):
@@ -107,6 +146,13 @@ def lint_entry(entry: dict) -> List[str]:
     gate_table = (entry.get("outcomes") or {}).get("gate_table") or []
     if len(gate_table) < 1:
         errors.append("lint: outcomes.gate_table must have at least one row")
+    execution = entry.get("execution") or {}
+    topology = (entry.get("preconditions") or {}).get("topology") or {}
+    concurrency_mode = str(execution.get("concurrency_mode") or "")
+    if "eval_fanout" in concurrency_mode and topology.get("contention_matrix") == "not_required":
+        errors.append(
+            "lint: eval_fanout entries require a fresh contention_matrix precondition"
+        )
     return errors
 
 
@@ -205,16 +251,22 @@ def resolve_checkbox_refs(
         handoff_path = (repo_root / owning) if owning else None
         exists = bool(handoff_path and handoff_path.is_file())
         line: Optional[int] = None
+        anchor_count = 0
+        anchor_error: Optional[str] = None
         if exists and checkbox:
             try:
-                for idx, text in enumerate(
-                    handoff_path.read_text(encoding="utf-8").splitlines(), 1
-                ):
-                    if checkbox in text:
-                        line = idx
-                        break
+                lines = handoff_path.read_text(encoding="utf-8").splitlines()
+                anchors = _find_anchor_lines(lines, checkbox)
+                anchor_count = len(anchors)
+                if anchor_count == 1:
+                    line = anchors[0] + 1
+                elif anchor_count == 0:
+                    anchor_error = f"missing unchecked checkbox anchor for {checkbox!r}"
+                else:
+                    anchor_error = f"ambiguous unchecked checkbox anchors for {checkbox!r}"
             except OSError:
                 line = None
+                anchor_error = "handoff read failed"
         refs.append(
             {
                 "task_id": entry.get("task_id"),
@@ -223,7 +275,9 @@ def resolve_checkbox_refs(
                 "also_flips": list(prov.get("also_flips") or []),
                 "handoff_exists": exists,
                 "checkbox_line": line,
-                "resolved": bool(exists and line is not None),
+                "checkbox_anchor_count": anchor_count,
+                "checkbox_anchor_error": anchor_error,
+                "resolved": bool(exists and line is not None and anchor_count == 1),
             }
         )
     return refs
@@ -252,7 +306,11 @@ def _print_invalid(invalid: Dict[str, List[str]]) -> None:
 
 def cmd_validate(args: argparse.Namespace) -> int:
     validator = load_schema(args.schema)
-    entries = load_entries(args.entries_dir)
+    try:
+        entries = load_entries(args.entries_dir)
+    except ManifestInputError as exc:
+        print(f"manifest input error: {exc}", file=sys.stderr)
+        return 1
     valid, invalid = validate_all(entries, validator)
     print(f"entries: {len(entries)}  valid: {len(valid)}  invalid: {len(invalid)}")
     if invalid:
@@ -264,7 +322,11 @@ def cmd_validate(args: argparse.Namespace) -> int:
 
 def cmd_compile(args: argparse.Namespace) -> int:
     validator = load_schema(args.schema)
-    entries = load_entries(args.entries_dir)
+    try:
+        entries = load_entries(args.entries_dir)
+    except ManifestInputError as exc:
+        print(f"manifest input error: {exc}", file=sys.stderr)
+        return 1
     valid, invalid = validate_all(entries, validator)
     if invalid:
         print(
@@ -305,7 +367,11 @@ def cmd_compile(args: argparse.Namespace) -> int:
 
 def cmd_simulate(args: argparse.Namespace) -> int:
     validator = load_schema(args.schema)
-    entries = load_entries(args.entries_dir)
+    try:
+        entries = load_entries(args.entries_dir)
+    except ManifestInputError as exc:
+        print(f"manifest input error: {exc}", file=sys.stderr)
+        return 1
     valid, invalid = validate_all(entries, validator)
     if invalid:
         print("REFUSING TO SIMULATE: invalid entries present.", file=sys.stderr)

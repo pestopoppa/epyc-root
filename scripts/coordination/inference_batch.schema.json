@@ -171,7 +171,8 @@
           "additionalProperties": false,
           "properties": {
             "required_topology_hash": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^[0-9a-f]{16}$"
             },
             "live_affinity_verified": {
               "type": "boolean"

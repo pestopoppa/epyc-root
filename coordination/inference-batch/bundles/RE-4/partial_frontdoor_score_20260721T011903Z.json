@@ -1,0 +1,109 @@
+{
+  "summary": {
+    "grade": "observation",
+    "grade_note": "OBSERVATION-grade: non-saturated research benchmark; for hypothesis formation only, not a keep/revert/deploy/promote decision gate.",
+    "run_id": "longcot_mini_re4_stack_20260721T011903Z",
+    "model_role": "frontdoor",
+    "config_name": "baseline",
+    "suite": "longcot_mini",
+    "rows_in_run": 9,
+    "scorable_rows": 9,
+    "scorable_correct": 0,
+    "overall_accuracy": 0.0,
+    "overall_accuracy_excluding_canary_leaks": 0.0,
+    "clean_scorable_rows": 9,
+    "canary_leak_count": 0,
+    "canary_leaks_on_scorable_rows": 0,
+    "unscorable_logic_rows": 0,
+    "missing_from_prompt_index": 0
+  },
+  "per_domain": {
+    "chess": {
+      "correct": 0,
+      "total": 6,
+      "accuracy": 0.0,
+      "canary_leaks": 0
+    },
+    "math": {
+      "correct": 0,
+      "total": 3,
+      "accuracy": 0.0,
+      "canary_leaks": 0
+    }
+  },
+  "missing_prompt_ids": [],
+  "per_question": [
+    {
+      "question_id": "longcot_mini_1",
+      "domain": "math",
+      "is_scorable": true,
+      "correct": false,
+      "canary_leak": false,
+      "reason": "no_solution_marker"
+    },
+    {
+      "question_id": "longcot_mini_10",
+      "domain": "math",
+      "is_scorable": true,
+      "correct": false,
+      "canary_leak": false,
+      "reason": "no_solution_marker"
+    },
+    {
+      "question_id": "longcot_mini_100",
+      "domain": "math",
+      "is_scorable": true,
+      "correct": false,
+      "canary_leak": false,
+      "reason": "no_solution_marker"
+    },
+    {
+      "question_id": "longcot_mini_101",
+      "domain": "chess",
+      "is_scorable": true,
+      "correct": false,
+      "canary_leak": false,
+      "reason": "no_solution_marker"
+    },
+    {
+      "question_id": "longcot_mini_102",
+      "domain": "chess",
+      "is_scorable": true,
+      "correct": false,
+      "canary_leak": false,
+      "reason": "no_solution_marker"
+    },
+    {
+      "question_id": "longcot_mini_103",
+      "domain": "chess",
+      "is_scorable": true,
+      "correct": false,
+      "canary_leak": false,
+      "reason": "no_solution_marker"
+    },
+    {
+      "question_id": "longcot_mini_104",
+      "domain": "chess",
+      "is_scorable": true,
+      "correct": false,
+      "canary_leak": false,
+      "reason": "no_solution_marker"
+    },
+    {
+      "question_id": "longcot_mini_106",
+      "domain": "chess",
+      "is_scorable": true,
+      "correct": false,
+      "canary_leak": false,
+      "reason": "no_solution_marker"
+    },
+    {
+      "question_id": "longcot_mini_108",
+      "domain": "chess",
+      "is_scorable": true,
+      "correct": false,
+      "canary_leak": false,
+      "reason": "no_solution_marker"
+    }
+  ]
+}

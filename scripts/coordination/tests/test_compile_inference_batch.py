@@ -76,9 +76,7 @@ def test_schema_is_valid_draft7():
 
 def test_example_entry_validates(validator):
     assert EXAMPLE_ENTRY.is_file(), "shipped example entry must exist"
-    entries = cib.load_entries(EXAMPLE_ENTRY.parent)
-    assert len(entries) == 1
-    _, entry = entries[0]
+    entry = yaml.safe_load(EXAMPLE_ENTRY.read_text(encoding="utf-8"))
     assert cib.validate_entry(entry, validator) == []
 
 
@@ -124,6 +122,19 @@ def test_lint_rejects_blank_checkbox(validator):
     assert any("checkbox" in x and x.startswith("lint:") for x in errs)
 
 
+def test_lint_rejects_eval_fanout_without_contention_matrix(validator):
+    e = _valid_entry()
+    e["preconditions"]["topology"] = {
+        "required_topology_hash": "8c8cfcbb13d2611d",
+        "contention_matrix": "not_required",
+    }
+    e["execution"]["concurrency_mode"] = "same_trial_eval_fanout"
+
+    errs = cib.validate_entry(e, validator)
+
+    assert any("eval_fanout entries require" in x and x.startswith("lint:") for x in errs)
+
+
 # ---------------------------------------------------------------------------
 # Schema rejection (structurally malformed)
 # ---------------------------------------------------------------------------
@@ -132,6 +143,17 @@ def test_schema_rejects_bad_enum(validator):
     e["execution"]["driver"] = "not_a_driver"
     errs = cib.validate_entry(e, validator)
     assert any(x.startswith("schema:") for x in errs)
+
+
+def test_schema_rejects_long_topology_digest(validator):
+    e = _valid_entry()
+    e["preconditions"]["topology"] = {
+        "required_topology_hash": "a" * 64,
+        "live_affinity_verified": True,
+        "contention_matrix": "not_required",
+    }
+    errs = [x for x in cib.validate_entry(e, validator) if x.startswith("schema:")]
+    assert any("required_topology_hash" in x and "does not match" in x for x in errs)
 
 
 def test_schema_rejects_wrong_type_and_unknown_key(validator):
@@ -208,6 +230,46 @@ def test_validate_cli_exit_zero_all_valid(tmp_path):
     assert cib.main(["--entries-dir", str(d), "validate"]) == 0
 
 
+def test_validate_cli_rejects_duplicate_yaml_keys(tmp_path, capsys):
+    d = tmp_path / "entries"
+    d.mkdir()
+    p = d / "dup.yaml"
+    p.write_text(
+        """
+task_id: DUP
+title: first
+title: second
+provenance:
+  owning_handoff: handoffs/active/foo.md
+  checkbox: F-1
+phase: 0
+priority: P1
+preconditions:
+  depends_on: []
+execution:
+  driver: command
+  concurrency_mode: serial_noninference
+outcomes:
+  gate_table:
+    - gate: does it pass?
+      evidence: metric
+      fork:
+        pass:
+          next: DONE_PASS
+        fail:
+          next: FAILED_REVERTED
+artifacts:
+  outputs: []
+ledger: {}
+""",
+        encoding="utf-8",
+    )
+
+    assert cib.main(["--entries-dir", str(d), "validate"]) == 1
+    err = capsys.readouterr().err
+    assert "duplicate key 'title'" in err
+
+
 def test_compile_cli_emits_manifest_and_lock(tmp_path):
     d = tmp_path / "entries"
     d.mkdir()
@@ -240,6 +302,24 @@ def test_compile_cli_emits_manifest_and_lock(tmp_path):
     assert ex_ref["handoff_exists"] is True
     assert ex_ref["resolved"] is True
     assert isinstance(ex_ref["checkbox_line"], int)
+
+
+def test_resolve_checkbox_refs_requires_unchecked_anchor(tmp_path):
+    handoff = tmp_path / "handoff.md"
+    handoff.write_text("EV-4 appears in prose only\\n- [ ] **EV-40 sibling\\n", encoding="utf-8")
+    entry = _valid_entry("EV4")
+    entry["provenance"] = {
+        "owning_handoff": "handoff.md",
+        "checkbox": "EV-4",
+    }
+
+    ref = cib.resolve_checkbox_refs([entry], tmp_path)[0]
+
+    assert ref["handoff_exists"] is True
+    assert ref["checkbox_line"] is None
+    assert ref["checkbox_anchor_count"] == 0
+    assert ref["resolved"] is False
+    assert "missing unchecked checkbox anchor" in ref["checkbox_anchor_error"]
 
 
 def test_compile_cli_refuses_on_invalid(tmp_path, capsys):

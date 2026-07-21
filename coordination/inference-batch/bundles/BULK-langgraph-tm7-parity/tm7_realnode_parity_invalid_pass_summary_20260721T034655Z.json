@@ -1,0 +1,192 @@
+{
+  "copied_report": "/mnt/raid0/llm/epyc-root/coordination/inference-batch/bundles/BULK-langgraph-tm7-parity/tm7_realnode_parity_invalid_pass_20260721T034655Z.json",
+  "failure_class": "infra_blocked_invalid_harness_pass",
+  "generated_at": "2026-07-21T03:52:25.107423+00:00",
+  "reported_n_fail": 0,
+  "reported_n_pass": 4,
+  "reported_n_tasks": 4,
+  "reported_n_trace_coverage_fail": 0,
+  "reported_overall": "PASS",
+  "root_causes": [
+    "run_task_lg_parity.py pre-9dfbe572 counted raw decision_chain() dict keys instead of extracted chain rows for trace_coverage_ok",
+    "Both live arms returned Terminal role architect_general: No LLM primitives or REPL configured, so the runner did not wire live graph/LLM dependencies",
+    "Extracted parity chains were empty (len_a=0,len_b=0) on all tasks despite reported PASS"
+  ],
+  "rows": [
+    {
+      "arms": {
+        "run_task": {
+          "answer": "[FAILED: Terminal role architect_general: No LLM primitives or REPL configured]",
+          "role_history": [
+            "frontdoor",
+            "coder_escalation",
+            "architect_general"
+          ],
+          "success": false,
+          "turns": 6
+        },
+        "run_task_lg": {
+          "answer": "[FAILED: Terminal role architect_general: No LLM primitives or REPL configured]",
+          "role_history": [
+            "frontdoor",
+            "coder_escalation",
+            "coder_escalation",
+            "architect_general",
+            "architect_general"
+          ],
+          "success": false,
+          "turns": 6
+        }
+      },
+      "coverage_a": {
+        "categories": [],
+        "phases": []
+      },
+      "coverage_b": {
+        "categories": [],
+        "phases": []
+      },
+      "len_a": 0,
+      "len_b": 0,
+      "reported_verdict": "PASS",
+      "task_id": "tm7-smoke-1",
+      "trace_chain_lengths_reported": {
+        "run_task": 5,
+        "run_task_lg": 5
+      },
+      "trace_coverage_ok_reported": true
+    },
+    {
+      "arms": {
+        "run_task": {
+          "answer": "[FAILED: Terminal role architect_general: No LLM primitives or REPL configured]",
+          "role_history": [
+            "frontdoor",
+            "coder_escalation",
+            "architect_general"
+          ],
+          "success": false,
+          "turns": 6
+        },
+        "run_task_lg": {
+          "answer": "[FAILED: Terminal role architect_general: No LLM primitives or REPL configured]",
+          "role_history": [
+            "frontdoor",
+            "coder_escalation",
+            "coder_escalation",
+            "architect_general",
+            "architect_general"
+          ],
+          "success": false,
+          "turns": 6
+        }
+      },
+      "coverage_a": {
+        "categories": [],
+        "phases": []
+      },
+      "coverage_b": {
+        "categories": [],
+        "phases": []
+      },
+      "len_a": 0,
+      "len_b": 0,
+      "reported_verdict": "PASS",
+      "task_id": "tm7-smoke-2",
+      "trace_chain_lengths_reported": {
+        "run_task": 5,
+        "run_task_lg": 5
+      },
+      "trace_coverage_ok_reported": true
+    },
+    {
+      "arms": {
+        "run_task": {
+          "answer": "[FAILED: Terminal role architect_general: No LLM primitives or REPL configured]",
+          "role_history": [
+            "frontdoor",
+            "coder_escalation",
+            "architect_general"
+          ],
+          "success": false,
+          "turns": 6
+        },
+        "run_task_lg": {
+          "answer": "[FAILED: Terminal role architect_general: No LLM primitives or REPL configured]",
+          "role_history": [
+            "frontdoor",
+            "coder_escalation",
+            "coder_escalation",
+            "architect_general",
+            "architect_general"
+          ],
+          "success": false,
+          "turns": 6
+        }
+      },
+      "coverage_a": {
+        "categories": [],
+        "phases": []
+      },
+      "coverage_b": {
+        "categories": [],
+        "phases": []
+      },
+      "len_a": 0,
+      "len_b": 0,
+      "reported_verdict": "PASS",
+      "task_id": "tm7-smoke-3",
+      "trace_chain_lengths_reported": {
+        "run_task": 5,
+        "run_task_lg": 5
+      },
+      "trace_coverage_ok_reported": true
+    },
+    {
+      "arms": {
+        "run_task": {
+          "answer": "[FAILED: Terminal role architect_general: No LLM primitives or REPL configured]",
+          "role_history": [
+            "frontdoor",
+            "coder_escalation",
+            "architect_general"
+          ],
+          "success": false,
+          "turns": 6
+        },
+        "run_task_lg": {
+          "answer": "[FAILED: Terminal role architect_general: No LLM primitives or REPL configured]",
+          "role_history": [
+            "frontdoor",
+            "coder_escalation",
+            "coder_escalation",
+            "architect_general",
+            "architect_general"
+          ],
+          "success": false,
+          "turns": 6
+        }
+      },
+      "coverage_a": {
+        "categories": [],
+        "phases": []
+      },
+      "coverage_b": {
+        "categories": [],
+        "phases": []
+      },
+      "len_a": 0,
+      "len_b": 0,
+      "reported_verdict": "PASS",
+      "task_id": "tm7-smoke-4",
+      "trace_chain_lengths_reported": {
+        "run_task": 5,
+        "run_task_lg": 5
+      },
+      "trace_coverage_ok_reported": true
+    }
+  ],
+  "schema_version": "tm7.invalid_pass_summary.v1",
+  "source_report": "/mnt/raid0/llm/epyc-orchestrator/data/trace/tm7_realnode_parity.json",
+  "valid_tm7_pass": false
+}

@@ -11,14 +11,13 @@ The loop session is the SOLE writer of `ledger.jsonl`, `op-bundle.md`, and the c
 ## Session-init (every loop iteration start)
 
 1. **Reconcile state**: `compile_inference_batch.py` is already compiled → read `manifest.yaml`; fold `ledger.jsonl` (latest-row-per-task_id wins) → live task states via `batch_ledger.reconcile(manifest)`.
-2. **Host-health snapshot**: `scripts/autopilot/host_health.py` + `scripts/session/health_check.sh`; record the tier. If throttled → `host_health.py --remediate` (drop_caches + throttle-check) then re-baseline; if uptime ≥ the entry's `max_uptime_days` → quarantine subsequent `throughput_sensitive` results + queue an op-bundle reboot request (host reboots are operator-only).
+2. **Host-health snapshot**: `scripts/autopilot/host_health.py` + `scripts/session/health_check.sh --profile batch`; record the tier. If throttled → `host_health.py --remediate` (pause + `drop_caches` + NUMA-interleave rewarm + throttle-check) then re-baseline; if uptime ≥ the entry's `max_uptime_days` → quarantine subsequent `throughput_sensitive` results + queue an op-bundle reboot request (host reboots are operator-only).
 3. **Quiet-window gate**: `scripts/coordination/inference_load_check.py` → `classify_load()`. Outside a quiet window, only `serial_noninference` entries are eligible this iteration. **This is the hard rider — never start a throughput_sensitive/eval_fanout entry while the parallel session is active** (no llama-server decode / no llama-bench|cli|eval procs / no heavy downloads / MI210 unoccupied / autopilot stopped).
-4. **Topology + flag attestation** (only when a reload happened): `scripts/server/preflight_gate.py` → writes `attestations/<ts>.json` (topology hash matching clean_window_manifest, affinity, contention freshness, health). For flag-gated entries, verify the flag is live on ALL uvicorn workers (the 1-of-6 propagation hazard) before trusting any coverage/emission number.
-   - KNOWN ISSUE: `health_check.sh` currently exits 1 in-tree (pre-existing security-audit step under `set -e`) → B4 attestations conservatively FAIL. Fix that script or adjust the check profile before attestations can PASS.
+4. **Topology + flag attestation** (only when a reload happened): `scripts/server/preflight_gate.py` → writes `attestations/<ts>.json` (topology hash matching clean_window_manifest, affinity, contention freshness, health). For flag-gated entries, verify the flag is live on ALL uvicorn workers (the 1-of-6 propagation hazard) before trusting any coverage/emission number. Batch runs use the batch health-check profile so low session-init free-space policy remains advisory unless the batch footprint itself is at risk.
 
 ## Pick-next-entry
 
-Eligible = `READY` ∧ preconditions satisfiable ∧ `depends_on` all in {DONE_PASS, DONE_MARGINAL_OBS} ∧ operator_gates all granted (see `op-bundle.md` grants) ∧ quiet-window-appropriate for its `contention_class`. Among eligible: prefer entries whose `stack_lineup` matches the currently-resident stack (avoid a reload); else pick the phase with the most unblocked work and pay one reload. Never start a `throughput_sensitive` entry whose `est_wall_clock_h` exceeds the declared remaining window budget. `COORDINATION`-status entries are never picked (they exist only for precondition cross-refs to the parallel session's work).
+Eligible = `READY` ∧ preconditions satisfiable ∧ `depends_on` all in {DONE_PASS, DONE_MARGINAL_OBS} ∧ operator_gates all granted (see `op-bundle.md` grants) ∧ quiet-window-appropriate for its `contention_class`. `batch_status_report.py` is gate-aware by default: `eligible_now` means manifest/operator eligible; pass `--load-report <inference_load_check.json>` to compute `runnable_now` under the current quiet-window snapshot. For CPU-domain planning while an explicitly coordinated GPU-only bench is live, the report may be run with `--allow-gpu-parallel --allow-active-port <port>`; this only suppresses MI210 and that named port in the report and does not relax execution preflight. `--ignore-operator-gates` is reserved for structural audits. Among eligible: prefer entries whose `stack_lineup` matches the currently-resident stack (avoid a reload); else pick the phase with the most unblocked work and pay one reload. Never start a `throughput_sensitive` entry whose `est_wall_clock_h` exceeds the declared remaining window budget. `COORDINATION`-status entries are never picked (they exist only for precondition cross-refs to the parallel session's work).
 
 ## Per-entry cycle
 
@@ -42,7 +41,7 @@ Eligible = `READY` ∧ preconditions satisfiable ∧ `depends_on` all in {DONE_P
 
 ## Wrap-up cadence
 
-After each phase or ~4 entries: regenerate `batch_status_report.py` output, update the `bulk-inference-campaign.md` status line, commit ledger + packaged artifacts (single-writer). Full wrap-up routine at phase boundaries.
+After each phase or ~4 entries: regenerate `batch_status_report.py` output using the default `op-bundle.md` gate registry, update the `bulk-inference-campaign.md` status line, commit ledger + packaged artifacts (single-writer). Full wrap-up routine at phase boundaries.
 
 ## Instrument discipline
 

@@ -74,6 +74,8 @@ def _build_payload(args: argparse.Namespace) -> dict:
         payload["x_orchestrator_role"] = args.x_orchestrator_role
     if args.x_force_model:
         payload["x_force_model"] = args.x_force_model
+    if args.max_tokens:
+        payload["max_tokens"] = args.max_tokens
 
     tools = []
     if args.demo_tool:
@@ -203,6 +205,12 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--model", default="orchestrator", help="Orchestrator model alias (default: orchestrator).")
     parser.add_argument("--api-key", default="local", help="Authorization token sent as Bearer token.")
     parser.add_argument("--prompt", default="Summarize the active role and escalation context.", help="User message.")
+    parser.add_argument(
+        "--max-tokens",
+        type=int,
+        default=0,
+        help="Optional max_tokens value to include in the request payload.",
+    )
     parser.add_argument(
         "--x-orchestrator-role",
         default="frontdoor",

@@ -1,0 +1,1 @@
+{"ts":"2026-07-21T04:26:19+00:00","target_tag":"v2026.4.23","live":true,"pass":11,"fail":2,"skip":0,"checks":"PASS:config-present,PASS:pin-audit,PASS:launch-config,PASS:single-slot-wiring,PASS:reference-client-dry,PASS:live:health,PASS:live:chat,PASS:live:tooluse,PASS:live:streaming,PASS:live:override,FAIL:live:multiturn,FAIL:live:reference-client,PASS:live:subagent"}

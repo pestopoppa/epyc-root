@@ -376,6 +376,6 @@ Each phase ships behind an env flag, default-on after its gate passes. Rollback 
 - [x] J1/J2/J3/J5 gate verifications + WP-7 per-role policy ratified ✅
 - [ ] WP-6 / WP-7 full ratification - inference-gated, awaiting operator approval + measurement
 - [x] WP-5 per-role placement_policy ratified + WP-3/WP-4 SM logic VERIFIED ✅ 2026-07-14 — operator audit #5 (2026-05-27): J2/J3 RESOLVED, migration state machine verified in-process (`test_concurrency_aware_migration_sm.py`, `181e86a`); per-role policy DECISION table ratified
-- [ ] WP-3/WP-4 genuinely-live under-traffic migration probe - needs single-worker API (multi-worker `--workers 6` confounds session affinity); SM trigger logic verified + regression-protected but live-traffic observation still open
+- [x] WP-3/WP-4 genuinely-live under-traffic migration probe ✅ 2026-07-21 — ROUTE-A3 final single-worker probe passed with session-labeled committed migrations (`forward=6`, `reverse=4`, `n_aborted=0`, `sessions_over_cap=[]`, cooldown guard observed once); evidence packaged at `coordination/inference-batch/bundles/ROUTE-A3-j2j3-single-worker/j2j3_single_worker_migration_probe_20260721T065054Z.final_row.json` and terminal ledger row `ROUTE-A3-j2j3-single-worker-20260721T065054Z`
 - [ ] Higher-sample (>=8) vision_escalation re-bench to ratify clean allow (current 5/8 pairs cv>5%)
 - [ ] Wire missing Prometheus migration counters (kv_migration_direction_total, thrash_skipped) or verify observable evidence

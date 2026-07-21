@@ -2,7 +2,7 @@
 # Wave-3 M3 — P3 BULK-CAMPAIGN inference-batch entries (phase 3).
 #
 # Per-model-group clean-window items. All entries are kernel-era-stamped
-# (production-consolidated-v6 / E5-cpu-kernel, from the 2026-06-26 v6+iqk cutover)
+# (production-consolidated-v7 / E5-cpu-kernel, from the 2026-06-26 v6+iqk cutover)
 # and throughput_sensitive -> require host_health.tier: quiet_window. The loop
 # groups execution by model to avoid reload thrash ("per-model-group windows").
 #
@@ -32,7 +32,7 @@
   priority: P2
   preconditions:
     stack_lineup: "production default lineup (frontdoor + workers), single-instance measurement"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       GGML_IQK: 1
     flag_attestation: env_only
@@ -43,7 +43,7 @@
       max_uptime_days: 7
       cache_state: drop_caches
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -132,7 +132,7 @@
   priority: P3
   preconditions:
     stack_lineup: "clean model-batched window; frontdoor + ingest resident, worker_general re-attested"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       GGML_IQK: 1
     flag_attestation: all_workers
@@ -145,7 +145,7 @@
       max_uptime_days: 7
       cache_state: drop_caches
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -250,21 +250,26 @@
     coordination_note: >
       A-fast corpus/harness verified and GGUF artifacts produced for Granite/e5-base/BGE-M3
       on 2026-07-03. This entry runs the embedder-only load/vector smoke first, then Phase B
-      retrieval bench. NO production model reload required (embedder servers only, ports 8090-8095).
+      retrieval bench. NO production model reload required: the command starts any missing warm
+      embedder-only servers on ports 8096/8097/8098, preserves ones already live, and cleans up
+      only the warm roles it introduced; baseline BGE stays on port 8090.
   phase: 3
   priority: P3
   preconditions:
     stack_lineup: "embedder-only servers (Granite/e5-base/BGE-M3 GGUF); no production role reload"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flag_attestation: env_only
     models:
       - granite-embedding-97m-r2
+      - multilingual-e5-base
+      - bge-m3
+      - bge-large-en-v1.5
     host_health:
       tier: quiet_window
       max_uptime_days: 14
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: stopped
@@ -275,10 +280,32 @@
     protocol_id: "P-BENCH-3 (embedder latency) + retrieval recall bench"
     dry_run: false
     command: >
-      cd /mnt/raid0/llm/epyc-inference-research &&
+      bash -lc 'set -euo pipefail;
+      port_open() { python3 -c "import socket,sys; s=socket.socket(); s.settimeout(0.25); sys.exit(0 if s.connect_ex((\"127.0.0.1\", int(sys.argv[1]))) == 0 else 1)" "$1"; };
+      started_roles=();
+      port_open 8096 || started_roles+=(embedder_granite_97m_r2);
+      port_open 8097 || started_roles+=(embedder_multilingual_e5_base);
+      port_open 8098 || started_roles+=(embedder_bge_m3);
+      cleanup() {
+        if ((${#started_roles[@]})); then
+          cd /mnt/raid0/llm/epyc-orchestrator &&
+          python3 scripts/server/orchestrator_stack.py stop "${started_roles[@]}" || true;
+        fi;
+      };
+      trap cleanup EXIT;
+      cd /mnt/raid0/llm/epyc-orchestrator &&
+      python3 scripts/server/orchestrator_stack.py start --only embedder_granite_97m_r2 embedder_multilingual_e5_base embedder_bge_m3 --numa-mode full --skip-stack-change-gate --no-compile-registry;
+      cd /mnt/raid0/llm/epyc-inference-research;
+      mkdir -p data/embedder_bench;
       .venv/bin/python scripts/benchmark/embedder_recall_bench.py
-      --queries <queries.jsonl> --corpus <corpus.jsonl> --gold <gold.jsonl>
-      --model granite-embedding-97m-r2 --k 1,3,5,10 --execute
+      --corpus /mnt/raid0/llm/epyc-root/data/benchmarks/eval-corpus-v0.jsonl
+      --models granite-embedding-97m-r2/Q8_0 multilingual-e5-base/Q8_0 bge-m3/Q8_0 bge-large-en-v1.5/reference
+      --k 1 3 5 10 50 --batch-size 8 --max-input-chars 512;
+      EMBEDDER_RECALL_EXECUTE=1 .venv/bin/python scripts/benchmark/embedder_recall_bench.py
+      --corpus /mnt/raid0/llm/epyc-root/data/benchmarks/eval-corpus-v0.jsonl
+      --models granite-embedding-97m-r2/Q8_0 multilingual-e5-base/Q8_0 bge-m3/Q8_0 bge-large-en-v1.5/reference
+      --k 1 3 5 10 50 --batch-size 8 --max-input-chars 512 --execute
+      --output data/embedder_bench/granite_97m_r2_phaseB.json'
     cwd: /mnt/raid0/llm/epyc-inference-research
     concurrency_mode: isolated_bench
     fanout_transport: none
@@ -352,7 +379,7 @@
   priority: P2
   preconditions:
     stack_lineup: "single full instance, -np sweep; frontdoor A3B + dense control"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       GGML_IQK: 1
     flag_attestation: env_only
@@ -363,7 +390,7 @@
       max_uptime_days: 7
       cache_state: drop_caches
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -449,17 +476,19 @@
   priority: P3
   preconditions:
     stack_lineup: "production lineup with xmas_routing enforce active"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       "xmas_routing.mode": enforce
     flag_attestation: all_workers
     host_health:
       tier: any
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: any
+    operator_gates:
+      - XMAS-enforce-window-ab-root-present
     depends_on: []
   execution:
     driver: autopilot_action
@@ -537,7 +566,7 @@
   priority: P3
   preconditions:
     stack_lineup: "LightOnOCR server (config.server_urls.ocr_server; /ocr/pdf, port 8082); odl_bench adapter"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flag_attestation: env_only
     models:
       - lightonocr-2-1b
@@ -546,7 +575,7 @@
       max_uptime_days: 14
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: stopped
@@ -636,7 +665,7 @@
   priority: P3
   preconditions:
     stack_lineup: "opendataloader-pdf[hybrid] + sidecar 'opendataloader-pdf-hybrid --port 5002' live; odl_bench adapter"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       ORCHESTRATOR_ODL_TABLE_BACKEND: hybrid
     flag_attestation: env_only
@@ -645,7 +674,7 @@
       max_uptime_days: 14
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: stopped
@@ -735,7 +764,7 @@
   priority: P3
   preconditions:
     stack_lineup: "PaddleOCR-VL-1.6 GGUF + mmproj via llama-mtmd (CPU or MI210); NEW Wave-3 VL engine adapter"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flag_attestation: env_only
     models:
       - paddleocr-vl-1.6
@@ -744,7 +773,7 @@
       max_uptime_days: 14
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: stopped
@@ -813,30 +842,30 @@
     era_stamp: "E5-cpu-kernel"
 
 # -----------------------------------------------------------------------------
-# 9. Hermes — pin-bump / reference-client / subagent smokes
+# 9. Hermes — standalone reference-client / subagent smokes
 # -----------------------------------------------------------------------------
 - schema_version: inference_batch.entry.v1
   task_id: BULK-hermes-smokes
-  title: "Hermes — pin-bump + reference-client + subagent single-slot smokes"
+  title: "Hermes — standalone smoke harness + reference-client + subagent single-slot smokes"
   provenance:
     owning_handoff: handoffs/active/hermes-outer-shell.md
     checkbox: "G — Validate subagent + single-slot llama-server interaction"
     also_flips:
-      - "handoffs/active/hermes-agent-index.md#Hermes upstream pin bump"
       - "handoffs/active/hermes-agent-index.md#Reference non-Hermes client"
       - "handoffs/active/hermes-agent-index.md#Live Hermes end-to-end smoke checklist"
     source_ref: "research/deep-dives/hermes-agent-v2026-4-23-release.md"
     coordination_note: >
-      Bundled Hermes inference smokes gated behind a quiet window: (a) pin bump v2026.3.23 ->
-      v2026.4.23 + breaking-change audit smoke (basic chat / tool use / streaming / override /
-      multi-turn), (b) reference non-Hermes client live --send/streaming validation, (c) subagent
-      + single-slot llama-server interaction (2+ parallel subagents, same endpoint). Static wiring
-      (plugin bundle F, skills, drift check) already landed; only live validation remains.
+      Bundled Hermes standalone inference smokes gated behind a quiet window: (a) pin-audit/static
+      report for the requested target, (b) standalone backend smoke (health / chat / tool schema /
+      streaming / override / multi-turn), (c) reference non-Hermes client live --send/streaming
+      validation against the standalone backend, and (d) subagent + single-slot llama-server
+      interaction (2+ parallel subagents, same endpoint). This batch entry does not perform an
+      upstream Hermes checkout or pin bump; that remains tracked separately in hermes-agent-index.md.
   phase: 3
   priority: P3
   preconditions:
     stack_lineup: "single-slot llama-server (-np 1, context_length 32768) for Hermes; orchestrator role alias"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       GGML_IQK: 1
     flag_attestation: env_only
@@ -847,7 +876,7 @@
       max_uptime_days: 14
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: stopped
@@ -857,9 +886,7 @@
     protocol_id: "P-SMOKE-1 (Hermes end-to-end smoke checklist)"
     dry_run: false
     command: >
-      python scripts/hermes/hermes_pin_audit.py --target-tag v2026.4.23 &&
-      HERMES_SMOKE_LIVE=1 bash scripts/hermes/run_hermes_smokes.sh --target-tag v2026.4.23
-      --chat --tooluse --streaming --override --multiturn --reference-client --subagent
+      bash scripts/hermes/run_hermes_wave3_batch.sh --target-tag v2026.4.23
     cwd: /mnt/raid0/llm/epyc-root
     concurrency_mode: isolated_bench
     fanout_transport: none
@@ -872,21 +899,21 @@
         - INFRA_BLOCKED
   outcomes:
     expected: >
-      Pin bump audited + smoked; reference non-Hermes client --send/streaming validated; 2+ parallel
+      Standalone Hermes smoke harness, reference non-Hermes client --send/streaming, and 2+ parallel
       subagents each hit the single-slot llama-server independently without cross-talk or wedge.
     gate_table:
-      - gate: "Do the Hermes pin-bump, reference-client, and subagent single-slot smokes all pass clean?"
-        evidence: "pin audit report + chat/tool/stream/override/multi-turn smoke + subagent isolation check, P-SMOKE-1"
+      - gate: "Do the Hermes standalone smoke, reference-client, and subagent single-slot checks all pass clean?"
+        evidence: "pin-audit/static report + chat/tool/stream/override/multi-turn smoke + reference-client + subagent isolation check, P-SMOKE-1"
         fork:
           pass:
-            rule: "all smoke legs pass; no breaking change; subagents isolated on the single slot"
+            rule: "all standalone smoke legs pass; reference client streams; subagents isolated on the single slot"
             action:
-              - "flip Hermes G + pin-bump + reference-client + smoke-checklist checkboxes"
+              - "flip Hermes G + standalone reference-client + smoke-checklist subset checkboxes"
             next: DONE_PASS
           marginal:
-            rule: "smokes pass but pin bump surfaces a minor non-blocking breaking change"
+            rule: "smokes pass but pin-audit/static report surfaces a minor non-blocking compatibility note"
             action:
-              - "record the breaking-change delta; flip smokes; defer pin bump to a follow-up"
+              - "record the compatibility delta; flip standalone smokes; defer actual pin bump to a follow-up"
             next: DONE_MARGINAL_OBS
           fail:
             rule: "any smoke leg garbles / wedges, or subagents collide on the slot"
@@ -907,64 +934,53 @@
     package_to: "coordination/inference-batch/bundles/BULK-hermes-smokes/"
   ledger:
     journal_quarantine_rule: >
-      record pin target, per-leg pass/fail, subagent count + isolation result; smoke rows are
+      record requested target tag, per-leg pass/fail, subagent count + isolation result; smoke rows are
       P-SMOKE-1 (non-decision-gating) and never gate a promotion on their own.
     era_stamp: "E5-cpu-kernel"
 
 # -----------------------------------------------------------------------------
-# 10. internal-kb-rag — AutoWiki page writer + K11 FTS5 lexical weight sweep
+# 10. internal-kb-rag — K11 FTS5 lexical weight sweep + AutoWiki deterministic dry-run
 # -----------------------------------------------------------------------------
 - schema_version: inference_batch.entry.v1
   task_id: BULK-kbrag-autowiki-k11
-  title: "internal-kb-rag — AutoWiki model-backed page writer + K11 FTS5 lexical sweep"
+  title: "internal-kb-rag — K11 FTS5 lexical sweep + AutoWiki deterministic writer dry-run"
   provenance:
     owning_handoff: handoffs/active/internal-kb-rag.md
-    checkbox: "K11 (optional, measure-first) — FTS5 lexical signal"
-    also_flips:
-      - "handoffs/active/internal-kb-rag.md#AutoWiki page generator/writer"
+    checkbox: "K11 batch lexical sweep"
     source_ref: "research/factory-ai-harvest-2026-06-03.md (Part 3E, intake-657)"
     coordination_note: >
-      Two coupled legs. (a) AutoWiki writer: the deterministic source-manifest -> ColBERT refresh
-      loop, output structural lint, and writer_evidence_policy (minimum_confidence: verified, >=3
-      source refs) all landed; only the model-backed page WRITER remains (inference-gated). (b) K11:
-      FTS5 lexical signal landed default-off (orchestrator 74120be); this measures the lexical_weight
-      sweep before any default weight promotion (measure-first). ColBERT MaxSim stays default until
+      Two non-LLM legs. (a) AutoWiki deterministic writer dry-run verifies the structural/evidence
+      scaffold over the live KB-RAG index, but it does NOT close model-backed page drafting or adopt
+      generated pages. (b) K11: FTS5 lexical signal landed default-off (orchestrator 74120be); this
+      measures a lexical_weight sweep over the K7 certification pool after remapping archived handoff
+      evidence paths and refreshing the KB-RAG index if stale. ColBERT MaxSim stays default until
       evidence justifies a lexical weight > 0.
   phase: 3
   priority: P3
   preconditions:
-    stack_lineup: "architect alias (CPU) for the AutoWiki writer; KB-RAG index resident; no production reload"
-    kernel_era: production-consolidated-v6
-    flags_required:
-      GGML_IQK: 1
-    flag_attestation: env_only
-    models:
-      - architect_general
+    stack_lineup: "KB-RAG index resident/refreshed; no llama-server or production reload required"
+    kernel_era: production-consolidated-v7
+    flag_attestation: none
+    models: []
     host_health:
-      tier: quiet_window
+      tier: active_safe
       max_uptime_days: 14
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: stopped
     depends_on: []
   execution:
     driver: command
-    protocol_id: "K7 Flywheel-template recall eval (HotpotQA/LoCoMo) + writer evidence policy"
+    protocol_id: "internal-kb-rag.k11-lexical-sweep.v1"
     dry_run: false
     command: >
-      .venv/bin/python scripts/kb_rag/autowiki_writer.py
-      --index-dir /mnt/raid0/llm/epyc-orchestrator/data/kb_rag/index
-      --output-dir wiki/autowiki_writer_candidate_pages --evidence-policy verified --dry-run ;
-      for w in 0.0 0.1 0.2 0.3; do KB_RAG_LEXICAL_WEIGHT=$w uv run python
-      /mnt/raid0/llm/epyc-orchestrator/scripts/kb_rag/cli.py eval --configs maxsim --cutoffs 3,5,10
-      --output-dir /mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_lexical_w$w ; done
-    cwd: /mnt/raid0/llm/epyc-orchestrator
-    concurrency_mode: same_trial_eval_fanout
-    fanout_transport: placement_queue
-    contention_class: eval_fanout_full_core
+      bash scripts/coordination/run_kbrag_k11_batch.sh --execute --repair-index-if-stale
+    cwd: /mnt/raid0/llm/epyc-root
+    concurrency_mode: serial_noninference
+    fanout_transport: none
+    contention_class: kb_rag_offline_retrieval
     est_wall_clock_h: 2.5
     timeout_s: 18000
     retry_policy:
@@ -973,44 +989,52 @@
         - INFRA_BLOCKED
   outcomes:
     expected: >
-      K11 lexical-weight sweep priced against the ColBERT-only default; AutoWiki writer produces
-      policy-conformant pages (>=3 source refs, verified confidence) on changed sources only.
+      K11 lexical-weight sweep priced against the ColBERT-only default over the remapped K7
+      certification pool; AutoWiki deterministic writer dry-run reports policy-conformant page
+      coverage without calling a model or adopting pages.
     gate_table:
-      - gate: "Does an FTS5 lexical weight > 0 beat ColBERT-only recall AND does the AutoWiki writer meet the evidence policy?"
-        evidence: "recall@10 per lexical_weight vs w=0 baseline (K7 pool) + writer structural-lint/evidence-policy pass rate"
+      - gate: "Does an FTS5 lexical weight > 0 beat ColBERT-only recall without increasing miss risk?"
+        evidence: "k11_lexical_weight_sweep.json: recall@10 per lexical_weight vs w=0 baseline over remapped K7 cert pool, plus AutoWiki dry-run policy summary"
         fork:
           pass:
-            rule: "a lexical_weight improves recall beyond the 2pp noise band with 0 new missed-all-evidence cases AND writer pages pass policy"
+            rule: "a lexical_weight improves recall beyond the 2pp noise band with 0 new missed-all-evidence cases, and AutoWiki dry-run ok=true"
             action:
-              - "flip K11 + AutoWiki-writer checkboxes; propose the winning lexical_weight default to operator"
+              - "flip K11; propose the winning lexical_weight default to operator"
             next: DONE_PASS
           marginal:
-            rule: "lexical uplift within noise; writer pages pass policy but no retrieval win"
+            rule: "lexical uplift within noise; AutoWiki dry-run ok=true but no retrieval win"
             action:
-              - "keep lexical_weight=0 default; adopt AutoWiki writer as observation-gated"
+              - "keep lexical_weight=0 default; leave model-backed AutoWiki drafting open"
             next: DONE_MARGINAL_OBS
           fail:
-            rule: "lexical weight regresses recall/miss-risk OR writer pages fail the evidence policy"
+            rule: "lexical weight regresses recall/miss-risk OR AutoWiki dry-run fails the evidence policy"
             action:
-              - "keep ColBERT-only default; hold the writer; document in internal-kb-rag"
+              - "keep ColBERT-only default; document in internal-kb-rag"
             next: FAILED_REVERTED
           infra:
-            classify: "index build failure / eval fan-out dispatch error / architect alias down"
+            classify: "ColBERT dependency missing / stale index rebuild failure / case remap unresolved / eval harness failure"
             action:
-              - "rebuild the KB-RAG index; re-run the sweep via the eval-concurrency path"
+              - "repair dependency/index/case-remap inputs, then rerun the offline K11 sweep"
           ambiguous:
             action:
-              - "hold for operator; attach per-weight recall rows + sample writer pages"
+              - "hold for operator; attach per-weight recall rows + AutoWiki dry-run summary"
             next: HELD_AMBIGUOUS
   artifacts:
     outputs:
-      - "data/kb_rag/eval/k11_lexical_weight_sweep.json"
-      - "wiki/autowiki_writer_candidate_pages/"
+      - "/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_lexical_weight_sweep.json"
+      - "/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_lexical_weight_sweep/"
+      - "/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_autowiki_writer_dryrun_summary.json"
+      - "/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_cert_cases_remapped.json"
+      - "/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_cert_case_remap_report.json"
+      - "/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_index_freshness_before.json"
+      - "/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_index_freshness_after.json"
+      - "/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_index_build_summary.json"
     package_to: "coordination/inference-batch/bundles/BULK-kbrag-autowiki-k11/"
   ledger:
     journal_quarantine_rule: >
-      record lexical_weight, recall@10, missed-all-evidence count, writer page policy-pass rate;
-      quarantine diagnostic_only if the K7 pool version changed mid-run.
+      record lexical_weight, recall@10, missed-all-evidence count, case-remap count, index
+      freshness, and AutoWiki dry-run policy summary; quarantine diagnostic_only if unresolved
+      evidence paths remain or if the K7 pool version changed mid-run.
     era_stamp: "E5-cpu-kernel"
 
 # -----------------------------------------------------------------------------
@@ -1018,25 +1042,22 @@
 # -----------------------------------------------------------------------------
 - schema_version: inference_batch.entry.v1
   task_id: BULK-langgraph-tm7-parity
-  title: "TM-7 — live real-node run_task_lg vs run_task parity (durable-resume gate)"
+  title: "TM-7 — live real-node run_task_lg vs run_task parity"
   provenance:
     owning_handoff: handoffs/active/reviewer-trace-materialization.md
-    checkbox: "TM-7"
-    also_flips:
-      - "handoffs/active/reviewer-trace-materialization.md#TM-8 — Coverage gate"
+    checkbox: "TM-7 live parity residual"
     source_ref: "intake-847 (LangGraph adopt_component) + research/deep-dives/2026-07-16-architect-reviewer-control-plane-audit.md"
     coordination_note: >
       TM-7 code landed 2026-07-17 (checkpointing.py + run_task_lg_durable/resume_task_lg,
       AsyncSqliteSaver, crash+interrupt->Command(resume) proven 10/10 with STUB nodes). REMAINING
       GATED leg: live real-node run_task_lg parity vs run_task on a fixed task set BEFORE enabling
-      interrupt-based review gates (H3). Hazard: node re-execution on resume — _execute_turn/REPL
-      side effects must be idempotent. Imports scoped strictly to langgraph +
-      langgraph-checkpoint-sqlite (minimum-imports).
+      interrupt-based review gates (H3). This live leg does not satisfy TM-8 coverage by itself,
+      and must fail closed if either arm has an empty decision chain.
   phase: 3
   priority: P2
   preconditions:
-    stack_lineup: "production lineup for real-node execution; data/graph_checkpoints.sqlite present"
-    kernel_era: production-consolidated-v6
+    stack_lineup: "production lineup for real-node execution; data/trace/parity_task_set.json present"
+    kernel_era: production-consolidated-v7
     flags_required:
       GGML_IQK: 1
     flags_forbidden:
@@ -1050,7 +1071,7 @@
       max_uptime_days: 14
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: stopped
@@ -1061,7 +1082,7 @@
     dry_run: false
     command: >
       .venv/bin/python scripts/trace/run_task_lg_parity.py --arms run_task_lg,run_task
-      --fixed-task-set data/trace/parity_task_set.json --seed 42
+      --fixed-task-set data/trace/parity_task_set.json --seed 42 --execute
     cwd: /mnt/raid0/llm/epyc-orchestrator
     concurrency_mode: paired_sequential
     fanout_transport: none
@@ -1074,31 +1095,31 @@
         - INFRA_BLOCKED
   outcomes:
     expected: >
-      run_task_lg reaches output parity with run_task on the fixed task set with idempotent resume
-      (no duplicated REPL side effects), clearing the gate to enable interrupt-based review gates (H3).
+      run_task_lg reaches decision-chain parity with run_task on the fixed task set, with non-empty
+      chains on both arms, clearing the live-parity prerequisite for interrupt-based review gates (H3).
     gate_table:
-      - gate: "Is run_task_lg at parity with run_task on real nodes, with idempotent resume?"
-        evidence: "per-task output equivalence + resume side-effect audit (no duplicate _execute_turn/REPL effects), P-AB-1, seed 42"
+      - gate: "Is run_task_lg at parity with run_task on real nodes with non-empty decision chains?"
+        evidence: "per-task decision-chain parity + non-empty trace coverage, P-AB-1, seed 42"
         fork:
           pass:
-            rule: "output parity on all fixed tasks AND clean idempotent resume"
+            rule: "decision-chain parity on all fixed tasks AND non-empty chains on both arms"
             action:
-              - "flip TM-7 remaining-gated + TM-8 coverage checkboxes; unblock H3 interrupt review gates"
+              - "flip TM-7 live parity residual; keep TM-8 coverage separate"
             next: DONE_PASS
           marginal:
-            rule: "parity holds but resume shows benign re-execution with no state corruption"
+            rule: "parity holds but chain coverage is partial or otherwise diagnostic-only"
             action:
-              - "record observation; keep interrupt gates OFF pending an idempotency fix"
+              - "record observation; keep interrupt gates OFF pending trace coverage repair"
             next: DONE_MARGINAL_OBS
           fail:
-            rule: "output divergence OR resume duplicates side effects / corrupts state"
+            rule: "decision-chain divergence OR empty decision chain on either arm"
             action:
-              - "keep GENERALIZED_INTERRUPTS forbidden; document the idempotency hazard in checkpointing.py"
+              - "keep GENERALIZED_INTERRUPTS forbidden; document the live parity / trace coverage defect"
             next: FAILED_REVERTED
           infra:
-            classify: "checkpointer DB error / AsyncSqliteSaver failure / node crash unrelated to parity"
+            classify: "trace DB error / node crash unrelated to parity"
             action:
-              - "verify data/graph_checkpoints.sqlite; re-run the parity set in a fresh quiet window"
+              - "verify data/trace/events.sqlite and the fixed task set; re-run the parity set in a fresh quiet window"
           ambiguous:
             action:
               - "hold for operator; attach per-task diff + resume side-effect trace"
@@ -1109,6 +1130,6 @@
     package_to: "coordination/inference-batch/bundles/BULK-langgraph-tm7-parity/"
   ledger:
     journal_quarantine_rule: >
-      record task id, run_task vs run_task_lg output equivalence, resume side-effect count, seed;
+      record task id, run_task vs run_task_lg decision-chain parity, trace chain lengths, seed;
       quarantine diagnostic_only if the fixed task set changed between arms.
     era_stamp: "E5-cpu-kernel"

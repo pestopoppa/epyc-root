@@ -1,7 +1,7 @@
 # Hermes Agent — Integration Index
 
 **Status**: active
-**Updated**: 2026-07-16
+**Updated**: 2026-07-21
 **Purpose**: dispatch surface for Hermes/OpenGauss-derived UX, shell, and agent-runtime work.
 
 > Completed pre-2026-06-19 checklist and research-intake chronology was compacted to [`../archived/hermes-agent-index-history-through-2026-06-19.md`](../archived/hermes-agent-index-history-through-2026-06-19.md). Current implementation status lives in the owning handoffs below.
@@ -10,10 +10,10 @@
 
 | Priority | Work | Owner / source | Gate |
 |---|---|---|---|
-| MED | Reference non-Hermes client live validation | [`hermes-outer-shell.md`](hermes-outer-shell.md) Phase P | Dry-run `scripts/hermes/reference_openai_client.py` now covers `x_*`, streaming, native `tools`, and `tool_choice`; live `--send` override/streaming validation requires a quiet inference window. |
-| MED | Hermes upstream pin bump and breaking-change audit | [`hermes-outer-shell.md`](hermes-outer-shell.md) P2.6 (cross-ref in hermes-outer-shell.md L278 corrected P2.5→P2.6 ✅ 2026-07-16) | `scripts/hermes/hermes_pin_audit.py` reports current pin/target/smoke gates; target choice + checkout + smoke tests require a quiet window. |
+| MED | Reference non-Hermes client live validation | [`hermes-outer-shell.md`](hermes-outer-shell.md) Phase P | Standalone Hermes `8099` `--send --stream` smoke passed 2026-07-21; the orchestrator `8000` override-semantics validation is still open. |
+| MED | Hermes upstream pin bump and breaking-change audit | [`hermes-outer-shell.md`](hermes-outer-shell.md) P2.6 (cross-ref in hermes-outer-shell.md L278 corrected P2.5→P2.6 ✅ 2026-07-16) | Smoke harness passed 2026-07-21, but no upstream checkout was performed. Current `/mnt/raid0/llm/hermes-agent` is `main...origin/main [ahead 1]`; target selection/checkout remains open. |
 | MED | tool-use-eval-contract — journal tool-call evidence under repaired contract | [`tool-use-eval-contract.md`](tool-use-eval-contract.md) | Post-2026-07-11: REPL code-extraction repaired (`extract_code_from_response`: `<end_prompt>` stripping, unanchored Gemma thinking-channel regex; toolrunner backend crash fixed; sentinel suite 4/5 pass). Remaining = journal shows nonzero `total_tool_calls` under the repaired `8be68732` prompt contract + usefulness evidence. This starves tool-output-compression P4e telemetry (1/100 required compressed-call observations), so it is upstream of that rollout decision. Owning-handoff open item: measure read-only multi-tool chains from full logs BEFORE any parallel-batching executor work. |
-| MED | Subagent + single-slot llama-server validation | [`hermes-outer-shell.md`](hermes-outer-shell.md) Phase 2 validation G | Requires controlled inference; do not overlap throughput-sensitive evidence windows. |
+| DONE | Subagent + single-slot llama-server validation | [`hermes-outer-shell.md`](hermes-outer-shell.md) Phase 2 validation G | Closed 2026-07-21: `BULK-hermes-smokes-20260721T042834Z` passed 2/2 parallel subagents on one `8099` slot, with cleanup returning to quiet. |
 | LOW | Multi-user auth flow | [`hermes-outer-shell.md`](hermes-outer-shell.md) | Deferred while deployment remains single-user. |
 | LOW | Open-source extraction sketch | Future/open-source track | Do not drive abstraction until MemRL/routing validation justifies it. |
 | LOW | Centaur credential-egress-proxy (intake-696) — evaluate a placeholder-credential egress-proxy pattern (agents see placeholders; real secrets injected only on authorized outbound) as a credential-hygiene design note for the outer shell; see hermes-outer-shell.md RIU 2026-06-20. The other Centaur/eve/ruflo patterns are duplicative of existing work (HOS-Pattern-S / strategy_store / pi-agent hooks); ruflo federation out-of-scope. | [`hermes-outer-shell.md`](hermes-outer-shell.md) RIU 2026-06-20 | Design note only; no implementation gate (added 2026-06-20 via research-intake batch deep-dive). |
@@ -97,8 +97,12 @@ After completing a row, update the owning handoff, this index, and `progress/YYY
 ## Progress checklist
 
 - [ ] Reference non-Hermes client live --send/streaming validation (quiet window)
+  - [x] Standalone Hermes `8099` reference-client `--send --stream` smoke ✅ 2026-07-21 (`BULK-hermes-smokes-20260721T042834Z`, final 13/13)
+  - [ ] Orchestrator `8000` override-semantics validation: role override, force-model, escalation cap, REPL disable, routing metadata, streaming
 - [ ] Hermes upstream pin bump + breaking-change audit + smoke
-- [ ] Subagent + single-slot llama-server validation (controlled inference)
+  - [x] Standalone smoke harness and pin-audit leg validated ✅ 2026-07-21 (`BULK-hermes-smokes-20260721T042834Z`, final 13/13)
+  - [ ] Actual upstream target selection/fetch/checkout/setup remains open; current Hermes checkout is ahead of `origin/main`
+- [x] Subagent + single-slot llama-server validation (controlled inference) ✅ 2026-07-21 (`BULK-hermes-smokes-20260721T042834Z`, 2/2 parallel subagents, one slot, no wedge)
 - [ ] Multi-user auth flow (deferred while single-user)
 - [ ] repl-turn-efficiency S4 Omega A/B measurement gate (quiet window + MEASUREMENT.md protocol)
 - [ ] tool-use-eval-contract native-tools sentinel/parity + cost-aware delegation
@@ -106,3 +110,5 @@ After completing a row, update the owning handoff, this index, and `progress/YYY
   - **Read-only multi-tool-chain measurement DONE ✅ 2026-07-17 (B4)** — ran `mine_repl_patterns.py` read-only over the full 3187-record `seeding_diagnostics.jsonl`: 807 REPL rows, 117 REPL+tools (14.5%), **30 multi-tool (3.7%), 30/30 read-only, 0/30 parallelized**, and all 30 are the identical `web_search×3` shape (2 per suite × 15 suites = synthetic, not organic). **Build-or-not verdict: NO-BUILD** a new parallel-batching REPL executor (existing `execute_parallel_calls()` already covers the batchable case and goes unused; independence unprovable from this log). Full block in [`tool-use-eval-contract.md`](tool-use-eval-contract.md) "Tool-Use Chain Analysis — 2026-07-17 (B4)". **The `journal nonzero total_tool_calls + usefulness` half remains OPEN (inference-gated)**, so this box stays unchecked.
 - [ ] hermes-outer-shell: test x_max_escalation with full graph (depends on LangGraph migration) — hermes-outer-shell.md line ~252
 - [ ] Live Hermes end-to-end smoke checklist: multi-turn, code exec, MEMORY.md persistence, latency, compression trigger, delegation (previously only implicit in the pin-bump row)
+  - [x] P-SMOKE-1 standalone subset: health/chat/tool schema/streaming/override/multi-turn/reference-client/subagent ✅ 2026-07-21 (`BULK-hermes-smokes-20260721T042834Z`)
+  - [ ] Hermes CLI-level code execution, `MEMORY.md` persistence, latency, and compression-trigger checks remain open.

@@ -288,11 +288,13 @@ Source: [`research/deep-dives/hermes-agent-v2026-4-23-release.md`](../../researc
 
 #### Phase 2 Validation (added 2026-04-24 from intake-454 deep-dive)
 
-- [ ] **G — Validate subagent + single-slot llama-server interaction** (3–5 h, depends on D and F; **REQUIRES INFERENCE — Wave 2**)
+- [x] **G — Validate subagent + single-slot llama-server interaction** (3–5 h, depends on D and F; **REQUIRES INFERENCE — Wave 2**) ✅ 2026-07-21 (BULK-hermes-smokes 20260721T042834Z: 13/13 final smoke; 2/2 subagents serialized on single-slot 8099; cleanup quiet)
   - **Resolves Question 5** above (swarm coordination)
   - Spawn 2+ parallel subagents via the new orchestrator role; each hits a single-slot llama-server independently
   - Confirm: no head-of-line blocking, correct request serialization, no shared-state corruption
   - If issues found: document the failure mode and either (i) configure spawn-depth ceiling appropriately, or (ii) move single-slot servers behind a request-broker
+  - 2026-07-21 evidence: inference-batch run `BULK-hermes-smokes-20260721T042834Z` passed `P-SMOKE-1` with 13/13 checks, including `live:subagent` (2/2 parallel subagents on one slot), `live:multiturn`, `live:streaming`, and `live:reference-client`. Artifacts: `coordination/inference-batch/bundles/BULK-hermes-smokes/`.
+  - Harness repairs landed during validation: the batch wrapper now writes the manifest-declared JSONL, starts/cleans only its own `8099` backend, resets per-attempt logs, uses the model's built-in Qwen3-Coder template with native `--reasoning off`, bounds the reference-client smoke with `max_tokens`, and avoids `pipefail` false negatives in streaming.
 
 #### Phase 2++ — Multi-Client Generalization (added 2026-04-25 from local-RAG architecture review)
 
@@ -313,6 +315,7 @@ Hermes is one *client* of the orchestrator's `/v1/chat/completions` + `x_*` over
   - [x] Add dry-run reference bare-client wiring helper: `scripts/hermes/reference_openai_client.py` prints cURL and OpenAI SDK recipes for `x_orchestrator_role`, `x_force_model`, `x_max_escalation`, `x_disable_repl`, and `x_show_routing` without sending traffic unless `--send` is explicit. ✅ 2026-07-06
   - [x] Extend the reference helper into a quiet-window validation harness for `stream`, native OpenAI `tools`, and `tool_choice` without sending traffic by default. ✅ 2026-07-06
   - [x] Add root-side regression coverage for dry-run `tool_choice=none` so print-only validation does not accidentally convert explicit no-tool requests back to `auto`. ✅ 2026-07-06
+  - [x] Validate the reference helper can live `--send --stream` against the standalone Hermes `8099` backend. ✅ 2026-07-21 (`BULK-hermes-smokes-20260721T042834Z`, bounded `max_tokens=16`, final smoke 13/13)
   - [ ] Run live `--send` validation in a quiet window and verify role override, force-model, escalation cap, REPL disable, routing metadata, and streaming behavior against the current `/v1/chat/completions` endpoint.
 - [x] **Q — Sufficiency call: do not absorb client-side concerns into the orchestrator** (~30 min, design discipline note) — recorded in `## Pros` above as the client/orchestrator separation rule.
   - Decision rule to record explicitly: per-client UX (slash commands, prompts, conversation memory) lives in the **client**, not the orchestrator. The orchestrator exposes overrides; clients map their UX to override values. This is the same discipline as the Hermes slash-command → `x_*` mapping — generalized as a principle, not a one-off
@@ -358,11 +361,15 @@ output shows `/mnt/raid0/llm/hermes-agent` at
 the expected untracked upstream `HERMES.md`, which must be resolved or
 documented before any checkout.
 
-No live bump has been performed. Next quiet-window action is to choose the
-target tag explicitly, fetch tags, checkout the chosen tag, rerun
-`scripts/hermes/setup_hermes.sh`, then smoke: reference-client print-only,
-live `/v1/chat/completions` overrides/streaming, Hermes basic chat, tool use,
-multi-turn context, and compression trigger.
+No live bump has been performed. 2026-07-21 update: `BULK-hermes-smokes`
+validated the standalone smoke harness, but did **not** fetch/checkout the
+target. Current Hermes checkout is `v2026.3.23-44-g532a49f1` on
+`main...origin/main [ahead 1]` with untracked `HERMES.md`; target
+`v2026.4.23` is not the latest visible remote tag (`v2026.7.20`) and is absent
+from local tags. Next pin-bump action is still to choose the target branch/tag
+deliberately, resolve/document the local ahead commit, fetch tags, checkout the
+chosen target, rerun `scripts/hermes/setup_hermes.sh`, then smoke the actual
+Hermes checkout.
 
 ## Research Intake Updates
 

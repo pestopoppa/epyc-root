@@ -1,0 +1,49 @@
+==============================================
+Pre-Session Health Check (profile: batch)
+==============================================
+
+--- Filesystem Health ---
+✅ PASS: /mnt/raid0 free 213G (>= 100G warn / 20G fail)
+✅ PASS: /mnt/raid0/llm exists
+⚠️  WARN: /tmp/claude bind-mounted (advisory in batch)
+
+--- Environment Variables ---
+✅ PASS: TMPDIR set
+✅ PASS: TMPDIR under LLM_ROOT
+✅ PASS: HF_HOME set
+✅ PASS: HF_HOME under LLM_ROOT
+
+--- Required Directories ---
+✅ PASS: /mnt/raid0/llm/tmp exists
+✅ PASS: /mnt/raid0/llm/cache exists
+✅ PASS: /mnt/raid0/llm/LOGS exists
+✅ PASS: /mnt/raid0/llm/models exists
+
+--- Process Status ---
+⚠️  WARN: Claude process already running
+node       65353  1.5  0.0 6773304 574920 pts/14 Sl+  Jul20  10:32 claude
+node      262076  0.0  0.0  83400  7836 ?        Sl   Jul20   0:00 tail -f -n +1 /tmp/claude-1000/-workspace/355c9594-506e-4e31-a544-453408eefcb7/scratchpad/ablation.log
+node     2201342  0.1  0.0 5507428 60348 pts/4   Sl+  Jul17   7:16 docker exec -i -t -u node -e CODEX_HOME=/home/node/.codex -e HOME=/home/node -e NPM_CONFIG_FUND=false -e NPM_CONFIG_UPDATE_NOTIFIER=false -e SHELL=/usr/bin/fish -e LANG=C.UTF-8 -e XDG_CONFIG_HOME=/home/node/.config -e NPM_CONFIG_PROGRESS=false -e PATH=/opt/rocm/bin:/home/node/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/share/npm-global/bin -e SHLVL=1 -e HOSTNAME=Beelzebub -e EDITOR=vim -e USER=node -e NODE_OPTIONS=--max-old-space-size=4096 -e VISUAL=vim -e NPM_CONFIG_CACHE=/home/node/.npm -e DEVCONTAINER=true -e NPM_CONFIG_AUDIT=false -e TZ=UTC -e CLAUDE_CONFIG_DIR=/home/node/.claude -e NPM_CONFIG_PREFIX=/usr/local/share/npm-global -e LD_LIBRARY_PATH=/opt/AMD/aocc-compiler-5.0.0/lib:/mnt/raid0/llm/llama.cpp/build/bin:/mnt/raid0/llm/llama.cpp-dflash/build/bin:/opt/rocm/lib -e ROCM_PATH=/opt/rocm -e HIP_PATH=/opt/rocm -w /workspace 52cd1c0372f8d4032692443ffa9c407e568e892f861c5d3fe8f0e20a29534cb2 tmux new -As agent
+node     2203630  1.1  0.0 75346696 674764 pts/4 Sl+  Jul17  57:31 claude
+⚠️  WARN: Storage monitor not running - consider starting it
+
+--- System Resources ---
+✅ PASS: Available RAM >100GB
+✅ PASS: CPU governor is 'performance'
+✅ PASS: kernel.numa_balancing is 0
+✅ PASS: THP enabled is 'always'
+✅ PASS: THP defrag is 'always'
+✅ PASS: kernel.perf_event_paranoid <= 1
+
+==============================================
+Health Check Summary
+==============================================
+  Passed:   16 ✅
+  Warnings: 3 ⚠️
+  Failed:   0 ❌
+
+⚠️  WARNINGS PRESENT - Review above
+
+Recommended actions:
+  • Start monitor: bash /mnt/raid0/llm/epyc-root/scripts/session/monitor_storage.sh &
+

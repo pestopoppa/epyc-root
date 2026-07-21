@@ -58,8 +58,8 @@ Q8 for the quality bench unless throughput is being measured, then use the produ
 
 ## Evals — objective-scored ONLY (no model-as-judge; the reviewer work proved that's near-random)
 - **Phase 1 (decisive on reasoning depth):**
-  - **AIME'25** (objective numeric answers) — *new adapter needed* (see task list).
-  - **GPQA-Diamond** (objective MC) — **reuse** the registered `gpqa` adapter in `v7_quality_gate_runner.py`.
+  - **AIME'25** (objective numeric answers) — use the new `aime25` adapter landed in research `51868f72`.
+  - **GPQA-Diamond** (objective MC) — use the new `gpqa_diamond` adapter landed in research `51868f72`; the older `gpqa` adapter is GPQA main, not Diamond.
   - **MMLU-Pro knowledge control** — **reuse** the `mmlu_pro` adapter. *The control is the point:* it
     should show IQ2 ≈ Q4 on knowledge **while** AIME/GPQA reveal any reasoning gap — the asymmetry the
     Δ0.0pp pool was too knowledge-heavy to expose.

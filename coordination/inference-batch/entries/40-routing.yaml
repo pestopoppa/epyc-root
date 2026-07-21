@@ -33,7 +33,7 @@
   priority: P3
   preconditions:
     stack_lineup: "production lineup, frontdoor full + quarter instances; placement SM enabled (PLACEMENT_STATE_MACHINE=1)"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       GGML_IQK: 1
       PLACEMENT_STATE_MACHINE: 1
@@ -48,9 +48,9 @@
       max_uptime_days: 7
       cache_state: drop_caches
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
-      contention_matrix: not_required
+      contention_matrix: v7-recert-required
     autopilot: stopped
     operator_gates: []
     depends_on: []
@@ -60,7 +60,9 @@
     dry_run: false
     command: >
       cd /mnt/raid0/llm/epyc-orchestrator &&
+      env AUTOPILOT_SHAPEKEYED_STEP2_SMOKE=1
       .venv/bin/python scripts/autopilot/shapekeyed_step2_smoke.py --execute
+      --output orchestration/reports/shape_keyed_step2_smoke.json
     cwd: /mnt/raid0/llm/epyc-orchestrator
     concurrency_mode: same_trial_eval_fanout
     fanout_transport: placement_queue
@@ -139,7 +141,7 @@
   priority: P3
   preconditions:
     stack_lineup: "production lineup; coder_escalation + workers; edit-transaction review hook staged default-off"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       GGML_IQK: 1
     flags_forbidden:
@@ -153,9 +155,9 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
-      contention_matrix: not_required
+      contention_matrix: v7-recert-required
     autopilot: stopped
     depends_on: []
   execution:
@@ -163,6 +165,7 @@
     protocol_id: "P-AB-1 (paired edit-transaction A/B, patch-verifier-graded)"
     dry_run: false
     command: >
+      env AUTOPILOT_PAIRED_AB_INFERENCE=1
       .venv/bin/python scripts/analysis/run_paired_ab.py --arms edit_transaction,baseline
       --verifier src/verification/patch_verifier.py --n 100 --suite multifile_edit --seed 42
       --execute
@@ -241,7 +244,7 @@
   priority: P3
   preconditions:
     stack_lineup: "SINGLE-WORKER API (--workers 1) so session affinity is not confounded; placement SM enabled"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       GGML_IQK: 1
       PLACEMENT_STATE_MACHINE: 1
@@ -253,9 +256,9 @@
       max_uptime_days: 7
       cache_state: drop_caches
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
-      contention_matrix: not_required
+      contention_matrix: v7-recert-required
     autopilot: stopped
     operator_gates: []
     depends_on: []
@@ -265,8 +268,12 @@
     dry_run: false
     command: >
       cd /mnt/raid0/llm/epyc-orchestrator &&
+      AUTOPILOT_MIGRATION_PROBE_INFERENCE=1
       .venv/bin/python scripts/autopilot/migration_probe.py
-      --role frontdoor --oscillation 1,4,4,1,1,1 --safe-slots 3 --execute
+      --role frontdoor --oscillation 1,4,4,1,1,1 --safe-slots 3
+      --worker-count 1
+      --output orchestration/reports/j2j3_single_worker_migration_probe.jsonl
+      --execute
     cwd: /mnt/raid0/llm/epyc-orchestrator
     concurrency_mode: same_trial_eval_fanout
     fanout_transport: placement_queue
@@ -310,7 +317,7 @@
             next: HELD_AMBIGUOUS
   artifacts:
     outputs:
-      - "orchestration/reports/j2j3_single_worker_migration_probe.json"
+      - "orchestration/reports/j2j3_single_worker_migration_probe.jsonl"
     package_to: "coordination/inference-batch/bundles/ROUTE-A3-j2j3-single-worker/"
   ledger:
     journal_quarantine_rule: >

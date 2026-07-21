@@ -52,9 +52,9 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: 4320d9b2ebdb4ad0200da91c6b1f807f77f44f931311d240cf8a8f04546535b9
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
-      contention_matrix: not_required
+      contention_matrix: v7-recert-required
     autopilot: stopped
     operator_gates:
       - OP-quiet-window
@@ -66,7 +66,16 @@
     command: >
       .venv/bin/python scripts/benchmark/eval_batch_serving_evaltower_window.py
       --mode calibration --suite scoring_verifiers --split HE-R+
-      --roles worker_general,frontdoor --full --seed 42
+      --roles frontdoor --full --seed 42
+      --min-eval-concurrency 3
+      --output-dir orchestration/reports/eval_tower_calibration_baseline_HE-R+/frontdoor
+      --api-url http://localhost:8000 --apply --confirm-clean-window
+      &&
+      .venv/bin/python scripts/benchmark/eval_batch_serving_evaltower_window.py
+      --mode calibration --suite scoring_verifiers --split HE-R+
+      --roles worker_general --full --seed 42
+      --allow-serial
+      --output-dir orchestration/reports/eval_tower_calibration_baseline_HE-R+/worker_general
       --api-url http://localhost:8000 --apply --confirm-clean-window
     cwd: /mnt/raid0/llm/epyc-orchestrator
     concurrency_mode: same_trial_eval_fanout
@@ -147,7 +156,7 @@
   priority: P2
   preconditions:
     stack_lineup: "production lineup + ThinkPRM-1.5B loaded sequentially at T2"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flag_attestation: env_only
     models:
       - thinkprm-1.5b-q4km
@@ -156,6 +165,7 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -249,7 +259,7 @@
   priority: P2
   preconditions:
     stack_lineup: "Ouro-2.6B transformers-CPU serial (feeds T0 sentinel)"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flag_attestation: env_only
     models:
       - ouro-2.6b-thinking
@@ -258,6 +268,7 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -353,7 +364,7 @@
   priority: P2
   preconditions:
     stack_lineup: "4 production roles (frontdoor + worker_general + architect_general + coder_escalation)"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flag_attestation: env_only
     models:
       - frontdoor
@@ -365,9 +376,9 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
-      contention_matrix: not_required
+      contention_matrix: v7-recert-required
     autopilot: stopped
     operator_gates:
       - OP-quiet-window
@@ -517,7 +528,7 @@
   priority: P2
   preconditions:
     stack_lineup: "production lineup reloaded with AUTOPILOT_SKILL_EFFICACY_GATE=1 in launch env"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       AUTOPILOT_SKILL_EFFICACY_GATE: 1
     flags_forbidden:
@@ -531,9 +542,9 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
-      contention_matrix: not_required
+      contention_matrix: v7-recert-required
     autopilot: stopped
     operator_gates:
       - OP-quiet-window
@@ -616,7 +627,7 @@
     owning_handoff: handoffs/active/eval-tower-verification.md
     checkbox: "EV-11c"
     also_flips:
-      - "handoffs/active/backlog-roi-audit-2026-07-14.md#RE-3"
+      - "handoffs/active/backlog-roi-audit-2026-07-14.md#RE-1"
     source_ref: "handoffs/active/eval-tower-verification.md#EV-11c fresh math re-baseline (INFERENCE -> batch manifest)"
     coordination_note: >
       PRECONDITION CHAIN (all BLOCKING): (a) EV-11a companion fix landed —
@@ -636,7 +647,7 @@
   priority: P1
   preconditions:
     stack_lineup: "production default lineup (frontdoor + worker_general + architect_general)"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flag_attestation: env_only
     models:
       - frontdoor
@@ -647,7 +658,7 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -746,14 +757,14 @@
       Standalone model-batched window (bulk-inference-campaign.md standalone queue),
       NOT part of the eval-tower phase-2 cluster's shared reload — group by model so
       each GGUF loads once. Deterministic scoring only; no judge. Dataset present at
-      epyc-inference-research/data/longcot-mini/ (Arrow). FLAG: exact suite adapter /
-      runner CLI for LongCoT-Mini not yet verified in-repo — resolve via B2
-      run_batch_entry.py before execution.
+      epyc-inference-research/data/longcot-mini/ (Arrow). Adapter + deterministic
+      scorer are verified in-repo; the command below uses an explicit run id so
+      the post-run scorer can discover every per-role/config result file.
   phase: 2
   priority: P2
   preconditions:
-    stack_lineup: "single local model per window (standalone, model-batched)"
-    kernel_era: production-consolidated-v6
+    stack_lineup: "optimized production-consolidated-v7 quarter stack; one role fans out across its four CPU quarter ports at a time"
+    kernel_era: production-consolidated-v7
     flag_attestation: env_only
     models:
       - frontdoor
@@ -763,6 +774,7 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -770,19 +782,34 @@
       - OP-quiet-window
     depends_on: []
   execution:
-    driver: clean_window_entry
+    driver: command
     protocol_id: "bulk-inference.longcot-mini-calibration.v1"
     dry_run: false
     command: >
-      .venv/bin/python scripts/benchmark/run_benchmark.py --suite longcot_mini
-      --model <role> --server-mode --skip-speed-tests &&
-      .venv/bin/python scripts/benchmark/score_longcot_run.py
-      benchmarks/results/runs/<RUN_ID>/<role>_<CONFIG>.json
-      --output benchmarks/results/runs/<RUN_ID>/longcot_mini_score.json
+      RUN_ID="${LONGCOT_MINI_RUN_ID:-longcot_mini_re4_$(date -u +%Y%m%dT%H%M%SZ)}";
+      OUT_DIR="data/longcot_mini_calibration/${RUN_ID}";
+      mkdir -p "${OUT_DIR}";
+      .venv/bin/python scripts/benchmark/longcot_mini_stack_runner.py
+      --run-id "${RUN_ID}"
+      --role-ports frontdoor=8080,8180,8280,8380
+      --role-ports worker_general=8082,8182,8282,8382
+      --endpoint chat
+      --prompt-mode concise_solution
+      --force-solution-grammar
+      --max-tokens "${LONGCOT_MINI_MAX_TOKENS:-2048}"
+      --timeout "${LONGCOT_MINI_TIMEOUT_S:-900}"
+      --summary-out "${OUT_DIR}/stack_runner_summary.json" &&
+      for result in benchmarks/results/runs/"${RUN_ID}"/frontdoor_*.json
+      benchmarks/results/runs/"${RUN_ID}"/worker_general_*.json; do
+        test -f "${result}" || { echo "missing LongCoT-Mini result files for ${RUN_ID}" >&2; exit 2; };
+        stem="$(basename "${result}" .json)";
+        .venv/bin/python scripts/benchmark/score_longcot_run.py "${result}"
+        --output "${OUT_DIR}/${stem}_score.json";
+      done
     cwd: /mnt/raid0/llm/epyc-inference-research
     concurrency_mode: isolated_bench
     fanout_transport: none
-    contention_class: standalone_model_window
+    contention_class: optimized_v7_quarter_ports
     est_wall_clock_h: 4.0
     timeout_s: 21600
     retry_policy:
@@ -826,6 +853,7 @@
   artifacts:
     outputs:
       - "data/longcot_mini_calibration/<run_id>/"
+      - "benchmarks/results/runs/<run_id>/{frontdoor,worker_general}_*.json"
     package_to: "coordination/inference-batch/bundles/RE-4/"
   ledger:
     journal_quarantine_rule: >
@@ -864,7 +892,7 @@
   priority: P3
   preconditions:
     stack_lineup: "reviewer/architect/grader pairings from pool-gen; eval-tower T0/T1 servers"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v7
     flags_required:
       AUTOPILOT_SCREENING_TIER_INFERENCE: 1
     flag_attestation: env_only
@@ -873,9 +901,9 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: true
-      contention_matrix: not_required
+      contention_matrix: v7-recert-required
     autopilot: any
     operator_gates:
       - OP-quiet-window

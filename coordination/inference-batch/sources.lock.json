@@ -1,20 +1,20 @@
 {
   "schema_version": "inference_batch.sources_lock.v1",
-  "generated_at": "2026-07-20T14:39:10Z",
+  "generated_at": "2026-07-21T09:33:07Z",
   "repos": {
     "epyc-root": {
-      "path": "/mnt/raid0/llm/epyc-root",
-      "sha": "8f70d3623c1f6fe712ac1d4ff4dda2f3db1e7516",
+      "path": "/workspace",
+      "sha": "2fb97522371e2a2cf40fc4a2c9f2f22948fadbe7",
       "dirty": true
     },
     "epyc-orchestrator": {
       "path": "/mnt/raid0/llm/epyc-orchestrator",
-      "sha": "987762a148106d17717746a90bfbb75ea5ae4a37",
+      "sha": "1e653f9cec69c4945c27899c2a8fcc5f67798473",
       "dirty": true
     },
     "epyc-inference-research": {
       "path": "/mnt/raid0/llm/epyc-inference-research",
-      "sha": "0a6fd8a59a048720ebbc0cf648f3903f080f9da6",
+      "sha": "b216fe0f44df814015faaa202e538e4f4fb1a37e",
       "dirty": true
     }
   },
@@ -28,6 +28,8 @@
       ],
       "handoff_exists": true,
       "checkbox_line": 106,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
       "resolved": true
     },
     {
@@ -36,7 +38,9 @@
       "checkbox": "RCP-W1",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 21,
+      "checkbox_line": 617,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
       "resolved": true
     },
     {
@@ -50,6 +54,8 @@
       ],
       "handoff_exists": true,
       "checkbox_line": 618,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
       "resolved": true
     },
     {
@@ -61,6 +67,8 @@
       ],
       "handoff_exists": true,
       "checkbox_line": 619,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
       "resolved": true
     },
     {
@@ -69,7 +77,9 @@
       "checkbox": "TM-8",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 27,
+      "checkbox_line": 28,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
       "resolved": true
     },
     {
@@ -79,6 +89,8 @@
       "also_flips": [],
       "handoff_exists": true,
       "checkbox_line": 20,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
       "resolved": true
     },
     {
@@ -88,6 +100,8 @@
       "also_flips": [],
       "handoff_exists": true,
       "checkbox_line": 32,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
       "resolved": true
     },
     {
@@ -97,6 +111,8 @@
       "also_flips": [],
       "handoff_exists": true,
       "checkbox_line": 29,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
       "resolved": true
     },
     {
@@ -106,6 +122,8 @@
       "also_flips": [],
       "handoff_exists": true,
       "checkbox_line": 49,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
       "resolved": true
     },
     {
@@ -114,7 +132,9 @@
       "checkbox": "LB-4",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 21,
+      "checkbox_line": 23,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
       "resolved": true
     },
     {
@@ -124,6 +144,8 @@
       "also_flips": [],
       "handoff_exists": true,
       "checkbox_line": 28,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
       "resolved": true
     },
     {
@@ -134,8 +156,10 @@
         "handoffs/active/reviewer-control-plane-index.md#P2"
       ],
       "handoff_exists": true,
-      "checkbox_line": 25,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'RD-5'",
+      "resolved": false
     },
     {
       "task_id": "semantics-advisory-rollout",
@@ -146,6 +170,8 @@
       ],
       "handoff_exists": true,
       "checkbox_line": 27,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
       "resolved": true
     },
     {
@@ -154,7 +180,9 @@
       "checkbox": "EV-4",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 3,
+      "checkbox_line": 180,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
       "resolved": true
     },
     {
@@ -163,8 +191,10 @@
       "checkbox": "EV-5",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 3,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'EV-5'",
+      "resolved": false
     },
     {
       "task_id": "EV-7-ouro-t0-sentinel",
@@ -172,8 +202,10 @@
       "checkbox": "EV-7",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 195,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'EV-7'",
+      "resolved": false
     },
     {
       "task_id": "EV-8-diversity-redundancy",
@@ -181,8 +213,10 @@
       "checkbox": "EV-8",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 222,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'EV-8'",
+      "resolved": false
     },
     {
       "task_id": "EV-10a-skill-efficacy-ab",
@@ -192,7 +226,9 @@
         "handoffs/active/bulk-inference-campaign.md#K-SKILL-1"
       ],
       "handoff_exists": true,
-      "checkbox_line": 399,
+      "checkbox_line": 410,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
       "resolved": true
     },
     {
@@ -200,10 +236,12 @@
       "owning_handoff": "handoffs/active/eval-tower-verification.md",
       "checkbox": "EV-11c",
       "also_flips": [
-        "handoffs/active/backlog-roi-audit-2026-07-14.md#RE-3"
+        "handoffs/active/backlog-roi-audit-2026-07-14.md#RE-1"
       ],
       "handoff_exists": true,
-      "checkbox_line": 411,
+      "checkbox_line": 424,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
       "resolved": true
     },
     {
@@ -212,7 +250,9 @@
       "checkbox": "K-LCM-1",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 5,
+      "checkbox_line": 87,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
       "resolved": true
     },
     {
@@ -222,6 +262,8 @@
       "also_flips": [],
       "handoff_exists": true,
       "checkbox_line": 42,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
       "resolved": true
     },
     {
@@ -232,8 +274,10 @@
         "handoffs/active/routing-and-optimization-index.md#Dynamic stack / placement"
       ],
       "handoff_exists": true,
-      "checkbox_line": 85,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'DS-E1 dynamic-stack KV measurement'",
+      "resolved": false
     },
     {
       "task_id": "BULK-K-ROPE-cells",
@@ -243,8 +287,10 @@
         "handoffs/active/bulk-inference-campaign.md#K-ROPE"
       ],
       "handoff_exists": true,
-      "checkbox_line": 153,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'RoPE K-ROPE-1 matrix'",
+      "resolved": false
     },
     {
       "task_id": "BULK-K-EMB-1",
@@ -254,8 +300,10 @@
         "handoffs/active/granite-97m-r2-bench-plan.md#Phase B"
       ],
       "handoff_exists": true,
-      "checkbox_line": 19,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'Granite embedder bench Phase B'",
+      "resolved": false
     },
     {
       "task_id": "BULK-A7-eseries",
@@ -265,8 +313,10 @@
         "handoffs/active/batched-decode-measurement.md#E4 \u2014 conditional re-promotions"
       ],
       "handoff_exists": true,
-      "checkbox_line": 24,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'E3 \u2014 8x8 GEMM SIMD body'",
+      "resolved": false
     },
     {
       "task_id": "BULK-XMAS-telemetry",
@@ -274,8 +324,10 @@
       "checkbox": "Monitor post-enable live telemetry",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 49,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'Monitor post-enable live telemetry'",
+      "resolved": false
     },
     {
       "task_id": "ODLB-W3-01-lightonocr",
@@ -286,6 +338,8 @@
       ],
       "handoff_exists": true,
       "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'swap hybrid backend from docling-fast'",
       "resolved": false
     },
     {
@@ -296,8 +350,10 @@
         "handoffs/active/opendataloader-pipeline-integration.md#Implement three-way routing"
       ],
       "handoff_exists": true,
-      "checkbox_line": 163,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'Run comparison on 200 PDFs'",
+      "resolved": false
     },
     {
       "task_id": "ODLB-W3-03-paddleocr-vl",
@@ -307,43 +363,46 @@
         "handoffs/active/opendataloader-pipeline-integration.md#Publish results in progress log"
       ],
       "handoff_exists": true,
-      "checkbox_line": 163,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'Run comparison on 200 PDFs'",
+      "resolved": false
     },
     {
       "task_id": "BULK-hermes-smokes",
       "owning_handoff": "handoffs/active/hermes-outer-shell.md",
       "checkbox": "G \u2014 Validate subagent + single-slot llama-server interaction",
       "also_flips": [
-        "handoffs/active/hermes-agent-index.md#Hermes upstream pin bump",
         "handoffs/active/hermes-agent-index.md#Reference non-Hermes client",
         "handoffs/active/hermes-agent-index.md#Live Hermes end-to-end smoke checklist"
       ],
       "handoff_exists": true,
-      "checkbox_line": 291,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'G \u2014 Validate subagent + single-slot llama-server interaction'",
+      "resolved": false
     },
     {
       "task_id": "BULK-kbrag-autowiki-k11",
       "owning_handoff": "handoffs/active/internal-kb-rag.md",
-      "checkbox": "K11 (optional, measure-first) \u2014 FTS5 lexical signal",
-      "also_flips": [
-        "handoffs/active/internal-kb-rag.md#AutoWiki page generator/writer"
-      ],
+      "checkbox": "K11 batch lexical sweep",
+      "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 389,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'K11 batch lexical sweep'",
+      "resolved": false
     },
     {
       "task_id": "BULK-langgraph-tm7-parity",
       "owning_handoff": "handoffs/active/reviewer-trace-materialization.md",
-      "checkbox": "TM-7",
-      "also_flips": [
-        "handoffs/active/reviewer-trace-materialization.md#TM-8 \u2014 Coverage gate"
-      ],
+      "checkbox": "TM-7 live parity residual",
+      "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 26,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'TM-7 live parity residual'",
+      "resolved": false
     },
     {
       "task_id": "ROUTE-A1-shapekeyed-step2",
@@ -354,8 +413,10 @@
         "handoffs/active/routing-and-optimization-index.md#Cross-Role Contention + Placement"
       ],
       "handoff_exists": true,
-      "checkbox_line": 380,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'Higher-sample (>=8) vision_escalation re-bench'",
+      "resolved": false
     },
     {
       "task_id": "ROUTE-A2-edit-transaction-ab",
@@ -366,8 +427,10 @@
         "handoffs/active/multi-file-coding-completion-capability.md#clean-window A/B"
       ],
       "handoff_exists": true,
-      "checkbox_line": 300,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'multi-file edit transaction remediation is built but rollout-gated'",
+      "resolved": false
     },
     {
       "task_id": "ROUTE-A3-j2j3-single-worker",
@@ -377,8 +440,10 @@
         "handoffs/active/within-role-placement-state-machine.md#WP-6 / WP-7 full ratification"
       ],
       "handoff_exists": true,
-      "checkbox_line": 379,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'WP-3/WP-4 genuinely-live under-traffic migration probe'",
+      "resolved": false
     },
     {
       "task_id": "KOP2-frontdoor-q8-fusion-ab",
@@ -388,8 +453,10 @@
         "handoffs/active/batched-decode-measurement.md#E3 \u2014 8x8 GEMM SIMD body"
       ],
       "handoff_exists": true,
-      "checkbox_line": 5,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'frontdoor Q8_0 operator/graph fusion to cut barrier COUNT'",
+      "resolved": false
     },
     {
       "task_id": "KOP2-v6iqk-canonical-verify",
@@ -400,6 +467,8 @@
       ],
       "handoff_exists": false,
       "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": null,
       "resolved": false
     },
     {
@@ -410,8 +479,10 @@
         "handoffs/blocked/swarm-dataset-distillation.md#Strand Phase B clears"
       ],
       "handoff_exists": true,
-      "checkbox_line": 176,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'Phase B \u2014 Single-instance bench (USER APPROVAL REQUIRED)'",
+      "resolved": false
     },
     {
       "task_id": "P5-GC1-strict-if-typed-emission",
@@ -419,8 +490,10 @@
       "checkbox": "GC-1",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 3,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'GC-1'",
+      "resolved": false
     },
     {
       "task_id": "P5-GC2-rubric-authoring-quality",
@@ -428,8 +501,10 @@
       "checkbox": "GC-2",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 122,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'GC-2'",
+      "resolved": false
     },
     {
       "task_id": "P5-GC3-why-diagnosis",
@@ -437,8 +512,10 @@
       "checkbox": "GC-3",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 125,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'GC-3'",
+      "resolved": false
     },
     {
       "task_id": "P6-RC8-baseline-decision-grade",
@@ -447,6 +524,8 @@
       "also_flips": [],
       "handoff_exists": true,
       "checkbox_line": 29,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
       "resolved": true
     },
     {
@@ -456,6 +535,8 @@
       "also_flips": [],
       "handoff_exists": true,
       "checkbox_line": 28,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
       "resolved": true
     },
     {
@@ -465,6 +546,8 @@
       "also_flips": [],
       "handoff_exists": true,
       "checkbox_line": 47,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
       "resolved": true
     },
     {
@@ -473,7 +556,9 @@
       "checkbox": "RM-2",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 22,
+      "checkbox_line": 37,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
       "resolved": true
     },
     {
@@ -485,6 +570,8 @@
       ],
       "handoff_exists": true,
       "checkbox_line": 51,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
       "resolved": true
     },
     {
@@ -494,6 +581,8 @@
       "also_flips": [],
       "handoff_exists": true,
       "checkbox_line": 30,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
       "resolved": true
     },
     {
@@ -502,8 +591,10 @@
       "checkbox": "K34",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 427,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'K34'",
+      "resolved": false
     },
     {
       "task_id": "COORD-glm52-admission",
@@ -511,8 +602,10 @@
       "checkbox": "Download completes + shard integrity verified",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 39,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'Download completes + shard integrity verified'",
+      "resolved": false
     },
     {
       "task_id": "COORD-mi210-drafter-stage12",
@@ -520,8 +613,10 @@
       "checkbox": "Stage 4 MTP head split for gemma4 worker_general",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 495,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'Stage 4 MTP head split for gemma4 worker_general'",
+      "resolved": false
     },
     {
       "task_id": "COORD-v7-promotion",
@@ -530,6 +625,8 @@
       "also_flips": [],
       "handoff_exists": true,
       "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'Operator v6 quality-gate baseline (K5 MMLU-Pro/GPQA-Diamond) -> promote banked GPU wins to v7'",
       "resolved": false
     },
     {
@@ -538,8 +635,10 @@
       "checkbox": "AXA-1",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 64,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'AXA-1'",
+      "resolved": false
     }
   ]
 }

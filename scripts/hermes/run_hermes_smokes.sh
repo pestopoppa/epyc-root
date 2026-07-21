@@ -318,14 +318,20 @@ live_chat() {
 }
 
 live_streaming() {
-    local base body
+    local base body tmp response
     base="$(resolve_base_url)"
     body='{"model":"","messages":[{"role":"user","content":"Count to three."}],"max_tokens":32,"stream":true,"temperature":0,"seed":42}'
+    tmp="$(mktemp /tmp/hermes_streaming.XXXXXX)"
     if curl -sf --max-time 120 -N -H 'Content-Type: application/json' \
-        -X POST "${base}/chat/completions" -d "$body" | grep -q '^data:'; then
+        -X POST "${base}/chat/completions" -d "$body" >"$tmp" 2>&1 \
+        && grep -q '^data:' "$tmp"; then
+        rm -f "$tmp"
         DETAIL="received streamed data: chunks"; return 0
     fi
-    DETAIL="no streamed data: chunks"; return 1
+    response="$(tr '\n' ' ' <"$tmp" | head -c 200)"
+    rm -f "$tmp"
+    DETAIL="no streamed data: chunks; response=${response}"
+    return 1
 }
 
 live_tooluse() {
@@ -350,20 +356,36 @@ live_override() {
 }
 
 live_multiturn() {
-    local base body
+    local base body tmp response
     base="$(resolve_base_url)"
     body='{"model":"","messages":[{"role":"user","content":"My name is Ada."},{"role":"assistant","content":"Hi Ada."},{"role":"user","content":"What is my name? One word."}],"max_tokens":16,"temperature":0,"seed":42}'
-    if _curl_json "${base}/chat/completions" "$body" | grep -qi 'ada'; then
+    tmp="$(mktemp /tmp/hermes_multiturn.XXXXXX)"
+    if _curl_json "${base}/chat/completions" "$body" >"$tmp" 2>&1 && grep -qi 'ada' "$tmp"; then
+        rm -f "$tmp"
         DETAIL="multi-turn context retained across turns"; return 0
     fi
-    DETAIL="multi-turn context not retained"; return 1
+    response="$(tr '\n' ' ' <"$tmp" | head -c 200)"
+    rm -f "$tmp"
+    DETAIL="multi-turn context not retained; response=${response}"
+    return 1
 }
 
 live_refclient() {
-    # Live --send validation of the reference non-Hermes client override surface.
-    local orch="${HERMES_SMOKE_ORCH_URL:-http://127.0.0.1:8000}"
-    if timeout 120 python3 "$REF_CLIENT" --send --x-show-routing --stream --base-url "$orch" >/tmp/hermes_refsend.$$ 2>&1; then
-        DETAIL="reference client --send/stream ok against $orch"
+    # Live --send validation of the reference non-Hermes client transport surface.
+    # Defaults to the standalone Hermes backend; set HERMES_SMOKE_REFCLIENT_BASE_URL
+    # or HERMES_SMOKE_ORCH_URL for the orchestrator override-semantics gate.
+    local base ref_base ref_model
+    ref_base="${HERMES_SMOKE_REFCLIENT_BASE_URL:-${HERMES_SMOKE_ORCH_URL:-}}"
+    if [[ -z "$ref_base" ]]; then
+        base="$(resolve_base_url)"
+        ref_base="${base%/v1}"
+    fi
+    ref_model="${HERMES_SMOKE_REFCLIENT_MODEL-}"
+    if timeout 120 python3 "$REF_CLIENT" --send --x-show-routing --stream \
+        --base-url "$ref_base" --model "$ref_model" \
+        --prompt "Reply with the single word OK." --max-tokens 16 --timeout 120 \
+        >/tmp/hermes_refsend.$$ 2>&1; then
+        DETAIL="reference client --send/stream ok against $ref_base"
         rm -f /tmp/hermes_refsend.$$; return 0
     fi
     DETAIL="reference client --send failed: $(head -c 160 /tmp/hermes_refsend.$$)"

@@ -1,0 +1,116 @@
+{
+  "artifacts": {
+    "outputs": [
+      "data/longcot_mini_calibration/<run_id>/",
+      "benchmarks/results/runs/<run_id>/{frontdoor,worker_general}_*.json"
+    ],
+    "package_to": "coordination/inference-batch/bundles/RE-4/"
+  },
+  "entry_hash": "sha256:7c90df29ac7e4494126803b9526a6c7af47be8e922ae66217f85fa6cdec8e7d4",
+  "execution": {
+    "command": "RUN_ID=\"${LONGCOT_MINI_RUN_ID:-longcot_mini_re4_$(date -u +%Y%m%dT%H%M%SZ)}\"; OUT_DIR=\"data/longcot_mini_calibration/${RUN_ID}\"; mkdir -p \"${OUT_DIR}\"; .venv/bin/python scripts/benchmark/longcot_mini_stack_runner.py --run-id \"${RUN_ID}\" --role-ports frontdoor=8080,8180,8280,8380 --role-ports worker_general=8082,8182,8282,8382 --endpoint chat --prompt-mode concise_solution --force-solution-grammar --max-tokens \"${LONGCOT_MINI_MAX_TOKENS:-2048}\" --timeout \"${LONGCOT_MINI_TIMEOUT_S:-900}\" --summary-out \"${OUT_DIR}/stack_runner_summary.json\" && for result in benchmarks/results/runs/\"${RUN_ID}\"/frontdoor_*.json benchmarks/results/runs/\"${RUN_ID}\"/worker_general_*.json; do\n  test -f \"${result}\" || { echo \"missing LongCoT-Mini result files for ${RUN_ID}\" >&2; exit 2; };\n  stem=\"$(basename \"${result}\" .json)\";\n  .venv/bin/python scripts/benchmark/score_longcot_run.py \"${result}\"\n  --output \"${OUT_DIR}/${stem}_score.json\";\ndone\n",
+    "concurrency_mode": "isolated_bench",
+    "contention_class": "optimized_v7_quarter_ports",
+    "cwd": "/mnt/raid0/llm/epyc-inference-research",
+    "driver": "command",
+    "dry_run": false,
+    "est_wall_clock_h": 4.0,
+    "fanout_transport": "none",
+    "protocol_id": "bulk-inference.longcot-mini-calibration.v1",
+    "retry_policy": {
+      "max_attempts": 2,
+      "retry_on": [
+        "INFRA_BLOCKED"
+      ]
+    },
+    "timeout_s": 21600
+  },
+  "ledger": {
+    "era_stamp": "instrument-era-2026-06-12-post-measurement-constitution",
+    "journal_quarantine_rule": "record model/quant (index by model NOT role), n, deterministic accuracy, scoring=deterministic_no_judge, reasoning_token_count, seed; quarantine diagnostic_only if any judge/LLM-scored row is present.\n"
+  },
+  "notes": "~500-easy deterministic long-horizon reasoning suite on local models. Adds a non-saturated suite exactly where EV-9 found production suites saturated, and tests the reasoning-compression premise (unbounded reasoning harmful) on our stack. Scoring MUST be deterministic \u2014 NO LLM-judge (MEASUREMENT.md).\n",
+  "outcomes": {
+    "expected": "A deterministic (no-judge) per-model calibration signal over ~500 easy long-horizon reasoning items. Non-saturated behavior confirms the suite is discriminative; the reasoning-length signal informs the reasoning-compression premise. Observation-grade.\n",
+    "gate_table": [
+      {
+        "evidence": "per-model deterministic accuracy over ~500 items, top-model score vs the 90% saturation line, seed=42, protocol bulk-inference.longcot-mini-calibration.v1",
+        "fork": {
+          "ambiguous": {
+            "action": [
+              "hold for operator; attach per-model score distribution"
+            ],
+            "next": "HELD_AMBIGUOUS"
+          },
+          "fail": {
+            "action": [
+              "quarantine diagnostic_only; the suite is not MEASUREMENT-compliant until scoring is deterministic"
+            ],
+            "next": "FAILED_REVERTED",
+            "rule": "scoring is nondeterministic / requires a judge / harness error"
+          },
+          "infra": {
+            "action": [
+              "re-run after drop_caches + throttle-check in a fresh standalone window (feedback_host_throttle_check)"
+            ],
+            "classify": "clean-window contention / host throttle / model load failure"
+          },
+          "marginal": {
+            "action": [
+              "record observation; suite is non-discriminative on the current stack (EV-9 saturation)"
+            ],
+            "next": "DONE_MARGINAL_OBS",
+            "rule": "runs deterministically but saturates (top model >= 90%)"
+          },
+          "pass": {
+            "action": [
+              "flip K-LCM-1; add LongCoT-Mini as a discriminative non-saturated suite",
+              "record the reasoning-length vs accuracy signal for reasoning-compression"
+            ],
+            "next": "DONE_PASS",
+            "rule": "scoring is deterministic (no judge) AND top local model scores < 90% (non-saturated) AND per-model accuracy recorded"
+          }
+        },
+        "gate": "Does LongCoT-Mini give a deterministic, non-saturated calibration signal on local models?"
+      }
+    ]
+  },
+  "phase": 2,
+  "preconditions": {
+    "autopilot": "stopped",
+    "depends_on": [],
+    "flag_attestation": "env_only",
+    "host_health": {
+      "cache_state": "warm",
+      "max_uptime_days": 7,
+      "tier": "quiet_window"
+    },
+    "kernel_era": "production-consolidated-v7",
+    "models": [
+      "frontdoor",
+      "worker_general"
+    ],
+    "operator_gates": [
+      "OP-quiet-window"
+    ],
+    "stack_lineup": "optimized production-consolidated-v7 quarter stack; one role fans out across its four CPU quarter ports at a time",
+    "topology": {
+      "contention_matrix": "not_required",
+      "live_affinity_verified": true,
+      "required_topology_hash": "8c8cfcbb13d2611d"
+    }
+  },
+  "priority": "P2",
+  "provenance": {
+    "checkbox": "K-LCM-1",
+    "coordination_note": "Standalone model-batched window (bulk-inference-campaign.md standalone queue), NOT part of the eval-tower phase-2 cluster's shared reload \u2014 group by model so each GGUF loads once. Deterministic scoring only; no judge. Dataset present at epyc-inference-research/data/longcot-mini/ (Arrow). Adapter + deterministic scorer are verified in-repo; the command below uses an explicit run id so the post-run scorer can discover every per-role/config result file.\n",
+    "intake_refs": [
+      "intake-386"
+    ],
+    "owning_handoff": "handoffs/active/bulk-inference-campaign.md",
+    "source_ref": "handoffs/active/backlog-roi-audit-2026-07-14.md#RE-4"
+  },
+  "schema_version": "inference_batch.entry.v1",
+  "task_id": "RE-4-longcot-mini-calibration",
+  "title": "RE-4 / K-LCM-1 \u2014 LongCoT-Mini deterministic long-horizon reasoning calibration (one clean-window package)"
+}
