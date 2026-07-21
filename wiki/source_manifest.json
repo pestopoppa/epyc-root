@@ -8,11 +8,11 @@
     "research": 134
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-07-21T13:35:37Z",
+  "last_compile": "2026-07-21T15:33:04Z",
   "mode": "full",
-  "scan_time": "2026-07-21T13:36:01Z",
+  "scan_time": "2026-07-21T15:33:04Z",
   "schema_version": 1,
-  "source_set_hash": "9305883abac6a3b8927cfa354ed79d93977b08a7d12f8bd3d83134f03d0be0a0",
+  "source_set_hash": "694cf5d0a3263e55f45387941648542a819cb705fafa01755e757113e1c3e503",
   "sources": [
     {
       "content_hash": "9eb9296ef6b1e1d8bb4164b3b8acd4899325e705edd8d018b638c3ad8b3126e1",
@@ -63,10 +63,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "62c1024b164d174450ac406fe5f724dd27ea11739bb1135412039d2d0db73462",
-      "modified": "2026-07-21T11:54:54Z",
+      "content_hash": "0c8f0356aa9ddde7f0120fa322a446da0c7694edad51d4297a31116e8482f162",
+      "modified": "2026-07-21T15:17:39Z",
       "path": "handoffs/active/architect-model-selection-bench.md",
-      "size": 29734,
+      "size": 30571,
       "title": "Architect Model Comparison Benchmark",
       "type": "handoff-active"
     },
@@ -159,10 +159,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ee24085dec4724bbaf54889fba7bd059aec8c6907ab74bced7b44cc00d21f9ca",
-      "modified": "2026-07-21T10:12:23Z",
+      "content_hash": "6887414540ff84098eaa54b69480a147a8d494c45c8eb611e52c730e63d51df0",
+      "modified": "2026-07-21T14:30:31Z",
       "path": "handoffs/active/context-folding-progressive.md",
-      "size": 16437,
+      "size": 18062,
       "title": "Context-Folding: Progressive Session Compaction Upgrade",
       "type": "handoff-active"
     },
@@ -191,10 +191,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "5e27d6d49cf1b33a4c0a1306289903b2b35dd40b599b79bb957953b308115046",
-      "modified": "2026-07-21T13:33:32Z",
+      "content_hash": "16f0036e202cc1cf15dc6ce5fcc4f45908a62434b456b3976c6f374035b0be4a",
+      "modified": "2026-07-21T15:32:35Z",
       "path": "handoffs/active/decision-aware-routing.md",
-      "size": 68510,
+      "size": 77740,
       "title": "Decision-Aware Routing for Q-Scorer",
       "type": "handoff-active"
     },
@@ -263,10 +263,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "874c21cf074a5be25fceac228461ed67aed629f1d88a848af54397c70906ff11",
-      "modified": "2026-07-21T10:03:02Z",
+      "content_hash": "bb0234ca4b3ffbb8bd46193fc24b6bdc37215eb3cc40165e60b17a14f88c101e",
+      "modified": "2026-07-21T14:28:08Z",
       "path": "handoffs/active/eval-tower-architecture-audit-2026-07-20.md",
-      "size": 76602,
+      "size": 76845,
       "title": "Eval Tower Architecture & Robustness Audit (2026-07-20)",
       "type": "handoff-active"
     },
@@ -279,10 +279,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b2b7d447f4335c308bfe73df860d7942c5bf356dd4ffb15cda2c6775495a1954",
-      "modified": "2026-07-21T10:03:32Z",
+      "content_hash": "dfc3c7dd217b08ada97f375fc0c77e3137963dc85d35c7896f4312949af2ecd2",
+      "modified": "2026-07-21T15:12:45Z",
       "path": "handoffs/active/eval-tower-verification.md",
-      "size": 68667,
+      "size": 70734,
       "title": "Eval Tower Verification Framework",
       "type": "handoff-active"
     },
@@ -495,10 +495,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "d215b81caa8468d33535b9d99e8252f73c82dcb623a6fdf80bb2ab04bfe045af",
-      "modified": "2026-07-21T09:27:37Z",
+      "content_hash": "e4feb1627ec50dce78ea734290f90bd90d7b10167075fce0a9c7a37e2b491e84",
+      "modified": "2026-07-21T15:17:00Z",
       "path": "handoffs/active/inference-batch-loop.md",
-      "size": 27475,
+      "size": 31346,
       "title": "Inference-Batch Loop \u2014 Campaign Insertion Point",
       "type": "handoff-active"
     },
@@ -535,11 +535,11 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "65ab737adbdd20684446af2174a0f09756c67bbb2f6cbd3a7b0ad7f7d5ea84e0",
-      "modified": "2026-07-21T13:33:09Z",
+      "content_hash": "30c0fb55fa34e16c3a99380eb8106059ad5cd2fa8be80d561b24e6a086328995",
+      "modified": "2026-07-21T15:15:34Z",
       "path": "handoffs/active/iqk-iquant-enablement.md",
-      "size": 7255,
-      "title": "iqk IQ-quant Enablement (IQ2_XXS / IQ3_XXS / IQ2_S)",
+      "size": 15321,
+      "title": "iqk IQ-quant Enablement \u2014 a live defect on every IQ-quant model we run",
       "type": "handoff-active"
     },
     {
@@ -1103,10 +1103,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "6a59da56fc12cf3b139cb60be7d92963790a89a11ef099502551cd59bb400743",
-      "modified": "2026-07-21T10:13:15Z",
+      "content_hash": "8654f38d35aff626f6a683c779e473a52073aad52c6f1b428eeb21cd9475dadd",
+      "modified": "2026-07-21T14:30:17Z",
       "path": "handoffs/active/tq3-quantization-evaluation.md",
-      "size": 32250,
+      "size": 32973,
       "title": "TQ3 / TurboQuant Quantization \u2014 Monitor List",
       "type": "handoff-active"
     },
@@ -1151,10 +1151,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ca6860fe1084c039decdac21a002191a1c6cc5065e06d5b48fc20388c9899eef",
-      "modified": "2026-07-21T06:56:07Z",
+      "content_hash": "eff2e74e0ff588fb20d7017853d00bc224867725e8cfbbf969ac911a0636affc",
+      "modified": "2026-07-21T15:17:32Z",
       "path": "handoffs/active/within-role-placement-state-machine.md",
-      "size": 46548,
+      "size": 47380,
       "title": "within-role-placement-state-machine",
       "type": "handoff-active"
     },
@@ -5407,10 +5407,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "3ebc5263ff20e077346297f378b40cbb5ff99ddc1851460a00ebe74d86b04768",
-      "modified": "2026-07-21T10:22:15Z",
+      "content_hash": "ea26a66f3347c2bd6b6863cfa086f21f5866093de2b8233c5ecfafdac9651036",
+      "modified": "2026-07-21T15:32:12Z",
       "path": "progress/2026-07/2026-07-21.md",
-      "size": 22347,
+      "size": 32346,
       "title": "2026-07-21",
       "type": "progress"
     },
