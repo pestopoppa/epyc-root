@@ -31,8 +31,8 @@ Format for operator action: change `[ ]` → `[x]` and append `GRANTED <date> �
 - [ ] **Ref-judge budget** — approve the metered frontier-API judge-of-judge (pinned model-id+date, ~100 sampled decisions) for the H5 Ref arm. Cited by: RM-6/reviewer-model-ablations Ref arm (prose today; wire into RM-6 operator_gates when that arm is scheduled).
 - [x] **EV-4-v7-contention-matrix-recert** — ✅ SATISFIED 2026-07-20: `vision_escalation` re-measured + v7 matrix regenerated and committed (`6be6a28e` in epyc-orchestrator; live hash `8c8cfcbb13d2611d`; live recert artifact `data/contention_matrix/v7-live-recert-20260720T180916Z/`; ROUTE-A3's terminal row records `matrix_status: fresh`). ESC-5 resolved via option (A). Flipped by the takeover loop session 2026-07-21 — the recert predated this flip but was never recorded here (registry gap found by the 07-21 state audit). Cited by: EV-4, EV-8, EV-10a.
 
-- [ ] **B7-scorer-semantics-ratification** — ratify the live-landed scorer package (`07a20a7c`+`8f24679a`) + golden-delta requirement + B7b remainder (SCORE-07/08/09/12). See ESC-6. Cited by: EV-4 (BLOCKED_PRECONDITION), EV-11c.
-- [ ] **EV-CONF-consumption-decision** — real-ECE → RLVR reward / gating surfaces + n_probs default posture. See ESC-7. Cited by: EV-4, AP-27 RLVR export consumers.
+- [x] **B7-scorer-semantics-ratification** — GRANTED 2026-07-21 (option B): operator ratifies the live-landed scorer package (`07a20a7c`+`8f24679a`); the before/after golden-delta doc is REQUIRED before EV-4 runs (in production by the takeover session); B7b remainder (SCORE-07/08/09/12) scheduled separately. See ESC-6. Cited by: EV-4, EV-11c.
+- [x] **EV-CONF-consumption-decision** — GRANTED 2026-07-21 (per recommendation): keep `n_probs=5` default-on (calibration dataset accrues); keep the `confidence_is_real` reward-side gate; the real-ECE-re-enters-gating decision is DEFERRED until EV-4's calibration baseline exists, then decided with data. See ESC-7. Cited by: EV-4, AP-27 RLVR export consumers.
 
 ### C. Posture decisions that SHAPE (not hard-block) entries
 

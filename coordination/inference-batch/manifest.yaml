@@ -1,6 +1,6 @@
 schema_version: inference_batch.manifest.v1
 entry_schema_version: inference_batch.entry.v1
-generated_at: '2026-07-21T09:22:32Z'
+generated_at: '2026-07-21T09:25:26Z'
 entry_count: 52
 entries:
 - schema_version: inference_batch.entry.v1
@@ -4436,9 +4436,9 @@ entries:
     driver: command
     protocol_id: P-AB-1 (paired edit-transaction A/B, patch-verifier-graded)
     dry_run: false
-    command: '.venv/bin/python scripts/analysis/run_paired_ab.py --arms edit_transaction,baseline
-      --verifier src/verification/patch_verifier.py --n 100 --suite multifile_edit
-      --seed 42 --execute
+    command: 'env AUTOPILOT_PAIRED_AB_INFERENCE=1 .venv/bin/python scripts/analysis/run_paired_ab.py
+      --arms edit_transaction,baseline --verifier src/verification/patch_verifier.py
+      --n 100 --suite multifile_edit --seed 42 --execute
 
       '
     cwd: /mnt/raid0/llm/epyc-orchestrator
@@ -4505,7 +4505,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:c7123594776385e7c6fab630e545f77b5d8546cda7ac0315dd962973d75b7390
+  entry_hash: sha256:796a402c8e9d38cf7dd8a8c598dfcae682273402ed19377fa02bd52c30a74343
 - schema_version: inference_batch.entry.v1
   task_id: ROUTE-A3-j2j3-single-worker
   title: A3 — J2/J3 genuinely-live under-traffic migration probe (single-worker API)

@@ -165,6 +165,7 @@
     protocol_id: "P-AB-1 (paired edit-transaction A/B, patch-verifier-graded)"
     dry_run: false
     command: >
+      env AUTOPILOT_PAIRED_AB_INFERENCE=1
       .venv/bin/python scripts/analysis/run_paired_ab.py --arms edit_transaction,baseline
       --verifier src/verification/patch_verifier.py --n 100 --suite multifile_edit --seed 42
       --execute

@@ -4,6 +4,18 @@
 
 **kbrag-K11 terminal execution (2026-07-21T06:05Z, `DONE_MARGINAL_OBS`):** K11 lexical-weight sweep 0.1–0.3 matched the ColBERT-only baseline exactly (recall@10 `0.5048`) — keep `lexical_weight=0`; two trailing ledger rows are intentional terminalization of an orphaned run (latest-wins correct). Sweep checkbox flipped in `internal-kb-rag.md`.
 
+**Live island EXHAUSTED (2026-07-21 ~09:30Z):** under the operator's window grant, the takeover
+session attempted both remaining preflight-clean entries and discovered both were **mislabeled
+runnable** (the bridge sidecar validated command *resolution* only): **ROUTE-A1** parked
+`BLOCKED_PRECONDITION` (`build_gate=step2-smoke-bridge` — `_drive_admit_overlap_probes` is a
+`NotImplementedError` stub at `shapekeyed_step2_smoke.py:718`; entry command double-gate bug found
++ fixed on the way; build task filed in `shape-keyed-contention-gating.md`); **ROUTE-A2** parked
+`BLOCKED_PRECONDITION` (`data_gate=multifile-edit-corpus` — harness correctly refuses suite-only
+execution and no multifile_edit corpus manifest exists on disk; env-gate command bug also fixed).
+Both first-attempt invalid-passes were caught by the `b216fe0f` artifact-validation hardening.
+**Every remaining entry is now operator/build/model-download gated.** Next runnable: **EV-4** the
+moment the B7 golden-delta doc lands (ESC-6 option B granted 2026-07-21; delta harness in flight).
+
 **ROUTE-A3 terminal execution (2026-07-21T06:55Z, `DONE_PASS`):** J2 forward=6 / J3 reverse=4 live KV-migration probes, `n_aborted=0`, matrix_status fresh; API restored to `--workers 6`. WP-3/WP-4 flipped in `within-role-placement-state-machine.md`. This was the prior session's final ledger write.
 
 **K-EMB terminal execution (2026-07-20T23:33Z):** `BULK-K-EMB-1` retried under the corrected exact-model and 512-character input policy and reached `DONE_PASS`. Preflight and execute both exited `0`, ports `8096`/`8097`/`8098` were closed after cleanup, and the Phase B artifact is `data/embedder_bench/granite_97m_r2_phaseB.json` in `epyc-inference-research`. Metrics on the 100-doc / 30-query fallback corpus: Granite Q8_0 recall@10 `0.9333`, recall@50 `0.9889`, nDCG@10 `0.8382`, wall `1.213s`; e5-base Q8_0 `0.8444` / `0.9611` / `0.7928`, wall `2.651s`; BGE-M3 Q8_0 `0.9000` / `0.9889` / `0.8380`, wall `7.037s`; BGE-large reference `0.8889` / `0.9500` / `0.8093`, wall `13.749s`. This flips the Granite Phase B/smoke checkboxes only; the broad P3 campaign remains open.
