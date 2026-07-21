@@ -488,3 +488,10 @@ Three new entries converge on one finding: **our judge-scored numbers currently 
 - [ ] Operator-review candidate (EV-6): run the **dual-judge offline audit** — score a held-out set with a clean rubric and with a deliberately bias-augmented rubric, report the gap per reviewer/judge config. Runnable on our stack today, no training required. [intake-874]
 - [ ] Operator-review candidate (EV-9 / RM-5): extend the bias-robustness probe set with the four CHERRL bias families and add exploitability (can the *author* cheaply emit the pattern?) as a second reporting axis. [intake-874]
 - [ ] Operator-review candidate: retrospectively check whether any autopilot best-of-N / candidate-selection gain rests on judge-measured scores alone, with no independent anchor. [intake-875]
+
+### Audit catch 2026-07-21 — de-anchoring can be EVIDENCE-GATHERED before the rule decision
+
+The anchor/de-anchoring rules above are human-amendment-only (trust boundary). But **measuring** de-anchoring on our own data is not a rule change — it is evidence gathering, and it makes the operator decision empirical rather than paper-cited:
+
+- [ ] Offline A/B on an existing labeled set (e.g. the RM-3/RM-5 reviewer corpus, or any suite with gold labels): score the same candidates with (a) the current show-candidate-and-ask judge and (b) a commit-first judge (judge answers independently, then compares). Report FPR on known-wrong answers for both, with a chance-corrected agreement stat per intake-876. intake-875's claimed effect is FPR 0.906 → 0.012 — if ours reproduces at even a fraction of that, the rule proposal carries local evidence; if it does not, we saved a constitution amendment. Moderate judge-inference cost → candidate for the inference-batch loop rather than ad-hoc execution.
+- [ ] Forward guard from intake-877 (was prose-only in progress): when the three absent-source suites are downloaded (operator ask), attach a **web-egress check** to any GAIA run — the suite is 165 verbatim public questions and is only safe on the direct-completion path; repl mode + `frontdoor` (the sole `web_access: true` role) is the one contaminating combination.

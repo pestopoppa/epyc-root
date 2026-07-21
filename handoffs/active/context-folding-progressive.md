@@ -124,3 +124,9 @@ The rot ↔ no-answer finding and the compaction-telemetry fixes are **orchestra
 The one genuinely inference-adjacent item is the optional ContextRot harness replication, which is already marked do-not-prioritise above (self-hostable arm is the low-signal one, ~25-50h/arm, underpowered at achievable reps).
 
 - [x] Fixed the inverted reference-miss detector (`session_summary.py`) to compare identifiers destroyed by compaction — present in `seg.granular_blocks`, absent from the surviving stub — rather than identifiers read off the stub itself. Two regression tests added that fail against the prior behaviour in both directions (missed real loss; false positive on preserved content). ✅ 2026-07-21
+
+### Audit catch 2026-07-21 — the fixed detector is DEAD CODE until the flags flip
+
+The inverted-detector fix (`epyc-orchestrator 921f71d1`) and the persistence task above are both inert while `role_aware_compaction` AND `helpfulness_scoring` remain `FeatureSpec(..., False, False, ...)` (`features.py:152,154`). No enable task existed — the "highest-value one-line fix" currently executes zero times in production.
+
+- [ ] **Enable decision (operator): flip `role_aware_compaction` + `helpfulness_scoring` on in SHADOW** — monitor-only, no behavior change: the compaction path they gate already runs; the flags only govern whether quality telemetry is recorded. Without this, CF-3c has no instrument and the detector fix cannot be validated against real traffic. If deliberately deferred, record why here so the dead-code state is a decision rather than an accident.

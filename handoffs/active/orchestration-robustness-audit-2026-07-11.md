@@ -232,3 +232,10 @@ Research-intake **intake-798** ("The Gemma Challenge and the Case for Agent Coll
 See also the gemma4-specific kernel spinoff: [`gemma-challenge-kernel-techniques-v7.md`](gemma-challenge-kernel-techniques-v7.md).
 
 Related checkpoint: MH-9 new-file mutation support landed in orchestrator commit `88639b1f`, closing the PromptForge checkpoint without changing any remaining audit tasks.
+
+## Audit catch 2026-07-21 — FAISS atomic-save orphans need a startup janitor (recurrence prevention)
+
+37 GB of orphaned `.embeddings.faiss.<uuid>.tmp` files (67 files, Jul 5-20) were reclaimed from `orchestration/repl_memory/sessions/` on 2026-07-21. Root cause is structural, so they WILL re-accumulate: `faiss_store.py` writes tmp → verifies → `.replace()`, with cleanup in a `finally` — but **`finally` does not run on SIGKILL**, and this host runs `earlyoom` (which SIGKILLs by design) plus hard session terminations. Each interrupted save strands a ~2 GB tmp. One tmp was observed live mid-save during the cleanup (caught via `/proc/*/fd`, save completed normally), so any janitor MUST exclude open files, not just old ones.
+
+- [ ] Add a startup sweep to `faiss_store.py` (init path): unlink `.{index,id_map}.*.tmp*` in the store directory that are (a) older than 24h AND (b) not held open by any process (`/proc/*/fd` walk — `fuser` is not installed in the devcontainer). ~15 lines; prevents unbounded re-accumulation of ~2 GB/incident orphans.
+- [ ] The 7 remaining tmp files from 2026-07-21 06:25-06:51 (5.1 GB) are candidates for the same sweep once older than 24h.

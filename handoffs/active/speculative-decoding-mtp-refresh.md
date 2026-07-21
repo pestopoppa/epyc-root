@@ -210,3 +210,9 @@ After any task: update the checkbox here + record measured numbers (with protoco
 - **[intake-870] "vLLM-Moet"** — separately reports MTP acceptance 2.73 vs 2.68 and draft accept 86.3% vs 84.1% against an official (NV)FP4 baseline on the same model family. Sample sizes tiny/unstated; treat as a weak external reference point only.
 
 - [ ] MTP-refresh candidate: confirm our native-MTP A/B sweeps enough draft depths to detect a non-monotonic optimum rather than assuming monotonic falloff. [intake-871]
+
+### Audit note 2026-07-21 — quant-pair self-speculation (idea unexamined, not endorsed)
+
+intake-870's **confidence-gated full-precision recompute** was dropped bundled with the (falsified) hot-expert delta tier, but it is a distinct mechanism and maps onto ground we already own: it is structurally **speculative decoding with a low-bpw quant as drafter and a higher-bpw quant of the SAME model as verifier** (e.g. GLM-5.2 UD-IQ2_M draft → UD-IQ3_XXS verify; both fit 1.1TB RAM together at ~540GB). Same-model different-quant should give very high acceptance α, which is the favorable spec-dec regime — but verifier bandwidth per accepted token is the whole question on a BW-bound host, and per standing discipline (`feedback_measure_alpha_before_specdec_investment`) **α must be measured before any investment**. Related prior art: completed [hsd-hierarchical-self-speculation.md](../completed/hsd-hierarchical-self-speculation.md).
+
+- [ ] IF a GLM-5.2 higher-bpw artifact lands for H-Q1 anyway (glm52-reviewer-capability-gates.md), piggyback a cheap α(IQ2_M→IQ3_XXS) measurement on the same download before considering anything further. No download solely for this.
