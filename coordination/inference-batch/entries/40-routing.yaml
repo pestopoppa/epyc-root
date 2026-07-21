@@ -265,8 +265,12 @@
     dry_run: false
     command: >
       cd /mnt/raid0/llm/epyc-orchestrator &&
+      AUTOPILOT_MIGRATION_PROBE_INFERENCE=1
       .venv/bin/python scripts/autopilot/migration_probe.py
-      --role frontdoor --oscillation 1,4,4,1,1,1 --safe-slots 3 --execute
+      --role frontdoor --oscillation 1,4,4,1,1,1 --safe-slots 3
+      --worker-count 1
+      --output orchestration/reports/j2j3_single_worker_migration_probe.jsonl
+      --execute
     cwd: /mnt/raid0/llm/epyc-orchestrator
     concurrency_mode: same_trial_eval_fanout
     fanout_transport: placement_queue
@@ -310,7 +314,7 @@
             next: HELD_AMBIGUOUS
   artifacts:
     outputs:
-      - "orchestration/reports/j2j3_single_worker_migration_probe.json"
+      - "orchestration/reports/j2j3_single_worker_migration_probe.jsonl"
     package_to: "coordination/inference-batch/bundles/ROUTE-A3-j2j3-single-worker/"
   ledger:
     journal_quarantine_rule: >

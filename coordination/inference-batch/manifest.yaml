@@ -1,6 +1,6 @@
 schema_version: inference_batch.manifest.v1
 entry_schema_version: inference_batch.entry.v1
-generated_at: '2026-07-21T06:01:06Z'
+generated_at: '2026-07-21T06:16:41Z'
 entry_count: 52
 entries:
 - schema_version: inference_batch.entry.v1
@@ -4552,8 +4552,10 @@ entries:
     protocol_id: P-AB-1 (live migration observation via single-worker eval-concurrency
       path)
     dry_run: false
-    command: 'cd /mnt/raid0/llm/epyc-orchestrator && .venv/bin/python scripts/autopilot/migration_probe.py
-      --role frontdoor --oscillation 1,4,4,1,1,1 --safe-slots 3 --execute
+    command: 'cd /mnt/raid0/llm/epyc-orchestrator && AUTOPILOT_MIGRATION_PROBE_INFERENCE=1
+      .venv/bin/python scripts/autopilot/migration_probe.py --role frontdoor --oscillation
+      1,4,4,1,1,1 --safe-slots 3 --worker-count 1 --output orchestration/reports/j2j3_single_worker_migration_probe.jsonl
+      --execute
 
       '
     cwd: /mnt/raid0/llm/epyc-orchestrator
@@ -4609,7 +4611,7 @@ entries:
           next: HELD_AMBIGUOUS
   artifacts:
     outputs:
-    - orchestration/reports/j2j3_single_worker_migration_probe.json
+    - orchestration/reports/j2j3_single_worker_migration_probe.jsonl
     package_to: coordination/inference-batch/bundles/ROUTE-A3-j2j3-single-worker/
   ledger:
     journal_quarantine_rule: 'record migration direction counts, thrash_skipped reason,
@@ -4618,7 +4620,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:33087fbb55201db256bec6b1ea9fa7a326e3f7efcbbc958a8ed404f2ab7c0854
+  entry_hash: sha256:e09b5ee422e7899a5e3c6781255744268835cf2520068033a25f9285ec8a5e11
 - schema_version: inference_batch.entry.v1
   task_id: P5-GC1-strict-if-typed-emission
   title: GC-1 — GLM-5.2 strict-IF / typed review_decision emission probe (GBNF-constrained
