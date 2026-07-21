@@ -1090,7 +1090,7 @@
     dry_run: false
     command: >
       .venv/bin/python scripts/trace/run_task_lg_parity.py --arms run_task_lg,run_task
-      --fixed-task-set data/trace/parity_task_set.json --seed 42
+      --fixed-task-set data/trace/parity_task_set.json --seed 42 --execute
     cwd: /mnt/raid0/llm/epyc-orchestrator
     concurrency_mode: paired_sequential
     fanout_transport: none

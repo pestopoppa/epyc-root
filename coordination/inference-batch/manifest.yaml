@@ -1,6 +1,6 @@
 schema_version: inference_batch.manifest.v1
 entry_schema_version: inference_batch.entry.v1
-generated_at: '2026-07-21T01:37:28Z'
+generated_at: '2026-07-21T03:34:59Z'
 entry_count: 52
 entries:
 - schema_version: inference_batch.entry.v1
@@ -2810,7 +2810,7 @@ entries:
     protocol_id: 'P-AB-1 (paired parity: run_task_lg vs run_task on a fixed task set)'
     dry_run: false
     command: '.venv/bin/python scripts/trace/run_task_lg_parity.py --arms run_task_lg,run_task
-      --fixed-task-set data/trace/parity_task_set.json --seed 42
+      --fixed-task-set data/trace/parity_task_set.json --seed 42 --execute
 
       '
     cwd: /mnt/raid0/llm/epyc-orchestrator
@@ -2873,7 +2873,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:df0fa4e83947a7737837c22913ebd8ae0b2fc701416af564d8c56729bd4e222e
+  entry_hash: sha256:c8a3bbc3b2f82b8d84fcdbb7d73e55546337035b9e945bd648f3bc8ea01c8af2
 - schema_version: inference_batch.entry.v1
   task_id: semantics-advisory-rollout
   title: Semantics-layer rollout Phase 2 — advisory mode (expose findings to the architect;

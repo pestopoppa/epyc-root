@@ -14,6 +14,17 @@ reasoning/computation LongCoT-Mini is meant to measure. Latest ledger status is
 `INFRA_BLOCKED`, not `DONE`; score artifacts live under
 `coordination/inference-batch/bundles/RE-4/partial_*_score_20260721T013833Z.*`.
 
+**TM-7 bridge no-op blocker fixed (2026-07-21T03:36Z; no TM-7/TM-8 flip):**
+the first `BULK-langgraph-tm7-parity` execute attempt returned success in
+0.038s without running live real-node parity. Root cause was two-part: the
+manifest command omitted `run_task_lg_parity.py --execute`, and the research
+bridge ignored `artifacts.outputs`, so it predicted `artifacts=[]` and never
+failed on the missing `data/trace/tm7_realnode_parity.json`. The bad attempt is
+terminal `INFRA_BLOCKED`; the source entry/compiled manifest now include
+`--execute` and the bridge now maps `artifacts.outputs` into expected artifacts
+with relative validation under `execution.cwd`. Retry TM-7 only from the
+regenerated entry hash `sha256:c8a3bbc3b2f82b8d84fcdbb7d73e55546337035b9e945bd648f3bc8ea01c8af2`.
+
 **No-execute bridge preflight sidecar (2026-07-20T22:31Z; no entry completion):** durable evidence is now stored at `coordination/inference-batch/attestations/eligible-preflight-20260720T2231Z.jsonl`. It contains exactly 8 `phase=preflight` rows for `RE-4-longcot-mini-calibration`, `BULK-langgraph-tm7-parity`, `BULK-K-EMB-1`, `BULK-hermes-smokes`, `BULK-kbrag-autowiki-k11`, `ROUTE-A1-shapekeyed-step2`, `ROUTE-A2-edit-transaction-ab`, and `ROUTE-A3-j2j3-single-worker`. Every row has `dry_run_ok=true`, `blocking_reasons=[]`, topology verified against attestation `coordination/inference-batch/attestations/20260720T191355.json` with live hash `8c8cfcbb13d2611d`, `stack_contract.ok=true`, and `autopilot_precondition.ok=true`. The bridge passed no `--execute`; it created no batch ledger row or execution artifact package, and no execution checkbox was flipped.
 
 **Topology repin checkpoint (2026-07-20; no entry completion):** root commit
@@ -126,6 +137,7 @@ The `/loop` is the SOLE writer of the ledger + batch checkbox flips. Do NOT run 
 - [x] Autopilot wiring: digest FA/FR consumer (B1), materializer refresh (B2), AP-6 seam (B4), supervisor liveness (C1), precondition gate (C2) ✅ 2026-07-17
 - [x] Dashboard incoherence root-cause (H4 lost-updates / H2 no-shared-epoch / H5 age-not-value) + `state_lock` primitive ✅ 2026-07-17
 - [x] Dashboard incoherence root-cause + fix — H4 single-writer lock + daemon control-merge, H2 shared snapshot epoch, H5 value-consistency axis ✅ 2026-07-17
+- [x] TM-7 bridge no-op prevention — command-driver entries now treat `artifacts.outputs` as expected artifacts, validate relative outputs under `execution.cwd`, and `BULK-langgraph-tm7-parity` now invokes the live parity leg with `--execute` ✅ 2026-07-21
 
 ### Inference runs — PENDING the operator /loop (quiet-window gated)
 - [x] **P-CRIT (Phase 0 unblock — do FIRST; runs in any detected quiet window, self-gated via `inference_load_check` like every other entry — no separate approval)** — **re-measure `vision_escalation` + regenerate the v7 contention matrix, then commit it.** ✅ 2026-07-20 — live v7 recert completed on topology `8c8cfcbb13d2611d` (15 measured cross-role pairs, 6 same-role entries, 0 unknown pairs), committed in `epyc-orchestrator`; D1/D4/D5 also landed in `epyc-root`. Full analysis + owner-tagged fix checklist: [eval-tower-loop-robustness-audit-2026-07-20.md](eval-tower-loop-robustness-audit-2026-07-20.md).
