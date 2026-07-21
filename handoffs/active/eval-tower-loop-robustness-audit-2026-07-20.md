@@ -139,7 +139,7 @@ The prevention is **not** kernel-promotion-specific — it's **any change to a m
 - [x] **H2 — add a "recertify topology-dependent artifacts" step to `v7-promotion.md`** (+ future `-vN`): matrix + placement caps + entry topology pins refreshed before promotion is declared done. ✅ 2026-07-20 — `v7-promotion.md` now records the recertification hardening as a checked promotion-routine item.
 
 ### Scoring Trust Boundary
-- [ ] **Cluster E — scoring → tracked as EV-CONF in [eval-tower-verification.md](eval-tower-verification.md).** EV-11b closed-bin binning is implemented; **[agent]** interim (hold ECE/AUC observation-only so the constant-0.0 stops inflating the rlvr tier score, with operator sign-off before merge if scoring weights are touched) + **[agent]** the logprob-passthrough plumbing (`completion_probabilities → confidence`) remain open; **[operator]** owns the final real-confidence / gating decision.
+- [ ] **Cluster E — scoring → tracked as EV-CONF in [eval-tower-verification.md](eval-tower-verification.md).** EV-11b closed-bin binning is implemented; **[agent]** logprob-passthrough plumbing (`completion_probabilities → confidence`) landed ✅ 2026-07-21 with source stamping; **[agent·op]** interim neutralization (hold ECE/AUC observation-only so the constant-0.0 stops inflating the rlvr tier score, with operator sign-off before merge if scoring weights are touched) remains open; **[operator]** owns the final real-confidence / gating decision.
 
 ## Provenance
 5 audits, 2026-07-20: runner + contention-matrix + preflight + entries/ledger (4 read-only subagents) +
