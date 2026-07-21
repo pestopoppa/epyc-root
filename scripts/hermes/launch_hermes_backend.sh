@@ -20,13 +20,14 @@ CONTEXT=32768
 # -np 2 would halve per-slot context (32K→16K) with no benefit.
 # Delegation subagents queue — they don't need parallel slots.
 SLOTS=1
-# Default to the no-think template so trivial turns avoid burning reasoning tokens.
-# Set HERMES_CHAT_TEMPLATE_FILE to test a different template or
-# HERMES_DISABLE_CHAT_TEMPLATE=1 to fall back to llama-server's built-in default.
-CHAT_TEMPLATE="${HERMES_CHAT_TEMPLATE_FILE:-${SCRIPT_DIR}/chat-template-no-think.jinja}"
+# Default to the model's built-in template and llama-server's native reasoning-off
+# controls. HERMES_CHAT_TEMPLATE_FILE remains available for targeted template tests.
+CHAT_TEMPLATE="${HERMES_CHAT_TEMPLATE_FILE:-}"
 if [[ "${HERMES_DISABLE_CHAT_TEMPLATE:-0}" == "1" ]]; then
     CHAT_TEMPLATE=""
 fi
+REASONING="${HERMES_REASONING:-off}"
+REASONING_FORMAT="${HERMES_REASONING_FORMAT:-none}"
 
 if [[ ! -f "$MODEL" ]]; then
     echo "ERROR: Model not found at $MODEL"
@@ -58,12 +59,14 @@ if [[ -n "$CHAT_TEMPLATE" ]]; then
 else
     echo "Chat template: llama-server built-in default"
 fi
+echo "Reasoning: ${REASONING} (${REASONING_FORMAT})"
 
 LLAMA_ARGS=(
     -m "$MODEL"
     --host "$HOST" --port "$PORT"
     -t "$THREADS" -c "$CONTEXT" --jinja
     --override-kv qwen3moe.expert_used_count=int:4
+    --reasoning "$REASONING" --reasoning-format "$REASONING_FORMAT"
     -np "$SLOTS" --mlock
 )
 if [[ -n "$CHAT_TEMPLATE" ]]; then

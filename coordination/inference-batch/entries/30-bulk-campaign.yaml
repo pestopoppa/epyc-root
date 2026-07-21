@@ -886,9 +886,7 @@
     protocol_id: "P-SMOKE-1 (Hermes end-to-end smoke checklist)"
     dry_run: false
     command: >
-      python scripts/hermes/hermes_pin_audit.py --target-tag v2026.4.23 &&
-      HERMES_SMOKE_LIVE=1 bash scripts/hermes/run_hermes_smokes.sh --target-tag v2026.4.23
-      --chat --tooluse --streaming --override --multiturn --reference-client --subagent
+      bash scripts/hermes/run_hermes_wave3_batch.sh --target-tag v2026.4.23
     cwd: /mnt/raid0/llm/epyc-root
     concurrency_mode: isolated_bench
     fanout_transport: none

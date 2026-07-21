@@ -1,6 +1,6 @@
 schema_version: inference_batch.manifest.v1
 entry_schema_version: inference_batch.entry.v1
-generated_at: '2026-07-21T04:11:10Z'
+generated_at: '2026-07-21T04:37:35Z'
 entry_count: 52
 entries:
 - schema_version: inference_batch.entry.v1
@@ -3401,9 +3401,7 @@ entries:
     driver: command
     protocol_id: P-SMOKE-1 (Hermes end-to-end smoke checklist)
     dry_run: false
-    command: 'python scripts/hermes/hermes_pin_audit.py --target-tag v2026.4.23 &&
-      HERMES_SMOKE_LIVE=1 bash scripts/hermes/run_hermes_smokes.sh --target-tag v2026.4.23
-      --chat --tooluse --streaming --override --multiturn --reference-client --subagent
+    command: 'bash scripts/hermes/run_hermes_wave3_batch.sh --target-tag v2026.4.23
 
       '
     cwd: /mnt/raid0/llm/epyc-root
@@ -3464,7 +3462,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:a88d5b67a9bad875d09287783f170399e56fe046993dacc3d973c1f6392dc449
+  entry_hash: sha256:ece17013731d8ac9675a6aaa523f0b0a518eae9c9302332602eea0bb8f756af4
 - schema_version: inference_batch.entry.v1
   task_id: BULK-kbrag-autowiki-k11
   title: internal-kb-rag — AutoWiki model-backed page writer + K11 FTS5 lexical sweep

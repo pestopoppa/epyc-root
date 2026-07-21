@@ -1,10 +1,10 @@
 {
   "schema_version": "inference_batch.sources_lock.v1",
-  "generated_at": "2026-07-21T04:11:10Z",
+  "generated_at": "2026-07-21T04:37:35Z",
   "repos": {
     "epyc-root": {
       "path": "/mnt/raid0/llm/epyc-root",
-      "sha": "6aa51bec92b9f1b2905ca1e625fae684885a0d19",
+      "sha": "425d64e4057ce2c2da10bdc88ae578050fe40d0c",
       "dirty": true
     },
     "epyc-orchestrator": {
@@ -378,10 +378,10 @@
         "handoffs/active/hermes-agent-index.md#Live Hermes end-to-end smoke checklist"
       ],
       "handoff_exists": true,
-      "checkbox_line": 291,
-      "checkbox_anchor_count": 1,
-      "checkbox_anchor_error": null,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'G \u2014 Validate subagent + single-slot llama-server interaction'",
+      "resolved": false
     },
     {
       "task_id": "BULK-kbrag-autowiki-k11",
