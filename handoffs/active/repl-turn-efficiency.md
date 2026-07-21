@@ -72,3 +72,31 @@ Do not implement a daemon unless at least one of these conditions is met during 
 ## Reporting Instructions
 
 After S4 or soak work, update this handoff with the exact run, sample size, turns/task, token cost/task, accuracy delta, latency percentiles, and rollback decision. Update [research-evaluation-index.md](research-evaluation-index.md) and [master-handoff-index.md](master-handoff-index.md) if priority or scope changes.
+
+## Research Intake Update — 2026-07-21 (RLM sub-call budget contracts + a verifiable span scorer)
+
+- **[intake-868] SkyRL `examples/train/rlm`** (Apache-2.0, NovaSky-AI/Berkeley Sky Computing Lab) and **[intake-867]** its companion write-up.
+  - Relevance: the training loop does not transfer (Ray + FSDP2 + vLLM engines, 4 GPUs), but the **REPL budget contracts are empirically-tuned and directly comparable to ours**: `rlm_query_batched` caps at **4 children per call**, a hard limit of **10 REPL rounds**, exactly **one repl block per response** (extras silently dropped), and a frozen-vs-policy switch for in-REPL sub-calls.
+  - Highest-value portable artifact: `compute_metrics_multipaper` — a **character-interval precision/recall/F1** reward over verbatim extracted spans (merge/intersect interval arithmetic), ~60 lines, dependency-free, Apache-2.0. It scores character intervals rather than string equality, which **structurally sidesteps the comma-brittle substring-scorer bug class that has bitten us**. It is also a *verifiable* scorer, which intake-874/875 argue we should prefer over rubric judges wherever an objective anchor exists.
+  - Context lives in a persistent Python REPL as a variable, never in the prompt — the same offloading model as our path.
+  - **Prefix-cache warning worth noting:** the RLM scaffold re-appends the user query at the end of every turn rather than accumulating it, so successive turns share **no prefix**. Every turn is a cache miss on the query suffix — a real cost on bandwidth-bound CPU decode, and an argument against copying that scaffold shape verbatim.
+
+- [ ] Candidate: port the interval-F1 span scorer as an eval-tower scorer for evidence-grounded retrieval (also relevant to [internal-kb-rag.md](internal-kb-rag.md)). [intake-868]
+
+## Deep-Dive Correction — 2026-07-21 (The scorer port is WITHDRAWN; take the prompt instead)
+
+Supersedes the actionable in the 2026-07-21 intake section above. A source-level read of the SkyRL repo (all 12 files fetched; note the directory has **no README** — the earlier framing could not have come from one) overturns the recommendation.
+
+**WITHDRAWN — do not port `compute_metrics_multipaper`.** Three findings, each sufficient on its own:
+1. **It is dead code upstream.** Zero call sites across the entire example directory (`evidence_rewards.py:57-73`). Its sibling `compute_child_rlm_metrics` is also never called.
+2. **SkyRL's actual reward is a closed-model LLM judge** — `judge_reward` (`:239-365`), `JUDGE_MODEL = "gpt-5.4-mini-2026-03-17"` against `api.openai.com`, hard-failing without `OPENAI_API_KEY`. The authors had the interval metric available and chose a rubric judge. That is evidence **against** the metric's sufficiency, not for it — inverting the intake-874/875 "prefer verifiable anchors" argument that justified the port.
+3. **It reproduces our brittleness scar with an added bug.** Offsets are `str.find`-recovered, not annotated. At `:176-180`, a predicted span that does not match exactly is **dropped from the precision denominator rather than penalized** — a model emitting 10 spans with 9 hallucinated and 1 exact scores **precision 1.0**. Symmetrically at `:167-169` unmatched GT spans drop from recall, and if none match the item scores 0.0, making infra failure indistinguishable from model failure. `find` also returns only the first occurrence, while the prompt explicitly demands extracting repeated facts separately.
+
+Correction to the earlier note: the blocker is NOT missing character-offset annotations (those are derived). It is that only **2 of ~30 adapters populate `context`** (`dataset_adapters.py:1550`, `:2435`), no suite stores span-level GT, and it grades a verbatim-quote-list task we do not run. The 58-line interval arithmetic (`:16-73`, stdlib-only) is correct and elegant, but it was never the hard part.
+
+**PROMOTED — `MULTIPAPER_CHILD_SYSTEM_PROMPT` (`evidence_rlm_env.py:120-224`) is the repo's real portable artifact.** It is a battle-tuned REPL-discipline prompt and it is exactly the S4 Omega A/B arm this handoff lacks: a turn **floor** as well as a ceiling ("HARD LIMIT of 10 rounds, aim for 5-7, do NOT return after only 2-3 rounds — that is too shallow", `:153-156`), a mandated 5-turn search→expand→extract→verify procedure (`:185-223`), and a same-block causality constraint (`:137-140` — cannot `extract_section()` on `search()` results in the same block; never `FINAL_VAR` in the same block as an extraction).
+
+Also correcting two earlier claims: the 4-children / 10-round budgets are **prompt text only, NOT enforced in code** (no `[:4]`/`max_rounds`/`max_turns` in `rlm_generator.py`), and the OpenRouter frozen model is **opt-in, not the default** (`frozen_openrouter_model: Optional[str] = None`, `rlm_config.py:20`).
+
+- [ ] S4 Omega A/B candidate: adopt the turn-floor + mandated-procedure shape from `MULTIPAPER_CHILD_SYSTEM_PROMPT` as the intervention arm — this handoff previously had none.
+- [ ] Only if an evidence-retrieval suite is separately justified: plumb HotpotQA's already-loaded-but-DISCARDED `supporting_facts` (`dataset_adapters.py:1524`) into the emitted record to create our first span-level GT, and write the interval metric ourselves with a robust matcher that counts unmatched predictions as **false positives**. Do NOT adopt SkyRL's `find`-based recovery.

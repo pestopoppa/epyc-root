@@ -414,3 +414,19 @@ Either is cheap and unblocks the substrate decision. The 5-sub-decision episodic
 - [ ] Run a naturally-delegating workload A/B (HotpotQA/DeepDive or small base model) before Step 3 escalation
 - [ ] Operator decision: push/PR the sub-decision-taxonomy feature branch
 - [ ] Step 3 conditional substrate replacement (~400-800 LoC) - gated on delegation-positive re-test
+
+## Research Intake Update — 2026-07-21 (Two new RLM sources — the depth evidence still favours max_depth≤1)
+
+Three RLM-lineage sources arrived together. **None of them overturns the pinned `max_depth=1`; the independent evidence continues to point the other way.**
+
+- **[intake-866] "Language model harnesses are compositional generalizers"** (Alex L. Zhang, personal blog) — credibility 3.
+  - Claims RL-training an RLM harness on SHORT tasks transfers to held-out tasks 8-32x longer with ~10x the eval lift of RL-ing the base Transformer, trained on **Qwen3-30B-A3B-Instruct-2507** — the exact MoE class we run on CPU. Introduces "locally in-distribution" (LID) as the proposed mechanism.
+  - **Treat as an observation, not a result.** Graphs only, no numeric tables, no seeds, no eval-set sizes, single-seed single-model 150-step run — a claimed 10x differential lift with no variance reporting could be seed noise. The author concedes LID is "very hard to formalize in an empirically meaningful way", i.e. it is unfalsifiable as stated, and reports a degenerate failure mode where the RLM collapses to offloading the whole problem to one sub-call.
+  - **It has zero independent criticism because it is weeks old and blog-published — absence of scrutiny, not evidence of correctness.**
+- **[intake-867] "Reinforcing Recursive Language Models"** (alphaXiv) + **[intake-868] SkyRL `examples/train/rlm`** (Apache-2.0, actively maintained).
+  - The genuinely new content is a training formulation: one shared policy for parent and child roles, with **parent-to-child GRPO advantage inheritance** and 1/k_g normalization. The code implements the parent/child rollout-tree bookkeeping that this spike needs as an *accounting model* for nested sub-agents, independent of any RL.
+  - Caution on the credit-assignment scheme: intake-878 quantifies why trajectory-level advantage degrades in multi-turn settings — **but note it contains no analysis of recursion or depth at all**; the "compounds with depth" framing is an extrapolation by the citing source, not a finding.
+- **Standing counter-evidence (unchanged, and still the strongest datapoint):** intake-547 — depth-0 86.6% vs depth-1 60.0% on Kimi K2 OOLONG, base models at 100.0% on S-NIAH degrading under depth-1, and ~96x wall-clock inflation at depth 2. RLM gains appear only where the base model scores ~0.0%, i.e. **recursion rescues failing models rather than improving competent ones.**
+
+- [ ] Substrate-decision input: the current evidence supports keeping `max_depth` at 0-1 for competent models and reserving recursion for near-zero-baseline cases; revisit only if a controlled local A/B contradicts intake-547. [intake-866, intake-547]
+- [ ] Design input: the SkyRL parent/child rollout-tree model (parent_rid/depth/child_index with reward propagation) is a reusable accounting shape for nested sub-agents here, usable without adopting any RL. [intake-868]

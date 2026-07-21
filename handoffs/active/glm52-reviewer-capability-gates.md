@@ -208,3 +208,27 @@ Flip checkboxes `✅ YYYY-MM-DD`; GC-1/2/3 numbers recorded here + registry (GC-
 ## Evidence Base (intake)
 
 intake-836 quant why-diagnosis caveat · intake-834 authoring-capability dominance · intake-837/838 format/bias fragility of judges · audit doc 2026-07-16 (GLM-dsa arch exists in-tree; reconciliation smoke later passed on experimental-v7 `3dee86a5a`; sparse final-attention and reviewer quality remain open).
+
+## Deep-Dive Correction — 2026-07-21 (The selective-precision hypothesis is FALSIFIED in our own GGUF)
+
+Two independently-indexed practitioners (intake-870 vLLM-Moet, intake-871 GLM-5.2-NVFP4-TR3) converged on holding attention + shared experts + the DSA indexer + early-layer MLPs above 4-bit while pushing routed experts low. The intake proposed testing whether our Unsloth UD-IQ2_M omits that carve-out. **It does not — Unsloth already implements all four, more aggressively than either practitioner described.** Per-tensor map parsed from the six GGUF shard headers (header bytes only; no weights read, no inference):
+
+| Tensor group | Quant |
+|---|---|
+| `attn_k_b`, `attn_kv_a_mqa`, `attn_q_b`, `attn_v_b` (KV-compression path) | **Q8_0** |
+| `attn_output`, `attn_q_a` | Q5_K / Q6_K |
+| `indexer.attn_k`, `indexer.attn_q_b` | **Q8_0** |
+| `indexer.proj`, `indexer.k_norm` | **F32** |
+| `ffn_*_shexp` (shared experts) | Q5_K / Q6_K |
+| `ffn_{gate,up,down}` layers 0-2 (`leading_dense_block_count=3`) | Q5_K / Q6_K |
+| `ffn_gate_exps`, `ffn_up_exps` (routed) | IQ2_XXS ×148 |
+| `ffn_down_exps` (routed) | IQ3_XXS ×71 |
+
+**There is no gap to exploit — close the branch.** Two consequences worth recording:
+- The DSA indexer is at Q8_0/F32 throughout. Our historical `indexer_top_k` corruption was therefore a **runtime parameter bug, not quantization damage**, and the tensor map rules quantization out as a repeat cause. (Header confirms `attention.indexer.top_k = 2048`, the known-safe value.)
+- **intake-870's FP4 hot-expert delta tier has nothing to bite on.** Our own routing-skew artifact (19.1M selections, 75 layers, 256 experts) classifies GLM-5.2 as `near_uniform_global`: normalized entropy **0.9987**, Gini **0.0664**, top_8 share 4.1% vs uniform 3.1%. There are no hot experts. (That artifact is hypothesis-grade, but decisive enough not to build on.)
+
+**Residual, and why I lean against it.** The genuine soft spot is that routed `ffn_gate/up_exps` sit at IQ2_XXS = **2.0625 bpw** — the weakest IQ2 member, below IQ2_S/IQ2_M despite the "UD-IQ2_M" label. Falsifiable form (**H-Q1**): re-run the identical decision-grade C-CRAB P-REV-1 slice on a higher-bpw GLM-5.2 (UD-IQ3_XXS / Q3_K_XL, ~300-340GB, fits in 1.1TB). Two pieces of our OWN evidence predict it falsifies: (1) **RM-2** — Qwen3.6-27B **dense Q8_0**, zero quantization damage, over-approved on the same slice (FA 54.2%, AUC 0.503); (2) **selectivity** — GLM passes JudgeBench-GPT 22/24 and SWE-bench-Verified accept controls 22/24 (FR 8.3%); 2-bit damage in routed experts degrades broadly, whereas this degrades only on C-CRAB hard negatives. That signature is task/prompt-policy, not precision.
+
+- [ ] Optional cheap closer (LOW priority, expected to falsify): run H-Q1 to formally eliminate the quantization branch. **Decision flip:** UD-IQ3_XXS moving C-CRAB FA below ~20% on the matched slice ⇒ quantization IS causal and selective requantization becomes a real project. FA staying >35% ⇒ quantization exonerated; the reviewer gate is a scaffold/policy problem.
+- [x] Selective-precision carve-out hypothesis (attention / DSA indexer / shared experts / layers 0-2) tested against the actual UD-IQ2_M tensor map — **FALSIFIED, Unsloth already implements it**. ✅ 2026-07-21

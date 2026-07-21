@@ -455,3 +455,95 @@ Full mining of `docs.factory.ai` (→ [`research/factory-ai-harvest-2026-06-03.m
   - [ ] **Prompt-cache-aware routing reward term** — add a `cache_affinity_bonus` (+ cold re-prefill penalty) favoring the role-server already holding the conversation prefix in slot-KV. This is a direct lever on **the flat-escalation-across-difficulty-bands open problem**: escalate only when `quality_gap` justifies the re-prefill cost.
   - [ ] **Session-sticky + per-request hybrid** — we decide per-request only; add a session-stickiness state to the outer coordinator (keep the role across turns unless escalation threshold crossed), combined with the cache-affinity term to stop flapping/cache-thrash.
   - [ ] **Reasoning-level as a first-class routing action** — make the action space `model × thinking-level` (not a fixed per-role thinking constant), operationalizing the phase-based spec/execution split.
+
+## Deep-Dive Correction — 2026-07-21 (The DAR-1 gate metric is a tautology; root cause is the reward, not the policy)
+
+Triggered by an intake deep-dive (intake-866/867). **The two RLM sources contributed nothing to routing** (~85% overlap with intake-536 RAO — advantage inheritance, mean-of-children, depth weighting all pre-held). What the dive found instead is a defect in this handoff's own evidence base. **All figures below were independently re-verified against source and the live store on 2026-07-21.**
+
+**1. The regret metric cannot return non-zero.** `scripts/analysis/dar1_regret_analysis.py:241-245`:
+```python
+top_score = d.selection_score_topk[0]
+selected_idx = d.action_topk.index(d.chosen_action)
+regret = max(0.0, top_score - d.selection_score_topk[selected_idx])
+```
+`selected_idx` is the index of the action the selector chose — i.e. its own argmax — so `regret ≡ 0` by construction, plus an explicit `regret = 0.0` hard-assign for `strategy in ("learned","memrl")`. This measures **selector self-consistency**, not routing quality. The script's own docstring warns against exactly this reading ("Caveats are first-class so downstream handoffs do not treat proxy metrics as observed oracle regret"). The 0.00% figure that closed the expansion gate is therefore not evidence that routing is near-optimal.
+
+**2. The reward is saturated** (`orchestration/repl_memory/sessions/episodic.db`, read-only, 2026-07-21):
+- `initial_q = 0.5 + (reward * 0.5)` (`q_scorer.py:1146`, `:1202`) ⟹ `q=1.0` ⟺ reward `1.0` at write time.
+- **587,391 / 661,717 rows (88.8%) are at `q_value=1.0` with `update_count=0`.**
+- Outcome balance: 597,490 success / 64,229 failure = **90.3% success**.
+
+**3. The TD update is effectively dead code in production.**
+- **659,667 / 661,717 = 99.69% of rows have `update_count = 0`.** Only 1,797 rows were ever updated once, 196 twice.
+- Each observation writes a NEW row (`episodic_store.py store()`) rather than updating the matching one, so `update_q_value()` (L618-678) — the apparatus DAR-1/2/3 are built on — almost never runs.
+
+**Causal chain (this is the root cause, not the Q-value symptom):** saturated reward → dead TD path → uniform Q → zero selection-score spread → a metric that is a *function of that spread* returns 0.00% → gate closes → the freeze prevents anyone discovering links 1-2. **Self-sealing.**
+
+Consequences for the frozen phases, stated plainly:
+- **DAR-3 (SPO+) would not have helped.** SPO+ fires only when the decision would flip; with reward=1.0 on 88.8% of samples `c_true` is constant and the loss is ~0 almost everywhere. Freezing it was accidentally correct, for the wrong stated reason.
+- **DAR-4/5 would not have helped either — and P4.1.3 already proved it.** Label-proxy IRT gave +9.02pp; *observed-outcome* IRT gave **0.00pp** with worse argmax match. That is the signal-vs-policy question answered in miniature.
+- **DAR-2 is documented "live-ON" but may be live-ineffective:** it skips memories at default Q, and only ~2,050 of 661,717 rows have learned Q. Needs verification before the attestation stands.
+
+**Counterweight measurement (OBSERVATION, not decision-gating).** The store contains an unused natural experiment: 622 objectives routed to ≥2 distinct roles at ≥5 observations each. Split-half (best role picked on fold A, scored on fold B): **8.40pp (A→B, n=184,628) / 8.09pp (B→A, n=179,364)** counterfactual outcome regret, against the gate's 0.00%. Caveats that MUST travel with it: assignment is not randomised (conflates role quality with selection conditions), `outcome` is a coarse binary, and stored objectives are truncated to 200 chars (`progress_logger.py:353`, `q_scorer.py:1261`) so distinct tasks sharing a prefix merge. Needs a protocol-id before it can gate anything.
+
+- [ ] **OPERATOR DECISION (frozen gate — human-amendment-only, not an agent edit):** does fable5-02's ">=5% regret" criterion mean *selector self-consistency regret* (current implementation, definitionally ~0) or *counterfactual outcome regret* (~8.1-8.4pp)? Nothing is unfrozen pending this ruling.
+- [ ] Reward-saturation audit (zero inference, ~1 session): invert `q = 0.5 + r/2` on `update_count=0` rows, histogram reward by role and task_class. **Decision flip:** if per-decision reward entropy <1 bit AND role-conditional means differ <2pp, close DAR-3/4/5 as `not_pursued — signal-bound` rather than leaving them frozen behind a metric that can never fire.
+- [ ] Write-path audit: is `update_count=0` on 99.69% of rows intentional (append-only replay buffer per the LRC design) or a dedup defect? Verify DAR-2 is live-*effective*, not just live-ON.
+- [ ] Do NOT run DAR-3's 10% epsilon-greedy exploration to manufacture counterfactuals — 386K of them already exist in the store for free. Degrading production to collect what we already hold is strictly dominated.
+- [ ] Raise the 200-char `objective` truncation before any counterfactual/competence analysis is run at promotion grade (runtime embedding path is NOT truncated, so live routing is unaffected).
+
+### Reward-Saturation Audit — EXECUTED 2026-07-21 (zero inference; read-only SQLite over episodic.db)
+
+Pre-registered disposition was: *"if per-decision reward entropy <1 bit AND role-conditional means differ <2pp, close DAR-3/4/5 as `not_pursued — signal-bound`."* **The audit SPLITS: condition 1 fires, condition 2 does not. The close-as-signal-bound disposition therefore DOES NOT FIRE.**
+
+Method: reward recovered by inverting `initial_q = 0.5 + reward*0.5` ⟹ `reward = 2q − 1`, over the 659,785 `update_count=0` rows (the 99.69% that were never TD-updated, i.e. still at write-time reward).
+
+**Condition 1 — reward IS saturated. MET.**
+| reward | count | share |
+|---|---:|---:|
+| +1.0 | 587,509 | **89.05%** |
+| −0.4 | 47,802 | 7.25% |
+| 0.0 | 7,460 | 1.13% |
+| +0.9 | 5,216 | 0.79% |
+| +0.7 | 2,614 | 0.40% |
+| all others | <700 | <0.1% |
+
+Per-decision reward entropy (0.1-bin) = **0.6877 bits**; binary (r==1 vs else) = **0.4985 bits**. Effectively trimodal — success / neutral / penalty — not a graded signal.
+
+**Condition 2 — but the reward DOES separate roles. NOT MET.** Role-conditional means (`action_type='routing'`):
+| role | n | mean reward |
+|---|---:|---:|
+| ingest_long_context | 59,724 | +0.9398 |
+| architect_general | 61,435 | +0.9305 |
+| worker_vision | 31,100 | +0.9193 |
+| coder_escalation | 86,868 | +0.9118 |
+| frontdoor | 287,686 | +0.8518 |
+| worker_general | 127,183 | +0.7788 |
+
+Spread = 0.2212 ⟹ **11.06pp**, or **8.05pp** excluding the degenerate `toolrunner` (n=616, all r=1.0). Either way ≫ the 2pp threshold. Standard errors are ≤0.0019, so the ordering is not noise. (`action_type` split: routing +0.8641 vs escalation +0.4319 over 4,382 rows — escalation carries far more signal per row.)
+
+**The decisive number — matched within-objective comparison** (controls the task-mix confound in the marginal above). 621 objectives seen under ≥2 roles at ≥5 obs each, covering 385,917 decisions:
+- Within-objective best-worst role reward gap: **mean 11.61pp, MEDIAN 0.00pp**
+- Objectives where the gap exceeds 5pp: **136 / 621 = 21.9%**
+- Non-saturated decisions in the matched set: **37,026 / 385,917 = 9.6%**
+
+**Interpretation — this reframes the program more usefully than either prior hypothesis.** The signal is neither absent (so "signal-bound, close it" is wrong) nor uniformly present (so "train a better global policy" is also wrong). It is **concentrated**: for roughly 78% of objectives the median role gap is *literally zero* — the routing decision does not matter — and essentially all discriminative information lives in a ~10-22% minority. A global policy trained across all traffic is dominated by the majority where every action is equally correct, which is a sufficient mechanical explanation for the five-null streak WITHOUT needing the policy class to be wrong. This is also why the marginal counterfactual estimate (8.1-8.4pp split-half) understates the achievable gain: it averages the decisive minority against a majority where the ceiling is zero.
+
+**Revised disposition (supersedes the pre-registered one):**
+- [x] Reward-saturation audit executed — entropy 0.6877 bits (saturated) but role-conditional spread 11.06pp (separating). Split verdict; close-as-signal-bound does NOT fire. ✅ 2026-07-21
+- [ ] Do NOT close DAR-3/4/5 as `not_pursued — signal-bound`. The correct reframing is **triage, not policy**: the target is a *gate* that identifies the ~22% of objectives where role choice is outcome-relevant, not a better global argmax. Re-scope DAR-3/4/5 accordingly before considering any unfreeze.
+- [ ] Highest-value next measurement (zero inference): restrict the existing DAR-2 contrastive objective — and any future policy eval — to the matched decisive subset, and report lift THERE rather than over all traffic. A policy that improves the 22% while leaving the 78% untouched is invisible in every metric used so far.
+- [ ] Reconsider the reward itself before the policy: at 89.05% at exactly +1.0 with a −0.4 penalty tail, this is a success/failure flag wearing a continuous type. Graded reward on the decisive subset is likely worth more than any loss-function change.
+- NOTE the confound that still stands: role assignment is not randomised, so marginal per-role means conflate role quality with the conditions under which each role is selected. The matched within-objective figures control for task identity but NOT for selection-within-task. Everything above is an OBSERVATION under MEASUREMENT.md; none of it is protocol-attested and none of it gates a promotion.
+
+#### Operator qualification (2026-07-21) — the 78% figure is quality-only, and the corpus is tier-skewed
+
+Two corrections to the audit reading above, from the operator:
+
+1. **"Roles score identically" is a QUALITY statement, not a routing-indifference statement.** Autopilot optimizes task execution **speed × quality**. On the ~78% of objectives where every role reaches the same outcome, the correct action is still not arbitrary — it is *route to the cheapest/fastest role that clears quality*. So that majority is not "the decision does not matter"; it is "the decision is dominated by the cost term" — which is exactly what DAR-1 observed empirically (cost and similarity terms drive selection; Q-values are decorative). The two findings agree, and the reward as currently constructed simply **cannot express the speed half of the objective at all** — it collapses to a success flag. That is a second, independent argument for fixing the reward before the loss function.
+2. **The measured corpus is tier-skewed toward T0/T1.** The 661,717 memories are dominated by autopilot eval traffic, which is mostly T0/T1 tasks. Easy tasks are exactly where models converge, so a 90.3% blanket success rate and a median 0.00pp role gap are partly an artifact of task difficulty, not evidence that roles are interchangeable in general. **T3 would plausibly show materially more quality divergence across roles/models** — and T3 is where routing errors are most expensive. This means the ~22% decisive-objective estimate is likely a FLOOR, and the audit understates the achievable headroom.
+
+Combined implication: the triage-gate framing survives, but its target sharpens. The gate should separate (a) the cost-dominated majority, where the objective is cheapest-role-that-clears-quality, from (b) the quality-decisive minority, which is under-represented in the current corpus and concentrated at higher tiers.
+
+- [ ] Re-run the matched within-objective analysis **stratified by task tier (T0/T1/T2/T3)** before drawing any conclusion about how much of the corpus is genuinely role-indifferent. Current estimate (21.9% decisive) is derived from a T0/T1-dominated sample and is probably a floor. Zero inference — the tier label needs to be recoverable from the stored context/objective or joined from the eval-tower record.
+- [ ] Any redesigned reward MUST carry the speed axis, not just the outcome flag — autopilot's objective is speed × quality and the current `reward` collapses to success/failure. This is a prerequisite for the majority regime, where cost is the operative term.
