@@ -224,3 +224,35 @@ After each entry: write the ledger terminal row; on `pass`, flip the entry check
 
 ## Completed Scope
 Historical detail: `progress/2026-07/2026-07-17.md` ("Inference-batch manifest — command-fabrication audit + repair"). This handoff subsumes the RCP/DS-E1/K-ROPE/K-LCM-1/Queue-2 execution rows previously staged in `bulk-inference-campaign.md` (see its 2026-07-17 subsume banner).
+
+## Candidate entries proposed 2026-07-21 (from the research-intake deep-dive session)
+
+Proposed as **prose only** — deliberately not written into `coordination/inference-batch/entries/*.yaml`, because the loop was actively consuming those files and the ledger at the time. Whoever owns the loop should decide whether to promote these into entries.
+
+**Triage of the three items that session produced, by whether they actually need inference:**
+
+| item | needs inference? | disposition |
+|---|---|---|
+| iqk IQ-quant enablement (B1-B5) | **YES** — build + per-model coherence + `llama-bench` | **operator-assigned** to a dedicated kernel session; see [iqk-iquant-enablement.md](iqk-iquant-enablement.md). Do not duplicate — but if the loop reaches a quiet window first, coordinate rather than race. |
+| ContextRot rot-signature probe | **YES** — moderate, see below | genuine candidate entry, **optional** |
+| rot↔NA compaction telemetry | **NO** | orchestrator-side plumbing only (`pipeline_monitor/anomaly.py` detectors already exist; the inverted detector is already fixed in `3d452476`). **Does not belong in this loop.** |
+
+### Candidate entry: ContextRot behavioural-signature probe (optional, moderate cost)
+
+**What**: run the `GAIR-NLP/ContextRot` local-search arm against our own stack to see whether the paper's **rot ↔ no-answer substitution** reproduces on models we serve. Source: intake-869 / arXiv 2606.29718.
+
+**Why it is scoped to the signature, not the accuracy delta**: the paper's accuracy differences between context-management policies are ~1pp on the self-hostable arm (BrowseComp-Plus), with ±2.5-3.8 SD over 5 repeats on a 100-question split — we cannot resolve that at any n we can afford. The **behavioural** signature is a ~50pp move (rot 53.4%→16.2%; no-answer 4.2→17.6 when summarization is added) and is resolvable at far smaller n. Anything targeting the accuracy delta should be refused.
+
+**Cost estimate (honest, and the reason this is optional)**: the full three-arm 200-question replication is ~25-50h/arm NUMA-concurrent at 1 rep — 3-6 days wall clock, and still underpowered for accuracy. A signature-only probe (2 arms — ReAct vs keep-latest+summary — at n≈30-50, capped turns, shorter contexts) is materially cheaper but is **still real inference time**, not a smoke test. Do not schedule it ahead of anything with a decision attached.
+
+**Preconditions** (all verified 2026-07-21, none blocking):
+- Corpus `Tevatron/browsecomp-plus-corpus` — 100,195 docs, 1.76 GB download / 3.26 GB on disk. **Not present locally** → this is a `data_gate`.
+- Embeddings `miaolu3/browsecomp-plus` `corpus_embeddings.pkl` — 821 MB, **Qwen3-Embedding-8B-specific** (4096-dim bf16). Our BGE servers are **not** a drop-in substitute; substituting them would require re-embedding all 100,195 docs and would break comparability with every published number.
+- Judge is hardcoded `gpt-4o-mini` / `gpt-4.1` at `localsearch/src/envs/local_search.py:208,250` — **two string literals** must be repointed at a local endpoint before it can run at all (open-source-only constraint).
+- `search_server.py` hardcodes `torch.device("cuda:0")`; under ROCm this maps to HIP and would occupy our only MI210. **Patch it to CPU** so the GPU stays free — retrieval is one 8B query forward plus an 820 MB matmul per turn, sub-second on EPYC.
+- The BrowseComp (web) arm requires a paid `SERPER_API_KEY` and is **out of scope** — local arm only.
+- Repo ships **no LICENSE file**.
+
+**Gate**: report rot-rate and no-answer-rate, never accuracy. A give-up-rate improvement that is accompanied by a rise in unfinished trajectories is **not** an improvement — that substitution is the whole finding.
+
+- [ ] Operator/loop-owner decision: promote the ContextRot signature probe to an entry, or decline it as too costly for its decision value.

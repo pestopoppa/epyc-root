@@ -93,3 +93,66 @@ Chasing the *trellis* stub is what uncovered the IQ-quant defect above, but the 
 ## Reporting instructions
 
 Append build/bench artifacts and protocol ids here, update [tq3-quantization-evaluation.md](tq3-quantization-evaluation.md) with the outcome, and flip B1-B5 / T1-T3 with `✅ YYYY-MM-DD`. All numbers are OBSERVATIONS under MEASUREMENT.md until produced by a codified recipe with operator approval.
+
+---
+
+## Addendum 2026-07-21 — the 1-bit family, and why KT must be gated outside our tree
+
+### A. The stubbed 1-bit family (IQ1_M / IQ1_S) — folded in for the kernel session
+
+`iqk_set_kernels_1bit` and `iqk_convert_1bit_q80_r8` are still `return false` stubs in
+`iqk_stubs.cpp`, exactly like the IQ-quant pair was. The consequence today:
+
+- **Hy3-IQ1_M-mtp** has **82 IQ1_M tensors** (`blk.*.ffn_gate.weight` and friends) that this
+  change does **not** cover. Its other 157 IQ3_XXS/IQ2_XXS tensors do get accelerated by B1-B5,
+  so Hy3 is partially fixed — the 1-bit remainder is the leftover.
+- No other registry model currently carries IQ1_* tensors, so Hy3 is the sole beneficiary as of
+  2026-07-21.
+
+Whether this is as cheap as the IQ-quant un-stub is **unverified** and must be checked before it
+is scheduled — the IQ-quant case was cheap for a specific reason (native enum values, kernel
+already vendored), and that reason has to be re-established here rather than assumed:
+
+- [ ] **B6 — Scope the 1bit family.** Confirm (a) `iqk_gemm_1bit.cpp` is vendored in our tree,
+  (b) which types its `set_kernels`/`convert` switches actually implement, (c) whether those are
+  native ggml enum values (`IQ1_S=19`, `IQ1_M=29` are native; ik-only `_R4` variants are not), and
+  (d) whether it needs block structs or `type_traits` rows we lack — the KT failure mode. If all
+  four come back clean it is the same one-day shape as B1-B5 and should ride the same build. If any
+  come back dirty, file it separately rather than bundling it into this promotion.
+- NOTE: the payoff is narrower than B1-B5 — one model, 82 tensors — so do not let it block B5.
+
+### B. Why the KT/trellis gate belongs in `ik_llama.cpp`, not our tree (operator question)
+
+The premise of the question is right: we **did** fold ik_llama's work into our fork at v6, and
+v7 carries it. But what was folded is the **iqk GEMM kernel subsystem** — the `mul_mat` dispatch
+path gated by `GGML_IQK`. The **KT block types and their format plumbing were deliberately not
+folded**, which is precisely what `iqk_stubs.cpp` documents.
+
+Verified in our tree at `production-consolidated-v7 @ 6ad45fa3f`:
+
+| capability | our tree | ik_llama.cpp |
+|---|---|---|
+| `IQ2_KT`/`IQ4_KT` in the public `ggml_type` enum (`ggml/include/ggml.h`) | **0 references** | present |
+| KT rows in the `type_traits` table (`ggml/src/ggml.c`) | **0 references** | present |
+| `llama-quantize` can *produce* a KT GGUF | **0 references** — no KT option | present |
+| `GGML_TYPE_COUNT` | 43 (KT ids are 153-158) | extended |
+
+So our binary can neither **produce** a KT GGUF nor **load** one. A KT tensor would index
+`type_traits` out of bounds — the same OOB class commit `715383cde` already had to fix once.
+
+That is the whole argument, and it is narrower than "use ik because it's better": **to answer
+"is IQ4_KT worth 3-6 days of porting?" you must first create an IQ4_KT GGUF and read it back, and
+only ik_llama.cpp can currently do either.** Using it as a *measurement instrument* to decide
+whether to build the capability in our tree is not a second serving path and does not reopen the
+deprecation — CLAUDE.md deprecates ik_llama as a **serving** binary, which this is not.
+
+The alternative is legitimate and should be stated plainly: **do the port first and measure in our
+own tree.** That is the cleaner end-state and avoids touching a deprecated tree at all. It simply
+costs the 3-6 days up front on a question whose expected answer is unfavourable — IQ2_KT is
+2.125 bpw against the 2.0625 bpw IQ2_XXS we already run (so *negative* bandwidth), and ik's own
+author reports KT as slower for CPU token generation. Spending the port to find that out inverts
+the usual order of cheap-test-then-build.
+
+**Operator's call.** If the deprecated-tree usage is unwelcome, T2 should be replaced by "port on
+`llama.cpp-experimental` and measure there", accepting the cost. Either way T1 (B1-B5) comes first
+and is unaffected.
