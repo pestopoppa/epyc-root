@@ -4,6 +4,16 @@
 
 **K-EMB terminal execution (2026-07-20T23:33Z):** `BULK-K-EMB-1` retried under the corrected exact-model and 512-character input policy and reached `DONE_PASS`. Preflight and execute both exited `0`, ports `8096`/`8097`/`8098` were closed after cleanup, and the Phase B artifact is `data/embedder_bench/granite_97m_r2_phaseB.json` in `epyc-inference-research`. Metrics on the 100-doc / 30-query fallback corpus: Granite Q8_0 recall@10 `0.9333`, recall@50 `0.9889`, nDCG@10 `0.8382`, wall `1.213s`; e5-base Q8_0 `0.8444` / `0.9611` / `0.7928`, wall `2.651s`; BGE-M3 Q8_0 `0.9000` / `0.9889` / `0.8380`, wall `7.037s`; BGE-large reference `0.8889` / `0.9500` / `0.8093`, wall `13.749s`. This flips the Granite Phase B/smoke checkboxes only; the broad P3 campaign remains open.
 
+**RE-4 terminal blocker (2026-07-21T03:25Z; no RE-4 flip):** the optimized v7
+quarter-stack RE-4 rerun with `prompt_mode=concise_solution` and
+`force_solution_grammar=true` fixed marker compliance but destroyed the benchmark
+signal. Frontdoor emitted `solution =` for 402/402 rows and scored 0/402;
+worker_general emitted markers for 307/307 partial rows and scored 0/307. The
+run was stopped after 6223s because the answer-only grammar suppresses the
+reasoning/computation LongCoT-Mini is meant to measure. Latest ledger status is
+`INFRA_BLOCKED`, not `DONE`; score artifacts live under
+`coordination/inference-batch/bundles/RE-4/partial_*_score_20260721T013833Z.*`.
+
 **No-execute bridge preflight sidecar (2026-07-20T22:31Z; no entry completion):** durable evidence is now stored at `coordination/inference-batch/attestations/eligible-preflight-20260720T2231Z.jsonl`. It contains exactly 8 `phase=preflight` rows for `RE-4-longcot-mini-calibration`, `BULK-langgraph-tm7-parity`, `BULK-K-EMB-1`, `BULK-hermes-smokes`, `BULK-kbrag-autowiki-k11`, `ROUTE-A1-shapekeyed-step2`, `ROUTE-A2-edit-transaction-ab`, and `ROUTE-A3-j2j3-single-worker`. Every row has `dry_run_ok=true`, `blocking_reasons=[]`, topology verified against attestation `coordination/inference-batch/attestations/20260720T191355.json` with live hash `8c8cfcbb13d2611d`, `stack_contract.ok=true`, and `autopilot_precondition.ok=true`. The bridge passed no `--execute`; it created no batch ledger row or execution artifact package, and no execution checkbox was flipped.
 
 **Topology repin checkpoint (2026-07-20; no entry completion):** root commit
@@ -122,6 +132,7 @@ The `/loop` is the SOLE writer of the ledger + batch checkbox flips. Do NOT run 
 - [ ] **P0** RCP prologue — RCP-W1 (reference relaunch + preflight), RCP-W2 (ledger materialize), RCP-W3 (calibration smoke) — gated OP-6a/6b + OP-stack-restart-approval
 - [ ] **P1** reviewer-plane riders — RC-8, RM-6, LB-1, LB-4, RD-12, TM-8 (TM-8 self-attested until emit-path markers land)
 - [ ] **P2** eval-tower — EV-4 is the first live v7 entry, but it is currently `BLOCKED_PRECONDITION` on B7 scorer-semantics sign-off. The EV-4 command requires `--min-eval-concurrency 3`; verifier-mode preflight now checks fanout against the actual forced roles (`worker_general,frontdoor`), serial fallback has a wall-budget fail-closed path, runner arms require full `n_scored` before decision-grade, and the textual multiple-choice implementation now covers configured labels, overlapping labels, and `(B)` expected letters. Because that changes scoring semantics, rerun EV-4 only after B7 operator sign-off, then append an explicit `READY` row or intentional retry-policy change. EV-11b closed-bin ECE is implemented; EV-11c remains after EV-CONF/scorer-era prerequisites; EV-5/7/8 (MODEL-DOWNLOAD-gated); EV-10a; RE-4; H5-RM3
+  - [ ] **RE-4 protocol repair** — redesign LongCoT-Mini execution so models may do bounded reasoning while deterministic final-answer extraction still works. Do not rerun the `concise_solution` + answer-only grammar protocol; latest evidence is floor-saturated (frontdoor 0/402, worker_general 0/307) and quarantined as `protocol_blocked/floor_saturated`.
 - [ ] **P3** bulk-campaign — DS-E1, A7, XMAS, hermes, kbrag, langgraph, ODLB-W3-01/02; K-ROPE (harness build-gate); ODLB-W3-03 (paddleocr-VL build-gate). `K-EMB-1` is DONE_PASS 2026-07-20, but this campaign row stays open until the remaining P3 entries close.
 - [ ] **P4** kernel/OP-2 — OP-2/v6+iqk and final v7 readiness closed outside this loop on 2026-07-19; do not schedule unchanged KOP2-frontdoor/KOP2-v6iqk reruns. Remaining kernel/routing entries require the manifest owner to reconcile the ledger against [v7-promotion.md](v7-promotion.md) and current post-candidate work before execution.
 - [ ] **P5** GLM window — legacy GC1/GC2/GC3 admission chain is superseded. GLM failed decision-grade P-REV-1 and reviewer/control-plane is decoupled from v7; only run a GLM entry with a named repair hypothesis or non-reviewer capability gate.
