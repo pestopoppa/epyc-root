@@ -142,8 +142,8 @@ Structural change → **implement in a follow-on pass** (not in this design task
 
 ## 7. Probe → full-run sequence
 
-- [ ] **RE-4.0 — implement runner v2** (follow-on pass): apply §6 to `longcot_mini_stack_runner.py` + add the four tests; run the new unit tests (no inference). Land on the research repo.
-- [ ] **RE-4.1 — apply entry v2 spec** (§5) to `20-eval-tower.yaml` (loop owner; recompile the batch entry). Protocol id → `…v2`.
+- [x] **RE-4.0 — implement runner v2** ✅ 2026-07-21 (research `9323213d`: two-phase + seed + token accounting + probe selection; 7 tests; v1 byte-identical) (follow-on pass): apply §6 to `longcot_mini_stack_runner.py` + add the four tests; run the new unit tests (no inference). Land on the research repo.
+- [x] **RE-4.1 — apply entry v2 spec** ✅ 2026-07-21 (protocol_id v2, two-phase command, probe gate prepended, est 12h; recompiled) (§5) to `20-eval-tower.yaml` (loop owner; recompile the batch entry). Protocol id → `…v2`.
 - [ ] **RE-4.2 — non-saturation probe** (operator quiet-window, v7 quarter stack, autopilot stopped): frontdoor-only, two-phase, `R=4096`, 30 stratified rows. Score with `score_longcot_run.py`. **Gate:** overall accuracy ∈ (10%, 90%) AND marker presence ~100%. If floor → re-probe `R=8192` (§4 escalation); if ceiling → `DONE_MARGINAL_OBS`, stop.
 - [ ] **RE-4.3 — full reference run** (only if RE-4.2 in-band): both roles, two-phase, `R=4096`, all 402 rows. Record per-model deterministic accuracy vs. the 90% saturation line, per-domain, canary-leak count (separately), mean reasoning tokens, `phase2_used` rate. Apply the existing entry gate fork.
 - [ ] **RE-4.4 — reasoning-budget ladder** (follow-on curve; the reasoning-compression signal): re-run the 402 rows at `R∈{512,1024,2048,4096}` (both roles). Emit accuracy(R) per role/domain and the **rescue set** (items wrong at low R, correct at high R) per `feedback_accuracy_token_tradeoff_rescue_metric`. Observation-grade.

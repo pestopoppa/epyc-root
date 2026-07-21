@@ -1,6 +1,6 @@
 schema_version: inference_batch.manifest.v1
 entry_schema_version: inference_batch.entry.v1
-generated_at: '2026-07-21T15:25:34Z'
+generated_at: '2026-07-21T21:07:40Z'
 entry_count: 52
 entries:
 - schema_version: inference_batch.entry.v1
@@ -2207,14 +2207,14 @@ entries:
     depends_on: []
   execution:
     driver: command
-    protocol_id: bulk-inference.longcot-mini-calibration.v1
+    protocol_id: bulk-inference.longcot-mini-calibration.v2
     dry_run: false
     command: "RUN_ID=\"${LONGCOT_MINI_RUN_ID:-longcot_mini_re4_$(date -u +%Y%m%dT%H%M%SZ)}\"\
       ; OUT_DIR=\"data/longcot_mini_calibration/${RUN_ID}\"; mkdir -p \"${OUT_DIR}\"\
       ; .venv/bin/python scripts/benchmark/longcot_mini_stack_runner.py --run-id \"\
       ${RUN_ID}\" --role-ports frontdoor=8080,8180,8280,8380 --role-ports worker_general=8082,8182,8282,8382\
-      \ --endpoint chat --prompt-mode concise_solution --force-solution-grammar --max-tokens\
-      \ \"${LONGCOT_MINI_MAX_TOKENS:-2048}\" --timeout \"${LONGCOT_MINI_TIMEOUT_S:-900}\"\
+      \ --endpoint chat --prompt-mode standard --two-phase --reasoning-budget \"${LONGCOT_MINI_REASONING_BUDGET:-4096}\"\
+      \ --final-answer-max-tokens 64 --seed 42 --timeout \"${LONGCOT_MINI_TIMEOUT_S:-900}\"\
       \ --summary-out \"${OUT_DIR}/stack_runner_summary.json\" && for result in benchmarks/results/runs/\"\
       ${RUN_ID}\"/frontdoor_*.json benchmarks/results/runs/\"${RUN_ID}\"/worker_general_*.json;\
       \ do\n  test -f \"${result}\" || { echo \"missing LongCoT-Mini result files\
@@ -2225,16 +2225,23 @@ entries:
     concurrency_mode: isolated_bench
     fanout_transport: none
     contention_class: optimized_v7_quarter_ports
-    est_wall_clock_h: 4.0
+    est_wall_clock_h: 12.0
     timeout_s: 21600
     retry_policy:
       max_attempts: 2
       retry_on:
       - INFRA_BLOCKED
   outcomes:
-    expected: 'A deterministic (no-judge) per-model calibration signal over ~500 easy
-      long-horizon reasoning items. Non-saturated behavior confirms the suite is discriminative;
-      the reasoning-length signal informs the reasoning-compression premise. Observation-grade.
+    expected: 'PROBE GATE FIRST (RE-4.2): a 30-question stratified frontdoor probe
+      at R=4096 must yield overall accuracy in (10%,90%) with ~100% marker presence
+      before the full run (floor -> re-probe R=8192; ceiling -> DONE_MARGINAL_OBS).
+      v2 protocol: two-phase (free CoT -> forced ''solution='' terminal turn), deterministic
+      structural scoring; supersedes the v1 answer-only-grammar protocol that floor-saturated
+      (frontdoor 0/402, worker_general 0/307). On pass, record the accuracy-vs-reasoning-budget
+      curve (R in 512/1024/2048/4096). A deterministic (no-judge) per-model calibration
+      signal over ~500 easy long-horizon reasoning items. Non-saturated behavior confirms
+      the suite is discriminative; the reasoning-length signal informs the reasoning-compression
+      premise. Observation-grade.
 
       '
     gate_table:
@@ -2283,7 +2290,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:7c90df29ac7e4494126803b9526a6c7af47be8e922ae66217f85fa6cdec8e7d4
+  entry_hash: sha256:cad9c6d8fadf40db7fb8436a193e068ac0d0778f749cdbe4a5f2f76eb2faac95
 - schema_version: inference_batch.entry.v1
   task_id: semantics-shadow-rollout
   title: Semantics-layer rollout Phase 1 — shadow-mode telemetry accumulation (CP1/CP2/CP3
