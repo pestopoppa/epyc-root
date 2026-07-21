@@ -2,9 +2,9 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-07-20 (merged 23 new sources — CPU-prefill barrier-fusion arc, live within-role placement SM + E1/E2/E5 batched-decode, heterogeneous CPU×GPU slot-fabric design, the reasoning∝active / 2-bit-asymmetry literature, the specced architect + reviewer model-role benches, eval-tower ECE/AUC, StreamingLLM floor, quant-asymmetric self-spec, and K28 fused-GDN research — into 8 articles; observation-heavy GPU sections remain review-gated pending post-promotion P-GPU-1.)
+**Last compiled**: 2026-07-21 (incremental — merged the 2026-07-20/21 eval-tower audit cycle: the two-audit tower teardown (3 CRITICAL/16 HIGH), the E7-eval-instrument pool rebuild + B7 scorer ratification, the EV-11 confidence-phantom neutralization + EV-CONF logprob plumbing, the judge-validity intake cluster (874/875/876), the inference-batch `/loop` overnight burn-down, the loop-robustness root cause (stale contention matrix ← vision NUMA rebind) + §H change-hardening, and the ROUTE-A3 live KV-migration probe — into Benchmark Methodology + Inference Serving. Earlier 2026-07-20 pass merged 23 new sources into 8 articles.)
 **Articles**: 26 compiled, 4 stub categories
-**Total sources**: 580+ scanned documents across 6 source types; 2026-07-20 pass merged 23 changed/new sources into 8 articles; 2026-07-05 pass merged 49 changed/new sources into 10 articles; 2026-06-21 pass merged 36 changed/new sources into 21 articles
+**Total sources**: 580+ scanned documents across 6 source types; 2026-07-21 pass merged 28 changed/new sources into 2 articles; 2026-07-20 pass merged 23 changed/new sources into 8 articles; 2026-07-05 pass merged 49 changed/new sources into 10 articles; 2026-06-21 pass merged 36 changed/new sources into 21 articles
 
 ---
 
@@ -22,7 +22,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Inference Serving](inference-serving.md) | 55 | Within-role full↔quarter placement SM is LIVE (3-way frontdoor 1.68×, session-handover migration, no mid-decode preemption); single `-np 8` batch server is 4.86× faster per eval; the heterogeneous CPU×GPU slot fabric is a DESIGN that EXTENDS the live fabric (gated post-v7 + E5) |
+| [Inference Serving](inference-serving.md) | 57 | Within-role placement SM is LIVE (3-way frontdoor 1.68×, session-handover migration, no mid-decode preemption) and its live KV-migration path was ratified under traffic (ROUTE-A3: fwd 6/rev 4, 0 aborts); single `-np 8` batch server is 4.86× faster per eval; the inference-batch `/loop` root-caused its EV-4 stall to a stale contention matrix (from a vision NUMA rebind, NOT the kernel) that had silently degraded prod cross-role concurrency since 2026-07-17 → §H recert-on-any-NUMA-role-change hardening landed |
 | [Local Inference](local-inference.md) | 36 | v7 promoted as `production-consolidated-v7`; deployed-lane throughput table + living model-probe scoreboard (all observation-grade); MI210 fits everything but the 122B-Q4 architect and GLM-5.2 (238 GB) |
 | [Chat Templates](chat-templates.md) | 2 | Per-family turn markers + when to use `/completion` (Qwen/gemma-3/Llama3) vs `/v1/chat/completions` (gemma-4 multi-channel) — checklist for onboarding new models without silent routing failures |
 
@@ -32,7 +32,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 |---------|---------|-------------|
 | [Cost-Aware Routing](cost-aware-routing.md) | 40+ | CoT scaffold-transplant falsified in both regimes (reasoning context amplifies, doesn't substitute for, receiver capability); verifier/selector best-of-N is the forward GPU-assist path |
 | [Routing Intelligence](routing-intelligence.md) | 67+ | RI-10 decision-ready but first packet is `hold_quality_unscored` (proxies favor enforce; factuality unscored); X-MAS learned route-mutation is live in enforce — first learned routing layer in production |
-| [Benchmark Methodology](benchmark-methodology.md) | 83+ | Model-role selection benches (architect + reviewer) are objective-scored ONLY — model-as-judge patch-review measured near-random (AUC 0.509); architect choice UNDECIDED (specced, gated); eval-tower must track ECE/AUC not just accuracy; suites saturate at 90-94% and can't resolve top-2 models |
+| [Benchmark Methodology](benchmark-methodology.md) | 90+ | 2026-07-20/21 eval-tower audit: 3 CRITICAL/16 HIGH defects (stale pool sampled 15/33 suites; threaded math_verify silently degraded to exact_match; qid recency-exclusion was a no-op) — mostly fixed; pool rebuilt + era-labeled **E7** (79,479 rows/41 suites) with B7 scorer ratified; EV-11 confidence proven a phantom (ECE 0.0 for 1182/1182, worth 10-15% of RLVR score) and neutralized; judge-validity intake — cross-family ensembling still passes ~55% of hacked answers, de-anchoring is the fix, report Cohen's kappa; EV-4 baseline RUNNING on E7 |
 
 ## Agent & Architecture
 
