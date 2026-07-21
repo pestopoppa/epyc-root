@@ -1,6 +1,6 @@
 schema_version: inference_batch.manifest.v1
 entry_schema_version: inference_batch.entry.v1
-generated_at: '2026-07-21T04:37:35Z'
+generated_at: '2026-07-21T04:43:45Z'
 entry_count: 52
 entries:
 - schema_version: inference_batch.entry.v1
@@ -3359,21 +3359,22 @@ entries:
   entry_hash: sha256:8eebe7009cae55f66c2bd41e71ca7be15e8d910a033605593eeeabaabd989a4f
 - schema_version: inference_batch.entry.v1
   task_id: BULK-hermes-smokes
-  title: Hermes — pin-bump + reference-client + subagent single-slot smokes
+  title: Hermes — standalone smoke harness + reference-client + subagent single-slot
+    smokes
   provenance:
     owning_handoff: handoffs/active/hermes-outer-shell.md
     checkbox: G — Validate subagent + single-slot llama-server interaction
     also_flips:
-    - handoffs/active/hermes-agent-index.md#Hermes upstream pin bump
     - handoffs/active/hermes-agent-index.md#Reference non-Hermes client
     - handoffs/active/hermes-agent-index.md#Live Hermes end-to-end smoke checklist
     source_ref: research/deep-dives/hermes-agent-v2026-4-23-release.md
-    coordination_note: 'Bundled Hermes inference smokes gated behind a quiet window:
-      (a) pin bump v2026.3.23 -> v2026.4.23 + breaking-change audit smoke (basic chat
-      / tool use / streaming / override / multi-turn), (b) reference non-Hermes client
-      live --send/streaming validation, (c) subagent + single-slot llama-server interaction
-      (2+ parallel subagents, same endpoint). Static wiring (plugin bundle F, skills,
-      drift check) already landed; only live validation remains.
+    coordination_note: 'Bundled Hermes standalone inference smokes gated behind a
+      quiet window: (a) pin-audit/static report for the requested target, (b) standalone
+      backend smoke (health / chat / tool schema / streaming / override / multi-turn),
+      (c) reference non-Hermes client live --send/streaming validation against the
+      standalone backend, and (d) subagent + single-slot llama-server interaction
+      (2+ parallel subagents, same endpoint). This batch entry does not perform an
+      upstream Hermes checkout or pin bump; that remains tracked separately in hermes-agent-index.md.
 
       '
   phase: 3
@@ -3415,27 +3416,29 @@ entries:
       retry_on:
       - INFRA_BLOCKED
   outcomes:
-    expected: 'Pin bump audited + smoked; reference non-Hermes client --send/streaming
-      validated; 2+ parallel subagents each hit the single-slot llama-server independently
+    expected: 'Standalone Hermes smoke harness, reference non-Hermes client --send/streaming,
+      and 2+ parallel subagents each hit the single-slot llama-server independently
       without cross-talk or wedge.
 
       '
     gate_table:
-    - gate: Do the Hermes pin-bump, reference-client, and subagent single-slot smokes
-        all pass clean?
-      evidence: pin audit report + chat/tool/stream/override/multi-turn smoke + subagent
-        isolation check, P-SMOKE-1
+    - gate: Do the Hermes standalone smoke, reference-client, and subagent single-slot
+        checks all pass clean?
+      evidence: pin-audit/static report + chat/tool/stream/override/multi-turn smoke
+        + reference-client + subagent isolation check, P-SMOKE-1
       fork:
         pass:
-          rule: all smoke legs pass; no breaking change; subagents isolated on the
-            single slot
+          rule: all standalone smoke legs pass; reference client streams; subagents
+            isolated on the single slot
           action:
-          - flip Hermes G + pin-bump + reference-client + smoke-checklist checkboxes
+          - flip Hermes G + standalone reference-client + smoke-checklist subset checkboxes
           next: DONE_PASS
         marginal:
-          rule: smokes pass but pin bump surfaces a minor non-blocking breaking change
+          rule: smokes pass but pin-audit/static report surfaces a minor non-blocking
+            compatibility note
           action:
-          - record the breaking-change delta; flip smokes; defer pin bump to a follow-up
+          - record the compatibility delta; flip standalone smokes; defer actual pin
+            bump to a follow-up
           next: DONE_MARGINAL_OBS
         fail:
           rule: any smoke leg garbles / wedges, or subagents collide on the slot
@@ -3456,13 +3459,13 @@ entries:
     - logs/hermes/hermes_wave3_smokes.jsonl
     package_to: coordination/inference-batch/bundles/BULK-hermes-smokes/
   ledger:
-    journal_quarantine_rule: 'record pin target, per-leg pass/fail, subagent count
-      + isolation result; smoke rows are P-SMOKE-1 (non-decision-gating) and never
-      gate a promotion on their own.
+    journal_quarantine_rule: 'record requested target tag, per-leg pass/fail, subagent
+      count + isolation result; smoke rows are P-SMOKE-1 (non-decision-gating) and
+      never gate a promotion on their own.
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:ece17013731d8ac9675a6aaa523f0b0a518eae9c9302332602eea0bb8f756af4
+  entry_hash: sha256:ac59476bc0b6302d6c5db2932918ec9e05644b9bd93b1e40234854ea66a28626
 - schema_version: inference_batch.entry.v1
   task_id: BULK-kbrag-autowiki-k11
   title: internal-kb-rag — AutoWiki model-backed page writer + K11 FTS5 lexical sweep
