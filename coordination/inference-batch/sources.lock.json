@@ -1,20 +1,20 @@
 {
   "schema_version": "inference_batch.sources_lock.v1",
-  "generated_at": "2026-07-21T03:34:59Z",
+  "generated_at": "2026-07-21T03:45:59Z",
   "repos": {
     "epyc-root": {
       "path": "/mnt/raid0/llm/epyc-root",
-      "sha": "a4a22316c4a52494443acb6c0a3d4e9a9280f4ac",
+      "sha": "3e6b20ff3f4b5bff1b196788fd2945dedd767ea2",
       "dirty": true
     },
     "epyc-orchestrator": {
       "path": "/mnt/raid0/llm/epyc-orchestrator",
-      "sha": "e26a7cb3ec9c99d9fc8ae8362dad8080e0e2033d",
+      "sha": "c1a436ebbb8180a0764df437b6004e482831a176",
       "dirty": true
     },
     "epyc-inference-research": {
       "path": "/mnt/raid0/llm/epyc-inference-research",
-      "sha": "583f2943871d760cde110e275fa8cbddc803a174",
+      "sha": "b216fe0f44df814015faaa202e538e4f4fb1a37e",
       "dirty": true
     }
   },
@@ -77,7 +77,7 @@
       "checkbox": "TM-8",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 27,
+      "checkbox_line": 28,
       "checkbox_anchor_count": 1,
       "checkbox_anchor_error": null,
       "resolved": true
@@ -399,15 +399,13 @@
     {
       "task_id": "BULK-langgraph-tm7-parity",
       "owning_handoff": "handoffs/active/reviewer-trace-materialization.md",
-      "checkbox": "TM-7",
-      "also_flips": [
-        "handoffs/active/reviewer-trace-materialization.md#TM-8 \u2014 Coverage gate"
-      ],
+      "checkbox": "TM-7 live parity residual",
+      "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": null,
-      "checkbox_anchor_count": 0,
-      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'TM-7'",
-      "resolved": false
+      "checkbox_line": 27,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
+      "resolved": true
     },
     {
       "task_id": "ROUTE-A1-shapekeyed-step2",

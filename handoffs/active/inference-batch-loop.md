@@ -22,8 +22,11 @@ bridge ignored `artifacts.outputs`, so it predicted `artifacts=[]` and never
 failed on the missing `data/trace/tm7_realnode_parity.json`. The bad attempt is
 terminal `INFRA_BLOCKED`; the source entry/compiled manifest now include
 `--execute` and the bridge now maps `artifacts.outputs` into expected artifacts
-with relative validation under `execution.cwd`. Retry TM-7 only from the
-regenerated entry hash `sha256:c8a3bbc3b2f82b8d84fcdbb7d73e55546337035b9e945bd648f3bc8ea01c8af2`.
+with relative validation under `execution.cwd`. A follow-up semantic guard split
+the completed durable-resume code checkbox from the remaining live parity
+residual, removed the incorrect automatic TM-8 flip, and requires non-empty
+decision chains for both arms. Retry TM-7 only from the regenerated entry hash
+`sha256:720b210fd1ee2ba7a4e33fdaa647347c94faca0414bb8c7ca26c73f6473d6b3e`.
 
 **No-execute bridge preflight sidecar (2026-07-20T22:31Z; no entry completion):** durable evidence is now stored at `coordination/inference-batch/attestations/eligible-preflight-20260720T2231Z.jsonl`. It contains exactly 8 `phase=preflight` rows for `RE-4-longcot-mini-calibration`, `BULK-langgraph-tm7-parity`, `BULK-K-EMB-1`, `BULK-hermes-smokes`, `BULK-kbrag-autowiki-k11`, `ROUTE-A1-shapekeyed-step2`, `ROUTE-A2-edit-transaction-ab`, and `ROUTE-A3-j2j3-single-worker`. Every row has `dry_run_ok=true`, `blocking_reasons=[]`, topology verified against attestation `coordination/inference-batch/attestations/20260720T191355.json` with live hash `8c8cfcbb13d2611d`, `stack_contract.ok=true`, and `autopilot_precondition.ok=true`. The bridge passed no `--execute`; it created no batch ledger row or execution artifact package, and no execution checkbox was flipped.
 

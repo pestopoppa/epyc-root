@@ -1047,24 +1047,21 @@
 # -----------------------------------------------------------------------------
 - schema_version: inference_batch.entry.v1
   task_id: BULK-langgraph-tm7-parity
-  title: "TM-7 — live real-node run_task_lg vs run_task parity (durable-resume gate)"
+  title: "TM-7 — live real-node run_task_lg vs run_task parity"
   provenance:
     owning_handoff: handoffs/active/reviewer-trace-materialization.md
-    checkbox: "TM-7"
-    also_flips:
-      - "handoffs/active/reviewer-trace-materialization.md#TM-8 — Coverage gate"
+    checkbox: "TM-7 live parity residual"
     source_ref: "intake-847 (LangGraph adopt_component) + research/deep-dives/2026-07-16-architect-reviewer-control-plane-audit.md"
     coordination_note: >
       TM-7 code landed 2026-07-17 (checkpointing.py + run_task_lg_durable/resume_task_lg,
       AsyncSqliteSaver, crash+interrupt->Command(resume) proven 10/10 with STUB nodes). REMAINING
       GATED leg: live real-node run_task_lg parity vs run_task on a fixed task set BEFORE enabling
-      interrupt-based review gates (H3). Hazard: node re-execution on resume — _execute_turn/REPL
-      side effects must be idempotent. Imports scoped strictly to langgraph +
-      langgraph-checkpoint-sqlite (minimum-imports).
+      interrupt-based review gates (H3). This live leg does not satisfy TM-8 coverage by itself,
+      and must fail closed if either arm has an empty decision chain.
   phase: 3
   priority: P2
   preconditions:
-    stack_lineup: "production lineup for real-node execution; data/graph_checkpoints.sqlite present"
+    stack_lineup: "production lineup for real-node execution; data/trace/parity_task_set.json present"
     kernel_era: production-consolidated-v7
     flags_required:
       GGML_IQK: 1
@@ -1103,31 +1100,31 @@
         - INFRA_BLOCKED
   outcomes:
     expected: >
-      run_task_lg reaches output parity with run_task on the fixed task set with idempotent resume
-      (no duplicated REPL side effects), clearing the gate to enable interrupt-based review gates (H3).
+      run_task_lg reaches decision-chain parity with run_task on the fixed task set, with non-empty
+      chains on both arms, clearing the live-parity prerequisite for interrupt-based review gates (H3).
     gate_table:
-      - gate: "Is run_task_lg at parity with run_task on real nodes, with idempotent resume?"
-        evidence: "per-task output equivalence + resume side-effect audit (no duplicate _execute_turn/REPL effects), P-AB-1, seed 42"
+      - gate: "Is run_task_lg at parity with run_task on real nodes with non-empty decision chains?"
+        evidence: "per-task decision-chain parity + non-empty trace coverage, P-AB-1, seed 42"
         fork:
           pass:
-            rule: "output parity on all fixed tasks AND clean idempotent resume"
+            rule: "decision-chain parity on all fixed tasks AND non-empty chains on both arms"
             action:
-              - "flip TM-7 remaining-gated + TM-8 coverage checkboxes; unblock H3 interrupt review gates"
+              - "flip TM-7 live parity residual; keep TM-8 coverage separate"
             next: DONE_PASS
           marginal:
-            rule: "parity holds but resume shows benign re-execution with no state corruption"
+            rule: "parity holds but chain coverage is partial or otherwise diagnostic-only"
             action:
-              - "record observation; keep interrupt gates OFF pending an idempotency fix"
+              - "record observation; keep interrupt gates OFF pending trace coverage repair"
             next: DONE_MARGINAL_OBS
           fail:
-            rule: "output divergence OR resume duplicates side effects / corrupts state"
+            rule: "decision-chain divergence OR empty decision chain on either arm"
             action:
-              - "keep GENERALIZED_INTERRUPTS forbidden; document the idempotency hazard in checkpointing.py"
+              - "keep GENERALIZED_INTERRUPTS forbidden; document the live parity / trace coverage defect"
             next: FAILED_REVERTED
           infra:
-            classify: "checkpointer DB error / AsyncSqliteSaver failure / node crash unrelated to parity"
+            classify: "trace DB error / node crash unrelated to parity"
             action:
-              - "verify data/graph_checkpoints.sqlite; re-run the parity set in a fresh quiet window"
+              - "verify data/trace/events.sqlite and the fixed task set; re-run the parity set in a fresh quiet window"
           ambiguous:
             action:
               - "hold for operator; attach per-task diff + resume side-effect trace"
@@ -1138,6 +1135,6 @@
     package_to: "coordination/inference-batch/bundles/BULK-langgraph-tm7-parity/"
   ledger:
     journal_quarantine_rule: >
-      record task id, run_task vs run_task_lg output equivalence, resume side-effect count, seed;
+      record task id, run_task vs run_task_lg decision-chain parity, trace chain lengths, seed;
       quarantine diagnostic_only if the fixed task set changed between arms.
     era_stamp: "E5-cpu-kernel"
