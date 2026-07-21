@@ -7,6 +7,27 @@
 
 ## Compiled Update — 2026-07-21
 
+### Addendum (same day, evening): within-role placement fixed end-to-end (DISPATCH-A/A2/A3)
+
+Operator-driven investigation ("four healthy NUMA-pinned quarters should decode concurrently")
+uncovered a three-layer serialization stack, fixed in orchestrator `99dd6c92`+`570200ff`+`5408109f`:
+(1) the dispatcher emitted the all-region full candidate first while the live 4-quarter stack had a
+quarter **impersonating the full slot** — each worker_general decode held all 4 per-role + all 4
+GLOBAL cross-role mutexes, blocking **every role machine-wide** ~26s/request (invisible production
+head-of-line); (2) the placement filter consumed an attribution holder view that phantom-reported
+the full → all disjoint quarters queued; (3) the misaligned full stranded one quarter and shifted
+region-locks off their physical cores (cross-role collision hazard). Fixes: policy-aware candidate
+construction + alignment guard, exact held-regions filter, and misaligned-full **demotion** to its
+true topology index. Result: first-ever 4-wide same-role decode (EV-11c live on all four quarters),
+mode-exclusivity design contract recorded (full/half XOR quarters; burst abandons the big
+instance). Operational lessons: eval client needs reconnect backoff (a mid-run API reload burned
+~680 questions as connect-errors); SIGSTOP-the-runner is the correct mid-run deploy procedure;
+`real_mode:true` is required on manual /chat probes (request-level mock default).
+
+**Source References (addendum):** `handoffs/active/within-role-placement-state-machine.md`
+(contract + WP-8..11), `coordination/inference-batch/op-bundle.md` (DISPATCH-A row),
+`progress/2026-07/2026-07-21.md` (DISPATCH arc), orchestrator commits `99dd6c92`/`570200ff`/`5408109f`.
+
 The inference-batch `/loop` — the single-writer execution vehicle over a 52-entry manifest — completed a clean overnight burn-down and a takeover session that **exhausted the live runnable island**, while a companion **loop-robustness audit** corrected the root cause of the EV-4 stall and hardened the loop against a whole class of topology-change regressions. The load-bearing correction: the EV-4 failure was **not** the v7 kernel cutover — it was the **2026-07-17 `vision_escalation` NUMA rebind (5 instances → 1)** shipping without a contention-matrix recert, which had been silently degrading production cross-role concurrency ever since. Confidence: `verified` for the landed loop/runner/preflight fixes (each with coordination-suite tests) and the terminal ledger outcomes; `observation` for the EV-4 baseline still in flight.
 
 ### Key Findings (2026-07-21)
