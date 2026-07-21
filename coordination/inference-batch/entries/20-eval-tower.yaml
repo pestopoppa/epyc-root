@@ -676,6 +676,8 @@
       .venv/bin/python scripts/benchmark/eval_batch_serving_evaltower_window.py
       --mode math_rebaseline --scoring math_verify --full
       --roles worker_general,worker_math --seed 42
+      --allow-serial
+      --output-dir orchestration/reports/eval_tower_math_rebaseline_E7
       --api-url http://localhost:8000 --apply --confirm-clean-window
     cwd: /mnt/raid0/llm/epyc-orchestrator
     concurrency_mode: paired_sequential

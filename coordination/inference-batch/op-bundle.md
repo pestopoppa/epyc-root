@@ -52,7 +52,7 @@ Format for operator action: change `[ ]` → `[x]` and append `GRANTED <date> �
 - [x] **screening-tier-runner-landed** — SATISFIED ✅ 2026-07-17 (`scripts/autopilot/screening_tier_runner.py` exists, 26 tests green). Cited by: H5-RM3, P6-RM4.
 - [ ] **RM-1-pool-gen-output-present** — PENDING: no `reviewer_pool_gen.json` output on disk yet (the generator `scripts/analysis/reviewer_pool_gen.py` exists; needs one run to produce the pool). Cited by: H5-RM3, ROUTE screening entries.
 - [ ] **XMAS-enforce-window-ab-root-present** — PENDING: no concrete enforce-window A/B root has been named for the passive post-enable telemetry monitor. Cited by: BULK-XMAS-telemetry.
-- [ ] **EV-11a-boxed-fix-landed** — UNCONFIRMED (verify at session-init): `debug_scorer._score_math_verify` native-`math_verify.parse()` boxed-extraction fix. BLOCKS EV-11. Owner: debug_scorer (research + orchestrator copies).
+- [x] **EV-11a-boxed-fix-landed** — CONFIRMED 2026-07-21 (takeover session, live evidence): `test_eval_verifier_mode.py::test_score_math_rebaseline_handles_nested_boxed_latex` passes at HEAD AND a direct scorer check (`score_answer('\\boxed{\\frac{1}{2}}' …, 'math_verify')` → True) confirms native nested-boxed parsing in the pinned orchestrator copy; the scorer-identity pin (`epyc_orch_debug_scorer`) makes the research-copy divergence moot for eval paths. EV-11 unblocked on this gate.
 
 ### F. Build-backlog gates (a runner/mode/adapter must be BUILT before the entry can run — these are NOT satisfiable by the loop; they need a build session)
 

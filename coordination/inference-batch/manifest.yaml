@@ -1,6 +1,6 @@
 schema_version: inference_batch.manifest.v1
 entry_schema_version: inference_batch.entry.v1
-generated_at: '2026-07-21T09:33:07Z'
+generated_at: '2026-07-21T10:24:55Z'
 entry_count: 52
 entries:
 - schema_version: inference_batch.entry.v1
@@ -1315,7 +1315,8 @@ entries:
     dry_run: false
     command: '.venv/bin/python scripts/benchmark/eval_batch_serving_evaltower_window.py
       --mode math_rebaseline --scoring math_verify --full --roles worker_general,worker_math
-      --seed 42 --api-url http://localhost:8000 --apply --confirm-clean-window
+      --seed 42 --allow-serial --output-dir orchestration/reports/eval_tower_math_rebaseline_E7
+      --api-url http://localhost:8000 --apply --confirm-clean-window
 
       '
     cwd: /mnt/raid0/llm/epyc-orchestrator
@@ -1393,7 +1394,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-07-17-math-verify-rebaseline
-  entry_hash: sha256:b46eeaf0d5d228f3a2a8de6138e088f1a9b211e4d0171f08c2744f7d0f9a07fa
+  entry_hash: sha256:08c60dc57b314bc561229abedb3260c9810df144f73063ae35dce01dfc398025
 - schema_version: inference_batch.entry.v1
   task_id: EV-4-calibration-baseline
   title: EV-4 — Eval-tower calibration baseline on Scoring Verifiers HE-R+ (ECE/AUC/Top-1/Bottom-1/rho/MAE)
