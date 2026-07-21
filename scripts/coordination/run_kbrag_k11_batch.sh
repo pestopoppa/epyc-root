@@ -230,7 +230,7 @@ BUILD_PERFORMED=0
 if [[ "${stale_now}" == "1" ]]; then
   if [[ "${REPAIR_INDEX}" == "1" ]]; then
     echo "KB-RAG index is stale; rebuilding before K11 sweep" >&2
-    build_args=(scripts/kb_rag/cli.py build)
+    build_args=(scripts/kb_rag/cli.py --index-dir "${INDEX_DIR}" --config "${CONFIG_PATH}" build)
     if [[ "${FORCE_REBUILD}" == "1" ]]; then
       build_args+=(--force)
     fi
@@ -297,9 +297,10 @@ for weight in ${WEIGHTS}; do
   mkdir -p "${out_dir}"
   (
     cd "${ORCH_REPO}"
-    KB_RAG_LEXICAL_WEIGHT="${weight}" "${ORCH_PY}" scripts/kb_rag/cli.py eval \
-      --cases "${REMAP_CASES}" \
+    KB_RAG_EMB_CACHE=1 KB_RAG_LEXICAL_WEIGHT="${weight}" "${ORCH_PY}" scripts/kb_rag/cli.py \
       --index-dir "${INDEX_DIR}" \
+      eval \
+      --cases "${REMAP_CASES}" \
       --configs maxsim \
       --cutoffs 3,5,10 \
       --output-dir "${out_dir}"
