@@ -1,10 +1,10 @@
 {
   "schema_version": "inference_batch.sources_lock.v1",
-  "generated_at": "2026-07-21T04:43:45Z",
+  "generated_at": "2026-07-21T04:52:53Z",
   "repos": {
     "epyc-root": {
       "path": "/mnt/raid0/llm/epyc-root",
-      "sha": "d02132d7a29f760bdc2a85b87bf6aad5bd8a4072",
+      "sha": "ffa2546f95dcc9409d5c0027adeeee16792d1073",
       "dirty": true
     },
     "epyc-orchestrator": {
@@ -386,9 +386,7 @@
       "task_id": "BULK-kbrag-autowiki-k11",
       "owning_handoff": "handoffs/active/internal-kb-rag.md",
       "checkbox": "K11 (optional, measure-first) \u2014 FTS5 lexical signal",
-      "also_flips": [
-        "handoffs/active/internal-kb-rag.md#AutoWiki page generator/writer"
-      ],
+      "also_flips": [],
       "handoff_exists": true,
       "checkbox_line": null,
       "checkbox_anchor_count": 0,

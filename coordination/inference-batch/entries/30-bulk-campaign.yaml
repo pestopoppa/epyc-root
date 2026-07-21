@@ -939,59 +939,48 @@
     era_stamp: "E5-cpu-kernel"
 
 # -----------------------------------------------------------------------------
-# 10. internal-kb-rag — AutoWiki page writer + K11 FTS5 lexical weight sweep
+# 10. internal-kb-rag — K11 FTS5 lexical weight sweep + AutoWiki deterministic dry-run
 # -----------------------------------------------------------------------------
 - schema_version: inference_batch.entry.v1
   task_id: BULK-kbrag-autowiki-k11
-  title: "internal-kb-rag — AutoWiki model-backed page writer + K11 FTS5 lexical sweep"
+  title: "internal-kb-rag — K11 FTS5 lexical sweep + AutoWiki deterministic writer dry-run"
   provenance:
     owning_handoff: handoffs/active/internal-kb-rag.md
     checkbox: "K11 (optional, measure-first) — FTS5 lexical signal"
-    also_flips:
-      - "handoffs/active/internal-kb-rag.md#AutoWiki page generator/writer"
     source_ref: "research/factory-ai-harvest-2026-06-03.md (Part 3E, intake-657)"
     coordination_note: >
-      Two coupled legs. (a) AutoWiki writer: the deterministic source-manifest -> ColBERT refresh
-      loop, output structural lint, and writer_evidence_policy (minimum_confidence: verified, >=3
-      source refs) all landed; only the model-backed page WRITER remains (inference-gated). (b) K11:
-      FTS5 lexical signal landed default-off (orchestrator 74120be); this measures the lexical_weight
-      sweep before any default weight promotion (measure-first). ColBERT MaxSim stays default until
+      Two non-LLM legs. (a) AutoWiki deterministic writer dry-run verifies the structural/evidence
+      scaffold over the live KB-RAG index, but it does NOT close model-backed page drafting or adopt
+      generated pages. (b) K11: FTS5 lexical signal landed default-off (orchestrator 74120be); this
+      measures a lexical_weight sweep over the K7 certification pool after remapping archived handoff
+      evidence paths and refreshing the KB-RAG index if stale. ColBERT MaxSim stays default until
       evidence justifies a lexical weight > 0.
   phase: 3
   priority: P3
   preconditions:
-    stack_lineup: "architect alias (CPU) for the AutoWiki writer; KB-RAG index resident; no production reload"
+    stack_lineup: "KB-RAG index resident/refreshed; no llama-server or production reload required"
     kernel_era: production-consolidated-v7
-    flags_required:
-      GGML_IQK: 1
-    flag_attestation: env_only
-    models:
-      - architect_general
+    flag_attestation: none
+    models: []
     host_health:
-      tier: quiet_window
+      tier: active_safe
       max_uptime_days: 14
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
       live_affinity_verified: false
-      contention_matrix: v7-recert-required
+      contention_matrix: not_required
     autopilot: stopped
     depends_on: []
   execution:
     driver: command
-    protocol_id: "K7 Flywheel-template recall eval (HotpotQA/LoCoMo) + writer evidence policy"
+    protocol_id: "internal-kb-rag.k11-lexical-sweep.v1"
     dry_run: false
     command: >
-      .venv/bin/python scripts/kb_rag/autowiki_writer.py
-      --index-dir /mnt/raid0/llm/epyc-orchestrator/data/kb_rag/index
-      --output-dir wiki/autowiki_writer_candidate_pages --evidence-policy verified --dry-run ;
-      for w in 0.0 0.1 0.2 0.3; do KB_RAG_LEXICAL_WEIGHT=$w uv run python
-      /mnt/raid0/llm/epyc-orchestrator/scripts/kb_rag/cli.py eval --configs maxsim --cutoffs 3,5,10
-      --output-dir /mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_lexical_w$w ; done
-    cwd: /mnt/raid0/llm/epyc-orchestrator
-    concurrency_mode: same_trial_eval_fanout
-    fanout_transport: placement_queue
-    contention_class: eval_fanout_full_core
+      bash scripts/coordination/run_kbrag_k11_batch.sh --execute --repair-index-if-stale
+    cwd: /mnt/raid0/llm/epyc-root
+    concurrency_mode: serial_noninference
+    fanout_transport: none
+    contention_class: kb_rag_offline_retrieval
     est_wall_clock_h: 2.5
     timeout_s: 18000
     retry_policy:
@@ -1000,44 +989,52 @@
         - INFRA_BLOCKED
   outcomes:
     expected: >
-      K11 lexical-weight sweep priced against the ColBERT-only default; AutoWiki writer produces
-      policy-conformant pages (>=3 source refs, verified confidence) on changed sources only.
+      K11 lexical-weight sweep priced against the ColBERT-only default over the remapped K7
+      certification pool; AutoWiki deterministic writer dry-run reports policy-conformant page
+      coverage without calling a model or adopting pages.
     gate_table:
-      - gate: "Does an FTS5 lexical weight > 0 beat ColBERT-only recall AND does the AutoWiki writer meet the evidence policy?"
-        evidence: "recall@10 per lexical_weight vs w=0 baseline (K7 pool) + writer structural-lint/evidence-policy pass rate"
+      - gate: "Does an FTS5 lexical weight > 0 beat ColBERT-only recall without increasing miss risk?"
+        evidence: "k11_lexical_weight_sweep.json: recall@10 per lexical_weight vs w=0 baseline over remapped K7 cert pool, plus AutoWiki dry-run policy summary"
         fork:
           pass:
-            rule: "a lexical_weight improves recall beyond the 2pp noise band with 0 new missed-all-evidence cases AND writer pages pass policy"
+            rule: "a lexical_weight improves recall beyond the 2pp noise band with 0 new missed-all-evidence cases, and AutoWiki dry-run ok=true"
             action:
-              - "flip K11 + AutoWiki-writer checkboxes; propose the winning lexical_weight default to operator"
+              - "flip K11; propose the winning lexical_weight default to operator"
             next: DONE_PASS
           marginal:
-            rule: "lexical uplift within noise; writer pages pass policy but no retrieval win"
+            rule: "lexical uplift within noise; AutoWiki dry-run ok=true but no retrieval win"
             action:
-              - "keep lexical_weight=0 default; adopt AutoWiki writer as observation-gated"
+              - "keep lexical_weight=0 default; leave model-backed AutoWiki drafting open"
             next: DONE_MARGINAL_OBS
           fail:
-            rule: "lexical weight regresses recall/miss-risk OR writer pages fail the evidence policy"
+            rule: "lexical weight regresses recall/miss-risk OR AutoWiki dry-run fails the evidence policy"
             action:
-              - "keep ColBERT-only default; hold the writer; document in internal-kb-rag"
+              - "keep ColBERT-only default; document in internal-kb-rag"
             next: FAILED_REVERTED
           infra:
-            classify: "index build failure / eval fan-out dispatch error / architect alias down"
+            classify: "ColBERT dependency missing / stale index rebuild failure / case remap unresolved / eval harness failure"
             action:
-              - "rebuild the KB-RAG index; re-run the sweep via the eval-concurrency path"
+              - "repair dependency/index/case-remap inputs, then rerun the offline K11 sweep"
           ambiguous:
             action:
-              - "hold for operator; attach per-weight recall rows + sample writer pages"
+              - "hold for operator; attach per-weight recall rows + AutoWiki dry-run summary"
             next: HELD_AMBIGUOUS
   artifacts:
     outputs:
       - "data/kb_rag/eval/k11_lexical_weight_sweep.json"
-      - "wiki/autowiki_writer_candidate_pages/"
+      - "data/kb_rag/eval/k11_lexical_weight_sweep/"
+      - "data/kb_rag/eval/k11_autowiki_writer_dryrun_summary.json"
+      - "data/kb_rag/eval/k11_cert_cases_remapped.json"
+      - "data/kb_rag/eval/k11_cert_case_remap_report.json"
+      - "data/kb_rag/eval/k11_index_freshness_before.json"
+      - "data/kb_rag/eval/k11_index_freshness_after.json"
+      - "data/kb_rag/eval/k11_index_build_summary.json"
     package_to: "coordination/inference-batch/bundles/BULK-kbrag-autowiki-k11/"
   ledger:
     journal_quarantine_rule: >
-      record lexical_weight, recall@10, missed-all-evidence count, writer page policy-pass rate;
-      quarantine diagnostic_only if the K7 pool version changed mid-run.
+      record lexical_weight, recall@10, missed-all-evidence count, case-remap count, index
+      freshness, and AutoWiki dry-run policy summary; quarantine diagnostic_only if unresolved
+      evidence paths remain or if the K7 pool version changed mid-run.
     era_stamp: "E5-cpu-kernel"
 
 # -----------------------------------------------------------------------------
