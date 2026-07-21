@@ -1,9 +1,14 @@
 # Architect Model Comparison Benchmark
 
-**Status (2026-07-20): SPEC'd — GATED, not yet runnable.** Waiting on three sequential gates
-(§Gating). All prep that requires no inference is done this session (spec, evidence note, arm-GGUF
-confirmation); the AIME'25 adapter build can proceed anytime; the inference runs are operator/
-quiet-window-gated **and** sequenced *after* v7 promotion and the `inference-batch-loop.md` backlog.
+**Status (2026-07-21): GPU ARMS RUN — reasoning suites show NEAR-PARITY; harder-tier + CPU arm outstanding.**
+Operator granted a GPU-only inference window (2026-07-20/21). Executed: per-model spec-dec sweep (→ registry
+optima), R1 letter-GPQA (n=198×3), R3 AIME'25 avg@4 (n=30×4×3), R2a–d thinking ablation + E-6 budget-cap.
+**Result so far: no arm is statistically separable on any reasoning suite** — H3 fails (35B-A3B ties both
+larger arms), H2 near-parity (27B-dense ≈ 122B-IQ2); `enable_thinking=false` vindicated; the +32pp reasoning
+lever is the *prompt*, not native `<think>`. **Outstanding:** OlympiadBench-numeric n=150 (RUNNING — the
+harder-tier discriminator, since GPQA/AIME saturate) → full `gpqa_diamond_cot` n=198 → **A2 122B-Q4 CPU arm**
+(later session; blocks **H1**, the IQ2-vs-Q4 question) → Phase 2 (OD-1/OD-2). **Reusable procedure:**
+[`../../docs/reference/architect-bench-runbook.md`](../../docs/reference/architect-bench-runbook.md).
 
 **One-line purpose:** decide, decision-grade, **which model holds the `architect` role** (deep
 reasoning / multi-step planning) — because the only local quality signal we have for the GPU-resident
