@@ -1,6 +1,6 @@
 schema_version: inference_batch.manifest.v1
 entry_schema_version: inference_batch.entry.v1
-generated_at: '2026-07-21T09:25:26Z'
+generated_at: '2026-07-21T09:33:07Z'
 entry_count: 52
 entries:
 - schema_version: inference_batch.entry.v1
@@ -1442,9 +1442,13 @@ entries:
     protocol_id: eval-tower.calibration-baseline.v1
     dry_run: false
     command: '.venv/bin/python scripts/benchmark/eval_batch_serving_evaltower_window.py
-      --mode calibration --suite scoring_verifiers --split HE-R+ --roles worker_general,frontdoor
-      --full --seed 42 --min-eval-concurrency 3 --api-url http://localhost:8000 --apply
-      --confirm-clean-window
+      --mode calibration --suite scoring_verifiers --split HE-R+ --roles frontdoor
+      --full --seed 42 --min-eval-concurrency 3 --output-dir orchestration/reports/eval_tower_calibration_baseline_HE-R+/frontdoor
+      --api-url http://localhost:8000 --apply --confirm-clean-window && .venv/bin/python
+      scripts/benchmark/eval_batch_serving_evaltower_window.py --mode calibration
+      --suite scoring_verifiers --split HE-R+ --roles worker_general --full --seed
+      42 --allow-serial --output-dir orchestration/reports/eval_tower_calibration_baseline_HE-R+/worker_general
+      --api-url http://localhost:8000 --apply --confirm-clean-window
 
       '
     cwd: /mnt/raid0/llm/epyc-orchestrator
@@ -1512,7 +1516,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:4b487c7febbce4246ef380c3b224c00e57a4362ee8450869b58e6e6cd1960c5f
+  entry_hash: sha256:4ee9306f00a3e26690446ded4df42b1587ecd6477452332418b891a0cd40b6fb
 - schema_version: inference_batch.entry.v1
   task_id: EV-10a-skill-efficacy-ab
   title: EV-10a — Deploy + paired A/B of the AUTOPILOT_SKILL_EFFICACY_GATE (per-suite,

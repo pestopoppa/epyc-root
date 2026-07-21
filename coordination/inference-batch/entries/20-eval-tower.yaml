@@ -66,8 +66,16 @@
     command: >
       .venv/bin/python scripts/benchmark/eval_batch_serving_evaltower_window.py
       --mode calibration --suite scoring_verifiers --split HE-R+
-      --roles worker_general,frontdoor --full --seed 42
+      --roles frontdoor --full --seed 42
       --min-eval-concurrency 3
+      --output-dir orchestration/reports/eval_tower_calibration_baseline_HE-R+/frontdoor
+      --api-url http://localhost:8000 --apply --confirm-clean-window
+      &&
+      .venv/bin/python scripts/benchmark/eval_batch_serving_evaltower_window.py
+      --mode calibration --suite scoring_verifiers --split HE-R+
+      --roles worker_general --full --seed 42
+      --allow-serial
+      --output-dir orchestration/reports/eval_tower_calibration_baseline_HE-R+/worker_general
       --api-url http://localhost:8000 --apply --confirm-clean-window
     cwd: /mnt/raid0/llm/epyc-orchestrator
     concurrency_mode: same_trial_eval_fanout
