@@ -91,3 +91,16 @@ Copy-paste-ready blocks for the operator to land in `MEASUREMENT.md` via a PR-re
 2. Append the `scope: reviewer_plane` era row to `instrument_eras.yaml` when corpus v1 + gold pipeline freeze.
 3. Confirm `check_claims_grammar.sh` recognizes the `[P-REV-1/…]` citation form (warn-mode month 1).
 4. Until merged: reviewer FA/FR/yield/CR remain observations (RC-6a checkbox stays open).
+
+## Research Intake Update — 2026-07-21 (P-REV-1 needs a chance-corrected agreement statistic — RC-6a still open)
+
+- **[intake-876] "Agreement Metrics for LLM-as-Judge Evaluation: What to Report and Why"** (arxiv:2606.00093; Delip Rao, Chris Callison-Burch)
+  - Relevance: **this arrives in time to amend a DRAFT rather than a ratified protocol.** RC-6a is still an open checkbox, and the P-REV-1 claim grammar currently reports raw FA/FR/yield/CR with **no chance correction, no confusion matrix, and no declared tie/abstention estimand**.
+  - Why it bites here specifically: RM-3c's live slice is FR 50.0% / FA 16.7% — a maximally skewed marginal. This handoff already warns in prose that bias can inflate CR to 81% at near-random accuracy. That warning is a **rediscovery of the chance-correction problem**, currently patched with a caveat instead of a statistic.
+  - Key claims: on non-degenerate binary data Pearson/Spearman/Kendall/phi/MCC all collapse to the **same number** (reporting several manufactures fake corroboration); Cohen's kappa is the only common coefficient adding information, because its marginal-sensitive normalization exposes judge-vs-human positive-rate drift. Recommended minimal binary report = accuracy + F1 + kappa + exactly one correlation representative + the confusion matrix.
+  - Abstention handling is a **choice of estimand, not preprocessing**: exclude / recode-as-negative / retain-as-third-class each estimate a different quantity. This directly bites GC-external-1a, which currently drops malformed/tie rows as data cleaning.
+  - **Caveat carried forward:** the paper does not discuss Gwet's AC1. The classical kappa paradox is that kappa collapses toward 0 under highly skewed marginals even at high raw agreement — exactly our deliberately near-miss corpora. Pair kappa with prevalence/bias disclosure (or AC1); do not adopt kappa uncritically.
+  - Delta from current approach: cost is low (kappa/Fleiss/Krippendorff are ~30 lines stdlib, alongside the existing stdlib ECE/AUC reimplementation).
+
+- [ ] Operator-review candidate (RC-6a, do BEFORE the PR lands): add a chance-corrected agreement statistic + a declared tie/abstention estimand + confusion-matrix publication to the P-REV-1 claim grammar; pair kappa with marginal/prevalence disclosure per the kappa-paradox caveat. Human-amendment-only — operator PR, not an agent edit. [intake-876]
+- [ ] Operator-review candidate (GC-external-1a): declare the tie/abstention estimand explicitly and report its rate, rather than skipping malformed/tie rows as cleaning. [intake-876]

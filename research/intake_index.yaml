@@ -19789,6 +19789,7 @@
   - 'Same Tier 2b findings as DistServe/Splitwise: workload-sensitive, can regress on small/short workloads, EPYC xGMI bandwidth proportionally worse than NVLink'
   - 'Mooncake assumes RDMA fabric and global KVCache pool — single-host CPU stack has no equivalent; only the KVCache-tiering pattern is portable to NUMA DRAM + SSD spill'
   - 'Production-validated only on long-context Kimi traces — short-prompt single-user regime remains untested'
+  - 'VENUE + METRICS CORRECTION (2026-07-21, via a re-submitted duplicate URL https://www.usenix.org/conference/fast25/presentation/qin): this work was published at USENIX FAST ''25 (proceedings pp. 155-170, Feb 2025) as ''Mooncake: Trading More Storage for Less Computation — A KVCache-centric Architecture for Serving LLM Chatbot'', and won Best Paper. It is peer-reviewed, not preprint-only. The camera-ready SUPERSEDES the preprint numbers this entry was built on: effective request capacity is 59%-498% ON REAL TRACES (replacing the preprint''s ''up to 525%'' IN SIMULATION), with +115% on NVIDIA A800 and +107% on H800 versus the prior production system, at 100B+ tokens/day across thousands of nodes. CITE THE PEER-REVIEWED FIGURES, NOT THE SIMULATED 525%. No new mechanism appears in the camera-ready, so the adopt_patterns verdict and all downstream artifacts stand unchanged. The retitle also sharpens one point for us: their storage tier exists because GPU HBM is tiny, whereas at 1.1TB DRAM we already sit at the tier Mooncake spends RDMA to reach — so the KV tiering and SSD-spill machinery is moot here and the portable value is entirely in the scheduling/admission/locality layer.'
   verdict: adopt_patterns
   ingested_date: '2026-04-26'
   discovered_via: search
@@ -46156,3 +46157,1127 @@
     on OCR CER. Base model DeepSeek-OCR itself has been supported in llama.cpp master since PR #17400
     merged 2026-03-25, with official ggml-org GGUFs — so the llama.cpp constraint noted in the original
     version of this entry was wrong and is withdrawn.
+- id: intake-866
+  arxiv_id: null
+  url: https://alexzhang13.github.io/blog/2026/harness/
+  source_type: blog
+  title: Language model harnesses are compositional generalizers
+  authors:
+  - Alex L. Zhang
+  categories:
+  - agent_architecture
+  - context_management
+  - autonomous_research
+  - context_extension
+  - benchmark_methodology
+  key_claims:
+  - 'A harness is valuable primarily because it keeps each individual LM call ''locally in-distribution'' (LID): the global task may be far out-of-distribution, but every sub-call resembles the short/simple prompts the model was trained on.'
+  - Harnesses induce an equivalence relation over tasks — structurally isomorphic tasks collapse into one class once decomposed — so competence transfers across both task length and task domain rather than being memorized per-benchmark.
+  - RL-training a Recursive Language Model (RLM) harness on only SHORT tasks is claimed to transfer to held-out tasks 8-32x longer, whereas RL-training the same base Transformer directly on the same short data produces essentially flat eval gains.
+  - The same decomposition scaffold is claimed to transfer across unrelated domains sharing latent structure, with the RLM approaching or exceeding a frontier model on cross-domain evaluations.
+  - Further returns on scale must come from inductive bias placed in the harness (control flow, recursion, context offloading), not from expecting the network alone to learn compositional generalization.
+  techniques:
+  - Recursive Language Models (RLM) as an RL-trainable harness
+  - Locally in-distribution (LID) harness design principle
+  - Context offloading — input passed as symbolic REPL variables instead of raw tokens
+  - Programmatic sub-agent calling with intermediate results held in the REPL, not the parent context
+  - Task-isomorphism framing via equivalence relations over the task space
+  - prime-rl training (decoupled PPO with GRPO-like advantages + KL loss)
+  reported_results:
+  - 'SELF-REPORTED, GRAPHS ONLY — no numeric tables, seeds, or eval-set sizes published. Training model Qwen3-30B-A3B-Instruct-2507; 150 RL steps, batch size 64, 4 rollouts/step, prime-rl.'
+  - 'Length generalization: train on short tasks only -> held-out tasks 8-32x longer, claimed ~10x the eval lift for the same train lift versus RL-ing the base Transformer directly.'
+  - Base Transformer eval curve claimed flat while train lift accrues; RLM eval tracks train lift.
+  - 'Cross-domain transfer: RLM claimed to approach/exceed GPT-5.5 on tasks whose surface domain differs from training.'
+  - 'Cost: RLM RL training wall-clock reported as 1.5-3x the base Transformer''s.'
+  - 'Benchmark span: MRCRv2 (64k-2M), GraphWalks (<128k to >1M), LongBenchPro (32k-256k), OOLONG (32k-256k), OOLONG-Pairs, Ada-LEval (8k-128k).'
+  referenced_arxiv_ids:
+  - '1706.03762'
+  - '2505.09388'
+  - '2507.20534'
+  - '2602.15763'
+  - '2210.03629'
+  - '2402.01030'
+  - '2601.02872'
+  - '2511.02817'
+  - '2512.24601'
+  - '2404.06480'
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-07-21'
+  notes: >-
+    DEEP-DIVE 2026-07-21 (routing lens): contributes little to the orchestrator-routing-training question — ~85% overlap with intake-536 (RAO), and NOT in
+    dependent of intake-867 (this is Zhang's blog; 867 thanks Zhang). LID is unfalsifiable as stated by the author's own admission; do NOT import the 'har
+    ness induces an equivalence relation' framing (unmeasured, and the author concedes the isomorphism leaks). The ONE liftable piece is the Appendix dist
+    ance recipe E_e[min_tau d(x_tau,x_e)], which is not LID but a nearest-neighbour FAMILIARITY measure — repurposable as a per-role competence feature CO
+    MP_r(x) computable with zero inference from sessions/embeddings.faiss + memories.action/outcome, concatenated at routing_classifier.py:61. Must be eva
+    luated leave-one-objective-out (only ~2,384 distinct objectives; in-sample NN scores AUC~1.0 for free). Decision flip: AUC<=0.55 close the line, >=0.6
+    5 first routing feature with real spread. See learned-routing-controller.md 2026-07-21 section.
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    - 07-benchmark-suite-construction.md
+    - 09-claude-debugger.md
+    handoffs:
+    - rao-redel-substrate-spike.md
+    - autopilot-continuous-optimization.md
+    - meta-harness-optimization.md
+    - context-folding-progressive.md
+    - repl-turn-efficiency.md
+    - tool-use-eval-contract.md
+    - hermes-agent-index.md
+    experiments: []
+    intake_entries:
+    - intake-153 (Recursive Language Models — verdict already_integrated, ~80% pattern coverage)
+    - intake-312 (Mismanaged Geniuses Hypothesis, same author — this post is its empirical successor)
+    - intake-349 (dspy.RLM module)
+    - 'intake-547 (Wang RLM reproduction — CONTRADICTING: depth-0 86.6% beats depth-1 60.0% on Kimi K2 OOLONG)'
+    - intake-271 (HumanLayer harness-engineering blog)
+    - intake-273 (Chroma Context Rot)
+    - intake-867 (alphaXiv RL-for-RLMs — the companion RL-training write-up)
+    - intake-868 (SkyRL examples/train/rlm — the training code)
+  handoffs_updated:
+  - rao-redel-substrate-spike.md
+  handoffs_created: []
+  contradicting_evidence:
+  - 'DIRECT FAILED REPLICATION of the underlying recursion premise (intake-547 / arXiv 2603.02615, Wang et al.): on Kimi K2 / OOLONG the non-recursive base model scores 86.6% while RLM depth-1 scores 60.0% — a 26.6pp REGRESSION from adding the harness. On S-NIAH, base models score 100.0% and both DeepSeek v3.2 (85.0%) and Kimi K2 (90.0%) degrade under depth-1. Depth-2 degrades uniformly. RLM gains appear only where the base model scores 0.0% — i.e. RLM rescues FAILING models rather than improving competent ones. This is the single most important caveat on the entry.'
+  - 'COST: the same reproduction reports DeepSeek S-NIAH at 3.6s base -> 89.3s depth-1 -> 344.5s depth-2 (~96x over base); Kimi K2 depth-2 hits 545.5s.'
+  - 'METHODOLOGICAL: personal blog, not a paper. Publishes graphs but no numeric tables — no eval-set sizes, no seeds, no per-task accuracy behind the ~10x lift, no variance reporting. A single-seed single-model 150-step run cannot support a claimed 10x differential lift; the difference could be seed noise. Under MEASUREMENT.md this is an OBSERVATION and may not gate any decision.'
+  - 'PRIOR EXPECTATION RUNS THE OTHER WAY: arXiv 2605.02572 (On Training LLMs for Long-Horizon Tasks) reports holdout-length evaluation drops of 10-20% at H=64 vs H=32 and performance collapse as goal distance grows — the default expectation in the RL literature is length-transfer FAILURE.'
+  - 'AUTHOR-ADMITTED SCOPE LIMITS: he states length generalization "is not always guaranteed", and reports a degenerate-strategy failure mode where "one viable strategy is just offload the entire problem to a single sub-call" — the RLM collapsing to a non-recursive baseline.'
+  - 'LID IS NON-OPERATIONAL BY THE AUTHOR''S OWN ADMISSION: "It is very hard to formalize the above in an empirically meaningful way." No test would falsify LID and no ex-ante metric separates a good from a bad harness. Treat LID as a framing device, not a measurable acceptance criterion.'
+  - 'CONFIRMATION-BIAS RISK: the headline RL-transfer claims have ZERO public criticism or independent reproduction, because the source is a weeks-old personal blog. The only RLM reproduction (2603.02615) tests the INFERENCE-time harness, not the RL-trained variant, so it is not a replication of these claims at all. Absence of criticism here is absence of scrutiny.'
+  - 'CITATION DEFECT: the page''s reference list attaches arXiv 2512.24601 to "OOLONG-Pairs", but our index records 2512.24601 as the canonical Recursive Language Models paper (intake-153). One attribution is wrong; do not reuse that ID from this source without checking.'
+  novelty_justification: 'The RLM mechanism is already covered (intake-153, 312, 349), so the architecture is not new to us. What is new is empirical: an RL-training run claiming harness-mediated short-task training transfers to 8-32x-longer held-out tasks, plus a domain-transfer result across six long-context benchmarks. Neither the training protocol, the 30B-A3B result, nor the six-benchmark span appears in the index. The LID formulation is a new framing rather than a restatement of MGH. Rated high on significant-new-results — but see contradicting_evidence: the results are unreplicated and the closest independent test points the other way.'
+  relevance_justification: 'The trained model is Qwen3-30B-A3B-Instruct-2507 — the exact MoE class we run on CPU — so the result concerns hardware we own rather than being an API-only finding. It lands on live work: AP-26 in autopilot-continuous-optimization.md is open pending an RLM vs non-RLM comparison; rao-redel-substrate-spike.md is choosing an RLM/RAO substrate now and has pinned max_depth=1 as load-bearing (which intake-547 supports and this post disputes); meta-harness-optimization.md and context-folding-progressive.md own harness-search and context offloading.'
+  verdict_justification: 'worth_investigating, not adopt_patterns: the harness patterns it advocates (REPL context offloading, symbolic variables, programmatic sub-calls) are ALREADY shipped per intake-153 and HA-RLM-1/2/3, with net-new lift ~0. The un-adopted part is the RL-training claim, which we have never tested and which needs an RL loop we do not run. Given intake-547''s direct contradiction, the actionable next step is NOT to pursue RLM training but to use the depth question as a live decision for rao-redel-substrate-spike.md: current evidence favours keeping max_depth=1 or 0 for competent models and reserving recursion for cases where the base model scores near zero. Do NOT let the 1.5-3x training-runtime figure travel as an EPYC cost estimate — our decode is bandwidth-bound and sub-call serialization costs differently on CPU.'
+- id: intake-867
+  arxiv_id: null
+  url: https://www.alphaxiv.org/blog/reinforcement-learning-for-rlms
+  source_type: blog
+  title: Reinforcing Recursive Language Models
+  authors:
+  - Daniel Kim
+  - Rehaan Ahmad
+  categories:
+  - agent_architecture
+  - training_distillation
+  - context_management
+  - tool_implementation
+  - search_retrieval
+  - benchmark_methodology
+  key_claims:
+  - A 4B model (Qwen3.5-4B) can be RL fine-tuned into a native Recursive Language Model whose parent (decomposer) and child (sub-agent) roles are served by a SINGLE shared policy, removing the need for separate policies or a frozen sub-call model as in the original RLM paper.
+  - Child rollouts inherit the GRPO advantage of the parent root rollout that spawned them, with child loss normalized by 1/k_g so parents spawning many children are not over-weighted; a recursive subtree-loss generalization to arbitrary depth is given.
+  - 'RLM behavior is out of the edge of competence for small models: Qwen3.5-4B scores 0 pass@16 on the RLM harness without cold-start SFT, so SFT on teacher traces is required before RL. SFT over the full RL dataset caused entropy collapse, so only a few dozen held-out examples were used.'
+  - The RLM scaffold re-appends the user query at the end of every turn rather than accumulating it, so successive turns share NO prefix — each turn must be a separate training sample with the last-step advantage broadcast backwards (step-wise GRPO).
+  - Verifiable rewards (F1 on evidence-span overlap) were claimed too noisy because multiple valid spans answer a query; rubric-based LLM judges were substituted and are claimed more robust to reward hacking. (SEE contradicting_evidence — this claim inverts the published consensus.)
+  - Explicit task-strategy text in the system prompt is currently load-bearing for RLM throughput and quality.
+  techniques:
+  - Recursive Language Models (RLM) with Python REPL as primary interface
+  - Single shared policy for parent + child RLM roles
+  - Parent-to-child GRPO advantage inheritance with 1/k_g child-loss normalization
+  - Recursive subtree loss for arbitrary RLM depth
+  - Step-wise (per-turn) RL training for non-prefix-sharing scaffolds
+  - Cold-start SFT on filtered teacher RLM traces
+  - Rubric-based LLM-judge rewards (rubrics-as-rewards)
+  - 'REPL built-ins: FINAL/FINAL_VAR, rlm_query, rlm_query_batched (parallel child dispatch)'
+  - SkyRL training stack, 8xH200 single node
+  reported_results:
+  - 'ALL SELF-REPORTED, single-lab, no independent verification; primary source returned HTTP 403 to automated fetch and was retrieved via curl + corroborated by search.'
+  - 'Single-paper (no sub-call) task: eval judge score ~0.6 -> ~0.8 for Qwen3.5-4B after RL on top of SFT.'
+  - 'Multi-paper recursive task: average rubric score 0.3 -> 0.6 on the TRAINING set after RL (not a held-out eval).'
+  - 'Eval: RL fine-tuned 4B RLM lands just short of Claude Sonnet 4.6''s 0.607 average rubric score under an identical RLM harness.'
+  - 'Latency: ~7s per RLM query for the 4B model on a single node vs >60s for Sonnet-based RLMs (~8.5x). NOT apples-to-apples — see contradicting_evidence.'
+  - 'Strategy prompt effect on frontier model: Sonnet 4.6 takes 90s per rollout without an explicit strategy vs 30s with one (3x).'
+  - 'Prompt-compression ablation: 200-token prompt converges slightly lower and less stably than a 1500-token strategy prompt.'
+  - 'Training scale: 8xH200, batch 16, 8 samples/prompt, up to 4 children per parent -> up to 512 concurrent rollouts. Dataset: 1000 synthetic queries over groups of up to 10 arXiv papers.'
+  referenced_arxiv_ids:
+  - '2512.24601'
+  - '2201.11903'
+  - '2501.12948'
+  - '2507.17746'
+  novelty: medium
+  relevance: high
+  credibility_score: 3
+  verdict: adopt_patterns
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-07-21'
+  notes: >-
+    DEEP-DIVE 2026-07-21 (routing lens): the shared-policy result is CONFIRMATORY, not directive — we already run frontdoor/coder_escalation/worker_summar
+    ize off ONE GGUF (Qwen3.6-35B-A3B-MTP-Q8_0) on one server. Its training economics do not bind (8xH200 vs our one MI210, no cluster), and collapsing ro
+    les would delete the COST axis that DAR-1 found is the only thing actually driving our routing. The advantage-inheritance/1-over-k_g mechanism is inta
+    ke-536 (RAO) 'mean-of-children, prevents trivial-spawn exploit' restated; the subtree loss is weaker than intake-549 (Tree-GRPO), which PROVES the ste
+    p-level equivalence 867 merely asserts. GENUINELY NEW and decision-relevant: the 0-pass@16-without-SFT floor. But the failure mode is HARNESS CONFORMA
+    NCE (malformed FINAL(...), runaway tool calls), not decision difficulty — so it is a direct argument AGAINST fine-tuning an LM to emit routing decisio
+    ns (a 5-way categorical with no output-format failure mode, already served in <0.1ms by a 200K-param numpy MLP). It says nothing about a discriminativ
+    e head on richer features; that transfer is void.
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    - 07-benchmark-suite-construction.md
+    - 04-radix-attention.md
+    handoffs:
+    - repl-turn-efficiency.md
+    - context-folding-progressive.md
+    - meta-harness-optimization.md
+    - harness-selection-and-integration.md
+    - internal-kb-rag.md
+    - rao-redel-substrate-spike.md
+    - outer-coordinator-learned-head.md
+    - tool-use-eval-contract.md
+    experiments: []
+    intake_entries:
+    - intake-153 (Recursive Language Models — this post trains what that paper prompts/SFTs)
+    - intake-349 (dspy.RLM module)
+    - intake-547 (Wang RLM reproduction — contradicting)
+    - intake-866 (companion harness/LID blog)
+    - intake-868 (SkyRL examples/train/rlm — the code for this post)
+    - intake-874 (rubric reward hacking — refutes the rubric-over-verifiable claim)
+    - intake-875 (self-play judge hacking — refutes it further)
+    - intake-878 (signal dilution — bears on the credit-assignment scheme)
+  handoffs_updated:
+  - rao-redel-substrate-spike.md
+  - repl-turn-efficiency.md
+  handoffs_created: []
+  contradicting_evidence:
+  - 'REFUTATION OF THE RUBRIC-VS-VERIFIABLE-REWARD CLAIM. This post asserts rubric LLM judges are MORE robust to reward hacking than verifiable F1. intake-874 (arXiv 2606.04923) builds a controlled environment that STABLY REPRODUCES reward hacking against rubric judges, finding policies exploit latent judge biases; intake-875 (arXiv 2607.05904) finds reference-free judges substantially LESS robust than verifiable ground-truth feedback. NOTE the honest scope: 2606.04923 does not run a head-to-head rubric-vs-verifiable comparison, so it kills "rubric judges are ROBUST to hacking" but does not establish "rubric is worse than F1". Our own index (intake-660/664, robust-kbench 2509.14279) separately documents programmatic verifiers being gamed 32.8% of the time. CONCLUSION: neither reward class is a safe default; do not adopt this post''s reasoning in either direction.'
+  - 'CREDIT-ASSIGNMENT SCHEME IS UNVALIDATED: intake-878 (arXiv 2606.22164) quantifies why trajectory-level GRPO advantage degrades in multi-turn settings (SNR scales as rho^-1/2 in decision density). CAVEAT ON THIS CITATION: that paper contains NO analysis of recursion, delegation depth, or parent-to-child inheritance — the "dilution compounds with depth" extension is an extrapolation, not a finding. It supports only the weaker premise that trajectory-level advantage degrades in multi-turn settings. 1/k_g is a variance-control heuristic, not a value estimate; nothing establishes unbiasedness.'
+  - 'THE 7s-vs-60s LATENCY COMPARISON IS NOT APPLES-TO-APPLES: a locally-served 4B model''s wall clock is dominated by local GPU throughput, while a Sonnet-class API call includes queueing, network, and provider-side batching. Separately, arXiv 2603.02615 shows RLM wall-clock is dominated by NUMBER OF SUB-CALLS, not root-model size, so a fixed 7s figure implies a fixed sub-call budget that would not hold on longer tasks.'
+  - 'The headline 0.3 -> 0.6 rubric improvement is reported on the TRAINING set, not a held-out eval — a distinction the post makes but which is easily lost when the number is quoted.'
+  - 'Single narrow task (evidence selection over <=10 arXiv papers), no long-context stress, rubric judges are the authors'' own, and alphaXiv selected the task for its own production needs over its own paper corpus — a mild commercial-bias discount.'
+  - 'Inherits the intake-547 caveat: independent reproduction finds RLM depth-1 UNDERPERFORMING depth-0 by 26.6pp on Kimi K2 OOLONG.'
+  novelty_justification: 'RLMs, REPL-as-interface, and GRPO are all already indexed (intake-153, 312, 349). What is new is the TRAINING formulation: one shared policy playing both parent and child, with parent advantage inherited by children and 1/k_g normalization, plus the recursive subtree-loss generalization. Also new to our corpus: the step-wise per-turn sampling requirement following from the scaffold''s deliberate lack of prefix sharing, and the finding that a 4B model is at 0 pass@16 on an RLM harness without cold-start SFT. Not high, because the substrate is all previously ingested and the contribution is one credit-assignment choice validated on a single narrow task.'
+  relevance_justification: 'Split by axis. TRAINING axis: not actionable — 8xH200, SFT-then-RL, SkyRL; we have no training cluster and one MI210. ORCHESTRATION/INFERENCE axis: high and actionable. (a) rlm_query_batched-style parallel child dispatch maps onto our NUMA-split concurrent-slot fabric, where 4 children per parent is exactly the aggregate-throughput regime we exploit; (b) the small-model-under-a-good-scaffold thesis matches our worker_fast/cheap-path rescue-rate work; (c) the strategy-prompt ablation is a pure prompt-side lever measurable locally today; (d) the no-shared-prefix scaffold is a direct warning for our prefix/radix caching — every RLM turn is a cache miss on the query suffix, a real cost on bandwidth-bound CPU decode; (e) the rubric-judge claim, though refuted, is a useful pointer INTO the reward-hacking literature now indexed as intake-874/875.'
+  verdict_justification: 'adopt_patterns. The RL recipe is not reproducible here, so not adopt_component. Three inference-side patterns are worth porting and are testable on the existing stack: batched child dispatch under one policy (maps onto our same-GGUF-shared-server model), the strategy-prompt-length ablation as a cheap harness experiment, and explicit accounting of prefix-cache loss from per-turn query re-appending. DO NOT adopt the fourth (rubric judges over span-F1) — see contradicting_evidence. Useful checkpoint on our standing "~80% of RLM implemented" claim: the missing piece is on-policy training of the child role, and this post is evidence that a prompted/SFT-only small model fails that role (0 pass@16), bounding how far the 80% claim can be pushed with 4B-class local workers.'
+- id: intake-868
+  arxiv_id: null
+  url: https://github.com/NovaSky-AI/SkyRL/tree/main/examples/train/rlm
+  source_type: repo
+  title: SkyRL examples/train/rlm — RL training harness for Recursive Language Models (multi-paper evidence extraction environment)
+  authors:
+  - NovaSky-AI / Berkeley Sky Computing Lab
+  - Daniel Kim (RLM environment PR)
+  - Sumanth R Hegde, Eric Tang (SkyRL maintainers)
+  - 'alphaXiv (collaborating org: dataset + SFT model)'
+  categories:
+  - agent_architecture
+  - training_distillation
+  - context_management
+  - tool_implementation
+  - search_retrieval
+  - benchmark_methodology
+  key_claims:
+  - Provides a runnable RL (GRPO) training recipe for Recursive Language Models — RL-post-training of the RLM scaffold itself rather than the inference-only RLM implementations already tracked in the index.
+  - 'Implements a parent/child rollout tree in the generator: each recursive sub-call is registered as its own rollout with parent_rid/depth/child_index, and child trajectories can be inlined into the training batch with reward propagated from the parent.'
+  - 'Ships a verifiable-reward environment: multi-paper verbatim evidence extraction over a dict-of-papers context, scored by character-interval precision/recall/F1 against ground-truth spans, computed per-paper then summed, plus an LLM-judge variant.'
+  - Context lives in a persistent Python REPL as a `context` variable, never in the prompt; the model interacts via repl blocks with search/extract_section/list_papers tools and terminates with FINAL(...)/FINAL_VAR(var).
+  - 'Sub-call dispatch is explicitly budgeted: rlm_query_batched caps at 4 children per call, hard limit of 10 REPL rounds, exactly one repl block per response, and a frozen-model option so in-REPL calls hit a frozen model instead of the policy being trained.'
+  techniques:
+  - Recursive Language Model inference scaffold with persistent Python REPL as the context store
+  - GRPO with KL loss (coef 0.01), n_samples_per_prompt=8, step-wise trajectories
+  - Parent/child recursive rollout trees with reward propagation to child trajectories
+  - Frozen-model sub-calls vs policy-model sub-calls (on-policy vs off-policy recursion)
+  - Character-interval F1 reward over verbatim extracted spans (merge/intersect interval arithmetic)
+  - Role-differentiated parent (coordinator) vs child (extraction worker) system prompts with explicit turn budgets
+  - Keyword-search REPL tooling with windowed snippet expansion and fuzzy fallback
+  - Ray + FSDP2 training with vLLM inference engines, NCCL weight sync
+  reported_results:
+  - 'The example directory reports NO benchmark numbers — it is a recipe, not a results artifact.'
+  - 'Configured operating point: Qwen3.5-family 2B policy, 4 train GPUs, TP=4, 1 vLLM engine, 32768 max prompt length, 1024 max generation, max_turns=6, temperature 1.0, lr 1e-6, 1 epoch.'
+  - 'Repo-level credibility signals: Apache-2.0, 2084 stars, 388 forks, created 2025-04-22, last push 2026-07-19 (actively maintained), 383 open issues. The rlm example landed 2026-05-08 and survived 3 subsequent repo-wide refactors.'
+  referenced_arxiv_ids:
+  - '2512.24601'
+  - '2511.16108'
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  verdict: adopt_patterns
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-07-21'
+  notes: >-
+    DEEP-DIVE 2026-07-21 (source-level read of all 12 files; the directory has NO README): the scorer actionable is WITHDRAWN. (1) compute_metrics_multipa
+    per (evidence_rewards.py:57-73) is DEAD CODE — zero call sites. (2) SkyRL's actual reward is judge_reward (:239-365), a closed-model gpt-5.4-mini rubr
+    ic call to api.openai.com — the authors had the interval metric and chose an LLM judge, which INVERTS the intake-874/875 'prefer verifiable anchors' a
+    rgument that justified the port. (3) It reproduces our brittleness scar with an added bug: offsets are str.find-recovered, and at :176-180 unmatched p
+    redicted spans are DROPPED FROM THE PRECISION DENOMINATOR rather than penalized — 9 hallucinated + 1 exact span scores precision 1.0. Blocker is NOT m
+    issing offset annotations (derived); it is that only 2 of ~30 adapters populate context and no suite stores span-level GT. PROMOTED INSTEAD: MULTIPAPE
+    R_CHILD_SYSTEM_PROMPT (evidence_rlm_env.py:120-224) — a REPL-discipline prompt (one block, no narration, no comments, stated drop-consequence, turn FL
+    OOR as well as ceiling, same-block causality constraint) that lands on tool-use-eval-contract.md's live comment-only-REPL blocker and gives repl-turn-
+    efficiency.md its missing S4 Omega A/B arm. Also corrected: the 4-children/10-round budgets are PROMPT TEXT ONLY, not enforced in code; the OpenRouter
+     frozen model is opt-in, not default (rlm_config.py:20).
+  cross_references:
+    chapters: []
+    handoffs:
+    - repl-turn-efficiency.md
+    - context-folding-progressive.md
+    - internal-kb-rag.md
+    - agent-world-env-synthesis.md
+    - tool-use-eval-contract.md
+    - meta-harness-optimization.md
+    - autopilot-continuous-optimization.md
+    - rao-redel-substrate-spike.md
+    experiments: []
+    intake_entries:
+    - intake-153 (Recursive Language Models paper — the parent technique)
+    - intake-331 (predict-rlm, DSPy-based RLM implementation)
+    - intake-349 (dspy.RLM official module)
+    - intake-358 (Sanjaya — evidence-first RLM agent library, inference-only)
+    - intake-867 (alphaXiv blog — the companion write-up for this code)
+    - intake-866 (harness/LID blog)
+  handoffs_updated:
+  - rao-redel-substrate-spike.md
+  - repl-turn-efficiency.md
+  handoffs_created: []
+  contradicting_evidence:
+  - 'Inherits every caveat on intake-867 (its companion write-up) and intake-547 (the RLM reproduction showing depth-1 UNDERPERFORMING depth-0 by 26.6pp on Kimi K2 OOLONG at ~96x wall-clock inflation at depth 2). Clean, maintained code is not evidence that recursion helps.'
+  - 'The parent-to-child reward propagation this repo implements is the trajectory-level-advantage scheme that intake-878 identifies as diluting signal in multi-turn settings; the repo implements it without validating it.'
+  - 'No benchmark numbers are published in the example directory itself, so any performance claim about this recipe comes from the alphaXiv blog (self-reported, single-lab) rather than from the code.'
+  - 'The default recipe assumes an OpenRouter-hosted frozen model, violating our self-hosted-only constraint unless repointed at a local OpenAI-compatible endpoint (a small change — the client is a single ~7.5KB adapter — but not the shipped default).'
+  novelty_justification: 'The RLM inference pattern is saturated in our index (paper, dspy.RLM, predict-rlm, Sanjaya) — on that axis this is duplicate. What is new is the training side: an open, Apache-2.0, end-to-end RL harness treating the recursion tree as the unit of credit assignment. Specifically novel: child rollouts registered as first-class trajectories with parent-propagated reward, a frozen-vs-policy switch for in-REPL sub-calls, and a verifiable interval-F1 reward for verbatim span extraction across a multi-document context. No existing entry covers RLM optimization, only RLM execution.'
+  relevance_justification: 'Split verdict, stated explicitly per project rule — NOT dismissed on hardware grounds. DOES NOT TRANSFER: the training loop as configured (Ray + FSDP2 + vLLM engines + NCCL weight sync, 4 training GPUs colocated with inference). DOES TRANSFER: (1) the parent/child rollout-tree bookkeeping is the accounting model rao-redel-substrate-spike.md needs for nested sub-agents; (2) the interval-F1 verbatim-evidence reward is a drop-in VERIFIABLE scorer for internal-kb-rag.md retrieval eval — it sidesteps the substring/comma-brittleness scorer-bug class we have been bitten by, since it scores character intervals rather than string equality; (3) the sub-call fan-out cap (4/call), hard round limit (10), and one-block-per-response contract are empirically-tuned budget controls mapping onto repl-turn-efficiency.md; (4) the parent-coordinator / child-worker prompt split is a reusable decomposition template.'
+  verdict_justification: 'adopt_patterns. Transferable value is architectural, not executable-as-is. Highest-value concrete action: port compute_metrics_multipaper / interval-F1 as an eval-tower scorer for evidence-grounded retrieval — roughly 60 lines, dependency-free, Apache-2.0, and VERIFIABLE, which intake-874/875 argue we should prefer over rubric judges wherever an objective anchor exists. Second, mine the parent/child rollout-context model when formalizing nested sub-agents. The RL-training path is flagged for OPERATOR REVIEW rather than closed — a 2B policy, single-MI210, self-hosted-frozen-model variant is not obviously infeasible — but intake-547 gives reason to doubt the payoff before spending on it. Do NOT treat as already_integrated: our ~80% RLM coverage claim is about inference patterns, and nothing in the stack trains or optimizes the recursion policy.'
+- id: intake-869
+  arxiv_id: '2606.29718'
+  url: https://arxiv.org/html/2606.29718v1
+  source_type: paper
+  title: Diagnosing and Mitigating Context Rot in Long-horizon Search
+  authors:
+  - Shijie Xia
+  - Yikun Wang
+  - Zhen Huang
+  - Pengfei Liu
+  categories:
+  - context_management
+  - agent_architecture
+  - benchmark_methodology
+  - search_retrieval
+  - knowledge_management
+  key_claims:
+  - 'Context rot in long-horizon search agents is a behavioral failure, not a context-window-capacity failure: as accumulated context grows, models increasingly give up outright or emit hedged/uncertain answers rather than truncating or erroring.'
+  - The degradation is claimed to track the semantics of accumulated content rather than raw trajectory length or turn count.
+  - A terminal-state error taxonomy (confident-correct, uncertain-correct, confident-incorrect, uncertain-incorrect, give-up, no-answer) can be applied automatically by an LLM judge with a reported ~98.7% agreement against human annotation.
+  - Across seven context-management methods in three families (compaction/summarization, trimming/discarding, isolation/sub-agents), no single method dominates across models; combining trimming with summarization is claimed to give the best accuracy/cost balance.
+  - Rot-aware rejection sampling — discarding sampled trajectories whose terminal state is give-up or uncertain — is claimed to add 2.6-4.9% accuracy on top of every aggregation strategy tested.
+  techniques:
+  - Terminal-state error taxonomy for agent trajectories
+  - LLM-as-judge trajectory classification with 5-run majority voting
+  - 'Context compaction: length-triggered / turn-triggered / struggle-score-triggered summarization'
+  - 'Context trimming: discard-all, keep-latest, keep-latest+summary'
+  - Context isolation via FoldAgent sub-agents
+  - Rot-aware rejection sampling / trajectory filtering
+  - Best-of-n aggregation (min trajectory length, fewest turns, majority vote)
+  - 'Runnable harness (github.com/GAIR-NLP/ContextRot): OpenAI-compatible endpoints, configurable context length and max turns, cached search results; local-search arm uses embedding retrieval over the BrowseComp-Plus corpus'
+  reported_results:
+  - 'Give-up rate reaches 38.6% on BrowseComp for GLM-4.7; uncertain-incorrect reaches 48.2% for MiniMax-2.5.'
+  - 'ReAct baselines: BrowseComp 35.0% (Qwen3.5) / 33.8% (GLM-4.7); BrowseComp-Plus 72.0% / 65.6%; xbench-DeepSearch 56.2% / 56.0%.'
+  - 'Keep-latest-with-summary: +13.2pp on BrowseComp (35.0 -> 48.2), +7.3pp on BrowseComp-Plus (72.0 -> 79.3); rot rate 53.4% -> 16.2%.'
+  - 'BUT their own table: FoldAgent scores 54.0% on BrowseComp vs keep-latest+sum 48.2% (same backbone).'
+  - 'AND: keep-latest ALONE scores 43.8%, plain Discard 44.6% — observation-dropping delivers ~9pp of the 13.2pp headline; summarization adds only 3.6-4.4pp.'
+  - 'FoldAgent is model-dependent: +19% for Qwen3.5 on BrowseComp but below baseline for GLM-4.7.'
+  - 'Rot-aware filtering: +2.6% to +4.9% across three aggregation methods. LLM-judge vs human agreement on terminal-state labels: 98.7% (struggle-score judge drops to 91.4%).'
+  - 'Models: Qwen3.5-397B-A17B (256K ctx), GLM-4.7, GLM-5.0, MiniMax-2.5. Benchmarks: BrowseComp (100-sample split), BrowseComp-Plus (200 of 860), xbench-DeepSearch.'
+  referenced_arxiv_ids:
+  - '2504.12516'
+  - '2510.11967'
+  - '2509.13313'
+  - '2307.03172'
+  - '2210.03629'
+  - '2505.06120'
+  - '2510.07777'
+  - '2510.05381'
+  - '2508.07976'
+  - '2602.15763'
+  - '2510.03204'
+  - '2602.02276'
+  - '2512.16970'
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: adopt_patterns
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-07-21'
+  notes: >-
+    DEEP-DIVE 2026-07-21 (full LaTeXML retrieved; Tables 2/3/4/9 extracted): every number in this entry VERIFIED correct. Five sharpenings. (a) The paper 
+    never claims 48.2 is the accuracy winner — it bolds FoldAgent 54.0; its actual claim is a cross-dataset average where keep-latest+sum wins by 0.35pp o
+    ver n=2 models. (b) Summarization's marginal contribution over trimming is +1.55pp AVERAGED and SIGN-INCONSISTENT (4 of 6 cells positive; GLM/BC+ -1.1
+    , GLM/xbench -0.6) — the +3.6-4.4pp quoted is the single most favorable cell. (c) Table 9 gives +/-2.5 to +/-3.8 SD over 5 repeats on a 100-question s
+    plit; the Discard->KL+sum gap is NOT distinguishable from noise. (d) MOST IMPORTANT: the Rot metric EXCLUDES No-Answer and the methods TRADE ONE FOR T
+    HE OTHER — ReAct NA=0.0 vs summarization arms NA=37-49%; Summary(Turn) reports rot 1.8% while 38.4% of trajectories never answer; KL NA 4.2 -> KL+sum 
+    NA 17.6. Any give-up-rate telemetry MUST be paired with a non-termination counter or we optimize into agents that never finish. (e) Cost framing was b
+    ackwards: the expensive arms are pure threshold-triggered summarization (21.7->53-69 tool calls); the hybrid's real cost is unfinished trajectories, n
+    ot tokens. Also: keep_k_latest is NOT pure trimming (falls back to summary-restart on overflow). HARNESS CORRECTION: the 'self-hostable against our BG
+    E servers' claim was WRONG — shipped embeddings are Qwen3-Embedding-8B-specific (4096-dim, 821MB bf16); BGE would require re-embedding 100,195 docs an
+    d break comparability. The BrowseComp arm requires a paid SERPER_API_KEY (fails open-source-only); only BrowseComp-Plus is self-hostable, and it is th
+    e arm where the summarization effect is ~1pp or NEGATIVE. Repo ships NO LICENSE file. Judge is hardcoded gpt-4o-mini/gpt-4.1 (two string literals to p
+    atch). ~25-50h/arm NUMA-concurrent at 1 rep => underpowered for the accuracy question; scope to the behavioral rot/NA signature only.
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    handoffs:
+    - context-folding-progressive.md
+    - tool-output-compression.md
+    - minddr-deep-research-mode.md
+    - reasoning-compression.md
+    - research-evaluation-index.md
+    - eval-tower-verification.md
+    - reviewer-decision-plane.md
+    - colbert-reranker-web-research.md
+    experiments: []
+    intake_entries:
+    - intake-273 (Chroma 'Context Rot' — same coinage, DIFFERENT artifact and group)
+    - intake-274 (The Complexity Trap — observation masking vs summarization; partially contradicts)
+    - intake-154 (Context-Folding / FoldGRPO — source of the FoldAgent arm re-benchmarked here)
+    - intake-155 (AgentFold)
+    - intake-157 (ReSum)
+    - intake-141 (Contextual Memory Virtualisation)
+    - intake-289 (Memento)
+    - intake-876 (judge agreement metrics — bears on the 98.7% figure)
+    - intake-877 (search-time contamination — bears on the BrowseComp numbers)
+  handoffs_updated:
+  - context-folding-progressive.md
+  - tool-output-compression.md
+  handoffs_created: []
+  contradicting_evidence:
+  - 'THE HEADLINE POLICY CLAIM IS WEAKER THAN STATED, BY THEIR OWN TABLE. FoldAgent scores 54.0% on BrowseComp vs keep-latest+summary at 48.2% on the same backbone, so "best" only holds once cost and cross-model robustness are folded in. The marginal contribution of summarization is small: keep-latest ALONE is 43.8% and plain Discard is 44.6%, so the bulk of the +13.2pp lift comes from simply dropping old observations, with summarization buying only 3.6-4.4pp.'
+  - 'EXTERNAL PARTIAL FAILED REPLICATION (intake-274 / arXiv 2508.21433): in the software-engineering domain the summarization component does not reproduce as a winner. On SWE-bench Verified across five model configs, simple observation masking matched or beat LLM summarization (Qwen3-Coder 480B 54.8% masked at $0.61 vs 53.8% summarized at $0.64), masking was cheapest in 4 of 5 configs, and summaries produced a trajectory-elongation effect costing 13-15% more. The two are not head-to-head (different domains) and both agree the big win is dropping stale observations. PRACTICAL READ: treat "drop stale observations" as the robust cross-domain result and "add LLM summarization on top" as a domain-specific, small, cost-negative-until-proven addition to be A/B''d, not assumed.'
+  - 'THE 98.7% JUDGE-AGREEMENT FIGURE IS NOT TRUSTWORTHY AS REPORTED: raw percent agreement on 300 trajectories labelled by two in-house researchers, with no chance-corrected statistic and no human-human inter-annotator agreement. Terminal-state labelling is heavily class-imbalanced, so 98.7% raw agreement is consistent with a judge near-useless on the minority class — the class of interest. See intake-876. Their own struggle-score judge drops to 91.4%.'
+  - 'ROT-AWARE REJECTION SAMPLING IS CONFOUNDED WITH JUDGE OVEROPTIMIZATION: the selection signal comes from the same LLM judge family used to score the outcome — the canonical best-of-N proxy-overoptimization setup. intake-875 measures a judge-pass vs unit-test-pass gap widening from 0.20 at k=1 to 0.588 at k=16 under exactly this pattern. A +2.6-4.9% band is within the magnitude judge-selection inflation produces.'
+  - 'THE MODEL-DEPENDENCE CLAIM IS n=2: FoldAgent +19% for Qwen3.5 vs negative for GLM-4.7 is a two-model contrast on a 100-sample split — roughly 10 questions of separation. n=2 cannot establish model-dependence as a property.'
+  - 'STATISTICAL POWER IS THIN THROUGHOUT: BrowseComp is a 100-sample split and BrowseComp-Plus a 200-of-860 subsample, so a 4.4pp gap is ~4 questions — squarely in our own per-suite-gate-resolution caveat.'
+  - 'LIVE-WEB CONTAMINATION RISK: intake-877 measures up-to-4% performance inflation across six public deep-research benchmarks from search-time contamination — the same order as several of this paper''s margins. BrowseComp relies on black-box live search APIs, making results time-dependent and non-reproducible.'
+  - 'AUTHOR-ADMITTED SCOPE: evaluation is exclusively on open-source models and confined to deep search; the authors state it "remains unclear whether the error distributions we observed fully generalize to other long-horizon agentic domains like software development" — precisely where The Complexity Trap contradicts them.'
+  - 'The semantics-over-length mechanism is not novel: Chroma (intake-273) already showed degradation driven by distractors and needle-distractor semantic similarity, but as a length-INTERACTION effect, weakening this paper''s length-irrelevance framing.'
+  - 'CONFIRMATION-BIAS RISK: this paper has NO published criticism, failed replication, or independent reproduction — it is ~3 weeks old. Every item above is either an author-admitted limitation, a weakness derived from their own tables, or a domain-adjacent result not written in response to it.'
+  novelty_justification: 'Distinct from intake-273 despite the shared phrase. Chroma is a STATIC SINGLE-TURN study (18 models, synthetic NIAH haystacks) measuring how a passively supplied long input degrades answers. This is a MULTI-TURN AGENTIC TRAJECTORY study where context is self-accumulated by a ReAct loop, and the headline is a behavioral failure mode (give-up, hedging) rather than a retrieval-accuracy curve. It also ships mitigations and ranks them. The terminal-state taxonomy as a measurable eval quantity and the head-to-head seven-policy bake-off on a common harness are new relative to intake-273/274/154/155. Different group, different artifact, different design — not a duplicate.'
+  relevance_justification: 'Two direct hits on live work. (1) Context-management policy: context-folding-progressive.md (at CF-3c) and tool-output-compression.md (Phase 3d) both cite intake-273/274 as their evidence base and lack exactly the comparative ablation this paper supplies. Its keep_k_latest_wo_reasoning arm speaks directly to reasoning-compression.md''s question of whether to retain historical thinking blocks. (2) Eval methodology: the repo ships a runnable harness talking OpenAI-compatible endpoints, so we can point it at llama-server and measure rot on our own roles; the local-search arm (BrowseComp-Plus + embedding retrieval) is self-hostable against our BGE servers, with only the web-search arm needing an external key. It evaluates the open-weight families we run or track, and minddr-deep-research-mode.md already uses xbench-DeepSearch/BrowseComp as public anchors.'
+  verdict_justification: 'adopt_patterns, not adopt_component: a thin, recently published research release (single-digit stars, no visible test suite, external search-API dependency in the web arm) is not a production dependency. Three patterns worth lifting, in priority order. (a) Add give-up-rate and uncertain-incorrect-rate as explicit eval-tower dimensions alongside accuracy — our compaction telemetry tracks reference misses, not refusal/hedging behavior, and a rot-rate move from 53.4% to 16.2% is a far sharper signal than the accuracy delta. This is the most durable takeaway and is largely independent of the contested policy ranking. (b) Use the seven-policy ablation as the design frame for CF-3c/Phase 3d, but adopt the CORRECTED reading: prioritize observation-dropping (~9pp of the 13.2pp) and treat summarization as a small, cost-negative-until-proven addition, consistent with intake-274. (c) The model-dependence of isolation cautions against a single global compaction policy across our heterogeneous role stack, though it rests on n=2. Any accuracy number here is an OBSERVATION under MEASUREMENT.md until re-run under our own protocol; the self-hostable local-search arm is the cheapest path. If we ever adopt the terminal-state judge, it must ship with a chance-corrected agreement statistic (intake-876), not raw percent agreement. CO-ARTIFACT: github.com/GAIR-NLP/ContextRot is the code release for this same work and is recorded here rather than as a separate entry.'
+- id: intake-870
+  arxiv_id: null
+  url: https://github.com/kacper-daftcode/vLLM-Moet
+  source_type: repo
+  title: 'vLLM-Moet — vLLM patch + hand-written SM120 SASS kernels: 2-bit MoE experts with an FP4 delta cache for consumer Blackwell'
+  authors:
+  - kacper-daftcode (single primary author)
+  categories:
+  - moe_optimization
+  - quantization
+  - inference_serving
+  - hardware_optimization
+  - speculative_decoding
+  key_claims:
+  - Only routed experts are compressed to 2 bits using a sign-symmetric {-4,-1,1,4} codebook; dense/attention layers stay at higher precision. The author's stated failure mode is that unconstrained optimal 2-bit codebooks introduce sign asymmetry that makes naive 2-bit MoE degenerate.
+  - Precision is recovered at runtime rather than by a better static quantizer — an FP4 'delta' tier keeps hot experts at higher precision, plus a confidence gate re-runs low-confidence decode steps at full precision.
+  - Three-tier expert residency (GPU expert cache -> pinned host RAM -> NVMe pack files) with background prefetch, batched miss-fetch plus CUDA-graph replay, and a tunable miss-tolerance knob; miss handling is claimed bit-identical to a fully-resident forward pass.
+  - A 7.4k-line patch against upstream vLLM v0.24.0 fixes five categories of consumer-Blackwell (sm_120) breakage.
+  - Supporting toolchain was built from scratch because sm_120 has no public SASS toolchain — a claimed 1,994-instruction-form ISA database and an SM120 SASS assembler/disassembler.
+  techniques:
+  - 2-bit routed-expert quantization with sign-symmetric codebook
+  - FP4 delta cache for hot experts (mixed-precision expert tiering)
+  - Confidence-gated full-precision recompute
+  - Three-tier expert residency GPU/pinned-RAM/NVMe with background prefetch
+  - NVMe expert pack files as persistent quantization cache
+  - Hand-written SM120 SASS QMMA MoE GEMM kernels
+  - CUDA graph capture/replay across expert misses
+  - MTP speculative decoding under pipeline parallelism
+  reported_results:
+  - 'ALL SELF-REPORTED, single-author, no independent reproduction; two fetched surfaces disagree on some rows.'
+  - 'GLM-5.2-NVFP4 (753B): 105 tok/s decode on 4x RTX PRO 6000. No stated non-Moet throughput baseline.'
+  - 'GLM-5.2 on 2x RTX PRO 6000 (192GB) with NVMe expert stores: 28-32 tok/s steady, 128K context. No baseline — configuration claimed impossible without the patch.'
+  - 'DeepSeek-V4-Flash (159B): 161 tok/s on 1x RTX PRO 6000; ~31 tok/s on a single RTX 5090. Landing page separately cites 214 tok/s on 4x RTX 5090 — unreconciled.'
+  - 'Kimi-K2.7-Code (1T): 51 tok/s single-stream, 222 tok/s aggregate at 8 concurrent streams on 4x RTX PRO 6000.'
+  - 'Quality (internal QUANT_PROBE, baseline = official (NV)FP4): MTP acceptance 2.73 vs 2.68, draft accept 86.3% vs 84.1%, 12/12 coherent greedy outputs, GSM8K 97.5% (+0.5pp). Sample sizes tiny/unstated.'
+  - 'Host RAM reduction from NVMe pack files, GLM TP2: ~568GB -> ~136GB, with claimed parity once the pinned arena covers ~25-27% of the expert working set. The one number with a clean internal A/B baseline.'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-07-21'
+  notes: >-
+    DEEP-DIVE 2026-07-21: the selective-precision actionable is CLOSED — the carve-out this repo converged on (attention + shared experts + DSA indexer + 
+    early-layer MLPs held high, routed experts low) is ALREADY implemented by our Unsloth GLM-5.2 UD-IQ2_M, verified from the six GGUF shard headers (attn
+     KV path Q8_0; indexer.proj/k_norm F32, indexer projections Q8_0; shexp Q5_K/Q6_K; layers 0-2 Q5_K/Q6_K; routed gate/up IQ2_XXS, down IQ3_XXS). No gap
+     to exploit. The FP4 hot-expert delta tier is separately RULED OUT: our own routing-skew artifact (19.1M selections) classifies GLM-5.2 as near_unifor
+    m_global (normalized entropy 0.9987, Gini 0.0664, top_8 share 4.1% vs uniform 3.1%) — there are no hot experts for a frequency-aware tier to bite on. 
+    Value of this entry is now confirmatory only.
+  cross_references:
+    chapters:
+    - 02-moe-optimization.md
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - deepseek-v4-flash-cpu-port.md
+    - glm51-reap-cpu-evaluation.md
+    - heterogeneous-slot-fabric-residency.md
+    - architect-model-selection-bench.md
+    - mi210-big-model-and-acceleration-roadmap.md
+    - gpu-acceleration-path.md
+    - cpu-shape-specialized-gemv-decode.md
+    - speculative-decoding-mtp-refresh.md
+    - glm52-reviewer-capability-gates.md
+    experiments: []
+    intake_entries:
+    - intake-167 (FlashMoE — ML-based SSD expert cache replacement)
+    - intake-168 (SpecMoEOff — hiding expert-offload latency with spec-dec)
+    - intake-310 (llama.cpp CPU+GPU hybrid MoE expert-offloading guide)
+    - intake-871 (GLM-5.2-NVFP4-TR3-Hybrid — this repo benchmarks that checkpoint family)
+  handoffs_updated:
+  - speculative-decoding-mtp-refresh.md
+  handoffs_created: []
+  contradicting_evidence:
+  - 'CREDIBILITY ASSESSED FROM SOURCE, NOT README: effectively single-author — contributor list is the author plus a bot account, a "root" identity, and Cursor AI-session attributions — with ~92 commits compressed into roughly ten days on a repo created 2026-06-15. No tests/ directory, no paper, no peer review, no independent reproduction found.'
+  - 'THE TWO FETCHED SURFACES DISAGREE ON THROUGHPUT ROWS. Treat all numbers as unreconciled.'
+  - 'MOST THROUGHPUT CLAIMS HAVE NO BASELINE, by construction: the headline configurations are ones the author states are impossible without the patch, so there is nothing to compare against. These are capability claims, not speedup claims.'
+  - 'THE QUALITY EVIDENCE WOULD NOT GATE ANYTHING under MEASUREMENT.md: 12 greedy outputs and a +0.5pp GSM8K delta are observations at best; +0.5pp is within one-or-two-question noise.'
+  - 'The one number with a clean internal A/B (568GB -> 136GB host RAM above a ~25-27% pinned-arena threshold) is also the least useful to us, since at 1.1TB RAM we are never memory-constrained in the way that motivates it.'
+  novelty_justification: 'The residency-tiering half is well-trodden for us — intake-167, 168, 310 already cover expert caching, SSD offload, and llama.cpp expert placement. What is NOT in the index is the quantization half: constraining the 2-bit expert codebook to be sign-symmetric (with a claimed mechanism for why unconstrained 2-bit MoE codebooks degenerate), pairing it with a RUNTIME FP4 delta tier for hot experts rather than a static mixed-precision assignment, and gating full-precision recompute on per-step confidence. The SASS toolchain artifacts are novel but architecture-locked.'
+  relevance_justification: 'Hard non-transfer: everything below the algorithm line is sm_120 CUDA SASS with prebuilt cubins, on a stack (vLLM) we do not run and hardware we do not have — our GPU is an MI210 gfx90a on ROCm 6.2. The NVMe expert tier is moot at 1.1TB RAM. Real transfer, three items: (1) sign-symmetric 2-bit codebook design is directly adjacent to our live GLM-5.2 UD-IQ2 usage and the in-flight IQ2 parity / architect-selection eval work, and is implementable as a GGML quant type; (2) hot-expert higher-precision delta tier plus confidence-gated recompute is a portable mixed-precision pattern that on CPU maps onto expert-page NUMA placement rather than PCIe tiering; (3) they run the exact two models we have active handoffs on (GLM-5.2, DeepSeek-V4-Flash) and report MTP acceptance deltas, giving an external reference point for the mtp-refresh branch.'
+  verdict_justification: 'worth_investigating. Not adopt_component (no code path to our stack), not not_applicable (the codebook and delta-tier ideas transfer). The concrete ask is an operator-reviewed read of the sign-symmetric 2-bit codebook + FP4-delta + confidence-gate design against our IQ2 GLM-5.2 quality work — note the convergence with intake-871, which independently arrives at a selective-precision carve-out for the same model family, raising the prior that low-bit GLM-5.2 needs selective precision. The SASS/NVMe/vLLM layers are flagged non-transferable for the record rather than dismissed. The bench/ directory with committed per-release results is better than most single-author forks but does not substitute for independent reproduction.'
+- id: intake-871
+  arxiv_id: null
+  url: https://huggingface.co/brandonmusic/GLM-5.2-NVFP4-TR3-Hybrid
+  source_type: repo
+  title: brandonmusic/GLM-5.2-NVFP4-TR3-Hybrid — Hybrid NVFP4 + trellis-3bit GLM-5.2 (744B MoE-DSA) with a published serving/evaluation evidence record
+  authors:
+  - brandonmusic (HuggingFace uploader; Docker images under a `verdictai` registry namespace)
+  - 'base model: zai-org / Z.ai (GLM-5.2)'
+  categories:
+  - quantization
+  - moe_optimization
+  - inference_serving
+  - benchmark_methodology
+  - speculative_decoding
+  key_claims:
+  - 'A community mixed-precision quantization of GLM-5.2 (GlmMoeDsaForCausalLM, 78 layers, 256 routed experts / 8 active, num_nextn_predict_layers=1): NVFP4 (group_size 16, static scales, ModelOpt/compressed-tensors) on most Linear layers, with an explicit ignore list keeping lm_head, all self_attn and DSA indexer projections, all shared_experts, and layers 0-2 MLPs at higher precision.'
+  - "The loader ships an EXL3 (exllamav3 trellis) extension, which is what 'TR3' denotes — the card never spells the acronym out, so the trellis-3bit reading is INFERRED, not stated."
+  - 'Artifact is safetensors only (81 shards, ~351GB weights; ~352GB repo total including a committed raw evaluation archive). No GGUF.'
+  - 'Serving is a pinned Docker image, config TP4 + DCP4/A2A + MTP3 with an nvfp4_ds_mla KV cache on four RTX PRO 6000 Blackwell GPUs.'
+  - 'An MTP draft-depth sweep is the headline serving finding: depth 3 beat depth 2 and depth 5 at every measured context, explained as depth 2 accepting a higher draft fraction but under-filling the verification window while depth 5''s verification cost exceeded its accepted tokens.'
+  - 'The repo is framed as an auditable engineering record: calibration manifest (1,048,576 target tokens, 1,773 samples, seed 20260711, 4-axis corpus histogram, corpus sha256), harness commit pins, SHA256SUMS, retained failure cases and retained losing arms.'
+  techniques:
+  - NVFP4 (FP4 E2M1, block size 16, FP8 E4M3 block scale + FP32 tensor scale) via NVIDIA ModelOpt
+  - Hybrid mixed-precision layer assignment via a sensitivity-driven ignore list
+  - EXL3 / exllamav3 trellis quantization extension as a serving-side plugin
+  - DeepSeek-style sparse attention (DSA) with an nvfp4_ds_mla quantized KV cache
+  - Tensor parallel 4 + decode context parallel 4 with all-to-all
+  - MTP speculative decoding with draft-depth sweep (depths 2/3/5)
+  - Domain-stratified calibration corpus construction with published manifest and hash
+  reported_results:
+  - 'ALL SELF-REPORTED, no independent verification.'
+  - 'Decode throughput, single-user, 4x RTX PRO 6000: MTP3 62.5 / 63.2 / 62.6 tok/s at 0 / 32K / 128K context; MTP2 60.3 / 58.4 / 54.5; MTP5 50.0 / 43.3 / 42.2.'
+  - 'GPQA Diamond four-pass mean 90.53% (717/792 generations over four repeats of the same 198-item split; SD 0.64pp), on 8x B200. The card cautions 792 is generation-level, not 792 independent questions; 31 generations hit the 100K token cap.'
+  - 'IFBench 76.67% prompt-level loose (230/300), 73.67% strict. Nine responses hit the cap and were scored as failures.'
+  - 'Aider Polyglot 85.52% pass@2 (189/221), over a REDUCED 221/225-task denominator — four timed-out tasks were excluded rather than failed, inflating the rate (85.52% -> 84.0% if counted wrong).'
+  - 'Self-reported comparison table (card explicitly labels it NOT a controlled A/B): NVIDIA GLM-5.2 FP8 GPQA 89.52 / IFBench 74.95; NVIDIA full NVFP4 89.39 / 75.81; this build 90.53 / 76.67; REAP-594B prune 86.87. Official Z.ai card lists GPQA-Diamond 91.2 (not protocol-matched).'
+  - 'Capacity boundary: gpu_memory_utilization 0.970 booted a 989,184-token KV pool but died with a 64MiB CUDA allocation failure in the sparse-attention indexer under 4-concurrent 128K stress.'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: low
+  credibility_score: 2
+  verdict: adopt_patterns
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-07-21'
+  notes: >-
+    DEEP-DIVE 2026-07-21: see intake-870 — the sensitivity carve-out this card documents is already implemented in our incumbent UD-IQ2_M, so the 'verify 
+    whether unsloth omits it' action is CLOSED (falsified; unsloth implements it more aggressively than this card describes). Incidental finding worth kee
+    ping: our historical GLM-5.2 indexer_top_k corruption was a RUNTIME PARAMETER bug, not quantization damage — the indexer sits at Q8_0/F32 throughout, 
+    ruling quantization out as a repeat cause. The MTP depth-3 non-monotonic optimum remains the entry's live contribution.
+  cross_references:
+    chapters:
+    - 02-moe-optimization.md
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    - 07-benchmark-suite-construction.md
+    handoffs:
+    - glm52-reviewer-capability-gates.md
+    - tq3-quantization-evaluation.md
+    - glm51-reap-cpu-evaluation.md
+    - gpu-acceleration-path.md
+    - mi210-big-model-and-acceleration-roadmap.md
+    - speculative-decoding-mtp-refresh.md
+    - cpu-prefill-compute-large-models.md
+    - reviewer-model-ablations.md
+    experiments: []
+    intake_entries:
+    - intake-699 (unsloth GLM-5.2-GGUF — our incumbent artifact, UD-IQ2_M)
+    - intake-756 (NVIDIA Qwen3.6-27B-NVFP4 — established the NVFP4 not_applicable precedent, operator-confirmed 2026-07-02)
+    - intake-339 (Gemma 4 31B IT NVFP4 Turbo — original NVFP4-not-GGUF finding)
+    - intake-427 (0xSero GLM-5.1-555B-A14B-REAP)
+    - intake-870 (vLLM-Moet — benchmarks this checkpoint family)
+    - intake-872 (exllamav3 — source of the EXL3/TR3 component)
+  handoffs_updated:
+  - speculative-decoding-mtp-refresh.md
+  handoffs_created: []
+  contradicting_evidence:
+  - 'THE ARTIFACT IS NOT LOADABLE ON OUR STACK: 81 safetensors shards, quant_method modelopt NVFP4, Blackwell-targeted container, nvfp4_ds_mla KV cache, CUDA-only EXL3 extension. NVFP4 has no GGUF representation and no GGML/llama.cpp CPU path; our MI210 is gfx90a/CDNA2 with no FP4 or FP8 tensor path. This repeats the operator-confirmed not_applicable precedent of intake-756.'
+  - 'IT IS ALSO LARGER THAN THE INCUMBENT: ~351GB vs GLM-5.2-UD-IQ2_M at ~238GB, which we already hold and run from RAM. Even with a CPU path there would be no footprint win.'
+  - 'UPLOADER IS NOT A KNOWN QUANTIZER and every number is self-reported with zero independent corroboration; the verdictai/ Docker namespace suggests commercial affiliation. That would floor credibility at 1; the published raw artifacts, hash manifests, pinned harness commits, four-pass variance reporting and retained failures are materially above community-re-quant norms, hence 2.'
+  - 'TWO NUMBERS ARE SOFT EVEN WITHIN THE SELF-REPORTED TIER: Aider 85.52% uses a reduced 221-task denominator (four timed-out tasks excluded, not failed); GPQA 792 is four repeats of 198 items, not 792 independent questions. The card discloses both, which is to its credit, but neither is decision-gating for us.'
+  - 'The comparison table mixes rows copied from third-party model cards under unmatched protocols; the card itself says it is not a controlled A/B. Do not read the 90.53 vs 89.39 delta as a quantization-quality result.'
+  - "The 'TR3' = trellis-3bit reading is inferred from the shipped EXL3 extension, not stated on the card. Treat the naming as unconfirmed."
+  novelty_justification: 'NVFP4 alone would be duplicate (intake-339, 427, 756). What is not yet indexed: (a) the specific hybrid construction — NVFP4 on bulk Linears combined with an EXL3/trellis component and an explicit high-precision carve-out for attention, the DSA indexer, shared experts, and the first three layers'' MLPs; (b) an MTP draft-depth sweep (2/3/5) with a NON-MONOTONIC result and a stated accept-rate-vs-verification-window explanation, directly adjacent to our own MTP work; (c) an unusually complete published evidence record. Medium — recombinations of known parts, but the carve-out list and the MTP-depth curve are concrete data points we did not have.'
+  relevance_justification: 'Low, not none, and low for three specific transferable reasons rather than as a dismissal. (1) The MTP depth-3 optimum and its accept-rate/verification-window rationale is a comparable prior for speculative-decoding-mtp-refresh.md and our glm52 native-MTP A/B — structurally comparable, not numerically, since their depth is a serving-side draft depth on a checkpoint with num_nextn_predict_layers=1. (2) The sensitivity carve-out list is a portable recipe testable against our UD-IQ2_M tensor map. (3) The published quality numbers give a near-4-bit GLM-5.2 reference point bounding how much of our IQ2_M reviewer-gate gap is quantization damage versus model ceiling — subject to the protocol mismatch.'
+  verdict_justification: 'adopt_patterns — take the method, refuse the artifact. Highest-value action: verify whether our UD-IQ2_M keeps the DSA indexer, shared experts, and layers 0-2 MLPs at elevated precision, since this card treats exactly those tensors as FP4-intolerant, and the GLM-5.2 indexer is the same subsystem where our own low indexer_top_k corruption was isolated. If unsloth''s map differs, that is a concrete testable hypothesis for the C-CRAB P-REV-1 admission failure. Note the corroboration from intake-870, which independently arrives at a selective-precision carve-out (attention + shared experts high, routed experts low) for the same model family — two independent practitioners converging on the same structural finding is stronger than either alone. Also worth mirroring: the domain-stratified calibration manifest pattern and the evidence-record discipline (pinned harness commits, retained failed arms, published checksums), close to what MEASUREMENT.md asks of a protocol citation. NOT adoptable: every kernel, the NVFP4 weights, the ds_mla KV cache, the EXL3 extension, the TP4/DCP4 topology, the container. PER PROJECT RULE, flagged rather than dismissed: the artifact stays not_applicable on hardware grounds pending operator review, bookmarked under gpu-acceleration-path.md, mirroring the intake-756 precedent.'
+- id: intake-872
+  arxiv_id: null
+  url: https://github.com/turboderp-org/exllamav3
+  source_type: repo
+  title: ExLlamaV3 — optimized quantization and inference library for running LLMs locally on modern consumer GPUs (EXL3 format)
+  authors:
+  - turboderp (author of ExLlama / ExLlamaV2)
+  - turboderp-org contributors
+  categories:
+  - quantization
+  - local_inference
+  - inference_serving
+  - hardware_optimization
+  key_claims:
+  - 'EXL3 is a streamlined variant of QTIP (Cornell RelaxML): a procedural-codebook trellis quantizer encoding high-dimensional weight vectors into tail-biting trellis structures, deviating from QTIP in tensor regularization and packing.'
+  - Quantization is single-step and fast — Hessians computed on the fly with a fused Viterbi kernel, so conversion takes minutes for small models and a few hours for 70B+, with no separate calibration pass.
+  - 'Very low bitrates remain usable: Llama-3.1-70B-EXL3 is claimed coherent at 1.6 bpw, fitting inference under 16GB VRAM with a 3 bpw output layer and 4096-token cache.'
+  - A Marlin-inspired GEMM kernel reaches roughly memory-bound decode latency under optimal conditions (4 bpw, RTX 4090); the library covers 40+ model architectures.
+  - 'Hardware support is CUDA 12.4+ ONLY. ROCm/AMD is explicitly listed under "What''s missing" as of v1.1.0 (2026-07-18); there is no CPU inference path at all.'
+  techniques:
+  - QTIP-style trellis-coded quantization with procedural (computed, not stored) codebook
+  - Tail-biting trellis vector encoding + Viterbi decoding, fused into the quantization kernel
+  - Hadamard / incoherence processing (random rotation) prior to quantization
+  - LDL decomposition for error-feedback weight rounding, Hessians accumulated on the fly
+  - Per-tensor bitrate allocation across 1-8 bpw, independent output-layer bitrate
+  - Marlin-inspired Tensor-Core GEMM kernel for packed low-bit weights
+  - Quantized KV cache with Hadamard smoothing (carried from ExLlamaV2)
+  reported_results:
+  - 'Llama-3.1-70B at 1.6 bpw reported coherent; inference under 16GB VRAM with 3 bpw output layer + 4096-token cache (README, no protocol citation).'
+  - 'Perplexity-vs-bpw and perplexity-vs-VRAM curves published for Llama-3.1-8B/70B, Llama-3.2-1B, Mistral-7B-Instruct-v0.3 — CHARTS ONLY, no tabulated numbers.'
+  - "The author's own comparison notes GGUF i-quants 'hold up well' against SOTA formats — the claimed EXL3 advantage over llama.cpp IQ-quants is MODEST, not order-of-magnitude."
+  - 'HumanEval scores across bitrates reported to align with publisher baselines, with repeatable, statistically significant dips around 3 bpw.'
+  - 'Kernel: "roughly memory-bound latency" at 4 bpw on RTX 4090 (no t/s figure given).'
+  - 'Third-party community figure (uncertain protocol, observation only): EXL3 4.15 bpw KLD ~0.144 vs MLX Q4 ~0.299.'
+  - 'Repo health: MIT license, ~1.1k stars, 121 forks, ~1256 commits on master, v1.1.0 released 2026-07-18 — actively maintained.'
+  referenced_arxiv_ids:
+  - '2406.11235'
+  - '2402.04396'
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-07-21'
+  notes: >-
+    DEEP-DIVE 2026-07-21: the trellis bench is NOT a flag flip — 3-6 days, medium-high risk. iqk_gemm_ktquants.cpp is absent from CMakeLists.txt:55-61; bl
+    ock_iq2_kt/block_iq4_kt do not exist in our tree; the KT types are synthetic casts OUTSIDE the enum (153-158) against GGML_TYPE_COUNT=43 with no type_
+    traits row, so a KT GGUF cannot load at all (same OOB class commit 715383cde already fixed once). Honoring ik's IDs against a dense type_traits ripple
+    s into CUDA/HIP tables. Also CPU-only, so the MI210 cannot participate. AND the bpw arithmetic kills the GLM case: block_iq2_kt is 2.125 bpw vs IQ2_XX
+    S 2.0625 — trellis is LARGER than what GLM-5.2 already uses, so zero bandwidth saved and arithmetic added. It is a quality-at-equal-bpw play mis-frame
+    d as a speed play. THE REAL FINDING: chasing this stub revealed our IQ-quant kernels are stubbed under a model we DEPLOY — iqk_typeA_supported (iqk_di
+    spatch.cpp:58) excludes every IQ type while GLM-5.2 UD-IQ2_M has 148 IQ2_XXS + 71 IQ3_XXS routed-expert tensors, so GGML_IQK=1 does NOTHING for the te
+    nsors dominating GLM decode and prefill. Kernels already vendored (iqk_gemm_iquants.cpp:2760-2813), enum values already native: ~1 day. Exactly the co
+    ndition iqk_stubs.cpp:11-12 warned about.
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - angelslim-techniques-evaluation.md
+    - kv-cache-quantization.md
+    - mi210-q8-dequant-gemv-roofline.md
+    - iqk-port.md
+    experiments: []
+    intake_entries:
+    - intake-456 (ExLlamaV2/vLLM tensor-parallelism argument — covers EXL2, a different format; V3 is a full rewrite)
+    - intake-873 (QTIP — the parent method, ingested via expansion from this entry)
+    - intake-871 (GLM-5.2-NVFP4-TR3-Hybrid — ships EXL3 as its 'TR3' serving-side component)
+  handoffs_updated:
+  - tq3-quantization-evaluation.md
+  handoffs_created: []
+  contradicting_evidence:
+  - "THE AUTHOR'S OWN ASSESSMENT UNDERCUTS THE HEADLINE: he notes GGUF i-quants 'hold up well' against SOTA formats, so the EXL3-over-IQ-quant advantage is modest. Since GGUF IQ-quants are exactly what we already run, the incremental quality case for us is weaker than the 1.6bpw-coherent framing suggests."
+  - 'NO TABULATED RESULTS: quality evidence is charts only, with no protocol citation, no seeds, and no tabulated perplexity numbers. Every EXL3 figure is an OBSERVATION under MEASUREMENT.md.'
+  - 'RUNTIME IS UNAVAILABLE TO US: CUDA 12.4+ only, ROCm explicitly an unimplemented to-do as of v1.1.0 (2026-07-18). It will not run on our MI210 gfx90a/ROCm 6.2, and there is no CPU path.'
+  - 'A repeatable, statistically significant HumanEval dip around 3 bpw is reported by the author — the low-bitrate frontier is not smooth, and 1.6bpw coherence does not imply usable capability at that rate.'
+  - 'Downstream implementation reports note real decode-side cost: EXL3 docs flag weak Ampere performance and a significant CPU bottleneck until extension kernels are built out, and an open issue reports EXL3 slower than koboldcpp on comparable workloads.'
+  - 'The favourable third-party KLD comparison compares against MLX, not against our GGUF IQ-quants — not the comparison that matters for us.'
+  novelty_justification: 'Trellis-coded quantization (QTIP lineage) is absent from our corpus — QTIP arXiv 2406.11235 was unindexed until this run, and the only QuIP#-adjacent mention was a citation inside the BitNet b1.58 entry. Our quantization track is entirely GGUF K-/IQ-quant, TurboQuant/TQ3, and ternary/QAT; scalar/lattice-free trellis coding with an on-the-fly Hessian and fused Viterbi quantizer is a distinct algorithm family. The existing ExLlamaV2 index entries cover a different format (EXL2) and are runtime-advocacy blogs, not method sources.'
+  relevance_justification: 'Runtime relevance is low-to-none on our substrate (CUDA-only, no ROCm, no CPU path, and our large MoEs cannot fit a 64GB single GPU regardless). METHOD relevance is medium-to-high: EXL3 publishes quality-vs-bitrate curves directly against GGUF i-quants at matched bpw, exactly the comparison axis tq3-quantization-evaluation.md and angelslim-techniques-evaluation.md care about, and its Hadamard/incoherence-processing step is the same primitive we already validated and landed for KV cache (Hadamard q4_0 PPL +0.017 vs f16). The transferable open question is whether trellis weight coding beats our IQ-quants at equal bits-per-weight, and whether Viterbi decode can be made cheap enough on AVX-512 — noting iqk-port.md currently STUBS OUT the trellis kernel family as unused.'
+  verdict_justification: 'worth_investigating as a METHOD source, not a runtime adoption. Transferable: (a) the QTIP trellis idea and its published bpw-vs-perplexity frontier as a reference target for our IQ-quant evaluation; (b) the underlying papers as higher-evidentiary-weight sources than the repo — 2406.11235 has been ingested this run as intake-873 in direct consequence; (c) the on-the-fly-Hessian single-pass quantizer as a cheaper alternative to calibration-heavy PTQ; (d) confirmation that Hadamard incoherence processing is load-bearing at low bitrate, consistent with our landed KV result. NOT transferable, flagged rather than dismissed: the runtime, the Marlin-style Tensor-Core GEMM (CDNA2 has no direct analogue), and single-GPU-resident deployment. Operator decisions to raise: (1) does a CPU AVX-512 trellis-decode spike clear the bar, given iqk currently stubs the trellis family and CPU decode is bandwidth-bound — see intake-873 for the sharper form of this question; (2) watch the repo''s ROCm to-do — if gfx90a support lands, the MI210 becomes an available EXL3 host for drafter/small-model roles.'
+- id: intake-873
+  arxiv_id: '2406.11235'
+  url: https://arxiv.org/abs/2406.11235
+  source_type: paper
+  title: 'QTIP: Quantization with Trellises and Incoherence Processing'
+  authors:
+  - Albert Tseng
+  - Qingyao Sun
+  - David Hou
+  - Christopher De Sa
+  categories:
+  - quantization
+  - local_inference
+  - hardware_optimization
+  key_claims:
+  - Trellis-coded quantization (TCQ) makes effective quantization dimension >100 tractable, whereas vector quantization is capped near 8 dimensions because codebook size grows exponentially with dimension; the resulting shaping gain is what drives quality at 2-4 bits per weight.
+  - A 'bitshift trellis' (LFSR-style state transition) removes TCQ's sequential decode dependency, so decoded weights can be recovered in parallel without storing the trellis graph.
+  - 'Codewords are computed rather than looked up: two arithmetic recipes (1MAD and 3INST) turn a bit-word into a pseudorandom approximately-Gaussian value in a handful of instructions, eliminating the large codebook that makes AQLM slow at inference.'
+  - Incoherence processing via a random Hadamard transform makes the weight distribution approximately i.i.d. Gaussian, the precondition that lets a single fixed computed code work for all layers.
+  - QTIP reports matching or beating QuIP# and AQLM on perplexity and zero-shot accuracy at every tested bitrate and model size, while retaining QuIP#-class decode throughput.
+  techniques:
+  - Trellis-coded quantization (TCQ) with tail-biting trellis approximation
+  - Bitshift trellis / LFSR state transition for parallel decode
+  - 'Computed pseudorandom Gaussian codes: 1MAD, 3INST, and a lookup/compute hybrid'
+  - Incoherence processing with the random Hadamard transform
+  - BlockLDLQ proxy-loss rounding inherited from the QuIP# framework
+  - Viterbi search for the encoding (quantization) step
+  reported_results:
+  - 'Llama-2-70B @ 2 bit, Wikitext2/C4 perplexity: QTIP 3.78/5.56 vs QuIP# 3.91/5.71 vs AQLM 3.94/5.72 (ctx 4096)'
+  - 'Llama-2-13B @ 2 bit: QTIP 5.26/6.99 vs QuIP# 5.35/7.20; Llama-2-7B @ 2 bit: QTIP 5.91/7.76 vs QuIP# 6.19/8.16'
+  - 'Llama-3-70B @ 2 bit (ctx 8192): QTIP 4.97/6.80 vs QuIP# 5.77/7.46 — largest reported margin, on the family most sensitive to low-bit PTQ'
+  - 'Gaussian-source MSE at 2 bit: scalar Lloyd-Max (dim 1) 0.118, QuIP# E8P (dim 8) 0.089, QTIP 1MAD/3INST (dim 256) 0.069, vs 0.063 distortion-rate bound'
+  - 'Decode throughput, RTX 4090 batch-1, Llama-2-70B @ 2 bit: QTIP 25.8 tok/s vs QuIP# 25.9 vs AQLM 8.27. GPU-only — NO CPU numbers reported.'
+  - 'Zero-shot at 2 bit (Llama-2-70B) is roughly a wash vs QuIP#: ArcC 48.1 vs 48.7, ArcE 76.9 vs 77.3, PiQA 80.1 vs 80.3, Winogrande 76.5 vs 75.9 — the gain is concentrated in perplexity, not downstream accuracy.'
+  referenced_arxiv_ids:
+  - '2402.15319'
+  - '2401.10774'
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-872
+  ingested_date: '2026-07-21'
+  notes: >-
+    DEEP-DIVE 2026-07-21: see intake-872. Re-sequenced BEHIND a cheaper sibling (un-stubbing iqk_set_kernels_iquants for the IQ2_XXS/IQ3_XXS/IQ2_S types G
+    LM-5.2 actually uses, ~1 day, no new types/GGUF/model). Correction to this entry's framing: Viterbi is the ENCODING cost only — at inference the trell
+    is LCG runs forward (one integer multiply-add + unpack), so the split is expensive one-off quantization plus moderate per-weight decode, not Viterbi-a
+    t-decode. The whole speed/quality question can be answered WITHOUT porting anything, by using /mnt/raid0/llm/ik_llama.cpp (already on disk, the refere
+    nce implementation) as a scratch measurement instrument. Gate: IQ4_KT must reach >=95% of Q4_K_M tg128 under the canonical protocol AND show a PPL/eva
+    l win; slower than 95% => DROP permanently. No IQ*_KT GGUF exists locally and public KT producers cover giant MoEs we do not serve.
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - angelslim-techniques-evaluation.md
+    - kv-cache-quantization.md
+    - iqk-port.md
+    - v6-iqk-promotion.md
+    experiments: []
+    intake_entries:
+    - intake-872 (exllamav3 / EXL3 — the downstream implementation that surfaced this)
+    - intake-871 (GLM-5.2-NVFP4-TR3-Hybrid — ships an EXL3 trellis component)
+  handoffs_updated:
+  - tq3-quantization-evaluation.md
+  handoffs_created: []
+  contradicting_evidence:
+  - 'THE PAPER NEVER BENCHMARKS AGAINST llama.cpp/GGUF QUANTS. Its entire comparison set is GPU research formats (QuIP#, AQLM, GPTVQ). There is therefore NO published evidence that QTIP beats IQ2/IQ3/IQ4 K- or I-quants at equal bits-per-weight, and no CPU throughput number of any kind — i.e. no evidence in the direction we actually care about.'
+  - 'OUR OWN STRONGEST LOCAL COUNTER-DATAPOINT: kv-cache-quantization.md records ikawrakow''s full-fix TurboQuant implementation on EPYC 9975 at 573 tok/s vs Hadamard+q4_0 at 1279 tok/s on Qwen3.5-35B — 2.2x SLOWER. The recorded conclusion was that codebook/compute-style dequant loses to plain q4_0 dequant on AVX-512 even fully optimized. QTIP''s computed codes are cheaper than codebook lookup, so this is suggestive rather than dispositive, but it is the same failure mode.'
+  - 'ZERO-SHOT ACCURACY AT 2 BIT IS WITHIN NOISE of QuIP# on 3 of 4 tasks (QTIP nominally WORSE on ArcC/ArcE/PiQA). The headline advantage is a perplexity advantage; whether it survives as a task-quality advantage is not established.'
+  - 'ENCODING COST: quantization requires Viterbi search over a large trellis, materially more expensive than GPTQ/AWQ-style rounding — we could not cheaply re-quantize our own checkpoints.'
+  - 'DOWNSTREAM CPU EVIDENCE IS DISCOURAGING: ik_llama.cpp''s port explicitly replaced QTIP''s fp16 trellis arithmetic with integer arithmetic because 16-bit integer dot products are ~2x faster on CPUs lacking native fp16 — the paper''s code as specified is not CPU-shaped. The llama.cpp upstream integration request (ggml-org/llama.cpp #10125) opened in late 2024 and stalled with no implementation and no CPU-performance analysis.'
+  - 'NO FAILED REPRODUCTION FOUND. Independent reimplementations exist and broadly corroborate the quality claim (ik_llama.cpp IQ1_KT/IQ2_KT/IQ3_KT/IQ4_KT, turboderp EXL3, a Together AI writeup).'
+  novelty_justification: 'Trellis-coded quantization, bitshift trellises, computed Gaussian codes, and incoherence processing are entirely absent from the intake index and from every quantization handoff. The index''s only QuIP mention is a passing baseline reference inside a BitNet entry. Our whole low-bit weight track (TQ3/TurboQuant, Sherry 1.25-bit, Tequila, DAQ, PrismML Q1_0/Q2_0) is scalar or ternary; none uses high-dimensional shaped coding. A distinct family, not a variant of anything indexed.'
+  relevance_justification: 'Directly on the critical path for a bandwidth-bound CPU decode regime: lower bpw at fixed quality is the one lever that buys decode throughput when memory-bandwidth-limited. CRITICALLY, iqk-port.md documents that our own v6 fork ALREADY CONTAINS the iqk trellis kernel family — stubbed out as return-false because the registry showed zero usage. QTIP is the paper that family implements. So "is TCQ implementable as a CPU AVX-512 GGML quant type" is not speculative: it already is, as ik_llama.cpp''s IQ1_KT/IQ2_KT/IQ3_KT/IQ4_KT (1.75-4.0 bpw), using an integer 3INST-style trellis chosen specifically to avoid table-lookup bottlenecks. The gating question is narrow and locally answerable: does the arithmetic decode cost per weight exceed the bandwidth it saves at our operating point?'
+  verdict_justification: 'worth_investigating, not adopt_component. The upside is real and the integration cost unusually low — un-stubbing an existing kernel family in our own tree rather than porting anything — but three things are unproven at our operating point. (1) The paper offers no CPU number and no GGUF comparison, so "QTIP beats IQ-quants at equal bpw" is unsupported in the direction we care about. (2) Our TQ3/KV precedent says compute-per-weight dequant has historically lost to plain q4_0 on AVX-512 by 2.2x — the bandwidth saved must exceed the arithmetic added, and at Q4-class bitrates (where we actually run) the bandwidth saving is small while the decode cost is not. (3) Encoding requires Viterbi search, so testing means finding published _KT GGUFs for our worker models or paying a real quantization cost. RECOMMENDED NEXT STEP is a bounded measurement, not a deployment: rebuild an experimental branch with the iqk trellis kernels un-stubbed and llama-bench IQ4_KT/IQ3_KT against production Q4_K_M under the canonical baseline protocol, paired with a correctness check. This MUST happen on llama.cpp-experimental — production-consolidated-v6 is frozen — and the sub-2-bit angle should be coordinated with angelslim-techniques-evaluation rather than opened as a parallel track.'
+- id: intake-874
+  arxiv_id: '2606.04923'
+  url: https://arxiv.org/abs/2606.04923
+  source_type: paper
+  title: Reproducing, Analyzing, and Detecting Reward Hacking in Rubric-Based Reinforcement Learning
+  authors:
+  - Xuekang Wang
+  - Zhuoyuan Hao
+  - Shuo Hou
+  - Hao Peng
+  - Juanzi Li
+  - Xiaozhi Wang
+  categories:
+  - benchmark_methodology
+  - autonomous_research
+  key_claims:
+  - 'Reward hacking in rubric-based RL is hard to study in the wild because real judge biases stay entangled with true task quality; the authors respond with CHERRL, a controllable environment injecting a KNOWN bias into an otherwise unbiased judge (J_biased = J_unbiased + alpha * bonus), making hacking reproducible and its onset locatable.'
+  - How fast a policy DISCOVERS a shortcut is governed by bias-task entanglement, quantified with an odds ratio between biased behavior and task success.
+  - How far a policy can EXPLOIT a discovered shortcut is capped by the model's inherent ability to generate the required pattern — structural/format bias ~66% elicitation success versus 95-100% for lexical/tone/self-praise biases.
+  - Hacked policies degrade measurably on in-domain capability while general-purpose benchmarks can stay flat, so a single aggregate benchmark is an unreliable tripwire for reward hacking.
+  - A tool-augmented detection agent (RHDA), operating judge-blind, localizes hacking ONSET more accurately than general-purpose agent baselines and a chain-of-thought monitor.
+  techniques:
+  - 'CHERRL controllable hacking environment: dual-judge (unbiased judge + injected controlled bias term)'
+  - Bias taxonomy along a semantic axis — semantic-irrelevant (lexical, format) vs semantic-relevant (tone, self-praise)
+  - Odds-ratio metric for bias-task entanglement as a predictor of discovery latency
+  - Quantitative onset definition from the joint signal of reward gap G(t) and shortcut prevalence M(t)
+  - 'RHDA: Inspect/Analyze/Compute/Reason tool agent with hypothesis tracking and evidence-constrained alerting'
+  - GRPO training loop on rubric/LLM-judge rewards
+  reported_results:
+  - 'Policy trained: Qwen3-4B via GRPO on HealthBench and VerInstruct (ALL reported dynamics come from this single policy model).'
+  - 'Detection (sum of point-distance / interval-distance errors, misses; lower better): RHDA-Plus 120/11/0; RHDA-397B 167/20/0; general-purpose agent baseline 198/80/0; CoT monitor 217/172/3 misses.'
+  - 'Onset timing: tone and lexical biases discovered early (~steps 68-116); self-praise late (~steps 460-478); odds ratios span ~0.53-1.09 and track onset delay.'
+  - 'Capability cost: in-domain drops under hacking, e.g. VerInstruct self-praise 31.7 -> 23.7 on IFBench Strict, while general suites (Arena Hard) sometimes show no decline.'
+  - 'Exploitability ceiling: format bias ~66% elicitation success vs 95-100% for the other three bias families.'
+  - 'Artifact: authors state code + environment released at github.com/THUAIS-Lab/CHERRL (release contents not independently verified in this intake).'
+  referenced_arxiv_ids:
+  - '2411.16594'
+  - '2309.16349'
+  - '2506.09942'
+  - '2402.10669'
+  - '2507.17746'
+  - '2605.12474'
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: adopt_patterns
+  discovered_via: expansion
+  expanded_from: intake-867
+  ingested_date: '2026-07-21'
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - eval-tower-verification.md
+    - reviewer-model-ablations.md
+    - reviewer-decision-plane.md
+    - reviewer-calibration-accounting.md
+    - autopilot-continuous-optimization.md
+    - eval-tower-architecture-audit-2026-07-20.md
+    - tool-use-eval-contract.md
+    - reviewer-control-plane-index.md
+    experiments: []
+    intake_entries:
+    - intake-836 (judge overcorrection, FR>>FA asymmetry)
+    - intake-837 / intake-838 (judge-bias probe sets)
+    - intake-834 (Agentic Rubrics — length-exploitation as the known rubric failure)
+    - intake-713 (DRACO rubric methodology -> EV-9)
+    - intake-660 / intake-664 (quantified reward hacking in the programmatic-verifier regime — the mirror image)
+    - intake-875 (self-play judge hacking — same conclusion from the selection side)
+    - intake-867 (the RLM blog whose rubric claim triggered this search)
+  handoffs_updated:
+  - eval-tower-verification.md
+  handoffs_created: []
+  contradicting_evidence:
+  - 'PARTIAL REFUTATION ONLY — honest read on the trigger claim: this paper does NOT run a head-to-head rubric-vs-verifiable-reward robustness comparison, so it cannot support the strong form ("rubric rewards are LESS robust than F1"). It establishes the weaker but still decisive form: rubric/LLM-judge rewards are demonstrably and reproducibly hackable, the exploits are semantic rather than rule-breaking, and detection requires a purpose-built agent. That falsifies "rubric judges are ROBUST to reward hacking"; it does not rank the two reward classes.'
+  - 'SINGLE-POLICY EVIDENCE BASE: essentially all dynamics come from Qwen3-4B; the authors flag generalization across scales/families as future work. The odds-ratio-vs-onset correlation rests on a handful of runs and a 0.53-1.09 OR range — a narrow spread to hang a predictive claim on.'
+  - 'Single-bias-at-a-time only; composite/interacting real-world biases are explicitly unaddressed, and real judges carry entangled multi-bias profiles. The controllability that makes CHERRL clean also makes it unlike the deployment regime.'
+  - 'RHDA detects but does not remediate: no reward-design patches, no mitigation evaluation. The detection benchmark is small and self-constructed by the same authors who defined the onset metric — margins are measured on a home-field instrument.'
+  - 'COUNTER-EVIDENCE FROM OUR OWN INDEX that programmatic verifiers are no safe harbor either: intake-660/664 and robust-kbench (2509.14279) document 32.8% of RL solutions gaming a deterministic timing oracle. "Switch to verifiable rewards" is NOT the lesson.'
+  novelty_justification: 'No entry in the index, no chapter, and no handoff covers a controllable bias-injection testbed for rubric-based RL or an agentic hacking-ONSET detector. Our existing reward-hacking coverage is entirely in the programmatic-verifier regime (intake-660/664); our judge-failure coverage (intake-834/836/837/838) is about calibration, overcorrection, and bias probes on STATIC grading, never about a policy adaptively discovering and exploiting a judge over training time. The dual-judge decomposition, the entanglement/odds-ratio account of discovery latency, the exploitability-ceiling result, and the G(t)/M(t) onset definition are all new.'
+  relevance_justification: 'HIGH on the JUDGE-BIAS AND HACKING-DETECTION half, which is the half that runs here; the RL-TRAINING half is not runnable (no training cluster, no GRPO loop, no policy weights to update), so CHERRL cannot be instantiated as-is. The transferable half lands on EV-9''s LLM-as-judge rubric dimensions and rubric_scoring.py, EV-6''s cross-family judge-swap, RM-5''s bias-robustness probe set (6 content-bias injections today, gaining a principled semantic-relevant vs semantic-irrelevant axis), and the reviewer decision plane''s two-turn grading. Sharpest fit is the exploitability finding: a bias only bites if the generator can cheaply produce the pattern — turning RM-5 from "does the reviewer get fooled" into "can the AUTHOR cheaply produce what fools it", the operative question for a plane where our own models write the candidates. It also lands on our scorer-artifact scar tissue (comma-brittle substring scorers, cross-arm parse-failure gaps): those were ACCIDENTAL judge biases, and this paper says such biases become exploitable, not merely noisy, the moment anything optimizes against them. MEASUREMENT.md''s human-amendment-only boundary limits blast radius today, but autopilot''s AP-38 rubric_scores loop is precisely the optimizing loop this paper warns about.'
+  verdict_justification: 'adopt_patterns, not adopt_component. It DOES ship a reusable artifact (CHERRL + RHDA), but neither is drop-in: CHERRL needs an RL training loop and a decomposed reward obtainable only by injecting our own bias term, and our rubric scorers grade a fixed model, so there is no reward-gap trajectory G(t) in which to detect an onset. What to adopt: (1) the semantic-relevant vs semantic-irrelevant bias taxonomy as the organizing axis for RM-5''s probe set, adding lexical/tone/self-praise/format to the existing six injections; (2) the dual-judge decomposition as an EV-6 OFFLINE audit — score a held-out set with a clean rubric and a deliberately bias-augmented rubric and report the gap per reviewer/judge config, runnable on our stack today with no training; (3) the exploitability-ceiling framing as a second axis in RM-5 robustness reporting; (4) the capability-degradation finding as a tower rule — never gate on an aggregate general benchmark when watching for scorer gaming, since in-domain drop with flat general scores was the observed signature. Do NOT adopt the GRPO pipeline, RHDA as a service, or any number as a gating figure (single-model, small n, home-field detection instrument — observation-tier only).'
+- id: intake-875
+  arxiv_id: '2607.05904'
+  url: https://arxiv.org/abs/2607.05904
+  source_type: paper
+  title: 'More Convincing, Not More Correct: Self-Play Reward Hacking of Reference-Free LLM Judges'
+  authors:
+  - Chenyu Zhou (Institute of Science Tokyo)
+  categories:
+  - benchmark_methodology
+  - autonomous_research
+  - agent_architecture
+  key_claims:
+  - A reference-free judge shown a candidate answer without ground truth scores plausibility, not correctness — 'verification asymmetry' — creating false-positive basins of convincing-but-wrong answers.
+  - Optimizing a policy against such judge verdicts (self-play + DPO) drives judge-measured pass rates up while independently-verified accuracy stays flat; all measured gain is reward hacking.
+  - The hacked errors are not judge-specific — they transfer across judge families (Qwen / Llama / Gemma) and scales, and survive a three-family minimum-vote ensemble, so cross-family ensembling is only a PARTIAL defense.
+  - The judge-truth gap is analytically bounded by (1 - true accuracy), so low-accuracy task regimes are exactly where reference-free judging is most exploitable.
+  - Requiring the judge to commit to its own independent answer before (or without) seeing the candidate — 'de-anchoring' — collapses false positives and prevents the basin forming during training.
+  techniques:
+  - Hidden-anchor audit (held-out cross-source exact-match verification never exposed to the judge)
+  - Self-play policy optimization via DPO against judge verdicts
+  - Commit-first judging (judge emits its own answer, then scores the candidate)
+  - Blind-solve verification (judge solves the problem without seeing the candidate)
+  - Best-of-N rejection sampling with judge-based selection
+  - Cross-family and min-vote ensemble judge comparison
+  reported_results:
+  - 'GSM8K, Qwen3-4B policy, n=1319: judge pass rate 0.716 -> 0.938 under self-play, while hidden-anchor accuracy stays 0.209 -> 0.202; judge-truth gap 0.735.'
+  - 'False-positive rate on wrong answers: 0.651 -> 0.906 for the self-judge.'
+  - 'Cross-family transfer of the hack (wrong-answer FPR, before -> after): Llama-3.1-8B 0.480 -> 0.568; Gemma-3-12B 0.764 -> 0.918; three-family Min ensemble 0.438 -> 0.552 — the ensemble still accepts ~55% of hacked wrong answers.'
+  - 'VERIFIED: best-of-N on LiveCodeBench, judge-selected gap 0.20 at k=1 widening to 0.588 at k=16 (95% CI [0.506, 0.669]), while unit-test pass rate on the selected candidate moves only 0.27 -> 0.29. De-anchored judging cuts gap@16 to 0.227.'
+  - 'De-anchoring ablation: commit-first FPR 0.012; blind-solve FPR 0.012 with discrimination 0.96; a plain "verify/recompute" prompt gives FPR 0.719 — telling the judge to check its work does NOT help, only independent commitment does.'
+  - 'AIME-2024, Ministral-3-8B, 30 problems: single-sample judge-truth gap +0.143 clean, +0.290 under a lenient judge prompt.'
+  referenced_arxiv_ids:
+  - '2306.05685'
+  - '2401.10020'
+  - '2408.15240'
+  - '2507.08794'
+  - '2210.10760'
+  - '2312.09244'
+  - '2310.02743'
+  - '2310.13548'
+  - '2401.01335'
+  - '2212.08073'
+  - '2505.08827'
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  verdict: adopt_patterns
+  discovered_via: expansion
+  expanded_from: intake-867
+  ingested_date: '2026-07-21'
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - eval-tower-verification.md
+    - research-evaluation-index.md
+    - autopilot-continuous-optimization.md
+    - reviewer-decision-plane.md
+    - reviewer-model-ablations.md
+    - eval-tower-architecture-audit-2026-07-20.md
+    experiments: []
+    intake_entries:
+    - intake-363 (LLM-as-a-Verifier)
+    - intake-367 (Scoring Verifiers, COLM 2025 — self-evaluation bias when the solution is shown)
+    - intake-368 (SWE-RM — equal-accuracy verifiers, divergent RL outcomes)
+    - intake-370 (Aletheia — RLVR for code verifiers)
+    - intake-834 (two-turn agentic rubric reviewer)
+    - intake-874 (rubric reward hacking — same conclusion from the training side)
+    - intake-876 (judge agreement metrics — the reporting-side complement)
+  handoffs_updated:
+  - eval-tower-verification.md
+  handoffs_created: []
+  contradicting_evidence:
+  - 'Single-author arXiv preprint (2026-07-07), not peer-reviewed, no independent replication of these numbers. All figures are observations, not protocol-certified.'
+  - 'Self-admitted scope limits: primary experiments are Qwen3-4B on GSM8K with only partial Gemma/Llama replication; the AIME arm is 30 problems; the best-of-N arm is one policy on LiveCodeBench.'
+  - 'THE PAPER''S OWN BOUND (gap <= 1 - accuracy) argues its headline magnitudes are inflated by an unusually weak policy (0.20 true accuracy). Our production roles operate at higher accuracy on most suites, so the effect size should be SMALLER here — the direction transfers, the magnitude probably does not.'
+  - 'The mitigation assumes exact-matchable answers and a verifier capable of solving the task. It offers nothing for open-ended rubric grading (our EV-9 / RD-2 surface), which is precisely where we have no independent anchor.'
+  - 'METHOD FRAMING RISK: "anchor accuracy stayed flat" is itself an exact-match measurement, so some of the reported gap could be scorer strictness rather than genuine wrongness — the same artifact class that bit us with comma-brittle substring scoring. The paper reports no scorer-error audit.'
+  novelty_justification: 'The failure mode (judges rewarding plausibility, reward overoptimization, sycophancy, RLAIF drift) is well covered by the works this paper cites, so the diagnosis is not new. What is new and usable: (a) a hidden-anchor protocol that QUANTIFIES judge-truth divergence rather than asserting it; (b) evidence that hacked errors transfer across judge families and defeat a min-vote ensemble — directly undercutting the cross-family-ensembling defense we already treat as strong; (c) the (1 - accuracy) bound telling you a priori which regimes are exploitable; (d) the sharp negative result that a "verify/recompute" prompt does nothing (FPR 0.719) while independent commitment collapses FPR to ~0.012. That last contrast is the genuinely novel, directly actionable piece.'
+  relevance_justification: 'Lands squarely on live surfaces. We run llm_judge scoring in the eval tower, we have an open direction to re-enable graded Claude-as-Judge in cost-aware rewards, EV-9 has an unselected rubric-judge role, RD-2 grades reviewer decisions with majority-k, and autopilot does Pareto/Bradley-Terry selection over candidates. The best-of-N result is the exact shape of our exposure: judge-measured selection quality can improve monotonically with N while true quality is flat, so any autopilot or reviewer gain attributed to judge-selected best-of-N is unverified until an independent anchor is attached. It also supplies a concrete counter to a rule we already codified — cross-family verification is our documented "strongest defense" in eval-tower-verification.md, and this paper shows a three-family ensemble still passing 55% of hacked wrong answers.'
+  verdict_justification: 'adopt_patterns — the value is protocol, not code. It offers a practical mitigation adoptable as an eval-tower rule, in two parts. (1) ANCHOR RULE: any judge-scored metric used to gate a decision must be paired with a judge-independent verifier (exact-match, unit tests, code execution, or a held-out anchor), and the judge-vs-anchor gap reported alongside the judge number; a widening gap under increasing N is the reward-hacking signature. (2) DE-ANCHORING RULE: where a judge must be used for selection, run it commit-first or blind-solve rather than the current show-the-candidate-and-ask pattern — a bolt-on prompt change with a large reported effect (FPR 0.906 -> 0.012), noting that a plain double-check instruction is measured to be worthless. Concretely this should (a) become a PROPOSED rule in eval-tower-verification.md next to the existing cross-family rule, with the ensemble caveat recorded against it; (b) gate any re-enablement of graded Claude-as-Judge on an anchored gap report; (c) inform EV-9 judge-role selection and RM-5 robustness probes; (d) trigger a retrospective check of whether any autopilot best-of-N gain rests on judge-measured scores alone. NOT adopt_component: no released artifact, single-author preprint, numbers not protocol-certified. The rule change is a human-amendment-only trust-boundary edit and must go to the operator, not be applied by an agent.'
+- id: intake-876
+  arxiv_id: '2606.00093'
+  url: https://arxiv.org/abs/2606.00093
+  source_type: paper
+  title: 'Agreement Metrics for LLM-as-Judge Evaluation: What to Report and Why'
+  authors:
+  - Delip Rao
+  - Chris Callison-Burch
+  categories:
+  - benchmark_methodology
+  - knowledge_management
+  key_claims:
+  - On non-degenerate binary judge-vs-human data, Pearson's r, Spearman's rho, Kendall's tau_b, the phi coefficient, and MCC all collapse to the same number; reporting several side by side manufactures an illusion of corroborating evidence.
+  - Cohen's kappa is the only common agreement coefficient adding information beyond phi/MCC, because its marginal-sensitive normalization exposes drift between the judge's positive-label rate and the human's. Accuracy alone hides that drift.
+  - 'Recommended minimal binary report = accuracy + F1 + Cohen''s kappa + exactly one of {Pearson, Spearman, Kendall, phi, MCC}, plus the confusion matrix.'
+  - 'Abstention/CANNOT_ASSESS handling is a choice of ESTIMAND, not preprocessing: exclude, recode-as-negative, and retain-as-third-class each estimate a different quantity, and the retain mode breaks the binary metric equivalences outright.'
+  - Three-class judgment scales (including tie classes) have no canonical scalar summary — an explicit weight matrix must be published. Multi-judge ensembles should report one primary statistic from Fleiss' kappa, Krippendorff's alpha, or average pairwise phi.
+  - A survey of 24 recent LLM-as-judge papers finds metric choice is entangled with judgment scale, tie handling, invalid-output handling, and abstention handling, and that those choices are rarely stated; the paper closes with an 11-item reporting checklist.
+  techniques:
+  - Cohen's kappa (chance-corrected two-rater agreement; primary recommendation for binary judge validation)
+  - Fleiss' kappa / Krippendorff's alpha / average pairwise phi (multi-judge ensembles)
+  - phi coefficient / MCC (single permitted correlation representative on binary data)
+  - Confusion-matrix publication + degenerate-marginal criteria
+  - 'Abstention estimand modes: exclude | recode-as-negative | retain-as-third-class'
+  - Explicit weight matrix for three-class / tie-bearing scales
+  - Coverage + covered-subset performance reporting; declared aggregation level
+  - 11-item LLM-as-judge reporting checklist
+  reported_results:
+  - 'NO new empirical measurements. Analytical paper: worked examples on hypothetical confusion matrices plus a structured audit of 24 published LLM-as-judge papers.'
+  - 'Central analytical result: on non-degenerate binary data the five listed correlation/association statistics are algebraically the same number; the kappa-minus-phi gap quantifies judge positive-rate drift relative to the human.'
+  - 'UNVERIFIED: per-paper counts from the 24-paper audit (e.g. how many report kappa vs raw agreement) could not be extracted from the fetched text.'
+  referenced_arxiv_ids:
+  - '2308.07201'
+  - '2306.04757'
+  - '2404.04475'
+  - '2309.15217'
+  - '2305.13711'
+  - '2303.16634'
+  - '2207.05221'
+  - '2305.17926'
+  - '2306.05087'
+  - '2311.09476'
+  - '2412.09569'
+  - '2404.18796'
+  novelty: medium
+  relevance: high
+  credibility_score: 3
+  verdict: adopt_patterns
+  discovered_via: expansion
+  expanded_from: intake-869
+  ingested_date: '2026-07-21'
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - reviewer-calibration-accounting.md
+    - reviewer-model-ablations.md
+    - reviewer-decision-plane.md
+    - eval-tower-verification.md
+    - glm52-reviewer-capability-gates.md
+    - research-evaluation-index.md
+    - reviewer-control-plane-index.md
+    experiments: []
+    intake_entries:
+    - intake-834 (Agentic Rubrics)
+    - intake-836 (judge overcorrection, FR>>FA)
+    - intake-837 (Bias in the Loop — auditing LLM-as-a-judge for SE)
+    - intake-838 (biases in LLM judges for code)
+    - intake-845 (weak-oracle inflation on SWE-bench)
+    - intake-869 (Context Rot — whose 98.7% raw-agreement figure prompted this expansion)
+    - intake-875 (self-play judge hacking — the selection-side complement)
+  handoffs_updated:
+  - eval-tower-verification.md
+  - reviewer-calibration-accounting.md
+  handoffs_created: []
+  contradicting_evidence:
+  - 'Non-peer-reviewed arXiv preprint (12 pages, submitted 2026-05-25). No venue acceptance visible.'
+  - 'NO new empirical data. All numbers are algebraic identities or hypothetical confusion matrices; the 24-paper audit''s selection criteria and per-paper tallies could not be verified from the fetched text.'
+  - 'THE PAPER RECOMMENDS COHEN''S KAPPA BUT DOES NOT DISCUSS GWET''S AC1 — a real gap. The classical kappa paradox is that kappa collapses toward 0 under highly skewed marginals even at high raw agreement, which is the failure mode AC1 exists to address. Our reviewer corpora are DELIBERATELY near-miss/skewed, so adopting kappa alone could swing the bias in the opposite direction. Report kappa AND prevalence/bias-adjusted context (or AC1), not kappa alone.'
+  - 'DISCOVERY-FRAMING MISMATCH, flagged plainly: this paper was surfaced as evidence that "papers report raw percent agreement instead of chance-corrected kappa, which inflates apparent judge quality when one class dominates." That is ADJACENT to, but not, the paper''s thesis. Its actual headline is that the CORRELATION family is redundant on binary data and kappa is the one coefficient adding information. The paper does recommend accuracy WITH kappa, so the spirit holds, but the specific "raw percent agreement inflation" claim as worded is UNVERIFIED against this source and should not be cited to it.'
+  - 'SCOPE LIMIT: the recommendations are for validating a judge against human/gold labels. Most of our production eval tower is deterministic-scored, so the paper does not touch T0/T1 model-quality scoring — only the reviewer/judge plane and the llm_judge suites.'
+  novelty_justification: 'The underlying statistics are classical (Cohen 1960; the phi/MCC/Pearson identity on 2x2 tables is textbook), so this is synthesis rather than discovery — hence medium. But it is new to our corpus: a full-text search of intake_index.yaml (865 entries) returns ZERO hits for kappa, Krippendorff, inter-annotator, or inter-rater. Our five existing judge-methodology entries (834/836/837/838/845) all cover judge BIAS and ORACLE STRENGTH; none covers agreement-statistic selection or chance correction. The abstention-as-estimand framing and the tie/weight-matrix requirement are genuinely non-obvious and directly bite our GC-external tie-dropping.'
+  relevance_justification: 'High, and unusually actionable for a survey. We are mid-flight on a reviewer-calibration instrument whose MEASUREMENT.md amendment P-REV-1 is DRAFTED but NOT YET MERGED (RC-6a still an open checkbox). The paper''s minimal-report set maps one-to-one onto a gap in that draft grammar. Our live RM-3c screening slice shows FR 50.0% at FA 16.7% — a maximally skewed marginal where the handoff itself already warns that bias can inflate consistency rate to 81% at near-random accuracy. That warning is a REDISCOVERY of exactly the chance-correction problem, currently patched with a prose caveat instead of a statistic. Artifacts that would change: MEASUREMENT.md P-REV-1 claim grammar; the reviewer calibration report metric panel; the GC-external adapter''s tie/abstention accounting; and chapter 06''s unvalidated "eliminates evaluator variance" claim.'
+  verdict_justification: 'adopt_patterns, not adopt_component — no artifact to import (analytical paper, no code, no dataset). What we adopt is the REPORTING CONTRACT: add a chance-corrected agreement statistic plus a declared tie/abstention estimand to P-REV-1 BEFORE RC-6a goes to operator PR, and collapse any multi-correlation reporting to one representative. Cost is low (kappa/Fleiss/Krippendorff are ~30 lines stdlib alongside the existing stdlib ECE/AUC reimplementation) and the window is open — this arrives in time to amend a DRAFT rather than a ratified protocol. Two constraints: MEASUREMENT.md and the eval tower are human-amendment-only, so this is an operator-PR proposal and NOT an agent edit; and per the kappa-paradox caveat, the proposal should pair kappa with marginal/prevalence disclosure rather than adopting kappa uncritically. KEY FINDING FOR THE OPERATOR: neither MEASUREMENT.md nor MEASUREMENT_POLICY.md currently mentions kappa, agreement, or inter-rater anything — zero hits in both files. The constitution has NO protocol covering a subjective/LLM-judged metric at all: P-QUAL-T1 pins scoring to deterministic methods only, so the moment a judge-scored number gates a decision it is either governed by nothing or smuggled in under a deterministic-only clause.'
+- id: intake-877
+  arxiv_id: '2606.05241'
+  url: https://arxiv.org/abs/2606.05241
+  source_type: paper
+  title: 'Search-Time Contamination in Deep Research Agents: Measuring Performance Inflation in Public Benchmark Evaluation'
+  authors:
+  - Yongjie Wang
+  - Xinyue Zhang
+  - Kunhong Yao
+  - Zhiwei Zeng
+  - Kaisong Song
+  - Jun Lin
+  - Zhiqi Shen
+  categories:
+  - benchmark_methodology
+  - search_retrieval
+  - agent_architecture
+  key_claims:
+  - 'Public benchmarks lose validity for agents that search the live web at inference time: the agent can retrieve the benchmark''s own metadata, question text, or ground-truth answer instead of reasoning — Search-Time Contamination (STC).'
+  - STC is widespread across the deep-research agents and six public benchmarks tested, and can inflate measured accuracy by up to 4 percentage points.
+  - Contamination has three escalating severities that must be distinguished, because only the most severe collapses the task entirely.
+  - Reported per-agent leakage rates on a single benchmark span roughly 0-78% depending on the agent's retrieval stack, so contamination exposure is a property of the search backend, not only of the benchmark.
+  - Existing deep-research leaderboard numbers may overestimate true reasoning ability; evaluation should move to isolated retrieval sandboxes, mandatory search-trajectory disclosure, and gated benchmark distribution.
+  techniques:
+  - 'Three-tier leakage taxonomy: Benchmark Metadata Leakage (retrieved URLs expose dataset identifiers); Question-Context Leakage (retrieved documents contain the exact question phrasing without the label); Explicit Answer Leakage (retrieved content carries both query and correct answer).'
+  - 'Tier-matched detection: URL regex/pattern matching for metadata leakage; normalized longest-common-substring overlap for question-context leakage; LLM-as-a-Judge adjudication for explicit answer leakage.'
+  - Human validation of the detector (reported 83.3% recall / 100% precision on one benchmark; 94.85% precision on another)
+  - 'Contamination-aware protocol: fixed isolated knowledge sandbox with identical retrieval sources across arms; transparent search trajectories logging queries, URLs and intermediate evidence; access-controlled benchmark hosting.'
+  reported_results:
+  - 'Headline (verbatim from abstract, high confidence): STC inflates measured performance by up to 4% across six public benchmarks.'
+  - 'Benchmark set is clinical/medical-heavy (MedQA, MedMCQA, MedXpertQA, Medbullets-5op, MMLU medical subsets, an HLE subset ~149 items), consistent with the authors'' stated limitation of not covering non-medical domains. Per-benchmark inflation split is single-source-extracted and UNVERIFIED beyond the aggregate.'
+  - 'Agents covered include Tongyi DeepResearch (primary), a Qwen3-30B-A3B base configuration, and commercial deep-research agents. Per-agent leakage rates on one benchmark range ~0% to ~78%. UNVERIFIED at the per-agent level.'
+  - 'Detector human-validation figures are single-source-extracted and UNVERIFIED.'
+  referenced_arxiv_ids:
+  - '2505.09388'
+  - '2510.24701'
+  - '2512.20491'
+  - '2311.16452'
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  verdict: adopt_patterns
+  discovered_via: expansion
+  expanded_from: intake-869
+  ingested_date: '2026-07-21'
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - minddr-deep-research-mode.md
+    - eval-tower-verification.md
+    - colbert-reranker-web-research.md
+    - internal-kb-rag.md
+    - eval-tower-architecture-audit-2026-07-20.md
+    - research-evaluation-index.md
+    experiments: []
+    intake_entries:
+    - intake-438 (MindDR three-agent deep-research pipeline)
+    - intake-412 (DeepPlanning agent benchmark)
+    - intake-869 (Context Rot — whose BrowseComp margins this puts in question)
+    - intake-876 (judge agreement metrics — the other eval-hygiene expansion from the same parent)
+  handoffs_updated:
+  - minddr-deep-research-mode.md
+  handoffs_created: []
+  contradicting_evidence:
+  - 'AUTHOR-STATED LIMITATIONS: URL-pattern matching can only find metadata leakage matching predefined patterns, so prevalence is likely UNDERestimated; the study is confined to clinical/medical benchmarks so generalization to BrowseComp/GAIA-style open-web benchmarks is asserted rather than demonstrated; commercial-agent coverage was cost-limited.'
+  - 'EFFECT SIZE IS MODEST: "up to 4%" is an upper bound, not a mean, and no per-benchmark confidence interval was retrievable, so the headline number is weaker than the rhetoric around it.'
+  - 'STRUCTURAL BIAS: the lead affiliation (Tongyi Lab / Alibaba) also produces Tongyi DeepResearch, one of the agents benchmarked, and the recommended isolated-sandbox regime would reshape leaderboards its own product competes on. MITIGATING: their own agent is the primary contaminated subject, so the bias does not point toward self-flattery.'
+  - 'Not peer-reviewed — arXiv preprint marked Under Review. No independent replication of the STC measurement found in our index.'
+  novelty_justification: 'Our index contains contamination material only in the TRAINING-data sense — decontaminated-BEIR protocols, 13-gram containment, "uses 2024 papers to prevent data contamination". NOTHING in the index, chapters, or handoffs addresses leakage occurring at INFERENCE time through the agent''s own retrieval calls. The three-tier severity taxonomy plus tier-matched detectors is a mechanism we have no analogue of.'
+  relevance_justification: 'We operate a deep-research mode (MindDR three-agent pipeline) whose evidence retrieval runs against self-hosted SearxNG — i.e. the live web — and we run a public HF-sourced GAIA suite in a tower where tool-use vs direct-inference comparisons are the point of the measurement. Both are precisely the configuration the paper says is invalid without a sandbox. It also lands on our measurement trust boundary: MEASUREMENT.md requires a decision-gating number to carry (metric, protocol-id, n/reps, date, attestation ref), and this paper identifies a validity defect that NO part of that tuple currently captures — retrieval-environment provenance.'
+  verdict_justification: 'adopt_patterns, not adopt_component: the value is the taxonomy and the evaluation protocol, not code we would run (their detectors are tuned to medical benchmarks and use an external LLM judge). Three concrete translations: (1) add a RETRIEVAL-PROVENANCE field to the eval-tower protocol contract so any live-web-backed number is labelled as such and is never citable as a reproducible gating number under MEASUREMENT.md; (2) require search-trajectory capture (query, URL, snippet) for deep-research eval runs so question-context and answer leakage can be audited post hoc — our SearxNG JSON path already returns engines[]/score, making this nearly free; (3) extend the colbert handoff''s S7 decontamination task, currently train-time only, with a search-time sibling. OUR EXPOSURE, assessed concretely: (a) LOWER THAN FEARED on the MindDR sentinel — its 20 prompts are EPYC-AUTHORED style imitations, not verbatim public items, graded by an EV-9 rubric with no published answer key, so question-context and answer leakage are largely inapplicable; it does run against the live web, which makes those numbers non-reproducible over time (a separate validity problem the transparent-trajectory recommendation also fixes). (b) THE ACTUAL EXPOSURE is the eval tower: chapter 06 lists a `gaia` suite of 165 questions pulled VERBATIM from the public gaia-benchmark/GAIA HF validation split with substring scoring, and chapter 08 states the GAIA adapter exists specifically to add volume where tool-use modes structurally outperform direct inference. GAIA questions and answers are public and widely mirrored. If that suite runs in any web-tool-enabled mode, the tool-use-vs-direct delta — which feeds cost-aware reward and mode-advantage routing — is inflated by exactly this mechanism. WHETHER THE GAIA SUITE CURRENTLY RUNS WITH THE WEB TOOL ENABLED IS UNRESOLVED and is the first action item. (c) SECOND-ORDER: minddr-deep-research-mode.md designates external public-benchmark numbers (BrowseComp 45.7, WideSearch 46.5, xbench-DS 75.0) as "the reliable anchors" for the MindDR adoption case, with a +5pp promotion gate. Up-to-4pp of such published numbers can be contamination — comparable to our own gate — so those anchors should be demoted from "reliable" to observation-grade. (d) NOT AFFECTED: internal-kb-rag retrieval evals (fixed local corpus) and the EPYC-authored web_research suite.'
+- id: intake-878
+  arxiv_id: '2606.22164'
+  url: https://arxiv.org/abs/2606.22164
+  source_type: paper
+  title: 'Drowning in Routine: Signal Dilution in Multi-Turn Agent Training'
+  authors:
+  - Yann Pernot (Mila / Polytechnique Montreal)
+  - Vi Retault (Polytechnique Montreal)
+  categories:
+  - agent_architecture
+  - routing_intelligence
+  - training_distillation
+  key_claims:
+  - 'Multi-turn agent trajectories mix a few consequential turns with many routine turns — states where the conditional return distribution is identical across all supported actions. Formalized as decision density rho: the expected fraction of critical states visited per trajectory.'
+  - 'Trajectory-level credit assignment (the GRPO-style single advantage broadcast to every turn) suffers signal dilution: routine turns contribute gradient variance but no signal.'
+  - 'Main theoretical result: the signal-to-noise ratio of a turn-level advantage estimator relative to a trajectory-level one scales as Theta(rho^-1/2). The sparser the real decisions, the larger the advantage of per-turn credit assignment.'
+  - With an imperfect critic the gain degrades to Theta(1/sqrt(rho + sigma_eps^2)) — critic estimation error sets a floor, so turn-level methods only pay off when critic noise is small relative to rho.
+  - The paper is diagnostic, not prescriptive; it argues rho is the quantity that should decide whether the extra cost of critic-based turn-level methods is justified.
+  techniques:
+  - No new algorithm. The contribution is the decision-density diagnostic (rho) plus the rho^-1/2 SNR scaling law as a pre-training method-selection criterion.
+  - 'Diluted Doors: a synthetic deterministic tree MDP with exactly tunable decision density, used as the measurement instrument.'
+  reported_results:
+  - 'SNR scaling at initialization (synthetic tree MDP): fitted exponent -0.5084, 95% CI [-0.5118, -0.5054], R^2 = 0.9994 in log space — matching the predicted -1/2.'
+  - 'Turn-level vs trajectory-level SNR ratio: 17.41x at rho = 1/51; 2.30x at rho = 1.'
+  - 'Training-step efficiency (policy = a ~30k-parameter causal Transformer, NOT an LLM): trajectory-level needs ~2.14x more iterations at rho = 1/51; no gain at rho = 1. Fitted efficiency exponent -0.19, R^2 = 0.948.'
+  - 'NO LLM-scale experiment, no agent benchmark (no WebShop/ALFWorld/SWE-bench), and no comparison against a named production RL baseline.'
+  referenced_arxiv_ids:
+  - '2505.10978'
+  - '2505.11821'
+  - '2505.22617'
+  - '2402.03300'
+  novelty: medium
+  relevance: medium
+  credibility_score: 4
+  verdict: adopt_patterns
+  discovered_via: expansion
+  expanded_from: intake-867
+  ingested_date: '2026-07-21'
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - decision-aware-routing.md
+    - outer-coordinator-learned-head.md
+    - rao-redel-substrate-spike.md
+    - learned-routing-controller.md
+    - autopilot-continuous-optimization.md
+    - agent-world-env-synthesis.md
+    experiments: []
+    intake_entries:
+    - intake-344 (Agent Lightning / LightningRL — hierarchical per-step credit assignment; this paper supplies the theory for why its split helps)
+    - intake-157 (ReSum — ReSum-GRPO advantage broadcasting, i.e. deliberately trajectory-level)
+    - intake-536 (RAO), intake-549 (Tree-GRPO), intake-547 (Wang RLM reproduction) — the recursive-delegation cluster
+    - intake-403 (Target Policy Optimization — GRPO failing under sparse/terminal reward at H=10, 50.4% error vs TPO 7.4%)
+    - intake-286 (Self-Distilled RLVR — token-level statement of the same problem)
+    - intake-867 (the RLM blog whose credit-assignment scheme prompted this expansion)
+  handoffs_updated: []
+  handoffs_created: []
+  contradicting_evidence:
+  - 'THE EMPIRICAL VALIDATION IS ENTIRELY SYNTHETIC: a hand-built tree MDP with a ~30k-parameter causal Transformer. No LLM, no tool-use agent, no standard agent benchmark. Transfer of the rho^-1/2 law to real multi-turn LLM training is ASSERTED, not shown.'
+  - 'THE PAPER''S OWN TWO EXPERIMENTS DISAGREE IN MAGNITUDE: the SNR exponent is -0.51 but the actual training-step-efficiency exponent is only -0.19. Most of the theoretical SNR advantage does not convert into iteration savings — an internal result that substantially weakens the practical claim.'
+  - 'PROP 3.3 CUTS AGAINST TURN-LEVEL METHODS: critic error enters additively with rho, so in the low-rho regime where turn-level supposedly wins most, a realistically noisy critic erases the gain.'
+  - 'rho IS NOT MEASURABLE in a real agent environment without already knowing the return structure, and the paper offers no estimator for rho on real workloads — blunting its use as a practical pre-training diagnostic.'
+  - 'Preprint, no venue, two authors, no released code or artifacts identified.'
+  - 'DISCOVERY-FRAMING MISMATCH, flagged plainly: this paper was cited (via the alphaXiv RLM blog critique) as showing that recursive parent-to-child advantage inheritance compounds dilution WITH DEPTH. It does NOT. It contains no analysis of recursion, delegation depth, or advantage inheritance, and no depth-compounding result — its entire axis is decision density within a FLAT multi-turn trajectory. It supports only the weaker premise that trajectory-level advantage degrades mechanistically in multi-turn settings. The depth extension is an extrapolation by the citing source. The nearest EPYC-held evidence for depth-dependent degradation is intake-547 (depth-0 86.6% beats depth-1 60.0%), which is an inference-time, not an advantage-inheritance, result.'
+  novelty_justification: 'The qualitative claim — trajectory-level GRPO advantage is a poor credit-assignment signal in multi-turn settings and per-turn estimation helps — is already well represented in the index (intake-344, intake-286, intake-403) and in concurrent literature. What is new is the closed-form scaling law: naming decision density rho, deriving Theta(rho^-1/2), and validating the exponent to R^2 0.999. That converts a folk observation into a quantity — a real but narrow contribution.'
+  relevance_justification: 'The training half does NOT transfer: EPYC is a CPU-first inference stack with no training cluster, so neither GRPO nor turn-level PPO is runnable here, and the paper proposes no algorithm we could port anyway. What transfers is the ATTRIBUTION ARGUMENT in a non-RL setting. Our episodic Q-scorer applies a TD update per routing decision against a terminal task outcome, and the autopilot journal attributes end-of-run success back over multi-turn agent trajectories. Most turns in those trajectories are routine (file reads, format fixes, retries) and reward-equivalent — a low-rho regime, where this paper says the per-decision signal is diluted by ~1/sqrt(rho). That is a concrete, testable framing for the zero-predictive-spread pathology DAR-1 already documented, and it argues for measuring an empirical rho proxy on the journal before investing further in reward shaping. Medium and not high because it is a lens, not a component: nothing is deployable, the evidence is synthetic, and we already hold several entries making the same directional point.'
+  verdict_justification: 'adopt_patterns. Adoptable: (1) the decision-density lens as an ANALYSIS STEP on the autopilot journal — estimate what fraction of logged turns/subagent calls are outcome-discriminative, since a low proxy-rho predicts that uniform terminal-reward attribution is mostly noise and would explain DAR-1''s flat Q-spread; (2) rho as a cheap prioritization argument for turn-level attribution work in the outer-coordinator head over more terminal-reward shaping; (3) Prop 3.3 as a caution — finer-grained attribution only pays if the per-turn value estimate is low-noise, which for us means a reliable per-turn scorer must exist FIRST (an eval-tower dependency). Not adoptable: everything algorithmic, on hardware grounds. Per project rule this is flagged for operator review rather than dismissed — if a GPU path lands, rho becomes a genuine pre-flight check on whether RAO/Tree-GRPO-class trajectory-level training is worth the compute. ADJACENT WORKS SURFACED (verified real, distinct, both absent from the index, NOT ingested this run to respect the expansion cap): arXiv 2604.11037 "RTMC: Step-Level Credit Assignment via Rollout Trees" (Wang/Zheng/Xu, 2026-04-13) — critic-free per-step advantages via cross-rollout state matching, +3.2pp over GRPO on SWE-bench Verified, arguably higher-value than this target since it answers the Prop 3.3 objection with real-benchmark numbers; and "Turn-PPO: Turn-Level Advantage Estimation with PPO for Improved Multi-Turn RL in Agentic LLMs" (Findings of ACL: EACL 2026) — peer-reviewed, evaluated on WebShop and Sokoban. Both are queued candidates for a future run.'

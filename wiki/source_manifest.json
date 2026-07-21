@@ -1,18 +1,18 @@
 {
   "by_type": {
     "docs": 34,
-    "handoff-active": 140,
+    "handoff-active": 145,
     "handoff-blocked": 2,
     "handoff-completed": 155,
-    "progress": 244,
+    "progress": 245,
     "research": 134
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-07-20T14:56:14Z",
+  "last_compile": "2026-07-21T13:35:37Z",
   "mode": "full",
-  "scan_time": "2026-07-20T14:56:19Z",
+  "scan_time": "2026-07-21T13:36:01Z",
   "schema_version": 1,
-  "source_set_hash": "1366e21d790c78e990f043cbed7e9b9f2aa966c3710d1b1b08e437f26141d211",
+  "source_set_hash": "9305883abac6a3b8927cfa354ed79d93977b08a7d12f8bd3d83134f03d0be0a0",
   "sources": [
     {
       "content_hash": "9eb9296ef6b1e1d8bb4164b3b8acd4899325e705edd8d018b638c3ad8b3126e1",
@@ -63,10 +63,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "78d6886345f52d704a4c614c16d62571daa26cfb25936784fa3a337d52c1c980",
-      "modified": "2026-07-20T14:32:04Z",
+      "content_hash": "62c1024b164d174450ac406fe5f724dd27ea11739bb1135412039d2d0db73462",
+      "modified": "2026-07-21T11:54:54Z",
       "path": "handoffs/active/architect-model-selection-bench.md",
-      "size": 12137,
+      "size": 29734,
       "title": "Architect Model Comparison Benchmark",
       "type": "handoff-active"
     },
@@ -135,10 +135,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "664d1db54a0a9cd64878d1191c7d34b7ee63ac978ac25280bc82399a86aa1431",
-      "modified": "2026-07-17T13:38:01Z",
+      "content_hash": "d5f4005222e4988011b064036c7fdc6afa789e29ba1243697aadab9f3b9762d5",
+      "modified": "2026-07-20T23:39:33Z",
       "path": "handoffs/active/bulk-inference-campaign.md",
-      "size": 123644,
+      "size": 123852,
       "title": "Bulk Inference Campaign \u2014 active backlog (Packages G\u2013K)",
       "type": "handoff-active"
     },
@@ -159,10 +159,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b3433f9c2b8d9d97c09486249b8dc68c6d37bd9ea44cdb9b94658c4139f7e41d",
-      "modified": "2026-07-14T17:18:00Z",
+      "content_hash": "ee24085dec4724bbaf54889fba7bd059aec8c6907ab74bced7b44cc00d21f9ca",
+      "modified": "2026-07-21T10:12:23Z",
       "path": "handoffs/active/context-folding-progressive.md",
-      "size": 7694,
+      "size": 16437,
       "title": "Context-Folding: Progressive Session Compaction Upgrade",
       "type": "handoff-active"
     },
@@ -191,10 +191,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "2816aca4c362648a1ac772ca795114918b4df3f547166f811efe9a83d6ed38b5",
-      "modified": "2026-07-04T16:04:39Z",
+      "content_hash": "5e27d6d49cf1b33a4c0a1306289903b2b35dd40b599b79bb957953b308115046",
+      "modified": "2026-07-21T13:33:32Z",
       "path": "handoffs/active/decision-aware-routing.md",
-      "size": 56248,
+      "size": 68510,
       "title": "Decision-Aware Routing for Q-Scorer",
       "type": "handoff-active"
     },
@@ -223,6 +223,14 @@
       "type": "handoff-active"
     },
     {
+      "content_hash": "1c93a56842b2b991f766166b24eb9e32b79ea8d8004627b4524538c3fc6b28aa",
+      "modified": "2026-07-20T17:33:40Z",
+      "path": "handoffs/active/document-parser-table-bench.md",
+      "size": 16006,
+      "title": "Document Parser Table-Extraction Benchmark \u2014 PaddleOCR-VL-1.6 pipeline vs ODL",
+      "type": "handoff-active"
+    },
+    {
       "content_hash": "a6642921a0c9c7984f42c1ed9bc48ed2193c826a6194f56c794f1a5b56b5827a",
       "modified": "2026-07-06T04:06:09Z",
       "path": "handoffs/active/dynamic-stack-concurrency.md",
@@ -247,18 +255,34 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "c1f8a7c6dee4b0b3d85f10830e182227ab32cebc9b87f74b788efe903e97d571",
-      "modified": "2026-07-17T10:49:38Z",
+      "content_hash": "1c425319e768a35b9b7d19f09414108f284b2fab326d959333a0e9bc02e54389",
+      "modified": "2026-07-20T17:02:26Z",
       "path": "handoffs/active/eval-benchmark-cost-reduction.md",
-      "size": 8708,
+      "size": 9949,
       "title": "Eval Benchmark Cost Reduction \u2014 Mid-Range Difficulty Filter",
       "type": "handoff-active"
     },
     {
-      "content_hash": "0a09f58f9fe287148b3d35aef02d4a86dc50067b9578ca99419e43336c735220",
-      "modified": "2026-07-20T03:47:33Z",
+      "content_hash": "874c21cf074a5be25fceac228461ed67aed629f1d88a848af54397c70906ff11",
+      "modified": "2026-07-21T10:03:02Z",
+      "path": "handoffs/active/eval-tower-architecture-audit-2026-07-20.md",
+      "size": 76602,
+      "title": "Eval Tower Architecture & Robustness Audit (2026-07-20)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "fbdc0fc8d49447bc5ea55f071a00d7df97694b064e332969c6cbfa1e25534b24",
+      "modified": "2026-07-21T00:38:11Z",
+      "path": "handoffs/active/eval-tower-loop-robustness-audit-2026-07-20.md",
+      "size": 28816,
+      "title": "Eval-Tower / Inference-Batch-Loop Robustness Audit (2026-07-20)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "b2b7d447f4335c308bfe73df860d7942c5bf356dd4ffb15cda2c6775495a1954",
+      "modified": "2026-07-21T10:03:32Z",
       "path": "handoffs/active/eval-tower-verification.md",
-      "size": 59231,
+      "size": 68667,
       "title": "Eval Tower Verification Framework",
       "type": "handoff-active"
     },
@@ -407,10 +431,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "19cdf3d441f17f3d57d46fca8172a76187f31129549f48ad04ec1373f28222a5",
-      "modified": "2026-07-19T22:56:52Z",
+      "content_hash": "72a83dcf9e2e6f2747aed1e9b662bd897d83ed40935a0a7df99ce2d6adcfe340",
+      "modified": "2026-07-21T10:13:15Z",
       "path": "handoffs/active/glm52-reviewer-capability-gates.md",
-      "size": 49430,
+      "size": 52708,
       "title": "Reviewer Control Plane \u2014 GLM-5.2 Reviewer Capability Gates (H6, slim)",
       "type": "handoff-active"
     },
@@ -439,10 +463,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "6f178078d9c90f78a36f888bf632f2f731a31dbe253faba94dc236e870e99886",
-      "modified": "2026-07-07T00:08:41Z",
+      "content_hash": "b9cf27893e5ec5e96c2856d4dae6b075c3dc3b07ce1dfc244891974eb6c4a51c",
+      "modified": "2026-07-20T23:39:02Z",
       "path": "handoffs/active/granite-97m-r2-bench-plan.md",
-      "size": 16254,
+      "size": 18164,
       "title": "Granite-97M-r2 Multilingual Embedder Bench Plan",
       "type": "handoff-active"
     },
@@ -455,10 +479,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b0da243827c03b886e45beb0f78389b828d46362ca28567cd6186d71912be321",
-      "modified": "2026-07-17T10:34:20Z",
+      "content_hash": "22822b76cbb856cf5d5e0e01b84860e9ec9a38e3131fb06b52c47ac7e43cdcc0",
+      "modified": "2026-07-21T04:36:25Z",
       "path": "handoffs/active/hermes-outer-shell.md",
-      "size": 63025,
+      "size": 64315,
       "title": "Hermes/OpenGauss as Outer Shell",
       "type": "handoff-active"
     },
@@ -471,10 +495,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "2b28f0e30cca4f9a7d94caf2bb5295c421e75dd5f47e7cbcc41a3204c2d7fa2d",
-      "modified": "2026-07-20T14:22:27Z",
+      "content_hash": "d215b81caa8468d33535b9d99e8252f73c82dcb623a6fdf80bb2ab04bfe045af",
+      "modified": "2026-07-21T09:27:37Z",
       "path": "handoffs/active/inference-batch-loop.md",
-      "size": 10472,
+      "size": 27475,
       "title": "Inference-Batch Loop \u2014 Campaign Insertion Point",
       "type": "handoff-active"
     },
@@ -495,10 +519,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "c97c4df68b254649ae00accdd102ec6caea8e9e86834252c2a07e6b93b3ac1da",
-      "modified": "2026-07-16T11:30:32Z",
+      "content_hash": "9efc5931829430d209406f73d73dac3cd53f97db52e49a615522654e57af2826",
+      "modified": "2026-07-21T06:00:37Z",
       "path": "handoffs/active/internal-kb-rag.md",
-      "size": 79594,
+      "size": 80188,
       "title": "Internal Knowledge-Base RAG",
       "type": "handoff-active"
     },
@@ -508,6 +532,14 @@
       "path": "handoffs/active/intra-process-tensor-parallel-decode.md",
       "size": 3983,
       "title": "Intra-Process Tensor-Parallel Decode Across CCDs",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "65ab737adbdd20684446af2174a0f09756c67bbb2f6cbd3a7b0ad7f7d5ea84e0",
+      "modified": "2026-07-21T13:33:09Z",
+      "path": "handoffs/active/iqk-iquant-enablement.md",
+      "size": 7255,
+      "title": "iqk IQ-quant Enablement (IQ2_XXS / IQ3_XXS / IQ2_S)",
       "type": "handoff-active"
     },
     {
@@ -527,10 +559,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "e0c99a7b2b8726f549283b2cc92f016fc1c81a2c30bb075594a9c0419e42d637",
-      "modified": "2026-07-14T16:04:41Z",
+      "content_hash": "6c5ded3f1cd3d2453cf8b11e4517362d98b237dbc2dd268ba6157b9127318fe0",
+      "modified": "2026-07-21T10:12:23Z",
       "path": "handoffs/active/learned-routing-controller.md",
-      "size": 142814,
+      "size": 145945,
       "title": "Learned Routing Controller: MLP Distillation from Episodic Memory",
       "type": "handoff-active"
     },
@@ -639,10 +671,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "eff6ddfc8fd01ffdb24baf36e151e3178f289e63eb59a9cf891d6d87cc6f38e5",
-      "modified": "2026-07-18T15:57:16Z",
+      "content_hash": "24f1a8dbf73454cac392b8bf884700f75d836f2959a9be39704e6f3677fdefe2",
+      "modified": "2026-07-21T09:49:09Z",
       "path": "handoffs/active/minddr-deep-research-mode.md",
-      "size": 16794,
+      "size": 19488,
       "title": "MindDR Deep Research Mode",
       "type": "handoff-active"
     },
@@ -711,10 +743,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "7e70d8964f4bf1f11257ba1d6dcfbec277efb7da94a5e9eef47ba7e57e1e9a93",
-      "modified": "2026-07-14T12:21:45Z",
+      "content_hash": "134bfd4628eace75c0ef17a641f80ddaaf9426f394fdeb1ee6dd659877d31718",
+      "modified": "2026-07-20T17:14:07Z",
       "path": "handoffs/active/multiscreen-attention-evaluation.md",
-      "size": 46232,
+      "size": 51151,
       "title": "Multiscreen Attention \u2014 Evaluation for EPYC Inference",
       "type": "handoff-active"
     },
@@ -743,10 +775,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "90b1753678871d367fede10ba7b2d6e9122c5cb92fe848731f0003b664e3c05d",
-      "modified": "2026-07-19T11:06:53Z",
+      "content_hash": "f31ce8f4c9f071887765d0bcf463b85292bc0db9bdef24b398f13bb526954ec7",
+      "modified": "2026-07-20T17:34:04Z",
       "path": "handoffs/active/opendataloader-pipeline-integration.md",
-      "size": 64049,
+      "size": 71396,
       "title": "OpenDataLoader PDF \u2014 Pipeline Integration",
       "type": "handoff-active"
     },
@@ -807,10 +839,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "cc1817931c1e879fcd2858273332d77d43d0c6149e68668b8e12decf5b8f2a93",
-      "modified": "2026-07-14T16:03:50Z",
+      "content_hash": "6b058cfb9723676b3b813e414d6989de2a8037b32606edcfa01f3dbcb6dcf038",
+      "modified": "2026-07-21T09:49:42Z",
       "path": "handoffs/active/rao-redel-substrate-spike.md",
-      "size": 37694,
+      "size": 40632,
       "title": "RAO + ReDel Substrate Spike",
       "type": "handoff-active"
     },
@@ -823,10 +855,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "0fd2403af41da1f1fe80d707c4a34ed4bf06fd2f2274ab8e2a72b4a818f9eab9",
-      "modified": "2026-06-20T05:21:00Z",
+      "content_hash": "7ae660f812bd257100f842af249619d1c7fbbebb78d0e0a0227e2f2d4d5642ab",
+      "modified": "2026-07-21T09:19:16Z",
+      "path": "handoffs/active/reasoning-effort-levels.md",
+      "size": 10249,
+      "title": "Reasoning Effort Levels \u2014 prompt-conditioned quality/token ladder",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "9cc9994be054bf0fe705e200c9dbcd708aae15fd73e77069f8ca92a06f6df23c",
+      "modified": "2026-07-21T10:13:45Z",
       "path": "handoffs/active/repl-turn-efficiency.md",
-      "size": 7142,
+      "size": 12517,
       "title": "REPL Turn Efficiency - Active Gates",
       "type": "handoff-active"
     },
@@ -847,10 +887,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "1fb46992e37a3a4b37593c9b55d14497752d25413471e46b471517a80c87b7ab",
-      "modified": "2026-07-17T08:19:15Z",
+      "content_hash": "1bbaf89dad816809922908edaddcc543c796b4d153d8d8f549505148dc79e732",
+      "modified": "2026-07-21T09:48:08Z",
       "path": "handoffs/active/reviewer-calibration-accounting.md",
-      "size": 14688,
+      "size": 17274,
       "title": "Reviewer Control Plane \u2014 Calibration Accounting: FA/FR Ledger + Near-Miss Corpus + P-REV-1 (H4)",
       "type": "handoff-active"
     },
@@ -887,10 +927,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b1b5fdaa6f701b057f1a950546c86cd9db8b606e972cf15700b0cbf2aabdc2ee",
-      "modified": "2026-07-17T08:20:36Z",
+      "content_hash": "47664cd0586ffbfd59c7b73b5aa5d4a5a9585cd642745cfb1c94dd22fbb9fe64",
+      "modified": "2026-07-21T04:10:35Z",
       "path": "handoffs/active/reviewer-trace-materialization.md",
-      "size": 9550,
+      "size": 10139,
       "title": "Reviewer Control Plane \u2014 Trace Materialization & Durable Execution (H1)",
       "type": "handoff-active"
     },
@@ -959,10 +999,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "2cdcb05b705169701cbcfc6e820972ea92a3fca54fdc7d037a8088d43141be03",
-      "modified": "2026-06-27T09:42:09Z",
+      "content_hash": "c9737f775ac1d0f70ec8127cfbb64cd291268ded6e017cc0d38b3ef10816adc6",
+      "modified": "2026-07-21T10:39:54Z",
       "path": "handoffs/active/shape-keyed-contention-gating.md",
-      "size": 37164,
+      "size": 39111,
       "title": "Shape-Keyed Contention Gating + Cross-Role Disjoint Placement",
       "type": "handoff-active"
     },
@@ -975,10 +1015,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "23bd771b68d9b2bed566128c4117d786b3f89233feb78582d5eb830403937ac3",
-      "modified": "2026-07-20T14:36:48Z",
+      "content_hash": "153b9a894835060052b6aec658e2a9b3741f09e50aa3d386bc56d0baae28e1cf",
+      "modified": "2026-07-21T09:49:42Z",
       "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "size": 40733,
+      "size": 42844,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
@@ -1047,26 +1087,26 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "86020a3042b00aeb0969ce95775fb362e409758e5a8c675efe1d8a285bad1a08",
-      "modified": "2026-07-16T20:56:07Z",
+      "content_hash": "17ab1f85b763ca4415d70df501fe3b5322d34029673c25cfc86fb9a91d385546",
+      "modified": "2026-07-21T09:48:36Z",
       "path": "handoffs/active/tool-output-compression.md",
-      "size": 47106,
+      "size": 48594,
       "title": "Tool Token Optimization \u2014 Output Compression + Definition Reduction",
       "type": "handoff-active"
     },
     {
-      "content_hash": "d922481782ab2db5da2763b93b61b4bfcf7cb1cf587bd3f89bb7b411d0dde98b",
-      "modified": "2026-07-17T11:12:31Z",
+      "content_hash": "d2eb39d2948e139cb7aed21a7a310fe498ca4149d2256487adc82131062aba1b",
+      "modified": "2026-07-21T10:13:45Z",
       "path": "handoffs/active/tool-use-eval-contract.md",
-      "size": 54897,
+      "size": 56278,
       "title": "Tool-Use Eval Contract \u2014 make autopilot trials actually exercise tools",
       "type": "handoff-active"
     },
     {
-      "content_hash": "6d3a024022959708645388aab6b71b3ac4d3e580ac27a2a6d84e26392cafa417",
-      "modified": "2026-07-20T03:31:22Z",
+      "content_hash": "6a59da56fc12cf3b139cb60be7d92963790a89a11ef099502551cd59bb400743",
+      "modified": "2026-07-21T10:13:15Z",
       "path": "handoffs/active/tq3-quantization-evaluation.md",
-      "size": 23900,
+      "size": 32250,
       "title": "TQ3 / TurboQuant Quantization \u2014 Monitor List",
       "type": "handoff-active"
     },
@@ -1103,18 +1143,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "bbd222b2ff26d315b7a873212f001fca544d8ab6758285c06e4cf780c3123025",
-      "modified": "2026-07-20T14:33:26Z",
+      "content_hash": "2731b564ee7a6f600a87722f29282538b22e1c8956e938c6b0c6a3df08980629",
+      "modified": "2026-07-20T18:51:11Z",
       "path": "handoffs/active/v7-promotion.md",
-      "size": 15709,
+      "size": 16585,
       "title": "v6 \u2192 v7 production-promotion (production-consolidated-v7)",
       "type": "handoff-active"
     },
     {
-      "content_hash": "b1f465cf76502503d0b5df528064056de6c6342cd9f1ba1efed22e245e85535d",
-      "modified": "2026-07-20T14:03:56Z",
+      "content_hash": "ca6860fe1084c039decdac21a002191a1c6cc5065e06d5b48fc20388c9899eef",
+      "modified": "2026-07-21T06:56:07Z",
       "path": "handoffs/active/within-role-placement-state-machine.md",
-      "size": 46294,
+      "size": 46548,
       "title": "within-role-placement-state-machine",
       "type": "handoff-active"
     },
@@ -5359,11 +5399,19 @@
       "type": "progress"
     },
     {
-      "content_hash": "cac327c77bec8b0ed41a441f66b052b56823656c4e1502a03b0fe8bacf959c94",
-      "modified": "2026-07-20T14:55:26Z",
+      "content_hash": "08df0c6060c64a81b58a52582f0a72046e0b2c9250c845fa0c4a3a872e8b9308",
+      "modified": "2026-07-21T07:59:30Z",
       "path": "progress/2026-07/2026-07-20.md",
-      "size": 96477,
+      "size": 166113,
       "title": "Progress - 2026-07-20",
+      "type": "progress"
+    },
+    {
+      "content_hash": "3ebc5263ff20e077346297f378b40cbb5ff99ddc1851460a00ebe74d86b04768",
+      "modified": "2026-07-21T10:22:15Z",
+      "path": "progress/2026-07/2026-07-21.md",
+      "size": 22347,
+      "title": "2026-07-21",
       "type": "progress"
     },
     {
@@ -5687,7 +5735,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 709,
+  "total_new": 715,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

@@ -430,3 +430,13 @@ Add a new MCP server module that wraps the bash invocation as a `run_bash_compre
 - [`internal-kb-rag.md`](internal-kb-rag.md) — K6 was satisfied via the kb-search skill route, not an MCP tool; the v3 middleware pattern in P4b is the precedent if a future kb-search MCP variant is wanted.
 - [`meta-harness-optimization.md`](meta-harness-optimization.md) HLE-1 — the per-call telemetry shape in P4b is a candidate evidence source for the "per-component harness metrics" axis if the compressor is ever scored as a harness component.
 - intake-609 `notes` field — feature-boundary table behind the v1-vs-v3 decision.
+
+## Research Intake Update — 2026-07-21 (Phase 3d: observation-dropping beats summarization on the evidence)
+
+- **[intake-869] "Diagnosing and Mitigating Context Rot in Long-horizon Search"** (arxiv:2606.29718; GAIR/SJTU) + `github.com/GAIR-NLP/ContextRot`
+  - Relevance to Phase 3d: a seven-policy head-to-head that our evidence base (intake-273/274) could not provide. **But read the ablation, not the headline** — keep-latest alone 43.8% and plain Discard 44.6% versus keep-latest+summary 48.2% off a 35.0% ReAct baseline, i.e. dropping stale observations carries ~9pp of the 13.2pp lift and summarization contributes 3.6-4.4pp.
+  - This corroborates intake-274 (The Complexity Trap) rather than contradicting it: masking matched or beat LLM summarization on SWE-bench in 4 of 5 configs on cost, with summaries causing 13-15% trajectory elongation. Two domains, same direction.
+  - Second finding worth carrying: method effectiveness is **model-dependent** (isolation +19% on Qwen3.5, negative on GLM-4.7), which cautions against one global compression policy across our heterogeneous role stack — though it rests on n=2.
+  - Numbers are OBSERVATION-grade (100-sample splits, no chance-corrected judge agreement, live-web contamination exposure per intake-877).
+
+- [ ] Phase 3d design input: bias the fallback chain toward cheap observation-dropping before LLM summarization, and require summarization to earn its cost in an A/B rather than assuming it. [intake-869, intake-274]
