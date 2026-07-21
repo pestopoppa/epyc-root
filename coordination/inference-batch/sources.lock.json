@@ -1,15 +1,15 @@
 {
   "schema_version": "inference_batch.sources_lock.v1",
-  "generated_at": "2026-07-21T05:36:09Z",
+  "generated_at": "2026-07-21T06:01:06Z",
   "repos": {
     "epyc-root": {
       "path": "/mnt/raid0/llm/epyc-root",
-      "sha": "4d0aabc466c2ef4d734025e497aa9051425c2ddc",
+      "sha": "03b9b4c0eaab47aa2489c2372a3d2bbc398eb040",
       "dirty": true
     },
     "epyc-orchestrator": {
       "path": "/mnt/raid0/llm/epyc-orchestrator",
-      "sha": "8d1059a480a1cd9bc5e2bb247d1cc37b1d9c35f9",
+      "sha": "8fd0b844fe6dd906c703455b3bfc87dd39b679c6",
       "dirty": true
     },
     "epyc-inference-research": {
@@ -388,10 +388,10 @@
       "checkbox": "K11 batch lexical sweep",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 390,
-      "checkbox_anchor_count": 1,
-      "checkbox_anchor_error": null,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'K11 batch lexical sweep'",
+      "resolved": false
     },
     {
       "task_id": "BULK-langgraph-tm7-parity",
