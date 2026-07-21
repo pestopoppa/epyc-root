@@ -1,15 +1,15 @@
 {
   "schema_version": "inference_batch.sources_lock.v1",
-  "generated_at": "2026-07-21T03:52:43Z",
+  "generated_at": "2026-07-21T04:11:10Z",
   "repos": {
     "epyc-root": {
       "path": "/mnt/raid0/llm/epyc-root",
-      "sha": "0110c7f14a97023e598ab6bc3a8b67a50248eebc",
+      "sha": "6aa51bec92b9f1b2905ca1e625fae684885a0d19",
       "dirty": true
     },
     "epyc-orchestrator": {
       "path": "/mnt/raid0/llm/epyc-orchestrator",
-      "sha": "9dfbe572adc8777364c01efdc6ecc3e033252108",
+      "sha": "36bfe9b4a84f5247119cd147673e20f6aa77d25e",
       "dirty": true
     },
     "epyc-inference-research": {
@@ -402,10 +402,10 @@
       "checkbox": "TM-7 live parity residual",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 27,
-      "checkbox_anchor_count": 1,
-      "checkbox_anchor_error": null,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'TM-7 live parity residual'",
+      "resolved": false
     },
     {
       "task_id": "ROUTE-A1-shapekeyed-step2",

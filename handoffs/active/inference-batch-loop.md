@@ -43,6 +43,18 @@ status for retry `BULK-langgraph-tm7-parity-20260721T034655Z` is terminal
 Do not retry TM-7 until the parity runner wires the same live graph/LLM
 dependencies used by production instead of bare `TaskDeps()`.
 
+**TM-7 live graph parity closed (2026-07-21T04:09Z; TM-8 still open):**
+after orchestrator `36bfe9b4` wired live graph dependencies and explicit
+`result_role_history` parity-chain fallback, official retry
+`BULK-langgraph-tm7-parity-20260721T040534Z` passed. The stale parity JSON was
+backed up and removed before execution, `run_batch_entry.py --execute` exited
+0, and the fresh report shows `overall=PASS`, `n_pass=4/4`, `n_fail=0`,
+`arm_success_ok=true`, exact output equivalence, and
+`n_parity_chain_coverage_fail=0`. Keep TM-8 separate: trace DB decision-chain
+coverage is still missing (`n_trace_coverage_fail=4`, trace chain lengths
+`0/0`), so trace materialization remains open before trace-coverage-dependent
+gates.
+
 **No-execute bridge preflight sidecar (2026-07-20T22:31Z; no entry completion):** durable evidence is now stored at `coordination/inference-batch/attestations/eligible-preflight-20260720T2231Z.jsonl`. It contains exactly 8 `phase=preflight` rows for `RE-4-longcot-mini-calibration`, `BULK-langgraph-tm7-parity`, `BULK-K-EMB-1`, `BULK-hermes-smokes`, `BULK-kbrag-autowiki-k11`, `ROUTE-A1-shapekeyed-step2`, `ROUTE-A2-edit-transaction-ab`, and `ROUTE-A3-j2j3-single-worker`. Every row has `dry_run_ok=true`, `blocking_reasons=[]`, topology verified against attestation `coordination/inference-batch/attestations/20260720T191355.json` with live hash `8c8cfcbb13d2611d`, `stack_contract.ok=true`, and `autopilot_precondition.ok=true`. The bridge passed no `--execute`; it created no batch ledger row or execution artifact package, and no execution checkbox was flipped.
 
 **Topology repin checkpoint (2026-07-20; no entry completion):** root commit
@@ -164,7 +176,7 @@ The `/loop` is the SOLE writer of the ledger + batch checkbox flips. Do NOT run 
 - [ ] **P2** eval-tower — EV-4 is the first live v7 entry, but it is currently `BLOCKED_PRECONDITION` on B7 scorer-semantics sign-off. The EV-4 command requires `--min-eval-concurrency 3`; verifier-mode preflight now checks fanout against the actual forced roles (`worker_general,frontdoor`), serial fallback has a wall-budget fail-closed path, runner arms require full `n_scored` before decision-grade, and the textual multiple-choice implementation now covers configured labels, overlapping labels, and `(B)` expected letters. Because that changes scoring semantics, rerun EV-4 only after B7 operator sign-off, then append an explicit `READY` row or intentional retry-policy change. EV-11b closed-bin ECE is implemented; EV-11c remains after EV-CONF/scorer-era prerequisites; EV-5/7/8 (MODEL-DOWNLOAD-gated); EV-10a; RE-4; H5-RM3
   - [ ] **RE-4 protocol repair** — redesign LongCoT-Mini execution so models may do bounded reasoning while deterministic final-answer extraction still works. Do not rerun the `concise_solution` + answer-only grammar protocol; latest evidence is floor-saturated (frontdoor 0/402, worker_general 0/307) and quarantined as `protocol_blocked/floor_saturated`.
 - [ ] **P3** bulk-campaign — DS-E1, A7, XMAS, hermes, kbrag, langgraph, ODLB-W3-01/02; K-ROPE (harness build-gate); ODLB-W3-03 (paddleocr-VL build-gate). `K-EMB-1` is DONE_PASS 2026-07-20, but this campaign row stays open until the remaining P3 entries close.
-  - [ ] **TM-7 live-deps runner repair** — wire `scripts/trace/run_task_lg_parity.py` to the production graph/LLM dependency construction path, or route the parity check through the production task runner, so `run_task_lg`/`run_task` produce non-empty decision chains instead of the bare `TaskDeps()` `No LLM primitives or REPL configured` failure. Retry only with the `9dfbe572` fail-closed guard active.
+  - [x] **TM-7 live-deps runner repair** ✅ 2026-07-21 — orchestrator `36bfe9b4` wires `scripts/trace/run_task_lg_parity.py` to live graph/LLM dependency construction and distinguishes role-history parity from trace DB coverage. Official retry `BULK-langgraph-tm7-parity-20260721T040534Z` passed with `n_pass=4/4`, `n_parity_chain_coverage_fail=0`, and `n_trace_coverage_fail=4`; TM-7 is closed, TM-8 remains open.
 - [ ] **P4** kernel/OP-2 — OP-2/v6+iqk and final v7 readiness closed outside this loop on 2026-07-19; do not schedule unchanged KOP2-frontdoor/KOP2-v6iqk reruns. Remaining kernel/routing entries require the manifest owner to reconcile the ledger against [v7-promotion.md](v7-promotion.md) and current post-candidate work before execution.
 - [ ] **P5** GLM window — legacy GC1/GC2/GC3 admission chain is superseded. GLM failed decision-grade P-REV-1 and reviewer/control-plane is decoupled from v7; only run a GLM entry with a named repair hypothesis or non-reviewer capability gate.
 - [ ] **P6** decision-grade confirmations — RC8/LB7/RM4/RM8/RELABEL/RM2-A3 (gated OP-5a P-REV-1; RM2-A3 also COORD-axa-teleport)
