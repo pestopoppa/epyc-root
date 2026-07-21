@@ -1,6 +1,6 @@
 schema_version: inference_batch.manifest.v1
 entry_schema_version: inference_batch.entry.v1
-generated_at: '2026-07-21T06:16:41Z'
+generated_at: '2026-07-21T09:22:32Z'
 entry_count: 52
 entries:
 - schema_version: inference_batch.entry.v1
@@ -4320,8 +4320,9 @@ entries:
     protocol_id: P-AB-1 (placement admit/queue smoke via autopilot eval-concurrency
       fan-out)
     dry_run: false
-    command: 'cd /mnt/raid0/llm/epyc-orchestrator && .venv/bin/python scripts/autopilot/shapekeyed_step2_smoke.py
-      --execute
+    command: 'cd /mnt/raid0/llm/epyc-orchestrator && env AUTOPILOT_SHAPEKEYED_STEP2_SMOKE=1
+      .venv/bin/python scripts/autopilot/shapekeyed_step2_smoke.py --execute --output
+      orchestration/reports/shape_keyed_step2_smoke.json
 
       '
     cwd: /mnt/raid0/llm/epyc-orchestrator
@@ -4385,7 +4386,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:5b9cac973af2e07e26975949f5f66ec912b0874c8956ee094f1e26d0f72656bb
+  entry_hash: sha256:de79f01b63c81ca7055ba410ffe27da1496c67abe1b38983aeeb5fab17ad74c6
 - schema_version: inference_batch.entry.v1
   task_id: ROUTE-A2-edit-transaction-ab
   title: A2 — multi-file edit-transaction routing A/B (EV-12 patch-verifier-fed)

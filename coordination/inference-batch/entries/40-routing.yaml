@@ -60,7 +60,9 @@
     dry_run: false
     command: >
       cd /mnt/raid0/llm/epyc-orchestrator &&
+      env AUTOPILOT_SHAPEKEYED_STEP2_SMOKE=1
       .venv/bin/python scripts/autopilot/shapekeyed_step2_smoke.py --execute
+      --output orchestration/reports/shape_keyed_step2_smoke.json
     cwd: /mnt/raid0/llm/epyc-orchestrator
     concurrency_mode: same_trial_eval_fanout
     fanout_transport: placement_queue
