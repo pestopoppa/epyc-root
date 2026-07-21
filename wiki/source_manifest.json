@@ -8,11 +8,11 @@
     "research": 134
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-07-21T15:33:04Z",
+  "last_compile": "2026-07-21T16:43:40Z",
   "mode": "full",
-  "scan_time": "2026-07-21T15:33:04Z",
+  "scan_time": "2026-07-21T16:43:40Z",
   "schema_version": 1,
-  "source_set_hash": "694cf5d0a3263e55f45387941648542a819cb705fafa01755e757113e1c3e503",
+  "source_set_hash": "d8ffaa9a7c0d645d1ffc9dba48068beecbbf6641cc0479ce661358ede3bad886",
   "sources": [
     {
       "content_hash": "9eb9296ef6b1e1d8bb4164b3b8acd4899325e705edd8d018b638c3ad8b3126e1",
@@ -63,10 +63,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "0c8f0356aa9ddde7f0120fa322a446da0c7694edad51d4297a31116e8482f162",
-      "modified": "2026-07-21T15:17:39Z",
+      "content_hash": "fe47901785cfd2a303fb18019dd680918f7968c2435935b4ca74fc6cf2487274",
+      "modified": "2026-07-21T16:37:03Z",
       "path": "handoffs/active/architect-model-selection-bench.md",
-      "size": 30571,
+      "size": 31984,
       "title": "Architect Model Comparison Benchmark",
       "type": "handoff-active"
     },
@@ -159,10 +159,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "6887414540ff84098eaa54b69480a147a8d494c45c8eb611e52c730e63d51df0",
-      "modified": "2026-07-21T14:30:31Z",
+      "content_hash": "4c14e72c4fb38f975c6d587de14997ec83500e7904670fc7a73d6330390df6dd",
+      "modified": "2026-07-21T16:23:29Z",
       "path": "handoffs/active/context-folding-progressive.md",
-      "size": 18062,
+      "size": 18935,
       "title": "Context-Folding: Progressive Session Compaction Upgrade",
       "type": "handoff-active"
     },
@@ -279,10 +279,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "dfc3c7dd217b08ada97f375fc0c77e3137963dc85d35c7896f4312949af2ecd2",
-      "modified": "2026-07-21T15:12:45Z",
+      "content_hash": "1d688154184080a9c18e55783cce7d2935daadc7d0158e2793f811373002a0d7",
+      "modified": "2026-07-21T16:23:29Z",
       "path": "handoffs/active/eval-tower-verification.md",
-      "size": 70734,
+      "size": 72896,
       "title": "Eval Tower Verification Framework",
       "type": "handoff-active"
     },
@@ -783,10 +783,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "cce7ca6d77f0fd7e8b0fd32f5bf2f05685df6d231ad54f250b87be2d5435daf4",
-      "modified": "2026-07-20T14:29:20Z",
+      "content_hash": "8bb4d132fca75f3652278fb3e11e83ef308a2d7fe9cc0f6ba4bd1075ff6d74c9",
+      "modified": "2026-07-21T16:23:29Z",
       "path": "handoffs/active/orchestration-robustness-audit-2026-07-11.md",
-      "size": 47404,
+      "size": 48590,
       "title": "Orchestration Robustness Audit \u2014 why fixes don't stick",
       "type": "handoff-active"
     },
@@ -839,10 +839,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "6b058cfb9723676b3b813e414d6989de2a8037b32606edcfa01f3dbcb6dcf038",
-      "modified": "2026-07-21T09:49:42Z",
+      "content_hash": "855fbd53d262809354e9edaa2d68443504ec6f3e2c37c3980c079d4885847338",
+      "modified": "2026-07-21T16:23:29Z",
       "path": "handoffs/active/rao-redel-substrate-spike.md",
-      "size": 40632,
+      "size": 44706,
       "title": "RAO + ReDel Substrate Spike",
       "type": "handoff-active"
     },
@@ -863,10 +863,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9cc9994be054bf0fe705e200c9dbcd708aae15fd73e77069f8ca92a06f6df23c",
-      "modified": "2026-07-21T10:13:45Z",
+      "content_hash": "6ad3ae7f271e0e2effbd80218e7217d58b176afe87e620a1ba96312ed4b49db8",
+      "modified": "2026-07-21T16:23:29Z",
       "path": "handoffs/active/repl-turn-efficiency.md",
-      "size": 12517,
+      "size": 13657,
       "title": "REPL Turn Efficiency - Active Gates",
       "type": "handoff-active"
     },
@@ -1015,10 +1015,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "153b9a894835060052b6aec658e2a9b3741f09e50aa3d386bc56d0baae28e1cf",
-      "modified": "2026-07-21T09:49:42Z",
+      "content_hash": "e6a68fc7dc89d48f5d1556628d0dffc30f95c57c7dd3ae9ffdeb946348c3b281",
+      "modified": "2026-07-21T16:23:29Z",
       "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "size": 42844,
+      "size": 44024,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
@@ -1151,10 +1151,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "eff2e74e0ff588fb20d7017853d00bc224867725e8cfbbf969ac911a0636affc",
-      "modified": "2026-07-21T15:17:32Z",
+      "content_hash": "36f9fbe6c65226e46e37374204419f1f95d7636b1095da263bd31a28e0320c4f",
+      "modified": "2026-07-21T16:01:43Z",
       "path": "handoffs/active/within-role-placement-state-machine.md",
-      "size": 47380,
+      "size": 49160,
       "title": "within-role-placement-state-machine",
       "type": "handoff-active"
     },
@@ -5407,10 +5407,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "ea26a66f3347c2bd6b6863cfa086f21f5866093de2b8233c5ecfafdac9651036",
-      "modified": "2026-07-21T15:32:12Z",
+      "content_hash": "551f864932b8f2df1bf22e92e85384c39e8e4a38f4ade6fb4ae1c019ab1e04c4",
+      "modified": "2026-07-21T16:43:40Z",
       "path": "progress/2026-07/2026-07-21.md",
-      "size": 32346,
+      "size": 37025,
       "title": "2026-07-21",
       "type": "progress"
     },
