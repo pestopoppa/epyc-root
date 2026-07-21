@@ -186,3 +186,9 @@ Unlike KT this needs **none** of the hard parts: `IQ2_XXS=16`, `IQ3_XXS=18`, `IQ
 - [ ] **STEP 3 (only if Step 2 wins):** the 3-6 day port. **Decision-flipper:** IQ4_KT must reach >=95% of Q4_K_M tg128 under the canonical protocol AND show a measurable PPL/eval win. Slower than 95% ⇒ DROP permanently — 17.5% fewer bytes that decode slower is strictly dominated.
 - NOTE: no IQ*_KT GGUF exists under `/mnt/raid0/llm`, and public KT producers (ubergarm, ik-community) cover the giant MoEs (DeepSeek-V3/R1, Kimi-K2.x, GLM-4.5/4.6/4.7), NOT the models we serve. Viterbi is the *encoding* cost only — decode runs the trellis LCG forward — so self-quantizing is hours on 192 cores plus an imatrix, not prohibitive, but it is not free either.
 - NOTE: `/mnt/raid0/llm/llama.cpp-experimental` is a proper worktree on `experimental-v7-refresh-20260716` @ `8bb53c520`, **3 ahead / 0 behind** production — correctly fresh-pulled. It is currently DIRTY with in-flight GDN/CONCAT work, so trellis/iquant work needs its own branch off it, not a merge into that state.
+
+### Ownership moved — 2026-07-21
+
+Both the IQ-quant un-stub and the KT/trellis sequencing now live in **[iqk-iquant-enablement.md](iqk-iquant-enablement.md)** (tasks B1-B5 and T1-T3 respectively), so there is one owner and one ordering. The analysis above stands; the executable tasks moved.
+
+Two corrections to the section above, from the tensor-header parse: the whitelist covers **five** native types (IQ2_XXS, IQ2_XS, IQ2_S, IQ3_XXS, IQ3_S), not three — matching exactly what `iqk_gemm_iquants.cpp` implements in both its kernel and converter switches. And the change benefits **all four** IQ-quant registry models, not GLM-5.2 alone; **Qwen3-Next-80B i1-IQ2_M gains the largest share (433 of 807 tensors, 54%)**.

@@ -547,3 +547,81 @@ Combined implication: the triage-gate framing survives, but its target sharpens.
 
 - [ ] Re-run the matched within-objective analysis **stratified by task tier (T0/T1/T2/T3)** before drawing any conclusion about how much of the corpus is genuinely role-indifferent. Current estimate (21.9% decisive) is derived from a T0/T1-dominated sample and is probably a floor. Zero inference — the tier label needs to be recoverable from the stored context/objective or joined from the eval-tower record.
 - [ ] Any redesigned reward MUST carry the speed axis, not just the outcome flag — autopilot's objective is speed × quality and the current `reward` collapses to success/failure. This is a prerequisite for the majority regime, where cost is the operative term.
+
+## ROOT CAUSE FOUND — 2026-07-21: the cost/speed half of the reward was dead due to a key-name mismatch
+
+The reward-saturation audit above established *that* the reward was saturated. This establishes **why**, and it is not a design gap — the speed axis was designed, implemented, and never executed.
+
+`compute_reward` (`orchestration/repl_memory/q_reward.py`) gates all three cost dimensions **plus** the teacher shaping behind one lookup:
+
+```python
+role = cost_metrics.get("role", "")
+baseline_tps = config.baseline_tps_by_role.get(role, 0)
+...
+if baseline_tps > 0 and tokens_gen > 0 and elapsed > 0:   # latency penalty
+if role in config.baseline_quality_by_role:               # quality-gap penalty
+if role in config.memory_cost_by_role:                    # memory-tier penalty
+```
+
+`cost_metrics` is the TASK_COMPLETED entry's `data` dict (`q_scorer.py:812`). Measured over **20,521 production `task_completed` entries** (last 14 progress-log files):
+
+| key | present |
+|---|---:|
+| `role` — **the key that is read** | **0** |
+| `producer_role` — the key that is written | **20,521** |
+| `regret` (teacher shaping) | 0 |
+| `speedup_vs_teacher` (teacher shaping) | 0 |
+
+So `baseline_tps` resolved to 0, every guard failed, and `reward` collapsed to `base_reward`. The outer `if cost_metrics` passed — the dict was non-empty — so nothing ever looked wrong.
+
+**Fixed** (`epyc-orchestrator` `q_reward.py`): read `role` → `producer_role` → `final_answer_role`. `producer_role` values map cleanly onto `baseline_tps_by_role` keys (frontdoor 24.3, worker_general 38.46, architect_general 12.19, …; only the 49 `mock` rows miss). Five regression tests added (`tests/unit/test_q_reward_role_key.py`), two of which fail against the pre-fix code.
+
+**Replayed against 20,526 real historical completions:**
+
+| | at exactly r=+1.0 | mean | entropy (0.1-bin) |
+|---|---:|---:|---:|
+| before | **100.0%** | +1.0000 | **0.0000 bits** |
+| after | **0.2%** | +0.5601 | **2.4580 bits** |
+
+Role-conditional means post-fix: worker_vision +0.967, ingest_long_context +0.898, frontdoor +0.607, worker_general +0.524, coder_escalation +0.470, **architect_general +0.253** (lowest — slowest baseline at 12.19 tps and most expensive, so it takes all three penalties). Role spread **0.7147**, versus 0.2212 in the stored data.
+
+**This is the mechanical explanation for the five-null streak.** Every learned-routing experiment (P4.1.3, P4.2, P4.5, P4.6, DAR-4b) was fitting a target that carried zero bits. No policy class, loss function, or feature set can extract signal from a constant.
+
+### Retroactive rescoring is possible
+
+- **94.5%** of `task_completed` entries carry usable speed telemetry (`tokens_generated` 99.8%, `generation_ms` 99.8%, `prompt_eval_ms` 99.8%, `http_overhead_ms` 99.8%).
+- **20,516 `task_started`/`task_completed` pairs** carry timestamps, so **true wall-clock task duration is recoverable** — 85 days of progress logs are retained.
+- Rescoring is therefore a replay over `logs/progress/*.jsonl`, not a re-run. It creates an instrument-era boundary: pre-fix stored `q_value`s and post-fix rewards are **not comparable**, and the era must be recorded before any mixed-era comparison is made.
+
+### The speed axis must be wall-clock, not tokens/sec (operator requirement)
+
+Dimension 1 as written is throughput-relative: `expected_elapsed = tokens_generated / baseline_tps` against `generation_ms`. **That is gameable through tools** and measurably blind. Wall-clock vs model-compute over 19,433 tasks: **median 1.60x, p90 9.09x**. Per role:
+
+| role | n | wall p50 | model p50 | overhead |
+|---|---:|---:|---:|---:|
+| worker_vision | 1,775 | 11.9s | **0.4s** | **5.38x** |
+| worker_general | 9,547 | 12.4s | 3.2s | 1.93x |
+| frontdoor | 3,904 | 6.8s | 3.4s | 1.63x |
+| coder_escalation | 2,493 | 6.9s | 3.3s | 1.20x |
+| ingest_long_context | 748 | 8.5s | 6.7s | 1.12x |
+| architect_general | 2,009 | 11.3s | 9.4s | 1.10x |
+
+`worker_vision` spends 0.4s generating inside 11.9s of wall clock. A tokens/sec penalty scores it as fast; a task-execution-speed penalty would not. The gap is orchestration and tool time — exactly what autopilot's speed × quality objective is supposed to price, and exactly what the current dimension cannot see.
+
+- [x] Root-caused the reward saturation to a `role` vs `producer_role` key mismatch; fixed with regression tests; replayed on 20,526 historical completions (0.0000 → 2.4580 bits). ✅ 2026-07-21
+- [ ] Add a **wall-clock task-duration** term as the speed axis, derived from `task_started`→`task_completed`, and demote the tokens/sec term to a secondary signal. Per-role p50/p90 baselines above are computable from the retained logs — derive them under a protocol id rather than hand-setting constants.
+- [ ] Record the instrument-era boundary for reward values before any pre/post-fix comparison is made or any policy is trained across it.
+- [ ] Optional: replay-rescore historical rows so the episodic store carries post-fix rewards. Not indispensable (the logs are the source of truth and can be replayed on demand), but it would make the 174K-row store trainable without a join.
+
+## DAR-3 / DAR-4 / DAR-5 RESCOPE — approved 2026-07-21
+
+Superseding the "FROZEN pending a ≥5% regret replay" status. That gate was measured by a metric that cannot return non-zero (see the tautology finding above), so it was never a real gate.
+
+**They are not unfrozen, and they are not closed. They are re-aimed.** The three phases were designed to improve a *global argmax* over a target that carried zero bits. Both premises are now known false: the target was broken (fixed above), and the majority regime is not quality-discriminative (median within-objective role gap 0.00pp; only 21.9% of objectives decisive, and that is a floor given the T0/T1-skewed corpus).
+
+New shape:
+
+- [ ] **DAR-3 (was SPO+/epsilon-greedy) → triage gate.** Build a classifier that separates *cost-dominated* objectives (any role clears quality; choose cheapest/fastest) from *quality-decisive* objectives (role choice changes the outcome). Report lift on the decisive subset, never on all traffic — a policy that fixes the 22% and leaves the 78% alone is invisible in every metric used to date. **Do NOT run the original 10% epsilon-greedy exploration**: 386K counterfactual decisions already exist in the store for free, so degrading production to manufacture them is strictly dominated.
+- [ ] **DAR-4 (bilinear descriptor-conditioned predictor) → retained, but retrain on the fixed reward.** Its prior null (P4.1.3: label-proxy IRT +9.02pp, observed-outcome IRT 0.00pp) is now explained — the observed outcome was constant. Re-run before drawing any conclusion about the model class.
+- [ ] **DAR-5 → gated behind the reward redesign, not behind a regret replay.** Precondition is a reward carrying a wall-clock speed axis (above), since the cost-dominated majority is where most traffic lives and the current reward cannot price it.
+- [ ] Re-run the matched within-objective analysis **stratified by task tier (T0/T1/T2/T3)** before sizing any of this. 21.9% is derived from a T0/T1-dominated sample and is expected to rise at T3, where routing errors are most expensive.

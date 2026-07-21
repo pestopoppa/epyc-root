@@ -112,3 +112,15 @@ Supersedes the ordering in the 2026-07-21 intake section above. A deep dive on i
 - [ ] Replace the seven-policy bake-off with the narrower question our code actually poses: does the protected-zone LLM-summary half of `ContextCompressor` earn its keep over stub-only trimming, and what is the right `TOOL_OUTPUT_AGE_THRESHOLD`? That is a 2×k sweep on existing code.
 - [ ] Do NOT prioritize running the ContextRot harness: the only self-hostable arm (BrowseComp-Plus) is the one where the summarization effect is ~1pp or NEGATIVE, and at the 1-2 reps we could afford (~25-50h/arm NUMA-concurrent) it is underpowered to resolve it. If run at all, scope it to reproduce the **behavioral rot/NA signature** (a ~50pp move), never the accuracy delta (a ~1pp move). Also note the BrowseComp arm requires a paid `SERPER_API_KEY` (fails our open-source-only constraint) and the repo ships **no LICENSE file**.
 - [ ] Correction to the earlier note: the "self-hostable against our BGE servers" claim was WRONG. The shipped embeddings are Qwen3-Embedding-8B-specific (4096-dim, 821MB, bf16); using BGE would require re-embedding all 100,195 docs and would break comparability with every published number.
+
+### Ownership clarification — 2026-07-21 (this is orchestrator work, not inference-research)
+
+The rot ↔ no-answer finding and the compaction-telemetry fixes are **orchestrator-side**, not inference-research, and need no quiet window or inference budget:
+
+- The instrument is `CompactionQualityMonitor` (`src/graph/session_log.py:563`) and its call site `src/graph/session_summary.py`, both orchestrator code.
+- The give-up / no-answer detectors already exist in `src/pipeline_monitor/anomaly.py` (`detect_repl_max_turns` = the paper's NA metric exactly, `detect_assistant_help_request` ≈ give-up, `detect_self_doubt_loop` ≈ hedging). The work is joining them to compaction state and persisting the result — plumbing, not measurement.
+- Nothing here requires llama.cpp, a kernel build, or a benchmark slot. Validating that the telemetry *moves* would require agent traffic (autopilot), but that is orchestrator-level and can ride normal operation rather than a reserved inference window.
+
+The one genuinely inference-adjacent item is the optional ContextRot harness replication, which is already marked do-not-prioritise above (self-hostable arm is the low-signal one, ~25-50h/arm, underpowered at achievable reps).
+
+- [x] Fixed the inverted reference-miss detector (`session_summary.py`) to compare identifiers destroyed by compaction — present in `seg.granular_blocks`, absent from the surviving stub — rather than identifiers read off the stub itself. Two regression tests added that fail against the prior behaviour in both directions (missed real loss; false positive on preserved content). ✅ 2026-07-21
