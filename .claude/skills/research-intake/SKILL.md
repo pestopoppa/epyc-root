@@ -291,7 +291,7 @@ Entries with `relevance >= medium` and no row above must appear under **Explicit
 
 ### Recommended Actions
 - Operator-review candidate: {prioritized follow-up action with evidence source}
-- Deep-dive candidates, ranked: {which intakes most warrant a Stage-2 dive, and why}
+- Deep-dive candidates, ranked: {which intakes most warrant a Stage-2 dive, and why — expansion-discovered entries are fully eligible}
 ```
 
 2. **Append entries to `research/intake_index.yaml`**:
@@ -308,7 +308,7 @@ Stage 2 begins only when the operator requests deep dives on specific intakes. N
 
 ### 2a — Deep dives
 
-- Dive only the intakes the operator named. Sub-agents are fine; give each the same external-content quarantine rules and the relevant repo context (frozen gates, hardware constraints, MEASUREMENT.md status of any number it will cite).
+- Dive only the intakes the operator named. Any entry is eligible — including expansion-discovered ones (`discovered_via: expansion|search`); that is precisely why Phase 3 runs in Stage 1, so the operator can choose dives from the full expanded set, not just the submitted URLs. Sub-agents are fine; give each the same external-content quarantine rules and the relevant repo context (frozen gates, hardware constraints, MEASUREMENT.md status of any number it will cite).
 - **Verify, don't summarize**: read the actual source/code, quote file:line, and prefer overturning the intake entry's conclusion to confirming it — an overturned recommendation is a successful dive (2026-07-21 precedent: a proposed scorer port was withdrawn when the dive found it was dead code upstream).
 - **Derived-actionables ledger (required per dive)**: every "we could/should/worth X" the dive produces goes into a ledger with a proposed disposition — task line + owning handoff, or explicit decline with reason. This is the counterpart of the wrap-up skill's derived-actionables gate; the 2026-07-21 audit found seven high-ROI items that were derived in dive prose and filed nowhere.
 - Record each dive's corrections on the intake entry itself (`notes:` field, appended) so overturned conclusions cannot be re-derived later — but still make NO handoff edits.
@@ -317,7 +317,7 @@ Stage 2 begins only when the operator requests deep dives on specific intakes. N
 
 When dives are done (or the operator asks to integrate without dives), call **EnterPlanMode** and present ONE consolidated plan covering:
 
-1. **Handoff edits** — per target file: the exact section/task lines to append (from the Phase-4 drafts, corrected by the dives), including `- [x] … ✅ date` lines for anything a dive already settled.
+1. **Handoff edits** — per target file: the exact section/task lines to append, including `- [x] … ✅ date` lines for anything a dive already settled. **The plan must resolve EVERY Stage-1 Phase-4 proposal row — dived or not** (actionables from non-dived intakes are just as real), plus every dive-ledger row; dives correct or overturn drafts, they do not scope the plan.
 2. **New stubs** — full stub content, per the template below.
 3. **Index rows** — domain index + master-index placement for anything priority-worthy or time-sensitive. Time-sensitive items (e.g. an amendment whose window closes on another task's ratification) MUST have an index row — an owning-handoff task alone is not discoverable.
 4. **Explicit declines** — every ledger item not being filed, with its reason.
@@ -359,7 +359,7 @@ Apply exactly what was approved — additions discovered mid-execution go back t
 ### Stage 2 verification gates
 
 - **2a**: each dive ends with a derived-actionables ledger; every ledger row has a disposition; intake `notes:` updated for any overturned conclusion.
-- **2b**: plan presented via plan mode; every ledger row from every dive appears in the plan as either a filed item or an explicit decline; time-sensitive items have index rows.
+- **2b**: plan presented via plan mode; **every Stage-1 Phase-4 proposal row AND every dive-ledger row** appears in the plan as either a filed item or an explicit decline — non-dived intakes' actionables included; time-sensitive items have index rows.
 - **2c**: diff matches the approved plan; `validate_intake.sh` exit 0; checkbox counts reported.
 
 ## Boundaries
