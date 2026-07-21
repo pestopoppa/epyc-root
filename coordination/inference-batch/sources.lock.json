@@ -1,15 +1,15 @@
 {
   "schema_version": "inference_batch.sources_lock.v1",
-  "generated_at": "2026-07-21T12:22:41Z",
+  "generated_at": "2026-07-21T15:25:34Z",
   "repos": {
     "epyc-root": {
       "path": "/workspace",
-      "sha": "e02481d761321f6dc153a728a0b5aeb3c4a8b6f0",
+      "sha": "e3adedf4804573a2df57c730d0b469ac60961409",
       "dirty": true
     },
     "epyc-orchestrator": {
       "path": "/mnt/raid0/llm/epyc-orchestrator",
-      "sha": "4dd270edfad263c05f07173ab961a4feccb5c5da",
+      "sha": "1698a3ef5cae1ea1f068b7497fd1ce54f1a753cd",
       "dirty": true
     },
     "epyc-inference-research": {
@@ -226,7 +226,7 @@
         "handoffs/active/bulk-inference-campaign.md#K-SKILL-1"
       ],
       "handoff_exists": true,
-      "checkbox_line": 410,
+      "checkbox_line": 412,
       "checkbox_anchor_count": 1,
       "checkbox_anchor_error": null,
       "resolved": true
@@ -239,7 +239,7 @@
         "handoffs/active/backlog-roi-audit-2026-07-14.md#RE-1"
       ],
       "handoff_exists": true,
-      "checkbox_line": 424,
+      "checkbox_line": 426,
       "checkbox_anchor_count": 1,
       "checkbox_anchor_error": null,
       "resolved": true
