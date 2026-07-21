@@ -29,7 +29,7 @@ Format for operator action: change `[ ]` → `[x]` and append `GRANTED <date> �
 - [ ] **OP-WORKER-MTP-REATTEST** — re-attest the gemma4 worker_general MTP head config before a long-context matrix run. Cited by: BULK-K-ROPE-cells.
 - [ ] **OP-ODL-SOURCE-CORPUS** — provide/approve the source PDF corpus + ground-truth for the ODL structural benches (the real gap on the OCR entries — the command is valid, the corpus is missing). Cited by: ODLB-W3-01/02/03.
 - [ ] **Ref-judge budget** — approve the metered frontier-API judge-of-judge (pinned model-id+date, ~100 sampled decisions) for the H5 Ref arm. Cited by: RM-6/reviewer-model-ablations Ref arm (prose today; wire into RM-6 operator_gates when that arm is scheduled).
-- [ ] **EV-4-v7-contention-matrix-recert** — re-measure and commit the v7 contention matrix, including the post-v7 `vision_escalation` geometry, before any fanout eval-tower entry resumes. Cited by: EV-4, EV-8, EV-10a.
+- [x] **EV-4-v7-contention-matrix-recert** — ✅ SATISFIED 2026-07-20: `vision_escalation` re-measured + v7 matrix regenerated and committed (`6be6a28e` in epyc-orchestrator; live hash `8c8cfcbb13d2611d`; live recert artifact `data/contention_matrix/v7-live-recert-20260720T180916Z/`; ROUTE-A3's terminal row records `matrix_status: fresh`). ESC-5 resolved via option (A). Flipped by the takeover loop session 2026-07-21 — the recert predated this flip but was never recorded here (registry gap found by the 07-21 state audit). Cited by: EV-4, EV-8, EV-10a.
 
 ### C. Posture decisions that SHAPE (not hard-block) entries
 
