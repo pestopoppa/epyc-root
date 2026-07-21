@@ -1,6 +1,6 @@
 schema_version: inference_batch.manifest.v1
 entry_schema_version: inference_batch.entry.v1
-generated_at: '2026-07-21T01:15:08Z'
+generated_at: '2026-07-21T01:37:28Z'
 entry_count: 52
 entries:
 - schema_version: inference_batch.entry.v1
@@ -2207,13 +2207,14 @@ entries:
       ; OUT_DIR=\"data/longcot_mini_calibration/${RUN_ID}\"; mkdir -p \"${OUT_DIR}\"\
       ; .venv/bin/python scripts/benchmark/longcot_mini_stack_runner.py --run-id \"\
       ${RUN_ID}\" --role-ports frontdoor=8080,8180,8280,8380 --role-ports worker_general=8082,8182,8282,8382\
-      \ --endpoint chat --max-tokens \"${LONGCOT_MINI_MAX_TOKENS:-2048}\" --timeout\
-      \ \"${LONGCOT_MINI_TIMEOUT_S:-900}\" --summary-out \"${OUT_DIR}/stack_runner_summary.json\"\
-      \ && for result in benchmarks/results/runs/\"${RUN_ID}\"/frontdoor_*.json benchmarks/results/runs/\"\
-      ${RUN_ID}\"/worker_general_*.json; do\n  test -f \"${result}\" || { echo \"\
-      missing LongCoT-Mini result files for ${RUN_ID}\" >&2; exit 2; };\n  stem=\"\
-      $(basename \"${result}\" .json)\";\n  .venv/bin/python scripts/benchmark/score_longcot_run.py\
-      \ \"${result}\"\n  --output \"${OUT_DIR}/${stem}_score.json\";\ndone\n"
+      \ --endpoint chat --prompt-mode concise_solution --force-solution-grammar --max-tokens\
+      \ \"${LONGCOT_MINI_MAX_TOKENS:-2048}\" --timeout \"${LONGCOT_MINI_TIMEOUT_S:-900}\"\
+      \ --summary-out \"${OUT_DIR}/stack_runner_summary.json\" && for result in benchmarks/results/runs/\"\
+      ${RUN_ID}\"/frontdoor_*.json benchmarks/results/runs/\"${RUN_ID}\"/worker_general_*.json;\
+      \ do\n  test -f \"${result}\" || { echo \"missing LongCoT-Mini result files\
+      \ for ${RUN_ID}\" >&2; exit 2; };\n  stem=\"$(basename \"${result}\" .json)\"\
+      ;\n  .venv/bin/python scripts/benchmark/score_longcot_run.py \"${result}\"\n\
+      \  --output \"${OUT_DIR}/${stem}_score.json\";\ndone\n"
     cwd: /mnt/raid0/llm/epyc-inference-research
     concurrency_mode: isolated_bench
     fanout_transport: none
@@ -2276,7 +2277,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:17645a0a4a0e18fc01e3ddb330c9ae48ac898d285483740ea0973bdf3a7ae0ed
+  entry_hash: sha256:7c90df29ac7e4494126803b9526a6c7af47be8e922ae66217f85fa6cdec8e7d4
 - schema_version: inference_batch.entry.v1
   task_id: semantics-shadow-rollout
   title: Semantics-layer rollout Phase 1 — shadow-mode telemetry accumulation (CP1/CP2/CP3

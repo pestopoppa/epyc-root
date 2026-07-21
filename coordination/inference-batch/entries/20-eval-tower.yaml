@@ -786,6 +786,8 @@
       --role-ports frontdoor=8080,8180,8280,8380
       --role-ports worker_general=8082,8182,8282,8382
       --endpoint chat
+      --prompt-mode concise_solution
+      --force-solution-grammar
       --max-tokens "${LONGCOT_MINI_MAX_TOKENS:-2048}"
       --timeout "${LONGCOT_MINI_TIMEOUT_S:-900}"
       --summary-out "${OUT_DIR}/stack_runner_summary.json" &&
