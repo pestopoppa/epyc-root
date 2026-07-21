@@ -1,6 +1,6 @@
 schema_version: inference_batch.manifest.v1
 entry_schema_version: inference_batch.entry.v1
-generated_at: '2026-07-21T21:07:40Z'
+generated_at: '2026-07-21T22:16:59Z'
 entry_count: 52
 entries:
 - schema_version: inference_batch.entry.v1
@@ -1314,10 +1314,11 @@ entries:
     protocol_id: eval-tower.math-rebaseline.v1
     dry_run: false
     command: 'env HF_HOME=/mnt/raid0/llm/hf-home HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1
-      AUTOPILOT_EVAL_CONCURRENCY=4 .venv/bin/python scripts/benchmark/eval_batch_serving_evaltower_window.py
-      --mode math_rebaseline --scoring math_verify --full --roles worker_general,worker_math
-      --seed 42 --min-eval-concurrency 4 --output-dir orchestration/reports/eval_tower_math_rebaseline_E7
-      --api-url http://localhost:8000 --apply --confirm-clean-window
+      AUTOPILOT_EVAL_CONCURRENCY=4 AUTOPILOT_EVAL_REQUEST_TIMEOUT_S=420 .venv/bin/python
+      scripts/benchmark/eval_batch_serving_evaltower_window.py --mode math_rebaseline
+      --scoring math_verify --full --roles worker_general,worker_math --seed 42 --min-eval-concurrency
+      4 --output-dir orchestration/reports/eval_tower_math_rebaseline_E7 --api-url
+      http://localhost:8000 --apply --confirm-clean-window
 
       '
     cwd: /mnt/raid0/llm/epyc-orchestrator
@@ -1395,7 +1396,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-07-17-math-verify-rebaseline
-  entry_hash: sha256:a949812c1f05f24fdf5762e9e4b92aa824206c519e69a417334643def1375017
+  entry_hash: sha256:b7d7ad81043e077142dbf74a569191b97fb854d974e5db4dfeb0e7f37395c7b0
 - schema_version: inference_batch.entry.v1
   task_id: EV-4-calibration-baseline
   title: EV-4 — Eval-tower calibration baseline on Scoring Verifiers HE-R+ (ECE/AUC/Top-1/Bottom-1/rho/MAE)

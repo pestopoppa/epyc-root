@@ -675,6 +675,7 @@
     command: >
       env HF_HOME=/mnt/raid0/llm/hf-home HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1
       AUTOPILOT_EVAL_CONCURRENCY=4
+      AUTOPILOT_EVAL_REQUEST_TIMEOUT_S=420
       .venv/bin/python scripts/benchmark/eval_batch_serving_evaltower_window.py
       --mode math_rebaseline --scoring math_verify --full
       --roles worker_general,worker_math --seed 42

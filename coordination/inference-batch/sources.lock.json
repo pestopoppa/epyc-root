@@ -1,15 +1,15 @@
 {
   "schema_version": "inference_batch.sources_lock.v1",
-  "generated_at": "2026-07-21T21:07:40Z",
+  "generated_at": "2026-07-21T22:16:59Z",
   "repos": {
     "epyc-root": {
       "path": "/workspace",
-      "sha": "6c2f5f252c6472aea8912ad86572c25203e4b612",
+      "sha": "594292a4c4b2da28c98b32cb8bdb829d7ea2e300",
       "dirty": true
     },
     "epyc-orchestrator": {
       "path": "/mnt/raid0/llm/epyc-orchestrator",
-      "sha": "5408109faa5c317bcfd7776ff1c9f6c110c117ae",
+      "sha": "e9d3c86452c185ccd7bbe8e16f5638b06e33f6e7",
       "dirty": true
     },
     "epyc-inference-research": {
