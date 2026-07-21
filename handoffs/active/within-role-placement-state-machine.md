@@ -391,5 +391,12 @@ MODE (1 in full mode, N-quarters in burst mode), not the static overlap of a mix
 (4) a configured-but-DOWN big instance must never block the quarter walk (see the preserved
 `affinity_preflight --live-only` patch). Acceptance test for WP-8/Step-2: 4 concurrent worker
 requests → 4 busy quarters; 4 concurrent frontdoor requests → 4 busy quarters, half0 idle.
+**TRACE CORRECTION (2026-07-21, definitive):** the lever is NOT the Step-2 contention seam (it is
+live-ON and only consulted after a disjoint candidate exists) — it is `_dispatch` candidate
+construction (full emitted first, `concurrency_aware.py:1020-1027`) PLUS the live stack wiring
+quarter 8082 into the all-region full slot (impersonation → all 4 GLOBAL mutexes held per decode →
+machine-wide cross-role head-of-line blocking). `placement_policy` is currently migration-gating
+only, never candidate ordering. Fix in flight: policy-aware candidate construction + FULL_DISABLED
+for worker_general + port-alignment/liveness guard.
 
 - [ ] **WP-8 — post-WP-3 quarters-only eval fanout** (filed 2026-07-21, from the EV-11c 26h-serial analysis): teach `compute_max_safe_concurrency` (src/runtime/instance_topology.py) the largest-disjoint-subset mode its own docstring promises now that WP-3 KV migration is live-probed (ROUTE-A3), and wire the dispatcher's evict-full-then-quarter path for eval fanout. worker_general has 4 healthy quarter instances (J5 co-run ratio 1.005 = free) blocked only by the full-first ceiling; instance fanout is compute-identical to serial (separate processes, no logit jitter — unlike slot batching). Unlocks ~3.5-3.8x on full-n rebaselines (26h→~7h class). GATED on WP-6/WP-7 dispatcher ratification — do NOT hot-wire onto in-flight baseline runs. First consumer: EV-4b worker arm; cross-ref eval-tower-verification.md EV-PROTO.
