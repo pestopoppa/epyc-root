@@ -33,6 +33,13 @@ git diff HEAD -- handoffs/ | grep -cE '^\+\s*[-*] \[[xX]\]'
 
 If this prints `0` but the session completed any handoff-tracked work, go back and sync the checklists. Report the flip count in the wrap-up output.
 
+**Derived-actionables gate (required — the flip-count gate cannot see this).** The flip-count gate catches un-flipped checkboxes; it has no counterpart for conclusions that never became checkboxes at all. A 2026-07-21 audit found **seven** high-ROI items — including the session's single time-sensitive item — that were fully derived in analysis text ("measurable locally today", "worth mirroring", "cheapest experiment in the program") and then filed **nowhere**: not in the owning handoff, not in any index. Before committing, sweep the session's own output (deep-dive results, sub-agent reports, analysis sections appended to handoffs) for every "we could/should/worth X" sentence and give each one exactly one of:
+
+1. a `- [ ]` task in the owning handoff (plus an index row if it is priority-worthy or time-sensitive — a task buried at line 1400 of a long handoff is filed, not discoverable);
+2. an **explicit written decline** ("not filed because …") so the drop is a decision, not an accident.
+
+Watch for the three failure shapes that audit found: a conclusion stated in prose but never converted to a task; a fix landed while the flag/config that would make it *run* stays off with no enable task; and a live idea silently discarded because a *sibling* idea was falsified. Report the count of newly filed tasks and explicit declines in the wrap-up output.
+
 ### 3. Handoff Index Updates
 
 - Update relevant domain index files linked from `handoffs/active/master-handoff-index.md`
