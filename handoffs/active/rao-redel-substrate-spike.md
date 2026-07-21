@@ -430,3 +430,24 @@ Three RLM-lineage sources arrived together. **None of them overturns the pinned 
 
 - [ ] Substrate-decision input: the current evidence supports keeping `max_depth` at 0-1 for competent models and reserving recursion for near-zero-baseline cases; revisit only if a controlled local A/B contradicts intake-547. [intake-866, intake-547]
 - [ ] Design input: the SkyRL parent/child rollout-tree model (parent_rid/depth/child_index with reward propagation) is a reusable accounting shape for nested sub-agents here, usable without adopting any RL. [intake-868]
+
+### Correction 2026-07-21 — depth should be CONDITIONAL, not a pinned default (operator challenge)
+
+The earlier note recorded intake-547 as supporting a **static** `max_depth=1`. That under-reads it. The finding is that **RLM gains appear only where the base model scores ~0** — on Kimi K2 OOLONG depth-1 *lost* (86.6 → 60.0), but on DeepSeek OOLONG depth-1 *rescued* a total failure (0.0 → 42.1). Direction-of-effect is conditional on whether the base attempt is going to fail. A pinned default throws that away in both directions: it forfeits the rescue where recursion helps, and it still pays depth where recursion hurts.
+
+**The correct shape is a gated surface: escalate depth only when the base attempt is predicted to fail.** We already hold the training data for exactly that predictor — `learned-routing-controller.md` lists an **Escalation prediction** surface, "Binary (will frontdoor fail?)", with **10,528 positive + 56,457 negative** examples, status **Ready**. It has never been built. The `COMP_r(x)` competence probe proposed from intake-866 is the same quantity approached from the other side (per-role familiarity → predicted success), so the two should be developed as one signal rather than two.
+
+**Three constraints that must ride with any depth surface:**
+1. **Cost gating is not optional.** intake-547 measures depth-1 at ~25x wall-clock (3.6s → 89.3s) and depth-2 at ~96x (→ 344.5s). The expected-value condition is `P(base fails) × value(rescue) > cost_multiplier`, so depth-2 needs a very high failure probability to clear; depth-1 is the tractable rung. Do not expose depth-2 without a measured gate.
+2. **This is newly computable, and was not before.** Until 2026-07-21 the routing reward could not represent the cost side at all (the entire cost/speed half was inert — see `decision-aware-routing.md`). A depth surface priced against a constant reward would have been untunable. It is worth building now for that reason, and was not before.
+3. **Per-model, not global.** intake-547's direction-of-effect differs by model, so the gate must be conditioned on the target role/model, not a single global threshold.
+
+- [ ] Reframe the substrate decision from "pin `max_depth`" to "expose depth as a conditional surface gated on predicted base-attempt failure". The static `max_depth=1` remains the correct *default*; what changes is that it stops being the only setting.
+- [ ] Build the Escalation-prediction surface (10,528 pos / 56,457 neg, already labelled and Ready per `learned-routing-controller.md`) as the depth gate, developed jointly with the `COMP_r(x)` competence probe — they estimate the same underlying quantity.
+- [ ] Gate depth escalation on expected value, not on predicted failure alone: require `P(fail) × value(rescue) > cost_multiplier`, with depth-2 held behind a measured threshold given the ~96x wall-clock.
+
+### Audit catch 2026-07-21 — OOLONG is the missing instrument for the open depth A/B
+
+The open checkbox above ("Run a naturally-delegating workload A/B before Step 3 escalation") and the intake-547-vs-866 depth dispute share one missing piece: **we do not hold the benchmark the dispute is measured on.** OOLONG (and MRCRv2/GraphWalks) appear in intake-866's eval span and intake-547's reproduction, but none is in our suite (`dataset_adapters.py` has no oolong adapter; long-context coverage is longbench/zeroscrolls/leval/ruler/needle). Adopting OOLONG would let us run **depth-0 vs depth-1 on OUR models** instead of arbitrating between two external results on models we do not serve — directly answering both this handoff's A/B gate and the conditional-depth surface question.
+
+- [ ] Evaluate adopting OOLONG as a suite adapter (source/licence check first), sized to the depth question: n large enough to resolve a ~10-25pp gap, not a full-suite port. If adopted, the naturally-delegating-workload A/B above should run on it. Cross-file with the completed [long-context-eval-datasets.md](../completed/long-context-eval-datasets.md) rationale before adding a sixth long-context suite.

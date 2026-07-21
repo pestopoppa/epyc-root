@@ -11,6 +11,28 @@
 
 ---
 
+## Cheapest open experiment — competence-region probe (registered 2026-07-21)
+
+Zero inference, data already on disk, and it is the **only** proposed routing feature with a
+pre-declared kill criterion. It was buried at line ~1444 of `learned-routing-controller.md` and
+appeared in no index until now.
+
+`COMP_r(x) = max cos(e(x), e(m))` over memories with `action=r, outcome=success`, using the 1024-d
+BGE vectors already in `sessions/embeddings.faiss`; `retriever.py _retrieve()` L235-326 already does
+this FAISS lookup, so only a per-role restriction and success filter are new. Feature concatenates at
+`routing_classifier.py:61`.
+
+- [ ] Run `COMP_r(x)` **leave-one-objective-out** (mandatory — only ~2,384 distinct objectives, so an
+  in-sample nearest neighbour scores AUC≈1.0 for free); report AUC for `success | role` plus argmax
+  accuracy on the 622-objective counterfactual set. **AUC ≤0.55 → record the null and close the
+  intake-866 line** (both the difficulty axis and the familiarity axis are then flat). **AUC ≥0.65 →
+  first routing feature with real spread in the program's history.** Owner:
+  [learned-routing-controller.md](learned-routing-controller.md).
+- [ ] Develop jointly with the **Escalation-prediction** surface (10,528 pos / 56,457 neg, status
+  *Ready*, never built) — 'will this role succeed?' and 'will the base attempt fail?' are the same
+  quantity, and the latter is the gate a conditional-depth surface needs
+  ([rao-redel-substrate-spike.md](rao-redel-substrate-spike.md)).
+
 ## How to Use This Index
 
 1. **Read the outstanding tasks below** — they are ordered by priority and dependency

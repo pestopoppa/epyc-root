@@ -379,4 +379,24 @@ Each phase ships behind an env flag, default-on after its gate passes. Rollback 
 - [x] WP-3/WP-4 genuinely-live under-traffic migration probe ✅ 2026-07-21 — ROUTE-A3 final single-worker probe passed with session-labeled committed migrations (`forward=6`, `reverse=4`, `n_aborted=0`, `sessions_over_cap=[]`, cooldown guard observed once); evidence packaged at `coordination/inference-batch/bundles/ROUTE-A3-j2j3-single-worker/j2j3_single_worker_migration_probe_20260721T065054Z.final_row.json` and terminal ledger row `ROUTE-A3-j2j3-single-worker-20260721T065054Z`
 - [ ] Higher-sample (>=8) vision_escalation re-bench to ratify clean allow (current 5/8 pairs cv>5%)
 - [ ] Wire missing Prometheus migration counters (kv_migration_direction_total, thrash_skipped) or verify observable evidence
+**DESIGN CONTRACT (operator, 2026-07-21 — the missing specification for WP-8/Step-2):** the big
+instance (worker_general full `0-95`; frontdoor/ingest half `0-47,96-143`) exists for
+**single-request max throughput only**. Under multiple concurrent requests the router MUST
+**abandon** it and serve from quarters — full/half and quarters are **mutually exclusive operating
+modes**, not co-placeable peers. Implications: (1) frontdoor's current 3-way is a geometric
+accident (half0+q2+q3 disjoint), NOT the contract — intended burst mode is 4-way quarters with
+half0 abandoned; (2) worker_general burst must spread across 4 quarters (today it pins to one —
+2026-07-21 diagnosis, resolved-4/effective-1); (3) `compute_max_safe_concurrency` should model the
+MODE (1 in full mode, N-quarters in burst mode), not the static overlap of a mixed candidate set;
+(4) a configured-but-DOWN big instance must never block the quarter walk (see the preserved
+`affinity_preflight --live-only` patch). Acceptance test for WP-8/Step-2: 4 concurrent worker
+requests → 4 busy quarters; 4 concurrent frontdoor requests → 4 busy quarters, half0 idle.
+**TRACE CORRECTION (2026-07-21, definitive):** the lever is NOT the Step-2 contention seam (it is
+live-ON and only consulted after a disjoint candidate exists) — it is `_dispatch` candidate
+construction (full emitted first, `concurrency_aware.py:1020-1027`) PLUS the live stack wiring
+quarter 8082 into the all-region full slot (impersonation → all 4 GLOBAL mutexes held per decode →
+machine-wide cross-role head-of-line blocking). `placement_policy` is currently migration-gating
+only, never candidate ordering. Fix in flight: policy-aware candidate construction + FULL_DISABLED
+for worker_general + port-alignment/liveness guard.
+
 - [ ] **WP-8 — post-WP-3 quarters-only eval fanout** (filed 2026-07-21, from the EV-11c 26h-serial analysis): teach `compute_max_safe_concurrency` (src/runtime/instance_topology.py) the largest-disjoint-subset mode its own docstring promises now that WP-3 KV migration is live-probed (ROUTE-A3), and wire the dispatcher's evict-full-then-quarter path for eval fanout. worker_general has 4 healthy quarter instances (J5 co-run ratio 1.005 = free) blocked only by the full-first ceiling; instance fanout is compute-identical to serial (separate processes, no logit jitter — unlike slot batching). Unlocks ~3.5-3.8x on full-n rebaselines (26h→~7h class). GATED on WP-6/WP-7 dispatcher ratification — do NOT hot-wire onto in-flight baseline runs. First consumer: EV-4b worker arm; cross-ref eval-tower-verification.md EV-PROTO.
