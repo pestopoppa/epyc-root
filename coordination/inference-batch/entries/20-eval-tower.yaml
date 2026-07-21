@@ -755,7 +755,7 @@
   phase: 2
   priority: P2
   preconditions:
-    stack_lineup: "single local model per window (standalone, model-batched)"
+    stack_lineup: "optimized production-consolidated-v7 quarter stack; one role fans out across its four CPU quarter ports at a time"
     kernel_era: production-consolidated-v7
     flag_attestation: env_only
     models:
@@ -781,12 +781,14 @@
       RUN_ID="${LONGCOT_MINI_RUN_ID:-longcot_mini_re4_$(date -u +%Y%m%dT%H%M%SZ)}";
       OUT_DIR="data/longcot_mini_calibration/${RUN_ID}";
       mkdir -p "${OUT_DIR}";
-      .venv/bin/python scripts/benchmark/run_benchmark.py --suite longcot_mini
-      --model frontdoor --server-mode --skip-speed-tests --skip-preflight
-      --baseline-run "${RUN_ID}" --force &&
-      .venv/bin/python scripts/benchmark/run_benchmark.py --suite longcot_mini
-      --model worker_general --server-mode --skip-speed-tests --skip-preflight
-      --baseline-run "${RUN_ID}" --force &&
+      .venv/bin/python scripts/benchmark/longcot_mini_stack_runner.py
+      --run-id "${RUN_ID}"
+      --role-ports frontdoor=8080,8180,8280,8380
+      --role-ports worker_general=8082,8182,8282,8382
+      --endpoint chat
+      --max-tokens "${LONGCOT_MINI_MAX_TOKENS:-2048}"
+      --timeout "${LONGCOT_MINI_TIMEOUT_S:-900}"
+      --summary-out "${OUT_DIR}/stack_runner_summary.json" &&
       for result in benchmarks/results/runs/"${RUN_ID}"/frontdoor_*.json
       benchmarks/results/runs/"${RUN_ID}"/worker_general_*.json; do
         test -f "${result}" || { echo "missing LongCoT-Mini result files for ${RUN_ID}" >&2; exit 2; };
@@ -797,7 +799,7 @@
     cwd: /mnt/raid0/llm/epyc-inference-research
     concurrency_mode: isolated_bench
     fanout_transport: none
-    contention_class: standalone_model_window
+    contention_class: optimized_v7_quarter_ports
     est_wall_clock_h: 4.0
     timeout_s: 21600
     retry_policy:
