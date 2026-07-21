@@ -1,10 +1,10 @@
 {
   "schema_version": "inference_batch.sources_lock.v1",
-  "generated_at": "2026-07-21T04:52:53Z",
+  "generated_at": "2026-07-21T04:58:19Z",
   "repos": {
     "epyc-root": {
       "path": "/mnt/raid0/llm/epyc-root",
-      "sha": "ffa2546f95dcc9409d5c0027adeeee16792d1073",
+      "sha": "fb632c021bfbbd9bd2d1ef1ffa185e146d367e22",
       "dirty": true
     },
     "epyc-orchestrator": {
@@ -385,13 +385,13 @@
     {
       "task_id": "BULK-kbrag-autowiki-k11",
       "owning_handoff": "handoffs/active/internal-kb-rag.md",
-      "checkbox": "K11 (optional, measure-first) \u2014 FTS5 lexical signal",
+      "checkbox": "K11 batch lexical sweep",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": null,
-      "checkbox_anchor_count": 0,
-      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'K11 (optional, measure-first) \u2014 FTS5 lexical signal'",
-      "resolved": false
+      "checkbox_line": 390,
+      "checkbox_anchor_count": 1,
+      "checkbox_anchor_error": null,
+      "resolved": true
     },
     {
       "task_id": "BULK-langgraph-tm7-parity",

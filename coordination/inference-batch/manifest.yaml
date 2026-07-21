@@ -1,6 +1,6 @@
 schema_version: inference_batch.manifest.v1
 entry_schema_version: inference_batch.entry.v1
-generated_at: '2026-07-21T04:52:53Z'
+generated_at: '2026-07-21T04:58:19Z'
 entry_count: 52
 entries:
 - schema_version: inference_batch.entry.v1
@@ -3472,7 +3472,7 @@ entries:
     dry-run
   provenance:
     owning_handoff: handoffs/active/internal-kb-rag.md
-    checkbox: K11 (optional, measure-first) — FTS5 lexical signal
+    checkbox: K11 batch lexical sweep
     source_ref: research/factory-ai-harvest-2026-06-03.md (Part 3E, intake-657)
     coordination_note: 'Two non-LLM legs. (a) AutoWiki deterministic writer dry-run
       verifies the structural/evidence scaffold over the live KB-RAG index, but it
@@ -3559,14 +3559,14 @@ entries:
           next: HELD_AMBIGUOUS
   artifacts:
     outputs:
-    - data/kb_rag/eval/k11_lexical_weight_sweep.json
-    - data/kb_rag/eval/k11_lexical_weight_sweep/
-    - data/kb_rag/eval/k11_autowiki_writer_dryrun_summary.json
-    - data/kb_rag/eval/k11_cert_cases_remapped.json
-    - data/kb_rag/eval/k11_cert_case_remap_report.json
-    - data/kb_rag/eval/k11_index_freshness_before.json
-    - data/kb_rag/eval/k11_index_freshness_after.json
-    - data/kb_rag/eval/k11_index_build_summary.json
+    - /mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_lexical_weight_sweep.json
+    - /mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_lexical_weight_sweep/
+    - /mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_autowiki_writer_dryrun_summary.json
+    - /mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_cert_cases_remapped.json
+    - /mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_cert_case_remap_report.json
+    - /mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_index_freshness_before.json
+    - /mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_index_freshness_after.json
+    - /mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_index_build_summary.json
     package_to: coordination/inference-batch/bundles/BULK-kbrag-autowiki-k11/
   ledger:
     journal_quarantine_rule: 'record lexical_weight, recall@10, missed-all-evidence
@@ -3576,7 +3576,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:ba5828e1cb035b2a05bbefd40d7e4e8b8e48e7e99246aa39a3e0c2de28477c6a
+  entry_hash: sha256:28fbffcfe37d0903f35733cb9a5f4f5b4988f8072999edacdcab0fffc484a382
 - schema_version: inference_batch.entry.v1
   task_id: ODLB-W3-01-lightonocr
   title: ODLB-W3-01 — LightOnOCR scanned/image OCR arm (OmniDocBench like-for-like)

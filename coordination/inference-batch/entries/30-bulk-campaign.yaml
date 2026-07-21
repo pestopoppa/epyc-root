@@ -946,7 +946,7 @@
   title: "internal-kb-rag — K11 FTS5 lexical sweep + AutoWiki deterministic writer dry-run"
   provenance:
     owning_handoff: handoffs/active/internal-kb-rag.md
-    checkbox: "K11 (optional, measure-first) — FTS5 lexical signal"
+    checkbox: "K11 batch lexical sweep"
     source_ref: "research/factory-ai-harvest-2026-06-03.md (Part 3E, intake-657)"
     coordination_note: >
       Two non-LLM legs. (a) AutoWiki deterministic writer dry-run verifies the structural/evidence
@@ -1021,14 +1021,14 @@
             next: HELD_AMBIGUOUS
   artifacts:
     outputs:
-      - "data/kb_rag/eval/k11_lexical_weight_sweep.json"
-      - "data/kb_rag/eval/k11_lexical_weight_sweep/"
-      - "data/kb_rag/eval/k11_autowiki_writer_dryrun_summary.json"
-      - "data/kb_rag/eval/k11_cert_cases_remapped.json"
-      - "data/kb_rag/eval/k11_cert_case_remap_report.json"
-      - "data/kb_rag/eval/k11_index_freshness_before.json"
-      - "data/kb_rag/eval/k11_index_freshness_after.json"
-      - "data/kb_rag/eval/k11_index_build_summary.json"
+      - "/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_lexical_weight_sweep.json"
+      - "/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_lexical_weight_sweep/"
+      - "/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_autowiki_writer_dryrun_summary.json"
+      - "/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_cert_cases_remapped.json"
+      - "/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_cert_case_remap_report.json"
+      - "/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_index_freshness_before.json"
+      - "/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_index_freshness_after.json"
+      - "/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_index_build_summary.json"
     package_to: "coordination/inference-batch/bundles/BULK-kbrag-autowiki-k11/"
   ledger:
     journal_quarantine_rule: >

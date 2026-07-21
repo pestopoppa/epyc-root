@@ -226,6 +226,7 @@ print("0" if json.loads(p.read_text())["ok"] else "1")
 PY
 )"
 
+BUILD_PERFORMED=0
 if [[ "${stale_now}" == "1" ]]; then
   if [[ "${REPAIR_INDEX}" == "1" ]]; then
     echo "KB-RAG index is stale; rebuilding before K11 sweep" >&2
@@ -237,10 +238,29 @@ if [[ "${stale_now}" == "1" ]]; then
       cd "${ORCH_REPO}"
       "${ORCH_PY}" "${build_args[@]}"
     ) | tee "${BUILD_SUMMARY}"
+    BUILD_PERFORMED=1
   elif [[ "${EXECUTE}" == "1" ]]; then
     echo "KB-RAG index is stale; rerun with --repair-index-if-stale or rebuild first" >&2
     exit 75
   fi
+fi
+
+if [[ "${BUILD_PERFORMED}" != "1" ]]; then
+  "${ORCH_PY}" - <<'PY' > "${BUILD_SUMMARY}"
+import json
+import os
+from pathlib import Path
+
+freshness_before = json.loads(Path(os.environ["FRESHNESS_BEFORE"]).read_text(encoding="utf-8"))
+payload = {
+    "ok": bool(freshness_before.get("ok")),
+    "rebuild_performed": False,
+    "reason": "index_already_fresh" if freshness_before.get("ok") else "check_only_without_repair",
+    "index_dir": os.environ["INDEX_DIR"],
+    "freshness_before": os.environ["FRESHNESS_BEFORE"],
+}
+print(json.dumps(payload, indent=2, sort_keys=True))
+PY
 fi
 
 write_freshness "${FRESHNESS_AFTER}"
