@@ -177,10 +177,11 @@ loads `6,701` candidate-level items across HE-R/HE-R+/MBPP-R/MBPP-R+ with
 
 ### EV-4: Calibration baseline (needs inference)
 
-- [ ] **EV-4** — Complete the decision-grade HE-R+ calibration baseline through the inference-batch loop after v7 contention-matrix recertification.
-- [ ] Run current eval tower on Scoring Verifiers HE-R+ benchmark
-- [ ] Record ECE, AUC, Top-1, Bottom-1, Spearman ρ, MAE as baseline
-- [ ] Identify calibration violations — which question types produce miscalibrated confidence?
+- [ ] **EV-4** — Complete the decision-grade HE-R+ calibration baseline through the inference-batch loop after v7 contention-matrix recertification. *(accuracy leg DONE; calibration axes pending the EV-4b rerun below)*
+- [x] Run current eval tower on Scoring Verifiers HE-R+ benchmark ✅ 2026-07-21 — two-phase run on the E7 instrument (frontdoor @ certified concurrency 3, worker_general `--allow-serial`): **accuracy BANKED** frontdoor 0.7085 (820/820), worker_general 0.6572 (814/820; unscored rows excluded per REL-1); dataset_sha256 `87eaabbd…` identical across arms; ledger `DONE_MARGINAL_OBS` per the entry's own authored marginal fork.
+- [x] Diagnose the calibration-axes outcome ✅ 2026-07-21 — ECE 0.0/AUROC None/Spearman 1.0 = degenerate BY DESIGN: EV-CONF suppressed `n_probs` for `code_execution`-scored questions and all scoring_verifiers items are code-execution-scored; also means the ranking metrics (Top-1/Bottom-1/ρ/MAE) were structurally unmeasurable with binary confidence. Operator decided **ESC-7-EXT Option A** same day: code_execution now captures generation-logprob geomean confidence (test verdict stays the label; landed in orchestrator).
+- [ ] **EV-4b — rerun the calibration axes on the Option-A scorer** (chained to execute when EV-11c frees the window): real code-domain ECE/AUROC/Top-1/Bottom-1/ρ/MAE on HE-R+; supersedes the marginal run's calibration axes via ledger append.
+- [ ] Identify calibration violations — which question types produce miscalibrated confidence? *(needs EV-4b + EV-11c data)*
 - [ ] This baseline is the comparison point for all subsequent verification improvements
 
 **Dependencies**: Inference stack must be running. Can be folded into a Package B/C run.
