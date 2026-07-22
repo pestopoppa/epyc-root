@@ -226,3 +226,52 @@ warm/explicit-only and not normally launched, so "expected down" slightly overst
   `launch_selected=False`; 0 regions held (interactive lane idle; EV-11c on the 18072 eval lane).
 - GET#3 `/contention`: `active_decodes_by_role={}`, `contention_admitted_count=0`,
   `per_role_scheduling=[]` (per-worker fragment).
+
+---
+
+## Implementation record
+
+**2026-07-22 — C1 + M2 landed** (`epyc-orchestrator@e97d4ed9`, branch
+`spec-dec-mtp-refresh-2026-06-22`; owned dashboard route/template files + tests only).
+
+- [x] **[C1] Realized-fleet-first NUMA-mode resolution** ✅ 2026-07-22 —
+  `dashboard_topology.active_stack_numa_mode()` reworked to resolve
+  **realized live fleet (bare-TCP probe via `scripts.server.realized_fleet.derive_realized_numa_mode`) > hardened runtime-facts manifest > `ORCHESTRATOR_STACK_NUMA_MODE` env hint > `both` default**. The env is
+  demoted to a last-resort spawn-time hint, so a worker that inherited `full`
+  can no longer invert a quarters-only fleet. New `active_stack_numa_mode_resolution()`
+  returns provenance (`mode`/`source`/`realized`/`manifest`/`env`/`disagreements`).
+- [x] **[C1] Realized probe runs in-process at request time, TTL-cached** ✅ 2026-07-22 —
+  `_probe_realized_numa_mode()` (isolated seam) + `_cached_realized_numa_mode()` with
+  a ~5s TTL so 2 Hz × 6-worker polling collapses to one probe. Fully fail-safe
+  (any error → `None` → falls through to manifest/env/default).
+- [x] **[C1/H4] Visible provenance annotation** ✅ 2026-07-22 — `stack_numa_mode_provenance`
+  added to the `/topology`, `/region_locks`, and coherent `snapshot` payloads;
+  `dashboard.html` renders a topology mode badge that goes amber and shows
+  "env disagrees: full" when a lower-precedence source contradicts the realized fleet.
+- [x] **[M2] `expected`/rogue + `launch_selected` inversion fixed** ✅ 2026-07-22 —
+  both derive from the realized-first mode (fell out of C1): live quarters read
+  `expected=True`, dead fulls are absent-by-policy, never surfaced as
+  `expected-stack-server` down rows. Guarded by a 12-quarter + env=full inversion
+  regression test.
+- [x] **Tests** ✅ 2026-07-22 — realized-over-env, inversion regression,
+  manifest-beats-env, manifest-rejected fallback ordering, TTL-cache probe-storm
+  collapse, provenance badge (route-HTML). Existing dashboard suites kept green
+  (realized probe neutralized in their fixtures). Two `test_dashboard_helpers`
+  failures remain (`test_port_hints_follow_current_full_mode_priors`,
+  `test_topology_activity_initializes_expected_embedder_bucket`) — **pre-existing
+  and environmental** (they read the live host's empty `selected_servers` manifest;
+  both fail identically on clean HEAD, unrelated to this change).
+
+**Not done (deferred, still open):**
+
+- [ ] **[C1 fix #2] Manifest writer intent-not-realized gap** — writer lives in
+  `scripts/server/runtime_facts_manifest.py` (other-agent ownership); ESC-8 fixes
+  already rewrote the writer to derive `selected_servers` from realized state, but
+  the live manifest still shows an empty lineup — verify separately.
+- [ ] **[C1 fix #3] One env / one SoT across the `--workers 6` pool** — process/launch
+  concern (`scripts/server/*`), out of dashboard-file ownership.
+- [ ] **[H1] Circuit-breaker / forced-role-fallback panel** — deferred (stretch).
+- [ ] **[H2] REL-1 eval error-rate surface** — deferred (stretch).
+- [ ] **[H3] Contention-panel per-worker provenance**, **[M1] region_locks held-set
+  SoT reuse**, **[M3] eval-batch lane attribution**, **[M4] calibration provenance**,
+  **[L1] era-sliced KPI window** — untouched.
