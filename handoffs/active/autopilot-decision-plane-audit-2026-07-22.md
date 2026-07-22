@@ -1,0 +1,229 @@
+# Autopilot Decision-Plane Adversarial Audit — 2026-07-22
+
+**Type:** READ-ONLY adversarial audit (operator-commissioned 2026-07-22)
+**Target:** the *consumer* layer — the code that reads eval/bench evidence and turns it into keep/revert/promote/keep decisions — in `/mnt/raid0/llm/epyc-orchestrator` (branch `spec-dec-mtp-refresh-2026-06-22`, HEAD `22e32ec2`).
+**Instrument context:** the eval tower (the *producer*) just completed a two-day hardening (REL-1 excluded-error rows, hard-fail scorers, journal durability, real logprob confidence, E7 era pool rebuild). This audit asks whether the consumer turns that honest evidence into honest conclusions.
+**Method:** every claim verified against actual code (file:line), actual SQLite queries, actual journal/state excerpts. No cited file is in the concurrent-edit flux set (`scripts/server/*`, `src/config/models.py`, `src/registry/stack_priors.py`); no HEAD-vs-worktree reconciliation was needed.
+
+---
+
+## Executive Summary
+
+The decision plane is **structurally strong on the SPEED axis and structurally blind on the QUALITY axis.** The single most important finding is an **asymmetry**:
+
+- **Speed decisions are fully instrument-era-gated and fail-closed.** `pareto_epoch_ts` / `pareto_exclude_before_ts` are set to the E6 (v7 kernel) boundary `2026-07-20T13:30:13Z`; the Pareto archive is reconstructed from the append-only journal with era-exclusion + de-inflation applied; `strict_epoch` **raises** if an active speed era lacks its epoch timestamps (autopilot.py:5889-5890); and a `frontier_rerun_required` marker (currently OPEN, `completed_numeric_trials: 0 / min 16`) **forces** current-era numeric trials before the frontier can be exploited (autopilot.py:3430-3466). The Pareto archive also has a clean single source of truth: the state cache is torn down and re-derived from the journal fold ("journal fold is authoritative," autopilot.py:5907-5931).
+
+- **Quality decisions have NO era fence at all.** The sequential-promotion e-process reads journal evidence filtered only by `core_id == "core_v1"` — a hardcoded constant (planner_evidence.py:23), not the live instrument era — with **no timestamp / era / `pareto_exclude_before_ts` / protocol filter** (autopilot.py:2846-2921, planner_evidence.py:103-123). `active_instrument_eras` contains only `autopilot_speed`/`cpu_bench`, **no `eval_quality` entry**. `quality_history` / `quality_history_by_tier` in state are **bare float lists with zero provenance** (defect #4 in its purest form). The fail-closed `instrument_era_guard.py` (scope `autopilot_quality`) exists but is **not imported by autopilot.py / safety_gate.py / actions.py**.
+
+This matters **now, imminently**: the journal tail is trial 1437 @ `2026-07-16` (all pre-E7); state was last written `2026-07-21 09:19` (before the E7 boundary `2026-07-21T10:30`). The live EV-11c eval is producing the **first post-E7 quality evidence**. The next quality promote/revert that ingests it will pool a post-E7 number (79k/41-suite pool, B7 scorer) with pre-E7 `core_v1` baselines (21-suite, laxer scorer) into the **same** anytime-valid e-process wealth — exactly the contaminated-mixture the SEQ-1 provenance comment (autopilot.py:2860-2864) warns accrues wealth anti-conservatively.
+
+The consumer's other failure-modes are **well-defended**: pause works (historical no-op fixed), the journal writer is durable (flock+fsync+torn-tail quarantine), the live decision loop and safety gate read all journal shards via the canonical helper, the meta-action loop is re-enabled with a two-depth guard, and every broad `except` in the promotion path fails **closed** (refuses to promote). The residual risks are the era-blindness above, a **HIGH** rewind/restore coverage gap (episodic vector store can silently desync; two live decision-gating stores are not purged), two **MEDIUM** journal-reader bugs in observability/preflight tooling (not the live loop), and a set of **inert derived-state mechanisms** (empty validity table, empty content-hash table, blind diversity guardrail).
+
+**Lineage verdict (headline):** derived-state lineage **IS present** — 100% of strategy rows carry `created_at`, 99.9% carry `source_trial_id`, and 100% of journal rows carry `timestamp`, all mappable to the dated boundaries in `instrument_eras.yaml`. **Era-triage is feasible; a scratch rebuild is NOT the only honest option.** The caveat is that *no runtime consumer currently applies* instrument-era demotion to quality/strategy conclusions, and existing rows carry only a *timestamp* era stamp (no per-row content-hash / protocol id), so triage must be done by an offline, timestamp-keyed pass or a new era-aware retrieval filter.
+
+**Findings by severity:** 1 CRITICAL · 3 HIGH · 6 MEDIUM · 5 LOW (plus reassuring counter-evidence noted inline).
+
+---
+
+## CRITICAL
+
+### C1 — Quality promote/revert fires on mixed-era evidence (no era fence on the quality axis)
+Defect signature #4 (numbers gating decisions without provenance) + #1 (state duplicated / no SSOT for era).
+
+**The read path.** `_seq_inputs_for_trial` (autopilot.py:2830-2932) builds the null (baseline) profile and prior quality/rate observations from `journal.entries_with_supersessions()`. The only predicates applied per row are:
+- `bug_corrupted_by` empty and `outcome_status ∉ {invalid, skipped}` (autopilot.py:2847-2850)
+- `int(entry.tier) == tier` (autopilot.py:2851-2855)
+- `str(seq.get("core_id") or DEFAULT_EVIDENCE_CORE_ID) != DEFAULT_EVIDENCE_CORE_ID → continue` (autopilot.py:2886; repeated at :2023 and :2440)
+
+There is **no timestamp / era / `pareto_exclude_before_ts` / `pareto_epoch_ts` / protocol comparison anywhere in this loop.** `entries_with_supersessions()` takes no `since`/era argument (experiment_journal.py:789). Independently confirmed in `_seq_observation_rows` (planner_evidence.py:103-123): filters only on `core_id`, `candidate` present, and finite `z`.
+
+**Why `core_id` does not fence eras.**
+1. `DEFAULT_EVIDENCE_CORE_ID = "core_v1"` (planner_evidence.py:23) is a hardcoded constant. `_seq_inputs_for_trial` stamps every trial's decision evidence with this constant (`"core_id": DEFAULT_EVIDENCE_CORE_ID`, autopilot.py:2921) and passes it to `gate.check(..., core_id=...)` (autopilot.py:7817). The eval tower's real versioned era id (`EvalResult.core_id`, eval_tower.py:1527-1535) is **discarded** by the consumer.
+2. The E7 scorer/pool rebuild did **not** mint a new `core_id`. Live journal (both shards, 1332 rows) has exactly two `seq.core_id` values: `None` (939 rows, legacy) and `"core_v1"` (393 rows). So pre-E7 and post-E7 evidence will both be `core_v1` and pool together.
+3. `... or DEFAULT_EVIDENCE_CORE_ID` treats a MISSING `core_id` as the default — even a manual bump to `core_v2` would silently readmit every legacy `None` row.
+4. E4 (the planned quality-instrument era with `core_id` + `policy_version`) is **not opened** in `instrument_eras.yaml` (only a trailing comment at line 119). `active_instrument_eras` = `{autopilot_speed: E6-autopilot-speed, cpu_bench: E6-cpu-kernel}` — no `eval_quality` key.
+
+**The compared scalars carry no era stamp.** The regression gate compares `result.quality` against the persisted same-tier baseline scalar (safety_gate.py:1341-1350); the AP-24 keep/revert label compares `quality − baseline.quality_for_tier(tier)` (autopilot.py:7888, self_criticism.py:76-103). `quality_history` / `quality_history_by_tier` in `autopilot_state.json` are **bare float lists** — verified live: `quality_history = [1.85…, …, 1.96…]` (len 10), `quality_history_by_tier` = `{"0":[…], "1":[…], "2":[…], "3":[…]}` of bare floats — no timestamp, trial id, era, protocol, or n. These feed the MAD anti-noise check (median of history; safety_gate.py MAD_Z_THRESHOLD=2.0), so a post-E7 candidate is judged against a **pre-E7 bare-float median**.
+
+**The guard exists but is unwired.** `src/autopilot_core/instrument_era_guard.py` ("fail-closed guards for activating era-bound AutoPilot instruments," scope `autopilot_quality`) is imported only by `eval_tower.py` and the offline `core_v2_promotion_report.py` — **not** by `autopilot.py`, `safety_gate.py`, or `actions.py`. Eval-instrument drift within a `core_id` is `log.warning`-ed, not failed closed (eval_tower.py:1537-1552), so drifted rows are still recorded and still pooled.
+
+**Imminence.** Journal max trial = 1437 @ `2026-07-16T10:05:03` (all pre-E7). State mtime `2026-07-21 09:19` (pre-E7 boundary). EV-11c (2026-07-22) is generating the first post-E7 rows. The very next quality decision that consumes them is the one at risk.
+
+**Impact:** honest post-E7 evidence produces a dishonest conclusion — a candidate can be confirmed/promoted or reverted on an e-process whose wealth mixes two instruments. This is the audit's core thesis realized. **Severity: CRITICAL.**
+
+---
+
+## HIGH
+
+### H1 — Evidence identity is a hardcoded constant that ignores the real era stamp
+Sub-finding of C1, called out separately because it is the concrete code defect to fix. The decision-bearing `seq.core_id` is the constant `"core_v1"` (autopilot.py:2921), overriding `EvalResult.core_id`. Combined with the `or DEFAULT` fallback (autopilot.py:2886/2023/2440), the era predicate is **inert**: it neither reflects the live era nor excludes un-stamped rows. Note (verified against live data): the real stamp is **not even present historically** — 0 of 1103 rows with populated `eval_details` carry `core_id` or `dataset_content_sha256`; the eval tower only began stamping them in the E7 hardening, which postdates the journal tail. So going forward the true identity is available in `eval_details` but the consumer discards it. **Severity: HIGH.**
+
+### H2 — Rewind/restore silently desyncs the episodic vector store and skips two live decision-gating stores
+Defect signature #1 (no single source of truth across SQLite/FAISS layers) + #2 (silent).
+
+The codified "rewind" is checkpoint/restore in `StructuralLab` (there is no separate `rewind` script; the `*.bak-rewind*` dirs are ad-hoc operator backups). Operator entrypoint `cmd_restore` (autopilot.py:8941-8949) and in-loop auto-rollback after 3 consecutive safety failures (autopilot.py:7850-7883) both call `lab.restore_checkpoint()` (structural_lab.py:147-208). Coverage:
+
+- **Strategy store is SAFE (atomic).** `strategies.db` + `strategy_embeddings.faiss` + `strategy_id_map.npy` are co-located in `repl_memory/strategies/` (strategy_store.py:313-324) and restored as one `rmtree`+`copytree` unit (structural_lab.py:195-205). SQLite and FAISS cannot desync here. AP-22 short-term memory is restore-or-clear (structural_lab.py:186-193). This is the historically-flagged store, and it is correct.
+- **Episodic/sessions store is SPLIT-RISK.** Its `episodic.db`, `embeddings.faiss`, `id_map.npy` are three **independent** `CHECKPOINT_FILES` entries (structural_lab.py:39-41) restored file-by-file with copy-**if-present** and **no clear-on-absent, no post-restore integrity rebuild** (structural_lab.py:164-169). Restoring a checkpoint that carries `episodic.db` but not `embeddings.faiss` leaves an OLD SQLite paired with a LIVE FAISS index — rowid↔faiss-id mapping breaks silently. Evidence this happens in practice: `repl_memory/sessions/` is littered with recovery artifacts (`id_map.pre-repair-*` ×7, `id_map.npy.broken-1779368503`, `id_map.npy.bak_pre_erase`, `id_map.npy.wipe-bak-*`).
+- **Two live decision-gating stores are NOT checkpointed/purged at all:** `failure_blacklist.yaml` (BLACKLIST_PATH, autopilot.py:198; 20 KB, ACTIVE — gates which actions the planner may re-sample) and `orchestration/optuna_study.db` (454 KB, ACTIVE numeric-swarm study). A restore rolls state back but leaves these forward-dated. (For auto-rollback the blacklist asymmetry is arguably intentional — it appends the failing config before restoring — but for operator `cmd_restore` it is silent and undocumented.)
+
+**Severity: HIGH** (strategy store safe, but episodic store can desync silently and two live gating stores are ignored).
+
+### H3 — `preflight_audit.py` journal reader stops at the first shard gap (JRN-7), and it gates autopilot start
+Defect signature #2. `preflight_audit._jsonl_paths` (preflight_audit.py:199-209) for a base-file path uses `batch = 1; while True: if not (…_{batch}.jsonl).exists(): break` — a missing `_2` hides `_3`+ (the exact JRN-7 class the canonical `journal_shards.py` was written to eliminate). Its directory-invocation branch (preflight_audit.py:198) is correctly numeric via `_jsonl_batch_key`; only the base-file branch is buggy, and the default `JOURNAL_PATH` (preflight_audit.py:50/597) **is** the base file. Because preflight gates autopilot start, a shard gap → undercounted trials/coverage → mis-assessed readiness. **Severity: HIGH** (start-gating), reader currently benign only because no gap exists today.
+
+---
+
+## MEDIUM
+
+### M1 — `strategy_validity` and `content_hashes` tables are EMPTY → the AP-28 validity-weighted ranking is inert
+Defect signature #2/#4. Live `repl_memory/strategies/strategies.db`: `SELECT COUNT(*) FROM strategy_validity` = **0**, `content_hashes` = **0**. `_validity_score` (strategy_store.py:595-609) returns the 0.5 prior when no row exists → **all 1424 strategies are retrieved at uniform 0.5 validity**, regardless of whether structural_lab later disproved them. `update_validity` (strategy_store.py:510-544) is wired and called (structural_lab.py:874) but has produced no rows in the current store — the advertised "validity-weighted ranking, per-entry staleness" (module docstring) is a **no-op** today. The retrieval-time staleness proxy that DOES fire — `context_hash` (SHA-256 of `model_registry.yaml` + `frontdoor.md` + `worker_general.md`, strategy_store.py:576-593) — is **orthogonal to instrument eras**: E5/E6/E7 (kernel + eval-pool boundaries) do not touch those three files, so a pre-E7 strategy is not flagged stale by config-hash. **Severity: MEDIUM.**
+
+### M2 — `phase_status.py` journal reader sorts shards lexicographically (JRN-6)
+`phase_status._journal_shards` (phase_status.py:382) = `sorted(journal_dir.glob("autopilot_journal*.jsonl"))` with **no key** → `autopilot_journal_10.jsonl` orders before `_2.jsonl` once the index reaches two digits. It reads every shard (no shard dropped) but appends rows out of trial order, corrupting any latest-trial/order-dependent logic. Observability/status reporter, not the live keep/revert loop. **Severity: MEDIUM.**
+
+### M3 — Action-local revert gate falls back to legacy-only gating on seq-input error
+`_action_gate_check` (actions.py:879-886): `except Exception … return ctx.gate.check(eval_result)`. This disables the sequential path on error (conservative for the ratchet) but means an ephemeral mutation is then judged only by the legacy quality-floor/regression gate — a mutation the seq path would scrutinize can be **kept** if it clears the legacy floor. **Severity: MEDIUM.**
+
+### M4 — Journal `seq.core_id` records the constant, not the produced era; `keep_revert_decision` records INTENT
+The journal row (autopilot.py:8366-8407) carries substantial lineage (`trial_id`, `timestamp`, `config_snapshot`, `config_diff`, `parent_trial`, `git_tag`, `metric_schema_version`, full `seq` block), but (a) `seq.core_id` is the constant `"core_v1"`, not the eval-tower era (defect #3, intent-not-realized for the identity field), and (b) `keep_revert_decision` is the **rule-based self-criticism label** (`quality − baseline`, self_criticism.py:76-103), not the realized config-revert outcome or `BaselineUpdateResult.updated`. Realized baseline state lives separately in `autopilot_state.json` (`Baseline.to_state_dict`, `seq_last_promotion_blocked`). A reader that trusts `keep_revert_decision` as realized state must reconcile against a different file. **Severity: MEDIUM.**
+
+### M5 — AP-37 diversity-stall guardrail is inert (blind for ~56 consecutive trials, no escalation)
+`meta_optimizer.observe` (meta_optimizer.py:163-165): when `distinct2` or `semantic_embedding_agreement` is unavailable, status = `"signal_missing"`, `trigger = False`. Live `diversity_stall_state` shows `status: "signal_missing"` / reason `"distinct2 or semantic_embedding_agreement unavailable"` for **every** trial 1380-1436. So the diversity guardrail has been blind for ~56 trials with no escalation. It **fails safe** (never falsely recommends a rebalance), but the operator has no signal that a decision-influencing monitor is dark. **Severity: MEDIUM** (guardrail down, but fail-safe).
+
+### M6 — `mutation_graph.db` empty → mutation-outcome priors are absent (silent)
+`repl_memory/mutation_graph.db` is 0 bytes; `MutationGraph.__init__` (mutation_graph.py:101-134) `CREATE TABLE IF NOT EXISTS` on connect, so reads of mutation-type × failure-pattern outcome priors return empty with no error. Not checkpointed by rewind (H2), so a state-loss event leaves it empty silently. Low live impact today (the graph is unused), but the planner's mutation priors are silently absent. **Severity: MEDIUM/LOW.**
+
+---
+
+## LOW
+
+- **L1 — `scripts/analysis/corpus_v1/common.py:332`** globs `autopilot_journal_*.jsonl` (trailing underscore) → **drops the base shard** (first 1000 trials) AND sorts lexicographically. Combined JRN-5(inverse)/JRN-6. Corpus-analysis tool, out of the decision path, but a real data-completeness bug.
+- **L2 — Dashboard journal reader (`src/api/routes/dashboard.py:2390-2422`)** is a correct local numeric-sorted reader (Class B) but duplicates the canonical `journal_shards.py` logic — drift risk if one is fixed and not the other.
+- **L3 — Default-OFF accept gates.** `_skill_efficacy_accepts` returns `True` when its arm is `None` (actions.py:964-965); `_bsv2_accepts` returns `True` when `baseline_result is None` (actions.py:1063-1064) — both admit-all unless `_SKILL_EFFICACY_GATE_ENV` / `_BSV2_ACCEPT_GATE_ENV` are set (actions.py:938-947). A coverage gap, not a silent-permit-on-error.
+- **L4 — Killed-trial placeholder** (autopilot.py:5501-5522) does not set `outcome_status` (defaults `"ok"`, experiment_journal.py:250); it carries `quality=0.0` + `pareto_status="dominated"` + `bug_corrupted_by`, and the frontier path additionally requires `outcome_status=="ok"` AND real quality, so it cannot pollute the frontier. Cosmetic.
+- **L5 — Stray 0-byte DBs** `repl_memory/strategy_store.db` (top-level) and `repl_memory/strategies/strategies.sqlite` are not read by any code (the live store is `repl_memory/strategies/strategies.db` via `DEFAULT_STRATEGY_PATH`). Harmless clutter, but a future mis-pointed reader would silently get an empty store.
+
+---
+
+## Reassuring counter-evidence (verified solid — do NOT "fix")
+
+- **Pause works** (historical no-op fixed 2026-05-24). The main loop `while not shutdown_requested:` (autopilot.py:6534) re-reads `_EXTERNAL_CONTROL_FIELDS = ("paused","pause_reason","_in_cache_flush")` (autopilot.py:5801) from disk **every iteration** (autopilot.py:6553-6560) and idles on `paused` (autopilot.py:6579-6596); `cmd_pause` writes under the H4 cross-process lock (autopilot.py:8842-8851). **Memory note `feedback_autopilot_pause_broken_use_sigterm` is STALE relative to code.**
+- **Journal writer is durable.** `ExperimentJournal.record` (experiment_journal.py:552-583): full line serialized, single `write` under `fcntl.flock(LOCK_EX)` + `flush` + `os.fsync`; torn tail is quarantined to `.corrupt-<ts>` + truncated on next append (experiment_journal.py:369-429); mid-file corruption **raises** `ExperimentJournalCorruptError` (not silently dropped). Rotation is deterministic (`batch = trial_id // MAX_TRIALS_PER_FILE`, MAX=1000) with no lost/double-write window.
+- **Live decision loop + safety gate read ALL shards correctly (Class A).** Both build `ExperimentJournal()` whose `_load_existing` iterates the canonical `journal_shards()` (experiment_journal.py:461); `safety_gate.py:284-288` reads `all_entries()`/`supersession_events()` transitively canonical.
+- **Pareto archive has a single source of truth.** Speed-axis era params (`pareto_epoch_ts`, `pareto_pre_epoch_speed_factor`, `pareto_exclude_before_ts`) are read from state (autopilot.py:5866-5891) and applied to a **journal-fold reconstruction**; `strict_epoch` **raises** if an active speed era lacks them (autopilot.py:5889-5890); the cached `state["pareto_archive"]` is discarded and re-derived ("journal fold is authoritative," autopilot.py:5907-5931). `frontier_rerun_required` is **enforced**, not just recorded — it forces current-era numeric trials until `min_trials` (16) complete before clearing (autopilot.py:3430-3466); currently OPEN at `completed_numeric_trials: 0`.
+- **Meta-action loop re-enabled + guarded, no t188 residue.** Live `consecutive_meta_actions = 0`, `trial_counter = 1438`, no `_meta_halt_reason`. Forced-substitution at N=1 converts a 2nd consecutive meta no-op into a measured `seed_batch` tagged `meta_action_forced_metric_trial` (autopilot.py:4381-4402, records intent-vs-realized); latched pause backstop at N≥5 survives restart via `_EXTERNAL_CONTROL_FIELDS` (autopilot.py:7598-7636).
+- **Promotion path fails CLOSED on error.** `verdict.seq is None` → `update_baseline` refuses (safety_gate.py:1797-1809); `_baseline_eligible` `except → return False` (safety_gate.py:1684-1686); `_bsv2_accepts` `except → return False`/block (actions.py:1100-1115); `_seq_candidate_replay_payload` `except → None`. No permissive promote-on-error found. Promotion thresholds are conservative: baseline promotion needs `combined_E ≥ SEQ_PROMOTION_FINAL_CONFIRM_E (100)` AND `delta_ci.excludes_regression` (autopilot.py:2284-2293); candidate confirm needs `E_quality ≥ 20.0` AND `E_rate ≥ 20.0` (sequential_verdict.py:45-56, safety_gate.py:1182-1185); monotonic baseline uses strict `>` (safety_gate.py:1836-1844); near-tie keep/revert → `"unchanged"` (self_criticism.py:93-98); reproduction floor `BASELINE_PROMOTION_REPRO_MIN = 3`.
+
+---
+
+## LINEAGE VERDICT (the derived-state triage question)
+
+**Question:** For each derived store, do entries carry traceable lineage to the evidence that produced them, such that pre-E7-derived conclusions can be IDENTIFIED and selectively demoted (era-triage) — or is lineage absent, forcing a scratch rebuild?
+
+**Answer: Lineage IS present. Era-triage is feasible. A scratch rebuild is NOT required.**
+
+**Evidence — strategy store** (`repl_memory/strategies/strategies.db`, the live store; the top-level `strategy_store.db` is a 0-byte stray):
+
+- 1424 rows. Schema carries lineage columns: `source_trial_id`, `created_at`, `evidence_trial_ids`, `context_hash` (strategy_store.py:330-355).
+- Population: `created_at` on **100%** (range `2026-04-02` → `2026-07-11`); `source_trial_id` present on **1423/1424 (99.9%)**; `evidence_trial_ids` non-empty on 119 (patterns/conventions); `context_hash` on 1221/1424 (86%).
+- Timestamp era-buckets vs `instrument_eras.yaml` boundaries: **244** pre-E2 (`<2026-06-01`), **1121** E2→E5, **59** E5→E6 (`2026-06-26T22:07:11`→`2026-07-20T13:30:13`), **0** E6→E7, **0** post-E7. → the ENTIRE store predates E6/E7; under strict era-triage every quality/speed-numeric conclusion demotes to historical prior, and every row is **individually classifiable** by `created_at`.
+- Sample rows (evidence of usable lineage):
+  - `journal-consult-gate-trial-1251 | source_trial_id=1251 | created 2026-07-07T14:21:57 | pattern | evidence_trial_ids=[1251] | ctx=c6533737f7c3`
+  - `opseed-green-v6-tool-activation-latency | 1071 | 2026-07-03T09:53:20 | pattern | evidence_trial_ids=[1063,1065,1066,1067,1068,1069]`
+  - oldest: `source_trial_id=5 | 2026-04-02T07:39:21 | prompt_forge | raw`
+
+**Evidence — journal (primary quality/speed evidence):** every row carries `timestamp` (100%, ISO8601+tz), `git_tag` (present but empty on 215/1332 rows), `metric_schema_version` (`"1"` on 1317/1332), and REALIZED outcome fields (`outcome_status`: ok 1212 / skipped 57 / invalid 48; `pareto_status`: dominated 999 / frontier 85 / fast_reject 129; `keep_revert_decision`: revert 457 / excluded 411 / keep 229). A supersession mechanism (`bug_corrupted_by` on 246 rows) already quarantines evidence. **Caveat (verified):** no historical row carries `eval_details.core_id` or `dataset_content_sha256` (0 of 1103 populated) — those are new E7 eval-tower stamps that postdate the tail — so existing rows are era-classifiable by **timestamp only**, not by content hash. Given the dated era boundaries in `instrument_eras.yaml`, timestamp classification is sound.
+
+**Evidence — Pareto archive:** journal-derived and already era-gated at read time (`exclude_before_ts` / `deinflate_before_ts`, autopilot.py:5917-5924); the `frontier_rerun_required.previous_marker.archive_snapshot` records `trial_ids`, `captured_at`, and the era reason — full lineage.
+
+**Chain:** `strategy.source_trial_id` → journal trial → `timestamp` (+ `git_tag`) → dated `instrument_eras.yaml` boundary. This chain is intact on ~100% of derived rows.
+
+**Therefore:**
+- The operator can run an **offline, timestamp-keyed era-triage** that flags every strategy row (`created_at`) and every journal-derived conclusion (`timestamp`) as pre-/post-E7 and demotes pre-E7 quality/speed-numeric conclusions to hypothesis. **No scrub-to-zero is warranted.**
+- BUT lineage being *present in the data* is not the same as being *applied by consumers*. Two gaps must be closed for the triage to actually bite: (1) the quality decision path applies **no** era filter (C1) — an offline triage of the strategy store will not stop the live e-process from pooling pre/post-E7 journal rows; (2) the strategy store's only runtime freshness signals (`context_hash` staleness, empty `strategy_validity`, journal supersession) are all **orthogonal to instrument eras**, so retrieval will keep surfacing pre-E7 strategies at full weight until an era-aware filter is added.
+
+**Verdict in one line:** *Era-classify, don't scratch* — the data supports selective demotion; the missing piece is a consumer that reads the era, not a missing lineage.
+
+---
+
+## Prioritized fix list (file:line targets)
+
+1. **[CRITICAL, C1/H1] Era-fence the quality e-process.** In `_seq_inputs_for_trial` (autopilot.py:2830-2921) and `_seq_observation_rows` (planner_evidence.py:103-123), stop stamping the constant `"core_v1"` (autopilot.py:2921) and instead carry the eval-tower `EvalResult.core_id` / an `eval_quality` era label; add a timestamp/era exclusion analogous to the speed-axis `pareto_exclude_before_ts`. Wire `src/autopilot_core/instrument_era_guard.py` (scope `autopilot_quality`) into `autopilot.py`/`safety_gate.py` so cross-era pooling fails closed. Add an `eval_quality` key to `active_instrument_eras` at the E7 boundary and a `quality_epoch_ts`/`quality_exclude_before_ts` analog. **Do this before EV-11c post-E7 results feed a promote/revert.**
+2. **[CRITICAL/C1] Give `quality_history` provenance.** `quality_history` / `quality_history_by_tier` (state; consumed safety_gate.py via autopilot.py:6337-6338, written back :8493-8494) must become records of `(value, trial_id, timestamp, core_id/era, n)` not bare floats, so the MAD median (safety_gate.py MAD_Z_THRESHOLD path) cannot silently mix eras.
+3. **[HIGH/H2] Make restore atomic per store + purge or version the gating stores.** In `structural_lab.restore_checkpoint` (structural_lab.py:164-208): restore the episodic `episodic.db`+`embeddings.faiss`+`id_map.npy` as one unit with clear-on-absent + a post-restore FAISS↔SQLite integrity rebuild (mirror the strategy-dir `rmtree`+`copytree` at :195-205); add `failure_blacklist.yaml` (autopilot.py:198) and `optuna_study.db` to `CHECKPOINT_FILES` (structural_lab.py:37-46) or document/enforce the intended asymmetry in `cmd_restore` (autopilot.py:8941-8949).
+4. **[HIGH/H3] Fix the preflight JRN-7 reader.** Replace the base-file `while True … break` in `preflight_audit._jsonl_paths` (preflight_audit.py:199-209) with `resolve_journal_paths()` from `journal_shards.py`.
+5. **[MEDIUM/M2] Fix the phase_status JRN-6 reader.** `phase_status._journal_shards` (phase_status.py:382) → use `journal_shards()` (numeric-sorted) instead of bare `sorted(glob(...))`.
+6. **[MEDIUM/M1] Repair or retire the validity/content-hash mechanism.** Either populate `strategy_validity` (ensure `update_validity`, strategy_store.py:510-544, is actually invoked on outcomes) or stop advertising validity-weighted ranking; add an instrument-era term to strategy retrieval (strategy_store.py:1684-1743) so `context_hash` staleness is not the only freshness signal.
+7. **[MEDIUM/M3] Tighten the action-local gate fallback.** `_action_gate_check` (actions.py:879-886) should not silently fall back to legacy-only gating; surface the seq-input error and keep the seq scrutiny or fail closed.
+8. **[MEDIUM/M5] Escalate a persistently-dark diversity signal.** `meta_optimizer.observe` (meta_optimizer.py:163-165) should raise/alert when `signal_missing` persists beyond a small streak, rather than silently reporting it every trial.
+9. **[MEDIUM/M4] Separate INTENT from REALIZED in the journal.** Record the realized `BaselineUpdateResult.updated` / actual revert outcome alongside the self-criticism `keep_revert_decision` label (autopilot.py:8396) so a single journal row is self-describing.
+10. **[LOW/L1,L2,L5] Housekeeping.** `corpus_v1/common.py:332` → include the base shard + numeric sort; collapse the dashboard Class-B reader (dashboard.py:2390-2422) onto `journal_shards.py`; delete the 0-byte stray DBs (`repl_memory/strategy_store.db`, `repl_memory/strategies/strategies.sqlite`).
+
+---
+
+*Audit performed read-only. No source file, index, or configuration was modified. Live eval EV-11c was not touched; no HTTP/inference/stack calls were issued. Counts and samples are from the live stores as of 2026-07-22.*
+
+---
+
+## IMPLEMENTATION RECORD — C1/H1 quality-axis era fence (2026-07-22)
+
+**Commit:** `epyc-orchestrator` `14cc929c` on `spec-dec-mtp-refresh-2026-06-22` (not pushed).
+Mirrors the praised speed-axis pattern (`pareto_epoch_ts`/`pareto_exclude_before_ts`,
+`strict_epoch`) onto the quality axis. **Inert when no active `eval_quality` era is set** —
+every pre-existing gate/planner path is byte-identical, verified by 280 targeted unit tests
+green (35 new). The CRITICAL C1/F1 blindness is closed before the first post-E7 promote/revert.
+
+### What landed
+- [x] **`eval_quality` era key + startup migration** ✅ 2026-07-22 — `_migrate_eval_quality_era(state)`
+  (autopilot.py, guarded/idempotent) seeds `active_instrument_eras.eval_quality` +
+  `quality_epoch_ts` + `quality_exclude_before_ts` from the human-owned registry on next
+  startup (code-path migration; the registry itself is NOT written). Falls forward to the
+  `E7_EVAL_INSTRUMENT_BOUNDARY` code constant only when the registry is unreadable AND the
+  clock is at/after the boundary; no-op before any boundary opens. Validated read-only against
+  live `autopilot_state.json` (resolves `1784629800.0` = 2026-07-21T10:30Z; file untouched).
+- [x] **Era-fence the quality evidence reads** ✅ 2026-07-22 — `_seq_inputs_for_trial` (the
+  sequential e-process null/prior/alpha fold) and `format_planner_evidence_section` drop
+  pre-boundary rows by `timestamp` (unparseable ts ⇒ excluded, fail-closed). Threaded at all
+  three call sites via `quality_exclude_before_ts`. Pre-E7 rows are PRIORS (excluded from
+  wealth/decisions), not deleted.
+- [x] **Fail-closed SafetyGate re-baseline hold** ✅ 2026-07-22 — a pre-boundary (or era-mismatched)
+  baseline vs the active era trips `quality_rebaseline_required`: `check()` SUPPRESSES the
+  cross-era regression/per-suite/MAD legs (keeps the absolute quality floor + finite guard) and
+  tags `quality_rebaseline_required`; `update_baseline()` REFUSES quality promotion with
+  `ineligible_reason="quality_rebaseline_required"`. Both log loudly (ERROR, once) with the
+  operator remediation. No promote/revert on quality crosses the boundary.
+- [x] **Wire `instrument_era_guard` into the decision path** ✅ 2026-07-22 — new
+  `active_eval_quality_era()` resolver added to `src/autopilot_core/instrument_era_guard.py`;
+  autopilot.py now imports it (the audit's "guard exists but unwired" fix). Strict
+  `_quality_epoch_params_from_state()` raises on a half-declared fence (speed-axis
+  `strict_epoch` parity).
+- [x] **`quality_history` provenance** ✅ 2026-07-22 — internal `_QualityObs(q, ts, era, core_id)`;
+  legacy bare floats decode as pre-boundary (era=""); the MAD window filters to same-era
+  samples so a post-E7 median can't be dragged by a pre-E7 window; persisted as the
+  authoritative `quality_history_provenance_by_tier` (float mirror kept for external readers).
+  `Baseline` carries + persists `eval_quality_era`.
+- [x] **Tests** ✅ 2026-07-22 — boundary-straddle filtering, migration-from-era-less-state,
+  re-baseline fail-closed (check suppression + update refusal), guard wiring, provenance
+  round-trip + era-filtered MAD. Every existing autopilot/safety-gate suite kept green.
+
+### Era-registry row — NO new row required
+The `E7-eval-instrument` row (scope `eval_quality`, `from: 2026-07-21T10:30:00Z`) **already
+exists** in `orchestration/instrument_eras.yaml`. The implementation reads it as the source of
+truth; the `E7_EVAL_INSTRUMENT_BOUNDARY`/`E7_EVAL_INSTRUMENT_ERA_ID` code constants only cite
+that row for the fail-safe fallback and MUST stay in lockstep with it. **No human amendment of
+the era registry or MEASUREMENT.md was made or is needed for this fix.**
+
+### What remains (owner action, out of this session's scope)
+- [ ] **Operator: clear the re-baseline hold.** The hold is fail-closed BY DESIGN — it blocks
+  automated quality promote/revert until a **post-E7 baseline** exists. The operator must reseed
+  `orchestration/autopilot_state.json:baseline_state` (`baselines_by_tier`,
+  `per_suite_quality_by_tier`, `per_suite_counts_by_tier`) from a post-E7 eval AND stamp
+  `baseline_state.eval_quality_era: "E7-eval-instrument"` (+ the MAD `quality_history*` windows).
+  The migration seeds the *fence keys* in code on next startup, but reseeding *baseline quality
+  values* is a measurement action across the human-amendment trust boundary — not done here.
+  Until then the gate holds quality decisions and logs the remediation each gate instance.
+- [ ] Non-owned audit findings untouched (other owners / other agents' flux files): H2
+  rewind/restore atomicity (`structural_lab.py`), H3 preflight JRN-7 reader, M1 validity table,
+  M2 phase_status reader, M3 action-local gate fallback (`actions.py`), M4/M5/M6, and the
+  SafetyGate/RLVR audit's F2 (`export_rlvr_environment.py`, mid-edit by another agent).

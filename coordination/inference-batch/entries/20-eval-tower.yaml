@@ -675,6 +675,7 @@
     command: >
       env HF_HOME=/mnt/raid0/llm/hf-home HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1
       AUTOPILOT_EVAL_CONCURRENCY=4
+      AUTOPILOT_EVAL_REQUEST_TIMEOUT_S=420
       .venv/bin/python scripts/benchmark/eval_batch_serving_evaltower_window.py
       --mode math_rebaseline --scoring math_verify --full
       --roles worker_general,worker_math --seed 42
@@ -787,7 +788,7 @@
     depends_on: []
   execution:
     driver: command
-    protocol_id: "bulk-inference.longcot-mini-calibration.v1"
+    protocol_id: "bulk-inference.longcot-mini-calibration.v2"
     dry_run: false
     command: >
       RUN_ID="${LONGCOT_MINI_RUN_ID:-longcot_mini_re4_$(date -u +%Y%m%dT%H%M%SZ)}";
@@ -798,9 +799,11 @@
       --role-ports frontdoor=8080,8180,8280,8380
       --role-ports worker_general=8082,8182,8282,8382
       --endpoint chat
-      --prompt-mode concise_solution
-      --force-solution-grammar
-      --max-tokens "${LONGCOT_MINI_MAX_TOKENS:-2048}"
+      --prompt-mode standard
+      --two-phase
+      --reasoning-budget "${LONGCOT_MINI_REASONING_BUDGET:-4096}"
+      --final-answer-max-tokens 64
+      --seed 42
       --timeout "${LONGCOT_MINI_TIMEOUT_S:-900}"
       --summary-out "${OUT_DIR}/stack_runner_summary.json" &&
       for result in benchmarks/results/runs/"${RUN_ID}"/frontdoor_*.json
@@ -814,7 +817,7 @@
     concurrency_mode: isolated_bench
     fanout_transport: none
     contention_class: optimized_v7_quarter_ports
-    est_wall_clock_h: 4.0
+    est_wall_clock_h: 12.0
     timeout_s: 21600
     retry_policy:
       max_attempts: 2
@@ -822,6 +825,14 @@
         - INFRA_BLOCKED
   outcomes:
     expected: >
+      PROBE GATE FIRST (RE-4.2): a 30-question stratified frontdoor probe at
+      R=4096 must yield overall accuracy in (10%,90%) with ~100% marker
+      presence before the full run (floor -> re-probe R=8192; ceiling ->
+      DONE_MARGINAL_OBS). v2 protocol: two-phase (free CoT -> forced
+      'solution=' terminal turn), deterministic structural scoring; supersedes
+      the v1 answer-only-grammar protocol that floor-saturated (frontdoor
+      0/402, worker_general 0/307). On pass, record the
+      accuracy-vs-reasoning-budget curve (R in 512/1024/2048/4096).
       A deterministic (no-judge) per-model calibration signal over ~500 easy
       long-horizon reasoning items. Non-saturated behavior confirms the suite is
       discriminative; the reasoning-length signal informs the reasoning-compression

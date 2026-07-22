@@ -1,9 +1,14 @@
 # Architect Model Comparison Benchmark
 
-**Status (2026-07-20): SPEC'd — GATED, not yet runnable.** Waiting on three sequential gates
-(§Gating). All prep that requires no inference is done this session (spec, evidence note, arm-GGUF
-confirmation); the AIME'25 adapter build can proceed anytime; the inference runs are operator/
-quiet-window-gated **and** sequenced *after* v7 promotion and the `inference-batch-loop.md` backlog.
+**Status (2026-07-21): GPU ARMS RUN — reasoning suites show NEAR-PARITY; harder-tier + CPU arm outstanding.**
+Operator granted a GPU-only inference window (2026-07-20/21). Executed: per-model spec-dec sweep (→ registry
+optima), R1 letter-GPQA (n=198×3), R3 AIME'25 avg@4 (n=30×4×3), R2a–d thinking ablation + E-6 budget-cap.
+**Result so far: no arm is statistically separable on any reasoning suite** — H3 fails (35B-A3B ties both
+larger arms), H2 near-parity (27B-dense ≈ 122B-IQ2); `enable_thinking=false` vindicated; the +32pp reasoning
+lever is the *prompt*, not native `<think>`. **Outstanding:** OlympiadBench-numeric n=150 (RUNNING — the
+harder-tier discriminator, since GPQA/AIME saturate) → full `gpqa_diamond_cot` n=198 → **A2 122B-Q4 CPU arm**
+(later session; blocks **H1**, the IQ2-vs-Q4 question) → Phase 2 (OD-1/OD-2). **Reusable procedure:**
+[`../../docs/reference/architect-bench-runbook.md`](../../docs/reference/architect-bench-runbook.md).
 
 **One-line purpose:** decide, decision-grade, **which model holds the `architect` role** (deep
 reasoning / multi-step planning) — because the only local quality signal we have for the GPU-resident
@@ -12,6 +17,11 @@ and every published benchmark of the exact models is unreliable.
 
 **Rationale + full evidence:** [`../../docs/reference/architect-model-selection-2026-07-20.md`](../../docs/reference/architect-model-selection-2026-07-20.md)
 (two theses w/ cited numbers, the AXA-1 gap analysis, the decision tree). **Read it first.**
+
+**Reusable procedure:** [`../../docs/reference/architect-bench-runbook.md`](../../docs/reference/architect-bench-runbook.md)
+— the polished SOP for benching *any future* architect candidate (gates, arms, per-model config discovery,
+the suite ladder, the two reasoning axes, scoring discipline, statistics/stopping rules, decision framework,
+tooling, artifact layout, gotchas, end-to-end checklist). Distilled from this run.
 
 ## Open decisions (operator to confirm)
 - **[ ] OD-1 — Phase-2 planning-task design.** Phase 1 (AIME'25 + GPQA-Diamond + MMLU-Pro control) is
@@ -63,6 +73,15 @@ Q8 for the quality bench unless throughput is being measured, then use the produ
   - **MMLU-Pro knowledge control** — **reuse** the `mmlu_pro` adapter. *The control is the point:* it
     should show IQ2 ≈ Q4 on knowledge **while** AIME/GPQA reveal any reasoning gap — the asymmetry the
     Δ0.0pp pool was too knowledge-heavy to expose.
+  - **OlympiadBench (harder-tier discriminator, added 2026-07-20)** — new `olympiadbench_numeric` suite:
+    OlympiadBench filtered to single-answer `Numerical` items whose gold **parses to a clean number**
+    (492 of 674), scored by a new **`math_numeric`** path (brace-balanced `\boxed{}` extraction + numeric
+    equivalence via `parse_math_number`: handles `\frac`, `\sqrt`, `%`, products; **97% gold-parse,
+    60/60 self-consistency**). Rationale: OlympiadBench's native `substring`/LaTeX scoring is brittle and
+    would reintroduce the per-arm parse bias fixed in R1. No per-item difficulty field exists (dataset
+    `difficulty` is constant), so the suite as a whole is the harder tier; items are seed-shuffled, paired.
+    **This is the ceiling-breaker AIME'25 can't be** (AIME saturates for these arms; see R2c/R3). Running
+    n=150 paired, CoT, thinking-off, per-model optimum spec-dec.
 - **Phase 2 (tool-using multi-step planning) — DESIGN TBD (operator to confirm; deferred "other point"):**
   recommended default = **SWE-bench-Verified in agentic/tool-using mode**, scored by its **FAIL_TO_PASS
   test oracle** (objective pass/fail — "does it plan+execute with tools" without a judge).
@@ -78,6 +97,20 @@ Q8 for the quality bench unless throughput is being measured, then use the produ
   eval-tower scorer. **Throughput is secondary**; GPU-row t/s stays **observation-grade until `P-GPU-1`
   certifies on `production-consolidated-v7`** (post-promotion). Era-stamp every result.
 - **Same questions across arms** (paired, like the AXA-1 parity) so per-arm deltas are McNemar-testable.
+- **Difficulty-descending sequential evaluation (adopted 2026-07-20, operator).** For any suite with a
+  difficulty ranking, run items **hardest→easiest** with all arms **interleaved per question**, maintaining
+  a running paired test, and stop early on either of two rules:
+  1. **Saturation stop (always valid):** once the current difficulty tier is answered near-ceiling by all
+     arms, remaining easier items carry ≈0 discriminating information — stop; skipping them loses ~nothing.
+  2. **Decision stop (requires sequential error control):** cross an **always-valid / e-process** boundary
+     (reuse the reviewer control-plane FR≫FA e-process infra) for either **separation** or **futility**.
+     Do NOT use a fixed-α McNemar as a peeking rule — that is p-hacking.
+  **Rank by an a-priori, model-independent difficulty key ONLY** (AIME problem number; OlympiadBench's own
+  difficulty field). **Never order by our own arms' solve rates** — that is circular selection and
+  manufactures significance. Validated on AIME'25: solve-rate is cleanly monotonic in problem number
+  (tiers 1–5 / 6–10 / 11–15 → 92% / 76% / 50% combined), and the hard tier already shows A1=A3=50%, so a
+  sequential run would have concluded "no separation within AIME'25" after ~10 items instead of 30.
+  This is an **ordering/stopping efficiency**, not a power fix — separation still needs harder *items*.
 
 ## Decision tree (exit criteria)
 1. **A1 ≈ A2 on AIME/GPQA** → 122B-A10B stays architect, **GPU-resident at IQ2** (AXA-1 win reasoning-certified).
@@ -96,22 +129,229 @@ Q8 for the quality bench unless throughput is being measured, then use the produ
 ## Gating (sequenced — do NOT start inference until ALL clear)
 1. **[x] v7 promoted to production** (`production-consolidated-v7`) → GPU arms are now `P-GPU-1`-eligible. Tracked in [`v7-promotion.md`](v7-promotion.md). ✅ 2026-07-20
 2. **[ ] `inference-batch-loop.md` outstanding tests complete** — the parallel agent runs that backlog first, on the current orchestration stack. See [`inference-batch-loop.md`](inference-batch-loop.md).
-3. **[ ] Operator quiet-window inference approval** (`feedback_no_concurrent_inference`) — GPU arms **one-at-a-time** (single MI210), CPU arm (A2) may run concurrently in a detected quiet window (`inference_load_check.py`).
+3. **[x] Operator inference approval — GPU ONLY** ✅ 2026-07-20. Operator granted the GPU arms explicitly ("GPU-only benchmark tasks … DO NOT interfere with any CPU inference resources"), **overriding gate 2 for the GPU arms only**. Gate 2 remains binding for anything touching CPU.
+
+> **GPU/CPU split (operator, 2026-07-20).** The CPU arm **A2 (122B-A10B UD-Q4_K_M)** is explicitly deferred to a **subsequent session**; this session runs GPU arms only and must not touch CPU inference. Consequence: **H1 (the primary hypothesis — does IQ2 preserve the 122B's reasoning?) cannot be answered yet**, because it is the A1-vs-A2 contrast. What the GPU-only pass *can* settle is **H2** (27B-dense vs 122B-IQ2) and **H3** (35B-A3B trails), plus each GPU arm's absolute reasoning level.
+> **The A2 session MUST replay the pinned item sets** at `artifacts/architect-bench-gpu-20260720/questions_<suite>.json` via `--questions-in`, or the pairing (and any McNemar test) is void.
 
 ## Prioritized task list
 ### Prep (no inference — can proceed now)
 - [x] Handoff spec authored ✅ 2026-07-20
 - [x] Evidence/decision-tree note authored (`docs/reference/architect-model-selection-2026-07-20.md`) ✅ 2026-07-20
 - [x] All 4 base-arm GGUFs confirmed on disk ✅ 2026-07-20
-- [ ] **Build the AIME'25 adapter** and register it in `ADAPTER_SUITES` (`epyc-inference-research/scripts/benchmark/v7_quality_gate_runner.py`); fixture-test on 1 item. Mirror the existing `gpqa`/`mmlu_pro` adapters.
-- [ ] Confirm GPQA-Diamond + MMLU-Pro adapters run against the arm servers (dry-run, no full sweep).
+- [x] **Build the AIME'25 adapter** (`aime25`, 2025-only/30 Q) and register it in `ADAPTER_SUITES` ✅ 2026-07-20
+- [x] **Build a real GPQA-*Diamond* adapter** (`gpqa_diamond`, 198 Q) ✅ 2026-07-20 — *the pre-existing `gpqa` suite is GPQA **main (448)**, not Diamond; the spec called for Diamond*
+- [x] Build `gpqa_diamond_cot` (CoT-permitting variant) ✅ 2026-07-20 — *see "reasoning budget" note below*
+- [x] Harden the runner: per-question JSONL, pinned item sets, production sampling, `enable_thinking`, repeats, truncation capture ✅ 2026-07-20
+- [x] Fixture-test adapters + scorer offline (25 assertions, 0 failures) ✅ 2026-07-20
+- [ ] Confirm MMLU-Pro control re-runs under the hardened protocol (sidecar's n=50 run predates it).
 - [ ] (Phase 2, if approved) build/validate the SWE-bench-Verified agentic scorer → FAIL_TO_PASS pass/fail.
+
+#### Prep findings that change the protocol (2026-07-20)
+1. **`gpqa` ≠ GPQA-Diamond.** The registered `gpqa` adapter loads `ankner/gpqa` = 448-row GPQA **main**. Diamond membership was recovered from the local `hendrydong/gpqa_diamond` mirror; all **198/198** matched into the main set by normalized question text, so `gpqa_diamond` keeps real MC distractors while being verifiably the Diamond subset.
+2. **AIME data defect.** `opencompass/AIME2025` ships `2025-II-5` as `336^\circ`. Left uncleaned it is unmatchable by an integer-emitting model — a silent 0 for *every* arm. `aime25` normalizes answers to the integer at load.
+3. **Reasoning budget is a confound on letter-only MC.** Under the stock "Answer with the letter only" prompt at `enable_thinking=false`, A1 emits **2 tokens** (no CoT at all) while A3 spontaneously writes **~168 tokens mean (max 1442)**. The arms therefore get *unequal* reasoning budgets, and a letter-only score cannot speak to reasoning depth. `gpqa_diamond_cot` equalizes this and is the **primary** reasoning measure; letter-only is retained as a secondary no-CoT/prior probe.
+4. **`enable_thinking=false` is mandatory** for these Qwen arms (degenerate `<think>` loops otherwise), and `--reasoning off` at the server — corroborated by the registry's own `reasoning_policy_observation` (`--reasoning auto` → 0/4 produced final content).
 
 ### Gated inference (after all three gates)
 - [ ] **Phase 1** — A1–A4 × {AIME'25, GPQA-Diamond, MMLU-Pro control}, paired, seed-pinned, MEASUREMENT-stamped.
+  - [x] **GPU arms A1/A3/A4 × `gpqa_diamond` (letter-only, no-CoT secondary probe)** ✅ 2026-07-20 — **all three arms statistically indistinguishable** (R1)
+  - [x] **GPU arms A1/A3/A4 × `aime25` avg@4** (n=30 × 4, seeds 42–45) ✅ 2026-07-21 — **near-parity, no arm separable** (R3): A1 71.7 / A3 74.2 / A4 70.8; all pairwise p ≥ 0.50; **H3 fails, H2 near-parity**
+  - [x] **Per-model GPU spec-dec optima swept + recorded to registry** ✅ 2026-07-20 (`optimal_gpu_serving`: A1 mtp-2, A3/A4 mtp-4)
+  - [x] **Thinking-mode ablation (R2a–d)** — CoT-prompt +32pp; native `<think>` ON hurts both (termination defect); `enable_thinking=false` vindicated ✅ 2026-07-21
+  - [x] **Reusable bench runbook authored** (`docs/reference/architect-bench-runbook.md`) ✅ 2026-07-21
+  - [x] **Build OlympiadBench harder-tier discriminator** (`olympiadbench_numeric` + `math_numeric` scorer, 492 items, 97% gold-parse) ✅ 2026-07-21
+  - [x] GPU arms A1/A3/A4 × **`olympiadbench_numeric`** (n=150 paired) ✅ 2026-07-22 — **⚠ SATURATES (A1 89.3/A3 88.0/A4 89.3, all p≥0.77), NOT the harder tier intended** (adapter filter flaw; see R4). Highest-powered null of the bench.
+  - [x] **Build a genuinely-harder discriminator** (derived R4) ✅ 2026-07-22 — `olympiadbench_hard` suite (155 Expression/Tuple/set items, the complement of the numeric suite) + **`math_symbolic` sympy-backed scorer** (validated 155/155 self-match, 0 perturbation-FP, 0 LaTeX-variant asymmetry). Research `ef286939`.
+  - [x] **Pilot `olympiadbench_hard` (A1 n≈24)** ✅ 2026-07-22 — **IT DISCRIMINATES: A1 50.0% overall / 76.9% among finished vs the 89% numeric-suite saturation.** But **46% truncate at 16384** → the overall score is budget-confounded (finished-vs-truncated swing ≈57pp). See R5.
+  - [ ] **Full `olympiadbench_hard` 3-arm run — GATED on budget ≥ 32768** (else truncation confounds the arms; a model that reasons more concisely would score higher for a non-reasoning reason). This is the outstanding measurement that could finally break the reasoning-parity tie. Also surfaced a stack-wide thread → [reasoning-effort-levels.md § Token-budget study](reasoning-effort-levels.md).
+  - [ ] GPU arms A1/A3/A4 × **`gpqa_diamond_cot`** full n=198 — *primary* CoT measure (deferred behind OlympiadBench; n=50 slice done in R2)
+  - [ ] MMLU-Pro control re-run under hardened protocol (sidecar's n=50 predates it)
+  - [ ] **A2 (CPU, 122B UD-Q4_K_M) — deferred to a later session.** Must use `--questions-in` on the pinned manifests (else pairing is void). Blocks H1.
+
+**Run protocol actually used (GPU arms, 2026-07-20)** — kernel `production-consolidated-v7` (`build-hip`, 10098/`6ad45fa3f`), MI210, one arm at a time, `--device ROCm0 -ngl all -fa on -ctk f16 -ctv f16 -c 32768 -b/-ub 2048`, server `--reasoning off` + request `enable_thinking=false`, production sampling **temp 0.6 / top_p 0.95 / top_k 20 / seed 42** (+1 per avg@k pass). Per-arm spec-dec set to each model's **measured** optimum (A1 `draft-mtp` n-max 2; A3/A4 n-max 4) — see the registry `optimal_gpu_serving` blocks. GPU servers pinned to cores 88–95 so the CPU inference stack is untouched.
+**avg@k ordering:** repeats are the *outer* loop — each pass sweeps all questions at one seed — so an interrupted run degrades to a valid avg@(k−1) rather than a subset-biased score. Arms stopped at different k are still comparable by filtering the per-question JSONL to the seeds all arms completed.
+**Throughput rows from these runs are OBSERVATION-grade** (pre-`P-GPU-1`); the accuracy verdict is device-independent and decision-eligible.
+
+### Result R1 — GPQA-Diamond, letter-only / no-CoT (n=198 paired, seed 42, 2026-07-20)
+
+| Arm | accuracy | trunc | noparse | Δ vs A1 | McNemar |
+|---|---:|---:|---:|---:|---|
+| **A1** 122B-A10B UD-IQ2_M | **55.1%** | 0 | 0 | — | — |
+| **A3** 27B dense Q8 | **55.6%** | 4 | 2 | **+0.5pp** | b=35 c=36 **p=1.00** |
+| **A4** 35B-A3B Q8 | **53.0%** | 16 | 3 | **−2.0pp** | b=33 c=29 **p=0.70** |
+
+**Finding: no arm separates from any other on no-CoT GPQA-Diamond.** All pairwise p ≥ 0.63. Under a letter-only prompt the models emit ~2 tokens and cannot reason, so this suite reads *knowledge/priors*, not reasoning depth — and on knowledge the three are equivalent. **This does NOT support H3** (35B-A3B was expected to trail): the shallow 3B-active reasoner ties the 122B when neither may reason. Consistent with the AXA-1 Δ0.0pp result being knowledge-parity, and with the thesis that architect separation must come from the CoT/AIME suites.
+
+> ⚠ **These numbers are POST-correction. The pre-correction run said something different and wrong.**
+> The first scoring pass reported A1 55.1% / A3 51.0% / A4 43.4%, i.e. **A1 −A4 = +11.6pp at McNemar p=0.0059 ("significant")**. That entire result was an **answer-extraction artifact**: the extractor only accepted a bare letter when it was the *whole* response, so a reply ending "…reasoning…\n\n**B**" failed to parse and scored wrong. Parse failures were **0 / 13 / 29** across A1 / A3 / A4 — i.e. the bug penalised exactly the arms that show their work, manufacturing an 11.6pp gap and pointing at the wrong architect. Fixed (bare-letter-final-line rule, last-match-wins, delimiter-required `ANSWER` tag); the fix also removed *false positives* (a reply ending "Option D matches this structure.\n\nD" had been scored `C`). **Re-scored offline from stored responses — zero GPU re-run.** Tooling: `architect_bench_rescore.py`, `architect_bench_analyze.py` (which now always prefers `per_question.rescored.jsonl` so arms are never compared under different scorer versions).
+> **Rule going forward: report a per-arm parse-failure rate next to every accuracy number; any cross-arm difference is a scoring bug until proven otherwise.**
+
+### R2 (in flight) — reasoning budget dominates, and the stack-wide `enable_thinking=false` default is now in question
+
+**Why this was opened (operator, 2026-07-20):** published GPQA-Diamond for these exact models is far above R1 — Qwen3.6-27B **87.8%**, Qwen3.6-35B-A3B **86.0%** (vendor-reported) vs our 55.6% / 53.0%. The gap is **the measurement condition, not a broken harness**: R1 forced letter-only + `enable_thinking=false`, so the models emitted ~2 tokens. Same arm, same questions, same harness, CoT allowed → **A1 went 55.1% → 83.3%** (early n). Published figures are thinking/CoT numbers and are **not comparable** to a no-CoT probe.
+
+**The deeper problem.** The stack-wide default (`chat_template_kwargs.enable_thinking: false` on `architect_general`, `frontdoor`, `coder_escalation`, …) traces to the 2026-05-20 probe recorded in `feedback_qwen3x_enable_thinking_false` (+33pp for frontdoor). But that probe's *failure mode* was thinking-ON runs hitting `finish_reason=length` with **`content=""`** — the model never emitted an answer inside the budget. **That is a token-budget artifact, the same class as the truncation/parse bugs corrected above** — not necessarily a quality property of thinking mode. The memory itself already flags this confound for the `ingest` row ("most likely max_tokens truncation of native reasoning, not a thinking ablation"); the same doubt applies to the Qwen3.6 rows.
+
+**R2 ablation design** — thinking ON vs OFF, *identical* pinned `gpqa_diamond_cot` items (n=50), **max_tokens 16384** so thinking cannot be starved (the whole point), production sampling, per-arm optimum spec-dec:
+- **A4 = Qwen3.6-35B-A3B** — the exact model the +33pp claim was made about, and the production **frontdoor**.
+- **A1 = Qwen3.5-122B-A10B IQ2** — the **architect** candidate (and the reviewer-arm model).
+- Server: `--reasoning on --reasoning-budget -1 --reasoning-format deepseek` (thoughts → `reasoning_content`, so `content` is scored cleanly) vs `--reasoning off`. Note `-rea/--reasoning [on|off|auto]` is a real flag — the runs above genuinely disabled thinking, they did not merely hide it.
+- Metrics: accuracy, **empty-content-with-reasoning rate** (the documented degenerate-loop signature), truncation, and **median completion tokens** — because the deploy decision is quality *per latency*, not quality alone.
+
+**Scope note:** a positive result changes production config for architect/reviewer/frontdoor roles, which is **operator-gated** and must weigh the latency/throughput cost (thinking multiplies output tokens; frontdoor is latency-sensitive). This bench only *measures*; it does not change the stack.
+
+#### R2a — **allowing CoT in the response is worth +32pp**, and it validates the harness against published numbers
+
+Arm **A4 = Qwen3.6-35B-A3B (production frontdoor)**, **identical 50 questions**, thinking mode **OFF in both conditions** — the only change is whether the *prompt* permits reasoning:
+
+| A4 condition (same 50 Q) | accuracy | mean tokens |
+|---|---:|---:|
+| "Answer with the letter only" | **52.0%** | 537 |
+| "Reason step by step, then answer" | **84.0%** | 2150 |
+| **Δ** | **+32.0pp** | **4.0× tokens** |
+
+McNemar **b=19 c=3, p=8.6e-04** — decisively significant, 0 truncations, 0 parse failures.
+
+**Two conclusions:**
+1. **The harness is externally validated.** 84.0% sits within noise of the vendor-published **86.0%** for this exact model (n=50 ⇒ ±~10pp). The earlier 53% was never a harness defect — it was a no-CoT probe, and the ~33pt gap from published is the reasoning contribution.
+2. **This is a PROMPT effect, not a thinking-mode effect** — `enable_thinking=false` in *both* arms. So "reasoning off" in this stack has (at least) two independent axes, and they must not be conflated:
+   - **(a) does the prompt let the model reason in `content`** — worth +32pp here, at 4× output tokens;
+   - **(b) `enable_thinking` / `--reasoning`** — the native `<think>` channel, still being measured (R2b).
+   Axis (a) is a *prompt-template* property of each role, not a server flag, and it is the larger effect measured so far. **Any stack-wide "should our models reason?" review has to cover both axes**, or it will change the flag and leave the +32pp on the table.
+
+#### R2b — thinking mode on the **frontdoor** is a *termination* failure; the stack default is VINDICATED
+
+A4 = Qwen3.6-35B-A3B, same 50 pinned items, `max_tokens=16384` (**8× the 2048 of the original 2026-05-20 probe**), `--reasoning on --reasoning-budget -1 --reasoning-format deepseek`:
+
+| A4 | accuracy | median tok | budget-exhausted in `<think>`, **empty content** |
+|---|---:|---:|---:|
+| think **off** | **83.3%** | 1343 | 0 |
+| think **on** | **50.0%** | 16043 | **23 / 48 (48%)** |
+
+Paired: **−33.3pp, McNemar b=1 c=17, p=1.0e-04**, at **5.9× output tokens**.
+
+**My "budget artifact" hypothesis is REFUTED for this model.** The +33pp thinking-off advantage *reproduces* at 8× the original budget, so the stack-wide `enable_thinking=false` default is **empirically correct for Qwen3.6-35B-A3B** — it was not an artifact of a stingy `max_tokens`.
+
+**But the cause is a termination defect, not a quality deficit.** 48% of the time the model consumes the entire 16384-token budget inside `<think>` and emits *zero* content. Splitting the two populations:
+- On the **25 items where thinking terminated**: ON 96.0% vs OFF 92.0% → **+4.0pp, b=1 c=0, p=1.00 (n.s.)**. The eye-catching "96%" is **selection bias**, not a thinking win.
+- On the **23 items where it never terminated**: think-off still scored **73.9%**, so these are *not* merely the impossible questions — thinking loops preferentially on the harder ones, i.e. exactly where reasoning was supposed to help.
+
+**Actionable lever (untested):** llama-server exposes `--reasoning-budget N` (>0) plus `--reasoning-budget-message`, which force-closes the think block so the model *must* emit an answer. That converts the 48% total losses into (short-thought) answers and is the obvious next experiment — it belongs to [`reasoning-effort-levels.md`](reasoning-effort-levels.md) E-6.
+
+**Do not generalize this to the architect yet** — A1 (122B-A10B IQ2) is a different model and is measuring now. "Frontdoor should not think" ≠ "architect should not think".
+
+#### R2c — with CoT allowed, A1 leads A4 by 6pp but **it is NOT statistically supported**, and GPQA-Diamond looks saturated
+
+Same 50 pinned items, CoT allowed, thinking off:
+
+| Arm | accuracy | mean tokens |
+|---|---:|---:|
+| **A1** 122B-A10B IQ2 (architect) | **90.0%** | 3582 |
+| **A4** 35B-A3B (frontdoor) | **84.0%** | 2150 |
+| Δ | **+6.0pp** | 1.7× |
+
+**McNemar b=5 c=2, p=0.45 — not significant.** Only **7 discordant pairs** at n=50; this is badly underpowered and must not be read as separation. Directionally consistent with A1 > A4, nothing more.
+
+**Two consequences for the rest of the bench:**
+1. **GPQA-Diamond may be saturating for these arms.** At 84–90% only ~5–8 items separate any two arms, and A1's 90.0% already exceeds A4's *published* 86.0%. Per [[feedback_eval_saturation_masks_model_gap]], a suite near ceiling hides real capability gaps — so a null here is weak evidence of equality, not evidence of parity. **AIME'25 (much lower ceiling) becomes the decisive discriminator**, which raises the value of the queued avg@4 run.
+2. **The full n=198 CoT run matters** — ~4× the discordant pairs. Run it before drawing any H2/H3 conclusion.
+
+**Contrast worth keeping:** under letter-only these same two arms were 55.1% vs 53.0% (p=0.70, n=198). Allowing CoT lifts *both* by ~30pp and widens the gap slightly, but does not by itself resolve which model reasons better.
+
+#### R3 — AIME'25 avg@4 (the decisive, non-saturated discriminator) — IN PROGRESS
+
+n=30 problems × 4 draws (seeds 42–45), CoT prompt, thinking off, budget 16384, per-model optimum spec-dec. Reported as **avg@4** (mean over draws) with **pass@4** (solved ≥1/4) for reference.
+
+| Arm | avg@4 | pass@4 | truncated draws |
+|---|---:|---:|---:|
+| **A1** 122B-A10B IQ2 (architect) | 71.7% | 83.3% | 7/120 (6%) |
+| **A3** 27B dense Q8 | **74.2%** | **90.0%** | 0/120 |
+| **A4** 35B-A3B Q8 (frontdoor) | 70.8% | 86.7% | 1/120 |
+
+**Three-way paired (all 30 problems), pass@4 McNemar — H2 & H3 both resolve to NEAR-PARITY:**
+- A1 vs A3: A3-only=2, A1-only=0, **p=0.50** — A3 weakly dominant, n.s.
+- A1 vs A4: A4-only=2, A1-only=1, **p=1.00**
+- A3 vs A4: A3-only=2, A4-only=1, **p=1.00**
+- 2 problems (I-14, I-15) solved by **no** arm.
+
+**Verdict on the decisive suite: no arm is statistically separable from any other.** The spread is A3 74.2% ≥ A4 70.8% ≈ A1 71.7% — a 3.4pp band, all p ≥ 0.50 at n=30. **H3 fails** (the 3B-active A4 does *not* trail — it ties both larger arms). **H2 is near-parity** (27B-dense ≈ 122B-IQ2, if anything the 27B edges it). This is now **four independent measurements agreeing** (letter-only GPQA, CoT-GPQA, AIME'25, AXA-1 Δ0.0pp) that at ≤AIME difficulty these three models reason equivalently. **AIME'25 at n=30 cannot separate them** → the OlympiadBench harder-tier discriminator (running) is the test that matters; if it *also* shows parity, the architect decision has no accuracy basis and falls entirely to deployment-robustness (favoring the dual-resident 122B).
+
+**Paired A1 vs A3 (identical 30 problems) — H2 signal: the 27B-dense reasons at least as well as the 122B-IQ2.**
+- avg@4: A3 **74.2%** vs A1 71.7%; pass@4: A3 **90.0%** vs A1 83.3%.
+- McNemar on pass@4: **b=2 (A3 solved, A1 didn't) c=0 (reverse), p=0.50 — not significant**, but **strictly dominant in direction**: A3 solved *everything A1 solved, plus 2 more* (II-8, II-15); A1 solved **nothing** A3 missed. Both failed the same 3 hardest (I-14, I-15, II-13).
+- A3 also had **zero truncation** vs A1's 6% — the dense model reaches its answer in fewer tokens.
+
+**Read (pending A4):** on the decisive, non-saturated suite the 122B-IQ2 shows **no reasoning advantage** over the 27B-dense — consistent with the GPQA-CoT null (R2c) and the AXA-1 Δ0.0pp. Zero problems distinguish the 122B upward. This is **H2 near-parity**, and it means the architect decision is **not** carried by hard-reasoning accuracy → the deployment-robustness axis (dual-resident 122B cheaper to operate at equal quality; GPU-only 27B has no CPU self-fallback and pins the single GPU slot) becomes decisive. **Caveat:** n=30 is low power; a 2-problem gap is well within noise. This weighs the *operating-cost* branch of the decision tree, it does not by itself crown the 27B. A4 next = the H3 check.
+
+#### R2d — **native `<think>` hurts BOTH models. `enable_thinking=false` is vindicated stack-wide.** ✅ complete
+
+All four ablation arms, n=50 pinned items, `max_tokens=16384`, `--reasoning-budget -1`:
+
+| Arm | think off | think on | Δ (paired) | McNemar | token cost | non-terminating `<think>` |
+|---|---:|---:|---:|---|---:|---:|
+| **A1** 122B-IQ2 (architect) | **90.0%** | 74.0% | **−16.0pp** | b=0 c=8 **p=0.0078** | 2.79× | **9/50 (18%)** |
+| **A4** 35B-A3B (frontdoor) | **84.0%** | 48.0% | **−36.0pp** | b=1 c=19 **p<0.0001** | 6.03× | **25/50 (50%)** |
+
+**Verdict: the stack-wide `enable_thinking=false` default is CORRECT, for both roles, and my "budget artifact" hypothesis is fully refuted.** The effect reproduces at **8× the original probe's budget** and is significant for both models. Thinking-ON is worse *and* costs 2.8–6× the tokens — it loses on both axes.
+
+**Root cause is termination, not reasoning quality.** Conditioning on whether `<think>` ever closed:
+- **A1:** terminated on 41/50. There: ON 90.2% vs OFF 95.1% (**−4.9pp, b=0 c=2, p=0.50, n.s.**).
+- **A4:** terminated on 25/50. There: ON 96.0% vs OFF 92.0% (**+4.0pp, b=1 c=0, p=1.00, n.s.**).
+- On the *non*-terminating items, think-off still scored **66.7%** (A1) and **76.0%** (A4) — so these are **not** simply the impossible questions; the loop preferentially eats items the model could otherwise answer.
+
+So when thinking terminates it is roughly **quality-neutral** on this suite (both n.s., opposite signs); the entire measured loss is the non-termination tail. The **severity is strongly per-model** (18% vs 50%), which is direct evidence for the per-model calibration invariant in [`reasoning-effort-levels.md`](reasoning-effort-levels.md).
+
+**This does NOT close the "our models should reason" question — it re-points it.** The +32pp win (R2a) came from **CoT in `content` via the prompt**, which is *already* how these arms run and is a different axis from `enable_thinking`. The native `<think>` channel, as configured today, is a liability for both models. The open lever is `--reasoning-budget N` (>0) + `--reasoning-budget-message`, which force-closes the think block so the model must answer — untested, and the single highest-value follow-up (E-6).
+
+**Operator decision surface (measurement only — no stack change made):** keep `enable_thinking=false` everywhere (now evidence-backed at an adequate budget), and pursue reasoning quality through **prompt-level effort** rather than the native channel.
+### Follow-up tooling / deferred (derived this session)
+- [ ] **Build the interleaved-per-question sequential runner** with always-valid / e-process stopping (§8 of the runbook). Current runner is arm-by-arm, so the difficulty-descending early-stop can't accrue a live paired test. Needed to realize the sequential-evaluation efficiency on future/harder suites.
+- [ ] **Promote the GPU driver scripts into the repo** (`gpu_lib.sh`, `run_arm.sh`, `run_budget.sh` — currently session scratchpad) so the runbook's launch pattern is executable, not just documented. (Runbook §10 records this deferral.)
+- [x] **Declined: AIME'25 hard-tier avg@16 top-up.** Considered; explicitly *not* pursued — it sharpens ~7 problems where A1=A3 already tie (likely a tighter confirmation of parity), whereas OlympiadBench adds harder *items* with real n. Higher expected information → chose OlympiadBench. ✅ 2026-07-21
 - [ ] Resolve the decision tree from Phase 1; **(conditional) build + run A5** if branch 2 fires.
 - [ ] **Phase 2** (if run) — tool-using planning on the surviving 1–2 arms.
 - [ ] **Record the architect decision** (checkbox-flip here) → route to AXA-1 (`mi210-big-model-and-acceleration-roadmap.md`) + the model registry.
+
+## R4 — OlympiadBench-numeric SATURATES too (adapter design flaw, not the ceiling-breaker claimed)
+A1 122B-IQ2 = **89.3% (134/150)** on `olympiadbench_numeric` — *higher* than its AIME'25 (71.7%), though
+this was meant to be the *harder* tier. **Scorer verified correct** (spot-checks all genuine numeric matches
+incl. `\sqrt`, degrees; zero false positives). Cause = the **adapter filter**: single-answer clean-**numeric**
+gold selects the easy-answer subset — hard olympiad problems disproportionately have Expression/Tuple/set
+answers (the ~165 items excluded), so filtering by answer *format* filtered out *difficulty*. Per-tier
+Algebra 92.5% / other 87.6% (both saturated); a real hard tail exists but is small (25 truncation-inducing
+items @ 56%, ~17% of the suite). **So it's a second saturating suite, not a discriminator.** The
+harder-discriminator goal is **unmet** — fix filed above (symbolic scorer for the excluded Expression/Tuple
+items, or a harder numeric suite, or lean on Phase 2 tool-use). **Three-way paired final (n=150): A1 89.3% /
+A3 88.0% / A4 89.3%, all pairwise p ≥ 0.77 — a complete null** (122/150 solved by all three, only 5 by none;
+~28 discriminating items). Even saturated, this is the **highest-powered null of the bench.** *Pattern: this
+is the 4th time this session a scoring/selection choice mis-set difficulty — verify a suite discriminates
+before trusting its verdict (runbook §8 saturation-diagnosis).*
+
+### ⇒ Bench verdict (reasoning suites, GPU arms): NULL across the board
+Six independent paired measurements — letter-GPQA (n=198), CoT-GPQA (n=50), AIME'25 avg@4 (n=30),
+OlympiadBench-numeric (n=150), plus AXA-1 Δ0.0pp and the thinking ablations — **all show no separation**
+between A1 (122B-IQ2), A3 (27B-dense), A4 (35B-A3B). **H2 = near-parity, H3 = fails** (the 3B-active model
+never trails). At the difficulty these suites reach, **the architect choice has no accuracy basis** →
+decision falls to **deployment-robustness** (dual-resident 122B cheaper to operate at equal quality; GPU-only
+27B has no CPU self-fallback + pins the GPU slot). **Two things could still break the tie and are the only
+open quality questions:** (1) a *genuinely* harder discriminator (filed symbolic-scorer fix) or **Phase 2
+tool-use** (the architect's real job); (2) **H1** — IQ2-vs-Q4, which needs the **A2 CPU arm** (later session).
+Until then, no deployment change is warranted on accuracy grounds.
+
+## R5 — `olympiadbench_hard` DISCRIMINATES (finally a non-saturated suite) — but is budget-gated
+Built the harder-tier fix R4 called for: `olympiadbench_hard` = the 155 Expression/Tuple/set OlympiadBench
+items the numeric suite excluded (where difficulty lives), scored by a new **sympy-backed `math_symbolic`**
+path (numeric → set/tuple → symbolic equivalence; validated 155/155 gold self-match, **0 perturbation
+false-positives, 0 LaTeX-variant asymmetry** — the per-arm parse-bias guard the numeric suite lacked).
+**Pilot (A1 122B-IQ2, n=24): 50.0% overall — the first sub-saturation reading of the bench** (vs 89% on
+`olympiadbench_numeric`, 88–90% on GPQA). **But 46% truncate at 16384 tokens** (median 9.7k, these olympiad
+problems induce very long reasoning), and truncation ≈ wrong (2/11 truncated correct). **Accuracy among
+*finished* responses = 76.9%**, so the 50.0% is heavily budget-suppressed. **⇒ the full 3-arm run is GATED
+on `max_tokens ≥ 32768`** — at 16384 the arms would be partly ranked on reasoning *concision*, a confound.
+This is now the single outstanding measurement that could break the reasoning-parity tie (R1–R4 all null).
+It also surfaced a **stack-wide finding — `max_tokens` is a silent quality lever** — documented as a study
+in [`reasoning-effort-levels.md § Token-budget study`](reasoning-effort-levels.md) (operator-flagged).
 
 ## Dependency graph
 `Prep (AIME adapter)` ∥ `Gate1 v7-promotion` → `Gate2 inference-batch-loop` → `Gate3 operator quiet window`
