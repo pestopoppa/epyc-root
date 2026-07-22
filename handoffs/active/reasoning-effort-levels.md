@@ -141,12 +141,31 @@ meant to fix). This makes budget-selection and admission-control **one problem**
       sets from **assessed task complexity** (easy → tight budget, hard → generous). Requires per-request
       budget plumbing through the orchestrator serving path (llama-server already accepts it per request).
       Natural extension of [[project_learned_routing_controller]] — budget becomes a routing *output*.
-- [ ] **TB-6 — Concurrency-aware admission control (VRAM guard).** The router/orchestrator must track live
-      `Σ(budget_i × kv_per_token_model)` against the card and **admit/queue/downgrade** requests so the sum
-      never forces `n_ctx_slot` below a request's budget. Per-model `kv_per_token` (measured above) is the
-      key constant; extends the live placement SM in [[project_heterogeneous_slot_fabric]] (already
-      "everything is a slot"). Potentially **asynchronous** — hold or shed budget under pressure rather than
-      truncate. This is a non-trivial joint scheduler: **complexity-estimate → budget → admission → placement**.
+- [ ] **TB-6 — Concurrency-aware admission control (VRAM *and BANDWIDTH* guard).** The router/orchestrator
+      must track live `Σ(budget_i × kv_per_token_model)` against the card and **admit/queue/downgrade**
+      requests so the sum never forces `n_ctx_slot` below a request's budget. Per-model `kv_per_token`
+      (measured above) is the key constant; extends the live placement SM in
+      [[project_heterogeneous_slot_fabric]] (already "everything is a slot"). Potentially **asynchronous** —
+      hold or shed budget under pressure rather than truncate. Non-trivial joint scheduler:
+      **complexity-estimate → budget → admission → placement**.
+      > **⚠ MEASURED 2026-07-22 — the binding constraint is memory BANDWIDTH, not VRAM capacity; and the
+      > optimal concurrency is a function of context (= reasoning budget).** Batching `olympiadbench_hard`
+      > (budget 32768 → per-slot ctx 36864) on the 122B-IQ2:
+      > - **np=14:** fit VRAM comfortably (52/64 GiB) but **collapsed** — per-request decode fell so far that
+      >   **54/155 requests (35%) exceeded a 3600s timeout**. (The "18.2 tok/s aggregate" first reported was
+      >   NOT a real throughput — it is real-tokens ÷ a wall-clock inflated by 54 timeout-stalls; discard it.
+      >   True np=14 aggregate is unmeasured, but ≈ or below single-stream by the np=4 point below.)
+      > - **np=4 (native per-request timing):** median **11.9 tok/s/request → ~47 tok/s aggregate** — only
+      >   ~8% over single-stream spec-none (43.6). So at this context **batching barely helps** and sequential
+      >   would have been just as fast + reliable.
+      > **Why (vs pre-promotion B32 benches that showed 148.7 agg):** those were at *small* context (~512–2k),
+      > where KV is tiny and 32 slots pack in. At 36864 ctx the KV read per decode step scales with
+      > `(context × active_slots)` and MoE requests scatter across experts → each step reads far more memory →
+      > **aggregate throughput DROPS as concurrency rises**. **So there is an `np × context` optimum curve, and
+      > the optimal np collapses toward 1 as the reasoning budget (context) grows.** TB-1 must therefore be a
+      > **2-D (budget × concurrency) grid** capturing the decode-collapse knee; "fits in VRAM" is NOT
+      > sufficient to raise concurrency. Bandwidth ceiling ≈ `Σ(ctx_i) × kv_bytes/token / mem_bw`. Evidence:
+      > `artifacts/architect-bench-gpu-20260720/runs/olympiadbench_hard/` (A1 np=14 timeouts vs np=4 timing).
 - [x] **TB-7 — Calibrate the budget policy from AutoPilot's live token stats (no new inference).** AutoPilot ✅ 2026-07-22
       already records **tokens-generated per successfully-completed task**. That is a free, production-grounded
       distribution of "how much budget did each task class actually need" — mine it to set per-(task-class,
