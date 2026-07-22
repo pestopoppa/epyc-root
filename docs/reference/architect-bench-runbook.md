@@ -96,6 +96,16 @@ Each model has its **own** optimal GPU serving config; do not inherit another mo
 Run **cheap-and-saturating first, decisive-and-hard last**. Each rung has a distinct job; do not collapse
 them.
 
+> **⚠ PILOT-GATE (mandatory before any full multi-arm run) — added 2026-07-22 after it bit.** Before
+> committing all arms × full-n to a suite, run **one arm (the incumbent) on a ~20-item pilot** and check the
+> saturation diagnosis (§8). If the pilot saturates (all/near-all correct) the suite will not discriminate —
+> **do not run the full matrix**; fix the suite (harder items / better scorer) first. On the 2026-07-20/22
+> run this step was skipped for `olympiadbench_numeric`: A1 came back 89.3% (saturated — the clean-numeric
+> filter had selected the easy-answer subset), so 3 arms × 150 items of GPU time bought only a
+> higher-powered *restatement* of a null already known, not the harder-difficulty test the suite was built
+> for. A 20-item pilot on A1 would have flagged it and redirected to the symbolic-scorer fix first. **The
+> saturation diagnosis belongs on a pilot, not on the full result.**
+
 | # | Suite (adapter) | Job | n | Notes |
 |---|---|---|---|---|
 | L0 | **`mmlu_pro`** | knowledge control | 100–200 | should show quant-parity *while* reasoning suites reveal gaps — the asymmetry is the point |
