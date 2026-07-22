@@ -64,7 +64,7 @@ The smoke-tests map the card; the payoff is hosting the big models. Two axes:
 - GPU kernel validation before future production-kernel promotion
 - Agentic ROCm kernel authoring loop (child handoff)
 
-- [ ] **MI-KB-1** — evaluate KernelBench integration into experimental kernel validation pipeline (step 3 of four-step workflow)
+- [x] **MI-KB-1** — evaluate KernelBench integration into experimental kernel validation pipeline (step 3 of four-step workflow) ✅ 2026-07-22
 - [ ] **MI-KB-2** — run KernelBench over current v6 production kernel to establish baseline
 
 ## Progress checklist

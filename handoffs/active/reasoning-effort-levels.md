@@ -147,7 +147,7 @@ meant to fix). This makes budget-selection and admission-control **one problem**
       key constant; extends the live placement SM in [[project_heterogeneous_slot_fabric]] (already
       "everything is a slot"). Potentially **asynchronous** — hold or shed budget under pressure rather than
       truncate. This is a non-trivial joint scheduler: **complexity-estimate → budget → admission → placement**.
-- [ ] **TB-7 — Calibrate the budget policy from AutoPilot's live token stats (no new inference).** AutoPilot
+- [x] **TB-7 — Calibrate the budget policy from AutoPilot's live token stats (no new inference).** AutoPilot ✅ 2026-07-22
       already records **tokens-generated per successfully-completed task**. That is a free, production-grounded
       distribution of "how much budget did each task class actually need" — mine it to set per-(task-class,
       model) budget defaults and to find the knee *without* running the TB-1 sweep for every task type.
@@ -170,7 +170,7 @@ as its `n_ctx_slot` (`-c = per_slot_ctx × n_parallel`) — else llama.cpp silen
 `n_ctx_slot ≥ budget` and VRAM headroom at launch (the batched run does).
 
 ## Prioritized task list
-- [ ] **E-1 — Design the ladder.** Draft 4–5 effort levels, e.g. L0 answer-only → L1 one-line
+- [x] **E-1 — Design the ladder.** Draft 4–5 effort levels, e.g. L0 answer-only → L1 one-line ✅ 2026-07-22
       justification → L2 brief step-by-step (bounded) → L3 full CoT → (L4 native `<think>` on).
       Levels must be *prompt* variants; note which also set a budget backstop.
 - [ ] **E-2 — Measure the curve, once per model.** Sweep the levels on the **already-pinned**

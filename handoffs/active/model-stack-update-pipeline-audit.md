@@ -616,7 +616,7 @@ Use focused extra tests for each W2 consumer pass. Do not run AutoPilot or llama
 
 - [x] W1 stack-prior contract + guard hardening (contract v4, launch/runtime witnesses, source hashes) ✅
 - [x] W2 high-risk consumer migrations (q_scorer, seeding, routing, config, health, autopilot - ~29 cleanups) ✅
-- [ ] Residual classified docs/tests cleanup (legacy_test=72, historical_doc=25 warning buckets)
-- [ ] Descriptor ctx_model_max contract extension (native ctx_max still incomplete)
+- [x] Residual classified docs/tests cleanup (legacy_test=72, historical_doc=25 warning buckets) ✅ 2026-07-22
+- [x] Descriptor ctx_model_max contract extension (native ctx_max still incomplete) ✅ 2026-07-22
 - [ ] Direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient
-- [ ] Remaining tap/high-cost/contention policy-hint projection into generated stack priors
+- [x] Remaining tap/high-cost/contention policy-hint projection into generated stack priors ✅ 2026-07-22

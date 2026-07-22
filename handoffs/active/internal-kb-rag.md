@@ -506,4 +506,4 @@ _Via /research-intake Stage-2 (intake-881 graph-engineering wiring assessment)._
 
 ### Follow-ups discovered during federation implementation — 2026-07-22
 - [x] Re-run `scripts/gitnexus-analyze.sh` for **epyc-orchestrator** — its GitNexus index is corrupt (LadybugDB `lbug.wal` without `lbug.shadow` → CLI segfaults, signal 11, on every read). The `federation.py` tool degrades gracefully (skips that repo) but the orchestrator code-graph side is unavailable until re-indexed. ✅ 2026-07-22 (re-indexed 32.9s, 52,993 nodes; index reads clean, no more signal-11)
-- [ ] Tidy `federation.py`'s hardcoded `onnxruntime` site-packages fallback path (env-overridable via `FEDERATION_ORT_SITE_PACKAGES`) — discover the encoder deps without the hardcoded `/mnt/raid0/llm/venv/...` path.
+- [x] Tidy `federation.py`'s hardcoded `onnxruntime` site-packages fallback path (env-overridable via `FEDERATION_ORT_SITE_PACKAGES`) — discover the encoder deps without the hardcoded `/mnt/raid0/llm/venv/...` path. ✅ 2026-07-22

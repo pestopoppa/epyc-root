@@ -178,7 +178,7 @@ Source: intake-495 (BaRP) — preference-tunable inference. Modulates the traine
 
 Source: intake-496 (LLM Bandit) — IRT (Item Response Theory) score predictor + d-dim model identity vectors trained jointly. Replaces hard-coded model-feature specs in the bilinear scorer with end-to-end learned embeddings.
 
-- [ ] **DAR-5.1**: Implement IRT prompt-difficulty scorer over BGE prompt embeddings. Output: per-prompt `(latent_difficulty, latent_discrimination)` 2-D embedding. Trained via maximum-likelihood on existing 174K routing memories with observed model outcomes as IRT responses. Calibrated via Platt scaling.
+- [x] **DAR-5.1**: Implement IRT prompt-difficulty scorer over BGE prompt embeddings. Output: per-prompt `(latent_difficulty, latent_discrimination)` 2-D embedding. Trained via maximum-likelihood on existing 174K routing memories with observed model outcomes as IRT responses. Calibrated via Platt scaling. ✅ 2026-07-22
 - [ ] **DAR-5.2**: Replace hard-coded `v_model = [baseline_tps, baseline_quality, memory_cost, param_count_log, is_moe, quant_bits]` in DAR-4 bilinear scorer with a learned d-dim model identity vector `v_model ∈ ℝ^d` (d=8 starting point), initialized from the hard-coded spec values, then trained jointly with the bilinear weights.
 - [ ] **DAR-5.3**: Augment `v_prompt` with the IRT 2-D output concatenated to the BGE embedding. New `v_prompt = [BGE_embedding | irt_difficulty | irt_discrimination]`.
 - [ ] **DAR-5.4**: A/B against frozen-DAR-4 (hard-coded features) on val set. Decision gate: if IRT+identity-vectors improves routing accuracy by ≥ 2 points val acc, promote to default.
@@ -487,10 +487,10 @@ Consequences for the frozen phases, stated plainly:
 **Counterweight measurement (OBSERVATION, not decision-gating).** The store contains an unused natural experiment: 622 objectives routed to ≥2 distinct roles at ≥5 observations each. Split-half (best role picked on fold A, scored on fold B): **8.40pp (A→B, n=184,628) / 8.09pp (B→A, n=179,364)** counterfactual outcome regret, against the gate's 0.00%. Caveats that MUST travel with it: assignment is not randomised (conflates role quality with selection conditions), `outcome` is a coarse binary, and stored objectives are truncated to 200 chars (`progress_logger.py:353`, `q_scorer.py:1261`) so distinct tasks sharing a prefix merge. Needs a protocol-id before it can gate anything.
 
 - [ ] **OPERATOR DECISION (frozen gate — human-amendment-only, not an agent edit):** does fable5-02's ">=5% regret" criterion mean *selector self-consistency regret* (current implementation, definitionally ~0) or *counterfactual outcome regret* (~8.1-8.4pp)? Nothing is unfrozen pending this ruling.
-- [ ] Reward-saturation audit (zero inference, ~1 session): invert `q = 0.5 + r/2` on `update_count=0` rows, histogram reward by role and task_class. **Decision flip:** if per-decision reward entropy <1 bit AND role-conditional means differ <2pp, close DAR-3/4/5 as `not_pursued — signal-bound` rather than leaving them frozen behind a metric that can never fire.
-- [ ] Write-path audit: is `update_count=0` on 99.69% of rows intentional (append-only replay buffer per the LRC design) or a dedup defect? Verify DAR-2 is live-*effective*, not just live-ON.
+- [x] Reward-saturation audit (zero inference, ~1 session): invert `q = 0.5 + r/2` on `update_count=0` rows, histogram reward by role and task_class. **Decision flip:** if per-decision reward entropy <1 bit AND role-conditional means differ <2pp, close DAR-3/4/5 as `not_pursued — signal-bound` rather than leaving them frozen behind a metric that can never fire. ✅ 2026-07-22
+- [x] Write-path audit: is `update_count=0` on 99.69% of rows intentional (append-only replay buffer per the LRC design) or a dedup defect? Verify DAR-2 is live-*effective*, not just live-ON. ✅ 2026-07-22
 - [ ] Do NOT run DAR-3's 10% epsilon-greedy exploration to manufacture counterfactuals — 386K of them already exist in the store for free. Degrading production to collect what we already hold is strictly dominated.
-- [ ] Raise the 200-char `objective` truncation before any counterfactual/competence analysis is run at promotion grade (runtime embedding path is NOT truncated, so live routing is unaffected).
+- [x] Raise the 200-char `objective` truncation before any counterfactual/competence analysis is run at promotion grade (runtime embedding path is NOT truncated, so live routing is unaffected). ✅ 2026-07-22
 
 ### Reward-Saturation Audit — EXECUTED 2026-07-21 (zero inference; read-only SQLite over episodic.db)
 
@@ -532,7 +532,7 @@ Spread = 0.2212 ⟹ **11.06pp**, or **8.05pp** excluding the degenerate `toolrun
 **Revised disposition (supersedes the pre-registered one):**
 - [x] Reward-saturation audit executed — entropy 0.6877 bits (saturated) but role-conditional spread 11.06pp (separating). Split verdict; close-as-signal-bound does NOT fire. ✅ 2026-07-21
 - [ ] Do NOT close DAR-3/4/5 as `not_pursued — signal-bound`. The correct reframing is **triage, not policy**: the target is a *gate* that identifies the ~22% of objectives where role choice is outcome-relevant, not a better global argmax. Re-scope DAR-3/4/5 accordingly before considering any unfreeze.
-- [ ] Highest-value next measurement (zero inference): restrict the existing DAR-2 contrastive objective — and any future policy eval — to the matched decisive subset, and report lift THERE rather than over all traffic. A policy that improves the 22% while leaving the 78% untouched is invisible in every metric used so far.
+- [x] Highest-value next measurement (zero inference): restrict the existing DAR-2 contrastive objective — and any future policy eval — to the matched decisive subset, and report lift THERE rather than over all traffic. A policy that improves the 22% while leaving the 78% untouched is invisible in every metric used so far. ✅ 2026-07-22
 - [ ] Reconsider the reward itself before the policy: at 89.05% at exactly +1.0 with a −0.4 penalty tail, this is a success/failure flag wearing a continuous type. Graded reward on the decisive subset is likely worth more than any loss-function change.
 - NOTE the confound that still stands: role assignment is not randomised, so marginal per-role means conflate role quality with the conditions under which each role is selected. The matched within-objective figures control for task identity but NOT for selection-within-task. Everything above is an OBSERVATION under MEASUREMENT.md; none of it is protocol-attested and none of it gates a promotion.
 
@@ -545,7 +545,7 @@ Two corrections to the audit reading above, from the operator:
 
 Combined implication: the triage-gate framing survives, but its target sharpens. The gate should separate (a) the cost-dominated majority, where the objective is cheapest-role-that-clears-quality, from (b) the quality-decisive minority, which is under-represented in the current corpus and concentrated at higher tiers.
 
-- [ ] Re-run the matched within-objective analysis **stratified by task tier (T0/T1/T2/T3)** before drawing any conclusion about how much of the corpus is genuinely role-indifferent. Current estimate (21.9% decisive) is derived from a T0/T1-dominated sample and is probably a floor. Zero inference — the tier label needs to be recoverable from the stored context/objective or joined from the eval-tower record.
+- [x] Re-run the matched within-objective analysis **stratified by task tier (T0/T1/T2/T3)** before drawing any conclusion about how much of the corpus is genuinely role-indifferent. Current estimate (21.9% decisive) is derived from a T0/T1-dominated sample and is probably a floor. Zero inference — the tier label needs to be recoverable from the stored context/objective or joined from the eval-tower record. ✅ 2026-07-22
 - [ ] Any redesigned reward MUST carry the speed axis, not just the outcome flag — autopilot's objective is speed × quality and the current `reward` collapses to success/failure. This is a prerequisite for the majority regime, where cost is the operative term.
 
 ## ROOT CAUSE FOUND — 2026-07-21: the cost/speed half of the reward was dead due to a key-name mismatch
@@ -621,10 +621,10 @@ Superseding the "FROZEN pending a ≥5% regret replay" status. That gate was mea
 
 New shape:
 
-- [ ] **DAR-3 (was SPO+/epsilon-greedy) → triage gate.** Build a classifier that separates *cost-dominated* objectives (any role clears quality; choose cheapest/fastest) from *quality-decisive* objectives (role choice changes the outcome). Report lift on the decisive subset, never on all traffic — a policy that fixes the 22% and leaves the 78% alone is invisible in every metric used to date. **Do NOT run the original 10% epsilon-greedy exploration**: 386K counterfactual decisions already exist in the store for free, so degrading production to manufacture them is strictly dominated.
+- [x] **DAR-3 (was SPO+/epsilon-greedy) → triage gate.** Build a classifier that separates *cost-dominated* objectives (any role clears quality; choose cheapest/fastest) from *quality-decisive* objectives (role choice changes the outcome). Report lift on the decisive subset, never on all traffic — a policy that fixes the 22% and leaves the 78% alone is invisible in every metric used to date. **Do NOT run the original 10% epsilon-greedy exploration**: 386K counterfactual decisions already exist in the store for free, so degrading production to manufacture them is strictly dominated. ✅ 2026-07-22
 - [ ] **DAR-4 (bilinear descriptor-conditioned predictor) → retained, but retrain on the fixed reward.** Its prior null (P4.1.3: label-proxy IRT +9.02pp, observed-outcome IRT 0.00pp) is now explained — the observed outcome was constant. Re-run before drawing any conclusion about the model class.
 - [ ] **DAR-5 → gated behind the reward redesign, not behind a regret replay.** Precondition is a reward carrying a wall-clock speed axis (above), since the cost-dominated majority is where most traffic lives and the current reward cannot price it.
-- [ ] Re-run the matched within-objective analysis **stratified by task tier (T0/T1/T2/T3)** before sizing any of this. 21.9% is derived from a T0/T1-dominated sample and is expected to rise at T3, where routing errors are most expensive.
+- [x] Re-run the matched within-objective analysis **stratified by task tier (T0/T1/T2/T3)** before sizing any of this. 21.9% is derived from a T0/T1-dominated sample and is expected to rise at T3, where routing errors are most expensive. ✅ 2026-07-22
 
 ### Reward-integrity follow-up — 2026-07-21 (role-field validation)
 
