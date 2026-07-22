@@ -388,7 +388,81 @@ summary}`. No provenance defect here; included for completeness of surface #3.
 
 ---
 
+## EV-11c Confidence-Capture Coverage Review (2026-07-22, follow-up session)
+
+Commissioned after EV-11c (`math_rebaseline`) shipped `ECE=0.0/AUROC=0.0`
+placeholder zeros with **no** confidence provenance in its per-role aggregates.
+Question per path: **(a)** requests logprobs (`n_probs`)? **(b)** computes
+per-question confidence? **(c)** threads `confidence_is_real` into aggregates?
+**(d)** ECE/AUROC emit real / honest-null / **fake 0.0**? File:line at HEAD after
+this session's fixes (`scripts/autopilot/eval_tower.py`,
+`scripts/benchmark/eval_batch_serving_evaltower_window.py`,
+`scripts/autopilot/export_rlvr_environment.py`).
+
+| Eval / scoring path | (a) logprobs | (b) per-Q confidence | (c) `confidence_is_real` in aggregate | (d) ECE/AUROC emission | Verdict |
+|---|---|---|---|---|---|
+| **`math_rebaseline`** (`eval_tower.py:4308` `eval_math_rebaseline` → `_eval_batch`→`_eval_question:2456` → `_aggregate`) | YES — `_eval_question:2456` requests `n_probs` for scoreable non-rubric (math_verify qualifies) | YES — `_completion_probabilities_confidence:612` via `_derive_question_confidence:1880` | **FIXED** — per_role now stamps `confidence_is_real`+`confidence_source_counts` (`eval_tower.py:4393,4405-4407`) | **FIXED** — `agg.ece/auroc` gated → None on binary/mixed (`4403-4404`); was **fake 0.0** | was the incident; now honest |
+| **HE-R+ / EV-4 calibration** (`eval_tower.py:4232` `eval_calibration`) | YES (Option A code_execution `n_probs`) | YES — `r.confidence` → `compute_calibration_metrics` | **FIXED** — per_role now stamps `confidence_is_real`+source counts (`eval_tower.py:4275-4294`) | **FIXED** — six metrics gated → None on binary/mixed (`4288-4291`); `compute_calibration_metrics` already emitted honest nulls for degenerate but ECE was a fake ~0.0 on binary proxy | now honest + provenance |
+| **core `_aggregate`** (mc / general / T0-T3, `eval_tower.py:3013`) | inherits `_eval_question` `n_probs` | YES | YES — `details.confidence_is_real` (present since e26a7cb3) | **FIXED for data-absent** — empty confidences → None not 0.0 (`3134-3160`) + `calibration_confidence_present` provenance (`3330`); present-data path (incl. degenerate AUROC 0.0) unchanged to preserve ECE-binning pins & respect the F3/ESC-7 boundary (ece/auroc are NOT SafetyGate inputs) | honest absence; gating semantics untouched |
+| **RLVR export** (`export_rlvr_environment.py`) | n/a (offline bridge) | reads persisted rows | **FIXED (F2)** — `_eval_record:224-235` merges `confidence_is_real`; `_environment_row:253,261` attaches `details={confidence_is_real}` to the SimpleNamespace | consumes ece/auroc via `rlvr_tiers`; was fail-**closed** (every row `confidence_not_real`), now provenance-clean rows earn credit; absent stamp still fail-closed | FIXED |
+| **window-runner** (`eval_batch_serving_evaltower_window.py` verifier/tier) | delegates to EvalTower | delegates | reads per_role `confidence_is_real` | `decision_grade` **FIXED** — reliability-floor (<0.8) + fake-calibration demotion w/ `decision_grade_reasons[]` (`build_verifier_report` + `_decision_grade_quality_reasons:239`). **Per-question persistence: ABSENT until this fix** — sidecar wrote to default trial-keyed root (`trial_unknown`), not the run's `--output-dir`; now per-arm `question_results.<arm>.jsonl` into `--output-dir` (`eval_tower.py:1968` `set_question_artifact_dir` + `_eval_batch` path override) + `--retry-errors-from` merge mode (`build_retry_report:1229`, `merge_prior_and_retried:1157`, `eval_question_subset:4439`) | FIXED |
+| **RE-4 longcot runner** | — | — | — | — | **NOT PRESENT in epyc-orchestrator** (lives in epyc-inference-research); no in-repo path to fix |
+| **seeding** (`scripts/benchmark/seeding_orchestrator.py:636,766`) | forwards `n_probs` to payload (plumbing present since e26a7cb3) | producer-side only | n/a — seeding does not build calibration aggregates | n/a | **OWNED ELSEWHERE — documented only**, no defect observed (no ECE/AUROC aggregate emitted here) |
+
+**Cross-path note:** the shared fail-closed provenance rule is uniform — an
+aggregate is `confidence_is_real` **only** when *every* scored row carries the
+`completion_probabilities_geomean` source; any binary/mixed batch ⇒ False ⇒
+ECE/AUROC emit `None` at the decision-facing surface (never 0.0). The core
+`_aggregate` retains computed values on present data (measurement-instrument pins
++ F3/ESC-7 boundary), because ece/auroc are not SafetyGate/Pareto inputs; the
+real-vs-proxy gate is applied in the decision-facing per-role builders and in
+`rlvr_tiers` (which already treats not-real as blocked).
+
+### Implementation Record (this session — code in epyc-orchestrator)
+
+- [x] **B1 — math-path confidence capture + provenance** ✅ 2026-07-22 —
+  `eval_math_rebaseline` per_role threads `confidence_is_real` /
+  `confidence_source_counts`; ECE/AUROC gated to `None` on binary/mixed (reuses
+  `_derive_question_confidence` / `_completion_probabilities_confidence` / the
+  `ev11b_closed_bin` ECE — no forked math). (`eval_tower.py:4393-4407`)
+- [x] **B2 — placeholder-zero elimination in core `_aggregate`** ✅ 2026-07-22 —
+  data-absent (empty confidences) → `ece=None`/`auroc=None` + `confidence_is_real`
+  / `calibration_confidence_present` provenance; present-data path & ECE-binning
+  pins preserved; safety_gate dataclass default & gate consumption untouched
+  (respects F3/ESC-7). `eval_calibration` per_role likewise gated + provenance.
+- [x] **B3 — RLVR export provenance threading (F2)** ✅ 2026-07-22 — both hops
+  fixed: `_eval_record` merges `confidence_is_real`(+source counts) incl. the
+  nested `details.details` shape; `_environment_row` gives the SimpleNamespace a
+  `details={"confidence_is_real": …}`. Fail-closed default preserved (absent stamp
+  ⇒ blocked).
+- [x] **B4 — decision_grade honesty in window runner** ✅ 2026-07-22 —
+  `_decision_grade_quality_reasons` demotes on any arm reliability `< 0.8` OR
+  present-and-False confidence provenance; `decision_grade_reasons[]` surfaced in
+  report + markdown; lenient on absent fields (fires only on present-and-bad).
+- [x] **B5 — per-question persistence on the window-runner path** ✅ 2026-07-22 —
+  `EvalTower.set_question_artifact_dir` + `_eval_batch` per-arm path override reuse
+  the existing append-only/fsync `_EvalQuestionJsonlWriter`; window runner writes
+  `<output-dir>/question_results.<arm>.jsonl` (best-effort, fail-soft).
+- [x] **B6 — `--retry-errors-from <dir>` merge mode** ✅ 2026-07-22 — loads prior
+  per-arm sidecars, reruns ONLY error rows per role via
+  `EvalTower.eval_question_subset` (guard-relaxed subset primitive), emits a MERGED
+  summary (`merged=true`, `retried_n`, `retry_source_run`) with `decision_grade`
+  over the merged pool. Same `--apply/--confirm-clean-window` gating.
+- [x] **Tests** ✅ 2026-07-22 — new fixtures (mocked rows; straddled real/absent
+  confidence; reliability-floor boundary; RLVR provenance incl. nested shape;
+  persistence sidecar; retry merge) across `test_eval_verifier_mode.py`,
+  `test_rlvr_environment_export.py`, `test_eval_tower_ev11_stats.py`. Targeted
+  suite green (187 passed across touched-module test files; existing pins intact).
+
+**Scope boundary respected:** no process/stack/inference/network actions; other
+agents' files (`safety_gate.py`, `autopilot.py`, `src/api/*`, `seeding_*`,
+`stack_priors`) untouched — gaps found there are documented above, not edited.
+
+---
+
 *Audit artifacts: offline import of `src.autopilot_core.rlvr_tiers` (pure);
 read-only reads of `autopilot_state.json`, `autopilot_baseline.yaml`,
 `instrument_eras.yaml`, gate report JSON, eval report summary. No inference, no
-HTTP, no stack commands, no source edits.*
+HTTP, no stack commands, no source edits. Follow-up implementation session
+(2026-07-22) added code fixes in epyc-orchestrator + this coverage review /
+implementation record; targeted offline pytest only.*
