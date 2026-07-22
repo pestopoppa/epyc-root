@@ -385,3 +385,8 @@ AXA-1, and open a registry-change note (do NOT edit the live registry — that's
 6 papers deep-dived read-only; see `research/intake_index.yaml`: net-new `2508.18672`, `2505.11574`,
 `2505.02390` (highest-priority — exact toolchain), `2604.07035`; promoted-from-reference `2504.04823`;
 already-integrated `2505.09388` (intake-074).
+
+
+## Laguna S 2.1 intake integration — 2026-07-22 (deferred candidate)
+_Via /research-intake Stage-2 (intake-879/880); blocked on the [laguna-s21-cpu-port.md](laguna-s21-cpu-port.md) port producing a working CPU build._
+- [ ] Include Laguna S 2.1 (Q4_K_M + UD-IQ2_M) as an architect/coder-bench candidate ONCE SERVED — first independent quality read (all vendor numbers self-reported)

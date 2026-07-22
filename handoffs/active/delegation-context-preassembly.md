@@ -95,3 +95,8 @@ Run **advisory-first** (bundle attached, reactive discovery still enabled — DC
 - ❌ quality drop OR no latency improvement → keep reactive discovery; shelve pre-assembly; flag off.
 
 Mitigation: flag default-off; advisory mode never removes reactive discovery; top-ups always allowed (no hard firewall); bundle freshness (`repo_sha`/`content_sha256`) re-checked per delegation; security/noise exclusion policy applied at DCP-1. Operator decision tree mirrored in [`bulk-inference-campaign.md`](bulk-inference-campaign.md) Package J.
+
+
+## Research-intake integration — 2026-07-22 (graph-wiring: KB->delegation, gated)
+_Via /research-intake Stage-2 (intake-881 graph-engineering wiring assessment)._
+- [ ] (Gated) Add the ColBERT KB as an optional prior-decisions source in delegation-context pre-assembly, behind the existing `dcp_pre_assembly` flag; measure quality/latency before default-on (DCP's live A/B is already latency-unfavorable: ON 32.6s vs OFF 20.2s)

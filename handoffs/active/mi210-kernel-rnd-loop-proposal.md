@@ -74,3 +74,8 @@ Single-GPU serialization ⇒ one experiment at a time (unlike the orchestration 
 - [ ] Phase 1 kernel strategy store SQLite (kernel_store.py exists; Pareto/rewind wiring open)
 - [ ] Phase 2 the nightshift loop (outer planner/critic + inner sweep->kernel_eval.sh->Pareto)
 - [ ] First real workload: L3-MoE/L15 MMQ-family param sweep through the loop
+
+
+## Auto-kernel revival — research-intake integration 2026-07-22 (Phase 2 from OpenHyra harness)
+_Via /research-intake Stage-2 (intake-885 OpenHyra)._
+- [ ] Build Phase 2 (autonomous inner verify loop) on OpenHyra's harness pattern: all-outcomes Experience Bank (`eb.py` append-only + fsync) as the Phase-1 strategy store; evidence-gated stop (the LLM may only REQUEST stop; deterministic guards on evaluator records dispose; `stopping.py:238-263`). Autonomy ceiling unchanged — experimental-tree commits + OBSERVATIONS only; P-GPU-1 / production push stays operator-gated

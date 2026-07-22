@@ -33,3 +33,12 @@ Related existing work (do NOT duplicate — this stub is about the *collaboratio
 - Concrete transferable patterns from intake-798: layered/rotating quality gates (defeat metric-gaming), taskforces+channels (defeat collapse + message-flood), trace sharing (defeat repeated dead-ends), HITL dashboard to steer agents out of hopeless loops.
 - All intake-798 numbers are OBSERVATION-grade (challenge-internal, self-reported); this stub is about the *organizational mechanism*, which does not depend on those numbers.
 - Template referenced by the source: `github.com/huggingface/agent-collabs` (external, operator-review only — do not clone/run without approval).
+
+
+## Research-intake integration — 2026-07-22 (R&D-harness patterns from orx / HyRA / OpenHyra)
+_Via /research-intake Stage-2 (intake-882/883 orx, intake-884 HyRA, intake-885 OpenHyra). NOTE: the HyRA/OpenHyra R&D-harness descriptor + scoring items were routed here rather than to meta-harness-optimization.md, which forbids new task checkboxes (compatibility pointer)._
+- [ ] Compare OpenHyra's all-outcomes Experience Bank + LLM Context-Agent cross-round memory (`eb.py`, `context_agent.py`) against StructuralLab / agent-collab archive design
+- [ ] Adopt a uniform per-task descriptor {seed/baseline solution, run script -> solution.json, fixed objective scorer, always-valid fallback} for the R&D harness (HyRA cross-domain contract)
+- [ ] Feature-mine OpenHyra's trusted-evaluator-outside-sandbox + anti-TOCTOU immutable-snapshot scoring (`sandbox.py:80-134,255`) as a reusable scoring-integrity pattern (general R&D-harness version of the C6 kernel-loop item in [rocm-verify-profile-backend.md](rocm-verify-profile-backend.md))
+- [ ] (Optional spike, gate on operator interest) Point orx at EPYC's llama.cpp via OpenCode as a DISPOSABLE test vehicle (`--backend local`, custom OpenAI provider in `~/.config/opencode/opencode.json`) to validate the loop end-to-end. NOT a harness commitment — mining orx's patterns is unconditional and re-targeting to our eventual chosen harness is ~1 `impl Harness` file (`src/local/harness/mod.rs:1135`). Gate any long-term harness choice on [harness-selection-and-integration.md](harness-selection-and-integration.md)
+- [ ] (Optional spike) Add a 3rd OpenHyra llm_backend adapter (~30-60 LOC) targeting a local OpenAI-compatible coding agent -> llama.cpp; needs `OPENHYRA_ALLOW_UNSANDBOXED=1` + an external container (sandbox is macOS-only)

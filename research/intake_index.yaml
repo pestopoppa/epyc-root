@@ -47281,3 +47281,442 @@
   novelty_justification: 'The qualitative claim — trajectory-level GRPO advantage is a poor credit-assignment signal in multi-turn settings and per-turn estimation helps — is already well represented in the index (intake-344, intake-286, intake-403) and in concurrent literature. What is new is the closed-form scaling law: naming decision density rho, deriving Theta(rho^-1/2), and validating the exponent to R^2 0.999. That converts a folk observation into a quantity — a real but narrow contribution.'
   relevance_justification: 'The training half does NOT transfer: EPYC is a CPU-first inference stack with no training cluster, so neither GRPO nor turn-level PPO is runnable here, and the paper proposes no algorithm we could port anyway. What transfers is the ATTRIBUTION ARGUMENT in a non-RL setting. Our episodic Q-scorer applies a TD update per routing decision against a terminal task outcome, and the autopilot journal attributes end-of-run success back over multi-turn agent trajectories. Most turns in those trajectories are routine (file reads, format fixes, retries) and reward-equivalent — a low-rho regime, where this paper says the per-decision signal is diluted by ~1/sqrt(rho). That is a concrete, testable framing for the zero-predictive-spread pathology DAR-1 already documented, and it argues for measuring an empirical rho proxy on the journal before investing further in reward shaping. Medium and not high because it is a lens, not a component: nothing is deployable, the evidence is synthetic, and we already hold several entries making the same directional point.'
   verdict_justification: 'adopt_patterns. Adoptable: (1) the decision-density lens as an ANALYSIS STEP on the autopilot journal — estimate what fraction of logged turns/subagent calls are outcome-discriminative, since a low proxy-rho predicts that uniform terminal-reward attribution is mostly noise and would explain DAR-1''s flat Q-spread; (2) rho as a cheap prioritization argument for turn-level attribution work in the outer-coordinator head over more terminal-reward shaping; (3) Prop 3.3 as a caution — finer-grained attribution only pays if the per-turn value estimate is low-noise, which for us means a reliable per-turn scorer must exist FIRST (an eval-tower dependency). Not adoptable: everything algorithmic, on hardware grounds. Per project rule this is flagged for operator review rather than dismissed — if a GPU path lands, rho becomes a genuine pre-flight check on whether RAO/Tree-GRPO-class trajectory-level training is worth the compute. ADJACENT WORKS SURFACED (verified real, distinct, both absent from the index, NOT ingested this run to respect the expansion cap): arXiv 2604.11037 "RTMC: Step-Level Credit Assignment via Rollout Trees" (Wang/Zheng/Xu, 2026-04-13) — critic-free per-step advantages via cross-rollout state matching, +3.2pp over GRPO on SWE-bench Verified, arguably higher-value than this target since it answers the Prop 3.3 objection with real-benchmark numbers; and "Turn-PPO: Turn-Level Advantage Estimation with PPO for Improved Multi-Turn RL in Agentic LLMs" (Findings of ACL: EACL 2026) — peer-reviewed, evaluated on WebShop and Sokoban. Both are queued candidates for a future run.'
+- id: intake-879
+  arxiv_id: null
+  url: https://poolside.ai/blog/introducing-laguna-s-2-1
+  source_type: blog
+  title: Introducing Laguna S 2.1
+  authors:
+  - Poolside team
+  categories:
+  - speculative_decoding
+  - local_inference
+  - agent_architecture
+  - moe_optimization
+  key_claims:
+  - Laguna S 2.1 is a 118B-total / 8B-active-parameter Mixture-of-Experts agentic coding model, claimed 'the most capable agentic coding model in its weight class by a wide margin.'
+  - Open weights day-one under OpenMDW-1.1 in BF16, FP8, INT4, and NVFP4, plus official GGUF and MLX conversions (Q4_K_M 75GB / Q8_0 128GB / F16 235GB all fit in 1.1TB RAM).
+  - 'Official ''DFlash'' draft models are published for speculative decoding; the GGUF release ships a 2.2GB DFlash-BF16 drafter (DFlashLagunaForCausalLM: 6 sliding-attention layers, block_size 16, num_speculative_tokens=15).'
+  - 1M-token context supported in both thinking and no-thinking modes (GGUF ships at 256K, extensible to 1M via YaRN scaling).
+  - First poolside model where RL post-training was done in FP8 precision.
+  techniques:
+  - DFlash block-diffusion speculative-decoding draft models (poolside-trained drafters; same technique lineage as arXiv:2602.06036)
+  - Mixture-of-Experts (118B total / 8B active per token, 256 experts top-10 + 1 shared)
+  - 1M-token context via YaRN scaling
+  - 'llama.cpp fork spec path: --spec-type draft-dflash --spec-draft-n-max 15 (poolside fork branch ''laguna'')'
+  - FP8 RL post-training
+  reported_results:
+  - 'Terminal-Bench 2.1: 70.2% (pass@1 avg of 4). Leaderboard context: Kimi K3 88.3%, Claude Fable 5 88.0%, Qwen 3.7 Max 74.5%, Tencent Hy3 71.7%, Laguna S 2.1 70.2%, DeepSeek-V4-Pro-Max 64.0%'
+  - SWE-Bench Multilingual 78.5%; SWE-Bench Pro (Public) 59.4%; DeepSWE v1.1 40.4%; SWE Atlas (Codebase QnA) 46.2%; Toolathlon Verified 49.7%
+  - No tokens/sec, throughput, speedup, or DFlash acceptance-rate numbers disclosed. All figures self-reported (OBSERVATIONS per MEASUREMENT.md, not decision-gating).
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-07-22'
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - dflash-block-diffusion-speculation.md
+    - speculative-decoding-mtp-refresh.md
+    - deepseek-v4-flash-cpu-port.md
+    - inference-acceleration-index.md
+    - moe-spec-cpu-spec-dec-integration.md
+    - tree-draft-forward-port-plan.md
+    experiments: []
+    intake_entries:
+    - 'intake-158 (DFlash: Block Diffusion for Flash Speculative Decoding, arXiv:2602.06036 - recorded ''NO llama.cpp support'' blocker now flipped by poolside fork)'
+    - intake-296 / intake-297 / intake-298 (z-lab DFlash HF collection / GitHub / project page)
+    - intake-159 (DART diffusion drafter, DFlash sibling)
+    - intake-447 (Lucebox Hub DFlash GGUF port for consumer GPUs)
+    - intake-417 (VLA/driving DFlash application)
+    - intake-880 (companion Laguna GGUF model card)
+  handoffs_updated:
+  - laguna-s21-cpu-port.md
+  - speculative-decoding-mtp-refresh.md
+  - architect-model-selection-bench.md
+  - inference-acceleration-index.md
+  - master-handoff-index.md
+  handoffs_created:
+  - laguna-s21-cpu-port.md
+  contradicting_evidence:
+  - 'EPYC''s OWN concluded handoff dflash-block-diffusion-speculation.md (2026-03-18) found block-diffusion DFlash NOT viable on CPU with Q4_K_M: 27% per-token acceptance breaks the sequential chain; an AR drafter won 36.5 vs 13.0 t/s. That verdict was against a GENERIC drafter with no llama.cpp path; whether poolside''s purpose-trained high-acceptance drafter clears the CPU wall is an OPEN, operator-benchable question, not an established win.'
+  - No independent third-party benchmark of Laguna S 2.1 was found at intake time (web search returned only vendor pages + r/LocalLLaMA discussion) - all quality numbers are poolside self-reported.
+  - 'The Laguna architecture is not in mainline llama.cpp; serving needs poolside''s ''laguna'' fork or upstream PR #25165 (joerowell, ''Add support for Laguna XS.2 & M.1''), so any run requires the llama.cpp-experimental forward-port workflow, never the frozen v7 kernel.'
+  notes: 'MTP/NEXTN CHECK (2026-07-22): base config.json (LagunaForCausalLM) has NO num_nextn_predict_layers / mtp / nextn / eagle field, so Laguna CANNOT use v7''s native MTP/NEXTN spec-dec path and the GGUFs carry no NEXTN tensors; HF search for Laguna+MTP/nextn/eagle/draft returned zero repos. DFlash is the ONLY native spec-dec mechanism. Upstream mainline support tracked in ggml-org/llama.cpp PR #25165.  ||  STAGE-2 DIVE CORRECTION (2026-07-22): MoE router is SIGMOID + score-correction bias, NOT softplus (softplus = the attention output gate) - verified merged laguna.cpp:874-877. iqk caveat imprecise: 92.2% of UD-IQ2_M bytes are IQ-quant (stubbed on frozen v7) but already covered by the code-complete iqk-iquant-enablement branch (97.6% of the IQ bulk); only Q5_K/Q6_K attention (7.4%) is iqk-accelerated on frozen v7 today. Integrated via plan async-brewing-wirth.'
+  novelty_justification: 'The DFlash block-diffusion technique itself is already covered (intake-158/296/297/298 + completed handoff). Materially new: poolside now ships an OFFICIAL llama.cpp fork path (--spec-type draft-dflash) plus purpose-trained DFlash drafters - flipping the ''no llama.cpp support'' blocker intake-158 recorded - and a downloadable weight-class-leading agentic coding GGUF (118B-A8B) with a 2.2GB drafter. New artifacts + deployment surface over a known technique = medium, not high.'
+  relevance_justification: Direct hit on the current spec-dec-mtp-refresh branch; operator is downloading Q4_K_M + UD-IQ2_M now. Q4_K_M (75GB) fits the EPYC 9655 / 1.1TB RAM CPU envelope and the 8B-active MoE shape is favorable for bandwidth-bound CPU decode vs a dense 118B. Maps onto active spec-dec / MoE-spec / forward-port handoffs.
+  verdict_justification: 'worth_investigating, not adopt_component: EPYC''s own concluded handoff found block-diffusion DFlash NOT viable on CPU/Q4_K_M; poolside''s purpose-trained drafter MAY overcome that but must be operator-benched, and draft-dflash is not in production-consolidated-v7 (needs a forward-port on llama.cpp-experimental, never frozen production). Credibility 2: vendor blog (-1), recent <12mo (+1), established coding-AI lab (+1), DFlash technique independently corroborated via arXiv:2602.06036 (+1); Laguna''s own benchmark numbers are self-reported and unverified.'
+- id: intake-880
+  arxiv_id: null
+  url: https://huggingface.co/poolside/Laguna-S-2.1-GGUF
+  source_type: repo
+  title: Laguna S 2.1 GGUF (poolside) - MoE coding model GGUF conversions + DFlash speculative-decoding draft model
+  authors:
+  - poolside (poolside.ai)
+  categories:
+  - speculative_decoding
+  - quantization
+  - moe_optimization
+  - local_inference
+  - inference_serving
+  - context_extension
+  key_claims:
+  - GGUF conversions of poolside/Laguna-S-2.1 for llama.cpp - a 118B-total / 8B-activated MoE (256 routed experts, top-10, + 1 shared; 48 layers with 12 global + 36 sliding-window (window 512) attention, GQA 8 KV heads, softplus/per-head attention gating), for agentic coding and long-horizon SWE.
+  - Ships a purpose-built companion DFlash speculative-decoding draft model (laguna-s-2.1-DFlash-BF16.gguf, 2.2GB) served via new fork flags --spec-type draft-dflash --spec-draft-n-max 15.
+  - 'Full support requires poolside''s llama.cpp fork branch ''laguna''; base Laguna support is also in upstream review as ggml-org/llama.cpp PR #25165 (joerowell) - the arch is NOT yet in mainline llama.cpp.'
+  - 'Quant lineup: F16 235GB, Q8_0 128GB, Q4_K_M 75GB (imatrix-quantized), + laguna-s-2.1.imatrix 0.4GB; a separate unsloth/Laguna-S-2.1-GGUF mirror adds UD-IQ2_M (37GB) and other imatrix UD-quants.'
+  - GGUFs ship at 262,144-token (256K) context; native 1M reachable via rope override (--ctx-size 1048576 --rope-scaling yarn --rope-scale 128 --yarn-orig-ctx 8192) with a quality caveat; recommends --temp 0.7 --top-p 0.95. License OpenMDW-1.1.
+  techniques:
+  - sparse MoE routing with shared expert
+  - DFlash speculative-decoding drafter
+  - imatrix quantization
+  - sliding-window attention
+  - YaRN long-context extension
+  - softplus/per-head attention gating
+  - grouped-query attention
+  - custom llama.cpp fork serving
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: high
+  credibility_score: null
+  verdict: adopt_component
+  discovered_via: input
+  ingested_date: '2026-07-22'
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - speculative-decoding-mtp-refresh.md
+    - deepseek-v4-flash-cpu-port.md
+    - inference-acceleration-index.md
+    - moe-spec-cpu-spec-dec-integration.md
+    - tree-draft-forward-port-plan.md
+    - dflash-block-diffusion-speculation.md
+    experiments: []
+    intake_entries:
+    - intake-158 (DFlash arXiv:2602.06036)
+    - intake-296 / intake-297 / intake-298 (z-lab DFlash artifacts)
+    - intake-447 (Lucebox DFlash GGUF port)
+    - intake-417 (VLA DFlash application)
+    - intake-879 (companion poolside launch blog)
+  handoffs_updated:
+  - laguna-s21-cpu-port.md
+  - iqk-iquant-enablement.md
+  - speculative-decoding-mtp-refresh.md
+  - inference-acceleration-index.md
+  - master-handoff-index.md
+  handoffs_created:
+  - laguna-s21-cpu-port.md
+  contradicting_evidence:
+  - 'Arch not in mainline llama.cpp / not in production-consolidated-v7 - requires poolside fork or upstream PR #25165; serving must go through llama.cpp-experimental forward-port, never frozen production.'
+  - The UD-IQ2_M bulk hits the same IQ-quant iqk-stub caveat as GLM-5.2 (no iqk AVX-512 acceleration on IQ tensors); only the Q4_K_M K-quant benefits from the production iqk path.
+  - Model card carries zero benchmark numbers (credibility null); any speed/quality claim must come from operator-gated canonical benches.
+  notes: 'Deployment artifact the operator is actively downloading (Q4_K_M poolside + UD-IQ2_M unsloth + DFlash-BF16 drafter + imatrices, ~115GB). MTP/NEXTN heads DO NOT EXIST for Laguna (base config has no nextn field); DFlash is the sole native spec-dec path. Upstream arch PR: ggml-org/llama.cpp #25165.  ||  STAGE-2 DIVE CORRECTION (2026-07-22): DFlash = SAME codebase as z-lab (arXiv:2602.06036), not just same technique (GGUF dflash.target_layers = HF target_layer_ids +1, matching z-lab offset=1; no timestep/denoise tensors -> single-pass conditioned block drafter, not iterative diffusion). PR #25165 is MERGED (22 files +1091/-1), base arch only; draft-dflash NOT included (fork branch laguna). UD-IQ2_M full size 37.3GB. Integrated via plan async-brewing-wirth (created laguna-s21-cpu-port.md).'
+  novelty_justification: 'First-party GGUF release of a custom 118B/8B-active MoE coding architecture (novel mixed global+sliding-window attention, softplus gating) not previously in the model registry, shipping a first-party TRAINED DFlash GGUF drafter + fork exposing --spec-type draft-dflash. High: a genuinely new deployable capability, not a re-post of an indexed artifact.'
+  relevance_justification: Directly deployable on the CPU-inference stack (EPYC 9655, 1.1TB RAM); Q4_K_M is a K-quant that benefits from the production iqk AVX-512 GEMM path; 8B-active MoE is favorable for bandwidth-bound decode. The bundled tiny DFlash drafter is a ready-made spec-dec drop for the active spec-dec-mtp-refresh line.
+  verdict_justification: 'adopt_component: a ready-to-serve GGUF coding model + purpose-built draft model already being pulled. Stage-2 caveats: (1) needs poolside fork / PR #25165 - goes through llama.cpp-experimental, never frozen v7; (2) --spec-type draft-dflash is poolside-specific, distinct from native draft-mtp/draft-ngram; (3) prior EPYC DFlash work found the block-diffusion drafter NOT viable on CPU/Q4_K_M - open empirical question. Credibility null: card has no empirical claims.'
+- id: intake-881
+  arxiv_id: null
+  url: https://www.turingpost.com/p/is-graph-engineering-real-why-everyone-is-talking-about-it
+  source_type: blog
+  title: 'FOD#159: Is Graph Engineering Real? Why Everyone Is Talking About It'
+  authors:
+  - Ksenia Se (Turing Post)
+  categories:
+  - knowledge_management
+  - agent_architecture
+  - rag_alternatives
+  - memory_augmented
+  key_claims:
+  - '''Graph engineering'' conflates four distinct things: control graphs (what runs next), knowledge graphs (entities+relationships for retrieval/reasoning), execution-trace graphs (what happened in one run), and improvement graphs (loops that optimize/audit each other). A graph = nodes + edges + state.'
+  - A loop is already a graph (a path returning to an earlier node); 'graph/loop engineering' relabels long-established orchestration ideas, not new mechanisms.
+  - Viral claims that graph engineering 'replaced RAG' at major institutions are false; the cited '18% higher accuracy / 85% lower cost' figure traces to ONE narrow GraphRAG-on-engineering-diagrams paper, not a general result.
+  - 'Design guidance: code controls predictable/deterministic routing; models handle only steps needing judgment (Google ADK philosophy); a box-and-arrow diagram does not make a linear workflow more advanced.'
+  techniques:
+  - Control graphs / agent-orchestration-as-graph (LangGraph)
+  - Knowledge graphs + GraphRAG
+  - Execution-trace / observability graphs
+  - Improvement / self-optimization loop graphs
+  - DSPy
+  - MCP
+  - Google Agent Development Kit 2.0 (code-vs-model routing split)
+  reported_results:
+  - The '18% accuracy / 85% cost' graph-engineering claim is explicitly DEBUNKED as a single-narrow-paper artifact, not a general win.
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: medium
+  credibility_score: 3
+  verdict: already_integrated
+  discovered_via: input
+  ingested_date: '2026-07-22'
+  cross_references:
+    chapters: []
+    handoffs:
+    - internal-kb-rag.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-151 (GitNexus - deployed code knowledge graph, 29981 symbols)
+    - intake-146 (LangGraph - agent orchestration as graphs)
+    - intake-291 (Rowboat - knowledge-graph agent memory)
+    - intake-330 (code-review-graph - AST structural code graph)
+  handoffs_updated:
+  - internal-kb-rag.md
+  - delegation-context-preassembly.md
+  handoffs_created: []
+  contradicting_evidence:
+  - The article is itself a debunking / hype-deflation piece; its central caution (RAG not replaced; the 18%/85% number is a single-paper artifact) is the useful residue and aligns with EPYC's already-deployed tooling. Confirmation-bias risk is low precisely because it argues AGAINST the trend it covers.
+  notes: 'Analyst newsletter, vendor-neutral (one clearly-marked MongoDB sponsored segment). Its four-graph taxonomy maps 1:1 onto existing EPYC surfaces: control->pydantic_graph orchestrator, knowledge->GitNexus + internal-kb-rag, execution-trace->unified-trace-memory-service, improvement->autopilot. Value is vocabulary/screening-prior, not an adoptable technique.  ||  STAGE-2 DIVE CORRECTION (2026-07-22): ''nothing new to build'' was too strong - GitNexus (code KB) and ColBERT (docs KB) are disjoint indices with an explicitly-missing crossover (internal-kb-rag.md:21); a federation query is buildable/MEDIUM (filed there). Improvement->Control is already wired (autopilot journal/episodic.db -> learned-routing-controller). Trace->improvement and trace->KB are ABSENT BY DESIGN (Layer-A append-only). KB->delegation filed gated in delegation-context-preassembly.md. Integrated via plan async-brewing-wirth.'
+  novelty_justification: Aggregation/opinion piece, no new mechanism or original empirical result. All four graph types are already indexed (GitNexus intake-151, LangGraph intake-146, code-review-graph intake-330, Rowboat intake-291). Only fresh contribution is the taxonomy framing - a lens, not a technique - hence low, not duplicate.
+  relevance_justification: On-topic for the KB/GitNexus surface and its hype-debunking is a useful screening prior for future graph-flavored intake, but it proposes nothing buildable and its design principles are already embodied in EPYC's orchestrator + learned routing controller. Validation/vocabulary value, not actionable - medium.
+  verdict_justification: 'already_integrated: the entire four-type taxonomy maps onto existing EPYC surfaces, all satisfying the self-hosted/open-source/CPU constraints. Vendor-neutral commentary that deflates hype rather than proposing a component. Credibility 3: reputable analyst newsletter that sources/debunks claims, +1 recent, no peer review, no original empirical work.'
+- id: intake-882
+  arxiv_id: null
+  url: https://openresearch.sh/
+  source_type: blog
+  title: OpenResearch - Run autoresearch on your machine (alphaXiv)
+  authors:
+  - alphaXiv (org)
+  categories:
+  - autonomous_research
+  - agent_architecture
+  - tool_implementation
+  - swarm_techniques
+  key_claims:
+  - 'Local-first agentic research-experiment orchestrator: install the ''orx'' CLI, start a local dashboard with ''orx up'', assign each research direction its own agent.'
+  - Agents run IN PARALLEL, in ISOLATED git worktrees, using existing local tools and compute (worktree-per-agent, not hosted-only).
+  - Ships a /reproduce-paper <paper URL or title> on <compute> command turning an NL paper reference into a reproduction run on user-specified compute.
+  - Unit of work is an ML experiment (reproduce paper, test longer context, sweep optimizer, tighten eval harness, ablate regularizer) - NOT literature-RAG synthesis.
+  - 'Hybrid distribution: open-source CLI on GitHub + optional hosted ''Cloud agent''. Integrates with Marimo notebooks.'
+  techniques:
+  - autoresearch loop (autonomous code -> run experiment -> measure -> iterate)
+  - parallel multi-agent orchestration with git-worktree isolation
+  - local dashboard control plane (orx up)
+  - natural-language paper reproduction command
+  - Marimo notebook integration
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-07-22'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - meta-harness-optimization.md
+    - minddr-deep-research-mode.md
+    experiments: []
+    intake_entries:
+    - intake-148 (karpathy/autoresearch - closest cousin)
+    - intake-149 (PraxLab autonomous experiment harness)
+    - intake-421 (pi-autoresearch)
+    - intake-124 (alphaXiv Paper Lookup skill - same org)
+    - intake-867 (alphaXiv RL-for-RLMs blog - same org)
+    - intake-883 (the orx CLI backing this landing page)
+  handoffs_updated: []
+  handoffs_created: []
+  contradicting_evidence:
+  - Landing page with zero empirical claims/benchmarks/pricing - nothing to independently contradict; capability is unverified. Core loop is open-source/self-hostable (clears EPYC no-SaaS constraint on its local path); the hosted 'Cloud agent' would be declined.
+  notes: 'Productized alphaXiv packaging of the already-indexed autoresearch loop (intake-148/149/421). Mineable design deltas: git-worktree-per-agent parallel isolation, /reproduce-paper NL command. NOT a literature-RAG/deep-research tool, so it does NOT overlap EPYC''s deep-research harness / ColBERT KB / SearxNG. FLAGGED for operator review (borderline open-source-vs-hybrid).'
+  novelty_justification: The autoresearch loop (agent writes code, runs experiments, sweeps/ablates, iterates) is already covered by intake-148/149/421. openresearch.sh is a productized alphaXiv packaging; its deltas (worktree-per-agent parallel isolation, /reproduce-paper, orx up dashboard, Marimo) are packaging/UX, not a new mechanism. Zero empirical claims - low.
+  relevance_justification: 'EPYC already RUNS an autonomous experiment loop (autopilot + meta-harness + nightshift), so this is a comparable open-source harness. Two mineable choices map onto live work: worktree-isolated parallel agents (mirrors EPYC''s own worktree isolation) and the /reproduce-paper pattern for the intake->reproduction bridge. Does not touch the inference/kernel stack - medium.'
+  verdict_justification: 'worth_investigating (adopt_patterns fallback). NOT SaaS-only: the orx CLI is open-source/self-hostable (local orx up dashboard, BYO compute, paper search no-login), clearing the no-SaaS constraint; hosted Cloud agent optional. Because it overlaps EPYC''s existing autopilot/meta-harness loop, investigate (read the sibling CLI intake-883) and mine its worktree-parallel + paper-reproduction patterns rather than wholesale-adopt a redundant loop. Credibility null: no empirical claims.'
+- id: intake-883
+  arxiv_id: null
+  url: https://github.com/alphaXiv/openresearch-cli
+  source_type: repo
+  title: OpenResearch CLI (orx) - Run parallel research agents with any model
+  authors:
+  - alphaXiv (contact@alphaxiv.org)
+  categories:
+  - autonomous_research
+  - agent_architecture
+  - tool_implementation
+  - knowledge_management
+  - search_retrieval
+  - local_inference
+  key_claims:
+  - Rust CLI + embedded local web dashboard (loopback 127.0.0.1:4791, SQLite/SSE) orchestrating autonomous 'autoresearch' loops from literature review through experiment analysis.
+  - Runs research agents in parallel across separate git worktrees; every experiment is a git branch, so lineage (baseline -> variants) stays explicit (an 'experiment tree').
+  - 'Harness-agnostic: it does NOT run models itself - it drives a locally installed coding-agent harness (Claude Code, Codex, OpenCode, Cursor); harness + model chosen in the UI.'
+  - 'Bring-your-own-compute: launches runs on SSH, Slurm, Kubernetes, Modal, Hugging Face Jobs, local machine, or OpenResearch-managed GPUs, with live logs/artifacts/git-diffs/W&B streaming.'
+  - 'Local and private by design: code/data stay on-machine; only user-initiated compute + paper-search calls leave the box; anonymous opt-out telemetry only.'
+  techniques:
+  - Parallel research agents in isolated git worktrees
+  - Experiment-tree-as-git-branches lineage tracking
+  - Harness abstraction layer driving Claude Code / Codex / OpenCode / Cursor (BYO model)
+  - Autonomous propose -> launch -> analyze research loop
+  - Compute abstraction (SSH/Slurm/K8s/Modal/HF/managed GPUs) with SSH-tunnel remote dashboard
+  - alphaXiv full-text arXiv/paper search (no login required)
+  - Agent-skill injection (orx install-skills) so coding agents can drive orx
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  verdict: adopt_patterns
+  discovered_via: input
+  ingested_date: '2026-07-22'
+  cross_references:
+    chapters: []
+    handoffs:
+    - minddr-deep-research-mode.md
+    - agent-collab-rnd-harness.md
+    - colbert-reranker-web-research.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-124 (alphaXiv Paper Lookup skill - sibling alphaXiv entry)
+    - intake-269 (research-intake credibility rubric + parallel-agent-swarm design - adjacent)
+    - intake-882 (the openresearch.sh landing page this CLI backs)
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  - agent-collab-rnd-harness.md
+  handoffs_created: []
+  contradicting_evidence:
+  - 'NO LICENSE: GitHub license field is null, no LICENSE file (raw 404), so despite public source it is all-rights-reserved by default - collides with EPYC''s opensource-only-for-deploy policy (blocks adopt_component; patterns still mineable).'
+  - Drives models through a coding-agent harness, not a direct OpenAI-compatible endpoint, so it can reach EPYC's self-hosted llama.cpp only INDIRECTLY via a harness (OpenCode/Cursor) - not a clean local-endpoint component. Does NOT hard-require alphaXiv SaaS for the core loop (dashboard local/loopback, compute BYO, paper search no-login).
+  notes: 'Activity signal (2026-07-22): 84 stars, 8 forks, 143 commits, created 2026-06-07, pushed today, release v0.1.72; Rust 74% / TS 20%; cargo test present. An opencode.json already exists in the workspace. Operator-review candidates: (a) mine git-experiment-tree + worktree-parallel-agent patterns for autopilot/nightshift; (b) spike an OpenCode harness under orx pointed at EPYC''s llama.cpp endpoint - pending license clarification.  ||  STAGE-2 DIVE CORRECTION (2026-07-22): License is MIT (Cargo.toml:8 SPDX) - NOT unlicensed; GitHub''s API returned null because it keys off a root LICENSE file. Operator waived license regardless (home build). Core loop runs with ZERO alphaXiv calls (LocalPlane = SQLite only; --backend local runs on the EPYC host; paper search public/token-free). ''Any model'' = via the driven coding-agent CLI, not a direct model API. Patterns (experiment-tree lineage, refill loop) filed to autopilot; spike filed optional-gated to agent-collab. Integrated via plan async-brewing-wirth.'
+  novelty_justification: 'Not a duplicate of EPYC''s deep-research harness (which is answer-synthesis: fan-out search + adversarial verify + cited report). orx is an experiment-RUNNING orchestrator; its distinctive combo is experiments-as-git-branches/parallel-worktree agents + a compute-abstraction layer + harness-agnostic autoresearch from a local dashboard. Underlying ideas already represented (autonomous loop, multi-agent, lit search) - medium not high.'
+  relevance_justification: 'Adjacent to several live efforts (minddr-deep-research-mode, research-intake, autopilot/nightshift, ColBERT KB, SearxNG). Largely a competing/parallel orchestrator, not a drop-in: it exposes no OpenAI-base-url, so it reaches EPYC''s endpoint only via a harness. Adoptable patterns (git-branch experiment lineage, worktree-parallel agents, harness abstraction, no-login paper search) worth mining - medium.'
+  verdict_justification: 'adopt_patterns with an OPERATOR-REVIEW FLAG. Two blockers vs adopt_component: (1) NO LICENSE (all-rights-reserved by default vs opensource-only-for-deploy); (2) drives models via a harness not a direct endpoint. Does NOT hard-require alphaXiv SaaS (core loop local; SaaS optional). Credibility null: repo makes no empirical claims; healthy activity noted for the record.'
+- id: intake-884
+  arxiv_id: null
+  url: https://hy.tencent.com/research/hyra
+  source_type: blog
+  title: HyRA (Hunyuan Research Agent) - Tencent's autonomous/self-improving research agent for open problems in science, math, engineering & creative design
+  authors:
+  - Tencent Hunyuan (Hyra Team)
+  categories:
+  - autonomous_research
+  - agent_architecture
+  key_claims:
+  - 'HyRA = Hunyuan Research Agent: an autonomous, recursively self-improving research agent solving open problems end-to-end across three tracks - AI4AI (neural-arch optimization, model training), AI4Science (symbolic discovery, protein docking, quantum circuit routing, signal processing, packing), AI4Fun (game-playing, music, procedural 3D).'
+  - Beats prior published/SOTA bests on multiple concrete open problems (11 AI4Science + 3 AI4AI tasks + AI4Fun demos), with released self-contained reproduction scripts.
+  - '''First model deeply participating in its own evolution'' framing; AI4AI track has the agent optimize ML training pipelines (nanogpt speedrun, nanochat autoresearch) - self-directed research automation a la AlphaEvolve.'
+  - Structurally an LLM-driven propose-evaluate-select (evolutionary/iterative) loop over candidate solutions with per-task objective scorers; underlying LLM presumed Hunyuan/Hy3 family (not stated).
+  - Released as results + reproducible scripts only (Apache-2.0); no agent weights, no arXiv/technical report.
+  techniques:
+  - Autonomous research agent (recursive self-improvement)
+  - LLM-driven evolutionary / iterative propose-evaluate-select search over solution code
+  - Per-task objective verifiers/scorers gating candidate acceptance
+  - Multi-domain problem-solving harness (AI4AI / AI4Science / AI4Fun)
+  reported_results:
+  - 'AI4AI: nanochat_autoresearch 0.9015 val BPB; nanogpt_speedrun 76.4s wall-clock; sol_execbench 0.771'
+  - 'AI4Science: packing_records 100 records broken; smallest_adder 15 params (vs 36 prior); PARP1 docking -10.60 (vs -9.77); qubit_routing 258,369 CNOTs (vs 269,037 prior); sunspot_symbolic R^2 0.78 (vs 0.47)'
+  - 'AI4Fun: Reversi/Othello bot, music arrangement, procedural 3D (qualitative). All numbers Tencent self-reported; scripts released (Apache-2.0), no third-party replication at intake.'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  verdict: adopt_patterns
+  discovered_via: input
+  ingested_date: '2026-07-22'
+  cross_references:
+    chapters: []
+    handoffs:
+    - agent-collab-rnd-harness.md
+    - autopilot-continuous-optimization.md
+    - minddr-deep-research-mode.md
+    - tri-role-coordinator-architecture.md
+    experiments: []
+    intake_entries:
+    - intake-329 (MiniMax research-agent self-evolution loop - closest conceptual match)
+    - intake-328 (MiniMax-M2.7 self-evolution training loop)
+    - intake-108 (EvoScientist - multi-agent evolving AI scientists)
+    - intake-669 (KernelFoundry - AlphaEvolve-family evolutionary coding agent)
+    - intake-673 (K-Search - world-model-tree evolutionary code search)
+    - intake-677 (GEAK-OpenEvolve - explicit AlphaEvolve/OpenEvolve adaptation)
+  handoffs_updated:
+  - agentic-rocm-kernel-authoring.md
+  - rocm-verify-profile-backend.md
+  - mi210-kernel-rnd-loop-proposal.md
+  - autopilot-continuous-optimization.md
+  - agent-collab-rnd-harness.md
+  - inference-acceleration-index.md
+  - master-handoff-index.md
+  handoffs_created: []
+  contradicting_evidence:
+  - All record claims are Tencent self-reported with self-selected baselines, no peer-review venue, and no third-party replication at intake time (Apache-2.0 reproduction scripts released but unrun by third parties). Promotional showcase framing.
+  - No agent weights released and no CPU-inference surface - relevance is pattern/architecture-level only, not drop-in; heavy LLM-eval compute.
+  notes: 'Fetch note: hy.tencent.com/research/hyra is a client-rendered SPA (WebFetch returned only ''Tencent Hy''); content corroborated from github.com/Tencent-Hunyuan/Hyra-results (Apache-2.0, results + scripts, no weights) + official announcement + web search. No arXiv/technical report. Coverage gap: no chapter (01-10) covers autonomous/evolutionary research agents.  ||  STAGE-2 DIVE CORRECTION (2026-07-22): Hyra-results is an ARTIFACTS repo, not the agent (loop closed-source, not reconstructable). AI4AI artifacts are GPU (H100/Triton/FP8) but a DIRECT input to reviving EPYC''s stalled auto-kernel loop: SOL-ExecBench correctness-gated contract -> C5/C6; 5 bf16/fp16 Triton kernels (+CUDA-lib winners) = reference specs the loop authors gfx90a kernels FROM; FP8 = buildable authoring target (FP8-weight->bf16-MFMA upcast; no native gfx90a FP8 MFMA is a throughput limit, not a wall). Only whole-cluster TRAINING tasks (nanogpt 8xH100, nanochat CuTe) stay out. Filed to agentic-rocm-kernel-authoring / rocm-verify-profile-backend / mi210-kernel-rnd-loop-proposal / autopilot / agent-collab. Integrated via plan async-brewing-wirth.'
+  novelty_justification: 'Fresh major-lab instantiation of an LLM-driven self-improving/evolutionary research agent with unusually broad scope + released reproduction artifacts. MEDIUM not high: the paradigm is already well-covered (AlphaEvolve/OpenEvolve/ShinkaEvolve, GEAK/KernelFoundry/K-Search intake-669/673/677, EvoScientist intake-108, MiniMax self-evolution intake-328/329); HyRA''s packing/adder records mirror AlphaEvolve''s - a strong new datapoint, not a new technique.'
+  relevance_justification: 'MEDIUM: HyRA''s self-evolution loop (analyze failures -> propose changes -> evaluate vs objective -> keep/revert) is structurally the same pattern EPYC''s autopilot/StructuralLab already runs, and AI4AI (optimizing model training) is adjacent to autopilot self-optimization + agent-collab-rnd-harness. NOT a CPU-inference technique (no kernel/quant/spec-dec/KV/RAG mechanism), targets no EPYC-stack component, weights unreleased - pattern-level relevance only.'
+  verdict_justification: 'adopt_patterns. Harvest the harness/loop patterns (multi-domain propose-evaluate-select, per-task objective verifiers, self-directed AI4AI optimization) as reinforcing prior art for autopilot research mode + agent-collab-rnd-harness / tri-role-coordinator; another AlphaEvolve-family confirmation. NOT adopt_component (no weights, heavy compute, zero CPU-inference surface); NOT new_opportunity (paradigm already indexed). Credibility 2: Tencent Hunyuan major lab (+1), recent (+1), Apache-2.0 repro scripts (+1), offset by self-reported records / self-selected baselines / no peer review / no replication / promotional framing (-1).'
+- id: intake-885
+  arxiv_id: null
+  url: https://github.com/MrSteeeve/OpenHyra
+  source_type: repo
+  title: OpenHyra - open-source reconstruction of Tencent HyRA's evolutionary research-agent loop
+  authors:
+  - MrSteeeve (Qian Yuhua)
+  categories:
+  - autonomous_research
+  - agent_architecture
+  - tool_implementation
+  - benchmark_methodology
+  key_claims:
+  - Open-source (MIT) reconstruction of Tencent HyRA's evolutionary research-agent loop (created 2026-07-21). Reproduces HyRA's PUBLIC role decomposition (Context Agent distills the Experience Bank into the next direction and is the only cross-round memory; stateless Proposal Agents; all-outcomes Experience Bank; trusted external evaluator) - NOT HyRA's actual internal search algorithm.
+  - 'Core loop fully implemented (harness.py:440-691 run_pipeline: threaded context_producer -> proposal_worker -> evaluator_worker; all outcomes committed incl. failures) - not stubbed; 46 unittest methods green in CI (macOS py3.11/3.12).'
+  - 'Standout is a measurement/provenance layer: a trusted evaluator OUTSIDE the sandbox recomputes score on an immutable anti-TOCTOU snapshot (self-reported numbers ignored); a run-manifest sha256 attestation refuses to resume on result-affecting drift; an evidence-gated stop (LLM may only request stop; deterministic guards on evaluator records dispose).'
+  - Search algorithm is a linear (1+lambda) LLM-guided loop - NOT MAP-Elites / island / population GA; append-only archive, global-best copied only as a workspace baseline.
+  - Drives a coding-agent CLI (claude/codex), NOT direct model API calls; ~30-60 LOC to add a 3rd backend targeting a local OpenAI-compatible agent -> llama.cpp. Sandbox is macOS-only (fails closed on Linux without OPENHYRA_ALLOW_UNSANDBOXED=1).
+  techniques:
+  - trusted-evaluator-outside-sandbox scoring
+  - anti-TOCTOU immutable-snapshot (O_NOFOLLOW; reject symlink/FIFO/multiply-linked; size cap; chmod 0444; SIGKILL candidate pgroup before snapshot)
+  - run-manifest sha256 provenance + resume-drift rejection
+  - evidence-gated stop controller (LLM requests, deterministic guards dispose)
+  - all-outcomes Experience Bank (append-only JSONL + fsync)
+  - LLM Context-Agent cross-round memory
+  - linear (1+lambda) LLM-guided search
+  reported_results:
+  - 'Standalone-verifiable headline result: verify.py re-computes from committed solution.json (n=405, C=1.111814562869239, SHA-256-checked); sits below the SimpleTES 1.144887 reference and correctly EXCLUDES HyRA''s protocol-violating 1.159715 - no overclaiming.'
+  - 46 unittest methods / 111 assertions green; CI passing every commit. Single task (sums_diffs) so far; generality unproven.
+  - Numbers are OBSERVATIONS per MEASUREMENT.md; repo is 1-day-old / 0-star / solo-author - judged on code merit per operator directive.
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  verdict: adopt_patterns
+  discovered_via: search
+  expanded_from: intake-884
+  ingested_date: '2026-07-22'
+  cross_references:
+    chapters: []
+    handoffs:
+    - rocm-verify-profile-backend.md
+    - mi210-kernel-rnd-loop-proposal.md
+    - autopilot-continuous-optimization.md
+    - agent-collab-rnd-harness.md
+    experiments: []
+    intake_entries:
+    - intake-884 (Tencent HyRA - the closed agent this reconstructs)
+    - intake-329 / intake-328 (MiniMax self-evolution loop)
+    - intake-669 / intake-673 / intake-677 (AlphaEvolve-family evolutionary coding/kernel agents)
+  handoffs_updated:
+  - rocm-verify-profile-backend.md
+  - mi210-kernel-rnd-loop-proposal.md
+  - autopilot-continuous-optimization.md
+  - agent-collab-rnd-harness.md
+  - inference-acceleration-index.md
+  - master-handoff-index.md
+  handoffs_created: []
+  contradicting_evidence:
+  - Single task plugin (sums_diffs) - 'task-plugin generality' claimed but unproven; two preflight lint rules are distilled from observed sums_diffs failures and may not generalize.
+  - Sandbox is macOS Seatbelt only; on Linux (the EPYC box) it fails closed unless OPENHYRA_ALLOW_UNSANDBOXED=1, losing network/write confinement - needs an external container/VM.
+  - Only an ARCHITECTURAL reconstruction of HyRA's PUBLIC role decomposition; cannot and does not recover HyRA's internal search/selection algorithm - do not cite as HyRA's actual mechanism.
+  - Brand-new (created 2026-07-21; 25 commits in ~24h; solo author; 0 stars) - structure may churn.
+  notes: 'Deep-dived on merit per operator directive (stars irrelevant): HOLDS-UP. Source read-only at scratchpad/openhyra. Its measurement layer is a working implementation of the C6 anti-reward-hacking differentiator EPYC''s auto-kernel loop (rocm-verify-profile-backend.md) owns but never built -> filed there + Phase-2 (mi210-kernel-rnd-loop-proposal.md) + autopilot provenance/stop + agent-collab archive-comparison + an optional local-endpoint adapter spike. Requires a coding-agent CLI harness (gate long-term harness choice on harness-selection-and-integration.md). Integrated via plan async-brewing-wirth.'
+  novelty_justification: Not a duplicate; a genuinely-new working open-source artifact. Its search layer is a linear (1+lambda) LLM-guided loop - less sophisticated than the AlphaEvolve/OpenEvolve/ShinkaEvolve family EPYC already indexes (intake-669/673/677). Novelty is medium because the measurement/provenance layer (trusted-evaluator-outside-sandbox, anti-TOCTOU snapshot, provenance-drift-gated resume, evidence-gated stop) is the genuinely worth-mining part, not the search.
+  relevance_justification: 'HIGH: the measurement layer is a working implementation of the C6 anti-reward-hacking differentiator an ACTIVE EPYC program (the auto-kernel loop) identified as owned-but-never-built, and it maps onto autopilot''s keep/revert gate + MEASUREMENT.md attestation discipline. Tempered by coding-agent-CLI coupling + macOS-only sandbox + single-task, but the direct feed into active work makes it high, not medium.'
+  verdict_justification: 'adopt_patterns (feature-mine the measurement/provenance layer; not adopt-wholesale). License is MIT and a non-blocker regardless (home build). Best value = porting C6 (sandbox/provenance/stop) into rocm-verify-profile-backend + the Phase-2 loop; running the harness itself on EPYC is an optional low-priority spike (needs a 3rd llm_backend adapter + external container on Linux). NOT adopt_component (single-task, macOS sandbox, coding-agent-CLI coupling). Credibility null: a code repo whose only empirical claim is a standalone-verifiable puzzle solution, not a performance benchmark.'
