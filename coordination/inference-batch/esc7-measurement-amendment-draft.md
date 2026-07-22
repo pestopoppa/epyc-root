@@ -4,16 +4,28 @@
 applies §2 by hand (human-amendment-only). Prepared 2026-07-21 per the standing instruction
 (op-bundle ESC-7-FINAL).**
 
-## 1. Evidence summary (to be filled from terminal rows)
+## 1. Evidence summary (code columns FILLED 2026-07-22 from EV-4c; math columns pending overnight E7c rerun)
+
+**Run provenance**: the code columns are **EV-4c** (`eval_tower_calibration_baseline_HE-R+/{frontdoor,worker_general}_ev4c/`),
+superseding EV-4b whose calibration was void (chat-path n_probs never reached llama — fixed `83f53382`) —
+EV-4b remains the accuracy-only record and reproduced EV-4 exactly. Both EV-4c arms: decision_grade=True,
+zero reasons — the first decision-grade calibration rows in the project.
+
+**Code-domain decision-test reading (preliminary, pending math)**:
+- AUROC materially above 0.5: **PASS** (frontdoor 0.634; worker 0.575 — weaker but consistent direction).
+- ECE stable across the domain's arms: **PASS with note** — 0.253 vs 0.322, same overconfidence signature,
+  ordering coherent (weaker model → worse calibration AND discrimination); Δ0.069 recorded, not an artifact
+  of one role.
+- Provenance clean: **PASS** (both confidence_is_real=True, source completion_probabilities_geomean fleet-wide).
 
 | Axis | EV-11c math (worker_general) | EV-11c math (worker_math) | EV-4b code HE-R+ (frontdoor) | EV-4b code HE-R+ (worker_general) |
 |---|---|---|---|---|
-| n scored | ⟨n⟩ | ⟨n⟩ | ⟨n⟩ | ⟨n⟩ |
-| accuracy | ⟨v⟩ | ⟨v⟩ | 0.7085 (from EV-4; EV-4b re-measures) | 0.6572 (from EV-4) |
-| ECE (closed-bin, real confidence) | ⟨v⟩ | ⟨v⟩ | ⟨v⟩ | ⟨v⟩ |
-| AUROC | ⟨v⟩ | ⟨v⟩ | ⟨v⟩ | ⟨v⟩ |
-| confidence_is_real | must be True | must be True | must be True | must be True |
-| Top-1 / Bottom-1 / ρ / MAE | n/a (math) | n/a | ⟨v⟩ | ⟨v⟩ |
+| n scored | ⟨n⟩ (E7c rerun overnight 07-22) | ⟨n⟩ (E7c rerun) | **820** ✅ | **817** ✅ |
+| accuracy | ⟨v⟩ | ⟨v⟩ | **0.7085** (3rd exact reproduction) | **0.6585** (EV-4: 0.6572 — within 1.1q) |
+| ECE (closed-bin, real confidence) | ⟨v⟩ | ⟨v⟩ | **0.2532** ✅ | **0.3216** ✅ |
+| AUROC | ⟨v⟩ | ⟨v⟩ | **0.6337** ✅ | **0.5751** ✅ |
+| confidence_is_real | must be True | must be True | **True** ✅ | **True** ✅ |
+| Top-1 / Bottom-1 / ρ / MAE | n/a (math) | n/a | **1.0 / 0.0 / 0.2105 / 0.2949** | **1.0 / 0.0 / 0.1234 / 0.3454** |
 
 **Decision test the data must pass before §2 is applied** (else the package recommends staying
 observational, with the specific gap named):
