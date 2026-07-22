@@ -20,11 +20,11 @@ zero reasons — the first decision-grade calibration rows in the project.
 
 | Axis | EV-11c math (worker_general) | EV-11c math (worker_math) | EV-4b code HE-R+ (frontdoor) | EV-4b code HE-R+ (worker_general) |
 |---|---|---|---|---|
-| n scored | ⟨n⟩ (E7c rerun overnight 07-22) | ⟨n⟩ (E7c rerun) | **820** ✅ | **817** ✅ |
-| accuracy | ⟨v⟩ | ⟨v⟩ | **0.7085** (3rd exact reproduction) | **0.6585** (EV-4: 0.6572 — within 1.1q) |
-| ECE (closed-bin, real confidence) | ⟨v⟩ | ⟨v⟩ | **0.2532** ✅ | **0.3216** ✅ |
-| AUROC | ⟨v⟩ | ⟨v⟩ | **0.6337** ✅ | **0.5751** ✅ |
-| confidence_is_real | must be True | must be True | **True** ✅ | **True** ✅ |
+| n scored | **1684** ✅ (E7c) | **1628** ✅ (E7c) | **820** ✅ | **817** ✅ |
+| accuracy | **0.7886** (rel 0.926) | **0.7801** (rel 0.895) | **0.7085** (3rd exact reproduction) | **0.6585** (EV-4: 0.6572 — within 1.1q) |
+| ECE (closed-bin, real confidence) | **0.2114** ✅ | **0.2199** ✅ | **0.2532** ✅ | **0.3216** ✅ |
+| AUROC | **0.4013** ⚠ | **0.4114** ⚠ | **0.6337** ✅ | **0.5751** ✅ |
+| confidence_is_real | **True** ✅ | **True** ✅ | **True** ✅ | **True** ✅ |
 | Top-1 / Bottom-1 / ρ / MAE | n/a (math) | n/a | **1.0 / 0.0 / 0.2105 / 0.2949** | **1.0 / 0.0 / 0.1234 / 0.3454** |
 
 **Decision test the data must pass before §2 is applied** (else the package recommends staying
@@ -71,3 +71,24 @@ Recommend: ECE/AUROC stay observational; file the specific gap (e.g. code-geomea
 consider salient-token confidence as an EV-CONF follow-up; or AUROC ≈ 0.5 → confidence carries no
 signal at current temperature and the calibration program needs a different confidence source
 before any gating). No MEASUREMENT.md change; ESC-7 remains open with the evidence attached.
+
+
+## 5. FINAL package reading (2026-07-23, both domains decision-grade)
+
+**Math (E7c, paired 0.7827 vs 0.7808, arms indistinguishable, decision_grade=True):**
+- ECE stable across arms (0.211/0.220) and across domains (~0.21-0.32 everywhere): the fleet is
+  consistently overconfident — a real, reproducible property.
+- **AUROC ≈ 0.40 on BOTH math arms — confidence is ANTI-discriminative on math** (more confident
+  when wrong). Consistent cross-arm ⇒ not noise. Likely mechanism: geomean-length confounding —
+  long correct derivations accumulate low-prob tokens ⇒ lower geomean; confidently-wrong short
+  answers score high. This is §4's predicted failure mode, now measured.
+
+**Recommendation to operator (data-driven):**
+- §2 amendment applies with DOMAIN SCOPING: calibration/discrimination re-enter decision-capable
+  use for CODE rows only (AUROC 0.63/0.58 discriminates; ECE 0.25/0.32 baseline). MATH ECE may
+  gate as a stability check; MATH AUROC stays observational pending a salient-token /
+  answer-token confidence source (file as EV-CONF-2). Baselines to inline in §2: code ECE
+  0.2532/0.3216, AUROC 0.6337/0.5751; math ECE 0.2114/0.2199, AUROC 0.4013/0.4114 (obs-only).
+- The anti-discrimination finding is itself decision-grade evidence AGAINST using raw geomean
+  confidence in any math-domain reward — exactly the class of error the SWE-RM program warned
+  about, caught by the instrument before it reached a training loop.
