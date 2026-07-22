@@ -622,3 +622,18 @@ From the 2026-07-04 MI210 campaign on gemma-4-26B-A4B (the clean MoE-no-GDN test
 Meta-finding reinforced across the campaign: every lever's sign is a function of arch × substrate × batch — never carry a verdict across dense↔MoE or GPU↔CPU.
 
 Sources: [launcher-numa-mode-gating.md](../handoffs/active/launcher-numa-mode-gating.md), [dynamic-stack-concurrency.md](../handoffs/active/dynamic-stack-concurrency.md), [capability-registry-and-promotion.md](../handoffs/active/capability-registry-and-promotion.md), [standardized-stack-update-pipeline-finalization.md](../handoffs/active/standardized-stack-update-pipeline-finalization.md), [moe-aggregate-deployment-wins-brief.md](../handoffs/active/moe-aggregate-deployment-wins-brief.md), [progress/2026-07/2026-07-04.md](../progress/2026-07/2026-07-04.md), [progress/2026-07/2026-07-05.md](../progress/2026-07/2026-07-05.md).
+
+
+## Realized-fleet truth (ESC-8, compiled 2026-07-22)
+
+Production routed correctly only by accident for two days: a poisoned `STACK_NUMA_MODE=full`
+env + a valid full-mode runtime-facts manifest were held off by a silently-swallowed circular
+import (`handoffs/active/esc8-stack-restart-landmine-audit-2026-07-22.md`). The durable rule
+extracted into code: **no layer may trust launch-time intent over the realized fleet**.
+`scripts/server/realized_fleet.py` (TCP-probe mode classification, injectable) now backs the
+facts writer (realized-state serialization, unknown≠"full"), launch-time env alignment, config
+lineup liveness validation, the priors compiler (refuses ambient default-full), the stack-change
+guard, and the dashboard. The manifest is honest for the first time (realized mode + 21 live
+servers), verified end-to-end. Deploy discipline: SIGSTOP the eval runner before any API reload
+(no client reconnect backoff — two burned-arm incidents), and implementation subagents carry
+zero process-management authority (a prose ban failed; 532 questions paid for the lesson).
