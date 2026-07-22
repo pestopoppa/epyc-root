@@ -161,7 +161,8 @@ Q8 for the quality bench unless throughput is being measured, then use the produ
   - [x] **Thinking-mode ablation (R2a–d)** — CoT-prompt +32pp; native `<think>` ON hurts both (termination defect); `enable_thinking=false` vindicated ✅ 2026-07-21
   - [x] **Reusable bench runbook authored** (`docs/reference/architect-bench-runbook.md`) ✅ 2026-07-21
   - [x] **Build OlympiadBench harder-tier discriminator** (`olympiadbench_numeric` + `math_numeric` scorer, 492 items, 97% gold-parse) ✅ 2026-07-21
-  - [ ] GPU arms A1/A3/A4 × **`olympiadbench_numeric`** (n=150 paired) — RUNNING 2026-07-21 (the ceiling-breaker AIME can't be)
+  - [x] GPU arms A1/A3/A4 × **`olympiadbench_numeric`** (n=150 paired) ✅ 2026-07-22 — **⚠ SATURATES (A1 89.3/A3 88.0/A4 89.3, all p≥0.77), NOT the harder tier intended** (adapter filter flaw; see R4). Highest-powered null of the bench.
+  - [ ] **Build a genuinely-harder discriminator** (derived R4): `olympiadbench_numeric`'s clean-numeric filter skews easier than AIME (kept 509/674; hard olympiad answers are disproportionately Expression/Tuple, which were excluded). Fix = symbolic-equivalence scorer (sympy/math-verify) so the ~165 excluded Expression/Tuple items — where the difficulty lives — become scorable; OR a harder numeric suite (HMMT/Putnam subset); OR accept near-frontier parity and rely on Phase 2 tool-use.
   - [ ] GPU arms A1/A3/A4 × **`gpqa_diamond_cot`** full n=198 — *primary* CoT measure (deferred behind OlympiadBench; n=50 slice done in R2)
   - [ ] MMLU-Pro control re-run under hardened protocol (sidecar's n=50 predates it)
   - [ ] **A2 (CPU, 122B UD-Q4_K_M) — deferred to a later session.** Must use `--questions-in` on the pinned manifests (else pairing is void). Blocks H1.
@@ -309,6 +310,32 @@ So when thinking terminates it is roughly **quality-neutral** on this suite (bot
 - [ ] Resolve the decision tree from Phase 1; **(conditional) build + run A5** if branch 2 fires.
 - [ ] **Phase 2** (if run) — tool-using planning on the surviving 1–2 arms.
 - [ ] **Record the architect decision** (checkbox-flip here) → route to AXA-1 (`mi210-big-model-and-acceleration-roadmap.md`) + the model registry.
+
+## R4 — OlympiadBench-numeric SATURATES too (adapter design flaw, not the ceiling-breaker claimed)
+A1 122B-IQ2 = **89.3% (134/150)** on `olympiadbench_numeric` — *higher* than its AIME'25 (71.7%), though
+this was meant to be the *harder* tier. **Scorer verified correct** (spot-checks all genuine numeric matches
+incl. `\sqrt`, degrees; zero false positives). Cause = the **adapter filter**: single-answer clean-**numeric**
+gold selects the easy-answer subset — hard olympiad problems disproportionately have Expression/Tuple/set
+answers (the ~165 items excluded), so filtering by answer *format* filtered out *difficulty*. Per-tier
+Algebra 92.5% / other 87.6% (both saturated); a real hard tail exists but is small (25 truncation-inducing
+items @ 56%, ~17% of the suite). **So it's a second saturating suite, not a discriminator.** The
+harder-discriminator goal is **unmet** — fix filed above (symbolic scorer for the excluded Expression/Tuple
+items, or a harder numeric suite, or lean on Phase 2 tool-use). **Three-way paired final (n=150): A1 89.3% /
+A3 88.0% / A4 89.3%, all pairwise p ≥ 0.77 — a complete null** (122/150 solved by all three, only 5 by none;
+~28 discriminating items). Even saturated, this is the **highest-powered null of the bench.** *Pattern: this
+is the 4th time this session a scoring/selection choice mis-set difficulty — verify a suite discriminates
+before trusting its verdict (runbook §8 saturation-diagnosis).*
+
+### ⇒ Bench verdict (reasoning suites, GPU arms): NULL across the board
+Six independent paired measurements — letter-GPQA (n=198), CoT-GPQA (n=50), AIME'25 avg@4 (n=30),
+OlympiadBench-numeric (n=150), plus AXA-1 Δ0.0pp and the thinking ablations — **all show no separation**
+between A1 (122B-IQ2), A3 (27B-dense), A4 (35B-A3B). **H2 = near-parity, H3 = fails** (the 3B-active model
+never trails). At the difficulty these suites reach, **the architect choice has no accuracy basis** →
+decision falls to **deployment-robustness** (dual-resident 122B cheaper to operate at equal quality; GPU-only
+27B has no CPU self-fallback + pins the GPU slot). **Two things could still break the tie and are the only
+open quality questions:** (1) a *genuinely* harder discriminator (filed symbolic-scorer fix) or **Phase 2
+tool-use** (the architect's real job); (2) **H1** — IQ2-vs-Q4, which needs the **A2 CPU arm** (later session).
+Until then, no deployment change is warranted on accuracy grounds.
 
 ## Dependency graph
 `Prep (AIME adapter)` ∥ `Gate1 v7-promotion` → `Gate2 inference-batch-loop` → `Gate3 operator quiet window`
