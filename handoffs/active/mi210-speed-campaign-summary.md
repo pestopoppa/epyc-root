@@ -70,3 +70,5 @@ The smoke-tests map the card; the payoff is hosting the big models. Two axes:
 ## Progress checklist
 
 - [x] Campaign executive summary produced - GPU speed structurally exhausted (2026-07-04) ✅
+
+- [ ] **Correct KernelBench provenance** (flagged by the 2026-07-22 MI-KB-1 scoping): MI-KB-1 recorded "intake-797, arxiv 2606.20128, 9/9 seeded-fuzzing" — the real KernelBench is Stanford ScalingIntelligence **arxiv:2502.10517** (a kernel-GENERATION benchmark, metric `fast_p`), confirmed against intake-660/661. rec-007/intake-797 conflated it with a fuzzing/correctness result and mis-stamped the id. Fix the id/framing. Scoping: `epyc-inference-research/docs/design/kernelbench-step3-regression-guard-scoping.md`.

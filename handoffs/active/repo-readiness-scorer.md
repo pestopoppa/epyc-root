@@ -411,3 +411,6 @@ Validation:
 - [ ] Close remaining root L5.self_optimizing_loop gap (13-item queue)
 - [ ] Bring epyc-llama Standardized/L3 -> L4 (incremental_validation, generated_docs, health_automation, analysis_reports, security_audit, replay_analysis)
 - [ ] Repair stale epyc-llama GitNexus index (narrow .gitnexusignore) before editing llama readiness docs
+
+### epyc-llama GitNexus index — diagnostic (2026-07-22 non-inference sweep)
+- [ ] epyc-llama GitNexus index (413): a bare re-index thrashes — the killers are DENSE sub-512KB files (`src/llama-arch.cpp`, `iqk_gemm_floats.cpp`@48KB, `llama-vocab.cpp`, `unicode-data.cpp`, `tools/mtmd/`), NOT the >512KB GPU TUs (gitnexus auto-skips those, so narrowing the ignore to big files can't win). RECOMMENDATION: one scoped serving-layer index (`src/`+`common/`+`tools/`, exclude ALL of `ggml/` + the dense offenders) at a quiet low-contention window via `scripts/gitnexus-analyze.sh`; if it still thrashes, leave epyc-llama unindexed and score readiness by git shortlog/tests/CHANGELOG — it's a frozen tree, low value. A partial `.gitnexusignore` (28 patterns) is staged uncommitted in `/mnt/raid0/llm/llama.cpp/.gitnexusignore`.
