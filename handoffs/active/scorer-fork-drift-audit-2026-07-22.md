@@ -216,3 +216,38 @@ math  research.score_answer("x","x","math_verify") = RAISE ValueError: Unknown s
 - Third fork: `/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/v7_quality_gate_runner.py` (via `architect_bench_rescore.py`)
 - SCORE-NN taxonomy source: `/workspace/handoffs/active/eval-tower-architecture-audit-2026-07-20.md` (rows SCORE-01..25, B7 checklist items)
 - Proof harnesses: `/mnt/raid0/llm/tmp/scorer-audit-scratch/proof{,2,3,4}.py`
+
+---
+
+## Implementation Record — seeding-path honesty fixes (2026-07-22)
+
+Implemented by the seeding-path fix session (owner files: `seeding_scoring.py`,
+`seeding_orchestrator.py` + tests; wiring in `seeding_eval.py`). No process
+management, no network, offline verification only (throwaway interpreters +
+mocked responses + targeted pytest). All 61 targeted seeding-scorer tests pass;
+`ruff` clean on the three source files.
+
+- [x] **Fix 1 [HIGH · MemRL] — in-band `[ERROR:`/circuit-open answers → EXCLUDED, not scored WRONG** ✅ 2026-07-22
+  - `seeding_scoring._inband_error_text()` added (mirror of `eval_tower._inband_error_text`, anchored at start-of-answer after `lstrip`).
+  - `seeding_scoring._classify_error()` now classifies any `[ERROR:`-prefixed error string as `infrastructure` (so a generic in-band banner not matching an `INFRA_PATTERNS` substring is still excluded, matching eval-tower REL-1 intent).
+  - `seeding_orchestrator._surface_inband_error()` added and wired into all three `call_orchestrator_forced` response-assembly sites (200 path, 4xx/5xx path, watcher path): copies an in-band `[ERROR: ...]` answer into `data["error"]` (+`failure_reason="inband_error"`) only when no structured error is already present. Raw `answer` untouched.
+  - `_build_role_result` also applies Guard 1 directly (defense-in-depth) so any resp reaching scoring with an in-band banner is excluded even if not surfaced upstream. Result: `error_type="infrastructure"` → `passed=None` → reward-skipped (`seeding_eval.py` reward block keys on `error_type=="infrastructure"`).
+- [x] **Fix 2 [HIGH/MED · crash/silent-drop] — `ScoringUnavailableError`/`ValueError` caught → excluded row, run continues** ✅ 2026-07-22
+  - `seeding_scoring.score_answer_or_error()` added: wraps the B7 scorer, returns `(bool, None)` for a normal verdict or `(None, "scoring_unavailable: …" | "scoring_error: …")` on a scorer raise — never propagates.
+  - `_build_role_result` now scores via `score_answer_or_error`; a `None` verdict is stamped `error_type="infrastructure"` (excluded) and logged. Covers BOTH the main 3-way path and the debugger-retry path (both route through `evaluate_question_3way → _build_role_result`); the driver no longer crashes and no question silently vanishes.
+- [x] **Fix 3 [MED · re-score] — raw answer + scoring context persisted for offline re-score** ✅ 2026-07-22
+  - Verified the raw per-role `answer` was **already** persisted in the checkpoint JSONL via `dataclasses.asdict(RoleResult)` — the audit's finding-3 proof (`grep -c answer = 0`) checked the two *source* files, not the serialized artifact; confirmed on a live checkpoint (`answer` field present per role). Added a regression test guarding the round-trip.
+  - The real offline-rescore gap was the missing scoring context: `ThreeWayResult.expected` is truncated to 200 chars and `scoring_method`/`scoring_config` were not stored. `evaluate_question_3way` now writes `metadata["scoring_context"] = {expected (untruncated), scoring_method, scoring_config}`, persisted via the same `asdict` path. A completed seed run is now re-scorable without re-inference (parity with `architect_bench_rescore`).
+- [x] **Forced-role fallback mismatch — verified + delegation-aware fix applied** ✅ 2026-07-22
+  - `seeding_scoring._forced_role_serving_mismatch()` added (mirror of eval-tower Guard 2). Applied in `_build_role_result` **gated on `allow_delegation is False`**. Verification finding: a verbatim port would be a NEW defect — the seeding ARCHITECT config runs `allow_delegation=True`, where `routed_to != force_role` is the *expected* delegated behavior; firing there would wrongly exclude every architect delegation and itself poison MemRL. Guard 2 therefore fires only for the delegation-OFF configs (SELF:direct, SELF:repl, VL-architect direct) where a `routed_to` mismatch genuinely means a silent circuit-open cross-role fallback.
+
+### Files changed (all under `/mnt/raid0/llm/epyc-orchestrator`)
+- `scripts/benchmark/seeding_scoring.py` (owned) — `_inband_error_text`, `_forced_role_serving_mismatch`, `score_answer_or_error`, `_classify_error` in-band prefix rule.
+- `scripts/benchmark/seeding_orchestrator.py` (owned) — `_surface_inband_error` + 3 wiring sites.
+- `scripts/benchmark/seeding_eval.py` (wiring, not in owner set but on the seeding path; no concurrent owner) — Guards 1/2 + scorer-catch in `_build_role_result` (new `allow_delegation` param threaded from `_eval_single_config`); `scoring_context` in `evaluate_question_3way`.
+- Tests: `tests/unit/test_seeding_scoring.py`, `tests/unit/test_seeding_orchestrator.py`, `tests/unit/test_seeding_eval.py`.
+
+### Duplication / follow-up notes for later unification
+- `_inband_error_text` and `_forced_role_serving_mismatch` are **local copies** of the `scripts/autopilot/eval_tower.py` reference implementations (that file is owned by another session and was READ-only for parity). Recommend a later unification into one shared module imported by both the eval tower and the seeding path.
+- **Residual (out of scope, flagged):** `scripts/benchmark/seeding_legacy.py:~331` (the *deprecated* `ComparativeResult` path, `evaluate_question`) still scores via a bare `score_answer_deterministic` with the same pre-guard pattern (no in-band/forced-role guard, no scorer-unavailability catch) and can `_inject_rewards_http`. It is imported `# noqa: F401` (unused) by the live driver and is **not** the active 3-way MemRL path, so it was left untouched — but it is a parallel copy of the same defect and should get the same treatment if ever reactivated.
+- **Deviation from audit finding-3 literal wording:** the raw `answer` was already persisted; the substantive fix delivered is the scoring-context persistence that actually enables the stated purpose (offline re-scoring), plus a guarding test.
