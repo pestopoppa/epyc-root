@@ -468,3 +468,4 @@ HTTP, no stack commands, no source edits. Follow-up implementation session
 implementation record; targeted offline pytest only.*
 
 - [ ] **Per-question rows lack start/end timestamps** (found 2026-07-22 verifying EV-4b concurrency): `question_results.*.jsonl` rows carry verdicts/hashes/covariates but no per-question timing, so end-to-end concurrency depth and latency distributions cannot be derived from the artifact. Add started_at/ended_at to `_EvalQuestionJsonlWriter` rows.
+- [ ] **Resume-incomplete support for eval arms** (operator ask 2026-07-22): the sidecar's `complete_marker_required` contract + `--retry-errors-from` (error rows only) mean a stopped mid-arm run restarts from zero. Add `--resume-incomplete-from <dir>`: load per-question rows, skip completed ordinals, run the remainder, merge with explicit provenance (resumed=true, resume_boundary_ordinal). Enables stop→upgrade→resume workflows for long arms.
