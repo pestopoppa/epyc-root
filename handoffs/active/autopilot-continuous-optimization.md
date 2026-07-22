@@ -1502,3 +1502,12 @@ captures the seq preflight containment result only.
   the planner also attempted a stale invalid
   `repl_executor.tool_activation_threshold` draft, and the critic rejected it
   before substituting the valid memrl action. ✅ 2026-07-15
+
+
+## Research-intake integration — 2026-07-22 (measurement-discipline hardening + orx/OpenHyra patterns)
+_Via /research-intake Stage-2 (intake-883 orx, intake-884 HyRA, intake-885 OpenHyra)._
+- [ ] Harden keep/revert into an explicit self-scoring candidate contract: always retain a proven baseline (valid rollback before any experiment); accept only on a re-verified strict improvement measured under pinned determinism (fixed threads/seed, N-run mean); atomic config swap; require an inline validity note stating what the number does/doesn't prove — including "no gating on a locally-unmeasurable proxy without held-out re-verify"
+- [ ] Adopt run-manifest provenance (sha256 of sources+task+evaluator + resume-drift rejection, per OpenHyra `provenance.py:72-157`) as the attestation format for experiment runs — codifies MEASUREMENT.md (protocol-id, attestation ref) in the loop
+- [ ] Evaluate OpenHyra's evidence-gated stop controller (LLM may only REQUEST stop; deterministic guards on evaluator records dispose; `stopping.py:238-263`) vs current keep/revert + convergence stop
+- [ ] Mine orx's experiment-tree lineage model: branch-per-node (`orx/<slug>`) + `parent_experiment_id` pointer + immutable-baseline invariant + promote-winner-as-next-round-parent (`src/local/experiments.rs:719-780`)
+- [ ] Mine orx's "stacked bushes" tree-shape + per-completion refill loop (wait-first-completion -> analyze -> refill/promote/stop) as an explicit autopilot strategy; EPYC's analog is CPU/NUMA-slot saturation

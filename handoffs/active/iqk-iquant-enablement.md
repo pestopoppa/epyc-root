@@ -156,3 +156,8 @@ the usual order of cheap-test-then-build.
 **Operator's call.** If the deprecated-tree usage is unwelcome, T2 should be replaced by "port on
 `llama.cpp-experimental` and measure there", accepting the cost. Either way T1 (B1-B5) comes first
 and is unaffected.
+
+
+## Laguna S 2.1 intake integration — 2026-07-22
+_Via /research-intake Stage-2 (intake-880); see [laguna-s21-cpu-port.md](laguna-s21-cpu-port.md)._
+- [ ] Add Laguna-S-2.1-UD-IQ2_M as the 5th beneficiary model to the B2/B3 gate list. Its routed-expert bulk is IQ2_XXS(51%)+IQ3_XXS(37%)+IQ2_S(1.4%) = the same set the committed `iqk/enable-iquants-v7-20260721` branch already accelerates (89.9% of the model); only 2 IQ4_XS tensors (2.3%) stay uncovered, the same remnant GLM-5.2/Qwen already carry — NO new kernel needed
