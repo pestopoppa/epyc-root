@@ -163,7 +163,7 @@ Q8 for the quality bench unless throughput is being measured, then use the produ
   - [x] **Build OlympiadBench harder-tier discriminator** (`olympiadbench_numeric` + `math_numeric` scorer, 492 items, 97% gold-parse) ✅ 2026-07-21
   - [x] GPU arms A1/A3/A4 × **`olympiadbench_numeric`** (n=150 paired) ✅ 2026-07-22 — **⚠ SATURATES (A1 89.3/A3 88.0/A4 89.3, all p≥0.77), NOT the harder tier intended** (adapter filter flaw; see R4). Highest-powered null of the bench.
   - [x] **Build a genuinely-harder discriminator** (derived R4) ✅ 2026-07-22 — `olympiadbench_hard` suite (155 Expression/Tuple/set items, the complement of the numeric suite) + **`math_symbolic` sympy-backed scorer** (validated 155/155 self-match, 0 perturbation-FP, 0 LaTeX-variant asymmetry). Research `ef286939`.
-  - [x] **Pilot `olympiadbench_hard` (A1 n≈24)** ✅ 2026-07-22 — **IT DISCRIMINATES: A1 52.2% overall / 76.9% among finished vs the 89% numeric-suite saturation.** But **43% truncate at 16384** → the overall score is budget-confounded (finished-vs-truncated swing ≈57pp). See R5.
+  - [x] **Pilot `olympiadbench_hard` (A1 n≈24)** ✅ 2026-07-22 — **IT DISCRIMINATES: A1 50.0% overall / 76.9% among finished vs the 89% numeric-suite saturation.** But **46% truncate at 16384** → the overall score is budget-confounded (finished-vs-truncated swing ≈57pp). See R5.
   - [ ] **Full `olympiadbench_hard` 3-arm run — GATED on budget ≥ 32768** (else truncation confounds the arms; a model that reasons more concisely would score higher for a non-reasoning reason). This is the outstanding measurement that could finally break the reasoning-parity tie. Also surfaced a stack-wide thread → [reasoning-effort-levels.md § Token-budget study](reasoning-effort-levels.md).
   - [ ] GPU arms A1/A3/A4 × **`gpqa_diamond_cot`** full n=198 — *primary* CoT measure (deferred behind OlympiadBench; n=50 slice done in R2)
   - [ ] MMLU-Pro control re-run under hardened protocol (sidecar's n=50 predates it)
@@ -344,10 +344,10 @@ Built the harder-tier fix R4 called for: `olympiadbench_hard` = the 155 Expressi
 items the numeric suite excluded (where difficulty lives), scored by a new **sympy-backed `math_symbolic`**
 path (numeric → set/tuple → symbolic equivalence; validated 155/155 gold self-match, **0 perturbation
 false-positives, 0 LaTeX-variant asymmetry** — the per-arm parse-bias guard the numeric suite lacked).
-**Pilot (A1 122B-IQ2, n≈24): 52.2% overall — the first sub-saturation reading of the bench** (vs 89% on
-`olympiadbench_numeric`, 88–90% on GPQA). **But 43% truncate at 16384 tokens** (median 9.7k, these olympiad
-problems induce very long reasoning), and truncation ≈ wrong (2/10 truncated correct). **Accuracy among
-*finished* responses = 76.9%**, so the 52.2% is heavily budget-suppressed. **⇒ the full 3-arm run is GATED
+**Pilot (A1 122B-IQ2, n=24): 50.0% overall — the first sub-saturation reading of the bench** (vs 89% on
+`olympiadbench_numeric`, 88–90% on GPQA). **But 46% truncate at 16384 tokens** (median 9.7k, these olympiad
+problems induce very long reasoning), and truncation ≈ wrong (2/11 truncated correct). **Accuracy among
+*finished* responses = 76.9%**, so the 50.0% is heavily budget-suppressed. **⇒ the full 3-arm run is GATED
 on `max_tokens ≥ 32768`** — at 16384 the arms would be partly ranked on reasoning *concision*, a confound.
 This is now the single outstanding measurement that could break the reasoning-parity tie (R1–R4 all null).
 It also surfaced a **stack-wide finding — `max_tokens` is a silent quality lever** — documented as a study

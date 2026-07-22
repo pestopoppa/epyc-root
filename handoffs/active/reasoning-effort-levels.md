@@ -77,10 +77,10 @@ native-`<think>`: it is the raw `max_tokens` a request is allowed. Measured acro
 |---|---:|---:|---:|---:|---|
 | AIME'25 avg@4 | 16384 | 6% | 71.7% | 76.1% | small |
 | gpqa_diamond_cot | 4096→8192 | ~20%→low | — | — | raised mid-session |
-| **olympiadbench_hard (pilot n≈24)** | 16384 | **43%** | **52.2%** | **76.9%** | **≈ +25pp latent** |
+| **olympiadbench_hard (pilot n=24)** | 16384 | **46%** | **50.0%** | **76.9%** | **≈ +27pp latent** |
 
 On `olympiadbench_hard` the model **largely can solve the problems** (76.9% when it finishes) but the
-measured score is 52.2% because 43% get cut off (truncated-and-correct: only 2/10). That is a **~57pp swing
+measured score is 50.0% because 46% get cut off (truncated-and-correct: only 2/11). That is a **~57pp swing
 between finished and truncated** driven purely by token budget. Related but *distinct* failure: native
 `<think>` **non-termination** (R2d/E-6: 18–50% never close the block even at 16384) — same symptom
 (budget-exhausted, no answer), different cause (looping vs. legitimately-long reasoning); the fix differs
