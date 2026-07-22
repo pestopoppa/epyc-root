@@ -502,4 +502,4 @@ Open design questions (carried from the stub, unresolved):
 
 ## Research-intake integration — 2026-07-22 (graph-wiring: code<->docs crossover)
 _Via /research-intake Stage-2 (intake-881 graph-engineering wiring assessment)._
-- [ ] Build a code<->docs crossover query: federate the GitNexus symbol/flow graph with the ColBERT KB index (symbol/file -> related handoff/wiki chunks; doc-mention -> code symbols). This handoff already names the gap at :21; federation is additive, not the "replace GitNexus" non-goal (:102)
+- [x] Build a code<->docs crossover query: federate the GitNexus symbol/flow graph with the ColBERT KB index (symbol/file -> related handoff/wiki chunks; doc-mention -> code symbols). This handoff already names the gap at :21; federation is additive, not the "replace GitNexus" non-goal (:102) ✅ 2026-07-22
