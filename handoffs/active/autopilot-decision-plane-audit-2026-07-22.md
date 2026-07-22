@@ -163,3 +163,67 @@ The journal row (autopilot.py:8366-8407) carries substantial lineage (`trial_id`
 ---
 
 *Audit performed read-only. No source file, index, or configuration was modified. Live eval EV-11c was not touched; no HTTP/inference/stack calls were issued. Counts and samples are from the live stores as of 2026-07-22.*
+
+---
+
+## IMPLEMENTATION RECORD — C1/H1 quality-axis era fence (2026-07-22)
+
+**Commit:** `epyc-orchestrator` `14cc929c` on `spec-dec-mtp-refresh-2026-06-22` (not pushed).
+Mirrors the praised speed-axis pattern (`pareto_epoch_ts`/`pareto_exclude_before_ts`,
+`strict_epoch`) onto the quality axis. **Inert when no active `eval_quality` era is set** —
+every pre-existing gate/planner path is byte-identical, verified by 280 targeted unit tests
+green (35 new). The CRITICAL C1/F1 blindness is closed before the first post-E7 promote/revert.
+
+### What landed
+- [x] **`eval_quality` era key + startup migration** ✅ 2026-07-22 — `_migrate_eval_quality_era(state)`
+  (autopilot.py, guarded/idempotent) seeds `active_instrument_eras.eval_quality` +
+  `quality_epoch_ts` + `quality_exclude_before_ts` from the human-owned registry on next
+  startup (code-path migration; the registry itself is NOT written). Falls forward to the
+  `E7_EVAL_INSTRUMENT_BOUNDARY` code constant only when the registry is unreadable AND the
+  clock is at/after the boundary; no-op before any boundary opens. Validated read-only against
+  live `autopilot_state.json` (resolves `1784629800.0` = 2026-07-21T10:30Z; file untouched).
+- [x] **Era-fence the quality evidence reads** ✅ 2026-07-22 — `_seq_inputs_for_trial` (the
+  sequential e-process null/prior/alpha fold) and `format_planner_evidence_section` drop
+  pre-boundary rows by `timestamp` (unparseable ts ⇒ excluded, fail-closed). Threaded at all
+  three call sites via `quality_exclude_before_ts`. Pre-E7 rows are PRIORS (excluded from
+  wealth/decisions), not deleted.
+- [x] **Fail-closed SafetyGate re-baseline hold** ✅ 2026-07-22 — a pre-boundary (or era-mismatched)
+  baseline vs the active era trips `quality_rebaseline_required`: `check()` SUPPRESSES the
+  cross-era regression/per-suite/MAD legs (keeps the absolute quality floor + finite guard) and
+  tags `quality_rebaseline_required`; `update_baseline()` REFUSES quality promotion with
+  `ineligible_reason="quality_rebaseline_required"`. Both log loudly (ERROR, once) with the
+  operator remediation. No promote/revert on quality crosses the boundary.
+- [x] **Wire `instrument_era_guard` into the decision path** ✅ 2026-07-22 — new
+  `active_eval_quality_era()` resolver added to `src/autopilot_core/instrument_era_guard.py`;
+  autopilot.py now imports it (the audit's "guard exists but unwired" fix). Strict
+  `_quality_epoch_params_from_state()` raises on a half-declared fence (speed-axis
+  `strict_epoch` parity).
+- [x] **`quality_history` provenance** ✅ 2026-07-22 — internal `_QualityObs(q, ts, era, core_id)`;
+  legacy bare floats decode as pre-boundary (era=""); the MAD window filters to same-era
+  samples so a post-E7 median can't be dragged by a pre-E7 window; persisted as the
+  authoritative `quality_history_provenance_by_tier` (float mirror kept for external readers).
+  `Baseline` carries + persists `eval_quality_era`.
+- [x] **Tests** ✅ 2026-07-22 — boundary-straddle filtering, migration-from-era-less-state,
+  re-baseline fail-closed (check suppression + update refusal), guard wiring, provenance
+  round-trip + era-filtered MAD. Every existing autopilot/safety-gate suite kept green.
+
+### Era-registry row — NO new row required
+The `E7-eval-instrument` row (scope `eval_quality`, `from: 2026-07-21T10:30:00Z`) **already
+exists** in `orchestration/instrument_eras.yaml`. The implementation reads it as the source of
+truth; the `E7_EVAL_INSTRUMENT_BOUNDARY`/`E7_EVAL_INSTRUMENT_ERA_ID` code constants only cite
+that row for the fail-safe fallback and MUST stay in lockstep with it. **No human amendment of
+the era registry or MEASUREMENT.md was made or is needed for this fix.**
+
+### What remains (owner action, out of this session's scope)
+- [ ] **Operator: clear the re-baseline hold.** The hold is fail-closed BY DESIGN — it blocks
+  automated quality promote/revert until a **post-E7 baseline** exists. The operator must reseed
+  `orchestration/autopilot_state.json:baseline_state` (`baselines_by_tier`,
+  `per_suite_quality_by_tier`, `per_suite_counts_by_tier`) from a post-E7 eval AND stamp
+  `baseline_state.eval_quality_era: "E7-eval-instrument"` (+ the MAD `quality_history*` windows).
+  The migration seeds the *fence keys* in code on next startup, but reseeding *baseline quality
+  values* is a measurement action across the human-amendment trust boundary — not done here.
+  Until then the gate holds quality decisions and logs the remediation each gate instance.
+- [ ] Non-owned audit findings untouched (other owners / other agents' flux files): H2
+  rewind/restore atomicity (`structural_lab.py`), H3 preflight JRN-7 reader, M1 validity table,
+  M2 phase_status reader, M3 action-local gate fallback (`actions.py`), M4/M5/M6, and the
+  SafetyGate/RLVR audit's F2 (`export_rlvr_environment.py`, mid-edit by another agent).
