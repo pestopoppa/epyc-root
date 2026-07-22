@@ -117,6 +117,45 @@ finished-vs-truncated split.
       (L0–L3) and native-`<think>`. A tight prompt-effort level *reduces* the budget needed (the model plans
       brevity); the full 2-D (effort × budget) grid per model is the complete picture. Fold into E-2/E-6.
 
+### Production control problem — budget × concurrency × VRAM is a JOINT, dynamic constraint (operator, 2026-07-22)
+
+The study above measures *static* per-model curves. **Production is harder: reasoning budget and server
+concurrency are coupled through VRAM, and the coupling is dynamic.** Measured 2026-07-22 while sizing the
+batched hard-suite run (MI210, 64 GiB, f16 KV, per-slot ctx 36864 = prompt + 32768 budget):
+
+| model | weights+base | **per-slot KV @36864** | slots to fill 64 GiB |
+|---|---:|---:|---:|
+| 122B-IQ2 (MoE/GQA) | 38.2 GiB | **0.99 GiB** | ~20 |
+| 27B-dense Q8 | 26.9 GiB | **2.39 GiB** | ~13 |
+| 35B-A3B (MoE) | 35.7 GiB | **0.76 GiB** | ~30 |
+
+**Key facts for a router:** (1) KV/slot scales **linearly with the reasoning budget** (`n_ctx_slot`), and
+(2) it is **strongly per-architecture** — the dense 27B costs 2–3× the KV/slot of the MoE arms, so it can
+serve **far fewer** concurrent high-budget requests on the same card. So VRAM = `weights + Σ_slots(budget_i ×
+kv_per_token)`. **A naive "raise the budget" or "raise concurrency" in isolation risks OOM**, which in
+llama.cpp silently shrinks `n_ctx_slot = n_ctx / n_parallel` → **truncation** (the very failure the budget was
+meant to fix). This makes budget-selection and admission-control **one problem**.
+
+**The router design this implies (the operator's framing):**
+- [ ] **TB-5 — Expose `max_tokens` / `reasoning_budget` as a per-request tunable surface** the router
+      sets from **assessed task complexity** (easy → tight budget, hard → generous). Requires per-request
+      budget plumbing through the orchestrator serving path (llama-server already accepts it per request).
+      Natural extension of [[project_learned_routing_controller]] — budget becomes a routing *output*.
+- [ ] **TB-6 — Concurrency-aware admission control (VRAM guard).** The router/orchestrator must track live
+      `Σ(budget_i × kv_per_token_model)` against the card and **admit/queue/downgrade** requests so the sum
+      never forces `n_ctx_slot` below a request's budget. Per-model `kv_per_token` (measured above) is the
+      key constant; extends the live placement SM in [[project_heterogeneous_slot_fabric]] (already
+      "everything is a slot"). Potentially **asynchronous** — hold or shed budget under pressure rather than
+      truncate. This is a non-trivial joint scheduler: **complexity-estimate → budget → admission → placement**.
+- [ ] **TB-7 — Calibrate the budget policy from AutoPilot's live token stats (no new inference).** AutoPilot
+      already records **tokens-generated per successfully-completed task**. That is a free, production-grounded
+      distribution of "how much budget did each task class actually need" — mine it to set per-(task-class,
+      model) budget defaults and to find the knee *without* running the TB-1 sweep for every task type.
+      Cross-check the TB-1 curves (capability ceiling) against the AutoPilot distribution (realized demand):
+      the deployable budget is roughly the high percentile of realized demand for the task class, capped by
+      the VRAM/concurrency budget (TB-6). **Do this first** — it may answer TB-2's "single mostly-ok setting"
+      from existing data before any GPU sweep.
+
 **Coverage target (TB-1):** every production model — frontdoor (35B-A3B), worker (gemma-4-26B-A4B), architect
 (122B), ingest (Qwen3-Next-80B), reviewer arm, coder. Cheapest first; frontdoor + architect gate any
 production budget change (operator-gated).
@@ -124,7 +163,11 @@ production budget change (operator-gated).
 **Per-model INVARIANT applies** (see above): the budget knee is a `(model, quant)` property, certified per
 model, never inherited. **Tooling ready:** `olympiadbench_hard` suite + `math_symbolic` scorer +
 finished-vs-truncated split (`truncated`/`finish_reason` fields in per-question JSONL) + idempotent budget
-top-ups all landed this session.
+top-ups + **`--concurrency` batched runner + a VRAM-sizing probe** (per-slot KV table above) — all landed
+this session. The batched run gives the TB-1 sweeps ~10× wall-clock, and the per-slot-KV constants are the
+inputs TB-6's admission-control needs. **Method note:** each `-np` slot must get the FULL per-request budget
+as its `n_ctx_slot` (`-c = per_slot_ctx × n_parallel`) — else llama.cpp silently truncates; verify
+`n_ctx_slot ≥ budget` and VRAM headroom at launch (the batched run does).
 
 ## Prioritized task list
 - [ ] **E-1 — Design the ladder.** Draft 4–5 effort levels, e.g. L0 answer-only → L1 one-line
