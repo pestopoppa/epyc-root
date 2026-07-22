@@ -1,6 +1,6 @@
 ---
 title: ESC-8 — Stack-script restart-landmine audit + Option A implementation contract
-status: audit complete (read-only, verified); implementation authorized (op-bundle ESC-8, Option A, 2026-07-22)
+status: DEPLOYED 2026-07-22 — all six fixes + verification complete; landmine dead (see checklist)
 created: 2026-07-22
 owner: eval-tower-architecture-audit (ESC-8) / within-role-placement-state-machine (shared restart surface)
 audit_agent: read-only; findings verified against live system + throwaway-interpreter imports
@@ -111,29 +111,29 @@ full-instance ports (quarters-only ⇒ `"quarter"`); never default unknown to `"
 
 # 5. Option A implementation checklist (authorized; deploy at EV-11c terminal boundary)
 
-- [ ] **Fix 1 — facts writer realized-state serialization**: `runtime_facts_manifest.py:95-120`
+- [x] ✅ 2026-07-22 (`1de3cef9`) **Fix 1 — facts writer realized-state serialization**: `runtime_facts_manifest.py:95-120`
   derive `runtime_stack` from realized `state` (+ `topology_idx_for_port`); `:103`/`:185-188`
   never coerce unknown mode to `"full"` — derive from realized ports. Liveness-filter dead state
   rows (8096-8098) and stale fleet markers.
-- [ ] **Fix 2 — pass realized mode at all writer call sites**: `stack_commands.py:1626, :1430,
+- [x] ✅ 2026-07-22 (`1de3cef9` + cmd_start merge `5aa29f35`) **Fix 2 — pass realized mode at all writer call sites**: `stack_commands.py:1626, :1430,
   :1376`; `cmd_status` :1711 refresh facts after `save_state` (or stop saving state in status).
-- [ ] **Fix 3 — env alignment assertion**: `orchestrator_stack.py:1630-1636` after resolving
+- [x] ✅ 2026-07-22 (`1de3cef9`) **Fix 3 — env alignment assertion**: `orchestrator_stack.py:1630-1636` after resolving
   `runtime_numa_mode`, assert against realized fleet (live listeners on NUMA_CONFIG full vs
   quarter ports); on mismatch correct to realized mode + log provenance.
-- [ ] **Fix 4 — kill hardcoded full defaults**: `orchestrator_stack.py:2099-2103` +
+- [x] ✅ 2026-07-22 (`1de3cef9`) **Fix 4 — kill hardcoded full defaults**: `orchestrator_stack.py:2099-2103` +
   `stack_commands.py:1050` `--numa-mode` default None → infer from running fleet; refuse
   `--only` on mode conflict.
-- [ ] **Fix 5 — config precedence inversion**: `models.py:316-349` validated runtime facts first,
+- [x] ✅ 2026-07-22 (`5aa29f35`) **Fix 5 — config precedence inversion**: `models.py:316-349` validated runtime facts first,
   env-filter as fallback (or validate env lineup against live listeners); stop silently
   swallowing the ImportError — log it.
-- [ ] **Fix 6 — priors compile must not read ambient default-full env**:
+- [x] ✅ 2026-07-22 (`5aa29f35`; guard realized-mode `2ac7712c`/`d8b7e0bd`) **Fix 6 — priors compile must not read ambient default-full env**:
   `stack_priors.py:777-779` require explicit mode or read realized mode, so clean-shell
   `pipeline update` cannot rewrite priors to the full lineup. (Coordinate with WP-13 edits in the
   same file.)
-- [ ] **Docs/consistency**: `--numa-mode` help text (orchestrator_stack.py:2103-2116) vs
+- [x] ✅ 2026-07-22 (help text in `1de3cef9`; dashboard env-first fixed realized-first `e97d4ed9`; stack_templates default-full reader NOT yet hardened — folded into WP-12 scope) **Docs/consistency**: `--numa-mode` help text (orchestrator_stack.py:2103-2116) vs
   `stack_numa.py:173-184` FULL_DISABLED comment; `dashboard_topology.py:139-146` env-first
   display (WP-14 reader hardening covers); `stack_templates.py:257-259` default-full reader.
-- [ ] **Verification at deploy**: post-reload, plain-import `get_config().server_urls` in a
+- [x] ✅ 2026-07-22 VERIFIED — plain-import clean-shell AND env=full both resolve quarter lineups (poison rejected loudly); manifest realized (mode quarter, 21 live servers); reload round-trips without re-arming; canonical env restored (quarter + all placement flags) **Verification at deploy**: post-reload, plain-import `get_config().server_urls` in a
   clean shell AND in an env=full shell both resolve to the quarter lineup; facts manifest
   records realized quarters + mode `"quarter"`; `reload orchestrator` round-trips without
   re-arming; DISPATCH-A3 demotion count unchanged.
