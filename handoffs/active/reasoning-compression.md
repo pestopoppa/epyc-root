@@ -234,6 +234,8 @@ Three families of techniques, ordered by implementation effort:
 
 **Source**: RE-Bench (intake-794)
 
+> **⚠ CORRECTION 2026-07-22 (RC-RE-1 scoping):** RE-Bench is NOT a "reasoning-capability evaluation for open-weight models." It is METR's **long-horizon agentic ML-engineering benchmark** — AI-R&D tasks scored vs human experts over multi-hour budgets — and 6 of its 7 environments need 1-8×H100 (only the CPU-only Rust-Codecontests env is runnable here, OBSERVATION-grade). It is open-weight-*compatible* at the model-driver level (our OpenAI-compatible llama-server endpoint) but is the WRONG instrument for reasoning-compression safety. Right tool = held-out AIME/MATH-500/GPQA in the E7 tower scored by accuracy-vs-token rescue-rate. Re-scope RC-RE-2 accordingly. Full analysis: `epyc-inference-research/docs/design/re-bench-open-weight-compatibility.md`.
+
 **Key finding**: RE-Bench focuses on reasoning capability evaluation for open-weight models. Directly relevant to our CoT study and reasoning compression work.
 
 **Applicability to EPYC**: If RE-Bench includes open-weight model evaluation, it could serve as a validation suite for our reasoning compression techniques (TrimR, difficulty-adaptive budgets, SEAL control vectors). Particularly relevant for evaluating whether compressed reasoning degrades reasoning quality on held-out reasoning tasks.
@@ -599,4 +601,4 @@ SPIRAL (arXiv 2606.23595) trains one model to jointly emit parallel CoT traces +
 ### Diverse-exploration RL objectives — HW-gated training reference (intake-748 / 749)
 Poly-EPO (arXiv 2604.17654) and Polychromic Objectives for RL (arXiv 2509.25424) are training-time diversity-preserving RL objectives — the **training-side answer to the diversity-collapse bound** documented in §Diversity Collapse Interaction (inference-time interventions cannot recover training-time diversity loss). Tier-3 forward-pointer only (we don't RL-train yet), filed like TPO / RLTF / RLSD; materializes with the MI210.
 
-- [ ] **Correct RE-Bench framing** (flagged by the 2026-07-22 RC-RE-1 scoping): RC-RE-1/rec-005 frames RE-Bench as a reasoning-QUALITY eval; it is actually long-horizon **agentic ML-engineering vs human experts** (6/7 envs need 1-8xH100). Re-scope RC-RE-2 accordingly. Scoping: `epyc-inference-research/docs/design/re-bench-open-weight-compatibility.md`.
+- [x] **Correct RE-Bench framing** (flagged by the 2026-07-22 RC-RE-1 scoping): RC-RE-1/rec-005 frames RE-Bench as a reasoning-QUALITY eval; it is actually long-horizon **agentic ML-engineering vs human experts** (6/7 envs need 1-8xH100). Re-scope RC-RE-2 accordingly. Scoping: `epyc-inference-research/docs/design/re-bench-open-weight-compatibility.md`. ✅ 2026-07-22

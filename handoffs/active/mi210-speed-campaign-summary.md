@@ -55,6 +55,8 @@ The smoke-tests map the card; the payoff is hosting the big models. Two axes:
 
 **Source**: KernelBench (intake-797, arxiv 2606.20128)
 
+> **⚠ CORRECTION 2026-07-22 (MI-KB-1 scoping, verified vs intake index):** This row is a THREE-WAY conflation. The real **KernelBench** is Stanford ScalingIntelligence **arxiv:2502.10517** — a kernel-*generation* benchmark (LLM writes CUDA/DSL kernels for PyTorch programs; metric `fast_p`), confirmed via intake-660/661. It is NOT `arxiv 2606.20128` (a separate seeded-fuzzing / "correctness-illusion" kernel paper) and NOT `intake-797` (the unrelated "Externalization in LLM Agents" review, arxiv 2604.08224). The "9/9 seeded-fuzzing" headline below belongs to the 2606.20128 paper, not KernelBench. MI-KB-1 was scoped against the REAL KernelBench: no CPU backend + gfx942/950-only AMD path (not our gfx90a) → decline the harness; methodology already covered by `test-backend-ops` + `kernel_eval.sh`. Full analysis: `epyc-inference-research/docs/design/kernelbench-step3-regression-guard-scoping.md`.
+
 **Key finding**: Seeded fuzzing for kernel correctness catches 9/9 buggy kernels, passes 15/15 controls. Provides fine-grained kernel-level benchmarking substrate.
 
 **Applicability to EPYC**: Directly applicable as step 3 in the four-step experimental kernel workflow (Pull → Build → **Validate no regressions** → Deploy). KernelBench's seeded fuzzing methodology can serve as a regression guard for v7 candidate validation, catching correctness regressions in experimental kernel builds before promotion.
@@ -71,4 +73,4 @@ The smoke-tests map the card; the payoff is hosting the big models. Two axes:
 
 - [x] Campaign executive summary produced - GPU speed structurally exhausted (2026-07-04) ✅
 
-- [ ] **Correct KernelBench provenance** (flagged by the 2026-07-22 MI-KB-1 scoping): MI-KB-1 recorded "intake-797, arxiv 2606.20128, 9/9 seeded-fuzzing" — the real KernelBench is Stanford ScalingIntelligence **arxiv:2502.10517** (a kernel-GENERATION benchmark, metric `fast_p`), confirmed against intake-660/661. rec-007/intake-797 conflated it with a fuzzing/correctness result and mis-stamped the id. Fix the id/framing. Scoping: `epyc-inference-research/docs/design/kernelbench-step3-regression-guard-scoping.md`.
+- [x] **Correct KernelBench provenance** (flagged by the 2026-07-22 MI-KB-1 scoping): MI-KB-1 recorded "intake-797, arxiv 2606.20128, 9/9 seeded-fuzzing" — the real KernelBench is Stanford ScalingIntelligence **arxiv:2502.10517** (a kernel-GENERATION benchmark, metric `fast_p`), confirmed against intake-660/661. rec-007/intake-797 conflated it with a fuzzing/correctness result and mis-stamped the id. Fix the id/framing. Scoping: `epyc-inference-research/docs/design/kernelbench-step3-regression-guard-scoping.md`. ✅ 2026-07-22
