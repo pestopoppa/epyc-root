@@ -351,3 +351,12 @@ Coverage map (full table in the tests-agent transcript): well-tested = `_aggrega
 - **Read-only audit**: nothing was edited; `eval_tower.py`, the runner, and coordination files carry the parallel loop agent's live uncommitted work — its ownership per the 2026-07-20 operator ruling stands.
 - **MEASUREMENT trust boundary**: scoring semantics, thresholds, eval concurrency (fixed at 3 as part of the instrument), and era handling are human-amendment-only. Items tagged [op] change instrument semantics; [agent·op] are bug-fixes on the scoring path that still take a one-line sign-off (EV-CONF precedent). Pool rebuild (A3) is an instrument change → era label, never edit-in-place.
 - The former `eval_tower.py:2068` inline-ECE tripwire is retired by EV-11b; new outputs carry `details["ece_binning"]="closed_top_bin_stat_tests"` and `details["ece_instrument_era"]="ev11b_closed_bin_2026_07_20"`.
+
+## DEFERRED — non-inference eval-tower hardening (operator decision, 2026-07-22)
+The non-inference eval-tower hardening cluster is **DEFERRED to a genuine quiet window** per operator. It was scoped + ready but held: `scripts/autopilot/eval_tower.py` is **single-writer** to the live inference-batch / eval-batch loop, and a sustained `eval_batch_serving_evaltower_window.py --mode calibration` campaign was running (repeatedly spawning windows), so editing that surface from a side session would violate the "do not edit from a side session" rule.
+Pick up when **no** eval-batch/calibration run is live — gate check: `pgrep -f evaltower_window` returns nothing (and `:8000` idle). Deferred tasks (all still `- [ ]` in their owning handoffs):
+- **A2** single-import bootstrap + delete/hard-alias orch shadow copies (this handoff) — fixes the CRITICAL nondeterministic module binding.
+- **C2** loader accounting / silent-drop guard (this handoff).
+- **E5** ~12 mechanical `[agent]` LOW fixes (this handoff).
+- **EV-RUNNER-BACKOFF** bounded backoff on connection-refused — [eval-tower-verification.md](eval-tower-verification.md) (stops burning eval budget during API reloads).
+- **safetygate provenance fields** `started_at`/`ended_at` + `--resume-incomplete-from` — [safetygate-rlvr-provenance-audit-2026-07-22.md](safetygate-rlvr-provenance-audit-2026-07-22.md).

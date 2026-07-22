@@ -240,7 +240,7 @@ Three families of techniques, ordered by implementation effort:
 
 **Cross-reference**: Our existing Tier 1-3 compression taxonomy and the OPSDC finding (reasoning can be net-negative) suggest RE-Bench could help calibrate the compression-vs-quality tradeoff for different difficulty bands.
 
-- [ ] **RC-RE-1** — check RE-Bench for open-weight model compatibility and integration with our eval tower
+- [x] **RC-RE-1** — check RE-Bench for open-weight model compatibility and integration with our eval tower ✅ 2026-07-22
 - [ ] **RC-RE-2** — run RE-Bench against compressed vs uncompressed reasoning to validate compression safety
 
 ## Notes

@@ -58,15 +58,19 @@ Compiled from deep-dive intake of agent benchmarking, evaluation, and autonomous
   created: '2026-07-08'
 
 - id: rec-005
-  title: "Reasoning evaluation benchmarks (RE-Bench) for open-weight models"
+  title: "RE-Bench (METR) — agentic ML-engineering benchmark, NOT a reasoning-quality eval"
   source: RE-Bench (intake-794)
   category: benchmark_methodology
-  priority: medium
+  priority: low
   description: >
-    RE-Bench focuses on reasoning capability evaluation, which is directly relevant to our CoT study and
-    reasoning compression work. If RE-Bench includes open-weight model evaluation, it could serve as a
-    validation suite for our MI210 reasoning performance.
-  action: "Check RE-Bench for open-weight model compatibility. Cross-reference with reasoning-compression.md handoff."
+    CORRECTED 2026-07-22 (parallel research agent finding, verified): RE-Bench is METR's AGENTIC
+    ML-ENGINEERING evaluation - open-ended ML research/engineering tasks (kernel optimization,
+    scaling-law experiments, fine-tuning) scored against human expert baselines over multi-hour
+    agent runs. It is NOT a reasoning-capability/CoT eval and does not fit the reasoning-compression
+    validation role the original entry assumed. Potential relevance is instead to long-horizon
+    agentic harness evaluation (harness-selection track), at much higher per-run cost.
+  action: "If pursued at all, evaluate under the harness-selection track as an agentic-capability
+    reference, not under reasoning-compression. No CoT-study cross-reference."
   status: open
   created: '2026-07-08'
 

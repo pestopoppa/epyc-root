@@ -173,7 +173,7 @@ Before committing to Phase 2 training recipe, run WebSearch for "MindDeepResearc
 
 **Action**: Monitor PaperBench development; evaluate as a source-fidelity validation gate for our deep-research reports.
 
-- [ ] **MD-PB-1** — evaluate PaperBench methodology for source-fidelity validation of deep-research reports
+- [x] **MD-PB-1** — evaluate PaperBench methodology for source-fidelity validation of deep-research reports ✅ 2026-07-22
 - [ ] **MD-PB-2** — consider integrating PaperBench-style evaluation into MD-9 A/B test rubric
 
 ## Progress checklist
