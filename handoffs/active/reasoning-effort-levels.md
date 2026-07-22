@@ -7,6 +7,12 @@ R2a result in [`architect-model-selection-bench.md`](architect-model-selection-b
 conditions (and token budgets) trading generated tokens for quality — instead of the current binary
 "reasoning on / reasoning off", so latency-sensitive roles can buy *some* reasoning without paying full CoT.
 
+> **⚠ 2026-07-22 — a THIRD axis surfaced that may matter stack-wide: `max_tokens` (completion budget) as a
+> silent quality lever.** See **§ Token-budget study** below. Short version: on hard problems, models get
+> *truncated mid-reasoning* and score wrong for a budget reason, not a capability reason — a ~57pp swing was
+> measured on one suite. Production budgets may be below the "knee" for several stack models. The operator
+> flagged this as worth a dedicated later-session study across the whole stack.
+
 ## Motivating evidence (measured, not hypothesised)
 
 Arm A4 = **Qwen3.6-35B-A3B (production frontdoor)**, GPQA-Diamond, **identical 50 questions**,
@@ -60,6 +66,65 @@ scored a garbage `1`; CoT at 8192: ~20% truncation; and the historical `enable_t
 "give a brief justification then answer"), so the model *plans* a short answer and still emits a
 well-formed final answer. A token cap is at best a backstop, and if used it needs a
 `--reasoning-budget-message`-style graceful-close so the model terminates cleanly instead of being cut.
+
+## § Token-budget study — `max_tokens` as a stack-wide quality lever (operator-flagged 2026-07-22)
+
+**The finding.** On hard tasks, models are truncated *mid-reasoning* by the completion-token ceiling and
+score wrong for a **budget** reason, not a capability reason. This is a distinct axis from prompt-effort and
+native-`<think>`: it is the raw `max_tokens` a request is allowed. Measured across this session:
+
+| Suite (arm A1 122B-IQ2 unless noted) | budget | truncation | overall acc | acc among FINISHED | Δ from budget |
+|---|---:|---:|---:|---:|---|
+| AIME'25 avg@4 | 16384 | 6% | 71.7% | 76.1% | small |
+| gpqa_diamond_cot | 4096→8192 | ~20%→low | — | — | raised mid-session |
+| **olympiadbench_hard (pilot n≈24)** | 16384 | **43%** | **52.2%** | **76.9%** | **≈ +25pp latent** |
+
+On `olympiadbench_hard` the model **largely can solve the problems** (76.9% when it finishes) but the
+measured score is 52.2% because 43% get cut off (truncated-and-correct: only 2/10). That is a **~57pp swing
+between finished and truncated** driven purely by token budget. Related but *distinct* failure: native
+`<think>` **non-termination** (R2d/E-6: 18–50% never close the block even at 16384) — same symptom
+(budget-exhausted, no answer), different cause (looping vs. legitimately-long reasoning); the fix differs
+(`--reasoning-budget` force-close vs. simply more `max_tokens`).
+
+**Why it matters for production.** Every stack role runs with an effective completion ceiling
+(`roles.*.reasoning_budget`, `max_tokens_multiplier`, orchestrator request defaults). If those ceilings sit
+**below the knee** for a given model, that model is **silently losing quality on hard tasks** — invisibly,
+because a truncated answer looks like a wrong answer in aggregate accuracy. Nobody would see it without the
+finished-vs-truncated split.
+
+**The operator's two hypotheses (both testable):**
+1. **Per-model/per-task tuning is needed** — the budget knee differs by model (a 3B-active model reasons
+   differently than a 122B) and by task difficulty, so quality-maximization requires a matrix.
+2. **A single "mostly-ok" generous setting recovers most quality** — there may be one budget (per model, or
+   even stack-wide) that captures ≥90% of the model's max-budget accuracy, making per-task tuning unnecessary.
+   This is the cheap-win hypothesis and should be tested first.
+
+**Study design (later session):**
+- [ ] **TB-1 — Per-model budget curve.** For each stack model, on a truncation-inducing suite
+      (`olympiadbench_hard` is ideal — it induces 9–16k-token reasoning), sweep `max_tokens ∈
+      {4k, 8k, 16k, 24k, 32k}` on the **same pinned items**, plot **accuracy AND truncation-rate vs budget**,
+      and report the **finished-only accuracy** (the budget-independent ceiling) alongside overall. Find the
+      **knee** (truncation < ~5%, accuracy plateaus). Use the idempotent `(id,seed)` resume so each higher
+      budget only re-runs the items the lower budget truncated.
+- [ ] **TB-2 — Test the "single mostly-ok setting" hypothesis.** Does one budget capture ≥90% of each
+      model's max-budget accuracy? If yes → a simple per-model (or stack-wide) default; if no → the
+      per-task matrix (hypothesis 1). Report quality-per-token, not just quality — budget = tokens = time on
+      a shared box ([[feedback_cpu_decode_bw_bound]]).
+- [ ] **TB-3 — Audit production ceilings against the knees.** Cross-reference each role's live
+      `reasoning_budget`/`max_tokens_multiplier` (`orchestration/model_registry.yaml`) against its measured
+      knee. Flag any role running **below** its knee — that is silent quality loss, fixable by raising one number.
+- [ ] **TB-4 — Interaction with the effort ladder.** Budget is a **third axis** alongside prompt-effort
+      (L0–L3) and native-`<think>`. A tight prompt-effort level *reduces* the budget needed (the model plans
+      brevity); the full 2-D (effort × budget) grid per model is the complete picture. Fold into E-2/E-6.
+
+**Coverage target (TB-1):** every production model — frontdoor (35B-A3B), worker (gemma-4-26B-A4B), architect
+(122B), ingest (Qwen3-Next-80B), reviewer arm, coder. Cheapest first; frontdoor + architect gate any
+production budget change (operator-gated).
+
+**Per-model INVARIANT applies** (see above): the budget knee is a `(model, quant)` property, certified per
+model, never inherited. **Tooling ready:** `olympiadbench_hard` suite + `math_symbolic` scorer +
+finished-vs-truncated split (`truncated`/`finish_reason` fields in per-question JSONL) + idempotent budget
+top-ups all landed this session.
 
 ## Prioritized task list
 - [ ] **E-1 — Design the ladder.** Draft 4–5 effort levels, e.g. L0 answer-only → L1 one-line
