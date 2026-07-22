@@ -562,3 +562,22 @@ winner table plus route-mutation tests.
 > **Review flag (project-wiki writer-evidence policy):** model-compiled, not adopted until human or measured review.
 
 - **"Recursion rescues failing models" implies a gated depth surface, not a pinned `max_depth`.** The intake-547 reproduction shows direction-of-effect flips with predicted base-attempt success: depth-1 *lost* 26.6pp on Kimi K2/OOLONG (86.6 → 60.0) but *rescued* a total failure on DeepSeek/OOLONG (0.0 → 42.1). A static default forfeits the rescue where recursion helps and still pays depth where it hurts. The gate's training data already exists unused — the **Escalation-prediction** surface ("will frontdoor fail?", 10,528 pos / 56,457 neg, status *Ready*, never built) — and the `COMP_r(x)` competence probe estimates the same quantity from the other side; the three threads are one signal (registered as **N17**). Constraints: cost-gating is mandatory (depth-1 ≈ 25× wall-clock, depth-2 ≈ 96×, so the condition is `P(fail) × value(rescue) > cost_multiplier`); the gate must be per-model; and this only became tunable when the reward's cost half was fixed on 2026-07-21 — a depth surface priced against a constant reward is untunable. A local depth-0-vs-depth-1 A/B requires adopting OOLONG, which no suite currently carries. Sources: [rao-redel-substrate-spike.md](../handoffs/active/rao-redel-substrate-spike.md), [learned-routing-controller.md](../handoffs/active/learned-routing-controller.md), [master-handoff-index.md](../handoffs/active/master-handoff-index.md).
+
+
+## Learned-routing write path + fleet layer (compiled 2026-07-22)
+
+- **Q-learning was append-only since inception** (`68df9787`, 2026-01-14; verified via
+  `scripts/analysis/dar_write_path_audit.py`): 99.695% of 671,780 routing rows carry
+  `update_count=0`; 3,642 (objective, action) pairs duplicated 176.8×. The TD-update path was
+  aspirational — the only learned rows came from `score_external_result`. Fix `44b41056`:
+  flag-gated (`ORCHESTRATOR_Q_TD_WRITE`) find-or-update + shared `apply_td_update`;
+  non-destructive chronological-replay migration (671,780 → 31,548 on snapshot), FAISS-safe.
+- **MemRL reward honesty** (`3bfe2584`): in-band `[ERROR:` answers no longer become 0.0 rewards;
+  historical poisoned rows are NOT store-identifiable (7,460 zero-reward rows quantified for
+  era-triage).
+- **Roles are a remappable logical layer over server fleets** (operator constitution): the WP-12
+  fleet-layer design (`handoffs/active/wp12-fleet-layer-design.md`) makes it structural — one
+  backend/breaker/lock identity per physical fleet, same-fleet fallback compiled to no-op.
+  Interim: alias truth lives in registry `shared_with` (see
+  `epyc-orchestrator/docs/runbooks/role-alias-change-runbook.md` for the change procedure and
+  the five layers an alias touches).

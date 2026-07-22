@@ -1,5 +1,19 @@
 # EPYC Handoff — Master Index
 
+> **2026-07-22 audit + calibration campaign (day's entry points):** four verified audits with
+> embedded implementation records — [decision-plane](autopilot-decision-plane-audit-2026-07-22.md)
+> (era fence LANDED; **Q-TD-write deploy + era-fence baseline reseed = the two open operator
+> boundary actions**), [SafetyGate/RLVR](safetygate-rlvr-provenance-audit-2026-07-22.md),
+> [scorer-drift](scorer-fork-drift-audit-2026-07-22.md) (research-repo pre-B7 scorer open),
+> [dashboard](autopilot-dashboard-fidelity-audit-2026-07-22.md) (H1/H2 panels open). ESC-8
+> landmine [DEPLOYED](esc8-stack-restart-landmine-audit-2026-07-22.md). WP-12 fleet layer
+> [design ready](wp12-fleet-layer-design.md) (impl post-measurement-chain). First decision-grade
+> calibration rows (EV-4c) in the
+> [ESC-7 draft](../../coordination/inference-batch/esc7-measurement-amendment-draft.md); math
+> columns fill from the overnight E7c run. Alias changes:
+> [runbook](https://github.com/pestopoppa/epyc-orchestrator/blob/main/docs/runbooks/role-alias-change-runbook.md).
+
+
 **Purpose**: dispatch. Find your domain index or claim a queue row. History lives in `progress/`; completed work in `handoffs/completed/`. Rows are **deleted** on completion (not struck through). Claims cite `MEASUREMENT.md` protocols; historical numbers era-label via `instrument_eras.yaml`. The pre-2026-06-12 chronology header + 66-row queue is preserved at `progress/2026-06/master-index-pre-rewrite-archive-2026-06-12.md`.
 
 ## Domain indices

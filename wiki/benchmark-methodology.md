@@ -663,3 +663,30 @@ Sources: [`research/deep-dives/2026-06-12-agents-last-exam.md`](../research/deep
 - **Raw percent agreement is not an adequate validation statistic for a judge, and our constitution does not currently require a better one.** arXiv:2606.00093 (Rao & Callison-Burch) shows that on non-degenerate binary judge-vs-human data Pearson/Spearman/Kendall/phi/MCC all collapse to the same number, so reporting several manufactures an illusion of corroboration; Cohen's kappa is the one common coefficient adding information, because its marginal-sensitive normalization exposes judge-vs-human positive-rate drift. Abstention handling is a **choice of estimand, not preprocessing**. A full-text search of the 878-entry intake index returned zero prior hits for kappa/Krippendorff/inter-rater, and neither MEASUREMENT.md nor MEASUREMENT_POLICY.md mentions an agreement statistic — the draft P-REV-1 reviewer grammar reports raw FA/FR/yield/CR with no chance correction. Caveat to carry: the paper does not discuss Gwet's AC1, and the kappa paradox bites hardest on the deliberately skewed near-miss corpora we build. Sources: [reviewer-calibration-accounting.md](../handoffs/active/reviewer-calibration-accounting.md), [eval-tower-verification.md](../handoffs/active/eval-tower-verification.md), [reviewer-model-ablations.md](../handoffs/active/reviewer-model-ablations.md).
 
 - **Live-web agentic benchmarks carry a validity defect that no field of our claim grammar captures.** arXiv:2606.05241 defines Search-Time Contamination — an agent retrieving the benchmark's own metadata, question text, or answer instead of reasoning — with a three-tier severity taxonomy and up-to-4pp measured inflation across six public benchmarks, and per-agent leakage rates spanning ~0-78% depending on the retrieval stack. Our own exposure was checked and is currently **zero**: the `gaia` suite contributes 0 questions to the live pool (dataset gated and never downloaded), no web-search tool exists in `scripts/benchmark/`, `web_access` defaults False with only `frontdoor` enabling it, and the eval tower hits llama-server ports directly with no tool registry. The forward guard is to re-check if the absent-source suites are ever populated. Sources: [minddr-deep-research-mode.md](../handoffs/active/minddr-deep-research-mode.md), [eval-tower-verification.md](../handoffs/active/eval-tower-verification.md), [progress 2026-07-21](../progress/2026-07/2026-07-21.md).
+
+
+## Calibration instrumentation era (compiled 2026-07-22)
+
+The eval tower crossed from accuracy-only to **decision-grade calibration** in one arc
+(sources: `handoffs/active/eval-tower-architecture-audit-2026-07-20.md`, the four 2026-07-22
+audits, `progress/2026-07/2026-07-22.md`):
+
+- **Fake-zero elimination**: absent confidence had emitted ECE/AUROC `0.0` — placeholder values
+  masquerading as perfect/degenerate measurements. All decision-facing aggregates now emit
+  `None` + `confidence_is_real` provenance; `decision_grade` demotes on reliability<0.8 or fake
+  calibration, with reasons[].
+- **The chat-path n_probs gap** (`83f53382`): llama's OpenAI-compat endpoint ignores the native
+  `n_probs` param; the chat backend never translated to `logprobs`/`top_logprobs` nor parsed
+  them back — and every eval role is a chat-completions role. One gap = every calibration void.
+  First decision-grade rows (EV-4c HE-R+): frontdoor ECE 0.253/AUROC 0.634, worker 0.322/0.575,
+  coherent ordering, triple-reproduced accuracy base (0.7085).
+- **Instrument-lies theme**: the run-progress display counted excluded error rows as wrong
+  (53.8% panic that was really 76% + honest exclusions); the `/slots` busy-sampler undercounted
+  (a "scoring-bound" theory died when sidecar timing showed gen 9.7s / scoring 23ms). Verify the
+  instrument before the conclusion — both false alarms came from probes, not the system.
+- **Arm operability**: per-question sidecar rows now persist full answers + wall-clock intervals
+  (`ended/started/elapsed/scored_at_s`) → concurrency depth (proven MAX OVERLAP 4) and offline
+  re-scoring from the artifact alone; `--retry-errors-from` (error rows) and
+  `--resume-incomplete-from` (interrupted arms, dataset-sha-guarded) make long arms recoverable.
+- **REL-1 held under fire**: a mid-eval API restart burned 532 questions into *excluded error
+  rows* — never scored wrong; the paired accuracy stayed honest (0.764 vs 0.762).
