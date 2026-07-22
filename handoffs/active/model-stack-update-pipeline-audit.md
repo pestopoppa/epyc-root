@@ -620,3 +620,5 @@ Use focused extra tests for each W2 consumer pass. Do not run AutoPilot or llama
 - [x] Descriptor ctx_model_max contract extension (native ctx_max still incomplete) ✅ 2026-07-22
 - [ ] Direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient
 - [x] Remaining tap/high-cost/contention policy-hint projection into generated stack priors ✅ 2026-07-22
+
+- [ ] (620 follow-up — deferred, operator-gated) Wire a compile-blocking strict known-gap for null `ctx_model_max` in `_descriptor_gaps`. Deliberately NOT done in `13112f77` (the field extension) because it would flip the strict promotion gate to error for every not-yet-populated model on the launcher path (CRITICAL blast radius). Populate native `ctx_max` first, then enable.

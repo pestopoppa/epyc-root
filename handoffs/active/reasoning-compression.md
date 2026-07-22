@@ -598,3 +598,5 @@ SPIRAL (arXiv 2606.23595) trains one model to jointly emit parallel CoT traces +
 
 ### Diverse-exploration RL objectives — HW-gated training reference (intake-748 / 749)
 Poly-EPO (arXiv 2604.17654) and Polychromic Objectives for RL (arXiv 2509.25424) are training-time diversity-preserving RL objectives — the **training-side answer to the diversity-collapse bound** documented in §Diversity Collapse Interaction (inference-time interventions cannot recover training-time diversity loss). Tier-3 forward-pointer only (we don't RL-train yet), filed like TPO / RLTF / RLSD; materializes with the MI210.
+
+- [ ] **Correct RE-Bench framing** (flagged by the 2026-07-22 RC-RE-1 scoping): RC-RE-1/rec-005 frames RE-Bench as a reasoning-QUALITY eval; it is actually long-horizon **agentic ML-engineering vs human experts** (6/7 envs need 1-8xH100). Re-scope RC-RE-2 accordingly. Scoping: `epyc-inference-research/docs/design/re-bench-open-weight-compatibility.md`.
