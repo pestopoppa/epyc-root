@@ -466,3 +466,5 @@ read-only reads of `autopilot_state.json`, `autopilot_baseline.yaml`,
 HTTP, no stack commands, no source edits. Follow-up implementation session
 (2026-07-22) added code fixes in epyc-orchestrator + this coverage review /
 implementation record; targeted offline pytest only.*
+
+- [ ] **Per-question rows lack start/end timestamps** (found 2026-07-22 verifying EV-4b concurrency): `question_results.*.jsonl` rows carry verdicts/hashes/covariates but no per-question timing, so end-to-end concurrency depth and latency distributions cannot be derived from the artifact. Add started_at/ended_at to `_EvalQuestionJsonlWriter` rows.
