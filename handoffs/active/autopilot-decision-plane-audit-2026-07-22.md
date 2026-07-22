@@ -227,3 +227,51 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
   rewind/restore atomicity (`structural_lab.py`), H3 preflight JRN-7 reader, M1 validity table,
   M2 phase_status reader, M3 action-local gate fallback (`actions.py`), M4/M5/M6, and the
   SafetyGate/RLVR audit's F2 (`export_rlvr_environment.py`, mid-edit by another agent).
+
+---
+
+## HIGH — H4 (added 2026-07-22): The learned-routing Q signal is an append-only buffer, not Q-learning
+
+Defect signature #4 (a number gating decisions that was never actually learned) + a write-path sibling of **H2** (the episodic store's integrity). Verified read-only against the `20260722T125604Z` snapshot; reproduced with the existing auditor `scripts/analysis/dar_write_path_audit.py` (unchanged, re-run).
+
+### Finding (reproduced)
+- **99.695%** of 671,780 routing rows have `update_count = 0`. `store()` inserts a fresh row per observation; `update_q_value` (the TD apparatus DAR-1/2/3 build on) almost never fires.
+- **643,874** update_count=0 rows collapse to **3,642** distinct `(objective, action)` pairs — **176.8x** duplication, max **7,889** rows for one pair.
+- Rows carrying a learned (moved) Q: **0.305%**; DAR-2 could fire on ≤ **9.74%** (ceiling). The "learned router" is an append-only log.
+
+### Root cause (commit-dated)
+The production scorer path `q_scorer._update_routing_memory` (and its escalation sibling) only TD-updates when `routing_decision.memory_id` is **already** set; otherwise it blind-appends via `store()`. But the **sole** production emitter of `ROUTING_DECISION`, `progress_logger.log_task_started` (progress_logger.py:366-377), **never populates `memory_id`** (`ProgressEntry.memory_id` defaults to `None`). So the update branch is **structurally unreachable from the progress-log path** — every scored routing decision falls through to append.
+- `git blame`: the `if memory_id: … else: store()` structure is **original to `68df9787`** ("feat: MemRL episodic memory implementation", 2026-01-14) and never changed (only the `temporal_decay_rate` kwarg was added in `b3a5b4da`). **Append-only was the behavior since inception; the TD path was aspirational** — not a later regression that bypassed a working updater.
+- The ~2,050 rows that *do* carry a learned Q come from a **different** writer: `score_external_result` (the MemRL/seeding/debug path), which *does* find-or-create by similarity + TD-update. Snapshot confirms: **1,706 / 2,050** learned rows have `context.source == "external"`; the progress-log path contributes ≈ none.
+
+### Fix (implemented, flag-gated OFF by default) — `ORCHESTRATOR_Q_TD_WRITE`
+`orchestration/repl_memory/q_scorer.py`: when the append branch has no pre-linked `memory_id`, it now **find-or-updates** the existing `(objective, action)` routing row in place before appending. The "find" (`_find_existing_routing_memory`) uses the FAISS similarity index (fast) then requires an **exact** objective+action string match, so distinct objectives are never merged. TD math is unchanged (`update_q_value`, learning-rate + temporal-decay preserved).
+- **`ORCHESTRATOR_Q_TD_WRITE` default OFF ⇒ byte-identical legacy append** (deployment is an explicit operator-boundary flip). Flag ON ⇒ in-place TD.
+- The pre-linked-`memory_id` branch and the escalation path are unchanged. **Escalation (`_update_escalation_memory`) has the identical latent defect** (4,382 append-only rows) — left as a scoped follow-up; the routing defect is the audited/migrated one.
+- TD math extracted to a pure `episodic_store.apply_td_update(...)` shared by the live path **and** the migration, guaranteeing identical replay math.
+
+### Migration (non-destructive, idempotent) — `scripts/maintenance/consolidate_q_append_only.py`
+Chronologically replays the 643,874 append-only rows through `apply_td_update` (reward recovered per row via `r = 2q − 1`, valid for update_count=0), producing **one consolidated Q per `(objective, action)`** — the store the live path would have produced. Verified on a scratch copy: **671,780 → 31,548 rows** (3,642 TD-consolidated + 27,906 passthrough); biggest group 7,889 rows → one row `uc=7888`.
+- **Non-destructive**: original `memories` table untouched; results in a new drop-in `memories_consolidated` table + `_q_consolidation_provenance` / `_q_consolidation_meta`.
+- **`--dry-run`** (read-only, safe against the live DB) and a hard refusal to WRITE the live sessions store (copy to `/mnt/raid0/llm/tmp/` first).
+- **Idempotent**: rebuilds deterministically from `memories` content.
+- **Row classes preserved**: `update_count>0` (already-TD-updated, e.g. the external path) and objective-NULL rows **pass through verbatim** — a legitimately-distinct episodic class is not destroyed.
+- **FAISS-sidecar consistency (ties to H2)**: the FAISS index / `id_map.npy` are **not touched**. Each consolidated row keeps its group's representative `id` + `embedding_idx`, so its vector + id_map entry stay valid. Collapsed duplicates' vectors become **orphaned-but-benign** — `retrieve_by_similarity` over-fetches and filters by SQLite membership, so an orphaned vector resolves to no row and is dropped. **No new SQLite↔FAISS desync class is introduced** (a later compaction can rebuild a compact index from the consolidated id set).
+
+### Poisoned-row verdict (seeding fix `3bfe2584`) — NOT store-identifiable
+The in-band `[ERROR: …]` marker lives in the **answer text**, persisted in seed-run **report artifacts**, not in `episodic.db` (routing rows store only task_type / objective / priority). A 0.0 reward maps to `q = 0.5`, indistinguishable from a legitimately-wrong answer or a neutral default. **Poisoned rows cannot be reliably identified from store data.** Store-side **0.0-reward exposure** (proxy: `source=external ∧ uc=0 ∧ q==0.5 ∧ outcome=failure`) = **7,460 rows**, window **2026-05-25 → 2026-07-16** — an over-set (includes legitimate wrong answers). Excluding all of them would bias Q upward, so the migration does **not** guess: it prints the exposure and offers **`--exclude-memory-ids FILE`** for an operator list derived offline from the artifacts (era-triage decision).
+
+### Deploy plan (operator boundary — NOT executed here)
+1. **Migrate first, on a copy.** `cp -r orchestration/repl_memory/sessions /mnt/raid0/llm/tmp/q_consolidate` → `python scripts/maintenance/consolidate_q_append_only.py --db /mnt/raid0/llm/tmp/q_consolidate/episodic.db --dry-run` then without `--dry-run`; inspect `memories_consolidated` + `_q_consolidation_meta`.
+2. **Swap** (operator, during a quiesced write window with autopilot/API stopped): rename `memories`→`memories_pre_consolidation` and `memories_consolidated`→`memories` in the **live** `episodic.db` (or re-run the migration against the live copy in place). Optionally rebuild a compact FAISS index from the consolidated id set.
+3. **Flip the flag** `ORCHESTRATOR_Q_TD_WRITE=1` and restart the API (so new observations TD-update the consolidated rows instead of re-appending). Order matters: migrate → swap → flag, so the first post-flip write finds a deduplicated store.
+4. **Verify after**: `python scripts/analysis/dar_write_path_audit.py` — expect `update_count=0` fraction to fall and the duplication factor to approach 1.0 as new observations accrue; the DAR-2 "rows with learned Q" fraction should climb from 0.305%. Re-run the auditor as the DAR-2 effectiveness re-measure.
+
+### Deliverables / checkboxes
+- [x] **Root-cause dated to `68df9787`** (append-only since inception; TD path aspirational) ✅ 2026-07-22
+- [x] **Flag-gated in-place TD write path** (`ORCHESTRATOR_Q_TD_WRITE`, default OFF = byte-identical) ✅ 2026-07-22 — `q_scorer.py`, `episodic_store.apply_td_update`
+- [x] **Idempotent non-destructive consolidation migration** with `--dry-run` / live-write guard / FAISS-safe design ✅ 2026-07-22 — `scripts/maintenance/consolidate_q_append_only.py`
+- [x] **Poisoned-row verdict**: not store-identifiable; 7,460-row 0.0-reward exposure quantified; `--exclude-memory-ids` hook ✅ 2026-07-22
+- [x] **Tests** (13): flag-off byte-identical, flag-on in-place TD + math, no cross-objective/action merge; migration replay-equivalence vs `update_q_value`, decay, idempotency, dry-run, exclude, passthrough, live-write refusal ✅ 2026-07-22
+- [ ] **Operator: run the deploy plan** (migrate → swap → flag → re-measure) at the scheduled boundary — the live 11h eval is routing through the current store right now; do NOT flip mid-eval.
+- [ ] **Follow-up**: apply the same find-or-update to `_update_escalation_memory` (identical latent defect, 4,382 append-only escalation rows).
