@@ -301,3 +301,15 @@ The in-band `[ERROR: …]` marker lives in the **answer text**, persisted in see
   comparison for the other 39 suites. The fail-closed hold stays (correctly) until the sweep runs.
   Measured suites available NOW for the sweep's cross-check: math quality (E7c), scoring_verifiers
   (EV-4c).
+
+- [ ] **EV-BASELINE-E7 blocked on tier-arm error class (2 attempts, filed 2026-07-23)**: attempt 1
+  errored 14/50 (knowledge-tool import failures — five client libs installed, tools now green in
+  /health); attempt 2 errored 26/50 with errors CONCENTRATED in code-execution + agentic/heavy
+  suites (debugbench/livecodebench/bigcodebench/usaco/tool_use/agentic/long_context all absent
+  from the 24 scored; mean_tools_used 0.04 rules out tool-execution). Runner honestly refused
+  both (current_eval_degenerate — the reliability floor working). NEXT: (a) wire the per-question
+  sidecar into the TIER path (set_question_artifact_dir — calibration/math modes have it, tier
+  does not: diagnosis-blocking gap); (b) rerun a small tier draw instrumented, classify the 26 by
+  reason; (c) fix the class (suspects: client-side code-execution sandbox availability in the
+  tier runner context vs the calibration path that worked, or per-suite deadline shape on heavy
+  suites); (d) then the full sweep → reseed. The era-fence hold remains correctly closed.
