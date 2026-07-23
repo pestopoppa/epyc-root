@@ -650,6 +650,14 @@ but C1 and C3 are execution-blocking (must land in the harness before any decisi
   "current EvalTower fan-out" arm FRESH under E6-cpu-kernel (v7) + E4-quality-core-v2 + the
   WP-12 fleet layer before applying R3; the batch arm is already re-measured by the E5 cells.
   Treat E1's C1@1 tie and the "batch 2.258 / current 10.970" figures as direction-only priors.
+  **C10-F1 addendum (2026-07-23, from the WP-12 case-10 live gate)**: the current-arm's
+  within-role concurrency mechanism is **6-uvicorn-process spread × per-process per-role
+  `Semaphore(1)`** (every live role resolves `get_role_max_concurrency()==1` because
+  `live_warm_worker_slots()` filters `tier=="warm"` and all live roles are `hot`), with
+  cross-process disjointness from region flocks — NOT a role-level concurrency cap of N. A
+  `--workers 1` API serializes each role fully. Model the current-arm baseline accordingly and
+  record the API worker count in the arm's attestation. Fix task filed in
+  [wp12-fleet-layer-design.md](wp12-fleet-layer-design.md) (C10-F1 follow-up).
 - [ ] **C3 (execution-blocking) — build the multi-server harness + cell-manifest affinity gate.**
   `server_numa_np_sweep.py` (or extend `server_np_sweep.py`): per-instance taskset pinning +
   correct per-shape numactl policy (interleave only for full/gemma-MTP), multi-launch/teardown
