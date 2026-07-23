@@ -116,7 +116,7 @@ tightly-gated GPU residency (the danger was VRAM *scarcity*).
 On any phase: flip its `- [ ]`, record the measured constant (E5 provisioning, C for N-dwell, allowlist
 contents) with a MEASUREMENT stamp. No stack/production change lands without the operator + the 3 gates.
 
-## Fabric optionality/robustness contract (opening position, operator-initiated 2026-07-23)
+## Fabric optionality/robustness contract (OPERATOR-RATIFIED 2026-07-23 — "couldn't agree MORE"; governs the fabric design session)
 
 **Optionality principle**: role→slot binding is POLICY DATA, never code — every topology in the
 escalation option space (A-D, eval-tower-verification.md), every parallelism layout, every

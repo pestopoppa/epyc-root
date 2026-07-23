@@ -183,3 +183,118 @@ session fixes immediately; launch-config (mmproj flag) → stack-script fix on i
 (re-download mmproj/model) → session executes, hours-scale; MODEL-choice (VL model itself wrong) →
 operator decision presented immediately with options, never parked. The reseed sequences after the
 vl fix — instrument correctness precedes gate liveness, consistent with every choice this campaign.
+
+## vl 0/376 diagnosis
+
+**Method**: static read-only trace (no inference, no process/network). Exemplars `vl_chart_test_0452`
+(expected `15`) and `vl_chart_test_1401` (expected `25101`). Verdict below; one live probe confirms.
+
+### Full path traced (each hop VERIFIED intact up to the break)
+
+1. **Pool carries the image.** `epyc-inference-research/benchmarks/prompts/question_pool.jsonl` vl rows
+   have `image_path` = absolute PNG path (e.g. `/mnt/raid0/llm/epyc-orchestrator/benchmarks/images/vl/chartqa/chart_test_0452.png`),
+   `scoring_method: substring`, `expected` a short string. Files EXIST on disk (checked: 0452=111KB,
+   1401=73KB; dir has 1575 pngs). ✓
+2. **Eval tower forwards it.** `epyc-orchestrator/scripts/autopilot/eval_tower.py::_generate_question`
+   L2645 `image_path = q.get("image_path","")`, put into `call_kwargs["image_path"]` L2664, passed to
+   `call_orchestrator_forced`. ✓
+3. **Client posts it as an API field.** `epyc-orchestrator/scripts/benchmark/seeding_orchestrator.py::call_orchestrator_forced`
+   L808-809 `if image_path: payload["image_path"] = image_path`; POSTed to `{url}/chat` (eval_batch path
+   L933-937 `_execute_direct`). This is exactly the "image_path forwarded" the instrument note verified. ✓
+4. **Schema accepts it.** `src/api/models/requests.py::ChatRequest` L131 `image_path: str | None`. ✓
+5. **Routing → worker_vision.** `src/api/routes/chat_pipeline/routing_decision.py::select_initial_route`
+   L81-82: image present + `force_role=""`/`role=""` (both empty for vl rows) ⇒ returns
+   `["worker_vision"], "vision_input"` BEFORE the hybrid router. `_route_request` (routing.py L267) uses it. ✓
+   (Latent secondary hop: `apply_failure_veto` L103-140 can revert worker_vision→frontdoor if the failure
+   graph's risk for worker_vision exceeds the band threshold — strategy `vision_input` is veto-eligible.)
+6. **chat.py Stage 7.5** (`src/api/routes/chat.py` L757) `if str(initial_role) in vision_roles and request.image_path:`
+   → `_execute_vision_multimodal`. `vision_roles`/URL come from `orchestration/derived/stack_priors.yaml`
+   where **worker_vision is a real Qwen2.5-VL-7B server, mode=vision, endpoint http://localhost:8086,
+   mmproj-model-f16.gguf** (L1593-1624). ✓
+7. **Multimodal handler builds a correct payload.** direct → `chat_vision.py::_handle_vision_request`;
+   repl → `_vision_react_mode_answer` (mode chosen by `chat_routing.py::_select_mode`). Both base64 the
+   file (`validate_api_path` PASSES — path is under the allowed `/mnt/raid0/llm/` prefix; `.exists()` true)
+   and POST an OpenAI-shape `image_url` data-URI to `http://localhost:8086/v1/chat/completions`
+   (`_vl_url_for_role("worker_vision")` resolves the endpoint from stack_priors — no raise). ✓
+
+### THE BREAK — silent vision fallthrough → blind answering (image discarded)
+
+**Broken hop: `src/api/routes/chat_pipeline/vision_stage.py::_execute_vision_multimodal`, the broad
+`except Exception: … return None  # Fall through to text-only mode` (~L244-257, `log.warning` only).**
+If the worker_vision POST returns non-200 (or the handler raises for ANY reason), `_handle_vision_request`
+exhausts its single forced server + the legacy `/vision/analyze` fallback and raises
+`RuntimeError("All vision paths failed…")` (chat_vision.py L358). That raise is swallowed here and the
+function returns `None`. chat.py then continues to **Stage 8 text execution** — `direct_stage.py` /
+`repl_executor.py`, which contain **ZERO image handling (grep-verified)** — so the image is dropped and
+the model answers **BLIND**. This module's own docstring (vision_stage.py L8-9) states it outright:
+"Without this, `_execute_direct/_execute_repl` discard image data and VL models answer blind."
+
+**Why this yields 0/376 rather than an excluded count:** a blind answer is a normal non-empty string, not
+an `[ERROR:` marker, so the eval SCORES it (it is NOT caught by the REL-1 in-band-error guard
+`eval_tower.py::_inband_error_text` L591 / L2705, which would EXCLUDE it). 376 blind answers on chart-QA
+all miss the gold number ⇒ **0 correct / 376 scored**. The full-suite denominator (376, not a shrunken
+excluded count) is itself the proof that answers were PRODUCED, not errored — i.e. blind, per hypothesis (a).
+
+**Why deterministic for all 376:** the trigger applies identically to every request — either (i)
+worker_vision:8086 rejects the multimodal request every time (server up but launched without a working
+mmproj / wrong template / payload shape — consistent with the prior clue that worker_vision returned
+HTTP 400 to a misrouted text question), or (ii) `apply_failure_veto` reverts worker_vision→frontdoor for
+the whole suite. Both funnel through the same silent fallthrough to blind text.
+
+### Minimal fix (two parts)
+
+- **Eval-honesty / visibility (immediate, session-scope code fix):** in `_execute_vision_multimodal`, when
+  the request HAS image data and the multimodal handler fails, do NOT `return None` (blind fallthrough).
+  Return a `ChatResponse` whose `answer` is an in-band marker `"[ERROR: vision_unavailable: <detail>]"`.
+  The eval's `_inband_error_text` guard then converts it to an EXCLUDED reliability row (REL-1) instead of
+  scoring a wrong answer — flipping a silent, mis-scored **0/376** into 376 visibly-excluded rows so the
+  fault is attributable and stops corrupting the quality denominator. (Interactive non-eval callers may
+  still opt into graceful text fallback, but it must be explicit, never the default for image-bearing reqs.)
+- **Root cause (after probe):** fix whatever makes worker_vision reject the multimodal request. Per the
+  operator escalation ladder this is most likely launch-config (mmproj flag on the :8086 server) — a
+  stack-script fix on the idle stack — OR the failure-veto reverting the role. The probe pins which.
+
+### The ONE live probe (main session runs — single /chat with a real chart image)
+
+```bash
+curl -s http://localhost:8000/chat -H 'Content-Type: application/json' -d '{
+  "prompt": "What is the value of the gray bar in the Donald Trump category?",
+  "image_path": "/mnt/raid0/llm/epyc-orchestrator/benchmarks/images/vl/chartqa/chart_test_0452.png",
+  "real_mode": true
+}' | jq '{routed_to, routing_strategy, error, answer}'
+```
+Correct answer contains `15`. Interpretation:
+- `routed_to` != `worker_vision` (e.g. `frontdoor`/`worker_general`) ⇒ routing/**failure-veto** stripped
+  vision before Stage 7.5 → blind. Fix = veto/routing (hop 5).
+- `routed_to` == `worker_vision` but answer is a blind guess/refusal / no `15` ⇒ the multimodal handler
+  swallowed a worker_vision failure and fell through (the break above). Disambiguate the server itself:
+
+```bash
+IMG=$(base64 -w0 /mnt/raid0/llm/epyc-orchestrator/benchmarks/images/vl/chartqa/chart_test_0452.png)
+curl -s http://localhost:8086/v1/chat/completions -H 'Content-Type: application/json' \
+  -d "{\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"image_url\",\"image_url\":{\"url\":\"data:image/png;base64,$IMG\"}},{\"type\":\"text\",\"text\":\"What is the value of the gray bar in the Donald Trump category?\"}]}],\"max_tokens\":128,\"temperature\":0}" \
+  | jq '.choices[0].message.content, .error'
+```
+- 200 + content contains `15` ⇒ worker_vision healthy; bug is entirely orchestrator-side (swallow/veto).
+- non-200 / ignores image ⇒ worker_vision itself misconfigured (mmproj/launch); the swallow was masking it.
+
+### Confidence
+
+- **HIGH** on the mechanism: image is dropped and the model answers blind; blind answers are scored (not
+  excluded), giving 0/376. Backed by three independent facts — the full-suite denominator proving answers
+  were produced; `direct_stage.py`/`repl_executor.py` having no image handling; and the vision_stage.py
+  docstring naming this exact failure.
+- **MEDIUM** on the upstream trigger (worker_vision non-200 vs failure-veto vs repl-path). The single probe
+  above resolves it in one shot.
+
+## vl probe verdict (2026-07-23, live, idle stack)
+
+Both paths (orchestrator /chat AND direct 8086 multimodal) answered "48" on chart_test_0452 —
+and the IMAGE VERIFIES the model is SEEING: the Trump row reads Poor=48 / Only fair=15 /
+Good=21 / Excellent=15; the model read real values from the correct row and picked the wrong
+gray-ish bar (Poor 48 vs the lighter "Only fair" 15). Legitimate color-ambiguity miss by a
+working vision pipeline. RE-RANKED hypotheses for 0/376: (1) the vision_stage silent-swallow
+fires UNDER EVAL LOAD (contention/timeouts during 4-wide → text fallback → blind → scored
+wrong), not on idle; (2) scorer strictness on verbose VL answers may contribute. Swallow fix
+correct regardless; then a ~20-question instrumented vl slice on idle stack measures TRUE vl
+accuracy with exclusions visible → decides vl-in-core composition.
