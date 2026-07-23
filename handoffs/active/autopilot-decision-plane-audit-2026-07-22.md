@@ -323,7 +323,7 @@ The in-band `[ERROR: …]` marker lives in the **answer text**, persisted in see
   changes). Also from the same diag: kuzu module missing in venv (6x ImportError, mutation-graph
   tools) — install or lazy-degrade.
 
-- [ ] **Routing modality guard + backend HTTPStatusError handling (filed 2026-07-23, from tier
+- [x] ✅ 2026-07-23 (`bb3a9ebb` — bidirectional fence: text fenced off vision roles declaratively, image exempt from veto, vision failures in-band, HTTPStatusError structured) **Routing modality guard + backend HTTPStatusError handling (filed 2026-07-23, from tier
   forensics)**: MemRL routed a long-context TEXT longbench question to worker_vision (:8086) →
   HTTP 400 (context window); `select_initial_route` only forces vision ON image presence, never
   guards non-vision traffic AWAY from VL servers; and `LlamaServerBackend.infer` catches
