@@ -289,7 +289,7 @@ The in-band `[ERROR: …]` marker lives in the **answer text**, persisted in see
   probe with ECE not degraded; then re-baseline math via a full arm and amend P-CAL. (d) Owner:
   eval-tower program, post-EV-BASELINE-E7 in priority order unless the operator promotes it.
 
-- [ ] **EV-BASELINE-E7 — post-E7 full-pool baseline sweep (reseed prerequisite; filed 2026-07-23)**:
+- [x] ✅ 2026-07-23 COMPLETE — reseed APPLIED by operator (12:45:07Z; backup autopilot_state.pre-reseed-20260723T124507Z.json; gate reads T1 1.6 / T2 1.891, era E7-eval-instrument; fail-closed hold lifted on same-era designed-core ground) **EV-BASELINE-E7 — post-E7 full-pool baseline sweep (reseed prerequisite; filed 2026-07-23)**:
   the granted era-fence reseed is UNDERDETERMINED by current data — `baseline_state` is tier-keyed
   over the 41-suite E7 pool, while post-E7 measurements cover only math (E7c) + scoring_verifiers
   (EV-4c). Deriving `baselines_by_tier` from 2 suites would fabricate a tier baseline (the exact
@@ -302,7 +302,7 @@ The in-band `[ERROR: …]` marker lives in the **answer text**, persisted in see
   Measured suites available NOW for the sweep's cross-check: math quality (E7c), scoring_verifiers
   (EV-4c).
 
-- [ ] **EV-BASELINE-E7 blocked on tier-arm error class (2 attempts, filed 2026-07-23)**: attempt 1
+- [x] ✅ 2026-07-23 RESOLVED through six defect-fix iterations; baselines banked on core_v2 (T1 1.600 rel 0.90) + legacy T2 (1.891 rel 0.92), escalation-off declared **EV-BASELINE-E7 blocked on tier-arm error class (2 attempts, filed 2026-07-23)**: attempt 1
   errored 14/50 (knowledge-tool import failures — five client libs installed, tools now green in
   /health); attempt 2 errored 26/50 with errors CONCENTRATED in code-execution + agentic/heavy
   suites (debugbench/livecodebench/bigcodebench/usaco/tool_use/agentic/long_context all absent
