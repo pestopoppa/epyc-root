@@ -510,7 +510,7 @@ The anchor/de-anchoring rules above are human-amendment-only (trust boundary). B
   NUMA×batch mapping (batched-decode-measurement.md) BEFORE implementing. Not applicable to
   tier/whole-stack draws (route across all roles; no disjoint layout exists). Protocol must declare the mode (solo vs overlapped
   load profile) for era comparability. Cross-ref: design-backlog-triage-2026-07-23.md Section 2 top-3.
-- [ ] **core_v2 re-run batch composition (2026-07-23, REVISED per operator architect-swap caution)**:
+- [x] ✅ 2026-07-23 T1+T2 DONE (T1 1.600 core_v2 rel 0.90 escalation-off-verified; T2 1.891 rel 0.92) + reseed APPLIED by operator; T3 leg now gated ONLY on the architect decision (judge prereq MET 76c34590) **core_v2 re-run batch composition (2026-07-23, REVISED per operator architect-swap caution)**:
   when core_v2 promotes, run **T1+T2 with think-harder/architect escalation explicitly pinned OFF**
   (declared protocol property, not gate accident; verify architect-independence per-row via
   think_harder_attempted in the sidecar) — baselines then measure the try-cheap-first serving plane

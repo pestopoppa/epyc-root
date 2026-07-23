@@ -1,6 +1,6 @@
 # EPYC Handoff — Master Index
 
-> **2026-07-22 audit + calibration campaign (day's entry points):** four verified audits with
+> **2026-07-22/23 measurement campaign — TERMINAL 2026-07-23 12:45Z** (gate live: T1 1.600 core_v2 / T2 1.891, era-fenced, reseed operator-applied; P-CAL + P-PAIRED + E4-quality-core-v2 in the constitution; scorer class closed; judge fixed; vl recovered). Open: T3 (architect decision), WP-12 flip (parallel session sync), E5, fabric session. Historical entry points: four verified audits with
 > embedded implementation records — [decision-plane](autopilot-decision-plane-audit-2026-07-22.md)
 > (era fence LANDED; **Q-TD-write deploy + era-fence baseline reseed = the two open operator
 > boundary actions**), [SafetyGate/RLVR](safetygate-rlvr-provenance-audit-2026-07-22.md),
