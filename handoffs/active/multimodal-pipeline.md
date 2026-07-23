@@ -487,4 +487,102 @@ Watch list: SHANKS (arxiv:2510.06917) is sibling not supersession — different 
 
 Operator directive: the MiniCPM-o/MI210 vision_escalation lane stays parked ("ignore for now") — but **when ready, promotion into the stack must be deterministic, not bespoke**.
 
-- [ ] **Write the vision_escalation → MiniCPM-o promotion runbook**: a single documented, gate-checked sequence covering (1) registry vision_escalation rebind (model + mmproj + HIP runtime lane, reversing the 2026-07-19 `91cf4033`/`dacd15a2` safe-alias rollback); (2) `stack_change_pipeline.py update` + `check` green; (3) rolling server swap on 8087 via `orchestrator_stack.py` (the 2026-07-23 additive `--numa-mode both` promotion path in `stack_commands.py` is the pattern: explicit-arg authority, skip-healthy, no-outage); (4) §H contention-matrix recert for the changed lane (the 2026-07-17 rebind shipped WITHOUT recert — flagged in v7-promotion.md:38 — the runbook must close that gap, not repeat it); (5) live-affinity + realized-first attestation; (6) smoke via the eval path (image + text probe) with the modality fence verified; (7) rollback = the same runbook with the safe-alias registry state. Prior evidence to cite: MiniCPM-o validation 2026-07-18 (110-127 t/s, 4/4 quality, 8/8 service matrix) vs the alias faster on the 07-19 long-decode slice — the runbook executes whichever model the operator picks; it is model-agnostic mechanics.
+- [x] **Write the vision_escalation → MiniCPM-o promotion runbook** ✅ 2026-07-23 — persisted at [docs/runbooks/vision-escalation-minicpmo-promotion.md](../../docs/runbooks/vision-escalation-minicpmo-promotion.md) (drafted + adversarially verified by workflow; 6 corrections applied; data-only + 3 constant lines, registry edit goes to the MASTER). Original spec: a single documented, gate-checked sequence covering (1) registry vision_escalation rebind (model + mmproj + HIP runtime lane, reversing the 2026-07-19 `91cf4033`/`dacd15a2` safe-alias rollback); (2) `stack_change_pipeline.py update` + `check` green; (3) rolling server swap on 8087 via `orchestrator_stack.py` (the 2026-07-23 additive `--numa-mode both` promotion path in `stack_commands.py` is the pattern: explicit-arg authority, skip-healthy, no-outage); (4) §H contention-matrix recert for the changed lane (the 2026-07-17 rebind shipped WITHOUT recert — flagged in v7-promotion.md:38 — the runbook must close that gap, not repeat it); (5) live-affinity + realized-first attestation; (6) smoke via the eval path (image + text probe) with the modality fence verified; (7) rollback = the same runbook with the safe-alias registry state. Prior evidence to cite: MiniCPM-o validation 2026-07-18 (110-127 t/s, 4/4 quality, 8/8 service matrix) vs the alias faster on the 07-19 long-decode slice — the runbook executes whichever model the operator picks; it is model-agnostic mechanics.
+
+
+## Trigger Gate: worker_vision 4×-quarters recollection
+
+**Status**: Recollection held OPEN "in principle" (operator, stack-lineup-dossier-2026-07-23 item 7). This gate defines the two conditions under which it converts to action. Until either trips, the 2026-05-24 revert stands and `test_worker_vision_stays_single_instance` stays pinned.
+
+### 0. Evidence snapshot (measured 2026-07-23, read-only)
+
+| Fact | Value | Source |
+|---|---|---|
+| Tap window | 2026-07-15T19:07 → 2026-07-23T17:28 (~7.9 days) | `/mnt/raid0/llm/tmp/inference_tap_events.jsonl` (940,083 events) |
+| worker_vision request starts | **399 — ALL `batch_id:"evaltower-*"`; organic (`batch_id:null`) = 0** | grep of `"event":"start"` lines |
+| vision_escalation events | **0** (any type, entire window) | same file |
+| Per-request profile | mean 87–183 gen tokens, decode 26–31 t/s tap-observed (p50 26.2, p90 50.7), 4–10 s decode; `prompt_ms` recorded 0.0 (prefill/image-encode NOT captured) | `"event":"timings"` lines |
+| Revert basis (2026-05-24) | 24t = 11.39 vs 48t = 11.30 t/s flat; +16 GB mlock; zero volume; 4×q lived ~90 min (`6657bbdc` → `92283a08`) | `stack_numa.py:198-204`, progress/2026-05/2026-05-24.md, dossier §row worker_vision |
+| Current shape | ONE quarter Q0B (24-47,120-143) @8086, `-t 24`, `-np 2` slots | `stack_numa.py:205-208`, `orchestrator_stack.py:_build_vision_command` (slots fallback 2) |
+| What changed since revert | **vl modality fence live 2026-07-23** (`src/api/routes/chat_pipeline/routing_decision.py`: image → `worker_vision` at line 142; text fenced OFF vision roles; failure-veto exemption for image requests). Pre-fence the lane was routing-dead (vl 0/376 — now STALE per core-v2-design-note §amendment) | routing_decision.py:30-83,142,195-208 |
+
+**Consequence of the fence**: all demand data at or before 2026-07-23 — including the table above — *undercounts true organic vision demand* (routing was broken, then freshly fixed). The demand clock starts **2026-07-23**; first valid reading ≥ **2026-08-06** (14-day window).
+
+### Trigger A — DEMAND (current model kept; quarters = replication for throughput)
+
+Rationale: the 2026-05-24 flat-scaling finding kills quartering as a *latency* lever, but replication for *throughput* is orthogonal — extra independent quarter instances add aggregate capacity even for a thread-flat model. The real 2026-05-24 blocker was zero volume. So Trigger A is purely a volume/saturation gate.
+
+**Capacity model (assumptions explicit)**:
+- Service time S per organic request: 4–10 s decode (tap-observed 26–31 t/s × 90–180 tokens) + un-instrumented image-encode/prefill budget 3–10 s → **S ≈ 10–20 s**; worst-case floor using the Phase-0.5 protocol number (11.3 t/s, era pre-v7): **S ≈ 25 s**.
+- One quarter, `-np 2` slots, co-run efficiency of 2 slots on 24t assumed 1.3–1.6× single-stream (J5 quarter-pair precedent; NOT measured for this role) → sustained capacity **C ≈ 2–5 req/min**; use **C_conservative = 2 req/min**.
+- SLA assumed: p95 queue wait ≤ 30 s, p95 time-to-last-token ≤ 90 s; utilization target ρ ≤ 0.7.
+
+**Trip condition (both sub-signals required — the AND makes the gate self-calibrating against the 11-vs-31 t/s uncertainty)**:
+1. **Rate**: sustained organic arrival λ ≥ **2 req/min over any 30-min window**, recurring on **≥ 3 distinct days within 14 days** (all post-2026-07-23 data only), AND
+2. **Saturation**: in-flight depth > 2 (both slots busy, requests queuing) for **> 10% of samples** in those windows, or p95 queue wait > 30 s.
+
+Current reading vs threshold: **0 organic req in 7.9 days vs ≥ 2/min required** — not remotely close; the gate exists so this gets re-read post-fence, cheaply, on a cadence.
+
+**Measurement (read-only, zero inference)**:
+```bash
+# A1 — organic arrivals per hour (excludes eval-tower batches)
+grep '"role":"worker_vision"' /mnt/raid0/llm/tmp/inference_tap_events.jsonl \
+  | grep '"event":"start"' | grep '"batch_id":null' \
+  | grep -o '"ts":"[0-9T:-]*' | cut -c8-21 | sort | uniq -c
+
+# A2 — saturation proxy: max/distribution of concurrent in-flight organic requests
+grep '"role":"worker_vision"' /mnt/raid0/llm/tmp/inference_tap_events.jsonl \
+  | grep '"batch_id":null' \
+  | grep -oE '"event":"(start|end)"[^}]*?"ts_epoch":[0-9.]+' \
+  | sed -E 's/"event":"(start|end)".*"ts_epoch":([0-9.]+)/\2 \1/' | sort -n \
+  | awk '{d+=($2=="start")?1:-1; n++; if(d>2)over++; if(d>max)max=d}
+         END{printf "max_inflight=%d over_2slots_frac=%.3f\n", max, (n?over/n:0)}'
+
+# A3 — service-time check (recalibrate S if model/kernel changes)
+grep '"role":"worker_vision"' /mnt/raid0/llm/tmp/inference_tap_events.jsonl \
+  | grep '"event":"timings"' | grep '"batch_id":null' \
+  | grep -o '"total_s":[0-9.]*' | cut -d: -f2 | sort -n \
+  | awk '{a[NR]=$1} END{if(NR)print "n="NR, "p50="a[int(NR*.5)], "p95="a[int(NR*.95)]}'
+```
+Mind tap-file rotation (journal-rotation lesson: read all shards if `inference_tap_events_<n>.jsonl` appears). Cost: ~seconds of grep; run at each review checkpoint.
+
+### Trigger B — CAPABILITY (model change on the role)
+
+Trips when a **new VL model is a candidate for `worker_vision` on CPU** and, unlike the 7B, actually profits from the topology. All three sub-gates required:
+
+1. **Quality gate first**: candidate passes the K35 fixed-fixture vision quality matrix at parity-or-better vs the current 7B alias (precedent: Qwen3-VL-30B was collapsed 5→1 on 2026-07-17, `139ba643`, for 3/4 vs the 7B's 4/4 — capacity for wrong answers is worthless).
+2. **J5-style certified-affinity pair test**: quarter-pair **aggregate co-run ratio ≥ 1.2 mean, no pair < 1.0**, with **n ≥ 8 reps and CV ≤ 5% per pair** (the J5 vision -t48 re-bench was direction-robust but DIAGNOSTIC-GRADE at 5/8 pairs cv>5% — a decision gate needs the clean version), measured **only** under `live_affinity_verified` (`scripts/server/affinity_preflight.py`, role mode) — the 2026-05-26 lesson: uncertified affinity produced phantom blocks (0.40–0.46×) that certified re-bench overturned to 1.38–2.52× allow.
+3. **Thread-scaling sanity**: single-instance 24t vs 48t delta > 10% (the 7B's 11.39-vs-11.30 flatline is the disqualifier this reverses), OR the model is large enough that a quarter is its minimum viable footprint.
+
+**Measurement**: `python scripts/server/contention_matrix.py --roles worker_vision` (canonical J5 harness; writes `orchestration/contention_matrix.yaml` with topology-hash attestation) against a candidate 4×q shape on the experimental config — this **is inference on the EPYC and requires per-run operator approval** (MEASUREMENT.md; no-concurrent-inference policy). Record the result as a decision-gating tuple `(ratio, contention_matrix protocol, n, date, attestation ref)`.
+
+**B alone does not trip the gate**: quartering buys *concurrent aggregate* throughput, which is worthless at zero concurrency. B additionally requires a demand floor of **≥ 0.5 req/min sustained organic** (25% of Trigger A's rate, measured the same way).
+
+### Gate logic
+
+```
+RECOLLECT_4xq  =  ( A )  OR  ( B AND organic λ ≥ 0.5 req/min )
+SUSPENDED whenever a certified MI210 vision lane is persistent-live (see below)
+```
+
+### Interaction with MiniCPM-o / MI210 (explicit)
+
+State (dossier §Chain + item 3): MiniCPM-o-4.5 on MI210 fully validated 2026-07-18 (110–127 t/s, 4/4 quality, co-residency, 8/8 service matrix), rolled back 2026-07-19 to the CPU safe alias; the alias itself ran *faster* on MI210 long-decode (118.5 vs 109.2 t/s). The cutover is **decision-pending, not execution-pending**, with a deterministic promotion runbook task filed in multimodal-pipeline.md §"MiniCPM-o deterministic promotion runbook".
+
+- One MI210 vision stream ≈ 110–127 t/s ≈ **4–10× a CPU quarter stream**. The marginal capacity of +3 CPU quarters (~+2–4 req/min, +16 GB mlock, new region-lock pressure on node0/Q0) is dwarfed by a single GPU lane (~15–40 req/min at the same S).
+- **Rule**: if the operator executes any persistent-live MI210 vision cutover (MiniCPM-o *or* the alias-on-GPU variant), this gate is **SUSPENDED** — overflow vision demand routes to the GPU escalation lane instead, and the CPU 4×q case survives only as (i) GPU-lane retirement/contention fallback, or (ii) an operator-mandated CPU-resilience requirement (a different gate, operator-defined).
+- **Caveat to re-verify at trip time**: the MI210 currently hosts the operator's Qwen3.5-122B UD-IQ2_M architect experiment (the port-18072 process — external, not a stack lane). Co-residency was validated 2026-07-18, but GPU headroom must be re-confirmed on the day either trigger trips.
+
+### What un-pins `test_worker_vision_stays_single_instance` when tripped
+
+The pin encodes a *decision*, so un-pinning = superseding the decision with an attested one, in **one commit**:
+
+1. **Attestation first**: persist the trip evidence (Trigger A: tap-window counts + the A1/A2 command outputs + dates; Trigger B: `contention_matrix.yaml` ref + affinity attestation + K35 result) in the handoff and progress note, as a MEASUREMENT.md-grade tuple.
+2. **Same commit, orchestrator repo**: (a) `scripts/server/stack_numa.py:205-208` — new `worker_vision` shape (mirror the `burst_prefer_quarters` pattern; rewrite the 198–204 comment block to cite the trip attestation, don't delete the history); (b) **replace** `tests/unit/test_orchestrator_stack_threads.py:84-92` — add `"worker_vision"` to the `test_quartered_roles_per_instance_thread_count` loop (line 71) and write a new pin asserting the NEW ratified shape with the attestation ref in its docstring; (c) registry `server_mode` update so the WP-12 fleet layer derives the endpoints (do NOT hand-copy URLs into `src/config/models.py` — fleet is SoT).
+3. **Config gates**: `stack_change_pipeline.py update` + `check` green.
+4. **Promotion**: additive, no-outage — `orchestrator_stack.py start --only worker_vision --numa-mode both` (`stack_commands._only_mode_transition_allowed` path); `affinity_preflight.py` role-mode green; **contention-matrix recert for the changed lane** (do not repeat the 2026-07-17 rebind-without-recert gap flagged at v7-promotion.md:38).
+5. **Post**: dispatch verification on the new instances; re-run A1/A2 after 48 h to confirm the added capacity is actually absorbing queue.
+
+### Review cadence
+
+Re-run A1–A3 at each stack-review checkpoint (or ≥ every 14 days), first valid post-fence reading **2026-08-06**. If two consecutive checkpoints read λ ≈ 0 organic *and* the MI210 cutover executes, recommend converting "open in principle" → "closed: superseded by GPU lane" to the operator.
