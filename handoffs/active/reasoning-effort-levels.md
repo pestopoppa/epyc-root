@@ -141,38 +141,55 @@ meant to fix). This makes budget-selection and admission-control **one problem**
       sets from **assessed task complexity** (easy → tight budget, hard → generous). Requires per-request
       budget plumbing through the orchestrator serving path (llama-server already accepts it per request).
       Natural extension of [[project_learned_routing_controller]] — budget becomes a routing *output*.
-- [x] **TB-6-exec — np × context throughput surface (GPU-only study).** ✅ 2026-07-23 — COMPLETE for A1
-      (122B-A10B UD-IQ2_M, v7 kernel, MTP-on). Full grid: np{1,2,4,8,16,32} × L{2048,8192,16384,32768}
-      generation-length cells (`study_np_context.sh` + `study_np_context_longL.sh`, artifacts
-      `np_context_study_20260723/`). **Aggregate decode t/s surface:**
+- [x] **TB-6-exec — np × context throughput surface, ALL GPU architect candidates (GPU-only study).**
+      ✅ 2026-07-23 — COMPLETE for **A1** (122B-A10B UD-IQ2_M, MoE, MTP2), **A3** (Qwen3.6-27B dense Q8, MTP4),
+      **A4** (Qwen3.6-35B-A3B Q8, MoE, MTP4) — each at its own max-opt MTP depth, v7 kernel, MI210. Grid
+      np{1,2,4,8,16,32} × L{2048,8192,16384,32768} (drivers `study_np_context*.sh`, artifacts
+      `np_context_study_20260723/`). Aggregate decode t/s (— = grid-capped or VRAM-guard SKIP):
 
-      | np ↓ / L → | 2,048 | 8,192 | 16,384 | 32,768 |
-      |---|---|---|---|---|
-      | 1  | 54.7 | 52.7 | 57.1 | 52.0 |
-      | 2  | 44.0 | 44.2 | 44.8 | 43.0 |
-      | 4  | 63.1 | 60.9 | 55.6 | 45.7 |
-      | 8  | 85.3 | 66.8 | 62.7 | — |
-      | 16 | 99.9 | 86.2 | — | — |
-      | 32 | 103.4 | — | — | — |
+      | np↓/L→ | **A1** 2k | 8k | 16k | 32k | **A3** 2k | 8k | 16k | 32k | **A4** 2k | 8k | 16k | 32k |
+      |---|---|---|---|---|---|---|---|---|---|---|---|---|
+      | 1  | 54.7 | 52.7 | 57.1 | 52.0 | 46.8 | 47.0 | 41.4 | 42.5 | 72.4 | 94.0 | 99.4 | 73.3 |
+      | 2  | 44.0 | 44.2 | 44.8 | 43.0 | 79.1 | 64.3 | 64.0 | 65.2 | 103.2 | 111.5 | 98.3 | 98.9 |
+      | 4  | 63.1 | 60.9 | 55.6 | 45.7 | 113.8 | 102.5 | 90.8 | 95.2 | 147.2 | 159.0 | 126.9 | 131.5 |
+      | 8  | 85.3 | 66.8 | 62.7 | — | 151.2 | 119.9 | 100.4 | — | 181.1 | 193.8 | 159.5 | — |
+      | 16 | 99.9 | 86.2 | — | — | 152.9 | 104.0 | — | — | 220.9 | 207.1 | — | — |
+      | 32 | 103.4 | — | — | — | 128.7 | — | — | — | 243.5 | — | — | — |
 
-      **Batching speedup (peak agg ÷ np=1) collapses monotonically with reasoning budget:** L=2048 → **1.89×**
-      (np16-32); L=8192 → **1.64×** (np16); L=16384 → **1.10×** (np8); L=32768 → **1.00×, net-negative**
-      (np=1 is peak; np4=45.7 < np1=52.0). This QUANTIFIES the TB-6 hypothesis below ("optimal np collapses
-      toward 1 as budget grows"). **Router rule for the 122B-IQ2 arm:** budget ≤8k → batch np8-16; 16k →
-      np4-8; ≥32k → **np=1** (batching net-negative — protect per-request latency instead; at L=32768 the
-      ordering is np1=52.0 > np4=45.7 > np2=43.0, so concurrency buys no aggregate). **Secondary:**
-      (a) the **np=2 dip is universal** (43-45 agg at ALL four L) — a reproducible MoE scheduling artifact,
-      strictly worse than np=1, **the single worst operating point — never deliberately run 2-way**; (b)
-      **single-stream is flat across L** (52-57 regardless
-      of budget) — a lone request pays ~no throughput penalty for a longer budget. Cross-check: earlier
-      fixed-*total*=36864 probe np4=62 matches this surface's L=8192 np4=60.9. ✅
-- [ ] **TB-6-exec-followups (GPU-owned).** (a) A3 (27B dense, ~2.4× KV/slot — expect the collapse-to-np=1
-      knee at *shorter* L); + the other GPU-resident stack models. (b) A *rigorous* variant using
-      **prefill-to-depth** (long synthetic prompt + short generation) to measure decode-at-KV-depth cheaply
-      instead of the slow generate-L proxy used here. (d) Extract per-model `kv_bytes/token` from the VRAM
-      readings for the admission-control constant. NOTE: measured KV is *cheaper* than a naive 0.23 GB/1k
-      estimate — that figure conflated true KV with per-np compute/batch buffers; totals to 131k ctx fit
-      under ~54 GB on the 64 GB card.
+      **Peak aggregate per (arm, budget) [np@peak]:** L2k → A1 103@32 · A3 153@16 · **A4 243@32**; L8k → A1 86@16 ·
+      A3 120@8 · **A4 207@16**; L16k → A1 63@8 · A3 100@8 · **A4 160@8**; L32k → A1 52@**1** · A3 95@4 · **A4 132@4**.
+
+      **KEY FINDINGS (cross-candidate):**
+      1. **Throughput ranking A4 ≫ A3 > A1 at every batched operating point** — small-active MoE (3B active)
+         batches best, dense 27B second, large-active IQ2 MoE worst. At L2k peak: 243 / 153 / 103.
+      2. **A1 is the SOLE outlier.** It is the only arm with (a) an np=2 dip AND (b) a long-context batching
+         *collapse* (net-negative at 32k: np4=45.7 < np1=52.0). A3 (dense) and A4 (small MoE) both batch
+         **robustly at every budget** (A3 2.2–3.3×; A4 up to 3.4×).
+      3. **⚠ CORRECTION of the earlier A1-only reading (was wrong):** the np=2 dip is **NOT** generic-MoE (A4
+         MoE shows *no* dip, 1.43× at np=2) and the long-CoT collapse is **NOT** generic-long-context (A4
+         batches fine at 32k). BOTH are **A1-SPECIFIC**, confounded across IQ2-quant / MTP-2 / large-active —
+         cause not isolated (candidate followup RP/kernel).
+      4. **Batching is ARCHITECTURE-DEPENDENT, not universal.** The earlier "optimal np → 1 as budget grows /
+         don't batch long-CoT" rule holds **ONLY for A1**. Dense + small-MoE keep ~2–3× batching at 32k.
+      5. **Why dense batches so well:** weight-reuse amortization (read weights once, apply to np tokens) beats
+         MoE expert-scatter at low–mid np; the MoE edge (fewer active params) only surfaces at high np with
+         expert reuse — which is exactly where A4 pulls away (243 @ np32) and A3 plateaus (~153 @ np8-16).
+      6. **Caveat:** np=1 cells are n=1 (NREQ=np) → noisy baselines (A4 np=1 ranged 72–99 across L); the
+         batched aggregates (n=np) are the reliable reads. Peak numbers, not np=1 ratios, drive the policy.
+
+      **Router rule — per-arm, architecture-aware (supersedes the single-arm rule):**
+      - **A1** (large IQ2 MoE): batch ≤8k (np8-16); 16k np4-8; **≥32k np=1**; **never np=2**.
+      - **A3** (dense): batch **all** budgets, sweet spot **np=8** (regresses past np=16).
+      - **A4** (small MoE): batch aggressively **all** budgets, scales to **np=32+**, no dip — the throughput arm.
+
+      Cross-check: earlier fixed-*total*=36864 probe np4=62 matches A1's L=8192 np4=60.9. ✅
+- [ ] **TB-6-exec-followups (GPU-owned).** (a) ✅ A3+A4 surfaces DONE 2026-07-23; remaining: the other
+      GPU-resident stack models if/when relevant. (b) A *rigorous* variant using **prefill-to-depth** (long
+      synthetic prompt + short generation) to measure decode-at-KV-depth cheaply instead of the slow generate-L
+      proxy — also fixes the n=1 np=1-baseline noise. (d) Extract per-model `kv_bytes/token` from the VRAM
+      readings for the admission-control constant (A1 ~0.08, A3 ~0.15, A4 low — MoE). NOTE: measured KV is
+      *cheaper* than a naive 0.23 GB/1k estimate — that conflated true KV with per-np compute/batch buffers;
+      totals to 131k ctx fit under ~54 GB on the 64 GB card.
 - [ ] **TB-6-exec (c) — A2/CPU (122B-Q4) np×context surface — HANDED TO CPU LINEAGE 2026-07-23.** Does the
       Q4 arm on CPU show the same batching-collapse shape? Owned by the CPU session per the GPU/CPU split
       ([[project_session_split_2026_07_23]]); tracked here for the surface's completeness only.
@@ -201,6 +218,35 @@ meant to fix). This makes budget-selection and admission-control **one problem**
       > **2-D (budget × concurrency) grid** capturing the decode-collapse knee; "fits in VRAM" is NOT
       > sufficient to raise concurrency. Bandwidth ceiling ≈ `Σ(ctx_i) × kv_bytes/token / mem_bw`. Evidence:
       > `artifacts/architect-bench-gpu-20260720/runs/olympiadbench_hard/` (A1 np=14 timeouts vs np=4 timing).
+      > **✅ 2026-07-23: the 2-D grid is now MEASURED for all GPU candidates — see TB-6-exec surface above
+      > (A1) + the consolidated cross-candidate table (A1/A3/A4). Router-integration plan: TB-6-ROUTER below.**
+- [ ] **TB-6-ROUTER — Wire the np×budget surface into the router (GATED on GPU joining the orchestration
+      stack).** The surfaces give, per GPU-resident model, a lookup `reasoning_budget → (optimal np, expected
+      aggregate t/s, expected per-request t/s)`. This is the missing half of the routing decision: the learned
+      router already maps *task → budget* ([[project_learned_routing_controller]]); this maps *budget →
+      concurrency policy*. **Precondition (why gated):** the MI210 is today a *bench instrument*, NOT a serving
+      node — production is CPU-only. This activates only when the GPU is registered as a serving backend in
+      `orchestrator_stack.py` / `model_registry` — an operator-gated stack change
+      ([[feedback_stack_change_three_gates]], [[project_orchestrator_stack_freeze]]).
+      **Data products to freeze into the registry per GPU model** (the `optimal_gpu_serving` block already
+      exists as the home): (1) `kv_bytes_per_token` (admission capacity constant, from VRAM readings);
+      (2) `np_ceiling(budget)` — concurrency beyond which aggregate plateaus/declines (A1: np16 @≤8k, np8 @16k,
+      **np1 @≥32k**); (3) the full `agg_throughput(np,budget)` + `per_req_throughput(np,budget)` surface for SLA
+      estimation; (4) **forbidden operating points** — np=2 for MoE arms (universal dip). **Integration, three
+      layers:** (a) *Static server sizing* — size each model's launch `-np` to its expected budget distribution
+      (AutoPilot TB-7 realized-demand): short-budget roles → high np; deep-reasoning architect → np1-2; never
+      launch a MoE arm at np=2. (b) *Complexity→budget→concurrency co-decision* — extend the learned controller
+      to emit a coupled concurrency ceiling alongside the budget; do not admit a request into a slot pool that
+      would exceed `np_ceiling(budget)`. (c) *Live admission/placement* — the TB-6 controller tracks
+      `Σ(budget_i × kv_bytes/token)` against BOTH the VRAM cap AND the bandwidth-collapse ceiling; near the
+      ceiling it admits/queues/downgrades (shed budget or route to CPU) rather than pack another slot into the
+      collapse region. Integrates with [[project_heterogeneous_slot_fabric]] ("everything is a slot") + the
+      within-role-placement SM. **Cross-model dimension:** the consolidated table also picks *which* GPU arm
+      serves a given (budget,load) point — a small-active MoE (A4) may sustain higher aggregate at moderate np
+      than a dense model (A3) whose higher KV/slot forces an earlier collapse. **Validate before activation:**
+      re-measure under the *production* serving config (real RAG-context prompts, not the short-prompt proxy —
+      long prompts shift the collapse leftward) via the prefill-to-depth variant, reconciled with AutoPilot's
+      realized budget distribution.
 - [x] **TB-7 — Calibrate the budget policy from AutoPilot's live token stats (no new inference).** AutoPilot ✅ 2026-07-22
       already records **tokens-generated per successfully-completed task**. That is a free, production-grounded
       distribution of "how much budget did each task class actually need" — mine it to set per-(task-class,

@@ -33,6 +33,19 @@ this FAISS lookup, so only a per-role restriction and success filter are new. Fe
   quantity, and the latter is the gate a conditional-depth surface needs
   ([rao-redel-substrate-spike.md](rao-redel-substrate-spike.md)).
 
+## GPU np×budget throughput surface (registered 2026-07-23)
+
+Measured for ALL three GPU architect candidates: `reasoning_budget → (optimal np, aggregate t/s, per-request
+t/s)`. **Batching is architecture-dependent** — throughput ranking **A4 (35B-A3B MoE) ≫ A3 (27B dense) > A1
+(122B-A10B IQ2 MoE)** at every batched point (L2k peaks 243/153/103). A3 + A4 batch robustly at every budget
+(2.2–3.4×); **A1 is the sole outlier** — the np=2 dip and long-CoT batching *collapse* are A1-specific, NOT
+generic-MoE (A4 MoE has no dip) and NOT generic-long-context. This is the missing *budget → concurrency
+policy* half of routing — it co-determines each arm's launch `-np`, the admission-control ceiling, and which
+GPU arm serves a given (budget,load) point. Full surface + per-arm rule + **router-integration plan
+(TB-6-ROUTER, GATED on the GPU joining the orchestration stack)**:
+[reasoning-effort-levels.md](reasoning-effort-levels.md) §TB-6. Primary consumer:
+[heterogeneous-slot-fabric-residency.md](heterogeneous-slot-fabric-residency.md).
+
 ## How to Use This Index
 
 1. **Read the outstanding tasks below** — they are ordered by priority and dependency
