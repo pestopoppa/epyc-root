@@ -331,3 +331,4 @@ The in-band `[ERROR: …]` marker lives in the **answer text**, persisted in see
   Fix: (a) modality guard in routing (text → never VL-only servers unless explicitly forced);
   (b) catch HTTPStatusError → structured failure_stage/reason. Non-trivial blast radius — needs
   its own tests; evidence in ev_baseline_e7_tier1 sidecar + agent report (04411baf).
+- [ ] **SCORE-26: implement `structural_exact_match` scorer (filed 2026-07-23)**: longcot_mini rows declare it; unknown → honest exclusion. Same class as SCORE-25 f1_list. Audit the pool for ALL declared-but-unimplemented scorers in one pass (grep scoring_method values vs the scorer dispatch) so this class closes wholesale, not one suite at a time.
