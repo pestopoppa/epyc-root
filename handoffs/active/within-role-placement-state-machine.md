@@ -312,7 +312,7 @@ Autopilot ratification run launched (pid ~1559782, `--max-trials 30`, `--no-cont
 | frontdoor | **burst_prefer_quarters** | J5 quarters scale 1.37–1.67×; SM places 3 disjoint live |
 | worker_general | **burst_prefer_quarters** (candidate) | J5 -t48 re-bench (`da1aed6` validated): 4/6 borderline + 2/6 block, mean 0.879, all pairs 1.54–1.89× aggregate (net-positive). Gate verdict flipped block→borderline. WP-7 should flip NUMA_CONFIG to burst; a node-aware variant avoiding q0+q2/q1+q3 cross-node pairs is the refinement |
 | vision_escalation | **burst_prefer_quarters** (candidate, full-disabled-under-burst) | J5 -t48 re-bench OVERTURNS -t96 block + refutes mmproj: quarter-pairs 5/6 allow super-linear (1.14–1.27×); only full+quarter blocks (0.58–0.62×). Gate verdict flipped block→borderline. DIAGNOSTIC-GRADE (5/8 pairs cv>5%, q1+q3 cv 0.420) — ratify allow after higher-sample re-bench. Strongest quartering candidate of the three |
-| ingest_long_context | solo_prefer_full (half) | non-quarterable (80B on 24 cores ~0.1 t/s) |
+| ingest_long_context | solo_prefer_full (half) | non-quarterable (80B on 24 cores ~0.1 t/s) — **AMENDMENT NOTE (2026-07-23, append-only per measurement policy)**: contradicted by the realized v7 lineup (4×48t ingest quarters launched and serving) and stack_numa's own record "48t single-quarter = 12.34 t/s, viable for quartering"; the ~0.1 t/s figure appears to describe a 24-thread (not 48t-quarter) probe or an earlier model era. See [stack-lineup-dossier-2026-07-23.md](stack-lineup-dossier-2026-07-23.md) §5.3; row retained unedited above per append-only discipline |
 | architect_general | queue_only / solo | single whole-machine instance (122B) |
 | worker_vision | solo | single instance (q0b) |
 

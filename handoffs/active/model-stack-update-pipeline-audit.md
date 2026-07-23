@@ -546,6 +546,13 @@ Tasks:
 - DONE in `5b4f683`: chat summarization chunk-digest selection now reads live
   worker roles from stack priors instead of probing retired `worker_fast` at
   port 8102, and sequential retry fallback stays on the selected live worker.
+- DONE in `ee39cbe7` (2026-07-23): `src/graph/session_log.py` session-summary /
+  scratchpad extraction was the MISSED sibling of the `5b4f683`/`cc401c0`
+  class — raw-keyed `role="worker_fast"` bypassed alias normalization to dead
+  8102 (autopilot checkpoints showed the lane returning 0 tokens). Now selects
+  from live stack priors (worker_summarize-first) and `[ERROR`-prefixed
+  responses fall back to the deterministic summary. Found by the 2026-07-23
+  stack-lineup archaeology ([stack-lineup-dossier-2026-07-23.md](stack-lineup-dossier-2026-07-23.md) §3).
 - DONE in `cc401c0`: parallel step executor same-wave burst eligibility now
   reads live warm `worker_*` roles from stack priors, defaults unknown role
   reporting to `worker_general`, and fails closed to sequential execution when
