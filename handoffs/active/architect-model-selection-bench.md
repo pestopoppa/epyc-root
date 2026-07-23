@@ -1,6 +1,7 @@
 # Architect Model Comparison Benchmark
 
-**Status (2026-07-21): GPU ARMS RUN — reasoning suites show NEAR-PARITY; harder-tier + CPU arm outstanding.**
+**Status (2026-07-23): GPU BENCH COMPLETE — reasoning suites are a WELL-POWERED NULL across the board (incl. the non-saturated olympiad-hard, R6). No reasoning-accuracy basis for the architect choice → deployment robustness decides. Outstanding: A2/CPU arm (H1 + IQ2-loop quant-attribution), IQ2 repetition-fence (RP-1 probe running), Phase-2 tool-use.**
+_(prior status)_ **2026-07-21: GPU ARMS RUN — reasoning suites show NEAR-PARITY; harder-tier + CPU arm outstanding.**
 Operator granted a GPU-only inference window (2026-07-20/21). Executed: per-model spec-dec sweep (→ registry
 optima), R1 letter-GPQA (n=198×3), R3 AIME'25 avg@4 (n=30×4×3), R2a–d thinking ablation + E-6 budget-cap.
 **Result so far: no arm is statistically separable on any reasoning suite** — H3 fails (35B-A3B ties both
@@ -164,7 +165,7 @@ Q8 for the quality bench unless throughput is being measured, then use the produ
   - [x] GPU arms A1/A3/A4 × **`olympiadbench_numeric`** (n=150 paired) ✅ 2026-07-22 — **⚠ SATURATES (A1 89.3/A3 88.0/A4 89.3, all p≥0.77), NOT the harder tier intended** (adapter filter flaw; see R4). Highest-powered null of the bench.
   - [x] **Build a genuinely-harder discriminator** (derived R4) ✅ 2026-07-22 — `olympiadbench_hard` suite (155 Expression/Tuple/set items, the complement of the numeric suite) + **`math_symbolic` sympy-backed scorer** (validated 155/155 self-match, 0 perturbation-FP, 0 LaTeX-variant asymmetry). Research `ef286939`.
   - [x] **Pilot `olympiadbench_hard` (A1 n≈24)** ✅ 2026-07-22 — **IT DISCRIMINATES: A1 50.0% overall / 76.9% among finished vs the 89% numeric-suite saturation.** But **46% truncate at 16384** → the overall score is budget-confounded (finished-vs-truncated swing ≈57pp). See R5.
-  - [ ] **Full `olympiadbench_hard` 3-arm run — GATED on budget ≥ 32768** (else truncation confounds the arms; a model that reasons more concisely would score higher for a non-reasoning reason). This is the outstanding measurement that could finally break the reasoning-parity tie. Also surfaced a stack-wide thread → [reasoning-effort-levels.md § Token-budget study](reasoning-effort-levels.md).
+  - [x] **Full `olympiadbench_hard` 3-arm run (budget 32768, np=1+MTP)** ✅ 2026-07-23 — **NULL, well-powered on a non-saturated suite** (A1 68.4 / A3 69.0 / A4 64.5, all pairwise p ≥ 0.19; see R6). Config determined by probe first (np=1+MTP); `extract_boxed` bug fixed (A1 +11pp recovered). This was *the* measurement that could have broken the parity tie — it didn't. Surfaced: IQ2 termination defect + the token-budget/concurrency threads → [reasoning-effort-levels.md](reasoning-effort-levels.md).
   - [ ] GPU arms A1/A3/A4 × **`gpqa_diamond_cot`** full n=198 — *primary* CoT measure (deferred behind OlympiadBench; n=50 slice done in R2)
   - [ ] MMLU-Pro control re-run under hardened protocol (sidecar's n=50 predates it)
   - [ ] **A2 (CPU, 122B UD-Q4_K_M) — deferred to a later session.** Must use `--questions-in` on the pinned manifests (else pairing is void). Blocks H1.
@@ -338,6 +339,41 @@ decision falls to **deployment-robustness** (dual-resident 122B cheaper to opera
 open quality questions:** (1) a *genuinely* harder discriminator (filed symbolic-scorer fix) or **Phase 2
 tool-use** (the architect's real job); (2) **H1** — IQ2-vs-Q4, which needs the **A2 CPU arm** (later session).
 Until then, no deployment change is warranted on accuracy grounds.
+
+## R6 — `olympiadbench_hard` FINAL (n=155 paired, np=1+MTP, fixed-extractor rescored): NULL, well-powered
+**The decisive result.** On the first genuinely **non-saturated** suite (68/69/64% — real headroom, unlike
+GPQA/AIME which saturated ~89%), all three GPU arms are still statistically inseparable:
+
+| arm | acc | truncation | median tokens |
+|---|---:|---:|---:|
+| A1 122B-IQ2 | **68.4%** | 25% | 6195 |
+| A3 27B-dense | **69.0%** | 0% | 4019 |
+| A4 35B-A3B | **64.5%** | 0% | — |
+
+Pairwise McNemar: **A1↔A3 p=1.00, A1↔A4 p=0.26, A3↔A4 p=0.19 — no separation.** ⇒ **SIX independent
+measurements now null** (letter-GPQA, CoT-GPQA, AIME'25, olympiad-numeric, olympiad-hard, AXA-1 Δ0.0pp).
+**The architect candidates reason equivalently across the full measurable difficulty range.** No
+reasoning-accuracy basis for the choice → **deployment robustness decides** (dual-resident 122B cheaper to
+operate at equal quality), *modulo* the IQ2 defect below. Remaining accuracy unknowns: H1 (needs A2/CPU) and
+Phase-2 tool-use (the architect's real job).
+
+**Two corrections landed to get this clean (both scorer artifacts, both fixed offline from stored responses):**
+1. **Config:** A1 first ran at np=14/np=4 **no-MTP** (max-opt violation) — the config probe (research
+   tooling) found **np=1 + per-model MTP** optimal (MTP +32% at single-stream; batching a wash at 36864-ctx
+   that adds non-determinism). A3/A4 ran at np=1+MTP. A1 stayed no-MTP (accuracy is lossless under spec-dec;
+   near-parity confirms it's not poisoned).
+2. **`extract_boxed` bug** (research `c4fe1e96`): the old extractor grabbed the *incomplete* final `\boxed{`
+   from a truncated tail; A1's looping-truncated items had the correct answer in earlier complete `\boxed{}`.
+   Fix (last *complete* boxed) recovered **21/40** truncated items → A1 **57.4% → 68.4%**, 0 regressions.
+
+### IQ2 termination defect (the real caveat on the 122B-IQ2 architect) → see [reasoning-effort-levels.md § Quant-aware repetition-penalty fence](reasoning-effort-levels.md)
+The 122B-**IQ2** loops on `\boxed{answer}` to the token cap on **25%** of items (Q8 arms: 0–1%) — a
+degenerate-repetition / EOS-damage artifact tracking **quantization aggressiveness**, not size. Post-fix it
+costs **no accuracy** but **~2× tokens** (median 6195 vs 4019) — a production *operating* cost. Production
+does NOT give the architect a repetition penalty (bench matched that), so the loop would occur live.
+**RP-1 probe running** (repeat 1.1/1.3/DRY): does a fence break the loop without hurting accuracy? Policy
+(operator): apply the penalty **selectively to high-quant models**, never blanket (it has a quality cost).
+RP-2 (does Q4/A2 loop too?) folds into the deferred CPU arm.
 
 ## R5 — `olympiadbench_hard` DISCRIMINATES (finally a non-saturated suite) — but is budget-gated
 Built the harder-tier fix R4 called for: `olympiadbench_hard` = the 155 Expression/Tuple/set OlympiadBench
