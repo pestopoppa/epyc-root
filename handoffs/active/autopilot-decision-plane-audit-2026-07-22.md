@@ -278,3 +278,16 @@ The in-band `[ERROR: …]` marker lives in the **answer text**, persisted in see
 
 - [x] ✅ 2026-07-23 **H4 Q-TD-write DEPLOYED**: flag live (845e7492 + reload), migration+table-swap executed (676,463→31,565), snapshot-refreshed audit confirms 1.0x duplication / 17.84% learned-Q. Legacy table + backup retained.
 - [ ] **EV-CONF-2 — salient-token confidence source** (filed 2026-07-23): math AUROC 0.40 both arms = geomean anti-discrimination (length confounding). Build answer-token/salient-token confidence; re-baseline math AUROC before any math-domain confidence use. See ESC-7 draft §5.
+
+- [ ] **EV-BASELINE-E7 — post-E7 full-pool baseline sweep (reseed prerequisite; filed 2026-07-23)**:
+  the granted era-fence reseed is UNDERDETERMINED by current data — `baseline_state` is tier-keyed
+  over the 41-suite E7 pool, while post-E7 measurements cover only math (E7c) + scoring_verifiers
+  (EV-4c). Deriving `baselines_by_tier` from 2 suites would fabricate a tier baseline (the exact
+  defect class this campaign eliminated). REQUIRED: a quiet-window T1/T2 eval sweep across the E7
+  pool (autopilot-style fan-out, eval_batch, decision_grade rows) → then apply the reseed
+  (baselines_by_tier + per_suite_quality_by_tier + counts + MAD windows from the sweep, stamped
+  eval_quality_era: "E7-eval-instrument"). Partial seeding of only the 2 measured suites REJECTED:
+  it would either lift the hold against an unrepresentative baseline or recreate cross-era
+  comparison for the other 39 suites. The fail-closed hold stays (correctly) until the sweep runs.
+  Measured suites available NOW for the sweep's cross-check: math quality (E7c), scoring_verifiers
+  (EV-4c).
