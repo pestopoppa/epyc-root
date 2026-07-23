@@ -313,3 +313,12 @@ The in-band `[ERROR: …]` marker lives in the **answer text**, persisted in see
   reason; (c) fix the class (suspects: client-side code-execution sandbox availability in the
   tier runner context vs the calibration path that worked, or per-suite deadline shape on heavy
   suites); (d) then the full sweep → reseed. The era-fence hold remains correctly closed.
+
+- [ ] **SCORE-25: implement `f1_list` scorer (filed 2026-07-23)**: the `tulving_episodic` suite
+  (456 rows, whole suite, E7 expansion) declares `scoring_method: f1_list` — item-level F1 over
+  parsed lists (distinct from B7 SCORE-24 token-multiset f1). Currently every row errors
+  "Unknown scoring method" (honest REL-1 exclusion; ~0.6% of pool, 0-1 per tier draw). Fix:
+  item-level F1 with per-item boundary-anchored normalization, parse format from the suite's
+  actual gold rows, golden fixtures, scorer-era record note. ADDITIVE (no existing verdict
+  changes). Also from the same diag: kuzu module missing in venv (6x ImportError, mutation-graph
+  tools) — install or lazy-degrade.
