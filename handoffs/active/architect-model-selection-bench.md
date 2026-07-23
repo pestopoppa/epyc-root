@@ -1,6 +1,6 @@
 # Architect Model Comparison Benchmark
 
-**Status (2026-07-23): GPU BENCH COMPLETE — reasoning suites are a WELL-POWERED NULL across the board (incl. the non-saturated olympiad-hard, R6). No reasoning-accuracy basis for the architect choice → deployment robustness decides. Outstanding: A2/CPU arm (H1 + IQ2-loop quant-attribution), IQ2 repetition-fence (RP-1 probe running), Phase-2 tool-use.**
+**Status (2026-07-23): GPU BENCH COMPLETE — reasoning suites are a WELL-POWERED NULL across the board (incl. the non-saturated olympiad-hard, R6). No reasoning-accuracy basis for the architect choice → deployment robustness decides. RP-1 DONE (fence=repeat_penalty 1.1); A2/CPU confirmed the loop is MODEL-specific not IQ2 (quant-attribution REFUTED). Outstanding: RP-5 fenced-H1 (Q4-vs-IQ2 accuracy, both need the fence, CPU-gated), RP-3 (`boxed-prompt trigger?), Phase-2 tool-use.**
 _(prior status)_ **2026-07-21: GPU ARMS RUN — reasoning suites show NEAR-PARITY; harder-tier + CPU arm outstanding.**
 Operator granted a GPU-only inference window (2026-07-20/21). Executed: per-model spec-dec sweep (→ registry
 optima), R1 letter-GPQA (n=198×3), R3 AIME'25 avg@4 (n=30×4×3), R2a–d thinking ablation + E-6 budget-cap.
@@ -373,10 +373,12 @@ Q4 (A2/CPU, confirmed 2026-07-23: identical `\boxed{}` loop on the same item). T
 hypothesis is REFUTED (RP-2).** Post-extractor-fix it costs **no accuracy** but **~2× tokens** (median 6195
 vs 4019) — a production *operating* cost **inherent to the 122B-A10B candidate at either quant** (so it does
 NOT argue IQ2-vs-Q4 either way). Production gives the 122B architect no repetition penalty at either quant
-(bench matched that), so the loop occurs live. **Fix (RP-1): a mild `repeat_penalty ~1.1`** breaks the loop
-with accuracy held (~55%); `1.3` over-penalizes (~15%). Apply **per-model** (the 122B-A10B), not per-quant,
-not blanket. **Clean H1 (Q4 vs IQ2 accuracy) now requires the fence on BOTH arms** (RP-5) — both loop
-unfenced. RP-3: is the `\boxed{}` prompt itself the trigger? (leading root-cause hypothesis).
+(bench matched that), so the loop occurs live. **Fix — RP-1 COMPLETE ✅ 2026-07-23: `repeat_penalty 1.1`**
+breaks the loop (truncation ~100%→22%, median tokens 32768→10.6k) with accuracy held (22/40 = 55% vs
+baseline 21/40); **`1.3` over-penalizes** (tanks math to ~15%, generations grow); **DRY (0.8) ruled out**
+(inconsistent loop-break + mangles answers, 0/40). Apply **per-model** (the 122B-A10B, both quants), not
+per-quant, not blanket. **Clean H1 (Q4 vs IQ2 accuracy) now requires the fence on BOTH arms** (RP-5) — both
+loop unfenced. RP-3: is the `\boxed{}` prompt itself the trigger? (leading root-cause hypothesis).
 
 ## R5 — `olympiadbench_hard` DISCRIMINATES (finally a non-saturated suite) — but is budget-gated
 Built the harder-tier fix R4 called for: `olympiadbench_hard` = the 155 Expression/Tuple/set OlympiadBench
