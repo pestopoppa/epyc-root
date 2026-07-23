@@ -173,3 +173,13 @@ Activation is deliberately blocked until the operator appends the row below.
 **Refresh policy**: `core_v2` is frozen. Any item swap bumps to `core_v3` with a new era row (never edit this
 one). Once the audit block has accrued per-item solve stats over this era, an empirical medium-difficulty
 refresh (`core_v2_select.py --source ledger`) can supersede it — again operator-gated.
+
+## Operator directive on vl (2026-07-23): FIX-NOW, NO DEFERRAL
+
+The "promote without vl / core_v2.1 later" branch is DELETED by operator direction. Whatever the
+0/376 diagnosis finds, the instrument is fixed FIRST and core_v2 includes vl from birth (composition
+amended, sha recomputed, one era row). Escalation ladder by finding depth: code/payload/schema →
+session fixes immediately; launch-config (mmproj flag) → stack-script fix on idle stack; artifact
+(re-download mmproj/model) → session executes, hours-scale; MODEL-choice (VL model itself wrong) →
+operator decision presented immediately with options, never parked. The reseed sequences after the
+vl fix — instrument correctness precedes gate liveness, consistent with every choice this campaign.
