@@ -1,5 +1,20 @@
 # Heterogeneous CPU×GPU Slot Fabric + Dynamic Residency
 
+> ## ⚖ CORE GUIDING PRINCIPLE (OPERATOR-RATIFIED 2026-07-23 — governs every design decision in this handoff)
+> **Optionality**: role→slot binding is POLICY DATA, never code — every topology, parallelism
+> layout, and residency arrangement must be expressible as configuration the fabric executes.
+> Data can be swept; code is a strategic decision forever.
+> **Robustness axioms (campaign scars, non-negotiable)**: (1) one fact per physical resource —
+> breaker/lock/health/residency on the SLOT, realized-probed, never per-role copies; (2)
+> realized-first truth — the device↔model map comes from probing, never launch intent; (3)
+> fail-closed residency — unverifiable teleport ⇒ slot UNKNOWN, excluded from placement; (4) no
+> mid-decode preemption — session-handover is the only migration primitive.
+> **Conversion rule**: a parameter is autopilot-sweepable IFF bounded ∧ reversible ∧
+> protocol-measurable ∧ gate-protected; design every parameter to satisfy all four FROM BIRTH so
+> strategic→sweepable conversion is a flag flip, not a redesign.
+> (Full ratified contract with context: §"Fabric optionality/robustness contract" below.)
+
+
 **Status (2026-07-20): DESIGN — GATED (post-v7-promotion). Provisioning + lane decisions PENDING
 [E5](batched-decode-measurement.md) (NUMA×batch sweep).** No production/stack change proposed here —
 this is the target-architecture design distilled from the 2026-07-20 strategic discussion. Nothing is
