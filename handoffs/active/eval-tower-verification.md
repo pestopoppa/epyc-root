@@ -513,3 +513,6 @@ The anchor/de-anchoring rules above are human-amendment-only (trust boundary). B
   EV-5/EV-7 process tier; reseed consumes T1/T2 only). PREREQ for the T3 leg: the llm_judge
   response-shape fix (judge client now routes via API but parser calls the response malformed —
   small fix, evidence in ev_baseline_e7_tier1 sidecar zeroscrolls/physreason rows).
+- [ ] **Unify autopilot's second McNemar producer (filed 2026-07-23)**: autopilot.py ~:1431
+  sequential-verdict gate emits raw mcnemar_from_vectors counts (used_for_gating: False) — consume
+  paired_stats.verdict_from_result (a153122e) so both producers share one verdict surface.
