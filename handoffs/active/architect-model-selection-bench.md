@@ -366,14 +366,17 @@ Phase-2 tool-use (the architect's real job).
    from a truncated tail; A1's looping-truncated items had the correct answer in earlier complete `\boxed{}`.
    Fix (last *complete* boxed) recovered **21/40** truncated items → A1 **57.4% → 68.4%**, 0 regressions.
 
-### IQ2 termination defect (the real caveat on the 122B-IQ2 architect) → see [reasoning-effort-levels.md § Quant-aware repetition-penalty fence](reasoning-effort-levels.md)
-The 122B-**IQ2** loops on `\boxed{answer}` to the token cap on **25%** of items (Q8 arms: 0–1%) — a
-degenerate-repetition / EOS-damage artifact tracking **quantization aggressiveness**, not size. Post-fix it
-costs **no accuracy** but **~2× tokens** (median 6195 vs 4019) — a production *operating* cost. Production
-does NOT give the architect a repetition penalty (bench matched that), so the loop would occur live.
-**RP-1 probe running** (repeat 1.1/1.3/DRY): does a fence break the loop without hurting accuracy? Policy
-(operator): apply the penalty **selectively to high-quant models**, never blanket (it has a quality cost).
-RP-2 (does Q4/A2 loop too?) folds into the deferred CPU arm.
+### 122B-A10B termination defect — MODEL-specific, NOT quant-specific (the real caveat on the 122B architect) → see [reasoning-effort-levels.md § MODEL-specific repetition-penalty fence](reasoning-effort-levels.md)
+The **Qwen3.5-122B-A10B loops on `\boxed{answer}` to the token cap at BOTH quants** — IQ2 (25% of items) AND
+Q4 (A2/CPU, confirmed 2026-07-23: identical `\boxed{}` loop on the same item). The Q8 arms (27B-dense,
+35B-A3B) do NOT loop (0–1%). **⇒ the defect tracks the MODEL, not the quant — the "IQ2 EOS-damage"
+hypothesis is REFUTED (RP-2).** Post-extractor-fix it costs **no accuracy** but **~2× tokens** (median 6195
+vs 4019) — a production *operating* cost **inherent to the 122B-A10B candidate at either quant** (so it does
+NOT argue IQ2-vs-Q4 either way). Production gives the 122B architect no repetition penalty at either quant
+(bench matched that), so the loop occurs live. **Fix (RP-1): a mild `repeat_penalty ~1.1`** breaks the loop
+with accuracy held (~55%); `1.3` over-penalizes (~15%). Apply **per-model** (the 122B-A10B), not per-quant,
+not blanket. **Clean H1 (Q4 vs IQ2 accuracy) now requires the fence on BOTH arms** (RP-5) — both loop
+unfenced. RP-3: is the `\boxed{}` prompt itself the trigger? (leading root-cause hypothesis).
 
 ## R5 — `olympiadbench_hard` DISCRIMINATES (finally a non-saturated suite) — but is budget-gated
 Built the harder-tier fix R4 called for: `olympiadbench_hard` = the 155 Expression/Tuple/set OlympiadBench

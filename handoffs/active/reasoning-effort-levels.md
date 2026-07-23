@@ -197,31 +197,42 @@ inputs TB-6's admission-control needs. **Method note:** each `-np` slot must get
 as its `n_ctx_slot` (`-c = per_slot_ctx × n_parallel`) — else llama.cpp silently truncates; verify
 `n_ctx_slot ≥ budget` and VRAM headroom at launch (the batched run does).
 
-## § Quant-aware repetition-penalty fence (operator, 2026-07-23)
+## § MODEL-specific repetition-penalty fence (operator, 2026-07-23; attribution CORRECTED)
 
-**Finding (olympiadbench_hard, 2026-07-23):** the 122B-A10B **UD-IQ2_M** loops on `\boxed{answer}` to the
-token cap on **25%** of items (degenerate repetition — solves it, can't stop); the Q8 arms do not
-(27B-dense **0%**, 35B-A3B **~1%**). The need for a repetition fence tracks **quantization aggressiveness**,
-not model or role — consistent with 2-bit quant damaging low-probability tokens including EOS/stop.
+**Finding (olympiadbench_hard, 2026-07-23):** the **Qwen3.5-122B-A10B** loops on `\boxed{answer}` to the
+token cap (degenerate repetition — solves it, can't stop) — **at BOTH quants: UD-IQ2_M (25% of items) AND
+UD-Q4_K_M** (A2/CPU, item-1 = 32768 tok, tail-uniqueness 0.03, `\boxed{2n-1}`×N on the *same* item IQ2
+looped on). The Q8 arms do NOT loop (27B-dense **0%**, 35B-A3B **~1%**). **⇒ the defect tracks the MODEL
+(122B-A10B), NOT quantization** — the 2-bit-EOS-damage hypothesis is REFUTED (RP-2). It is likely a
+model×prompt property (the `\boxed{}` instruction may be a trigger — RP-3).
 
-**Policy (operator): apply the repetition penalty SELECTIVELY, to highly-quantized models that need it —
-NOT equally across the stack.** Rationale: the penalty has a real quality cost (registry's own Qwen note:
-`presence_penalty > 1.0` causes language mixing; repetition penalties hurt legitimate repetition in
-code/math/structured output), so pay that tax only where degeneration risk is high. Production already uses
-penalties per-model (worker `repeat_penalty 1.05`, gemma4 `1.1` crash-mitigation, some frontdoor
-`presence_penalty 1.5`) — **but the 122B-IQ2 architect has NONE**, and our bench matched that, so the loop
-would occur in production. The fence is a `(model, quant)` property, certified per model (per the INVARIANT
-above), never inherited stack-wide.
+**Policy (operator, corrected): apply the repetition penalty to the MODELS that need it (the 122B-A10B, at
+any quant), NOT keyed on quant aggressiveness, and NOT blanket across the stack.** Rationale: the penalty
+has a real quality cost (registry's own Qwen note: `presence_penalty > 1.0` causes language mixing;
+repetition penalties hurt legitimate repetition in code/math/structured output — confirmed by RP-1:
+`repeat 1.3` tanked accuracy to ~15%). Production already uses penalties per-model (worker `repeat_penalty
+1.05`, gemma4 `1.1` crash-mitigation, some frontdoor `presence_penalty 1.5`) — **but the 122B-A10B architect
+has NONE at either quant**, and our bench matched that, so the loop would occur in production. The fence is a
+**per-MODEL** property (certified per model), never inherited stack-wide.
 
 - [ ] **RP-1 — Repetition-penalty probe (running 2026-07-23):** on A1's 40 looping items, test
       `repeat-penalty {1.1, 1.3}` and the **DRY sampler** vs baseline — does it break the loop
       (truncation→0, tokens↓) WITHOUT hurting accuracy? Pick the least-cost fence. Driver `probe_reppen.sh`.
-- [ ] **RP-2 — Quant attribution:** does the **Q4 122B (A2, CPU arm)** loop too, or is it IQ2-specific?
-      (2-bit EOS damage hypothesis.) Folds into the deferred A2 run — makes it a quant-cost check, not just H1.
+- [x] **RP-2 — Quant attribution: REFUTED ✅ 2026-07-23.** A2 (122B-A10B **Q4**, CPU) loops **identically**
+      to IQ2 on the same item → the loop is **MODEL-specific (122B-A10B), NOT quant-specific**. So it is
+      NOT 2-bit EOS damage, and the ~2× token cost is inherent to the 122B-A10B candidate at either quant
+      (does not distinguish IQ2 vs Q4). *(A2 was run unfenced only to answer this — a clean H1 accuracy
+      read needs the fence on BOTH A1 and A2; see RP-5.)*
 - [ ] **RP-3 — Does it loop on the ARCHITECT WORKLOAD** (multi-step planning) or only on competition-math
-      `\boxed{}` prompts? The `\boxed{}` instruction may itself be the trigger. Test on real architect tasks.
-- [ ] **RP-4 — Quant-aware penalty policy in the registry:** add a per-`(model,quant)` repetition-penalty
-      default keyed on quant aggressiveness (e.g. sub-4-bit → fence on), operator-gated. Do NOT blanket it.
+      `\boxed{}` prompts? The `\boxed{}` instruction may itself be the trigger — **now the leading hypothesis
+      for the root cause** (both quants loop; models differ). Test on real architect tasks + a no-`\boxed`
+      prompt variant.
+- [ ] **RP-4 — MODEL-specific penalty policy in the registry:** add a per-**model** repetition-penalty
+      default for the 122B-A10B (both quants) — RP-1 says **mild `repeat_penalty ~1.1`** (breaks the loop,
+      accuracy held ~55%; `1.3` over-penalizes to ~15%). Operator-gated. Do NOT key on quant; do NOT blanket.
+- [ ] **RP-5 — Clean H1 (Q4 vs IQ2 reasoning parity) WITH the fence.** Both quants loop unfenced, so the
+      H1 accuracy comparison must run A1(IQ2) and A2(Q4) both at `repeat_penalty 1.1` on the same hard items.
+      CPU-window-gated (A2 is CPU). This is the remaining architect-bench accuracy unknown.
 
 ## Prioritized task list
 - [x] **E-1 — Design the ladder.** Draft 4–5 effort levels, e.g. L0 answer-only → L1 one-line ✅ 2026-07-22
