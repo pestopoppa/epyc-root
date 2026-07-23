@@ -322,3 +322,12 @@ The in-band `[ERROR: …]` marker lives in the **answer text**, persisted in see
   actual gold rows, golden fixtures, scorer-era record note. ADDITIVE (no existing verdict
   changes). Also from the same diag: kuzu module missing in venv (6x ImportError, mutation-graph
   tools) — install or lazy-degrade.
+
+- [ ] **Routing modality guard + backend HTTPStatusError handling (filed 2026-07-23, from tier
+  forensics)**: MemRL routed a long-context TEXT longbench question to worker_vision (:8086) →
+  HTTP 400 (context window); `select_initial_route` only forces vision ON image presence, never
+  guards non-vision traffic AWAY from VL servers; and `LlamaServerBackend.infer` catches
+  Timeout/RequestError but not HTTPStatusError, so 400s surface as raw in-band `[ERROR:` text.
+  Fix: (a) modality guard in routing (text → never VL-only servers unless explicitly forced);
+  (b) catch HTTPStatusError → structured failure_stage/reason. Non-trivial blast radius — needs
+  its own tests; evidence in ev_baseline_e7_tier1 sidecar + agent report (04411baf).
