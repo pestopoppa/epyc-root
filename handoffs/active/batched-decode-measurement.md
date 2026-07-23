@@ -297,3 +297,16 @@ state.
 ## Reporting
 
 Tick waypoints here + one-line progress entry per session; on full completion delete the master-index row and move this file to `completed/`; every number follows the [MEASUREMENT.md](../../MEASUREMENT.md) claim grammar (metric, protocol-id, n, date, attest ref).
+
+- [ ] **Eval-batch serving lane decision (tabled here 2026-07-23 from the EV-BASELINE-E7 session)**:
+  the retired `eval_batch_frontdoor` lane (port 18070, warm launcher-only, -np 8 — "not a
+  distinct model-routing role") posed the question: dedicated eval lane vs quiet-window 4-wide
+  fan-out on production quarters (this week's proven regime). Decide WITH the E5 NUMA×batch(-np)
+  mapping data, not before: E5 tells us what a batch lane costs/yields per placement. Design
+  options to evaluate then: (a) no lane — quiet-window fan-out suffices; (b) resurrect a CPU lane
+  as a WP-12 fleet with an eval-only role bound to it (outside-quiet-window evals without
+  touching interactive traffic); (c) **push batched eval decoding to the MI210 GPU** — an
+  eval-lane fleet on the GPU under heterogeneous-slot-fabric-residency.md ("everything is a
+  slot"), freeing ALL CPU quarters for interactive traffic. Note: the robust eval structure these
+  designs waited on now EXISTS (decision-grade P-CAL instrument, honest error rows, per-question
+  artifacts, resume/retry) — the queued design ideas across the notes can now be tested properly.
