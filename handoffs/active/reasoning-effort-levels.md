@@ -159,18 +159,23 @@ meant to fix). This makes budget-selection and admission-control **one problem**
       (np16-32); L=8192 → **1.64×** (np16); L=16384 → **1.10×** (np8); L=32768 → **1.00×, net-negative**
       (np=1 is peak; np4=45.7 < np1=52.0). This QUANTIFIES the TB-6 hypothesis below ("optimal np collapses
       toward 1 as budget grows"). **Router rule for the 122B-IQ2 arm:** budget ≤8k → batch np8-16; 16k →
-      np4-8; ≥32k → np1-2 (batching net-negative — protect per-request latency instead). **Secondary:**
+      np4-8; ≥32k → **np=1** (batching net-negative — protect per-request latency instead; at L=32768 the
+      ordering is np1=52.0 > np4=45.7 > np2=43.0, so concurrency buys no aggregate). **Secondary:**
       (a) the **np=2 dip is universal** (43-45 agg at ALL four L) — a reproducible MoE scheduling artifact,
-      strictly worse than np=1, never operate there; (b) **single-stream is flat across L** (52-57 regardless
+      strictly worse than np=1, **the single worst operating point — never deliberately run 2-way**; (b)
+      **single-stream is flat across L** (52-57 regardless
       of budget) — a lone request pays ~no throughput penalty for a longer budget. Cross-check: earlier
       fixed-*total*=36864 probe np4=62 matches this surface's L=8192 np4=60.9. ✅
-- [ ] **TB-6-exec-followups — extend the surface (GPU-only).** (a) A3 (27B dense, ~2.4× KV/slot — expect the
-      collapse-to-np=1 knee at *shorter* L); + the other GPU-resident stack models. (b) A *rigorous* variant
-      using **prefill-to-depth** (long synthetic prompt + short generation) to measure decode-at-KV-depth
-      cheaply instead of the slow generate-L proxy used here. (c) A2/CPU (122B-Q4) deferred to a follow-on
-      (CPU was busy). (d) Extract per-model `kv_bytes/token` from the VRAM readings for the admission-control
-      constant. NOTE: measured KV is *cheaper* than a naive 0.23 GB/1k estimate — that figure conflated true
-      KV with per-np compute/batch buffers; total contexts to 131k fit under ~54 GB on the 64 GB card.
+- [ ] **TB-6-exec-followups (GPU-owned).** (a) A3 (27B dense, ~2.4× KV/slot — expect the collapse-to-np=1
+      knee at *shorter* L); + the other GPU-resident stack models. (b) A *rigorous* variant using
+      **prefill-to-depth** (long synthetic prompt + short generation) to measure decode-at-KV-depth cheaply
+      instead of the slow generate-L proxy used here. (d) Extract per-model `kv_bytes/token` from the VRAM
+      readings for the admission-control constant. NOTE: measured KV is *cheaper* than a naive 0.23 GB/1k
+      estimate — that figure conflated true KV with per-np compute/batch buffers; totals to 131k ctx fit
+      under ~54 GB on the 64 GB card.
+- [ ] **TB-6-exec (c) — A2/CPU (122B-Q4) np×context surface — HANDED TO CPU LINEAGE 2026-07-23.** Does the
+      Q4 arm on CPU show the same batching-collapse shape? Owned by the CPU session per the GPU/CPU split
+      ([[project_session_split_2026_07_23]]); tracked here for the surface's completeness only.
 - [ ] **TB-6 — Concurrency-aware admission control (VRAM *and BANDWIDTH* guard).** The router/orchestrator
       must track live `Σ(budget_i × kv_per_token_model)` against the card and **admit/queue/downgrade**
       requests so the sum never forces `n_ctx_slot` below a request's budget. Per-model `kv_per_token`
