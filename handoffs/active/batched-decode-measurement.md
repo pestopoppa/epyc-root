@@ -331,11 +331,21 @@ and its 1×full-vs-4×per-node question already has era-labeled prior data
 operator request, at the then-current architect model's top spec.
 (ii) `NUMA_CONFIG` has no half1 instance for the frontdoor/ingest families —
 the harness SYNTHESIZES the `48-95,144-191`×96t shape on bench ports only; no
-prod cpuset changes, no §H recert trigger. (iii) The C1b half-pair co-run has
-never been measured (J5 measured quarter pairs) — SAME-SHAPE evidence for
-WP-9's distinct-halves design; WP-9's actual mixed pair (frontdoor-half0 +
-ingest-half1, different models) remains its own §H contention-matrix cell at
-the lineup event.
+prod cpuset changes, no §H recert trigger. (iii) **CORRECTED 2026-07-23 (lineup-dossier archaeology)**: the C1b
+half-pair co-run HAS been measured once — the 2026-05-26 operator-requested
+DUAL-HALF experiment (certified affinity, halves at 8073/8074/8075) came out
+**negative across all three roles** (co-run ratios frontdoor 0.455 / ingest
+0.524 / vision 0.541 ≈ each half halves under concurrency → aggregate ≈
+serial; mechanism: two 48c halves contend on the memory channels serving the
+shared mmap'd weight pages, exactly why 24c quarters scale and halves don't;
+`progress/2026-05/2026-05-26.md:844-849`, reverted same day, never standing
+config). Pre-v7-era ⇒ **direction-only prior** under E6-cpu-kernel — E5
+still measures C1b (kernel + model era changed), but the scout should probe
+C1b EARLY and prune hard if the ~0.5 co-run signature reappears; the
+provisioning-candidate framing should not presume C1b is live until it beats
+this prior. WP-9's actual mixed pair (frontdoor-half0 + ingest-half1,
+different models) remains its own §H contention-matrix cell at the lineup
+event.
 
 K = per-instance `-np`, capped so total in-flight ≤ 43 (the fixed P-BENCH-3
 prompt batch): C1 × {1,2,4,8,16,32}; C1b/C2 × {1,2,4,8,16}; C3 × {1,2,4,8}.
@@ -498,7 +508,10 @@ attestation incl. iqk + kv_unified fields, decision_grade gating; (f) iso-T
 comparison table + R1-R4 rule evaluation in the summarizer.
 
 - [x] E5 sweep design + cell grid + decision rules + window schedule prepared (design-only, zero inference) ✅ 2026-07-23
-- [ ] E5 harness implementation (research-repo session; harness delta spec above = audit C3, with C1's `GGML_IQK=1` env+attestation — both execution-blocking before any decision-grade cell)
+- [x] E5 harness implementation ✅ 2026-07-23 (research `b294daa0` + orchestrator `6a55aeed`): `server_numa_np_sweep.py` (multi-instance, canonical env incl. `GGML_IQK=1` via `build_canonical_env`, preflight hard gate, ps-verified teardown, N×K closed-loop driver, E1-style manifest+attestation, dry-run default + `--execute --i-have-operator-grant` double gate, R1–R4 summarizer) + `e5_cell_manifests.py` with the **pre-registered 116-cell grid COMMITTED** (frozen pre-registration artifact) + `affinity_preflight.py` cell-manifest mode. 148 offline tests green (47+54+25+22). Built via 7-agent workflow with 2-lens adversarial review (13 findings, 12 fixed). Two findings bind execution:
+  - **POOL-DRIFT (binding, solved by pinned qids)**: the 2026-07-21 E7 pool rebuild changes the `tier=1, seed=42, limit=43` draw — re-sampling would select a different batch including a 101,655-char tulving prompt (breaks the 2048 ctx sizing AND E1 comparability). All 43 E1 qids verified present in the current pool → the manifests pin `prompt_batch.selection="pinned_qids"` + a 4096-char fail-closed cap. General lesson for ANY pool consumer: seed-N draws are pool-version-dependent; pin qids, never re-sample across era boundaries.
+  - **E5 sampling regime — DECIDED ✅ 2026-07-23** (operator: "sampling regime as recommended"; research `6b9a90c7`): **production temp+seed42 for every cell** (realized serving defaults: qwen36+gemma temp .3/top_k 40/top_p .95/min_p .05/seed 42; ingest 80B production is already greedy with seed pinned 42; dense control inherits the qwen36 regime). temp-0 exists ONLY in five `-e1parity` **twin cells** of the E1-tied solo anchors (qwen36 C1@1/C3@1; dense C1@1/C3@1 + scout-full@1) so the E1 direction cross-check runs regime-clean — twins carry the `e1_parity_anchor` variant tag, `decision_grade_intent=false`, and the summarizer excludes them from R1/R2/R4 (no regime mixing inside decision rules). Grid: 116 → **121 cells**, regenerated + committed.
+  - **`--device none/--device-draft none` discovered necessity**: the v7 binary is HIP-capable — without the explicit pin, E5 CPU cells could silently offload draft work to the MI210. Wired into the harness launch args.
 - [ ] Operator queue-clear confirmation before scheduling W0 (audit GO/NO-GO caveat: inference-batch-loop is parked/operator-gated, architect-bench has CPU-gated items RP-5/RP-3/Phase-2 outstanding — the "runs LAST" precondition is not cleanly terminal)
 - [ ] E5 W0-W4 runs (operator quiet windows, after queue-clear)
 
@@ -646,10 +659,28 @@ but C1 and C3 are execution-blocking (must land in the harness before any decisi
   legacy-quant cells (gemma Q4_K_M, dense 27B Q8) silently run without iqk — the aborted
   2026-07-07 "missing-IQK" run is the cautionary tale. Attest the iqk state alongside
   `kv_unified`.
-- [ ] **C2 (decision-blocking for R3) — do not gate on the pre-v7 E2 numbers.** Re-baseline the
-  "current EvalTower fan-out" arm FRESH under E6-cpu-kernel (v7) + E4-quality-core-v2 + the
-  WP-12 fleet layer before applying R3; the batch arm is already re-measured by the E5 cells.
-  Treat E1's C1@1 tie and the "batch 2.258 / current 10.970" figures as direction-only priors.
+- [x] **C2 (decision-blocking for R3) — current-arm re-baseline DONE ✅ 2026-07-23.** Measured
+  FRESH under E6-cpu-kernel (v7) + E4-quality-core-v2 + WP-12 fleet layer + the **restored
+  big+quarters lineup** (post-restoration, post-locality-heal), current-arm-only via
+  `--skip-batch-arm`, PRODUCTION escalation (not pinned — this prices the lane as it actually
+  runs): **27.546 wall-min/eval** (core_v2, 50 items, 45 scored, reliability 0.90 floor-clean,
+  quality 1.667, resolved eval_concurrency 3 — the restored half occupies q0+q1 so frontdoor's
+  disjoint fan-out is half+q2+q3). Report:
+  `epyc-orchestrator/orchestration/reports/r3_current_arm_rebaseline_corev2_20260723/`.
+  Per-item: 27.546/50 = **0.551 min/item** (0.612 per scored item) — feed this as the R3
+  baseline file's `items_per_eval=50` row. Secondary observation (NOT the baseline): a
+  legacy-pool-draw run under the same lane measured 21.87 min (different question set;
+  `r3_current_arm_rebaseline_20260723/`). Config deltas vs the 2026-07-23-morning current-arm
+  row (23.87 min): concurrency 4→3 (restored-geometry resolution), escalation pinned→production,
+  lineup quarters-only→big+quarters — the morning row was a reseed input, not an R3 baseline.
+  **C10-F1 addendum (2026-07-23, from the WP-12 case-10 live gate)**: the current-arm's
+  within-role concurrency mechanism is **6-uvicorn-process spread × per-process per-role
+  `Semaphore(1)`** (every live role resolves `get_role_max_concurrency()==1` because
+  `live_warm_worker_slots()` filters `tier=="warm"` and all live roles are `hot`), with
+  cross-process disjointness from region flocks — NOT a role-level concurrency cap of N. A
+  `--workers 1` API serializes each role fully. Model the current-arm baseline accordingly and
+  record the API worker count in the arm's attestation. Fix task filed in
+  [wp12-fleet-layer-design.md](wp12-fleet-layer-design.md) (C10-F1 follow-up).
 - [ ] **C3 (execution-blocking) — build the multi-server harness + cell-manifest affinity gate.**
   `server_numa_np_sweep.py` (or extend `server_np_sweep.py`): per-instance taskset pinning +
   correct per-shape numactl policy (interleave only for full/gemma-MTP), multi-launch/teardown
@@ -657,6 +688,14 @@ but C1 and C3 are execution-blocking (must land in the harness before any decisi
   and a per-cell affinity preflight that accepts arbitrary {cpuset, port} cells (the existing
   `affinity_preflight.py` is role-keyed and has no `--live-only` flag — extend it or add a
   manifest mode).
+- **C4 ADDENDUM (2026-07-23 lineup restoration)**: the quarters-only premise is OBSOLETE — the
+  operator ruled the v7-cutover big-instance drop accidental and the lineup was restored same
+  day (orchestrator `95dffc88`: frontdoor half 8070 + worker full 8072 + ingest half 8085 live,
+  `burst_prefer_quarters`). **C1 (1×half) is therefore the LIVE production solo shape again**
+  for frontdoor/ingest (and 1×full for gemma), not merely a provisioning candidate; C3 remains
+  the live burst shape. The R3 current-arm re-baseline MUST run under this restored lineup.
+  Contention-matrix note: big∥quarter co-run rows are pre-v7-era priors (hash-fresh,
+  semantically demoted) — E5's cells re-measure the underlying physics anyway.
 - [ ] **C4 (interpretive) — relabel C1** as a provisioning candidate / E1-continuity anchor, not
   "the current production solo shape" (realized stack is quarters-only; gemma's 1×full is
   DISABLED). Optionally refresh the stale waypoint prose (line 26) to the mode-exclusive config

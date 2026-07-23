@@ -141,15 +141,36 @@ meant to fix). This makes budget-selection and admission-control **one problem**
       sets from **assessed task complexity** (easy → tight budget, hard → generous). Requires per-request
       budget plumbing through the orchestrator serving path (llama-server already accepts it per request).
       Natural extension of [[project_learned_routing_controller]] — budget becomes a routing *output*.
-- [~] **TB-6-exec — np × context throughput surface (GPU-only study, STARTED 2026-07-23).** First pass
-      running: A1 (122B-IQ2) × np{1,2,4} × L{2048,8192} generation-length cells, measuring aggregate +
-      per-request decode + errors, with n_ctx_slot/VRAM verification per cell (`study_np_context.sh`,
-      artifacts `np_context_study_20260723/`). Combines with existing 36864-ctx probe data (np1=58/np2=44/
-      np4=62 agg t/s) to map where batching helps (small L) vs collapses (large L). **Follow-ups:** extend
-      to A3 (dense, 2.4× KV/slot — expect earlier collapse) + the other GPU stack models; and a *rigorous*
-      variant using **prefill-to-depth** (long synthetic prompt + short generation) to measure
-      decode-at-KV-depth cheaply instead of the slow generate-L proxy. A2/CPU deferred to a follow-on
-      (CPU busy). Feeds the admission-control constant `kv_bytes/token` per model.
+- [x] **TB-6-exec — np × context throughput surface (GPU-only study).** ✅ 2026-07-23 — COMPLETE for A1
+      (122B-A10B UD-IQ2_M, v7 kernel, MTP-on). Full grid: np{1,2,4,8,16,32} × L{2048,8192,16384,32768}
+      generation-length cells (`study_np_context.sh` + `study_np_context_longL.sh`, artifacts
+      `np_context_study_20260723/`). **Aggregate decode t/s surface:**
+
+      | np ↓ / L → | 2,048 | 8,192 | 16,384 | 32,768 |
+      |---|---|---|---|---|
+      | 1  | 54.7 | 52.7 | 57.1 | 52.0 |
+      | 2  | 44.0 | 44.2 | 44.8 | 43.0 |
+      | 4  | 63.1 | 60.9 | 55.6 | 45.7 |
+      | 8  | 85.3 | 66.8 | 62.7 | — |
+      | 16 | 99.9 | 86.2 | — | — |
+      | 32 | 103.4 | — | — | — |
+
+      **Batching speedup (peak agg ÷ np=1) collapses monotonically with reasoning budget:** L=2048 → **1.89×**
+      (np16-32); L=8192 → **1.64×** (np16); L=16384 → **1.10×** (np8); L=32768 → **1.00×, net-negative**
+      (np=1 is peak; np4=45.7 < np1=52.0). This QUANTIFIES the TB-6 hypothesis below ("optimal np collapses
+      toward 1 as budget grows"). **Router rule for the 122B-IQ2 arm:** budget ≤8k → batch np8-16; 16k →
+      np4-8; ≥32k → np1-2 (batching net-negative — protect per-request latency instead). **Secondary:**
+      (a) the **np=2 dip is universal** (43-45 agg at ALL four L) — a reproducible MoE scheduling artifact,
+      strictly worse than np=1, never operate there; (b) **single-stream is flat across L** (52-57 regardless
+      of budget) — a lone request pays ~no throughput penalty for a longer budget. Cross-check: earlier
+      fixed-*total*=36864 probe np4=62 matches this surface's L=8192 np4=60.9. ✅
+- [ ] **TB-6-exec-followups — extend the surface (GPU-only).** (a) A3 (27B dense, ~2.4× KV/slot — expect the
+      collapse-to-np=1 knee at *shorter* L); + the other GPU-resident stack models. (b) A *rigorous* variant
+      using **prefill-to-depth** (long synthetic prompt + short generation) to measure decode-at-KV-depth
+      cheaply instead of the slow generate-L proxy used here. (c) A2/CPU (122B-Q4) deferred to a follow-on
+      (CPU was busy). (d) Extract per-model `kv_bytes/token` from the VRAM readings for the admission-control
+      constant. NOTE: measured KV is *cheaper* than a naive 0.23 GB/1k estimate — that figure conflated true
+      KV with per-np compute/batch buffers; total contexts to 131k fit under ~54 GB on the 64 GB card.
 - [ ] **TB-6 — Concurrency-aware admission control (VRAM *and BANDWIDTH* guard).** The router/orchestrator
       must track live `Σ(budget_i × kv_per_token_model)` against the card and **admit/queue/downgrade**
       requests so the sum never forces `n_ctx_slot` below a request's budget. Per-model `kv_per_token`
