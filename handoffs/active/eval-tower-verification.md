@@ -500,8 +500,10 @@ The anchor/de-anchoring rules above are human-amendment-only (trust boundary). B
 - [ ] **Cross-fleet arm-parallelism for rebaselines (operator-endorsed 2026-07-23; TRIGGER: implement
   WITH the next scheduled EV-4-class cross-fleet run so it lands with its consumer)**: CORRECTED DESIGN
   SPACE (operator 2026-07-23 — fleets overlap on cpusets/BW; naive 4∥4 overlap is NOT free):
-  (i) overlapped 4∥4 — gain = measured cross-role matrix aggregate (~1.3-1.7x historical), gate-
-  mediated, latency degrades (timeout-budget interaction); (ii) **node-partitioned layouts
+  (i) overlapped 4∥4 — NOT VIABLE under live policy (operator correction #2, 2026-07-23):
+  CROSS_ROLE_DISJOINT_PLACEMENT=1 + per-region locks SERIALIZE overlapping-region requests across
+  roles — the arms would interleave, aggregate ≈ serial, no win. (The ~1.3-1.7x figures were
+  contention-matrix MEASUREMENT experiments that produced this policy, not allowed placements.); (ii) **node-partitioned layouts
   (operator-proposed, likely the real ~2x): frontdoor half on node0 ∥ worker quarters-of-the-
   disjoint-half on node1, or two disjoint halves — true cpuset disjointness + per-node BW
   isolation**; each arm keeps a full node's local bandwidth. Quantify (ii) vs (i) via the E5
