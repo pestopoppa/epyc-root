@@ -318,13 +318,17 @@ is self-describing. Era-stamp; append, never overwrite historical numbers (MEASU
   use np=1+MTP. If you must batch, `-c = per_slot_ctx × np` and verify `n_ctx_slot ≥ budget` (§3). And do
   not report `Σtokens ÷ wall` as throughput when requests timed out — the wall is inflated by stalls, it's
   not a throughput number.
-- **Degenerate repetition / termination loops track QUANTIZATION.** A sub-4-bit model (122B-IQ2) looped on
-  `\boxed{answer}` to the token cap on 25% of items; the Q8 arms 0–1% — 2-bit damages low-probability tokens
-  incl. EOS/stop. Symptoms: "truncation" that is actually verbatim repetition (tail line-uniqueness ≈0), ~2×
-  the tokens of a lossless-quant peer. **Post-extractor-fix it costs no accuracy but real tokens/latency.**
-  Fix = a **selectively-applied repetition penalty / DRY sampler** on high-quant models only (it has a
-  quality cost — don't blanket it); confirm the loop is quant-attributable by testing a higher-precision
-  quant of the *same* model. See [[reasoning-effort-levels]] § quant-aware repetition-penalty fence.
+- **Degenerate repetition / termination loops track the MODEL, not quantization** (⚠ corrected 2026-07-23 —
+  we first mis-attributed it to 2-bit). The Qwen3.5-122B-A10B looped on `\boxed{answer}` to the token cap at
+  **BOTH quants** (IQ2 25% of items, Q4 confirmed identical on the same item); the 27B-dense and 35B-A3B (Q8,
+  *different models*) never did. **So test the attribution before assuming quant** — run a higher-precision
+  quant of the SAME model; one identical loop there refutes "quant-specific." Symptoms: "truncation" that is
+  actually verbatim repetition (tail line-uniqueness ≈0), ~2× the tokens of a non-looping peer.
+  Post-extractor-fix it costs no accuracy but real tokens/latency. **Fix = a per-MODEL repetition penalty**
+  (`repeat_penalty ~1.1` worked — loop 100%→22%, accuracy held; `1.3` over-penalized to ~15%; DRY 0.8
+  inconsistent + mangled answers). Selective, never blanket (it has a quality cost — hurts legitimate
+  math/code repetition). The `\boxed{}` instruction may itself be the trigger (leading hypothesis). See
+  [[reasoning-effort-levels]] § MODEL-specific repetition-penalty fence.
 - **Monitor ERROR/empty counts live, not just accuracy.** A 35%-timeout run ran for hours because status
   checks watched acc+truncation but not `request_error`. Alert on the first error.
 

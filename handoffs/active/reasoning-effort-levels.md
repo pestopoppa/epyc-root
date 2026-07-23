@@ -215,7 +215,7 @@ repetition penalties hurt legitimate repetition in code/math/structured output �
 has NONE at either quant**, and our bench matched that, so the loop would occur in production. The fence is a
 **per-MODEL** property (certified per model), never inherited stack-wide.
 
-- [ ] **RP-1 — Repetition-penalty probe (running 2026-07-23):** on A1's 40 looping items, test
+- [x] **RP-1 — Repetition-penalty probe ✅ 2026-07-23:** `repeat_penalty 1.1` is the fix (loop 100%→22%, tokens 32768→10.6k, acc held 55%); `1.3` over-penalizes (~15%); DRY(0.8) ruled out (inconsistent + 0/40). On A1's 40 looping items, test
       `repeat-penalty {1.1, 1.3}` and the **DRY sampler** vs baseline — does it break the loop
       (truncation→0, tokens↓) WITHOUT hurting accuracy? Pick the least-cost fence. Driver `probe_reppen.sh`.
 - [x] **RP-2 — Quant attribution: REFUTED ✅ 2026-07-23.** A2 (122B-A10B **Q4**, CPU) loops **identically**
