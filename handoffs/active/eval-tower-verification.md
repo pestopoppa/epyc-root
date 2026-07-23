@@ -496,3 +496,10 @@ The anchor/de-anchoring rules above are human-amendment-only (trust boundary). B
 
 - [ ] Offline A/B on an existing labeled set (e.g. the RM-3/RM-5 reviewer corpus, or any suite with gold labels): score the same candidates with (a) the current show-candidate-and-ask judge and (b) a commit-first judge (judge answers independently, then compares). Report FPR on known-wrong answers for both, with a chance-corrected agreement stat per intake-876. intake-875's claimed effect is FPR 0.906 → 0.012 — if ours reproduces at even a fraction of that, the rule proposal carries local evidence; if it does not, we saved a constitution amendment. Moderate judge-inference cost → candidate for the inference-batch loop rather than ad-hoc execution.
 - [ ] Forward guard from intake-877 (was prose-only in progress): when the three absent-source suites are downloaded (operator ask), attach a **web-egress check** to any GAIA run — the suite is 165 verbatim public questions and is only safe on the direct-completion path; repl mode + `frontdoor` (the sole `web_access: true` role) is the one contaminating combination.
+
+- [ ] **Cross-fleet arm-parallelism for rebaselines (operator-endorsed 2026-07-23; TRIGGER: implement
+  WITH the next scheduled EV-4-class cross-fleet run so it lands with its consumer)**: run arms that
+  live on DISJOINT fleets concurrently (frontdoor arm ∥ worker arm — EV-4c ran them serially at ~45
+  min each while the other fleet idled; parallel = ~2x wall-clock). Not applicable to tier/whole-stack
+  draws (no idle fleet to absorb the second run). Protocol must declare the mode (solo vs overlapped
+  load profile) for era comparability. Cross-ref: design-backlog-triage-2026-07-23.md Section 2 top-3.
