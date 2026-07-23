@@ -125,6 +125,7 @@ Four pre-formed decision blocks were seeded by the 2026-07-17 command audit (the
 - **Recommendation**: (B). The delta doc is cheap, makes the era boundary auditable, and EV-4 is quiet-window-gated anyway.
 
 ### ESC-7 — EV-CONF: real-confidence consumption default (decision)
+- **✅ §2 APPLIED 2026-07-23 (`a76a4054`)** — P-CAL protocol live in MEASUREMENT.md; rlvr_tiers code-scoping deployed (`3417f857`). ESC-7 CLOSED.
 - **✅ GRANTED 2026-07-23 — OPTION A (domain-scoped adoption)**: calibration+discrimination re-enter
   decision-capable use (RLVR reward components, EV-5/EV-7 verifier gating) for **CODE rows only**;
   math ECE usable as stability check; math AUROC stays observational pending EV-CONF-2
