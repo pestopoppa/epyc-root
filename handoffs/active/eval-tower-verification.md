@@ -498,8 +498,13 @@ The anchor/de-anchoring rules above are human-amendment-only (trust boundary). B
 - [ ] Forward guard from intake-877 (was prose-only in progress): when the three absent-source suites are downloaded (operator ask), attach a **web-egress check** to any GAIA run — the suite is 165 verbatim public questions and is only safe on the direct-completion path; repl mode + `frontdoor` (the sole `web_access: true` role) is the one contaminating combination.
 
 - [ ] **Cross-fleet arm-parallelism for rebaselines (operator-endorsed 2026-07-23; TRIGGER: implement
-  WITH the next scheduled EV-4-class cross-fleet run so it lands with its consumer)**: run arms that
-  live on DISJOINT fleets concurrently (frontdoor arm ∥ worker arm — EV-4c ran them serially at ~45
-  min each while the other fleet idled; parallel = ~2x wall-clock). Not applicable to tier/whole-stack
-  draws (no idle fleet to absorb the second run). Protocol must declare the mode (solo vs overlapped
+  WITH the next scheduled EV-4-class cross-fleet run so it lands with its consumer)**: CORRECTED DESIGN
+  SPACE (operator 2026-07-23 — fleets overlap on cpusets/BW; naive 4∥4 overlap is NOT free):
+  (i) overlapped 4∥4 — gain = measured cross-role matrix aggregate (~1.3-1.7x historical), gate-
+  mediated, latency degrades (timeout-budget interaction); (ii) **node-partitioned layouts
+  (operator-proposed, likely the real ~2x): frontdoor half on node0 ∥ worker quarters-of-the-
+  disjoint-half on node1, or two disjoint halves — true cpuset disjointness + per-node BW
+  isolation**; each arm keeps a full node's local bandwidth. Quantify (ii) vs (i) via the E5
+  NUMA×batch mapping (batched-decode-measurement.md) BEFORE implementing. Not applicable to
+  tier/whole-stack draws (route across all roles; no disjoint layout exists). Protocol must declare the mode (solo vs overlapped
   load profile) for era comparability. Cross-ref: design-backlog-triage-2026-07-23.md Section 2 top-3.
