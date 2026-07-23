@@ -7,9 +7,9 @@
 > [scorer-drift](scorer-fork-drift-audit-2026-07-22.md) (research-repo pre-B7 scorer open),
 > [dashboard](autopilot-dashboard-fidelity-audit-2026-07-22.md) (H1/H2 panels open). ESC-8
 > landmine [DEPLOYED](esc8-stack-restart-landmine-audit-2026-07-22.md). WP-12 fleet layer
-> [implemented 2026-07-23](wp12-fleet-layer-design.md) (branch `wp12-fleet-layer-impl`, cases 1–9
-> green offline, flag default-OFF; **flip boundary = the open operator action**: merge +
-> WP-13-interim deletion + reload + case-10 live gate). First decision-grade
+> [FLIPPED LIVE 2026-07-23](wp12-fleet-layer-design.md) (merge `4ca6859a`, flag `a172d2dd`
+> attested in serving; rollback = flag-0 reload; **open**: case-10 live gate pending operator
+> inference grant + post-soak §5 cleanup — WP-13 interim retained as rollback substrate). First decision-grade
 > calibration rows (EV-4c) in the
 > [ESC-7 draft](../../coordination/inference-batch/esc7-measurement-amendment-draft.md); math
 > columns fill from the overnight E7c run. Alias changes:

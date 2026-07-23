@@ -499,7 +499,8 @@ comparison table + R1-R4 rule evaluation in the summarizer.
 
 - [x] E5 sweep design + cell grid + decision rules + window schedule prepared (design-only, zero inference) ✅ 2026-07-23
 - [ ] E5 harness implementation (research-repo session; harness delta spec above = audit C3, with C1's `GGML_IQK=1` env+attestation — both execution-blocking before any decision-grade cell)
-- [ ] E5 W0-W3 runs (operator quiet windows, after the post-promotion queue)
+- [ ] Operator queue-clear confirmation before scheduling W0 (audit GO/NO-GO caveat: inference-batch-loop is parked/operator-gated, architect-bench has CPU-gated items RP-5/RP-3/Phase-2 outstanding — the "runs LAST" precondition is not cleanly terminal)
+- [ ] E5 W0-W4 runs (operator quiet windows, after queue-clear)
 
 ## Gates & pitfalls
 
