@@ -675,6 +675,14 @@ but C1 and C3 are execution-blocking (must land in the harness before any decisi
   and a per-cell affinity preflight that accepts arbitrary {cpuset, port} cells (the existing
   `affinity_preflight.py` is role-keyed and has no `--live-only` flag — extend it or add a
   manifest mode).
+- **C4 ADDENDUM (2026-07-23 lineup restoration)**: the quarters-only premise is OBSOLETE — the
+  operator ruled the v7-cutover big-instance drop accidental and the lineup was restored same
+  day (orchestrator `95dffc88`: frontdoor half 8070 + worker full 8072 + ingest half 8085 live,
+  `burst_prefer_quarters`). **C1 (1×half) is therefore the LIVE production solo shape again**
+  for frontdoor/ingest (and 1×full for gemma), not merely a provisioning candidate; C3 remains
+  the live burst shape. The R3 current-arm re-baseline MUST run under this restored lineup.
+  Contention-matrix note: big∥quarter co-run rows are pre-v7-era priors (hash-fresh,
+  semantically demoted) — E5's cells re-measure the underlying physics anyway.
 - [ ] **C4 (interpretive) — relabel C1** as a provisioning candidate / E1-continuity anchor, not
   "the current production solo shape" (realized stack is quarters-only; gemma's 1×full is
   DISABLED). Optionally refresh the stale waypoint prose (line 26) to the mode-exclusive config
