@@ -286,6 +286,176 @@ the dense-control status explicit instead of implicitly treating the sweep as
 fully complete. The stack was restored afterward and is back in `STACK READY`
 state.
 
+### 2026-07-23 — E5 harness preparation (design-only, zero inference; WP-12 worktree session side quest)
+
+Full sweep design prepared per the E5 waypoint; no code written (the harness
+lives in `epyc-inference-research/scripts/benchmark/`, outside this session's
+write scope) and no inference run. Everything below is mechanically executable
+by the implementing session + operator.
+
+**Cell grid (pre-registered; 2026-07-23 operator review folded in — 2×half
+added as the whole-machine provisioning candidate).** Indexed by model+quant,
+never role. Configs per model (shapes from `NUMA_CONFIG`; bench ports 19xxx to
+avoid any prod collision):
+
+| Model | C1 (1×half) | C1b (2×half, one per NUMA node) | C2 (2×q, q2+q3 — mechanism probe) | C3 (4×q) |
+|---|---|---|---|---|
+| `qwen36_q8_0` (35B-A3B Q8, ~37 GB/inst) | half0 `0-47,96-143` ×96t | + half1 `48-95,144-191` ×96t | 2×48t | 4×48t |
+| `qwen36_27b_q8` (dense control, ~29 GB) | shape UNRESOLVED for dense — scout runs 1×half0 vs 1×full-machine `0-95` at K∈{1,8}; Stage-B C1 adopts the winner (full-machine rows double as E1 continuity anchors) | + half1 ×96t | 2×48t | 4×48t |
+| `qwen3_next_80b` ingest arm (~45 GB; W4, operator-added 2026-07-23) | half0 ×96t | + half1 ×96t | — | 4×48t |
+| `gemma4-26B-A4B Q4_K_M MTP` (~16 GB) | full `0-95` ×96t + `numactl --interleave=all` — NO half shape (half-pinning crashes the MTP draft path, `tensor buffer not set`) | — | — (scout-only) | 4×48t |
+
+Notes: (0) **Config-list semantics**: C1/C1b/C2/C3 are ALTERNATIVE serving
+configs for one model, swept as separate cells — never co-deployed. C1 (the
+current production solo shape) stays in the grid as the baseline anchor and
+as the denominator of the scaling read C1@K vs C1b@K ("does adding the second
+node-local half double aggregate?"). (i) The "1×big" shape is
+**MODEL-SIZE-DEPENDENT**, not universal: for ~35B-class A3B MoE the half wins
+(April 2026-04-17 head-to-head, NODE0-local 27.06 t/s vs
+full-machine+interleave 26.60 t/s — cache locality beats channel
+parallelism), while the 122B architect legitimately takes the full machine
+(Probe B 2026-05-04: 1×full+interleave 12.19 t/s vs 4.3 t/s/instance split).
+Hence the dense-control C1 shape is treated as unresolved (scout decides),
+and the architect stays OUT of E5 scope: the waypoint's model list excludes
+it, architect-model-selection-bench runs BEFORE E5 and may swap the model,
+and its 1×full-vs-4×per-node question already has prior data (12.19 vs 16.86
+t/s aggregate, registry reopen note) — optional W5 only on operator request.
+(ii) `NUMA_CONFIG` has no half1 instance for the frontdoor/ingest families —
+the harness SYNTHESIZES the `48-95,144-191`×96t shape on bench ports only; no
+prod cpuset changes, no §H recert trigger. (iii) The C1b half-pair co-run has
+never been measured (J5 measured quarter pairs) — SAME-SHAPE evidence for
+WP-9's distinct-halves design; WP-9's actual mixed pair (frontdoor-half0 +
+ingest-half1, different models) remains its own §H contention-matrix cell at
+the lineup event.
+
+K = per-instance `-np`, capped so total in-flight ≤ 43 (the fixed P-BENCH-3
+prompt batch): C1 × {1,2,4,8,16,32}; C1b/C2 × {1,2,4,8,16}; C3 × {1,2,4,8}.
+
+**Stage-B decision-grade set per model (~13 cells):** two pre-registered
+comparison families —
+- **Whole-machine provisioning (the E5 decision):** iso-T pairs {C1b@T/2 vs
+  C3@T/4} for T ∈ {8,16,32} — "two big node-local batched servers vs four
+  quarter-batched servers" at equal in-flight;
+- **Half-machine mechanism (roofline flip):** iso-T pairs {C1@T vs C2@T/2}
+  for T ∈ {16,32} — identical 48-core resource split 1-way vs 2-way, the
+  purest NUMA-locality-vs-batch-amortization read;
+plus scaling-efficiency pairs {C1@K vs C1b@K} at K ∈ {4,8} (does the second
+node-local half double aggregate — the half-grain J5 analogue), and solo
+anchors C1@1 (ties to E1) and C3@1. Gemma runs {1×full, 4×q} only (~8 cells).
+Legacy mixed shapes (half+q2+q3) are EXCLUDED from Stage B: the 2026-07-21
+mode-exclusivity contract deprecates full+quarter co-placement; scout may
+probe one mixed cell for curiosity, never for provisioning.
+
+**Protocol decisions (deltas from E1, each with rationale):**
+1. **KV budget scales with K** (`-c = <per-stream ctx>×K`, floor 8192, q8 KV,
+   `-fa on`): the binding reason is WORK-PARITY across K — decode-time KV read
+   traffic follows the stream's actual sequence length (identical across K for
+   a fixed prompt set); allocation sets the per-stream CEILING. Under E1's
+   fixed-total convention (`-c 32768`) per-stream context shrinks with K
+   (32k@1 → 1k@32), so high-K cells would TRUNCATE long answers — doing less
+   work per task and inflating tasks/hour. Constant per-stream context makes
+   every cell complete the same workload, and matches production footprint
+   realism (a K-slot server allocates K streams' worth of real KV state).
+   The per-stream constant is a SIZING RULE, not a magic number: smallest
+   power of two ≥ max(tier-1 prompt + generation cap + margin) — expected
+   2048; implementer verifies against the actual pool. E5 K=1 cells therefore
+   aren't byte-comparable to E1 rows; the scout cross-checks direction against
+   the E1 ladder before Stage B.
+   **Unified KV (`--kv-unified`) — corrected 2026-07-23 after operator review**
+   (the original "deliberately out, not production shape" line was written
+   without checking project history — it IS a documented project axis:
+   tree-spec multi-path verification requires it and our fork FORCE-enables
+   `kv_unified` for DRAFT_TREE configs, `common/speculative.cpp:2668`; old
+   NUMA/tree bench sweeps passed it on dense arms and deliberately omitted it
+   on SSM arms; PR #18730 upstream). Base E5 protocol stays SPLIT KV — it is
+   what today's realized stack serves (explicit slots + MTP linear p_split=0 →
+   default `kv_unified=false`) and keeps E1 comparability — but: (i) any cell
+   running a tree-spec config gets unified FORCED by our own fork, so
+   `kv_unified` is a per-cell MANIFEST/attestation field, never assumed; (ii)
+   the scout adds one paired probe (qwen36 C1@16, split vs `-kvu`) to price
+   the tradeoff on EPYC — unified buys elastic per-stream capacity (no
+   truncation ceiling without over-allocating; cross-seq prefix sharing) at
+   the cost of per-stream KV contiguity (scattered cells on a BW-bound
+   decode), cell/defrag management, and pool-capacity interference between
+   streams; ≥5% delta at the probe escalates a split-vs-unified Stage-B arm
+   to the operator; (iii) SSM/hybrid arms (ingest W4) keep unified OFF per
+   the tree-spec Phase-8 scar (hybrid+kv_unified allocator/acceptance
+   failures).
+2. **Production spec-dec ON** (`feedback_bench_max_opt` / compare-vs-top-spec):
+   qwen36 arms run embedded NEXTN self-draft, gemma runs its draft-mtp recipe
+   (all 8 launch params). Record per-cell draft accept-rates — spec-dec ×
+   batching interplay is itself unmeasured. The Stage-A probe explicitly tests
+   np×spec-dec compatibility per model (gemma MTP ASSERT/wedge risk): if a
+   model wedges at np>1, document, notify operator, and run that arm
+   spec-dec-off as an explicitly-caveated separate arm — never silently.
+3. **TTFT reported separately** from steady-state per-stream decode (CPU23
+   9.6× concurrent-prefill amplification) — closed-loop driver records TTFT,
+   per-stream p50/p95 completion latency, and aggregate tasks/hour with the
+   ramp window trimmed.
+4. **Warming**: `drop_caches` only between MODELS (operator step), then
+   per-instance pinned warm-up generation (1 prompt, 32 tok) before any
+   measured cell — the shared-mmap first-touch trap
+   (`feedback_drop_caches_numa_eviction`) means an unpinned re-read pins one
+   node and poisons every quarter cell after it.
+5. **Per-cell preconditions**: `affinity_preflight.py --live-only` per
+   instance (WP-6 bad-affinity artifact is the cautionary tale), throttle
+   check, `numa_balancing=0`, no pre-existing llama processes; ps-verified
+   kill between cells. Decision-grade refuses on any warning (E1 semantics).
+6. **Correctness pairing**: store every response; post-hoc offline score with
+   the E7-era B7 scorer; garbage gate per cell = parse-failure ≤ 2/43 and no
+   repetition-loop flags, else the cell is marked degraded (speed number
+   demoted to observation).
+
+**Pre-registered decision rules** (read before results exist, to avoid
+post-hoc cherry-picking):
+- **R1 crossover**: at each iso-T, a split wins on aggregate tasks/hour with a
+  ≥10% margin; smaller margins = tie → prefer the status-quo quarters split.
+  The K* where 1×big first beats 4×q (if anywhere) is the roofline-flip point.
+- **R2 lanes**: report the (aggregate, p95) Pareto per model; lanes are "real"
+  iff the peak-aggregate cell's p95 exceeds 3× that config's K=1 p95 (or 60s
+  absolute) while some lower-K cell holds ≥70% of peak within SLA.
+- **R3 eval-lane pricing**: convert each candidate cell to wall-minutes/eval
+  and set against the E2 rows (batch 2.258 vs current 10.970) to decide the
+  tabled lane question — note option (b) is now a zero-code remap under the
+  WP-12 fleet layer (an eval-only RoleBinding on a batch-shaped fleet).
+- **R4 slot-fabric provisioning row**: per model, (config, K) = the
+  smallest-latency cell achieving ≥90% of peak aggregate → feeds the
+  per-instance `-np` sizing in within-role-placement-state-machine.md and the
+  heterogeneous-slot-fabric provisioning table.
+- **Spec interpretation note**: the waypoint's "worker_general {full}-only"
+  is read as "no full+quarter mixes" — the 4×q worker config is included
+  because 1×full@32 vs 4×q@8 is precisely the sweep's money comparison and
+  4×q is the live burst mode (WP-8 acceptance shape). Flag to operator at
+  scheduling if the literal reading was intended.
+
+**Quiet-window schedule** (queues behind inference-batch-loop →
+architect-model-selection-bench per the post-promotion order): **W0** scout —
+all models, full grid incl. C1b, 64-token cap, non-decision-grade, prunes
+Stage B (~2-2.5 h); **W1** `qwen36_q8_0` Stage B (~4-5 h at ~13 cells);
+**W2** gemma Stage B (~2-3 h at ~8 cells); **W3** dense control Stage B
+(~4-6 h; slowest decode — control evidence for the MoE-batching-weaker
+hypothesis, can lag without blocking W1/W2 provisioning reads); **W4** ingest
+`qwen3_next_80b` arm (operator-added 2026-07-23; configs C1/C1b/C3 as
+separate cells — C1b's half-pair ratio is same-shape evidence for WP-9;
+schedule appetite is the operator's call).
+RAM is a non-constraint throughout (worst case 4×45 GB ingest + KV on 1.1 TB,
+stack stopped).
+
+**Harness delta spec** (extend `server_np_sweep.py` or sibling
+`server_numa_np_sweep.py` in epyc-inference-research): (a) cell-manifest input
+(model, config_id, instances[{cpu_list, port, threads, numactl_policy}], np,
+c, prompt caps); (b) multi-server launch/teardown per cell with per-instance
+pinning + OMP env stack + ps-verified kill; (c) closed-loop per-stream driver
+round-robining the 43-prompt pool across N×K streams, recording TTFT /
+per-stream latency / trimmed aggregate; (d) per-instance affinity preflight
+wired as a hard cell gate; (e) E1-style manifest with protocol-id P-BENCH-3
+(the waypoint blesses reuse), era stamp, attestation, decision_grade gating;
+(f) iso-T comparison table + R1-R4 rule evaluation in the summarizer.
+
+- [x] E5 sweep design + cell grid + decision rules + window schedule prepared (design-only, zero inference) ✅ 2026-07-23
+- [ ] E5 harness implementation (research-repo session; harness delta spec above)
+- [ ] E5 W0-W3 runs (operator quiet windows, after the post-promotion queue)
+
 ## Gates & pitfalls
 
 - Operator window required: per `feedback_no_concurrent_inference` / `feedback_speed_verify_via_llama_bench`, the operator runs the benches — this handoff prepares commands, harness, and analysis; schedule inside the bulk-campaign Queue-2 quiesce window (one attested reload serves all).
