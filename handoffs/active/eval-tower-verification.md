@@ -181,7 +181,7 @@ loads `6,701` candidate-level items across HE-R/HE-R+/MBPP-R/MBPP-R+ with
 - [x] Run current eval tower on Scoring Verifiers HE-R+ benchmark ✅ 2026-07-21 — two-phase run on the E7 instrument (frontdoor @ certified concurrency 3, worker_general `--allow-serial`): **accuracy BANKED** frontdoor 0.7085 (820/820), worker_general 0.6572 (814/820; unscored rows excluded per REL-1); dataset_sha256 `87eaabbd…` identical across arms; ledger `DONE_MARGINAL_OBS` per the entry's own authored marginal fork.
 - [x] Diagnose the calibration-axes outcome ✅ 2026-07-21 — ECE 0.0/AUROC None/Spearman 1.0 = degenerate BY DESIGN: EV-CONF suppressed `n_probs` for `code_execution`-scored questions and all scoring_verifiers items are code-execution-scored; also means the ranking metrics (Top-1/Bottom-1/ρ/MAE) were structurally unmeasurable with binary confidence. Operator decided **ESC-7-EXT Option A** same day: code_execution now captures generation-logprob geomean confidence (test verdict stays the label; landed in orchestrator).
 - [ ] **EV-PROTO — rebaseline wall-clock protocol options** (from the 2026-07-21 EV-11c 26h-serial run): (a) **arm-parallelism** — different-role arms run on separate servers, so concurrent arms are compute-identical to serial (contention shifts timing only, not logits); adopt for future multi-role rebaselines with a protocol note relaxing sole-occupancy when no speed axis gates (≈2× wall saved). (b) **pinned slot-batching** — in-server continuous batching jitters logits (FP reduction order) and hence sampled tokens + completion_probabilities at temp>0; NOT poison but a DIFFERENT instrument — only with the batch level declared in the protocol id (precedent: MEASUREMENT.md pins T1 eval concurrency 3 as instrument identity). Prereq: teach the tower's concurrency ladder to distinguish live-instance count from per-instance slots. Do NOT mix batching levels within one comparison. (c) **direct-port sharded mode** — the harness assigns question i → quarter instance i mod N, bypassing the dispatcher: disjointness true by construction when N idle same-shape quarters exist, and the deterministic question→instance mapping is BETTER for reproducibility than dispatcher placement. Cost: new harness mode (runner speaks the orchestrator API today) + exits the journal/provenance path, so requires its own protocol id + provenance stamping. Contrast with the dispatcher path, which is gated on the Step-2 SHAPE_AWARE_CONTENTION arming chain (ROUTE-A1 → WP-8) — the admission gate refuses same-role co-placement it cannot prove disjoint, despite J5 certifying quarter co-run free (safety interlock currently dumber than the data we hold; 2026-07-21 diagnosis).
-- [ ] **EV-RUNNER-BACKOFF — eval client reconnect backoff** (from the 2026-07-21 burned arm): `call_orchestrator_forced`/the window runner churned ~680 questions as instant connect-errors during a ~1min API reload window (no backoff, no retry-on-connect-refused). Add bounded exponential backoff on connection-level failures (NOT on inference errors — those stay honest REL-1 errors) so an API restart pauses the run instead of burning the question budget. Pairs with the SIGSTOP deploy procedure (progress 2026-07-21).
+- [x] ✅ 2026-07-23 (`4e684678` — eval-scoped connection-level backoff, 60s budget, REL-1-honest) **EV-RUNNER-BACKOFF — eval client reconnect backoff** (from the 2026-07-21 burned arm): `call_orchestrator_forced`/the window runner churned ~680 questions as instant connect-errors during a ~1min API reload window (no backoff, no retry-on-connect-refused). Add bounded exponential backoff on connection-level failures (NOT on inference errors — those stay honest REL-1 errors) so an API restart pauses the run instead of burning the question budget. Pairs with the SIGSTOP deploy procedure (progress 2026-07-21).
 - [ ] **EV-4b — rerun the calibration axes on the Option-A scorer** (chained to execute when EV-11c frees the window): real code-domain ECE/AUROC/Top-1/Bottom-1/ρ/MAE on HE-R+; supersedes the marginal run's calibration axes via ledger append.
 - [ ] Identify calibration violations — which question types produce miscalibrated confidence? *(needs EV-4b + EV-11c data)*
 - [ ] This baseline is the comparison point for all subsequent verification improvements
@@ -496,3 +496,43 @@ The anchor/de-anchoring rules above are human-amendment-only (trust boundary). B
 
 - [ ] Offline A/B on an existing labeled set (e.g. the RM-3/RM-5 reviewer corpus, or any suite with gold labels): score the same candidates with (a) the current show-candidate-and-ask judge and (b) a commit-first judge (judge answers independently, then compares). Report FPR on known-wrong answers for both, with a chance-corrected agreement stat per intake-876. intake-875's claimed effect is FPR 0.906 → 0.012 — if ours reproduces at even a fraction of that, the rule proposal carries local evidence; if it does not, we saved a constitution amendment. Moderate judge-inference cost → candidate for the inference-batch loop rather than ad-hoc execution.
 - [ ] Forward guard from intake-877 (was prose-only in progress): when the three absent-source suites are downloaded (operator ask), attach a **web-egress check** to any GAIA run — the suite is 165 verbatim public questions and is only safe on the direct-completion path; repl mode + `frontdoor` (the sole `web_access: true` role) is the one contaminating combination.
+
+- [ ] **Cross-fleet arm-parallelism for rebaselines (operator-endorsed 2026-07-23; TRIGGER: implement
+  WITH the next scheduled EV-4-class cross-fleet run so it lands with its consumer)**: CORRECTED DESIGN
+  SPACE (operator 2026-07-23 — fleets overlap on cpusets/BW; naive 4∥4 overlap is NOT free):
+  (i) overlapped 4∥4 — NOT VIABLE under live policy (operator correction #2, 2026-07-23):
+  CROSS_ROLE_DISJOINT_PLACEMENT=1 + per-region locks SERIALIZE overlapping-region requests across
+  roles — the arms would interleave, aggregate ≈ serial, no win. (The ~1.3-1.7x figures were
+  contention-matrix MEASUREMENT experiments that produced this policy, not allowed placements.); (ii) **node-partitioned layouts
+  (operator-proposed, likely the real ~2x): frontdoor half on node0 ∥ worker quarters-of-the-
+  disjoint-half on node1, or two disjoint halves — true cpuset disjointness + per-node BW
+  isolation**; each arm keeps a full node's local bandwidth. Quantify (ii) vs (i) via the E5
+  NUMA×batch mapping (batched-decode-measurement.md) BEFORE implementing. Not applicable to
+  tier/whole-stack draws (route across all roles; no disjoint layout exists). Protocol must declare the mode (solo vs overlapped
+  load profile) for era comparability. Cross-ref: design-backlog-triage-2026-07-23.md Section 2 top-3.
+- [x] ✅ 2026-07-23 T1+T2 DONE (T1 1.600 core_v2 rel 0.90 escalation-off-verified; T2 1.891 rel 0.92) + reseed APPLIED by operator; T3 leg now gated ONLY on the architect decision (judge prereq MET 76c34590) **core_v2 re-run batch composition (2026-07-23, REVISED per operator architect-swap caution)**:
+  when core_v2 promotes, run **T1+T2 with think-harder/architect escalation explicitly pinned OFF**
+  (declared protocol property, not gate accident; verify architect-independence per-row via
+  think_harder_attempted in the sidecar) — baselines then measure the try-cheap-first serving plane
+  and stay VALID across the pending architect model swap; reseed consumes these. **T3 HELD** until
+  BOTH (a) the llm_judge response-shape fix (evidence: ev_baseline_e7_tier1 sidecar
+  zeroscrolls/physreason rows) AND (b) the operator's architect-model decision land — T3's
+  expert/hard population is the escalation-prone tier where the architect materially serves;
+  measuring it days before a swap bakes in an immediately-stale anchor.
+- [ ] **Unify autopilot's second McNemar producer (filed 2026-07-23)**: autopilot.py ~:1431
+  sequential-verdict gate emits raw mcnemar_from_vectors counts (used_for_gating: False) — consume
+  paired_stats.verdict_from_result (a153122e) so both producers share one verdict surface.
+- **Architect resource model — heterogeneous correction (operator, 2026-07-23)**: "escalation
+  drains the machine (quarters idle before the 122B takes the full bank)" holds ONLY for the
+  pure-CPU plane. With the MI210 in the design, the drain constraint dissolves into an OPEN
+  OPTION SPACE (operator: do NOT settle this in prose — it is a strategic-triage row): (A)
+  architect on GPU, CPU plane untouched; (B) CPU roles teleport to GPU, architect takes the CPU
+  bank (bandwidth asymmetry cuts both ways — MI210 HBM ~3.5x socket BW, the decode-bound party
+  wants it); (C) hybrid layer-split residency; (D) dynamic residency under the slot fabric —
+  under which the static choice partially CONVERTS to autopilot-exposable surfaces (residency
+  thresholds, teleport break-evens, per-device slot budgets). Decide with E5 + slot-fabric
+  measurements, not assumption. Changes
+  T3 economics post-architect-decision (escalation tier measurable without touching the CPU
+  baseline plane). Generalizes under heterogeneous-slot-fabric-residency.md ("everything is a
+  slot"); residual cost = CPU↔GPU stream-teleport break-even (~150-250 resident tokens). The
+  pending architect bench includes GPU arms — the swap decision may itself select this topology.

@@ -205,7 +205,34 @@ Unit + integration, all runnable without live inference (mock backends, syntheti
 
 ## 10. Reporting
 
+### Implementation status (2026-07-23, chartered worktree session — NOT landed; flip boundary pending)
+
+Implementation branch: `wp12-fleet-layer-impl` (epyc-orchestrator, worktree
+`/mnt/raid0/llm/worktrees/wp12-fleet-layer`, rebased onto
+`origin/spec-dec-mtp-refresh-2026-06-22` @ `97ce58b8` — two-test
+reconciliation + solo-goes-full seam fix absorbed), head `3c0b4ce4`, pushed;
+84-test targeted regression green post-rebase. The live-lock-coupling finding
+this session filed was confirmed by the main session, fixed in `97ce58b8`, and
+generalized to a filed three-seam-hermeticity task for the whole file
+(`5adf81aa`).
+Flag `ORCHESTRATOR_FLEET_LAYER` default OFF everywhere; no env wiring into launch
+scripts; flag-off behavior verified byte-identical (existing placement/migration/
+demotion suites: 130 passed; the 2 failures — frontdoor drift-guard vacuity check +
+vision quarter-preference — pre-exist at the base commit, verified by stash-run).
+
+- [x] §2.1 `ServerFleet` build from registry `server_mode` SoT (`src/fleet.py`; env/runtime-facts producers structurally not consulted; port-resolved `is_full`; per-FLEET degraded literal) ✅ 2026-07-23
+- [x] §2.2 `RoleBinding` policy layer (fleet_ref + model_binding; `capacity_cap`/`placement_policy_override` carried as data, enforcement deliberately deferred) ✅ 2026-07-23
+- [x] §3 one breaker/lock identity per fleet endpoint (CAB `health_tracker` injection, per-dispatched-endpoint recording, circuit-aware SM candidates, all-open fail-fast; §3 parity invariant fails the build closed) ✅ 2026-07-23
+- [x] §7 one-CAB-per-fleet collapse (flag-gated `_init_fleet_backends`; logical role threaded per-call; use_chat_completions fleet-consensus-or-fail-closed) ✅ 2026-07-23
+- [x] §4 same-fleet fallback compiled to no-ops (`compiled_fleet_fallback_map` + flag-gated `get_fallback_roles`) ✅ 2026-07-23
+- [x] §6 acceptance cases 1–9 as offline/mocked tests (33 tests: `test_fleet_layer_build.py` 1/3/8/9+parity+degraded, `test_fleet_layer_dispatch.py` 2/7+flag-off identity, `test_fleet_layer_breaker.py` 4+5-fail-fast, `test_fleet_layer_fallback.py` 5/6) ✅ 2026-07-23
+- [ ] §6 case 10 live gate — operator-boundary act, NOT this session's
+- Explicit decline (2026-07-23): per-request `use_chat_completions` threading through a shared fleet backend is NOT filed as a task — the fleet-consensus-or-fail-closed rule covers every real fleet (all shared-fleet roles agree in the live config, verified offline), and a future disagreement fails loudly to the legacy build rather than mis-routing; revisit only if that CRITICAL log ever fires.
+- [ ] Flip boundary: merge, acceptance re-run, §5 WP-13 interim deletion (Fix-A delegations, alias-ports fix, parity drift-guard test, `_LEGACY_SERVER_URL_FALLBACKS`), launch-env wiring, one reload — owned by the main session + operator
+
 On implementation (post-measurement-chain, per operator sequencing):
 1. Flip the WP-12 checkbox in `within-role-placement-state-machine.md` → `- [x] … ✅ <date>`; note the interim (WP-13 Fix-A + drift-guard test) deletion in the same edit.
 2. Update `progress/2026-07/2026-07-DD.md`.
 3. Cross-reference op-bundle ESC-8 (shared restart surface) and the WP-9/WP-10 lineup event.
+
+> **2026-07-23**: the fleet layer's heterogeneous extension is governed by the OPERATOR-RATIFIED fabric contract (core guiding principle banner in [heterogeneous-slot-fabric-residency.md](heterogeneous-slot-fabric-residency.md)): policy-data-never-code, the four robustness axioms, the bounded/reversible/measurable/gated conversion rule.

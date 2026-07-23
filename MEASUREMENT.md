@@ -184,3 +184,84 @@ and MUST be re-run** under this protocol. No partial upgrades.
 wins were measured on the *experimental* kernel, so they remain observations until re-run on
 `production-consolidated-v7` after promotion. `P-GPU-1` ratification enables that
 post-promotion certification; it does not upgrade pre-promotion experimental numbers.
+
+### P-CAL — Verifier/answer calibration (ECE / AUROC)                    [added 2026-07-23]
+- Instruments: eval-tower.math-rebaseline (GSM8K+MATH-500, n=1,819/arm, math_verify, seed 42,
+  production sampling; run E7c 2026-07-23) and eval-tower.calibration-baseline.v1 (Scoring
+  Verifiers HE-R+, n=820/arm, code_execution labels, seed 42; run EV-4c 2026-07-22). Era:
+  E7-eval-instrument and later ONLY — pre-E7 calibration rows are void (proxy confidence).
+- ECE = closed-top-bin stat_tests definition (ece_instrument_era=ev11b_closed_bin_2026_07_20),
+  10 bins. Confidence = completion-probability geomean; a row gates ONLY when its aggregate
+  carries confidence_is_real=True — proxy or mixed-provenance ECE is an observation FOREVER.
+- Decision-capable uses (ESC-7 Option A, granted 2026-07-23 — DOMAIN-SCOPED): (a) RLVR reward
+  calibration/discrimination components enter at their existing weights (rlvr_tiers) for
+  provenance-clean CODE (code_execution-scored) rows only; (b) verifier-model promotion
+  (EV-5/EV-7) may gate on code-domain ECE/AUROC against the same-domain P-CAL baseline.
+  MATH: ECE usable as a cross-arm stability check only; math AUROC is an OBSERVATION
+  (anti-discriminative 0.401/0.411 — geomean length confounding) pending EV-CONF-2
+  (salient-token/answer-span confidence source).
+- Baselines (era anchors, this amendment): code ECE 0.2532/0.3216, AUROC 0.6337/0.5751
+  (frontdoor/worker_general, EV-4c); math ECE 0.2114/0.2199, AUROC 0.4013/0.4114
+  observation-only (worker_general/worker_math, E7c). Ledger rows: EV-4-calibration-baseline,
+  EV-11-math-rebaseline (2026-07-23).
+### P-PAIRED — Paired A/B significance verdict (McNemar)                  [staged 2026-07-23; operator-apply]
+
+  STATUS: STAGED for human review. This block is written by the P-PAIRED implementation
+  session but NOT applied — the measurement trust boundary (MEASUREMENT.md §4) is
+  human-amendment-only. The operator pastes this at the tail of MEASUREMENT.md by hand
+  after auditing the cited implementation.
+
+- Instrument identity. The paired-significance verdict surface is
+  epyc-orchestrator `scripts/autopilot/paired_stats.py::mcnemar_verdict` (+ the
+  `verdict_from_result` convenience and `MCNEMAR_EXACT_MAX_DISCORDANT` constant),
+  driven from `scripts/autopilot/eval_tower.py::screen_paired_arms` (each matched pair
+  carries a `verdict` block) and threaded per-role by
+  `eval_tower.py::attach_role_paired_verdicts`. The producing instrument is
+  eval-tower.math-rebaseline (GSM8K+MATH-500, n=1,819/arm, math_verify, seed 42,
+  production sampling; `result.paired_significance` in each
+  `eval_tower_math_rebaseline_*/summary.json`). Era: E7-eval-instrument and later ONLY —
+  pre-E7 paired rows are void (proxy-scored arms). Metric direction: a lower two-sided
+  p_value is stronger evidence of a real difference; the VERDICT, not the raw delta, is
+  the decision object.
+
+- Verdict semantics. Inputs are the discordant (flip) counts from
+  `mcnemar_from_vectors`: b = a_correct_b_wrong (arm A wins the flip), c =
+  a_wrong_b_correct (arm B wins the flip). The verdict block is
+  {verdict, method:"mcnemar", approximation, n_discordant, p_value, z, alpha,
+  exact_max_discordant}. Method selection by discordant count n_discordant = b + c:
+  n_discordant <= 25 -> EXACT two-sided binomial sign test (approximation
+  "exact_binomial", z null); n_discordant > 25 -> continuity-corrected NORMAL
+  approximation (approximation "normal_approx", signed z; Edwards correction
+  (|b-c|-1), two-sided p = erfc(|z|/sqrt(2))). Threshold rationale: the normal
+  approximation is trustworthy only once b+c >= 25 (standard McNemar guidance), and the
+  exact path divides by 2**n which overflows float64 past ~1000 discordant pairs — so the
+  switch is both statistical and numerical. Verdict rule at alpha=0.05:
+  "indistinguishable" unless p_value < alpha AND b != c; then "b_better" when c > b else
+  "a_better". Provenance gate: a pair is scored ONLY when both arms declare, and agree
+  on, {dataset_sha256, test_profile} (`paired_stats.require_matched_comparison`);
+  mismatched/one-sided/both-missing provenance is refused to `mismatched_pairs`, never
+  silently verdicted.
+
+- Decision-capable uses (paired A/B keep/prefer on same-dataset, same-seed arms).
+  A P-PAIRED verdict MAY gate a keep/prefer decision between two arms ONLY when both arms
+  were scored on the identical question set (matching dataset_sha256) under the identical
+  test_profile (matching scoring method, seed, sampling policy) — i.e. the pair appears in
+  `pairs`, not `mismatched_pairs`, of the `result.paired_significance` block. Under that
+  provenance: (a) verdict "a_better"/"b_better" (p_value < alpha) is decision-grade
+  evidence to PREFER the winning arm over the loser for that dataset+profile; (b) verdict
+  "indistinguishable" is decision-grade evidence of NO measured preference — it does NOT
+  license a swap and MUST NOT be read as "equivalent" beyond this dataset/profile (a null
+  is not proof of equality; report n_discordant so an underpowered null is visible). A
+  verdict never gates across mismatched provenance, never upgrades a single-arm accuracy
+  delta, and never gates outside the E7-eval-instrument era. Attestation grammar:
+  `verdict [P-PAIRED, n_discordant/method, YYYY-MM-DD, attest <summary.json ref>]`.
+
+- Baseline (era anchor, this amendment): E7c math re-baseline
+  (`orchestration/reports/eval_tower_math_rebaseline_E7c/summary.json`), arms
+  worker_general vs worker_math, seed 42: b=61, c=58, n_discordant=119 -> normal_approx,
+  p_value ~0.855 -> verdict "indistinguishable" (the two worker arms are statistically
+  indistinguishable on the math re-baseline; the ~0.2pp accuracy delta is inside the
+  noise band). Ledger row: EV-11-math-rebaseline (2026-07-23). Tests:
+  `tests/unit/test_paired_stats.py` (verdict known-answer: small exact + large normal,
+  threshold boundary, direction, alpha), `tests/unit/test_eval_tower_paired_significance.py`
+  (screen verdict attachment + per-role threading).

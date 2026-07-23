@@ -690,3 +690,21 @@ audits, `progress/2026-07/2026-07-22.md`):
   `--resume-incomplete-from` (interrupted arms, dataset-sha-guarded) make long arms recoverable.
 - **REL-1 held under fire**: a mid-eval API restart burned 532 questions into *excluded error
   rows* — never scored wrong; the paired accuracy stayed honest (0.764 vs 0.762).
+
+## Campaign terminal + instrument completion (compiled 2026-07-23)
+
+The 2026-07-22/23 measurement campaign closed with the quality gate LIVE: era-fenced reseed
+(T1 1.600 on the designed core_v2, escalation-off declared and artifact-verified; T2 1.891),
+operator-applied via the human-amendment boundary. Constitution gained three acts: P-CAL
+(domain-scoped calibration — code decision-capable, math observational pending EV-CONF-2's
+salient-token source), P-PAIRED (McNemar verdicts, exact≤25/normal-CC above), and the
+E4-quality-core-v2 era row. Scorer coverage CLOSED wholesale: a full-pool audit found exactly
+2 gaps in 79,480 rows (f1_list, structural_exact_match), implemented byte-identical to research
+reference adapters with the B7 pin unchanged. The judge-scoring class was fixed at the INGRESS
+(calls had auto-routed into the REPL loop via the OpenAI-compat endpoint). The vl suite —
+"dead 0/376" for six weeks — was recovered by re-measurement (truth-slice 20/20): the standing
+lesson is that dead-suite claims EXPIRE and the ~7-minute instrumented truth-slice is the cheap
+re-validation. Baseline discipline extracted: six refused attempts = six real production defects,
+zero garbage numbers banked (missing tool libs, migration NULL-crash, client-side budget
+override + five read caps, dead judge port, pre-REL-1 zero-tolerance gate, schema ceiling).
+Sources: progress/2026-07/2026-07-2{2,3}.md, core-v2-design-note, decision-plane audit records.

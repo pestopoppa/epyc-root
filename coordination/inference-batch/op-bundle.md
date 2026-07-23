@@ -125,6 +125,15 @@ Four pre-formed decision blocks were seeded by the 2026-07-17 command audit (the
 - **Recommendation**: (B). The delta doc is cheap, makes the era boundary auditable, and EV-4 is quiet-window-gated anyway.
 
 ### ESC-7 — EV-CONF: real-confidence consumption default (decision)
+- **✅ §2 APPLIED 2026-07-23 (`a76a4054`)** — P-CAL protocol live in MEASUREMENT.md; rlvr_tiers code-scoping deployed (`3417f857`). ESC-7 CLOSED.
+- **✅ GRANTED 2026-07-23 — OPTION A (domain-scoped adoption)**: calibration+discrimination re-enter
+  decision-capable use (RLVR reward components, EV-5/EV-7 verifier gating) for **CODE rows only**;
+  math ECE usable as stability check; math AUROC stays observational pending EV-CONF-2
+  (salient-token confidence — math AUROC 0.40 both arms = geomean anti-discrimination). Evidence +
+  §2 amendment text: esc7-measurement-amendment-draft.md (operator applies §2 to MEASUREMENT.md by
+  hand; agent follow-ons in draft §3 execute after). Baselines: code ECE 0.2532/0.3216, AUROC
+  0.6337/0.5751 (EV-4c); math ECE 0.2114/0.2199, AUROC 0.4013/0.4114 obs-only (E7c).
+
 - **Gate**: `e26a7cb3` landed the full logprob→confidence plumbing (verified correct end-to-end; provenance stamped). But `n_probs=5` defaults ON, so **real (and mixed-provenance) ECE now feeds the RLVR reward calibration/discrimination components and the journaled ECE series by default** — the audit reserved "does real-ECE re-enter gating" for the operator. SafetyGate promotion verdicts do NOT consume ECE (verified), so live gating is unaffected; the exposure is the RLVR `ready_for_training` export + the gate-era ECE series.
 - **Interim applied (pre-approved by the EV-CONF audit item)**: RLVR calibration+discrimination components are being gated on `confidence_is_real` (zeroed + `confidence_not_real` blocker when the flag is absent/false/mixed) — fix in flight this session.
 - **Remaining decision**: once confidence is real fleet-wide, does calibration re-enter the RLVR reward (and eventually any gating surface)? Also: keep `n_probs=5` default-on (costs: non-streaming path, cache bypass) or flip to opt-in?

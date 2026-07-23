@@ -141,6 +141,15 @@ meant to fix). This makes budget-selection and admission-control **one problem**
       sets from **assessed task complexity** (easy → tight budget, hard → generous). Requires per-request
       budget plumbing through the orchestrator serving path (llama-server already accepts it per request).
       Natural extension of [[project_learned_routing_controller]] — budget becomes a routing *output*.
+- [~] **TB-6-exec — np × context throughput surface (GPU-only study, STARTED 2026-07-23).** First pass
+      running: A1 (122B-IQ2) × np{1,2,4} × L{2048,8192} generation-length cells, measuring aggregate +
+      per-request decode + errors, with n_ctx_slot/VRAM verification per cell (`study_np_context.sh`,
+      artifacts `np_context_study_20260723/`). Combines with existing 36864-ctx probe data (np1=58/np2=44/
+      np4=62 agg t/s) to map where batching helps (small L) vs collapses (large L). **Follow-ups:** extend
+      to A3 (dense, 2.4× KV/slot — expect earlier collapse) + the other GPU stack models; and a *rigorous*
+      variant using **prefill-to-depth** (long synthetic prompt + short generation) to measure
+      decode-at-KV-depth cheaply instead of the slow generate-L proxy. A2/CPU deferred to a follow-on
+      (CPU busy). Feeds the admission-control constant `kv_bytes/token` per model.
 - [ ] **TB-6 — Concurrency-aware admission control (VRAM *and BANDWIDTH* guard).** The router/orchestrator
       must track live `Σ(budget_i × kv_per_token_model)` against the card and **admit/queue/downgrade**
       requests so the sum never forces `n_ctx_slot` below a request's budget. Per-model `kv_per_token`
@@ -187,6 +196,32 @@ this session. The batched run gives the TB-1 sweeps ~10× wall-clock, and the pe
 inputs TB-6's admission-control needs. **Method note:** each `-np` slot must get the FULL per-request budget
 as its `n_ctx_slot` (`-c = per_slot_ctx × n_parallel`) — else llama.cpp silently truncates; verify
 `n_ctx_slot ≥ budget` and VRAM headroom at launch (the batched run does).
+
+## § Quant-aware repetition-penalty fence (operator, 2026-07-23)
+
+**Finding (olympiadbench_hard, 2026-07-23):** the 122B-A10B **UD-IQ2_M** loops on `\boxed{answer}` to the
+token cap on **25%** of items (degenerate repetition — solves it, can't stop); the Q8 arms do not
+(27B-dense **0%**, 35B-A3B **~1%**). The need for a repetition fence tracks **quantization aggressiveness**,
+not model or role — consistent with 2-bit quant damaging low-probability tokens including EOS/stop.
+
+**Policy (operator): apply the repetition penalty SELECTIVELY, to highly-quantized models that need it —
+NOT equally across the stack.** Rationale: the penalty has a real quality cost (registry's own Qwen note:
+`presence_penalty > 1.0` causes language mixing; repetition penalties hurt legitimate repetition in
+code/math/structured output), so pay that tax only where degeneration risk is high. Production already uses
+penalties per-model (worker `repeat_penalty 1.05`, gemma4 `1.1` crash-mitigation, some frontdoor
+`presence_penalty 1.5`) — **but the 122B-IQ2 architect has NONE**, and our bench matched that, so the loop
+would occur in production. The fence is a `(model, quant)` property, certified per model (per the INVARIANT
+above), never inherited stack-wide.
+
+- [ ] **RP-1 — Repetition-penalty probe (running 2026-07-23):** on A1's 40 looping items, test
+      `repeat-penalty {1.1, 1.3}` and the **DRY sampler** vs baseline — does it break the loop
+      (truncation→0, tokens↓) WITHOUT hurting accuracy? Pick the least-cost fence. Driver `probe_reppen.sh`.
+- [ ] **RP-2 — Quant attribution:** does the **Q4 122B (A2, CPU arm)** loop too, or is it IQ2-specific?
+      (2-bit EOS damage hypothesis.) Folds into the deferred A2 run — makes it a quant-cost check, not just H1.
+- [ ] **RP-3 — Does it loop on the ARCHITECT WORKLOAD** (multi-step planning) or only on competition-math
+      `\boxed{}` prompts? The `\boxed{}` instruction may itself be the trigger. Test on real architect tasks.
+- [ ] **RP-4 — Quant-aware penalty policy in the registry:** add a per-`(model,quant)` repetition-penalty
+      default keyed on quant aggressiveness (e.g. sub-4-bit → fence on), operator-gated. Do NOT blanket it.
 
 ## Prioritized task list
 - [x] **E-1 — Design the ladder.** Draft 4–5 effort levels, e.g. L0 answer-only → L1 one-line ✅ 2026-07-22

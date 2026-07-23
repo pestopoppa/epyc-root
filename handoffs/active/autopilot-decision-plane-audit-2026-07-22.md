@@ -278,3 +278,84 @@ The in-band `[ERROR: …]` marker lives in the **answer text**, persisted in see
 
 - [x] ✅ 2026-07-23 **H4 Q-TD-write DEPLOYED**: flag live (845e7492 + reload), migration+table-swap executed (676,463→31,565), snapshot-refreshed audit confirms 1.0x duplication / 17.84% learned-Q. Legacy table + backup retained.
 - [ ] **EV-CONF-2 — salient-token confidence source** (filed 2026-07-23): math AUROC 0.40 both arms = geomean anti-discrimination (length confounding). Build answer-token/salient-token confidence; re-baseline math AUROC before any math-domain confidence use. See ESC-7 draft §5.
+  **Scoping (2026-07-23):** (a) Candidate sources, cheapest first: ANSWER-SPAN geomean (confidence
+  over only the final-answer tokens — directly attacks length confounding; the boxed/final-answer
+  extractor from SCORE-03/16 already locates the span); salient-token (min-prob or high-entropy
+  decision tokens); self-consistency proxy (k-sample agreement — costs k× inference, last resort).
+  (b) BLOCKER: per-token logprobs are NOT persisted (sidecar stores only the aggregate geomean) —
+  offline re-scoring of E7c is impossible; EITHER extend the sidecar to persist the top-1 logprob
+  vector per row (cheap, do first) THEN a ~200-row math probe suffices to compare sources, OR run
+  a fresh instrumented probe. (c) Success gate: candidate source AUROC materially >0.5 on the math
+  probe with ECE not degraded; then re-baseline math via a full arm and amend P-CAL. (d) Owner:
+  eval-tower program, post-EV-BASELINE-E7 in priority order unless the operator promotes it.
+
+- [x] ✅ 2026-07-23 COMPLETE — reseed APPLIED by operator (12:45:07Z; backup autopilot_state.pre-reseed-20260723T124507Z.json; gate reads T1 1.6 / T2 1.891, era E7-eval-instrument; fail-closed hold lifted on same-era designed-core ground) **EV-BASELINE-E7 — post-E7 full-pool baseline sweep (reseed prerequisite; filed 2026-07-23)**:
+  the granted era-fence reseed is UNDERDETERMINED by current data — `baseline_state` is tier-keyed
+  over the 41-suite E7 pool, while post-E7 measurements cover only math (E7c) + scoring_verifiers
+  (EV-4c). Deriving `baselines_by_tier` from 2 suites would fabricate a tier baseline (the exact
+  defect class this campaign eliminated). REQUIRED: a quiet-window T1/T2 eval sweep across the E7
+  pool (autopilot-style fan-out, eval_batch, decision_grade rows) → then apply the reseed
+  (baselines_by_tier + per_suite_quality_by_tier + counts + MAD windows from the sweep, stamped
+  eval_quality_era: "E7-eval-instrument"). Partial seeding of only the 2 measured suites REJECTED:
+  it would either lift the hold against an unrepresentative baseline or recreate cross-era
+  comparison for the other 39 suites. The fail-closed hold stays (correctly) until the sweep runs.
+  Measured suites available NOW for the sweep's cross-check: math quality (E7c), scoring_verifiers
+  (EV-4c).
+
+- [x] ✅ 2026-07-23 RESOLVED through six defect-fix iterations; baselines banked on core_v2 (T1 1.600 rel 0.90) + legacy T2 (1.891 rel 0.92), escalation-off declared **EV-BASELINE-E7 blocked on tier-arm error class (2 attempts, filed 2026-07-23)**: attempt 1
+  errored 14/50 (knowledge-tool import failures — five client libs installed, tools now green in
+  /health); attempt 2 errored 26/50 with errors CONCENTRATED in code-execution + agentic/heavy
+  suites (debugbench/livecodebench/bigcodebench/usaco/tool_use/agentic/long_context all absent
+  from the 24 scored; mean_tools_used 0.04 rules out tool-execution). Runner honestly refused
+  both (current_eval_degenerate — the reliability floor working). NEXT: (a) wire the per-question
+  sidecar into the TIER path (set_question_artifact_dir — calibration/math modes have it, tier
+  does not: diagnosis-blocking gap); (b) rerun a small tier draw instrumented, classify the 26 by
+  reason; (c) fix the class (suspects: client-side code-execution sandbox availability in the
+  tier runner context vs the calibration path that worked, or per-suite deadline shape on heavy
+  suites); (d) then the full sweep → reseed. The era-fence hold remains correctly closed.
+
+- [x] ✅ 2026-07-23 (`epyc-orchestrator` `7e767df7`, not pushed) **SCORE-25: implement `f1_list` scorer**: the `tulving_episodic` suite
+  (456 rows, whole suite, E7 expansion) declares `scoring_method: f1_list` — item-level F1 over
+  parsed lists (distinct from B7 SCORE-24 token-multiset f1). Previously every row errored
+  "Unknown scoring method" (honest REL-1 exclusion; ~0.6% of pool, 0-1 per tier draw).
+  IMPLEMENTED in `scripts/benchmark/debug_scorer.py::_score_f1_list` — per-item (set-level) F1:
+  greedy GT→pred matching, lenient `min(nb_pred,nb_gt)` precision denominator, group-0
+  hallucination policy (empty gold + prediction ⇒ 0; empty gold + abstention "None" ⇒ 1). Per-item
+  normalization reuses the B7 primitive `_normalize_text` (the one deliberate substitution vs the
+  research `tulving_episodic_adapter` NFC normaliser — strictly more lenient, never fabricates a
+  match; agrees with the reference on all 1544 cross-check cases). Gold is a JSON list; non-list ⇒
+  `ScoringUnavailableError` (EXCLUDED, never False). Offline-verified on all 456 real pool rows
+  (456/456 perfect-answer PASS, 0 errors, 0 false positives, 180/180 empty-gold abstention correct).
+  ADDITIVE — no existing verdict changes (B7 golden-corpus pin still byte-stable). Golden fixtures
+  in `tests/unit/test_debug_scorer_score25_26.py`. NOTE (unowned, left open): kuzu module missing in
+  venv (6x ImportError, mutation-graph tools) — install or lazy-degrade.
+
+- [x] ✅ 2026-07-23 (`bb3a9ebb` — bidirectional fence: text fenced off vision roles declaratively, image exempt from veto, vision failures in-band, HTTPStatusError structured) **Routing modality guard + backend HTTPStatusError handling (filed 2026-07-23, from tier
+  forensics)**: MemRL routed a long-context TEXT longbench question to worker_vision (:8086) →
+  HTTP 400 (context window); `select_initial_route` only forces vision ON image presence, never
+  guards non-vision traffic AWAY from VL servers; and `LlamaServerBackend.infer` catches
+  Timeout/RequestError but not HTTPStatusError, so 400s surface as raw in-band `[ERROR:` text.
+  Fix: (a) modality guard in routing (text → never VL-only servers unless explicitly forced);
+  (b) catch HTTPStatusError → structured failure_stage/reason. Non-trivial blast radius — needs
+  its own tests; evidence in ev_baseline_e7_tier1 sidecar + agent report (04411baf).
+- [x] ✅ 2026-07-23 (`epyc-orchestrator` `7e767df7`, not pushed) **SCORE-26: implement `structural_exact_match` scorer**: longcot_mini
+  (402 rows) declares it; previously unknown → honest exclusion. IMPLEMENTED in
+  `scripts/benchmark/debug_scorer.py::_score_structural_exact_match` — interpretation DERIVED from
+  the suite's rows (golds are canonical JSON str/int/list/dict): parse-then-canonicalize-then-
+  compare, NOT string equality. Final-answer anchor = text after the LAST `solution =` marker (B7
+  last-occurrence convention; no marker ⇒ False, a task failure not a scorer error); recursive
+  canonicalization (dict keys sorted, list order preserved, numeric scalars incl. numeric strings
+  collapsed so `391365`==`"391365"`==`391365.0`, non-numeric string case PRESERVED for
+  SMILES/FEN, whitespace collapsed); pure structural `==`. Byte-identical to the research reference
+  `longcot_mini_adapter.score_structural` across all 2387 cross-check cases; offline-verified on all
+  402 real pool rows (402/402 perfect-answer PASS, 0 errors, 0 false positives on wrong/no-marker/
+  case-flipped answers). ADDITIVE — no existing verdict changes. Golden fixtures in
+  `tests/unit/test_debug_scorer_score25_26.py`.
+  **Wholesale-audit result (grep of every `scoring_method` in the 79,480-row pool vs the
+  `score_answer` dispatch):** exactly TWO gaps existed — `f1_list` and `structural_exact_match` —
+  BOTH now closed. Full gap table (method | rows | suites): `f1_list` 456 (tulving_episodic);
+  `structural_exact_match` 402 (longcot_mini). All other declared methods already dispatched:
+  `multiple_choice` 44,844, `f1` 12,426, `substring` 9,640, `exact_match` 4,219, `llm_judge` 3,806,
+  `code_execution` 3,157, `programmatic` 529 (+ 1 row with no `scoring_method` field, benign). The
+  class is closed wholesale — no other suite errors "Unknown scoring method".
+- [ ] **Hermeticize test_dispatch_placement_state_machine.py (filed 2026-07-23)**: the solo-goes-full seam fix (97ce58b8) closed ONE live-state coupling; siblings still read live host lock seams under traffic (observed: a different test flaked once during a live eval, passed on rerun; suite takes 80-97s against live traffic vs mocked-instant). Audit every test in the file for the three-seam patch pattern (active_region_holders + lock acquisitor + held_regions_by_role) and mock all timing waits.

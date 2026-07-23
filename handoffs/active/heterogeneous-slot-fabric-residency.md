@@ -1,5 +1,20 @@
 # Heterogeneous CPU×GPU Slot Fabric + Dynamic Residency
 
+> ## ⚖ CORE GUIDING PRINCIPLE (OPERATOR-RATIFIED 2026-07-23 — governs every design decision in this handoff)
+> **Optionality**: role→slot binding is POLICY DATA, never code — every topology, parallelism
+> layout, and residency arrangement must be expressible as configuration the fabric executes.
+> Data can be swept; code is a strategic decision forever.
+> **Robustness axioms (campaign scars, non-negotiable)**: (1) one fact per physical resource —
+> breaker/lock/health/residency on the SLOT, realized-probed, never per-role copies; (2)
+> realized-first truth — the device↔model map comes from probing, never launch intent; (3)
+> fail-closed residency — unverifiable teleport ⇒ slot UNKNOWN, excluded from placement; (4) no
+> mid-decode preemption — session-handover is the only migration primitive.
+> **Conversion rule**: a parameter is autopilot-sweepable IFF bounded ∧ reversible ∧
+> protocol-measurable ∧ gate-protected; design every parameter to satisfy all four FROM BIRTH so
+> strategic→sweepable conversion is a flag flip, not a redesign.
+> (Full ratified contract with context: §"Fabric optionality/robustness contract" below.)
+
+
 **Status (2026-07-20): DESIGN — GATED (post-v7-promotion). Provisioning + lane decisions PENDING
 [E5](batched-decode-measurement.md) (NUMA×batch sweep).** No production/stack change proposed here —
 this is the target-architecture design distilled from the 2026-07-20 strategic discussion. Nothing is
@@ -99,6 +114,7 @@ tightly-gated GPU residency (the danger was VRAM *scarcity*).
 ## Task list (all GATED — post-v7-promotion + post-E5; nothing starts before then)
 - [x] Architecture designed + reconciled against the live placement fabric ✅ 2026-07-20
 - [ ] **Consume E5** — set the CPU (N,K) provisioning + resolve the lanes question from the sweep
+- [ ] **Model-keyed capability records replace role-keyed NUMA/spec config** (operator-directed 2026-07-23; the model-side completion of the ratified optionality principle). Today `NUMA_CONFIG` + spec/launch recipes are keyed by ROLE (frontdoor's entry encodes the 35B's half-wins result; worker_general's encodes gemma's interleave/MTP quirks), so a model swap under a role is a bespoke lineup event (2026-05-08 worker swap precedent). Invert into per-model capability cards — model+quant → {optimal solo shape, NUMA-splitting potential, per-shape `-np` optima (E5 R4 rows are the first population), ctx/KV config, spec-dec recipe + accept rates, platform-labeled top specs, policy quirks} — with role entries and WP-12 fleets holding REFERENCES only. Payoffs: (a) model swap = flip the reference + §H recert, nothing else — this also yields the missing model-swap-under-role runbook (alias runbook + `new-model` skill are partial today); (b) contention-matrix rows indexed by (model_a, model_b, shape-pair) instead of role+instance become REUSABLE across swaps — the §H recert shrinks to never-measured pairs only (the derived `placement_overlap`/topology_hash layer is already deterministic recompilation; only the measured throughput verdicts are physical facts of the model stack).
 - [ ] **Design the GPU-as-placement-target** extension to `ConcurrencyAwareBackend`/`NUMA_CONFIG` (GPU instance in the fabric)
 - [ ] **Layer-2 residency-actuator verb** on `orchestrator_stack.py` (allowlisted load/evict + kill-switch) + the swap protocol (session-handover drain)
 - [ ] **Teleport-to-GPU** = the re-prefill-from-transcript variant of the existing migration transaction
@@ -115,3 +131,28 @@ tightly-gated GPU residency (the danger was VRAM *scarcity*).
 ## Reporting
 On any phase: flip its `- [ ]`, record the measured constant (E5 provisioning, C for N-dwell, allowlist
 contents) with a MEASUREMENT stamp. No stack/production change lands without the operator + the 3 gates.
+
+## Fabric optionality/robustness contract (OPERATOR-RATIFIED 2026-07-23 — "couldn't agree MORE"; governs the fabric design session)
+
+**Optionality principle**: role→slot binding is POLICY DATA, never code — every topology in the
+escalation option space (A-D, eval-tower-verification.md), every parallelism layout, every
+residency arrangement must be expressible as configuration. Data can be swept; code is a
+strategic decision forever.
+
+**Robustness invariants (2026-07-22/23 campaign lessons, promoted to axioms)**:
+1. One fact per physical resource — breaker/lock/health/residency on the SLOT, realized-probed,
+   never per-role copies (ESC-8 / 90x-churn, extended to devices).
+2. Realized-first truth — device↔model map from probing, never launch intent (the manifest lesson;
+   a stale "GPU holds architect" record is a future phantom-lineup outage).
+3. Fail-closed residency — unverifiable teleport ⇒ slot UNKNOWN, excluded from placement (REL-1
+   applied to placement).
+4. No mid-decode preemption; session-handover is the only migration primitive (proven).
+
+**Conversion rule (strategic→sweepable boundary)**: a fabric parameter is autopilot-sweepable IFF
+bounded ∧ reversible ∧ protocol-measurable ∧ gate-protected. Static remainder: device inventory,
+per-device quant artifacts, safety envelopes, the residency-capable model set. DESIGN DISCIPLINE:
+build every parameter to satisfy the four properties from birth so conversion is a flag flip.
+
+**Inputs required before the full design session** (per the design-session discipline for
+NUMA/concurrency complexity): E5 NUMA×batch mapping, teleport break-even measurements, and the
+architect-bench GPU-arm results (the first heterogeneous binding candidate).

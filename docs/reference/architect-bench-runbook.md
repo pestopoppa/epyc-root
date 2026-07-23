@@ -88,6 +88,23 @@ Each model has its **own** optimal GPU serving config; do not inherit another mo
   `chat_template_kwargs.enable_thinking=false` request-side are mandatory (else degenerate `<think>` loops
   — see §6 and [[feedback_qwen3x_enable_thinking_false]]). Verify by curling one degenerate-prone prompt
   and confirming non-empty `content`.
+- **Run at MAX optimization — always. Probe the config on a small sample BEFORE any intensive run.**
+  ([[feedback_bench_max_opt_and_config_probe_first]]) Do NOT disable an optimization (e.g. spec-dec) to
+  dodge a suspected caveat — *test* whether the caveat applies. Use `throughput_report.py` + `--concurrency`
+  + a VRAM-sizing probe on ~8 items to rank `{spec-dec on/off} × {np} × context`. Measured 2026-07-23:
+  - **spec-dec (draft-mtp) is a clean +32% at single-stream** (58 vs 44 t/s for 122B-IQ2); never omit it.
+  - **Batching does NOT transfer across context.** At *small* context high `np` wins (AXA-1: 148 agg@B32),
+    but at the *large* per-slot context a big reasoning budget forces (32768 budget → 36864 ctx), KV read
+    per decode step scales with `context × active_slots` and MoE requests scatter across experts, so
+    **aggregate throughput DROPS as np rises** — np=14 *collapsed* (54/155 requests timed out), np=4 was a
+    wash. **Optimal np → 1 as the reasoning budget grows.** So for long-reasoning suites, **np=1 + per-model
+    MTP** is both max-opt and fastest, and it avoids batch-numerics non-determinism (batched output ≠
+    single-stream bit-for-bit → keep one config across all arms for a paired bench).
+  - **The binding constraint at large budget is memory BANDWIDTH, not VRAM capacity** — "it fits in VRAM"
+    (52/64 GiB) does not mean you can raise concurrency. Per-slot KV = (context × kv_bytes/token); the
+    *dense* 27B costs ~2.4× the KV/slot of the MoE arms (0.99 vs 2.39 GiB @36864 f16). If you DO batch, set
+    `-c = per_slot_ctx × np` (else llama.cpp silently shrinks `n_ctx_slot` → truncation) and verify
+    `n_ctx_slot ≥ budget` + VRAM headroom at launch.
 
 ---
 
@@ -112,7 +129,8 @@ them.
 | L1 | **`gpqa_diamond`** (letter-only) | no-CoT prior/knowledge probe | 198 | ~2 tokens/q; a floor, saturates for strong models |
 | L2 | **`gpqa_diamond_cot`** | reasoning w/ CoT in `content` | 198 | the +CoT lift is large (≈+30pp); still saturates ~85–90% for frontier-ish models |
 | L3 | **`aime25`** (avg@k) | decisive competition-math reasoning | 30 × k | lower ceiling than GPQA; **the discriminator** — but only 30 items |
-| L4 | **`olympiadbench_numeric`** | harder-tier ceiling-breaker | 100–150 | 492 cleanly-scorable items; use when L3 saturates (it usually does) |
+| L4 | **`olympiadbench_numeric`** | *(weak)* harder-tier | 100–150 | ⚠ its clean-numeric filter selects the *easy-answer* subset → also saturates (~89%). Use L5 for a real ceiling-breaker. |
+| L5 | **`olympiadbench_hard`** | **the real non-saturated discriminator** | 155 | Expression/Tuple/set items (`math_symbolic` sympy scorer). 64–69% for frontier-ish models — genuine headroom. Needs budget ≥ 32768 (some models loop/ramble longer). |
 | A | **thinking ablation** (`--reasoning on/off`) | is the native `<think>` channel worth it? | 50 | see §6 |
 | B | **effort / `--reasoning-budget`** | can native thinking be made safe/cheap? | 50 | see §6; ref [`reasoning-effort-levels.md`](../../handoffs/active/reasoning-effort-levels.md) |
 | P2 | **SWE-bench-Verified agentic** (FAIL_TO_PASS) | the architect's *actual job*: tool-using multi-step planning | — | operator-gated design; objective oracle, no model-judge |
@@ -176,11 +194,20 @@ the non-termination severity was 18% vs 50% across two models, so certify each m
   (last-match, CoT says "answer" repeatedly) → terse letter → **bare letter alone on the final line** →
   single-candidate fallback. The bare-final-line rule is essential: without it, verbose (CoT) arms fail to
   parse while terse arms score fine — a direct bias against the models that reason.
-- **Math** (`math_numeric`): brace-balanced `\boxed{}` extraction (`extract_boxed`) → numeric equivalence
-  (`parse_math_number`: handles `\frac`, `\sqrt`, `%`, products, `\pi`). **Filter the suite to items whose
-  GOLD parses to a clean number** so every item is scorable and a parse miss can only be the model's — do
-  not trust substring/LaTeX matching (it reintroduces per-arm bias). Validate the scorer offline:
-  gold-scores-itself ≈100%, perturbed-gold ≈0% false-positive.
+- **Math-numeric** (`math_numeric`): brace-balanced `\boxed{}` extraction (`extract_boxed`) → numeric
+  equivalence (`parse_math_number`: `\frac`, `\sqrt`, `%`, products, `\pi`). **Filter the suite to items
+  whose GOLD parses to a clean number** so every item is scorable and a parse miss can only be the model's.
+  Do not trust substring/LaTeX matching (reintroduces per-arm bias). Validate offline: gold-scores-itself
+  ≈100%, perturbed-gold ≈0% FP.
+- **Math-symbolic** (`math_symbolic`, for `olympiadbench_hard`): sympy-backed — `\boxed{}` → numeric →
+  set/tuple (order-independent for solution *sets*, order-sensitive for ordered pairs) → symbolic
+  equivalence (`simplify`/`equals`). Filter gold to items that self-canonicalize. Validate: 0 perturbation-FP
+  AND **0 LaTeX-variant asymmetry** (`0.5`==`\frac12`, `n/2`==`\frac{n}{2}`) — the asymmetry check is the
+  per-arm-bias guard.
+- **`extract_boxed` must take the last *COMPLETE* brace-balanced `\boxed`, skipping truncated fragments.**
+  A model that loops on `\boxed{answer}` and gets cut off ends with an incomplete `\boxed{…` — the naive
+  `rfind` grabs that fragment and scores wrong, even though complete `\boxed{answer}` appear earlier.
+  (2026-07-23: this bug alone understated the 122B-IQ2 by **11pp**, 57.4→68.4%, recovered offline.)
 - **Exact match** (`exact_match` + `extract_patterns`): ordered most-explicit-first, last-match-wins;
   `normalize_numeric` for integer answers (AIME).
 - **After any scorer change, re-score every arm offline** (`architect_bench_rescore.py`) and make the
@@ -231,15 +258,18 @@ the non-termination severity was 18% vs 50% across two models, so certify each m
 ## 10. Tooling (all in `epyc-inference-research/scripts/benchmark/`)
 
 - **Runner:** `v7_quality_gate_runner.py` — flags: `--suites --n --seed --repeats`,
-  `--temperature/--top-p/--top-k`, `--enable-thinking/--no-enable-thinking`, `--max-tokens`,
-  `--per-question-out` (incremental JSONL), `--questions-out/--questions-in` (pin/replay), `--limit`,
-  `--arm`, `--kernel/--binary/--models` (metadata). **Idempotent `(id,seed)` resume**: never re-queries a
-  collected draw — safe restarts and avg@k top-ups (add seeds only).
+  `--temperature/--top-p/--top-k`, `--enable-thinking/--no-enable-thinking`, `--max-tokens`, `--concurrency`
+  (client thread pool → match server `-np`), `--per-question-out` (incremental JSONL), `--questions-out/--questions-in`
+  (pin/replay), `--limit`, `--arm`, `--kernel/--binary/--models`. **Idempotent `(id,seed)` resume**: never
+  re-queries a collected draw. Captures per-request decode + aggregate throughput into the `result.json`
+  `throughput` block.
 - **Adapters:** `dataset_adapters.py` — suites `mmlu_pro`, `gpqa_diamond`, `gpqa_diamond_cot`, `aime25`,
-  `olympiadbench_numeric`. Scoring paths `multiple_choice`, `exact_match`, `math_numeric`.
+  `olympiadbench_numeric`, **`olympiadbench_hard`**. Scoring paths `multiple_choice`, `exact_match`,
+  `math_numeric`, **`math_symbolic`** (sympy — needs `sympy` in pyproject).
 - **Analysis:** `architect_bench_analyze.py` (paired McNemar/bootstrap, per-arm failure columns, prefers
-  `*.rescored.jsonl`), `architect_bench_rescore.py` (offline re-score from stored responses),
-  `thinking_ablation_analyze.py`, `e6_budget_analyze.py`.
+  `*.rescored.jsonl`), `architect_bench_rescore.py` (offline re-score from stored responses — the reason to
+  persist full responses), `thinking_ablation_analyze.py`, `e6_budget_analyze.py`,
+  **`throughput_report.py`** (aggregate + per-request t/s; reconstructs aggregate for pre-timing runs).
 - **GPU serving pattern** (record the exact recipe per run):
   `env LD_LIBRARY_PATH=<build-hip>/bin GGML_IQK=1 ROCR_VISIBLE_DEVICES=0 OMP_NUM_THREADS=1 taskset -c 88-95
   llama-server -m <gguf> --device ROCm0 -ngl all -fa on --reasoning off --metrics --slots --jinja
@@ -283,6 +313,20 @@ is self-describing. Era-stamp; append, never overwrite historical numbers (MEASU
 - **Circular difficulty selection.** Rank by a-priori difficulty only; never by your own results.
 - **Two "reasoning" axes.** Prompt-CoT vs native-`<think>` are independent (§6); a stack review that flips
   `enable_thinking` and stops there leaves the larger prompt lever untouched.
+- **Batching collapses at large context (long-reasoning suites).** High `np` × big budget saturates memory
+  *bandwidth*, not VRAM — per-request decode falls until long generations time out. Don't batch these;
+  use np=1+MTP. If you must batch, `-c = per_slot_ctx × np` and verify `n_ctx_slot ≥ budget` (§3). And do
+  not report `Σtokens ÷ wall` as throughput when requests timed out — the wall is inflated by stalls, it's
+  not a throughput number.
+- **Degenerate repetition / termination loops track QUANTIZATION.** A sub-4-bit model (122B-IQ2) looped on
+  `\boxed{answer}` to the token cap on 25% of items; the Q8 arms 0–1% — 2-bit damages low-probability tokens
+  incl. EOS/stop. Symptoms: "truncation" that is actually verbatim repetition (tail line-uniqueness ≈0), ~2×
+  the tokens of a lossless-quant peer. **Post-extractor-fix it costs no accuracy but real tokens/latency.**
+  Fix = a **selectively-applied repetition penalty / DRY sampler** on high-quant models only (it has a
+  quality cost — don't blanket it); confirm the loop is quant-attributable by testing a higher-precision
+  quant of the *same* model. See [[reasoning-effort-levels]] § quant-aware repetition-penalty fence.
+- **Monitor ERROR/empty counts live, not just accuracy.** A 35%-timeout run ran for hours because status
+  checks watched acc+truncation but not `request_error`. Alert on the first error.
 
 ---
 
