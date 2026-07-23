@@ -331,11 +331,21 @@ and its 1×full-vs-4×per-node question already has era-labeled prior data
 operator request, at the then-current architect model's top spec.
 (ii) `NUMA_CONFIG` has no half1 instance for the frontdoor/ingest families —
 the harness SYNTHESIZES the `48-95,144-191`×96t shape on bench ports only; no
-prod cpuset changes, no §H recert trigger. (iii) The C1b half-pair co-run has
-never been measured (J5 measured quarter pairs) — SAME-SHAPE evidence for
-WP-9's distinct-halves design; WP-9's actual mixed pair (frontdoor-half0 +
-ingest-half1, different models) remains its own §H contention-matrix cell at
-the lineup event.
+prod cpuset changes, no §H recert trigger. (iii) **CORRECTED 2026-07-23 (lineup-dossier archaeology)**: the C1b
+half-pair co-run HAS been measured once — the 2026-05-26 operator-requested
+DUAL-HALF experiment (certified affinity, halves at 8073/8074/8075) came out
+**negative across all three roles** (co-run ratios frontdoor 0.455 / ingest
+0.524 / vision 0.541 ≈ each half halves under concurrency → aggregate ≈
+serial; mechanism: two 48c halves contend on the memory channels serving the
+shared mmap'd weight pages, exactly why 24c quarters scale and halves don't;
+`progress/2026-05/2026-05-26.md:844-849`, reverted same day, never standing
+config). Pre-v7-era ⇒ **direction-only prior** under E6-cpu-kernel — E5
+still measures C1b (kernel + model era changed), but the scout should probe
+C1b EARLY and prune hard if the ~0.5 co-run signature reappears; the
+provisioning-candidate framing should not presume C1b is live until it beats
+this prior. WP-9's actual mixed pair (frontdoor-half0 + ingest-half1,
+different models) remains its own §H contention-matrix cell at the lineup
+event.
 
 K = per-instance `-np`, capped so total in-flight ≤ 43 (the fixed P-BENCH-3
 prompt batch): C1 × {1,2,4,8,16,32}; C1b/C2 × {1,2,4,8,16}; C3 × {1,2,4,8}.
