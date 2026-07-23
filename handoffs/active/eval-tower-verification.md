@@ -508,3 +508,8 @@ The anchor/de-anchoring rules above are human-amendment-only (trust boundary). B
   NUMA×batch mapping (batched-decode-measurement.md) BEFORE implementing. Not applicable to
   tier/whole-stack draws (route across all roles; no disjoint layout exists). Protocol must declare the mode (solo vs overlapped
   load profile) for era comparability. Cross-ref: design-backlog-triage-2026-07-23.md Section 2 top-3.
+- [ ] **core_v2 re-run batch composition (2026-07-23)**: when core_v2 promotes, run T1+T2+T3
+  (operator ask: include tier 3 — expert/hard workflows — as the standing era anchor for the
+  EV-5/EV-7 process tier; reseed consumes T1/T2 only). PREREQ for the T3 leg: the llm_judge
+  response-shape fix (judge client now routes via API but parser calls the response malformed —
+  small fix, evidence in ev_baseline_e7_tier1 sidecar zeroscrolls/physreason rows).
