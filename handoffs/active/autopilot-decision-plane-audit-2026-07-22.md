@@ -275,3 +275,6 @@ The in-band `[ERROR: …]` marker lives in the **answer text**, persisted in see
 - [x] **Tests** (13): flag-off byte-identical, flag-on in-place TD + math, no cross-objective/action merge; migration replay-equivalence vs `update_q_value`, decay, idempotency, dry-run, exclude, passthrough, live-write refusal ✅ 2026-07-22
 - [ ] **Operator: run the deploy plan** (migrate → swap → flag → re-measure) at the scheduled boundary — the live 11h eval is routing through the current store right now; do NOT flip mid-eval.
 - [ ] **Follow-up**: apply the same find-or-update to `_update_escalation_memory` (identical latent defect, 4,382 append-only escalation rows).
+
+- [x] ✅ 2026-07-23 **H4 Q-TD-write DEPLOYED**: flag live (845e7492 + reload), migration+table-swap executed (676,463→31,565), snapshot-refreshed audit confirms 1.0x duplication / 17.84% learned-Q. Legacy table + backup retained.
+- [ ] **EV-CONF-2 — salient-token confidence source** (filed 2026-07-23): math AUROC 0.40 both arms = geomean anti-discrimination (length confounding). Build answer-token/salient-token confidence; re-baseline math AUROC before any math-domain confidence use. See ESC-7 draft §5.
