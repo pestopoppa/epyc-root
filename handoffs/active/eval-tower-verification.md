@@ -508,11 +508,15 @@ The anchor/de-anchoring rules above are human-amendment-only (trust boundary). B
   NUMA×batch mapping (batched-decode-measurement.md) BEFORE implementing. Not applicable to
   tier/whole-stack draws (route across all roles; no disjoint layout exists). Protocol must declare the mode (solo vs overlapped
   load profile) for era comparability. Cross-ref: design-backlog-triage-2026-07-23.md Section 2 top-3.
-- [ ] **core_v2 re-run batch composition (2026-07-23)**: when core_v2 promotes, run T1+T2+T3
-  (operator ask: include tier 3 — expert/hard workflows — as the standing era anchor for the
-  EV-5/EV-7 process tier; reseed consumes T1/T2 only). PREREQ for the T3 leg: the llm_judge
-  response-shape fix (judge client now routes via API but parser calls the response malformed —
-  small fix, evidence in ev_baseline_e7_tier1 sidecar zeroscrolls/physreason rows).
+- [ ] **core_v2 re-run batch composition (2026-07-23, REVISED per operator architect-swap caution)**:
+  when core_v2 promotes, run **T1+T2 with think-harder/architect escalation explicitly pinned OFF**
+  (declared protocol property, not gate accident; verify architect-independence per-row via
+  think_harder_attempted in the sidecar) — baselines then measure the try-cheap-first serving plane
+  and stay VALID across the pending architect model swap; reseed consumes these. **T3 HELD** until
+  BOTH (a) the llm_judge response-shape fix (evidence: ev_baseline_e7_tier1 sidecar
+  zeroscrolls/physreason rows) AND (b) the operator's architect-model decision land — T3's
+  expert/hard population is the escalation-prone tier where the architect materially serves;
+  measuring it days before a swap bakes in an immediately-stale anchor.
 - [ ] **Unify autopilot's second McNemar producer (filed 2026-07-23)**: autopilot.py ~:1431
   sequential-verdict gate emits raw mcnemar_from_vectors counts (used_for_gating: False) — consume
   paired_stats.verdict_from_result (a153122e) so both producers share one verdict surface.
