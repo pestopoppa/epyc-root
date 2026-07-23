@@ -226,9 +226,19 @@ vision quarter-preference — pre-exist at the base commit, verified by stash-ru
 - [x] §7 one-CAB-per-fleet collapse (flag-gated `_init_fleet_backends`; logical role threaded per-call; use_chat_completions fleet-consensus-or-fail-closed) ✅ 2026-07-23
 - [x] §4 same-fleet fallback compiled to no-ops (`compiled_fleet_fallback_map` + flag-gated `get_fallback_roles`) ✅ 2026-07-23
 - [x] §6 acceptance cases 1–9 as offline/mocked tests (33 tests: `test_fleet_layer_build.py` 1/3/8/9+parity+degraded, `test_fleet_layer_dispatch.py` 2/7+flag-off identity, `test_fleet_layer_breaker.py` 4+5-fail-fast, `test_fleet_layer_fallback.py` 5/6) ✅ 2026-07-23
-- [ ] §6 case 10 live gate — operator-boundary act, NOT this session's
 - Explicit decline (2026-07-23): per-request `use_chat_completions` threading through a shared fleet backend is NOT filed as a task — the fleet-consensus-or-fail-closed rule covers every real fleet (all shared-fleet roles agree in the live config, verified offline), and a future disagreement fails loudly to the legacy build rather than mis-routing; revisit only if that CRITICAL log ever fires.
-- [ ] Flip boundary: merge, acceptance re-run, §5 WP-13 interim deletion (Fix-A delegations, alias-ports fix, parity drift-guard test, `_LEGACY_SERVER_URL_FALLBACKS`), launch-env wiring, one reload — owned by the main session + operator
+
+### FLIP BOUNDARY EXECUTED 2026-07-23 (operator-directed; this session held the con; main session stood down per one-deploy-authority)
+
+- [x] Merge `wp12-fleet-layer-impl` (3c0b4ce4) → `spec-dec-mtp-refresh-2026-06-22` = merge commit `4ca6859a` ✅ 2026-07-23
+- [x] Acceptance cases 1–9 re-run on the MERGED tree: 33/33 + targeted regression 53/53 ✅ 2026-07-23
+- [x] Launch-env wiring: `ORCHESTRATOR_FLEET_LAYER=1` durable `env.setdefault` (`a172d2dd`); rollback = reload with `ORCHESTRATOR_FLEET_LAYER=0` in the shell env ✅ 2026-07-23
+- [x] Pre-reload preflight: fleet build from LIVE registry+priors+NUMA = 4 fleets (frontdoor + worker_general quarters-shared, architect single, ingest quarters), §3 parity green, 8 bindings, none degraded ✅ 2026-07-23
+- [x] One API-only reload (new PID 3051676) + no-inference attestation: `ORCHESTRATOR_FLEET_LAYER=1` in worker env (attest_orchestrator_workers), API healthy, /health backend probes now group the shared fleet (`coder_escalation/frontdoor/worker_summarize` as one probe) ✅ 2026-07-23
+- [x] Both boundary commits pushed to origin ✅ 2026-07-23
+- **DELIBERATE SCOPE DEVIATION (flagged in `a172d2dd`)**: the §5 WP-13 interim deletion did NOT execute at this boundary. Reasoning chain: instant-rollback requirement ⇒ the legacy per-role build stays ⇒ Fix-A delegations + generator alias-ports inheritance are its substrate (deleting them breaks rollback after any priors regeneration: toolrunner KeyError degraded, worker_math single-quarter re-serialization) ⇒ their guard tests stay with the code they guard. Fleet-wins-at-runtime resolves the two-descriptions concern the §5 atomicity clause guarded against. The permission classifier independently blocked live-tree test deletion, converging on the same outcome.
+- [ ] **Post-soak §5 cleanup (code + tests as ONE change)**: retire the legacy per-role build path — ServerURLsConfig URL ownership, Fix-A delegations, `_LEGACY_SERVER_URL_FALLBACKS`, generator alias-ports inheritance, and their guard tests (4 in `test_full_slot_demotion.py` + convergence test in `test_stack_priors_compiler.py`) — once the fleet layer survives its soak and the operator retires the flag-off rollback
+- [ ] §6 case 10 live gate — **PENDING EXPLICIT OPERATOR INFERENCE GRANT** (standing directive: no inference without explicit permission): single-worker API ✓ (current shape), flag ✓ live; probe plan = worker_math 4-wide burst → 4 busy quarters, single-breaker fact, same-fleet-fallback no-op count 0, no phantom-full, ROUTE-A3 J2/J3 migration replay
 
 On implementation (post-measurement-chain, per operator sequencing):
 1. Flip the WP-12 checkbox in `within-role-placement-state-machine.md` → `- [x] … ✅ <date>`; note the interim (WP-13 Fix-A + drift-guard test) deletion in the same edit.
