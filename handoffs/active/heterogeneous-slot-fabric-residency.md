@@ -115,3 +115,28 @@ tightly-gated GPU residency (the danger was VRAM *scarcity*).
 ## Reporting
 On any phase: flip its `- [ ]`, record the measured constant (E5 provisioning, C for N-dwell, allowlist
 contents) with a MEASUREMENT stamp. No stack/production change lands without the operator + the 3 gates.
+
+## Fabric optionality/robustness contract (opening position, operator-initiated 2026-07-23)
+
+**Optionality principle**: role→slot binding is POLICY DATA, never code — every topology in the
+escalation option space (A-D, eval-tower-verification.md), every parallelism layout, every
+residency arrangement must be expressible as configuration. Data can be swept; code is a
+strategic decision forever.
+
+**Robustness invariants (2026-07-22/23 campaign lessons, promoted to axioms)**:
+1. One fact per physical resource — breaker/lock/health/residency on the SLOT, realized-probed,
+   never per-role copies (ESC-8 / 90x-churn, extended to devices).
+2. Realized-first truth — device↔model map from probing, never launch intent (the manifest lesson;
+   a stale "GPU holds architect" record is a future phantom-lineup outage).
+3. Fail-closed residency — unverifiable teleport ⇒ slot UNKNOWN, excluded from placement (REL-1
+   applied to placement).
+4. No mid-decode preemption; session-handover is the only migration primitive (proven).
+
+**Conversion rule (strategic→sweepable boundary)**: a fabric parameter is autopilot-sweepable IFF
+bounded ∧ reversible ∧ protocol-measurable ∧ gate-protected. Static remainder: device inventory,
+per-device quant artifacts, safety envelopes, the residency-capable model set. DESIGN DISCIPLINE:
+build every parameter to satisfy the four properties from birth so conversion is a flag flip.
+
+**Inputs required before the full design session** (per the design-session discipline for
+NUMA/concurrency complexity): E5 NUMA×batch mapping, teleport break-even measurements, and the
+architect-bench GPU-arm results (the first heterogeneous binding candidate).
