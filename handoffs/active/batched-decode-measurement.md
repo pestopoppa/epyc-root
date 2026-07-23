@@ -23,7 +23,7 @@ names "eval pipelines"; the trigger has been satisfied for weeks. The batch>1
 - [x] **E2 — eval-tower window runner** (same lane): `scripts/benchmark/eval_batch_serving_evaltower_window.py` now packages the compare-and-rollback loop for the current EvalTower arm versus the temporary eval-batch arm. Default mode is plan-only; live mutation requires `--apply --confirm-clean-window`, active AutoPilot blocks by default unless `--allow-autopilot-active` is explicit, and the resulting evidence is non-decision-grade in that case. The runner calls the existing activation helpers, rolls back unless `--keep-enabled` is requested, and writes JSON/MD outputs under `orchestration/reports/eval_batch_serving_evaltower_<timestamp>/`. Tests landed in `tests/unit/test_eval_batch_serving_evaltower_window.py`; validation passed with `uv run pytest -q tests/unit/test_eval_batch_serving_activation_window.py tests/unit/test_eval_batch_serving_evaltower_window.py` (`12 passed`), `uv run ruff check scripts/benchmark/eval_batch_serving_evaltower_window.py tests/unit/test_eval_batch_serving_evaltower_window.py`, and `python3 -m py_compile ...`. Plan-only smoke wrote `/mnt/raid0/llm/tmp/evalbatch-evaltower-plan-smoke-2/summary.json` with `status=plan_only`, `applied=false`, `decision_grade=false`, `autopilot_active=true`, 3 activation commands, and 2 rollback commands.
 - [x] **E3 — 8x8 GEMM SIMD body** (days, CONDITIONAL): **NO-GO / CLOSED for now**. 2026-07-18 zero-inference decision: E1/E2 show a serving/topology win, not per-thread compute headroom, and the newer CPU roofline classifies decode-side SIMD/ALU work as bandwidth-killed. Do not write the AVX-512BW batch>1 GEMM body unless a future counter run contradicts the roofline. ✅ 2026-07-18
 - [x] **E4 — conditional re-promotions** (doc-only first): **PARTIAL REOPEN TO MEASUREMENT ONLY**. 2026-07-18 zero-inference decision: CPU17/Sarathi reopens only to the long-prompt mid-stream TBT measurement gate because eval-batch is the named workload class; CPU18/MegaBlocks remains gated pending evidence that padding/capacity-factor cost is material. ✅ 2026-07-18
-- [ ] **E5 — NUMA×batch interaction sweep** (post-v7-promotion quiet window; the never-measured 2D cross). NUMA-split and `-np` batching have only ever been measured **separately** — NUMA-split built the pinning map; `-np` alone is E1 (single instance). **Hypothesis (roofline):** batching amortizes the per-token weight-read → shifts CPU decode **BW-bound → compute-bound** → the NUMA-locality advantage may **flip at high K**; the crossover in K is unknown and sets the slot-fabric grid shape. Directly tests whether **a single full-machine high-`-np` server beats quarter-batched servers**. **Protocol (reuse the E1 `-np` harness + P-BENCH-3):** per-model 2D grid — **N = each model's *allowed* NUMA-pinned configs** (from `scripts/server/stack_numa.py` `NUMA_CONFIG` + the safe-placement table in [within-role-placement-state-machine.md](within-role-placement-state-machine.md); e.g. frontdoor `{full},{full,q3},{full,q3,q2}`; **worker_general `{full}`-only** — no disjoint quarters, a pure-K test; architect 122B full-only) × **K = `-np ∈ {1,2,4,8,16,32}`**. Two reads: **(i) iso-concurrency** — hold total in-flight = N×K fixed (e.g. 32) and vary the split (`1×32` vs `2×16` vs `4×8` where safe-placement allows) → the direct "one big batched server vs quarter-batched" answer; **(ii)** unconstrained **peak-aggregate (N,K)**. **Metrics:** aggregate decode t/s **and** per-stream p50/p95 latency (P-BENCH-3), paired with a correctness/garbage check; era-stamped, protocol-id + attest ref. **Canonical recipe only:** OMP env stack, `scripts/server/affinity_preflight.py` **live-affinity verify per instance** (the WP-6 bad-affinity artifact is the cautionary tale), per-instance cache warming (drop_caches NUMA re-read trap), throttle check, host-health gate (uptime / `numa_balancing=0`). **Models:** `qwen36_q8_0` (frontdoor 35B-A3B) + `qwen36_27b_q8` (dense control) — both already in the E1 harness — + gemma `worker_general`. **Decides:** the (N,K) provisioning per model for the slot fabric + whether **workload-class lanes** are real (a low-K/high-K crossover). **Feeds** [within-role-placement-state-machine.md](within-role-placement-state-machine.md) per-instance `-np` sizing and [heterogeneous-slot-fabric-residency.md](heterogeneous-slot-fabric-residency.md) (provisioning-pending). **Gating:** post-v7-promotion; runs **LAST in the post-promotion queue** — `inference-batch-loop → architect-model-selection-bench → this` — operator/quiet-window, P-BENCH-3 host-health. Bench-only.
+- [ ] **E5 — NUMA×batch interaction sweep** (post-v7-promotion quiet window; the never-measured 2D cross). NUMA-split and `-np` batching have only ever been measured **separately** — NUMA-split built the pinning map; `-np` alone is E1 (single instance). **Hypothesis (roofline):** batching amortizes the per-token weight-read → shifts CPU decode **BW-bound → compute-bound** → the NUMA-locality advantage may **flip at high K**; the crossover in K is unknown and sets the slot-fabric grid shape. Directly tests whether **a single full-machine high-`-np` server beats quarter-batched servers**. **Protocol (reuse the E1 `-np` harness + P-BENCH-3):** per-model 2D grid — **N = each model's *allowed* NUMA-pinned configs** (from `scripts/server/stack_numa.py` `NUMA_CONFIG` + the safe-placement table in [within-role-placement-state-machine.md](within-role-placement-state-machine.md); e.g. frontdoor `{1×half},{2×half},{4×q}` — full+quarter mixes excluded per the 2026-07-21 mode-exclusivity contract [refreshed 2026-07-23, audit C4; the original `{full,q3}`-style mixed examples are superseded]; worker_general `{1×full},{4×q}`; architect 122B out of E5 scope — see the 2026-07-23 design section) × **K = `-np ∈ {1,2,4,8,16,32}`**. Two reads: **(i) iso-concurrency** — hold total in-flight = N×K fixed (e.g. 32) and vary the split (`1×32` vs `2×16` vs `4×8` where safe-placement allows) → the direct "one big batched server vs quarter-batched" answer; **(ii)** unconstrained **peak-aggregate (N,K)**. **Metrics:** aggregate decode t/s **and** per-stream p50/p95 latency (P-BENCH-3), paired with a correctness/garbage check; era-stamped, protocol-id + attest ref. **Canonical recipe only:** OMP env stack, `scripts/server/affinity_preflight.py` **live-affinity verify per instance** (the WP-6 bad-affinity artifact is the cautionary tale), per-instance cache warming (drop_caches NUMA re-read trap), throttle check, host-health gate (uptime / `numa_balancing=0`). **Models:** `qwen36_q8_0` (frontdoor 35B-A3B) + `qwen36_27b_q8` (dense control) — both already in the E1 harness — + gemma `worker_general`. **Decides:** the (N,K) provisioning per model for the slot fabric + whether **workload-class lanes** are real (a low-K/high-K crossover). **Feeds** [within-role-placement-state-machine.md](within-role-placement-state-machine.md) per-instance `-np` sizing and [heterogeneous-slot-fabric-residency.md](heterogeneous-slot-fabric-residency.md) (provisioning-pending). **Gating:** post-v7-promotion; runs **LAST in the post-promotion queue** — `inference-batch-loop → architect-model-selection-bench → this` — operator/quiet-window, P-BENCH-3 host-health. Bench-only.
 
 ## Progress Notes
 
@@ -306,12 +306,15 @@ avoid any prod collision):
 | `gemma4-26B-A4B Q4_K_M MTP` (~16 GB) | full `0-95` ×96t + `numactl --interleave=all` — NO half shape (half-pinning crashes the MTP draft path, `tensor buffer not set`) | — | — (scout-only) | 4×48t |
 
 Notes: (0) **Config-list semantics**: C1/C1b/C2/C3 are ALTERNATIVE serving
-configs for one model, swept as separate cells — never co-deployed. C1 (the
-current production solo shape) stays in the grid as the production-shape
-anchor — meaning the model's TOP optimized production recipe on that shape
-(full spec-dec stack; "anchor" NEVER means an unoptimized baseline, per the
-2026-07-23 operator directive) — and as the denominator of the scaling read
-C1@K vs C1b@K ("does adding the second node-local half double aggregate?"). (i) The "1×big" shape is
+configs for one model, swept as separate cells — never co-deployed. C1 is a
+provisioning CANDIDATE + E1-continuity anchor (audit C4 relabel: the realized
+stack is QUARTERS-only — **C3 is the status-quo production shape**; gemma's
+1×full is DISABLED by placement_policy=full_disabled; the solo big shape C1
+describes serves nowhere today). Every anchor cell still means the model's
+TOP optimized production recipe on that shape (full spec-dec stack; "anchor"
+NEVER means an unoptimized baseline, per the 2026-07-23 operator directive).
+C1 also remains the denominator of the scaling read C1@K vs C1b@K ("does
+adding the second node-local half double aggregate?"). (i) The "1×big" shape is
 **MODEL-SIZE-DEPENDENT**, not universal: for ~35B-class A3B MoE the half wins
 (April 2026-04-17 head-to-head, NODE0-local 27.06 t/s vs
 full-machine+interleave 26.60 t/s — cache locality beats channel
@@ -408,10 +411,20 @@ probe one mixed cell for curiosity, never for provisioning.
    measured cell — the shared-mmap first-touch trap
    (`feedback_drop_caches_numa_eviction`) means an unpinned re-read pins one
    node and poisons every quarter cell after it.
-5. **Per-cell preconditions**: `affinity_preflight.py --live-only` per
-   instance (WP-6 bad-affinity artifact is the cautionary tale), throttle
-   check, `numa_balancing=0`, no pre-existing llama processes; ps-verified
-   kill between cells. Decision-grade refuses on any warning (E1 semantics).
+5. **Per-cell preconditions**: per-instance LIVE affinity verification via
+   the cell-manifest preflight mode that audit C3 builds (the existing
+   `affinity_preflight.py` is NUMA_CONFIG-role-keyed and has NO `--live-only`
+   flag — it cannot gate the synthesized half1/bench-port shapes as-is; the
+   WP-6 bad-affinity artifact is the cautionary tale), throttle check,
+   `numa_balancing=0`, no pre-existing llama processes; ps-verified kill
+   between cells. **`GGML_IQK=1` set in EVERY cell's server env and recorded
+   as a manifest/attestation field alongside `kv_unified`** (audit C1,
+   execution-blocking: the v7 iqk runtime gate — without it K-quant/legacy
+   cells silently run un-iqk'd; the aborted 2026-07-07 "missing-IQK" dense
+   run is the cautionary tale). The harness env imports
+   `scripts/lib/canonical_recipe.py` constants instead of keeping a private
+   `DEFAULT_ENV` copy (recipe-drift risk). Decision-grade refuses on any
+   warning (E1 semantics).
 6. **Correctness pairing**: store every response; post-hoc offline score with
    the E7-era B7 scorer; garbage gate per cell = parse-failure ≤ 2/43 and no
    repetition-loop flags, else the cell is marked degraded (speed number
@@ -425,10 +438,18 @@ post-hoc cherry-picking):
 - **R2 lanes**: report the (aggregate, p95) Pareto per model; lanes are "real"
   iff the peak-aggregate cell's p95 exceeds 3× that config's K=1 p95 (or 60s
   absolute) while some lower-K cell holds ≥70% of peak within SLA.
-- **R3 eval-lane pricing**: convert each candidate cell to wall-minutes/eval
-  and set against the E2 rows (batch 2.258 vs current 10.970) to decide the
-  tabled lane question — note option (b) is now a zero-code remap under the
-  WP-12 fleet layer (an eval-only RoleBinding on a batch-shaped fleet).
+- **R3 eval-lane pricing** (amended per audit C2 — decision-blocking): the E2
+  rows (batch 2.258 vs current 10.970 wall-min/eval, 2026-07-03) are
+  DEMOTED-TO-PRIOR under three era boundaries (E6-cpu-kernel v7 cutover
+  2026-07-20, E7-eval-instrument, E4-quality-core-v2 — and the eval unit
+  itself changed, 43-q legacy T1 → 50-item core_v2): direction only, they
+  CANNOT gate the lane decision. Before applying R3, RE-BASELINE the
+  "current EvalTower fan-out" arm FRESH under v7 + core_v2 + the WP-12 fleet
+  layer (one measured row; the batch arm is already re-measured by the E5
+  cells themselves), then convert each candidate cell to wall-minutes/eval
+  against that fresh baseline. Option (b) remains a zero-code remap under the
+  WP-12 fleet layer (an eval-only RoleBinding on a batch-shaped fleet — live
+  as of the 2026-07-23 flip).
 - **R4 slot-fabric provisioning row**: per model, (config, K) = the
   smallest-latency cell achieving ≥90% of peak aggregate → feeds the
   per-instance `-np` sizing in within-role-placement-state-machine.md and the
@@ -458,19 +479,26 @@ schedule appetite is the operator's call).
 RAM is a non-constraint throughout (worst case 4×45 GB ingest + KV on 1.1 TB,
 stack stopped).
 
-**Harness delta spec** (extend `server_np_sweep.py` or sibling
-`server_numa_np_sweep.py` in epyc-inference-research): (a) cell-manifest input
-(model, config_id, instances[{cpu_list, port, threads, numactl_policy}], np,
-c, prompt caps); (b) multi-server launch/teardown per cell with per-instance
-pinning + OMP env stack + ps-verified kill; (c) closed-loop per-stream driver
-round-robining the 43-prompt pool across N×K streams, recording TTFT /
-per-stream latency / trimmed aggregate; (d) per-instance affinity preflight
-wired as a hard cell gate; (e) E1-style manifest with protocol-id P-BENCH-3
-(the waypoint blesses reuse), era stamp, attestation, decision_grade gating;
-(f) iso-T comparison table + R1-R4 rule evaluation in the summarizer.
+**Harness delta spec = audit C3, execution-blocking** (extend
+`server_np_sweep.py` or sibling `server_numa_np_sweep.py` in
+epyc-inference-research — the existing script is SINGLE-server with hardcoded
+`numactl --interleave=all` and cannot run C1b/C2/C3 cells as-is): (a)
+cell-manifest input (model, config_id, instances[{cpu_list, port, threads,
+numactl_policy}], np, c, prompt caps); (b) multi-server launch/teardown per
+cell with per-instance taskset pinning + per-SHAPE numactl policy (interleave
+ONLY for full-machine/gemma-MTP shapes) + OMP env stack + `GGML_IQK=1`
+imported from `canonical_recipe.py` constants + ps-verified kill; (c)
+closed-loop per-stream driver round-robining the 43-prompt pool across N×K
+streams, recording TTFT / per-stream latency / trimmed aggregate; (d)
+per-instance affinity preflight wired as a hard cell gate — requires
+EXTENDING `affinity_preflight.py` with an arbitrary-{cpuset, port}
+cell-manifest mode (today role-keyed, no live-only flag); (e) E1-style
+manifest with protocol-id P-BENCH-3 (the waypoint blesses reuse), era stamp,
+attestation incl. iqk + kv_unified fields, decision_grade gating; (f) iso-T
+comparison table + R1-R4 rule evaluation in the summarizer.
 
 - [x] E5 sweep design + cell grid + decision rules + window schedule prepared (design-only, zero inference) ✅ 2026-07-23
-- [ ] E5 harness implementation (research-repo session; harness delta spec above)
+- [ ] E5 harness implementation (research-repo session; harness delta spec above = audit C3, with C1's `GGML_IQK=1` env+attestation — both execution-blocking before any decision-grade cell)
 - [ ] E5 W0-W3 runs (operator quiet windows, after the post-promotion queue)
 
 ## Gates & pitfalls
