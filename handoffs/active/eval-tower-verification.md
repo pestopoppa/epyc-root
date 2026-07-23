@@ -524,9 +524,14 @@ The anchor/de-anchoring rules above are human-amendment-only (trust boundary). B
   paired_stats.verdict_from_result (a153122e) so both producers share one verdict surface.
 - **Architect resource model — heterogeneous correction (operator, 2026-07-23)**: "escalation
   drains the machine (quarters idle before the 122B takes the full bank)" holds ONLY for the
-  pure-CPU plane. With the MI210 in the design, a GPU-resident architect decodes while CPU
-  quarters keep serving — the architect↔worker delegation session becomes natural cross-device
-  concurrency (worker sub-calls on CPU exactly while the architect holds only the GPU). Changes
+  pure-CPU plane. With the MI210 in the design, the drain constraint dissolves into an OPEN
+  OPTION SPACE (operator: do NOT settle this in prose — it is a strategic-triage row): (A)
+  architect on GPU, CPU plane untouched; (B) CPU roles teleport to GPU, architect takes the CPU
+  bank (bandwidth asymmetry cuts both ways — MI210 HBM ~3.5x socket BW, the decode-bound party
+  wants it); (C) hybrid layer-split residency; (D) dynamic residency under the slot fabric —
+  under which the static choice partially CONVERTS to autopilot-exposable surfaces (residency
+  thresholds, teleport break-evens, per-device slot budgets). Decide with E5 + slot-fabric
+  measurements, not assumption. Changes
   T3 economics post-architect-decision (escalation tier measurable without touching the CPU
   baseline plane). Generalizes under heterogeneous-slot-fabric-residency.md ("everything is a
   slot"); residual cost = CPU↔GPU stream-teleport break-even (~150-250 resident tokens). The
