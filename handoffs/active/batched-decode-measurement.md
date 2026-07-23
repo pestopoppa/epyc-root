@@ -659,10 +659,20 @@ but C1 and C3 are execution-blocking (must land in the harness before any decisi
   legacy-quant cells (gemma Q4_K_M, dense 27B Q8) silently run without iqk — the aborted
   2026-07-07 "missing-IQK" run is the cautionary tale. Attest the iqk state alongside
   `kv_unified`.
-- [ ] **C2 (decision-blocking for R3) — do not gate on the pre-v7 E2 numbers.** Re-baseline the
-  "current EvalTower fan-out" arm FRESH under E6-cpu-kernel (v7) + E4-quality-core-v2 + the
-  WP-12 fleet layer before applying R3; the batch arm is already re-measured by the E5 cells.
-  Treat E1's C1@1 tie and the "batch 2.258 / current 10.970" figures as direction-only priors.
+- [x] **C2 (decision-blocking for R3) — current-arm re-baseline DONE ✅ 2026-07-23.** Measured
+  FRESH under E6-cpu-kernel (v7) + E4-quality-core-v2 + WP-12 fleet layer + the **restored
+  big+quarters lineup** (post-restoration, post-locality-heal), current-arm-only via
+  `--skip-batch-arm`, PRODUCTION escalation (not pinned — this prices the lane as it actually
+  runs): **27.546 wall-min/eval** (core_v2, 50 items, 45 scored, reliability 0.90 floor-clean,
+  quality 1.667, resolved eval_concurrency 3 — the restored half occupies q0+q1 so frontdoor's
+  disjoint fan-out is half+q2+q3). Report:
+  `epyc-orchestrator/orchestration/reports/r3_current_arm_rebaseline_corev2_20260723/`.
+  Per-item: 27.546/50 = **0.551 min/item** (0.612 per scored item) — feed this as the R3
+  baseline file's `items_per_eval=50` row. Secondary observation (NOT the baseline): a
+  legacy-pool-draw run under the same lane measured 21.87 min (different question set;
+  `r3_current_arm_rebaseline_20260723/`). Config deltas vs the 2026-07-23-morning current-arm
+  row (23.87 min): concurrency 4→3 (restored-geometry resolution), escalation pinned→production,
+  lineup quarters-only→big+quarters — the morning row was a reseed input, not an R3 baseline.
   **C10-F1 addendum (2026-07-23, from the WP-12 case-10 live gate)**: the current-arm's
   within-role concurrency mechanism is **6-uvicorn-process spread × per-process per-role
   `Semaphore(1)`** (every live role resolves `get_role_max_concurrency()==1` because
