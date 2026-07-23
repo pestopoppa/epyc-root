@@ -314,14 +314,21 @@ The in-band `[ERROR: …]` marker lives in the **answer text**, persisted in see
   tier runner context vs the calibration path that worked, or per-suite deadline shape on heavy
   suites); (d) then the full sweep → reseed. The era-fence hold remains correctly closed.
 
-- [ ] **SCORE-25: implement `f1_list` scorer (filed 2026-07-23)**: the `tulving_episodic` suite
+- [x] ✅ 2026-07-23 (`epyc-orchestrator` `7e767df7`, not pushed) **SCORE-25: implement `f1_list` scorer**: the `tulving_episodic` suite
   (456 rows, whole suite, E7 expansion) declares `scoring_method: f1_list` — item-level F1 over
-  parsed lists (distinct from B7 SCORE-24 token-multiset f1). Currently every row errors
-  "Unknown scoring method" (honest REL-1 exclusion; ~0.6% of pool, 0-1 per tier draw). Fix:
-  item-level F1 with per-item boundary-anchored normalization, parse format from the suite's
-  actual gold rows, golden fixtures, scorer-era record note. ADDITIVE (no existing verdict
-  changes). Also from the same diag: kuzu module missing in venv (6x ImportError, mutation-graph
-  tools) — install or lazy-degrade.
+  parsed lists (distinct from B7 SCORE-24 token-multiset f1). Previously every row errored
+  "Unknown scoring method" (honest REL-1 exclusion; ~0.6% of pool, 0-1 per tier draw).
+  IMPLEMENTED in `scripts/benchmark/debug_scorer.py::_score_f1_list` — per-item (set-level) F1:
+  greedy GT→pred matching, lenient `min(nb_pred,nb_gt)` precision denominator, group-0
+  hallucination policy (empty gold + prediction ⇒ 0; empty gold + abstention "None" ⇒ 1). Per-item
+  normalization reuses the B7 primitive `_normalize_text` (the one deliberate substitution vs the
+  research `tulving_episodic_adapter` NFC normaliser — strictly more lenient, never fabricates a
+  match; agrees with the reference on all 1544 cross-check cases). Gold is a JSON list; non-list ⇒
+  `ScoringUnavailableError` (EXCLUDED, never False). Offline-verified on all 456 real pool rows
+  (456/456 perfect-answer PASS, 0 errors, 0 false positives, 180/180 empty-gold abstention correct).
+  ADDITIVE — no existing verdict changes (B7 golden-corpus pin still byte-stable). Golden fixtures
+  in `tests/unit/test_debug_scorer_score25_26.py`. NOTE (unowned, left open): kuzu module missing in
+  venv (6x ImportError, mutation-graph tools) — install or lazy-degrade.
 
 - [x] ✅ 2026-07-23 (`bb3a9ebb` — bidirectional fence: text fenced off vision roles declaratively, image exempt from veto, vision failures in-band, HTTPStatusError structured) **Routing modality guard + backend HTTPStatusError handling (filed 2026-07-23, from tier
   forensics)**: MemRL routed a long-context TEXT longbench question to worker_vision (:8086) →
@@ -331,5 +338,24 @@ The in-band `[ERROR: …]` marker lives in the **answer text**, persisted in see
   Fix: (a) modality guard in routing (text → never VL-only servers unless explicitly forced);
   (b) catch HTTPStatusError → structured failure_stage/reason. Non-trivial blast radius — needs
   its own tests; evidence in ev_baseline_e7_tier1 sidecar + agent report (04411baf).
-- [ ] **SCORE-26: implement `structural_exact_match` scorer (filed 2026-07-23)**: longcot_mini rows declare it; unknown → honest exclusion. Same class as SCORE-25 f1_list. Audit the pool for ALL declared-but-unimplemented scorers in one pass (grep scoring_method values vs the scorer dispatch) so this class closes wholesale, not one suite at a time.
+- [x] ✅ 2026-07-23 (`epyc-orchestrator` `7e767df7`, not pushed) **SCORE-26: implement `structural_exact_match` scorer**: longcot_mini
+  (402 rows) declares it; previously unknown → honest exclusion. IMPLEMENTED in
+  `scripts/benchmark/debug_scorer.py::_score_structural_exact_match` — interpretation DERIVED from
+  the suite's rows (golds are canonical JSON str/int/list/dict): parse-then-canonicalize-then-
+  compare, NOT string equality. Final-answer anchor = text after the LAST `solution =` marker (B7
+  last-occurrence convention; no marker ⇒ False, a task failure not a scorer error); recursive
+  canonicalization (dict keys sorted, list order preserved, numeric scalars incl. numeric strings
+  collapsed so `391365`==`"391365"`==`391365.0`, non-numeric string case PRESERVED for
+  SMILES/FEN, whitespace collapsed); pure structural `==`. Byte-identical to the research reference
+  `longcot_mini_adapter.score_structural` across all 2387 cross-check cases; offline-verified on all
+  402 real pool rows (402/402 perfect-answer PASS, 0 errors, 0 false positives on wrong/no-marker/
+  case-flipped answers). ADDITIVE — no existing verdict changes. Golden fixtures in
+  `tests/unit/test_debug_scorer_score25_26.py`.
+  **Wholesale-audit result (grep of every `scoring_method` in the 79,480-row pool vs the
+  `score_answer` dispatch):** exactly TWO gaps existed — `f1_list` and `structural_exact_match` —
+  BOTH now closed. Full gap table (method | rows | suites): `f1_list` 456 (tulving_episodic);
+  `structural_exact_match` 402 (longcot_mini). All other declared methods already dispatched:
+  `multiple_choice` 44,844, `f1` 12,426, `substring` 9,640, `exact_match` 4,219, `llm_judge` 3,806,
+  `code_execution` 3,157, `programmatic` 529 (+ 1 row with no `scoring_method` field, benign). The
+  class is closed wholesale — no other suite errors "Unknown scoring method".
 - [ ] **Hermeticize test_dispatch_placement_state_machine.py (filed 2026-07-23)**: the solo-goes-full seam fix (97ce58b8) closed ONE live-state coupling; siblings still read live host lock seams under traffic (observed: a different test flaked once during a live eval, passed on rerun; suite takes 80-97s against live traffic vs mocked-instant). Audit every test in the file for the three-seam patch pattern (active_region_holders + lock acquisitor + held_regions_by_role) and mock all timing waits.
