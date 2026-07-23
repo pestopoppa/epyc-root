@@ -522,3 +522,12 @@ The anchor/de-anchoring rules above are human-amendment-only (trust boundary). B
 - [ ] **Unify autopilot's second McNemar producer (filed 2026-07-23)**: autopilot.py ~:1431
   sequential-verdict gate emits raw mcnemar_from_vectors counts (used_for_gating: False) — consume
   paired_stats.verdict_from_result (a153122e) so both producers share one verdict surface.
+- **Architect resource model — heterogeneous correction (operator, 2026-07-23)**: "escalation
+  drains the machine (quarters idle before the 122B takes the full bank)" holds ONLY for the
+  pure-CPU plane. With the MI210 in the design, a GPU-resident architect decodes while CPU
+  quarters keep serving — the architect↔worker delegation session becomes natural cross-device
+  concurrency (worker sub-calls on CPU exactly while the architect holds only the GPU). Changes
+  T3 economics post-architect-decision (escalation tier measurable without touching the CPU
+  baseline plane). Generalizes under heterogeneous-slot-fabric-residency.md ("everything is a
+  slot"); residual cost = CPU↔GPU stream-teleport break-even (~150-250 resident tokens). The
+  pending architect bench includes GPU arms — the swap decision may itself select this topology.
