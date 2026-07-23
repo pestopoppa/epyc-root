@@ -307,19 +307,25 @@ avoid any prod collision):
 
 Notes: (0) **Config-list semantics**: C1/C1b/C2/C3 are ALTERNATIVE serving
 configs for one model, swept as separate cells — never co-deployed. C1 (the
-current production solo shape) stays in the grid as the baseline anchor and
-as the denominator of the scaling read C1@K vs C1b@K ("does adding the second
-node-local half double aggregate?"). (i) The "1×big" shape is
+current production solo shape) stays in the grid as the production-shape
+anchor — meaning the model's TOP optimized production recipe on that shape
+(full spec-dec stack; "anchor" NEVER means an unoptimized baseline, per the
+2026-07-23 operator directive) — and as the denominator of the scaling read
+C1@K vs C1b@K ("does adding the second node-local half double aggregate?"). (i) The "1×big" shape is
 **MODEL-SIZE-DEPENDENT**, not universal: for ~35B-class A3B MoE the half wins
 (April 2026-04-17 head-to-head, NODE0-local 27.06 t/s vs
 full-machine+interleave 26.60 t/s — cache locality beats channel
 parallelism), while the 122B architect legitimately takes the full machine
-(Probe B 2026-05-04: 1×full+interleave 12.19 t/s vs 4.3 t/s/instance split).
+(Probe B 2026-05-04: 1×full+interleave 12.19 t/s vs 4.3 t/s/instance split —
+NOTE these are pre-E7-era, pre-NEXTN-self-draft figures cited for SHAPE
+DIRECTION only, hypothesis grade per MEASUREMENT.md, never throughput
+references; the current architect top spec includes the v6 NEXTN recipe).
 Hence the dense-control C1 shape is treated as unresolved (scout decides),
 and the architect stays OUT of E5 scope: the waypoint's model list excludes
 it, architect-model-selection-bench runs BEFORE E5 and may swap the model,
-and its 1×full-vs-4×per-node question already has prior data (12.19 vs 16.86
-t/s aggregate, registry reopen note) — optional W5 only on operator request.
+and its 1×full-vs-4×per-node question already has era-labeled prior data
+(12.19 vs 16.86 t/s aggregate, registry reopen note) — optional W5 only on
+operator request, at the then-current architect model's top spec.
 (ii) `NUMA_CONFIG` has no half1 instance for the frontdoor/ingest families —
 the harness SYNTHESIZES the `48-95,144-191`×96t shape on bench ports only; no
 prod cpuset changes, no §H recert trigger. (iii) The C1b half-pair co-run has
@@ -388,6 +394,11 @@ probe one mixed cell for curiosity, never for provisioning.
    np×spec-dec compatibility per model (gemma MTP ASSERT/wedge risk): if a
    model wedges at np>1, document, notify operator, and run that arm
    spec-dec-off as an explicitly-caveated separate arm — never silently.
+   **Operator directive (2026-07-23, absolute): baseline (spec-off /
+   unoptimized) configs NEVER run outside explicitly-labeled
+   inference-research benchmark arms — never as serving shapes, anchors, or
+   reference points. Every "anchor" cell in this sweep means the model's TOP
+   optimized production recipe.**
 3. **TTFT reported separately** from steady-state per-stream decode (CPU23
    9.6× concurrent-prefill amplification) — closed-loop driver records TTFT,
    per-stream p50/p95 completion latency, and aggregate tasks/hour with the
@@ -421,7 +432,13 @@ post-hoc cherry-picking):
 - **R4 slot-fabric provisioning row**: per model, (config, K) = the
   smallest-latency cell achieving ≥90% of peak aggregate → feeds the
   per-instance `-np` sizing in within-role-placement-state-machine.md and the
-  heterogeneous-slot-fabric provisioning table.
+  heterogeneous-slot-fabric provisioning table. **Output schema is
+  MODEL-KEYED capability data** (model+quant → {solo shape, NUMA-splitting
+  potential, per-shape -np optimum, ctx/KV config, spec recipe + accept
+  rates, kv_unified attestation}) per the ratified fabric optionality
+  contract: models own their optimal config; roles are policy references
+  over it; the orchestration layer consumes only the resulting contention
+  matrix of the deployed model stack.
 - **Spec interpretation note**: the waypoint's "worker_general {full}-only"
   is read as "no full+quarter mixes" — the 4×q worker config is included
   because 1×full@32 vs 4×q@8 is precisely the sweep's money comparison and
