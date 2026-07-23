@@ -278,6 +278,16 @@ The in-band `[ERROR: …]` marker lives in the **answer text**, persisted in see
 
 - [x] ✅ 2026-07-23 **H4 Q-TD-write DEPLOYED**: flag live (845e7492 + reload), migration+table-swap executed (676,463→31,565), snapshot-refreshed audit confirms 1.0x duplication / 17.84% learned-Q. Legacy table + backup retained.
 - [ ] **EV-CONF-2 — salient-token confidence source** (filed 2026-07-23): math AUROC 0.40 both arms = geomean anti-discrimination (length confounding). Build answer-token/salient-token confidence; re-baseline math AUROC before any math-domain confidence use. See ESC-7 draft §5.
+  **Scoping (2026-07-23):** (a) Candidate sources, cheapest first: ANSWER-SPAN geomean (confidence
+  over only the final-answer tokens — directly attacks length confounding; the boxed/final-answer
+  extractor from SCORE-03/16 already locates the span); salient-token (min-prob or high-entropy
+  decision tokens); self-consistency proxy (k-sample agreement — costs k× inference, last resort).
+  (b) BLOCKER: per-token logprobs are NOT persisted (sidecar stores only the aggregate geomean) —
+  offline re-scoring of E7c is impossible; EITHER extend the sidecar to persist the top-1 logprob
+  vector per row (cheap, do first) THEN a ~200-row math probe suffices to compare sources, OR run
+  a fresh instrumented probe. (c) Success gate: candidate source AUROC materially >0.5 on the math
+  probe with ECE not degraded; then re-baseline math via a full arm and amend P-CAL. (d) Owner:
+  eval-tower program, post-EV-BASELINE-E7 in priority order unless the operator promotes it.
 
 - [ ] **EV-BASELINE-E7 — post-E7 full-pool baseline sweep (reseed prerequisite; filed 2026-07-23)**:
   the granted era-fence reseed is UNDERDETERMINED by current data — `baseline_state` is tier-keyed
