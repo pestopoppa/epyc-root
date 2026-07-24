@@ -1,6 +1,8 @@
 # Architect Model Comparison Benchmark
 
-**Status (2026-07-24): quality NULL CONFIRMED at higher power + a SCORER ARTIFACT corrected + throughput surface added. Keep/drop = quality-tied, A4 throughput-best, tool-use eval outstanding.**
+**Status (2026-07-24 EOD): CODING LADDER COMPLETE — pooled coding TIED (n=347) but SWE-oracle produced the campaign's FIRST significant separation: A3 52.5% vs A4 35.0% (+17.5pp, p=0.039 uncorrected). A3 leads the architect-like tiers. NEW CANDIDATE: Laguna-S-2.1 UD-IQ2_M (34.7GB, fits GPU, DFlash drafter) folded in per operator — config discovery → SWE-oracle → LCB-hard next; A3-vs-A4 SWE confirmation sequenced after. Ladder details: [scoring-infra-standardization.md](scoring-infra-standardization.md) §2b.**
+
+_(prior)_ **Status (2026-07-24): quality NULL CONFIRMED at higher power + a SCORER ARTIFACT corrected + throughput surface added. Keep/drop = quality-tied, A4 throughput-best, tool-use eval outstanding.**
 
 > **⚠ 2026-07-24 — R7: canonical re-score fixes a scorer artifact; the pooled quality read is NULL, and A4 was never actually weaker.**
 > While answering "should A3(27B-dense) and A1(122B) be dropped vs A4?", pooling the banked per-question data (n=533)

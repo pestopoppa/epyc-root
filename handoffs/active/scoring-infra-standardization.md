@@ -67,17 +67,31 @@ already has bare-letter handling).
       "code_execution" was a stub — commented-out asserts). Research `5b7a1696`, `1d490c26`. Remaining
       sub-item → **harden isolation (unshare/nsjail/container)** before at-scale/untrusted runs (scaffold is
       trusted-code only) — still open, carried in 2b-agentic prep.
-- [~] **2b. Run A1/A3/A4 on the coding ladder** — RUNNING 2026-07-24. **HumanEval DONE** (validation rung;
-      paired n=164: A4 95.7 / A1 95.1 / A3 92.1, all p≥0.15 — saturated as predicted; **IQ2 costs nothing on
-      executable code**, A1≈A4 p=1.0). **LCB-hard running** (53 hard contest problems, stdin/stdout oracle,
-      window 2023-05→2024-03; contamination caveat: window likely overlaps training). **BCB-hard chained**
-      (90 verified-scorable of 148; exec venv py3.12 + dep stack). Artifacts `architect-code-eval-20260724/`.
-- [~] **2b-swe. SWE-bench Verified harness (official, docker).** Mechanics ✅; **gold-calibration filter
-      VALIDATED ✅ 2026-07-24: 40/40 instances resolve gold** (django 24 + mpl/sklearn/sphinx/sympy 4 each;
-      psf/requests excluded as non-hermetic). Oracle patch-gen rung BUILT + CHAINED: prompts materialized
-      (40, windowed oracle files, SEARCH/REPLACE protocol; med 11k chars), `convert_sr_to_patch.py` converts
-      to unified diffs, arms generate at -c 49152 after BCB. **Remaining:** run the official harness eval on
-      each arm's `predictions.json` (docker, after generation) → per-arm resolve-rate + paired stats.
+- [x] **2b. Coding ladder COMPLETE — all four rungs, all arms.** ✅ 2026-07-24. HumanEval n=164 (A4 95.7 /
+      A1 95.1 / A3 92.1, tied/saturated); LCB-hard n=53 (A4 54.7 / A1 47.2 / A3 45.3, A4 +9.4pp ns);
+      BCB-hard n=90 (A3 31.1 / A4 27.8 / A1 26.7, ns); **SWE-oracle n=40 (A3 52.5 / A1 37.5 / A4 35.0 —
+      A3 vs A4 +17.5pp p=0.039 SIG uncorrected, disc 8/1)**. **Pooled 4-rung n=347: 64.8 / 64.6 / 63.4 — dead
+      tied (all p≥0.53).** Read: aggregate coding TIED on discriminative suites (real null, not saturation);
+      skill texture = A4 contest-algorithmics, **A3 realistic tiers (library-API + repo bug-fix)**; patch
+      discipline A1 34 > A3 32 > A4 27 non-empty. ~1,050 GPU inferences, 0 request errors. Artifacts
+      `architect-code-eval-20260724/` (pq.jsonl + predictions + harness reports, re-scorable).
+- [x] **2b-swe. SWE-bench Verified oracle rung DONE end-to-end.** ✅ 2026-07-24 — gold-calibration 40/40;
+      oracle patch-gen (SEARCH/REPLACE → diff conversion) + official docker eval for all three arms; results
+      in 2b above. Harness caveat for paired stats: empty-patch instances are absent from the report's
+      resolved/unresolved lists — score over the FULL slice (empty = fail) or the pairing silently shrinks.
+- [ ] **2b-confirm. SWE A3-vs-A4 expansion (SEQUENCED AFTER Laguna, operator 2026-07-24).** Expand the
+      gold-calibrated slice 40→150+ (docker gold-validation CPU-side), rerun A3+A4 only → decision-grade
+      confirmation of the +17.5pp p=0.039 (uncorrected, ~12 comparisons today — needs confirmation).
+- [ ] **2b-laguna. Fold Laguna-S-2.1 into the candidate process (operator 2026-07-24).** On disk:
+      `models/Laguna-S-2.1-GGUF/` — UD-IQ2_M **34.7GB (fits MI210)**, Q4_K_M 70GB (CPU-side), and a 2.1GB
+      **DFlash BF16 drafter** (own spec-dec path!). Steps: (1) runbook §3 config discovery — bring-up, MTP/
+      DFlash spec-dec sweep, optimal serving block → registry; (2) **SWE-oracle 40-slice first** (the
+      architect-relevant rung); (3) LCB-hard, then decide BCB-hard; full runbook later if warranted.
+- [~] **2b-agentic-build. Mature the agentic SWE harness (subagent, STARTED 2026-07-24).** Missing pieces:
+      multi-turn tool loop (explore→edit→test→iterate) in the instance container; no-oracle localization
+      (repo search, not gold files); turn/budget mgmt + trajectory logs; git-diff patch extraction; replay-
+      mock tests. Subagent builds + mock-tests (ZERO process mgmt — no servers/docker); live smoke = parent
+      session. Orchestrator-REPL variant (audit Q3) is the production-path option.
 - [ ] **2c. Eval-tower pool registration decision package (OPERATOR).** Once LCB-hard/BCB-hard/SWE-oracle
       prove discriminative: present options+tradeoffs for registering them into the E7 eval pool (era-sensitive
       instrument change — new-era row vs supplementary-pool vs bench-only). Operator asked for the package

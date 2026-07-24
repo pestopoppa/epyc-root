@@ -42,6 +42,17 @@ Two converging threads landed this cycle: the architect-candidate benchmark reac
   (SEARCH/REPLACE protocol → offline diff conversion → FAIL_TO_PASS) chained behind the GPU runs.
   [scoring-infra-standardization](../handoffs/active/scoring-infra-standardization.md)
 
+### Final ladder results (compiled 2026-07-24 EOD)
+
+The coding ladder completed: pooled 4-rung n=347 **dead-tied** (A4 64.8 / A3 64.6 / A1 63.4, all p≥0.53) —
+a real null on discriminative suites — but **SWE-oracle (n=40, gold-calibrated) produced the campaign's first
+significant separation: A3 52.5% vs A4 35.0% (+17.5pp, McNemar p=0.039 uncorrected, discordants 8/1)**, with
+A3 also directionally ahead on BCB-hard: the dense model leads the *realistic* tiers while the small-active
+MoE leads contest algorithmics. Patch-protocol discipline scaled with size (A1 34 > A3 32 > A4 27 non-empty).
+Method note for SWE paired stats: the harness report omits empty-patch instances from resolved/unresolved —
+pair over the FULL slice or n silently shrinks. Next: Laguna-S-2.1 IQ2 candidate fold-in (config → SWE →
+LCB), then the A3-vs-A4 SWE confirmation expansion (p=0.039 is 1-of-~12 comparisons and needs it).
+
 ### Open Questions (2026-07-24)
 
 - The A2/RP-5 CPU Q4 arm's paired McNemar analysis (canonical rescore) against A1-IQ2 was still pending at compile time — will H1 (does IQ2 preserve the 122B's reasoning relative to Q4?) close as parity, given the live at-or-above read?
