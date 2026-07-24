@@ -60,10 +60,13 @@ already has bare-letter handling).
       `score_code`) running generated code vs stdin/stdout or assert-style tests in an isolated subprocess
       (fresh temp cwd, RLIMIT_CPU/AS/CORE/NPROC, wall timeout, minimal env); smoke-tested correct/wrong/runaway/
       functional. Replaces the adapter's placeholder `substring "def "` check. Research `e12149b9`.
-- [ ] **2a-ii. Wire it to the suites.** Surface LiveCodeBench/BigCodeBench actual test cases in the adapter
-      (`scoring_config`); add `scoring_method="code_execution"` dispatch to `score_response`/runner; validate a
-      reference solution scores 100%. Then **harden isolation (unshare/nsjail/container)** — required before
-      at-scale/untrusted runs; the current scaffold is trusted-code only.
+- [x] **2a-ii. Wire it to the suites.** ✅ 2026-07-24 — `code_execution` dispatch added to canonical
+      `score_response` (functional check() / unittest / stdin-stdout styles); HumanEval oracle validated
+      **164/164 canonicals**; BCB unittest oracle validated **90/148** (drops = long-tail deps/env, equal for
+      all arms); real-LCB stdin/stdout materialized from the cached contest dataset (the shipped adapter's
+      "code_execution" was a stub — commented-out asserts). Research `5b7a1696`, `1d490c26`. Remaining
+      sub-item → **harden isolation (unshare/nsjail/container)** before at-scale/untrusted runs (scaffold is
+      trusted-code only) — still open, carried in 2b-agentic prep.
 - [~] **2b. Run A1/A3/A4 on the coding ladder** — RUNNING 2026-07-24. **HumanEval DONE** (validation rung;
       paired n=164: A4 95.7 / A1 95.1 / A3 92.1, all p≥0.15 — saturated as predicted; **IQ2 costs nothing on
       executable code**, A1≈A4 p=1.0). **LCB-hard running** (53 hard contest problems, stdin/stdout oracle,
