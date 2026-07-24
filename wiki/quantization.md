@@ -2,8 +2,30 @@
 
 **Category**: `quantization`
 **Confidence**: verified (CPU quant findings) · observation (2026-07 MI210 gfx90a roofline numbers — single-run, no P-GPU-1 per MEASUREMENT.md)
-**Last compiled**: 2026-07-20 (adds the reasoning∝active / 2-bit-asymmetry literature cluster, the architect IQ2-vs-Q4 reasoning-certification gap, and the quant-asymmetric self-spec lane; earlier 2026-07-17 note: adds stale-fork Q2_0 freshness-audit gap, x86 Q8_0 repack/iqk-routing status, and the BF16-vs-F16 KV bench; ⚠️ 2026-07-06 MI210 gfx90a quant-roofline subsection flagged for human review — see Key Findings)
-**Sources**: 31 documents (0 dedicated deep-dives, 4 handoffs, 4 active handoffs, 24 intake entries + cross-references from 6 deep-dives)
+**Last compiled**: 2026-07-24 (adds the RP-1/RP-2 refutation of the 2-bit-EOS-damage hypothesis for the architect's degenerate `\boxed{}` loop, and the CPU A2 Q4 arm's live at-or-above IQ2 reasoning read; earlier 2026-07-20 note: adds the reasoning∝active / 2-bit-asymmetry literature cluster, the architect IQ2-vs-Q4 reasoning-certification gap, and the quant-asymmetric self-spec lane; earlier 2026-07-17 note: adds stale-fork Q2_0 freshness-audit gap, x86 Q8_0 repack/iqk-routing status, and the BF16-vs-F16 KV bench; ⚠️ 2026-07-06 MI210 gfx90a quant-roofline subsection flagged for human review — see Key Findings)
+**Sources**: 33 documents (0 dedicated deep-dives, 4 handoffs, 6 active handoffs, 24 intake entries + cross-references from 6 deep-dives)
+
+## Compiled Update — 2026-07-24
+
+The architect IQ2-vs-Q4 reasoning-certification question (flagged UNDECIDED in the prior compile) advanced on two fronts: a degenerate-repetition defect first suspected as 2-bit EOS damage was refuted as **quant-independent**, and the CPU Q4 arm (A2) ran the same fenced, pinned-item comparison as the GPU IQ2 arm, tracking at-or-above it. Confidence: `verified` for the RP-1/RP-2 measured refutation (McNemar-paired, offline-rescored); `observation` for A2's still-in-progress paired analysis at compile time.
+
+### Key Findings (2026-07-24)
+
+- **The 2-bit-EOS-damage hypothesis is REFUTED: the Qwen3.5-122B-A10B's degenerate `\boxed{}` repetition loop tracks the MODEL, not the quantization.** On `olympiadbench_hard`, the 122B-A10B looped to the token cap on **25% of items at IQ2** — the original evidence for suspecting 2-bit EOS damage — but the **CPU Q4_K_M arm (A2) loops IDENTICALLY on the same item** (item 1: 32768 tokens, tail-uniqueness 0.03, `\boxed{2n-1}`×N repeated at both quants). The Q8 arms (27B-dense, 35B-A3B — different models entirely) never loop (0–1%). One identical Q4 loop is a sufficient counterexample to the quant-attribution hypothesis. Consequence: the fix is a **per-MODEL** repetition-penalty fence (the 122B-A10B, at any quant it is deployed at), never a per-quant or blanket policy — `repeat_penalty 1.1` breaks the loop (truncation ~100%→22%, tokens 32768→10.6k) with accuracy held (22/40 vs baseline 21/40); `1.3` over-penalizes math to ~15% accuracy; DRY (0.8) is inconsistent and sometimes mangles the answer outright. The `\boxed{}` instruction itself is the leading root-cause hypothesis (untested). Because production currently gives the 122B-A10B architect no repetition penalty at either quant, the loop occurs live today, at a real ~2× token/latency operating cost that does **not** distinguish IQ2 from Q4. [architect-model-selection-bench](../handoffs/active/architect-model-selection-bench.md) §RP-1/RP-2, [reasoning-effort-levels](../handoffs/active/reasoning-effort-levels.md) §MODEL-specific repetition-penalty fence
+
+- **The CPU Q4 arm (A2), run fenced overnight on the pinned item sets, is tracking at-or-above the GPU IQ2 arm's reasoning band — the first direct evidence bearing on H1 (does IQ2 preserve the 122B's reasoning relative to Q4?).** With the RP-1 fence applied (`repeat_penalty 1.1`, port 18073, 25.8 tok/s decode): `aime25` 23/30 (76.7%) complete; `olympiadbench_hard` ~72% on the answered items vs A1-IQ2's 68.4% on the same suite. This is a live, not-yet-finalized read — the canonical-extractor paired McNemar analysis was still pending at compile time — but it argues against a large IQ2 reasoning penalty on this model, complementing the knowledge-axis parity already certified (AXA-1 Δ0.0pp, n=212). `gpqa_diamond_cot` was deliberately skipped on this arm (power math: 185 paired items give an MDE of only ~6–7pp, insufficient to detect a subtle 1–2pp degradation, and the +198 in the full set still only reaches ~4pp). [architect-model-selection-bench](../handoffs/active/architect-model-selection-bench.md) §RP-5, [progress 2026-07-24](../progress/2026-07/2026-07-24.md)
+
+### Open Questions (2026-07-24)
+
+- The A2-vs-A1 paired McNemar analysis (canonical rescore) had not landed at compile time — does H1 close as statistical parity, or does a real (if small) IQ2 reasoning penalty emerge once formally tested?
+- RP-3 (does the loop occur on real architect planning workloads, or only on `\boxed{}`-style competition-math prompts?) is unresolved and is the leading root-cause lead.
+- Should the per-model repetition-penalty fence (RP-4) be added to the production registry now, given production currently runs the 122B-A10B unfenced and the loop is confirmed to occur live?
+
+### Source References (2026-07-24)
+
+- [architect-model-selection-bench.md](../handoffs/active/architect-model-selection-bench.md) §RP series, §A2 — the CPU Q4 arm execution, the quant-attribution refutation, the repetition-penalty probe results.
+- [reasoning-effort-levels.md](../handoffs/active/reasoning-effort-levels.md) §MODEL-specific repetition-penalty fence — the per-model (not per-quant) invariant and its production-policy implications.
+- [progress 2026-07-23](../progress/2026-07/2026-07-23.md), [progress 2026-07-24](../progress/2026-07/2026-07-24.md) — A2 overnight execution log, RP-1 probe results.
 
 ## Compiled Update — 2026-07-20
 

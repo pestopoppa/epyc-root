@@ -2,9 +2,9 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-07-21 (incremental — merged the 2026-07-20/21 eval-tower audit cycle: the two-audit tower teardown (3 CRITICAL/16 HIGH), the E7-eval-instrument pool rebuild + B7 scorer ratification, the EV-11 confidence-phantom neutralization + EV-CONF logprob plumbing, the judge-validity intake cluster (874/875/876), the inference-batch `/loop` overnight burn-down, the loop-robustness root cause (stale contention matrix ← vision NUMA rebind) + §H change-hardening, and the ROUTE-A3 live KV-migration probe — into Benchmark Methodology + Inference Serving. Earlier 2026-07-20 pass merged 23 new sources into 8 articles.)
+**Last compiled**: 2026-07-24 (incremental — merged 14 new sources into 7 articles: the WP-12 fleet-layer flip + case-10 live gate (C10-F1 per-role `Semaphore(1)` finding) and the big+quarters lineup restoration into Inference Serving; the E5 NUMA×batch W0 scout (69/69 cells, C3-quarters-optimal-everywhere, model-dependent C1b) and the cross-architecture GPU np×context throughput surface into Hardware Optimization; the architect-bench well-powered NULL + R7 scorer-artifact correction + scoring-infra fragmentation audit into Benchmark Methodology; the IQ2-vs-Q4 termination-defect refutation + CPU A2 arm into Quantization; the MiniCPM-o promotion runbook + worker_vision trigger gate into Multimodal; the per-model MTP-depth/batching architecture-dependence into Speculative Decoding; and the measured reasoning-effort ladder + token-budget study into Cost-Aware Routing. Earlier 2026-07-21 pass merged 28 changed/new sources into 2 articles; 2026-07-20 pass merged 23 new sources into 8 articles.)
 **Articles**: 26 compiled, 4 stub categories
-**Total sources**: 580+ scanned documents across 6 source types; 2026-07-21 pass merged 28 changed/new sources into 2 articles; 2026-07-20 pass merged 23 changed/new sources into 8 articles; 2026-07-05 pass merged 49 changed/new sources into 10 articles; 2026-06-21 pass merged 36 changed/new sources into 21 articles
+**Total sources**: 590+ scanned documents across 6 source types; 2026-07-24 pass merged 14 changed/new sources into 7 articles; 2026-07-21 pass merged 28 changed/new sources into 2 articles; 2026-07-20 pass merged 23 changed/new sources into 8 articles; 2026-07-05 pass merged 49 changed/new sources into 10 articles; 2026-06-21 pass merged 36 changed/new sources into 21 articles
 
 ---
 
@@ -12,17 +12,17 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Speculative Decoding](speculative-decoding.md) | 61+ | Every production target ships a near-free native MTP head that beats external drafters (measured dead); the surviving redesign is quant-asymmetric same-model self-spec (IQ2-GPU drafter + Q4-CPU verifier, K2 1.61×, observation-grade) |
+| [Speculative Decoding](speculative-decoding.md) | 63+ | Every production target ships a near-free native MTP head that beats external drafters (measured dead); per-model MTP depth is now measured for all 3 architect candidates (122B-IQ2 n-max=2, 27B-dense/35B-A3B n-max=4) and batching interacts with spec-dec **architecture-dependently** — the "don't batch long-context" rule is 122B-IQ2-specific, not generic MoE |
 | [MoE Optimization](moe-optimization.md) | 37 | Reasoning ∝ ACTIVE FLOPs, knowledge ∝ TOTAL params; GLM-5.2 routing is near-uniform (top_32=15%) so generic hot-expert offload/REAP is not justified; IQ2 GPU residency is two-for-two viable but caps at ~122B |
 | [KV Cache](kv-cache.md) | 39 | StreamingLLM pre-v7 floor sweep failed the quality floor → no simple KV cluster admitted yet; per-token KV streaming over PCIe is an anti-pattern (7-14× slower than DDR5); GDN residents' O(1) KV make teleport KV-copy near-moot |
-| [Quantization](quantization.md) | 31 | 2-bit is asymmetric — knowledge holds ~99% but reasoning halves under UNIFORM 2-bit (dynamic UD/DQ3 holds); the architect's IQ2≈Q4 Δ0.0pp parity is knowledge-only (n≈4/hard-suite), NOT reasoning-certified; architect quant UNDECIDED (bench-gated) |
-| [Hardware Optimization](hardware-optimization.md) | 90+ | CPU decode is BW-exhausted but CPU *prefill* is an open compute-bound regime (hot path = OpenMP barriers, not math → default-off CONCAT dim0 lever +3-9%); GPU raw-speed frontier structurally exhausted, live frontier is residency/teleport; v7 promoted as `production-consolidated-v7` |
+| [Quantization](quantization.md) | 33 | The architect's degenerate `\boxed{}` repetition loop tracks the MODEL not the quant (Q4 loops identically to IQ2 on the same item — 2-bit-EOS-damage hypothesis REFUTED); fenced CPU-Q4 arm tracks at-or-above GPU-IQ2 on hard reasoning, undercutting the case for a real IQ2 reasoning penalty |
+| [Hardware Optimization](hardware-optimization.md) | 93+ | CPU decode is BW-exhausted but CPU *prefill* is an open compute-bound regime; v7 promoted as `production-consolidated-v7`; E5 W0 scout (69/69 cells) shows 4×quarters beats any big-instance shape for EVERY production model, and cross-architecture GPU batching is architecture-dependent (small-MoE ≫ dense > large-MoE-IQ2, with the large-MoE arm uniquely collapsing at long context) |
 
 ## Serving & Systems
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Inference Serving](inference-serving.md) | 57 | Within-role placement SM is LIVE (3-way frontdoor 1.68×, session-handover migration, no mid-decode preemption) and its live KV-migration path was ratified under traffic (ROUTE-A3: fwd 6/rev 4, 0 aborts); single `-np 8` batch server is 4.86× faster per eval; the inference-batch `/loop` root-caused its EV-4 stall to a stale contention matrix (from a vision NUMA rebind, NOT the kernel) that had silently degraded prod cross-role concurrency since 2026-07-17 → §H recert-on-any-NUMA-role-change hardening landed |
+| [Inference Serving](inference-serving.md) | 61 | The v7-cutover quarters-only launch was ruled an accidental regression and the big+quarters lineup was restored same-day via a new additive, no-outage `--numa-mode both` promotion path; the WP-12 fleet layer flipped live and its case-10 gate found production within-role concurrency comes from 6-process OS fan-out, not a role-level semaphore (which resolves to `Semaphore(1)` for every role); within-role placement SM's live KV-migration path re-ratified on the restored lineup (fwd 6/rev 1, 0 aborts) |
 | [Local Inference](local-inference.md) | 36 | v7 promoted as `production-consolidated-v7`; deployed-lane throughput table + living model-probe scoreboard (all observation-grade); MI210 fits everything but the 122B-Q4 architect and GLM-5.2 (238 GB) |
 | [Chat Templates](chat-templates.md) | 2 | Per-family turn markers + when to use `/completion` (Qwen/gemma-3/Llama3) vs `/v1/chat/completions` (gemma-4 multi-channel) — checklist for onboarding new models without silent routing failures |
 
@@ -30,9 +30,9 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Cost-Aware Routing](cost-aware-routing.md) | 40+ | CoT scaffold-transplant falsified in both regimes (reasoning context amplifies, doesn't substitute for, receiver capability); verifier/selector best-of-N is the forward GPU-assist path |
+| [Cost-Aware Routing](cost-aware-routing.md) | 42+ | CoT scaffold-transplant falsified in both regimes; the reasoning-effort ladder got its first real measurements — the accuracy lever is the PROMPT (+32pp CoT-in-content), not native `<think>` (loses via a non-termination tail, fixable with a budget cap); `max_tokens` is a silent third quality axis (a ~57pp finished-vs-truncated swing measured) coupled to admission control via per-architecture KV/slot cost |
 | [Routing Intelligence](routing-intelligence.md) | 67+ | RI-10 decision-ready but first packet is `hold_quality_unscored` (proxies favor enforce; factuality unscored); X-MAS learned route-mutation is live in enforce — first learned routing layer in production |
-| [Benchmark Methodology](benchmark-methodology.md) | 90+ | 2026-07-20/21 eval-tower audit: 3 CRITICAL/16 HIGH defects (stale pool sampled 15/33 suites; threaded math_verify silently degraded to exact_match; qid recency-exclusion was a no-op) — mostly fixed; pool rebuilt + era-labeled **E7** (79,479 rows/41 suites) with B7 scorer ratified; EV-11 confidence proven a phantom (ECE 0.0 for 1182/1182, worth 10-15% of RLVR score) and neutralized; judge-validity intake — cross-family ensembling still passes ~55% of hacked answers, de-anchoring is the fix, report Cohen's kappa; EV-4 baseline RUNNING on E7 |
+| [Benchmark Methodology](benchmark-methodology.md) | 94+ | Architect model-selection bench reached a well-powered, scorer-corrected NULL across 7 measurements (A1≈A3≈A4, quality-tied); a stale extractor nearly manufactured a false-significant result (R7), triggering a fragmentation audit that found ~10+ duplicated scoring implementations stack-wide, one on the autopilot RL reward path (unaudited, high risk) |
 
 ## Agent & Architecture
 
@@ -61,7 +61,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Multimodal](multimodal.md) | 34 | Benchmark deployed Qwen-VL field-placement before adding LocateAnything; Gemma 4 stays benchmark-first, not model-card-dismissed |
+| [Multimodal](multimodal.md) | 42+ | Benchmark deployed Qwen-VL field-placement before adding LocateAnything; Gemma 4 stays benchmark-first, not model-card-dismissed; the MiniCPM-o `vision_escalation` cutover now has a deterministic, model-agnostic promotion/rollback runbook, and `worker_vision` quartering has a quantitative demand/capability trigger gate replacing an unmeasured "in principle" |
 | [Document Processing](document-processing.md) | 4 | ODL structured metadata and default-off body warnings now reach preprocessing; the hybrid sidecar is live on `127.0.0.1:5002`, so the remaining table gap is benchmark-backed comparison and routing policy |
 | [Formal Verification](formal-verification.md) | 7 | Goedel-Code-Prover 8B beats GPT-5.3-Codex at 62.0%; RustEvo2 is now the gate for Rust specialist claims |
 

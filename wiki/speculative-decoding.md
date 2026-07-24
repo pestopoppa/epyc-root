@@ -2,8 +2,16 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-07-20 (adds the external-drafter-dead / native-MTP-dominant finding, the surviving quant-asymmetric self-spec redesign, and the K28 fused-GDN-kernel research; earlier 2026-07-19 note: adds v7 promotion/reviewer decoupling, repaired native GLM-MTP evidence, and the lossless-only release boundary; 2026-07-04/05/06 MI210/spec-sheet subsections remain flagged where noted)
-**Sources**: 61+ documents
+**Last compiled**: 2026-07-24 (adds the per-model GPU MTP-depth optimum for all three architect candidates and the architecture-dependent spec-dec × batching interaction; earlier 2026-07-20 note: adds the external-drafter-dead / native-MTP-dominant finding, the surviving quant-asymmetric self-spec redesign, and the K28 fused-GDN-kernel research; earlier 2026-07-19 note: adds v7 promotion/reviewer decoupling, repaired native GLM-MTP evidence, and the lossless-only release boundary; 2026-07-04/05/06 MI210/spec-sheet subsections remain flagged where noted)
+**Sources**: 63+ documents
+
+## Compiled Update — 2026-07-24
+
+### GPU spec-dec depth per architect candidate + batching interaction (2026-07-20→24)
+
+**Per-model MTP draft depth reconfirms the "MoE saturates early, dense goes deeper" pattern from a fourth data point (GPU, MI210, v7).** The architect-candidate GPU bench swept `{spec none, draft-mtp n-max 1..4}` for the three GPU-fitting architect candidates and pinned each to its measured optimum: **Qwen3.5-122B-A10B UD-IQ2_M (large-active MoE) → n-max 2**; **Qwen3.6-27B-dense Q8 → n-max 4**; **Qwen3.6-35B-A3B Q8 (small-active MoE) → n-max 4**. Inheriting one model's setting onto another cost ~29% throughput — reconfirming the standing invariant that spec-dec depth (like reasoning-effort levels and repetition-penalty fences, see [Cost-Aware Routing](cost-aware-routing.md) and [Quantization](quantization.md)) must be certified **per (model, quant)**, never inherited or applied at the role level. MTP itself is a clean, unconditional **+32% at single-stream** for the 122B-IQ2 arm (58 vs 44 t/s) — never omit it; run it at max-opt before probing any other lever. [architect-model-selection-bench](../handoffs/active/architect-model-selection-bench.md) §Run protocol, [architect-bench-runbook](../docs/reference/architect-bench-runbook.md) §3
+
+**Batching (`-np`) and spec-dec depth interact, and the interaction is architecture-dependent, not universal — the "don't batch long-context" rule from the 122B-IQ2 arm does NOT transfer to the other two candidates.** Extending the initial 122B-IQ2-only np×context sweep to all three architect candidates (each at its own max-opt MTP depth) found throughput ranking **A4 (35B-A3B small-MoE) ≫ A3 (27B-dense) > A1 (122B-IQ2 large-MoE)** at every batched operating point, and that **A1 alone** shows both a universal np=2 dip and a long-context batching collapse (net-negative at a 32k-token budget). A3 and A4 both batch robustly (2.2–3.4×) across every measured budget up to 32k. A spec-dec+batching router rule tuned on one model — even the architect candidate — therefore cannot be assumed to generalize to sibling models on the same kernel; see [Hardware Optimization](hardware-optimization.md) for the full cross-architecture surface and per-arm router rules. [reasoning-effort-levels](../handoffs/active/reasoning-effort-levels.md) §TB-6-exec
 
 ## Compiled Update — 2026-07-20
 
