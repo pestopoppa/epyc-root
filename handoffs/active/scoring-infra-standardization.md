@@ -89,11 +89,17 @@ already has bare-letter handling).
       **DFlash BF16 drafter** (own spec-dec path!). Steps: (1) runbook §3 config discovery — bring-up, MTP/
       DFlash spec-dec sweep, optimal serving block → registry; (2) **SWE-oracle 40-slice first** (the
       architect-relevant rung); (3) LCB-hard, then decide BCB-hard; full runbook later if warranted.
-- [~] **2b-agentic-build. Mature the agentic SWE harness (subagent, STARTED 2026-07-24).** Missing pieces:
-      multi-turn tool loop (explore→edit→test→iterate) in the instance container; no-oracle localization
-      (repo search, not gold files); turn/budget mgmt + trajectory logs; git-diff patch extraction; replay-
-      mock tests. Subagent builds + mock-tests (ZERO process mgmt — no servers/docker); live smoke = parent
-      session. Orchestrator-REPL variant (audit Q3) is the production-path option.
+- [x] **2b-agentic-build. Agentic SWE harness BUILT + mock-tested (subagent).** ✅ 2026-07-24 — research
+      `d476b318`: `scripts/benchmark/agentic_swe_harness.py` + tests (16/16 green, verified independently).
+      Multi-turn bash/edit(SR)/done loop in the instance container, NO-oracle prompting, turn/wall/cmd
+      budgets, history compaction (150k chars), tracked-only git-diff patch extraction, in-container
+      timeouts, resume-safe predictions consumable by the official harness. Bonus: caught a latent
+      `lstrip("ab/")` path-mangling bug in `convert_sr_to_patch.py` (fixed; 0 shipped-run impact, verified).
+- [ ] **2b-agentic-smoke. LIVE smoke of the agentic harness (parent session, GPU-gated).** One instance
+      (e.g. django__django-11099 container from the cached gold images) + one served arm via the provided
+      CLI (`--dry-run` first); verify /testbed clean-at-base assumption; then a 10-instance pilot before any
+      3-arm agentic comparison. Waits for GPU free post-Laguna-kernel work.
+      Orchestrator-REPL variant (audit Q3) remains the production-path option.
 - [ ] **2c. Eval-tower pool registration decision package (OPERATOR).** Once LCB-hard/BCB-hard/SWE-oracle
       prove discriminative: present options+tradeoffs for registering them into the E7 eval pool (era-sensitive
       instrument change — new-era row vs supplementary-pool vs bench-only). Operator asked for the package
