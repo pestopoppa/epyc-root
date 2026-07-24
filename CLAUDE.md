@@ -183,6 +183,11 @@ Documents in `handoffs/archived/`, `handoffs/completed/`, `progress/`, and `CHAN
 
 - **Do not add intake entries, handoff stubs, or other index modifications via sub-agents without explicit user approval.** All index changes must be traceable to a direct user request.
 
+## Operator Decision Requests
+
+- **Never ask the operator an open-ended question when escalating a decision.** Every request for input is a decision package: 2–4 concrete options with tradeoffs (cost / risk / time / quality / reversibility) and supporting data, a recommendation with reasoning, and the default outcome if no choice is made. Claude Code sessions deliver this via the AskUserQuestion tool (recommended option first, labeled "(Recommended)"). Full contract: `agents/shared/OPERATING_CONSTRAINTS.md` → *Operator Decision Requests*.
+- Pure factual gaps (missing credential, ambiguous reference) may be asked directly.
+
 <!-- gitnexus:start -->
 <!-- gitnexus:keep -->
 # GitNexus — Code Intelligence

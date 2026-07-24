@@ -49,3 +49,16 @@ Require explicit user confirmation and rollback planning before:
 - Recursive deletes in data or model directories
 - Kernel or boot-level configuration changes
 - System-wide privileged changes that impact stability
+
+## Operator Decision Requests
+
+Never escalate a decision with an open-ended question ("How should I proceed?", "What do you want to do about X?"). Every request for operator input is a **decision package**:
+
+1. **Context** — 1–2 sentences: what you were doing, what fork was hit, why it cannot be resolved autonomously.
+2. **Options** — 2–4 concrete choices, each with what it entails, its tradeoffs (cost / risk / time / quality / reversibility), and supporting data. Performance/quality numbers follow the claim grammar (`MEASUREMENT_POLICY.md`).
+3. **Recommendation** — the option you would pick and why. If genuinely torn, name the measurement or fact that would break the tie.
+4. **Default** — what happens if the operator makes no choice (status quo, blocked, timeout behavior).
+
+Delivery: Claude Code sessions use the AskUserQuestion tool with the recommended option listed first and labeled "(Recommended)"; other harnesses render the package as a compact markdown list.
+
+Exception: pure factual gaps (a missing credential, an ambiguous file reference) may be asked directly — this contract governs choices among alternatives, not fact retrieval.

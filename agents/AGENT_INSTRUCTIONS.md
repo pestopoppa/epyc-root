@@ -44,6 +44,7 @@ Cross-repo dependency map: `.claude/dependency-map.json`
 - Never silently swallow exceptions.
 - Keep changes small, testable, and documented.
 - Decisions gate on **claims**, not observations: a performance/quality number must cite a `MEASUREMENT.md` protocol; historical numbers are era-labeled first (`agents/shared/MEASUREMENT_POLICY.md`). Never edit historical records to "fix" them — append.
+- Operator input requests are decision packages — 2–4 options with tradeoffs + data, a recommendation, and the default outcome — never open-ended questions (`agents/shared/OPERATING_CONSTRAINTS.md` → *Operator Decision Requests*).
 
 ## Output Contract
 
