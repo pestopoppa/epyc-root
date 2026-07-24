@@ -72,12 +72,26 @@ already has bare-letter handling).
       executable code**, A1≈A4 p=1.0). **LCB-hard running** (53 hard contest problems, stdin/stdout oracle,
       window 2023-05→2024-03; contamination caveat: window likely overlaps training). **BCB-hard chained**
       (90 verified-scorable of 148; exec venv py3.12 + dep stack). Artifacts `architect-code-eval-20260724/`.
-- [~] **2b-swe. SWE-bench Verified harness (official, docker).** ✅ mechanics validated (docker root on raid0;
-      5/5 instances complete, 0 errors). Gold-patch calibration: psf/requests non-hermetic (1/5) → EXCLUDED;
-      django 4/5 (one instance-level env quirk). **Adopted the gold-calibration filter** (same principle as
-      BCB canonical filter): an instance enters the eval slice iff its GOLD patch resolves in our env — applied
-      identically to all arms, unbiased. 40-instance slice (django-weighted + sympy/sphinx/sklearn/mpl)
-      validating now → survivors become the patch-gen rung's question set.
+- [~] **2b-swe. SWE-bench Verified harness (official, docker).** Mechanics ✅; **gold-calibration filter
+      VALIDATED ✅ 2026-07-24: 40/40 instances resolve gold** (django 24 + mpl/sklearn/sphinx/sympy 4 each;
+      psf/requests excluded as non-hermetic). Oracle patch-gen rung BUILT + CHAINED: prompts materialized
+      (40, windowed oracle files, SEARCH/REPLACE protocol; med 11k chars), `convert_sr_to_patch.py` converts
+      to unified diffs, arms generate at -c 49152 after BCB. **Remaining:** run the official harness eval on
+      each arm's `predictions.json` (docker, after generation) → per-arm resolve-rate + paired stats.
+- [ ] **2c. Eval-tower pool registration decision package (OPERATOR).** Once LCB-hard/BCB-hard/SWE-oracle
+      prove discriminative: present options+tradeoffs for registering them into the E7 eval pool (era-sensitive
+      instrument change — new-era row vs supplementary-pool vs bench-only). Operator asked for the package
+      when the time comes; do NOT register unilaterally.
+- [ ] **2d. LCB contamination-window refresh.** The cached LCB snapshot spans 2023-05→2024-03 (likely inside
+      these models' training windows). Pull a newer LiveCodeBench release (v5/v6 date-window) for a
+      post-cutoff hard slice; re-validate oracle; compare to the current window's scores (a large drop =
+      contamination signal on the old window).
+- [ ] **2e. Runbook: replace the P2 placeholder with the built coding ladder** (HumanEval=validation rung →
+      LCB-hard → BCB-hard → SWE-oracle → agentic; validate-on-canonical/gold gates; model-major residency +
+      SMT-sibling affinity for GPU serving) once the arms' results land.
+      *(Declined as separate tasks: model-major driver restructure — captured in
+      [[feedback_mi210_host_threads_smt_siblings]] and folds into 2e; promoting the SWE scripts from
+      artifacts/ into scripts/benchmark/ — already covered by the standing runbook §10 promotion task.)*
 - [ ] **2b-agentic. SWE-bench/tau-bench multi-turn harness** for true planning/tool-use. Audit Q3 unblocks a
       cheaper first rung: run a tool-use eval **through the orchestrator's live REPL loop**
       (`call_orchestrator_forced(force_role="architect_general", force_mode="repl")`) — exercises the production

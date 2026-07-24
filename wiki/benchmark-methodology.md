@@ -21,11 +21,32 @@ Two converging threads landed this cycle: the architect-candidate benchmark reac
 
 - **The architect-bench SOP (runbook) crystallized a hard pre-verdict scoring gate from the R7 incident.** Because a scorer fix in code does not retroactively propagate to already-stored `per_question.jsonl`/`*.rescored.jsonl` results (they are point-in-time), the runbook now requires, before any pooled read or keep/drop verdict: (1) regenerate every arm's rescored file with the *current* extractor, and (2) print per-arm `noparse` counts per suite and stop if the gap is asymmetric across arms. This mechanizes the project's standing rule ([[feedback_parse_failure_rate_is_a_scoring_artifact]]) into a gate rather than a reviewer habit. [architect-bench-runbook](../docs/reference/architect-bench-runbook.md) §7
 
+### Delta — audit closure + coding ladder stood up (compiled 2026-07-24 later)
+
+- **The memrl question CLOSED: NOT affected.** The read-only orchestrator audit (59 file:line citations)
+  found the live TD reward does **zero regex answer-extraction** — success is a structural flag, cost terms
+  are telemetry/priors, latency is length-normalized — so autopilot reward carries no verbose penalty. The
+  judge-parse bug class exists but every affected path is dormant or reward-decoupled; two latent 1c-fix items
+  scoped (a 500-char candidate truncation in `review_service.review()` re-enterable via `allow_delegation=True`,
+  and a false-*positive* last-letter fallback in `debug_scorer`). Bonus finding: **tool use is production-live**
+  via the bespoke REPL protocol (`TOOL()/CALL()/FINAL()`), so an architect tool-use eval can run through the
+  orchestrator today (`force_role="architect_general", force_mode="repl"`); `ChatRequest.tools` is
+  accepted-but-never-consumed. [audit](../research/deep-dives/2026-07-24-autopilot-scoring-tooluse-audit.md)
+- **The Phase-2 coding ladder went from "no harness" to running in one session**, every rung
+  validated-on-canonical before model tokens: HumanEval (164/164 canonicals; arms tied+saturated —
+  A4 95.7 / A1 95.1 / A3 92.1, IQ2 costs nothing on executable code); **real LiveCodeBench-hard** (53 contest
+  problems w/ hidden stdin/stdout tests; **discriminative** — A4 54.7%); **BigCodeBench-hard** (90/148
+  canonical-verified; two harness bugs — venv-symlink `resolve()` and OpenBLAS-vs-RLIMIT_AS — caught by the
+  canonical gate); **SWE-bench Verified official docker harness** with a **gold-calibration filter** (instance
+  in slice iff its gold patch resolves here): 40/40 resolved on the calibrated slice; oracle patch-gen rung
+  (SEARCH/REPLACE protocol → offline diff conversion → FAIL_TO_PASS) chained behind the GPU runs.
+  [scoring-infra-standardization](../handoffs/active/scoring-infra-standardization.md)
+
 ### Open Questions (2026-07-24)
 
-- Does `memrl.score_completed_task` (the autopilot RL reward path) share the verbose-penalty bug? Unaudited at compile time — if so, production routing reward has been systematically biased against models that show their reasoning for as long as that scorer has been in place.
 - The A2/RP-5 CPU Q4 arm's paired McNemar analysis (canonical rescore) against A1-IQ2 was still pending at compile time — will H1 (does IQ2 preserve the 122B's reasoning relative to Q4?) close as parity, given the live at-or-above read?
-- Phase 2 (tool-use/coding, the runbook's now-required gate) has no harness for agentic SWE-bench/tau-bench yet — built before or after the operator's architect keep/drop decision is finalized?
+- Do the hard coding tiers (LCB-hard / BCB-hard / SWE-oracle) separate the three arms where reasoning-QA could not — and do the discriminative survivors get registered into the eval-tower pool (era-sensitive, operator decision package pending results)?
+- The agentic multi-turn harness (SWE-bench agentic / tau-bench) remains unbuilt; the audit's orchestrator-REPL path is the cheap first rung.
 
 ### Source References (2026-07-24)
 
