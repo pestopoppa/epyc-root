@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-07-24
+
+- Ratified `P-BENCH-PREFILL-1`, including CPU prefill provenance, cache preparation, repetition, and kernel-promotion non-inferiority rules.
+
 ## 2026-04-10
 
 - **ROCm/rocWMMA Research Intake + GPU Acceleration Path**:

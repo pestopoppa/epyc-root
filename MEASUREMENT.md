@@ -265,3 +265,54 @@ post-promotion certification; it does not upgrade pre-promotion experimental num
   `tests/unit/test_paired_stats.py` (verdict known-answer: small exact + large normal,
   threshold boundary, direction, alpha), `tests/unit/test_eval_tower_paired_significance.py`
   (screen verdict attachment + per-role threading).
+
+## P-BENCH-PREFILL-1 — Canonical single-instance CPU prefill (RATIFIED 2026-07-24)
+
+**Scope and direction.** Decision-gating CPU prompt-processing throughput produced by
+`llama-bench`; metric is prompt tokens/second, higher-better. Decode remains governed by
+`P-BENCH-1`. This protocol may be paired with `P-BENCH-1` in a kernel-promotion bundle.
+
+**Entry point and fixed profile.** Run only through
+`epyc-inference-research/scripts/benchmark/bench_canonical.sh` and
+`scripts/lib/canonical_recipe.py`, never a hand-typed `llama-bench` invocation. The
+canonical profile is `-p 2048 -n 0 -r 10`, `taskset -c 0-95`, `-t 96`, and `-fa 1`,
+with no `--numa distribute`. The wrapper-enforced OMP environment and binary/library
+resolution checks are mandatory. A `GGML_*` variable is allowed only when it is the
+single variant under test, with the value recorded for every arm.
+
+**Release identity.** Both arms must provide explicit `--binary`, `--source-root`, and
+`--library-path`. The candidate must be a clean, committed tree whose binary reports
+that candidate commit. Record branch, commit, dirty status, binary and shared-library
+SHA256 values, `llama-bench --version`, `ldd`, model path/size/SHA256, complete argv,
+environment, date, and host-attestation reference. Mixed or production-resolved
+candidate libraries invalidate the run.
+
+**Host and cache preparation.** All `P-BENCH-1` host-health and quiet-window
+preconditions apply. Before each matched production/candidate pair: run `sync`, drop
+page cache, sleep two seconds, then re-warm the model through
+`taskset -c 0-95 numactl --interleave=all`. Do not drop cache between the two arms.
+Declare arm order. The initial pair uses production then candidate; any required retry
+uses a fresh reset and reversed order. A failed strict host preflight, concurrent
+inference, stale governor/THP/NUMA state, or unresolved process blocker invalidates the
+pair.
+
+**Repetitions and result.** Use at least 10 repetitions per arm for a release
+non-inferiority claim. Retain every `samples_ts` value and report each arm's median and
+MAD. The comparison ratio is `candidate_median / production_median`. Cold model-load
+time is not part of the throughput metric; the cache state and warm-up policy remain
+part of the attestation.
+
+**CPU kernel-promotion decision rule.**
+
+- For every non-IQ regression cell, ratio `>= 0.98` is PASS and ratio `< 0.95` is FAIL.
+- A ratio in `[0.95, 0.98)` requires one fresh reversed-order pair. Pool all 20 samples
+  per arm; the pooled-median ratio must be `>= 0.98`, otherwise the cell FAILS.
+- For a newly enabled IQ kernel path, neither its `P-BENCH-PREFILL-1` prefill ratio nor
+  its paired `P-BENCH-1` decode ratio may be `< 0.95`, and at least one must be
+  `>= 1.05`; otherwise the feature has not demonstrated sufficient release utility.
+- Model-load, correctness/coherence, numerical-safety, attribution, or cleanup failure
+  is an unconditional FAIL regardless of throughput.
+
+Every required cell must pass before promotion. A failed cell blocks promotion pending
+repair or a separate, explicit operator waiver. Claim grammar:
+`CPU prefill <value> tok/s [P-BENCH-PREFILL-1, n=<reps>, YYYY-MM-DD, attest <ref>]`.
