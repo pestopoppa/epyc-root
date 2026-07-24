@@ -586,3 +586,4 @@ The pin encodes a *decision*, so un-pinning = superseding the decision with an a
 ### Review cadence
 
 Re-run A1–A3 at each stack-review checkpoint (or ≥ every 14 days), first valid post-fence reading **2026-08-06**. If two consecutive checkpoints read λ ≈ 0 organic *and* the MI210 cutover executes, recommend converting "open in principle" → "closed: superseded by GPU lane" to the operator.
+- [ ] **MiniCPM-o CPU assessment + promotion decision** (operator-directed 2026-07-23/24, queued after A2/RP-5): bench MiniCPM-o-4.5 Q4 on a CPU lane (bench port, bench posture while the stack is down) vs the current Qwen2.5-VL-7B worker — speed + K35-fixture quality — then DECIDE promotion per the runbook: vision_escalation only, or BOTH worker_vision (replacing Qwen2.5-VL) and vision_escalation. **CPU leg only — the operator runs the GPU leg in their parallel session**; the promotion call joins both evidence sets.
