@@ -34,12 +34,25 @@ already has bare-letter handling).
       truncated-boxed regressions. Research `bc33cb76`.
 - [ ] **1b. Migrate research consumers** to import the canonical lib; delete each duplicate extractor; test
       each. (score_benchmarks, lib/scorer, score_aa_omniscience, xmas_*, short_mk_voting, adapters.)
-- [ ] **1c. Orchestrator audit + fix (PRODUCTION-TOUCHING, GATED).** Verify `memrl.score_completed_task`,
-      `model_grader._extract_classification`, `rubric_review` against the shared contract for the
-      verbose-penalty bug. `memrl` is the autopilot RL reward path — a bug there has been biasing production
-      routing reward against verbose models. Fix behind the shared lib; regression-test; operator-reviewed.
-      Cross-repo code sharing (research lib → orchestrator) needs a packaging decision (dependency-map has
-      orchestrator→research as DATA, not CODE).
+- [x] **1c-audit. Orchestrator scoring + tool-use audit (read-only, subagent).** ✅ 2026-07-24 — report:
+      [`research/deep-dives/2026-07-24-autopilot-scoring-tooluse-audit.md`](../../research/deep-dives/2026-07-24-autopilot-scoring-tooluse-audit.md)
+      (59 file:line citations). **Verdicts:** (Q1) **memrl reward NOT AFFECTED** — the live TD reward does zero
+      regex answer-extraction (structural success flag + telemetry/prior cost terms; latency length-normalized);
+      externally-injected eval rewards use the B7-hardened `debug_scorer` (bare-letter-safe). (Q2) judge-parse
+      bug class present but **every affected path dormant or reward-decoupled** (`model_grader` has no callers;
+      proactive-review gating flags declared off). (Q3) **tool use IS production-live** via the bespoke Python-REPL
+      protocol (`TOOL()/CALL()/FINAL()`) — NOT llama-server native function calling; `ChatRequest.tools` is
+      accepted-but-never-consumed (wired-but-dead). An architect tool-use eval can run through the orchestrator
+      TODAY via `call_orchestrator_forced(force_role="architect_general", force_mode="repl")`. (Q4) 10 independent
+      extraction impls inventoried. **No ⚠ production finding.**
+- [ ] **1c-fix (PRODUCTION-TOUCHING, GATED — scoped by the audit).** (a) Vendor the canonical `answer_scoring`
+      contract into the orchestrator + a **shared golden-corpus drift test** (data-only coupling, consistent with
+      orchestrator→research being a DATA dependency). (b) Fix the latent verbose bias: `review_service.review()`
+      truncates the candidate to **500 chars** before judging (`review_service.py:420`) feeding `all_approved` →
+      memrl reward — dormant only while `parallel_execution`/`architect_delegation` stay off, and re-enterable via
+      per-request `allow_delegation=True`. (c) `debug_scorer.py:269-272` last-standalone-letter fallback is a
+      false-*POSITIVE* (score-inflation) risk vs the canonical lib — re-score a recent eval batch before/after
+      consolidation to quantify. (d) Decide fate of dead `ChatRequest.tools` (consume or remove).
 
 ### Track 2 — Tool-use / coding eval harness
 - [x] **2a-i. `datasets` + code-execution scorer scaffold.** ✅ 2026-07-24 — DONE. Installed the `benchmark`
@@ -51,8 +64,14 @@ already has bare-letter handling).
       (`scoring_config`); add `scoring_method="code_execution"` dispatch to `score_response`/runner; validate a
       reference solution scores 100%. Then **harden isolation (unshare/nsjail/container)** — required before
       at-scale/untrusted runs; the current scaffold is trusted-code only.
-- [ ] **2b. Run A1/A3/A4 on the coding harness** → the actual keep/drop capability signal (GPU-gated). Then
-      the **agentic SWE-bench/tau-bench** multi-turn tool-loop harness (a real build) for true planning/tool-use.
+- [~] **2b. Run A1/A3/A4 on the coding harness** — RUNNING 2026-07-24: HumanEval (harness-validation rung;
+      A4=95.7%, saturated as expected) then **LiveCodeBench-hard** chained (53 hard contest problems, stdin/stdout
+      oracle, window 2023-05→2024-03 — contamination caveat: window likely overlaps model training). Artifacts
+      `architect-code-eval-20260724/`.
+- [ ] **2b-agentic. SWE-bench/tau-bench multi-turn harness** for true planning/tool-use. Audit Q3 unblocks a
+      cheaper first rung: run a tool-use eval **through the orchestrator's live REPL loop**
+      (`call_orchestrator_forced(force_role="architect_general", force_mode="repl")`) — exercises the production
+      tool path with no new harness; full SWE-bench (per-instance repo envs) remains the big build.
 
 ## Reporting
 Update this handoff + progress after each phase. Per-phase commits. 1c and 2b do not start without an operator
