@@ -64,10 +64,17 @@ already has bare-letter handling).
       (`scoring_config`); add `scoring_method="code_execution"` dispatch to `score_response`/runner; validate a
       reference solution scores 100%. Then **harden isolation (unshare/nsjail/container)** — required before
       at-scale/untrusted runs; the current scaffold is trusted-code only.
-- [~] **2b. Run A1/A3/A4 on the coding harness** — RUNNING 2026-07-24: HumanEval (harness-validation rung;
-      A4=95.7%, saturated as expected) then **LiveCodeBench-hard** chained (53 hard contest problems, stdin/stdout
-      oracle, window 2023-05→2024-03 — contamination caveat: window likely overlaps model training). Artifacts
-      `architect-code-eval-20260724/`.
+- [~] **2b. Run A1/A3/A4 on the coding ladder** — RUNNING 2026-07-24. **HumanEval DONE** (validation rung;
+      paired n=164: A4 95.7 / A1 95.1 / A3 92.1, all p≥0.15 — saturated as predicted; **IQ2 costs nothing on
+      executable code**, A1≈A4 p=1.0). **LCB-hard running** (53 hard contest problems, stdin/stdout oracle,
+      window 2023-05→2024-03; contamination caveat: window likely overlaps training). **BCB-hard chained**
+      (90 verified-scorable of 148; exec venv py3.12 + dep stack). Artifacts `architect-code-eval-20260724/`.
+- [~] **2b-swe. SWE-bench Verified harness (official, docker).** ✅ mechanics validated (docker root on raid0;
+      5/5 instances complete, 0 errors). Gold-patch calibration: psf/requests non-hermetic (1/5) → EXCLUDED;
+      django 4/5 (one instance-level env quirk). **Adopted the gold-calibration filter** (same principle as
+      BCB canonical filter): an instance enters the eval slice iff its GOLD patch resolves in our env — applied
+      identically to all arms, unbiased. 40-instance slice (django-weighted + sympy/sphinx/sklearn/mpl)
+      validating now → survivors become the patch-gen rung's question set.
 - [ ] **2b-agentic. SWE-bench/tau-bench multi-turn harness** for true planning/tool-use. Audit Q3 unblocks a
       cheaper first rung: run a tool-use eval **through the orchestrator's live REPL loop**
       (`call_orchestrator_forced(force_role="architect_general", force_mode="repl")`) — exercises the production
