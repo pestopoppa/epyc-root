@@ -283,8 +283,11 @@ single variant under test, with the value recorded for every arm.
 **Release identity.** Both arms must provide explicit `--binary`, `--source-root`, and
 `--library-path`. The candidate must be a clean, committed tree whose binary reports
 that candidate commit. Record branch, commit, dirty status, binary and shared-library
-SHA256 values, `llama-bench --version`, `ldd`, model path/size/SHA256, complete argv,
-environment, date, and host-attestation reference. Mixed or production-resolved
+SHA256 values, the exact `build: <commit> (<number>)` line emitted by every
+`llama-bench` result (whose commit must match the recorded source HEAD), `ldd`, model
+path/size/SHA256, complete argv, environment, date, and host-attestation reference.
+The frozen v7 and v8-candidate `llama-bench` binaries do not implement a `--version`
+option. Mixed or production-resolved
 candidate libraries invalidate the run.
 
 **Host and cache preparation.** All `P-BENCH-1` host-health and quiet-window

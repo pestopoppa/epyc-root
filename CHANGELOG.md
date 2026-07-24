@@ -3,6 +3,7 @@
 ## 2026-07-24
 
 - Ratified `P-BENCH-PREFILL-1`, including CPU prefill provenance, cache preparation, repetition, and kernel-promotion non-inferiority rules.
+- Corrected its build-identity witness to the commit-bearing `llama-bench` result line because the frozen v7 and v8-candidate binaries do not implement `--version`.
 
 ## 2026-04-10
 
