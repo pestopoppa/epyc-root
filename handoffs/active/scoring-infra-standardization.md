@@ -82,7 +82,9 @@ already has bare-letter handling).
 - [ ] **2b-confirm. SWE A3-vs-A4 expansion (SEQUENCED AFTER Laguna, operator 2026-07-24).** Expand the
       gold-calibrated slice 40→150+ (docker gold-validation CPU-side), rerun A3+A4 only → decision-grade
       confirmation of the +17.5pp p=0.039 (uncorrected, ~12 comparisons today — needs confirmation).
-- [ ] **2b-laguna. Fold Laguna-S-2.1 into the candidate process (operator 2026-07-24).** On disk:
+- [ ] **2b-laguna. Fold Laguna-S-2.1 into the candidate process — ⛔ BLOCKED (operator 2026-07-24): needs a
+      small llama.cpp kernel upgrade first (inference-research work, OPERATOR-OWNED — do NOT start bring-up
+      until the operator green-lights; experimental-branch workflow applies per CLAUDE.md).** On disk:
       `models/Laguna-S-2.1-GGUF/` — UD-IQ2_M **34.7GB (fits MI210)**, Q4_K_M 70GB (CPU-side), and a 2.1GB
       **DFlash BF16 drafter** (own spec-dec path!). Steps: (1) runbook §3 config discovery — bring-up, MTP/
       DFlash spec-dec sweep, optimal serving block → registry; (2) **SWE-oracle 40-slice first** (the
