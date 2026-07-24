@@ -1,5 +1,21 @@
 # Architect Model Comparison Benchmark
 
+**Status (2026-07-24): quality NULL CONFIRMED at higher power + a SCORER ARTIFACT corrected + throughput surface added. Keep/drop = quality-tied, A4 throughput-best, tool-use eval outstanding.**
+
+> **⚠ 2026-07-24 — R7: canonical re-score fixes a scorer artifact; the pooled quality read is NULL, and A4 was never actually weaker.**
+> While answering "should A3(27B-dense) and A1(122B) be dropped vs A4?", pooling the banked per-question data (n=533)
+> at first showed A1/A3 *significantly* > A4 — **but that was a scoring artifact**: `gpqa_diamond` was scored with a
+> stale extractor that dropped bare-letter answers, and A4 (verbose) leaked **15%** of items to false parse-failures
+> vs A1's **0%** — a systematic bias against models that show their work. Re-scored uniformly with the canonical
+> `extract_letter_answer` (via `architect_bench_rescore.py`; A4 gpqa **43.4→53.0%**), the pooled n=533 read is:
+> **A1 69.8 / A3 69.6 / A4 67.4 — every pairwise p ≥ 0.23 (NULL); A1≈A3 (Δ0.2pp).** So on measured quality A1 and A3
+> **do NOT outcompete A4**; A4's earlier "deficit" was the artifact. **Keep/drop lean: quality-tied → A4 suffices; A1/A3
+> not justified on quality grounds.** Regression test locked (research `274fe0c1`). Autopilot NOT affected (its eval-tower
+> grader is LLM-judge-based, not regex-MC). CIs still admit ≤~6-9pp A3>A4 on hard reasoning (more discriminating items
+> would close it) — and this is all math/science-QA, **not** the architect's real job. **The decisive gate now = Phase-2
+> tool-use/coding** (harness does NOT exist yet — LiveCodeBench needs `datasets`+exec-sandbox; agentic SWE-bench needs a build).
+> **Throughput surface** (TB-6, [[reasoning-effort-levels]]): A4 ≫ A3 > A1 at every batched point → on GPU A4 is quality-tied AND fastest.
+
 **Status (2026-07-23): GPU BENCH COMPLETE — reasoning suites are a WELL-POWERED NULL across the board (incl. the non-saturated olympiad-hard, R6). No reasoning-accuracy basis for the architect choice → deployment robustness decides. RP-1 DONE (fence=repeat_penalty 1.1); A2/CPU confirmed the loop is MODEL-specific not IQ2 (quant-attribution REFUTED). Outstanding: RP-5 fenced-H1 (Q4-vs-IQ2 accuracy, both need the fence, CPU-gated), RP-3 (`boxed-prompt trigger?), Phase-2 tool-use.**
 _(prior status)_ **2026-07-21: GPU ARMS RUN — reasoning suites show NEAR-PARITY; harder-tier + CPU arm outstanding.**
 Operator granted a GPU-only inference window (2026-07-20/21). Executed: per-model spec-dec sweep (→ registry

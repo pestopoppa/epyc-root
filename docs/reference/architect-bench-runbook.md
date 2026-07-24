@@ -212,6 +212,14 @@ the non-termination severity was 18% vs 50% across two models, so certify each m
   `normalize_numeric` for integer answers (AIME).
 - **After any scorer change, re-score every arm offline** (`architect_bench_rescore.py`) and make the
   analyzer prefer `*.rescored.jsonl` — never compare arms scored under different rules.
+- **HARD PRE-VERDICT GATE (2026-07-24, R7):** a scorer fix in code does **NOT** propagate to already-stored
+  `per_question.jsonl`/`*.rescored.jsonl` — the stored `correct`/`extracted` fields are *point-in-time*.
+  Before **any** pooled read or keep/drop verdict: (1) regenerate every arm's `*.rescored.jsonl` with the
+  **current** `architect_bench_rescore.py`, and (2) print the per-arm `noparse` count **per suite** and stop
+  if the gap is asymmetric. *Why this is a hard gate:* on the 2026-07-24 keep/drop pool (n=533), stale gpqa
+  scoring gave A4 (verbose) **15% false parse-failures** vs A1's **0%**, which manufactured a *significant*
+  A1/A3 > A4 result (p=0.005/0.043). Canonical re-score (A4 gpqa 43.4→53.0%) collapsed it to NULL
+  (all p ≥ 0.23). One un-regenerated file flipped the verdict. ([[feedback_parse_failure_rate_is_a_scoring_artifact]])
 
 ---
 
@@ -252,6 +260,15 @@ the non-termination severity was 18% vs 50% across two models, so certify each m
 
 > The bench answers "is quality different?" The deploy decision also weighs "what does it cost to *operate*?"
 > A quality tie is the branch where operating cost wins — usually for the dual-resident option.
+
+> **REQUIRED GATE (2026-07-24): reasoning-QA cannot decide a keep/drop on its own — P2 tool-use/coding is
+> mandatory before any architect verdict.** The L1–L4 ladder is math/science-QA; the architect's *real job*
+> is planning, decomposition, tool-use, and long-context synthesis, which QA does not test — and a saturated
+> or QA-tied result can hide a capability gap that only shows under agentic load ([[feedback_eval_saturation_masks_model_gap]]).
+> So a null on L4 is **necessary but not sufficient** to drop a candidate: you must also run P2. **P2 harness
+> status (2026-07-24): NOT built** — LiveCodeBench/BigCodeBench need the `datasets` lib + a sandboxed
+> code-execution scorer; agentic SWE-bench/tau-bench needs a multi-turn tool-loop harness. Building it is a
+> prerequisite, not an optional follow-on.
 
 ---
 
