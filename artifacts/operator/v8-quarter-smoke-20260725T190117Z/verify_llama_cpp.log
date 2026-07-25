@@ -1,0 +1,10 @@
+=== llama.cpp Branch Verification ===
+
+[0;32m✓ Production: production-consolidated-v8[0m
+[0;32m✓ Production commit: 67a433bf45a8a091d83b4ea0b32ff0735fd51800[0m
+[0;32m✓ Production tracked/index state is clean[0m
+[0;32m✓ Production CPU server: version: 10107 (67a433bf4) (a4b667163022aa166ade7c0e00fa4e775b37662e02c10da7642c8c23a4d6b414)[0m
+[0;32m✓ Production HIP server: version: 10107 (67a433bf4) (112c560f1c978c584a9899539851348a0ce1e05cde458061c281758aff066882)[0m
+[0;32m✓ Smoke binary exists: /mnt/raid0/llm/llama.cpp/build/bin/llama-cli[0m
+
+[0;32m=== VERIFICATION PASSED ===[0m

@@ -1,0 +1,136 @@
+8ab8718efbd7cce0c350e1f096aad735cd0ad5c7b58e5fc7c58b6600f98f2949  ./libggml-base.so.0.16.0
+4c56a1da53cd7e59b487ca4ca592e1bb382d61c487c7972d729c616918d2b214  ./libggml-cpu.so.0.16.0
+ba0a91a85c8b1f1ede0680d6024fcab4c7e560a34f26f27dd832d9ed89a63434  ./libggml.so.0.16.0
+10466a69c043c7eb82e21caf253121c4919360d5f66919af5eea1dff5266f43c  ./libllama-batched-bench-impl.so
+38b7dc1d2e193cac95d56a778c83d83ae820875be51e61f97ae2a7b418fa6c31  ./libllama-bench-impl.so
+df8ce33ddebe965d39c209676746e996a61d24cc2c5edf2306ffe6490e76e7c2  ./libllama-cli-impl.so
+f54638df031a8d36f2463ea868b7031dbc12adfb85b2f36647631b8dd57e94c8  ./libllama-common.so.0.0.10098
+2c78938d7034940719e05cba0e1dfbe094156521663facd719f3646a4216dfe6  ./libllama-common.so.0.0.10100
+32a5366e3287d89b3b21f9c3fee114d0427c5921429307430d078bb35da947f2  ./libllama-common.so.0.0.10101
+6be404351ddbef66cd60105c892a70513421983a35952b1c9064e9217b818de7  ./libllama-common.so.0.0.10102
+f74b6d3bb75f21cecf2f86c0a5359df7286cb03fe19ed25d7b524c254832af7f  ./libllama-common.so.0.0.10104
+283d9d673f495105e12c3c6262a895bf4ab48b52170bdb57d1dc1a4a3ca55544  ./libllama-common.so.0.0.10106
+0fc0b1014d997221effe1777fd247721c63d65ff7cddcde504b4d0f732e18e25  ./libllama-common.so.0.0.10107
+33cbadfccb4487b951558149df7d086c98a7e41c98309ce07c1fd256795151af  ./libllama-completion-impl.so
+337424eb395591cffe3e6840b5c08d64bba190b814901a40d40354d277c63aa1  ./libllama-fit-params-impl.so
+42929c58da6320297888d207d27c50777bb3a23b5c436759feaa440ee216d0ef  ./libllama-perplexity-impl.so
+c458c0a3917b9bcea3efeb54e5d084bf6a0023bce19874f44ac80979516e3be0  ./libllama-quantize-impl.so
+9245e197c5ed332c8e7c362450a401c4d75073589e1f73d45327873c3b649cfc  ./libllama-server-impl.so
+1680719b76f1c322047994e6d1dac8f0f962fd8a0336c49d2c4cd8fe457d5de4  ./libllama.so.0.0.10098
+1680719b76f1c322047994e6d1dac8f0f962fd8a0336c49d2c4cd8fe457d5de4  ./libllama.so.0.0.10100
+1680719b76f1c322047994e6d1dac8f0f962fd8a0336c49d2c4cd8fe457d5de4  ./libllama.so.0.0.10101
+1680719b76f1c322047994e6d1dac8f0f962fd8a0336c49d2c4cd8fe457d5de4  ./libllama.so.0.0.10102
+dad74a952f42937374f015da30ae3876e363e9d63d130a93dfe88ca81fe29ced  ./libllama.so.0.0.10104
+dad74a952f42937374f015da30ae3876e363e9d63d130a93dfe88ca81fe29ced  ./libllama.so.0.0.10106
+dad74a952f42937374f015da30ae3876e363e9d63d130a93dfe88ca81fe29ced  ./libllama.so.0.0.10107
+70b885f4b68356cddbbe8539131667ab6e2562117f8604b0497aa71e1fcbfce6  ./libmtmd.so.0.0.10098
+70b885f4b68356cddbbe8539131667ab6e2562117f8604b0497aa71e1fcbfce6  ./libmtmd.so.0.0.10100
+70b885f4b68356cddbbe8539131667ab6e2562117f8604b0497aa71e1fcbfce6  ./libmtmd.so.0.0.10101
+70b885f4b68356cddbbe8539131667ab6e2562117f8604b0497aa71e1fcbfce6  ./libmtmd.so.0.0.10102
+70b885f4b68356cddbbe8539131667ab6e2562117f8604b0497aa71e1fcbfce6  ./libmtmd.so.0.0.10104
+70b885f4b68356cddbbe8539131667ab6e2562117f8604b0497aa71e1fcbfce6  ./libmtmd.so.0.0.10106
+70b885f4b68356cddbbe8539131667ab6e2562117f8604b0497aa71e1fcbfce6  ./libmtmd.so.0.0.10107
+d37602c9912a38ad683fbc6c4047cc440a6747e25b729199968e526db8a4f323  ./llama
+4dd0b0f4b14e5380994e6ede97c2734465fe9d044f5b98c0ab951b3688452627  ./llama-batched
+e5ff36d6fe1fcef25e63cd3cdb5fafadd80e5de82be9cd73ab8e7a5f25546bdc  ./llama-batched-bench
+68e1d37c200ffc9d9a0bcfa4bc6985475486600a20331e6524323d393ba5edd1  ./llama-bench
+dbb77c9f4652d8b731b01f001dd6e25469b48d4c80a02d291a8bc9ad8224eca7  ./llama-cli
+b368f6383c95a161b23d9c8373a63fa68ae6ddef8789bb46b109fcdbb894ec9a  ./llama-completion
+99b072e5e0bd171acb03a9fa35ec6d4b89eb1e284b269d8bbf6c3cbb8f9f436d  ./llama-convert-llama2c-to-ggml
+b67df57914bbf9f490d5f0dd468f4978f00d8536a6e6468572b6a0fa81f2e92d  ./llama-cvector-generator
+3e0739a0fc94fdeac5de71b6820dd62452a80a4818ba21798f94381385273505  ./llama-debug
+66266dcceff24038ffa9c0f2c21cf5d05fd0bd4171ab3acf6b65f30c22ae6f34  ./llama-debug-template-parser
+b21271d3daa14fbde80b824c31ab8ba5ba24798f462a8c1d740bd26bcc64efc9  ./llama-diffusion-cli
+af61e567dcf18c0d62602de77bbcca9d9224f8e3b2e0a6208a61c7dd7cf8bafd  ./llama-embedding
+eb8d81ae83abbba41739b3f46caa44cf18de53ba307da28f2a70e578691889df  ./llama-eval-callback
+d84125de7bf08a554c85b11eb05b907f2308f2ce9056f2b057fd2b90e7c25224  ./llama-export-lora
+3423dbe2ea343c1e4dbe8b1c93646a5dabc78b28b44ea0894ff9748dd2122fd5  ./llama-finetune
+7161797bd58ead552c95daccd2e0debb2adf27436c53e9a9a1e5c60920592d87  ./llama-fit-params
+5123c3ab4268a707ff3f54aaac1c303353d09336b339b46ae2a1278354872e3c  ./llama-gemma3-cli
+11f0659c3f7e7e82ee31671d8e52a247088f8fdad5cba8d72ef49adf05dd86e8  ./llama-gen-docs
+fa0527a4ef0f61239bc4edf10af9f607e5ede7786f37e056d5b10042b3c7b32e  ./llama-gguf
+b244f39816c71c480cc7de7be5e19c9deda80c5886fcf639c6ec51884dad6728  ./llama-gguf-hash
+d666402d9ab1530af41f2a81c719a9e2a4add6c52fcc4b3c00b08afa3761fd67  ./llama-gguf-split
+9bd44295e4bd370bc6bf9dcd4cb6bf11d9f432696d536ca84bd4edc7f775415b  ./llama-idle
+35e689d3a4db8b89541f2e061e7127030fa3624d0d61900317ac3903175eadca  ./llama-imatrix
+5123c3ab4268a707ff3f54aaac1c303353d09336b339b46ae2a1278354872e3c  ./llama-llava-cli
+7540e63bd1017de3c23dbda8a5553a10df744a6c6d7c64167fb87f2fcf325351  ./llama-lookahead
+8ff587e19fc5fea6a3cb2c0991c69accec5dd2be11eee4eee19eceeb44e0a8c2  ./llama-lookup
+9181556de628fd6940c49d33531e7e370aee1f069ec7c6d13f091c5f74d60ed9  ./llama-lookup-create
+46f5662a51fcebfb7bcb351b495aef0071a2c3700501247ee2818be1bab35582  ./llama-lookup-merge
+731d02c801647ca49fdb78b207be17aad756ee11f4d4c9d3e3e39f333b2fa8a8  ./llama-lookup-stats
+5123c3ab4268a707ff3f54aaac1c303353d09336b339b46ae2a1278354872e3c  ./llama-minicpmv-cli
+d614ff1bef8875420b1f046ae2e43234f1bd8d61f522c4efdf6918923cb9ff20  ./llama-mtmd-cli
+0e00161fde6911d241f5d40f561a9ee3a90a162bbb1eff0a94b1a1877897feca  ./llama-mtmd-debug
+a64ea1e9fef818554790dbbf3126e0c8cff01f0cbb60383e4d427666b743b100  ./llama-parallel
+4a21ffd2a22f47c323e5bb39992aef9e634e99313f1d8ab07f8b42ee36f23d9c  ./llama-passkey
+ea58766089682128302f41ca4878ea26411dc6246622db6787be1de63232f56c  ./llama-perplexity
+e93721ffbaf43108c46a876d83f54b4b34a09f11f590963acd6b984e3a6b62ee  ./llama-q8dot
+4a07dde40dc6e9e013b9f3f549f275c59e6342af56719792f6f7115d8fc20ab3  ./llama-quantize
+5123c3ab4268a707ff3f54aaac1c303353d09336b339b46ae2a1278354872e3c  ./llama-qwen2vl-cli
+72a6603b23e42ac006100902ed1582f8605ab54750f8a382982a49c423961541  ./llama-results
+c67235456b1e91a5e2e6fd3d9600d669c674d3ccb219aeb32d1e9b1cd1f2d7aa  ./llama-retrieval
+a4b667163022aa166ade7c0e00fa4e775b37662e02c10da7642c8c23a4d6b414  ./llama-server
+16d0942de00a43dfe2d2ba1d1a8c3c9b922bfd4ac0cb25a619e47e759e220d43  ./llama-simple
+7a8e5e685128317b77fa4c1372aa5773382baceff30131d99d55aecca0c36869  ./llama-simple-chat
+355e95b9941b7c0cb95f695398c9fc13adc4a9b9a48f40608ff544669d2a83aa  ./llama-speculative
+402e67e60754eb5cf58dfa51fbe44b19177d0a2556a21adb647c275f0dcbdcd3  ./llama-speculative-simple
+e2155c36fac792e3fee8f2acf412959330b0717a7fdef86049d707b2a6e5611c  ./llama-template-analysis
+bc0428c67a4e9d9cb181c4d10e8da489e3afb60a46684f37fce80e11457ac44f  ./llama-tokenize
+80de9e5b92518e56cf67cf4bd4ee93d05384a7850bb35629b5f01244d60dccd8  ./llama-tts
+3bb08503cd962e6f40d4d48ac2655b0b680d494827d9b966c8c8cf64db7baef8  ./llama-vdot
+462f5c30b7421c2589e9148f9003149dc5faaa401d2be63f8cb41e40dbfb1b53  ./test-alloc
+f3838b0c344123b73ae7c10b42f9a9b78410caeffd9d20ea89287206a45d4323  ./test-arg-parser
+9a29dd6d239363e32cca1edc13541860bd1607d644e5d63714db0321a2ecf9fa  ./test-autorelease
+e336b4abed8c21d76f86121fbaf131ba560fdc6de1b560d3937c43f3e524cd0c  ./test-backend-ops
+a9c1a5f5f443d6b3963818bec8ccd4a68b3623d8a3d697e44d0af2ce58043c77  ./test-backend-sampler
+0a7f3ea024ef0072e5477702ea22efb901f3df9fc3a3988e8123b9fc698f0ae9  ./test-barrier
+3581ab615f84537e3f92b0f0dd1211aa35f1eea1186c3e2c143940008ab1e030  ./test-batch-alloc
+110f748f86c4deb464a1e79215fe646ad86db849d1195671226f5a49b7d30408  ./test-c
+06d8f9e059b2d732d2084d1de452ba941e3fe208b9d56e30bceba9817c5ab8f5  ./test-chat
+8ab01814416828b936bde378104d8fd39ec9f3c0d59b7a4964e53ab54aaf85e7  ./test-chat-auto-parser
+06cb58133bcf00706674bb8c7be4bc3583953abe38f9c1e950a430f5c746f724  ./test-chat-peg-parser
+173bc66f7924e3e27587ae8612bedf0f8ac5d9391c7596b07194071f473db21b  ./test-chat-template
+291a75741555a42bf608493c00211977236fe39e311207ffe166521dfa4fa1d8  ./test-col2im-1d
+d2862500fb7d8a0e2cea60f13a4caaa2f24a9603cccccc631b8f752bb758a806  ./test-export-graph-ops
+6a31b90703f7e49218591b7c2c391b3872ceda9bde60ab83953039cd79fe791b  ./test-gbnf-validator
+99c31c06c5b9a513d6a25df42d0b1c5bf770bc9519ffa052471f91ea8e6e93ea  ./test-gguf
+2faec68175c51887ff20e63c303d65afd38e70ccbe773a5e11063eaa7a8be071  ./test-gguf-model-data
+19d7e5233b43a487a0962131cb5e9a52a6d5674436dd520981ff6b515dca16ec  ./test-grammar-integration
+8b6852baf35a169cfa27c4d6c4dcafa111ed8a711d315be4d81266b05ae3376f  ./test-grammar-parser
+2c80ac55bf5b027e93ebe59cd3add06ae8e2e6b965e31a3bd01d17dd3341e691  ./test-iqk-ser
+a224e06d4c015400bba3e68d4dba866a8a30da95640a9a6b52f8511dd45a8e46  ./test-jinja
+ccfe7bcfdfcd58b77e7833560e30f7c1c5e7cf356cc5248aa5f756f0e1cf0d4e  ./test-json-schema-to-grammar
+172a5d83cbe60d652e3ce6fe6337beb1fea19ac76bce05e4a1532e7bff013c40  ./test-llama-archs
+7db1e77eebcc772ca3213837846f4cee90813348b5318c7778880dd51916394d  ./test-llama-grammar
+a605c38923910f9535b059c3900dcdcf2c1e267d637e35a0a48e256067ff8277  ./test-log
+a46c2678e9397b6546f3c7477bd7ed0563fe1b177ca626c84fdf988fc525c1f4  ./test-model-load-cancel
+d6de106b5287f8d621c2ab59b03a4f7280368f45a1744de70a7771fd9fb467cc  ./test-mtmd-c-api
+8452d245b17ca26a759a4a6e1b896e5c91da43e96847f712f5aacc61aaaa761d  ./test-opt
+f4ad68e35e622d75ecd29578fedd38ed9629e4ebf5d8cc37c5c89ee3b35b9ad0  ./test-peg-parser
+469c6aeb4a98c0f6dda9ca4d5848ccec1cdac37146a275a1cb306f8dd8cd657b  ./test-quant-type-selection
+1e15b3800b2f0da29f61ad7b4299b3f3c13b9fb881dd50c1e89ab228b4d9e4c6  ./test-quantize-fns
+20f0ab45ec5581e6e75d3982858f0dc870b8c73d4939a45832cead18d9313c53  ./test-quantize-perf
+2895e375935255fde055e6fd74b5f9b562d6baca823016608cb9c2ea4669573c  ./test-quantize-stats
+a7981db7ae015417c8caf18000dcae95d313fa3e74482b9213321c39ddbcffd0  ./test-reasoning-budget
+c957312fb012b9cc3d44b6b7331e0e9087249d7a1a0444b627d8d2c7332ad864  ./test-recurrent-state-rollback
+a6aea70ffb0cac6fc29390b4d4a861b398b2ad1614800f3374bf215ef75b755b  ./test-rope
+46e7f5c55f622bce200ece650e37095f1e703bbd55699cf04835b56f84250452  ./test-sampling
+356d86e032dd179de4c7acc3acadc38937418bb67b51470501084bacbb6eee86  ./test-save-load-state
+31ce1b5ab19c4ab6e37cbd046a4773109672bd5d11c98ca196b09b5d5c7b3c78  ./test-state-restore-fragmented
+e94d9f70ddbeb75c010e71e02c55bcc1219433ab02394ab53f2521af50f36a79  ./test-thread-safety
+ba495c2adc2b8ae4b8e2b9ce1f641352393e1b491d3100cdc6a66cb59ffdce6f  ./test-tokenizer-0
+66f77f0981b7a8a5247f6308446c3277ee55da51b6fb0eb513c9e3aa1530f62e  ./test-tokenizer-1-bpe
+9f0fea7d79d01591bd123633ba3fe95950b354638f99000d18b266ee407fd211  ./test-tokenizer-1-spm
+symlink ./libggml-base.so -> libggml-base.so.0
+symlink ./libggml-base.so.0 -> libggml-base.so.0.16.0
+symlink ./libggml-cpu.so -> libggml-cpu.so.0
+symlink ./libggml-cpu.so.0 -> libggml-cpu.so.0.16.0
+symlink ./libggml.so -> libggml.so.0
+symlink ./libggml.so.0 -> libggml.so.0.16.0
+symlink ./libllama-common.so -> libllama-common.so.0
+symlink ./libllama-common.so.0 -> libllama-common.so.0.0.10107
+symlink ./libllama.so -> libllama.so.0
+symlink ./libllama.so.0 -> libllama.so.0.0.10107
+symlink ./libmtmd.so -> libmtmd.so.0
+symlink ./libmtmd.so.0 -> libmtmd.so.0.0.10107
