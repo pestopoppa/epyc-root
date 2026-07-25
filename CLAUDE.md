@@ -183,6 +183,13 @@ Documents in `handoffs/archived/`, `handoffs/completed/`, `progress/`, and `CHAN
 
 - **Do not add intake entries, handoff stubs, or other index modifications via sub-agents without explicit user approval.** All index changes must be traceable to a direct user request.
 
+### Codex Delegation Policy
+
+- In Codex sessions, keep the main thread focused on high-level decomposition, risk and ownership decisions, reviewing and accepting delegated work, integration, and operator communication.
+- Delegate independent, well-defined tasks whenever possible. Use the smallest capable `gpt-5.6-terra` or `gpt-5.6-luna` agent at the lowest adequate effort (`low`, `medium`, `high`, or `xhigh`).
+- Treat every sub-agent result as proposed work: the main thread must review its evidence and diffs and run appropriate validation before accepting it.
+- Delegate wrap-up routines only to `gpt-5.6-luna` at `high` effort. If that model is unavailable, report wrap-up as blocked and request an explicit operator override; never silently substitute another model.
+
 ## Operator Decision Requests
 
 - **Never ask the operator an open-ended question when escalating a decision.** Every request for input is a decision package: 2–4 concrete options with tradeoffs (cost / risk / time / quality / reversibility) and supporting data, a recommendation with reasoning, and the default outcome if no choice is made. Claude Code sessions deliver this via the AskUserQuestion tool (recommended option first, labeled "(Recommended)"). Full contract: `agents/shared/OPERATING_CONSTRAINTS.md` → *Operator Decision Requests*.
