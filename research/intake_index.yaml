@@ -2678,6 +2678,7 @@
     No specific benchmark numbers in abstract. Not applicable to EPYC — we don''t do document-to-KG RAG pipelines.
 
     '
+  dive_corrections: '2026-07-25 ID-37 re-read. CORRECTLY FILED. Pure hyperparameter tuning (chunking/graph-construction/retrieval/prompting) inside the Cognee framework, no architecture; EPYC''s KB is ColBERT dense retrieval over markdown, not KG construction. The paper reports no transferable result — its own abstract hedges that gains vary ''across datasets and metrics'' and concludes progress needs ''clearer frameworks for optimization''.'
 - id: intake-137
   arxiv_id: null
   url: https://www.percepta.ai/blog/can-llms-be-computers
@@ -3832,6 +3833,7 @@
     not directly applicable to EPYC server workloads. Interesting data point: TQ1_0 is 4-5x faster than TQ2_0 on Apple but
     TQ2_0 is favored on Adreno — backend-specific kernel performance varies significantly. Low standalone value; context for
     intake-162.'
+  dive_corrections: '2026-07-25 ID-37 re-read. CORRECTLY FILED — genuinely read before dismissal (the TQ1_0-vs-TQ2_0 backend inversion it cites is real). Content is Vulkan compute-shader ternary kernels on mobile/consumer GPUs plus LoRA fine-tune timings; EPYC neither fine-tunes nor uses the Vulkan backend, and TQ1_0/TQ2_0 are already integrated in the epyc-llama fork. Minor uncaptured detail, NOT actioned: the repo''s quality-parity gate methodology (''99.04% same-top-token rate, KL divergence < 0.0003'' vs CPU reference) is a mildly reusable gate pattern, but tq3-quantization-evaluation.md already runs a stricter output-compliance gate.'
 - id: intake-164
   arxiv_id: null
   url: https://huggingface.co/blog/qvac/fabric-llm-finetune-bitnet
@@ -4484,6 +4486,7 @@
   notes: >
     Implementation repo for intake-177. MIT licensed. Hopper GPU only.
 
+  dive_corrections: '2026-07-25 ID-37 re-read. CORRECTLY FILED — the strongest not_applicable of the set, triple-disqualified: it is a TRAINING kernel (FA3 backward pass), Hopper-only (README requires H100/H200), CUDA >= 12.8. EPYC has one gfx90a MI210 on ROCm 6.2 and does not train. No CPU or ROCm path exists.'
 - id: intake-179
   arxiv_id: null
   url: https://github.com/karpathy/nanochat/pull/633
@@ -13302,6 +13305,7 @@
     informative but not directly actionable. The advantage scoring
     field could be interesting for future data quality research.
 
+  dive_corrections: '2026-07-25 ID-37 re-read. CORRECTLY FILED, with a correction that makes it MORE dismissible: the entry''s one forward-looking hook — ''the advantage scoring field could be interesting for future data quality research'' — is empty. The `advantage` column is a UNIFORM CONSTANT 1.0 across all 20,480 rows; there is no quality signal in it. Anyone revisiting this entry would otherwise chase an empty column. Also a provenance smear: the ''dip-and-recovery'' and ''repeated exposure > coverage'' key_claims come from the companion paper, not this dataset card. Cosmetic: `source_type: blog` should be repo (HuggingFace dataset).'
 - id: intake-376
   url: https://huggingface.co/datasets/open-r1/OpenR1-Math-220k
   source_type: blog
@@ -13329,7 +13333,7 @@
   novelty: low
   relevance: low
   credibility_score: null
-  verdict: not_applicable
+  verdict: already_integrated
   discovered_via: null
   expanded_from: null
   ingested_date: '2026-04-15'
@@ -13355,6 +13359,7 @@
     Math-Verify verification methodology is more relevant than the
     dataset itself.
 
+  dive_corrections: '2026-07-25 ID-37 re-read (8 low-relevance conflation candidates). VERDICT CORRECTED not_applicable -> already_integrated. `not_applicable` asserts OUT-OF-SCOPE, but this entry''s own notes cite the source as supporting evidence for a LIVE handoff (`reasoning-compression.md`, via the 75%-solve-under-8k-tokens statistic). A source feeding a live EPYC thread is not out-of-scope. This is verdict-hygiene only — no content was missed and no new work is implied. Cosmetic nits: `source_type: blog` should be repo (it is a HuggingFace dataset), and the download figure is stale (14,009 recorded vs 44,489/month on re-read).'
 - id: intake-377
   url: https://github.com/huggingface/Math-Verify
   source_type: repo
@@ -14736,6 +14741,7 @@
     orchestration technique. Memory/user-modeling concepts already covered by
     EPYCs completed B1 user modeling and Graphiti/MemRL episodic memory work.
     No component or pattern worth porting into EPYC.
+  dive_corrections: '2026-07-25 ID-37 re-read. CORRECTLY FILED — and an exemplar of how not_applicable should be argued (carries explicit novelty AND relevance justifications). Confirmed: client-side capture product (Swift/Flutter/BLE firmware) with the backend hard-bound to Firebase/Firestore and NO Ollama/llama.cpp/local-model path anywhere, so not self-hostable in the sense EPYC requires. Its ''memory'' layer is Firestore CRUD, not an episodic-memory technique.'
 - id: intake-401
   url: https://huggingface.co/YatharthS/LuxTTS
   source_type: repo
@@ -42679,6 +42685,7 @@
   handoffs_created: []
   notes: 'DEEP-DIVE REVISION 2026-07-11: DOWNGRADED medium->low novelty/relevance, adopt_patterns->already_integrated. okf-schema is a downstream single-author impl of Google OKF v0.1, which we already deep-dived and adopted via intake-710/711 (drove wiki/SCHEMA.md ## Conformance). Gap analysis: every tier (immutable findings, contradiction-status, finding->concept promotion, principles-as-constraints, outcomes<->evidence) is already covered here, usually more maturely + hook-enforced. Sole marginally-novel idea (explicit finding->concept promotion provenance) is already present informally. No empirical claims -> credibility null. File-and-close.'
   ingested_date: '2026-07-11'
+  dive_corrections: '2026-07-25 ID-37 re-read. CORRECTLY FILED — the already_integrated tier mapping holds (Findings<->intake_index, Concepts<->chapters, Principles<->CLAUDE.md/MEASUREMENT.md hook-enforced, Outcomes<->handoffs), and the ''no empirical measurements'' call is confirmed: the tutorial''s numbers are a FICTIONAL COMPOSITE dated to 2026, not measurements. Minor gap: the schema has FIVE tiers, not the four summarized — it omits Structures (reusable system blueprints), whose EPYC analogue is wiki/ chapters + docs/reference/. Conclusion unaffected.'
 - id: intake-800
   arxiv_id: '2607.05794'
   url: https://arxiv.org/html/2607.05794v1
@@ -42792,6 +42799,7 @@
   handoffs_created: []
   notes: 'not_applicable: commercial "viral article" landing page (bias applied), no empirical claims -> credibility null. Generic Claude Code agent primer whose patterns (Commander/Hands tiering, adversarial verification, skills) the project already documents/practices (cf. fable5-findings-*, meta-harness-optimization). Sibling youmind viral-article already indexed at credibility 0. Page contained reader-directed imperatives (end-user behavior, not agent hijacking); treated as data, none obeyed.'
   ingested_date: '2026-07-11'
+  dive_corrections: '2026-07-25 ID-37 re-read. CORRECTLY FILED. Commercial landing page promoting the vendor''s own platform and paid tiers; ZERO benchmarks — the only quantities on the page are engagement counters (559K views, 401 likes), which is exactly why credibility_score: null is right. Every pattern described (Commander/Hands tiering, sub-agent fan-out, adversarial verification, .claude/skills markdown) is already documented and practiced here per fable5-findings-* and meta-harness-optimization.md.'
 - id: intake-802
   arxiv_id: null
   url: https://github.com/local-inference-lab/llm-inference-bench

@@ -1175,7 +1175,7 @@ No conflicts with active handoffs. HSD handoff (completed) modified the speculat
 **DFlash block diffusion** ([`dflash-block-diffusion-speculation.md`](dflash-block-diffusion-speculation.md)) opens new composition opportunities for tree speculation:
 
 ### DFlash as O(1) Tree Builder
-Tree speculation's key bottleneck is sequential AR draft generation — each draft token depends on the previous. DFlash eliminates this entirely: a small diffusion model generates all draft tokens in parallel via iterative denoising. The diffusion process naturally produces multiple candidates per position (from different denoising trajectories), making it an ideal tree builder.
+Tree speculation's key bottleneck is sequential AR draft generation — each draft token depends on the previous. DFlash eliminates this entirely: a small diffusion model generates all draft tokens in parallel. **Correction 2026-07-25: the forward pass is SINGLE-PASS, not iterative denoising** (verified from the drafter weights — no timestep tensors), so there are no "different denoising trajectories" to harvest multiple candidates from; the tree-builder rationale in this paragraph does not hold as written. See `completed/dflash-block-diffusion-speculation.md` § CRITICAL CORRECTION.
 
 ### Composition Plan (DFlash Phase 5)
 1. DFlash generates block of 16 draft tokens in parallel

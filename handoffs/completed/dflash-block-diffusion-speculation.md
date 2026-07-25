@@ -27,7 +27,7 @@ DFlash trains a small (~0.5-1B) transformer as a block diffusion model. Given:
 - Hidden states from specific layers of the target model (conditioning signal)
 - A block of noisy token embeddings (initialized from noise)
 
-The drafter iteratively denoises the block over T steps (typically T=8-16) to produce a block of draft tokens. All tokens in the block are generated in parallel — the drafter uses causal attention within the block but is conditioned on the target's context.
+~~The drafter iteratively denoises the block over T steps (typically T=8-16) to produce a block of draft tokens.~~ **SUPERSEDED — see the CRITICAL CORRECTION later in this file: the DFlash forward pass is NOT iterative denoising, it is SINGLE-PASS.** Re-confirmed 2026-07-25 from the published drafter weights (no timestep tensors). Left struck rather than deleted because this line is near the top and was still teaching the wrong cost model to anyone who stopped reading before the correction. All tokens in the block are generated in parallel — the drafter uses causal attention within the block but is conditioned on the target's context.
 
 Key properties:
 - **O(1) draft latency**: Fixed denoising steps, independent of block size

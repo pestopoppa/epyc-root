@@ -161,4 +161,22 @@ _Provenance: surfaced while validating the GEPA proposer fix (see [`intake-deriv
   2. Bring up: `start --numa-mode both --skip-stack-change-gate` — justified ONLY for cold bring-up after step 1's verification (the pre-deploy "do not bypass" warning targeted the since-closed A2/A3 hazards; benchmarks and autopilot resumes must still never bypass).
   3. Immediately after fleet-up: `scripts/registry/stack_change_pipeline.py update` — realized mode is now derivable, priors compile succeeds, gate debt cleared.
   4. Policy riders: stop autopilot before a full bring-up (SIGTERM + drain), restart after; per-run operator approval for llama-* remains in force.
-- [ ] **Design question for this surface (owner decision)**: should the GATE's stack_priors check adopt a cold-fleet posture — e.g. when `derive_realized_numa_mode()` is None AND an explicit CLI mode was threaded, downgrade the WRITE-path priors compile to CHECK-only (or defer it to a post-launch hook) instead of hard-failing? Pro: removes the skip-the-whole-gate step from cold starts (36 checks currently discarded to tolerate 1 designed refusal). Con: touches a kill-chain-A4 trust boundary; any carve-out must provably never rewrite `stack_priors.yaml` pre-launch. NOT implemented unilaterally for that reason.
+- [x] **Design question RESOLVED 2026-07-25 — already decided, deliberately; no change warranted.** ✅
+  I asked whether the GATE's stack_priors check should adopt a cold-fleet posture (trust an explicit
+  CLI/env mode when no fleet is realized) instead of hard-failing. **The codebase already answers this,
+  and the answer is no.** `tests/unit/test_stack_priors_compiler.py:1142` encodes the exact carve-out as a
+  prohibited behavior, with the rationale in a comment: *"An explicit env does NOT rescue a no-signal probe
+  (unverifiable fleet)."* Implementing the carve-out would require inverting a test that documents intent.
+  - **Refined understanding of WHY the check path refuses** (this differs from the write path and I had it
+    conflated): `_check_stack_priors` (`stack_change_pipeline.py:504`) sets `require_realized_mode=True` NOT
+    for write-safety but for **comparison validity** — its own comment: *"so a clean-shell check computes the
+    SAME lineup the update writes and cannot report the quarters-only priors as 'stale' against a full
+    expected."* Kill-chain A4 protection lives only on the WRITE path (`:550`). Refusing is the fail-closed
+    alternative to a comparison the tool cannot trust.
+  - **Consequence for operators**: a gate-green cold start is impossible **by design**, not by defect. The
+    cold-start recipe above (verify via dry-run that the ONLY residual error is the priors refusal, then
+    `--skip-stack-change-gate` for bring-up, then `stack_change_pipeline.py update` immediately once the
+    fleet is realized) is therefore the **sanctioned** path, not a workaround. The 36 other checks still run
+    and must be green before the skip.
+  - Anyone revisiting this must change the test and its comment first, with the owning surface's sign-off —
+    that test is the specification.
