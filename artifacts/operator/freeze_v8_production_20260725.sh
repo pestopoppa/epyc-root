@@ -462,14 +462,16 @@ validate_corrected_lineup_evidence() {
     jq -n -e --slurpfile baseline "$WORKER_BASELINE" --slurpfile candidate "$WORKER_RESULT" '
         ($baseline[0].suites | map({key:.suite, value:.}) | from_entries) as $base |
         ($candidate[0].suites | map({key:.suite, value:.}) | from_entries) as $cand |
-        all(["mmlu_pro", "gpqa"][] as $suite;
+        all(["mmlu_pro", "gpqa"][];
+            . as $suite |
             $cand[$suite].n >= 195 and
             $cand[$suite].accuracy >= ($base[$suite].accuracy - 0.05))
     ' >/dev/null || fail 'worker structured quality comparison failed the 5pp gate'
     jq -n -e --slurpfile baseline "$ARCH_BASELINE" --slurpfile candidate "$ARCH_RESULT" '
         ($baseline[0].suites | map({key:.suite, value:.}) | from_entries) as $base |
         ($candidate[0].suites | map({key:.suite, value:.}) | from_entries) as $cand |
-        all(["mmlu_pro", "gpqa"][] as $suite;
+        all(["mmlu_pro", "gpqa"][];
+            . as $suite |
             $cand[$suite].n >= 195 and
             $cand[$suite].accuracy >= ($base[$suite].accuracy - 0.05))
     ' >/dev/null || fail 'architect structured quality comparison failed the 5pp gate'
