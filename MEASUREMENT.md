@@ -349,3 +349,45 @@ part of the attestation.
 Every required cell must pass before promotion. A failed cell blocks promotion pending
 repair or a separate, explicit operator waiver. Claim grammar:
 `CPU prefill <value> tok/s [P-BENCH-PREFILL-1, n=<reps>, YYYY-MM-DD, attest <ref>]`.
+
+## P-DFLASH-LINEUP-1 — DFlash lineup enablement (RATIFIED 2026-07-25)
+
+**Scope and direction.** This protocol gates a production lineup change that enables
+`--spec-type draft-dflash`; it does not gate whether DFlash capability may exist in a
+versioned kernel and it is not a kernel-promotion requirement. Evaluate every
+`(target model, target quant, device class, draft model)` lane independently. Do not
+pool acceptance or speed across lanes. Acceptance and decode throughput are
+higher-better.
+
+**Instrument and provenance.** Use the owning checked-in DFlash runner with its fixed
+prompt pack, semantic validators, warmup, counterbalanced base/DFlash schedule, and
+replicate count. The artifact must record the runner commit, target and draft model
+paths/sizes/SHA256 values, binary and shared-library paths/SHA256 values, complete
+argv/environment, lane identity, raw per-replicate prompt rows, draft counters, host
+preflight, process witnesses, and cleanup. Every prompt response must pass its semantic
+validator. Missing, malformed, non-finite, mixed-lane, contaminated, or incomplete
+evidence is a failure.
+
+**Metrics.** For one lane, pooled per-token acceptance is
+`sum(draft_n_accepted) / sum(draft_n)` over all DFlash prompts and replicates. For each
+prompt class separately, compute base and DFlash decode throughput as
+`sum(completion_tokens) / sum(decode_seconds)` over that prompt's replicates, then
+compute `DFlash throughput / base throughput`. Persist all numerator and denominator
+values; an aggregate or median-of-medians speedup cannot substitute for the
+per-prompt ratios.
+
+**Lineup decision rule.** A lane is eligible only when all of the following hold:
+
+- pooled per-token acceptance is `>= 0.60`;
+- every prompt-class DFlash/base decode-throughput ratio is `>= 1.00`;
+- all identity, semantic, numerical, host, completeness, and cleanup checks pass.
+
+Failure blocks enabling DFlash only for that lane. It does not block other lanes,
+non-DFlash serving, or promotion of the underlying kernel capability. Passing this
+gate does not itself edit a production lineup; the operator must separately authorize
+the reversible deployment change.
+
+**Prospective use.** This protocol applies only to runs started after this amendment.
+The 2026-07-24 Laguna IQ2/Q4/Q8 artifacts remain observations and MUST NOT be
+retro-certified. Claim grammar:
+`DFlash lineup <lane> eligible|ineligible [P-DFLASH-LINEUP-1, acceptance=<value>, per-prompt ratios=<values>, n=<reps>, YYYY-MM-DD, attest <ref>]`.

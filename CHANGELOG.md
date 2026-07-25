@@ -7,6 +7,9 @@
 - Amended `P-BENCH-PREFILL-1` contention accounting to gate on an unclamped signed
   sustained-throughput window, while retaining startup/teardown sampling skew as
   telemetry and preserving whole-arm contamination, swap, and ownership failures.
+- Ratified prospective `P-DFLASH-LINEUP-1`: each model/quant/device lane requires at
+  least 60% pooled per-token acceptance and no per-prompt decode slowdown before a
+  separately authorized production DFlash lineup enablement.
 
 ## 2026-04-10
 
