@@ -490,6 +490,15 @@ cleanup() {
     local rc=$?
     trap - EXIT INT TERM HUP
     if (( transaction_active )); then
+        if [[ "$phase" == "complete" &&
+              "$(jq -r '.phase' "$JOURNAL" 2>/dev/null)" == "complete" &&
+              "$output_sha" =~ ^[0-9a-f]{64}$ &&
+              -f "$OUTPUT" &&
+              "$(sha256 "$OUTPUT")" == "$output_sha" ]]; then
+            # Completion was durably journaled; a signal in the final instruction
+            # window must not roll an already-attested transaction backward.
+            exit "$rc"
+        fi
         if ! restore_preimages; then
             printf 'ROLLBACK INCOMPLETE: inspect %s and its durable preimages.\n' "$JOURNAL" >&2
             exit 2
