@@ -1,0 +1,22 @@
+{
+  "schema": "epyc.kernel_v8.runtime_packaging.v1",
+  "candidate_head": "67a433bf45a8a091d83b4ea0b32ff0735fd51800",
+  "stage": "/mnt/raid0/llm/llama.cpp/.v8-runtime-stage-67a433bf4",
+  "original_server_sha256": {
+    "cpu": "c6accc0d5bf935e85c56a16a5f837a70774005876d2326628702325e73b6704b",
+    "hip": "094b395244d71f0d30f82999e53d261f9d4daeea0b651b3e95b51cb6712888ac"
+  },
+  "deployed_server_sha256": {
+    "cpu": "a4b667163022aa166ade7c0e00fa4e775b37662e02c10da7642c8c23a4d6b414",
+    "hip": "112c560f1c978c584a9899539851348a0ce1e05cde458061c281758aff066882"
+  },
+  "rpath": {
+    "cpu": "$ORIGIN",
+    "hip": "$ORIGIN:/opt/rocm/lib"
+  },
+  "rewritten_elfs": 249,
+  "clean_environment_version_verified": true,
+  "clean_environment_ldd_verified": true,
+  "experimental_runpath_hits": 0,
+  "dangling_symlinks": 0
+}
