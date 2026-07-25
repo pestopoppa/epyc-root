@@ -11,11 +11,11 @@ source "$SCRIPT_DIR/../lib/env.sh"
 
 # Configuration (derived from env.sh)
 LLAMA_CPP_DIR="${LLM_ROOT}/llama.cpp"
-EXPECTED_BRANCH="production-consolidated-v7"  # 2026-07 v7 cutover: canonical production kernel supersedes v6 after the documented promotion routine.
-EXPECTED_COMMIT="6ad45fa3ff6718c07c000061dbc6e29c1771f6e3"
-EXPECTED_VERSION_LINE="version: 10098 (6ad45fa3f)"
-EXPECTED_CPU_SERVER_SHA256="df4806655b071ae3f74e5e986dcf830379b9302a8044be8466601e60345a7b21"
-EXPECTED_HIP_SERVER_SHA256="07daf49174825f23cd866a5d280d92c4b4e69891c314ca10b419bcadca3a9752"
+EXPECTED_BRANCH="production-consolidated-v8"  # 2026-07 v8 cutover: full exact-tip candidate plus sealed relocatable runtime trees.
+EXPECTED_COMMIT="67a433bf45a8a091d83b4ea0b32ff0735fd51800"
+EXPECTED_VERSION_LINE="version: 10107 (67a433bf4)"
+EXPECTED_CPU_SERVER_SHA256="a4b667163022aa166ade7c0e00fa4e775b37662e02c10da7642c8c23a4d6b414"
+EXPECTED_HIP_SERVER_SHA256="112c560f1c978c584a9899539851348a0ce1e05cde458061c281758aff066882"
 EXPERIMENTAL_DIR="${LLM_ROOT}/llama.cpp-experimental"
 
 # Colors
