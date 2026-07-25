@@ -78,7 +78,9 @@ output_sha=""
 pre_eras_sha=""
 pre_state_sha=""
 pre_card_sha=""
+preprompt_eras_sha=""
 preprompt_state_sha=""
+preprompt_card_sha=""
 
 fail() {
     printf 'ERROR: %s\n' "$*" >&2
@@ -160,11 +162,17 @@ require_only_expected_orchestrator_changes() {
         fail "unexpected tracked files changed during the ratification"
 }
 
-require_same_preprompt_state() {
-    [[ "$preprompt_state_sha" =~ ^[0-9a-f]{64}$ ]] ||
-        fail "pre-prompt AutoPilot state digest was not captured"
+require_same_preprompt_inputs() {
+    [[ "$preprompt_eras_sha" =~ ^[0-9a-f]{64}$ &&
+       "$preprompt_state_sha" =~ ^[0-9a-f]{64}$ &&
+       "$preprompt_card_sha" =~ ^[0-9a-f]{64}$ ]] ||
+        fail "pre-prompt era/state/card digests were not captured"
+    [[ "$(sha256 "$ERAS")" == "$preprompt_eras_sha" ]] ||
+        fail "instrument era registry changed while awaiting operator confirmation"
     [[ "$(sha256 "$STATE")" == "$preprompt_state_sha" ]] ||
         fail "live AutoPilot state changed while awaiting operator confirmation"
+    [[ "$(sha256 "$CARD")" == "$preprompt_card_sha" ]] ||
+        fail "system card changed while awaiting operator confirmation"
 }
 
 autopilot_is_running() {
@@ -181,7 +189,7 @@ acquire_locks() {
 
     # This is the shared lock used by every cooperating autopilot_state.json writer.
     exec 9>>"$STATE_LOCK"
-    flock -w 10 9 || fail "could not acquire the live AutoPilot state lock"
+    flock -n 9 || fail "live AutoPilot state lock is held"
 
     autopilot_is_running &&
         fail "AutoPilot process exists despite the singleton lock; inspect before proceeding"
@@ -514,6 +522,7 @@ cleanup() {
 recover_transaction() {
     if [[ -e "$PREP_DIR" && ! -e "$TXN_DIR" ]]; then
         local abandoned_at abandoned
+        [[ -t 0 ]] || fail "preparation recovery requires an interactive terminal"
         printf '%s\n' \
             "Interrupted preimage preparation found at $PREP_DIR." \
             "No live target mutation starts before preparation is promoted to $TXN_DIR." \
@@ -545,6 +554,7 @@ recover_transaction() {
     require_sha "$PRE_STATE" "$pre_state_sha" "AutoPilot-state preimage"
     require_sha "$PRE_CARD" "$pre_card_sha" "system-card preimage"
 
+    [[ -t 0 ]] || fail "transaction recovery requires an interactive terminal"
     printf '%s\n' \
         "Recovery will restore exactly the three durable preimages in $TXN_DIR." \
         "Type RECOVER-V8-ERA-FENCE to continue."
@@ -571,6 +581,17 @@ idempotent_complete() {
         .scope == "eligibility_fence_only" and
         .production_frozen == false and .separate_freeze_required == true
     ' "$OUTPUT" >/dev/null || fail "completed output has the wrong scope"
+    require_sha "$ERAS" \
+        "$(jq -r '.artifacts.instrument_eras_sha256' "$OUTPUT")" \
+        "attested instrument era registry"
+    require_sha "$STATE" \
+        "$(jq -r '.artifacts.autopilot_state_sha256' "$OUTPUT")" \
+        "attested AutoPilot state"
+    require_sha "$CARD" \
+        "$(jq -r '.artifacts.system_card_sha256' "$OUTPUT")" \
+        "attested system card"
+    validate_post_fence
+    require_only_expected_orchestrator_changes
     printf 'Eligibility fence is already ratified and digest-valid: %s\n' "$OUTPUT"
 }
 
@@ -909,7 +930,9 @@ main() {
     validate_evidence
     require_orchestrator_clean
     validate_pre_fence_state
+    preprompt_eras_sha="$(sha256 "$ERAS")"
     preprompt_state_sha="$(sha256 "$STATE")"
+    preprompt_card_sha="$(sha256 "$CARD")"
     autopilot_is_running && fail "AutoPilot is running; stop it before ratification"
 
     [[ -t 0 ]] || fail "operator ratification requires an interactive terminal"
@@ -931,7 +954,7 @@ main() {
     validate_production
     validate_evidence
     require_orchestrator_clean
-    require_same_preprompt_state
+    require_same_preprompt_inputs
     validate_pre_fence_state
     autopilot_is_running && fail "AutoPilot started after confirmation"
 
