@@ -135,7 +135,9 @@ verify_manifest() {
 }
 
 manifest_matches() {
-    local tree=$1 expected=$2 actual="$expected.actual"
+    local tree=$1
+    local expected=$2
+    local actual="$expected.actual"
     tree_manifest "$tree" "$actual"
     cmp -s "$expected" "$actual"
     local result=$?
