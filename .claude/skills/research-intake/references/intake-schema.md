@@ -35,6 +35,8 @@ Each entry in `research/intake_index.yaml` follows this schema.
 | `handoffs_created` | list[string] | New stub handoff filenames created |
 | `citation_context` | string | Surrounding text where this was cited (seed entries only) |
 | `notes` | string | Free-form analysis notes, deep-dive findings, revision history |
+| `verification` | enum | `stage1-unverified` (default on Stage-1 persist) · `dive-verified` · `dive-overturned`. **Set by Stage 1; promoted only by a Stage-2 dive that read primary source.** |
+| `dive_corrections` | string | Dated record of what a Stage-2 dive changed, so an overturned conclusion cannot be re-derived. Append-only. |
 
 ## Cross-References Object
 
@@ -68,3 +70,29 @@ yet know about it.
 The taxonomy and this schema are versioned (`schema_version: "1.0"`) so consumers
 can detect drift. See `wiki/SCHEMA.md` → `## Conformance` for the canonical
 statement of both the version stamp and the permissive-consumption contract.
+
+
+## Verification lifecycle (added 2026-07-25)
+
+Every entry carries a `verification` state:
+
+| State | Set by | Meaning |
+|---|---|---|
+| `stage1-unverified` | Stage 1 persist | Extracted from a fetch/summary pass. Claims are **provisional**. |
+| `dive-verified` | Stage 2 dive | Claims checked against primary source (quoted `file:line` or passage). |
+| `dive-overturned` | Stage 2 dive | A load-bearing claim was falsified; see `dive_corrections`. |
+
+**The unverified contract.** No number, quoted metric, or named mechanism from a
+`stage1-unverified` entry may be quoted in a Stage-3 plan item or a handoff task line. It must first
+be promoted by a dive.
+
+**Why this exists.** On 2026-07-25 two Stage-1 summariser agents invented specifics that were
+persisted to the index and read as evidence: a paper ablation whose four numbers appear nowhere in
+the paper (and which had additionally been cross-pasted into an *unrelated* entry), and a four-step
+tool behaviour absent from its source, which contained two generic sentences. Both survived until a
+Stage-2 dive read the primary sources. The `verification` field makes that provisional status visible
+instead of invisible.
+
+**Cross-contamination check.** Before persisting, verify each entry's `key_claims` and
+`reported_results` reference only its **own** source. A figure belonging to a different entry is a
+defect, not a stylistic issue.

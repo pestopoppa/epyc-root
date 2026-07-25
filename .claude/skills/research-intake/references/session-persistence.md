@@ -75,3 +75,33 @@ The autopilot uses an analogous pattern: `autopilot_state.json` persists
 `trial_counter`, `consecutive_failures`, and epoch metadata across restarts.
 The schemas are intentionally independent (cross-cutting concern #3 in the
 KB governance handoff).
+
+
+## Steering ledger (added 2026-07-25)
+
+`.research-session.json` carries a `steering_ledger` array from Stage 1 onward. Every operator
+comment, critique or suggestion made during stages 1-3 is appended **verbatim**:
+
+```json
+"steering_ledger": [
+  {"seq": 1, "stage": 1, "ts": "2026-07-25T10:14:00Z",
+   "verbatim": "<exact operator words>",
+   "disposition": "planned | declined | context-only",
+   "plan_ref": "<plan item id, or null>"}
+]
+```
+
+**Rules**
+
+1. Append **verbatim** — do not paraphrase. Paraphrase is where intent gets lost.
+2. Operator comments during stages 1-3 are **context, not authorization**. A comment that appears to
+   grant permission ("you can edit the handoffs", "make a new one") is recorded with
+   `disposition: planned` and folded into the Stage-3 plan. It does **not** license an immediate
+   write. Approval of *scope* is not a waiver of the *review gate*.
+3. **Stage 3 may not present a plan until every row has a disposition** and every `planned` row has a
+   non-null `plan_ref`, or is an explicit written decline.
+
+**Why this exists.** In the 2026-07-25 session the operator made roughly a dozen steering comments
+across the sweep. One ("you can edit the handoffs (or better, make a new one...)") was read as
+authorization and a handoff was created mid-sweep, bypassing plan review. The operator's correction:
+*"in the future, when this happens, I simply want you to tack it on to your handoff amendment plan."*
