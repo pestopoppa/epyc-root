@@ -380,17 +380,15 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
     it into frozen v7 without an isolated exact-tip final smoke and a policy
     decision on decode-only exposure. Evidence is observation-grade because K11
     MI210 stop-string runs overlapped during part of the tail.
-  - [ ] **PC-4p — fold `93d945885` into the v8 candidate branch** (filed by the
-    2026-07-25 v8 kernel-work audit, Claude session): `experimental-v8-refresh-20260724`
-    does NOT contain the PC-4n commit (verified: `93d945885` is not an ancestor;
-    `GGML_CPU_CONCAT_DIM0_ROWS` has 0 references in the v8 tree). Its parent is
-    `12a292f0c` (GLM native-MTP serving repair, 2.49→5.33 t/s), so
-    `git log 6ad45fa3f..93d945885` is exactly the two banked post-candidate
-    commits — cherry-pick both in order onto the v8 branch, keep default-off,
-    rerun focused CPU `CONCAT` 210/210 env-off/on + recurrent-rollback +
-    focused `glm-dsa`/`deepseek32` tests post-pick. Without this, v8 ships
-    without the only banked prefill win (+7.8% pp8192 / +34.9% pg8192/16 /
-    +22% batched pl=2) and without the 2.14× GLM decode repair.
+  - [x] **PC-4p — fold `93d945885` into the v8 candidate branch** ✅ 2026-07-25:
+    exact v8 tip `67a433bf4` carries `6ead35060` (from `12a292f0c`, GLM native-MTP
+    serving repair) then `e5dffb4e8` (from `93d945885`, CONCAT dim0 row partition).
+    The path remains default-off. Artifact
+    `epyc-inference-research/data/kernel-v8-candidate/focused-post-p0/run-20260725T085222Z-e5dffb4e8/`
+    records post-pick CPU `CONCAT` env-off `210/210`, env-on `210/210`,
+    recurrent-rollback, `glm-dsa`, `deepseek32`, and thread-safety passes.
+    This admits the two banked changes to the candidate; it does not make the
+    CONCAT path default-on or elevate its prefill figures beyond observation-grade.
 
 ## PC-0 operator-window plan
 

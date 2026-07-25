@@ -1,9 +1,9 @@
 # Laguna S 2.1 CPU Port — Experimental Branch
 
-**Status**: IN PROGRESS on `experimental-v8-refresh-20260724` — base arch + DFlash landed as `afa770382` (+`6c44557bf` thread-safety); GPU IQ2 smoke GREEN post-repair, CPU q8 lane blocked on a real model arithmetic miss + a harness attribution defect. See 2026-07-25 audit section. (Was: stub, created via /research-intake Stage-2, operator-approved 2026-07-22)
+**Status**: IN PROGRESS on `experimental-v8-refresh-20260724` — base arch + DFlash landed as `afa770382` (+`6c44557bf` thread-safety); the required GPU IQ2 and CPU Q4 lanes are complete. CPU Q8 characterization retains a real arithmetic miss but is not a promotion lane under operator scope. DFlash enablement is a gate FAIL/no-go. See 2026-07-25 audit section. (Was: stub, created via /research-intake Stage-2, operator-approved 2026-07-22)
 **Created**: 2026-07-22
 **Priority**: P2
-**Effort**: Low-Medium (base arch ~350 LOC; DFlash spec path is a separate larger port)
+**Effort**: Low-Medium (base arch ~350 LOC; DFlash spec path is included in the v8 carrying work, with enablement separately gated)
 **Categories**: local_inference, moe_optimization, speculative_decoding, quantization, hardware_optimization
 **Source**: intake-879 (poolside launch blog) + intake-880 (GGUF model card) + Stage-2 deep-dive 2026-07-22
 **Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
@@ -32,7 +32,7 @@ Port the **Laguna** architecture (poolside/Laguna-S-2.1: 118B-total / 8B-active 
 
 ## Tasks
 
-- [x] Forward-port base Laguna arch (merged PR #25165 commits, ~350 LOC: `src/models/laguna.cpp` +332, `models.h`, 1-3-line touches to `llama-arch`/`llama-model`/`llama-vocab`, `conversion/laguna.py` +207) onto a FRESH-pulled `llama.cpp-experimental` off `production-consolidated-v7`; validate S-2.1 Q4_K_M loads + coherence/garbage smoke ✅ 2026-07-25 — landed as `afa770382` on `experimental-v8-refresh-20260724` (superset: includes the DFlash spec path NOT in the PR); Q4 CPU + IQ2 GPU gates green in `/mnt/raid0/llm/tmp/v8-gates-20260724/{laguna-q4-cpu,laguna-iq2-gpu,laguna-dflash-contract}` (exit 0), `test-llama-archs`/`test-chat-auto-parser` pass in ctest; 2026-07-25 audit verified graph idioms match sibling archs (NEOX rope group, Qwen3-style QK-RMSNorm, per-layer YaRN/plain-RoPE split sound, softplus gate width-checked on both target and drafter sides)
+- [x] Forward-port base Laguna arch (merged PR #25165 commits, ~350 LOC: `src/models/laguna.cpp` +332, `models.h`, 1-3-line touches to `llama-arch`/`llama-model`/`llama-vocab`, `conversion/laguna.py` +207) onto a FRESH-pulled `llama.cpp-experimental` off `production-consolidated-v7`; validate S-2.1 Q4_K_M loads + coherence/garbage smoke ✅ 2026-07-25 — landed as `afa770382` on `experimental-v8-refresh-20260724` (superset: includes the DFlash spec path NOT in the PR). Required CPU Q4 evidence is at `epyc-inference-research/data/kernel-v8-candidate/laguna-cpu-dflash-exact-tip/run-20260725T112845Z-67a433bf4-noswap/` (nested `run-20260725T113030Z`): base median `7.078103` t/s, DFlash median `8.028143` t/s, but acceptance `17.2267%` fails the lineup floor. Final hardened GPU IQ2 artifact `epyc-inference-research/data/gpu-mi210/laguna-iq2-kv-sweep-exact-tip/run-20260725T125201Z` is post-identity, `15/15`, and observation-only: A q8/FA-on `33.992845`, B f16/FA-on `35.490117`, C f16/FA-off `33.782293`; B/A `+4.404668%`. `test-llama-archs`/`test-chat-auto-parser` pass in ctest; 2026-07-25 audit verified graph idioms match sibling archs (NEOX rope group, Qwen3-style QK-RMSNorm, per-layer YaRN/plain-RoPE split sound, softplus gate width-checked on both target and drafter sides)
 - [ ] Confirm the PR-author-flagged "GQA head-ratio backend dispatch" bug does not hit the CPU build (PR touches no `ggml/` files; per-layer `n_head` handled at graph level → likely CUDA-only)
 
 ---
@@ -46,27 +46,26 @@ code is clean (conversion surface complete 1:1 vs `load_arch_tensors`; templates
 The harness relaxations were audited commit-by-commit and are **NOT vacuous**: RESULT_JSON
 exact numeric equality, `finish_reason=stop`, completion floors, anti-garbage, and
 `draft_n>0` all still hard-gate — and post-relaxation the harness caught a REAL deterministic
-q8_0 model arithmetic error. Open items:
+q8_0 model arithmetic error. Remaining items:
 
-- [ ] **L-1 (silent-wrong risk) — make the SWA contract explicit in conversion.**
-  `conversion/laguna.py` never writes `SLIDING_WINDOW_PATTERN` (only `add_sliding_window`,
+- [x] **L-1 (silent-wrong risk) — make the SWA contract explicit in conversion.** ✅ 2026-07-25 — landed in `89d55f161`.
+  Before the fix, `conversion/laguna.py` never wrote `SLIDING_WINDOW_PATTERN` (only `add_sliding_window`,
   `laguna.py:86-89`) — the 4-dense-first layer pattern is an implicit code-side default
   (`laguna.cpp:39-41`); and `rope_freq_base_train_swa` silently defaults to the full-attn
   YaRN base (500000) when `ROPE_FREQ_BASE_SWA` is absent (`laguna.cpp:47-49`) though SWA
-  layers intend θ=10000. Write both keys at conversion + make the C++ fallback loud
-  (warn or abort). Any future Laguna variant converts silently-wrong today.
-- [ ] **L-2 (integration gap) — validate encoder input width explicitly.** DFlash encoder
-  assumes draft `n_embd` == target hidden size (`dflash.cpp:15` vs `speculative.cpp:1325`);
-  `LLM_KV_TARGET_HIDDEN_SIZE` exists in `llama-arch.h` but is never read; no divisibility
-  assert on `n_feat = n_embd_inp_enc()/n_aux` (`dflash.cpp:128`). Mismatch currently fails
-  only indirectly via `fc` shape at load. Read the key and check explicitly.
-- [ ] **L-3 (masking risk) — bound the non-finite feature sanitize.** `speculative.cpp`
-  (+1471-1490) unconditionally clamps target features to ±65504/NaN→0 on ALL backends
+  layers intend θ=10000. The landed conversion writes both keys and makes the C++ fallback loud.
+- [x] **L-2 (integration gap) — validate encoder input width explicitly.** ✅ 2026-07-25 — landed in `89d55f161`. DFlash encoder
+  previously assumed draft `n_embd` == target hidden size (`dflash.cpp:15` vs `speculative.cpp:1325`);
+  `LLM_KV_TARGET_HIDDEN_SIZE` existed in `llama-arch.h` but was never read; there was no
+  divisibility assert on `n_feat = n_embd_inp_enc()/n_aux` (`dflash.cpp:128`). Mismatch
+  previously failed only indirectly via `fc` shape at load. The landed change reads the key
+  and checks explicitly.
+- [x] **L-3 (masking risk) — bound the non-finite feature sanitize.** ✅ 2026-07-25 — landed in `89d55f161`. `speculative.cpp`
+  (+1471-1490) previously unconditionally clamped target features to ±65504/NaN→0 on ALL backends
   (comment blames Metal f16), warning once per process — after the first warning it silently
-  masks real target-model numerical bugs. Gate it per-backend or export a per-batch bad-count
-  telemetry counter.
-- [ ] **L-4 (harness defect, root cause still open) — fix `summarize()` attribution
-  ordering.** The 23:47Z "warmup" failure was a MISATTRIBUTION: all 20 cells' warmups passed;
+  masks real target-model numerical bugs. The landed change bounds that sanitize behavior.
+- [x] **L-4 (harness defect) — fix `summarize()` attribution
+  ordering.** ✅ 2026-07-25 — landed in `978ca540`; the exact CPU final reports semantic failure status before schema completeness. The 23:47Z "warmup" failure was a MISATTRIBUTION: all 20 cells' warmups passed;
   the real failure was 5/5 `q8_0_base` cells with `incorrect prime sum: 361` (vs 311),
   deterministic at temp0/seed 424242. Mechanism: error-path result rows lack the `"warmup"`
   key and `summarize()` checks `row["warmup"]` before ever surfacing `primary_error`. The
@@ -80,16 +79,14 @@ q8_0 model arithmetic error. Open items:
   arithmetic). Decide: relax the no-enumeration cap for the CPU lane, or accept and rerun with
   a different seed sweep — but do NOT paper over it with a validator relaxation; it is exactly
   the class of failure the harness exists to catch.
-- [ ] **L-6 (gate design) — add an acceptance/net-speed floor before any production DFlash
-  enablement.** Measured: GPU IQ2 acceptance 21.6% pooled — dflash is +35% on primes but
+- [x] **L-6 (gate design) — add an acceptance/net-speed floor before any production DFlash
+  enablement.** ✅ 2026-07-25 — gate implemented in `733c2cee`/`2bbd4109`; current DFlash result is FAIL/no-go, not an enablement. Measured: GPU IQ2 acceptance 21.6% pooled — dflash is +35% on primes but
   **−28%/−37% on the other two prompts**; CPU acceptance 17.2% (q4) / 19.0% (q8). This is
   consistent with the March block-diffusion NO-GO (27% accept) and the target-side quant-noise
-  mechanism — the BF16 drafter does not fix it. No gate anywhere enforces acceptance or
-  speedup; median-of-medians summaries can mask per-prompt net-negative. Add: per-prompt net
-  decode ratio surfaced + a floor gate (e.g. pooled acceptance ≥ X AND no prompt-class
-  net-negative) as a precondition for enabling `--spec-type draft-dflash` in any lineup.
-  Q8_0-target CPU (+11.9% aggregate at q4 — sole positive lane) is the only arm near the
-  reopen condition; IQ2-target GPU currently reads as a NO by the March precedent's own logic.
+  mechanism — the BF16 drafter does not fix it. The landed runner now surfaces per-prompt net
+  decode ratios and fails closed unless pooled acceptance is at least 60% with no prompt-class
+  net-negative. Q4 CPU improved aggregate decode by 13.42% but its 17.23% acceptance still
+  fails; IQ2-target GPU remains a NO by the March precedent's own logic.
 - [ ] **L-7 (minor) — tighten the normalize prompt.** `bed4a1d4` states "JSON `sum` … must be
   1.0" in the prompt, so the validator's `sum==1.0` check no longer tests computation (the
   normalized values 0/0.2/0.3/0.5 are still computed+checked). Reword so the gated value is
@@ -102,4 +99,4 @@ q8_0 model arithmetic error. Open items:
 
 ## Notes
 
-All Laguna quality/speed numbers to date are poolside self-reported OBSERVATIONS per MEASUREMENT.md — none gate a decision. The iqk (Laguna UD-IQ2_M beneficiary), DFlash (accept-rate bench + draft-dflash port), and architect-bench rows live in the linked handoffs and are cross-indexed under the "Laguna S 2.1 experimental-kernel cluster" in [`inference-acceleration-index.md`](inference-acceleration-index.md) so the whole cluster can be tackled in one session.
+Laguna evidence includes both poolside self-reported observations and the local exact-tip GPU KV artifact above; neither is decision-grade or a production-enable gate under MEASUREMENT.md. The iqk (Laguna UD-IQ2_M beneficiary), DFlash (accept-rate bench + draft-dflash port), and architect-bench rows live in the linked handoffs and are cross-indexed under the "Laguna S 2.1 experimental-kernel cluster" in [`inference-acceleration-index.md`](inference-acceleration-index.md) so the whole cluster can be tackled in one session.

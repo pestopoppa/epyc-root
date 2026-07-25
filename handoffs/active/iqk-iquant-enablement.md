@@ -56,11 +56,16 @@ Verified 2026-07-21: host load average ~48, seven llama-servers resident, and a 
 
 ## Outstanding tasks (require a quiet window)
 
-- [x] **B1 — Build.** ✅ 2026-07-25 — re-anchored to v8: `b8ad9d292` compiles `iqk_gemm_iquants.cpp` in `build-v8-cpu`/`build-v8-hip`/`build-v8-sanitize`; `test-iqk-ser` + `test-iqk-valid-control` pass on all three builds (persisted ctest logs, `/tmp/v8-candidate-ctest-20260724-1977a5d78-cleanenv/`). The commit also fixed real UB in the kernels AND in the native `arch/x86/quants.c` reference paths (load-bearing for test validity).
-- [ ] **B2 — Correctness before speed, per model.** For each of the four models: short coherence + garbage check with `GGML_IQK=1` vs `GGML_IQK=0`, same prompt and seed. iqk is **not bit-exact by design**, so the gate is output sanity and eval parity, never bit-compare. Pair every speed number with a correctness check.
-  - 2026-07-25 audit note: **substantially done for 3 models** — durable 6-arm attestation `epyc.iqk_real_model_correctness.attestation.v1` (GLM-5.2-IQ2, Qwen3-Next-80B-IQ2, Hy3-IQ1; pass, bound to candidate head, per-token logprob sha256 evidence) at `epyc-inference-research/data/kernel-v8-candidate/iqk-real-model-correctness/run-20260724T210820Z/summary.json`. **Remaining: Laguna-UD-IQ2_M arm** (5th beneficiary below). 122B-IQ2 is GPU-resident in production — CPU arm optional/deprioritized.
+- [x] **B1 — Build.** ✅ 2026-07-25 — re-anchored to v8: `b8ad9d292` compiles `iqk_gemm_iquants.cpp` in `build-v8-cpu`/`build-v8-hip`/`build-v8-sanitize`; `test-iqk-ser` + `test-iqk-valid-control` pass on all three builds. Historical HIP CTest was `56/59`, with all 3 failures classified baseline with paired differentials; exact-tip HIP is `59/62` with the same 3 failure classes. This is not a green full-HIP-CTest claim. Exact-tip CPU and sanitizer qualification and paired evidence are durable under `epyc-inference-research/data/kernel-v8-candidate/`. The commit also fixed real UB in the kernels AND in the native `arch/x86/quants.c` reference paths (load-bearing for test validity).
+- [x] **B2 — Correctness before speed, operator-scoped.** ✅ 2026-07-25 — exact 6-arm/24-task, three-model attestation `epyc.iqk_real_model_correctness.attestation.v1`, bound to exact tip `67a433bf4`, passed at `epyc-inference-research/data/kernel-v8-candidate/iqk-real-model-correctness/run-20260725T102000Z-67a433bf4/` (nested `101945Z`). It covers GLM-5.2-IQ2, Qwen3-Next-80B-IQ2, and Hy3-IQ1 with same-seed IQK-on/off coherence, anti-garbage, and per-token-logprob evidence. qwen3.5-122B is excluded by deprecation; Laguna IQ2 CPU/IQK is excluded by operator direction in favor of GPU IQ2, so this does not claim a Laguna IQK-on/off test.
 - [ ] **B3 — Speed.** `llama-bench` under the canonical baseline protocol (`taskset -c 0-95 -t 96 -fa 1`, OMP env stack mandatory), `GGML_IQK=1` vs `=0`, prefill and decode reported separately. Start with **Qwen3-Next-80B** (largest covered share, 54%) and **GLM-5.2** (highest operational value), then the other two.
-  - 2026-07-25 audit note: decision-grade matrix **IN FLIGHT** — `cpu_prefill_v8_regression_runner.py` under ratified `P-BENCH-PREFILL-1`, run `data/kernel-v8-candidate/cpu-prefill-regression/run-20260725T082414Z-v3-live/` (first non-IQ pair passed, ratio 1.0255). Three runner caveats to close before citing results as decision-grade: (1) `KMP_BLOCKTIME=10` is a declared-but-unratified drift (`CANONICAL_RECIPE_KMP_DRIFT`, trust-boundary change required); (2) **no era stamp** on emitted artifacts — add `instrument_eras.yaml` label; (3) contention-monitor v3 validates a ≥10s clean window but reps executed OUTSIDE it still count in medians — either restrict medians to reps inside eligible windows or persist per-rep window overlap. Also: Q8_0 rows need the SECOND gate `GGML_IQK_Q8_0=1` or they measure native, not iqk.
+  - 2026-07-25 status: the current `cpu_prefill_v8_regression_runner.py` era-stamps artifacts,
+    proves that the clean sustained window covers all measured repetitions, and sets
+    `GGML_IQK_Q8_0=1` for Q8_0 rows. The prospective live run
+    `data/kernel-v8-candidate/cpu-prefill-regression/run-20260725T082414Z-v3-live/`
+    is invalid and supplies no decision number: the Qwen3.6-35B Q8 MoE prefill arm sustains
+    about 50–55 target core-equivalents and cannot satisfy the ratified 72-core eligibility
+    floor. Awaiting the operator's `RATIFY-48`, `WAIVE-Q8`, or `REPLACE-Q8` decision.
 - [ ] **B4 — Non-IQ regression check.** Confirm K-quant/legacy models are unaffected. The dispatch change is purely additive so this should be a formality — but it is the claim that lets this reach production.
   - 2026-07-25 audit note: **this exact risk class already materialized** — `b8ad9d292` incidentally reclassified Q2_K/Q3_K activations Q8_2_X4→Q8_K, engaging never-validated iqk kquant kernels and corrupting Hy3 output (caught on live output at 20:47Z, NOT by tests; fixed same day by `1977a5d78` + static_asserts). The measured non-IQ check is therefore NOT a formality for v8 — it is mandatory, and default CI still cannot catch a re-introduction (see NEW-4 below).
 - [ ] **B5 — Promote.** If B2-B4 pass, fold into the next experimental→production promotion per the four-step workflow. Do NOT hand-patch production v7.
@@ -163,7 +168,7 @@ and is unaffected.
 
 ## Laguna S 2.1 intake integration — 2026-07-22
 _Via /research-intake Stage-2 (intake-880); see [laguna-s21-cpu-port.md](laguna-s21-cpu-port.md)._
-- [ ] Add Laguna-S-2.1-UD-IQ2_M as the 5th beneficiary model to the B2/B3 gate list. Its routed-expert bulk is IQ2_XXS(51%)+IQ3_XXS(37%)+IQ2_S(1.4%) = the same set the committed `iqk/enable-iquants-v7-20260721` branch already accelerates (89.9% of the model); only 2 IQ4_XS tensors (2.3%) stay uncovered, the same remnant GLM-5.2/Qwen already carry — NO new kernel needed
+- [x] Add Laguna-S-2.1-UD-IQ2_M as the 5th beneficiary model to the B2/B3 gate list. ✅ 2026-07-25 — recorded and operator-scoped to GPU IQ2; it is not a B2 CPU IQK-on/off-tested model. Its routed-expert bulk is IQ2_XXS(51%)+IQ3_XXS(37%)+IQ2_S(1.4%) = the same set the committed `iqk/enable-iquants-v7-20260721` branch already accelerates (89.9% of the model); only 2 IQ4_XS tensors (2.3%) stay uncovered, the same remnant GLM-5.2/Qwen already carry — NO new kernel needed
 
 ---
 
@@ -176,38 +181,37 @@ Q2_K/Q3_K 1.5%, Q8_0 2.2%. Both GEMV and GEMM are enabled, dense + MoE, no batch
 runtime gating/fallback is clean (GGML_IQK=0 → zero overhead; non-AVX512 → functional #else
 paths). Findings ordered by leverage:
 
-- [ ] **NEW-1 (perf, ~3 lines) — enable IQ4_XS dispatch.** A real compiled IQ4_XS kernel
+- [x] **NEW-1 (perf, ~3 lines) — enable IQ4_XS dispatch.** ✅ 2026-07-25 — landed in `8890e2b14`; focused CPU/sanitizer evidence passed. A real compiled IQ4_XS kernel
   already exists (`iqk_gemm_kquants.cpp:2712-2714` via `DequantizerIQ4XS`, routed at
   `iqk_mul_mat.cpp:906-917`) but the type is excluded from `iqk_typeA_supported`, so it is
-  never reached. Adding it to the dispatch whitelist + `iqk_weight_uses_q8_k` + the
-  `repack.cpp` parity list closes the last 2.9% of GLM-5.2 bytes (and the IQ4_XS remnants on
+  never reached. The landed change adds it to the dispatch whitelist + `iqk_weight_uses_q8_k` + the
+  `repack.cpp` parity list, closing the last 2.9% of GLM-5.2 bytes (and the IQ4_XS remnants on
   122B/Laguna) at near-zero risk. Same B2-style correctness gate applies. (IQ4_NL likewise
   exists unused — registry-irrelevant today, note only.)
-- [ ] **NEW-2 (perf waste, defect) — stop paying the Q2_K/Q3_K double penalty.** Post-fix,
-  Q2_K/Q3_K remain in `iqk_typeA_supported` but can never pass `MulMat::prepare` → every such
-  matmul under `GGML_IQK=1` pays the full cooperative Q8_2_X4 activation quantize +
+- [x] **NEW-2 (perf waste, defect) — stop paying the Q2_K/Q3_K double penalty.** ✅ 2026-07-25 — landed in `8890e2b14`; focused CPU/sanitizer evidence passed. Before the fix,
+  Q2_K/Q3_K remained in `iqk_typeA_supported` but could never pass `MulMat::prepare` → every such
+  matmul under `GGML_IQK=1` paid the full cooperative Q8_2_X4 activation quantize +
   `ggml_barrier` (`iqk_dispatch.cpp:146-162`, MoE `:229-264`) and THEN falls back to native
   rerunning from scratch — pure per-call waste on GLM-5.2's blk.48/78 expert layers — while
-  `repack.cpp:4544-4546` simultaneously withholds these tensors from CPU_REPACK. Either remove
-  the two types from the whitelist (restoring v7 behavior exactly) or reject before activation
-  quantization. Also fix the stale header comment `iqk_dispatch.cpp:4-5` still claiming
-  "Q8_K for Q2_K/Q3_K".
-- [ ] **NEW-3 (correctness risk, NDEBUG) — invalid-expert-ID OOB on the fallback path.** The
+  `repack.cpp:4544-4546` simultaneously withheld these tensors from CPU_REPACK. The landed
+  change removes both types before activation quantization, restores v7 behavior, and fixes
+  the stale header comment that claimed "Q8_K for Q2_K/Q3_K".
+- [x] **NEW-3 (correctness risk, NDEBUG) — invalid-expert-ID OOB on the fallback path.** ✅ 2026-07-25 — landed in `8890e2b14`; focused CPU/sanitizer evidence passed. The
   iqk MoE hook zeroes/skips invalid expert ids (`iqk_dispatch.cpp:239-262`), but the native
   path that Q2_K/Q3_K experts fall back to only `assert()`s id validity (`ggml-cpu.c:1649`) —
   a no-op under NDEBUG, then an OOB row-mapping write. The invalid-id scenario is exactly what
-  `test-iqk-ser` exists for; the fallback path is unprotected. Add a runtime guard (or resolve
-  via NEW-2 removal).
-- [ ] **NEW-4 (test gap) — default CI cannot catch an iqk corruption re-introduction.** The
+  `test-iqk-ser` exists for; the fallback path was unprotected. The landed change adds an
+  explicit NDEBUG-safe bounds guard that zeroes inactive invalid routes.
+- [x] **NEW-4 (test gap) — close default CI's IQK corruption gap.** ✅ 2026-07-25 — landed in `8890e2b14`; focused CPU/sanitizer evidence passed. Before the fix, the
   new `test-backend-ops` IQ cases compare against a sound `use_ref` reference, but nothing in
   ctest exports `GGML_IQK=1`, so default runs exercise only native kernels; the only
   iqk-engaging default test is `test-iqk-ser` — a **structural** smoke (MUL_MAT_ID, IQ2_XXS
   only, one shape, no numerical comparison vs reference). The Hy3 corruption would pass
-  default CI today. Add a `GGML_IQK=1` ctest variant of the MUL_MAT/MUL_MAT_ID backend-ops
-  cases for all 5 types + dense GEMV/GEMM shapes, and extend `test-iqk-ser` to numerically
+  default CI. The landed change adds a `GGML_IQK=1` ctest variant of the MUL_MAT/MUL_MAT_ID backend-ops
+  cases for all 5 types + dense GEMV/GEMM shapes, and extends `test-iqk-ser` to numerically
   compare iqk-vs-control within NMSE tolerance.
-- [ ] **NEW-5 (Zen5 decode experiment, cheap) — GEMV inner loop is on the disfavored
-  instruction.** `multiply_add_1` (`iqk_gemm_iquants.cpp:683-717`) selects the
+- [x] **NEW-5 (Zen5 decode experiment, cheap) — GEMV inner loop is on the disfavored
+  instruction.** ✅ 2026-07-25 — NO-GO: `160/216` focused evidence did not justify the change; source restored. `multiply_add_1` (`iqk_gemm_iquants.cpp:683-717`) selects the
   **VPDPBUSD** (`_mm256_dpbusd_epi32`) branch under HAVE_FANCY_SIMD on this host, while the
   **VPMADDUBSW** variant sits in the same function's `#else`. Prior Zen5 measurement
   (`project_zen5_vnni_vs_maddubs`) found VPMADDUBSW faster; the GEMM path already uses
@@ -225,12 +229,11 @@ paths). Findings ordered by leverage:
   admission; (f) all kernels are 256-bit ymm — no zmm variant exists (Zen5 512-bit datapath +
   `k_x_step`/`IQK_MAX_NY` tiling inherited from ik's Zen4 tuning, unexamined). None of these
   gate v8 promotion; they are the next iqk perf tranche.
-- [ ] **NEW-7 (evidence hygiene, do before container restart):** copy the volatile `/tmp`
-  gate evidence to durable storage (`data/kernel-v8-candidate/`): full-suite ctest logs
-  (`/tmp/v8-candidate-ctest-20260724-1977a5d78-cleanenv/{hip,cpu}.log` — HIP 56/59 with all 3
-  failures classified baseline, CPU 58/59), the quant-type-selection differential
-  (`/tmp/v8-candidate-ctest-20260724/quant-selection-{production,candidate}.*`), and the
-  thread-safety paired differentials. Only the LIGHTNING_INDEXER classification is durable
-  today. Also: rerun `test-thread-safety` post-`6c44557bf` (never rerun after the fix landed),
-  and regenerate the Laguna gate `provenance.txt` files at the commit SHA (currently bound to
-  a dirty pre-commit tree).
+- [x] **NEW-7 (evidence hygiene, do before container restart):** ✅ 2026-07-25 — durable
+  exact-tip CPU/HIP/sanitizer CTest evidence is under
+  `epyc-inference-research/data/kernel-v8-candidate/{exact-tip-build,final-focused,sanitize-final}/`;
+  paired thread-safety and quant-selection evidence is under
+  `data/kernel-v8-candidate/pre-final-audit-evidence/run-20260725T0945Z/paired-thread-quant/`.
+  The post-`6c44557bf` thread-safety rerun passed. Historical HIP was `56/59`, all 3 failures
+  classified baseline with paired differentials; exact-tip HIP is `59/62` with the same three
+  failure classes, not green.
