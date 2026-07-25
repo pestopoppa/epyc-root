@@ -450,3 +450,12 @@ already-integrated `2505.09388` (intake-074).
 ## Laguna S 2.1 intake integration — 2026-07-22 (deferred candidate)
 _Via /research-intake Stage-2 (intake-879/880); blocked on the [laguna-s21-cpu-port.md](laguna-s21-cpu-port.md) port producing a working CPU build._
 - [ ] Include Laguna S 2.1 (Q4_K_M + UD-IQ2_M) as an architect/coder-bench candidate ONCE SERVED — first independent quality read (all vendor numbers self-reported)
+
+
+## 2026-07-25 — intake Stage-2a dive: ThinkingCap arm, corrected
+
+_Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25.md`](intake-derived-work-2026-07-25.md)._
+
+- [ ] **A3-tc arm — ThinkingCap-Qwen3.6-27B as a token-cost variant of A3.** R6 found the three architect arms statistically inseparable, so the decision falls to operating cost, and this handoff already tracks median completion tokens as the discriminator (A3 baseline 4,019). Vendor claims ~45.8% out-of-domain thinking-token reduction.
+- [ ] **Run the comparison the vendor did not**: ThinkingCap `enable_thinking=true` vs **stock Qwen3.6-27B `enable_thinking=false`** — our incumbent production config, since both registry rows set `disable_thinking: true`. A naive drop-in delivers ≈zero benefit because ThinkingCap's entire value lives inside the thinking trace.
+- [ ] **Corrections from the dive, before scoping the A/B**: (a) **MTP is not a ThinkingCap feature** — its MTP head is **byte-identical** to our stock drafter, so hold the MTP path constant across arms; (b) the vendor's own table is **8-of-12 negative** out-of-domain (GPQA-D −1.7, HMMT −3.3, Claw-Eval −2.6, LongBench-v2 −2.4, AA-LCR −2.0) with token reduction *smallest* where accuracy loss is largest, and most deltas inside overlapping 95% CIs — under-powered in both directions; (c) the GGUF repo **declares no license**, which gates registry admission; (d) it is a **weights-frozen finetune, not a reasoning-budget dial**, so under the per-model effort invariant it is a *different model* and any level calibrated on stock is void.

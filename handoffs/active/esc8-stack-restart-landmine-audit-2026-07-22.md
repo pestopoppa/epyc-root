@@ -146,3 +146,19 @@ full-instance ports (quarters-only ⇒ `"quarter"`); never default unknown to `"
   interim that keeps the per-copy world safe until the fleet layer lands.
 - Interim siblings landing at the same boundary: WP-13 (stack_priors alias-ports + convergence
   test), WP-14 (fail-closed manifest readers).
+
+
+# 2026-07-25 — Cold-start follow-up (GEPA-validation session): 37-error class diagnosed + CLI threading fix landed
+
+_Provenance: surfaced while validating the GEPA proposer fix (see [`intake-derived-work-2026-07-25.md`](intake-derived-work-2026-07-25.md) ID-1). Not registry drift — both registries committed-clean; gate was green at WP-13 (`d8b7e0bd`)._
+
+**Diagnosis.** On a fully-cold host, `_launch_manifest_targets` (stack_change_guard.py:839) resolves the launch view as realized-fleet mode → env `ORCHESTRATOR_STACK_NUMA_MODE` → default `full`. Dead fleet ⇒ `derive_realized_numa_mode()` = None; clean shell ⇒ env unset ⇒ **launch view built for `full`** while the registry documents the restored `both` lineup ⇒ **37 wholesale errors** (same family as the 105-error class WP-13 fixed for live fleets). The CLI's explicit `--numa-mode both` was **never consulted by the guard**.
+
+- [x] **Fix landed 2026-07-25**: `scripts/server/stack_commands.py` `_run_stack_change_launch_gate` now threads an EXPLICIT `--numa-mode` into the gate subprocess env (precedence preserved: realized > CLI > env > default; omitted flag unchanged). Validated: identical cold dry-run went **37 errors → 1** with the CLI flag alone; `tests/unit/test_orchestrator_stack_reload.py` 38/38 green. ✅ 2026-07-25
+- [x] **Residual 1 error root-caused as BY DESIGN**: `_realized_compile_numa_mode` (src/registry/stack_priors.py) raises `StackPriorsModeError` whenever no realized signal exists — **even with env explicitly set** (its decision table only consults env when a fleet is listening). That is Fix 6 / kill-chain-A4 protection, so a gate-green cold start is currently impossible by construction. The `stack_paths`/`stack_manifest` circular-import warnings in gate output are the documented benign-by-accident landmine, NOT the cause. ✅ 2026-07-25
+- [ ] **Cold-start recipe (until the design question below is settled)** — verified sequence:
+  1. Pre-verify: `start --numa-mode both --dry-run` → confirm the ONLY remaining gate error is the `stack_priors` dead-fleet refusal (36 other checks green).
+  2. Bring up: `start --numa-mode both --skip-stack-change-gate` — justified ONLY for cold bring-up after step 1's verification (the pre-deploy "do not bypass" warning targeted the since-closed A2/A3 hazards; benchmarks and autopilot resumes must still never bypass).
+  3. Immediately after fleet-up: `scripts/registry/stack_change_pipeline.py update` — realized mode is now derivable, priors compile succeeds, gate debt cleared.
+  4. Policy riders: stop autopilot before a full bring-up (SIGTERM + drain), restart after; per-run operator approval for llama-* remains in force.
+- [ ] **Design question for this surface (owner decision)**: should the GATE's stack_priors check adopt a cold-fleet posture — e.g. when `derive_realized_numa_mode()` is None AND an explicit CLI mode was threaded, downgrade the WRITE-path priors compile to CHECK-only (or defer it to a post-launch hook) instead of hard-failing? Pro: removes the skip-the-whole-gate step from cold starts (36 checks currently discarded to tolerate 1 designed refusal). Con: touches a kill-chain-A4 trust boundary; any carve-out must provably never rewrite `stack_priors.yaml` pre-launch. NOT implemented unilaterally for that reason.

@@ -656,3 +656,12 @@ These handoffs are tracked in other indices but have cross-cutting impact here:
 - [ ] P1 Dynamic stack / within-role placement / shape-keyed contention quiesce-window probes
 - [ ] P2 Delegation/context/edit harness (DCP-5/J7, BEP, internal-interaction P2 bake)
 - [ ] P2/P3 Research-derived routing experiments (DAR/tri-role/OC frozen), web/search + PromptForge tails, gated Fusion/AB-MCTS design
+
+
+## 2026-07-25 — intake-derived work (research-intake Stage-2)
+
+New coordination point: [`intake-derived-work-2026-07-25.md`](intake-derived-work-2026-07-25.md) (38 open items).
+Routing/optimizer outstanding items:
+- **GEPA reflective mutation never ran** — fixed 2026-07-25; `gepa_ratio` decisions rest on 8 trials ever (one `keep`) produced by a proposer that always raised. Re-open gated on the supervised first run (ID-1/ID-3, AP-19b).
+- **GEPA's artifact scope is no longer prompt-only** — `optimize_anything` optimizes any scoreable string. Two-budget contract: `max_evals` (eval-call ledger) vs `max_token_cost` (USD proposer cap) — the latter is **inert on local models**, so `max_evals` + `stop_at_score` are the only working bounds. Silent unbounded-run hazard.
+- **Independent negative evidence on GEPA transfer**: arXiv 2607.14004 reports the GEPA-optimized agent falling **below** the unoptimized baseline under task shift; both README headline numbers fail checking.

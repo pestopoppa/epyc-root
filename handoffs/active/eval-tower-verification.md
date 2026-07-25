@@ -536,3 +536,11 @@ The anchor/de-anchoring rules above are human-amendment-only (trust boundary). B
   baseline plane). Generalizes under heterogeneous-slot-fabric-residency.md ("everything is a
   slot"); residual cost = CPU↔GPU stream-teleport break-even (~150-250 resident tokens). The
   pending architect bench includes GPU arms — the swap decision may itself select this topology.
+
+
+## 2026-07-25 — intake Stage-2a dive: EV-9 frontier-tier candidate + EV-10c admission prefilter
+
+_Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25.md`](intake-derived-work-2026-07-25.md)._
+
+- [ ] **EV-10c — single-artifact admission prefilter (CORE pattern, intake-888).** Before a candidate skill/insight/prompt fragment reaches the EV-10a paired per-suite gate, re-attempt ONLY the originating failure with ONLY that artifact in context; admit iff success rate beats the pre-artifact baseline. Rejects junk at ~1 rollout each instead of a full paired suite run, and gives the SkillsBench net-negative caution (intake-096) a mechanical filter. Keep EV-10a as the authoritative accept gate.
+- [ ] **EV-9 frontier-tier candidate — FrontierCS (arXiv 2512.15699).** EV-9 records production suites saturating in the 90–94% band and unable to resolve the top-2 models; FrontierCS is maximally non-saturating (best model Score@1 **29.37** vs human expert **95.41**) and ships per-problem evaluators. **Start with a ~10-problem FLOOR PROBE on one production arm** before costing the exec-sandbox harness: all published baselines are proprietary API models, so our open-weight arms may land near zero — trading a saturation problem for an equally non-discriminative floor. Version note: paper v1 = **156** problems; the site reflects FrontierCS **1.0, 240 tasks / 172 algorithmic**. **No seeds, variance or significance testing anywhere** — do not build ranking-sensitive work on it, and define our own protocol-id rather than inheriting theirs.

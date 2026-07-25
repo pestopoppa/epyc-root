@@ -344,3 +344,13 @@ Reproducible this date: `/healthz` returns 200 (instance up), but the usable eng
 **Mitigation landed same day**: `scripts/search/searx.sh` now emits a `⚠ DEGRADED` stderr warning when ≥ half the requested engines are unresponsive (keyed on the response's own `unresponsive_engines`; exit code unchanged so partial results still flow). Surfaces the degradation instead of returning silent junk.
 
 **Still open (operator)**: brave/mojeek rate-limits/blocks and bing junk-for-our-IP are an instance/egress-IP problem, not fixable in the bash bridge. Options: rotate egress IP, add SearXNG engine keys/credentials, or widen the default engine set to ones that respond from this IP. Until then, prefer built-in WebSearch for correctness-critical sweeps.
+
+
+## 2026-07-25 — intake Stage-2a dive: Firecrawl verdict label correction
+
+_Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25.md`](intake-derived-work-2026-07-25.md)._
+
+- [ ] **Change the intake-364 / intake-365 verdict from `not_applicable` to `superseded`** (by intake-372, Crawl4AI). Firecrawl is **AGPL-3.0 open-source and fully self-hostable** (`SELF_HOST.md` + `docker-compose.yaml` stand up `/v1/scrape`, `/v1/crawl`, `/v1/map` locally) — it is in scope and was **out-competed**, not out-of-scope. EPYC policy treats `not_applicable` as the verdict requiring the most justification; here the justification exists (a 322-line deep dive) but the label misstates it, which is how a well-reasoned rejection gets re-litigated.
+- [ ] **Correct two now-outdated objections in the notes**: self-hosted `/search` accepts `SEARXNG_ENDPOINT` / `SEARXNG_ENGINES` / `SEARXNG_CATEGORIES` (it can front our own SearxNG at :8888), and `/extract` accepts `OPENAI_BASE_URL` / `OLLAMA_BASE_URL` / `MODEL_NAME` (it can run against a local llama-server). Neither changes the Crawl4AI decision.
+- [ ] **The decisive objection strengthened**: compose grew from five services to **seven** (adds `foundationdb` + `foundationdb-init`), declaring 6 cores / 12 GB on a host whose entire performance story is CPU memory bandwidth. Fire-engine remains cloud-only, so the self-hosted engine ladder still tops out at Playwright.
+- [ ] For **CA-6 (Camofox escalation)**, consider Firecrawl's **ranked engine-waterfall** pattern — numeric per-engine quality scores plus a per-request ordered fallback list — instead of extending the substring blocklist in `_is_blocked_page()`.

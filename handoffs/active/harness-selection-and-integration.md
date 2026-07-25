@@ -125,3 +125,12 @@ Therefore:
 4. **ACP is cheaply deferrable** — it can be added later as an optional *harness-local* Path-B north adapter (Hermes/OpenGauss already ships one) with zero impact on the cooperation contract. Not a one-way door.
 
 **Recommendation to HS-4 (operator decides):** keep the cooperation contract = `/v1` + `x_*` (body) + MCP for tools (MCP-first is already de-facto — the orchestrator ships an MCP server today). Keep **HS-3 dormant on cooperation grounds** — do not survey/adopt "all ACP-speakers" as cooperation candidates. Re-open ACP only on a concrete UI/editor-interop demand (operator call): (a) a bring-your-own-editor / management-GUI product surface, (b) a specific external client (Zed / JetBrains / Local Studio Pi intake-833) to drive the stack from, or (c) ACP gaining inference-routing semantics (it has none today). The intake-263 "MCP-first, ACP = editor-agent-not-inference" lean is **confirmed and sharpened** by A4, not flipped by the unchosen-harness framing.
+
+
+## 2026-07-25 — intake Stage-2a dive: HS-5 trainability axis; Fractal is not a candidate
+
+_Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25.md`](intake-derived-work-2026-07-25.md)._
+
+- [ ] **HS-5 — add a "weight-space RL adapter exists?" column to the HS-4 decision matrix.** OpenCode = **YES** (first-party `opencode_env` in huggingface/OpenEnv plus a complete TRL AsyncGRPO example, both landed 2026-07-24); Hermes = NO; ACP-speakers = NO. Decision input only — cooperation surface (HS-1b/HS-1c, both SUFFICIENT) remains the primary axis. It is ~zero cost to preserve now and an expensive retrofit later.
+  - **Caveat, dive-verified**: the training half is **not reachable on our hardware and should be declined, not bridged**. llama.cpp has **none** of the seven vLLM control endpoints (`/get_world_size`, `/pause`, `/resume`, `/init_weight_transfer_engine`, `/start_weight_update`, `/update_weights`, `/finish_weight_update`) and `weight_transfer.py:25` hard-imports the vLLM NCCL engine, so it could only ever be a **frozen off-policy sampler** — defeating AsyncGRPO's premise. Plus separate-GPU, FSDP2-only and no PEFT/LoRA path.
+- [ ] **Record Fractal (plasma-ai) as an OUTER-LOOP orchestrator that drives harnesses, NOT an HS-4 candidate** — it owns no HTTP client and exposes no `base_url`, delegating all model access to a spawned vendor CLI. Free inheritance from HS-1c: a Fractal node running `--agent=opencode` reaches the Orch via `opencode.json` `options.baseURL`, so local-model operation needs no fork of either project.

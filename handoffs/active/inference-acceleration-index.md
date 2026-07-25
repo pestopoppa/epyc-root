@@ -423,3 +423,13 @@ After completing an acceleration item:
 - [x] **[v7-audit LANE B]** B7 CPU prefill-compute track scoping: closed from existing PC-1 prompt-wall sizing + PC-2 fusion design; owner handoff now leaves PC-0 as a concrete operator-window profile gate, not more docs scoping. ✅ 2026-07-18
 - [x] **GPU-drafter DR-1 economics model**: external Stage-1/2 failed despite high/perfect acceptance; future drafter/control lanes must satisfy `E(α,K) > F(K)+H(K)` before any serving build. Owner: [gpu-drafter-control-redesign.md](gpu-drafter-control-redesign.md). ✅ 2026-07-18
 - [x] Qwable artifact cleanup checkpoint recorded in research commit `179442b`: cleanup/status files were added to the earlier Qwable artifact rather than split into a detached follow-up. ✅ 2026-07-18
+
+
+## 2026-07-25 — intake-derived work (research-intake Stage-2)
+
+New coordination point: [`intake-derived-work-2026-07-25.md`](intake-derived-work-2026-07-25.md) (38 open items).
+Acceleration-relevant outstanding items:
+- **DFlash blocker is dead** — merged upstream 2026-06-28 (PR #22105), in **production** since `ed4091266` (2026-07-18); `src/models/dflash.cpp` on `production-consolidated-v7`, `Qwen3.6-27B-DFlash-f16.gguf` on disk since 2026-07-03. Retire the "needs SGLang/vLLM" framing wherever it still defers work (ID-28).
+- **Two unmeasured DFlash drafters for LIVE production roles** (collection grew ~4 → 22): `gemma-4-26B-A4B-it-DFlash` (worker_general; pure MoE, dodges the GDN wall; incumbent measured NOT VIABLE at 58.7%/1.06x) and `Qwen3.5-122B-A10B-DFlash` (architect_general) — both recorded as "GAP — needs custom training" in the March handoff (ID-29/ID-30).
+- **Two doc errors bias the reopen decision** (ID-31): the Q4_K_M NO-GO is attributed to "hybrid-SSM targets" but was measured on Qwen3-Coder-30B-A3B, a **pure MoE**; and DFlash is **single-pass**, not "iterative denoising over T=8-16 steps".
+- **MTP presence must be read from tensor count** (851 = no MTP, 866 = MTP, 24-byte ranged header read) — file-size deltas are unsound (ID-15/ID-16).

@@ -497,7 +497,7 @@ PDF Input
   - **Sibling**: intake-436 (W-RAC) attacks cost via decoupled LLM grouping; intake-579 attacks quality via method-selection. Complementary levers in the same problem space.
 
 - **[intake-580] "ekimetrics/adaptive-chunking" — Official MIT-licensed implementation** (`github.com/ekimetrics/adaptive-chunking`, 67 stars, 3 forks at intake)
-  - **Relevance**: Modular Python 3.11+ implementation of intake-579. Each chunker is an independent module behind a small ABC, so our ODL-heading chunker (or current `document_chunker.py`) can be slotted in as an additional candidate and scored by the same harness. Core dependencies minimal; PDF backends are Docling (default open-source), PyMuPDF, Azure Document Intelligence. Resumable metrics computation (skip already-computed documents on rerun) makes large-corpus evaluation interruptible.
+  - **Relevance**: Modular Python 3.11+ implementation of intake-579. ~~Each chunker is an independent module behind a small ABC, so our ODL-heading chunker (or current `document_chunker.py`) can be slotted in as an additional candidate and scored by the same harness.~~ **CORRECTED 2026-07-25 (intake Stage-2a dive): that ABC does not exist** — the only `ABC` in the tree is `BaseParser`; the five chunkers share no base class or registry, and the adaptive-selection logic lives only in the `paper/` reproduction subpackage, not the importable library. Core dependencies minimal; PDF backends are Docling (default open-source), PyMuPDF, Azure Document Intelligence. Resumable metrics computation (skip already-computed documents on rerun) makes large-corpus evaluation interruptible.
   - **License caveat**: Core MIT, but FMRE metric requires `maverick-coref` (CC BY-NC-SA 4.0). Lifting the full 5-metric suite needs license clearance OR a coref-free reimplementation of RC.
   - **Action**: candidate eval scaffold for Phase 3 benchmark integration — NOT a runtime dependency for Phase 1/2.
 
@@ -617,3 +617,12 @@ Every parser number in this handoff — including ODL's `table.TEDS=0.783813` �
 ### Spun out 2026-07-20 → [`document-parser-table-bench.md`](document-parser-table-bench.md)
 
 The parser-comparison / table-extraction thread now has its own handoff. It carries the retraction of the 2026-07-17/18 PaddleOCR-VL results, the full-OmniDocBench instrument upgrade (1651 pages / 665 tables, replacing the 18-page / 10-table demo), the PaddleOCR environment setup, and the MinerU2.5-Pro / GLM-OCR architecture pre-check. Track the table question there; this handoff retains the ODL integration work.
+
+
+## 2026-07-25 — intake Stage-2a dive corrections (intake-580, intake-890)
+
+_Via `/research-intake` Stage-2; see [`intake-derived-work-2026-07-25.md`](intake-derived-work-2026-07-25.md) ID-18/ID-35._
+
+- [ ] Record that the Ekimetrics **RC/FMRE metric carried a silent boundary-corruption bug** — `compute_filtered_missing_ref_error` guarded `str.find()` with `except ValueError`, but `find` returns `-1` rather than raising, so an unlocatable chunk produced `start_idx=-1` and silently corrupted every downstream reference boundary. Present from first release 2026-03-26 until `649ece1` on 2026-07-06 — **spanning the paper's entire publication window**. Treat the reported RC = 99.0 as **unverified**; do not cite it in Phase 2/3 chunker-quality design.
+- [ ] Probe `ODL → markdown → PageIndex md_to_tree` as a downstream consumer: PageIndex's own parser is pymupdf + PyPDF2 born-digital text only (no OCR, no tables, no reading order) — strictly weaker than ODL — but its markdown ingestion path lets us substitute our parser for theirs.
+- [ ] Review PageIndex's build-time injection hardening as a reference implementation for the document-body injection policy: regex redaction, `<user_document>` delimiter framing, a system preamble on every prompt, and — the pattern we do not currently have — **deterministic post-hoc validation nullifying any LLM-emitted page index outside the real page range**, which constrains model output against ground truth rather than trusting the prompt.

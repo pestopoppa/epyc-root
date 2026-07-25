@@ -47720,3 +47720,828 @@
   novelty_justification: Not a duplicate; a genuinely-new working open-source artifact. Its search layer is a linear (1+lambda) LLM-guided loop - less sophisticated than the AlphaEvolve/OpenEvolve/ShinkaEvolve family EPYC already indexes (intake-669/673/677). Novelty is medium because the measurement/provenance layer (trusted-evaluator-outside-sandbox, anti-TOCTOU snapshot, provenance-drift-gated resume, evidence-gated stop) is the genuinely worth-mining part, not the search.
   relevance_justification: 'HIGH: the measurement layer is a working implementation of the C6 anti-reward-hacking differentiator an ACTIVE EPYC program (the auto-kernel loop) identified as owned-but-never-built, and it maps onto autopilot''s keep/revert gate + MEASUREMENT.md attestation discipline. Tempered by coding-agent-CLI coupling + macOS-only sandbox + single-task, but the direct feed into active work makes it high, not medium.'
   verdict_justification: 'adopt_patterns (feature-mine the measurement/provenance layer; not adopt-wholesale). License is MIT and a non-blocker regardless (home build). Best value = porting C6 (sandbox/provenance/stop) into rocm-verify-profile-backend + the Phase-2 loop; running the harness itself on EPYC is an optional low-priority spike (needs a 3rd llm_backend adapter + external container on Linux). NOT adopt_component (single-task, macOS sandbox, coding-agent-CLI coupling). Credibility null: a code repo whose only empirical claim is a standalone-verifiable puzzle solution, not a performance benchmark.'
+- id: intake-886
+  arxiv_id: null
+  url: https://gepa-ai.github.io/gepa/blog/2026/07/22/optimize-anything-omni/
+  source_type: blog
+  title: 'optimize_anything goes omni — composing GEPA / AutoResearch / Meta-Harness into meta-optimizer pipelines'
+  authors:
+  - Shangyin Tan
+  - Lakshya A Agrawal
+  - Dan Klein
+  - Koushik Sen
+  - Alexandros G. Dimakis
+  - Matei Zaharia
+  categories:
+  - agent_architecture
+  - autonomous_research
+  - benchmark_methodology
+  - tool_implementation
+  key_claims:
+  - '`optimize_anything` is one black-box API over interchangeable optimizer backends (`gepa` reflective-evolutionary, `autoresearch` agentic, `meta_harness` agentic-proposer, `best_of_n` naive baseline); the caller writes one evaluator and swaps search algorithm with a single `engine=` argument.'
+  - 'No optimizer dominates: per-problem wins across 10 Frontier-CS problems split GEPA 3 / AutoResearch 3 / Meta-Harness 4. Each hill-climbs early then plateaus; re-seeding a stalled candidate into a DIFFERENT optimizer breaks the plateau. This is the load-bearing claim behind omni.'
+  - 'The portable inter-optimizer handoff representation is simply a Python `str` — `result.best_candidate` becomes the next stage`s `seed_candidate`. There is NO optimizer-state interchange: no frontier transfer, no history, no learned-proposer transfer. Good news for EPYC: any optimizer producing a best-string can participate at zero structural cost.'
+  - 'LOCAL-ENDPOINT SPLIT (decisive for EPYC): the `gepa` engine runs in-process and accepts any callable implementing GEPA''s LM protocol, so a local llama.cpp `/v1` server can drive proposals. But `autoresearch` and `meta_harness` BOTH shell out to the proprietary `claude` CLI and cannot be pointed at local inference — so 2 of the 3 engines in the omni result are NOT reproducible on our stack.'
+  - 'Two operator-summary corrections: the widely-quoted "+7.8pp above best standalone" is arithmetically true but is actually AutoResearch''s own standalone-to-omni delta (the headline lift is GEPA''s +18.0); and the "finishes faster" claim appears NOWHERE in the post.'
+  techniques:
+  - optimize_anything unified black-box optimization API
+  - engine registry / pluggable optimizer backends (gepa.oa.registry.register_engine)
+  - composition primitives (optimize_best_of / _sequential / _parallel / _vote / adaptive plateau-rotating scheduler)
+  - Actionable Side Information (evaluator returns score + info dict read by the proposer LM)
+  - sealed reporting-only test_set held outside the eval server HTTP surface
+  reported_results:
+  - 'Frontier-CS, 10 problems, $20 matched budget, Claude Sonnet 4.6: GEPA 43.8 -> omni 61.8 (+18.0); AutoResearch 55.4 -> 63.2 (+7.8); Meta-Harness 50.9 -> 59.3 (+8.4). Zero-shot floor 7.72.'
+  - 'NO seeds, NO repetitions, NO standard deviations, NO confidence intervals, NO significance tests anywhere — every cell is a single unqualified number, self-published by the optimizer''s own authors.'
+  - 'Budget-parity gap: "$20" is `max_token_cost`, a USD cap on the PROPOSER LLM''s own spend; the orthogonal `max_evals` eval-call budget (default 100) is never stated as matched, so arms may not be eval-parity-matched at all.'
+  referenced_arxiv_ids:
+  - '2512.15699'
+  novelty: high
+  relevance: high
+  credibility_score: 2
+  verdict: adopt_patterns
+  discovered_via: input
+  ingested_date: '2026-07-25'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - agent-collab-rnd-harness.md
+    - harness-selection-and-integration.md
+    - frontier-f2-self-running-lab.md
+    experiments: []
+    intake_entries:
+    - intake-240 (GEPA paper 2507.19457 — the `gepa` engine's algorithm)
+    - intake-244 (Meta-Harness — reduced here to an agentic proposer, NOT a scaffolding-code mutator)
+    - intake-148 (Karpathy AutoResearch — the `autoresearch` engine's lineage)
+    - intake-338 (Agent Lightning — the entry that recorded "no published benchmark comparisons vs GEPA or Meta-Harness"; this post supplies exactly that head-to-head)
+    - intake-345 (GEPA Full Program Adapter — already proposed optimize_anything for llama.cpp launch configs on 2026-04-12)
+    - intake-898 (FrontierCS — the BENCHMARK these runs used; NOT the method paper)
+  handoffs_updated: []
+  handoffs_created:
+  contradicting_evidence:
+  - 'PRIMARY SOURCE FOR THE COMPOSITION THESIS IS UNCORROBORATED: a Tier-2b sweep could not locate any independent evaluation of this specific result, and frontier-cs.org/blog carries no optimizer-composition post.'
+  - 'arXiv 2607.14004 (Terminal-Bench 2.0, matched budgets, independent) is a DIRECT COUNTEREXAMPLE to the composition thesis: a second optimization pass produced NEGATIVE TRANSFER for GEPA (fell below the unoptimized baseline) and no further improvement for Meta-Harness; only a method with explicit regression control compounded.'
+  - 'arXiv 2605.26046 ("When Gradients Collide"): naively combining single-objective-optimized instructions DEGRADES performance (Spearman 0.305 -> 0.220) — "inference-time instruction interference", the exact failure mode a composition claim must rule out.'
+  - 'arXiv 2606.23664 (MAS-PromptBench): prompt optimization does not uniformly improve multi-agent systems; a substantial fraction of configurations show no gain or regression.'
+  - 'n=10 is ~6% of FrontierCS (156 problems in the paper, 172 on the project site) — a deliberate down-selection. At n=10 a +7.8pt delta is <=1 problem flipping.'
+  novelty_justification: 'High. All three constituent optimizers are already indexed (240/244/148) and this URL is not, but what is genuinely new is (1) the first controlled head-to-head of the three optimizer families under fixed task/model/budget — an index entry (intake-338) explicitly recorded that no such comparison existed; (2) the plateau-and-switch finding; (3) a shipped composition layer + register_engine extension point that makes meta-optimization a ~12-line call rather than a research idea.'
+  relevance_justification: 'High and on a live critical path. EPYC already runs GEPA in autopilot: `gepa_optimizer.py` + `OrchestratorGEPAAdapter` are wired into PromptForge at a state-backed gepa_ratio of 0.30, and AP-21 (2026-07-11) declined to raise it on thin evidence. This post supports keeping the mix for a DIFFERENT reason than recorded — not "GEPA is weak" but "no single optimizer dominates, and mixing beats any fixed ratio" — and argues for making the mix plateau-triggered rather than statically weighted.'
+  verdict_justification: 'adopt_patterns. Adopt the plateau-detect-and-switch pattern and composition topology as design input to PromptForge''s species scheduler. Do NOT treat the Frontier-CS table as decision-gating: single-run, no variance, n=10, authors benchmarking their own product, and budget parity is undefined. MIT license, no blocker. ROUTING CAUTION: meta-harness-optimization.md is a FROZEN compatibility pointer that forbids new task checkboxes — despite the topical match, nothing routes there.'
+  notes: 'Ingested 2026-07-25 via /research-intake. Derived work PROPOSED (pending Stage-2 plan approval) as intake-derived-work-2026-07-25.md (ID-3). Tier-2b materially weakened the surrounding GEPA claims: both README headline numbers fail checking — "ARC-AGI 32%->89%" is from a DIFFERENT method (optimize_anything evolving code with Gemini 3 Flash) while GEPA''s own tutorial reports 44.0->49.5, and "90x cheaper than Claude Opus 4.1" links to a Databricks blog by an adopter listed in the same README, not independent corroboration.'
+  dive_corrections: '2026-07-25 Stage-2a dive: omni blog: the earlier ''source could not be located'' finding was a BAD SWEEP (it queried frontier-cs.org, the benchmark''s site, not gepa-ai.github.io, the publisher). Post verified HTTP 200, 121,877 B — fully citable. The composition table, the 3/3/4 split, the absence of seeds/variance/CI/significance, and the absence of any timing claim are all CONFIRMED verbatim. BUT the CLI-vs-local-callable engine split is NOT stated in the post (CLI/local/callable/endpoint all 0 occurrences) — that claim survives only on the gepa REPO source (src/gepa/lm.py:44-71; autoresearch/meta_harness spawn the claude CLI); cite the repo, not the blog. Budget-parity gap CONFIRMED strongest: max_token_cost is verbatim ''your proposer''s USD budget'' (4x$5) and max_evals appears ZERO times.'
+- id: intake-887
+  arxiv_id: null
+  url: https://www.letta.com/blog/trajectory/
+  source_type: blog
+  title: 'Letta trajectory-v1 — a cross-harness agent-transcript interchange format (Apache-2.0)'
+  authors:
+  - Letta Research (MemGPT successor; no individual byline)
+  categories:
+  - agent_architecture
+  - memory_augmented
+  - knowledge_management
+  - context_management
+  - tool_implementation
+  key_claims:
+  - 'A trajectory here is a normalized, deliberately LOSSY, token-efficient record list meant to be READ BY AN AGENT for memory formation — explicitly NOT a full-fidelity replay/benchmark artifact. Harbor ATIF is positioned as the full-fidelity counterpart.'
+  - 'A concrete versioned JSON Schema exists (schema/trajectory-v1.schema.json): >=1 role-tagged records over five types — meta, user, reasoning, assistant (with optional tool_calls), tool (linked by tool_call_id). assistant.content must be null iff tool_calls present.'
+  - 'Eight harness adapters ship (claude-code, codex, hermes, letta-code, openclaw, openhands, pi, deepagents), so one agent''s memory can be formed from sessions produced by a different harness on the same machine. NO opencode adapter.'
+  - 'Only demonstrated use case is memory/context construction. Training/RL and evaluation are asserted in the repo description but no result is shown, and the schema carries NO reward, outcome, score, cost, latency or token field.'
+  techniques:
+  - trajectory-v1 five-type role-tagged record list as cross-harness interchange
+  - per-harness adapters normalizing native session JSONL/SQLite
+  - lossy token-efficiency transforms (drop envelopes/duplicated payloads/UI event streams; marker-inclusive head-tail truncation)
+  - additive canonical view with record_hash / content_hash / stable_source_record_id for dedup
+  - privacy-preserving differential parity harness (SHA-256-first comparison)
+  reported_results:
+  - 'Token counts (protocol-thin — n not stated, no repeats, no protocol id). Claude Code: native 951,115 -> Harbor ATIF 835,187 -> trajectory untruncated 211,923 (4.5x) -> trajectory default 170,934 (5.6x). Codex: native 3,919,385 -> ATIF 2,371,530 -> untruncated 1,938,450 (2.0x) -> default 727,516 (5.4x).'
+  - 'CAVEAT: the headline 5.6x/5.4x includes tool-result truncation — a lossy format measured against a format whose stated purpose is full-fidelity replay. The apples-to-apples row is "untruncated" (4.5x / 2.0x).'
+  - 'PARITY.md (2026-07-10, the most rigorous number here): differential check vs the production letta-agent-sdk dream-pipeline over 1,050 on-device sessions (1,006 Claude Code + 44 Codex). 1,043/1,043 normalization outcomes matched; of 903 successful sessions 902 outputs matched exactly; the single mismatch was an intentional cap repair.'
+  - 'NO accuracy, task-success, or downstream-agent-performance number anywhere. The claim that cross-harness memory formation HELPS is entirely unmeasured.'
+  - 'Repo signal 2026-07-25: Apache-2.0, 77 stars, 57 commits, created 2026-07-10 — two weeks old, actively moving, no independent adoption.'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: 1
+  verdict: adopt_component
+  discovered_via: input
+  ingested_date: '2026-07-25'
+  cross_references:
+    chapters: []
+    handoffs:
+    - frontier-f1-real-task-corpus.md
+    - unified-trace-memory-service.md
+    - reviewer-trace-materialization.md
+    - harness-selection-and-integration.md
+    - tool-output-compression.md
+    experiments: []
+    intake_entries:
+    - intake-819 (same Letta/MemGPT lineage — sleep-time compute; same commercial-bias caveat applies)
+    - intake-736 (pi-share-hf — same collect-agent-sessions problem, single-harness, plus a redaction gate this lacks)
+    - intake-726 (Terminal-Bench/Harbor — the named prior art whose ATIF format this differentiates against)
+    - intake-849 (OpenAI Agents SDK TracingProcessor — same layer, OPPOSITE intent: measurement-complete vs measurement-stripped)
+    - intake-426 (coding harness is ~98.4% plumbing — supports buying this normalizer rather than maintaining ours)
+  handoffs_updated: []
+  handoffs_created:
+  contradicting_evidence:
+  - 'A Tier-2b sweep could not locate the post via the Letta blog index (26 posts listed, none matching) — most likely a search/index failure rather than nonexistence, since the primary read returned schema filenames, PARITY.md counts and GitHub API stats. RE-VERIFY the URL before citing the token ratio anywhere.'
+  - 'The two formats do not encode the same thing, so a token ratio is not like-for-like: Harbor ATIF deliberately records token IDs, logprobs, tool definitions, per-step token counts and cost specifically to serve SFT/RL pipelines. A format 4.5-5.6x smaller is smaller BECAUSE it drops those fields.'
+  - 'Lossy trace compression trades replay fidelity for ratio; the step where an error surfaces is usually not the step that caused it, so a failure you cannot replay you cannot debug (arXiv 2607.18754, 2606.14805).'
+  novelty_justification: 'Medium. No index entry covers a cross-harness agent-transcript interchange FORMAT (nearest: intake-736 single-harness export, intake-657 lossy cross-vendor translation, intake-726 Harbor/ATIF). Held below high because "normalize heterogeneous transcripts to a common message list" is engineering convergence, not a research contribution; what is new is the explicit thesis that an agent-consumed trace should be a DIFFERENT, lossy artifact from a benchmark-consumed one, plus a concrete versioned schema with eight adapters and real differential-parity validation.'
+  relevance_justification: 'High. frontier-f1-real-task-corpus.md W2b already hand-rolled a Claude/Codex session-JSONL importer inside epyc-orchestrator scripts/tasks/harvest_tasks.py — bespoke sidechain detection, run over 2,558 JSONL paths — which is precisely what the claude-code + codex adapters do, now parity-validated on 1,050 real sessions. unified-trace-memory-service.md T7 (Hermes ingest, deferred) has a ready-made hermes adapter. harness-selection-and-integration.md HS-4 gains a small real asymmetry: adapters exist for hermes and openhands but NOT opencode.'
+  verdict_justification: 'adopt_component with a hard scope limit. Importable artifact = the Apache-2.0 normalizer (claude-code/codex adapters) as a candidate replacement for bespoke parsing in harvest_tasks.py, since it is maintained, versioned, schema-validated and differentially parity-checked where ours is not. TWO ADOPTION HAZARDS: the Python package ships _vendor/*.mjs so it likely shells out to a vendored Node bundle (verify against minimum-imports policy), and the repo is two weeks old with no independent adopters (version pin + local differential check mandatory). MUST NOT be adopted as a source of record: no tokens/latency/cost/outcome/phase-tag/executor-model-id, truncates tool results by default, and would silently destroy the fields TM-3/TM-8 and F1 W2 depend on.'
+  notes: 'Ingested 2026-07-25 via /research-intake. Derived work PROPOSED (pending Stage-2 plan approval) as intake-derived-work-2026-07-25.md (ID-19). The clean NEGATIVE is as valuable as the positive: recording precisely why trajectory-v1 fails the reviewer-plane requirement pins the minimum measurement-grade field set TM-8 must verify, and pre-empts a future agent treating a token-efficient projection as replayable evidence.'
+  dive_corrections: '2026-07-25 Stage-2a dive: Letta trajectory: adopt_component has NO ARTIFACT. letta-trajectory is NOT on PyPI (404); release.yml publishes npm only. The Python package is a subprocess shim to a VENDORED NODE 20 CLI (_MINIMUM_NODE_MAJOR=20, _vendor/trajectory-cli.mjs, subprocess.run([node,...])) and the Node dependency is UNDECLARED, so pip install succeeds then fails at first call — disqualifying under minimum-imports. Downgrade to: port the ~50-line hermes SQLite read in Python. My Hermes suspicion was WRONG — the adapter targets OUR Hermes (NousResearch/hermes-agent), verified against hermes_state.py DEFAULT_DB_PATH/reasoning_content/active. The no-measurement-fields negative is STRUCTURALLY ENFORCED (additionalProperties:false on all five $defs). The blog post DOES exist (HTTP 200) — it is simply unlinked from the 26-post index.'
+- id: intake-888
+  arxiv_id: '2605.28742'
+  url: https://arxiv.org/html/2605.28742v2
+  source_type: paper
+  title: 'CORE: Contrastive Reflection Enables Rapid Improvements in Reasoning'
+  authors:
+  - Linas Nasvytis
+  - Simon Jerome Han
+  - Ben Prystawski
+  - Satchel Grant
+  - Noah D. Goodman
+  - Judith E. Fan
+  categories:
+  - agent_architecture
+  - autonomous_research
+  - memory_augmented
+  - context_management
+  - benchmark_methodology
+  key_claims:
+  - 'A frozen model improves without weight updates by comparing a FAILED and a SUCCESSFUL rollout of the SAME problem and distilling the difference into a short natural-language insight. The paired contrast is load-bearing — reflecting on either trace alone is measurably weaker. CORRECTED 2026-07-25 (Stage-2a dive): the real ablation is full 0.907 > correct-trace-only 0.830 > no-utility-score 0.780 > last-trace-only 0.617, from ONE figure covering Matchstick Arithmetic only, 10-example regime only, n=3. The variant is named ''last trace only'', not ''contrastive-only''.'
+  - 'Under a fixed rollout budget it beats a parametric RLVR baseline (GRPO) and three non-parametric baselines (GEPA, episodic-RAG, MemRL) with as few as 5-10 training problems.'
+  - 'Storing compact insights instead of whole trajectories collapses inference-time context cost ~36x vs trace-retrieval memory (0.92k prompt tokens/item vs 33.6k episodic-RAG / 32.7k MemRL; GEPA 1.29k).'
+  - 'Two gating mechanisms carry the method: an ADMISSION TEST (a candidate insight is written only if re-attempting the originating problem with that insight alone beats the prior success rate) and UTILITY-AWARE RETRIEVAL (baseline-normalized empirical utility + exploration bonus, not semantic similarity alone).'
+  - 'Failure-biased problem sampling concentrates rollout budget on problems the model solves unreliably rather than on already-solved or hopeless ones.'
+  techniques:
+  - contrastive reflection (paired success/failure trace comparison)
+  - insight admission testing before storage
+  - utility-aware insight retrieval with exploration bonus
+  - baseline-relative utility normalization
+  - failure-biased problem sampling
+  - dual external memory (rollout memory + insight memory)
+  reported_results:
+  - 'ONE base model only — gpt-oss-120b (open-weight MoE), frozen. No cross-model transfer study. Authors state insight quality degrades with smaller models.'
+  - 'Four synthetic verifiable-reward tasks (Matchstick, MathGAP, ZebraLogic, Tower of Hanoi); train 5/10/100 problems; held-out 100-problem eval; 3 runs per condition.'
+  - 'Held-out accuracy (10-sample): Matchstick 0.907, MathGAP 0.830, ZebraLogic 0.717, Hanoi 0.423. Accuracy is largely FLAT from 5 -> 100 training samples (ZebraLogic 0.700 -> 0.717 -> 0.663) — the sample-efficiency claim, but also a ceiling.'
+  - 'Rollout efficiency: exceeded best-baseline by ~350 training rollouts; 0.445 -> 0.717 held-out over 0 -> 2,100 rollouts. Reflection and admission-test calls counted INSIDE reported totals (budget comparison fair on that axis).'
+  - 'INFERENCE-ONLY: frozen weights, no GPU training, no >64GB VRAM, code released, base model open-weight — reproducible on EPYC hardware in principle.'
+  referenced_arxiv_ids:
+  - '2509.25140'
+  - '2509.13237'
+  - '2605.12978'
+  - '2602.12430'
+  - '2602.13949'
+  - '2507.19457'
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  verdict: adopt_patterns
+  discovered_via: input
+  ingested_date: '2026-07-25'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - eval-tower-verification.md
+    - unified-trace-memory-service.md
+    - swarm-dataset-distillation.md
+    experiments: []
+    intake_entries:
+    - intake-240 (GEPA — a DIRECT CORE baseline, already wired into PromptForge at gepa_ratio 0.30)
+    - intake-089 (MemRL — a DIRECT CORE baseline, already marked already_integrated)
+    - intake-627 (Trace2Skill — closest prior art; analysts split by outcome but analyze INDEPENDENTLY, not paired on the same problem)
+    - intake-096 (SkillsBench — self-generated skills net-negative; CORE's admission test is a concrete mechanism against exactly this)
+    - intake-899 (faulty-memories 2605.12978 — cited BY this paper and a direct counterweight to its insight-store growth)
+  handoffs_updated: []
+  handoffs_created:
+  contradicting_evidence:
+  - 'No replication attempt exists — the paper is ~2 months old. That is absence of scrutiny, NOT evidence of robustness.'
+  - 'The MECHANISM it depends on has four independent 2026 counterexamples: arXiv 2605.24050 (skill shadowing — adding skills degrades accuracy, driven by semantic confusability not size); arXiv 2605.19576 (Library Drift — unbounded accumulation stagnates or drops BELOW the no-skill baseline); arXiv 2605.26667 (MemFail — staleness, retrieval error, conflicting insights, context contamination); arXiv 2605.22842 (safety declines under BENIGN accumulation with no adversary).'
+  - 'Credit assignment in utility-weighted retrieval is a known-open problem: arXiv 2607.21106 (AttriMem) and 2605.21768 (Memory-R2) both find coarse outcome rewards cannot identify WHICH stored memory supported the answer. CORE admits its own utility update credits every retrieved insight identically.'
+  - '61-62% of agent-memory errors occur AFTER the relevant memory was already retrieved — so a method whose contribution is better retrieval-by-utility optimizes the smaller half of the error budget.'
+  - 'Single-model (gpt-oss-120b, NOT in our registry), n=3 runs, 100-problem eval sets, four synthetic puzzle tasks with zero overlap with our suites.'
+  novelty_justification: 'Medium. The family is densely covered — GEPA (240) and MemRL (089) are literally CORE''s own baselines and both are already wired into the orchestrator; SkillOpt (626), Trace2Skill (627) and the ACE lineage (781) all do text-space skill evolution from traces. New to our corpus: (1) the insight is generated from a PAIRED success/failure of the SAME problem, with the ablation quantifying the pairing; (2) a rollout-budget-matched head-to-head putting parametric and non-parametric methods on one axis; (3) prompt-tokens-per-eval-item reported as a first-class result, a serving-cost metric almost every paper in this family omits.'
+  relevance_justification: 'High — lands on live work. autopilot-continuous-optimization.md P10 runs GEPA inside PromptForge and froze gepa_ratio at 0.30 on thin evidence; CORE is a rollout-cheaper alternative in that exact slot, and its 5-sample regime matches our chronically small-n eval reality. eval-tower-verification.md EV-10a is an open paired efficacy gate; CORE''s admission test is a cheaper single-artifact prefilter upstream of it. The 36x context reduction is the most EPYC-shaped number in the paper: prefill is the expensive half on CPU, so 33k injected tokens/item is unaffordable while 0.92k is not.'
+  verdict_justification: 'adopt_patterns. We already own the infrastructure this plugs into, so there is no component to import; four discrete mechanisms are worth lifting — paired contrastive insight generation, the admission test, failure-biased sampling, and prompt-tokens-per-item as a reported cost axis. MEASUREMENT: all numbers are OBSERVATIONAL for EPYC (the paper states its own protocol, better hygiene than most of this literature, but carries no EPYC protocol-id or attestation). Real barriers are not the usual ones: single-model evidence with authors stating insight quality degrades on smaller models; n=3 with several gaps inside noise; four synthetic tasks; accuracy flat 5->100 samples; and admitted-broken credit assignment.'
+  notes: 'Ingested 2026-07-25 via /research-intake. Derived work PROPOSED (pending Stage-2 plan approval) as intake-derived-work-2026-07-25.md (ID-4). Timing is fortunate: AP-29 KnowledgeDistiller code landed 2026-05-08 (4cdc77e) but WIRING IS STILL DEFERRED, and its planned unconditional 25-trial trigger is the worst-performing arm in the counterweight literature — so the gate is a free design change now and an expensive rollback later.'
+- id: intake-889
+  arxiv_id: null
+  url: https://github.com/huggingface/trl/blob/main/examples/scripts/openenv/opencode.py
+  source_type: repo
+  title: 'TRL AsyncGRPO + OpenEnv HarnessRolloutWorker — loop-owning RL training of an unmodified coding-agent harness'
+  authors:
+  - Hugging Face TRL team
+  - Quentin Gallouedec
+  - huggingface/OpenEnv contributors
+  categories:
+  - agent_architecture
+  - training_distillation
+  - autonomous_research
+  - benchmark_methodology
+  - tool_implementation
+  key_claims:
+  - 'Both classes named in the operator summary EXIST: AsyncGRPOTrainer and HarnessRolloutWorker (openenv_harness.py:383), both under trl.experimental with an explicitly unstable API. The example landed 2026-07-24 (PR #6420) — one day before intake.'
+  - 'The mechanism is LOOP-OWNING (black-box) RL: TRL does NOT drive the agent turn loop. An unmodified production agent runs to completion in a per-rollout sandbox while an in-sandbox OpenAI-compatible interception proxy forwards its /v1/chat/completions calls and records per-turn (request, response, completion_token_ids, per_token_logps). TRL re-tokenizes and trains GRPO on the recorded ids.'
+  - 'The "harness of your choice (opencode, pi, codex, claude code)" claim is NOT supported by the code: OpenEnv/envs contains 36 environments but only opencode_env is an agent-harness environment; codex_env, claude_env and pi_env all 404. opencode is the sole working loop-owning harness.'
+  - 'Reward is ENVIRONMENT-owned, not orchestrator-synthesized: ResourceSession.verify(transcript) -> VerifyResult(env_reward), and OpenEnv raises if the orchestration layer disagrees. The example sandbox is a hardlink-cloned local directory, NOT a container.'
+  - 'HARDWARE-BLOCKED for EPYC: docs require the vLLM server and trainer on SEPARATE GPUs; we have ONE MI210 (gfx90a, no partitioning). Also vLLM>=0.22.0 + transformers>=5.2.0, FSDP2-only, NCCL weight transfer, and NO PEFT/LoRA path — full-parameter FT only.'
+  techniques:
+  - loop-owning (black-box) RL on an unmodified agent harness
+  - in-sandbox OpenAI-compatible interception proxy for token-id + logprob capture
+  - AsyncGRPO (decoupled rollout generation and gradient updates, staleness-bounded)
+  - held-out programmatic verifier producing dense env_reward inside the environment
+  - turn-selection and auxiliary-call-filtering hooks (train_turn_fn / agent_turn_fn)
+  reported_results:
+  - 'NO empirical results for the harness path — the example ships default hyperparameters only (Qwen3-4B-Instruct-2507, num_generations=8, max_completion_length=16384, max_steps=100).'
+  - 'Verifier config: up to 12 held-out stdin/stdout tests per rollout, 6s timeout, 2GB ulimit; problems with <3 tests dropped.'
+  - 'VERIFIED BRIDGE: OpenEnv proxy reads entry.get("token_id") (vLLM key); our production-consolidated-v7 server emits the same value under "id" (tools/server/server-task.cpp:298,316) — a ONE-LINE alias makes llama.cpp a compatible trace-capture endpoint.'
+  - 'The rollout worker child runs with CUDA_VISIBLE_DEVICES="" — sandboxes, verifiers and rewards are pure CPU work, which suits a 192-thread host.'
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: high
+  credibility_score: null
+  verdict: adopt_patterns
+  discovered_via: input
+  ingested_date: '2026-07-25'
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - harness-selection-and-integration.md
+    - agent-world-env-synthesis.md
+    - tool-use-eval-contract.md
+    - frontier-f1-real-task-corpus.md
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries:
+    - intake-327 (Hermes DSPy+GEPA WITHOUT GPU — the exact text-space contrast to this weight-space method)
+    - intake-244 (Meta-Harness optimizes harness CODE; this optimizes model WEIGHTS inside a fixed harness — orthogonal, composable)
+    - intake-444 (Agent-World environment synthesis — supplies the task arena this trainer would consume)
+    - intake-370 (Aletheia — what makes RLVR for code verifiers tick; informs the held-out-verifier design)
+    - intake-426 (Claude Code ~98.4% plumbing — underpins the don't-build-a-bespoke-harness posture)
+  handoffs_updated: []
+  handoffs_created:
+  contradicting_evidence:
+  - 'The operator-supplied claim of multi-harness support is contradicted by the repository itself: only opencode_env exists; codex_env / claude_env / pi_env 404.'
+  - 'No empirical result is published for the harness path at all — the adjacent white-box Wordle example reports only qualitative movement.'
+  novelty_justification: 'High. Zero hits for OpenEnv, HarnessRolloutWorker or AsyncGRPOTrainer across the 882-entry index. The index holds ~30 GRPO/RLVR entries but every one trains a policy the trainer itself drives turn-by-turn. Training an UNMODIFIED third-party production harness — with its own planner, context manager, tool set and stop condition — by passively intercepting its LLM traffic inverts that relationship, and is orthogonal to intake-244 which searches harness CODE and leaves weights fixed.'
+  relevance_justification: 'High on two hooks. harness-selection-and-integration.md HS-4 is an OPEN operator decision and this adds an axis it does not currently weigh: OpenCode is the ONLY candidate with a first-party trainable adapter, so choosing it keeps a future weight-space-RL option open at ~zero extra cost, whereas Hermes would require writing the whole ResourceSession + proxy + sandbox layer. agent-world-env-synthesis.md AW-9 is exactly "multi-env GRPO, GPU-gated" and this is a code-complete instance of that gate. CRITICAL CONTRAST: our shipped self-improvement (PromptForge/GEPA, Meta-Harness) is TEXT-space, runs on CPU today, and needs no weights; this is WEIGHT-space and is hard-gated on training hardware. Composable, not competing — but only the former is executable here.'
+  verdict_justification: 'adopt_patterns, with one operator-review flag rather than a self-authorized rejection. ADOPTABLE NOW (no GPU): the environment/verifier/trace-capture substrate — black_box mode needs no logprobs and the rollout worker is CPU-only by design, so running opencode in a sandbox against our llama.cpp endpoint with a held-out verifier yields verified agent trajectories with programmatic rewards, an eval-tower and corpus asset independent of ever training. NOT ADOPTABLE (flagged, not dismissed): the weight-update half. Licenses all clean — TRL Apache-2.0, OpenEnv BSD-3-Clause, opencode MIT.'
+  notes: 'Ingested 2026-07-25 via /research-intake. Derived work PROPOSED (pending Stage-2 plan approval) as intake-derived-work-2026-07-25.md (ID-20). Adapter cost for our own harness: the ResourceSessionFactory shim is ~10 lines; real cost is ResourceSession + the TRL-side loop-owning extension protocol (wait_for_completion, fetch_proxy_trace), a per-rollout isolated sandbox, and proxy routing. Subtle trap worth recording: a harness firing auxiliary LLM calls (title generation, summarization) will train those calls with the task reward unless agent_turn_fn filters them.'
+  dive_corrections: '2026-07-25 Stage-2a dive: TRL/OpenEnv: DECLINE rather than bridge. llama.cpp has NONE of the seven vLLM control endpoints (/get_world_size, /pause, /resume, /init_weight_transfer_engine, /start_weight_update, /update_weights, /finish_weight_update — full sweep of tools/server/*.cpp returns zero) and weight_transfer.py:25 hard-imports the vLLM NCCL engine, so llama.cpp could only ever be a FROZEN OFF-POLICY SAMPLER, defeating AsyncGRPO''s premise. My proposed one-line alias was also BUGGY: entry.get(''token_id'') or entry.get(''id'') is truthiness-based and token id 0 is valid and falsy, silently desyncing completion_token_ids from per_token_logps. Logprob semantics also mismatch (llama.cpp ''prob''/''logprob'' != vLLM processed_logprobs). Keep only the GPU-free half: black_box mode + LocalSubprocessSandboxBackend (no E2B needed).'
+- id: intake-890
+  arxiv_id: null
+  url: https://github.com/VectifyAI/PageIndex
+  source_type: repo
+  title: 'PageIndex — vectorless, reasoning-based RAG via an LLM-built document tree (MIT)'
+  authors:
+  - Vectify AI
+  categories:
+  - rag_alternatives
+  - search_retrieval
+  - knowledge_management
+  - document_processing
+  - agent_architecture
+  key_claims:
+  - 'Replaces embedding retrieval with an LLM-built hierarchical table-of-contents per document, then has an LLM reason down the tree to page ranges. Node schema is {title, node_id, start_index, end_index, summary, nodes[]} where start/end are PHYSICAL PAGE NUMBERS, so every result is page-citable by construction.'
+  - 'Retrieval is NOT a fixed algorithm: the OSS repo ships three zero-LLM Python tool functions (get_document, get_document_structure, get_page_content) and expects an agent loop to call them — so per-query LLM-call count is agent-determined and UNBOUNDED by the library.'
+  - 'The 98.7% FinanceBench figure belongs to Mafin 2.5, VectifyAI''s COMMERCIAL hosted product, evaluated in a separate repo — NOT to this OSS code.'
+  - 'Fully local-capable: all LLM traffic routes through litellm with temperature=0, and _normalize_retrieve_model passes through openai/ and litellm/ prefixes, so a local llama.cpp endpoint is a config change with zero hosted dependency. PageIndexClient is a LOCAL client, not a cloud SDK.'
+  - 'Its own PDF handling is strictly weaker than ours: pymupdf + PyPDF2 born-digital text only, no OCR, no table structure, no reading order — but it accepts markdown via md_to_tree, so our ODL pipeline can feed it directly.'
+  techniques:
+  - LLM-generated hierarchical tree-of-contents index (vectorless, no chunking, no embeddings)
+  - TOC-first build with fallback generation over ~20k-token page groups
+  - self-verification loop (verify_toc, fix_incorrect_toc_with_retries) repairing hallucinated page indices
+  - deterministic post-hoc validation nullifying any LLM-emitted page index outside the real range
+  - prompt-injection hardening of untrusted document text (regex redaction, delimiter framing, system preamble)
+  reported_results:
+  - '98.7% FinanceBench — attributed to Mafin 2.5 (commercial), not the OSS repo. Vendor comparison table quotes competitor baselines from their marketing pages at 66.7% coverage vs its own 100%.'
+  - 'Repo traction: 34.5k stars, 322 commits, MIT — the artifact is real and inspectable.'
+  - 'Build cost is one-time and offline but heavy: entire document text passes the LLM at least once in ~20k-token groups, plus one verification call per TOC item, plus up-to-3 repair retries, plus a full recursive re-run per oversized node.'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  verdict: adopt_patterns
+  discovered_via: input
+  ingested_date: '2026-07-25'
+  cross_references:
+    chapters: []
+    handoffs:
+    - internal-kb-rag.md
+    - colbert-reranker-web-research.md
+    - opendataloader-pipeline-integration.md
+    - document-parser-table-bench.md
+    - knowledge-base-governance-improvements.md
+    experiments: []
+    intake_entries:
+    - intake-268 (Karpathy LLM Wiki — persistent compilation beats repeated retrieval; PageIndex is that thesis at single-document scope)
+    - intake-436 (W-RAC — LLM-guided grouping over ID-addressable units; nearest structural analogue)
+    - intake-494 (SLIDERS — structured long-document QA, also FinanceBench, also "alternative architecture not an upgrade lane"; same framing applies)
+  handoffs_updated: []
+  handoffs_created:
+  contradicting_evidence:
+  - 'INDEPENDENT SELF-HOSTED EVALUATION (kirkryan.co.uk): Qwen3-32B on an RTX 5090, 18-document corpus, 16 queries — 9.6-MINUTE AVERAGE QUERY TIME and only 7 of 16 queries completed within a 10-minute timeout. Precision good, throughput not viable. On CPU serving this is materially worse.'
+  - 'Independent deep-dive (sjramblings.io) did NOT reproduce 98.7% and attributes it to Mafin 2.5; measures 50-200 API calls to index a single 100-page PDF; 137 LLM calls for one 131-page report implies ~7,000 calls for a 50-document corpus before answering anything.'
+  - 'THE BASELINE IS WRONG: arXiv 2604.01733 finds BM25 OUTPERFORMS dense retrieval (text-embedding-3-large) on all metrics except Recall@20 for financial text-and-table documents. The vectorless pitch benchmarks against embedding-only retrieval; the baseline it must beat is hybrid BM25+dense with a reranker, and no evaluation shows it doing so.'
+  - 'Hierarchical retrieval is not uniformly better than flat: T-Retriever (arXiv 2601.04945) reports semantics-first RAPTOR sometimes outperformed by strong flat baselines.'
+  - 'Independently reported FinanceBench figures span 74-98.7% across systems using different subsets, judges and answer criteria — a bare "98.7% on FinanceBench" is not comparable to anything without a stated split and protocol.'
+  novelty_justification: 'Medium. No index entry mentions PageIndex, VectifyAI or "vectorless"; RAPTOR / tree-search-retrieval / hierarchical-retrieval return zero hits across 882 entries, so the tree-navigation retrieval family is genuinely uncovered. Not high because the load-bearing ideas have neighbours: intake-436 already establishes LLM-guided grouping over ID-addressable units, intake-494 covers structured long-document QA on FinanceBench, and intake-268 states the persistent-compilation position this instantiates. What is new is the artifact — MIT, feature-complete, page-citable node schema, working self-repair for hallucinated page indices.'
+  relevance_justification: 'High, and the sharpest finding is that PageIndex is a COMPLEMENT to the existing ColBERT kb-search path, not a competitor. internal-kb-rag.md serves 577 markdown files / 18,010 chunks at ~180 ms per query with ZERO LLM calls; PageIndex has NO cross-document retrieval primitive at all (get_document presupposes you already know the document) and costs several sequential LLM round-trips. On CPU, where each call is seconds not milliseconds, it is the wrong instrument for "which of 577 files" and the right one for "where inside this one 200-page PDF". Natural composition: ColBERT for document selection, PageIndex tree for intra-document navigation.'
+  verdict_justification: 'adopt_patterns — not adopt_component, not worth_investigating. Verified from source: MIT; all LLM calls via litellm with openai/ prefix passthrough so a local llama.cpp endpoint works; retrieve.py tool functions are plain local Python with no network. The OSS repo is feature-complete for build + retrieval, not a teaser — the cloud tier sells OCR quality and an MCP frontend, not the core algorithm. The decisive EPYC consideration is QUERY cost: the library imposes no bound, the reference agent does metadata -> full-tree -> page-content -> answer (~4 sequential calls minimum with monotonically growing context, unbounded above). Any adoption must cap navigation depth explicitly. The 98.7% cannot gate anything under MEASUREMENT.md.'
+  notes: 'Ingested 2026-07-25 via /research-intake. Derived work PROPOSED (pending Stage-2 plan approval) as intake-derived-work-2026-07-25.md (ID-18). Worth taking regardless of adoption: the build-time injection hardening — regex redaction of override phrases, <user_document> delimiter framing, a system preamble on every prompt, and DETERMINISTIC POST-HOC VALIDATION nullifying any LLM-emitted page index outside the real range — is a reference implementation for the open ORCHESTRATOR_DOCUMENT_BODY_INJECTION_POLICY work. The post-hoc index validation in particular is a pattern we do not have: it constrains LLM output against ground truth rather than trusting the prompt.'
+  dive_corrections: '2026-07-25 Stage-2a dive: PageIndex: my timeout figure was INVERTED — the independent evaluation reports 9 of 16 queries TIMED OUT and 7 completed. ''RTX 5090'' is UNSOURCED; the measured setup was Qwen3-32B via Ollama over 18 docs. TWO LLM transports, not one: build path via litellm (confirmed) but the retrieval demo uses the OpenAI Agents SDK. No global bound on per-query LLM calls (only per-call retries); O(N) per document — 18 docs ~9.6 min, 500 ~4.4 h, 10k ~3.5 days. DO NOT OVER-CLAIM: the same author''s follow-up halves query time with parallel execution and gets better recall with a SMALLER model, so 9.6 min is a default-config worst case, not a floor. MIT + genuinely local confirmed.'
+- id: intake-891
+  arxiv_id: null
+  url: https://huggingface.co/DavidAU/Qwen3.6-27B-Fable-Fusion-711-Uncensored-Heretic-NM-DAU-NEO-MAX-MTP-GGUF
+  source_type: repo
+  title: 'DavidAU Qwen3.6-27B-Fable-Fusion-711 — abliterated merge with a PAIRED MTP / non-MTP GGUF quant ladder'
+  authors:
+  - DavidAU
+  - Nightmedia (NM)
+  - trohrbaugh (Heretic abliteration)
+  categories:
+  - speculative_decoding
+  - quantization
+  - local_inference
+  - ssm_hybrid
+  - benchmark_methodology
+  key_claims:
+  - 'MTP is a real tensor claim, not just naming: MTP GGUFs are a distinct suffixed line with "MTP tensors set to Q8_0 precision for all quants". STRUCTURAL CORROBORATION computed from the HF file manifest (not the card): each of TEN quants is published TWICE, and the MTP twin is larger by EXACTLY 451,320,768 bytes (430.4 MiB) in all ten cases — a quant-invariant constant delta, which is what a fixed-precision Q8_0 head on an otherwise identical body looks like.'
+  - 'The MTP ladder covers K-quants, not just IQ: MTP-Q4_K_S/Q4_K_M/Q5_K_S/Q5_K_M/Q6_K/Q8_0 all exist. On frozen production v7 (where IQ-quants are iqk-stubbed) this means an MTP experiment need not incur the IQ-stub penalty — the defect is AVOIDABLE BY QUANT SELECTION here, unlike GLM-5.2 UD-IQ2_M.'
+  - 'Base is Qwen/Qwen3.6-27B — the same checkpoint already registered (qwen36_27b_q8, qwen36_27b_q4km) and already instrumented on MI210. llama.cpp architecture support is NOT a prerequisite gap.'
+  - 'Abliteration is quantified: refusals 4/100 vs 99/100 for the stock base, at KL divergence 0.0469. That is a weight edit applied to the same trunk the NEXTN/MTP head was co-trained against, so draft acceptance on this merge CANNOT be inherited from vanilla-base MTP measurements.'
+  techniques:
+  - multi-stage fine-tune + merge over Qwen3.6-27B
+  - Heretic v1.2.0 directional ablation (Arbitrary-Rank Ablation)
+  - NEO Imatrix quantization with F16 output tensor (MAX)
+  - paired MTP / non-MTP GGUF publishing with the MTP head pinned to Q8_0 independent of body quant
+  reported_results:
+  - 'ARC-C 0.711 (mxfp8) vs 0.647 base Qwen3.6-27B — the "711" in the name. Card claims the merge exceeds base on 6 of 7 suites.'
+  - 'Decensoring: 4/100 refusals vs 99/100 base; KL divergence 0.0469.'
+  - 'MTP throughput claim: on Q4_K_S "regular GGUFs are about 75 t/s, whereas MTP GGUFs (acceptance 60%, 2 tokens) can exceed 90 T/S". NO hardware, backend, batch size, context, sampler or repetition count given — and 75 t/s on a 27B at 4-bit is GPU-class, so almost certainly not CPU. OBSERVATION only; gates nothing.'
+  - 'Manifest: 23 GGUF quants + 3 mmproj. Non-MTP IQ2_M 11.67 GB through Q8_0 29.79 GB; MTP twins each +0.45 GB. mmproj F16 0.93 GB.'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-07-25'
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - speculative-decoding-mtp-refresh.md
+    - qwen36-27b-cpu-feasibility.md
+    - iqk-iquant-enablement.md
+    - capability-registry-and-promotion.md
+    - reviewer-calibration-accounting.md
+    experiments: []
+    intake_entries:
+    - intake-160 (Heretic — the exact abliteration tool this merge names)
+    - intake-721 (unsloth Qwen3.6-35B-A3B-MTP-GGUF — precedent for a community GGUF bundling a native NEXTN head in-file)
+    - intake-777 (Qwable-v1 — THE CAUTIONARY PRECEDENT: a community Qwen3.6 re-export whose GGUF ladder silently DROPPED all nextn/mtp tensors, caught only by parsing all 733 tensors from the header)
+    - intake-823 (Hy3-GGUF — same convention of pinning the MTP layer at q8_0 on low-bit tiers)
+  handoffs_updated: []
+  handoffs_created:
+  contradicting_evidence:
+  - 'The MTP tensor claim is NOT yet header-verified. The constant 451,320,768-byte delta is strong structural evidence but is inference from file sizes; intake-777 is the standing proof that a structurally similar ladder can silently lack the tensors entirely.'
+  - 'Quality claims are self-published by the merge author''s own collaborator with no harness version, no n or reps, no seeds, no shot count, no protocol id. The suites (ARC, HellaSwag, PIQA, BoolQ, WinoGrande, OpenBookQA) are near-saturated multiple-choice likelihood scoring at 27B scale and weakly predictive of the agentic/coding/reviewer behaviour we route on.'
+  - 'Abliteration is a measurement hazard: 4/100 vs 99/100 refusals means any refusal-sensitive or safety-gated suite will show a delta that is a BEHAVIOUR change masquerading as a capability change. Swapping this into the qwen36_27b_q8 reviewer arm would invalidate existing reviewer calibration without a fresh pass.'
+  novelty_justification: 'Medium. Neither DavidAU nor Fable-Fusion appears in the 882-entry index, but every ingredient is already indexed: abliteration (160), in-GGUF NEXTN packaging (721, 823), Fable-trace community finetunes of a Qwen3.6 base (777). What is genuinely new is the ARTIFACT SHAPE — the first indexed release publishing a MATCHED MTP / non-MTP pair at ten identical body quants for a checkpoint already in our registry, which makes the MTP-head contribution isolable at fixed body precision. Also the first abliterated + MTP-head combination, raising a question no prior entry addresses.'
+  relevance_justification: 'High but ASYMMETRIC, and must be read that way. GPU axis: high and concrete — we already hold qwen36_27b_mtp_q8_local with a measured MI210 optimum on production v7 (--spec-type draft-mtp --spec-draft-n-max 4: 53.1 t/s vs 29.2 no-spec = 1.82x, the largest MTP win of the three architect-bench GPU arms). CPU axis: LOW, and stating it explicitly matters because the name implies otherwise — Qwen3.6-27B is 48 Gated-DeltaNet + 16 Gated-Attention layers, and the GDN verification wall architecturally forecloses CPU spec-dec on this class (0.56x measured on the Qwen3.5 hybrid sibling).'
+  verdict_justification: 'worth_investigating — not adopt_component, emphatically not not_applicable. The case for investigating is one unusually cheap, high-information gate requiring ZERO inference and no bench approval: parse the GGUF header of one MTP file and its non-MTP twin and diff the tensor lists. intake-777 makes that gate mandatory rather than optional. The case against anything stronger: no open role this fills (an uncensored creative-oriented merge, not a production role candidate); the CPU plane is foreclosed so realistic payoff is confined to the operator-owned MI210; quality claims are hypothesis-grade; and any reviewer/eval use inherits a real abliteration confound.'
+  notes: 'Ingested 2026-07-25 via /research-intake. Derived work PROPOSED (pending Stage-2 plan approval) as intake-derived-work-2026-07-25.md (ID-15). Two things flagged rather than ruled out: the model ships a vision projector (mmproj F16/BF16/F32), making it the only MTP-bearing VLM-capable artifact of a base we already run; and the paired ladder would let us measure, for the first time, whether directional abliteration degrades a co-trained NEXTN head''s acceptance rate — a question with implications beyond this repo, and we already own the vanilla control. CAVEAT WITH A SHELF LIFE: the "prefer K-quant MTP tiers to avoid the iqk IQ-stub" advice is tied to frozen production v7; a parallel session is re-landing IQ-quant enablement on experimental-v8-refresh-20260724, after which the IQ MTP tiers become viable too.'
+  dive_corrections: '2026-07-25 Stage-2a dive: DavidAU: the constant 451,320,768 B delta is CONFIRMED exact across all ten pairs with zero variance, and the repo is apache-2.0 with three mmproj projectors. AMENDED: 22 GGUFs, not 20 — IQ4_XS and Q6_K each have a third undocumented LOW-MTP variant. METHOD CORRECTION: do NOT infer MTP presence from file-size deltas; that reasoning is unsound (ThinkingCap''s Q4_K_M is 722 MB SMALLER than our non-MTP Q4_K_M yet has MTP). The reliable test is TENSOR COUNT from a 24-byte ranged header read: 851 = no MTP, 866 = MTP (+15 = the blk.64.nextn.* block), plus KV key qwen35.nextn_predict_layers.'
+- id: intake-892
+  arxiv_id: null
+  url: https://huggingface.co/bottlecapai/ThinkingCap-Qwen3.6-27B-GGUF
+  source_type: repo
+  title: 'ThinkingCap-Qwen3.6-27B-GGUF — token-efficient reasoning FINETUNE (not a reasoning-budget dial)'
+  authors:
+  - BottleCap AI
+  - Tomas Mikolov (final author on the parent card)
+  categories:
+  - training_distillation
+  - context_management
+  - local_inference
+  - quantization
+  - cost_aware_routing
+  key_claims:
+  - 'It is a full-weight supervised FINETUNE of Qwen3.6-27B aimed at emitting fewer thinking tokens — explicitly NOT a decode-time control mechanism, LoRA or merge. NEITHER card documents any per-request reasoning-length knob, effort level or budget parameter: the compression is baked into the weights at a single operating point and is NOT tunable at inference.'
+  - 'Parent card reports ~45.8% macro thinking-token reduction across 12 held-out out-of-domain benchmarks with macro accuracy 81.5 -> 80.7, and 57.7% across 7 in-domain with 94.4 -> 95.4.'
+  - 'Accuracy is NOT uniformly preserved. Out-of-domain regressions: GPQA-Diamond 85.5 -> 83.8 (-1.7), HMMT Nov-2025 88.0 -> 84.7 (-3.3), Claw-Eval 87.0 -> 84.4 (-2.6), LongBench-v2 62.6 -> 60.2 (-2.4), AA-LCR 76.2 -> 74.2 (-2.0). Gains: LiveCodeBench +3.6, GSM8K +3.2.'
+  - 'The GGUF repo publishes ONLY K-quants and f16 (Q4_K_M 15.7 GB, Q6_K 20.9 GB, Q8_0 27.1 GB, f16 50.9 GB) plus a 0.9 GB mmproj — so every published weight file falls inside the iqk AVX-512 accelerated type set. It is a VISION-language model.'
+  - 'Advertised MTP self-speculative capable with no separate draft model (--spec-type draft-mtp --spec-draft-n-max 4), measured accept-length 3.26-3.69 at n=4.'
+  techniques:
+  - supervised finetuning for thinking-token compression (weights-level, non-tunable)
+  - MTP self-speculative decoding
+  - GGUF K-quantization
+  - vision-language mmproj projector
+  reported_results:
+  - 'Parent card protocol: 5 seeds per condition, 95% CIs, significance testing claimed; temp 1.0 / top_p 0.95 / top_k 20. Per-benchmark n NOT stated.'
+  - 'Examples: GPQA-Diamond 10,777 -> 3,351 tokens (-67.8%); MMLU-Pro 3,455 -> 1,290 (-53.7%); SuperGPQA -58.4% at IDENTICAL accuracy 64.0; GSM8K 3,175 -> 648 (-74.1%) at +3.2pp.'
+  - 'GGUF-repo quant sweep (N=200/dataset x 3 seeds): ALL quants and the base model OVERLAP in 95% CI — that table demonstrates NO accuracy separation and cannot support a quality-preserved claim on its own.'
+  - 'Wall-clock (bs=16, MMLU-Pro, CUDA llama-server): base bf16 138.1 s -> ThinkingCap Q4_K_M + MTP 35.5 s (3.89x). Irrelevant to bandwidth-bound CPU decode, though the TOKEN-COUNT reduction is hardware-independent and does transfer.'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: 1
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-07-25'
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    - 06-benchmarking-framework.md
+    handoffs:
+    - reasoning-compression.md
+    - reasoning-effort-levels.md
+    - per-request-reasoning-budget.md
+    - architect-model-selection-bench.md
+    - qwen36-27b-cpu-feasibility.md
+    - model-capability-descriptors.md
+    experiments: []
+    intake_entries:
+    - intake-110 (OPSDC self-distillation for reasoning compression — closest technique analogue; also predicts the easy/hard asymmetry seen here)
+    - intake-130 (Do NOT Think That Much — the overthinking analysis this operationalizes)
+    - intake-276 (Brevity Constraints Reverse Performance Hierarchies — predicts brevity can IMPROVE accuracy, matching the in-domain +1.0 macro)
+    - intake-657 (Factory tiered reasoning-effort control — the DIAL pattern; this is the complementary weights-level shift, NOT a dial)
+  handoffs_updated: []
+  handoffs_created:
+  contradicting_evidence:
+  - 'THE VENDOR''S OWN TABLE CONTRADICTS THE FRAMING IN DIRECTION: of 12 out-of-domain benchmarks, 8 are NEGATIVE, 2 flat, 2 positive. Most deltas sit inside overlapping 95% CIs so the study is under-powered in BOTH directions, but an 8-of-12 negative sign pattern is not what "preserves accuracy" predicts.'
+  - 'Token reduction is SMALLEST exactly where accuracy loss is LARGEST: 67.8% cut on GPQA-D but only 38.0% on HMMT and 25.2% on Claw-Eval. The headline ~46% average is over a strongly heterogeneous distribution.'
+  - 'General literature agrees compression hurts most where reasoning matters: arXiv 2509.05226 finds the highest-compression approaches omit critical reasoning steps for harder problems, with sharp accuracy decline as difficulty rises; adaptive length penalties recover what uniform compression loses. A single-ratio finetune is the uniform case.'
+  - 'The one independent evaluation found (zephel01 local llmbench, 95.0% at Q4_K_M, Q4_K_M ~ Q8_0 within noise) contains NO base-model control arm, so it confirms the model is strong and quantizes cleanly but cannot corroborate "no degradation vs base" at all.'
+  novelty_justification: 'Medium. The technique (finetune a reasoning model to emit shorter chains at held accuracy) is well covered across the reasoning-compression cluster (110/126/130/276 and others) and the handoff already codes them into a Tier-1/2/3 taxonomy. Above low because it supplies something no existing entry does: a released, Apache-2.0, downloadable CHECKPOINT of that technique applied to a base already in our registry, shipped as llama.cpp GGUF K-quants with MTP, plus a 19-benchmark multi-seed table with an explicit in-domain / out-of-domain split. The taxonomy has no "Tier-0: download an already-compressed checkpoint" rung and this is one.'
+  relevance_justification: 'High on four hooks, but with a decisive caveat. (1) Exact base-model match — Qwen3.6-27B is registered twice and is arm A3 in the live architect bench. (2) The architect decision now turns on exactly this quantity: R6 reported six independent null results (arms reason equivalently, A1<->A3 p=1.00), so the choice falls to deployment/operating cost, and the handoff already tracks median tokens as the discriminator. (3) A same-path A/B needs zero new infra — we already hold Qwen3.6-27B-MTP-Q4_K_M/Q8_0/f16-upcast GGUFs. (4) Quant coverage is favourable — all published files are inside iqk_typeA_supported. THE CAVEAT: under our CURRENT registry config this would deliver close to ZERO benefit, because both Qwen3.6-27B rows set disable_thinking: true and ThinkingCap''s entire value lives inside the thinking trace.'
+  verdict_justification: 'worth_investigating, deliberately NOT adopt_component and explicitly NOT not_applicable — the recommendation is to acquire and measure. Every number is vendor self-reported with no independent re-measurement; corroborating hits all restate or redistribute the card. credibility 1 by rubric, but that UNDERSTATES the card''s internal methodological quality (5 seeds with 95% CIs, explicit in/out-of-domain split so the headline is quoted on held-out data, and self-reported REGRESSIONS a purely promotional card would have omitted). The low score reflects absence of external validation, not detected sloppiness. On a green local A/B it escalates to adopt_component.'
+  notes: 'Ingested 2026-07-25 via /research-intake. Derived work PROPOSED (pending Stage-2 plan approval) as intake-derived-work-2026-07-25.md (ID-16). The sharper question, which appears in NEITHER the source nor our bench: does ThinkingCap with enable_thinking=true beat stock Qwen3.6-27B with enable_thinking=false (our incumbent production config) on accuracy-per-second? That is the only configuration in which this artifact can pay. Also: it is a DIFFERENT MODEL under the reasoning-effort-levels invariant, so any effort level or draft depth calibrated on stock Qwen3.6-27B is void. Separate finding worth checking independently of adoption: both cards describe this base as vision-capable with a 0.9 GB mmproj, while our registry describes qwen36_27b_* as text-only with no mmproj_path — a possible descriptor gap.'
+  dive_corrections: '2026-07-25 Stage-2a dive: ThinkingCap: the MTP head is STOCK, confirmed at BYTE level. The entire 451 MB layer-64 block is byte-identical to our local Qwen3.6-27B-MTP-Q8_0.gguf (single sha256 over the region), as are token_embd.weight, output.weight (tied shared head) and output_norm.weight; a control tensor (blk.32.ffn_gate) genuinely differs, so the offset arithmetic is sound. The differing set is exactly the 256 LoRA target modules (q/k/v/o in the 16 full-attention layers + ffn_gate/up/down x 64), matching upstream merge_verify_report.json (LoRA r=64, alpha=128, merged scaling 2.0) and an MTP shard named model-base-aux.safetensors. The -1,184 B file delta is FULLY METADATA, exact to the byte (15 absent KV pairs + name + template + alignment). CONSEQUENCES: (1) MTP is NOT a ThinkingCap feature — we already hold that drafter, so hold it constant across arms; (2) this is a genuine co-trained-head vs modified-trunk mismatch, predicted worst on the early keep-thinking tokens the finetune targets; (3) accept-length appears genuinely measured (base rows reported too: 3.66/3.61 vs 3.69/3.65) but is statistically indistinguishable from base and vision numbers are slightly WORSE; (4) TEMPLATE: ThinkingCap ships STOCK Qwen (7,764 B) while OUR local artifact carries Unsloth''s PATCHED variant (8,057 B, developer-role + tool-calling fixes); (5) the GGUF repo declares NO LICENSE — gates registry admission. Verified GGUF fingerprint for MTP presence: 851 tensors = no MTP, 866 = MTP.'
+- id: intake-893
+  arxiv_id: null
+  url: https://www.plasma.ai/research/fractal
+  source_type: blog
+  title: 'Fractal — recursive agent loops for giant tasks (Plasma AI research post)'
+  authors: [Nicholas Diao, Andrew Turner, Colton Berry]
+  categories: [agent_architecture, autonomous_research, swarm_techniques, context_management]
+  key_claims:
+  - 'Fractal is NOT an inference engine, kernel or serving system — it is an agent-orchestration framework running coding-agent CLIs (Claude Code, Codex, Grok Build, OpenCode, Oh My Pi) as a self-organizing tree of long-running loops.'
+  - 'Each node runs a persistent 5-step loop (Prepare / Plan / Execute / Review / Commit) with each step spawned as a FRESH agent process in the node''s own git worktree — fresh-process-per-step is the context-window escape hatch; continuity lives in git and memory files, not a transcript.'
+  - 'Containment is by multi-axis hard caps rather than supervision: per-node USD budgets aggregating up the tree (with a reserve tranche, default 10%), plus max-iters / max-depth / max-children / max-descendants and per-run/iteration/step timeouts.'
+  - 'Headline evidence is self-application: a 187-node tree against Fractal''s own codebase reportedly found 135 issues and fixed 55 test-first, growing the suite from 698 to 823 passing tests.'
+  techniques: [hierarchical agent trees, per-node git worktree + branch isolation, fresh-agent-process-per-step, topic-organized Markdown knowledge-graph memory, parent/child message bus (Fractal Radio), hierarchically-aggregating budget caps]
+  reported_results:
+  - '187-node tree, 135 issues found, 55 fixed, tests 698 -> 823. NO hardware, NO wall-clock, NO token or USD totals, NO baseline arm.'
+  - '"Six fresh runs on the tuned defaults completed with no steering" — no success criterion, no denominator beyond six, no failure taxonomy.'
+  - 'ALL OBSERVATIONS, not protocol-grade: no protocol-id, no reps, no attestation, no independent baseline, and the evaluator is the tool''s own maintainers scoring the tool on its own repository. Test COUNT is an agent-gameable metric and issue counts have no denominator.'
+  - 'Explicit absence: zero throughput, latency, tokens/sec, cost-per-task or quality-benchmark numbers — the artifact does not touch the inference layer.'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  credibility_score: 1
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-07-25'
+  cross_references:
+    chapters: [08-cost-aware-rewards.md]
+    handoffs: [agent-collab-rnd-harness.md, frontier-f2-self-running-lab.md, mi210-kernel-rnd-loop-proposal.md, autopilot-continuous-optimization.md]
+    experiments: []
+    intake_entries:
+    - intake-894 (companion repo — carries the portability + code-merit verdict)
+    - intake-550 (ReDel — academic toolkit for recursive multi-agent systems; Fractal is the production-engineering counterpart)
+    - intake-517 (HALO — near-identical vocabulary, orthogonal objective: HALO OPTIMIZES a loop, Fractal RUNS one)
+    - intake-426 (Claude Code 98.4% plumbing — Fractal is that plumbing hoisted one level above the harness)
+  handoffs_updated: []
+  handoffs_created: []
+  contradicting_evidence:
+  - 'The entire evidential base is a self-scored run of the tool on the tool''s own repository, with no baseline, no protocol and no hardware or cost disclosure.'
+  - 'Commercial bias is explicit and material: the post closes by announcing "Fractal Cloud" with an early-access signup, so the research page doubles as a funnel.'
+  novelty_justification: 'Not a duplicate — no plasma.ai/plasma-ai or fractal entry exists. But the CONCEPT is well-trodden here: intake-550/544/536/517/318/700/883 already cover recursive/hierarchical agent trees and intake-314 covers worktree-parallel agents. What this adds is a specific engineering commitment set — fresh process per STEP, git-worktree-as-continuity-medium, budget aggregation with a reserve tranche, knowledge-graph-over-transcript memory. New perspective on a covered technique.'
+  relevance_justification: 'ZERO relevance to the core inference stack — no CUDA/ROCm/AVX-512/GGUF/quantization content; it cannot make a token go faster on either the MI210 or the EPYC CPUs. Relevance is entirely lab-automation, which is genuinely active: agent-collab-rnd-harness.md is an open stub shopping for exactly this mechanism, and mi210-kernel-rnd-loop-proposal.md has Phase 2 unbuilt with no budget-containment design. Medium not high because the BLOG contributes framing and unverifiable claims only — the actionable artifact is the repo.'
+  verdict_justification: 'worth_investigating, not adopt_*. The design ideas are worth extracting regardless of whether the numbers hold; the numbers themselves must not gate anything.'
+  notes: 'Ingested 2026-07-25 via /research-intake. OPERATOR DECISION 2026-07-25: containerized / disposable-host trial approved; NOT on this host as configured.'
+  dive_corrections: '2026-07-25 Stage-2a dive: Fractal blog: test-count and absence claims corrected. It is 108 .py under tests/ (91 named test_*.py), NOT 68 — the test-to-module ratio argument gets STRONGER (~1.6-1.9x). My claim that the page carries no cost or wall-clock figures is FALSIFIABLE — it shows 11 dollar figures and durations (run 41m $23.87/$300.00) in an illustrative TUI screenshot; the defensible statement is that those figures are NOT ATTRIBUTED to the 187-node self-application run. A math-problem control does exist (''matched it ten for ten'') — acknowledge it or the critique looks careless. The 187/135/55/698->823 figures are CONFIRMED verbatim, as is the absence of hardware and token figures.'
+- id: intake-894
+  arxiv_id: null
+  url: https://github.com/plasma-ai/fractal
+  source_type: repo
+  title: 'plasma-ai/fractal — hierarchical agent loops, Apache-2.0 (implementation reality + portability verdict)'
+  authors: [Plasma AI, Andrew Turner (sole commit author on visible history)]
+  categories: [agent_architecture, autonomous_research, swarm_techniques, tool_implementation, knowledge_management]
+  key_claims:
+  - 'IMPLEMENTATION IS REAL and does NOT contradict the blog: 57 Python modules vs 68 test modules, four GitHub Actions workflows with pytest+coverage gated on PRs, pyright typing, Sphinx docs, PyPI plasma-fractal 1.0.0 (2026-07-21), Apache-2.0. Every headline mechanism has a corresponding module (core/worktree.py, core/radio.py, core/cost.py, core/loop.py, core/schema.sql). Nothing headline is stubbed.'
+  - 'ZERO inference-layer content: no CUDA, ROCm, HIP, Triton, FP8, kernel, GGUF, llama.cpp, vLLM, SGLang, PyTorch or tensor anywhere. Runtime deps are exactly plasma-wiki, rich, textual, typer on Python 3.12-3.14. Portability to MI210 or EPYC CPUs is VACUOUSLY TOTAL — it runs anywhere Python runs and accelerates nothing.'
+  - 'MODEL ACCESS IS DELEGATED, which is the actual EPYC hook: Fractal owns no HTTP client and exposes no base_url; each impl/*.py spawns a vendor CLI as a subprocess. Self-hosted models are reachable iff the chosen backend CLI can be pointed at a custom endpoint — and our own HS-1c audit already established OpenCode does exactly this via opencode.json options.baseURL. So --agent=opencode is a ZERO-FORK path from a Fractal node to the Orch and thence to local llama.cpp.'
+  - 'BUT THE BUDGET SYSTEM — the primary containment mechanism — DEGRADES ON SELF-HOSTED MODELS: cost derivation is per-backend and vendor-dependent. Against a local llama-server there is no USD to report and no pricing-cache row, so max-cost/max-iter-cost/max-step-cost collapse toward zero and stop bounding the run.'
+  - 'HOST-SAFETY POSTURE IS ACTIVELY HOSTILE TO THIS MACHINE: nodes run their agent WITHOUT permission prompts by default (each backend seeded with its bypass flag), and per the README the per-node git worktree isolates the branch it commits to, NOT the filesystem, the network, or anything outside it.'
+  techniques: [subprocess-supervisor over pluggable coding-agent CLIs, git worktree + branch per node, SQLite state/cost ledger, Textual TUI with live steering, parent/child message bus, multi-axis hard caps, scope flag restricting committable subdirectories]
+  reported_results:
+  - 'The repo reports NO benchmarks — README, docs/ and examples/ carry no throughput, latency, quality or cost-per-task numbers.'
+  - 'The blog''s 187-node self-application run is NOT reproducible from the repo: no run artifacts, no fractal.db export, no node-tree transcript, no issue list.'
+  - 'Repo health 2026-07-25: 580 stars, 56 commits, created 2026-07-01, last push 2026-07-24, Apache-2.0. Entire visible history is ONE author — bus factor 1, no external contributor has landed code. A 1.0 tag four days old on a repo three weeks old.'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  verdict: adopt_patterns
+  discovered_via: input
+  ingested_date: '2026-07-25'
+  cross_references:
+    chapters: [08-cost-aware-rewards.md]
+    handoffs: [agent-collab-rnd-harness.md, mi210-kernel-rnd-loop-proposal.md, agentic-rocm-kernel-authoring.md, harness-selection-and-integration.md, frontier-f2-self-running-lab.md, internal-kb-rag.md]
+    experiments: []
+    intake_entries:
+    - intake-893 (companion blog post — the claims this implements)
+    - intake-318 (Agentnetes — Kubernetes-inspired self-organizing agent orchestration with worktrees; closest architectural sibling)
+    - intake-700 (Ruflo — same slot, harness-coupled instead of harness-agnostic)
+    - intake-314 (Running Parallel Agents Interactively & Deterministically — worktree-parallelism precedent)
+    - intake-848 (OpenHands — precedent for the "adopting it imports a competing orchestrator" hazard; applies to Fractal's Plan/Review steps)
+  handoffs_updated: []
+  handoffs_created: []
+  contradicting_evidence:
+  - 'Default bypassPermissions + branch-only isolation is disqualifying on this host as configured: /workspace/repos/* and /mnt/raid0/llm/* are the same physical trees, live llama-servers and autopilot are running, and the standing shared-clone hazards (staged files riding into parallel commits, branch switching under a shared tree) apply directly.'
+  - 'Running it imports a SECOND decision-making orchestrator (its own Plan/Review layer) alongside autopilot — the exact hazard recorded against OpenHands at intake-848.'
+  - 'Bus factor 1 and a four-day-old 1.0 on a three-week-old repo argue against taking a dependency.'
+  novelty_justification: 'No prior plasma-ai or fractal entry, so not a duplicate. The tree-of-agents construct is well covered (550/544/536/318/700/883), so the ideas are not new — the RUNNABLE, tested, CI-gated, PyPI-published, Apache-2.0 packaging of them IS the net-new artifact, and it is harness-agnostic across five backend CLIs rather than welded to one (which separates it from Ruflo/intake-700).'
+  relevance_justification: 'High on the LAB-AUTOMATION axis, explicitly not the inference axis. Three active handoffs have an open slot: agent-collab-rnd-harness.md is an open stub shopping for exactly this mechanism; mi210-kernel-rnd-loop-proposal.md is approved-and-building with Phase 2 unbuilt and no budget-containment design; agentic-rocm-kernel-authoring.md needs a generate->compile->verify->profile->refine driver and already resolved to a Claude+Codex actor-critic, two of Fractal''s five backends. The hardest blocker is operational, not technical.'
+  verdict_justification: 'adopt_patterns, not adopt_component — the repo does NOT overturn the blog, it substantiates the mechanism while leaving the results unverifiable. Code merit is genuinely good (68 test modules to 57 source modules, PR-gated CI, no stubs on headline features, commit messages that read like someone actually operating it). Commercial-bias check comes out FAVOURABLE on the code (the full loop, budgets, radio, TUI and all five backends are in-tree under Apache-2.0 with no license key or phone-home) and UNFAVOURABLE on the roadmap (Fractal Cloud announced with early access). Three reasons to lift patterns rather than adopt: it imports a competing orchestrator; its budget caps go slack against local models; and default-bypassed permissions are disqualifying here.'
+  notes: 'Ingested 2026-07-25 via /research-intake. OPERATOR DECISION 2026-07-25: containerized / disposable-host trial approved. Containment design worth extracting regardless — budget aggregation up the tree, a reserve tranche withheld for cleanup, drain-at-iteration-boundary termination, and the scope flag limiting commit blast radius (the mechanism that would keep an autonomous kernel node out of frozen production-consolidated-v7). A non-USD cost basis (GPU-seconds or wall-clock) is required before any local use.'
+  dive_corrections: '2026-07-25 Stage-2a dive: Fractal repo: runtime deps confirmed as ONLY plasma-wiki/rich/textual/typer with zero torch/vllm/CUDA/ROCm/llama.cpp — ''accelerates nothing'' is safe. 56 commits, single author (bus factor 1). The safety posture is the project''s OWN front-page [!WARNING], stronger than I asserted: ''Nodes run their agent without permission prompts by default'' enumerating five bypass flags (Claude bypassPermissions, Codex danger-full-access, Grok --always-approve, opencode --auto, omp --yolo), and ''The per-node git worktree isolates the branch it commits to, not the filesystem, the network, or anything else outside it.'' Cite theirs rather than asserting our own. Budget slack CONFIRMED concretely by their docs: ''Cost is recorded, never estimated. A step whose backend reported no figure stores no cost'' — so a local llama-server that reports nothing produces no cost row and max-cost never trips.'
+- id: intake-895
+  arxiv_id: '2506.15629'
+  url: https://arxiv.org/html/2506.15629v1
+  source_type: paper
+  title: 'Revisiting Compositional Generalization Capability of LLMs Considering Instruction Following Ability (ACL 2025 Main)'
+  authors: [Yusuke Sakai, Hidetaka Kamigaito, Taro Watanabe]
+  categories: [benchmark_methodology, quantization]
+  key_claims:
+  - 'Adding an ordering constraint turns CommonGen from set-coverage into a joint probe of compositional generalization AND instruction adherence: 192 four-concept seed sets expanded into all 24 permutations (4,608 ordered sets, 27,648 instances over 6 templates); the model must emit a sentence containing every concept IN THE STATED SEQUENCE.'
+  - 'Models parse the ordering intent but do not satisfy it: appending "in the specified order" lifts ordered coverage sharply for capable models (Llama3.1-405B +55.41 pts), yet the BEST model reaches only ~75% ordered rate against ~99% unordered coverage — roughly a quarter of outputs silently violate an explicit, trivially checkable constraint.'
+  - 'Order adherence scales with parameter count inside a family (Llama3.2-1B 27.86% -> Llama3.1-405B 75.26%), arguing this is a capability ceiling rather than a prompt-engineering artifact.'
+  - 'Naturalness priors override the instruction: models silently re-order concepts into their training-frequent arrangement and frequently emit the IDENTICAL sentence for all 24 permutations of a set (Gemma2-2B collapsed every permutation onto one sentence).'
+  - 'The constraint is nearly free in fluency terms (GPT2-XL perplexity of ordered outputs degrades only slightly), so this is a pure instruction-adherence failure, not a fluency/constraint tradeoff.'
+  techniques: [Ordered CommonGen (permutation-expanded), concept-set permutation probe as a positional-bias test, ordered-coverage / Ordered Rate metric, spaCy lemmatized concept matching (judge-free), pairwise-BLEU and pairwise-BLEURT diversity, Diverse Rate]
+  reported_results:
+  - '36 instruction-tuned LLMs evaluated (Llama3, Qwen2/2.5, Gemma2, Phi-3, Mistral, Mixtral, OLMo-2, Tulu-3, plus proprietary arms).'
+  - 'Best ordered rate 75.26% (Llama3.1-405B) against unordered concept coverage 98.91%.'
+  - 'SCALE/REPRODUCIBILITY: 27,648 short greedy generations per model config, ALL OPEN MODELS RUN AT 4-BIT, temperature 0 / fixed seed. NO TRAINING — pure inference-time evaluation. Scoring is programmatic (lemmatize + subsequence check) plus a small BLEURT-20 checkpoint. Cost estimate ~7-8 h/model for the full sweep at ~30 t/s CPU decode; a single-template subsample (4,608 instances, ~1.3 h) is the practical form.'
+  referenced_arxiv_ids: ['2404.14219', '2410.12924', '2501.12948', '2301.13688']
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: adopt_patterns
+  discovered_via: input
+  ingested_date: '2026-07-25'
+  cross_references:
+    chapters: [06-benchmarking-framework.md, 07-benchmark-suite-construction.md]
+    handoffs: [eval-tower-verification.md, scoring-infra-standardization.md, architect-model-selection-bench.md, tq3-quantization-evaluation.md, core-v2-design-note-2026-07-23.md, prompt-construction-determinism.md]
+    experiments: []
+    intake_entries:
+    - intake-441 (output-diversity collapse / EV-8 source — complementary construct: that measures WITHIN-prompt sampling variety, this measures ACROSS-prompt invariance under a controlled 24-way permutation, and cannot be faked by lexical filler)
+  handoffs_updated: []
+  handoffs_created: []
+  contradicting_evidence:
+  - 'Ordered Rate and Coverage-with-order are reported as numerically near-identical — the metric pair may be partially redundant; pick ONE before wiring.'
+  - 'The ordering constraint is inherently English-lemmatization-dependent (spaCy), a scorer-fragility class we have been bitten by before (substring/comma brittleness).'
+  - 'Dataset/code release for the paper''s own artifact is not confirmed, so a rebuild from the public allenai/commongen_lite seeds is the safer path.'
+  novelty_justification: 'Not in the index (grepped by arxiv_id, CommonGen, ordered coverage, pairwise-BLEU, author names — zero hits). Chapters 06/07 cover an IFEval-derived instruction_precision suite and I enumerated its full verifier list (word_count_range, contains_keyword, numbered_list, json_valid, starts_with, all_uppercase, paragraph_count, comma_separated, ...): there is NO ordering/sequence verifier anywhere in the 43-question suite, and no permutation-invariance probe anywhere in the eval tower. Two things are genuinely new: ordered-subsequence coverage as a cheap judge-free compound-constraint verifier class, and the controlled-permutation design that isolates "did the model condition on the instruction?" from "did it emit a fluent sentence?".'
+  relevance_justification: 'Three active items land on this. (1) architect-model-selection-bench.md documents a 212-question paired eval returning delta 0.0pp precisely because the pool was instruction-following + factual-QA dominated — our IF axis is SATURATED and non-discriminative; this is an IF axis where the strongest model in the world scores ~75%. (2) tq3-quantization-evaluation.md gates instruction-following on a BINARY single prompt; ordered coverage gives a graded 0-100% score suitable for quant-quality gating, and the paper ran everything at 4-bit so the metric is known to behave under quantization. (3) EV-8 diversity metrics are stalled on the gameability of distinct-2/self-BLEU; permutation-conditioned ordered coverage is not gameable by lexical filler. Internal corroboration already exists: completed/numa-orchestrator-deployment.md found all three quants hitting the same 20/33 instruction_precision ceiling.'
+  verdict_justification: 'adopt_patterns — NOT superseded and NOT already_integrated. VENUE CHECK: this is ACL 2025 Main (aclanthology 2025.acl-long.1508), so the ar5iv "preprint" framing is stale and it IS peer-reviewed — credibility 4, with the recency term neutral at ~13 months. Searched for successors: the IF benchmark space has moved (IFEval++/AdvancedIF-class combinatorial-constraint work), but none subsume the controlled permutation family over a FIXED concept set, which is what makes the identical-output-across-24-orderings diagnostic possible. Do NOT adopt the artifact wholesale (36-model sweep not worth our budget; pBLEURT adds a checkpoint dependency for an axis EV-8 already covers). Take the PATTERN: an ordered-subsequence verifier plus a permutation-invariance probe, rebuilt from public seeds inside our own harness.'
+  notes: 'Ingested 2026-07-25 via /research-intake.'
+  dive_corrections: '2026-07-25 Stage-2a dive: Ordered CommonGen: venue is ACL 2025 Main AND an OUTSTANDING PAPER award — credibility 4 is if anything understated. CORRECTION: my note that Ordered Rate and Coverage-with-order are near-identical/redundant is OVERTURNED — they diverge by up to 26.5 points on weak models (Qwen2-0.5B 30.84 vs 57.34; Phi3-mini 49.54 vs 62.04) and converge only at 405B, so BOTH carry distinct signal precisely in the small/quantized regime we care about. Implement both. CONFOUND to record before using the leaderboard as quant-quality evidence: all 32 open models run at 4-bit while the GPT/Gemini arms are full-precision API at temp 0. Also removed from this entry a CORE ablation line that had been cross-pasted here in error.'
+- id: intake-896
+  arxiv_id: null
+  url: https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models
+  source_type: blog
+  title: 'The new rules of context engineering for Claude 5 generation models'
+  authors: [Thariq Shihipar (Anthropic)]
+  categories: [context_management, agent_architecture, knowledge_management, tool_implementation]
+  key_claims:
+  - 'Claims over 80% of Claude Code''s system prompt was removed for Opus 5 / Fable 5 with no measurable loss on internal coding evaluations. NO protocol, NO named eval suite, NO n, NO date, NO link, NO attestation is given anywhere in the post.'
+  - 'Six named shifts: rules -> judgment; examples -> expressive interface design; everything-upfront -> progressive disclosure (skills and tools loaded on demand via ToolSearch); repetition -> single-site tool descriptions; manual memory -> auto-memory; simple specs -> rich code-level references plus rubrics that instantiate verifier agents.'
+  - 'CLAUDE.md is reframed as the thin node of a load-on-demand tree: state the repo purpose plus non-obvious gotchas, and spend zero tokens on anything derivable from the file structure.'
+  - 'The /doctor claim is CONFIRMED and understated by the summary: it deduplicates local vs checked-in CLAUDE.md, TRIMS content derivable from the codebase, MIGRATES the always-loaded remainder into skills and nested on-demand files, and reports unused skills/MCP servers/plugins against their context cost. It reports before changing anything, and is a bundled prompt-based skill, so its behaviour is model-mediated, not deterministic.'
+  techniques: [progressive-disclosure context tree, deferred tool loading via ToolSearch, interface design over worked examples, single-site tool descriptions, rubric-instantiated verifier agents, auto-memory, derivable-content deletion (doctor trim contract)]
+  reported_results:
+  - '">80% removed, no measurable degradation" — vendor observation, zero protocol detail, zero corroboration. No other quantitative result appears in the post; no tables, no baselines, no links to evaluation data.'
+  - 'Independently corroborated (mechanism, not magnitude): /doctor''s CLAUDE.md trim/migrate contract exists in shipped Claude Code and in the first-party command reference.'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  verdict: adopt_patterns
+  discovered_via: input
+  ingested_date: '2026-07-25'
+  cross_references:
+    chapters: []
+    handoffs: [agent-file-prose-compression.md, context-folding-progressive.md, delegation-context-preassembly.md, tool-output-compression.md]
+    experiments: []
+    intake_entries:
+    - intake-846 (Anthropic engineering 5-post set — closest prior entry, NOT a duplicate; that is about how to BUILD agent scaffolding, this is about DELETING it)
+    - intake-781 (Weng harness survey — frames ACE->MCE->Meta-Harness as AUTOMATING context engineering; this argues the newest models need LESS engineered context, so the automation target is shrinking)
+    - intake-787 (MCE bi-level skill evolution — optimizes context artifacts; in direct tension with "delete 80% of them")
+    - intake-249 (Claude Code leak analysis — already recorded "distribute behavior constraints to tool definitions rather than the system prompt"; this is the first-party confirmation)
+    - intake-096 (SkillsBench — the empirical counterweight: curated skills +16.2pp on average but 16/84 tasks REGRESS via conflicting guidance; cautions against a naive migrate-CLAUDE.md-into-skills sweep)
+  handoffs_updated: []
+  handoffs_created: []
+  contradicting_evidence:
+  - 'THE HIGHEST-RISK CLAIM IN THE SWEEP. Traced to primary source: the ">80%" statement originates from a CONFERENCE TALK (Anthropic technical staff at an AI Engineer event), relayed by the-decoder. On fetching: no benchmark scores, no eval, no protocol, no A/B, no metric of any kind. The "no measurable degradation" phrasing is NOT attributable to any published measurement. Every other hit is a restatement — zero independent corroboration.'
+  - 'DIRECT REBUTTAL for smaller/self-hosted models: arXiv 2512.17920 finds constraint compliance degrades substantially FASTER than semantic accuracy under compression, and smaller models violate constraints more readily at the same ratio (most pronounced at ~40-60% compression). It identifies an "instruction ambiguity zone" where output looks semantically fine while explicit directives are silently dropped — i.e. NAIVE EVAL WOULD SCORE THIS AS "NO DEGRADATION".'
+  - 'Prompt compression is strongly task-dependent: up to 52% performance drops on classification vs minor degradation on TriviaQA/SAMSum (arXiv 2410.12388, 2604.02985). A single aggregate "no degradation" verdict cannot hold across task types.'
+  - 'Direction of effect is model-size-dependent in BOTH directions (arXiv 2603.13306: few-shot and CoT prompts REDUCE accuracy for tiny/small models). Matches our own non-monotonic, model-dependent compression-tolerance finding — neither "cut it" nor "keep it" generalizes; it must be measured per model.'
+  novelty_justification: 'Medium. No new technique and no rigorous results — the six shifts are partially represented already (intake-249 recorded tool-level constraint distribution; 781/787 cover context engineering as an optimization target; 096 covers skill efficacy empirically). Three things are new: a first-party statement that the MODEL GENERATION changed what good context engineering is (reframing prior guidance as era-bound rather than wrong); the >80% datapoint, weak as evidence but the first published magnitude for prompt-deletion headroom; and /doctor as a runnable shipped tool with an explicit keep/cut taxonomy, which is an executable artifact rather than advice.'
+  relevance_justification: 'High — this acts directly on EPYC''s own always-loaded governance surface, and a shipped tool can execute part of it. ALREADY COMPLIANT: agents/AGENT_INSTRUCTIONS.md (75 lines) is already the pattern, predating the post; .claude/commands/wrap-up.md is 32 BYTES pointing at a 15,102-byte target (a 470x deferral ratio); MEASUREMENT_POLICY.md is a deliberate two-tier digest WITH a stated precedence rule (better than the post, which never addresses precedence); rubric->verifier-agent is already exceeded by the reviewer control plane and tests/compliance/agent_file/live_runner.py. VIOLATIONS: CLAUDE.md is 223 lines / 18,080 chars always loaded with only 3 outbound links; four policies stated 2-3x; and duplication has ALREADY caused drift — ENGINEERING_STANDARDS.md:52 still says production-consolidated-v6 after the 2026-07-20 v7 cutover, which is local EPYC proof of the failure mode independent of any vendor claim.'
+  verdict_justification: 'adopt_patterns. Adopt the STRUCTURAL rules (progressive disclosure, single-site guidance, interface-over-example) because they are corroborated by shipped product surface AND because our own tree demonstrates the failure they predict. Do NOT adopt the >80% figure as a target or gate — MEASUREMENT.md forbids gating on a first-party observation with no protocol, and 2512.17920 contradicts its transfer to smaller self-hosted models. The right move is to treat ">80% is deletable with no loss" as a HYPOTHESIS and falsify it locally with the instrument that already exists (live_runner.py: compliance >= 0.95x baseline, procedure >= 0.95x baseline, recall >= 0.90 absolute). Not adopt_component: /doctor is a bundled skill to be RUN read-only, not a component to integrate.'
+  notes: 'Ingested 2026-07-25 via /research-intake. KEY DISTINCTION for our own use: the safe subset is LOSSLESS STRUCTURAL DELETION (derivable content + duplicated policy), which is model-independent, NOT lossy prose compression of content we keep — where all of agent-file-prose-compression.md Phase-3''s measured failures live (worker_fast pinned to none; worker_30B fails mild AND medium but passes aggressive). Sequencing matters: deletion first shrinks the corpus that compression must then handle.'
+- id: intake-897
+  arxiv_id: '2509.13237'
+  url: https://arxiv.org/abs/2509.13237
+  source_type: paper
+  title: 'Metacognitive Reuse: Turning Recurring LLM Reasoning Into Concise Behaviors'
+  authors: [Aniket Didolkar, Nicolas Ballas, Sanjeev Arora, Anirudh Goyal]
+  categories: [context_management, memory_augmented, agent_architecture, training_distillation]
+  key_claims:
+  - 'Recurring reasoning fragments are distilled into compact named (name, instruction) "behaviors" — procedural hints, NOT worked exemplars — collected into a behavior handbook retrieved into context at inference time.'
+  - 'Behavior-conditioned inference cuts reasoning tokens by up to 46% while MATCHING OR IMPROVING baseline accuracy — the compression is free on the accuracy axis rather than a speed/quality trade.'
+  - 'Behavior-guided self-improvement yields up to 10% higher accuracy than a naive critique-and-revise baseline on AIME-24, using the model''s own extracted behaviors.'
+  - 'Behavior-conditioned SFT injects the same procedural traits into weights, outperforming plain SFT across 4 base models — so the handbook is usable either as a zero-training in-context artifact or as training signal.'
+  techniques: [behavior handbook extraction, metacognitive strategist pipeline, behavior-conditioned inference, behavior-guided self-improvement, behavior-conditioned SFT, BGE-M3 + FAISS retrieval at k=40]
+  reported_results:
+  - 'Up to 46% reduction in reasoning tokens at matched-or-better accuracy (MATH-500, AIME-24, AIME-25).'
+  - 'Self-improvement up to +10% accuracy over critique-and-revise on AIME-24.'
+  - 'Handbook sizes: 788 behaviors from 1k MATH questions; 1,457 from 60 AIME questions.'
+  - 'PROTOCOL — notably the strongest in this batch: temp 0.6 / top-p 0.95 (production-style, not temp-0), accuracy averaged over 5 SEEDS for MATH and 80 RUNS for AIME. Still no confidence intervals or significance tests.'
+  referenced_arxiv_ids: ['2501.12948', '2505.00147']
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  verdict: adopt_patterns
+  discovered_via: expansion
+  expanded_from: intake-888
+  ingested_date: '2026-07-25'
+  cross_references:
+    chapters: []
+    handoffs: [reasoning-compression.md, autopilot-continuous-optimization.md, delegation-context-preassembly.md]
+    experiments: []
+    intake_entries:
+    - intake-626 (SkillOpt — same "text artifact as external state of a frozen agent" framing; SkillOpt optimizes ONE document, this builds a RETRIEVED library of many small procedures)
+    - intake-627 (Trace2Skill — also distills trajectory-local lessons, but targets task success, not token count)
+    - intake-096 (SkillsBench — behaviors here are MODEL-EXTRACTED, so the -1.3pp self-generated-skills warning applies and a validation gate is mandatory)
+    - intake-899 (faulty memories — a behavior handbook is itself an accumulating store, so those failure modes apply directly)
+  handoffs_updated: []
+  handoffs_created: []
+  contradicting_evidence:
+  - 'Behaviors are model-extracted — exactly the self-generated-artifact case SkillsBench (intake-096) shows net-negative (-1.3pp average, 16/84 tasks regress). A held-out validation gate is mandatory, not optional.'
+  - 'The handbook is a continuously-updated store, so the degradation failure modes in arXiv 2605.12978 (intake-899) apply: it should be append-only with raw traces retained, not a rewrite-in-place library.'
+  novelty_justification: 'Medium. The skill/insight-distillation family is well covered (SkillOpt 626, Trace2Skill 627, Cheat-Sheet Distillation). What is NOT covered is the OBJECTIVE: every existing entry optimizes task success, this optimizes reasoning-token count at fixed accuracy, and reports the artifact working in three deployment modes (in-context, self-improvement, SFT) from one extraction pipeline. The behavior-as-procedure vs exemplar distinction is a real delta from the cheat-sheet line.'
+  relevance_justification: 'High. reasoning-compression.md is active with inference-cost reduction as its stated objective, and its Tier 1 is explicitly "zero-training, inference-time only" — behavior-conditioned inference drops straight in, and 46% sits well above everything currently in the taxonomy (conciseness prompting 37%, Soft Thinking 22.4%). THE EPYC-SPECIFIC ANGLE IS FAVOURABLE AND WORTH MEASURING: BCI trades INPUT tokens (retrieved behaviors) for OUTPUT tokens. Our CPU decode is memory-bandwidth-bound with software levers largely exhausted, while prefill is compute-bound and substantially cheaper per token — so a prefill-for-decode trade is structurally BETTER here than on a GPU-served stack, and the same 46% is worth more to us than to the authors. Second hook: we already have the retrieval substrate (BGE embedding servers on ports 8090-8095; StrategyStore/SkillBank are FAISS+SQLite).'
+  verdict_justification: 'adopt_patterns. No importable artifact — the published handbooks are MATH/AIME with a 70B strategist, matching neither our domain nor our extraction model. What transfers is the mechanism: extract named procedural behaviors from our OWN successful traces, retrieve k into context, measure output-token delta at fixed accuracy. Two guardrails ride along (see contradicting_evidence). Protocol note: this is the best-instrumented paper in the batch (5 seeds on MATH, 80 runs on AIME, production-style sampling rather than temp-0), which raises confidence in the 46% meaningfully relative to the rest — still an observation, but a well-replicated one, adequate to justify a local A/B.'
+  notes: 'Ingested 2026-07-25 via /research-intake Phase-3 Tier-1 expansion from intake-888 (CORE). When A/B-ing, score TOTAL pipeline tokens (retrieved-behavior prefill + decode), never decode alone — mirrors the existing S4 formalizer convention and prevents claiming a win a prefill blowup has already eaten.'
+  dive_corrections: '2026-07-25 Stage-2a dive: Metacognitive Reuse / BCI: the 46% is ''UP TO'' — a best case, output-tokens-only, with no accuracy figure given at that operating point. The input-side cost is ADMITTED BUT NEVER MEASURED (''involves a larger number of input tokens due to the inclusion of retrieved behaviors''), with k=40 behaviors retrieved per query on AIME. Their defence — ''no autoregressive generation required on the input side'' — is a GPU-PREFILL argument that INVERTS on a bandwidth-bound-decode / compute-bound-prefill CPU stack, so my ''worth more to EPYC than to the authors'' framing is unsupported until we measure our own prefill cost. Protocol confirmed as the best-instrumented in the batch (5 seeds MATH, 80 runs AIME, temp 0.6/top-p 0.95).'
+- id: intake-898
+  arxiv_id: '2512.15699'
+  url: https://arxiv.org/abs/2512.15699
+  source_type: paper
+  title: 'FrontierCS: Evolving Challenges for Evolving Intelligence'
+  authors: [Qiuyang Mang, Wenhao Chai, Zhifei Li, Huanzhi Mao, Shang Zhou, Jingbang Chen, "(+45 more; advisors incl. Ion Stoica, Joseph E. Gonzalez, Dawn Song)"]
+  categories: [benchmark_methodology, agent_architecture, autonomous_research]
+  key_claims:
+  - 'Benchmarks 156 expert-authored open-ended CS problems where the optimal solution is UNKNOWN but quality is objectively machine-scorable; models emit executable programs rather than a final answer, so scoring is partial-credit quality rather than pass/fail.'
+  - 'Frontier models remain far below human experts on both tracks: best algorithmic Score@1 is 29.37 (Gemini 3.0 Pro) against a human-expert 95.41; best research-track Score@1 is 29.40. No saturation risk at current capability.'
+  - 'Raising the reasoning budget alone does not close the gap — a NON-MONOTONIC effort curve is reported (GPT-5 low/medium/high = 7.903 / 15.336 / 12.626), i.e. more thinking tokens can score WORSE.'
+  - 'Problem mix: 107 algorithmic (29 optimization / 27 constructive / 51 interactive) and 49 research (HPC 19, OS 8, DB 7, AI 6, PL 5, Security 4); each ships an expert reference solution plus an automatic evaluator.'
+  techniques: [open-ended partial-credit scoring, executable-program submission, per-problem automatic evaluator with reference solution, Score@1 / Avg@5 / Pass@k reporting, NP-hard variant problem construction]
+  reported_results:
+  - 'Algorithmic Score@1: Human Experts 95.41; Gemini 3.0 Pro 29.37; Claude Opus 4.5 14.95; Grok 4 13.67; DeepSeek 3.2 12.65; GPT-5.1 Thinking 11.80.'
+  - 'Research Score@1: Claude Opus 4.5 29.40; GPT-5.1 Thinking 28.39; Gemini 3.0 Pro 26.95.'
+  - 'MEASUREMENT CAVEAT (verbatim protocol, Sec 4.1): k=5 samples per problem, 20-minute timeout per LLM request, single-round. NO random seeds, NO standard deviations, NO confidence intervals, NO error bars, NO significance testing anywhere.'
+  - 'BUDGET NOT MATCHED ACROSS ARMS: the only universal constraint is a 20-min wall-clock per request. Per-model settings differ BY CONSTRUCTION — Gemini thinking_budget=-1 (unlimited) vs Claude reasoning_budget=20,000. No USD cap, no token cap, no matched eval-call count is defined.'
+  - 'Artifact IS open: code + data at github.com/FrontierCS/Frontier-CS, per-problem reference solution + automatic evaluator.'
+  referenced_arxiv_ids: ['2411.15114', '2506.00172', '2410.10813']
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-886
+  ingested_date: '2026-07-25'
+  cross_references:
+    chapters: [06-benchmarking-framework.md, 07-benchmark-suite-construction.md]
+    handoffs: [eval-tower-verification.md, architect-model-selection-bench.md, scoring-infra-standardization.md, frontier-f1-real-task-corpus.md]
+    experiments: []
+    intake_entries:
+    - intake-886 (the gepa-ai omni blog — FrontierCS is the BENCHMARK those runs used, NOT the source of their method or numbers)
+    - intake-240 (GEPA), intake-244 (Meta-Harness), intake-148 (AutoResearch) — the optimizer lineage benchmarked ON this
+    - intake-096 (SkillsBench — precedent for adopting a benchmark's METHODOLOGY while its artifact stays unrunnable here)
+  handoffs_updated: []
+  handoffs_created: []
+  contradicting_evidence:
+  - 'ALL published baselines are proprietary API models. Our open-weight arms have no FrontierCS numbers, and with the frontier ceiling at ~29 they plausibly land in low single digits — trading a saturation problem for an equally non-discriminative FLOOR problem. Must be settled by a cheap floor-probe before any harness spend.'
+  - 'No independent evaluation or contamination analysis exists (~7 months old). That is absence of scrutiny, not absence of problems.'
+  - 'Single-run / no-variance reporting is a recognized field-level problem (arXiv 2512.06710): single-number leaderboard entries obscure the variance that determines whether a result reproduces.'
+  novelty_justification: 'High. The intake index contains no open-ended / unknown-optimum CS benchmark. Every suite we currently run is closed-form pass/fail or exact-match (gpqa_diamond, aime25, olympiadbench_numeric and _hard, livecodebench, SWE-bench-Verified FAIL_TO_PASS). Partial credit against an expert reference where no optimum is known is a genuinely different instrument class, and its HPC track (19 problems) is the only benchmark surfaced so far that scores systems-optimization quality the way our own kernel work is judged.'
+  relevance_justification: 'High, and it lands on a named, dated gap. EV-9 in eval-tower-verification.md records that production review suites sit in the saturated 90-94% band and "cannot resolve" the top-2 stack models, calling this direct motivation for a frontier tier the tower lacks. architect-model-selection-bench.md just burned a cycle on olympiadbench_numeric returning a well-powered null (A1 89.3 / A3 88.0 / A4 89.3, all p>=0.77) because it saturated. FrontierCS is maximally non-saturating and ships open-source evaluators.'
+  verdict_justification: 'worth_investigating, not adopt_component. Three things must resolve first: (1) FLOOR RISK — run a ~10-problem floor probe with one production arm before funding a harness; (2) HARNESS COST — executable-program submission plus per-problem evaluator execution needs a sandboxed exec path we do not have (same blocker recorded against LiveCodeBench); (3) INSTRUMENT GRADE — the published leaderboard is OBSERVATION-grade (k=5 but no seeds/variance/significance, budgets explicitly unmatched), so if we adopt the suite we must define our own protocol-id, reps and budget-parity rule rather than inheriting the paper''s.'
+  notes: 'Ingested 2026-07-25 via /research-intake Phase-3 Tier-1 expansion from intake-886. CLOSED NEGATIVE WORTH NOT RE-CHASING: this paper was surfaced on the hypothesis that it was the omni / optimize_anything METHOD paper that could upgrade the composition numbers to protocol-grade. IT IS NOT — it is the benchmark those runs were executed on, and contains no GEPA, no AutoResearch, no Meta-Harness and none of the 43.8->61.8 / 55.4->63.2 / 50.9->59.3 figures. Consequences: the omni composition numbers have NO protocol-bearing source and stay observation-grade PERMANENTLY, and no budget-parity definition exists in either the blog or this paper (FrontierCS imposes no dollar cap at all; the blog''s "$20" is its own construct).'
+  dive_corrections: '2026-07-25 Stage-2a dive: FrontierCS: the 156-vs-172 discrepancy is RESOLVED and is not a contradiction — the paper (v1) describes 156 problems (107 algorithmic + 49 research), while the project site reflects the later FrontierCS 1.0 release of 240 tasks of which 172 are the algorithmic track. The benchmark-not-method negative is CONFIRMED (no GEPA/AutoResearch/Meta-Harness, no 43.8/61.8 anywhere). Protocol: 20-minute per-request timeout confirmed; no seeds, variance, error bars or significance testing anywhere; ''k=5'' is loose — they report Score@1, Avg@5 and Score@5.'
+- id: intake-899
+  arxiv_id: '2605.12978'
+  url: https://arxiv.org/abs/2605.12978
+  source_type: paper
+  title: 'Useful Memories Become Faulty When Continuously Updated by LLMs'
+  authors: [Dylan Zhang, Yanshan Lin, Zhengkun Wu, Yihang Sun, Bingxuan Li, Dianqi Li, Hao Peng]
+  categories: [memory_augmented, agent_architecture, knowledge_management, benchmark_methodology]
+  key_claims:
+  - 'Continuously-updated textual memory becomes LESS useful as experience accumulates: utility rises early, then falls BELOW the no-memory baseline. Degradation is caused by the CONSOLIDATION PROCESS ITSELF, not by bad underlying experience.'
+  - 'Consolidation destroys knowledge the agent already had. Feeding GROUND-TRUTH solutions through a streaming consolidation loop drops a 19-problem ARC-AGI slice from 100% (no memory) to 52.6% at round 10 — the model fails 54% of problems it had already solved, with correct answers in the pipeline.'
+  - 'The failure is SCHEDULE-dependent, not pool-dependent. From an IDENTICAL trajectory pool, one-shot consolidation (Static-All) stays at ceiling through R=50 while incremental streaming collapses to 52.6%. Grouping by task family beats ungrouped by 17-38 points.'
+  - 'Raw episodic trajectories match or beat abstracted memories: episodic-only in-context learning is competitive with or better than ACE, AWM, Dynamic Cheatsheet and CLIN across AppWorld / ALFWorld / WebShop — "raw episodes should be treated as first-class evidence, not disposable material to be compressed away."'
+  - 'Agent-controlled memory beats forced consolidation: letting the model choose Retain / Delete / Consolidate matches or exceeds mandatory rewriting, and episodic management alone (retain+delete, abstraction DISABLED) matches or exceeds full agent-controlled.'
+  techniques: [dual-store episodic + abstract with GATED consolidation, agent-controlled retain/delete/consolidate, episodic-only management ablation, task-family-grouped consolidation, static-all vs streaming schedule ablation, ground-truth-regime consolidation stress test]
+  reported_results:
+  - 'FAILURE MODE 1 — non-monotonic utility decline under streaming updates: WebShop AWM reward 0.64 (8 examples) -> 0.20 (128); ScienceWorld falls below the no-memory baseline at memory size ~100.'
+  - 'FAILURE MODE 2 — in-distribution regression under GROUND-TRUTH input: ARC-AGI 100% -> 52.6% after Stream R=10. The consolidator degrades knowledge even when never shown a wrong answer.'
+  - 'FAILURE MODE 3 — update-schedule sensitivity: same pool, different ORDER; Static-All holds ceiling where Stream collapses; Static-Group beats ungrouped by 17-38 points on ALFWorld.'
+  - 'FAILURE MODE 4 — cross-boundary misgrouping under forced consolidation ("routinely merges across class boundaries").'
+  - 'FAILURE MODE 5 — interference from overgeneralized lessons: abstraction strips APPLICABILITY PRECONDITIONS, leaving lessons that mislead on RELATED tasks; cumulative memory accumulates ~5x more overgeneralized entries than fresh per-task consolidation.'
+  - 'FAILURE MODE 6 — overfit to a narrow stream: holds on exact repetitions, collapses on simple variants within the same family; concrete tokens disappear from entries by round 50.'
+  - 'FAILURE MODE 7 — catastrophic forgetting across task switches: cumulative ends 203 points BEHIND fresh per-task consolidation over a 15-task sequence, accumulating garbage memories at ~20x the rate.'
+  - 'PROTOCOL CAVEAT (authors'' own Limitations): "average two repeats per question unless noted otherwise"; results are "point estimates from a small number of repeats rather than formal error bars". No seeds stated.'
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  verdict: adopt_patterns
+  discovered_via: expansion
+  expanded_from: intake-888
+  ingested_date: '2026-07-25'
+  cross_references:
+    chapters: []
+    handoffs: [autopilot-continuous-optimization.md, unified-trace-memory-service.md, engram-conditional-memory.md, knowledge-base-governance-improvements.md]
+    experiments: []
+    intake_entries:
+    - intake-888 (CORE — cites this paper; this is the direct counterweight to CORE's insight-store growth)
+    - intake-627 (Trace2Skill — INDEPENDENT CORROBORATION: parallel batch consolidation beats SEQUENTIAL online editing by +4.0/+6.8pp on SpreadsheetBench, the same Static-All >> Stream effect from a different group on a different benchmark)
+    - intake-626 (SkillOpt — its validation-gated strict-improvement edit rule is exactly the defense these failure modes argue for; the one skill-store design in our index that would survive this critique)
+    - intake-096 (SkillsBench — self-generated skills net-negative; same warning family, now given a MECHANISM)
+    - intake-089 (MemRL — our Q-value memory lineage; utility-weighted retrieval assumes stored entries stay valid, which this falsifies)
+  handoffs_updated: []
+  handoffs_created: []
+  contradicting_evidence:
+  - 'The authors report ~2 repeats per question and no formal error bars, so under MEASUREMENT.md these are OBSERVATIONS. Strong enough to justify adding a control arm and a gate to a NOT-YET-WIRED component; NOT strong enough to justify reverting landed work on their own.'
+  novelty_justification: 'High. The index is saturated with memory METHODS (MemRL 089, ACE 781/787, ReasoningBank, DecentMem, Dynamic Cheatsheet, CLIN, AWM) and has essentially no NEGATIVE-RESULT work on what those methods do as the store grows. This supplies the mechanism and, critically, the GROUND-TRUTH CONTROL: degradation persists when the consolidator is fed only correct solutions, ruling out "bad experience in, bad memory out" and localizing the fault in the rewriting step. That control is what makes it more than a cautionary anecdote.'
+  relevance_justification: 'High, and decision-relevant BEFORE a build rather than after. Three live EPYC surfaces rest on the assumption this falsifies. (1) AP-29 KnowledgeDistiller code landed 2026-05-08 (4cdc77e) but WIRING IS STILL DEFERRED; its design source specifies that on phase promotion raw trajectories are REMOVED from L1 — precisely the disposal this argues against — and the planned trigger (unconditional consolidation at the 25-trial checkpoint) is the FORCE regime, the worst-performing arm. (2) AP-32 landed 2026-06-14 (5d07e52): StrategyStore stores generalized_content and audit_insight_specificity() actively pushes insights toward abstraction, justified by "task-agnostic insights outperform task-specific (+1.1%)" — head-on conflict with failure mode 5. (3) SkillBank retrieval is 0.7*q_value + 0.3*similarity (literally utility-weighted) over a merge-on-dedup store, and is currently dormant, so a rebuild is a clean design point rather than a migration.'
+  verdict_justification: 'adopt_patterns. Nothing here is an importable artifact — the value is four design constraints to apply to AP-29 before it is wired and to any SkillBank rebuild: (a) do not delete raw trajectories on promotion, keep the episodic tier authoritative and the abstract tier a derived cache; (b) do not consolidate on an unconditional trial-count trigger — gate it, and prefer batched/grouped over streaming (the cheapest change, and the one both this paper and intake-627 point at); (c) establish an EPISODIC-ONLY control arm as the bar any distiller must beat, since without it a distiller can look fine while being net-negative; (d) re-examine AP-32''s push toward generalized content — require retained applicability preconditions.'
+  notes: 'Ingested 2026-07-25 via /research-intake Phase-3 Tier-1 expansion from intake-888. The corroboration from intake-627 makes the schedule-sensitivity claim considerably harder to dismiss: two independent groups, different benchmarks, same direction. Tier-2b found three further independent counterweights in the same family: arXiv 2605.24050 (skill shadowing — driven by semantic confusability, not size), 2605.19576 (Library Drift — performance drops BELOW the no-skill baseline), 2605.26667 (MemFail), 2605.22842 (safety declines under benign accumulation, no adversary).'
+- id: intake-900
+  arxiv_id: '2602.12430'
+  url: https://arxiv.org/abs/2602.12430
+  source_type: paper
+  title: 'Agent Skills for Large Language Models: Architecture, Acquisition, Security, and the Path Forward (survey)'
+  authors: [Renjun Xu, Yang Yan]
+  categories: [agent_architecture, tool_implementation, knowledge_management, benchmark_methodology]
+  key_claims:
+  - 'Survey of agent skills as a modular abstraction: self-contained directories of a SKILL.md instruction file plus optional scripts/references/assets, loaded on demand via three-level progressive disclosure (metadata -> instructions -> resources).'
+  - 'Skills and MCP are ORTHOGONAL layers — skills supply procedural knowledge, MCP supplies tool connectivity — so they compose rather than compete.'
+  - 'SECURITY: across 42,447 community skills from two marketplaces, 26.1% contain vulnerabilities (13.3% data-exfiltration, 11.8% privilege-escalation, 5.2% high-severity malicious intent); skills bundling executable scripts are 2.12x more likely to be vulnerable; a single industrialized actor accounted for 54.1% of confirmed malicious cases via templated brand impersonation.'
+  - 'Proposes four verification gates (G1 static pattern/dependency scan, G2 LLM semantic intent-mismatch classification, G3 behavioral sandboxing for side effects invisible to static analysis, G4 permission-manifest validation against observed behavior) plus graduated permission tiers.'
+  - 'SCALING LIMIT: cites a finding that skill-selection accuracy exhibits a sharp PHASE TRANSITION once a library grows past a critical size — a hard bound on single-agent skill management, not gradual degradation.'
+  techniques: [SKILL.md progressive disclosure, four-gate skill verification, graduated permission tiers, static + LLM semantic detection, behavioral sandboxing, skill composition graphs]
+  reported_results:
+  - 'Security corpus: 42,447 skills analyzed; 157 confirmed malicious carrying 632 vulnerabilities; 54.1% attributable to one actor.'
+  - 'PROVENANCE CAVEAT: this is a SURVEY — the headline 26.1% and 2.12x figures are SECONDHAND, aggregated from three concurrent primary studies (arXiv 2601.10338, 2602.06547, 2510.26328). No seeds, repetitions or variance reported for any aggregated result.'
+  referenced_arxiv_ids: ['2601.04748', '2601.10338', '2602.06547', '2510.26328', '2305.16291']
+  novelty: medium
+  relevance: medium
+  credibility_score: 1
+  verdict: adopt_patterns
+  discovered_via: expansion
+  expanded_from: intake-888
+  ingested_date: '2026-07-25'
+  cross_references:
+    chapters: []
+    handoffs: [security-review-skill.md, knowledge-base-governance-improvements.md]
+    experiments: []
+    intake_entries:
+    - intake-096 (SkillsBench — the definitive empirical entry on whether skills help; this survey adds no comparable primary evidence and does NOT supersede it)
+    - intake-626 (SkillOpt — the phase-transition finding is the argument for why SkillOpt's single-document scope may be CORRECT rather than a limitation)
+    - intake-627 (Trace2Skill — skill-directory construction, covered here only as related work)
+  handoffs_updated: []
+  handoffs_created: []
+  contradicting_evidence:
+  - 'All results are secondhand survey aggregates with no protocol — an observation about an observation. The three primaries must be read directly before any figure is cited as evidence.'
+  - 'All 13 EPYC skills are FIRST-PARTY and nothing is installed from a marketplace, so the 26.1% vulnerability rate describes a LATENT risk, not a live one.'
+  novelty_justification: 'Medium. As a survey of the skills paradigm it is largely low-novelty for us — SkillsBench (096), SkillOpt (626) and Trace2Skill (627) already cover the method axis with primary evidence, and the skillsbench eval suite adopted the methodology back in 2026-03. Two things ARE new to the index and carry the entry: the large-N skill supply-chain security corpus, and the skill-selection PHASE TRANSITION at library scale. Neither appears anywhere in the index or handoffs.'
+  relevance_justification: 'Medium, not high, and the distinction matters. We use the SKILL.md format natively (13 skills under .claude/skills/) and security-review-skill.md is ACTIVE with v1 scope already including supply-chain checks and OWASP-LLM:2025, so the four-gate framework maps cleanly onto its existing 8-gate filter — a real integration point. What holds it at medium: all 13 skills are first-party and we install nothing from a marketplace, so the vulnerability base rate is latent rather than live. The phase-transition finding is the more immediately useful half, because SkillBank is slated for a rebuild and an unbounded library is currently the implicit design.'
+  verdict_justification: 'adopt_patterns, scoped tightly to two items — the four verification gates as a checklist extension to the existing security-review skill, and the phase-transition caution as a bound on SkillBank library growth. Everything else is already better covered by primaries we hold. Deliberately NOT proposed: adopting any surveyed method (SAGE, SEAgent, CUA-Skill are GUI/computer-use agents on proprietary stacks, outside our serving domain and given only secondhand treatment); and NOT citing the 26.1% figure as evidence until the three primaries are read directly.'
+  notes: 'Ingested 2026-07-25 via /research-intake Phase-3 Tier-1 expansion from intake-888.'
+  dive_corrections: '2026-07-25 Stage-2a dive: Agent Skills survey: BOTH flagged items are CITATIONS, not primary work by these authors. The 26.1%/2.12x security figures trace to arXiv 2601.10338, the 54.1% single-actor figure to arXiv 2602.06547, and the prompt-injection material to arXiv 2510.26328 — cite those directly, never the survey. The skill-selection PHASE TRANSITION is attributed to arXiv 2601.04748 (''Beyond a critical library size, skill selection accuracy degrades sharply''); READ THAT PRIMARY before setting any SkillBank library-size bound.'

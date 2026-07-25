@@ -124,3 +124,12 @@ Update this handoff + progress after each phase. Per-phase commits. 1c and 2b do
 gate (production reward path / agentic build). See [[project_architect_model_selection_bench]],
 [`architect-bench-runbook.md`](../../docs/reference/architect-bench-runbook.md) §7 (pre-verdict scoring gate),
 [[feedback_parse_failure_rate_is_a_scoring_artifact]].
+
+
+## 2026-07-25 — intake Stage-2a dive: ordered-subsequence verifier (BOTH metrics)
+
+_Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25.md`](intake-derived-work-2026-07-25.md)._
+
+- [ ] Add an **`ordered_subsequence`** verifier to the canonical `answer_scoring` library: given an ordered concept list, lemmatize the completion and check all concepts appear as an ordered subsequence; return graded coverage in [0,1] plus a binary all-in-order flag. Must land in the canonical library — not an 11th bespoke scorer — with unit tests for lemma-boundary and repeated-concept cases.
+- [ ] **Implement BOTH Ordered Rate and Coverage-with-order, not one.** An earlier note called them redundant; the dive **overturned** that — they diverge by up to **26.5 pts** on weak models (Qwen2-0.5B 30.84 vs 57.34; Phi3-mini 49.54 vs 62.04) and converge only at 405B, so both carry distinct signal exactly in the small/quantized regime we care about.
+- [ ] Source is **ACL 2025 Main and an Outstanding Paper** (arXiv 2506.15629) — our 43-question `instruction_precision` suite has **no ordering/sequence verifier of any kind**. Known fragility: spaCy-lemmatization dependence (same class as the substring/comma brittleness). **Confound to record**: the paper's leaderboard runs 32 open models at 4-bit against full-precision API arms — do not cite that table itself as quant-quality evidence.

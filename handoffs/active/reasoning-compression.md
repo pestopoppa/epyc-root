@@ -602,3 +602,13 @@ SPIRAL (arXiv 2606.23595) trains one model to jointly emit parallel CoT traces +
 Poly-EPO (arXiv 2604.17654) and Polychromic Objectives for RL (arXiv 2509.25424) are training-time diversity-preserving RL objectives — the **training-side answer to the diversity-collapse bound** documented in §Diversity Collapse Interaction (inference-time interventions cannot recover training-time diversity loss). Tier-3 forward-pointer only (we don't RL-train yet), filed like TPO / RLTF / RLSD; materializes with the MI210.
 
 - [x] **Correct RE-Bench framing** (flagged by the 2026-07-22 RC-RE-1 scoping): RC-RE-1/rec-005 frames RE-Bench as a reasoning-QUALITY eval; it is actually long-horizon **agentic ML-engineering vs human experts** (6/7 envs need 1-8xH100). Re-scope RC-RE-2 accordingly. Scoping: `epyc-inference-research/docs/design/re-bench-open-weight-compatibility.md`. ✅ 2026-07-22
+
+
+## 2026-07-25 — intake Stage-2a dive: Tier-0 rung + BCI (with a corrected cost story)
+
+_Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25.md`](intake-derived-work-2026-07-25.md)._
+
+- [ ] Add a **Tier-0 (zero-training, zero-inference-infra): adopt a pre-compressed checkpoint** rung to the taxonomy, seeded with ThinkingCap-Qwen3.6-27B. Record as an **observation** (vendor self-reported, no independent corroboration); note its own table is 8-of-12 negative out-of-domain and the repo declares no license.
+- [ ] Add **Behavior-Conditioned Inference** (arXiv 2509.13237) as a Tier-1 candidate: extract named procedural "behaviors" from our own successful traces, retrieve k into context, measure output-token delta at fixed accuracy. Best-instrumented paper in the batch (5 seeds MATH, 80 runs AIME, temp 0.6/top-p 0.95).
+- [ ] **Corrected cost story — measure before believing.** The 46% is **"up to"**, output-tokens-only, with no accuracy figure at that operating point, and the **input-side cost is admitted but never measured** (`"involves a larger number of input tokens due to the inclusion of retrieved behaviors"`; **k=40** behaviors/query on AIME). Their defence — *"no autoregressive generation required on the input side"* — is a **GPU-prefill argument that inverts on a bandwidth-bound-decode / compute-bound-prefill CPU stack**. Score **total pipeline tokens** (retrieved-behavior prefill + decode), never decode alone.
+- [ ] Two guardrails ride along: behaviors are **model-extracted** (SkillsBench −1.3 pp caution ⇒ held-out validation gate mandatory), and a behavior handbook is itself an **accumulating store** ⇒ build append-only with raw traces retained (arXiv 2605.12978).

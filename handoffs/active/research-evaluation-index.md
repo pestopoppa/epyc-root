@@ -153,3 +153,12 @@ After completing a row, update the owning handoff, this index, `master-handoff-i
 - [x] MED Granite embedder bench Phase B ✅ 2026-07-20 (`BULK-K-EMB-1`; fallback corpus, common 512-char policy)
 - [ ] MED Granite embedder Phase C decision; RoPE K-ROPE-1 matrix (needs Gemma4 MTP serving fix; re-attest vs launch recipe before repeating 2026-06-20 gate claim)
 - [ ] LOW Reasoning-compression tails; monitoring-only watches (TQ3, YaRN, swarm/Strand, etc.)
+
+
+## 2026-07-25 — intake-derived work (research-intake Stage-2)
+
+New coordination point: [`intake-derived-work-2026-07-25.md`](intake-derived-work-2026-07-25.md) (38 open items).
+Eval-instrument outstanding items:
+- **`ordered_subsequence` verifier** — our 43-question `instruction_precision` suite has **no ordering verifier of any kind**. Implement **both** Ordered Rate and Coverage-with-order (they diverge up to 26.5 pts on weak models; my earlier "redundant" note was wrong). ACL 2025 Main **Outstanding Paper** (ID-7).
+- **FrontierCS floor probe** (~10 problems, one arm) before any harness spend — non-saturating (29.37 vs human 95.41) but all baselines are proprietary API models, so our arms may land near zero (ID-8).
+- **Two fabricated citations were purged from the intake index** this session (CORE ablation, `/doctor` behaviour), both from Stage-1 agent summaries. New rule ID-10b: no unverified Stage-1 specific may enter task text (ID-10b/ID-10c).

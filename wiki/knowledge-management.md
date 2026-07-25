@@ -267,3 +267,43 @@ Sources: [`handoffs/completed/privacy-hygiene-precommit-hooks.md`](../handoffs/c
 
 - **"Derived-but-unfiled" is a distinct knowledge-loss mode, orthogonal to un-flipped checkboxes.** An operator-prompted audit of one session's deep dives found **seven** high-ROI items — including the session's only time-sensitive one — that were fully derived in analysis prose ("measurable locally today", "cheapest experiment in the program") and then filed nowhere: no task in the owning handoff, no index row. Three recurring shapes: (1) a conclusion stated in prose but never converted to a task; (2) a fix landed while the flag/config that would make it *run* stayed off with no enable task; (3) a live idea silently discarded because a **sibling** idea was falsified. The same audit found the converse defect too: a task filed at line ~1444 of a 1,400-line handoff, in zero indices — *filed is not discoverable*. Sources: [progress 2026-07-21](../progress/2026-07/2026-07-21.md), [routing-and-optimization-index.md](../handoffs/active/routing-and-optimization-index.md), [master-handoff-index.md](../handoffs/active/master-handoff-index.md).
 - **The countermeasure is a closure property enforced at four gates, not vigilance.** (1) research-intake Stage 1: every `relevance ≥ medium` entry → a proposal row with verbatim draft task lines, or an explicit decline; **no handoff/index writes in the sweep** — integration is proposed, not performed. (2) Stage 2 (operator-gated): deep dives each end in a derived-actionables ledger; the plan-mode integration proposal must resolve **every Stage-1 proposal row (dived or not) plus every ledger row** — dives correct drafts, they do not scope the plan. (3) Plan approval before any write; mid-execution additions return to the operator. (4) The wrap-up skill's derived-actionables gate backstops whatever leaked into prose anyway, in both harnesses (one real file — `.claude/commands/wrap-up.md` symlinks to `agents/commands/wrap-up.md`). At each gate a silent drop becomes a checkable defect. Sources: `.claude/skills/research-intake/SKILL.md` (2026-07-21 redesign), `agents/commands/wrap-up.md`, [progress 2026-07-21](../progress/2026-07/2026-07-21.md).
+
+
+## Companion-artifact conflation in research intake (2026-07-25)
+
+A companion **repo / weights collection / project page is a DISTINCT artifact** from the paper it
+accompanies. The intake schema's dedup key is an exact `arxiv_id` or `url` match — being
+*referenced in another entry's notes* is not a collision.
+
+`intake-335` (github.com/gepa-ai/gepa) was filed 2026-04-12 as "Duplicate — the GEPA paper already
+references this GitHub repo in its notes." Nobody read the codebase. Re-reading it surfaced a
+shipped engine layer absent from the paper, a six-month-stale local pin, and a **live defect in
+EPYC's own autopilot** that the "already integrated" label had hidden for months.
+
+A detector (dismissive verdict + conflation language + **no** exact key collision) found **19**
+such entries; 11 were re-read. Highest-cost instance: three DFlash entries filed "supplementary to
+the paper" while the blocker they cite (`no llama.cpp support / no GGUF / no CPU path`) had been
+**dead for five weeks** — merged upstream, forward-ported to production, artifact on disk.
+
+**Two false alarms worth not re-deriving**: entries with `already_integrated` and no `key_claims`
+are overwhelmingly `discovered_via: seed` bootstrap corpus (correct behavior, not dropped value);
+and `handoffs_updated` is unreliable as an integration signal — the REAP cluster has an empty field
+while `completed/reap-moe-expert-pruning.md` exists and cites it.
+
+## Fabricated citations from summarizer agents (2026-07-25)
+
+Two invented specifics reached the intake index from Stage-1 agent summaries and were caught only
+by a later verification dive:
+
+| Fabrication | Reality |
+|---|---|
+| CORE ablation `0.268/0.234/0.227/0.203` (also cross-pasted into an unrelated entry) | Does not exist in arXiv 2605.28742. Real: `0.907/0.830/0.780/0.617`, one task, one regime, n=3 |
+| `/doctor` "dedupes / trims / migrates / reports before changing" | The source contains two generic sentences |
+
+**Rule adopted**: any number, quoted metric, or named mechanism entering a handoff task must be
+dive-verified against primary source. **Corollary**: "absent from an index page" is not evidence of
+nonexistence — two sources reported unlocatable both return HTTP 200 (one unlinked from its own
+blog index; one where the sweep queried the benchmark's site rather than the publisher's).
+
+_Sources: `handoffs/active/intake-derived-work-2026-07-25.md` ID-10/10b/10c;
+`research/intake_index.yaml` (dive_corrections fields); `progress/2026-07/2026-07-25.md`._

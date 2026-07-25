@@ -703,3 +703,32 @@ Two adversarial-audit findings from the inference-batch campaign. Both are failu
 - **Command-fabrication: sub-agents that author execution commands from *semantic intent* produce plausible-but-ungrounded commands, and schema+lint cannot catch it — only `--help`/execution grounding can.** The consolidated inference-batch manifest (52 entries authored by four sub-agents) passed schema+lint, yet an adversarial command-audit found a large fraction of `execution.command` strings cited runners/flags/recipes that exist nowhere on disk (no `eval_tower.py replay` CLI = ~11 entries, no `bench_canonical.sh --recipe` flag = ~6, 7 missing helper scripts). Root cause: the agents wrote commands in a *plausible naming convention* from intent without grounding a single flag against `--help`; the YAML is well-formed, so structural validators are blind to it. The durable rule: **adversarial command-audit (execute or `--help`-check every authored command) is a required gate before an agent-generated command manifest is trusted** — an authored command is a hypothesis until a real binary accepts its flags. Companion rule: a **5-pass ground-truth-on-disk re-audit** (commands / provenance / preconditions / graph / committed-code) *localizes* fabrication rather than discarding all authoring work — here it confirmed the damage was confined to leaf command-strings (provenance ~98% grounded, 0 fabricated files, committed modules 0 stubs / ~440 tests green). Sources: [inference-batch-loop.md](../handoffs/active/inference-batch-loop.md), [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md), [progress 2026-07-17](../progress/2026-07/2026-07-17.md).
 
 - **Derived-view incoherence: a freshness/age contract detects staleness but is structurally blind to VALUE-divergence, and atomic writes stop torn reads but NOT lost updates under concurrent read-modify-write.** After a prior "freshness contract" fix, the `:8000` autopilot dashboard went incoherent again. A 5-hypothesis adversarial root-cause found the freshness contract is only a read-layer AGE detector — it never compares source *values*, so two disagreeing-but-fresh representations both read "fresh" (H5, confirmed). The real divergence sources were concurrency, not staleness: **H4** — `autopilot_state.json` is rewritten by 5+ processes with per-write atomicity (`tmp`+`os.replace`) but ZERO mutual exclusion, so concurrent read-modify-write silently *loses updates* and state drifts from the append-only journal; **H2** — the earlier coherent-snapshot fix covered only the live-inference plane, so the four autopilot panels shared no snapshot epoch. Fixes: a `state_lock` cross-process **flock** + daemon control-field merge (H4), a shared `state_generation` **snapshot epoch** + `/autopilot_snapshot` endpoint (H2), and a **value-consistency divergence axis** added alongside the age axis (H5). H1 (non-atomic writes) and H3 (shard race) were refuted. Generalizable lesson: **coherence of derived views needs three independent guarantees — atomicity (torn-read safety), cross-process mutual exclusion (lost-update safety), and a shared snapshot epoch — plus a value-divergence check; an age/freshness contract supplies none of them.** Sources: [inference-batch-loop.md](../handoffs/active/inference-batch-loop.md), [progress 2026-07-17](../progress/2026-07/2026-07-17.md), [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md).
+
+
+## Adapter-protocol dispatch: presence vs None-ness (2026-07-25)
+
+**Gotcha with a five-month silent-failure precedent.** GEPA's reflective mutation selects the
+proposer with `if self.adapter.propose_new_texts is not None` (`reflective_mutation.py:66-67`),
+while `GEPAAdapter` declares the hook as a **class attribute defaulting to `None`**
+(`gepa/core/adapter.py:180`). EPYC's `OrchestratorGEPAAdapter` instead defined it as a *method*
+that raised `NotImplementedError` to signal "use the built-in proposer" — but **a bound method is
+never `None`**, so the check always took the adapter branch and raised **before any LM call**.
+
+Cost: `633 s and 50 evals burned per invocation for a guaranteed no-op`, from ≥2026-06-04 until
+2026-07-25, logged at INFO as a normal `0.718 → 0.000` completion. Fixed by declaring
+`propose_new_texts = None`. Deleting the attribute would have been wrong — the class does not
+inherit the protocol, so a missing attribute turns the same check into an `AttributeError`, and
+`gepa/api.py:231` separately uses `hasattr()` to decide whether `reflection_lm` is mandatory.
+
+**Transferable rule**: when an optional hook is declared as a protocol *attribute*, opt out by
+setting it to the declared default — never by defining a raising stub. Check whether the consumer
+dispatches on presence (`hasattr`), identity (`is not None`), or both; they can disagree.
+
+**Second defect in the same file**: passing a reflection LM as a model-id *string* is
+unroutable to a local endpoint. GEPA's string path builds its own wrapper calling
+`litellm.completion(model=..., messages=...)` with **no `api_base`** (`gepa/api.py:242-244`), so
+litellm's resolution order falls through to `https://api.openai.com/v1`. Pass a **callable**
+carrying `api_base` instead.
+
+_Sources: `handoffs/active/autopilot-continuous-optimization.md` § 2026-07-25;
+`handoffs/active/intake-derived-work-2026-07-25.md` ID-1; `progress/2026-07/2026-07-25.md`._

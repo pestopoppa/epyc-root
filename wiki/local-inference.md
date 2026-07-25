@@ -216,3 +216,36 @@ Hot-tier resident model footprint is ~167 GB (well under 1.13 TB host); ~600 GB 
 `scripts/server/orchestrator_stack.py` HOT_SERVERS + WARM_SERVERS now COMPUTED from `ROLE_LAUNCH_META` (tier + mode + aliases) + `NUMA_CONFIG` (wiring spec). Module-load validation rejects misconfiguration; start-time validation cross-checks against registry's `process_layout`. Adding/removing roles is now safer (catches dangling refs before launch).
 
 Source: [progress/2026-05/2026-05-06.md](../progress/2026-05/2026-05-06.md), [handoffs/active/qwen36-production-upgrade.md](../handoffs/active/qwen36-production-upgrade.md).
+
+
+## Detecting MTP/NEXTN tensors in a GGUF (2026-07-25)
+
+**Do not infer MTP presence from file size.** Counterexample from real artifacts:
+`ThinkingCap-Qwen3.6-27B` Q4_K_M is **722 MB smaller** than our non-MTP
+`Qwen_Qwen3.6-27B-Q4_K_M.gguf` and demonstrably **has** MTP tensors. Size deltas only hold within a
+single quantizer's recipe.
+
+**Reliable fingerprint** (Qwen3.6-27B family), readable in a **24-byte ranged HTTP read** of the
+GGUF header — no download:
+
+| Tensor count | Meaning |
+|---|---|
+| 851 | no MTP |
+| 866 | MTP present (+15 = the `blk.64.nextn.*` block) |
+
+Corroborate with KV key `qwen35.nextn_predict_layers`.
+
+**Related trap — confounded A/B pairs.** Two locally-held artifacts can both be valid yet not be a
+controlled pair: `Qwen3.6-27B-MTP-Q4_K_M.gguf` (17,106,773,120 B, 866 tensors) is *smaller* than
+`Qwen_Qwen3.6-27B-Q4_K_M.gguf` (17,533,552,192 B, 851 tensors) — 15 extra tensors yet smaller, so
+they were built with different recipes. Any MTP-vs-non-MTP benchmark across those two is
+confounded. The Q8_0 pair is clean.
+
+**Provenance technique**: to test whether a finetune retrained or inherited a draft head, compare
+the actual tensor bytes, not sizes. A byte-identical `blk.64.*` region (single sha256) plus a
+genuinely-differing control tensor proves both inheritance and that the offset arithmetic is sound.
+Applied to ThinkingCap, this showed a **stock MTP head on a LoRA-modified trunk** — a co-trained-head
+vs modified-trunk mismatch, with the differing set matching the adapter's 256 target modules exactly.
+
+_Sources: `handoffs/active/speculative-decoding-mtp-refresh.md` § 2026-07-25;
+`handoffs/active/intake-derived-work-2026-07-25.md` ID-15/ID-16._
