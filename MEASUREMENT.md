@@ -299,6 +299,36 @@ uses a fresh reset and reversed order. A failed strict host preflight, concurren
 inference, stale governor/THP/NUMA state, or unresolved process blocker invalidates the
 pair.
 
+**Continuous contention accounting (AMENDED 2026-07-25).** Retain every raw
+`/proc/stat` aggregate sample, process-group sample, source/target sampling bracket,
+swap counter, ownership witness, and competing llama/AutoPilot/KFD witness. Because
+aggregate CPU counters and a process-group scan do not share an atomic timestamp, a
+single adjacent interval's signed subtraction is diagnostic telemetry only and MUST
+NOT by itself invalidate an arm.
+
+For each adjacent sample pair, retain elapsed time, aggregate total/busy deltas, target
+process-group CPU delta, target core-equivalents, signed external core-equivalents,
+swap delta, and exclusion reasons. An interval is eligible only when elapsed time and
+aggregate total delta are positive; aggregate busy is monotonic and does not exceed
+total; target CPU is monotonic; target use is at least `0.75 *` the configured CPU
+count (`72` cores for the canonical `0-95` profile); ownership is stable; swap I/O is
+zero; and no competing llama/AutoPilot/KFD witness exists. `target_delta > busy_delta`
+is retained as signed sampling telemetry, not classified as a malformed interval.
+
+Select the longest contiguous eligible interval sequence whose aggregate elapsed time
+is at least 10 seconds, breaking equal-duration ties by earliest start. From that
+window's endpoints compute, without clamping,
+`signed_external_core_equivalents = (aggregate_busy_delta - target_group_cpu_delta) /
+(CLK_TCK * elapsed_seconds)`. The arm passes this gate only when a qualifying window
+exists and the signed value is in `[-1.0, 4.0]` core-equivalents. A value below `-1.0`
+is a persistent counter-alignment failure, not evidence of negative contention.
+Startup and teardown intervals excluded for low target use remain in the artifact.
+Any sampling failure, ownership change, swap I/O, or competing llama/AutoPilot/KFD
+witness anywhere in the arm remains an unconditional invalidation. The two
+2026-07-24 startup-race artifacts remain invalid and MUST NOT be retro-certified.
+This amendment is prospective: no pre-amendment artifact may be retro-certified under
+this sustained-window algorithm.
+
 **Repetitions and result.** Use at least 10 repetitions per arm for a release
 non-inferiority claim. Retain every `samples_ts` value and report each arm's median and
 MAD. The comparison ratio is `candidate_median / production_median`. Cold model-load
