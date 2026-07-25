@@ -132,14 +132,13 @@ if [[ ! -x "$SERVER" ]]; then
     exit 1
 fi
 
-# Verify branch
+# Verify the experimental tree is not masquerading as a frozen production branch.
 cd "$LLAMA_DIR"
 BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
 log "Branch: ${BRANCH}"
-# 2026-06-26 v6+iqk cutover: SUPERSEDED by scripts/session/verify_llama_cpp.sh (the live branch gate,
-# now EXPECTED_BRANCH=production-consolidated-v6). Bumped here so this legacy smoke does not false-warn.
-if [[ "$BRANCH" != "production-consolidated-v6" ]]; then
-    log "WARNING: Expected production-consolidated-v6, got ${BRANCH}"
+if [[ "$BRANCH" == production-consolidated-* ]]; then
+    log "FATAL: Experimental smoke must run on a feature branch, got ${BRANCH}"
+    exit 1
 fi
 
 # ── Model Load Tests ──────────────────────────────────────────

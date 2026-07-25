@@ -1,8 +1,8 @@
 #!/bin/bash
-# verify_llama_cpp.sh — Verify llama.cpp is on correct production branch
+# verify_llama_cpp.sh — Verify the exact frozen production llama.cpp identity
 #
-# Run this at session start to prevent accidentally using wrong branch.
-# Returns non-zero if branch is wrong, allowing session_init.sh to warn/fail.
+# Run this at session start to prevent accidentally using the wrong source tip
+# or stale CPU/HIP binaries. Returns non-zero on any identity mismatch.
 
 set -euo pipefail
 
@@ -12,6 +12,10 @@ source "$SCRIPT_DIR/../lib/env.sh"
 # Configuration (derived from env.sh)
 LLAMA_CPP_DIR="${LLM_ROOT}/llama.cpp"
 EXPECTED_BRANCH="production-consolidated-v7"  # 2026-07 v7 cutover: canonical production kernel supersedes v6 after the documented promotion routine.
+EXPECTED_COMMIT="6ad45fa3ff6718c07c000061dbc6e29c1771f6e3"
+EXPECTED_VERSION_LINE="version: 10098 (6ad45fa3f)"
+EXPECTED_CPU_SERVER_SHA256="df4806655b071ae3f74e5e986dcf830379b9302a8044be8466601e60345a7b21"
+EXPECTED_HIP_SERVER_SHA256="07daf49174825f23cd866a5d280d92c4b4e69891c314ca10b419bcadca3a9752"
 EXPERIMENTAL_DIR="${LLM_ROOT}/llama.cpp-experimental"
 
 # Colors
@@ -43,20 +47,87 @@ verify_branch() {
   fi
 }
 
+verify_commit() {
+  local dir="$1"
+  local expected="$2"
+  local label="$3"
+  local current
+
+  if ! current=$(git -C "$dir" rev-parse HEAD 2>/dev/null); then
+    echo -e "${RED}✗ $label commit cannot be resolved${NC}"
+    return 1
+  fi
+  if [[ "$current" == "$expected" ]]; then
+    echo -e "${GREEN}✓ $label commit: $current${NC}"
+    return 0
+  fi
+  echo -e "${RED}✗ $label commit: expected '$expected', got '$current'${NC}"
+  return 1
+}
+
+verify_tracked_state() {
+  local dir="$1"
+  local label="$2"
+
+  if git -C "$dir" diff --quiet &&
+      git -C "$dir" diff --cached --quiet; then
+    echo -e "${GREEN}✓ $label tracked/index state is clean${NC}"
+    return 0
+  fi
+  echo -e "${RED}✗ $label has tracked or staged changes${NC}"
+  return 1
+}
+
+check_server_identity() {
+  local server="$1"
+  local expected_sha256="$2"
+  local expected_version_line="$3"
+  local label="$4"
+  local actual_sha256
+  local version_output
+  local version_line
+
+  if [[ ! -x "$server" ]]; then
+    echo -e "${RED}✗ $label binary missing: $server${NC}"
+    return 1
+  fi
+  actual_sha256=$(sha256sum -- "$server" | awk '{print $1}')
+  if [[ "$actual_sha256" != "$expected_sha256" ]]; then
+    echo -e "${RED}✗ $label SHA256: expected '$expected_sha256', got '$actual_sha256'${NC}"
+    return 1
+  fi
+  if ! version_output=$(
+    env LD_LIBRARY_PATH="$(dirname "$server")" LANG=C LC_ALL=C \
+      "$server" --version 2>&1
+  ); then
+    echo -e "${RED}✗ $label --version failed${NC}"
+    return 1
+  fi
+  version_line="${version_output%%$'\n'*}"
+  if [[ "$version_line" != "$expected_version_line" ]]; then
+    echo -e "${RED}✗ $label version: expected '$expected_version_line', got '$version_line'${NC}"
+    return 1
+  fi
+  echo -e "${GREEN}✓ $label: $version_line ($actual_sha256)${NC}"
+}
+
 check_binary_exists() {
-  # llama-server is production-required (the orchestrator launches against it).
-  # llama-cli is a smoke/bench helper — useful but not needed for inference, so it warns
-  # instead of failing the gate (was: required, which false-warned every session_init.sh).
-  local server="$LLAMA_CPP_DIR/build/bin/llama-server"
+  local cpu_server="$LLAMA_CPP_DIR/build/bin/llama-server"
+  local hip_server="$LLAMA_CPP_DIR/build-hip/bin/llama-server"
   local cli="$LLAMA_CPP_DIR/build/bin/llama-cli"
   local rc=0
-  if [[ -x "$server" ]]; then
-    echo -e "${GREEN}✓ Production binary exists: $server${NC}"
-  else
-    echo -e "${RED}✗ Production binary missing: $server${NC}"
-    echo -e "${YELLOW}  Rebuild with: cd $LLAMA_CPP_DIR && cmake -B build && cmake --build build -j$(nproc)${NC}"
+
+  if ! check_server_identity \
+      "$cpu_server" "$EXPECTED_CPU_SERVER_SHA256" "$EXPECTED_VERSION_LINE" \
+      "Production CPU server"; then
     rc=1
   fi
+  if ! check_server_identity \
+      "$hip_server" "$EXPECTED_HIP_SERVER_SHA256" "$EXPECTED_VERSION_LINE" \
+      "Production HIP server"; then
+    rc=1
+  fi
+  # llama-cli is a smoke/bench helper, not a production-serving requirement.
   if [[ -x "$cli" ]]; then
     echo -e "${GREEN}✓ Smoke binary exists: $cli${NC}"
   else
@@ -73,7 +144,13 @@ main() {
 
   # Check production branch
   if ! verify_branch "$LLAMA_CPP_DIR" "$EXPECTED_BRANCH" "Production"; then
-    ((errors++))
+    errors=$((errors + 1))
+  fi
+  if ! verify_commit "$LLAMA_CPP_DIR" "$EXPECTED_COMMIT" "Production"; then
+    errors=$((errors + 1))
+  fi
+  if ! verify_tracked_state "$LLAMA_CPP_DIR" "Production"; then
+    errors=$((errors + 1))
   fi
 
   # Check experimental is NOT production (should be on feature branch)
@@ -89,7 +166,7 @@ main() {
 
   # Check binary exists
   if ! check_binary_exists; then
-    ((errors++))
+    errors=$((errors + 1))
   fi
 
   echo ""
