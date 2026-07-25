@@ -216,6 +216,24 @@ The "we'd need to write a fork patch" framing in earlier glm51 handoff text was 
 - **GLM-5.2 (754B GLM-MoE-DSA) is now the PRIMARY GLM target** (intake-699: unsloth dynamic quants of `zai-org/GLM-5.2`, MIT, 1M context; supersedes GLM-5.1). 2026-07-16 correction: the old "PR #21149 is the gating dependency" statement is superseded; v6 contains generic DSA via #23346. The live gate is now GLM-5.2 UD-IQ2_M completion, integrity verification, load-smoke, and long-context DSA-indexer engagement.
 - **Note**: #19460 remains a superseded tensor-loading PR, and #21149 remains useful historical design context, but neither is the current activation blocker. See [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) for the GLM-side disposition.
 
+## 2026-07-25 v8-audit note — HIP LIGHTNING_INDEXER bf16 backend-op failure CLASSIFIED (pre-existing baseline, flaky)
+
+During v8-candidate gating (`experimental-v8-refresh-20260724`), `test-backend-ops -o
+LIGHTNING_INDEXER -p type_K=bf16` fails on MI210 HIP with ERR≈1.0 (vs 1e-6 tol) — and the
+paired differential proves it is **NOT a v8 delta**: production v7 failed 8/12 bf16 configs,
+candidate 6/12 (identical clean-env invocation); isolated 5-rep single-config runs show it is
+**flaky** (production failed rep 5/5, candidate 0/5). Durable evidence:
+`epyc-inference-research/data/kernel-v8-candidate/lightning-indexer-v7-v8-{baseline,isolated}/`.
+This is a real pre-existing HIP bf16 LIGHTNING_INDEXER kernel bug in the landed #23346 code —
+not a promotion blocker, but it means the DSA indexer's bf16 K-cache path is numerically
+untrustworthy on gfx90a until root-caused.
+
+- [ ] **D4 — root-cause the HIP bf16 LIGHTNING_INDEXER numerical failure** (flaky, ERR≈1.0,
+  6-8/12 configs, both v7 and v8): suspect reduction-order/precision in the WMMA-era kernel on
+  gfx90a or a bf16 staging issue; f16 configs pass. Low priority (no production lineup uses a
+  bf16 indexer K-cache today) but file upstream if confirmed in current master. Evidence paths
+  above; classification work done 2026-07-25.
+
 ## Progress checklist
 
 - [x] D1 pull/build/smoke PR #21149 — SUPERSEDED: DSA landed in v6 via generic-DSA #23346 (`deepseek32` + `glm-dsa` archs present); no draft-PR pull needed; smoke-test moved to the model-eval handoffs. ✅ 2026-07-16
