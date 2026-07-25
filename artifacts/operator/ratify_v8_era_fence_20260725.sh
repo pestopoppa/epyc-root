@@ -71,6 +71,8 @@ AUTOPILOT_LOCK="$ORCH/orchestration/.autopilot.lock"
 STATE_LOCK="$STATE.lock"
 SCRIPT_REL=artifacts/operator/ratify_v8_era_fence_20260725.sh
 SCRIPT_PATH="$ROOT/$SCRIPT_REL"
+FREEZE_SCRIPT_REL=artifacts/operator/freeze_v8_production_20260725.sh
+FREEZE_SCRIPT="$ROOT/$FREEZE_SCRIPT_REL"
 
 phase="preflight"
 transaction_active=0
@@ -81,6 +83,7 @@ pre_card_sha=""
 preprompt_eras_sha=""
 preprompt_state_sha=""
 preprompt_card_sha=""
+preprompt_lineup_manifest=""
 
 fail() {
     printf 'ERROR: %s\n' "$*" >&2
@@ -130,6 +133,61 @@ require_blob_at_commit() {
         fail "$label hash does not match its immutable evidence commit"
 }
 
+terminal_lineup_manifest() {
+    require_tracked_clean "$ROOT" "$FREEZE_SCRIPT_REL"
+    bash "$FREEZE_SCRIPT" --terminal-lineup-manifest
+}
+
+validate_terminal_lineup() {
+    local manifest
+    manifest="$(terminal_lineup_manifest)" || fail "corrected terminal-lineup validation failed"
+    jq -e '
+        .schema == "epyc.v8_terminal_lineup_evidence.v1" and
+        .status == "pass" and .mode == "both" and
+        .validator.repository == "epyc-root" and
+        .validator.path == "artifacts/operator/freeze_v8_production_20260725.sh" and
+        .production_head == "67a433bf45a8a091d83b4ea0b32ff0735fd51800" and
+        .smoke_contract.total == 24 and .smoke_contract.chat == 18 and
+        .smoke_contract.embedding == 6 and
+        .smoke_contract.ports == [8070,8072,8080,8082,8083,8085,8086,8087,8090,8091,8092,8093,8094,8095,8180,8182,8185,8280,8282,8285,8380,8382,8385,8485] and
+        .live_api_contract.models_loaded == 6 and .live_api_contract.backend_probes == 6 and
+        .live_api_contract.ports == [8070,8072,8083,8085,8086,8087] and
+        .quality_contract.roles == ["worker_general", "architect_general"] and
+        .quality_contract.suites == ["mmlu_pro", "gpqa"] and
+        .quality_contract.effective_questions == {mmlu_pro:200, gpqa:195} and
+        .quality_contract.regression_threshold == 0.05 and
+        .quality_contract.zero_errors_required == true and
+        .quality_contract.worker_baseline_arm == "v7-worker-general-baseline-full-18072" and
+        .quality_contract.architect_baseline_arm == "v7-architect-general-baseline-full-18083" and
+        .quality_contract.baseline_kernel == "production-consolidated-v7" and
+        .quality_contract.baseline_binary == "/mnt/raid0/llm/llama.cpp-v7-build-backup-6ad45fa3ff/cpu-bin/llama-server" and
+        .quality_contract.worker_arm == "v8-production-worker-general-full-8072" and
+        .quality_contract.architect_arm == "v8-production-architect-general-full-8083" and
+        .quality_contract.candidate_kernel == "production-consolidated-v8" and
+        .quality_contract.candidate_binary == "/mnt/raid0/llm/llama.cpp/build/bin/llama-server" and
+        .quality_contract.shared_question_identity == {
+            seed:42, repeats:1, questions_artifact:"questions.json",
+            baseline_and_candidate_rows_exact:true
+        } and
+        (.quality_contract.artifacts | keys | sort) == [
+            "architect_baseline", "architect_baseline_per_question", "architect_per_question",
+            "architect_report", "architect_result", "questions", "worker_baseline",
+            "worker_baseline_per_question", "worker_per_question", "worker_report", "worker_result"
+        ] and
+        .quality_contract.artifacts.worker_baseline_per_question.repository == "epyc-inference-research" and
+        (.quality_contract.artifacts.worker_baseline_per_question.path |
+            endswith("/v7-worker-general-baseline.per-question.jsonl")) and
+        (.quality_contract.artifacts.worker_baseline_per_question.sha256 | test("^[0-9a-f]{64}$")) and
+        .quality_contract.artifacts.architect_baseline_per_question.repository == "epyc-inference-research" and
+        (.quality_contract.artifacts.architect_baseline_per_question.path |
+            endswith("/v7-architect-general-baseline.per-question.jsonl")) and
+        (.quality_contract.artifacts.architect_baseline_per_question.sha256 | test("^[0-9a-f]{64}$")) and
+        .quality_contract.architect_cpu_q4_live_and_quality_tested == true and
+        (.quality_contract.b2_regression_omission_scope | contains("not a deprecation premise")) and
+        .historical_quarter_smoke == "superseded provenance; not the terminal production-lineup contract"
+    ' <<<"$manifest" >/dev/null || fail "terminal-lineup manifest predicate failed"
+}
+
 require_orchestrator_clean() {
     require_commit_ancestor "$ORCH" "$ORCH_FIXTURE_COMMIT" "E8 validation fixture"
     git -C "$ORCH" diff --quiet ||
@@ -163,6 +221,7 @@ require_only_expected_orchestrator_changes() {
 }
 
 require_same_preprompt_inputs() {
+    local current_lineup_manifest
     [[ "$preprompt_eras_sha" =~ ^[0-9a-f]{64}$ &&
        "$preprompt_state_sha" =~ ^[0-9a-f]{64}$ &&
        "$preprompt_card_sha" =~ ^[0-9a-f]{64}$ ]] ||
@@ -173,6 +232,11 @@ require_same_preprompt_inputs() {
         fail "live AutoPilot state changed while awaiting operator confirmation"
     [[ "$(sha256 "$CARD")" == "$preprompt_card_sha" ]] ||
         fail "system card changed while awaiting operator confirmation"
+    [[ -n "$preprompt_lineup_manifest" ]] || fail "pre-prompt terminal-lineup manifest was not captured"
+    current_lineup_manifest="$(terminal_lineup_manifest)" ||
+        fail "terminal-lineup evidence became invalid while awaiting confirmation"
+    [[ "$(jq -S -c . <<<"$current_lineup_manifest")" == "$(jq -S -c . <<<"$preprompt_lineup_manifest")" ]] ||
+        fail "terminal-lineup evidence changed while awaiting operator confirmation"
 }
 
 autopilot_is_running() {
@@ -256,8 +320,6 @@ validate_evidence() {
         .production_kernel.version == "10107 (67a433bf4)" and
         .orchestrator.commit == "698c366fa2a9b93af2eebe4ed98c4522f841b795" and
         .scope.numa_mode == "quarter" and
-        .scope.qwen3_5_122b_loaded == false and
-        .scope.qwen3_5_122b_tested == false and
         .scope.chat_endpoints == 14 and .scope.embedding_endpoints == 6 and
         .scope.total_endpoints == 20 and
         .final_attempt.artifact == "quarter_smoke_rerun2.jsonl" and
@@ -269,7 +331,7 @@ validate_evidence() {
         .promotion_guard.kernel_regression == false and
         .gpu_posture.post_smoke_kfd_processes == 0 and
         .gpu_posture.post_smoke_vram_percent == 0
-    ' "$QUARTER" >/dev/null || fail "quarter-stack smoke predicate failed"
+    ' "$QUARTER" >/dev/null || fail "superseded quarter-stack provenance predicate failed"
 
     jq -e --arg head "$EXPECTED_HEAD" '
         .schema == "epyc.cpu_prefill_v8.operator_waiver.v1" and
@@ -572,7 +634,7 @@ recover_transaction() {
 idempotent_complete() {
     [[ -f "$JOURNAL" && -f "$OUTPUT" ]] || return 1
     [[ "$(jq -r '.phase' "$JOURNAL" 2>/dev/null)" == "complete" ]] || return 1
-    local recorded
+    local recorded current_lineup attested_lineup
     recorded="$(jq -r '.output_sha256' "$JOURNAL")"
     [[ "$recorded" =~ ^[0-9a-f]{64}$ ]] || fail "completed journal has no output digest"
     require_sha "$OUTPUT" "$recorded" "completed eligibility-fence attestation"
@@ -590,6 +652,11 @@ idempotent_complete() {
     require_sha "$CARD" \
         "$(jq -r '.artifacts.system_card_sha256' "$OUTPUT")" \
         "attested system card"
+    validate_terminal_lineup
+    current_lineup="$(terminal_lineup_manifest)"
+    attested_lineup="$(jq -S -c '.terminal_production_lineup' "$OUTPUT")"
+    [[ "$(jq -S -c . <<<"$current_lineup")" == "$attested_lineup" ]] ||
+        fail "completed E8 attestation no longer matches terminal-lineup evidence"
     validate_post_fence
     require_only_expected_orchestrator_changes
     printf 'Eligibility fence is already ratified and digest-valid: %s\n' "$OUTPUT"
@@ -799,7 +866,7 @@ PY
 
 write_output() {
     local ratified_at script_sha eras_sha state_sha card_sha
-    local root_head orch_head research_head output_tmp
+    local root_head orch_head research_head output_tmp lineup_manifest
     ratified_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
     script_sha="$(sha256 "$SCRIPT_PATH")"
     eras_sha="$(sha256 "$ERAS")"
@@ -808,11 +875,12 @@ write_output() {
     root_head="$(git -C "$ROOT" rev-parse HEAD)"
     orch_head="$(git -C "$ORCH" rev-parse HEAD)"
     research_head="$(git -C "$RESEARCH" rev-parse HEAD)"
+    lineup_manifest="$(terminal_lineup_manifest)" || fail "terminal-lineup manifest failed before publication"
     output_tmp="$ROOT/artifacts/operator/.ratify_v8_era_fence_20260725.json.tmp"
 
     python3 - \
         "$output_tmp" "$ratified_at" "$script_sha" "$eras_sha" "$state_sha" "$card_sha" \
-        "$root_head" "$orch_head" "$research_head" <<'PY'
+        "$root_head" "$orch_head" "$research_head" "$lineup_manifest" <<'PY'
 import json
 import os
 from pathlib import Path
@@ -850,6 +918,11 @@ payload = {
     },
     "frontier_rerun_required": {"required": True, "min_numeric_trials": 16},
     "q8_claim": "none; campaign-scoped WAIVE-Q8 remains binding",
+    "terminal_production_lineup": json.loads(sys.argv[10]),
+    "historical_quarter_evidence_posture": (
+        "Superseded provenance only; the embedded both-mode 24/24, live API 6/6, "
+        "and worker+architect quality manifest is the terminal contract."
+    ),
     "required_next_action": (
         "Run and validate the separate production freeze transaction; this "
         "attestation establishes only the E8 eligibility fence."
@@ -910,10 +983,20 @@ main() {
             fi
             return
             ;;
+        --validate-only)
+            require_tracked_clean "$ROOT" "$SCRIPT_REL"
+            validate_production
+            validate_evidence
+            validate_terminal_lineup
+            require_orchestrator_clean
+            validate_pre_fence_state
+            printf 'Read-only E8 validation passed; no files changed.\n'
+            return
+            ;;
         "")
             ;;
         *)
-            fail "usage: $0 [--status|--recover]"
+            fail "usage: $0 [--status|--recover|--validate-only]"
             ;;
     esac
 
@@ -928,11 +1011,13 @@ main() {
     require_tracked_clean "$ROOT" "$SCRIPT_REL"
     validate_production
     validate_evidence
+    validate_terminal_lineup
     require_orchestrator_clean
     validate_pre_fence_state
     preprompt_eras_sha="$(sha256 "$ERAS")"
     preprompt_state_sha="$(sha256 "$STATE")"
     preprompt_card_sha="$(sha256 "$CARD")"
+    preprompt_lineup_manifest="$(terminal_lineup_manifest)"
     autopilot_is_running && fail "AutoPilot is running; stop it before ratification"
 
     [[ -t 0 ]] || fail "operator ratification requires an interactive terminal"
@@ -942,6 +1027,8 @@ main() {
         'It appends E8-cpu-kernel and E8-autopilot-speed at 2026-07-25T18:38:43Z.' \
         'It demotes pre-boundary speed/frontier evidence to historical prior for v8 decisions.' \
         'It requires 16 fresh v8-era numeric trials before AutoPilot speed maxima are trusted.' \
+        'It binds the terminal both-mode lineup: 24/24 endpoints, live API 6/6, and zero-error worker+architect MMLU-Pro/GPQA gates within 5pp.' \
+        'The CPU Q4 architect is live and quality-tested; the separate B2 omission is not a deprecation premise.' \
         'The campaign-scoped WAIVE-Q8 remains binding; no Q8 performance or non-regression claim is made.' \
         'Type RATIFY-V8-ERA-FENCE to attest this decision; anything else aborts.'
     read -r -p '> ' decision
@@ -953,6 +1040,7 @@ main() {
     acquire_locks
     validate_production
     validate_evidence
+    validate_terminal_lineup
     require_orchestrator_clean
     require_same_preprompt_inputs
     validate_pre_fence_state
@@ -999,6 +1087,7 @@ main() {
     write_journal
 
     validate_post_fence
+    validate_terminal_lineup
     require_only_expected_orchestrator_changes
     autopilot_is_running && fail "AutoPilot appeared during the locked transaction"
     phase="deep_validation_passed"
@@ -1011,6 +1100,9 @@ main() {
 
     # Recheck exact live content after publication and before declaring completion.
     validate_post_fence
+    validate_terminal_lineup
+    [[ "$(jq -S -c . <<<"$(terminal_lineup_manifest)")" == "$(jq -S -c '.terminal_production_lineup' "$OUTPUT")" ]] ||
+        fail "operator attestation lost its exact terminal-lineup binding"
     [[ "$(sha256 "$OUTPUT")" == "$output_sha" ]] ||
         fail "operator attestation changed before completion"
     phase="complete"

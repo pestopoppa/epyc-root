@@ -38,15 +38,20 @@ That was correct when written — the registry genuinely had no IQ-quant models.
 
 **5. Expected payoff, stated honestly.** Prefill-dominant, decode-modest. Decode at 2-3 bpw sits deep in the memory-bandwidth-bound regime where the original port measured ~0% on Q8_0; the +22-49% figures came from prefill. GLM-5.2 prompts run 3-12K tokens and its measured decode is 2.49 t/s (5.33 with MTP), so prefill is the operative axis for that role. **Do not promote this on an assumed decode win** — B3 exists to measure it.
 
-## What changed (committed, 3 files, +13/−2)
+## What changed (initial enablement plus v8 hardening)
 
 | File | Change |
 |---|---|
 | `ggml/src/ggml-cpu/CMakeLists.txt` | add `ggml-cpu/iqk/iqk_gemm_iquants.cpp` to the build |
 | `ggml/src/ggml-cpu/iqk/iqk_stubs.cpp` | remove the two `return false` stubs so the real symbols link |
-| `ggml/src/ggml-cpu/iqk/iqk_dispatch.cpp` | whitelist IQ2_XXS, IQ2_XS, IQ2_S, IQ3_XXS, IQ3_S |
+| `ggml/src/ggml-cpu/iqk/iqk_dispatch.cpp` | whitelist IQ2_XXS, IQ2_XS, IQ2_S, IQ3_XXS, IQ3_S, and IQ4_XS; reject Q2_K/Q3_K before activation quantization |
 
-The whitelist matches the kernel's real capability **exactly**: both `iqk_set_kernels_iquants` (`:2760-2775`) and `iqk_convert_iquants_q80_r8` (`:2810-2814`) implement precisely these five native types. The `*_R4` repacked variants in the same file are ik-only and unreachable from our GGUFs. IQ4_XS and IQ1_M are deliberately excluded — no kernel exists for them here.
+The initial five IQ2/IQ3 types use `iqk_gemm_iquants.cpp`. Final v8 commit
+`8890e2b14` also enables native IQ4_XS through the already-vendored
+`iqk_gemm_kquants.cpp` kernel (`set_kernels` at `:2724`, conversion at `:2780`) and
+adds compile-time dispatch assertions. The `*_R4` repacked variants remain ik-only
+and unreachable from our GGUFs. IQ1_M remains excluded because its 1-bit family is
+still stubbed.
 
 **Pre-verified statically (no build):** every `GGML_TYPE_*` referenced by `iqk_gemm_iquants.cpp` resolves — the five natives from `ggml.h`, the `*_R4` variants via the `iqk_ext_types.h` shim, and `Q8_2_X4` via `#define … 99` in `iqk_config.h:18` (used only inside comments in this file).
 
@@ -57,16 +62,24 @@ Verified 2026-07-21: host load average ~48, seven llama-servers resident, and a 
 ## Outstanding tasks (require a quiet window)
 
 - [x] **B1 — Build.** ✅ 2026-07-25 — re-anchored to v8: `b8ad9d292` compiles `iqk_gemm_iquants.cpp` in `build-v8-cpu`/`build-v8-hip`/`build-v8-sanitize`; `test-iqk-ser` + `test-iqk-valid-control` pass on all three builds. Historical HIP CTest was `56/59`, with all 3 failures classified baseline with paired differentials; exact-tip HIP is `59/62` with the same 3 failure classes. This is not a green full-HIP-CTest claim. Exact-tip CPU and sanitizer qualification and paired evidence are durable under `epyc-inference-research/data/kernel-v8-candidate/`. The commit also fixed real UB in the kernels AND in the native `arch/x86/quants.c` reference paths (load-bearing for test validity).
-- [x] **B2 — Correctness before speed, operator-scoped.** ✅ 2026-07-25 — exact 6-arm/24-task, three-model attestation `epyc.iqk_real_model_correctness.attestation.v1`, bound to exact tip `67a433bf4`, passed at `epyc-inference-research/data/kernel-v8-candidate/iqk-real-model-correctness/run-20260725T102000Z-67a433bf4/` (nested `101945Z`). It covers GLM-5.2-IQ2, Qwen3-Next-80B-IQ2, and Hy3-IQ1 with same-seed IQK-on/off coherence, anti-garbage, and per-token-logprob evidence. qwen3.5-122B is excluded by deprecation; Laguna IQ2 CPU/IQK is excluded by operator direction in favor of GPU IQ2, so this does not claim a Laguna IQK-on/off test.
-- [ ] **B3 — Speed.** `llama-bench` under the canonical baseline protocol (`taskset -c 0-95 -t 96 -fa 1`, OMP env stack mandatory), `GGML_IQK=1` vs `=0`, prefill and decode reported separately. Start with **Qwen3-Next-80B** (largest covered share, 54%) and **GLM-5.2** (highest operational value), then the other two.
-  - 2026-07-25 status: the current `cpu_prefill_v8_regression_runner.py` era-stamps artifacts,
-    proves that the clean sustained window covers all measured repetitions, and sets
-    `GGML_IQK_Q8_0=1` for Q8_0 rows. The prospective live run
-    `data/kernel-v8-candidate/cpu-prefill-regression/run-20260725T082414Z-v3-live/`
-    is invalid and supplies no decision number: the Qwen3.6-35B Q8 MoE prefill arm sustains
-    about 50–55 target core-equivalents and cannot satisfy the ratified 72-core eligibility
-    floor. Awaiting the operator's `RATIFY-48`, `WAIVE-Q8`, or `REPLACE-Q8` decision.
-- [ ] **B4 — Non-IQ regression check.** Confirm K-quant/legacy models are unaffected. The dispatch change is purely additive so this should be a formality — but it is the claim that lets this reach production.
+- [x] **B2 — Correctness before speed, operator-scoped.** ✅ 2026-07-25 — exact 6-arm/24-task, three-model attestation `epyc.iqk_real_model_correctness.attestation.v1`, bound to exact tip `67a433bf4`, passed at `epyc-inference-research/data/kernel-v8-candidate/iqk-real-model-correctness/run-20260725T102000Z-67a433bf4/` (nested `101945Z`). It covers GLM-5.2-IQ2, Qwen3-Next-80B-IQ2, and Hy3-IQ1 with same-seed IQK-on/off coherence, anti-garbage, and per-token-logprob evidence. The qwen3.5-122B B2 arm is omitted under the separate operator instruction to skip its regression tests. GPU-IQ2 arm excluded; CPU Q4 architect remains live. Laguna CPU/IQK is excluded by operator direction in favor of GPU IQ2, so this does not claim a Laguna IQK-on/off test.
+
+  **2026-07-25 operator correction / provenance:** this session incorrectly treated the R7 "A4 suffices" benchmark verdict as an executed Qwen3.5-122B deprecation. It is a pending operator lineup decision, not a serving-lineup change. The restored both-mode contract serves the CPU Q4 architect on `8083`; only its B2 regression arm remains out of scope under the separate regression-skip instruction.
+- [x] **B3 — Speed.** ✅ 2026-07-25 — the ratified `P-BENCH-PREFILL-1`
+  matrix passed all 14 executed v7/v8 pairs with zero throughput failures at
+  `epyc-inference-research/data/kernel-v8-candidate/cpu-prefill-regression/run-20260725T155655Z-v4-waive-q8-kfd-procrace-swapoff/summary.json`.
+  IQK-on utility ratios `(pp2048, tg128)` were GLM-5.2 `(1.4274, 1.0013)`,
+  Hy3 `(1.3297, 1.0035)`, and Qwen3-Next `(1.3900, 0.9875)`; all three
+  satisfy the ratified IQ rule. The operator's campaign-scoped WAIVE-Q8
+  excludes four Qwen3.6 Q8 arms, so v8 makes no Q8 performance or
+  non-regression claim.
+- [x] **B4 — Non-IQ regression check.** ✅ 2026-07-25 — Gemma Q4 passed the
+  ratified throughput check at `1.0830x` pp2048 and `1.0075x` tg128. The
+  terminal paired quality gate used one pinned 200-question MMLU-Pro +
+  195-question GPQA set and produced exact v7/v8 ties with zero errors:
+  worker Gemma Q4 `36.5% / 24.6%`, architect Qwen3.5-122B Q4
+  `63.5% / 56.9%`. Evidence is committed in research at `965e353e` under
+  `data/kernel-v8-candidate/quality-gate/run-20260725T204443Z-fullcontract-both-mode/`.
   - 2026-07-25 audit note: **this exact risk class already materialized** — `b8ad9d292` incidentally reclassified Q2_K/Q3_K activations Q8_2_X4→Q8_K, engaging never-validated iqk kquant kernels and corrupting Hy3 output (caught on live output at 20:47Z, NOT by tests; fixed same day by `1977a5d78` + static_asserts). The measured non-IQ check is therefore NOT a formality for v8 — it is mandatory, and default CI still cannot catch a re-introduction (see NEW-4 below).
 - [ ] **B5 — Promote.** If B2-B4 pass, fold into the next experimental→production promotion per the four-step workflow. Do NOT hand-patch production v7.
 
