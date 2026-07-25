@@ -1,12 +1,20 @@
 # Cross-Reference Map
 
+> **Path convention (verified 2026-07-25).** Entries under **Handoffs** may live in
+> `handoffs/active/` **or** `handoffs/completed/`. Names prefixed `completed/` have been archived —
+> search them there. **Always search BOTH directories**: a handoff moving to `completed/` does not
+> mean the topic is uncovered, and treating a failed `active/` lookup as "no prior coverage" is how
+> an intake wrongly concludes a technique is novel. 10 entries in this map were found pointing at
+> `active/` after their handoffs were archived; a sub-agent following the stale path would have found
+> nothing.
+
 Maps taxonomy categories to specific files and search terms for cross-referencing.
 
 ## Category → File Mapping
 
 ### speculative_decoding
 - **Chapters**: `01-speculative-decoding.md`, `03-prompt-lookup.md`, `05-deprecated-approaches.md`, `10-advanced-speculative-decoding.md`
-- **Handoffs**: `tree-speculation-numa-drafting.md`, `hsd-hierarchical-self-speculation.md`
+- **Handoffs**: `completed/tree-speculation-numa-drafting.md`, `completed/hsd-hierarchical-self-speculation.md`
 - **Experiments**: `specexec-verification-profile.md`, `bench_self_speculation.sh`
 - **Search terms**: speculative decoding, draft model, tree speculation, Sequoia, SpecInfer, Medusa, EAGLE, self-speculation, hierarchical speculation
 
@@ -17,17 +25,17 @@ Maps taxonomy categories to specific files and search terms for cross-referencin
 
 ### kv_cache
 - **Chapters**: `04-radix-attention.md`
-- **Handoffs**: `kv-cache-quantization.md`, `tq3-quantization-evaluation.md` (monitoring upstream PRs)
+- **Handoffs**: `completed/kv-cache-quantization.md`, `tq3-quantization-evaluation.md` (monitoring upstream PRs)
 - **Search terms**: KV cache, paged attention, prefix caching, radix attention, cache eviction, vAttention, ChunkKV, TurboQuant, Hadamard rotation
 
 ### quantization
 - **Chapters**: (none)
-- **Handoffs**: `kv-cache-quantization.md`, `tq3-quantization-evaluation.md`
+- **Handoffs**: `completed/kv-cache-quantization.md`, `tq3-quantization-evaluation.md`
 - **Search terms**: quantization, GPTQ, AWQ, GGUF, Q4_K_M, mixed precision, calibration, TQ3_1S, Walsh-Hadamard, TurboQuant
 
 ### benchmark_methodology
 - **Chapters**: `06-benchmarking-framework.md`, `07-benchmark-suite-construction.md`
-- **Handoffs**: `qwen35-frontdoor-benchmark.md`
+- **Handoffs**: `completed/qwen35-frontdoor-benchmark.md`
 - **Search terms**: benchmark, evaluation, scoring, dataset construction, question pool
 
 ### cost_aware_routing
@@ -37,17 +45,17 @@ Maps taxonomy categories to specific files and search terms for cross-referencin
 
 ### agent_architecture
 - **Chapters**: `09-claude-debugger.md`
-- **Handoffs**: `orchestrator-stack-audit.md`, `rlm-orchestrator-roadmap.md`, `orchestrator-conversation-management.md`, `meta-harness-optimization.md`
+- **Handoffs**: `completed/orchestrator-stack-audit.md`, `completed/rlm-orchestrator-roadmap.md`, `completed/orchestrator-conversation-management.md`, `meta-harness-optimization.md`
 - **Search terms**: agent architecture, tool use, REPL, code generation, orchestration, harness optimization, subagent, tool-level constraints
 
 ### context_extension
 - **Chapters**: (none)
-- **Handoffs**: `yarn-context-extension-research.md`, `long-context-eval-datasets.md`
+- **Handoffs**: `yarn-context-extension-research.md`, `completed/long-context-eval-datasets.md`
 - **Search terms**: YaRN, RoPE scaling, context extension, long context, sliding window
 
 ### context_management
 - **Chapters**: (none)
-- **Handoffs**: `context-folding-progressive.md`, `orchestrator-conversation-management.md`, `tool-output-compression.md`
+- **Handoffs**: `context-folding-progressive.md`, `completed/orchestrator-conversation-management.md`, `tool-output-compression.md`
 - **Search terms**: context compaction, session compaction, context folding, prompt cache boundary, HISTORY_SNIP, CONTEXT_COLLAPSE, micro-compaction, token compression, tool output filtering, RTK, segment dedup, helpfulness scoring, free-zone threshold, role-aware compaction, AgentOCR, Skill0, ICRL, optical self-compression
 
 ### inference_serving
@@ -62,7 +70,7 @@ Maps taxonomy categories to specific files and search terms for cross-referencin
 
 ### hardware_optimization
 - **Chapters**: (none)
-- **Handoffs**: `tree-speculation-numa-drafting.md`
+- **Handoffs**: `completed/tree-speculation-numa-drafting.md`
 - **Search terms**: NUMA, GPU kernel, flash attention, operator fusion, CUDA graph, Neural Engine, ANE
 
 ### ssm_hybrid
@@ -77,7 +85,7 @@ Maps taxonomy categories to specific files and search terms for cross-referencin
 
 ### training_distillation
 - **Chapters**: (none)
-- **Handoffs**: `08-doc-to-lora-prototype.md`
+- **Handoffs**: `completed/08-doc-to-lora-prototype.md`
 - **Search terms**: distillation, LoRA, fine-tuning, RLHF, DPO
 
 ### autonomous_research
@@ -92,17 +100,17 @@ Maps taxonomy categories to specific files and search terms for cross-referencin
 
 ### memory_augmented
 - **Chapters**: (none)
-- **Handoffs**: `orchestrator-conversation-management.md` (B1: User Modeling)
+- **Handoffs**: `completed/orchestrator-conversation-management.md` (B1: User Modeling)
 - **Search terms**: episodic memory, working memory, external memory, memory-augmented, user modeling
 
 ### knowledge_management
 - **Chapters**: (none)
-- **Handoffs**: `knowledge-base-governance-improvements.md`, `context-folding-progressive.md`
+- **Handoffs**: `completed/knowledge-base-governance-improvements.md`, `context-folding-progressive.md`
 - **Search terms**: knowledge base, LLM wiki, persistent compilation, knowledge hygiene, linting, cross-referencing, intake index, governance
 
 ### rag_alternatives
 - **Chapters**: (none)
-- **Handoffs**: `knowledge-base-governance-improvements.md`
+- **Handoffs**: `completed/knowledge-base-governance-improvements.md`
 - **Search terms**: RAG alternative, compilation vs retrieval, persistent wiki, structured synthesis, LLM-maintained wiki
 
 ### tool_implementation
@@ -112,12 +120,12 @@ Maps taxonomy categories to specific files and search terms for cross-referencin
 
 ### local_inference
 - **Chapters**: (none)
-- **Handoffs**: `dynamic-stack-concurrency.md`, `kv-cache-quantization.md`
+- **Handoffs**: `dynamic-stack-concurrency.md`, `completed/kv-cache-quantization.md`
 - **Search terms**: GGUF, llama.cpp, node-llama-cpp, local inference, on-device, local model serving
 
 ### search_retrieval
 - **Chapters**: (none)
-- **Handoffs**: `colbert-reranker-web-research.md`, `knowledge-base-governance-improvements.md`
+- **Handoffs**: `colbert-reranker-web-research.md`, `completed/knowledge-base-governance-improvements.md`
 - **Search terms**: BM25, vector search, hybrid search, re-ranking, RRF, retrieval pipeline, semantic search, qmd
 
 ### document_processing

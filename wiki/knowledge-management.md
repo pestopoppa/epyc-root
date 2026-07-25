@@ -307,3 +307,47 @@ blog index; one where the sweep queried the benchmark's site rather than the pub
 
 _Sources: `handoffs/active/intake-derived-work-2026-07-25.md` ID-10/10b/10c;
 `research/intake_index.yaml` (dive_corrections fields); `progress/2026-07/2026-07-25.md`._
+
+
+## Research-intake protocol: four stages, and why (2026-07-25)
+
+The intake pipeline was rewritten from two stages to four after a session in which the two-stage
+design failed in three distinct ways at once. The structure is worth recording because each stage
+boundary exists to stop a specific observed failure.
+
+| Stage | Mode | May write |
+|---|---|---|
+| 1 sweep/dedup/expand/recommend | auto | intake index (`stage1-unverified`) + session file |
+| 2 deep dives on operator-selected intakes | auto | verification/correction fields on entries |
+| 3 audit → action plan | **plan mode** | the plan file only |
+| 4 implement | auto | what the approved plan names |
+
+**Comments during stages 1–3 are context, not authorization.** They are appended verbatim to a
+steering ledger and folded into the Stage-3 plan — they never license an immediate handoff write,
+*even when they appear to grant permission*. Approval of **scope** is not a waiver of the **review
+gate**. Stage 3 cannot present a plan until every ledger row is a plan item or an explicit decline.
+
+**Summariser output is provisional until a dive reads primary source.** Entries persist as
+`stage1-unverified`; only a Stage-2 dive promotes them. No number, metric or named mechanism from an
+unverified entry may be quoted in plan text or a handoff task. This exists because two Stage-1 agents
+*invented* specifics that were persisted and read as evidence — a paper ablation whose figures appear
+nowhere in the paper (and which was additionally cross-pasted into an unrelated entry), and a
+four-step tool behaviour absent from a source containing two generic sentences.
+
+**Three lookup failure modes now guarded explicitly**, each having produced a wrong conclusion:
+
+1. **Truncated dedup** — a `head`-limited grep missed a real URL collision ~10,000 lines further down.
+   The sweep must run unbounded.
+2. **Companion-artifact conflation** — a repo/weights/dataset page is a *distinct artifact*, not a
+   duplicate of its paper. `duplicate` requires an exact `arxiv_id`/`url` collision; "the paper
+   mentions this repo" is not one. 19 entries were mis-filed this way.
+3. **Stale path lookup** — a category→file map listed 10 handoffs under `active/` after they were
+   archived. Treating a failed `active/` lookup as "no prior coverage" is how an intake wrongly
+   concludes a technique is novel. Always search `active/` **and** `completed/`.
+
+**Verdict taxonomy**: `not_applicable` asserts *out of scope* and demands the most justification of
+any verdict. In-domain, self-hostable, but out-competed is **`superseded`** — and the successor must
+be named, because an unexplained `superseded` is unfalsifiable.
+
+_Sources: `.claude/skills/research-intake/SKILL.md`; `references/intake-schema.md` § Verification
+lifecycle; `references/session-persistence.md` § Steering ledger; `progress/2026-07/2026-07-25.md`._
