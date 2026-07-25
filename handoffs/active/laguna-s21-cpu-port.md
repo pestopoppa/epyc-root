@@ -33,7 +33,7 @@ Port the **Laguna** architecture (poolside/Laguna-S-2.1: 118B-total / 8B-active 
 ## Tasks
 
 - [x] Forward-port base Laguna arch (merged PR #25165 commits, ~350 LOC: `src/models/laguna.cpp` +332, `models.h`, 1-3-line touches to `llama-arch`/`llama-model`/`llama-vocab`, `conversion/laguna.py` +207) onto a FRESH-pulled `llama.cpp-experimental` off `production-consolidated-v7`; validate S-2.1 Q4_K_M loads + coherence/garbage smoke ✅ 2026-07-25 — landed as `afa770382` on `experimental-v8-refresh-20260724` (superset: includes the DFlash spec path NOT in the PR). Required CPU Q4 evidence is at `epyc-inference-research/data/kernel-v8-candidate/laguna-cpu-dflash-exact-tip/run-20260725T112845Z-67a433bf4-noswap/` (nested `run-20260725T113030Z`): base median `7.078103` t/s, DFlash median `8.028143` t/s, but acceptance `17.2267%` fails the lineup floor. Final hardened GPU IQ2 artifact `epyc-inference-research/data/gpu-mi210/laguna-iq2-kv-sweep-exact-tip/run-20260725T125201Z` is post-identity, `15/15`, and observation-only: A q8/FA-on `33.992845`, B f16/FA-on `35.490117`, C f16/FA-off `33.782293`; B/A `+4.404668%`. `test-llama-archs`/`test-chat-auto-parser` pass in ctest; 2026-07-25 audit verified graph idioms match sibling archs (NEOX rope group, Qwen3-style QK-RMSNorm, per-layer YaRN/plain-RoPE split sound, softplus gate width-checked on both target and drafter sides)
-- [ ] Confirm the PR-author-flagged "GQA head-ratio backend dispatch" bug does not hit the CPU build (PR touches no `ggml/` files; per-layer `n_head` handled at graph level → likely CUDA-only)
+- [x] Confirm the PR-author-flagged "GQA head-ratio backend dispatch" bug does not hit the CPU build ✅ 2026-07-25 — exact-tip CPU Q4 evidence completed all `5/5` base and `5/5` DFlash replicates on the real S.2 model at `data/kernel-v8-candidate/laguna-cpu-dflash-exact-tip/run-20260725T112845Z-67a433bf4-noswap/` (nested `run-20260725T113030Z`; `q4_k_m_base`/`q4_k_m_dflash` both `status=complete`). Source audit confirms `laguna.cpp` reads per-layer `n_head` (`48` full / `72` SWA) with `n_head_kv=8` and passes both values to the shared `build_qkv` graph; `afa770382` changes no `ggml/` backend code. This closes the target CPU concern with real-model execution evidence, not a claim about every hypothetical Laguna variant.
 
 ---
 
@@ -73,12 +73,14 @@ q8_0 model arithmetic error. Remaining items:
   next field check (`non-numeric replicate prompt_tps`) instead of reporting the semantic
   error. Make summarize() status-first: surface `primary_error` before schema-completeness
   checks.
-- [ ] **L-5 (model finding, investigate before more prompt surgery) — the q8_0 base
+- [x] **L-5 (model finding, investigate before more prompt surgery) — the q8_0 base
   deterministic arithmetic miss.** Sum 361≠311 with the correct prime list, plausibly induced
   by the `e2ea1df7` prompt constraints (≤2-sentence rationale, no enumeration → no shown
   arithmetic). Decide: relax the no-enumeration cap for the CPU lane, or accept and rerun with
   a different seed sweep — but do NOT paper over it with a validator relaxation; it is exactly
-  the class of failure the harness exists to catch.
+  the class of failure the harness exists to catch. ✅ 2026-07-25 — disposition is to preserve
+  the deterministic miss and strict validator, with no prompt/seed surgery. The operator scoped
+  Laguna promotion evidence to Q4 on CPU and IQ2 on GPU; Q8 remains characterization only.
 - [x] **L-6 (gate design) — add an acceptance/net-speed floor before any production DFlash
   enablement.** ✅ 2026-07-25 — gate implemented in `733c2cee`/`2bbd4109`; current DFlash result is FAIL/no-go, not an enablement. Measured: GPU IQ2 acceptance 21.6% pooled — dflash is +35% on primes but
   **−28%/−37% on the other two prompts**; CPU acceptance 17.2% (q4) / 19.0% (q8). This is
@@ -87,10 +89,11 @@ q8_0 model arithmetic error. Remaining items:
   decode ratios and fails closed unless pooled acceptance is at least 60% with no prompt-class
   net-negative. Q4 CPU improved aggregate decode by 13.42% but its 17.23% acceptance still
   fails; IQ2-target GPU remains a NO by the March precedent's own logic.
-- [ ] **L-7 (minor) — tighten the normalize prompt.** `bed4a1d4` states "JSON `sum` … must be
-  1.0" in the prompt, so the validator's `sum==1.0` check no longer tests computation (the
-  normalized values 0/0.2/0.3/0.5 are still computed+checked). Reword so the gated value is
-  not disclosed, or drop that sub-check from the gate accounting.
+- [x] **L-7 (minor) — tighten the normalize prompt.** ✅ 2026-07-25 — research commit
+  `daa4c926` removes the disclosed `must be 1.0` answer while retaining the independent exact
+  normalized-vector and computed-sum validator; focused Laguna runner tests pass. Before the
+  repair, `bed4a1d4` disclosed "JSON `sum` … must be 1.0", so that sub-check did not test
+  computation even though the normalized values 0/0.2/0.3/0.5 remained independently checked.
 - [ ] **L-8 (hygiene) — promote the ad-hoc GPU smoke artifact to a script.** The
   `epyc.laguna_iq2_dflash_candidate_smoke.final_postrepair.v1` summary schema is written by
   no script under `scripts/` — bespoke one-off, honestly labeled non-gating, but
