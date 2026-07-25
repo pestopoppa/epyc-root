@@ -665,3 +665,36 @@ guard, and the dashboard. The manifest is honest for the first time (realized mo
 servers), verified end-to-end. Deploy discipline: SIGSTOP the eval runner before any API reload
 (no client reconnect backoff — two burned-arm incidents), and implementation subagents carry
 zero process-management authority (a prose ban failed; 532 questions paid for the lesson).
+
+
+## Cold-fleet mode inference in the stack-change gate (2026-07-25)
+
+**Why a cold start cannot be gate-green, and why that is correct.**
+
+The stack-change guard builds its launch view by resolving NUMA mode as
+*realized-fleet → `ORCHESTRATOR_STACK_NUMA_MODE` → default `full`*. On a fully-cold host
+there is no realized signal and a clean shell has no env, so the view is built for `full`
+while the registry documents the live lineup — producing wholesale mismatch errors (37 in the
+2026-07-25 instance; the same family as an earlier 105-error class for live fleets). A CLI
+`--numa-mode` flag existed but was **never consulted by the guard**; it is now threaded into
+the gate subprocess env (precedence unchanged: realized > CLI > env > default), which took
+that instance from 37 errors to 1.
+
+**The residual 1 is by design, and the distinction is subtle enough to be worth recording.**
+`_check_stack_priors` sets `require_realized_mode=True` **not** for write-safety but for
+*comparison validity* — so a clean-shell check computes the same lineup an update would write
+and cannot report quarters-only priors as "stale" against a full expected. Kill-chain-A4
+write protection lives only on the *update* path. The refusal is the fail-closed alternative
+to a comparison the tool cannot trust.
+
+**Do not "fix" this by trusting an explicit mode on a dead fleet.** That carve-out is
+explicitly encoded as prohibited in `tests/unit/test_stack_priors_compiler.py`:
+*"An explicit env does NOT rescue a no-signal probe (unverifiable fleet)."* Changing it means
+changing a test that is the specification, with the owning surface's sign-off.
+
+**Consequence**: the documented cold-start recipe (dry-run to verify the priors refusal is the
+*only* residual, bring up with the gate skipped, then run the pipeline update immediately once
+the fleet is realized and the mode is derivable) is the **sanctioned** path, not a workaround.
+
+_Sources: `handoffs/active/esc8-stack-restart-landmine-audit-2026-07-22.md` § 2026-07-25;
+`epyc-orchestrator ed6288ea`._

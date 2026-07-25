@@ -23,6 +23,15 @@ In any **plain-import** process with the same env (verified in the repo venv):
 `get_config().server_urls` → frontdoor `:8070`, worker_general `:8072`, ingest `:8085`,
 worker_fast `:8102` — **all dead**.
 
+> **Archival status (reviewed 2026-07-25 wrap-up): KEPT ACTIVE despite 0 open checkboxes.**
+> All 12 items are complete, but this file is the **sole canonical home of the sanctioned
+> cold-start recipe** (§ 2026-07-25) and is referenced by four active handoffs
+> (`master-handoff-index.md`, `autopilot-continuous-optimization.md`,
+> `within-role-placement-state-machine.md`, `intake-derived-work-2026-07-25.md`). Moving it to
+> `completed/` would relocate live operational guidance out of `active/`, which the compaction
+> safety check forbids. Re-evaluate for archival only once the cold-start procedure has a home
+> elsewhere.
+
 # Standing operator warnings (until the package deploys)
 
 - ⚠️ **Do NOT run `scripts/registry/stack_change_pipeline.py update` from a clean shell** (kill
@@ -156,7 +165,7 @@ _Provenance: surfaced while validating the GEPA proposer fix (see [`intake-deriv
 
 - [x] **Fix landed 2026-07-25**: `scripts/server/stack_commands.py` `_run_stack_change_launch_gate` now threads an EXPLICIT `--numa-mode` into the gate subprocess env (precedence preserved: realized > CLI > env > default; omitted flag unchanged). Validated: identical cold dry-run went **37 errors → 1** with the CLI flag alone; `tests/unit/test_orchestrator_stack_reload.py` 38/38 green. ✅ 2026-07-25
 - [x] **Residual 1 error root-caused as BY DESIGN**: `_realized_compile_numa_mode` (src/registry/stack_priors.py) raises `StackPriorsModeError` whenever no realized signal exists — **even with env explicitly set** (its decision table only consults env when a fleet is listening). That is Fix 6 / kill-chain-A4 protection, so a gate-green cold start is currently impossible by construction. The `stack_paths`/`stack_manifest` circular-import warnings in gate output are the documented benign-by-accident landmine, NOT the cause. ✅ 2026-07-25
-- [ ] **Cold-start recipe (until the design question below is settled)** — verified sequence:
+- [x] **Cold-start recipe — SANCTIONED PATH (not a stopgap).** ✅ 2026-07-25 — written and verified (the dry-run confirms the priors refusal is the sole residual; 36 other checks green). Retained below as standing reference guidance, not as outstanding work. The design question below resolved 2026-07-25 as already-decided-no, so this sequence is the permanent supported way to cold-start, not a workaround pending a fix. Verified sequence:
   1. Pre-verify: `start --numa-mode both --dry-run` → confirm the ONLY remaining gate error is the `stack_priors` dead-fleet refusal (36 other checks green).
   2. Bring up: `start --numa-mode both --skip-stack-change-gate` — justified ONLY for cold bring-up after step 1's verification (the pre-deploy "do not bypass" warning targeted the since-closed A2/A3 hazards; benchmarks and autopilot resumes must still never bypass).
   3. Immediately after fleet-up: `scripts/registry/stack_change_pipeline.py update` — realized mode is now derivable, priors compile succeeds, gate debt cleared.

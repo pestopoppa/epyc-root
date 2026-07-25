@@ -610,3 +610,45 @@ v6 fully supports **draft-model-free** speculative decoding (ngram / prompt-look
 **2026-07-04 update — the corpus-backed static-cache option is retired.** The one candidate source for a `--lookup-cache-static` build (the 651GB local code corpus) failed its prompt-injection clean-window A/B and was deleted with operator approval before any large static n-gram cache was built; the `build_static_ngram_cache.py` scaffold survives as code history only. The in-context ngram/prompt-lookup fallback described above is unaffected (it needs no corpus), but a corpus-derived static cache would now require recreating a corpus under a fresh handoff + protocol. See [corpus-augmented-prompt-lookup-revalidation.md](../handoffs/completed/corpus-augmented-prompt-lookup-revalidation.md).
 
 **Cross-references**: [`handoffs/active/v6-iqk-promotion.md`](../handoffs/active/v6-iqk-promotion.md) (cutover tracking + gate status) · [`handoffs/active/iqk-port.md`](../handoffs/active/iqk-port.md) (iqk kernel integration + MTP-composition A/B) · [`progress/2026-06/2026-06-26.md`](../progress/2026-06/2026-06-26.md) · the 2026-06-25 full-stack MTP sweep table near the top of this page (v6-candidate numbers, pre-deploy-gate).
+
+
+## DFlash: corrected mechanism and production status (2026-07-25)
+
+Two long-standing descriptions of DFlash in this repo were wrong, and both biased the
+reopen decision in the same direction — toward *not* revisiting it.
+
+**It is single-pass, not iterative denoising.** Multiple internal documents described the
+drafter as "iteratively denoising the block over T steps (typically T=8-16)". Verified from
+the published drafter weights: **there are no timestep tensors**; drafting is a single
+forward pass over a block of `mask_token_id` embeddings. The wrong model *overstates
+drafting cost* — precisely the term that decides whether the technique can pay for itself on
+bandwidth-bound CPU decode. One completed handoff carried both the wrong description near the
+top and a "CRITICAL CORRECTION" contradicting it further down; a second handoff's tree-builder
+rationale rested on harvesting candidates from "different denoising trajectories" that do not
+exist.
+
+**The Q4_K_M NO-GO is architecture-general, not SSM-specific.** Chapter 10 attributed it to
+"hybrid-SSM targets", but it was measured on **Qwen3-Coder-30B-A3B — a pure MoE with no
+recurrence**. The chapter's own authoritative rows say only "quantization noise in
+hidden-state extraction is the root cause" and never mention SSM.
+
+**The "no llama.cpp support" blocker is dead** (was true, then wasn't, for five weeks):
+upstream merged 2026-06-28 (PR #22105), forward-ported to production `ed4091266` (2026-07-18),
+`--spec-type draft-dflash` live on `production-consolidated-v7`, converted GGUF on disk since
+2026-07-03. The NO-GO on *acceptance economics* stands; the *availability* framing does not.
+
+**Drafter architecture** (settled, so it stops being re-derived): headless (no `embed_tokens`,
+no `lm_head`; 58 tensors), non-causal (`is_causal=False`), and **target-locked** —
+`fc.weight` is `[hidden, n_taps*hidden]`, so there is no generic drafter. Inert as
+`--model-draft`; live only under `-md` + `--spec-type draft-dflash` after conversion with
+`--target-model-dir`.
+
+**Published-speedup provenance** (so the headline numbers stop circulating unqualified):
+6.17x MATH-500 / 5.91x AIME24 / 5.85x AIME25 are **Qwen3-8B, greedy temp 0, hardware unstated,
+measured against naive autoregressive decode at concurrency 1** — a naive baseline, unusable
+against a stack whose incumbent is native MTP. Code and agentic suites are **2.27x-5.43x**,
+roughly half the headline.
+
+_Sources: `docs/chapters/10-advanced-speculative-decoding.md` (corrected `aa026750`);
+`handoffs/completed/dflash-block-diffusion-speculation.md`;
+`handoffs/active/intake-derived-work-2026-07-25.md` ID-28..ID-34._
