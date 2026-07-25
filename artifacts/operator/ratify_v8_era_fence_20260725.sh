@@ -69,7 +69,8 @@ INTERRUPTED_OUTPUT="$TXN_DIR/attestation.interrupted.json"
 OPERATOR_LOCK="$ROOT/artifacts/operator/.v8-era-fence.lock"
 AUTOPILOT_LOCK="$ORCH/orchestration/.autopilot.lock"
 STATE_LOCK="$STATE.lock"
-SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
+SCRIPT_REL=artifacts/operator/ratify_v8_era_fence_20260725.sh
+SCRIPT_PATH="$ROOT/$SCRIPT_REL"
 
 phase="preflight"
 transaction_active=0
@@ -894,7 +895,7 @@ main() {
         fail "partial or conflicting transaction exists; inspect --status and use --recover"
     fi
 
-    require_tracked_clean "$ROOT" "${SCRIPT_PATH#"$ROOT/"}"
+    require_tracked_clean "$ROOT" "$SCRIPT_REL"
     validate_production
     validate_evidence
     require_orchestrator_clean
