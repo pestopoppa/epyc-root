@@ -13,7 +13,7 @@ E8_RECEIPT="$ROOT/artifacts/operator/ratify_e8_autopilot_quality_fence_20260726.
 E8_RECEIPT_SHA256="313a8129336ec4ad6149bfb04541cb5a2bacd79568e0ce06efdba9718b43437c"
 # This is the reviewed recovery fix. The subsequent rearm receipt makes this
 # immutable launch authority rather than trusting whatever happens to be HEAD.
-REVIEWED_ORCHESTRATOR_HEAD="fdc0aeb9d3ef5940ff5ee7a556d2f41736317431"
+REVIEWED_ORCHESTRATOR_HEAD="f3ba7e9d13891de368db0e3100d2357d18122aee"
 SCRIPT_REL="artifacts/operator/ratify_e8_empty_frontier_bootstrap_20260726.sh"
 TOKEN="RATIFY-E8-EMPTY-FRONTIER-BOOTSTRAP"
 OUTPUT="$ROOT/artifacts/operator/ratify_e8_empty_frontier_bootstrap_20260726.json"
@@ -101,7 +101,9 @@ state["_allow_empty_frontier_rebase"] = True
 state["e8_empty_frontier_bootstrap"] = {
     "status": "active",
     "reason": "E8 current-era replay intentionally empty; permit fresh frontier bootstrap",
-    "required_clear_condition": "ParetoArchive admits at least one current-era point",
+    "required_clear_condition": (
+        "next AutoPilot startup observes at least one current-era Pareto point"
+    ),
 }
 tmp = path.with_suffix(path.suffix + ".e8-empty-frontier.tmp")
 tmp.write_text(json.dumps(state, indent=2, sort_keys=True) + "\n")
@@ -140,14 +142,20 @@ actual_head = __import__("subprocess").check_output(
 ).strip()
 if actual_head != reviewed_head:
     raise SystemExit("orchestrator HEAD changed while writing bootstrap receipt")
+state_payload = json.loads(state.read_text())
 payload = {
     "schema": "epyc.operator_e8_empty_frontier_bootstrap.v1",
     "decision": "RATIFY-E8-EMPTY-FRONTIER-BOOTSTRAP",
     "ratified_at": datetime.now(timezone.utc).isoformat(),
     "parent_e8_quality_fence_sha256": __import__("hashlib").sha256(receipt.read_bytes()).hexdigest(),
     "reviewed_orchestrator_head": reviewed_head,
-    "state_delta": {"_allow_empty_frontier_rebase": True},
-    "clear_condition": "ParetoArchive admits at least one current-era point",
+    "state_delta": {
+        "_allow_empty_frontier_rebase": state_payload["_allow_empty_frontier_rebase"],
+        "e8_empty_frontier_bootstrap": state_payload["e8_empty_frontier_bootstrap"],
+    },
+    "clear_condition": (
+        "next AutoPilot startup observes at least one current-era Pareto point"
+    ),
     "sha256": {
         "autopilot_state": __import__("hashlib").sha256(state.read_bytes()).hexdigest(),
         "instrument_eras": __import__("hashlib").sha256(eras.read_bytes()).hexdigest(),
@@ -182,7 +190,7 @@ E8 empty-frontier bootstrap transaction plan
 - require zero completed E8 numeric trials and an empty E8-only journal replay
 - atomically set _allow_empty_frontier_rebase=true
 - leave all era, quality, baseline, and frontier-rerun values unchanged
-- clear automatically only after ParetoArchive admits a current-era point
+- retire the bypass at the next AutoPilot startup after a current-era Pareto point exists
 EOF
 }
 

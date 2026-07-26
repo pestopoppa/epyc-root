@@ -13,7 +13,7 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "artifacts/operator/ratify_e8_empty_frontier_bootstrap_20260726.sh"
 ORCH_SOURCE = Path("/mnt/raid0/llm/epyc-orchestrator")
-REVIEWED_ORCHESTRATOR_HEAD = "fdc0aeb9d3ef5940ff5ee7a556d2f41736317431"
+REVIEWED_ORCHESTRATOR_HEAD = "f3ba7e9d13891de368db0e3100d2357d18122aee"
 
 
 def _run(command: list[str], *, cwd: Path) -> None:
@@ -169,7 +169,16 @@ def test_bootstrap_attestation_changes_only_the_durable_rebase_posture(tmp_path:
         (root / "artifacts/operator/ratify_e8_empty_frontier_bootstrap_20260726.json").read_text()
     )
     assert receipt["reviewed_orchestrator_head"] == REVIEWED_ORCHESTRATOR_HEAD
-    assert receipt["state_delta"] == {"_allow_empty_frontier_rebase": True}
+    assert receipt["state_delta"] == {
+        "_allow_empty_frontier_rebase": True,
+        "e8_empty_frontier_bootstrap": {
+            "status": "active",
+            "reason": "E8 current-era replay intentionally empty; permit fresh frontier bootstrap",
+            "required_clear_condition": (
+                "next AutoPilot startup observes at least one current-era Pareto point"
+            ),
+        },
+    }
 
     repeat = _attest(root, env)
     assert repeat.returncode != 0
