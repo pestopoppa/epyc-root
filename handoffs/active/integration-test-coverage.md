@@ -2,11 +2,19 @@
 
 **Status**: COMPACTED 2026-05-28 - active coverage backlog only; Phases 1-4 are preserved in the completed ledger.
 **Created**: 2026-04-13
-**Updated**: 2026-05-28
+**Updated**: 2026-07-26
 **Priority**: MEDIUM
 **Primary repo**: `/mnt/raid0/llm/epyc-orchestrator`
 **Parent index**: [master-handoff-index.md](master-handoff-index.md)
 **Completed ledger**: [integration-test-coverage-phases-1-4-completed-through-2026-05-28.md](../completed/integration-test-coverage-phases-1-4-completed-through-2026-05-28.md)
+
+## 2026-07-26 Staleness Review
+
+This remains an active, risk-triggered backlog. The
+[research and evaluation index](research-evaluation-index.md) still routes
+narrow integration-test slices here, but no new production-risk slice was
+selected by this documentation review. Keep the queue focused and do not turn
+freshness maintenance into blanket coverage work.
 
 ## Executor Start Here
 

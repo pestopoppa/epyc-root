@@ -2,11 +2,18 @@
 
 **Status**: COMPACTED 2026-05-28 - Expected Attention deployed; active only for S8 autopilot profiles and S9 auto-trigger.
 **Created**: 2026-04-08
-**Updated**: 2026-05-28
+**Updated**: 2026-07-26
 **Priority**: MEDIUM
 **Categories**: kv_cache, inference_serving, memory_bandwidth
 **Parent index**: [inference-acceleration-index.md](inference-acceleration-index.md)
 **Completed ledger**: [triattention-kv-selection-deployment-completed-through-2026-05-28.md](../completed/triattention-kv-selection-deployment-completed-through-2026-05-28.md)
+
+## 2026-07-26 Staleness Review
+
+S8 remains explicitly scheduled in the
+[bulk-inference campaign](bulk-inference-campaign.md), and S9/S3 remain
+dependent on S8 evidence. No profile sweep or auto-trigger decision was
+completed by this review, so all open task states remain unchanged.
 
 ## Executor Start Here
 

@@ -2,12 +2,19 @@
 
 **Status**: COMPACTED 2026-05-28 - v1 Ring-mini port complete; active only for production-suitability decisions.
 **Created**: 2026-04-29
-**Updated**: 2026-05-28
+**Updated**: 2026-07-26
 **Priority**: MEDIUM
 **Categories**: ssm_hybrid, context_extension, kv_cache, training_distillation, inference_serving
 **Workstream**: Inference Acceleration + CPU Engineering
 **Parent index**: [inference-acceleration-index.md](inference-acceleration-index.md)
 **Completed ledger**: [lightning-attention-port-v1-completed-through-2026-05-28.md](../completed/lightning-attention-port-v1-completed-through-2026-05-28.md)
+
+## 2026-07-26 Staleness Review
+
+The [design-backlog triage](design-backlog-triage-2026-07-23.md) preserves the
+dedicated-op path as profile-gated and leaves the production-role decision
+open. No new role or profile evidence was produced by this review, so LQ-1
+through LQ-4 remain correctly gated.
 
 ## Executor Start Here
 

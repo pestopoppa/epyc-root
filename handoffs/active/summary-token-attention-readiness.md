@@ -2,7 +2,7 @@
 
 **Status**: REFRESHED 2026-05-28 — monitoring-only readiness tracker; no implementation until a gate fires
 **Created**: 2026-04-29 (via research-intake of intake-502 KSA + intake-507 GSA)
-**Updated**: 2026-05-28 (activation evidence and no-code rules clarified)
+**Updated**: 2026-07-26 (activation gates reviewed; no gate fired)
 **Categories**: kv_cache, context_extension, context_management, ssm_hybrid, training_distillation
 **Workstream**: Inference Acceleration
 **Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
@@ -12,6 +12,13 @@
 - [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) — related but RETROFIT (post-hoc), not architectural CPT
 - [`triattention-kv-selection.md`](triattention-kv-selection.md) — also RETROFIT KV selection
 - [`lightning-attention-port.md`](lightning-attention-port.md) — sibling architectural-port handoff (different mechanism family)
+
+## 2026-07-26 Staleness Review
+
+The [design-backlog triage](design-backlog-triage-2026-07-23.md) still records
+no satisfied checkpoint, upstream-inference, or training-capacity activation
+gate for this cluster. Keep the tracker monitoring-only and open a separate
+implementation handoff only when one of the OR-gates below has evidence.
 
 ## 2026-05-28 Audit Reset — Executor Start Here
 
@@ -120,7 +127,8 @@ Extend `convert_hf_to_gguf.py` with appropriate architecture detection + tensor 
 
 ### Phase 4 — Integration (~1 week)
 
-- Cherry-pick into `production-consolidated-v3` if production-viable
+- Start from the current frozen production tip in `llama.cpp-experimental`;
+  promote a validated candidate as a new production version
 - Update model_registry.yaml with the new architecture
 - Add to orchestrator stack management
 

@@ -2,9 +2,16 @@
 
 **Status**: REFRESHED 2026-05-28 — monitoring-only readiness tracker; blocked on pretrained checkpoint + inference reference + architecture docs
 **Created**: 2026-04-14 (via research intake deep dive)
-**Updated**: 2026-05-28 (activation forks and no-code monitoring rules clarified)
+**Updated**: 2026-07-26 (activation gates reviewed; no gate fired)
 **Categories**: ssm_hybrid, context_extension, inference_serving
 **Priority**: HIGH (strategic) — activates when gate criteria met
+
+## 2026-07-26 Staleness Review
+
+The [design-backlog triage](design-backlog-triage-2026-07-23.md) still
+classifies the public path as training-only and requires both a pretrained
+checkpoint and an inference reference. Neither implementation gate is recorded
+as satisfied, so this remains monitoring-only.
 
 ## 2026-05-28 Audit Reset — Executor Start Here
 

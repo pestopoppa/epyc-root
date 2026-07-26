@@ -4,7 +4,15 @@
 **Priority**: MEDIUM as a guarded reopen target; not an active production rollout.
 **Parent index**: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md)
 **Completed ledger**: [`../completed/large-moe-expert-parallelism-completed-through-2026-05-28.md`](../completed/large-moe-expert-parallelism-completed-through-2026-05-28.md)
-**Updated**: 2026-05-28
+**Updated**: 2026-07-26
+
+## 2026-07-26 Staleness Review
+
+The [CPU optimization index](cpu-inference-optimization-index.md) still treats
+evaluation batching as a possible reason to re-evaluate expert parallelism,
+not as authorization to deploy it. No fresh CPU20 canonical EP matrix is
+recorded, so the EP flags remain default-off and CPU15-REVAL remains the
+binding reopen gate.
 
 ## Start Here
 

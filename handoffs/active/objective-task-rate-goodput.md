@@ -2,9 +2,18 @@
 
 **Status**: HOLD/SHADOW — W1-W2 + W4 landed 2026-06-12; W3 live vector flip held by 2026-06-13 policy decision; replay reports fold supersession events as of `d21bbee` and include baseline-promotion evidence as of `47c75de`
 **Created**: 2026-06-12
+**Updated**: 2026-07-26
 **Priority**: GATED — N6 policy decision closed 2026-06-13; W3 reopens only after the evidence-plane and quality-eligibility gates below
 **Spec**: [fable5-findings-05-objective-design.md](../completed/fable5-findings-05-objective-design.md) — read before claiming any waypoint. Slots into [fable5-findings-01-impl-plan.md](../completed/fable5-findings-01-impl-plan.md) as Phase 1.6.
 **Related**: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (noise/admission rules the new axis inherits), [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) (live consumer), [MEASUREMENT.md](../../MEASUREMENT.md) §P-SPEED-OBJ (already names task_rate as the speed axis) + §5 era table (E3→E4 retire-view)
+
+## 2026-07-26 Staleness Review
+
+The era prerequisite has advanced, but the
+[design-backlog triage](design-backlog-triage-2026-07-23.md) still requires a
+fresh quality-eligible replay: the previous task-rate frontier admitted
+quality-floor violations. W3 therefore remains a narrowly gated replay and
+policy decision, not a live-vector flip.
 
 ## Why
 

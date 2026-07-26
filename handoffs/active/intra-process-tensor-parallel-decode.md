@@ -2,11 +2,18 @@
 
 **Status**: COMPACTED 2026-05-28 - reference + revalidation-gated only; no CPU1 work without a new workload/topology trigger.
 **Created**: 2026-04-23
-**Updated**: 2026-05-28
+**Updated**: 2026-07-26
 **Priority**: MEDIUM when dormant; HIGH only after the reopen checklist passes
 **Categories**: hardware_optimization, inference_serving, local_inference
 **Parent index**: [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md), [inference-acceleration-index.md](inference-acceleration-index.md)
 **Completed ledger**: [intra-process-tensor-parallel-decode-completed-through-2026-05-28.md](../completed/intra-process-tensor-parallel-decode-completed-through-2026-05-28.md)
+
+## 2026-07-26 Staleness Review
+
+No topology or workload trigger has been established since compaction. The
+[inference-acceleration index](inference-acceleration-index.md) still makes
+fresh topology/workload proof a prerequisite, so this handoff remains a
+dormant reopen gate rather than an implementation queue.
 
 ## Executor Start Here
 
