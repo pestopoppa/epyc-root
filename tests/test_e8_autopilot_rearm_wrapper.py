@@ -23,7 +23,17 @@ declare -A alive=([111]=1 [222]=1)
 process_alive() {{ [[ "${{alive[$1]:-0}}" == 1 ]]; }}
 kill() {{
     printf '%s %s\\n' "$1" "$2" >>"{log}"
+    if [[ "$1" == -TERM && "$2" == 111 && "${{alive[222]:-0}}" == 1 ]]; then alive[333]=1; fi
     if [[ "$1" == -KILL ]]; then alive[$2]=0; fi
+}}
+pgrep() {{
+    case "${{@: -1}}" in
+        *supervisor*) [[ "${{alive[222]:-0}}" == 1 ]] && printf '222\\n' ;;
+        *autopilot.py*)
+            [[ "${{alive[111]:-0}}" == 1 ]] && printf '111\\n'
+            [[ "${{alive[333]:-0}}" == 1 ]] && printf '333\\n'
+            ;;
+    esac
 }}
 sleep() {{ :; }}
 cleanup_after_failed_start
@@ -33,8 +43,8 @@ cleanup_after_failed_start
 
     assert result.returncode == 0, result.stderr
     assert log.read_text().splitlines() == [
-        "-TERM 111",
-        "-KILL 111",
         "-TERM 222",
         "-KILL 222",
+        "-TERM 111",
+        "-KILL 111",
     ]

@@ -112,6 +112,15 @@ terminate_pid() {
     ! process_alive "$pid"
 }
 
+terminate_matching_processes() {
+    local pattern="$1" pid
+    local -a pids=()
+    mapfile -t pids < <(pgrep -f "$pattern" || true)
+    for pid in "${pids[@]}"; do
+        terminate_pid "$pid" || printf 'ERROR: PID %s remained live after SIGKILL.\n' "$pid" >&2
+    done
+}
+
 cleanup_after_failed_start() {
     local status=$? discovered_child discovered_supervisor
     trap - EXIT
@@ -120,9 +129,13 @@ cleanup_after_failed_start() {
         discovered_supervisor="$supervisor_pid"
         [[ -n "$discovered_child" ]] || discovered_child="$(pgrep -f '[s]cripts/autopilot/autopilot.py start' | head -n 1 || true)"
         [[ -n "$discovered_supervisor" ]] || discovered_supervisor="$(pgrep -f '[s]cripts/autopilot/autopilot_supervisor.py' | head -n 1 || true)"
-        printf 'E8 AutoPilot launch verification failed; terminating child=%s supervisor=%s.\n' "$discovered_child" "$discovered_supervisor" >&2
-        terminate_pid "$discovered_child" || printf 'ERROR: child PID %s remained live after SIGKILL.\n' "$discovered_child" >&2
+        printf 'E8 AutoPilot launch verification failed; terminating supervisor=%s child=%s.\n' "$discovered_supervisor" "$discovered_child" >&2
         terminate_pid "$discovered_supervisor" || printf 'ERROR: supervisor PID %s remained live after SIGKILL.\n' "$discovered_supervisor" >&2
+        terminate_matching_processes '[s]cripts/autopilot/autopilot_supervisor.py'
+        terminate_pid "$discovered_child" || printf 'ERROR: child PID %s remained live after SIGKILL.\n' "$discovered_child" >&2
+        terminate_matching_processes '[s]cripts/autopilot/autopilot.py start'
+        ! pgrep -f '[s]cripts/autopilot/autopilot_supervisor.py' >/dev/null || fail 'AutoPilot supervisor remained live after cleanup'
+        ! pgrep -f '[s]cripts/autopilot/autopilot.py start' >/dev/null || fail 'AutoPilot child remained live after cleanup'
     fi
     exit "$status"
 }
