@@ -51,8 +51,13 @@ validate_attestation() {
     current_orchestrator_head="$(git -C "$ORCH" rev-parse HEAD)"
     [[ "$current_orchestrator_head" == "$attested_orchestrator_head" ]] ||
         fail "orchestrator HEAD $current_orchestrator_head does not match attested $attested_orchestrator_head"
-    git -C "$ORCH" diff --quiet || fail 'orchestrator tree has tracked modifications'
-    git -C "$ORCH" diff --cached --quiet || fail 'orchestrator index has staged modifications'
+    # The human transaction intentionally appends the attested E8 registry row
+    # without committing it. Its exact current hash was checked above; every
+    # other tracked orchestrator path must remain clean before launch.
+    git -C "$ORCH" diff --quiet -- . ':(exclude)orchestration/instrument_eras.yaml' ||
+        fail 'orchestrator tree has tracked modifications outside the attested era registry'
+    git -C "$ORCH" diff --cached --quiet -- . ':(exclude)orchestration/instrument_eras.yaml' ||
+        fail 'orchestrator index has staged modifications outside the attested era registry'
 }
 
 snapshot_prelaunch() {
