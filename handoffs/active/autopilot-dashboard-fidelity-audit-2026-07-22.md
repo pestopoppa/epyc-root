@@ -270,6 +270,23 @@ warm/explicit-only and not normally launched, so "expected down" slightly overst
   the live manifest still shows an empty lineup — verify separately.
 - [ ] **[C1 fix #3] One env / one SoT across the `--workers 6` pool** — process/launch
   concern (`scripts/server/*`), out of dashboard-file ownership.
+- [ ] **[E8-PANELS] Era-honest pareto/GEPA plots for E8 (operator-reported 2026-07-26: "current
+  era looks like garbage").** The E8 reseed's honest-instrument trials (q≈1.71–1.77) plot
+  against pre-E8 points measured on the laxer instrument (q≈1.85–2.04 plateau), inviting a
+  false regression read. The pareto panel's era machinery exists (`_autopilot_era_regions()`
+  `dashboard.py:2317`, applied `:4011`, default=current era) but was certified for E7 — verify
+  and fix three things: (a) era regions derive from the LIVE sources (`instrument_eras.yaml`
+  E8 rows appended 2026-07-26 + `pareto_epoch_ts=1785004723` = the E8 fence), not hardcoded
+  E7 boundaries — E8 trials must render as the current-era series with the boundary line
+  annotated at 2026-07-25T18:38:43Z; (b) the QUALITY axis gets era labeling too — C1 showed
+  only speed was era-fenced/de-inflated; pre-E7/E7/E8 quality points are different-instrument
+  numbers (41-suite pool + B7 scorer + extractor fixes ≈ −0.1..−0.3 q systematic) and must be
+  rendered as greyed "historical prior (era, instrument)" series, never one undifferentiated
+  scatter. Never rescale values — label eras (append-only constitution). (c) GEPA/optimizer
+  panel: hatch or grey the 2026-06-04→07-25 reflective-mutation NO-OP window (every reflection
+  raised pre-LM-call; optimizer provenance broken) or suppress the panel until ≥1 post-fix
+  GEPA trial exists; tooltip carries the provenance caveat. Panels stamp era + generated_at
+  per the freshness contract.
 - [ ] **[H1] Circuit-breaker / forced-role-fallback panel** — deferred (stretch).
 - [ ] **[H2] REL-1 eval error-rate surface** — deferred (stretch).
 - [ ] **[H3] Contention-panel per-worker provenance**, **[M1] region_locks held-set
