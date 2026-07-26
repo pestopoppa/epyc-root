@@ -50,6 +50,7 @@ validate_evidence() {
 import hashlib
 import json
 import math
+from datetime import datetime, timezone
 from pathlib import Path
 import sys
 
@@ -61,6 +62,17 @@ def fail(message: str) -> None:
 def finite_number(value: object, label: str) -> None:
     if not isinstance(value, (int, float)) or isinstance(value, bool) or not math.isfinite(value):
         fail(f"{label} must be finite")
+
+
+def post_boundary_timestamp(value: object, label: str) -> None:
+    if not isinstance(value, str) or not value:
+        fail(f"{label} must be a timestamp")
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        fail(f"{label} is not ISO-8601")
+    if parsed.tzinfo is None or parsed.astimezone(timezone.utc).timestamp() < 1785004723.0:
+        fail(f"{label} predates the E8 boundary")
 
 
 manifest_path = Path(sys.argv[1])
@@ -78,7 +90,8 @@ records = manifest["source_records"]
 if not isinstance(records, list) or len(records) != 2:
     fail("evidence manifest requires exactly two tier source records")
 seen_tiers: set[int] = set()
-record_keys = {"tier", "path", "sha256", "protocol_id", "core_id", "n", "timestamp", "era", "instrument"}
+record_keys = {"tier", "path", "sha256", "protocol_id", "core_id", "n", "timestamp", "era", "instrument", "quality"}
+source_by_tier: dict[str, dict] = {}
 for record in records:
     if not isinstance(record, dict) or set(record) != record_keys:
         fail("each source record must declare exactly the full-pool source contract")
@@ -88,16 +101,35 @@ for record in records:
     seen_tiers.add(tier)
     if record["instrument"] != "dedicated_full_pool_tier_baseline":
         fail("numeric-derived or non-full-pool source records are forbidden")
-    if record["era"] != "E8" or not all(isinstance(record[key], str) and record[key] for key in ("protocol_id", "core_id", "timestamp")):
+    if record["era"] != "E8" or not all(isinstance(record[key], str) and record[key] for key in ("protocol_id", "core_id")):
         fail("source record protocol/core/timestamp/era is incomplete")
+    post_boundary_timestamp(record["timestamp"], "source record timestamp")
     if not isinstance(record["n"], int) or record["n"] <= 0:
         fail("source record n must be a positive integer")
+    finite_number(record["quality"], "source record quality")
     source = Path(record["path"])
     if not source.is_file():
         fail(f"source artifact is missing: {source}")
     actual = hashlib.sha256(source.read_bytes()).hexdigest()
     if record["sha256"] != actual:
         fail(f"source artifact hash mismatch: {source}")
+    try:
+        summary = json.loads(source.read_text())
+    except json.JSONDecodeError as exc:
+        fail(f"source artifact is not JSON: {exc}")
+    required_summary = {"tier", "core_id", "n", "quality", "per_suite_quality", "per_suite_counts", "era", "decision_grade"}
+    if not isinstance(summary, dict) or set(summary) != required_summary:
+        fail("source summary must declare exactly tier/core/n/quality/per-suite/era/decision-grade fields")
+    if summary["decision_grade"] is not True:
+        fail("source summary is not decision-grade")
+    if (summary["tier"], summary["core_id"], summary["n"], summary["era"]) != (tier, record["core_id"], record["n"], "E8"):
+        fail("source summary does not match declared tier/core/n/era")
+    finite_number(summary["quality"], "source summary quality")
+    if summary["quality"] != record["quality"]:
+        fail("source summary quality does not match declared source quality")
+    if not isinstance(summary["per_suite_quality"], dict) or not isinstance(summary["per_suite_counts"], dict):
+        fail("source summary per-suite fields must be objects")
+    source_by_tier[str(tier)] = {"record": record, "summary": summary}
 if seen_tiers != {1, 2}:
     fail("source records must cover tiers 1 and 2")
 
@@ -112,19 +144,47 @@ if not isinstance(baseline, dict) or set(baseline) != allowed_baseline:
     fail("replacement baseline_state contains non-quality fields or is incomplete")
 if baseline["eval_quality_era"] != "E8":
     fail("replacement baseline must be stamped E8")
+if set(baseline["baselines_by_tier"] or {}) != {"1", "2"}:
+    fail("tier baselines must cover exactly tiers 1 and 2")
+for field in ("per_suite_quality_by_tier", "per_suite_counts_by_tier"):
+    if not isinstance(baseline[field], dict) or set(baseline[field]) != {"1", "2"}:
+        fail(f"{field} must cover exactly tiers 1 and 2")
+if set(replacement["quality_history_by_tier"] or {}) != {"1", "2"} or set(replacement["quality_history_provenance_by_tier"] or {}) != {"1", "2"}:
+    fail("quality history and MAD provenance must cover exactly tiers 1 and 2")
 for tier in ("1", "2"):
     finite_number((baseline["baselines_by_tier"] or {}).get(tier), f"tier {tier} baseline")
-    if not isinstance((replacement["quality_history_by_tier"] or {}).get(tier), list) or not replacement["quality_history_by_tier"][tier]:
-        fail(f"tier {tier} quality history is missing")
-    for index, value in enumerate(replacement["quality_history_by_tier"][tier]):
+    summary = source_by_tier[tier]["summary"]
+    record = source_by_tier[tier]["record"]
+    if baseline["baselines_by_tier"][tier] != record["quality"]:
+        fail(f"tier {tier} baseline does not match source quality")
+    if baseline["per_suite_quality_by_tier"][tier] != summary["per_suite_quality"] or baseline["per_suite_counts_by_tier"][tier] != summary["per_suite_counts"]:
+        fail(f"tier {tier} per-suite proposal does not match source summary")
+    quality_map = baseline["per_suite_quality_by_tier"][tier]
+    count_map = baseline["per_suite_counts_by_tier"][tier]
+    if set(quality_map) != set(count_map):
+        fail(f"tier {tier} per-suite quality/count keys differ")
+    for suite, value in quality_map.items():
+        finite_number(value, f"tier {tier} suite {suite} quality")
+        if not isinstance(count_map[suite], int) or count_map[suite] < 0:
+            fail(f"tier {tier} suite {suite} count must be nonnegative")
+    history = replacement["quality_history_by_tier"][tier]
+    if not isinstance(history, list) or not 3 <= len(history) <= 10:
+        fail(f"tier {tier} quality history must contain 3-10 E8 observations")
+    for index, value in enumerate(history):
         finite_number(value, f"tier {tier} history[{index}]")
-    provenance = (replacement["quality_history_provenance_by_tier"] or {}).get(tier)
-    if not isinstance(provenance, list) or not provenance:
-        fail(f"tier {tier} MAD provenance is missing")
-    for observation in provenance:
-        if not isinstance(observation, dict) or observation.get("era") != "E8":
-            fail(f"tier {tier} MAD provenance is not E8-stamped")
-        finite_number(observation.get("q"), f"tier {tier} MAD provenance quality")
+    provenance = replacement["quality_history_provenance_by_tier"][tier]
+    if not isinstance(provenance, list) or len(provenance) != len(history):
+        fail(f"tier {tier} MAD provenance must match history length")
+    allowed_cores = {item["record"]["core_id"] for item in source_by_tier.values()}
+    for index, observation in enumerate(provenance):
+        if not isinstance(observation, dict) or set(observation) != {"q", "ts", "era", "core_id"}:
+            fail(f"tier {tier} MAD provenance has unexpected or missing fields")
+        if observation["era"] != "E8" or observation["core_id"] not in allowed_cores:
+            fail(f"tier {tier} MAD provenance is not tied to E8 source cores")
+        post_boundary_timestamp(observation["ts"], f"tier {tier} MAD provenance timestamp")
+        finite_number(observation["q"], f"tier {tier} MAD provenance quality")
+        if observation["q"] != history[index]:
+            fail(f"tier {tier} MAD provenance quality does not match history")
 PY
 }
 

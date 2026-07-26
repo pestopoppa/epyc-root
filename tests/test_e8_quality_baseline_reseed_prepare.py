@@ -32,7 +32,22 @@ def _evidence(tmp_path: Path) -> Path:
     records = []
     for tier in (1, 2):
         source = tmp_path / f"tier{tier}.json"
-        source.write_text(json.dumps({"tier": tier, "synthetic_fixture": True}) + "\n")
+        quality = float(tier)
+        source.write_text(
+            json.dumps(
+                {
+                    "tier": tier,
+                    "core_id": f"core-{tier}",
+                    "n": 4,
+                    "quality": quality,
+                    "per_suite_quality": {"suite": quality},
+                    "per_suite_counts": {"suite": 4},
+                    "era": "E8",
+                    "decision_grade": True,
+                }
+            )
+            + "\n"
+        )
         records.append(
             {
                 "tier": tier,
@@ -44,6 +59,7 @@ def _evidence(tmp_path: Path) -> Path:
                 "timestamp": "2026-07-26T00:00:00Z",
                 "era": "E8",
                 "instrument": "dedicated_full_pool_tier_baseline",
+                "quality": quality,
             }
         )
     evidence = {
@@ -54,13 +70,13 @@ def _evidence(tmp_path: Path) -> Path:
             "baseline_state": {
                 "eval_quality_era": "E8",
                 "baselines_by_tier": {"1": 1.0, "2": 2.0},
-                "per_suite_quality_by_tier": {"1": {}, "2": {}},
-                "per_suite_counts_by_tier": {"1": {}, "2": {}},
+                "per_suite_quality_by_tier": {"1": {"suite": 1.0}, "2": {"suite": 2.0}},
+                "per_suite_counts_by_tier": {"1": {"suite": 4}, "2": {"suite": 4}},
             },
-            "quality_history_by_tier": {"1": [1.0], "2": [2.0]},
+            "quality_history_by_tier": {"1": [1.0, 1.0, 1.0], "2": [2.0, 2.0, 2.0]},
             "quality_history_provenance_by_tier": {
-                "1": [{"q": 1.0, "era": "E8"}],
-                "2": [{"q": 2.0, "era": "E8"}],
+                "1": [{"q": 1.0, "ts": "2026-07-26T00:00:00Z", "era": "E8", "core_id": "core-1"}] * 3,
+                "2": [{"q": 2.0, "ts": "2026-07-26T00:00:00Z", "era": "E8", "core_id": "core-2"}] * 3,
             },
         },
     }
@@ -118,3 +134,34 @@ def test_evidence_contract_rejects_unrelated_baseline_key(tmp_path: Path) -> Non
 
     assert result.returncode != 0
     assert "non-quality fields" in result.stderr
+
+
+def test_evidence_contract_rejects_insufficient_mad_history(tmp_path: Path) -> None:
+    evidence = _evidence(tmp_path)
+    payload = json.loads(evidence.read_text())
+    payload["replacement"]["quality_history_by_tier"]["1"] = [1.0]
+    payload["replacement"]["quality_history_provenance_by_tier"]["1"] = [
+        {"q": 1.0, "ts": "2026-07-26T00:00:00Z", "era": "E8", "core_id": "core-1"}
+    ]
+    evidence.write_text(json.dumps(payload) + "\n")
+
+    result = _validate(evidence)
+
+    assert result.returncode != 0
+    assert "3-10" in result.stderr
+
+
+def test_evidence_contract_rejects_non_decision_grade_source(tmp_path: Path) -> None:
+    evidence = _evidence(tmp_path)
+    payload = json.loads(evidence.read_text())
+    source = Path(payload["source_records"][0]["path"])
+    summary = json.loads(source.read_text())
+    summary["decision_grade"] = False
+    source.write_text(json.dumps(summary) + "\n")
+    payload["source_records"][0]["sha256"] = hashlib.sha256(source.read_bytes()).hexdigest()
+    evidence.write_text(json.dumps(payload) + "\n")
+
+    result = _validate(evidence)
+
+    assert result.returncode != 0
+    assert "not decision-grade" in result.stderr
