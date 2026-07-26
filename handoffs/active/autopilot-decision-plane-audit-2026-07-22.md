@@ -215,14 +215,25 @@ that row for the fail-safe fallback and MUST stay in lockstep with it. **No huma
 the era registry or MEASUREMENT.md was made or is needed for this fix.**
 
 ### What remains (owner action, out of this session's scope)
-- [ ] **Operator: clear the re-baseline hold.** The hold is fail-closed BY DESIGN — it blocks
-  automated quality promote/revert until a **post-E7 baseline** exists. The operator must reseed
-  `orchestration/autopilot_state.json:baseline_state` (`baselines_by_tier`,
-  `per_suite_quality_by_tier`, `per_suite_counts_by_tier`) from a post-E7 eval AND stamp
-  `baseline_state.eval_quality_era: "E7-eval-instrument"` (+ the MAD `quality_history*` windows).
-  The migration seeds the *fence keys* in code on next startup, but reseeding *baseline quality
-  values* is a measurement action across the human-amendment trust boundary — not done here.
-  Until then the gate holds quality decisions and logs the remediation each gate instance.
+- [x] **Operator: clear the re-baseline hold (E7).** ✅ 2026-07-23 — reseed operator-applied for
+  the E7 era (see master-handoff-index 2026-07-23 note: "era-fenced, reseed operator-applied").
+  Original text retained: the hold is fail-closed BY DESIGN — it blocks automated quality
+  promote/revert until a post-era baseline exists; reseeding baseline quality values is a
+  measurement action across the human-amendment trust boundary.
+- [ ] **E8 RE-ARM (2026-07-26) — AutoPilot E8 baseline reseed = the gating task of the post-v8
+  campaign (operator-directed; CPU lane, runs FIRST).** The v8 E8 era fence
+  (`epyc-root/artifacts/operator/ratify_v8_era_fence_20260725.json`) demotes all pre-boundary
+  speed/frontier evidence to historical prior AND requires **16 fresh v8-era numeric trials
+  before AutoPilot speed maxima are trusted**; the same fail-closed re-baseline hold logic now
+  applies against the E8 boundary. Procedure = the applied E7 reseed pattern: restart AutoPilot
+  on the CURRENT frozen-v8 both-mode lineup (NO model changes until this completes — a
+  mid-reseed model swap confounds era-change vs model-change), accumulate ≥16 fresh numeric
+  trials + quality baseline reseed (`baseline_state.eval_quality_era: "E8"` + MAD
+  `quality_history*` windows). Baseline-value writes that cross the trust boundary → prepare the
+  human-only script and park it in the op-bundle; do NOT stall the campaign on it.
+  Pre-restart check: verify the 2026-07-17 resume-preconditions (small-sample debugbench
+  −1.5-gate trip on n_baseline=2; kv_compaction 500s) are fixed or still-relevant before
+  resuming — re-thrash risk (~10 rollbacks on 2026-07-16) if skipped.
 - [ ] Non-owned audit findings untouched (other owners / other agents' flux files): H2
   rewind/restore atomicity (`structural_lab.py`), H3 preflight JRN-7 reader, M1 validity table,
   M2 phase_status reader, M3 action-local gate fallback (`actions.py`), M4/M5/M6, and the

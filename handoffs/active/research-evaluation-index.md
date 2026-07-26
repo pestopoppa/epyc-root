@@ -1,7 +1,7 @@
 # Research & Evaluation — Coordination Index
 
 **Status**: active
-**Updated**: 2026-07-14
+**Updated**: 2026-07-26 — **post-v8 campaign is the active queue** (see the ★ checkpoint atop [master-handoff-index.md](master-handoff-index.md)): GPU lane = Laguna-IQ2 architect bench (SWE-oracle → LCB-hard, discriminating suites only) → MiniCPM-o Phase-1 → 27B finetune benches (downloads already running); CPU lane = AutoPilot E8 baseline reseed (gates all model-stack changes) → Laguna-Q4 arm. Owners: [architect-model-selection-bench.md](architect-model-selection-bench.md), [multimodal-pipeline.md](multimodal-pipeline.md), [autopilot-decision-plane-audit-2026-07-22.md](autopilot-decision-plane-audit-2026-07-22.md) §E8 RE-ARM.
 **Purpose**: dispatch surface for pre-production research, evaluation, and monitoring work. Production orchestrator changes should route through `routing-and-optimization-index.md`.
 
 > Completed checklist and research-intake chronology was compacted to [`../archived/research-evaluation-index-history-through-2026-06-19.md`](../archived/research-evaluation-index-history-through-2026-06-19.md). Current task truth lives in the owning handoffs and machine artifacts named below.

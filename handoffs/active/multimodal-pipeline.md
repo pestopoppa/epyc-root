@@ -158,6 +158,14 @@ Test Path B (MiniCPM-O) first — it's a complete package (ASR+TTS+Vision in one
 
 **9B dense model** (Qwen3-8B backbone + SigLip2 + Whisper-medium + CosyVoice2). Apache 2.0.
 
+### Phase-1 role assessment — operator-sequenced 2026-07-26 (GPU lane, AFTER the Laguna IQ2 architect bench)
+
+Serving viability is already proven: MiniCPM-o smoked **4/4 on MI210 at 114.8–126.9 t/s decode** in the v7 final-cutover vision matrix (2026-07-19, `data/v7_final_cutover_smoke/vision_*/summary.json`). What has NEVER been produced is quality evidence vs the incumbent — that is this assessment:
+
+- [ ] **M-1 — paired vision eval vs Qwen2.5-VL** on BOTH role workloads (`worker_vision` and `vision_escalation`), same-image/same-prompt paired design, objective-scored. Decision output: use MiniCPM-o for escalation, worker, both, or neither — as a decision package with per-role deltas.
+- [ ] **M-2 — TTS Path-B test** (built-in CosyVoice2): if audio quality is acceptable it obviates the blocked Qwen3-TTS port entirely (see §Path B above). Cheap; bundle in the same window.
+- [ ] **M-3 — role-swap gate**: any actual lineup change is a stack-model change → REQUIRES the AutoPilot E8 baseline reseed to be complete first, then routes through the three-gates discipline (pipeline-green ≠ starts ≠ live==config) + orchestrator_stack lifecycle. Evidence gathering (M-1/M-2) is NOT gated and may run as soon as the GPU lane reaches it.
+
 ### Files Downloaded
 Location: `/mnt/raid0/llm/models/MiniCPM-o-4_5-gguf/`
 

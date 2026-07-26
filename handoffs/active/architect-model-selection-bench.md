@@ -447,9 +447,11 @@ AXA-1, and open a registry-change note (do NOT edit the live registry — that's
 already-integrated `2505.09388` (intake-074).
 
 
-## Laguna S 2.1 intake integration — 2026-07-22 (deferred candidate)
-_Via /research-intake Stage-2 (intake-879/880); blocked on the [laguna-s21-cpu-port.md](laguna-s21-cpu-port.md) port producing a working CPU build._
-- [ ] Include Laguna S 2.1 (Q4_K_M + UD-IQ2_M) as an architect/coder-bench candidate ONCE SERVED — first independent quality read (all vendor numbers self-reported)
+## Laguna S 2.1 intake integration — 2026-07-22 → **UNBLOCKED 2026-07-26 by the v8 freeze**
+_Via /research-intake Stage-2 (intake-879/880); the "ONCE SERVED" blocker is CLEARED — Laguna arch is in frozen `production-consolidated-v8` (`67a433bf4`), IQ2 GPU-quality-attested (P-GPU-1), CPU Q4 lane exercised. Operator-sequenced 2026-07-26 as the GPU lane of the post-v8 campaign (see master index checkpoint)._
+- [ ] **L-IQ2 arm (GPU, MI210 — run FIRST)**: Laguna-S-2.1 UD-IQ2_M (34.7GB, fits GPU). Order: config discovery → **SWE-oracle** → **LCB-hard**. Suite discipline per R-series: run ONLY the discriminating axes (SWE-oracle is the campaign's sole significant separator, +17.5pp A3-vs-A4 p=.039; LCB/BCB-hard are the ladder) — do NOT spend window on the saturated/null suites (gpqa letter-only, aime25, olympiadbench_numeric ≈89% all arms). First independent quality read; all vendor numbers self-reported.
+- [ ] **L-Q4 arm (CPU)**: Laguna-S-2.1 Q4_K_M (75GB). **Sequenced AFTER the AutoPilot E8 baseline reseed completes** (operator-decided 2026-07-26): the reseed's 16 fresh numeric trials need a clean CPU; a 96-thread Q4 bench during reseed trials violates the same sustained-window discipline P-BENCH-PREFILL-1 ratifies. GPU-lane work is unaffected and runs concurrently.
+- [ ] **A3-vs-A4 SWE-oracle powered confirmation** — sequenced after the Laguna IQ2 SWE/LCB read (unchanged from 07-24 plan).
 
 
 ## 2026-07-25 — intake Stage-2a dive: ThinkingCap arm, corrected
@@ -459,3 +461,8 @@ _Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25
 - [ ] **A3-tc arm — ThinkingCap-Qwen3.6-27B as a token-cost variant of A3.** R6 found the three architect arms statistically inseparable, so the decision falls to operating cost, and this handoff already tracks median completion tokens as the discriminator (A3 baseline 4,019). Vendor claims ~45.8% out-of-domain thinking-token reduction.
 - [ ] **Run the comparison the vendor did not**: ThinkingCap `enable_thinking=true` vs **stock Qwen3.6-27B `enable_thinking=false`** — our incumbent production config, since both registry rows set `disable_thinking: true`. A naive drop-in delivers ≈zero benefit because ThinkingCap's entire value lives inside the thinking trace.
 - [ ] **Corrections from the dive, before scoping the A/B**: (a) **MTP is not a ThinkingCap feature** — its MTP head is **byte-identical** to our stock drafter, so hold the MTP path constant across arms; (b) the vendor's own table is **8-of-12 negative** out-of-domain (GPQA-D −1.7, HMMT −3.3, Claw-Eval −2.6, LongBench-v2 −2.4, AA-LCR −2.0) with token reduction *smallest* where accuracy loss is largest, and most deltas inside overlapping 95% CIs — under-powered in both directions; (c) the GGUF repo **declares no license**, which gates registry admission; (d) it is a **weights-frozen finetune, not a reasoning-budget dial**, so under the per-model effort invariant it is a *different model* and any level calibrated on stock is void.
+
+## 27B finetune candidates — downloads + bench (operator-sequenced 2026-07-26, GPU lane after MiniCPM-o)
+
+- [ ] **D-27B — downloads LAUNCHED 2026-07-26 by the operator session (Codex: MONITOR ONLY, do not relaunch).** A strictly-sequential chain is already running (log: `/mnt/raid0/llm/tmp/27b-q8-downloads-20260726.log`): (1) `ThinkingCap-Qwen3.6-27B-Q8_0.gguf` 29.1GB → `models/ThinkingCap-Qwen3.6-27B-GGUF/`; (2) Fable-Fusion **Q8 MTP** 30.2GB + (3) **Q8 non-MTP** 29.8GB → `models/Qwen3.6-27B-Fable-Fusion-711-GGUF/`. Operator directive: Q8 quant. Disk pre-cleared to 241GB free (Qwable/longcat/f16-upcast/tmp-scratch deleted, operator-approved). Completion criterion: log line `ALL DONE` + 3 files at full size, no `.part` remnants. If the chain died, resume it SINGLE-PROCESS only (`feedback_no_concurrent_downloads_shared_host`). On ThinkingCap arrival verify MTP by **tensor count (851 = no MTP / 866 = MTP)** via ranged header read — file-size deltas mislead.
+- [ ] **A3-ff arm — Fable-Fusion-711 as a bench candidate** once downloaded: same discriminating-suite ladder (SWE-oracle → LCB-hard); its paired quant ladder makes it the cleaner MTP-impact probe than ThinkingCap's confounded pair.
