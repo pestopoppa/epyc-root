@@ -234,6 +234,18 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
   Pre-restart check: verify the 2026-07-17 resume-preconditions (small-sample debugbench
   −1.5-gate trip on n_baseline=2; kv_compaction 500s) are fixed or still-relevant before
   resuming — re-thrash risk (~10 rollbacks on 2026-07-16) if skipped.
+- [x] **E8 re-arm protocol/quality fence + empty-frontier bootstrap ratified** ✅ 2026-07-26 —
+  operator receipts are durable; focused trust-boundary tests passed. The empty-frontier
+  bootstrap deliberately has no `production_best` checkpoint until the v8-only frontier is
+  rebuilt, so rollback restore warnings about its absence are expected and non-invalidating.
+- [x] **E8 AutoPilot restarted on the frozen-v8 both-mode lineup** ✅ 2026-07-26 — exact
+  `AUTOPILOT_SUPPRESSED_NUMERIC_SURFACES=kv_compaction` suppression is active; API remains
+  `6/6`; no lineup or registry mutation was made.
+- [ ] **E8 numeric frontier accumulation** — `7/16` fresh eligible numeric trials complete
+  as of the 2026-07-26 checkpoint; exact-stop monitor owns the `16/16/0` boundary.
+- [ ] **E8 quality baseline reseed/apply** — human-only protocol/source/apply scripts are
+  prepared and parked. Execute only after numeric `16/16/0`, then validate and publish the
+  post-boundary quality baseline before releasing the Laguna Q4 CPU lane.
 - [x] **E8-LAUNCH-RACE — scope failed-start cleanup to the wrapper-owned launch** ✅ 2026-07-26.
   Independent review found that the initial rearm wrapper's global fallback `pgrep` cleanup
   could terminate a concurrent valid AutoPilot launch. The wrapper now records the returned

@@ -2,8 +2,25 @@
 
 **Category**: `multimodal`
 **Confidence**: verified
-**Last compiled**: 2026-07-24 (adds the deterministic MiniCPM-o vision_escalation promotion runbook and the worker_vision demand/capability trigger gate)
+**Last compiled**: 2026-07-26 (adds bounded M-1 observation and M-2 pinned-interface closure; prior promotion runbook and demand gate retained)
 **Sources**: 42+ documents (added 2026-07-24 the vision_escalation MiniCPM-o promotion runbook and the worker_vision quantitative trigger gate; 2026-07-17 MiniCPM-o/frontdoor service-matrix activation evidence, Qwen3-VL-30B escalation defect mitigation, and PaddleOCR-VL document-specialist checkpoint; 2026-06-22 vision-pipeline live-server registration + the TTS path-elimination matrix; 2026-06-05 LocateAnything/Gemma 4 benchmark-first update; 2026-06-21 Kimi-K2.7-Code MoonViT / UniRL intake merge)
+
+## Compiled Update — 2026-07-26 bounded MiniCPM-o evidence
+
+The first live paired MiniCPM-o observation is deliberately not a deployment
+decision: it observed `6/8` versus Qwen2.5-VL `5/8` on `worker_vision` and
+`7/10` versus `6/10` on `vision_escalation`, with exact two-sided McNemar
+`p=1.0` for both. The sample is observation-only and does not alter the
+lineup. In parallel, the pinned llama.cpp-omni Path-B CLI feasibility probe is
+terminally blocked: the exact pin accepts numbered audio fixtures only and
+cannot meet the required text-input/output-WAV contract without source changes.
+The actual TTS adapter decision and any M-3 role swap remain open behind E8.
+
+### Source References (2026-07-26 bounded MiniCPM-o evidence)
+
+- [Multimodal pipeline handoff](../handoffs/active/multimodal-pipeline.md) — M-1 observation, M-2 feasibility closure, and remaining M-2/M-3 gates.
+- [Post-v8 master handoff index](../handoffs/active/master-handoff-index.md) — campaign sequencing and no-lineup-change boundary.
+- [Progress 2026-07-26](../progress/2026-07/2026-07-26.md) — exact paired counts and pinned-interface evidence.
 
 ## Summary
 

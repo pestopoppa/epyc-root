@@ -100,6 +100,12 @@ already has bare-letter handling).
       CLI (`--dry-run` first); verify /testbed clean-at-base assumption; then a 10-instance pilot before any
       3-arm agentic comparison. Waits for GPU free post-Laguna-kernel work.
       Orchestrator-REPL variant (audit Q3) remains the production-path option.
+- [x] **2b-agentic-capture. Lossless trajectory evidence + live integrity gate.** ✅ 2026-07-26 — Full
+      assistant replies and pre-context-truncation tool observations are now always persisted with UTF-8
+      sizes and SHA-256 identities. Per-turn live status exposes anomalies; a companion `capture-status.json`
+      binds every patch, trajectory, and runner source. Over-budget/legacy/mismatched evidence remains
+      observable but exits nonzero and is scoring-ineligible; ordinary resume fails closed. The default
+      research smoke targets cover the contract (`make test`: 43 passed; `make lint`: clean).
 - [ ] **2c. Eval-tower pool registration decision package (OPERATOR).** Once LCB-hard/BCB-hard/SWE-oracle
       prove discriminative: present options+tradeoffs for registering them into the E7 eval pool (era-sensitive
       instrument change — new-era row vs supplementary-pool vs bench-only). Operator asked for the package

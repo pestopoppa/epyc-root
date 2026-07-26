@@ -162,8 +162,9 @@ Test Path B (MiniCPM-O) first — it's a complete package (ASR+TTS+Vision in one
 
 Serving viability is already proven: MiniCPM-o smoked **4/4 on MI210 at 114.8–126.9 t/s decode** in the v7 final-cutover vision matrix (2026-07-19, `data/v7_final_cutover_smoke/vision_*/summary.json`). What has NEVER been produced is quality evidence vs the incumbent — that is this assessment:
 
-- [ ] **M-1 — paired vision eval vs Qwen2.5-VL** on BOTH role workloads (`worker_vision` and `vision_escalation`), same-image/same-prompt paired design, objective-scored. Decision output: use MiniCPM-o for escalation, worker, both, or neither — as a decision package with per-role deltas.
+- [x] **M-1 — paired vision eval vs Qwen2.5-VL** ✅ 2026-07-26 — same-image/same-prompt objective-scored live observation in `artifacts/minicpm-o-phase1-v8-20260726/live-20260726T174112Z-O98PrJ/`: `worker_vision` MiniCPM-o `6/8` vs Qwen2.5-VL `5/8` (`+12.5pp`, exact two-sided McNemar `p=1.0`); `vision_escalation` MiniCPM-o `7/10` vs `6/10` (`+10pp`, `p=1.0`). This is `observation_only_unratified`; it asserts no decision threshold and takes **no lineup action**.
 - [ ] **M-2 — TTS Path-B test** (built-in CosyVoice2): if audio quality is acceptable it obviates the blocked Qwen3-TTS port entirely (see §Path B above). Cheap; bundle in the same window.
+- [x] **M-2 pinned-interface feasibility** ✅ 2026-07-26 — terminal `blocked-by-pinned-interface` at llama.cpp-omni `5202b7b2f4d11f50b9f996161e7a2f8b8571b890`; the pinned CLI has neither the required text-prompt input nor output-WAV contract. Evidence: `epyc-inference-research/artifacts/minicpm-o-phase1-v8-20260726/M2_OMNI_FEASIBILITY_PROBE.md`. No source modification or substitute TTS experiment was used; the unchecked M-2 TTS test remains open.
 - [ ] **M-3 — role-swap gate**: any actual lineup change is a stack-model change → REQUIRES the AutoPilot E8 baseline reseed to be complete first, then routes through the three-gates discipline (pipeline-green ≠ starts ≠ live==config) + orchestrator_stack lifecycle. Evidence gathering (M-1/M-2) is NOT gated and may run as soon as the GPU lane reaches it.
 
 ### Files Downloaded

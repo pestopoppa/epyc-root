@@ -2,8 +2,27 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-07-24 (adds the WP-12 server-fleet layer flip + case-10 live gate (the C10-F1 per-role `Semaphore(1)` concurrency finding), the big+quarters lineup restoration via the new additive `--numa-mode both` promotion path, and the inference-batch-loop parked-island decision menu / ownership transfer; earlier 2026-07-21 note: the inference-batch `/loop` overnight burn-down + takeover, the loop-robustness audit root cause (stale contention matrix from a vision NUMA rebind — not the kernel) and its change-hardening, the ROUTE-A3 live within-role KV-migration probe, and the EV-4 two-phase honest-refusal; earlier 2026-07-20 note: the live within-role placement state machine ratification, the E1/E2 batched-decode results + E5 NUMA×batch spec, and the heterogeneous CPU×GPU slot-fabric design)
-**Sources**: 61 documents
+**Last compiled**: 2026-07-26 (adds frozen-v8 E8 rebaseline posture; prior fleet and lineup updates retained)
+**Sources**: 63 documents
+
+## Compiled Update — 2026-07-26 E8 rebaseline hold
+
+Production remains frozen on `production-consolidated-v8`; the post-freeze E8
+quality boundary is a fail-closed rebaseline, not a stack change. The quality
+fence and empty-frontier bootstrap receipts are complete and AutoPilot was
+re-armed on the unchanged frozen-v8 both-mode lineup with only
+`kv_compaction` suppressed. At this checkpoint the numeric frontier remains
+in progress (`7/16`); its exact-stop `16/16/0` boundary precedes the human-only
+quality-baseline evidence/apply path and the Laguna Q4 CPU lane. No registry,
+lineup, or serving-kernel conclusion is implied.
+
+### Source References (2026-07-26 E8 rebaseline hold)
+
+- [AutoPilot decision-plane audit](../handoffs/active/autopilot-decision-plane-audit-2026-07-22.md) — ratified receipts, re-arm state, and remaining numeric/quality gates.
+- [Post-v8 master handoff index](../handoffs/active/master-handoff-index.md) — CPU/GPU campaign ordering and frozen-kernel constraints.
+- [Progress 2026-07-26](../progress/2026-07/2026-07-26.md) — checkpoint count and human-only apply boundary.
+- [AutoPilot digest 2026-07-26](../progress/2026-07/2026-07-26-autopilot.md) — current numeric-trial activity; it does not override the checkpoint's exact-stop gate.
+- [Bulk inference campaign](../handoffs/active/bulk-inference-campaign.md) — related post-v8 campaign context; no additional serving conclusion was promoted from this source.
 
 ## Compiled Update — 2026-07-24
 

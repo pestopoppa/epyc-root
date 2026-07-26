@@ -188,7 +188,8 @@ Documents in `handoffs/archived/`, `handoffs/completed/`, `progress/`, and `CHAN
 - In Codex sessions, keep the main thread focused on high-level decomposition, risk and ownership decisions, reviewing and accepting delegated work, integration, and operator communication.
 - Delegate independent, well-defined tasks whenever possible. Use the smallest capable `gpt-5.6-terra` or `gpt-5.6-luna` agent at the lowest adequate effort (`low`, `medium`, `high`, or `xhigh`).
 - Treat every sub-agent result as proposed work: the main thread must review its evidence and diffs and run appropriate validation before accepting it.
-- Delegate wrap-up routines only to `gpt-5.6-luna` at `high` effort. If that model is unavailable, report wrap-up as blocked and request an explicit operator override; never silently substitute another model.
+- Delegate wrap-up routines to `gpt-5.6-luna` at `high` effort when available. If Luna is unavailable, automatically use `gpt-5.6-terra` at `high` effort without blocking or requesting an operator override.
+- Run a formal wrap-up at every natural phase boundary or major campaign milestone. Update owning-handoff checkboxes and progress immediately as gates land; never defer dashboard truth until the next wrap-up.
 
 ## Operator Decision Requests
 

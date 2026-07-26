@@ -2,8 +2,38 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-07-24 (adds the architect-model-selection-bench well-powered NULL verdict + the R7 scorer-artifact correction, the scoring-infra-standardization fragmentation audit and Phase-1a canonical scoring library, and the CPU A2/RP-5 fenced 122B-Q4 arm; earlier 2026-07-21 note: the 2026-07-20/21 eval-tower audit cycle — the two-audit tower teardown, the E7-eval-instrument pool rebuild + B7 scorer ratification, the EV-11 confidence-phantom neutralization, the EV-4 calibration baseline on the E7 instrument, and the judge-validity research cluster intake-874/875/876; earlier 2026-07-20 note: adds the specced architect model-selection bench, the reviewer model-role ablation results, the eval-tower ECE/AUC + math_verify work, and the living model-probe scoreboard; K35/K5/readiness content retained)
+**Last compiled**: 2026-07-26 (adds the lossless capture-integrity boundary and agentic trajectory eligibility; prior 2026-07-24 architect/scorer updates retained)
 **Sources**: 94+ documents
+
+## Compiled Update — 2026-07-26 capture-integrity boundary
+
+The Laguna architect comparison exposed an evidence defect rather than a model
+verdict: the original runner retained only the final 4,000 response characters.
+That makes the initial `18/40` SWE read and selective replacement draws
+diagnostic only. Schema v4 now retains and fingerprints complete prompt,
+response, and reasoning material, fails incomplete rows and stale resume data
+closed, and makes the converter and judge require the reviewed producer and
+pinned prompts. A lossless agentic-SWE trajectory contract applies the same
+principle to every assistant reply and pre-truncation tool observation. The
+separate Laguna prompt-contract-fix full-40 and official Docker scores remain
+open; no coding-specialist decision follows from this update.
+
+### Key Findings (2026-07-26)
+
+- **A score cannot be decision-grade when the scored response was tail-sliced.**
+  Full-response retention and row-level identities are now a prerequisite for
+  conversion, scoring, or safe resume; token caps remain visible model outcomes
+  rather than being repaired into partial patches.
+- **The capture gate generalizes beyond one-shot SWE.** Agentic trajectories
+  now preserve full turn evidence and publish a run-level eligibility manifest,
+  so incomplete, legacy, over-budget, or source-mismatched evidence is not
+  silently accepted by a later scorer.
+
+### Source References (2026-07-26 capture-integrity boundary)
+
+- [Architect model comparison handoff](../handoffs/active/architect-model-selection-bench.md) — Laguna result supersession, v4 gate, and remaining full-40/Docker work.
+- [Scoring infrastructure handoff](../handoffs/active/scoring-infra-standardization.md) — completed lossless agentic trajectory capture contract.
+- [Progress 2026-07-26](../progress/2026-07/2026-07-26.md) — capture failure modes, validation evidence, and explicit non-decision posture.
 
 ## Compiled Update — 2026-07-24
 

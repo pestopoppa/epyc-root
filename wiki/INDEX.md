@@ -1,14 +1,14 @@
 # Project Wiki — Knowledge Index
 
-**Manifest reconciled**: 2026-07-26 — all 62 sources added or changed since
-the saved baseline were reviewed. Their durable findings were already
-represented by the 2026-07-22 through 2026-07-26 wiki updates, including the
-frozen v8 kernel and terminal serving state; no new category article was
-required.
+**Manifest reconciled**: 2026-07-26 — the seven changed checkpoint sources
+were synthesized into Benchmark Methodology, Multimodal, and Inference Serving.
+The update records capture-integrity requirements, bounded MiniCPM-o evidence,
+and the E8 rebaseline hold without converting open campaign gates into
+completion claims.
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-07-24 (incremental — merged 14 new sources into 7 articles: the WP-12 fleet-layer flip + case-10 live gate (C10-F1 per-role `Semaphore(1)` finding) and the big+quarters lineup restoration into Inference Serving; the E5 NUMA×batch W0 scout (69/69 cells, C3-quarters-optimal-everywhere, model-dependent C1b) and the cross-architecture GPU np×context throughput surface into Hardware Optimization; the architect-bench well-powered NULL + R7 scorer-artifact correction + scoring-infra fragmentation audit into Benchmark Methodology; the IQ2-vs-Q4 termination-defect refutation + CPU A2 arm into Quantization; the MiniCPM-o promotion runbook + worker_vision trigger gate into Multimodal; the per-model MTP-depth/batching architecture-dependence into Speculative Decoding; and the measured reasoning-effort ladder + token-budget study into Cost-Aware Routing. Earlier 2026-07-21 pass merged 28 changed/new sources into 2 articles; 2026-07-20 pass merged 23 new sources into 8 articles.)
+**Last compiled**: 2026-07-26 (incremental — merged 7 checkpoint sources into Benchmark Methodology, Multimodal, and Inference Serving: lossless v4 capture and agentic trajectory eligibility; MiniCPM-o M-1 observation/M-2 pinned-interface closure; and frozen-v8 E8 rebaseline sequencing. The Laguna prompt-fix/Docker score, E8 numeric completion, quality apply, and 27B observations remain open. Earlier 2026-07-24 pass merged 14 sources into 7 articles.)
 **Articles**: 26 compiled, 4 stub categories
 **Total sources**: 590+ scanned documents across 6 source types; 2026-07-24 pass merged 14 changed/new sources into 7 articles; 2026-07-21 pass merged 28 changed/new sources into 2 articles; 2026-07-20 pass merged 23 changed/new sources into 8 articles; 2026-07-05 pass merged 49 changed/new sources into 10 articles; 2026-06-21 pass merged 36 changed/new sources into 21 articles
 
