@@ -31,8 +31,29 @@ def test_script_exposes_no_writing_or_attestation_mode() -> None:
 def _evidence(tmp_path: Path) -> Path:
     records = []
     for tier in (1, 2):
-        source = tmp_path / f"tier{tier}.json"
+        observations = []
         quality = float(tier)
+        for index, q in enumerate((quality - 0.1, quality, quality + 0.1)):
+            raw = tmp_path / f"tier{tier}-observation-{index}.json"
+            raw_payload = {
+                "q": q,
+                "ts": "2026-07-26T00:00:00Z",
+                "core_id": f"core-{tier}",
+                "protocol_id": f"E8-full-pool-tier-{tier}",
+                "n": 4,
+                "era": "E8",
+                "per_suite_quality": {"suite": quality},
+                "per_suite_counts": {"suite": 4},
+            }
+            raw.write_text(json.dumps(raw_payload) + "\n")
+            observations.append(
+                {
+                    key: raw_payload[key]
+                    for key in ("q", "ts", "core_id", "protocol_id", "n", "era")
+                }
+                | {"path": str(raw), "sha256": hashlib.sha256(raw.read_bytes()).hexdigest()}
+            )
+        source = tmp_path / f"tier{tier}.json"
         source.write_text(
             json.dumps(
                 {
@@ -44,6 +65,7 @@ def _evidence(tmp_path: Path) -> Path:
                     "per_suite_counts": {"suite": 4},
                     "era": "E8",
                     "decision_grade": True,
+                    "observations": observations,
                 }
             )
             + "\n"
@@ -73,10 +95,18 @@ def _evidence(tmp_path: Path) -> Path:
                 "per_suite_quality_by_tier": {"1": {"suite": 1.0}, "2": {"suite": 2.0}},
                 "per_suite_counts_by_tier": {"1": {"suite": 4}, "2": {"suite": 4}},
             },
-            "quality_history_by_tier": {"1": [1.0, 1.0, 1.0], "2": [2.0, 2.0, 2.0]},
+            "quality_history_by_tier": {"1": [0.9, 1.0, 1.1], "2": [1.9, 2.0, 2.1]},
             "quality_history_provenance_by_tier": {
-                "1": [{"q": 1.0, "ts": "2026-07-26T00:00:00Z", "era": "E8", "core_id": "core-1"}] * 3,
-                "2": [{"q": 2.0, "ts": "2026-07-26T00:00:00Z", "era": "E8", "core_id": "core-2"}] * 3,
+                "1": [
+                    {"q": 0.9, "ts": "2026-07-26T00:00:00Z", "era": "E8", "core_id": "core-1"},
+                    {"q": 1.0, "ts": "2026-07-26T00:00:00Z", "era": "E8", "core_id": "core-1"},
+                    {"q": 1.1, "ts": "2026-07-26T00:00:00Z", "era": "E8", "core_id": "core-1"},
+                ],
+                "2": [
+                    {"q": 1.9, "ts": "2026-07-26T00:00:00Z", "era": "E8", "core_id": "core-2"},
+                    {"q": 2.0, "ts": "2026-07-26T00:00:00Z", "era": "E8", "core_id": "core-2"},
+                    {"q": 2.1, "ts": "2026-07-26T00:00:00Z", "era": "E8", "core_id": "core-2"},
+                ],
             },
         },
     }
@@ -148,7 +178,7 @@ def test_evidence_contract_rejects_insufficient_mad_history(tmp_path: Path) -> N
     result = _validate(evidence)
 
     assert result.returncode != 0
-    assert "3-10" in result.stderr
+    assert "derived from raw" in result.stderr
 
 
 def test_evidence_contract_rejects_non_decision_grade_source(tmp_path: Path) -> None:
@@ -165,3 +195,29 @@ def test_evidence_contract_rejects_non_decision_grade_source(tmp_path: Path) -> 
 
     assert result.returncode != 0
     assert "not decision-grade" in result.stderr
+
+
+def test_evidence_contract_rejects_tampered_raw_observation(tmp_path: Path) -> None:
+    evidence = _evidence(tmp_path)
+    payload = json.loads(evidence.read_text())
+    raw = Path(payload["source_records"][0]["path"])
+    summary = json.loads(raw.read_text())
+    observation = Path(summary["observations"][0]["path"])
+    observation.write_text("{}\n")
+
+    result = _validate(evidence)
+
+    assert result.returncode != 0
+    assert "raw observation artifact hash mismatch" in result.stderr
+
+
+def test_evidence_contract_rejects_aggregate_mismatch(tmp_path: Path) -> None:
+    evidence = _evidence(tmp_path)
+    payload = json.loads(evidence.read_text())
+    payload["replacement"]["baseline_state"]["baselines_by_tier"]["1"] = 9.0
+    evidence.write_text(json.dumps(payload) + "\n")
+
+    result = _validate(evidence)
+
+    assert result.returncode != 0
+    assert "baseline does not match source quality" in result.stderr

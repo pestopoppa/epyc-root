@@ -50,6 +50,7 @@ validate_evidence() {
 import hashlib
 import json
 import math
+import statistics
 from datetime import datetime, timezone
 from pathlib import Path
 import sys
@@ -117,7 +118,7 @@ for record in records:
         summary = json.loads(source.read_text())
     except json.JSONDecodeError as exc:
         fail(f"source artifact is not JSON: {exc}")
-    required_summary = {"tier", "core_id", "n", "quality", "per_suite_quality", "per_suite_counts", "era", "decision_grade"}
+    required_summary = {"tier", "core_id", "n", "quality", "per_suite_quality", "per_suite_counts", "era", "decision_grade", "observations"}
     if not isinstance(summary, dict) or set(summary) != required_summary:
         fail("source summary must declare exactly tier/core/n/quality/per-suite/era/decision-grade fields")
     if summary["decision_grade"] is not True:
@@ -129,7 +130,46 @@ for record in records:
         fail("source summary quality does not match declared source quality")
     if not isinstance(summary["per_suite_quality"], dict) or not isinstance(summary["per_suite_counts"], dict):
         fail("source summary per-suite fields must be objects")
-    source_by_tier[str(tier)] = {"record": record, "summary": summary}
+    observations = summary["observations"]
+    observation_keys = {"path", "sha256", "q", "ts", "core_id", "protocol_id", "n", "era"}
+    if not isinstance(observations, list) or not 3 <= len(observations) <= 10:
+        fail("source summary must include 3-10 independent full-pool observations")
+    observation_identities: set[tuple[str, str]] = set()
+    normalized_observations = []
+    for observation in observations:
+        if not isinstance(observation, dict) or set(observation) != observation_keys:
+            fail("source summary observation has unexpected or missing fields")
+        identity = (str(observation["path"]), str(observation["sha256"]))
+        if identity in observation_identities:
+            fail("source summary repeats a raw observation")
+        observation_identities.add(identity)
+        if observation["era"] != "E8" or observation["core_id"] != record["core_id"]:
+            fail("source summary observation is not tied to the declared E8 core")
+        if not isinstance(observation["n"], int) or observation["n"] <= 0:
+            fail("source summary observation n must be a positive integer")
+        if not isinstance(observation["protocol_id"], str) or not observation["protocol_id"]:
+            fail("source summary observation protocol is missing")
+        post_boundary_timestamp(observation["ts"], "source summary observation timestamp")
+        finite_number(observation["q"], "source summary observation quality")
+        raw = Path(observation["path"])
+        if not raw.is_file():
+            fail(f"raw observation artifact is missing: {raw}")
+        if hashlib.sha256(raw.read_bytes()).hexdigest() != observation["sha256"]:
+            fail(f"raw observation artifact hash mismatch: {raw}")
+        try:
+            raw_payload = json.loads(raw.read_text())
+        except json.JSONDecodeError as exc:
+            fail(f"raw observation artifact is not JSON: {exc}")
+        raw_keys = {"q", "ts", "core_id", "protocol_id", "n", "era", "per_suite_quality", "per_suite_counts"}
+        if not isinstance(raw_payload, dict) or set(raw_payload) != raw_keys:
+            fail("raw observation artifact has unexpected or missing fields")
+        for key in ("q", "ts", "core_id", "protocol_id", "n", "era"):
+            if raw_payload[key] != observation[key]:
+                fail("raw observation artifact does not match normalized observation")
+        if not isinstance(raw_payload["per_suite_quality"], dict) or not isinstance(raw_payload["per_suite_counts"], dict):
+            fail("raw observation per-suite fields must be objects")
+        normalized_observations.append({**observation, "raw": raw_payload})
+    source_by_tier[str(tier)] = {"record": record, "summary": summary, "observations": normalized_observations}
 if seen_tiers != {1, 2}:
     fail("source records must cover tiers 1 and 2")
 
@@ -155,10 +195,28 @@ for tier in ("1", "2"):
     finite_number((baseline["baselines_by_tier"] or {}).get(tier), f"tier {tier} baseline")
     summary = source_by_tier[tier]["summary"]
     record = source_by_tier[tier]["record"]
-    if baseline["baselines_by_tier"][tier] != record["quality"]:
+    observations = source_by_tier[tier]["observations"]
+    observed_quality = [observation["q"] for observation in observations]
+    aggregate_quality = statistics.median(observed_quality)
+    if summary["quality"] != aggregate_quality or record["quality"] != aggregate_quality:
+        fail(f"tier {tier} source quality is not the median of raw observations")
+    if baseline["baselines_by_tier"][tier] != aggregate_quality:
         fail(f"tier {tier} baseline does not match source quality")
-    if baseline["per_suite_quality_by_tier"][tier] != summary["per_suite_quality"] or baseline["per_suite_counts_by_tier"][tier] != summary["per_suite_counts"]:
-        fail(f"tier {tier} per-suite proposal does not match source summary")
+    suite_keys = set(observations[0]["raw"]["per_suite_quality"])
+    if not suite_keys or any(set(item["raw"]["per_suite_quality"]) != suite_keys or set(item["raw"]["per_suite_counts"]) != suite_keys for item in observations):
+        fail(f"tier {tier} raw observation per-suite keys differ")
+    aggregate_suite_quality = {
+        suite: statistics.median(item["raw"]["per_suite_quality"][suite] for item in observations)
+        for suite in suite_keys
+    }
+    aggregate_suite_counts = {
+        suite: statistics.median(item["raw"]["per_suite_counts"][suite] for item in observations)
+        for suite in suite_keys
+    }
+    if summary["per_suite_quality"] != aggregate_suite_quality or summary["per_suite_counts"] != aggregate_suite_counts:
+        fail(f"tier {tier} source summary per-suite values are not median aggregates")
+    if baseline["per_suite_quality_by_tier"][tier] != aggregate_suite_quality or baseline["per_suite_counts_by_tier"][tier] != aggregate_suite_counts:
+        fail(f"tier {tier} per-suite proposal does not match source aggregate")
     quality_map = baseline["per_suite_quality_by_tier"][tier]
     count_map = baseline["per_suite_counts_by_tier"][tier]
     if set(quality_map) != set(count_map):
@@ -168,13 +226,19 @@ for tier in ("1", "2"):
         if not isinstance(count_map[suite], int) or count_map[suite] < 0:
             fail(f"tier {tier} suite {suite} count must be nonnegative")
     history = replacement["quality_history_by_tier"][tier]
-    if not isinstance(history, list) or not 3 <= len(history) <= 10:
-        fail(f"tier {tier} quality history must contain 3-10 E8 observations")
+    if not isinstance(history, list) or history != observed_quality:
+        fail(f"tier {tier} quality history must be derived from raw observations")
     for index, value in enumerate(history):
         finite_number(value, f"tier {tier} history[{index}]")
     provenance = replacement["quality_history_provenance_by_tier"][tier]
     if not isinstance(provenance, list) or len(provenance) != len(history):
         fail(f"tier {tier} MAD provenance must match history length")
+    expected_provenance = [
+        {key: observation[key] for key in ("q", "ts", "era", "core_id")}
+        for observation in observations
+    ]
+    if provenance != expected_provenance:
+        fail(f"tier {tier} MAD provenance must be derived from raw observations")
     allowed_cores = {item["record"]["core_id"] for item in source_by_tier.values()}
     for index, observation in enumerate(provenance):
         if not isinstance(observation, dict) or set(observation) != {"q", "ts", "era", "core_id"}:
