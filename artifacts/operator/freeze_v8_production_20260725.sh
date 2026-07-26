@@ -1099,7 +1099,7 @@ recover_transaction() {
 }
 
 main() {
-    local command
+    local command token attest_token=''
     for command in git jq sha256sum timeout python3 flock install sync mktemp rg realpath sed wc awk head; do
         command -v "$command" >/dev/null || fail "missing required command: $command"
     done
@@ -1131,8 +1131,16 @@ main() {
             print_terminal_lineup_manifest
             return
             ;;
-        '') ;;
-        *) fail "usage: $0 [--status|--recover|--validate-only|--validate-terminal-lineup-only|--terminal-lineup-manifest]" ;;
+        --attest)
+            [[ $# -eq 2 ]] || fail "usage: $0 --attest FREEZE-V8"
+            [[ -n "$2" ]] || fail "operator attestation token must not be empty"
+            attest_token=$2
+            ;;
+        '')
+            [[ $# -eq 0 ]] ||
+                fail "usage: $0 [--status|--recover|--validate-only|--validate-terminal-lineup-only|--terminal-lineup-manifest|--attest FREEZE-V8]"
+            ;;
+        *) fail "usage: $0 [--status|--recover|--validate-only|--validate-terminal-lineup-only|--terminal-lineup-manifest|--attest FREEZE-V8]" ;;
     esac
     [[ ! -e "$PREP_DIR" ]] || fail "interrupted preparation exists at $PREP_DIR; inspect before retrying"
     if [[ -e "$TXN_DIR" || -e "$OUTPUT" ]]; then
@@ -1155,8 +1163,12 @@ main() {
         'The CPU matrix promotion_decision=false is preserved; this is not an automatic matrix promotion.' \
         'WAIVE-Q8 remains binding; no Q8 non-regression claim is made.' \
         'Type FREEZE-V8 to attest this final release decision; anything else aborts.'
-    local token
-    read -r -p '> ' token
+    if [[ -n "$attest_token" ]]; then
+        token=$attest_token
+        printf '> %s\n' "$token"
+    else
+        read -r -p '> ' token
+    fi
     [[ "$token" == FREEZE-V8 ]] || { printf 'Aborted; no files changed.\n'; return 1; }
 
     exec 7>>"$LOCK"

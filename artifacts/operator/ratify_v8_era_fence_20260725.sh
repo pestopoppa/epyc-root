@@ -255,8 +255,10 @@ acquire_locks() {
     exec 9>>"$STATE_LOCK"
     flock -n 9 || fail "live AutoPilot state lock is held"
 
-    autopilot_is_running &&
+    if autopilot_is_running; then
         fail "AutoPilot process exists despite the singleton lock; inspect before proceeding"
+    fi
+    return 0
 }
 
 validate_production() {
@@ -961,6 +963,7 @@ PY
 }
 
 main() {
+    local command decision operator_token=''
     for command in git jq sha256sum uv python3 flock rg install mktemp sync; do
         command -v "$command" >/dev/null || fail "missing required command: $command"
     done
@@ -993,10 +996,17 @@ main() {
             printf 'Read-only E8 validation passed; no files changed.\n'
             return
             ;;
+        --attest)
+            [[ $# -eq 2 ]] ||
+                fail "usage: $0 --attest RATIFY-V8-ERA-FENCE"
+            [[ -n "$2" ]] || fail "operator attestation token must not be empty"
+            operator_token=$2
+            ;;
         "")
+            [[ $# -eq 0 ]] || fail "usage: $0 [--status|--recover|--validate-only|--attest RATIFY-V8-ERA-FENCE]"
             ;;
         *)
-            fail "usage: $0 [--status|--recover|--validate-only]"
+            fail "usage: $0 [--status|--recover|--validate-only|--attest RATIFY-V8-ERA-FENCE]"
             ;;
     esac
 
@@ -1031,7 +1041,12 @@ main() {
         'The CPU Q4 architect is live and quality-tested; the separate B2 omission is not a deprecation premise.' \
         'The campaign-scoped WAIVE-Q8 remains binding; no Q8 performance or non-regression claim is made.' \
         'Type RATIFY-V8-ERA-FENCE to attest this decision; anything else aborts.'
-    read -r -p '> ' decision
+    if [[ -n "$operator_token" ]]; then
+        decision=$operator_token
+        printf '> %s\n' "$decision"
+    else
+        read -r -p '> ' decision
+    fi
     [[ "$decision" == "RATIFY-V8-ERA-FENCE" ]] || {
         printf 'Aborted; no files changed.\n'
         return 1
