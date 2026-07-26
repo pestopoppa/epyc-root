@@ -221,3 +221,39 @@ def test_evidence_contract_rejects_aggregate_mismatch(tmp_path: Path) -> None:
 
     assert result.returncode != 0
     assert "baseline does not match source quality" in result.stderr
+
+
+def test_evidence_contract_rejects_mismatched_observation_protocol_or_n(tmp_path: Path) -> None:
+    evidence = _evidence(tmp_path)
+    payload = json.loads(evidence.read_text())
+    source = Path(payload["source_records"][0]["path"])
+    summary = json.loads(source.read_text())
+    summary["observations"][0]["protocol_id"] = "wrong-protocol"
+    source.write_text(json.dumps(summary) + "\n")
+    payload["source_records"][0]["sha256"] = hashlib.sha256(source.read_bytes()).hexdigest()
+    evidence.write_text(json.dumps(payload) + "\n")
+
+    result = _validate(evidence)
+
+    assert result.returncode != 0
+    assert "protocol or n differs" in result.stderr
+
+
+def test_evidence_contract_rejects_copied_raw_observation(tmp_path: Path) -> None:
+    evidence = _evidence(tmp_path)
+    payload = json.loads(evidence.read_text())
+    source = Path(payload["source_records"][0]["path"])
+    summary = json.loads(source.read_text())
+    original = Path(summary["observations"][0]["path"])
+    copied = tmp_path / "copied-observation.json"
+    copied.write_bytes(original.read_bytes())
+    summary["observations"][1]["path"] = str(copied)
+    summary["observations"][1]["sha256"] = hashlib.sha256(copied.read_bytes()).hexdigest()
+    source.write_text(json.dumps(summary) + "\n")
+    payload["source_records"][0]["sha256"] = hashlib.sha256(source.read_bytes()).hexdigest()
+    evidence.write_text(json.dumps(payload) + "\n")
+
+    result = _validate(evidence)
+
+    assert result.returncode != 0
+    assert "repeats a raw observation path or content hash" in result.stderr

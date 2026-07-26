@@ -134,21 +134,24 @@ for record in records:
     observation_keys = {"path", "sha256", "q", "ts", "core_id", "protocol_id", "n", "era"}
     if not isinstance(observations, list) or not 3 <= len(observations) <= 10:
         fail("source summary must include 3-10 independent full-pool observations")
-    observation_identities: set[tuple[str, str]] = set()
+    observation_paths: set[str] = set()
+    observation_hashes: set[str] = set()
     normalized_observations = []
     for observation in observations:
         if not isinstance(observation, dict) or set(observation) != observation_keys:
             fail("source summary observation has unexpected or missing fields")
-        identity = (str(observation["path"]), str(observation["sha256"]))
-        if identity in observation_identities:
-            fail("source summary repeats a raw observation")
-        observation_identities.add(identity)
+        if str(observation["path"]) in observation_paths or str(observation["sha256"]) in observation_hashes:
+            fail("source summary repeats a raw observation path or content hash")
+        observation_paths.add(str(observation["path"]))
+        observation_hashes.add(str(observation["sha256"]))
         if observation["era"] != "E8" or observation["core_id"] != record["core_id"]:
             fail("source summary observation is not tied to the declared E8 core")
         if not isinstance(observation["n"], int) or observation["n"] <= 0:
             fail("source summary observation n must be a positive integer")
         if not isinstance(observation["protocol_id"], str) or not observation["protocol_id"]:
             fail("source summary observation protocol is missing")
+        if observation["protocol_id"] != record["protocol_id"] or observation["n"] != record["n"]:
+            fail("source summary observation protocol or n differs from the declared tier run")
         post_boundary_timestamp(observation["ts"], "source summary observation timestamp")
         finite_number(observation["q"], "source summary observation quality")
         raw = Path(observation["path"])
@@ -168,6 +171,13 @@ for record in records:
                 fail("raw observation artifact does not match normalized observation")
         if not isinstance(raw_payload["per_suite_quality"], dict) or not isinstance(raw_payload["per_suite_counts"], dict):
             fail("raw observation per-suite fields must be objects")
+        if set(raw_payload["per_suite_quality"]) != set(raw_payload["per_suite_counts"]):
+            fail("raw observation per-suite quality/count keys differ")
+        for suite, value in raw_payload["per_suite_quality"].items():
+            finite_number(value, f"raw observation suite {suite} quality")
+            count = raw_payload["per_suite_counts"][suite]
+            if not isinstance(count, int) or count < 0:
+                fail(f"raw observation suite {suite} count must be a nonnegative integer")
         normalized_observations.append({**observation, "raw": raw_payload})
     source_by_tier[str(tier)] = {"record": record, "summary": summary, "observations": normalized_observations}
 if seen_tiers != {1, 2}:
@@ -209,10 +219,12 @@ for tier in ("1", "2"):
         suite: statistics.median(item["raw"]["per_suite_quality"][suite] for item in observations)
         for suite in suite_keys
     }
-    aggregate_suite_counts = {
-        suite: statistics.median(item["raw"]["per_suite_counts"][suite] for item in observations)
-        for suite in suite_keys
-    }
+    aggregate_suite_counts = {}
+    for suite in suite_keys:
+        counts = {item["raw"]["per_suite_counts"][suite] for item in observations}
+        if len(counts) != 1:
+            fail(f"tier {tier} raw observation per-suite counts differ")
+        aggregate_suite_counts[suite] = counts.pop()
     if summary["per_suite_quality"] != aggregate_suite_quality or summary["per_suite_counts"] != aggregate_suite_counts:
         fail(f"tier {tier} source summary per-suite values are not median aggregates")
     if baseline["per_suite_quality_by_tier"][tier] != aggregate_suite_quality or baseline["per_suite_counts_by_tier"][tier] != aggregate_suite_counts:
