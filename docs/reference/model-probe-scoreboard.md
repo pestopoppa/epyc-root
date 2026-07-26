@@ -1,8 +1,8 @@
-# Model Probe Scoreboard (production-consolidated-v7)
+# Model Probe Scoreboard (production-consolidated-v8)
 
 **Living scoreboard** — one glance-able read of how every candidate model is performing on the
-production v7 stack. Current production is `production-consolidated-v7 @
-6ad45fa3ff` (binary `10098`; iqk + GPU-opts + `Q2_0`; some older rows name
+production v8 stack. Current production is `production-consolidated-v8 @
+67a433bf45a8a091d83b4ea0b32ff0735fd51800` (binary `10107`; `GGML_IQK=1` supports IQ2/IQ3 and IQ4_XS, while IQ1 remains non-accelerated; some older rows name
 their original artifact commit). Newer `llama.cpp-experimental` commits are
 post-candidate research until they rerun the final coherence+garbage smoke. All rows are
 **OBSERVATION-grade** (single-config, small-n per MEASUREMENT.md) — hypotheses, not

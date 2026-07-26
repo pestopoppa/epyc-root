@@ -1,9 +1,10 @@
-# iqk IQ-quant Enablement — a live defect on every IQ-quant model we run
+# iqk IQ-quant Enablement — shipped in v8, residual research active
 
-**Status**: RE-LANDED ON v8 — BUILT, correctness-attested (3 models), speed matrix IN FLIGHT. **Carrying vehicle is now `experimental-v8-refresh-20260724`** (commits `b8ad9d292` enable+harden, `1977a5d78` Q2_K/Q3_K fallback preserve), a hardened SUPERSET of the branch below. See the 2026-07-25 audit section for residual defects + new tasks.
+**Status**: PROMOTED AND FROZEN IN v8 — `production-consolidated-v8` at `67a433bf45a8a091d83b4ea0b32ff0735fd51800`, `llama-server` version `10107`. The terminal both-mode lineup passed `24/24` smoke and `6/6` API; final-freeze attestation `artifacts/operator/ratify_v8_final_freeze_20260725.json` has SHA `e7fce2c5cd720940fc84b669f57b78a61589fd8baef9b4e03030ed0dc4a3175b`. The CPU Q4 architect remains live at `8083`. The campaign-scoped WAIVE-Q8 means v8 makes no Q8 performance or non-regression claim. See the 2026-07-25 audit section for residual post-v8 work.
 **Created**: 2026-07-21 (via research-intake deep dive on intake-872/873)
-**Priority**: HIGH — this is a live defect, not an experiment. We ship an acceleration flag that silently skips the majority of the weights on four deployed models.
-**Branch**: ~~`iqk/enable-iquants-v7-20260721` @ `f78ec18fe`, worktree `/mnt/raid0/llm/llama.cpp-iqk-iquants`~~ **superseded 2026-07-25** — the v8 branch re-implemented this as `b8ad9d292` (same 5-type whitelist + tests + IQ3_XXS small-shape NMSE guard) WITHOUT merging `f78ec18fe`; the worktree branch is now historical. Retire it after v8 promotes.
+**Priority**: POST-v8 RESEARCH — the production enablement defect is closed;
+NEW-6, trellis gates, and the remaining riders below stay open.
+**Branch**: ~~`iqk/enable-iquants-v7-20260721` @ `f78ec18fe`, worktree `/mnt/raid0/llm/llama.cpp-iqk-iquants`~~ **superseded 2026-07-25** — the v8 branch re-implemented this as `b8ad9d292` (same 5-type whitelist + tests + IQ3_XXS small-shape NMSE guard) WITHOUT merging `f78ec18fe`; the worktree branch is historical after the v8 freeze.
 **Superseded branch**: `iqk/enable-iquants-20260721` @ `e06f5368f` (off the experimental tip, only 3 of 5 types) — do not use
 **Related**: [tq3-quantization-evaluation.md](tq3-quantization-evaluation.md), [glm52-reviewer-capability-gates.md](glm52-reviewer-capability-gates.md), [v7-promotion.md](v7-promotion.md), completed [iqk-port.md](../completed/iqk-port.md)
 
@@ -11,7 +12,8 @@
 
 ## Executor start here
 
-Build the worktree, run the per-model gates in B2-B4, promote via B5. Everything below explains *why this is worth doing promptly*; the tasks are at the bottom.
+B1-B5 are complete in frozen v8. Start from the unchecked post-v8 tasks below;
+do not rebuild or re-promote the frozen production branch.
 
 ## Why this matters (the case for doing it now)
 
@@ -81,7 +83,7 @@ Verified 2026-07-21: host load average ~48, seven llama-servers resident, and a 
   `63.5% / 56.9%`. Evidence is committed in research at `965e353e` under
   `data/kernel-v8-candidate/quality-gate/run-20260725T204443Z-fullcontract-both-mode/`.
   - 2026-07-25 audit note: **this exact risk class already materialized** — `b8ad9d292` incidentally reclassified Q2_K/Q3_K activations Q8_2_X4→Q8_K, engaging never-validated iqk kquant kernels and corrupting Hy3 output (caught on live output at 20:47Z, NOT by tests; fixed same day by `1977a5d78` + static_asserts). The measured non-IQ check is therefore NOT a formality for v8 — it is mandatory, and default CI still cannot catch a re-introduction (see NEW-4 below).
-- [ ] **B5 — Promote.** If B2-B4 pass, fold into the next experimental→production promotion per the four-step workflow. Do NOT hand-patch production v7.
+- [x] **B5 — Promote.** ✅ 2026-07-26 — promoted and frozen as `production-consolidated-v8` at `67a433bf45a8a091d83b4ea0b32ff0735fd51800` (version `10107`). Terminal both-mode lineup passed `24/24` smoke and `6/6` API; final-freeze attestation `artifacts/operator/ratify_v8_final_freeze_20260725.json` SHA `e7fce2c5cd720940fc84b669f57b78a61589fd8baef9b4e03030ed0dc4a3175b`. Do not hand-patch the frozen production kernel.
 
 ## Decision gates
 
@@ -98,7 +100,8 @@ Chasing the *trellis* stub is what uncovered the IQ-quant defect above, but the 
 **And the bpw arithmetic undercuts the motivating use case.** `block_iq2_kt` is 68 B per 256 weights = **2.125 bpw**, versus **IQ2_XXS at 2.0625 bpw** — trellis is *larger* than what GLM-5.2 already uses, so it saves zero bandwidth while adding per-weight arithmetic. It is a **quality-at-equal-bpw play mis-framed as a speed play**. Against Q4_K_M the saving is ~17.5%, but our own iqk data (+7.9-8.8% on Q4_K, ~0% on Q8_0) shows we are not fully bandwidth-saturated at 4-bit, so added arithmetic eats into it. ik's own author states KT quants are "generally slower for token generation on CPU due to likely compute bottleneck".
 
 **Sequencing (do not reorder):**
-- [ ] **T1 — Do B1-B5 above first.** Cheap, additive, and it targets models we actually run.
+- [x] **T1 — Do B1-B5 above first.** ✅ 2026-07-26 — satisfied by the
+  frozen v8 promotion; continue with T2 only under its separate gate.
 - [ ] **T2 — Gate trellis in `ik_llama.cpp`, not in our tree.** `/mnt/raid0/llm/ik_llama.cpp` is already on disk and is the reference implementation. Build it in a scratch dir purely as a measurement instrument and bench IQ4_KT vs Q4_K_M and IQ2_KT vs IQ2_XXS *there*. This answers the whole question without porting anything. Needs operator inference approval; it is a bench harness, not a second serving binary.
 - [ ] **T3 — Port only if T2 wins.** Gate: IQ4_KT must reach **≥95% of Q4_K_M tg128** under the canonical protocol **and** show a measurable PPL/eval win. Slower than 95% ⇒ **DROP permanently** — 17.5% fewer bytes that decode slower is strictly dominated.
 - NOTE: no `IQ*_KT` GGUF exists under `/mnt/raid0/llm`, and public KT producers (ubergarm, ik-community) cover giant MoEs we do not serve. Viterbi is the **encoding** cost only — at inference the trellis LCG runs forward — so self-quantising is hours on 192 cores plus an imatrix, not prohibitive, but not free.

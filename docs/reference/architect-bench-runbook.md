@@ -44,7 +44,7 @@ result.
 ## 1. Prerequisites & gates
 
 - [ ] **Kernel:** the current production kernel's GPU build (`llama.cpp/build-hip/bin/llama-server`), e.g.
-      `production-consolidated-v7`. Confirm `--version` and record it. Bench numbers must come from the
+      `production-consolidated-v8` (`67a433bf45a8a091d83b4ea0b32ff0735fd51800`, version `10107`). Confirm `--version` and record it. Bench numbers must come from the
       real production binary, never a stripped bench build.
 - [ ] **GPU idle:** `rocm-smi --showuse --showmemuse` → 0% / 0 VRAM, no KFD PIDs. The single MI210 runs
       **one arm at a time**.

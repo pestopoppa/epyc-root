@@ -16,14 +16,14 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | [MoE Optimization](moe-optimization.md) | 37 | Reasoning ∝ ACTIVE FLOPs, knowledge ∝ TOTAL params; GLM-5.2 routing is near-uniform (top_32=15%) so generic hot-expert offload/REAP is not justified; IQ2 GPU residency is two-for-two viable but caps at ~122B |
 | [KV Cache](kv-cache.md) | 39 | StreamingLLM pre-v7 floor sweep failed the quality floor → no simple KV cluster admitted yet; per-token KV streaming over PCIe is an anti-pattern (7-14× slower than DDR5); GDN residents' O(1) KV make teleport KV-copy near-moot |
 | [Quantization](quantization.md) | 33 | The architect's degenerate `\boxed{}` repetition loop tracks the MODEL not the quant (Q4 loops identically to IQ2 on the same item — 2-bit-EOS-damage hypothesis REFUTED); fenced CPU-Q4 arm tracks at-or-above GPU-IQ2 on hard reasoning, undercutting the case for a real IQ2 reasoning penalty |
-| [Hardware Optimization](hardware-optimization.md) | 93+ | CPU decode is BW-exhausted but CPU *prefill* is an open compute-bound regime; v7 promoted as `production-consolidated-v7`; E5 W0 scout (69/69 cells) shows 4×quarters beats any big-instance shape for EVERY production model, and cross-architecture GPU batching is architecture-dependent (small-MoE ≫ dense > large-MoE-IQ2, with the large-MoE arm uniquely collapsing at long context) |
+| [Hardware Optimization](hardware-optimization.md) | 93+ | CPU decode is BW-exhausted but CPU *prefill* is an open compute-bound regime; v8 is frozen as `production-consolidated-v8`; E5 W0 scout (69/69 cells) shows 4×quarters beats any big-instance shape for EVERY production model, and cross-architecture GPU batching is architecture-dependent (small-MoE ≫ dense > large-MoE-IQ2, with the large-MoE arm uniquely collapsing at long context) |
 
 ## Serving & Systems
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
 | [Inference Serving](inference-serving.md) | 61 | The v7-cutover quarters-only launch was ruled an accidental regression and the big+quarters lineup was restored same-day via a new additive, no-outage `--numa-mode both` promotion path; the WP-12 fleet layer flipped live and its case-10 gate found production within-role concurrency comes from 6-process OS fan-out, not a role-level semaphore (which resolves to `Semaphore(1)` for every role); within-role placement SM's live KV-migration path re-ratified on the restored lineup (fwd 6/rev 1, 0 aborts) |
-| [Local Inference](local-inference.md) | 36 | v7 promoted as `production-consolidated-v7`; deployed-lane throughput table + living model-probe scoreboard (all observation-grade); MI210 fits everything but the 122B-Q4 architect and GLM-5.2 (238 GB) |
+| [Local Inference](local-inference.md) | 36 | v8 frozen as `production-consolidated-v8`; deployed-lane throughput table + living model-probe scoreboard (all observation-grade); MI210 fits everything but the 122B-Q4 architect and GLM-5.2 (238 GB) |
 | [Chat Templates](chat-templates.md) | 2 | Per-family turn markers + when to use `/completion` (Qwen/gemma-3/Llama3) vs `/v1/chat/completions` (gemma-4 multi-channel) — checklist for onboarding new models without silent routing failures |
 
 ## Routing & Evaluation

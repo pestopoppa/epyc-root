@@ -5,6 +5,16 @@
 **Last compiled**: 2026-07-20 (adds the deployed-lane throughput table, the living model-probe scoreboard + stop-list, and the CPU-prefill local lever; earlier 2026-07-19 note: adds v7 promotion boundary, GLM reviewer residency decision, and post-promotion P-GPU-1 certification)
 **Sources**: 36 documents
 
+## Current Production — 2026-07-26
+
+Production is frozen on `production-consolidated-v8` at
+`67a433bf45a8a091d83b4ea0b32ff0735fd51800` (binary `10107`). The terminal
+both-mode lineup passed 24/24 endpoint smoke and API 6/6, including the live
+Qwen3.5-122B CPU Q4 architect at port 8083. The final freeze attestation is
+[`ratify_v8_final_freeze_20260725.json`](../artifacts/operator/ratify_v8_final_freeze_20260725.json);
+v7 at `6ad45fa3ff6718c07c000061dbc6e29c1771f6e3` remains the rollback/history
+anchor.
+
 ## Compiled Update — 2026-07-20
 
 v7 is promoted as `production-consolidated-v7` at frozen candidate `6ad45fa3ff` (binary `10098`). Two new reference artifacts organize the local-serving picture: a **deployed-lane throughput table** (what each role actually runs today) and a **living model-probe scoreboard** (how every candidate model/quant performs, all observation-grade). Confidence: `verified` for deployed CPU-lane facts and the OP-2 canonical control; `observation` for every MI210 throughput row that has not been rerun under `P-GPU-1`.
@@ -20,7 +30,10 @@ v7 is promoted as `production-consolidated-v7` at frozen candidate `6ad45fa3ff` 
 
 - The frontdoor **CPU-MTP** context curve on v7 is a measured gap (only the ~34.5 prod point exists; K35 measured GPU-MTP).
 - GPU-worker eligibility for gemma-4 is unresolved (natural free-form multi-slot determinism fails, K11.1) even though the model fits.
-- Architect ≥32K context throughput is unmeasured; all scoreboard/throughput rows require production-named `P-GPU-1` reruns on `production-consolidated-v7` before they become decision-grade.
+- At this 2026-07-20 boundary, architect ≥32K context throughput was
+  unmeasured and decision-grade reruns required the then-current
+  `production-consolidated-v7`. Current reruns use the production-named v8
+  kernel in the 2026-07-26 note above.
 
 ### Source References (2026-07-20)
 
@@ -32,7 +45,7 @@ v7 is promoted as `production-consolidated-v7` at frozen candidate `6ad45fa3ff` 
 
 ## Summary
 
-The project runs all production inference locally through llama-server (from a custom llama.cpp fork) serving GGUF-quantized models on the EPYC 9655 CPU, using 1.13 TB of DDR5 RAM. There is no cloud API dependency for inference and no network-dependent model serving. As of the **2026-07-20 v7 cutover** the entire stack -- from a 0.5B draft model to a 122B architect -- runs on **ONE kernel, `production-consolidated-v7`** at frozen candidate `6ad45fa3ff` / binary `10098`: upstream llama.cpp framework + native MTP/NEXTN speculative decoding + the project's forward-ported CPU kernels + ik_llama's iqk AVX-512 GEMM kernels integrated into the fork (runtime-gated by `GGML_IQK=1`) plus the validated v7 promotion set. The earlier 2026-06-26 v6 cutover consolidated the gemma worker off the separate `ik_llama.cpp` binary; **ik_llama.cpp is now fully deprecated — there is no second binary**. (The `production-consolidated-v3` fork described in the historical findings below is a prior era of the same lineage.)
+The project runs all production inference locally through llama-server (from a custom llama.cpp fork) serving GGUF-quantized models on the EPYC 9655 CPU, using 1.13 TB of DDR5 RAM. There is no cloud API dependency for inference and no network-dependent model serving. As of the **2026-07-25 v8 final freeze** the entire stack -- from a 0.5B draft model to a 122B architect -- runs on **ONE kernel, `production-consolidated-v8`** at `67a433bf45a8a091d83b4ea0b32ff0735fd51800` / binary `10107`. `GGML_IQK=1` supports IQ2/IQ3 and IQ4_XS as well as the existing supported types; IQ1 remains non-accelerated. The v7 kernel (`6ad45fa3ff6718c07c000061dbc6e29c1771f6e3` / binary `10098`) is the rollback/history anchor. The earlier 2026-06-26 v6 cutover consolidated the gemma worker off the separate `ik_llama.cpp` binary; **ik_llama.cpp is now fully deprecated — there is no second binary**. (The `production-consolidated-v3` fork described in the historical findings below is a prior era of the same lineage.)
 
 As of **2026-07-02 an AMD Instinct MI210 (gfx90a, CDNA2, 64 GB HBM2e) is installed**, opening a GPU serving tier for the first time — earlier eras of this page correctly stated "no GPU," which is now superseded. The MI210 is a *latency tier on top of* the CPU+RAM tier, not a replacement: the fork's HIP build leg is verified on gfx90a and GPU-resident decode (including gemma4 NEXTN-MTP and qwen35 delta-net) runs clean and is fully insulated from the concurrent CPU stack. Vulkan is architecturally impossible on the compute-only MI200 family (no CDNA2 ICD exists); the GPU path is HIP/ROCm only.
 
@@ -52,7 +65,7 @@ Speculative decoding is the primary acceleration method. The production stack us
 
 ### New Findings (2026-07-02) — v6 single-kernel cutover, MI210 GPU tier, CPU/GPU MTP, and stalled ports
 
-- **Historical 2026-06-26 v6-iqk cutover: one-kernel consolidation and ik_llama deprecation.** That cutover moved every hot role onto `production-consolidated-v6` (upstream framework + native MTP/NEXTN + our CPU kernels + ik's iqk AVX-512 GEMM, `GGML_IQK`-gated) and retired the separate ik_llama binary. Current production is now `production-consolidated-v7`; the v6 row remains the evidence record for the one-kernel architecture. [v6-iqk-promotion.md](../handoffs/completed/v6-iqk-promotion.md)
+- **Historical 2026-06-26 v6-iqk cutover: one-kernel consolidation and ik_llama deprecation.** That cutover moved every hot role onto `production-consolidated-v6` (upstream framework + native MTP/NEXTN + our CPU kernels + ik's iqk AVX-512 GEMM, `GGML_IQK`-gated) and retired the separate ik_llama binary. Current production is now `production-consolidated-v8`; the v6 row remains the evidence record for the one-kernel architecture. [v6-iqk-promotion.md](../handoffs/completed/v6-iqk-promotion.md)
 - **iqk kernels give ~+38% throughput at zero quality cost — matched full-port eval-parity.** On `worker_general`, IQK-on vs IQK-off over N=206 matched AA Omniscience questions (deterministic F1): accuracy unchanged (0.111650 vs 0.111650), avg F1 +0.008365, hallucination rate −0.010929, and throughput 38.46 vs 27.78 t/s = **1.38×**. This is the P-QUAL-PROMO eval-parity evidence; a clean post-reboot bench and any operator production-policy decision remain the only open tail. [v6-iqk-promotion.md](../handoffs/active/v6-iqk-promotion.md)
 - **An AMD Instinct MI210 (gfx90a, 64 GB HBM2e) is installed and the fork's HIP build leg is verified — GPU inference now works.** Isolated worktree `mi210-hip-enable` built with `-DGGML_HIP=ON -DAMDGPU_TARGETS=gfx90a`. One build break: ROCm 6.2 ships only `_fnuz` fp8 types (OCP landed in 6.3), so `ggml-cuda/vendors/hip.h` fp8 guard had to bump to `>=60300000` (committed `0ebf1b4d7`). Runtime gotcha: `BUILD_SHARED_LIBS=ON` binaries resolve the production CPU `libggml` via inherited `LD_LIBRARY_PATH` → SIGSEGV; must prepend the HIP build's `bin` + `/opt/rocm/lib`. [progress 2026-07-02 MI210](../progress/2026-07/2026-07-02-mi210.md), [gpu-drafter-mi200-investigation.md](../handoffs/active/gpu-drafter-mi200-investigation.md)
 - **GPU-side MTP self-speculation works on the MI210 (evidence for the MTP head-split thesis).** gemma-4-31B-Q4_K_M target + the 514 MB NEXTN head both on ROCm0 (`--spec-type draft-mtp -ngl 99 --spec-draft-ngl 99`, server-only — the CLI/speculative example is not MTP-wired): decode **43.25 t/s = 1.44× over plain (30.01)**, draft acceptance 59.7% (163/273), mean accept length 2.79 of n_max=3. The per-step hidden-state hop is a ~µs PCIe memcpy, not CPU compute. [progress 2026-07-02 MI210](../progress/2026-07/2026-07-02-mi210.md)

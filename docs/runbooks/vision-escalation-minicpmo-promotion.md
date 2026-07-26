@@ -22,9 +22,9 @@ adversarial verifier); the verifier's 6 corrections are applied inline. -->
 | P2 | **MI210 free** — the operator's external Qwen3.5-122B bench process on port **18072** is *not a stack lane and operator-owned — never kill it*; it must be finished/vacated. | `rocm-smi --showmemuse` ≈ 0% VRAM; `ls /sys/class/kfd/...` / `rocm-smi --showpids` shows no compute PIDs; `ss -ltn | grep 18072` empty. |
 | P3 | **Quiet window** — no AutoPilot running, no EvalTower batch in flight, no concurrent model downloads. If an eval is mid-run at any reload/stop point: **SIGSTOP the eval runner, act, SIGCONT** (naked reloads burned 532 queued questions on 2026-07-22 — `docs/runbooks/role-alias-change-runbook.md:66-70`). | `pgrep -af autopilot.py` empty; no fresh writes under `epyc-orchestrator/orchestration/reports/`. |
 | P4 | **Artifacts on disk** — model + vision projector present and hash-known. | `ls -l /mnt/raid0/llm/models/MiniCPM-o-4_5-gguf/MiniCPM-o-4_5-Q4_K_M.gguf` (5,026,714,400 bytes; sha256 `1237a97e…bbc0932` per master registry `artifact_status.hf_metadata.q4_k_m`) and `…/vision/MiniCPM-o-4_5-vision-F16.gguf` (1,095,113,184 bytes; sha256 `1453678c…ba82f421` per lean-era commit `4ab4e0ee`). |
-| P5 | **Production v7 HIP binary healthy** — `/mnt/raid0/llm/llama.cpp/build-hip/bin/llama-server --version` reports `version: 10098 (6ad45fa3f)`. **Deliberate deviation from the `a6f20ae1` diff**: that commit (2026-07-18, pre-cutover) pointed at `/mnt/raid0/llm/llama.cpp-experimental/build-hip/bin`; since the 2026-07-20 v7 cutover the production HIP tree is canonical, and serving off the experimental tree would violate production-kernel discipline. All `binary_dir` literals below use the **production** tree. |
+| P5 | **Production v8 HIP binary healthy** — `/mnt/raid0/llm/llama.cpp/build-hip/bin/llama-server --version` reports `version: 10107 (67a433bf4)`. **Deliberate deviation from the `a6f20ae1` diff**: that commit (2026-07-18, pre-cutover) pointed at `/mnt/raid0/llm/llama.cpp-experimental/build-hip/bin`; since the 2026-07-25 v8 final freeze the production HIP tree is canonical, and serving off the experimental tree would violate production-kernel discipline. All `binary_dir` literals below use the **production** tree. |
 | P6 | **Clean git baselines** in `epyc-inference-research` and `epyc-orchestrator` (the rollback anchor is a git revert; uncommitted drift makes rollback nondeterministic). Fetch-before-commit rule applies on main. | `git status` / `git log @{u}..` in both repos. |
-| P7 | **Realized fleet is the restored big+quarters lineup** (2026-07-23): frontdoor half0@8070+4q, worker full@8072+4q, ingest half0@8085+4q, architect@8083, worker_vision@8086, vision_escalation@8087. | `uv run python scripts/server/orchestrator_stack.py status`; runtime-facts manifest `/mnt/raid0/llm/tmp/orchestrator_runtime_facts.json` shows realized mode `both` + non-empty `selected_servers`. |
+| P7 | **Realized fleet is the terminal both-mode big+quarters lineup**: frontdoor half0@8070+4q, worker full@8072+4q, ingest half0@8085+4q, architect CPU Q4@8083, worker_vision@8086, vision_escalation@8087. | `uv run python scripts/server/orchestrator_stack.py status`; runtime-facts manifest `/mnt/raid0/llm/tmp/orchestrator_runtime_facts.json` shows realized mode `both` + non-empty `selected_servers`. |
 
 ---
 
@@ -34,7 +34,7 @@ adversarial verifier); the verifier's 6 corrections are applied inline. -->
 
 ### 1a. Replace `roles.vision_escalation` (master lines **4072–4138**, i.e. from `  vision_escalation:` up to but excluding `  worker_summarize:` at 4139)
 
-The replacement below is the `4ab4ee0ee`+`a6f20ae1` lean state reconstructed into master style, with two deliberate deviations flagged: **(i)** `binary_dir` → production v7 HIP tree (P5); **(ii)** historical `k35_*_observation` rows are **retained** (append-only registry discipline — never erase history to "fix" it).
+The replacement below is the `4ab4ee0ee`+`a6f20ae1` lean state reconstructed into master style, with two deliberate deviations flagged: **(i)** `binary_dir` → production v8 HIP tree (P5); **(ii)** historical `k35_*_observation` rows are **retained** (append-only registry discipline — never erase history to "fix" it).
 
 ```yaml
   vision_escalation:
@@ -301,6 +301,6 @@ Rollback is not a special path; it is Steps 1–6 with the safe-alias registry s
 - **The operator's external MI210 process (port 18072)** — operator-owned; this runbook never touches it.
 - **MEASUREMENT trust-boundary artifacts** (instrument eras, eval tower, scoring, safety gates) — human-amendment-only; nothing here edits them.
 - **worker_vision (8086)** — untouched in both directions.
-- **WP-12 fleet-layer restructuring / future `-v8` kernel work / core_v2 item composition** — out of scope; note only that `vision_escalation` has no `server_mode` row, so the fleet layer's registry-SoT fleet build does not bind it (manifest-role binding verified in priors).
+- **WP-12 fleet-layer restructuring / future `-v9` kernel work / core_v2 item composition** — out of scope; note only that `vision_escalation` has no `server_mode` row, so the fleet layer's registry-SoT fleet build does not bind it (manifest-role binding verified in priors).
 
 **Reporting**: on execution, flip the runbook checkbox in `handoffs/active/multimodal-pipeline.md:490`, append the promotion (or rollback) to `progress/YYYY-MM/…`, and record the Step-4 matrix refresh + Step-5/6 artifact paths in the promotion commit messages (one commit per repo: research = master registry; orchestrator = constants + regenerated lean/descriptors/priors/summary/matrix).

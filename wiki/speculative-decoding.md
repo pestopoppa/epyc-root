@@ -634,7 +634,8 @@ hidden-state extraction is the root cause" and never mention SSM.
 
 **The "no llama.cpp support" blocker is dead** (was true, then wasn't, for five weeks):
 upstream merged 2026-06-28 (PR #22105), forward-ported to production `ed4091266` (2026-07-18),
-`--spec-type draft-dflash` live on `production-consolidated-v7`, converted GGUF on disk since
+`--spec-type draft-dflash` live on `production-consolidated-v8` (and present in
+the v7 rollback lineage), converted GGUF on disk since
 2026-07-03. The NO-GO on *acceptance economics* stands; the *availability* framing does not.
 
 **Drafter architecture** (settled, so it stops being re-derived): headless (no `embed_tokens`,

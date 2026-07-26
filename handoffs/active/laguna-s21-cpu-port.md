@@ -1,6 +1,6 @@
 # Laguna S 2.1 CPU Port — Experimental Branch
 
-**Status**: IN PROGRESS on `experimental-v8-refresh-20260724` — base arch + DFlash landed as `afa770382` (+`6c44557bf` thread-safety); the required GPU IQ2 and CPU Q4 lanes are complete. CPU Q8 characterization retains a real arithmetic miss but is not a promotion lane under operator scope. DFlash enablement is a gate FAIL/no-go. See 2026-07-25 audit section. (Was: stub, created via /research-intake Stage-2, operator-approved 2026-07-22)
+**Status**: v8 PROMOTED AND FROZEN — `production-consolidated-v8` at `67a433bf45a8a091d83b4ea0b32ff0735fd51800` (version `10107`) carries the base Laguna arch + DFlash work. Required GPU IQ2 and CPU Q4 lanes are complete; terminal both-mode lineup passed `24/24` smoke and `6/6` API. CPU Q8 characterization retains a real arithmetic miss but is not a promotion lane under operator scope; DFlash enablement is a gate FAIL/no-go. L-7 is complete; L-8 and future Laguna architect evaluation remain open post-v8. (Was: stub, created via /research-intake Stage-2, operator-approved 2026-07-22)
 **Created**: 2026-07-22
 **Priority**: P2
 **Effort**: Low-Medium (base arch ~350 LOC; DFlash spec path is included in the v8 carrying work, with enablement separately gated)
@@ -17,7 +17,7 @@
 
 ## Objective
 
-Port the **Laguna** architecture (poolside/Laguna-S-2.1: 118B-total / 8B-active MoE — 256 routed experts top-10 + 1 shared; 48 layers mixed 12 full-attention + 36 sliding-window(512); **sigmoid**-routed MoE with score-correction bias; **softplus attention-output gate**; QK-norm; per-layer-type RoPE — YaRN on full layers, plain RoPE on SWA layers) onto an experimental llama.cpp branch on the EPYC 9655 CPU stack, validate quality + throughput vs the production kernel, and merge into a new production version **only** after both gates pass. **NEVER modify frozen `production-consolidated-v7`** — all work on `llama.cpp-experimental` off a fresh production pull, per the four-step workflow.
+Port the **Laguna** architecture (poolside/Laguna-S-2.1: 118B-total / 8B-active MoE — 256 routed experts top-10 + 1 shared; 48 layers mixed 12 full-attention + 36 sliding-window(512); **sigmoid**-routed MoE with score-correction bias; **softplus attention-output gate**; QK-norm; per-layer-type RoPE — YaRN on full layers, plain RoPE on SWA layers) onto an experimental llama.cpp branch on the EPYC 9655 CPU stack, validate quality + throughput vs the production kernel, and merge into a new production version **only** after both gates pass. The port is now frozen in v8; **NEVER modify `production-consolidated-v8`**. All residual work starts from a fresh v8 pull in `llama.cpp-experimental`, per the four-step workflow.
 
 ## Why now
 

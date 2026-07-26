@@ -1,10 +1,12 @@
 # CPU Prefill-Compute for Large Models
 
-**Status**: SCOPED / PROFILE-GATED (B7 scoping closed 2026-07-18 from the v7
-lever audit). Design is complete enough to leave agent-zero-inference mode;
-PC-4 has one default-off post-candidate kernel package landed in
-`llama.cpp-experimental`. PC-4o now keeps it as an env-gated research/tuning
-candidate, not default-on and not part of frozen v7 `6ad45fa3ff`.
+**Status**: PROMOTED DEFAULT-OFF PACKAGE + ACTIVE RESEARCH. PC-4p's two-bank
+package is in frozen `production-consolidated-v8` at
+`67a433bf45a8a091d83b4ea0b32ff0735fd51800` (version `10107`): native GLM-MTP
+is repaired, while `GGML_CPU_CONCAT_DIM0_ROWS=1` remains default-off. This is
+not a default-on prefill claim; the remaining prefill-compute research stays
+active, and the preserved CPU matrix `promotion_decision=false` is not a veto
+of the operator freeze.
 **Owner handoff**: this file. **Parent index**: [inference-acceleration-index.md](inference-acceleration-index.md);
 sibling of [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md).
 
@@ -387,8 +389,11 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
     `epyc-inference-research/data/kernel-v8-candidate/focused-post-p0/run-20260725T085222Z-e5dffb4e8/`
     records post-pick CPU `CONCAT` env-off `210/210`, env-on `210/210`,
     recurrent-rollback, `glm-dsa`, `deepseek32`, and thread-safety passes.
-    This admits the two banked changes to the candidate; it does not make the
-    CONCAT path default-on or elevate its prefill figures beyond observation-grade.
+    This admitted the two banked changes to the candidate; v8 was subsequently
+    promoted and frozen at `67a433bf45a8a091d83b4ea0b32ff0735fd51800` (version
+    `10107`). It does not make the CONCAT path default-on or elevate its prefill
+    figures beyond observation-grade; the preserved CPU matrix
+    `promotion_decision=false` is not a veto of the operator freeze.
 
 ## PC-0 operator-window plan
 
