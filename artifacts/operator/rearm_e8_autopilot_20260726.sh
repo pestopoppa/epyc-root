@@ -22,6 +22,8 @@ STABILITY_WINDOW_S="${AUTOPILOT_E8_STABILITY_WINDOW_S:-10}"
 cleanup_armed=0
 supervisor_pid=""
 child_pid=""
+supervisor_pgid=""
+child_pgid=""
 source_max_epoch=0
 
 fail() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
@@ -99,6 +101,24 @@ process_alive() {
     [[ -n "${1:-}" ]] && kill -0 "$1" 2>/dev/null
 }
 
+process_group_id() {
+    local pid="$1" pgid
+    pgid="$(ps -o pgid= -p "$pid" | tr -d '[:space:]')" || return 1
+    [[ "$pgid" =~ ^[0-9]+$ ]] || return 1
+    printf '%s\n' "$pgid"
+}
+
+process_group_alive() {
+    [[ -n "${1:-}" ]] && kill -0 -- "-$1" 2>/dev/null
+}
+
+process_parent_pid() {
+    local pid="$1" parent
+    parent="$(ps -o ppid= -p "$pid" | tr -d '[:space:]')" || return 1
+    [[ "$parent" =~ ^[0-9]+$ ]] || return 1
+    printf '%s\n' "$parent"
+}
+
 process_start_epoch() {
     local pid="$1" ticks boot_hz boot_epoch
     ticks="$(awk '{print $22}' "/proc/$pid/stat")" || return 1
@@ -131,41 +151,58 @@ terminate_pid() {
     ! process_alive "$pid"
 }
 
-terminate_matching_processes() {
-    local pattern="$1" pid
-    local -a pids=()
-    mapfile -t pids < <(pgrep -f "$pattern" || true)
-    for pid in "${pids[@]}"; do
-        terminate_pid "$pid" || printf 'ERROR: PID %s remained live after SIGKILL.\n' "$pid" >&2
+terminate_process_group() {
+    local pgid="$1" attempts=0
+    process_group_alive "$pgid" || return 0
+    kill -TERM -- "-$pgid" 2>/dev/null || true
+    while process_group_alive "$pgid" && (( attempts < 5 )); do
+        sleep 1
+        ((attempts += 1))
     done
+    if process_group_alive "$pgid"; then
+        kill -KILL -- "-$pgid" 2>/dev/null || true
+        attempts=0
+        while process_group_alive "$pgid" && (( attempts < 5 )); do
+            sleep 1
+            ((attempts += 1))
+        done
+    fi
+    ! process_group_alive "$pgid"
+}
+
+terminate_owned_process() {
+    local label="$1" pid="$2" pgid="$3"
+    if [[ -n "$pgid" ]]; then
+        terminate_process_group "$pgid" ||
+            printf 'ERROR: owned %s process group %s remained live after SIGKILL.\n' "$label" "$pgid" >&2
+    elif [[ -n "$pid" ]]; then
+        terminate_pid "$pid" ||
+            printf 'ERROR: owned %s PID %s remained live after SIGKILL.\n' "$label" "$pid" >&2
+    fi
 }
 
 cleanup_after_failed_start() {
-    local status=$? discovered_child discovered_supervisor
+    local status=$?
     trap - EXIT
     if (( cleanup_armed == 1 )); then
-        discovered_child="$child_pid"
-        discovered_supervisor="$supervisor_pid"
-        [[ -n "$discovered_child" ]] || discovered_child="$(pgrep -f '[s]cripts/autopilot/autopilot.py start' | head -n 1 || true)"
-        [[ -n "$discovered_supervisor" ]] || discovered_supervisor="$(pgrep -f '[s]cripts/autopilot/autopilot_supervisor.py' | head -n 1 || true)"
-        printf 'E8 AutoPilot launch verification failed; terminating supervisor=%s child=%s.\n' "$discovered_supervisor" "$discovered_child" >&2
-        terminate_pid "$discovered_supervisor" || printf 'ERROR: supervisor PID %s remained live after SIGKILL.\n' "$discovered_supervisor" >&2
-        terminate_matching_processes '[s]cripts/autopilot/autopilot_supervisor.py'
-        terminate_pid "$discovered_child" || printf 'ERROR: child PID %s remained live after SIGKILL.\n' "$discovered_child" >&2
-        terminate_matching_processes '[s]cripts/autopilot/autopilot.py start'
-        ! pgrep -f '[s]cripts/autopilot/autopilot_supervisor.py' >/dev/null || fail 'AutoPilot supervisor remained live after cleanup'
-        ! pgrep -f '[s]cripts/autopilot/autopilot.py start' >/dev/null || fail 'AutoPilot child remained live after cleanup'
+        printf 'E8 AutoPilot launch verification failed; terminating owned supervisor=%s child=%s.\n' "$supervisor_pid" "$child_pid" >&2
+        terminate_owned_process 'supervisor' "$supervisor_pid" "$supervisor_pgid"
+        terminate_owned_process 'child' "$child_pid" "$child_pgid"
     fi
     exit "$status"
 }
 
 await_child() {
-    local elapsed=0
+    local elapsed=0 candidate parent
     while (( elapsed < CHILD_DISCOVERY_TIMEOUT_S )); do
-        child_pid="$(pgrep -f '[s]cripts/autopilot/autopilot.py start' | head -n 1 || true)"
-        if process_alive "$child_pid"; then
+        while read -r candidate; do
+            process_alive "$candidate" || continue
+            parent="$(process_parent_pid "$candidate" || true)"
+            [[ "$parent" == "$supervisor_pid" ]] || continue
+            child_pid="$candidate"
+            child_pgid="$(process_group_id "$child_pid")" || return 1
             return 0
-        fi
+        done < <(pgrep -f '[s]cripts/autopilot/autopilot.py start' || true)
         sleep 1
         ((elapsed += 1))
     done
@@ -235,6 +272,8 @@ start() {
         uv run python scripts/autopilot/start_fable_authority_daemon.py --max-trials "$MAX_TRIALS"
     ) >"$RUN_DIR/launch.json"
     supervisor_pid="$(jq -er '.pid' "$RUN_DIR/launch.json")"
+    supervisor_pgid="$(process_group_id "$supervisor_pid")" ||
+        fail 'could not read authority launcher supervisor process group'
     await_child || fail "authority launcher did not leave a live AutoPilot child within ${CHILD_DISCOVERY_TIMEOUT_S}s"
     verify_live_launch
     monitor >"$RUN_DIR/e8-progress-after-start.json"

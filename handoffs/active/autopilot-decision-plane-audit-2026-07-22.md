@@ -234,6 +234,14 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
   Pre-restart check: verify the 2026-07-17 resume-preconditions (small-sample debugbench
   −1.5-gate trip on n_baseline=2; kv_compaction 500s) are fixed or still-relevant before
   resuming — re-thrash risk (~10 rollbacks on 2026-07-16) if skipped.
+- [x] **E8-LAUNCH-RACE — scope failed-start cleanup to the wrapper-owned launch** ✅ 2026-07-26.
+  Independent review found that the initial rearm wrapper's global fallback `pgrep` cleanup
+  could terminate a concurrent valid AutoPilot launch. The wrapper now records the returned
+  supervisor and its direct child process groups, accepts a child only when its PPID matches
+  that supervisor, and applies TERM → verify → KILL → verify only to those owned groups.
+  Focused validation: `6 passed`; Ruff, ShellCheck warning level, `bash -n`, and
+  `git diff --check` clean. A fail-closed live probe with the bootstrap receipt absent created
+  no run directory and left no AutoPilot process.
 - [ ] Non-owned audit findings untouched (other owners / other agents' flux files): H2
   rewind/restore atomicity (`structural_lab.py`), H3 preflight JRN-7 reader, M1 validity table,
   M2 phase_status reader, M3 action-local gate fallback (`actions.py`), M4/M5/M6, and the
