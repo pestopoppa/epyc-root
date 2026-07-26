@@ -182,6 +182,13 @@ These tasks are scattered across active handoffs and require inference compute b
 | G8 | MiniMax M2.7 tool-calling | Research intake (intake-328/329) | Evaluate tool-calling reliability vs Qwen3 stack. Test orchestrator function-calling pipeline. | Standalone | ~4h |
 | G9 | MiniMax M2.7 architect_general replacement eval | Research intake (intake-328/329) | **Goal: test whether MiniMax M2.7 can replace or complement the live `architect_general` role only.** The removed `architect_coding` role is no longer a target. Compare M2.7 against current `architect_general` (Qwen3.5-122B-A10B) on architecture/general-reasoning tasks plus any existing MiniMax G8 tool-calling evidence. Do not treat this as a coder replacement or RAM-consolidation decision unless a separate coder-eval owner reopens that scope. | Standalone | ~4-6h |
 
+- [ ] **G9-disk — MiniMax-M2.7 keep-vs-delete decision (operator; filed 2026-07-26).** The 227GB
+  `models/MiniMax-M2.7-GGUF/` dir survived the 2026-07-26 disk cleanup ONLY because G7a-G9 are
+  still-open rows. Decide when the post-v8 architect-bench campaign lands its verdicts: either
+  G9 merges into the architect bench as an M2.7 arm (keep the download), or G7a-G9 are killed as
+  superseded by that campaign (delete 227GB, record in both registries' deletion ledgers per the
+  2026-07-26 pattern). Do not re-download if deleted without a fresh operator decision.
+
 ### Progress (updated 2026-04-13)
 
 - **G1 (Memento S1)**: ✅ Feasibility CONFIRMED (2026-04-13). `llama_memory_seq_rm()` supports mid-sequence block eviction. Runtime validation passed (slot erase + continued generation). OpenMementos-228K downloading (`microsoft/OpenMementos`). S2 (LoRA) is next.
