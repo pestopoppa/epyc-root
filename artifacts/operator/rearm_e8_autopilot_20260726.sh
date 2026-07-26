@@ -8,7 +8,9 @@ ROOT="${EPYC_ROOT:-/mnt/raid0/llm/epyc-root}"
 ORCH="${EPYC_ORCH:-/mnt/raid0/llm/epyc-orchestrator}"
 PROD="${EPYC_PROD:-/mnt/raid0/llm/llama.cpp}"
 PYTHON="$ORCH/.venv/bin/python"
-ATTESTATION="$ROOT/artifacts/operator/ratify_e8_autopilot_quality_fence_20260726.json"
+QUALITY_ATTESTATION="$ROOT/artifacts/operator/ratify_e8_autopilot_quality_fence_20260726.json"
+QUALITY_ATTESTATION_SHA256="313a8129336ec4ad6149bfb04541cb5a2bacd79568e0ce06efdba9718b43437c"
+BOOTSTRAP_ATTESTATION="$ROOT/artifacts/operator/ratify_e8_empty_frontier_bootstrap_20260726.json"
 STATE="$ORCH/orchestration/autopilot_state.json"
 ERAS="$ORCH/orchestration/instrument_eras.yaml"
 SUPPRESSION="kv_compaction"
@@ -37,20 +39,32 @@ validate_frozen_stack() {
 }
 
 validate_attestation() {
-    [[ -f "$ATTESTATION" ]] || fail 'E8 quality-fence attestation is absent'
-    jq -e --arg eras "$(sha256sum "$ERAS" | awk '{print $1}')" --arg state "$(sha256sum "$STATE" | awk '{print $1}')" '
+    [[ -f "$QUALITY_ATTESTATION" ]] || fail 'E8 quality-fence attestation is absent'
+    [[ -f "$BOOTSTRAP_ATTESTATION" ]] || fail 'E8 empty-frontier bootstrap attestation is absent'
+    local quality_sha state_sha eras_sha current_orchestrator_head
+    quality_sha="$(sha256sum "$QUALITY_ATTESTATION" | awk '{print $1}')"
+    [[ "$quality_sha" == "$QUALITY_ATTESTATION_SHA256" ]] ||
+        fail 'E8 quality-fence receipt hash is not the ratified original'
+    state_sha="$(sha256sum "$STATE" | awk '{print $1}')"
+    eras_sha="$(sha256sum "$ERAS" | awk '{print $1}')"
+    current_orchestrator_head="$(git -C "$ORCH" rev-parse HEAD)"
+    jq -e --arg eras "$eras_sha" '
         .decision == "RATIFY-E8-AUTOPILOT-QUALITY-FENCE" and
         .quality_era.id == "E8" and
         .required_autopilot_env.AUTOPILOT_SUPPRESSED_NUMERIC_SURFACES == "kv_compaction" and
-        .sha256.instrument_eras == $eras and .sha256.autopilot_state == $state
-    ' "$ATTESTATION" >/dev/null || fail 'E8 attestation does not match current state and registry'
-    jq -e '.active_instrument_eras.eval_quality == "E8" and .quality_epoch_ts == 1785004723.0 and .quality_exclude_before_ts == 1785004723.0 and .baseline_state.eval_quality_era == "E7-eval-instrument"' "$STATE" >/dev/null ||
-        fail 'state is not the expected E8 quality-hold posture'
-    local attested_orchestrator_head current_orchestrator_head
-    attested_orchestrator_head="$(jq -er '.repository_heads.epyc_orchestrator' "$ATTESTATION")"
-    current_orchestrator_head="$(git -C "$ORCH" rev-parse HEAD)"
-    [[ "$current_orchestrator_head" == "$attested_orchestrator_head" ]] ||
-        fail "orchestrator HEAD $current_orchestrator_head does not match attested $attested_orchestrator_head"
+        .sha256.instrument_eras == $eras
+    ' "$QUALITY_ATTESTATION" >/dev/null || fail 'E8 quality receipt does not match the current era registry'
+    jq -e --arg parent "$quality_sha" --arg state "$state_sha" --arg eras "$eras_sha" --arg head "$current_orchestrator_head" '
+        .decision == "RATIFY-E8-EMPTY-FRONTIER-BOOTSTRAP" and
+        .parent_e8_quality_fence_sha256 == $parent and
+        .reviewed_orchestrator_head == $head and
+        .repository_heads.epyc_orchestrator == $head and
+        .state_delta._allow_empty_frontier_rebase == true and
+        .sha256.autopilot_state == $state and .sha256.instrument_eras == $eras
+    ' "$BOOTSTRAP_ATTESTATION" >/dev/null ||
+        fail 'bootstrap receipt does not bind the current E8 state, era registry, and launcher authority'
+    jq -e '.active_instrument_eras.eval_quality == "E8" and .quality_epoch_ts == 1785004723.0 and .quality_exclude_before_ts == 1785004723.0 and .baseline_state.eval_quality_era == "E7-eval-instrument" and ._allow_empty_frontier_rebase == true and .e8_empty_frontier_bootstrap.status == "active"' "$STATE" >/dev/null ||
+        fail 'state is not the attested E8 empty-frontier bootstrap posture'
     # The human transaction intentionally appends the attested E8 registry row
     # without committing it. Its exact current hash was checked above; every
     # other tracked orchestrator path must remain clean before launch.
@@ -234,6 +248,7 @@ main() {
         --dry-run)
             [[ $# -eq 1 ]] || fail 'usage: --dry-run|--start|--monitor'
             validate_frozen_stack
+            validate_attestation
             snapshot_prelaunch
             (
                 export AUTOPILOT_SUPPRESSED_NUMERIC_SURFACES="$SUPPRESSION"
