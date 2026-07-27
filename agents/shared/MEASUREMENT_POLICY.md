@@ -42,6 +42,30 @@ reruns of every arm, blocking real work).
   and the decision each outcome triggers; "confirmation" runs are shelved unless their
   result would change a deployment decision.
 
+## Consolidated apply-time ratification (operator-ratified 2026-07-27)
+
+**Evidence collection and validation NEVER wait on a human signature.** Protocol
+pre-ratification is abolished as a default. The ceremony is inverted: agents run
+collection/validation/repair autonomously and fail-closed with sealed provenance, and the
+human signs ONCE, at apply time, over a consolidated evidence bundle (protocol + evidence
+hashes + validation results + the exact state diff to be applied).
+
+- **One token per trust boundary, not per artifact.** Human-only writes remain exactly: era
+  registry rows, `MEASUREMENT.md`, AutoPilot baseline-state applies, production
+  freezes/cutovers, host reboots. Everything upstream is autonomous.
+- **A failed validation does NOT restart a ratification chain.** Fix, revalidate
+  autonomously, re-present the SAME consolidated apply token with updated evidence hashes.
+  Never serialize a repair loop through the operator.
+- **Batch queued boundary items** into one attestation listing each item (the operator may
+  strike lines) — the op-bundle grant pattern extended to state applies.
+- **Never gate unrelated work on a boundary token.** Benches, replays, and evidence
+  gathering on other instruments proceed regardless of any pending apply
+  (origin incident: Laguna-Q4 wrongly chained behind an AutoPilot baseline apply).
+
+Rationale: the trust boundary exists so agents cannot self-certify the instruments that
+judge them — it was never meant to meter the *pace* of evidence work. This converts
+operator interactions from O(defects) to O(boundaries).
+
 ## Trust boundary
 
 `MEASUREMENT.md`, the eval tower, scoring contracts, and this file are read-only for autonomous optimization processes. Changes are human, PR-reviewed amendments.

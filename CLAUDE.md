@@ -127,6 +127,7 @@ Audit trail in `logs/agent_audit.log`. Analysis: `scripts/utils/agent_log_analyz
 - **Historical numbers**: era-label first (`epyc-orchestrator/orchestration/instrument_eras.yaml`), then apply the verb — retro-certified → use; demoted-to-prior → hypothesis only (re-measure if it must gate); retired-view → consult the era-appropriate rebuilt view. Never edit historical records to "fix" them — append.
 - Benchmarks run only via the codified recipes (`bench_canonical.sh`/`canonical_recipe.py`) with operator approval; agent digest at `agents/shared/MEASUREMENT_POLICY.md`.
 - **Deterministic replay before regeneration** (operator-ratified 2026-07-27): if a result is obtainable by deterministically rescoring/transforming saved inference outputs, ALWAYS do that instead of re-running inference; rebaseline only the axis that changed. Full rule: `agents/shared/MEASUREMENT_POLICY.md` → *Deterministic replay before regeneration*.
+- **Consolidated apply-time ratification** (operator-ratified 2026-07-27): evidence collection/validation never waits on a human signature; the human signs ONCE per trust boundary, at apply time, over a consolidated evidence bundle. Failed validations repair + re-present the same token — never a new chain. Never gate unrelated work on a pending boundary token. Full rule: `agents/shared/MEASUREMENT_POLICY.md` → *Consolidated apply-time ratification*.
 - The measurement trust boundary (MEASUREMENT.md, eval tower, scoring, safety gates, era registry rows) is human-amendment-only.
 
 ## Session Management
@@ -191,6 +192,7 @@ Documents in `handoffs/archived/`, `handoffs/completed/`, `progress/`, and `CHAN
 - Treat every sub-agent result as proposed work: the main thread must review its evidence and diffs and run appropriate validation before accepting it.
 - Delegate wrap-up routines to `gpt-5.6-luna` at `high` effort when available. If Luna is unavailable, automatically use `gpt-5.6-terra` at `high` effort without blocking or requesting an operator override.
 - Run a formal wrap-up at every natural phase boundary or major campaign milestone. Update owning-handoff checkboxes and progress immediately as gates land; never defer dashboard truth until the next wrap-up.
+- When the operator grants exclusive machine access, keep independent CPU and GPU lanes active concurrently. If inference is idle, use all protocol-permitted CPU cores for parallelizable preparation, validation, and analysis; serialize only for explicit protocol constraints, dependencies, or measured resource contention.
 
 ## Operator Decision Requests
 
