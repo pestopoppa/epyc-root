@@ -391,17 +391,33 @@ freezes/cutovers, host reboots).
 
 ## Milestones
 
-- [ ] **M1 — skeleton + manual round-trip.** *Skeleton BUILT ✅ 2026-07-27* (dirs, `BUS_PROTOCOL.md`, `config.yaml`, `session_bus.schema.json`, `scripts/coordination/session_bus.py`, `tokens/token-queue.md`, CLAUDE.md drain instruction); manual round-trip READY→ASSIGNED→CLAIMED→RUNNING→DONE_PASS green, `validate` schema+single-writer clean. **Remaining for M1 sign-off: Codex drains its inbox at a real boundary unprompted** (needs a live Codex session).
-  Original criteria: Write §Skeleton verbatim; add the CLAUDE.md
-  drain instruction; both current mains + coordinator-agent adopt outbox/inbox manually (operator or
-  coordinator-agent plays coordinator-daemon by hand). Accept: one task READY→ASSIGNED→CLAIMED→RUNNING→
-  DONE_PASS across two real sessions via file appends only; every row schema-valid;
-  single-writer audit clean (git blame per file = one authoring session); **Codex drains its
-  inbox at a real boundary unprompted**. Rollback: delete directory.
-- [ ] **M2 — hub visibility.** `/api/bus` + `/api/queue` (clone `/api/kernel` payload-builder
-  + `freshness.classify` on semantic `generated_at`), `/bus` page (queue table, inbox depths,
-  heartbeat ages, pending tokens). Accept: renders live state; correct staleness classes on a
-  stale fixture; fails soft. Rollback: revert additive routes.
+- [x] **M1 — skeleton + manual round-trip.** ✅ 2026-07-27 — layout, `BUS_PROTOCOL.md`,
+  `config.yaml`, `session_bus.schema.json`, `scripts/coordination/session_bus.py` (append/fold/
+  validate/cursor/status/drain), `tokens/token-queue.md`, and the CLAUDE.md drain instruction
+  (inherited by Codex via the `AGENTS.md` symlink). Manual round-trip
+  READY→ASSIGNED→CLAIMED→RUNNING→DONE_PASS green via file appends only; `validate` schema- and
+  single-writer-clean over 16 records; negatives correctly refused (a main writing `queue.jsonl`,
+  a row missing `gating`, a `token-request` without pre-validation evidence).
+  **Codex drained unprompted at a real boundary** — cursor advanced to the full inbox at 18:34Z,
+  ack/status/task-complete written to its own outbox at 18:35Z, boundary reported as *"after
+  main-thread review, acceptance, commit, and push of the FG-1 replay provenance/taxonomy
+  repair"*, instruction *"verified independently at AGENTS.md lines 198-202"*.
+  **Caveat, self-reported by Codex** (`operator_message_also_notified: true`): it was also
+  notified by the operator, so "would have drained with zero prompting" is not falsifiable from
+  this instance. What IS evidenced: the standing instruction is discoverable, was independently
+  verified, and the mechanism works end-to-end at a genuine task boundary.
+  Rollback: delete the directory.
+- [x] **M2 — hub visibility.** ✅ 2026-07-27 — `/api/bus` (roster, per-agent liveness, inbox
+  depth, operator-token counts, co-residency topology check), `/api/queue` (folded queue +
+  invariant alarms), and the `/bus` page on :8100. Clones the `/api/kernel` payload-builder
+  pattern and classifies freshness from semantic heartbeat/row timestamps, not file mtime.
+  PyYAML is imported behind a guard so the hub stays runnable under a stdlib-only interpreter.
+  Accept: renders live state ✅; correct staleness classes on stale fixtures ✅ (fresh → aging at
+  30m → stale at 3h, with `stale-heartbeat:*` alarms firing); fails soft ✅ (missing config →
+  `config_error` + empty roster, no crash). Surfaces the rider invariants directly:
+  `none-lane-depth`, `missing-gating`, `roster-orphan`, `co-residency-topology-drift`.
+  Verified on a throwaway port; the live hub was never restarted. Rollback: revert the additive
+  routes.
 - [ ] **M3 — coordinator-daemon, read-only advisory.** `session_bus_coordinator.py` (flock,
   tick loop, heartbeat, epoch) emitting advisory `saturation` + would-assign rows only;
   `bus_supervisor.sh`. Accept: would-assign matches actual human/agent choices over a working

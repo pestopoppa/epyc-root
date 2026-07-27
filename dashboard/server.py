@@ -15,6 +15,9 @@ GET /api/handoff_board       compact cards for all four columns (live scan, TTL-
 GET /api/handoff_detail?id=  full card + scrubbed markdown body (lazy modal load)
 GET /api/handoff_timeline    the git-derived timeline artifact (+ freshness)
 GET /api/kernel              the kernel-R&D dashboard contract (+ freshness)
+GET /bus                     the session-bus page (static HTML, re-read per request)
+GET /api/bus                 roster, per-agent liveness, inbox depth, operator tokens (+ alarms)
+GET /api/queue               folded work queue (latest row per task_id) + invariant alarms
 GET /api/outcome             the autopilot outcome contract (+ freshness), if exported
 GET /api/health              board=live + timeline/kernel/outcome staleness class
 
@@ -52,6 +55,7 @@ TIMELINE_PATH = REPO / "data" / "handoff_timeline.json"
 _STATIC = Path(__file__).resolve().parent / "static"
 STATIC_HTML = _STATIC / "handoffs.html"
 KERNEL_HTML = _STATIC / "kernel.html"
+BUS_HTML = _STATIC / "bus.html"
 
 # Kernel-R&D dashboard contract — produced by epyc-inference-research's kernel-R&D
 # loop (kernel_store.py export); the hub only READS it (self-contained data
@@ -342,6 +346,227 @@ def kernel_payload() -> dict:
     return data
 
 
+# --------------------------------------------------------------- session bus (M2)
+#
+# Renders the session bus's file state. The hub OWNS nothing here: the
+# coordinator-daemon owns queue.jsonl and inbox/*, each agent owns its own
+# outbox/heartbeat/cursor. Read-only, fails soft, never writes.
+
+_BUS_ROOT = _REPO_ROOT / "coordination" / "session-bus"
+_HEARTBEAT_WARN_S = 15 * 60
+_HEARTBEAT_STALE_S = 60 * 60
+
+
+def _read_bus_config() -> dict:
+    """Read config.yaml. PyYAML is optional so the hub stays runnable under a
+    bare stdlib python (it is normally launched from the orchestrator venv)."""
+    path = _BUS_ROOT / "config.yaml"
+    try:
+        import yaml  # noqa: PLC0415 — optional dependency, deliberately local
+    except ImportError:
+        return {"_error": "PyYAML unavailable — bus config not parsed "
+                          "(hub is running under a stdlib-only interpreter)"}
+    try:
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return {"_error": f"bus config not found at {path}"}
+    except (OSError, Exception) as exc:  # yaml.YAMLError included
+        return {"_error": f"bus config unreadable: {exc}"}
+    return data if isinstance(data, dict) else {"_error": "bus config malformed (not a mapping)"}
+
+
+def _read_jsonl_rows(path: Path, start: int = 0) -> list[dict]:
+    """Tolerant JSONL read — a malformed line is skipped, never fatal."""
+    try:
+        with path.open("rb") as fh:
+            fh.seek(start)
+            raw = fh.read()
+    except (FileNotFoundError, OSError):
+        return []
+    rows = []
+    for line in raw.decode("utf-8", errors="replace").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            rows.append(json.loads(line))
+        except json.JSONDecodeError:
+            continue
+    return rows
+
+
+def _fold_queue() -> dict[str, dict]:
+    """Latest row per task_id wins (batch_ledger.reconcile semantics)."""
+    latest: dict[str, dict] = {}
+    for row in _read_jsonl_rows(_BUS_ROOT / "queue.jsonl"):
+        tid = row.get("task_id")
+        if tid:
+            latest[tid] = row
+    return latest
+
+
+def _cursor_offset(agent: str) -> int:
+    try:
+        data = json.loads((_BUS_ROOT / "cursors" / f"{agent}.json").read_text(encoding="utf-8"))
+        return int(data.get("offset", 0))
+    except (FileNotFoundError, OSError, json.JSONDecodeError, ValueError, TypeError):
+        return 0
+
+
+def _heartbeat_class(age_s: float | None) -> str:
+    if age_s is None:
+        return "missing"
+    if age_s <= _HEARTBEAT_WARN_S:
+        return "fresh"
+    return "aging" if age_s <= _HEARTBEAT_STALE_S else "stale"
+
+
+def queue_payload() -> dict:
+    """Folded work queue plus the invariant alarms the rider defines."""
+    latest = _fold_queue()
+    rows = [latest[k] for k in sorted(latest)]
+    by_status: dict[str, int] = {}
+    by_lane: dict[str, int] = {}
+    for row in rows:
+        by_status[row.get("status", "?")] = by_status.get(row.get("status", "?"), 0) + 1
+        by_lane[row.get("lane", "?")] = by_lane.get(row.get("lane", "?"), 0) + 1
+
+    none_ready = sum(1 for r in rows if r.get("status") == "READY" and r.get("lane") == "none")
+    ungated = [r.get("task_id") for r in rows if not r.get("gating")]
+
+    alarms = []
+    if rows and none_ready == 0:
+        alarms.append({
+            "id": "none-lane-depth",
+            "severity": "warn",
+            "detail": "lane:none READY depth is 0. The never-block guarantee assumes a "
+                      "non-empty non-gated backlog; without it a main that loses a lease "
+                      "has nothing to fall back to.",
+        })
+    if ungated:
+        alarms.append({
+            "id": "missing-gating",
+            "severity": "error",
+            "detail": f"{len(ungated)} row(s) lack a gating classification "
+                      f"({', '.join(str(t) for t in ungated[:5])}). Lease revocation has no "
+                      "defined fallback set for these.",
+        })
+
+    ts_candidates = [t for t in (_parse_semantic_timestamp(r.get("ts")) for r in rows) if t]
+    generated_at = max(ts_candidates) if ts_candidates else None
+    return {
+        "generated_at": (datetime.fromtimestamp(generated_at, timezone.utc).isoformat()
+                         if generated_at else None),
+        "count": len(rows),
+        "by_status": by_status,
+        "by_lane": by_lane,
+        "none_lane_ready_depth": none_ready,
+        "rows": rows,
+        "alarms": alarms,
+        "_freshness": {
+            "staleness_class": _heartbeat_class(
+                None if generated_at is None else max(0.0, time.time() - generated_at)),
+            "age_s": None if generated_at is None else max(0.0, time.time() - generated_at),
+            "source": "queue.jsonl rows[].ts",
+        },
+    }
+
+
+def bus_payload() -> dict:
+    """Roster, per-agent liveness, inbox depth, operator-token state."""
+    config = _read_bus_config()
+    roster = config.get("roster") or []
+    now = time.time()
+
+    agents = []
+    seen = set()
+    for entry in roster if isinstance(roster, list) else []:
+        if not isinstance(entry, dict) or not entry.get("id"):
+            continue
+        aid = str(entry["id"])
+        seen.add(aid)
+        hb_path = _BUS_ROOT / "heartbeats" / f"{aid}.json"
+        hb: dict = {}
+        age = None
+        try:
+            hb = json.loads(hb_path.read_text(encoding="utf-8"))
+            age = max(0.0, now - hb_path.stat().st_mtime)
+        except (FileNotFoundError, OSError, json.JSONDecodeError):
+            hb = {}
+        unread = len(_read_jsonl_rows(_BUS_ROOT / "inbox" / f"{aid}.jsonl", _cursor_offset(aid)))
+        agents.append({
+            "id": aid,
+            "role": entry.get("role"),
+            "lanes": entry.get("lanes"),
+            "endpoint": entry.get("endpoint"),
+            "drain": entry.get("drain"),
+            "state": hb.get("state"),
+            "task_id": hb.get("task_id"),
+            "heartbeat_age_s": age,
+            "heartbeat_class": _heartbeat_class(age),
+            "inbox_unread": unread,
+        })
+
+    # Files present for an agent with no roster row: adding a main is "1 roster
+    # row + 4 files", so files without a row means a half-added main.
+    orphan_files = sorted({p.stem for p in (_BUS_ROOT / "outbox").glob("*.jsonl")} - seen)
+
+    tokens_path = _BUS_ROOT / "tokens" / "token-queue.md"
+    try:
+        token_text = tokens_path.read_text(encoding="utf-8")
+        tokens = {"ungranted": token_text.count("- [ ]"), "granted": token_text.count("- [x]")}
+    except (FileNotFoundError, OSError):
+        tokens = {"ungranted": 0, "granted": 0, "error": "token queue not found"}
+
+    alarms = []
+    for a in agents:
+        if a["heartbeat_class"] == "stale":
+            alarms.append({"id": f"stale-heartbeat:{a['id']}", "severity": "warn",
+                           "detail": f"{a['id']} heartbeat is {a['heartbeat_age_s']:.0f}s old."})
+    if orphan_files:
+        alarms.append({"id": "roster-orphan", "severity": "error",
+                       "detail": f"bus files exist for {orphan_files} with no roster row."})
+
+    # R3: a co-residency policy whose topology hash no longer matches the live
+    # matrix is silently wrong, which is the failure this guard exists to catch.
+    co = config.get("co_residency") or {}
+    expected_hash = co.get("expected_topology_hash")
+    live_hash = None
+    matrix_path = Path("/mnt/raid0/llm/epyc-orchestrator/orchestration/contention_matrix.yaml")
+    try:
+        for line in matrix_path.read_text(encoding="utf-8").splitlines():
+            if line.startswith("topology_hash:"):
+                live_hash = line.split(":", 1)[1].strip().strip('"')
+                break
+    except (FileNotFoundError, OSError):
+        pass
+    if expected_hash and live_hash and expected_hash != live_hash:
+        alarms.append({
+            "id": "co-residency-topology-drift", "severity": "error",
+            "detail": f"co_residency.expected_topology_hash={expected_hash} but the live "
+                      f"contention matrix reports {live_hash}. Policy is stale; "
+                      f"on_topology_mismatch={co.get('on_topology_mismatch')!r}.",
+        })
+
+    ages = [a["heartbeat_age_s"] for a in agents if a["heartbeat_age_s"] is not None]
+    return {
+        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "config_error": config.get("_error"),
+        "coordinator_daemon": config.get("coordinator_daemon"),
+        "flags": config.get("flags"),
+        "caps": config.get("caps"),
+        "agents": agents,
+        "tokens": tokens,
+        "co_residency": {"expected_topology_hash": expected_hash, "live_topology_hash": live_hash},
+        "alarms": alarms,
+        "_freshness": {
+            "staleness_class": _heartbeat_class(min(ages) if ages else None),
+            "age_s": min(ages) if ages else None,
+            "source": "heartbeats/*.json mtime (freshest)",
+        },
+    }
+
+
 _OUTCOME_EMPTY = {
     "outcome_progress": {"status": "missing", "blockers": []},
     "observation_notice": (
@@ -496,6 +721,8 @@ class _Handler(BaseHTTPRequestHandler):
                 self._send_html(STATIC_HTML)
             elif route == "/kernel":
                 self._send_html(KERNEL_HTML)
+            elif route == "/bus":
+                self._send_html(BUS_HTML)
             elif route == "/health":
                 self._send_json({"status": "ok"})
             elif route == "/api/handoff_board":
@@ -509,6 +736,10 @@ class _Handler(BaseHTTPRequestHandler):
                 self._send_json(timeline_payload())
             elif route == "/api/kernel":
                 self._send_json(kernel_payload())
+            elif route == "/api/bus":
+                self._send_json(bus_payload())
+            elif route == "/api/queue":
+                self._send_json(queue_payload())
             elif route == "/api/outcome":
                 self._send_json(outcome_payload())
             elif route == "/api/health":
