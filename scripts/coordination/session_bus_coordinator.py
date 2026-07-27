@@ -9,15 +9,28 @@ senses lane occupancy, folds the queue, and computes what it *would* assign.
 It never analyzes, reviews, or edits work products — queue/routing/watchdog only
 ("the moment it reviews, it's a second main" — operator).
 
-M3 IS ADVISORY. With `coordinator_daemon.authority` set to `manual` or
-`advisory` the daemon writes ONLY two files, both of which it owns:
+TWO AUTHORITY LEVELS, one switch between them.
+
+`authority: manual` | `advisory` (M3) — the daemon writes ONLY two files, both
+of which it owns:
 
     heartbeats/coordinator-daemon.json   its own liveness + epoch
-    advisory.jsonl                        would-assign / saturation records
+    advisory.jsonl                        would-assign / saturation / audit records
 
-It does NOT write queue.jsonl or any inbox in advisory mode, so a running daemon
-cannot disturb the M1 manual workflow. Real assignment is M4 and requires
-`authority: assign`; until then the daemon refuses to take it even if asked.
+It does NOT write queue.jsonl, any inbox, or the token queue, so a running daemon
+cannot disturb the M1 manual workflow. This is the property M3 verified.
+
+`authority: assign` (M4) — additionally transcribes agent reports into the queue,
+relays token-requests, runs the stall ladder, and makes real assignments. See
+`apply_assignment()`. Setting authority back to `advisory` is the documented
+rollback and needs no other change.
+
+M4's ordering is deliberate: transcribe first so decisions are made against
+current truth rather than a stale queue; relay tokens next so a newly-gated task
+is not then assigned in the same tick; run the stall ladder before assigning so a
+requeued task is immediately available; assign last. Every write is idempotent —
+transcription compares the latest report per task against the queue rather than
+tracking consumed messages, so a repeated tick cannot double-apply.
 
 EPOCH FENCING. Each start increments the epoch (read back from the daemon's own
 heartbeat). Advisory rows carry it so a stale record from a previous generation
@@ -42,7 +55,7 @@ import os
 import signal
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Optional
 
@@ -53,7 +66,10 @@ if str(REPO_ROOT) not in sys.path:
 from scripts.coordination.session_bus import (  # noqa: E402
     COORDINATOR_DAEMON,
     DEFAULT_BUS_ROOT,
+    MSG_SCHEMA_VERSION,
+    QUEUE_SCHEMA_VERSION,
     TERMINAL_STATES,
+    _append_jsonl,
     _read_jsonl,
     _write_atomic,
     fold_queue,
@@ -87,7 +103,26 @@ def _load_config(bus_root: Path) -> dict:
 
 
 def _lane_snapshot() -> dict:
-    """Occupancy per lane. Fail-safe: anything unknown counts as busy."""
+    """Occupancy per lane. Fail-safe: anything unknown counts as busy.
+
+    TEST SEAM. `SESSION_BUS_LANE_SNAPSHOT_JSON` substitutes the whole snapshot.
+    This exists because probing real host state makes a test both slow (~2s per
+    tick) and flaky by construction — a test whose expected result depends on
+    whether a role happens to be serving right now is a test that will lie to you
+    eventually. It already did once today, on the drop_caches guard. Production
+    never sets this variable.
+    """
+    override = os.environ.get("SESSION_BUS_LANE_SNAPSHOT_JSON")
+    if override:
+        try:
+            faked = json.loads(override)
+            faked.setdefault("ts", _utcnow_iso())
+            faked.setdefault("none_busy", False)
+            faked["_test_seam"] = True
+            return faked
+        except json.JSONDecodeError:
+            pass   # malformed override -> fall through to a real probe
+
     snapshot: dict[str, Any] = {"ts": _utcnow_iso()}
 
     load_class = None
@@ -377,6 +412,210 @@ def compute_advice(bus_root: Path, config: dict, epoch: int) -> list[dict]:
 # ------------------------------------------------------------------- daemon
 
 
+# =========================================================================== M4
+#
+# Assignment authority. Everything below WRITES to files the daemon owns
+# (queue.jsonl, inbox/*, tokens/token-queue.md) and therefore runs ONLY when
+# `coordinator_daemon.authority == "assign"`. In manual/advisory mode the daemon
+# still writes exactly two files, which is the property M3 verified — flipping
+# authority is the single switch, and setting it back to `advisory` is the
+# documented rollback.
+#
+# ALL OF THIS IS BOOKKEEPING, NOT JUDGMENT. Transcription is derived
+# deterministically from what agents reported; the daemon never decides whether
+# work was done well. It is also STATELESS AND IDEMPOTENT: rather than tracking
+# which outbox messages it has consumed (which would need daemon-owned cursors on
+# files it does not own), it compares the latest report per task against the queue
+# and appends only when they disagree. Re-running a tick therefore cannot
+# double-apply.
+
+_ACK_IMPLIES = {"ASSIGNED": "CLAIMED"}
+_STATUS_IMPLIES = {"CLAIMED": "RUNNING", "ASSIGNED": "RUNNING"}
+
+
+def _outbox_reports(bus_root: Path, roster: list[dict]) -> dict[str, list[dict]]:
+    """task_id -> its messages, in file order, across every agent outbox."""
+    reports: dict[str, list[dict]] = {}
+    for entry in roster:
+        aid = str(entry.get("id", "")).strip()
+        if not aid:
+            continue
+        rows, _ = _read_jsonl(bus_root / "outbox" / f"{aid}.jsonl")
+        for row in rows:
+            tid = row.get("task_id")
+            if tid:
+                reports.setdefault(tid, []).append(row)
+    return reports
+
+
+def transcribe(latest: dict[str, dict], reports: dict[str, list[dict]], epoch: int) -> list[dict]:
+    """Queue rows implied by agent reports but not yet reflected in the queue."""
+    out: list[dict] = []
+    for tid, msgs in reports.items():
+        row = latest.get(tid)
+        if not row or row.get("status") in TERMINAL_STATES:
+            continue
+        status = row.get("status")
+        base = {k: row.get(k) for k in ("lane", "gating", "owner", "priority", "priority_class",
+                                        "contention_class", "role_affinity", "spec_ref",
+                                        "est_wall_clock_h", "operator_gates", "depends_on",
+                                        "max_attempts", "attempt", "replay_eligible")
+                if row.get(k) is not None}
+        kinds = [m.get("kind") for m in msgs]
+
+        if "task-complete" in kinds:
+            done = [m for m in msgs if m.get("kind") == "task-complete"][-1]
+            outcome = str((done.get("payload") or {}).get("outcome", "")).lower()
+            new = {"pass": "DONE_PASS", "marginal": "DONE_MARGINAL_OBS"}.get(outcome, "FAILED")
+            if status != new:
+                out.append({**base, "schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(),
+                            "task_id": tid, "status": new, "epoch": epoch,
+                            **({"failure_reason": str((done.get("payload") or {}).get("reason", ""))}
+                               if new == "FAILED" and (done.get("payload") or {}).get("reason") else {})})
+            continue
+
+        target = status
+        if "ack" in kinds:
+            target = _ACK_IMPLIES.get(target, target)
+        if "status" in kinds:
+            target = _STATUS_IMPLIES.get(target, target)
+        if target != status:
+            out.append({**base, "schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(),
+                        "task_id": tid, "status": target, "epoch": epoch,
+                        "claim_ts": _utcnow_iso() if target == "CLAIMED" else row.get("claim_ts")})
+    return [{k: v for k, v in r.items() if v is not None} for r in out]
+
+
+def relay_tokens(bus_root: Path, reports: dict[str, list[dict]], latest: dict[str, dict],
+                 epoch: int) -> tuple[list[str], list[dict]]:
+    """Relay token-request blocks into the token queue, verbatim.
+
+    The daemon relays; the coordinator-agent presents; ONLY the operator flips a
+    checkbox. Idempotent on gate_id: a gate already present is never re-appended,
+    so a repeated tick cannot duplicate a block. Pre-validation is the requesting
+    agent's duty — a request lacking dry-run evidence is a DEFECT, not something
+    to quietly relay, because presenting a command that fails is an agent defect
+    by policy.
+    """
+    tq = bus_root / "tokens" / "token-queue.md"
+    existing = tq.read_text(encoding="utf-8") if tq.exists() else ""
+    blocks: list[str] = []
+    rows: list[dict] = []
+    defects: list[dict] = []
+
+    for tid, msgs in reports.items():
+        for msg in msgs:
+            if msg.get("kind") != "token-request":
+                continue
+            payload = msg.get("payload") or {}
+            gate = payload.get("gate_id")
+            if not gate:
+                continue
+            validated = payload.get("validated") or {}
+            if not validated.get("cmd") or validated.get("dry_run_exit") is None:
+                defects.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                                "epoch": epoch, "kind": "defect", "check": "token-prevalidation",
+                                "subject": msg.get("from"),
+                                "detail": f"token-request {gate} lacks dry-run evidence; "
+                                          f"presenting an unvalidated command is an agent defect"})
+                continue
+            if gate in existing:
+                continue
+            blocks.append(
+                f"\n### {gate}\n\n"
+                f"- [ ] **{gate}** — requested by `{msg.get('from')}` for task `{tid}`\n"
+                f"  - block ref: `{payload.get('block_ref', '-')}`\n"
+                f"  - command (pre-validated, dry-run exit "
+                f"`{validated.get('dry_run_exit')}`):\n"
+                f"    ```\n    {validated.get('cmd')}\n    ```\n"
+                f"  - dry-run evidence: {validated.get('dry_run_evidence')}\n"
+            )
+            row = latest.get(tid)
+            if row and row.get("status") not in TERMINAL_STATES and row.get("status") != "HELD_OP_GATE":
+                rows.append({"schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(),
+                             "task_id": tid, "status": "HELD_OP_GATE",
+                             "lane": row.get("lane"), "gating": row.get("gating"),
+                             "epoch": epoch, "owner": row.get("owner"),
+                             "operator_gates": sorted(set((row.get("operator_gates") or []) + [gate]))})
+    return blocks, rows + defects
+
+
+def stall_ladder(bus_root: Path, latest: dict[str, dict], agents: dict[str, dict],
+                 reports: dict[str, list[dict]], config: dict, epoch: int) -> dict:
+    """soft-stall -> nudge; hard-stall (lease expired) -> requeue + defect; give-up -> alert.
+
+    Grace is lane-tuned: silence on a bench lane is not a stall, so a cpu/gpu
+    task's grace derives from `est_wall_clock_h * bench_grace_margin` while
+    `lane: none` uses the flat `none_lane_grace_s`.
+    """
+    leases = config.get("leases") or {}
+    none_grace = float(leases.get("none_lane_grace_s", 900))
+    margin = float(leases.get("bench_grace_margin", 1.5))
+    now = datetime.now(timezone.utc)
+
+    nudges: list[dict] = []
+    queue_rows: list[dict] = []
+    advisory: list[dict] = []
+    alerts: list[str] = []
+
+    for tid, row in latest.items():
+        if row.get("status") not in {"ASSIGNED", "CLAIMED", "RUNNING"}:
+            continue
+        owner = row.get("owner")
+        if not owner:
+            continue
+        agent = agents.get(owner) or {}
+
+        expired = False
+        exp = row.get("lease_expires_ts")
+        if exp:
+            try:
+                expired = datetime.fromisoformat(str(exp)) < now
+            except ValueError:
+                expired = False
+
+        if row.get("lane") in {"cpu", "gpu"} and row.get("est_wall_clock_h"):
+            grace = float(row["est_wall_clock_h"]) * 3600.0 * margin
+        else:
+            grace = float(row.get("heartbeat_grace_s") or none_grace)
+        hb_age = agent.get("age_s")
+        hb_stale = hb_age is None or hb_age > grace
+        # Recent outbox traffic disproves a stall regardless of heartbeat age.
+        talking = bool(reports.get(tid))
+
+        if expired:
+            attempt = int(row.get("attempt") or 0) + 1
+            max_attempts = int(row.get("max_attempts") or 3)
+            if attempt > max_attempts:
+                alerts.append(
+                    f"\n- [ ] **GIVE-UP {tid}** — lease expired after {attempt - 1} attempt(s), "
+                    f"owner `{owner}`. The coordinator-daemon does not decide what happens next; "
+                    f"this is an operator/coordinator-agent call.\n")
+                queue_rows.append({"schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(),
+                                   "task_id": tid, "status": "INFRA_BLOCKED",
+                                   "lane": row.get("lane"), "gating": row.get("gating"),
+                                   "epoch": epoch, "attempt": attempt,
+                                   "failure_reason": "attempts exhausted after lease expiry"})
+            else:
+                queue_rows.append({"schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(),
+                                   "task_id": tid, "status": "STALE_REQUEUED",
+                                   "lane": row.get("lane"), "gating": row.get("gating"),
+                                   "epoch": epoch, "owner": None, "attempt": attempt,
+                                   "failure_reason": "lease expired"})
+                advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                                 "epoch": epoch, "kind": "defect", "check": "hard-stall",
+                                 "subject": owner,
+                                 "detail": f"task {tid} lease expired; requeued as attempt "
+                                           f"{attempt}/{max_attempts}"})
+        elif hb_stale and not talking:
+            nudges.append({"to": owner, "kind": "nudge", "task_id": tid,
+                           "corr_id": f"nudge-{tid}-{epoch}",
+                           "payload": {"reason": "soft-stall",
+                                       "heartbeat_age_s": hb_age,
+                                       "grace_s": grace}})
+    return {"nudges": nudges, "queue_rows": queue_rows, "advisory": advisory, "alerts": alerts}
+
+
 def audit(bus_root: Path, epoch: int) -> list[dict]:
     """R7 defect attribution — the daemon auditing the agent tier.
 
@@ -473,17 +712,111 @@ def _authority(config: dict) -> str:
     return str((config.get("coordinator_daemon") or {}).get("authority", "manual")).strip()
 
 
+def _append_inbox(bus_root: Path, msgs: list[dict], epoch: int) -> list[dict]:
+    """Deliver messages to recipient inboxes (daemon-owned). Returns what it wrote."""
+    written = []
+    for msg in msgs:
+        to = msg.get("to")
+        if not to:
+            continue
+        path = bus_root / "inbox" / f"{to}.jsonl"
+        existing, _ = _read_jsonl(path)
+        stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        full = {"schema_version": MSG_SCHEMA_VERSION, "ts": _utcnow_iso(),
+                "from": COORDINATOR_DAEMON,
+                "id": f"msg-{stamp}-{len(existing) + 1}-{COORDINATOR_DAEMON}", **msg}
+        _append_jsonl(path, full)
+        written.append(full)
+    return written
+
+
+def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
+    """M4 write path. Runs ONLY under authority: assign.
+
+    Order matters and is deliberate: transcribe what agents already reported
+    BEFORE deciding anything, so decisions are made against current truth rather
+    than a stale queue; relay tokens next so a newly-gated task is not then
+    assigned; run the stall ladder before assigning so a requeued task is
+    immediately available; assign last.
+    """
+    emitted: list[dict] = []
+    roster = [r for r in (config.get("roster") or []) if isinstance(r, dict)]
+    reports = _outbox_reports(bus_root, roster)
+
+    # 1. transcribe agent reports into the queue (bookkeeping, no judgment)
+    latest = fold_queue(bus_root)
+    for row in transcribe(latest, reports, epoch):
+        _append_jsonl(bus_root / "queue.jsonl", row)
+        emitted.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                        "kind": "transcribed", "task_id": row["task_id"], "status": row["status"]})
+
+    # 2. relay token-requests; a newly gated task must not be assigned this tick
+    latest = fold_queue(bus_root)
+    blocks, extra = relay_tokens(bus_root, reports, latest, epoch)
+    if blocks:
+        tq = bus_root / "tokens" / "token-queue.md"
+        with tq.open("a", encoding="utf-8") as fh:
+            fh.writelines(blocks)
+        emitted.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                        "kind": "tokens-relayed", "count": len(blocks)})
+    for item in extra:
+        if item.get("kind") == "defect":
+            emitted.append(item)
+        else:
+            _append_jsonl(bus_root / "queue.jsonl", item)
+            emitted.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                            "kind": "held-on-gate", "task_id": item["task_id"]})
+
+    # 3. stall ladder
+    latest = fold_queue(bus_root)
+    agents = _agent_states(bus_root, roster)
+    ladder = stall_ladder(bus_root, latest, agents, reports, config, epoch)
+    for row in ladder["queue_rows"]:
+        _append_jsonl(bus_root / "queue.jsonl", row)
+    if ladder["nudges"]:
+        _append_inbox(bus_root, ladder["nudges"], epoch)
+    if ladder["alerts"]:
+        with (bus_root / "tokens" / "token-queue.md").open("a", encoding="utf-8") as fh:
+            fh.writelines(ladder["alerts"])
+    emitted.extend(ladder["advisory"])
+
+    # 4. real assignment, using the same eligibility the advisory path uses
+    latest = fold_queue(bus_root)
+    for rec in compute_advice(bus_root, config, epoch):
+        if rec.get("kind") != "would-assign" or not rec.get("task_id"):
+            continue
+        tid, agent = rec["task_id"], rec["agent"]
+        row = latest.get(tid) or {}
+        if row.get("status") != "READY":
+            continue
+        hold = float((config.get("leases") or {}).get("max_hold_s", 1800))
+        expires = datetime.now(timezone.utc) + timedelta(seconds=hold)
+        _append_jsonl(bus_root / "queue.jsonl", {
+            "schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(), "task_id": tid,
+            "status": "ASSIGNED", "lane": row.get("lane"), "gating": row.get("gating"),
+            "epoch": epoch, "owner": agent, "priority": row.get("priority"),
+            "lease_expires_ts": expires.isoformat(timespec="seconds"),
+            "attempt": int(row.get("attempt") or 0)})
+        _append_inbox(bus_root, [{"to": agent, "kind": "task-assign", "task_id": tid,
+                                  "requires_ack": True, "ack_deadline_s": 600,
+                                  "payload": {"lane": row.get("lane"), "epoch": epoch,
+                                              "lease_expires_ts": expires.isoformat(timespec="seconds"),
+                                              **({"spec_ref": row["spec_ref"]} if row.get("spec_ref") else {})}}],
+                      epoch)
+        emitted.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                        "kind": "assigned", "agent": agent, "task_id": tid})
+        latest = fold_queue(bus_root)
+    return emitted
+
+
 def tick(bus_root: Path, epoch: int, *, dry_run: bool = False) -> list[dict]:
     config = _load_config(bus_root)
     authority = _authority(config)
-    if authority == "assign":
-        # M4 is not built. Refusing is the safe failure: an unbuilt assign path
-        # must never be silently approximated by the advisory one.
-        raise SystemExit(
-            "coordinator_daemon.authority='assign' but assignment (M4) is not implemented. "
-            "Set authority to 'advisory' or build M4 first."
-        )
     advice = compute_advice(bus_root, config, epoch) + audit(bus_root, epoch)
+    if authority == "assign" and not dry_run:
+        # M4. In manual/advisory mode this branch never runs, so the daemon keeps
+        # writing exactly two files — the property M3 verified.
+        advice += apply_assignment(bus_root, config, epoch)
     if not dry_run:
         _append_advisory(bus_root, advice)
     return advice

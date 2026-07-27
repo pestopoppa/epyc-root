@@ -527,11 +527,38 @@ freezes/cutovers, host reboots).
   running in advisory mode to accumulate it; the supervisor loop is NOT started (operator's call
   — `bus_supervisor.sh loop`, or the cron `once` entry in its header).
   Rollback: stop the daemon; the bus returns to fully-functional M1 manual mode.
-- [ ] **M4 — assignment authority.** Real task-assign + lease/stall ladder + requeue + token
-  relay; mains consume assignments at boundaries. Accept: 48h with zero idle-lane time while
-  eligible work existed (hub saturation history is the evidence); one induced stall exercises
-  nudge→requeue; induced coordinator-daemon restart mid-assignment shows epoch fencing (no double
-  assignment); operator touched ONLY token-queue checkboxes. Rollback: `authority: advisory`.
+- [ ] **M4 — assignment authority.** *CODE BUILT ✅ 2026-07-27, acceptance pending.*
+  `apply_assignment()` in `session_bus_coordinator.py`, gated entirely on
+  `coordinator_daemon.authority == "assign"`. Advisory mode still writes exactly two files, which
+  the test suite asserts directly — so flipping authority is the single switch and setting it back
+  to `advisory` is the whole rollback.
+  Implemented: real task-assign (queue row + inbox `task-assign` + lease from `leases.max_hold_s`);
+  deterministic transcription of agent reports (ack→CLAIMED, status→RUNNING,
+  task-complete→DONE_PASS/DONE_MARGINAL_OBS/FAILED, carrying `failure_reason`); token relay into
+  `tokens/token-queue.md` with the pre-validated command verbatim, marking the task
+  `HELD_OP_GATE`; and all three stall rungs (soft→`nudge`, hard/lease-expired→`STALE_REQUEUED`
+  with owner cleared and attempt+1 plus a defect, give-up→`INFRA_BLOCKED` plus a token-queue alert
+  that explicitly leaves the decision to the operator).
+  **Ordering is deliberate:** transcribe → relay → stall ladder → assign. Transcribing first means
+  decisions are made against current truth, not a stale queue; relaying before assigning means a
+  newly-gated task is not assigned in the same tick; the ladder before assignment means a requeued
+  task is immediately available.
+  **Idempotent by construction, not by bookkeeping.** Transcription compares the latest report per
+  task against the queue instead of tracking consumed messages — which would have needed
+  daemon-owned cursors on files the daemon does not own. Repeated ticks provably append nothing.
+  Also: a `token-request` lacking dry-run evidence is refused and raises a defect rather than being
+  relayed, because presenting a command that fails is an agent defect by policy.
+  Tests: `scripts/coordination/tests/test_session_bus_m4.py`, **31/31**.
+  A documented test seam (`SESSION_BUS_LANE_SNAPSHOT_JSON`) makes lane state deterministic — real
+  probing made the suite 66s and host-dependent, and a test whose result depends on whether a role
+  happens to be serving is a test that will eventually lie (it already did once today, on the
+  drop_caches guard). With the seam: 7s, plus five cases that could not be expressed before
+  (lane-busy gating, `exclusive-contiguous` needing a quiet host, `replay_eligible` bypassing a
+  busy lane).
+  **Remaining for M4 sign-off:** the 48h zero-idle soak, one induced stall, an induced restart
+  mid-assignment showing epoch fencing, and operator touching only token-queue checkboxes — plus
+  M3's advisory-accuracy evidence, on which M4's go/no-go rests. The switch stays at `manual`
+  until then. Rollback: `authority: advisory`.
 - [ ] **M5 — flag-gated extensions** (each independent): Claude Stop/SessionStart drain hook
   (clone `*_context.sh`) · send-keys adapter behind `OP-SENDKEYS-CODEX` (OFF; rate-limited;
   idle-pane check) · hybrid triage (dead-agent drafts + routing annotations; budget-capped;
