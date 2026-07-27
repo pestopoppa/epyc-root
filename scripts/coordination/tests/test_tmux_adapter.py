@@ -49,9 +49,12 @@ def load(bus_root: Path):
     return m
 
 
-def write_config(bus_root: Path, roster: list[dict], *, sendkeys="on", spawn_cap=3) -> dict:
+def write_config(bus_root: Path, roster: list[dict], *, sendkeys="on", spawn_cap=3,
+                 live_session: str | None = None) -> dict:
     cfg = {"roster": roster, "flags": {"codex_sendkeys": sendkeys},
-           "caps": {"max_spawns_per_day": spawn_cap}}
+           "caps": {"max_spawns_per_day": spawn_cap},
+           "tmux": {"live_session": live_session or SESSION,
+                    "allow_session_creation": False}}
     import yaml
     (bus_root / "config.yaml").write_text(yaml.safe_dump(cfg), encoding="utf-8")
     return cfg
@@ -251,6 +254,41 @@ def test_live() -> None:
 
             rc = m.cmd_spawn(S())
             check(rc == 2, "spawn refuses once the daily cap is reached")
+
+            # ---- operator requirement: one live session, windows only ----
+            print("\n  -- live-session enforcement --")
+            src = MODULE.read_text()
+            check('_tmux("new-session' not in src,
+                  "the adapter never invokes new-session anywhere in its source")
+
+            write_config(bus, [{"id": "elsewhere", "endpoint": "tmux:some-other-session"}],
+                         spawn_cap=3, live_session=SESSION)
+            class S2:
+                agent = "elsewhere"; command = "true"; dry_run = True
+            rc = m.cmd_spawn(S2())
+            check(rc == 2, "spawn refuses a session that is not tmux.live_session")
+
+            write_config(bus, [{"id": "notmux", "endpoint": "monitor:file"}],
+                         spawn_cap=3, live_session=SESSION)
+            class S3:
+                agent = "notmux"; command = "true"; dry_run = True
+            rc = m.cmd_spawn(S3())
+            check(rc == 2, "spawn refuses a non-tmux endpoint (no more session name 'file')")
+
+            write_config(bus, [{"id": "ghostsess", "endpoint": "tmux:definitely-not-running"}],
+                         spawn_cap=3, live_session="definitely-not-running")
+            class S4:
+                agent = "ghostsess"; command = "true"; dry_run = True
+            rc = m.cmd_spawn(S4())
+            check(rc == 2, "spawn refuses a live_session that does not exist rather than "
+                           "creating one")
+
+            write_config(bus, [{"id": "win-ok", "endpoint": f"tmux:{SESSION}"}],
+                         spawn_cap=3, live_session=SESSION)
+            class S5:
+                agent = "win-ok"; command = "true"; dry_run = True
+            rc = m.cmd_spawn(S5())
+            check(rc == 0, "spawn accepts the declared live session")
         finally:
             tmux("kill-session", "-t", SESSION)
             print(f"  (throwaway session {SESSION} killed)")

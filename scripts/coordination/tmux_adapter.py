@@ -28,6 +28,11 @@ FAIL-CLOSED THROUGHOUT. Typing into a pane mid-generation corrupts the prompt of
 whatever is running there, so every unevaluable signal blocks the nudge. Unlike
 the edit-time guards, erring permissive here damages someone else's session.
 
+EVERY SPAWNED MAIN IS A WINDOW IN THE ONE LIVE SESSION (operator, 2026-07-27).
+`tmux.live_session` in config declares it; spawn refuses any other session, refuses
+a non-tmux endpoint, and never calls `new-session` — throwaway sessions exist only
+so the test suite can avoid touching the live one.
+
 NEVER GUESS A PANE. An endpoint of `tmux:agent` names a session but not a window.
 Rather than picking one, this refuses: sending keystrokes to the wrong pane is the
 exact disaster the guards exist to prevent. Endpoints must be
@@ -314,7 +319,36 @@ def cmd_spawn(args: argparse.Namespace) -> int:
               f"decision, not this adapter's.", file=sys.stderr)
         return EX_BLOCKED
 
-    session = str(entry.get("endpoint") or "tmux:agent").split(":")[1] or "agent"
+    # OPERATOR REQUIREMENT (2026-07-27): every spawned main is a WINDOW in the one
+    # live session, never its own session. Throwaway sessions are a testing device
+    # only. Three things enforce that, because convention is not enforcement:
+    #   a) the endpoint must be a tmux endpoint — `monitor:file` previously derived
+    #      the session name 'file' by splitting on ':', which is garbage;
+    #   b) the derived session must equal tmux.live_session from config;
+    #   c) that session must already EXIST — this adapter never calls new-session,
+    #      and allow_session_creation is a declared `false` rather than an absence.
+    tmux_cfg = config.get("tmux") or {}
+    live = str(tmux_cfg.get("live_session") or "agent")
+    ep = str(entry.get("endpoint") or "")
+    if not ep.startswith("tmux:"):
+        print(f"REFUSING: {args.agent!r} has endpoint {ep!r}, which is not a tmux endpoint. "
+              f"A spawned main must live in the {live!r} session as a window.", file=sys.stderr)
+        return EX_BLOCKED
+    parts = ep.split(":")
+    session = parts[1] if len(parts) > 1 and parts[1] else live
+    if session != live:
+        print(f"REFUSING: endpoint names session {session!r} but tmux.live_session is {live!r}. "
+              f"All spawned mains belong in the one live session — separate sessions are for "
+              f"tests only.", file=sys.stderr)
+        return EX_BLOCKED
+    rc_s, _ = _tmux("has-session", "-t", session)
+    if rc_s != 0:
+        creatable = bool(tmux_cfg.get("allow_session_creation"))
+        print(f"REFUSING: session {session!r} does not exist"
+              + ("." if creatable else " and allow_session_creation is false, so this adapter "
+                 "will not create one. Start the session first."), file=sys.stderr)
+        return EX_BLOCKED
+
     if args.dry_run:
         would = [r for r in (f"inbox/{args.agent}.jsonl", f"outbox/{args.agent}.jsonl",
                              f"heartbeats/{args.agent}.json", f"cursors/{args.agent}.json")

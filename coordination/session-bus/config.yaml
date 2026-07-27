@@ -23,6 +23,14 @@ coordinator_daemon:
   authority: manual        # manual (M1) | advisory (M3) | assign (M4)
   epoch: 0
 
+# Live tmux topology (operator requirement, 2026-07-27): every spawned main is a
+# WINDOW in the one live session — never its own session. Throwaway sessions are
+# for tests only. `spawn` refuses any target that is not this session, refuses a
+# non-tmux endpoint, and never creates a session (it only ever calls new-window).
+tmux:
+  live_session: agent
+  allow_session_creation: false
+
 flags:
   codex_sendkeys: on       # gate: OP-SENDKEYS-CODEX in tokens/token-queue.md
   triage: off               # M5
