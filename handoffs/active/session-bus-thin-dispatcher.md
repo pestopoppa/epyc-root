@@ -324,15 +324,40 @@ freezes/cutovers, host reboots).
   [`../../artifacts/operator/proposed_inference_gate_amendment_20260727.md`](../../artifacts/operator/proposed_inference_gate_amendment_20260727.md);
   **operator applies**. Blocks M4 — its 48h zero-idle acceptance is unachievable while every lane
   refill needs a signature. Must land *after* R1, never before.
-- [ ] **R3 — declare both subsystems instances of the ratified fabric contract (M1).** The
-  CPU-region lock and this bus are the same five-part structure: resource set · exclusive claim ·
-  co-residency policy as data · admission gate · typed defer reasons. Give the bus's co-residency
-  policy the contention-matrix shape (pair-keyed, `verdict` + floor) **including a
-  `topology_hash` staleness guard** — a stale hand-declared `contention_class` currently fails
-  silently. Promote declared classes toward measured ones reusing
-  `epyc-orchestrator/scripts/server/contention_matrix.py`, never a second generator.
-  **Correction to §Convergence:** read-only sensing is *not* sufficient for exclusion (TOCTOU) —
-  anything occupying CPU regions must **acquire** the locks, per fabric axiom 1.
+- [x] **R3 — declare both subsystems instances of the ratified fabric contract.** ✅ 2026-07-27
+  Both declared as instances in
+  [heterogeneous-slot-fabric-residency.md](heterogeneous-slot-fabric-residency.md) with the
+  five-part table and the axiom-1/axiom-4 consequences. `config.yaml`'s `co_residency` block
+  carries the matrix's shape and an `expected_topology_hash` with `on_topology_mismatch: refuse`;
+  `/api/bus` surfaces `co-residency-topology-drift` as an alarm.
+  **Correction applied to §Convergence:** read-only sensing is not exclusion (TOCTOU) — anything
+  occupying CPU regions acquires the locks (R1).
+
+  **DRAFTING ERROR IN THIS ITEM, now fixed.** R3 originally said "promote declared classes toward
+  measured ones", conflating two orthogonal axes: `contention_class`
+  (`exclusive-contiguous | resumable`) is a **pausability** axis introduced by R5, whereas the
+  contention matrix measures **per-role-pair co-residency** (15 measured pairs, allow/borderline/
+  block against a 0.85 floor). They are not the same thing and one cannot be promoted into the
+  other. The real gap the wording hid: the bus *referenced* the matrix in config but never
+  *consulted* it — eligibility asked only the binary question "is the lane busy", which is
+  strictly weaker than what the orchestrator already knows.
+
+  **Now implemented.** Queue rows carry an optional `role_affinity` (the stack role whose resource
+  profile the task resembles); the daemon maps `priority_class` → `TrafficClass` and consults
+  `src.scheduling.contention.pair_policy()` against every live role holder from
+  `active_region_holders()`. Reused, never reimplemented — R3's "never a second generator" applied
+  to the consumer side.
+  Verified live against `frontdoor` holding q0/q2/q3: `architect_general` is **queued** at
+  `background-churn` (measured ratio 0.9) but **admitted** at `production-live`. That is R5's
+  priority semantics falling out of the measured policy for free, rather than being reimplemented.
+
+  **One deliberate divergence from the orchestrator, documented in code.** `pair_policy()` returns
+  `allow` for an *unmeasured* pair at foreground traffic — correct there, where a real request is
+  waiting and starving it on missing data would be worse. The bus carries no SLO, so fabric
+  axiom 3 governs instead: unverifiable is **excluded**, not permitted. An unmeasured pair is
+  rejected at every traffic class, with a message naming the generator that would measure it.
+  Admitting one would have been the same silently-wrong-policy failure the topology-hash guard
+  exists to prevent, one level down.
 - [ ] **R4 — lease authority and revocation-by-drain (M4).** Grant/revoke belongs to
   coordinator-agent. `cpu_region_lock` **cannot be revoked by a third party** (`cancel_check`
   only aborts an in-progress acquire; a held flock releases on fd-close), so authority lives in

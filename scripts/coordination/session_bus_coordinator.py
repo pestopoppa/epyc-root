@@ -151,7 +151,8 @@ def _gates_granted(row: dict, token_text: str) -> bool:
     return True
 
 
-def _eligible(row: dict, latest: dict[str, dict], snapshot: dict, token_text: str) -> tuple[bool, str]:
+def _eligible(row: dict, latest: dict[str, dict], snapshot: dict, token_text: str,
+              co_ctx: dict | None = None) -> tuple[bool, str]:
     if row.get("status") != "READY":
         return False, f"status={row.get('status')}"
     for dep in row.get("depends_on") or []:
@@ -165,12 +166,125 @@ def _eligible(row: dict, latest: dict[str, dict], snapshot: dict, token_text: st
     # lane occupancy would queue work that cannot possibly contend.
     if row.get("replay_eligible"):
         return True, "eligible (replay_eligible — no lane, no claim needed)"
+    # R3: measured per-role-pair co-residency, not just binary lane occupancy.
+    if co_ctx is not None:
+        ok, why = _co_residency_verdict(row, co_ctx)
+        if not ok:
+            return False, why
     lane = row.get("lane")
     if lane in {"cpu", "gpu"} and snapshot.get(f"{lane}_busy"):
         return False, f"lane {lane} busy (load_class={snapshot.get('load_class')})"
     if row.get("contention_class") == "exclusive-contiguous" and snapshot.get("cpu_busy"):
         return False, "exclusive-contiguous needs a quiet host"
     return True, "eligible"
+
+
+_ORCH_ROOT = Path("/mnt/raid0/llm/epyc-orchestrator")
+
+# R3: the bus REFERENCED the measured contention matrix in config but never
+# consulted it — eligibility only asked the binary question "is the lane busy".
+# That is strictly weaker than what the orchestrator already knows: the matrix
+# records per-role-PAIR measured throughput ratios with allow/borderline/block
+# verdicts. A task can be blocked from co-running with a specific live role even
+# when the lane is not saturated.
+#
+# NOTE ON AXES. `contention_class` (exclusive-contiguous | resumable) is a
+# PAUSABILITY axis introduced by R5. Co-residency compatibility is a different,
+# role-pair axis. The rider text originally conflated them ("promote declared
+# classes toward measured ones"); they are orthogonal and are now kept separate.
+# `role_affinity` is the field that maps a task onto the matrix's axis.
+_TRAFFIC_BY_PRIORITY_CLASS = {
+    "production-live": "foreground_interactive",
+    "operator-directed": "foreground_specialist",
+    "background-churn": "background",
+}
+
+
+def _load_matrix_machinery():
+    """Import the orchestrator's matrix API. Never reimplement it (R3)."""
+    if str(_ORCH_ROOT) not in sys.path:
+        sys.path.insert(0, str(_ORCH_ROOT))
+    from src.scheduling.contention import (  # noqa: PLC0415
+        MatrixStatus, PairDecision, TrafficClass, load_contention_matrix, matrix_status, pair_policy,
+    )
+    from src.runtime.cpu_region_lock import active_region_holders  # noqa: PLC0415
+    return dict(MatrixStatus=MatrixStatus, PairDecision=PairDecision, TrafficClass=TrafficClass,
+                load=load_contention_matrix, status=matrix_status, policy=pair_policy,
+                holders=active_region_holders)
+
+
+def co_residency_context(config: dict) -> dict:
+    """Live role holders + matrix health, computed once per tick."""
+    co = config.get("co_residency") or {}
+    ctx: dict[str, Any] = {"available": False, "live_roles": [], "matrix_status": None,
+                           "expected_topology_hash": co.get("expected_topology_hash"),
+                           "on_mismatch": co.get("on_topology_mismatch", "refuse")}
+    try:
+        api = _load_matrix_machinery()
+    except Exception as exc:  # noqa: BLE001
+        ctx["error"] = f"matrix API unavailable: {exc}"
+        return ctx
+    try:
+        status = api["status"](current_topology_hash=ctx["expected_topology_hash"])
+        ctx["matrix_status"] = str(getattr(status, "value", status))
+        ctx["live_roles"] = sorted(api["holders"]().keys())
+        if ctx["matrix_status"] == "ok":
+            ctx["matrix"] = api["load"]()
+            ctx["available"] = True
+        ctx["api"] = api
+    except Exception as exc:  # noqa: BLE001
+        ctx["error"] = f"matrix probe failed: {exc}"
+    return ctx
+
+
+def _co_residency_verdict(row: dict, ctx: dict) -> tuple[bool, str]:
+    """(ok, reason) for one task against everything currently decoding.
+
+    Fail-closed for tasks that DECLARE a role_affinity when the matrix cannot be
+    trusted (fabric axiom 3, and config's on_topology_mismatch: refuse). Tasks
+    with no role_affinity are unaffected — there is nothing to look up, so
+    refusing them would be a guess dressed as a guard.
+    """
+    role = row.get("role_affinity")
+    if not role:
+        return True, "no role_affinity — co-residency not applicable"
+    if not ctx.get("available"):
+        detail = ctx.get("error") or f"matrix status={ctx.get('matrix_status')}"
+        if ctx.get("on_mismatch") == "refuse":
+            return False, f"co-residency unverifiable ({detail}) and policy is refuse"
+        return True, f"co-residency unverifiable ({detail}) but policy is permit"
+    api, matrix = ctx["api"], ctx["matrix"]
+    traffic = _TRAFFIC_BY_PRIORITY_CLASS.get(row.get("priority_class"), "background")
+    for live in ctx["live_roles"]:
+        if live == role:
+            continue  # same-role co-residency has its own certification path
+        pair = matrix.get_pair(role, live)
+        # DELIBERATE DIVERGENCE FROM THE ORCHESTRATOR. pair_policy() returns
+        # `allow` for an UNMEASURED pair at foreground traffic — sensible there,
+        # where a real request is waiting and starving it on missing data would
+        # be worse. The bus carries no SLO: its work is background orchestration
+        # with nobody waiting, so fabric axiom 3 governs instead — unverifiable
+        # means excluded, not permitted. Admitting an unmeasured pair here is
+        # exactly the silently-wrong-policy failure the R3 guard exists to stop,
+        # one level down.
+        if pair is None:
+            return False, (f"co-residency UNMEASURED: no matrix entry for ({role}, live {live}). "
+                           f"Axiom 3 — unverifiable is excluded, not permitted. Measure the pair "
+                           f"via scripts/server/contention_matrix.py, or drop role_affinity if "
+                           f"this task genuinely does not contend.")
+        try:
+            decision = api["policy"](role, live, traffic, matrix)
+        except Exception as exc:  # noqa: BLE001
+            return False, f"pair_policy({role},{live}) failed: {exc}"
+        value = str(getattr(decision, "value", decision))
+        if value in {"block", "queue"}:
+            return False, (f"measured co-residency: {role} vs live {live} -> {value}, "
+                           f"measured ratio {pair.ratio} (traffic={traffic})")
+        if value == "degraded_allow":
+            return True, (f"co-residency degraded_allow: {role} vs live {live}, "
+                          f"ratio {pair.ratio} (traffic={traffic}) — admitted under SLO override, "
+                          f"flag it in the run's attribution")
+    return True, "co-residency clear against all live roles"
 
 
 _PRIORITY_RANK = {"P0": 0, "P1": 1, "P2": 2, "P3": 3, "P4": 4}
@@ -188,6 +302,7 @@ def compute_advice(bus_root: Path, config: dict, epoch: int) -> list[dict]:
     roster = [r for r in (config.get("roster") or []) if isinstance(r, dict)]
     latest = fold_queue(bus_root)
     snapshot = _lane_snapshot()
+    co_ctx = co_residency_context(config)
     agents = _agent_states(bus_root, roster)
     try:
         token_text = (bus_root / "tokens" / "token-queue.md").read_text(encoding="utf-8")
@@ -207,6 +322,10 @@ def compute_advice(bus_root: Path, config: dict, epoch: int) -> list[dict]:
             "none": "idle",
         },
         "load_class": snapshot.get("load_class"),
+        "co_residency": {"matrix_status": co_ctx.get("matrix_status"),
+                         "live_roles": co_ctx.get("live_roles"),
+                         "available": co_ctx.get("available"),
+                         "error": co_ctx.get("error")},
         "queue_depth": len(latest),
         "ready_depth": sum(1 for r in latest.values() if r.get("status") == "READY"),
     }]
@@ -228,7 +347,7 @@ def compute_advice(bus_root: Path, config: dict, epoch: int) -> list[dict]:
         for row in latest.values():
             if row.get("task_id") in claimed_this_tick:
                 continue
-            ok, why = _eligible(row, latest, snapshot, token_text)
+            ok, why = _eligible(row, latest, snapshot, token_text, co_ctx)
             if not ok:
                 if row.get("status") == "READY":
                     rejections.append({"task_id": row.get("task_id"), "reason": why})
