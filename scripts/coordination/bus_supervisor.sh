@@ -50,7 +50,7 @@ STARTUP_TIMEOUT="${STARTUP_TIMEOUT:-30}"  # wait for a fresh heartbeat after rel
 LOG_DIR="${EPYC_ROOT}/logs"
 SUP_LOG="${LOG_DIR}/bus_supervisor.log"
 DAEMON_LOG="${LOG_DIR}/coordinator_daemon.log"
-LOCK_FILE="/tmp/bus_supervisor.lock"
+LOCK_FILE="${LOCK_FILE:-/tmp/bus_supervisor.lock}"   # overridable so tests isolate
 SUP_PIDFILE="${LOG_DIR}/bus_supervisor.pid"
 
 # Deliberately specific so it cannot match this supervisor's own command line.
@@ -92,7 +92,14 @@ stop_wedged() {
 
 start_daemon() {
   log "launching coordinator-daemon"
-  nohup "$DAEMON" run >>"$DAEMON_LOG" 2>&1 &
+  # `9>&-` is load-bearing: fd 9 holds this supervisor's flock, and a child
+  # inherits it across fork+exec. Without closing it, the DAEMON ends up holding
+  # the supervisor's lock for its entire life, so no supervisor can ever start
+  # again while that daemon lives — a complete self-lockout. Observed 2026-07-27:
+  # `bus_supervisor.sh once` started the daemon, exited, and the daemon kept fd 9,
+  # after which every `loop` logged "another supervisor holds the lock" while
+  # `status` reported no supervisor running.
+  nohup "$DAEMON" run 9>&- >>"$DAEMON_LOG" 2>&1 &
   local waited=0
   while (( waited < STARTUP_TIMEOUT )); do
     sleep 1; waited=$(( waited + 1 ))
