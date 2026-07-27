@@ -8,8 +8,12 @@ SUPERVISOR'S OWN LOCK for its entire life. Every later `loop` logged "another
 supervisor holds the lock; exiting" while `status` reported no supervisor running:
 a complete, silent self-lockout of the watchdog. Fixed with `9>&-` on the child.
 
-Isolated: its own LOCK_FILE, EPYC_ROOT and BUS_ROOT, so it never touches the live
-supervisor, daemon, or lock.
+Isolated on FOUR axes: its own LOCK_FILE, EPYC_ROOT, BUS_ROOT **and DAEMON_PATTERN**.
+The last one is not optional. `pgrep -f` matches whole command lines, so a stub named
+session_bus_coordinator.py in a temp dir matches the production pattern, and
+stop_wedged then kills the LIVE daemon. That happened on 2026-07-27: a test that
+believed itself isolated killed production, because every path was scoped but the
+pgrep pattern was global.
 
 Usage: scripts/coordination/tests/test_bus_supervisor.py
 """
@@ -58,7 +62,7 @@ def main() -> int:
     (root / "logs").mkdir()
     (root / "scripts" / "coordination").mkdir(parents=True)
     # a stand-in daemon: writes a heartbeat, then sleeps like the real one
-    stub = root / "scripts" / "coordination" / "session_bus_coordinator.py"
+    stub = root / "scripts" / "coordination" / f"stub_coordinator_{os.getpid()}.py"
     stub.write_text(
         "#!/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python\n"
         "import json,sys,time,os\n"
@@ -70,8 +74,13 @@ def main() -> int:
         "    time.sleep(2)\n")
     stub.chmod(0o755)
 
+    # DAEMON is derived from EPYC_ROOT by the script, so point it at the stub and
+    # scope DAEMON_PATTERN to the stub's unique name. Without this the script's
+    # global pgrep pattern reaches the PRODUCTION daemon and stop_wedged kills it —
+    # which is exactly what happened before this line existed.
     env = {**os.environ, "EPYC_ROOT": str(root), "BUS_ROOT": str(bus),
-           "LOCK_FILE": str(lock), "STARTUP_TIMEOUT": "12"}
+           "LOCK_FILE": str(lock), "STARTUP_TIMEOUT": "12",
+           "DAEMON": str(stub), "DAEMON_PATTERN": stub.name + " run"}
     try:
         print("== the fd-9 self-lockout regression ==")
         r = subprocess.run(["bash", str(SUP), "once"], capture_output=True, text=True, env=env)

@@ -40,7 +40,7 @@ set -euo pipefail
 EPYC_ROOT="${EPYC_ROOT:-/mnt/raid0/llm/epyc-root}"
 BUS_ROOT="${BUS_ROOT:-${EPYC_ROOT}/coordination/session-bus}"
 HEARTBEAT="${BUS_ROOT}/heartbeats/coordinator-daemon.json"
-DAEMON="${EPYC_ROOT}/scripts/coordination/session_bus_coordinator.py"
+DAEMON="${DAEMON:-${EPYC_ROOT}/scripts/coordination/session_bus_coordinator.py}"
 
 POLL_INTERVAL="${POLL_INTERVAL:-20}"      # seconds between healthy polls
 STALE_AFTER="${STALE_AFTER:-150}"         # heartbeat older than this => unhealthy
@@ -54,7 +54,12 @@ LOCK_FILE="${LOCK_FILE:-/tmp/bus_supervisor.lock}"   # overridable so tests isol
 SUP_PIDFILE="${LOG_DIR}/bus_supervisor.pid"
 
 # Deliberately specific so it cannot match this supervisor's own command line.
-DAEMON_PATTERN="session_bus_coordinator\\.py run"
+# OVERRIDABLE, and that matters: `pgrep -f` matches on the whole command line, so a
+# test stub named session_bus_coordinator.py in a temp dir matches this pattern and
+# `stop_wedged` will kill the PRODUCTION daemon. That happened 2026-07-27 — a test
+# that believed itself isolated (own LOCK_FILE, own EPYC_ROOT, own BUS_ROOT) killed
+# the live daemon, because the pattern is global while everything else was scoped.
+DAEMON_PATTERN="${DAEMON_PATTERN:-session_bus_coordinator\\.py run}"
 
 mkdir -p "$LOG_DIR"
 
