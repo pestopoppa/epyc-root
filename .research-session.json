@@ -1,0 +1,87 @@
+{
+  "session_started": "2026-07-27",
+  "stage": 4,
+  "stage1_completed": "2026-07-27",
+  "processed_urls": [
+    "https://github.com/avbiswas/fast-rlm"
+  ],
+  "entries_created": [
+    "intake-901"
+  ],
+  "next_intake_id": 902,
+  "expansion_count": 0,
+  "expansion_cap": 10,
+  "notes": "Single-URL intake, run inline (skill: 1-2 URLs inline, no sub-agent fan-out). Exact URL collision with intake-693 and intake-783; filed as low-novelty re-review superseding intake-783, not as duplicate. Stage-1 evidence: GitHub API /repos + /commits (2026-07-27), README.md, docs/guide/sessions.md, docs/development/benchmarks.md, git tree at f25f310b.",
+  "steering_ledger": [
+    {
+      "seq": 1,
+      "stage": 1,
+      "verbatim": "I know we've looked at this github many times already but it keeps gettign updated with cool features",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "stage1_response": "PARTIALLY OVERTURNED by GitHub API evidence: repo pushed_at = 2026-07-07T22:36:54Z, HEAD f25f310b, 57 commits \u2014 identical commit count to intake-783's 2026-07-08 re-review. Zero commits since. The premise held historically (Feb-Jul 2026 saw ACP, MCP, Vertex, sessions land) but not for this submission: the showcased 'repl memory' IS commits 063cfdc6 'Sessions' + f25f310b 'FAST RLM logs for sessions', both 2026-07-07, already indexed. Recorded so Stage 3 does not plan around a stale-update premise."
+    },
+    {
+      "seq": 2,
+      "stage": 1,
+      "verbatim": "also, the RLM project is at a more mature stage than ours showing significant capability af handling real workloads",
+      "disposition": "planned",
+      "plan_ref": "S3-item-TBD (capability-gap comparison)",
+      "stage1_response": "Carried to Stage 3 as the framing for a capability-gap comparison. Stage-1 qualification: fast-rlm ships a benchmarks/ harness (LongBench/NarrativeQA, oolong-synth, NIAH) that intake-783 never recorded \u2014 real evidence of workload orientation. BUT docs/development/benchmarks.md publishes NO scores, costs, or baselines. So 'more mature' is supported at the level of runtime features and harness existence, and is UNSUPPORTED at the level of demonstrated results. A dive on benchmarks/_harness.py would settle whether there are runnable results behind it."
+    },
+    {
+      "seq": 3,
+      "stage": 1,
+      "verbatim": "what can we learn from it to get our own architecture in ato a more mature state?",
+      "disposition": "planned",
+      "plan_ref": "S3-item-TBD (derived actionables from dive D1/D2)",
+      "stage1_response": "This is the operative scoping question and reframes the intake from technique-import to design comparison against subsystems we already own (src/repl_environment/state.py checkpoint()/restore(), src/session/persister.py SessionPersister + SQLite store). Drives dive recommendations D1 (session/memory design delta) and D2 (benchmark harness). Preliminary actionables recorded in Stage-1 report, all [unverified]."
+    },
+    {
+      "seq": 4,
+      "stage": 3,
+      "verbatim": "this contradiction keeps coming up, I think it woudl be worthwhile to have a handoff focusing on evaluating this ourselves and getting to a clarification ourselves. Maybe there's nuance that we're still not grasping",
+      "disposition": "planned",
+      "plan_ref": "Item 1 (rlm-contested-claims-self-evaluation.md)",
+      "stage1_response": "Filed as the eval stub. Stage-3 audit found the nuance is PARTLY already recorded: rao-redel-substrate-spike.md:26,36 holds the depth caveat as load-bearing with more detail than intake-547's own entry, and master-index N17 already frames the resolution (depth rescues failing attempts, hurts competent ones). What was genuinely missing is first-party measurement \u2014 every record treats intake-547 as received evidence. intake-547's cross_references pointed at an ARCHIVED handoff, a plausible mechanical reason it kept resurfacing unowned; repaired."
+    },
+    {
+      "seq": 5,
+      "stage": 4,
+      "verbatim": "Immediately implement handoffs/active/repl-session-memory-maturity.md when done since it doesn't require any inference nor change to the instrument era",
+      "disposition": "planned",
+      "plan_ref": "D-b, D-e (landed); D-a after decision",
+      "stage1_response": "D-b and D-e implemented and tested same session. D-a held for the architectural decision below."
+    },
+    {
+      "seq": 6,
+      "stage": 4,
+      "verbatim": "yes, bot overdesigning for it now may be silly. Lets get to real world work and then assess how much the cost/benefit actually is. Ideally T3 autopilot suites eventually get us there",
+      "disposition": "planned",
+      "plan_ref": "D-c1/D-c2; E2 cancelled",
+      "stage1_response": "D-c rescoped from a synthetic ON/OFF replication arm to real-workload measurement on T3 hard-workflow/tool-use/REPL traffic at zero added inference. E2 in the eval stub reduced to a pointer, no arm runs there. D-e1 folded in."
+    },
+    {
+      "seq": 7,
+      "stage": 4,
+      "verbatim": "sounds like we need to take an important architectural/safety decision. Provide options and tradeoffs.",
+      "disposition": "planned",
+      "plan_ref": "D-a (hardened pickle boundary)",
+      "stage1_response": "4-option decision package delivered via AskUserQuestion. Operator chose 'pickle behind a hardened boundary'. Implemented with 4 layers; /security-review found 4 issues (P1 numpy nested-unpickle gadget, P2 HMAC key race yielding an empty key, P3 strip() on key bytes, P3 two layer-4 AST bypasses), all fixed before landing."
+    }
+  ],
+  "stage1_gates": {
+    "dedup_sweep_unbounded": true,
+    "validator_exit": 0,
+    "handoffs_git_clean": true,
+    "cross_contamination_checked": true,
+    "expansion_within_cap": true
+  },
+  "stage2_completed": "2026-07-27",
+  "stage3_plan_approved": "2026-07-27",
+  "stage4_completed": "2026-07-27",
+  "handoffs_created": [
+    "rlm-contested-claims-self-evaluation.md",
+    "repl-session-memory-maturity.md"
+  ]
+}
