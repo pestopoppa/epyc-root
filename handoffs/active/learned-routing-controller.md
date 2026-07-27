@@ -185,7 +185,16 @@ The refutation's most valuable output is not the null — it is what the null ex
 **every consumer of `memories.outcome`**, not just this probe: MemRL reward shaping, Q-values, the
 routing classifier's own training labels, and skill-bank effectiveness.
 
-- [ ] **EPD-1 — `outcome` is written once at INSERT and NEVER updated.** Verified directly:
+- [~] **EPD-1 — CONFIRMED but reclassified 2026-07-27: correct semantics, not a bug.**
+      `outcome` is indeed written once at INSERT and never updated. But a consumer audit found
+      **nothing in the live read path consumes it** — `retriever.py` contains the string `outcome`
+      zero times in 951 lines, and there is no SQL `WHERE` on the column anywhere in the repo. Live
+      routing ranks on `q_value` + cosine + cost, and `q_value` updates correctly (TD(0) reproduced
+      bit-exactly for the 5 highest-`update_count` rows). First-observation semantics is therefore
+      the right reading; rewriting it would silently redefine a historical field. **The genuinely
+      broken sibling was `update_count`** — see below — which DOES feed a live gate. Retained as
+      context; original text follows.
+  - [ ] EPD-1-orig — `outcome` is written once at INSERT and NEVER updated. Verified directly:
       `orchestration/repl_memory/episodic_store.py:723-725` is
       `UPDATE memories SET q_value = ?, updated_at = ?, update_count = ? WHERE id = ?` — `outcome`
       is absent from the SET clause, while the INSERT at `:435` writes it once.
@@ -194,12 +203,17 @@ routing classifier's own training labels, and skill-bank effectiveness.
       *observation #1* while its `q_value` has been refined thousands of times. Decide: update
       `outcome` alongside `q_value`, or formally demote `outcome` to "first-observation sign" and
       stop treating it as a label.
-- [ ] **EPD-2 — `failure` conflates errors with cost penalties on CORRECT answers.** For live-traffic
-      rows the mapping is `reward <= 0 -> failure`, and reward carries penalties for latency,
-      escalation (−0.15) and delegation misattribution (−0.10). A correct-but-slow answer is stamped
-      `failure`. This is the mechanical explanation for attack 3: prompt **length** predicts the
-      label because length drives latency, which drives the penalty, which sets the label. Source
-      pointers: `orchestration/repl_memory/q_scorer.py`, `q_reward.py`.
+- [~] **EPD-2 — OVERSTATED, largely withdrawn 2026-07-27.** The original claim was that `failure`
+      conflates errors with cost penalties on correct answers (`reward <= 0 -> failure`, with reward
+      carrying latency / escalation −0.15 / delegation-misattribution −0.10 penalties). Adversarial
+      verification measured the actual reach: it explains **~4.3%** of live-traffic failure labels
+      (207 of 4,822), not a dominant share. And the related `reward == 0.0 -> failure` is **correct
+      behaviour, not a bug** — `seeding_rewards.py:452-468` defines
+      `success_reward(passed) = 1.0 if passed else 0.0`, and genuine no-signal cases are dropped one
+      branch earlier as `INFRA_SKIP` (`seeding_eval.py:1268-1279`). The q_value histogram confirms
+      the binary encoding: the never-updated external population is 98.2% concentrated on exactly
+      {1.0, 0.5}. **`outcome='failure'` on those rows is the right label.** No action; retained so the
+      claim is not re-derived.
 - [ ] **EPD-3 — the embedding index mixes >=3 text conventions, so the vector leaks the writer path.**
       Observed conventions: `"type:{t} | objective:{o[:200]} | priority:{p}"`,
       `"type:chat | objective:{p[:200]}"`, and raw <=450-char text from
@@ -209,10 +223,13 @@ routing classifier's own training labels, and skill-bank effectiveness.
       (coder_escalation 0.037 vs 0.288). Any embedding-based model over this store is partly a
       pipeline classifier. Decide: re-embed under one convention, or partition by convention.
 
-**Why this is the real result.** The probe asked "is failure decodable?" and got 0.726. The honest
-answer is that the *label* is not yet a measurement of the thing we care about. Fixing EPD-1..3 is a
-precondition for EP-5 (re-run) and, more importantly, for trusting any routing/MemRL signal derived
-from `outcome`. Cross-reference: this may be a second mechanical contributor to the five-null
+**Why this is the real result — REVISED 2026-07-27.** The probe asked "is failure decodable?" and
+got 0.726, which was refuted. The follow-up audit then established that EPD-1 and EPD-2 are much
+smaller than stated (see the strikethroughs above): `outcome` feeds nothing live, and the cost-penalty
+conflation reaches ~4.3% of labels. **The defect that actually mattered was EPD-3's cousin — the
+FAISS/id_map desync**, which corrupted vector resolution store-wide from 2026-07-05 and is now fixed
+and repaired. See [`episodic-memory-integrity.md`](episodic-memory-integrity.md). EP-5 (re-run) should
+wait for the reseed there, not for a label fix. Cross-reference: this may be a second mechanical contributor to the five-null
 learned-routing streak alongside the constant-reward bug fixed 2026-07-21 (master-index N16).
 
 
