@@ -200,6 +200,13 @@ Documents in `handoffs/archived/`, `handoffs/completed/`, `progress/`, and `CHAN
   nudges; write acks and status to **your own** outbox (`outbox/<your-id>.jsonl`). Never write
   another agent's file — `queue.jsonl` and `inbox/*` belong to the coordinator-daemon. Contract:
   [`coordination/session-bus/BUS_PROTOCOL.md`](coordination/session-bus/BUS_PROTOCOL.md).
+- **Refresh your heartbeat at the same boundary**, not just once at startup:
+  `session_bus.py append --agent <id> --target heartbeat --json '{"state":"working","task_id":"<id>"}'`
+  (`state`: `idle` | `working` | `draining`). A heartbeat written once is a birth certificate, not
+  a liveness signal — and a stale one is actively harmful: the stall ladder reads it as a stall and
+  nudges a healthy agent, while `tmux_adapter.py` refuses to nudge a genuinely idle one. Observed
+  2026-07-27: a live session's heartbeat was 2h stale while it was mid-generation, and only the
+  second signal prevented a spurious nudge.
 
 ## Operator Decision Requests
 
