@@ -55,8 +55,32 @@ failure caught in amber.
         the reload with `desync = 0` throughout (ntotal 707,276 → 707,561), **0/291 with a NULL
         `update_count`** (the pre-fix population was 22,949 of 54,960) and **0/291 with a NULL
         `embedding_idx`**. The desync fix is confirmed under live writes, not just at reload.
-- [ ] M-10 — **Reseed** (`reseed_episodic_store.py`). Relayed to Codex 2026-07-27. Needs inference
-      (~58,132 BGE embeddings) and a window with no pinned CPU bench running.
+- [ ] M-10 — **Reseed** (`reseed_episodic_store.py`). Relayed to Codex 2026-07-27; script HARDENED
+      by Codex and reviewed+approved 2026-07-27 (`517a8c38`, `7b2e58a9`); execution handed back.
+      Needs inference (~58,132 BGE embeddings) and a window with no pinned CPU bench running.
+  - [x] M-10b — **Review of Codex's hardening: APPROVED, and it caught two real bugs of mine.**
+        ✅ 2026-07-27. 82 tests pass across reseed/memory_record/faiss/parallel_embedder.
+        **(i) My reseed could have silently produced a corrupt store.** It built its embedder with
+        bare `TaskEmbedder()`, and `EmbeddingConfig.use_fallback` defaults to **True** — the fallback
+        being a SHA-256-seeded PCG64 pseudo-embedding. A BGE hiccup mid-reseed would have written
+        hash noise, passed the `id_map[embedding_idx] == id` check, and **exited 0 on a corrupt
+        store** — the same "internally consistent while silently wrong" shape as the original bug.
+        Codex gates it three ways: `use_fallback=False`, the new `allow_subprocess=False` (needed
+        because `use_fallback` alone left the subprocess path open), and an explicit
+        `ParallelEmbedderClient(EmbedderPoolConfig(use_fallback=False))` override; the terminal
+        branch now raises instead of substituting.
+        **(ii) `record_from_legacy_context` corrupted contract round-trips.** Mine swept every
+        unrecognised key into `metrics`, so re-reading a contract-written record nested `metrics`
+        inside `metrics` and filed `record_version` as telemetry — compounding on every reseed pass.
+        Fixed in `7b2e58a9`; my round-trip test was strengthened to full `to_context()` equality,
+        which is what exposed it.
+        Also added: `verify_episodic_reseed_cosine.py` implementing the acceptance gate
+        (`return 0 if len(sample) == args.sample_size and mean > 0.95 else 1` — full sample AND
+        mean >0.95, so a short sample cannot pass), and `_checked_batch()` validating shape
+        `(n, 1024)` and `np.isfinite` per batch.
+  - [ ] M-10c — Execution handed back to Codex 2026-07-27. **NOTE**: the SS-BENCH-GATE guard added
+        to `orchestrator_stack.py` does NOT cover this script — it is not a stack lifecycle action —
+        so the "no pinned CPU bench" precondition remains a manual check.
   - [ ] M-10a — Acceptance is the **cosine test**, not the exit code: re-embed a row's own text and
         compare to its stored vector. Before: **mean 0.5505, 0/12 above 0.9**. Pass: **> 0.95**.
 - [x] M-11 — **SkillBank is retrievable.** ✅ 2026-07-27. The consumer was never missing:
