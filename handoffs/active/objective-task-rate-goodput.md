@@ -44,6 +44,25 @@ inputs are journaled, so the axis replays over FULL journal history at zero infe
 - [x] **W1 — axis + shadow journal** (~half day): added task-rate helpers and policy constants in `src/autopilot_core/tier_specs.py`; `eval_tower._aggregate()` records `task_rate_qph`, `goodput_qph`, and `tokens_per_solved_task`; new journal rows include live legacy vector + shadow task-rate vector under policy labels.
 - [x] **W2 — historical replay + bloat-artifact diff report** (~half day, ZERO inference): replay implemented via `scripts/analysis/task_rate_goodput_replay.py` and `journal_reconstruction` objective-policy replay. Full-journal report: `epyc-orchestrator/orchestration/reports/task_rate_goodput_replay_2026-06-12.md`. Follow-up `d21bbee` folds append-only supersession events before rendering report rows, so replay tables match supersession-aware archive/dashboard state. Follow-up `47c75de` adds a `Baseline Promotion Evidence` section scoped to `baseline_promotion` events whose source trial is present in the effective folded replay rows; malformed/incomplete events render as `n/a` rather than crashing the report.
 - [ ] **W3 — flip the vector** (~half day): archive/gate/baseline move to the 3-D vector behind a policy-version bump; retire t/s AND the tier-cost axis from dominance (tier-mix stays telemetry for capacity planning); record the E3→E4 retire-view per MEASUREMENT.md §5 (frontier restarts fresh; old view archived read-only). **Hold as of 2026-06-13**: W2 replay found 1/5 legacy T1 frontier points fall off under `task_rate_3d_v1`, not the spec's >=2/5 proof threshold, and raw `task_rate` admits a zero-quality high-rate frontier point. Do not flip live dominance yet.
+  - [x] **W3a — E8 quality-eligible replay EXECUTED** ✅ 2026-07-27 (Claude session, zero
+    inference; report `epyc-orchestrator/orchestration/reports/task_rate_goodput_replay_e8_20260727.md`).
+    Machinery green on the fresh era: 1356 journal rows parsed (0 malformed), state epoch
+    scoping admitted exactly the **16 E8 reseed trials**; the 2026-06-13 blocker class is
+    ABSENT on E8 rows (no zero-quality/low-quality frontier admissions — all task-rate
+    frontier points q≥1.77, floor 1.0). Legacy frontier 3 points / HV 8.16; task-rate
+    frontier 5 points / HV 150.33; task-rate ADDS trials 1444 (89.1 q/h, 1487 tok/solved)
+    and 1456 (83.2 q/h). **Pre-registered drop criterion NOT met** (0/3 legacy points fall
+    off; spec needs ≥2/3): the 16 homogeneous surface-sweep trials don't vary verbosity, so
+    axis divergence hasn't had a chance to appear. Flip decision → operator (options below).
+  - [ ] **W3b — operator flip decision** (package 2026-07-27): (A) flip now on policy
+    conviction — the axis is P-SPEED-OBJ-ratified and the gameability argument is accepted;
+    risk = n=16 homogeneous evidence. (B) DEFAULT — hold legacy vector; re-run the replay
+    (free) as verbosity-affecting trials accrue (prompt prunes, tool policies); flip when the
+    drop criterion or a material reorder appears. (C) RECOMMENDED — dual-report interim:
+    legacy stays the live dominance vector, task_rate/goodput surfaces on panels + journal
+    telemetry immediately (W4 fields already recorded per row), flip armed on first observed
+    divergence. C costs nothing, makes verbosity-gaming visible the day it starts, and keeps
+    the pre-registered evidence bar intact.
 - [x] **W4 — telemetry + doc truth** (~half day): `task_rate_qph`, `goodput_qph`, and `tokens_per_solved_task` are journaled; `scripts/autopilot/program.md` now states that EvalTower `speed` remains the current Pareto speed axis/host-throttle diagnostic, task-rate fields are shadow policy telemetry, and `tokens_per_solved_task` is the bloat diagnostic. The stale wall-occupancy `sum(tokens_generated[role] / throughput_tps[role])` proxy is explicitly marked as not computed/not live. `rg` found no other live system-card copy of that stale text.
 - [x] **W5 — policy decision** (2026-06-13, zero inference): keep `task_rate_qph`, `goodput_qph`, and `tokens_per_solved_task` as shadow telemetry; leave live Pareto dominance on the current objective until preconditions below are met.
 
