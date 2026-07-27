@@ -632,6 +632,87 @@ def process_revocations(config: dict, latest: dict[str, dict], reports: dict[str
     return {"queue_rows": queue_rows, "nudges": nudges, "advisory": advisory}
 
 
+def intake_proposals(bus_root: Path, latest: dict[str, dict], reports: dict[str, list[dict]],
+                     epoch: int) -> tuple[list[dict], list[dict]]:
+    """Turn `task-propose` messages into READY queue rows (returns rows, advisory).
+
+    This is how work ENTERS the queue. Agents never write `queue.jsonl`; they
+    propose from their own outbox and the daemon transcribes — bookkeeping, not
+    judgment, so the daemon stays inside its bright line.
+
+    Idempotent on `task_id`: a proposal for a task already in the queue is
+    skipped, so re-running intake cannot duplicate or resurrect anything. That
+    matters because a completed task must NOT be re-created by an old proposal
+    still sitting in an outbox.
+
+    Deliberately NOT part of the tick loop. Intake writes `queue.jsonl`, which
+    would break the advisory-mode invariant M3 verified (exactly two files). It is
+    a one-shot the operator or an agent invokes: `session_bus_coordinator.py
+    intake`. Seeding the queue is a decision, not something a daemon should start
+    doing on its own.
+    """
+    rows: list[dict] = []
+    advisory: list[dict] = []
+    seen: set[str] = set()
+    for tid, msgs in reports.items():
+        for msg in msgs:
+            if msg.get("kind") != "task-propose":
+                continue
+            if tid in latest:
+                advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                                 "epoch": epoch, "kind": "would-skip", "task_id": tid,
+                                 "reason": f"proposal ignored: already in the queue as "
+                                           f"{latest[tid].get('status')}"})
+                continue
+            if tid in seen:
+                continue
+            seen.add(tid)
+            pl = msg.get("payload") or {}
+            row = {"schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(), "task_id": tid,
+                   "status": "READY", "lane": pl.get("lane"), "gating": pl.get("gating"),
+                   "epoch": epoch, "origin": f"proposed-by:{msg.get('from')}",
+                   "spec_ref": pl.get("spec_ref")}
+            for key in ("priority", "priority_class", "contention_class", "role_affinity",
+                        "est_wall_clock_h", "replay_eligible"):
+                if pl.get(key) is not None:
+                    row[key] = pl[key]
+            rows.append(row)
+            advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                             "epoch": epoch, "kind": "intake", "task_id": tid,
+                             "detail": f"lane={pl.get('lane')} gating={pl.get('gating')} "
+                                       f"classification={pl.get('classification', 'unstated')}"})
+    return rows, advisory
+
+
+def cmd_intake(args: argparse.Namespace) -> int:
+    """One-shot: transcribe task proposals into READY queue rows."""
+    bus_root = Path(args.bus_root)
+    config = _load_config(bus_root)
+    roster = [r for r in (config.get("roster") or []) if isinstance(r, dict)]
+    reports = _outbox_reports(bus_root, roster)
+    latest = fold_queue(bus_root)
+    epoch = _read_epoch(bus_root)
+    rows, advisory = intake_proposals(bus_root, latest, reports, epoch)
+
+    if args.dry_run:
+        print(f"would admit {len(rows)} task(s):")
+        for r in rows:
+            print(f"  {r['task_id']:<44} lane={r.get('lane'):<5} gating={r.get('gating'):<5} "
+                  f"{r.get('priority', '-')}")
+        skips = [a for a in advisory if a["kind"] == "would-skip"]
+        for s in skips:
+            print(f"  skip {s['task_id']:<44} {s['reason']}")
+        return 0
+
+    for row in rows:
+        _append_jsonl(bus_root / "queue.jsonl", row)
+    if advisory:
+        _append_advisory(bus_root, advisory)
+    print(f"admitted {len(rows)} task(s); "
+          f"{len([a for a in advisory if a['kind'] == 'would-skip'])} already present")
+    return 0
+
+
 def _class_precedence(config: dict) -> dict[str, set[str]]:
     """{class: set of classes it yields to} from the priority_classes artifact."""
     out: dict[str, set[str]] = {}
@@ -1166,6 +1247,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     a = sub.add_parser("audit", help="R7 integrity audit only (defects + observations)")
     a.set_defaults(func=cmd_audit)
+
+    i = sub.add_parser("intake", help="one-shot: transcribe task-propose messages into READY rows")
+    i.add_argument("--dry-run", action="store_true", help="show what would be admitted")
+    i.set_defaults(func=cmd_intake)
     return p
 
 

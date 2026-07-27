@@ -54,7 +54,8 @@
             "requeue",
             "reprioritize",
             "saturation",
-            "lease-revoke"
+            "lease-revoke",
+            "task-propose"
           ]
         },
         "corr_id": {
@@ -264,6 +265,93 @@
                   "yield_to": {
                     "type": "string",
                     "description": "task_id or priority class this yields to"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "task-propose"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "task_id",
+              "payload"
+            ],
+            "properties": {
+              "payload": {
+                "type": "object",
+                "required": [
+                  "lane",
+                  "gating",
+                  "spec_ref",
+                  "summary"
+                ],
+                "description": "How work ENTERS the queue. Agents never write queue.jsonl \u2014 they propose, and the coordinator-daemon transcribes (pure bookkeeping, no judgment). gating is mandatory here for the same reason it is mandatory on the row: without it a lease revocation has no defined fallback set.",
+                "properties": {
+                  "lane": {
+                    "enum": [
+                      "cpu",
+                      "gpu",
+                      "none"
+                    ]
+                  },
+                  "gating": {
+                    "enum": [
+                      "cpu",
+                      "gpu",
+                      "both",
+                      "none"
+                    ]
+                  },
+                  "spec_ref": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "owning handoff (+ checkbox anchor) \u2014 the spec stays OUT of the row"
+                  },
+                  "summary": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "priority": {
+                    "type": "string",
+                    "pattern": "^P[0-4]$"
+                  },
+                  "priority_class": {
+                    "enum": [
+                      "production-live",
+                      "operator-directed",
+                      "background-churn"
+                    ]
+                  },
+                  "contention_class": {
+                    "enum": [
+                      "exclusive-contiguous",
+                      "resumable"
+                    ]
+                  },
+                  "role_affinity": {
+                    "type": "string"
+                  },
+                  "est_wall_clock_h": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "replay_eligible": {
+                    "type": "boolean"
+                  },
+                  "classification": {
+                    "type": "string",
+                    "description": "how lane/gating were decided \u2014 'heuristic' means provisional"
                   }
                 }
               }
