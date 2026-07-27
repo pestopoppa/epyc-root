@@ -59,8 +59,11 @@ inputs are journaled, so the axis replays over FULL journal history at zero infe
     telemetry immediately; flip armed on first observed divergence (amber tripwire badge when
     ≥2 legacy frontier points drop under task-rate). Options A (flip now) and B (silent hold)
     declined in favor of visibility-without-risk.
-  - [ ] **W3c — dual-report panel implementation** (in flight 2026-07-27, Claude session
-    agent): pareto payload gains task_rate_qph/goodput_qph/tokens_per_solved + offered_load
+  - [x] **W3c — dual-report panel implementation** ✅ 2026-07-27 (orchestrator `3f21d760`,
+    +508/−22, 296+2 tests green; canonical helpers reused from tier_specs + the replay module,
+    zero math reimplemented; live-journal smoke reproduces the E8 report: legacy frontier
+    {1445,1446,1450}, task-rate adds 1444/1456, tripwire quiet at dropped=0; activates at the
+    queued API reload): pareto payload gains task_rate_qph/goodput_qph/tokens_per_solved + offered_load
     per entry (canonical helpers, no reimplementation); speed-axis toggle (median request t/s
     ↔ task_rate q/h); dual-report banner; server-side divergence tripwire. Display-only;
     dominance unchanged; ships at the queued API reload.
