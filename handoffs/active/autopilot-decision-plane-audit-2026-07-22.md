@@ -247,6 +247,14 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
   recorded as `autopilot_killed_mid_trial`. The authoritative current-era journal fold has
   16 eligible entries and reconstructs a three-point frontier (`1445`, `1446`, `1450`).
   Live marker terminalization remains a separate human transaction; no extra trial is needed.
+- [x] **E8 quality reseed -- T1 tier evidence boundary** ✅ 2026-07-27 — T1/r1 was migrated
+  deterministically from the legacy 50-question result, with its one blank-generation timeout
+  repaired in the separate watched window; fresh T1/r2 and T1/r3 each completed `50/50`.
+  All three raw records are E8/core_v2 `e8_quality_full_pool_tier_baseline.v4`, `n=50` and
+  `q=1.5`. The fixed scorer-tail ordinals `32`, `33`, and `38` in each fresh replicate had one
+  bounded retry (`2` attempts, terminal error null) and recovered. The runtime watcher recorded
+  `409/409` clean samples before T2/r1 began; T2/r1 remains active. This is an evidence
+  checkpoint only: it neither applies nor publishes the E8 quality baseline.
 - [ ] **E8 quality baseline reseed/apply** — human-only protocol/source/apply scripts are
   prepared and parked. Execute only after numeric `16/16/0`, then validate and publish the
   post-boundary quality baseline before releasing the Laguna Q4 CPU lane.
