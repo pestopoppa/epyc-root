@@ -400,18 +400,39 @@ freezes/cutovers, host reboots).
   three places. Beyond the wasted 6s of a 45s tick, the real hazard was two halves of one decision
   observing different host states. Now probed once per tick, verified 1 call.
   Tests: 50/50.
-- [ ] **R6 — coordinator-agent as integration owner (M5).** Wrap-up (via
-  `epyc-root/scripts/coordination/flip_checkbox.py`), worktree merging, pushing, merge-to-main.
-  Structurally removes the shared-clone hazard: `/workspace/repos/<n>` and `/mnt/raid0/llm/<n>`
-  are the same tree, so parallel mains' staged files ride into each other's commits — mains in
-  worktrees with a single integrator fixes it by construction. **Merge-to-main gates on content,
-  not category:** autonomous unless the diff touches a human-only path (`MEASUREMENT.md`,
-  `instrument_eras.yaml`, eval tower/scoring, safety gates, era rows,
-  `production-consolidated-*` kernel state), where it becomes a boundary token; the kernel case
-  additionally carries the four-step promotion workflow. Git hygiene as enforced rules:
-  path-scoped adds only, `fetch` + `log @{u}..main` before commit, no branch switching in a
-  shared clone. **Exclusion:** may flip checkboxes and append progress, may **not** create
-  handoff stubs, intake entries, or index rows.
+- [x] **R6 — coordinator-agent as integration owner.** ✅ 2026-07-27 — the mechanizable half is
+  built; the rest is procedure, and is labelled as such rather than pretended into code.
+
+  **Built: the merge gate** (`scripts/coordination/merge_gate.py`). Classifies a diff as
+  `autonomous` or `gated` from CONTENT, never category — autonomous unless the change touches a
+  human-only path, because merges are revertible and the human-only list is not. Production kernels
+  are one entry on that list, not a special case; they differ only in what satisfies the gate
+  (operator approval **plus** the four-step promotion workflow, carried through as an
+  `extra_requirement`). Rules are repo-scoped, so `MEASUREMENT.md` gates in `epyc-root` and not
+  elsewhere. A gated verdict emits a ready-to-relay token-request block with an ungranted checkbox.
+  **Fail-closed, opposite to the PreToolUse guard, deliberately:** an unverifiable or drifted gate
+  list returns rc 3 and refuses, because a list that cannot be verified cannot authorise anything.
+  The edit-time guard errs permissive (blocking on uncertainty would stall the repo); this one errs
+  strict (refusing costs one operator glance). Same list, two biases, each matched to its cost.
+  It never merges, pushes, or commits — deciding and acting are separate so the check can run in a
+  pre-merge hook, in coordinator-agent, or by hand without any of them inheriting write authority.
+  Tests: `scripts/coordination/tests/test_merge_gate.py`, 25/25, including the drifted-pin refusal
+  end-to-end and its restoration.
+
+  **Built elsewhere: git hygiene as enforced rules** — path-scoped adds and fetch-before-commit are
+  R7a's `check_commit_hygiene.py`, not prose.
+
+  **Procedure, not code (stated so it is not mistaken for automated):** wrap-up itself
+  (`flip_checkbox.py` is the primitive; sequencing it is coordinator-agent's job), worktree
+  merging, and pushing. The structural benefit — mains in worktrees with a single integrator, so
+  parallel sessions' staged files cannot ride into each other's commits — comes from the working
+  arrangement, not from a script.
+
+  **The no-index-creation exclusion stays policy, not a hook, and here is why:** blocking creation
+  of handoff stubs or index rows mechanically cannot distinguish an agent inventing work from the
+  operator asking for a handoff to be written. A guard that cannot tell those apart would block
+  legitimate requested work, which is the over-blocking failure this session already hit twice.
+  `CLAUDE.md` states the rule; the daemon's audit reports index changes as observations.
 - [x] **R7 — coordinator integrity.** ✅ 2026-07-27 — three layers, each catching what the
   previous one cannot:
   *Containment.* The trust boundary moved out of agent-editable `config.yaml` into
