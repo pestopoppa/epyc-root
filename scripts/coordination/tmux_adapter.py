@@ -43,7 +43,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import shlex
 import subprocess
 import sys
 import time
@@ -97,7 +96,20 @@ def resolve_target(config: dict, agent: str) -> tuple[str | None, str]:
     parts = ep.split(":")
     session = parts[1] if len(parts) > 1 else ""
     if len(parts) >= 3 and parts[2]:
-        return f"{session}:{parts[2]}", f"endpoint names window {parts[2]!r}"
+        want = parts[2]
+        # MUST verify. tmux resolves an unmatched target to the session's CURRENT
+        # window and exits 0 — measured 2026-07-27: `display-message -t sess:gone`
+        # returned data for a different window. Trusting the string would have let
+        # send-keys hit the wrong pane, which is the precise failure this module
+        # claims to prevent.
+        rc, got = _tmux("display-message", "-p", "-t", f"{session}:{want}", "#{window_name}")
+        if rc != 0:
+            return None, f"target {session}:{want} does not resolve: {got}"
+        if got.strip() != want and not want.isdigit():
+            return None, (f"target {session}:{want!r} resolved to window {got.strip()!r} — tmux "
+                          f"falls back to the current window on a miss. Refusing rather than "
+                          f"typing into the wrong pane.")
+        return f"{session}:{want}", f"endpoint names window {want!r} (verified)"
     # No window in the endpoint: accept ONLY an exact window-name match.
     rc, out = _tmux("list-windows", "-t", session, "-F", "#{window_index}\t#{window_name}")
     if rc != 0:
@@ -149,12 +161,14 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float) -> dict:
     hb, hb_age = heartbeat(agent)
 
     dead = quiet_for = None
+    attached = None
     if target:
         rc, out = _tmux("display-message", "-p", "-t", target,
-                        "#{pane_dead}\t#{window_activity}")
-        if rc == 0 and "\t" in out:
-            d, _, act = out.partition("\t")
+                        "#{pane_dead}\t#{window_activity}\t#{session_attached}")
+        if rc == 0 and out.count("\t") >= 2:
+            d, act, att = out.split("\t")[:3]
             dead = d.strip() == "1"
+            attached = att.strip() not in {"", "0"}
             try:
                 quiet_for = max(0.0, time.time() - int(act.strip()))
             except ValueError:
@@ -181,11 +195,32 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float) -> dict:
         blockers.append("pane is dead")
     if dead is None and target:
         blockers.append("could not read pane state — fail closed")
-    if quiet_for is None and target:
+    # window_activity only reflects OUTPUT while a client is attached. Measured
+    # 2026-07-27 on a detached session: a window printing every second and one
+    # sleeping reported the SAME timestamp, so quiet_for only ever grows and the
+    # check silently always passes — fail-OPEN in a module that must fail closed.
+    # So it is a corroborating signal that counts only when trustworthy, and the
+    # heartbeat is the guard that actually decides.
+    quiet_check = "n/a"
+    if not target:
+        pass
+    elif attached is False:
+        # NOT a blocker. A detached session is the normal overnight state — the
+        # whole point of this system is coordinating while the operator is away —
+        # so refusing every nudge when detached would defeat it. The quiet-check
+        # simply cannot be evaluated, so it contributes nothing either way, and the
+        # heartbeat is the guard that decides (as this module claims). If an agent
+        # reports `idle` while generating, that is an agent defect and the fix
+        # belongs in its heartbeat discipline, not in a signal tmux cannot give us.
+        quiet_check = "skipped: session detached, window_activity does not track output"
+    elif quiet_for is None:
         blockers.append("could not read window_activity — fail closed")
-    elif quiet_for is not None and quiet_for < quiet_s:
+    elif quiet_for < quiet_s:
+        quiet_check = f"blocked: output {quiet_for:.0f}s ago"
         blockers.append(f"window produced output {quiet_for:.0f}s ago (< {quiet_s:.0f}s) — "
                         f"likely mid-generation")
+    else:
+        quiet_check = f"passed: quiet for {quiet_for:.0f}s"
     if hb is None:
         blockers.append("no heartbeat — cannot tell if the agent is thinking; fail closed")
     else:
@@ -197,6 +232,7 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float) -> dict:
     return {"agent": agent, "target": target, "target_reason": why,
             "authorised": authorised, "spawn_cap": spawn_cap, "spawns_today": spawns_today,
             "pane_dead": dead, "window_quiet_for_s": quiet_for,
+            "session_attached": attached, "quiet_check": quiet_check,
             "heartbeat_state": (hb or {}).get("state"), "heartbeat_age_s": hb_age,
             "seconds_since_last_nudge": since_nudge,
             "blockers": blockers, "nudge_ok": not blockers}
@@ -214,6 +250,7 @@ def cmd_probe(args: argparse.Namespace) -> int:
     q = p["window_quiet_for_s"]
     print(f"window quiet     {q:.0f}s" if q is not None else "window quiet     (unreadable)")
     age = p["heartbeat_age_s"]
+    print(f"quiet-check      {p['quiet_check']}")
     print(f"heartbeat        {p['heartbeat_state']} (age {age:.0f}s)" if age is not None
           else "heartbeat        (none)")
     print(f"spawns today     {p['spawns_today']}/{p['spawn_cap']}")
@@ -277,6 +314,16 @@ def cmd_spawn(args: argparse.Namespace) -> int:
               f"decision, not this adapter's.", file=sys.stderr)
         return EX_BLOCKED
 
+    session = str(entry.get("endpoint") or "tmux:agent").split(":")[1] or "agent"
+    if args.dry_run:
+        would = [r for r in (f"inbox/{args.agent}.jsonl", f"outbox/{args.agent}.jsonl",
+                             f"heartbeats/{args.agent}.json", f"cursors/{args.agent}.json")
+                 if not (BUS_ROOT / r).exists()]
+        print(f"would create {len(would)} bus file(s): {', '.join(would) or 'none (all present)'}")
+        print(f"would create window {session}:{args.agent} running: {args.command}")
+        print("(--dry-run: nothing written, no window created)")
+        return 0
+
     created = []
     for rel, seed in ((f"inbox/{args.agent}.jsonl", ""), (f"outbox/{args.agent}.jsonl", "")):
         p = BUS_ROOT / rel
@@ -295,11 +342,7 @@ def cmd_spawn(args: argparse.Namespace) -> int:
             created.append(rel)
     print(f"bus files ready ({len(created)} created: {', '.join(created) or 'all pre-existing'})")
 
-    session = str(entry.get("endpoint") or "tmux:agent").split(":")[1] or "agent"
     launch = args.command
-    if args.dry_run:
-        print(f"would create window {session}:{args.agent} running: {launch}")
-        return 0
     rc, out = _tmux("new-window", "-t", session, "-n", args.agent, launch)
     if rc != 0:
         print(f"new-window failed: {out}", file=sys.stderr)
