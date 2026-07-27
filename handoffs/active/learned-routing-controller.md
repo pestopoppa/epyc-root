@@ -55,7 +55,7 @@ Once the MLP handles the common case, episodic memory shifts from **runtime quer
 | Surface | Choices | Training data | Status |
 |---------|---------|---------------|--------|
 | Mode selection | direct vs repl | Action field encodes mode | Data exists, needs extraction |
-| Escalation prediction | Binary (will frontdoor fail?) | 10,528 positive + 56,457 negative | Ready |
+| Escalation prediction | Binary (will frontdoor fail?) | 10,528 positive + 56,457 negative (frozen 2026-04-15 snapshot) — **live db 2026-07-27: 54,960 routing rows, per-role 22-33% failure** | **PROBED 2026-07-27 — see below; result PROVISIONAL** |
 | Context injection budget | Continuous (0-2000 tokens) | SkillBank effectiveness_score | Needs collection |
 | Multi-turn budget | Integer (1-10 REPL turns) | Session turn counts | Needs extraction |
 
@@ -64,6 +64,62 @@ Once the MLP handles the common case, episodic memory shifts from **runtime quer
 **Architecture decision**: Independent models per surface, not shared trunk. Routing has 174K clean labels; other surfaces have 10K or less. Don't risk degrading the best-data task with noisy co-training. Merge to multi-task only after all surfaces have abundant data + experiment confirms no routing accuracy regression.
 
 ---
+
+## Escalation-prediction probe — 2026-07-27 (PROVISIONAL, adversarial verification pending)
+
+Built and run: `scripts/analysis/escalation_prediction_probe.py`. Report:
+`orchestration/reports/escalation_prediction_probe/escalation_prediction_probe.json`.
+
+**Zero inference.** The 1024-d BGE vectors already exist in `sessions/embeddings.faiss`; the probe
+reads a read-only snapshot. Runnable without a clean inference window — this is why it was picked up
+while E1/E3 stay blocked. Ran pinned to 8 cores at `nice -n 19`, 179 MB of vectors, ~20 s.
+
+**Freeze compliance.** This handoff is FROZEN for expansion per fable5-findings-02. Building and
+MEASURING a probe is allowed — COMP_r was completed 2026-07-22 under the same freeze — but PROMOTING
+one is not. Any positive result here is RECOMMEND-only. Nothing has been wired.
+
+### Tasks
+
+- [x] EP-1 — Build the probe with mandatory grouped splits, a shuffled-label control, and a
+      pre-declared decision gate (NULL <=0.55 / SIGNAL >=0.65). ✅ 2026-07-27
+- [x] EP-2 — Run against live data (54,960 routing rows with an outcome + embedding). ✅ 2026-07-27
+- [ ] EP-3 — **Adversarial verification IN FLIGHT.** Six attacks; the load-bearing one is temporal
+      leakage (if failures and objectives both cluster in time, a random group split leaks future
+      into past). Do not cite the numbers below until this closes.
+- [ ] EP-4 — Once verified: if SIGNAL holds, write the recommendation into master-index N17 as the
+      evidence its conditional-depth surface needs. If REFUTED, record the null and say so in N17 —
+      that would remove the cheapest route to conditional depth.
+
+### Provisional numbers (group-weighted AUC, GroupShuffleSplit x5, test_size 0.25)
+
+| role | group-weighted | row-weighted (misleading) | base rate | n | groups |
+|---|---|---|---|---|---|
+| worker_general | **0.726 +/- 0.022** | 0.579 | 33.0% | 6,596 | 2,334 |
+| ingest_long_context | **0.674 +/- 0.013** | 0.581 | 25.1% | 6,040 | 1,999 |
+| coder_escalation | **0.648 +/- 0.010** | 0.637 | 24.2% | 6,764 | 2,171 |
+| architect_general | 0.626 +/- 0.020 | 0.547 | 25.7% | 6,327 | 2,101 |
+| **frontdoor** | **0.575 +/- 0.032** | 0.784 | 22.2% | 26,995 | 2,384 |
+
+Shuffled-label controls all 0.49-0.52. `worker_vision` skipped (4 positives, not evaluable).
+
+**The shape that matters: signal exists but NOT on frontdoor** — which is exactly how this table
+framed the surface ("will frontdoor fail?"). The strongest role is `worker_general`. If this survives
+verification, the surface should be re-scoped away from frontdoor.
+
+### Three methodology errors caught during the run — each inverted the result
+
+Recorded because they generalize to any probe over this store:
+
+1. **Grouping by a hash of `context` is wrong.** 26,995 frontdoor rows carry only **2,384 distinct
+   vectors** (~11x reuse) and 497 vector-hashes span multiple context-derived groups, so identical
+   points land in train AND test. The `context` column holds material beyond the embedded objective.
+   **Group by the embedding itself.** 2,384 is the same figure `comp_region_probe.py` warns about.
+2. **`GroupKFold` is deterministic** — a "multi-seed stability check" over it reported a spread of
+   exactly `0.0000`, a no-op masquerading as a control. Use `GroupShuffleSplit`.
+3. **Row-weighted pooling is carried by a handful of objectives.** Top-10 groups hold **33%** of
+   frontdoor rows while the **median group size is 1**. Report group-weighted (one point per distinct
+   objective) as the headline; row-weighted flatters.
+
 
 ## Training Data
 

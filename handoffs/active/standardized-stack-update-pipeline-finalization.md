@@ -198,6 +198,24 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
 
 ## Outstanding Work
 
+- [ ] **SS-BENCH-GATE — a stack reload must check for a running CPU bench, not just autopilot.**
+      **Incident 2026-07-27**: an operator-authorized `orchestrator_stack.py reload orchestrator`
+      killed the Laguna Q4 CPU bench **1h09m into a decision-gating run**. The reload spawned an
+      accelerated sidecar (PID `1202069`, 15:51:42) on cores the bench had pinned, and the bench's
+      *campaign continuity gate* invalidated the run:
+      `campaign continuity gate failed: production stack continuity invalid: accelerated sidecar
+      1202069 overlaps CPU bench cores: [0, 1, 2, ...]`.
+      The precondition that was checked — "autopilot is down" — is **not the relevant gate**; the
+      gate keys on **core overlap** with a pinned bench. Two things to land:
+  - [ ] SS-BENCH-GATE-a — Make `orchestrator_stack.py` lifecycle actions refuse (or warn loudly and
+        require an explicit override) when a pinned CPU bench is detected, the same way the bench's
+        own continuity gate refuses. Detection: a live bench driver plus core-overlap against the
+        fleet's intended affinity.
+  - [ ] SS-BENCH-GATE-b — Pin the orchestrator fleet (including transient sidecars) off the CPU
+        bench core range so a reload cannot trip the gate at all. This is the durable fix; (a) is the
+        guard rail.
+
+
 - [x] Keep the `waived_production_blocker` mechanism empty by default and
   fail-closed: any future waiver must be intentional, owned, expiring, and
   removed as soon as compatibility no longer needs it. Current guard state has
