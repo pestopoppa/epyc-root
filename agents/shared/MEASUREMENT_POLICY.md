@@ -66,6 +66,9 @@ hashes + validation results + the exact state diff to be applied).
   the full validation path before handing over the token command). A command that fails in
   the operator's hands is an AGENT defect: fix, revalidate, re-present — never iterate
   draft→fail→redraft through the operator.
+- **A boundary token may only be presented while compute is saturated with other work.**
+  Ratification is background activity for the operator, never a foreground stall for the
+  machine: queue the next evidence/bench/replay task FIRST, then hand over the token.
 
 Rationale: the trust boundary exists so agents cannot self-certify the instruments that
 judge them — it was never meant to meter the *pace* of evidence work. This converts
