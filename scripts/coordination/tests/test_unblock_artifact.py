@@ -111,6 +111,22 @@ def main() -> int:
         check(rc2 == 0 and not marker.exists(),
               "second apply skips an already-applied gate (no double-run)")
 
+    # ---- regenerating AFTER a tick must not orphan the grant ----
+    print("\n== generate after the tick (deadlock regression) ==")
+    with tempfile.TemporaryDirectory() as d:
+        m = fresh(Path(d))
+        marker = Path(d) / "regen.txt"
+        write_gates(m, ["- [ ] **G-1** — one"])
+        write_request(m, "codex", "G-1", f"touch {marker}")
+        m.cmd_generate(Args())
+        write_gates(m, ["- [x] **G-1** — one GRANTED 2026-07-27"])
+        m.cmd_generate(Args())          # coordinator-agent regenerates periodically
+        rc = m.cmd_apply(Args())
+        check(rc == 0, f"grant survives a regenerate (got rc={rc})")
+        check(marker.exists(), "the command still applied after regeneration")
+        pins = json.loads(m.PINS.read_text())
+        check("G-1" in pins["gates"], "a granted gate stays pinned, not only pending ones")
+
     # ---- struck stays held, and per-line independence ----
     print("\n== struck + per-line independence ==")
     with tempfile.TemporaryDirectory() as d:

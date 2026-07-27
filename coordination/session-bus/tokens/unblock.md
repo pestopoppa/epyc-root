@@ -1,6 +1,6 @@
 # Consolidated unblock
 
-generated 2026-07-27T21:25:09+00:00  ·  epyc-root @ a329a8a4
+generated 2026-07-27T21:28:12+00:00  ·  epyc-root @ 6595b05c
 pending 3 · granted 0 · struck 0 · malformed 0
 
 ## The one command
@@ -28,10 +28,10 @@ grant leaves no record of when you gave it.
 
 - holds: _no task currently held_
 - requested by `claude-main` for `m5-flag-op-sendkeys-codex`
-- pre-validated (dry-run exit `0`): validated on a temp copy: both anchors unique, codex_sendkeys -> on AND max_spawns_per_day -> 4, YAML re-parsed. This AUTHORISES the M5 send-keys/pane-spawn adapter, which is NOT yet implemented — the daemon reports NOT IMPLEMENTED regardless of the flag, so granting cannot misrepresent readiness.
+- pre-validated (dry-run exit `0`): validated on a temp copy: both anchors unique, codex_sendkeys -> on AND max_spawns_per_day -> 3 (operator-chosen 2026-07-27, not a default), YAML re-parsed. AUTHORISES the M5 send-keys/pane-spawn adapter, which is NOT yet implemented — the daemon reports NOT IMPLEMENTED regardless of the flag.
 - command:
 
-      /mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -c "import pathlib;p=pathlib.Path('/workspace/coordination/session-bus/config.yaml');t=p.read_text();a1,b1='codex_sendkeys: off','codex_sendkeys: on';a2,b2='max_spawns_per_day: 0','max_spawns_per_day: 4';assert t.count(a1)==1 and t.count(a2)==1,'anchor not unique';p.write_text(t.replace(a1,b1).replace(a2,b2))"
+      /mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -c "import pathlib;p=pathlib.Path('/workspace/coordination/session-bus/config.yaml');t=p.read_text();a1,b1='codex_sendkeys: off','codex_sendkeys: on';a2,b2='max_spawns_per_day: 0','max_spawns_per_day: 3';assert t.count(a1)==1 and t.count(a2)==1,'anchor not unique';p.write_text(t.replace(a1,b1).replace(a2,b2))"
 
 ### triage
 

@@ -1,8 +1,8 @@
 {
   "gates": {
     "OP-SENDKEYS-CODEX": {
-      "cmd": "/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -c \"import pathlib;p=pathlib.Path('/workspace/coordination/session-bus/config.yaml');t=p.read_text();a1,b1='codex_sendkeys: off','codex_sendkeys: on';a2,b2='max_spawns_per_day: 0','max_spawns_per_day: 4';assert t.count(a1)==1 and t.count(a2)==1,'anchor not unique';p.write_text(t.replace(a1,b1).replace(a2,b2))\"",
-      "cmd_sha256": "30907c0dfea89aea5e2cc7bd89b69cc4c1b0973758ab8e20e71b4c7edde77472"
+      "cmd": "/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -c \"import pathlib;p=pathlib.Path('/workspace/coordination/session-bus/config.yaml');t=p.read_text();a1,b1='codex_sendkeys: off','codex_sendkeys: on';a2,b2='max_spawns_per_day: 0','max_spawns_per_day: 3';assert t.count(a1)==1 and t.count(a2)==1,'anchor not unique';p.write_text(t.replace(a1,b1).replace(a2,b2))\"",
+      "cmd_sha256": "4540b81d343c38da27724f393c433bc370bb2d32eb8ef18be2f04195910e942a"
     },
     "headless-worker": {
       "cmd": "/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -c \"import pathlib,sys;p=pathlib.Path('/workspace/coordination/session-bus/config.yaml');t=p.read_text();old,new=sys.argv[1],sys.argv[2];assert t.count(old)==1,'anchor not unique';p.write_text(t.replace(old,new))\"  'max_headless_workers: 0' 'max_headless_workers: 2'",
@@ -13,6 +13,6 @@
       "cmd_sha256": "356f8dfcbd1d43ee7cb6ef860989c909c0379e625180b177082d6212dbcb9436"
     }
   },
-  "generated_at": "2026-07-27T21:25:09+00:00",
-  "head": "a329a8a4"
+  "generated_at": "2026-07-27T21:28:12+00:00",
+  "head": "6595b05c"
 }

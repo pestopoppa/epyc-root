@@ -90,6 +90,20 @@ _STRUCK = re.compile(r"\bSTRUCK\b\s*(?P<date>\d{4}-\d{2}-\d{2})?", re.I)
 _ISO_DATE = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
 
 
+def _show(path: Path) -> str:
+    """Repo-relative when possible, absolute otherwise.
+
+    `relative_to` RAISES for a path outside REPO_ROOT. That only happens under a
+    redirected root, but it happened AFTER a successful apply — the operator would
+    have seen a traceback and had no idea whether the gates actually applied.
+    Cosmetics must never be able to mask a real outcome.
+    """
+    try:
+        return str(path.relative_to(REPO_ROOT))
+    except ValueError:
+        return str(path)
+
+
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
@@ -248,6 +262,17 @@ def build_artifact() -> tuple[str, dict]:
             lines.append(f"- `{g['gate_id']}`")
         lines.append("")
 
+    # Pin GRANTED gates as well, not only pending ones. `generate` is run
+    # periodically by coordinator-agent, and if it ran between the operator ticking
+    # a box and running apply, a granted gate would drop out of the pending list,
+    # lose its pin, and then be refused as "not in the artifact when generated" —
+    # permanently. The pin means "this command has not changed since it was
+    # presented", which matters MOST once a grant has been given.
+    for g in granted:
+        cmd = cmds.get(g["gate_id"])
+        if cmd and g["gate_id"] not in pins["gates"]:
+            pins["gates"][g["gate_id"]] = {"cmd_sha256": _sha256(cmd["cmd"]), "cmd": cmd["cmd"]}
+
     return "\n".join(lines) + "\n", pins
 
 
@@ -256,7 +281,7 @@ def cmd_generate(args: argparse.Namespace) -> int:
     ARTIFACT.parent.mkdir(parents=True, exist_ok=True)
     ARTIFACT.write_text(text, encoding="utf-8")
     PINS.write_text(json.dumps(pins, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print(f"wrote {ARTIFACT.relative_to(REPO_ROOT)} ({len(pins['gates'])} applicable gate(s))")
+    print(f"wrote {_show(ARTIFACT)} ({len(pins['gates'])} applicable gate(s))")
     return 0
 
 
@@ -379,7 +404,7 @@ def cmd_apply(args: argparse.Namespace) -> int:
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     path = RECEIPTS / f"unblock_{stamp}_{os.getpid()}.json"
     path.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
-    print(f"\nreceipt: {path.relative_to(REPO_ROOT)}")
+    print(f"\nreceipt: {_show(path)}")
 
     if failures:
         print(f"\n{failures} gate(s) FAILED. Each is an AGENT defect, not an operator problem:",
