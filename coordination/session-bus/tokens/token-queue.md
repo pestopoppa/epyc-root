@@ -23,7 +23,7 @@ repairs and re-presents the **same** token — never a new chain. A struck line'
 
 ## Standing gates (default OFF — grant individually)
 
-- [ ] **OP-SENDKEYS-CODEX** — allow the coordinator-daemon to nudge a main via
+- [x] **OP-SENDKEYS-CODEX** GRANTED 2026-07-27 — allow the coordinator-daemon to nudge a main via
   `tmux send-keys`. Rate-limited, idle-pane-checked. Evidence required: the nudge ladder
   demonstrably exhausted without it. Note this is also the mechanism behind spawning mains into
   new tmux panes, and `caps.max_spawns_per_day` is currently `0`.
