@@ -388,6 +388,21 @@ freezes/cutovers, host reboots).
   alone, turning `BUS_PROTOCOL.md` rule 9 from an assertion into something runnable.
   Tests: `scripts/hooks/tests/test_trust_boundary_edit.py`, 16/16 — including that layer 2 degrades
   open while layer 1 holds.
+  - [x] **R7a — the two checks the audit cannot make, moved to where the actor is known.**
+    ✅ 2026-07-27 — `scripts/hooks/check_commit_hygiene.py` (`PreToolUse → Bash`). Rule A blocks
+    wholesale staging on a shared repo (`git add -A|--all|-u|.`, `git commit -a|-am`), citing the
+    real 2026-07-27 incident where one session's progress entry rode into commit `94a39cc0`
+    authored by another and reached `origin/main` under an unrelated message. Rule B blocks
+    committing with a stale `FETCH_HEAD` (default 600s, `EPYC_FETCH_MAX_AGE_S`), because parallel
+    sessions push between your read and your write.
+    Sandbox/temp repos are skipped by design so throwaway git fixtures stay frictionless.
+    **Implemented in Python, not bash, for a specific reason:** the first draft matched with regex
+    and had a false-positive class it could not escape — `git commit -m "add -A to the docs"`
+    matched, because a regex cannot see that `-A` sits inside a quoted message. `shlex` tokenises
+    properly and the argument of `-m` is never scanned for flags. Same lesson as the drop_caches
+    matcher: an over-broad guard is worse than a missing one.
+    Tests: `scripts/hooks/tests/test_commit_hygiene.py`, 29/29, including all five
+    message-mentions-a-flag cases the regex draft failed, plus malformed quoting degrading open.
   **Deferred to M4 (not outstanding here):** coordinator-agent stall *detection* is the M4 stall
   ladder's job; the heartbeat it needs already exists and `/api/bus` already surfaces its age.
 - [ ] **R8 — consolidated unblock artifact (M2).** Coordinator-agent maintains ONE continuously

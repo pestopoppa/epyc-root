@@ -25,6 +25,11 @@
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/check_live_holder_interference.sh\"",
             "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/scripts/hooks/check_commit_hygiene.py\"",
+            "timeout": 5
           }
         ]
       },
