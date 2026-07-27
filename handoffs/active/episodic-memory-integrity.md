@@ -78,9 +78,20 @@ failure caught in amber.
         (`return 0 if len(sample) == args.sample_size and mean > 0.95 else 1` — full sample AND
         mean >0.95, so a short sample cannot pass), and `_checked_batch()` validating shape
         `(n, 1024)` and `np.isfinite` per batch.
-  - [ ] M-10c — Execution handed back to Codex 2026-07-27. **NOTE**: the SS-BENCH-GATE guard added
-        to `orchestrator_stack.py` does NOT cover this script — it is not a stack lifecycle action —
-        so the "no pinned CPU bench" precondition remains a manual check.
+  - [~] M-10c — **RESEED IN FLIGHT.** Codex started it 2026-07-27T22:07:15Z
+        (`reseed_episodic_store_20260727T220715Z`). Backups complete
+        (`*.pre-reseed-20260727T220715Z` for `embeddings.faiss` / `id_map.npy` / `episodic.db`);
+        marker at `state: backups_complete`. **Do not touch the store while it holds the writer
+        lock** — no reads of `embeddings.faiss`/`id_map.npy`, and do not run the cosine verifier
+        until it exits.
+        **NOTE**: the SS-BENCH-GATE guard added to `orchestrator_stack.py` does NOT cover this
+        script — it is not a stack lifecycle action — so the "no pinned CPU bench" precondition
+        remains a manual check.
+  - [ ] M-10d — On completion, run
+        `verify_episodic_reseed_cosine.py --sample-size 12` and record the numbers here. It exits 0
+        only on a full sample AND mean > 0.95. Pre-reseed baseline: **mean 0.5505, 0/12 above 0.9**.
+        If it fails, roll back from `*.pre-reseed-20260727T220715Z` — do not iterate on the live
+        store.
   - [ ] M-10a — Acceptance is the **cosine test**, not the exit code: re-embed a row's own text and
         compare to its stored vector. Before: **mean 0.5505, 0/12 above 0.9**. Pass: **> 0.95**.
 - [x] M-11 — **SkillBank is retrievable.** ✅ 2026-07-27. The consumer was never missing:
