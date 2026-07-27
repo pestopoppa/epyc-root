@@ -54,15 +54,27 @@ inputs are journaled, so the axis replays over FULL journal history at zero infe
     and 1456 (83.2 q/h). **Pre-registered drop criterion NOT met** (0/3 legacy points fall
     off; spec needs ≥2/3): the 16 homogeneous surface-sweep trials don't vary verbosity, so
     axis divergence hasn't had a chance to appear. Flip decision → operator (options below).
-  - [ ] **W3b — operator flip decision** (package 2026-07-27): (A) flip now on policy
-    conviction — the axis is P-SPEED-OBJ-ratified and the gameability argument is accepted;
-    risk = n=16 homogeneous evidence. (B) DEFAULT — hold legacy vector; re-run the replay
-    (free) as verbosity-affecting trials accrue (prompt prunes, tool policies); flip when the
-    drop criterion or a material reorder appears. (C) RECOMMENDED — dual-report interim:
-    legacy stays the live dominance vector, task_rate/goodput surfaces on panels + journal
-    telemetry immediately (W4 fields already recorded per row), flip armed on first observed
-    divergence. C costs nothing, makes verbosity-gaming visible the day it starts, and keeps
-    the pre-registered evidence bar intact.
+  - [x] **W3b — operator flip decision: OPTION C chosen** ✅ 2026-07-27 — dual-report
+    interim: legacy stays the live dominance vector; task_rate/goodput surfaces on panels +
+    telemetry immediately; flip armed on first observed divergence (amber tripwire badge when
+    ≥2 legacy frontier points drop under task-rate). Options A (flip now) and B (silent hold)
+    declined in favor of visibility-without-risk.
+  - [ ] **W3c — dual-report panel implementation** (in flight 2026-07-27, Claude session
+    agent): pareto payload gains task_rate_qph/goodput_qph/tokens_per_solved + offered_load
+    per entry (canonical helpers, no reimplementation); speed-axis toggle (median request t/s
+    ↔ task_rate q/h); dual-report banner; server-side divergence tripwire. Display-only;
+    dominance unchanged; ships at the queued API reload.
+- [ ] **W5 — regime-profiled offered load (NEXT INSTRUMENT ERA, pairs with batching
+  integration; operator design decision 2026-07-27).** The trial eval's single fixed arrival
+  pattern (closed-loop concurrency-3) means task_rate measures one operating point; configs
+  can win that point while being wrong for sparse single-request traffic. Resolution chosen:
+  regime-ADAPTIVITY stays in the router/placement layer (WP-12 burst machinery + placement
+  surfaces are already AutoPilot-trialable); regime-REPRESENTATIVENESS moves into the eval —
+  a small offered-load profile set (sparse-1 / steady-3 / burst-N), task_rate per profile,
+  dominance on the steady profile or an F1-real-task-corpus-weighted mix. Explicitly REJECTED:
+  baking regime-switching into the scalar (unauditable, newly gameable; violates
+  one-number-one-protocol). The `offered_load` field landed in W3c future-proofs rows/panels
+  for this.
 - [x] **W4 — telemetry + doc truth** (~half day): `task_rate_qph`, `goodput_qph`, and `tokens_per_solved_task` are journaled; `scripts/autopilot/program.md` now states that EvalTower `speed` remains the current Pareto speed axis/host-throttle diagnostic, task-rate fields are shadow policy telemetry, and `tokens_per_solved_task` is the bloat diagnostic. The stale wall-occupancy `sum(tokens_generated[role] / throughput_tps[role])` proxy is explicitly marked as not computed/not live. `rg` found no other live system-card copy of that stale text.
 - [x] **W5 — policy decision** (2026-06-13, zero inference): keep `task_rate_qph`, `goodput_qph`, and `tokens_per_solved_task` as shadow telemetry; leave live Pareto dominance on the current objective until preconditions below are met.
 
