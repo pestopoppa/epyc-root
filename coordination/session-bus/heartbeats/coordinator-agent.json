@@ -1,0 +1,6 @@
+{
+  "agent": "coordinator-agent",
+  "state": "idle",
+  "task_id": "m3-divergence-audit",
+  "ts": "2026-07-27T22:29:20+00:00"
+}

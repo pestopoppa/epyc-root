@@ -595,9 +595,23 @@ freezes/cutovers, host reboots).
   anything), and the same task was being advised to every idle agent (harmless while advisory,
   a double-assignment once M4 has authority).
   **Remaining for M3 sign-off: would-assign matches actual human/agent choices over a working
-  day, divergences explainable.** That needs elapsed time and cannot be compressed. The daemon is
-  running in advisory mode to accumulate it; the supervisor loop is NOT started (operator's call
-  — `bus_supervisor.sh loop`, or the cron `once` entry in its header).
+  day, divergences explainable.** That needs elapsed time and cannot be compressed.
+  - [x] **M3a — supervisor running.** ✅ 2026-07-27 — started by the operator's instruction;
+    supervisor 2009016 holds the lock, daemon does not. Fixing a self-lockout was required first
+    (see M3b).
+  - [x] **M3b — supervisor could never start (fd-9 self-lockout).** ✅ 2026-07-27 —
+    `exec 9>"$LOCK_FILE"` creates an inheritable descriptor, so the daemon inherited the
+    supervisor's own flock and held it for life. Every `loop` logged "another supervisor holds the
+    lock" while `status` showed none running. Fixed with `9>&-`; pinned by
+    `scripts/coordination/tests/test_bus_supervisor.py` (5/5), which asserts the daemon holds ZERO
+    fds on the lock.
+  - [x] **M3c — the supervisor test killed the live daemon.** ✅ 2026-07-27 — it scoped
+    `LOCK_FILE`/`EPYC_ROOT`/`BUS_ROOT` but the supervisor's `pgrep -f` pattern is global, so a
+    stub with the same filename matched production. `DAEMON`/`DAEMON_PATTERN` are now overridable.
+    *Isolation is only as strong as its weakest axis.*
+  - [ ] **M3d — the queue must hold real work for the evidence to mean anything.** Seeded
+    2026-07-27 (19 tasks); before that the advisory stream held 978 records and ZERO
+    `would-assign`. Widen per-handoff with `seed_queue.py --list` as the soak proceeds.
   Rollback: stop the daemon; the bus returns to fully-functional M1 manual mode.
 - [ ] **M4 — assignment authority.** *CODE BUILT ✅ 2026-07-27, acceptance pending.*
   `apply_assignment()` in `session_bus_coordinator.py`, gated entirely on
@@ -631,7 +645,24 @@ freezes/cutovers, host reboots).
   mid-assignment showing epoch fencing, and operator touching only token-queue checkboxes — plus
   M3's advisory-accuracy evidence, on which M4's go/no-go rests. The switch stays at `manual`
   until then. Rollback: `authority: advisory`.
-- [ ] **M5 — flag-gated extensions** (each independent): Claude Stop/SessionStart drain hook
+- [ ] **M5 — flag-gated extensions** (each independent). *Send-keys/spawn BUILT ✅ 2026-07-27*
+  after the operator granted `OP-SENDKEYS-CODEX` with `max_spawns_per_day: 3`:
+  `scripts/coordination/tmux_adapter.py` (probe/nudge/spawn), 34/34 tests. Fail-closed; refuses to
+  guess a pane; spawns only as a **window in `tmux.live_session`**, never its own session; creates
+  all four bus files before the pane starts.
+  Three defects its test suite found: an unverified target could send keys to the **wrong pane**
+  (tmux resolves a miss to the current window with exit 0); the quiet-check was **fail-open**
+  (`window_activity` only tracks output while attached); and `--dry-run` created files.
+  - [ ] **M5a — `--min-interval-s` default of 600s is the implementer's guess, not an operator
+    decision.** Same class as the `max_spawns_per_day: 4` that the operator corrected to 3.
+  - [ ] **M5b — roster orphans.** `refresh_gpu_queue_integration` and
+    `validate_reseed_integration` are heartbeating with **no roster row** (Codex's sub-work).
+    Either give each a roster row or use a signal other than a heartbeat for sub-tasks; `/api/bus`
+    reports them under the `roster-orphan` alarm meanwhile.
+  - [ ] **M5c — standing instructions do not reach running sessions.** A CLAUDE.md rule added at
+    21:43Z left an active agent on its 19:45Z heartbeat. Recorded in `BUS_PROTOCOL.md`; the open
+    task is for coordinator-agent to nudge running mains to *re-read* on every such change.
+  Original list: Claude Stop/SessionStart drain hook
   (clone `*_context.sh`) · send-keys adapter behind `OP-SENDKEYS-CODEX` (OFF; rate-limited;
   idle-pane check) · hybrid triage (dead-agent drafts + routing annotations; budget-capped;
   `DRAFT-UNREVIEWED`) · headless workers via `claude_via_devc.sh` under caps. Accept: per

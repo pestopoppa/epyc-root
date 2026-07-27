@@ -71,3 +71,6 @@ data/handoff_timeline.json.tmp.*
 # boundaries, not on a timer.
 coordination/session-bus/advisory.jsonl
 coordination/session-bus/heartbeats/coordinator-daemon.json
+logs/bus_supervisor.out
+logs/bus_supervisor.pid
+logs/coordinator_daemon.log
