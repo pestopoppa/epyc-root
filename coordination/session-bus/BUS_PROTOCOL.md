@@ -73,6 +73,22 @@ Owning handoff: [`handoffs/active/session-bus-thin-dispatcher.md`](../../handoff
     classification is a hard validation failure: without it, revocation has no defined fallback
     set and rule 8 cannot be honoured.
 
+## Standing instructions change under running sessions
+
+An agent's instruction set is loaded at session start. Editing `CLAUDE.md` /
+`AGENTS.md` therefore does **not** reach a session already running — observed
+2026-07-27, when a heartbeat-refresh rule was added at 21:43Z and a demonstrably
+active agent was still on its 19:45Z heartbeat afterwards.
+
+So a standing-instruction change is a **coordination event**, not just a commit:
+
+- The coordinator-agent nudges every running main to **re-read `AGENTS.md`**, not to
+  act on a summary of the change. A summary is lossy; the file is authoritative.
+- Agents treat such a nudge as "refresh your instruction set", not as a one-off
+  task, because the next change will arrive the same way.
+- Until a main confirms the re-read, assume it is operating on its startup copy.
+  Do not read a stale behaviour as disobedience.
+
 ## Drain
 
 Every agent, at every task boundary:
