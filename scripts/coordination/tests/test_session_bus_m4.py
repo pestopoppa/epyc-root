@@ -270,6 +270,92 @@ def test_lane_gating_and_pausability() -> None:
         b3.cleanup()
 
 
+def test_lease_revocation() -> None:
+    print("\n== R4: lease revocation is quiesce-and-drain, never forcible ==")
+    b = Bus("assign")
+    try:
+        b.add_queue(task_id="rv-1", status="RUNNING", lane="cpu", gating="cpu", owner="codex",
+                    lease_expires_ts=now_iso(3600), priority="P2")
+        b.heartbeat("codex", "working", "rv-1")
+        # authorised: coordinator-agent holds lease_grant authority
+        b.add_outbox("coordinator-agent", kind="lease-revoke", task_id="rv-1",
+                     payload={"reason": "production-live needs the cpu lane",
+                              "yield_to": "production-live"})
+        b.tick()
+        check(b.row("rv-1").get("revoking") is True, "row marked revoking")
+        check(b.status_of("rv-1") == "RUNNING",
+              "status unchanged — it IS still running (axiom 4: no forcible stop)")
+        nudges = [m for m in b.inbox("codex") if m.get("kind") == "nudge"]
+        check(bool(nudges), "holder nudged to drain")
+        instr = (nudges[-1].get("payload") or {}).get("instruction", "") if nudges else ""
+        check("lane:none" in instr, "nudge tells the holder to keep working on lane:none, not idle")
+
+        n_before = len([m for m in b.inbox("codex") if m.get("kind") == "nudge"])
+        b.tick()
+        check(len([m for m in b.inbox("codex") if m.get("kind") == "nudge"]) == n_before,
+              "idempotent: no repeat nudge on the next tick")
+
+        # holder drains at its boundary -> lease released, task re-assignable
+        b.heartbeat("codex", "draining", "rv-1")
+        b.tick()
+        check(b.status_of("rv-1") == "READY", f"drained -> READY (got {b.status_of('rv-1')})")
+        check(b.row("rv-1").get("owner") is None, "owner cleared on release")
+        check(b.row("rv-1").get("revoking") is False, "revoking flag cleared")
+
+        # The one-tick exclusion must carry NO lasting penalty: with nothing
+        # higher-priority waiting, ordinary priority ordering resumes the task.
+        b.tick()
+        check(b.status_of("rv-1") == "ASSIGNED",
+              f"resumes on the NEXT tick when nothing outranks it (got {b.status_of('rv-1')})")
+    finally:
+        b.cleanup()
+
+    b2 = Bus("assign")
+    try:
+        b2.add_queue(task_id="rv-2", status="RUNNING", lane="cpu", gating="cpu", owner="codex",
+                     lease_expires_ts=now_iso(3600))
+        b2.heartbeat("codex", "working", "rv-2")
+        # UNauthorised: a main cannot revoke another main's lease
+        b2.add_outbox("claude-main", kind="lease-revoke", task_id="rv-2",
+                      payload={"reason": "I want the lane"})
+        out = b2.tick()
+        check(not b2.row("rv-2").get("revoking"), "unauthorised revocation NOT applied")
+        check("lease-authority" in out, "unauthorised revocation raises a defect")
+    finally:
+        b2.cleanup()
+
+    b3 = Bus("assign")
+    try:
+        # a revoking task must not be handed to anyone else while still held
+        b3.add_queue(task_id="rv-3", status="READY", lane="none", gating="none", priority="P0",
+                     revoking=True)
+        b3.tick()
+        check(b3.status_of("rv-3") == "READY",
+              "revoking task not assigned even when READY and top priority")
+    finally:
+        b3.cleanup()
+
+    b4 = Bus("assign")
+    try:
+        # the yield actually lands: the freed lane goes to the higher-priority task
+        b4.add_queue(task_id="yield-victim", status="RUNNING", lane="cpu", gating="cpu",
+                     owner="codex", lease_expires_ts=now_iso(3600), priority="P3")
+        b4.add_queue(task_id="yield-target", status="READY", lane="cpu", gating="cpu",
+                     priority="P0", priority_class="production-live")
+        b4.heartbeat("codex", "working", "yield-victim")
+        b4.add_outbox("coordinator-agent", kind="lease-revoke", task_id="yield-victim",
+                      payload={"reason": "yield to production-live", "yield_to": "yield-target"})
+        b4.tick(lanes={"cpu_busy": False, "gpu_busy": False, "load_class": "quiet"})
+        b4.heartbeat("codex", "draining", "yield-victim")
+        b4.tick(lanes={"cpu_busy": False, "gpu_busy": False, "load_class": "quiet"})
+        check(b4.status_of("yield-target") == "ASSIGNED",
+              f"higher-priority task claims the freed lane (got {b4.status_of('yield-target')})")
+        check(b4.status_of("yield-victim") == "READY",
+              f"yielded task waits its turn (got {b4.status_of('yield-victim')})")
+    finally:
+        b4.cleanup()
+
+
 def test_advisory_writes_only_two_files() -> None:
     print("\n== advisory mode still writes only two files (M3 invariant) ==")
     b = Bus("advisory")
@@ -292,6 +378,7 @@ def main() -> int:
     test_token_relay()
     test_stall_ladder()
     test_lane_gating_and_pausability()
+    test_lease_revocation()
     test_advisory_writes_only_two_files()
     failed = [w for ok, w in RESULTS if not ok]
     print(f"\n{len(RESULTS) - len(failed)}/{len(RESULTS)} passed")

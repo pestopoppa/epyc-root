@@ -49,6 +49,18 @@ Owning handoff: [`handoffs/active/session-bus-thin-dispatcher.md`](../../handoff
    mid-decode, never a kill (fabric axiom 4). A revoked main immediately continues on `lane: none`
    work — it does not stall. A revocation the holder ignores surfaces as a `defect`, never as a
    silent inconsistency.
+
+   *Mechanism (R4).* `coordinator-agent` (or the operator through it) writes a `lease-revoke`
+   message to its own outbox; authority is checked against `authority.lease_grant` in
+   `config.yaml` and an unauthorised sender is rejected with a `defect`, never obeyed. The
+   coordinator-daemon marks the queue row `revoking` — status is UNCHANGED, because the task
+   genuinely is still running — and nudges the holder to drain. When the holder reports
+   `state: draining`, the lease is released: owner cleared, status `READY`.
+   A task released this way is **excluded from that same tick's assignment**, otherwise it would
+   be handed straight back to the same holder and the revocation would be a no-op with a pointless
+   drain. It resumes on a later tick by ordinary priority ordering, so there is no lasting
+   penalty — that ordering IS the deterministic re-grant trigger, and the daemon exercises no
+   discretion in choosing when.
 9. **RECONSTRUCTIBILITY.** Coordinator-agent state must be rebuildable from bus files alone
    (`queue.jsonl`, `tokens/token-queue.md`, heartbeats, cursors). Authority that exists only in a
    session's context is a design defect. **Verify it, do not assert it:**

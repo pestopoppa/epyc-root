@@ -188,6 +188,8 @@ def _gates_granted(row: dict, token_text: str) -> bool:
 
 def _eligible(row: dict, latest: dict[str, dict], snapshot: dict, token_text: str,
               co_ctx: dict | None = None) -> tuple[bool, str]:
+    if row.get("revoking"):
+        return False, "lease is being handed back (draining) — not re-assignable while held"
     if row.get("status") != "READY":
         return False, f"status={row.get('status')}"
     for dep in row.get("depends_on") or []:
@@ -540,6 +542,96 @@ def relay_tokens(bus_root: Path, reports: dict[str, list[dict]], latest: dict[st
     return blocks, rows + defects
 
 
+def process_revocations(config: dict, latest: dict[str, dict], reports: dict[str, list[dict]],
+                        epoch: int) -> dict:
+    """R4 — lease revocation, always quiesce-and-drain, never forcible.
+
+    A held `flock` cannot be revoked by a third party and axiom 4 forbids
+    mid-decode preemption, so revocation is COOPERATIVE: the daemon marks the
+    queue row `revoking` and nudges the holder, which stops accepting new work and
+    releases at its next boundary. The advisory layer never claims to be the
+    liveness truth — the flock remains that.
+
+    Authority is checked against `authority.lease_grant`. An unauthorised sender
+    is rejected with a defect rather than obeyed; that check is deterministic, so
+    the daemon making it does not stray into judgment.
+
+    A revocation the holder IGNORES surfaces as a defect via the normal stall
+    ladder (its lease still expires), never as a silent inconsistency.
+    """
+    allowed = set((config.get("authority") or {}).get("lease_grant")
+                  or ["operator", "coordinator-agent"])
+    queue_rows: list[dict] = []
+    nudges: list[dict] = []
+    advisory: list[dict] = []
+
+    for tid, msgs in reports.items():
+        for msg in msgs:
+            if msg.get("kind") != "lease-revoke":
+                continue
+            sender = msg.get("from")
+            if sender not in allowed:
+                advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                                 "epoch": epoch, "kind": "defect", "check": "lease-authority",
+                                 "subject": sender,
+                                 "detail": f"{sender!r} requested revocation of {tid} but "
+                                           f"lease_grant authority is {sorted(allowed)}"})
+                continue
+            row = latest.get(tid)
+            if not row or row.get("status") not in {"ASSIGNED", "CLAIMED", "RUNNING"}:
+                advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                                 "epoch": epoch, "kind": "would-skip", "agent": sender,
+                                 "task_id": tid,
+                                 "reason": f"revocation ignored: status={row.get('status') if row else 'absent'}"})
+                continue
+            if row.get("revoking"):
+                continue                              # idempotent
+            payload = msg.get("payload") or {}
+            queue_rows.append({
+                "schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(), "task_id": tid,
+                "status": row.get("status"), "lane": row.get("lane"), "gating": row.get("gating"),
+                "epoch": epoch, "owner": row.get("owner"), "revoking": True,
+                "lease_expires_ts": row.get("lease_expires_ts"),
+                "attempt": row.get("attempt"), "priority": row.get("priority")})
+            nudges.append({"to": row.get("owner"), "kind": "nudge", "task_id": tid,
+                           "corr_id": f"revoke-{tid}-{epoch}",
+                           "payload": {"reason": "lease-revoke — quiesce and drain",
+                                       "detail": payload.get("reason"),
+                                       "yield_to": payload.get("yield_to"),
+                                       "instruction": ("stop accepting new work for this task, "
+                                                       "release at your next boundary, and "
+                                                       "continue immediately on lane:none work — "
+                                                       "do not idle and do not abort mid-unit")}})
+            advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                             "epoch": epoch, "kind": "lease-revoking", "agent": row.get("owner"),
+                             "task_id": tid, "detail": payload.get("reason")})
+    return {"queue_rows": queue_rows, "nudges": nudges, "advisory": advisory}
+
+
+def settle_drained(latest: dict[str, dict], agents: dict[str, dict], epoch: int) -> list[dict]:
+    """A revoking task whose holder now reports `draining` has released its lease.
+
+    Returns it to READY with the owner cleared, so the ordinary priority-ordered
+    assignment pass re-grants it when it is next eligible. That IS R4's
+    "deterministic re-grant trigger" — no separate mechanism is needed, and the
+    daemon exercises no discretion in choosing when.
+    """
+    out: list[dict] = []
+    for tid, row in latest.items():
+        if not row.get("revoking") or row.get("status") in TERMINAL_STATES:
+            continue
+        holder = row.get("owner")
+        state = (agents.get(holder) or {}).get("state")
+        if state != "draining":
+            continue
+        out.append({"schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(), "task_id": tid,
+                    "status": "READY", "lane": row.get("lane"), "gating": row.get("gating"),
+                    "epoch": epoch, "owner": None, "revoking": False,
+                    "priority": row.get("priority"), "attempt": row.get("attempt"),
+                    "failure_reason": "lease released on revocation (drained at boundary)"})
+    return out
+
+
 def stall_ladder(bus_root: Path, latest: dict[str, dict], agents: dict[str, dict],
                  reports: dict[str, list[dict]], config: dict, epoch: int) -> dict:
     """soft-stall -> nudge; hard-stall (lease expired) -> requeue + defect; give-up -> alert.
@@ -750,6 +842,33 @@ def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
         emitted.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
                         "kind": "transcribed", "task_id": row["task_id"], "status": row["status"]})
 
+    # 1b. R4 revocation: mark revoking + nudge the holder to drain, and settle any
+    # task whose holder has since reported `draining` back to READY.
+    latest = fold_queue(bus_root)
+    agents_now = _agent_states(bus_root, roster)
+    rev = process_revocations(config, latest, reports, epoch)
+    for row in rev["queue_rows"]:
+        _append_jsonl(bus_root / "queue.jsonl", row)
+    if rev["nudges"]:
+        _append_inbox(bus_root, rev["nudges"], epoch)
+    emitted.extend(rev["advisory"])
+
+    latest = fold_queue(bus_root)
+    # Tasks released by revocation THIS tick are excluded from this tick's
+    # assignment pass. Without that, the task returns to READY and the very next
+    # step hands it straight back to the same holder — making the revocation a
+    # no-op and the drain pure churn. Skipping one tick lets whatever the lease
+    # was yielded TO claim the lane first; if nothing higher-priority
+    # materialises, ordinary priority ordering resumes the task next tick, so
+    # there is no lasting penalty.
+    released_this_tick: set[str] = set()
+    for row in settle_drained(latest, agents_now, epoch):
+        _append_jsonl(bus_root / "queue.jsonl", row)
+        released_this_tick.add(row["task_id"])
+        emitted.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                        "kind": "lease-released", "task_id": row["task_id"],
+                        "detail": "excluded from this tick's assignment so the yield can land"})
+
     # 2. relay token-requests; a newly gated task must not be assigned this tick
     latest = fold_queue(bus_root)
     blocks, extra = relay_tokens(bus_root, reports, latest, epoch)
@@ -786,6 +905,8 @@ def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
         if rec.get("kind") != "would-assign" or not rec.get("task_id"):
             continue
         tid, agent = rec["task_id"], rec["agent"]
+        if tid in released_this_tick:
+            continue
         row = latest.get(tid) or {}
         if row.get("status") != "READY":
             continue

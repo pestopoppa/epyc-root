@@ -53,7 +53,8 @@
             "defect",
             "requeue",
             "reprioritize",
-            "saturation"
+            "saturation",
+            "lease-revoke"
           ]
         },
         "corr_id": {
@@ -231,6 +232,43 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "lease-revoke"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "task_id",
+              "payload"
+            ],
+            "properties": {
+              "payload": {
+                "type": "object",
+                "required": [
+                  "reason"
+                ],
+                "description": "R4 \u2014 request that a holder give its lease back. Authority is checked against config.yaml authority.lease_grant; an unauthorised sender is rejected with a defect row. Revocation is ALWAYS quiesce-and-drain at the holder's next boundary (fabric axiom 4) \u2014 never a kill.",
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "yield_to": {
+                    "type": "string",
+                    "description": "task_id or priority class this yields to"
+                  }
+                }
+              }
+            }
+          }
         }
       ]
     },
@@ -395,6 +433,10 @@
         "role_affinity": {
           "type": "string",
           "description": "R3 \u2014 the stack role whose resource profile this task resembles, used to look the task up in the MEASURED contention matrix (per-role-pair verdicts). Distinct from contention_class, which is the pausability axis. Absent means co-residency is not applicable to this task, not that it is permitted."
+        },
+        "revoking": {
+          "type": "boolean",
+          "description": "R4 \u2014 the coordinator-agent has asked for this lease back. The task keeps its current status because it IS still running; the holder stops accepting new work and releases at its next boundary (axiom 4). A revoking task is never re-assigned while still held."
         }
       }
     }

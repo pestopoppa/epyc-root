@@ -358,15 +358,28 @@ freezes/cutovers, host reboots).
   rejected at every traffic class, with a message naming the generator that would measure it.
   Admitting one would have been the same silently-wrong-policy failure the topology-hash guard
   exists to prevent, one level down.
-- [ ] **R4 — lease authority and revocation-by-drain (M4).** Grant/revoke belongs to
-  coordinator-agent. `cpu_region_lock` **cannot be revoked by a third party** (`cancel_check`
-  only aborts an in-progress acquire; a held flock releases on fd-close), so authority lives in
-  an advisory layer *above* the flock, with the flock remaining liveness truth. Revocation =
-  quiesce + drain at the holder's next boundary, reusing the ratified swap protocol — never
-  mid-decode (axiom 4). A revoked main continues on `lane: none` work immediately.
-  **Prerequisite:** every queue row declares its gating (`cpu`/`gpu`/`both`/`none`); a missing
-  classification is a hard validation failure, because without it revocation has no defined
-  fallback set.
+- [x] **R4 — lease authority and revocation-by-drain.** ✅ 2026-07-27 — new `lease-revoke`
+  message kind and a `revoking` queue-row field. `coordinator-agent` (or the operator through it)
+  requests revocation from its own outbox; authority is checked against `authority.lease_grant` and
+  an unauthorised sender is **rejected with a defect, never obeyed** — a deterministic check, so
+  the daemon making it does not stray into judgment.
+  Revocation is cooperative by necessity as well as by policy: a held `flock` cannot be revoked by
+  a third party, and axiom 4 forbids mid-decode preemption. The daemon marks the row `revoking`
+  with **status unchanged** — the task genuinely is still running — and nudges the holder to
+  quiesce, with an instruction that explicitly says to continue on `lane: none` work rather than
+  idle. On `state: draining` the lease is released: owner cleared, status `READY`.
+  A revocation the holder ignores still surfaces via the ordinary stall ladder when its lease
+  expires, so it becomes a defect rather than a silent inconsistency.
+  **Bug found and fixed by its own test.** Returning the task to `READY` made it immediately
+  eligible again *in the same tick*, so the assignment pass handed it straight back to the same
+  holder — the revocation became a no-op and the drain pure churn. Released tasks are now excluded
+  from that tick's assignment. Verified both directions: a higher-priority `production-live` task
+  claims the freed lane, and with nothing outranking it the yielded task resumes on the next tick,
+  so the exclusion carries no lasting penalty. Ordinary priority ordering IS the deterministic
+  re-grant trigger; no separate mechanism was needed.
+  Prerequisite already satisfied: `gating` is a REQUIRED queue-row field, so the fallback set is
+  always defined.
+  Tests: 45/45 in `scripts/coordination/tests/test_session_bus_m4.py`.
 - [ ] **R5 — priority classes and pausability (M4).** Classes
   `production-live` > `operator-directed` > `background-churn`; yield = quiesce + drain, never
   kill. Long work drains via **progressive persistence** (every persisted unit is a drain point —
