@@ -386,15 +386,34 @@ freezes/cutovers, host reboots).
   returns to `HELD_OP_GATE` — held, not dropped, not silently requeued. **Not** a dwell-time
   metric: waiting on a token must never idle anything, so the only counter kept is
   idle-lane-time-while-eligible-work-existed, as an invariant alarm that should read zero.
-- [ ] **R9 — replay-eligibility screen at queue admission (M1/M3).** Apply *Deterministic replay
-  before regeneration* when a task **enters** the queue, not when someone remembers: a
-  tail-replayable result needs no lane, no claim, and no token — it stops being a gate at all.
-  Advisory `replay_eligible` annotation beside `routing_annotation`. Highest-leverage reducer of
-  gate volume, because it removes gates at source rather than routing them faster.
-- [ ] **R10 — interference hooks (M5).** Pre-tool-use hooks in `epyc-root/scripts/hooks/`
-  (precedent `*_context.sh`) querying the single holder query — refuse edits to a currently
-  executing script, refuse `drop_caches` while any holder is live. Mechanically checkable rules
-  only; no encoded judgment.
+- [ ] **R9 — replay-eligibility screen at queue admission (M1/M3).** *Enforcement DONE
+  ✅ 2026-07-27* — `replay_eligible` is a schema field, and the coordinator-daemon's eligibility
+  rule now admits such a task **regardless of lane occupancy**: a tail-replayable result comes
+  from deterministically rescoring banked outputs, so it occupies no lane and needs no claim, and
+  gating it on lane-busy would queue work that cannot possibly contend. Verified with the CPU lane
+  busy — a `replay_eligible` rescore is admitted while an otherwise-identical regeneration is
+  rejected.
+  **Remaining: the classification half.** Deciding *which* tasks are tail-replayable is per-task
+  judgment; today it must be annotated by hand when the row is authored. Automating it is the M5
+  triage hook's routing-annotation duty (flag-gated, `triage: off`). Until then the enforcement is
+  live but only fires on rows someone remembered to mark.
+- [x] **R10 — interference hooks.** ✅ 2026-07-27 —
+  `scripts/hooks/check_live_holder_interference.sh`, registered in `.claude/settings.json` under
+  both `PreToolUse → Bash` and `PreToolUse → Write|Edit`. Two mechanically checkable rules: refuse
+  a **write** to `drop_caches` while any CPU region is claimed (the re-read pins pages onto one
+  NUMA node, so the live run does not error — its numbers just become wrong), and refuse editing a
+  `.sh` that a shell is currently executing (bash reads incrementally from its file offset, so an
+  in-place edit splices old and new text). Fail-open: any probe that cannot answer confidently
+  allows the call, because a hook that blocks on uncertainty stalls parallel sessions for reasons
+  they cannot see. Override `EPYC_ALLOW_LIVE_INTERFERENCE=1`.
+  Tests: `scripts/hooks/tests/test_live_holder_interference.py --all`, 16/16. Cases live in a JSON
+  fixture because a PreToolUse hook matches command *text* and so cannot distinguish performing an
+  action from mentioning it — a test with the patterns as literals is blocked by the hook it tests.
+  Three bring-up lessons, all encoded: it fired for real (frontdoor held q0/q2/q3 while the
+  orchestrator served, blocking a cache drop that would have corrupted live inference — the test
+  expectation was wrong, not the hook); the first matcher was over-broad and blocked this hook's
+  own commit message; and a PreToolUse block kills the **entire** Bash call, so a blocked block
+  executes *nothing* — do not assume partial execution.
 
 ## Milestones
 
