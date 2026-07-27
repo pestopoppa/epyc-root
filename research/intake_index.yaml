@@ -24752,7 +24752,8 @@
   - Depth-2 recursion OVERTHINKS — accuracy on simple retrieval tasks DEGRADES vs depth-1 and vs vanilla long-context
   - 'Execution cost explodes super-linearly with depth: 3.6s → 344.5s per query going depth-1 → depth-2'
   - Original RLM paper defaulted to depth=1; deeper recursion only speculative future work — reproduction shows it is actively harmful at depth>=2 for many tasks
-  - Token-cost inflation is exponential in depth; advocates dynamic/learned depth control instead of fixed recursion
+  - 'OVERTURNED 2026-07-27 (E0): "Token-cost inflation is exponential in depth" is contradicted by the paper''s OWN Figures 3-4 and prose (S4.3: "while the execution time strictly increases with depth, the token usage sometimes stabilizes or even slightly drops from Depth=1 to Depth=2"). Tokens FALL from D1 to D2 in 3 of 4 cells. Depth-2 is a LATENCY pathology (runs crash on format collapse or stall in serial sub-call loops, burning wall-clock without consuming tokens), NOT a token-cost one.'
+  - Advocates dynamic/learned depth control instead of fixed recursion
   techniques:
   - 'Reproduction study: depth-1 vs depth-2 RLM sweep'
   - S-NIAH (Synthetic Needle-in-a-Haystack)
@@ -24760,9 +24761,11 @@
   - Per-depth wallclock + token-cost accounting
   - Cross-model verification (DeepSeek v3.2 vs Kimi K2)
   reported_results:
-  - 'Execution time: 3.6s @ depth-1 → 344.5s @ depth-2 (~96x)'
-  - Depth-2 RLM accuracy < depth-1 on simple retrieval
+  - 'CORRECTED 2026-07-27 (E0, primary read + adversarial re-read): the ladder is Base 3.6s -> Depth-1 89.3s -> Depth-2 344.5s (DeepSeek v3.2, S-NIAH, per-query average). The prior record "3.6s @ depth-1 -> 344.5s @ depth-2 (~96x)" MISLABELLED THE ARM: 3.6s is the BASE LLM. 96x spans Base->D2; the true Depth-1->Depth-2 factor is 3.86x, so the old two-point form overstated the depth-2 MARGINAL cost by ~25x.'
+  - 'Cost is a STEP FUNCTION at the Base->RLM boundary, not a function of depth. Latency multipliers Base->D1 then D1->D2: DeepSeek S-NIAH 24.8x then 3.86x; Kimi S-NIAH 10.3x then 1.54x; DeepSeek OOLONG 5.4x then 1.90x; Kimi OOLONG 2.69x then 1.33x. The first step dominates and the multiplier DECELERATES in all four cells.'
+  - Depth-2 RLM accuracy < depth-1 on simple retrieval FOR DEEPSEEK ONLY - Kimi K2 on S-NIAH is FLAT 90.0 -> 90.0 across depths, contradicting the paper's own "uniformly degraded across all conditions" claim
   - Depth-1 still beats vanilla long-context on complex reasoning
+  - 'EVIDENCE GRADE: n=20 per condition, SINGLE RUN, zero repeats, no variance, no significance testing (the paper''s only limitations subsection, S4.5). S-NIAH accuracy is quantized in 5pp steps, so the headline DeepSeek 85.0 -> 70.0 "plummet" is a THREE-QUESTION flip and Kimi 100 -> 90 a two-question flip. Observation-only under MEASUREMENT.md.'
   referenced_arxiv_ids:
   - '2512.24601'
   novelty: high
@@ -24796,7 +24799,30 @@
     model-dependent) and a three-point wall-clock ladder 3.6s -> 89.3s -> 344.5s. master-handoff-index
     N17 further frames the resolution — recursion RESCUES failing attempts (DeepSeek OOLONG 0.0 ->
     42.1) while HURTING competent ones, so depth should be gated on predicted failure rather than
-    pinned. First-party measurement is now owned by rlm-contested-claims-self-evaluation.md.'
+    pinned. First-party measurement is now owned by rlm-contested-claims-self-evaluation.md.
+
+    2026-07-27 E0 DIVE (primary source read: PDF + figure-image extraction, since the numeric results
+    live in figures not text tables; every verdict independently re-read by a second agent instructed
+    to refute). THREE CORRECTIONS, see reported_results and key_claims above:
+    (1) ARM MISLABEL - 3.6s is the BASE LLM arm, not depth-1. Our two-point "~96x" record overstated
+    the depth-2 marginal cost by ~25x. The real ladder is Base 3.6 -> D1 89.3 -> D2 344.5.
+    (2) "TOKEN COST EXPONENTIAL IN DEPTH" IS OVERTURNED by the paper''s own figures - tokens FALL D1->D2
+    in 3 of 4 cells; depth-2 is a latency pathology, not a token one.
+    (3) THE 0.0 -> 42.1 RESCUE IS SUBSTANTIALLY A SCORER ARTIFACT. Appendix A.3: the base model
+    "had successfully found the answers but produced long narrative explanations instead of the
+    expected strict formats", and NO rescoring was done. This is our own
+    feedback_parse_failure_rate_is_a_scoring_artifact.md pattern. MATTERS BECAUSE master-handoff-index
+    N17 premises its conditional-depth surface on "recursion rescues failing attempts" - the idea
+    stands, its headline evidence does not. A.3 is also internally incoherent: it blames "formatting
+    failures under recursive abstraction" for a run that is the BASE arm with no recursion.
+    ALSO: the paper overclaims - S4.2 says depth-2 "uniformly degraded performance across all
+    conditions" but its own Figure 1 shows Kimi K2 S-NIAH FLAT at 90.0 -> 90.0.
+    FOUR UNSTATED THREATS: OOLONG contexts capped at 1,024-65,536 tokens (RLM tested where it is not
+    needed); Kimi K2 RLM arms only score at all because the author hand-patched strip_think_tags()
+    (without it "all RLM (depth 1 and 2) samples failed with parsing errors"); strict-format
+    exact-match scoring conflates format and reasoning failures; latency measured on a consumer macOS
+    laptop over blocking sequential third-party API calls.'
+  verification: dive-verified
   novelty_justification: First independent reproduction of RLM with cross-model verification and direct quantification of overthinking failure mode at depth>=2. Provides empirical contradicting evidence
     to naive "just recurse deeper" deployment of RLM/RAO patterns.
   relevance_justification: RLM/RAO patterns are on EPYC roadmap (rlm-orchestrator-roadmap.md + halo-trace-loop-spike). The 96x cost blow-up at depth-2 is a hard constraint for CPU inference where every

@@ -1,7 +1,10 @@
 # REPL Session Memory — Maturity Deltas
 
-**Status**: active — D-a, D-b, D-e landed 2026-07-27 (no inference, no instrument-era surface);
-D-c rescoped to real-workload measurement (D-c1); D-d unstarted
+**Status**: active — D-a/D-a2/D-a3/D-a4/D-a6, D-b, D-c1, D-d, D-e all landed 2026-07-27 (no
+inference, no instrument-era surface). **An adversarial review broke the first pickle boundary the
+same day; fixed in orchestrator `9d30bb60` — see *Security review — round 2*.** Remaining: D-c/D-c2
+(decide on real-workload numbers), D-a5 (columnar codec, only if a workload needs DataFrames),
+D-e1 (caps default, folded into D-c1).
 **Created**: 2026-07-27 (via research intake, operator-approved 2026-07-27)
 **Priority**: MEDIUM
 **Categories**: agent_architecture, context_management, memory_augmented
@@ -50,17 +53,46 @@ SQLite-backed rather than a single `state.json`. No task is filed for it.
       below.
   - [x] D-a1 — `/security-review` run on the implemented surface ✅ 2026-07-27. Four issues found and
         fixed before landing.
-- [ ] D-a2 — **Follow-up: pandas.** DataFrames are deliberately NOT allowlisted in v1 — unpickling
-      one pulls in a wide surface of pandas internals (block managers, index constructors) that
-      cannot be audited as tightly as the current list. They continue to be reported as unavailable.
-      Revisit only with a dedicated review.
-- [ ] D-a4 — **Layer-4 `type()` check is literal-dict-only.** `visit_Call` matches
-      `type('C', (), {'__reduce__': ...})` when the namespace is a **dict literal**; a variable
-      (`d = {...}; type('C', (), d)`) still slips past. Layer 1 holds in that case, so this is
-      defense-in-depth only — decide whether to broaden the rule or accept it explicitly.
-- [ ] D-a3 — **Guard the allowlist against drift.** `ALLOWED_GLOBALS` must stay inert-data-only;
-      `test_no_callable_gadgets_on_the_allowlist` is the regression guard. Any addition needs a
-      security pass, especially anything with a nested-deserialization path.
+- [x] D-a2 — **Follow-up: pandas — DECLINE CONFIRMED, NOT-FEASIBLE.** ✅ 2026-07-27, empirical audit
+      (19 DataFrame/Series shapes × 5 pandas versions, static `pickletools` enumeration cross-checked
+      against a `find_class`-tracing unpickler, 36 = 36 agreement). Three independent disqualifiers,
+      any one sufficient:
+      1. **The inert-types invariant cannot hold.** 36 globals required; 8 are executable factories
+         invoked via REDUCE with attacker-chosen args — `_unpickle_block`, `_new_Index`,
+         `_new_DatetimeIndex`, `__pyx_unpickle_NDArrayBacked`, `__pyx_unpickle_IntervalMixin`,
+         `BlockManager`/`SingleBlockManager.__setstate__`. `_new_Index(cls, d)` literally does
+         `cls(**d)`.
+      2. **The pyarrow branch is a proven memory-disclosure primitive.** With pyarrow installed, a
+         plain string column needs `pyarrow.lib._restore_array`, which reconstructs an Arrow array
+         from raw offset/data buffers **with no validation**. Demonstrated: offsets `[0, 4096]` over
+         a 2-byte data buffer produced a **4096-byte heap over-read** returning adjacent process
+         memory. `validate()` catches it but is never called on this path. Critically, it is built by
+         *ordinary REPL calls* — no `__reduce__` defined — so the AST layer never fires.
+      3. **A pinned allowlist is unmaintainable.** 3.0.2 vs 2.2.3 share only **14 of 57** required
+         globals (2.x pickles everything under private `pandas.core.*` paths; 3.0 moved them to
+         public). Worse, the set depends on whether `pyarrow` is *installed* — a transitive
+         `uv sync` silently changes what a DataFrame requires.
+      Also surfaced: `builtins.slice` is required by 18 of 19 cases and is not allowlisted, so no
+      partial pandas allowlist would have worked as written anyway.
+- [ ] D-a5 — **If DataFrame persistence is ever wanted, use a typed columnar codec, not the
+      allowlist.** Encode to a plain dict of `{str: ndarray | list | str | int}` with a closed dtype
+      tag set and explicit index encodings, then pickle *that*; reconstruction happens in our code via
+      public `pd.DataFrame(...)`, never in the unpickler. Prototyped during the audit: **17 of 19
+      cases round-trip exactly** under `assert_frame_equal`, requiring **zero** new allowlist entries.
+      ~250-350 LoC + ~150 LoC tests. Not scheduled — file only if a real workload needs it.
+- [x] D-a4 — **Layer-4 broadened.** ✅ 2026-07-27. 3-arg `type()` is now rejected outright rather
+      than only its literal-dict form. Superseded in scope by D-a6 below.
+- [x] D-a6 — **BYPASS FOUND AND CLOSED (adversarial review, 2026-07-27).** ✅ See *Security review —
+      round 2* below. The boundary landed earlier the same day was **broken end-to-end** and is now
+      fixed (orchestrator `9d30bb60`).
+- [x] D-a3 — **Allowlist drift guard.** ✅ 2026-07-27. `ALLOWED_GLOBALS` is pinned to a reviewed
+      golden set (`TestAllowlistDriftGuard`), so any addition or removal is a deliberate, reviewable
+      edit rather than a silent widening — plus structural guards that no entry reaches a
+      side-effecting module and every `builtins` entry resolves to a type. **This is the mechanism
+      that would have forced a review of the `numpy.ndarray` entry that D-a6 later showed was a
+      memory-corruption primitive.** Note the framing changed: the invariant is no longer
+      "inert data types only" (that claim was false), it is "every entry individually assessed for
+      constructor-reachable primitives".
 ## Why D-a needed a decision, not just effort (verified 2026-07-27)
 
 The original problem statement: `state.py` gates on `_is_json_serializable`, so REPL-defined
@@ -185,6 +217,64 @@ model-written REPL code, and unpickling happens in the orchestrator API process.
 - `dumps()` validates by round-tripping through the allowlist unpickler, so construction happens at
   *save* time as well as restore. Same allowlist, same process, no additional privilege — noted so
   it is not mistaken for a pure-validation step.
+
+## Security review — round 2 (2026-07-27, adversarial): the boundary was BROKEN
+
+An adversarial agent was asked to break the boundary landed hours earlier
+(orchestrator `d4f84288`). **It succeeded.** Fixed in `9d30bb60`. Recorded in full because the
+lesson generalizes past this module.
+
+**The bypass.** Model-authored REPL code that passes `ASTSecurityVisitor` could produce a checkpoint
+variable that, once signed and restored, dereferences an attacker-controlled pointer in the
+orchestrator process. Verified end-to-end: `dumps()` accepted and HMAC-signed the object; a fresh
+process loading the signed envelope and touching the value exited **139 (SIGSEGV)**.
+
+**Primary defect — "allowlisted" is not "inert".** `numpy.ndarray` was on the allowlist as a nominal
+data type. Its constructor form is a memory-corruption primitive:
+
+```python
+np.ndarray((1,), dtype('O'), buffer=struct.pack("P", addr))   # element IS the object at addr
+```
+
+numpy performs **no** validation on an object-dtype buffer. Round 1 guarded `multiarray.scalar` for
+exactly this shape and left `ndarray` unguarded — the guard was written against the *instance*
+found, not the *class* of defect.
+
+*Fix*: `numpy.ndarray` now resolves to a **non-callable type token**. A legitimate numpy pickle never
+calls `ndarray` — it passes the class as `_reconstruct`'s subtype and fills data via `__setstate__`
+(verified against the real opcode stream), so the legitimate path is untouched. `_reconstruct` is
+wrapped to unwrap the token and reject any other subtype. Plus `_assert_array_safe`, a
+**metadata-only** check (reads `dtype`/`nbytes`, never an element, so it is safe against a forged
+pointer) run on every value entering and leaving the module, rejecting object-dtype arrays and
+oversize logical arrays.
+
+**Size-cap evasion, same gadget.** `ndarray((4_000_000_000,), dtype('u1'), b'\x00', 0, (0,))` is a
+**104-byte** signed pickle describing a 4 GB stride-0 view. The byte cap bounds the *encoded* payload,
+never the *logical* object — hence `MAX_ARRAY_BYTES`.
+
+**Secondary defect — layer 4 was bypassable six ways**, all installing a hook with no `FunctionDef`:
+a metaclass `__new__` mutating the namespace under a **computed key**
+(`ns["__redu" + "ce__"] = fn`), `dict(__reduce__=fn)`, `ns.update(dict(...))`, and subscript
+assignment.
+
+*Fix*: reject custom metaclasses and `dict(<hook>=...)`, and extend the subscript check.
+The insight: **a computed key can never be caught statically — but it is inert unless the dict is
+installed as a class namespace**, and that has exactly two routes (`type(n,b,d)`, metaclass). Both
+closed. The module docstring now states plainly that this layer is depth, never the guarantee.
+
+**What held up** (clean results, reported as such): `defaultdict`/`Counter`/`deque` factory abuse —
+the factory is only *stored*, never called at unpickle, and `find_class` gates it; numpy object-*array*
+contents are inlined in the outer stream so `find_class` catches them; classic nested-list pickle
+bombs are defeated by memoization; HMAC is used correctly (`compare_digest`, verified **before** any
+unpickling, size checks first); no `dumps`/`loads` parse differential.
+
+**Three lessons worth carrying:**
+1. A type on an allowlist is not automatically inert — assess each entry for
+   **constructor-reachable primitives**, which is now what D-a3's guard enforces.
+2. Guarding the *instance* of a defect (`scalar`) while leaving its *class* unguarded (`ndarray`)
+   is how the same bug survives a review. Round 1 did exactly that.
+3. "Verify by doing the dangerous work" — `dumps()` validates by actually constructing — means a
+   gadget fires at **save** time too, not only restore.
 
 ## Implementation log
 
