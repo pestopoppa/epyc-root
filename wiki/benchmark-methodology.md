@@ -2,7 +2,7 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-07-26 (adds the lossless capture-integrity boundary and agentic trajectory eligibility; prior 2026-07-24 architect/scorer updates retained)
+**Last compiled**: 2026-07-27 (adds the three measured episodic-store leakage traps; prior 2026-07-26 capture-integrity and 2026-07-24 architect/scorer updates retained)
 **Sources**: 94+ documents
 
 ## Compiled Update — 2026-07-26 capture-integrity boundary
@@ -799,3 +799,39 @@ re-validation. Baseline discipline extracted: six refused attempts = six real pr
 zero garbage numbers banked (missing tool libs, migration NULL-crash, client-side budget
 override + five read caps, dead judge port, pre-REL-1 zero-tolerance gate, schema ceiling).
 Sources: progress/2026-07/2026-07-2{2,3}.md, core-v2-design-note, decision-plane audit records.
+
+### Probing the episodic store: three leakage traps, measured (2026-07-27)
+
+Any supervised probe over `sessions/episodic.db` + `embeddings.faiss` hits the same three traps.
+Each was found by inverting a result mid-analysis, not predicted in advance, so they are recorded as
+measured properties of *this* store rather than general advice.
+
+**1. The unit of identity is the embedding, not the `context` string.** The `context` column carries
+material beyond the text that was actually embedded, so hashing it splits identical vectors into
+different groups. Measured on the live store: **26,995 `frontdoor` routing rows carry only 2,384
+distinct vectors** (~11× reuse), and **497 vector-hashes span more than one context-derived group**.
+Group by a hash of the float32 vector bytes. Note 2,384 is the same figure `comp_region_probe.py`
+flags in its own docstring — the store's effective dimensionality is far lower than its row count
+suggests, and every probe over it must be designed around that.
+
+**2. `GroupKFold` is deterministic — it cannot produce a stability estimate.** A "multi-seed" check
+wrapped around it varies only the estimator's `random_state`, which for `lbfgs` changes nothing. The
+observed symptom is a reported seed spread of *exactly* `0.0000`, which reads as "extremely stable"
+and actually means "the control never ran." Use `GroupShuffleSplit` (or shuffle group assignment)
+when you want variance.
+
+**3. Row-weighted pooling is carried by a handful of objectives.** Group sizes here are extremely
+skewed: for `frontdoor`, the **top-10 groups hold 33% of all rows while the median group size is 1**.
+A pooled row-weighted metric is therefore substantially a measurement of ~10 repeated boilerplate
+prompts. Report **group-weighted** (one prediction per distinct objective) as the headline. The two
+views can disagree sharply and in *either* direction — in the 2026-07-27 escalation probe, frontdoor
+was 0.784 row-weighted vs 0.575 group-weighted, while `worker_general` moved the other way, 0.579 vs
+0.726. Ranking roles by the wrong view inverts the conclusion about which surface has signal.
+
+**Non-negotiable controls for this store**: a shuffled-label run (must land ~0.5, else the harness
+leaks), an ungrouped run retained *only* as a leakage anchor, and a minimum-positives guard so a
+degenerate class (`worker_vision`: 4 failures in 1,456 rows) is skipped rather than reported as a
+number.
+
+Sources: `scripts/analysis/escalation_prediction_probe.py`, `scripts/analysis/comp_region_probe.py`,
+`handoffs/active/learned-routing-controller.md`, `progress/2026-07/2026-07-27.md`.
