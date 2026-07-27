@@ -426,11 +426,27 @@ freezes/cutovers, host reboots).
   `none-lane-depth`, `missing-gating`, `roster-orphan`, `co-residency-topology-drift`.
   Verified on a throwaway port; the live hub was never restarted. Rollback: revert the additive
   routes.
-- [ ] **M3 — coordinator-daemon, read-only advisory.** `session_bus_coordinator.py` (flock,
-  tick loop, heartbeat, epoch) emitting advisory `saturation` + would-assign rows only;
-  `bus_supervisor.sh`. Accept: would-assign matches actual human/agent choices over a working
-  day (divergences explainable); survives kill -9 via supervisor; zero writes to foreign
-  files. Rollback: stop daemon (bus stays in M1 manual mode).
+- [ ] **M3 — coordinator-daemon, read-only advisory.** *BUILT ✅ 2026-07-27* —
+  `scripts/coordination/session_bus_coordinator.py` (flock singleton, tick loop, heartbeat,
+  epoch fencing) and `scripts/coordination/bus_supervisor.sh` (userspace watchdog, health =
+  heartbeat mtime, SIGTERM-then-SIGKILL, exponential backoff, `loop|once|status`; no systemd).
+  Emits advisory `saturation` / `would-assign` / `would-idle` / `would-skip` records to
+  `advisory.jsonl` only.
+  Verified: **survives kill -9 via supervisor** (recovered in 1s, epoch 1→2, and advisory rows
+  carry the epoch so a pre-restart generation is identifiable); **zero writes to foreign files**
+  (only `advisory.jsonl` + its own heartbeat, both daemon-owned); eligibility honours priority
+  order, lane-busy, ungranted `operator_gates`, and non-terminal `depends_on`;
+  `authority: assign` is **refused** because M4 is not built — an unbuilt assign path must never
+  be silently approximated by the advisory one.
+  Two bugs found by its own tests and fixed: `classify_load()` returns `state`, not `class`
+  (reading the wrong key fail-safes to permanently-busy, so the daemon would never have advised
+  anything), and the same task was being advised to every idle agent (harmless while advisory,
+  a double-assignment once M4 has authority).
+  **Remaining for M3 sign-off: would-assign matches actual human/agent choices over a working
+  day, divergences explainable.** That needs elapsed time and cannot be compressed. The daemon is
+  running in advisory mode to accumulate it; the supervisor loop is NOT started (operator's call
+  — `bus_supervisor.sh loop`, or the cron `once` entry in its header).
+  Rollback: stop the daemon; the bus returns to fully-functional M1 manual mode.
 - [ ] **M4 — assignment authority.** Real task-assign + lease/stall ladder + requeue + token
   relay; mains consume assignments at boundaries. Accept: 48h with zero idle-lane time while
   eligible work existed (hub saturation history is the evidence); one induced stall exercises

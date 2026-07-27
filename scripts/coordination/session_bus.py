@@ -103,7 +103,7 @@ def required_writer(bus_root: Path, target: Path) -> str:
     except ValueError as e:
         raise BusError(f"{target} is outside the bus root {bus_root}") from e
     parts = rel.parts
-    if rel.name == "queue.jsonl" and len(parts) == 1:
+    if rel.name in {"queue.jsonl", "advisory.jsonl"} and len(parts) == 1:
         return COORDINATOR_DAEMON
     if len(parts) == 2:
         area, fname = parts
