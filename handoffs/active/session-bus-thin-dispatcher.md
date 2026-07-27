@@ -310,6 +310,13 @@ freezes/cutovers, host reboots).
   child's lifetime; `bench_canonical.sh` derives its cpu list from the emitted canonical command
   and fails closed. Verified: contention serializes, SIGKILL releases (kernel fd-close), signals
   forwarded for drain, stale payloads never reported as holders.
+  - [ ] **R1a — end-to-end bench claim never fired (open gap, inference-gated).** The wiring is
+    verified structurally via `bench_canonical.sh --dry-run`, and contention was verified against
+    *synthetic* holders. A real `llama-bench` has never acquired the claim, held it through a run,
+    and released it. Closing this needs one short smoke run (e.g. `-n 128 -r 1` on a small model),
+    which under the amended clause needs a held claim rather than an operator signature. Deferred
+    by the operator 2026-07-27; until it runs, treat A0 as structurally-verified, not
+    end-to-end-verified.
 - [x] **R2 — retire per-run operator approval (A1).** ✅ 2026-07-27 — ratified and applied by the
   operator via `artifacts/operator/ratify_inference_gate_amendment_20260727.sh`
   (`OPERATING_CONSTRAINTS.md` → `bc290da2…`). M4's zero-idle acceptance is no longer gated on a

@@ -160,6 +160,11 @@ def _eligible(row: dict, latest: dict[str, dict], snapshot: dict, token_text: st
             return False, f"dependency {dep} not terminal-success"
     if not _gates_granted(row, token_text):
         return False, "operator_gates not GRANTED"
+    # R9: a tail-replayable result is obtained by deterministically rescoring
+    # banked outputs, so it occupies no lane and needs no claim. Gating it on
+    # lane occupancy would queue work that cannot possibly contend.
+    if row.get("replay_eligible"):
+        return True, "eligible (replay_eligible — no lane, no claim needed)"
     lane = row.get("lane")
     if lane in {"cpu", "gpu"} and snapshot.get(f"{lane}_busy"):
         return False, f"lane {lane} busy (load_class={snapshot.get('load_class')})"
