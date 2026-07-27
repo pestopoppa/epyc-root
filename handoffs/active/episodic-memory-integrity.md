@@ -104,6 +104,15 @@ failure caught in amber.
       embedding, so they must live in task space). **Verified**: a USACO task retrieves "Route USACO
       and competitive programming to architect_general" (0.770); a chemistry task retrieves "Route
       chemistry problems to frontdoor" (0.630). Index 57/57.
+  - [x] M-11b — **Stale skills PURGED, not migrated.** ✅ 2026-07-27. Backfilling them was the wrong
+        call: all 57 were distilled from the corrupt corpus (mis-assigned vectors, cost-contaminated
+        labels), their `source_trajectory_ids` match 0 current rows, and **5 route to
+        `architect_coding` — a role that does not exist in the live registry** (verified against
+        `model_registry.yaml`). Making them retrievable put stale advice, including a dead role, into
+        live routing prompts. Purged: 57 → 0, `skill_embeddings.faiss` / `skill_id_map.npy` retired,
+        `skills.db` backed up to `skills.db.pre-purge-*`. Verified: bank count 0, retrieval returns
+        0, so nothing stale can reach a prompt. The retrieval path itself remains wired and working —
+        it just has nothing to serve until re-distillation.
   - [ ] M-11a — Re-distil skills after the reseed. The 57 existing skills reference
         `source_trajectory_ids` matching 0 current rows, and were distilled from 200-char stubs — all
         57 are thin routing heuristics because that is the ceiling of the input. Re-distilling over
