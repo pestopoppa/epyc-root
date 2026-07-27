@@ -22,6 +22,26 @@ A decision-gating number = `(metric, protocol-id, n/reps, date, attestation ref)
 - **A/B**: N ≥ 100/arm for production-role decisions; classify every failure by reason (infra vs model) and report the infra rate next to the effect.
 - **Registry writes**: throughput/quality fields carry structured `measured: {date, protocol}` provenance (free-text comments are the legacy witness — do not destroy them in reformats).
 
+## Deterministic replay before regeneration (operator-ratified 2026-07-27)
+
+**If a result can be obtained without running inference — by deterministically rescoring or
+transforming previously saved inference outputs — ALWAYS do that instead of regenerating.**
+Origin: the architect-bench rescoring spiral (each scorer fix was triggering full same-era
+reruns of every arm, blocking real work).
+
+- **Scorer/converter/extractor defect** → the default remedy is a tail replay: re-run the
+  fixed deterministic stage over BANKED model outputs (seconds, no inference). Regenerate
+  only when the GENERATION path itself was defective.
+- **Quality scores transfer across kernel eras once parity is proven** (e.g. v7→v8 paired
+  Δ0.0pp exact ties). Kernel era-fencing exists for the speed axis; quality re-fencing is
+  triggered only by instrument (scorer/pool) changes — and those get tail-replay too.
+  Rebaseline only the axis that changed — never everything.
+- **Before any full-suite rerun**, prefer focused runs on the discriminating/discordant
+  items (the McNemar-discordant set carries the signal).
+- **Pre-commit a stopping rule** before any bench campaign: name the table that is FINAL
+  and the decision each outcome triggers; "confirmation" runs are shelved unless their
+  result would change a deployment decision.
+
 ## Trust boundary
 
 `MEASUREMENT.md`, the eval tower, scoring contracts, and this file are read-only for autonomous optimization processes. Changes are human, PR-reviewed amendments.

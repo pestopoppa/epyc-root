@@ -126,6 +126,7 @@ Audit trail in `logs/agent_audit.log`. Analysis: `scripts/utils/agent_log_analyz
 - A decision-gating number = `(metric, protocol-id, n/reps, date, attestation ref)`. A number without a protocol citation is an **observation** — usable for hypotheses, never to gate keep/revert/deploy/promote/buy/close decisions.
 - **Historical numbers**: era-label first (`epyc-orchestrator/orchestration/instrument_eras.yaml`), then apply the verb — retro-certified → use; demoted-to-prior → hypothesis only (re-measure if it must gate); retired-view → consult the era-appropriate rebuilt view. Never edit historical records to "fix" them — append.
 - Benchmarks run only via the codified recipes (`bench_canonical.sh`/`canonical_recipe.py`) with operator approval; agent digest at `agents/shared/MEASUREMENT_POLICY.md`.
+- **Deterministic replay before regeneration** (operator-ratified 2026-07-27): if a result is obtainable by deterministically rescoring/transforming saved inference outputs, ALWAYS do that instead of re-running inference; rebaseline only the axis that changed. Full rule: `agents/shared/MEASUREMENT_POLICY.md` → *Deterministic replay before regeneration*.
 - The measurement trust boundary (MEASUREMENT.md, eval tower, scoring, safety gates, era registry rows) is human-amendment-only.
 
 ## Session Management
