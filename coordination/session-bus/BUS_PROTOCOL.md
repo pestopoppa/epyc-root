@@ -51,7 +51,10 @@ Owning handoff: [`handoffs/active/session-bus-thin-dispatcher.md`](../../handoff
    silent inconsistency.
 9. **RECONSTRUCTIBILITY.** Coordinator-agent state must be rebuildable from bus files alone
    (`queue.jsonl`, `tokens/token-queue.md`, heartbeats, cursors). Authority that exists only in a
-   session's context is a design defect. Degraded mode with coordinator-agent down: the daemon
+   session's context is a design defect. **Verify it, do not assert it:**
+   `session_bus.py rebuild` derives the full coordinator state from bus files alone. If a
+   fresh session can act correctly from that output the invariant holds; anything it needs
+   that is absent there IS the defect. Degraded mode with coordinator-agent down: the daemon
    keeps assigning, deterministic lease re-grants keep flowing, tokens accumulate durably, and
    **merges and discretionary reprioritization pause** — nothing blocks.
 10. **EVERY QUEUE ROW DECLARES ITS GATING** (`cpu` / `gpu` / `both` / `none`). A missing

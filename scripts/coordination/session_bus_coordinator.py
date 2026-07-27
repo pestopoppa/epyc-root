@@ -258,6 +258,73 @@ def compute_advice(bus_root: Path, config: dict, epoch: int) -> list[dict]:
 # ------------------------------------------------------------------- daemon
 
 
+def audit(bus_root: Path, epoch: int) -> list[dict]:
+    """R7 defect attribution — the daemon auditing the agent tier.
+
+    Emits ONLY mechanically checkable findings. Anything requiring judgment
+    belongs to a human, not here: the daemon that starts interpreting work is a
+    second main.
+
+    A note on what is deliberately NOT a defect. Two of R7's candidate checks —
+    "commit without a preceding fetch" and "wholesale `git add`" — are not
+    reliably decidable after the fact, and a commit touching a human-only path
+    cannot be attributed to agent-vs-operator at all, because every session
+    commits under one git identity. Those are emitted as `observation`, not
+    `defect`, so a clean audit is never mistaken for full coverage. Preventing
+    them belongs in a pre-commit hook, where the actor is still known.
+    """
+    findings: list[dict] = []
+
+    def add(kind: str, check: str, subject: str, detail: str) -> None:
+        findings.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                         "kind": kind, "check": check, "subject": subject, "detail": detail})
+
+    # --- hard, mechanical: trust-boundary pin -------------------------------
+    try:
+        from scripts.coordination.session_bus import check_trust_boundary_pin
+        for problem in check_trust_boundary_pin(bus_root):
+            add("defect", "trust-boundary-pin", "coordinator-agent", problem)
+    except Exception as exc:  # noqa: BLE001
+        add("observation", "trust-boundary-pin", "coordinator-daemon",
+            f"pin check unavailable: {exc}")
+
+    # --- hard, mechanical: single-writer ownership --------------------------
+    for path in sorted((bus_root / "outbox").glob("*.jsonl")):
+        owner = path.stem
+        rows, _ = _read_jsonl(path)
+        for i, row in enumerate(rows, 1):
+            if row.get("from") != owner:
+                add("defect", "single-writer", owner,
+                    f"outbox/{path.name}:{i} carries from={row.get('from')!r} but this file's "
+                    f"only writer is {owner!r}")
+
+    # --- observation: human-only paths touched by recent commits ------------
+    try:
+        import subprocess
+        gate = bus_root / "human_only_paths.yaml"
+        globs = []
+        if gate.exists():
+            for line in gate.read_text(encoding="utf-8").splitlines():
+                line = line.strip()
+                if line.startswith("glob:"):
+                    globs.append(line.split(":", 1)[1].strip().strip('"'))
+        if globs:
+            changed = subprocess.run(
+                ["git", "-C", str(REPO_ROOT), "log", "--name-only", "--pretty=format:", "-20"],
+                capture_output=True, text=True, timeout=15,
+            ).stdout.split()
+            hits = sorted({g for g in globs for c in changed if c == g})
+            for hit in hits:
+                add("observation", "human-only-path-touched", hit,
+                    "a commit in the last 20 touched a human-only path. NOT a defect: all "
+                    "sessions share one git identity, so this cannot be attributed to an agent "
+                    "rather than the operator. Confirm it was an operator/ratify-script apply.")
+    except Exception as exc:  # noqa: BLE001
+        add("observation", "human-only-path-touched", "-", f"git inspection unavailable: {exc}")
+
+    return findings
+
+
 def _heartbeat_path(bus_root: Path) -> Path:
     return bus_root / "heartbeats" / f"{COORDINATOR_DAEMON}.json"
 
@@ -297,7 +364,7 @@ def tick(bus_root: Path, epoch: int, *, dry_run: bool = False) -> list[dict]:
             "coordinator_daemon.authority='assign' but assignment (M4) is not implemented. "
             "Set authority to 'advisory' or build M4 first."
         )
-    advice = compute_advice(bus_root, config, epoch)
+    advice = compute_advice(bus_root, config, epoch) + audit(bus_root, epoch)
     if not dry_run:
         _append_advisory(bus_root, advice)
     return advice
@@ -391,7 +458,23 @@ def build_parser() -> argparse.ArgumentParser:
 
     s = sub.add_parser("status", help="daemon liveness + recent advice")
     s.set_defaults(func=cmd_status)
+
+    a = sub.add_parser("audit", help="R7 integrity audit only (defects + observations)")
+    a.set_defaults(func=cmd_audit)
     return p
+
+
+def cmd_audit(args: argparse.Namespace) -> int:
+    bus_root = Path(args.bus_root)
+    findings = audit(bus_root, _read_epoch(bus_root))
+    defects = [f for f in findings if f["kind"] == "defect"]
+    for f in findings:
+        marker = "DEFECT " if f["kind"] == "defect" else "observe"
+        print(f"  {marker} [{f['check']}] {f['subject']}: {f['detail']}")
+    if not findings:
+        print("  clean — no mechanical violations")
+    print(f"\n{len(defects)} defect(s), {len(findings) - len(defects)} observation(s)")
+    return 1 if defects else 0
 
 
 def main(argv: Optional[list[str]] = None) -> int:

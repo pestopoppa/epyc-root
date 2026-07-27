@@ -362,20 +362,34 @@ freezes/cutovers, host reboots).
   path-scoped adds only, `fetch` + `log @{u}..main` before commit, no branch switching in a
   shared clone. **Exclusion:** may flip checkboxes and append progress, may **not** create
   handoff stubs, intake entries, or index rows.
-- [ ] **R7 — coordinator integrity (M3/M4).** *Authority containment:* the human-only path list
-  is itself a data artifact, so coordinator-agent could otherwise widen its own authority — it is
-  human-amendment-only and hash-pinned, readable but never writable by the agent. *Defect
-  attribution:* the coordinator-**daemon** files defect rows against coordinator-agent, on
-  mechanically checkable violations only (wholesale `git add`, commit without a preceding fetch,
-  a gated-path merge without a granted token, a single-writer breach) — deterministic, so the
-  daemon never crosses into reviewing work products. *Failure mode:* coordinator-agent must be
-  **fully reconstructible from bus files alone** (axiom 2); anything living only in its context
-  is a design defect. Degraded mode when it is down: the daemon keeps assigning, deterministic
-  lease re-grants keep flowing, tokens accumulate durably, **merges and discretionary
-  reprioritization pause** — nothing blocks. Restart is the operator's via the give-up rung.
-  *Hidden assumption:* never-block requires a non-empty `lane: none` backlog — alarm when
-  none-lane ready-depth drops below threshold. Note "no idle lane" and "churning the backlog" are
-  different metrics; do not let the first stand in for the second.
+- [x] **R7 — coordinator integrity.** ✅ 2026-07-27 — three layers, each catching what the
+  previous one cannot:
+  *Containment.* The trust boundary moved out of agent-editable `config.yaml` into
+  `coordination/session-bus/human_only_paths.yaml`, pinned by `human_only_paths.sha256`.
+  `scripts/hooks/check_trust_boundary_edit.sh` (registered `PreToolUse → Write|Edit`) refuses edits
+  to the gate list and its pin **unconditionally** (layer 1, needs no parsing, never degrades) and
+  to the paths the list names (layer 2, best-effort — it ALLOWS with a warning if the list cannot be
+  parsed, because failing closed on an unreadable config would block every edit in the repo).
+  The operator path is untouched: ratify scripts amend via bash/python, not Write/Edit.
+  *Detection.* `session_bus.py validate` compares the list against its pin, so a direct shell write
+  that bypasses hooks entirely is still caught after the fact. Verified against injected drift, a
+  missing list, and a missing pin.
+  *Attribution.* `session_bus_coordinator.py audit` emits `defect` records for the two
+  mechanically decidable violations — trust-boundary pin drift and single-writer breach (a row in
+  `outbox/<a>` whose `from` is not `<a>`). Defects go to `advisory.jsonl`, preserving M3's verified
+  zero-foreign-writes property.
+  **Honest scoping — two of R7's candidate checks are NOT defects and are emitted as
+  `observation` instead.** "Commit without a preceding fetch" and "wholesale `git add`" are not
+  reliably decidable after the fact, and a commit touching a human-only path cannot be attributed
+  to agent-versus-operator at all, because every session commits under one git identity (the same
+  limitation that broke M1's git-blame audit criterion). Preventing those belongs in a pre-commit
+  hook, where the actor is still known. A clean audit must not be read as full coverage.
+  *Reconstructibility.* `session_bus.py rebuild` derives full coordinator state from bus files
+  alone, turning `BUS_PROTOCOL.md` rule 9 from an assertion into something runnable.
+  Tests: `scripts/hooks/tests/test_trust_boundary_edit.py`, 16/16 — including that layer 2 degrades
+  open while layer 1 holds.
+  **Deferred to M4 (not outstanding here):** coordinator-agent stall *detection* is the M4 stall
+  ladder's job; the heartbeat it needs already exists and `/api/bus` already surfaces its age.
 - [ ] **R8 — consolidated unblock artifact (M2).** Coordinator-agent maintains ONE continuously
   current artifact listing every pending gate — bench tokens, trust-boundary applies, and R6
   merge gates alike — each line individually strikeable, every command pre-validated end-to-end

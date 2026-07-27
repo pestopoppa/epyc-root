@@ -69,13 +69,10 @@ co_residency:
   # Declared classes are provisional until measured; promote via the generator above.
   declared_classes_are_provisional: true
 
-# Human-only write paths. This list defines what requires an operator signature,
-# so it is itself human-amendment-only — coordinator-agent reads it, never writes
-# it, and a diff touching it is gated.
-human_only_paths:
-  - "MEASUREMENT.md"
-  - "epyc-orchestrator/orchestration/instrument_eras.yaml"
-  - "eval tower / scoring"
-  - "safety gates"
-  - "era registry rows"
-  - "production-consolidated-*"     # additionally requires the four-step promotion workflow
+# Human-only write paths live in their own hash-pinned, hook-protected file so
+# that an agent able to edit this config cannot widen its own authority:
+#   human_only_paths.yaml  +  human_only_paths.sha256   (see R7)
+trust_boundary:
+  source: "coordination/session-bus/human_only_paths.yaml"
+  pin: "coordination/session-bus/human_only_paths.sha256"
+  on_pin_mismatch: refuse

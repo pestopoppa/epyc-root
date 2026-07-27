@@ -284,13 +284,47 @@ def cmd_validate(args: argparse.Namespace) -> int:
         if hb.get("state") not in {"idle", "working", "draining", None}:
             problems.append(f"heartbeats/{path.name}: bad state {hb.get('state')!r}")
 
+    # R7: the trust-boundary list is hash-pinned. The PreToolUse hook stops the
+    # ordinary edit path, but a direct shell write bypasses hooks entirely — so
+    # the pin is the layer that still catches it, after the fact.
+    problems.extend(check_trust_boundary_pin(bus_root))
+    checked += 1
+
     print(f"checked {checked} record(s)")
     if problems:
         for p in problems:
             print(f"  FAIL {p}")
         return 1
-    print("  OK — schema clean, single-writer clean")
+    print("  OK — schema clean, single-writer clean, trust-boundary pin intact")
     return 0
+
+
+def check_trust_boundary_pin(bus_root: Path) -> list[str]:
+    """Compare human_only_paths.yaml against its recorded sha256.
+
+    Returns a list of problem strings (empty when intact). A missing pair is
+    reported, not ignored: an absent gate list means nothing is enforced, which
+    is worse than a drifted one because it looks like nothing is wrong.
+    """
+    gate = bus_root / "human_only_paths.yaml"
+    pin = bus_root / "human_only_paths.sha256"
+    if not gate.exists() and not pin.exists():
+        return ["trust boundary: human_only_paths.yaml and its .sha256 pin are both absent — "
+                "nothing is enforced"]
+    if not gate.exists():
+        return ["trust boundary: pin exists but human_only_paths.yaml is missing"]
+    if not pin.exists():
+        return ["trust boundary: human_only_paths.yaml exists but its .sha256 pin is missing — "
+                "drift would be undetectable"]
+    import hashlib
+
+    actual = hashlib.sha256(gate.read_bytes()).hexdigest()
+    expected = pin.read_text(encoding="utf-8").split()[0].strip() if pin.read_text().strip() else ""
+    if actual != expected:
+        return [f"trust boundary DRIFT: human_only_paths.yaml is {actual[:16]}… but the pin says "
+                f"{expected[:16] or '(empty)'}… — the gate list changed outside the operator path. "
+                f"Re-pin deliberately or revert."]
+    return []
 
 
 def _cursor_path(bus_root: Path, agent: str) -> Path:
@@ -387,6 +421,75 @@ def cmd_status(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_rebuild(args: argparse.Namespace) -> int:
+    """R7 reconstructibility — everything a fresh coordinator-agent needs, from files alone.
+
+    `BUS_PROTOCOL.md` rule 9 asserts that coordinator-agent state must be
+    rebuildable from bus files, and that authority living only in a session's
+    context is a design defect. An assertion nobody can run is not a guarantee,
+    so this verb IS the check: if a fresh session can act correctly from this
+    output, the invariant holds. If something it needs is missing here, that
+    absence is the defect.
+    """
+    bus_root = Path(args.bus_root)
+    latest = fold_queue(bus_root)
+
+    def _read(path: Path) -> str:
+        try:
+            return path.read_text(encoding="utf-8")
+        except (FileNotFoundError, OSError):
+            return ""
+
+    token_text = _read(bus_root / "tokens" / "token-queue.md")
+    state = {
+        "rebuilt_at": _utcnow_iso(),
+        "source": "bus files only — no session context consulted",
+        "queue": {
+            "count": len(latest),
+            "by_status": {s: sum(1 for r in latest.values() if r.get("status") == s)
+                          for s in sorted({r.get("status", "?") for r in latest.values()})},
+            "live": {tid: r for tid, r in sorted(latest.items())
+                     if r.get("status") not in TERMINAL_STATES},
+        },
+        "pending_operator_tokens": [
+            line.strip() for line in token_text.splitlines() if line.lstrip().startswith("- [ ]")
+        ],
+        "granted_operator_tokens": [
+            line.strip() for line in token_text.splitlines() if line.lstrip().startswith("- [x]")
+        ],
+        "agents": {},
+        "trust_boundary": {
+            "pin_problems": check_trust_boundary_pin(bus_root),
+            "gate_list": "human_only_paths.yaml (human-amendment-only, hash-pinned)",
+        },
+    }
+    for hb_path in sorted((bus_root / "heartbeats").glob("*.json")):
+        aid = hb_path.stem
+        try:
+            hb = json.loads(hb_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            hb = {"error": "unreadable"}
+        unread, _ = _read_jsonl(bus_root / "inbox" / f"{aid}.jsonl", _cursor_get(bus_root, aid))
+        state["agents"][aid] = {"heartbeat": hb, "cursor": _cursor_get(bus_root, aid),
+                                "inbox_unread": len(unread)}
+
+    if args.json:
+        print(json.dumps(state, indent=2, sort_keys=True, default=str))
+        return 0
+    print(f"rebuilt from bus files at {state['rebuilt_at']}")
+    print(f"  queue: {state['queue']['count']} rows, {state['queue']['by_status']}")
+    print(f"  live (non-terminal): {list(state['queue']['live']) or '(none)'}")
+    print(f"  operator tokens: {len(state['pending_operator_tokens'])} pending, "
+          f"{len(state['granted_operator_tokens'])} granted")
+    for aid, a in state["agents"].items():
+        hb = a["heartbeat"]
+        print(f"  {aid:<20} state={hb.get('state')} task={hb.get('task_id')} "
+              f"cursor={a['cursor']} unread={a['inbox_unread']}")
+    probs = state["trust_boundary"]["pin_problems"]
+    print(f"  trust boundary: {'intact' if not probs else probs}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="session_bus.py", description=__doc__.split("\n")[0])
     p.add_argument("--bus-root", default=str(DEFAULT_BUS_ROOT))
@@ -418,6 +521,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     sp = sub.add_parser("status", help="human summary of bus state")
     sp.set_defaults(func=cmd_status)
+
+    rb = sub.add_parser("rebuild", help="derive full coordinator state from bus files alone (R7)")
+    rb.add_argument("--json", action="store_true")
+    rb.set_defaults(func=cmd_rebuild)
     return p
 
 

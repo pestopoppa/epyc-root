@@ -65,6 +65,11 @@
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/check_live_holder_interference.sh\"",
             "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/check_trust_boundary_edit.sh\"",
+            "timeout": 5
           }
         ]
       }
