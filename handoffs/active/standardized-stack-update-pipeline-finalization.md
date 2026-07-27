@@ -207,10 +207,13 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
       1202069 overlaps CPU bench cores: [0, 1, 2, ...]`.
       The precondition that was checked — "autopilot is down" — is **not the relevant gate**; the
       gate keys on **core overlap** with a pinned bench. Two things to land:
-  - [ ] SS-BENCH-GATE-a — Make `orchestrator_stack.py` lifecycle actions refuse (or warn loudly and
-        require an explicit override) when a pinned CPU bench is detected, the same way the bench's
-        own continuity gate refuses. Detection: a live bench driver plus core-overlap against the
-        fleet's intended affinity.
+  - [x] SS-BENCH-GATE-a — **LANDED** ✅ 2026-07-27 (orchestrator `237f16f0`).
+        `orchestrator_stack.py` start/stop/reload now call `guard_against_running_bench()`, which
+        detects a live bench driver (`*_bench_runner.py`, `v7_quality_gate_runner.py`, `llama-bench`,
+        `run_e8_quality_baseline_reseed.py`), prints the incident context, and exits 2 unless
+        `--allow-during-bench` is passed. `earlyoom` is excluded — it merely names `llama-bench` in
+        its arguments. **Verified live on first run**: it caught the E8 quality baseline reseed
+        (PID 1485364) and the v7 quality gate.
   - [ ] SS-BENCH-GATE-b — Pin the orchestrator fleet (including transient sidecars) off the CPU
         bench core range so a reload cannot trip the gate at all. This is the durable fix; (a) is the
         guard rail.

@@ -2,7 +2,7 @@
 
 **Category**: `memory_augmented`
 **Confidence**: verified
-**Last compiled**: 2026-07-27
+**Last compiled**: 2026-07-27 (adds the vector-resolution corruption post-mortem)
 **Sources**: 28+ documents (2 deep-dives, 22 intake entries, active handoffs, progress logs, K-MEM/Tulving measurement context, and the 2026-06-28 W4/W6 reboot-readiness checkpoint)
 
 ## Summary
@@ -258,3 +258,53 @@ traffic.
 **Sources**: [intake-901](https://github.com/avbiswas/fast-rlm) fast-rlm REPL memory (dive-verified
 2026-07-27) · [intake-783](https://github.com/avbiswas/fast-rlm) fast-rlm re-review ·
 [Handoff](../handoffs/active/repl-session-memory-maturity.md) · [Progress](../progress/2026-07/2026-07-27.md)
+
+### The 2026-07-05 vector-resolution corruption: a two-file publish that could not be atomic
+
+The episodic store's vector lookups were silently wrong store-wide for three weeks. The mechanism is
+worth recording because it is a general hazard for any index-plus-sidecar persistence scheme, not a
+quirk of this codebase.
+
+**`FAISSEmbeddingStore.save()` published two files with two separate renames.** POSIX cannot rename a
+pair atomically, so a crash between them *always* leaves a mismatch. The only real choice is **which**
+mismatch — and the two directions are not equally recoverable:
+
+| published first | crash leaves | recoverable? |
+|---|---|---|
+| index | index ahead of id_map — trailing vectors have no id | **No.** `_load()`'s "truncate id_map to match index" is a silent no-op in this direction. |
+| id_map | id_map ahead of index — trailing ids have no vector | **Yes.** `_load()` drops them. Self-healing. |
+
+The old order was index-first. Worse, `add()` then took its position from `index.ntotal` while
+appending the id at `len(id_map)`, so once the two diverged **every subsequent write inherited the
+offset and persisted it into the metadata table**. Drift accumulated at +1 per interrupted publish
+and reached 42; 57,721 of 57,960 rows ended up with a wrong `embedding_idx`. 19.7 GB of orphaned
+`.tmp` files were the fossil record — including a 0-byte id_map temp beside a 2.79 GB index temp.
+
+**Three generalizable rules this produced:**
+
+1. **When two artifacts must agree and cannot be published atomically, choose the publish order so a
+   crash lands in the self-healing direction** — then make the loader actually heal it, and log the
+   unrecoverable direction as an error rather than pretending a no-op repaired it.
+2. **Derive an append position from the structure you look up through**, not from a parallel one.
+   Here `id_map` is what resolves a memory to a vector, so `len(id_map)` is the only defensible
+   position; taking `index.ntotal` let the two disagree by construction.
+3. **Fail closed on detected inconsistency.** Writing into a desynced store is what turned a
+   recoverable outage into permanent data corruption.
+
+**Repair was exact, not inferred.** `id_map` is a list of memory ids, so a row's true position is its
+index in that list — a reverse lookup, no offset model, no re-embedding. Worth checking for before
+reaching for a statistical alignment fit.
+
+**Two measurement traps encountered while diagnosing this**, both of which produced confident wrong
+findings:
+
+- **Never compare embeddings with a byte hash.** float32 sub-ULP jitter changes the bytes but not the
+  vector; 16 concurrent embeddings of one text hashed to different values while agreeing at pairwise
+  cosine **1.0000**. This produced a false "the embedding server is non-deterministic" finding twice.
+- **When classifying a store by field presence, check every key that could carry the field.** Two
+  writer paths stored the same task text under `objective` and `task_description`; a classifier
+  checking only the first read half the store as contentless and produced a false "half the store is
+  telemetry" finding.
+
+Sources: `handoffs/active/episodic-memory-integrity.md`, `orchestration/repl_memory/faiss_store.py`,
+`scripts/maintenance/repair_faiss_id_map.py`, `progress/2026-07/2026-07-27.md`.

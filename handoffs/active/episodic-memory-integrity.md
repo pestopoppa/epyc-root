@@ -55,8 +55,35 @@ failure caught in amber.
       (~58,132 BGE embeddings) and a window with no pinned CPU bench running.
   - [ ] M-10a — Acceptance is the **cosine test**, not the exit code: re-embed a row's own text and
         compare to its stored vector. Before: **mean 0.5505, 0/12 above 0.9**. Pass: **> 0.95**.
-- [ ] M-11 — Wire SkillBank retrieval. All 57 skills have `embedding_idx` NULL and
-      `retrieval_count = 0`, so it cannot be retrieved even in principle.
+- [x] M-11 — **SkillBank is retrievable.** ✅ 2026-07-27. The consumer was never missing:
+      `state.hybrid_router` is replaced by `SkillAugmentedRouter` (`services/memrl.py:481`) whenever
+      the `skillbank` flag is on, and it is. Only the search key was absent —
+      `SkillBank.store(skill, embedding=None)` takes the embedding as OPTIONAL and only assigns
+      `embedding_idx` when supplied, and the distillation pipeline never supplied one, so no
+      `skill_embeddings.faiss` existed at all. `backfill_skill_embeddings.py` embedded all 57 by WHEN
+      THEY APPLY (title + when_to_apply + task_types — skills are matched against the incoming TASK
+      embedding, so they must live in task space). **Verified**: a USACO task retrieves "Route USACO
+      and competitive programming to architect_general" (0.770); a chemistry task retrieves "Route
+      chemistry problems to frontdoor" (0.630). Index 57/57.
+  - [ ] M-11a — Re-distil skills after the reseed. The 57 existing skills reference
+        `source_trajectory_ids` matching 0 current rows, and were distilled from 200-char stubs — all
+        57 are thin routing heuristics because that is the ceiling of the input. Re-distilling over
+        real trajectories is what makes SkillBank worth its retrieval slot.
+- [x] M-13 — **A failed index load no longer destroys the store.** ✅ 2026-07-27. `_load()` swallowed
+      ANY read failure and called `_create_new()`, replacing a 700k-vector store with an empty index
+      that the next `save()` would publish over the real files. Same class of defect as the
+      publish-order bug. Now re-raises when files exist; creates fresh only when there is nothing to
+      load. 2 regression tests.
+- [x] M-14 — **SS-BENCH-GATE-a landed** (in `standardized-stack-update-pipeline-finalization.md`).
+      ✅ 2026-07-27. `orchestrator_stack.py` start/stop/reload now refuse while a CPU bench driver is
+      running, overridable with `--allow-during-bench`. Verified live — it caught the E8 quality
+      baseline reseed and the v7 quality gate on first run.
+- [ ] M-15 — **Reopen intake-866 / COMP_r.** Its 2026-07-22 null (pooled AUC 0.4933) was computed
+      through `memories.embedding_idx`, i.e. the broken mapping. Adversarial re-analysis with the
+      correct id_map resolution moves it to **0.5570**, which no longer clears the probe's own
+      close-out gate of <=0.55; its in-sample leakage anchor read 0.6427 where the report documented
+      "expected ~1.0", recovering to 0.9101 under the correct mapping. The line was closed on bad
+      evidence. Re-run after the reseed.
 - [ ] M-12 — Run the memory-on vs memory-off A/B that **has never existed** in either repo. This is
       the only thing that will answer "does episodic retrieval help" with evidence.
 
