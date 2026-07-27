@@ -24,9 +24,15 @@ repairs and re-presents the **same** token — never a new chain. A struck line'
 ## Standing gates (default OFF — grant individually)
 
 - [x] **OP-SENDKEYS-CODEX** GRANTED 2026-07-27 — allow the coordinator-daemon to nudge a main via
-  `tmux send-keys`. Rate-limited, idle-pane-checked. Evidence required: the nudge ladder
-  demonstrably exhausted without it. Note this is also the mechanism behind spawning mains into
-  new tmux panes, and `caps.max_spawns_per_day` is currently `0`.
+  `tmux send-keys`, and to spawn a main as a **window in the one live session**
+  (`tmux.live_session`) — never its own session. Rate-limited per agent
+  (`--min-interval-s`, default 600s) and capped per day by `caps.max_spawns_per_day`; both values
+  live in `config.yaml` rather than here, so this block cannot go stale against them.
+  *Granted to authorise the BUILD*: `scripts/coordination/tmux_adapter.py` did not exist at grant
+  time, and `capability_status()` reported `NOT IMPLEMENTED` regardless of the flag until it did —
+  a flag can never make an absent adapter look present. The original "evidence required: the nudge
+  ladder demonstrably exhausted" condition was therefore **not** the basis for this grant, and is
+  recorded as superseded rather than quietly dropped.
 - [ ] **triage: on** — enable the M5 one-shot triage hook (dead-agent block drafting + routing
   annotations). Operator flag after the M4 soak; budget-capped by `caps.triage_calls_per_day`.
 - [ ] **headless-worker caps > 0** — only after M4 acceptance.
