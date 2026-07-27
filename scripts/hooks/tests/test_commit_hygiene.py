@@ -67,6 +67,17 @@ CASES: list[tuple[str, int, dict, str]] = [
     ("git -C /tmp/sandbox add -A", 0, FRESH, "-C sandbox: add -A allowed"),
     ('cd /tmp/sb && git commit -am "x"', 0, FRESH, "sandbox: commit -am allowed"),
 
+    # ---- rule B: an in-command fetch satisfies freshness ----
+    ("git fetch && git commit -m \"x\"", 0, STALE, "fetch THEN commit in one command is allowed"),
+    ("git fetch -q && git add a b && git commit -m \"x\"", 0, STALE, "fetch, add, commit chain"),
+    ("git -C /workspace fetch && git -C /workspace commit -m \"x\"", 0, STALE,
+     "explicit -C on both"),
+    ("git commit -m \"x\" && git fetch", 2, STALE, "fetch AFTER commit does not count"),
+    ('git commit -m \"remember to git fetch first\"', 2, STALE,
+     "a fetch mentioned in the MESSAGE does not count"),
+    ("git -C /mnt/raid0/llm/epyc-orchestrator fetch && git commit -m \"x\"", 2, STALE,
+     "fetching a DIFFERENT repo does not satisfy this one"),
+
     # ---- rule B: stale fetch ----
     ('git commit -m "msg"', 2, STALE, "commit with stale fetch blocks"),
     ("git add path/one", 0, STALE, "add is unaffected by fetch age"),

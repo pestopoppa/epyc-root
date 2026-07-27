@@ -172,6 +172,40 @@ def resolve_repo(cmd: str, segment: str, dash_c: str | None) -> str | None:
     return canon(default) if is_shared(default) else None
 
 
+def fetch_precedes_commit(cmd: str, repo: str) -> bool:
+    """True if the command fetches this repo before committing in it.
+
+    Matched on tokenised segments so a `git fetch` inside a commit MESSAGE cannot
+    satisfy the rule — the same quoting hazard the flag checks avoid.
+    """
+    fetch_at: int | None = None
+    commit_at: int | None = None
+    for idx, segment in enumerate(_SEP.split(cmd)):
+        for tokens in git_invocations(segment):
+            sub, _args, dash_c = subcommand_of(tokens)
+            if sub not in {"fetch", "commit", "pull"}:
+                continue
+            target = canon(dash_c) if dash_c else canon(
+                os.environ.get("CLAUDE_PROJECT_DIR", "/workspace"))
+            # A `cd` in the same command redirects an un-flagged invocation.
+            if not dash_c:
+                try:
+                    whole = shlex.split(cmd)
+                    for i, tok in enumerate(whole):
+                        if tok == "cd" and i + 1 < len(whole):
+                            target = canon(whole[i + 1])
+                            break
+                except ValueError:
+                    pass
+            if target != canon(repo):
+                continue
+            if sub in {"fetch", "pull"} and fetch_at is None:
+                fetch_at = idx
+            elif sub == "commit" and commit_at is None:
+                commit_at = idx
+    return fetch_at is not None and commit_at is not None and fetch_at < commit_at
+
+
 def block(message: str) -> int:
     print(message.rstrip(), file=sys.stderr)
     return 2
@@ -227,6 +261,16 @@ parallel sessions in this shared clone. Stage explicit paths instead:
     git add path/one path/two && git commit -m "..."
 
 Override: EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1""")
+
+                # `git fetch && git commit` in ONE command is exactly the idiom
+                # this rule wants, but a PreToolUse hook runs BEFORE any of it
+                # executes, so judging on the pre-fetch mtime would forbid the
+                # compliant form and teach people to bypass instead of comply. A
+                # guard that blocks the behaviour it is asking for is a bad guard.
+                # So: an in-command fetch for this repo, positioned before the
+                # commit, satisfies freshness.
+                if fetch_precedes_commit(cmd, repo):
+                    continue
 
                 fetch_head = Path(repo) / ".git" / "FETCH_HEAD"
                 try:

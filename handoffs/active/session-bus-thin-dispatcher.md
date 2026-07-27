@@ -476,16 +476,42 @@ freezes/cutovers, host reboots).
     message-mentions-a-flag cases the regex draft failed, plus malformed quoting degrading open.
   **Deferred to M4 (not outstanding here):** coordinator-agent stall *detection* is the M4 stall
   ladder's job; the heartbeat it needs already exists and `/api/bus` already surfaces its age.
-- [ ] **R8 — consolidated unblock artifact (M2).** Coordinator-agent maintains ONE continuously
-  current artifact listing every pending gate — bench tokens, trust-boundary applies, and R6
-  merge gates alike — each line individually strikeable, every command pre-validated end-to-end
-  (a failed operator-presented command is an agent defect). Operator runs **one command on
-  return**. Follows the `ratify_*.sh` idiom: pinned HEAD + file `sha256`s, refuse on drift,
-  idempotent; a failed validation repairs and re-presents the **same** token, never a new chain.
-  Per-line independent validation so striking one line cannot invalidate the rest; a struck line
-  returns to `HELD_OP_GATE` — held, not dropped, not silently requeued. **Not** a dwell-time
-  metric: waiting on a token must never idle anything, so the only counter kept is
-  idle-lane-time-while-eligible-work-existed, as an invariant alarm that should read zero.
+- [x] **R8 — consolidated unblock artifact.** ✅ 2026-07-27 —
+  `scripts/coordination/unblock_artifact.py` (`generate` / `show` / `apply [--plan]`) plus
+  `artifacts/operator/unblock.sh` as THE one command.
+  **Granting is flipping a checkbox in `tokens/token-queue.md`** — the mechanism BUS_PROTOCOL
+  rule 1 already establishes, where a checkbox in an operator-owned file *is* the grant. No new
+  grammar invented. Per-gate command pins (never a bundle-wide hash, which would hard-fail the
+  moment a line is struck), struck gates stay `HELD_OP_GATE` and are re-presented unchanged, and
+  the applier never commits, never `git add`s and writes no bus file but its receipt — the daemon
+  transcribes next tick. An already-applied gate is skipped by receipt lookup keyed on the command
+  hash, so a second `apply` cannot double-run a non-idempotent command, while a *changed* command
+  correctly counts as not-yet-applied.
+  Tests: 24/24 — drift-after-grant refuses (rc 3), a struck line does not invalidate granted ones,
+  a failing command returns rc 2 and is attributed to the AGENT, undated adjudication is malformed,
+  `--plan` writes nothing, all three dash forms parse identically.
+  A test also caught a real flaw in the module: it used one constant for both where its code lives
+  and where its data lives, which made it unimportable under a redirected root. Now separated.
+
+  **DESIGN NOTE — a multi-agent spec was produced for this and largely rejected.** A 9-agent
+  workflow (4 surveys → synthesis → 3 adversarial lenses → consolidation; 919k tokens, 43 min)
+  returned a ~113k-character spec proposing a hashed token preimage typed by the operator, versioned
+  sidecars, revision-pinned appliers, `0444` forensic archives, per-item transaction directories with
+  rollback, a token-attempt rate-limit ledger, and a six-verb mark grammar.
+  Rejected as disproportionate, and **its own §7 supplies the decisive evidence**: under
+  "deliberately not doing" it records that defending against a compromised generator is out of scope
+  because *"the operator's secret is typed into a machine-generated script."* The centrepiece
+  ceremony therefore defends against nothing an agent could do, while taxing every return. The
+  checkbox has identical real security properties and already existed.
+  **Process lesson:** three adversarial lenses each asked "what could go wrong" and each answered
+  "add mechanism"; none asked "is this proportionate". Adversarial critique escalates by
+  construction — a panel of this shape needs a fourth lens whose job is to *delete*.
+  **Findings from it that WERE adopted** (the survey work was genuinely useful): no repo-HEAD pin
+  (parallel sessions commit continuously); no dwell-time metric (it measures the operator); never a
+  whole-bundle integrity assertion; only the operator escalates a glyph, machines may only
+  de-escalate on payload drift; never delete or move a row, because a missing gate reads as *absent*
+  rather than *declined*; an adjudication verb without an ISO date is malformed; parse the gate id
+  independently of the dash character; keep generator annotations off the operator's line.
 - [ ] **R9 — replay-eligibility screen at queue admission (M1/M3).** *Enforcement DONE
   ✅ 2026-07-27* — `replay_eligible` is a schema field, and the coordinator-daemon's eligibility
   rule now admits such a task **regardless of lane occupancy**: a tail-replayable result comes
