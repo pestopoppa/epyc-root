@@ -87,7 +87,10 @@ failure caught in amber.
         **NOTE**: the SS-BENCH-GATE guard added to `orchestrator_stack.py` does NOT cover this
         script — it is not a stack lifecycle action — so the "no pinned CPU bench" precondition
         remains a manual check.
-  - [ ] M-10d — On completion, run
+  - [ ] M-10d — **Result lands automatically at `/mnt/raid0/llm/tmp/reseed_acceptance.log`** — a
+        detached watcher (armed 2026-07-27T22:36Z) waits for the reseed PID, then runs the marker
+        dump, the cosine verifier and a final desync check into that file. Read it first next
+        session. Manually, run
         `verify_episodic_reseed_cosine.py --sample-size 12` and record the numbers here. It exits 0
         only on a full sample AND mean > 0.95. Pre-reseed baseline: **mean 0.5505, 0/12 above 0.9**.
         If it fails, roll back from `*.pre-reseed-20260727T220715Z` — do not iterate on the live
