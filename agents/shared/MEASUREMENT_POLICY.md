@@ -62,6 +62,11 @@ hashes + validation results + the exact state diff to be applied).
   gathering on other instruments proceed regardless of any pending apply
   (origin incident: Laguna-Q4 wrongly chained behind an AutoPilot baseline apply).
 
+- **Operator-presented commands must be pre-validated end-to-end by the agent** (dry-run
+  the full validation path before handing over the token command). A command that fails in
+  the operator's hands is an AGENT defect: fix, revalidate, re-present — never iterate
+  draft→fail→redraft through the operator.
+
 Rationale: the trust boundary exists so agents cannot self-certify the instruments that
 judge them — it was never meant to meter the *pace* of evidence work. This converts
 operator interactions from O(defects) to O(boundaries).
