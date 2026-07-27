@@ -8,6 +8,7 @@ RESEARCH="/mnt/raid0/llm/epyc-inference-research"
 PYTHON="$ORCH/.venv/bin/python"
 RUNNER="$ORCH/scripts/benchmark/run_e8_quality_baseline_reseed.py"
 CANDIDATE_DIR="$ROOT/artifacts/operator/e8_quality_baseline_candidate_v4_20260727"
+LEGACY_T1_R1_DIR="$ROOT/artifacts/operator/.e8_quality_baseline_candidate_v4_20260727.staging-e5812cb262dc4f4bb424f2a649defa1f"
 EVIDENCE="$CANDIDATE_DIR/e8_quality_baseline_evidence.json"
 STATE_REVIEW="$CANDIDATE_DIR/state_candidate_review.json"
 RECEIPT="$ROOT/artifacts/operator/ratify_e8_quality_baseline_context_apply_v4_20260727.json"
@@ -18,7 +19,7 @@ APPLIER="$ROOT/artifacts/operator/apply_e8_quality_baseline_state.py"
 ATTESTATION="$ROOT/artifacts/operator/ratify_e8_quality_baseline_state_apply_v4_20260727.json"
 TRANSACTION_BASE="$ROOT/artifacts/operator/e8_quality_baseline_state_apply_v4_20260727"
 INTEGRITY="$ROOT/artifacts/operator/e8_quality_baseline_v4_integrity_20260727.json"
-INTEGRITY_SHA256="1be17ddb8d8039a8c88542f9c2274771ffd5bdf19a3a25bf78d4b9644510efbc"
+INTEGRITY_SHA256="2b748fd6057d9638f7c53ac5194e8a7cef8926be7333887f97a88c9c907d649a"
 TOKEN="ATTEST-E8-CONTEXT-FEASIBILITY-AND-BASELINE-APPLY-20260727"
 
 fail() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
@@ -325,7 +326,10 @@ collect() {
     fi
     [[ ! -e "$CANDIDATE_DIR" ]] ||
         fail "candidate directory exists without valid evidence: $CANDIDATE_DIR"
-    PYTHONOPTIMIZE=0 "$PYTHON" "$RUNNER" --collect-candidate --output-dir "$CANDIDATE_DIR"
+    PYTHONOPTIMIZE=0 "$PYTHON" "$RUNNER" \
+        --collect-candidate \
+        --legacy-t1-r1-dir "$LEGACY_T1_R1_DIR" \
+        --output-dir "$CANDIDATE_DIR"
     validate_candidate
     stage_state_review
     printf 'E8 v4 candidate evidence collected: %s\n' "$EVIDENCE"

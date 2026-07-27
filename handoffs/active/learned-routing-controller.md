@@ -83,14 +83,17 @@ one is not. Any positive result here is RECOMMEND-only. Nothing has been wired.
 - [x] EP-1 — Build the probe with mandatory grouped splits, a shuffled-label control, and a
       pre-declared decision gate (NULL <=0.55 / SIGNAL >=0.65). ✅ 2026-07-27
 - [x] EP-2 — Run against live data (54,960 routing rows with an outcome + embedding). ✅ 2026-07-27
-- [ ] EP-3 — **Adversarial verification IN FLIGHT.** Six attacks; the load-bearing one is temporal
-      leakage (if failures and objectives both cluster in time, a random group split leaks future
-      into past). Do not cite the numbers below until this closes.
-- [ ] EP-4 — Once verified: if SIGNAL holds, write the recommendation into master-index N17 as the
-      evidence its conditional-depth surface needs. If REFUTED, record the null and say so in N17 —
-      that would remove the cheapest route to conditional depth.
+- [x] EP-3 — **Adversarial verification COMPLETE — the result is REFUTED.** ✅ 2026-07-27.
+      3 of 6 attacks refute it. See *EP-3 refutation* below. **Do not cite the 0.726.**
+- [x] EP-4 — **Verdict: N17's conditional-depth surface is UNSUPPORTED by this probe.** ✅ 2026-07-27.
+      The honest number is the within-suite AUC (worker_general `0.5521 ± 0.038`, frontdoor
+      `0.5204 ± 0.037`) — on the NULL side of the pre-declared 0.55 gate. Recorded here rather than
+      edited into N17, whose owner should pick it up.
+- [ ] EP-5 — **Re-run the probe only after the `outcome` label defects below are fixed.** The current
+      label cannot support this question; a repeat on the same label would reproduce the same
+      artifact.
 
-### Provisional numbers (group-weighted AUC, GroupShuffleSplit x5, test_size 0.25)
+### ⚠️ REFUTED numbers (retained so nobody re-derives them) — group-weighted AUC, GroupShuffleSplit x5
 
 | role | group-weighted | row-weighted (misleading) | base rate | n | groups |
 |---|---|---|---|---|---|
@@ -102,9 +105,64 @@ one is not. Any positive result here is RECOMMEND-only. Nothing has been wired.
 
 Shuffled-label controls all 0.49-0.52. `worker_vision` skipped (4 positives, not evaluable).
 
-**The shape that matters: signal exists but NOT on frontdoor** — which is exactly how this table
-framed the surface ("will frontdoor fail?"). The strongest role is `worker_general`. If this survives
-verification, the surface should be re-scoped away from frontdoor.
+**These numbers are exactly reproducible and mean nothing about task difficulty.** They survived
+near-duplicate merging and a time-ordered split, and the shuffled controls are clean — the harness
+arithmetic is correct. What it decodes is the benchmark suite and the writer pipeline, not the task.
+See below.
+
+### EP-3 refutation (independent adversarial verification, 2026-07-27)
+
+Six attacks; **3 refute**. Attack scripts under `/mnt/raid0/llm/tmp/esc_refute/` (read-only; the repo
+was never written to).
+
+| # | Attack | Verdict |
+|---|---|---|
+| 1 | Near-duplicate leakage across sha1 groups | SURVIVED — merging at cos>=0.99 *raises* AUC |
+| 2 | Temporal leakage (time-ordered split) | SURVIVED as posed — but the time axis is confounded with the writer path |
+| 3 | Trivial surface features | **REFUTED** |
+| 4 | Metric artifact / continuous rate | **REFUTED** |
+| 5 | Does `outcome` mean what we think | **REFUTED** |
+| 6 | Sanity of controls | SURVIVED — controls are sound |
+
+**Attack 3 — a 13-feature length/format model beats the 1024-d embedding on 4 of 5 roles**, and the
+embedding adds nothing on top of it (`emb+triv` <= `TRIVIAL` on three roles, within noise on the
+rest). Trivial features: char length, word count, newline count, code-fence and URL flags, digit and
+uppercase counts, punctuation counts. The "semantic decodability" framing is hollow — the ceiling is
+prompt length and format statistics.
+
+| role | BGE 1024-d | trivial-13 | emb+triv |
+|---|---|---|---|
+| worker_general | 0.7262 | 0.6840 | 0.6861 |
+| ingest_long_context | 0.6736 | **0.7332** | 0.6837 |
+| coder_escalation | 0.6480 | **0.7318** | 0.6485 |
+| architect_general | 0.6262 | **0.6748** | 0.6191 |
+| frontdoor | 0.5750 | **0.6178** | 0.6228 |
+
+**Attack 4 — the headline lives entirely in objectives seen exactly once.** 74-82% of test groups are
+size 1. On objectives observed more than once — the only ones where a failure *rate* is even a rate —
+all four "signal" roles collapse to chance (0.47-0.53), and `worker_general` drops to **0.411** at
+size>=3. Spearman against the continuous rate *inverts* the role ranking. Root cause: per-objective
+failure rate has split-half reliability of **-0.04 to 0.43**; there is no stable propensity to decode.
+
+**Attack 5 — `outcome` is a benchmark-suite detector, not a difficulty signal.** Suite x task_type
+identity alone, with no embedding, beats the embedding on all five roles (0.727-0.804). Within
+(suite x task_type) strata the embedding collapses:
+
+| role | all-strata | **within-suite** |
+|---|---|---|
+| worker_general | 0.6926 | **0.5521** |
+| ingest_long_context | 0.6654 | **0.5822** |
+| coder_escalation | 0.6362 | **0.5250** |
+| architect_general | 0.6350 | **0.5669** |
+| frontdoor | 0.6104 | **0.5204** |
+
+Three of five land at or below the probe's own pre-declared NULL gate of 0.55. Failure is a property
+of the grader: `simpleqa_general` 0.711-0.930 fail vs `mbpp` 0.017-0.068. And single templates
+dominate — `worker_general`'s largest vector group is a 497-row *"You are a physics answer
+equivalence judge…"* prompt at **81.1%** failure; `frontdoor` carries a 2,335-row *"Return executable
+Python only"* template at **97.1%**.
+
+
 
 ### Three methodology errors caught during the run — each inverted the result
 
@@ -119,6 +177,43 @@ Recorded because they generalize to any probe over this store:
 3. **Row-weighted pooling is carried by a handful of objectives.** Top-10 groups hold **33%** of
    frontdoor rows while the **median group size is 1**. Report group-weighted (one point per distinct
    objective) as the headline; row-weighted flatters.
+
+
+## 🔴 EP-3 fallout: three VERIFIED defects in the `outcome` label (cross-cutting)
+
+The refutation's most valuable output is not the null — it is what the null exposed. These affect
+**every consumer of `memories.outcome`**, not just this probe: MemRL reward shaping, Q-values, the
+routing classifier's own training labels, and skill-bank effectiveness.
+
+- [ ] **EPD-1 — `outcome` is written once at INSERT and NEVER updated.** Verified directly:
+      `orchestration/repl_memory/episodic_store.py:723-725` is
+      `UPDATE memories SET q_value = ?, updated_at = ?, update_count = ? WHERE id = ?` — `outcome`
+      is absent from the SET clause, while the INSERT at `:435` writes it once.
+      Measured impact on the live store: **max `update_count` = 7,888**, mean `20.3`, and **2,792 of
+      54,960 rows have >10 updates**. Every one of those rows still carries the sign of
+      *observation #1* while its `q_value` has been refined thousands of times. Decide: update
+      `outcome` alongside `q_value`, or formally demote `outcome` to "first-observation sign" and
+      stop treating it as a label.
+- [ ] **EPD-2 — `failure` conflates errors with cost penalties on CORRECT answers.** For live-traffic
+      rows the mapping is `reward <= 0 -> failure`, and reward carries penalties for latency,
+      escalation (−0.15) and delegation misattribution (−0.10). A correct-but-slow answer is stamped
+      `failure`. This is the mechanical explanation for attack 3: prompt **length** predicts the
+      label because length drives latency, which drives the penalty, which sets the label. Source
+      pointers: `orchestration/repl_memory/q_scorer.py`, `q_reward.py`.
+- [ ] **EPD-3 — the embedding index mixes >=3 text conventions, so the vector leaks the writer path.**
+      Observed conventions: `"type:{t} | objective:{o[:200]} | priority:{p}"`,
+      `"type:chat | objective:{p[:200]}"`, and raw <=450-char text from
+      `scripts/maintenance/repair_episodic_embeddings.py`'s FAISS rebuild. Consequence: a probe can
+      read the writer path straight off the vector at **ROW-AUC 0.906 (worker_general) / 0.940
+      (frontdoor)**, and the two writer paths have failure rates differing by up to **8x**
+      (coder_escalation 0.037 vs 0.288). Any embedding-based model over this store is partly a
+      pipeline classifier. Decide: re-embed under one convention, or partition by convention.
+
+**Why this is the real result.** The probe asked "is failure decodable?" and got 0.726. The honest
+answer is that the *label* is not yet a measurement of the thing we care about. Fixing EPD-1..3 is a
+precondition for EP-5 (re-run) and, more importantly, for trusting any routing/MemRL signal derived
+from `outcome`. Cross-reference: this may be a second mechanical contributor to the five-null
+learned-routing streak alongside the constant-reward bug fixed 2026-07-21 (master-index N16).
 
 
 ## Training Data
