@@ -356,6 +356,57 @@ def test_lease_revocation() -> None:
         b4.cleanup()
 
 
+def test_auto_yield() -> None:
+    print("\n== R5: automatic yield to a higher priority class ==")
+    b = Bus("assign")
+    try:
+        b.add_queue(task_id="churn", status="RUNNING", lane="cpu", gating="cpu", owner="codex",
+                    lease_expires_ts=now_iso(3600), priority="P3",
+                    priority_class="background-churn")
+        b.add_queue(task_id="live", status="READY", lane="cpu", gating="cpu", priority="P0",
+                    priority_class="production-live")
+        b.heartbeat("codex", "working", "churn")
+        out = b.tick(lanes={"cpu_busy": True, "gpu_busy": False, "load_class": "busy"})
+        check(b.row("churn").get("revoking") is True,
+              "background-churn holder marked revoking when production-live waits")
+        check("auto-yield" in out, "auto-yield recorded in the advisory stream")
+        nudges = [m for m in b.inbox("codex") if m.get("kind") == "nudge"]
+        check(any((m.get("payload") or {}).get("yield_to") == "live" for m in nudges),
+              "nudge names what it is yielding to")
+    finally:
+        b.cleanup()
+
+    b2 = Bus("assign")
+    try:
+        # guard 1: do NOT drain a lane for a task that is ALSO gate-blocked
+        b2.add_queue(task_id="churn2", status="RUNNING", lane="cpu", gating="cpu", owner="codex",
+                     lease_expires_ts=now_iso(3600), priority="P3",
+                     priority_class="background-churn")
+        b2.add_queue(task_id="live-gated", status="READY", lane="cpu", gating="cpu", priority="P0",
+                     priority_class="production-live", operator_gates=["OP-NOT-GRANTED"])
+        b2.heartbeat("codex", "working", "churn2")
+        b2.tick(lanes={"cpu_busy": True, "gpu_busy": False, "load_class": "busy"})
+        check(not b2.row("churn2").get("revoking"),
+              "no auto-yield when the waiting task is also blocked on an ungranted gate")
+    finally:
+        b2.cleanup()
+
+    b3 = Bus("assign")
+    try:
+        # never yield to an equal or lower class
+        b3.add_queue(task_id="hold-live", status="RUNNING", lane="cpu", gating="cpu", owner="codex",
+                     lease_expires_ts=now_iso(3600), priority="P1",
+                     priority_class="production-live")
+        b3.add_queue(task_id="want-churn", status="READY", lane="cpu", gating="cpu", priority="P0",
+                     priority_class="background-churn")
+        b3.heartbeat("codex", "working", "hold-live")
+        b3.tick(lanes={"cpu_busy": True, "gpu_busy": False, "load_class": "busy"})
+        check(not b3.row("hold-live").get("revoking"),
+              "production-live is NOT preempted by background-churn even at higher P-rank")
+    finally:
+        b3.cleanup()
+
+
 def test_advisory_writes_only_two_files() -> None:
     print("\n== advisory mode still writes only two files (M3 invariant) ==")
     b = Bus("advisory")
@@ -379,6 +430,7 @@ def main() -> int:
     test_stall_ladder()
     test_lane_gating_and_pausability()
     test_lease_revocation()
+    test_auto_yield()
     test_advisory_writes_only_two_files()
     failed = [w for ok, w in RESULTS if not ok]
     print(f"\n{len(RESULTS) - len(failed)}/{len(RESULTS)} passed")

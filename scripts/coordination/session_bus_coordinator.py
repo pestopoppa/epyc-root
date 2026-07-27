@@ -87,6 +87,30 @@ def _utcnow_iso() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
+# Per-tick probe cache. Host sensing (pgrep + llama-server HTTP + rocm-smi) costs
+# ~2s per call, and a single tick needs the lane snapshot and the co-residency
+# context in several places. Probing repeatedly would burn a material slice of a
+# 45s tick AND risk two halves of one decision seeing different host states,
+# which is the worse problem. Cleared at the top of every tick.
+_TICK_CACHE: dict[str, Any] = {}
+
+
+def _reset_tick_cache() -> None:
+    _TICK_CACHE.clear()
+
+
+def lane_snapshot_cached() -> dict:
+    if "lanes" not in _TICK_CACHE:
+        _TICK_CACHE["lanes"] = _lane_snapshot()
+    return _TICK_CACHE["lanes"]
+
+
+def co_residency_cached(config: dict) -> dict:
+    if "co" not in _TICK_CACHE:
+        _TICK_CACHE["co"] = co_residency_context(config)
+    return _TICK_CACHE["co"]
+
+
 def _load_config(bus_root: Path) -> dict:
     try:
         import yaml
@@ -338,8 +362,8 @@ def compute_advice(bus_root: Path, config: dict, epoch: int) -> list[dict]:
     """What the daemon WOULD do this tick. Pure — writes nothing."""
     roster = [r for r in (config.get("roster") or []) if isinstance(r, dict)]
     latest = fold_queue(bus_root)
-    snapshot = _lane_snapshot()
-    co_ctx = co_residency_context(config)
+    snapshot = lane_snapshot_cached()
+    co_ctx = co_residency_cached(config)
     agents = _agent_states(bus_root, roster)
     try:
         token_text = (bus_root / "tokens" / "token-queue.md").read_text(encoding="utf-8")
@@ -608,6 +632,98 @@ def process_revocations(config: dict, latest: dict[str, dict], reports: dict[str
     return {"queue_rows": queue_rows, "nudges": nudges, "advisory": advisory}
 
 
+def _class_precedence(config: dict) -> dict[str, set[str]]:
+    """{class: set of classes it yields to} from the priority_classes artifact."""
+    out: dict[str, set[str]] = {}
+    for entry in config.get("priority_classes") or []:
+        if isinstance(entry, dict) and entry.get("name"):
+            out[entry["name"]] = set(entry.get("yields_to") or [])
+    return out
+
+
+def auto_yield(config: dict, latest: dict[str, dict], snapshot: dict, token_text: str,
+               co_ctx: dict, epoch: int) -> dict:
+    """R5 — a higher-priority CLASS arriving preempts a lower one, by drain.
+
+    This is the *deterministic* trigger R4 permits the daemon to pull: precedence
+    comes straight from the `priority_classes` artifact, so no discretion is
+    exercised. Discretionary revocation remains coordinator-agent's.
+
+    Two guards keep it from thrashing:
+
+      1. The waiting task must be eligible **but for the lane**. Draining a lane
+         for a task that is also blocked on an ungranted gate or an unmet
+         dependency would be pure churn — the lane would sit idle and the task
+         still could not run. We re-test eligibility against a snapshot with that
+         lane free; only if it then passes is the yield justified.
+      2. At most one revocation per lane per tick, so a burst of high-class work
+         cannot drain every holder simultaneously.
+    """
+    precedence = _class_precedence(config)
+    if not precedence:
+        return {"queue_rows": [], "nudges": [], "advisory": []}
+
+    queue_rows: list[dict] = []
+    nudges: list[dict] = []
+    advisory: list[dict] = []
+    lanes_yielded: set[str] = set()
+
+    waiting = sorted((r for r in latest.values()
+                      if r.get("status") == "READY" and not r.get("revoking")),
+                     key=lambda r: (_PRIORITY_RANK.get(r.get("priority"), 9), str(r.get("task_id"))))
+    live = [r for r in latest.values()
+            if r.get("status") in {"ASSIGNED", "CLAIMED", "RUNNING"} and not r.get("revoking")]
+
+    for want in waiting:
+        lane = want.get("lane")
+        if lane in {None, "none"} or lane in lanes_yielded:
+            continue
+        want_class = want.get("priority_class")
+        if not want_class:
+            continue
+
+        # Guard 1: would it actually run if the lane were free?
+        free_snapshot = {**snapshot, f"{lane}_busy": False, "cpu_busy": False}
+        ok, why = _eligible(want, latest, free_snapshot, token_text, co_ctx)
+        if not ok:
+            advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                             "epoch": epoch, "kind": "would-skip",
+                             "task_id": want.get("task_id"),
+                             "reason": f"no auto-yield: blocked for another reason too ({why})"})
+            continue
+
+        for holder in live:
+            if holder.get("lane") != lane:
+                continue
+            holder_class = holder.get("priority_class")
+            if not holder_class or want_class not in precedence.get(holder_class, set()):
+                continue
+            queue_rows.append({
+                "schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(),
+                "task_id": holder["task_id"], "status": holder.get("status"),
+                "lane": lane, "gating": holder.get("gating"), "epoch": epoch,
+                "owner": holder.get("owner"), "revoking": True,
+                "lease_expires_ts": holder.get("lease_expires_ts"),
+                "attempt": holder.get("attempt"), "priority": holder.get("priority")})
+            nudges.append({"to": holder.get("owner"), "kind": "nudge",
+                           "task_id": holder["task_id"],
+                           "corr_id": f"autoyield-{holder['task_id']}-{epoch}",
+                           "payload": {"reason": "auto-yield to a higher priority class",
+                                       "yield_to": want.get("task_id"),
+                                       "detail": f"{holder_class} yields to {want_class}",
+                                       "instruction": ("quiesce and release at your next boundary, "
+                                                       "then continue on lane:none work — do not "
+                                                       "idle and do not abort mid-unit")}})
+            advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                             "epoch": epoch, "kind": "auto-yield",
+                             "agent": holder.get("owner"), "task_id": holder["task_id"],
+                             "detail": f"{holder_class} yields lane {lane} to "
+                                       f"{want.get('task_id')} ({want_class})"})
+            lanes_yielded.add(lane)
+            break
+    return {"queue_rows": queue_rows, "nudges": nudges, "advisory": advisory}
+
+
 def settle_drained(latest: dict[str, dict], agents: dict[str, dict], epoch: int) -> list[dict]:
     """A revoking task whose holder now reports `draining` has released its lease.
 
@@ -846,6 +962,21 @@ def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
     # task whose holder has since reported `draining` back to READY.
     latest = fold_queue(bus_root)
     agents_now = _agent_states(bus_root, roster)
+
+    # R5 auto-yield: a higher priority CLASS waiting on a lane a lower class
+    # holds triggers a drain, by deterministic rule from the priority artifact.
+    try:
+        tok = (bus_root / "tokens" / "token-queue.md").read_text(encoding="utf-8")
+    except Exception:  # noqa: BLE001
+        tok = ""
+    ay = auto_yield(config, latest, lane_snapshot_cached(), tok, co_residency_cached(config), epoch)
+    for row in ay["queue_rows"]:
+        _append_jsonl(bus_root / "queue.jsonl", row)
+    if ay["nudges"]:
+        _append_inbox(bus_root, ay["nudges"], epoch)
+    emitted.extend(ay["advisory"])
+
+    latest = fold_queue(bus_root)
     rev = process_revocations(config, latest, reports, epoch)
     for row in rev["queue_rows"]:
         _append_jsonl(bus_root / "queue.jsonl", row)
@@ -931,6 +1062,7 @@ def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
 
 
 def tick(bus_root: Path, epoch: int, *, dry_run: bool = False) -> list[dict]:
+    _reset_tick_cache()   # one consistent host view per tick, probed once
     config = _load_config(bus_root)
     authority = _authority(config)
     advice = compute_advice(bus_root, config, epoch) + audit(bus_root, epoch)

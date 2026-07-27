@@ -380,14 +380,26 @@ freezes/cutovers, host reboots).
   Prerequisite already satisfied: `gating` is a REQUIRED queue-row field, so the fallback set is
   always defined.
   Tests: 45/45 in `scripts/coordination/tests/test_session_bus_m4.py`.
-- [ ] **R5 — priority classes and pausability (M4).** Classes
-  `production-live` > `operator-directed` > `background-churn`; yield = quiesce + drain, never
-  kill. Long work drains via **progressive persistence** (every persisted unit is a drain point —
-  no segmentation ceremony), enforced by `lease.max_hold_s`. **Pausability splits by run type:**
-  `exclusive-contiguous` for decision-gating timing runs (never paused — a run split across a
-  pause spans different thermal/cache/NUMA-warmth states and the halves may not compose into one
-  valid observation) versus `resumable` for quality evals, sweeps, replays, and evidence
-  collection. Class axis is designed now, populated when real production traffic exists.
+- [x] **R5 — priority classes, yield, and pausability.** ✅ 2026-07-27 — classes
+  `production-live > operator-directed > background-churn` live in `config.yaml` as a
+  `priority_classes` artifact with explicit `yields_to`, so precedence is data, not code.
+  *Pausability* is enforced in eligibility and tested: `exclusive-contiguous` refuses to start on a
+  non-quiet host, `resumable` drains at any persisted unit, and `lease.max_hold_s` bounds the hold.
+  *Yield* reuses R4's drain mechanism exactly — quiesce, release at a boundary, never a kill.
+  **Automatic yield implemented** (`auto_yield()`): a higher-priority *class* waiting on a lane a
+  lower class holds triggers a drain. This is the deterministic trigger R4 permits the daemon to
+  pull — precedence comes straight from the artifact, so no discretion is exercised; discretionary
+  revocation stays coordinator-agent's.
+  Two guards keep it from thrashing, both tested: the waiting task must be eligible **but for the
+  lane** (draining a lane for a task that is also gate-blocked would leave the lane idle AND the
+  task still unable to run — pure churn), and at most one revocation per lane per tick so a burst
+  of high-class work cannot drain every holder at once. Verified that `production-live` is **not**
+  preempted by `background-churn` even when the latter carries a higher P-rank: class precedence
+  dominates P-rank, which is the point of having two axes.
+  Also added a **per-tick probe cache**: host sensing costs ~2s a call and a tick needed it in
+  three places. Beyond the wasted 6s of a 45s tick, the real hazard was two halves of one decision
+  observing different host states. Now probed once per tick, verified 1 call.
+  Tests: 50/50.
 - [ ] **R6 — coordinator-agent as integration owner (M5).** Wrap-up (via
   `epyc-root/scripts/coordination/flip_checkbox.py`), worktree merging, pushing, merge-to-main.
   Structurally removes the shared-clone hazard: `/workspace/repos/<n>` and `/mnt/raid0/llm/<n>`
