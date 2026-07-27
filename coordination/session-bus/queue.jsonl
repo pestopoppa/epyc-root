@@ -1,0 +1,5 @@
+{"contention_class": "resumable", "epoch": 0, "gating": "none", "lane": "none", "origin": "rider-R3", "priority": "P1", "priority_class": "background-churn", "schema_version": "session_bus.queue.v1", "status": "READY", "task_id": "R3-staleness-guard", "ts": "2026-07-27T18:22:46+00:00"}
+{"epoch": 0, "gating": "none", "lane": "none", "owner": "claude-main", "priority": "P1", "schema_version": "session_bus.queue.v1", "status": "ASSIGNED", "task_id": "R3-staleness-guard", "ts": "2026-07-27T18:22:46+00:00"}
+{"epoch": 0, "gating": "none", "lane": "none", "owner": "claude-main", "schema_version": "session_bus.queue.v1", "status": "CLAIMED", "task_id": "R3-staleness-guard", "ts": "2026-07-27T18:22:46+00:00"}
+{"epoch": 0, "gating": "none", "lane": "none", "owner": "claude-main", "schema_version": "session_bus.queue.v1", "status": "RUNNING", "task_id": "R3-staleness-guard", "ts": "2026-07-27T18:22:46+00:00"}
+{"artifacts": ["coordination/session-bus/config.yaml"], "epoch": 0, "gating": "none", "lane": "none", "owner": "claude-main", "schema_version": "session_bus.queue.v1", "status": "DONE_PASS", "task_id": "R3-staleness-guard", "ts": "2026-07-27T18:22:46+00:00"}

@@ -1,0 +1,81 @@
+# Session bus configuration — policy-as-data (fabric contract: policy-data-never-code).
+# Owning handoff: handoffs/active/session-bus-thin-dispatcher.md (M1 + §Rider).
+schema_version: session_bus.config.v1
+
+# Adding a main = 1 roster row + 4 files (inbox/outbox/heartbeat/cursor).
+# Roster rows are slot-shaped so a future local-model main is just another row.
+roster:
+  - {id: codex,             role: main,              lanes: [cpu, gpu, none], endpoint: "tmux:agent",   drain: boundary}
+  - {id: claude-main,       role: main,              lanes: [cpu, gpu, none], endpoint: "monitor:file", drain: push}
+  - {id: coordinator-agent, role: coordinator-agent, lanes: [none],           endpoint: "monitor:file", drain: push}
+
+authority:
+  within_lane: [self]
+  cross_main: [operator, coordinator-agent]
+  # Lease grant/revoke is coordinator-agent's; the daemon may re-grant ONLY by
+  # deterministic rule from the priority artifact, never by discretion.
+  lease_grant: [operator, coordinator-agent]
+  lease_regrant_deterministic: [coordinator-daemon]
+
+coordinator_daemon:
+  tick_s: 45
+  lookahead: 1
+  authority: manual        # manual (M1) | advisory (M3) | assign (M4)
+  epoch: 0
+
+flags:
+  codex_sendkeys: off       # gate: OP-SENDKEYS-CODEX in tokens/token-queue.md
+  triage: off               # M5
+
+caps:
+  max_headless_workers: 0
+  max_spawns_per_day: 0
+  triage_calls_per_day: 0
+
+leases:
+  none_lane_grace_s: 900
+  bench_grace_margin: 1.5   # x est_wall_clock_h
+  # R5: bound the hold so drain latency has a ceiling. Work exceeding this must
+  # persist progressively (every persisted unit is a drain point) or be refused.
+  max_hold_s: 1800
+
+# R5 pausability, split by run type. Progressive persistence makes *progress*
+# resumable but not a *timing measurement*: a throughput run split across a pause
+# spans different thermal/cache/NUMA-warmth states and the halves may not compose
+# into one valid observation.
+pausability:
+  exclusive-contiguous:     # decision-gating timing runs (canonical throughput)
+    pausable: false
+  resumable:                # quality evals, sweeps, replays, evidence collection
+    pausable: true
+    drain_at: persisted_unit
+
+# R5 priority classes. Yield is quiesce+drain, never kill (fabric axiom 4).
+priority_classes:
+  - {name: production-live,   yields_to: []}
+  - {name: operator-directed, yields_to: [production-live]}
+  - {name: background-churn,  yields_to: [production-live, operator-directed]}
+
+# R3: co-residency policy carries the contention-matrix shape INCLUDING a
+# staleness guard. The orchestrator matrix refuses itself under a mismatched
+# topology_hash; a hand-declared contention_class without this guard fails
+# silently, which is the failure mode this exists to prevent.
+co_residency:
+  source: "epyc-orchestrator/orchestration/contention_matrix.yaml"
+  generator: "epyc-orchestrator/scripts/server/contention_matrix.py"   # never a second generator
+  expected_topology_hash: "8c8cfcbb13d2611d"
+  on_topology_mismatch: refuse      # fail-closed (fabric axiom 3)
+  default_floor: 0.85
+  # Declared classes are provisional until measured; promote via the generator above.
+  declared_classes_are_provisional: true
+
+# Human-only write paths. This list defines what requires an operator signature,
+# so it is itself human-amendment-only — coordinator-agent reads it, never writes
+# it, and a diff touching it is gated.
+human_only_paths:
+  - "MEASUREMENT.md"
+  - "epyc-orchestrator/orchestration/instrument_eras.yaml"
+  - "eval tower / scoring"
+  - "safety gates"
+  - "era registry rows"
+  - "production-consolidated-*"     # additionally requires the four-step promotion workflow

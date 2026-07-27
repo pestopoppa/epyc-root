@@ -195,6 +195,12 @@ Documents in `handoffs/archived/`, `handoffs/completed/`, `progress/`, and `CHAN
 - When the operator grants exclusive machine access, keep independent CPU and GPU lanes active concurrently. If inference is idle, use all protocol-permitted CPU cores for parallelizable preparation, validation, and analysis; serialize only for explicit protocol constraints, dependencies, or measured resource contention.
 - **Long-horizon throughput contract (operator, 2026-07-27):** (1) *Run-first bias* — observation-grade evidence runs on the current validated instrument and fixes on failure; multi-pass adversarial review is reserved for decision-grade gates and trust-boundary artifacts, max ONE independent review per new instrument before its first run. (2) *Saturation scheduling* — maintain a deep-enough work queue that CPU and GPU always have a running task; on ANY block (operator token, review, build), immediately start the next queued item. (3) *Boundary tokens are presented only while compute is saturated* (see MEASUREMENT_POLICY → Consolidated apply-time ratification). (4) A failed operator-presented command is an agent defect; pre-validate end-to-end.
 
+- **Bus drain (session bus M1, 2026-07-27):** at every task boundary, run
+  `scripts/coordination/session_bus.py drain --agent <your-roster-id>` and act on assignments and
+  nudges; write acks and status to **your own** outbox (`outbox/<your-id>.jsonl`). Never write
+  another agent's file — `queue.jsonl` and `inbox/*` belong to the coordinator-daemon. Contract:
+  [`coordination/session-bus/BUS_PROTOCOL.md`](coordination/session-bus/BUS_PROTOCOL.md).
+
 ## Operator Decision Requests
 
 - **Never ask the operator an open-ended question when escalating a decision.** Every request for input is a decision package: 2–4 concrete options with tradeoffs (cost / risk / time / quality / reversibility) and supporting data, a recommendation with reasoning, and the default outcome if no choice is made. Claude Code sessions deliver this via the AskUserQuestion tool (recommended option first, labeled "(Recommended)"). Full contract: `agents/shared/OPERATING_CONSTRAINTS.md` → *Operator Decision Requests*.

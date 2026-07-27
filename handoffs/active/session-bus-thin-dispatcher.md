@@ -391,7 +391,8 @@ freezes/cutovers, host reboots).
 
 ## Milestones
 
-- [ ] **M1 — skeleton + manual round-trip.** Write §Skeleton verbatim; add the CLAUDE.md
+- [ ] **M1 — skeleton + manual round-trip.** *Skeleton BUILT ✅ 2026-07-27* (dirs, `BUS_PROTOCOL.md`, `config.yaml`, `session_bus.schema.json`, `scripts/coordination/session_bus.py`, `tokens/token-queue.md`, CLAUDE.md drain instruction); manual round-trip READY→ASSIGNED→CLAIMED→RUNNING→DONE_PASS green, `validate` schema+single-writer clean. **Remaining for M1 sign-off: Codex drains its inbox at a real boundary unprompted** (needs a live Codex session).
+  Original criteria: Write §Skeleton verbatim; add the CLAUDE.md
   drain instruction; both current mains + coordinator-agent adopt outbox/inbox manually (operator or
   coordinator-agent plays coordinator-daemon by hand). Accept: one task READY→ASSIGNED→CLAIMED→RUNNING→
   DONE_PASS across two real sessions via file appends only; every row schema-valid;

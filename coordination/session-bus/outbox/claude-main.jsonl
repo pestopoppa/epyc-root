@@ -1,0 +1,2 @@
+{"corr_id": "R3-1", "from": "claude-main", "id": "msg-20260727T182246Z-1-claude-main", "kind": "ack", "schema_version": "session_bus.msg.v1", "task_id": "R3-staleness-guard", "to": "coordinator-daemon", "ts": "2026-07-27T18:22:46+00:00"}
+{"corr_id": "R3-1", "from": "claude-main", "id": "msg-20260727T182246Z-2-claude-main", "kind": "task-complete", "payload": {"outcome": "pass"}, "schema_version": "session_bus.msg.v1", "task_id": "R3-staleness-guard", "to": "coordinator-daemon", "ts": "2026-07-27T18:22:46+00:00"}

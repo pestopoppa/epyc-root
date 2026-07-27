@@ -1,0 +1,68 @@
+# Session Bus Protocol v1
+
+Owning handoff: [`handoffs/active/session-bus-thin-dispatcher.md`](../../handoffs/active/session-bus-thin-dispatcher.md)
+(M1). Sibling contract: [`../inference-batch/LOOP_PROTOCOL.md`](../inference-batch/LOOP_PROTOCOL.md).
+
+## Roles (one role, two tiers)
+
+| Term | What it is |
+|---|---|
+| **coordinator** | the role the operator interacts with |
+| **coordinator-daemon** | `session_bus_coordinator.py` — host-side, `nohup`+flock singleton, tick loop, epoch fencing, heartbeat. **Not** an agent session. Transcribes, validates, assigns by deterministic rule; **never** sets priorities, never reviews work products |
+| **coordinator-agent** | an agent session with a roster row. Decision packages, operator-intent relay, cross-main reprioritization, lease grants, integration |
+| **main** | a long-horizon agent thread doing the work |
+
+## Rules
+
+1. **SINGLE WRITER.** `queue.jsonl` + `inbox/*` = coordinator-daemon; `outbox/<a>` = agent `<a>`;
+   `heartbeats/<w>` = writer `<w>`; `tokens/token-queue.md` blocks = coordinator-daemon relay,
+   checkboxes = operator. **No file ever has two writers.** One writer may own many files.
+
+   *Enforcement boundary, stated plainly:* `session_bus.py` derives the required writer from the
+   target path and refuses a mismatch, so a cross-write is structurally inexpressible — you can
+   only address the files of whoever you claim to be. But `--agent` is **self-asserted**: the CLI
+   cannot detect impersonation. That is what the M1 single-writer audit (`git blame` per bus file
+   = one authoring session) exists to catch, and why the audit is an acceptance criterion rather
+   than a formality.
+2. **NEVER BLOCK.** No agent waits on the bus. Work continues; grants and acks are picked up at
+   the next boundary (op-bundle contract). A pending operator token never gates unrelated work.
+3. **ACKS.** `requires_ack` messages are redelivered as a `nudge` (same `corr_id`) after
+   `ack_deadline_s`; consumers dedupe by msg `id`.
+4. **CURSORS.** Each consumer owns `cursors/<self>.json` (byte offsets); never rewind another's
+   cursor. Rotation (coordinator-daemon, own files only) happens only past ALL cursors, into
+   `archive/`.
+5. **AUTHORITY.** Reprioritize scope per `config.yaml`'s matrix; violations are rejected with a
+   `defect` row. The coordinator-daemon files defect rows against coordinator-agent on
+   **mechanically checkable** violations only — never on judgment.
+6. **TRUST BOUNDARIES ARE HUMAN-ONLY** and unchanged: era registry rows, `MEASUREMENT.md`,
+   AutoPilot baseline applies, production freezes/cutovers, host reboots. The coordinator-daemon
+   sequences and the coordinator-agent presents; **neither signs**. The human-only path list is
+   itself human-amendment-only and hash-pinned — coordinator-agent reads it, never writes it.
+7. **RESOURCE CLAIMS ARE ACQUIRED, NOT OBSERVED.** Lane sensing informs scheduling; only holding
+   the lock provides exclusion (observing holders is TOCTOU). Anything occupying CPU regions
+   acquires them via `epyc-orchestrator/scripts/region-lock`. One fact per physical resource —
+   the `flock` — with any advisory lease layer sitting *above* it, never claiming to be it
+   (fabric axiom 1).
+8. **RECLAIM IS ALWAYS QUIESCE-AND-DRAIN.** Lease revocation and priority yield mark the holder
+   `revoking`/`draining`; it stops accepting new work and releases at its next boundary. Never
+   mid-decode, never a kill (fabric axiom 4). A revoked main immediately continues on `lane: none`
+   work — it does not stall. A revocation the holder ignores surfaces as a `defect`, never as a
+   silent inconsistency.
+9. **RECONSTRUCTIBILITY.** Coordinator-agent state must be rebuildable from bus files alone
+   (`queue.jsonl`, `tokens/token-queue.md`, heartbeats, cursors). Authority that exists only in a
+   session's context is a design defect. Degraded mode with coordinator-agent down: the daemon
+   keeps assigning, deterministic lease re-grants keep flowing, tokens accumulate durably, and
+   **merges and discretionary reprioritization pause** — nothing blocks.
+10. **EVERY QUEUE ROW DECLARES ITS GATING** (`cpu` / `gpu` / `both` / `none`). A missing
+    classification is a hard validation failure: without it, revocation has no defined fallback
+    set and rule 8 cannot be honoured.
+
+## Drain
+
+Every agent, at every task boundary:
+
+```
+python3 scripts/coordination/session_bus.py drain --agent <id>
+```
+
+Act on assignments and nudges; write acks and status to your own outbox.
