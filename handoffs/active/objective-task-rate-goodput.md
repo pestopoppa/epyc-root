@@ -7,6 +7,19 @@
 **Spec**: [fable5-findings-05-objective-design.md](../completed/fable5-findings-05-objective-design.md) — read before claiming any waypoint. Slots into [fable5-findings-01-impl-plan.md](../completed/fable5-findings-01-impl-plan.md) as Phase 1.6.
 **Related**: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (noise/admission rules the new axis inherits), [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) (live consumer), [MEASUREMENT.md](../../MEASUREMENT.md) §P-SPEED-OBJ (already names task_rate as the speed axis) + §5 era table (E3→E4 retire-view)
 
+## 2026-07-27 Operator re-prioritization — PIVOT-FIRST after bench closure
+
+Operator (reviewing the E8 frontier): "optimizing [median_request_tps] is gameable — verbose
+output pumps the metric; the only real-world metric is how quickly orchestration performs a
+task, and how well." This is this handoff's thesis; elevated out of the dead lane as the
+FIRST item of the post-closure robustness/workload-tuning pivot (master-index ★ block).
+Key unlock: the 16 fresh E8 reseed trials (2026-07-26/27) are era-fenced, honest-instrument
+rows — plausibly satisfying W3's quality-eligible-replay gate — and the replay is
+deterministic journal recomputation (zero inference; per MEASUREMENT_POLICY.md →
+*Deterministic replay before regeneration*). Sequence: replay E8 rows → task_rate/goodput
+frontier → operator policy decision on the live vector flip (P-SPEED-OBJ already names
+task_rate as the axis) → panels relabel (extends E8-PANELS-a axis-labeling task).
+
 ## 2026-07-26 Staleness Review
 
 The era prerequisite has advanced, but the
