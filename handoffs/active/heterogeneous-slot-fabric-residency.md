@@ -153,6 +153,35 @@ bounded ∧ reversible ∧ protocol-measurable ∧ gate-protected. Static remain
 per-device quant artifacts, safety envelopes, the residency-capable model set. DESIGN DISCIPLINE:
 build every parameter to satisfy the four properties from birth so conversion is a flag flip.
 
+**Declared instances of this contract (2026-07-27)**: the contract above is not specific to GPU
+residency — it is the general **resource-admission blueprint**, and two subsystems already
+implement it independently:
+
+| Element | Orchestrator CPU placement | Session bus (agent dispatch) |
+|---|---|---|
+| Resource set | CPU regions `q0..q3` | lanes `cpu/gpu/none`, slot-shaped roster |
+| Exclusive claim | `src/runtime/cpu_region_lock.py` (`LOCK_EX` per region, union acquire, LIFO release) | task claim + `lease_expires_ts` + epoch fencing |
+| Co-residency policy as data | `orchestration/contention_matrix.yaml` (ratio, `verdict`, `default_floor`, `topology_hash`) | `contention_class` + `config.yaml` |
+| Admission gate | `src/scheduling/contention_gate.py` `evaluate()`/`admit()` | coordinator-daemon eligibility rule |
+| Typed defer reasons | `src/scheduling/placement.py` `QueueReason` | `queue.jsonl` status enum |
+
+Consequences already acted on, tracked as R1/R3 in
+[session-bus-thin-dispatcher.md](session-bus-thin-dispatcher.md) §Rider:
+
+- **Axiom 1 forbids a second occupancy notion.** Benchmarks previously took no region lock at all
+  while orchestrator dispatch did — three disjoint exclusion domains over the same cores. Closed
+  2026-07-27 via `epyc-orchestrator/scripts/region-lock`, a wrapper over the *same*
+  `cpu_region_lock()`. Observing holders is not exclusion (TOCTOU); only acquiring is.
+- **Axiom 4 shapes every reclaim path.** Lease revocation and priority preemption are
+  quiesce-and-drain at a boundary, reusing the swap protocol above — never forcible. A held
+  `flock` cannot be revoked by a third party in any case, so lease authority must sit in an
+  advisory layer above it, with the flock remaining liveness truth (axiom 1).
+
+**Unification remains deferred** behind this handoff's existing triggers (a local-model
+long-horizon main, or the slot fabric landing "everything is a slot"). What converges now is
+vocabulary and data shape, not implementations — bounded, reversible, and gate-protected per the
+conversion rule.
+
 **Inputs required before the full design session** (per the design-session discipline for
 NUMA/concurrency complexity): E5 NUMA×batch mapping, teleport break-even measurements, and the
 architect-bench GPU-arm results (the first heterogeneous binding candidate).

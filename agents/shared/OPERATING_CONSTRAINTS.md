@@ -32,7 +32,9 @@ Recommended environment variables:
 
 ## Inference and Benchmarks
 
-- Never launch inference/benchmark runs (llama-bench/cli/server, run_benchmark.py, eval suites) without explicit per-run operator approval — a parallel agent or the autopilot may be running; concurrent runs silently poison both sides.
+- Never launch inference/benchmark runs (llama-bench/cli/server, run_benchmark.py, eval suites) without a held CPU-region claim covering the cores the run pins — use `region-lock run --cpu-list <list> -- <command>` (epyc-orchestrator/scripts/region-lock); `bench_canonical.sh` acquires it automatically and refuses to run unlocked. Concurrent runs on overlapping regions silently poison both sides — the claim, not a human, is what prevents that.
+- Operator approval is required only where the run's `operator_gates[]` names an actual trust boundary (era registry rows, MEASUREMENT.md, AutoPilot baseline applies, production freezes/cutovers, host reboots). Concurrency alone is never grounds for a human gate.
+- Co-residency policy lives in versioned, staleness-guarded data (`orchestration/contention_matrix.yaml`, guarded by `topology_hash`), never in prose.
 - Throughput numbers only via the codified recipes (`bench_canonical.sh` / `canonical_recipe.py` in epyc-inference-research) — never hand-typed bench commands.
 - Host-health preflight before trusting any measurement: uptime ≤1wk → `drop_caches` + NUMA-interleave re-warm; ≥1wk → reboot required.
 - Full policy: `agents/shared/MEASUREMENT_POLICY.md` → `/workspace/MEASUREMENT.md`.
