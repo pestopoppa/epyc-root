@@ -270,8 +270,32 @@ warm/explicit-only and not normally launched, so "expected down" slightly overst
   the live manifest still shows an empty lineup — verify separately.
 - [ ] **[C1 fix #3] One env / one SoT across the `--workers 6` pool** — process/launch
   concern (`scripts/server/*`), out of dashboard-file ownership.
-- [ ] **[E8-PANELS] Era-honest pareto/GEPA plots for E8 (operator-reported 2026-07-26: "current
-  era looks like garbage").** The E8 reseed's honest-instrument trials (q≈1.71–1.77) plot
+- [x] **[E8-PANELS] Era-honest pareto/GEPA plots for E8** ✅ 2026-07-27 — implemented in
+  orchestrator `64c05ca7` (7 files, +828/−48, 285 focused tests green), converging with
+  Codex's independent region-lock membership fix (22:17 same night). Delivered: (A) E8 era
+  pickup pinned by test against the live registry; (B) per-point `historical_instrument`
+  labeling, faded historical series, E8 boundary annotation (label-never-rescale); (C) GEPA
+  no-op provenance window 2026-06-04→`ed6288ea` hatched + caveat badge; (D) ALL live
+  instances render in the region-lock panel with "n/a (no lock domain)"; (E — scope-extended)
+  authority banner reads live holds ("quality: HELD pending E8 baseline; speed: pending E8
+  numeric rerun N/16"); `decision_grade_possible=False` while any hold is open. Python-side
+  takes effect at the deferred API reload (reseed trial boundary); HTML live on refresh.
+  - [ ] **[E8-PANELS-a] Reconcile the rerun counter fields**: banner shows the gate marker's
+    `frontier_rerun_required` count (0/16) while `frontier_rerun_pending_clear` carries the
+    live 15/16 — unify which field the gate updates mid-run (cosmetic, confusing).
+  - [ ] **[E8-PANELS-b] Commit the ratified era-registry row**: an uncommitted `eval_quality`
+    E8 row sits in `orchestration/instrument_eras.yaml` (output of the operator's quality-fence
+    transaction; human-amendment provenance) — commit it with its receipt reference.
+  - [ ] **[E8-PANELS-c] Hub pct presentation**: `pct_all_done` reads intake sweeps as decline
+    (denominator inflation, see 2026-07-27 forensics) — surface absolute `all_tasks_done` +
+    a newly-filed-tasks series on the :8100 hub (owner may also be
+    loops-and-dashboards-audit-2026-07-05.md).
+- [ ] **[E8-TRIALS-COLD] Validate restart-surface trial speed samples for cold-start
+  contamination** before/at frontier terminalization: `spec_decode_role_restart` trials
+  relaunch servers and may sample speed un-prewarmed (guardrail: cold-start collapses to
+  24-35 t/s vs 55-70 warm; live tap showed worker at 18.3 t/s ~1 min post-restart; trials
+  1443/1445/1453 logged s=8.4/9.7/4.4). Owner overlap: autopilot-decision-plane-audit §E8
+  RE-ARM; filed here because the evidence surfaced via the dashboard tap. The E8 reseed's honest-instrument trials (q≈1.71–1.77) plot
   against pre-E8 points measured on the laxer instrument (q≈1.85–2.04 plateau), inviting a
   false regression read. The pareto panel's era machinery exists (`_autopilot_era_regions()`
   `dashboard.py:2317`, applied `:4011`, default=current era) but was certified for E7 — verify
