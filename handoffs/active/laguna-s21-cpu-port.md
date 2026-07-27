@@ -99,6 +99,21 @@ q8_0 model arithmetic error. Remaining items:
   no script under `scripts/` — bespoke one-off, honestly labeled non-gating, but
   unreproducible. Fold it into `laguna_pgpu1_dflash_runner.py` or delete after the formal
   P-GPU-1 run supersedes it.
+- [ ] **L-9 (post-v8 candidate bench) — execute the Laguna Q4_K_M CPU quality arm after
+  the E8 quality hold closes.** Harness readiness is complete ✅ 2026-07-27:
+  `laguna_q4_cpu_bench_runner.py` now uses a full `taskset 0-95` /
+  `numactl --interleave=all` model prewarm before each suite, the sealed arm-neutral v4
+  capture/converter contract, free ports `18094/18095`, and semantic validation of the
+  frozen-v8 24-port both-mode stack. Concurrent HIP work is allowed only when every
+  sidecar thread is disjoint from benchmark cores; exact argv/model/executable/listener
+  identity and all thread affinities are sampled every five seconds. GPU-coexistent
+  throughput is explicitly observation-only and forbidden as a role-decision input.
+  Focused validation: `35 passed`; the no-inference live dry run fails only on the
+  expected frontier/quality-release conditions. The separately prepared, unexecuted
+  `laguna_q4_cpu_config_discovery.py` is a bounded four-cell, throughput-only recipe
+  selector for that arm; its `50` combined runner/discovery tests and Ruff check pass.
+  It does not authorize a lineup change or a quality verdict. The remaining gate is the
+  actual 40-item SWE-oracle plus 53-item LCB-hard execution and official scoring.
 
 ## Notes
 

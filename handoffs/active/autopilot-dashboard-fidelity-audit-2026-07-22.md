@@ -290,8 +290,13 @@ warm/explicit-only and not normally launched, so "expected down" slightly overst
     (denominator inflation, see 2026-07-27 forensics) — surface absolute `all_tasks_done` +
     a newly-filed-tasks series on the :8100 hub (owner may also be
     loops-and-dashboards-audit-2026-07-05.md).
-- [ ] **[E8-TRIALS-COLD] Validate restart-surface trial speed samples for cold-start
-  contamination** before/at frontier terminalization: `spec_decode_role_restart` trials
+- [x] **[E8-TRIALS-COLD] Validate restart-surface trial speed samples for cold-start
+  contamination** ✅ 2026-07-27. Retrospective row-level audit cleared the sealed E8
+  frontier: restart attempts 1442/1455 were tier-0 skips because AP-3 restart was disabled,
+  so neither relaunched a role; trials 1443/1445/1453 each recorded all 65
+  `cache_warm_state=warm` covariates. Only warm trial 1445 entered the sealed frontier
+  (`[1445, 1446, 1450]`) and supplied its speed maximum. The terminalizer itself did not
+  enforce or attest this predicate. Original concern: `spec_decode_role_restart` trials
   relaunch servers and may sample speed un-prewarmed (guardrail: cold-start collapses to
   24-35 t/s vs 55-70 warm; live tap showed worker at 18.3 t/s ~1 min post-restart; trials
   1443/1445/1453 logged s=8.4/9.7/4.4). Owner overlap: autopilot-decision-plane-audit §E8
@@ -311,6 +316,11 @@ warm/explicit-only and not normally launched, so "expected down" slightly overst
   raised pre-LM-call; optimizer provenance broken) or suppress the panel until ≥1 post-fix
   GEPA trial exists; tooltip carries the provenance caveat. Panels stamp era + generated_at
   per the freshness contract.
+- [ ] **[E8-TRIALS-COLD-GUARD] Enforce restart/cold eligibility in future frontier
+  terminalizers**: reject or quarantine restart-surface evidence until an affirmative
+  prewarm/cache-warm predicate is present, and persist the predicate in the terminalization
+  receipt. The 2026-07-27 retrospective clears E8 factually; it does not establish this
+  forward instrument control.
 - [ ] **[H1] Circuit-breaker / forced-role-fallback panel** — deferred (stretch).
 - [ ] **[H2] REL-1 eval error-rate surface** — deferred (stretch).
 - [ ] **[H3] Contention-panel per-worker provenance**, **[M1] region_locks held-set

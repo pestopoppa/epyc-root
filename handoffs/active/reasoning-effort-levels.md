@@ -183,6 +183,22 @@ meant to fix). This makes budget-selection and admission-control **one problem**
       - **A4** (small MoE): batch aggressively **all** budgets, scales to **np=32+**, no dip — the throughput arm.
 
       Cross-check: earlier fixed-*total*=36864 probe np4=62 matches A1's L=8192 np4=60.9. ✅
+- [ ] **TB-6-exec-v8 candidate extension — RUNNING 2026-07-27.** Under the operator's zero-idle,
+      observation-grade grant, extend `epyc-inference-research/artifacts/np_context_study_v8_20260727/`
+      with one-load-per-model frozen-v8 runs: ThinkingCap Q8 and both Fable-Fusion Q8 variants each
+      receive an `rb1024` SWE/LCB first-read plus the canonical `np×L` grid; Laguna UD-IQ2_M receives
+      the grid with DFlash off; A4 receives the `L=2k/8k` era-bridge column. After those cells finish,
+      run the separate production-template prefill-to-depth instrument using pinned real retrieval
+      prompts. Evidence collection does not authorize a lineup or registry change.
+- [x] **TB-6-sidecar CPU-containment repair** ✅ 2026-07-27 — an initial GPU-sidecar
+      thread-affinity check caught a ROCm helper thread inheriting the broad host mask during a
+      concurrent Laguna Q4 CPU arm, correctly invalidating that arm rather than accepting a false
+      clean-window claim. `np_context_study_v8_20260727/driver/run_model_block.sh` now places the
+      driver before child creation in the dedicated threaded cgroup-v2 `epyc-v8-gpu-sidecar`, with
+      `cpuset.cpus=184-191`; every server thread is therefore hard-confined even if it subsequently
+      requests a broad affinity. The driver records `sidecar_cpuset.txt` and retains the existing
+      per-thread affinity proof. Self-test and the 12-cell aggregation suite passed; the live grid
+      remains observation-only and in progress.
 - [ ] **TB-6-exec-followups (GPU-owned).** (a) ✅ A3+A4 surfaces DONE 2026-07-23; remaining: the other
       GPU-resident stack models if/when relevant. (b) A *rigorous* variant using **prefill-to-depth** (long
       synthetic prompt + short generation) to measure decode-at-KV-depth cheaply instead of the slow generate-L
