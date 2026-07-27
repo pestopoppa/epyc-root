@@ -1,6 +1,6 @@
 # Consolidated unblock
 
-generated 2026-07-27T20:29:59+00:00  ·  epyc-root @ 92fa6c99
+generated 2026-07-27T21:07:52+00:00  ·  epyc-root @ 78dc76cc
 pending 3 · granted 0 · struck 0 · malformed 0
 
 ## The one command
@@ -27,21 +27,27 @@ grant leaves no record of when you gave it.
 ### OP-SENDKEYS-CODEX
 
 - holds: _no task currently held_
-- **no pre-validated command recorded** — this gate cannot be applied
-  automatically. The requesting agent owes dry-run evidence; presenting
-  an unvalidated command is an agent defect, so nothing is guessed here.
+- requested by `claude-main` for `m5-flag-op-sendkeys-codex`
+- pre-validated (dry-run exit `0`): flip validated on a temp copy of config.yaml: anchor unique, replacement applied, YAML still parses. allows the coordinator-daemon to nudge a main via tmux send-keys, and is also the mechanism behind spawning mains into panes
+- command:
+
+      /mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -c "import pathlib,sys;p=pathlib.Path('/workspace/coordination/session-bus/config.yaml');t=p.read_text();old,new=sys.argv[1],sys.argv[2];assert t.count(old)==1,'anchor not unique';p.write_text(t.replace(old,new))"  'codex_sendkeys: off' 'codex_sendkeys: on'
 
 ### triage
 
 - holds: _no task currently held_
-- **no pre-validated command recorded** — this gate cannot be applied
-  automatically. The requesting agent owes dry-run evidence; presenting
-  an unvalidated command is an agent defect, so nothing is guessed here.
+- requested by `claude-main` for `m5-flag-triage`
+- pre-validated (dry-run exit `0`): flip validated on a temp copy of config.yaml: anchor unique, replacement applied, YAML still parses. enables the M5 one-shot triage hook: dead-agent block drafting + routing annotations, budget-capped by triage_calls_per_day (still 0 — raise it separately)
+- command:
+
+      /mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -c "import pathlib,sys;p=pathlib.Path('/workspace/coordination/session-bus/config.yaml');t=p.read_text();old,new=sys.argv[1],sys.argv[2];assert t.count(old)==1,'anchor not unique';p.write_text(t.replace(old,new))"  'triage: off' 'triage: on'
 
 ### headless-worker
 
 - holds: _no task currently held_
-- **no pre-validated command recorded** — this gate cannot be applied
-  automatically. The requesting agent owes dry-run evidence; presenting
-  an unvalidated command is an agent defect, so nothing is guessed here.
+- requested by `claude-main` for `m5-flag-headless-worker`
+- pre-validated (dry-run exit `0`): flip validated on a temp copy of config.yaml: anchor unique, replacement applied, YAML still parses. raises the headless-worker cap from 0 to 2
+- command:
+
+      /mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -c "import pathlib,sys;p=pathlib.Path('/workspace/coordination/session-bus/config.yaml');t=p.read_text();old,new=sys.argv[1],sys.argv[2];assert t.count(old)==1,'anchor not unique';p.write_text(t.replace(old,new))"  'max_headless_workers: 0' 'max_headless_workers: 2'
 

@@ -1,5 +1,18 @@
 {
-  "gates": {},
-  "generated_at": "2026-07-27T20:29:59+00:00",
-  "head": "92fa6c99"
+  "gates": {
+    "OP-SENDKEYS-CODEX": {
+      "cmd": "/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -c \"import pathlib,sys;p=pathlib.Path('/workspace/coordination/session-bus/config.yaml');t=p.read_text();old,new=sys.argv[1],sys.argv[2];assert t.count(old)==1,'anchor not unique';p.write_text(t.replace(old,new))\"  'codex_sendkeys: off' 'codex_sendkeys: on'",
+      "cmd_sha256": "8c7a1b9eaeb08ba7c84777f09bfa980c5bcca086ae77f53ab406d69b93d6c431"
+    },
+    "headless-worker": {
+      "cmd": "/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -c \"import pathlib,sys;p=pathlib.Path('/workspace/coordination/session-bus/config.yaml');t=p.read_text();old,new=sys.argv[1],sys.argv[2];assert t.count(old)==1,'anchor not unique';p.write_text(t.replace(old,new))\"  'max_headless_workers: 0' 'max_headless_workers: 2'",
+      "cmd_sha256": "1a891c54f56591559ebb07611217ab249c4392d9eacafbf7a0aa2d000fbab77c"
+    },
+    "triage": {
+      "cmd": "/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -c \"import pathlib,sys;p=pathlib.Path('/workspace/coordination/session-bus/config.yaml');t=p.read_text();old,new=sys.argv[1],sys.argv[2];assert t.count(old)==1,'anchor not unique';p.write_text(t.replace(old,new))\"  'triage: off' 'triage: on'",
+      "cmd_sha256": "356f8dfcbd1d43ee7cb6ef860989c909c0379e625180b177082d6212dbcb9436"
+    }
+  },
+  "generated_at": "2026-07-27T21:07:52+00:00",
+  "head": "78dc76cc"
 }
