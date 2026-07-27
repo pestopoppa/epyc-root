@@ -52,7 +52,7 @@ reviews, it's a second main" — operator).
   ratification + pre-validated operator commands (`MEASUREMENT_POLICY.md`), run-first bias.
 - Operator decisions (2026-07-27): build now at N=2 mains but **roster-driven N-main from day
   one**; **hybrid runtime** (deterministic core + capped one-shot triage); Codex consumption
-  via boundary drain (send-keys OFF behind grant); operator interface = a **coordinator-agent** agent
+  via boundary drain (send-keys OFF behind grant); operator interface = a **coordinator-agent**
   thread; authority matrix below.
 
 ## Components
@@ -60,7 +60,7 @@ reviews, it's a second main" — operator).
 | Component | Runs where | Cloned from |
 |---|---|---|
 | **Session bus** (files) | `coordination/session-bus/` | `coordination/inference-batch/` (ledger + op-bundle) |
-| **Coordinator-daemon daemon** `session_bus_coordinator.py` | host, nohup+flock (or tmux window in session `agent`) — NOT inside any agent session | `hub_supervisor.sh` loop discipline + `batch_ledger.py` fold |
+| **Coordinator-daemon** `session_bus_coordinator.py` | host, nohup+flock (or tmux window in session `agent`) — NOT inside any agent session | `hub_supervisor.sh` loop discipline + `batch_ledger.py` fold |
 | **Bus library/CLI** `scripts/coordination/session_bus.py` | called by coordinator-daemon AND agents | `batch_ledger.py` / `batch_status_report.py` |
 | **Watchdog-of-coordinator-daemon** `scripts/coordination/bus_supervisor.sh` | host, nohup+flock | verbatim `hub_supervisor.sh` clone (health = coordinator-daemon heartbeat mtime) |
 | **Coordinator-agent** (operator-facing coordination agent) | an agent session (today: the Claude oversight session, formalized) | the role this week's session performed ad hoc |
@@ -90,7 +90,7 @@ coordination/session-bus/
                                # thresholds, flags (codex_sendkeys: off, triage: off), caps
   config/routing-table.yaml    # task-class → (main, model-tier, effort) data artifact
   session_bus.schema.json      # Draft-07 schema: msg + queue rows
-  queue.jsonl                  # WORK QUEUE — single writer: DISPATCHER
+  queue.jsonl                  # WORK QUEUE — single writer: COORDINATOR-DAEMON
   inbox/<agent>.jsonl          # single writer: coordinator-daemon
   outbox/<agent>.jsonl         # single writer: that agent
   tokens/token-queue.md        # op-bundle clone; agents author blocks, coordinator-daemon relays,
@@ -402,7 +402,7 @@ freezes/cutovers, host reboots).
   + `freshness.classify` on semantic `generated_at`), `/bus` page (queue table, inbox depths,
   heartbeat ages, pending tokens). Accept: renders live state; correct staleness classes on a
   stale fixture; fails soft. Rollback: revert additive routes.
-- [ ] **M3 — coordinator-daemon daemon, read-only advisory.** `session_bus_coordinator.py` (flock,
+- [ ] **M3 — coordinator-daemon, read-only advisory.** `session_bus_coordinator.py` (flock,
   tick loop, heartbeat, epoch) emitting advisory `saturation` + would-assign rows only;
   `bus_supervisor.sh`. Accept: would-assign matches actual human/agent choices over a working
   day (divergences explainable); survives kill -9 via supervisor; zero writes to foreign
