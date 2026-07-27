@@ -2,8 +2,8 @@
 
 **Category**: `memory_augmented`
 **Confidence**: verified
-**Last compiled**: 2026-07-05
-**Sources**: 26+ documents (2 deep-dives, 20 intake entries, active handoffs, progress logs, K-MEM/Tulving measurement context, and the 2026-06-28 W4/W6 reboot-readiness checkpoint)
+**Last compiled**: 2026-07-27
+**Sources**: 28+ documents (2 deep-dives, 22 intake entries, active handoffs, progress logs, K-MEM/Tulving measurement context, and the 2026-06-28 W4/W6 reboot-readiness checkpoint)
 
 ## Summary
 
@@ -212,3 +212,49 @@ The δ-mem Phase 1 reproduction landed on EPYC CPU on 2026-05-20 with the releas
 **Phase 1 artifact**: `/mnt/raid0/llm/epyc-inference-research/data/research/2026-05-20-dmem-locomo-smoke/results.json` + `.jsonl`.
 
 **Model-agnostic caveat (2026-05-20)**: the M.3 topology is **not gemma4-specific** — it learns K/V vectors matching any frozen backbone's cache geometry (head_dim × num_heads × num_layers). Gemma4 is just the target Phase 2 will be tested against because worker_general is the highest-traffic role; the same recipe applies to frontdoor (Qwen3.6-35B), coder, or ingest_long_context with per-backbone param counts that scale with cache geometry.
+
+### REPL session memory: what our checkpoint/restore actually persists (2026-07-27)
+
+The orchestrator's cross-turn REPL state is a **third memory surface**, distinct from the episodic /
+strategy / skill-bank trio above: it carries a single session's *working set* (variables, artifacts,
+exploration log) across turns and requests, rather than learned signal across sessions. A 2026-07-27
+comparison against `fast-rlm` (intake-901, dive-verified) established what it does and does not hold.
+
+**Two persistence tiers, plus an explicit third bucket:**
+
+| Tier | Mechanism | What it holds |
+|---|---|---|
+| JSON | `_is_json_serializable` gate in `src/repl_environment/state.py` | plain data — dicts, lists, scalars, strings |
+| Signed pickle | `src/repl_environment/safe_pickle.py`, allowlisted + HMAC'd + 5,000,000-byte cap | numpy arrays/scalars, collections, datetime/Decimal/Fraction |
+| Unavailable | reported, never silently dropped | REPL-defined functions/classes, pandas DataFrames, open handles, anything failing the allowlist |
+
+**The design rule that matters: report what is missing, not only what survived.** `restore()`
+reconciles against the **live namespace** rather than trusting the checkpoint payload, and
+`get_state()` renders a `## Not Restored` section so the model is told which names are gone and why.
+Before this, a variable dropped at restore time (an engine-builtin name collision) was reported as a
+successful restore in telemetry — the count came from what the checkpoint *claimed*. The general
+lesson generalizes past the REPL: **a memory system that reports only its hits cannot be debugged**,
+because the consumer silently references state that is not there.
+
+**Deserialization is a trust boundary, not a serialization detail.** The objects being persisted are
+authored by model-written REPL code, so any pickle path is deserialization of untrusted input inside
+the orchestrator process. `pickle` is listed in `ASTSecurityVisitor.FORBIDDEN_MODULES` precisely for
+this reason. The boundary that made it acceptable has four layers — a `find_class` allowlist of inert
+data types (load-bearing), an HMAC (tampering at rest only — it cannot establish content safety when
+*we* are the ones pickling model-authored objects), a size cap, and an AST rule refusing REPL code
+that binds a serialization hook. Two failure modes found during review are worth remembering
+generally: a library-internal **nested unpickle** (numpy's object-dtype `multiarray.scalar` calls
+plain `pickle.loads` on its data buffer, escaping any outer guard), and a **key-provisioning race**
+that briefly published a zero-length HMAC key file readable as an empty, guessable key.
+
+**Contested-claim status.** Whether carrying prior REPL *code* into a resumed prompt is cheaper than
+re-deriving state is **not settled for our workloads**. The one published measurement (fast-rlm,
+n=1 per arm, synthetic corpus, maintainer-measured) reports ~2.6× fewer input tokens, but its own
+caveat says the saving holds only when follow-ups add a line or two of new code — "a session where
+every query does heavy multi-step work is the case to watch", which is our regime. Measurement was
+deliberately moved off a synthetic replication arm and onto real T3 hard-workflow/tool-use/REPL
+traffic.
+
+**Sources**: [intake-901](https://github.com/avbiswas/fast-rlm) fast-rlm REPL memory (dive-verified
+2026-07-27) · [intake-783](https://github.com/avbiswas/fast-rlm) fast-rlm re-review ·
+[Handoff](../handoffs/active/repl-session-memory-maturity.md) · [Progress](../progress/2026-07/2026-07-27.md)

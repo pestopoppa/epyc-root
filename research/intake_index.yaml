@@ -24774,15 +24774,29 @@
   cross_references:
     chapters: []
     handoffs:
-    - rlm-orchestrator-roadmap.md
+    - rao-redel-substrate-spike.md
+    - rlm-contested-claims-self-evaluation.md
     - context-folding-progressive.md
     - orchestrator-conversation-management.md
     experiments: []
     intake_entries:
     - intake-153 (RLM foundational, arxiv:2512.24601)
     - intake-536 (RAO, arxiv:2605.06639) — RAO claims to LEARN good decomposition; this reproduction shows naive deeper recursion fails, motivating RAO reward-shaped training
-  handoffs_updated: []
-  handoffs_created: []
+  handoffs_updated:
+  - rao-redel-substrate-spike.md
+  handoffs_created:
+  - rlm-contested-claims-self-evaluation.md
+  dive_corrections: '2026-07-27 (filed during the intake-901 Stage-3 audit, NOT a dive on this entry
+    — its own claims remain unverified against arXiv:2603.02615 and E0 of the new handoff exists to
+    read them): cross_references.handoffs pointed at rlm-orchestrator-roadmap.md, ARCHIVED
+    2026-03-29, so this entry''s depth caveat had no live owner in the index — a plausible reason the
+    RLM depth contradiction kept resurfacing unowned. Repointed at rao-redel-substrate-spike.md,
+    which already carries the caveat as load-bearing (lines 26, 36) with MORE detail than this entry
+    records: Kimi K2 OOLONG depth-0 86.6%% BEATS depth-1 60.0%% (direction-of-effect is
+    model-dependent) and a three-point wall-clock ladder 3.6s -> 89.3s -> 344.5s. master-handoff-index
+    N17 further frames the resolution — recursion RESCUES failing attempts (DeepSeek OOLONG 0.0 ->
+    42.1) while HURTING competent ones, so depth should be gated on predicted failure rather than
+    pinned. First-party measurement is now owned by rlm-contested-claims-self-evaluation.md.'
   novelty_justification: First independent reproduction of RLM with cross-model verification and direct quantification of overthinking failure mode at depth>=2. Provides empirical contradicting evidence
     to naive "just recurse deeper" deployment of RLM/RAO patterns.
   relevance_justification: RLM/RAO patterns are on EPYC roadmap (rlm-orchestrator-roadmap.md + halo-trace-loop-spike). The 96x cost blow-up at depth-2 is a hard constraint for CPU inference where every
@@ -34701,7 +34715,7 @@
   verdict_justification: 'adopt_patterns. No new component to import beyond fast-rlm (already referenced), but the validate-on-FINAL + retry-not-restart + structured-return-as-attention-mask pattern is a concrete design input for the structured-tool-output work and for any RLM subagent fan-out we build. credibility null — practitioner blog with a single anecdotal cost figure, no benchmark.'
   contradicting_evidence:
   - 'Single anecdotal example (one NarrativeQA sample), no systematic benchmark; the boolean-mask win may be sample-specific. The author is also the fast-rlm maintainer (mild promotional framing). Validate the pattern against a real eval before treating it as established.'
-  notes: 'User-provided input 2026-06-10 (pasted X post by @neural_avb, 2026-06-08). url points to the fast-rlm repo since the post has no canonical permalink; this is a SEPARATE later post from the already_integrated 2026-05-19 fast-rlm recap entry. Builds on RLM paper arxiv:2512.24601. DEEP-DIVE 2026-06-12 (research/deep-dives/2026-06-12-rlm-structured-output-contracts.md): parent half ALREADY shipped (final_schema_validation, 2026-05-20: contract-at-step-0 + validate-on-FINAL + retry). Real remaining gap = child/sub-LM return schema on batch_llm_query/llm_query (combined_ops.py:302, no schema=) ~30-40 LoC, Phase-1 REPL, default-off, orthogonal to ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT; land post-cutover, gate on a fan-out eval.'
+  notes: 'User-provided input 2026-06-10 (pasted X post by @neural_avb, 2026-06-08). url points to the fast-rlm repo since the post has no canonical permalink; this is a SEPARATE later post from the already_integrated 2026-05-19 fast-rlm recap entry. Builds on RLM paper arxiv:2512.24601. DEEP-DIVE 2026-06-12 (research/deep-dives/2026-06-12-rlm-structured-output-contracts.md): parent half ALREADY shipped (final_schema_validation, 2026-05-20: contract-at-step-0 + validate-on-FINAL + retry). Real remaining gap = child/sub-LM return schema on batch_llm_query/llm_query (combined_ops.py:302, no schema=) ~30-40 LoC, Phase-1 REPL, default-off, orthogonal to ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT; land post-cutover, gate on a fan-out eval. CORRECTED 2026-07-27 (intake-901 Stage-2 dive D3): this remaining gap is CLOSED. src/repl_environment/combined_ops.py:338 now takes schema: dict | None, renders a child schema preamble (:33-41), validates via _validate_final_answer (:397) and RETRIES rather than restarts (:402-412, max_retries capped to 2 at :353), and emits schema/schema_validation telemetry (:435, :466). Do NOT re-derive this as open work. New from the same dive: fast-rlm ships ENABLE_STRUCTURED_IO as a built-in ABLATION flag (src/subagents.ts:177-179) that disables schema validation and the schema preamble — a ready-made A/B instrument we lack.'
 - id: intake-694
   arxiv_id: null
   url: https://twitter.com/victormustar/status/1930000000000000000
@@ -48553,3 +48567,83 @@
   verdict_justification: 'adopt_patterns, scoped tightly to two items — the four verification gates as a checklist extension to the existing security-review skill, and the phase-transition caution as a bound on SkillBank library growth. Everything else is already better covered by primaries we hold. Deliberately NOT proposed: adopting any surveyed method (SAGE, SEAgent, CUA-Skill are GUI/computer-use agents on proprietary stacks, outside our serving domain and given only secondhand treatment); and NOT citing the 26.1% figure as evidence until the three primaries are read directly.'
   notes: 'Ingested 2026-07-25 via /research-intake Phase-3 Tier-1 expansion from intake-888.'
   dive_corrections: '2026-07-25 Stage-2a dive: Agent Skills survey: BOTH flagged items are CITATIONS, not primary work by these authors. The 26.1%/2.12x security figures trace to arXiv 2601.10338, the 54.1% single-actor figure to arXiv 2602.06547, and the prompt-injection material to arXiv 2510.26328 — cite those directly, never the survey. The skill-selection PHASE TRANSITION is attributed to arXiv 2601.04748 (''Beyond a critical library size, skill selection accuracy degrades sharply''); READ THAT PRIMARY before setting any SkillBank library-size bound.'
+- id: intake-901
+  arxiv_id: null
+  url: https://github.com/avbiswas/fast-rlm
+  source_type: repo
+  title: 'fast-rlm REPL memory / resumable sessions — long-document multi-query demo (@neural_avb X post, re-review 2026-07-27)'
+  authors:
+  - Avishek Biswas (AVB, @neural_avb)
+  categories:
+  - agent_architecture
+  - context_management
+  - memory_augmented
+  - tool_implementation
+  - benchmark_methodology
+  novelty: low
+  relevance: high
+  credibility_score: null
+  discovered_via: input
+  ingested_date: '2026-07-27'
+  verdict: adopt_patterns
+  verification: dive-verified
+  key_claims:
+  - 'REPL memory = the Session feature: root agent auto-saves REPL state after every step; a resumed query starts a FRESH conversation seeded with (prior queries + FINAL answers + full code dump) plus a step-0 probe that prints a ground-truth inventory of restored variables (docs/guide/sessions.md).'
+  - 'Persistence tiers: picklable variables <=5 MB pickled into state.json; REPL-defined functions and classes stored as SOURCE CODE (not objects); comments adjacent to assignments attached to variables as annotations; query->FINAL ledger; step-by-step code history with failed steps compressed.'
+  - 'Explicit drop reporting rather than silent loss: context objects, open file handles, generators, JS proxies, and >5 MB variables are surfaced via session.dropped() with a reason.'
+  - 'Safety invariant: "Saved code is shown, never re-executed." Scope is root-agent-only — sub-agents remain isolated and do not participate in session memory.'
+  - 'commit(name, note=None) is an in-REPL curation tool layered on top of auto-save: "auto-saving is the safety net, commit is curation"; committed variables are marked committed:true in state.'
+  - 'Concurrency limitation stated in the docs: ONE live query per session directory — two queries running against the same session dir at the same time will race.'
+  - 'The repo ships a benchmarks/ harness (benchmarks/_harness.py, longbench_benchmark.py, oolong_synth_benchmark.py, niah_benchmark.py) against LongBench/NarrativeQA and oolong-synth — a capability intake-783 did not record.'
+  techniques:
+  - Cross-query REPL variable persistence (session memory)
+  - Step-0 restored-variable inventory probe (ground-truth reconciliation on resume)
+  - Fresh-conversation resume seeded by prior code dump rather than transcript replay
+  - Source-code serialization of REPL-defined functions/classes
+  - Explicit dropped-variable reporting with reason (vs silent loss)
+  - Auto-save safety net + operator-curated commit() annotation layer
+  - Atomic state writes with resume-from-last-completed-step
+  reported_results:
+  - 'Repo state at this re-review (GitHub API, 2026-07-27): HEAD f25f310b "FAST RLM logs for sessions", pushed_at 2026-07-07T22:36:54Z, 57 commits, 459 stars, 60 forks, MIT, zero releases/tags, created 2026-02-22.'
+  - 'ZERO code delta vs intake-783 (re-reviewed 2026-07-08, recorded "57 commits"): the last two commits, 063cfdc6 "Sessions" and f25f310b "FAST RLM logs for sessions" (both 2026-07-07), ARE the REPL-memory feature the X post showcases. The repo has not been updated since.'
+  - 'CORRECTED BY DIVE D1: docs/guide/sessions.md:64-79 DOES state a protocol for the "~2.6x cheaper" figure — google/gemini-3.5-flash via OpenRouter, 40-episode synthetic podcast corpus, 1 build query + 6 follow-ups answered purely from restored state, independent session directories per arm, metric = per-query input prompt tokens plus answer correctness. Full per-query table given: code-ON total 119,744 input tokens vs code-OFF 314,961 (ratio 2.63x, arithmetic checks out); "Both variants answered every query correctly." What it actually lacks is reps/n (one run per arm), variance, a seed, and independence (maintainer measuring his own default on a synthetic corpus he built). Under MEASUREMENT.md it is an OBSERVATION (no protocol-id, no attestation ref) — usable for hypotheses, not to gate.'
+  - 'CONFIRMED BY DIVE D2: docs/development/benchmarks.md publishes no scores. Root cause found in source: benchmarks/_harness.py:4 states verbatim "No budget sweeps, no non-RLM baseline yet" — the harness measures whether the RLM was correct and what it cost, with NO direct-long-context arm to compare against.'
+  - 'DIVE D1: the 2.6x number appears ONLY in docs/guide/sessions.md. It is absent from all source and tests; the code comment at src/session.ts:170-173 makes only the qualitative claim "experiments show it materially speeds up follow-up queries".'
+  referenced_arxiv_ids:
+  - '2512.24601'
+  handoffs_created:
+  - rlm-contested-claims-self-evaluation.md
+  - repl-session-memory-maturity.md
+  handoffs_updated: []
+  cross_references:
+    superseded_intake: intake-783
+    intake_entries:
+    - intake-783
+    - intake-693
+    - intake-153
+    - intake-536
+    chapters: []
+    handoffs: []
+  contradicting_evidence:
+  - 'Recursion depth: a March 2026 reproduction (Daren Wang) already captured in this index reports that deeper recursion (depth>=2) is ACTIVELY HARMFUL for many tasks, against the original RLM paper''s depth=1 default. fast-rlm ships max_depth=3 as its default — a default our stack should not copy uncritically.'
+  - 'Bounded search surfaces recurring production critiques of the RLM paradigm generally: latency (a run may spend ~60s on REPL loops/greps), cost spikes, format collapse, and the security surface of granting REPL + recursive sub-agent access. PROVISIONAL — secondary commentary, not a controlled study.'
+  - 'The "~2.6x cheaper" session figure is the maintainer''s own, published without protocol in his own project docs. No independent corroboration found in a bounded search (provisional — absence of a bounded-search hit is not evidence of absence).'
+  novelty_justification: 'low, NOT duplicate. The URL is an exact collision with intake-693 and intake-783, and the code delta versus intake-783 is literally zero (pushed_at 2026-07-07 predates intake-783''s 2026-07-08 re-review; still 57 commits). The submitted X post therefore demonstrates an ALREADY-INDEXED feature rather than a new one. It is filed as a distinct entry rather than novelty:duplicate because (a) the index precedent for this repo is re-review entries that supersede (693 -> 783), and (b) two things intake-783 under-captured are recorded here for the first time: the mechanism-level design of session memory (5 MB pickle tier + source-serialized functions + dropped() reporting + step-0 inventory probe + saved-code-never-re-executed + one-live-query-per-dir race) and the existence of the benchmarks/ harness.'
+  relevance_justification: 'high. The operator framed this as an architecture-maturity question against our own stack, and it lands on live production code: we already have src/repl_environment/state.py checkpoint()/restore() and src/session/persister.py SessionPersister with a SQLite store, so this is a direct design comparison on a subsystem we own — not a greenfield import.'
+  verdict_justification: 'adopt_patterns. Nothing here is a component to import: fast-rlm is a standalone Deno/Pyodide runtime, our REPL is in-process Python, and we already have checkpoint/restore plus session persistence. The transferable material is design-level — the persistence-tier taxonomy with explicit drop reporting, the step-0 restored-state inventory probe, and resume-as-fresh-conversation-seeded-by-code. credibility_score null: repo with no published empirical results (its own benchmarks doc reports no numbers); the single 2.6x figure carries no protocol and is author-reported.'
+  dive_corrections: '2026-07-27 Stage-2 dives D1/D2/D3 (primary source read at pinned SHA f25f310b; our side read at epyc-orchestrator working tree).
+
+    OVERTURNED (1): my Stage-1 characterisation of the "~2.6x cheaper" figure as having "no protocol, no n, no workload named" was WRONG. docs/guide/sessions.md:64-79 names the model, corpus, query structure, arm independence and metric, and publishes the full per-query token table. The correct criticism is narrower: n=1 per arm, no variance, no seed, synthetic corpus, maintainer-measured. It remains an OBSERVATION under MEASUREMENT.md, but the entry must not claim the protocol is absent.
+
+    OVERTURNED (2): my Stage-1 preliminary actionable "audit checkpoint/restore for SILENT drop" was wrong on the premise. We ALREADY report drops, and we report them to the MODEL, not just the log: src/repl_environment/state.py:320 collects skipped_user_globals, and src/session/models.py:462-465 renders "Skipped non-serializable variables: ..." into the model-facing resume summary alongside a restored-variable inventory at models.py:452-461. The real deltas are different and are listed below.
+
+    CONFIRMED (D1, mechanism): fast_rlm/_session.py:153-170 exposes variables()/functions()/dropped(); src/session.ts:213 sets __SESSION_MAX_VAR_BYTES__ = 5_000_000 with per-variable drop reasons at :307 ("not picklable: ...") and :312-313 ("too large to save: N bytes (cap ...)"); values are pickle protocol 4 then base64 into state.json (:322); functions/classes stored as SOURCE (:332, ast-parsed per step); atomic tmp+rename writes with a byte-identical-skip optimisation (:96-98, :88); an immutable-value pickle cache avoids re-pickling unchanged corpora (:222, :302).
+
+    CONFIRMED (D1, the real deltas vs us): (a) SERIALIZATION TIER — ours is JSON-only (state.py:262 _is_json_serializable), so REPL-defined functions/classes, numpy arrays, DataFrames and built indexes all fall into skipped_user_globals and are LOST; theirs pickles them to 5 MB and source-serializes functions. (b) POST-RESTORE RECONCILIATION — ours is a host-side text summary asserting what the checkpoint SAID (models.py:452-465) and restore() at state.py:410-421 logs only builtin-key collisions to the logger; theirs injects SESSION_PROBE_PY (session.ts:376-393) which executes IN the live REPL after restore and prints repr() of what ACTUALLY landed, backed by a __session_restore_result__ carrying per-name "unpickle failed: ..." (:364). Theirs catches restore-time failures; ours cannot. (c) PRIOR-CODE DUMP — their resume seeds a FRESH conversation with the executed code log (session.ts:174-185, failed steps compressed to one-line comments); ours seeds prose findings/last-topic. This is exactly the axis the 2.6x table measures. (d) CURATION LAYER — commit(name, note) plus comment-to-variable binding via tokenize; we have variable_lineage (role, execution_count, ts) but no agent-facing annotation. (e) Our inventory is truncated to 12 vars / 8 skipped (models.py:455, :464); theirs is not.
+
+    CONFIRMED (D1, limits): docs/guide/sessions.md:117 "Saved code is shown, never re-executed" — only function/class defs are re-executed, as deterministic. Session memory is ROOT-AGENT-ONLY; sub-agents isolated. One live query per session dir or the runs race.
+
+    CONFIRMED+EXTENDED (D2): the harness is real and cheaply reusable but has NO baseline arm (_harness.py:4). It DOES expose the axes we care about as CLI flags: --seed (default 0, :327), --max-depth (:345-346, "default: RLMConfig''s 3"), --temperature (:355), --judge (:361). Scorers are deterministic by default (exact_match :58, numeric_match :63, SQuAD/LongBench token-F1 :78) with an OPTIONAL temperature-0 LLM judge (:95-147) motivated at :106 as "the fix for token-F1 punishing wordy-but-right answers". benchmarks/niah_benchmark.py is FULLY SYNTHETIC with no dataset download (:1, :38-60) — runnable on our stack against local models with zero external dependency. CAUTION: adopting their LLM judge would cross our human-amendment-only scoring trust boundary (MEASUREMENT.md); the deterministic scorers do not.
+
+    OVERTURNED/CLOSED (D3): intake-693''s recorded remaining gap — "child/sub-LM return schema on batch_llm_query/llm_query (combined_ops.py:302, no schema=)" — is CLOSED in our tree. src/repl_environment/combined_ops.py:338 now takes schema: dict | None, renders a preamble (:33-41), validates via _validate_final_answer (:397) and RETRIES rather than restarts (:402-412, max_retries capped to 2 at :353), and emits schema/schema_validation telemetry (:435, :466). intake-693''s note is stale and should not be re-derived as an open task. NEW from D3: fast-rlm ships ENABLE_STRUCTURED_IO as a built-in ABLATION flag (src/subagents.ts:177-179) that disables schema validation and the schema preamble — a ready-made A/B instrument, and the pattern we lack. Also src/subagents.ts:235 enforces max_depth by THROWING "MAXIMUM DEPTH REACHED" at the child, not by degrading gracefully.'
+  notes: 'User-provided 2026-07-27 (pasted X post by @neural_avb showing a Sherlock Holmes novel answered across multiple queries via persistent REPL variables, with a terminal TUI showing query timelines, code steps, and a memory view of saved variables). Operator steering this session: (1) "I know we''ve looked at this github many times already but it keeps getting updated with cool features"; (2) "the RLM project is at a more mature stage than ours showing significant capability at handling real workloads"; (3) "what can we learn from it to get our own architecture into a more mature state?" — steering (1) is PARTIALLY OVERTURNED by the API evidence above (no commits since 2026-07-07); steering (2) and (3) reframe this intake as a capability-gap comparison rather than a technique import, and are carried to Stage 3. DEDUP TRIPWIRE: do NOT open a new intake for this repo until GitHub /repos reports pushed_at later than 2026-07-07T22:36:54Z (HEAD f25f310b); three entries (693, 783, 901) already share this exact URL. Verified-at-Stage-1 sources: GitHub API /repos and /commits (2026-07-27), README.md, docs/guide/sessions.md, docs/development/benchmarks.md, git tree at f25f310b. NOT yet read: fast_rlm/_session.py, src/session.ts, tests/session_state_test.ts, benchmarks/_harness.py — a dive would read these.'
