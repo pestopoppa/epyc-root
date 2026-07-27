@@ -387,6 +387,8 @@ def compute_advice(bus_root: Path, config: dict, epoch: int) -> list[dict]:
                          "live_roles": co_ctx.get("live_roles"),
                          "available": co_ctx.get("available"),
                          "error": co_ctx.get("error")},
+        "capabilities": capability_status(config),
+        "capability_blockers": capability_blockers(config),
         "queue_depth": len(latest),
         "ready_depth": sum(1 for r in latest.values() if r.get("status") == "READY"),
     }]
@@ -997,6 +999,66 @@ def _append_advisory(bus_root: Path, rows: list[dict]) -> None:
             fh.write(json.dumps(row, sort_keys=True) + "\n")
 
 
+def capability_status(config: dict) -> dict[str, dict]:
+    """Which M5 capabilities are authorised, capped, and actually implemented.
+
+    WHY THIS EXISTS. `flags` and `caps` sat in config.yaml with NOTHING reading
+    them — declared safeguards that enforced nothing. A cap that is not enforced is
+    worse than no cap, because it reads as protection. This makes them real, and
+    reports the third axis that matters: whether the code exists at all. Granting a
+    gate for an unimplemented capability would otherwise leave the config asserting
+    `on` while nothing could act on it.
+
+    `implemented` is a fact about this file, not a policy — so a granted flag can
+    never make an absent adapter look present.
+    """
+    flags = config.get("flags") or {}
+    caps = config.get("caps") or {}
+
+    def state(flag_val) -> bool:
+        return str(flag_val).strip().lower() in {"1", "true", "yes", "on"}
+
+    return {
+        "codex_sendkeys": {
+            "authorised": state(flags.get("codex_sendkeys")),
+            "cap": int(caps.get("max_spawns_per_day") or 0),
+            "cap_name": "max_spawns_per_day",
+            "implemented": False,      # no send-keys / pane-spawn adapter exists yet
+            "gate": "OP-SENDKEYS-CODEX",
+        },
+        "triage": {
+            "authorised": state(flags.get("triage")),
+            "cap": int(caps.get("triage_calls_per_day") or 0),
+            "cap_name": "triage_calls_per_day",
+            "implemented": False,      # no one-shot triage hook exists yet
+            "gate": "triage",
+        },
+        "headless_workers": {
+            "authorised": int(caps.get("max_headless_workers") or 0) > 0,
+            "cap": int(caps.get("max_headless_workers") or 0),
+            "cap_name": "max_headless_workers",
+            "implemented": False,      # no headless launcher wiring exists yet
+            "gate": "headless-worker",
+        },
+    }
+
+
+def capability_blockers(config: dict) -> list[str]:
+    """Human-readable reasons each M5 capability cannot run right now."""
+    out: list[str] = []
+    for name, s in capability_status(config).items():
+        reasons = []
+        if not s["implemented"]:
+            reasons.append("NOT IMPLEMENTED")
+        if not s["authorised"]:
+            reasons.append(f"gate {s['gate']} not granted")
+        if s["cap"] <= 0:
+            reasons.append(f"{s['cap_name']}=0")
+        if reasons:
+            out.append(f"{name}: " + ", ".join(reasons))
+    return out
+
+
 def _authority(config: dict) -> str:
     return str((config.get("coordinator_daemon") or {}).get("authority", "manual")).strip()
 
@@ -1222,6 +1284,12 @@ def cmd_status(args: argparse.Namespace) -> int:
               f"age={age:.0f}s note={hb.get('note')!r}")
     except Exception:  # noqa: BLE001
         print("no coordinator-daemon heartbeat")
+    blockers = capability_blockers(_load_config(bus_root))
+    print("M5 capabilities:")
+    for b in blockers:
+        print(f"  BLOCKED  {b}")
+    if not blockers:
+        print("  all authorised, capped and implemented")
     rows, _ = _read_jsonl(bus_root / "advisory.jsonl")
     print(f"advisory records: {len(rows)}")
     for row in rows[-5:]:
