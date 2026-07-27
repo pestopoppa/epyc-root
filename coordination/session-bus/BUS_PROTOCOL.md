@@ -21,9 +21,10 @@ Owning handoff: [`handoffs/active/session-bus-thin-dispatcher.md`](../../handoff
    *Enforcement boundary, stated plainly:* `session_bus.py` derives the required writer from the
    target path and refuses a mismatch, so a cross-write is structurally inexpressible — you can
    only address the files of whoever you claim to be. But `--agent` is **self-asserted**: the CLI
-   cannot detect impersonation. That is what the M1 single-writer audit (`git blame` per bus file
-   = one authoring session) exists to catch, and why the audit is an acceptance criterion rather
-   than a formality.
+   cannot detect impersonation. M1 acceptance therefore relies on the content-level ownership
+   lint (`from == owner` plus target-path refusal) and commit separation, not `git blame` author
+   names: all current agents share one git identity, so author-name output cannot discriminate
+   writer sessions. A stronger identity boundary remains future work.
 2. **NEVER BLOCK.** No agent waits on the bus. Work continues; grants and acks are picked up at
    the next boundary (op-bundle contract). A pending operator token never gates unrelated work.
 3. **ACKS.** `requires_ack` messages are redelivered as a `nudge` (same `corr_id`) after

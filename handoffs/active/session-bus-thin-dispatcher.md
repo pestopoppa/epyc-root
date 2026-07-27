@@ -413,8 +413,8 @@ freezes/cutovers, host reboots).
   regardless of who wrote it. The enforcing check is the content-level lint in
   `session_bus.py validate` (every row in `outbox/<a>` must carry `from == <a>`; every write is
   refused unless the caller owns the target path), corroborated by commit separation — Codex
-  committed only its own three files as `45501f0a`. Later milestones should cite the lint, not
-  the author field.
+  committed only its own three files as `45501f0a`; the coordinator fold has since terminalized
+  the acceptance row as `DONE_PASS`. Later milestones should cite the lint, not the author field.
 - [x] **M2 — hub visibility.** ✅ 2026-07-27 — `/api/bus` (roster, per-agent liveness, inbox
   depth, operator-token counts, co-residency topology check), `/api/queue` (folded queue +
   invariant alarms), and the `/bus` page on :8100. Clones the `/api/kernel` payload-builder
