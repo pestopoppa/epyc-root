@@ -24,12 +24,12 @@ coordinator_daemon:
   epoch: 0
 
 flags:
-  codex_sendkeys: off       # gate: OP-SENDKEYS-CODEX in tokens/token-queue.md
+  codex_sendkeys: on       # gate: OP-SENDKEYS-CODEX in tokens/token-queue.md
   triage: off               # M5
 
 caps:
   max_headless_workers: 0
-  max_spawns_per_day: 0
+  max_spawns_per_day: 3
   triage_calls_per_day: 0
 
 leases:

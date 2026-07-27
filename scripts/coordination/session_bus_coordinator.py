@@ -1023,7 +1023,7 @@ def capability_status(config: dict) -> dict[str, dict]:
             "authorised": state(flags.get("codex_sendkeys")),
             "cap": int(caps.get("max_spawns_per_day") or 0),
             "cap_name": "max_spawns_per_day",
-            "implemented": False,      # no send-keys / pane-spawn adapter exists yet
+            "implemented": True,       # scripts/coordination/tmux_adapter.py (M5, 2026-07-27)
             "gate": "OP-SENDKEYS-CODEX",
         },
         "triage": {
