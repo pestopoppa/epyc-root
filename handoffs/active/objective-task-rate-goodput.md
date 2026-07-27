@@ -67,6 +67,11 @@ inputs are journaled, so the axis replays over FULL journal history at zero infe
     per entry (canonical helpers, no reimplementation); speed-axis toggle (median request t/s
     ↔ task_rate q/h); dual-report banner; server-side divergence tripwire. Display-only;
     dominance unchanged; ships at the queued API reload.
+  - [x] **W3d — panel activation verified live** ✅ 2026-07-27: API-only reload via
+    `orchestrator_stack.py reload orchestrator` (performed while fixing the probe-env health
+    flapping); `/dashboard/api/pareto` confirmed serving `task_rate_qph`, `goodput_qph`,
+    `tokens_per_solved`, `offered_load` + divergence tripwire; 6/6 backend probes green
+    post-reload.
 - [ ] **W5 — regime-profiled offered load (NEXT INSTRUMENT ERA, pairs with batching
   integration; operator design decision 2026-07-27).** The trial eval's single fixed arrival
   pattern (closed-loop concurrency-3) means task_rate measures one operating point; configs
