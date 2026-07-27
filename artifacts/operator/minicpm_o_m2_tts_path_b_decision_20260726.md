@@ -116,3 +116,48 @@ current 27B GPU phase boundary** (the FF/TC np_context_study_v8 grid is live on 
 MI210) and must not delay running evidence. The adapter build/audit is CPU-side and
 can be prepared without the GPU; the M-2 observation itself queues behind GPU-free.
 Owning session for execution: the Codex long-horizon workflow (relay required).
+
+## Immutable Derivative Pin (2026-07-27)
+
+The authorized detached derivative is now pinned at
+`c86781a93fa07b396ec3613fb79e7a22ab30d8f8` in
+`/mnt/raid0/llm/llama.cpp-omni-experimental`. Its exact ancestry is:
+
+- required upstream parent:
+  `5202b7b2f4d11f50b9f996161e7a2f8b8571b890`;
+- minimal contract adapter:
+  `af555ed6cb3b2a135b43f614a9e03c9df4d77825`;
+- audited repair and terminal derivative pin:
+  `c86781a93fa07b396ec3613fb79e7a22ab30d8f8`.
+
+Patch rationale: add a strict CPU-only CLI path for exact text input and a
+fresh private run directory, then publish exactly `output.wav` by validating
+and joining the backend's complete consecutive PCM WAV chunk set. Strict mode
+disables fallback/device ambiguity and fails closed on missing prerequisites,
+unsafe paths, incomplete output, or publication conflicts. Legacy callers keep
+their prior behavior when strict mode is disabled. The run-directory contract
+assumes a trusted parent and excludes concurrent mutation by another process
+using the same account.
+
+Independent audit identified and the terminal pin fixes three acceptance
+blockers: stale completion-marker indices in real retained output, an
+unintended legacy CPU-routing change, and umask-dependent run-directory
+permissions. The terminal pin also bounds WAV format allocation and moves
+run-directory creation after prerequisite preflight.
+
+CPU validation ran under the `q1` region lock against the terminal pin:
+
+- CMake Release build of `llama-omni-cli` and
+  `test-omni-tts-run-contract`: passed;
+- `test-omni-tts-run-contract`: passed;
+- `test-omni-cli-contract`: passed;
+- focused CTest result: `2/2` passed, `0` failed.
+
+No M-2 derivative measurement had run when this pin was published. The
+observation remains queued behind the FF/TC MI210 grid and must retain its
+exact input text, command, runtime identity, output path, and WAV SHA-256.
+
+The standing upstream watch checked `origin/master` at
+`74699a53df6ca0f4947ff37066f851532c20b12d`. That revision still lacks a
+documented deterministic text-input plus explicit single-output-WAV contract,
+so no migration from the local derivative is available yet.
