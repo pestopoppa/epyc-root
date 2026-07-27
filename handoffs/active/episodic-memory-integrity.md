@@ -51,6 +51,10 @@ failure caught in amber.
       (`eaea2317`)
 - [x] M-9 — Deploy: API reloaded to the fixed code and **verified self-healing live** — a `-2`
       desync appeared after reload and `_load()` reconciled it to 0 automatically. ✅ 2026-07-27
+  - [x] M-9a — **Fix holds under production write load.** ✅ 2026-07-27. 291 memories written since
+        the reload with `desync = 0` throughout (ntotal 707,276 → 707,561), **0/291 with a NULL
+        `update_count`** (the pre-fix population was 22,949 of 54,960) and **0/291 with a NULL
+        `embedding_idx`**. The desync fix is confirmed under live writes, not just at reload.
 - [ ] M-10 — **Reseed** (`reseed_episodic_store.py`). Relayed to Codex 2026-07-27. Needs inference
       (~58,132 BGE embeddings) and a window with no pinned CPU bench running.
   - [ ] M-10a — Acceptance is the **cosine test**, not the exit code: re-embed a row's own text and
@@ -84,6 +88,13 @@ failure caught in amber.
       close-out gate of <=0.55; its in-sample leakage anchor read 0.6427 where the report documented
       "expected ~1.0", recovering to 0.9101 under the correct mapping. The line was closed on bad
       evidence. Re-run after the reseed.
+- [ ] M-16 — **Verify the record contract is actually exercised in production.** Deployed but
+      unexercised as of 2026-07-27 22:0x: the API restarted 21:53:16 on code containing `eaea2317`
+      (21:40:06), and exactly **1** row has been written since — at 21:53:03, i.e. 13 s BEFORE that
+      process started, so it is the old process's last write. Nothing has yet gone through the new
+      path. Check once traffic flows: new rows must carry `record_version`, an untruncated
+      `objective`, and telemetry under `metrics`. The chokepoint guard in `store()` logs a warning
+      for any non-contract write, so a silent regression is visible in the API log.
 - [ ] M-12 — Run the memory-on vs memory-off A/B that **has never existed** in either repo. This is
       the only thing that will answer "does episodic retrieval help" with evidence.
 
