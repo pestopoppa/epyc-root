@@ -675,12 +675,34 @@ freezes/cutovers, host reboots).
   Three defects its test suite found: an unverified target could send keys to the **wrong pane**
   (tmux resolves a miss to the current window with exit 0); the quiet-check was **fail-open**
   (`window_activity` only tracks output while attached); and `--dry-run` created files.
-  - [ ] **C6 — nudge submission verification.** *NOT resolved — on its third fix attempt as of
-    2026-07-28.* Attempt 1 (fail-open) let an unverified target send keys to the wrong pane;
-    attempt 2 (quiet-check via `window_activity`) produced a false-negative on TUI overlays;
-    attempt 3 is currently being reworked in `scripts/coordination/tmux_adapter.py` /
-    `tests/test_tmux_adapter.py` (in flight in a parallel session — do not edit those two files
-    until it lands). The previous `[x]` mark on this line was premature and has been corrected.
+  - [x] **C6 — nudge submission verification.** ✅ 2026-07-28 — commit `8033f039`. Attempt 1
+    (fail-open) let an unverified target send keys to the wrong pane; attempt 2 (quiet-check via
+    `window_activity`) produced a false-negative on TUI overlays; attempt 3 (`codex-bus-tests`)
+    replaced the row-window predicate with a **cursor-anchored** one — the composer is everything
+    up to the terminal cursor, a pending message is one the composer *ends with*, matching is
+    whitespace-insensitive (both TUIs soft-wrap inside the fragment), and the 240-char cap became
+    a 4000-char policy ceiling on measured calibration (Claude blobs at ~805, Codex at 1001 and
+    truncates blobs at 1024; 400-char chunks with a load-bearing 0.15s gap are verified to 12,000).
+    Independently reviewed by `claude-gpu-lane`, which found attempt 3 had **reopened the
+    fail-open through two narrower doors** and fixed both; 21 → 29 tests.
+    - `text_absent` post-Enter was read as "submitted". An Enter consumed by a completion overlay
+      rewrites or *extends* the typed text instead of submitting, leaving a pane that is
+      byte-for-byte a success. Fixed twice over: success now requires the transcript **echo**
+      positively (`text_echoed`), and messages containing `@` or starting with `/ ! #` are refused
+      up front, because the extend case is undetectable from the pane afterwards. A leading `!` is
+      Claude Code's bash mode — such a nudge would have *executed* in the target session.
+    - A whitespace-only 60-char tail normalised to `""`, and `endswith("")` matched every pane, so
+      the pre-Enter gate passed unconditionally and fired a bare Enter into the pane.
+    - Also: post-Enter acceptance now needs 2 consecutive samples (a half-drawn repaint frame was
+      believable on one); `send-keys` gained `--` (a chunk starting with `-` parsed as a flag); a
+      mid-message chunk failure now reports how many chars it left pending in someone's composer.
+    - **Testing rule this produced — a fixture must not hide the predicate under test.** The
+      end-to-end fixture cleared the screen on submit (`\033[2J\033[H` after `read`). No real TUI
+      does that — both echo the submitted message into the transcript — and it is precisely the
+      echo that the post-Enter check must observe. A screen-clearing fixture therefore passes an
+      implementation that cannot tell submission from a swallowed Enter: the test models away the
+      one signal it exists to verify. When a fixture stands in for a real system, check what it
+      *removes*, not just what it reproduces; anything the predicate reads is not optional detail.
   - [x] **C7 — roster-bound writer containment** ✅ 2026-07-28 — heartbeat/outbox appends require
     a roster id; rebuild and daemon audit ignore non-roster artifacts; validation warns without
     deleting them. `tests/test_session_bus.py` proves no task-shaped writer becomes an agent.

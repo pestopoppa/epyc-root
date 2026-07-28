@@ -1,5 +1,15 @@
 # Task: fix the C6 submission-verification false negative
 
+> **RESOLVED 2026-07-28 — commit `8033f039`.** The cursor-anchored predicate (this task's
+> deliverable, by `codex-bus-tests`) plus two fail-opens it introduced, found and fixed by
+> `claude-gpu-lane` on independent review: post-Enter *absence* of the message was read as
+> submission (an Enter eaten by a completion overlay rewrites or extends the text and looks
+> identical to a success — success now requires the transcript echo, and `@ / ! #` triggers are
+> refused up front), and a whitespace-only fragment normalised to `""` so `endswith("")` matched
+> every pane. 21 → 29 tests. Full record: `handoffs/active/session-bus-thin-dispatcher.md` → M5 → C6.
+> **Kept, not archived**, because the two-attempt failure history above is why the third attempt
+> got a mandatory independent review — and C9 in the same module is queued for the same treatment.
+
 **Assigned to** `codex-bus-tests`. You fixed C6 in `e6c8abcf`; this is the follow-up its live use
 exposed. Written to be self-contained, because you are picking this up on a cleared context.
 
