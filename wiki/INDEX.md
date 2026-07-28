@@ -38,7 +38,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 |---------|---------|-------------|
 | [Cost-Aware Routing](cost-aware-routing.md) | 42+ | CoT scaffold-transplant falsified in both regimes; the reasoning-effort ladder got its first real measurements — the accuracy lever is the PROMPT (+32pp CoT-in-content), not native `<think>` (loses via a non-termination tail, fixable with a budget cap); `max_tokens` is a silent third quality axis (a ~57pp finished-vs-truncated swing measured) coupled to admission control via per-architecture KV/slot cost |
 | [Routing Intelligence](routing-intelligence.md) | 67+ | RI-10 decision-ready but first packet is `hold_quality_unscored` (proxies favor enforce; factuality unscored); X-MAS learned route-mutation is live in enforce — first learned routing layer in production |
-| [Benchmark Methodology](benchmark-methodology.md) | 94+ | Architect model-selection bench reached a well-powered, scorer-corrected NULL across 7 measurements (A1≈A3≈A4, quality-tied); a stale extractor nearly manufactured a false-significant result (R7), triggering a fragmentation audit that found ~10+ duplicated scoring implementations stack-wide, one on the autopilot RL reward path (unaudited, high risk) |
+| [Benchmark Methodology](benchmark-methodology.md) | 94+ | Architect model-selection retained deterministic replay rather than regeneration after scorer defects; the sealed ThinkingCap no-think row and bounded Laguna remediation are current authority, while G3's missing controls and E8's unapplied recovery evidence remain explicit non-decision work |
 
 ## Agent & Architecture
 

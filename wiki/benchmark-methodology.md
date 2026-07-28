@@ -5,6 +5,53 @@
 **Last compiled**: 2026-07-27 (adds the three measured episodic-store leakage traps; prior 2026-07-26 capture-integrity and 2026-07-24 architect/scorer updates retained)
 **Sources**: 94+ documents
 
+## Compiled Update — 2026-07-28 bounded recovery and targeted validation
+
+The post-v8 campaign closed three related evidence practices. First, a scorer
+or converter defect is repaired by deterministic replay of saved outputs; new
+generation is reserved for a generation-path defect. That rule allowed the
+ThinkingCap no-think row and the G3 receiver continuation to retain their
+sealed inference evidence while correcting the downstream path. Second,
+targeted remedial inference must test the hypothesized failure mechanism, not
+quietly become a full-suite rerun: Laguna's eight preclassified LCB cases
+recovered only one new solve despite fixing several termination modes. Third,
+the E8 quality-baseline recovery binds reconstruction to the sealed T1 core
+before any output write and keeps collection distinct from the later
+human-only baseline application.
+
+### Key Findings (2026-07-28)
+
+- **Do deterministic tail replay before regeneration.** The corrected
+  ThinkingCap no-think SWE/LCB row is comparable because the capture was
+  re-scored from sealed outputs with the frozen v4 converter; the old
+  thinking-enabled row stays diagnostic rather than being blended into the
+  comparison. G3 likewise completed its receiver-only continuation from the
+  sealed generator ledger, but its missing matched controls and stop-reason
+  metadata defect remain explicit open work.
+- **A termination repair is not a quality repair.** Laguna FG-2V changed one
+  literal loop to a normal stop and improved several format stops, yet its
+  focused eight-row screen gained only one new LCB solve. The evidence rules
+  out inferring coding-role suitability from a cleaner finish reason alone.
+- **Recovery instruments must validate source identity before side effects.**
+  E8 partial-r2 schema v2 reconstructs from the sealed T1 `core_v2` and
+  rejects legacy or mismatched intermediates before creating collection
+  output. The active collection remains observation/evidence work; no quality
+  baseline has been applied or published.
+
+### Open Questions (2026-07-28)
+
+- G3 needs matched receiver-nothink and Qwable-prefix controls, plus faithful
+  llama-server stop-reason classification, before any generator selection.
+- E8 still requires complete fresh recovery evidence and the separate
+  consolidated human trust-boundary action before its quality baseline can be
+  applied.
+
+### Source References (2026-07-28 bounded recovery and targeted validation)
+
+- [Architect model comparison handoff](../handoffs/active/architect-model-selection-bench.md) — sealed no-think ThinkingCap authority and the bounded Laguna FG-2V result.
+- [GPU CoT scaffold sidecar](../handoffs/active/gpu-cot-scaffold-sidecar.md) — deterministic receiver-only G3 continuation, results, and unidentifiable-control caveat.
+- [Autopilot decision-plane audit](../handoffs/active/autopilot-decision-plane-audit-2026-07-22.md) — sealed-core E8 recovery contract and unapplied baseline state.
+
 ## Compiled Update — 2026-07-26 capture-integrity boundary
 
 The Laguna architect comparison exposed an evidence defect rather than a model
