@@ -45,11 +45,12 @@ config change with a rehearsed rollback, never a rebuild.
 - [x] Autopilot resume preconditions fixed: tiny-n hard-gate guard (`4d329002`) + kv_compaction per-role skip (`24fa1399`), tested, pushed ✅ 2026-07-28
 - [x] Laguna weights deleted (108G freed; in-use guard verified) ✅ 2026-07-28
 - [ ] **P0-1 (operator)** — run the E8 ratification when Codex presents the apply-ready bundle (D4). BEFORE reboot.
-- [ ] **P0-2 (Codex)** — FG-4b canonical A4 CPU re-anchor: clear stale q2 region locks (verify holder PIDs dead — `bench.q2` holder 1428683 confirmed dead 2026-07-28), then `bench_canonical.sh` protocol run; refresh the stale 24.3 t/s registry row via the canonical path only.
-- [ ] **P0-3 (Codex)** — E5 non-reboot-gated prep: W0 summarizer + Stage-B prune, harness readiness, manifests, cell definitions (`batched-decode-measurement.md` E5).
+- [ ] **P0-2 (Codex, inference)** — FG-4b canonical A4 CPU re-anchor: **q2 is FREE — verified via `region-lock status` 2026-07-28** (locks are flock-based and died with their holders; the on-disk lock files are harmless vestiges — do NOT delete them). Just run `bench_canonical.sh` per protocol; refresh the stale 24.3 t/s registry row via the canonical path only.
+- [ ] **P0-3 (THIS session — division of labor 2026-07-28: Claude builds all non-inference work; Codex queues inference only)** — E5 non-reboot-gated prep: W0 summarizer + Stage-B prune (offline), C1 (GGML_IQK per-cell manifest/attestation) + C3 (multi-server harness + cell-manifest affinity gate) builds, W1–W4 cell manifests. Subagent dispatched 2026-07-28.
+- [ ] **P0-7 (THIS session)** — Phase-2 lane scaffolding started early (non-inference): flag-gated default-off launch-layer code + ready-to-apply registry PROPOSAL (registry itself stays FROZEN per D3 — no live edits), np_ceiling policy table from the measured grids, lane spec with D1 admission order. Subagent dispatched 2026-07-28.
 - [x] **P0-4** — registry deprecation check: VERIFIED 2026-07-28 that neither Laguna nor ThinkingCap was ever registered in the master or lean registry (bench-only candidates; no rows exist to annotate). Deprecation of record = D7 here + the architect-bench handoff status. ✅ 2026-07-28
 - [ ] **P0-5** — relay sent to Codex pointing at this handoff as program authority.
-- [ ] **P0-6 (guarded)** — delete TC weights (28G) at the G3-drain boundary: precondition `lsof` empty on `/mnt/raid0/llm/models/ThinkingCap-Qwen3.6-27B-GGUF` AND G3 campaign reports complete.
+- [ ] **P0-6 (guarded, operator-gated)** — delete TC weights (28G) only after **G3 scaffold-generator results are back AND the operator has reviewed them** (off-chance of idea revision) AND `lsof` empty on `/mnt/raid0/llm/models/ThinkingCap-Qwen3.6-27B-GGUF`. Not merely G3-drain.
 
 ### Phase 1 — the reboot window (one bundle; operator schedules AFTER P0-1)
 - [ ] **P1-1 (operator)** — host reboot (cures uptime>P-BENCH gate + worker-quarter 8282/8382 page locality).
