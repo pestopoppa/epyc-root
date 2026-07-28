@@ -148,7 +148,9 @@ def test_live() -> None:
         bus = Path(d)
         m = load(bus)
         try:
-            tmux("new-session", "-d", "-s", SESSION, "-n", "quiet", "sleep 300")
+            tmux("new-session", "-d", "-s", SESSION, "-n", "quiet",
+                 "sh", "-c", "printf '\\033[999;1H'; IFS= read -r line; "
+                 "printf '\\033[2J\\033[HSUBMITTED\\n'; sleep 300")
             # `sh -c` as SEPARATE args, not one string. The default shell here is
             # fish, which rejects bash loop syntax — passing the loop as a single
             # arg created the window and fish killed it instantly, so this case

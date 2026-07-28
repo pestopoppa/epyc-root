@@ -65,6 +65,15 @@ EX_BLOCKED = 2
 EX_MISCONFIG = 3
 EX_USAGE = 64
 
+# C6 policy. A ~1,018-character nudge was observed to become a mangled Codex
+# paste blob. We have no safe TUI calibration point below that failure, so this
+# is deliberately a fail-loud operational cap, not a claim about the TUI's
+# actual threshold. At >4x below the observed failure it leaves a clear safety
+# margin; raising it requires a dedicated disposable-TUI calibration.
+MAX_NUDGE_MESSAGE_CHARS = 240
+DEFAULT_NUDGE_SETTLE_S = 0.25
+_PROMPT_TAIL_LINES = 4
+
 
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
@@ -76,6 +85,33 @@ def _tmux(*args: str) -> tuple[int, str]:
     except (OSError, subprocess.SubprocessError) as exc:
         return 127, str(exc)
     return r.returncode, (r.stdout or r.stderr).strip()
+
+
+def _prompt_tail(target: str) -> tuple[str | None, str | None]:
+    """Return the bottom prompt area, or a fail-closed diagnostic.
+
+    Tmux does not expose a submitted-input state. The bottom of a captured pane
+    is the closest available signal: a pending prompt is there, while submitted
+    transcript content normally scrolls above it. This can false-refuse on an
+    unusual TUI layout, but must never claim delivery without post-Enter proof.
+    """
+    try:
+        # Do not use _tmux here: its normal ``strip`` is correct for control
+        # output but destroys the blank lines that identify a prompt tail.
+        # -J joins terminal-wrapped input so a tail fragment stays searchable.
+        result = subprocess.run(["tmux", "capture-pane", "-p", "-J", "-t", target],
+                                capture_output=True, text=True, timeout=15)
+    except (OSError, subprocess.SubprocessError) as exc:
+        return None, f"could not capture pane for submission verification: {exc}"
+    if result.returncode != 0:
+        return None, f"could not capture pane for submission verification: " \
+                     f"{(result.stdout or result.stderr).strip()}"
+    return "\n".join((result.stdout or "").split("\n")[-_PROMPT_TAIL_LINES:]), None
+
+
+def _pending_fragment(message: str) -> str:
+    """A tail fragment survives ordinary prompt wrapping without matching prose."""
+    return message[-min(len(message), 80):]
 
 
 def load_config() -> dict:
@@ -240,6 +276,7 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float) -> dict:
             "session_attached": attached, "quiet_check": quiet_check,
             "heartbeat_state": (hb or {}).get("state"), "heartbeat_age_s": hb_age,
             "seconds_since_last_nudge": since_nudge,
+            "submission_verification": "capture prompt tail after Enter; may fail closed",
             "blockers": blockers, "nudge_ok": not blockers}
 
 
@@ -261,6 +298,7 @@ def cmd_probe(args: argparse.Namespace) -> int:
     print(f"spawns today     {p['spawns_today']}/{p['spawn_cap']}")
     sn = p["seconds_since_last_nudge"]
     print(f"last nudge       {sn:.0f}s ago" if sn is not None else "last nudge       (never)")
+    print(f"submission check {p['submission_verification']}")
     print(f"\nnudge_ok         {p['nudge_ok']}")
     for b in p["blockers"]:
         print(f"  BLOCKED  {b}")
@@ -268,6 +306,12 @@ def cmd_probe(args: argparse.Namespace) -> int:
 
 
 def cmd_nudge(args: argparse.Namespace) -> int:
+    if len(args.message) > MAX_NUDGE_MESSAGE_CHARS:
+        print(f"REFUSING: nudge message is {len(args.message)} chars; the conservative "
+              f"C6 cap is {MAX_NUDGE_MESSAGE_CHARS}. A ~1018-char message was observed as a "
+              "mangled TUI paste blob; do not chunk without disposable-TUI calibration.",
+              file=sys.stderr)
+        return EX_USAGE
     config = load_config()
     p = probe(config, args.agent, args.quiet_s, args.heartbeat_max_age)
     if p["seconds_since_last_nudge"] is not None and p["seconds_since_last_nudge"] < args.min_interval_s:
@@ -282,9 +326,30 @@ def cmd_nudge(args: argparse.Namespace) -> int:
     if args.dry_run:
         print(f"would send to {p['target']}: {args.message!r}")
         return 0
-    rc, out = _tmux("send-keys", "-t", p["target"], args.message, "Enter")
+    # C6: message and Enter MUST be separate calls. A single send-keys call can
+    # leave the text in a Codex prompt while tmux still returns success.
+    rc, out = _tmux("send-keys", "-l", "-t", p["target"], args.message)
     if rc != 0:
-        print(f"send-keys failed: {out}", file=sys.stderr)
+        print(f"send-keys message failed: {out}", file=sys.stderr)
+        return EX_MISCONFIG
+    settle_s = max(0.0, float(getattr(args, "settle_s", DEFAULT_NUDGE_SETTLE_S)))
+    time.sleep(settle_s)
+    tail, failure = _prompt_tail(p["target"])
+    fragment = _pending_fragment(args.message)
+    if failure or "[Pasted Content" in (tail or "") or fragment not in (tail or ""):
+        print("nudge submission not confirmed before Enter: "
+              f"{failure or 'prompt tail lacks pending text or shows paste blob'}", file=sys.stderr)
+        return EX_MISCONFIG
+
+    rc, out = _tmux("send-keys", "-t", p["target"], "Enter")
+    if rc != 0:
+        print(f"send-keys Enter failed: {out}", file=sys.stderr)
+        return EX_MISCONFIG
+    time.sleep(settle_s)
+    tail, failure = _prompt_tail(p["target"])
+    if failure or "[Pasted Content" in (tail or "") or fragment in (tail or ""):
+        print("nudge submission not confirmed after Enter: "
+              f"{failure or 'prompt still contains pending text or shows paste blob'}", file=sys.stderr)
         return EX_MISCONFIG
     record("nudge", args.agent, args.message[:200])
     print(f"nudged {args.agent} at {p['target']}")
@@ -402,6 +467,8 @@ def build_parser() -> argparse.ArgumentParser:
     nu.add_argument("--agent", required=True)
     nu.add_argument("--message", required=True)
     nu.add_argument("--min-interval-s", type=float, default=600.0, help="rate limit (default 600)")
+    nu.add_argument("--settle-s", type=float, default=DEFAULT_NUDGE_SETTLE_S,
+                    help="delay before each prompt-tail submission check")
     nu.add_argument("--dry-run", action="store_true")
     nu.set_defaults(func=cmd_nudge)
 
