@@ -238,6 +238,22 @@ def test_security_audit_accepts_scripts_security_surface(tmp_path):
     assert "scripts/security/audit_repository.py" in security_audit["evidence"]
 
 
+def test_security_audit_does_not_treat_an_empty_directory_as_evidence(tmp_path):
+    scorer = _load_module()
+    repo = tmp_path / "repo"
+    (repo / "scripts" / "security").mkdir(parents=True)
+
+    report = scorer.score_repositories({"sample": repo})
+    security_audit = next(
+        item
+        for item in report["repos"]["sample"]["criteria"]
+        if item["id"] == "L4.security_audit"
+    )
+
+    assert security_audit["passed"] is False
+    assert security_audit["evidence"] == []
+
+
 def test_llama_native_surfaces_count_as_readiness_evidence(tmp_path):
     scorer = _load_module()
     repo = tmp_path / "llama"

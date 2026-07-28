@@ -160,7 +160,20 @@ def _iter_matches(root: Path, patterns: Iterable[str]) -> list[Path]:
 
 def exists_any(*patterns: str) -> Detector:
     def _detector(root: Path) -> CheckResult:
-        matches = _iter_matches(root, patterns)
+        # Readiness evidence must identify a concrete tool or artifact. A glob
+        # like ``scripts/security/**`` yields its directory, not necessarily its
+        # descendants. Expand directory matches to files so the evidence is
+        # actionable and an empty directory cannot satisfy the criterion.
+        matches: list[Path] = []
+        for path in _iter_matches(root, patterns):
+            if path.is_file():
+                matches.append(path)
+            elif path.is_dir():
+                matches.extend(
+                    child for child in path.rglob("*")
+                    if child.is_file() and not _ignored(child, root)
+                )
+        matches = sorted(set(matches), key=lambda path: _rel(path, root))
         return CheckResult(bool(matches), [_rel(p, root) for p in matches[:5]])
 
     return _detector
