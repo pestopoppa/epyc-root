@@ -110,6 +110,21 @@ Neither signs anything. Trust boundaries are human-only (`BUS_PROTOCOL.md` rule 
   disobedience.
 - **Identity before keystrokes.** Never send keys to a pane whose agent identity is inferred
   rather than confirmed, and never into a pane holding operator-typed input.
+- **A guard refusing a nudge on stale or contradictory data is not license to bypass it.** If
+  `tmux_adapter.py nudge` refuses because the target's heartbeat reads `working`, first confirm
+  from the pane whether the session is genuinely idle or genuinely mid-generation — do not assume
+  either way. If it is genuinely idle but unreachable (a completed session that never refreshed
+  its heartbeat, now blocked waiting for input, so it cannot refresh the heartbeat either — a
+  deadlock, and `--heartbeat-max-age` does not rescue it because the refusal keys on state, not
+  age), do not send keys around the guard. Notify the operator: name the session, what it is
+  waiting on, why the adapter refuses, and the exact message to relay. The operator relays it
+  manually, and the relayed message must ask the session to refresh its heartbeat so the deadlock
+  clears itself. Mirror image of defect C8 (unreachable for want of a delivery path): here the
+  delivery path exists but the liveness signal lying about it is the obstacle. Both end with a
+  main sitting idle and invisible while work waits on it. Origin: 2026-07-28,
+  `claude-gpu-lane` finished a review and sat idle awaiting an answer while its heartbeat still
+  read `working` (~8094s stale); the adapter correctly refused twice, and the coordinator bypassed
+  it with raw `tmux send-keys` instead of escalating to the operator.
 - **Never send an unverified control character or key sequence to a live agent pane.** If you do
   not have direct evidence of what a key does in that specific TUI, do not send it — reproduce the
   situation in a disposable tmux session you create and kill yourself, learn the behaviour there,

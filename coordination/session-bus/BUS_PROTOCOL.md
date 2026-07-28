@@ -118,4 +118,13 @@ Boundaries reach the coordinator durably: the coordinator-daemon's `detect_task_
 delivers a `status` message with `payload.event == "task-boundary"` to `coordinator-agent`'s
 inbox on any main's transition into `idle`. That is daemon-side, so it survives a coordinator
 session restart — but it makes boundaries *durable*, not *instant*: a running session still only
+
+### Unreachable idle session (stale heartbeat, guard refuses nudge)
+
+`tmux_adapter.py nudge` refuses to nudge a target whose heartbeat still reads `working`, even if
+the target actually finished and is now idle and blocked waiting for input — it cannot refresh
+its own heartbeat while blocked, so the guard's refusal and the target's silence reinforce each
+other into a deadlock. `--heartbeat-max-age` does not help: the refusal keys on heartbeat state,
+not age. Do not bypass the guard with raw `tmux send-keys`. Full procedure and origin incident:
+`agents/coordinator-agent.md` → Guardrails.
 sees them at its next drain (defect C8, 2026-07-28).
