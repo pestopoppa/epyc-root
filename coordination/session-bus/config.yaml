@@ -11,7 +11,12 @@ roster:
   # is now named explicitly. Roster id stays `codex`: it is the identity every existing
   # queue row, cursor, inbox and outbox is keyed on, and renaming it would orphan all of them.
   - {id: codex,             role: main,              lanes: [cpu, gpu, none], endpoint: "tmux:agent:codex-inference", drain: boundary}
-  - {id: claude-main,       role: main,              lanes: [cpu, gpu, none], endpoint: "monitor:file", drain: push}
+  # RETIRED 2026-07-28: the operator closed its tmux window (agent:claude_A). The row is kept,
+  # not deleted — queue rows, cursors and its inbox/outbox are all keyed on this identity, and
+  # removing it would orphan that history. `lanes: []` means the daemon will never assign to it.
+  # Its 2 undelivered inbox messages are moot: the stage_b_prune_plan task-assign was reassigned
+  # to codex-bus-tests and completed. Endpoint left as-is so the C8 lint keeps it visible.
+  - {id: claude-main,       role: retired,           lanes: [],               endpoint: "monitor:file", drain: push}
   - {id: coordinator-agent, role: coordinator-agent, lanes: [none],           endpoint: "monitor:file", drain: push}
   # Added by coordinator-agent 2026-07-28. Test authoring for the session bus itself
   # (zero coverage found: no file under tests/ references session_bus, while the bus is
