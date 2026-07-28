@@ -1,11 +1,13 @@
 # Episodic Memory Integrity — 2026-07-05 corruption, root cause and repair
 
-**Status**: active — **the store is healthy and now permanently asserted.** Write path FIXED and
-proven self-healing in production; data repair and terminal live-store reseed DONE; a standing
-integrity gate (M-17) now blocks AutoPilot on a broken store and runs in `health_check.sh`. Live
-state 2026-07-28: `ntotal=58322 id_map=58322 desync=0`, round-trip 500/500, diversity 57/57
-(ratio 1.000), **semantic self-match 0.9943** (was 0.5505 during the incident). Remaining items are
-follow-on analysis (M-15), a re-distil (M-11a), the never-run A/B (M-12), and one known gap (M-17e).
+**Status**: active — **CLEARED FOR SEEDING (M-18 full-surface audit, 2026-07-28).** Write path
+FIXED and proven self-healing in production; reseed DONE; standing integrity gate (M-17) blocks
+AutoPilot on a broken store and runs in `health_check.sh`; the degenerate-vector guarantee extends
+to **every** store via `FAISSEmbeddingStore.add()` (episodic, SkillBank, StrategyStore — commit
+`82fbf276`). Live state 2026-07-28: episodic `ntotal=58386 desync=0`, round-trip 500/500,
+degenerate 0/500, **semantic self-match 0.9956** (0.5505 during the incident); strategy store
+1424/1424/1424 coherent, 0 degenerate; skills a clean post-purge slate. Remaining items are
+follow-on analysis (M-15), the re-distil (M-11a, inference-gated), and the never-run A/B (M-12).
 **Created**: 2026-07-27
 **Priority**: HIGH — this subsystem underpins routing, MemRL and SkillBank
 **Categories**: agent_architecture, memory_augmented, routing_intelligence
