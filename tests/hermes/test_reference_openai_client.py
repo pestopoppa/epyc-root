@@ -6,6 +6,7 @@ import io
 import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -25,6 +26,7 @@ def _args(**overrides):
     defaults = {
         "model": "orchestrator",
         "prompt": "Check routing.",
+        "max_tokens": 0,
         "stream": False,
         "x_max_escalation": "B2",
         "x_disable_repl": True,
@@ -41,6 +43,14 @@ def _args(**overrides):
 
 
 class ReferenceOpenAIClientTests(unittest.TestCase):
+    def test_parse_args_exposes_optional_max_tokens(self):
+        client = _load_module()
+
+        with patch("sys.argv", ["reference_openai_client.py"]):
+            self.assertEqual(client._parse_args().max_tokens, 0)
+        with patch("sys.argv", ["reference_openai_client.py", "--max-tokens", "16"]):
+            self.assertEqual(client._parse_args().max_tokens, 16)
+
     def test_build_payload_includes_stream_and_custom_overrides(self):
         client = _load_module()
 
@@ -53,6 +63,14 @@ class ReferenceOpenAIClientTests(unittest.TestCase):
         self.assertIs(payload["x_disable_repl"], True)
         self.assertEqual(payload["x_orchestrator_role"], "frontdoor")
         self.assertEqual(payload["x_force_model"], "worker_general")
+        self.assertNotIn("max_tokens", payload)
+
+    def test_build_payload_includes_positive_max_tokens(self):
+        client = _load_module()
+
+        payload = client._build_payload(_args(max_tokens=16))
+
+        self.assertEqual(payload["max_tokens"], 16)
 
     def test_build_payload_adds_demo_tool_and_auto_tool_choice(self):
         client = _load_module()
