@@ -114,7 +114,11 @@ failure caught in amber.
         `skills.db` backed up to `skills.db.pre-purge-*`. Verified: bank count 0, retrieval returns
         0, so nothing stale can reach a prompt. The retrieval path itself remains wired and working —
         it just has nothing to serve until re-distillation.
-  - [ ] M-11a — Re-distil skills after the reseed. The 57 existing skills reference
+  - [ ] M-11a — Re-distil skills after the reseed (inference-gated). Note from the 2026-07-28
+        audit: `structural_lab.distill_skillbank` is broken as-is — it passes `teacher_model=` and
+        `categories=` kwargs that `DistillationPipeline.__init__` does not accept, and calls its
+        async `run()` synchronously; the failure is caught and reported as `{"status": "error"}`.
+        Fix the wiring as part of the re-distil. The 57 previous skills reference
         `source_trajectory_ids` matching 0 current rows, and were distilled from 200-char stubs — all
         57 are thin routing heuristics because that is the ceiling of the input. Re-distilling over
         real trajectories is what makes SkillBank worth its retrieval slot.
@@ -216,6 +220,27 @@ failure caught in amber.
         Justified rather than merely strict: with BGE down the write path now raises anyway, so
         AutoPilot could not record memories. Structural failures skip the window and block in
         **0.3 s**; healthy startup costs **0.9 s**. ✅ 2026-07-28
+  - [x] M-18 — **Pre-seeding audit of the ENTIRE memory surface (operator-requested re-audit).**
+        ✅ 2026-07-28, commit `82fbf276`. Findings and dispositions:
+
+        | # | Finding | Disposition |
+        |---|---------|-------------|
+        | 1 | The chokepoint guard did NOT cover SkillBank or StrategyStore — both persist FAISS vectors without touching `EpisodicStore.store()`; strategy's `_embed()` docstring *advertised* "hash-based fallback if no model available" | **FIXED** — `DegenerateVectorError` in `FAISSEmbeddingStore.add()`, the single function every vector passes to reach ANY index |
+        | 2 | `StrategyStore._hash_embed` emits well-formed RandomState vectors — undetectable after the fact | **FIXED** — `_embed()` fails closed on both fallback branches at the source |
+        | 3 | `DistillationPipeline._embed_skill` called `self.embedder.embed()` — a method TaskEmbedder does not have; the AttributeError was swallowed, so with a real embedder every distilled skill silently landed UNINDEXED | **FIXED** — `embed_text` + fallback refusal |
+        | 4 | TWO skill-embedding conventions (backfill task-space vs pipeline `"{title}: {principle}"`) — the exact defect class that produced the episodic incident | **FIXED** — canonical `skill_embedding_text()` in `skill_bank.py`, both writers import it |
+        | 5 | API callers of `score_external_result` | **VERIFIED SAFE** — both wrap in `except Exception` → a refused write is a lost write with a loud log, not a 500 |
+        | 6 | Query-side embedder outage (garbage query vector at retrieval) | **VERIFIED SELF-NEUTRALIZING** — zero/NaN queries score 0.0/-inf against every row and fall below `min_similarity`; retrieval degrades to empty, not wrong |
+        | 7 | Strategy store coherence (never audited) | **VERIFIED CLEAN** — 1424 = 1424 = 1424 (sqlite = faiss = id_map), 0 degenerate vectors |
+        | 8 | Two `skills.db` files | **VERIFIED HARMLESS** — canonical is `sessions/skills.db` (all consumers agree); root-level twin is an empty fossil; both 0 rows post-purge |
+        | 9 | One 911 MB pre-reseed `.tmp` orphan | **REMOVED** |
+        | 10 | Newest 25 episodic rows | **VERIFIED** — 25/25 on contract, `update_count` NULLs = 0, live traffic flowing through the fixed path |
+        | 11 | `structural_lab.distill_skillbank` constructs `DistillationPipeline` with nonexistent kwargs and calls sync `run()` on an async method | **NOT fixed** — broken-but-loud (returns `{"status": "error"}`); a real fix needs teacher-model wiring (inference). Absorbed into M-11a below |
+
+        Final state, all five checks: `ntotal=58386 id_map=58386 desync=0`, round-trip 500/500,
+        diversity 67/67 (1.000), degenerate 0/500, **semantic self-match 0.9956**. AutoPilot gate:
+        PASS. Touched-surface suite: 453 passed (single failure = pre-existing env-var flake).
+        **Verdict: cleared for seeding via AutoPilot and/or live traffic.**
   - [x] M-17i — 14 further tests (`tests/unit/test_degenerate_embedding_guard.py`), including the
         measured fallback distribution, so a future "fix" that makes the fallback well-formed —
         which would be *more* dangerous, not less — fails loudly instead of passing silently.
