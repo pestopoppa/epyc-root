@@ -9,9 +9,9 @@ identified equivalent serving shape. Decode throughput is higher-better. This
 protocol does not cover `llama-bench`, aggregate/multi-instance throughput,
 batched/slot serving, quality, a registry mutation, or deployment authorization.
 
-**Pinned instrument.** The evidence must name the ratified runner's repository
+**Pinned instrument.** The evidence must name the ratified runner's repository,
 commit, Git tree, path, and SHA-256, and the runner source must exactly match
-those values. Record the production `llama-server` branch, commit, binary
+those values in a clean Git worktree. Record the production `llama-server` branch, commit, binary
 SHA-256/version, model path/SHA-256, complete argv, complete effective
 environment, CPU list, topology derivation, request payload, and all raw server
 responses. Any missing, substituted, dirty, or mismatched identity makes the
@@ -19,6 +19,16 @@ result an observation. The pre-ratification runner at research commit
 `919e83a249ed9060d0608305700e6eeddb8daa71` is explicitly nonconforming: it
 uses three samples and a mean and does not force `ignore_eos`; it MUST NOT be
 retro-certified under P-BENCH-4.
+
+**Ratification transaction.** The human receipt, the appended measurement
+policy, and the changelog entry are one fail-closed transaction. Stage and
+fsync every candidate before replacing either policy file; publish the receipt
+only after the authoritative runner accepts it against the updated policy. The
+receipt must be created with a no-replace operation and its containing
+directory fsynced. A valid durable receipt is the commit record: an
+interruption after it exists must not retract that receipt or its bound policy
+files. A failure before it exists must restore both policy files and leave no
+new receipt.
 
 **Exclusive ownership and host state.** Launch exactly one CPU-only server with
 `-np 1`. Before launch, the runner's quiet-host preflight must prove no competing

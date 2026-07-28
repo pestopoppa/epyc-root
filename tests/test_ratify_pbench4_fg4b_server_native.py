@@ -22,7 +22,7 @@ AUTHORITATIVE_RUNNER = Path(
     "/mnt/raid0/llm/worktrees/fg4b-optimized-server-20260728/"
     "scripts/benchmark/fg4b_a4_cpu_optimized_reanchor.py"
 )
-AUTHORITATIVE_RUNNER_SHA256 = "11364fe3197b91554c9b44a7aa2b80403c1e01f7646474f4e3269dc0a2953980"
+AUTHORITATIVE_RUNNER_SHA256 = "f2983a10f6af3290f254c16a7681762a074bafb71fc12df68dbfbcc83043a1b9"
 
 
 def _sha256_bytes(value: bytes) -> str:
@@ -97,6 +97,7 @@ def validate_protocol_attestation(path: Path) -> dict:
     _git("init", "-q", cwd=research)
     _git("config", "user.email", "test@example.invalid", cwd=research)
     _git("config", "user.name", "P-BENCH-4 Test", cwd=research)
+    _git("remote", "add", "origin", "https://example.invalid/fg4b-research.git", cwd=research)
     _git("add", ".", cwd=research)
     _git("commit", "-qm", "hardened fixture", cwd=research)
 
@@ -116,6 +117,7 @@ def validate_protocol_attestation(path: Path) -> dict:
         "P_BENCH_4_RUNNER_ROOT": str(research),
         "P_BENCH_4_EXPECTED_RESEARCH_COMMIT": _git("rev-parse", "HEAD", cwd=research),
         "P_BENCH_4_EXPECTED_RESEARCH_TREE": _git("rev-parse", "HEAD^{tree}", cwd=research),
+        "P_BENCH_4_EXPECTED_REPOSITORY": _git("remote", "get-url", "origin", cwd=research),
         "P_BENCH_4_EXPECTED_RUNNER_SHA256": _sha256_bytes(runner_bytes),
         "P_BENCH_4_EXPECTED_AMENDMENT_SHA256": _sha256_bytes(amendment),
         "P_BENCH_4_EXPECTED_MEASUREMENT_SHA256": _sha256_bytes(measurement.encode()),
@@ -150,8 +152,8 @@ def test_validate_only_is_cwd_independent_and_does_not_mutate(transaction_fixtur
     assert result.returncode == 0, result.stderr
     assert "preflight-valid" in result.stdout
     root = transaction_fixture["root"]
-    assert (root / "MEASUREMENT.md").read_text() == transaction_fixture["measurement"]
-    assert (root / "CHANGELOG.md").read_text() == transaction_fixture["changelog"]
+    assert (root / "MEASUREMENT.md").read_text() == transaction_fixture["measurement"], result.stderr
+    assert (root / "CHANGELOG.md").read_text() == transaction_fixture["changelog"], result.stderr
 
 
 def test_attest_applies_exact_content_and_writes_runner_bound_receipt(transaction_fixture: dict[str, object]) -> None:
@@ -167,6 +169,12 @@ def test_attest_applies_exact_content_and_writes_runner_bound_receipt(transactio
     receipt = json.loads(receipts[0].read_text())
     assert receipt["status"] == "ratified"
     assert receipt["instrument_sha256"] == transaction_fixture["env"]["P_BENCH_4_EXPECTED_RUNNER_SHA256"]
+    assert receipt["instrument"] == {
+        "repository": transaction_fixture["env"]["P_BENCH_4_EXPECTED_REPOSITORY"],
+        "repository_commit": transaction_fixture["env"]["P_BENCH_4_EXPECTED_RESEARCH_COMMIT"],
+        "repository_tree": transaction_fixture["env"]["P_BENCH_4_EXPECTED_RESEARCH_TREE"],
+        "path": "scripts/benchmark/fg4b_a4_cpu_optimized_reanchor.py",
+    }
     assert receipt["contract"]["measured_reps"] == 5
     assert receipt["contract"]["ignore_eos"] is True
     assert receipt["contract"]["required_finish_reason"] == "length"
@@ -201,6 +209,13 @@ def test_receipt_contract_is_accepted_by_the_authoritative_hardened_runner(
     receipt_path = next((root / "artifacts/operator").glob("ratify_pbench4_fg4b_server_native_*.json"))
     receipt = json.loads(receipt_path.read_text())
     receipt["instrument_sha256"] = AUTHORITATIVE_RUNNER_SHA256
+    runner_root = AUTHORITATIVE_RUNNER.parents[2]
+    receipt["instrument"] = {
+        "repository": _git("remote", "get-url", "origin", cwd=runner_root),
+        "repository_commit": _git("rev-parse", "HEAD", cwd=runner_root),
+        "repository_tree": _git("rev-parse", "HEAD^{tree}", cwd=runner_root),
+        "path": str(AUTHORITATIVE_RUNNER.relative_to(runner_root)),
+    }
     receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
 
     spec = importlib.util.spec_from_file_location("pbench4_authoritative_test", AUTHORITATIVE_RUNNER)
@@ -262,7 +277,27 @@ def test_rolls_back_measurement_when_changelog_replacement_cannot_start(transact
     assert not list((root / "artifacts/operator").glob("ratify_pbench4_fg4b_server_native_*.json"))
 
 
-def test_rolls_back_policy_and_receipt_when_transaction_cannot_complete(
+def test_no_replace_receipt_refuses_existing_destination_and_rolls_back_policy(
+    transaction_fixture: dict[str, object],
+) -> None:
+    root = transaction_fixture["root"]
+    stamp = "20260728T235959Z"
+    receipt = root / "artifacts/operator" / f"ratify_pbench4_fg4b_server_native_{stamp}.json"
+    receipt.write_text("existing receipt\n", encoding="utf-8")
+    result = _run(
+        transaction_fixture,
+        "--attest",
+        TOKEN,
+        P_BENCH_4_TEST_STAMP=stamp,
+    )
+    assert result.returncode != 0
+    assert "receipt destination already exists" in result.stderr
+    assert receipt.read_text(encoding="utf-8") == "existing receipt\n"
+    assert (root / "MEASUREMENT.md").read_text() == transaction_fixture["measurement"], result.stderr
+    assert (root / "CHANGELOG.md").read_text() == transaction_fixture["changelog"], result.stderr
+
+
+def test_durable_receipt_commits_all_three_files_despite_post_publish_interruption(
     transaction_fixture: dict[str, object],
 ) -> None:
     result = _run(
@@ -273,15 +308,29 @@ def test_rolls_back_policy_and_receipt_when_transaction_cannot_complete(
     )
     assert result.returncode != 0
     root = transaction_fixture["root"]
-    assert (root / "MEASUREMENT.md").read_text() == transaction_fixture["measurement"]
-    assert (root / "CHANGELOG.md").read_text() == transaction_fixture["changelog"]
-    assert not list((root / "artifacts/operator").glob("ratify_pbench4_fg4b_server_native_*.json"))
+    assert (root / "MEASUREMENT.md").read_text() != transaction_fixture["measurement"]
+    assert (root / "CHANGELOG.md").read_text() != transaction_fixture["changelog"]
+    receipts = list((root / "artifacts/operator").glob("ratify_pbench4_fg4b_server_native_*.json"))
+    assert len(receipts) == 1
+    assert json.loads(receipts[0].read_text())["status"] == "ratified"
+
+
+def test_live_production_preflight_accepts_current_policy_pins() -> None:
+    result = subprocess.run(
+        ["bash", str(SOURCE_SCRIPT), "--validate-only"],
+        text=True,
+        capture_output=True,
+        check=False,
+        cwd="/",
+    )
+    assert result.returncode == 0, result.stderr
+    assert "preflight-valid" in result.stdout
 
 
 def test_reviewed_bundle_keeps_the_explicit_nonretroactive_quarantine() -> None:
     script = SOURCE_SCRIPT.read_text(encoding="utf-8")
     amendment = SOURCE_AMENDMENT.read_text(encoding="utf-8")
-    assert "877ee0654bb01be319a771b503bb31cbc1729dda" in script
-    assert "11364fe3197b91554c9b44a7aa2b80403c1e01f7646474f4e3269dc0a2953980" in script
+    assert "c00f2937a48439f5f00e527176e854a94333a8db" in script
+    assert "f2983a10f6af3290f254c16a7681762a074bafb71fc12df68dbfbcc83043a1b9" in script
     assert "919e83a249ed9060d0608305700e6eeddb8daa71" in amendment
     assert "explicitly_nonconforming_not_retro_certified" in script
