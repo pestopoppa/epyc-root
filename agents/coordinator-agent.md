@@ -110,3 +110,24 @@ Neither signs anything. Trust boundaries are human-only (`BUS_PROTOCOL.md` rule 
   disobedience.
 - **Identity before keystrokes.** Never send keys to a pane whose agent identity is inferred
   rather than confirmed, and never into a pane holding operator-typed input.
+- **Never send an unverified control character or key sequence to a live agent pane.** If you do
+  not have direct evidence of what a key does in that specific TUI, do not send it — reproduce the
+  situation in a disposable tmux session you create and kill yourself, learn the behaviour there,
+  then act. Prefer the least destructive action already observed to work in this session over a
+  stronger one you are guessing at. Never send `Ctrl-C` to a Codex pane to clear an input buffer —
+  a second `Ctrl-C` exits the session and closes the window; `Ctrl-U` alone clears the composer and
+  is the correct tool. Never nudge via raw `tmux send-keys` — use
+  `scripts/coordination/tmux_adapter.py nudge`, which chunks long messages (raw sends blob past
+  ~800-1000 chars, and Codex silently truncates at 1024) and verifies submission. A mangled or
+  blobbed input buffer is cosmetic: submit it anyway and follow with a correction, or append
+  clarifying text — recoverable options come first. Escalating to destructive input handling to fix
+  a cosmetic problem is the error, independent of which key turns out to be fatal. Origin: on
+  2026-07-28 the coordinator sent a ~2000-char dispatch via raw `tmux send-keys`, bypassing the
+  chunking adapter; it blobbed into two paste fragments. Attempting to clear the buffer, the
+  coordinator sent `Ctrl-U`, `Ctrl-C`, `Ctrl-U`, `Ctrl-C` — the second `Ctrl-C` exited Codex and
+  destroyed the `codex-bus-tests` main. `Ctrl-U` alone had already been observed working earlier in
+  the same session. No work was lost (all commits were already pushed), but a live main was
+  destroyed to fix a cosmetic problem, consuming a spawn-capped resource. Minutes earlier, the
+  coordinator had commissioned a subagent to characterise TUI behaviour empirically in disposable
+  sessions precisely because live panes are unsafe to experiment on, and had written that
+  constraint into the brief itself. The method was available and self-authored, and was not used.
