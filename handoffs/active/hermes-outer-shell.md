@@ -316,6 +316,9 @@ Hermes is one *client* of the orchestrator's `/v1/chat/completions` + `x_*` over
   - [x] Extend the reference helper into a quiet-window validation harness for `stream`, native OpenAI `tools`, and `tool_choice` without sending traffic by default. ✅ 2026-07-06
   - [x] Add root-side regression coverage for dry-run `tool_choice=none` so print-only validation does not accidentally convert explicit no-tool requests back to `auto`. ✅ 2026-07-06
   - [x] Validate the reference helper can live `--send --stream` against the standalone Hermes `8099` backend. ✅ 2026-07-21 (`BULK-hermes-smokes-20260721T042834Z`, bounded `max_tokens=16`, final smoke 13/13)
+  - [x] Repair the reference-client `max_tokens` Namespace fixture regression. ✅ 2026-07-28 — the
+    parser owns the supported `--max-tokens` request cap; the stale test fixture now models its
+    default/override contract and verifies payload omission/inclusion. Root `82b0858a`; 7 passed.
   - [ ] Run live `--send` validation in a quiet window and verify role override, force-model, escalation cap, REPL disable, routing metadata, and streaming behavior against the current `/v1/chat/completions` endpoint.
 - [x] **Q — Sufficiency call: do not absorb client-side concerns into the orchestrator** (~30 min, design discipline note) — recorded in `## Pros` above as the client/orchestrator separation rule.
   - Decision rule to record explicitly: per-client UX (slash commands, prompts, conversation memory) lives in the **client**, not the orchestrator. The orchestrator exposes overrides; clients map their UX to override values. This is the same discipline as the Hermes slash-command → `x_*` mapping — generalized as a principle, not a one-off

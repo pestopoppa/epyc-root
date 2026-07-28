@@ -408,6 +408,9 @@ Validation:
 - [x] v1 deterministic scorer + tests landed ✅
 - [x] remediation queue / advisory MD / passive AutoPilot pickup / candidate-eval-gate / default-off advisory bridge live ✅
 - [x] epyc-root, epyc-orchestrator, epyc-inference-research all at Autonomous/L5 ✅
+- [x] Repair file-level readiness-evidence regression. ✅ 2026-07-28 — recursive detector
+  surfaces now expand to concrete non-ignored files; empty directories no longer pass as evidence.
+  Root `0c276023`; 14 passed.
 - [ ] Close remaining root L5.self_optimizing_loop gap (13-item queue)
 - [ ] Bring epyc-llama Standardized/L3 -> L4 (incremental_validation, generated_docs, health_automation, analysis_reports, security_audit, replay_analysis)
 - [x] Repair stale epyc-llama GitNexus index (narrow .gitnexusignore) before editing llama readiness docs ✅ 2026-07-22 (scoped serving-layer index, see below)

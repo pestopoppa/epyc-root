@@ -2,7 +2,7 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-07-19 (adds reviewer control-plane dogfooding, representation-scoped reviewer gates, and v7/reviewer release decoupling; Hermes remains re-scoped under the parent open-harness decision)
+**Last compiled**: 2026-07-28 (adds transport-only coordinator acceptance and contract-backed tooling regressions)
 **Sources**: 64+ documents
 
 ## Summary
@@ -49,6 +49,34 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 - The current architecture separates production orchestration from reviewer experimentation. GLM and the fast RM-2 slate are not admitted as production patch reviewers, while v7 production promotion proceeds on independent inference gates; future reviewer admission requires a new repair hypothesis or screened candidate, not unchanged reruns. Sources: [v7 promotion](../handoffs/active/v7-promotion.md), [GLM reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md), [autopilot control-plane integration](../handoffs/active/autopilot-control-plane-integration.md).
 
 ## Key Findings
+
+### 2026-07-28 — Transport-only coordination and contract-backed tooling
+
+- **The session bus distinguishes mechanical delivery from autonomous coordination.** At
+  `manual|advisory` authority, the daemon may relay an explicitly addressed outbox message, issue
+  a fixed overdue-ACK redelivery, or surface a recorded non-idle-to-idle boundary, but it cannot
+  choose work, mutate queue/lease/gate state, or determine a token outcome. The acceptance witness
+  is therefore a provenance trace over each mutation—not the retired "two files written" proxy.
+- **Agent-facing enforcement and client helpers need tests that model their real contracts.** The
+  reference guard now resolves the nested session-bus references used by the compliant coordinator
+  role instead of forbidding that valid idiom. Separately, the Hermes reference-client tests now
+  construct the parser's complete `max_tokens` Namespace and prove both default omission and
+  explicit request-cap inclusion. These repairs preserve production behavior while making the
+  stated interfaces executable.
+- **Readiness evidence is only useful when it points to an artifact.** Recursive readiness surfaces
+  now expand to concrete non-ignored files, so an empty directory cannot claim security or native
+  tooling readiness and remediation consumers receive the actionable path that justified a pass.
+
+#### Source References
+
+- [Session Bus + Thin Coordinator](../handoffs/active/session-bus-thin-dispatcher.md) — M3
+  decision-property acceptance, C7/C8 coverage, and guard self-idiom regression.
+- [Hermes/OpenGauss as Outer Shell](../handoffs/active/hermes-outer-shell.md) — reference-client
+  parser and payload contract regression.
+- [Repo-Readiness Scorer](../handoffs/active/repo-readiness-scorer.md) — file-level evidence
+  requirement and empty-directory regression.
+- [Progress 2026-07-28](../progress/2026-07/2026-07-28.md) — focused validation outcomes and
+  remaining C6 limitation.
 
 ### New Findings (2026-07-06 — Hermes boundary generalized to multi-client contract)
 
