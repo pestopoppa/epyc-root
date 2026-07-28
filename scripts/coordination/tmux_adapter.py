@@ -72,7 +72,12 @@ EX_USAGE = 64
 # margin; raising it requires a dedicated disposable-TUI calibration.
 MAX_NUDGE_MESSAGE_CHARS = 240
 DEFAULT_NUDGE_SETTLE_S = 0.25
-_PROMPT_TAIL_LINES = 4
+# A bare prompt leaves pending text in the last few rows, but modal overlays
+# (for example Codex's plan confirmation and Claude's agent picker) can place
+# decorations below it.  The lower visible pane still bounds the input region;
+# use enough rows to include those overlays without searching scrollback.
+_INPUT_REGION_LINES = 24
+_PASTE_BLOB_MARKER = "[Pasted Content"
 
 
 def _now() -> str:
@@ -87,13 +92,15 @@ def _tmux(*args: str) -> tuple[int, str]:
     return r.returncode, (r.stdout or r.stderr).strip()
 
 
-def _prompt_tail(target: str) -> tuple[str | None, str | None]:
-    """Return the bottom prompt area, or a fail-closed diagnostic.
+def _input_region(target: str) -> tuple[str | None, str | None]:
+    """Return the lower visible input region, or a fail-closed diagnostic.
 
     Tmux does not expose a submitted-input state. The bottom of a captured pane
     is the closest available signal: a pending prompt is there, while submitted
-    transcript content normally scrolls above it. This can false-refuse on an
-    unusual TUI layout, but must never claim delivery without post-Enter proof.
+    transcript content normally scrolls above it. Include modal decorations in
+    that region: they can move the editable line above a bare four-line prompt
+    tail. This can false-refuse on an unusual TUI layout, but must never claim
+    delivery without post-Enter proof.
     """
     try:
         # Do not use _tmux here: its normal ``strip`` is correct for control
@@ -106,12 +113,27 @@ def _prompt_tail(target: str) -> tuple[str | None, str | None]:
     if result.returncode != 0:
         return None, f"could not capture pane for submission verification: " \
                      f"{(result.stdout or result.stderr).strip()}"
-    return "\n".join((result.stdout or "").split("\n")[-_PROMPT_TAIL_LINES:]), None
+    return "\n".join((result.stdout or "").split("\n")[-_INPUT_REGION_LINES:]), None
 
 
 def _pending_fragment(message: str) -> str:
     """A tail fragment survives ordinary prompt wrapping without matching prose."""
     return message[-min(len(message), 80):]
+
+
+def _submission_state(input_region: str, fragment: str) -> str:
+    """Classify the only safe observable states of a pending nudge.
+
+    ``text_present`` is the expected state before Enter. ``text_absent`` means
+    the text did not land in the visible input region. A paste-blob marker wins
+    even if it contains the fragment: that is the known mangling failure, not
+    proof that the TUI received editable text.
+    """
+    if _PASTE_BLOB_MARKER in input_region:
+        return "paste_blob"
+    if fragment in input_region:
+        return "text_present"
+    return "text_absent"
 
 
 def load_config() -> dict:
@@ -276,7 +298,7 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float) -> dict:
             "session_attached": attached, "quiet_check": quiet_check,
             "heartbeat_state": (hb or {}).get("state"), "heartbeat_age_s": hb_age,
             "seconds_since_last_nudge": since_nudge,
-            "submission_verification": "capture prompt tail after Enter; may fail closed",
+            "submission_verification": "capture bounded input region after Enter; may fail closed",
             "blockers": blockers, "nudge_ok": not blockers}
 
 
@@ -334,11 +356,17 @@ def cmd_nudge(args: argparse.Namespace) -> int:
         return EX_MISCONFIG
     settle_s = max(0.0, float(getattr(args, "settle_s", DEFAULT_NUDGE_SETTLE_S)))
     time.sleep(settle_s)
-    tail, failure = _prompt_tail(p["target"])
+    input_region, failure = _input_region(p["target"])
     fragment = _pending_fragment(args.message)
-    if failure or "[Pasted Content" in (tail or "") or fragment not in (tail or ""):
-        print("nudge submission not confirmed before Enter: "
-              f"{failure or 'prompt tail lacks pending text or shows paste blob'}", file=sys.stderr)
+    if failure:
+        print(f"nudge submission verification unavailable before Enter: {failure}", file=sys.stderr)
+        return EX_MISCONFIG
+    pending_state = _submission_state(input_region or "", fragment)
+    if pending_state == "paste_blob":
+        print("nudge message was mangled into a paste blob before Enter; refusing", file=sys.stderr)
+        return EX_MISCONFIG
+    if pending_state == "text_absent":
+        print("nudge message did not land in the input region before Enter; refusing", file=sys.stderr)
         return EX_MISCONFIG
 
     rc, out = _tmux("send-keys", "-t", p["target"], "Enter")
@@ -346,10 +374,16 @@ def cmd_nudge(args: argparse.Namespace) -> int:
         print(f"send-keys Enter failed: {out}", file=sys.stderr)
         return EX_MISCONFIG
     time.sleep(settle_s)
-    tail, failure = _prompt_tail(p["target"])
-    if failure or "[Pasted Content" in (tail or "") or fragment in (tail or ""):
-        print("nudge submission not confirmed after Enter: "
-              f"{failure or 'prompt still contains pending text or shows paste blob'}", file=sys.stderr)
+    input_region, failure = _input_region(p["target"])
+    if failure:
+        print(f"nudge submission verification unavailable after Enter: {failure}", file=sys.stderr)
+        return EX_MISCONFIG
+    submitted_state = _submission_state(input_region or "", fragment)
+    if submitted_state == "paste_blob":
+        print("nudge submission not confirmed after Enter: paste blob mangled", file=sys.stderr)
+        return EX_MISCONFIG
+    if submitted_state == "text_present":
+        print("nudge submission not confirmed after Enter: text present but unsubmitted", file=sys.stderr)
         return EX_MISCONFIG
     record("nudge", args.agent, args.message[:200])
     print(f"nudged {args.agent} at {p['target']}")
