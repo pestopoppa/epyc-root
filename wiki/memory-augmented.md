@@ -2,8 +2,7 @@
 
 **Category**: `memory_augmented`
 **Confidence**: verified
-**Last compiled**: 2026-07-27 (adds the vector-resolution corruption post-mortem)
-**Checkpoint note**: terminal episodic-reseed acceptance added 2026-07-28; the global source-manifest timestamp remains unchanged because unrelated source drift still requires separate compilation.
+**Last compiled**: 2026-07-28 (adds the standing integrity gates + universal degenerate-vector guarantee)
 **Sources**: 29+ documents (2 deep-dives, 22 intake entries, active handoffs, progress logs, K-MEM/Tulving measurement context, and the 2026-06-28 W4/W6 reboot-readiness checkpoint)
 
 ## Summary
@@ -19,6 +18,13 @@ Two high-relevance entries point toward concrete next steps. MemPalace (intake-3
 The connection between memory and the autopilot is especially significant. Before the strategy store and Evolution Manager were implemented, species operated statelessly: Seeder never read past trial outcomes, NumericSwarm used only Optuna's internal state, PromptForge built mutation prompts without past mutation outcomes, and StructuralLab did not consult experiment history. The experiment journal existed but was passive -- consumed only by the Controller's prompt template as flat text (last 20 entries). EvoScientist's finding that memory-augmented proposals dramatically outperform memoryless ones (ablation: -45.83 gap without evolution) motivated the strategy store implementation. Species now retrieve relevant past insights before making proposals via semantic search against the strategy store.
 
 ## Key Findings
+
+### New Finding (2026-07-28) — An internally-consistent store can be completely wrong; the fix is a standing assertion, not a repair
+
+- **The 22-day lesson is codified: nothing checked the store, so it rotted invisibly.** `check_episodic_integrity.py` now asserts the four properties the incident actually violated — index/id_map sync, `embedding_idx` round-trip, vector diversity per **distinct objective** (a row denominator flags healthy benchmark replay as collapse), and the decisive **semantic self-match** (re-embed a row's own objective, cosine against its stored vector — the one check internal consistency cannot fake: 0.9956 healthy vs 0.5505 during the incident). Wired into `health_check.sh` §6 (metadata-only, 0.23 s) and AutoPilot `cmd_start` as a fail-closed gate that retries through an embedder boot window then refuses. Validated against deliberately-broken stores — injected mis-resolution reproduces the incident signature (cosine 0.4372). Sources: [episodic-memory-integrity.md](../handoffs/active/episodic-memory-integrity.md) M-17, [progress 2026-07-28](../progress/2026-07/2026-07-28.md). `verified`
+- **Fail-open embedder fallbacks are a store-poisoning class, and the guard belongs at the index boundary.** `use_fallback=True` is the default everywhere and every live site builds a bare `TaskEmbedder()`, so a BGE outage silently writes SHA-256 pseudo-vectors — measured 89.0% all-zero (float32 norm overflows to inf), 2.8% NaN (FAISS scores −inf, permanently unretrievable), 8.1% well-formed-but-meaningless. The well-formed slice defeats every metadata check and its only detector needed the embedders that were down. Guarantee now sits at `FAISSEmbeddingStore.add()` — the single function every vector passes to reach ANY index (episodic, SkillBank, StrategyStore) — plus exact hash-fallback detection at text-bearing chokepoints (a 0.99-cosine detector had a 45% false-positive rate; exact comparison has 0 over 3,000 live vectors). Sources: [episodic-memory-integrity.md](../handoffs/active/episodic-memory-integrity.md) M-17e-i/M-18. `verified`
+- **The `distill_skillbank` autopilot surface never worked once** — wrong constructor kwargs plus a sync call of async `run()` meant every invocation since the action existed returned `{"status": "error"}`; separately its embed call used a nonexistent method, so even a working pipeline would have stored every skill unindexed, and it embedded a different text convention from what retrieval queries. Repaired, unified on one canonical `skill_embedding_text()`, smoke-tested zero-inference (MockTeacher: distill → dedup → store → indexed). Teacher policy: Claude CLI autonomous default, one-env-line shift to local. First real run is gated on fresh trajectories (readiness probe in the handoff; note **0 of 58,655 rows carry a `work` payload** — write sites never pass it, filed M-11a2). Sources: [episodic-memory-integrity.md](../handoffs/active/episodic-memory-integrity.md) M-11a. `verified`
+
 
 ### New Finding (2026-06-21) — Evidence-pruned reconstruction (MRAgent) is a second instance of the parked two-pass-retrieval pattern, not a new workstream
 

@@ -126,12 +126,40 @@ failure caught in amber.
         (my own smoke test caught the unpaired version writing vectors into the live sessions
         dir). Smoke-tested end-to-end with MockTeacher, zero inference: distill → dedup → store →
         FAISS-indexed, no live-tree side effects.
-  - [ ] M-11a — Re-distil skills (INFERENCE — the teacher LLM writes the skills). Gate (1)
-        RESOLVED — **operator ruling 2026-07-28: Claude CLI is the autonomous default**, wired for a
-        one-env-line shift when the operator decides (`AUTOPILOT_DISTILL_TEACHER=local` on the
-        supervisor; `AUTOPILOT_DISTILL_LOCAL_URL` defaults to the frontdoor, `..._LOCAL_MODEL` for
-        provenance; explicit action `teacher` still wins). Remaining gate (2) **data** — the
-        reseeded store holds 200-char
+  - [ ] M-11a — **First re-distil (INFERENCE — the teacher LLM writes the skills). DO NOT run
+        early; DO NOT forget to run it when ready.** Operator-directed sequence (2026-07-28):
+
+        **seed / run live traffic first → let real trajectories accumulate → then let autopilot
+        propose `distill_skillbank`** (or trigger it via `seed_skills.py --teacher claude`).
+
+        Teacher policy is RESOLVED — operator ruling 2026-07-28: Claude CLI is the autonomous
+        default, wired for a one-env-line shift when the operator decides
+        (`AUTOPILOT_DISTILL_TEACHER=local` on the supervisor; `AUTOPILOT_DISTILL_LOCAL_URL`
+        defaults to the frontdoor, `..._LOCAL_MODEL` for provenance; explicit action `teacher`
+        still wins).
+
+        **Readiness probe** (run this; do not guess):
+        ```bash
+        sqlite3 "file:orchestration/repl_memory/sessions/episodic.db?mode=ro" \
+          "SELECT COUNT(*) FROM memories WHERE created_at > '2026-07-27T22:07' \
+           AND outcome IN ('success','failure')"
+        ```
+        Baseline at filing (2026-07-28T13:4x): **374**. The distillation pipeline consumes
+        `objective`/`routing_decision`/`outcome` per trajectory, so readiness = enough FRESH
+        post-reseed rows with real outcomes and untruncated objectives — suggest **≥2,000** (≈10
+        batches at the default 20/batch over a meaningfully diverse pool) before the first run.
+        The pre-distillation checkpoint in `_action_distill_skillbank` protects rollback either way.
+  - [ ] M-11a2 — **`work`-payload capture is NOT wired** (measured 2026-07-28: **0 of 58,655** rows
+        carry `work`). The live write sites (`q_scorer.py:1194,1291,1402`) pass only
+        objective/metrics — nothing passes `answer`/`tool_calls`/`repl_steps`/`reasoning`, so the
+        contract's work-storage capability sits unused and future distillation stays
+        objective+outcome-only. Wiring capture is zero-inference but design-adjacent (what to
+        capture, size policy) — coordinate with
+        [repl-session-memory-maturity.md](repl-session-memory-maturity.md), which owns trajectory
+        richness. Until this lands, do not expect distilled skills to encode HOW a task was solved,
+        only WHICH routing outcomes succeeded.
+
+        Historical context — the reseeded store holds 200-char
         objective stubs; rich trajectories arrive only from new live-traffic/autopilot writes, so
         the first re-distil is best run after real traffic accumulates. The 57 previous skills reference
         `source_trajectory_ids` matching 0 current rows, and were distilled from 200-char stubs — all
