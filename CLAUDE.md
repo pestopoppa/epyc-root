@@ -200,6 +200,12 @@ Documents in `handoffs/archived/`, `handoffs/completed/`, `progress/`, and `CHAN
   nudges; write acks and status to **your own** outbox (`outbox/<your-id>.jsonl`). Never write
   another agent's file — `queue.jsonl` and `inbox/*` belong to the coordinator-daemon. Contract:
   [`coordination/session-bus/BUS_PROTOCOL.md`](coordination/session-bus/BUS_PROTOCOL.md).
+- **Coordinating other sessions?** Your role file is
+  [`agents/coordinator-agent.md`](agents/coordinator-agent.md) — cross-main sequencing, decision
+  packages, lease grants, integration, and the session-lifecycle rules (an idle main with an empty
+  queue is a coordination failure; `/clear` only after a wrap-up AND only when the next task is
+  disjoint). Full lifecycle contract: `agents/shared/OPERATING_CONSTRAINTS.md` → *Session
+  Lifecycle: wrap-up, clear, close*.
 - **Refresh your heartbeat at the same boundary**, not just once at startup:
   `session_bus.py append --agent <id> --target heartbeat --json '{"state":"working","task_id":"<id>"}'`
   (`state`: `idle` | `working` | `draining`). A heartbeat written once is a birth certificate, not

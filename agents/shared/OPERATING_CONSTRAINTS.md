@@ -64,3 +64,74 @@ Never escalate a decision with an open-ended question ("How should I proceed?", 
 Delivery: Claude Code sessions use the AskUserQuestion tool with the recommended option listed first and labeled "(Recommended)"; other harnesses render the package as a compact markdown list.
 
 Exception: pure factual gaps (a missing credential, an ambiguous file reference) may be asked directly — this contract governs choices among alternatives, not fact retrieval.
+
+## Session Lifecycle: wrap-up, clear, close
+
+Applies to any agent directing another long-running session (coordinator-agent above all), and to
+your own session when a task ends.
+
+**A finished session is never left idle.** An idle main with an empty queue is a coordination
+failure, not a neutral resting state. At every task boundary the choice is exactly one of:
+
+| Situation | Action |
+|---|---|
+| Next task is **related** to what just finished | **Leverage the existing context** — dispatch straight into it. Do NOT wrap up, do NOT clear. |
+| Next task is **disjoint** from what just finished | **Wrap up first, then `/clear`**, then dispatch. |
+| **No further task** can be assigned | **Close the session.** Do not leave it idling. |
+
+**`/clear` requires BOTH conditions — a completed wrap-up AND a disjoint follow-on task.** Neither
+alone is sufficient. Context on a related task is an asset: the session already holds the file
+layout, the fixture patterns, the failure modes and the conventions. Clearing it forces a
+rediscovery pass and discards exactly the understanding that makes the next task cheap. Clearing
+*without* a wrap-up is worse — the durable record of what happened is lost along with the context.
+
+Judge disjointness against **what the session just wrapped up**, not against its whole history.
+
+**Sequencing trap — `/clear` wipes the pending instruction too.** Never send "run /clear then do X"
+as a single nudge: the session clears and X is gone with it. Send `/clear` as its own submission,
+confirm it landed, then dispatch the task as a **separate** nudge pointing at a self-contained
+brief file. A brief that assumes remembered context will not survive the clear that precedes it.
+
+**Recovering a context cleared by mistake:** Codex prints a resume handle on clear
+(`codex resume <session-id>`). If context was cleared that should have been kept, resume rather
+than forcing the session to rediscover everything from a brief.
+
+*Origin: 2026-07-28 — a bus-testing main was cleared between two neighbouring bus-defect tasks,
+discarding directly relevant context; and an earlier combined "wrap-up, then /clear, then read X"
+nudge lost its own follow-on instruction.*
+
+### Coordinator main thread stays free for coordination
+
+A session whose job is coordinating other sessions must NOT spend its main thread on focused
+execution work — writing docs, editing files, authoring briefs, running analyses. That work is
+dispatched to subagents so the main thread stays free to coordinate the mains. The coordinator's
+scarce resource is attention to task boundaries: every minute the main thread spends head-down on
+a focused task is a minute mains can sit idle unnoticed. See `agents/coordinator-agent.md` →
+Guardrails for the full rule and the 2026-07-28 origin incident (two mains, codex-bus-tests and
+claude-gpu-lane, went idle with empty queues while the coordinator's main thread wrote governance
+docs).
+
+### Wrap-up at major checkpoints, not only at session end
+
+Wrap-up must be triggered at every major checkpoint, not only when a session ends. The operator
+monitors high-level progress via the handoff dashboard rather than by watching individual
+sessions, and the dashboard counts **checkbox state only** — prose status updates are invisible to
+it. A checkpoint that is never wrapped up is, from the operator's view, work that did not happen.
+
+A major checkpoint is a phase boundary or a completed campaign — not every task. Examples from
+2026-07-28: a session completing P2-1/P2-3/P2-3d/P2-5 of a program phase; a session completing a
+whole defect campaign (C1-C8).
+
+Wrap-up may be run either by the main session that hit the checkpoint, or by a subagent of the
+coordinator running wrap-up **on its behalf**. The latter is preferred when the main has already
+been dispatched into its next task, so it is not interrupted. Coordinator responsibility: when a
+main hits a checkpoint and moves straight into new work, the coordinator dispatches a subagent to
+wrap up on its behalf rather than letting the record go stale or stalling the main. See
+`agents/coordinator-agent.md` → Guardrails for the coordinator-side rule.
+
+Related direction, same date, same theme of keeping sessions productive: non-inference work that
+can proceed regardless of a pending reboot or a blocked inference lane should be actively sourced,
+assigned, and tracked — do not stand a session down merely because the headline items are
+inference-gated.
+
+*Origin: 2026-07-28 operator direction.*

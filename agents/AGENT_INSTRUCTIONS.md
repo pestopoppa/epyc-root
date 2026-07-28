@@ -28,7 +28,9 @@ Cross-repo dependency map: `.claude/dependency-map.json`
 3. `agents/shared/ENGINEERING_STANDARDS.md`
 4. `agents/shared/WORKFLOWS.md`
 5. `docs/guides/agent-workflows/INDEX.md`
-6. Role file in `agents/*.md` relevant to the task
+6. Role file in `agents/*.md` relevant to the task — if you are coordinating other sessions on
+   the session bus, that is `agents/coordinator-agent.md` plus
+   `coordination/session-bus/BUS_PROTOCOL.md` (the contract)
 7. Domain docs in `docs/` and current status in `CLAUDE.md`
 
 ## Non-Negotiables

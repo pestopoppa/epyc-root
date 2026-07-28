@@ -24,6 +24,7 @@ This directory is organized for agent legibility and low drift.
 | Model Engineer | `agents/model-engineer.md` | Model conversion, quantization, pairing |
 | Sysadmin | `agents/sysadmin.md` | Host tuning and runtime system state |
 | Safety Reviewer | `agents/safety-reviewer.md` | Risk gate before high-impact operations |
+| Coordinator Agent | `agents/coordinator-agent.md` | Cross-main sequencing on the session bus; the only role with cross-main authority |
 
 ## Model Routing (Task-Based)
 

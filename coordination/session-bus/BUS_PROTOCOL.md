@@ -98,3 +98,24 @@ python3 scripts/coordination/session_bus.py drain --agent <id>
 ```
 
 Act on assignments and nudges; write acks and status to your own outbox.
+
+## Session lifecycle at a task boundary (coordinator duty)
+
+Full contract: `agents/shared/OPERATING_CONSTRAINTS.md` → *Session Lifecycle: wrap-up, clear,
+close*. The bus-relevant summary, because this is where the coordinator sees the boundary:
+
+- **An idle main with an empty queue is a coordination failure**, not a resting state. Rule 2
+  says no agent blocks on the bus; it does not say an agent may sit with nothing to do.
+- At a boundary, exactly one of: **related next task → keep the context and dispatch**;
+  **disjoint next task → wrap up, then `/clear`, then dispatch**; **nothing assignable → close
+  the session**.
+- `/clear` needs **both** a completed wrap-up **and** a disjoint follow-on. Related-domain
+  context is an asset — clearing it buys a rediscovery pass and nothing else.
+- `/clear` destroys the pending instruction, so it can never share a nudge with the task that
+  follows it. Clear, confirm, then dispatch a separate nudge pointing at a self-contained brief.
+
+Boundaries reach the coordinator durably: the coordinator-daemon's `detect_task_boundaries()`
+delivers a `status` message with `payload.event == "task-boundary"` to `coordinator-agent`'s
+inbox on any main's transition into `idle`. That is daemon-side, so it survives a coordinator
+session restart — but it makes boundaries *durable*, not *instant*: a running session still only
+sees them at its next drain (defect C8, 2026-07-28).
