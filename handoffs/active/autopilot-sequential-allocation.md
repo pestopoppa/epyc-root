@@ -1,7 +1,9 @@
 # Autopilot Sequential Verdicts — the allocation rule, not the effect, was the binding constraint
 
-**Status**: active — offline re-adjudication COMPLETE 2026-07-28 (zero inference); two candidates sit
-within ~10 trials of a genuine confirm
+**Status**: active — offline re-adjudication COMPLETE 2026-07-28 (zero inference). Two candidates sit
+within ~10 trials of a confirm **inside `core_v1`** — but `core_v1` is closed and E8 is under a
+fail-closed rebaseline hold, so SEQ-3 is gated on an operator era ruling (SEQ-3a) or a ~49-trial
+clean re-run (SEQ-3b).
 **Created**: 2026-07-28
 **Priority**: HIGH — this determines whether the benchmark-Autopilot program was ever tested
 **Categories**: benchmark_methodology, autonomous_research, routing_intelligence
@@ -72,10 +74,34 @@ outcome.
 - [x] SEQ-1 — Verify the k=8/allocation claims directly against the journal. ✅ 2026-07-28
 - [x] SEQ-2 — Build and run the offline re-adjudication (zero inference). ✅ 2026-07-28
       Report: `orchestration/reports/readjudicate_sequential_20260728.json`
-- [ ] SEQ-3 — **Decide the allocation policy.** The cheapest decisive experiment is ~9-10 more trials
-      on `70902e4b665474e7` (≈2.6 eval-hours at the historical ~935 s/trial) to see whether it
-      actually crosses E=20. That is the first confirmed-or-refuted verdict the program would ever
-      have produced. Inference-gated.
+- [ ] SEQ-3 — **Resume the top candidate to a verdict. GATED — read the era problem first.**
+
+    **The "~9 more trials" figure is only valid inside `core_v1`, and `core_v1` is over.**
+    All 393 sequential trials carry `core_id: core_v1`, spanning 2026-06-18 → 2026-07-16. The
+    current era is **E8** (`instrument_eras.yaml:166`, from 2026-07-25T18:38:43Z, scope
+    `eval_quality`), which explicitly opens *"a fail-closed E8 AutoPilot rebaseline hold: pre-v8/E7
+    baseline and MAD observations are historical priors until an operator-ratified E8
+    quality-baseline reseed writes fresh values and windows."* `core_v1` has no era row at all —
+    the only `core_id` the registry declares is `core_v2` (E4).
+
+    Folding E8-instrument z's into a `core_v1` e-process would mix non-comparable evidence, which is
+    the exact defect the era registry exists to prevent. So there are two honest paths:
+
+  - [ ] SEQ-3a — **Bridge (cheap, needs an operator ruling).** If an operator judges the E8
+        instrument comparable to `core_v1` for this candidate's axis and records an era row saying
+        so, then ~9-10 further trials (≈2.6 eval-hours at the historical ~935 s/trial) settle it.
+        **This is a measurement-trust-boundary decision and is human-amendment-only** per
+        MEASUREMENT.md — an agent must not make it.
+  - [ ] SEQ-3b — **Re-run clean under E8 (expensive, no ruling needed).** Restart the candidate at
+        k=0 under the E8 instrument. At the observed growth of 1.0631×/trial it needs **~49 trials**
+        to reach `confirm_e=20.0` — roughly **12.7 eval-hours**, not 2.6. Also gated on the E8
+        quality-baseline reseed completing and being operator-ratified, since the hold is
+        fail-closed.
+
+    **Candidate identity for whoever runs it**: `70902e4b665474e7`, species `seeder`, tier 1,
+    `core_id core_v1`, last trial `1067` (2026-07-03, git tag `autopilot/trial-1067`), config_diff
+    `{n_questions: 18 → 16, suites: [...] → null}`, hypothesis "Seed 16 questions across all",
+    last state `k=40 E_quality=11.5507 lambda=0.5 r_eff=11`.
 - [ ] SEQ-A — Sticky `refuted` label (above).
 - [ ] SEQ-B — Frozen baseline-promotion gate (above).
 - [ ] SEQ-4 — Re-examine the 9 candidates whose refutation does not survive the relaxed budget.
