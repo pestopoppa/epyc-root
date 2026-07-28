@@ -183,13 +183,15 @@ meant to fix). This makes budget-selection and admission-control **one problem**
       - **A4** (small MoE): batch aggressively **all** budgets, scales to **np=32+**, no dip — the throughput arm.
 
       Cross-check: earlier fixed-*total*=36864 probe np4=62 matches A1's L=8192 np4=60.9. ✅
-- [ ] **TB-6-exec-v8 candidate extension — RUNNING 2026-07-27.** Under the operator's zero-idle,
+- [ ] **TB-6-exec-v8 candidate extension — grids terminal; prefill-to-depth RAG RUNNING 2026-07-28.** Under the operator's zero-idle,
       observation-grade grant, extend `epyc-inference-research/artifacts/np_context_study_v8_20260727/`
       with one-load-per-model frozen-v8 runs: ThinkingCap Q8 and both Fable-Fusion Q8 variants each
       receive an `rb1024` SWE/LCB first-read plus the canonical `np×L` grid; Laguna UD-IQ2_M receives
       the grid with DFlash off; A4 receives the `L=2k/8k` era-bridge column. After those cells finish,
       run the separate production-template prefill-to-depth instrument using pinned real retrieval
-      prompts. Evidence collection does not authorize a lineup or registry change.
+      prompts. The four prerequisite grids are terminal, and the q3-held successor is live first on
+      Fable non-MTP; retain this item open until the separate RAG instrument terminalizes. Evidence
+      collection does not authorize a lineup or registry change.
 - [x] **TB-6-sidecar CPU-containment repair** ✅ 2026-07-27 — an initial GPU-sidecar
       thread-affinity check caught a ROCm helper thread inheriting the broad host mask during a
       concurrent Laguna Q4 CPU arm, correctly invalidating that arm rather than accepting a false
@@ -202,7 +204,8 @@ meant to fix). This makes budget-selection and admission-control **one problem**
 - [ ] **TB-6-exec-followups (GPU-owned).** (a) ✅ A3+A4 surfaces DONE 2026-07-23; remaining: the other
       GPU-resident stack models if/when relevant. (b) A *rigorous* variant using **prefill-to-depth** (long
       synthetic prompt + short generation) to measure decode-at-KV-depth cheaply instead of the slow generate-L
-      proxy — also fixes the n=1 np=1-baseline noise. (d) Extract per-model `kv_bytes/token` from the VRAM
+      proxy — also fixes the n=1 np=1-baseline noise. The prepared q3 RAG successor started 2026-07-28 and
+      remains live evidence collection, not a terminal result. (d) Extract per-model `kv_bytes/token` from the VRAM
       readings for the admission-control constant (A1 ~0.08, A3 ~0.15, A4 low — MoE). NOTE: measured KV is
       *cheaper* than a naive 0.23 GB/1k estimate — that conflated true KV with per-np compute/batch buffers;
       totals to 131k ctx fit under ~54 GB on the 64 GB card.
