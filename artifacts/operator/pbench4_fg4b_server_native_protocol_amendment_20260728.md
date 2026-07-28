@@ -22,13 +22,15 @@ retro-certified under P-BENCH-4.
 
 **Ratification transaction.** The human receipt, the appended measurement
 policy, and the changelog entry are one fail-closed transaction. Stage and
-fsync every candidate before replacing either policy file; publish the receipt
+fsync every candidate, both policy preimages, and a durable transaction journal
+before replacing either policy file. Hold the shared measurement trust-boundary
+lock across startup recovery and the complete transaction. Publish the receipt
 only after the authoritative runner accepts it against the updated policy. The
 receipt must be created with a no-replace operation and its containing
-directory fsynced. A valid durable receipt is the commit record: an
-interruption after it exists must not retract that receipt or its bound policy
-files. A failure before it exists must restore both policy files and leave no
-new receipt.
+directory fsynced. A valid durable receipt is the commit record: startup
+recovery commits its bound policy files. Without such a receipt, recovery
+atomically restores and fsyncs both journaled preimages. Recovery is mandatory
+after trapped failures, signals, abrupt process death, and host restart.
 
 **Exclusive ownership and host state.** Launch exactly one CPU-only server with
 `-np 1`. Before launch, the runner's quiet-host preflight must prove no competing

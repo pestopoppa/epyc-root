@@ -8,8 +8,10 @@ import json
 import os
 from pathlib import Path
 import shutil
+import signal
 import subprocess
 import sys
+import time
 
 import pytest
 
@@ -22,7 +24,7 @@ AUTHORITATIVE_RUNNER = Path(
     "/mnt/raid0/llm/worktrees/fg4b-optimized-server-20260728/"
     "scripts/benchmark/fg4b_a4_cpu_optimized_reanchor.py"
 )
-AUTHORITATIVE_RUNNER_SHA256 = "f2983a10f6af3290f254c16a7681762a074bafb71fc12df68dbfbcc83043a1b9"
+AUTHORITATIVE_RUNNER_SHA256 = "b77cdf9d90d010146c79a09114947fa24919f65e97cd35519ca76b085a24f19d"
 
 
 def _sha256_bytes(value: bytes) -> str:
@@ -115,6 +117,7 @@ def validate_protocol_attestation(path: Path) -> dict:
         "EPYC_ROOT": str(root),
         "EPYC_RESEARCH": str(research),
         "P_BENCH_4_RUNNER_ROOT": str(research),
+        "P_BENCH_4_TRUST_LOCK": str(operator / ".measurement-trust-boundary.lock"),
         "P_BENCH_4_EXPECTED_RESEARCH_COMMIT": _git("rev-parse", "HEAD", cwd=research),
         "P_BENCH_4_EXPECTED_RESEARCH_TREE": _git("rev-parse", "HEAD^{tree}", cwd=research),
         "P_BENCH_4_EXPECTED_REPOSITORY": _git("remote", "get-url", "origin", cwd=research),
@@ -145,6 +148,36 @@ def _run(fixture: dict[str, object], *args: str, **extra_env: str) -> subprocess
         env=env,
         cwd="/",
     )
+
+
+def _start_attestation(
+    fixture: dict[str, object],
+    **extra_env: str,
+) -> subprocess.Popen[str]:
+    env = os.environ | fixture["env"] | extra_env  # type: ignore[operator]
+    return subprocess.Popen(
+        ["bash", str(fixture["script"]), "--attest", TOKEN],
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        env=env,
+        cwd="/",
+        start_new_session=True,
+    )
+
+
+def _wait_for_phase(process: subprocess.Popen[str], predicate: object) -> None:
+    deadline = time.monotonic() + 10
+    while time.monotonic() < deadline:
+        if callable(predicate) and predicate():
+            return
+        if process.poll() is not None:
+            stdout, stderr = process.communicate()
+            pytest.fail(f"ratifier exited before crash phase: {stdout=} {stderr=}")
+        time.sleep(0.01)
+    process.kill()
+    stdout, stderr = process.communicate()
+    pytest.fail(f"timed out waiting for crash phase: {stdout=} {stderr=}")
 
 
 def test_validate_only_is_cwd_independent_and_does_not_mutate(transaction_fixture: dict[str, object]) -> None:
@@ -196,6 +229,20 @@ def test_attest_applies_exact_content_and_writes_runner_bound_receipt(transactio
     }
     assert receipt["contract"]["durable_publish"] == (
         "fsync_files_and_staging_dir_then_parent_before_and_after_atomic_rename"
+    )
+    transactions = list(
+        (root / "artifacts/operator/pbench4_fg4b_server_native_transactions").glob(".pbench4-*")
+    )
+    assert len(transactions) == 1
+    journal = json.loads((transactions[0] / "transaction.json").read_text())
+    completion = json.loads((transactions[0] / "COMPLETE").read_text())
+    assert journal["state"] == "prepared"
+    assert completion["disposition"] == "committed"
+    assert _sha256_bytes((transactions[0] / "MEASUREMENT.md.before").read_bytes()) == (
+        journal["files"]["measurement"]["preimage_sha256"]
+    )
+    assert _sha256_bytes((transactions[0] / "CHANGELOG.md.before").read_bytes()) == (
+        journal["files"]["changelog"]["preimage_sha256"]
     )
 
 
@@ -315,6 +362,67 @@ def test_durable_receipt_commits_all_three_files_despite_post_publish_interrupti
     assert json.loads(receipts[0].read_text())["status"] == "ratified"
 
 
+def test_sigkill_after_first_policy_rename_recovers_both_preimages(
+    transaction_fixture: dict[str, object],
+) -> None:
+    root = transaction_fixture["root"]
+    process = _start_attestation(
+        transaction_fixture,
+        P_BENCH_4_TEST_HOLD_AFTER_MEASUREMENT_SECONDS="30",
+    )
+    _wait_for_phase(
+        process,
+        lambda: (root / "MEASUREMENT.md").read_text() != transaction_fixture["measurement"],
+    )
+    contender = _run(transaction_fixture, "--validate-only")
+    assert contender.returncode != 0
+    assert "measurement trust-boundary lock is already held" in contender.stderr
+    os.killpg(process.pid, signal.SIGKILL)
+    process.communicate(timeout=5)
+    assert process.returncode == -signal.SIGKILL
+    assert not list((root / "artifacts/operator").glob("ratify_pbench4_fg4b_server_native_*.json"))
+
+    recovery = _run(transaction_fixture, "--validate-only")
+    assert recovery.returncode == 0, recovery.stderr
+    assert "Recovered rolled-back" in recovery.stdout
+    assert (root / "MEASUREMENT.md").read_text() == transaction_fixture["measurement"]
+    assert (root / "CHANGELOG.md").read_text() == transaction_fixture["changelog"]
+    transaction = next(
+        (root / "artifacts/operator/pbench4_fg4b_server_native_transactions").glob(".pbench4-*")
+    )
+    assert json.loads((transaction / "COMPLETE").read_text())["disposition"] == "rolled_back"
+
+
+def test_sigkill_after_durable_receipt_recovers_committed_transaction(
+    transaction_fixture: dict[str, object],
+) -> None:
+    root = transaction_fixture["root"]
+    process = _start_attestation(
+        transaction_fixture,
+        P_BENCH_4_TEST_HOLD_AFTER_RECEIPT_SECONDS="30",
+    )
+    _wait_for_phase(
+        process,
+        lambda: bool(
+            list((root / "artifacts/operator").glob("ratify_pbench4_fg4b_server_native_*.json"))
+        ),
+    )
+    os.killpg(process.pid, signal.SIGKILL)
+    process.communicate(timeout=5)
+    assert process.returncode == -signal.SIGKILL
+
+    recovery = _run(transaction_fixture, "--validate-only")
+    assert recovery.returncode != 0
+    assert "Recovered committed" in recovery.stdout
+    assert "marker is already present" in recovery.stderr
+    assert (root / "MEASUREMENT.md").read_text() != transaction_fixture["measurement"]
+    assert (root / "CHANGELOG.md").read_text() != transaction_fixture["changelog"]
+    transaction = next(
+        (root / "artifacts/operator/pbench4_fg4b_server_native_transactions").glob(".pbench4-*")
+    )
+    assert json.loads((transaction / "COMPLETE").read_text())["disposition"] == "committed"
+
+
 def test_live_production_preflight_accepts_current_policy_pins() -> None:
     result = subprocess.run(
         ["bash", str(SOURCE_SCRIPT), "--validate-only"],
@@ -330,7 +438,7 @@ def test_live_production_preflight_accepts_current_policy_pins() -> None:
 def test_reviewed_bundle_keeps_the_explicit_nonretroactive_quarantine() -> None:
     script = SOURCE_SCRIPT.read_text(encoding="utf-8")
     amendment = SOURCE_AMENDMENT.read_text(encoding="utf-8")
-    assert "c00f2937a48439f5f00e527176e854a94333a8db" in script
-    assert "f2983a10f6af3290f254c16a7681762a074bafb71fc12df68dbfbcc83043a1b9" in script
+    assert "73dcf194fc5c6a23a098ecc34bcef03e38430f0a" in script
+    assert "b77cdf9d90d010146c79a09114947fa24919f65e97cd35519ca76b085a24f19d" in script
     assert "919e83a249ed9060d0608305700e6eeddb8daa71" in amendment
     assert "explicitly_nonconforming_not_retro_certified" in script
