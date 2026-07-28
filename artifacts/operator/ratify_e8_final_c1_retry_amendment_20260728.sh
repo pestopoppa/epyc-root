@@ -1,6 +1,7 @@
 #!/bin/bash
 # Human-only authorization for the final E8 c1 retry. This script never runs inference.
 set -euo pipefail
+export PATH="/usr/bin:/bin"
 
 SCRIPT_PATH="$(realpath -e -- "${BASH_SOURCE[0]}")"
 SCRIPT_DIR="$(dirname -- "$SCRIPT_PATH")"
@@ -27,6 +28,7 @@ fi
 
 RECEIPT="$ROOT/artifacts/operator/ratify_e8_final_c1_retry_amendment_20260728.json"
 LOCK="$ROOT/artifacts/operator/.e8_final_c1_retry_amendment.lock"
+LOCK_HELD=0
 TOKEN="RATIFY-E8-FINAL-C1-RETRY-20260728"
 PLAN_REL="partial_r2_plan.json"
 PROPOSAL_REL="recovery_proposal.json"
@@ -45,12 +47,12 @@ EXPECTED_FAILED_SIDECARS="97:a550c07752f8dedc0fdf5c4582b587c90f3b624405ed1454f62
 # These are deliberately unresolved until the owning orchestrator integration
 # supplies its reviewed final-c1 runner and validator pins. A human token must
 # never authorize an unpinned instrument.
-EXPECTED_ORCH_COMMIT="__ORCHESTRATOR_COMMIT_TO_BE_SUPPLIED__"
-EXPECTED_ORCH_TREE="__ORCHESTRATOR_TREE_TO_BE_SUPPLIED__"
-RUNNER_REL="__FINAL_C1_RUNNER_PATH_TO_BE_SUPPLIED__"
-EXPECTED_RUNNER_SHA256="__FINAL_C1_RUNNER_SHA256_TO_BE_SUPPLIED__"
-VALIDATOR_REL="__FINAL_C1_VALIDATOR_PATH_TO_BE_SUPPLIED__"
-EXPECTED_VALIDATOR_SHA256="__FINAL_C1_VALIDATOR_SHA256_TO_BE_SUPPLIED__"
+EXPECTED_ORCH_COMMIT="abbcd699327b0da4327567e5a07d72fbc97aa29c"
+EXPECTED_ORCH_TREE="1617b2bff226bb94a5ecda82f48df7631d1e40c5"
+RUNNER_REL="scripts/benchmark/final_c1_retry.py"
+EXPECTED_RUNNER_SHA256="1825d09a82124bcbd8583515d0baa0be773433d68531e6d8eb74ca33382c637b"
+VALIDATOR_REL="scripts/benchmark/final_c1_validator.py"
+EXPECTED_VALIDATOR_SHA256="b82c49cfa362d75496d5e925d58ae5b11d1d33c3d9d14a6f7f796a6c6bf4e977"
 
 if [[ "$TEST_MODE" == "1" ]]; then
     EXPECTED_PLAN_SHA256="${E8_C1_EXPECTED_PLAN_SHA256:-$EXPECTED_PLAN_SHA256}"
@@ -73,6 +75,82 @@ sha256() { sha256sum -- "$1" | awk '{print $1}'; }
 require_hash() { [[ "$(sha256 "$2")" == "$1" ]] || fail "SHA-256 mismatch for $2"; }
 require_pin() { [[ "$1" =~ ^[0-9a-f]{40}$ || "$1" =~ ^[0-9a-f]{64}$ ]] || fail "unresolved or malformed instrument pin"; }
 require_relpath() { [[ "$1" != /* && "$1" != *".."* && "$1" != __* ]] || fail "unresolved or unsafe instrument path"; }
+
+cleanup() {
+    local status=$?
+    trap - EXIT INT TERM HUP
+    set +e
+    [[ "$LOCK_HELD" != 1 ]] || rmdir -- "$LOCK"
+    return "$status"
+}
+
+acquire_lock() {
+    # mkdir(2) is an atomic no-replace operation and does not follow a symlink
+    # at the target path. The private, empty directory is the shared lock.
+    if ! mkdir -m 0700 -- "$LOCK"; then
+        fail "canonical shared lock acquisition refused: $LOCK"
+    fi
+    LOCK_HELD=1
+    trap cleanup EXIT
+    trap 'exit 130' INT
+    trap 'exit 143' TERM
+    trap 'exit 129' HUP
+    if [[ "$TEST_MODE" == 1 && "${E8_C1_TEST_HOLD_LOCK_SECONDS:-0}" != 0 ]]; then
+        [[ "${E8_C1_TEST_HOLD_LOCK_SECONDS}" =~ ^[0-9]+([.][0-9]+)?$ ]] ||
+            fail "invalid test-only lock hold duration"
+        sleep "${E8_C1_TEST_HOLD_LOCK_SECONDS}"
+    fi
+}
+
+release_lock() {
+    rmdir -- "$LOCK" || fail "canonical shared lock could not be released: $LOCK"
+    LOCK_HELD=0
+}
+
+verify_canonical_paths() {
+    local production=0
+    [[ "$TEST_MODE" == 1 ]] || production=1
+    "$PYTHON" - "$SCRIPT_PATH" "$ROOT" "$EVIDENCE" "$(dirname -- "$RECEIPT")" \
+        "$CANONICAL_ROOT" "$CANONICAL_EVIDENCE" "$production" <<'PY'
+import os
+import stat
+import sys
+from pathlib import Path
+
+script, root, evidence, receipt_parent, canonical_root, canonical_evidence, production = sys.argv[1:]
+
+def reject_alias(label: str, value: str, kind: str) -> None:
+    path = Path(value)
+    if not path.is_absolute() or os.path.realpath(value) != value:
+        raise SystemExit(f"{label} is not an exact resolved path: {value}")
+    current = Path(path.anchor)
+    for part in path.parts[1:]:
+        current /= part
+        mode = os.lstat(current).st_mode
+        if stat.S_ISLNK(mode):
+            raise SystemExit(f"{label} contains a symlink component: {current}")
+    mode = os.lstat(path).st_mode
+    if kind == "file" and not stat.S_ISREG(mode):
+        raise SystemExit(f"{label} is not a regular file: {value}")
+    if kind == "dir" and not stat.S_ISDIR(mode):
+        raise SystemExit(f"{label} is not a directory: {value}")
+
+reject_alias("script", script, "file")
+reject_alias("root", root, "dir")
+reject_alias("evidence", evidence, "dir")
+reject_alias("receipt parent", receipt_parent, "dir")
+if production == "1":
+    expected_script = f"{canonical_root}/artifacts/operator/ratify_e8_final_c1_retry_amendment_20260728.sh"
+    expected_parent = f"{canonical_root}/artifacts/operator"
+    expected = {"script": expected_script, "root": canonical_root,
+                "evidence": canonical_evidence, "receipt parent": expected_parent}
+    actual = {"script": script, "root": root, "evidence": evidence,
+              "receipt parent": receipt_parent}
+    for label, wanted in expected.items():
+        if actual[label] != wanted:
+            raise SystemExit(f"production {label} differs from canonical path: {actual[label]}")
+PY
+}
 
 verify_instrument_pins() {
     require_pin "$EXPECTED_ORCH_COMMIT"
@@ -149,25 +227,35 @@ verify_preflight() {
         fail "production amendment must run from the canonical root: $CANONICAL_ROOT"
     [[ -d "$ROOT/.git" || -f "$ROOT/.git" ]] || fail "root is not a Git worktree: $ROOT"
     [[ ! -e "$RECEIPT" ]] || fail "final-c1 amendment receipt already exists: $RECEIPT"
+    verify_canonical_paths
     verify_instrument_pins
     verify_failed_namespace
 }
 
-write_receipt() {
-    local candidate=$1
-    "$PYTHON" - "$candidate" "$EVIDENCE" "$EXPECTED_PLAN_SHA256" "$EXPECTED_PROPOSAL_SHA256" \
+write_and_publish_receipt() {
+    local test_hold="${E8_C1_TEST_HOLD_AFTER_CANDIDATE_SECONDS:-0}"
+    local test_decoy="${E8_C1_TEST_REPLACE_CANDIDATE_WITH_SYMLINK:-0}"
+    [[ "$TEST_MODE" == 1 ]] || { test_hold=0; test_decoy=0; }
+    [[ "$test_hold" =~ ^[0-9]+([.][0-9]+)?$ ]] || fail "invalid test-only receipt hold duration"
+    "$PYTHON" - "$LOCK" "$RECEIPT" "$EVIDENCE" "$EXPECTED_PLAN_SHA256" "$EXPECTED_PROPOSAL_SHA256" \
         "$EXPECTED_FAILURES_SHA256" "$EXPECTED_PLAN_TREE_SHA256" "$EXPECTED_PROPOSAL_TREE_SHA256" \
         "$EXPECTED_SOURCE_TREE_SHA256" "$EXPECTED_FAILED_SIDECARS" "$ORCH" "$EXPECTED_ORCH_COMMIT" "$EXPECTED_ORCH_TREE" \
         "$RUNNER_REL" "$EXPECTED_RUNNER_SHA256" "$VALIDATOR_REL" "$EXPECTED_VALIDATOR_SHA256" \
-        "$SCRIPT_PATH" <<'PY'
+        "$SCRIPT_PATH" "$test_hold" "$test_decoy" <<'PY'
+import ctypes
+import errno
 import hashlib
 import json
+import os
+import stat
 import sys
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 
-(out, evidence, plan_hash, proposal_hash, failures_hash, plan_tree, proposal_tree, source_tree, sidecars,
- orch, commit, tree, runner, runner_hash, validator, validator_hash, script) = sys.argv[1:]
+(lock_dir, receipt, evidence, plan_hash, proposal_hash, failures_hash, plan_tree, proposal_tree,
+ source_tree, sidecars, orch, commit, tree, runner, runner_hash, validator, validator_hash,
+ script, test_hold, test_decoy) = sys.argv[1:]
 payload = {
     "schema": "epyc.operator_e8_quality_final_c1_retry_amendment.v1",
     "status": "ratified",
@@ -211,20 +299,81 @@ payload = {
     "non_authorizations": {"no_state_write": True, "no_lineup_mutation": True,
                            "no_inference_by_ratifier": True},
 }
-Path(out).write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-PY
-}
+data = (json.dumps(payload, indent=2, sort_keys=True) + "\n").encode()
+decoded = json.loads(data)
+if decoded["authorization"] != payload["authorization"] or decoded["non_authorizations"] != payload["non_authorizations"]:
+    raise SystemExit("receipt schema round-trip differs")
 
-durable_fsync() {
-    "$PYTHON" - "$1" <<'PY'
-import os
-import sys
-
-path = sys.argv[1]
-fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY if os.path.isdir(path) else os.O_RDONLY)
+nofollow = getattr(os, "O_NOFOLLOW", 0)
+if not hasattr(os, "O_TMPFILE"):
+    raise SystemExit("O_TMPFILE is unavailable; fail closed")
+lockfd = os.open(lock_dir, os.O_RDONLY | os.O_DIRECTORY | nofollow)
+parent, name = os.path.split(receipt)
+dirfd = os.open(parent, os.O_RDONLY | os.O_DIRECTORY | nofollow)
+fd = os.open(lock_dir, os.O_RDWR | os.O_TMPFILE, 0o600)
+published = False
+decoy = os.path.join(lock_dir, "receipt.candidate")
 try:
+    before = os.fstat(fd)
+    if not stat.S_ISREG(before.st_mode) or before.st_nlink != 0:
+        raise SystemExit("anonymous receipt inode is not an unlinked regular file")
+    view = memoryview(data)
+    while view:
+        written = os.write(fd, view)
+        view = view[written:]
     os.fsync(fd)
+    written_state = os.fstat(fd)
+    if (written_state.st_dev, written_state.st_ino, written_state.st_nlink) != (before.st_dev, before.st_ino, 0):
+        raise SystemExit("anonymous receipt inode changed while writing")
+    os.lseek(fd, 0, os.SEEK_SET)
+    held_data = os.read(fd, len(data) + 1)
+    if held_data != data:
+        raise SystemExit("held receipt bytes differ before publication")
+    if test_decoy == "1":
+        os.symlink("/etc/passwd", decoy)
+    if float(test_hold):
+        time.sleep(float(test_hold))
+
+    libc = ctypes.CDLL(None, use_errno=True)
+    linkat = libc.linkat
+    linkat.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_int]
+    linkat.restype = ctypes.c_int
+    at_empty_path = 0x1000
+    if linkat(fd, b"", dirfd, os.fsencode(name), at_empty_path) != 0:
+        error = ctypes.get_errno()
+        if error == errno.EEXIST:
+            raise SystemExit(f"receipt destination already exists: {receipt}")
+        raise OSError(error, os.strerror(error), receipt)
+    published = True
+    after = os.fstat(fd)
+    final = os.stat(name, dir_fd=dirfd, follow_symlinks=False)
+    os.lseek(fd, 0, os.SEEK_SET)
+    final_data = os.read(fd, after.st_size + 1)
+    if (after.st_dev, after.st_ino, after.st_nlink) != (before.st_dev, before.st_ino, 1):
+        raise SystemExit("published receipt inode or link count differs")
+    if not stat.S_ISREG(final.st_mode) or (final.st_dev, final.st_ino) != (after.st_dev, after.st_ino):
+        raise SystemExit("published receipt does not name the held candidate inode")
+    if final_data != data:
+        raise SystemExit("held receipt content changed during publication")
+    os.fsync(dirfd)
+except BaseException:
+    if published:
+        try:
+            final = os.stat(name, dir_fd=dirfd, follow_symlinks=False)
+            held = os.fstat(fd)
+            if (final.st_dev, final.st_ino) == (held.st_dev, held.st_ino):
+                os.unlink(name, dir_fd=dirfd)
+                os.fsync(dirfd)
+        except (FileNotFoundError, OSError):
+            pass
+    raise
 finally:
+    try:
+        os.unlink(decoy)
+    except FileNotFoundError:
+        pass
+    os.close(lockfd)
+    os.close(dirfd)
     os.close(fd)
 PY
 }
@@ -240,40 +389,17 @@ plan() {
 attest() {
     verify_preflight
     mkdir -p -- "$(dirname -- "$RECEIPT")"
-    exec 9>"$LOCK"
-    flock -n 9 || fail "another final-c1 amendment transaction holds the canonical shared lock"
+    acquire_lock
     verify_preflight
-    local candidate
-    candidate="$(mktemp "${RECEIPT}.candidate.XXXXXX")"
-    trap 'rm -f -- "$candidate"' EXIT
-    write_receipt "$candidate"
-    "$PYTHON" - "$candidate" <<'PY'
-import json
-import sys
-payload = json.load(open(sys.argv[1], encoding="utf-8"))
-assert payload["authorization"]["ordinals"] == [97, 279]
-assert payload["authorization"]["qids"] == ["leval_codeU_269", "leval_review_summ_382"]
-assert payload["authorization"]["order"] == "sequential"
-assert payload["authorization"]["generation_concurrency"] == 1
-assert payload["authorization"]["request_timeout_s"] == 300
-assert payload["authorization"]["success_disposition"] == "clean_rows_continue_existing_clean_500_finalizer"
-assert payload["authorization"]["repeated_failure_disposition"] == "terminal_failed_no_admission"
-assert payload["authorization"]["no_auto_retry"] is True
-assert payload["authorization"]["no_timeout_increase"] is True
-assert payload["non_authorizations"] == {"no_state_write": True, "no_lineup_mutation": True,
-                                          "no_inference_by_ratifier": True}
-PY
-    durable_fsync "$candidate"
     # Detect any evidence mutation which occurred while this receipt was being
     # constructed. The namespace is read-only evidence; publication is denied
     # if its full canonical tree no longer agrees with the preflight binding.
     verify_failed_namespace
-    # link(2) has no overwrite mode, unlike `mv -n` whose no-op may still exit
-    # successfully. The candidate and final receipt are in the same directory.
-    ln -- "$candidate" "$RECEIPT" || fail "receipt destination already exists: $RECEIPT"
-    durable_fsync "$(dirname -- "$RECEIPT")"
-    rm -f -- "$candidate"
-    trap - EXIT
+    # One trusted process creates an anonymous inode, writes and validates the
+    # receipt, then publishes that held inode with linkat(AT_EMPTY_PATH).
+    write_and_publish_receipt
+    release_lock
+    trap - EXIT INT TERM HUP
     printf 'E8 final-c1 retry amendment receipt created:\n%s\n' "$RECEIPT"
     sha256sum -- "$RECEIPT"
 }

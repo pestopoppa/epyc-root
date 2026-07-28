@@ -9,6 +9,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import time
 
 import pytest
 
@@ -114,7 +115,7 @@ def amendment_fixture(tmp_path: Path) -> dict[str, object]:
 
 def _run(fixture: dict[str, object], *args: str, **extra_env: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        ["bash", str(fixture["script"]), *args],
+        ["/bin/bash", str(fixture["script"]), *args],
         cwd="/",
         text=True,
         capture_output=True,
@@ -125,6 +126,10 @@ def _run(fixture: dict[str, object], *args: str, **extra_env: str) -> subprocess
 
 def _receipt(fixture: dict[str, object]) -> Path:
     return fixture["root"] / "artifacts/operator/ratify_e8_final_c1_retry_amendment_20260728.json"  # type: ignore[operator]
+
+
+def _lock(fixture: dict[str, object]) -> Path:
+    return fixture["root"] / "artifacts/operator/.e8_final_c1_retry_amendment.lock"  # type: ignore[operator]
 
 
 def test_validate_only_is_cwd_independent_and_read_only(amendment_fixture: dict[str, object]) -> None:
@@ -166,6 +171,7 @@ def test_attestation_writes_only_the_exact_narrow_contract(amendment_fixture: di
         "no_lineup_mutation": True,
         "no_inference_by_ratifier": True,
     }
+    assert not _lock(amendment_fixture).exists()
 
 
 def test_refuses_tampered_failure_namespace_without_receipt(amendment_fixture: dict[str, object]) -> None:
@@ -212,18 +218,151 @@ def test_wrong_token_and_duplicate_attestation_fail_closed(amendment_fixture: di
     assert "already exists" in duplicate.stderr
 
 
+def test_lock_symlink_is_not_followed_or_modified(amendment_fixture: dict[str, object], tmp_path: Path) -> None:
+    sentinel = tmp_path / "sentinel"
+    sentinel.mkdir()
+    marker = sentinel / "marker"
+    marker.write_text("unchanged\n", encoding="utf-8")
+    _lock(amendment_fixture).symlink_to(sentinel, target_is_directory=True)
+
+    result = _run(amendment_fixture, "--attest", TOKEN)
+
+    assert result.returncode != 0
+    assert "shared lock acquisition refused" in result.stderr
+    assert _lock(amendment_fixture).is_symlink()
+    assert marker.read_text(encoding="utf-8") == "unchanged\n"
+    assert not _receipt(amendment_fixture).exists()
+
+
+def test_existing_regular_lock_is_not_truncated(amendment_fixture: dict[str, object]) -> None:
+    lock = _lock(amendment_fixture)
+    lock.write_bytes(b"do-not-truncate\n")
+
+    result = _run(amendment_fixture, "--attest", TOKEN)
+
+    assert result.returncode != 0
+    assert "shared lock acquisition refused" in result.stderr
+    assert lock.read_bytes() == b"do-not-truncate\n"
+    assert not _receipt(amendment_fixture).exists()
+
+
+def test_concurrent_attestation_cannot_enter_critical_section(amendment_fixture: dict[str, object]) -> None:
+    env = os.environ | amendment_fixture["env"] | {"E8_C1_TEST_HOLD_LOCK_SECONDS": "0.75"}  # type: ignore[operator]
+    first = subprocess.Popen(
+        ["/bin/bash", str(amendment_fixture["script"]), "--attest", TOKEN],
+        cwd="/",
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        env=env,
+    )
+    deadline = time.monotonic() + 3
+    while not _lock(amendment_fixture).is_dir() and time.monotonic() < deadline:
+        time.sleep(0.01)
+    assert _lock(amendment_fixture).is_dir(), "first attestation never acquired the shared lock"
+
+    second = _run(amendment_fixture, "--attest", TOKEN)
+    first_stdout, first_stderr = first.communicate(timeout=5)
+
+    assert second.returncode != 0
+    assert "shared lock acquisition refused" in second.stderr
+    assert first.returncode == 0, first_stderr
+    assert "receipt created" in first_stdout
+    assert _receipt(amendment_fixture).is_file()
+    assert not _lock(amendment_fixture).exists()
+
+
+def test_candidate_is_private_and_never_created_in_receipt_parent(amendment_fixture: dict[str, object]) -> None:
+    env = os.environ | amendment_fixture["env"] | {"E8_C1_TEST_HOLD_AFTER_CANDIDATE_SECONDS": "0.75"}  # type: ignore[operator]
+    process = subprocess.Popen(
+        ["/bin/bash", str(amendment_fixture["script"]), "--attest", TOKEN],
+        cwd="/",
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        env=env,
+    )
+    deadline = time.monotonic() + 3
+    while not _lock(amendment_fixture).is_dir() and time.monotonic() < deadline:
+        time.sleep(0.01)
+    assert _lock(amendment_fixture).is_dir(), "private transaction directory was not created"
+    assert list(_lock(amendment_fixture).iterdir()) == []
+    parent = _receipt(amendment_fixture).parent
+    assert list(parent.glob("*.candidate*")) == []
+
+    stdout, stderr = process.communicate(timeout=5)
+    assert process.returncode == 0, stderr
+    assert "receipt created" in stdout
+    assert not _lock(amendment_fixture).exists()
+
+
+def test_named_candidate_symlink_cannot_substitute_anonymous_receipt_inode(
+    amendment_fixture: dict[str, object],
+) -> None:
+    result = _run(
+        amendment_fixture,
+        "--attest",
+        TOKEN,
+        E8_C1_TEST_REPLACE_CANDIDATE_WITH_SYMLINK="1",
+    )
+    assert result.returncode == 0, result.stderr
+    receipt = json.loads(_receipt(amendment_fixture).read_text(encoding="utf-8"))
+    assert receipt["schema"] == "epyc.operator_e8_quality_final_c1_retry_amendment.v1"
+    assert not _lock(amendment_fixture).exists()
+
+
+def test_evidence_alias_path_is_rejected(amendment_fixture: dict[str, object], tmp_path: Path) -> None:
+    alias = tmp_path / "evidence-alias"
+    alias.symlink_to(amendment_fixture["evidence"], target_is_directory=True)
+    result = _run(amendment_fixture, "--validate-only", E8_C1_EVIDENCE=str(alias))
+    assert result.returncode != 0
+    assert "not an exact resolved path" in result.stderr
+    assert not _receipt(amendment_fixture).exists()
+
+
+def test_root_and_receipt_parent_alias_path_is_rejected(
+    amendment_fixture: dict[str, object], tmp_path: Path
+) -> None:
+    alias = tmp_path / "root-alias"
+    alias.symlink_to(amendment_fixture["root"], target_is_directory=True)
+    result = _run(amendment_fixture, "--validate-only", EPYC_ROOT=str(alias))
+    assert result.returncode != 0
+    assert "not an exact resolved path" in result.stderr
+
+
+def test_hostile_path_cannot_replace_boundary_commands(
+    amendment_fixture: dict[str, object], tmp_path: Path
+) -> None:
+    hostile = tmp_path / "hostile"
+    hostile.mkdir()
+    marker = tmp_path / "hostile-git-ran"
+    fake_git = hostile / "git"
+    fake_git.write_text(f"#!/bin/bash\ntouch {marker}\nexit 99\n", encoding="utf-8")
+    fake_git.chmod(0o755)
+    result = _run(amendment_fixture, "--validate-only", PATH=str(hostile))
+    assert result.returncode == 0, result.stderr
+    assert not marker.exists()
+
+
 def test_test_mode_cannot_target_canonical_root_or_evidence(amendment_fixture: dict[str, object]) -> None:
     result = _run(amendment_fixture, "--validate-only", EPYC_ROOT="/mnt/raid0/llm/epyc-root")
     assert result.returncode != 0
     assert "test mode refuses canonical" in result.stderr
 
 
-def test_production_defaults_refuse_unresolved_runner_pins() -> None:
+def test_production_defaults_pin_the_reviewed_runner_and_validator() -> None:
     text = SOURCE_SCRIPT.read_text(encoding="utf-8")
-    assert "__ORCHESTRATOR_COMMIT_TO_BE_SUPPLIED__" in text
-    assert "unresolved or malformed instrument pin" in text
+    assert "abbcd699327b0da4327567e5a07d72fbc97aa29c" in text
+    assert "1617b2bff226bb94a5ecda82f48df7631d1e40c5" in text
+    assert "scripts/benchmark/final_c1_retry.py" in text
+    assert "1825d09a82124bcbd8583515d0baa0be773433d68531e6d8eb74ca33382c637b" in text
+    assert "scripts/benchmark/final_c1_validator.py" in text
+    assert "b82c49cfa362d75496d5e925d58ae5b11d1d33c3d9d14a6f7f796a6c6bf4e977" in text
+    assert "_TO_BE_SUPPLIED__" not in text
     assert "request_timeout_s\": 300" in text
     assert "no_timeout_increase\": True" in text
     assert 'PYTHON="/usr/bin/python3"' in text
-    assert "durable_fsync" in text
     assert '.e8_final_c1_retry_amendment.lock' in text
+    assert 'export PATH="/usr/bin:/bin"' in text
+    assert "AT_EMPTY_PATH" in text
+    assert "O_TMPFILE" in text
