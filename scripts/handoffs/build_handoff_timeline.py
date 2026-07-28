@@ -231,11 +231,13 @@ def build_timeline(repo: Path) -> dict:
     # card re-sorts/re-dates on edits even when its file carries no ``Updated:`` field.
     file_activity: dict[str, str] = {}
     tasks_weekly: Counter = Counter()    # task completions per week
-    opened_weekly: Counter = Counter()   # tasks entering the backlog per week
+    opened_weekly: Counter = Counter()   # legacy created-date task intake estimate
+    newly_filed_weekly: Counter = Counter()  # first observed checkbox additions
     created_weekly: Counter = Counter()
     completed_weekly: Counter = Counter()
     total_completions = 0
     total_opened = 0
+    total_newly_filed = 0
 
     def _set_terminal(rec: dict, term_date: str, term_state: str) -> None:
         # A handoff cannot terminate before it was created.
@@ -299,8 +301,9 @@ def build_timeline(repo: Path) -> dict:
                     rec["terminal_date"] = None
                     rec["terminal_state"] = None
 
-            # Task flow: 'opened' = first appearance (any state, enters backlog);
-            # 'completed' = first checked appearance. Both first-seen-once per handoff.
+            # Task flow: legacy 'opened' attributes first appearance to the handoff
+            # Created date; 'newly_filed' uses the first observed patch commit.
+            # 'completed' is first checked appearance. All are first-seen-once.
             ident = new_ss or old_ss
             if ident is not None:
                 ikey = f"{ident[0]}/{ident[1]}"
@@ -333,6 +336,8 @@ def build_timeline(repo: Path) -> dict:
                                        or commit_day)
                         opened_weekly[_iso_week(opened_when)] += 1
                         total_opened += 1
+                        newly_filed_weekly[commit_week] += 1
+                        total_newly_filed += 1
                     if mark in ("x", "X") and tkey not in cbag:
                         cbag.add(tkey)
                         when = inline_date
@@ -352,8 +357,10 @@ def build_timeline(repo: Path) -> dict:
         "file_activity": file_activity,
         "tasks_weekly": [
             {"week": w, "tasks_completed": tasks_weekly.get(w, 0),
-             "opened": opened_weekly.get(w, 0), "completed": tasks_weekly.get(w, 0)}
-            for w in sorted(set(tasks_weekly) | set(opened_weekly))
+             "opened": opened_weekly.get(w, 0),
+             "newly_filed": newly_filed_weekly.get(w, 0),
+             "completed": tasks_weekly.get(w, 0)}
+            for w in sorted(set(tasks_weekly) | set(opened_weekly) | set(newly_filed_weekly))
         ],
         "handoffs_weekly": [
             {"week": w, "created": created_weekly.get(w, 0),
@@ -366,6 +373,7 @@ def build_timeline(repo: Path) -> dict:
             "archived": final.get("archived", 0),
             "tasks_completed": total_completions,
             "tasks_opened": total_opened,
+            "tasks_newly_filed": total_newly_filed,
             "commits_scanned": len(commits),
             "earliest": series[0]["date"] if series else None,
         },

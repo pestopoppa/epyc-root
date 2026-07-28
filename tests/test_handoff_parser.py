@@ -236,6 +236,11 @@ class BoardTests(unittest.TestCase):
                 "## Work\n"
                 "No checkboxes here.\n"
             )
+            (root / "completed" / "finished.md").write_text(
+                "# Finished\n"
+                "## Work\n"
+                "- [x] completed task\n"
+            )
 
             board = hp.build_board(root)
             backlog = board["backlog"]
@@ -243,6 +248,8 @@ class BoardTests(unittest.TestCase):
             self.assertEqual(backlog["open_handoffs"], 4)
             self.assertEqual(backlog["open_tasks"], 4)
             self.assertEqual(backlog["open_tasks_done"], 1)
+            self.assertEqual(backlog["all_tasks_done"], 2)
+            self.assertEqual(backlog["all_tasks_total"], 6)
             self.assertEqual(backlog["open_untracked_handoffs"], 1)
             self.assertEqual(backlog["dead_lane"]["over_30"], 2)
             self.assertEqual(backlog["dead_lane"]["over_90"], 1)
@@ -261,6 +268,16 @@ class BoardTests(unittest.TestCase):
             self.assertEqual(buckets["LOW"]["open_handoffs"], 2)
             self.assertEqual(buckets["LOW"]["open_untracked_handoffs"], 1)
             self.assertEqual(backlog["dead_lane"]["unknown_activity"], 1)
+
+
+class FrontendContractTests(unittest.TestCase):
+    def test_backlog_and_task_flow_use_absolute_and_newly_filed_contracts(self):
+        html = (_REPO / "dashboard" / "static" / "handoffs.html").read_text()
+        self.assertIn('bk.all_tasks_done, l: "tasks completed (all tracked)"', html)
+        self.assertNotIn("const pctAll = bk.pct_all_done", html)
+        self.assertIn("const filed=w=>(w.newly_filed!=null?w.newly_filed:w.opened)||0;", html)
+        self.assertIn("tasks_newly_filed!=null", html)
+        self.assertIn("tasks newly filed vs completed per week", html)
 
 
 class PathTraversalTests(unittest.TestCase):

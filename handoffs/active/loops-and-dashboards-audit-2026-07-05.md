@@ -329,6 +329,10 @@ Package these trust-boundary changes into a **single** proposal with a shared Vi
   - [x] Bucket open tasks by priority in the backlog banner: root dashboard payload now emits priority buckets and the banner renders them as open handoff/task/untracked counts. ✅ 2026-07-06
   - [x] Probably-dead lane: handoffs untouched >30/90d or missing activity now surface as a sorted clickable archive-review candidate list in the backlog banner; index/archive changes remain operator-owned. ✅ 2026-07-06
   - [x] Promote the open-scope denominator (`pct_open_done`) to the headline next to `pct_all_done`. ✅ 2026-07-06
+  - [x] Separate backlog completion from intake growth ✅ 2026-07-27 — the headline/bar now
+    use `pct_open_done` only, the hub surfaces absolute `all_tasks_done`, and the task-flow
+    timeline adds first-observed `newly_filed` / `tasks_newly_filed` while retaining legacy
+    `opened` fields for old consumers. Focused parser/timeline validation: `42 + 10` passed.
 - **[P5] Kernel freshness badge on data recency** — classify on `max(runs[].ts)`, not export-file mtime.
 - **[P5] Steering affordances** — close the "zero POST" gap: guarded operator actions (or, minimally, copy-exact SIGTERM/pause command chips) so pause/rewind/quarantine leave shell tribal knowledge.
 - **[P5] Governance/attention tax** — 132 handoffs / 488 open tasks and a 224-line master index restating runtime state in ~6 places (near-daily alignment commits) are themselves a bottleneck; the outcome-KPI header + archive-review lane are the levers.

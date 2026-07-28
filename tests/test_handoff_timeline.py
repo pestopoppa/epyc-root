@@ -148,6 +148,12 @@ class TimelineEndToEndTests(unittest.TestCase):
         tasks_by_week = {r["week"]: r["tasks_completed"] for r in data["tasks_weekly"]}
         self.assertEqual(tasks_by_week.get(_iso_week("2026-01-15")), 1)  # backdated flip
         self.assertEqual(tasks_by_week.get(_iso_week("2026-03-03")), 1)  # created-done
+        filed_by_week = {r["week"]: r["newly_filed"] for r in data["tasks_weekly"]}
+        opened_by_week = {r["week"]: r["opened"] for r in data["tasks_weekly"]}
+        self.assertEqual(filed_by_week.get(_iso_week("2026-03-02")), 3)
+        self.assertEqual(filed_by_week.get(_iso_week("2026-01-10")), 0)
+        self.assertEqual(opened_by_week.get(_iso_week("2026-01-10")), 3)
+        self.assertEqual(t["tasks_newly_filed"], 3)
 
         self.assertIsNotNone(data["last_sha"])
 
@@ -212,6 +218,7 @@ class OpenedMigrationTests(unittest.TestCase):
             repo.commit("2026-03-05T10:00:00")
             data = bt.build_timeline(root)
             self.assertEqual(data["totals"]["tasks_opened"], 1)      # not 2
+            self.assertEqual(data["totals"]["tasks_newly_filed"], 1)  # not 2
             self.assertEqual(data["totals"]["tasks_completed"], 1)
 
 

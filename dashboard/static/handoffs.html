@@ -251,11 +251,11 @@
     </h2>
     <div class="charts">
       <div>
-        <p class="chart-title">Task flow — opened vs completed per week <span id="tasks-total" class="muted"></span></p>
-        <svg id="chart-tasks" viewBox="0 0 600 200" role="img" aria-label="tasks opened vs completed per week"></svg>
+        <p class="chart-title">Task flow — newly filed vs completed per week <span id="tasks-total" class="muted"></span></p>
+        <svg id="chart-tasks" viewBox="0 0 600 200" role="img" aria-label="tasks newly filed vs completed per week"></svg>
         <div class="legend">
           <span><i style="background:var(--completed)"></i>completed</span>
-          <span><i style="background:var(--high)"></i>opened (intake)</span>
+          <span><i style="background:var(--high)"></i>newly filed</span>
         </div>
       </div>
       <div>
@@ -420,6 +420,7 @@ function renderBacklog(bk, act){
     {n: bk.open_handoffs, l: "handoffs outstanding", cls: "warn"},
     {n: bk.open_tasks, l: "open tasks (active+blocked)", cls: "warn"},
     {n: bk.open_tasks_done, l: "tasks done in open handoffs", cls: "good"},
+    {n: bk.all_tasks_done, l: "tasks completed (all tracked)", cls: "good"},
     {n: bk.open_untracked_handoffs, l: "outstanding without a checklist", cls: ""},
   ];
   stats.innerHTML = "";
@@ -492,20 +493,14 @@ function renderBacklog(bk, act){
   }
 
   const pctOpen = bk.pct_open_done;
-  const pctAll = bk.pct_all_done;
-  const pct = pctOpen ?? pctAll;
-  $("#backlog-fill").style.width = (pct==null?0:pct)+"%";
+  $("#backlog-fill").style.width = (pctOpen==null?0:pctOpen)+"%";
   const pctEl = $("#backlog-pct");
   if(pctEl){
     pctEl.innerHTML = "";
-    if(pctOpen==null && pctAll==null){
+    if(pctOpen==null){
       pctEl.textContent = "—";
     }else{
-      const primary = pctOpen!=null ? pctOpen+"% open backlog" : pctAll+"% all-tracked";
-      pctEl.appendChild(el("span","pct-main", primary));
-      if(pctOpen!=null && pctAll!=null){
-        pctEl.appendChild(el("span","pct-sub", pctAll+"% all-tracked"));
-      }
+      pctEl.appendChild(el("span","pct-main", pctOpen+"% open backlog"));
     }
   }
 
@@ -743,8 +738,8 @@ function barChart(svg, weeks){
   svg.innerHTML="";
   if(!weeks.length){ svg.appendChild(svgNS("text",{x:W/2,y:H/2,fill:"#8b949e","text-anchor":"middle","font-size":12})).textContent="no data"; return; }
   const comp=w=>(w.completed!=null?w.completed:w.tasks_completed)||0;
-  const open=w=>w.opened||0;
-  const max=Math.max(1,...weeks.map(w=>Math.max(comp(w),open(w))));
+  const filed=w=>(w.newly_filed!=null?w.newly_filed:w.opened)||0;
+  const max=Math.max(1,...weeks.map(w=>Math.max(comp(w),filed(w))));
   const iw=W-pad.l-pad.r, ih=H-pad.t-pad.b, bw=iw/weeks.length;
   for(let g=0;g<=2;g++){ const val=Math.round(max*g/2); const y=pad.t+ih-(ih*g/2);
     svg.appendChild(svgNS("line",{x1:pad.l,y1:y,x2:W-pad.r,y2:y,stroke:"#21262d","stroke-width":1}));
@@ -754,15 +749,15 @@ function barChart(svg, weeks){
   weeks.forEach((w,idx)=>{
     const bh=ih*comp(w)/max, x=pad.l+idx*bw+bw*0.15, y=pad.t+ih-bh;
     const rect=svgNS("rect",{x,y,width:bw*0.7,height:Math.max(0,bh),fill:"#3fb950",rx:1});
-    const tt=svgNS("title"); tt.textContent=`${w.week}: ${comp(w)} completed · ${open(w)} opened`; rect.appendChild(tt);
+    const tt=svgNS("title"); tt.textContent=`${w.week}: ${comp(w)} completed · ${filed(w)} newly filed`; rect.appendChild(tt);
     svg.appendChild(rect);
     if(idx%Math.ceil(weeks.length/8||1)===0){
       const t=svgNS("text",{x:pad.l+idx*bw+bw/2,y:H-pad.b+14,fill:"#8b949e","font-size":8,"text-anchor":"middle"});
       t.textContent=w.week.replace(/^\d+-/,""); svg.appendChild(t);
     }
   });
-  // opened (intake) line overlay
-  const pts=weeks.map((w,idx)=>`${(pad.l+idx*bw+bw/2).toFixed(1)},${(pad.t+ih-ih*open(w)/max).toFixed(1)}`).join(" ");
+  // newly filed line overlay; old artifacts fall back to legacy opened.
+  const pts=weeks.map((w,idx)=>`${(pad.l+idx*bw+bw/2).toFixed(1)},${(pad.t+ih-ih*filed(w)/max).toFixed(1)}`).join(" ");
   svg.appendChild(svgNS("polyline",{points:pts,fill:"none",stroke:"#f0883e","stroke-width":1.6,"stroke-linejoin":"round"}));
 }
 function lineChart(svg, series){
@@ -793,8 +788,11 @@ async function loadTimeline(){
   catch(e){ setBadge("#timeline-badge","stale"); return; }
   barChart($("#chart-tasks"), d.tasks_weekly||[]);
   lineChart($("#chart-state"), d.series||[]);
-  const total=(d.totals&&d.totals.tasks_completed)||0;
-  $("#tasks-total").textContent = total?`(${total} total)`:"";
+  const completed=(d.totals&&d.totals.tasks_completed)||0;
+  const filed=(d.totals&&((d.totals.tasks_newly_filed!=null)
+    ?d.totals.tasks_newly_filed:d.totals.tasks_opened))||0;
+  $("#tasks-total").textContent = (completed||filed)
+    ?`(${completed} completed · ${filed} newly filed)`:"";
   setBadge("#timeline-badge", (d._freshness&&d._freshness.staleness_class)||"fresh");
 }
 
