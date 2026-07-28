@@ -42,9 +42,10 @@ for ref in "${refs[@]}"; do
   if [[ -f "$file_dir/$ref" ]] || [[ -f "$PROJECT_DIR/$ref" ]]; then
     continue
   fi
-  # Then the standard handoff locations, so bare handoff filenames still resolve.
+  # Then the standard governance locations, so documented bare references
+  # resolve without a broad repository-wide basename search.
   resolved=0
-  for d in handoffs/active handoffs/completed handoffs/archived; do
+  for d in handoffs/active handoffs/completed handoffs/archived coordination/session-bus; do
     if [[ -f "$PROJECT_DIR/$d/$ref" ]]; then resolved=1; break; fi
   done
   (( resolved )) && continue
