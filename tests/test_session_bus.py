@@ -34,6 +34,20 @@ def _append(path: Path, row: dict) -> None:
         fh.write(json.dumps(row, sort_keys=True) + "\n")
 
 
+def _heartbeat(root: Path, agent: str, state: str, *, task_id: str | None = None) -> None:
+    """Write an isolated agent heartbeat for direct coordinator unit tests."""
+    row: dict[str, str] = {
+        "agent": agent,
+        "state": state,
+        "ts": "2026-07-28T00:00:00+00:00",
+    }
+    if task_id is not None:
+        row["task_id"] = task_id
+    path = root / "heartbeats" / f"{agent}.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(row), encoding="utf-8")
+
+
 def _message(sender: str, recipient: str, kind: str = "finding", *, seq: int = 1,
              **extra: object) -> dict:
     """A schema-valid bus message unless a test deliberately mutates it."""
@@ -416,3 +430,125 @@ def test_c4_unacked_message_redelivers_one_same_corr_id_nudge(
             and (row.get("payload") or {}).get("reason") == coordinator._ACK_REDELIVERY_REASON]
     assert bus.main(["--bus-root", str(bus_root), "drain", "--agent", "bob", "--peek"]) == 0
     assert capsys.readouterr().out.count(nudges[0]["id"]) == 1
+
+
+@pytest.mark.parametrize("state", ("idle", "working", "draining"))
+def test_c8_first_seen_heartbeat_never_replays_a_task_boundary(
+        bus_root: Path, state: str) -> None:
+    """C8: daemon startup snapshots agents rather than flooding the coordinator."""
+    roster = json.loads((bus_root / "config.yaml").read_text(encoding="utf-8"))["roster"]
+    _heartbeat(bus_root, "alice", state, task_id="t1")
+
+    assert coordinator.detect_task_boundaries(bus_root, roster, epoch=7) == []
+    assert _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl") == []
+    assert json.loads((bus_root / "boundary_state.json").read_text(encoding="utf-8")) == {
+        "alice": f"{state}|t1", "bob": "None|None",
+    }
+
+
+def test_c8_working_churn_is_not_a_task_boundary(bus_root: Path) -> None:
+    """C8: only a transition into idle is useful coordinator work."""
+    roster = json.loads((bus_root / "config.yaml").read_text(encoding="utf-8"))["roster"]
+    _heartbeat(bus_root, "alice", "working", task_id="t1")
+    assert coordinator.detect_task_boundaries(bus_root, roster, epoch=7) == []
+
+    # Neither a redundant heartbeat nor replacing one active task with another
+    # should look like an available-worker boundary.
+    _heartbeat(bus_root, "alice", "working", task_id="t1")
+    assert coordinator.detect_task_boundaries(bus_root, roster, epoch=7) == []
+    _heartbeat(bus_root, "alice", "working", task_id="t2")
+    assert coordinator.detect_task_boundaries(bus_root, roster, epoch=7) == []
+    assert _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl") == []
+
+
+def test_c8_idle_boundary_is_durable_idempotent_and_schema_valid(bus_root: Path) -> None:
+    """C8: a retired task produces one valid, restart-safe coordinator notice."""
+    roster = json.loads((bus_root / "config.yaml").read_text(encoding="utf-8"))["roster"]
+    _heartbeat(bus_root, "alice", "working", task_id="t1")
+    assert coordinator.detect_task_boundaries(bus_root, roster, epoch=7) == []
+
+    # Retiring task_id is the escaped live bug: schema requires strings, so the
+    # delivered message must omit it instead of serializing task_id: null.
+    _heartbeat(bus_root, "alice", "idle")
+    advisory = coordinator.detect_task_boundaries(bus_root, roster, epoch=7)
+    assert len(advisory) == 1
+    assert advisory[0]["kind"] == "task-boundary"
+    assert advisory[0]["transition"] == "working|t1 -> idle|None"
+    delivered = _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+    assert len(delivered) == 1
+    notice = delivered[0]
+    bus.validate_row(bus_root, notice, "msg")
+    assert notice["kind"] == "status"
+    assert notice["payload"]["event"] == "task-boundary"
+    assert notice["payload"]["transition"] == "working|t1 -> idle|None"
+    assert "task_id" not in notice
+
+    # An unchanged tick is idempotent, including after a daemon process restart:
+    # the persisted snapshot alone supplies all history the fresh call needs.
+    persisted = json.loads((bus_root / "boundary_state.json").read_text(encoding="utf-8"))
+    assert persisted["alice"] == "idle|None"
+    assert coordinator.detect_task_boundaries(bus_root, roster, epoch=8) == []
+    assert _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl") == delivered
+
+
+def test_c8_coordinator_agent_idle_is_excluded_from_boundary_notices(bus_root: Path) -> None:
+    """C8: the coordinator must not enqueue a notice to itself."""
+    roster = [{"id": "coordinator-agent", "role": "coordinator-agent", "lanes": ["none"]}]
+    _heartbeat(bus_root, "coordinator-agent", "idle")
+
+    assert coordinator.detect_task_boundaries(bus_root, roster, epoch=7) == []
+    assert not (bus_root / "inbox" / "coordinator-agent.jsonl").exists()
+    assert not (bus_root / "boundary_state.json").exists()
+
+
+def test_c8_endpoint_lint_warns_for_unreachable_roster_rows_only(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """C8: non-tmux endpoints surface their unread work without failing validation."""
+    config = json.loads((bus_root / "config.yaml").read_text(encoding="utf-8"))
+    for entry in config["roster"]:
+        entry["endpoint"] = "tmux:bus-tests"
+    next(entry for entry in config["roster"] if entry["id"] == "alice")["endpoint"] = "monitor:file"
+    (bus_root / "config.yaml").write_text(json.dumps(config), encoding="utf-8")
+    _provision(bus_root, "alice")
+    _append(bus_root / "inbox" / "alice.jsonl", _message("bob", "alice"))
+    for name in ("human_only_paths.yaml", "human_only_paths.sha256"):
+        shutil.copy2(LIVE_BUS_ROOT / name, bus_root / name)
+
+    assert bus.main(["--bus-root", str(bus_root), "validate"]) == 0
+    output = capsys.readouterr().out
+    assert "WARN roster/alice" in output
+    assert "currently 1" in output
+
+    next(entry for entry in config["roster"] if entry["id"] == "alice")["endpoint"] = "tmux:bus-tests"
+    (bus_root / "config.yaml").write_text(json.dumps(config), encoding="utf-8")
+    assert bus.main(["--bus-root", str(bus_root), "validate"]) == 0
+    assert "WARN roster/alice" not in capsys.readouterr().out
+
+
+def test_c8_endpoint_lint_malformed_config_warns_without_raising(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """C8: endpoint lint is advisory even when the roster cannot be parsed."""
+    (bus_root / "config.yaml").write_text("roster: [unterminated", encoding="utf-8")
+
+    assert bus.main(["--bus-root", str(bus_root), "validate"]) == 1
+    output = capsys.readouterr().out
+    assert "WARN roster endpoint check skipped:" in output
+    assert "FAIL could not read config.yaml roster:" in output
+
+
+@pytest.mark.xfail(
+    strict=True,
+    reason="C8 endpoint lint silently skips an absent config.yaml instead of warning",
+)
+def test_c8_endpoint_lint_absent_config_warns_without_raising(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """C8 defect: a missing config must degrade the endpoint lint to a warning."""
+    (bus_root / "config.yaml").unlink()
+
+    assert bus.main(["--bus-root", str(bus_root), "validate"]) == 1
+    assert "WARN roster endpoint check skipped:" in capsys.readouterr().out
+
+
+def test_c8_boundary_state_is_daemon_owned(bus_root: Path) -> None:
+    """C8: persisted boundary history has the same single writer as inboxes."""
+    assert bus.required_writer(bus_root, bus_root / "boundary_state.json") == bus.COORDINATOR_DAEMON
