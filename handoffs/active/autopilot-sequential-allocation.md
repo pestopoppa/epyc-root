@@ -61,13 +61,45 @@ outcome.
       outgrows the kill condition should read `accumulating` again. It does not: **56 of 393 trials
       carry `state="refuted"` while `E >= budget_min_e` and `k >= budget`** — the persisted label
       contradicts what the policy's own function returns for that very trial. `70902e4b665474e7`
-      crosses E=2.0 at k=10 and stays labelled refuted to k=40 at E=11.55. Decide: recompute the
-      label per trial, or make stickiness explicit and documented.
-- [ ] **SEQ-B — the baseline-promotion gate is unreachable.** Max `baseline_promotion_combined_E`
-      ever observed is **1.0795** against `required_E = 100.0`, and `combined_E == E_rate_noninf`
-      exactly in **307 of 391** trials — the rate e-process dominates and is effectively frozen. No
-      candidate can be promoted through this gate regardless of quality evidence. Fix before any new
-      campaign, or the compute burns into a gate that cannot open.
+      crosses E=2.0 at k=10 and stays labelled refuted to k=40 at E=11.55.
+
+      **What it actually costs, measured 2026-07-28**: the label does NOT stop allocation — that
+      candidate kept receiving trials to k=40. What `seq_refuted` does is exclude a candidate from
+      **promotion and positive strategy distillation** (`learning_exclusions.py:111-119`). So **3
+      candidates are permanently excluded by a condition they no longer meet**:
+
+      | candidate | k | E_quality |
+      |---|---|---|
+      | `70902e4b665474e7` | 40 | **11.5507** |
+      | `dd793a6ee43ce718` | 24 | **8.7048** |
+      | `85c3dcf25823c537` | 15 | **2.7448** |
+
+      Reported by `readjudicate_sequential_candidates.py` under *SEQ-A: STICKY REFUTED LABELS*.
+  - [ ] SEQ-A1 — **OPERATOR DECISION**: recompute the verdict label per trial from `state_name()`
+        (restoring the policy's own pure-function semantics), or keep stickiness and document it as
+        "a stop decision is final". Either is defensible — a stopped e-process arguably *should*
+        stay stopped — but the current state is neither: the label is sticky while allocation is
+        not, so candidates keep burning trials whose evidence is then discarded. This changes which
+        candidates are promotable, so it is **human-amendment-only** per MEASUREMENT.md.
+- [ ] **SEQ-B — the promotion gate is unreachable, but NOT because anything is broken.**
+      **CORRECTED 2026-07-28** — I first wrote that "the rate e-process is frozen". **It is not.**
+      Measured: `E_rate_noninf` takes **82 distinct values** (min 0.5213, median 0.9100, max 1.1100)
+      and `z_rate` takes 179 distinct values with median **−0.8979** and only **7.9% positive**. The
+      axis computes fine; it is reporting that candidates **genuinely do not improve throughput**.
+
+      The gate is `combined_E = min(E_quality, E_rate_noninf)` (`autopilot.py:1953-1966`,
+      `binding_joint` mode) against `required_E = 100.0`. For the top candidate that is
+      `min(11.55, 0.556) = 0.556` — real quality evidence entirely masked by a real negative rate
+      result. **18 of 393** trials ever exceed `E_rate 1.0`; **0** ever exceed 2.0.
+
+      So this is a **policy question, not a defect**: do you want a JOINT gate (quality AND
+      throughput, current `binding_joint`) or quality-primary with rate advisory? The advisory mode
+      already exists — `quality_only_rate_advisory` — and was exercised in 35 trials under an
+      operator bridge (`rate_axis_mode = operator_p0_2_rate_alpha_bridge`).
+  - [ ] SEQ-B1 — **OPERATOR DECISION**: keep the joint gate, or move the rate axis to advisory. This
+        changes what counts as a promotion, so it is a measurement-trust-boundary change and is
+        **human-amendment-only** per MEASUREMENT.md. Note that under a joint gate, a candidate that
+        buys quality with throughput can never be promoted — which may be exactly what you want.
 
 ## Tasks
 
