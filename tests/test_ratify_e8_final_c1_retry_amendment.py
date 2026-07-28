@@ -226,3 +226,4 @@ def test_production_defaults_refuse_unresolved_runner_pins() -> None:
     assert "no_timeout_increase\": True" in text
     assert 'PYTHON="/usr/bin/python3"' in text
     assert "durable_fsync" in text
+    assert '.e8_final_c1_retry_amendment.lock' in text

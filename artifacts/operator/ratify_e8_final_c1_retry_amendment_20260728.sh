@@ -26,6 +26,7 @@ if [[ "$TEST_MODE" == "1" ]]; then
 fi
 
 RECEIPT="$ROOT/artifacts/operator/ratify_e8_final_c1_retry_amendment_20260728.json"
+LOCK="$ROOT/artifacts/operator/.e8_final_c1_retry_amendment.lock"
 TOKEN="RATIFY-E8-FINAL-C1-RETRY-20260728"
 PLAN_REL="partial_r2_plan.json"
 PROPOSAL_REL="recovery_proposal.json"
@@ -239,8 +240,8 @@ plan() {
 attest() {
     verify_preflight
     mkdir -p -- "$(dirname -- "$RECEIPT")"
-    exec 9<"$SCRIPT_PATH"
-    flock -n 9 || fail "another final-c1 amendment transaction holds the script lock"
+    exec 9>"$LOCK"
+    flock -n 9 || fail "another final-c1 amendment transaction holds the canonical shared lock"
     verify_preflight
     local candidate
     candidate="$(mktemp "${RECEIPT}.candidate.XXXXXX")"
