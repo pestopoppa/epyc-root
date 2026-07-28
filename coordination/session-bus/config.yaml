@@ -5,7 +5,12 @@ schema_version: session_bus.config.v1
 # Adding a main = 1 roster row + 4 files (inbox/outbox/heartbeat/cursor).
 # Roster rows are slot-shaped so a future local-model main is just another row.
 roster:
-  - {id: codex,             role: main,              lanes: [cpu, gpu, none], endpoint: "tmux:agent",   drain: boundary}
+  # Window renamed to `codex-inference` by the operator 2026-07-28 to disambiguate it from
+  # codex-bus-tests. The bare `tmux:agent` endpoint then resolved to nothing — the adapter
+  # correctly REFUSED to guess a pane rather than typing into the wrong one — so the window
+  # is now named explicitly. Roster id stays `codex`: it is the identity every existing
+  # queue row, cursor, inbox and outbox is keyed on, and renaming it would orphan all of them.
+  - {id: codex,             role: main,              lanes: [cpu, gpu, none], endpoint: "tmux:agent:codex-inference", drain: boundary}
   - {id: claude-main,       role: main,              lanes: [cpu, gpu, none], endpoint: "monitor:file", drain: push}
   - {id: coordinator-agent, role: coordinator-agent, lanes: [none],           endpoint: "monitor:file", drain: push}
   # Added by coordinator-agent 2026-07-28. Test authoring for the session bus itself
