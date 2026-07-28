@@ -447,8 +447,8 @@ freezes/cutovers, host reboots).
   missing list, and a missing pin.
   *Attribution.* `session_bus_coordinator.py audit` emits `defect` records for the two
   mechanically decidable violations — trust-boundary pin drift and single-writer breach (a row in
-  `outbox/<a>` whose `from` is not `<a>`). Defects go to `advisory.jsonl`, preserving M3's verified
-  zero-foreign-writes property.
+  `outbox/<a>` whose `from` is not `<a>`). Defects go to `advisory.jsonl`, preserving the M3
+  separation between non-binding observability and autonomous routing decisions.
   **Honest scoping — two of R7's candidate checks are NOT defects and are emitted as
   `observation` instead.** "Commit without a preceding fetch" and "wholesale `git add`" are not
   reliably decidable after the fact, and a commit touching a human-only path cannot be attributed
@@ -582,14 +582,36 @@ freezes/cutovers, host reboots).
   `scripts/coordination/session_bus_coordinator.py` (flock singleton, tick loop, heartbeat,
   epoch fencing) and `scripts/coordination/bus_supervisor.sh` (userspace watchdog, health =
   heartbeat mtime, SIGTERM-then-SIGKILL, exponential backoff, `loop|once|status`; no systemd).
-  Emits advisory `saturation` / `would-assign` / `would-idle` / `would-skip` records to
-  `advisory.jsonl` only.
+  Emits non-binding advisory `saturation` / `would-assign` / `would-idle` / `would-skip` records
+  to `advisory.jsonl`. C2 relay, ACK redelivery, and C8 durable boundary surfacing may also append
+  prescribed transport/notification rows to daemon-owned `inbox/*`; C8 persists its comparison
+  snapshot in `boundary_state.json`.
   Verified: **survives kill -9 via supervisor** (recovered in 1s, epoch 1→2, and advisory rows
-  carry the epoch so a pre-restart generation is identifiable); **zero writes to foreign files**
-  (only `advisory.jsonl` + its own heartbeat, both daemon-owned); eligibility honours priority
-  order, lane-busy, ungranted `operator_gates`, and non-terminal `depends_on`;
+  carry the epoch so a pre-restart generation is identifiable); eligibility honours priority order,
+  lane-busy, ungranted `operator_gates`, and non-terminal `depends_on`;
   `authority: assign` is **refused** because M4 is not built — an unbuilt assign path must never
   be silently approximated by the advisory one.
+  **M3 acceptance restatement — no autonomous decision at `authority: manual|advisory`.** The
+  retired “exactly two files” count was only a proxy for this property and is no longer evidence:
+  legitimate C2/C8 transport now writes inboxes. In either pre-M4 authority, every daemon mutation
+  must be one of: (a) its heartbeat, advisory, or C8 comparison state; (b) a schema-valid,
+  explicitly addressed outbox relay that preserves the sender-selected recipient, `kind`,
+  `task_id`/`corr_id`, and payload verbatim (the daemon adds only its delivery envelope and
+  `relayed_src`); (c) the fixed ACK-redelivery transform of a previously delivered, overdue
+  `requires_ack` message; or (d) the fixed C8 transform of a recorded non-idle → `idle` heartbeat
+  transition into the defined `task-boundary` status notice for `coordinator-agent`. These are
+  mechanical derivations, not choices. The daemon must not select work or a work recipient, nor
+  set or alter priority, lane, owner, lease, queue status, gating, or a token outcome; it must not
+  write `queue.jsonl` or `tokens/token-queue.md`. Advisory records remain observations only.
+  **Required evidence for M3 sign-off:** run manual and advisory ticks over fixtures containing an
+  explicit relay, an overdue ACK, and an idle transition; account for every mutation; prove
+  byte-equivalence of relay-controlled fields, provenance of every generated notice, and no
+  queue/token or assignment-state mutation. **This criterion is falsified by** any manual/advisory
+  tick that changes `queue.jsonl` or `tokens/token-queue.md`; creates `task-assign` or another
+  assignment/lifecycle/priority/lease/gating decision; alters a relayed recipient, kind,
+  task/correlation identity, or payload; emits a boundary notice without its prior non-idle → idle
+  heartbeat transition (or fields not derived from that heartbeat); or redelivers without a prior,
+  overdue `requires_ack` source. File count alone is deliberately non-evidence.
   Two bugs found by its own tests and fixed: `classify_load()` returns `state`, not `class`
   (reading the wrong key fail-safes to permanently-busy, so the daemon would never have advised
   anything), and the same task was being advised to every idle agent (harmless while advisory,
@@ -615,9 +637,9 @@ freezes/cutovers, host reboots).
   Rollback: stop the daemon; the bus returns to fully-functional M1 manual mode.
 - [ ] **M4 — assignment authority.** *CODE BUILT ✅ 2026-07-27, acceptance pending.*
   `apply_assignment()` in `session_bus_coordinator.py`, gated entirely on
-  `coordinator_daemon.authority == "assign"`. Advisory mode still writes exactly two files, which
-  the test suite asserts directly — so flipping authority is the single switch and setting it back
-  to `advisory` is the whole rollback.
+  `coordinator_daemon.authority == "assign"`. M3's decision-property criterion—not a file
+  count—proves that manual/advisory transport cannot become an assignment path, so flipping
+  authority is the single switch and setting it back to `advisory` is the whole rollback.
   Implemented: real task-assign (queue row + inbox `task-assign` + lease from `leases.max_hold_s`);
   deterministic transcription of agent reports (ack→CLAIMED, status→RUNNING,
   task-complete→DONE_PASS/DONE_MARGINAL_OBS/FAILED, carrying `failure_reason`); token relay into
