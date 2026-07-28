@@ -536,13 +536,9 @@ def test_c8_endpoint_lint_malformed_config_warns_without_raising(
     assert "FAIL could not read config.yaml roster:" in output
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="C8 endpoint lint silently skips an absent config.yaml instead of warning",
-)
 def test_c8_endpoint_lint_absent_config_warns_without_raising(
         bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
-    """C8 defect: a missing config must degrade the endpoint lint to a warning."""
+    """C8: a missing config degrades the endpoint lint to a warning."""
     (bus_root / "config.yaml").unlink()
 
     assert bus.main(["--bus-root", str(bus_root), "validate"]) == 1

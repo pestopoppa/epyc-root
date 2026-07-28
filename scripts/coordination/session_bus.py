@@ -283,27 +283,26 @@ def cmd_validate(args: argparse.Namespace) -> int:
     # undelivered at unread=1. Surface it; never let it be silent.
     try:
         cfg_path = bus_root / "config.yaml"
-        if cfg_path.exists():
-            import yaml  # lazy: keeps the rest of the CLI dependency-free
-            cfg = yaml.safe_load(cfg_path.read_text(encoding="utf-8")) or {}
-            for entry in (cfg.get("roster") or []):
-                if not isinstance(entry, dict):
-                    continue
-                aid = str(entry.get("id", "")).strip()
-                ep = str(entry.get("endpoint") or "")
-                if not aid or ep.startswith("tmux:"):
-                    continue
-                try:
-                    pending, _ = _read_jsonl(bus_root / "inbox" / f"{aid}.jsonl",
-                                             _cursor_get(bus_root, aid))
-                    unread = len(pending)
-                except Exception:  # noqa: BLE001
-                    unread = "unknown"
-                warnings.append(
-                    f"roster/{aid}: endpoint {ep!r} has no push delivery and cannot be "
-                    f"nudged (not a tmux endpoint) — assigned work can rot unread "
-                    f"(currently {unread}). Re-point it at a tmux window or give "
-                    f"{ep!r} a real push mechanism.")
+        import yaml  # lazy: keeps the rest of the CLI dependency-free
+        cfg = yaml.safe_load(cfg_path.read_text(encoding="utf-8")) or {}
+        for entry in (cfg.get("roster") or []):
+            if not isinstance(entry, dict):
+                continue
+            aid = str(entry.get("id", "")).strip()
+            ep = str(entry.get("endpoint") or "")
+            if not aid or ep.startswith("tmux:"):
+                continue
+            try:
+                pending, _ = _read_jsonl(bus_root / "inbox" / f"{aid}.jsonl",
+                                         _cursor_get(bus_root, aid))
+                unread = len(pending)
+            except Exception:  # noqa: BLE001
+                unread = "unknown"
+            warnings.append(
+                f"roster/{aid}: endpoint {ep!r} has no push delivery and cannot be "
+                f"nudged (not a tmux endpoint) — assigned work can rot unread "
+                f"(currently {unread}). Re-point it at a tmux window or give "
+                f"{ep!r} a real push mechanism.")
     except Exception as exc:  # noqa: BLE001 - never let the lint itself fail closed
         warnings.append(f"roster endpoint check skipped: {exc}")
 
