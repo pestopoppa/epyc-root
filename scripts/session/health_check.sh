@@ -209,7 +209,7 @@ elif [[ ! -f "$EPISODIC_CHECK" ]]; then
   ((WARN+=1))
 else
   EPISODIC_OUT=$(cd "${LLM_ROOT}/epyc-orchestrator" && uv run python "$EPISODIC_CHECK" 2>&1) && EPISODIC_RC=0 || EPISODIC_RC=$?
-  check "Episodic store integrity (index/id_map, round-trip, diversity)" \
+  check "Episodic store integrity (sync, round-trip, diversity, degenerate vectors)" \
     "[ $EPISODIC_RC -eq 0 ]" \
     "$(echo "$EPISODIC_OUT" | grep -E '^\s+\[FAIL\]' | sed 's/^ *//' | tr '\n' ';') — do NOT trust memory-derived results; see handoffs/active/episodic-memory-integrity.md"
 fi

@@ -174,10 +174,59 @@ failure caught in amber.
         objectives** — and identical text *should* share a vector. Correct denominator is distinct
         objectives; the store reads **57/57, ratio 1.000**. Pinned by
         `TestDiversityDenominator`. ✅ 2026-07-28
-  - [ ] M-17e — When the embedders are unreachable the semantic check reports `[SKIP]` and does not
-        fail the gate (BGE may still be booting). This is deliberate but it is a hole: a run started
-        during embedder downtime is gated on metadata only. Consider having the AutoPilot gate retry
-        for N seconds before accepting the skip.
+  - [x] M-17e — **Embedder-outage hole CLOSED — and it was much worse than "gated on metadata
+        only".** ✅ 2026-07-28. Investigating the skip turned up a live, unfixed corruption path.
+
+        **`use_fallback` defaults to `True`** in both `EmbeddingConfig` (`embedder.py:48`) and
+        `EmbedderPoolConfig` (`parallel_embedder.py:53`), and **every live site builds a bare
+        `TaskEmbedder()`** — `memrl.py:388`, `routing.py:162`, `strategy_store.py:308`,
+        `seed_loader.py:412`, `classification_retriever.py:306`, `procedure_registry.py:135`,
+        `tools/llm.py:22,33`. The only site that sets `use_fallback=False` is the reseed script
+        Codex hardened. So a BGE outage does **not** fail a write — it silently stores a SHA-256
+        pseudo-vector.
+
+        **Measured over 5,000 real task texts, the fallback is numerically broken, not merely
+        "semantically meaningless" as its docstring claims:**
+
+        | outcome | share | consequence |
+        |---|---|---|
+        | **all-zero** | **89.0%** | float32 `norm` overflows to `inf`; `norm > 0` is True for inf; `v/inf == 0` |
+        | contains NaN | 2.8% | permanently unretrievable — FAISS scores the row `-inf` |
+        | unit-normalised | 8.1% | well-formed, semantically meaningless, passes every cheap check |
+
+        **The blind spot was exact**: the well-formed 8.1% pass index/id_map sync and the
+        `embedding_idx` round-trip, so the *only* detector was `semantic_self_match` — which
+        requires the very embedders whose absence produced them. **The condition that causes the
+        corruption is the condition that disables its detector.**
+
+        Audited the live store for this: **0 hash-fallback vectors across all 58,322 rows.** Clean,
+        because the reseed used `use_fallback=False` and BGE has been up.
+  - [x] M-17f — **Chokepoint refusal.** `EpisodicStore.store()` now raises
+        `DegenerateEmbeddingError` on all-zero, non-finite, or exact-hash-fallback embeddings.
+        Placed at the single chokepoint (`store_immediate` delegates to it) rather than at the ~8
+        constructor sites, so a new caller cannot lose the guarantee. Detection is **exact**, not
+        heuristic — the fallback is a pure function of the text. Override:
+        `EPISODIC_ALLOW_DEGRADED_EMBEDDINGS=1`, logged at ERROR. ✅ 2026-07-28
+  - [x] M-17g — **`degenerate_vectors` check, which needs no embedder.** This is what actually
+        closes the blind spot at the detection layer: all-zero and NaN are text-independent, so
+        91.8% of fallback corruption is now detectable *in exactly the condition that causes it*.
+        ✅ 2026-07-28
+  - [x] M-17h — **AutoPilot gate: retry then fail closed.** Waits out an embedder boot window
+        (`AUTOPILOT_EPISODIC_GATE_WAIT_S`, default 180 s, polling every 15 s) and then **refuses**.
+        Justified rather than merely strict: with BGE down the write path now raises anyway, so
+        AutoPilot could not record memories. Structural failures skip the window and block in
+        **0.3 s**; healthy startup costs **0.9 s**. ✅ 2026-07-28
+  - [x] M-17i — 14 further tests (`tests/unit/test_degenerate_embedding_guard.py`), including the
+        measured fallback distribution, so a future "fix" that makes the fallback well-formed —
+        which would be *more* dangerous, not less — fails loudly instead of passing silently.
+        ✅ 2026-07-28
+
+        **Two defects in my own detector, caught by measuring instead of assuming:**
+        a cosine test at 0.99 had a **45% false-positive rate** against random unit vectors (the
+        overflowed reference vector is unnormalised and dots high with anything) — replaced with
+        exact comparison, now **0 false positives over 3,000 live BGE vectors**; and I first wrote
+        that hash vectors are "maximally diverse and defeat `vector_diversity`", which is wrong —
+        at 89% all-zero they collapse, and that check *would* fire.
 - [ ] M-12 — Run the memory-on vs memory-off A/B that **has never existed** in either repo. This is
       the only thing that will answer "does episodic retrieval help" with evidence.
 
