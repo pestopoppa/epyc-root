@@ -325,7 +325,7 @@ path = sys.argv[1]
 parent = os.path.dirname(path)
 if not os.path.isabs(path) or os.path.realpath(parent) != parent:
     raise SystemExit(f"trust-boundary lock parent is not an exact path: {parent}")
-fd = os.open(path, os.O_RDWR | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0), 0o600)
+fd = os.open(path, os.O_RDWR | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0), 0o660)
 try:
     if not stat.S_ISREG(os.fstat(fd).st_mode):
         raise SystemExit(f"trust-boundary lock is not a regular file: {path}")
@@ -338,9 +338,9 @@ try:
 finally:
     os.close(parent_fd)
 PY
-    exec 9<>"$TRUST_LOCK"
-    /usr/bin/flock -n 9 || fail "measurement trust-boundary lock is already held: $TRUST_LOCK"
-    "$PYTHON" - "$TRUST_LOCK" "/proc/$$/fd/9" <<'PY'
+    exec 8<>"$TRUST_LOCK"
+    /usr/bin/flock -n 8 || fail "measurement trust-boundary lock is already held: $TRUST_LOCK"
+    "$PYTHON" - "$TRUST_LOCK" "/proc/$$/fd/8" <<'PY'
 import os
 import stat
 import sys
@@ -353,6 +353,11 @@ if stat.S_ISLNK(named.st_mode) or not stat.S_ISREG(named.st_mode):
 if (named.st_dev, named.st_ino) != (held.st_dev, held.st_ino):
     raise SystemExit("held trust-boundary lock inode differs from its canonical path")
 PY
+    if [[ "$TEST_MODE" == 1 && "${P_BENCH_4_TEST_HOLD_TRUST_LOCK_SECONDS:-0}" != 0 ]]; then
+        [[ "${P_BENCH_4_TEST_HOLD_TRUST_LOCK_SECONDS}" =~ ^[0-9]+([.][0-9]+)?$ ]] ||
+            fail "invalid test-only trust-lock hold duration"
+        /usr/bin/sleep "${P_BENCH_4_TEST_HOLD_TRUST_LOCK_SECONDS}"
+    fi
 }
 
 write_transaction_journal() {

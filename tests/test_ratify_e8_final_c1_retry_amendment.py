@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import hashlib
+import fcntl
 import json
 import os
 from pathlib import Path
 import shutil
+import signal
 import subprocess
 import sys
 import time
@@ -81,9 +83,24 @@ def amendment_fixture(tmp_path: Path) -> dict[str, object]:
 
     runner = orch / "scripts/benchmark/final_c1_retry.py"
     validator = orch / "scripts/benchmark/final_c1_validator.py"
+    wrapper = (
+        orch
+        / "scripts/benchmark/operator_candidates/ratify_and_apply_e8_quality_baseline_v5.sh"
+    )
+    applier_adapter = (
+        orch
+        / "scripts/benchmark/operator_candidates/apply_e8_quality_baseline_state_v5_candidate.py"
+    )
+    canonical_applier = root / "artifacts/operator/apply_e8_quality_baseline_state.py"
     runner.parent.mkdir(parents=True)
     runner.write_text("FINAL_C1 = True\n", encoding="utf-8")
     validator.write_text("VALIDATOR = True\n", encoding="utf-8")
+    wrapper.parent.mkdir(parents=True)
+    wrapper.write_text("#!/bin/bash\nexit 0\n", encoding="utf-8")
+    applier_adapter.write_text("APPLIER_ADAPTER = True\n", encoding="utf-8")
+    canonical_applier.write_text("CANONICAL_APPLIER = True\n", encoding="utf-8")
+    _git("add", ".", cwd=root)
+    _git("commit", "-qm", "canonical applier fixture", cwd=root)
     _git("init", "-q", cwd=orch)
     _git("config", "user.email", "test@example.invalid", cwd=orch)
     _git("config", "user.name", "E8 Instrument Test", cwd=orch)
@@ -96,6 +113,7 @@ def amendment_fixture(tmp_path: Path) -> dict[str, object]:
         "E8_C1_EVIDENCE": str(evidence),
         "EPYC_ORCHESTRATOR": str(orch),
         "E8_C1_PYTHON": sys.executable,
+        "E8_C1_TRUST_LOCK": str(root / "artifacts/operator/.measurement-trust.lock"),
         "E8_C1_EXPECTED_PLAN_SHA256": _sha256(plan_path),
         "E8_C1_EXPECTED_PROPOSAL_SHA256": _sha256(proposal_path),
         "E8_C1_EXPECTED_FAILURES_SHA256": _sha256(failures_path),
@@ -109,6 +127,12 @@ def amendment_fixture(tmp_path: Path) -> dict[str, object]:
         "E8_C1_EXPECTED_RUNNER_SHA256": _sha256(runner),
         "E8_C1_VALIDATOR_REL": "scripts/benchmark/final_c1_validator.py",
         "E8_C1_EXPECTED_VALIDATOR_SHA256": _sha256(validator),
+        "E8_C1_WRAPPER_REL": str(wrapper.relative_to(orch)),
+        "E8_C1_EXPECTED_WRAPPER_SHA256": _sha256(wrapper),
+        "E8_C1_APPLIER_ADAPTER_REL": str(applier_adapter.relative_to(orch)),
+        "E8_C1_EXPECTED_APPLIER_ADAPTER_SHA256": _sha256(applier_adapter),
+        "E8_C1_CANONICAL_APPLIER_REL": str(canonical_applier.relative_to(root)),
+        "E8_C1_EXPECTED_CANONICAL_APPLIER_SHA256": _sha256(canonical_applier),
     }
     return {"root": root, "evidence": evidence, "script": root / "artifacts/operator" / SOURCE_SCRIPT.name, "env": env}
 
@@ -129,7 +153,19 @@ def _receipt(fixture: dict[str, object]) -> Path:
 
 
 def _lock(fixture: dict[str, object]) -> Path:
-    return fixture["root"] / "artifacts/operator/.e8_final_c1_retry_amendment.lock"  # type: ignore[operator]
+    return Path(fixture["env"]["E8_C1_TRUST_LOCK"])  # type: ignore[index]
+
+
+def _lock_is_held(path: Path) -> bool:
+    if not path.exists():
+        return False
+    with path.open("r+", encoding="utf-8") as handle:
+        try:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            return True
+        fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+    return False
 
 
 def test_validate_only_is_cwd_independent_and_read_only(amendment_fixture: dict[str, object]) -> None:
@@ -171,7 +207,7 @@ def test_attestation_writes_only_the_exact_narrow_contract(amendment_fixture: di
         "no_lineup_mutation": True,
         "no_inference_by_ratifier": True,
     }
-    assert not _lock(amendment_fixture).exists()
+    assert _lock(amendment_fixture).is_file()
 
 
 def test_refuses_tampered_failure_namespace_without_receipt(amendment_fixture: dict[str, object]) -> None:
@@ -228,26 +264,25 @@ def test_lock_symlink_is_not_followed_or_modified(amendment_fixture: dict[str, o
     result = _run(amendment_fixture, "--attest", TOKEN)
 
     assert result.returncode != 0
-    assert "shared lock acquisition refused" in result.stderr
+    assert "Too many levels of symbolic links" in result.stderr
     assert _lock(amendment_fixture).is_symlink()
     assert marker.read_text(encoding="utf-8") == "unchanged\n"
     assert not _receipt(amendment_fixture).exists()
 
 
-def test_existing_regular_lock_is_not_truncated(amendment_fixture: dict[str, object]) -> None:
+def test_existing_regular_lock_is_reused_without_truncation(amendment_fixture: dict[str, object]) -> None:
     lock = _lock(amendment_fixture)
     lock.write_bytes(b"do-not-truncate\n")
 
-    result = _run(amendment_fixture, "--attest", TOKEN)
+    result = _run(amendment_fixture, "--validate-only")
 
-    assert result.returncode != 0
-    assert "shared lock acquisition refused" in result.stderr
+    assert result.returncode == 0, result.stderr
     assert lock.read_bytes() == b"do-not-truncate\n"
     assert not _receipt(amendment_fixture).exists()
 
 
 def test_concurrent_attestation_cannot_enter_critical_section(amendment_fixture: dict[str, object]) -> None:
-    env = os.environ | amendment_fixture["env"] | {"E8_C1_TEST_HOLD_LOCK_SECONDS": "0.75"}  # type: ignore[operator]
+    env = os.environ | amendment_fixture["env"] | {"E8_C1_TEST_HOLD_TRUST_LOCK_SECONDS": "0.75"}  # type: ignore[operator]
     first = subprocess.Popen(
         ["/bin/bash", str(amendment_fixture["script"]), "--attest", TOKEN],
         cwd="/",
@@ -257,19 +292,54 @@ def test_concurrent_attestation_cannot_enter_critical_section(amendment_fixture:
         env=env,
     )
     deadline = time.monotonic() + 3
-    while not _lock(amendment_fixture).is_dir() and time.monotonic() < deadline:
+    while not _lock_is_held(_lock(amendment_fixture)) and time.monotonic() < deadline:
         time.sleep(0.01)
-    assert _lock(amendment_fixture).is_dir(), "first attestation never acquired the shared lock"
+    assert _lock_is_held(_lock(amendment_fixture)), "first attestation never acquired the shared lock"
 
     second = _run(amendment_fixture, "--attest", TOKEN)
     first_stdout, first_stderr = first.communicate(timeout=5)
 
     assert second.returncode != 0
-    assert "shared lock acquisition refused" in second.stderr
+    assert "measurement trust-boundary lock is already held" in second.stderr
     assert first.returncode == 0, first_stderr
     assert "receipt created" in first_stdout
     assert _receipt(amendment_fixture).is_file()
-    assert not _lock(amendment_fixture).exists()
+    assert _lock(amendment_fixture).is_file()
+
+
+def test_sigkill_releases_final_c1_measurement_lock(
+    amendment_fixture: dict[str, object],
+) -> None:
+    env = os.environ | amendment_fixture["env"] | {  # type: ignore[operator]
+        "E8_C1_TEST_HOLD_TRUST_LOCK_SECONDS": "30"
+    }
+    process = subprocess.Popen(
+        ["/bin/bash", str(amendment_fixture["script"]), "--validate-only"],
+        cwd="/",
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        env=env,
+        start_new_session=True,
+    )
+    deadline = time.monotonic() + 3
+    while not _lock_is_held(_lock(amendment_fixture)) and time.monotonic() < deadline:
+        time.sleep(0.01)
+    assert _lock_is_held(_lock(amendment_fixture)), "final-c1 ratifier never acquired the lock"
+
+    os.killpg(process.pid, signal.SIGKILL)
+    process.communicate(timeout=5)
+    assert process.returncode == -signal.SIGKILL
+    assert subprocess.run(
+        ["ps", "-p", str(process.pid)],
+        capture_output=True,
+        check=False,
+    ).returncode != 0
+    assert not _lock_is_held(_lock(amendment_fixture))
+
+    recovered = _run(amendment_fixture, "--validate-only")
+    assert recovered.returncode == 0, recovered.stderr
+    assert "preflight-valid" in recovered.stdout
 
 
 def test_candidate_is_private_and_never_created_in_receipt_parent(amendment_fixture: dict[str, object]) -> None:
@@ -282,18 +352,15 @@ def test_candidate_is_private_and_never_created_in_receipt_parent(amendment_fixt
         stderr=subprocess.PIPE,
         env=env,
     )
-    deadline = time.monotonic() + 3
-    while not _lock(amendment_fixture).is_dir() and time.monotonic() < deadline:
-        time.sleep(0.01)
-    assert _lock(amendment_fixture).is_dir(), "private transaction directory was not created"
-    assert list(_lock(amendment_fixture).iterdir()) == []
+    time.sleep(0.2)
+    assert process.poll() is None
     parent = _receipt(amendment_fixture).parent
     assert list(parent.glob("*.candidate*")) == []
 
     stdout, stderr = process.communicate(timeout=5)
     assert process.returncode == 0, stderr
     assert "receipt created" in stdout
-    assert not _lock(amendment_fixture).exists()
+    assert _lock(amendment_fixture).is_file()
 
 
 def test_named_candidate_symlink_cannot_substitute_anonymous_receipt_inode(
@@ -308,7 +375,7 @@ def test_named_candidate_symlink_cannot_substitute_anonymous_receipt_inode(
     assert result.returncode == 0, result.stderr
     receipt = json.loads(_receipt(amendment_fixture).read_text(encoding="utf-8"))
     assert receipt["schema"] == "epyc.operator_e8_quality_final_c1_retry_amendment.v1"
-    assert not _lock(amendment_fixture).exists()
+    assert _lock(amendment_fixture).is_file()
 
 
 def test_evidence_alias_path_is_rejected(amendment_fixture: dict[str, object], tmp_path: Path) -> None:
@@ -352,17 +419,23 @@ def test_test_mode_cannot_target_canonical_root_or_evidence(amendment_fixture: d
 
 def test_production_defaults_pin_the_reviewed_runner_and_validator() -> None:
     text = SOURCE_SCRIPT.read_text(encoding="utf-8")
-    assert "6907582a0d67e6fded47b9350b87cb911c8d83b3" in text
-    assert "db35e179b7b35f96d55b5ae755bdcf421dbe4d2b" in text
+    assert "a37385074ffcf795b8bac668a3b630ea5bebace2" in text
+    assert "dad67e0ac036d8a582234044db3424a1aa3f0a36" in text
     assert "scripts/benchmark/final_c1_retry.py" in text
     assert "0bc35b84399df7d7434de6b356f58545f28cea89bf164aaa85977d7954ce6295" in text
     assert "scripts/benchmark/final_c1_validator.py" in text
     assert "b82c49cfa362d75496d5e925d58ae5b11d1d33c3d9d14a6f7f796a6c6bf4e977" in text
+    assert "scripts/benchmark/operator_candidates/ratify_and_apply_e8_quality_baseline_v5.sh" in text
+    assert "fca5b8b0e663205e3525098e3997fec76b22533ef8dd7175745acc3e4fc1753c" in text
+    assert "scripts/benchmark/operator_candidates/apply_e8_quality_baseline_state_v5_candidate.py" in text
+    assert "ab8ed499c98eedfb961f790ede2596649d8f6080317145f3b8203ab871080309" in text
+    assert "f1e0c0a88edaea5a66dda34ec9a938f8a20daa17491263a44ffff179623d3d61" in text
     assert "_TO_BE_SUPPLIED__" not in text
     assert "request_timeout_s\": 300" in text
     assert "no_timeout_increase\": True" in text
     assert 'PYTHON="/usr/bin/python3"' in text
-    assert '.e8_final_c1_retry_amendment.lock' in text
+    assert 'TRUST_LOCK="/run/lock/epyc-measurement-trust-boundary.lock"' in text
+    assert ".e8_final_c1_retry_amendment.lock" not in text
     assert 'export PATH="/usr/bin:/bin"' in text
     assert "AT_EMPTY_PATH" in text
     assert "O_TMPFILE" in text

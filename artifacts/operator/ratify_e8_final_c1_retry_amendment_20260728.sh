@@ -15,20 +15,21 @@ ORCH="/mnt/raid0/llm/epyc-orchestrator"
 # The ratifier needs only the stdlib. Do not execute an interpreter reachable
 # through the mutable orchestrator worktree while asserting no side effects.
 PYTHON="/usr/bin/python3"
+TRUST_LOCK="/run/lock/epyc-measurement-trust-boundary.lock"
 
 if [[ "$TEST_MODE" == "1" ]]; then
     ROOT="${EPYC_ROOT:-$DEFAULT_ROOT}"
     EVIDENCE="${E8_C1_EVIDENCE:-$CANONICAL_EVIDENCE}"
     ORCH="${EPYC_ORCHESTRATOR:-$ORCH}"
     PYTHON="${E8_C1_PYTHON:-$PYTHON}"
+    TRUST_LOCK="${E8_C1_TRUST_LOCK:-$TRUST_LOCK}"
     # Test overrides must never be able to mint a receipt at a canonical path.
     [[ "$ROOT" != "$CANONICAL_ROOT" && "$EVIDENCE" != "$CANONICAL_EVIDENCE" ]] ||
         { printf 'ERROR: test mode refuses canonical root or evidence namespace.\n' >&2; exit 1; }
 fi
 
 RECEIPT="$ROOT/artifacts/operator/ratify_e8_final_c1_retry_amendment_20260728.json"
-LOCK="$ROOT/artifacts/operator/.e8_final_c1_retry_amendment.lock"
-LOCK_HELD=0
+RECEIPT_PARENT="$(dirname -- "$RECEIPT")"
 TOKEN="RATIFY-E8-FINAL-C1-RETRY-20260728"
 PLAN_REL="partial_r2_plan.json"
 PROPOSAL_REL="recovery_proposal.json"
@@ -47,12 +48,18 @@ EXPECTED_FAILED_SIDECARS="97:a550c07752f8dedc0fdf5c4582b587c90f3b624405ed1454f62
 # These are deliberately unresolved until the owning orchestrator integration
 # supplies its reviewed final-c1 runner and validator pins. A human token must
 # never authorize an unpinned instrument.
-EXPECTED_ORCH_COMMIT="6907582a0d67e6fded47b9350b87cb911c8d83b3"
-EXPECTED_ORCH_TREE="db35e179b7b35f96d55b5ae755bdcf421dbe4d2b"
+EXPECTED_ORCH_COMMIT="a37385074ffcf795b8bac668a3b630ea5bebace2"
+EXPECTED_ORCH_TREE="dad67e0ac036d8a582234044db3424a1aa3f0a36"
 RUNNER_REL="scripts/benchmark/final_c1_retry.py"
 EXPECTED_RUNNER_SHA256="0bc35b84399df7d7434de6b356f58545f28cea89bf164aaa85977d7954ce6295"
 VALIDATOR_REL="scripts/benchmark/final_c1_validator.py"
 EXPECTED_VALIDATOR_SHA256="b82c49cfa362d75496d5e925d58ae5b11d1d33c3d9d14a6f7f796a6c6bf4e977"
+WRAPPER_REL="scripts/benchmark/operator_candidates/ratify_and_apply_e8_quality_baseline_v5.sh"
+EXPECTED_WRAPPER_SHA256="fca5b8b0e663205e3525098e3997fec76b22533ef8dd7175745acc3e4fc1753c"
+APPLIER_ADAPTER_REL="scripts/benchmark/operator_candidates/apply_e8_quality_baseline_state_v5_candidate.py"
+EXPECTED_APPLIER_ADAPTER_SHA256="ab8ed499c98eedfb961f790ede2596649d8f6080317145f3b8203ab871080309"
+CANONICAL_APPLIER_REL="artifacts/operator/apply_e8_quality_baseline_state.py"
+EXPECTED_CANONICAL_APPLIER_SHA256="f1e0c0a88edaea5a66dda34ec9a938f8a20daa17491263a44ffff179623d3d61"
 
 if [[ "$TEST_MODE" == "1" ]]; then
     EXPECTED_PLAN_SHA256="${E8_C1_EXPECTED_PLAN_SHA256:-$EXPECTED_PLAN_SHA256}"
@@ -68,6 +75,12 @@ if [[ "$TEST_MODE" == "1" ]]; then
     EXPECTED_RUNNER_SHA256="${E8_C1_EXPECTED_RUNNER_SHA256:-$EXPECTED_RUNNER_SHA256}"
     VALIDATOR_REL="${E8_C1_VALIDATOR_REL:-$VALIDATOR_REL}"
     EXPECTED_VALIDATOR_SHA256="${E8_C1_EXPECTED_VALIDATOR_SHA256:-$EXPECTED_VALIDATOR_SHA256}"
+    WRAPPER_REL="${E8_C1_WRAPPER_REL:-$WRAPPER_REL}"
+    EXPECTED_WRAPPER_SHA256="${E8_C1_EXPECTED_WRAPPER_SHA256:-$EXPECTED_WRAPPER_SHA256}"
+    APPLIER_ADAPTER_REL="${E8_C1_APPLIER_ADAPTER_REL:-$APPLIER_ADAPTER_REL}"
+    EXPECTED_APPLIER_ADAPTER_SHA256="${E8_C1_EXPECTED_APPLIER_ADAPTER_SHA256:-$EXPECTED_APPLIER_ADAPTER_SHA256}"
+    CANONICAL_APPLIER_REL="${E8_C1_CANONICAL_APPLIER_REL:-$CANONICAL_APPLIER_REL}"
+    EXPECTED_CANONICAL_APPLIER_SHA256="${E8_C1_EXPECTED_CANONICAL_APPLIER_SHA256:-$EXPECTED_CANONICAL_APPLIER_SHA256}"
 fi
 
 fail() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
@@ -76,48 +89,63 @@ require_hash() { [[ "$(sha256 "$2")" == "$1" ]] || fail "SHA-256 mismatch for $2
 require_pin() { [[ "$1" =~ ^[0-9a-f]{40}$ || "$1" =~ ^[0-9a-f]{64}$ ]] || fail "unresolved or malformed instrument pin"; }
 require_relpath() { [[ "$1" != /* && "$1" != *".."* && "$1" != __* ]] || fail "unresolved or unsafe instrument path"; }
 
-cleanup() {
-    local status=$?
-    trap - EXIT INT TERM HUP
-    set +e
-    [[ "$LOCK_HELD" != 1 ]] || rmdir -- "$LOCK"
-    return "$status"
-}
+acquire_trust_boundary_lock() {
+    "$PYTHON" - "$TRUST_LOCK" <<'PY'
+import os
+import stat
+import sys
 
-acquire_lock() {
-    # mkdir(2) is an atomic no-replace operation and does not follow a symlink
-    # at the target path. The private, empty directory is the shared lock.
-    if ! mkdir -m 0700 -- "$LOCK"; then
-        fail "canonical shared lock acquisition refused: $LOCK"
-    fi
-    LOCK_HELD=1
-    trap cleanup EXIT
-    trap 'exit 130' INT
-    trap 'exit 143' TERM
-    trap 'exit 129' HUP
-    if [[ "$TEST_MODE" == 1 && "${E8_C1_TEST_HOLD_LOCK_SECONDS:-0}" != 0 ]]; then
-        [[ "${E8_C1_TEST_HOLD_LOCK_SECONDS}" =~ ^[0-9]+([.][0-9]+)?$ ]] ||
-            fail "invalid test-only lock hold duration"
-        sleep "${E8_C1_TEST_HOLD_LOCK_SECONDS}"
-    fi
-}
+path = sys.argv[1]
+parent = os.path.dirname(path)
+if not os.path.isabs(path) or os.path.realpath(parent) != parent:
+    raise SystemExit(f"trust-boundary lock parent is not an exact path: {parent}")
+fd = os.open(path, os.O_RDWR | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0), 0o660)
+try:
+    if not stat.S_ISREG(os.fstat(fd).st_mode):
+        raise SystemExit(f"trust-boundary lock is not a regular file: {path}")
+    os.fsync(fd)
+finally:
+    os.close(fd)
+parent_fd = os.open(parent, os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_NOFOLLOW", 0))
+try:
+    os.fsync(parent_fd)
+finally:
+    os.close(parent_fd)
+PY
+    exec 8<>"$TRUST_LOCK"
+    /usr/bin/flock -n 8 ||
+        fail "measurement trust-boundary lock is already held: $TRUST_LOCK"
+    "$PYTHON" - "$TRUST_LOCK" "/proc/$$/fd/8" <<'PY'
+import os
+import stat
+import sys
 
-release_lock() {
-    rmdir -- "$LOCK" || fail "canonical shared lock could not be released: $LOCK"
-    LOCK_HELD=0
+path, held_path = sys.argv[1:]
+named = os.lstat(path)
+held = os.stat(held_path)
+if stat.S_ISLNK(named.st_mode) or not stat.S_ISREG(named.st_mode):
+    raise SystemExit(f"trust-boundary lock path is not a regular file: {path}")
+if (named.st_dev, named.st_ino) != (held.st_dev, held.st_ino):
+    raise SystemExit("held trust-boundary lock inode differs from its canonical path")
+PY
+    if [[ "$TEST_MODE" == 1 && "${E8_C1_TEST_HOLD_TRUST_LOCK_SECONDS:-0}" != 0 ]]; then
+        [[ "${E8_C1_TEST_HOLD_TRUST_LOCK_SECONDS}" =~ ^[0-9]+([.][0-9]+)?$ ]] ||
+            fail "invalid test-only trust-lock hold duration"
+        /usr/bin/sleep "${E8_C1_TEST_HOLD_TRUST_LOCK_SECONDS}"
+    fi
 }
 
 verify_canonical_paths() {
     local production=0
     [[ "$TEST_MODE" == 1 ]] || production=1
-    "$PYTHON" - "$SCRIPT_PATH" "$ROOT" "$EVIDENCE" "$(dirname -- "$RECEIPT")" \
+    "$PYTHON" - "$SCRIPT_PATH" "$ROOT" "$EVIDENCE" "$RECEIPT_PARENT" "$TRUST_LOCK" \
         "$CANONICAL_ROOT" "$CANONICAL_EVIDENCE" "$production" <<'PY'
 import os
 import stat
 import sys
 from pathlib import Path
 
-script, root, evidence, receipt_parent, canonical_root, canonical_evidence, production = sys.argv[1:]
+script, root, evidence, receipt_parent, trust_lock, canonical_root, canonical_evidence, production = sys.argv[1:]
 
 def reject_alias(label: str, value: str, kind: str) -> None:
     path = Path(value)
@@ -139,13 +167,15 @@ reject_alias("script", script, "file")
 reject_alias("root", root, "dir")
 reject_alias("evidence", evidence, "dir")
 reject_alias("receipt parent", receipt_parent, "dir")
+reject_alias("trust-boundary lock", trust_lock, "file")
 if production == "1":
     expected_script = f"{canonical_root}/artifacts/operator/ratify_e8_final_c1_retry_amendment_20260728.sh"
     expected_parent = f"{canonical_root}/artifacts/operator"
     expected = {"script": expected_script, "root": canonical_root,
-                "evidence": canonical_evidence, "receipt parent": expected_parent}
+                "evidence": canonical_evidence, "receipt parent": expected_parent,
+                "trust-boundary lock": "/run/lock/epyc-measurement-trust-boundary.lock"}
     actual = {"script": script, "root": root, "evidence": evidence,
-              "receipt parent": receipt_parent}
+              "receipt parent": receipt_parent, "trust-boundary lock": trust_lock}
     for label, wanted in expected.items():
         if actual[label] != wanted:
             raise SystemExit(f"production {label} differs from canonical path: {actual[label]}")
@@ -157,8 +187,14 @@ verify_instrument_pins() {
     require_pin "$EXPECTED_ORCH_TREE"
     require_pin "$EXPECTED_RUNNER_SHA256"
     require_pin "$EXPECTED_VALIDATOR_SHA256"
+    require_pin "$EXPECTED_WRAPPER_SHA256"
+    require_pin "$EXPECTED_APPLIER_ADAPTER_SHA256"
+    require_pin "$EXPECTED_CANONICAL_APPLIER_SHA256"
     require_relpath "$RUNNER_REL"
     require_relpath "$VALIDATOR_REL"
+    require_relpath "$WRAPPER_REL"
+    require_relpath "$APPLIER_ADAPTER_REL"
+    require_relpath "$CANONICAL_APPLIER_REL"
     [[ -x "$PYTHON" ]] || fail "required trusted interpreter is unavailable: $PYTHON"
     [[ -d "$ORCH/.git" || -f "$ORCH/.git" ]] || fail "orchestrator is not a Git worktree: $ORCH"
     git -C "$ORCH" cat-file -e "${EXPECTED_ORCH_COMMIT}^{commit}" || fail "pinned orchestrator commit is unavailable"
@@ -168,6 +204,11 @@ verify_instrument_pins() {
         fail "pinned final-c1 runner hash differs"
     [[ "$(git -C "$ORCH" show "${EXPECTED_ORCH_COMMIT}:${VALIDATOR_REL}" | sha256sum | awk '{print $1}')" == "$EXPECTED_VALIDATOR_SHA256" ]] ||
         fail "pinned final-c1 validator hash differs"
+    [[ "$(git -C "$ORCH" show "${EXPECTED_ORCH_COMMIT}:${WRAPPER_REL}" | sha256sum | awk '{print $1}')" == "$EXPECTED_WRAPPER_SHA256" ]] ||
+        fail "pinned E8-v5 wrapper hash differs"
+    [[ "$(git -C "$ORCH" show "${EXPECTED_ORCH_COMMIT}:${APPLIER_ADAPTER_REL}" | sha256sum | awk '{print $1}')" == "$EXPECTED_APPLIER_ADAPTER_SHA256" ]] ||
+        fail "pinned E8-v5 applier adapter hash differs"
+    require_hash "$EXPECTED_CANONICAL_APPLIER_SHA256" "$ROOT/$CANONICAL_APPLIER_REL"
 }
 
 verify_failed_namespace() {
@@ -237,10 +278,12 @@ write_and_publish_receipt() {
     local test_decoy="${E8_C1_TEST_REPLACE_CANDIDATE_WITH_SYMLINK:-0}"
     [[ "$TEST_MODE" == 1 ]] || { test_hold=0; test_decoy=0; }
     [[ "$test_hold" =~ ^[0-9]+([.][0-9]+)?$ ]] || fail "invalid test-only receipt hold duration"
-    "$PYTHON" - "$LOCK" "$RECEIPT" "$EVIDENCE" "$EXPECTED_PLAN_SHA256" "$EXPECTED_PROPOSAL_SHA256" \
+    "$PYTHON" - "$RECEIPT_PARENT" "$RECEIPT" "$EVIDENCE" "$EXPECTED_PLAN_SHA256" "$EXPECTED_PROPOSAL_SHA256" \
         "$EXPECTED_FAILURES_SHA256" "$EXPECTED_PLAN_TREE_SHA256" "$EXPECTED_PROPOSAL_TREE_SHA256" \
         "$EXPECTED_SOURCE_TREE_SHA256" "$EXPECTED_FAILED_SIDECARS" "$ORCH" "$EXPECTED_ORCH_COMMIT" "$EXPECTED_ORCH_TREE" \
         "$RUNNER_REL" "$EXPECTED_RUNNER_SHA256" "$VALIDATOR_REL" "$EXPECTED_VALIDATOR_SHA256" \
+        "$WRAPPER_REL" "$EXPECTED_WRAPPER_SHA256" "$APPLIER_ADAPTER_REL" "$EXPECTED_APPLIER_ADAPTER_SHA256" \
+        "$CANONICAL_APPLIER_REL" "$EXPECTED_CANONICAL_APPLIER_SHA256" \
         "$SCRIPT_PATH" "$test_hold" "$test_decoy" <<'PY'
 import ctypes
 import errno
@@ -253,9 +296,10 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path
 
-(lock_dir, receipt, evidence, plan_hash, proposal_hash, failures_hash, plan_tree, proposal_tree,
+(candidate_dir, receipt, evidence, plan_hash, proposal_hash, failures_hash, plan_tree, proposal_tree,
  source_tree, sidecars, orch, commit, tree, runner, runner_hash, validator, validator_hash,
- script, test_hold, test_decoy) = sys.argv[1:]
+ wrapper, wrapper_hash, applier_adapter, applier_adapter_hash,
+ canonical_applier, canonical_applier_hash, script, test_hold, test_decoy) = sys.argv[1:]
 payload = {
     "schema": "epyc.operator_e8_quality_final_c1_retry_amendment.v1",
     "status": "ratified",
@@ -280,6 +324,12 @@ payload = {
         "ratifier_interpreter": "/usr/bin/python3",
         "runner": {"path": runner, "sha256": runner_hash},
         "validator": {"path": validator, "sha256": validator_hash},
+        "wrapper": {"path": wrapper, "sha256": wrapper_hash},
+        "applier_adapter": {"path": applier_adapter, "sha256": applier_adapter_hash},
+        "canonical_applier": {
+            "path": canonical_applier,
+            "sha256": canonical_applier_hash,
+        },
     },
     "authorization": {
         "tier": 2,
@@ -307,12 +357,12 @@ if decoded["authorization"] != payload["authorization"] or decoded["non_authoriz
 nofollow = getattr(os, "O_NOFOLLOW", 0)
 if not hasattr(os, "O_TMPFILE"):
     raise SystemExit("O_TMPFILE is unavailable; fail closed")
-lockfd = os.open(lock_dir, os.O_RDONLY | os.O_DIRECTORY | nofollow)
+candidate_dirfd = os.open(candidate_dir, os.O_RDONLY | os.O_DIRECTORY | nofollow)
 parent, name = os.path.split(receipt)
 dirfd = os.open(parent, os.O_RDONLY | os.O_DIRECTORY | nofollow)
-fd = os.open(lock_dir, os.O_RDWR | os.O_TMPFILE, 0o600)
+fd = os.open(candidate_dir, os.O_RDWR | os.O_TMPFILE, 0o600)
 published = False
-decoy = os.path.join(lock_dir, "receipt.candidate")
+decoy = os.path.join(candidate_dir, ".e8-final-c1-receipt.candidate")
 try:
     before = os.fstat(fd)
     if not stat.S_ISREG(before.st_mode) or before.st_nlink != 0:
@@ -372,7 +422,7 @@ finally:
         os.unlink(decoy)
     except FileNotFoundError:
         pass
-    os.close(lockfd)
+    os.close(candidate_dirfd)
     os.close(dirfd)
     os.close(fd)
 PY
@@ -388,8 +438,6 @@ plan() {
 
 attest() {
     verify_preflight
-    mkdir -p -- "$(dirname -- "$RECEIPT")"
-    acquire_lock
     verify_preflight
     # Detect any evidence mutation which occurred while this receipt was being
     # constructed. The namespace is read-only evidence; publication is denied
@@ -398,11 +446,11 @@ attest() {
     # One trusted process creates an anonymous inode, writes and validates the
     # receipt, then publishes that held inode with linkat(AT_EMPTY_PATH).
     write_and_publish_receipt
-    release_lock
-    trap - EXIT INT TERM HUP
     printf 'E8 final-c1 retry amendment receipt created:\n%s\n' "$RECEIPT"
     sha256sum -- "$RECEIPT"
 }
+
+acquire_trust_boundary_lock
 
 case "${1:-}" in
     --plan|--validate-only)
