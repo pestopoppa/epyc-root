@@ -247,22 +247,23 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
   recorded as `autopilot_killed_mid_trial`. The authoritative current-era journal fold has
   16 eligible entries and reconstructs a three-point frontier (`1445`, `1446`, `1450`).
   Live marker terminalization remains a separate human transaction; no extra trial is needed.
-- [x] **E8 quality reseed -- T1 tier evidence boundary** ✅ 2026-07-27 — T1/r1 was migrated
-  deterministically from the legacy 50-question result, with its one blank-generation timeout
-  repaired in the separate watched window; fresh T1/r2 and T1/r3 each completed `50/50`.
-  All three raw records are E8/core_v2 `e8_quality_full_pool_tier_baseline.v4`, `n=50` and
-  `q=1.5`. The fixed scorer-tail ordinals `32`, `33`, and `38` in each fresh replicate had one
-  bounded retry (`2` attempts, terminal error null) and recovered. The runtime watcher recorded
-  `409/409` clean samples before T2/r1 began; T2/r1 remains active. This is an evidence
-  checkpoint only: it neither applies nor publishes the E8 quality baseline.
+- [x] **E8 quality reseed -- T1 tier evidence boundary** ✅ 2026-07-28 — clean v5 T1/r1,
+  T1/r2, and T1/r3 are each terminal `50/50`, with `25` correct and zero final errors. The
+  records are E8/core_v2 `e8_quality_full_pool_tier_baseline.v4`, `n=50`, and `q=1.5` under the
+  repaired detached runtime-root contract (`43600480`). T1/r3 ordinal `32` incurred a
+  scorer-side `ReadTimeout`; the protocol repaired it through exactly one deterministic
+  scorer-tail replay, without regenerating inference, and the terminal row has `error: null`.
+  T2/r1 is active. This is an evidence checkpoint only: it neither applies nor publishes the E8
+  quality baseline.
 - [ ] **E8 quality baseline reseed/apply** — human-only protocol/source/apply scripts are
   prepared and parked. The earlier v4 collection is historical, non-decision evidence after the
   fixed-vector context defect. A first v5 launch failed before inference because its detached
   runtime root was wrong; the targeted fix is `43600480` on pushed branch
   `e8-v5-runtime-root-20260727` (`44` tests, Ruff, compile, and blocker-free preflight). Clean
-  v5 `T1/r1` collection is now **RUNNING** from that commit. Do not apply or publish a baseline
-  until the complete v5 evidence bundle and its single consolidated human trust-boundary action
-  are ready.
+  v5 T1/r1-r3 are complete and T2/r1 is running. The reviewed consolidated one-token wrapper is
+  pushed on orchestrator branch `codex/e8-consolidated-wrapper-20260728` at `b3db2800`; it is
+  neither merged nor applied. Do not apply or publish a baseline until the complete v5 evidence
+  bundle and its single consolidated human trust-boundary action are ready.
 - [x] **E8-LAUNCH-RACE — scope failed-start cleanup to the wrapper-owned launch** ✅ 2026-07-26.
   Independent review found that the initial rearm wrapper's global fallback `pgrep` cleanup
   could terminate a concurrent valid AutoPilot launch. The wrapper now records the returned
