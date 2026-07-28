@@ -717,6 +717,35 @@ freezes/cutovers, host reboots).
   - [ ] **M5c — standing instructions do not reach running sessions.** A CLAUDE.md rule added at
     21:43Z left an active agent on its 19:45Z heartbeat. Recorded in `BUS_PROTOCOL.md`; the open
     task is for coordinator-agent to nudge running mains to *re-read* on every such change.
+  - [ ] **C9 — `cmd_spawn` caps a daily action count, not live concurrency.** *Observed
+    2026-07-28.* `caps.max_spawns_per_day` is enforced by counting `kind == "spawn"` rows in
+    `coordination/session-bus/adapter-ledger.jsonl` whose `ts` starts with today's date — a rate
+    limit on the spawn action, not a bound on simultaneously-live mains. Killing or closing a main
+    never returns its slot. Observed with three spawn rows for the day (`codex-bus-tests`
+    15:34:25, `claude-gpu-lane` 16:04:42, `fable-auditor` 19:47:34) while only two mains were
+    actually alive — `codex-bus-tests` had already been destroyed — yet further spawns were
+    refused at 3/3 despite spare real capacity.
+    A concurrency cap should bound the thing that actually costs something: simultaneous mains
+    competing for compute, context, and coordinator attention. A daily action cap instead
+    penalises churn, turns one operational mistake into a cost for the rest of the day, and —
+    worst — makes closing an idle session cost a spawn slot for no reason, directly against the
+    session-lifecycle rule in `agents/shared/OPERATING_CONSTRAINTS.md` ("nothing assignable →
+    close the session"): a coordinator that correctly closes a finished main is punished for it.
+    The operator's expectation was concurrency semantics; the config key name matches the
+    implementation, so the key name is not the bug — the design is.
+    Fix: count **live roster-member windows** (e.g. `tmux list-windows` against
+    `tmux.live_session`, intersected with roster ids from `config.yaml`) instead of ledger rows.
+    Rename the cap to reflect concurrency (e.g. `caps.max_concurrent_mains`) — decide and state
+    explicitly whether the old key stays readable for one release or the module fails closed when
+    only the old key is present; do not leave that ambiguous. Stay fail-closed: if the live-window
+    count can't be determined (tmux unreachable, session absent), refuse rather than assume zero —
+    this module's whole history (C3, C6, C8) is fail-open defects; do not add another. Needs tests
+    in `tests/test_tmux_adapter.py`. `tmux_adapter.py` is grant-gated (`OP-SENDKEYS-CODEX`) and had
+    three fix attempts on the unrelated C6 defect on 2026-07-28 alone, so this change wants an
+    independent review before it lands, not a same-session self-merge.
+    *Context, not part of the fix:* the operator raised the cap 3 → 6 in
+    `coordination/session-bus/config.yaml` on 2026-07-28 as interim headroom. That bump is not the
+    fix and does not close this item.
   Original list: Claude Stop/SessionStart drain hook
   (clone `*_context.sh`) · send-keys adapter behind `OP-SENDKEYS-CODEX` (OFF; rate-limited;
   idle-pane check) · hybrid triage (dead-agent drafts + routing annotations; budget-capped;
