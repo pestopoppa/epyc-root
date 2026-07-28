@@ -1085,6 +1085,67 @@ def _append_inbox(bus_root: Path, msgs: list[dict], epoch: int) -> list[dict]:
     return written
 
 
+COORDINATOR_AGENT = "coordinator-agent"
+_BOUNDARY_STATE = "boundary_state.json"
+
+
+def detect_task_boundaries(bus_root: Path, roster: list[dict], epoch: int) -> list[dict]:
+    """Deliver task-boundary notices to coordinator-agent's inbox, durably.
+
+    Defect C8 (2026-07-28): boundary surfacing lived in a coordinator SESSION as a
+    background poller, so it died with the session — and a `monitor:file` endpoint
+    has no push, so an idle agent was unreachable and its finished work sat
+    unnoticed. Detection therefore belongs in the daemon: it is the always-on tier
+    (kept alive by bus_supervisor.sh), it already owns every inbox, and a notice
+    written to coordinator-agent's inbox is picked up by ANY coordinator session's
+    next drain — including a fresh one started hours later. That is what makes
+    boundary surfacing survive a session restart.
+
+    Prior state is persisted in a daemon-owned file so a DAEMON restart does not
+    replay every agent as a fresh boundary. Only transitions INTO idle are
+    reported: an agent going idle is the boundary that needs new work. Ordinary
+    working->working churn is noise and is deliberately not delivered.
+    """
+    state_path = bus_root / _BOUNDARY_STATE
+    try:
+        prev = json.loads(state_path.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001 - absent or corrupt reads as "no history"
+        prev = {}
+
+    now = _agent_states(bus_root, roster)
+    notices, snapshot = [], {}
+    for aid, st in now.items():
+        if (st.get("role") or "") == "coordinator-agent":
+            continue  # don't notify the coordinator about its own idleness
+        cur = f"{st.get('state')}|{st.get('task_id')}"
+        snapshot[aid] = cur
+        was = prev.get(aid)
+        if was is None or was == cur:
+            continue
+        if str(st.get("state") or "").strip() == "idle":
+            notice = {
+                "to": COORDINATOR_AGENT, "kind": "status",
+                "payload": {"event": "task-boundary", "agent": aid,
+                            "transition": f"{was} -> {cur}",
+                            "detail": f"{aid} reached a task boundary and is IDLE "
+                                      f"(was {was}). It has no running task; "
+                                      f"assign work or stand it down.",
+                            "state": "idle"}}
+            # An agent that has retired its task_id has None here, and the msg
+            # schema types task_id as a string — so omit rather than emit null.
+            if st.get("task_id"):
+                notice["task_id"] = st["task_id"]
+            notices.append(notice)
+
+    if notices:
+        _append_inbox(bus_root, notices, epoch)
+    if snapshot != prev:
+        _write_atomic(state_path, snapshot)
+    return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+             "kind": "task-boundary", "agent": n["payload"]["agent"],
+             "transition": n["payload"]["transition"]} for n in notices]
+
+
 # Kinds the daemon already consumes through another path; relaying them too would
 # double-count. token-request -> relay_tokens (token-queue.md); task-propose /
 # task-complete -> transcribe (queue.jsonl).
@@ -1356,6 +1417,9 @@ def tick(bus_root: Path, epoch: int, *, dry_run: bool = False) -> list[dict]:
     if not dry_run:
         roster = [r for r in (config.get("roster") or []) if isinstance(r, dict)]
         advice += relay_outbox_messages(bus_root, roster, epoch)
+        # C8: boundary surfacing must outlive any single coordinator session, so
+        # it runs here (the always-on tier) rather than in a session-local poller.
+        advice += detect_task_boundaries(bus_root, roster, epoch)
         advice += redeliver_unacked_messages(bus_root, roster, epoch)
 
     if authority == "assign" and not dry_run:
