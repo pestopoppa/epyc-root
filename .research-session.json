@@ -1,87 +1,89 @@
 {
-  "session_started": "2026-07-27",
+  "session_started": "2026-07-28",
   "stage": 4,
-  "stage1_completed": "2026-07-27",
+  "stage1_completed": "2026-07-28",
   "processed_urls": [
-    "https://github.com/avbiswas/fast-rlm"
+    "https://arxiv.org/abs/1807.03819",
+    "https://arxiv.org/abs/2405.16039",
+    "https://arxiv.org/abs/2410.20672",
+    "https://arxiv.org/abs/2502.05171",
+    "https://arxiv.org/abs/2507.10524",
+    "https://arxiv.org/abs/2607.13491",
+    "https://arxiv.org/abs/2607.16051",
+    "operator-submitted://looped-transformers-overview-2026-07-28",
+    "https://arxiv.org/abs/2507.02199",
+    "https://arxiv.org/abs/2511.07384",
+    "https://arxiv.org/abs/2404.02258"
   ],
   "entries_created": [
-    "intake-901"
+    "intake-902",
+    "intake-903",
+    "intake-904",
+    "intake-905",
+    "intake-906",
+    "intake-907",
+    "intake-908",
+    "intake-909",
+    "intake-910",
+    "intake-911",
+    "intake-912"
   ],
-  "next_intake_id": 902,
-  "expansion_count": 0,
+  "next_intake_id": 913,
+  "expansion_count": 3,
   "expansion_cap": 10,
-  "notes": "Single-URL intake, run inline (skill: 1-2 URLs inline, no sub-agent fan-out). Exact URL collision with intake-693 and intake-783; filed as low-novelty re-review superseding intake-783, not as duplicate. Stage-1 evidence: GitHub API /repos + /commits (2026-07-27), README.md, docs/guide/sessions.md, docs/development/benchmarks.md, git tree at f25f310b.",
+  "notes": "7-URL arXiv batch on the recurrent-depth / looped-transformer lineage plus one operator-submitted overview document (mid-turn addition). Dedup sweep run unbounded 2026-07-28: zero primary arxiv_id/url collisions; 1807.03819, 2410.20672, 2502.05171 appear only in referenced_arxiv_ids of intake-420/555/582/636 (not collisions). Prior session (2026-07-27, intake-901) completed Stage 4; fresh session started, ID sequence continued at 902.",
   "steering_ledger": [
     {
       "seq": 1,
       "stage": 1,
-      "verbatim": "I know we've looked at this github many times already but it keeps gettign updated with cool features",
-      "disposition": "context-only",
-      "plan_ref": null,
-      "stage1_response": "PARTIALLY OVERTURNED by GitHub API evidence: repo pushed_at = 2026-07-07T22:36:54Z, HEAD f25f310b, 57 commits \u2014 identical commit count to intake-783's 2026-07-08 re-review. Zero commits since. The premise held historically (Feb-Jul 2026 saw ACP, MCP, Vertex, sessions land) but not for this submission: the showcased 'repl memory' IS commits 063cfdc6 'Sessions' + f25f310b 'FAST RLM logs for sessions', both 2026-07-07, already indexed. Recorded so Stage 3 does not plan around a stale-update premise."
+      "verbatim": "Add this to the intake list also: \"**Looped Transformers: Reusing Model Parameters for Scalable Reasoning Through Recurrent Depth** [full ~8KB overview document; summarized under operator_submitted_documents.looped-transformers-overview-2026-07-28; verbatim retained in conversation transcript 2026-07-28]\"",
+      "disposition": "planned",
+      "plan_ref": "Item 1 (lineage section) + Item 2 (intake-909 note)",
+      "stage1_response": "Processed as an 8th intake source (inline; pasted text, no fetch). The document claims identities for the two 2026 papers (2607.13491 = DeepLoop, loop-aware DeepNorm scaling; 2607.16051 = Loopie, layer-wise A-A-A-B-B-B looping + MoE reinvestment). These identifications were deliberately NOT forwarded to the sub-agents fetching those IDs, so their fetch-derived identification is an independent check against this document. All figures in the document (e.g. Huginn 3.5B/800B tokens, 50B-equivalent) are stage1-unverified claims of the overview, to be reconciled against the per-paper entries."
     },
     {
       "seq": 2,
-      "stage": 1,
-      "verbatim": "also, the RLM project is at a more mature stage than ours showing significant capability af handling real workloads",
+      "stage": 2,
+      "verbatim": "Agreed. But also deep dive 903, 904, and 910.",
       "disposition": "planned",
-      "plan_ref": "S3-item-TBD (capability-gap comparison)",
-      "stage1_response": "Carried to Stage 3 as the framing for a capability-gap comparison. Stage-1 qualification: fast-rlm ships a benchmarks/ harness (LongBench/NarrativeQA, oolong-synth, NIAH) that intake-783 never recorded \u2014 real evidence of workload orientation. BUT docs/development/benchmarks.md publishes NO scores, costs, or baselines. So 'more mature' is supported at the level of runtime features and harness existence, and is UNSUPPORTED at the level of demonstrated results. A dive on benchmarks/_harness.py would settle whether there are runnable results behind it."
+      "plan_ref": "Stage-2 dive set = {903, 904, 905, 906, 908, 910, 911}",
+      "stage2_response": "Operator approved the ranked dive set (908, 905, 911, 906) and expanded it with 903 (MoEUT), 904 (RRT), 910 (Huginn latent-CoT probe, now a standalone dive rather than folded into 905). All seven dispatched 2026-07-28."
     },
     {
       "seq": 3,
-      "stage": 1,
-      "verbatim": "what can we learn from it to get our own architecture in ato a more mature state?",
-      "disposition": "planned",
-      "plan_ref": "S3-item-TBD (derived actionables from dive D1/D2)",
-      "stage1_response": "This is the operative scoping question and reframes the intake from technique-import to design comparison against subsystems we already own (src/repl_environment/state.py checkpoint()/restore(), src/session/persister.py SessionPersister + SQLite store). Drives dive recommendations D1 (session/memory design delta) and D2 (benchmark harness). Preliminary actionables recorded in Stage-1 report, all [unverified]."
-    },
-    {
-      "seq": 4,
-      "stage": 3,
-      "verbatim": "this contradiction keeps coming up, I think it woudl be worthwhile to have a handoff focusing on evaluating this ourselves and getting to a clarification ourselves. Maybe there's nuance that we're still not grasping",
-      "disposition": "planned",
-      "plan_ref": "Item 1 (rlm-contested-claims-self-evaluation.md)",
-      "stage1_response": "Filed as the eval stub. Stage-3 audit found the nuance is PARTLY already recorded: rao-redel-substrate-spike.md:26,36 holds the depth caveat as load-bearing with more detail than intake-547's own entry, and master-index N17 already frames the resolution (depth rescues failing attempts, hurts competent ones). What was genuinely missing is first-party measurement \u2014 every record treats intake-547 as received evidence. intake-547's cross_references pointed at an ARCHIVED handoff, a plausible mechanical reason it kept resurfacing unowned; repaired."
-    },
-    {
-      "seq": 5,
-      "stage": 4,
-      "verbatim": "Immediately implement handoffs/active/repl-session-memory-maturity.md when done since it doesn't require any inference nor change to the instrument era",
-      "disposition": "planned",
-      "plan_ref": "D-b, D-e (landed); D-a after decision",
-      "stage1_response": "D-b and D-e implemented and tested same session. D-a held for the architectural decision below."
-    },
-    {
-      "seq": 6,
-      "stage": 4,
-      "verbatim": "yes, bot overdesigning for it now may be silly. Lets get to real world work and then assess how much the cost/benefit actually is. Ideally T3 autopilot suites eventually get us there",
-      "disposition": "planned",
-      "plan_ref": "D-c1/D-c2; E2 cancelled",
-      "stage1_response": "D-c rescoped from a synthetic ON/OFF replication arm to real-workload measurement on T3 hard-workflow/tool-use/REPL traffic at zero added inference. E2 in the eval stub reduced to a pointer, no arm runs there. D-e1 folded in."
-    },
-    {
-      "seq": 7,
-      "stage": 4,
-      "verbatim": "sounds like we need to take an important architectural/safety decision. Provide options and tradeoffs.",
-      "disposition": "planned",
-      "plan_ref": "D-a (hardened pickle boundary)",
-      "stage1_response": "4-option decision package delivered via AskUserQuestion. Operator chose 'pickle behind a hardened boundary'. Implemented with 4 layers; /security-review found 4 issues (P1 numpy nested-unpickle gadget, P2 HMAC key race yielding an empty key, P3 strip() on key bytes, P3 two layer-4 AST bypasses), all fixed before landing."
+      "stage": 2,
+      "verbatim": "\"908 | reasoning-compression.md | Smoke-test Loopie-6B-A0.6B-preview via transformers/vLLM on CPU vs Ouro-2.6B-Thinking\" - why do we care about these models?",
+      "disposition": "declined",
+      "plan_ref": "Item 4 row 1 (smoke test declined: artifacts dead; replaced by watch task)",
+      "stage2_response": "Answered in-session (see reply 2026-07-28): we do not care about them as production candidates; we care because (a) reasoning-compression.md maintains a standing watch on looped/latent-reasoning models as potential small-role candidates (Ouro was filed as a CPU-verifier idea, intake-332), (b) the lineage's promise \u2014 test-time compute knob converting loops into quality without parameter growth \u2014 matches our routed multi-role stack shape, and (c) a smoke test is the cheapest way to convert credibility-1 self-reported claims into first-party evidence before any investment. The honest caveat from intake-902's own justification stands: looping cuts parameter FOOTPRINT, not per-token DRAM traffic, so the CPU-decode-BW win is unproven \u2014 which is precisely what a smoke test would measure. Whether the smoke-test actionable survives into the Stage-3 plan is for the operator after dives land."
     }
   ],
-  "stage1_gates": {
-    "dedup_sweep_unbounded": true,
-    "validator_exit": 0,
-    "handoffs_git_clean": true,
-    "cross_contamination_checked": true,
-    "expansion_within_cap": true
+  "operator_submitted_documents": {
+    "looped-transformers-overview-2026-07-28": {
+      "title": "Looped Transformers: Reusing Model Parameters for Scalable Reasoning Through Recurrent Depth",
+      "received": "2026-07-28",
+      "channel": "operator paste, mid-turn during Stage 1",
+      "provenance": "unstated \u2014 reads as a synthesized technical overview; no URL, no author byline; final line says content is 'drawn from the technical overview of looped Transformer research'",
+      "summary_of_claims": [
+        "Looped/recurrent-depth/latent-reasoning models reuse a shared layer block iterated in depth; ~4x parameter reduction at comparable FLOPs/latency",
+        "UT (1807.03819) is the ancestor: shared transition function + ACT halting; did not dominate due to compute-vs-parameter tradeoff at matched FLOPs, timing vs the scaling era, encoder-decoder-only evaluation, modest gains",
+        "Modern designs: prelude/core/coda partition, truncated backprop through time, randomly sampled loop count r replacing learned ACT halting; r is a continuous inference-time quality knob",
+        "Huginn (Geiping et al. 2502.05171): 3.5B/800B tokens, unrolled depth matches up to ~50B-parameter-equivalent reasoning on certain benchmarks, latent-space reasoning without CoT tokens",
+        "MoEUT (2405.16039): loops fine-grained expert groups to restore capacity; Relaxed Recursive Transformers (2410.20672): per-step LoRA adapters on shared block; MoR (2507.10524): token-level routing to recursion depth + KV-sharing variant",
+        "DeepLoop (2607.13491): loop-aware DeepNorm scaling exponent fixing training instability from weight reuse [IDENTITY UNVERIFIED]",
+        "Loopie (2607.16051): layer-wise looping (A-A-A-B-B-B) + reduced stored depth + MoE reinvestment, claimed to surpass compute-matched vanilla Transformer [IDENTITY UNVERIFIED]"
+      ]
+    }
   },
-  "stage2_completed": "2026-07-27",
-  "stage3_plan_approved": "2026-07-27",
-  "stage4_completed": "2026-07-27",
-  "handoffs_created": [
-    "rlm-contested-claims-self-evaluation.md",
-    "repl-session-memory-maturity.md"
-  ]
+  "stage2_completed": "2026-07-28",
+  "dives_completed": {
+    "intake-903": "dive-verified (all claims confirmed; peri-LN scale caveat, ~6.5B-token regime, no checkpoints)",
+    "intake-904": "dive-verified (ICLR 2025; cred 3->4; 2.66x throughput = oracle-exit SIMULATION; TIDE link downgraded to partial)",
+    "intake-905": "dive-verified (NeurIPS 2025 spotlight; 50B = FLOPs arithmetic not parity; mechanism evidence uneven \u2014 self-spec-dec has ZERO numbers)",
+    "intake-906": "dive-verified (135M-scale LOSS omitted at Stage 1; 2.06x = bespoke H100 harness; checkpoints Google-Drive 360M only)",
+    "intake-908": "dive-OVERTURNED (weights/code links DEAD; v1 IMO/IPhO gold silently retracted in v2; compute-matched = wall-clock only, own-reproduction baseline)",
+    "intake-910": "dive-verified (figures were GSM8K not arithmetic; probe supports narrow reading only; 905 contradicting_evidence narrowed)",
+    "intake-911": "dive-verified (conversion cost OVERTURNED as in-reach: 26-52B tokens cluster-scale; novelty high->medium \u2014 RRT is prior art; cred 2->3; checkpoints consumable)"
+  },
+  "stage4_completed": "2026-07-28"
 }

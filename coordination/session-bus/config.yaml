@@ -18,6 +18,12 @@ roster:
   # now load-bearing for coordination). lanes:[none] — this main must never take an
   # inference lane, so it cannot contend with the codex main running G3/E8.
   - {id: codex-bus-tests,   role: main,              lanes: [none],           endpoint: "tmux:agent",   drain: boundary}
+  # Added by coordinator-agent 2026-07-28 on operator direction, after codex reported the MI210
+  # idle with all legacy campaign GPU inference terminal. Owns gpu-serving-tie-in-program P2-1
+  # (role-agnostic resident lane) and P2-3 (Stage-0 hardening). lanes:[none, gpu] — it may hold
+  # the GPU lane, but NEVER cpu: the codex main runs CPU-side E8/G3 work and P1-2's E5 grid has
+  # a ~2026-07-31 deadline on this host.
+  - {id: claude-gpu-lane,   role: main,              lanes: [gpu, none],      endpoint: "tmux:agent",   drain: boundary}
 
 authority:
   within_lane: [self]

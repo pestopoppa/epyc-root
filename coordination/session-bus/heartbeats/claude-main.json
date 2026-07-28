@@ -1,6 +1,6 @@
 {
   "agent": "claude-main",
-  "state": "working",
-  "task_id": "R3-staleness-guard",
-  "ts": "2026-07-27T18:22:46+00:00"
+  "state": "idle",
+  "task_id": null,
+  "ts": "2026-07-28T16:00:14+00:00"
 }

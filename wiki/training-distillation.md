@@ -2,8 +2,8 @@
 
 **Category**: `training_distillation`
 **Confidence**: verified
-**Last compiled**: 2026-07-07
-**Sources**: 35 documents
+**Last compiled**: 2026-07-28
+**Sources**: 36 documents
 
 ## Summary
 
@@ -24,6 +24,17 @@ Aletheia RLVR (intake-370) provides scale-dependent training recipes for verific
 The 2026-07-02 cross-model LoRA-transfer / hypernetwork-adapter cluster (intake-764..771 + existing intake-098/707/618) unifies eight works around one operational value proposition — adapt a frozen LLM cheaply, then carry that adaptation across a rotating open-weight roster without full re-training per base. The cluster shares one blocker (adapter/hypernetwork/converter training is gradient-based and GPU-gated, the same Phase-B gate that backbones the doc-to-LoRA line), with two exceptions cutting through: Cross-LoRA (intake-765) is the only CPU-plausible member (pure SVD + least-squares weight-space port, no training, but only ~14% per-task lift recovery), and Text-to-LoRA (intake-771, Sakana, ICML'25) is the only member shipping open code AND open pretrained hypernetwork weights — enabling a genuinely zero-cost CPU validation spike. The Platonic Representation Hypothesis (intake-770) is the cited theoretical basis, but its Capacity corollary is the load-bearing caveat for us: representation convergence is strongest for large/capable models and weakest for small/heterogeneous ones — exactly the regime our small drafters and mixed roster occupy. Do not assume portability; local re-measurement gates any adoption.
 
 ## Key Findings
+
+### New (2026-07-28, looped-transformer / recurrent-depth lineage — intake-902..912, 7 Stage-2 dives)
+
+- **The lineage map is now dive-verified end-to-end**: Universal Transformers (intake-902, superseded root) → MoEUT shared-layer MoE (intake-903) → Relaxed Recursive Transformers (intake-904, ICLR 2025) → Huginn depth-recurrence (intake-905, NeurIPS 2025 spotlight) → Mixture-of-Recursions (intake-906, NeurIPS 2025) → DeepLoop loop-aware normalization (intake-907) / Loopie layer-loop MoE (intake-908). Four distinct **loop placements**: model-loop (Ouro), layer-loop R=2 (Loopie), token-routed recursion (MoR), converted recurrence (Retrofitted Recurrence, intake-911). All share one gate: no llama.cpp/GGUF path exists for any of them.
+- **Naive layer sharing loses; every viable design restores capacity another way** — MoEUT via fine-grained MoE experts in the shared layer (C4 PPL wins of 0.13–0.25 at ≥244M, small and from a ~6.5B-token regime), RRT via SVD-initialized layer-wise LoRA (+up to 6.5pp over zero-init). Follow-up work (Mixture-of-LoRAs, 2512.12880) already contests RRT's static-LoRA choice at BERT scale.
+- **Conversion beats from-scratch, but is not cheap**: RRT's pretrained-weight init and intake-911's recurrence curriculum (GSM8K 26.5→51.2 over r=1→32 on converted TinyLlama) both verify, but conversion costs 26–52B uptraining tokens on cluster hardware, and the converted model is *worse* than a non-recurrent post-trained control at r=1 (26.5 vs 45.2) — the test-time knob only buys back quality at ~32× core FLOPs.
+- **Huginn's "50B-parameter equivalent" is FLOPs-unrolling arithmetic** (num_steps × 1.5B + 2B), not parity with any 50B model — absolute MMLU is 31.38 vs OLMo-7B's 60.56. Its four zero-shot inference mechanisms are unevenly evidenced: per-token KL-exit and cyclic KV-cache sharing are quantified (KV budget 4 of 32 steps with **no** MTBench loss), continuous-CoT is weak (~1–2 steps), and self-speculative decoding has **zero published numbers**.
+- **Recurrence depth is not a CoT substitute at 3.5B** (intake-910 probe, verified figures): CoT-suppressed GSM8K rises only 3.11→4.93 strict from r=4→32 and plateaus, vs 24.87/38.13 for the same model with explicit CoT. The probe does not refute latent computation wholesale (lens methods only detect token-decodable content — authors concede this) and does not touch the compute-scaling claim.
+- **No throughput number in this family is a serving number**: RRT's 2.66× is an oracle-exit *simulation* with unspecified hardware; MoR's 2.06× is a bespoke H100 depth-wise-batching harness with no prefill workload; MoR also *loses* to vanilla under isoFLOPs at 135M (recursive capacity bottleneck) — its Pareto claim holds at ≥360M only.
+- **Loopie is the credibility cautionary tale of the batch** (dive-overturned): its claimed HF preview weights and vllm/megatron code links were all dead 11 days post-publication; its v1 abstract-level IMO/IPhO gold claims (GPT-5.5 LLM-as-judge self-scoring landing exactly on the 35/35 gold threshold) were silently removed in v2 three days later while newsletters still restate them; its "compute-matched" crossover is wall-clock-matched on the authors' own Megatron stack vs their own 800B-token baseline reproduction, explicitly not FLOP-matched and explicitly not established for inference.
+- **EPYC posture: watch-only, with corroboration banked** — the family independently confirms the TIDE post-mortem (competitive early exit/adaptive depth was only ever demonstrated with training-time loop/exit losses; no paper ran a post-hoc control). Watch triggers recorded in `reasoning-compression.md`: conversion recipe ≤5B tokens or single-GPU scale, a ≥7B instruct-tuned looped checkpoint, or upstream GGUF/llama.cpp looped-model support.
 
 ### New (2026-07-02, cross-model LoRA-transfer cluster; F3 trusted-label authority + trace-publish/self-distill; reasoning-compression SPIRAL + diverse-RL)
 
@@ -138,6 +149,8 @@ The 2026-07-02 cross-model LoRA-transfer / hypernetwork-adapter cluster (intake-
 
 ## Source References
 
+- [Reasoning Compression handoff — 2026-07-28 looped-transformer lineage section](/workspace/handoffs/active/reasoning-compression.md) -- loop-placement taxonomy, dive-verified Huginn/probe/Loopie/retrofit rows, watch triggers; backed by intake-902..912 in `research/intake_index.yaml` (7 Stage-2 dives 2026-07-28, per-entry `dive_corrections` carry the primary-source evidence)
+- [Progress 2026-07-28 — research intake digest](/workspace/progress/2026-07/2026-07-28.md) -- session-level record of the batch outcomes (Loopie overturned, Huginn 50B framing, throughput provenance corrections)
 - [PostTrainBench + ACT deep dive](/workspace/research/deep-dives/agent-training-posttrainbench-act.md) -- Agent-driven post-training results, ACT contrastive training methodology, cross-size transfer validation
 - [Ch.15 SkillBank & Experience Distillation](/mnt/raid0/llm/epyc-orchestrator/docs/chapters/15-skillbank-experience-distillation.md) -- Production SkillBank architecture, distillation pipeline, recursive evolution, ~2,020 LOC implementation
 - [SEAL Concise Reasoning experiment](/mnt/raid0/llm/epyc-inference-research/docs/experiments/seal-concise-reasoning.md) -- Control vector results across MoE/dense/SSM architectures

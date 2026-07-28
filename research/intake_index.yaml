@@ -48673,3 +48673,692 @@
 
     OVERTURNED/CLOSED (D3): intake-693''s recorded remaining gap — "child/sub-LM return schema on batch_llm_query/llm_query (combined_ops.py:302, no schema=)" — is CLOSED in our tree. src/repl_environment/combined_ops.py:338 now takes schema: dict | None, renders a preamble (:33-41), validates via _validate_final_answer (:397) and RETRIES rather than restarts (:402-412, max_retries capped to 2 at :353), and emits schema/schema_validation telemetry (:435, :466). intake-693''s note is stale and should not be re-derived as an open task. NEW from D3: fast-rlm ships ENABLE_STRUCTURED_IO as a built-in ABLATION flag (src/subagents.ts:177-179) that disables schema validation and the schema preamble — a ready-made A/B instrument, and the pattern we lack. Also src/subagents.ts:235 enforces max_depth by THROWING "MAXIMUM DEPTH REACHED" at the child, not by degrading gracefully.'
   notes: 'User-provided 2026-07-27 (pasted X post by @neural_avb showing a Sherlock Holmes novel answered across multiple queries via persistent REPL variables, with a terminal TUI showing query timelines, code steps, and a memory view of saved variables). Operator steering this session: (1) "I know we''ve looked at this github many times already but it keeps getting updated with cool features"; (2) "the RLM project is at a more mature stage than ours showing significant capability at handling real workloads"; (3) "what can we learn from it to get our own architecture into a more mature state?" — steering (1) is PARTIALLY OVERTURNED by the API evidence above (no commits since 2026-07-07); steering (2) and (3) reframe this intake as a capability-gap comparison rather than a technique import, and are carried to Stage 3. DEDUP TRIPWIRE: do NOT open a new intake for this repo until GitHub /repos reports pushed_at later than 2026-07-07T22:36:54Z (HEAD f25f310b); three entries (693, 783, 901) already share this exact URL. Verified-at-Stage-1 sources: GitHub API /repos and /commits (2026-07-27), README.md, docs/guide/sessions.md, docs/development/benchmarks.md, git tree at f25f310b. NOT yet read: fast_rlm/_session.py, src/session.ts, tests/session_state_test.ts, benchmarks/_harness.py — a dive would read these.'
+- id: intake-902
+  arxiv_id: '1807.03819'
+  url: https://arxiv.org/abs/1807.03819
+  source_type: paper
+  title: Universal Transformers
+  authors:
+  - Mostafa Dehghani
+  - Stephan Gouws
+  - Oriol Vinyals
+  - Jakob Uszkoreit
+  - Lukasz Kaiser
+  categories:
+  - agent_architecture
+  - cost_aware_routing
+  novelty: low
+  relevance: low
+  credibility_score: 4
+  discovered_via: input
+  ingested_date: '2026-07-28'
+  verdict: superseded
+  verification: stage1-unverified
+  key_claims:
+  - Replaces the Transformer's stack of depth-unique layers with a single recurrently applied block (weights shared across positions and time-steps), so depth becomes iterative refinement of per-symbol representations.
+  - Adds Adaptive Computation Time (ACT) dynamic halting to modulate computation steps per input symbol — variable effective depth at runtime.
+  - Claims Turing-completeness under certain assumptions, addressing the vanilla Transformer's failure to length-generalize on algorithmic tasks.
+  - Recurrent depth improves both small-data reasoning (bAbI, algorithmic tasks) and large-scale MT (beats Transformer base on WMT14 En-De).
+  techniques:
+  - Depth recurrence with cross-step weight tying (shared transition function)
+  - Adaptive Computation Time (ACT) per-symbol dynamic halting
+  - Depthwise separable convolution or position-wise FFN transition function
+  - Timestep (recurrence-index) embeddings
+  reported_results:
+  - 'WMT14 En-De: UT base 28.9 BLEU vs Transformer base 28.0 BLEU.'
+  - 'bAbI 10K joint: UT 0.47% avg error; UT+ACT 0.29% (0/20 failed tasks).'
+  - 'LAMBADA: perplexity 142, accuracy 0.19.'
+  - 'Algorithmic length generalization (train 40 / test 400): copy 0.91 char-acc, reverse 0.96, addition 0.34.'
+  referenced_arxiv_ids:
+  - '1603.08983'
+  - '1511.08228'
+  - '1410.5401'
+  - '1706.03762'
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-420
+    - intake-457
+    - intake-555
+    - intake-582
+    - intake-636
+  contradicting_evidence: null
+  novelty_justification: 'Foundational 2018 origin of the recurrent-depth/looped-transformer lineage, but its mechanisms (depth recurrence, cross-step weight tying, ACT halting) are already described inside existing entries — intake-420 (OpenMythos cites 1807.03819), intake-457 (Hyperloop Transformers names UT), intake-582 (GRAM cites it). Adding it contributes lineage grounding and original numbers, not new technique surface.'
+  relevance_justification: 'EPYC does not train models; looped architectures need inference support llama.cpp lacks (per the Ouro/intake-332 scope gate), and prior index analysis holds that shared-weight looping cuts parameter footprint, not per-token DRAM traffic — the actual BW-bound decode bottleneck. Value is as the historical anchor of the 7-paper batch.'
+  verdict_justification: 'superseded — in-domain but outcompeted by its own descendants now in the index: MoEUT (intake-903, shared-layer MoE), Relaxed Recursive Transformers (intake-904, LoRA relaxation), Huginn (intake-905), Mixture-of-Recursions (intake-906, the modern form of ACT via token-level depth routing). Correct index role is lineage root node; route evaluation effort to successors.'
+  notes: 'Batch 2026-07-28 (recurrent-depth lineage, 7 papers + operator overview doc). ICLR 2019. Stage-1 fetch: ar5iv full text (redirect to ar5iv.labs.arxiv.org), all figures from fetched text. Credibility 4: peer-reviewed +2, >24mo -1, major lab +1, corroboration +2 capped (descendant lineage reproduces core mechanisms). Sub-agent grep note: apparent handoff matches were all the English word "act" or SSM-sense "recurrent"; no genuine prior handoff coverage of UT itself.'
+- id: intake-903
+  arxiv_id: '2405.16039'
+  url: https://arxiv.org/abs/2405.16039
+  source_type: paper
+  title: 'MoEUT: Mixture-of-Experts Universal Transformers'
+  authors:
+  - Róbert Csordás
+  - Kazuki Irie
+  - Jürgen Schmidhuber
+  - Christopher Potts
+  - Christopher D. Manning
+  categories:
+  - moe_optimization
+  novelty: medium
+  relevance: medium
+  credibility_score: 4
+  discovered_via: input
+  ingested_date: '2026-07-28'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - Naive layer sharing in Universal Transformers suffers a fundamental parameter-compute ratio problem — sharing drastically cuts parameters at fixed compute.
+  - MoEUT makes the shared layer a mixture-of-experts (sigma-MoE feedforward + SwitchHead MoE attention) and claims to be the first shared-layer design to slightly outperform standard Transformers on language modeling at less compute and memory.
+  - Two UT-specific innovations claimed crucial — layer grouping (stacking small groups of shared MoE layers, G=2 optimal) and a peri-layernorm scheme between pre- and post-layernorm.
+  - Ablations attribute part of the win to the recurrent/shared structure itself, not just MoE capacity.
+  techniques:
+  - MoEUT (shared-layer MoE Universal Transformer)
+  - sigma-MoE fine-grained feedforward experts
+  - SwitchHead MoE self-attention
+  - Layer grouping (G=2)
+  - Peri-layernorm
+  reported_results:
+  - 'C4 perplexity MoEUT vs dense baseline: 44M 18.30 vs 18.97; 126M 14.76 vs 14.97; 244M 13.24 vs 13.40; 728M 11.34 vs 11.59; 1040M 10.90 vs 11.15.'
+  - 'Downstream (LAMBADA, BLiMP, CBT, HellaSwag, PIQA, ARC-E) marginally better or comparable; claimed clear win in per-MAC efficiency.'
+  - 'Layer grouping ablation: G=2 optimal, G=1 (fully shared) worse. Trained C4/SlimPajama/peS2o/The Stack, ctx 1024, 1e5 steps.'
+  referenced_arxiv_ids:
+  - '1807.03819'
+  - '2001.08361'
+  - '1701.06538'
+  - '2101.03961'
+  - '2310.10837'
+  - '2312.07987'
+  - '2310.07096'
+  - '1909.11942'
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters:
+    - 02-moe-optimization.md
+    - 05-deprecated-approaches.md
+    experiments: []
+    handoffs: []
+    intake_entries:
+    - intake-636
+    - intake-555
+    - intake-582
+  contradicting_evidence:
+  - 'Follow-up literature (surfaced in bounded Tier-2b search, provisional): looped designs including MoEUT are noted as leaving multi-loop inference latency overhead "largely unaddressed" — the shared-layer win is a training/parameter-efficiency result, not a serving result.'
+  novelty_justification: 'Chapters have no coverage of shared-layer / universal-transformer architectures (the "recurrent" hits in 02-moe-optimization.md and 05-deprecated-approaches.md are SSM recurrent-state — a different concept). MoEUT adds the missing MoE-branch ancestor of the lineage: how layer sharing was made parameter-competitive.'
+  relevance_justification: 'In-domain for a project serving MoE models on CPU — parameter sharing cuts weight memory, and CPU decode is BW-bound. But this is a training-time architecture at <=1B scale with no public large checkpoints; nothing actionable on the frozen v8 stack today. Value is lineage context for Loopie (intake-908), which explicitly extends the loop+MoE combination.'
+  verdict_justification: 'worth_investigating as lineage node: it established that shared-layer transformers become compute-AND-parameter competitive when the shared layer is MoE. Not superseded on Stage-1 evidence — successors extend rather than demonstrably outcompete it; if the Loopie dive shows the loop+MoE branch converged there, this entry likely flips to superseded.'
+  dive_corrections: '2026-07-28 Stage-2 dive (primary full-text read). All five Stage-1 claims CONFIRMED against source (Table 1 values exact; Sec 2.1/2.2 sigma-MoE+SwitchHead; Fig 6 G=2; Fig 4a shared-layer ablation; Fig 4b per-MAC win). Refinements: (a) Table 1 also has a 319M row (12.65 vs 12.81) omitted at Stage 1; (b) peri-layernorm advantage DIMINISHES at larger model sizes, weakening "crucial" at the 1B end; (c) downstream average at 244M is 55.5 vs 55.6 — baseline a hair HIGHER, so "comparable", not "better"; (d) training runs are tiny (~6.5B tokens: 1e5 steps x bs64 x ctx1024) — all claims are small-data-regime observations. No pretrained checkpoints released at any scale (code only: github.com/robertcsordas/moeut, MIT). Adversarial pass (bounded): no independent replication or contestation found — only restatements; headline wins are small (0.13-0.25 PPL at >=244M) and rest mainly on the per-MAC framing. Supersession by Loopie (intake-908) is PARTIAL pending that dive: Loopie Sec 5.4 cites MoEUT as prior work and extends loop+MoE to 20B with open weights, but does not benchmark against it. Dive recommends relevance drift toward low-medium (lineage context only).'
+  notes: 'Batch 2026-07-28. NeurIPS 2024. Stage-1 fetch: ar5iv full text; C4 perplexity table and ablations from fetched text. CAVEAT: referenced_arxiv_ids were mapped from named works (fetched page showed author/bracket cites), not extracted verbatim. Credibility 4: peer-reviewed +2, >24mo -1, major labs +1, corroboration +2 capped.'
+- id: intake-904
+  arxiv_id: '2410.20672'
+  url: https://arxiv.org/abs/2410.20672
+  source_type: paper
+  title: 'Relaxed Recursive Transformers: Effective Parameter Sharing with Layer-wise LoRA'
+  authors:
+  - Sangmin Bae
+  - Adam Fisch
+  - Hrayr Harutyunyan
+  - Ziwei Ji
+  - Seungyeon Kim
+  - Tal Schuster
+  categories:
+  - training_distillation
+  - inference_serving
+  - speculative_decoding
+  novelty: medium
+  relevance: medium
+  credibility_score: 4
+  discovered_via: input
+  ingested_date: '2026-07-28'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - Layer tying in modern pretrained LLMs can halve parameter count with minimal loss IF the shared block is initialized from pretrained weights (Stepwise / Average / Lower init) rather than trained from scratch.
+  - Relaxed variant adds layer-specific LoRA modules on the tied block; truncated-SVD of the residual between original and tied weights initializes the LoRA and substantially beats zero init.
+  - Recursive Gemma 1B (half of Gemma 2B) uptrained on 60B tokens with KD claims near-parity with full Gemma 2B trained on 3T tokens.
+  - Continuous depth-wise batching — scheduling different loop iterations of the shared block for different samples in one batch, combined with early exit — claims 2-3x theoretical serving throughput.
+  - Early-exit training with aggressive loss-coefficient schedule keeps first-loop output within 4.6pp of final-output accuracy.
+  techniques:
+  - Recursive Transformer (CYCLE layer tying)
+  - Pretrained-weight initialization of the tied block (Stepwise / Average / Lower)
+  - Layer-wise LoRA relaxation with truncated-SVD initialization
+  - Continuous depth-wise batching
+  - Early-exit training with intermediate-loss coefficient decay
+  - Knowledge-distillation uptraining
+  reported_results:
+  - 'Recursive Gemma 1B (Stepwise init, 15B-token uptrain): 51.7% few-shot avg vs 38.2% same-size from-scratch baseline (+13.5pp).'
+  - '60B-token uptrain + KD: 58.4% vs full Gemma 2B comparison point 58.6% (baselines: TinyLlama 1.1B 43.3%, Pythia 1B 48.8%).'
+  - 'LoRA rank sweep: rank 64 ~54.0%, rank 256 ~55.2%, rank 512 ~56.2% ("on par with original Gemma").'
+  - 'Throughput (theoretical, depth-wise batching + early exit): vanilla Gemma 1080 tok/s -> recursive 2877 tok/s (x2.66); relaxed rank-512 1719 tok/s (x1.59).'
+  referenced_arxiv_ids:
+  - '1807.03819'
+  - '1909.11942'
+  - '2106.09685'
+  - '2207.07061'
+  - '2310.05424'
+  - '2309.06180'
+  handoffs_created: []
+  handoffs_updated:
+  - reasoning-compression.md
+  cross_references:
+    chapters:
+    - 05-deprecated-approaches.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - llama-cpp-kernel-push-rebase.md
+    - qwen36-benchmark-fixes.md
+    - autopilot-continuous-optimization.md
+    experiments:
+    - self-speculation-benchmark.md
+    intake_entries:
+    - intake-636
+    - intake-555
+    - intake-582
+  contradicting_evidence:
+  - 'Follow-up work (bounded Tier-2b search, provisional): RRT''s static LoRA modules "partially restore depth-specific behaviour but lack token-dependent routing"; Mixture-of-LoRAs work (2512.12880 lineage) positions itself as fixing this expressivity gap.'
+  novelty_justification: 'The adjacent trained-early-exit family (LayerSkip) is covered in chapters 05/10 and this paper is referenced by intake-636, but layer tying with pretrained-weight init, SVD-initialized LoRA relaxation, and continuous depth-wise batching are not cataloged anywhere. Lineage anchor between UT/MoEUT and Huginn/MoR.'
+  relevance_justification: 'Directly in-domain for the project''s early-exit / self-speculation history: EPYC''s post-hoc TIDE early exit was deprecated as a dead end (llama-cpp-kernel-push-rebase.md: post-hoc exit <10% speedup, adapters produce garbage), and this paper is exactly the trained-recursion counterpoint explaining why. Not immediately actionable: gains require 15-60B-token uptraining + KD; no recursive-depth checkpoint is in the production lineup.'
+  verdict_justification: 'worth_investigating: (1) architectural anchor for the batch''s later papers; (2) continuous depth-wise batching is a serving-side scheduling idea that would matter for llama.cpp if a recursive-depth open model ever enters the candidate pool; (3) usefully corroborates the TIDE post-mortem — early exit needs training-time support. Not superseded within the batch on the parameter-sharing axis.'
+  dive_corrections: '2026-07-28 Stage-2 dive (primary full-text read). Core claims CONFIRMED: three init strategies (Sec 2.2, Stepwise best); SVD-init LoRA beats zero init by up to 6.5pp (Fig 6c); 51.7% vs 38.2% and 58.4% vs 58.6% (Fig 5c, Fig 7c); -4.6pp first-loop exit gap (Table 3, via 0.1/1.0 loss coefficients + self-distillation). CORRECTIONS: (a) the 2.66x/1.59x throughput numbers are VERIFIED AS ORACLE-EXIT SIMULATION — paper states "hypothetical throughput improvements based on an oracle-exiting approach"; hardware never identified; KV-cache handling for exited tokens deferred to future work. Never quotable as serving numbers — observation-grade at best under MEASUREMENT.md. (b) Per-rank sweep decimals (54.0/55.2/56.2) are figure-derived and could not be verified digit-for-digit — treat as approximate; trend and rank-512 parity confirmed. (c) "Minimal loss" requires 15-60B tokens of uptraining co-required with pretrained init — init alone is not lossless. (d) TIDE cross-link DOWNGRADED to partial corroboration: the paper runs NO post-hoc/untrained early-exit control arm, so it is consistent-with, not proof-of, "post-hoc adapters fail" — cite as trained-recursion counterpoint only. (e) Venue: ICLR 2025 accepted (credibility 3 -> 4 defensible). No official code/checkpoints; third-party replication github.com/avramdj/rrt-lora. Adversarial: Mixture-of-LoRAs / ModernALBERT (2512.12880) directly beats layer-wise LoRA at BERT scale (GLUE 81.94 vs 80.95) — refines, does not overturn, the decoder results; recorded as a note, NOT a new intake entry (per index-modification policy).'
+  notes: 'Batch 2026-07-28. Google DeepMind/Research + KAIST. Stage-1 fetch: ar5iv full text with equations and throughput table. CAVEATS: referenced_arxiv_ids mapped from named works, not verbatim; peer-review venue not stated in fetched copy; throughput numbers are the paper''s own "theoretical" figures. Credibility 3: venue unconfirmed +0, ~21mo +0, major lab +1, corroboration +2 capped (MoR extends it; intake-636 cites it).'
+- id: intake-905
+  arxiv_id: '2502.05171'
+  url: https://arxiv.org/abs/2502.05171
+  source_type: paper
+  title: 'Scaling up Test-Time Compute with Latent Reasoning: A Recurrent Depth Approach (Huginn)'
+  authors:
+  - Jonas Geiping
+  - Sean McLeish
+  - Neel Jain
+  - John Kirchenbauer
+  - Siddharth Singh
+  - Brian R. Bartoldson
+  - Bhavya Kailkhura
+  - Abhinav Bhatele
+  - Tom Goldstein
+  categories:
+  - local_inference
+  - kv_cache
+  - speculative_decoding
+  - inference_serving
+  novelty: medium
+  relevance: high
+  credibility_score: 4
+  discovered_via: input
+  ingested_date: '2026-07-28'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - Scales test-time computation by iterating a recurrent depth block in latent space — no specialized CoT training data, no long context windows.
+  - Claims latent recurrent reasoning captures "types of reasoning that are not easily represented in words"; reasoning benchmark performance improves up to a compute load equivalent to 50B parameters from a 3.5B model.
+  - Recurrent-depth models claimed to "naturally support" zero-shot per-token adaptive compute, self-speculative decoding, and KV-cache sharing without retraining.
+  - Training with randomly sampled iteration counts (log-normal Poisson) + truncated backprop (last k=8 iterations) yields path independence across random state initializations.
+  techniques:
+  - Prelude / core recurrent block / coda architecture, shape (2, 4, 2), unrolling to 132 effective layers at mean recurrence r=32
+  - Random-state init + adapter concatenating latent state with input embeddings
+  - Log-normal Poisson sampling of recurrence count; truncated backprop through last k=8 iterations
+  - Sandwich normalization
+  - KL-divergence-between-successive-steps per-token exit criterion (threshold 5e-4)
+  - Zero-shot KV-cache sharing via cyclic cache overwriting
+  - Continuous chain-of-thought (warm-start next token from previous token's final latent state)
+  - Self-speculative decoding (draft with few iterations, verify with more)
+  reported_results:
+  - '3.5B params (1.5B prelude/coda, 1.5B core, 0.5B embeddings), trained 800B tokens.'
+  - 'At r=32: GSM8K CoT 24.87/38.13 (flexible/strict), ARC-E 69.91, ARC-C 38.23, HellaSwag 65.21, MMLU 31.38, HumanEval 23.17, MBPP 24.80.'
+  - 'Test-time scaling is task-dependent: HellaSwag near-saturates by ~8 recurrences; GSM8K keeps improving to 32+.'
+  - '180B-token matched comparison: recurrent r=32 GSM8K CoT 9.02/10.24 vs fixed-depth baseline 1.82/2.20.'
+  - 'Released checkpoint Huginn-0125 (huggingface.co/tomg-group-umd/huginn-0125); code at github.com/seal-rg/recurrent-pretraining.'
+  referenced_arxiv_ids:
+  - '1807.03819'
+  - '1909.01377'
+  - '2412.06769'
+  - '2410.08292'
+  - '2310.08866'
+  - '2007.03629'
+  - '2410.05864'
+  handoffs_created: []
+  handoffs_updated:
+  - reasoning-compression.md
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    experiments: []
+    intake_entries:
+    - intake-555
+    - intake-636
+    - intake-332
+  contradicting_evidence:
+  - 'DIVE-NARROWED 2026-07-28 (intake-910 primary read): workshop probe finds no token-DECODABLE intermediate-result trajectories across Huginn recurrence (logit/coda lens, arithmetic, n=100/67) and shows recurrence depth is NOT a substitute for explicit CoT — CoT-suppressed GSM8K 3.11 -> 4.93 strict (8-shot, r=4->32, plateau after) vs 24.87/38.13 for the SAME model with explicit CoT at r=64; one-digit composite arithmetic 0.19 CoT-suppressed. Probe authors explicitly do not rule out subtler/distributed latent computation; the probe does NOT touch the compute-scaling claim (measured WITH standard prompting) nor non-math benchmarks. Fair reading: challenges the latent-CoT-replaces-explicit-CoT framing, not the latent-computation or test-time-scaling claims wholesale.'
+  - 'Secondary commentary (bounded search, provisional): single chain-like propagation deemed inadequate for tasks demanding exploration/adaptivity; opacity of latent steps flagged as standing limitation.'
+  novelty_justification: 'Foundational paper of the recurrent-depth lineage, but the index already treats it as known context — intake-636 names Geiping''s "foundational RDT/Huginn (2502.05171)" and intake-555 references it. Ingestion closes a dangling-reference gap and adds mechanism detail not yet indexed (per-token KL exit, cyclic KV-cache sharing, self-speculative decoding, continuous CoT warm-start, released 3.5B checkpoint).'
+  relevance_justification: 'high. Directly matches the active latent-reasoning/test-time-compute thread in handoffs/active/reasoning-compression.md (CoLaR, Ouro, HRM/GRAM lineage). Its zero-shot inference-time properties — per-token adaptive compute, KV-cache budget sharing, self-speculative decoding — map onto EPYC''s core optimization axes. A 3.5B open checkpoint is locally runnable in principle; architecture is not llama.cpp-supported (per project policy, that is a flag for review, not grounds for dismissal).'
+  verdict_justification: 'worth_investigating: only referenced as context by two entries, never ingested; its own inference-time contributions are untracked; Huginn-0125 remains the canonical open recurrent-depth checkpoint. The contradicting probe evidence (intake-910) makes the latent-reasoning framing itself a contested claim a dive should adjudicate.'
+  dive_corrections: '2026-07-28 Stage-2 dive (primary full-text read + HF/GitHub artifact verification). Benchmark rows CONFIRMED exactly (Tables 1/2/3: GSM8K 24.87/38.13, ARC-E 69.91, ARC-C 38.23, HellaSwag 65.21, MMLU 31.38, HumanEval 23.17, MBPP 24.80); architecture (2,4,2)/132-effective-layers and 180B-token matched-twin result (9.02/10.24 vs 1.82/2.20) CONFIRMED. THREE CORRECTIONS: (1) The headline "50B-parameter equivalent" is ARITHMETIC FLOPs-unrolling (materialized params = num_steps x 1.5B + 2B; r=32 -> 50B), NOT parity with any 50B model — absolute scores trail OLMo-7B badly (MMLU 31.38 vs 60.56). What is measured is that gains continue as r rises toward 32+. (2) The four zero-shot mechanisms are UNEVENLY evidenced: KL-exit adaptive compute QUANTIFIED (MTBench 5.63 vs 5.56, per-domain exit distributions); cyclic KV-sharing QUANTIFIED (cache budget 4 of 32 steps scores 5.86 MTBench, no loss); self-speculative decoding MECHANISM ONLY — zero published numbers (do NOT cite for spec-dec plans, per measure-alpha-first policy); continuous-CoT warm-start weakly quantified (1-2 fewer convergence steps). Stage 1 listed all four as if equally supported. (3) Venue upgrade: NeurIPS 2025 SPOTLIGHT (OpenReview S3GhJooWIC) — not a bare preprint. Also: body says 795B tokens (abstract rounds to 800B); matched-twin is params/data/tokens-matched, NOT training-FLOPs-matched (recurrence spends ~r x more core FLOPs/token); paper itself concedes first-generation instrument (LR never cooled, untested mixture) and its orbit/slider interpretability claims are self-described as qualitative — pre-conceding part of the intake-910 probe surface. Artifacts verified live: HF huginn-0125 Apache-2.0 safetensors (7.6k downloads/mo, no GGUF); seal-rg/recurrent-pretraining (903 stars, trained on 4096 MI250X — ROCm-native, minor practical plus for our MI210). No independent replication beyond the intake-910 probe; third-party coverage is restatement.'
+  notes: 'Batch 2026-07-28. UMD/ELLIS/LLNL. Stage-1 fetch: ar5iv full text. Peer-review venue not found in fetched content. Credibility 4: venue +0, ~17mo +0, major-lab pedigree +1, corroboration +2 capped (follow-on sampler paper 2510.14961/intake-636 builds on it; LatentMAS cites it), +1 full code/checkpoint/data release enabling verification. One referenced ID (2310.03819) flagged by the sub-agent as a possible extraction artifact and omitted here.'
+- id: intake-906
+  arxiv_id: '2507.10524'
+  url: https://arxiv.org/abs/2507.10524
+  source_type: paper
+  title: 'Mixture-of-Recursions: Learning Dynamic Recursive Depths for Adaptive Token-Level Computation'
+  authors:
+  - Sangmin Bae
+  - Yujin Kim
+  - Reza Bayat
+  - Sungnyun Kim
+  - Jiyoun Ha
+  - Tal Schuster
+  - Adam Fisch
+  - Hrayr Harutyunyan
+  - Ziwei Ji
+  - Aaron Courville
+  - Se-Young Yun
+  categories:
+  - routing_intelligence
+  - kv_cache
+  - inference_serving
+  - training_distillation
+  novelty: medium
+  relevance: low
+  credibility_score: 4
+  discovered_via: input
+  ingested_date: '2026-07-28'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - Unifies parameter sharing, token-level adaptive recursion depth, and memory-efficient KV caching inside a single Recursive Transformer framework.
+  - Lightweight routers assign per-token recursion depths — hard tokens get more depth than easy ones (expert-choice hierarchical filtering, or token-choice up-front commitment).
+  - Under equal training compute, claims to outperform vanilla baselines with fewer parameters (43.1% vs 42.3% avg few-shot with nearly 50% fewer parameters).
+  - Recursion-wise KV caching / recursive KV sharing cut KV memory and IO; with continuous depth-wise batching claims up to 2.06x inference throughput vs vanilla.
+  techniques:
+  - Expert-choice routing per recursion depth with hierarchical filtering
+  - Token-choice routing (single up-front top-1 depth commitment)
+  - Recursion-wise KV caching; recursive KV sharing (first-step cache reused across recursions)
+  - Parameter-sharing schemes Cycle / Sequence / Middle-Cycle / Middle-Sequence (Middle-Cycle best)
+  - Continuous depth-wise batching
+  - Auxiliary router loss
+  reported_results:
+  - 'Scales 135M / 360M / 730M / 1.7B; isoFLOPs 2e18 / 5e18 / 16.5e18; up to 31B training tokens.'
+  - 'Validation NLL: MoR (118M, Nr=3) 2.7925 vs vanilla (315M) 2.7824 — near-parity at ~1/3 params.'
+  - 'Few-shot: MoR (167M, Nr=2) 43.1% vs vanilla 42.3%. Fixed-token 20B setting: lower loss with 25% fewer FLOPs.'
+  - 'Up to 2.06x throughput (MoR-4, max batch, depth-wise batching); 19% training-time reduction; 25% lower peak memory.'
+  - 'Code: github.com/raymin0223/mixture_of_recursions.'
+  referenced_arxiv_ids:
+  - '2410.20672'
+  - '1807.03819'
+  - '2502.05171'
+  - '2405.16039'
+  - '2404.02258'
+  handoffs_created: []
+  handoffs_updated:
+  - reasoning-compression.md
+  cross_references:
+    chapters:
+    - 05-deprecated-approaches.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - llama-cpp-kernel-push-rebase.md
+    - autopilot-continuous-optimization.md
+    experiments:
+    - self-speculation-benchmark.md
+    intake_entries:
+    - intake-555
+    - intake-582
+    - intake-636
+    - intake-904
+  contradicting_evidence:
+  - 'No substantive contradiction surfaced in a bounded Tier-2b search (provisional). Paper''s own framing concedes naive recursion gains are limited relative to added recursive computation; the routing mechanism is the load-bearing addition. Follow-on Soft-MoR work exists in vision (2607.00774).'
+  novelty_justification: 'The recurrent-depth lineage is partially represented (intake-582 GRAM, intake-636 samplers, intake-555 LatentMAS), but no entry covers token-level routed recursion depth or recursion-wise KV caching / depth-wise batching — the specific mechanisms MoR introduces. Pivotal mid-lineage paper the batch''s 2026 entries build on.'
+  relevance_justification: 'low. Train-from-scratch architecture at 135M-1.7B research scale; nothing deployable on the frozen v8 kernel. MoR corroborates the project''s own TIDE deprecation (adaptive depth must be trained in, not bolted on). Serving-side patterns (recursion-wise KV cache, depth-wise batching) become relevant only if MoR-style open checkpoints appear.'
+  verdict_justification: 'worth_investigating: keystone paper of the lineage this batch catalogs; its KV/batching serving techniques matter immediately if recursive-depth checkpoints are released; independently validates the TIDE deprecation decision. not_applicable would discard the lineage''s central node; superseded does not apply — the 2026 successors extend rather than outcompete it.'
+  dive_corrections: '2026-07-28 Stage-2 dive (primary full-text read, NeurIPS v3, repo + venue verification). CONFIRMED: routing mechanisms (Sec 2.2.1 expert-choice beta-percentile + hierarchical filtering; token-choice argmax), Table 2-Right KV factors (recursion-wise: memory AND IO (Nr+1)/2Nr; recursive sharing: memory 1/Nr but IO 1 — NO IO reduction, decode bottleneck remains), 167M Nr=2 43.1% vs 42.3% headline, Middle-Cycle best (Tables 10/11), NeurIPS 2025 poster 118085. FIVE CORRECTIONS: (1) Stage 1 OMITTED the self-disclosed negative result — at 135M under isoFLOPs MoR LOSES to vanilla (NLL 2.9490 vs 2.8432, avg 38.11 vs 42.15; "recursive capacity bottleneck"); the Pareto claim holds at >=360M only. (2) The 118M Nr=3 NLL comparison direction was wrong-framed: MoR 2.7925 is slightly WORSE than vanilla 2.7824 — parameter-parity result, not a win. (3) 2.06x throughput provenance pinned: MEASURED but on a bespoke queue-based depth-wise-batching harness (H100, FA2 + torch.compile, no-prefill workload, ~256-token generations, 360M models, max batch derived from H100 VRAM 32->51; vanilla does get sequence-wise continuous batching). Not a vLLM/serving-stack number — never quote as such. (4) "Auxiliary router loss" conflated two distinct mechanisms: expert-choice auxiliary loss (causality fix) vs token-choice balancing loss; token-choice is NOT competitive (NLL 2.9163 / avg 40.0 vs expert-choice 2.7925 / 42.6). (5) "Up to 31B tokens" understates appendix isoFLOPs runs to 76.2B. Checkpoints: Google Drive only, 360M only — no HF uploads. OpenReview reviews unretrievable (Cloudflare 403); no independent replications found (bounded); press coverage uncritical restatement. Smoke-test declined: no decision the result could gate.'
+  notes: 'Batch 2026-07-28. KAIST + Google DeepMind/Research + Mila. NeurIPS 2025 (confirmed via neurips.cc poster page + repo README in a one-query WebSearch). Stage-1 fetch: arxiv.org/html full text (ar5iv had no rendered copy). Referenced IDs beyond 2410.20672 mapped from cited names, not verbatim. Credibility 4: peer-reviewed +2, ~12.5mo +0, major labs +1, corroboration +1.'
+- id: intake-907
+  arxiv_id: '2607.13491'
+  url: https://arxiv.org/abs/2607.13491
+  source_type: paper
+  title: 'DeepLoop: Depth Scaling for Looped Transformers'
+  authors:
+  - Shuzhen Li
+  - Yifan Zhang
+  - Jiacheng Guo
+  - Quanquan Gu
+  - Mengdi Wang
+  categories:
+  - training_distillation
+  novelty: medium
+  relevance: low
+  credibility_score: 2
+  discovered_via: input
+  ingested_date: '2026-07-28'
+  verdict: worth_investigating
+  verification: stage1-unverified
+  key_claims:
+  - Weight sharing in looped transformers breaks untied-depth residual-scaling assumptions — DeepNorm-style analysis no longer applies because updates aggregate across visits and are read back through the same revisited blocks.
+  - A first-order perturbation bound with a visit-alignment coefficient kappa_R governs stability; decorrelated visits recover DeepNorm p=1/4, aligned visits at fixed physical depth require exponent p=1/2.
+  - DeepLoop is a one-line correction — keep DeepNorm Post-LN but set alpha=(2N)^(1/2), beta=(8N)^(-1/2).
+  - Neutral when no block is revisited (R=1); improves validation loss and downstream accuracy once recurrent depth is active (GPT-2 Small/Medium, R=3/5/7).
+  - Claims Hierarchical Reasoning Models bind the threshold at p=1/2, unifying looped LMs and hierarchical reasoners under one parameterization.
+  techniques:
+  - DeepLoop residual parameterization (loop-corrected DeepNorm exponents p=1/4 -> 1/2)
+  - Visit-alignment coefficient kappa_R
+  - First-order perturbation bound for tied depth
+  - Asymmetric per-module (alpha, beta) for two-module hierarchies with one-step gradient truncation
+  reported_results:
+  - 'GPT-2 Small, FineWeb-Edu 50BT, 100K steps: val loss delta vs looped baseline at R=3/5/7 = -0.0160/-0.0231/-0.0186; R=1 neutral (+0.0004).'
+  - 'GPT-2 Medium: deltas at R=3/5/7 = -0.0153/-0.0196/-0.0278; R=1 +0.0011.'
+  - 'GPT-2 Medium 8-task lm-eval 1-shot avg: R=7 55.20% vs 54.62% baseline; R=5 slightly below baseline (54.19% vs 54.42%).'
+  - 'HRM on ARC-AGI: p=1/2 beats vanilla at all K, +4.00pp (K=1) shrinking to +0.75pp (K=1000).'
+  - 'Exponent sweep (R=3): p in {0.30,0.35,0.40} never escapes the unigram floor (~7.67 nats); p>=0.50 reliable; best mean at p=0.45.'
+  referenced_arxiv_ids:
+  - '1807.03819'
+  - '1909.11942'
+  - '2502.05171'
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    experiments: []
+    intake_entries:
+    - intake-332
+    - intake-341
+    - intake-636
+    - intake-547
+    - intake-134
+  contradicting_evidence: null
+  novelty_justification: 'The looped/recurrent-depth lineage is well represented (intake-332 Ouro, intake-341 RLTT, intake-636 samplers, intake-547), but no existing entry covers training-time residual parameterization / initialization theory for tied depth. The mechanism (DeepNorm exponent correction driven by a visit-alignment bound) is new to the index; the theme is not.'
+  relevance_justification: 'Pretraining parameterization fix — EPYC serves frozen GGUF checkpoints on a frozen v8 kernel and does not pretrain. Value is lineage context: if looped models like Ouro land in the local stack, DeepLoop explains a training-side quality lever, not an inference-side one. Per project policy, flagged for review rather than dismissed.'
+  verdict_justification: 'worth_investigating (lightweight): confirmed a genuine looped-transformer paper, mechanistically novel to the index, but training-time only. A dive would mainly verify the HRM/ARC-AGI numbers and record the p=1/2 tied-depth rule as evaluation context for future looped-model onboarding. The identity claimed by the operator overview document (intake-909) — "DeepLoop corrects a DeepNorm scaling assumption for looped models" — was independently CONFIRMED by fetch.'
+  notes: 'Batch 2026-07-28. Princeton (Mengdi Wang) / UCLA (Quanquan Gu). arXiv preprint 2026-07-15. Stage-1 fetch: arxiv.org/html full text (ar5iv redirect chain landed back at arxiv). Code claimed at github.com/lszshu/DeepLoop (unverified). Referenced IDs mapped from author-year cites. Credibility 2: preprint +0, <=12mo +1, established groups +1, no corroboration yet. Tier-2b contradiction search not run for this entry (too new; bounded pass prioritized higher-credibility claims).'
+- id: intake-908
+  arxiv_id: '2607.16051'
+  url: https://arxiv.org/abs/2607.16051
+  source_type: paper
+  title: 'Loop the Loopies! (Loopie-20B-A2B / Loopie-6B-A0.6B looped-MoE models)'
+  authors:
+  - Zitian Gao
+  - Yilong Chen
+  - Yihao Xiao
+  - Xinyu Yang
+  - Ran Tao
+  - Joey Zhou
+  - Bryan Dai
+  categories:
+  - moe_optimization
+  - local_inference
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  credibility_score: 1
+  discovered_via: input
+  ingested_date: '2026-07-28'
+  verdict: worth_investigating
+  verification: dive-overturned
+  key_claims:
+  - Introduces two looped-transformer MoE models — Loopie-20B-A2B (20B total / 2B active, 27 stored layers) and Loopie-6B-A0.6B (6B / 0.6B active, 18 stored layers) — using a LAYER-loop pattern with R=2 (layer 1 -> layer 1 -> layer 2 -> layer 2 ...), vs whole-stack model-loop.
+  - Claims to solve the classic compute-scaling objection to looping — under matched compute, Loopie-20B-A2B initially lags a vanilla Qwen3-30B-A3B baseline but overtakes it after ~600B pre-training tokens and holds the advantage.
+  - R=2 claimed as the sweet spot in the layer-loop scaling ablation.
+  - Novel post-training — "Supervised Pre-training" (SPT, SFT-style objective at ~2T-token scale) followed by large-scale RL with GSPO on math/code, claiming frontier-level reasoning.
+  - Paper explicitly states inference-time computation has NOT been systematically studied (future work); no early-exit/adaptive-depth mechanism reported.
+  techniques:
+  - Layer-loop recurrence (R=2 per-layer repetition)
+  - High-sparsity MoE (10% active params)
+  - Supervised Pre-training (SPT)
+  - GSPO RL post-training
+  - Two-stage pre-training with annealing (2.28T + 1.26T tokens)
+  reported_results:
+  - 'Loopie-20B-A2B vs Nemotron 3 Nano 30B-A3B: MMLU 81.28 vs 80.52; ARC-C 93.52 vs 91.96; BBH 82.28 vs 68.76; AIME 2024 92.09 vs 85.00; MBPP 89.49 vs 90.66 (loses).'
+  - 'Loopie-20B-A2B AIME 2024 92.09 vs Qwen3-30B-A3B-Thinking 90.10.'
+  - 'Loopie-6B-A0.6B vs Ouro-2.6B-Thinking: AIME 2024 80.42 vs 62.50; HumanEval 84.15 vs 95.12 (Ouro wins HumanEval). MMLU pairing inconsistent across two fetch passes — treat as unverified.'
+  - 'Compute-matched crossover vs Qwen3-30B-A3B after ~600B tokens (Figure 3). Training: 3.5T pre-training + ~2T SPT tokens.'
+  - 'Inference cost / latency / KV-cache numbers: not found in fetched content (authors defer to future work).'
+  referenced_arxiv_ids:
+  - '1807.03819'
+  - '2510.25741'
+  - '2502.05171'
+  - '1909.11942'
+  - '2405.16039'
+  - '2507.18071'
+  handoffs_created: []
+  handoffs_updated:
+  - reasoning-compression.md
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    - routing-and-optimization-index.md
+    experiments: []
+    intake_entries:
+    - intake-332
+    - intake-341
+    - intake-636
+    - intake-582
+    - intake-555
+  contradicting_evidence:
+  - 'No independent evaluation found in a bounded Tier-2b search (provisional). An AI-newsletter item restating the IMO/IPhO gold claims is RESTATEMENT, not corroboration. All benchmark numbers are self-reported by an unestablished lab (IQuestLab); weights are "-preview".'
+  novelty_justification: 'The looped lineage is well covered (intake-332 Ouro, intake-341, intake-636, this batch). Genuinely new: (a) loop+MoE at 20B scale with open preview weights, (b) an explicit compute-matched crossover claim directly answering the standard objection to looping, (c) layer-loop (R=2 per-layer) as a third loop placement vs model-loop (Ouro) and token-routed recursion (MoR), (d) the SPT recipe.'
+  relevance_justification: 'medium (watch-only). Same scope gate that holds Ouro at watch-status (no llama.cpp/GGUF path; v8 frozen). Stage-1 premise that the authors ship weights + a vLLM fork was OVERTURNED by the 2026-07-28 dive — see dive_corrections; Loopie remains a direct upgrade candidate for the Ouro watch slot ONLY if artifacts actually appear.'
+  verdict_justification: 'worth_investigating (WATCH-ONLY after dive): in-domain and architecturally genuine, but the Stage-1 smoke-test path is DEAD — the claimed HF preview weights and vllm-loopie/megatron code links return 404/401 as of 2026-07-28 (see dive_corrections). Nothing is runnable; gate all follow-up on artifacts actually appearing. Operator overview (intake-909) identity claim for this ID — "Loopie, layer-wise looping + MoE reinvestment" — remains independently CONFIRMED by fetch (overview''s generic A-A-A-B-B-B pattern is R=2 in the paper).'
+  dive_corrections: '2026-07-28 Stage-2 dive (primary read of BOTH arXiv versions + artifact recon + lab identity). Architecture claims CONFIRMED (Sec 2.1 layer-loop R=2; 27/18 stored layers; Qwen3-MoE backbone, Megatron; Table 3 AIME rows exact). SIX FINDINGS: (1) OVERTURNED — "open preview weights" do NOT exist: HF IQuestLab/Loopie-20B-A2B-preview and -6B-A0.6B-preview return 401 (nonexistent-or-private), org listing (22 models) has no Loopie, HF search 0 hits; code links github.com/IQuestLab/loopie/{megatron,vllm} are malformed subpaths of a 404 repo. All three artifact links dead at publication +11 days. The Stage-1 #1 actionable (CPU smoke test) is DEAD until release. (2) SILENT RETRACTION — v1 (Jul 17) claimed abstract-level IMO 2025 + IPhO 2025 gold (IMO 35 = EXACTLY the gold threshold, scored by GPT-5.5 LLM-as-judge, 64x64 generate-verify-refine TTS pipeline); v2 (Jul 20) removed all 22 IMO/IPhO mentions and replaced the abstract sentence with "frontier-level reasoning performance", no explanation. Newsletters restate the retracted v1 claim. (3) "Compute-matched" = WALL-CLOCK/optimizer-step-time matched on the authors'' Megatron stack, explicitly NOT FLOP-matched (Sec 2.4 verbatim); baseline is the authors'' OWN Qwen3-30B-A3B-like reproduction trained only 800B tokens, never validated against real Qwen3. Per-token inference FLOPs remain ~2x and inference-time compute matching is deferred to future work — so the overview-doc thesis holds at most for pre-training wall-clock on memory-constrained training stacks, NOT for inference (the axis that matters for EPYC). (4) R=2 "sweet spot" carries the paper''s own caveat that Figure 6 is not compute-matched (0.25B-active scale, 250B tokens). (5) MMLU attribution RESOLVED: 82.70 = Ouro-2.6B-Thinking, 78.36 = Loopie-6B-A0.6B; Loopie-6B loses MMLU and HumanEval (84.15 vs 95.12) to Ouro-2.6B while winning AIME24 by ~18pp; and in the paper''s OWN Table 3 Nemotron Cascade 2 30B-A3B beats Loopie on AIME24 (93.33 vs 92.09) and AIME25 (91.25 vs 83.75) — "frontier-level" means top-2, not top-1. (6) NO contamination/decontamination statement anywhere despite 2T tokens of SFT-style SPT + synthetic-reasoning annealing; AIME avg@8 via EvalScope; internal token-count inconsistency (Sec 3 "3T" vs Sec 3.4 2.28T vs Table 3 "3.5T"). Lab identity: IQuestLab = AI research arm of Ubiquant (Beijing quant fund, ~$10B AUM) — real and funded, prior releases incl. IQuest-Coder-V1 (with "40B-Loop" variants) and a hype track record; lead author states he trained/implemented/wrote single-handedly, two authors interns. Adversarial: ZERO independent evidence; all coverage is restatement of (partly retracted) claims. Credibility stays 1. CPU-decode hypothesis recorded (NOT a task): R=2 consecutive reuse of ~37MB Q4 active-expert working set might hit EPYC L3 for 2x effective FLOPs at ~1x weight traffic — contingent on per-iteration router agreement, unobservable without weights.'
+  notes: 'Batch 2026-07-28. IQuestLab (unestablished; external reviewers from CMU/Tsinghua acknowledged — not corroboration). arXiv 2026-07. Stage-1 fetch: arxiv abs + full HTML (v1 and v2 passes); one Table 4 MMLU attribution conflict across passes flagged inline. Referenced IDs mapped from cite keys. Credibility 1: preprint +0, <=12mo +1, lab +0, corroboration +0.'
+- id: intake-909
+  arxiv_id: null
+  url: operator-submitted://looped-transformers-overview-2026-07-28
+  source_type: blog
+  title: 'Looped Transformers: Reusing Model Parameters for Scalable Reasoning Through Recurrent Depth (operator-submitted overview)'
+  authors: []
+  categories:
+  - training_distillation
+  - inference_serving
+  - knowledge_management
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  discovered_via: input
+  ingested_date: '2026-07-28'
+  verdict: worth_investigating
+  verification: stage1-unverified
+  key_claims:
+  - Frames the looped/recurrent-depth lineage as a third scaling path (weight reuse) beside parameter and data/compute scaling; shared weights become "polymorphic" iterative refiners.
+  - Attributes UT's non-adoption to four factors — compute-vs-parameter tradeoff at matched FLOPs, timing against the scale era, encoder-decoder-only evaluation at modest scale, and modest gain magnitude.
+  - Describes the modern design consensus — prelude/core/coda partition, truncated backprop through time, randomly sampled loop count r replacing learned ACT halting, r as a continuous inference-time compute knob.
+  - Positions the batch's papers as successive fixes to the compute bottleneck (MoEUT expert loops; RRT per-step LoRA; MoR token-level depth routing + KV sharing; DeepLoop loop-aware normalization; Loopie layer-wise looping + MoE reinvestment) and concludes the historical compute disadvantage of recurrence "is not fundamental".
+  techniques:
+  - Lineage synthesis (UT -> MoEUT -> RRT -> Huginn -> MoR -> DeepLoop/Loopie)
+  reported_results:
+  - 'None of its own. Figures it repeats (e.g. Huginn 3.5B/800B tokens, ~50B-parameter-equivalent reasoning) belong to the underlying papers and are tracked on their entries (intake-902..908).'
+  referenced_arxiv_ids:
+  - '1807.03819'
+  - '2502.05171'
+  - '2405.16039'
+  - '2507.10524'
+  - '2410.20672'
+  - '2607.13491'
+  - '2607.16051'
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    experiments: []
+    intake_entries:
+    - intake-902
+    - intake-903
+    - intake-904
+    - intake-905
+    - intake-906
+    - intake-907
+    - intake-908
+  contradicting_evidence:
+  - 'Its Huginn framing ("latent-space reasoning ... requiring neither specialized reasoning data nor long context") inherits the contested claim probed by intake-910 (limited evidence of interpretable latent CoT; marginal recurrence gains vs explicit CoT).'
+  - 'Thesis narrowed by the 2026-07-28 intake-908 dive: the sole result supporting "the compute disadvantage of recurrence is not fundamental" is Loopie''s crossover, which is WALL-CLOCK-matched pre-training on the authors'' own Megatron stack vs their own 800B-token Qwen3-30B-A3B reproduction — explicitly not FLOP-matched and explicitly not established for inference. Both 2026-paper identifications (DeepLoop, Loopie) were CONFIRMED, but the open Loopie weights the ecosystem narrative implies do NOT exist as of 2026-07-28 (links dead), and the IMO/IPhO gold claims were silently retracted in v2.'
+  novelty_justification: 'Synthesis of the 7 papers submitted in the same batch; no new results. Its distinctive contribution is the historical why-UT-lost analysis and the claim that the compute disadvantage of recurrence is not fundamental — a thesis, not a finding.'
+  relevance_justification: 'medium as the framing document for the batch: it is the operator''s working mental model of the lineage, so its claims are what Stage-2 dives should confirm or correct. Both of its 2026-paper identifications (DeepLoop, Loopie) were independently CONFIRMED by fetch during this Stage 1.'
+  verdict_justification: 'worth_investigating in the derived sense: the document itself needs no dive, but its central thesis (looping is now competitive on a compute-adjusted basis) rests on Loopie''s self-reported crossover claim (intake-908, credibility 1) and should be adjudicated by the Loopie/Huginn dives rather than accepted from the overview.'
+  notes: 'Operator-pasted mid-turn 2026-07-28 during Stage 1 (steering ledger seq 1). Provenance unstated — reads as a synthesized technical overview; no URL or byline; closing line says it is "drawn from the technical overview of looped Transformer research". Verbatim text retained in conversation transcript; claim summary in .research-session.json under operator_submitted_documents. Handled under external-content quarantine: claims recorded in agent''s own words. credibility_score null (synthesis without its own empirical claims).'
+- id: intake-910
+  arxiv_id: '2507.02199'
+  url: https://arxiv.org/abs/2507.02199
+  source_type: paper
+  title: 'Latent Chain-of-Thought? Decoding the Depth-Recurrent Transformer'
+  authors:
+  - Wenquan Lu
+  - Yuechuan Yang
+  - Kyle Lee
+  - Yanshu Li
+  - Enqi Liu
+  categories:
+  - benchmark_methodology
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  discovered_via: search
+  expanded_from: intake-905
+  ingested_date: '2026-07-28'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - Probes whether reasoning structures actually emerge inside Huginn-3.5B on arithmetic tasks, using Logit Lens and Coda Lens rank-trajectory tracking of final and intermediate result tokens.
+  - Finds LIMITED evidence of interpretable latent chain-of-thought inside the recurrent computation.
+  - Reports significant probing inconsistencies across recurrent blocks — no clear temporal separation or structured latent reasoning pathway across recurrence steps.
+  - Concludes increasing recurrence depth yields only marginal gains that fall well short of models that explicitly externalize reasoning steps.
+  techniques:
+  - Logit Lens probing across recurrence steps
+  - Coda Lens probing (decoding intermediate latents through the coda)
+  - Rank-trajectory tracking of result tokens
+  reported_results:
+  - 'DIVE-VERIFIED figures: GSM8K 8-shot with CoT SUPPRESSED via system prompt, strict-match: 3.11 (r=4) -> 4.47 (r=8) -> 4.78 (r=16) -> 4.93 (r=32), plateau after (4.70 r=64, 4.93 r=128, 4.62 r=256); same model WITH explicit CoT at r=64: 24.87 strict / 38.13 flexible. (Stage-1 provisional label "arithmetic" was WRONG for these — they are GSM8K.)'
+  - 'One-digit composite arithmetic set (2k questions, 4-shot, CoT-suppressed, r=16): accuracy 0.19. Probe subsets small: n=100 rank trajectories, n=67 correct-answer-filtered.'
+  - 'Code: github.com/wenquanlu/huginn-latent-cot.'
+  referenced_arxiv_ids:
+  - '2502.05171'
+  handoffs_created: []
+  handoffs_updated:
+  - reasoning-compression.md
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    experiments: []
+    intake_entries:
+    - intake-905
+    - intake-909
+  contradicting_evidence: null
+  novelty_justification: 'First adversarial/interpretability probe of the recurrent-depth latent-reasoning claim to enter the index. It is the primary contradicting evidence attached to intake-905 and directly qualifies the framing the operator overview (intake-909) repeats.'
+  relevance_justification: 'medium: EPYC does not run Huginn, but the reasoning-compression handoff tracks latent-reasoning approaches, and this paper is the calibration weight against over-crediting latent-CoT claims across that whole thread (Coconut, CoLaR, Ouro entries share the framing).'
+  verdict_justification: 'worth_investigating as evidence, not as technique: its role is inside the Huginn dive (Stage 2), not as a standalone effort. Filed so the contradiction cannot be lost in prose.'
+  dive_corrections: '2026-07-28 Stage-2 dive (primary full-text read, v2). All qualitative claims CONFIRMED verbatim (limited latent-CoT evidence; probing inconsistencies — logit lens interpretable at R1-R3 but not R4, coda lens exactly reversed). CORRECTIONS: (1) provisional figures were GSM8K (8-shot, CoT suppressed by system prompt), NOT the arithmetic probe task; arithmetic number added (0.19 on 2k one-digit composite). (2) "Falls well short of models that externalize reasoning" is Huginn-with-CoT vs Huginn-without — a SELF-comparison, not cross-model. (3) Authors explicitly concede lens methods only detect token-DECODABLE computation and "do not definitively rule out the presence of latent CoT... may be more subtle or distributed than our employed tools can detect" — the probe does NOT touch Huginn''s compute-scaling claim (measured WITH standard prompting) nor non-math benchmarks; their own Fig 3 (R1-R3 decode numeric prefixes) weakly evidences numeric latent content with block-role specialization as an alternative reading. Net: the probe supports the NARROW claim (recurrence depth is not a CoT substitute at 3.5B) well, the broad claim (no useful latent computation) not at all. Weight against intake-905 narrowed accordingly (905 contradicting_evidence reworded this date). Code verified: github.com/wenquanlu/huginn-latent-cot (probing scripts, dataset, modified variants). No Huginn-author rebuttal found; venue confirmed COLM 2025 workshop (student-led, 5 authors).'
+  notes: 'Expansion entry, discovered via Tier-2b contradiction search on intake-905 claims. Venue: 1st Workshop on Application of LLM Explainability to Reasoning and Planning, COLM 2025. Stage-1 fetch: arxiv abs page only (title/authors/abstract/venue verified); numeric figures seen only in search summaries and marked provisional. Credibility 3: workshop peer review +2 (light), ~13mo +0, academic group +0, aligns with independent MoDr-line observations +1.'
+- id: intake-911
+  arxiv_id: '2511.07384'
+  url: https://arxiv.org/abs/2511.07384
+  source_type: paper
+  title: 'Teaching Pretrained Language Models to Think Deeper with Retrofitted Recurrence'
+  authors:
+  - Sean McLeish
+  - Ang Li
+  - John Kirchenbauer
+  - Dayal Singh Kalra
+  - Brian R. Bartoldson
+  - Bhavya Kailkhura
+  - Avi Schwarzschild
+  - Jonas Geiping
+  - Tom Goldstein
+  - Micah Goldblum
+  categories:
+  - training_distillation
+  - local_inference
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  discovered_via: search
+  expanded_from: intake-905
+  ingested_date: '2026-07-28'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - Converts existing pretrained NON-recurrent language models into depth-recurrent variants (retrofitted recurrence) rather than training looped models from scratch.
+  - Uses a curriculum that gradually increases model depth during training while preserving performance and reducing computational cost.
+  - Claims converting pretrained models to recurrent variants outperforms standard post-training on math tasks at equivalent compute budgets.
+  - Positions recurrence as separating train-time compute/parameters from test-time compute.
+  techniques:
+  - Retrofitted recurrence (pretrained -> depth-recurrent conversion)
+  - Depth curriculum during conversion training
+  reported_results:
+  - 'Abstract-level only from Stage-1 fetch: no model sizes, token counts, or benchmark deltas stated on the abs page. Code and models stated to be released (GitHub + HF collection, links not captured).'
+  referenced_arxiv_ids:
+  - '2502.05171'
+  handoffs_created: []
+  handoffs_updated:
+  - reasoning-compression.md
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    experiments: []
+    intake_entries:
+    - intake-905
+    - intake-332
+  contradicting_evidence: null
+  novelty_justification: 'high: every looped-lineage entry in the index (Ouro intake-332, GRAM intake-582, this batch) carries the same scope gate — "requires training from scratch, no transfer recipe to pretrained LLMs". This paper is the first indexed work that directly attacks that gate by converting pretrained models. If the recipe works at accessible scale, the entire lineage''s relevance classification changes.'
+  relevance_justification: 'medium now, potentially high: EPYC does not train from scratch, but conversion-uptraining of an existing checkpoint is a smaller ask, and the group (same UMD/Goldstein lineage as Huginn) releases code and models. reasoning-compression.md''s cross-cutting note explicitly lists "any transfer-learning bridge from recursive nets to pretrained LLMs" as the condition that would flip relevance to high — this paper claims to be exactly that bridge.'
+  verdict_justification: 'worth_investigating: the claim addresses the load-bearing objection gating the whole lineage, is from the Huginn group (competent but NOT independent of intake-905''s claims), and Stage-1 saw only the abstract. A dive should extract model scales, conversion token budgets, and whether released checkpoints are within EPYC-servable formats.'
+  dive_corrections: '2026-07-28 Stage-2 dive (primary full-text read + artifact verification; Stage 1 had abstract only). Recipe CONFIRMED: delete a contiguous middle-layer band from a pretrained ~1B decoder (TinyLlama 22L -> (4,8,4) prelude/core/coda by removing layers 4-9), init everything from pretrained weights (beats random decisively), uptrain with Huginn-style sampled recurrence whose MEAN linearly ramps to 32 — the curriculum is the genuinely new piece. Test-time knob CONFIRMED: num_steps monotone r=1..32, GSM8K 26.5 -> 51.2, MATH 9.7 -> 14.2 (TinyLlama two-phase); extrapolation beyond trained mean depth conceded open. FOUR CORRECTIONS: (1) OVERTURNED — conversion cost is NOT within a non-pretraining shop''s reach: 26-52B uptraining tokens (some ablations 120B) on AMD MI300A cluster; the bridge is consumable (Apache-2.0 checkpoints), not reproducible on EPYC. (2) "Equivalent compute budgets" = matched TRAINING FLOPs only; the win needs ~32x more inference FLOPs, and at r=1 the converted model is WORSE than the non-recurrent post-trained baseline (GSM8K 26.5 vs 45.2); gains at r=32 are +6.0pp GSM8K / +1.4pp MATH. (3) Novelty HIGH -> MEDIUM: not the first pretrained-to-recursive bridge — RRT (intake-904, 2410.20672) precedes it with init-strategy conversion; new parts are the recurrence curriculum + test-time-compute knob on converted models. (4) Credibility 2 -> 3: full artifact release verified (github.com/mcleish7/retrofitting-recurrence, ~20 HF checkpoints incl. a non-recurrent post-trained control, Apache-2.0, runs in transformers with trust_remote_code; NOT llama.cpp-servable). Venue: OpenReview PDF exists (Oq3Xblt0x1) but decision unverifiable — treat as under-review preprint. Scale ceiling 1B (authors concede). Same-group-as-Huginn caveat re-confirmed: self-corroboration, not independent evidence for intake-905.'
+  notes: 'Expansion entry, surfaced in the Tier-2b/follow-up search sweep (2026-07-28). arXiv 2025-11-10, no venue stated. Stage-1 fetch: arxiv abs page only. Credibility 2: preprint +0, <=12mo +1, established group +1, no independent corroboration; NOTE same-group as Huginn — supporting statements about recurrence are not independent evidence for intake-905.'
+- id: intake-912
+  arxiv_id: '2404.02258'
+  url: https://arxiv.org/abs/2404.02258
+  source_type: paper
+  title: 'Mixture-of-Depths: Dynamically allocating compute in transformer-based language models'
+  authors:
+  - David Raposo
+  - Sam Ritter
+  - Blake Richards
+  - Timothy Lillicrap
+  - Peter Conway Humphreys
+  - Adam Santoro
+  categories:
+  - cost_aware_routing
+  - routing_intelligence
+  - training_distillation
+  novelty: medium
+  relevance: low
+  credibility_score: 2
+  discovered_via: expansion
+  expanded_from: intake-906
+  ingested_date: '2026-07-28'
+  verdict: worth_investigating
+  verification: stage1-unverified
+  key_claims:
+  - Transformers can learn to dynamically allocate compute to specific sequence positions rather than uniformly — a top-k router per block decides which tokens participate in attention+MLP, the rest skip via residual.
+  - Total compute budget stays static and predictable (capacity fixed a priori), unlike halting-based adaptive computation.
+  - Claims baseline-equivalent quality with a fraction of FLOPs per forward pass and upwards of 50% faster sampling steps.
+  techniques:
+  - Per-block top-k token routing (capacity-based, not halting-based)
+  - Static compute budget with dynamic, context-dependent token selection
+  reported_results:
+  - 'Abstract-level only from Stage-1 fetch: "fraction of the FLOPs per forward pass"; "upwards of 50% faster to step during post-training sampling"; matches baseline at equivalent wall-clock training. No table figures captured.'
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - routing-and-optimization-index.md
+    experiments: []
+    intake_entries:
+    - intake-906
+  contradicting_evidence: null
+  novelty_justification: 'The direct routing ancestor of Mixture-of-Recursions (intake-906): MoR''s expert-choice depth routing is MoD''s mechanism transplanted to recursion count. Absent from the index despite being a well-known 2024 DeepMind paper; filed to complete the routing lineage.'
+  relevance_justification: 'low: training-time architecture, no deployment path on frozen pretrained GGUFs. Conceptual relevance to cost_aware_routing — per-token compute allocation under a fixed budget is the same shape as EPYC''s request-level routing problem, one level down.'
+  verdict_justification: 'worth_investigating (lineage context): filed primarily so MoR''s mechanism has its ancestor on record; no standalone dive warranted.'
+  notes: 'Expansion entry (reference chase from intake-906, which cites Mixture-of-Depths as its routing basis). arXiv 2024-04-02; venue not stated on abs page. Stage-1 fetch: arxiv abs page only. Credibility 2: venue unstated +0, >24mo -1, major lab (DeepMind) +1, corroboration +2 capped (MoR and Soft-MoR lines build on it).'
