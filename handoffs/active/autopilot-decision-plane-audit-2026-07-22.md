@@ -264,9 +264,10 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
   `e8-v5-runtime-root-20260727` (`44` tests, Ruff, compile, and blocker-free preflight). Clean
   v5 T1/r1-r3 are complete and the old T2/r1 source is stopped after its two generation failures.
   The reviewed consolidated one-token wrapper is merged, but neither evidence nor state is applied.
-  The tokenless recovery/finalizer sequence is queued behind the currently held FG-2V q0 claim
-  because its fail-closed c3 preflight requires all three non-recovery frontdoor regions free. It
-  will collect exactly three scorer replays and 438 generations, then finalize fresh T2/r3.
+  The tokenless recovery/finalizer sequence started on fresh output
+  `e8_quality_baseline_v5_partial_r2_recovery_20260728T135608Z` after FG-2V released q0. Its
+  fail-closed c3 preflight passed with q0/q1/q2 free and q3 held by the recovery; it is collecting
+  exactly three scorer replays and 438 generations before finalizing fresh T2/r3.
   Do not apply or publish a baseline until that complete v5 evidence bundle and its single
   consolidated human trust-boundary action are ready.
 - [x] **E8-LAUNCH-RACE — scope failed-start cleanup to the wrapper-owned launch** ✅ 2026-07-26.
