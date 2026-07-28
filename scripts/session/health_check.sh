@@ -185,7 +185,39 @@ check "kernel.perf_event_paranoid <= 1" "[ \"$PERF_PARANOID\" -le 1 ] 2>/dev/nul
 echo ""
 
 # ============================================
-# 6. SUMMARY
+# 6. EPISODIC MEMORY INTEGRITY
+# ============================================
+#
+# The episodic store's vector resolution was silently wrong for 22 days
+# (2026-07-05 -> 2026-07-27) and nothing noticed, because nothing looked: the
+# index loaded, queries returned neighbours, and retrieval produced
+# plausible-looking results that were semantically random. An
+# internally-consistent store can be completely wrong, so assert the properties
+# that were actually violated. Metadata-only (0.2 s, no BGE servers, no
+# inference); the decisive re-embed check is --semantic and is left to the
+# pre-Autopilot gate.
+
+echo "--- Episodic Memory ---"
+
+EPISODIC_CHECK="${LLM_ROOT}/epyc-orchestrator/scripts/maintenance/check_episodic_integrity.py"
+EPISODIC_STORE="${LLM_ROOT}/epyc-orchestrator/orchestration/repl_memory/sessions/embeddings.faiss"
+
+if [[ ! -f "$EPISODIC_STORE" ]]; then
+  echo "⏭️  SKIP: episodic store not present (nothing seeded yet)"
+elif [[ ! -f "$EPISODIC_CHECK" ]]; then
+  echo "⚠️  WARN: $EPISODIC_CHECK missing — store integrity is UNVERIFIED"
+  ((WARN+=1))
+else
+  EPISODIC_OUT=$(cd "${LLM_ROOT}/epyc-orchestrator" && uv run python "$EPISODIC_CHECK" 2>&1) && EPISODIC_RC=0 || EPISODIC_RC=$?
+  check "Episodic store integrity (index/id_map, round-trip, diversity)" \
+    "[ $EPISODIC_RC -eq 0 ]" \
+    "$(echo "$EPISODIC_OUT" | grep -E '^\s+\[FAIL\]' | sed 's/^ *//' | tr '\n' ';') — do NOT trust memory-derived results; see handoffs/active/episodic-memory-integrity.md"
+fi
+
+echo ""
+
+# ============================================
+# 7. SUMMARY
 # ============================================
 
 echo "=============================================="

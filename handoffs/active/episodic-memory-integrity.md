@@ -1,7 +1,11 @@
 # Episodic Memory Integrity — 2026-07-05 corruption, root cause and repair
 
-**Status**: active — write path FIXED and proven self-healing in production; data repair and
-terminal live-store reseed DONE; post-reseed follow-ups remain
+**Status**: active — **the store is healthy and now permanently asserted.** Write path FIXED and
+proven self-healing in production; data repair and terminal live-store reseed DONE; a standing
+integrity gate (M-17) now blocks AutoPilot on a broken store and runs in `health_check.sh`. Live
+state 2026-07-28: `ntotal=58322 id_map=58322 desync=0`, round-trip 500/500, diversity 57/57
+(ratio 1.000), **semantic self-match 0.9943** (was 0.5505 during the incident). Remaining items are
+follow-on analysis (M-15), a re-distil (M-11a), the never-run A/B (M-12), and one known gap (M-17e).
 **Created**: 2026-07-27
 **Priority**: HIGH — this subsystem underpins routing, MemRL and SkillBank
 **Categories**: agent_architecture, memory_augmented, routing_intelligence
@@ -129,13 +133,51 @@ failure caught in amber.
       close-out gate of <=0.55; its in-sample leakage anchor read 0.6427 where the report documented
       "expected ~1.0", recovering to 0.9101 under the correct mapping. The line was closed on bad
       evidence. Re-run after the reseed.
-- [ ] M-16 — **Verify the record contract is actually exercised in production.** Deployed but
-      unexercised as of 2026-07-27 22:0x: the API restarted 21:53:16 on code containing `eaea2317`
-      (21:40:06), and exactly **1** row has been written since — at 21:53:03, i.e. 13 s BEFORE that
-      process started, so it is the old process's last write. Nothing has yet gone through the new
-      path. Check once traffic flows: new rows must carry `record_version`, an untruncated
-      `objective`, and telemetry under `metrics`. The chokepoint guard in `store()` logs a warning
-      for any non-contract write, so a silent regression is visible in the API log.
+- [x] M-16 — **Record contract IS exercised in production.** ✅ 2026-07-28. Verified once traffic
+      flowed: the last 40 rows are **40/40 on contract**, newest `2026-07-28T06:25:53`, keys
+      `['objective', 'priority', 'record_version', 'source', 'task_type']`. The chokepoint guard in
+      `store()` logged no non-contract warnings.
+- [x] M-17 — **Standing integrity assertion, so the store cannot rot unobserved again.**
+      ✅ 2026-07-28. This is the item that closes the incident's *real* defect: the store was wrong
+      for 22 days and nothing noticed, because nothing looked. Every component was internally
+      consistent the whole time.
+
+      `scripts/maintenance/check_episodic_integrity.py` asserts the four properties that were
+      actually violated — index/id_map sync, `embedding_idx` round-trip, vector diversity, and
+      (decisively) **semantic self-match**: re-embed a row's own objective and cosine it against its
+      stored vector. No amount of internal consistency can fake that one.
+
+      **Validated against deliberately-broken stores, not just the happy path** — a monitor that only
+      ever passes is indistinguishable from no monitor:
+
+      | injected defect | check that fired | measured |
+      |---|---|---|
+      | index-ahead desync | `index_id_map_sync` | desync=5, exit 1 |
+      | mis-resolving mapping (the incident) | `embedding_idx_roundtrip` + `semantic_self_match` | 0/200 resolve; **cosine 0.4372** |
+      | vector collapse | `vector_diversity` | 1 vector / 200 objectives |
+
+      The 0.4372 sits right next to the **0.5505** measured during the live incident — the check
+      reproduces the incident signature, which is the evidence that it would have fired on day one.
+  - [x] M-17a — Wired into `scripts/session/health_check.sh` §6 (metadata-only, **0.23 s**, no
+        inference, no BGE dependency). ✅ 2026-07-28
+  - [x] M-17b — Wired into AutoPilot as a **fail-closed startup gate**
+        (`_enforce_episodic_integrity_gate`, called from `cmd_start`), running the decisive
+        `--semantic` check. A broken store now blocks the run with exit 2 rather than degrading it,
+        because a trial on a broken store produces evidence that *looks valid* — which is precisely
+        what the last 22 days of trials were. Documented override:
+        `AUTOPILOT_SKIP_EPISODIC_GATE=1`, logged loudly. ✅ 2026-07-28
+  - [x] M-17c — 9 regression tests (`tests/unit/test_episodic_integrity_check.py`), one per injected
+        defect plus the skip path. Full episodic suite **157 passed**. ✅ 2026-07-28
+  - [x] M-17d — **A bug in my own check, caught and pinned.** The first version divided distinct
+        vectors by *row count* and reported the healthy store as collapsing (ratio 0.114). Benchmark
+        traffic legitimately replays the same objectives — 500 recent rows carry only **57 distinct
+        objectives** — and identical text *should* share a vector. Correct denominator is distinct
+        objectives; the store reads **57/57, ratio 1.000**. Pinned by
+        `TestDiversityDenominator`. ✅ 2026-07-28
+  - [ ] M-17e — When the embedders are unreachable the semantic check reports `[SKIP]` and does not
+        fail the gate (BGE may still be booting). This is deliberate but it is a hole: a run started
+        during embedder downtime is gated on metadata only. Consider having the AutoPilot gate retry
+        for N seconds before accepting the skip.
 - [ ] M-12 — Run the memory-on vs memory-off A/B that **has never existed** in either repo. This is
       the only thing that will answer "does episodic retrieval help" with evidence.
 
