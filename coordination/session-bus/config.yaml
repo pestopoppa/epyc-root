@@ -29,6 +29,14 @@ roster:
   # the GPU lane, but NEVER cpu: the codex main runs CPU-side E8/G3 work and P1-2's E5 grid has
   # a ~2026-07-31 deadline on this host.
   - {id: claude-gpu-lane,   role: main,              lanes: [gpu, none],      endpoint: "tmux:agent",   drain: boundary}
+  # Added by coordinator-agent 2026-07-28 on operator direction. Fable 5 at xhigh effort,
+  # READ-ONLY auditor of the E8 harness contract set. Rationale: three consecutive failed-closed
+  # cycles each surfaced a DIFFERENT defect in a different layer (snapshot publisher binding,
+  # watcher abort path, runner sealed-question contract), so codex is discovering contract
+  # violations one run-cycle at a time. A fresh reviewer reading the whole harness at once can
+  # find the remainder statically. lanes: [none] — it must never take an inference lane or a
+  # region claim; codex owns E8 and the tail regeneration still to come.
+  - {id: fable-auditor,     role: reviewer,          lanes: [none],           endpoint: "tmux:agent",   drain: boundary}
 
 authority:
   within_lane: [self]
