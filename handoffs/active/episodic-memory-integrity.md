@@ -126,10 +126,12 @@ failure caught in amber.
         (my own smoke test caught the unpaired version writing vectors into the live sessions
         dir). Smoke-tested end-to-end with MockTeacher, zero inference: distill → dedup → store →
         FAISS-indexed, no live-tree side effects.
-  - [ ] M-11a — Re-distil skills (INFERENCE — the teacher LLM writes the skills). Two gates:
-        (1) **teacher policy** — the action default is `teacher="claude"`, i.e. autonomous
-        distillation would invoke the metered Claude CLI; operator decision pending on which
-        teacher autopilot may use unattended; (2) **data** — the reseeded store holds 200-char
+  - [ ] M-11a — Re-distil skills (INFERENCE — the teacher LLM writes the skills). Gate (1)
+        RESOLVED — **operator ruling 2026-07-28: Claude CLI is the autonomous default**, wired for a
+        one-env-line shift when the operator decides (`AUTOPILOT_DISTILL_TEACHER=local` on the
+        supervisor; `AUTOPILOT_DISTILL_LOCAL_URL` defaults to the frontdoor, `..._LOCAL_MODEL` for
+        provenance; explicit action `teacher` still wins). Remaining gate (2) **data** — the
+        reseeded store holds 200-char
         objective stubs; rich trajectories arrive only from new live-traffic/autopilot writes, so
         the first re-distil is best run after real traffic accumulates. The 57 previous skills reference
         `source_trajectory_ids` matching 0 current rows, and were distilled from 200-char stubs — all
