@@ -1,14 +1,33 @@
 # Outer-Coordinator Learned Head (Claude-driven loop)
 
-**Status**: REFRESHED 2026-05-28 — SCOPING/PARKING ONLY; no implementation and no OC-1 draft until dependency gates or a measured Claude-loop bottleneck exist
+**Status**: REFRESHED 2026-07-28 — SCOPING/PARKING ONLY; no implementation and no OC-1 draft until dependency gates or a measured Claude-loop bottleneck exist
 **Created**: 2026-04-26 (via Trinity deep-dive — intake-474, ICLR 2026)
-**Updated**: 2026-05-28 (archive risk resolved; scoping gate and ROI fork clarified)
+**Updated**: 2026-07-28 (parked-status review; dependency and measured-bottleneck triggers remain closed)
 **Priority**: SPECULATIVE (long-term; do not start before tri-role + DAR + LRC Phase 4 land)
 **Categories**: agent_architecture, autonomous_research, routing_intelligence
 **Related**: [tri-role-coordinator-architecture.md](tri-role-coordinator-architecture.md), [meta-harness-optimization.md](meta-harness-optimization.md), [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md)
 **Deep-dive**: [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md) (sections 2.3 and 3 — outer-coordination layer)
 
 ---
+
+## 2026-07-28 Parked-Status Review
+
+The implementation trigger remains closed. The routing-and-optimization index
+still freezes DAR, tri-role, and outer-coordinator expansion until the DAR
+regret and per-question-vector gates pass. The post-v8 AutoPilot campaign is
+rebuilding its E8 speed and quality baselines; it has not produced an OC-0
+measurement showing that Claude decision tokens are a material share of run
+cost. Fugu remains useful competitive intelligence, but it does not satisfy
+either local trigger.
+
+- **Dependency evidence**:
+  [`routing-and-optimization-index.md`](routing-and-optimization-index.md)
+  continues to keep this lane frozen behind the routing gates.
+- **ROI evidence**: no measured Claude-loop token-cost bottleneck or
+  replaceable-token fraction has been filed.
+- **Disposition**: remain active but parked. Do not start OC-0 or draft OC-1;
+  re-review only when a dependency gate lands or a measured outer-loop
+  bottleneck is attached.
 
 ## 2026-05-28 Audit Reset — Executor Start Here
 
