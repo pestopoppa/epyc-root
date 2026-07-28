@@ -647,18 +647,26 @@ freezes/cutovers, host reboots).
   until then. Rollback: `authority: advisory`.
 - [ ] **M5 — flag-gated extensions** (each independent). *Send-keys/spawn BUILT ✅ 2026-07-27*
   after the operator granted `OP-SENDKEYS-CODEX` with `max_spawns_per_day: 3`:
-  `scripts/coordination/tmux_adapter.py` (probe/nudge/spawn), 34/34 tests. Fail-closed; refuses to
+  `scripts/coordination/tmux_adapter.py` (probe/nudge/spawn). Fail-closed; refuses to
   guess a pane; spawns only as a **window in `tmux.live_session`**, never its own session; creates
   all four bus files before the pane starts.
   Three defects its test suite found: an unverified target could send keys to the **wrong pane**
   (tmux resolves a miss to the current window with exit 0); the quiet-check was **fail-open**
   (`window_activity` only tracks output while attached); and `--dry-run` created files.
+  - [x] **C6 — nudge submission verification** ✅ 2026-07-28 — text and Enter are separate tmux
+    calls; the adapter capture-checks the prompt before and after Enter and records success only
+    after the text is gone. Messages above the 240-character fail-loud cap are refused (a >4×
+    safety margin below the observed ~1,018-character paste-blob failure); disposable-session
+    coverage passes in `tests/test_tmux_adapter.py`.
+  - [x] **C7 — roster-bound writer containment** ✅ 2026-07-28 — heartbeat/outbox appends require
+    a roster id; rebuild and daemon audit ignore non-roster artifacts; validation warns without
+    deleting them. `tests/test_session_bus.py` proves no task-shaped writer becomes an agent.
   - [ ] **M5a — `--min-interval-s` default of 600s is the implementer's guess, not an operator
     decision.** Same class as the `max_spawns_per_day: 4` that the operator corrected to 3.
-  - [ ] **M5b — roster orphans.** `refresh_gpu_queue_integration` and
-    `validate_reseed_integration` are heartbeating with **no roster row** (Codex's sub-work).
-    Either give each a roster row or use a signal other than a heartbeat for sub-tasks; `/api/bus`
-    reports them under the `roster-orphan` alarm meanwhile.
+  - [ ] **M5b — operator disposition for preserved roster orphans.** C7 prevents recurrence and
+    keeps existing task-named heartbeat/outbox files out of roster-derived state, but does not
+    delete or move evidence. Decide whether each preserved artifact is retained evidence, gets a
+    roster row, or is superseded by a task signal; only the operator can authorize disposition.
   - [ ] **M5c — standing instructions do not reach running sessions.** A CLAUDE.md rule added at
     21:43Z left an active agent on its 19:45Z heartbeat. Recorded in `BUS_PROTOCOL.md`; the open
     task is for coordinator-agent to nudge running mains to *re-read* on every such change.
