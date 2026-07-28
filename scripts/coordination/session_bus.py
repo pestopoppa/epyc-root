@@ -115,6 +115,29 @@ def required_writer(bus_root: Path, target: Path) -> str:
     raise BusError(f"{rel} is not a writable bus file (no single-writer rule covers it)")
 
 
+def _roster_ids(bus_root: Path) -> set[str]:
+    """Read declared agent identities; malformed roster data is fail-closed."""
+    try:
+        import yaml
+        cfg = yaml.safe_load((bus_root / "config.yaml").read_text(encoding="utf-8")) or {}
+    except Exception as exc:  # noqa: BLE001 — caller needs an operator-facing error
+        raise BusError(f"could not read config.yaml roster: {exc}") from exc
+    roster = cfg.get("roster") if isinstance(cfg, dict) else None
+    if not isinstance(roster, list):
+        raise BusError("config.yaml roster is missing or malformed; refusing an unverified writer")
+    ids = {str(row.get("id", "")).strip() for row in roster if isinstance(row, dict)} - {""}
+    if not ids:
+        raise BusError("config.yaml roster has no ids; refusing an unverified writer")
+    return ids
+
+
+def _require_roster_id(bus_root: Path, agent: str) -> None:
+    ids = _roster_ids(bus_root)
+    if agent not in ids:
+        raise BusError(f"{agent!r} is not a roster id in config.yaml (have: {', '.join(sorted(ids))}). "
+                       "Add the roster row first; task ids belong in the task_id field.")
+
+
 # --------------------------------------------------------------------- schema
 
 
@@ -176,6 +199,9 @@ def fold_queue(bus_root: Path) -> dict[str, dict]:
 def cmd_append(args: argparse.Namespace) -> int:
     bus_root = Path(args.bus_root)
     row = json.loads(args.json)
+
+    if args.target in {"outbox", "heartbeat"}:
+        _require_roster_id(bus_root, args.agent)
 
     if args.target == "queue":
         path = bus_root / "queue.jsonl"
@@ -242,7 +268,13 @@ def cmd_fold(args: argparse.Namespace) -> int:
 def cmd_validate(args: argparse.Namespace) -> int:
     bus_root = Path(args.bus_root)
     problems: list[str] = []
+    warnings: list[str] = []
     checked = 0
+    try:
+        roster_ids = _roster_ids(bus_root)
+    except BusError as exc:
+        problems.append(str(exc))
+        roster_ids = set()
 
     queue = bus_root / "queue.jsonl"
     if queue.exists():
@@ -256,6 +288,9 @@ def cmd_validate(args: argparse.Namespace) -> int:
 
     for area in ("inbox", "outbox"):
         for path in sorted((bus_root / area).glob("*.jsonl")):
+            if area == "outbox" and path.stem not in roster_ids:
+                warnings.append(f"outbox/{path.name}: non-roster writer file is ignored; preserved "
+                                "pending operator disposition")
             expected = required_writer(bus_root, path)
             rows, _ = _read_jsonl(path)
             for i, row in enumerate(rows, 1):
@@ -272,6 +307,9 @@ def cmd_validate(args: argparse.Namespace) -> int:
                     )
 
     for path in sorted((bus_root / "heartbeats").glob("*.json")):
+        if path.stem not in roster_ids and path.stem != COORDINATOR_DAEMON:
+            warnings.append(f"heartbeats/{path.name}: non-roster writer file is ignored; preserved "
+                            "pending operator disposition")
         checked += 1
         try:
             hb = json.loads(path.read_text(encoding="utf-8"))
@@ -291,6 +329,8 @@ def cmd_validate(args: argparse.Namespace) -> int:
     checked += 1
 
     print(f"checked {checked} record(s)")
+    for warning in warnings:
+        print(f"  WARN {warning}")
     if problems:
         for p in problems:
             print(f"  FAIL {p}")
@@ -450,6 +490,7 @@ def cmd_rebuild(args: argparse.Namespace) -> int:
     """
     bus_root = Path(args.bus_root)
     latest = fold_queue(bus_root)
+    roster_ids = _roster_ids(bus_root)
 
     def _read(path: Path) -> str:
         try:
@@ -480,8 +521,8 @@ def cmd_rebuild(args: argparse.Namespace) -> int:
             "gate_list": "human_only_paths.yaml (human-amendment-only, hash-pinned)",
         },
     }
-    for hb_path in sorted((bus_root / "heartbeats").glob("*.json")):
-        aid = hb_path.stem
+    for aid in sorted(roster_ids):
+        hb_path = bus_root / "heartbeats" / f"{aid}.json"
         try:
             hb = json.loads(hb_path.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, OSError):

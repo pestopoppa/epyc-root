@@ -939,8 +939,11 @@ def audit(bus_root: Path, epoch: int) -> list[dict]:
             f"pin check unavailable: {exc}")
 
     # --- hard, mechanical: single-writer ownership --------------------------
-    for path in sorted((bus_root / "outbox").glob("*.jsonl")):
-        owner = path.stem
+    roster = [entry for entry in (_load_config(bus_root).get("roster") or [])
+              if isinstance(entry, dict) and str(entry.get("id", "")).strip()]
+    for entry in roster:
+        owner = str(entry["id"]).strip()
+        path = bus_root / "outbox" / f"{owner}.jsonl"
         rows, _ = _read_jsonl(path)
         for i, row in enumerate(rows, 1):
             if row.get("from") != owner:

@@ -323,6 +323,50 @@ def test_epoch_fencing_stamps_new_advisory_rows_and_exposes_stale_epoch(
     assert [row["epoch"] for row in stale] == [6]
 
 
+def test_c7_nonroster_writer_files_are_refused_ignored_and_preserved(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """C7: task-shaped writer ids neither create routes nor become agents."""
+    _provision(bus_root, *AGENTS)
+    ghost = "task-shaped-writer"
+    assert bus.main(["--bus-root", str(bus_root), "append", "--agent", ghost,
+                     "--target", "heartbeat", "--json", '{"state":"working"}']) == 1
+    assert bus.main(["--bus-root", str(bus_root), "append", "--agent", ghost,
+                     "--target", "outbox", "--json", json.dumps(_message(ghost, "alice"))]) == 1
+    assert "not a roster id" in capsys.readouterr().err
+    assert not (bus_root / "heartbeats" / f"{ghost}.json").exists()
+    assert not (bus_root / "outbox" / f"{ghost}.jsonl").exists()
+
+    # Existing evidence is surfaced but never deleted or adopted as an agent.
+    ghost_hb = bus_root / "heartbeats" / f"{ghost}.json"
+    ghost_outbox = bus_root / "outbox" / f"{ghost}.jsonl"
+    ghost_hb.write_text(json.dumps({"agent": ghost, "state": "working", "task_id": ghost}),
+                        encoding="utf-8")
+    _append(ghost_outbox, _message(ghost, "alice"))
+    before = {path: path.read_bytes() for path in (ghost_hb, ghost_outbox)}
+    for name in ("human_only_paths.yaml", "human_only_paths.sha256"):
+        shutil.copy2(LIVE_BUS_ROOT / name, bus_root / name)
+
+    assert bus.main(["--bus-root", str(bus_root), "validate"]) == 0
+    validation = capsys.readouterr().out
+    assert f"WARN heartbeats/{ghost}.json" in validation
+    assert f"WARN outbox/{ghost}.jsonl" in validation
+    assert {path: path.read_bytes() for path in (ghost_hb, ghost_outbox)} == before
+
+    assert bus.main(["--bus-root", str(bus_root), "rebuild", "--json"]) == 0
+    rebuilt = json.loads(capsys.readouterr().out)
+    assert set(rebuilt["agents"]) == set(AGENTS)
+    assert ghost not in rebuilt["agents"]
+    _quiet_tick_seams(monkeypatch)
+    config = json.loads((bus_root / "config.yaml").read_text())
+    assert ghost not in coordinator._agent_states(bus_root, config["roster"])
+    assert not [row for row in coordinator.audit(bus_root, epoch=1)
+                if row.get("subject") == ghost]
+    advice = coordinator.tick(bus_root, epoch=1, dry_run=True)
+    assert not [row for row in advice if row.get("agent") == ghost or row.get("subject") == ghost]
+    assert {path: path.read_bytes() for path in (ghost_hb, ghost_outbox)} == before
+
+
 def test_c4_unacked_message_redelivers_one_same_corr_id_nudge(
         bus_root: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
     """C4 / Rule 3: one overdue ACK produces one dedupeable nudge on later ticks.
