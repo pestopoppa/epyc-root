@@ -10,6 +10,10 @@
 - Ratified prospective `P-DFLASH-LINEUP-1`: each model/quant/device lane requires at
   least 60% pooled per-token acceptance and no per-prompt decode slowdown before a
   separately authorized production DFlash lineup enablement.
+- Ratified `P-SHED-1` (cross-device shed trade): the CPU→GPU shed decision is a paired
+  whole-system `task_rate` comparison on one frozen corpus with a mandatory idle-lane
+  residency control, swept shed fraction and >=2 stress levels, n >= 10 paired blocks and
+  a published MDE; cross-device tokens/s differencing is not a decision row.
 
 ## 2026-04-10
 

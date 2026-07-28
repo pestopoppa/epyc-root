@@ -391,3 +391,111 @@ the reversible deployment change.
 The 2026-07-24 Laguna IQ2/Q4/Q8 artifacts remain observations and MUST NOT be
 retro-certified. Claim grammar:
 `DFlash lineup <lane> eligible|ineligible [P-DFLASH-LINEUP-1, acceptance=<value>, per-prompt ratios=<values>, n=<reps>, YYYY-MM-DD, attest <ref>]`.
+
+## P-SHED-1 — Cross-device shed trade (CPU→GPU work displacement)
+
+**Scope and direction.** Governs decision-gating claims about moving batched
+`worker_general`-class work off the CPU fleet onto the MI210 GPU shadow lane while the CPU
+is under stress — the regime where the mover consumes the resource it is relieving (the
+lane's 8 host threads occupy SMT siblings 184-191, whose physical cores 88-95 are atomic
+region `q3`). No prior protocol covers this: `P-BENCH-2` is CPU multi-instance aggregate,
+`P-BENCH-3` is batched slot decode, `P-GPU-1` is GPU throughput, and none covers work
+moved *between* devices. P-SHED-1 is composite: `P-BENCH-2` governs the CPU half,
+`P-GPU-1` governs the GPU half, and the paired whole-system design below governs the net.
+Design source: epyc-inference-research `docs/design/p2-5a-shed-trade-measurement-spec.md`
+(commit `d5f5942f`).
+
+**Metric — `task_rate`, not tokens/s.** The primary quantity is `task_rate` (tasks
+completed per eval-wall-hour) summed across BOTH devices on one frozen corpus,
+higher-better. Tokens/s is NOT commensurable across the two sides (the CPU runs
+gemma4-26B-A4B MoE, the GPU lane a 27B dense — different tokenizers, different work per
+token), and `P-SPEED-OBJ` already settled the axis as `task_rate` with t/s retained as
+host-health telemetry only. A t/s difference across the two sides MUST NOT appear in a
+decision row under this protocol.
+
+**The net is measured directly, never reconstructed.** The decision quantity is a PAIRED
+whole-system comparison of two configurations running the identical frozen corpus in the
+same wall window. Measuring the GPU gain and the CPU loss separately and subtracting is
+forbidden: it compounds both halves' noise (rate CV ≈ 9.1% each) and measures the halves
+under conditions that do not co-occur, which is the phenomenon under study. The separate
+halves are retained as diagnostics that explain the sign, never as the inputs the answer
+is computed from.
+
+**Arms (all on the same frozen corpus; A0/A2 answer, A1/A3 explain).**
+
+- **A0 — CPU-only under stress**: full stress load, all tasks on CPU, lane NOT launched
+  (`q3` free of the lane). Baseline total `task_rate`.
+- **A1 — lane resident, idle**: full stress load, all tasks on CPU, lane resident serving
+  nothing. Isolates the **residency tax** — the cost of merely holding 8 host threads on
+  `q3` before any work is shed. This control is MANDATORY; without it a negative net
+  cannot be attributed.
+- **A2 — shed active**: stress load minus shed fraction *f*, lane resident serving *f*.
+- **A3 — GPU reference, CPU quiesced**: lane serving *f* against a declared-quiesced CPU,
+  giving the un-contended GPU ceiling.
+
+Primary quantity: `net_task_rate = task_rate_total(A2) − task_rate_total(A0)`,
+higher-better, counting tasks completed on both devices in the same wall window.
+Diagnostics: `residency_tax = task_rate(A1) − task_rate(A0)` (≤0 expected);
+`gpu_contention_tax = task_rate_gpu(A2) − task_rate_gpu(A3)`;
+`cpu_displacement = task_rate_cpu(A2) − task_rate_cpu(A0)` (<0 by construction).
+
+**Shed fraction is swept, never assumed.** *f* ∈ {0.25, 0.50, 1.00} at minimum (*f*=0 is
+A0). The optimum may be interior — the residency tax is paid once while CPU displacement
+grows with *f* — so a single-*f* result MUST NOT be generalized to "shedding does not
+work".
+
+**Stress is an input, not an observation.** Stress level = a fixed concurrent-request
+depth against the CPU fleet, chosen so the `q3` quarter is saturated in A0, declared in
+the run header. **At least two stress levels** (saturating and 0.5× saturating). A trade
+measured only at saturation MUST NOT be generalized downward.
+
+**Controls.** Arms are interleaved and order-randomized within each rep block — never
+blocked as A0×n → A2×n (thermal and page-cache drift would alias onto the arm effect).
+Live affinity of every instance and of the lane's host threads verified via
+`affinity_preflight.py` (topology hash certifies intent, not reality). Host-health tier
+per `P-BENCH-1`, with `drop_caches` + NUMA-interleave re-warm (never a bare re-read) and
+lane pre-warm completed BEFORE the measurement window opens in every resident-lane arm.
+Lane host-thread count is FIXED at 8 (SMT contention is non-linear; the v8 np×context
+ceiling table rests on that shape). `q3` and the GPU device claim are ACQUIRED via
+`region-lock` for the run's whole duration — observing that the lane looks free is TOCTOU
+and is not exclusion. All traffic goes through the eval-path fan-out with forced role
+targets, never live `/chat`.
+
+**Reps, MDE, and the pre-registered null.** Reps follow the `P-BENCH-1` rule (n ≥ 5 for
+≥5% effects, n ≥ 10 for ≤2% effects); given rate CV ≈ 9.1%, a plausible single-digit
+percent net requires **n ≥ 10 paired blocks**. The MDE is computed and published WITH the
+result, not after seeing it. Rate claims go through the improvement / non-inferiority
+e-process per `P-SPEED-OBJ` — never a single trial. If `|net_task_rate|` is below the MDE
+the verdict is **"no detectable trade"**, which is a decision (do not build), not a failed
+experiment.
+
+**Pre-registered decision rule.**
+
+- `net > 0`, e-process confirms, gain exceeds the operator's complexity threshold → the
+  shed admission class may be built; the measured (*f*, stress) region is its validated
+  envelope, and outside it the class refuses.
+- `net > 0` but within MDE, or e-process inconclusive → do NOT build; re-measure only if a
+  consumer decision depends on it.
+- `net ≤ 0` at every swept *f* → close the shed class permanently, recorded as
+  measurement-closed.
+- `net ≤ 0` explained wholly by `residency_tax` → narrower finding: the lane MUST NOT be
+  resident during CPU stress; the class stays closed and lane residency policy gains a
+  stress-aware rule.
+
+**Decision-grade requires ALL of**: this ratified protocol; a production-named kernel
+(`production-consolidated-vN`, currently v8 `67a433bf4`) per the `P-GPU-1` provenance
+rule; every `P-GPU-1` mandatory field for the GPU half (hardware state before AND after,
+host-interference declaration, binary/model identity, run recipe, result grammar,
+attestation) and every `P-BENCH-2` requirement for the CPU half; live-affinity
+attestation; a contention matrix certified fresh for the current topology hash; the CPU
+fleet in its terminal PRODUCTION lineup (not a bench shape); a frozen corpus manifest with
+sha256 identical across every arm and rep; n ≥ 10 paired blocks with published MDE; an
+e-process verdict; and an attestation ref. Missing ANY of these makes the run
+**observation-grade** — it informs design and gates nothing. `P-GPU-1`'s no-partial-
+upgrades retro-certification rule applies unchanged.
+
+**Prospective use.** This protocol applies only to runs started after this amendment. No
+pre-amendment shed or lane-residency artifact may be retro-certified under it. Report
+median and MAD; state metric direction on every row; per-stream p50/p95 latency is
+reported per side as `P-BENCH-3` requires for any batched-slot claim. Claim grammar:
+`shed net <value> tasks/eval-wall-h at f=<f>, stress=<level> [P-SHED-1, n=<reps>, YYYY-MM-DD, attest <ref>]`.
