@@ -256,7 +256,7 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
   T2/r1 is active. This is an evidence checkpoint only: it neither applies nor publishes the E8
   quality baseline.
 - [x] **E8 v5 partial-resume provenance, runtime isolation, and exact-tail prompt reconstruction** ✅ 2026-07-28 — the bounded resume instrument now binds the held region claim to the real zero-byte lock, seals source/runtime provenance, and reconstructs full prompt-bearing generation inputs from the sealed public vectors before checking their hashes against both public and scorer-only vectors. This closes the failed-source path that sent a scorer-only row (no prompt and `question_id=unknown`) to the tail collector. Orchestrator commits `ecb8445c`, `c5acee57`, and `3484828f`; focused validation passed and independent review approved the bounded retry scope (`T2/r1` ordinals `98/99`, then fresh `T2/r2-r3`). This completes the instrument repair only, not collection, baseline application, or publication.
-- [x] **E8 partial-r2 recovery/finalizer and consolidated-apply provenance instrument** ✅ 2026-07-28 — the recovery path now persists the exact three scorer replays plus the 438 generation obligations, validates the four segmented monitor windows, and produces a non-decision composite whose final resume scope is only fresh T2/r3. The one-token apply wrapper binds the exact composite/source hashes and is self-contained for a separate shell. The reviewed series is merged on orchestrator `main` at `451a9aac`, with the combined `main` at `48a5e9d5`; `166` tests and static checks passed. This completed only executable evidence/provenance plumbing: it did not collect the remaining evidence or apply/publish a baseline.
+- [x] **E8 partial-r2 recovery/finalizer and consolidated-apply provenance instrument** ✅ 2026-07-28 — the recovery path now persists the exact three scorer replays plus the 438 generation obligations, validates the four segmented monitor windows, and produces a non-decision composite whose final resume scope is only fresh T2/r3. The one-token apply wrapper binds the exact composite/source hashes and is self-contained for a separate shell. Orchestrator `c9719229` supersedes the earlier instrument tip: plan schema v2 binds reconstruction and both downstream validators to the sealed T1 `core_v2`, reconstructs before any output write, and rejects legacy/mismatched intermediates. Focused validation passed `48` tests plus independent review and a no-inference real-vector preflight. This completed only executable evidence/provenance plumbing: the old failed partial-r2 namespace is ineligible audit evidence, and no baseline was collected, applied, or published.
 - [ ] **E8 quality baseline reseed/apply** — human-only protocol/source/apply scripts are
   prepared and parked. The earlier v4 collection is historical, non-decision evidence after the
   fixed-vector context defect. A first v5 launch failed before inference because its detached
@@ -264,8 +264,9 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
   `e8-v5-runtime-root-20260727` (`44` tests, Ruff, compile, and blocker-free preflight). Clean
   v5 T1/r1-r3 are complete and the old T2/r1 source is stopped after its two generation failures.
   The reviewed consolidated one-token wrapper is merged, but neither evidence nor state is applied.
-  The tokenless recovery/finalizer sequence is armed behind the canonical FG-4b A4 CPU re-anchor:
-  it will collect exactly three scorer replays and 438 generations, then finalizes fresh T2/r3.
+  The tokenless recovery/finalizer sequence is queued behind the currently held FG-2V q0 claim
+  because its fail-closed c3 preflight requires all three non-recovery frontdoor regions free. It
+  will collect exactly three scorer replays and 438 generations, then finalize fresh T2/r3.
   Do not apply or publish a baseline until that complete v5 evidence bundle and its single
   consolidated human trust-boundary action are ready.
 - [x] **E8-LAUNCH-RACE — scope failed-start cleanup to the wrapper-owned launch** ✅ 2026-07-26.
