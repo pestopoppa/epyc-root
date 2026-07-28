@@ -8,6 +8,11 @@ roster:
   - {id: codex,             role: main,              lanes: [cpu, gpu, none], endpoint: "tmux:agent",   drain: boundary}
   - {id: claude-main,       role: main,              lanes: [cpu, gpu, none], endpoint: "monitor:file", drain: push}
   - {id: coordinator-agent, role: coordinator-agent, lanes: [none],           endpoint: "monitor:file", drain: push}
+  # Added by coordinator-agent 2026-07-28. Test authoring for the session bus itself
+  # (zero coverage found: no file under tests/ references session_bus, while the bus is
+  # now load-bearing for coordination). lanes:[none] — this main must never take an
+  # inference lane, so it cannot contend with the codex main running G3/E8.
+  - {id: codex-bus-tests,   role: main,              lanes: [none],           endpoint: "tmux:agent",   drain: boundary}
 
 authority:
   within_lane: [self]
