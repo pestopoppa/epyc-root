@@ -65,19 +65,55 @@ EX_BLOCKED = 2
 EX_MISCONFIG = 3
 EX_USAGE = 64
 
-# C6 policy. A ~1,018-character nudge was observed to become a mangled Codex
-# paste blob. We have no safe TUI calibration point below that failure, so this
-# is deliberately a fail-loud operational cap, not a claim about the TUI's
-# actual threshold. At >4x below the observed failure it leaves a clear safety
-# margin; raising it requires a dedicated disposable-TUI calibration.
-MAX_NUDGE_MESSAGE_CHARS = 240
+# ---------------------------------------------------------------------------
+# DISPOSABLE-TUI CALIBRATION, 2026-07-28 (sessions `tuical-codex` / `tuical-claude`,
+# both killed; the live `agent` session was never touched). This replaces the
+# previous guesses. Measured facts, all reproducible:
+#
+#  A. SINGLE-BURST PASTE THRESHOLD. One `send-keys -l` call carrying N chars is
+#     rendered as literal typed text below a threshold and as a paste attachment
+#     at or above it. Bisected:
+#         Codex CLI v0.145.0 : 1000 -> typed, 1001 -> "[Pasted Content 1001 chars]"
+#         Claude Code v2.1.220:  800 -> typed,  805 -> "[Pasted text #n]"
+#     The original 1018-char failure report was the Codex side of this.
+#  B. CONTENT LOSS ABOVE THE BLOB. Codex blobs cap at 1024 chars: a 1498- and a
+#     2998-char burst both rendered "[Pasted Content 1024 chars]". That is the
+#     real mangling — not the blob itself.
+#  C. CHUNKING BELOW THE THRESHOLD IS SAFE. Sending the message in 400-char
+#     chunks with a 0.15 s gap renders as ordinary typed text with no blob and
+#     no loss, verified at 1200 / 2000 / 3000 / 5000 / 12000 chars on BOTH TUIs.
+#     A 0.0 s gap re-coalesces into one burst and DOES blob — the gap is load
+#     bearing. 400 is half of the lower (Claude) threshold.
+#  D. So the 240-char cap was ~3.3x below the true single-burst limit and is not
+#     the binding constraint at all once (C) is used. 4000 is a policy ceiling
+#     (past it, write a brief file), a third of the largest verified length.
+MAX_NUDGE_MESSAGE_CHARS = 4000
+NUDGE_CHUNK_CHARS = 400
+NUDGE_CHUNK_DELAY_S = 0.15
 DEFAULT_NUDGE_SETTLE_S = 0.25
-# A bare prompt leaves pending text in the last few rows, but modal overlays
-# (for example Codex's plan confirmation and Claude's agent picker) can place
-# decorations below it.  The lower visible pane still bounds the input region;
-# use enough rows to include those overlays without searching scrollback.
-_INPUT_REGION_LINES = 24
-_PASTE_BLOB_MARKER = "[Pasted Content"
+# Bounded polls, so a slow redraw is a wait rather than a false refusal.
+_VERIFY_TIMEOUT_S = 2.0
+_VERIFY_POLL_S = 0.1
+# An accepting post-Enter observation must repeat before it is believed: a single
+# capture can land on a half-drawn repaint frame in which the composer has been
+# cleared for redraw but the Enter was in fact swallowed.
+_VERIFY_STABLE_SAMPLES = 2
+# Codex renders "[Pasted Content 1016 chars]", Claude Code "[Pasted text #5]".
+_PASTE_BLOB_MARKER = "[Pasted"
+# Leading characters that put a TUI composer into a mode where Enter does NOT
+# submit prose. `/` opens the command menu and `@` the file picker in both TUIs —
+# Enter then ACCEPTS a completion, which rewrites the composer while leaving the
+# cursor off the message, i.e. it looks exactly like a submission to any check
+# that reads the pane. Claude Code additionally treats a leading `!` as bash mode
+# and `#` as a memory write, so a nudge starting with either would EXECUTE rather
+# than say something. There is no pane state that distinguishes these after the
+# fact, so the trigger is refused up front instead of being detected afterwards.
+_COMPOSER_MODE_PREFIXES = ("/", "!", "#", "@")
+# `@` anywhere (not just leading) opens Codex's file picker at the typed token.
+_INLINE_PICKER_TRIGGER = "@"
+# How far back from the cursor a paste banner can sit on the composer line.
+_BLOB_LOOKBACK_CHARS = 200
+_FRAGMENT_CHARS = 60
 
 
 def _now() -> str:
@@ -92,48 +128,166 @@ def _tmux(*args: str) -> tuple[int, str]:
     return r.returncode, (r.stdout or r.stderr).strip()
 
 
-def _input_region(target: str) -> tuple[str | None, str | None]:
-    """Return the lower visible input region, or a fail-closed diagnostic.
+def _composer_text(target: str) -> tuple[str | None, str | None]:
+    """Return everything on the pane up to the CURSOR, or a fail-closed reason.
 
-    Tmux does not expose a submitted-input state. The bottom of a captured pane
-    is the closest available signal: a pending prompt is there, while submitted
-    transcript content normally scrolls above it. Include modal decorations in
-    that region: they can move the editable line above a bare four-line prompt
-    tail. This can false-refuse on an unusual TUI layout, but must never claim
-    delivery without post-Enter proof.
+    WHY THE CURSOR, AND NOT A ROW WINDOW. Measured 2026-07-28 in disposable Codex
+    and Claude Code sessions: the terminal cursor sits at exactly the end of the
+    pending (typed-but-unsubmitted) input, in both TUIs, with or without a modal
+    overlay open. Two consequences that the previous two fixes both missed:
+
+      1. Overlays render BELOW the cursor line. With Codex's `@` picker open (a
+         multi-row list) the cursor stayed on the composer at cx=3 and the typed
+         text still ended at it. So an overlay CANNOT displace this anchor, which
+         is why this predicate is structurally immune to the false negatives that
+         a "last N rows" window produced.
+      2. After a successful Enter, BOTH TUIs echo the submitted message into the
+         transcript, where it stays visible. Measured directly: post-Enter the
+         message was still in the pane while the cursor sat on an empty composer.
+         So "message still visible" is the SUCCESS rendering, and the previous
+         "text present after Enter => unsubmitted" rule fired on every good nudge.
+         Anchoring at the cursor separates the two: on success the composer no
+         longer ENDS with the message; on a swallowed Enter it still does.
+
+    Plain `capture-pane` (no -J) is mandatory here: `cursor_y` indexes the physical
+    grid, and -J would join wrapped rows and shift every index under it.
     """
     try:
-        # Do not use _tmux here: its normal ``strip`` is correct for control
-        # output but destroys the blank lines that identify a prompt tail.
-        # -J joins terminal-wrapped input so a tail fragment stays searchable.
-        result = subprocess.run(["tmux", "capture-pane", "-p", "-J", "-t", target],
-                                capture_output=True, text=True, timeout=15)
+        pos = subprocess.run(
+            ["tmux", "display-message", "-p", "-t", target, "#{cursor_y}\t#{cursor_x}"],
+            capture_output=True, text=True, timeout=15)
+        pane = subprocess.run(["tmux", "capture-pane", "-p", "-t", target],
+                              capture_output=True, text=True, timeout=15)
     except (OSError, subprocess.SubprocessError) as exc:
-        return None, f"could not capture pane for submission verification: {exc}"
-    if result.returncode != 0:
-        return None, f"could not capture pane for submission verification: " \
-                     f"{(result.stdout or result.stderr).strip()}"
-    return "\n".join((result.stdout or "").split("\n")[-_INPUT_REGION_LINES:]), None
+        return None, f"could not read pane for submission verification: {exc}"
+    if pos.returncode != 0 or pane.returncode != 0:
+        out = (pos.stdout or pos.stderr or "") + (pane.stdout or pane.stderr or "")
+        return None, f"could not read pane for submission verification: {out.strip()}"
+    raw = (pos.stdout or "").strip().split("\t")
+    if len(raw) < 2:
+        return None, f"tmux gave no cursor position for {target!r}; cannot verify"
+    try:
+        cy, cx = int(raw[0]), int(raw[1])
+    except ValueError:
+        return None, f"tmux gave an unreadable cursor position {raw!r}; cannot verify"
+    lines = (pane.stdout or "").split("\n")
+    if cy >= len(lines):
+        return None, f"cursor row {cy} is outside the captured pane ({len(lines)} rows)"
+    return "\n".join(lines[:cy] + [lines[cy][:cx]]), None
+
+
+def _normalise(text: str) -> str:
+    """Drop ALL whitespace.
+
+    Measured 2026-07-28: raw substring matching is unreliable because both TUIs
+    soft-wrap the composer themselves, and a wrap can fall INSIDE the fragment.
+    At 300/848/900/998 chars a raw match failed while the text had landed
+    perfectly; whitespace-stripped matching succeeded in every one of those
+    cases. This — not overlays — is the main source of the "did not land"
+    false refusals seen in normal operation.
+    """
+    return "".join(text.split())
 
 
 def _pending_fragment(message: str) -> str:
-    """A tail fragment survives ordinary prompt wrapping without matching prose."""
-    return message[-min(len(message), 80):]
+    """A tail fragment; anchored at the cursor it is unambiguous at 60 chars.
 
-
-def _submission_state(input_region: str, fragment: str) -> str:
-    """Classify the only safe observable states of a pending nudge.
-
-    ``text_present`` is the expected state before Enter. ``text_absent`` means
-    the text did not land in the visible input region. A paste-blob marker wins
-    even if it contains the fragment: that is the known mangling failure, not
-    proof that the TUI received editable text.
+    Trailing whitespace is dropped FIRST. Matching is whitespace-insensitive, so
+    a fragment made only of spaces normalises to "" — and ``endswith("")`` is
+    true of every pane, which would make the pre-Enter gate pass unconditionally
+    and fire Enter into a pane that never received the text.
     """
-    if _PASTE_BLOB_MARKER in input_region:
-        return "paste_blob"
-    if fragment in input_region:
+    trimmed = message.rstrip()
+    return trimmed[-min(len(trimmed), _FRAGMENT_CHARS):]
+
+
+def _submission_state(composer_text: str, fragment: str) -> str:
+    """Classify the composer, cursor-anchored. Four states, all distinct.
+
+    ``text_present``  the composer ENDS with the message — pending, not submitted.
+    ``paste_blob``    the composer ends in a paste attachment banner instead of
+                      editable text: the known mangling failure (Codex truncates
+                      such blobs at 1024 chars).
+    ``text_echoed``   the message is on the pane but no longer at the cursor: the
+                      transcript echo of a SUBMITTED message. This is the only
+                      post-Enter success state.
+    ``text_absent``   the message is nowhere up to the cursor. Before Enter that
+                      means it did not land. AFTER Enter it is NOT proof of
+                      submission — see the note below.
+
+    WHY ``text_absent`` MUST NOT MEAN "SUBMITTED". Treating "no longer at the
+    cursor" as success reopens the C6 fail-open through a second door: an Enter
+    consumed by an in-composer completion overlay (Codex's `@` picker, either
+    TUI's `/` menu) REPLACES the tail instead of submitting, and the composer
+    then ends with the completion. Requiring the echo — measured 2026-07-28 on
+    both TUIs — makes the success path positive evidence rather than the absence
+    of failure, so an Enter that edited the composer is refused, not recorded.
+    """
+    normalised, needle = _normalise(composer_text), _normalise(fragment)
+    if not needle:
+        # Unmatchable: fail closed rather than match everything.
+        return "text_absent"
+    if normalised.endswith(needle):
         return "text_present"
+    if _PASTE_BLOB_MARKER in composer_text[-_BLOB_LOOKBACK_CHARS:]:
+        return "paste_blob"
+    if needle in normalised:
+        return "text_echoed"
     return "text_absent"
+
+
+def _await_state(target: str, fragment: str, wanted: set[str], timeout_s: float,
+                 stable_samples: int = 1) -> tuple[str | None, str | None]:
+    """Poll the composer until it reaches one of ``wanted``; return the last state.
+
+    Polling exists so that a slow redraw is a WAIT, not a refusal. It never turns
+    a failure into a success: on timeout the genuinely-observed state is returned
+    and the caller refuses on it.
+
+    ``stable_samples`` is how many CONSECUTIVE observations of a wanted state are
+    required to believe it. The confirmation samples are taken even past the
+    deadline — a candidate that only holds for one frame is a repaint artifact,
+    and accepting it is the same fail-open the module exists to prevent.
+    """
+    deadline = time.monotonic() + max(0.0, timeout_s)
+    run = 0
+    while True:
+        composer, failure = _composer_text(target)
+        if failure:
+            return None, failure
+        state = _submission_state(composer or "", fragment)
+        run = run + 1 if state in wanted else 0
+        if run >= max(1, stable_samples):
+            return state, None
+        if run == 0 and time.monotonic() >= deadline:
+            return state, None
+        time.sleep(_VERIFY_POLL_S)
+
+
+def _send_message_chunked(target: str, message: str) -> tuple[int, str]:
+    """Type the message in sub-threshold chunks so no TUI sees a paste burst.
+
+    See the calibration block: 400 chars with a 0.15 s gap renders as literal
+    typed text on both TUIs up to at least 12,000 chars, while the same text in
+    one call blobs above 800 (Claude) / 1000 (Codex) and loses everything past
+    1024. The gap is required — chunks sent back-to-back re-coalesce and blob.
+
+    ``--`` terminates tmux's own option parsing: without it a chunk that starts
+    with ``-`` (a message beginning ``--``, or a 400-char boundary landing on a
+    hyphen) is read as a flag and the send fails.
+    """
+    for start in range(0, len(message), NUDGE_CHUNK_CHARS):
+        rc, out = _tmux("send-keys", "-l", "-t", target, "--",
+                        message[start:start + NUDGE_CHUNK_CHARS])
+        if rc != 0:
+            if start:
+                out = (f"{out} — WARNING: {start} chars were already typed into {target} and "
+                       f"are still pending in that composer. No Enter was sent. Clear it "
+                       f"before the next nudge.")
+            return rc, out
+        if start + NUDGE_CHUNK_CHARS < len(message):
+            time.sleep(NUDGE_CHUNK_DELAY_S)
+    return 0, ""
 
 
 def load_config() -> dict:
@@ -298,7 +452,8 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float) -> dict:
             "session_attached": attached, "quiet_check": quiet_check,
             "heartbeat_state": (hb or {}).get("state"), "heartbeat_age_s": hb_age,
             "seconds_since_last_nudge": since_nudge,
-            "submission_verification": "capture bounded input region after Enter; may fail closed",
+            "submission_verification": "cursor-anchored composer check before Enter, transcript "
+                                       "echo required after it; may fail closed",
             "blockers": blockers, "nudge_ok": not blockers}
 
 
@@ -329,10 +484,30 @@ def cmd_probe(args: argparse.Namespace) -> int:
 
 def cmd_nudge(args: argparse.Namespace) -> int:
     if len(args.message) > MAX_NUDGE_MESSAGE_CHARS:
-        print(f"REFUSING: nudge message is {len(args.message)} chars; the conservative "
-              f"C6 cap is {MAX_NUDGE_MESSAGE_CHARS}. A ~1018-char message was observed as a "
-              "mangled TUI paste blob; do not chunk without disposable-TUI calibration.",
+        print(f"REFUSING: nudge message is {len(args.message)} chars; the calibrated policy "
+              f"cap is {MAX_NUDGE_MESSAGE_CHARS}. Chunked sending is verified to 12,000 chars, "
+              f"so this is a 'write a brief file instead' ceiling, not a TUI limit.",
               file=sys.stderr)
+        return EX_USAGE
+    if "\n" in args.message or "\r" in args.message:
+        # A literal newline IS the submit key. It would send a truncated nudge and
+        # leave the remainder typed into whatever came next — fail closed.
+        print("REFUSING: nudge message contains a newline, which the TUI reads as Enter and "
+              "would submit a partial message. Send a single line.", file=sys.stderr)
+        return EX_USAGE
+    stripped = args.message.lstrip()
+    if stripped.startswith(_COMPOSER_MODE_PREFIXES) or _INLINE_PICKER_TRIGGER in args.message:
+        print(f"REFUSING: nudge message starts with one of {' '.join(_COMPOSER_MODE_PREFIXES)} "
+              f"or contains '{_INLINE_PICKER_TRIGGER}'. Those put the composer in a mode where "
+              f"Enter accepts a completion (or runs a command) instead of submitting prose, and "
+              f"the resulting pane is indistinguishable from a successful send. Rephrase without "
+              f"the trigger — write the path plainly, or point at a brief file.", file=sys.stderr)
+        return EX_USAGE
+    if not _pending_fragment(args.message):
+        # Nothing matchable means nothing verifiable, and an unverifiable nudge is
+        # a bare Enter fired into someone else's pane.
+        print("REFUSING: nudge message is blank once trailing whitespace is dropped, so "
+              "submission cannot be verified.", file=sys.stderr)
         return EX_USAGE
     config = load_config()
     p = probe(config, args.agent, args.quiet_s, args.heartbeat_max_age)
@@ -350,23 +525,30 @@ def cmd_nudge(args: argparse.Namespace) -> int:
         return 0
     # C6: message and Enter MUST be separate calls. A single send-keys call can
     # leave the text in a Codex prompt while tmux still returns success.
-    rc, out = _tmux("send-keys", "-l", "-t", p["target"], args.message)
+    rc, out = _send_message_chunked(p["target"], args.message)
     if rc != 0:
         print(f"send-keys message failed: {out}", file=sys.stderr)
         return EX_MISCONFIG
     settle_s = max(0.0, float(getattr(args, "settle_s", DEFAULT_NUDGE_SETTLE_S)))
     time.sleep(settle_s)
-    input_region, failure = _input_region(p["target"])
     fragment = _pending_fragment(args.message)
+    # BEFORE Enter the composer must END with the message. Wait for it rather
+    # than sampling once: a long chunked message can still be rendering.
+    pending_state, failure = _await_state(p["target"], fragment, {"text_present"},
+                                          _VERIFY_TIMEOUT_S)
     if failure:
         print(f"nudge submission verification unavailable before Enter: {failure}", file=sys.stderr)
         return EX_MISCONFIG
-    pending_state = _submission_state(input_region or "", fragment)
     if pending_state == "paste_blob":
-        print("nudge message was mangled into a paste blob before Enter; refusing", file=sys.stderr)
+        print("nudge message was mangled into a paste blob before Enter; refusing. "
+              "The composer holds a paste attachment, not editable text — its content is "
+              "truncated at 1024 chars and cannot be verified.", file=sys.stderr)
         return EX_MISCONFIG
-    if pending_state == "text_absent":
-        print("nudge message did not land in the input region before Enter; refusing", file=sys.stderr)
+    if pending_state != "text_present":
+        print("nudge message did not land in the composer before Enter; refusing. "
+              "The cursor is not at the end of the message, so the pane is not accepting "
+              "typed input (a full-screen modal, e.g. Codex backtrack mode, does this).",
+              file=sys.stderr)
         return EX_MISCONFIG
 
     rc, out = _tmux("send-keys", "-t", p["target"], "Enter")
@@ -374,16 +556,32 @@ def cmd_nudge(args: argparse.Namespace) -> int:
         print(f"send-keys Enter failed: {out}", file=sys.stderr)
         return EX_MISCONFIG
     time.sleep(settle_s)
-    input_region, failure = _input_region(p["target"])
+    # AFTER Enter the message must have MOVED: off the cursor, but still on the
+    # pane as the transcript echo. Note this is NOT "the message is gone from the
+    # pane" — both TUIs echo the submitted text above, and treating that as
+    # failure is exactly the false negative this fix removes. Nor is it merely
+    # "no longer at the cursor": that would accept an Enter which a completion
+    # overlay consumed to rewrite the composer. Success is the echo, positively.
+    submitted_state, failure = _await_state(p["target"], fragment, {"text_echoed"},
+                                            _VERIFY_TIMEOUT_S, _VERIFY_STABLE_SAMPLES)
     if failure:
         print(f"nudge submission verification unavailable after Enter: {failure}", file=sys.stderr)
         return EX_MISCONFIG
-    submitted_state = _submission_state(input_region or "", fragment)
-    if submitted_state == "paste_blob":
-        print("nudge submission not confirmed after Enter: paste blob mangled", file=sys.stderr)
-        return EX_MISCONFIG
     if submitted_state == "text_present":
-        print("nudge submission not confirmed after Enter: text present but unsubmitted", file=sys.stderr)
+        print("nudge submission not confirmed after Enter: text present but unsubmitted "
+              "(the composer still ends with the message, so the TUI swallowed Enter)",
+              file=sys.stderr)
+        return EX_MISCONFIG
+    if submitted_state == "paste_blob":
+        print("nudge submission not confirmed after Enter: the composer holds a paste blob",
+              file=sys.stderr)
+        return EX_MISCONFIG
+    if submitted_state != "text_echoed":
+        print("nudge submission not confirmed after Enter: the message is no longer at the "
+              "cursor but is not echoed on the pane either. Enter was consumed by something "
+              "that rewrote the composer (a completion picker, e.g. Codex '@' or a '/' menu) "
+              "rather than submitting. Refusing to record a nudge that may not have been sent.",
+              file=sys.stderr)
         return EX_MISCONFIG
     record("nudge", args.agent, args.message[:200])
     print(f"nudged {args.agent} at {p['target']}")
