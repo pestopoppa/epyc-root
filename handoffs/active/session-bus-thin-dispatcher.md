@@ -675,14 +675,39 @@ freezes/cutovers, host reboots).
   Three defects its test suite found: an unverified target could send keys to the **wrong pane**
   (tmux resolves a miss to the current window with exit 0); the quiet-check was **fail-open**
   (`window_activity` only tracks output while attached); and `--dry-run` created files.
-  - [x] **C6 — nudge submission verification** ✅ 2026-07-28 — text and Enter are separate tmux
-    calls; the adapter capture-checks the prompt before and after Enter and records success only
-    after the text is gone. Messages above the 240-character fail-loud cap are refused (a >4×
-    safety margin below the observed ~1,018-character paste-blob failure); disposable-session
-    coverage passes in `tests/test_tmux_adapter.py`.
+  - [ ] **C6 — nudge submission verification.** *NOT resolved — on its third fix attempt as of
+    2026-07-28.* Attempt 1 (fail-open) let an unverified target send keys to the wrong pane;
+    attempt 2 (quiet-check via `window_activity`) produced a false-negative on TUI overlays;
+    attempt 3 is currently being reworked in `scripts/coordination/tmux_adapter.py` /
+    `tests/test_tmux_adapter.py` (in flight in a parallel session — do not edit those two files
+    until it lands). The previous `[x]` mark on this line was premature and has been corrected.
   - [x] **C7 — roster-bound writer containment** ✅ 2026-07-28 — heartbeat/outbox appends require
     a roster id; rebuild and daemon audit ignore non-roster artifacts; validation warns without
     deleting them. `tests/test_session_bus.py` proves no task-shaped writer becomes an agent.
+  - [x] **Bus protocol test suite** ✅ 2026-07-28 — first-ever automated coverage for the session
+    bus (`tests/test_session_bus.py`); grew from 14 passed + 2 xfail to 27 passed, 0 xfail across
+    the campaign below. Commit `69c65068`.
+  - [x] **C1 — no inbound route for coordinator-agent.** ✅ 2026-07-28 — added
+    `session_bus.py provision`. (Fixed by coordinator-agent, same campaign.)
+  - [x] **C2 — daemon never relayed agent-authored outbox messages.** ✅ 2026-07-28 — added
+    `relay_outbox_messages`, idempotent via `relayed_src`. (Fixed by coordinator-agent, same
+    campaign.)
+  - [x] **C3 — drain failed open on a missing inbox.** ✅ 2026-07-28 — drain now exits 2 on a
+    missing inbox instead of silently succeeding. (Fixed by coordinator-agent, same campaign.)
+  - [x] **C4 — ack redelivery and cursor-rewind enforcement.** ✅ 2026-07-28 — one durable tagged
+    ack-deadline nudge per unacked `corr_id`, recipient-outbox ACK only; Rule 4 cursor rewind now
+    refused (lower `--set` offsets rejected, equal/higher allowed). Commit `d6599a2b`; both prior
+    xfails promoted to passing (16 passed).
+  - [x] **C8 — durable task-boundary surfacing + endpoint-lint coverage.** ✅ 2026-07-28 —
+    `detect_task_boundaries` in the coordinator-daemon delivers a task-boundary status message to
+    coordinator-agent's inbox on any main's transition to idle, persisted in daemon-owned
+    `boundary_state.json` so a daemon restart does not replay; plus a `validate` WARN for any
+    roster row whose endpoint has no working delivery path, and a WARN for a missing
+    `config.yaml`. Commits `496363c8`, `fa7ad915`, `7806b6a8` (durable surfacing, fixed by
+    coordinator-agent). 27 passed, 0 xfail.
+  - [x] **Guard self-idiom regression** ✅ 2026-07-28 — `agents_reference_guard.sh` now resolves
+    bare nested session-bus references, and the compliant coordinator-agent role file is
+    explicitly tested (a guard must not forbid its own idiom). Commit `667ed96f`, 3 passed.
   - [ ] **M5a — `--min-interval-s` default of 600s is the implementer's guess, not an operator
     decision.** Same class as the `max_spawns_per_day: 4` that the operator corrected to 3.
   - [ ] **M5b — operator disposition for preserved roster orphans.** C7 prevents recurrence and
