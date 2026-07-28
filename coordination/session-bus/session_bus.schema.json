@@ -79,6 +79,10 @@
         "payload": {
           "type": "object",
           "description": "kind-specific; see per-kind rules below"
+        },
+        "relayed_src": {
+          "type": "string",
+          "description": "Set by the coordinator-daemon when it relays an agent-authored outbox message into a recipient inbox: the source msg id. Carries the dedupe key so relay is idempotent across ticks (defect C2, 2026-07-28). Absent on daemon-generated messages."
         }
       },
       "allOf": [

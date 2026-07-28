@@ -360,6 +360,19 @@ def cmd_drain(args: argparse.Namespace) -> int:
     agents run at every task boundary."""
     bus_root = Path(args.bus_root)
     inbox = bus_root / "inbox" / f"{args.agent}.jsonl"
+
+    # C3: fail CLOSED on an unprovisioned route. _read_jsonl returns empty for a
+    # missing file, which made "never provisioned" indistinguishable from "nothing
+    # new" — the coordinator-agent drained clean for a whole session while messages
+    # addressed to it were being dropped (defect C1, 2026-07-28). A missing inbox is
+    # a bootstrap error, never a quiet no-op.
+    if not inbox.exists():
+        print(f"session_bus: no inbox for '{args.agent}' at {inbox} — route not "
+              f"provisioned. Every roster member needs 4 files (inbox/outbox/"
+              f"heartbeat/cursor); run `session_bus.py provision --agent {args.agent}`.",
+              file=sys.stderr)
+        return 2
+
     start = _cursor_get(bus_root, args.agent)
     rows, end = _read_jsonl(inbox, start)
 
@@ -490,6 +503,63 @@ def cmd_rebuild(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_provision(args: argparse.Namespace) -> int:
+    """Create the 4 files a roster member needs. Idempotent.
+
+    config.yaml states 'adding a main = 1 roster row + 4 files (inbox/outbox/
+    heartbeat/cursor)', but nothing enforced it: coordinator-agent was added as a
+    roster row with only 3 of the 4 and its inbound route silently did not exist
+    (defect C1, 2026-07-28). This makes the documented step executable.
+    """
+    bus_root = Path(args.bus_root)
+    agent = args.agent
+
+    try:
+        import yaml  # lazy: keeps the rest of the CLI dependency-free
+        cfg = yaml.safe_load((bus_root / "config.yaml").read_text()) or {}
+        roster = [r.get("id") for r in (cfg.get("roster") or []) if isinstance(r, dict)]
+    except Exception as exc:  # noqa: BLE001 - config is advisory here
+        print(f"session_bus: could not read roster ({exc}); provisioning anyway",
+              file=sys.stderr)
+        roster = []
+
+    if roster and agent not in roster:
+        print(f"session_bus: '{agent}' is not a roster id in config.yaml "
+              f"(have: {', '.join(roster)}). Add the roster row first.", file=sys.stderr)
+        return 2
+
+    created, existed = [], []
+    for rel in (f"inbox/{agent}.jsonl", f"outbox/{agent}.jsonl"):
+        path = bus_root / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if path.exists():
+            existed.append(rel)
+        else:
+            path.touch()
+            created.append(rel)
+
+    cursor = _cursor_path(bus_root, agent)
+    if cursor.exists():
+        existed.append(f"cursors/{agent}.json")
+    else:
+        _write_atomic(cursor, {"agent": agent, "offset": 0, "ts": _utcnow_iso()})
+        created.append(f"cursors/{agent}.json")
+
+    hb = bus_root / "heartbeats" / f"{agent}.json"
+    if hb.exists():
+        existed.append(f"heartbeats/{agent}.json")
+    else:
+        hb.parent.mkdir(parents=True, exist_ok=True)
+        _write_atomic(hb, {"agent": agent, "state": "idle", "ts": _utcnow_iso()})
+        created.append(f"heartbeats/{agent}.json")
+
+    for rel in created:
+        print(f"created  {rel}")
+    for rel in existed:
+        print(f"exists   {rel}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="session_bus.py", description=__doc__.split("\n")[0])
     p.add_argument("--bus-root", default=str(DEFAULT_BUS_ROOT))
@@ -518,6 +588,10 @@ def build_parser() -> argparse.ArgumentParser:
     dp.add_argument("--agent", required=True)
     dp.add_argument("--peek", action="store_true", help="print without advancing the cursor")
     dp.set_defaults(func=cmd_drain)
+
+    pp = sub.add_parser("provision", help="create the 4 files a roster member needs (idempotent)")
+    pp.add_argument("--agent", required=True)
+    pp.set_defaults(func=cmd_provision)
 
     sp = sub.add_parser("status", help="human summary of bus state")
     sp.set_defaults(func=cmd_status)

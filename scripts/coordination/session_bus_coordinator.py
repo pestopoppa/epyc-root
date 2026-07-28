@@ -73,6 +73,7 @@ from scripts.coordination.session_bus import (  # noqa: E402
     _read_jsonl,
     _write_atomic,
     fold_queue,
+    validate_row,
 )
 
 LOCK_PATH = Path("/tmp/session_bus_coordinator.lock")
@@ -1081,6 +1082,69 @@ def _append_inbox(bus_root: Path, msgs: list[dict], epoch: int) -> list[dict]:
     return written
 
 
+# Kinds the daemon already consumes through another path; relaying them too would
+# double-count. token-request -> relay_tokens (token-queue.md); task-propose /
+# task-complete -> transcribe (queue.jsonl).
+_NO_RELAY_KINDS = {"token-request", "task-propose", "task-complete"}
+
+
+def relay_outbox_messages(bus_root: Path, roster: list[dict], epoch: int) -> list[dict]:
+    """Deliver agent-authored, explicitly-addressed outbox messages to inboxes.
+
+    Defect C2 (2026-07-28): _append_inbox was only ever called with messages the
+    daemon generated itself, so agent -> agent messages were written and silently
+    dropped. That made coordinator-agent's duties 4 and 6 (lease-revoke, re-read
+    nudges) unexecutable, and BUS_PROTOCOL rule 3's ack redelivery could never fire
+    because delivery never happened. Note _outbox_reports keys by task_id and drops
+    rows without one, so relay reads the outboxes directly rather than reusing it.
+
+    Idempotent: each delivered row carries `relayed_src` (the source msg id), and a
+    recipient's inbox is scanned for those before delivering.
+    """
+    ids = [str(e.get("id", "")).strip() for e in roster if str(e.get("id", "")).strip()]
+    delivered_src: dict[str, set[str]] = {}
+    for aid in ids:
+        rows, _ = _read_jsonl(bus_root / "inbox" / f"{aid}.jsonl")
+        delivered_src[aid] = {r["relayed_src"] for r in rows if r.get("relayed_src")}
+
+    advisory: list[dict] = []
+    for sender in ids:
+        rows, _ = _read_jsonl(bus_root / "outbox" / f"{sender}.jsonl")
+        for row in rows:
+            to, kind = row.get("to"), row.get("kind")
+            src = row.get("id")
+            if not to or not src or kind in _NO_RELAY_KINDS:
+                continue
+            targets = [a for a in ids if a != sender] if to == "*" else (
+                [to] if to in ids and to != sender else [])
+            # Never propagate an invalid row. Relay is a fan-out, so delivering a
+            # malformed message multiplies one bad row into N and leaves `validate`
+            # permanently red — a validator nobody can get to green stops being read.
+            # The source row is left untouched in the sender's outbox (single writer);
+            # the defect is surfaced for its author to fix.
+            try:
+                validate_row(bus_root, row, "msg")
+            except Exception as exc:  # noqa: BLE001
+                advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                                 "epoch": epoch, "kind": "defect", "agent": sender,
+                                 "detail": f"outbox msg {src} is schema-invalid and was NOT "
+                                           f"relayed: {exc}"})
+                continue
+            for target in targets:
+                if src in delivered_src.get(target, set()):
+                    continue
+                # Preserve the original author and payload; only the envelope is new.
+                msg = {k: v for k, v in row.items() if k not in ("id", "ts")}
+                msg["to"] = target
+                msg["relayed_src"] = src
+                _append_inbox(bus_root, [msg], epoch)
+                delivered_src.setdefault(target, set()).add(src)
+                advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                                 "epoch": epoch, "kind": "relayed", "from": sender,
+                                 "to": target, "relayed_src": src, "msg_kind": kind})
+    return advisory
+
+
 def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
     """M4 write path. Runs ONLY under authority: assign.
 
@@ -1209,6 +1273,22 @@ def tick(bus_root: Path, epoch: int, *, dry_run: bool = False) -> list[dict]:
     config = _load_config(bus_root)
     authority = _authority(config)
     advice = compute_advice(bus_root, config, epoch) + audit(bus_root, epoch)
+
+    # C2 relay. Runs at EVERY authority, including manual, because delivering an
+    # explicitly-addressed message is transport, not judgment — and gating it on
+    # `assign` would leave coordinator-agent's outbound channel dead until M4,
+    # which is exactly the defect being fixed.
+    #
+    # INVARIANT CHANGE, stated rather than slipped in: the daemon now writes
+    # inbox/* at manual authority, so it no longer writes "exactly two files" in
+    # manual/advisory mode. That file-count was M3's PROXY for "the daemon makes
+    # no decisions"; the underlying property still holds (relay chooses nothing —
+    # recipient, kind and payload all come from the sender), but M3's acceptance
+    # evidence must be restated against the decision property, not the file count.
+    if not dry_run:
+        roster = [r for r in (config.get("roster") or []) if isinstance(r, dict)]
+        advice += relay_outbox_messages(bus_root, roster, epoch)
+
     if authority == "assign" and not dry_run:
         # M4. In manual/advisory mode this branch never runs, so the daemon keeps
         # writing exactly two files — the property M3 verified.
