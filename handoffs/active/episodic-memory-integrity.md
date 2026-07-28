@@ -116,11 +116,22 @@ failure caught in amber.
         `skills.db` backed up to `skills.db.pre-purge-*`. Verified: bank count 0, retrieval returns
         0, so nothing stale can reach a prompt. The retrieval path itself remains wired and working —
         it just has nothing to serve until re-distillation.
-  - [ ] M-11a — Re-distil skills after the reseed (inference-gated). Note from the 2026-07-28
-        audit: `structural_lab.distill_skillbank` is broken as-is — it passes `teacher_model=` and
-        `categories=` kwargs that `DistillationPipeline.__init__` does not accept, and calls its
-        async `run()` synchronously; the failure is caught and reported as `{"status": "error"}`.
-        Fix the wiring as part of the re-distil. The 57 previous skills reference
+  - [x] M-11a-wiring — **The `distill_skillbank` autopilot surface is REPAIRED** ✅ 2026-07-28
+        (`47a3eecf`). It was a designed-in action (`actions.py:1848`, pre-distillation checkpoint
+        and all) that had returned `{"status": "error"}` on every invocation ever made — wrong
+        constructor kwargs plus a sync call of the async `run()`. Now mirrors `seed_skills.py`:
+        teacher resolution (claude|codex|local|mock), high-Q trajectory extraction reading the
+        contract `objective` key (seed_skills read only legacy `task_description` — fixed there
+        too), `asyncio.run`, guarded embedder, and `faiss_path` paired with a custom `db_path`
+        (my own smoke test caught the unpaired version writing vectors into the live sessions
+        dir). Smoke-tested end-to-end with MockTeacher, zero inference: distill → dedup → store →
+        FAISS-indexed, no live-tree side effects.
+  - [ ] M-11a — Re-distil skills (INFERENCE — the teacher LLM writes the skills). Two gates:
+        (1) **teacher policy** — the action default is `teacher="claude"`, i.e. autonomous
+        distillation would invoke the metered Claude CLI; operator decision pending on which
+        teacher autopilot may use unattended; (2) **data** — the reseeded store holds 200-char
+        objective stubs; rich trajectories arrive only from new live-traffic/autopilot writes, so
+        the first re-distil is best run after real traffic accumulates. The 57 previous skills reference
         `source_trajectory_ids` matching 0 current rows, and were distilled from 200-char stubs — all
         57 are thin routing heuristics because that is the ceiling of the input. Re-distilling over
         real trajectories is what makes SkillBank worth its retrieval slot.
