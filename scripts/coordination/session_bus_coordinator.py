@@ -1086,6 +1086,71 @@ def _append_inbox(bus_root: Path, msgs: list[dict], epoch: int) -> list[dict]:
 # double-count. token-request -> relay_tokens (token-queue.md); task-propose /
 # task-complete -> transcribe (queue.jsonl).
 _NO_RELAY_KINDS = {"token-request", "task-propose", "task-complete"}
+_ACK_REDELIVERY_REASON = "ack-deadline elapsed"
+
+
+def redeliver_unacked_messages(bus_root: Path, roster: list[dict], epoch: int) -> list[dict]:
+    """Rule 3: nudge recipients whose delivered ACK-required messages expired.
+
+    The recipient's outbox is the authoritative ACK source: it is the only file
+    that recipient may write.  A ``corr_id`` is considered acknowledged when an
+    ``ack`` row in that outbox carries the same value.
+
+    Bound: emit at most one ACK-deadline nudge per unacknowledged ``corr_id``.
+    The nudge remains durable in the recipient inbox, so re-running every tick
+    cannot grow the inbox without bound.  Its daemon-assigned message id is new,
+    while ``corr_id`` preserves the protocol's correlation identity.
+    """
+    ids = [str(entry.get("id", "")).strip() for entry in roster
+           if str(entry.get("id", "")).strip()]
+    advisory: list[dict] = []
+    now = datetime.now(timezone.utc)
+
+    for recipient in ids:
+        inbox, _ = _read_jsonl(bus_root / "inbox" / f"{recipient}.jsonl")
+        outbox, _ = _read_jsonl(bus_root / "outbox" / f"{recipient}.jsonl")
+        acked = {str(row.get("corr_id")) for row in outbox
+                 if row.get("kind") == "ack" and row.get("corr_id")}
+        nudged = {
+            str(row.get("corr_id")) for row in inbox
+            if row.get("kind") == "nudge" and row.get("corr_id")
+            and (row.get("payload") or {}).get("reason") == _ACK_REDELIVERY_REASON
+        }
+
+        for row in inbox:
+            corr_id = row.get("corr_id")
+            deadline_s = row.get("ack_deadline_s")
+            if not row.get("requires_ack") or not corr_id or deadline_s is None:
+                continue
+            corr_id = str(corr_id)
+            if corr_id in acked or corr_id in nudged:
+                continue
+            try:
+                delivered_at = datetime.fromisoformat(str(row.get("ts")))
+                if delivered_at.tzinfo is None:
+                    delivered_at = delivered_at.replace(tzinfo=timezone.utc)
+                overdue = now >= delivered_at + timedelta(seconds=float(deadline_s))
+            except (TypeError, ValueError, OverflowError):
+                continue  # malformed source is not a safe basis for a deadline action
+            if not overdue:
+                continue
+            _append_inbox(bus_root, [{
+                "to": recipient,
+                "kind": "nudge",
+                "corr_id": corr_id,
+                "task_id": row.get("task_id"),
+                "payload": {
+                    "reason": _ACK_REDELIVERY_REASON,
+                    "original_msg_id": row.get("id"),
+                    "instruction": "ack the correlated message from your own outbox",
+                },
+            }], epoch)
+            nudged.add(corr_id)
+            advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                             "epoch": epoch, "kind": "ack-redelivered",
+                             "agent": recipient, "corr_id": corr_id,
+                             "task_id": row.get("task_id")})
+    return advisory
 
 
 def relay_outbox_messages(bus_root: Path, roster: list[dict], epoch: int) -> list[dict]:
@@ -1288,6 +1353,7 @@ def tick(bus_root: Path, epoch: int, *, dry_run: bool = False) -> list[dict]:
     if not dry_run:
         roster = [r for r in (config.get("roster") or []) if isinstance(r, dict)]
         advice += relay_outbox_messages(bus_root, roster, epoch)
+        advice += redeliver_unacked_messages(bus_root, roster, epoch)
 
     if authority == "assign" and not dry_run:
         # M4. In manual/advisory mode this branch never runs, so the daemon keeps

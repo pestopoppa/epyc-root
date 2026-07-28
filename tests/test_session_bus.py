@@ -215,13 +215,15 @@ def test_rule_4_drain_peek_does_not_advance_but_drain_does(
     assert json.loads(cursor.read_text())["offset"] == (bus_root / "inbox" / "alice.jsonl").stat().st_size
 
 
-@pytest.mark.xfail(strict=True, reason="Rule 4 gap: cursor --set currently permits rewinds")
-def test_rule_4_cursor_only_advances(bus_root: Path) -> None:
+def test_rule_4_cursor_only_advances(bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
     """Rule 4 regression: a consumer cannot move its cursor backwards."""
     _provision(bus_root, "alice")
     assert bus.main(["--bus-root", str(bus_root), "cursor", "--agent", "alice", "--set", "20"]) == 0
+    assert bus.main(["--bus-root", str(bus_root), "cursor", "--agent", "alice", "--set", "20"]) == 0
+    assert bus.main(["--bus-root", str(bus_root), "cursor", "--agent", "alice", "--set", "21"]) == 0
     assert bus.main(["--bus-root", str(bus_root), "cursor", "--agent", "alice", "--set", "10"]) != 0
-    assert json.loads((bus_root / "cursors" / "alice.json").read_text())["offset"] == 20
+    assert "cannot rewind" in capsys.readouterr().err
+    assert json.loads((bus_root / "cursors" / "alice.json").read_text())["offset"] == 21
 
 
 def test_rule_8_authorized_revoke_drains_releases_and_skips_same_tick_assignment(
@@ -321,10 +323,12 @@ def test_epoch_fencing_stamps_new_advisory_rows_and_exposes_stale_epoch(
     assert [row["epoch"] for row in stale] == [6]
 
 
-@pytest.mark.xfail(strict=True, reason="C4 gap: ACK deadline scanning/redelivery is not implemented")
 def test_c4_unacked_message_redelivers_one_same_corr_id_nudge(
-        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """C4 / Rule 3: one overdue ACK produces one dedupeable nudge on later ticks."""
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
+    """C4 / Rule 3: one overdue ACK produces one dedupeable nudge on later ticks.
+
+    The explicit bound is one durable nudge per unacknowledged correlation id.
+    """
     _provision(bus_root, *AGENTS)
     _quiet_tick_seams(monkeypatch)
     assignment = _message(
@@ -333,8 +337,38 @@ def test_c4_unacked_message_redelivers_one_same_corr_id_nudge(
         payload={"lane": "none", "epoch": 1, "lease_expires_ts": "2000-01-01T00:00:00+00:00"},
     )
     _append(bus_root / "inbox" / "bob.jsonl", assignment)
+    # A normal nudge is not an ACK-deadline redelivery and must not suppress one.
+    _append(bus_root / "inbox" / "bob.jsonl", _message(
+        "alice", "bob", "nudge", seq=4, corr_id="corr-ack", payload={"reason": "other event"},
+    ))
+    acknowledged = _message(
+        "coordinator-daemon", "bob", "task-assign", task_id="already-acked", corr_id="corr-acked",
+        seq=2, requires_ack=True, ack_deadline_s=1,
+        payload={"lane": "none", "epoch": 1, "lease_expires_ts": "2000-01-01T00:00:00+00:00"},
+    )
+    _append(bus_root / "inbox" / "bob.jsonl", acknowledged)
+    _append(bus_root / "outbox" / "bob.jsonl", _message(
+        "bob", "coordinator-agent", "ack", seq=3, corr_id="corr-acked",
+    ))
+    foreign_ack = _message(
+        "coordinator-daemon", "bob", "task-assign", task_id="foreign-ack", corr_id="corr-foreign",
+        seq=5, requires_ack=True, ack_deadline_s=1,
+        payload={"lane": "none", "epoch": 1, "lease_expires_ts": "2000-01-01T00:00:00+00:00"},
+    )
+    _append(bus_root / "inbox" / "bob.jsonl", foreign_ack)
+    _append(bus_root / "outbox" / "alice.jsonl", _message(
+        "alice", "coordinator-agent", "ack", seq=6, corr_id="corr-foreign",
+    ))
     coordinator.tick(bus_root, epoch=1)
     coordinator.tick(bus_root, epoch=1)
-    nudges = [row for row in _read_jsonl(bus_root / "inbox" / "bob.jsonl")
-              if row["kind"] == "nudge" and row.get("corr_id") == "corr-ack"]
+    inbox = _read_jsonl(bus_root / "inbox" / "bob.jsonl")
+    nudges = [row for row in inbox if row["kind"] == "nudge" and row.get("corr_id") == "corr-ack"
+              and (row.get("payload") or {}).get("reason") == coordinator._ACK_REDELIVERY_REASON]
+    assert len(nudges) == 1
     assert len({row["id"] for row in nudges}) == 1
+    assert nudges[0]["id"] != assignment["id"]
+    assert not [row for row in inbox if row["kind"] == "nudge" and row.get("corr_id") == "corr-acked"]
+    assert [row for row in inbox if row["kind"] == "nudge" and row.get("corr_id") == "corr-foreign"
+            and (row.get("payload") or {}).get("reason") == coordinator._ACK_REDELIVERY_REASON]
+    assert bus.main(["--bus-root", str(bus_root), "drain", "--agent", "bob", "--peek"]) == 0
+    assert capsys.readouterr().out.count(nudges[0]["id"]) == 1

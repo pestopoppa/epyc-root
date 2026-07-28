@@ -350,6 +350,10 @@ def cmd_cursor(args: argparse.Namespace) -> int:
     if args.set is None:
         print(_cursor_get(bus_root, args.agent))
         return 0
+    current = _cursor_get(bus_root, args.agent)
+    if args.set < current:
+        raise BusError(f"cursor[{args.agent}] cannot rewind from {current} to {args.set}; "
+                       "BUS_PROTOCOL rule 4 permits only equal or advancing offsets")
     _write_atomic(path, {"agent": args.agent, "offset": int(args.set), "ts": _utcnow_iso()})
     print(f"cursor[{args.agent}] = {args.set}")
     return 0
