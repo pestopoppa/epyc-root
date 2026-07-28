@@ -6,6 +6,7 @@
 
 _Reuses the built harness (`/mnt/raid0/llm/tmp/cot-g1/`, SCAFFOLD-PREFIX mode) and the validated conditional deploy rule (reasoning-bound task + receiver latent capability). GPQA-48-class scale, single MI210 sidecar — small. Queue: after the post-v8 campaign GPU lane drains (MiniCPM M-2/M-3, np×L sweeps)._
 
+- [x] **G3 prerequisite — exact Qwable IQ4_XS artifact restored and verified** ✅ 2026-07-28 — `Qwable-v1.IQ4_XS.gguf` is present at the pinned HF revision `f35ea1502056a2886dd88fb8a29272f8f3c9c3a5`, `18,939,313,056` bytes, SHA-256 `3921bb8f1fc26ddd80ee97d0f48ccf507bd1dab04dbe4fc475e2eae65a05f460`. Durable restore receipt: `/mnt/raid0/llm/tmp/cot-g1/g3_20260728/restore_qwable_iq4xs.log`. This restores the fixed control artifact only; it does not execute G3.
 - [ ] **G3-0 — Qwable-standalone GPQA control** (the study's open caveat): does Qwable solve GPQA itself (relay) or amplify the receiver? Deployment value holds either way, but the mechanism read gates how to generalize to new generators.
 - [ ] **G3-1 — FF-non-MTP as generator** (prefix → same beneficiaries as the original study): tests whether the Fable-5-distillation value lives in the traces (transfers to 27B dense) or in Qwable's architecture. Uses the banked Q8 non-MTP GGUF (851 tensors, downloaded 2026-07-26).
 - [ ] **G3-2 — TC as generator**: tests the concise-prefix hypothesis — if TC's short, precise outputs match Qwable's 0.58× token profile at comparable rescue rate, it is the cheaper scaffold. License gate WAIVED by operator 2026-07-27 (performance-only).

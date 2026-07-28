@@ -255,6 +255,7 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
   scorer-tail replay, without regenerating inference, and the terminal row has `error: null`.
   T2/r1 is active. This is an evidence checkpoint only: it neither applies nor publishes the E8
   quality baseline.
+- [x] **E8 v5 partial-resume provenance, runtime isolation, and exact-tail prompt reconstruction** ✅ 2026-07-28 — the bounded resume instrument now binds the held region claim to the real zero-byte lock, seals source/runtime provenance, and reconstructs full prompt-bearing generation inputs from the sealed public vectors before checking their hashes against both public and scorer-only vectors. This closes the failed-source path that sent a scorer-only row (no prompt and `question_id=unknown`) to the tail collector. Orchestrator commits `ecb8445c`, `c5acee57`, and `3484828f`; focused validation passed and independent review approved the bounded retry scope (`T2/r1` ordinals `98/99`, then fresh `T2/r2-r3`). This completes the instrument repair only, not collection, baseline application, or publication.
 - [ ] **E8 quality baseline reseed/apply** — human-only protocol/source/apply scripts are
   prepared and parked. The earlier v4 collection is historical, non-decision evidence after the
   fixed-vector context defect. A first v5 launch failed before inference because its detached
