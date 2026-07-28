@@ -125,6 +125,15 @@ session restart — but it makes boundaries *durable*, not *instant*: a running 
 the target actually finished and is now idle and blocked waiting for input — it cannot refresh
 its own heartbeat while blocked, so the guard's refusal and the target's silence reinforce each
 other into a deadlock. `--heartbeat-max-age` does not help: the refusal keys on heartbeat state,
-not age. Do not bypass the guard with raw `tmux send-keys`. Full procedure and origin incident:
+not age. Do not bypass the guard with raw `tmux send-keys`.
+
+A refusal is a snapshot, not a verdict: check the pane first (a mid-generation session is not
+blocked, and the guard is correct), then keep re-probing with `tmux_adapter.py probe --agent <id>`
+rather than escalating immediately — most refusals self-clear (quiet-check ~20s, nudge rate limit
+600s, `working` heartbeat clears at the session's own next boundary). Escalate to the operator
+only once the block outlives the longest plausible self-clearing timer (10-15 minutes of
+continuous refusal with no pane activity) AND something is actually waiting on that session. Never
+busy-wait or bypass while probing; do other coordination work between probes (rule 2 covers
+blocking on a human too). Full procedure, threshold reasoning, and origin incident:
 `agents/coordinator-agent.md` → Guardrails.
 sees them at its next drain (defect C8, 2026-07-28).

@@ -116,10 +116,33 @@ Neither signs anything. Trust boundaries are human-only (`BUS_PROTOCOL.md` rule 
   either way. If it is genuinely idle but unreachable (a completed session that never refreshed
   its heartbeat, now blocked waiting for input, so it cannot refresh the heartbeat either — a
   deadlock, and `--heartbeat-max-age` does not rescue it because the refusal keys on state, not
-  age), do not send keys around the guard. Notify the operator: name the session, what it is
-  waiting on, why the adapter refuses, and the exact message to relay. The operator relays it
+  age), do not send keys around the guard — but do not escalate to the operator on the first
+  refusal either; a genuinely mid-generation session is not blocked at all, and escalating it is
+  the coordinator misreading a guard that is working correctly. Escalate only once BOTH hold: (1)
+  the block has persisted across repeated probes long enough that it cannot be one of the known
+  self-clearing conditions — anchor this to the actual timers, not a number pulled from nowhere:
+  the quiet-check window is ~20s, the nudge rate limit is 600s (`--min-interval-s`), and a
+  `working` heartbeat clears whenever the session next hits a boundary, so a block that outlives
+  the longest plausible self-clearing timer, on the order of 10-15 minutes of continuous refusal
+  with no pane activity, is the point where it stops being transient; and (2) something is
+  actually waiting on that session — an unreachable session with no queued work and nothing
+  blocked behind it is a note for the next report, not an interrupt, while one holding up a
+  deadline-bearing lane, an operator gate, or another main's dependency is worth interrupting for.
+  Below that threshold, keep re-probing instead of reporting. Once both hold, notify the operator:
+  name the session, what it is waiting on, why the adapter refuses, and the exact message to
+  relay. The operator relays it
   manually, and the relayed message must ask the session to refresh its heartbeat so the deadlock
-  clears itself. Mirror image of defect C8 (unreachable for want of a delivery path): here the
+  clears itself. A refusal is a snapshot, not a verdict — `tmux_adapter.py probe --agent <id>` is
+  read-only and cheap, so keep re-probing on a sane interval while the relay is pending rather than
+  treating the first refusal as permanent: the quiet-check window expires as the pane settles, the
+  nudge rate limit expires on a timer, and a stale `working` heartbeat clears the moment the
+  session refreshes it at its own next boundary. If the guard clears on its own, send the nudge
+  normally through the adapter and tell the operator the relay is no longer needed. Distinguishing
+  temporarily-refused from permanently-unreachable before escalating is the coordinator's job —
+  escalating a condition that would have cleared in 60 seconds wastes the operator's attention, the
+  scarcest resource in the loop. Never busy-wait tightly and never bypass while waiting; continue
+  other coordination work between probes (rule 2: no agent blocks on the bus, including blocking on
+  a human). Mirror image of defect C8 (unreachable for want of a delivery path): here the
   delivery path exists but the liveness signal lying about it is the obstacle. Both end with a
   main sitting idle and invisible while work waits on it. Origin: 2026-07-28,
   `claude-gpu-lane` finished a review and sat idle awaiting an answer while its heartbeat still
