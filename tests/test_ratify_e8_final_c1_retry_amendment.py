@@ -352,10 +352,10 @@ def test_test_mode_cannot_target_canonical_root_or_evidence(amendment_fixture: d
 
 def test_production_defaults_pin_the_reviewed_runner_and_validator() -> None:
     text = SOURCE_SCRIPT.read_text(encoding="utf-8")
-    assert "abbcd699327b0da4327567e5a07d72fbc97aa29c" in text
-    assert "1617b2bff226bb94a5ecda82f48df7631d1e40c5" in text
+    assert "6907582a0d67e6fded47b9350b87cb911c8d83b3" in text
+    assert "db35e179b7b35f96d55b5ae755bdcf421dbe4d2b" in text
     assert "scripts/benchmark/final_c1_retry.py" in text
-    assert "1825d09a82124bcbd8583515d0baa0be773433d68531e6d8eb74ca33382c637b" in text
+    assert "0bc35b84399df7d7434de6b356f58545f28cea89bf164aaa85977d7954ce6295" in text
     assert "scripts/benchmark/final_c1_validator.py" in text
     assert "b82c49cfa362d75496d5e925d58ae5b11d1d33c3d9d14a6f7f796a6c6bf4e977" in text
     assert "_TO_BE_SUPPLIED__" not in text

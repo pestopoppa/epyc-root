@@ -47,10 +47,10 @@ EXPECTED_FAILED_SIDECARS="97:a550c07752f8dedc0fdf5c4582b587c90f3b624405ed1454f62
 # These are deliberately unresolved until the owning orchestrator integration
 # supplies its reviewed final-c1 runner and validator pins. A human token must
 # never authorize an unpinned instrument.
-EXPECTED_ORCH_COMMIT="abbcd699327b0da4327567e5a07d72fbc97aa29c"
-EXPECTED_ORCH_TREE="1617b2bff226bb94a5ecda82f48df7631d1e40c5"
+EXPECTED_ORCH_COMMIT="6907582a0d67e6fded47b9350b87cb911c8d83b3"
+EXPECTED_ORCH_TREE="db35e179b7b35f96d55b5ae755bdcf421dbe4d2b"
 RUNNER_REL="scripts/benchmark/final_c1_retry.py"
-EXPECTED_RUNNER_SHA256="1825d09a82124bcbd8583515d0baa0be773433d68531e6d8eb74ca33382c637b"
+EXPECTED_RUNNER_SHA256="0bc35b84399df7d7434de6b356f58545f28cea89bf164aaa85977d7954ce6295"
 VALIDATOR_REL="scripts/benchmark/final_c1_validator.py"
 EXPECTED_VALIDATOR_SHA256="b82c49cfa362d75496d5e925d58ae5b11d1d33c3d9d14a6f7f796a6c6bf4e977"
 
