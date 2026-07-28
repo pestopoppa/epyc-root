@@ -66,7 +66,15 @@ flags:
 
 caps:
   max_headless_workers: 0
-  max_spawns_per_day: 3
+  # Raised 3 -> 6 by operator direction 2026-07-28. NOTE THE SEMANTICS: cmd_spawn counts
+  # spawn EVENTS in adapter-ledger.jsonl for today, not live windows — so killing a main does
+  # NOT return its slot. On 2026-07-28 three spawns were used while only two mains were alive,
+  # blocking further spawns. The operator's expectation (and the better design) is a CONCURRENCY
+  # cap on simultaneous live mains, which is what actually costs compute, context and attention.
+  # A daily action cap instead penalises churn and perversely discourages closing an idle
+  # session — cutting against the lifecycle rule that says "nothing assignable -> close it".
+  # Filed as a task; this bump is headroom in the meantime, not the fix.
+  max_spawns_per_day: 6
   triage_calls_per_day: 0
 
 leases:
