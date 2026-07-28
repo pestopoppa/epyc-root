@@ -171,6 +171,7 @@ Documents in `handoffs/archived/`, `handoffs/completed/`, `progress/`, and `CHAN
 - When asked to kill a process, **verify it is actually dead** after the kill attempt. Run `ps -p <pid>` to confirm. If SIGINT/SIGTERM fails, immediately escalate to SIGKILL. Do not report success until `ps` confirms the PID is gone.
 - When running autopilot or long-lived server processes, **always check if the running process is stale** (predates recent code changes) before declaring a fix is deployed. Compare process start time (`ps -o lstart -p <pid>`) against file modification times. Restart the process if needed.
 - **API reload vs full stack reload**: when the orchestrator API (uvicorn, port 8000) needs a restart, reload only the API — do NOT reload the entire stack (which restarts llama-servers, embedders, etc). Use `orchestrator_stack.py reload orchestrator`. **API-only reload: do NOT stop autopilot first** — it will reconnect to the new API. **Full stack reload: stop autopilot first**, then reload, then restart it.
+- **Reload ownership**: this HOW guidance does not authorize WHO may trigger a reload or WHEN — including the API-only case. If a session owns the inference, any reload (API-only or full stack) must be executed by that session, at a moment it chooses; it is never forced on its workflow from outside. Full rule + origin incident: `agents/shared/OPERATING_CONSTRAINTS.md` → *Inference and Benchmarks*.
 
 ## Research Intake
 

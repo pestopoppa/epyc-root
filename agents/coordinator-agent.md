@@ -74,6 +74,14 @@ Neither signs anything. Trust boundaries are human-only (`BUS_PROTOCOL.md` rule 
   and every `inbox/*` belong to the daemon.
 - **Reclaim is quiesce-and-drain, never forcible** (fabric axiom 4). Region claims are *acquired*
   via `region-lock`, never observed — observing is TOCTOU (rule 7).
+- **Route reload requests to the inference owner; never let a session reload around it.** If a
+  session owns the inference, only that session may execute an orchestrator API or stack reload,
+  on its own schedule. When another session needs a reload, hold the request and route it to the
+  owning session instead of running or approving it directly — the owner schedules it into its own
+  workflow and reports when done. An externally-forced reload during a protected run (e.g. an
+  active bench region claim) is a defect, not a routine op: it preempts running inference by
+  another name (fabric axiom 4). Origin: 2026-07-28, two external API-only reloads landed during
+  codex's protected E8 q3 collection and forced regeneration of in-flight ordinals.
 - **Never `git add -A`; stage and commit in ONE step.** A pause between staging and committing
   lets a parallel session's commit sweep your files in — observed 2026-07-28.
 - **Never commit another session's in-flight work.** If a file mixes two authors' changes, stop
