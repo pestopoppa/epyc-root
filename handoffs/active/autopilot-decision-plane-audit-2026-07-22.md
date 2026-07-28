@@ -256,8 +256,13 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
   `409/409` clean samples before T2/r1 began; T2/r1 remains active. This is an evidence
   checkpoint only: it neither applies nor publishes the E8 quality baseline.
 - [ ] **E8 quality baseline reseed/apply** — human-only protocol/source/apply scripts are
-  prepared and parked. Execute only after numeric `16/16/0`, then validate and publish the
-  post-boundary quality baseline before releasing the Laguna Q4 CPU lane.
+  prepared and parked. The earlier v4 collection is historical, non-decision evidence after the
+  fixed-vector context defect. A first v5 launch failed before inference because its detached
+  runtime root was wrong; the targeted fix is `43600480` on pushed branch
+  `e8-v5-runtime-root-20260727` (`44` tests, Ruff, compile, and blocker-free preflight). Clean
+  v5 `T1/r1` collection is now **RUNNING** from that commit. Do not apply or publish a baseline
+  until the complete v5 evidence bundle and its single consolidated human trust-boundary action
+  are ready.
 - [x] **E8-LAUNCH-RACE — scope failed-start cleanup to the wrapper-owned launch** ✅ 2026-07-26.
   Independent review found that the initial rearm wrapper's global fallback `pgrep` cleanup
   could terminate a concurrent valid AutoPilot launch. The wrapper now records the returned

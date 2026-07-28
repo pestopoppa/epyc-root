@@ -1,7 +1,7 @@
 # Episodic Memory Integrity — 2026-07-05 corruption, root cause and repair
 
-**Status**: active — write path FIXED and proven self-healing in production; data repair DONE;
-reseed STAGED and relayed to Codex 2026-07-27
+**Status**: active — write path FIXED and proven self-healing in production; data repair and
+terminal live-store reseed DONE; post-reseed follow-ups remain
 **Created**: 2026-07-27
 **Priority**: HIGH — this subsystem underpins routing, MemRL and SkillBank
 **Categories**: agent_architecture, memory_augmented, routing_intelligence
@@ -55,9 +55,12 @@ failure caught in amber.
         the reload with `desync = 0` throughout (ntotal 707,276 → 707,561), **0/291 with a NULL
         `update_count`** (the pre-fix population was 22,949 of 54,960) and **0/291 with a NULL
         `embedding_idx`**. The desync fix is confirmed under live writes, not just at reload.
-- [ ] M-10 — **Reseed** (`reseed_episodic_store.py`). Relayed to Codex 2026-07-27; script HARDENED
-      by Codex and reviewed+approved 2026-07-27 (`517a8c38`, `7b2e58a9`); execution handed back.
-      Needs inference (~58,132 BGE embeddings) and a window with no pinned CPU bench running.
+- [x] M-10 — **Reseed** (`reseed_episodic_store.py`). ✅ 2026-07-28. Codex ran the hardened
+      terminal path at receipt stamp `20260727T220715Z`: **58,281** task memories re-embedded,
+      0 telemetry exclusions, index/id_map `58,281/58,281`, `desync=0`, and 0 broken
+      `embedding_idx` self-resolutions. Durable survey and apply logs:
+      `artifacts/episodic-memory-reseed-20260727/`. The subsequent API-only reload succeeded and
+      restored health to `6/6`; no full-stack restart or production-lineup change occurred.
   - [x] M-10b — **Review of Codex's hardening: APPROVED, and it caught two real bugs of mine.**
         ✅ 2026-07-27. 82 tests pass across reseed/memory_record/faiss/parallel_embedder.
         **(i) My reseed could have silently produced a corrupt store.** It built its embedder with
@@ -78,25 +81,16 @@ failure caught in amber.
         (`return 0 if len(sample) == args.sample_size and mean > 0.95 else 1` — full sample AND
         mean >0.95, so a short sample cannot pass), and `_checked_batch()` validating shape
         `(n, 1024)` and `np.isfinite` per batch.
-  - [~] M-10c — **RESEED IN FLIGHT.** Codex started it 2026-07-27T22:07:15Z
-        (`reseed_episodic_store_20260727T220715Z`). Backups complete
-        (`*.pre-reseed-20260727T220715Z` for `embeddings.faiss` / `id_map.npy` / `episodic.db`);
-        marker at `state: backups_complete`. **Do not touch the store while it holds the writer
-        lock** — no reads of `embeddings.faiss`/`id_map.npy`, and do not run the cosine verifier
-        until it exits.
-        **NOTE**: the SS-BENCH-GATE guard added to `orchestrator_stack.py` does NOT cover this
-        script — it is not a stack lifecycle action — so the "no pinned CPU bench" precondition
-        remains a manual check.
-  - [ ] M-10d — **Result lands automatically at `/mnt/raid0/llm/tmp/reseed_acceptance.log`** — a
-        detached watcher (armed 2026-07-27T22:36Z) waits for the reseed PID, then runs the marker
-        dump, the cosine verifier and a final desync check into that file. Read it first next
-        session. Manually, run
-        `verify_episodic_reseed_cosine.py --sample-size 12` and record the numbers here. It exits 0
-        only on a full sample AND mean > 0.95. Pre-reseed baseline: **mean 0.5505, 0/12 above 0.9**.
-        If it fails, roll back from `*.pre-reseed-20260727T220715Z` — do not iterate on the live
-        store.
-  - [ ] M-10a — Acceptance is the **cosine test**, not the exit code: re-embed a row's own text and
-        compare to its stored vector. Before: **mean 0.5505, 0/12 above 0.9**. Pass: **> 0.95**.
+  - [x] M-10c — **RESEED EXECUTED.** ✅ 2026-07-28. Started 2026-07-27T22:07:15Z
+        (`reseed_episodic_store_20260727T220715Z`) after its three same-stamp backups completed;
+        it exited after publishing the repaired live index and database.
+  - [x] M-10d — **Acceptance captured.** ✅ 2026-07-28. The full 12-row cosine verifier produced
+        mean **1.0000000496705372**, **12/12 above 0.9**, `ntotal=58,281`, `id_map_len=58,281`,
+        `desync=0`, and `bad=0`; see
+        `artifacts/episodic-memory-reseed-20260727/cosine-acceptance.log`.
+  - [x] M-10a — Acceptance is the **cosine test**, not the exit code. ✅ 2026-07-28. The pre-reseed
+        baseline was mean **0.5505**, 0/12 above 0.9; the required full sample now exceeds the
+        `>0.95` gate at **1.0000000496705372**. No rollback was required.
 - [x] M-11 — **SkillBank is retrievable.** ✅ 2026-07-27. The consumer was never missing:
       `state.hybrid_router` is replaced by `SkillAugmentedRouter` (`services/memrl.py:481`) whenever
       the `skillbank` flag is on, and it is. Only the search key was absent —
@@ -157,7 +151,8 @@ time*, so that text is gone; answers/tool-calls/REPL-steps/reasoning were never 
 Trajectories arrive only from **new** writes through the fixed path, which is already live. Do not
 expect the reseed to deliver the trajectory store — it delivers the clean baseline underneath it.
 
-Also expected: the index shrinks ~707,276 → ~58,132 vectors, because it currently spans
+As observed: the index shrank from ~707k legacy-inclusive vectors to **58,281** live task vectors,
+because it previously spanned
 `memories_appendonly_legacy` (680,922 archive rows). No code reads that table (verified).
 
 ## The store carries real signal — this is worth fixing
@@ -203,5 +198,5 @@ Common cause of 2 and 3: **asserting a negative without checking the alternative
 
 ## Reporting
 
-Update M-10/M-10a with the Codex reseed result including the **cosine acceptance numbers**. If
-acceptance fails, roll back from `*.pre-reseed-*` and record why — do not iterate on the live store.
+M-10/M-10a are closed with the durable cosine result above. Next memory work is M-11a, M-12,
+M-15, and M-16; do not reopen the reseed unless a new evidence-backed integrity failure appears.

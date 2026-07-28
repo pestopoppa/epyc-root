@@ -3,7 +3,8 @@
 **Category**: `memory_augmented`
 **Confidence**: verified
 **Last compiled**: 2026-07-27 (adds the vector-resolution corruption post-mortem)
-**Sources**: 28+ documents (2 deep-dives, 22 intake entries, active handoffs, progress logs, K-MEM/Tulving measurement context, and the 2026-06-28 W4/W6 reboot-readiness checkpoint)
+**Checkpoint note**: terminal episodic-reseed acceptance added 2026-07-28; the global source-manifest timestamp remains unchanged because unrelated source drift still requires separate compilation.
+**Sources**: 29+ documents (2 deep-dives, 22 intake entries, active handoffs, progress logs, K-MEM/Tulving measurement context, and the 2026-06-28 W4/W6 reboot-readiness checkpoint)
 
 ## Summary
 
@@ -308,3 +309,28 @@ findings:
 
 Sources: `handoffs/active/episodic-memory-integrity.md`, `orchestration/repl_memory/faiss_store.py`,
 `scripts/maintenance/repair_faiss_id_map.py`, `progress/2026-07/2026-07-27.md`.
+
+### Terminal reseed acceptance (2026-07-28)
+
+The exact id-map repair restored pointer consistency but could not repair the separate
+id-map-position-to-vector offset. The live store was therefore rebuilt from its task text under a
+strict no-fallback BGE embedding contract. Receipt `20260727T220715Z` re-embedded **58,281** task
+memories; the published FAISS/id-map pair is `58,281/58,281`, with `desync=0` and no metadata row
+resolving to the wrong id.
+
+The acceptance test deliberately re-embedded a sampled row's own text and compared it with the
+published vector by cosine, not by byte hash. All **12/12** samples exceeded 0.9 and the mean was
+**1.0000000496705372**, clearing the pre-registered `>0.95` gate; the same test before reseed was
+mean `0.5505`, 0/12 above 0.9. This proves that the new vectors belong to their metadata rows, not
+merely that the rebuilt index is structurally self-consistent. The API-only reload after publication
+returned service health to `6/6` without changing the lineup.
+
+The repair is a clean baseline, not recovery of historical trajectory fidelity: 41,057 source
+objectives were already truncated to 200 characters, and answers/tool calls/reasoning were never
+stored. New fixed-contract writes are required to accumulate richer trajectory data.
+
+Sources: [episodic-memory integrity handoff](../handoffs/active/episodic-memory-integrity.md),
+[2026-07-28 progress](../progress/2026-07/2026-07-28.md),
+[`dry-run.log`](../artifacts/episodic-memory-reseed-20260727/dry-run.log),
+[`apply.log`](../artifacts/episodic-memory-reseed-20260727/apply.log), and
+[`cosine-acceptance.log`](../artifacts/episodic-memory-reseed-20260727/cosine-acceptance.log).
