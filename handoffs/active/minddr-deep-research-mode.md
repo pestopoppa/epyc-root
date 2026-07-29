@@ -1,6 +1,6 @@
 # MindDR Deep Research Mode
 
-**Status**: REFRESHED 2026-05-28 — Phase 1 scaffold landed; MD-9 A/B is the live gate; Phase 2 GPU-gated and Phase 3 conditional
+**Status**: REFRESHED 2026-07-29 — Phase 1 scaffold landed; MD-9 A/B is the live gate; Phase 2 hardware is present but its training-runtime preflight is blocked; Phase 3 conditional
 **Created**: 2026-04-22 (split from `routing-intelligence.md` per deep-dive integration pass)
 **Updated**: 2026-05-28 (executor gate clarified after MD-1..MD-8 landed)
 **Categories**: agent_architecture, routing_intelligence, training_distillation
@@ -8,9 +8,9 @@
 **Depends on**: `routing-intelligence.md` (classifier infrastructure), `eval-tower-verification.md` EV-9 (multi-dimensional rubric)
 **Sibling (same gate, lighter weight)**: [`gpu-cot-scaffold-sidecar.md`](../completed/gpu-cot-scaffold-sidecar.md) — its **G1** ("does an injected CoT scaffold beat a code worker's own thinking, per token?") is **MD-9 one weight down**. Both live in the **reasoning-economics cluster** (`research-evaluation-index.md`) and must share the EV-9 DRACO/MindDR scoring contract + token-normalization, not re-derive them.
 
-> **🔔 Reopen-trigger FIRED (Phase 2) — 2026-07-18 stale-open audit.** The Phase-2 hardware gate changed: the DGX-Spark path is dead, but the **MI210 is present (2026-07-02)** → a gfx90a training-viability smoke is now possible. (MD-9 A/B remains the live Phase-1 gate, still inference-window-gated.) See [`stale-open-audit-2026-07-18.md`](stale-open-audit-2026-07-18.md).
+> **🔔 Reopen-trigger FIRED (Phase 2) — 2026-07-18 stale-open audit.** The hardware-acquisition wait is cleared: the DGX-Spark path is dead and the **MI210 is present (2026-07-02)**. The 2026-07-29 preflight found no pinned gfx90a training runtime, so the viability smoke remains blocked on provisioning plus a quiet-window lease. (MD-9 A/B remains the live Phase-1 gate, still inference-window-gated.) See [`stale-open-audit-2026-07-18.md`](stale-open-audit-2026-07-18.md).
 
-- [ ] Phase-2: run a gfx90a (MI210) training-viability smoke now that the hardware gate flipped (was DGX-blocked)
+- [ ] Phase-2: run a gfx90a (MI210) training-viability smoke now that the hardware gate flipped (was DGX-blocked) — **BLOCKED 2026-07-29**: GPU is idle and visible, but both project uv environments lack `torch`, `transformers`, `accelerate`, `trl`, `peft`, and `datasets`; requires a pinned gfx90a-compatible training environment, not an ad-hoc install.
 
 ## 2026-05-28 Audit Reset — Executor Start Here
 
@@ -65,7 +65,7 @@ Success criterion: ≥+5pp quality uplift on 20-40 research-like sentinel querie
 
 ### Phase 2 — Four-stage RL specialization (GPU-gated, deferred)
 
-Post-DGX-Spark: implement MindDR's four-stage training recipe on Qwen3-32B or Qwen3-30B-A3B backbone. Requires AReaL async RL runner (or equivalent).
+Post-DGX-Spark wording is retired: a MI210 is installed, but no pinned gfx90a training runtime exists yet. AReaL is not an assumed MI210 runner — its current deep dive targets 128+ H800 GPUs and recommends against adoption here. Select an equivalent runner only after the minimal ROCm autograd smoke and an approved training plan.
 
 ### Phase 3 — Architectural refactor (conditional on Phase 1 success)
 
@@ -142,7 +142,7 @@ Per `feedback_handoff_driven_tracking`: all phase transitions require progress/l
 
 Per `feedback_checkpoint_pareto_state`: Phase 2 RL training must save autopilot_state.json checkpoints; lost frontier = lost compute.
 
-Phase 2 GPU training (MD-10..13) is gated on **MI210/gfx90a training viability** (re-gated 2026-07-14). The prior "DGX Spark acquisition" gate is dead — DGX was never bought; an AMD MI210 (gfx90a, 64GB, ROCm 6.2) was installed 2026-07-02. The gate is now the pending training-viability smoke against gfx90a, not a hardware-acquisition wait.
+Phase 2 GPU training (MD-10..13) is gated on **MI210/gfx90a training viability** (re-gated 2026-07-14). The prior "DGX Spark acquisition" gate is dead — DGX was never bought; an AMD MI210 (gfx90a, 64GB) was installed 2026-07-02. The gate is now a pinned ROCm-runtime training-viability smoke against gfx90a with an approved quiet window, not a hardware-acquisition wait.
 
 ## Cross-references
 
