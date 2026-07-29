@@ -1,6 +1,6 @@
 # Agentic ROCm Kernel Authoring — MI210 Verify+Profile Harness
 
-**Status**: stub (design / investigation) — hardware-gated
+**Status**: active investigation — hardware present; P-GPU-1 ratified; GPU runs remain operator-approved
 **Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-06-03 (GEAK keystone + AgentKernelArena)
 **Categories**: hardware_optimization, agent_architecture, autonomous_research, tool_implementation, training_distillation
 **Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked and the llama.cpp HIP build is verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`; memory `project_mi210_gpu_inference`). This program is now **ACTIVE**, priority **MEDIUM** — it is an *optimization* (close the measured quantized-MMQ-dequant roofline gap: ~33% Q4_K / ~47% Q8 at batch-1), **not a production blocker**: llama.cpp-HIP already serves ~910 tok/s @32-way as-is (2026-07-02 obs). First step = reproduce **GEAK-eval** (intake-674, arXiv 2507.23194) on gfx90a — compile+correctness+timing round-trip — as the sanity gate. **Scoping caveat (adversarially verified 2026-07-03)**: GEAK-v1 is the *only* gfx90a-proven substrate (MI250X = same CDNA2 ISA family); **AgentKernelArena (679) / robust-kbench (668) are gfx942/CDNA3-listed** and must be treated as ports, not drop-in reproductions. All GPU runs remain operator-approved measurements per MEASUREMENT.md (write P-GPU-1 first). [was: "expected ~July 2026; nothing executes until the card racks" — stale after 2026-07-02 install]
@@ -71,7 +71,7 @@ Same `gfx90a` ISA **predicts compile compatibility, not performance equivalence.
 ## Progress checklist
 
 - [ ] Reproduce GEAK-eval (intake-674) on gfx90a MI210 - compile+correctness+timing round-trip (first sanity gate)
-- [ ] Write P-GPU-1 measurement protocol before any GPU runs
+- [x] Write P-GPU-1 measurement protocol before any GPU runs ✅ 2026-07-29 — human amendment ratified the canonical MI210 GPU protocol in [`MEASUREMENT.md`](../../MEASUREMENT.md#p-gpu-1--mi210-gpu-canonical-throughput-ratified-2026-07-19) on 2026-07-19; this closes protocol authoring only, not any GPU run or decision claim.
 - [ ] Register controllers (Claude+Codex, EvoEngineer, KernelFoundry, K-Search, Xe-Forge, GEAK) as AgentKernelArena adapters and A/B on gfx90a
 - [ ] Build C4 gfx90a profiler-metric analyzer (GEAK-v2 raw-rocprof path first)
 - [ ] Build C6 anti-reward-hacking layer (robust-kbench + AgentKernelArena unseen-shape)
