@@ -903,6 +903,49 @@ freezes/cutovers, host reboots).
     Latent, not live: no roster row triggered any of these shapes, and the real config resolves to
     the same 4 mains before and after. 40 → 46 tests in `tests/test_tmux_adapter.py`; 48 across
     both suites.
+  - [ ] **C19 — the whole-repo test result depends on WHICH PATH you invoke it from.** *Measured
+    2026-07-29, and it is why two sessions reported different truths about the same commit.* Same
+    tree, same commit, same interpreter:
+    `cd /mnt/raid0/llm/epyc-root && pytest tests/test_ratify_pbench4_fg4b_*` → **28 passed**;
+    `cd /workspace && …` → **3 failed, 25 passed**. `/workspace/.git` and
+    `/mnt/raid0/llm/epyc-root/.git` are the same inode (96604699), so this is one tree reached two
+    ways. The E8 ratifier scripts under `artifacts/operator/` compare the invocation path against
+    the literal canonical root as a **trust-boundary guard** ("production ratifier must run from
+    the canonical root"). *The guard is correct and must not be relaxed to make a test pass* — it
+    is exactly the kind of check that should not accept a second name for the production root.
+    Consequence for C16: a pass/fail tally from this repo is only comparable when the invocation
+    path is quoted with it. `pytest.ini` now documents the canonical path at the top. Open question
+    for the owner of those scripts (codex / measurement, NOT this lane): should the guard compare
+    `realpath` so one physical tree gives one answer, or is binding to the literal path the
+    intended strictness? Either answer is fine; the current silent divergence is not.
+  - [ ] **C17 — a live window that NO roster row claims is silently excluded from the count, and
+    there is one right now.** *Found 2026-07-29 while auditing routed bus messages.* C14 closed the
+    **row → window** direction (a roster row whose endpoint could not be read). This is the
+    **window → row** direction, and it is live rather than latent: session `agent` holds a window
+    named `claude` that no roster row claims (`claude-main` is RETIRED with a `monitor:file`
+    endpoint and its historical window was `claude_A`). `live_mains` reports 4 —
+    `claude-gpu-lane`, `codex`, `coordinator-agent`, `fable-auditor` — and `claude` is attributed
+    to nobody. **If that window is a main, the cap is really 5/4 and a slot has been invented**;
+    the count resolves the ambiguity in the capacity-inventing direction, which is the one this
+    module keeps getting wrong.
+    Why it was not simply fixed with C14: an unattributed window is indistinguishable from a tool
+    window, and `htop`/`btop`/`fish` are legitimately not mains — refusing on every unattributed
+    window would make spawn refuse permanently. The principled fix needs config data that does not
+    exist yet: an explicit `tmux.non_main_windows` allowlist, after which any window that is
+    neither a roster main nor allowlisted refuses (or at minimum surfaces in `probe`). That is a
+    new config key changing spawn behaviour, so it is an operator decision, not an implementer's.
+    **Immediate question, independent of the fix:** is `claude` a main needing a roster row, or an
+    operator shell? If it is a main, `config.yaml` is stale and the concurrency count is
+    understating the fleet today.
+  - [ ] **C18 — a routed message to a dead session is dropped silently.** *Observed 2026-07-29.*
+    `msg-20260729T092520Z-15-claude-gpu-lane` routed to `[fable-auditor, codex-bus-tests]`;
+    `fable-auditor` received it, `codex-bus-tests` no longer exists (no tmux window, heartbeat 16.4h
+    stale) and its share vanished with no defect, no bounce, nothing. `append` validates that a
+    `needs_routing_to` entry is a roster ID — but a roster row outlives the session, so ID validity
+    is not reachability. fable-auditor is making unreachable recipients emit a defect; this item
+    tracks it from this lane and is closed by that work. Audit done here: of 16 outbox rows only 2
+    carry `needs_routing_to`, and `codex-bus-tests` was the only unreachable recipient among them —
+    re-sent to `coordinator-agent` as `msg-20260729T100100Z-18-claude-gpu-lane`.
   - [ ] **C15 — `caps.max_concurrent_mains: 4` is saturated at 4/4.** Set 2026-07-28 against a
     then-steady state of 3 live mains; a `fable-auditor` window brought it to 4 within the hour,
     so the next spawn needs a main closed. Working as designed — a closed main now returns its
