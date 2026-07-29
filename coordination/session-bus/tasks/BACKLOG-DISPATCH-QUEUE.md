@@ -97,7 +97,7 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 20 | `speculative-decoding-mtp-refresh.md:236` | intake 2a | none | S | `models/*.gguf` headers | Tensor-count header gate for the DavidAU Qwen3.6-27B MTP GGUFs |
 | 21 | `agent-file-prose-compression.md:244` | intake 2a | none | S | `agent-file-prose-compression.md` | Re-source `/doctor` behaviour from the CLI before speccing |
 | 22 | `learned-routing-controller.md:1613` | deep-dive correction | none | S | (guardrail note) | Standing guardrail: do not import intake-866 equivalence framing |
-| 23 | `document-parser-table-bench.md:144` | consequence | none | S | (guardrail note) | Guardrail: no MinerU/GLM-OCR downloads as odl_bench swaps |
+| 23 | ~~`document-parser-table-bench.md:144`~~ **✅ CLOSED 2026-07-29** | consequence | none | S | (guardrail note) | Guardrail: no MinerU/GLM-OCR downloads as odl_bench swaps |
 | 24 | `scorer-fork-drift-audit-2026-07-22.md:257` | residual tasks | none | S | `scripts/benchmark/seeding_legacy.py` | Guard or delete the legacy ComparativeResult reward-injection path |
 | 25 | ~~`autopilot-continuous-optimization.md:1529`~~ **✅ CLOSED 2026-07-29** | AP-32 | none | S | `wiki/agent-architecture.md`, `strategy_store.py` | Strike unmeasured +1.1% claim; guard the dead linter |
 | 26 | `architect-model-selection-bench.md:330` | follow-up tooling | none | S | `scripts/bench/gpu_lib.sh`, `run_arm.sh`, `run_budget.sh` | Promote scratchpad GPU driver scripts into the repo |
@@ -489,7 +489,7 @@ re-grep before assigning.
 - L70 | none | S | Y | Phase C English-only table TEDS | Decide table path: ODL, hybrid, or PaddleOCR wholesale | handoff
 - L71 | none | M | Y | Phase-D decision | Consider MinerU2.5-Pro / GLM-OCR only if PaddleOCR underperforms | handoff
 - L72 | cpu | L | Y | - | Domain-transfer check on real orchestrator-ingested PDF corpus | odl_bench/, local PDF corpus
-- L144 | none | S | Y | - | **READY** Guardrail: no MinerU/GLM-OCR downloads as odl_bench swaps | ?
+- L144 | none | S | Y | - | **CLOSED 2026-07-29** — both require a separately scoped multi-call pipeline harness before any download or benchmark | Guardrail: no MinerU/GLM-OCR downloads as odl_bench swaps | ?
 - L145 | none | M | Y | PaddleOCR-VL pipeline proof | Scope MinerU2.5-Pro-2605 as separate pipeline-harness project | ?
 
 ## dynamic-stack-concurrency.md (6)
