@@ -140,7 +140,7 @@ _Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25
 _Via `/research-intake` Stage-4 (intake-921 / 926 / 931 / 934, plus KAT-Coder-V2.5 §4.1 and the DSPy/GEPA cost line). All figures below are OBSERVATION-grade under MEASUREMENT.md — external, closed-model, mostly n=1 per cell. None gates HS-4._
 
 - [x] **HS-6 — Audit our Layer-B surface against the six-dimension harness decomposition** (context assembly / tool interaction / generation control / orchestration / memory management / output processing), recording per dimension which parts are **editable** vs **hard-coded**. Merge in arXiv 2605.23950's seven-layer taxonomy (adds **Observability** and **Governance**) and adopt its **Harness Card** as our disclosure schema. Output is a table in this index, not a code change. ✅ 2026-07-29 — Harness Card below; source-only audit, no runtime change.
-- [ ] **HS-7 — Re-targetable-harness principle (operator, 2026-07-29).** The fleet will be upgraded as better open-weight models land, so **harness policy must survive a freeze change**. This ranks the NLAH design (intake-926: policy as an editable *document*, mechanisms in code) **ABOVE** a model-specific experience bank (intake-921), and it is the reason 926 is the adoption target despite weaker headline numbers. Record this as a standing selection criterion for HS-4 and for anything that proposes to bake per-model behaviour into the harness.
+- [x] **HS-7 — Re-targetable-harness principle (operator, 2026-07-29).** The fleet will be upgraded as better open-weight models land, so **harness policy must survive a freeze change**. This ranks the NLAH design (intake-926: policy as an editable *document*, mechanisms in code) **ABOVE** a model-specific experience bank (intake-921), and it is the reason 926 is the adoption target despite weaker headline numbers. Record this as a standing selection criterion for HS-4 and for anything that proposes to bake per-model behaviour into the harness. ✅ 2026-07-29 — criterion and acceptance evidence below; HS-8 implementation remains open.
 - [ ] **HS-8 — Extract run-level policy into an editable document per the NLAH pattern.** Measured reductions: 60.10k→2.90k tokens / 68→3 files (Live-SWE); 47.50k→1.40k / 5→1 (SeeAct); 10.50k→0.80k / 3→1 (MHTBA). MIT reference impl at `github.com/curated-skills/LinguaClaw`. **Carry the DESIGN, not the numbers.**
 - [ ] **HS-9 — Open-weight interpreter feasibility probe** — the one genuinely novel transfer question in the set. All NLAH arms ran on `gpt-5.4-mini`; nothing establishes that an open-weight model can *interpret* a natural-language policy document faithfully. Their mechanism metrics (Workflow Preservation, Stage Coverage, Ordered Workflow, Artifact Contract, Tool Call Success, Information Handoff Recall) score policy adherence **without a benchmark score**, so drift is measurable on saved traces — deterministic-replay-eligible. Watch their own red flag: **Information Handoff Recall drops to 0.32/0.55 under parent-child execution even on a frontier model.**
 - [ ] **HS-10 — File harness randomization as an EVALUATION-side pattern**, not a training one. Three axes from KAT-Coder-V2.5 §4.1: tool-invocation protocol, context-management strategy, control-flow complexity. Needs no RL — our FAIL_TO_PASS oracle already satisfies the "verification anchored to test outcomes, not traces" precondition. Cross-link the **P4.6 randomized-pool NULL** as prior evidence that randomization is not automatically a win.
@@ -173,3 +173,22 @@ surface (transport, toolset, per-request body overrides, and its own compaction/
 It must not absorb the code-owned memory, output, observability, or governance mechanisms. This
 preserves the Layer-A moat and makes a harness/model swap a client integration rather than a
 trust-boundary migration.
+
+### HS-7 Re-targetable-harness selection criterion (2026-07-29)
+
+**Standing HS-4 criterion.** A candidate is re-targetable only when its run-level policy is a
+versioned, editable document that can be retained across a model/freeze change. The document
+owns role instructions, workflow/stage order, artifact and handoff contracts, tool-use intent,
+retry/stop rules, and disclosure requirements. A separate model-adaptation manifest may tune
+model/quant, context or token budgets, request overrides, and prompts; it must not silently
+replace the policy with accumulated model-specific behavior. Validators, parsers, tool execution,
+sandboxing, state transitions, persistence, observability, and the measurement/governance
+boundary remain code-owned mechanisms.
+
+**Selection and acceptance evidence.** HS-4 reviews must score this criterion alongside
+cooperation: identify the policy-document version, any model-adaptation manifest, and every
+model-specific rule. A later model switch is re-targetable only if it preserves that policy
+version or supplies an explicit, reviewable migration diff, then republishes the HS-6 Harness
+Card disclosure for the realized configuration. Policy adherence and handoff/artifact contracts
+can subsequently be checked on saved traces (HS-9); this is a portability requirement, not a
+performance or capability claim.
