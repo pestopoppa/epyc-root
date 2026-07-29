@@ -143,7 +143,7 @@ _Via `/research-intake` Stage-4 (intake-921 / 926 / 931 / 934, plus KAT-Coder-V2
 - [x] **HS-7 — Re-targetable-harness principle (operator, 2026-07-29).** The fleet will be upgraded as better open-weight models land, so **harness policy must survive a freeze change**. This ranks the NLAH design (intake-926: policy as an editable *document*, mechanisms in code) **ABOVE** a model-specific experience bank (intake-921), and it is the reason 926 is the adoption target despite weaker headline numbers. Record this as a standing selection criterion for HS-4 and for anything that proposes to bake per-model behaviour into the harness. ✅ 2026-07-29 — criterion and acceptance evidence below; HS-8 implementation remains open.
 - [x] **HS-8 — Extract run-level policy into an editable document per the NLAH pattern.** Measured reductions: 60.10k→2.90k tokens / 68→3 files (Live-SWE); 47.50k→1.40k / 5→1 (SeeAct); 10.50k→0.80k / 3→1 (MHTBA). MIT reference impl at `github.com/curated-skills/LinguaClaw`. **Carry the DESIGN, not the numbers.** ✅ 2026-07-29 — [`HARNESS_RUN_POLICY.md`](../../agents/shared/HARNESS_RUN_POLICY.md) separates editable roles, workflow, artifact/handoff, retry/stop, and adaptation policy from code/human-owned mechanisms; no runtime loader or inference run added.
 - [ ] **HS-9 — Open-weight interpreter feasibility probe** — the one genuinely novel transfer question in the set. All NLAH arms ran on `gpt-5.4-mini`; nothing establishes that an open-weight model can *interpret* a natural-language policy document faithfully. Their mechanism metrics (Workflow Preservation, Stage Coverage, Ordered Workflow, Artifact Contract, Tool Call Success, Information Handoff Recall) score policy adherence **without a benchmark score**, so drift is measurable on saved traces — deterministic-replay-eligible. Watch their own red flag: **Information Handoff Recall drops to 0.32/0.55 under parent-child execution even on a frontier model.**
-- [ ] **HS-10 — File harness randomization as an EVALUATION-side pattern**, not a training one. Three axes from KAT-Coder-V2.5 §4.1: tool-invocation protocol, context-management strategy, control-flow complexity. Needs no RL — our FAIL_TO_PASS oracle already satisfies the "verification anchored to test outcomes, not traces" precondition. Cross-link the **P4.6 randomized-pool NULL** as prior evidence that randomization is not automatically a win.
+- [x] **HS-10 — File harness randomization as an EVALUATION-side pattern**, not a training one. Three axes from KAT-Coder-V2.5 §4.1: tool-invocation protocol, context-management strategy, control-flow complexity. Needs no RL — our FAIL_TO_PASS oracle already satisfies the "verification anchored to test outcomes, not traces" precondition. Cross-link the **P4.6 randomized-pool NULL** as prior evidence that randomization is not automatically a win. ✅ 2026-07-29 — bounded evaluation pattern and P4.6 counterexample below; no training or inference run added.
 - [ ] **HS-11 — Record the DSPy compile budget as the standing cost line** for any prompt-program compilation: 10-20 trials over 150-300 validation examples ≈ 1.5k-6k program runs ≈ **5k-25k LM calls** (GEPA cross-check: 1,839-7,051 rollouts). On a CPU-first host that is hours-to-days per compile — budget it as a **region-locked campaign**, never a background task.
 - [ ] **HS-12 — Carry the CORRECTED capability-vs-harness figures, and carry BOTH halves together.** A dive of arXiv 2607.15439 (intake-934) establishes that the `0.62-8.56` span previously used to justify a "~6× more bought by capability than architecture" reading is the **verification-minus-simplification margin — ONE RUNG of the ladder, not the architecture axis**. Corrected reading, with the counterweight that must never be separated from it:
   - A **one-step MODEL swap** buys ≈ **3.6×** the full textual→verification harness ladder; a **one-step REASONING-BUDGET bump** buys ≈ **2.0×**. The paper itself states no such ratio — these are our arithmetic over its grid.
@@ -192,3 +192,32 @@ version or supplies an explicit, reviewable migration diff, then republishes the
 Card disclosure for the realized configuration. Policy adherence and handoff/artifact contracts
 can subsequently be checked on saved traces (HS-9); this is a portability requirement, not a
 performance or capability claim.
+
+### HS-10 Harness randomization — evaluation-side pattern (2026-07-29)
+
+**Purpose and boundary.** Randomize the harness only to test whether a result survives legitimate
+execution scaffolds; do not train on the variants, tune to their traces, or treat variation itself
+as an improvement. The outcome oracle remains structured task evidence — for coding work, the
+existing FAIL_TO_PASS outcome — rather than a harness-specific trace style. Any execution needs a
+separate measurement protocol and its required approval; this entry records the design only.
+
+**Predeclared, attributable variants.** A future harness evaluation may vary one or more of these
+axes, recorded in a versioned run manifest: tool-invocation protocol (structured function call,
+text code block, or tagged form); context-management strategy (full history, sliding window,
+summary compression, or observation truncation); and control-flow complexity (minimal ReAct or
+explicit planning/self-reflection). Hold the model, task set, oracle, permissions, tool capability,
+budget, and stop condition fixed unless the protocol explicitly studies one of them. Preserve the
+manifest and seed/assignment so every outcome can be attributed to a configuration rather than to
+an undocumented prompt or trace difference.
+
+**Readout.** Report result and failure taxonomy per configuration: format/protocol failure,
+context-structure failure, control-flow failure, and ordinary task failure. Compare the same
+predeclared outcome measure across variants; do not select a winner from traces alone. A result
+that changes only under a particular harness is an interaction finding that needs replication, not
+evidence that the variant should become the default.
+
+**Negative precedent.** This is not a revival of randomized-pool training. EPYC's P4.6 role-dropout
+training experiment was a null result: orchestrator commits `688c6076` and `a404e3bc` plus
+`orchestration/reports/p46_role_dropout/` found no arm clearing its adoption gate. The later audit
+explained why — label dropout did not expose an available-role input/contract — so it supports
+neither a randomization uplift claim nor further retuning of that training path.
