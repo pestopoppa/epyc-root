@@ -163,10 +163,21 @@ already has bare-letter handling).
       JSON inside `<tool_call>`, **NOT** Qwen's XML `<function=…><parameter=…>` form, and the chat template
       differs between v2 (6,994 B) and Coder (4,718 B). Verify **per model, not per family** — a cross-arm
       parse-failure gap reads as a quality gap ([[feedback_parse_failure_rate_is_a_scoring_artifact]]).
-- [ ] **2b-swe-hygiene. Adopt the six-point SWE-bench disclosure standard** (harness identity + version pinned;
+- [x] **2b-swe-hygiene. Adopt the six-point SWE-bench disclosure standard** ✅ 2026-07-29 — harness identity + version pinned;
       the **model-harness pair** as the unit of report; denominator + split; dataset mutation disclosed;
-      n/reps/seeds; contamination posture). Apply to intake-916/917/924 together. No external SWE-bench figure
+      n/reps/seeds; contamination posture. Applied below to intake-916/917/924. No external SWE-bench figure
       gates a decision without all six.
+
+### SWE-bench disclosure application — intake-916 / 917 / 924 (2026-07-29)
+
+External coding numbers are observations only. `unknown` is a required disclosure result, not permission
+to infer a favorable value; a row with any unresolved field cannot enter an EPYC comparison or decision gate.
+
+| Intake / reported result | Harness identity + model-harness unit | Denominator / split | Dataset mutation | n / reps / seeds | Contamination posture / disposition |
+|---|---|---|---|---|---|
+| **916** — proprietary KAT-Coder-V2.5, SWE-Bench Pro `65.2` | Paper identifies Claude Code as both training and evaluation harness, but does not pin an evaluable version/config; report only as proprietary KAT-Coder-V2.5 × unspecified vendor harness. | Pro benchmark denominator/split not disclosed in the result row. | Not disclosed. | Not disclosed. | Vendor-run, no independent reproduction found; never attach this result to the downloadable Dev weights or use it for a role decision. |
+| **917** — KAT-Coder-V2.5-Dev, Verified `69.40` | `KAT-Coder-V2.5-Dev × claude_code@2.1.195` (pin recorded). | Full/split detail not supplied with the card result. | Not disclosed. | Card says each model/eval set ran once: `n=1`, no repetitions/variance/seeds. | Vendor in-house result; no independent evaluation found. The reported gain is below the vendor-vs-vendor baseline gap, so it is hypothesis-grade only. |
+| **924** — Qwopus Fusion, astropy `7/15`; parent claims also cite `152/202` and `335/500` | Fusion harness/version not disclosed; parent figures are distinct parent-model × undisclosed-harness results and must not be inherited by Fusion. | Fusion is an astropy-only `15`-item slice; parent rows use incompatible `202`-slice and full-`500` denominators. | Selection method for the 202 slice not disclosed. | No reproducible n/reps/seeds; the `7/15` is a single small slice. | Self-report only; the benched Q4 artifact is incomplete and non-MTP, while the usable MTP Q5 artifact is unbenched. No Fusion comparison claim is admissible. |
 
 ## Reporting
 Update this handoff + progress after each phase. Per-phase commits. 1c and 2b do not start without an operator
