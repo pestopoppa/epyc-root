@@ -1007,3 +1007,111 @@ def test_c24_an_unreadable_predecessor_heartbeat_still_records_the_reset(
     rows = [json.loads(l) for l in adapter.LEDGER.read_text().splitlines() if l.strip()]
     resets = [r for r in rows if r["kind"] == "heartbeat-reset"]
     assert len(resets) == 1 and "unreadable" in resets[0]["overwrote"]
+
+
+# ---------------------------------------------------------------- C31 rate-limit key
+
+
+def _c31_ledger(path: Path, rows: list[dict]) -> None:
+    path.write_text("".join(json.dumps(r, sort_keys=True) + "\n" for r in rows), encoding="utf-8")
+
+
+def _c31_probe(tag: str, monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+               ledger_rows: list[dict]) -> dict:
+    adapter = _c9_adapter(tag, monkeypatch, tmp_path, windows="0\tnew-main",
+                          config=_C24_SPAWN_CONFIG)
+    adapter.BUS_ROOT = tmp_path / f"bus_{tag}"
+    (adapter.BUS_ROOT / "heartbeats").mkdir(parents=True)
+    (adapter.BUS_ROOT / "heartbeats" / "new-main.json").write_text(
+        json.dumps({"agent": "new-main", "state": "idle", "task_id": None,
+                    "ts": datetime.now(timezone.utc).isoformat(timespec="seconds")}))
+    _c31_ledger(adapter.LEDGER, ledger_rows)
+    return adapter.probe(_C24_SPAWN_CONFIG, "new-main", 0.0, 900.0)
+
+
+def _iso_ago(seconds: float) -> str:
+    from datetime import timedelta
+    return (datetime.now(timezone.utc) - timedelta(seconds=seconds)).isoformat(timespec="seconds")
+
+
+def test_c31_a_nudge_to_a_destroyed_window_does_not_rate_limit_the_new_one(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """C31: the rate limit exists to avoid pestering a WORKING SESSION. A session that
+    did not exist when the earlier nudge was sent cannot have been pestered by it.
+
+    Observed 2026-07-29: after a kill + re-spawn, nudges to the fresh window were
+    refused for the rest of the 600s interval because of a nudge to the destroyed one.
+    Coupled to C24 — that fix stops the fresh main being heartbeat-blocked, and this
+    stops it being rate-limit-blocked instead. Either alone leaves it unreachable.
+    """
+    p = _c31_probe("c31_respawn", monkeypatch, tmp_path, [
+        {"ts": _iso_ago(300), "kind": "nudge", "agent": "new-main", "detail": "to the OLD window"},
+        {"ts": _iso_ago(120), "kind": "spawn", "agent": "new-main", "detail": "window recreated"},
+    ])
+    assert p["seconds_since_last_nudge"] is None, \
+        "the only nudge predates this window instance and must not count"
+    assert p["nudges_this_window_instance"] == 0
+    assert p["spawned_at"] is not None
+
+
+def test_c31_a_nudge_to_the_current_window_still_rate_limits(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """The positive control. Without it, 'ignore old nudges' would be satisfied by
+    ignoring ALL of them, which deletes the rate limit rather than re-keying it."""
+    p = _c31_probe("c31_current", monkeypatch, tmp_path, [
+        {"ts": _iso_ago(600), "kind": "spawn", "agent": "new-main", "detail": "window created"},
+        {"ts": _iso_ago(60), "kind": "nudge", "agent": "new-main", "detail": "to THIS window"},
+    ])
+    assert p["seconds_since_last_nudge"] is not None
+    assert 55 <= p["seconds_since_last_nudge"] <= 70
+    assert p["nudges_this_window_instance"] == 1
+
+
+def test_c31_only_the_newest_spawn_defines_the_instance(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Several spawns over a day: nudges between an OLD spawn and the newest one
+    belong to a window that is also gone."""
+    p = _c31_probe("c31_multi", monkeypatch, tmp_path, [
+        {"ts": _iso_ago(3000), "kind": "spawn", "agent": "new-main", "detail": "first"},
+        {"ts": _iso_ago(2400), "kind": "nudge", "agent": "new-main", "detail": "instance 1"},
+        {"ts": _iso_ago(1800), "kind": "spawn", "agent": "new-main", "detail": "second"},
+        {"ts": _iso_ago(1200), "kind": "nudge", "agent": "new-main", "detail": "instance 2"},
+        {"ts": _iso_ago(600), "kind": "spawn", "agent": "new-main", "detail": "third"},
+    ])
+    assert p["seconds_since_last_nudge"] is None
+    assert p["nudges_this_window_instance"] == 0
+
+
+def test_c31_another_agents_spawn_does_not_clear_my_rate_limit(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """The key is (agent, window instance). A neighbour re-spawning must not reset it —
+    that would make any busy fleet effectively unrate-limited."""
+    p = _c31_probe("c31_other", monkeypatch, tmp_path, [
+        {"ts": _iso_ago(60), "kind": "nudge", "agent": "new-main", "detail": "mine"},
+        {"ts": _iso_ago(30), "kind": "spawn", "agent": "someone-else", "detail": "not mine"},
+    ])
+    assert p["seconds_since_last_nudge"] is not None
+    assert p["nudges_this_window_instance"] == 1
+
+
+def test_c31_no_spawn_row_falls_back_to_whole_history(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """A window created outside cmd_spawn leaves no spawn row. Keeping the limit is
+    the fail-safe direction — dropping it would silence the guard for exactly the
+    windows this adapter knows least about."""
+    p = _c31_probe("c31_nospawn", monkeypatch, tmp_path, [
+        {"ts": _iso_ago(60), "kind": "nudge", "agent": "new-main", "detail": "no spawn row"},
+    ])
+    assert p["seconds_since_last_nudge"] is not None
+    assert p["spawned_at"] is None
+
+
+def test_c31_an_unparseable_nudge_ts_does_not_wedge_nudging(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Matches the pre-C31 behaviour deliberately, and is NOT widened: a corrupt
+    ledger row that permanently blocked nudging would wedge the whole fleet, which is
+    strictly worse than one missed rate limit."""
+    p = _c31_probe("c31_corrupt", monkeypatch, tmp_path, [
+        {"ts": "not-a-timestamp", "kind": "nudge", "agent": "new-main", "detail": "corrupt"},
+    ])
+    assert p["seconds_since_last_nudge"] is None

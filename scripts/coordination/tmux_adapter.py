@@ -596,14 +596,53 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float) -> dict:
     # HISTORY, NOT A GATE (C9). Kept because "how much spawning happened today" is
     # useful context; it enforces nothing. The gate is the live count above.
     spawns_today = sum(1 for r in rows if r.get("kind") == "spawn" and r.get("ts", "").startswith(today))
-    last_nudge = max((r["ts"] for r in rows if r.get("kind") == "nudge" and r.get("agent") == agent),
-                     default=None)
-    since_nudge = None
-    if last_nudge:
+    # C31 (2026-07-29): THE RATE LIMIT IS PER WINDOW INSTANCE, NOT PER ROSTER ID.
+    #
+    # This took the newest `nudge` row for the AGENT ID and nothing else, so after a
+    # window was killed and re-spawned, nudges to the FRESH window were refused for
+    # the remainder of the 600s interval because a nudge had gone to the DESTROYED one
+    # minutes earlier. The limit exists to avoid pestering a working session; a session
+    # that did not exist when the earlier nudge was sent cannot have been pestered by
+    # it. Observed during 2026-07-29 bring-up.
+    #
+    # Same root cause as C24 one field over — state keyed to an identity outlives the
+    # session that identity named — and the two are COUPLED: C24 stops a re-spawned
+    # main being heartbeat-blocked, and this stops it being rate-limit-blocked instead.
+    # Fixing either alone leaves the fresh session unreachable, which is the symptom
+    # C24 exists to remove.
+    #
+    # The spawn epoch is read from the ledger the adapter already writes, so this needs
+    # no new state file and cannot disagree with one. Timestamps are PARSED rather than
+    # string-compared: `_now()` is stable ISO-8601 today, but an ordering that silently
+    # depends on that is the kind of thing a format change breaks without a test.
+    # A window created outside `cmd_spawn` leaves no spawn row, so `spawn_at` is None
+    # and the old whole-history behaviour applies — the fail-safe direction, since it
+    # keeps the limit rather than dropping it. A nudge row whose ts cannot be parsed is
+    # skipped and cannot hold the limit open; that matches the previous behaviour
+    # exactly (it caught ValueError and left `since_nudge` None) and is NOT widened
+    # here, because a corrupt ledger row that permanently blocks nudging would wedge
+    # the whole fleet — a strictly worse failure than one missed rate limit.
+    def _ts(row: dict) -> float | None:
         try:
-            since_nudge = max(0.0, time.time() - datetime.fromisoformat(last_nudge).timestamp())
-        except ValueError:
-            since_nudge = None
+            return datetime.fromisoformat(str(row.get("ts"))).timestamp()
+        except (TypeError, ValueError):
+            return None
+
+    def _times(kind: str) -> list[float]:
+        out = []
+        for r in rows:
+            if r.get("kind") != kind or r.get("agent") != agent:
+                continue
+            t = _ts(r)
+            if t is not None:
+                out.append(t)
+        return out
+
+    spawn_at = max(_times("spawn"), default=None)
+    nudges_this_instance = [t for t in _times("nudge")
+                            if spawn_at is None or t >= spawn_at]
+    last_nudge_at = max(nudges_this_instance, default=None)
+    since_nudge = None if last_nudge_at is None else max(0.0, time.time() - last_nudge_at)
 
     blockers: list[str] = []
     if not authorised:
@@ -658,6 +697,11 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float) -> dict:
             "session_attached": attached, "quiet_check": quiet_check,
             "heartbeat_state": (hb or {}).get("state"), "heartbeat_age_s": hb_age,
             "seconds_since_last_nudge": since_nudge,
+            # C31: surfaced so a refusal can be read as "this WINDOW was nudged", not
+            # "this id was nudged at some point in its history".
+            "nudges_this_window_instance": len(nudges_this_instance),
+            "spawned_at": None if spawn_at is None else datetime.fromtimestamp(
+                spawn_at, timezone.utc).isoformat(timespec="seconds"),
             "submission_verification": "cursor-anchored composer check before Enter, transcript "
                                        "echo required after it; may fail closed",
             "blockers": blockers, "nudge_ok": not blockers}
