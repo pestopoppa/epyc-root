@@ -21519,8 +21519,7 @@
   cross_references:
     chapters: []
     handoffs:
-    - rlm-orchestrator-roadmap.md
-    - 01-fast-rlm-budget-controls.md
+    - repl-turn-efficiency.md
     - context-folding-progressive.md
     - meta-harness-optimization.md
     - orchestrator-conversation-management.md
@@ -21530,11 +21529,13 @@
     - intake-331 (predict-rlm, DSPy-based RLM)
     - intake-349 (dspy.RLM official module)
     - intake-250 (same author Avishek Biswas — text-albumentations)
-  handoffs_updated: []
+    - intake-783 (fast-rlm by the same author; this explainer is its design rationale)
+  handoffs_updated:
+  - repl-turn-efficiency.md
   handoffs_created: []
-  novelty_justification: RLM paradigm, REPL sandbox, pass-by-reference subagents, FINAL(variable) vs FINAL(string), and asyncio fan-out are all in the intake index via intake-153 and its DSPy/vRLM/predict-rlm descendants. Blog adds no new technique, no benchmark, no new code beyond pointing at avbiswas/fast-rlm (already referenced from 01-fast-rlm-budget-controls.md).
-  relevance_justification: RLM is an active EPYC workstream — two completed/active handoffs (rlm-orchestrator-roadmap.md completed, 01-fast-rlm-budget-controls.md completed), ~80% pattern coverage already implemented, and four downstream intake entries feed the same area.
-  verdict_justification: 'already_integrated. Pedagogical recap of arxiv:2512.24601 by independent practitioner Avishek Biswas (also author of fast-rlm). Recommended use: link from rlm-orchestrator-roadmap.md as onboarding/reference asset; do NOT open a new investigation handoff.'
+  novelty_justification: 'RLM paradigm, REPL sandbox, pass-by-reference subagents, FINAL(variable) vs FINAL(string), and asyncio fan-out are all in the intake index via intake-153 and its DSPy/vRLM/predict-rlm descendants. The blog is not an independent corroborating source: its author is also the fast-rlm author and links that repo in-body, making it a design explainer for intake-783.'
+  relevance_justification: 'RLM is an active EPYC workstream. The live mechanism owner is repl-turn-efficiency.md; context-folding, meta-harness, and conversation-management retain their related ownership.'
+  verdict_justification: 'already_integrated. Use this as intake-783 design rationale and as a source of the open-weight-tuned prompt/verbatim-slice pattern; do not treat it as an independent benchmark or open a duplicate investigation handoff.'
 - id: intake-538
   arxiv_id: '2605.14037'
   url: https://arxiv.org/abs/2605.14037
@@ -37105,7 +37106,8 @@
     superseded_intake: intake-693
     similar_intakes: []
     chapters: []
-    handoffs: []
+    handoffs:
+    - repl-turn-efficiency.md
   novelty_justification: 'Since intake-693 (Jun 2026), expanded from structured-IO proof-of-concept to full-featured RLM runtime: MCP, ACP coding agent orchestration, resumable sessions, tool management, 4 backends, comprehensive CLI. ACP and MCP now directly relevant to EPYC orchestration.'
   relevance_justification: 'High: ACP integration, MCP support, session management, and structured IO are all directly relevant to EPYC orchestration concerns. Tool inheritance boundaries and env injection patterns applicable to our harness design.'
   verdict_justification: 'adopt_selectively: harvest ACP integration pattern, MCP client design, session management, and tool inheritance boundaries. Not adopt_component: project is a standalone RLM runtime, not a drop-in library for EPYC.'
@@ -38044,8 +38046,8 @@
   - answer_diffusion_iterative_answer_dict
   - rl_training_of_rlm_scaffold
   reported_results:
-  - 'DeepDive (GLM 4.6): RLM ~doubles performance vs LLM'
-  - 'Oolong (~1.5M-char real data): RLM outperforms LLM by a large margin'
+  - 'DeepDive: the “almost doubling” claim is GLM-4.6-only; with tips, RLM falls to just above half the LLM result, while GPT-5-mini is worse with RLM absent tips.'
+  - 'Oolong: the gain is real-subset-specific; synth is worse. Synth-with-labels is the zero-sub-LLM regex-over-context case. API rejection of over-long plain-LLM prompts was counted as zero tokens.'
   - 'math-python: RLM reward ~40% lower than baseline on GPT-5-mini (regression on simple math)'
   referenced_arxiv_ids:
   - '2512.24601'
@@ -38066,19 +38068,22 @@
     - autopilot-continuous-optimization.md
     - meta-harness-optimization.md
     - context-folding-progressive.md
+    - repl-turn-efficiency.md
     experiments: []
     intake_entries:
     - intake-153
     - intake-154
     - intake-312
     - intake-349
-    - intake-537
   credibility_score: 3
+  verification: dive-verified
   contradicting_evidence:
   - Commercial promotional post (-1) with soft/vague numbers ("almost a doubling", "~40% lower"); offset by +1 recency and +1 real training lab. RLM regression on simple math (math-python -40% reward) is an acknowledged limitation, not an external contradiction.
-  handoffs_updated: []
+  handoffs_updated:
+  - repl-turn-efficiency.md
   handoffs_created: []
-  notes: 'already_integrated: core RLM paradigm fully tracked via intake-153 (arxiv:2512.24601, ~80% implemented in EPYC REPL sandbox) and near-duplicate explainer intake-537. This is a company re-explanation of the same paper/sources. One forward item worth operator flag (not auto-adopt): Prime Intellect RL-train-the-scaffold direction, complementary to autopilot-continuous-optimization and intake-154 FoldGRPO.'
+  notes: 'already_integrated: core RLM paradigm is tracked via intake-153 (arxiv:2512.24601, ~80% implemented in EPYC REPL sandbox). This is an independent Prime Intellect implementation in verifiers, not fast-rlm; the shared arXiv ancestor does not establish a direct lineage. One forward item worth operator flag (not auto-adopt): Prime Intellect RL-train-the-scaffold direction, complementary to autopilot-continuous-optimization and intake-154 FoldGRPO.'
+  dive_corrections: '2026-07-29: primary-source dive corrected the prior promotional summary. The DeepDive claim is GLM-4.6-only and reverses under tips; the Oolong aggregate is driven by the real subset while synth is worse, with an API-rejection artifact in the plain-LLM denominator. The source has plot images only: n=50 prompts × one rollout, one shared seed, untuned defaults, and no confidence intervals. These are observation-grade claims, not decision gates.'
   ingested_date: '2026-07-11'
 - id: intake-804
   arxiv_id: '2607.05391'
@@ -46392,9 +46397,9 @@
 
     NEW CONTRADICTING EVIDENCE TO RECORD: the paper reports NO seeds, NO repeats and NO error bars, with agent decoding at temperature 0.7 — every cell is n=1. All OBSERVATIONS under MEASUREMENT.md.
 
-    INDEPENDENT EVIDENCE, BOTH DIRECTIONS: (a) DISCONFIRMATION — Trace2Skill (above), plus its "+Combined outperforms ReasoningBank by +13.8pp Vrf for the 122B model; +9.2pp Vrf for 35B". (b) CORROBORATION — EvoMemBench (arXiv 2605.18421), a third-party benchmark on a unified open-weight DeepSeek-V3.2 backbone, ranks ReasoningBank BEST overall on In-Episode Execution at 16K (43.0), 32K (49.5) and 128K (48.0), second on Cross-Episode Knowledge (42.7) behind ACE (44.8) — with the family-wide caveat that "at 128K, several memory methods even fall below the no-memory baseline". (c) OpenReview forum jL7fwchScm exists but both API endpoints and the web forum return a bot-challenge 403, so "no reviewer criticism found" is UNVERIFIED, not absent.
+    INDEPENDENT EVIDENCE, BOTH DIRECTIONS: (a) DISCONFIRMATION — Trace2Skill (above), plus its "+Combined outperforms ReasoningBank by +13.8pp Vrf for the 122B model; +9.2pp Vrf for 35B". (b) CORROBORATION / CORRECTION — EvoMemBench (arXiv 2605.18421), a third-party benchmark on a unified open-weight DeepSeek-V3.2 backbone, ranks ReasoningBank best **among memory methods** on In-Episode Execution at 16K (43.0), 32K (49.5) and 128K (48.0), while long-context baselines beat all fifteen methods. On Cross-Episode Knowledge Easy, ReasoningBank is last of 13 (42.7) and ACE is ninth (44.8); it is second to ACE only on Medium. (c) OpenReview forum jL7fwchScm exists but both API endpoints and the web forum return a bot-challenge 403, so "no reviewer criticism found" is UNVERIFIED, not absent.
 
-    SUPERSESSION TESTED AND REJECTED FOR OUR CONSTRAINTS: SkillOS (arXiv 2605.06614, NOT in our index) beats it — "improves the average success rate from 55.7 to 61.2 over the strongest baseline ReasoningBank with Qwen3-8B" and elsewhere "+7.1 points over ReasoningBank (66.0%)" — and diagnoses it exactly as we do ("relies on FIXED, HEURISTIC POLICIES for deciding what to write or discard"). BUT its winning arm requires an RL-TRAINED 8B curator, and its prompt-only variant "SkillOS-base reaches only 63.6% — barely above No Memory", i.e. BELOW ReasoningBank''s 66.0%. With no RL cluster the successor''s advantage is unreachable, so ReasoningBank remains the best gradient-free member of the family. SkillOS also independently corroborates intake-899: its MemP arm, the one WITH "consolidation, forgetting, and re-indexing", scores 58.6% — below No-Memory''s 61.2%.'
+    SUPERSESSION TESTED AND REJECTED FOR OUR CONSTRAINTS: SkillOS (arXiv 2605.06614, NOT in our index) beats it — "improves the average success rate from 55.7 to 61.2 over the strongest baseline ReasoningBank with Qwen3-8B" and elsewhere "+7.1 points over ReasoningBank (66.0%)" — and diagnoses it exactly as we do ("relies on FIXED, HEURISTIC POLICIES for deciding what to write or discard"). BUT its winning arm requires an RL-TRAINED 8B curator, and its prompt-only variant "SkillOS-base reaches only 63.6% — barely above No Memory", i.e. BELOW ReasoningBank''s 66.0% on that ALFWorld/Qwen3-8B comparison. On WebShop, SkillOS-base beats ReasoningBank, so no family-wide gradient-free ranking follows. SkillOS also independently corroborates intake-899: its MemP arm, the one WITH "consolidation, forgetting, and re-indexing", scores 58.6% — below No-Memory''s 61.2%.'
 - id: intake-931
   arxiv_id: '2605.05138'
   url: https://arxiv.org/abs/2605.05138
