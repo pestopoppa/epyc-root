@@ -83,6 +83,20 @@
         "relayed_src": {
           "type": "string",
           "description": "Set by the coordinator-daemon when it relays an agent-authored outbox message into a recipient inbox: the source msg id. Carries the dedupe key so relay is idempotent across ticks (defect C2, 2026-07-28). Absent on daemon-generated messages."
+        },
+        "needs_routing_to": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "STRUCTURAL routing intent (2026-07-29): the roster ids this message must REACH, beyond the transport `to`. Added because two routed messages were missed when routing intent lived as prose inside `payload` and a context-economy truncation cut exactly the sentence carrying it. Prose is not a routing channel: tools act on this field. Entries must be roster ids (append refuses unknowns). A message with this field appears in each named agent's `triage` standing queue until that agent dispositions it by corr_id from its own outbox — advancing a cursor never clears it."
+        },
+        "action_required": {
+          "type": "boolean",
+          "description": "STRUCTURAL action intent (2026-07-29): the routed-to agents (needs_routing_to, else a concrete `to`) must ACT, not merely receive. Stays in their `triage` queue until dispositioned by an outbox row with matching corr_id that is either a substantive kind (anything but a bare ack) or an ack with payload.disposition in {done, declined, handed-off, superseded}. A bare ack marks it acked-but-unactioned and it KEEPS appearing: acknowledgment is receipt, not action. `append` refuses action_required on to='*' with needs_routing_to unset — intent with no addressee is the failure shape this field exists to kill."
         }
       },
       "allOf": [

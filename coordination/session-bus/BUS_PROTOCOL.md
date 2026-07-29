@@ -99,6 +99,32 @@ python3 scripts/coordination/session_bus.py drain --agent <id>
 
 Act on assignments and nudges; write acks and status to your own outbox.
 
+## Routing intent is structural, not prose (2026-07-29)
+
+Two routed messages were missed on 2026-07-29 because routing intent lived as prose inside
+`payload` ("FOR FABLE-AUDITOR …" in a defect string; "action: DOC FIX requested … relay") and a
+context-economy payload truncation cut exactly the sentences carrying it. No tool could have known
+better. Therefore:
+
+- **`needs_routing_to`** (top-level msg field, array of roster ids): who this message must REACH,
+  beyond the transport `to`. `append` refuses non-roster ids.
+- **`action_required`** (top-level, boolean): the routed-to agents (`needs_routing_to`, else a
+  concrete `to`) must ACT. `append` refuses `action_required` on `to: '*'` with no
+  `needs_routing_to` — intent with no addressee is the failure shape itself.
+- **`triage --agent <id>`** (also `drain --triage`) prints the standing queue of messages routed
+  to you: **in full, never truncated, cursor-independent** — the agent's whole inbox plus a scan of
+  every outbox, so a message the relay never delivered is still visible to its target. Draining
+  cannot consume this queue.
+- **Disposition** is the only thing that clears an item, written to YOUR OWN outbox with
+  `corr_id` = the message id (a daemon relay copy and its original are one logical message —
+  either id works): any substantive kind, or `kind: ack` with `payload.disposition` in
+  `done | declined | handed-off | superseded`. A **bare ack is receipt, not action**: it clears a
+  reach-only message but an `action_required` one stays listed as acked-awaiting-action.
+- **`validate` warns** when a payload carries prose routing markers (a roster id in a routing
+  phrase, or an action request) while the structural field is unset — authoring-side (outbox rows)
+  only. Anyone summarizing or truncating bus traffic must preserve these two fields and must not
+  truncate messages carrying them.
+
 ## Session lifecycle at a task boundary (coordinator duty)
 
 Full contract: `agents/shared/OPERATING_CONSTRAINTS.md` → *Session Lifecycle: wrap-up, clear,

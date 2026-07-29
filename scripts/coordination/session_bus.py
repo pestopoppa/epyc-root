@@ -13,7 +13,12 @@ Verbs
   validate  whole-bus schema check + single-writer lint
   cursor    get/advance your own cursor (byte offsets)
   status    human summary: queue by status/lane, inbox depths, heartbeat ages
-  drain     print your inbox past your cursor and advance it
+  drain     print your inbox past your cursor and advance it (--triage appends
+            the routing standing-queue report)
+  triage    the standing queue of messages ROUTED to you (needs_routing_to /
+            action_required), printed IN FULL, cursor-independent — advancing a
+            cursor never clears it; only a corr_id disposition from your own
+            outbox does
 
 Single-writer is STRUCTURAL, not advisory: `append` derives the required writer
 from the target path and refuses a mismatch. One writer may own many files; no
@@ -25,6 +30,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import time
 from datetime import datetime, timezone
@@ -193,6 +199,193 @@ def fold_queue(bus_root: Path) -> dict[str, dict]:
     return latest
 
 
+# -------------------------------------------------------------- routing intent
+#
+# 2026-07-29: two routed messages were missed because routing intent lived as
+# PROSE inside `payload` ("FOR FABLE-AUDITOR RELEVANT TO THE C9 REVIEW" in a
+# defect_3 string; "action: DOC FIX requested … operator-directed relay") and a
+# context-economy payload truncation cut exactly the sentences carrying it. No
+# tool could have known better, because nothing structural said "this must reach
+# agent X" or "this needs action". These fields and the triage view make that
+# intent machine-readable, delivery-independent, and impossible to consume by
+# advancing a cursor.
+
+ROUTING_FIELD = "needs_routing_to"
+ACTION_FIELD = "action_required"
+
+# What clears an action_required item: any substantive response, or an ack that
+# says WHAT HAPPENED. A bare ack is receipt, not action.
+TERMINAL_DISPOSITIONS = frozenset({"done", "declined", "handed-off", "superseded"})
+
+_ROUTING_KEYWORD = (r"(?:\bfor\b|\brelay\b|\broute\b|\bforward\b|\battention\b|"
+                    r"\brelevant\b|\bmust\s+reach\b)")
+_ACTION_PROSE = re.compile(
+    r"\baction[\s_-]*(?:required|requested)\b|\brequires\s+action\b", re.IGNORECASE)
+
+
+def logical_id(row: dict) -> str:
+    """One id per logical message: a daemon relay copy (relayed_src set) and its
+    outbox original are the SAME message to triage, so a disposition against
+    either id clears both."""
+    return str(row.get("relayed_src") or row.get("id") or "")
+
+
+def routing_targets(row: dict) -> list[str]:
+    """Roster ids this message is structurally routed to. Empty list = not
+    routed (ordinary mail; drain covers it)."""
+    targets = row.get(ROUTING_FIELD)
+    if isinstance(targets, list) and targets:
+        return [str(t) for t in targets]
+    to = str(row.get("to") or "")
+    if row.get(ACTION_FIELD) and to and to != "*":
+        return [to]
+    return []
+
+
+def prose_routing_warnings(row: dict, roster_ids: set[str]) -> list[str]:
+    """Warn on the exact shape that failed 2026-07-29: routing/action intent
+    written as payload prose while the structural field is unset. Advisory —
+    never a failure — so existing history stays valid."""
+    payload = row.get("payload")
+    if not isinstance(payload, dict):
+        return []
+    text = json.dumps(payload, sort_keys=True)
+    warnings: list[str] = []
+    if not row.get(ROUTING_FIELD):
+        excluded = {str(row.get("from") or ""), str(row.get("to") or "")}
+        for rid in sorted(roster_ids - excluded):
+            pattern = re.compile(
+                _ROUTING_KEYWORD + r"[^\n]{0,60}" + re.escape(rid) + r"|" + re.escape(rid)
+                + r"[^\n]{0,60}(?:\brelevant\b|\battention\b|\bmust\b)", re.IGNORECASE)
+            if pattern.search(text):
+                warnings.append(
+                    f"payload names {rid!r} in a routing phrase but {ROUTING_FIELD} is unset — "
+                    f"prose routing intent is invisible to tools and was truncated away on "
+                    f"2026-07-29; set {ROUTING_FIELD}: [\"{rid}\"]")
+                break
+    if not row.get(ACTION_FIELD) and (
+            isinstance(payload.get("action"), str) or _ACTION_PROSE.search(text)):
+        warnings.append(
+            f"payload carries an action request in prose but {ACTION_FIELD} is unset — set "
+            f"{ACTION_FIELD}: true so the request sits in the recipient's triage queue until "
+            f"dispositioned instead of dying in a truncated summary")
+    return warnings
+
+
+def routed_view(bus_root: Path, agent: str) -> dict[str, list[dict]]:
+    """The standing routing queue for `agent`, derived from bus files alone.
+
+    DISCOVERY IS DELIVERY-INDEPENDENT: the agent's full inbox (from byte 0 —
+    cursors are never consulted, so draining cannot consume this queue) PLUS
+    every outbox, so a message stuck in a sender's outbox because the relay
+    never ran (defect C2's shape) is still visible to its target. Reading
+    another agent's outbox is legal — single-writer governs writes.
+
+    STATE per logical message, judged only from the agent's OWN outbox rows
+    whose corr_id resolves (via relay-copy aliases) to the message:
+      pending   -> no reference at all
+      acked     -> bare ack(s) only; clears reach-only messages, but an
+                   action_required message KEEPS APPEARING (receipt != action)
+      actioned  -> any non-ack kind, or an ack with payload.disposition in
+                   TERMINAL_DISPOSITIONS; drops off the queue
+    Self-authored messages are excluded: the writer cannot miss its own mail.
+    """
+    inbox_rows, _ = _read_jsonl(bus_root / "inbox" / f"{agent}.jsonl")
+    alias = {str(r.get("id")): logical_id(r) for r in inbox_rows if r.get("relayed_src")}
+    entries: dict[str, dict] = {}
+
+    def note(row: dict, source: str, delivered: bool) -> None:
+        if str(row.get("from") or "") == agent or agent not in routing_targets(row):
+            return
+        entry = entries.setdefault(logical_id(row),
+                                   {"row": row, "sources": [], "delivered": False})
+        entry["sources"].append(source)
+        if delivered:
+            entry["row"] = row
+            entry["delivered"] = True
+
+    for row in inbox_rows:
+        note(row, f"inbox/{agent}.jsonl", True)
+    for path in sorted((bus_root / "outbox").glob("*.jsonl")):
+        rows, _ = _read_jsonl(path)
+        for row in rows:
+            note(row, f"outbox/{path.name}", False)
+
+    my_outbox, _ = _read_jsonl(bus_root / "outbox" / f"{agent}.jsonl")
+    state: dict[str, str] = {}
+    for row in my_outbox:
+        corr = str(row.get("corr_id") or "")
+        if not corr:
+            continue
+        lid = alias.get(corr, corr)
+        if lid not in entries:
+            continue
+        disposition = (row.get("payload") or {}).get("disposition")
+        if row.get("kind") != "ack" or disposition in TERMINAL_DISPOSITIONS:
+            state[lid] = "actioned"
+        else:
+            state.setdefault(lid, "acked")
+
+    pending: list[dict] = []
+    acked_awaiting: list[dict] = []
+    for lid in sorted(entries):
+        entry = entries[lid]
+        status = state.get(lid)
+        if status == "actioned":
+            continue
+        if status == "acked":
+            if entry["row"].get(ACTION_FIELD):
+                acked_awaiting.append(entry)
+            continue
+        pending.append(entry)
+    return {"pending": pending, "acked_awaiting_action": acked_awaiting}
+
+
+def print_triage(bus_root: Path, agent: str) -> None:
+    """Print the standing queue IN FULL — never truncated. A message a tool has
+    shortened for context economy is exactly how today's two were lost."""
+    view = routed_view(bus_root, agent)
+    pending, acked = view["pending"], view["acked_awaiting_action"]
+    if not pending and not acked:
+        print(f"(triage: no routed messages awaiting {agent})")
+        return
+    if pending:
+        print(f"== TRIAGE: {len(pending)} message(s) routed to {agent}, awaiting disposition "
+              f"— IN FULL, never truncated ==")
+        for entry in pending:
+            undelivered = ("" if entry["delivered"] else
+                           "   [NOT in your inbox — found by outbox scan; the relay may never "
+                           "have delivered it]")
+            print(f"-- {logical_id(entry['row'])}  via {' + '.join(entry['sources'])}{undelivered}")
+            print(json.dumps(entry["row"], indent=2, sort_keys=True))
+    if acked:
+        print(f"== TRIAGE: {len(acked)} action_required message(s) ACKED but NOT actioned "
+              f"(a bare ack is receipt, not action) ==")
+        for entry in acked:
+            print(f"-- {logical_id(entry['row'])}")
+            print(json.dumps(entry["row"], indent=2, sort_keys=True))
+    print(f"triage: to clear an item, append to YOUR outbox a row with corr_id=<its id> — any "
+          f"substantive kind, or kind=ack with payload.disposition in "
+          f"{sorted(TERMINAL_DISPOSITIONS)}. Advancing your cursor never clears this list.")
+
+
+def _check_routing_intent(bus_root: Path, row: dict) -> None:
+    """Fail-closed authoring checks for the structural routing fields."""
+    targets = row.get(ROUTING_FIELD)
+    if targets:
+        roster = _roster_ids(bus_root)
+        unknown = sorted({str(t) for t in targets} - roster)
+        if unknown:
+            raise BusError(
+                f"{ROUTING_FIELD} names non-roster id(s) {unknown} — routing intent must be "
+                f"resolvable or it is prose in disguise (have: {', '.join(sorted(roster))})")
+    if row.get(ACTION_FIELD) and not targets and str(row.get("to") or "*") == "*":
+        raise BusError(
+            f"{ACTION_FIELD} is set but the message has no concrete addressee (to='*' and "
+            f"{ROUTING_FIELD} unset) — intent with no addressee is the 2026-07-29 failure "
+            f"shape; name the agent(s) in {ROUTING_FIELD}")
+
+
 # ------------------------------------------------------------------ commands
 
 
@@ -244,6 +437,14 @@ def cmd_append(args: argparse.Namespace) -> int:
         row.setdefault("id", f"msg-{stamp}-{len(existing) + 1}-{args.agent}")
 
     validate_row(bus_root, row, definition)
+    if definition == "msg":
+        _check_routing_intent(bus_root, row)
+        try:
+            roster = _roster_ids(bus_root)
+        except BusError:
+            roster = set()
+        for warning in prose_routing_warnings(row, roster):
+            print(f"session_bus: WARN {warning}", file=sys.stderr)
     _append_jsonl(path, row)
     print(f"appended -> {path.relative_to(bus_root)}  ({row.get('id') or row.get('task_id')})")
     return 0
@@ -329,6 +530,12 @@ def cmd_validate(args: argparse.Namespace) -> int:
                     validate_row(bus_root, row, "msg")
                 except BusError as e:
                     problems.append(f"{area}/{path.name}:{i}: {e}")
+                # Routing-intent-in-prose lint (2026-07-29) — authoring side only
+                # (outbox), so one logical message warns once, not once per relay
+                # copy. The exact shape that lost two routed messages today.
+                if area == "outbox":
+                    for w in prose_routing_warnings(row, roster_ids):
+                        warnings.append(f"{area}/{path.name}:{i} ({row.get('id')}): {w}")
                 # Single-writer lint: every row in an outbox must be FROM its owner.
                 if area == "outbox" and row.get("from") != expected:
                     problems.append(
@@ -445,21 +652,35 @@ def cmd_drain(args: argparse.Namespace) -> int:
               f"provisioned. Every roster member needs 4 files (inbox/outbox/"
               f"heartbeat/cursor); run `session_bus.py provision --agent {args.agent}`.",
               file=sys.stderr)
+        # The triage view is delivery-independent (outbox scan), so it still
+        # works — and matters MOST — when the inbox route is broken.
+        if getattr(args, "triage", False):
+            print_triage(bus_root, args.agent)
         return 2
 
     start = _cursor_get(bus_root, args.agent)
     rows, end = _read_jsonl(inbox, start)
 
-    if not rows:
+    if rows:
+        for row in rows:
+            print(json.dumps(row, sort_keys=True))
+        if not args.peek:
+            _write_atomic(_cursor_path(bus_root, args.agent),
+                          {"agent": args.agent, "offset": end, "ts": _utcnow_iso()})
+        print(f"-- {len(rows)} message(s); cursor {start} -> {end}"
+              f"{' (peek: not advanced)' if args.peek else ''}", file=sys.stderr)
+    else:
         print(f"(no new messages for {args.agent})")
-        return 0
-    for row in rows:
-        print(json.dumps(row, sort_keys=True))
-    if not args.peek:
-        _write_atomic(_cursor_path(bus_root, args.agent),
-                      {"agent": args.agent, "offset": end, "ts": _utcnow_iso()})
-    print(f"-- {len(rows)} message(s); cursor {start} -> {end}"
-          f"{' (peek: not advanced)' if args.peek else ''}", file=sys.stderr)
+    if getattr(args, "triage", False):
+        print_triage(bus_root, args.agent)
+    return 0
+
+
+def cmd_triage(args: argparse.Namespace) -> int:
+    """The routing standing queue. Never reads or writes cursors: a routed
+    message cannot be consumed by draining — only a corr_id disposition from the
+    target's own outbox clears it."""
+    print_triage(Path(args.bus_root), args.agent)
     return 0
 
 
@@ -662,7 +883,15 @@ def build_parser() -> argparse.ArgumentParser:
     dp = sub.add_parser("drain", help="print your inbox past your cursor and advance")
     dp.add_argument("--agent", required=True)
     dp.add_argument("--peek", action="store_true", help="print without advancing the cursor")
+    dp.add_argument("--triage", action="store_true",
+                    help="also print the routing standing queue (cursor-independent, in full)")
     dp.set_defaults(func=cmd_drain)
+
+    tp = sub.add_parser("triage", help="standing queue of messages routed to you "
+                                       "(needs_routing_to / action_required); cursor-independent, "
+                                       "printed in full, cleared only by corr_id disposition")
+    tp.add_argument("--agent", required=True)
+    tp.set_defaults(func=cmd_triage)
 
     pp = sub.add_parser("provision", help="create the 4 files a roster member needs (idempotent)")
     pp.add_argument("--agent", required=True)
