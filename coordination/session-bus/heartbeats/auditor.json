@@ -1,6 +1,6 @@
 {
   "agent": "auditor",
   "state": "working",
-  "task_id": "backlog-15-reasoningbank-claim",
-  "ts": "2026-07-29T16:26:04+00:00"
+  "task_id": "c36-runtime-liveness-over-self-report",
+  "ts": "2026-07-29T16:34:42+00:00"
 }

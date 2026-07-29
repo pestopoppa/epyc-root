@@ -1627,6 +1627,35 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   that skip would make the quiet-check STRICTER and close a real fail-open; it should be measured
   and filed on its own rather than smuggled in here.
 
+- [ ] **C36 — liveness is decided by the RUNTIME, not by the agent's self-report.** *Operator-approved
+  Option B, 2026-07-29; assigned to `auditor`. Evidence base:
+  [`docs/design/agent-session-control-surface.md`](../../docs/design/agent-session-control-surface.md),
+  which ranks 14 candidate signals with measurements and disproves several plausible ones.*
+  **The root defect:** the heartbeat is written BY the agent, so an agent that has stopped cannot say
+  so — and `probe` refuses every nudge on `state == "working"`. That is the deadlock; C35
+  (pane-quiescence override) mitigates the symptom, not the cause. A runtime-reported status has no
+  such dependency: it is true even when the agent is wedged, because it is STATE, not a timestamp.
+  Scope: `probe`/`cmd_nudge` decide from runtime; the heartbeat is demoted to a CORROBORATOR; when
+  the two disagree **the runtime wins and `probe` says so in BOTH directions**, the way C35 reports
+  its override even when it did not fire. Signals, in priority order: (1) Codex `thread.status` via
+  `codex app-server` JSON-RPC (exact, runtime-reported); (2) the Codex rollout terminal record
+  (`task_complete` / `turn_aborted`) — no server needed; (3) `claude agents --json` for Claude mains.
+  **Note the direction of the NEW protection:** today a main whose heartbeat wrongly reads `idle`
+  while it is mid-generation *will* be nudged. Runtime `active` blocks that — a hazard the current
+  guard cannot see at all.
+  Constraints carried from the dispatch: every other guard stands (pane exists, `pane_dead` false,
+  quiet check, rate limit, auth flag, target resolution); fail closed on anything unreadable; an
+  UNAVAILABLE runtime falls back to current behaviour, **never** to `idle`. **CPU delta is INVALID
+  for Claude mains** — a main burned 17% CPU sitting at its prompt because its subagents run
+  in-process. Option A (running Codex mains as `--remote` clients and injecting turns over JSON-RPC)
+  is **not** approved; read-only status queries only.
+  - [ ] **BLOCKED-ON / dependency: C30(a).** C36 must branch on which backend a roster id runs, and
+    C30(a) — still open — is exactly *"the backend a main runs on is invisible to the bus"*. The
+    2026-07-29 model-agnostic rename made backend a runtime property that nothing records. Escalated
+    with options; the default if unanswered is single-backend scope with an explicit fallback and
+    `probe` stating which mains are uncovered, because a wrong backend guess makes C36 return a
+    confident WRONG answer — strictly worse than the heartbeat it replaces.
+
 ## Decision gates
 
 - `OP-SENDKEYS-CODEX` (send-keys nudging) — operator grant, evidence-driven, default OFF.
