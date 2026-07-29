@@ -1,6 +1,6 @@
 {
   "agent": "auditor",
-  "state": "working",
-  "task_id": "backlog-work-row",
-  "ts": "2026-07-29T17:32:03+00:00"
+  "state": "idle",
+  "task_id": null,
+  "ts": "2026-07-29T17:38:45+00:00"
 }
