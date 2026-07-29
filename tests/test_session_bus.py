@@ -1799,3 +1799,97 @@ def test_c34_full_validation_stays_silent(
     pytest.importorskip("jsonschema")
     bus.validate_row(bus_root, _message("alice", "bob", "finding", seq=1), "msg")
     assert capsys.readouterr().err == ""
+
+
+# ------------------------------------------- claim: row ownership the FS enforces
+
+
+def test_claim_is_exclusive_and_the_loser_is_told_who_holds_it(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """Observed 2026-07-29: mainD claimed TOP-40 #5 at 16:00:07 and finished at
+    16:03:51 while mainC was independently building the same row; mainC found the
+    flipped checkbox at 16:05:05 and threw its implementation away. Two mains, one
+    row, five minutes apart, inside the first ten minutes of three mains on a shared
+    queue.
+
+    The collision map partitions FILES, not rows, and claiming was an outbox message —
+    which only helps if the other main DRAINS between the claim and starting work.
+    O_EXCL has no window between checking and taking, because there is no check.
+    """
+    row = "Run focused unit tests for stack priors, guard, enum sync"
+    assert bus.main(["--bus-root", str(bus_root), "claim", "--agent", "alice", "--row", row]) == 0
+    assert bus.main(["--bus-root", str(bus_root), "claim", "--agent", "bob", "--row", row]) == 2
+    out = capsys.readouterr()
+    assert "claimed by alice" in out.out
+    assert "REFUSING" in out.err and "'alice'" in out.err
+
+
+def test_claim_keys_on_task_text_not_line_number(bus_root: Path) -> None:
+    """The queue's own rule: line numbers are a hint, task text is the identity —
+    mains close rows live and every anchor below a closure shifts. Two mains reading
+    the same row at different offsets must still collide."""
+    a = "  Port the ~50-line   Hermes SQLite reader\t"
+    b = "Port the ~50-LINE Hermes SQLite reader"
+    assert bus.main(["--bus-root", str(bus_root), "claim", "--agent", "alice", "--row", a]) == 0
+    assert bus.main(["--bus-root", str(bus_root), "claim", "--agent", "bob", "--row", b]) == 2
+
+
+def test_claim_is_idempotent_for_its_own_holder(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """A main that restarts mid-task must not be locked out of work it already holds."""
+    row = "Guard or delete the legacy path"
+    assert bus.main(["--bus-root", str(bus_root), "claim", "--agent", "alice", "--row", row]) == 0
+    assert bus.main(["--bus-root", str(bus_root), "claim", "--agent", "alice", "--row", row]) == 0
+    assert "already yours" in capsys.readouterr().out
+
+
+def test_claim_release_only_releases_your_own(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """Releasing someone else's claim would reintroduce the race, silently."""
+    row = "Enumerate models on the system from both registries"
+    assert bus.main(["--bus-root", str(bus_root), "claim", "--agent", "alice", "--row", row]) == 0
+
+    assert bus.main(["--bus-root", str(bus_root), "claim", "--agent", "bob",
+                     "--row", row, "--release"]) == 1
+    assert "may not release" in capsys.readouterr().err
+
+    assert bus.main(["--bus-root", str(bus_root), "claim", "--agent", "alice",
+                     "--row", row, "--release"]) == 0
+    # released -> the row is takeable again, which is the whole point of releasing
+    assert bus.main(["--bus-root", str(bus_root), "claim", "--agent", "bob", "--row", row]) == 0
+
+
+def test_claim_refuses_a_non_roster_id(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """C29 consistency: every identity-taking verb uses the same rule."""
+    assert bus.main(["--bus-root", str(bus_root), "claim", "--agent", "ghost",
+                     "--row", "anything"]) == 1
+    assert "not a roster id" in capsys.readouterr().err
+    assert not (bus_root / "claims").exists()
+
+
+def test_claim_list_shows_holders_and_release_is_a_noop_when_unclaimed(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    assert bus.main(["--bus-root", str(bus_root), "claim", "--agent", "alice", "--list"]) == 0
+    assert "no rows claimed" in capsys.readouterr().out
+
+    bus.main(["--bus-root", str(bus_root), "claim", "--agent", "alice", "--row", "row one"])
+    bus.main(["--bus-root", str(bus_root), "claim", "--agent", "bob", "--row", "row two"])
+    assert bus.main(["--bus-root", str(bus_root), "claim", "--agent", "alice", "--list"]) == 0
+    listing = capsys.readouterr().out
+    assert "alice" in listing and "bob" in listing and "row one" in listing
+
+    assert bus.main(["--bus-root", str(bus_root), "claim", "--agent", "alice",
+                     "--row", "never claimed", "--release"]) == 0
+    assert "not claimed" in capsys.readouterr().out
+
+
+def test_claim_does_not_disturb_the_single_writer_lint(bus_root: Path) -> None:
+    """`claims/` is a new area. `validate` must not start failing because of it —
+    a validator nobody can get to green stops being read (the C2 rule)."""
+    _provision(bus_root, *AGENTS)
+    for name in ("human_only_paths.yaml", "human_only_paths.sha256"):
+        shutil.copy2(LIVE_BUS_ROOT / name, bus_root / name)
+    bus.main(["--bus-root", str(bus_root), "claim", "--agent", "alice", "--row", "a row"])
+
+    assert bus.main(["--bus-root", str(bus_root), "validate"]) == 0

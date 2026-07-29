@@ -28,6 +28,7 @@ file ever has two writers.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -784,6 +785,106 @@ def cmd_drain(args: argparse.Namespace) -> int:
     return 0
 
 
+def _claim_key(row: str) -> str:
+    """sha1 of the row's TEXT, whitespace-normalised and case-folded.
+
+    Keyed on text, never on `file:line`. The dispatch queue states its own rule —
+    *"line numbers are a hint, task text is the identity"* — because mains close rows
+    live and every anchor below a closure shifts. Two mains reading the same row at
+    different line numbers must still collide on the same key.
+    """
+    return hashlib.sha1(" ".join(row.split()).casefold().encode("utf-8")).hexdigest()
+
+
+def cmd_claim(args: argparse.Namespace) -> int:
+    """Take exclusive ownership of a backlog row, enforced by the filesystem.
+
+    WHY THIS EXISTS. Observed 2026-07-29, not hypothetical: `mainD` claimed TOP-40 #5
+    (the RLM E1a NIAH scorer) at 16:00:07 and reported it done at 16:03:51, while
+    `mainC` was independently building the same thing; `mainC` found the flipped
+    checkbox at 16:05:05 and withdrew its duplicate implementation
+    (`outcome: collision-with-completed-work`). Two mains, one row, five minutes
+    apart, one implementation thrown away — inside the first ten minutes of three
+    mains working a shared 232-row queue.
+
+    The collision map could not prevent it: it partitions FILES, not ROWS, and it is
+    advisory prose. Claiming was by convention — an outbox message — and a claim only
+    helps if the other main happens to DRAIN between the claim and starting work.
+    Self-selection from a shared list with pull-based notification is a race by
+    construction, and the window is minutes.
+
+    So the claim is a FILE CREATED WITH O_EXCL. The create either succeeds (you own
+    the row) or fails (somebody else does); there is no window between checking and
+    taking, because there is no check. It needs no daemon, no authority change and no
+    protocol round-trip, and it stays single-writer-clean because each claim file has
+    exactly one writer for its whole life.
+
+    ADDITIVE BY DESIGN: nothing in this module or the daemon reads `claims/`. Whether
+    the fleet adopts it is the coordinator's call — this only removes the delay
+    between that decision and having the mechanism.
+    """
+    bus_root = Path(args.bus_root)
+    _require_roster_id(bus_root, args.agent)          # C29: same identity rule as everything else
+    claims = bus_root / "claims"
+
+    if args.list:
+        rows = []
+        for p in sorted(claims.glob("*.json")):
+            try:
+                rows.append(json.loads(p.read_text(encoding="utf-8")))
+            except (OSError, json.JSONDecodeError):
+                print(f"session_bus: WARNING unreadable claim {p.name}", file=sys.stderr)
+        if not rows:
+            print("(no rows claimed)")
+        for r in rows:
+            print(f"{r.get('agent'):18s} {r.get('ts')}  {r.get('row')}")
+        return 0
+
+    if not args.row:
+        raise BusError("claim needs --row '<task text>' (or --list)")
+    path = claims / f"{_claim_key(args.row)}.json"
+    payload = {"agent": args.agent, "row": args.row, "ts": _utcnow_iso()}
+
+    if args.release:
+        # Release only what you own. Never delete another agent's claim — that would
+        # reintroduce the race this closes, with the added twist of doing it silently.
+        if not path.exists():
+            print(f"(not claimed: {args.row[:70]})")
+            return 0
+        try:
+            owner = json.loads(path.read_text(encoding="utf-8")).get("agent")
+        except (OSError, json.JSONDecodeError):
+            owner = None
+        if owner != args.agent:
+            raise BusError(f"{args.agent!r} may not release a row claimed by {owner!r}")
+        path.unlink()
+        print(f"released: {args.row[:70]}")
+        return 0
+
+    claims.mkdir(parents=True, exist_ok=True)
+    try:
+        fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+    except FileExistsError:
+        try:
+            held = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            held = {}
+        owner = held.get("agent")
+        if owner == args.agent:
+            # Re-claiming your OWN row is not a collision; a main that restarts
+            # mid-task must not be locked out of the work it is holding.
+            print(f"already yours since {held.get('ts')}: {args.row[:70]}")
+            return 0
+        print(f"REFUSING: claimed by {owner!r} since {held.get('ts')} — {args.row[:70]}",
+              file=sys.stderr)
+        return 2
+    with os.fdopen(fd, "w", encoding="utf-8") as fh:
+        json.dump(payload, fh, sort_keys=True)
+        fh.write("\n")
+    print(f"claimed by {args.agent}: {args.row[:70]}")
+    return 0
+
+
 def cmd_triage(args: argparse.Namespace) -> int:
     """The routing standing queue. Never reads or writes cursors: a routed
     message cannot be consumed by draining — only a corr_id disposition from the
@@ -1009,6 +1110,13 @@ def build_parser() -> argparse.ArgumentParser:
                                        "printed in full, cleared only by corr_id disposition")
     tp.add_argument("--agent", required=True)
     tp.set_defaults(func=cmd_triage)
+
+    cl = sub.add_parser("claim", help="take exclusive ownership of a backlog row (O_EXCL)")
+    cl.add_argument("--agent", required=True)
+    cl.add_argument("--row", help="the task TEXT (not file:line — anchors shift, text is identity)")
+    cl.add_argument("--release", action="store_true", help="release a row you own")
+    cl.add_argument("--list", action="store_true", help="show all currently claimed rows")
+    cl.set_defaults(func=cmd_claim)
 
     pp = sub.add_parser("provision", help="create the 4 files a roster member needs (idempotent)")
     pp.add_argument("--agent", required=True)
