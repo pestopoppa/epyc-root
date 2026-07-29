@@ -201,6 +201,29 @@ DeepConf-offline is the highest-ROI item from this intake and is scheduled ahead
 
 **UPDATE 2026-05-24 (A2 done — NOT adopting):** built as an isolated spike (41 tests) and validated against live Qwen3.6. **Decisive negative:** DeepConf's confidence-weighted vote ties plain majority (3/4 = 3/4, no gain), and the confidence signal is anti-correlated with correctness (top-1-confidence 1/4; correct-vs-wrong gap −0.158) — the model is overconfident on wrong short answers. So DeepConf adds N× generation + `n_probs` cost for **zero accuracy benefit** on our stack. Not wired into the orchestrator or autopilot; no branch/worktree is needed for the remaining bulk-inference run. Reasoning-budget control for this handoff should rely on the existing stop-signal/template levers, not DeepConf. Full data: [`research/deep-dives/optillm-test-time-techniques.md`](../../research/deep-dives/optillm-test-time-techniques.md) §P21.A Outcome.
 
+## Stop-signal abstraction — design only (2026-07-29)
+
+This is an interface contract for a future **experimental** reasoning controller, not a production sampler feature. The existing `budget_tokens` state machine is the only executable producer today; Step 3/4 must first prove it correct on hybrid SSM models. No producer may waive a quality gate or modify the frozen production kernel.
+
+Each producer may emit, at a decode boundary:
+
+```text
+StopSignal { producer: hard_cap | certainty_probe | draft_hidden_exit,
+             disposition: continue | request_close_think | abstain,
+             evidence_ref: trace-local immutable observation reference,
+             confidence: optional [0,1], next_eligible_token, reason_code }
+```
+
+The controller is a deterministic arbiter. `hard_cap` is authoritative once its existing state machine reaches the forcing boundary. Every other producer is **advisory and fail-closed**: missing evidence, unsupported architecture, invalid confidence, or disagreement means `continue`, not early close. A request acts only at the next eligible decode boundary using the same explicit closing-token path as hard cap; it never edits a prompt retrospectively or claims the model finished answering.
+
+| Producer | Admission before it may request close |
+|---|---|
+| `hard_cap` | Source-proven budget state machine plus this handoff's hybrid budget=0 and pure-MoE regression checks |
+| `certainty_probe` (CGR-shaped) | Versioned probe cadence/answer-token contract, saved signal, and paired quality + total-token non-inferiority evidence |
+| `draft_hidden_exit` (SpecExit-shaped) | Experimental-kernel-only hidden-state contract, draft/target compatibility and output parity, and paired quality + latency evidence |
+
+Confidence values are not comparable or scalarized. Enable at most one advisory producer per explicit experiment identifier; unsupported paths emit `abstain`. For every non-hard-cap request retain producer/version, request/decode positions, disposition, reason code, raw-signal reference, and later scorer result. This permits deterministic replay and detects overconfident early exits without rerunning inference. Such records are observations until a measurement protocol supplies the quality gate.
+
 ## Progress checklist
 
 - [x] Step 1-2: trace budget-enforcement pipeline + root-cause (SSM state-update race, 2026-04-17) ✅
@@ -208,4 +231,4 @@ DeepConf-offline is the highest-ROI item from this intake and is scheduled ahead
 - [ ] Step 3: implement fix (force </think> / suppress think scaffold at budget=0 for hybrid SSM), needs running server
 - [ ] Step 4: verify budget>0 caps reasoning at N tokens; no regression on pure MoE
 - [ ] Thread thinking.budget_tokens through ChatRequest per role
-- [ ] Design stop-signal abstraction to slot in CGR certainty-threshold / SpecExit hidden-state exit
+- [x] Design stop-signal abstraction to slot in CGR certainty-threshold / SpecExit hidden-state exit ✅ 2026-07-29 — design-only deterministic `StopSignal`/arbiter contract: hard cap remains the only executable authority; CGR and SpecExit are advisory, one-at-a-time, fail-closed producers pending source, parity, and paired quality/total-token evidence. No production sampler, server, or kernel change.
