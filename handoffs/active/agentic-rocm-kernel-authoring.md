@@ -16,7 +16,7 @@
 ---
 
 ## Objective
-Stand up an **agentic, train-free kernel-authoring loop for the incoming MI210** — drive a strong coding agent through generate → compile → verify → profile → refine to produce and tune **HIP/Triton kernels** for the EPYC stack, replacing the manual hipify-and-hand-tune path. **We cannot retrain a kernel model on one MI210, but we can run a train-free verify+profile loop** — and AMD has already open-sourced most of the substrate (GEAK/Apex/AgentKernelArena), demonstrated on gfx90a.
+Stand up an **agentic, train-free kernel-authoring loop for the installed MI210** — drive a strong coding agent through generate → compile → verify → profile → refine to produce and tune **HIP/Triton kernels** for the EPYC stack, replacing the manual hipify-and-hand-tune path. **We cannot retrain a kernel model on one MI210, but we can run a train-free verify+profile loop** — and AMD has already open-sourced most of the substrate (GEAK/Apex/AgentKernelArena), demonstrated on gfx90a.
 
 ## Current Decision Snapshot (2026-06-03)
 The path *today* (supersedes any earlier "EvoEngineer/CudaForge-first" framing):
@@ -75,7 +75,7 @@ Same `gfx90a` ISA **predicts compile compatibility, not performance equivalence.
 - [ ] Register controllers (Claude+Codex, EvoEngineer, KernelFoundry, K-Search, Xe-Forge, GEAK) as AgentKernelArena adapters and A/B on gfx90a
 - [ ] Build C4 gfx90a profiler-metric analyzer (GEAK-v2 raw-rocprof path first)
 - [ ] Build C6 anti-reward-hacking layer (robust-kbench + AgentKernelArena unseen-shape)
-- [ ] Run GEAK-family freshness sweep (deep-dive s9) at each audit
+- [x] **GEAK-family freshness sweep completed ✅ 2026-07-29**: refreshed the deep-dive appendix from AMD's current AgentKernelArena/GEAKv3 reports. AKA now publishes 214 tasks and a 44-task MI300X comparison; this is vendor/CDNA3 evidence only and does not close the MI210/gfx90a reproduction gap. [Freshness appendix](../../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md#9-freshness-appendix-sweep-at-each-handoff-audit--when-the-mi210-racks).
 
 
 ## Auto-kernel revival — research-intake integration 2026-07-22 (C5 seed corpus + FP8 authoring target)

@@ -519,9 +519,10 @@ The anchor/de-anchoring rules above are human-amendment-only (trust boundary). B
   zeroscrolls/physreason rows) AND (b) the operator's architect-model decision land — T3's
   expert/hard population is the escalation-prone tier where the architect materially serves;
   measuring it days before a swap bakes in an immediately-stale anchor.
-- [ ] **Unify autopilot's second McNemar producer (filed 2026-07-23)**: autopilot.py ~:1431
-  sequential-verdict gate emits raw mcnemar_from_vectors counts (used_for_gating: False) — consume
-  paired_stats.verdict_from_result (a153122e) so both producers share one verdict surface.
+- [x] **Unify autopilot's second McNemar producer (filed 2026-07-23) ✅ 2026-07-29**:
+  the observation-only sequential baseline payload now consumes `paired_stats.verdict_from_result`
+  under `mcnemar_verdict` while preserving `used_for_gating: False`; verified by
+  `uv run python -m pytest -q tests/unit/test_paired_stats.py tests/unit/test_autopilot_sequential_wiring.py` (72 passed).
 - **Architect resource model — heterogeneous correction (operator, 2026-07-23)**: "escalation
   drains the machine (quarters idle before the 122B takes the full bank)" holds ONLY for the
   pure-CPU plane. With the MI210 in the design, the drain constraint dissolves into an OPEN

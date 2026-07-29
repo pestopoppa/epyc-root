@@ -611,6 +611,7 @@ Dimension 1 as written is throughput-relative: `expected_elapsed = tokens_genera
 - [x] Root-caused the reward saturation to a `role` vs `producer_role` key mismatch; fixed with regression tests; replayed on 20,526 historical completions (0.0000 → 2.4580 bits). ✅ 2026-07-21
 - [ ] Add a **wall-clock task-duration** term as the speed axis, derived from `task_started`→`task_completed`, and demote the tokens/sec term to a secondary signal. Per-role p50/p90 baselines above are computable from the retained logs — derive them under a protocol id rather than hand-setting constants.
 - [ ] Record the instrument-era boundary for reward values before any pre/post-fix comparison is made or any policy is trained across it.
+  - [x] **Pre-validated human-amendment token authored ✅ 2026-07-29**: `RATIFY-E9-ROUTING-REWARD-ERA-20260729` is in `outbox/mainB.jsonl` with an append-only, SHA-pinned command and copy-only YAML validation (`dry_run_exit=0`). Await operator signature; agents did not edit `orchestration/instrument_eras.yaml`.
 - [ ] Optional: replay-rescore historical rows so the episodic store carries post-fix rewards. Not indispensable (the logs are the source of truth and can be replayed on demand), but it would make the 174K-row store trainable without a join.
 
 ## DAR-3 / DAR-4 / DAR-5 RESCOPE — approved 2026-07-21

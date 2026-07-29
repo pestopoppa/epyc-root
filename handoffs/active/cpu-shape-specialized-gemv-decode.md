@@ -722,9 +722,9 @@ When resuming this handoff:
 - [ ] Check `master-handoff-index.md` and `cpu-inference-optimization-index.md` for any status changes since 2026-04-23.
 - [x] Check llama.cpp upstream for any new CPU ukernel PRs (this handoff may be partially obsoleted). ✅ 2026-07-29 — unmerged x86 Q4_Kx8/Q8_K GEMV candidates [#23309](https://github.com/ggml-org/llama.cpp/pull/23309) and [#23793](https://github.com/ggml-org/llama.cpp/pull/23793) are experimental-watchlist items only: Intel/small-model author observations, overlapping `repack.cpp` changes, and no v8 production action. #25390 is a merged generic scalar-tail fix to review only on a future upstream forward-port.
 - [ ] Check for any new Justine Tunney / tinyBLAS Zen 5 benchmarks.
-- [ ] **Work in `/mnt/raid0/llm/llama.cpp-experimental`, never the production `llama.cpp` tree.** Ensure the experimental worktree is anchored on `production-consolidated-v4` (or successor) before starting.
+- [ ] **Work in `/mnt/raid0/llm/llama.cpp-experimental`, never the production `llama.cpp` tree.** Start every new experiment from the current frozen production tip (`production-consolidated-v8` / `67a433bf4` as of 2026-07-29), then create a fresh experimental branch; do not revive the obsolete v4 anchor.
 - [ ] **Measure tinyBLAS on/off as first Phase 0 step** (`GGML_USE_LLAMAFILE` macro); that delta changes the remaining headroom calculation.
-- [ ] **Confirm TIDE code paths are dormant** — fork commits `143ded626`, `c4e06b01e`, `59d2012b2` are TIDE-related and dated 2026-04-23 (same day as TIDE's deprecation). Baseline must not run with early-exit enabled.
+- [x] **TIDE early-exit paths confirmed dormant ✅ 2026-07-29**: fork commits `143ded626`, `c4e06b01e`, and `59d2012b2` are not reachable from frozen production `production-consolidated-v8` (`67a433bf4`); current `common/`, `src/`, `ggml/`, `tools/`, and `examples/` contain no `TIDE`, `n_layer_exit`, or early-exit implementation. Baseline therefore cannot enable TIDE.
 - [ ] Run Phase 0 baseline measurements — do not skip the profiling gate (DeltaNet >40% abandon threshold).
 - [ ] Start a new `progress/YYYY-MM/YYYY-MM-DD.md` entry before Phase 1 work begins.
 - [ ] Update this handoff's Status field as phases close.
