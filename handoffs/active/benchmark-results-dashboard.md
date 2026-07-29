@@ -1,6 +1,6 @@
 # Benchmark Results Dashboard
 
-**Status**: active — proposed 2026-07-28, NOT started
+**Status**: active — registry inventory landed 2026-07-29; artifact ingestion and UI remain open
 **Created**: 2026-07-28
 **Priority**: LOW — nice-to-have, operator-requested (2026-07-28). The archival-DB phase is explicitly *not* high priority.
 **Owner**: unclaimed
@@ -44,7 +44,7 @@ model X?" without artifact archaeology.
 
 ## Phase 1 — read-only inspector (the actual ask)
 
-- [ ] Enumerate models on the system from the registries (master full-record + lean active).
+- [x] Enumerate models on the system from the registries (master full-record + lean active). ✅ 2026-07-29 — `scripts/dashboard/build_benchmark_model_inventory.py` emits the read-only `data/benchmark_model_inventory.json` contract: 166 deduplicated model/quant records from 179 research roles and 15 orchestrator roles, retaining each source's role references. YAML parsing stays out of the stdlib-only :8100 hub.
 - [ ] Ingest artifact surfaces (`summary.json` / `results.json`) into a **per-model** view: quality
       (suite / n / accuracy), throughput (np×L grid, RAG-at-depth), kernel + era, date.
 - [ ] Filterable table + per-model drill-down, served as a sibling page on :8100.
