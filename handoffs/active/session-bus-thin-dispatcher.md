@@ -667,6 +667,35 @@ freezes/cutovers, host reboots).
   mid-assignment showing epoch fencing, and operator touching only token-queue checkboxes — plus
   M3's advisory-accuracy evidence, on which M4's go/no-go rests. The switch stays at `manual`
   until then. Rollback: `authority: advisory`.
+### C-series ownership + residuals after the 2026-07-29 gpu-lane re-task (filed at wrap-up)
+
+The `claude-gpu-lane` identity was stood down, then **re-spawned and re-tasked by the operator to
+P2-2 tenant landing** (`gpu-serving-tie-in-program.md`). It is **not carrying the session-bus
+C-series forward**, and said so explicitly on the bus rather than letting the work rot as
+implicitly-owned. These three are filed here so they exist as tasks, not as prose in a bus message
+nobody re-reads:
+
+- [ ] **C-OWN — the C-series needs a new owner.** C6/C9/C10/C14/C16/C18/C21 and the `tmux_adapter.py`
+  hardening arc are currently **unowned**. Everything landed is committed and pushed; nothing is in
+  flight. Re-assignment is a coordinator call. The two decisions the lane deliberately left open
+  (C15 spawn cap, C18(a) `codex-bus-tests` role) are in the handover block below and remain open.
+- [ ] **C22 (NEW) — `roster_window_names()` is dead code still carrying the last-writer-wins idiom.**
+  Zero callers after C14, but it still contains the `names[value] = rid` shape the C9 review flagged
+  as a collision bug. Delete it. Reviewer's own framing (`fable-auditor`, msg-20260729T100449Z-18):
+  left in place it "waits to hand the collision bug to a future caller." One-line cleanup, not
+  blocking, and cheap enough that it should not survive another wrap-up.
+- [ ] **C23 (NEW) — triage disposition should not require an identical payload per `corr_id`.**
+  Found by doing it wrong on 2026-07-29: clearing 19 routed items needs one message per `corr_id`,
+  so a session with a single disposition for all of them emits the **same ~1.5 KB payload 19 times**.
+  Audited and worth stating precisely, because the obvious diagnosis is wrong: there is **no
+  duplicate-send bug and no relay fan-out** — 19 messages, 19 distinct `corr_id`s, 19 distinct ids,
+  relayed 1:1. The defect is that the protocol's clearing granularity makes bus spam the *natural*
+  way to do a bulk disposition. Options: allow a `corr_ids: [...]` list on one message, or have
+  `drain --triage` accept a bulk-disposition verb. Until then the workaround is discipline — a
+  repeated payload across N `corr_id`s is bus noise by construction, so bodies must be per-item or
+  terse. Belongs to whoever owns `BUS_PROTOCOL.md`; not edited here because the contract is not
+  this lane's to change.
+
 > ### POST-REBOOT HANDOVER — `claude-gpu-lane`, closed 2026-07-29 (read this first)
 >
 > **Tier-C rank 10(d) crash-window fixes are on a PUSHED BRANCH, not in /tmp.**
