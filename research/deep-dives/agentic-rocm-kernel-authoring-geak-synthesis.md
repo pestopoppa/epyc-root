@@ -66,7 +66,7 @@ Operator-level/torch-eager scores overstate real gains ~25pp (1.16×→0.93× vs
 **Triton first** (GEAK-eval gfx90a-proven, open, clean ROCm backend — lowest-risk). **HIP second** — GEAK-HIP (678) proves the same loop closes at the hipcc level and **out-optimized a human engineer** (Voxelization 2.07× vs 1.84×); AgentKernelArena's **Torch2HIP** category (679) is the from-scratch torch→HIP path directly seeding the llama.cpp endgame. Neither ships an open HIP benchmark, so the HIP arm requires our own HIP oracle + robust-kbench hardening (UB risk is higher at raw-HIP). Pairs with `llama-cpp-dsa-contribution.md`.
 
 ## 6. Evidence matrix (grouped by ROLE, not chronology)
-**AMD-native substrate (adopt):** GEAK 674 (C1/C2/C3/C5, gfx90a-proven, MIT) · Apex 675 (E2E harness + Magpie scorer + MCP, MIT, gfx90a-listed) · AgentKernelArena 679 (controller-A/B arena + 3 task suites + unseen-shape C6 half, Apache-2.0, **gfx942-only**) · GEAK-v2 677 (C4 Profiler-Analyzer + QD upgrades, **gfx942-only**) · GEAK-HIP 678 (HIP-arm patterns, **gfx942-only**).
+**AMD-native substrate (adopt):** GEAK 674 (C1/C2/C3/C5, gfx90a-proven, **Apache-2.0** at its v1 source tag) · Apex 675 (E2E harness + Magpie scorer + MCP, MIT, gfx90a-listed) · AgentKernelArena 679 (controller-A/B arena + 3 task suites + unseen-shape C6 half, Apache-2.0, **gfx942-only**) · GEAK-v2 677 (C4 Profiler-Analyzer + QD upgrades, **gfx942-only**) · GEAK-HIP 678 (HIP-arm patterns, **gfx942-only**).
 **Controller candidates:** EvoEngineer 666 (lead) · KernelFoundry 669 (hardware-awareness layer) · Xe-Forge 672 (linear archetype) · K-Search 673 (world-model tree) · GEAK 674 (AMD-native, first to stand up).
 **C4 sources:** GEAK-v2 Profiler-Analyzer 677 (try first) · Xe-Forge static-KB 672 · CudaForge formal selection 662.
 **C6 sources:** robust-kbench 668 (exploit classes) · AgentKernelArena 679 (unseen shapes).
@@ -100,3 +100,32 @@ The MI210 is installed; any execution remains operator-approved under the measur
 - **AgentKernelArena (intake-679):** arXiv 2605.16819, Apache-2.0, repo `AMD-AGI/AgentKernelArena`. The public AMD report is now a released 44-task MI300X comparison and includes GEAKv3 alongside general agents; its 214-task arena is broader than that reported subset. Treat the reported ranking as vendor/CDNA3 observation only; the MI210 reproduction and unseen-shape hardening gates remain.
 - **New-sibling watch:** `rocm.blogs.amd.com` + the `AMD-AIG-AIMA` and `AMD-AGI` GitHub orgs (where GEAK/GEAK-eval/Apex/GEAK-HIP/AgentKernelArena all live) for further AMD-native kernel-agent tooling.
 - **Standing caveat:** triple commercial bias on all AMD entries (AMD authors agent + benchmark + hardware); no independent third-party reproduction found in Tier-2b for any of intake-674–679. Treat as provisional until reproduced on our own gfx90a (`feedback_classify_eval_failures_by_reason`, observe-before-diagnosing).
+
+## 10. Pre-hardware source pins and deferred environment recipe (2026-07-29)
+
+This is a **source-preparation record, not an installation or a run authorization**. It was prepared while
+E5 Stage-B holds the host: no ROCm package, Python environment, model, server, or GPU workload was
+started. The first activation still requires E5 release plus the P-GPU-1 operator approval.
+
+| Component | Evidence-matched pin | License inspection | Disposition |
+|---|---|---|---|
+| GEAK v1 agent (intake-674, arXiv:2507.23194) | `AMD-AGI/GEAK` tag `v1.0.0`, commit `4ffba15a55f250816598b4e27eb56ca40a699cea` (the `GEAK-v1` branch points to the same commit) | `LICENSE.md` at the pin identifies AMD code as **Apache-2.0**. This corrects the old MIT label. | The only paper-era, gfx90a-supported controller pin. Do not substitute current main or v2/v3/v4 branches. |
+| GEAK-eval (intake-674) | `AMD-AGI/GEAK-eval` commit `a85e657ffa82e130f3677c5d6f76d6866537846e` (2025-07-30, paper-era source snapshot) | **Unresolved:** repository tree has no project-level `LICENSE` at this pin; its only license path belongs to vendored TritonBench data. | May be inspected/reproduced only after a license owner resolves the repository-code license; do not copy its code into EPYC until then. |
+| Apex (intake-675; no paper release) | `AMD-AGI/Apex` commit `e06b5d1cd58996a82c5e2897164f760c3b3f87ac` (2026-05-29, pre-current-source snapshot) | `LICENSE` is **MIT**. | Reference the pinned E2E/score shape; any later version needs an explicit freshness review because no paper tag exists. |
+| AgentKernelArena (intake-679, arXiv:2605.16819) | `AMD-AGI/AgentKernelArena` commit `2dbbf1d3f676b948c04c339de50516fe80ed4ab9` (2026-05-29, paper-era source snapshot) | `LICENSE` is **Apache-2.0**. | Pin for later controller-A/B and unseen-shape design work; it is still gfx942 evidence, not an MI210 benchmark. |
+
+The pin selection deliberately separates source provenance from a runnable environment. GEAK v1 declares
+`triton==3.1.0`; GEAK-eval's paper-era requirements declare `triton==3.3.0`; therefore they **must not
+share a virtual environment**. Apex's older requirements describe a separate ROCm torch installation and
+only require `triton>=3.0`; AgentKernelArena needs Python 3.12+, ROCm tools (`hipcc`, `rocprof-compute`),
+and its own lightweight Python dependencies. A single catch-all environment would silently replace one
+paper's Triton pin with another.
+
+When the operator opens the GPU lane, prepare separate throwaway, provenance-logged environments in this
+order: (1) record the host bind-mounted ROCm release and `hipcc --version`; (2) create a per-component
+environment; (3) install only a PyTorch ROCm build whose ROCm ABI matches that host, then record
+`torch.__version__`, `torch.version.hip`, `triton.__version__`, and `PYTORCH_ROCM_ARCH=gfx90a`; (4) install
+only that component's pinned requirements; (5) run a **non-benchmark** import/device preflight; and only
+then present the P-GPU-1 command package for the GEAK-eval compile/correctness/timing reproduction.
+Never solve an ABI mismatch by an ad-hoc host ROCm install, and never let the preflight create a production
+kernel build or modify the frozen production tree.
