@@ -125,6 +125,13 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
     are **gated**, not dispatchable (and E5 separately prohibits their local
     llama workload). `backlog_live_uncertified = 953` for this dated
     read-through slice; `backlog_not_a_task = 36` is unchanged.
+  - **READ-CERTIFIED 2026-07-29 (mainB, 1 row):**
+    `autopilot-authority-autoenable-proposal.md` is explicitly superseded by
+    consolidated apply-time ratification. Its sole box is an archive
+    disposition that waits for operator acknowledgement; it is
+    **operator-gated**, not live engineering work. `backlog_live_uncertified
+    = 952` for this dated read-through slice; `backlog_not_a_task = 36` is
+    unchanged.
   - [ ] **REMAINS OPEN:** read-certify the 955. That is the only route left and it is a bounded but
     large job; it should be split across mains by handoff, not attempted in one session.
 
