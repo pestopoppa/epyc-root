@@ -439,7 +439,7 @@ Add a new MCP server module that wraps the bash invocation as a `run_bash_compre
   - Second finding worth carrying: method effectiveness is **model-dependent** (isolation +19% on Qwen3.5, negative on GLM-4.7), which cautions against one global compression policy across our heterogeneous role stack — though it rests on n=2.
   - Numbers are OBSERVATION-grade (100-sample splits, no chance-corrected judge agreement, live-web contamination exposure per intake-877).
 
-- [ ] Phase 3d design input: bias the fallback chain toward cheap observation-dropping before LLM summarization, and require summarization to earn its cost in an A/B rather than assuming it. [intake-869, intake-274]
+- [x] Phase 3d design input: bias the fallback chain toward cheap observation-dropping before LLM summarization, and require summarization to earn its cost in an A/B rather than assuming it. ✅ 2026-07-29 — audit resolves the ownership boundary: `compress_tool_output.py` already does deterministic observation dropping for recognized commands and fenced blocks, and deliberately has no model dependency. The only model fallback is the separate orchestrator two-stage document-summarization path, so it must not be ported into this tool-output script by analogy. Any runtime reorder needs its own telemetry-backed orchestrator task; unknown-command passthrough remains fail-safe rather than a generic lossy dropper. [intake-869, intake-274]
 
 ## Research Intake Update — 2026-07-29 (the compaction-default question: verbatim log + grep vs summarize-and-compact)
 
