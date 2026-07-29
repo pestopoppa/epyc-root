@@ -290,6 +290,74 @@ def test_live() -> None:
             p = m.probe(cfg, "quiet", 20.0, 900.0)
             check(p["nudge_ok"], f"quiet window + idle heartbeat -> nudge_ok (blockers={p['blockers']})")
 
+            # ---- C35: pane quiescence overrides a `working` heartbeat ----
+            # These run against REAL panes, which is the only place the premise can
+            # be checked: a window that is genuinely emitting must LOOK busy, and a
+            # window sitting at its prompt must LOOK quiet. The stubbed suite can
+            # only prove the arithmetic once those readings are assumed.
+            print("\n  -- C35 quiescence override --")
+
+            # THE PREMISE ITSELF, asserted rather than assumed. The `busy` fixture
+            # prints once a second, standing in for the spinner both TUIs redraw
+            # while generating. If a future tmux or TUI stopped moving
+            # #{window_activity}, the override would start firing on live
+            # generations — and this check is what would catch it, loudly, instead
+            # of the operator discovering it as a corrupted pane.
+            #
+            # It also pins DETACHED tracking specifically. This throwaway session
+            # has no client attached, and the override deliberately does not require
+            # one, because a detached session is the normal overnight state and an
+            # attached-only override would be useless exactly when it is needed.
+            # (Calibrated 2026-07-29 across attached/detached x fore/background: a
+            # window emitting 5x/s never exceeded 1s of apparent quiet in any of the
+            # four combinations, while an idle window aged monotonically.)
+            p_busy = m.probe(cfg, "busy", 20.0, 900.0)
+            bq = p_busy["window_quiet_for_s"]
+            check(bq is not None and bq < 10,
+                  f"PREMISE: a window emitting every second reads as recently active "
+                  f"even while DETACHED (quiet_for={bq})")
+
+            # The case that matters most: a real, still-emitting pane keeps its
+            # `working` heartbeat believed even at a threshold far below the default.
+            set_heartbeat(m, "busy", "working")
+            p_busy = m.probe(cfg, "busy", 20.0, 900.0, 5.0)
+            check(any("says working" in b for b in p_busy["blockers"]),
+                  f"a REAL emitting pane still refuses a nudge ({p_busy['blockers']})")
+            check(p_busy["heartbeat_override_applied"] is False,
+                  "and the override reports that it did not fire")
+            check(not p_busy["nudge_ok"], "mid-generation panes are never nudge_ok")
+
+            # A real settled pane, quiet ~22s by now, with a stuck `working` state —
+            # this is the deadlock the operator hand-relayed around four times on
+            # 2026-07-29. At a 5s threshold the quiescence outvotes the heartbeat.
+            set_heartbeat(m, "quiet", "working")
+            p_q = m.probe(cfg, "quiet", 20.0, 900.0, 5.0)
+            check(p_q["heartbeat_override_applied"] is True,
+                  f"a settled pane overrides a stuck `working` heartbeat "
+                  f"(quiet_for={p_q['window_quiet_for_s']}, {p_q['heartbeat_override_reason']})")
+            check(not any("says working" in b for b in p_q["blockers"]),
+                  f"the working blocker is gone ({p_q['blockers']})")
+            check(p_q["nudge_ok"], f"THE POINT: the session is reachable again ({p_q['blockers']})")
+
+            # ...and the threshold is really consulted: the SAME pane in the SAME
+            # state stays blocked when the bar is above its quiet time. Without this
+            # the case above would pass equally for "always override".
+            p_q_strict = m.probe(cfg, "quiet", 20.0, 900.0, 3600.0)
+            check(p_q_strict["heartbeat_override_applied"] is False,
+                  "the same pane stays blocked when the threshold is above its quiet time")
+            check(not p_q_strict["nudge_ok"], "and is not nudge_ok")
+
+            # Disabling the override restores the pre-C35 behaviour exactly.
+            p_q_off = m.probe(cfg, "quiet", 20.0, 900.0, 0.0)
+            check(p_q_off["heartbeat_override_applied"] is False and not p_q_off["nudge_ok"],
+                  "a 0 threshold disables the override entirely (pre-C35 behaviour)")
+
+            # Restore the state the rest of the live group expects.
+            set_heartbeat(m, "quiet", "idle")
+            set_heartbeat(m, "busy", "idle")
+            p = m.probe(cfg, "quiet", 20.0, 900.0)
+            check(p["nudge_ok"], "quiet window restored to nudge_ok for the cases below")
+
             class A:
                 agent = "quiet"; message = "bus drain: test"; min_interval_s = 600.0; dry_run = True
                 quiet_s = 20.0; heartbeat_max_age = 900.0

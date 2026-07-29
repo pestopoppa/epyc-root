@@ -1233,3 +1233,324 @@ def test_c30b_an_unreadable_window_list_does_not_manufacture_a_failure(
     assert adapter.cmd_spawn(A()) == 0
     rows = [json.loads(l) for l in adapter.LEDGER.read_text().splitlines() if l.strip()]
     assert [r["kind"] for r in rows] == ["spawn"]
+
+
+# ---------------------------------------------------------------- C35 quiescence override
+
+
+# A roster whose endpoint names its window explicitly, so resolve_target verifies
+# against #{window_index}\t#{window_name} and every case below reaches the
+# heartbeat logic rather than dying at target resolution.
+_C35_CONFIG = {
+    "flags": {"codex_sendkeys": "on"},
+    "roster": [{"id": "main-a", "endpoint": "tmux:agent:main-a"}],
+    "tmux": {"live_session": "agent", "allow_session_creation": False},
+    "caps": {"max_concurrent_mains": 6},
+}
+
+
+def _c35_probe(tag: str, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, *,
+               state: str = "working", quiet_for: float | None = 300.0,
+               dead: str = "0", attached: str = "1",
+               display_rc: int = 0, hb_override_quiet_s: float = 120.0,
+               hb_age_s: float = 0.0, exact_activity: float | None = None) -> dict:
+    """Probe one synthetic pane whose quiet time and heartbeat are both dialled in.
+
+    `quiet_for` is expressed in SECONDS AGO and converted to the epoch stamp tmux
+    actually reports, so the cases read in the units the guard is specified in.
+    None makes #{window_activity} unparseable, which must fail closed.
+
+    `exact_activity` supplies that epoch stamp directly, for the frozen-clock
+    boundary cases where the usual `now - quiet_for` arithmetic would drift by the
+    time probe reads it back.
+    """
+    adapter = _load("c35_" + tag)
+    adapter.LEDGER = tmp_path / f"ledger_{tag}.jsonl"
+    adapter.BUS_ROOT = tmp_path / f"bus_{tag}"
+    (adapter.BUS_ROOT / "heartbeats").mkdir(parents=True)
+    hb = adapter.BUS_ROOT / "heartbeats" / "main-a.json"
+    hb.write_text(json.dumps({"agent": "main-a", "state": state, "task_id": "t-1",
+                              "ts": datetime.now(timezone.utc).isoformat(timespec="seconds")}))
+    if hb_age_s:
+        old = __import__("time").time() - hb_age_s
+        os.utime(hb, (old, old))
+    monkeypatch.setattr(adapter, "load_config", lambda: _C35_CONFIG)
+
+    if exact_activity is not None:
+        act = str(int(exact_activity))
+    elif quiet_for is None:
+        act = "not-a-number"
+    else:
+        act = str(int(__import__("time").time() - quiet_for))
+
+    def fake_tmux(*args: str) -> tuple[int, str]:
+        if args[0] == "display-message":
+            fmt = args[-1]
+            if "#{pane_dead}" in fmt:
+                if display_rc != 0:
+                    return display_rc, "can't find pane"
+                return 0, f"{dead}\t{act}\t{attached}"
+            # resolve_target's verification probe
+            return 0, "4\tmain-a"
+        if args[0] == "list-windows":
+            return 0, "4\tmain-a"
+        return 0, ""
+
+    monkeypatch.setattr(adapter, "_tmux", fake_tmux)
+    return adapter.probe(_C35_CONFIG, "main-a", 20.0, 900.0, hb_override_quiet_s)
+
+
+def _working_blocked(p: dict) -> bool:
+    return any("says working" in b for b in p["blockers"])
+
+
+def test_c35_a_quiet_pane_overrides_a_working_heartbeat(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """THE DEADLOCK THIS REMOVES. A main that finishes a unit and settles at its
+    prompt keeps `working` in its heartbeat, because the code that would update it
+    is the code that stopped running. It cannot clear the flag, because clearing it
+    requires being told to — which is what the guard refused. Measured 2026-07-29:
+    four hand-relays in one day, one of them into a session holding the whole
+    machine for an exclusive E5 window."""
+    p = _c35_probe("override", monkeypatch, tmp_path, state="working", quiet_for=300.0)
+    assert not _working_blocked(p), f"the working blocker must be suppressed ({p['blockers']})"
+    assert p["heartbeat_override_applied"] is True
+    assert p["nudge_ok"], f"and the nudge must actually be allowed ({p['blockers']})"
+
+
+def test_c35_a_recently_active_pane_still_believes_a_working_heartbeat(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """THE CASE THAT MATTERS MOST — this is the one protecting a mid-generation
+    session from having text typed into its pane. Both TUIs redraw a spinner about
+    once a second while working (calibrated 2026-07-29: a busy window never showed
+    more than 1s of apparent quiet in any attached/detached x fore/background
+    combination), so a real generation lands here and the heartbeat is believed."""
+    p = _c35_probe("midgen", monkeypatch, tmp_path, state="working", quiet_for=1.0)
+    assert _working_blocked(p), "a mid-generation pane must still refuse"
+    assert p["heartbeat_override_applied"] is False
+    assert not p["nudge_ok"]
+
+
+@pytest.mark.parametrize("quiet_for,applied", [
+    (110.0, False),   # comfortably inside the threshold — believed
+    (130.0, True),    # comfortably past it — overridden
+])
+def test_c35_the_threshold_is_respected_either_side(
+        quiet_for: float, applied: bool, monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Path) -> None:
+    p = _c35_probe(f"bound{int(quiet_for)}", monkeypatch, tmp_path,
+                   state="working", quiet_for=quiet_for, hb_override_quiet_s=120.0)
+    assert p["heartbeat_override_applied"] is applied
+    assert _working_blocked(p) is (not applied)
+
+
+@pytest.mark.parametrize("quiet_for,applied", [
+    (119.0, False),   # one second short — believed
+    (120.0, True),    # EXACTLY at the threshold: the comparison is >=, so it overrides
+    (121.0, True),
+])
+def test_c35_the_threshold_is_exact_at_its_boundary(
+        quiet_for: float, applied: bool, monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Path) -> None:
+    """A FROZEN CLOCK, because the boundary is otherwise untestable.
+
+    `_c35_probe` builds an epoch stamp and probe turns it back into a duration, and
+    the elapsed time between those two steps pushes the result a fraction of a
+    second past whatever was asked for. A parametrisation of (120.0 -> overrides)
+    therefore passes against a `<=` comparison as readily as a `<` one — verified:
+    mutating the operator to `<=` left the earlier version of this test green. So
+    the clock is pinned to an integral value, which makes the arithmetic exact and
+    the boundary genuinely observable.
+
+    Whole seconds only: tmux reports #{window_activity} as an epoch INTEGER, so a
+    fractional quiet time is not a state the adapter can ever observe.
+    """
+    import time as _time
+    fixed = float(int(_time.time()))
+    monkeypatch.setattr(_time, "time", lambda: fixed)
+    p = _c35_probe(f"exact{str(quiet_for).replace('.', '_')}", monkeypatch, tmp_path,
+                   state="working", quiet_for=quiet_for, hb_override_quiet_s=120.0,
+                   exact_activity=fixed - quiet_for)
+    assert p["window_quiet_for_s"] == pytest.approx(quiet_for), \
+        "the frozen clock must make the observed quiet time exactly what was asked for"
+    assert p["heartbeat_override_applied"] is applied
+    assert _working_blocked(p) is (not applied)
+
+
+def test_c35_the_threshold_is_tunable_not_hardcoded(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """The flag must actually move the decision, or it is decoration."""
+    quiet = 200.0
+    lax = _c35_probe("tunelax", monkeypatch, tmp_path, quiet_for=quiet, hb_override_quiet_s=100.0)
+    strict = _c35_probe("tunestr", monkeypatch, tmp_path, quiet_for=quiet, hb_override_quiet_s=600.0)
+    assert lax["heartbeat_override_applied"] is True
+    assert strict["heartbeat_override_applied"] is False
+    assert lax["heartbeat_override_quiet_s"] == 100.0
+
+
+def test_c35_a_non_positive_threshold_disables_the_override(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """0 must mean OFF, not 'override always'. A mis-set threshold has to be inert,
+    because the failure it would otherwise cause is typing into a live generation."""
+    for tag, thr in (("zero", 0.0), ("neg", -1.0)):
+        p = _c35_probe("disabled" + tag, monkeypatch, tmp_path,
+                       state="working", quiet_for=99999.0, hb_override_quiet_s=thr)
+        assert p["heartbeat_override_applied"] is False
+        assert _working_blocked(p), f"threshold {thr} must leave the guard fully armed"
+
+
+def test_c35_an_unreadable_window_activity_fails_closed(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """This module's defect history is C3, C6, C8, C24, C35 — every one a fail-OPEN.
+    An unparseable activity stamp must never be read as 'quiet for a long time'."""
+    p = _c35_probe("badact", monkeypatch, tmp_path, state="working", quiet_for=None)
+    assert p["heartbeat_override_applied"] is False
+    assert _working_blocked(p)
+    assert "unreadable" in (p["heartbeat_override_reason"] or "")
+
+
+def test_c35_an_unreadable_pane_fails_closed(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """display-message failing means pane_dead is None. `dead is not False` is the
+    deliberate wording — `not dead` would treat None as alive."""
+    p = _c35_probe("badpane", monkeypatch, tmp_path, state="working", display_rc=1)
+    assert p["heartbeat_override_applied"] is False
+    assert _working_blocked(p)
+    assert not p["nudge_ok"]
+
+
+def test_c35_a_dead_pane_is_never_overridden_and_still_refuses(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """A dead pane is quiet forever, which is exactly the shape that would fool a
+    naive quiescence rule."""
+    p = _c35_probe("deadpane", monkeypatch, tmp_path, state="working",
+                   quiet_for=9999.0, dead="1")
+    assert p["heartbeat_override_applied"] is False
+    assert any("pane is dead" in b for b in p["blockers"])
+    assert not p["nudge_ok"]
+
+
+def test_c35_the_override_touches_only_the_working_blocker(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Every other guard must survive the override independently. Without this the
+    change could quietly become 'a quiet pane is always nudgeable'."""
+    # staleness: independent, and deliberately NOT overridden — it is already
+    # tunable with --heartbeat-max-age, whereas state was not tunable at all.
+    stale = _c35_probe("stale", monkeypatch, tmp_path, state="working",
+                       quiet_for=300.0, hb_age_s=4000.0)
+    assert stale["heartbeat_override_applied"] is True
+    assert any("stale" in b for b in stale["blockers"])
+    assert not stale["nudge_ok"], "an overridden state must not also waive staleness"
+
+    # authorisation flag
+    adapter = _load("c35_flagoff")
+    adapter.LEDGER = tmp_path / "l.jsonl"
+    adapter.BUS_ROOT = tmp_path / "bus_flagoff"
+    (adapter.BUS_ROOT / "heartbeats").mkdir(parents=True)
+    (adapter.BUS_ROOT / "heartbeats" / "main-a.json").write_text(
+        json.dumps({"agent": "main-a", "state": "working", "task_id": "t",
+                    "ts": datetime.now(timezone.utc).isoformat(timespec="seconds")}))
+    cfg_off = dict(_C35_CONFIG, flags={"codex_sendkeys": "off"})
+    monkeypatch.setattr(adapter, "load_config", lambda: cfg_off)
+    act = str(int(__import__("time").time() - 300))
+    monkeypatch.setattr(adapter, "_tmux", lambda *a: (
+        (0, f"0\t{act}\t1") if a[0] == "display-message" and "#{pane_dead}" in a[-1]
+        else (0, "4\tmain-a")))
+    p = adapter.probe(cfg_off, "main-a", 20.0, 900.0, 120.0)
+    assert p["heartbeat_override_applied"] is True
+    assert any("codex_sendkeys is off" in b for b in p["blockers"])
+    assert not p["nudge_ok"], "the authorisation gate is not a heartbeat blocker"
+
+
+def test_c35_a_missing_heartbeat_is_still_a_blocker_even_on_a_quiet_pane(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """The override suppresses a `working` STATE. It must not be reachable as a way
+    of nudging an agent with no heartbeat at all."""
+    adapter = _load("c35_nohb")
+    adapter.LEDGER = tmp_path / "l2.jsonl"
+    adapter.BUS_ROOT = tmp_path / "bus_nohb"
+    (adapter.BUS_ROOT / "heartbeats").mkdir(parents=True)
+    monkeypatch.setattr(adapter, "load_config", lambda: _C35_CONFIG)
+    act = str(int(__import__("time").time() - 5000))
+    monkeypatch.setattr(adapter, "_tmux", lambda *a: (
+        (0, f"0\t{act}\t1") if a[0] == "display-message" and "#{pane_dead}" in a[-1]
+        else (0, "4\tmain-a")))
+    p = adapter.probe(_C35_CONFIG, "main-a", 20.0, 900.0, 120.0)
+    assert any("no heartbeat" in b for b in p["blockers"])
+    assert p["heartbeat_override_applied"] is False
+    assert not p["nudge_ok"]
+
+
+def test_c35_an_idle_heartbeat_reports_no_override_at_all(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """THE COMPLIANT PATH. An agent keeping its heartbeat honest must not be routed
+    through the override at all — probe should show it was never consulted."""
+    p = _c35_probe("idle", monkeypatch, tmp_path, state="idle", quiet_for=300.0)
+    assert p["heartbeat_override_applied"] is False
+    assert p["heartbeat_override_reason"] is None, \
+        "no reason means the override was never reached, not that it declined"
+    assert p["nudge_ok"]
+
+
+def test_c35_probe_explains_the_override_in_both_directions(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """`probe` must never let a human be surprised by a nudge the guard 'should'
+    have refused — nor leave a refusal unexplained. Both renderings are asserted
+    because a one-sided report is how probe and nudge drift apart."""
+    adapter = _load("c35_print")
+
+    class PA:
+        agent = "main-a"
+        json = False
+        quiet_s = 20.0
+        heartbeat_max_age = 900.0
+        heartbeat_override_quiet_s = 120.0
+
+    applied = _c35_probe("printapp", monkeypatch, tmp_path, state="working", quiet_for=300.0)
+    monkeypatch.setattr(adapter, "load_config", lambda: _C35_CONFIG)
+    monkeypatch.setattr(adapter, "probe", lambda *a, **k: applied)
+    adapter.cmd_probe(PA())
+    out = capsys.readouterr().out
+    assert "hb-override" in out and "APPLIED" in out
+    assert "quiet" in out and "settled at" in out, f"it must say WHY, not just that it did: {out}"
+
+    believed = _c35_probe("printbel", monkeypatch, tmp_path, state="working", quiet_for=2.0)
+    monkeypatch.setattr(adapter, "probe", lambda *a, **k: believed)
+    adapter.cmd_probe(PA())
+    out2 = capsys.readouterr().out
+    assert "hb-override" in out2 and "not applied" in out2
+    assert "heartbeat believed" in out2
+
+
+def test_c35_an_overriding_nudge_is_recorded_as_such_in_the_ledger(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """If the override ever does interrupt a real generation, the ledger row is the
+    evidence. An ordinary nudge must stay byte-identical to before."""
+    adapter = _load("c35_ledger")
+    # _Args.message is shared class state that earlier tests mutate, so set it here
+    # and build the scripted composer from it rather than from a literal.
+    _Args.message = "drain the bus"
+    pending = "› " + _Args.message
+    submitted = pending + "\n● working\n\n› "
+    over = {"nudge_ok": True, "target": "agent:main-a", "seconds_since_last_nudge": None,
+            "heartbeat_override_applied": True, "window_quiet_for_s": 300.0,
+            "heartbeat_override_reason": "window quiet 300s (>= 120s)"}
+    calls = _stub_nudge(adapter, monkeypatch, [pending, submitted], tmp_path)
+    monkeypatch.setattr(adapter, "probe", lambda *a, **k: over)
+    assert adapter.cmd_nudge(_Args()) == 0
+    row = json.loads(adapter.LEDGER.read_text().splitlines()[-1])
+    assert row["heartbeat_override"].startswith("window quiet")
+    assert row["window_quiet_for_s"] == 300.0
+    assert calls, "and it really did send"
+
+    plain = {"nudge_ok": True, "target": "agent:main-a", "seconds_since_last_nudge": None,
+             "heartbeat_override_applied": False, "window_quiet_for_s": 300.0,
+             "heartbeat_override_reason": "window was active 2s ago"}
+    adapter2 = _load("c35_ledger2")
+    _stub_nudge(adapter2, monkeypatch, [pending, submitted], tmp_path)
+    adapter2.LEDGER = tmp_path / "plain.jsonl"
+    monkeypatch.setattr(adapter2, "probe", lambda *a, **k: plain)
+    assert adapter2.cmd_nudge(_Args()) == 0
+    row2 = json.loads(adapter2.LEDGER.read_text().splitlines()[-1])
+    assert "heartbeat_override" not in row2, "a normal nudge row is unchanged on disk"

@@ -126,6 +126,72 @@ _FRAGMENT_CHARS = 60
 CAP_KEY = "max_concurrent_mains"
 LEGACY_CAP_KEY = "max_spawns_per_day"
 
+# ---------------------------------------------------------------------------
+# C35, 2026-07-29. PANE QUIESCENCE OVERRIDES A `working` HEARTBEAT.
+#
+# THE DEADLOCK. The `state == working` blocker is correct in principle — typing
+# into a pane mid-generation corrupts whatever is running there. But a main that
+# FINISHES a unit and settles at its prompt very often still says `working`,
+# because the code that would update the heartbeat is exactly the code that has
+# stopped running. The session cannot clear the flag, because clearing it
+# requires being told to, which is what the guard refuses. `--heartbeat-max-age`
+# does NOT rescue it: the refusal keys on STATE, not age, so a heartbeat can be
+# five seconds old and still wedge the session forever.
+#
+# COST, measured 2026-07-29: the operator hand-relayed into panes at least four
+# times in one day, including into `mainA` while it held the ENTIRE machine for
+# an exclusive E5 decision-grade window — the most expensive possible idle state,
+# since nothing else can use the host either. One stretch saw ten consecutive
+# nudge attempts refused against a session provably sitting at an empty prompt.
+#
+# THE SIGNAL. Both TUIs redraw continuously while working: a spinner with an
+# elapsed-seconds counter, token counts, streaming output. So `window_activity`
+# moves about once a second during generation, and a window quiet for MINUTES is
+# very strong evidence the session is settled at its prompt regardless of what
+# its heartbeat claims. This is the same reasoning the existing `--quiet-s`
+# check already encodes, at a much longer and therefore much safer horizon.
+#
+# CALIBRATION, 2026-07-29, disposable sessions `tuiok-*` (created and killed by
+# the measurement; the live `agent` session was never written to). Two windows,
+# one emitting 5x/second and one idle, sampled across the full matrix of
+# {detached, attached} x {background, active}:
+#
+#     condition                       busy window     idle window
+#     detached, background            0-1s            aged 35 -> 51s
+#     attached, background            0-1s            aged 54 -> 70s
+#     attached, active/visible        0-1s            aged 73 -> 90s
+#     detached again, background      0-1s            aged 84 -> 139s
+#
+#   The busy window NEVER exceeded 1s of apparent quiet in any condition, while
+#   the idle window aged monotonically. 120s is therefore ~120x the largest gap
+#   ever observed on a window that was genuinely producing output.
+#
+#   Corroborated against the live `agent` session read-only (display-message
+#   only): working mains and the constantly-redrawing htop/btop windows sat at
+#   0-2s while two settled mains showed 209s and 211s. Real Claude Code and
+#   Codex TUIs, not just the synthetic emitter.
+#
+# TWO EARLIER MEASUREMENTS OF THIS SAME SIGNAL WERE WRONG, both by the same
+# class of test-method defect, and both are worth knowing about before anyone
+# re-measures it:
+#   (a) the default shell here is fish, so a `bash`-syntax loop handed to
+#       `tmux new-window` dies instantly and the window closes — while
+#       `new-window` still exits 0. That is C30(b) exactly, met again in the
+#       measurement rather than in production.
+#   (b) `automatic-rename` renames a window to its running command, after which
+#       a NAME-based target stops resolving and `display-message` falls back to
+#       the session's CURRENT window — so several windows silently report one
+#       window's numbers. Address windows by INDEX when measuring.
+# Both artefacts produce the same false reading: "a busy window looks quiet",
+# which would argue against this override. Verify the pane is alive and its
+# target resolves before believing any quiet number.
+#
+# WHY THE THRESHOLD IS A FLAG. The safe value depends on how the fleet is run
+# (a main that shells out to a long silent build redraws less than one that
+# streams tokens). Making it explicit means a nudge that overrides is always
+# traceable to a number someone chose, not to an implicit rule.
+DEFAULT_HEARTBEAT_OVERRIDE_QUIET_S = 120.0
+
 
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
@@ -572,8 +638,14 @@ def record(kind: str, agent: str, detail: str, **fields: object) -> None:
         fh.write(json.dumps(row, sort_keys=True) + "\n")
 
 
-def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float) -> dict:
-    """Every guard signal, with an explicit blocker list. Pure — acts on nothing."""
+def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float,
+          hb_override_quiet_s: float = DEFAULT_HEARTBEAT_OVERRIDE_QUIET_S) -> dict:
+    """Every guard signal, with an explicit blocker list. Pure — acts on nothing.
+
+    `hb_override_quiet_s` is the C35 quiescence override (see the constant). It
+    is keyword-defaulted so the four-positional-argument call sites and tests
+    that predate it keep working unchanged.
+    """
     flags, caps = config.get("flags") or {}, config.get("caps") or {}
     authorised = str(flags.get("codex_sendkeys")).strip().lower() in {"1", "true", "yes", "on"}
     spawn_cap, cap_reason = resolve_spawn_cap(caps)
@@ -658,24 +730,37 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float) -> dict:
         blockers.append("pane is dead")
     if dead is None and target:
         blockers.append("could not read pane state — fail closed")
-    # window_activity only reflects OUTPUT while a client is attached. Measured
-    # 2026-07-27 on a detached session: a window printing every second and one
-    # sleeping reported the SAME timestamp, so quiet_for only ever grows and the
-    # check silently always passes — fail-OPEN in a module that must fail closed.
-    # So it is a corroborating signal that counts only when trustworthy, and the
-    # heartbeat is the guard that actually decides.
+    # HISTORICAL CLAIM, NOW FALSIFIED — read this before trusting the skip below.
+    # This block used to state that window_activity only reflects OUTPUT while a
+    # client is attached, citing a 2026-07-27 measurement in which a detached
+    # window printing every second and one sleeping reported the SAME timestamp.
+    #
+    # Re-measured 2026-07-29 (see DEFAULT_HEARTBEAT_OVERRIDE_QUIET_S): THAT IS NOT
+    # TRUE. With zero clients attached, a window emitting 5x/second held quiet_for
+    # at 0-1s for 60s straight while a sleeping window in the same session aged
+    # 84 -> 139s. Detached tracking works. The 2026-07-27 reading was almost
+    # certainly one of the two measurement artefacts documented at that constant —
+    # a fish-killed pane, or a name-target that silently resolved to a different
+    # window — both of which make a busy window look quiet.
+    #
+    # THE BEHAVIOUR BELOW IS DELIBERATELY UNCHANGED ANYWAY. Removing the skip would
+    # make the quiet-check STRICTER (it would start blocking detached sessions that
+    # are genuinely emitting), which is a real improvement but a different change
+    # with its own blast radius; C35's brief was the heartbeat blocker alone. Filed
+    # as a follow-up on the C35 row. Note the C35 override does NOT depend on this
+    # skip: it reads quiet_for directly, which is computed regardless of attachment,
+    # and a live test pins that in a DETACHED throwaway session.
     quiet_check = "n/a"
     if not target:
         pass
     elif attached is False:
         # NOT a blocker. A detached session is the normal overnight state — the
         # whole point of this system is coordinating while the operator is away —
-        # so refusing every nudge when detached would defeat it. The quiet-check
-        # simply cannot be evaluated, so it contributes nothing either way, and the
-        # heartbeat is the guard that decides (as this module claims). If an agent
-        # reports `idle` while generating, that is an agent defect and the fix
-        # belongs in its heartbeat discipline, not in a signal tmux cannot give us.
-        quiet_check = "skipped: session detached, window_activity does not track output"
+        # so refusing every nudge when detached would defeat it. Retained as-is
+        # pending the follow-up above; the wording no longer asserts the falsified
+        # claim, it just records that this check is not being applied here.
+        quiet_check = "skipped: session detached (see C35 follow-up — this skip is now known " \
+                      "to be more permissive than it needs to be)"
     elif quiet_for is None:
         blockers.append("could not read window_activity — fail closed")
     elif quiet_for < quiet_s:
@@ -684,11 +769,48 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float) -> dict:
                         f"likely mid-generation")
     else:
         quiet_check = f"passed: quiet for {quiet_for:.0f}s"
+    # C35: the quiescence override, evaluated ONLY against the `working` blocker.
+    # Every other guard above and below is untouched — a dead pane, an unreadable
+    # pane, a failed target resolution, the normal quiet check, the rate limit and
+    # the authorisation flag all still refuse on their own. The override cannot
+    # turn a refusal into a nudge by itself; it can only decline to ADD this one
+    # blocker. Staleness deliberately stays a separate blocker: it is already
+    # tunable with --heartbeat-max-age, whereas state was not tunable at all,
+    # and that asymmetry is the whole defect.
+    #
+    # FAIL CLOSED on every input. The override needs a pane that is positively
+    # alive (`dead is False`, not merely "not True") and a window_activity we
+    # could actually parse. Anything unreadable leaves the blocker in place —
+    # this module's defect history is C3, C6, C8, C24 and today's C35, and every
+    # one of them was a fail-OPEN. A non-positive threshold disables the override
+    # entirely rather than meaning "override always", so a mis-set 0 is inert.
+    hb_override_applied = False
+    hb_override_reason: str | None = None
     if hb is None:
         blockers.append("no heartbeat — cannot tell if the agent is thinking; fail closed")
     else:
         if str(hb.get("state")) == "working":
-            blockers.append(f"heartbeat says working (task {hb.get('task_id')})")
+            if hb_override_quiet_s <= 0:
+                hb_override_reason = (f"disabled (--heartbeat-override-quiet-s "
+                                      f"{hb_override_quiet_s:.0f})")
+            elif dead is not False:
+                hb_override_reason = "pane state unreadable or dead — fail closed, no override"
+            elif quiet_for is None:
+                hb_override_reason = "window_activity unreadable — fail closed, no override"
+            elif quiet_for < hb_override_quiet_s:
+                # THE CASE THAT MATTERS MOST: a genuinely mid-generation session.
+                # Its spinner redraws about once a second, so it lands here and the
+                # heartbeat is believed.
+                hb_override_reason = (f"window was active {quiet_for:.0f}s ago "
+                                      f"(< {hb_override_quiet_s:.0f}s) — heartbeat believed")
+            else:
+                hb_override_applied = True
+                hb_override_reason = (
+                    f"window quiet {quiet_for:.0f}s (>= {hb_override_quiet_s:.0f}s); both TUIs "
+                    f"redraw a spinner every second while working, so this pane is settled at "
+                    f"its prompt and the `working` heartbeat is stale self-report")
+            if not hb_override_applied:
+                blockers.append(f"heartbeat says working (task {hb.get('task_id')})")
         if hb_age is not None and hb_age > hb_max_age:
             blockers.append(f"heartbeat is {hb_age:.0f}s stale (> {hb_max_age:.0f}s)")
 
@@ -701,6 +823,13 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float) -> dict:
             "pane_dead": dead, "window_quiet_for_s": quiet_for,
             "session_attached": attached, "quiet_check": quiet_check,
             "heartbeat_state": (hb or {}).get("state"), "heartbeat_age_s": hb_age,
+            # C35: the override is reported even when it did NOT fire, so `probe`
+            # explains a `working` heartbeat that was believed as well as one that
+            # was overridden. A human reading probe is never surprised by a nudge
+            # the guard "should" have refused.
+            "heartbeat_override_quiet_s": hb_override_quiet_s,
+            "heartbeat_override_applied": hb_override_applied,
+            "heartbeat_override_reason": hb_override_reason,
             "seconds_since_last_nudge": since_nudge,
             # C31: surfaced so a refusal can be read as "this WINDOW was nudged", not
             # "this id was nudged at some point in its history".
@@ -713,7 +842,8 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float) -> dict:
 
 
 def cmd_probe(args: argparse.Namespace) -> int:
-    p = probe(load_config(), args.agent, args.quiet_s, args.heartbeat_max_age)
+    p = probe(load_config(), args.agent, args.quiet_s, args.heartbeat_max_age,
+              getattr(args, "heartbeat_override_quiet_s", DEFAULT_HEARTBEAT_OVERRIDE_QUIET_S))
     if args.json:
         print(json.dumps(p, indent=2))
         return 0 if p["nudge_ok"] else EX_BLOCKED
@@ -727,6 +857,12 @@ def cmd_probe(args: argparse.Namespace) -> int:
     print(f"quiet-check      {p['quiet_check']}")
     print(f"heartbeat        {p['heartbeat_state']} (age {age:.0f}s)" if age is not None
           else "heartbeat        (none)")
+    # C35: printed whenever the heartbeat said `working`, in BOTH directions. An
+    # override that fired silently would make `probe` disagree with `nudge`, which
+    # is precisely the surprise this line exists to prevent.
+    if p.get("heartbeat_override_reason") is not None:
+        print(f"hb-override      {'APPLIED' if p['heartbeat_override_applied'] else 'not applied'}"
+              f": {p['heartbeat_override_reason']}")
     live_n = p["live_mains_count"]
     cap = p["spawn_cap"]
     print(f"live mains       {live_n if live_n is not None else '(unreadable — spawn refuses)'}"
@@ -770,7 +906,8 @@ def cmd_nudge(args: argparse.Namespace) -> int:
               "submission cannot be verified.", file=sys.stderr)
         return EX_USAGE
     config = load_config()
-    p = probe(config, args.agent, args.quiet_s, args.heartbeat_max_age)
+    p = probe(config, args.agent, args.quiet_s, args.heartbeat_max_age,
+              getattr(args, "heartbeat_override_quiet_s", DEFAULT_HEARTBEAT_OVERRIDE_QUIET_S))
     if p["seconds_since_last_nudge"] is not None and p["seconds_since_last_nudge"] < args.min_interval_s:
         p["blockers"].append(f"rate limit: last nudge {p['seconds_since_last_nudge']:.0f}s ago "
                              f"(< {args.min_interval_s:.0f}s)")
@@ -843,7 +980,15 @@ def cmd_nudge(args: argparse.Namespace) -> int:
               "rather than submitting. Refusing to record a nudge that may not have been sent.",
               file=sys.stderr)
         return EX_MISCONFIG
-    record("nudge", args.agent, args.message[:200])
+    # C35: a nudge that only happened because quiescence outvoted a `working`
+    # heartbeat is the one most worth being able to reconstruct later — if the
+    # override ever does interrupt a real generation, this row is the evidence.
+    # `record` drops None fields, so an ordinary nudge is unchanged on disk.
+    record("nudge", args.agent, args.message[:200],
+           heartbeat_override=p.get("heartbeat_override_reason")
+           if p.get("heartbeat_override_applied") else None,
+           window_quiet_for_s=p.get("window_quiet_for_s")
+           if p.get("heartbeat_override_applied") else None)
     print(f"nudged {args.agent} at {p['target']}")
     return 0
 
@@ -1112,6 +1257,15 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--quiet-s", type=float, default=20.0,
                    help="window must have produced no output for this long (default 20)")
     p.add_argument("--heartbeat-max-age", type=float, default=900.0)
+    # C35. Top-level (not per-subcommand) so `probe` and `nudge` are evaluated
+    # against the SAME threshold — a probe that answered a different question
+    # from the nudge it precedes would be worse than no probe at all.
+    p.add_argument("--heartbeat-override-quiet-s", type=float,
+                   default=DEFAULT_HEARTBEAT_OVERRIDE_QUIET_S,
+                   help="a `working` heartbeat is overridden once the window has been quiet "
+                        f"this long (default {DEFAULT_HEARTBEAT_OVERRIDE_QUIET_S:.0f}); both "
+                        "TUIs redraw every second while generating, so this means 'settled at "
+                        "its prompt'. 0 or less disables the override entirely.")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     pr = sub.add_parser("probe", help="report every guard signal; act on nothing")
