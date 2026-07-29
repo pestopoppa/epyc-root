@@ -44748,13 +44748,13 @@
   discovered_via: input
   ingested_date: '2026-07-29'
   verdict: adopt_patterns
-  verification: stage1-unverified
+  verification: dive-verified
   key_claims:
   - A library of 11 model-agnostic agent skills covers the hardware-design pipeline end to end.
   - 'CAD work is STEP-first: the STEP file is the primary validated artifact; STL/3MF/GLB are explicitly demoted to derived secondary exports.'
-  - Models are authored as parametric build123d Python source, never as hand-edited generated artifacts, so regeneration and diffing happen at source level.
-  - Validation is a required ordered workflow ending in a MANDATORY visual snapshot pass that deterministic checks passing does not excuse.
-  - Skills compose via explicit named handoffs with stated ownership boundaries.
+  - CAD workflows default to parametric build123d Python source so regeneration and diffing happen at source level; direct STEP/STP import remains an explicit exception when no generator exists or the user targets the artifact.
+  - For visibly changed primary CAD STEP/STP artifacts (plus the separate implicit-CAD flow), validation ends in a mandatory visual snapshot pass that deterministic checks passing does not excuse.
+  - Some skills compose through explicit named handoff contracts (notably CAD-viewer and G-code to Bambu Labs); this is not a universal cross-skill ownership system.
   techniques:
   - build123d parametric modelling over OpenCASCADE
   - STEP-first artifact hierarchy
@@ -44762,7 +44762,7 @@
   - progressive reference loading (trigger-gated references/*.md)
   - mandatory cross-skill handoff contract with explicit failure-reporting branch
   - mandatory visual snapshot review
-  - deterministic geometric test tables with negative checks
+  - structured human-readable geometric test specifications with explicit negative checks; no bundled runner or scorer
   - cross-runtime plugin manifests over one shared skill corpus
   reported_results:
   - NOT-FOUND-IN-SOURCE - no pass rate, success rate, or accuracy figure anywhere in the README or the 10 benchmark files
@@ -44792,15 +44792,16 @@
     - intake-271
     - intake-124
   contradicting_evidence: null
-  novelty_justification: 'The packaging pattern near-duplicates intake-450 (veniceai/skills): multi-skill corpus with parallel plugin manifests and progressive reference loading. NEW to the corpus: (a) the CAD/mechanical/robotics domain, absent from index, chapters and handoffs entirely; (b) the benchmarks/ shape - 10 natural-language part specs each paired with deterministic machine-checkable geometric assertions including explicit negative checks.'
-  relevance_justification: 'Lands on a named gap rather than a live workstream. intake-derived-work-2026-07-25.md ID-8 records that production suites sit at 90-94% and cannot resolve the top-2 models, with the FrontierCS remedy blocked on a sandboxed exec path plus proprietary-only baselines; this repo supplies a candidate non-saturating coding task family whose verifier (OpenCASCADE geometry queries) is open-source and CPU-local. NOT immediately actionable: the repo ships specs but no scorer.'
+  novelty_justification: 'The packaging pattern near-duplicates intake-450 (veniceai/skills): multi-skill corpus with parallel plugin manifests and progressive reference loading. NEW to the corpus: (a) the CAD/mechanical/robotics domain, absent from index, chapters and handoffs entirely; (b) the benchmarks shape - 10 natural-language part specifications with structured geometric expectations including explicit negative checks.'
+  relevance_justification: 'Lands on a named gap rather than a live workstream. intake-derived-work-2026-07-25.md ID-8 records that production suites sit at 90-94% and cannot resolve the top-2 models, with the FrontierCS remedy blocked on a sandboxed exec path plus proprietary-only baselines; this repo supplies a candidate non-saturating coding task family. NOT immediately actionable: the repo ships specifications but no scorer, so any OpenCASCADE geometry verifier is new EPYC work.'
   verdict_justification: 'We will not serve CAD - no role needs STEP files. Two patterns are portable: (1) the benchmark shape (NL spec -> artifact -> deterministic geometric assertions incl. negative checks) is a verifiable-reward family whose ground truth is COMPUTED, not model-judged or substring-matched - precisely the failure class this corpus has repeatedly been bitten by; (2) SKILL.md authoring constructs - a mandatory cross-skill handoff contract with an explicit report-the-failure branch, and a ''report only checks that actually ran'' non-negotiable. NOT adopt_component: benchmarks/ has no runner or scorer, so eval use means writing the verifier ourselves.'
   recommended_actions:
   - '[unverified] Log the 10 benchmark specs as a candidate non-saturating task family against intake-derived-work-2026-07-25.md ID-8 and eval-tower-verification.md EV-8, with the caveat that adoption cost is WRITING a geometric verifier, not importing one. Index row requires operator approval per CLAUDE.md.'
   - '[unverified] Spike the cheapest slice first: benchmarks 01-03, have a production coder arm emit build123d source, score with a small OpenCASCADE assertion script. The symmetric floor risk flagged for FrontierCS applies - open-weight arms may score near zero, trading saturation for a floor.'
   - '[unverified] Port two authoring constructs into the skills rubric under hermes-outer-shell.md: the mandatory cross-skill handoff contract with explicit failure branch, and the ''report only checks that actually ran'' non-negotiable (a direct anti-fabrication guard our skill corpus lacks).'
   - '[unverified] Record the verifier-class insight in chapter 07: assertions computed from the artifact''s own geometry plus explicit negative checks are immune to the substring/comma brittleness and scorer-artifact parse failures already documented in this repo.'
-  notes: 'credibility_score NULL per rubric: the repo makes NO empirical claims - no pass rates, no model comparisons, no results table anywhere in the tree. 11.6k stars is adoption signal, not evidence. Dependencies: core CAD/DXF/URDF/G-code/viewer skills run locally (build123d + OpenCASCADE + playwright); two skills reach outward - step-parts requires a hosted third-party catalog API, bambu-labs talks to a LAN printer. NO skill depends on OpenAI/Anthropic model APIs; skills are model-agnostic Markdown contracts. NO automated benchmark runner or scorer found across all 2030 tree paths; 9 of 11 SKILL.md files and all 9 references/*.md were NOT read, so constructs could exist there. cadpy package internals not inspected, so how much of a geometric verifier comes free is unverified. main tip 2026-07-10 while pushed_at is 2026-07-28 - active work is on develop, not inspected.'
+  notes: 'credibility_score NULL per rubric: the repo makes NO empirical claims - no pass rates, no model comparisons, no results table anywhere in the tree. 11.6k stars is adoption signal, not evidence. Dependencies: core CAD/DXF/URDF/G-code/viewer skills run locally (build123d + OpenCASCADE + playwright); two skills reach outward - step-parts requires a hosted third-party catalog API, bambu-labs talks to a LAN printer. NO skill depends on OpenAI/Anthropic model APIs; skills are model-agnostic Markdown contracts. NO automated benchmark runner or scorer found across all 2030 tree paths, so the benchmark specifications are not machine-checkable assertions until EPYC supplies a verifier. cadpy package internals not inspected, so how much of a geometric verifier comes free is unverified. main tip 2026-07-10 while pushed_at is 2026-07-28 - active work is on develop, not inspected.'
+  dive_corrections: '2026-07-29 Stage-2 OD-E audit for the intake-926 fabrication mode. The core source claims are present: MIT license, 11 skills, 10 benchmark specifications, STEP-first CAD artifact hierarchy, build123d-default source workflow, mandatory relevant visual snapshot review, and explicit negative checks. No performance claim was fabricated. Corrected scope inflation: direct STEP/STP import is allowed in stated exceptions; named handoff contracts are conditional rather than universal; visual review applies to specified CAD flows; and the geometric test specifications have no bundled runner or scorer. This is dive-verified, not dive-overturned.'
 - id: intake-916
   arxiv_id: '2607.05471'
   url: https://modelscope.ai/papers/2607.05471

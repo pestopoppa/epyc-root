@@ -826,8 +826,13 @@ nobody re-reads:
     decision.** Same class as the `max_spawns_per_day: 4` that the operator corrected to 3.
   - [ ] **M5b — operator disposition for preserved roster orphans.** C7 prevents recurrence and
     keeps existing task-named heartbeat/outbox files out of roster-derived state, but does not
-    delete or move evidence. Decide whether each preserved artifact is retained evidence, gets a
-    roster row, or is superseded by a task signal; only the operator can authorize disposition.
+    delete or move evidence. **Audit 2026-07-29:** archive (never delete) the 22 task-keyed
+    heartbeat snapshots after disposition; each is only `{agent,state,task_id,ts}` and carries no
+    unique finding or attestation. Retain/re-home first the two task-keyed outboxes: their four
+    messages are unique and unrelayed — one E8-launch audit finding and three E8-R2 statuses,
+    including the sealed-vector scorer fix `c7f6c7fa`. Recommended action: a roster writer adopts
+    the messages with original ids/payloads, then archives both outboxes with the heartbeats. Only
+    the operator can authorize this disposition.
   - [ ] **M5c — standing instructions do not reach running sessions.** A CLAUDE.md rule added at
     21:43Z left an active agent on its 19:45Z heartbeat. Recorded in `BUS_PROTOCOL.md`; the open
     task is for coordinator-agent to nudge running mains to *re-read* on every such change.

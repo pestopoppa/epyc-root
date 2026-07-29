@@ -305,8 +305,7 @@ From `progress/2026-07/2026-07-29.md` ("Deferred / open"), claude-main's handove
 - **OD-D (Q5_0)** — the enabling rationale was retracted: the Q4_K_M A/B that motivated it was CPU
   (2026-05-07, pre-MI210), while upstream #1385 is ROCm — the mechanism cannot explain the result.
   Effectively closed as a dead lead; no further action implied.
-- **OD-E** — audit `intake-915` (the only non-dived KB entry) for the intake-926 fabrication mode.
-  Still open.
+- [x] **OD-E** — audited `intake-915` (the only non-dived KB entry) for the intake-926 fabrication mode. ✅ 2026-07-29 — core source claims verified; narrowly overstated scope was corrected; `verification` promoted to `dive-verified`. Completion record: `intake-derived-work-2026-07-25.md` ID-10e.
 
 **Explicitly do NOT redo**: claude-main's final message asked for the E5 `stage_b_prune_plan`
 provenance repair to be re-assigned, but that request was **stale when written** — the repair is
