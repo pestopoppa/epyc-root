@@ -2,8 +2,98 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-07-24 (adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
+**Last compiled**: 2026-07-29 (corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
 **Sources**: 93+ documents
+
+## Compiled Update — 2026-07-29 (GPU topology ground truth; E5 still scout-only)
+
+This pass records two corrections and one **status clarification that supersedes any
+reading of the 2026-07-24 entry below as a settled result**. The corrections are to the
+machine's own topology description; the clarification is that **E5 has produced no
+decision-grade cell at all** — the 2026-07-24 W0 numbers were and remain scout-grade,
+and the Stage-B waves that would confirm or overturn them have not run.
+
+Confidence: `verified` for the sysfs/`numactl` topology facts and the landed doc-debt
+findings; `observation` for every throughput figure carried forward from W0; the
+device-local placement question is **unmeasured** and is labelled as such below.
+
+### Key Findings (2026-07-29)
+
+- **The MI210 is attached to NUMA node 1, not node 3 — a premise that had been inherited
+  and propagated unchecked.** Ground truth read from sysfs: `/sys/class/drm/card2/device`,
+  device id `0x740f`, `numa_node=1`. Consequence: the lane's measured 184-191 host-thread
+  placement (which folds to physical cores 88-95 = region `q3`) **is already cross-node
+  today**. Its authority is therefore **measured lineage** — every np×context ceiling was
+  derived with the threads exactly there — **not device locality**. The distinction is
+  load-bearing: lineage is a reason not to move the threads without re-deriving the
+  ceilings, whereas locality would have been a reason they *belong* there. Only the first
+  is true. [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md),
+  [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
+
+- **Device-local host-thread placement has never been tried, so scattered placement is not
+  disqualified by physics — the current configuration is itself the existence proof.** The
+  only comparison ever made was 184-191 vs 88-95, *both* inside `q3` and *both* cross-node.
+  Node-1-local candidates (SMT ids within 120-143) are untested. The unmeasured costs are
+  pinned-buffer DMA locality (`hipHostMalloc` first-touch scatters staging buffers) and,
+  more plausibly, cache-line ping-pong on the submission state the 8 host threads share
+  when spread across nodes. The upside is symmetric — the lane might get *faster* — which
+  is why the P2-5j placement sweep is sequenced **before** any `q3` carve is minted.
+  [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md)
+
+- **Documented topology invariant is wrong in code comments: `stack_numa.py:26` claims 2
+  NUMA nodes while `numactl -H` reports 4 (NPS4).** Filed as P2-5l (behaviour-neutral, plus
+  a stale 12.19 t/s comment) rather than edited in place, on the reasoning that a
+  misdocumented topology invariant is how the next placement defect gets built.
+  [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
+
+- **E5 status, stated plainly: W0 scout is still the only E5 data that exists. W1-W4 are
+  `BLOCKED_ON_OPERATOR_SCHEDULED_REBOOT`.** The P-BENCH-1/3 one-week uptime boundary is a
+  hard gate and reboots are operator-only. No Stage-B cell has been measured, so **none of
+  the pre-registered R1-R4 questions (crossover K\*, lane verdict, provisioning rows) has
+  an answer**, and the 2026-07-24 directions below remain hypotheses. Post-W0 work was
+  preparation only: all four W0 runs now carry **observation-grade** `offline_scores.jsonl`
+  with provenance (2,967 saved responses) and a Stage-B prune plan
+  (`stage_b_prune_plan.json`, SHA-256 `9b4d4f03…96b8`). W2's Gemma group is **invalid for
+  any quality interpretation** — the original capture stored reasoning text with no answer
+  channel, giving 430/430 parse failures with no raw SSE ledger, unrecoverable — and W4's
+  high-K `raw_fallback` rows are demoted from decision-grade use.
+  [batched-decode-measurement](../handoffs/active/batched-decode-measurement.md)
+
+- **A decision-grade CPU anchor did land for the A4 optimized-serving shape, and it is
+  proposal-only.** FG-4b run `fg4b-a4-cpu-optimized-server-20260729T110152Z`:
+  `13.1599 tok/s` median, MAD `0.01633`, over five exact 512-token server decodes, all
+  terminating on `length`, with a ratified affinity receipt and verified teardown. The
+  generated registry patch was **not applied** — the evidence exists, the deployment does
+  not. [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md),
+  [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
+
+- **Two quantities the program explicitly refuses to quote as results.** (1) Shed-batch net
+  benefit is `(GPU gained − q3 CPU lost)` and is **never measured** — recorded so that "do
+  not build the shed-batch class" can be a measurement outcome rather than the reversal of
+  a shipped feature. (2) The 122B-at-72-threads/3-quadrant figure **does not exist**; a
+  −10% to −40% band was bounded by a reviewer who declined to narrow it without data. A
+  bound is not a result. [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md)
+
+### Open Questions (2026-07-29)
+
+- Does device-local (node-1) host-thread placement beat the incumbent 184-191? Untested;
+  P2-5j is the sweep that would answer it, and it gates the carve decision.
+- Where is the E5 crossover K\*? Still unanswered — and will stay unanswered until Stage-B
+  runs post-reboot, with W2 additionally gated on a focused SSE capture smoke.
+- Does the historical placement-sensitivity prior (+184% from wiring alone, Probe B
+  2026-05-04) still hold on v8? It is cited for **shape direction only** and is pre-era.
+
+### Source References (2026-07-29)
+
+- [gpu-serving-tie-in-program.md](../handoffs/active/gpu-serving-tie-in-program.md) — MI210
+  node-1 ground truth, lineage-not-locality placement authority, P2-5j sweep sequencing,
+  FG-4b decision-grade re-anchor, the never-measured shed trade and the non-existent 122B
+  quadrant number.
+- [batched-decode-measurement.md](../handoffs/active/batched-decode-measurement.md) — E5
+  wave status (W0 only; W1-W4 blocked), offline-score provenance, W2 Gemma quality
+  invalidity, W4 raw-fallback demotion, Stage-B prune plan hash.
+- [progress 2026-07-29](../progress/2026-07/2026-07-29.md) — the topology-correction arc
+  and the P2-5j/k/l/m filings, plus the FG-4b terminal entry.
 
 ## Compiled Update — 2026-07-24
 

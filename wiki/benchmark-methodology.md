@@ -2,8 +2,144 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-07-27 (adds the three measured episodic-store leakage traps; prior 2026-07-26 capture-integrity and 2026-07-24 architect/scorer updates retained)
-**Sources**: 94+ documents
+**Last compiled**: 2026-07-29 (records that the E8 quality baseline still has NO signature and no applied baseline, and that E5 has no decision-grade cell; prior 2026-07-27 leakage traps and 2026-07-26 capture-integrity updates retained)
+**Sources**: 97+ documents
+
+## Compiled Update — 2026-07-29 two campaigns that have produced instruments, not results
+
+Two of the project's largest open campaigns reached a state that is easy to
+misread, so this entry states it first and plainly.
+
+**E8 has no baseline signature.** No E8 quality baseline has been collected in
+full, applied, or published. Everything landed between 2026-07-27 and 2026-07-29
+is instrument repair, provenance plumbing, and publication hardening — every
+entry says so in its own words ("evidence checkpoint only", "instrument repair
+only", "instrument/integration checkpoint only", "publication-path hardening
+only"). **E5 has no decision-grade cell.** Its Stage-B waves W1-W4 are blocked on
+an operator-scheduled reboot, so the W0 scout numbers remain the only E5 data and
+remain observation-grade.
+
+Confidence: `verified` for the campaign *status* facts, the landed instrument
+work and its test counts, and the methodological rules below — all read directly
+from the owning handoffs. No performance or quality conclusion is promoted here,
+because neither campaign has produced one.
+
+### Key Findings (2026-07-29)
+
+- **The E8 numeric half is complete; the quality half is not, and the two are
+  routinely conflated.** Numeric frontier accumulation reached its exact-stop
+  boundary `16/16/0` at trial `1458` on 2026-07-27 (trial `1459` never dispatched;
+  trial `1457` was terminated pre-admission when an external GitNexus process
+  overlapped its eval and is recorded as `autopilot_killed_mid_trial`); the
+  authoritative journal fold has 16 eligible entries and reconstructs a three-point
+  frontier. On the quality side only the **T1 tier** is terminal — v5 T1/r1, r2 and
+  r3 each `50/50` with 25 correct and zero final errors, recorded as E8/`core_v2`
+  `e8_quality_full_pool_tier_baseline.v4`, `n=50`, `q=1.5`. That is an evidence
+  checkpoint; it neither applies nor publishes a baseline. T2 collection has not
+  completed. [autopilot-decision-plane-audit](../handoffs/active/autopilot-decision-plane-audit-2026-07-22.md)
+
+- **Deterministic replay before regeneration was applied under pressure and held.**
+  T1/r3 ordinal 32 hit a scorer-side `ReadTimeout`; the protocol repaired it with
+  exactly one deterministic scorer-tail replay, **without regenerating inference**,
+  and the terminal row carries `error: null`. The same rule governs the open work:
+  "do not run new generation before deterministic replay of saved outputs is
+  exhausted." [autopilot-decision-plane-audit](../handoffs/active/autopilot-decision-plane-audit-2026-07-22.md)
+
+- **A scorer that shares mutable execution state across invocations produces
+  divergences that look like model behaviour.** An E8 completion attempt correctly
+  *refused admission* because ordinal `418` / `bcb_BigCodeBench/190` had a stored
+  verdict of `false` while deterministic re-scoring returned `true`. Root cause:
+  BigCodeBench code execution shared `/mnt/raid0/llm/tmp`, so concurrent
+  invocations collided on the same `test.db` — meaning **the stored `false` has no
+  execution witness at all**. The remedy is ordered, not parallel: integrate scorer
+  isolation (private per-invocation workspaces) *first*, then the replay successor,
+  and only then run a bounded retry. Any correction ledger must bind source bytes,
+  scorer source hashes, per-row before/after verdicts, and corrected sidecars.
+  [autopilot-decision-plane-audit](../handoffs/active/autopilot-decision-plane-audit-2026-07-22.md),
+  [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
+
+- **Failed evidence is preserved immutably and classified as ineligible, not
+  deleted or quietly retried.** Two E8 successor namespaces are kept on disk as
+  failures — one a wrong-request attempt with no valid collection, one where all six
+  c1 requests completed but the run correctly failed closed at `RACE.build_plan`
+  because its predecessor journal response differed from the sealed EvalTower
+  sidecar. Abort paths terminalize as *ineligible audit evidence*. The earlier v4
+  collection is likewise labelled historical, non-decision evidence after the
+  fixed-vector context defect.
+  [autopilot-decision-plane-audit](../handoffs/active/autopilot-decision-plane-audit-2026-07-22.md)
+
+- **An instrument can be extensively hardened and still not be signable.** The E8
+  chain accumulated large validated test counts across the window (322 tests on the
+  integrated remediation checkpoint, 325 on the race-retry publication hardening, 202
+  on the independent Tier-A re-audit that verified all six original fail-open findings
+  closed), yet the consolidated ratification wrapper carries an explicit
+  **FIX-FIRST — do not sign as pushed** verdict for mechanical reasons: a branch tip
+  that is not self-consistent with its own checkout, an add/add-conflicting divergence
+  from main, and a validator that cannot validate the segmented resume provenance the
+  live collection actually produces. Test count is not signability.
+  [autopilot-decision-plane-audit](../handoffs/active/autopilot-decision-plane-audit-2026-07-22.md),
+  [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md)
+
+- **E5's grading discipline survived the pause, including the parts that are
+  inconvenient.** W0 ran under `--allow-host-health-warning` at 20-day uptime and is
+  scout/non-decision **by design**; the operator-facing results artifact leads with an
+  observation-grade banner and the handoff instructs that when decision-grade results
+  land the banner must be *rewritten* (not just the numbers), that the W0 figures must
+  be **retained alongside** rather than edited to agree, and that the artifact must be
+  republished to the same URL. W0's Gemma group is separately unusable for quality —
+  430/430 parse failures from a capture that stored reasoning text with no answer
+  channel, with no raw SSE ledger, unrecoverable — and a focused post-fix capture smoke
+  must pass before any decision-grade W2 run.
+  [batched-decode-measurement](../handoffs/active/batched-decode-measurement.md)
+
+- **Decision-grade and deployable are different states, and the record now says which
+  it means.** The FG-4b A4 CPU re-anchor is `decision_grade=true` *and*
+  `proposal_only=true`: 13.1599 tok/s median over five exact 512-token server decodes
+  with a ratified affinity receipt, and a generated registry patch that was
+  deliberately **not applied**. Similarly, the G3 saved-output replay closed with zero
+  mismatches across five 48-item arms but is recorded as observation-only with a
+  32,768-vs-16,384 context confound and no deployment, lineup, registry or role
+  decision attached. [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
+
+- **A pass/fail tally is only comparable when the invocation path is quoted with it.**
+  The same tree at the same commit under the same interpreter reported 2 failed / 616
+  passed from the canonical root and 5 failed / 610 passed from `/workspace` — one tree,
+  two names, because E8 ratifier scripts compare the invocation path to the literal
+  canonical root as a trust-boundary guard. Path dependence also changed *which* tests
+  ran (615 vs 618). The guard was not relaxed: making a test pass by weakening a
+  trust-boundary check would be a trust-boundary change.
+  [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
+
+### Open Questions (2026-07-29)
+
+- Structured timeout provenance remains an instrument-correctness blocker before fresh
+  final-C1/finalizer evidence, the consolidated human receipt, or any baseline apply —
+  and the c1 retry timeout is a governed 300-second-budget decision that must not be
+  silently raised.
+- Producer-pin recurrence is open: older producer namespaces can still be selected
+  without a runtime seal, and the ratified receipt binds the original producer helper
+  while the live audit requires the current helper hash. The recorded remedy is to
+  preserve the historical pin and bind the runtime helper *separately* — never to
+  weaken the original provenance check.
+- E5's R1-R4 questions have no answers and will not until Stage-B runs post-reboot.
+- A `salient-token confidence` line of work is blocked outright: per-token logprobs are
+  not persisted, so offline re-scoring of the relevant era is impossible.
+
+### Source References (2026-07-29)
+
+- [autopilot-decision-plane-audit-2026-07-22.md](../handoffs/active/autopilot-decision-plane-audit-2026-07-22.md)
+  — E8 status of record (numeric 16/16/0 complete; quality T1-only; nothing applied or
+  published), the instrument-repair chain, the ineligible-evidence discipline, the
+  BigCodeBench execution-collision finding, and the open sub-gates.
+- [batched-decode-measurement.md](../handoffs/active/batched-decode-measurement.md) — E5
+  scout-vs-Stage-B grading, the artifact-republication rules for a grade change, and the
+  Gemma capture invalidity.
+- [gpu-serving-tie-in-program.md](../handoffs/active/gpu-serving-tie-in-program.md) — the
+  FIX-FIRST ratification-wrapper verdict and the program-wide rule that bench observations
+  inform design but never gate promotion alone.
+- [progress 2026-07-29](../progress/2026-07/2026-07-29.md) — FG-4b decision-grade/
+  proposal-only terminal, the G3 observation-only closeout, and the invocation-path tally
+  divergence.
 
 ## Compiled Update — 2026-07-28 bounded recovery and targeted validation
 

@@ -148,18 +148,24 @@ re-running before reading it re-enters the loop the audit exists to end.
 
 ---
 
-### Wiki compilation backlog — deferred three wrap-ups running, now a task
+### Wiki compilation — DONE 2026-07-29, with one policy gap left open
 
-- [ ] **Compile the 7 queued wiki sources** once the campaigns they describe reach a terminal
-  state. `python3 .claude/skills/project-wiki/scripts/compile_sources.py` reports `total_new: 7`
-  (5 active handoffs, today's progress file, `docs/reference/p2-2-tenant-landing-readiness-20260729.md`).
-  `.last_compile` was deliberately **not** touched, so they requeue rather than being marked
-  compiled. The reason for deferral is substantive, not scheduling: six of seven describe campaigns
-  that are **incomplete** — E8 has no baseline signature, the GPU lane is unactivated — and the
-  wiki writer policy demands `verified` confidence with review. Compiling durable knowledge out of
-  an unfinished campaign mints claims that later have to be retracted. **Do this after the E8
-  signature lands, not before.** The two earlier deferrals cited other sessions being mid-write;
-  that justification expired when the fleet was closed, which is why it is a checkbox now.
+All 7 queued sources were compiled at the pre-reboot wrap-up on operator instruction (`total_new`
+now `0`). Four pages updated: `inference-serving`, `hardware-optimization`,
+`benchmark-methodology`, `agent-architecture`, each with a dated *Compiled Update* section.
+
+**Read this before trusting those pages**: three of the campaigns they describe are incomplete, and
+the pages say so rather than smoothing it — E8 has **no baseline signature** (numeric half complete
+at exact-stop 16/16/0, quality half T1-terminal only; every 07-27→07-29 landing is instrument
+repair, and the ratification wrapper's own verdict is *FIX-FIRST — do not sign as pushed*); the GPU
+lane is **built, inert, not activated**; E5 W1-W4 are unrun, so every carried-forward number is
+observation-grade.
+
+- [ ] **Satisfy `requires_human_or_measured_review` on the four compiled pages.** The manifest's
+  `writer_evidence_policy` sets it `true`; these pages are model-compiled and have **not** had that
+  review, and no per-section review-flag banners were added (recent passes on the same pages did
+  not use them either, so this is a standing convention-vs-policy gap, not a new lapse). Either add
+  the banners or record an operator decision that convention suffices.
 
 ## 3. Artifact-update obligation when E5 W1-W4 land
 

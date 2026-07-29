@@ -1,5 +1,19 @@
 # Project Wiki — Knowledge Index
 
+**Manifest reconciled**: 2026-07-29 (third pass, backlog clearance) — the 7 sources
+queued since the 12:24Z compile, and deferred by three consecutive wrap-ups, were
+compiled into four articles: **Inference Serving** (the GPU shadow lane — built,
+tested, and *not activated*; P2-2 tenant landing; the whisper capability blocker),
+**Hardware Optimization** (the MI210 is on NUMA node 1, not node 3; placement
+authority is measured lineage, not locality; E5 remains scout-only), **Benchmark
+Methodology** (E8 has no baseline signature and E5 no decision-grade cell — both
+campaigns have produced instruments, not results), and **Agent Architecture** (the
+coordinator-daemon/coordinator-agent split, structural bus routing, and the
+determinate-state polarity defect class). The pass is **status-weighted**: every
+incomplete campaign is compiled with its incompleteness as the headline, since the
+stated reason for the prior deferrals was the risk of minting a claim that would
+later need retracting. Prior notes retained below.
+
 **Manifest reconciled**: 2026-07-29 — the 21 sources changed since the
 2026-07-29T10:16Z compile (19 active handoffs, 1 blocked handoff, 1 progress
 log, almost all of them the output of a single 24-entry research-intake batch)
@@ -16,7 +30,9 @@ completion claims.
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-07-29 (second incremental pass — merged 3 changed sources into 2 articles: Knowledge Management (the cross-reference defect *resolved* — the earlier pass recorded it while still open — plus the new "never round-trip a whole document to append to it" rule) and Multimodal (how a pre-deployment assessment ages: backend premise struck, latency forecast falsified, hardware extrapolation retired, a self-doubted hypothesis confirmed, VAE identity left open). `handoffs/active/session-bus-thin-dispatcher.md` was **NOT** compiled — with only itself and the progress log as sources it falls below the 3-source minimum in the manifest's `writer_evidence_policy`, the same rule that held back `routing_intelligence` in the prior pass. Prior pass follows.)
+**Last compiled**: 2026-07-29 (third incremental pass — cleared the 7-source deferral backlog into 4 articles; see the manifest note above. `session-bus-thin-dispatcher.md`, held back by the prior pass for falling below the 3-source minimum, now clears it via the progress log and the tie-in program and is compiled into Agent Architecture. Prior second pass follows.)
+
+**Previously compiled**: 2026-07-29 (second incremental pass — merged 3 changed sources into 2 articles: Knowledge Management (the cross-reference defect *resolved* — the earlier pass recorded it while still open — plus the new "never round-trip a whole document to append to it" rule) and Multimodal (how a pre-deployment assessment ages: backend premise struck, latency forecast falsified, hardware extrapolation retired, a self-doubted hypothesis confirmed, VAE identity left open). `handoffs/active/session-bus-thin-dispatcher.md` was **NOT** compiled — with only itself and the progress log as sources it falls below the 3-source minimum in the manifest's `writer_evidence_policy`, the same rule that held back `routing_intelligence` in the prior pass. Prior pass follows.)
 
 **Previously compiled**: 2026-07-29 (incremental — merged 21 changed sources into 10 articles: Benchmark Methodology (eval-instrument correctness, the (model, scaffold) unit of report, four provenance downgrades), Agent Architecture (harness re-targetability; merged ≠ running), Memory-Augmented (store shape, budget-conditional retrieval, the missing per-window curve), Context Management (mandatory masking anchor, verbatim-log A/B, total-token accounting), Speculative Decoding (weight-map verification over config), Knowledge Management (the correction pass and the Stage-2b intake gate), Search & Retrieval (the struck GGUF-availability premise), Multimodal (LongText-Bench comparability + the ROCm f32 candidate fix), Training & Distillation (the inverted Experience-Distillation premise), LLM Prompting (GEPA-class optimizer of record + the compile cost line). `routing_intelligence` was NOT updated — its single new source does not meet the 3-source minimum in the manifest's `writer_evidence_policy`. Prior 2026-07-26 note follows.)
 **Previously compiled**: 2026-07-26 (incremental — merged 7 checkpoint sources into Benchmark Methodology, Multimodal, and Inference Serving: lossless v4 capture and agentic trajectory eligibility; MiniCPM-o M-1 observation/M-2 pinned-interface closure; and frozen-v8 E8 rebaseline sequencing. The Laguna prompt-fix/Docker score, E8 numeric completion, quality apply, and 27B observations remain open. Earlier 2026-07-24 pass merged 14 sources into 7 articles.)
@@ -33,13 +49,13 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | [MoE Optimization](moe-optimization.md) | 37 | Reasoning ∝ ACTIVE FLOPs, knowledge ∝ TOTAL params; GLM-5.2 routing is near-uniform (top_32=15%) so generic hot-expert offload/REAP is not justified; IQ2 GPU residency is two-for-two viable but caps at ~122B |
 | [KV Cache](kv-cache.md) | 39 | StreamingLLM pre-v7 floor sweep failed the quality floor → no simple KV cluster admitted yet; per-token KV streaming over PCIe is an anti-pattern (7-14× slower than DDR5); GDN residents' O(1) KV make teleport KV-copy near-moot |
 | [Quantization](quantization.md) | 33 | The architect's degenerate `\boxed{}` repetition loop tracks the MODEL not the quant (Q4 loops identically to IQ2 on the same item — 2-bit-EOS-damage hypothesis REFUTED); fenced CPU-Q4 arm tracks at-or-above GPU-IQ2 on hard reasoning, undercutting the case for a real IQ2 reasoning penalty |
-| [Hardware Optimization](hardware-optimization.md) | 93+ | CPU decode is BW-exhausted but CPU *prefill* is an open compute-bound regime; v8 is frozen as `production-consolidated-v8`; E5 W0 scout (69/69 cells) shows 4×quarters beats any big-instance shape for EVERY production model, and cross-architecture GPU batching is architecture-dependent (small-MoE ≫ dense > large-MoE-IQ2, with the large-MoE arm uniquely collapsing at long context) |
+| [Hardware Optimization](hardware-optimization.md) | 93+ | The MI210 is on **NUMA node 1, not node 3** — the incumbent 184-191 host-thread placement is already cross-node and its authority is *measured lineage, not locality*; device-local candidates were never tried. E5 remains **scout-only** (W1-W4 blocked on an operator reboot). Earlier: CPU decode is BW-exhausted but CPU *prefill* is an open compute-bound regime; v8 is frozen as `production-consolidated-v8`; E5 W0 scout (69/69 cells) shows 4×quarters beats any big-instance shape for EVERY production model, and cross-architecture GPU batching is architecture-dependent (small-MoE ≫ dense > large-MoE-IQ2, with the large-MoE arm uniquely collapsing at long context) |
 
 ## Serving & Systems
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Inference Serving](inference-serving.md) | 61 | The v7-cutover quarters-only launch was ruled an accidental regression and the big+quarters lineup was restored same-day via a new additive, no-outage `--numa-mode both` promotion path; the WP-12 fleet layer flipped live and its case-10 gate found production within-role concurrency comes from 6-process OS fan-out, not a role-level semaphore (which resolves to `Semaphore(1)` for every role); within-role placement SM's live KV-migration path re-ratified on the restored lineup (fwd 6/rev 1, 0 aborts) |
+| [Inference Serving](inference-serving.md) | 66 | A GPU shadow lane is built, tested (170 lane tests) and **not activated** — no production traffic, registry frozen, no apply path in the module; an idle MI210 still does not imply a startable lane because its host threads sit in region `q3`. Earlier: the v7-cutover quarters-only launch was ruled an accidental regression and the big+quarters lineup was restored same-day via a new additive, no-outage `--numa-mode both` promotion path; the WP-12 fleet layer flipped live and its case-10 gate found production within-role concurrency comes from 6-process OS fan-out, not a role-level semaphore (which resolves to `Semaphore(1)` for every role); within-role placement SM's live KV-migration path re-ratified on the restored lineup (fwd 6/rev 1, 0 aborts) |
 | [Local Inference](local-inference.md) | 36 | v8 frozen as `production-consolidated-v8`; deployed-lane throughput table + living model-probe scoreboard (all observation-grade); MI210 fits everything but the 122B-Q4 architect and GLM-5.2 (238 GB) |
 | [Chat Templates](chat-templates.md) | 2 | Per-family turn markers + when to use `/completion` (Qwen/gemma-3/Llama3) vs `/v1/chat/completions` (gemma-4 multi-channel) — checklist for onboarding new models without silent routing failures |
 
@@ -49,13 +65,13 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 |---------|---------|-------------|
 | [Cost-Aware Routing](cost-aware-routing.md) | 42+ | CoT scaffold-transplant falsified in both regimes; the reasoning-effort ladder got its first real measurements — the accuracy lever is the PROMPT (+32pp CoT-in-content), not native `<think>` (loses via a non-termination tail, fixable with a budget cap); `max_tokens` is a silent third quality axis (a ~57pp finished-vs-truncated swing measured) coupled to admission control via per-architecture KV/slot cost |
 | [Routing Intelligence](routing-intelligence.md) | 67+ | RI-10 decision-ready but first packet is `hold_quality_unscored` (proxies favor enforce; factuality unscored); X-MAS learned route-mutation is live in enforce — first learned routing layer in production |
-| [Benchmark Methodology](benchmark-methodology.md) | 94+ | Architect model-selection retained deterministic replay rather than regeneration after scorer defects; the sealed ThinkingCap no-think row and bounded Laguna remediation are current authority, while G3's missing controls and E8's unapplied recovery evidence remain explicit non-decision work |
+| [Benchmark Methodology](benchmark-methodology.md) | 97+ | **E8 has no baseline signature and E5 no decision-grade cell** — both campaigns have produced instruments, not results; a scorer sharing mutable execution state (`test.db` collision) produced a stored verdict with no execution witness; `decision_grade=true` and `proposal_only=true` co-occur, and a tally is only comparable when its invocation path is quoted. Earlier: architect model-selection retained deterministic replay rather than regeneration after scorer defects; the sealed ThinkingCap no-think row and bounded Laguna remediation are current authority, while G3's missing controls and E8's unapplied recovery evidence remain explicit non-decision work |
 
 ## Agent & Architecture
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Agent Architecture](agent-architecture.md) | 64+ | Consult primitive went design→staged-v1 in one week, all default-off; Hermes is now one client of the shared `/v1/chat/completions` + `x_*` contract rather than a special routing path |
+| [Agent Architecture](agent-architecture.md) | 67+ | Coordination splits into a deterministic **coordinator-daemon** and an LLM **coordinator-agent** (neither can do the other's job); routing intent is a schema field, not payload prose; and the recurring defect class is a determinate-state failure — an unreadable state treated as a benign value, four times in one day. A merged fix and a running fix are different states. Earlier: consult primitive went design→staged-v1 in one week, all default-off; Hermes is now one client of the shared `/v1/chat/completions` + `x_*` contract rather than a special routing path |
 | [Autonomous Research](autonomous-research.md) | 87+ | Ledger authority cutover is live; planner economics pivoted to local drafting/critique, with `frontdoor` drafting and `worker_general` critique queued for the next boundary restart |
 | [Memory-Augmented Models](memory-augmented.md) | 25+ | Episodic FAISS writes require cross-process locking; K-MEM Tulving is a mixed baseline with weak chronology and no memory-routing promotion |
 

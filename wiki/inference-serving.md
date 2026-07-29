@@ -2,8 +2,161 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-07-26 (adds frozen-v8 E8 rebaseline posture; prior fleet and lineup updates retained)
-**Sources**: 63 documents
+**Last compiled**: 2026-07-29 (adds the GPU shadow lane — built, inert, unactivated — and P2-2 tenant landing; prior frozen-v8 E8 rebaseline posture and fleet/lineup updates retained)
+**Sources**: 66 documents
+
+## Compiled Update — 2026-07-29 GPU shadow lane: built, inert, NOT activated
+
+The MI210 acquired a *designed and largely implemented* serving lane during the
+2026-07-28/29 window. **Nothing about it is live.** The GPU serves no production
+traffic, the master registry is frozen, no registry proposal has been applied, and
+the activation choreography (Steps 0-7) has not been run. Read every item below as
+"code and data that exist and are tested", never as "a serving capability the stack
+has".
+
+Confidence: `verified` for the landed code, test counts, on-disk artifact hashes and
+region-lock/sysfs observations — all of which were re-checked rather than restated;
+**no throughput or quality claim about the lane exists yet**, because the lane has
+never served a request. The Phase-3 bake-off that would produce one has not started.
+
+### Key Findings (2026-07-29)
+
+- **The shadow-only invariant (D3) is the governing constraint, and it is enforced
+  structurally rather than by policy memory.** "The GPU lane serves no production
+  traffic until Phase-3 bake-off evidence + operator three-gates sign-off." The
+  tenancy module has **no apply path at all** — D3 by absence of the function, not a
+  flag over one — and `render_registry_proposal` emits diffs only. The np_ceiling
+  loader sits behind a default-off `ORCHESTRATOR_FEATURE_GPU_SHADOW_LANE`; the
+  preflight probe is plan-only and was never run. 170 lane tests pass across the
+  four suites at integrated HEAD.
+  [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md)
+
+- **The inertness guarantee got *weaker* as the lane got more complete, and the
+  handoff says so rather than letting it pass.** The original P0-7 witness was
+  lexical ("`gpu_shadow_lane` does not appear in `orchestrator_stack.py`"). P2-6
+  legitimately added gated lane plumbing, so that assertion could not survive and was
+  reworked into a structural witness (no manifest/NUMA/port/server row exists, so no
+  gated branch can fire; every compile output byte-identical to the pre-lane state).
+  The safety property therefore changed from **two independent barriers (no code AND
+  no data) to one (no data)**: a single data edit adding a `PORT_MAP`/`ROLE_LAUNCH_META`
+  row now suffices to make live code fire. That is a deliberate tradeoff, named
+  explicitly so a later reader does not assume the old, stronger property.
+  [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md)
+
+- **An idle MI210 does not imply a startable lane — measured, not inferred.** The
+  lane's host threads pin to SMT siblings 184-191 → physical cores 88-95 → atomic
+  region `q3`, so starting it requires holding `q3`'s flock, the same lock production
+  CPU roles take. Observed 2026-07-28: `q0`/`q1` held by frontdoor, `q2` free, `q3`
+  held by a `bench-e8-quality` run — while `rocm-smi` simultaneously reported VRAM 0%
+  and no KFD PIDs. The GPU was entirely idle and the lane was still not startable.
+  Activation waits for the `q3` holder to quiesce-and-drain at its own boundary and is
+  never forced (fabric axiom 4).
+  [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md)
+
+- **Tenant landing (P2-2) closed on two of three tenants, and P2-2 itself is NOT
+  closed.** All three D2 tenants were already on disk, so the pass required zero
+  downloads and the `curl -C -` resume-corruption hazard was off the critical path.
+  Dense-27B stock is **verified landed** by an independent local re-hash
+  (28,665,067,072 B, sha256 `5927dc06…43897b2a`) rather than a restatement of the
+  existing attestation. MiniCPM-o's artifacts verified against both runbook P4 hashes
+  (plus a newly-recorded audio-F16 hash, out of runbook scope). But the MiniCPM-o
+  *promotion* (P2-2c, Steps 1-6) is **not executable**: runbook precondition P7 FAILS
+  because no fleet port is listening, and Step 2 forbids a manual mode override in
+  exactly that case. That is a genuine constraint, not a preference — the executable
+  deliverable was the proposal, and no file in either repo was edited.
+  [p2-2-tenant-landing-readiness](../docs/reference/p2-2-tenant-landing-readiness-20260729.md)
+
+- **The third tenant is blocked by a capability gap D2 did not anticipate, and the
+  operator deferred rather than fixed it.** Measured on the actual runtime: the
+  deployed whisper is faster-whisper large-v3-turbo on **CTranslate2 4.7.2, which has
+  no ROCm/HIP backend** (`cuda_devices 0`); `whisper_server.py:61-62` hard-codes
+  `device="cpu"`. whisper.cpp is not on this host. Critically, **D2's "~1.6 GB" was
+  the CTranslate2 directory's disk footprint — the size of a model that cannot execute
+  on the device — never a measured MI210 VRAM figure.** Blast radius is fail-safe: the
+  np_ceiling `phase2_resident_set` rows bake that 1.6 GB in, so if whisper never lands
+  those budgets are *conservative*, under-stating available VRAM; no ceiling
+  over-authorises and no cell needs withdrawing. The operator chose **W3 (defer)**;
+  whisper is refiled as P2-9 downstream of the bake-off, with W1 (stays on CPU) the
+  standing recommendation and W2 (port to whisper.cpp on HIP) explicitly ruled out for
+  now. A comment-only banner was added at the head of
+  `gpu_shadow_lane_np_ceiling.yaml` specifically to block the obvious wrong reaction —
+  "whisper isn't landing, so free up its 1.6 GiB."
+  [p2-2-tenant-landing-readiness](../docs/reference/p2-2-tenant-landing-readiness-20260729.md),
+  [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md)
+
+- **"One artifact = one tenant = one policy row; identity is (path, bytes, sha256),
+  never a flag on a shared row."** The rule was adopted after a near-miss whose failure
+  mode is silent-wrong-answer: FF-MTP is a *separate GGUF* (30,239,022,560 B, 866
+  tensors = 851+15) from its non-MTP sibling (29,787,701,792 B, 851 tensors). Modelling
+  MTP as a flag on one shared row would have sized the tenant at 27.74 instead of 28.16
+  GiB — a wrong number with no error anywhere.
+  [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md)
+
+- **Lane admission priority orders admission, never eviction — and the shed-batch class
+  is partially self-defeating.** §3.2 states explicitly that a higher class may be
+  admitted ahead of queued work and may stop new lower-priority admissions, but may NOT
+  interrupt a request already decoding, at any priority; reclaim stays quiesce-and-drain.
+  This is spelled out because "priority queue" ordinarily implies preemption and here it
+  must not. Separately, the shed-batch class's premise ("CPU is stressed, move batch work
+  to the GPU") is undercut by the lane not being a pure GPU resource: its host threads sit
+  on `q3`'s physical cores, so shedding consumes CPU in the region most likely contended
+  under CPU stress. Net benefit is `(GPU gained − q3 CPU lost)` and is **never measured**.
+  Classes 3-4 flags are reserved but deliberately *not registered* in `src/features.py`,
+  on the reasoning that a flag for an unbuilt feature reads as "someone can turn this on".
+  [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md)
+
+- **The slot fabric is being amended by the program, not replaced — and it has a named
+  hole.** The tie-in program is the ACTIVE execution vehicle; the heterogeneous-slot-fabric
+  handoff remains DESIGN-GATED and is the axiom source the program cites by name (the GPU
+  gets its own non-blocking flock rather than a CPU pseudo-region per axiom 1; `force_release()`
+  raises by construction per axiom 4). The amendment recorded 2026-07-29: **GPU host threads
+  are an implicit consumer the fabric does not model** — no slot, no lease, no epoch, so
+  quiesce-drain cannot cover them — and the fabric must not be finalised without closing it.
+  The fabric's own contract was separately generalized (2026-07-27) into a resource-admission
+  blueprint spanning the orchestrator CPU placement layer and the session bus, with the
+  axiom-1 consequence stated sharply: **observing holders is not exclusion (TOCTOU); only
+  acquiring is.**
+  [heterogeneous-slot-fabric-residency](../handoffs/active/heterogeneous-slot-fabric-residency.md)
+
+- **Activation sequencing is decided (D11, hybrid "sign-off last") but not executed.**
+  Order: P2-2 tenant landing → Steps 0-7 choreography → the P3-1/P3-2 bake-off starting on
+  the **incumbent 184-191 placement** (with a placement-pending caveat on absolute latency
+  and token economics) → the P2-5j placement sweep folding into the P2-5c campaign →
+  placement + carve + residency decided *together* at the verdict → **P3-3 production
+  sign-off last**. Both irreversible acts (minting a carve, production sign-off) sit after
+  the sweep. [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md),
+  [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
+
+### Open Questions (2026-07-29)
+
+- Nothing in Phase 3 has run, so the lane's serving characteristics are entirely unknown:
+  the bake-off's own published MDEs (~0.20 SWE / ~0.19 LCB / ~0.13 critic) say the critic
+  duty is the discriminating signal and the coder case will likely turn on token economics
+  — but that is a design expectation, not a result.
+- P2-2c (MiniCPM-o Steps 1-6) needs the fleet up *and* a runbook P1 operator grant; until
+  then P2-2 stays open.
+- The P2-5 decision rule has an explicit unbuilt dependency chain: E8 signature → AutoPilot
+  resume → stress duty cycle becomes measurable → complexity threshold settable → rule
+  executable. AutoPilot is currently down. The stress duty cycle is measured nowhere, and
+  measuring it under present conditions would wrongly close the shed-batch class on a
+  measurement artifact.
+- Does whisper belong on the MI210 at all (W1 vs W2)? Deliberately unanswered until the
+  bake-off numbers exist.
+
+### Source References (2026-07-29)
+
+- [gpu-serving-tie-in-program.md](../handoffs/active/gpu-serving-tie-in-program.md) — ratified
+  decisions D1-D11, the shadow-only invariant and its structural enforcement, the P0-7→P2-1c
+  witness degradation, the `q3` coupling, tenant/policy identity rule, admission-not-eviction
+  contract, and the Phase-3 gates.
+- [p2-2-tenant-landing-readiness-20260729.md](../docs/reference/p2-2-tenant-landing-readiness-20260729.md)
+  — independent re-hash of all three tenants, runbook P1-P7 verdicts (P7 FAIL, no fleet port
+  listening), and the whisper capability blocker with its fail-safe blast-radius analysis.
+- [heterogeneous-slot-fabric-residency.md](../handoffs/active/heterogeneous-slot-fabric-residency.md)
+  — the target architecture and axiom source; the 2026-07-29 GPU-host-threads gap; the
+  resource-admission-blueprint generalization.
+- [progress 2026-07-29](../progress/2026-07/2026-07-29.md) — the D11 decision, the W3
+  execution and P2-2 rescope, and the pre-reboot state in which none of this is activated.
 
 ## Compiled Update — 2026-07-26 E8 rebaseline hold
 

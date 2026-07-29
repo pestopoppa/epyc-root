@@ -2,8 +2,152 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-07-28 (adds transport-only coordinator acceptance and contract-backed tooling regressions)
-**Sources**: 64+ documents
+**Last compiled**: 2026-07-29 (adds the coordinator-daemon/coordinator-agent split, structural bus routing, and the recurring polarity defect class; prior transport-only coordinator acceptance retained)
+**Sources**: 67+ documents
+
+## Compiled Update — 2026-07-29 the coordination plane: two tiers, and one defect class
+
+The N-main-thread control structure reached `DESIGN-RATIFIED — build-ready` and
+accumulated a substantial implementation, but its **authority milestones are not
+accepted**: assignment authority stays at `manual`, triage stays `off`, and
+headless-worker caps stay at 0 pending a soak that cannot be compressed. The
+durable knowledge from this arc is less about the transport than about a defect
+class that recurred four separate times in a single day.
+
+Confidence: `verified` for the landed code, test counts, and the operator
+decisions recorded in the handoff; `inferred` for the generalization of the
+polarity lesson. Milestone acceptance state is quoted as-is — several items are
+"BUILT ✅ … acceptance pending", which is not the same as done.
+
+### Key Findings (2026-07-29)
+
+- **One role, two tiers — and the split is load-bearing.** The **coordinator-daemon**
+  is host-side deterministic code (singleton under flock, tick loop, epoch fencing,
+  heartbeat) and is explicitly *not* an agent; the **coordinator-agent** is an agent
+  session with a roster row, inbox, outbox, heartbeat and cursor. The rationale is
+  stated as a capability argument rather than a preference: an always-on watchdog
+  cannot be an LLM (it compacts, dies, and costs tokens per tick), and deterministic
+  code cannot draft decisions or merge. The bright line is that the daemon "never
+  analyzes, reviews, or edits work products — queue/routing/watchdog only", because
+  the moment it reviews, it is a second main.
+  [session-bus-thin-dispatcher](../handoffs/active/session-bus-thin-dispatcher.md)
+
+- **Single-writer ownership is structural, not conventional.** `queue.jsonl` and
+  `inbox/*` belong to the daemon, `outbox/<agent>` to that agent, and token-queue
+  checkboxes to the operator. Agents never write the queue — they propose and report,
+  and the daemon transcribes ("pure bookkeeping, no judgment"). Adding a main is one
+  roster row plus four files. Authority is matched to the writer: mains reprioritize
+  their own lane only, cross-main sequencing belongs to the coordinator-agent and the
+  operator, and the daemon never sets priorities.
+  [session-bus-thin-dispatcher](../handoffs/active/session-bus-thin-dispatcher.md)
+
+- **Routing intent became a structural message field, after prose routing lost real
+  findings.** `needs_routing_to` and `action_required` are now schema fields with
+  fail-closed authoring, backed by a lint that catches prose-only routing (it was
+  validated against both of the day's actual failure messages), and by a `triage`
+  standing queue that is cursor-independent and delivery-independent because it scans
+  outboxes. The motivating failure is concrete: a payload truncation ate exactly the
+  sentence carrying "FOR \<AGENT\>" and the finding was lost. Truncation itself was then
+  made *evident* rather than silent, via numbered fences with byte counts and a
+  completion trailer. The machinery caught real traffic immediately, surfacing findings
+  that no relay had yet delivered.
+  [session-bus-thin-dispatcher](../handoffs/active/session-bus-thin-dispatcher.md),
+  [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
+
+- **The recurring defect class: a state that could not be determined was treated as a
+  benign value.** It appeared four times in one day, in four different subsystems — a
+  spawn-cap undercount that *relaxed* the cap and invented capacity (and whose invariant
+  was documented backwards in the docstring and in two pushed commit messages), window
+  endpoints that could not be parsed, roster metadata used as a liveness proxy, and an
+  unreadable tmux session. The adopted rule is to **prefer the refusal a human can
+  override to the silence nobody can see**: unreadable endpoints, ambiguous window
+  ownership and unparseable rows all now refuse. The corollary warning is filed with the
+  blocking item — do not "fix" an unreadable tmux by counting it as zero mains, because
+  that hands out occupied slots.
+  [session-bus-thin-dispatcher](../handoffs/active/session-bus-thin-dispatcher.md),
+  [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
+
+- **A merged fix and a running fix are different states, and only the process owner can
+  close the second.** The same lesson landed twice on one file in one day: a message
+  routed to a dead session was dropped silently, the fan-out fix merged, and the notice
+  stayed inert until the daemon's owner restarted it (activated at epoch 9). A third
+  activation gap of the same shape is still open. Reachability is now **observed, not
+  declared** — liveness is tested rather than read off roster metadata — and the policy
+  is deliver-plus-warn, never refuse.
+  [session-bus-thin-dispatcher](../handoffs/active/session-bus-thin-dispatcher.md),
+  [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
+
+- **The delivery plane can be entirely healthy while coordination fails at the last
+  hop.** The first `coordinator-agent` instantiation ran with its cursor **33 messages
+  behind**, including a hard block needing an operator signature and a completed audit
+  carrying two CRITICAL findings — while daemon relay, boundary detection and the
+  severity watcher all functioned correctly. Every fix shipped that day was in the
+  delivery plane; the actual defect was in **bus → operator**, which is judgment and
+  cannot be mechanised. It became a standing rule on *every* reply rather than a startup
+  step: **DRAIN BEFORE YOU SPEAK**. A companion artifact was promoted to first-class
+  status for the same reason: `rebuild` reconstructs the bus *mechanism* (queue rows,
+  tokens, cursors, unread depth) but carries no record of what a session was mid-way
+  through or which gate a campaign is parked behind — so a fresh coordinator correctly
+  reports an empty queue while a campaign sits one command from resuming. The mechanism
+  makes a coordinator addressable; the brief makes it useful.
+  [session-bus-thin-dispatcher](../handoffs/active/session-bus-thin-dispatcher.md),
+  [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
+
+- **A test suite can be green because it cannot fail.** A standalone adapter suite shared
+  a basename with another test file, so pytest raised an import-file-mismatch collection
+  ERROR that aborted the entire run — and its entry points never asserted, so had it been
+  collected it would have reported PASS with every check failing. Fixing it also exposed a
+  racy fixture (a spawned `command="true"` is reaped in ~0.3 s), which retroactively made an
+  earlier "37/37" **flaky-green**. Separately, no whole-repo pytest existed at all; creating
+  one moved the tree from 2200 collected + 46 errors + aborted to 576 collected with 0 errors
+  and a completing run. The stated goal is worth preserving: *a run that is honestly red, not
+  a green one.* [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
+
+- **Bus noise is a payload-shape property, not a retry bug.** An operator complaint about a
+  repeated triage disposition audited clean on the transport — 19 messages, 19 distinct
+  `corr_id`s, 19 distinct ids, relayed 1:1 with no fan-out. The real defect was a
+  byte-identical ~1.5 KB payload sent 19 times, differing only by `corr_id`, because clearing
+  triage requires one `corr_id` per item. Rule adopted: a repeated payload across N `corr_id`s
+  is noise by construction — make the body per-item, or send one message naming all N. The
+  underlying protocol gap (no bulk-clear granularity) was filed rather than worked around.
+  [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
+
+- **Adversarial critique escalates by construction unless something is chartered to delete.**
+  A nine-agent specification effort consumed ~919k tokens over ~43 minutes to produce a
+  ~113k-character spec, which was rejected as disproportionate to the problem. The recorded
+  process lesson is that a panel of that shape needs a fourth lens whose job is to *delete*.
+  [session-bus-thin-dispatcher](../handoffs/active/session-bus-thin-dispatcher.md)
+
+### Open Questions (2026-07-29)
+
+- Assignment authority (M4) is code-complete and **not accepted**: its go/no-go rests on the
+  advisory-accuracy evidence of the read-only tier — would-assign matching actual human and
+  agent choices over a working day, with divergences explainable. That needs elapsed time and
+  cannot be compressed. Until then the switch stays at `manual`, `triage` stays `off`, and
+  headless-worker caps stay at 0.
+- The CPU-region claim is **structurally verified, not end-to-end verified** — a real
+  `llama-bench` has never acquired the claim, held it through a run, and released it.
+- Ownership of the whole tmux-adapter hardening arc lapsed when its session was re-tasked; it
+  is filed as unowned and re-assignment is a coordinator call.
+- One blocking bring-up dependency is manual by design: nothing creates the tmux session a
+  spawn requires, and the adapter will never create one, so a human must create it before any
+  spawn can succeed.
+- The handoff and the day's final wrap-up disagree on the current concurrency-cap number (the
+  handoff entry predates an operator raise the same day). Treat the handoff's figure as stale;
+  the authoritative value is whatever the live config says, and this wiki deliberately records
+  no number.
+
+### Source References (2026-07-29)
+
+- [session-bus-thin-dispatcher.md](../handoffs/active/session-bus-thin-dispatcher.md) — the
+  daemon/agent nomenclature split and bright line, single-writer ownership, authority matrix,
+  structural routing fields, milestone acceptance state, rider status, and the C-series ledger.
+- [progress 2026-07-29](../progress/2026-07/2026-07-29.md) — the polarity arc across four
+  subsystems, the activation-gap repetition, the coordinator-agent instantiation and close,
+  the invisible-suite and whole-repo-pytest findings, and the bus-noise diagnosis.
+- [gpu-serving-tie-in-program.md](../handoffs/active/gpu-serving-tie-in-program.md) — an
+  operator decision (activation sequencing) routed and recorded *through* the bus as a task
+  id, demonstrating the decision-package path the coordination plane exists to carry.
 
 ## Summary
 
