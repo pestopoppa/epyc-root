@@ -96,6 +96,7 @@ import hashlib
 import importlib.util
 import json
 import os
+import signal
 import subprocess
 import sys
 import tempfile
@@ -124,6 +125,13 @@ def fsync_path(path: Path) -> None:
         os.close(parent_fd)
         os.close(fd)
 
+def fsync_directory(path: Path) -> None:
+    fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_NOFOLLOW", 0))
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
 def replace(path: Path, data: bytes) -> None:
     temporary = path.parent / f".pbench4-affinity-{os.getpid()}-{path.name}"
     fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0), 0o644)
@@ -136,6 +144,20 @@ def replace(path: Path, data: bytes) -> None:
         os.close(fd)
     os.replace(temporary, path)
     fsync_path(path)
+
+def remove_receipt(path: Path) -> None:
+    if path.is_symlink() or not path.is_file():
+        raise SystemExit(f"receipt is not a regular file: {path}")
+    path.unlink()
+    parent_fd = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_NOFOLLOW", 0))
+    try:
+        os.fsync(parent_fd)
+    finally:
+        os.close(parent_fd)
+
+def fault(point: str) -> None:
+    if os.environ.get("P_BENCH_4_AFFINITY_TEST_FAULT") == point:
+        os.kill(os.getpid(), signal.SIGKILL)
 
 def contract() -> dict:
     return {
@@ -184,17 +206,45 @@ def recover_pending() -> None:
         destination = Path(str(journal.get("receipt") or ""))
         if destination.parent != root / "artifacts/operator" or destination.is_symlink():
             raise SystemExit(f"unfinished affinity transaction has an unsafe receipt path: {tx}")
-        if destination.is_file():
-            validate(destination)
-            write_json(tx / "COMPLETE", {"state": "committed-recovered"})
-            continue
         before_measurement = (tx / "MEASUREMENT.md.before").read_bytes()
         before_changelog = (tx / "CHANGELOG.md.before").read_bytes()
-        expected = (journal.get("measurement_after"), journal.get("changelog_after"))
+        candidate_measurement = (tx / "MEASUREMENT.md.candidate").read_bytes()
+        candidate_changelog = (tx / "CHANGELOG.md.candidate").read_bytes()
+        after = (journal.get("measurement_after"), journal.get("changelog_after"))
         current = (hashlib.sha256(measurement.read_bytes()).hexdigest(), hashlib.sha256(changelog.read_bytes()).hexdigest())
         before = (hashlib.sha256(before_measurement).hexdigest(), hashlib.sha256(before_changelog).hexdigest())
-        if current == expected:
+        if before != (journal.get("measurement_before"), journal.get("changelog_before")):
+            raise SystemExit(f"unfinished affinity transaction has corrupt preimages: {tx}")
+        if (hashlib.sha256(candidate_measurement).hexdigest(), hashlib.sha256(candidate_changelog).hexdigest()) != after:
+            raise SystemExit(f"unfinished affinity transaction has corrupt candidates: {tx}")
+        first_replace = (after[0], before[1])
+        second_replace = (before[0], after[1])
+        if destination.exists():
+            if not destination.is_file():
+                raise SystemExit(f"unfinished affinity transaction has an unsafe receipt destination: {tx}")
+            if current == before:
+                replace(measurement, candidate_measurement)
+                replace(changelog, candidate_changelog)
+                current = after
+            if current == after:
+                try:
+                    validate(destination)
+                except BaseException:
+                    remove_receipt(destination)
+                    replace(measurement, before_measurement)
+                    replace(changelog, before_changelog)
+                    write_json(tx / "COMPLETE", {"state": "rolled-back-invalid-receipt"})
+                else:
+                    write_json(tx / "COMPLETE", {"state": "committed-recovered"})
+                continue
+            raise SystemExit(f"unfinished affinity transaction has unrecognized receipt policy state: {tx}")
+        if current == after:
             replace(measurement, before_measurement)
+            fault("recovery_after_first_restore")
+            replace(changelog, before_changelog)
+        elif current == first_replace or current == second_replace:
+            replace(measurement, before_measurement)
+            fault("recovery_after_first_restore")
             replace(changelog, before_changelog)
         elif current != before:
             raise SystemExit(f"unfinished affinity transaction has unrecognized policy state: {tx}")
@@ -238,7 +288,9 @@ destination = root / "artifacts/operator" / f"ratify_pbench4_fg4b_affinity_witne
 if destination.exists():
     raise SystemExit("receipt destination already exists")
 tx_parent.mkdir(parents=True, exist_ok=True)
+fsync_directory(tx_parent)
 tx = Path(tempfile.mkdtemp(prefix=f".pbench4-affinity-{stamp}.", dir=tx_parent))
+fsync_directory(tx_parent)
 (tx / "MEASUREMENT.md.before").write_bytes(measurement_before)
 (tx / "CHANGELOG.md.before").write_bytes(changelog_before)
 (tx / "MEASUREMENT.md.candidate").write_bytes(measurement_candidate)
@@ -247,29 +299,29 @@ for path in tx.iterdir():
     fsync_path(path)
 journal = {"schema": "epyc.pbench4_fg4b_affinity_transaction.v1", "state": "prepared", "receipt": str(destination), "measurement_before": hashlib.sha256(measurement_before).hexdigest(), "measurement_after": amended_measurement_sha256, "changelog_before": hashlib.sha256(changelog_before).hexdigest(), "changelog_after": amended_changelog_sha256}
 write_json(tx / "transaction.json", journal)
-published = False
 try:
     staged_receipt = tx / "receipt.json"
     write_json(staged_receipt, receipt(measurement, datetime.now(UTC).isoformat().replace("+00:00", "+00:00")))
     replace(measurement, measurement_candidate)
+    fault("after_first_policy_replace")
     replace(changelog, changelog_candidate)
+    fault("after_both_policy_replaces")
     validate(staged_receipt)
     data = staged_receipt.read_bytes()
     fd = os.open(destination, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0), 0o644)
     try:
-        view = memoryview(data)
+        partial = os.environ.get("P_BENCH_4_AFFINITY_TEST_FAULT") == "after_partial_receipt_create"
+        view = memoryview(b"partial" if partial else data)
         while view:
             view = view[os.write(fd, view):]
         os.fsync(fd)
+        fault("after_partial_receipt_create")
     finally:
         os.close(fd)
     fsync_path(destination)
-    published = True
+    fault("after_valid_receipt_publish_before_complete")
     write_json(tx / "COMPLETE", {"state": "committed"})
 except BaseException:
-    if not published:
-        replace(measurement, measurement_before)
-        replace(changelog, changelog_before)
     raise
 print(f"ratified: {destination}")
 PY

@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import signal
 import subprocess
 
 import pytest
@@ -79,6 +80,10 @@ def _run(fixture: dict[str, object], *args: str, **extra_env: str) -> subprocess
     )
 
 
+def _transactions(root: Path) -> list[Path]:
+    return sorted((root / "artifacts/operator/pbench4_fg4b_affinity_transactions").glob(".pbench4-affinity-*"))
+
+
 def test_validate_only_is_cwd_independent_and_uses_the_exact_runner(transaction_fixture: dict[str, object]) -> None:
     result = _run(transaction_fixture, "--validate-only")
     assert result.returncode == 0, result.stderr
@@ -118,3 +123,99 @@ def test_duplicate_or_existing_receipt_refuses_without_policy_mutation(transacti
     duplicate = _run(transaction_fixture, "--validate-only")
     assert duplicate.returncode != 0
     assert "marker is already present" in duplicate.stderr
+
+
+@pytest.mark.parametrize(
+    ("fault", "stamp"),
+    [
+        ("after_first_policy_replace", "20260729T120010Z"),
+        ("after_both_policy_replaces", "20260729T120011Z"),
+        ("after_partial_receipt_create", "20260729T120012Z"),
+    ],
+)
+def test_killed_transaction_recovers_to_preimages_without_a_receipt(
+    transaction_fixture: dict[str, object], fault: str, stamp: str
+) -> None:
+    root = transaction_fixture["root"]
+    prior_bytes = (root / "artifacts/operator" / SOURCE_PRIOR_RECEIPT.name).read_bytes()
+    crashed = _run(
+        transaction_fixture,
+        "--attest",
+        TOKEN,
+        P_BENCH_4_AFFINITY_TEST_STAMP=stamp,
+        P_BENCH_4_AFFINITY_TEST_FAULT=fault,
+    )
+    assert crashed.returncode != 0
+    recovered = _run(transaction_fixture, "--validate-only")
+    assert recovered.returncode == 0, recovered.stderr
+    assert (root / "MEASUREMENT.md").read_bytes() == transaction_fixture["measurement"]
+    assert (root / "CHANGELOG.md").read_bytes() == transaction_fixture["changelog"]
+    assert not (root / f"artifacts/operator/ratify_pbench4_fg4b_affinity_witness_{stamp}.json").exists()
+    assert (root / "artifacts/operator" / SOURCE_PRIOR_RECEIPT.name).read_bytes() == prior_bytes
+    assert json.loads((_transactions(root)[0] / "COMPLETE").read_text()) ["state"].startswith("rolled-back")
+
+
+def test_valid_receipt_before_complete_is_recovered_as_committed(transaction_fixture: dict[str, object]) -> None:
+    root = transaction_fixture["root"]
+    stamp = "20260729T120013Z"
+    crashed = _run(
+        transaction_fixture,
+        "--attest",
+        TOKEN,
+        P_BENCH_4_AFFINITY_TEST_STAMP=stamp,
+        P_BENCH_4_AFFINITY_TEST_FAULT="after_valid_receipt_publish_before_complete",
+    )
+    assert crashed.returncode != 0
+    recovered = _run(transaction_fixture, "--validate-only")
+    assert recovered.returncode != 0
+    assert "marker is already present" in recovered.stderr
+    receipt = root / f"artifacts/operator/ratify_pbench4_fg4b_affinity_witness_{stamp}.json"
+    assert receipt.is_file()
+    assert "affinity-witness superseding amendment" in (root / "MEASUREMENT.md").read_text()
+    assert json.loads((_transactions(root)[0] / "COMPLETE").read_text())["state"] == "committed-recovered"
+
+
+def test_valid_receipt_with_restored_preimages_is_recovered_as_committed(
+    transaction_fixture: dict[str, object],
+) -> None:
+    root = transaction_fixture["root"]
+    stamp = "20260729T120015Z"
+    crashed = _run(
+        transaction_fixture,
+        "--attest",
+        TOKEN,
+        P_BENCH_4_AFFINITY_TEST_STAMP=stamp,
+        P_BENCH_4_AFFINITY_TEST_FAULT="after_valid_receipt_publish_before_complete",
+    )
+    assert crashed.returncode != 0
+    (root / "MEASUREMENT.md").write_bytes(transaction_fixture["measurement"])
+    (root / "CHANGELOG.md").write_bytes(transaction_fixture["changelog"])
+    recovered = _run(transaction_fixture, "--validate-only")
+    assert recovered.returncode != 0
+    assert "marker is already present" in recovered.stderr
+    assert "affinity-witness superseding amendment" in (root / "MEASUREMENT.md").read_text()
+    assert json.loads((_transactions(root)[0] / "COMPLETE").read_text())["state"] == "committed-recovered"
+
+
+def test_interrupted_recovery_reenters_and_rolls_back_known_partial_state(
+    transaction_fixture: dict[str, object],
+) -> None:
+    root = transaction_fixture["root"]
+    crashed = _run(
+        transaction_fixture,
+        "--attest",
+        TOKEN,
+        P_BENCH_4_AFFINITY_TEST_STAMP="20260729T120014Z",
+        P_BENCH_4_AFFINITY_TEST_FAULT="after_both_policy_replaces",
+    )
+    assert crashed.returncode != 0
+    interrupted_recovery = _run(
+        transaction_fixture,
+        "--validate-only",
+        P_BENCH_4_AFFINITY_TEST_FAULT="recovery_after_first_restore",
+    )
+    assert interrupted_recovery.returncode in {-signal.SIGKILL, 137}
+    final_recovery = _run(transaction_fixture, "--validate-only")
+    assert final_recovery.returncode == 0, final_recovery.stderr
+    assert (root / "MEASUREMENT.md").read_bytes() == transaction_fixture["measurement"]
+    assert (root / "CHANGELOG.md").read_bytes() == transaction_fixture["changelog"]
