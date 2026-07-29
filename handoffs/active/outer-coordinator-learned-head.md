@@ -142,10 +142,29 @@ quality result; and explicit exclusion reasons. Until then, this vector can
 guide only offline schema work and must not drive action selection, promotion,
 or a learned-head claim.
 
+### OC-0.4 — cost-benefit result: denominator absent, so no ROI claim (2026-07-29)
+
+An honest numeric estimate is **not currently possible**. The durable trial
+journal records evaluated-model token fields (for example instruction-token
+count and generated-token/eval metrics), but not planner/critic provider usage
+per controller turn. The planner configuration exposes output **caps** (local
+planner default 2,048; brief/draft caps 1,536/2,048); caps are not observed
+Claude consumption. PEAF's documented ~150 cached input plus ~50–100 output
+tokens is a forecast addendum, not a complete planner-turn ledger.
+
+Consequently, neither the numerator (tokens a small head could actually
+replace) nor the denominator (total Claude controller tokens per run) exists.
+The 20%/50% thresholds cannot be evaluated, and this work must be treated as
+**not qualified for OC-1** rather than guessed into a positive ROI. The minimal
+future measurement is provider-reported input/output/cache tokens for draft,
+critique, and any follow-up turn, joined to a stable controller decision id and
+run id; only then may a descriptive replacement fraction be computed. It is an
+observation metric, not a promotion or deployment gate.
+
 - [x] **OC-0.1** Enumerate the per-turn decisions Claude makes in the autopilot loop today. Read `scripts/autopilot/` and the autopilot handoff to inventory: which model to dispatch to, when to plan vs execute, when to compact context, when to verify, when to terminate. Produce a table. ✅ 2026-07-29 — committed controller inventory above; it separates planner suggestions from the deterministic/human gates that must remain outside any learned head.
 - [x] **OC-0.2** For each decision in the table, mark whether it is (a) routinely-uniform (Claude always picks the same option in similar contexts — codifiable), (b) genuinely-context-dependent (would need a learned head), or (c) currently-arbitrary (needs a clearer rule before being learned). ✅ 2026-07-29 — classification is in the OC-0.1 table; enforcement and evidence-maintenance rows are uniform, proposal/routing/compaction timing are contextual candidates, and StrategyStore retrieval ranking is currently arbitrary.
 - [x] **OC-0.3** Identify the fitness signal: what quantity would the learned head be optimising? Per-task pass rate is too narrow for an autopilot loop. Possible candidates: pass-rate × token-cost, time-to-completion, autopilot trial success, eval-tower aggregate score across a session. ✅ 2026-07-29 — selected the same-era, same-tier eligible outcome vector above; it remains an offline-only candidate pending decision-level provenance and token attribution.
-- [ ] **OC-0.4** Cost-benefit estimate: how many Claude tokens per autopilot run today, and what fraction is spent on the decisions the head would replace? If <20%, defer indefinitely. If >50%, this becomes a real candidate.
+- [x] **OC-0.4** Cost-benefit estimate: how many Claude tokens per autopilot run today, and what fraction is spent on the decisions the head would replace? If <20%, defer indefinitely. If >50%, this becomes a real candidate. ✅ 2026-07-29 — no observed planner/critic token ledger exists, so the replacement fraction and thresholds are uncomputable; OC-1 is not qualified until that provenance is collected.
 - [ ] **OC-0.6** **Design-space-reference table (NEW 2026-04-28, from intake-474 + intake-493)**: populate a comparison table of published learned-coordinator architectures inside the OC-0 deliverable. **Framing — this is competitive intelligence, not a list of architectures EPYC is committing to copy. The table answers "what are others publishing in this design space?" so OC-0.5 can decide informedly, NOT "which one do we replicate?"** Two rows minimum:
 
   | System (intake) | Action space | Optimizer + cost | Replication risk | Code/weights status | What to learn from / what NOT to copy |
