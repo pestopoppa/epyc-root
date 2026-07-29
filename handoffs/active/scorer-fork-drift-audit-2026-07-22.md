@@ -254,7 +254,7 @@ mocked responses + targeted pytest). All 61 targeted seeding-scorer tests pass;
 
 ## Residual tasks (filed at 2026-07-22 wrap-up)
 - [ ] Unify the `_inband_error_text` / `_forced_role_serving_mismatch` local copies (seeding `3bfe2584`) with eval_tower's originals into one shared module (currently two deliberate copies)
-- [ ] `seeding_legacy.py:~331` deprecated ComparativeResult path carries the pre-guard reward-injection pattern — guard it or delete the legacy path
+- [x] `seeding_legacy.py:~331` deprecated ComparativeResult path carries the pre-guard reward-injection pattern — guard it or delete the legacy path ✅ 2026-07-29 (`epyc-orchestrator` `e108ec9f`; in-band and scorer-unavailable responses persist as infrastructure diagnostics but suppress comparative reward injection; focused seeding tests 72/72)
   - **AUDITED 2026-07-29 (`auditor`). THE PREMISE OF THIS ROW IS FALSE — "currently unused by the
     live driver" is wrong, and the correct disposition is GUARD, not delete.** Evidence, all in
     `epyc-orchestrator` (the file moved there in `49e9ce56`; this row and the dispatch queue both
