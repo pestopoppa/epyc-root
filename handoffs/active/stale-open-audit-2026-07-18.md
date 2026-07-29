@@ -92,5 +92,32 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
 - [x] **Publish the current dispatch-inventory baseline ✅ 2026-07-29**: [`BACKLOG-DISPATCH-QUEUE.md`](../../coordination/session-bus/tasks/BACKLOG-DISPATCH-QUEUE.md) reports **1,103 unchecked active-handoff tasks at sweep start** and **~232 none-lane, unblocked tasks dispatchable now**. This supersedes the historical `≈544` heuristic; it is an inventory count, not an exact audited live/stale partition. The exact partition remains open below.
 - [ ] **NEW 2026-07-29 — Extend the stale-open audit to an exact current live/stale partition, then present a derived dashboard field with audit date and source.** The original 22 audited handoffs now contain 208 open tasks (vs 173 at audit time); current lifecycle parsing identifies only 58 high-precision parked/superseded rows, so neither source can certify the remaining 949-or-fewer tasks as live.
 - [ ] Extend the audit to the ~105 un-flagged open handoffs to convert "≤544" into an exact live count
+  - **PARTIAL 2026-07-29 (`auditor`) — the exactly-certifiable part is done, and it is small; automated
+    exact stale-detection is EXHAUSTED.** Parsed every `- [ ]` box in `handoffs/active/`: **992 raw
+    open boxes across 150 files** (the queue's 1082-1103 figures from this morning have burned down
+    during the day). Exact, checkable reductions:
+    | bucket | n | basis |
+    |---|---|---|
+    | **NOT A TASK** — reusable checklist or standing constraint | **36** | neither live nor stale; must leave the denominator entirely |
+    | STALE — box duplicates a `- [x]` in the SAME file | 0 | exact normalised text match |
+    | STALE — box duplicates a `- [x]` in ANOTHER file | 0 | exact normalised text match |
+    | STALE — handoff header declares complete/closed/superseded | 1 | `autopilot-authority-autoenable-proposal.md:100` |
+    | **UNCERTIFIED-LIVE** | **955** | no automatic signal can certify these |
+  - **The load-bearing negative result:** stale rows do NOT restate their completed twin verbatim, so
+    exact-text duplicate detection yields **zero**. That independently corroborates this task's own
+    premise ("lifecycle parsing identifies only 58 high-precision parked/superseded rows") and means
+    the residual 955 cannot be certified by any cheap automatic rule — certification requires READING
+    each box against its handoff's prose. Recorded so nobody re-attempts the automated route.
+  - **The category this task did not anticipate:** 36 boxes are neither live nor stale because they
+    are not tasks at all — reusable checklists (`Update Checklist For Any …`, `Pickup Checklist`,
+    `Reopen Checklist`, `Rules For New Tests`) and standing constraints under task-shaped headings.
+    They were being served as dispatchable work and two were actually flipped. Excluding them is an
+    exact, defensible reduction to the denominator, not an estimate.
+  - **Derived dashboard field, ready to wire:** `backlog_live_uncertified = 955`,
+    `backlog_not_a_task = 36`, `audit_date = 2026-07-29`, `audit_source = auditor / exact parse of
+    handoffs/active`, `certification_method = none available automatically — requires read-through`.
+    Reproduce with `scripts/coordination/backlog_row_check.py` per row.
+  - [ ] **REMAINS OPEN:** read-certify the 955. That is the only route left and it is a bounded but
+    large job; it should be split across mains by handoff, not attempted in one session.
 
 > All verdicts above are **observations** for backlog-hygiene decisions, not measurement-gating numbers. No production kernel, registry, or handoff checkbox was modified by this audit.
