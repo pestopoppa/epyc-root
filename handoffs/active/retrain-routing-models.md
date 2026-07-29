@@ -1,0 +1,127 @@
+# Retrain Routing Models
+
+**Status**: ACTIVE/PARTIAL — BGE repair + current-data MLP retrain completed 2026-06-12; classifier weights are staged, the clean-window rollout harness landed 2026-07-05, and the production flag remains OFF pending operator rollout decision.
+**Unblocked by**: `repair_episodic_embeddings.py --repair --servers 90 --batch-size 128 --base-port 8090` completed 2026-06-12. Post-repair diagnose-only report: 291,587 routing memories in DB, 275,960 FAISS vectors, 275,960 `reembedded.npz` IDs, 94.6% FAISS coverage, 94.6% live-overlap, 15,627 orphan IDs, **Status: HEALTHY**. The earlier 0-byte `embeddings.faiss` anomaly was the repair window, not the standing blocker.
+**Next sequence**: the clean-window wiring/attestation bracket passed and rolled back in orchestrator `fe270b48`. Live routing remains OFF because `--keep-enabled` was not requested and the artifact is feature-attestation evidence, not routing-quality promotion evidence. Decide explicitly whether to run a keep-enabled bracket, and then decide whether GAT and SkillBank retrains are still justified under the Fable 5 routing freeze.
+**Created**: 2026-05-25
+
+## Context
+Episodic memory was reset on 2026-05-25. The routing classifier weights,
+GraphRouter GAT weights, and SkillBank skills were invalidated. Normal
+FAISS retrieval is active as fallback. The former blocker was not label
+volume: by 2026-06-12 the store already held hundreds of thousands of routing
+rows, but FAISS/reembedded coverage was stale after reset. The BGE repair is
+now complete, so the immediate production-correctness task is to extract
+current training data, retrain the MLP classifier, and verify the live flag
+cannot silently claim a dead fast path. That repair was staged on 2026-06-12;
+the live flag remains intentionally off until the rollout decision.
+
+## Steps
+
+### 1. Verify memory + embedding health
+```bash
+python3 -c "from orchestration.repl_memory.episodic_store import EpisodicStore; s = EpisodicStore(); print(s.count('routing'))"
+python3 scripts/maintenance/repair_episodic_embeddings.py --diagnose-only
+```
+
+### 2. Retrain routing classifier (MLP)
+```bash
+python3 scripts/graph_router/extract_training_data.py
+python3 scripts/graph_router/train_routing_classifier.py --batch-size 512
+```
+
+**2026-06-12 result**:
+- Extracted 275,960 samples / 1,031 features from repaired `reembedded.npz`.
+- Label distribution: frontdoor 137,027; worker_explore 43,959; ingest_long_context 36,215; coder_escalation 30,382; architect_general 28,377; no architect_coding/worker_math/worker_vision rows in the repaired set.
+- First large-batch pass underfit (58.4% validation accuracy; non-frontdoor classes poor) and was archived at `/mnt/raid0/llm/tmp/routing_classifier_weights_b4096_20260612.npz`.
+- Batch-512 pass was promoted to `orchestration/repl_memory/routing_classifier_weights.npz`: 81.0% validation accuracy; per-class validation: frontdoor 92.7%, architect_general 83.2%, coder_escalation 82.0%, worker_explore 47.9%, ingest_long_context 74.3%.
+- Full-dataset threshold check: at global confidence >=0.8, coverage 61.6% and precision 94.4%; at >=0.9, coverage 45.6% and precision 97.7%.
+
+### 3. Verify classifier wiring before enabling
+```bash
+python3 scripts/maintenance/verify_routing_wiring.py
+```
+
+Only re-enable `ORCHESTRATOR_ROUTING_CLASSIFIER=1` after weights exist,
+validation is acceptable, and `/config/attest` proves the flag is uniform
+across workers.
+
+**2026-06-12 result**: `verify_routing_wiring.py` passed with the promoted
+weights and existing verifier head. `/config/attest` still saw 6 workers with
+`routing_classifier=false`, so the artifact is staged but not live.
+
+**2026-07-05 follow-up**: Orchestrator `7f5d874f` adds
+`scripts/maintenance/routing_classifier_rollout_window.py`, a no-inference,
+plan-only-by-default rollout harness. Live mutation requires both `--apply` and
+`--confirm-clean-window`; active AutoPilot blocks by default. The harness runs
+`verify_routing_wiring.py`, reloads the orchestrator API with
+`ORCHESTRATOR_FEATURE_ROUTING_CLASSIFIER=1`, attests sampled `/config/attest`
+workers with `attest_flags.py --expect routing_classifier=true`, and rolls back
+to `routing_classifier=false` unless `--keep-enabled` is explicit. Plan-only
+smoke while AutoPilot was active found API health OK, weights present, and five
+sampled API workers still attesting `routing_classifier=false`. Orchestrator
+`d59e6532` records the latest plan-only preflight artifact at
+`orchestration/reports/routing_classifier_rollout_20260705T052644Z/`: API
+health OK, weights present, AutoPilot active, and 4 sampled workers still
+attesting `routing_classifier=false`. The subsequent clean-window bracket in
+orchestrator `fe270b48` wrote
+`orchestration/reports/routing_classifier_rollout_20260705T053117Z/` with
+`status=attestation_passed_rolled_back`: `verify_routing_wiring` passed,
+`routing_classifier=true` attestation passed, rollback to
+`routing_classifier=false` passed, and live routing remains OFF by policy.
+
+### 4. Retrain GraphRouter (GAT) only if still justified
+```bash
+python3 scripts/graph_router/train_graph_router.py --epochs 100
+python3 scripts/graph_router/onboard_model.py \
+    --role test_new_model \
+    --description "Validation model" \
+    --port 9999 --tps 60.0 --memory-tier HOT --memory-gb 10
+```
+
+Fable 5 froze routing-learning expansion until current-traffic DAR-1 regret
+reaches >=5% and per-question vectors exist. Treat GAT retraining as
+verification/backstop work unless a fresh gate says routing regret is real.
+
+### 5. Re-distill SkillBank only if trajectory volume and freeze gate pass
+```bash
+# Dry-run to check trajectory volume
+python3 -m orchestration.repl_memory.distillation.pipeline --days 25 --teacher mock --dry-run
+
+# Real distillation (needs ~500 trajectories)
+python3 -m orchestration.repl_memory.distillation.pipeline --days 25 --teacher claude
+
+# Verify
+sqlite3 /mnt/raid0/llm/tmp/skills.db "SELECT skill_type, COUNT(*) FROM skills GROUP BY skill_type;"
+```
+
+### 6. Enable features
+Set in `orchestrator_stack.py` or environment:
+```bash
+export ORCHESTRATOR_ROUTING_CLASSIFIER=1
+export ORCHESTRATOR_GRAPH_ROUTER=1
+export ORCHESTRATOR_SKILLBANK=1
+```
+
+## Research Intake Update — 2026-06-10
+
+### New Related Research
+- **[intake-687] "LOLLMS Smart Router Dataset"** (huggingface.co/datasets/ParisNeo/lollms_smart_router_dataset)
+  - Relevance: this handoff is data-starved (gated on accumulating ~500+ routing examples). The lollms dataset is **464 labeled query→model-index examples with natural-language rationales** (Apache-2.0) — usable as bootstrap/eval data or a schema/format reference for a generative-router surface.
+  - Key technique: synthetic routing-label generation via multi-LLM prompting (TTT Dataset Builder); two reference routers fine-tuned on it (Llama-3.2-1B/3B). Schema is `task_prompt` (task + enumerated candidate-model list with capability descriptions) → `task_solution` (selected index + justification).
+  - Delta from current approach: **taxonomy mismatch** — lollms labels are generic public models (GPT-4/Claude-2/CodeLlama/DALL-E/Whisper), NOT our 5-role EPYC taxonomy (frontdoor/architect_general/architect_coding/coder_escalation/worker_explore). Requires a relabel/translation step before training use; the transferable value is the difficulty-tier signal, the prompt-with-candidate-list format, and the rationale field. Verdict worth_investigating — cold-start/reference data, not a drop-in.
+
+### Deep-Dive Refinement (2026-06-12) — correction: lollms is NOT the unblock
+**This retrain is NOT short on labels.** The live `episodic.db` already holds **52K+ labeled routing memories**; the real blocker is **missing BGE embeddings** (FAISS was reset; `reembedded.npz` is a frozen 2026-04-15 snapshot). The lollms dataset cannot fix an embedding gap, and it's the wrong surface: it's generative-router SFT *text* (per-row candidate-list → index+rationale), while our controller is a discriminative **BGE-embedding MLP** (1031-d feature → 8 roles). Its "relabel to 5 roles" is structurally infeasible — the label is a *prompt-relative index into a per-row candidate list*, with no stable model→role map — and synthetic labels would pollute the Q-grounded store. **Unblock path = operator BGE re-embed** (`repair_episodic_embeddings.py --repair` → `extract_training_data.py` → `train_routing_classifier.py`), not lollms. Keep lollms parked only as a TTT-synthesis / generative-router reference. Full: `research/deep-dives/2026-06-12-lollms-smart-router-dataset.md`.
+
+### 7. Delete this handoff
+
+## Progress checklist
+
+- [x] Step 1 verify memory/embedding health - HEALTHY post BGE repair ✅
+- [x] Step 2 retrain MLP classifier - 81.0% val acc, staged to routing_classifier_weights.npz ✅
+- [x] Step 3 verify wiring - passed (attest still routing_classifier=false, staged not live) ✅
+- [x] clean-window rollout harness + enable/attest/rollback bracket (orch fe270b48) - passed, rolled back ✅
+- [ ] Operator decision: run a --keep-enabled bracket to actually enable live routing
+- [ ] Step 4/5 GAT + SkillBank retrains - only if Fable 5 freeze gate (DAR-1 regret >=5%) justifies
+- [ ] Step 7 delete handoff once complete

@@ -1,0 +1,2812 @@
+{
+  "criterion_coverage": {
+    "L1.basic_logs": {
+      "coverage": 1.0,
+      "description": "Has logs, health checks, or logging code.",
+      "failed_repos": [],
+      "level": 1,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "pillar": "Debugging & Observability"
+    },
+    "L1.basic_security": {
+      "coverage": 1.0,
+      "description": "Has basic secret-exclusion or security files.",
+      "failed_repos": [],
+      "level": 1,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "pillar": "Security"
+    },
+    "L1.build_entry": {
+      "coverage": 1.0,
+      "description": "Has a build/install entry point.",
+      "failed_repos": [],
+      "level": 1,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "pillar": "Build System"
+    },
+    "L1.experiment_surface": {
+      "coverage": 0.75,
+      "description": "Has benchmark/eval/report artifacts.",
+      "failed_repos": [
+        "epyc-llama"
+      ],
+      "level": 1,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research"
+      ],
+      "pillar": "Product & Experimentation"
+    },
+    "L1.readme_docs": {
+      "coverage": 1.0,
+      "description": "Has user/developer documentation.",
+      "failed_repos": [],
+      "level": 1,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "pillar": "Documentation"
+    },
+    "L1.setup_surface": {
+      "coverage": 0.5,
+      "description": "Has setup or environment entry points.",
+      "failed_repos": [
+        "epyc-orchestrator",
+        "epyc-inference-research"
+      ],
+      "level": 1,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-llama"
+      ],
+      "pillar": "Dev Environment"
+    },
+    "L1.style_config": {
+      "coverage": 1.0,
+      "description": "Has a formatter/linter/style config.",
+      "failed_repos": [],
+      "level": 1,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "pillar": "Style & Validation"
+    },
+    "L1.task_surface": {
+      "coverage": 1.0,
+      "description": "Has a task/backlog/agent-discovery surface.",
+      "failed_repos": [],
+      "level": 1,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "pillar": "Task Discovery"
+    },
+    "L1.tests_present": {
+      "coverage": 1.0,
+      "description": "Has a test tree or test files.",
+      "failed_repos": [],
+      "level": 1,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "pillar": "Testing"
+    },
+    "L2.agent_docs": {
+      "coverage": 1.0,
+      "description": "Documents agent/project operating rules.",
+      "failed_repos": [],
+      "level": 2,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "pillar": "Documentation"
+    },
+    "L2.build_docs": {
+      "coverage": 1.0,
+      "description": "Documents build/install/setup commands.",
+      "failed_repos": [],
+      "level": 2,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "pillar": "Build System"
+    },
+    "L2.debug_docs": {
+      "coverage": 1.0,
+      "description": "Documents debug/log/health workflows.",
+      "failed_repos": [],
+      "level": 2,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "pillar": "Debugging & Observability"
+    },
+    "L2.dev_env_docs": {
+      "coverage": 1.0,
+      "description": "Documents container/venv/dev setup.",
+      "failed_repos": [],
+      "level": 2,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "pillar": "Dev Environment"
+    },
+    "L2.measurement_docs": {
+      "coverage": 1.0,
+      "description": "Documents metrics, evals, or experiments.",
+      "failed_repos": [],
+      "level": 2,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "pillar": "Product & Experimentation"
+    },
+    "L2.security_docs": {
+      "coverage": 1.0,
+      "description": "Documents secret, PII, or security handling.",
+      "failed_repos": [],
+      "level": 2,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "pillar": "Security"
+    },
+    "L2.style_docs": {
+      "coverage": 1.0,
+      "description": "Documents lint/format/style commands.",
+      "failed_repos": [],
+      "level": 2,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "pillar": "Style & Validation"
+    },
+    "L2.task_docs": {
+      "coverage": 1.0,
+      "description": "Documents backlog/handoff/issue workflow.",
+      "failed_repos": [],
+      "level": 2,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "pillar": "Task Discovery"
+    },
+    "L2.test_docs": {
+      "coverage": 1.0,
+      "description": "Documents test commands or test policy.",
+      "failed_repos": [],
+      "level": 2,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "pillar": "Testing"
+    },
+    "L3.doc_validation": {
+      "coverage": 1.0,
+      "description": "Has documentation validation or generated-doc tooling.",
+      "failed_repos": [],
+      "level": 3,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "pillar": "Documentation"
+    },
+    "L3.machine_task_index": {
+      "coverage": 0.5,
+      "description": "Has structured or indexed task coordination.",
+      "failed_repos": [
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "level": 3,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator"
+      ],
+      "pillar": "Task Discovery"
+    },
+    "L3.repro_build": {
+      "coverage": 0.75,
+      "description": "Uses reproducible build metadata or lock/config files.",
+      "failed_repos": [
+        "epyc-inference-research"
+      ],
+      "level": 3,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-llama"
+      ],
+      "pillar": "Build System"
+    },
+    "L3.security_automation": {
+      "coverage": 0.25,
+      "description": "Automates secret/PII/security checks.",
+      "failed_repos": [
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "level": 3,
+      "passed_repos": [
+        "epyc-root"
+      ],
+      "pillar": "Security"
+    },
+    "L3.standard_dev_env": {
+      "coverage": 0.25,
+      "description": "Standardizes local environment setup.",
+      "failed_repos": [
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "level": 3,
+      "passed_repos": [
+        "epyc-root"
+      ],
+      "pillar": "Dev Environment"
+    },
+    "L3.structured_experiments": {
+      "coverage": 0.75,
+      "description": "Has structured reports/journals/configured evals.",
+      "failed_repos": [
+        "epyc-llama"
+      ],
+      "level": 3,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research"
+      ],
+      "pillar": "Product & Experimentation"
+    },
+    "L3.structured_obs": {
+      "coverage": 1.0,
+      "description": "Has structured logs, trace, or metrics plumbing.",
+      "failed_repos": [],
+      "level": 3,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "pillar": "Debugging & Observability"
+    },
+    "L3.style_enforced": {
+      "coverage": 0.75,
+      "description": "Automates lint/style validation.",
+      "failed_repos": [
+        "epyc-inference-research"
+      ],
+      "level": 3,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-llama"
+      ],
+      "pillar": "Style & Validation"
+    },
+    "L3.test_automation": {
+      "coverage": 0.75,
+      "description": "Automates test execution through CI/config/scripts.",
+      "failed_repos": [
+        "epyc-inference-research"
+      ],
+      "level": 3,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-llama"
+      ],
+      "pillar": "Testing"
+    },
+    "L4.analysis_reports": {
+      "coverage": 0.5,
+      "description": "Has analyzers or report generators over logs/traces.",
+      "failed_repos": [
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "level": 4,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator"
+      ],
+      "pillar": "Debugging & Observability"
+    },
+    "L4.build_speed": {
+      "coverage": 1.0,
+      "description": "Has build caching, profiling, or optimized build lanes.",
+      "failed_repos": [],
+      "level": 4,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "pillar": "Build System"
+    },
+    "L4.fast_safe_tests": {
+      "coverage": 1.0,
+      "description": "Has parallel, flaky, or safety-aware test controls.",
+      "failed_repos": [],
+      "level": 4,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "pillar": "Testing"
+    },
+    "L4.generated_docs": {
+      "coverage": 0.25,
+      "description": "Builds or refreshes docs/site/wiki from sources.",
+      "failed_repos": [
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "level": 4,
+      "passed_repos": [
+        "epyc-root"
+      ],
+      "pillar": "Documentation"
+    },
+    "L4.health_automation": {
+      "coverage": 0.25,
+      "description": "Has health/session/storage automation.",
+      "failed_repos": [
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "level": 4,
+      "passed_repos": [
+        "epyc-root"
+      ],
+      "pillar": "Dev Environment"
+    },
+    "L4.incremental_validation": {
+      "coverage": 1.0,
+      "description": "Supports incremental or changed-file validation.",
+      "failed_repos": [],
+      "level": 4,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "pillar": "Style & Validation"
+    },
+    "L4.prioritized_tasks": {
+      "coverage": 0.25,
+      "description": "Prioritizes tasks with dependencies and reporting rules.",
+      "failed_repos": [
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "level": 4,
+      "passed_repos": [
+        "epyc-root"
+      ],
+      "pillar": "Task Discovery"
+    },
+    "L4.replay_analysis": {
+      "coverage": 0.75,
+      "description": "Can replay/analyze experiments without rerunning them.",
+      "failed_repos": [
+        "epyc-llama"
+      ],
+      "level": 4,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research"
+      ],
+      "pillar": "Product & Experimentation"
+    },
+    "L4.security_audit": {
+      "coverage": 0.25,
+      "description": "Has security-review, audit, or hardening surfaces.",
+      "failed_repos": [
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "level": 4,
+      "passed_repos": [
+        "epyc-root"
+      ],
+      "pillar": "Security"
+    },
+    "L5.agent_doc_loop": {
+      "coverage": 0.25,
+      "description": "Agents have durable handoff/progress documentation loops.",
+      "failed_repos": [
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "level": 5,
+      "passed_repos": [
+        "epyc-root"
+      ],
+      "pillar": "Documentation"
+    },
+    "L5.agent_guards": {
+      "coverage": 1.0,
+      "description": "Agent-facing guards prevent unsafe edits/actions.",
+      "failed_repos": [],
+      "level": 5,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "pillar": "Style & Validation"
+    },
+    "L5.auto_eval_gates": {
+      "coverage": 0.25,
+      "description": "Has automated eval/safety gates for candidate changes.",
+      "failed_repos": [
+        "epyc-root",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "level": 5,
+      "passed_repos": [
+        "epyc-orchestrator"
+      ],
+      "pillar": "Testing"
+    },
+    "L5.auto_remediation_queue": {
+      "coverage": 0.5,
+      "description": "Has an autopilot/remediation queue or self-running lab.",
+      "failed_repos": [
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "level": 5,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator"
+      ],
+      "pillar": "Task Discovery"
+    },
+    "L5.autonomous_runner": {
+      "coverage": 0.5,
+      "description": "Has autonomous/nightshift runner infrastructure.",
+      "failed_repos": [
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "level": 5,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator"
+      ],
+      "pillar": "Build System"
+    },
+    "L5.autonomous_security_review": {
+      "coverage": 0.25,
+      "description": "Has agent-usable security review or policy gates.",
+      "failed_repos": [
+        "epyc-orchestrator",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "level": 5,
+      "passed_repos": [
+        "epyc-root"
+      ],
+      "pillar": "Security"
+    },
+    "L5.closed_loop_obs": {
+      "coverage": 0.5,
+      "description": "Feeds traces/logs into closed-loop analysis.",
+      "failed_repos": [
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "level": 5,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator"
+      ],
+      "pillar": "Debugging & Observability"
+    },
+    "L5.self_healing_ops": {
+      "coverage": 0.5,
+      "description": "Has self-healing/restart or stale-process controls.",
+      "failed_repos": [
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "level": 5,
+      "passed_repos": [
+        "epyc-root",
+        "epyc-orchestrator"
+      ],
+      "pillar": "Dev Environment"
+    },
+    "L5.self_optimizing_loop": {
+      "coverage": 0.25,
+      "description": "Has Pareto/evolutionary optimization loops.",
+      "failed_repos": [
+        "epyc-root",
+        "epyc-inference-research",
+        "epyc-llama"
+      ],
+      "level": 5,
+      "passed_repos": [
+        "epyc-orchestrator"
+      ],
+      "pillar": "Product & Experimentation"
+    }
+  },
+  "generated_at": "2026-06-13T03:13:13.288201+00:00",
+  "levels": {
+    "1": "Functional",
+    "2": "Documented",
+    "3": "Standardized",
+    "4": "Optimized",
+    "5": "Autonomous"
+  },
+  "pillars": [
+    "Style & Validation",
+    "Build System",
+    "Testing",
+    "Documentation",
+    "Dev Environment",
+    "Debugging & Observability",
+    "Security",
+    "Task Discovery",
+    "Product & Experimentation"
+  ],
+  "portfolio": {
+    "level_rates": {
+      "1": 0.9166666666666666,
+      "2": 1.0,
+      "3": 0.6666666666666666,
+      "4": 0.5833333333333334,
+      "5": 0.4444444444444444
+    },
+    "maturity": {
+      "achieved_label": "Documented",
+      "achieved_level": 2,
+      "next_label": "Standardized",
+      "next_level": 3
+    }
+  },
+  "repos": {
+    "epyc-inference-research": {
+      "criteria": [
+        {
+          "description": "Has a formatter/linter/style config.",
+          "evidence": [
+            "pyproject.toml"
+          ],
+          "id": "L1.style_config",
+          "level": 1,
+          "passed": true,
+          "pillar": "Style & Validation"
+        },
+        {
+          "description": "Has a build/install entry point.",
+          "evidence": [
+            "pyproject.toml"
+          ],
+          "id": "L1.build_entry",
+          "level": 1,
+          "passed": true,
+          "pillar": "Build System"
+        },
+        {
+          "description": "Has a test tree or test files.",
+          "evidence": [
+            "data/external/kvpress/tests/integration/test_ruler.py",
+            "data/external/kvpress/tests/presses/test_block_press.py",
+            "data/external/kvpress/tests/presses/test_compactor_press.py",
+            "data/external/kvpress/tests/presses/test_duo_attention_press.py",
+            "data/external/kvpress/tests/presses/test_ea_with_stats.py"
+          ],
+          "id": "L1.tests_present",
+          "level": 1,
+          "passed": true,
+          "pillar": "Testing"
+        },
+        {
+          "description": "Has user/developer documentation.",
+          "evidence": [
+            "README.md",
+            "docs",
+            "docs/MODEL_MANIFEST.md",
+            "docs/chapters",
+            "docs/chapters/01-speculative-decoding.md"
+          ],
+          "id": "L1.readme_docs",
+          "level": 1,
+          "passed": true,
+          "pillar": "Documentation"
+        },
+        {
+          "description": "Has setup or environment entry points.",
+          "evidence": [],
+          "id": "L1.setup_surface",
+          "level": 1,
+          "passed": false,
+          "pillar": "Dev Environment"
+        },
+        {
+          "description": "Has logs, health checks, or logging code.",
+          "evidence": [
+            "scripts/benchmark/context_generator.py",
+            "scripts/benchmark/eval_helpers.py",
+            "scripts/benchmark/eval_tale_budget.py",
+            "scripts/benchmark/eval_trimr.py",
+            "scripts/benchmark/optuna_orchestrator.py"
+          ],
+          "id": "L1.basic_logs",
+          "level": 1,
+          "passed": true,
+          "pillar": "Debugging & Observability"
+        },
+        {
+          "description": "Has basic secret-exclusion or security files.",
+          "evidence": [
+            ".gitignore"
+          ],
+          "id": "L1.basic_security",
+          "level": 1,
+          "passed": true,
+          "pillar": "Security"
+        },
+        {
+          "description": "Has a task/backlog/agent-discovery surface.",
+          "evidence": [
+            "AGENTS.md",
+            "CLAUDE.md"
+          ],
+          "id": "L1.task_surface",
+          "level": 1,
+          "passed": true,
+          "pillar": "Task Discovery"
+        },
+        {
+          "description": "Has benchmark/eval/report artifacts.",
+          "evidence": [
+            "benchmarks",
+            "benchmarks/evidence",
+            "benchmarks/evidence/20260111_123428",
+            "benchmarks/evidence/20260111_123428/baseline_raw.txt",
+            "benchmarks/evidence/20260111_123428/full_log.txt"
+          ],
+          "id": "L1.experiment_surface",
+          "level": 1,
+          "passed": true,
+          "pillar": "Product & Experimentation"
+        },
+        {
+          "description": "Documents lint/format/style commands.",
+          "evidence": [
+            "docs/chapters/03-prompt-lookup.md",
+            "docs/chapters/05-deprecated-approaches.md",
+            "docs/chapters/06-benchmarking-framework.md",
+            "docs/chapters/07-benchmark-suite-construction.md",
+            "docs/chapters/08-cost-aware-rewards.md"
+          ],
+          "id": "L2.style_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Style & Validation"
+        },
+        {
+          "description": "Documents build/install/setup commands.",
+          "evidence": [
+            "README.md",
+            "docs/MODEL_MANIFEST.md",
+            "docs/chapters/01-speculative-decoding.md",
+            "docs/chapters/02-moe-optimization.md",
+            "docs/chapters/03-prompt-lookup.md"
+          ],
+          "id": "L2.build_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Build System"
+        },
+        {
+          "description": "Documents test commands or test policy.",
+          "evidence": [
+            "docs/chapters/02-moe-optimization.md",
+            "docs/chapters/04-radix-attention.md",
+            "docs/chapters/06-benchmarking-framework.md",
+            "docs/chapters/07-benchmark-suite-construction.md",
+            "docs/chapters/08-cost-aware-rewards.md"
+          ],
+          "id": "L2.test_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Testing"
+        },
+        {
+          "description": "Documents agent/project operating rules.",
+          "evidence": [
+            "AGENTS.md",
+            "CLAUDE.md"
+          ],
+          "id": "L2.agent_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Documentation"
+        },
+        {
+          "description": "Documents container/venv/dev setup.",
+          "evidence": [
+            "docs/reference/models/QUIRKS.md"
+          ],
+          "id": "L2.dev_env_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Dev Environment"
+        },
+        {
+          "description": "Documents debug/log/health workflows.",
+          "evidence": [
+            "AGENTS.md",
+            "CLAUDE.md",
+            "README.md",
+            "docs/chapters/06-benchmarking-framework.md",
+            "docs/chapters/07-benchmark-suite-construction.md"
+          ],
+          "id": "L2.debug_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Debugging & Observability"
+        },
+        {
+          "description": "Documents secret, PII, or security handling.",
+          "evidence": [
+            "docs/chapters/10-advanced-speculative-decoding.md",
+            "docs/reference/benchmarks/RESULTS.md"
+          ],
+          "id": "L2.security_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Security"
+        },
+        {
+          "description": "Documents backlog/handoff/issue workflow.",
+          "evidence": [
+            "AGENTS.md",
+            "CLAUDE.md",
+            "docs/chapters/01-speculative-decoding.md",
+            "docs/chapters/03-prompt-lookup.md",
+            "docs/chapters/05-deprecated-approaches.md"
+          ],
+          "id": "L2.task_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Task Discovery"
+        },
+        {
+          "description": "Documents metrics, evals, or experiments.",
+          "evidence": [
+            "AGENTS.md",
+            "CLAUDE.md",
+            "README.md",
+            "docs/MODEL_MANIFEST.md",
+            "docs/chapters/01-speculative-decoding.md"
+          ],
+          "id": "L2.measurement_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Product & Experimentation"
+        },
+        {
+          "description": "Automates lint/style validation.",
+          "evidence": [],
+          "id": "L3.style_enforced",
+          "level": 3,
+          "passed": false,
+          "pillar": "Style & Validation"
+        },
+        {
+          "description": "Uses reproducible build metadata or lock/config files.",
+          "evidence": [],
+          "id": "L3.repro_build",
+          "level": 3,
+          "passed": false,
+          "pillar": "Build System"
+        },
+        {
+          "description": "Automates test execution through CI/config/scripts.",
+          "evidence": [],
+          "id": "L3.test_automation",
+          "level": 3,
+          "passed": false,
+          "pillar": "Testing"
+        },
+        {
+          "description": "Has documentation validation or generated-doc tooling.",
+          "evidence": [
+            "docs",
+            "docs/MODEL_MANIFEST.md",
+            "docs/chapters",
+            "docs/chapters/01-speculative-decoding.md",
+            "docs/chapters/02-moe-optimization.md"
+          ],
+          "id": "L3.doc_validation",
+          "level": 3,
+          "passed": true,
+          "pillar": "Documentation"
+        },
+        {
+          "description": "Standardizes local environment setup.",
+          "evidence": [],
+          "id": "L3.standard_dev_env",
+          "level": 3,
+          "passed": false,
+          "pillar": "Dev Environment"
+        },
+        {
+          "description": "Has structured logs, trace, or metrics plumbing.",
+          "evidence": [
+            "scripts/benchmark/analyze_usaco_failures.py",
+            "scripts/benchmark/analyze_web_research_baseline.py",
+            "scripts/benchmark/attention_matching.py",
+            "scripts/benchmark/bench_amd_pace.py",
+            "scripts/benchmark/context_generator.py"
+          ],
+          "id": "L3.structured_obs",
+          "level": 3,
+          "passed": true,
+          "pillar": "Debugging & Observability"
+        },
+        {
+          "description": "Automates secret/PII/security checks.",
+          "evidence": [],
+          "id": "L3.security_automation",
+          "level": 3,
+          "passed": false,
+          "pillar": "Security"
+        },
+        {
+          "description": "Has structured or indexed task coordination.",
+          "evidence": [],
+          "id": "L3.machine_task_index",
+          "level": 3,
+          "passed": false,
+          "pillar": "Task Discovery"
+        },
+        {
+          "description": "Has structured reports/journals/configured evals.",
+          "evidence": [
+            "data",
+            "data/all_spec_sweep",
+            "data/all_spec_sweep/all_spec_sweep_20260320_011544.csv",
+            "data/all_spec_sweep/logs_20260320_011544",
+            "data/all_spec_sweep/logs_20260320_011544/arch_122b_q4km_192t_dm16_ps0.log"
+          ],
+          "id": "L3.structured_experiments",
+          "level": 3,
+          "passed": true,
+          "pillar": "Product & Experimentation"
+        },
+        {
+          "description": "Supports incremental or changed-file validation.",
+          "evidence": [
+            "scripts/gitnexus-analyze.sh"
+          ],
+          "id": "L4.incremental_validation",
+          "level": 4,
+          "passed": true,
+          "pillar": "Style & Validation"
+        },
+        {
+          "description": "Has build caching, profiling, or optimized build lanes.",
+          "evidence": [
+            "data/kv_cache_quant",
+            "data/page_cache",
+            ".gitnexus/parse-cache",
+            "benchmarks/results/runs/20251217_104145/thinking/DeepSeek-R1-Distill-Qwen-32B_baseline_t2_q2_cache_bug.txt",
+            "benchmarks/results/runs/20251217_104145/thinking/Qwen3-Next-80B-A3B-Thinking_baseline_t2_q2_cache_bug.txt"
+          ],
+          "id": "L4.build_speed",
+          "level": 4,
+          "passed": true,
+          "pillar": "Build System"
+        },
+        {
+          "description": "Has parallel, flaky, or safety-aware test controls.",
+          "evidence": [
+            "scripts/benchmark/add_model_to_benchmark.sh",
+            "scripts/benchmark/analyze_usaco_failures.py",
+            "scripts/benchmark/bench_all_spec_sweeps.sh",
+            "scripts/benchmark/bench_coder_192t.sh",
+            "scripts/benchmark/bench_kv_cache_quant.sh"
+          ],
+          "id": "L4.fast_safe_tests",
+          "level": 4,
+          "passed": true,
+          "pillar": "Testing"
+        },
+        {
+          "description": "Builds or refreshes docs/site/wiki from sources.",
+          "evidence": [],
+          "id": "L4.generated_docs",
+          "level": 4,
+          "passed": false,
+          "pillar": "Documentation"
+        },
+        {
+          "description": "Has health/session/storage automation.",
+          "evidence": [],
+          "id": "L4.health_automation",
+          "level": 4,
+          "passed": false,
+          "pillar": "Dev Environment"
+        },
+        {
+          "description": "Has analyzers or report generators over logs/traces.",
+          "evidence": [],
+          "id": "L4.analysis_reports",
+          "level": 4,
+          "passed": false,
+          "pillar": "Debugging & Observability"
+        },
+        {
+          "description": "Has security-review, audit, or hardening surfaces.",
+          "evidence": [],
+          "id": "L4.security_audit",
+          "level": 4,
+          "passed": false,
+          "pillar": "Security"
+        },
+        {
+          "description": "Prioritizes tasks with dependencies and reporting rules.",
+          "evidence": [],
+          "id": "L4.prioritized_tasks",
+          "level": 4,
+          "passed": false,
+          "pillar": "Task Discovery"
+        },
+        {
+          "description": "Can replay/analyze experiments without rerunning them.",
+          "evidence": [
+            "scripts/benchmark/replay_missing_rewards.py"
+          ],
+          "id": "L4.replay_analysis",
+          "level": 4,
+          "passed": true,
+          "pillar": "Product & Experimentation"
+        },
+        {
+          "description": "Agent-facing guards prevent unsafe edits/actions.",
+          "evidence": [
+            "AGENTS.md"
+          ],
+          "id": "L5.agent_guards",
+          "level": 5,
+          "passed": true,
+          "pillar": "Style & Validation"
+        },
+        {
+          "description": "Has autonomous/nightshift runner infrastructure.",
+          "evidence": [],
+          "id": "L5.autonomous_runner",
+          "level": 5,
+          "passed": false,
+          "pillar": "Build System"
+        },
+        {
+          "description": "Has automated eval/safety gates for candidate changes.",
+          "evidence": [],
+          "id": "L5.auto_eval_gates",
+          "level": 5,
+          "passed": false,
+          "pillar": "Testing"
+        },
+        {
+          "description": "Agents have durable handoff/progress documentation loops.",
+          "evidence": [],
+          "id": "L5.agent_doc_loop",
+          "level": 5,
+          "passed": false,
+          "pillar": "Documentation"
+        },
+        {
+          "description": "Has self-healing/restart or stale-process controls.",
+          "evidence": [],
+          "id": "L5.self_healing_ops",
+          "level": 5,
+          "passed": false,
+          "pillar": "Dev Environment"
+        },
+        {
+          "description": "Feeds traces/logs into closed-loop analysis.",
+          "evidence": [],
+          "id": "L5.closed_loop_obs",
+          "level": 5,
+          "passed": false,
+          "pillar": "Debugging & Observability"
+        },
+        {
+          "description": "Has agent-usable security review or policy gates.",
+          "evidence": [],
+          "id": "L5.autonomous_security_review",
+          "level": 5,
+          "passed": false,
+          "pillar": "Security"
+        },
+        {
+          "description": "Has an autopilot/remediation queue or self-running lab.",
+          "evidence": [],
+          "id": "L5.auto_remediation_queue",
+          "level": 5,
+          "passed": false,
+          "pillar": "Task Discovery"
+        },
+        {
+          "description": "Has Pareto/evolutionary optimization loops.",
+          "evidence": [],
+          "id": "L5.self_optimizing_loop",
+          "level": 5,
+          "passed": false,
+          "pillar": "Product & Experimentation"
+        }
+      ],
+      "exists": true,
+      "level_rates": {
+        "1": 0.8888888888888888,
+        "2": 1.0,
+        "3": 0.3333333333333333,
+        "4": 0.4444444444444444,
+        "5": 0.1111111111111111
+      },
+      "maturity": {
+        "achieved_label": "Documented",
+        "achieved_level": 2,
+        "next_label": "Standardized",
+        "next_level": 3
+      },
+      "path": "/mnt/raid0/llm/epyc-inference-research",
+      "pillar_rates": {
+        "Build System": 0.6,
+        "Debugging & Observability": 0.6,
+        "Dev Environment": 0.2,
+        "Documentation": 0.6,
+        "Product & Experimentation": 0.8,
+        "Security": 0.4,
+        "Style & Validation": 0.8,
+        "Task Discovery": 0.4,
+        "Testing": 0.6
+      }
+    },
+    "epyc-llama": {
+      "criteria": [
+        {
+          "description": "Has a formatter/linter/style config.",
+          "evidence": [
+            ".clang-format",
+            ".github/workflows/ai-issues.yml",
+            ".github/workflows/bench.yml.disabled",
+            ".github/workflows/build.yml",
+            ".github/workflows/check-vendor.yml"
+          ],
+          "id": "L1.style_config",
+          "level": 1,
+          "passed": true,
+          "pillar": "Style & Validation"
+        },
+        {
+          "description": "Has a build/install entry point.",
+          "evidence": [
+            "CMakeLists.txt",
+            "Makefile",
+            "pyproject.toml"
+          ],
+          "id": "L1.build_entry",
+          "level": 1,
+          "passed": true,
+          "pillar": "Build System"
+        },
+        {
+          "description": "Has a test tree or test files.",
+          "evidence": [
+            "gguf-py/tests/test_metadata.py",
+            "gguf-py/tests/test_quants.py",
+            "scripts/snapdragon/qdc/tests/test_bench.py",
+            "tests",
+            "tests/.gitignore"
+          ],
+          "id": "L1.tests_present",
+          "level": 1,
+          "passed": true,
+          "pillar": "Testing"
+        },
+        {
+          "description": "Has user/developer documentation.",
+          "evidence": [
+            "README.md",
+            "docs",
+            "docs/android",
+            "docs/android.md",
+            "docs/android/imported-into-android-studio.jpg"
+          ],
+          "id": "L1.readme_docs",
+          "level": 1,
+          "passed": true,
+          "pillar": "Documentation"
+        },
+        {
+          "description": "Has setup or environment entry points.",
+          "evidence": [
+            "requirements.txt"
+          ],
+          "id": "L1.setup_surface",
+          "level": 1,
+          "passed": true,
+          "pillar": "Dev Environment"
+        },
+        {
+          "description": "Has logs, health checks, or logging code.",
+          "evidence": [
+            "scripts/compare-llama-bench.py",
+            "scripts/compare-logprobs.py",
+            "scripts/create_ops_docs.py",
+            "scripts/fetch_server_test_models.py",
+            "scripts/server-bench.py"
+          ],
+          "id": "L1.basic_logs",
+          "level": 1,
+          "passed": true,
+          "pillar": "Debugging & Observability"
+        },
+        {
+          "description": "Has basic secret-exclusion or security files.",
+          "evidence": [
+            ".gitignore",
+            "SECURITY.md"
+          ],
+          "id": "L1.basic_security",
+          "level": 1,
+          "passed": true,
+          "pillar": "Security"
+        },
+        {
+          "description": "Has a task/backlog/agent-discovery surface.",
+          "evidence": [
+            ".github/ISSUE_TEMPLATE",
+            ".github/ISSUE_TEMPLATE/010-bug-compilation.yml",
+            ".github/ISSUE_TEMPLATE/011-bug-results.yml",
+            ".github/ISSUE_TEMPLATE/019-bug-misc.yml",
+            ".github/ISSUE_TEMPLATE/020-enhancement.yml"
+          ],
+          "id": "L1.task_surface",
+          "level": 1,
+          "passed": true,
+          "pillar": "Task Discovery"
+        },
+        {
+          "description": "Has benchmark/eval/report artifacts.",
+          "evidence": [],
+          "id": "L1.experiment_surface",
+          "level": 1,
+          "passed": false,
+          "pillar": "Product & Experimentation"
+        },
+        {
+          "description": "Documents lint/format/style commands.",
+          "evidence": [
+            "README.md",
+            "docs/autoparser.md",
+            "docs/backend/CANN.md",
+            "docs/backend/OPENCL.md",
+            "docs/development/HOWTO-add-model.md"
+          ],
+          "id": "L2.style_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Style & Validation"
+        },
+        {
+          "description": "Documents build/install/setup commands.",
+          "evidence": [
+            "AGENTS.md",
+            "README.md",
+            "docs/android.md",
+            "docs/autoparser.md",
+            "docs/backend/BLIS.md"
+          ],
+          "id": "L2.build_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Build System"
+        },
+        {
+          "description": "Documents test commands or test policy.",
+          "evidence": [
+            "README.md",
+            "docs/autoparser.md",
+            "docs/backend/OPENVINO.md",
+            "docs/backend/SYCL.md",
+            "docs/backend/VirtGPU.md"
+          ],
+          "id": "L2.test_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Testing"
+        },
+        {
+          "description": "Documents agent/project operating rules.",
+          "evidence": [
+            "AGENTS.md",
+            "CLAUDE.md"
+          ],
+          "id": "L2.agent_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Documentation"
+        },
+        {
+          "description": "Documents container/venv/dev setup.",
+          "evidence": [
+            "README.md",
+            "docs/android.md",
+            "docs/autoparser.md",
+            "docs/backend/BLIS.md",
+            "docs/backend/CANN.md"
+          ],
+          "id": "L2.dev_env_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Dev Environment"
+        },
+        {
+          "description": "Documents debug/log/health workflows.",
+          "evidence": [
+            "AGENTS.md",
+            "README.md",
+            "docs/autoparser.md",
+            "docs/backend/CUDA-FEDORA.md",
+            "docs/backend/OPENVINO.md"
+          ],
+          "id": "L2.debug_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Debugging & Observability"
+        },
+        {
+          "description": "Documents secret, PII, or security handling.",
+          "evidence": [
+            "SECURITY.md"
+          ],
+          "id": "L2.security_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Security"
+        },
+        {
+          "description": "Documents backlog/handoff/issue workflow.",
+          "evidence": [
+            "README.md",
+            "docs/backend/BLIS.md",
+            "docs/backend/CANN.md",
+            "docs/backend/CUDA-FEDORA.md",
+            "docs/backend/OPENCL.md"
+          ],
+          "id": "L2.task_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Task Discovery"
+        },
+        {
+          "description": "Documents metrics, evals, or experiments.",
+          "evidence": [
+            "README.md",
+            "docs/android.md",
+            "docs/backend/OPENVINO.md",
+            "docs/backend/SYCL.md",
+            "docs/backend/VirtGPU/development.md"
+          ],
+          "id": "L2.measurement_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Product & Experimentation"
+        },
+        {
+          "description": "Automates lint/style validation.",
+          "evidence": [
+            ".github/workflows/ai-issues.yml",
+            ".github/workflows/bench.yml.disabled",
+            ".github/workflows/build.yml",
+            ".github/workflows/check-vendor.yml",
+            ".github/workflows/close-issue.yml"
+          ],
+          "id": "L3.style_enforced",
+          "level": 3,
+          "passed": true,
+          "pillar": "Style & Validation"
+        },
+        {
+          "description": "Uses reproducible build metadata or lock/config files.",
+          "evidence": [
+            "CMakePresets.json",
+            "poetry.lock"
+          ],
+          "id": "L3.repro_build",
+          "level": 3,
+          "passed": true,
+          "pillar": "Build System"
+        },
+        {
+          "description": "Automates test execution through CI/config/scripts.",
+          "evidence": [
+            ".github/workflows/ai-issues.yml",
+            ".github/workflows/bench.yml.disabled",
+            ".github/workflows/build.yml",
+            ".github/workflows/check-vendor.yml",
+            ".github/workflows/close-issue.yml"
+          ],
+          "id": "L3.test_automation",
+          "level": 3,
+          "passed": true,
+          "pillar": "Testing"
+        },
+        {
+          "description": "Has documentation validation or generated-doc tooling.",
+          "evidence": [
+            "docs",
+            "docs/android",
+            "docs/android.md",
+            "docs/android/imported-into-android-studio.jpg",
+            "docs/autoparser.md"
+          ],
+          "id": "L3.doc_validation",
+          "level": 3,
+          "passed": true,
+          "pillar": "Documentation"
+        },
+        {
+          "description": "Standardizes local environment setup.",
+          "evidence": [],
+          "id": "L3.standard_dev_env",
+          "level": 3,
+          "passed": false,
+          "pillar": "Dev Environment"
+        },
+        {
+          "description": "Has structured logs, trace, or metrics plumbing.",
+          "evidence": [
+            "scripts/compare-llama-bench.py",
+            "scripts/jinja/jinja-tester.py",
+            "scripts/tool_bench.py"
+          ],
+          "id": "L3.structured_obs",
+          "level": 3,
+          "passed": true,
+          "pillar": "Debugging & Observability"
+        },
+        {
+          "description": "Automates secret/PII/security checks.",
+          "evidence": [],
+          "id": "L3.security_automation",
+          "level": 3,
+          "passed": false,
+          "pillar": "Security"
+        },
+        {
+          "description": "Has structured or indexed task coordination.",
+          "evidence": [],
+          "id": "L3.machine_task_index",
+          "level": 3,
+          "passed": false,
+          "pillar": "Task Discovery"
+        },
+        {
+          "description": "Has structured reports/journals/configured evals.",
+          "evidence": [],
+          "id": "L3.structured_experiments",
+          "level": 3,
+          "passed": false,
+          "pillar": "Product & Experimentation"
+        },
+        {
+          "description": "Supports incremental or changed-file validation.",
+          "evidence": [
+            "scripts/gitnexus-analyze.sh"
+          ],
+          "id": "L4.incremental_validation",
+          "level": 4,
+          "passed": true,
+          "pillar": "Style & Validation"
+        },
+        {
+          "description": "Has build caching, profiling, or optimized build lanes.",
+          "evidence": [
+            "build_libomp_pgo_use",
+            "build_libomp_pgo_bolt",
+            "build_libomp_pgo_use/tests",
+            "build_libomp_pgo_use/Makefile",
+            "build_libomp_pgo_use/CTestTestfile.cmake"
+          ],
+          "id": "L4.build_speed",
+          "level": 4,
+          "passed": true,
+          "pillar": "Build System"
+        },
+        {
+          "description": "Has parallel, flaky, or safety-aware test controls.",
+          "evidence": [
+            "scripts/tool_bench.py"
+          ],
+          "id": "L4.fast_safe_tests",
+          "level": 4,
+          "passed": true,
+          "pillar": "Testing"
+        },
+        {
+          "description": "Builds or refreshes docs/site/wiki from sources.",
+          "evidence": [],
+          "id": "L4.generated_docs",
+          "level": 4,
+          "passed": false,
+          "pillar": "Documentation"
+        },
+        {
+          "description": "Has health/session/storage automation.",
+          "evidence": [],
+          "id": "L4.health_automation",
+          "level": 4,
+          "passed": false,
+          "pillar": "Dev Environment"
+        },
+        {
+          "description": "Has analyzers or report generators over logs/traces.",
+          "evidence": [],
+          "id": "L4.analysis_reports",
+          "level": 4,
+          "passed": false,
+          "pillar": "Debugging & Observability"
+        },
+        {
+          "description": "Has security-review, audit, or hardening surfaces.",
+          "evidence": [],
+          "id": "L4.security_audit",
+          "level": 4,
+          "passed": false,
+          "pillar": "Security"
+        },
+        {
+          "description": "Prioritizes tasks with dependencies and reporting rules.",
+          "evidence": [],
+          "id": "L4.prioritized_tasks",
+          "level": 4,
+          "passed": false,
+          "pillar": "Task Discovery"
+        },
+        {
+          "description": "Can replay/analyze experiments without rerunning them.",
+          "evidence": [],
+          "id": "L4.replay_analysis",
+          "level": 4,
+          "passed": false,
+          "pillar": "Product & Experimentation"
+        },
+        {
+          "description": "Agent-facing guards prevent unsafe edits/actions.",
+          "evidence": [
+            "AGENTS.md"
+          ],
+          "id": "L5.agent_guards",
+          "level": 5,
+          "passed": true,
+          "pillar": "Style & Validation"
+        },
+        {
+          "description": "Has autonomous/nightshift runner infrastructure.",
+          "evidence": [],
+          "id": "L5.autonomous_runner",
+          "level": 5,
+          "passed": false,
+          "pillar": "Build System"
+        },
+        {
+          "description": "Has automated eval/safety gates for candidate changes.",
+          "evidence": [],
+          "id": "L5.auto_eval_gates",
+          "level": 5,
+          "passed": false,
+          "pillar": "Testing"
+        },
+        {
+          "description": "Agents have durable handoff/progress documentation loops.",
+          "evidence": [],
+          "id": "L5.agent_doc_loop",
+          "level": 5,
+          "passed": false,
+          "pillar": "Documentation"
+        },
+        {
+          "description": "Has self-healing/restart or stale-process controls.",
+          "evidence": [],
+          "id": "L5.self_healing_ops",
+          "level": 5,
+          "passed": false,
+          "pillar": "Dev Environment"
+        },
+        {
+          "description": "Feeds traces/logs into closed-loop analysis.",
+          "evidence": [],
+          "id": "L5.closed_loop_obs",
+          "level": 5,
+          "passed": false,
+          "pillar": "Debugging & Observability"
+        },
+        {
+          "description": "Has agent-usable security review or policy gates.",
+          "evidence": [],
+          "id": "L5.autonomous_security_review",
+          "level": 5,
+          "passed": false,
+          "pillar": "Security"
+        },
+        {
+          "description": "Has an autopilot/remediation queue or self-running lab.",
+          "evidence": [],
+          "id": "L5.auto_remediation_queue",
+          "level": 5,
+          "passed": false,
+          "pillar": "Task Discovery"
+        },
+        {
+          "description": "Has Pareto/evolutionary optimization loops.",
+          "evidence": [],
+          "id": "L5.self_optimizing_loop",
+          "level": 5,
+          "passed": false,
+          "pillar": "Product & Experimentation"
+        }
+      ],
+      "exists": true,
+      "level_rates": {
+        "1": 0.8888888888888888,
+        "2": 1.0,
+        "3": 0.5555555555555556,
+        "4": 0.3333333333333333,
+        "5": 0.1111111111111111
+      },
+      "maturity": {
+        "achieved_label": "Documented",
+        "achieved_level": 2,
+        "next_label": "Standardized",
+        "next_level": 3
+      },
+      "path": "/mnt/raid0/llm/llama.cpp",
+      "pillar_rates": {
+        "Build System": 0.8,
+        "Debugging & Observability": 0.6,
+        "Dev Environment": 0.4,
+        "Documentation": 0.6,
+        "Product & Experimentation": 0.2,
+        "Security": 0.4,
+        "Style & Validation": 1.0,
+        "Task Discovery": 0.4,
+        "Testing": 0.8
+      }
+    },
+    "epyc-orchestrator": {
+      "criteria": [
+        {
+          "description": "Has a formatter/linter/style config.",
+          "evidence": [
+            "pyproject.toml",
+            "scripts/validate",
+            "scripts/validate/attest_flags.py",
+            "scripts/validate/check_contention_matrix_fresh.py"
+          ],
+          "id": "L1.style_config",
+          "level": 1,
+          "passed": true,
+          "pillar": "Style & Validation"
+        },
+        {
+          "description": "Has a build/install entry point.",
+          "evidence": [
+            "Makefile",
+            "pyproject.toml"
+          ],
+          "id": "L1.build_entry",
+          "level": 1,
+          "passed": true,
+          "pillar": "Build System"
+        },
+        {
+          "description": "Has a test tree or test files.",
+          "evidence": [
+            ".claude/worktrees/p21a-deepconf/tests/classifiers/test_difficulty_signal.py",
+            ".claude/worktrees/p21a-deepconf/tests/integration/test_api_endpoints.py",
+            ".claude/worktrees/p21a-deepconf/tests/integration/test_archive_pipeline.py",
+            ".claude/worktrees/p21a-deepconf/tests/integration/test_cache_hits.py",
+            ".claude/worktrees/p21a-deepconf/tests/integration/test_cache_integration.py"
+          ],
+          "id": "L1.tests_present",
+          "level": 1,
+          "passed": true,
+          "pillar": "Testing"
+        },
+        {
+          "description": "Has user/developer documentation.",
+          "evidence": [
+            "README.md",
+            "docs",
+            "docs/ARCHITECTURE.md",
+            "docs/SETUP.md",
+            "docs/autopilot"
+          ],
+          "id": "L1.readme_docs",
+          "level": 1,
+          "passed": true,
+          "pillar": "Documentation"
+        },
+        {
+          "description": "Has setup or environment entry points.",
+          "evidence": [],
+          "id": "L1.setup_surface",
+          "level": 1,
+          "passed": false,
+          "pillar": "Dev Environment"
+        },
+        {
+          "description": "Has logs, health checks, or logging code.",
+          "evidence": [
+            "logs",
+            "logs/.bg_cleanup.lock",
+            "logs/autopilot.codexprimary.log",
+            "logs/autopilot.cutover.1780529.log",
+            "logs/autopilot.log"
+          ],
+          "id": "L1.basic_logs",
+          "level": 1,
+          "passed": true,
+          "pillar": "Debugging & Observability"
+        },
+        {
+          "description": "Has basic secret-exclusion or security files.",
+          "evidence": [
+            ".gitignore"
+          ],
+          "id": "L1.basic_security",
+          "level": 1,
+          "passed": true,
+          "pillar": "Security"
+        },
+        {
+          "description": "Has a task/backlog/agent-discovery surface.",
+          "evidence": [
+            "AGENTS.md",
+            "CLAUDE.md"
+          ],
+          "id": "L1.task_surface",
+          "level": 1,
+          "passed": true,
+          "pillar": "Task Discovery"
+        },
+        {
+          "description": "Has benchmark/eval/report artifacts.",
+          "evidence": [
+            "benchmarks",
+            "benchmarks/images",
+            "benchmarks/images/vl",
+            "benchmarks/images/vl/chartqa",
+            "benchmarks/images/vl/chartqa/chart_test_0000.png"
+          ],
+          "id": "L1.experiment_surface",
+          "level": 1,
+          "passed": true,
+          "pillar": "Product & Experimentation"
+        },
+        {
+          "description": "Documents lint/format/style commands.",
+          "evidence": [
+            "AGENTS.md",
+            "CLAUDE.md",
+            "README.md",
+            "docs/ARCHITECTURE.md",
+            "docs/chapters/02-orchestration-architecture.md"
+          ],
+          "id": "L2.style_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Style & Validation"
+        },
+        {
+          "description": "Documents build/install/setup commands.",
+          "evidence": [
+            "AGENTS.md",
+            "CLAUDE.md",
+            "README.md",
+            "docs/ARCHITECTURE.md",
+            "docs/SETUP.md"
+          ],
+          "id": "L2.build_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Build System"
+        },
+        {
+          "description": "Documents test commands or test policy.",
+          "evidence": [
+            "AGENTS.md",
+            "CLAUDE.md",
+            "README.md",
+            "docs/ARCHITECTURE.md",
+            "docs/SETUP.md"
+          ],
+          "id": "L2.test_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Testing"
+        },
+        {
+          "description": "Documents agent/project operating rules.",
+          "evidence": [
+            "AGENTS.md",
+            "CLAUDE.md"
+          ],
+          "id": "L2.agent_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Documentation"
+        },
+        {
+          "description": "Documents container/venv/dev setup.",
+          "evidence": [
+            "docs/ARCHITECTURE.md",
+            "docs/SETUP.md",
+            "docs/chapters/01-runtime-environment.md",
+            "docs/chapters/02-orchestration-architecture.md",
+            "docs/chapters/03-repl-environment.md"
+          ],
+          "id": "L2.dev_env_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Dev Environment"
+        },
+        {
+          "description": "Documents debug/log/health workflows.",
+          "evidence": [
+            "AGENTS.md",
+            "CLAUDE.md",
+            "docs/ARCHITECTURE.md",
+            "docs/chapters/01-runtime-environment.md",
+            "docs/chapters/02-orchestration-architecture.md"
+          ],
+          "id": "L2.debug_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Debugging & Observability"
+        },
+        {
+          "description": "Documents secret, PII, or security handling.",
+          "evidence": [
+            "docs/ARCHITECTURE.md",
+            "docs/chapters/02-orchestration-architecture.md",
+            "docs/chapters/03-repl-environment.md",
+            "docs/chapters/05-data-processing-pipelines.md",
+            "docs/chapters/08-graph-reasoning.md"
+          ],
+          "id": "L2.security_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Security"
+        },
+        {
+          "description": "Documents backlog/handoff/issue workflow.",
+          "evidence": [
+            "AGENTS.md",
+            "CLAUDE.md",
+            "README.md",
+            "docs/ARCHITECTURE.md",
+            "docs/chapters/01-runtime-environment.md"
+          ],
+          "id": "L2.task_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Task Discovery"
+        },
+        {
+          "description": "Documents metrics, evals, or experiments.",
+          "evidence": [
+            "AGENTS.md",
+            "CLAUDE.md",
+            "README.md",
+            "docs/ARCHITECTURE.md",
+            "docs/SETUP.md"
+          ],
+          "id": "L2.measurement_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Product & Experimentation"
+        },
+        {
+          "description": "Automates lint/style validation.",
+          "evidence": [
+            "Makefile"
+          ],
+          "id": "L3.style_enforced",
+          "level": 3,
+          "passed": true,
+          "pillar": "Style & Validation"
+        },
+        {
+          "description": "Uses reproducible build metadata or lock/config files.",
+          "evidence": [
+            "uv.lock"
+          ],
+          "id": "L3.repro_build",
+          "level": 3,
+          "passed": true,
+          "pillar": "Build System"
+        },
+        {
+          "description": "Automates test execution through CI/config/scripts.",
+          "evidence": [
+            "Makefile"
+          ],
+          "id": "L3.test_automation",
+          "level": 3,
+          "passed": true,
+          "pillar": "Testing"
+        },
+        {
+          "description": "Has documentation validation or generated-doc tooling.",
+          "evidence": [
+            "docs",
+            "docs/ARCHITECTURE.md",
+            "docs/SETUP.md",
+            "docs/autopilot",
+            "docs/autopilot/hypervolume_trend.png"
+          ],
+          "id": "L3.doc_validation",
+          "level": 3,
+          "passed": true,
+          "pillar": "Documentation"
+        },
+        {
+          "description": "Standardizes local environment setup.",
+          "evidence": [],
+          "id": "L3.standard_dev_env",
+          "level": 3,
+          "passed": false,
+          "pillar": "Dev Environment"
+        },
+        {
+          "description": "Has structured logs, trace, or metrics plumbing.",
+          "evidence": [
+            "orchestration/instrument_eras.yaml"
+          ],
+          "id": "L3.structured_obs",
+          "level": 3,
+          "passed": true,
+          "pillar": "Debugging & Observability"
+        },
+        {
+          "description": "Automates secret/PII/security checks.",
+          "evidence": [],
+          "id": "L3.security_automation",
+          "level": 3,
+          "passed": false,
+          "pillar": "Security"
+        },
+        {
+          "description": "Has structured or indexed task coordination.",
+          "evidence": [
+            "orchestration/autopilot_journal.jsonl"
+          ],
+          "id": "L3.machine_task_index",
+          "level": 3,
+          "passed": true,
+          "pillar": "Task Discovery"
+        },
+        {
+          "description": "Has structured reports/journals/configured evals.",
+          "evidence": [
+            "data",
+            "data/bep_sandbox",
+            "data/bep_sandbox/INVALID-apiclobber-results-real-20260526-232621",
+            "data/bep_sandbox/INVALID-apiclobber-results-real-20260526-232621/results.jsonl",
+            "data/bep_sandbox/INVALID-mockmode-results-real-20260526-230928"
+          ],
+          "id": "L3.structured_experiments",
+          "level": 3,
+          "passed": true,
+          "pillar": "Product & Experimentation"
+        },
+        {
+          "description": "Supports incremental or changed-file validation.",
+          "evidence": [
+            "scripts/gitnexus-analyze.sh"
+          ],
+          "id": "L4.incremental_validation",
+          "level": 4,
+          "passed": true,
+          "pillar": "Style & Validation"
+        },
+        {
+          "description": "Has build caching, profiling, or optimized build lanes.",
+          "evidence": [
+            "cache",
+            ".venv/CACHEDIR.TAG",
+            ".gitnexus/parse-cache",
+            "cache/next-plaid",
+            "src/prefix_cache.py"
+          ],
+          "id": "L4.build_speed",
+          "level": 4,
+          "passed": true,
+          "pillar": "Build System"
+        },
+        {
+          "description": "Has parallel, flaky, or safety-aware test controls.",
+          "evidence": [
+            "pyproject.toml",
+            "scripts/autopilot/actions.py",
+            "scripts/autopilot/autopilot.py",
+            "scripts/autopilot/autopilot_tui.py",
+            "scripts/autopilot/config_applicator.py"
+          ],
+          "id": "L4.fast_safe_tests",
+          "level": 4,
+          "passed": true,
+          "pillar": "Testing"
+        },
+        {
+          "description": "Builds or refreshes docs/site/wiki from sources.",
+          "evidence": [],
+          "id": "L4.generated_docs",
+          "level": 4,
+          "passed": false,
+          "pillar": "Documentation"
+        },
+        {
+          "description": "Has health/session/storage automation.",
+          "evidence": [],
+          "id": "L4.health_automation",
+          "level": 4,
+          "passed": false,
+          "pillar": "Dev Environment"
+        },
+        {
+          "description": "Has analyzers or report generators over logs/traces.",
+          "evidence": [
+            "orchestration/reports",
+            "orchestration/reports/dar1_regret_replay_2026-06-12.md",
+            "orchestration/reports/item_analytics_2026-06-12.json",
+            "orchestration/reports/item_analytics_2026-06-12.md",
+            "orchestration/reports/task_rate_goodput_replay_2026-06-12.md"
+          ],
+          "id": "L4.analysis_reports",
+          "level": 4,
+          "passed": true,
+          "pillar": "Debugging & Observability"
+        },
+        {
+          "description": "Has security-review, audit, or hardening surfaces.",
+          "evidence": [],
+          "id": "L4.security_audit",
+          "level": 4,
+          "passed": false,
+          "pillar": "Security"
+        },
+        {
+          "description": "Prioritizes tasks with dependencies and reporting rules.",
+          "evidence": [],
+          "id": "L4.prioritized_tasks",
+          "level": 4,
+          "passed": false,
+          "pillar": "Task Discovery"
+        },
+        {
+          "description": "Can replay/analyze experiments without rerunning them.",
+          "evidence": [
+            "orchestration/reports",
+            "orchestration/reports/dar1_regret_replay_2026-06-12.md",
+            "orchestration/reports/item_analytics_2026-06-12.json",
+            "orchestration/reports/item_analytics_2026-06-12.md",
+            "orchestration/reports/task_rate_goodput_replay_2026-06-12.md"
+          ],
+          "id": "L4.replay_analysis",
+          "level": 4,
+          "passed": true,
+          "pillar": "Product & Experimentation"
+        },
+        {
+          "description": "Agent-facing guards prevent unsafe edits/actions.",
+          "evidence": [
+            "AGENTS.md"
+          ],
+          "id": "L5.agent_guards",
+          "level": 5,
+          "passed": true,
+          "pillar": "Style & Validation"
+        },
+        {
+          "description": "Has autonomous/nightshift runner infrastructure.",
+          "evidence": [
+            "scripts/autopilot",
+            "scripts/autopilot/#program.md#",
+            "scripts/autopilot/actions.py",
+            "scripts/autopilot/autopilot.py",
+            "scripts/autopilot/autopilot_tui.py"
+          ],
+          "id": "L5.autonomous_runner",
+          "level": 5,
+          "passed": true,
+          "pillar": "Build System"
+        },
+        {
+          "description": "Has automated eval/safety gates for candidate changes.",
+          "evidence": [
+            "orchestration/eval_registry.yaml",
+            "scripts/autopilot",
+            "scripts/autopilot/#program.md#",
+            "scripts/autopilot/actions.py",
+            "scripts/autopilot/autopilot.py"
+          ],
+          "id": "L5.auto_eval_gates",
+          "level": 5,
+          "passed": true,
+          "pillar": "Testing"
+        },
+        {
+          "description": "Agents have durable handoff/progress documentation loops.",
+          "evidence": [],
+          "id": "L5.agent_doc_loop",
+          "level": 5,
+          "passed": false,
+          "pillar": "Documentation"
+        },
+        {
+          "description": "Has self-healing/restart or stale-process controls.",
+          "evidence": [
+            "scripts/server/orchestrator_stack.py"
+          ],
+          "id": "L5.self_healing_ops",
+          "level": 5,
+          "passed": true,
+          "pillar": "Dev Environment"
+        },
+        {
+          "description": "Feeds traces/logs into closed-loop analysis.",
+          "evidence": [
+            "orchestration/repl_memory",
+            "orchestration/repl_memory/__init__.py",
+            "orchestration/repl_memory/bilinear_scorer.py",
+            "orchestration/repl_memory/distillation",
+            "orchestration/repl_memory/distillation/__init__.py"
+          ],
+          "id": "L5.closed_loop_obs",
+          "level": 5,
+          "passed": true,
+          "pillar": "Debugging & Observability"
+        },
+        {
+          "description": "Has agent-usable security review or policy gates.",
+          "evidence": [],
+          "id": "L5.autonomous_security_review",
+          "level": 5,
+          "passed": false,
+          "pillar": "Security"
+        },
+        {
+          "description": "Has an autopilot/remediation queue or self-running lab.",
+          "evidence": [
+            "scripts/autopilot",
+            "scripts/autopilot/#program.md#",
+            "scripts/autopilot/actions.py",
+            "scripts/autopilot/autopilot.py",
+            "scripts/autopilot/autopilot_tui.py"
+          ],
+          "id": "L5.auto_remediation_queue",
+          "level": 5,
+          "passed": true,
+          "pillar": "Task Discovery"
+        },
+        {
+          "description": "Has Pareto/evolutionary optimization loops.",
+          "evidence": [
+            "orchestration/autopilot_journal.jsonl",
+            "scripts/autopilot",
+            "scripts/autopilot/#program.md#",
+            "scripts/autopilot/actions.py",
+            "scripts/autopilot/autopilot.py"
+          ],
+          "id": "L5.self_optimizing_loop",
+          "level": 5,
+          "passed": true,
+          "pillar": "Product & Experimentation"
+        }
+      ],
+      "exists": true,
+      "level_rates": {
+        "1": 0.8888888888888888,
+        "2": 1.0,
+        "3": 0.7777777777777778,
+        "4": 0.5555555555555556,
+        "5": 0.7777777777777778
+      },
+      "maturity": {
+        "achieved_label": "Documented",
+        "achieved_level": 2,
+        "next_label": "Standardized",
+        "next_level": 3
+      },
+      "path": "/mnt/raid0/llm/epyc-orchestrator",
+      "pillar_rates": {
+        "Build System": 1.0,
+        "Debugging & Observability": 1.0,
+        "Dev Environment": 0.4,
+        "Documentation": 0.6,
+        "Product & Experimentation": 1.0,
+        "Security": 0.4,
+        "Style & Validation": 1.0,
+        "Task Discovery": 0.8,
+        "Testing": 1.0
+      }
+    },
+    "epyc-root": {
+      "criteria": [
+        {
+          "description": "Has a formatter/linter/style config.",
+          "evidence": [
+            ".github/workflows/docs.yml",
+            "scripts/validate",
+            "scripts/validate/check_agent_file_symlink.sh",
+            "scripts/validate/check_handoff_freshness.sh",
+            "scripts/validate/check_imperative_injection.py"
+          ],
+          "id": "L1.style_config",
+          "level": 1,
+          "passed": true,
+          "pillar": "Style & Validation"
+        },
+        {
+          "description": "Has a build/install entry point.",
+          "evidence": [
+            "scripts/clone-repos.sh",
+            "scripts/setup.sh"
+          ],
+          "id": "L1.build_entry",
+          "level": 1,
+          "passed": true,
+          "pillar": "Build System"
+        },
+        {
+          "description": "Has a test tree or test files.",
+          "evidence": [
+            "scripts/halo/test_convert_tap_to_otel.py",
+            "scripts/utils/test_compress_tool_output.py",
+            "tests",
+            "tests/compliance",
+            "tests/compliance/agent_file"
+          ],
+          "id": "L1.tests_present",
+          "level": 1,
+          "passed": true,
+          "pillar": "Testing"
+        },
+        {
+          "description": "Has user/developer documentation.",
+          "evidence": [
+            "README.md",
+            "docs",
+            "docs/guides",
+            "docs/guides/agent-workflows",
+            "docs/guides/agent-workflows/INDEX.md"
+          ],
+          "id": "L1.readme_docs",
+          "level": 1,
+          "passed": true,
+          "pillar": "Documentation"
+        },
+        {
+          "description": "Has setup or environment entry points.",
+          "evidence": [
+            ".devcontainer",
+            ".devcontainer/.gitignore_global",
+            ".devcontainer/Dockerfile",
+            ".devcontainer/devcontainer.json",
+            ".devcontainer/post_install.py"
+          ],
+          "id": "L1.setup_surface",
+          "level": 1,
+          "passed": true,
+          "pillar": "Dev Environment"
+        },
+        {
+          "description": "Has logs, health checks, or logging code.",
+          "evidence": [
+            "logs",
+            "logs/.current_session",
+            "logs/agent_audit.log",
+            "logs/canvases",
+            "logs/canvases/component_topology.canvas"
+          ],
+          "id": "L1.basic_logs",
+          "level": 1,
+          "passed": true,
+          "pillar": "Debugging & Observability"
+        },
+        {
+          "description": "Has basic secret-exclusion or security files.",
+          "evidence": [
+            ".gitignore",
+            "scripts/hooks/pii_precommit.sh"
+          ],
+          "id": "L1.basic_security",
+          "level": 1,
+          "passed": true,
+          "pillar": "Security"
+        },
+        {
+          "description": "Has a task/backlog/agent-discovery surface.",
+          "evidence": [
+            "AGENTS.md",
+            "CLAUDE.md",
+            "handoffs/active",
+            "handoffs/active/agent-file-prose-compression.md",
+            "handoffs/active/agent-world-env-synthesis.md"
+          ],
+          "id": "L1.task_surface",
+          "level": 1,
+          "passed": true,
+          "pillar": "Task Discovery"
+        },
+        {
+          "description": "Has benchmark/eval/report artifacts.",
+          "evidence": [
+            "progress",
+            "progress/2025-12",
+            "progress/2025-12/2025-12-16.md",
+            "progress/2025-12/2025-12-21.md",
+            "progress/2025-12/2025-12-22.md"
+          ],
+          "id": "L1.experiment_surface",
+          "level": 1,
+          "passed": true,
+          "pillar": "Product & Experimentation"
+        },
+        {
+          "description": "Documents lint/format/style commands.",
+          "evidence": [
+            "docs/infrastructure/02-storage-safety.md",
+            "docs/recovery/2026-02-19-unreachable-triage.md",
+            "docs/reference/constants-governance.md",
+            "handoffs/active/agent-file-prose-compression.md",
+            "handoffs/active/attention-matching-kv-compaction.md"
+          ],
+          "id": "L2.style_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Style & Validation"
+        },
+        {
+          "description": "Documents build/install/setup commands.",
+          "evidence": [
+            "AGENTS.md",
+            "CLAUDE.md",
+            "docs/infrastructure/01-hardware-system.md",
+            "docs/infrastructure/INDEX.md",
+            "docs/publication/canonical-cpu-benchmarking-methodology-draft.md"
+          ],
+          "id": "L2.build_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Build System"
+        },
+        {
+          "description": "Documents test commands or test policy.",
+          "evidence": [
+            "AGENTS.md",
+            "CLAUDE.md",
+            "README.md",
+            "docs/infrastructure/02-storage-safety.md",
+            "docs/recovery/2026-02-19-preservation-inventory.md"
+          ],
+          "id": "L2.test_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Testing"
+        },
+        {
+          "description": "Documents agent/project operating rules.",
+          "evidence": [
+            "AGENTS.md",
+            "CLAUDE.md"
+          ],
+          "id": "L2.agent_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Documentation"
+        },
+        {
+          "description": "Documents container/venv/dev setup.",
+          "evidence": [
+            ".devcontainer/devcontainer.json"
+          ],
+          "id": "L2.dev_env_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Dev Environment"
+        },
+        {
+          "description": "Documents debug/log/health workflows.",
+          "evidence": [
+            "AGENTS.md",
+            "CLAUDE.md",
+            "README.md",
+            "docs/guides/agent-workflows/research-writer.md",
+            "docs/guides/agent-workflows/safety-reviewer.md"
+          ],
+          "id": "L2.debug_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Debugging & Observability"
+        },
+        {
+          "description": "Documents secret, PII, or security handling.",
+          "evidence": [
+            "docs/recovery/2026-02-19-preservation-inventory.md",
+            "docs/recovery/2026-02-19-unreachable-triage.md",
+            "handoffs/active/delegation-context-preassembly.md",
+            "handoffs/active/fable5-architecture-review.md",
+            "handoffs/active/fable5-findings-04-impl-plan.md"
+          ],
+          "id": "L2.security_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Security"
+        },
+        {
+          "description": "Documents backlog/handoff/issue workflow.",
+          "evidence": [
+            "AGENTS.md",
+            "CLAUDE.md",
+            "README.md",
+            "docs/infrastructure/01-hardware-system.md",
+            "docs/reference/agent-config/MEMRL_DISTILLATION_DESIGN.md"
+          ],
+          "id": "L2.task_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Task Discovery"
+        },
+        {
+          "description": "Documents metrics, evals, or experiments.",
+          "evidence": [
+            "MEASUREMENT.md"
+          ],
+          "id": "L2.measurement_docs",
+          "level": 2,
+          "passed": true,
+          "pillar": "Product & Experimentation"
+        },
+        {
+          "description": "Automates lint/style validation.",
+          "evidence": [
+            ".github/workflows/docs.yml",
+            "scripts/hooks/agents_reference_guard.sh",
+            "scripts/hooks/agents_schema_guard.sh",
+            "scripts/hooks/benchmark_context.sh",
+            "scripts/hooks/check_filesystem_path.sh"
+          ],
+          "id": "L3.style_enforced",
+          "level": 3,
+          "passed": true,
+          "pillar": "Style & Validation"
+        },
+        {
+          "description": "Uses reproducible build metadata or lock/config files.",
+          "evidence": [
+            ".devcontainer/Dockerfile",
+            ".devcontainer/devcontainer.json"
+          ],
+          "id": "L3.repro_build",
+          "level": 3,
+          "passed": true,
+          "pillar": "Build System"
+        },
+        {
+          "description": "Automates test execution through CI/config/scripts.",
+          "evidence": [
+            ".github/workflows/docs.yml"
+          ],
+          "id": "L3.test_automation",
+          "level": 3,
+          "passed": true,
+          "pillar": "Testing"
+        },
+        {
+          "description": "Has documentation validation or generated-doc tooling.",
+          "evidence": [
+            "docs",
+            "docs/guides",
+            "docs/guides/agent-workflows",
+            "docs/guides/agent-workflows/INDEX.md",
+            "docs/guides/agent-workflows/benchmark-analyst.md"
+          ],
+          "id": "L3.doc_validation",
+          "level": 3,
+          "passed": true,
+          "pillar": "Documentation"
+        },
+        {
+          "description": "Standardizes local environment setup.",
+          "evidence": [
+            ".devcontainer",
+            ".devcontainer/.gitignore_global",
+            ".devcontainer/Dockerfile",
+            ".devcontainer/devcontainer.json",
+            ".devcontainer/post_install.py"
+          ],
+          "id": "L3.standard_dev_env",
+          "level": 3,
+          "passed": true,
+          "pillar": "Dev Environment"
+        },
+        {
+          "description": "Has structured logs, trace, or metrics plumbing.",
+          "evidence": [
+            "logs/agent_audit.log",
+            "scripts/halo",
+            "scripts/halo/convert_tap_to_otel.py",
+            "scripts/halo/test_convert_tap_to_otel.py"
+          ],
+          "id": "L3.structured_obs",
+          "level": 3,
+          "passed": true,
+          "pillar": "Debugging & Observability"
+        },
+        {
+          "description": "Automates secret/PII/security checks.",
+          "evidence": [
+            "scripts/hooks/pii_precommit.sh"
+          ],
+          "id": "L3.security_automation",
+          "level": 3,
+          "passed": true,
+          "pillar": "Security"
+        },
+        {
+          "description": "Has structured or indexed task coordination.",
+          "evidence": [
+            ".claude/dependency-map.json",
+            "handoffs/active/master-handoff-index.md"
+          ],
+          "id": "L3.machine_task_index",
+          "level": 3,
+          "passed": true,
+          "pillar": "Task Discovery"
+        },
+        {
+          "description": "Has structured reports/journals/configured evals.",
+          "evidence": [
+            "data",
+            "data/compliance",
+            "data/compliance/2026-05-06-worker30b-curve",
+            "data/compliance/2026-05-06-worker30b-curve/SUMMARY.md",
+            "data/compliance/2026-05-06-worker30b-curve/aggressive.json"
+          ],
+          "id": "L3.structured_experiments",
+          "level": 3,
+          "passed": true,
+          "pillar": "Product & Experimentation"
+        },
+        {
+          "description": "Supports incremental or changed-file validation.",
+          "evidence": [
+            "scripts/gitnexus-analyze.sh",
+            "scripts/validate/check_numeric_literals.py"
+          ],
+          "id": "L4.incremental_validation",
+          "level": 4,
+          "passed": true,
+          "pillar": "Style & Validation"
+        },
+        {
+          "description": "Has build caching, profiling, or optimized build lanes.",
+          "evidence": [
+            ".gitnexus/parse-cache",
+            "wiki/kv-cache.md",
+            "site/topics/kv-cache",
+            "site/topics/kv-cache/index.html",
+            "handoffs/completed/numa-page-cache-prewarm.md"
+          ],
+          "id": "L4.build_speed",
+          "level": 4,
+          "passed": true,
+          "pillar": "Build System"
+        },
+        {
+          "description": "Has parallel, flaky, or safety-aware test controls.",
+          "evidence": [
+            "scripts/hooks/check_pytest_safety.sh"
+          ],
+          "id": "L4.fast_safe_tests",
+          "level": 4,
+          "passed": true,
+          "pillar": "Testing"
+        },
+        {
+          "description": "Builds or refreshes docs/site/wiki from sources.",
+          "evidence": [
+            "scripts/docs",
+            "scripts/docs/rewrite-links.py",
+            "site",
+            "site/404.html",
+            "site/about"
+          ],
+          "id": "L4.generated_docs",
+          "level": 4,
+          "passed": true,
+          "pillar": "Documentation"
+        },
+        {
+          "description": "Has health/session/storage automation.",
+          "evidence": [
+            "scripts/session/health_check.sh",
+            "scripts/session/monitor_storage.sh",
+            "scripts/session/session_init.sh"
+          ],
+          "id": "L4.health_automation",
+          "level": 4,
+          "passed": true,
+          "pillar": "Dev Environment"
+        },
+        {
+          "description": "Has analyzers or report generators over logs/traces.",
+          "evidence": [
+            "scripts/utils/agent_log_analyze.sh"
+          ],
+          "id": "L4.analysis_reports",
+          "level": 4,
+          "passed": true,
+          "pillar": "Debugging & Observability"
+        },
+        {
+          "description": "Has security-review, audit, or hardening surfaces.",
+          "evidence": [
+            "handoffs/active/security-review-skill.md",
+            "scripts/hooks/earlyoom_audit.sh",
+            "scripts/hooks/pii_precommit.sh"
+          ],
+          "id": "L4.security_audit",
+          "level": 4,
+          "passed": true,
+          "pillar": "Security"
+        },
+        {
+          "description": "Prioritizes tasks with dependencies and reporting rules.",
+          "evidence": [
+            "AGENTS.md",
+            "CLAUDE.md",
+            "handoffs/active/agent-file-prose-compression.md",
+            "handoffs/active/angelslim-techniques-evaluation.md",
+            "handoffs/active/batched-edit-parallel-apply.md"
+          ],
+          "id": "L4.prioritized_tasks",
+          "level": 4,
+          "passed": true,
+          "pillar": "Task Discovery"
+        },
+        {
+          "description": "Can replay/analyze experiments without rerunning them.",
+          "evidence": [
+            "handoffs/active/agent-world-env-synthesis.md",
+            "handoffs/active/autopilot-continuous-optimization.md",
+            "handoffs/active/batched-edit-parallel-apply.md",
+            "handoffs/active/bep-dcp-falsification-harness.md",
+            "handoffs/active/bulk-inference-campaign.md"
+          ],
+          "id": "L4.replay_analysis",
+          "level": 4,
+          "passed": true,
+          "pillar": "Product & Experimentation"
+        },
+        {
+          "description": "Agent-facing guards prevent unsafe edits/actions.",
+          "evidence": [
+            "AGENTS.md",
+            "scripts/hooks/agents_schema_guard.sh",
+            "scripts/hooks/check_filesystem_path.sh"
+          ],
+          "id": "L5.agent_guards",
+          "level": 5,
+          "passed": true,
+          "pillar": "Style & Validation"
+        },
+        {
+          "description": "Has autonomous/nightshift runner infrastructure.",
+          "evidence": [
+            "scripts/nightshift",
+            "scripts/nightshift/bin",
+            "scripts/nightshift/bin/claude",
+            "scripts/nightshift/claude-nightshift",
+            "scripts/nightshift/claude_via_devc.sh"
+          ],
+          "id": "L5.autonomous_runner",
+          "level": 5,
+          "passed": true,
+          "pillar": "Build System"
+        },
+        {
+          "description": "Has automated eval/safety gates for candidate changes.",
+          "evidence": [],
+          "id": "L5.auto_eval_gates",
+          "level": 5,
+          "passed": false,
+          "pillar": "Testing"
+        },
+        {
+          "description": "Agents have durable handoff/progress documentation loops.",
+          "evidence": [
+            ".claude/commands",
+            ".claude/commands/agent-files.md",
+            ".claude/commands/agent-governance.md",
+            ".claude/commands/benchmark.md",
+            ".claude/commands/draft-compat.md"
+          ],
+          "id": "L5.agent_doc_loop",
+          "level": 5,
+          "passed": true,
+          "pillar": "Documentation"
+        },
+        {
+          "description": "Has self-healing/restart or stale-process controls.",
+          "evidence": [
+            "scripts/nightshift/inference_guard.sh",
+            "scripts/session/emergency_cleanup.sh"
+          ],
+          "id": "L5.self_healing_ops",
+          "level": 5,
+          "passed": true,
+          "pillar": "Dev Environment"
+        },
+        {
+          "description": "Feeds traces/logs into closed-loop analysis.",
+          "evidence": [
+            "logs/agent_audit.log",
+            "scripts/halo/convert_tap_to_otel.py"
+          ],
+          "id": "L5.closed_loop_obs",
+          "level": 5,
+          "passed": true,
+          "pillar": "Debugging & Observability"
+        },
+        {
+          "description": "Has agent-usable security review or policy gates.",
+          "evidence": [
+            "handoffs/active/security-review-skill.md",
+            "scripts/hooks/pii_precommit.sh"
+          ],
+          "id": "L5.autonomous_security_review",
+          "level": 5,
+          "passed": true,
+          "pillar": "Security"
+        },
+        {
+          "description": "Has an autopilot/remediation queue or self-running lab.",
+          "evidence": [
+            "handoffs/active/frontier-f2-self-running-lab.md",
+            "handoffs/active/master-handoff-index.md"
+          ],
+          "id": "L5.auto_remediation_queue",
+          "level": 5,
+          "passed": true,
+          "pillar": "Task Discovery"
+        },
+        {
+          "description": "Has Pareto/evolutionary optimization loops.",
+          "evidence": [],
+          "id": "L5.self_optimizing_loop",
+          "level": 5,
+          "passed": false,
+          "pillar": "Product & Experimentation"
+        }
+      ],
+      "exists": true,
+      "level_rates": {
+        "1": 1.0,
+        "2": 1.0,
+        "3": 1.0,
+        "4": 1.0,
+        "5": 0.7777777777777778
+      },
+      "maturity": {
+        "achieved_label": "Optimized",
+        "achieved_level": 4,
+        "next_label": "Autonomous",
+        "next_level": 5
+      },
+      "path": "/mnt/raid0/llm/epyc-root",
+      "pillar_rates": {
+        "Build System": 1.0,
+        "Debugging & Observability": 1.0,
+        "Dev Environment": 1.0,
+        "Documentation": 1.0,
+        "Product & Experimentation": 0.8,
+        "Security": 1.0,
+        "Style & Validation": 1.0,
+        "Task Discovery": 1.0,
+        "Testing": 0.8
+      }
+    }
+  },
+  "unlock_threshold": 0.8
+}

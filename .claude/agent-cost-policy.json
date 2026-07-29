@@ -1,0 +1,38 @@
+{
+  "context_budget": {
+    "enabled": true,
+    "facts_line_cap": 150,
+    "on_demand_large_artifacts": true
+  },
+  "admission": {
+    "concurrency_limits": { "subagent_max": 4 },
+    "budget_thresholds": { "per_task_usd": 0.50 }
+  },
+  "context_compaction": {
+    "enabled": true,
+    "allowed_artifact_classes": ["file_list", "lint_summary", "failure_table", "test_output"]
+  },
+  "long_input": {
+    "two_stage_enabled": true,
+    "stage_thresholds": { "cheap_summary_max_tokens": 2000 }
+  },
+  "failure_action_map": {
+    "schema_format": "retry",
+    "logic_error": "think_harder",
+    "infra_timeout": "retry",
+    "complexity": "escalate"
+  },
+  "routing": {
+    "model_tier": {
+      "enabled": true,
+      "aggression": "moderate",
+      "table": {
+        "implementation_fix:1": "haiku", "implementation_fix:2": "sonnet", "implementation_fix:3": "opus",
+        "planning_synthesis:1": "haiku", "planning_synthesis:2": "sonnet", "planning_synthesis:3": "opus",
+        "long_input:1": "sonnet", "long_input:2": "sonnet", "long_input:3": "opus",
+        "read_search:1": "haiku", "read_search:2": "haiku", "read_search:3": "sonnet",
+        "resume:1": "haiku", "resume:2": "sonnet", "resume:3": "opus"
+      }
+    }
+  }
+}

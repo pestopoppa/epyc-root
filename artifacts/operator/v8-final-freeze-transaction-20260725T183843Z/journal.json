@@ -1,0 +1,9 @@
+{
+  "cutover_boundary": "2026-07-25T18:38:43Z",
+  "output_sha256": "e7fce2c5cd720940fc84b669f57b78a61589fd8baef9b4e03030ed0dc4a3175b",
+  "phase": "complete",
+  "preimages": "immutable attestation inputs copied beneath preimages/",
+  "production_frozen": true,
+  "schema": "epyc.v8_final_freeze_transaction.v1",
+  "scope": "mechanical_post_e8_freeze"
+}

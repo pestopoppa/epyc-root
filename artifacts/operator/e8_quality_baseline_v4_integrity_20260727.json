@@ -1,0 +1,11 @@
+{
+  "artifacts": {
+    "/mnt/raid0/llm/epyc-orchestrator/scripts/autopilot/eval_tower.py": "45e9a30771c55c0ea82ccd56b493f1f144941acd93d9c74240224d9b6a6978d6",
+    "/mnt/raid0/llm/epyc-orchestrator/scripts/benchmark/run_e8_quality_baseline_reseed.py": "f8e5450164166d7323187e9ab1b2e061893a7071bd469f61509794b9b4ae30ff",
+    "artifacts/operator/apply_e8_quality_baseline_state.py": "f1e0c0a88edaea5a66dda34ec9a938f8a20daa17491263a44ffff179623d3d61",
+    "artifacts/operator/e8_context_replacement_map_candidate_relaxed_20260727.json": "168ec8bd82e97deaf76943c65ba0c923848a5bda1ee14d4ce9bedcf2a3f12b95",
+    "artifacts/operator/e8_quality_context_coverage_v4_r2_20260727.json": "7ef88865c5aa7315143b19cc3d40c153c59e981db7eba9bcbb2ab6ea774fe983",
+    "artifacts/operator/prepare_e8_quality_baseline_reseed_v4_20260727.sh": "1a105335313cc9a05f2d9d8f09d32cc52b5f3909dabf498edd71e283236199bd"
+  },
+  "schema": "epyc.e8_quality_baseline_v4_integrity.v1"
+}

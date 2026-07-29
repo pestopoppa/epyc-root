@@ -1,0 +1,164 @@
+# Session bus configuration — policy-as-data (fabric contract: policy-data-never-code).
+# Owning handoff: handoffs/active/session-bus-thin-dispatcher.md (M1 + §Rider).
+schema_version: session_bus.config.v1
+
+# Adding a main = 1 roster row + 4 files (inbox/outbox/heartbeat/cursor).
+# Roster rows are slot-shaped so a future local-model main is just another row.
+roster:
+  # Window renamed to `codex-inference` by the operator 2026-07-28 to disambiguate it from
+  # codex-bus-tests. The bare `tmux:agent` endpoint then resolved to nothing — the adapter
+  # correctly REFUSED to guess a pane rather than typing into the wrong one — so the window
+  # is now named explicitly. Roster id stays `codex`: it is the identity every existing
+  # queue row, cursor, inbox and outbox is keyed on, and renaming it would orphan all of them.
+  - {id: inference,         role: main,              lanes: [cpu, gpu, none], endpoint: "tmux:agent:inference",  drain: boundary}   # was `codex` until 2026-07-29
+  # RETIRED 2026-07-28: the operator closed its tmux window (agent:claude_A). The row was kept,
+  # not deleted — queue rows, cursors and its inbox/outbox are all keyed on this identity, and
+  # removing it would orphan that history.
+  #
+  # REVIVED 2026-07-29 post-reboot by coordinator-agent, on the operator's standing rule "always
+  # reuse main aliases after reboot". It owns E5 W1-W4 (the NUMA×batch sweep) on the cpu lane.
+  # A `role: retired` row is a re-usable slot, not a tombstone: reviving the identity keeps its
+  # outbox history, cursor and triage corr_ids attached to the same name, whereas a fresh alias
+  # would orphan all of it AND leave the old row drawing "LOOKS DEAD" advisories forever.
+  # endpoint monitor:file -> tmux:agent:claude-main so it can actually be nudged: monitor:file has
+  # no push delivery, which `validate` flags precisely because assigned work rots unread there.
+  - {id: mainA,             role: main,              lanes: [cpu, none],      endpoint: "tmux:agent:mainA",      drain: boundary}   # was `claude-main` until 2026-07-29
+  # Renamed window 0 `claude` -> `coordinator` and re-pointed monitor:file -> tmux 2026-07-29:
+  # monitor:file has NO push delivery, which `validate` flagged precisely because assigned
+  # work rots unread there. The id stays `coordinator-agent` — it is the authority name in
+  # authority.cross_main and lease_grant, not a session label.
+  - {id: coordinator-agent, role: coordinator-agent, lanes: [none],           endpoint: "tmux:agent:coordinator", drain: push}
+  # Added by coordinator-agent 2026-07-28. Test authoring for the session bus itself
+  # (zero coverage found: no file under tests/ references session_bus, while the bus is
+  # now load-bearing for coordination). lanes:[none] — this main must never take an
+  # inference lane, so it cannot contend with the codex main running G3/E8.
+  - {id: codex-bus-tests,   role: retired,           lanes: [],               endpoint: "tmux:agent:codex-bus-tests",   drain: boundary}
+  # Added by coordinator-agent 2026-07-28 on operator direction, after codex reported the MI210
+  # idle with all legacy campaign GPU inference terminal. Owns gpu-serving-tie-in-program P2-1
+  # (role-agnostic resident lane) and P2-3 (Stage-0 hardening). lanes:[none, gpu] — it may hold
+  # the GPU lane, but NEVER cpu: the codex main runs CPU-side E8/G3 work and P1-2's E5 grid has
+  # a ~2026-07-31 deadline on this host.
+  # RE-ACTIVATED 2026-07-29T12:47Z on operator direction (reversing the 12:40Z stand-down):
+  # P2-2 tenant landing starts PRE-reboot rather than deferring. Re-using the same roster id
+  # deliberately — its inbox still holds the undelivered lane-activation decision, so a fresh
+  # session in this slot drains it rather than needing it re-relayed.
+  - {id: mainB,             role: main,              lanes: [gpu, none],      endpoint: "tmux:agent:mainB",      drain: boundary}   # was `claude-gpu-lane` until 2026-07-29
+  # Added by coordinator-agent 2026-07-28 on operator direction. Fable 5 at xhigh effort,
+  # Originally spawned 2026-07-28 as a READ-ONLY auditor of the E8 harness contract set:
+  # three consecutive failed-closed cycles had each surfaced a DIFFERENT defect in a different
+  # layer (snapshot publisher binding, watcher abort path, runner sealed-question contract), so
+  # the inference main was discovering contract violations one run-cycle at a time, and a fresh
+  # reviewer reading the whole harness at once could find the remainder statically.
+  #
+  # NO LONGER READ-ONLY, corrected 2026-07-29. It adopted C-OWN — the session-bus delivery plane,
+  # including `tmux_adapter.py` and the whole C-series — which makes implementing fixes part of
+  # its job, not a deviation from it. It has since landed C29/C30b/C31/C33/C34. The stale
+  # "READ-ONLY" wording was found by a charter audit and is corrected here rather than left to
+  # contradict MAIN-GOALS.md. Its second standing duty is auditing other mains' completed work,
+  # which is the counterweight that makes "prefer finishing whole items over polishing" safe.
+  #
+  # lanes: [none] STILL HOLDS and is unchanged: it must never take an inference lane or a region
+  # claim. Owning the delivery plane is not a licence to contend for the host.
+  - {id: auditor,           role: reviewer,          lanes: [none],           endpoint: "tmux:agent:auditor",    drain: boundary}
+  # Added by coordinator-agent 2026-07-29 on operator direction: 293 tasks closed in the last 7
+  # days against a target of 1000+, and the binding constraint is idle mains, not throughput per
+  # main. mainC/mainD exist purely to churn backlog — they take whatever unblocked handoff work is
+  # dispatched to them. lanes:[none] deliberately: the CPU is already contended by inference (E8)
+  # and mainA (E5), and none-lane work is the only kind that can be dispatched instantly at any
+  # moment, which is exactly what an anti-idle reserve needs to be.
+  - {id: mainC,             role: main,              lanes: [none],           endpoint: "tmux:agent:mainC",      drain: boundary}
+  - {id: mainD,             role: main,              lanes: [none],           endpoint: "tmux:agent:mainD",      drain: boundary}   # was `fable-auditor` until 2026-07-29
+
+authority:
+  within_lane: [self]
+  cross_main: [operator, coordinator-agent]
+  # Lease grant/revoke is coordinator-agent's; the daemon may re-grant ONLY by
+  # deterministic rule from the priority artifact, never by discretion.
+  lease_grant: [operator, coordinator-agent]
+  lease_regrant_deterministic: [coordinator-daemon]
+
+coordinator_daemon:
+  tick_s: 45
+  lookahead: 1
+  authority: manual        # manual (M1) | advisory (M3) | assign (M4)
+  epoch: 0
+
+# Live tmux topology (operator requirement, 2026-07-27): every spawned main is a
+# WINDOW in the one live session — never its own session. Throwaway sessions are
+# for tests only. `spawn` refuses any target that is not this session, refuses a
+# non-tmux endpoint, and never creates a session (it only ever calls new-window).
+tmux:
+  live_session: agent
+  allow_session_creation: false
+
+flags:
+  codex_sendkeys: on       # gate: OP-SENDKEYS-CODEX in tokens/token-queue.md
+  triage: off               # M5
+
+caps:
+  max_headless_workers: 0
+  # C9 FIXED 2026-07-28. `cmd_spawn` now counts LIVE roster-member windows in
+  # tmux.live_session, so closing an idle main returns its slot immediately —
+  # which is what the session-lifecycle rule asks sessions to do. The superseded
+  # `max_spawns_per_day` counted spawn EVENTS per day: killing a main never
+  # returned its slot, and on 2026-07-28 three spawn rows blocked further spawns
+  # while only two mains were alive.
+  #
+  # The old key is REFUSED, not read as a fallback: its 6 authorised six spawn
+  # ACTIONS in a day, and re-reading that as six SIMULTANEOUS mains would grant
+  # concurrency nobody approved — a fail-open, in the module whose defect history
+  # (C3, C6, C8) is entirely fail-opens. Setting this key is the migration.
+  #
+  # 4 = one free slot above the steady state of 3 live mains (codex,
+  # coordinator-agent, claude-gpu-lane). Operator decision, 2026-07-28.
+  # An uncountable live set (tmux unreachable, session absent) REFUSES.
+  # Raised 4 -> 7 by coordinator-agent 2026-07-29 on operator direction: parallelise the
+  # withheld tier-B/tier-C audit findings across additional mains ahead of the reboot.
+  # Concurrency semantics (C9): counts LIVE roster windows, so closing a main returns its slot.
+  max_concurrent_mains: 7
+  triage_calls_per_day: 0
+
+leases:
+  none_lane_grace_s: 900
+  bench_grace_margin: 1.5   # x est_wall_clock_h
+  # R5: bound the hold so drain latency has a ceiling. Work exceeding this must
+  # persist progressively (every persisted unit is a drain point) or be refused.
+  max_hold_s: 1800
+
+# R5 pausability, split by run type. Progressive persistence makes *progress*
+# resumable but not a *timing measurement*: a throughput run split across a pause
+# spans different thermal/cache/NUMA-warmth states and the halves may not compose
+# into one valid observation.
+pausability:
+  exclusive-contiguous:     # decision-gating timing runs (canonical throughput)
+    pausable: false
+  resumable:                # quality evals, sweeps, replays, evidence collection
+    pausable: true
+    drain_at: persisted_unit
+
+# R5 priority classes. Yield is quiesce+drain, never kill (fabric axiom 4).
+priority_classes:
+  - {name: production-live,   yields_to: []}
+  - {name: operator-directed, yields_to: [production-live]}
+  - {name: background-churn,  yields_to: [production-live, operator-directed]}
+
+# R3: co-residency policy carries the contention-matrix shape INCLUDING a
+# staleness guard. The orchestrator matrix refuses itself under a mismatched
+# topology_hash; a hand-declared contention_class without this guard fails
+# silently, which is the failure mode this exists to prevent.
+co_residency:
+  source: "epyc-orchestrator/orchestration/contention_matrix.yaml"
+  generator: "epyc-orchestrator/scripts/server/contention_matrix.py"   # never a second generator
+  expected_topology_hash: "8c8cfcbb13d2611d"
+  on_topology_mismatch: refuse      # fail-closed (fabric axiom 3)
+  default_floor: 0.85
+  # Declared classes are provisional until measured; promote via the generator above.
+  declared_classes_are_provisional: true
+
+# Human-only write paths live in their own hash-pinned, hook-protected file so
+# that an agent able to edit this config cannot widen its own authority:
+#   human_only_paths.yaml  +  human_only_paths.sha256   (see R7)
+trust_boundary:
+  source: "coordination/session-bus/human_only_paths.yaml"
+  pin: "coordination/session-bus/human_only_paths.sha256"
+  on_pin_mismatch: refuse

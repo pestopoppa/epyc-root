@@ -1,0 +1,13 @@
+{
+  "cutover_boundary": "2026-07-25T18:38:43Z",
+  "output_sha256": "8f69882c88b1e3cda2ae5716129f834e9274db56a6e5cd2f74cdd0e45317bcb7",
+  "phase": "complete",
+  "preimages": {
+    "autopilot_state_sha256": "f4a036a0b8c349e1a14b746c7692775ded53970aa8fbb8b188f861081f715f4f",
+    "instrument_eras_sha256": "8d321c345c286616ee600fadecbc0c00d467ed5d6c10519cc7fd5b984c61eeea",
+    "system_card_sha256": "2f0a95c7a6de7d8018cccd9639b0cc77649a1beb0d183f4cd6c5cebd637c98e3"
+  },
+  "production_frozen": false,
+  "schema": "epyc.v8_era_fence_transaction.v1",
+  "scope": "eligibility_fence_only"
+}

@@ -1,0 +1,12 @@
+{
+  "schema_version": "public_results_review_decisions.v1",
+  "generated_from": "docs/publication/public-results-review-queue.md",
+  "policy": "Generated result rows remain immutable; this file records publication-review routing decisions only. A retired row can be reconsidered by adding a row-specific evidence bundle and overriding the default decision.",
+  "default_decisions": {
+    "verification-decision-needed": {
+      "decision": "retired_from_public_claims",
+      "reason": "no row-specific evidence bundle or protocol metadata; keep local historical reference only"
+    }
+  },
+  "rows": {}
+}

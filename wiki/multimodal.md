@@ -1,0 +1,386 @@
+# Multimodal
+
+**Category**: `multimodal`
+**Confidence**: verified
+**Last compiled**: 2026-07-26 (adds bounded M-1 observation and M-2 pinned-interface closure; prior promotion runbook and demand gate retained)
+**Sources**: 42+ documents (added 2026-07-24 the vision_escalation MiniCPM-o promotion runbook and the worker_vision quantitative trigger gate; 2026-07-17 MiniCPM-o/frontdoor service-matrix activation evidence, Qwen3-VL-30B escalation defect mitigation, and PaddleOCR-VL document-specialist checkpoint; 2026-06-22 vision-pipeline live-server registration + the TTS path-elimination matrix; 2026-06-05 LocateAnything/Gemma 4 benchmark-first update; 2026-06-21 Kimi-K2.7-Code MoonViT / UniRL intake merge)
+
+## Compiled Update — 2026-07-26 bounded MiniCPM-o evidence
+
+The first live paired MiniCPM-o observation is deliberately not a deployment
+decision: it observed `6/8` versus Qwen2.5-VL `5/8` on `worker_vision` and
+`7/10` versus `6/10` on `vision_escalation`, with exact two-sided McNemar
+`p=1.0` for both. The sample is observation-only and does not alter the
+lineup. In parallel, the pinned llama.cpp-omni Path-B CLI feasibility probe is
+terminally blocked: the exact pin accepts numbered audio fixtures only and
+cannot meet the required text-input/output-WAV contract without source changes.
+The actual TTS adapter decision and any M-3 role swap remain open behind E8.
+
+### Source References (2026-07-26 bounded MiniCPM-o evidence)
+
+- [Multimodal pipeline handoff](../handoffs/active/multimodal-pipeline.md) — M-1 observation, M-2 feasibility closure, and remaining M-2/M-3 gates.
+- [Post-v8 master handoff index](../handoffs/active/master-handoff-index.md) — campaign sequencing and no-lineup-change boundary.
+- [Progress 2026-07-26](../progress/2026-07/2026-07-26.md) — exact paired counts and pinned-interface evidence.
+
+## Summary
+
+The EPYC multimodal pipeline spans four modalities: speech-to-text (production), vision (code-complete), text-to-speech (blocked), and unified multimodal (downloaded/untested). The current voice loop has a gap: Mic -> Whisper (port 9000) -> text -> LLM -> response text -> NO TTS OUTPUT. Four TTS paths and two vision upgrade candidates are under evaluation.
+
+Speech-to-text is the only multimodal component in production: faster-whisper large-v3-turbo running on port 9000 with int8 quantization at 2.8x real-time. The vision pipeline is code-complete at approximately 4,500 lines across 23 files with 1,234 tests passing, covering EXIF analysis, face detection/embedding (InsightFace), VL description (llama-mtmd-cli), CLIP embeddings, batch processing, video frame extraction, ChromaDB integration, and 11 API endpoints. It needs live validation with model servers running (Qwen2.5-VL-7B on 8086, Qwen3-VL-30B on 8087).
+
+TTS has three existing paths, all blocked, plus one newly viable CPU-native candidate. Path A (Qwen3-TTS C++ port in llama.cpp) generates codec tokens at 1.5x real-time but outputs unintelligible noise -- the divergence point between PyTorch reference and C++ token generation has not been identified. Path B (MiniCPM-O 4.5 built-in CosyVoice2 TTS) requires the llama.cpp-omni fork and is untested. Path C (Qwen3-TTS as standalone PyTorch sidecar on port 8110) is viable for GPU-available deployments -- 97ms first-packet latency, 10-language support, voice cloning from 3 seconds of audio, Apache 2.0 licensed. Path D (ZipVoice-Distill / LuxTTS CPU sidecar) is the strongest candidate for CPU-only EPYC: the parent model (k2-fsa ZipVoice-Distill, ASRU 2025, Apache 2.0) achieves RTF=1.22 on a single Xeon thread at 4 flow-matching steps -- projected RTF of 0.15-0.22 on EPYC 9655 with 16 threads. LuxTTS is a thin fine-tune atop ZipVoice-Distill that adds a community-trained 48kHz Vocos vocoder; the 48kHz vocoder adds negligible overhead (<5% of total inference) and is not the bottleneck. Path D is a deployment exercise, not a research port -- upstream already ships ONNX export, INT8 quantization, and a sherpa-onnx C++ runtime. TADA (Hume AI, intake-402) introduces a distinct architectural approach (1:1 text-acoustic dual alignment over a Llama 3.2 backbone) suited for coherent long-form synthesis (up to 700 seconds), but is GPU-bound as shipped with no CPU benchmark or GGUF/ONNX path; it is shelved until long-form narration becomes a workload or GPU becomes available. Voicebox (intake-396) is a multi-engine TTS studio whose architecture patterns (TTSBackend Protocol, chunked_tts.py, serial asyncio queue) are directly reusable (~550 lines) for building an EPYC TTS sidecar; its claimed ROCm support is README-only with no implementation code.
+
+Moondream 3 (9B total / 2B active MoE VLM) was evaluated and deferred. Despite interesting native detect/point capabilities, it is blocked by BSL 1.1 licensing, uncertain llama.cpp GGUF support for its novel MoE architecture (64 experts, learned attention temperature scaling), lack of tool calling (required for agentic vision), and preview-state unoptimized inference with no published standard benchmarks. The current Qwen2.5-VL-7B stack is more mature with full llama.cpp support and an escalation path to Qwen3-VL-30B-A3B.
+
+MiniCPM-O 4.5 (9B dense, Qwen3-8B backbone + SigLip2 + Whisper-medium + CosyVoice2) offers unified multimodal capability. Vision + text works on mainline llama.cpp; audio features require the llama.cpp-omni fork. It scores 77.6 OpenCompass (vs Qwen2.5-VL-7B's 70.5) and 80.1 MathVista (vs 68.2), but lacks tool calling (0 vs Qwen3-VL-8B's 0.663 BFCL). As of 2026-07-17, the realistic `--reasoning off` MI210 lane is the first fast quality-clean `vision_escalation` candidate: it passed the fixed K35 OCR/chart slice, co-resided with the MI210 frontdoor lane, and a broader 2K/8K service matrix showed idle residency was free while active overlap kept frontdoor near baseline. The remaining gate is explicit MI210 scheduling policy, not basic runnability.
+
+### Checkpoint correction (2026-07-19)
+
+MiniCPM-o remains a controlled candidate rather than an activated live role.
+The launch/smoke and Qwen2.5-VL rollback checks ran, but persistent API/AutoPilot
+traffic was not restarted or observed. The registry therefore keeps the
+Qwen2.5-VL alias as the safety lane until an explicit persistent-live cutover
+window is completed. [Model probe scoreboard](../docs/reference/model-probe-scoreboard.md)
+
+Gemma 4 (intake-251/252) introduces Any-to-Any multimodal models (text+image+audio unified). E4B (8B effective) could simplify the pipeline but is blocked by lack of GGUF support (MLX only). VoxCPM2 (intake-317) is a tokenizer-free multilingual TTS alternative requiring GPU (RTX 4090 for real-time), tracked for GPU upgrade path.
+
+## Key Findings
+
+### New (2026-07-17, MiniCPM-o becomes the leading vision-escalation candidate)
+
+- **MiniCPM-o with `--reasoning off` is now the first fast quality-clean MI210 `vision_escalation` candidate, and the gating question is activation policy rather than model correctness.** Default reasoning mode placed correct answers in `reasoning_content`, so production-visible scoring failed `0/4`. The realistic lane (`--reasoning off`) passed all four fixed K35 OCR/chart fixtures on CPU (`11.98-14.13 t/s`) and MI210 (`110.81-122.18 t/s`, about `11%` VRAM). Follow-up frontdoor coexistence checks tightened the serving risk: a targeted co-residency smoke passed at `66%` combined MI210 VRAM, the synthetic active-collision probe bounded a worst-case frontdoor drop to about `80.2 t/s`, and the broader 2K/8K service matrix passed all `8/8` active fixture/context overlaps with frontdoor mean `94.77 t/s` versus `96.33 t/s` alone. The active stack therefore stays on the Qwen2.5-VL CPU alias only as a capacity-policy choice, not because MiniCPM-o lacks quality or basic coexistence evidence. Sources: [Progress 2026-07-17](../progress/2026-07/2026-07-17.md), [Gemma challenge kernel techniques v7](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [K35 optimized stack throughput/context report](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
+- **The old Qwen3-VL-30B `vision_escalation` lane is now treated as a quality defect, not a premium route.** On the fixed K35 OCR/chart slice it was faster than `worker_vision` on short decode, but it failed the chart fixture under every tested shape (`Moldova`/`Suriname` instead of `Tanzania`), including the image-token and default-expert diagnostics. The live mitigation was to keep port `8087` but temporarily rebind it to the same Qwen2.5-VL-7B model/projector as `worker_vision` until a replacement is deliberately activated. Sources: [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md), [progress 2026-07-17](../progress/2026-07/2026-07-17.md), [K35 optimized stack throughput/context report](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
+- **PaddleOCR-VL-1.6 belongs in the document-extraction lane, not the general vision-QA lane.** The MI210 smoke passed digit OCR (`7500`) and invoice/receipt extraction at roughly `485-490 t/s`, and the guarded Wave-3 `odl_bench` producer now writes scored page predictions from GT images. But prompt-only HTML-table recovery stayed negative (`TEDS=0.0`), and even the post-processing rescore only lifted table TEDS to `0.058333`. The result is "fast document specialist with an open table-format gap," not a replacement for `vision_escalation`. Sources: [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md), [progress 2026-07-17](../progress/2026-07/2026-07-17.md), [K35 optimized stack throughput/context report](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
+
+### New (2026-06-22, vision pipeline live; TTS still has no working path)
+
+- **The vision pipeline is functionally complete and now prefers the resident multimodal llama-server over CLI fallback; TTS remains unsolved with most candidate paths eliminated.** The vision pipeline (23 files, ~4.5K lines) passed live-server analyzer validation, registered its tools (vision_analyze/vision_search/vision_face_identify among 59 central tools), and landed chat integration (2026-06-21). ASR is live (Whisper large-v3-turbo, ~2.8x real-time). TTS is blocked: Path A (Qwen3-TTS via llama.cpp) outputs noise; Path B (MiniCPM-O built-in) untested; Path C (Qwen3-TTS PyTorch sidecar) is viable; Path D (LuxTTS CPU) is a benchmarked candidate; Path E (Qwen3.5-Omni) is API-only and not adopted. Multimodal-audio integration awaits a quiet-window API restart and a llama.cpp-omni fork build. Deep-dive corrections: LocateAnything-3B grounding incompatible with GGUF (Parallel Box Decoding); Moondream-3 deferred (BSL license, no tool calling); Holo-3.1-4B parked (no GGUF, redundant); Marlin-2B video-captioning deferred (BF16-only, mislabeled backbone). MiniCPM-O 4.5 beats deployed VLs on OpenCompass/MathVista but lags on DocVQA/OCRBench vs Qwen3-VL. Source: [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md).
+
+- **Benchmark deployed Qwen-VL field placement before adding LocateAnything (2026-06-05).** The LocateAnything-3B form-fill demo is dominated by the 35B-A3B controller's huge prefill and turn count, not by the 3B visual grounding model alone. Because the stack already has Qwen3-VL-30B and Qwen2.5-VL-7B vision roles, the correct next step is a field-placement IoU benchmark on the deployed VLMs first; LocateAnything becomes a CPU-transformers precision A/B only if the existing VLMs miss the needed grounding precision. Sources: [progress 2026-06-05](../progress/2026-06/2026-06-05.md), [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md).
+- **Gemma 4 should stay a benchmark candidate, not be dismissed from model-card priors.** The June 5 deep-dive corrected an overreach: Gemma 4 was newly released and had not been evaluated locally, so frontdoor/vision replacement claims must wait for EPYC suite results. The card metric previously read as MMMU was actually multilingual MMLU text; vision comparison should use the appropriate vision numbers and local tasks. Sources: [progress 2026-06-05](../progress/2026-06/2026-06-05.md), [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md).
+
+- STT is production: faster-whisper large-v3-turbo, port 9000, int8, 2.8x RT [multimodal-pipeline.md]
+- Vision is code-complete: 4,500 lines, 23 files, 1,234 tests, 11 API endpoints. Needs live validation [multimodal-pipeline.md]
+- TTS Path C (PyTorch sidecar) is most viable for GPU-available deployments: 97ms latency, 10 languages, Apache 2.0, ~1-3 GB VRAM [multimodal-moondream3-qwen3tts.md]
+- Qwen3-TTS llama.cpp port outputs noise -- codec token divergence unresolved [multimodal-pipeline.md]
+- Moondream 3 DEFERRED: BSL 1.1 license, uncertain GGUF, no tool calling, preview state [multimodal-moondream3-qwen3tts.md]
+- MiniCPM-O 4.5 beats Qwen2.5-VL-7B on OpenCompass (+7.1) and MathVista (+11.9) but lacks tool calling [multimodal-pipeline.md]
+- Qwen3-TTS achieves 2.12% Chinese WER and 2.58% English WER with 0.89 speaker similarity, beating MiniMax, ElevenLabs, CosyVoice [multimodal-moondream3-qwen3tts.md]
+- Moondream 3's "surpasses GPT-5" claims lack published numerical comparisons on standard benchmarks [multimodal-moondream3-qwen3tts.md]
+- Gemma 4 E-series could unify modalities in single model but blocked by GGUF availability [intake-251/252]
+- MMLBD-C (corrected long-document benchmark by LightOn) recommended for VL model evaluation [multimodal-pipeline.md]
+- **Path D (ZipVoice-Distill / LuxTTS) is the only CPU-realistic TTS option currently available**: ZipVoice-Distill (123M, 4 NFE, ASRU 2025) achieves RTF=1.22 on 1 Xeon thread; projected RTF 0.15-0.22 on EPYC 9655 with 16 threads; WER=1.51 on LibriSpeech-PC (beats F5-TTS, E2, XTTS). Path D is a deployment exercise -- upstream ships ONNX + INT8 + sherpa-onnx C++. [luxtts-cpu-tts-candidate.md] `verified`
+- **LuxTTS is a thin fine-tune of ZipVoice-Distill**, adding a community-trained 48kHz Vocos vocoder (36.7M, MIT); credibility of LuxTTS-as-product is 2/5 (single-author, no formal eval), but parent ZipVoice-Distill credibility is 4/5 (peer-reviewed, full code, ONNX/C++). Target upstream directly. [luxtts-cpu-tts-candidate.md] `verified`
+- **Flow-matching is not CPU-hostile at small scale**: ZipVoice-Distill's 4×123M Zipformer structure (downsampling rates [1,2,4,2,1]) is ~18× fewer FLOPs than F5-TTS (32×336M). The Vocos 48kHz vocoder adds <5% to end-to-end CPU time and is not the bottleneck. [luxtts-cpu-tts-candidate.md] `inferred`
+- **TADA (Hume AI) introduces 1:1 text-acoustic dual alignment** on a Llama 3.2 1B/3B backbone, enforcing strict token-to-acoustic-frame correspondence that eliminates content hallucination by construction (zero hallucinations/1000+ LibriTTSR samples). Achieves 2nd place on EARS long-form eval (sSIM 4.18, sMOS 3.78) with Online Rejection Sampling. [hume-tada-text-acoustic-alignment.md] `verified`
+- **TADA is GPU-bound as shipped**: All RTF numbers (0.09) are on a single H100 with torch.compile+bf16. No CPU benchmark, no GGUF, no ONNX path exists. Speech Free Guidance doubles LLM forward passes; on CPU this is ~1.5-2× compute overhead, not the negligible 0.01 RTF claimed for GPU batch parallel. Shelved until long-form narration is a workload or GPU is available. [hume-tada-text-acoustic-alignment.md] `verified`
+- **TADA's competitive EARS scores require Online Rejection Sampling** (3-5× inference cost multiplier); raw TADA-3B scores 67.0 speaker similarity vs Index-TTS's 76.9. "2nd place overall" is marketing-friendly -- TADA is competitive, not winning on any single metric. [hume-tada-text-acoustic-alignment.md] `verified`
+- **Voicebox ROCm support is README-only**: No HSA/ROCm detection code exists anywhere in the repo (926 lines of Rust, all Python backends). CPU coverage is LuxTTS-specific only -- the only backend with explicit per-CPU thread tuning. Do not cite voicebox as ROCm prior art. [voicebox-multi-engine-tts-studio.md] `verified`
+- **Voicebox chunked_tts.py is production-quality and directly reusable**: ~240 lines of pure numpy/regex implementing sentence-boundary splitting (with abbreviation list, CJK punctuation, decimal-number handling, bracket-tag atomicity), linear-crossfade concatenation, and per-chunk seed decorrelation. [voicebox-multi-engine-tts-studio.md] `verified`
+- **Voicebox's serial asyncio queue is 40 lines** -- one worker, coroutine-per-item, no preemption. Adopt with a bounded queue size and reject-on-full policy. The TTSBackend Protocol (6-method typing.Protocol + ModelConfig dataclass registry) shapes a clean extension surface for adding future engines. [voicebox-multi-engine-tts-studio.md] `verified`
+- **Kimi-K2.7-Code's "now multimodal" selling point does NOT apply on EPYC today**: the model became multimodal via a 400M MoonViT vision encoder shipped as separate mmproj GGUFs (mmproj-Q8_0 0.7GB, mmproj-f16 1.1GB), but **MoonViT is UNSUPPORTED in our llama.cpp fork (no moonvit handling)** — only the text path (deepseek2/MLA + kimi-k2 tokenizer) is plausibly usable. The vision capability is unreachable on our stack regardless of the larger storage/decode-throughput blockers. [intake-703] `verified` (fork)
+- **MoonViT support is fork-state, not mainline-state**: MoonViT is supported in *mainline* llama.cpp (PR #15458, Kimi-VL, merged 2025-08-26 — relevant to intake-680/683 LocateAnything), but that support has not been carried into our production fork. Do not infer Kimi-K2.7-Code vision-runnability from the mainline LocateAnything analysis. [intake-703] `verified` (fork)
+- **UniRL is a multi-GPU RL training framework, not_applicable on CPU-only EPYC**: Tencent Hunyuan's UniRL (Ray + FSDP, Flow-DPPO and other GRPO/PPO trust-region variants) trains unified diffusion/multimodal *generators* — it is training code only, with no inference/serving path and no training GPU on the EPYC host. The blocker is "no training GPU," not "no image role." [intake-709] `external/DGX-gated`
+- **A CPU image-generation role IS already deployed** (sd_server / ERNIE-Image-Turbo via stable-diffusion.cpp, port 8190), so UniRL's diffusion-RL (Flow-DPPO) could one day fine-tune that exact model — but only on a future training GPU (DGX Spark). Held as a DGX-gated passive watch-item, not a rejection. [intake-709] `external/DGX-gated`
+
+## Actionable for EPYC
+
+- **Vision live validation (immediate)**: Start Qwen2.5-VL-7B on 8086 and Qwen3-VL-30B on 8087, run existing test suite with live model endpoints. This is the final step before production.
+- **TTS Path D feasibility benchmark (highest TTS priority)**: `pip install zipvoice`, download k2-fsa/ZipVoice-Distill (~500MB), measure RTF + first-packet latency on EPYC 9655 with 16 threads (FP32, no GPU). Target: RTF < 0.35, first-packet < 400ms. If it passes, continue to ONNX path (Phase D2) and FastAPI sidecar (Phase D4). Decision criteria for promotion: RTF < 0.35, WER < 2.5, memory < 2 GB. [luxtts-cpu-tts-candidate.md]
+- **Adopt voicebox chunking utilities**: Copy `chunked_tts.py` (~240 lines), `task_queue.py` (~40 lines), and `TTSBackend` Protocol + `ModelConfig` (~200 lines) into the EPYC TTS sidecar. Add bounded queue size. Voicebox license is MIT. [voicebox-multi-engine-tts-studio.md]
+- **TTS Path C prototype (when prioritized)**: Build FastAPI wrapper around `Qwen3TTSModel.from_pretrained()` on port 8110. Benchmark VRAM and latency on EPYC hardware. Gate behind `ORCHESTRATOR_TTS_ENABLED` flag.
+- **MiniCPM-O Phase 1 testing**: Run `llama-mtmd-cli` with Q4_K_M + vision mmproj. Compare vision quality against Qwen2.5-VL-7B on same prompts. No fork needed for vision-only.
+- **Activation decision for `vision_escalation` is now service-policy work, not candidate discovery.** MiniCPM-o's MI210 `--reasoning off` lane is quality-clean and passed the bounded frontdoor coexistence matrix, so the next action is an operator decision on MI210 scheduling policy or a deliberately separate multi-request stress pass. Sources: [Progress 2026-07-17](../progress/2026-07/2026-07-17.md), [K35 optimized stack throughput/context report](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
+- **Document-OCR specialization should now compare PaddleOCR-VL directly against LightOnOCR/ODL rather than treating it as another generic VLM candidate.** The producer/runtime path is closed; the open work is table post-processing or parser comparison on structural/table/reading-order metrics. Sources: [Progress 2026-07-17](../progress/2026-07/2026-07-17.md), [K35 optimized stack throughput/context report](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
+- **Voice cloning guardrails**: Must be designed before enabling any TTS path. 3-second cloning raises ethical/misuse concerns.
+- **Monitor Gemma 4 GGUF**: Once llama.cpp conversion is available, evaluate E4B as potential unified multimodal worker that replaces separate STT + Vision + TTS services.
+- **Do NOT resume Qwen3-TTS C++ debugging** unless MiniCPM-O TTS and PyTorch sidecar both fail.
+- **Add `worker_tts` role** to model_registry.yaml (gated behind feature flag) when TTS path is selected.
+- **Shelve TADA** until: (a) long-form (>2 min) coherent narration becomes a required workload, OR (b) GPU becomes available in the EPYC deployment. Re-entry triggers: community llama.cpp port appears, or long-form use case is confirmed. [hume-tada-text-acoustic-alignment.md]
+- **Do NOT run LuxTTS and TADA CPU evaluations in parallel**: TADA CPU viability requires porting three separate components (modified Llama backbone, flow-matching head, codec) before any measurement is possible; LuxTTS benchmark is a 1-day exercise. Sequential evaluation is cheaper. [hume-tada-text-acoustic-alignment.md]
+
+## Open Questions
+
+- Is MiniCPM-O 4.5's built-in TTS quality competitive with standalone Qwen3-TTS? (Untested)
+- Can Qwen3-VL-8B (with tool calling) replace Qwen2.5-VL-7B as `worker_vision`?
+- When will Gemma 4 GGUF conversion be available in llama.cpp?
+- Does the vision pipeline's OpenAI-compat multimodal support (parsing image_url in message content) need to be completed before production use?
+- What is the VRAM impact of running MiniCPM-O alongside existing model stack?
+- Can VoxCPM2's tokenizer-free approach produce better quality than Qwen3-TTS's discrete codebook approach?
+- Does ZipVoice-Distill's 0.657 SIM-o (speaker similarity) meet EPYC's voice-cloning quality bar? Qwen3-TTS reaches 0.789; the gap is meaningful for voice-identity use cases. [luxtts-cpu-tts-candidate.md]
+- If Path D passes RTF threshold, is the 48kHz Vocos head upgrade (LuxTTS's main addition over upstream) worth the ~1.3× overhead? Requires A/B test on same text+reference. [luxtts-cpu-tts-candidate.md]
+- If long-form TTS (>2 min) becomes a workload, would TADA's 700s context outperform voicebox-style chunk-and-crossfade using LuxTTS? No benchmark exists. [hume-tada-text-acoustic-alignment.md]
+
+## Related Categories
+
+- [Document Processing](document-processing.md) -- Vision pipeline feeds document preprocessing; OpenDataLoader provides structured context for VL models
+- [Tool Implementation](tool-implementation.md) -- Vision API endpoints, TTS sidecar service design
+- [MoE Optimization](moe-optimization.md) -- Moondream 3 uses 64-expert MoE; Gemma 4 26B-A4B is MoE
+- [SSM Hybrid](ssm-hybrid.md) -- MiniCPM-O uses standard attention; relevant as architectural comparison
+
+## Source References
+
+- [Moondream 3 + Qwen3-TTS deep dive](/workspace/research/deep-dives/multimodal-moondream3-qwen3tts.md) -- Architecture analysis, benchmark review, integration assessment for both models
+- [Multimodal pipeline handoff](/workspace/handoffs/active/multimodal-pipeline.md) -- Current state of all four modalities, testing plans, research intake updates
+- [Progress 2026-07-17](/workspace/progress/2026-07/2026-07-17.md) -- MiniCPM-o activation evidence, Qwen3-VL-30B chart-failure mitigation, and PaddleOCR-VL document-specialist checkpoint
+- [K35 optimized stack throughput/context report](/workspace/research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md) -- Consolidated MiniCPM-o service matrix, Qwen3-VL-30B defect framing, and PaddleOCR-VL document-specialist evidence
+- [MiniCPM-O integration handoff](/workspace/handoffs/archived/minicpm-o-4_5-integration.md) -- Download status, benchmark comparison, testing phases
+- [Vision pipeline handoff](/workspace/handoffs/archived/vision-pipeline.md) -- Historical vision implementation details
+- [OpenDataLoader deep dive](/workspace/research/deep-dives/opendataloader-pdf-pipeline-integration.md) -- Structured context for VL models (Phase 2)
+- [LuxTTS / ZipVoice-Distill deep dive](/workspace/research/deep-dives/luxtts-cpu-tts-candidate.md) -- CPU TTS feasibility assessment; ZipVoice-Distill architecture, RTF projections, integration plan for Path D
+- [TADA deep dive](/workspace/research/deep-dives/hume-tada-text-acoustic-alignment.md) -- Text-acoustic dual alignment; CPU viability analysis; EARS benchmarks; comparison to LuxTTS for Path D
+- [Voicebox deep dive](/workspace/research/deep-dives/voicebox-multi-engine-tts-studio.md) -- Multi-engine TTS studio architecture; reusable patterns (chunker, queue, TTSBackend Protocol); ROCm claim refutation
+- [intake-251/252] Gemma 4 -- Any-to-Any multimodal models, pending GGUF
+- [intake-317](https://github.com/OpenBMB/VoxCPM) VoxCPM2 -- Tokenizer-free TTS alternative, GPU-dependent
+- [intake-396] Voicebox (jamiepine/voicebox) -- Multi-engine TTS studio; patterns adopted, ROCm discredited
+- [intake-401] LuxTTS (YatharthS/LuxTTS) -- ZipVoice-Distill fine-tune with 48kHz vocoder; credibility 2/5 (fork), parent 4/5; Path D vehicle
+- [intake-402] TADA (HumeAI/tada) -- Long-form TTS via text-acoustic dual alignment; GPU-only as shipped; shelved pending long-form workload or GPU access
+- [intake-703](https://huggingface.co/mradermacher/Kimi-K2.7-Code-GGUF) Kimi-K2.7-Code-GGUF (Moonshot AI) -- ~1T coding MoE now multimodal via 400M MoonViT + mmproj GGUFs, but MoonViT UNSUPPORTED in our fork (text path only); text-only coder_escalation contender, storage-gated
+- [intake-709](https://github.com/Tencent-Hunyuan/UniRL) UniRL (Tencent Hunyuan) -- Multi-GPU RL training framework (Ray + FSDP, Flow-DPPO) for unified multimodal/diffusion generators; not_applicable CPU-only (no training GPU); DGX-gated watch-item, could one day fine-tune deployed sd_server / ERNIE-Image-Turbo
+- [vision-escalation-minicpmo-promotion.md](../docs/runbooks/vision-escalation-minicpmo-promotion.md) -- the 7-step, adversarially-verified deterministic promotion/rollback runbook for the vision_escalation role (master-registry rebind, pipeline gates, additive server swap, §H recert, affinity attestation, eval-path smoke, rollback)
+- [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md) §MiniCPM-o deterministic promotion runbook, §Trigger Gate -- the runbook filing narrative and the worker_vision 4×quarters demand/capability trigger gate (measured tap-window baseline, two-condition trip logic, MI210-suspension rule)
+- [progress 2026-07-23](../progress/2026-07/2026-07-23.md) -- OP-7 residuals landing session: MiniCPM-o runbook persistence and the worker_vision trigger gate authorship
+
+## KAME — tandem speech-to-speech with parallel oracle injection (2026-04-30)
+
+**TL;DR**: KAME (Sakana AI, ICASSP 2026, intake-511..515) pairs a Moshi-class real-time S2S front-end with a parallel text-LLM oracle stream that injects gradually-refined knowledge mid-utterance. MT-Bench-speech 2.05 (Moshi) → 6.43 (KAME). **Verdict: not_applicable for current EPYC scope** — Moshi audio-codec stack has no GGUF/llama.cpp support (same blocker class as existing Path D / Path E TTS work) and the front-end weights are tied to a specific Moshi base + KAME-specific simulated-oracle retraining recipe.
+
+### Architecture (clarification: oracle is a fourth autoregressive stream, NOT an external API call)
+
+The oracle stream is **not** an external API call into a frozen Moshi — it is a **fourth autoregressive stream within a 4-stream Moshi-style joint transformer**, sitting alongside input-audio / output-audio / inner-monologue streams. The front-end was specifically retrained on simulated-oracle-augmented data with a 6-level hint progression (Table 1 of the paper) to handle oracle text that progressively converges to ground-truth as user speech completes.
+
+**Implication**: "back-end agnostic" is genuine — backend LLM (GPT-4.1 / Claude Opus 4.1 / Gemini 2.5 Flash in the reference impl) can be swapped via `OPENAI_BASE_URL` to a self-hosted llama-server. **But the front-end is fixed weights tied to a specific Moshi base + this specific training recipe.** You can swap Claude for GPT, but you cannot graft this onto an arbitrary Moshi without re-training.
+
+### Closed-API claim correction
+
+An earlier intake draft cited cloud-API dependencies (OpenAI Chat Completions + Google STT) as a verdict driver. Direct repo audit of `src/kame/server_oracle.py` shows `AsyncOpenAI()` instantiated with **no args**, which transparently honors `OPENAI_BASE_URL`. Backend swap to local llama-server is **one env var**. The closed-API dependency is convenience, not architecture. The real adoption blocker is (1) Moshi audio-codec stack absence in llama.cpp, (2) front-end retraining on simulated-oracle data, (3) GPU-only inference path, (4) no EPYC voice-interface use case on roadmap.
+
+### Transferable pattern (recorded as competitive intelligence)
+
+The "fourth autoregressive stream with most-recent-wins semantics, mid-decode update from a parallel slow path" is genuinely distinct from existing EPYC patterns:
+
+| Pattern | Difference from KAME oracle stream |
+|---------|-----------------------------------|
+| Drafter / verifier speculative decoding | No token-level accept/reject; KAME oracle does not vote on tokens, it conditions generation |
+| `worker_general` → `coder` routing | Sequential, not parallel mid-stream |
+| Hermes outer-shell + worker | Request-boundary coordination, not mid-utterance |
+| Trinity learned coordinator | Per-turn dispatch, not intra-turn |
+
+**Not worth a stub** — pattern is interesting but speculative without near-term implementation path. Recorded for awareness.
+
+### Three concrete revival gates
+
+In order of likelihood:
+
+1. **CPU-only audio codec stack** lands — Mimi/Moshi-class neural codecs port to llama.cpp/GGUF, OR a credible CPU PyTorch path (AVX-512 BF16) exists. Same prerequisite as Paths A/D/E. If this resolves, multiple TTS systems unblock together and KAME becomes one of several candidates with an unusually clean backend-swap story.
+2. **Open-weight KAME checkpoint** ships from Sakana (HF model card intake-515 exists; check periodically). Without weights, training requires GPU compute we don't have plus the audio + simulated-oracle pipelines.
+3. **An EPYC voice-interface use case appears** that justifies the integration effort. Currently `multimodal-pipeline.md` is LOW priority; voice S2S has no production driver.
+
+Items 1 and 2 are strongly coupled: if Sakana ships weights AND the codec stack ports, KAME becomes the first TTS Path with a fully-defined adoption sequence.
+
+### Watch list
+
+- **SHANKS** (arxiv:2510.06917, "Simultaneous Hearing and Thinking for Spoken Language Models") — adjacent same-quarter paper exploring similar speak-while-thinking territory but solving a *different problem* (interruption + tool-call-during-listen vs knowledge-grounded response). Tracked as sibling, NOT supersession. Ingest separately if it gains adoption.
+
+### Sources
+
+- [intake-511](https://arxiv.org/abs/2510.02327) KAME paper — Sakana AI, ICASSP 2026
+- [intake-512](https://pub.sakana.ai/kame/) Sakana AI blog post (MT-Bench numbers, hot-swappable backends)
+- [intake-513](https://github.com/SakanaAI/kame) Reference inference repo
+- [intake-514](https://github.com/SakanaAI/kame_finetune) Finetune workflow (DeepSpeed, GPU-only)
+- [intake-515](https://huggingface.co/SakanaAI/kame) HF model card
+- [`research/deep-dives/kame-tandem-s2s-architecture.md`](../research/deep-dives/kame-tandem-s2s-architecture.md) — full deep-dive with paper analysis, oracle-mechanism audit, EPYC mapping, SHANKS comparison
+- [`handoffs/active/multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — Research Intake Update 2026-04-30 + deep-dive refinement
+
+## ERNIE-Image-Turbo (Baidu, 2026-05-06)
+
+8B distilled DiT (Diffusion Transformer) text-to-image model evaluated for the multimodal pipeline. Apache-2.0. Distilled from a larger ERNIE-Image base via consistency distillation; targets fast inference (single-step or few-step generation) at competitive quality.
+
+**Relevance to EPYC stack**: candidate for image generation in the multimodal pipeline (alongside Qwen3-VL for vision-understanding and faster-whisper for ASR). DiT inference on CPU is bandwidth-bound; quantized variants would need to land first to be production-viable on the EPYC 9655 host.
+
+Sources: [research/deep-dives/ernie-image-turbo-dit-text-to-image.md](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md), [handoffs/active/ernie-image-turbo-evaluation.md](../handoffs/active/ernie-image-turbo-evaluation.md).
+
+## Multimodal pipeline (Vision + TTS + ASR) handoff
+
+Coordinating handoff [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md) tracks the integrated multimodal stack: vision (Qwen2.5-VL-7B at port 8086 + Qwen3-VL-30B-A3B at port 8087), ASR (faster-whisper large-v3-turbo at port 9000), and TTS (planned). Image generation candidates (ERNIE-Image-Turbo, others) feed into this handoff via intake.
+
+Source: [handoffs/active/multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md).
+
+## Image generation deployment (production 2026-05-07)
+
+ERNIE-Image-Turbo Q8 GGUF runs in production via stable-diffusion.cpp's native ggml backend (`sd-server`, port 8190), replacing an initial ComfyUI + ComfyUI-GGUF + PyTorch deployment. The swap delivered **2.54× wall-clock speedup** at production scale (~188 s vs 478 s @ 1024² 8 steps) without quality cost, by skipping ComfyUI-GGUF's per-layer dequant-to-BF16 step in favor of ggml's native Q8 GEMM kernels (AVX-512BW + VNNI on Zen 5).
+
+Stack integration mirrors the document_formalizer (OCR) pattern: `start_sd_server()` in `orchestrator_stack.py`, launcher script at `scripts/diffusion/start_sd_server.sh`, registry entry `sd_server` (managed_by: orchestrator_stack), API exposed via `/sdapi/v1/txt2img` (sd-webui-compatible). The Hermes plugin path (`scripts/hermes/plugins/local-image-generate/`) routes through `ImageGenerator` → `SDServerClient` and replaces the disabled cloud `image_generate` (FAL) tool.
+
+### Production tunings
+
+| Flag | Effect | Notes |
+|---|---|---|
+| `--diffusion-fa` | Flash attention in DiT | enabled |
+| `--diffusion-conv-direct` | `ggml_conv2d_direct` for DiT convs | enabled, within-noise on sampling but no downside |
+| `--vae-conv-direct` | `ggml_conv2d_direct` for VAE convs | **enabled** — single biggest win, **7.10× on VAE decode alone** (76 s → 10.7 s at 832×1248), no quality cost |
+| `numactl --interleave=all`, `-t 96` | Full-host pinning + thread span | canonical CPU baseline |
+| Q8_0 weights | quantization | distilled-model penalty CONFIRMED at Q4_K_M (visible Korean-text corruption at 8 steps); Q8 is the production point |
+
+### Empirical findings worth recording
+
+- **stable-diffusion.cpp upstream already ships ERNIE-Image-Turbo support** (`src/ernie_image.hpp`, 441 lines). The "C++ port" we'd estimated as multi-week work was already done by upstream maintainers. Lesson: when a project moves at sd.cpp's pace and ERNIE-Image-Turbo is on huggingface, scan the upstream source before planning the port.
+- **IPEX is a no-op on the ComfyUI-GGUF path**: `ipex.optimize()` cannot bind onto `GGMLTensor` parameters (which materialize to BF16 just-in-time inside `GGMLLayer.forward`). The dequant tax IS the bottleneck and IPEX cannot reach it. Confirmed via 2026-05-07 A/B at 512² 4-step (0–4% delta, measurement noise). [ernie-image-turbo-evaluation.md, progress/2026-05-07.md]
+- **Distilled-model quantization-penalty hypothesis is real**: Q4_K_M at 8 steps delivers 17% wall-clock win at the cost of visible degradation on dense text rendering — exactly the model's signature differentiator (LongTextBench 0.9655 vs FLUX.1-dev 0.306). Mechanism prediction held: tight 8-step error budget cannot integrate out dequant noise the way a 50-step sampler would. Trade is bad for ERNIE specifically. [progress/2026-05-07.md]
+- **ggml CPU backend is at the kernel ceiling on Zen 5 stock**: `-march=native` already emits AVX-512BW + VNNI (387 explicit `vpdpbusd`/`vpdpwssd` instructions in the binary). Further sampler win on CPU requires either porting our llama.cpp fork's AVX-512BW 8x8 Q8 kernel (estimate +10-20%, multi-day work) or waiting for GPU.
+- **Hermes plugin path survived backend swap unchanged**: thin-interface discipline paid off — `ImageGenerator.generate(request) → result` interface was preserved across the ComfyUI → sd-server transition. Plugin code, Hermes tool registry, and dispatcher mapping all unchanged.
+
+Sources: [progress/2026-05-07.md](../progress/2026-05/2026-05-07.md), [handoffs/active/ernie-image-turbo-evaluation.md](../handoffs/active/ernie-image-turbo-evaluation.md), [research/deep-dives/ernie-image-turbo-dit-text-to-image.md](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md).
+
+## Marlin-2B — video captioning + temporal grounding at 2B (NemoStation, 2026-05-20)
+
+2B VLM fine-tune (base stated as "Qwen3.5-2B" but Qwen3.5 family is publicly 27B+ — likely Qwen2.5-VL-2B mislabel) trained via SFT on ~400K clip-level annotations followed by SimPO (reference-model-free preference optimization) with Gemini-3-Flash as the teacher/judge. Two convenience methods on the HF wrapper: `.caption()` returns scene + temporally-stamped events, `.find(query)` resolves natural-language queries to `(start, end)` spans. Apache-2.0, BF16, vLLM-compatible, single-H100-trained, 125 downloads/mo at intake.
+
+**Author-reported benchmarks** (no third-party replication at intake time): tops CaReBench at 2B; positioned between Tarsier-34B and Gemini-1.5-Pro on DREAM-1K; +6.4 mIoU over Qwen2.5-VL-7B on TimeLens-Bench (Charades / ActivityNet / QVHighlights aggregate), matching Gemini-2.0-Flash.
+
+**Relevance to EPYC stack**: low — no active video-captioning or temporal-grounding workload. The multimodal pipeline currently handles video only as ffmpeg-extracted frames fed through image-VLMs. Marlin-2B is BF16-only (no GGUF), so any deployment would require either a small dedicated GPU host or a llama.cpp conversion. Held at `worth_investigating` rather than `not_applicable` per the project's "consider creative deployment roles" policy — a small dense video model could plausibly serve as a frame-level event detector inside `src/vision/` if a GPU is added. Three revival gates documented: (i) a video-understanding workload appears, (ii) a small GPU is added, (iii) third-party benchmark replication of the +6.4 mIoU TimeLens claim. Base-architecture ambiguity should be resolved with NemoStation before any deployment.
+
+Sources: [research/intake_index.yaml#intake-575](../research/intake_index.yaml), [handoffs/active/multimodal-pipeline.md#research-intake-update--2026-05-20](../handoffs/active/multimodal-pipeline.md).
+
+## Intake deep-dives: Holo-3.1-4B & open-weights VLM/doc follow-ups (2026-06-12)
+
+**Holo-3.1-4B (intake-691) — PARKED (runnability-gated).** H Company's 4B GUI-grounding/computer-use VLM (`Qwen3_5ForConditionalGeneration` arch, native function-calling, AndroidWorld 4B 58→71% self-reported, Apache-2.0). The deep-dive corrected a key intake error: **the 4B ships BF16 safetensors only — no GGUF/mmproj** (the intake-694 roundup conflated this with the 35B-A3B's official GGUF), and Qwen3.5 vision/mmproj on llama.cpp is still fragile (ggml-org #21268/#21271). Its grounding capability is **redundant** with the deployed Qwen3-VL-30B (:8087) / Qwen2.5-VL-7B (:8086). It remains a legitimate A/B contender vs LocateAnything-3B (intake-680) — better-licensed (Apache-2.0 vs NVIDIA non-commercial), native function-calling — **only if** a GUI-agent/screenshot workload enters the roadmap AND the deployed Qwen-VLs prove inadequate on field-placement IoU; even then, measure via a throwaway transformers-CPU worker, never a GGUF stack role.
+
+**Open-weights roundup follow-ups (intake-694).** Triaging the 2026-06-05 HF roundup against the actual stack surfaced two VLM/doc-relevant P-items: **PaddleOCR-VL-1.6** (P1, Apache-2.0, 1B doc-parsing VLM on an ERNIE-4.5-0.3B backbone, OmniDocBench 96.33 SOTA, **official GGUF + mmproj** → CPU-runnable) is a candidate vs LightOnOCR for the doc pipeline (see document-processing / opendataloader handoff); and **Step-3.7-Flash** (P2, Apache-2.0, 196B/11B-active MoE VLM, SWE-Bench Verified 76.5, official GGUF) is a coder_escalation eval candidate. Image/video/music/3D generators (Ideogram 4, Magenta RT 2, Cosmos3-Super, TripoSplat, NAVA) are out of scope.
+
+Sources: [`research/deep-dives/2026-06-12-holo-3.1-4b-gui-vlm.md`](../research/deep-dives/2026-06-12-holo-3.1-4b-gui-vlm.md), [`research/deep-dives/2026-06-12-open-weights-roundup-followups.md`](../research/deep-dives/2026-06-12-open-weights-roundup-followups.md), [`handoffs/active/multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md), intake-691/694.
+
+## Kimi-K2.7-Code multimodality (MoonViT) & UniRL diffusion-RL (2026-06-21)
+
+Two intake items touch the multimodal stack from opposite ends — a frontier coding MoE that quietly became a VLM, and a multimodal-generator RL trainer. Both are blocked on EPYC today for different reasons.
+
+**Kimi-K2.7-Code (intake-703) — multimodality unreachable in our fork.** Moonshot AI's Code-specialized ~1T MoE (mradermacher GGUF quants) became multimodal via a **400M MoonViT vision encoder** shipped as separate mmproj GGUFs (mmproj-Q8_0 0.7 GB, mmproj-f16 1.1 GB). The decisive point for this category: **MoonViT is UNSUPPORTED in our production llama.cpp fork (no moonvit handling)** — only the text path (deepseek2/MLA + kimi-k2 tokenizer) is plausibly usable, so the "now multimodal" selling point does not apply on EPYC. This is a *fork* limitation: MoonViT is in mainline llama.cpp (PR #15458, Kimi-VL, merged 2025-08-26, relevant to the intake-680/683 LocateAnything thread) but that support was never carried into our fork. The model's primary disposition is as a text-only coder_escalation contender, where it is independently storage-gated (Q4_K_M GGUF 620.7 GB vs ~633 GB raid0 free) and tracked under the large-MoE expert-parallelism handoff — not here.
+
+**UniRL (intake-709) — multi-GPU RL trainer, DGX-gated.** Tencent Hunyuan's UniRL is a reinforcement-learning *training* framework (Ray + FSDP) for unified multimodal/diffusion generators, bundling several GRPO/PPO trust-region variants (Flow-DPPO et al.). It is **not_applicable on CPU-only EPYC**: it is training code only (no inference/serving path) and there is no training GPU on the host. The README has no benchmark numbers; the three team algorithms are incremental trust-region variants (observations, not decision-grade). It is *not* rejected outright, because a CPU image-generation role IS already deployed (sd_server / ERNIE-Image-Turbo via stable-diffusion.cpp, port 8190) — UniRL's diffusion-RL (Flow-DPPO) could one day fine-tune that exact model. Held as a DGX-gated passive watch-item under the GPU-acceleration path: the blocker is "no training GPU," not "no image role."
+
+Sources: intake-703 (Kimi-K2.7-Code-GGUF, MoonViT fork-unsupported — verified), intake-709 (UniRL, Tencent Hunyuan — external/DGX-gated), [`handoffs/active/multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md).
+
+## MiniCPM-o deterministic promotion runbook + worker_vision demand-gate (2026-07-23/24)
+
+**The vision_escalation MiniCPM-o cutover decision was operationalized into a reusable, gate-checked runbook rather than resolved.** Per operator directive ("when ready, promotion into the stack must be deterministic, not bespoke"), a 7-step promotion runbook was drafted and adversarially verified (5-agent workflow, 6 corrections applied): (1) master-registry rebind — the registry edit target is deliberately the **master** registry (`epyc-inference-research`), not the lean file, because the 2026-07-18 rebind was a lean hand-edit that got silently clobbered on the next stack start once lean-registry auto-compile went default-on; (2) `stack_change_pipeline.py update` + `check` green; (3) the 8087 server swap via the new 2026-07-23 additive `--numa-mode both` promotion path (skip-healthy, no-outage — see [Inference Serving](inference-serving.md)); (4) a **§H contention-matrix recert for the changed lane** — the runbook exists precisely to close the gap the 2026-07-17 rebind left open (it shipped without recertifying the matrix); (5) live-affinity + realized-first attestation; (6) a three-layer smoke via the actual eval path (direct fixture probe, EvalTower-forced-role probe, modality-fence check — scoring only `message.content`, never `reasoning_content`, since default reasoning mode scores 0/4 on these fixtures); (7) rollback = the same runbook run toward the safe-alias state. All steps are model-agnostic mechanics — the runbook executes whichever candidate the operator names, substituting only the model/path/mmproj block and the expected-throughput band. Model choice remains open: MiniCPM-o-4.5 Q4 validated 2026-07-18 (110–127 t/s MI210 decode, 4/4 K35 fixed-fixture quality, 8/8 mixed-service co-residency matrix) vs the current Qwen2.5-VL-7B safe alias, which measured *faster* on a 2026-07-19 long-decode slice (118.50 vs 109.18 t/s) — so the decision is genuinely quality-tied-on-speed, not merely execution-pending. A CPU-side MiniCPM-o vs Qwen2.5-VL bench (speed + K35-fixture quality) was queued for the idle window to inform the final call; the GPU leg is the operator's own session. [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md), [vision-escalation-minicpmo-promotion.md](../docs/runbooks/vision-escalation-minicpmo-promotion.md)
+
+**A quantitative demand/capability trigger gate now governs the long-open "should `worker_vision` recollect to 4 quarters" question, replacing an unmeasured "in principle."** Baseline measurement (7.9-day tap window, 2026-07-15→23): 399 `worker_vision` requests, **all** eval-tower-driven (`batch_id` non-null); **zero** organic traffic; `vision_escalation` saw zero events of any kind in the same window. The gate has two independent trigger conditions (either fires it): **Trigger A (demand)** — sustained organic arrival ≥2 req/min over any 30-min window on ≥3 distinct days within 14 days, AND in-flight depth >2 (saturating the current single quarter's 2 slots) for >10% of samples; **Trigger B (capability)** — a new candidate VL model passes the K35 quality gate at parity-or-better *and* a certified-affinity quarter-pair co-run bench shows aggregate ≥1.2× with no pair <1.0× (n≥8, CV≤5% — tightening the prior J5 vision re-bench, which was direction-robust but diagnostic-grade at 5/8 pairs CV>5%), plus a demand floor of ≥0.5 req/min. **Whichever trigger fires, the gate is SUSPENDED if a persistent-live MI210 vision lane goes into production** — one GPU vision stream (110–127 t/s) is 4–10× a CPU quarter stream, so any GPU cutover makes CPU-side quartering moot except as a GPU-retirement fallback. Consequence flagged: the routing modality fence only went live 2026-07-23 (vision was previously routing-dead, 0/376), so **all demand data at or before that date — including the 7.9-day baseline above — undercounts true organic demand**; the first valid post-fence reading is 2026-08-06. [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md) §Trigger Gate
+
+## Compiled Update — 2026-07-29: ERNIE keeps the quality axis, Z-Image is a latency question, and the blank-PNG defect has a candidate fix
+
+**Confidence**: verified for the artifact/source-tree facts (which model headers
+carry which ROCm mitigation, what our pinned checkout contains, what the deployed
+binary was built from); **observation-grade** for the benchmark scores, which are
+vendor self-reports on both sides.
+
+### LongText-Bench comparability RESOLVED — and what that does not settle
+
+Same benchmark, same splits, aggregation = EN/ZH arithmetic mean. The incumbent
+vendor's own model card carries a three-column table that **includes the
+competitor and reproduces the competitor's per-split numbers exactly** — which is
+what makes the comparison legitimate rather than a vendor-vs-vendor mismatch.
+Harmonized ranking:
+
+**ERNIE-Image-Turbo 0.9655 (with prompt enhancer) > ERNIE 0.9639 (without) >
+Z-Image base 0.9355 > Z-Image-Turbo 0.9215** — the incumbent leads by **4.4
+points**, and leads **even without its prompt enhancer**.
+
+This resolves **comparability only**. It does **not** validate the 0.9655 figure:
+both sides are vendor self-reports, and the 20-prompt local EN/ZH typography
+spot-check remains the only instrument that can settle validity. That open
+question therefore survives the dive rather than being closed by it.
+[`ernie-image-turbo-evaluation.md`](../handoffs/active/ernie-image-turbo-evaluation.md) §2026-07-29 corrections, §Remaining Operational Question 2
+
+### Consequence: the alternative is a latency candidate, decoupled from quality
+
+Because the quality question on the axis the role was selected for is already
+answered against it, Z-Image-Turbo is scoped as a **latency candidate only** (6B
+vs 8B, GGUF 2.59–6.58 GB, apache-2.0, runnable on today's binary) against the
+~3 min @1024² CPU problem. Any trial repeats the local Q8-vs-Q4 A/B and is never
+framed as a quality swap. Noted alongside it: a rank-32 distill-patch LoRA (476
+BF16 tensors across all 34 blocks) is a **Base↔Turbo conversion mechanism**, but
+alpha-scaling for step-vs-quality is an **untested hypothesis** and the backend's
+LoRA key resolution for that architecture is **unverified**.
+[`multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) §Research Intake Update 2026-07-29
+
+### The "stale backend" premise is struck — no upgrade is needed to trial anything
+
+Our pinned image backend already contains the alternative model's implementation
+(a 646-line header plus its documentation, fully wired through the model
+dispatch, version enum, name conversion and RoPE id generation), and the deployed
+gfx90a server binary **was compiled from that source**. The claimed
+**ERNIE-regression risk of a forced backend upgrade collapses with the premise**:
+no upgrade is required to trial a second model, so nothing touches the live role.
+The separate currency question (~202 commits / ~2.7 months behind upstream, tree
+clean) is real but non-blocking.
+
+### Candidate FIX for the MI210 1024² blank-PNG defect
+
+Upstream ran a **ROCm f16-overflow campaign** on 2026-07-10 (two PRs) covering
+four model families and the shared FeedForward — and **the deployed image model's
+header appears in neither PR**, making it the only model in the family with
+**zero ROCm overflow mitigation**. The candidate fix mirrors that pattern:
+ROCm-guarded `set_force_prec_f32(true)` on the attention out-projection and the
+feed-forward second linear (the setters already exist locally), rebuild the HIP
+tree for gfx90a, and re-run the failing case at fixed seed across 896 / 960 /
+1024. Supporting inference: `--vae-tiling`, `--vae-on-cpu` and CPU-RNG were
+already ruled out, which points **away from the VAE and at the DiT emitting
+non-finite latents**, and a failure threshold sitting between 896 and 960 is what
+accumulation overflow looks like. **This is a candidate fix, not a diagnosis** —
+and it needs no new model and no new weights.
+[`gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) §2026-07-29 Stage-2 dive
+
+### A durable control-selection rule: controls must be mitigation-matched
+
+The proposal to run the alternative model as a **diagnostic control** for the
+blank-PNG bug is **withdrawn as confounded**: its header carries an explicit ROCm
+workaround that the deployed model lacks entirely, so a passing run says nothing
+about the failing model's code path. If a second model is wanted as a control it
+must be **mitigation-matched** — here, the family member whose guard is
+Vulkan-only at our pin. Generalization: a control differing from the subject in
+*the very dimension under test* is not a control.
+[`gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) §Control-probe note;
+[`ernie-image-turbo-evaluation.md`](../handoffs/active/ernie-image-turbo-evaluation.md) §2026-07-29 corrections
+
+### A pre-deployment assessment ages badly in specific, predictable ways
+
+The deployed image model's deep dive was written as a **pre-deployment**
+assessment; filing its intake row 12 weeks later (`intake-937`, 2026-07-29)
+forced a line-by-line reconciliation against production reality. Four of its
+premises had rotted, and the *pattern* of rot is the transferable part:
+
+- **Backend premise struck.** The dive planned around a Python inference stack
+  and flagged "upstream support unverified" as an open question. Upstream had
+  in fact shipped native support (441 lines), and that has been the production
+  serving path since the week after the dive. **Availability questions expire
+  fastest** on fast-moving projects — the dive's own §"scan the upstream source
+  before planning the port" lesson applied to itself one section later.
+- **Latency forecast falsified.** Predicted 30–120 s/image on this host;
+  production measures ~188 s at 1024²/8 steps — optimistic by 1.6–6×. Retired,
+  not adjusted: a forecast that missed by that margin has no residual value.
+- **Hardware extrapolation dead.** An entire section extrapolated to a machine
+  that was never acquired. The actual accelerator is a different vendor
+  entirely. **Extrapolations to unpurchased hardware should be dated and
+  quarantined**, because they read as measurements to later readers.
+- **A hypothesis the dive itself doubted was confirmed.** It called the
+  "distilled models amplify quantization damage" claim community folklore and
+  judged it *partially falsified* for this regime, on the strength of a
+  competitor's A/B. Our own A/B then confirmed it for this model — the cheaper
+  quant bought 17% wall-clock and corrupted in-image text, i.e. degradation
+  landed precisely on the model's signature differentiator. Both survive: the
+  higher quant is safe as predicted, *and* the cliff arrives on the
+  text-rendering axis exactly where the dive hypothesised.
+
+One disagreement remains **open**, not resolved: the dive describes a bespoke
+128-channel VAE with portability implications, while the bundle actually
+deployed ships a VAE from a different model family. Neither vendor card names
+the VAE, so no source can adjudicate — recorded as open rather than settled in
+either direction.
+
+### Source References
+
+- [`ernie-image-turbo-evaluation.md`](../handoffs/active/ernie-image-turbo-evaluation.md) — struck stale-backend premise (header present at the pinned commit, deployed binary built from it); LongText-Bench harmonization and the surviving validity question; withdrawal of the confounded control; the 2026-07-29 intake-row filing
+- [`research/deep-dives/ernie-image-turbo-dit-text-to-image.md`](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md) — the pre-deployment assessment itself: the backend premise, the CPU latency forecast, the retired hardware extrapolation, the quantization-damage hypothesis, and the unresolved VAE identity
+- [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — the six folded corrections and the vendor-default-resolution sting (the GPU defect blanks the first resolution the vendor recommends)
+- [`multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — Z-Image-Turbo scoped as a latency-only candidate; the distill-patch LoRA conversion mechanism and its untested assumptions
+- [`gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) — the ROCm f16-overflow campaign gap and the f32-precision candidate fix; the mitigation-matched-control rule

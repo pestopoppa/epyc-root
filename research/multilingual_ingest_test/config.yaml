@@ -1,0 +1,117 @@
+# Multilingual Ingest Quality-Gap Test — configuration
+# Per handoffs/active/internal-kb-rag.md § "Test Scope — Multilingual Ingest Quality-Gap Measurement"
+
+# ---- Endpoints (OpenAI-compatible /v1/chat/completions) ----
+endpoints:
+  ingest_long_context:
+    url: "http://localhost:8085/v1/chat/completions"
+    model: "auto"
+    # Qwen3-Next-80B SSM-hybrid; per feedback_qwen3x_enable_thinking_false this role
+    # is the exception — thinking MUST stay ON for ingest_long_context.
+    thinking: true
+    timeout_s: 300
+    max_tokens: 512
+  worker_general:
+    url: "http://localhost:8070/v1/chat/completions"
+    model: "auto"
+    # gemma4-26B-A4B Q4_K_M MTP — out-of-loop judge for pairwise eval
+    thinking: false
+    timeout_s: 120
+    max_tokens: 1024
+  hymt2_specialist:
+    # Filled in at test time by the user after pulling Hy-MT2-1.8B-1.25bit weights.
+    # See handoffs/active/angelslim-techniques-evaluation.md for STQ1_0 kernel status.
+    url: "http://localhost:8099/v1/chat/completions"
+    model: "auto"
+    thinking: false  # Hy-MT2 is a "fast-thinking" model per release notes
+    timeout_s: 60
+    max_tokens: 512
+
+# ---- KB-RAG retrieval eval ----
+kb_rag:
+  # Path to the orchestrator's kb_rag module (added to sys.path by kb_rag_eval.py)
+  orchestrator_repo: "/mnt/raid0/llm/epyc-orchestrator"
+  # Index location (DEFAULT_INDEX_DIR in kb_rag.py = epyc-orchestrator/data/kb_rag/index)
+  index_dir: "/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/index"
+  top_k: 5
+  metric: "ndcg"  # ndcg | mrr
+
+# ---- Sample strata (target ≥10 each, total 40) ----
+# Refined 2026-05-21 per user direction: drop Mandarin-minority/dialect stratum
+# (not in actual ingest workflow), replace european_low_resource with
+# european_mainstream targeting Italian/French/German/Russian — the high-resource
+# EU languages where existing stack models should be strong; Hy-MT2 wins here
+# would be a meaningful niche finding.
+strata:
+  chinese_english_control:
+    target: 10
+    languages: ["zh", "en"]
+  european_mainstream:
+    target: 10
+    languages: ["it", "fr", "de", "ru"]
+  cjk_technical:
+    target: 10
+    languages: ["ja", "ko"]
+  mixed_script_structured:
+    target: 10
+    languages: ["zh-en-code", "ja-latex", "json-mt"]
+
+# ---- Decision thresholds (pre-committed; do not change post-hoc) ----
+thresholds:
+  pairwise_win_rate_for_h1: 0.60    # B-win ≥60% on a stratum to count as a win
+  ndcg5_lift_for_h1: 0.05           # NDCG@5 lift ≥0.05 to count as a retrieval win
+  specialist_vs_decomposition_margin: 0.10  # B must beat C by ≥10pp to claim specialist-specific lift; else decomposition-only
+  cn_en_regression_floor: -0.03     # B must not lose CN/EN by more than 3pp pairwise
+
+# ---- Pipeline prompts (frozen at harness creation) ----
+prompts:
+  summarize_a_and_c_step2: |
+    Summarize the following text in English in roughly 100-150 tokens.
+    Preserve named entities, technical terms, and numerical results exactly.
+    If the text is already in English, summarize it as-is.
+
+    Text:
+    {content}
+
+    English summary:
+
+  translate_c_step1: |
+    Translate the following text to English. Preserve named entities, technical
+    terms, numerical results, structured-data delimiters (JSON/XML), and code
+    blocks exactly. Do not summarize, comment, or add explanation — output only
+    the translation.
+
+    Text:
+    {content}
+
+    English translation:
+
+  translate_b_hymt2: |
+    Translate the following text to English. Preserve named entities, technical
+    terms, numerical results, and structured-data delimiters exactly.
+
+    {content}
+
+  judge_pairwise: |
+    You are evaluating two English summaries of the same source text. Pick the
+    better summary based on: (1) factual accuracy vs source, (2) preservation of
+    named entities and technical terms, (3) structural fidelity (if structured
+    content), (4) conciseness. Ignore stylistic preferences.
+
+    Source text (original language):
+    ---
+    {source}
+    ---
+
+    Summary [X]:
+    ---
+    {summary_x}
+    ---
+
+    Summary [Y]:
+    ---
+    {summary_y}
+    ---
+
+    Respond with exactly one of: "X", "Y", or "TIE". Then on a new line, give a
+    one-sentence reason. No other output.

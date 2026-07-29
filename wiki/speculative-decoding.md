@@ -1,0 +1,739 @@
+# Speculative Decoding
+
+**Category**: `speculative_decoding`
+**Confidence**: verified
+**Last compiled**: 2026-07-24 (adds the per-model GPU MTP-depth optimum for all three architect candidates and the architecture-dependent spec-dec × batching interaction; earlier 2026-07-20 note: adds the external-drafter-dead / native-MTP-dominant finding, the surviving quant-asymmetric self-spec redesign, and the K28 fused-GDN-kernel research; earlier 2026-07-19 note: adds v7 promotion/reviewer decoupling, repaired native GLM-MTP evidence, and the lossless-only release boundary; 2026-07-04/05/06 MI210/spec-sheet subsections remain flagged where noted)
+**Sources**: 63+ documents
+
+## Compiled Update — 2026-07-24
+
+### GPU spec-dec depth per architect candidate + batching interaction (2026-07-20→24)
+
+**Per-model MTP draft depth reconfirms the "MoE saturates early, dense goes deeper" pattern from a fourth data point (GPU, MI210, v7).** The architect-candidate GPU bench swept `{spec none, draft-mtp n-max 1..4}` for the three GPU-fitting architect candidates and pinned each to its measured optimum: **Qwen3.5-122B-A10B UD-IQ2_M (large-active MoE) → n-max 2**; **Qwen3.6-27B-dense Q8 → n-max 4**; **Qwen3.6-35B-A3B Q8 (small-active MoE) → n-max 4**. Inheriting one model's setting onto another cost ~29% throughput — reconfirming the standing invariant that spec-dec depth (like reasoning-effort levels and repetition-penalty fences, see [Cost-Aware Routing](cost-aware-routing.md) and [Quantization](quantization.md)) must be certified **per (model, quant)**, never inherited or applied at the role level. MTP itself is a clean, unconditional **+32% at single-stream** for the 122B-IQ2 arm (58 vs 44 t/s) — never omit it; run it at max-opt before probing any other lever. [architect-model-selection-bench](../handoffs/active/architect-model-selection-bench.md) §Run protocol, [architect-bench-runbook](../docs/reference/architect-bench-runbook.md) §3
+
+**Batching (`-np`) and spec-dec depth interact, and the interaction is architecture-dependent, not universal — the "don't batch long-context" rule from the 122B-IQ2 arm does NOT transfer to the other two candidates.** Extending the initial 122B-IQ2-only np×context sweep to all three architect candidates (each at its own max-opt MTP depth) found throughput ranking **A4 (35B-A3B small-MoE) ≫ A3 (27B-dense) > A1 (122B-IQ2 large-MoE)** at every batched operating point, and that **A1 alone** shows both a universal np=2 dip and a long-context batching collapse (net-negative at a 32k-token budget). A3 and A4 both batch robustly (2.2–3.4×) across every measured budget up to 32k. A spec-dec+batching router rule tuned on one model — even the architect candidate — therefore cannot be assumed to generalize to sibling models on the same kernel; see [Hardware Optimization](hardware-optimization.md) for the full cross-architecture surface and per-arm router rules. [reasoning-effort-levels](../handoffs/active/reasoning-effort-levels.md) §TB-6-exec
+
+## Compiled Update — 2026-07-20
+
+The dominant new result: **every production target already ships a near-free embedded/native MTP head that beats any separate-drafter scheme**, so the straightforward external GPU-drafter lanes are measured dead. The surviving redesign is a *quant-asymmetric same-model* self-spec (aggressive-IQ GPU drafter + high-quant CPU verifier). Confidence: `verified`/measured for the drafter economics and DR-0 self-spec numbers (observation-grade under `P-GPU-1`); `inferred` for the K28 kernel design.
+
+### Key Findings (2026-07-20)
+
+- **v7 banks correctness-verified, runtime-gated-off spec-dec wins** (observation-grade): HIP per-decode graph capture **+25%** worker spec-dec (A4B MoE) / +4–14% base decode, and MMVQ→MMQ small-batch verify-dispatch **+17.4%** MTP-verify / **+31.7%** gemma-31B. K7 root-caused the Q4 spec-dec graph regression to **VERIFY-side thrash** (verify batch = n_drafted+1 varies with acceptance → warmup resets), NOT the draft loop; the Lever-A shape-aware graph key measured NEUTRAL and was not landed. The onegraph single-graph fold is DEFERRED (K1: the gemma4 `is_mem_shared` drafter warm-up is already zero-drafter-compute → no CPU win). Worker default is one combined `ngram-mod,draft-mtp` server. ([gemma-challenge-kernel-techniques-v7](../handoffs/active/gemma-challenge-kernel-techniques-v7.md))
+- **External GPU-drafter lanes are measured dead; native MTP dominates.** Stage-1 (CPU target + MI210 external drafter) = 0.915× decode despite usable acceptance; Stage-2 co-resident = 0.355× (external) / 0.948× (native MTP) vs GPU no-spec. The DR-1 break-even model shows external lanes failed even at α=1.0 → the blocker is **overhead/control cost, not acceptance**; any future lane must satisfy `E(α,K) > F(K)+H(K)` on paper first. ([gpu-drafter-control-redesign](../handoffs/active/gpu-drafter-control-redesign.md), [mi210-big-model-and-acceleration-roadmap](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md))
+- **Quant-asymmetric same-model self-spec is the surviving redesign.** Aggressive-IQ drafter on GPU + high-quant verifier on CPU is N5-free (identical vocab/M-RoPE/GDN) and the CPU verify launders quality. DR-0e.2 (observation-grade): 122B Q4-CPU verifier + 122B-IQ2-MI210 drafter, **K2 = 1.61× (alpha 0.90)**, 28/28 quality, output byte-stable vs CPU baseline; K2 chosen over K4 (only +3.85%, alpha 0.787). New server telemetry now separates `F(K)` verify work (K2: 33.7s) from `H(K)` coordination (0.66s). Default-off research lane, `P-GPU-1`-gated. ([quant-asymmetric-self-spec-serving-design](../docs/reference/quant-asymmetric-self-spec-serving-design-2026-07-20.md), [gpu-drafter-control-redesign](../handoffs/active/gpu-drafter-control-redesign.md))
+- **GLM native-MTP repaired** (post-candidate `12a292f0c`): 5.33 t/s vs 2.49 no-spec, alpha 0.933 (376/403 accepted) — available-not-required, since the reviewer route is decoupled from v7 finalization. ([v7-promotion](../handoffs/active/v7-promotion.md))
+- **K28 GDN long-prefill fused-chunked kernel (research/design):** the serial token-scan kernel is serial-dependency-bound (effective BW falls 51→27 GB/s as prompt grows → real fusion headroom), but the Phase-0 ceiling is bounded (GDN ~15% of GPU prefill; 4× op → ~11% full-model). The real fix is a single fused chunked-recurrence kernel (fusion-first FP32, then MFMA/bf16) keeping chunk-local tensors on-chip — the generic-ggml chunked graph already uses matrix cores yet loses ~6% (op-dispatch/HBM-bound). Must preserve GDA/KDA + transposed state + **K>1 MTP-snapshot** semantics for spec-dec rollback. Post-promotion/default-off only; do NOT delay v7. GPU remains the natural habitat for the CPU-dead recurrent-model speculation (parallel scan for GDN state; vLLM DDTree+Dflash on Qwen3.5-27B AWQ ≈ 91 t/s community reference). ([k28-fused-chunked-gdn-kernel-research](../handoffs/active/k28-fused-chunked-gdn-kernel-research.md), [progress 2026-07-20-k28](../progress/2026-07/2026-07-20-k28-fused-gdn-kernel-research.md), [gpu-acceleration-path](../handoffs/active/gpu-acceleration-path.md))
+
+### Open Questions (2026-07-20)
+
+- Is there any external / adaptive-K / cascade drafter *control* design that beats native MTP, or is native MTP the terminal answer on this stack?
+- Does the K2 quant-asymmetric self-spec lane survive broader task-class admission + a production-named `P-GPU-1` certification?
+- Does a real fused GDN chunked-recurrence kernel raise the K28 full-model ceiling (needs direct ROCm profiler attribution, currently unavailable)?
+
+### Source References (2026-07-20)
+
+- [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md) — HIP-graph spec-dec wins, K7 verify-side thrash, onegraph deferral.
+- [gpu-drafter-control-redesign.md](../handoffs/active/gpu-drafter-control-redesign.md) — external-drafter lanes dead; quant-asymmetric self-spec redesign + DR-0/DR-1.
+- [quant-asymmetric-self-spec-serving-design-2026-07-20.md](../docs/reference/quant-asymmetric-self-spec-serving-design-2026-07-20.md) — K2 lane design + F(K)/H(K) telemetry.
+- [mi210-big-model-and-acceleration-roadmap.md](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md) — Axis-B drafter economics, native-MTP dominance.
+- [k28-fused-chunked-gdn-kernel-research.md](../handoffs/active/k28-fused-chunked-gdn-kernel-research.md) + [progress 2026-07-20-k28](../progress/2026-07/2026-07-20-k28-fused-gdn-kernel-research.md) — fused GDN kernel design + bounded ceiling.
+- [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md) — GPU as the natural habitat for recurrent-model speculation (DFlash/DDTree).
+
+
+> **2026-06-26 v6 cutover note (top-of-page banner).** The production EPYC inference stack was cut from a TWO-kernel setup (v5 llama.cpp + a SEPARATE ik_llama.cpp binary used ONLY by the gemma worker) onto ONE kernel: **production-consolidated-v6** (canonical tree `/mnt/raid0/llm/llama.cpp`). v6 = upstream llama.cpp framework + native MTP/NEXTN speculative decoding + our forward-ported CPU kernels + **ik_llama's iqk AVX-512 GEMM kernels** integrated into the fork (runtime-gated by env `GGML_IQK=1`). **ik_llama.cpp is FULLY DEPRECATED — no second binary.** The historical "Gemma 4 MTP Drafter" sections below (2026-05-06 → 2026-05-16) describe the now-superseded ik_llama PR #1744 path; they are preserved verbatim as the measurement/decision record and carry inline `2026-06-26 v6 cutover` notes pointing to the replacement mechanism. Cutover STATUS: "v6+iqk cutover executed 2026-06-26: registry/launcher/governance config converged (all no-inference gates green, 174 promotion-gate tests pass), canonical binary built; **live throughput + garbage verification PENDING** (operator deploy gate)." Do NOT read any number below as verified v6 production throughput. Tracking: [`handoffs/active/v6-iqk-promotion.md`](../handoffs/active/v6-iqk-promotion.md).
+
+## Summary
+
+Speculative decoding accelerates autoregressive inference by drafting multiple candidate tokens cheaply, then verifying them against the target model in a single batch. The fundamental promise is that verification of N tokens can be cheaper than N sequential decodes -- but on our EPYC 9655 CPU stack, this promise is architecture-dependent: it holds for dense and pure MoE models but breaks catastrophically on hybrid recurrent architectures.
+
+Our production experience spans the full spectrum. Tree speculation on Qwen2.5-Coder-32B (dense, f16) yields +15.8% throughput. External drafting with a 0.75B Qwen3-Coder model gives +55% on dense 32B targets. But every speculative approach tested on Qwen3.5 hybrid models -- MTP-1, tree speculation (Approaches 0, A, C), and DFlash -- results in net-negative throughput (-53% to -66%). The root cause is that 75% of layers in Qwen3.5 are Delta Net recurrent layers that process tokens sequentially regardless of batch size, making multi-token verification O(N) instead of O(1). This "verification wall" is the single most important finding in our speculative decoding research, and it applies equally to all draft-verify paradigms: autoregressive, tree, and block diffusion.
+
+The frontier technique is DFlash (block diffusion speculation), which drafts 16 tokens in a single O(1) forward pass through a 0.5B drafter -- a genuine architectural advance over the linear O(N) cost of EAGLE-style autoregressive drafting. On GPU, DFlash achieves 6.49 accepted tokens per round on Qwen3-8B (greedy). However, our 21-commit llama.cpp C++ port (forward pass verified bit-exact against HuggingFace) demonstrated that DFlash is not viable on Q4_K_M quantized models: per-token acceptance drops to 27%, yielding only 1.4% block acceptance. The quantization noise in hidden state extraction degrades the conditioning signal beyond recovery. The autoregressive drafter wins decisively (36.5 vs 13.0 t/s). A complementary technique, DART, uses a single-layer drafter with a 100GB n-gram trie from the Dolma corpus to prune draft trees, boosting acceptance by +0.5-0.7 tokens -- feasible on our 768GB+ RAM but with lower base acceptance (3.67-3.76 vs DFlash's 6.49).
+
+A separate line of research addresses reasoning efficiency without touching the draft-verify loop. The short-m@k paper demonstrates that shorter reasoning chains are up to 34.5% more accurate than longer ones within the same question, because correct reasoning proceeds efficiently while incorrect reasoning wanders (95-188 backtracks for correct vs 269-352 for incorrect). This yields a zero-cost "length alarm" heuristic: when a `<think>` block exceeds 1.5x the difficulty band budget, cancel and re-generate with a fresh seed. The full parallel approach (k concurrent streams, take the first m to finish) requires multi-slot infrastructure we currently lack, but the heuristic alone integrates cleanly with our existing difficulty-band system at near-zero implementation cost.
+
+A promising new direction is calibration-based early exit (TIDE, intake-422/423). Unlike LayerSkip/SWIFT which require fine-tuning, TIDE trains tiny MLP routers (~0.5M params) on cosine similarity between hidden states at checkpoint layers -- calibration takes <3 minutes on 2000 samples. On GPU, this yields 6.6-8.1% throughput gains. On CPU at batch_size=1, the gain is projected at 15-25% because (a) there is no batch compaction overhead, (b) layer compute is the dominant cost, and (c) the router check is a trivial matmul. Our fork already has `n_layer_exit` support across 7 model architectures including qwen3moe (production); the deep dive maps a 3-phase implementation path from external router → per-token exit → GGUF-embedded routers. This directly addresses the HSD finding that static layer-skip yields near-zero acceptance -- the learned router prevents quality degradation by only exiting tokens that have genuinely converged.
+
+One adjacent acceleration bet closed definitively in July 2026: the 651GB local code corpus held as a prompt-injection / prospective n-gram-speculation source failed its clean-window A/B (no throughput or quality win on coding roles) and was deleted with operator approval — corpus-augmented prompt lookup is retired, and the draft-model-free ngram path remains a zero-RAM capability with no corpus behind it.
+
+The current state of the art for our stack is not speculative decoding at all -- it is NUMA 4-way parallel serving (4 independent model instances on 48 threads each), which delivers 6.7x aggregate throughput on the frontdoor role. Speculative decoding provides incremental gains on top (+17-21% from draft_max tuning, +2-5% from tree branching on large dense targets) but is no longer the primary acceleration lever. The opening provided by REAP expert pruning is significant, however: REAP-25B is pure MoE (`qwen3moe` arch), meaning speculative decoding works where the hybrid frontdoor previously made it impossible.
+
+### New Findings (2026-07-11 — Gemma onegraph collapses warm-up into the draft graph)
+
+- **The Gemma MTP drafter picked up a small but architectural win: the warm-up pass can be folded into the 7-step drafting loop and replayed as one GPU graph.** The `onegraph` technique is lossless because the drafter is Q-only, KV-shared, and has no cross-position dependency across the warm-up phase, so the multi-position prepass is redundant. That makes the optimization a graph-construction simplification rather than a model-change: one launch, one replay path, same output. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md), [progress 2026-07-11.md](../progress/2026-07/2026-07-11.md).
+
+### New Findings (2026-07-16 — `ngram-mod` composes with MTP, but quality gates stay task-level)
+
+- **The v7 worker launch now uses one combined speculative stack (`ngram-mod,draft-mtp`) instead of redundant worker lanes.** Upstream/common speculative code tries n-gram drafting first and falls back to the MTP drafter when no prompt-matching draft is available, so the conservative deployment is one server configuration rather than separate `ngram` and `MTP` pools. This keeps the mechanism invisible to AutoPilot for now: planners do not tune per-request `ngram` switches until the combined lane has task-level acceptance evidence. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [progress 2026-07-16.md](../progress/2026-07/2026-07-16.md).
+- **The `ngram-mod` speed signal is workload-dependent and not quality-clean enough for default-on claims by itself.** The MI210 quiet-card retest showed Qwen2.5-Coder-0.5B repetitive JSON edit `292.5 -> 347.7 t/s` (+18.9%) and Gemma-4-26B-A4B Q4 with `--reasoning off` `85.7 -> 129.1 t/s` (+50.6%), but Gemma JSON/key correctness was not clean and outputs were not token-identical. Treat this as a speed lever that must be admitted through task acceptance, not a universal speculation win. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [progress 2026-07-16.md](../progress/2026-07/2026-07-16.md).
+- **K5 quality evidence closes the immediate v7 speculation-risk gate for the refreshed candidate.** The corrected chat-endpoint K5 harness measured v6 and v7 candidate `8e5c555ab` identically on MMLU-Pro (`73/200=36.5%`) and GPQA (`50/195=25.6%`), with `0` query errors and comparator `PASS` at the `-5pp` threshold. The invalid raw `/v1/completions` attempt is explicitly discarded as a protocol error. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [progress 2026-07-16.md](../progress/2026-07/2026-07-16.md), `/mnt/raid0/llm/tmp/v7-quality-20260716-chat/v7_quality_gate_report.md`.
+
+### New Findings (2026-07-16 — N5 frontdoor drafter alpha landed on patched experimental v7)
+
+- **The final N5 checkpoint now has real acceptance evidence on the patched experimental v7 tree, not just readiness artifacts.** After the `draft-tree` output-capacity fix in `da1bf5e2f`, the rebuilt `build-hip/bin/llama-server` reports `version: 10077 (da1bf5e2f)` and the strict execute run at `/mnt/raid0/llm/epyc-inference-research/data/specdec_frontdoor_alpha/n5_retest_v7_execute_20260716T190836Z/summary.json` is `decision_grade=true` with `n5_spec_on` `376/376`, `positive_mtp` `355/401`, and `spec_off` `0/0`. This is the load-bearing N5 result: acceptance is now measured on the current candidate rather than inferred from the preflight. Sources: [gpu-drafter-mi200-investigation.md](../handoffs/active/gpu-drafter-mi200-investigation.md), [Progress 2026-07-16](../progress/2026-07/2026-07-16.md).
+
+### New Findings (2026-07-17 — draft-tree routing proof and hot-path cleanup)
+
+- **K25 is now closed as a route-proof question: CDNA2 Q8_0 verify width `ne11=1` dispatches to MMVQ, while accepted speculative verify widths `ne11=2..9` and `33` dispatch to MMQ.** The path was proven in three layers: source audit showed the selector already uses `ne11 <= 1`; low-level `test-backend-ops` plus `rocprofv2` confirmed `n=1` uses `mul_mat_vec_q` and `n=2..8` uses `mul_mat_q`; and the final accepted external-draft request with `GGML_CUDA_LOG_MMVQ_ROUTE=1` captured real request-time MMVQ/MMQ route logs. The performance conclusion did not change: external draft-tree remains slower than the resident no-spec frontdoor lane, so this closes correctness/routing evidence, not economics. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md), [progress 2026-07-17](../progress/2026-07/2026-07-17.md).
+- **K29 removed the speculative hot-path token-buffer malloc/free churn without changing batch ownership.** Experimental v7 `6b93ca027` replaces the extra draft-token sidecars in `common/speculative.cpp` with `std::vector<llama_token>` ownership and nulls `batch.token` before `llama_batch_free()`, so the batch free path keeps owning the embedding and metadata buffers while the speculative path stops doing manual token-buffer allocation. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [progress 2026-07-17](../progress/2026-07/2026-07-17.md).
+- **The production-shaped Gemma worker lane re-confirmed `draft_max=2` as the default; deeper drafting over-drafts without paying back in accepted tokens.** The 8K CPU worker sweep on the live composed stack (`ngram-mod,draft-mtp`, assistant v6 Q8 draft, q8 KV, reasoning off) measured depth 2 at `87.76 t/s` with `492/666` accepted, depth 3 at `76.38 t/s` with `492/812` accepted, and depth 4 at `84.40 t/s` with `494/734` accepted. That is a useful constraint on the earlier onegraph discussion: there is no hidden gain from simply drafting deeper on the current worker lane. Sources: [speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md), [progress 2026-07-17](../progress/2026-07/2026-07-17.md), [k35-optimized-stack-throughput-context-report-2026-07-17.md](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
+
+### New Findings (2026-07-17 — onegraph verify-side reframe, per-decode graph A/B, and two spec-dec correctness fixes)
+
+- **The onegraph single-graph fold is DEFERRED because the measured spec-dec regression is verify-side, not draft-side — the draft loop is already graph-optimal.** K2's MI210 A/B showed per-decode HIP graph capture is net-positive on Q8 (gemma4-26B-A4B external-head spec-dec **+25%**, the production worker regime) but a **−5% regression on the same model at Q4**. K7's source audit localized the thrash: for the single-seq gemma4 `is_mem_shared` drafter every *draft* decode is `n_tokens=1` at a fixed position (shape-stable → the per-decode graph warms up once and replays), while the *target verify* decode is `n_tokens=n_drafted+1` and varies with acceptance every step, so the single pointer-keyed (`nodes[0]`, shape-blind) cache slot keeps resetting `warmup_complete` and verify runs eager. So the on-target fix is a shape-aware cache key (Lever A), NOT onegraph — which fuses the *already-shape-stable draft decodes* and does not touch the verify variability. Lever A was implemented env-gated and measured **NEUTRAL** (Q8 −2% with byte-identical output = correctness-safe but no speedup; Q4 noisy) → not landed, source reverted to a patch. A draft-depth sweep also refuted a deeper-is-faster hypothesis (clean sequential n_max 2 ≈ 4; the earlier "n_max 2→4 +20%" was a load artifact, retracted) — no draft-depth headroom to justify onegraph either. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md), [progress 2026-07-17](../progress/2026-07/2026-07-17.md).
+- **A real onegraph implementation is a speculative+backend co-design, not a local edit — and ROCm 6.2 forecloses the variable-length form.** The draft loop is host-in-the-loop: each iteration does a hard `llama_synchronize`, a host read of the sampled token + h_row, a data-dependent `p_min`/`n_max` early-exit, and a host memcpy of h_row back into the batch. Folding it into one replayable graph requires keeping the sampled token and h_row on-device (bypassing the `get_sampled_token_ith` / `get_embeddings_nextn_ith` host contracts), dropping the data-dependent early-exit for a **fixed-N unroll** (MI210 ROCm 6.2 lacks CUDA-style conditional graph nodes, so variable-length drafting cannot live in-graph), and holding batch shape constant across all N sub-steps. Tensor *content* is not part of graph `node_props`, so a wrong-but-same-shape buffer silently feeds stale state and is NOT caught by re-capture — a correctness risk that makes it high-risk, not merely hard. Sources: [speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md), [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md).
+- **Two silent spec-dec correctness bugs were fixed on experimental v7, both invisible to config validation.** (1) `common/speculative.cpp` recorded the draft-model path but then called `llama_model_load_from_file(params.model.path...)`, **silently reloading the TARGET model as the draft** in common/server paths (K32, `96986f5e9`); the fix loads the real draft path with draft-specific device/`n_gpu_layers`/tensor-buffer overrides, and an invalid `-md` path now fails at startup instead of masquerading. (2) `draft-tree` raised `n_seq_max` to 32 but left draft `n_ctx` unchanged, so `8192/32` left only a 256-token per-sequence draft context → long-output requests threw HTTP 500 near `n_tokens=257` (K33); the fix forces unified KV for draft-tree draft contexts, preserving full per-sequence context (`508/508` accepted on the repaired 1024-token run, though the Stage-1 economics gate still failed at `0.915×`). Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [progress 2026-07-17](../progress/2026-07/2026-07-17.md).
+- **Quality gating for any drafter/kernel candidate must be multi-suite downstream, never PPL-only** — the Gemma Challenge's PPL-only gate was gamed (the top *lossy* submission held PPL but lost 15 GPQA-Diamond / 40 MMLU-Pro points), which is why the v7 K5 gate scores MMLU-Pro + GPQA at production sampling. See [Benchmark Methodology](benchmark-methodology.md) for the gate discipline. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md).
+
+## 2026-07-19 Update — v7 release boundary and repaired GLM-MTP
+
+- The refreshed experimental-v7 tip was promoted as `production-consolidated-v7` on 2026-07-20 after production-role evidence cleared, with the reviewer route explicitly decoupled after GLM failed decision-grade C-CRAB P-REV-1 and the fast RM-2 alternatives also failed to clear the reviewer gate. This changed release sequencing, not the quality bar: future reviewer work remains a separate control-plane track. Sources: [v7 promotion](../handoffs/active/v7-promotion.md), [GLM reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md), [model-probe scoreboard](../docs/reference/model-probe-scoreboard.md).
+- Native GLM-MTP is now a repaired acceleration result rather than a reviewer-admission result. The matched CPU A/B delivered `5.33` decode t/s with `376/403` accepted drafts (`alpha=0.933`) versus `2.49` no-spec, but this does not establish reviewer quality or a GPU deployment path. Sources: [GLM reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md), [tree-draft forward-port plan](../handoffs/active/tree-draft-forward-port-plan.md), [model-probe scoreboard](../docs/reference/model-probe-scoreboard.md).
+- The release scope remains lossless and evidence-gated. `ngram-mod` remains workload-dependent, deeper drafting does not improve the current worker lane, and experimental-v7 GPU numbers remain observations until a production-named kernel is certified under P-GPU-1. Sources: [Gemma v7 kernel techniques](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [P-GPU-1 ratification package](../docs/reference/p-gpu-1-ratification-package-2026-07-18.md), [v7 promotion](../handoffs/active/v7-promotion.md).
+
+## Key Findings
+
+### 2026-07-06 — VERIFIED protocol-pinned MTP temp→α spec sheet (model-specific, non-monotonic) · reproducibility root-caused · MTP +60.2% on F16 · tree-draft (DySpec) SHELVED — ⚠️ COMPILE-FLAGGED FOR HUMAN REVIEW
+
+> **Review flag (project-wiki writer-evidence policy):** model-compiled from the v7-candidate spec-sheet session; **not adopted until human or measured review**. Every throughput/α number is an **OBSERVATION** — single MI210, serial, seed 42, no P-GPU-1 per MEASUREMENT.md — but each is now protocol-pinned (production temp + seed 42, fixed prompt, server model-identity VERIFIED, reps confirmed byte-identical at fixed temp). Sources: [findings-05c lever × category matrix (⭐ v7-candidate spec sheet)](../handoffs/active/fable5-window2-findings-05c-mi210-lever-category-matrix.md), [tree-draft forward-port plan](../handoffs/active/tree-draft-forward-port-plan.md), [kernel reconciliation audit](../handoffs/completed/kernel-reconciliation-audit.md), [progress 2026-07-06 v7-candidate + GPU levers](../progress/2026-07/2026-07-06-v7-candidate-and-gpu-levers.md).
+
+- **MTP/NEXTN temp→α is MODEL-SPECIFIC and NON-monotonic — there is NO universal "temp-0 inflates acceptance" rule; every spec-dec number must carry `(temp, α)`.** The verified single-stream curves (Qwen3.6, seed 42, v7-candidate kernel) diverge in *shape*, not just magnitude: **Qwen3.6-27B dense-GDN** is monotone-decreasing (MTP α .69 → .68 → .64 across temp 0 / 0.2 / 0.6); **gemma-4-31B pure-dense** is NON-monotonic and *peaks at temp 0.6* (α .49 → .45 → **.84**); **Qwen3.6-35B-A3B MoE** MTP is net-NEGATIVE at every temp. The generic "greedy decoding is a best-case for acceptance" heuristic holds only for the 27B; gemma inverts it. Consequence: the deployable figure is always the one measured at **production temp 0.1–0.3**, tagged `(temp, α)` — never a high-temp α quoted as the spec.
+- **The "non-reproducible bounce" was a temperature-comparison error, not hysteresis.** An apparent non-reproducibility (gemma "45.7" vs a fresh "32") was root-caused: at fixed `(prompt, temp, seed)` reps are **byte-identical** (MMQ FP-drift is the only byte-difference vs plain, and it is deterministic per config). The spread came entirely from the model-specific temp→α curve × prompt-dependent α being compared *across temperatures without pinning*: gemma's old "45.7" was a temp-0.6 / α-.84 figure (deployable temp-0.2 = ~30); the 27B's old "40.4" ≈ the verified 41.4 @ temp-0.2. **α is the SPEED dial only** — MTP/NEXTN is distribution-lossless, so there is no quality tradeoff (coherence PASS at all temps); acceptance moves throughput, never output quality. This hardens the `feedback_production_sampling_seed_not_temp0` discipline: pin temperature, verify server model identity, confirm reps byte-identical, never compare α across temps.
+- **Deployable single-stream tops (v7-candidate kernel, production temp), all `(temp, α)`-tagged:** Qwen3.6-27B dense-GDN **~41 t/s MTP** (α .68 @ t0.2, **+31%** over plain 31.7) · gemma-4-31B pure-dense **~30 t/s MTP** (α .45 @ t0.2, **+15%** over ~26) · Qwen3.6-35B-A3B MoE **FRONTDOOR ~101 t/s PLAIN** (MTP *loses*, ~90 < 101). This supersedes the earlier "gemma SS 45.7 / 27B SS 40.4" line, which conflated temperature and prompt. The frontdoor's PLAIN-beats-MTP result is the single-stream analog of the GPU-MoE-decode verdict (plain MoE decode is the bar spec-dec must clear).
+- **MTP repays ~4× more on F16 than on Q8 — a BW-bound effect, but F16 is a precision choice, not a throughput one.** On a Qwen3.6-27B Q8→F16 dequant proxy (values preserved so α≈Q8's, isolating the kernel path): plain F16 19.37 → **MTP F16 31.03 t/s = +60.2%** (α 66.9%, mean-accept 3.00/3), vs Q8's +15.6%. Confirmed hypothesis: F16 is 2 bytes/param (more BW-bound), so each accepted draft token avoids a fatter weight read. **But absolute F16-MTP 31.0 < Q8-MTP 33.6 < Q8-MTP+MMQ 40.4** — F16's doubled weight bytes dominate, so F16 is never a throughput choice; MTP just makes the precision far cheaper. A true-fp16 GGUF is needed to confirm the real α; the fp16 download stays DEFERRED (Q8 is quality-lossless here).
+- **Tree-draft (DySpec external-drafter tree speculation) is SHELVED — engine ported + validated, then dominated by embedded MTP on every stack target.** The DySpec Phase-1a port (a new `common_speculative_impl_draft_tree` subclass built into the v7-candidate, commit `46f876c12`) is bit-identical to linear draft on draft_n/accepted/α/output (the greedy-path collapse works as designed — engine CORRECT, milestone ACHIEVED). But the A/B on Qwen3.6-27B dense Q8 (external 0.8B qwen35 drafter, temp 0.2 / seed 42) is net-NEGATIVE vs plain: **draft-tree 17.42 ≈ draft-simple 18.60 < plain 31.17 ≪ embedded MTP 41.89** — the 0.8B external-drafter overhead isn't repaid on fast Q8 decode, and the near-free embedded MTP head dominates. Phase-1b's projected +15.8%-over-linear → only ~21.5 t/s, still < plain. **Every stack target ships an MTP head** (qwen 27B/35B/122B, gemma, and GLM-5.2 — which carries a native MTP/NEXTN head, `skip_mtp=False`, though it is an **inert stub on our fork**: the glm4-moe/glm-dsa NEXTN tensors load but are skipped in the forward pass), so no MTP-less niche remains for an external-drafter tree. The validated engine is banked (cheap to revive if a genuinely MTP-less target appears). **The better future GLM-5.2 spec-dec lever is finishing the native GLM MTP forward graph** (~90% scaffolded — a bounded qwen35-style port; gated on GLM-5.2 becoming runnable past the DSA gate, PR#21149), not tree-draft. See [tree-draft-forward-port-plan.md](../handoffs/active/tree-draft-forward-port-plan.md).
+
+### 2026-07-05 — MTP-on-GPU-MoE converged ~neutral · temp-0 A/B discipline · `-md` fix production-closed · prompt-lookup corpus retired — ⚠️ COMPILE-FLAGGED FOR HUMAN REVIEW
+
+> **Review flag (project-wiki writer-evidence policy):** model-compiled, not adopted until human or measured review. GPU numbers are OBSERVATIONS (single MI210, serial, seed=42, no P-GPU-1); CPU A/B numbers are throwaway-harness observations, not protocol-cited. Sources: [md-double-load fix brief](../handoffs/active/md-double-load-mtp-fix-brief.md), [corpus prompt-lookup revalidation (completed)](../handoffs/completed/corpus-augmented-prompt-lookup-revalidation.md), [progress 2026-07-05 CoT falsification + MTP](../progress/2026-07/2026-07-05-cot-falsification-and-mtp.md), [MoE aggregate deployment wins brief](../handoffs/active/moe-aggregate-deployment-wins-brief.md).
+
+- **MTP-on-GPU-MoE CONVERGED: ~neutral at production temperature — the 3-way flip-flop (−12% → +6.5% → −6.8%) is closed.** Root cause of the contradictory readings: each A/B measured a different, arbitrary output temperature instead of the deployed low-temp config. Full curve (Qwen3.6-35B-A3B, seed 42, experimental build with the `de447119f` MTP-verify MMQ dispatch fix): temp 0 (greedy) **+6.5%** at acceptance 0.79; temp 0.2 (**production** — registry intent 0.1–0.3) **−1.6%** at acceptance 0.63 (within single-sample noise); temp 0.6 **−6.8%** at acceptance 0.57. Verdict: **MTP is a WASH on GPU-resident MoE at production temp** — not worth enabling as a speed lever, but no longer a hard no-go; `de447119f` (+17.4% single-stream MTP-verify) is what neutralized the original −12% penalty. Do NOT re-quote "−12% / net-negative / no-go" as current — findings-05c still carries stale −12% cells in secondary tables (flagged there, not swept). The GPU-dense-vs-GPU-MoE substrate split from 2026-07-04 stands otherwise unchanged. Commits `93353884`→`ec2bda8e`→`7369b0ec`.
+- **Measurement discipline (new memory `feedback_production_sampling_seed_not_temp0`): never A/B spec-dec at temp 0.** Greedy decoding inflates draft acceptance (best case), so temp-0 A/Bs systematically overstate spec-dec wins — this is what produced the spurious "+6.5% sign-flip" reading, corrected the same session. Literature cross-check: spec-dec is output-distribution-preserving at every temperature, and acceptance falls monotonically as temperature rises (our 0.79→0.63→0.57 curve is textbook). Consequence: low-temp production (0.1–0.3) is the *favorable* spec-dec regime, so ~neutral-at-production is the expected outcome, not an anomaly. Measure sampling-sensitive features at the deployed sampling config (temp + seed 42, per `f4a8a3ca`).
+- **The `-md <same-file>` double-load fix is production-closed end-to-end; the CPU decode A/B closed MIXED — memory win, no speed win.** The launcher (`orchestrator_stack.py`, commit `5b4d8147`; legacy `LlamaCppBackend._build_command()` also guarded) now suppresses literal `-md` when `realpath(-md) == realpath(-m)`, keeping Gemma's genuine separate assistant-head `-md`. Live-reloaded 2026-07-03 (frontdoor + 4 quarter replicas + architect); post-reboot audit `same_file_md_count=0`. Post-reload acceptance confirms embedded NEXTN stays active without `-md` (aggregate token α 0.8204 incl. Gemma; frontdoor α 0.6188, architect small-sample 0.5556). Memory: affected-Qwen PSS **−20.8 GiB** (RSS −270 GiB, mostly duplicate mappings); Gemma control flat. But the quiet-window matched `/completion` A/B (Qwen3.6-35B throwaway server, mmap and `--mlock` arms) found the embedded no-`-md` path ~4% *slower* (ratio 0.959/0.962) at *identical* draft acceptance (α 0.791/0.794), while saving ~4.37 GiB load-PSS per instance. Decision: keep no-`-md` for duplicate-load hygiene + memory pressure; do NOT claim a CPU speedup (the +15.6% embedded-path win is GPU-measured only). Narrow rollback documented if production eval-fanout telemetry ever shows a sustained Qwen throughput regression.
+- **Corpus-augmented prompt lookup RETIRED; the 651GB corpus is DELETED.** After the wiring/observability/health-probe repairs (retrieval provably worked: 6/6 preflight injection, p50 ~1ms), the clean-window prompt-injection A/B (AutoPilot stopped, `--confirm-clean-window`) failed: `coder_escalation` 28.11→27.86 t/s (−0.25, quality neutral-but-uninformative), `worker_general` 37.16→34.06 t/s (−3.10) with a failed quality gate (−0.55 vs −0.5 threshold). The distinct CPL-4b mechanism — corpus as a **static n-gram speculation source** via `llama-lookup-create/-merge` — was scaffolded and dry-run-validated but retired unexecuted by operator decision; `/mnt/raid0/llm/cache/corpus` was deleted (~651G reclaimed, ~965G now free). Native `--lookup-*` / `--spec-type ngram-*` remains a supported zero-RAM v6 capability but now has no corpus behind a static cache; any recreation requires a fresh handoff + protocol (archived V3 corpus measurements are not current evidence).
+- **Drafter-roadmap adjacency: the GPU-reasoner "CoT scaffold" lane closed negative; verifier/selector is the forward GPU-assist mode.** Single-shot CoT-scaffold injection was FALSIFIED in both regimes (generator≈beneficiary: net −9/−2; generator>beneficiary: net −3, 1/21 rescue) — transplanted reasoning does not transplant capability — and the recursive self-debug loop was also weak (4% rescue, RL-ceiling-consistent). The literature-backed forward path for the MI210 reasoner helping CPU models is **verifier/selector best-of-N** (GenRM/GenPRM class), which does its own task rather than feeding the target — mechanically disjoint from draft-verify spec-dec, so the spec-dec drafter roadmap (α-gated external drafters, DFlash-on-HIP, NEXTN self-draft) is unaffected; the GPU-reasoner lane no longer competes for the same "GPU assists CPU decode" slot as a drafting mechanism. Full detail compiled in hardware-optimization.md.
+- **MoE-on-GPU aggregate-serving levers (⏸ production HOLD, operator 2026-07-04) reconfirm "plain MoE decode is the bar spec-dec must beat" on GPU.** The zero-code aggregate wins (`-fa 1` at B≥8, bf16-for-aggregate, combined 1548 t/s @B128 on gemma-26B-A4B) raise GPU-MoE plain-decode throughput further and are detailed in hardware-optimization.md; the spec-dec-relevant facts here are that the brief's "MTP for MoE-on-GPU = −12%" cell predates the temperature-curve convergence above (~neutral at production temp), and that forcing MoE experts to MMQ at low batch (`mmid` threshold) is net-negative — MMVQ is the correct low-batch expert kernel, so there is no MTP-verify-style dispatch win to harvest on the expert path.
+
+### 2026-07-04 — MI210 Qwen3.6-27B spec-dec campaign (MTP verify, head choice, substrate-dependence) — ⚠️ COMPILE-FLAGGED FOR HUMAN REVIEW
+
+> **Review flag (project-wiki writer-evidence policy):** this subsection was model-compiled from the MI210 campaign docs and is **not adopted until human or measured review**. Every throughput number is an **OBSERVATION** — single-run, contended MI210 host, no P-GPU-1 per MEASUREMENT.md. Sources: [findings-05b MI210 inference architecture](../handoffs/active/fable5-window2-findings-05b-mi210-inference-architecture.md), [progress 2026-07-03 MI210 campaign](../progress/2026-07/2026-07-03-mi210-qwen36-27b-speed-campaign.md).
+
+- **The embedded-NEXTN MTP invocation is `--spec-type draft-mtp` with NO `-md`; same-file `-md` was a double-load bug.** `-md <same file>` loads a full second copy of the model as the draft (full forward per draft token) → ~0% MTP speedup; the zero-extra-load self-spec path is reached only when `-md` is ABSENT. GPU-pinned embedded MTP (n_max=3 optimal; n_max=5/7 regress) reaches **+15.6% single-stream on the 27B** (33.6 vs 29.06 t/s). CPU frontdoor/architect were fixed live on 2026-07-03: registries may still record a same-GGUF self-draft path, but the launcher suppresses literal `-md` for same-realpath Qwen NEXTN roles and keeps Gemma's separate assistant-head `-md`.
+- **MMVQ→MMQ MTP-verify fix: +17.4%/+31.7% on dense-Q8, kernel-FLAT on MoE.** Small Q8 verify batches dispatch to per-column `mul_mat_vec_q` on CDNA2 instead of batched `mul_mat_q`; routing them to MMQ (experimental `de447119f`) gives +17.4% on Qwen3.6-27B and +31.7% on gemma-31B (both dense-Q8). It does NOT transfer to MoE experts (separate `get_mmvq_mmid_max_batch` dispatch); MMQ is numerically non-bit-exact so it **PERTURBS acceptance** (qwen36 −6pp, gemma-26B +4pp — a per-model coin-flip that dominates the MoE end-to-end delta over kernel speed). Evaluate any `mmid` follow-up on **acceptance-normalized step-rate, not raw t/s**. Kernel detail in hardware-optimization.md.
+- **MTP is SUBSTRATE-and-arch-dependent — net-NEGATIVE for MoE on GPU, and head-quant-independent.** GPU-resident MoE plain decode already reads only active-expert bytes at 1.6 TB/s, so MTP draft+verify overhead isn't repaid: gemma-4-26B-A4B plain 96.6 vs MTP 84.5 (−12%); qwen36-35B-A3B frontdoor plain 97.9 vs MTP ~86 (−12%). **Head-quant control (gemma-26B): plain 94.3 vs Q8-head MTP ~89.6 vs f16-head MTP ~81.5 — BOTH heads lose to plain**, so the loss is MoE-verify + GPU-resident overhead, not head dtype. The DENSE 27B is the opposite (plain 29 vs MTP 33.6, +15%). **MoE roles that migrate to GPU should run MTP OFF (plain is faster); MTP stays a CPU/BW-bound and GPU-dense win.** *2026-07-05 supersession: the −12% magnitude is stale. After the MMVQ→MMQ verify fix and a full output-temperature curve, MTP-on-GPU-MoE CONVERGED to ~neutral (−1.6%) at production sampling temp — no longer a reason to avoid MTP on GPU-MoE, but still not a speed win. See the 2026-07-05 subsection below.*
+- **EAGLE-3 no-go on qwen35-hybrid-on-GPU; MTP stays the head.** The community `Ex0bit/PRISM-EAGLE3` head loads and survives 900 tokens on our v6/HIP build (upstream #24541 Part-2 >700-token crash does NOT reproduce — a capability finding), but it is slower than MTP: **25.0 vs 33.6 t/s**, acceptance mean 2.34 < MTP 2.99. EAGLE-3 machinery already ships in v6 (`common/speculative.cpp:419-850`); it needs a trained qwen35 head + a relaxed `target_layer_ids_n==3` assert. The slowness is the same arch/substrate effect (MoE/hybrid plain-decode-on-GPU is already fast), NOT head-specific — EAGLE-3 is **untested/unrefuted for dense-transformer and CPU targets** (where it is SOTA).
+- **GDN-MFMA verify kernel KILLED for decode; fused-verify was already built; DFlash held.** The qwen35 GDN verify is ALREADY one fused state-resident recurrent op with O(1) snapshot rollback (the "build a fused verify" idea-mine was falsified). rocprofv2 shows GDN decode @B=32 is memory/occupancy-latency-bound (MfmaUtil 0%) → no MFMA win (detail in hardware-optimization.md). DFlash stays **HELD** (v2-era worktree, CPU-only, block-mode never worked; go/no-go gates on a CPU offline block-τ≥4 that the GPU-only directive blocks). Two CPU-era verdicts flagged for GPU re-test: hybrid **tree-drafting** (state-clone cost flips — 149 MB @ 1.6 TB/s ≈ 0.1 ms) and **GPU-draft / CPU-target** (`-devd`/`-ngld`/`-otd`; CPU verify amortizes the weight read so no findings-02 amortization penalty).
+
+### New (2026-07-03, α-measurement-first + DFlash promoted to an MI210 candidate)
+
+- **The first α(drafter→target) measurement is a zero-cost production log read, not a bench, and G0 is now closed for the self-MTP baseline.** Every production text role already runs MTP/NEXTN self-speculation, and the v6 servers print per-position acceptance stats. The 2026-07-03 live parser report (`epyc-orchestrator/orchestration/reports/mtp_acceptance_report_20260703T114323Z.md`) found no failed MTP-configured roles and measured token α: architect_general `0.6854`, frontdoor `0.6582`, worker_general `0.8256`, aggregate `0.7580`. Frontdoor/worker had one quiet replica each with no acceptance lines, so the report marks those role groups `ok_partial_port_traffic`. This reframes the drafter leg: the question is not "can we draft?" but "does an *external* drafter beat the self-MTP α already in production?" Sources: [findings-02 heterogeneous GPU](../handoffs/active/fable5-window2-findings-02-heterogeneous-gpu.md), [findings-05](../handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md), [gpu-drafter-mi200-investigation.md](../handoffs/active/gpu-drafter-mi200-investigation.md).
+- **DFlash is promoted from a "not-viable / same-deployment-wall" comparison to an explicit MI210/HIP candidate.** That wall was a *CPU* wall (recurrent/diffusion draft verification is expensive on CPU); on the MI210 the draft path runs on GPU with parallel scan, so the verification bottleneck disappears — the same reason `gpu-acceleration-path` revives DFlash/DDTree. Two forks: the deep-dive's O(1)-drafting port, and a HIP re-scope of the lucebox `llama.cpp-dflash-ggml` tree (currently CUDA-pinned). Still α-gated (G0 gives the baseline free); our own DFlash C++ forward pass is already verified correct to <0.01, so the algorithm was never the blocker; [unverified] that the reference kernels build on ROCm. Sources: [speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md), [dflash deep-dive](../research/deep-dives/dflash-dart-diffusion-speculation.md), [lucebox deep-dive](../research/deep-dives/lucebox-hub-consumer-gpu-dflash.md).
+- **A custom gfx90a dequant kernel helps spec-dec only for a batch-1 *latency* drafter.** Per the roofline synthesis (see hardware-optimization.md), the quantized-decode dequant gap is compensated by batched serving for throughput roles; a hand-authored Q4_K dequant-GEMV kernel earns its keep only where a GPU drafter runs at batch-1. Source: [findings-05](../handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md).
+
+### New (2026-07-02, MI210 landing — GPU-side spec-dec verified + MTP refresh + Qwen MTP port)
+
+- **The MI210 hardware gate is OPEN — the fork's HIP build leg works on gfx90a, and GPU-side MTP speculative decoding is demonstrated.** The AMD Instinct MI210 (gfx90a, CDNA2, 64 GB HBM2e) is installed with ROCm 6.2 bind-mounted. An isolated worktree off `production-consolidated-v6` built with `-DGGML_HIP=ON -DAMDGPU_TARGETS=gfx90a` after one fix (bump the OCP-fp8 typedef guard to `HIP_VERSION>=60300000`, committed `0ebf1b4d7`, since ROCm 6.2 ships only `_fnuz` fp8). gemma-4-31B-Q4_K_M target + its 514 MB NEXTN head both offloaded to ROCm0 via `--spec-type draft-mtp -ngl 99 --spec-draft-ngl 99` decode **43.25 t/s = 1.44× over plain 30.01**, draft acceptance 59.7% (163/273), mean accept length 2.79 of n_max=3 (per-position 0.758/0.593/0.440) — direct evidence that head-on-GPU MTP is structurally sound (the per-step hidden-state hop is a ~µs PCIe memcpy, not CPU compute). All numbers are first-pass OBSERVATIONS on a contended host, not decision-gating. [gpu-drafter-mi200-investigation.md](../handoffs/active/gpu-drafter-mi200-investigation.md), [progress 2026-07-02](../progress/2026-07/2026-07-02-mi210.md)
+- **qwen35 (GDN / hybrid-SSM) decodes CLEAN on the GPU HIP path — this localizes the qwen35 speculative-decode wall to the CPU codepath, not the forward pass.** Qwen3.6-27B-Q8_0 (arch `qwen35`, gated-delta-net + full attention) ran at 28.69 t/s with `-ngl 99` and **no M-RoPE/GDN decode failures** — the v6 fork's `ggml-cuda` carries full delta-net/ssm-conv kernels (a strict superset of the `dflash` tree). This is a sharp contrast with the persistent CPU external-draft / tree-spec qwen35 failures in the N5 blocker notes (`invalid seq_id`, M-RoPE decode aborts), and it removes "qwen35 can't decode on our stack" as a GPU-path concern. It does NOT by itself supply the N5 frontdoor-drafter α — that gate is about acceptance, not forward-pass health. [gpu-drafter-mi200-investigation.md](../handoffs/active/gpu-drafter-mi200-investigation.md), [progress 2026-07-02](../progress/2026-07/2026-07-02-mi210.md)
+- **Vulkan is architecturally impossible on the MI210 — use HIP/ROCm.** RADV/AMDVLK/amdgpu-pro all enumerate zero devices for the compute-only Instinct MI200 (CDNA2/Aldebaran) family; only `llvmpipe` (CPU) shows. This complements the earlier GT 1030 falsification: the two non-CPU accelerators in the box are each unusable for a different reason (GT 1030 too BW-poor, MI210 has no Vulkan ICD). [progress 2026-07-02](../progress/2026-07/2026-07-02-mi210.md)
+- **gemma-4-31B dense CPU MTP re-benched to ~1.84× on a clean host — the prior single-run 2.98× does not reproduce; on structured/code output it reaches 2.5–3.2×.** Clean 2026-06-22 gate-bench (host quiesced): baseline 9.14 → MTP draft_max=3 16.79 t/s (draft_max 3 > 4 > 2). On checkable code tasks the win is larger (Manacher's 2.55×, primes<100 3.19×) because predictable tokens draft at very high acceptance; generic prose accepts less. MTP output is **distribution-lossless, NOT byte-exact greedy** (batched-verify FP rounding flips greedy near-ties) — this supersedes the earlier "byte-exact under Leviathan verifier" claim as too strong. [speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md)
+- **Despite the real dense-MTP win, gemma-4-31B is Pareto-dominated by the gemma-4-26B-A4B MoE worker and was NOT promoted.** At equal ~90% suite quality, the A4B MoE reads ~3.8B active params/token vs the dense 31B's 31B, so on BW-bound CPU decode it wins the quality×speed frontier (~44.7 vs 26–32 t/s). Caveat: the "A4B ties dense-31B on quality" reading is a **saturation artifact of our ~90–94% suites** (public dense-Q4 gemma-4-31B evals land above ours, so it is not a Q4 penalty) — the domination is safe for the worker/general role where ~90% suffices, but must not be read as "A4B = 31B in capability." The lasting value of the MTP work is validating dense-CPU-MTP (2.5–3.2×), which justifies the Qwen3.5-9B dense path. [speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md)
+- **Qwen3.5-9B dense MTP confirms the dense-CPU-MTP thesis on a second (non-gemma) model: 14.90 → 29.30 t/s = 1.97×, 87% draft acceptance (184/211).** Verified via a fresh `origin/master` build (the new `llama_model_base` framework + #22673 MTP), since the cherry-pick into our fork is infeasible (below). Caveat: upstream-master kernels carry none of our fork's NUMA/CPU optimizations, so the verified quantity is the **~2× multiplier and end-to-end runnability**, not the absolute t/s. [qwen-mtp-llamacpp-port.md](../handoffs/active/qwen-mtp-llamacpp-port.md), [speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md)
+- **Landing Qwen MTP (#22673) in our fork by cherry-pick is INFEASIBLE — a model-framework generation gap, not enum glue.** PR #22400 (GDN partial seq_rm dependency) ported cleanly (`b139eba138`), but #22673's Qwen MTP graph is written against upstream's `struct llama_model_<arch> : public llama_model_base` refactor (nested `load_arch_hparams`/`build_arch_graph`/`graph`), while our fork is ~901 commits behind on the old `struct llm_build_<arch> : public llm_graph_context` pattern. The 25-file cherry-pick built into a structural wall. Realistic options: use a fresh upstream-master build for any Qwen-MTP need (loses our kernels; proven), reimplement the MTP nextn graph in our `llm_build_qwen35*` idiom (moderate, only if a Qwen-MTP model becomes deployable — none is), or rebase the fork ~901 commits (large, separate effort). [qwen-mtp-llamacpp-port.md](../handoffs/active/qwen-mtp-llamacpp-port.md)
+- **Per-model MTP verdicts (2026-06-22 refresh): dense wins, MoE is marginal, hybrid is dead.** gemma-4-31B dense = real ~1.84–3.2× (Pareto-dominated, eval-only); Qwen3.5-9B dense = 1.97× (worth pursuing); Qwen3.6-35B-A3B (frontdoor/coder) = worth_investigating but **low EV** (pure MoE-A3B is the worst CPU-MTP case — 26B-A4B measured only 1.06×) and needs the hard #22673 port; Qwen3.5-122B-A10B (architect) = **DEAD** (MTP-1 already measured 0.56× net slowdown, 75% Delta-Net recurrent layers do not batch); Qwen3.5-27B and Qwen3-Next-80B = **DEAD** (same Delta-Net verification wall, only GGUF attempt 0.43×). [speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md)
+- **FR-Spec draft-vocab trimming reaffirms that verification, not draft quality, is the CPU wall.** Trimming the native-MTP draft LM-head to a frequency-ranked top-32,768 of the 248,320-token vocab is lossless (byte-identical at temp=0) and cuts the draft-head `mul_mat_vec_q` kernel ~85%, yet yields only **+1-3% end-to-end** on bandwidth-bound decode — because the draft head is a small BW slice. This corroborates that expert-verification overhead, not the drafter, governs CPU MTP throughput. [speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md), [intake-740](https://github.com/ggml-org/llama.cpp/issues/25187)
+- **MoE-Spec is now a proven mechanism with NO live consumer.** The 2026-06-12 portfolio pass corrected the earlier "gate released / integration can proceed" framing: the REAP role (its only B=40-deployable target) has been removed from production, the Coder B=64 result was not robust across builds/cache-states, and the frontdoor runs zero spec-dec today — so there is nowhere to deploy `moe_spec_budget`. Reopen is chained to first enabling frontdoor spec-dec and re-running the B-sweep on its actual verification batches. [moe-spec-cpu-spec-dec-integration.md](../handoffs/active/moe-spec-cpu-spec-dec-integration.md)
+- **New GPU-track spec-dec catalog entries (2026-07-02), all observations-only until the MI210 path matures.** DSpark (intake-738): semi-autoregressive draft head + GPU-utilization-keyed adaptive verification depth — a candidate Stage-5 trained-drafter, gated by the same α bins, but its adaptive-depth controller is CPU-inert and gemma4 native MTP is already ~77% saturated (low headroom); DeepSpec (intake-737) is its MIT training/eval pipeline (8-GPU default — single-MI210 retraining unproven). Graft (intake-742): training-free prune-then-graft draft-tree refill, on-topic for tree-native MoE-Spec but EAGLE-3/GPU-adjacency-based (catalog until a CPU n-gram-refill variant is measured). DFlare (intake-741): layer-wise-fusion DFlash draft-capacity scaling (+5-11% over DFlash, GPU) — **distinct from our closed DFlash-on-Q4_K_M** CPU result. TwoTower (intake-751/752): frozen-AR-backbone + trainable diffusion denoiser (2.42× at 98.7% quality, GPU-only) — the "freeze base, train a bolt-on parallel generator" factorization is adjacent to how we train MTP/NEXTN heads. [speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md), [moe-spec-cpu-spec-dec-integration.md](../handoffs/active/moe-spec-cpu-spec-dec-integration.md)
+- **MI210 kernel roofline: the ~33%/47% ceiling is a quantized-dequant artifact, not general CDNA2 kernel immaturity.** llama.cpp gfx90a decode reaches ~33% (Q4_K) / ~47% (Q8_0) of the ~1.64 TB/s HBM roofline, but at fp16 (no dequant) it reaches 62% — the residual gap is specifically in the quantized MMQ dequant kernels. Flash-attn does not help batch-1 decode (`-fa 0` beats `-fa 1`); default MMQ beats forced rocBLAS. Matched-precision Qwen3-8B fp16: vLLM ~11% faster per-stream (69 vs 62.45 t/s) and +24% batched (1129 vs 910 gen tok/s) — vLLM's decisive edge is continuous-batching serving, motivating the ROCm kernel-authoring track for the quantized decode path. [progress 2026-07-02](../progress/2026-07/2026-07-02-mi210.md), [gpu-drafter-mi200-investigation.md](../handoffs/active/gpu-drafter-mi200-investigation.md)
+
+### New (2026-06-25, full-stack MTP sweep + draft-head precision + Qwen3.5-122B correction)
+
+- **Full-stack MTP sweep on v6-iqk (tuned n-max, draft-mtp, same chat path, June 2026 — throttled host, relative comparisons valid):**
+
+| Model | Quant | Base t/s | MTP peak t/s | Gain | Opt n-max | Accept |
+|-------|-------|-----:|-----:|-----:|:---------:|:------:|
+| gemma-4-31B dense | Q4_K_M | 5.2 | 15.4 | +197% | 6 | 0.43 |
+| Qwen3.6-27B dense | Q4_K_M | 4.4 | 12.2 | +177% | 4 | 0.81 |
+| Qwen3.5-27B hybrid-dense | Q4_K_M | 2.3 | 5.6 | +146% | 4 | 0.70 |
+| Qwen3.6-35B-A3B frontdoor | Q8_0 | 20.7 | 41.8 | +103% | 4 | 0.82 |
+| Qwen3.5-9B hybrid | Q4_K_M | 23.2 | 41.6 | +79% | 4 | 0.60 |
+| gemma-4-26B-A4B MoE | Q4_K_M | 42.1 | 52.8 (f16 head) / 58.0 (Q8 head) | +25–38% | 2 | 0.75–0.80 |
+
+Dense models gain +146–197% because MTP amortizes one weight-read across N tokens. MoE/hybrid models saturate at n2–4 (expert re-reads scale O(N×experts)). Sources: [iqk-port.md](../handoffs/active/iqk-port.md), [progress 2026-06-25](../progress/2026-06/2026-06-25.md).
+
+- **n-max is model/architecture-specific: dense scales to n6, MoE/hybrid peaks at n2–4.** Dense models (single weight-read per verify batch) benefit from longer drafts. MoE models re-read N×expert-sets per verify step — BW saturation hits earlier. Empirical confirmation: gemma-31B peaks at n6 (+197%); gemma-26B MoE peaks at n2 (+38% with Q8 head); Qwen3.6-35B-A3B MoE peaks at n4 (+103%). Sources: [progress 2026-06-25](../progress/2026-06/2026-06-25.md).
+- **iqk kernels are neutral on the MTP verify batch — iqk and MTP compose cleanly.** Same-window A/B on gemma-26B n4: iqk-on 48.2 t/s vs iqk-off 48.1 t/s. No kernel change needed for MTP; iqk gains on prefill and non-verify decode steps stack independently. Sources: [iqk-port.md](../handoffs/active/iqk-port.md), [progress 2026-06-25](../progress/2026-06/2026-06-25.md).
+- **Qwen3.5-122B-A10B MTP feasibility — earlier dismissal was wrong; the arch is `qwen35moe`, same NEXTN loader as the +103% frontdoor.** MTP blocks are dense attention (not recurrent); rollback is supported (`llama-arch.cpp` includes QWEN35MOE). The prior "GDN wall / 0.56× dead end" was measured on the old ik_llama fork with no `draft-mtp` (stale path). NEXTN GGUF artifact download and bench are the next step. Sources: [progress 2026-06-25](../progress/2026-06/2026-06-25.md).
+- **Draft head precision lever (gemma-26B specific): f16→Q8 head +28% at same acceptance.** See hardware-optimization.md for full analysis. Only models with a separate f16 vocab-embedding draft head have this lever; Qwen NEXTN heads share token_embd at model quant. Sources: [iqk-port.md](../handoffs/active/iqk-port.md), [progress 2026-06-25](../progress/2026-06/2026-06-25.md).
+- **v6-iqk + Q8 gemma head (42.78 t/s) beats ik_llama (38.63 t/s) by +11% on the worker model.** The consolidation gap is closed. The ik_llama advantage was per-step draft cost (f16 head), not acceptance quality (v6 acceptance 0.796 > ik 0.655). Sources: [progress 2026-06-25](../progress/2026-06/2026-06-25.md).
+
+- **DeepSeek-V4-Flash ships an optional MTP sidecar that extends the self-drafting MoE pattern (2026-05-28).** The 3.6 GiB MTP-only GGUF side-file packages V4's multi-token-prediction head as a drafter for the V4 target, matching the broader "target family plus MTP sidecar" pattern already seen in Gemma4 and DeepSeek-V3-style work. It is a candidate reference only until `deepseek4` target loading and MTP sidecar API parity are verified in llama.cpp/ik_llama.cpp, followed by acceptance-rate measurement on EPYC workloads. Source: [moe-spec-cpu-spec-dec-integration.md](../handoffs/active/moe-spec-cpu-spec-dec-integration.md).
+- **Peer-verifier speculation is not draft-target speculative decoding.** The Fortytwo-derived spike concerns same-tier peers scoring partial generations mid-stream, possibly using a Bradley-Terry-style accept/reject loop. That is mechanically distinct from small-drafter/large-target speculation and is currently a scoping spike only; the first gate is whether the backend exposes enough mid-stream control to prototype it without multi-week llama.cpp surgery. Source: [peer-verifier-speculation-spike.md](../handoffs/active/peer-verifier-speculation-spike.md).
+
+- **Verification wall on hybrid recurrent models**: Multi-token verification on Qwen3.5 (75% Delta Net layers) costs approximately N times single-token decode. MTP-1 measured 0.56x throughput at batch-size 2. Tree speculation measured -53% to -66% across three implementation approaches (frozen multi-path, per-path sequential replay, checkpoint/clone-cell). DFlash projected approximately 0.3x (16 tokens at approximately 16x cost). The root cause is architectural: recurrent layers process tokens sequentially regardless of batch size, while GPU parallel scan hides this cost. [DFlash deep-dive](../research/deep-dives/dflash-dart-diffusion-speculation.md), [Tree speculation handoff](../handoffs/completed/tree-speculation-numa-drafting.md)
+
+- **DFlash O(1) drafting is real but quantization kills acceptance**: DFlash generates 16 tokens in one forward pass via a 0.5B drafter conditioned on hidden states from 5 uniformly-sampled target layers. The drafter's cost is constant regardless of draft length -- fundamentally different from EAGLE-3's O(N) autoregressive cost. On GPU (f16), acceptance is 6.49 tokens per round. On our Q4_K_M stack, acceptance drops to 27% per token because quantized hidden states corrupt the conditioning signal. The DFlash handoff concluded after 21 commits with verified-correct C++ forward pass: not viable on Q4_K_M, autoregressive wins 36.5 vs 13.0 t/s. [DFlash deep-dive](../research/deep-dives/dflash-dart-diffusion-speculation.md), [DFlash handoff](../handoffs/completed/dflash-block-diffusion-speculation.md)
+
+- **DFlash + tree speculation is composable and multiplicative**: DFlash's parallel logits at all 16 positions can build a tree (take top-k at each position) at O(1) cost -- the same as linear. In standard tree speculation, building the tree requires N sequential draft passes. Projected impact on large architect models: 2-4x base DFlash times 1.15 tree bonus equals 2.3-4.6x. The tree bonus is largest for the architect models (235B, 480B) where verification headroom is greatest. [DFlash deep-dive](../research/deep-dives/dflash-dart-diffusion-speculation.md)
+
+- **DART trades drafter quality for speed + n-gram diversity**: DART uses a single transformer decoder layer (approximately 0.1B params, 3.5ms draft latency including n-gram lookup) conditioned on 3 target layers. Base acceptance is 3.67-3.76, lower than DFlash's 6.49, but the 100GB Dolma 3-gram trie boosts acceptance +0.5-0.7 via tree pruning. The trie is feasible on our 768GB+ system but represents a significant memory commitment for modest acceptance gains. DART's published training recipe is valuable reference for when DFlash publishes theirs. [DFlash deep-dive](../research/deep-dives/dflash-dart-diffusion-speculation.md)
+
+- **Tree speculation is structurally sound but overhead-limited on CPU**: The tree construction and verification infrastructure was implemented across 8 phases. On 32B f16 targets, tree gives +15.8% (5.01 to 5.80 t/s). On Q4_K_M, tree equals or underperforms linear because Q4_K_M verification is 4-5x at N=64 (not near-free like f16 at 1.69x). NUMA 4-way delivers much larger gains (6-7x aggregate). [Tree speculation handoff](../handoffs/completed/tree-speculation-numa-drafting.md)
+
+- **draft_max tuning gives free throughput**: Increasing `--draft-max` from 16 to 24-48 yields +17-21% across all production models with zero code changes. REAP-25B optimal is dm=24 linear (39.62 t/s). This was the single highest-ROI speculative optimization. [REAP handoff](../handoffs/completed/reap-moe-expert-pruning.md)
+
+- **Shorter reasoning chains are more accurate (short-m@k)**: Within any given question, shorter reasoning chains are up to 34.5% more accurate (LN-Super-49B) and use 42-54% fewer tokens. Correct reasoning is concise; incorrect reasoning wanders with compounding per-token error. Deployable without parallelism: short-1@k (take single shortest) gives equal accuracy with 40% fewer thinking tokens and approximately 50% less wall-time. Finetuning on short chains yields +2.8% accuracy and -5.8% tokens. [short-m@k deep-dive](../research/deep-dives/short-mk-parallel-reasoning.md)
+
+- **Frontdoor G5 short-m@k clean-window evidence is packaged (2026-06-20).** The frontdoor run on resident port `8070` is committed in `epyc-inference-research` `7e9f67f` at `benchmarks/results/clean_window/short_mk_voting/frontdoor.json`: `40` questions, `14/40` correct (`0.35` accuracy), GPQA `2/20`, MATH `12/20`, and no completion errors. Treat this as the frontdoor G5 cell only; remaining roles still need clean model-batched windows with affinity/canonical preflight. Sources: [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md), [progress 2026-06-20](../progress/2026-06/2026-06-20.md).
+
+- **Length alarm integrates with difficulty bands**: Easy problems benefit most from length-based filtering (wrong/right token ratio 2x vs 1.3x for hard). Our band-adaptive budgets (easy=1,500, medium=3,500, hard=7,000) are well-calibrated. The addition: if generation exceeds 1.5x band budget, treat as failure signal and re-generate. Three-layer stack: conciseness prompting (shifts distribution left) + band budgets (caps right tail) + length alarm (actively selects shorter chains). [short-m@k deep-dive](../research/deep-dives/short-mk-parallel-reasoning.md)
+
+- **NUMA parallelism could reopen hybrid speculation**: If 4 concurrent single-token decodes on separate NUMA nodes achieve >2.5x aggregate throughput, NUMA-parallel verification (N nodes times 1 token each, parallel) could break the sequential recurrent bottleneck. Each node needs its own model copy (approximately 20GB Q4_K_M). The project's existing concurrent execution tests showed aggregate throughput gains. [DFlash deep-dive](../research/deep-dives/dflash-dart-diffusion-speculation.md)
+
+- **REAP-pruned models are speculation-compatible**: REAP-25B is pure MoE (`qwen3moe` arch), so all speculation approaches work. Optimal config: dm=24 linear at 39.62 t/s (101% of base 30B with dm=8). Tree hurts (30.83 t/s, 79%). Lookup is safe but doesn't help on short prompts (37.91 t/s). If the frontdoor shifts from hybrid Qwen3.5 to REAP-25B, speculation becomes viable for the highest-volume role. [REAP handoff](../handoffs/completed/reap-moe-expert-pruning.md)
+
+## Actionable for EPYC
+
+- **Deployed and validated**: NUMA 4-way parallel (6.7x frontdoor), draft_max 32-48 (+17-21%), external drafting with 0.75B Qwen3-Coder (+55% on dense targets), auto freeze-recurrent for hybrid speculation, REAP-25B with dm=24 (39.62 t/s)
+
+- **Implement now**: Reasoning length alarm (Phase 0 of short-m@k). Approximately 80 lines in `src/graph/helpers.py`, integrates with existing `difficulty_signal.py` bands and `detect_think_block_loop()`. Zero infrastructure cost. Expected to improve accuracy on easy problems where the wrong/right token ratio is highest (2x). Estimated effort: 1 day
+
+- **Worth investigating**: NUMA-parallel verification benchmark (2-3 day effort to determine if NUMA isolation can break the hybrid verification wall -- if aggregate/N > 0.6x individual, project DFlash viability with tau=6.49 and N-parallel verification). DFlash tree composition on f16 dense targets (multiplicative benefits for architect models). Sequential short-1@k for math/reasoning tasks (Phase 1, k=2-3 generations keep shortest, 2 days, gated behind feature flag)
+
+- **Blocked/concluded (CPU)**: DFlash on Q4_K_M (concluded: 27% per-token acceptance, AR wins 36.5 vs 13.0 t/s). All tree/MTP approaches on hybrid models (concluded: -53% to -66%). Full short-m@k parallel generation (requires multi-slot infrastructure on architect models that we lack). DFlash training recipe not yet published
+
+- **GPU reopener — vLLM DDTree+Dflash** (2026-04-15): Community benchmark reports **91 tok/s accepted** on Qwen3.5-27B AWQ with DDTree (tree verification) + Dflash (block diffusion drafting) on DGX Spark GB10, 96.4% acceptance rate. GPU parallel scan handles the Delta Net recurrent state that kills CPU speculation. DFlash paper reports τ=6.49 on Qwen3.5-35B-A3B (GPU). This is vLLM-native, not llama.cpp — the entire pipeline (diffusion drafting, tree verification, KV management) is GPU-optimized. Reproduction plan in [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md), blocked on DGX Spark acquisition.
+
+- **Priority**: Low-to-medium on CPU (concluded). Potentially HIGH on GPU if DGX Spark is acquired — the 91 t/s community benchmark would make Dflash speculation the single most impactful GPU optimization. NUMA parallelism and KV cache optimization remain the primary CPU acceleration frontiers.
+
+## 2026-04-28 Update — MoE-Spec deployable, MAB selector + slot-promotion reopener
+
+**MoE-Spec verification-budget mechanism gate MET on pure-MoE targets** (Phase 1 prototype, autonomous CPU agent's session): `--moe-spec-budget N` aggregates routing softmax across the verification batch and shrinks the active-expert union. Phase 1 forward-pass measurements: Coder-30B Q4_K_M B=64 +7.3%, REAP-246B Q4_K_M B=40 +15.2% (both 5-rep proper canonical). Phase 2 v5 PGO end-to-end via llama-server attenuates significantly — REAP-246B end-to-end +3%, Coder-30B end-to-end +9% — because spec-dec round = drafter forward + target verification + accept-evaluation, and MoE-Spec only accelerates target verification (Amdahl ceiling). **Final verdict**: REAP-246B B=40 deployable; Coder-30B B=64 NOT deployable (varies wildly across builds + cache states + system noise). Production registry integration queued behind explicit pre-prod gate. Tracked at [`moe-spec-cpu-spec-dec-integration.md`](../handoffs/active/moe-spec-cpu-spec-dec-integration.md).
+
+**MAB tree-shape selector (intake-491, EMNLP'25 §3.2)** — **CLOSED 2026-04-29 with NO-GO** (framing revised 2026-04-29 evening via Remediation Phase C). Tested as drop-in over heap-spec for pure-MoE targets, orthogonal compounding axis to MoE-Spec verification budget. Paper reports sequential 112.69 → MAB-optimized 138.22 t/s on Pythia-6.9B; falsified on Qwen3-Coder-30B + DRAFT-0.75B drafter at v5 PGO build. Original Phase 0'' n=90 ("Coder -3.97% p=0.0125") was poisoned by missing OMP env stack baseline; Remediation Phase C re-tested under canonical at n=180 Coder + n=90 REAP: **Coder -1.34% NS, REAP -8.20% p<0.001**. Disposition unchanged (no-go); framing revised — Coder is actually within noise, not "definitive negative". REAP remains reliably negative. Tracked at [`completed/mab-tree-shape-selector.md`](../handoffs/completed/mab-tree-shape-selector.md).
+
+**Hybrid SSM spec-dec slot-promotion reopener (intake-490, PyTorch SGLang Dec 2025)**: per-candidate state slots via `S_new = S_parent + Δ(k,v,β,g)`; rejected slots discarded, accepted slot promoted. Architecturally compatible with Delta Net. Combined with DFlash-style NUMA-parallel single-token verify (one candidate per NUMA quarter), per-candidate cost drops from 450 MB clone (our prior `clone_cell` failure) to ~KB staged inputs AND verification wall-clock for K candidates drops from `K × single-token` to `1 × single-token` per quarter. Reopens the 6 closed SSM-hybrid handoffs under closure-inflation policy (gates A,B,C met under prior assumption; gate D unmet under per-candidate-slot assumption). Phase 0 research-only falsification queued. Tracked at [`hybrid-ssm-slot-promotion-spec-dec.md`](../handoffs/active/hybrid-ssm-slot-promotion-spec-dec.md). Cost model projects ~1.4× single-instance per-request latency on Qwen3.5-35B-A3B Q4_K_M if Phase 1 lands.
+
+Together these three handoffs add three orthogonal compounding axes to spec-dec on EPYC: verification budget (MoE-Spec, deployable), tree topology (MAB selector, Phase 0), hybrid state model (slot-promotion, Phase 0).
+
+## Updates — 2026-04-28
+
+### MoE-Spec verification-batch mechanism (Phase 1+2 v5 PGO)
+
+The `--moe-spec-budget N` mechanism — see [`moe-spec-cpu-spec-dec-integration.md`](../handoffs/active/moe-spec-cpu-spec-dec-integration.md) — aggregates routing softmax across the K-token verification batch, takes top-B over the aggregated distribution, and masks out-of-budget experts before `argsort_top_k`. Mechanism rationale: in a verification batch, the union of distinct experts selected across K tokens is a routing-policy-dependent superset of any single token's top-K. Reducing that union directly reduces DRAM expert-weight reads — the dominant decode cost on EPYC per CPU24 attribution.
+
+Phase 1 forward-pass measurements (5-rep canonical, autonomous CPU agent's session):
+
+| Model | Quant | Budget | pp32 baseline | pp32 MoE-Spec | Δ verify |
+|-------|-------|--------|---------------|---------------|----------|
+| Coder-30B | Q4_K_M | B=64 | 321.35 t/s | 344.70 t/s | +7.3% |
+| REAP-246B | Q4_K_M | B=40 | 45.23 t/s | 52.11 t/s | +15.2% |
+
+PPL drift (3-chunk WikiText-2 spot check): Coder-30B +6.7%, REAP-246B +23%. Drift is bounded by the assumption that out-of-budget experts contribute negligibly per-token; larger models have more diffuse routing and larger drift.
+
+Phase 2 end-to-end via llama-server (v5 PGO build, mixed-batch regimen): REAP-246B B=40 +3.3% e2e, Coder-30B B=64 −2.6% e2e (within build/cache-state noise). The end-to-end attenuation is Amdahl-determined: a spec-dec round = drafter forward + target verification + accept-evaluation, and MoE-Spec only accelerates target verification. Drafter and accept-eval are unchanged.
+
+**Final verdict**: REAP-246B B=40 deployable behind explicit env-gate `LLAMA_ARG_MOE_SPEC_BUDGET=40` for the REAP role only. Coder-30B B=64 NOT deployable — the mask-overhead vs total-compute ratio is marginal, and end-to-end measurements vary across builds and cache states beyond the gain margin. Defer Coder-30B to Phase 3 cleaner re-measurement after MAB selector lands.
+
+The cause for the measured-vs-predicted gain is geometric: EPYC's L3 (~32 MB per CCD × 12 = 384 MB) is far below total expert-weight footprint (Coder 17 GB, REAP 138 GB at Q4_K_M). Cutting expert-union size directly reduces DRAM traffic. Larger models therefore have more headroom — REAP at +15.2% vs Coder at +7.3% is consistent with this attribution.
+
+### Hybrid SSM slot-promotion reopener (intake-490) — CLOSED 2026-04-30, mechanism net-negative on Qwen3.6-35B + Qwen3-1.7B drafter
+
+Handoff moved to [`completed/hybrid-ssm-slot-promotion-spec-dec.md`](../handoffs/completed/hybrid-ssm-slot-promotion-spec-dec.md). **Closure-inflation correction (preserved)**: the prior "speculation dead on hybrid SSM" claim was valid under the K-token-batched-verify cost model and is preserved as accurate in [`completed/ssm-hybrid-acceleration.md`](../handoffs/completed/ssm-hybrid-acceleration.md) for all 7 closed approaches (clone_cell, K-token-batch, MoE self-draft, attention-only draft, prefix prefetch, per-token speculation, multi-context replay). The reopener tested a fundamentally different cost model.
+
+New mechanism from SGLang (PyTorch blog, Dec 2025): per-candidate state slots `S_new = S_parent + Δ(k,v,β,g)`, plus DFlash-style NUMA-parallel single-token verify (one candidate per NUMA quarter). The reopener implementation took dispatcher v0 (pass-through) to dispatcher v1 (functional K-parallel candidate verify) in commit `d45126db5` on `feature/cpu-ep-inter-process` (+386 LOC). All 7 sub-slices landed: alt-path selection from `speculation_tree::get_paths()`, one-shot primary→aux state sync at `SLOT_STATE_GENERATING`, sequential pre-decode aux state sync (race-free), parallel aux decode threads, per-ctx sample-and-accept reducer, winner-state commit with `slot.smpl` + `slot.spec_draft` rotation.
+
+**Slice B.5 gate-check PASSED**: state-sync cost is 62.81 MiB/aux ctx (5.3× smaller than the brief's 330 MiB worst-case), 17.5 ms one-shot per request, ~5.8 ms per primary→aux pair on Q8 hybrid — well under per-token gate budget.
+
+**Slice G canonical 3-prompt × 2-rep result on Qwen3.6-35B-A3B-Q8_0 + Qwen3-1.7B-Q8_0 drafter at v5 PGO build**: K=1 = 11.40 t/s mean, K=4 dispatcher v1 = 7.42 t/s mean — **K=4 is 35% slower**. Gate (≥1.3×) NOT MET.
+
+**Slice G divergent-tree sensitivity sweep (4 (p_split, temp) configs × 5 prompts including creative + open-ended)**: dispatcher engages 62 times, but **primary wins 60/62 (97%)**. The 2 aux-winning rounds delivered just +1 marginal accepted token each. Per-round economics: ~22 ms K-parallel overhead vs 0.03 × 83 = 2.5 ms expected savings = **−20 ms/round net loss**.
+
+**Important correction to canonical analysis**: the early "K-parallel verify hit count = 0" claim was an artifact of non-verbose log filter that suppressed DBG-level engagement messages. The dispatcher actively engages on canonical workload — it just loses 97% of the time.
+
+**Why architectural pivot was abandoned**: pre-sweep, the 35% slowdown was attributed to thread-count penalty (primary 24t vs 96t). The sweep falsified that — the deeper issue is that aux paths verify the SAME tokens primary already verifies in 97% of rounds, even at p_split=0.001 + temperature=0.7. Threading reconfiguration would not change aux win-rate.
+
+**Closure scope (per closure-inflation policy)**: mechanism is structurally net-negative for THIS drafter/target/workload class. Does NOT generalize to "K-parallel verify is dead" — different drafter models (larger drafter that produces alt branches more aligned with target sampling), different target models, different K values, and very different workload classes (long-form generation with frequent ambiguity) remain unevaluated.
+
+**Operational disposition**: dispatcher v1 stays in tree as disabled-by-default (`--spec-numa-quarters` defaults to 1; `LLAMA_ARG_SPEC_NUMA_QUARTERS` env equivalent). Re-evaluate on different drafter/target pairs. The 6.10× ceiling probe that motivated this work measured AGGREGATE THROUGHPUT across independent slots (NUMA-quarter splitting for 4× concurrent inference), not per-request K-parallel verify gain — these are two different mechanisms; the aggregate-throughput one is already deployed in production via the orchestrator's 4×24t splits.
+
+CPU20 bundles: [`2026-04-30-state-sync-cost-probe/`](../../epyc-inference-research/data/cpu_optimization/2026-04-30-state-sync-cost-probe/) (canonical 3×2 + state-sync probe), [`2026-04-30-divergent-tree-sweep/`](../../epyc-inference-research/data/cpu_optimization/2026-04-30-divergent-tree-sweep/) (4 configs × 5 prompts engagement probe).
+
+### MAB tree-shape selector — DEFINITIVE NO-GO (intake-491 §3.2, CLOSED 2026-04-29)
+
+Handoff moved to [`completed/mab-tree-shape-selector.md`](../handoffs/completed/mab-tree-shape-selector.md). Phase progression:
+
+| Phase | Date | n | Verdict |
+|---|---|---|---|
+| Phase 0 | 2026-04-29 | 3 | NO-GO greedy temp=0 — verifier collapses tree to greedy (byte-identical output linear vs tree) |
+| Phase 0' fixed-seed | 2026-04-30 | 9 | NO-GO temp=0.7 — fixed seed makes verifier deterministic (byte-identical output) |
+| Phase 0' random-seed | 2026-04-30 | 9 | INCONCLUSIVE — Coder tree +9.6% vs linear, p≈0.23 (NS, low n) |
+| Phase 0'' (broken OMP env) | 2026-04-29 morning | 90 paired | NO-GO claimed — Coder tree -3.97% (p=0.0125), REAP tree +0.34% (p=0.87) — *flagged later as poisoned baseline* |
+| **Phase 0''-canonical (Remediation Phase C)** | **2026-04-29 evening** | **180 Coder + 90 REAP** | **NO-GO under canonical OMP recipe** — Coder -1.34% NS, REAP -8.20% p<0.001 |
+
+The Phase 0' "+9.6%" was a low-n type-I error. The Phase 0'' "Coder definitive negative -3.97% p=0.0125" was itself an artifact of broken-OMP baseline contamination — under canonical recipe (`OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active numactl --interleave=all -- taskset ... -fa 1 --mmap 0`), Coder is actually within noise at twice the rep count. REAP regression IS real and highly significant. Phase 1 implementation (~245 LOC) NOT justified on either model.
+
+**Closure scope** does NOT generalize to: different drafter (Pythia uncertainty profile differs), different arm pool (paper-shapes tuned for Pythia), multi-tenant/concurrent-slot workloads, architecturally different targets (dense, hybrid SSM — only MoE Q4_K_M tested at scale).
+
+CPU20 bundles: [`2026-04-29-mab-tree-selector-phase-0/`](../../epyc-inference-research/data/cpu_optimization/2026-04-29-mab-tree-selector-phase-0/) (Phase 0 greedy), [`2026-04-30-mab-phase-0-prime-sampling/`](../../epyc-inference-research/data/cpu_optimization/2026-04-30-mab-phase-0-prime-sampling/) (Phase 0' fixed + random n=9), [`2026-04-29-mab-phase-0-prime-prime-replication/`](../../epyc-inference-research/data/cpu_optimization/2026-04-29-mab-phase-0-prime-prime-replication/) (Phase 0'' n=90, broken-OMP baseline), [`2026-04-29-remediation-phase-C-mab/`](../../epyc-inference-research/data/cpu_optimization/2026-04-29-remediation-phase-C-mab/) (Remediation Phase C n=180 Coder + n=90 REAP under canonical OMP recipe).
+
+### Amdahl ceiling for spec-dec end-to-end gain (cross-cutting)
+
+Spec-dec round decomposes as: drafter forward + target verification + accept-evaluation. All three orthogonal axes added in 2026-04-28 (MoE-Spec budget, MAB tree topology, slot-promotion) target the verification step only, and inherit the same Amdahl ceiling. REAP +13.5% pp32 verify → +3% e2e because drafter+accept-eval are unchanged.
+
+This means NUMA-4-way concurrent serving (~6.7× frontdoor aggregate, see [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-parallelism.md)) remains the primary CPU acceleration lever. Spec-dec axes are stacking incremental gains on top of an already-saturated verification-step budget. To push past the Amdahl ceiling, future work would need to accelerate the drafter forward or accept-evaluation steps independently.
+
+### Mamba Drafters EMNLP'25 Findings (intake-491)
+
+External SSM drafter for Transformer target: Mamba-130M matches/beats much larger Pythia drafters at constant memory vs context length. Memory at 8k context: Mamba 52 GB vs EAGLE 72 GB total. The accompanying tree-based MAB optimizer (the §3.2 result above): sequential 112.69 → MAB-optimized 138.22 t/s on Pythia-6.9B / GSM-8K (paper).
+
+Acceptance limitations (per the paper):
+- Hidden-state backtracking: Mamba discards previous hidden states, complicating rejection recovery
+- Tree-verification incompatibility: SSM sequential token processing precludes parallel path verification on the drafter side
+- Hyperparameter sensitivity
+
+Verdict: worth_investigating. The principle (SSM drafter for Transformer target) generalizes, but Pythia-6.9B / Mistral-7B target+drafter combos in the paper are too small to map directly onto our 30B / 246B stack. Bookmarked for future investigation when a larger SSM drafter checkpoint becomes available.
+
+## Open Questions
+
+- Now that qwen35/GDN decodes clean on the MI210 GPU path, is GPU-side speculative decoding (frontdoor NEXTN self-draft, or an external drafter) viable on qwen35 where it is foreclosed on CPU? The clean forward pass removes the qwen35 GPU concern, but the N5 frontdoor-drafter acceptance α still has no valid evidence on any path.
+- Does the GPU-side gemma-4-31B NEXTN result (1.44×, 59.7% accept) justify the MTP head-split (trunk-on-CPU / heads-on-GPU) for the gemma-4-26B-A4B worker, or is the DeepSeek-V3/gemma D=1 single-head constraint (one extra drafted token per main step, not a multi-token chain) too limiting to beat the already-saturated ~77% CPU MTP baseline?
+- Is landing Qwen MTP worth a fork rebase (~901 commits to adopt upstream's `llama_model_base` framework), given the cherry-pick is infeasible and no Qwen-MTP model is currently deployable (Qwen3.6-A3B MoE = worst CPU case, dense variants Pareto-dominated)?
+- Can the MI210 quantized-MMQ dequant kernels be tuned to close the gap to the fp16-observed 62% roofline (and past vLLM's edge), and does the ROCm agentic kernel-authoring path deliver that?
+- Can NUMA-isolated concurrent verification break the sequential recurrent bottleneck on Qwen3.5? If 4 NUMA nodes give >2.5x aggregate throughput, DFlash becomes interesting again on hybrid models
+- What is DFlash's acceptance rate on f16 hidden states (no quantization noise)? The Q4_K_M failure may be specific to quantized conditioning -- f16 testing was not attempted before the handoff concluded
+- Can DFlash + tree composition achieve the projected 2.3-4.6x on architect models (235B, 480B)? These are the highest-value targets due to slow baseline decode (300-800ms per token)
+- Will DFlash publish training recipes enabling custom drafter training for our models? DART's published recipe is the interim reference
+- Does the length alarm heuristic (Phase 0 short-m@k) interact with speculative decoding? Shorter reasoning chains may improve draft acceptance by reducing distribution shift over long sequences
+- Can Qwen3.5 hybrid serving benefit from the Qwen3.5 serving recipe (intake-152) for MoE+Delta Net configuration tips? The recipe may offer incremental non-speculation gains
+- Does REAP-25B's speculation compatibility compound with NUMA 4-way (4x15GB instances = 60GB, well within quarter-machine budget)?
+
+## Related Categories
+
+- [KV Cache Optimization](kv-cache.md) -- KV cache size determines context capacity; speculative decoding increases KV pressure (more tokens verified per round). KV compression enables larger speculation budgets and longer effective contexts
+- [MoE Optimization](moe-optimization.md) -- REAP-pruned models change speculation viability fundamentally: pure MoE is spec-compatible, hybrid is not. REAP-25B at 15GB fits trivially in quarter-machine for NUMA
+- [Quantization](quantization.md) -- Q4_K_M quantization degrades DFlash hidden state conditioning (27% vs 6.49 acceptance). KV quantization (Hadamard+q4_0) interacts with verification batch size. Weight quantization determines verification cost profile (f16: 1.69x at N=64, Q4_K_M: 4-5x). On the MI210, the ~33%/47% roofline ceiling for quantized decode is a dequant-MMQ artifact (fp16 reaches 62%)
+- [Hardware Optimization](hardware-optimization.md) -- MI210 (gfx90a) HIP build + GPU-side MTP/NEXTN spec-dec; the gemma-26B f16→Q8 draft-head precision lever (+28%); GPU parallel scan lets qwen35/GDN decode where CPU sequential recurrence forecloses it; ROCm quantized-kernel authoring is the open throughput lever
+
+## Source References
+
+- [DFlash & DART Deep-Dive](../research/deep-dives/dflash-dart-diffusion-speculation.md) -- O(1) block diffusion drafting, DART n-gram pruning, portability assessment (13-20 day implementation), verification wall analysis, DFlash+tree composability, NUMA-parallel reopener
+- [short-m@k Deep-Dive](../research/deep-dives/short-mk-parallel-reasoning.md) -- Shorter chains more accurate (+34.5%), length as failure signal, difficulty-stratified data, Phase 0-3 implementation path, cost analysis for single-server architecture
+- [DFlash Handoff](../handoffs/completed/dflash-block-diffusion-speculation.md) -- 21-commit C++ implementation, forward pass verified correct, Q4_K_M 27% acceptance, concluded not viable on quantized models (36.5 vs 13.0 t/s)
+- [MTP-1 Handoff](../handoffs/completed/mtp-speculative-decoding.md) -- Model-native MTP head, 0.56x on hybrid at batch-size 2, verification cost scales linearly with recurrent layers, CLOSED
+- [Tree Speculation Handoff](../handoffs/completed/tree-speculation-numa-drafting.md) -- 8 phases across 12 days, +15.8% on f16 dense, NUMA 4-way discovery (6-7x), 3 hybrid approaches all net-negative, Phase 8B deferred (40% viability)
+- [HSD Hierarchical Self-Speculation Handoff](../handoffs/completed/hsd-hierarchical-self-speculation.md) -- External draft +55% on dense 32B, HSD branch resampling +0.8%, freeze-recurrent auto-enable, self-spec not viable
+- [REAP Handoff](../handoffs/completed/reap-moe-expert-pruning.md) -- 246B deployed, REAP-25B dm=24 at 39.62 t/s, pure MoE enables speculation
+- [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md) -- `onegraph` lossless warm-up collapse for Gemma MTP drafting
+- [speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md) -- Gemma MTP / drafter refresh context and current kernel constraints
+- [progress 2026-07-11](../progress/2026-07/2026-07-11.md) -- wrap-up note recording the new onegraph finding
+- [progress 2026-07-17](../progress/2026-07/2026-07-17.md) -- K2/K7 onegraph verify-side reframe (regression is verify-side, draft loop is graph-optimal); K32 external-draft-path reload bug + K33 draft-tree unified-KV HTTP-500 fix; K29 hot-path malloc removal
+- [Inference Acceleration Index](../handoffs/active/inference-acceleration-index.md) -- Master coordination for all inference optimization work
+- [intake-016](https://arxiv.org/abs/2211.17192) arXiv:2211.17192 -- Foundational speculative decoding (Leviathan et al.)
+- [intake-129](https://arxiv.org/abs/2505.17813) short-m@k paper -- Parallel reasoning, length-accuracy correlation, difficulty-stratified analysis
+- [intake-152](https://docs.vllm.ai/projects/recipes/en/latest/Qwen/Qwen3.5.html) Qwen3.5 serving recipe -- Hybrid MoE+Delta Net configuration tips for non-speculation optimization
+- [intake-158](https://arxiv.org/abs/2602.06036) DFlash paper (arxiv:2602.06036) -- Block diffusion speculation, O(1) draft cost, tau=6.49
+- [intake-159](https://arxiv.org/abs/2601.19278) DART paper (arxiv:2601.19278) -- N-gram-pruned parallel drafting, single-layer drafter, Dolma trie
+- [intake-422](https://github.com/RightNow-AI/TIDE) TIDE: Token-Informed Depth Execution -- Calibration-trained MLP routers for per-token early exit without model fine-tuning; deep dive upgraded to adopt_patterns
+- [intake-423](https://arxiv.org/abs/2603.21365) TIDE paper (arxiv:2603.21365) -- Post-training early exit, 6.6-8.1% GPU throughput gain, projected 15-25% CPU gain
+- [TIDE deep-dive](../research/deep-dives/tide-calibration-router-early-exit.md) -- Implementation roadmap for calibration-router on fork's n_layer_exit infrastructure. **Note (2026-04-23): TIDE track deprecated after projection quality could not be solved with linear or bottleneck-adapter approaches; 1.76× speed confirmed but projection produces garbage on unseen prompts.**
+- [Lucebox Hub deep-dive](../research/deep-dives/lucebox-hub-consumer-gpu-dflash.md) -- 2026-04-23: first public GGUF Q4_K_M port of DFlash on consumer RTX 3090 via llama.cpp fork with tree-mode support. 207 tok/s peak, 129.5 tok/s mean HumanEval (5.46× / 3.43× over AR). Resolves the "no llama.cpp / no GGUF" blocker in intake-158 on the GPU side only — CPU spec-dec on hybrid DeltaNet remains not viable (verification cost is sequential recurrence, not kernel-level).
+- [Hazy Megakernel deep-dive](../research/deep-dives/hazy-megakernel-llm-inference.md) -- 2026-04-23: methodological parent of Lucebox's megakernel component; establishes 78% memory-bandwidth utilization as the GPU roofline target for any future inference engine.
+- [Qwen3.6-27B CPU feasibility deep-dive](../research/deep-dives/qwen36-27b-dense-spec-dec-cpu-feasibility.md) -- 2026-04-24: **architecture clarification** — Qwen3.6-27B (released 2026-04-22) is NOT true dense; it is hybrid Gated-DeltaNet + Gated-Attention (3:1 GDN:attention; 64 layers = 48 GDN + 16 Gated-Attn). "Dense" refers to dense FFN (no MoE). **Same architecture class as Qwen3.5-27B → CPU spec-dec foreclosed by GDN verification wall.** Community 4090 numbers (5.9× over Ollama, 154 t/s peak) are GPU-only and do not transfer; bookmarked at `gpu-acceleration-path.md`. CPU evaluation tracked at `qwen36-27b-cpu-feasibility.md` covers throughput probe + coder A/B only, no spec-dec.
+- [intake-455](https://huggingface.co/Qwen/Qwen3.6-27B) Qwen3.6-27B community spec-dec note (RTX 4090, ik_llama.cpp) -- Same-family 1.7B draft beats 4B distilled on net throughput (154 vs 85 t/s) despite lower acceptance — durable heuristic for future GPU spec-dec on dense-FFN models. CPU non-applicable.
+- [intake-490](https://pytorch.org/blog/hybrid-models-meet-sglang-more-than-full-attention/) PyTorch SGLang blog (Dec 2025) -- Slot-promotion mechanism for hybrid SSM speculation; per-candidate state slots; the basis for the 2026-04-28 hybrid SSM spec-dec reopener
+- [intake-491](https://arxiv.org/abs/2506.01206) Mamba Drafters for Speculative Decoding (EMNLP'25 Findings) -- §3.2 MAB tree-shape selector; +22.65% over sequential, +8.5% over best fixed shape on Pythia-6.9B; basis for the 2026-04-28 MAB selector handoff. Mamba SSM external drafter for Transformer target also documented but blocked on GPU rental for drafter training.
+- [MAB tree-shape selector handoff](../handoffs/active/mab-tree-shape-selector.md) -- intake-491 §3.2 Phase 0/1/2/3 spec; pre-prod gate on MoE-Spec production registry integration
+- [Hybrid SSM slot-promotion reopener handoff](../handoffs/completed/hybrid-ssm-slot-promotion-spec-dec.md) -- intake-490 reopener of 6 closed SSM-hybrid handoffs; CLOSED 2026-04-30 (mechanism net-negative on Qwen3.6-35B + Qwen3-1.7B drafter; dispatcher v1 in tree disabled-by-default; canonical 3×2 + 4-config × 5-prompt sweep showed primary wins 60/62 = 97% of K-parallel rounds)
+- [MoE-Spec handoff](../handoffs/active/moe-spec-cpu-spec-dec-integration.md) -- Verification-budget mechanism deployable on REAP-246B B=40; Phase 1+2 measured 2026-04-28; **2026-06-12 portfolio pass: proven mechanism with NO live consumer** (REAP role removed, frontdoor runs zero spec-dec) — reopen chained to first enabling frontdoor spec-dec; also carries the 2026-07-02 GPU-track catalog (DSpark, Graft, DFlare)
+- [GPU-Drafter MI200 investigation](../handoffs/active/gpu-drafter-mi200-investigation.md) -- Frontdoor-drafter α gating measurement (3-bin decision rule); N5 CPU-testable α still has no valid acceptance evidence (Qwen3-1.7B is tokenizer-incompatible qwen2 vs qwen35; aligned Qwen3.5-0.8B clears compat but hits CPU M-RoPE decode failures); **2026-07-02 MI210 landing: HIP build verified on gfx90a, GPU-side gemma-4-31B NEXTN MTP 1.44×, qwen35 decodes clean on GPU localizing the wall to the CPU codepath**; cross-tokenizer SLEM/SLRS/TLI, MTP head-split, cascade/FastDraft/SpecDec++/DSpark stages
+- [Speculative-Decoding / MTP Refresh handoff](../handoffs/active/speculative-decoding-mtp-refresh.md) -- Per-model MTP verdict table; gemma-4-31B dense gate-bench re-benched to ~1.84× (2.5–3.2× on code, corrects 2.98×), distribution-lossless, Pareto-dominated by 26B-A4B MoE worker; Qwen3.5-9B dense 1.97× via fresh-upstream build; eval-saturation caveat; FR-Spec vocab-trim +1-3% e2e
+- [Qwen MTP llama.cpp Port handoff](../handoffs/active/qwen-mtp-llamacpp-port.md) -- #22400 ported (b139eba138); #22673 cherry-pick INFEASIBLE (fork ~901 commits behind the `llama_model_base` refactor); fresh-upstream build runs Qwen3.5-9B dense MTP at 1.97%/87% accept; FR-Spec P7 optional follow-on
+- [MI210 first-touch progress log](../progress/2026-07/2026-07-02-mi210.md) -- MI210 install + ROCm 6.2, HIP build (fp8 guard fix 0ebf1b4d7), GPU-only benchmarks, gemma-4-31B+NEXTN MTP 43.25 t/s/1.44×, qwen35 clean decode, Vulkan-impossible falsification, roofline analysis, vLLM gfx90a head-to-head
+- [intake-723](https://huggingface.co/unsloth/Qwen3.5-9B-MTP-GGUF) unsloth Qwen3.5-9B-MTP-GGUF -- dense Qwen MTP head; 1.97× CPU verified via fresh-upstream build
+- [intake-724](https://huggingface.co/google/gemma-4-31B-it-assistant) google gemma-4-31B-it-assistant -- official dense gemma-4-31B MTP drafter (on disk); powers the ~1.84–3.2× dense gate-bench
+- [intake-725](https://github.com/ggml-org/llama.cpp/pull/22673) llama.cpp/ik_llama MTP+EAGLE-3 support (PRs #22673/#22400/#23398/#18039, ik #1744) -- upstream MTP path our fork must port or run via fresh-upstream build
+- [intake-737](https://github.com/deepseek-ai/DeepSpec) DeepSpec -- MIT draft-model train/eval framework (DSpark/DFlash/EAGLE-3); candidate MI210 draft-head training pipeline, 8-GPU default so single-MI210 retraining unproven
+- [intake-738](https://github.com/deepseek-ai/DeepSpec/blob/main/DSpark_paper.pdf) DSpark -- semi-AR draft head + utilization-keyed adaptive verification depth; Stage-5 trained-drafter candidate gated by the same α bins; controller CPU-inert; vendor speedups (57-85%) GPU-only, unreproduced
+- [intake-740](https://github.com/ggml-org/llama.cpp/issues/25187) FR-Spec draft-vocab trim for native MTP (arXiv 2502.14856) -- lossless@temp0, −85% draft-head kernel → only +1-3% e2e on BW-bound decode; reaffirms verification is the CPU wall
+- [intake-741](https://arxiv.org/abs/2606.02091) DFlare -- layer-wise-fusion DFlash draft-capacity scaling (+5-11% over DFlash, GPU); distinct from our closed DFlash-on-Q4_K_M CPU result; MI210-track only
+- [intake-742](https://arxiv.org/abs/2605.20104) Graft (Draft Less, Retrieve More) -- training-free prune-then-graft draft-tree refill; tree-native like MoE-Spec but EAGLE-3/GPU-adjacency-based; catalog until a CPU n-gram-refill variant is measured
+- [`-md` double-load MTP fix brief](../handoffs/active/md-double-load-mtp-fix-brief.md) -- same-file `-md` forces a full second model load and locks out the zero-extra-load NEXTN self-spec path; production fix (`5b4d8147`) live + post-reboot-audited (`same_file_md_count=0`); post-reload aggregate token α 0.8204; CPU quiet-window A/B mixed (PSS −20.8 GiB total but decode ~4% slower at identical acceptance); GPU embedded path +15.6%
+- [Corpus-augmented prompt lookup revalidation (COMPLETED 2026-07-04)](../handoffs/completed/corpus-augmented-prompt-lookup-revalidation.md) -- prompt-injection A/B failed (coder −0.25 t/s, worker −3.10 t/s + quality-gate fail); static n-gram cache experiment (CPL-4b) retired unexecuted; 651GB corpus deleted with operator approval
+- [MoE aggregate deployment wins brief](../handoffs/active/moe-aggregate-deployment-wins-brief.md) -- ⏸ production HOLD; `-fa 1` at B≥8 + bf16-for-aggregate raise GPU-MoE plain-decode (1548 t/s @B128 gemma-26B-A4B); MTP-for-MoE-on-GPU cell (−12%) superseded by the temperature-curve convergence; low-batch expert `mmid`→MMQ forcing net-negative (MMVQ correct)
+- [Progress 2026-07-05 — CoT falsification + MTP convergence](../progress/2026-07/2026-07-05-cot-falsification-and-mtp.md) -- MTP-on-GPU-MoE temp curve (+6.5% / −1.6% / −6.8% at temp 0 / 0.2 / 0.6) → ~neutral at production sampling; temp-0 spec-dec A/B discipline (`feedback_production_sampling_seed_not_temp0`); CoT scaffold-injection falsified both regimes, verifier/selector = forward GPU-reasoner mode
+- [findings-05c lever × model-category matrix](../handoffs/active/fable5-window2-findings-05c-mi210-lever-category-matrix.md) -- ⭐ v7-candidate spec sheet: VERIFIED protocol-pinned single-stream MTP temp→α curves (27B monotone↓ .69/.68/.64, gemma peaks t0.6 .49/.45/.84, 35B-A3B MoE net-negative) + aggregate table (frontdoor 408 @B32); deployable tops (27B ~41 MTP +31%, gemma ~30 MTP +15%, frontdoor ~101 PLAIN); L8 MTP-F16 +60.2% proxy; reproducibility = temperature-comparison error, not hysteresis
+- [Tree-draft (DySpec) forward-port plan](../handoffs/active/tree-draft-forward-port-plan.md) -- DySpec external-drafter tree speculation ported to v7-candidate (`common_speculative_impl_draft_tree`); Phase-1a engine bit-identical to linear draft (CORRECT) but net-negative vs plain and dominated by embedded MTP (27B: tree 17.4 ≈ simple 18.6 < plain 31.2 ≪ MTP 41.9); GLM-5.2 ships an MTP head (inert stub on our fork); SHELVED — native GLM MTP forward-graph is the better future lever
+- [Kernel reconciliation audit](../handoffs/completed/kernel-reconciliation-audit.md) -- v7-candidate reconciliation: fresh v6+iqk + 4 gfx90a GPU opts + tree-draft, zero merge conflict because ggml-cuda (GPU) and ggml-cpu/iqk + server (CPU) subsystems are disjoint; the 4 GPU opts (`de447119f`/`5dc116130`/`7c28056b7`/`496e2f098`) all resolve to real commits
+- [Progress 2026-07-06 — v7-candidate + GPU speed levers](../progress/2026-07/2026-07-06-v7-candidate-and-gpu-levers.md) -- v7-candidate build (`46f876c12`); verified temp→α curves + reproducibility root-cause; MTP-F16 +60.2%; tree-draft Phase-1a validated + SHELVED; GLM-5.2 MTP-head investigation; aggregate spec sheet on the reconciled kernel
+
+## Gemma 4 MTP Drafter — pure-CPU EPYC measured 2026-05-06
+
+> **2026-06-26 v6 cutover note.** This entire section documents the ik_llama.cpp PR #1744 path, which is **SUPERSEDED**. As of the 2026-06-26 v6+iqk cutover, the gemma-4-26B-A4B worker runs its external assistant-head MTP **natively on production-consolidated-v6** — the same single kernel that serves every other role. ik_llama.cpp is fully deprecated (no second binary). The mechanism is unchanged (separate `Gemma4AssistantForCausalLM` assistant head drafting for the target), but the runtime, CLI grammar, and OMP-idle plumbing below no longer apply. See the **"2026-06-26 — v6+iqk production cutover"** section at the end of this page for the replacement CLI grammar (`--spec-type draft-mtp` + `--spec-draft-n-max N`) and per-role MTP/NEXTN map. The PR #1744 measurement tables and the 9-launch-param recipe are preserved verbatim below as the historical decision record.
+
+Google released pre-trained Apache-2.0-licensed MTP drafters for Gemma 4 (31B Dense, 26B-A4B MoE, E4B/E2B). Distinct from in-target NextN MTP (Qwen 3.5, GLM-4.x): the drafter is a **separate small model** of the `Gemma4AssistantForCausalLM` arch (4 layers, 1024 or 256 hidden, sliding+full attention, `num_kv_shared_layers=4` so the drafter's K/V comes from the target's banks). One architecture class spans all variants — they differ only in width.
+
+ik_llama.cpp main does not support `gemma4_mtp` arch. PR #1744 (DRAFT, opened 2026-05-06 by Samuel/Radamanthys11) adds `LLM_ARCH_GEMMA4_MTP` + new `src/graphs/build_gemma4.cpp` + tensor mapping. Two patches were needed to actually run it on EPYC, both posted upstream:
+
+1. **1-line gate fix** in `examples/server/server-context.cpp:35-39` (`params_use_gemma4_external_mtp`) — removed a chicken-and-egg precondition (`params.speculative.type == COMMON_SPECULATIVE_TYPE_MTP`) that's set as a *consequence* of the helper returning true. Without this fix, MTP gets disabled at slot init → NULL deref → segfault on first request. PR #1744 [comment 4388461769](https://github.com/ikawrakow/ik_llama.cpp/pull/1744#issuecomment-4388461769).
+2. **4-line cosmetic Oops silencing** in `src/llama.cpp:2504-2515` — special-case the four top-level Gemma4Assistant tensor names (`mtp_pre_proj`, `mtp_post_proj`, `mtp_centroids`, `mtp_token_ordering`) in the size-accounting iteration. Loading is unaffected; warnings only. PR #1744 [comment 4388596615](https://github.com/ikawrakow/ik_llama.cpp/pull/1744#issuecomment-4388596615).
+
+### Measured on EPYC 9655 canonical (96 threads, fa=1, no-mmap, OMP env stack, numactl --interleave=all, taskset -c 0-95)
+
+| Variant | Baseline | + MTP draft-max=3 | Acceptance | Speedup | Verdict |
+|---------|----------|-------------------|------------|---------|---------|
+| **Gemma 4 31B Dense** Q4_K_M target + Q8_0 drafter | 7.05 t/s | **21.02 t/s** | 84.3% per-token (91/108), 100% per-batch (36/36) | **2.98×** | architect-tier candidate |
+| **Gemma 4 26B-A4B MoE** Q4_K_M target + Google official assistant-head Q8_0 drafter (GGUF-converted in-house) | 41.49 t/s | 44.12 t/s | 58.7% per-token (81/138), 73.9% per-batch (34/46) | 1.06× | tier X — slower than existing Coder-30B-A3B 49.1 t/s |
+| (PR #1744 author's mixed-CPU/GPU bench, threads=24, ngl=99, batch=128) | 21.7 | 48.6 | 74% | 2.3× | reference |
+
+### Two structural findings
+
+**31B Dense pure-CPU 2.98× exceeds the PR mixed-CPU/GPU 2.3×** because the small ~500 MB drafter amortizes well against the slow BW-bound dense target on CPU; on GPU the target is already fast so the relative drafter cost is larger. **Pure CPU is the most-favorable substrate for MTP on dense models.**
+
+**26B-A4B MoE + MTP only 1.06×** empirically confirms the lilting.ch contradicting-evidence finding (recorded in intake-527 `contradicting_evidence`): MoE batch=1 sees marginal gains because (a) the smaller 16/8-head drafter struggles to predict MoE expert routing (acceptance dropped 84.3% → 58.7%), and (b) the verifier loads up to K×8 distinct experts per K accepted tokens, eroding the bandwidth saving that makes MTP win on dense. **MoE batch=1 is a separate failure mode** from the Qwen 3.5 hybrid recurrent-verify wall (0.56× on Delta-Net) — both are MTP failure modes but with distinct mechanisms.
+
+### Production status
+
+- `gemma4_31b_q4km_mtp` registered in `epyc-inference-research/orchestration/model_registry.yaml` as Tier B (eval phase). Quality benchmark on the standard suite is the immediate open follow-up.
+- `gemma4_26b_a4b_q4km_mtp` registered as Tier X (eval-only; not deployable). Drafter GGUF was converted in-house from `google/gemma-4-26B-A4B-it-assistant` HF safetensors (no community GGUF existed) — 840 MB BF16 → 441 MB Q8_0 via PR #1744 `convert_hf_to_gguf.py` + `llama-quantize`.
+- Production use gates on PR #1744 merging to ik_llama.cpp main. Until then, runs from the `pr-1744` branch + our two patches; both registry entries pin `runtime_requirements.binary_dir` and `runtime_requirements.ld_library_path` accordingly.
+- E4B / E2B multimodal MTP path deferred unless multimodal-pipeline E-series unification proceeds.
+
+### Cross-references
+
+- Handoff: [gemma4-mtp-drafter-evaluation.md](../handoffs/active/gemma4-mtp-drafter-evaluation.md) — full gate sequence + result tables + follow-up matrix
+- Deep dive: [research/deep-dives/gemma4-mtp-drafter-deep-dive.md](../research/deep-dives/gemma4-mtp-drafter-deep-dive.md) — variant matrix, ik_llama.cpp PR table, EPYC implications
+- Inference acceleration index: [Research Intake Update — 2026-05-06](../handoffs/active/inference-acceleration-index.md#research-intake-update--2026-05-06)
+- Source: [intake-527](https://blog.google/innovation-and-ai/technology/developers-tools/multi-token-prediction-gemma-4/) — Google blog announcement, 2026-05-05
+
+### Production deployment landed (2026-05-08)
+
+**26B-A4B promoted to `worker_general`** despite the marginal 1.06× MoE-batch=1 speedup, on the strength of its quality lift over the prior occupant (Qwen3-Coder-30B-A3B Q4_K_M):
+
+| Axis | gemma4-26B-A4B Q4_K_M MTP | Qwen3-Coder-30B-A3B Q4_K_M | Δ |
+|---|---|---|---|
+| Full-suite quality (rigorous Claude-as-Judge, /183) | 165 (90%) | 153 (84%) | +6pp |
+| Tool_compliance (/27) | **26 (96%)** | 21 (78%) | +18pp |
+| Tool_compliance tps | 60.7 | 44.7 | +36% |
+| Median completion-token count per response | ~67 | ~120 | ~½ |
+
+The +1.06× MTP alone wouldn't have justified a swap; the orthogonal quality + verbosity lift did. **The corollary**: when MoE-batch=1 cancellation degrades the speedup ratio, evaluate whether the underlying model is also a quality / output-shape upgrade — those two axes can dominate the spec-dec axis for routing decisions.
+
+**Production launch tps measured higher than the original deep-dive bench** (76.5 t/s solo on full canonical instance, vs 44.12 t/s benchmarked at `mtp_speedup: 1.06`). The gap closes when launch params match the canonical recipe — the deep-dive bench used a subset of canonical settings; the production orchestrator now applies all of them.
+
+**Eight launch params required** for ik_llama.cpp PR #1744 + gemma4 MTP — every one surfaced as a root-cause for the same `GGML_ASSERT(buf != NULL && "tensor buffer not set")` failure at `ggml-backend.cpp:236`:
+
+> **2026-06-26 v6 cutover note.** The CLI grammar below is the deprecated ik_llama PR #1744 form. On production-consolidated-v6 the gemma worker engages MTP via **`--spec-type draft-mtp`** plus **`--spec-draft-n-max N`** (NOT `--spec-type mtp` / `--draft-max`); `--kv-hadamard` is removed. The `GGML_*` env-strip + `OMP_DYNAMIC=false` / `KMP_BLOCKTIME` workarounds (items 8–9) were ik_llama-fork-specific and **do not apply on v6** — v6 shares the production OMP integration that releases threads correctly under `OMP_WAIT_POLICY=active`. The remaining functional params (`--jinja`, `-np 1`, context, `--reasoning off`, KV q8_0, `--no-mmap`) still apply. See the page-end v6 cutover section for the canonical per-role grammar.
+
+1. `--spec-type mtp` — engages PR #1744 MTP code path (without it, `-md` is treated as standard spec decode and MTP draft tensors are loaded but never assigned to a backend buffer)
+2. `--jinja` — gemma4's custom embedded chat template
+3. `-np 1` — MTP fuses draft+target state across slots; `-np 2` ABA's on shared buffers
+4. `-c 16384` — match registry `max_context`; smaller values cause MTP buffer mismatches
+5. `--reasoning off` — gemma4 thinking-channel default ON; output otherwise lands in `reasoning_content` not `content`
+6. `-ctk q8_0 -ctv q8_0` — registry-declared KV types
+7. `--no-mmap` — canonical recipe (bulk-read on EPYC NUMA cold-cache)
+8. **Strip `GGML_*` env block** + `OMP_DYNAMIC=false` + LLVM-20 libomp on `LD_LIBRARY_PATH` — production llama.cpp's `GGML_CCD_POOLS` / `GGML_CCD_WORK_DIST` / `GGML_BARRIER_LOCAL_BETWEEN_OPS` are tuned against a different ggml fork commit; ik_llama.cpp PR #1744 leaves MTP draft tensors unassigned when these are set. The other two are part of the canonical OMP recipe.
+
+The `epyc-orchestrator/scripts/server/orchestrator_stack.py` worker_pool branch now applies all 8 via per-role `runtime_requirements` plumbing (binary override + LD_LIBRARY_PATH injection); other roles fall through to default. **Reference recipe**: memory `project_gemma4_mtp_launch_recipe`.
+
+**31B Dense remains evaluation-only** despite its 2.98× speedup — the absolute 21 t/s is unviable for production worker workloads (vs 76 t/s on 26B-A4B).
+
+**Cross-references**: [progress/2026-05/2026-05-08.md § session 2](../progress/2026-05/2026-05-08.md), commit `e205309` (epyc-orchestrator), commits `f106b7a`+`a295618` (epyc-inference-research), commit `0d131ea` (epyc-root).
+
+### 2026-05-09 — ik_llama.cpp idle-spin caveat (9th launch-param fix)
+
+After the swap landed and the stack was restarted, observed gemma4 worker_general pinning ~96 cores with **zero in-flight inference** and load average 97. Diagnosed via per-PID `/proc/<pid>/stat` delta sampling (per memory `feedback_ps_cpu_is_cumulative`): worker_general showed 95.13 cores busy in a 5s sample; all other servers at 0.00. User-confirmed via stop-test (`orchestrator_stack.py stop server_8072` → load 97 → ~5).
+
+Root cause: **ik_llama.cpp PR #1744's gemma-mtp branch does NOT release OMP threads during idle slots when `OMP_WAIT_POLICY=active`**. Production llama.cpp's OMP integration releases correctly under `active`; ik_llama.cpp's fork point regresses this. The 96-thread OMP team busy-waits indefinitely between dispatches.
+
+Fix: **9th required launch-param** for ik_llama.cpp PR #1744 + gemma4 MTP — `OMP_WAIT_POLICY=passive`. Wired in `orchestrator_stack.py:start_server` worker_pool branch under the `if binary_override:` guard, so it applies automatically to any future role using the binary_override path (gemma4-31B-MTP if rolled out, gemma4-E-series, etc.). Latency cost: a few µs first-token wakeup per request — negligible vs continuous 96-core idle waste under any non-saturated workload.
+
+This makes the actual launch-param recipe for ik_llama.cpp PR #1744 + gemma4 MTP **9 items**, not 8 (the table above stays at 8 because OMP_WAIT_POLICY belongs in the env layer, not the cmd args). Reference: memory `feedback_ik_llamacpp_omp_idle_spin`.
+
+**Cross-references**: [progress/2026-05/2026-05-09.md](../progress/2026-05/2026-05-09.md), commit `5eafe2f` (epyc-orchestrator).
+
+### 2026-05-16 — passive override REVERTED, KMP_BLOCKTIME=10 is the correct fix
+
+The 2026-05-09 `OMP_WAIT_POLICY=passive` override (commit `5eafe2f`) was reverted after smoke testing revealed passive **breaks MTP first-decode coordination**: every new request hangs forever with `llama_decode: failed to decode, ret = -3`, threads asleep on a futex but never woken by the MTP draft+target dispatch path.
+
+Tried as direct source patches in ik_llama.cpp's `examples/server/server-context.cpp` at the `slots_idle()` transition:
+- `omp_pause_resource(omp_pause_soft, omp_get_default_device())` — verified ignored by AOCC 5.0.0 libomp (95+ threads stayed in `R` state with `wchan=0` after the call)
+- `omp_pause_resource_all(omp_pause_hard)` — same, ignored
+
+**The correct fix is `KMP_BLOCKTIME=10` in the launch env** (LLVM libomp tunable; AOCC's libomp is LLVM-based and respects it). Workers busy-wait 10 ms before transitioning to a futex sleep — fast enough that MTP request dispatch still finds them warm (no first-token-latency regression), short enough that multi-second idle gaps don't waste cycles. `OMP_WAIT_POLICY=active` stays in the canonical recipe; KMP_BLOCKTIME tunes the idle transition, not the steady-state behavior.
+
+| Metric | active alone (broken) | active + KMP_BLOCKTIME=10 |
+|---|---|---|
+| gemma4 idle cores busy (5s sample) | 95.05 | **0.00** |
+| Threads state distribution | 95R / 5S | **100S** |
+| Thread `wchan` | (userspace) | `futex_wait_queue` ✓ |
+| gemma4 decode (solo) | ~109 t/s | **112 t/s** (no regression) |
+
+Critically, **the spinning gemma4 OMP team was dragging concurrent inference on other roles** via L3/DRAM bandwidth contention even when renice=19 had been applied to gemma4's threads (renice fixes scheduler priority but not memory-subsystem contention). Post-fix:
+
+| Role | With gemma4 spinning | With gemma4 KMP_BLOCKTIME=10 |
+|---|---|---|
+| frontdoor decode (thinking mode) | 7.21 t/s | **12.85 t/s** (+78%) |
+| coder_escalation decode | 4.02 t/s | 12.34 t/s (+207%) |
+| ingest_long_context decode | 10.46 t/s | 28.99 t/s (+177%) |
+
+Wired in `orchestrator_stack.py:start_server` worker_pool branch under the same `if binary_override:` gate. The general pattern (AOCC libomp ignores standard OMP 5.0 pause API; KMP_BLOCKTIME is the supported tunable) applies to any future ik_llama.cpp-based role added via `runtime_requirements.binary_dir`.
+
+**Reference memory**: `feedback_ik_llamacpp_omp_idle_spin` (updated with full resolution path).
+
+### 2026-05-16 — TIDE dynamic early-exit was the inflated bench number (cost of correctness)
+
+Bisect across 62 llama.cpp commits between 2026-04-24 and 2026-05-02 traced a frontdoor "regression" (16.4 → 12.45 t/s on Qwen3.6-35B-A3B Q8) to a single commit: **`2ffbdbbba` "fix: gate TIDE dynamic early exit on explicit --n-layer-exit flag"** (2026-05-02). The commit's rationale, verbatim:
+
+> Commit 0a9e8e5bc unconditionally activated TIDE layer reduction in the server decode loop for all models. After 5 warmup tokens with 3 consecutive >80% confidence tokens, llama_set_n_layer_exit() was called, skipping the last ~5 layers of any model — including qwen35moe (Qwen3.6-35B-A3B) which does not wire n_layer_exit into its layer loop or recurrent state management. **This corrupted GatedDeltaNet state, producing garbage output (TemplateName, TargetException, WidgetItem token sequences)** on non-trivial prompts.
+
+Reproduced verbatim on current binary with `--n-layer-exit 5..56` (re-enables TIDE per the fix's gating). Real bench prompt from `agentic.yaml:t1_q1_sequential` produces output like:
+
+```
+[{"tool": "grep_search",arguments {"htagTargetExceptionTargetExceptionTargetException...
+TemplateNameTemplateName...lésãoárd可梦obilizedNametoweTemplateName
+```
+
+Sweep across `--n-layer-exit ∈ {5, 20, 40, 56}` caps at 16.7-17.6 t/s (always corrupted).
+
+**The bench CSV at `epyc-inference-research/benchmarks/results/reviews/qwen36_q8_0_baseline.csv` (April 24, 25-30 t/s per question) was measured under TIDE-active conditions.** Claude-as-Judge scores were on factual correctness, not token-level integrity; corruption tends to appear in trailing tokens after the model emits a usable answer, so Judge scoring of 3/3 is consistent with corruption being present but tolerable for the leading answer text.
+
+The correctness fix was correct. **Don't re-enable TIDE.** The orchestrator's RegistryLoader-driven launch path never passes `--n-layer-exit` for any production role today; TIDE is fully gated off by design.
+
+**Residual gap**: even on the **April 20 binary (pre-TIDE entirely, head `81df3f7c`)** in total isolation (all other servers killed, 1068 GB free, fresh drop_caches), Qwen3.6-35B-A3B Q8 only delivers 12.13-12.48 t/s — not the 26 t/s recorded in the April 20 bench retest. CPU boost is correct. The 2x gap survives every config and binary lever tested. Most-plausible remaining cause: sustained multi-day uptime + cumulative throttle that `drop_caches` no longer fully restores (per memory `feedback_host_throttle_check`). Reboot test pending.
+
+**Cross-references**: [progress/2026-05/2026-05-16.md](../progress/2026-05/2026-05-16.md), llama.cpp commit `2ffbdbbba`, bench CSV `epyc-inference-research/benchmarks/results/reviews/qwen36_q8_0_retest_fork_fix.json`.
+
+### 2026-05-20 — Unified-model self-speculation (Nemotron-Labs-Diffusion)
+
+NVIDIA released **Nemotron-Labs-Diffusion** (intake-576, no arXiv ID, tech report 2026-05-19, NVIDIA Nemotron Open Model License). Family: 3B/8B/14B (Base + Instruct) + VLM-8B. Backbone is **Ministral3 dense LLaMA-family** — no SSM, no Mamba, no Delta Net. Distinct from every prior block-diffusion-speculation entry in this wiki (DFlash, DART, Lucebox, Luce-Qwen3.6) because the drafter and verifier are **the same set of weights** — mode is selected at inference time by switching the attention pattern (causal → AR, block-bidirectional → diffusion, dual-stream → training).
+
+Headline numbers (8B Instruct, batch=1, paper Fig. 9 + Tab. 10):
+
+| Hardware / quant | AR | Linear SS | Speedup | Eagle3 | SOL |
+|---|---|---|---|---|---|
+| GB200 FP8 | 256 t/s | **851 t/s** | **3.32×** | 354 (1.38×) | 1471 (5.75×) |
+| GB200 FP8 + custom CUDA | – | 1015 t/s | 3.97× | – | – |
+| RTX Pro 6000 INT4-AWQ-Marlin | 80 | 525 | 6.56× | 211 (2.64×) | 989 (12.36×) |
+| DGX Spark INT4-AWQ-Marlin | 41.8 | **112.5** | **2.69×** (INT4 vs INT4) | 43.2 (1.03×) | 223.1 (5.34×) |
+
+Acceptance length on SPEED-Bench (k=31): **NLD-8B native 5.46 / LoRA-tuned 6.82 vs Qwen3-8B-Eagle3 2.75 / Qwen3-9B-MTP 4.24**. Gap to MTP widens to 8.69 vs 4.73 on the four diffusion-friendly categories (coding, math, reasoning, multilingual). **Quality**: 8B AR mode +0.86% avg over Qwen3-8B AR across 10 benchmarks — first diffusion LM to match AR-class accuracy (LLaDA, Dream, SDAR were 9–26 points below).
+
+CPU portability prerequisites are materially better than DFlash: same-model drafter+verifier eliminates the cross-precision quantization drift that killed our DFlash CPU port at 27% acceptance; dense Ministral3 backbone has no recurrent-verify wall. **Port effort estimate: 15–25 days for Linear SS, 10–15 for diffusion-only** — comparable to DFlash but with more favorable architectural starting conditions. Critical unknowns before any port: (a) does Q4_K_M preserve the diffusion sampler's confidence-threshold sweet spot, (b) does Ministral3 load in our v4 llama.cpp fork, (c) does block-wise attention work as a causal-only approximation as a fast first cut. Two cheap pre-port audit tasks: Ministral3 conversion check (~1 h), AR-mode quality re-test on Q4_K_M (~4 h) — the latter validates the paradigm, NOT a worker-role candidacy (our worker_general is gemma4-26B-A4B Q4_K_M MTP; an 8B dense is the wrong size class).
+
+Verdict: `worth_investigating`. Tracked in [`inference-acceleration-index.md`](../handoffs/active/inference-acceleration-index.md) + [`gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) (DGX Spark Day-0 candidate alongside DFlash) + [`gemma4-mtp-drafter-evaluation.md`](../handoffs/active/gemma4-mtp-drafter-evaluation.md) (Tab. 10 is the strongest single-paper evidence that "self-speculation > MTP" at low concurrency on dense models). Full deep dive at [`research/deep-dives/nemotron-labs-diffusion-tri-mode.md`](../research/deep-dives/nemotron-labs-diffusion-tri-mode.md). Tier 2b contradicting-evidence re-run scheduled 2026-06-20. Follow-up intake candidates: Set Block Decoding (arxiv:2509.04185, Meta FAIR — immediate prior art), Efficient-dlm (arxiv:2512.14067), TiDAR (arxiv:2511.08923), Fast-dllm (arxiv:2505.22618).
+
+### New Findings (2026-05-27 — Peer-verifier same-tier speculation: NO-GO on EPYC, re-eval triggers documented)
+
+- **Peer-verifier speculation is NOT draft-target speculation.** The Fortytwo Network's (unpublished) chunk-ranking pitch describes a same-tier mechanism: one leader model emits a chunk (e.g., 64–256 tokens, or up-to-newline/up-to-tool-call boundary); the remaining N−1 peers don't generate, they *score* the prefix+chunk via a single forward pass; if the swarm agrees, commit; on disagreement, switch leadership to the highest-scoring peer's continuation. Distinct mechanism from Medusa / EAGLE / draft-target speculation — there's no small drafter, just same-tier peer cross-verification.
+- **NO-GO on current EPYC config — both backend and roofline gates fail.** `peer-verifier-speculation-spike.md` resolved 2026-05-27 by direct inspection of `LlamaServerBackend` + roofline math:
+  - **Gate 1 (backend)**: native `/completion` path in `src/backends/llama_server.py:_build_payload` has no prefix-score request mode (no `n_predict=0` + per-prompt-position log-probs); no mid-generation handoff primitive; `save_slot`/`restore_slot` exist but the disk format is NOT portable across heterogeneous GGUFs (per `feedback_same_model_roles_share_server.md`). Adding the scoring half is ~1 day of wrapper work; the swap half is multi-week (likely upstream llama-server territory).
+  - **Gate 2 (roofline)**: at N=3 26B verifiers (gemma4-26B-A4B band, leader at 76.5 t/s solo, prefill ~250 t/s), chunk=128: sequential verification = 1.67 + 3×0.51 = 3.20s/chunk → **40 t/s effective = 48% per-stream regression**. Parallel verification (peers share leader's 96-thread CPU) → ~38 t/s effective = 50% regression. Both schedules breach the 30% gate by 20-30 absolute points.
+- **Re-evaluation triggers documented in the handoff** (any one flips the NO-GO):
+  1. Fortytwo publishes the chunk-ranking method (replaces hypothesis-driven Variant 1 reconstruction with the actual mechanism — possibly cheaper than our roofline).
+  2. DGX Spark or other unified-memory hardware arrives (changes prefill-to-decode ratio).
+  3. RAO+ReDel substrate work (P#42) adds mid-stream-control primitives for an unrelated reason — drops Gate-1 cost from "multi-week" to "wire it up".
+  4. Smaller specialist peers (e.g., 8B from swarm-dataset-distillation) replace the 26B verifiers — N=3 8B prefill at ~400 t/s shrinks per-chunk overhead from 0.51s to ~0.32s; combined with every-other-chunk verification (2× reduction), gets to ~18% regression — under the gate.
+- **DAR-6 (request-time swarm-fanout) is NOT blocked by this NO-GO.** That covers the **published** post-hoc full-completion form (intake-615) and is independently buildable; scaffolding landed same session (default-off feature flag, no production routing change).
+
+The spike is preserved in `handoffs/active/` (not archived) as a frozen reference for the four re-evaluation conditions. Negative results with concrete gating numbers and triggers are more useful than verdicts like "not practical" — the next reviewer can compare new evidence against the recorded gate thresholds in O(1).
+
+Sources: [`handoffs/active/peer-verifier-speculation-spike.md`](../handoffs/active/peer-verifier-speculation-spike.md) · [`handoffs/active/decision-aware-routing.md`](../handoffs/active/decision-aware-routing.md) § DAR-6 · `research/intake_index.yaml` intake-614/615 · `epyc-orchestrator/src/backends/llama_server.py` · `progress/2026-05/2026-05-27.md`.
+
+### New Findings (2026-05-27 evening — Cross-tokenizer SD, MTP-split feasibility, FastDraft gating)
+
+Synthesis from 9-paper deep-dive (intake-617..624 + dedup against intake-042) supporting the new `gpu-drafter-mi200-investigation.md` handoff. Full text at [`research/deep-dives/2026-05-27-cross-tokenizer-specdec-and-mtp.md`](../research/deep-dives/2026-05-27-cross-tokenizer-specdec-and-mtp.md).
+
+**Cross-tokenizer speculation is three algorithms, not one.** Timor et al. ICML 2025 (intake-617, arxiv:2502.05202) presents **SLEM** (string-level exact match with look-behind realign), **SLRS** (rejection sampling against $\psi(t) = \sum$ over all draft tokenizations canonicalizing to a target prefix — exponential, reference-only), and **TLI** (token-level intersection — $q'(x) = q(x)/\sum_{x \in T \cap D} q(x)$, masked renorm over shared vocab, no detokenize/retokenize). Headline up to 2.8× on long-context summarization; worst case −57% on matched-architecture pair where heterogeneous machinery is unneeded overhead. **TLI is the operational starting point** for any non-Qwen drafter contingency on our stack — cheapest hot path, integrates into existing rejection-sampling kernels with a single masked renormalization. Reference impl is HuggingFace Transformers PR #35029 (merged); llama.cpp port is critical-path engineering. This **falsifies our existing Chapter 01 § Tokenizer Compatibility Constraints text** (flagged for rewrite).
+
+**MTP head-split for trunk-on-CPU/heads-on-GPU is architecturally bounded by what's shipped.** DeepSeek-V3 (intake-621) ships $D=1$ — per Eq. 21, the first MTP head hard-pins to the trunk's hidden state $h^0_i$, so chained-on-GPU has no chain. Gemma4's MTP (ik_llama.cpp PR #1744) is also $D=1$ — measured 76.9% acceptance on production traffic 2026-05-27 (`worker-explore-8072.log`, 472 release events, gate met). Per-token H2D of trunk hidden state is cheap (~14 KB at $d=7168$), so the split mechanically works, but it produces *one* extra drafted token per main step, not a multi-token chain. Gloeckle 2024 (intake-623, arxiv:2404.19737) is the architecturally correct version — **parallel** MTP heads with no inter-head dependency, $n=4$ → 2.74× speedup on code. But Meta released no checkpoints (500K GPU-hours trained, none shipped) and Llama-2 fine-tuning to add parallel heads "did not yield significant improvements" (their own quote). **Operationally: the architecture is right, the supply side is empty.**
+
+**FastDraft (intake-624, arxiv:2411.11055) is the matched-vocab custom-drafter training pipeline.** ~10B tokens, <24h on 8× Gaudi-2, ~1-3 wall-clock days on modern accelerators (~1-3 weeks on a single dedicated MI210). Headline α=0.65 on HumanEval (code), only 0.31-0.37 on chat/summarization. Matched-vocab only; no Qwen, no MoE, no targets ≥10B in the paper. **Sweet spot for our stack is coder_escalation, not frontdoor.**
+
+**The Gating Measurement — α(off-the-shelf drafter → target) on production traffic gates three independent optimization investments.** A single number — α(Qwen3-1.7B → Qwen3.6) at γ=3 on prod-mix traffic — gates: (a) cascade drafting / intake-042, gate α ≥ 0.7 (need geometric tail to exploit); (b) FastDraft custom training, gate α < 0.55 (off-the-shelf leaves acceptance on the table); (c) SpecDec++ adaptive-K / intake-620, gate optimal fixed K ≥ 4 AND per-position α-variance is high (structurally inapplicable at the gemma4 `--draft-max 2` regime where chunks are too short to truncate). These three are mutually exclusive — the same α value points to at most one as +EV; investing in two simultaneously is wasted effort. Persisted in three places: `gpu-drafter-mi200-investigation.md` § The Gating Measurement (specific thresholds + per-stage gate table), `research/deep-dives/2026-05-27-cross-tokenizer-specdec-and-mtp.md` § Action item #6 (rationale chain), and memory `feedback_measure_alpha_before_specdec_investment.md` (general principle).
+
+**ZeTT (intake-618) and FVT (intake-622) are not realistic drafter sources for us.** Both recover *self-consistency* under tokenizer swap, not target-distribution alignment. Acceptance against a Qwen3.6-35B target after FVT- or ZeTT-ing a non-Qwen 1B would be bounded by the underlying capability gap and the matched-vocab small Qwen drafter beats them off the shelf. Keep on contingency shelf; do not block matched-vocab MI200 work on them.
+
+Sources: [`handoffs/active/gpu-drafter-mi200-investigation.md`](../handoffs/active/gpu-drafter-mi200-investigation.md) · [`research/deep-dives/2026-05-27-cross-tokenizer-specdec-and-mtp.md`](../research/deep-dives/2026-05-27-cross-tokenizer-specdec-and-mtp.md) · `research/intake_index.yaml` intake-617..624 · `progress/2026-05/2026-05-27.md`.
+
+## TiDAR CPU-mechanism correction + diffusion-LM port variant question (2026-05-28)
+
+**Correction of an inverted reading.** Initial intake of TiDAR (arxiv:2511.08923, intake-633) scored it `superseded` by Nemotron-Labs-Diffusion (intake-576) and dismissed its "free token slots" mechanism as GPU-compute-slack-driven, therefore inapplicable to CPU. **The deep-dive 2026-05-28 inverted that finding.** TiDAR's plateau exists *because* weight + KV-cache fetch dominates per-step latency at batch=1 decode (paper Fig. 1) — that **is** our EPYC 9655 CPU regime (`project_cpu_decode_bw_bound`), not the inverse of it. The mechanism amortizes one weight-fetch over K drafted tokens per forward pass. On CPU each pass = one full weight scan, so TiDAR's one-pass pattern halves per-cycle weight traffic vs Nemotron Linear-SS (two-pass).
+
+TiDAR is the architectural ancestor of Nemotron's *underperforming* Quad-SS mode. Quad-SS underperforms on GPU because FlexAttention kernels for the quadratic mask are unoptimized; **on CPU we write ggml ops either way, so the FlexAttention blocker does not carry over**. Revised: intake-633 verdict superseded → worth_investigating; novelty low → medium.
+
+**Open question logged in Nemotron deep-dive §10**: evaluate a TiDAR-pattern one-pass variant alongside Nemotron Linear-SS in the §6 CPU port plan. User also proposed split-role hybrids (Variant C1 diffusion-think + AR-generate, C2 inverse). Promotion gate (matches the FLOPS-roofline audit decision rule exactly): **achieved FLOPS < 10% of ~9.2 TFLOPS FP32 socket theoretical AND achieved DRAM BW > 70% of ~614 GB/s socket theoretical** → diffusion variants have FLOPS margin. The roofline measurement that resolves this gate is itself a separate user-gated task ([`handoffs/active/cpu-decode-flops-roofline-audit.md`](../handoffs/active/cpu-decode-flops-roofline-audit.md)) which is blocked at DRAFT until Phase 0 calibrates the correct AMD Zen 5 perf counters (the initial draft prescribed Intel `fp_arith_inst_retired.*` events that this host rejects).
+
+Sources: `research/intake_index.yaml` intake-633/634/635 + intake-576 (Nemotron successor) · [`research/deep-dives/nemotron-labs-diffusion-tri-mode.md` §10](../research/deep-dives/nemotron-labs-diffusion-tri-mode.md) · [`handoffs/active/cpu-decode-flops-roofline-audit.md`](../handoffs/active/cpu-decode-flops-roofline-audit.md) · `progress/2026-05/2026-05-28.md` §research-intake-batch.
+
+## 2026-06-26 — v6+iqk production cutover (native MTP/NEXTN replaces ik_llama PR #1744)
+
+The production EPYC inference stack was cut from a TWO-kernel setup — v5 llama.cpp for most roles plus a SEPARATE ik_llama.cpp binary used ONLY by the gemma worker — onto ONE kernel: **production-consolidated-v6** (canonical tree `/mnt/raid0/llm/llama.cpp`). v6 = upstream llama.cpp framework + native MTP/NEXTN speculative decoding + our forward-ported CPU kernels + **ik_llama's iqk AVX-512 GEMM kernels** integrated into the fork and runtime-gated by env `GGML_IQK=1`. **ik_llama.cpp is now FULLY DEPRECATED — there is no second binary.** This closes the consolidation gap recorded in the 2026-06-25 sweep (v6+iqk with the Q8 gemma head measured 42.78 t/s vs ik_llama 38.63 t/s, +11%, with higher acceptance 0.796 > 0.655).
+
+**STATUS (use exactly — do NOT claim verified production throughput).** "v6+iqk cutover executed 2026-06-26: registry/launcher/governance config converged (all no-inference gates green, 174 promotion-gate tests pass), canonical binary built; **live throughput + garbage verification PENDING** (operator deploy gate)." Every speedup number elsewhere on this page predates the live v6 deploy gate and must be treated as a v6-candidate / pre-cutover measurement, not certified production throughput. Tracking: [`handoffs/active/v6-iqk-promotion.md`](../handoffs/active/v6-iqk-promotion.md).
+
+### v6 spec-decode CLI grammar (replaces the ik PR #1744 grammar)
+
+The v6 framework changed the speculative-decode CLI surface. The old ik_llama / pre-v6 flags are removed:
+
+| Concern | OLD (ik_llama PR #1744 / pre-v6) | NEW (production-consolidated-v6) |
+|---|---|---|
+| Engage MTP/NEXTN draft path | `--spec-type mtp` | **`--spec-type draft-mtp`** |
+| Draft length per step | `--draft-max N` (alias `--spec-draft-max`) | **`--spec-draft-n-max N`** |
+| KV Hadamard transform | `--kv-hadamard` | **removed** (no longer a flag) |
+| ngram / prompt-lookup draft | (not wired server-side) | **`--spec-type ngram-simple\|ngram-cache\|ngram-map-k\|ngram-mod`** (draft-model-free) |
+
+The functional gemma-worker launch params that are NOT spec-grammar (`--jinja` for the embedded chat template, `-np 1` to keep MTP draft+target state on one slot, context matching the registry `max_context`, `--reasoning off` so output lands in `content`, `-ctk q8_0 -ctv q8_0`, `--no-mmap`) carry over unchanged. The ik-fork-specific OMP idle-spin workarounds (`OMP_WAIT_POLICY=passive` → reverted → `KMP_BLOCKTIME=10`, and the `GGML_*` env-strip) are **not needed on v6**: v6 inherits the production llama.cpp OMP integration that releases the thread team correctly under `OMP_WAIT_POLICY=active`, so the canonical OMP recipe applies to the gemma worker like every other role.
+
+### Per-role MTP / NEXTN map on v6
+
+The production stack uses two distinct self/external speculative mechanisms, both native to v6 and both engaged via `--spec-type draft-mtp` + `--spec-draft-n-max N`:
+
+| Role(s) | Target model | Draft mechanism | Notes |
+|---|---|---|---|
+| `worker` (worker_general) | gemma-4-26B-A4B Q4_K_M MoE | **External assistant head** (`Gemma4AssistantForCausalLM`) | The one role that carries a separate small drafter model; the f16→Q8 head precision lever (+28% at equal acceptance) is gemma-specific. Optimal `--spec-draft-n-max 2` (MoE saturates early). |
+| `frontdoor`, `coder_escalation`, `worker_summarize` | Qwen3.6-35B-A3B (shared `:8070` process, one GGUF) | **NEXTN self-draft** (in-target head, shares `token_embd` at model quant) | One llama-server process serves all three roles; routing is software role→port. Opt `--spec-draft-n-max 4` (+103% in the v6-iqk sweep, acceptance 0.82). |
+| `architect_general` | Qwen3.5-122B (`qwen35moe`) | **NEXTN self-draft** | M-RoPE assertion resolved on v6; same NEXTN loader as frontdoor. Measured +58–89% on v6 (`llama-arch.cpp` includes QWEN35MOE; the earlier "GDN wall / 0.56× dead-end" was a stale ik path with no `draft-mtp`). MTP blocks here are dense attention, not recurrent. |
+
+**Launcher guard (2026-07-05).** Orchestrator `200d6ea` makes the CPU
+launcher omit `-md` when a role's draft path resolves to the same GGUF as the
+target model, preventing accidental double-load for embedded NEXTN/self-draft
+roles such as frontdoor and architect. `worker_general` still keeps `-md`
+because its current production MTP path uses a separate assistant-draft GGUF.
+
+**Registry mechanism note (2026-06-26).** The LEAN registry is hand-authoritative for the cutover (`--compile-registry` is OFF); the worker / Qwen3.6 / architect models carry NEW `model_id`s because their base GGUFs changed (ORIG worker base; NEXTN MTP variants for the self-drafting roles). Do not assume the lean registry was recompiled from master for this cutover — it was hand-converged.
+
+### ngram / prompt-lookup decoding (zero-RAM fallback — OFF in prod today, fully supported in v6)
+
+v6 fully supports **draft-model-free** speculative decoding (ngram / prompt-lookup), including **server-side**, via `--spec-type ngram-simple | ngram-cache | ngram-map-k | ngram-mod`. This drafts continuation tokens by matching the recent context against n-grams already present in the prompt/KV (and, for the cache/map variants, a running suffix structure) — no drafter weights, no extra model load, hence **zero additional RAM**. It is **OFF across the production stack today** (every spec-enabled role uses native MTP/NEXTN; the n-gram path is not engaged for any live role). Its documented role is the **architect's zero-RAM fallback**: when a NEXTN/MTP self-draft head is unavailable or RAM-constrained for a large architect target, ngram/prompt-lookup gives a no-extra-memory speculation path that is especially effective on repetitive / templated / long-context-quoting workloads where the next tokens frequently recur in-context. This is a v6 capability statement, not a measured production result — acceptance on EPYC architect traffic has not yet been benched.
+
+**2026-07-04 update — the corpus-backed static-cache option is retired.** The one candidate source for a `--lookup-cache-static` build (the 651GB local code corpus) failed its prompt-injection clean-window A/B and was deleted with operator approval before any large static n-gram cache was built; the `build_static_ngram_cache.py` scaffold survives as code history only. The in-context ngram/prompt-lookup fallback described above is unaffected (it needs no corpus), but a corpus-derived static cache would now require recreating a corpus under a fresh handoff + protocol. See [corpus-augmented-prompt-lookup-revalidation.md](../handoffs/completed/corpus-augmented-prompt-lookup-revalidation.md).
+
+**Cross-references**: [`handoffs/active/v6-iqk-promotion.md`](../handoffs/active/v6-iqk-promotion.md) (cutover tracking + gate status) · [`handoffs/active/iqk-port.md`](../handoffs/active/iqk-port.md) (iqk kernel integration + MTP-composition A/B) · [`progress/2026-06/2026-06-26.md`](../progress/2026-06/2026-06-26.md) · the 2026-06-25 full-stack MTP sweep table near the top of this page (v6-candidate numbers, pre-deploy-gate).
+
+
+## DFlash: corrected mechanism and production status (2026-07-25)
+
+Two long-standing descriptions of DFlash in this repo were wrong, and both biased the
+reopen decision in the same direction — toward *not* revisiting it.
+
+**It is single-pass, not iterative denoising.** Multiple internal documents described the
+drafter as "iteratively denoising the block over T steps (typically T=8-16)". Verified from
+the published drafter weights: **there are no timestep tensors**; drafting is a single
+forward pass over a block of `mask_token_id` embeddings. The wrong model *overstates
+drafting cost* — precisely the term that decides whether the technique can pay for itself on
+bandwidth-bound CPU decode. One completed handoff carried both the wrong description near the
+top and a "CRITICAL CORRECTION" contradicting it further down; a second handoff's tree-builder
+rationale rested on harvesting candidates from "different denoising trajectories" that do not
+exist.
+
+**The Q4_K_M NO-GO is architecture-general, not SSM-specific.** Chapter 10 attributed it to
+"hybrid-SSM targets", but it was measured on **Qwen3-Coder-30B-A3B — a pure MoE with no
+recurrence**. The chapter's own authoritative rows say only "quantization noise in
+hidden-state extraction is the root cause" and never mention SSM.
+
+**The "no llama.cpp support" blocker is dead** (was true, then wasn't, for five weeks):
+upstream merged 2026-06-28 (PR #22105), forward-ported to production `ed4091266` (2026-07-18),
+`--spec-type draft-dflash` live on `production-consolidated-v8` (and present in
+the v7 rollback lineage), converted GGUF on disk since
+2026-07-03. The NO-GO on *acceptance economics* stands; the *availability* framing does not.
+
+**Drafter architecture** (settled, so it stops being re-derived): headless (no `embed_tokens`,
+no `lm_head`; 58 tensors), non-causal (`is_causal=False`), and **target-locked** —
+`fc.weight` is `[hidden, n_taps*hidden]`, so there is no generic drafter. Inert as
+`--model-draft`; live only under `-md` + `--spec-type draft-dflash` after conversion with
+`--target-model-dir`.
+
+**Published-speedup provenance** (so the headline numbers stop circulating unqualified):
+6.17x MATH-500 / 5.91x AIME24 / 5.85x AIME25 are **Qwen3-8B, greedy temp 0, hardware unstated,
+measured against naive autoregressive decode at concurrency 1** — a naive baseline, unusable
+against a stack whose incumbent is native MTP. Code and agentic suites are **2.27x-5.43x**,
+roughly half the headline.
+
+_Sources: `docs/chapters/10-advanced-speculative-decoding.md` (corrected `aa026750`);
+`handoffs/completed/dflash-block-diffusion-speculation.md`;
+`handoffs/active/intake-derived-work-2026-07-25.md` ID-28..ID-34._
+
+## Compiled Update — 2026-07-29: verifying a draft/MTP head is a weight-map question, never a config question
+
+**Confidence**: verified — every claim below is a direct artifact read (weight
+maps, tensor counts, byte-level hashes) rather than a reported number.
+
+### `config.json` is UNSOUND for verifying a fine-tune's architecture
+
+One checkpoint retains `"mtp_num_hidden_layers": 1` while shipping **zero** `mtp.*`
+weights. A config-level check therefore reports the MTP head "preserved" and is
+**wrong**. A second checkpoint in the same sweep is missing **785 `mtp.*`
+tensors** relative to upstream while its config still declares the head. The
+reusable rule: **any capability claim about an HF fine-tune** — MTP head, draft
+head, vision tower, tied embeddings — **must be verified against
+`model.safetensors.index.json`** (or GGUF tensor counts), never against
+`config.json` alone. This is the same failure family as the standing
+tensor-count-not-file-size rule below: a declared property is not a shipped
+property.
+[`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) §2026-07-29 Stage-4
+
+### The two durable artifact facts for the KAT-Coder-V2.5-Dev candidate
+
+- **Tokenizer is byte-identical to the deployed frontdoor** — `sha256
+  5f9e4d49…cb42` on `tokenizer.json`, with matching `vocab.json` / `merges.txt`.
+  The **exact-tokenizer precondition for speculative decoding is therefore
+  SATISFIED** and needs no re-derivation.
+- **The MTP head is REMOVED**: `mtp_num_hidden_layers` 1→0 and **zero**
+  `nextn`/`mtp` tensors across **31,333 weight-map entries**. That is a
+  **regression versus our live frontdoor GGUF**, which carries `blk.40.nextn.*`.
+  Adopting this checkpoint in the frontdoor lane would silently drop the
+  native-MTP path — a spec-dec loss **no quality bench would surface**.
+
+[`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) §2026-07-29 Stage-4
+
+### The GGUF header gate, restated
+
+For the Qwen3.6-27B family the MTP presence test is a **24-byte ranged header
+read**: tensor count **851 = no MTP, 866 = MTP** (the +15 being the
+`blk.64.nextn.*` block), corroborated by the KV key
+`qwen35.nextn_predict_layers`. **File-size reasoning is unsound** — one
+fine-tune's Q4_K_M is 722 MB *smaller* than our non-MTP Q4_K_M and still has MTP.
+
+### MTP is not a fine-tune feature — hold it constant across arms
+
+At byte level, one fine-tune's entire 451 MB layer-64 block is **identical** to
+our local MTP Q8_0 artifact, as are `token_embd.weight`, `output.weight` and
+`output_norm.weight`; the differing set is exactly the **256 LoRA target
+modules** (r=64, α=128, merged scaling 2.0), and a control tensor genuinely
+differs, so the offset arithmetic is sound. Consequences: MTP must be held
+constant across arms rather than credited to the fine-tune; the mismatch is a
+genuine **co-trained-head versus modified-trunk** problem, predicted worst on
+exactly the early tokens the fine-tune targets; and the reported accept-lengths
+are statistically indistinguishable from base. A related hazard: our two local
+Q4_K_M artifacts are **not a clean pair** (different quantizer recipes, the MTP
+one being the *smaller* file), so any MTP-vs-non-MTP benchmark on those two is
+confounded.
+
+The zero-delta half of that byte-level result is independently useful: ~600
+non-LoRA tensors are **exactly** zero-delta, which makes them a free measurement
+of the Q8 dequant noise floor for any GGUF weight-delta geometry probe — the
+quantity that decides whether such a probe is trustworthy at all.
+[`architect-model-selection-bench.md`](../handoffs/active/architect-model-selection-bench.md) §zero-inference weight-delta geometry
+
+### Do not bundle a spec-dec variant into a quality A/B
+
+If a coder-role quality A/B is ever authorized, the MTP variant of the candidate
+must be **excluded**: a base-trunk MTP head on a fine-tuned trunk is a separate,
+unmeasured question, and including it confounds the quality axis with a spec-dec
+axis.
+[`multi-file-coding-completion-capability.md`](../handoffs/active/multi-file-coding-completion-capability.md) §2026-07-29 rider
+
+### Relevance is asymmetric between planes
+
+For the hybrid-attention family in this sweep, MTP is real on the MI210
+(measured optimum **53.1 t/s at `--spec-draft-n-max 4`, 1.82×**) while the CPU
+plane is **architecturally foreclosed** (48 of 64 layers are Gated DeltaNet;
+0.56× measured on the sibling). "MTP" appearing in a filename must never read as
+a reopen trigger for the parked CPU handoff.
+
+### Source References
+
+- [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — the `config.json`-is-unsound rule; KAT-Coder tokenizer hash and removed MTP head; GGUF header gate (tensor count, not file size); byte-level ThinkingCap MTP identity; CPU/GPU relevance asymmetry
+- [`architect-model-selection-bench.md`](../handoffs/active/architect-model-selection-bench.md) — the zero-delta non-LoRA tensor set as a dequant noise-floor control for weight-delta geometry; MTP held constant across bench arms
+- [`multi-file-coding-completion-capability.md`](../handoffs/active/multi-file-coding-completion-capability.md) — the exclusion of the MTP variant from any authorized quality A/B

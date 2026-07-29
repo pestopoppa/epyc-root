@@ -1,0 +1,6 @@
+{
+  "agent": "episodic_reseed_terminal",
+  "state": "idle",
+  "task_id": "episodic-store-reseed",
+  "ts": "2026-07-28T07:45:29+00:00"
+}

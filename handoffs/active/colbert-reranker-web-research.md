@@ -1,0 +1,515 @@
+# ColBERT Reranker for web_research Pipeline
+
+**Status**: refreshed 2026-05-28; S5 gate rechecked 2026-06-14 — S1-S4 complete; zero-page telemetry defect repaired; targeted and representative direct-tool probes produced real fetched/synthesized counters. Current S5 request-path reranker decision is **NO-GO/HOLD**: representative direct-tool deep-research sentinel sample synthesized 55 pages with 0 irrelevant pages, below the >20% waste threshold. Live Gate-3 now passes hard telemetry plus the `web_research` soft structured-output probe after `epyc-orchestrator` `9a220b9`; keep instrumentation and reranker utilities available but do not add request-path reranking complexity.
+**Created**: 2026-04-05 (extracted from `04-mirothinker-worker-eval.md` intake-174)
+**Updated**: 2026-05-28
+**Priority**: MEDIUM
+**Effort**: Medium
+**Depends on**: AR-3 autopilot data — S5 requires the post-AR-3 irrelevant-page analysis to confirm >20% waste rate before implementation proceeds. No infrastructure dependency; this is a data gate. See "Post-AR-3 Analysis" section below for the go/no-go script and thresholds.
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+This handoff is not blocked on library or model setup anymore. It is blocked on a measurement decision: does `web_research` currently waste enough synthesis work to justify a reranker in the request path?
+
+**Critique of older structure**: the file still read like a model-selection handoff, even though model setup and feature flag work already landed. The real ambiguity was the gate: implement S5 only if telemetry shows irrelevant-page synthesis is material. This reset puts that gate first and gives concrete forks.
+
+**Verified implementation context**:
+
+- Orchestrator commit `270d7317` added S1/S2 relevance instrumentation and `web_research_rerank` feature flag plumbing.
+- Orchestrator commit `41624699` wired `search_backend` into telemetry for the post-AR-3 analysis path.
+- Inference-research commit `f48dc05` added the baseline analyzer.
+- No reranker code should be added until the gate below is answered.
+
+**S5 go/no-go gate**:
+
+Run the analyzer on the most recent AR-3 / web-research eval bundle:
+
+```bash
+cd /mnt/raid0/llm/epyc-inference-research
+python3 scripts/benchmark/analyze_web_research_baseline.py benchmarks/results/eval
+```
+
+If the eval bundle is missing or too sparse, use production/orchestrator logs as a fallback:
+
+```bash
+rg -n "web_research relevance summary|irrelevant_rate|pages_irrelevant" \
+  /mnt/raid0/llm/epyc-orchestrator /mnt/raid0/llm/epyc-inference-research/benchmarks/results
+```
+
+**Decision forks**:
+
+| Observed irrelevant-page rate | Decision | Implementation path |
+|---:|---|---|
+| >20% with >=50 synthesized pages | GO | Implement S5 in `research.py` with lazy ONNX singleton, then run S6 A/B. |
+| 10-20% or <50 pages | HOLD | Add more web_research sentinel traffic; do not add request-path complexity yet. |
+| <10% with >=50 pages | NO-GO for S5 | Keep instrumentation; close this handoff as "reranker not justified"; optionally expose utility for offline analysis only. |
+
+**2026-06-12 gate analysis (read-only):** ran
+`python3 scripts/benchmark/analyze_web_research_baseline.py benchmarks/results/eval` in
+`/mnt/raid0/llm/epyc-inference-research`.
+
+- Questions with `web_research_baseline`: 1,274
+- Questions triggering `web_research`: 771 (60.5%)
+- Recorded `web_research` calls: 33,424
+- Pass rate with web_research: 671/771 (87.0%)
+- Pass rate without web_research: 440/503 (87.5%)
+- Aggregated page telemetry across files with `web_research_telemetry`: fetched=0, synthesized=0, irrelevant=0
+- No current orchestrator-log `web_research relevance summary` fallback rows were present.
+
+**Decision:** HOLD. The gate requires >=50 synthesized pages before a GO/NO-GO irrelevant-page-rate decision.
+This result also shows the existing analyzer-visible web_research data has source yield zero, so the next
+useful work is fresh sentinel traffic or web_research fetch/telemetry repair, not S5 implementation.
+
+**2026-06-14 telemetry repair/probe:** after `web_research` zero-page telemetry repair landed in
+`epyc-orchestrator`, ran a targeted source/fetch/synthesis probe with SearXNG plus only the
+`worker_general` quarter endpoint needed by `web_research` (`http://localhost:8082/completion`).
+
+- Artifact: `/mnt/raid0/llm/epyc-orchestrator/benchmarks/results/eval/web-research-telemetry-serial-20260614T1908Z`
+- Query set: 20 ColBERT/reranking-focused queries, `max_results=5`, `max_pages=3`
+- Runtime setting: serial synthesis (`_MAX_SYNTH_WORKERS=1`) because the default 3 concurrent synth calls against a single `-np 1` worker quarter timed out.
+- Results: 20/20 successful queries; 100 search results; 60/60 pages attempted, fetched, and synthesized; fetch failures 0; synthesis failures 0; irrelevant pages 0; search backend `searxng`.
+
+Decision: the telemetry denominator is now healthy, but this targeted probe does **not** justify S5. It is biased toward relevant ColBERT pages and observed `irrelevant_rate=0.0`. Keep request-path reranking off. The next gate should be a representative web_research sentinel/eval sample using the same repaired counters; implement S5 only if that sample crosses the existing >20% irrelevant-page threshold.
+
+**2026-06-14 representative direct-tool sentinel + synthesis hardening:** landed
+in `epyc-orchestrator` `93c4a09` (`Harden web research telemetry probe`).
+
+- Added `scripts/benchmark/web_research_telemetry_probe.py`, a direct
+  tool-only probe for `web_research` counters. It can run the
+  `orchestration/deep_research_sentinel.yaml` query set without invoking
+  orchestrator role routing, emits metadata-only `records.jsonl` plus
+  `summary.json`, supports `--shard-count/--shard-index`, and can pin a shard
+  to a specific worker endpoint.
+- Baseline representative run:
+  `/mnt/raid0/llm/epyc-orchestrator/benchmarks/results/eval/web-research-direct-deep-sentinel-20260614T1936Z`.
+  It ran all 20 deep-research sentinel prompts through SearXNG + the
+  `http://localhost:8082/completion` worker with serial synthesis. Result:
+  20/20 successful calls, 100 search results, 60 pages attempted, 57 pages
+  fetched successfully, 55 pages synthesized, 3 fetch failures, 2 worker
+  synthesis failures, 0 irrelevant pages (`irrelevant_rate=0.0`).
+- Sharded mitigation validation:
+  `web-research-direct-deep-sentinel-mitigated-s{0,1,2,3}-20260614T1953Z`.
+  Four probe processes ran across `8082/8182/8282/8382`, serial within each
+  worker. Result: 20/20 successful calls, 75 search results, 45 pages attempted,
+  43 pages synthesized, 2 fetch failures, 0 synthesis failures, 0 irrelevant
+  pages. This validated the faster tool-working pattern and the synthesis
+  hardening, but it is not the canonical S5 denominator because parallel
+  SearXNG returned fewer results.
+- Validation policy: use serial single-slot runs only for canonical denominators,
+  latency, reliability, or quality comparisons. For "does the tool work?"
+  checks, prefer bounded parallel shards across independent worker slots/ports
+  or explicitly multi-slot servers; keep at most one in-flight synthesis request
+  per single-slot endpoint to avoid manufacturing timeout failures.
+- Worker synthesis hardening: `_synthesize_page()` now logs bounded HTTP error
+  detail and retries one worker HTTP 5xx with a reduced `n_predict=256`.
+  Regression coverage proves a 500 on the primary 512-token call can recover on
+  the reduced-cap retry.
+- Live request-path check: Gate-3 hard telemetry initially passed after the HOT
+  stack was started (`get_eval_secret` counted 8, all timing rows successful,
+  no-tool isolation clean), while the old soft `web_research` structured-output
+  probe timed out at 180s. Follow-up `epyc-orchestrator` `9a220b9` tightened the
+  soft prompt to `max_results=1,max_pages=1` and made the soft classifier judge
+  successful `web_research` telemetry before post-tool final-answer errors. A
+  compact live role-path smoke then passed in 15.3s with one successful
+  `web_research` call, and full Gate-3 passed end to end:
+  `GATE3_HARD: PASS   WEB_RESEARCH: PASS`. The full run still over-called
+  `web_research` five times, so repeated web_research calls are a
+  prompt/control-efficiency follow-up, not a tool-plumbing blocker.
+
+Decision update: representative direct-tool evidence now crosses the >=50
+synthesized-page denominator with `<10%` irrelevant pages, so S5 request-path
+reranking is a current **NO-GO**. Keep `web_research_rerank` default-off and do
+not implement request-path reranking unless future AR-3/live role traffic shows
+material irrelevant-page waste above the existing threshold. Next useful work is
+role-loop efficiency around repeated `web_research` calls, not ColBERT
+insertion.
+
+**Risk controls if GO**:
+
+- Keep `ORCHESTRATOR_WEB_RESEARCH_RERANK=0` default-off.
+- Increase `max_results` only when the flag is on; legacy behavior must remain byte-for-byte close enough for existing tests.
+- Cache the ONNX session at module scope and fail open to baseline DDG/SearXNG ranking if model load fails.
+
+## Objective
+
+Add a reranking stage to the `web_research` pipeline between DuckDuckGo search and page fetch. Currently the explore worker receives all fetched pages and synthesizes directly, spending tokens on low-relevance pages that DuckDuckGo ranked highly by keyword match but are semantically weak for reasoning tasks.
+
+## Implementation Decision
+
+### Model
+
+| Model | Params | BEIR NDCG@10 | License | Verdict |
+|-------|--------|-------------|---------|---------|
+| **ColBERT-Zero** (LightOn) | <150M | 55.43 | Verify from HF card (public data training) | **PRIMARY** |
+| **mxbai-edge-colbert** (Mixedbread) | 17M | Outperforms ColBERTv2 on NanoBEIR | Apache 2.0 | **FALLBACK** |
+| ~~Reason-ModernColBERT~~ (LightOn) | 150M | 22.62/30.28 BRIGHT | CC-BY-NC-4.0 (non-commercial) | **ELIMINATED** |
+
+**ColBERT-Zero** is the primary choice: strongest general-purpose BEIR score (55.43), same LightOn/ModernBERT family as our deployed GTE-ModernColBERT-v1, trained on public data only. License must be verified from HuggingFace model card during S3.
+
+**mxbai-edge-colbert 17M** is the fallback: Apache 2.0 (license-clean), 6x smaller, 3x faster CPU encoding than ColBERTv2, still outperforms ColBERTv2. Use if ColBERT-Zero license is restrictive or if sub-ms latency is critical.
+
+**Reason-ModernColBERT** is eliminated: CC-BY-NC-4.0 prohibits commercial use. Self-training path exists (~2hr fine-tune on ReasonIR data) but is unnecessary overhead when ColBERT-Zero exists.
+
+### Library: ONNX Runtime (revised 2026-04-14)
+
+**Why ONNX Runtime**: C++ engine with Python bindings, lightweight (no PyTorch), cp314-compatible, already-on-disk model (`model_int8.onnx`). Per-token 128-dim embeddings + MaxSim in numpy — the full pipeline is ~15 lines of code.
+
+**Why NOT PyLate**: `fast-plaid` and `voyager` dependencies have no cp314 wheels. The orchestrator venv is Python 3.14. PyLate would require a separate venv or subprocess — unnecessary overhead when ONNX Runtime provides identical functionality.
+
+**Why NOT alternatives**:
+- **NextPLAID container**: Search-only API, no reranking endpoint. Designed for corpus-scale retrieval, not 10-snippet reranking.
+- **RAGatouille**: Wraps ColBERT for LangChain/LlamaIndex integration. We use neither framework.
+- **llama-server /reranking**: Would work (native C++ via HTTP) but requires GGUF conversion of the ColBERT model. ONNX model is already on disk.
+- **sentence-transformers**: No cp314 wheels (same issue as PyLate). Would also pull PyTorch (~2GB).
+
+### Architecture: Snippet-level pre-fetch reranking
+
+```
+DDG/Brave search (8-10 results)         ← increase max_results when flag on
+  → encode snippets + query via ColBERT  ← <1ms on EPYC for 10 snippets
+  → rerank by MaxSim, take top 3         ← NEW: semantic filter
+  → fetch top 3 pages (15s timeout each)
+  → paragraph-level SHA256 dedup
+  → synthesize via explore worker (45s each)
+  → return combined summaries
+```
+
+**Why snippet-level, not page-level**: DDG already returns snippets for all results. Encoding snippets (not full pages) via ColBERT is sub-ms and avoids fetching irrelevant pages entirely. This saves both fetch time (15s timeout per page) AND synthesis time (45s per page).
+
+**Why in-process, not container**: The task is encoding 10 short strings + 1 query and computing 10 MaxSim scores. This is a matrix multiplication, not a retrieval problem. Model loaded lazily on first call with flag enabled, stays in memory.
+
+## Existing Infrastructure
+
+| Component | Location | Reuse? |
+|-----------|----------|--------|
+| NextPLAID containers (:8088/:8089) | `orchestrator_stack.py` lines 398-430 | Pattern reference only — NextPLAID is overkill for this task |
+| `next_plaid_client` package | `code_search.py` lines 46-60 | Not needed (no NextPLAID container) |
+| `sentence-transformers` | Already installed (CLIP vision pipeline) | PyLate builds on this — no new heavy dependency |
+| `FeatureSpec` registry | `src/features.py` lines 75-129 | Use for `web_research_rerank` flag |
+| GTE-ModernColBERT-v1 on :8089 | Deployed, 128-dim INT8 | Different use case (docs retrieval), validates ColBERT-family CPU feasibility |
+
+## Pipeline Analysis (2026-04-14)
+
+Audited `epyc-orchestrator/src/tools/web/research.py` and `search.py`:
+
+```
+DDG/Brave search (5 results)
+  → fetch top 3 pages (6000 chars each, 15s timeout, parallel)
+  → paragraph-level SHA256 dedup
+  → synthesize ALL 3 via explore worker (Qwen2.5-7B, 512 tok, 45s timeout)
+  → return combined summaries
+```
+
+**Key finding: zero relevance filtering.** All 3 fetched pages get synthesized regardless of relevance. The worker prompt says "if not relevant, say so briefly" — so a 7B model doing a 45-second inference call is the only relevance gate. Each wasted synthesis costs ~45s of worker compute.
+
+**Cost of NOT reranking:** With 3 pages synthesized per query, even 1 irrelevant page = 33% waste in worker inference. At scale (autopilot sessions with many web_research calls), this compounds.
+
+## combined_ops.py Relationship
+
+`batch_web_search()` in `combined_ops.py` calls `web_search()` (DDG/Brave search returning titles/URLs/snippets), NOT `web_research()` (the full fetch+synthesize pipeline). Reranking in `research.py` does **not** automatically cover batch search in combined_ops.
+
+**Future extension**: If reranker proves valuable, expose a `rerank_snippets(query, snippets)` utility function that `combined_ops.py` could also call.
+
+## Post-AR-3 Analysis
+
+After AR-3 completes (or accumulates sufficient web_research trials), run the analysis script to extract the go/no-go decision:
+
+```bash
+cd /mnt/raid0/llm/epyc-inference-research
+python3 scripts/benchmark/analyze_web_research_baseline.py /mnt/raid0/llm/epyc-inference-research/benchmarks/results/eval
+```
+
+The script reports:
+- Total pages synthesized across all web_research calls
+- Pages classified irrelevant (count + percentage)
+- **Go/no-go recommendation**: `>20%` → proceed to S3, `10-20%` → marginal, `<10%` → skip
+
+If checkpoint data is insufficient (few web_research calls), also grep orchestrator logs as a backup:
+
+```bash
+grep "web_research relevance summary" /path/to/orchestrator.log | tail -20
+```
+
+## Work Items
+
+- [x] **S1: Instrument relevance logging** ✅ 2026-04-14 — Added `_is_irrelevant_synthesis()` heuristic + per-page/summary logging to `_web_research_impl()`. Returns `pages_irrelevant` + `irrelevant_rate` in response dict. 5 tests added. **Data collection folded into AR-3 Package D** — AR-3 includes a `web_research` sentinel suite (50 questions) that will trigger this instrumentation automatically during autopilot runs.
+  - File: `epyc-orchestrator/src/tools/web/research.py` (lines 44-69: detection, lines 376-400: instrumentation)
+  - Tests: `epyc-orchestrator/tests/unit/test_web_research_dedup.py` (TestIrrelevantSynthesisDetection, 5 cases)
+
+- [x] **S2: Register feature flag** ✅ 2026-04-14 — Added to `src/features.py` FeatureSpec registry + Features dataclass. Registry consistency test passes. Telemetry pipeline wired: `pages_irrelevant` + `irrelevant_rate` captured in `repl_executor.py`, `chat_delegation.py`, `WebResearchTelemetry`, and `analyze_web_research_baseline.py`.
+  ```python
+  FeatureSpec("web_research_rerank", False, False, "WEB_RESEARCH_RERANK",
+              "ColBERT snippet reranking in web_research pipeline")
+  ```
+  Runtime: `ORCHESTRATOR_WEB_RESEARCH_RERANK=1`
+  - File: `epyc-orchestrator/src/features.py`
+  - Effort: ~15min
+
+- [x] **S3: Model + encoding pipeline setup** ✅ 2026-04-14 — **REVISED**: PyLate eliminated. Using existing GTE-ModernColBERT-v1 ONNX (already on disk at `/mnt/raid0/llm/models/gte-moderncolbert-v1-onnx/`) + `onnxruntime` (installed in orchestrator venv). No download needed.
+  - **License**: ColBERT-Zero = Apache-2.0 (verified from HF model card). mxbai-edge-colbert = Apache-2.0. GTE-ModernColBERT-v1 = already deployed. All clear for commercial use.
+  - **PyLate eliminated**: `fast-plaid` and `voyager` dependencies have no cp314 wheels (orchestrator venv is Python 3.14). ONNX Runtime (1.24.4) has cp314 wheels and provides the same encoding capability with zero PyTorch dependency.
+  - **Pipeline**: `onnxruntime` + `tokenizers` (both already in venv) → load `model_int8.onnx` (144MB INT8) → per-token 128-dim embeddings → MaxSim scoring in numpy.
+  - **Model decision**: GTE-ModernColBERT-v1 (BEIR 54.67) vs ColBERT-Zero (BEIR 55.43) — <1pp difference. GTE already on disk, verified working. ColBERT-Zero download deferred unless accuracy issues emerge in S6.
+  - Model path: `/mnt/raid0/llm/models/gte-moderncolbert-v1-onnx/model_int8.onnx`
+  - Dependencies added: `onnxruntime==1.24.4` (+ flatbuffers, protobuf, sympy, mpmath)
+
+- [x] **S4: Benchmark latency on EPYC** ✅ 2026-04-14 — Benchmark complete. Results:
+  - **Encoding 1 query (48 tok) + 10 snippets (64 tok max)**: median 180ms, min 180ms, max 198ms
+  - **MaxSim scoring**: <1ms for 10 documents
+  - **Total**: ~180ms per reranking call
+  - **Note**: 180ms is well above the original <10ms target, but that target assumed pre-encoded embeddings. The 180ms includes full ONNX encoding through 150M params. Acceptable because each irrelevant page saved = 45s of synthesis. ROI: ~750x.
+  - **Ranking quality**: Perfect separation on test data — all 5 relevant snippets ranked top 5, all 5 irrelevant ranked bottom 5. Score spread: relevant 0.93-0.96, irrelevant 0.91-0.92.
+
+- [ ] **S5: Implement reranker** — HOLD as of 2026-06-12 gate analysis. Add reranking to `research.py`, gated behind `web_research_rerank` flag, only if a fresh analyzer run has >=50 synthesized pages and >20% irrelevant-page rate. When flag is ON: increase `max_results` from 5 to 8-10, encode search snippets (from SearXNG JSON API when deployed per [`searxng-search-backend.md`](searxng-search-backend.md), else DDG HTML) via GTE-ModernColBERT ONNX, rerank by MaxSim, take top 3 for fetch. When using SearXNG, `engines[]`/`score` metadata available for multi-engine confidence weighting. Lazy model loading on first call.
+  - File: `epyc-orchestrator/src/tools/web/research.py` (modify `_web_research_impl`)
+  - Encoding module: new `src/tools/web/colbert_reranker.py` (ONNX session, tokenizer, MaxSim)
+  - Effort: ~2h, depends on S3/S4 (done) and AR-3 go/no-go
+  - **Integration note**: ONNX session should be loaded lazily (first call) and cached as module-level singleton. Session is thread-safe for inference.
+
+- [ ] **S6: A/B test** — Compare reranked (10 results → top 3 by ColBERT) vs current (5 results → top 3 by DDG order) on web_research benchmark questions. Metrics: synthesis quality, irrelevant page rate, total latency.
+  - Effort: ~2h inference time, depends on S5
+
+## Research Intake Update — 2026-04-18
+
+### Surprisal-Based Chunking for Retrieval Pipeline (intake-408/409 deep-dive)
+
+Deep-dive analysis of EM-LLM (arXiv 2407.09450, ICLR 2025) and the Tulving Episodic Memory Benchmark (arXiv 2501.13121) revealed two findings relevant to this pipeline:
+
+**1. RAG chunk granularity is critical for episodic tasks.** The Tulving benchmark tested RAG at paragraph-level vs chapter-level chunking. Paragraph-level RAG *degrades* single-event recall from 0.81 (in-context) to 0.60, because event information is distributed across paragraphs. Chapter-level RAG (event-boundary-aligned) recovers to 0.82, matching in-context. **Implication for web_research**: when fetching pages for synthesis, paragraph-level extraction (current 6000-char chunks) may split relevant context. Event-boundary-aligned chunking would preserve coherent information units.
+
+**2. Surprisal-based chunking (EM-LLM Option D — low effort, partial benefit).** EM-LLM's full architecture requires deep llama.cpp modifications (not viable). But its core segmentation insight is extractable: use per-token log-probability surprisal from llama.cpp `/completion` (logprobs already available) to detect event boundaries. Boundary = where surprisal exceeds µ + γσ (rolling window statistics). Feed these semantically-coherent chunks into ColBERT reranker instead of fixed-size splits.
+
+**Proposed S7 (future, post-S6 validation):**
+- [ ] **S7: Surprisal-based page chunking** — After fetching pages, run through llama.cpp `/tokenize` + `/completion` with `n_probs`, compute per-token surprisal, split at surprise spikes. Feed chunks to ColBERT MaxSim instead of raw paragraphs. Tests whether event-boundary chunking improves synthesis quality on real web pages (where structure is less clean than synthetic narratives). Depends on S5/S6 confirming ColBERT reranking adds value.
+
+## Key Files
+
+| Resource | Path | Role |
+|----------|------|------|
+| web_research tool | `epyc-orchestrator/src/tools/web/research.py` (468 lines) | Primary implementation target |
+| web_search (DDG/Brave) | `epyc-orchestrator/src/tools/web/search.py` (223 lines) | Returns snippets used for reranking |
+| fetch + extract | `epyc-orchestrator/src/tools/web/fetch.py` | Page fetching (unchanged) |
+| feature flags | `epyc-orchestrator/src/features.py` | Register `web_research_rerank` flag |
+| tool manifest | `epyc-orchestrator/src/tools/web/manifest.json` | Tool registration (unchanged) |
+| Explore worker config | `epyc-orchestrator/orchestration/model_registry.yaml` | Worker model reference |
+| Web research baseline | `epyc-inference-research/scripts/benchmark/analyze_web_research_baseline.py` | A/B test analysis |
+| Combined ops | `epyc-orchestrator/src/repl_environment/combined_ops.py` | Uses `web_search` not `web_research` — future extension only |
+
+## Literature Survey (2026-04-14)
+
+### 1. Reason-ModernColBERT Status
+
+150M params, 128-dim multi-vector, cc-by-nc-4.0 license (non-commercial; reproducible under Apache via independent ReasonIR data gen, ~2hr fine-tune). BRIGHT full-mean 22.62 NDCG@10 without reasoning traces, 30.28 with GPT-4 traces -- outperforms all models up to 7B (45x its size). Claims top spot on BrowseComp-Plus (agentic search benchmark) with 54x fewer params. No CPU latency numbers published. **Verdict: ELIMINATED** — license prohibits commercial use. ColBERT-Zero achieves stronger general retrieval without license constraints.
+
+- [HuggingFace model card](https://huggingface.co/lightonai/Reason-ModernColBERT)
+- [LightOn blog](https://lighton.ai/lighton-blogs/lighton-deep-tech-simple-delivery)
+
+### 2. Competing Late-Interaction Models
+
+| Model | Params | Key Result | Verdict |
+|-------|--------|-----------|---------|
+| **ColBERT-Zero** (LightOn, Feb 2026) | <150M | 55.43 NDCG@10 on BEIR, outperforms GTE-ModernColBERT. Fully pre-trained on public data only. | **PRIMARY — strongest general-purpose ColBERT, open data** |
+| **GTE-ModernColBERT-v1** (LightOn) | ~150M | 54.67 BEIR avg, 88.39 LongEmbed. Base for Reason variant. | Already deployed on :8089 — validates CPU feasibility |
+| **mxbai-edge-colbert** (Mixedbread, Oct 2025) | 17M/32M | 17M outperforms ColBERTv2 (110M) on NanoBEIR. 3x faster CPU encoding than ColBERTv2. | **FALLBACK — best for latency-critical CPU path, Apache 2.0** |
+| **Jina-ColBERT-v2** (Jina AI) | ~110M | +6.5% over ColBERTv2, 89-language multilingual, Matryoshka dims (128/96/64). | Not needed — no multilingual requirement |
+| **SauerkrautLM-Multi-Reason-ModernColBERT** (VAGO) | ~150M | Community multilingual fork of Reason-ModernColBERT. | monitor_only |
+
+Key paper: Chaffin et al., "ColBERT-Zero: To Pre-train Or Not To Pre-train ColBERT models," arXiv:2602.16609, Feb 2026.
+
+- [ColBERT-Zero on HuggingFace](https://huggingface.co/lightonai/ColBERT-Zero)
+- [mxbai-edge-colbert tech report](https://arxiv.org/html/2510.14880v1)
+- [Jina-ColBERT-v2](https://huggingface.co/jinaai/jina-colbert-v2)
+
+### 3. CPU Inference Feasibility
+
+No published PyLate CPU benchmarks for ColBERT-Zero specifically. Proxy data:
+
+- **PLAID engine** (ColBERTv2): 45x speedup on CPU vs vanilla; tens-of-ms for 140M passage corpus.
+- **mxbai-edge-colbert 17M**: ~49s per 50K docs encoding (vs ColBERTv2 ~154s). Reranking 20 pre-encoded pages would be sub-ms MaxSim.
+- **TurkColBERT study**: ColmmBERT-base achieved 0.54ms query latency under MUVERA indexing.
+- **Key insight**: For reranking (not full retrieval), only MaxSim scoring over pre-computed embeddings is needed. 20 pages x 128-dim tokens = trivially fast on 192-thread EPYC. **Target <10ms is achievable with any model in this class.**
+
+### 4. Integration Patterns
+
+- **RAGatouille** (AnswerDotAI): Wraps ColBERT for LangChain/LlamaIndex. Supports rerank-only mode (no index build needed). Latest: v0.0.9, May 2025.
+- **PyLate** (LightOn): Native library for all ModernColBERT variants. Voyager HNSW indexing. More control but less framework integration.
+- **LlamaIndex**: NodePostprocessor API accepts any reranker. Standard pattern: retrieve top-20/30, rerank, pass top-K to LLM.
+- **Production consensus (2026)**: Hybrid retrieval (BM25 + dense) -> rerank top-20-30 -> LLM. Cross-encoders on full index cause p99 blowup; late-interaction on small candidate sets is the sweet spot.
+- **No DuckDuckGo-specific patterns found** -- DDG returns pre-ranked HTML pages, not embeddings. Our pipeline would encode fetched page text at rerank time.
+
+Rivera & Menolascina, "ModernBERT + ColBERT: Enhancing biomedical RAG," arXiv:2510.04757, Oct 2025 -- confirms ColBERT reranker improves Recall@3 by 4.2pp but requires joint fine-tuning of retriever+reranker.
+
+### 5. Alternatives to Late-Interaction Reranking
+
+- **SPLADE** (learned sparse): Acts as "smarter BM25" with term expansion. Inverted-index compatible. Best as first-stage retriever, not reranker. Does not replace ColBERT for reranking.
+- **Dense rerankers (cross-encoders)**: Higher quality ceiling but 2 orders of magnitude slower than ColBERT. Unusable at our latency target.
+- **BrowseComp-Plus findings**: Dense reasoning-specialized retrievers (Qwen3-8B) dramatically outperform BM25 for agentic search. But 8B models compete for inference slots -- ColBERT at 150M does not.
+- **Verdict**: Late-interaction is the correct architecture for our use case (CPU reranking of 10-20 web snippets, no GPU budget, no inference slot competition).
+
+## References
+
+- intake-174: Reason-ModernColBERT analysis (eliminated — license)
+- intake-175: PyLate library evaluation (MIT, selected)
+- [BRIGHT benchmark](https://github.com/xlang-ai/BRIGHT) — reasoning-intensive retrieval benchmark
+- [PyLate](https://github.com/lightonai/pylate) — late-interaction retrieval library
+- [BrowseComp-Plus](https://github.com/texttron/BrowseComp-Plus) — agentic search benchmark (ACL 2026)
+- [ColBERT-Zero paper](https://arxiv.org/abs/2602.16609) — Feb 2026, SOTA ColBERT pre-training
+- [mxbai-edge-colbert report](https://arxiv.org/html/2510.14880v1) — Oct 2025, tiny ColBERT for edge/CPU
+- [ModernBERT+ColBERT biomedical RAG](https://arxiv.org/abs/2510.04757) — Oct 2025
+- [Jina-ColBERT-v2 paper](https://arxiv.org/abs/2408.16672) — multilingual late-interaction
+- [RAGatouille](https://github.com/AnswerDotAI/RAGatouille) — ColBERT wrapper for LangChain/LlamaIndex
+
+## Research Intake Update — 2026-04-14
+
+### New Related Research
+- **[intake-359] "SearXNG: Privacy-respecting metasearch engine"** (github:searxng/searxng)
+  - Relevance: SearXNG could replace the DDG HTML scraping + Brave fallback in `search.py` with a self-hosted JSON API aggregating 250+ engines. Eliminates bot detection / rate limiting issues at the scraping layer. JSON response includes `engines[]`, `positions[]`, and `score` fields providing richer signal than bare HTML parsing.
+  - Key technique: Self-hosted metasearch with JSON API (`GET /search?q=...&format=json`). Cross-engine result merging with score boosting. Per-engine timeout/weight/retry/proxy config.
+  - Reported results: 28.3k GitHub stars, Docker ~183MB, ~70 public instances.
+  - Delta from current approach: Replaces 112 lines of fragile regex HTML parsing with ~15-line JSON API call. SearXNG handles URL-level dedup across engines (same URL merged with provenance tracking); existing `_dedup_pages()` handles paragraph-level dedup post-fetch. Caveats: Google blocks SearXNG via TLS fingerprinting; limiter API_MAX=4/hr must be disabled; JSON format not enabled by default.
+  - **Handoff created**: [`searxng-search-backend.md`](searxng-search-backend.md) — full deployment plan + implementation sketch.
+- **[intake-360] "SearXNG Documentation"** (docs.searxng.org)
+  - Relevance: API reference for SearXNG integration — documents endpoints, parameters, JSON response structure, engine configuration, and deployment.
+  - Key detail: `engines=` API param allows per-request engine selection — could route different query types to different engine sets.
+- **[intake-361] "mcp-searxng: MCP Server for SearXNG"** (github:ihor-sokoliuk/mcp-searxng)
+  - Relevance: 635-star MCP bridge with `searxng_web_search` + `web_url_read` tools. Alternative integration path for Claude Code sessions (separate from orchestrator backend).
+
+## Research Intake Update — 2026-04-17
+
+### New Related Research
+- **[intake-405] "Witchcraft: Rust XTR-Warp Semantic Search Engine"** (github:dropbox/witchcraft)
+  - Relevance: Alternative retrieval architecture in the same multi-vector space. XTR (token retrieval) vs ColBERT (late interaction) represents a different accuracy/speed tradeoff. Witchcraft packages XTR-Warp as zero-dependency Rust binary with SQLite persistence.
+  - Key technique: XTR contextualized token retrieval with GGUF-quantized T5 (candle), hybrid BM25+semantic search in SQLite FTS, single-file deployment.
+  - Reported results: 21ms p95 (M2 Max), 33% NDCG@10 (NFCorpus), 2x faster than original XTR-WARP.
+  - Delta from current approach: XTR trades accuracy for speed — 33% NDCG@10 vs ColBERT-Zero 55.43. Our ColBERT reranking decision is validated: ColBERT-family is substantially more accurate for the 10-snippet reranking use case. Witchcraft's embedded/serverless model is interesting for different use cases (session search, offline doc indexing) but not competitive for pipeline reranking.
+- **[intake-406] "WARP: An Efficient Engine for Multi-Vector Retrieval"** (arxiv:2501.17788)
+  - Relevance: SIGIR'25 paper showing 3x speedup over ColBERTv2/PLAID and 41x over XTR reference. Confirms multi-vector retrieval efficiency is an active research area. The WARP_SELECT (dynamic similarity imputation) and implicit decompression techniques are potentially applicable to future retrieval optimization.
+  - Delta from current approach: WARP optimizes corpus-scale retrieval (millions of passages); our ColBERT use case is snippet-level reranking (10 items) where these optimizations have minimal impact.
+- **[intake-407] "XTR: Rethinking the Role of Token Retrieval in Multi-Vector Retrieval"** (arxiv:2304.01982)
+  - Relevance: Foundational XTR paper from Google DeepMind. Token retrieval (score from subset) vs late interaction (score from all tokens) is the architectural fork between XTR and ColBERT. XTR claims 100-1000x cheaper inference at modest accuracy cost — confirmed by Witchcraft's speed/accuracy profile.
+
+## Research Intake Update — 2026-04-22
+
+### New Related Research (LightOn DenseOn/LateOn release)
+
+- **[intake-428] "DenseOn with the LateOn: Open State-of-the-Art Single and Multi-Vector Models"** (HF blog, LightOn, Apache 2.0)
+  - Relevance: Direct successor to ColBERT-Zero from the same LightOn team. Both models Apache 2.0 (vs Reason-ModernColBERT's CC-BY-NC-4.0, which previously forced elimination). LateOn is multi-vector reranker; DenseOn is dense retriever.
+  - Key technique: Two-stage contrastive training (665M curated pairs) + NV-Retriever hard negatives + decontaminated BEIR evaluation protocol.
+  - Reported results: LateOn BEIR 57.22 / decontaminated 60.36; DenseOn BEIR 56.20 / decontaminated 57.71. Both at <150M parameters, outperforming 4x larger models.
+  - Delta from current approach: GTE-ModernColBERT-v1 (54.67 BEIR, 180ms/10 snippets, currently deployed on :8089) is same architecture family. LateOn is +2.55pp BEIR drop-in candidate. DenseOn is secondary candidate for probe-first pool alternative to BGE-small.
+
+- **[intake-430] "LateOn" model card** — ModernBERT (149M), 128-dim per-token multi-vector, MaxSim scoring via PyLate.
+- **[intake-431] "DenseOn" model card** — ModernBERT (149M), CLS pooling + asymmetric query/document prompts.
+
+### Next Actions (scoped for this handoff)
+
+- [x] Verify ONNX INT8 variant availability for LateOn on HF Hub ✅ 2026-07-14 — S3b confirmed: LightOn ships `model_int8.onnx` pre-quantized on `lightonai/LateOn`
+- [ ] Benchmark LateOn CPU latency vs GTE-ModernColBERT-v1 baseline (target: <200ms for 10 snippets)
+- [ ] If latency acceptable: A/B test LateOn vs current model on web_research sentinel queries (when AR-3 Package D data accumulates)
+- [ ] Secondary: evaluate DenseOn for probe-first pool if BGE-small retention becomes a bottleneck
+
+## S3b / S4b / S7 — LateOn Drop-in Upgrade (2026-04-22, DD1)
+
+**Source**: `/workspace/research/deep-dives/lighton-denseon-lateon-retrieval-upgrade.md` (415 lines). LateOn (intake-430) is a same-architecture drop-in for currently-deployed GTE-ModernColBERT-v1 with **+2.55pp BEIR** (57.22 vs 54.67) and +1.83pp vs ColBERT-Zero. Same backbone (ModernBERT), same parameter class (149M), same 128-dim output, same Apache 2.0 license.
+
+**Target**: NIB2-47 (ONNX export) + inference-gated follow-ups.
+
+**Amended S5 plan**: LateOn becomes primary candidate for the reranker swap. GTE-ModernColBERT-v1 remains the fallback baseline. ColBERT-Zero (earlier primary candidate) is now secondary — LateOn wins by same-family comparison.
+
+Tasks:
+
+- [x] **S3b**: ONNX INT8 export of LateOn + parity test vs PyLate reference (NIB2-47, ~1h, non-inference). Unblocked today independent of AR-3. **DONE 2026-04-22 (code)**: LightOn ships `model_int8.onnx` pre-quantized on the `lightonai/LateOn` HF repo — no local Torch→ONNX export needed. Delivered `/mnt/raid0/llm/epyc-orchestrator/scripts/benchmark/colbert/export_lateon_onnx_int8.py` (~180 LoC): downloads 17 files (model_int8.onnx + model.onnx + safetensors + tokenizer + 3 dense heads + configs) then runs 20-snippet parity vs PyLate reference with `PARITY_TOLERANCE=1e-2`. Extended `src/tools/web/colbert_reranker.py` with `LATEON_MODEL_PATH` env var override (single-env-var activation). Added `[colbert-export]` optional extras to `pyproject.toml`. 13/13 colbert_reranker tests pass (+2 new). Execution run deferred: `pip install -e '.[colbert-export]'` + `python -m scripts.benchmark.colbert.export_lateon_onnx_int8` when a python env with onnxruntime + torch + transformers + pylate is available.
+- [ ] **S4b**: Re-run CPU latency benchmark with LateOn INT8 (DD1-A2, ~30min + 2h inference). Target: latency ≤ 200ms for 10 snippets (GTE baseline 180ms). **Harness unblocked 2026-06-14**: `epyc-orchestrator` `b37de4a` added `scripts/benchmark/bench_colbert_rerank.py`, so this is now a model/runtime measurement task rather than harness work.
+- [ ] **S7**: Adopt LightOn's decontamination protocol (xxhash64 + 13-gram containment, threshold 0.5) as EPYC-internal retrieval-eval standard. Write `scripts/benchmark/decontaminate_against_embeddings_training.py`. Decontaminate AR-3 Package D sentinel suite before running E3. Guards against "new model wins because it saw the test" failure mode.
+- [ ] **S5** (amended): A/B test LateOn vs GTE-ModernColBERT-v1 on decontaminated web_research sentinel queries. Gated on AR-3 Package D completion.
+
+### Expand — Local fine-tune (newly unblocked)
+
+LightOn released the full 665M curated pre-training corpus + 1.69M fine-tuning corpus under Apache 2.0. Previously blocked by Reason-ModernColBERT's CC-BY-NC-4.0 license; this release makes an EPYC-domain-specialized reranker a ~1-day experiment once primary adoption is stable.
+
+- [ ] **S8** (park until primary S5 stable + GPU available): local NV-Retriever fine-tune on REPL+sentinel queries. GPU-gated to DGX Spark. Worth revisiting as a Phase 2+ enhancement.
+
+## S3c / S4c / S5-amend — Reason-mxbai-colbert-v0-32m Edge-Reasoning Fallback (2026-04-24, intake-453)
+
+Source: [`research/deep-dives/reason-mxbai-colbert-32m-edge-retriever.md`](../../research/deep-dives/reason-mxbai-colbert-32m-edge-retriever.md). 32M ColBERT fine-tuned on BGE-reasoner + ReasonIR-HQ hard negatives. On BRIGHT natural-language splits (biology, earth_science, sustainable_living, pony) it matches or beats the 150M Reason-ModernColBERT sibling — those are exactly our web_research workload pattern. The −3.6 BRIGHT full-mean gap is entirely from symbol-dense splits (leetcode, aops, theoremqa) that are not our queries.
+
+**Amended S5 plan (now 3-slot)**: GTE-ModernColBERT-v1 baseline / **LateOn primary** (general BEIR strength) / **Reason-mxbai-32m fallback** (CPU-latency-budget slot). Three-way `MODEL_PATH` env-var selector. Conditional adoption on three gates: (1) ONNX INT8 parity (<1e-2 L2 vs PyLate), (2) EPYC median latency ≤80 ms @ 48 threads for 10 snippets, (3) A/B within 1pp of LateOn on natural-language web_research queries.
+
+CPU latency estimate ~40–50 ms p50 per 10-snippet call (optimistic 20 ms, pessimistic 60–80 ms). Derived by scaling the measured 180 ms GTE-150M-INT8 number by the backbone ratio (10 × 384²) / (22 × 768²) ≈ 0.113 and discounting the FLOP ratio to 25% realization under the BW-bound heuristic from `feedback_cpu_decode_bw_bound`.
+
+Tasks:
+
+- [x] **S3c**: ONNX INT8 export of `Reason-mxbai-colbert-v0-32m` + parity test vs PyLate reference (~1 h, non-inference). Unblocked independent of AR-3. **Artifact-profile step LANDED 2026-06-14** in `epyc-orchestrator` `ea29d79`: `export_lateon_onnx_int8.py` now has `lateon` and `reason-mxbai` profiles, verifies from HF metadata that Reason-mxbai is source-only (no `model_int8.onnx` shipped), can print/download the Reason-mxbai source artifact set, and fails fast with an actionable `model_int8.onnx` requirement before parity/latency. **Source artifacts staged 2026-06-14**: `/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8` now contains the expected 67 MB safetensors/tokenizer/config/dense-head file set. **Export scaffold LANDED 2026-06-14** in `epyc-orchestrator` `8711c60`: the helper now has a concrete `--export-int8` path, stable PyLate feature-dict wrapper, ONNX contract (`input_ids`/`attention_mask` → `token_embeddings`, opset 18, dynamic batch/sequence axes), dynamic INT8 quantization helper, and dependency preflight. **Artifact generated 2026-06-14**: after adding `onnx`, `onnxruntime`, and `onnxscript` to the isolated reranker/export environments, `model.onnx` + `model.onnx.data` + `model_int8.onnx` were produced under `/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8`. ONNX checker accepts both graphs with inputs `input_ids`/`attention_mask` and output `token_embeddings`; parity vs PyLate passed with max cosine divergence `2.7212e-03` and mean `1.2388e-03` at tolerance `1e-2`. Follow-up `epyc-orchestrator` `7c1e41e` adds `onnxscript` to the export preflight and makes reranker availability require actual model loadability instead of file presence only.
+- [x] **S4c**: CPU latency benchmark with Reason-mxbai INT8 at 48 threads for 10 snippets (~30 min). Target median ≤80 ms. **Harness prereq DONE 2026-06-14**: `epyc-orchestrator` `b37de4a` added `scripts/benchmark/bench_colbert_rerank.py` with warmup-separated latency metrics, JSON output, explicit LateOn/Reason-mxbai model-slot overrides, and no-model skip behavior. **Measured 2026-06-14** on the real ONNX Runtime path after `7c1e41e` hardened availability checks: artifact `/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8`, 50 measured calls, 5 warmup calls, 10 snippets/call, median `104.434 ms`, mean `104.301 ms`, p95 `105.237 ms`, first call `107.838 ms`, throughput `95.876 snippets/s`. Result: latency is faster than the older ~180 ms GTE baseline but misses the original ≤80 ms target; treat Reason-mxbai as promising-but-not-yet-accepted until request-path A/B and any optimization pass.
+- [x] **S5-amend**: **LANDED 2026-06-14** in `epyc-orchestrator` `107a8db`. `src/tools/web/colbert_reranker.py` now has a three-slot selector documented in code comments: `LATEON_MODEL_PATH` primary, `REASON_MXBAI_MODEL_PATH` 32M fallback, and GTE-ModernColBERT-v1 default. Unit coverage verifies default, Reason-mxbai-only, and LateOn-over-Reason precedence. Full A/B remains inference-gated on AR-3 Package D, same gate as S5.
+
+### Independence note
+
+S3c/S4c/S5-amend do not require AR-3. AR-3 only gates the **A/B rollout** (S5 / S6). Implementation, export, and latency probing can land on the next non-inference work session and slot directly into the existing 3-slot selector when AR-3 unblocks.
+
+### Cross-references
+
+- `/workspace/research/deep-dives/lighton-denseon-lateon-retrieval-upgrade.md`
+- Intake sources: 428 (blog), 430 (LateOn card), 431 (DenseOn card)
+- `wiki/search-retrieval.md` (updated 2026-04-22 with LateOn/DenseOn rows + decontaminated-BEIR column)
+
+## Research Intake Update — 2026-04-24
+
+### New Related Research
+
+- **[intake-453] "Reason-mxbai-colbert-v0-32m: Edge-Scale Reasoning ColBERT (32M params)"** (`huggingface.co/DataScience-UIBK/Reason-mxbai-colbert-v0-32m`)
+  - Relevance: 32M-param ColBERT fine-tuned on BGE-reasoner + ReasonIR-HQ hard negatives, built on mxbai-edge-colbert-v0-32m (our explicitly named S5 CPU-latency fallback candidate). Edge-scale sibling of Reason-ModernColBERT (intake-174, 150M).
+  - Reported results: BRIGHT nDCG@10 full-mean **19.00** (vs Reason-ModernColBERT 150M = 22.62, −3.6 pts); beats or matches 150M on natural-language splits (biology 32.71, earth_science 43.88, sustainable_living 20.77); lags on symbol-dense splits (leetcode, aops, theoremqa) due to case-insensitive tokenizer + sans_pos + 10-layer depth.
+  - Key technique: widened projection head 64→128 dim preserving base weights on first 64 dims (matches GTE-ModernColBERT-v1 128-dim output currently deployed on :8089); two-stage curriculum (VL warmup → BGE-reasoner/ReasonIR-HQ hard negatives); CachedContrastive loss, 8×H100 training.
+  - Delta from current approach: at ~5× smaller than Reason-ModernColBERT-150M, this is the direct CPU-latency fallback candidate the S5 plan already names. A targeted CPU-latency probe + BRIGHT-style A/B against LateOn and GTE-ModernColBERT-v1 is the cheapest next experiment. Current GTE-ONNX-INT8 is ~180 ms/call; 5× smaller backbone should drop to ~40 ms if PyLate→ONNX export path works.
+  - Caveats (Tier 2b): (1) README has a **license conflict** (frontmatter Apache-2.0 vs body "CC-BY-NC-4.0 inherited from training data") — must be resolved before any commercial-adjacent deployment. (2) No ONNX INT8 variant shipped — PyLate→ONNX export is an unvalidated dependency. (3) Base mxbai-edge-colbert-v0 authors self-describe it as a "proof-of-concept baseline" (arxiv 2510.14880); architectural ceiling on symbol-dense retrieval inherited. (4) Model released 2026-04-22 — no independent third-party replication yet.
+  - Action: queue S5 as A/B candidate after AR-3 web_research sentinel data lands. Treat BRIGHT 19.00 as ceiling — web_research queries are mostly natural-language, which is the model's strong suit, but verify before committing to ONNX export work.
+
+## Research Intake Update — 2026-04-28
+
+### New Related Research
+
+- **[intake-494] "Contexts are Never Long Enough: Structured Reasoning for Scalable Question Answering over Long Document Sets"** (arxiv:2604.22294, Stanford OVAL/Genie) — **out of scope for this handoff**. SLIDERS targets 3.9M–36M-token *corpus-level* QA via DB+SQL extraction; this handoff scopes web-research reranking at single-query scale (~10–100 docs). Different scaling axis. See `internal-kb-rag.md` 2026-04-28 section for the SLIDERS context relevant to KB retrieval. Cross-reference left in for index completeness only.
+
+## Research Intake Update — 2026-04-30
+
+### New Related Research
+
+- **[intake-519] "Granite-Embedding-97M-Multilingual-R2"** (HF `ibm-granite/granite-embedding-97m-multilingual-r2`, Apache 2.0, IBM, released 2026-04-29)
+  - Relevance to web-research pipeline: **MEDIUM**. Candidate dense first-stage retriever feeding the ColBERT reranker. 97M params (sub-100M class), ModernBERT backbone, 32K context, 384-dim embeddings, claimed 2,894 docs/s on reference HW (≈3× gte-multilingual-base 305M at matched quality). MTEB Multilingual Retrieval (18 tasks) = 59.6 — claimed best open <100M-param multilingual score (vs multilingual-e5-small 50.9, +8.7 pts). Apache 2.0, ONNX/OpenVINO INT8 ship targets, GGUF convertible (no native release).
+  - Why it matters here: SearXNG returns mixed-language snippets and our ColBERT pipeline currently has no production-grade dense first stage. Granite-97M-r2 is small enough (97M / ~370 MB FP32) to run on CPU with sub-millisecond per-doc latency — fits trivially on EPYC 9655 alongside the reranker.
+  - Tier 2b: BGE-M3 (305M-class, ~63.0 MTEB) outscores Granite-97M-r2 in raw retrieval quality but is 3× larger; the trade is throughput-vs-quality. The 59.6 vs 50.9 vs e5-small claim is on the IBM card and not yet independently verified outside of the HF leaderboard. No GGUF native release — quantized CPU deployment requires our own ONNX→GGUF or direct OpenVINO INT8 path.
+  - Action: small bench when S5 unblocks — measure Granite-97M-r2 vs multilingual-e5-base (current implicit baseline if any) on a representative slice from active SearXNG corpus, encode latency at 32K-context, decide whether to adopt as the dense retriever before ColBERT. Cross-ref `internal-kb-rag.md` 2026-04-30 update where the same model is evaluated for the KB-retrieval side.
+  - Verdict: `worth_investigating`. Not new_opportunity — retrieval architecture decisions for this handoff still in flight pending S5 data.
+
+#### Deep-dive refinement (2026-04-30) — bench plan persisted
+
+Deep-dive at [`/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md`](../../research/deep-dives/granite-embedding-97m-r2-evaluation.md). Bench handoff at [`granite-97m-r2-bench-plan.md`](granite-97m-r2-bench-plan.md) — gated on K2 chunker activation (currently STUB in `internal-kb-rag.md`).
+
+**Two corrections to the intake-update notes above**:
+
+1. **ModernBERT IS supported in llama.cpp** — `convert_hf_to_gguf.py:12452` registers `ModernBertModel(BertModel)` with `MODEL_ARCH.MODERN_BERT`. The "Ollama unsupported" note refers ONLY to Ollama's wrapper. GGUF + `llama-embedding` HTTP server on port `:8096` is the recommended deployment path (matches existing BGE-large `:8090–:8095` pattern).
+2. **2,894 docs/s is GPU (H100), NOT CPU.** Reset CPU expectations before benching.
+
+**Bench scope expanded** vs the original "1-day" framing: 2-3 inference-free engineering days (Phase A: GGUF conversion + comparator deployment + corpus build) + 1 inference day (Phase B: throughput + nDCG@10 + 32K context probe). Comparators: granite-97m-r2 Q8_0 + Q4_K_M, multilingual-e5-base, BGE-M3 (dense path only), BGE-large-en (reference). Eval corpus is the binding prerequisite — likely 100 code snippets + 30 NL queries with manual labels until a K2-produced KB slice exists.
+
+For S5 specifically: the dense first-stage choice in front of ColBERT will come out of this bench; defer S5 architecture decisions until Phase B completes.
+
+**Phase-C correction (2026-07-29):** Phase B is complete. Granite records
+0.9222 NDCG@10 versus BGE-M3's 0.9150, at 1.614s versus 7.037s wall-clock
+(4.36× lower), satisfying the bench's Granite promotion rule. If S5 activates
+a multilingual dense candidate stage before ColBERT, use Granite as its default
+encoder; this does not unblock S5's separate AR-3/decontamination requirements
+or alter the current snippet-only pipeline.
+
+## Research Intake Update — 2026-06-10
+
+### New Related Research
+- **[intake-689] "OBLIQ-Bench: Exposing Overlooked Bottlenecks in Modern Retrievers with Latent and Implicit Queries"** (arxiv:2605.06235, Tchuindjo/Shah/Khattab, MIT)
+  - Relevance: directly informs the reranker bench design here. Core finding is a **retrieval-verification asymmetry** — reasoning LLMs reliably *verify* relevance once a doc is surfaced, but single-stage retrievers fail to *surface* most relevant docs, so BEIR/BRIGHT-style saturation hides a real gap. Notably **LateOn (LightOn) is one of its evaluated baselines** — the same retriever EPYC is assessing in the DenseOn/LateOn upgrade deep-dive.
+  - Key technique: oblique-query taxonomy (descriptive / analogue / tip-of-the-tongue), a formal retrieval-verification gap metric gap(t)=V_t−R_t, and a tournament listwise-rerank verification ceiling.
+  - Reported results: best single-stage retriever NDCG@10 far below the LLM-rerank oracle (e.g. 0.102→0.913 on Congress Hearings); iterative query rewriting *harms* when relevance is orthogonal to topic.
+  - Delta from current approach: argues for **keeping/strengthening the LLM-rerank stage we already run** (the bottleneck is first-stage recall, not verification). The oblique-query dataset is a sharper eval than HotpotQA/LoCoMo for the KB-RAG flywheel — consider folding a slice into the Phase-B eval corpus. Caveat: oracle uses closed GPT-5.2, so absolute gap magnitudes are not reproducible on a CPU/open stack.
+
+### Deep-Dive Refinement (2026-06-12) — methodology-reuse, not dataset-reuse
+OBLIQ-Bench IS released (HF `dianetc/OBLIQ-Bench`, CC-BY-4.0) but its corpora (tweets / WildChat / Congress / writing-style) are **out-of-domain** for our code/doc retrieval — **do NOT fold OBLIQ rows into the Phase-B eval corpus**. Reuse only the `gap(t)=V_t−R_t` metric + 5-stage oblique-query construction recipe to author an oblique **code/KB** slice on the Phase-B corpus. **LateOn's OBLIQ scores (NDCG@10 0.003–0.149) are floor-level/out-of-domain and must NOT be cited against LateOn adoption** — the S3b/S4b/S5 gates are unchanged (LateOn evidence stays BEIR 57.22 / decontaminated 60.36). Core thesis (bottleneck = first-stage **recall**, not verification) supports keeping/strengthening the LLM-rerank stage. Oracle is closed GPT-5.2; reproduce only a lower-bound `gap_open` via an open verifier route (architect_general/frontdoor, `enable_thinking=False`). Full: `research/deep-dives/2026-06-12-obliq-bench-retrieval-eval.md`.

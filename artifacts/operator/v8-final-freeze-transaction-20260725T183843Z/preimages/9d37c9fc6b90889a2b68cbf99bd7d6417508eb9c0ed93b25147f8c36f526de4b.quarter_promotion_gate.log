@@ -1,0 +1,92 @@
+ORCHESTRATOR_STACK_NUMA_MODE=quarter env-filter branch failed (ImportError: cannot import name 'HOT_SERVERS' from partially initialized module 'scripts.server.stack_manifest' (most likely due to a circular import) (/mnt/raid0/llm/epyc-orchestrator/scripts/server/stack_manifest.py)); falling through to runtime-facts/stack-priors
+runtime-facts selected-servers read failed (ImportError: cannot import name 'LLAMA_SERVER' from partially initialized module 'scripts.server.stack_paths' (most likely due to a circular import) (/mnt/raid0/llm/epyc-orchestrator/scripts/server/stack_paths.py))
+descriptors: ok
+  detail: fresh: /mnt/raid0/llm/epyc-orchestrator/orchestration/model_descriptors.yaml
+stack_priors: failed
+  error: stack-prior compile failed: refusing to compile stack priors: no quarterable-role port is listening, so the realized NUMA mode cannot be determined (stack down or probe unavailable). Not defaulting to 'full' — ESC-8 kill chain A4 would rewrite stack_priors.yaml to the dead full lineup. Re-run with an explicit ORCHESTRATOR_STACK_NUMA_MODE once the intended fleet is up (e.g. ORCHESTRATOR_STACK_NUMA_MODE=quarter).
+procedure_enums: ok
+  detail: checked: /mnt/raid0/llm/epyc-orchestrator/orchestration/procedures/add_model_to_registry.yaml, /mnt/raid0/llm/epyc-orchestrator/orchestration/procedure.schema.json
+operator_summary: ok
+  detail: fresh: /mnt/raid0/llm/epyc-orchestrator/docs/generated/current_stack_summary.md
+guard: failed
+  error: role 'coder_escalation' serving.endpoint port 8070 does not match launch manifest port 8080
+  error: role 'coder_escalation' serving.ports [8070, 8080, 8180, 8280, 8380] include non-launch port(s) [8070]
+  error: role 'coder_escalation' serving.launch.entries port(s) [8070] absent from host 'frontdoor' launch manifest
+  error: role 'frontdoor' serving.endpoint port 8070 does not match launch manifest port 8080
+  error: role 'frontdoor' serving.ports [8070, 8080, 8180, 8280, 8380] include non-launch port(s) [8070]
+  error: role 'frontdoor' serving.launch.entries do not match launch manifest entries
+  error: role 'ingest_long_context' serving.endpoint port 8085 does not match launch manifest port 8185
+  error: role 'ingest_long_context' serving.ports [8085, 8185, 8285, 8385, 8485] include non-launch port(s) [8085]
+  error: role 'ingest_long_context' serving.launch.entries do not match launch manifest entries
+  error: role 'toolrunner' serving.endpoint port 8072 does not match launch manifest port 8082
+  error: role 'toolrunner' serving.ports [8072, 8082, 8182, 8282, 8382] include non-launch port(s) [8072]
+  error: role 'toolrunner' serving.launch.entries port(s) [8072] absent from host 'worker_general' launch manifest
+  error: role 'worker_general' serving.endpoint port 8072 does not match launch manifest port 8082
+  error: role 'worker_general' serving.ports [8072, 8082, 8182, 8282, 8382] include non-launch port(s) [8072]
+  error: role 'worker_general' serving.launch.entries do not match launch manifest entries
+  error: role 'worker_math' serving.endpoint port 8072 does not match launch manifest port 8082
+  error: role 'worker_math' serving.ports [8072, 8082, 8182, 8282, 8382] include non-launch port(s) [8072]
+  error: role 'worker_math' serving.launch.entries port(s) [8072] absent from host 'worker_general' launch manifest
+  error: role 'worker_summarize' serving.endpoint port 8070 does not match launch manifest port 8080
+  error: role 'worker_summarize' serving.ports [8070, 8080, 8180, 8280, 8380] include non-launch port(s) [8070]
+  error: role 'worker_summarize' serving.launch.entries port(s) [8070] absent from host 'frontdoor' launch manifest
+guard_all_surfaces: failed
+  warn: hardcoded_surface.waived.legacy_test.retired_role_in_tests: tests/unit/test_chat_request_role_validation.py:62: reviewer_agent, architect_coding) that Role._missing_ resolves. If this [exception: classification=legacy_test; owner=test-infrastructure; expires=2026-12-31; rationale=Intentional retired-role coverage: asserts Role._missing_ resolves the legacy "architect_coding" label to live architect_general. This fixture must keep the legacy string to prove backward-compatible normalization.]
+  warn: hardcoded_surface.waived.legacy_test.retired_role_in_tests: tests/unit/test_chat_request_role_validation.py:74: "architect_coding", [exception: classification=legacy_test; owner=test-infrastructure; expires=2026-12-31; rationale=Intentional retired-role coverage: asserts Role._missing_ resolves the legacy "architect_coding" label to live architect_general. This fixture must keep the legacy string to prove backward-compatible normalization.]
+  warn: hardcoded_surface.waived.legacy_test.retired_role_in_tests: tests/unit/test_q_reward_role_key.py:106: for role in ("architect_coding", "mock"): [exception: classification=legacy_test; owner=test-infrastructure; expires=2026-12-31; rationale=Intentional retired-role coverage: iterates the legacy "architect_coding" key to prove q-reward role-key handling stays stable for historical replay data. Migrating would drop legacy-key regression coverage.]
+  error: role 'coder_escalation' serving.endpoint port 8070 does not match launch manifest port 8080
+  error: role 'coder_escalation' serving.ports [8070, 8080, 8180, 8280, 8380] include non-launch port(s) [8070]
+  error: role 'coder_escalation' serving.launch.entries port(s) [8070] absent from host 'frontdoor' launch manifest
+  error: role 'frontdoor' serving.endpoint port 8070 does not match launch manifest port 8080
+  error: role 'frontdoor' serving.ports [8070, 8080, 8180, 8280, 8380] include non-launch port(s) [8070]
+  error: role 'frontdoor' serving.launch.entries do not match launch manifest entries
+  error: role 'ingest_long_context' serving.endpoint port 8085 does not match launch manifest port 8185
+  error: role 'ingest_long_context' serving.ports [8085, 8185, 8285, 8385, 8485] include non-launch port(s) [8085]
+  error: role 'ingest_long_context' serving.launch.entries do not match launch manifest entries
+  error: role 'toolrunner' serving.endpoint port 8072 does not match launch manifest port 8082
+  error: role 'toolrunner' serving.ports [8072, 8082, 8182, 8282, 8382] include non-launch port(s) [8072]
+  error: role 'toolrunner' serving.launch.entries port(s) [8072] absent from host 'worker_general' launch manifest
+  error: role 'worker_general' serving.endpoint port 8072 does not match launch manifest port 8082
+  error: role 'worker_general' serving.ports [8072, 8082, 8182, 8282, 8382] include non-launch port(s) [8072]
+  error: role 'worker_general' serving.launch.entries do not match launch manifest entries
+  error: role 'worker_math' serving.endpoint port 8072 does not match launch manifest port 8082
+  error: role 'worker_math' serving.ports [8072, 8082, 8182, 8282, 8382] include non-launch port(s) [8072]
+  error: role 'worker_math' serving.launch.entries port(s) [8072] absent from host 'worker_general' launch manifest
+  error: role 'worker_summarize' serving.endpoint port 8070 does not match launch manifest port 8080
+  error: role 'worker_summarize' serving.ports [8070, 8080, 8180, 8280, 8380] include non-launch port(s) [8070]
+  error: role 'worker_summarize' serving.launch.entries port(s) [8070] absent from host 'frontdoor' launch manifest
+guard_strict: failed
+  error: role 'coder_escalation' serving.endpoint port 8070 does not match launch manifest port 8080
+  error: role 'coder_escalation' serving.ports [8070, 8080, 8180, 8280, 8380] include non-launch port(s) [8070]
+  error: role 'coder_escalation' serving.launch.entries port(s) [8070] absent from host 'frontdoor' launch manifest
+  error: role 'frontdoor' serving.endpoint port 8070 does not match launch manifest port 8080
+  error: role 'frontdoor' serving.ports [8070, 8080, 8180, 8280, 8380] include non-launch port(s) [8070]
+  error: role 'frontdoor' serving.launch.entries do not match launch manifest entries
+  error: role 'ingest_long_context' serving.endpoint port 8085 does not match launch manifest port 8185
+  error: role 'ingest_long_context' serving.ports [8085, 8185, 8285, 8385, 8485] include non-launch port(s) [8085]
+  error: role 'ingest_long_context' serving.launch.entries do not match launch manifest entries
+  error: role 'toolrunner' serving.endpoint port 8072 does not match launch manifest port 8082
+  error: role 'toolrunner' serving.ports [8072, 8082, 8182, 8282, 8382] include non-launch port(s) [8072]
+  error: role 'toolrunner' serving.launch.entries port(s) [8072] absent from host 'worker_general' launch manifest
+  error: role 'worker_general' serving.endpoint port 8072 does not match launch manifest port 8082
+  error: role 'worker_general' serving.ports [8072, 8082, 8182, 8282, 8382] include non-launch port(s) [8072]
+  error: role 'worker_general' serving.launch.entries do not match launch manifest entries
+  error: role 'worker_math' serving.endpoint port 8072 does not match launch manifest port 8082
+  error: role 'worker_math' serving.ports [8072, 8082, 8182, 8282, 8382] include non-launch port(s) [8072]
+  error: role 'worker_math' serving.launch.entries port(s) [8072] absent from host 'worker_general' launch manifest
+  error: role 'worker_summarize' serving.endpoint port 8070 does not match launch manifest port 8080
+  error: role 'worker_summarize' serving.ports [8070, 8080, 8180, 8280, 8380] include non-launch port(s) [8070]
+  error: role 'worker_summarize' serving.launch.entries port(s) [8070] absent from host 'frontdoor' launch manifest
+stack_manifest_registry: skipped
+  warn: skipped because earlier stack-change checks failed
+q_scorer_priors: skipped
+  warn: skipped because earlier stack-change checks failed
+runtime_attestation: skipped
+  warn: skipped because earlier stack-change checks failed
+simulated_fixtures: reference
+  detail: data-only stack-change fixture target: uv run pytest -q tests/unit/test_stack_change_pipeline_simulated_fixtures.py
+promotion_gate: skipped
+  warn: skipped because earlier stack-change checks failed
+summary: failed
+acceptance: blocked
+promotion_gate: fix 64 error(s) before promotion

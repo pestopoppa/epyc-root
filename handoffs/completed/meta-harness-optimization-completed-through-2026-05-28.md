@@ -1,0 +1,559 @@
+# Meta-Harness - Completed Implementation Ledger
+
+> Historical completion ledger only.
+> Current active-path compatibility pointer lives in [meta-harness-optimization.md](../active/meta-harness-optimization.md); the closed post-compaction ledger is [meta-harness-optimization.md](meta-harness-optimization.md).
+> This file preserves pre-compaction implementation, intake, and deep-dive context; active tasks, gates, and indices are authoritative in the active handoff.
+
+# Meta-Harness: Automated Harness Optimization
+
+**Status**: Tier 1 + Tier 2 implemented. Ready for live validation via AR-3 autopilot run.
+**Created**: 2026-04-01 (via research intake)
+**Updated**: 2026-04-01 (Tier 1 + Tier 2 implemented)
+**Categories**: agent_architecture, benchmark_methodology
+
+## Objective
+
+Apply Meta-Harness (arXiv:2603.28052) approach to automatically optimize our orchestrator's harness components — prompt templates, tool definitions, routing logic, and escalation pipeline — using an agentic search over harness code rather than text-only prompt optimization.
+
+## Research Context
+
+| Intake ID | Title | Relevance | Verdict |
+|-----------|-------|-----------|---------|
+| intake-244 | Meta-Harness: End-to-End Optimization of Model Harnesses | high | new_opportunity |
+| intake-240 | GEPA: Reflective Prompt Evolution | medium | worth_investigating |
+
+## Key Findings from Deep-Dive
+
+### Critical Ablation (Table 3 — the core insight)
+| Feedback Mode | Median Accuracy |
+|---|---|
+| Scores only | 34.6% |
+| Scores + text summaries | 34.9% |
+| **Full filesystem access (traces)** | **50.0%** |
+
+Full execution traces provide +15 points over score-only feedback. This directly maps to our PromptForge gap.
+
+### Results on Agent Tasks
+- TerminalBench-2 (89 CLI tasks): **76.4% (Opus), 37.6% (Haiku)** — #1-#2 on leaderboard
+- RAG math (200 IMO-level): +4.7 points avg across 5 held-out models
+- Text classification: +7.7 points over SOTA with 4x fewer context tokens
+
+## Implementation Status
+
+### Tier 1: Execution Trace Feedback — DONE (2026-04-01)
+
+**What**: Feed `inference_tap.log` traces from evaluation runs back to PromptForge mutation step.
+
+**Implementation**:
+- `eval_tower.py`: Added `capture_recent_traces(n_lines=50)` — reads tail of `/mnt/raid0/llm/tmp/inference_tap.log`
+- `autopilot.py`: After each eval, stores `state["last_traces"]`; passes to `dispatch_action()` for prompt_mutation branch
+- `autopilot.py` dispatch: Traces prepended as `## Recent Execution Traces` section in PromptForge failure_context
+
+Per the ablation, this accounts for most of Meta-Harness's improvement (+15 pts over score-only).
+
+### Tier 2: Code Mutation Search Space — DONE (2026-04-01)
+
+**What**: Extend PromptForge so it can mutate Python orchestration code, not just `.md` templates.
+
+**Implementation**:
+- `prompt_forge.py`: Added `CodeMutation` dataclass, `propose_code_mutation()`, `apply_code_mutation()`, `revert_code_mutation()` methods
+- `prompt_forge.py`: `_build_code_mutation_prompt()` with code-specific system prompt + safety constraints
+- `prompt_forge.py`: `_validate_syntax()` via `ast.parse()` — mutations that fail syntax check are rejected
+- `autopilot.py`: Added `code_mutation` action type in `dispatch_action()` with full safety gate + simplicity criterion
+- `autopilot.py`: Added to controller prompt's Available Actions
+
+**Safety boundary** (eval trust boundary):
+```python
+CODE_MUTATION_ALLOWLIST = [
+    "src/prompt_builders/resolver.py",      # Prompt resolution logic
+    "src/escalation.py",                     # Escalation policy
+    "src/graph/escalation_helpers.py",       # Role cycle detection
+    "src/tool_policy.py",                    # Tool access control
+]
+```
+
+Files NOT on this list are immutable. Eval/scoring/safety code cannot be touched.
+
+**Safety mechanisms**:
+1. Allowlist enforcement (ValueError on unlisted files)
+2. `ast.parse()` syntax validation before acceptance
+3. Git commit before mutation (rollback safety net)
+4. Safety gate evaluation after application
+5. Simplicity criterion (reject >20% size increase for <2% quality gain)
+6. Optuna epoch invalidation on accepted code mutations
+
+### Tier 2b: Upgraded Search and Telemetry (intake-338/345)
+
+Source: Agent Lightning (Microsoft Research, intake-338/344) + GEPA Full Program Adapter (intake-345). Agent Lightning provides trace collection infrastructure; GEPA provides a stronger search algorithm than our current LLM-guided mutation.
+
+- [x] MH-4: GEPA search algorithm eval — ✅ **Folded into AR-3 Package D** (2026-04-12). GEPA integrated into PromptForge as `gepa` mutation type (30% of trials). AR-3 journal collects Pareto frontier contributions by mutation source (GEPA vs LLM). Comparison data resolves the key question after ~50 trials. See `scripts/autopilot/species/gepa_optimizer.py`.
+- [x] MH-5: Adopt Agent Lightning trace collection pattern for autopilot telemetry — ✅ 2026-04-12. `telemetry.py` module: `TelemetryCollector` class with `record_transition()` + `record_trial()`. `TransitionRecord` dataclass with OTLP-compatible `to_otlp_span()`. JSONL export to `orchestration/autopilot_telemetry.jsonl`. Per-step decomposition: controller_reasoning → action_execution → safety_gate.
+- [ ] **MH-6**: Adopt SKILL.md proposer-prior template for PromptForge code-mutation system prompt (~100 LoC; design non-inference, validation in AR-3). Source: [`research/deep-dives/meta-harness-official-reference-code.md`](../../research/deep-dives/meta-harness-official-reference-code.md) (intake-451). Add explicit read order (failed traces → frontier → strategy store → request), `expected_cost_delta` and `expected_quality_delta` fields the proposer must populate, and an explicit "no-task-specific-hints" clause. Implementation: `epyc-orchestrator/scripts/autopilot/species/prompt_forge.py` `_build_code_mutation_prompt()`. **Prereq for MH-7 / MH-9** — they consume the richer trace and mutation surface this template structures.
+- [ ] **MH-7**: Upgrade `eval_tower.capture_recent_traces()` → `capture_contrastive_traces(k_success, k_failure)` (~40 LoC; design non-inference, validation in AR-3). Directly addresses Open Question below ("What's the right trace granularity?"). Pair k_success successful trajectories with k_failure failed ones; feed both to the proposer. Default `k_success=2, k_failure=2` — tune in AR-3. Implementation: `epyc-orchestrator/scripts/autopilot/eval_tower.py`. Source: intake-451 deep-dive.
+- [ ] **MH-9**: Add `new_file` mutation type with directory-scoped allowlist (~80 LoC + tests; design non-inference, validation in AR-3). Current 4-file edit-only allowlist (Tier 2) cannot express whole-new-strategy-module candidates. New mutation: `dispatch_action({"type": "new_file", "path": "src/escalation_strategies/<name>.py", "content": "..."})`. Allowlist directories enumerated explicitly; deny anything outside the listed dirs. Tests: directory traversal protection, name collision handling, integration with existing safety gate. Implementation: `epyc-orchestrator/scripts/autopilot/species/prompt_forge.py` `dispatch_action()`. Source: intake-451 deep-dive.
+
+**MH-6/7/9 sequencing**: MH-6 → MH-7 → MH-9. MH-6 establishes the proposer's input/output contract (read order + cost/quality deltas); MH-7 enriches the input (contrastive traces) once the contract can absorb them; MH-9 widens the action space (new mutation type) once the proposer can predict cost/quality for novel candidate classes. All three implementation-non-inference, validation requires AR-3 restart (currently dead per [`autopilot-continuous-optimization.md`](../active/autopilot-continuous-optimization.md) Phase 5 status).
+
+### Tier 3: Full Outer Loop Rebuild — DEFERRED
+
+**What**: Build Meta-Harness-style filesystem of candidates + evaluation runner + agentic proposer.
+
+**Why deferred**: The outer search loop is not open-sourced. Building from scratch requires significant infrastructure (candidate directory management, per-candidate filesystem isolation, 82 files/iteration access). Current Tier 1+2 captures the core insight (execution traces + code mutations) without the operational overhead.
+
+**Revisit when**: AR-3 data shows diminishing returns from Tier 2 code mutations, indicating the search needs to be more systematic.
+
+## Open Questions
+
+- Can a 32B local model (Qwen2.5-Coder-32B) do diagnostic reasoning from traces, or does this require Opus-class? The paper only tested Opus.
+- What's the right trace granularity? Current approach sends raw last-50-lines. Filtered traces (errors + slow turns + escalations only) may be better.
+- For Tier 3: Docker per-candidate vs git worktree isolation?
+
+## Dependencies
+
+- ~~Autopilot AR-1 baseline must be working~~ DONE (2026-03-30)
+- ~~EvalTower T0 must produce reliable scores~~ DONE (sentinel questions validated)
+- ~~inference_tap.log must be capturing during evaluation~~ DONE (TUI already reads it)
+
+## Operator Guide
+
+See [docs/guides/meta-harness-operator-guide.md](/mnt/raid0/llm/epyc-orchestrator/docs/guides/meta-harness-operator-guide.md) for runtime operation, monitoring, and intervention procedures.
+
+## Notes
+
+Chelsea Finn + Omar Khattab (DSPy creator) co-authored. The TerminalBench-2 result is particularly relevant — they optimized an *agent scaffold*, which is exactly what our orchestrator is.
+
+## Research Intake Update — 2026-04-04
+
+### New Related Research
+- **[intake-254] "Goose — Open Source Autonomous AI Coding Agent"** (github.com/block/goose)
+  - Relevance: Rust-based autonomous coding agent with multi-model cost optimization and MCP integration
+  - Key technique: Multi-model routing for performance/cost balance, MCP-based tool extensibility
+  - Delta from current approach: Goose is end-to-end autonomous (builds, executes, debugs) vs our orchestrator's guided pipeline. Their MCP integration pattern is a reference for our tool surface
+- **[intake-255] "Clido — Multi-Provider CLI Coding Agent"** (github.com/clido-ai/clido-cli)
+  - Relevance: Profile-based multi-provider routing with per-session cost tracking and budget management
+  - Key technique: Real-time cost tracking per session, declarative YAML workflows, 16 provider backends
+  - Delta from current approach: Clido's per-session budget management implements the TOKEN_BUDGET concept from CC analysis (intake-249). Their profile-based provider switching maps to our routing intelligence
+
+## Research Intake Update — 2026-04-06
+
+### New Related Research
+- **[intake-271] "Skill Issue: Harness Engineering for Coding Agents"** (humanlayer.dev)
+  - Relevance: Practitioner synthesis validating that harness config, not model capability, drives coding agent performance
+  - Key technique: Progressive disclosure, context firewalls (sub-agent isolation), instruction budget management, back-pressure loops
+  - Reported results: TerminalBench-2 rank delta of ~28 positions from harness alone (same Opus 4.6 model)
+  - Delta from current approach: Our PromptForge does mutation but lacks systematic back-pressure loops feeding specific failure signals to harness components. The instruction budget concept (14-22% token overhead) is not tracked in our eval tower.
+- **[intake-272] "Evaluating AGENTS.md" (arXiv:2602.11988)** — ETH Zurich
+  - Relevance: Context files REDUCE task success rates and increase inference cost by 20%+
+  - Key technique: Empirical evaluation of AI-generated vs human-written agent context files on SWE-bench
+  - Delta from current approach: Direct threat to PromptForge code mutations that add instructions. Our thin-map architecture may be optimal, but needs empirical validation. **Action**: add instruction token budget tracking to eval tower; consider "minimal context" ablation in PromptForge.
+- **[intake-338] "Agent Lightning"** (Microsoft Research) — Zero-code agent optimization
+  - Relevance: Framework-agnostic agent optimization with RL, prompt optimization, and SFT
+  - Key technique: LightningRL hierarchical credit assignment for per-request reward attribution
+  - Delta from current approach: Meta-Harness optimizes harness code via agentic search. Agent Lightning optimizes the underlying LLM behavior via RL. Complementary approaches — Meta-Harness changes the harness, Agent Lightning trains the model to use the harness better.
+- **[intake-345] "GEPA Full Program Adapter"** (DSPy)
+  - Relevance: 93% MATH (vs 67% base) by evolving entire program structure, not just prompts
+  - Key technique: GEPA evolving signatures, modules, control flow with as few as 3 examples
+  - Delta from current approach: Meta-Harness searches over harness code. GEPA Full Program Adapter could be the search algorithm — replacing or augmenting our current LLM-guided mutation with evolutionary Pareto-optimal search. The +26pp result suggests this is a significantly stronger optimizer.
+
+## Research Intake Update — 2026-04-17
+
+### New Related Research
+
+- **[intake-394] "Evolver: GEP-Powered Self-Evolution Engine for AI Agents"** (repo: EvoMap/evolver)
+  - Relevance: auditable protocol-bound evolution (Gene/Capsule/EvolutionEvent JSONL assets) as a reference design for meta-harness mutation governance.
+  - Key technique: strategy-preset intent mixer (innovate/optimize/repair weights), log-signal selector-driven prompt routing, protected source files.
+  - Delta: adds a packaging/governance pattern to compare against our own harness-search artifact representation; not a new search algorithm.
+
+- **[intake-397] "Open Agents — Vercel-Labs Reference App for Background Coding Agents"** (repo: vercel-labs/open-agents)
+  - Relevance: agent-control-plane-separate-from-execution-sandbox pattern as a reference for the meta-harness search runtime separation from the orchestrator it optimizes.
+  - Key technique: durable workflow execution with reconnect-to-stream semantics (Vercel Workflow SDK), snapshot-based sandbox hibernate/resume, explicit contract between control plane and execution environment.
+  - Delta: TypeScript/Vercel-locked stack is not adoptable as a component, but the durable-workflow-reconnect and snapshot-resume design patterns are worth mining for long-running harness search sessions.
+
+- **[intake-399] "GenericAgent: A minimal self-evolving autonomous agent framework"** (repo: lsdefine/GenericAgent)
+  - Relevance: extreme-minimalism constraint (~3K LOC, ~100-line loop, 9 atomic tools, <30K context) as a design target for the meta-harness search space upper bound.
+  - Key technique: 5-tier memory taxonomy (L0 Meta Rules / L1 Insight Index / L2 Global Facts / L3 Task Skills/SOPs / L4 Session Archive); skill-crystallization from solved tasks into reusable SOPs.
+  - Delta: gives a concrete reference architecture for "how small can a useful agent loop be" — useful lower-bound anchor when proposing new harness variants. No benchmarks; single-user Chinese-market desktop agent.
+
+## Research Intake Update — 2026-04-20
+
+### New Related Research
+- **[intake-413] "Toward Ultra-Long-Horizon Agentic Science: Cognitive Accumulation for ML Engineering"** (arxiv:2601.10402)
+  - Relevance: HCC architecture demonstrates that tiered knowledge distillation (execution traces → phase knowledge → cross-task wisdom) yields SOTA on autonomous ML engineering — directly validates the meta-harness memory layer design.
+  - Key technique: Hierarchical Cognitive Caching with L1/L2/L3 cache analogy; cross-task wisdom consolidation; 56.44% medal rate on MLE-Bench.
+  - Delta from current approach: the distillation pipeline converting raw experiment logs into structured reusable knowledge could improve AutoPilot's strategy_store and PromptForge mutation quality.
+
+- **[intake-414] "Token Savior Recall — 97% Token Reduction MCP Server"** (repo: mibayy/token-savior)
+  - Relevance: 105-tool AST-level structural codebase navigation reduces context injection by 97% — relevant to harness search space for tool-surface minimization.
+  - Key technique: content-hash symbol staleness detection for automatic memory invalidation; MDL convention promotion (notes→conventions auto-upgrade); Bayesian validity tracking.
+  - Delta from current approach: the MDL distillation for convention promotion and staleness invalidation patterns are novel harness engineering primitives not in current search space.
+
+- **[intake-418] "Externalization in LLM Agents: A Unified Review of Memory, Skills, Protocols and Harness Engineering"** (arxiv:2604.08224)
+  - Relevance: positions the harness layer as the primary locus of agent capability improvement (weights→context→harness era progression) — directly validates the meta-harness optimization thesis.
+  - Key technique: three-dimensional externalization taxonomy (memory/skills/protocols) + harness layer orchestration; self-evolving harness search.
+  - Delta from current approach: the unified taxonomy could audit completeness of EPYC's agent infrastructure; the "harness era" framing reinforces the meta-harness investment direction.
+
+- **[intake-425] "Memory Transfer Learning: How Memories are Transferred Across Domains in Coding Agents"** (arxiv:2604.14004)
+  - Relevance: Empirically validates that abstract "Insight" representations transfer better than concrete traces across coding domains (+3.7% avg). Simple embedding retrieval outperforms LLM reranking — directly applicable to harness memory layer design decisions.
+  - Key technique: Four-tier memory abstraction (Trajectory → Workflow → Summary → Insight); negative transfer taxonomy for safety gates.
+  - Delta from current approach: The Insight format (title + description + generalizable content, no task-specific details) is a concrete template for harness memory entries. The negative transfer taxonomy (domain-mismatched anchoring, false validation confidence, misapplied best-practice transfer) can inform PromptForge mutation guardrails.
+
+- **[intake-426] "Dive into Claude Code: The Design Space of Today's and Future AI Agent Systems"** (arxiv:2604.14228)
+  - Relevance: Independent confirmation that 98.4% of agent complexity lives in operational infrastructure — strongest external validation of the meta-harness optimization thesis. Identifies six open design directions including the observability-evaluation gap and harness boundary evolution.
+  - Key technique: 13 design principles traced from 5 human values to implementation choices; five-layer compaction pipeline; comparative analysis (Claude Code vs OpenClaw) showing deployment context drives architectural choices.
+  - Delta from current approach: The observability-evaluation gap (agents produce outputs but evaluating them is hard) and the finding that 27% of Claude Code tasks represent novel work are new data points for justifying meta-harness investment. The comparative framework (CLI agent vs gateway agent) is relevant to our Hermes integration decisions.
+
+## Research Intake Update — 2026-04-22
+
+### New Related Research
+
+- **[intake-438] "Mind DeepResearch Technical Report"** (arxiv:2604.14518, Li Auto, production deployment)
+  - Relevance: Multi-agent framework with role specialization via RL. Production deployment demonstrates meta-harness viability at 30B scale. Complements meta-harness thesis that harness-layer investment dominates capability-layer investment.
+  - Key technique: Four-stage training (SFT → Search-RL → Report-RL → preference alignment) with multi-dimensional rubric evaluation.
+  - Reported results: SOTA 51.8 on MindDR Bench; BrowseComp-ZH 45.7%, WideSearch 46.5%, xbench-DS 75.0%.
+  - Delta: Our meta-harness work focuses on orchestration + context + routing. MindDR extends to RL agent-role specialization — an axis we've deferred (GPU-gated). Useful reference for a future Tier 3 direction if GPU becomes available.
+
+- **[intake-444] "Agent-World: Scaling Real-World Environment Synthesis for Evolving General Agent Intelligence"** (arxiv:2604.18292)
+  - Relevance: Self-evolving agent training with autonomous environment-task discovery. Addresses the meta-harness question: how do we scale past fixed benchmarks without manually curating tasks?
+  - Key technique: Agentic Environment-Task Discovery + Continuous Self-Evolving Agent Training + MCP integration for real-world services.
+  - Reported results: Agent-World-8B/14B beat proprietary baselines across 23 benchmarks.
+  - Delta: Environment synthesis as a scaling mechanism is orthogonal to our meta-harness Tiers 1-2 (orchestration) and the autopilot's AR-3 mutation loop. Consider as a Tier 2b or Tier 3 direction where the "harness" synthesizes its own evaluation environments.
+
+## Deep-Dive Integration — 2026-04-22
+
+### Tier 3 — Concrete Outer-Loop Rebuild Recipes (now split into 2 dedicated handoffs)
+
+The long-deferred Tier 3 outer-loop rebuild now has two concrete forward paths, each with its own dedicated handoff:
+
+**1. [`agent-world-env-synthesis.md`](../active/agent-world-env-synthesis.md) — Environment synthesis arena (DD6, intake-444)**
+
+- Phase 1 training-free and CPU-feasible today: LLM-orchestrated exploration of databases + MCP tool ecosystem → synthesized verifiable tasks with controllable difficulty → fed into AR-3 as additional benchmark input.
+- Phase 2 multi-env GRPO training: GPU-gated (post-DGX-Spark). Trains Qwen3-8B → Agent-World-8B-EPYC.
+- Entry point: AW-1 `env_synth/` module scaffold.
+
+**2. [`minddr-deep-research-mode.md`](../active/minddr-deep-research-mode.md) — Three-agent RL specialization (DD7, intake-438)**
+
+- Phase 1 prompt-level three-agent pipeline (Planning/DeepSearch/Report): zero-infra, falsifiable under eval tower, ~3w code.
+- Phase 2 four-stage training recipe: SFT → Search-RL (GSPO/GRPO) → Report-RL (DAPO) → preference alignment (DPO + Self-SFT). GPU-gated.
+- Entry point: MD-1 `deep_research_mode` feature flag.
+
+Both Phase-1 paths are training-free and implementable today. They operate on different axes: Agent-World expands the benchmark surface (bottom-up); MindDR refactors the routing pipeline (top-down). A fully-rebuilt Tier 3 eventually combines both — synthesized tasks (Agent-World Phase 1) train the three-agent pipeline (MindDR Phase 2) when GPU is available.
+
+### NIB2-41 — MDL distillation + staleness-detection mutation primitives (intake-414 Token Savior)
+
+Candidate new StructuralLab mutation types. 2d design + 1d integration into `program.md` search space. Tracked in `non-inference-backlog.md` NIB2-41. No dedicated handoff needed; this is a local extension to the existing mutation-type registry.
+
+#### Design (2026-04-22)
+
+Two new `StructuralLab` methods that operate on `orchestration/repl_memory/strategy_store.py` — the FAISS+SQLite strategy memory used by Seeder/NumericSwarm/PromptForge/StructuralLab.
+
+**M1 — `mdl_compress_strategies`** (Pattern C in `research/deep-dives/token-savior-extractable-patterns.md` §3 L459-706).
+- **Input**: all strategies in the store (or last N by `window_trials`).
+- **Process**:
+  1. Jaccard-cluster strategy insights by shared-token similarity (threshold 0.60).
+  2. For each cluster of size ≥ `min_cluster_size` (default 3): compute `MDL_before = Σ|zlib(insight_i)|` (per-entry description length) and `MDL_after = |zlib(representative)| + Σ|zlib(delta_i)|` where `delta_i` is the insight with tokens-in-representative masked out.
+  3. Promote the cluster to a **convention** if `(MDL_before - MDL_after) / MDL_before ≥ compression_threshold` (default 0.20).
+  4. Write convention to a new `strategy_conventions` table (additive — `CREATE TABLE IF NOT EXISTS`), with `representative`, `member_ids` JSON list, `compression_ratio`, `promoted_at`, `span_trials`.
+- **Output**: `{"status": "ok", "clusters_examined": N, "conventions_promoted": K, "total_compression_saved_bytes": B}`.
+- **Why `zlib` length as MDL proxy**: `zlib.compress(text.encode())` length is a standard MDL approximation (intake-414 + token-savior deep-dive L475). Paper-grade Rissanen MDL is overkill for string payloads this small.
+
+**M2 — `staleness_invalidate_strategies`** (Pattern B in deep-dive §2 L243-457).
+- **Input**: strategy store + a `scan_targets` list of content-bearing paths (default: `orchestration/prompts/**/*.md`, `orchestration/classifier_config.yaml`, `orchestration/model_registry.yaml`).
+- **Process**:
+  1. For each scan target compute `sha256(content)`. Maintain a `content_hashes` table mapping `target_path → current_hash`.
+  2. If a strategy's `metadata_json` references a path whose hash changed since the strategy's `created_at`, apply a **Bayesian validity update**: `beta_fail += 1` (on the `strategy_validity` table, also additive).
+  3. Compute `validity = alpha / (alpha + beta_fail)` (Beta distribution mean, α starts at 2 for prior, no prior successes). Strategies with `validity < 0.40` enter **quarantine** (boolean column, excluded from `retrieve()`). Strategies with `0.40 ≤ validity < 0.60` are flagged `suspected` (returned from retrieve but with warning metadata).
+  4. **Cascade**: if a quarantined strategy is referenced by the currently-loaded `routing_classifier_weights.npz` checkpoint (metadata trail), mark the checkpoint stale — autopilot's next cycle should retrain.
+- **Output**: `{"status": "ok", "targets_scanned": T, "hashes_changed": C, "strategies_checked": S, "quarantined": Q, "suspected": X, "cascade_invalidated": I}`.
+
+**Schema additions** to `strategy_store.py _init_schema()`:
+```sql
+CREATE TABLE IF NOT EXISTS strategy_conventions (
+    id TEXT PRIMARY KEY,
+    representative TEXT NOT NULL,
+    member_ids TEXT NOT NULL,         -- JSON array of strategy ids
+    compression_ratio REAL NOT NULL,
+    span_trials TEXT NOT NULL,         -- JSON [min_trial, max_trial]
+    promoted_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS strategy_validity (
+    strategy_id TEXT PRIMARY KEY,
+    alpha INTEGER NOT NULL DEFAULT 2,
+    beta_fail INTEGER NOT NULL DEFAULT 0,
+    quarantined INTEGER NOT NULL DEFAULT 0,
+    last_checked_at TEXT,
+    FOREIGN KEY (strategy_id) REFERENCES strategies(id)
+);
+CREATE TABLE IF NOT EXISTS content_hashes (
+    target_path TEXT PRIMARY KEY,
+    content_hash TEXT NOT NULL,
+    last_seen_at TEXT NOT NULL
+);
+```
+
+All three are pure additions (`IF NOT EXISTS`); existing strategies default to `alpha=2, beta_fail=0, quarantined=0`, so no migration is needed.
+
+**Integration points** (per `evolution_manager.py` cadence):
+- Hook `mdl_compress_strategies` after every 50 new strategies (log-only first, promote with dry-run guard).
+- Hook `staleness_invalidate_strategies` on each autopilot trial boundary (fast — just sha256s).
+
+**`program.md` search space documentation**: add a paragraph under "Tier 5: Stack Topology" describing the two new action shapes so the controller knows they exist as mutation options.
+
+**Testing**: 6 unit tests in `tests/autopilot/test_structural_lab_mutations.py`:
+1. MDL compresses a cluster of 3 near-identical insights into one convention (ratio > 0.20).
+2. MDL does NOT compress clusters below threshold.
+3. Staleness increments `beta_fail` when a referenced prompt hash changes.
+4. Staleness quarantines strategies whose validity drops below 0.40.
+5. Cascade invalidates routing classifier checkpoint when upstream strategy is quarantined.
+6. No-op when the store is empty.
+
+Files touched:
+- `orchestration/repl_memory/strategy_store.py` — schema + 3 helper methods (`_add_convention`, `_update_validity`, `_scan_content_hashes`).
+- `scripts/autopilot/species/_content_hash.py` — new, ~40 LoC, sha256 over canonical file bytes.
+- `scripts/autopilot/species/structural_lab.py` — `mdl_compress_strategies()` and `staleness_invalidate_strategies()` methods (~150 LoC total).
+- `scripts/autopilot/program.md` — 1-paragraph addition.
+- `tests/autopilot/test_structural_lab_mutations.py` — new, 6 tests.
+
+### Cross-references
+
+- `routing-and-optimization-index.md` P17 (Agent-World pointer) + P18 (MindDR pointer)
+- `agent-world-env-synthesis.md` + `minddr-deep-research-mode.md`
+- `/workspace/research/deep-dives/agent-world-environment-synthesis.md`
+- `/workspace/research/deep-dives/minddr-multi-agent-rl-specialization.md`
+
+## Research Intake Update — 2026-04-24
+
+### New Related Research
+
+- **[intake-451] "Meta-Harness (official reference code)"** (`github.com/stanford-iris-lab/meta-harness`)
+  - Relevance: the official code companion to intake-244 (the paper that drove this handoff). Ships `ONBOARDING.md` flow + `domain_spec.md` template that walks a coding-assistant conversation to a new-domain spec; two reference experiments (text_classification = memory-system search, terminal_bench_2 = scaffold evolution); `claude_wrapper.py` proposer examples.
+  - Reported results: no new empirical numbers beyond the paper — README explicitly states "cleaned up version of the code we used for the paper... not tested beyond verifying that it runs."
+  - Delta from current approach: our Tier-1/Tier-2 implementation was re-derived from the paper. The official repo validates our design. Cherry-pick (a) the ONBOARDING flow + `domain_spec.md` template for onboarding new domains (orchestrator roles / eval suites), and (b) the `claude_wrapper.py` proposer-logging pattern for PromptForge. Read the terminal_bench_2 scaffold-evolution example before any Tier-2b upgrade — it is the closest analog to our code-mutation search space.
+
+- **[intake-450] "Venice Skills — Agent Skills for the Venice.ai API"** (`github.com/veniceai/skills`)
+  - Relevance: SKILL.md authoring rubric applicable to skill-crystallization outputs of meta-harness runs. The ≤500-line / endpoint-table / gotchas-section template is a ready-made standard for any Skill0-style artifact this handoff produces.
+  - Delta: adopt the authoring rubric; ignore Venice's commercial API.
+
+- **[intake-454] "hermes-agent v2026.4.23 (v0.11.0)"** (`github.com/NousResearch/hermes-agent/releases/tag/v2026.4.23`)
+  - Relevance: release introduces orchestrator-role subagents with cross-agent file-state coordination and `/steer` mid-run correction — direct primitives for a multi-proposer meta-harness where specialized roles (code-mutator, memory-designer, scaffold-evolver) run in parallel and share state via file locks.
+  - Delta: evaluate whether the new orchestrator spawn depth + file-state coordination removes the need for our custom subagent wiring in the Tier-2b plan. If yes, the handoff can delegate coordination to hermes-agent and focus purely on the harness-search loop.
+
+## Research Intake Update — 2026-04-26
+
+### New Related Research
+
+- **[intake-473] "@mariozechner/pi-agent-core — Stateful TypeScript Agent Runtime"** (`github.com/badlogic/pi-mono/tree/main/packages/agent`)
+  - Relevance: production-grade composable hook surface that maps directly to the safety/audit middleware that PromptForge's Tier-2 code-mutation path needs. The framework defines `beforeToolCall` (preflight veto with `{ block: true, reason }`) and `afterToolCall` (field-replace-only result rewrite) as first-class hooks with **throw-isolation per call** — a throw inside `afterToolCall` becomes an error tool result for that one tool call instead of aborting the parallel batch (CHANGELOG #3084, 2026-04-17). 80+ contributors including Armin Ronacher (top-5).
+  - Key technique: **field-replace semantics for `afterToolCall`** — return any subset of `{ content, details, isError, terminate }` and only those fields are overwritten on the tool result; omitted fields keep their executed values. No deep merge. This is the natural composition shape for stacking unrelated middleware (audit · redaction · simplicity-criterion gating · code-syntax validation) without one layer knowing about the others.
+  - Delta from current approach: our PromptForge Tier-2 has the simplicity-criterion + AST-syntax-validate gates inlined into `dispatch_action()`. The pi-agent-core hook architecture suggests factoring those as discrete `before_tool_call` / `after_tool_call` handlers that compose cleanly when we add more gates (e.g., a Tier-2b code-trace inspection step, or per-mutation diff-size limits). Naming + factoring lift, not a port. Particularly relevant if Tier-2b's multi-proposer extension needs role-specific gates running in parallel.
+  - Deep-dive: `research/deep-dives/pi-agent-core-stateful-ts-runtime.md`
+
+## Research Intake Update — 2026-04-26
+
+### New Related Research
+
+- **[intake-474] "TRINITY: An Evolved LLM Coordinator"** (arxiv:2512.04695, ICLR 2026, Sakana AI, openreview:5HaRjXai12)
+  - Authors: Jinglue Xu, Qi Sun, Peter Schwendeman, Stefan Nielsen, Edoardo Cetin, Yujin Tang
+  - Relevance: Trinity is the most direct prior art for *learned, lightweight, multi-turn coordinator* architectures. Meta-Harness optimizes the *static configuration* of our harness (prompts, code, templates); Trinity-style work would optimize *per-call coordination decisions* (which sub-agent to dispatch, in what role, when to verify). These are sibling projects at different layers of the same stack.
+  - Key technique: 0.6B SLM + 10K-parameter linear head, trained with sep-CMA-ES against terminal binary task reward, picks `(LLM, role)` per turn from a 7-LLM pool with 3 roles {Thinker, Worker, Verifier}; Verifier-acceptance termination at K≤5 turns.
+  - Reported results: 86.2% LiveCodeBench v6 (claimed coordinator-system record); 21.9% mean relative-error reduction over 2nd-best multi-agent baseline; ablations show tri-role removal costs −5 to −8 points and is the second-largest ablation effect in the paper.
+  - Delta from current Meta-Harness: orthogonal scope. Meta-Harness's PromptForge searches over harness *components* (prompt text, tool definitions, routing logic). Trinity searches over per-call *decisions* with the components held fixed. **The two compose**: a Trinity-style learned coordinator could be one of the harness components Meta-Harness optimizes; conversely, Meta-Harness's role-specific prompt templates would be the per-role prompts Trinity dispatches.
+  - Outer-coordinator scoping: a separate handoff [`outer-coordinator-learned-head.md`](../active/outer-coordinator-learned-head.md) holds the speculative idea of replacing part of the Claude-driven autopilot loop with a Trinity-style learned head. Phase OC-0 (scoping) is gated until tri-role + DAR + LRC Phase 4 land. Cross-link from this handoff because the outer layer is also the Meta-Harness target — if OC-0 escalates, the implementation will need to coordinate with PromptForge's harness-search to avoid stepping on each other's parameters.
+  - Deep-dive: [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md) — sections 2.3 ("pool-homogeneity caveat … where does Claude fit?") and 3 ("portable / not portable") directly inform the boundary between Meta-Harness scope and outer-coordinator-learned-head scope.
+
+## Research Intake Update — 2026-04-28
+
+### New Related Research
+
+- **[intake-493] "Learning to Orchestrate Agents in Natural Language with the Conductor"** (arxiv:2512.04388, ICLR 2026, Sakana AI)
+  - **Framing**: competitive intelligence. Not a Meta-Harness scope-change.
+  - Relevance: Conductor is Trinity's 7B-GRPO sibling (six-author overlap, both underpinning Sakana Fugu). For Meta-Harness the relevance is **compositional**: Meta-Harness optimizes static configuration; a Conductor-style learned coordinator would dispatch *into* such configurations. The two layers compose, scope unchanged.
+  - Action space note: Conductor emits `(worker_id, NL_subtask, access_list)` per coordination step (topology emerges from access-list selections), trained via **GRPO** on **2× H100 80GB**. Code/weights promised in supplementary, not yet public.
+  - Reported deltas (concrete): LCB +1.03 pp (within noise), GPQA-D +2.7 pp, open-source-only inference +~10 pp vs Claude Sonnet 4.
+  - Caveat: see Tier 2b in `outer-coordinator-learned-head.md` and `tri-role-coordinator-architecture.md` 2026-04-28 sections.
+- **[intake-492] "Flywheel — local-first MCP memory layer for AI agents over Obsidian/Markdown vaults"** (`github.com/velvetmonkey/flywheel-memory`)
+  - Relevance: Flywheel demonstrates a **portable abstract contract** for an agent that mutates a markdown corpus — hash-before-write conflict detection + single-step undo log + structure-preserving edits. The *abstract contract* is portable; the *implementation* (Node FS semantics + Obsidian frontmatter/section model + YAML policy executor) is not lift-and-shift to our Python stack. PromptForge and the autopilot / meta-harness loop increasingly mutate handoffs/wiki/progress files; Flywheel's contract is design inspiration for a Python equivalent in our autopilot/meta-harness write path.
+  - Key pattern: YAML "policies" — declarative search-then-write workflows with preview + atomic execute. The abstraction is the takeaway, not the Node/MCP/Obsidian runtime.
+  - Delta from current approach: today our autopilot/meta-harness side-effects on markdown files have no formal write contract. Adopt the pattern (hash, preview, atomic, undo); do not adopt the runtime.
+  - Caveat (Tier 2b): credibility 3 — 1,092 commits, 3,292 tests, 385 releases, dual-OS dual-Node CI as engineering rigor signals; no peer review, no independent replication. Self-reported HotpotQA / LoCoMo benchmarks with ~1pp LLM-non-determinism variance band. Adopt patterns, not the runtime.
+
+## Research Intake Update — 2026-04-30
+
+### New Related Research
+
+- **[intake-509] "Skills For Real Engineers — Matt Pocock's Claude Code skills collection"** (`github.com/mattpocock/skills`)
+  - Relevance: Pocock codifies a four-failure-mode taxonomy that maps directly to gates the meta-harness search would mutate or evaluate against:
+    1. **Misalignment** → `/grill-me`, `/grill-with-docs` Socratic interrogation skills before any code is written.
+    2. **Verbosity** → `CONTEXT.md` shared-language doc maintained inline by `/grill-with-docs` (DDD ubiquitous-language pattern in skill form).
+    3. **Broken code** → `/tdd` red-green-refactor + `/diagnose` disciplined bug loop.
+    4. **Ball-of-mud** → `/to-prd`, `/zoom-out`, `/improve-codebase-architecture` for ongoing design hygiene.
+  - Key pattern: `/improve-codebase-architecture` and `/grill-with-docs` both treat a maintained `CONTEXT.md` + ADR set as a *first-class harness component*. For the Meta-Harness search this is a candidate harness module — the search could mutate (a) which docs the agent must consult, (b) when `CONTEXT.md` is forced to be re-read, (c) whether ADRs are appended after architecture decisions. Same idea-shape as Flywheel (intake-492) but expressed as prose/skill rather than write-contract.
+  - Delta from current approach: the meta-harness today mutates prompts and tool-output handling. Pocock's skills suggest mutating the *shared-language artifact itself* as a search axis. Combined with Flywheel's hash-before-write contract, the harness has two complementary handles on the markdown corpus: write-time invariants (Flywheel) and read-time consultation policy (Pocock-style).
+  - Caveat (Tier 2b): no empirical claims (credibility_score null). Pattern adoption only — no runtime component to import; calibration is for TypeScript app development, not CPU inference. The `/caveman` ~75% token-reduction figure is self-reported with no methodology — useful only as a baseline-to-beat for our own measured tool-output-compression numbers, not as evidence of efficacy.
+
+- **[intake-516] "HALO-Gemini-3-Flash-AppWorld dataset"** + **[intake-517] context-labs/HALO** + **[intake-518] halo-engine PyPI** (HALO project trio — same intake batch)
+  - Relevance to Meta-Harness: **HIGH**. HALO directly implements the loop class Meta-Harness Tier 3 envisions — OpenTelemetry trace ingestion → specialized RLM trace analyzer → coding agent applies harness edits → redeploy → re-trace. Reported deltas: AppWorld test_normal SGC for Sonnet 4.6 62.5% → 73.2% (+10.7 pts), Gemini 3 Flash 37.5% → 48.2% (+10.7 pts). Built on the foundational RLM paper (intake-153, Zhang/Kraska/Khattab arxiv:2512.24601), already in our index with verdict `already_integrated` and ~80% pattern coverage.
+  - Three concrete patterns to lift into Meta-Harness (NOT framework adoption — we already build the same scaffolding):
+    1. **Anti-overfitting argument**: a generic coding harness (Claude Code) overfits to a single-trace error and fails to generalize harness-level failure modes; a *specialized* trace-analysis RLM is needed. Encodes as a Meta-Harness search constraint: when mutating prompt/tool axes, evaluate the mutation on a held-out trace cluster, not the trace that motivated the mutation. Prevents Meta-Harness from learning trace-specific overfits.
+    2. **dev/test_normal split methodology**: AppWorld convention separates a hold-out test_normal split from dev. Adopt as a Meta-Harness convention — every harness candidate must show improvement on BOTH splits before promotion.
+    3. **Concrete failure-mode taxonomy**: hallucinated tool calls, redundant args, refusal loops, semantic correctness errors. Use as labelled categories for Tier 3's trace-clustering pass (complements Pocock's misalignment/verbosity/broken-code/ball-of-mud taxonomy from intake-509).
+  - HALO dataset (intake-516) is a small public corpus (168 traces) — primarily a benchmarking convenience, not training data. Useful as a comparison baseline if Meta-Harness ever evaluates on AppWorld.
+  - **Schema observation**: HALO span-tree format is a candidate for Meta-Harness's own trace observability layer — the orchestrator already emits structured logs that could be adapted. OpenTelemetry-compatible substrate is a clean integration seam.
+  - Tier 2b: production RLM loops face latency spikes, cost variance, format collapse; many OSS RLM impls pin max_depth=1; recursive-depth claim harder to operationalize than paper implies. Apply skeptically when sizing the analyzer's budget.
+  - Caveat (schema-name collision): `inference-net/HALO-Gemini-3-Flash-AppWorld` (HF dataset) and `context-labs/halo` (GitHub) appear to be SEPARATE orgs sharing the HALO name and a span-tree concept. Confirmed both reference AppWorld + RLM substrate; assume same project family pending clarification.
+  - Action: when Meta-Harness Tier 3 design solidifies, evaluate halo-engine (MIT, 2.5 MB pip install) as a reference implementation. Cross-ref `autopilot-continuous-optimization.md` 2026-04-30 update where the same patterns are tracked for the autopilot loop.
+
+#### Deep-dive refinement (2026-04-30) — concrete spike scoped, see halo-trace-loop-spike
+
+Deep-dive at [`/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md`](../../research/deep-dives/halo-rlm-trace-loop-integration.md). Spike handoff at [`halo-trace-loop-spike.md`](../active/halo-trace-loop-spike.md) — ready to claim.
+
+**Key finding that changes Tier 3 scope**: `scripts/autopilot/telemetry.py:to_otlp_span` already produces OTLP-shaped JSON (since 2026-04-12). The HALO OTel converter is **~30 LoC** for autopilot telemetry, ~120 LoC for inference-tap. Total spike code including tests: ~200 LoC. This is cheap to validate.
+
+**Net-new patterns from HALO worth lifting into Tier 3** (if spike passes 4-criterion gate):
+
+1. **Six-tool trace-query analyzer surface** (`get_dataset_overview`, `query_traces`, `count_traces`, `view_trace`, `search_trace`, `view_spans`) backed by a two-file JSONL+byte-offset trace store — lands in `unified-trace-memory-service.md` T1+T5 (~230 LoC).
+2. **dev/test_normal split discipline** — Tier 3 anti-overfit guard. Mostly methodology + script glue (~50 LoC).
+3. **Failure-mode taxonomy** (4 labels: hallucinated tool calls / redundant args / refusal loops / semantic correctness) — complements intake-509 Pocock taxonomy already in scope; serves as seed labels for trace-clustering.
+
+**Patterns that are duplicate of existing coverage** (do NOT re-implement): OTel span emission (intake-338 done), trace-driven mutator (intake-244 Tier-1 done), code-mutation search (Tier-2 done), GEPA evolution (intake-345 done), RLM REPL recursion (intake-153 R1-R6 done).
+
+**AppWorld dataset (intake-516)**: deferred. See `eval-tower-verification.md` and `agent-world-env-synthesis.md` 2026-04-30 deep-dive refinement sections.
+
+**Risk**: HALO `0.1.2` pre-1.0 churn; default `max_depth=1` matches Tier-2b warning; report is free-text markdown not structured JSON; default analyzer model is gpt-5.4-mini → spike must validate small-model coherence on local 30B-A3B coder before committing.
+
+## Research Intake Update — 2026-05-19
+
+### Recursive Agent Optimization (RAO) — RL training paradigm for recursive agents
+
+- **[intake-536] "Recursive Agent Optimization"** (arxiv:2605.06639, Gandhi/Chakraborty/Wang/Kumar/Neubig — CMU)
+  - Relevance to Meta-Harness: **HIGH**. RAO is the training-side complement to RLM (intake-153, ~80% coverage already implemented): RLM is inference-time orchestration on off-the-shelf models; RAO trains the *policy* to be good at recursive decomposition. Gives us a recipe to produce a LOCAL 8B–30B model that does what we're currently using frontier API models for.
+  - Three training tricks worth lifting into Meta-Harness Tier 3:
+    1. **Mean-of-children delegation bonus** (not sum) explicitly prevents the trivial-spawn exploit — encodes as a reward-shaping constraint when training any policy that can call subagents.
+    2. **Multi-task objective sampled across execution-tree depths** yields an automatic curriculum from model-generated sub-tasks — same policy trained on root + mid + leaf simultaneously.
+    3. **Leave-one-out (LOO) baseline shared across rollout group** + **depth-level inverse-frequency weighting** to prevent leaf-trajectory domination.
+  - Headline results: TextCraft-Synth hard 0.88 (recursive) vs ~0 (single-agent); Oolong-Real 30B recursive ≈ frontier Claude/o3/GPT-5-mini; DeepDive adaptive depth ~4 reaches hardest instances at ~18× single-agent latency.
+  - Inference architecture matches our existing pattern: rooted execution tree on Python REPL; delegation = async function (asyncio.gather); child outputs are first-class Python objects parent inspects/slices BEFORE loading into context. Direct match for `repl-turn-efficiency.md` and `tool-output-compression.md` goals.
+  - Tier 2b — **contradicting evidence (must integrate, not optional)**:
+    - **RLM reproduction** (intake-547, arxiv:2603.02615, Daren Wang): depth=2 recursion DEGRADES accuracy on simple retrieval AND inflates wallclock 96× (3.6s → 344.5s). RAO must demonstrate it overcomes (not just inherits) this overthinking pathology. **Recommended posture**: default `max_depth=1` for any RAO/RLM-style integration on EPYC unless we explicitly train a depth-controller.
+    - **Orchestration-trace survey** (intake-548, arxiv:2605.02801): as of May 2026, NO published RL method explicitly trains the stopping decision — including RAO. The stopping-decision gap is a concrete autopilot research target on its own.
+    - **Process-reward / LLM-judge rewards** are a known reward-hacking attack surface. RAO per-node LLM-judge reward is exactly this proxy class.
+    - **Mean-of-children delegation bonus** rewards delegation when children succeed on AVERAGE — biases parent toward over-delegating easy splits while masking individual catastrophic child failures.
+  - Adjacent assets discovered:
+    - **ReDel** (intake-550, arxiv:2408.02248, EMNLP 2024 Demo, MIT licensed): working open-source recursive multi-agent toolkit. asyncio sub-agent execution + recursive delegation via tool-use + event-stream replay + web-based visual debugger. This is the engineering substrate RAO assumes. **Evaluate ReDel as the harness substrate before in-house build** of halo-trace-loop-spike / rlm-orchestrator integration.
+    - **Tree-GRPO** (intake-549, arxiv:2509.21240, ICLR 2026): GRPO variant where each tree node is a complete agent interaction step, sharing common prefixes across rollouts. Methodological alternative to RAO LOO baseline.
+    - **@neural_avb X-post breakdown** (intake-541) — useful as onboarding/teaching asset alongside the paper.
+  - **Concrete next step**: when Meta-Harness Tier 3 design solidifies, draft a spike that combines (a) ReDel as harness substrate, (b) RAO's three training tricks as the policy training recipe, (c) `max_depth=1` cap per RLM-reproduction caveat, (d) explicit stopping-decision experiment per orchestration-trace survey gap finding.
+  - **STUB DRAFTED 2026-05-19**: ready-to-claim spike at [`rao-redel-substrate-spike.md`](../active/rao-redel-substrate-spike.md) (master priority queue #42). 3-step gated: Step 1 = 1-day ReDel pre-flight (~20 LoC glue, verify `OPENAI_BASE_URL` swap to llama-server drives `DelegateOne` against worker_general); Step 2 = 1-week paired A/B vs current `repl_executor`; Step 3 = 2-3 week feature-flagged substrate replacement (~800-1200 LoC) including 5-sub-decision taxonomy labelling on episodic store.
+
+### Latent multi-agent collaboration cluster — training-free frozen-stack candidate
+
+- **[intake-544] RMAS** (arxiv:2604.25917, Yang et al., shared author lineage with intake-153 RLM), **[intake-555] LatentMAS** (arxiv:2511.20639, ICML 2026 Spotlight, training-free), **[intake-558] Dead Weights** (arxiv:2604.08335, cross-architecture frozen composition)
+  - Relevance: directly addresses meta-harness's open question of whether sub-agent handoffs can avoid the text-detokenize/re-tokenize round-trip. LatentMAS claims 4× decode speedup + 70-83% output token reduction via training-free hidden-state handoff. Dead Weights claims a single learned linear projection suffices to translate activations between heterogeneous architectures (Llama/Qwen/Gemma → Phi/Mistral) — the bridge that would unlock frozen-GGUF deployment.
+  - Tier 2b: requires llama.cpp HTTP server fork to surface last-layer hidden states across server boundaries — breaks compat with upstream rebases. Demonstrated only on homogeneous-tokenizer agent pools in the seed papers; cross-tokenizer claim rests on a single 3-author preprint (Dead Weights) without independent reproduction. Speedup is vs text-MAS baseline, not vs our well-tuned single-server prefix-cache-hit path.
+  - **Action**: monitor — do NOT spin a handoff stub for the latent path. Re-evaluate when (a) Dead Weights independent reproduction lands (GPU rental for Dead Weights replication **DEFERRED** per user direction 2026-05-19), or (b) llama.cpp upstream exposes activation hooks across servers.
+  - **STUB DRAFTED 2026-05-19 for the text-MAS subset**: adjacent **X-MAS** (intake-557, arxiv:2505.16997) is the immediately actionable text-MAS heterogeneity adoption path — its (domain × function × model) optimal-assignment matrix could replace ad-hoc role-bench mapping in our heterogeneous stack. See [`x-mas-text-routing.md`](../active/x-mas-text-routing.md) (master priority queue #44, HIGH, 2-3 dev-days). Cheap-kill failure mode: if 5×5 winner table shows gemma4-26B-A4B winning ~all cells, heterogeneity does not apply to our stack and we abort.
+
+## Research Intake Update — 2026-05-20
+
+### New Related Research
+
+- **[intake-571] "ECHO: Terminal Agents Learn World Models for Free"** (Papailiopoulos et al., MSR AI Frontiers; PDF only, no arxiv yet)
+  - **Relevance**: Training-side analogue of the Tier-3 self-improvement loop. Auxiliary terminal-output prediction loss on GRPO rollouts ≈ 2× over baseline at zero marginal data cost.
+  - **Key technique**: Single rollout, single forward pass — train both action and observation tokens; the "world model" emerges as a byproduct of an existing auxiliary head, not a new model.
+  - **Delta from current approach**: Meta-harness Tier 3 is currently inference-time scaffold search; ECHO suggests a parallel training-time lever. Both are GPU-gated and out of scope until DGX Spark — file as a future Tier 4 candidate alongside SkillRL.
+
+- **[intake-570] "Expanding the Capabilities of RL via Text Feedback" (RLTF)** (Song/Chen/Tajwar/Munos/Pathak/Bagnell/Singh/Zanette, CMU+Inria; arxiv:2602.02482, OpenReview)
+  - **Relevance**: RLTF-FM's auxiliary "predict the critique" head enables test-time iterative self-feedback even when no external critic is available — a pattern the meta-harness could express as a self-critique sub-routine.
+  - **Reported results**: K&K 0.802/0.880, MATH500 0.598/0.636, LitBench 8.80/8.40 (SD/FM); critically, replacing text feedback with binary correctness collapses gains — text richness is load-bearing.
+  - **Delta from current approach**: Inference-side self-critique already exists in our harness via tool-call retries; RLTF-FM's gains depend on the trained FM head, which we lack. Note as a reference for any future GPU-gated training arm; the inference-time pattern alone is unlikely to reproduce the reported deltas.
+
+## Research Intake Update — 2026-05-25
+
+### New Related Research
+- **[intake-607] "Code as Agent Harness: Toward Executable, Verifiable, and Stateful Agent Systems"** (arxiv:2605.18747)
+  - Relevance: Survey framing the agent harness as three layers (interface / mechanism / scaling) and naming the *harness-level reliability vs. final-task-success* evaluation gap — directly sharpens the Tier-1 trace-feedback framing here.
+  - Key technique: taxonomy of code-as-substrate mechanisms (program-delegated reasoning, formal-verification interfaces, execution-driven Plan/Execute/Verify loops, working/semantic/experiential/long-term memory tiers).
+  - Reported results: none — survey/taxonomy, no original benchmarks.
+  - Delta from current approach: adopt_patterns only, nothing to implement. Use the interface/mechanism/scaling decomposition as a coverage checklist when auditing the harness. **Tier 2b**: a concurrent competing survey exists ("Agent Harness for LLM Agents", Preprints 202604.0428, 110+ papers) — the cluster is saturated, novelty:low. Does not supersede the actionable Meta-Harness (arxiv:2603.28052) work already in flight.
+- **[intake-605] "Repo Prompt — context-engineering tool (CodeMaps, Context Builder)"** (repoprompt.com)
+  - Relevance: closed-source GUI product whose *patterns* map onto context budgeting — CodeMaps (token-cheap structural API/symbol extraction) and a token-budget-bounded iterative context-selection engine (default 60k, 24-32k recommended for direct agent use).
+  - Key technique: "curate over auto-search" — humans/agent pick files; structural maps supply architecture context without spending tokens on full file bodies; exposed as a 15+ tool MCP server.
+  - Reported results: vendor claim ~80% token reduction (unbenchmarked, credibility null — upper bound only).
+  - Delta from current approach: pattern adoption only — proprietary macOS GUI + cloud-LLM orientation conflicts with the open-source-self-hosted constraint, so no component. CodeMaps overlaps GitNexus + intake-330 (code-review-graph AST extraction) already in hand.
+
+## Deep-Dive Task Proposals — 2026-05-25 (intake-607 Code-as-Agent-Harness §5.2.1 / §5.2.7)
+
+The Code-as-Agent-Harness survey's standout actionable idea lands here: **stop optimizing the harness against final-task-success alone** (a noisy single bit that rewards shortcut configs) and instead score the harness's *intermediate* behavior. This sharpens the Tier-1 trace-feedback loop, which currently feeds a 50-line trace tail to PromptForge but does not score it on named axes. Audit pass converted the initial brainstorm into an implementation contract below.
+
+> **Schema dependency (gap-fix 2026-05-25):** the `harness_metrics` and `oracle_adequacy` record families HLE-1/HLE-2 produce are part of the **shared trace schema owned by [`unified-trace-memory-service.md`](../active/unified-trace-memory-service.md) § "Shared Harness/Trace Schema"** — do not define a private schema here. Implement the shared schema first; HLE writes into it.
+
+- [x] **HLE-1 — Per-component harness metrics.** From Tier-1 traces (`inference_tap.log`, unified trace store events, tool-call records), compute per-trial scores on the paper's named axes and persist them next to the existing eval result:
+  - **Execution fidelity**: planned action matches executed action and resulting artifact; penalize stale-file edits, failed patch preconditions, tool calls whose observed result contradicts the plan, and "answer without evidence" shortcuts.
+  - **Feedback interpretation**: harness correctly parses tool/error/test output into the next decision; score whether failures lead to targeted retries rather than repeated identical actions.
+  - **Planning stability**: plan decomposition remains coherent under small prompt/order perturbations; compare step sequence signatures, not just final score.
+  - **Memory coherence**: references to prior state resolve to stored trace/strategy/scratchpad entries; penalize hallucinated memory and unlogged state assumptions.
+  - **Recovery rate**: number of recoveries from failed tool/test/checkpoint states divided by recoverable failures; distinguish "never failed" from "failed and recovered."
+
+  Implementation detail: start with rule-based metrics over structured traces, not an LLM judge. Add a `harness_metrics` JSON field to the journal/trace record with `metric_version`, per-axis scores, evidence event IDs, and `confidence`. Metrics without evidence IDs are not allowed into HLE-4 Pareto objectives. **Initial observe-only implementation landed 2026-05-27 in epyc-orchestrator `9222a19`** (`scripts/autopilot/hle_metrics.py`), with metric confidence/missingness and journal persistence via `931e43c`.
+- [x] **HLE-2 — Oracle-adequacy meta-metric.** For each eval suite/sentinel, explicitly characterize whether the oracle (tests / trace / judge / exact match) actually covers the failure modes, instead of assuming "no exception + tests pass = correct." Persist `oracle_adequacy` with at least: `oracle_type`, `coverage_claim`, `known_blind_spots`, `shortcut_risk`, `requires_external_answer`, `deterministic`, and `reviewed_by`. Flag suites where success is under-determined; these are where PromptForge can reward shortcuts. (Directly addresses the Package-B finding that REPL mode "succeeds" by web-searching the answer — routing-index P8b.) **Initial default oracle-adequacy registration landed 2026-05-27 in `9222a19`; J9 still decides whether the fields carry predictive signal.**
+- [ ] **HLE-3 — Harness-isolating benchmark methodology.** Adopt §5.2.7: **hold the model fixed, vary only the harness**, to isolate harness quality from model capability. Today T0/T1/T2 vary many things at once. Define a fixed-model harness-only eval lane with: fixed model/quant/build, fixed server flags, fixed prompt corpus, fixed random seeds where applicable, fixed retrieval corpus snapshot, and a single harness variable changed per run. Store `harness_variant_id` and `model_snapshot_id` so later analysis cannot confuse model upgrades with harness wins. (Pairs with autopilot HLE-4.)
+
+**Audit refinements / missed gaps**:
+
+1. **Metric validity has to be measured.** Before HLE-4 uses any metric as an objective, run it in observe-only mode and check whether it separates accepted vs rejected configs, predicts future regressions, or correlates with human-reviewed failures. Drop or quarantine metrics with no signal.
+2. **Avoid replacing one noisy scalar with five noisy scalars.** Each HLE-1 score needs evidence links and confidence. Low-confidence metrics should act as dashboard diagnostics, not hard gates.
+3. **Shortcut detection belongs in oracle adequacy.** Web-search leakage, answer-key memorization, exact-match parsing artifacts, and "tests do not cover behavior" should be first-class blind spots, not prose notes.
+4. **HALO/P20 should consume the same schema.** The HALO analyzer surface should read `harness_metrics` and `oracle_adequacy` directly from the unified trace store instead of scraping ad hoc text.
+
+These compose with the existing Tier-1/Tier-2/Tier-2b work and the HALO trace-loop spike (P20); the per-component metrics are candidate fields for the HALO six-tool analyzer surface. Roll-up: [`routing-and-optimization-index.md`](../active/routing-and-optimization-index.md) P24. Source: intake-607 `deep_dive` in `research/intake_index.yaml`.
+
+## Post-result conditional workflow + mitigation (HLE-1/2/3 — metric-validity gate, bulk-inference J9 lane)
+
+HLE-1/HLE-2 are non-inference code (compute metrics + register oracle-adequacy into the shared schema); HLE-3 (fixed-model harness-isolating lane) + the observe-only run land as **J9**. **2026-05-27 status:** `EvalResult`/journal fields landed in epyc-orchestrator `931e43c`, and rule-based HLE-1 metrics + HLE-2 oracle defaults landed in `9222a19`. Remaining work is the observe-only J9 run and analysis. **Metric-validity gate before any metric is allowed to influence decisions:** run each metric in observe-only mode and check it separates accepted-vs-rejected configs, predicts future regressions, and has missingness ≤20%.
+- ✅ metric shows signal → eligible for HLE-4 promotion (Pareto co-objective/guardrail in autopilot).
+- ❌ no signal / high missingness / low-confidence-for-most-trials → keep it a **dashboard diagnostic only**; never a hard gate.
+
+Mitigation: don't replace one noisy scalar with five noisy scalars — every HLE-1 score carries evidence-event-ids + confidence; shortcut detection (web-search leakage, answer-key memorization, exact-match artifacts) lives in oracle-adequacy as first-class blind spots, not prose. Operator decision tree mirrored in [`bulk-inference-campaign.md`](../active/bulk-inference-campaign.md) Package J.
+
+## Research Intake Update — 2026-05-26
+
+### New Related Research
+- **[intake-609] "FastMCP — Pythonic framework for building MCP servers and clients"** (`github.com/prefecthq/fastmcp`, Apache-2.0, v3.3.1)
+  - Relevance: the curated-context MCP server pattern referenced alongside intake-414 ("15+ tool MCP server" for structural-map curation) and the Phase 1 "MCP tool ecosystem → synthesized verifiable tasks" thread (line 223) both presuppose an MCP-server scaffold. FastMCP is the framework.
+  - 2026-05-26 update: standalone `fastmcp>=3` is now pinned in `epyc-orchestrator/pyproject.toml` and `src/mcp_server.py` runs on it (migration verified, 40 MCP tests pass). The framework choice is settled and v3-specific features (server composition, `FastMCP.from_fastapi`/`from_openapi`, around-style middleware) are now available without a further dep change. **No outstanding HLE work is unblocked** — HLE-1/HLE-2/HLE-3 are trace-schema and eval-methodology work, not MCP-tool work; the intake-605 "curate over auto-search" pattern was already verdict `adopt_patterns` (proprietary GUI, no component) so there is nothing here to build.
+  - When relevant: if HLE-1's "per-component harness metrics" ever needs to capture MCP-tool-call evidence (`@on_call_tool` middleware emitting evidence-event-ids), the precedent is [`tool-output-compression.md`](../active/tool-output-compression.md) Phase 4 (P4b). Until then, this entry is reference-only.
+
+## Research Intake Update — 2026-05-27
+
+### New Related Research — explicit "do not lift" record
+- **[intake-625] "Understand-Anything: multi-agent Claude Code plugin"** (`github.com/Lum1104/Understand-Anything`, MIT) — verdict: **worth_investigating** (patterns only, gated)
+  - Why this is here: UA orchestrates a 7-phase pipeline through **9 specialized agents** (project-scanner, file-analyzer, architecture-analyzer, domain-analyzer, tour-builder, graph-reviewer, assemble-reviewer, knowledge-graph-guide, article-analyzer). On the surface this is a candidate pattern for harness decomposition — exactly the kind of "split monolithic analysis into specialized agents" shape future harness searches will surface.
+  - **Do NOT lift the decomposition as a pattern.** Deep-dive at `research/deep-dives/2026-05-27-understand-anything-vs-gitnexus.md` §3 found no published ablation comparing 1-agent vs 9-agent quality. The decomposition reads as natural-LLM-style framing of orthogonal concerns (analysis vs review vs guidance), not a measured win. The README claims "5 agents" while the repo ships 9 — even the project's own count of its agents is unstable.
+  - **What IS worth lifting** (handled in [`internal-kb-rag.md`](../active/internal-kb-rag.md), not here): the deterministic phase components — `extract-structure.mjs` (Tree-sitter skeleton), `tour-builder.md` Phase-1 topology script (BFS-from-entry-point), and `domain-analyzer.md` 3-level schema. The decomposition is **not** on that list.
+  - When the meta-harness search hits UA again (it will — 39 127 ★, viral GitHub Trending presence in 2026 Q2): the answer is "evaluated 2026-05-27, decomposition not adopted, see intake-625 deep_dive". Forestall re-discovery.
+
+## Research Intake Update — 2026-05-27 (text-space skill-optimizer cohort)
+
+### New Related Research
+- **[intake-626] "SkillOpt: Executive Strategy for Self-Evolving Agent Skills"** (arxiv:2605.23904, Microsoft Research Asia, MIT — `github.com/microsoft/SkillOpt`) — verdict: **new_opportunity**, relevance **high**
+  - **Relevance to this handoff**: SkillOpt is the closest published method to where PromptForge wants to go. It treats a single **skill document** as the *external state of a frozen agent* and trains it like a weight-space optimizer — exactly the no-fine-tune, optimize-the-text constraint this stack operates under (CPU inference, frozen served model). Tested on the **Claude Code harness** and on **Qwen3.6-35B** (our frontdoor model) plus GPT-5.5/Codex — directly comparable to our surfaces.
+  - **Key technique**: every edit is a *bounded add/delete/replace* on the skill doc, **accepted only when it strictly improves a held-out SELECTION-split score** (ties rejected; default 2:1:7 train/sel/test). Stabilized by (a) a **textual learning-rate budget** that bounds the EDIT COUNT per step (L_t default 4, cosine-decay to floor 2 — *not* tokens), (b) a **rejected-edit buffer**, (c) an **epoch-wise slow/meta update**. The optimizer is a **separate strong model** (GPT-5.5 in main runs) from the frozen target; zero added inference-time calls at deployment; deliverable is a portable `best_skill.md` (repo generates it, does not ship pre-trained ones).
+  - **Reported results**: best-or-tied on all **52** (model × benchmark × harness) cells, and beats a per-cell **best-of-six oracle by +5.4**. On GPT-5.5: **+23.5** (direct chat) / **+24.8** (Codex loop) / **+19.1** (Claude Code) over no-skill. **Verified six benchmarks**: SearchQA, SpreadsheetBench, OfficeQA, DocVQA, LiveMathematicianBench, ALFWorld. **Verified seven models** include **Qwen3.6-35B-A3B** (= our production frontdoor `qwen36_q8_0`) and GPT-5.5. **Scope (pinned 2026-05-27)**: our open-weight frontdoor was run **direct-chat only (+9.1 avg)** — the Codex/Claude Code agentic-harness cells are GPT-5.5-only, so the *agentic-harness* skill benefit is unproven for an open-weight model. Per-cell direct-chat deltas: SearchQA +7.6 / SpreadsheetBench +9.3 / OfficeQA +1.2 / DocVQA +3.8 / LiveMath +10.4 / ALFWorld +22.4 (single-pass HTML extraction; scope high-confidence, exact cells medium).
+  - **Ablation (the load-bearing finding — Table 3)**: removing the **epoch-wise slow/meta update** costs **−22.5pts** on SpreadsheetBench — by far the largest. Rejected-edit buffer is mid (~−4.6). **Textual LR budget is the LEAST critical** (~−2). This reprioritizes what to lift.
+  - **Delta vs current PromptForge (CORRECTED after codebase deep-read 2026-05-27)**: PromptForge ALREADY has a baseline-comparison accept gate — `apply_mutation_isolated()` runs the mutation in an isolated worktree and `ctx.accept()` only fires `if result.quality > baseline`, else auto-revert; plus `safety_gate.py` (eval-trust boundary) and `mutation_ledger.py` (conflict-aware acceptance of *accepted* mutations). So "add a validation gate" is largely DONE. The genuinely missing, highest-value pieces, in priority order:
+    1. **Epoch-wise slow/meta update** (SkillOpt's load-bearing mechanism) — PromptForge has no epoch / cross-epoch consolidation concept. This is the real gap.
+    2. **A distinct held-out selection split** with strict-improvement-ties-rejected — verify `eval_tower` is not scoring acceptance on the same set it reports, to avoid overfitting (SkillOpt's 2:1:7 discipline).
+    3. **Rejected-edit buffer** — `mutation_ledger.py` today records only ACCEPTED mutations; extend it to log rejected edits + their score drops so the optimizer stops re-proposing dead ends (mid value).
+    - The **textual LR budget is least critical** per ablation — deprioritize. And PromptForge already uses Claude CLI as a **separate strong optimizer** over the Qwen-served orchestrator, matching SkillOpt's optimizer≠target design — so the "target-matched optimizer recovers only 56–74%" caveat does NOT bite us.
+  - **Caveats**: gains headlined on GPT-5.5 (frontier); Qwen3.6-35B-A3B per-cell deltas exist in the 52-cell sweep but are not separately headlined — verify before projecting. Author-stated limits: assumes reliable automatic feedback (verifiers/exact-match), optimizes one doc not a library, can overfit domain heuristics. No independent replication (paper 5 days old).
+
+### Cohort (SkillOpt baselines + adjacent, indexed/corrected via deep-read)
+- **[intake-630] EvoSkill** (arxiv:2603.02766, Alzubi et al.) — **the actual "EvoSkill" baseline SkillOpt cites** (initial intake mis-assigned this to CoEvoSkills). Pareto-frontier skill selection on a frozen model (GEPA-adjacent). OfficeQA +7.3%, SealQA +12.1%. Does NOT target Claude Code/Codex.
+- **[intake-627] Trace2Skill** (arxiv:2603.25158) — 128-way parallel-fleet trajectory analysis → LLM-merged skill directory. The **+57.65pp Qwen3.5-35B→122B WikiTQ** figure is an explicit *"up to"* best-case OOD peak (avg transfer ~+18pp); the 122B target = our architect_general but the 35B author is a 3.5-gen model we don't run. Parallel-analyst pattern reusable for autopilot fan-out; ~20× faster than sequential editing.
+- **[intake-628] CoEvoSkills** (arxiv:2604.01687, Philip S. Yu et al.) — **NOT a SkillOpt baseline** (distinct co-evolutionary paper). Skill Generator + co-evolving **Surrogate Verifier** that scores via a self-authored assertion suite without ground-truth content; **ablation-proven load-bearing (−30pp without it)**. Directly relevant to eval-tower's leak-free scoring. Uses SkillsBench (intake-096) as its eval suite.
+- **[intake-629] TextGrad** (arxiv:2406.07496, Stanford) — foundational textual-gradient baseline; now indexed. Reference anchor, not a build target.
+- **[intake-096] SkillsBench** (arxiv:2602.12670, Li et al.) — the eval substrate for this whole line; **methodology already adopted 2026-03-03** as our `skill_transfer` suite + `skill_transfer_regression.py` (see [completed/07-skillsbench-eval-suite.md](../completed/07-skillsbench-eval-suite.md)). **Decision-critical v3 finding (new 2026-05-27): self-generated skills are net-NEGATIVE on average (−1.3pp vs no-skill); curated skills can also regress specific tasks (16/84 negative).** This is the strongest external evidence that *naive self-authored procedural knowledge does not help* — i.e. exactly why a disciplined, validation-gated, meta-updated optimizer (SkillOpt) is required rather than letting PromptForge free-generate. Caveat: proprietary harnesses only (Claude Code / Gemini CLI / Codex CLI), no open-weight — methodology transfers, native suite does not run as-is.
+
+### Recommended next action (REVISED, no code change yet)
+When the meta-harness Tier-1/Tier-2 live-validation (AR-3 autopilot) run lands, the highest-value SkillOpt lift is the **epoch-wise slow/meta update** (its ablation-proven load-bearing mechanism), NOT the validation gate (PromptForge already has one) and NOT the LR budget (least critical). Secondary: confirm `eval_tower` uses a distinct held-out selection split for acceptance; extend `mutation_ledger.py` to a rejected-edit buffer. Reference impl `github.com/microsoft/SkillOpt` is MIT (`scripts/train.py`) — lift the epoch/meta-update loop, do not re-derive.
+
+**Cross-cutting prerequisite (eval side)**: this recommendation is only auditable once eval-tower can measure *paired, per-suite, negative-delta-guarded* skill efficacy — tracked as **EV-10a** in [eval-tower-verification.md](../active/eval-tower-verification.md) / [research-evaluation-index.md](../active/research-evaluation-index.md) P8. The SkillsBench finding (self-generated = −1.3pp; 16/84 curated regress) means an aggregate improvement can hide a per-suite regression; EV-10a is the instrument that catches it. For leak-constrained scoring, CoEvoSkills' (intake-628) surrogate-verifier pattern is EV-10b.

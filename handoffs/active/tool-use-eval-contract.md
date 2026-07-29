@@ -1,0 +1,366 @@
+# Tool-Use Eval Contract — make autopilot trials actually exercise tools
+
+**Latest verification (2026-07-05T19:45Z)**: `tool_use_activation=ready`.
+AutoPilot is live as PID `2935890` under the Fable launcher with
+`AUTOPILOT_TOOL_SENTINELS=1`, `AUTOPILOT_PLANNER_HINTS=1`,
+`AUTOPILOT_SEQ_VERDICT=1`, W6 audit flags, planner timeout `600`, stepping
+stones, `AUTOPILOT_PLANNER_PRIMARY=local_chat`, Codex critique, and
+`--max-trials 2000`. The API was reloaded after the contention-freshness fix
+and remains healthy; sampled workers previously reported
+`AUTOPILOT_TOOL_SENTINELS=1` plus `ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT=1`.
+Gate-3 hard telemetry passed before the restart, but
+the soft web-research probe exposed a prompt-shape bug in the forced-REPL
+sentinels: the prompts pinned `force_mode: repl` while asking for plain text /
+no code. Orchestrator `8be68732` fixes that contract by requiring executable
+Python with `TOOL("get_eval_secret", name=...)` followed by `FINAL(secret)`,
+plus a tool-aware comment-only nudge. Remaining work is to journal nonzero
+`total_tool_calls` under the repaired prompt contract and evaluate usefulness;
+it is not lane activation.
+
+**Live smoke update (2026-07-06T18:21Z)**: the API env is still correct for
+tool telemetry on PID `981677` (`AUTOPILOT_TOOL_SENTINELS=1`,
+`ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT=1`), but a five-way parallel Gate-3 smoke
+run (`AUTOPILOT_GATE3_PARALLELISM=5`) failed hard in the model/runtime path:
+all five sentinels returned the same repeated no-progress nudge / comment-only
+REPL output, `get_eval_secret` counted `0`, the no-tool isolation request still
+passed, and the soft `web_research` probe bucketed as `INFRA_FAIL` for the
+same reason. That means activation remains env-ready, but the live local REPL
+path is still not producing executable tool code on demand. The surface that
+would need an implementation change (`EvalTower._load_tool_sentinels` /
+tool-use prompt plumbing) is HIGH-risk, so this run intentionally stopped at
+documentation rather than editing code.
+
+**Parallel batching investigation (2026-07-05T17:36Z)**: read-only sidecar
+checked whether independent tool calls should be executed together and batched
+back into the next model context. Finding: this is already partially true
+inside a single structured REPL response. OpenAI-compatible request schemas now
+carry `tools`/`tool_choice` and tool-result history, while the chat loop remains
+turn-serial; however `REPLEnvironment._execute_structured()` detects multiple
+structured calls and routes read-only independent batches through
+`execute_parallel_calls()`. Telemetry already exposes `tools_called`,
+`tool_timings`, `tool_chains`, and `parallel_tools_used`. No active handoff
+specifically owns "parallel independent tool-call batching"; this handoff is
+the right owner. Current evidence says batching is **not yet the bottleneck**:
+recent AutoPilot windows still show near-zero live `total_tool_calls`, so the
+next action is measurement, not a new executor. Before editing HIGH/CRITICAL
+paths, measure how often requests have `len(tools_called) >= 2`, whether those
+calls are read-only, and whether `parallel_tools_used` is nonzero. Only if that
+shows material latency should implementation stay inside
+`REPLEnvironment.execute` / `parallel_dispatch.py`, preserving current OpenAI
+response semantics (`message.tool_calls` are not emitted for internally
+executed tools).
+
+**Parallel batching telemetry update (2026-07-06)**: `epyc-orchestrator`
+`64db8a12` extends `scripts/analysis/mine_repl_patterns.py` so future runs
+report `len(tools_called) >= 2`, explicit read-only chain coverage from
+`orchestration/tool_registry.yaml`, `parallel_tools_used=True`, and ranked tool
+chains from both diagnostics `tool_chains` and AutoPilot bigrams. Validation
+passed with `py_compile`, Ruff, and `uv run pytest -q
+tests/unit/test_mine_repl_patterns.py`. A current diagnostics-only run found
+`3187` diagnostic rows, `807` REPL rows, `117` REPL-with-tools rows, `30`
+multi-tool rows (`3.7%` of REPL), `0` explicit read-only multi-tool rows, and
+`0` `parallel_tools_used=True` rows. Do not treat the regenerated markdown
+report as decision-grade yet because the current `autopilot.log` has rotated and
+produced `0` parseable historical REPL sessions; the historical report was left
+unchanged. Follow-up `epyc-orchestrator` `87e957ba` adds explicit
+`side_effects: ["read_only"]` annotations for safe lookup/data/manifest/system
+read and pure native compute tools, while deliberately leaving eval-style Python
+and NumPy expression evaluators plus embedding/classification tools unannotated.
+This raises the registry-backed analyzer coverage without expanding the
+"read-only" contract to model-calling or potentially side-effectful eval
+surfaces.
+
+**Planner-hint refresh (2026-07-06)**: `epyc-orchestrator` now seeds `parallel-read-only-tool-batching` into the live planner StrategyStore hints. The hint does not change executor semantics; it just makes the existing parallel path easier for the drafter to exploit when a turn needs several independent read-only facts.
+
+**Higher-tier exploration hint (2026-07-06)**: `epyc-orchestrator` now also seeds `t3-hard-workflow-exploration` into the live planner StrategyStore hints. It nudges plateaued runs toward replayable `deep_eval tier 3` / hard-workflow / tool-use-heavy probes instead of repeated local T1 exploitation when W8 is not asking for promotion evidence.
+
+Parallel batching task state:
+- [x] Add analyzer telemetry for multi-tool, explicit read-only, and
+  `parallel_tools_used` coverage (`epyc-orchestrator` `64db8a12`). ✅ 2026-07-06
+- [x] Persist `tool_chains` from live REPL responses into
+  `seeding_diagnostics.jsonl` so the analyzer can reconstruct observed chain
+  structure from future runs. ✅ 2026-07-06
+- [x] Expand/read-through `tool_registry.yaml` side-effect annotations before
+  using read-only chain coverage as a decision gate; `python_eval`,
+  NumPy-backed eval-style math, and embedding/classification tools remain
+  unannotated by design (`epyc-orchestrator` `87e957ba`). ✅ 2026-07-06
+- [x] Seed a planner-facing hint for independent read-only tool batching so
+  the existing parallel-dispatch path is easier for the drafter to exploit
+  when a turn needs several unrelated facts. ✅ 2026-07-06
+- [x] Seed a planner-facing hint for T3 hard-workflow exploration so plateaued
+  runs can shift toward replayable expert/tool-use probes instead of T1-only
+  churn. ✅ 2026-07-06
+- [x] If future full-log runs show material independent read-only chains with
+  serial execution, scope implementation inside `REPLEnvironment.execute` /
+  `parallel_dispatch.py` without changing OpenAI response `message.tool_calls`
+  semantics. ✅ 2026-07-17 (B4) — **gate RESOLVED: NO-BUILD.** Ran the full-log
+  measurement; the condition is **NOT met** (see "Tool-Use Chain Analysis —
+  2026-07-17 (B4)" below): no material *independent* read-only chains — the only
+  multi-tool population is 30 identical `web_search×3` rows (3.7% of REPL, a
+  synthetic 2-per-suite pattern), 0 parallelized, and independence is unprovable
+  from this log. Implementation **NOT scoped**; re-open only on instrumented
+  future runs (persisted `tool_chains` + a per-call dependency flag) that show
+  material independent chains the existing `execute_parallel_calls()` path fails
+  to capture.
+
+## Tool-Use Chain Analysis — 2026-07-17 (B4): full-log run → NO-BUILD verdict
+
+**Method (read-only, no inference, no analyzer code change):** ran the existing
+`scripts/analysis/mine_repl_patterns.py` (`64db8a12` + `87e957ba` registry
+annotations) over the **full 3187-record** `logs/seeding_diagnostics.jsonl`,
+report output redirected off-repo so the historical `docs/repl_pattern_analysis.md`
+was **not** clobbered. Analyzer already emits every chain stat needed
+(`repl_multi_tools`, `repl_multi_tools_read_only`,
+`repl_multi_tools_with_parallel`, `tool_chain_counts`) — **no additive tweak was
+required**; `tests/unit/test_mine_repl_patterns.py` remains green (2 passed,
+untouched).
+
+**Quantification:**
+- 3187 diagnostic rows · **807 REPL** rows · **117 REPL+tools** (14.5%) · **690
+  REPL no-tools** (85.5%).
+- **30 multi-tool REPL rows** (`len(tools_called) >= 2`) = **3.7% of REPL**.
+- **30/30 read-only** (100% of multi-tool rows are all-read-only tools — up from
+  the 2026-07-06 run's `0`, purely because the `87e957ba` `side_effects:
+  ["read_only"]` registry annotations landed after that run; same 30 rows).
+- **0/30 parallelized** (`parallel_tools_used=True` on none).
+- **0/30 carry a persisted `tool_chains` structure** (that persistence postdates
+  this log → chain candidates come back empty).
+- **All 30 are the identical shape `['web_search','web_search','web_search']`**,
+  distributed **exactly 2 per suite across 15 suites** — a synthetic/seeded
+  signature, not organic model tool-use. Only tool present across the whole
+  multi-tool population is `web_search` (90 calls). Pass rate 5/30.
+- Latency: multi-tool mean 129s / median 180s vs no-tool mean 85s / median 57s —
+  the delta is `web_search` **network** latency, not REPL turn overhead.
+
+**Build-or-not verdict: NO-BUILD** a new parallel-batching REPL executor. Rationale:
+1. **Volume is negligible** — 30/807 REPL rows (3.7%), and REPL is itself a subset
+   of trials; the entire multi-tool population is one synthetic `web_search×3`
+   pattern.
+2. **The executor already exists and is unused** — `REPLEnvironment._execute_structured()`
+   already routes read-only independent batches through `execute_parallel_calls()`
+   (see 2026-07-05 investigation above). 0/30 used it → the gap is the model
+   **emitting** batchable calls (serial across turns instead of one structured
+   response), which the already-seeded `parallel-read-only-tool-batching` planner
+   hint targets — **not a missing executor**.
+3. **Independence is unprovable from this log** — no dependency flag, no argument
+   capture, no `tool_chains` structure (instrumentation gaps #3/#5). `web_search×3`
+   is as plausibly a *dependent* refine-loop (search → refine query → search) as an
+   independent fan-out; a build cannot be gated on unverified independence.
+4. **The one case where batching would help (parallel network-bound `web_search`)
+   is already covered** by the existing path; the payoff is realized only if the
+   model emits the calls together, i.e. a planner/emission concern, not an executor
+   concern.
+5. **Data is stale/thin** — historical log; `autopilot.log` rotated to 0 parseable
+   REPL sessions; decision-grade chain evidence needs the future-run instrumentation
+   (persisted `tool_chains` + per-call dependency flag) already scoped, not a new
+   executor.
+
+**Re-open trigger:** instrumented future runs showing a *material* count of
+*independent* read-only chains (dependency-flagged) that the model emits serially
+AND that `execute_parallel_calls()` fails to batch. Until then, keep the existing
+parallel path + the seeded planner hint; do not build. This also confirms the
+tool-output-compression P4e telemetry starvation is upstream (near-zero live
+`total_tool_calls`), not a batching-executor gap.
+
+**Prior verification (2026-07-04T10:24Z)**: the stale "StrategyStore only
+affects startup/action handlers" diagnosis is closed. `epyc-orchestrator`
+`1f8b1e4e` pins a full-controller-prompt regression showing a newly written
+StrategyStore row appears in the next formatted planner prompt when
+`AUTOPILOT_PLANNER_HINTS=1`; focused validation passed
+(`6 passed`). The live daemon PID `3220621` has `AUTOPILOT_PLANNER_HINTS=1`
+and `AUTOPILOT_TOOL_SENTINELS=1`, and the Fable gate artifact
+`fable5_gate_report_20260704T102439Z` reports `tool_use_activation=ready` with
+no activation gaps. Latest eval telemetry has `total_tool_calls=0`, but the
+recent 10-row tool window has `4` nonzero rows / `26` calls, so activation is
+proven and the remaining work is behavioral evidence collection plus downstream
+scoring/usefulness analysis, not planner-hint visibility or lane activation.
+
+**Operator guardrail seeded (2026-07-04T10:47Z)**: the live daemon's last
+invalid planner draft tried to treat a zero-tool-call eval as a
+`src/tool_policy.py` code-mutation bug. That is the wrong lever now that
+tool-use activation is ready. Added StrategyStore row
+`opseed-green-tool-use-no-tool-policy-code-mutation-20260704` with
+`negative_surface=src/tool_policy.py`, `source_trial_id=1117`, and
+`bind_identifiers=[tool_use_sentinel_lane, tools, repl, react_mode,
+code_mutation_guardrail]`. Direct prompt rendering verified that the row appears
+second in `_build_planner_strategy_hints()` under the broader v6 tool-activation
+latency hypothesis, so it should steer the next planner turn without restart.
+
+**Latest status (2026-07-04T03:27Z; superseded by later verification above)**: StrategyStore planner hints are confirmed live-refreshing into each controller prompt when `AUTOPILOT_PLANNER_HINTS=1`: `_refresh_planner_convention_bindings()` and `_build_planner_strategy_hints()` run inside the planner-turn path immediately before `plan_with_providers()`, and the persistent-store regression proves a long-lived planner handle sees external hint writes without restart. The first boundary fix (`5a18feb2`) scoped tool-related rows as `scope=orchestrator_eval_tools_not_planner_tools`, but the post-X-MAS relaunch still fail-closed once at trial `1109` when the planner attempted disallowed planner-side `Edit`; no action dispatched. `epyc-orchestrator` `19f276df` broadens the controller prompt boundary: the planner process is read-only, may inspect only with `Read`/`Grep`/`Glob`, and must return an AutoPilot action for any mutation or execution instead of using `Bash`, `Edit`, `MultiEdit`, `Write`, `NotebookEdit`, `apply_patch`, or equivalent planner-side tools. Validation: focused planner StrategyStore/boundary tests (`5 passed`), controller disallowed-tool regression (`1 passed`), Ruff, and `git diff --check`; GitNexus is current at `19f276df`. The current daemon at that checkpoint was PID `3220621` with `AUTOPILOT_TOOL_SENTINELS=1`, `AUTOPILOT_PLANNER_HINTS=1`, W4/W6 env, planner timeout `600`, stepping stones, and `--max-trials 2000`.
+
+**Prior status snapshot (superseded by the latest line above)**: the T1 tool-use sentinel lane is built and env-gated, the child/sub-LM schema contract is covered for both batched and single-delegate REPL paths, and the Phase 2 native OpenAI tools seam is partially shipped. Orchestrator commits `9d7b3c31`, `fcf43857`, and `6c333cd7` add native `tools`/`tool_choice` request plumbing and telemetry semantics; `4b9e1fd0`, `f83d9c31`, `9b7a9ebe`, and `a8030dc9` close the StrategyStore planner-prompt/live-refresh gap. Verified on 2026-07-04 against the live `1419`-row store: `opseed-green-v6-tool-activation-latency` and `opseed-green-tool-use-sentinel-lane` retrieve first for the tool-use query and render first in `_build_planner_strategy_hints()`. The old "startup-only StrategyStore" diagnosis and old "reload with tool sentinels" remaining step are superseded; the remaining live item is now only to let a sentinel-enabled eval journal nonzero `total_tool_calls`.
+
+**Historical activation update (2026-07-04T02:35Z)**: the env-gated lane was activated. AutoPilot was paused and the planner-only process group was terminated with `in_flight_trial=None`; the orchestrator API was reloaded with `AUTOPILOT_TOOL_SENTINELS=1`; Gate-3 passed hard telemetry (`get_eval_secret=7`, timing rows `7/7`, no-tool isolation clean); and AutoPilot was restarted under `setsid` with `AUTOPILOT_TOOL_SENTINELS=1` plus the existing W4/W6/planner env. Evidence artifacts: `epyc-orchestrator/orchestration/reports/gate3_tool_telemetry_20260704T023553Z.{json,md}` and `fable5_gate_report_20260704T023525Z.{json,md}`. Remaining tool-use item: wait for the first sentinel-enabled AutoPilot eval to journal nonzero `total_tool_calls`; until then Fable5 correctly retains the advisory gap `latest_eval_total_tool_calls_zero` from pre-activation trial `1107`.
+
+> ### 2026-06-09 — gate live-fired @711; claude-empty ROOT-CAUSED (300s timeout) + fixed
+> The autopilot did NOT reach `--max-trials 1000`: it **halted at trial 711 (2026-06-07 17:26) on `critic_unavailable`** — the degraded-pause gate's FIRST live trigger (claude draft empty → degraded → non-observational `structural_experiment` → paused, not dispatched). So the gate is now **live-verified**. It's been paused ~2 days → dashboard correctly shows no new data (journal_max=710, `stale_state_warning=None`, frontier [256,610]) — NOT a dashboard bug. **claude-empty root cause (option 2):** it's a **300s TIMEOUT**, not a session/account issue — `2026-06-07 17:24:59 ERROR: Controller timed out after 300s` (and 16:31 for 708). The claude planner draft runs a ~80KB prompt (`prompt_chars=80763`) WITH tool access (`--allowedTools Read,Grep,Glob`), taking 60–228s normally and intermittently >300s → killed → "empty" → degraded. `plan_with_providers` was called with no `timeout` → hard 300s default, no env override. **Fix `c425afc`:** `DEFAULT_PLANNER_TIMEOUT=int(os.environ.get("AUTOPILOT_PLANNER_TIMEOUT","600"))` + signature default (planner_coordinator.py — clean file; the gate's autopilot.py caller stays UNCOMMITTED, entangled). Failed claude calls return before the planner_archive write, so they're only in the log/tap (timeout×2 06-07, stale-session×4 earlier, rc=143×3, CLI-not-found×1). **To resume:** clear the pause (`paused=false`, `_dispatch_deficiency=null`) + restart (loads 600s timeout → claude drafts complete → no degrade → runs past 711). Pending operator go.
+
+> ### 2026-06-07 (cont.) — recovery SUCCEEDED; autopilot healthy at trial 710
+> Resumed on operator mark. 708 (degraded, codex draft, disable approval_gates) ran: **tool-use fully green** — `tool_use` quality **3.0 (all 5 pass)**, `get_eval_secret` counted **8** in journaled T1, `tool_helpfulness` NaN, isolation clean (atomic-secret fix → stable secret → answers match). 708 `mad_noise` is a legitimate within-noise classification (q1.814), NOT a masked failure. Stopped before 709 ran on old code, restarted with the **degraded-pause gate** deployed. **709: claude draft RECOVERED** (the empty-response was intermittent) → codex critic APPROVED a fresh `structural_experiment` (disable ure_uncertainty_shadow_log); `degraded=false` → the gate correctly did NOT fire (only pauses on `degraded and critique is None`). Planner now mixes fresh critic-approved structural experiments with occasional seed_batch drafts the critic REJECTS — no reject-loop accumulation (`consecutive_rejected_drafts=0`). At trial 710, `paused=false`, singleton, flagged. **Degraded-pause gate is deployed (working tree) + unit-tested (18 planner tests) but NOT yet live-triggered** (709 used claude, not degraded) — it will pause `critic_unavailable` on the next genuinely-degraded trial. **Open:** (a) gate patch UNCOMMITTED — `autopilot.py` entangled with other agents' uncommitted hunks, so I did not `git add` it (commit needs careful staging by the owning agent); (b) claude draft is INTERMITTENTLY empty (option 2) — flaky, not fully broken; the gate makes degraded trials safe regardless.
+
+> ### 2026-06-07 — critic_reject_loop @708 recovery (operator-directed; resume on mark)
+> Root cause (operator): the **resumed Claude planner session** carried a stale "every non-seed surface is dead / loop-keeper" narrative (`planner_providers.py:80` resumes same session via `session_id`) → kept drafting `seed_batch n=12`; binding critic rejected 4× → halt. Blacklist shows the broader fixation (seed_batch n=3/10/11/13/15/16/18/20/24/28/30 all blacklisted; n=12 was the next uncovered size). Code-level amplifier noted (NOT yet patched): reject-fallback + blacklist-fallback both substitute `seed_batch n=10` (`planner_coordinator.py:466`, `autopilot.py:1942`) — to be patched ONLY if the first post-recovery decision still loop-keeps.
+> **Recovery prep done (autopilot down throughout):** (1) deployed `9515e61` via orchestrator reload — secret sha unchanged across reload (load-or-create works). (2) reset ONLY halt/session fields in `autopilot_state.json`: `paused=false`, `consecutive_rejected_drafts=0`, `_dispatch_deficiency=null`, `session_id=null` (fresh planner session); KEPT `last_invalid_action`/`last_invalid_reason`/`invalid_signature_counts`; `trial_counter=708` unchanged; backup `archived_backups/autopilot_state.json.pre-halt-reset-*`. (3) appended a SPECIFIC blacklist entry `{seed_batch, n_questions:12}` (did NOT delete negative history; YAML parses, 41 entries); backup saved. State + blacklist edits are runtime recovery (not committed); `9515e61` is the durable code commit.
+> **REMAINING:** on operator mark — resume autopilot (`--max-trials 1000`, flag) and WATCH the first planner decision; if it still emits loop-keeper seed logic, STOP and patch the fallback policy so a critic reject with no `revised_action` pauses/skips instead of running the seed fallback.
+
+> ### 2026-06-07 — atomic load-or-create eval secret (`9515e61`) + AutoPilot halt (critic_reject_loop @708)
+> **(1) Secret-stability fix (committed, not deployed):** `eval_secret.generate_and_persist_secrets()` re-minted + overwrote `/dev/shm` on every call (runs per uvicorn worker at registration), so each orchestrator reload changed the secret mid-trial → `tool_use` scored 0 even when the tool was called (live trial 652). Fixed as **atomic load-or-create** (`9515e61`): fast-path load of an existing valid file (stable across reloads); on miss, flock → re-check under lock → temp + chmod 0600 + os.replace (multi-worker-safe). Tests: idempotency-across-reloads + 8-process convergence race (all converge on one set). Compiles, 7 sentinel tests pass. **Deploy = orchestrator reload** (the new code LOADS the existing `/dev/shm` so the deploy reload itself won't change the secret). Orchestrator has been stable since 06-05 22:52, so the re-mint bug is dormant right now; recent `tool_use` flakiness (0.0–1.8 with a stable secret, trials 699–707) is mostly MODEL behavior (always calls the tool — `get_eval_secret`=7–8 — but doesn't always return the exact value).
+> **(2) AutoPilot HALTED — `critic_reject_loop` (DESIGNED halt, operator review):** at trial 708 (2026-06-06 10:36) the binding critic rejected **4 consecutive** planner drafts of `seed_batch n=12` (`"not fresh: trial #699 already ran … repeats a recent failure pattern"`), tripping `consecutive_rejected_drafts=4` → `paused=True`, daemon down. This is the new binding-critic safety mechanism working as intended (stuck planner the critic keeps overriding). Per RESTART RUNBOOK: do NOT auto-restart through it — needs operator decision (e.g., clear/blacklist the stale `seed_batch n=12` pattern, or adjust the planner so it stops fixating on a recently-failed action, then reset `paused`/`consecutive_rejected_drafts` and resume). Ran 652→708 (~56 trials) fine on the telemetry fix before halting.
+
+> ### 2026-06-05 — tool_use telemetry was T0-gate-only (not journaled); moved to T1/T2 (`1500826`)
+> Live trial 502 (first post-cutover) showed the `tool_use` sentinels EXECUTING in T0 (3/5 PASS — get_eval_secret fired end-to-end) BUT the journaled `eval_details` was the **T1** hybrid eval (`per_suite_quality` = T1 pool suites, no `tool_use`; `total_tool_calls=0`). Root cause: I had wired the sentinels into `eval_t0`, but T0 is a fast-reject GATE whose telemetry is discarded — the trial journals T1 (or T2 for `deep_eval`/progressive). So `get_eval_secret`/`tool_helpfulness` never reached the planner per trial. The two correctness fixes WERE confirmed live on trial 502 (tool_helpfulness=NaN not −0.4; request-local isolation clean — T1 `tool_name_counts={}` despite T0 firing the tool). **Fix (`1500826`):** moved tool_use sentinels into the JOURNALED evals (append to T1 AND T2; removed from T0 to avoid double-run); inert unless the flag is set. Redeployed autopilot-side only (no orchestrator reload — orchestrator PID 4056951 already up with both flags + `/dev/shm` secrets). Restarted at trial 652, `--max-trials 1000`. Verification of journaled `get_eval_secret` count pending trial 652.
+
+> ### Gate-3 deploy result (2026-06-04) — `logs/gate3.run.log` (run 1), `logs/gate3.rerun.log` (run 2)
+> Window: autopilot down (500-run complete) → `reload orchestrator` with the flag (deploys `c4cdc8f`; PID 3008664, both flags verified, `/dev/shm` secrets minted) → gate-3 → HOLD for operator.
+> **Run 2 (after `lsof` fix `d1a0b18`): GATE3_HARD: PASS · WEB_RESEARCH: PASS.**
+> - HARD: env fully resolved (driver + orchestrator(pid=3008664) both flags PASS via the new `lsof` finder); `get_eval_secret` counted 7 (≥3); all 7 timing rows `success=True` (structured unwrap live-confirmed); no-tool REPL-forced request inherits no tools (request-local isolation live-confirmed).
+> - SOFT: `web_research` PASS (success + 1 result) — confirms the structured-envelope unwrap end-to-end on the live path.
+> - Run 1 had an env WARN (gate's old `ss` PID-finder didn't parse → fixed in `d1a0b18`, `lsof`-first fallback) and `WEB_RESEARCH: INFRA_FAIL` (a 500). **Triage of that 500:** web_research SUCCEEDED (its 500-run body had a fully-populated `web_research_results`), so the structured unwrap / request-local telemetry / `with_timeout` all worked; the 500 was a status-level decision in the **unchanged `/chat` deadline path** on the slow ~47s synthesis — a TIMING/INFRA flake, NOT a regression. Confirmed by run 2 passing. Follow-up (non-blocking): the `/chat` route returning a 500 with a complete body on long web_research synthesis deserves a separate look.
+> **NOT resumed** — autopilot stays down pending explicit operator instruction to start the 700-trial run with `AUTOPILOT_TOOL_SENTINELS=1`.
+
+> ### ⚠️ Review corrections (2026-06-04) — supersede earlier claims below
+> Two claims repeated in this handoff and in progress were **FALSE**; corrected:
+> 1. **"in-memory secrets NOT on disk" — was FALSE.** The secret values were hardcoded in `src/tools/eval_secret.py` AND repeated as `expected:` in `tool_sentinels.yaml`, so a model with repo file/search tools could grep them instead of calling `get_eval_secret` — i.e. "correct ⟹ tool call" was NOT proven. **Fix:** secrets are now minted at RUNTIME (`secrets.token_hex`, in memory), never in source/YAML; persisted only to a tmpfs path (`/dev/shm`, default) OUTSIDE `read_file`'s allowed roots; `eval_tower._load_tool_sentinels` injects the real `expected` from there (YAML holds a non-matching placeholder). **Honest framing:** this is best-effort, not a proof — the AUTHORITATIVE gate signal is the directly-measured `get_eval_secret` call count (now correctly request-local), NOT answer-correctness.
+> 2. **"no shared-log pollution" — was INCOMPLETE.** The F1 fix still fell back to the process-global `ToolRegistry` invocation log when a request made no local call, and counted `len(tool_timings)` from it — so a later NO-TOOL request reported a prior request's tools (reviewer reproduced: r2 with 0 local calls reported `tools_called=['foo'], tools_used=1`). **Fix:** `_invoke_tool` (context.py) now records per-request `SimpleNamespace` invocation objects (name/elapsed_ms/success/chain_id/caller_type/result) into `repl._invoked_tools`; `repl_executor` reads ONLY that — the global log is never read for per-request telemetry. Regression: `tests/unit/test_repl_tool_telemetry_isolation.py`.
+> 3. **(Medium) off-main-thread timeout** — the thread-guard removed the crash but disabled the hard timeout off-thread. Now restored via a futures-bounded wait (`base.py`): the caller still gets `ToolTimeout` on overrun; a stuck thread is orphaned (Python can't force-kill threads). Regression: `test_tools_base.py::test_timeout_decorator_off_main_thread_still_times_out`.
+> 4. **(High, 2nd review round) structured-output broke request-local semantics.** Under `ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT=1` (set by the launcher, `orchestrator_stack.py:1175`) `ToolRegistry.invoke()` RETURNS a `ToolOutput` envelope and converts handler failures to `ToolOutput(ok=False)` **without raising**. My request-local capture recorded the envelope as `result` and "no exception" as `success` → a failed structured tool recorded `success=True`, and a dict-returning tool recorded `result=ToolOutput(...)` instead of the raw dict (breaking `web_research_results`' `isinstance(inv.result, dict)` at `repl_executor.py:767`). **Fix:** `_invoke_tool` now unwraps a `ToolOutput` (lazy isinstance, duck-type fallback) → `success := ok`, `result := output`, matching `ToolInvocation` semantics; on a raised exception it stays `success=False, result=None`. Regressions: `test_repl_tool_telemetry_isolation.py::{test_structured_success_records_raw_output_not_envelope,test_structured_failure_records_success_false}`. (My first-round isolation test passed only because its fake registry returned raw values, not envelopes — the new tests use real `ToolOutput`.)
+>
+> Tests for all four: `test_tool_sentinels.py`, `test_repl_tool_telemetry_isolation.py` (incl. structured-envelope success/failure), `test_tools_base.py`, `test_token_accounting_invariant.py`, `test_chain_audit.py`, the 189-test REPL tool-path suite + F1/F2 surfaces — **all green**. These fixes need redeploy: orchestrator restart (eval_secret/builtin/context/base) + autopilot restart (eval_tower). NOTE: removing the on-disk `expected` is safe for the *live* (old) autopilot — the YAML placeholder never matches, so live tool_use scores INCORRECT (not spuriously correct) until redeploy. (`pyproject.toml`/`uv.lock` dirty in the worktree are NOT mine — another agent.)
+
+## Commit (2026-06-04)
+The code (15 files) is committed as **`c4cdc8f` "Fix tool-use eval telemetry and gate-3 deploy checks"** on branch **`fix/substring-scorer-digit-separators`** (the shared clone was on that branch, NOT main; we did not switch it to avoid disrupting parallel agents on the shared branch/index). Staged by explicit pathspec, verified `git diff --cached --name-only` == the 15 intended files + `--check` clean before commit; excluded all shared-clone churn (`actions.py`, `experiment_journal.py`, `structural_lab.py`, autopilot action tests, runtime YAML/memory, backup dirs, `uv.lock`/`pyproject.toml`). **The 16th file — `autopilot.py`'s `per_suite_tool_helpfulness` planner-surfacing hunk — is already on this branch via `c2033e4` "Fix autopilot invalid-action feedback loop"** (a parallel commit swept the uncommitted hunk). Net: the full change set spans `c4cdc8f` (15 files) + the autopilot.py hunk in `c2033e4`, both on `fix/substring-scorer-digit-separators`. Not pushed; not on main.
+
+## Gate-3 — telemetry-contract deploy gate (`scripts/autopilot/gate3_tool_telemetry.py`)
+Run during the deploy window, AFTER `reload orchestrator` (with `AUTOPILOT_TOOL_SENTINELS=1`; the launcher adds `ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT=1`) and BEFORE resuming autopilot. **Asserts the tool TELEMETRY contract, deliberately separate from model-quality scoring.** Pure assertion helpers are unit-tested (`tests/unit/test_gate3_tool_telemetry.py`, 16 green) so the logic is verified pre-deploy.
+- **HARD (exit 1 on fail):** (a) live env — driver + orchestrator have `AUTOPILOT_TOOL_SENTINELS=1` and orchestrator has `ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT=1` (read from the `:8000` PID's `/proc/environ`; PID-not-found → WARN, not fail); (b) `tool_name_counts["get_eval_secret"] >= 3`; (c) every `get_eval_secret` `tool_timings` row `success is True`; (d) a no-tool request issued AFTER the batch, **forced through the REPL path** (`force_mode="repl"`, which also disables cheap-first), inherits NO tools (`tools_called==[]`, `tools_used==0`) — live request-local isolation. Forcing repl is required: the pollution bug lived in REPL telemetry, so a routing-chosen non-REPL mode could false-pass.
+- **SOFT (never fails the gate; infra-bucketed):** one live `web_research` structured-output probe → `PASS` / `INFRA_FAIL` / `INCONCLUSIVE`. Confirms the live structured-envelope unwrap: when web_research succeeds, its timing row is `success=True` AND `web_research_results` is non-empty (empty-on-success is flagged as possible unwrap regression but bucketed infra). `web_research_results` is **NOT** a hard cutover gate (network/query path not guaranteed stable).
+- Invocation: `AUTOPILOT_TOOL_SENTINELS=1 AUTOPILOT_EVAL_CONCURRENCY=1 .venv/bin/python scripts/autopilot/gate3_tool_telemetry.py` → resume autopilot WITH the flag iff `GATE3_HARD: PASS` (treat `WEB_RESEARCH: INFRA_FAIL/INCONCLUSIVE` as a non-blocking sanity note).
+- Fast functional-smoke option: `AUTOPILOT_GATE3_PARALLELISM=N` fans out only the independent sentinel batch on verified multi-slot/multi-replica stacks; the post-batch no-tool isolation and soft `web_research` probe remain ordered after the batch. Use this to prove tool plumbing faster. Do **not** reuse parallel Gate-3 wall times as latency/throughput evidence.
+- 2026-06-14 live check after `epyc-orchestrator` `fad942c`: `AUTOPILOT_GATE3_PARALLELISM=3 AUTOPILOT_GATE3_REQUEST_TIMEOUT_S=180` passed `GATE3_HARD: PASS   WEB_RESEARCH: PASS` with `get_eval_secret` counted 8, 8/8 successful timing rows, clean isolation, and 5 successful `web_research` results.
+**Created**: 2026-06-03 (from review: "have the autopilot trials been using tools at all?")
+**Priority**: MEDIUM
+**Categories**: evaluation, tool-use, autopilot
+**Related**: [eval-tower-verification.md](eval-tower-verification.md) (T0 sentinel harness this extends)
+
+## Current State (read this first)
+
+- **Root cause (confirmed):** autopilot trials have **never** exercised tool use. Across 362/188/213 journal records `total_tool_calls` is uniformly 0. Two stacked reasons:
+  1. The trial request path (`seeding_orchestrator.py:599 call_orchestrator_forced` → `POST /chat`) **never sends tool schemas**; `ChatRequest` (`src/api/models/requests.py`) and the OpenAI-compat model (`src/api/models/openai.py`) have **no `tools`/`tool_choice` field** — `/v1/chat/completions` flattens messages to text and runs the same REPL machinery. Native structured tool-calling does not exist anywhere in the orchestrator.
+  2. The only thing that increments the counter is a **registered-tool invocation** in the REPL (`repl_executor.py:672` `tool_registry.get_invocation_log()`). The existing "agentic" sentinels (`sentinel_questions.yaml:256+`) **bake the data into the prompt** and score *text that mentions* a tool — so a model satisfies them with one line of plain Python or a text answer and never touches the registry.
+- **`tool_helpfulness` is already the steer signal, not raw count.** `autopilot.py:2040` — *"Steer by THIS, not raw tool_use_rate."* It is a planner **prior, not a Pareto objective**. It is NaN today only because there is no with-tools arm. **No planner change is needed or wanted** for Phase 1.
+- **Decision (user, 2026-06-03):** REPL path first (it's what production uses); native OpenAI tools tracked as a follow-on (Phase 2) because `/v1/chat/completions` claiming compatibility while silently dropping `tools` is a real contract gap. Do **not** make tool use a Pareto objective yet; optimize `tool_helpfulness`, not raw count; revisit a suite-specific objective once clean with/without data exists.
+
+## Phase 1 — REPL CALL(...) contract  ✅ BUILT, ⏸ INERT until cutover
+
+Goal: trials that are **impossible to pass without a real tool call**, exercising the REPL `CALL(...)` path production already uses — with **zero risk to the running autopilot** until a deliberate cutover.
+
+Built (all in `epyc-orchestrator`):
+- `scripts/autopilot/fixtures/tool_eval/{auth_alpha,inventory_beta,config_gamma}.txt` (+`README.md`) — server-side values **not present in any prompt**. Under `/mnt/raid0/llm/` so they fall in `read_file`'s allowed roots (`src/tools/file/read.py:36`). `read_file` is **already registered** in the running orchestrator (`register_all_tools`), so nonzero tool use needs **no orchestrator restart**.
+- `scripts/autopilot/tool_sentinels.yaml` — 4 questions, suite `tool_use`, each pins `force_mode: "repl"`; answers live only in the fixtures (auth code, an inventory sum, a config token, a two-file combine that forces ≥2 calls).
+- `scripts/autopilot/eval_tower.py` — three backward-compatible edits:
+  - `_eval_question` now honors per-question `force_mode`/`force_role` (default `""` → existing questions byte-identical). The `tool_use` suite uses `"repl"` to deterministically engage the REPL path instead of leaving it to the router.
+  - new `_load_tool_sentinels()` — returns `[]` unless `AUTOPILOT_TOOL_SENTINELS=1` **and** the file exists.
+  - `eval_t0` appends those to the T0 batch (`sentinels[:10] + self._load_tool_sentinels()`).
+- `tests/test_tool_sentinels.py` — 5 static (no-inference) guards: un-passability (`expected ∉ prompt`, recoverable from fixture), fixtures exist + inside allowed roots, every question pins `repl`, and the helpfulness-is-a-delta-not-a-count contract. **All 5 pass.**
+
+**Inert proof:** with `AUTOPILOT_TOOL_SENTINELS` unset, `_load_tool_sentinels()` returns `[]`, so the T0 batch is exactly `sentinels[:10]` as before. The running autopilot already imported `eval_tower`, so even the file edits do not affect it until restart.
+
+### Cutover (operator-triggered, at a clean autopilot point)
+1. Pick a moment between trials (don't disrupt mid-run — autopilot restart is an operator call).
+2. `export AUTOPILOT_TOOL_SENTINELS=1` and restart the autopilot via `orchestrator_stack.py`/the autopilot launcher.
+3. **Verification gate (requires one trial = inference; user runs it):** confirm a `tool_use` trial yields `total_tool_calls > 0` and `tool_helpfulness` becomes non-NaN in the journal. If `tools_used` stays 0, check (a) the router/forced mode actually entered `:repl`, and (b) the REPL system prompt advertised `read_file` so the model emitted `CALL(read_file, …)`.
+
+### Known nuance to revisit (not a Phase-1 blocker)
+Global `tool_helpfulness` mixes the always-passes-without-tools suites into the "without" arm. The clean signal is **per-suite** `tool_helpfulness` on `tool_use` — which is exactly the "suite-specific objective" to evaluate once with/without data is in hand.
+
+### Gate Run 1 — 2026-06-03 (isolated; autopilot stopped, then restored)
+Ran base[:10] (no-tool arm) + 4 `tool_use` (with-tool arm) via the real eval path, `AUTOPILOT_TOOL_SENTINELS=1`, concurrency 1, against a **quiesced** orchestrator (autopilot SIGTERM→SIGKILL'd; archive trial 364 / 5 Pareto pts preserved; restarted **without** the flag at trial 365 after the gate). Raw results:
+- `tool_use_read_authcode`: `used=1`, `tools_called=[]`, answer = **raw fixture contents** (`…ZX7Q-4K91-PN36…`) → read_file executed; `correct=False` only because the answer wasn't `<answer>`-wrapped.
+- `tool_use_two_files_combine`: `used=1`, `tools_called=[]`, answer = raw contents of first file → read_file executed, name lost, no combine/format.
+- `tool_use_sum_inventory`: `used=0`, `correct=True`, answer `<answer>5688</answer>` → file read via an **uncounted** path (`io.open`).
+- `tool_use_extract_token`: `/chat` **500 Internal Server Error** (infra; classify by reason).
+- Aggregate: `total_tool_calls=2`, `tool_name_counts={}`, `tool_helpfulness=nan` (`n_with=2 < _MIN_ARM=3`).
+- Gate: `tools_used>0` ✅ · `read_file ∈ tool_name_counts` ❌ · `tool_helpfulness finite` ❌.
+
+**Root findings (verified against source, not inferred):**
+1. **Tool-name telemetry gap (BUG).** Registered `read_file` runs (file contents appear as the answer) yet `tools_called`/`tool_name_counts` is empty — the count increments (`repl._tool_invocations`) but the name from `tool_registry.get_invocation_log()` (`repl_executor.py:672-693`) never reaches `resp["tools_called"]`. Without tool *names*, the gate's read_file check and name-level helpfulness can't work; this is the primary reason autopilot's tool signal is dead.
+2. **Uncounted file-access paths (DESIGN).** `open` is absent from `allowed_builtins` (`repl_environment/types.py:190`), BUT `io` is in `SAFE_IMPORT_MODULES` (`environment.py:287`) → `io.open(path).read()` reads any allowed file with **no counter** (this produced `5688` at `used=0`). Also `_READ_ONLY_REPL_TOOLS` (`peek`/`grep`/`list_dir`/`file_info`) are explicitly non-registry → uncounted. So a read-a-fixture question is file-gated, NOT counted-tool-gated.
+3. **Scoring/format.** Tool answers returned raw dumps, not the value in `<answer>` tags → `exact_match` failed despite a successful read. Switch `tool_use` scoring to `substring` on the expected token (or harden "return ONLY X").
+4. **One 500** on `extract_token` — trace orchestrator log for that request; classify infra vs model.
+
+**Required before a second gate / cutover:**
+- **F1 (bug) — root cause PINNED (evidence-backed):** The REPL advertises tools as plain Python signatures in the system prompt ("You have access to: `def read_file(path)…`", confirmed in `logs/worker-explore-8072.log`) and the namespace binds only `TOOL=_invoke_tool` / `CALL=_call_tool` (`environment.py:467-468`). Every tool invocation funnels through `_invoke_tool` (`context.py:420`), which is the single chokepoint that both increments the counter (`_tool_invocations += 1`, `context.py:433`) AND has `tool_name` in scope — but the name is not captured into anything `repl_executor` reads for `tools_called` when the registry-log path diverges (hence `used≥1`, `called=[]`). **Fix design:** append `tool_name` to a per-REPL `self._invoked_tool_names` list at the `context.py:433` increment site, and in `repl_executor.py` build `tools_called` by merging that list with the registry `get_invocation_log()` names. Single point, dispatch-path-agnostic → captures `read_file`, `get_eval_secret`, fallbacks, everything counted. **F1 is a hard prerequisite for F2:** the un-bypassable tool only yields a usable gate signal if its `_invoke_tool` is also NAMED.
+- **F2 (design fork — needs decision):** make tool use either (a) **un-bypassable** via an eval-only tool returning a server-side secret NOT on disk (so `io.open`/`peek` can't substitute; requires registering a tool + orchestrator restart), or (b) **count the read helpers + io reads** as tool use (broadens telemetry), or (c) **rely on `tool_helpfulness` only** and drop the "specific tool must fire" requirement.
+- **F3:** `tool_use` scoring → `substring`.
+- **F4:** investigate the 500.
+- **F5:** ≥3 reliably-counted tool questions so the with-arm clears `_MIN_ARM=3` and `tool_helpfulness` is finite.
+
+Outcome: the isolated gate did its job — **blocked the cutover before any Pareto contamination**. Autopilot restored to prior config (no flag), running at trial 365.
+
+### Phase 1.5 — F1+F2+F3 BUILT (2026-06-03, inert/env-gated, NO deploy yet)
+All code-only; verified with **0 inference**. New 5 static sentinel tests pass; **173 existing affected tests pass (no regression)**; all edited files `py_compile` clean.
+- **F1 (telemetry fix).** Request-local `self._invoked_tool_names: list[str]` (`environment.py:208`, in required_attrs), appended at the single counter chokepoint `_invoke_tool` (`context.py:433`, where `tool_name` is in scope). `repl_executor.py` now builds `tools_called` from that list, falling back to the registry log only when empty (`tools_called = _local_names or [inv.tool_name for inv in invocation_log]`) → accurate per-request names, no shared-log cross-request pollution, non-regressive. Covers registry-invoke, fallback, and specialized branches alike.
+- **F2 (un-bypassable tool).** `src/tools/eval_secret.py`: `EVAL_SECRETS` (in-memory dict, NOT on disk) + `get_eval_secret(name)`. Registered via `builtin_tools.py::_register_eval_tools` **only when `AUTOPILOT_TOOL_SENTINELS=1`** (verified: absent without flag, present with). Dispatches through the registry → `_invoke_tool` → F1 names it. Invariant: correct answer ⟹ counted CALL (`io.open`/`peek`/`grep`/fixtures can't reach an in-memory value).
+- **F3 (scoring).** `tool_sentinels.yaml` rewritten: 5 `get_eval_secret` questions (≥3 for `_MIN_ARM`), `force_mode: repl`, `scoring_method: substring` (robust to `<answer>` wrapping). Old read_file fixtures (`fixtures/tool_eval/`) deleted.
+- **Tests.** `tests/test_tool_sentinels.py` rewritten to the new invariant: imports `EVAL_SECRETS` (no drift), asserts expected==secret-for-name, expected∉prompt, repl-pinned, substring-scored, helpfulness-is-a-delta.
+
+### Operational window — DONE (2026-06-04, cutover live)
+Executed in order: stopped autopilot at clean boundary (trial 366 journaled, `in_flight: None`, SIGTERM→SIGKILL, 0 work lost) → `orchestrator_stack.py reload orchestrator` **with `AUTOPILOT_TOOL_SENTINELS=1`** (light API-only restart — NOT a 5-model reload; new API PID had the flag; warmup served `OK`) → gate-2 → resumed autopilot at trial 367 **WITH** the flag (PID 2492317, flag verified via /proc).
+
+**Gate-2 result (PASS):** `total_tool_calls=12`, `tool_name_counts={'get_eval_secret': 5, 'web_research': 1}`, `tool_helpfulness=-0.4` (finite), n_with=5/n_without=10.
+- `tools_used>0` ✅ · `get_eval_secret ≥ 3` ✅ (=5) · `tool_helpfulness finite` ✅.
+- **F1 confirmed LIVE:** `tools_called=['get_eval_secret']` now populated (was `[]` in gate-1). The in-memory secrets (`ZX7Q-…`, `TKN-…`, `KD73-…`) were returned only via the counted tool — invariant holds.
+
+### Follow-ups surfaced by gate-2 — ALL FIXED 2026-06-04 (staged; deploy needs restarts)
+1. **Per-suite `tool_helpfulness` — DONE.** Was a composition artifact: with-arm = 5 hard tool Qs (3/5), without-arm = 10 trivial base (10/10) → −0.4, wrong-signed prior. Now computed **within-suite** (`eval_tower.py` `_aggregate`): per-suite `P(correct|tool)−P(correct|no tool)` for suites with both arms ≥`_MIN_ARM`, scalar = mean of those; **NaN when none qualify** (honest "not measurable" instead of a contaminated negative — the current base+tool_use composition yields NaN, not −0.4). New `per_suite_tool_helpfulness: dict` on `EvalResult` (`safety_gate.py`) + surfaced to the planner (`autopilot.py`). Existing `==1.0`/NaN contract preserved (single-suite fixture). Regression test added.
+2a. **`charlie` code-as-answer + ToolOutput repr leak — DONE.** All 5 `tool_sentinels.yaml` prompts now state: FINAL answer = ONLY the exact value as plain text in `<answer></answer>`, no code/quotes/wrapper. (Loader reads YAML fresh per trial → live next trial, no restart.)
+2b. **`web_research` `signal only works in main thread` — FIXED (root-caused).** Not web_research-specific: `src/tools/base.py::with_timeout` (applied to every tool handler at `base.py:132`) used `signal.SIGALRM`, which only works in the main thread; the eval ThreadPoolExecutor + REPL dispatch run tools in worker threads → `ValueError`. Now guarded with `threading.current_thread() is threading.main_thread()`; off the main thread it skips the alarm and relies on the tool's own I/O timeout (httpx) instead of crashing. Regression test (`test_tools_base.py::test_timeout_decorator_in_worker_thread`). The `delta` prompt also now says "do not use web_research".
+
+**Deploy status:** prompts = live next trial; **per-suite helpfulness needs an autopilot restart**; **base.py web_research fix needs an orchestrator API restart** (`reload orchestrator`). Until then the live autopilot still computes the old cross-suite helpfulness (bounded — it's a prior, not Pareto). Tests: **46 passed / 1 skipped** across token-accounting, tools-base, sentinels, seeding-eval; all edited files py_compile clean.
+
+## Phase 2 — native OpenAI tools seam  🚧 PARTIAL CODE SHIPPED 2026-06-28
+
+Contract gap: `/v1/chat/completions` advertised OpenAI compatibility but **silently dropped `tools`/`tool_choice`** and could not accept standard tool-result history.
+
+Shipped in `epyc-orchestrator`:
+- `9d7b3c31` adds `tools` / `tool_choice` to `ChatRequest` and the OpenAI-compat request model; `OpenAIMessage` now accepts `role:"tool"`, assistant `tool_calls`, `tool_call_id`, and null assistant content when tool calls are present.
+- `9d7b3c31` preserves tool history through OpenAI context flattening/compression and maps native function schemas into a deterministic REPL bridge block instructing `CALL("tool_name", arg=value)` execution instead of dropping schemas.
+- `9d7b3c31` extends `call_orchestrator_forced` with optional `tools` / `tool_choice` pass-through. The payload remains legacy-identical unless the caller opts in.
+- `fcf43857` lets EvalTower question rows opt in to those native tool schemas, while ordinary rows omit the native-tool payload.
+- `6c333cd7` resolves response semantics without changing client call flow: `/v1/chat/completions` now annotates `x_orchestrator_metadata.native_tool_contract="internal_repl_execution"`, `response_tool_calls="not_emitted"`, and request-local `tools_used` / `tools_called` when native tools were supplied or internal tools executed. OpenAI response `message.tool_calls` remains `null` for internally executed REPL calls, preserving the standard meaning that non-null response tool calls ask the client to execute tools.
+
+Validation:
+- `uv run --with pytest pytest -q tests/unit/test_seeding_orchestrator.py tests/unit/test_api_models_requests.py tests/unit/test_api_models_openai.py tests/unit/test_openai_compat_roles.py tests/integration/test_openai_compat.py` -> `107 passed`.
+- `uv run --with pytest pytest -q tests/unit/test_eval_tower_concurrency_metrics.py tests/unit/test_seeding_orchestrator.py tests/unit/test_api_models_requests.py tests/unit/test_api_models_openai.py tests/unit/test_openai_compat_roles.py tests/integration/test_openai_compat.py` -> `128 passed`.
+- Focused `ruff`, `py_compile`, and `git diff --check` passed on touched files.
+
+Remaining:
+- Add a native-tools sentinel variant only at a clean restart/window. Do **not** edit `tool_sentinels.yaml` mid-run while live AutoPilot has `AUTOPILOT_TOOL_SENTINELS=1`, because the YAML is part of the active eval mix.
+- Decide native-vs-REPL parity expectations before wiring any objective.
+
+## Reporting
+After cutover + verification, update this file's Current-State, append to `progress/2026-06/`, and record the first measured `tool_helpfulness`. Promote the per-suite-objective question to its own decision once data exists.
+
+## Research Intake Update — 2026-06-10
+
+### New Related Research
+- **[intake-693] "Structured outputs in Recursive Language Models — schema-validated subagent returns as an external attention mask"** (AVB / fast-rlm, 2026-06-08)
+  - Relevance: directly adjacent to the `ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT` work this handoff already wires (ToolOutput envelope unwrap, structured tool returns). The post's failure mode is *free-text* subagent fan-out overwhelming the aggregator; the fix is **forcing each subagent to return a JSON-Schema-constrained value, validated on FINAL**, so the parent reads one typed flag instead of parsing prose. The booleans act as an "external attention mask" — a hallucination-reduction mechanism, not just a telemetry contract.
+  - Key technique: schema normalization (Pydantic/primitive/generic → JSON Schema) → **contract shown at REPL step 0** → **validate-on-FINAL, retry-not-restart** (on failure the agent gets the exact validation errors and re-emits the value; the REPL work is untouched).
+  - Delta from current approach: our structured-tool-output path validates the *envelope* shape; the additional pattern worth lifting is the **contract-up-front + retry-with-errors loop** and the framing of schema-constrained returns as a correctness lever for any subagent/RLM fan-out, not only a telemetry signal. credibility null (single-anecdote practitioner blog; validate against a real eval before relying on the magnitude).
+
+### Deep-Dive Refinement (2026-06-12) — parent already shipped; REPL child-schema work is closed
+The **parent** half is already implemented: `final_schema_validation` (2026-05-20) gives contract-at-step-0 + validate-on-`FINAL` + retry-with-errors (`src/features.py:134`; `_render_schema_preamble`/`_validate_final_answer`/`_format_validation_failure_message` in `src/graph/helpers.py:1266-1316`; 2-attempt retry at `repl_executor.py:549-565`). The REPL child / sub-LM return schema is also now implemented in current code: `_batch_llm_query` (`src/repl_environment/combined_ops.py:302`) accepts `schema=...`, and `delegate(..., schema=...)` is handled on the REPL routing path via `_delegate` / `_delegate_single` (`src/repl_environment/routing.py`). That closes the REPL structured-schema gap this handoff was tracking. The separate HTTP `/api/delegate` surface is still schema-free and should only be treated as an optional API-surface follow-up if parity there is desired. Full: `research/deep-dives/2026-06-12-rlm-structured-output-contracts.md`.
+
+> **UPDATE 2026-06-20 (intake-705 deep-dive):** the batched child-LLM structured-return path is ALREADY SHIPPED — epyc-orchestrator commit `18b5ceb` ("Validate batched child LLM schemas") added `schema=` / validate-on-`FINAL` / retry-with-errors to `combined_ops.py` `_batch_llm_query` (per-child contract preamble + validation + retry loop), unit-tested. At that point the remaining REPL work was the single-delegate path, not the batched path. A server-side delegate primitive already exists (`src/api/routes/chat_delegation.py`: architect→specialist, role pinning, per-request loop caps, re-entrance guard); the separate HTTP `/api/delegate` surface is still schema-free, so any parity work there is an optional API-surface follow-up rather than a REPL blocker. (Supersedes the ~30–40 LoC "still-open" framing above for the batched path.)
+
+> **UPDATE 2026-06-27:** the single-delegate REPL path is now shipped in epyc-orchestrator commit `6426dd4` ("Add schema validation for single delegates"). `delegate(..., schema=...)` is opt-in and preserves raw string behavior when no schema is supplied. Schema mode prepends the JSON Schema contract, validates the response with the existing `_validate_final_answer` helper, retries with explicit validation errors up to a bounded cap, returns a JSON envelope with `valid`/`response`/`raw_response`/`attempts`, and records schema validity in delegation artifacts. This closes the REPL single-delegate structured-schema gap in current code. The separate HTTP `/api/delegate` endpoint remains schema-free and is only an optional API-surface follow-up if we want parity there. Parallel delegation deliberately rejects `schema=` for now. Validation: `test_repl_routing.py`, `test_combined_ops.py`, and `test_repl_environment.py` all passed (`205 passed`).
+
+## Research Intake Update — 2026-07-21 (A worked example against the comment-only-REPL blocker)
+
+- **[intake-868] SkyRL `examples/train/rlm`** — Apache-2.0. Source-level read found one artifact that attacks this handoff's live blocker directly: sentinel prompts that pin `force_mode: repl` while producing comment-only, non-executable REPL output.
+  - `MULTIPAPER_CHILD_SYSTEM_PROMPT` (`evidence_rlm_env.py:120-224`) enforces exactly the opposite discipline with hard negative constraints: "Output ONLY ```repl code blocks. No narration" (`:134`), "EXACTLY ONE ```repl block. Never two, never zero" (`:135-136`), "No `#` comments in REPL code" (`:148`), plus a **stated consequence** for violation — "the second block will be SILENTLY DROPPED. You will lose that work" (`:146`).
+  - Also reusable: an explicit articulation of REPL turn semantics (`:137-140`) — you cannot call `extract_section()` on `search()` output in the same block because you have not seen the output yet, and never call `FINAL_VAR` in the same block as an extraction. Our sentinel prompts do not currently state this.
+  - Zero inference cost to adopt; it is prompt text, not code.
+
+- [x] Candidate fix for the comment-only-REPL blocker: adopt the negative-constraint + stated-consequence pattern (one block, no narration, no comments, drop-consequence named) into the sentinel prompts. [intake-868] ✅ 2026-07-29 — orchestrator `e6b989b9` adds the explicit discard-and-score-incorrect consequence to every executable-only sentinel prompt; `tests/test_tool_sentinels.py` passes 8/8 with no AutoPilot restart or inference.

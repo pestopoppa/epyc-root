@@ -1,0 +1,52 @@
+# Shared Workflows
+
+## New Feature
+
+1. Add or extend a feature flag.
+2. Implement guarded behavior.
+3. Add tests for enabled and disabled states.
+4. Document architecture impact in `docs/`.
+
+## API Change
+
+1. Update route, models, and service boundaries.
+2. Verify request/response validation at boundaries.
+3. Run focused API tests.
+4. Document behavior changes.
+
+## Escalation Logic Change
+
+1. Modify canonical escalation modules only.
+2. Add tests for expected decisions.
+3. Validate no regressions in existing routes.
+
+## System Change
+
+1. Capture current system state.
+2. Log rollback command.
+3. Apply change via audited commands.
+4. Validate expected impact and stability.
+
+## Benchmark Update
+
+1. Confirm operator approval + host-health preflight (`agents/shared/MEASUREMENT_POLICY.md`).
+2. Run via the codified recipe (`bench_canonical.sh`/`canonical_recipe.py`, epyc-inference-research) with explicit config capture; reps per `MEASUREMENT.md` (≥5 for ≥5% claims, ≥10 for ≤2%).
+3. Record results + anomalies with the claim grammar `(metric, protocol-id, n, date, attest)`.
+4. Compare against the era-matched baseline only (`instrument_eras.yaml`, epyc-orchestrator orchestration/); never across instrument eras.
+5. Update `repos/epyc-inference-research/docs/reference/benchmarks/RESULTS.md` when appropriate.
+
+## Handoff Closure And Roadmap Refresh
+
+1. Reconcile handoff checklist against real code/tests before marking complete.
+2. Extract durable findings into docs and agent playbooks; keep handoff as execution log, not the only source of truth.
+3. Update the master index (`handoffs/active/master-handoff-index.md`): **delete** the completed row — terminal rows do not stay in the queue. Update `handoffs/blocked/BLOCKED.md` if a blocker changed.
+4. Record evidence in `CHANGELOG.md` and progress log (`progress/YYYY-MM/`) with exact commands/tests used; performance/quality numbers use the claim grammar (`agents/shared/MEASUREMENT_POLICY.md`).
+5. Move handoff from `handoffs/active/` to `handoffs/completed/` only after docs + trackers + evidence are in place.
+
+## Orchestration Stabilization Closure (RLM)
+
+1. For orchestrator lifecycle work in `epyc-orchestrator`, prefer API-only reload: `python3 scripts/server/orchestrator_stack.py reload orchestrator`.
+2. In restricted environments, socket-based health/probe commands may require escalated execution; treat sandbox `PermissionError` on local sockets as an environment constraint, not an orchestration regression.
+3. Validate fixes with both unit coverage and contention probes; lock/delegation changes are not complete until seeded contention runs confirm no stale lock holders.
+4. Treat response diagnostics as first-class acceptance criteria: `delegation_diagnostics.break_reason`, `budget_diagnostics.*`, and `error_code` must be explicit on bounded failures.
+5. Keep roadmap status synchronized with evidence.

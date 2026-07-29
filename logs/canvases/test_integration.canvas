@@ -1,0 +1,34 @@
+{
+  "nodes": [
+    {
+      "id": "h1",
+      "type": "text",
+      "x": 100,
+      "y": 100,
+      "width": 250,
+      "height": 100,
+      "text": "**Test Hypothesis**\n\nConfidence: 0.8\nTested: Yes",
+      "color": "#22c55e"
+    },
+    {
+      "id": "e1",
+      "type": "text",
+      "x": 400,
+      "y": 100,
+      "width": 200,
+      "height": 60,
+      "text": "+SUPPORTS\ntest_memory_1",
+      "color": "#3b82f6"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge_e1_h1",
+      "fromNode": "e1",
+      "toNode": "h1",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "label": "supports"
+    }
+  ]
+}

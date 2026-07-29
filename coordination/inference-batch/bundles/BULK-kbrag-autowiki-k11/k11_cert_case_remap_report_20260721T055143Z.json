@@ -1,0 +1,165 @@
+{
+  "ok": true,
+  "remap_count": 31,
+  "remapped_cases": "/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_cert_cases_remapped.json",
+  "remaps": [
+    {
+      "case_id": "hotpot_kbrag_fable_queue",
+      "from": "/workspace/handoffs/active/fable5-findings-appendix-evidence-reports.md",
+      "to": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md"
+    },
+    {
+      "case_id": "hotpot_ledger_sequential_verdicts",
+      "from": "/workspace/handoffs/active/fable5-findings-01c-sequential-verdict-spec.md",
+      "to": "/workspace/handoffs/completed/fable5-findings-01c-sequential-verdict-spec.md"
+    },
+    {
+      "case_id": "hotpot_ledger_sequential_verdicts",
+      "from": "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+      "to": "/workspace/handoffs/completed/fable5-findings-01-measurement-and-integrity.md"
+    },
+    {
+      "case_id": "hotpot_batched_decode_gpu",
+      "from": "/workspace/handoffs/active/fable5-findings-03-serving-and-gpu.md",
+      "to": "/workspace/handoffs/completed/fable5-findings-03-serving-and-gpu.md"
+    },
+    {
+      "case_id": "hotpot_instrument_repair_measurement",
+      "from": "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+      "to": "/workspace/handoffs/completed/fable5-findings-01-measurement-and-integrity.md"
+    },
+    {
+      "case_id": "hotpot_instrument_repair_measurement",
+      "from": "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md",
+      "to": "/workspace/handoffs/completed/fable5-proposed-MEASUREMENT.md"
+    },
+    {
+      "case_id": "hotpot_routing_truth_controller",
+      "from": "/workspace/handoffs/active/fable5-findings-02-routing-decision-architecture.md",
+      "to": "/workspace/handoffs/completed/fable5-findings-02-routing-decision-architecture.md"
+    },
+    {
+      "case_id": "hotpot_objective_goodput",
+      "from": "/workspace/handoffs/active/fable5-findings-05-objective-design.md",
+      "to": "/workspace/handoffs/completed/fable5-findings-05-objective-design.md"
+    },
+    {
+      "case_id": "hotpot_data_flywheel_frontier",
+      "from": "/workspace/handoffs/active/fable5-findings-07-strategic-frontiers.md",
+      "to": "/workspace/handoffs/completed/fable5-findings-07-strategic-frontiers.md"
+    },
+    {
+      "case_id": "hotpot_privacy_security_hooks",
+      "from": "/workspace/handoffs/active/privacy-hygiene-precommit-hooks.md",
+      "to": "/workspace/handoffs/completed/privacy-hygiene-precommit-hooks.md"
+    },
+    {
+      "case_id": "hotpot_gpu_drafter_mi200",
+      "from": "/workspace/handoffs/active/fable5-findings-03-serving-and-gpu.md",
+      "to": "/workspace/handoffs/completed/fable5-findings-03-serving-and-gpu.md"
+    },
+    {
+      "case_id": "hotpot_dynamic_stack_placement",
+      "from": "/workspace/handoffs/active/launcher-numa-mode-gating.md",
+      "to": "/workspace/handoffs/completed/launcher-numa-mode-gating.md"
+    },
+    {
+      "case_id": "hotpot_repo_readiness_publication",
+      "from": "/workspace/handoffs/active/privacy-hygiene-precommit-hooks.md",
+      "to": "/workspace/handoffs/completed/privacy-hygiene-precommit-hooks.md"
+    },
+    {
+      "case_id": "hotpot_meta_harness_halo",
+      "from": "/workspace/handoffs/active/halo-trace-loop-spike.md",
+      "to": "/workspace/handoffs/completed/halo-trace-loop-spike.md"
+    },
+    {
+      "case_id": "hotpot_bulk_campaign_master_index",
+      "from": "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md",
+      "to": "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md"
+    },
+    {
+      "case_id": "locomo_fable_handoff_evolution",
+      "from": "/workspace/handoffs/active/fable5-architecture-review.md",
+      "to": "/workspace/handoffs/completed/fable5-architecture-review.md"
+    },
+    {
+      "case_id": "locomo_fable_handoff_evolution",
+      "from": "/workspace/handoffs/active/fable5-findings-00-executive-summary.md",
+      "to": "/workspace/handoffs/completed/fable5-findings-00-executive-summary.md"
+    },
+    {
+      "case_id": "locomo_fable_handoff_evolution",
+      "from": "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md",
+      "to": "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md"
+    },
+    {
+      "case_id": "locomo_measurement_integrity_chain",
+      "from": "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+      "to": "/workspace/handoffs/completed/fable5-findings-01-measurement-and-integrity.md"
+    },
+    {
+      "case_id": "locomo_measurement_integrity_chain",
+      "from": "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md",
+      "to": "/workspace/handoffs/completed/fable5-proposed-MEASUREMENT.md"
+    },
+    {
+      "case_id": "locomo_objective_design_trace",
+      "from": "/workspace/handoffs/active/fable5-findings-05-objective-design.md",
+      "to": "/workspace/handoffs/completed/fable5-findings-05-objective-design.md"
+    },
+    {
+      "case_id": "locomo_kernel_concurrency_trace",
+      "from": "/workspace/handoffs/active/fable5-findings-06-kernel-and-concurrency.md",
+      "to": "/workspace/handoffs/completed/fable5-findings-06-kernel-and-concurrency.md"
+    },
+    {
+      "case_id": "locomo_tool_contract_to_eval",
+      "from": "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+      "to": "/workspace/handoffs/completed/fable5-findings-01-measurement-and-integrity.md"
+    },
+    {
+      "case_id": "locomo_fable_impl_sequence",
+      "from": "/workspace/handoffs/active/fable5-findings-01-impl-plan.md",
+      "to": "/workspace/handoffs/completed/fable5-findings-01-impl-plan.md"
+    },
+    {
+      "case_id": "locomo_fable_impl_sequence",
+      "from": "/workspace/handoffs/active/fable5-findings-02-impl-plan.md",
+      "to": "/workspace/handoffs/completed/fable5-findings-02-impl-plan.md"
+    },
+    {
+      "case_id": "locomo_fable_impl_sequence",
+      "from": "/workspace/handoffs/active/fable5-findings-04-impl-plan.md",
+      "to": "/workspace/handoffs/completed/fable5-findings-04-impl-plan.md"
+    },
+    {
+      "case_id": "locomo_fable_impl_sequence",
+      "from": "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md",
+      "to": "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md"
+    },
+    {
+      "case_id": "locomo_gpu_strategy_trace",
+      "from": "/workspace/handoffs/active/fable5-findings-03-serving-and-gpu.md",
+      "to": "/workspace/handoffs/completed/fable5-findings-03-serving-and-gpu.md"
+    },
+    {
+      "case_id": "locomo_evidence_plane_family",
+      "from": "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md",
+      "to": "/workspace/handoffs/completed/fable5-proposed-MEASUREMENT.md"
+    },
+    {
+      "case_id": "locomo_frontier_portfolio",
+      "from": "/workspace/handoffs/active/fable5-findings-07-strategic-frontiers.md",
+      "to": "/workspace/handoffs/completed/fable5-findings-07-strategic-frontiers.md"
+    },
+    {
+      "case_id": "locomo_frontier_portfolio",
+      "from": "/workspace/handoffs/active/frontier-f7-economic-ledger.md",
+      "to": "/workspace/handoffs/completed/frontier-f7-economic-ledger.md"
+    }
+  ],
+  "source_cases": "/mnt/raid0/llm/epyc-orchestrator/scripts/kb_rag/k7_cert_cases.json",
+  "unresolved": [],
+  "unresolved_count": 0
+}

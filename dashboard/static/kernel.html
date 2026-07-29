@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EPYC — Kernel-R&D (MI210)</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2129; --border:#30363d;
+    --text:#c9d1d9; --muted:#8b949e; --accent:#60a5fa; --good:#3fb950;
+    --warn:#d29922; --bad:#f85149; --amber:#f0883e;
+  }
+  *{box-sizing:border-box} html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif}
+  a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+  header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:16px;padding:12px 20px;
+    background:rgba(13,17,23,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--border);flex-wrap:wrap}
+  header h1{font-size:16px;margin:0;font-weight:650}
+  header .sub{color:var(--muted);font-size:12px}
+  nav{display:flex;gap:14px;margin-left:auto;align-items:center;font-size:13px}
+  nav a.active{color:var(--text);font-weight:650;border-bottom:2px solid var(--accent);padding-bottom:2px}
+  .badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:2px 8px;border-radius:20px;border:1px solid var(--border);color:var(--muted)}
+  .badge .dot{width:7px;height:7px;border-radius:50%;background:var(--muted)}
+  .badge.fresh .dot{background:var(--good)}.badge.fresh{color:var(--good);border-color:#1f4d38}
+  .badge.aging .dot{background:var(--warn)}.badge.aging{color:var(--warn);border-color:#4d3f14}
+  .badge.stale .dot{background:var(--bad)}.badge.stale{color:var(--bad);border-color:#4d1f1c}
+  .badge.missing .dot{background:var(--muted)}
+  main{padding:18px 20px 60px;max-width:1200px;margin:0 auto}
+  .observation{background:rgba(240,136,62,.08);border:1px solid #5a3a1a;border-left:4px solid var(--amber);
+    border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#f0c088}
+  .observation b{color:var(--amber)}
+  .stats{display:flex;gap:26px;flex-wrap:wrap;margin-bottom:20px}
+  .stat{display:flex;flex-direction:column;gap:2px}
+  .stat .n{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+  .stat .l{font-size:11px;color:var(--muted)}
+  section.panel{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:20px}
+  section.panel h2{font-size:13px;margin:0 0 12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+  svg{width:100%;height:auto;display:block;overflow:visible}
+  table{border-collapse:collapse;width:100%;font-size:12.5px;display:block;overflow-x:auto}
+  th,td{border-bottom:1px solid var(--border);padding:6px 10px;text-align:left;white-space:nowrap}
+  th{color:var(--muted);font-weight:600;position:sticky;top:0;background:var(--panel)}
+  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .ok{color:var(--good)} .fail{color:var(--bad)} .muted{color:var(--muted)}
+  .delta.pos{color:var(--good)} .delta.neg{color:var(--bad)}
+  .mech{font-size:11px;color:var(--muted)}
+  .mech .down{color:var(--good)} .mech .up{color:var(--bad)}
+  code{background:#0d1117;border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-size:11px;font-family:ui-monospace,Menlo,Consolas,monospace}
+  .empty{color:var(--muted);padding:24px;text-align:center;font-size:13px}
+  .tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:10px;border:1px solid var(--amber);color:var(--amber);margin-left:6px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Kernel-R&D <span class="sub">· MI210 (gfx90a) · single-GPU nightshift loop</span></h1>
+  <nav>
+    <a href="/">Handoffs</a>
+    <a href="/kernel" class="active">Kernel-R&D</a>
+    <span class="badge" id="badge"><span class="dot"></span><span>contract</span></span>
+    <a id="autopilot-link" href="#" title="orchestrator autopilot dashboard">Autopilot ↗</a>
+  </nav>
+</header>
+
+<main>
+  <div class="observation" id="observation">
+    <b>OBSERVATION discipline.</b> Loading…
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <section class="panel">
+    <h2>Pareto frontier — CORRECT runs only <span class="tag">observation</span></h2>
+    <svg id="pareto" viewBox="0 0 640 280" role="img" aria-label="pareto frontier single vs aggregate throughput"></svg>
+    <div id="pareto-note" class="muted" style="font-size:11px;margin-top:6px"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Best correctness-passing variant per model</h2>
+    <div id="best"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Run log <span class="muted" id="runcount" style="text-transform:none;font-weight:400"></span></h2>
+    <div id="runs"></div>
+  </section>
+</main>
+
+<script>
+"use strict";
+const $=(s,r=document)=>r.querySelector(s);
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;};
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+$("#autopilot-link").href=`${location.protocol}//${location.hostname}:8000/dashboard`;
+
+function setBadge(cls,fresh){
+  const b=$("#badge");
+  b.classList.remove("fresh","aging","stale","missing");
+  b.classList.add(cls||"fresh");
+  if(fresh && fresh.age_s!=null){
+    const age = fresh.age_s >= 86400 ? `${(fresh.age_s/86400).toFixed(1)}d` :
+      fresh.age_s >= 3600 ? `${(fresh.age_s/3600).toFixed(1)}h` :
+      `${Math.round(fresh.age_s/60)}m`;
+    b.title = `${fresh.source || "semantic timestamp"} age ${age}`;
+  } else {
+    b.title = "kernel contract freshness";
+  }
+}
+// coerce to a number or an em-dash — never emit a raw string into innerHTML
+function num(x,d=2){return typeof x==="number"&&isFinite(x)?x.toFixed(d):"—";}
+function deltaCell(v){
+  if(v==null) return '<span class="muted">—</span>';
+  const cls=v>=0?"pos":"neg"; const s=(v>=0?"+":"")+v+"%";
+  return '<span class="delta '+cls+'">'+esc(s)+'</span>';
+}
+function mechCell(m){
+  if(!m) return '<span class="muted">—</span>';
+  const parts=[];
+  for(const k of ["MemUnitStalled","MemUnitBusy","VALUBusy"]){
+    if(m[k]==null) continue;
+    const v=m[k]; const cls=v<0?"down":"up";  // lower stall/busy = better
+    parts.push('<span class="'+cls+'">'+esc(k.replace("MemUnit","")+" "+(v>=0?"+":"")+v+"%")+'</span>');
+  }
+  return '<span class="mech">'+(parts.join(" · ")||"—")+'</span>';
+}
+
+function render(d){
+  const notice = d.observation_notice || "Every number is an OBSERVATION; operator-only authorizes prod push.";
+  $("#observation").innerHTML='<b>OBSERVATION discipline.</b> '+esc(notice);
+  setBadge((d._freshness&&d._freshness.staleness_class)||"missing", d._freshness);
+
+  const t=d.totals||{};
+  const stats=$("#stats"); stats.innerHTML="";
+  const defs=[["runs",t.runs],["correct",t.correct],["failed",t.failed],["models",t.models]];
+  for(const [l,n] of defs){ const s=el("div","stat"); s.innerHTML='<span class="n">'+(n||0)+'</span><span class="l">'+l+'</span>'; stats.appendChild(s); }
+
+  // Pareto scatter over (single-stream × aggregate) t/s. A point can only be
+  // placed HONESTLY when BOTH axes are real; a single-only point must NOT be
+  // fabricated onto the y=x diagonal (the old bug), so it is omitted + disclosed.
+  const withSingle=(d.pareto||[]).filter(p=>p.single_tps!=null);
+  const plotted=withSingle.filter(p=>p.aggregate_tps!=null);
+  const singleOnly=withSingle.length-plotted.length;
+  paretoChart($("#pareto"), plotted);
+  const note=$("#pareto-note");
+  if(!withSingle.length){
+    // Honest degradation: the panel is an empty shell because the producer
+    // (epyc-inference-research kernel_store export) does not populate absolute
+    // throughput fields yet — the hub only reads that contract, it cannot fill it.
+    note.textContent = (d.db_present===false || (t.runs||0)===0)
+      ? "Awaiting the loop's first sweep (epyc-inference-research; Phases 1–2 open). No absolute throughput exported yet — the run log below shows any seeded validation rows."
+      : "No absolute single-stream t/s in the contract — the kernel-R&D producer records Δ% + mechanism on validation-only rows and does not populate absolute/aggregate throughput yet (a batched llama-bench pass is the upstream gap, tracked on the kernel loop).";
+  } else if(!plotted.length){
+    note.textContent = `${withSingle.length} variant(s) carry single-stream t/s but no aggregate t/s — omitted from the (single × aggregate) chart rather than fabricated onto the diagonal. The producer does not populate aggregate throughput yet.`;
+  } else {
+    note.textContent = "Frontier = non-dominated CORRECT variants over (single-stream × aggregate) t/s."
+      + (singleOnly ? ` · ${singleOnly} single-only variant(s) omitted (no aggregate t/s recorded).` : "");
+  }
+
+  // best per model
+  const best=d.best_per_model||[];
+  if(!best.length){ $("#best").innerHTML='<div class="empty">no correctness-passing absolute-throughput runs yet</div>'; }
+  else{
+    let h='<table><thead><tr><th>model</th><th class="num">best single t/s</th><th class="num">Δ%</th><th>variant</th><th>git</th></tr></thead><tbody>';
+    for(const b of best){ h+='<tr><td>'+esc(b.model)+'</td><td class="num">'+num(b.single_tps)+'</td><td class="num">'+deltaCell(b.delta_pct)+'</td><td>'+esc(b.label)+'</td><td><code>'+esc(b.git_sha||"")+'</code></td></tr>'; }
+    $("#best").innerHTML=h+'</tbody></table>';
+  }
+
+  // run log
+  const runs=d.runs||[];
+  $("#runcount").textContent = runs.length?`(${runs.length})`:"";
+  if(!runs.length){ $("#runs").innerHTML='<div class="empty">no runs recorded yet — the kernel-R&D loop has not exported any results</div>'; return; }
+  let h='<table><thead><tr><th>label</th><th>model</th><th class="num">single t/s</th><th class="num">Δ%</th><th>correct</th><th>test-backend-ops</th><th>coherence</th><th>mechanism (dominant kernel)</th><th>git</th></tr></thead><tbody>';
+  for(const r of runs){
+    const ok = r.correct ? '<span class="ok">✓ OK</span>' : (r.status!=="OK"?'<span class="fail">✗ '+esc(r.status||"FAIL")+'</span>':'<span class="fail">✗ corr?</span>');
+    h+='<tr><td>'+esc(r.label||"")+'</td><td>'+esc(r.model||"")+'</td><td class="num">'+num(r.single_tps_variant)+'</td><td class="num">'+deltaCell(r.delta_pct)+'</td><td>'+ok+'</td><td class="muted">'+esc(r.tbo||"—")+'</td><td class="muted">'+esc(r.coherence||"—")+'</td><td>'+mechCell(r.mechanism)+'</td><td><code>'+esc(r.git_sha||"")+'</code></td></tr>';
+  }
+  $("#runs").innerHTML=h+'</tbody></table>';
+}
+
+function svgNS(t,a){const e=document.createElementNS("http://www.w3.org/2000/svg",t);for(const k in a)e.setAttribute(k,a[k]);return e;}
+function paretoChart(svg, pts){
+  const W=640,H=280,pad={l:44,r:12,t:12,b:34};
+  svg.innerHTML="";
+  // Callers pass only points with BOTH single_tps and aggregate_tps (real 2D
+  // points); a null-aggregate point is never fabricated onto the diagonal here.
+  if(!pts.length){ const t=svgNS("text",{x:W/2,y:H/2,fill:"#8b949e","text-anchor":"middle","font-size":12}); t.textContent="no (single × aggregate) points"; svg.appendChild(t); return; }
+  const xs=pts.map(p=>p.single_tps), ys=pts.map(p=>p.aggregate_tps);
+  const xmax=Math.max(...xs)*1.08||1, ymax=Math.max(...ys)*1.08||1;
+  const iw=W-pad.l-pad.r, ih=H-pad.t-pad.b;
+  const X=v=>pad.l+iw*v/xmax, Y=v=>pad.t+ih-ih*v/ymax;
+  for(let g=0;g<=2;g++){ const y=pad.t+ih-ih*g/2; svg.appendChild(svgNS("line",{x1:pad.l,y1:y,x2:W-pad.r,y2:y,stroke:"#21262d"}));
+    const t=svgNS("text",{x:pad.l-6,y:y+3,fill:"#8b949e","font-size":9,"text-anchor":"end"}); t.textContent=Math.round(ymax*g/2); svg.appendChild(t); }
+  const line=[...pts].sort((a,b)=>a.single_tps-b.single_tps).map(p=>`${X(p.single_tps).toFixed(1)},${Y(p.aggregate_tps).toFixed(1)}`).join(" ");
+  svg.appendChild(svgNS("polyline",{points:line,fill:"none",stroke:"#3fb950","stroke-width":1.4,"stroke-dasharray":"4 3"}));
+  for(const p of pts){ const c=svgNS("circle",{cx:X(p.single_tps),cy:Y(p.aggregate_tps),r:4,fill:"#3fb950"});
+    const tt=svgNS("title"); tt.textContent=`${p.label} (${p.model}): ${p.single_tps} single · ${p.aggregate_tps} agg · Δ${p.delta_pct}%`; c.appendChild(tt); svg.appendChild(c); }
+  const xl=svgNS("text",{x:pad.l+iw/2,y:H-6,fill:"#8b949e","font-size":10,"text-anchor":"middle"}); xl.textContent="single-stream t/s →"; svg.appendChild(xl);
+  const yl=svgNS("text",{x:12,y:pad.t+ih/2,fill:"#8b949e","font-size":10,"text-anchor":"middle",transform:`rotate(-90 12 ${pad.t+ih/2})`}); yl.textContent="aggregate t/s →"; svg.appendChild(yl);
+}
+
+async function load(){
+  try{ const r=await fetch("/api/kernel",{cache:"no-store"}); render(await r.json()); }
+  catch(e){ setBadge("stale"); $("#observation").innerHTML='<b>OBSERVATION discipline.</b> failed to load contract'; console.error(e); }
+}
+load(); setInterval(load, 60000);
+</script>
+</body>
+</html>

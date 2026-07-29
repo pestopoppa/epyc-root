@@ -1,0 +1,53 @@
+{
+  "kind": "wp12_case10_live_gate_verdict",
+  "verdict": "PASS",
+  "date_utc": "2026-07-23T15:04:15Z",
+  "grant": "operator 2026-07-23: 'inference granted for case-10 - run the live gate'",
+  "flag_state": "ORCHESTRATOR_FLEET_LAYER=1 (durable via orchestrator_stack.py setdefault, a172d2dd)",
+  "facts": {
+    "j2j3_replay": {
+      "status": "EXECUTED; structurally vacuous in the current lineup",
+      "detail": "Replayed ROUTE-A3 J2/J3 probe with identical parameters (frontdoor, oscillation 1,4,4,1,1,1, safe-slots 3, --workers 1 API-only reload). 12/12 requests OK, n_aborted=0. Verdict INCONCLUSIVE with 0 migrations is CORRECT: both fleets are quarters-only (cpusets 0/24/48/72 +SMT, no full endpoint), so the full<->quarter migration surface cannot trigger. The 2026-07-21 pass ran under a full+quarters lineup.",
+      "artifact": "probeA_stdout.json / j2j3_case10_fleet_layer_probeA.jsonl"
+    },
+    "worker_math_4wide_burst": {
+      "status": "PASS (production 6-worker shape)",
+      "detail": "4 concurrent worker_math requests via the placement-queue transport (call_orchestrator_forced, background/eval_batch, distinct sessions) -> 4 disjoint busy quarters (8082/8182/8282/8382), all four simultaneously decoding (peak /slots sample t=7.67s all busy; 39/72 polls >=2 busy). 4/4 requests OK; decodes physically confirmed in llama logs (~300 tokens each, draft acceptance 1.0).",
+      "artifact": "probeC_worker_math_burst_6w.json"
+    },
+    "single_breaker_fleet_identity": {
+      "status": "PASS",
+      "detail": "Every worker_math tap dispatch event carries topology_role=worker_general (one physical fleet fact). /health probes the shared fleets as single grouped entries (coder_escalation/frontdoor/worker_summarize; toolrunner/worker_general/worker_math). No circuit/breaker events in the probe windows.",
+      "artifact": "health_singleworker_pre_probe.json / health_post_probeC.json"
+    },
+    "same_fleet_fallback_noop": {
+      "status": "PASS",
+      "detail": "0 fallback lines in the orchestrator log across all probe windows; migration/thrash counters 0 -> 0; fallback-churn 0."
+    },
+    "no_phantom_full": {
+      "status": "PASS",
+      "detail": "All dispatches within the quarter port set; no full endpoint exists in either fleet (quarters-only build); migrations_started=0, migration_failures=0."
+    }
+  },
+  "findings": [
+    {
+      "id": "C10-F1",
+      "title": "Per-role Semaphore(1) serializes within-role traffic per API worker process",
+      "detail": "live_warm_worker_slots() returns {} because every live role is tier=hot while the function filters tier=='warm' -> get_role_max_concurrency()==1 for ALL roles -> primitives._acquire_role wraps every llm_call in threading.Semaphore(1). Within-role concurrency in production exists ONLY via the 6 uvicorn worker processes (each with its own semaphore + CAB, made disjoint by cross-process region flocks). On a --workers 1 API every role serializes fully: the first 4-wide burst attempt landed 4/4 on port 8082 back-to-back (staircase latencies 19.7/34.9/49.6/64.1s).",
+      "consequences": [
+        "single-worker windows (J2/J3-style probes, debug shapes) cannot exercise within-role concurrency",
+        "eval fan-out concurrency is process-spread, not role-limit; E5 current-arm baseline must model it as such",
+        "the 2026-07-21 J2/J3 committed migrations (forward=6/reverse=4) are consistent with fully serial traffic (full-idle KV handovers), not overlap-driven displacement"
+      ]
+    },
+    {
+      "id": "C10-F2",
+      "title": "Migration surface dormant in the quarters-only lineup",
+      "detail": "WP-3/WP-4 full<->quarter migration cannot trigger with no full endpoint in any fleet. SM stays unit-verified (test_concurrency_aware_migration_sm.py); the live surface returns only if a full instance returns to a lineup."
+    }
+  ],
+  "harness_notes": [
+    "burst driver read resp['response']/['content'] but the field is 'answer' -> chars=0 in request records; decode reality confirmed via llama server logs + a 1-request answer check ('ok')",
+    "driver: /mnt/raid0/llm/tmp/wp12_case10_burst.py (staged copy in bundle)"
+  ]
+}

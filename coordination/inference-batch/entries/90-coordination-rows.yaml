@@ -1,0 +1,263 @@
+# =============================================================================
+# Wave-3 M4 — COORDINATION rows (phase 90).
+#
+# These are NOT executable batch tasks. Each row is a precondition cross-reference
+# to work OWNED BY A PARALLEL SESSION. They exist so downstream entries (P4 era
+# stamps, P5 GLM probes, the A3 GPU arm, teleport knobs) can depend_on / reference a
+# stable task_id, and so the status dashboard shows the external blocker.
+#
+# MARKER (per plan): phase 90 + a coordination_note. The loop's pick-next must NEVER
+# execute these. The entry schema has no status field (additionalProperties:false),
+# so the COORDINATION ledger status is seeded OUTSIDE the entry: the operator/compile
+# step writes a COORDINATION ledger row for each task_id below (COORDINATION is not in
+# ELIGIBLE_STATES={READY}, so pending()/pick-next skips it). Until that seed exists an
+# empty-ledger --simulate would default these to READY — they are still authored
+# observe_only + dry_run so a stray pick is a no-op. Do NOT ledger-seed here; that is
+# the operator's step. See notes: on each row.
+#
+# Downstream dependents (documented per row):
+#   * P4 era stamps            <- COORD-v7-promotion (v7 becomes a new kernel era)
+#   * P5 GC-1..3               <- COORD-glm52-admission (GLM loads + is coherent)
+#   * P6 A4 arm (RM-4)         <- COORD-glm52-admission
+#   * P6 A3 arm (RM-2-A3)      <- COORD-axa-teleport (GPU bet #2 = AXA-1 residency lane)
+#   * LB-2/AXA-3 latency knobs <- COORD-mi210-drafter-stage12 + COORD-axa-teleport
+# =============================================================================
+
+- schema_version: inference_batch.entry.v1
+  task_id: COORD-kernel-k-queue
+  title: "COORDINATION — v7 kernel K-queue (parallel experimental-v7 session)"
+  notes: >
+    COORDINATION row — seed a COORDINATION ledger status for this task_id so pick-next
+    skips it. Never executed by the loop.
+  provenance:
+    owning_handoff: handoffs/active/gemma-challenge-kernel-techniques-v7.md
+    checkbox: "K34"
+    coordination_note: >
+      OWNED BY the parallel llama.cpp-experimental / v7 kernel session. CLOSED per the
+      H0 index update: K22 grammar-sampler crash (96986f5e9) and K23 GLM-dsa
+      load/runtime reconciliation (3dee86a5a). REMAINING open kernel work tracked here
+      for cross-ref only: (1) sparse-final-attention classification — K31/K31.2 +
+      the glm-dsa DSA-DENSE-MASK-LIKELY disposition (also in glm51-reap-cpu-evaluation.md
+      Phase 2); (2) v7 CPU/perf reproducibility — K34 host-throughput drift root-cause +
+      clean-run preflight (K34.2 landed); (3) EV-11a debug_scorer boxed-brace fix — NOTE:
+      this actually lives in eval-tower-verification.md (EV-11a) and BLOCKS the EV-11c
+      math re-baseline manifest entry, cross-referenced here because it gates
+      decision-grade math scoring the reviewer plane consumes. Downstream: COORD-v7-promotion
+      depends on this queue draining; do not schedule any kernel item from this batch.
+  phase: 90
+  priority: P4
+  preconditions:
+    depends_on: []
+  execution:
+    driver: command
+    dry_run: true
+    concurrency_mode: observe_only
+  outcomes:
+    expected: "Externally owned by the v7 kernel session; tracked for cross-ref only."
+    gate_table:
+      - gate: "Owned externally by the parallel v7 kernel session — do not execute in the loop."
+        evidence: "checkbox state in gemma-challenge-kernel-techniques-v7.md (K31/K34) + eval-tower-verification.md (EV-11a)"
+        fork:
+          pass:
+            rule: "external owner reports the remaining K-queue items closed"
+            action:
+              - "no loop action; downstream COORD-v7-promotion may advance"
+            next: COORDINATION
+          fail:
+            rule: "external owner reports items still open"
+            action:
+              - "no loop action; keep this row COORDINATION; downstream stays blocked"
+            next: COORDINATION
+  artifacts: {}
+  ledger: {}
+
+- schema_version: inference_batch.entry.v1
+  task_id: COORD-glm52-admission
+  title: "COORDINATION — GLM-5.2 admission / download / load smoke (parallel GLM session)"
+  notes: >
+    COORDINATION row — seed a COORDINATION ledger status so pick-next skips it. When the
+    parallel GLM session signals admission (load + coherence), the operator marks this
+    DONE_PASS to release the P5 GC-1..3 chain and the A4 arm. Never executed by the loop.
+  provenance:
+    owning_handoff: handoffs/active/glm51-reap-cpu-evaluation.md
+    checkbox: "Download completes + shard integrity verified"
+    coordination_note: >
+      OWNED BY the parallel GLM session (glm51-reap-cpu-evaluation.md). DONE upstream:
+      GLM-5.2 UD-IQ2_M download + six-shard integrity (238,577,580,768 bytes), short CPU
+      load/coherence smoke (exact READY), 4K/8K DSA traces, true >64K runnability, and the
+      current-source glm-dsa cache/runtime wiring (K23 / experimental-v7 3dee86a5a). OPEN
+      upstream: sparse-vs-dense final-attention classification, current-source long-context
+      needle/coherence, CPU throughput bench, expert-routing-skew profile, and the Phase-5
+      GO/WAIT/KILL disposition. These entries CONSUME those checkpoints — they do NOT re-run
+      the download or load smoke. Downstream dependents: P5-GC1/2/3 and the P6 RM-4 A4 arm.
+      FLAG: glm51-reap uses unlabeled checkboxes (no stable ids), so the checkbox ref above
+      is descriptive; resolution against the handoff is best-effort.
+  phase: 90
+  priority: P4
+  preconditions:
+    depends_on: []
+  execution:
+    driver: command
+    dry_run: true
+    concurrency_mode: observe_only
+  outcomes:
+    expected: "Externally owned by the parallel GLM session; tracked for cross-ref only."
+    gate_table:
+      - gate: "Owned externally by the parallel GLM session — do not execute in the loop."
+        evidence: "glm51-reap-cpu-evaluation.md load-smoke + Phase-5 disposition checkpoints"
+        fork:
+          pass:
+            rule: "GLM session reports admission (loads + coherent) — operator marks this task terminal-success"
+            action:
+              - "no loop action; P5-GC1 and the A4 arm become eligible"
+            next: COORDINATION
+          fail:
+            rule: "GLM session reports WAIT/KILL disposition"
+            action:
+              - "no loop action; keep COORDINATION; P5/A4 stay blocked"
+            next: COORDINATION
+  artifacts: {}
+  ledger: {}
+
+- schema_version: inference_batch.entry.v1
+  task_id: COORD-mi210-drafter-stage12
+  title: "COORDINATION — MI210 GPU-drafter Stage-1/2 economics (parallel drafter session)"
+  notes: >
+    COORDINATION row — seed a COORDINATION ledger status so pick-next skips it. Never
+    executed by the loop; tracked so the reviewer latency budget (LB-2) and teleport knobs
+    can cross-reference the GPU-drafter economics.
+  provenance:
+    owning_handoff: handoffs/active/gpu-drafter-mi200-investigation.md
+    checkbox: "Stage 4 MTP head split for gemma4 worker_general"
+    coordination_note: >
+      OWNED BY the parallel GPU-drafter session (gpu-drafter-mi200-investigation.md). N5
+      external-drafter alpha CLEARED 2026-07-16 (n5_spec_on 376/376; positive_mtp 355/401).
+      Stage-1 (CPU-target + MI210 external drafter) and Stage-2 (co-resident frontdoor/drafter)
+      BOTH FAILED the kill-gate 2026-07-17 — Stage-1 508/508 accepted but 0.915x decode /
+      0.911x wall; Stage-2 native-MTP 0.948x, external drafter 0.355x. Next Axis-B path is a
+      different drafter/control design (or quant-asymmetric same-model drafting), not
+      enabling Stage-1/2. FLAG: this handoff records progress in prose blockquotes, not
+      labeled checkboxes; the checkbox ref is descriptive. Downstream: reviewer LB-2
+      candidate-review latency budget (GPU relief valve) references the Stage-1/2 outcome;
+      no batch entry depends_on this row (informational cross-ref).
+  phase: 90
+  priority: P4
+  preconditions:
+    depends_on: []
+  execution:
+    driver: command
+    dry_run: true
+    concurrency_mode: observe_only
+  outcomes:
+    expected: "Externally owned by the parallel GPU-drafter session; tracked for cross-ref only."
+    gate_table:
+      - gate: "Owned externally by the parallel GPU-drafter session — do not execute in the loop."
+        evidence: "gpu-drafter-mi200-investigation.md Stage-1/2 kill-gate artifacts (2026-07-17)"
+        fork:
+          pass:
+            rule: "GPU-drafter session lands a promotable drafter/control design"
+            action:
+              - "no loop action; reviewer LB-2 GPU-relief-valve assumptions may be refreshed"
+            next: COORDINATION
+          fail:
+            rule: "Stage-1/2 remain non-promotable"
+            action:
+              - "no loop action; keep COORDINATION; LB budgets assume CPU-only reviewer latency"
+            next: COORDINATION
+  artifacts: {}
+  ledger: {}
+
+- schema_version: inference_batch.entry.v1
+  task_id: COORD-v7-promotion
+  title: "COORDINATION — v7 kernel promotion gate (parallel kernel/operator session)"
+  notes: >
+    COORDINATION row — seed a COORDINATION ledger status so pick-next skips it. Never
+    executed by the loop. v7 promotion completed on 2026-07-20: canonical production is
+    `production-consolidated-v7` at `6ad45fa3ff6718c07c000061dbc6e29c1771f6e3`
+    with binary `10098`. The P4 era-stamp entries now need explicit post-promotion
+    reconciliation before execution.
+  provenance:
+    owning_handoff: handoffs/active/inference-acceleration-index.md
+    checkbox: "Operator v6 quality-gate baseline (K5 MMLU-Pro/GPQA-Diamond) -> promote banked GPU wins to v7"
+    coordination_note: >
+      CLOSED by the parallel kernel session + operator on 2026-07-20. Canonical
+      `/mnt/raid0/llm/llama.cpp` is `production-consolidated-v7` at frozen candidate
+      `6ad45fa3ff6718c07c000061dbc6e29c1771f6e3`; CPU and HIP binaries report
+      `version: 10098 (6ad45fa3f)`. Quarter-mode production stack passed final
+      21/21 smoke and final attestation is clean except GitNexus drift. Production
+      kernels are FROZEN; post-candidate experimental commits need a fresh exact-tip
+      promotion gate.
+  phase: 90
+  priority: P4
+  preconditions:
+    depends_on: []
+  execution:
+    driver: command
+    dry_run: true
+    concurrency_mode: observe_only
+  outcomes:
+    expected: "Externally owned by the kernel session + operator; tracked for cross-ref only."
+    gate_table:
+      - gate: "Owned externally (operator v6 quality-gate + v7 promotion decision) — do not execute in the loop."
+        evidence: "v7-promotion.md 2026-07-20 cutover evidence + final quarter smoke/attestation"
+        fork:
+          pass:
+            rule: "v7 production cutover complete -> new kernel era minted"
+            action:
+              - "no loop action; P4 era-stamp entries re-key onto the v7 era"
+            next: COORDINATION
+          fail:
+            rule: "rollback or cutover evidence invalidated"
+            action:
+              - "no loop action; keep COORDINATION; reopen era-stamp reconciliation"
+            next: COORDINATION
+  artifacts: {}
+  ledger: {}
+
+- schema_version: inference_batch.entry.v1
+  task_id: COORD-axa-teleport
+  title: "COORDINATION — AXA teleport / GPU residency sequencing (parallel MI210 session + operator)"
+  notes: >
+    COORDINATION row — seed a COORDINATION ledger status so pick-next skips it. Never
+    executed by the loop. This is the release gate for the A3 GPU reviewer arm: the operator
+    sequences the single card 1->4 (drafter Stage-1 -> fast-architect residency -> GLM offload
+    -> teleport); bet #2 (AXA-1) is the residency lane the A3 arm needs.
+  provenance:
+    owning_handoff: handoffs/active/mi210-big-model-and-acceleration-roadmap.md
+    checkbox: "AXA-1"
+    coordination_note: >
+      OWNED BY the parallel MI210 session + operator GPU sequencing (locked 2026-07-16:
+      (1) drafter Stage-1 -> (2) fast-architect residency quality gate [bet #2, AXA-1] ->
+      (3) GLM-5.2 offload path [skew profile] -> (4) teleport/prefill-offload [bet #4,
+      AXA-2/AXA-3]). The single card cannot host the A3 122B-IQ2 reviewer until the operator
+      sequences bet #2. Downstream dependent: P6-RM2-A3-arm-122b-iq2-gpu depends_on this row
+      (structurally BLOCKED_PRECONDITION until released). AXA-3 (Class-3 teleport/lease
+      autopilot knobs) also lands off this axis and feeds autopilot-control-plane-integration
+      AP-2. The 2026-07-17 expert-routing-skew profile came back near-uniform globally, so
+      GLM hot-expert residency/REAP (bet #3) is not workload-justified yet.
+  phase: 90
+  priority: P4
+  preconditions:
+    depends_on: []
+  execution:
+    driver: command
+    dry_run: true
+    concurrency_mode: observe_only
+  outcomes:
+    expected: "Externally owned by the MI210 session + operator GPU sequencing; tracked for cross-ref only."
+    gate_table:
+      - gate: "Owned externally (operator GPU sequencing, bet #2 AXA-1 residency lane) — do not execute in the loop."
+        evidence: "mi210-big-model-and-acceleration-roadmap.md AXA-1/AXA-2/AXA-3 + operator sequencing decision"
+        fork:
+          pass:
+            rule: "operator sequences bet #2 -> the 122B-IQ2 residency lane is granted"
+            action:
+              - "no loop action; P6-RM2-A3-arm-122b-iq2-gpu becomes eligible"
+            next: COORDINATION
+          fail:
+            rule: "GPU lane not yet sequenced to bet #2"
+            action:
+              - "no loop action; keep COORDINATION; the A3 arm stays blocked"
+            next: COORDINATION
+  artifacts: {}
+  ledger: {}

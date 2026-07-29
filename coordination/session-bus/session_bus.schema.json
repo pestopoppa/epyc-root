@@ -1,0 +1,558 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "session_bus.schema.json",
+  "title": "session_bus.v1",
+  "description": "Session-bus message and queue-row schemas (M1). Validated by scripts/coordination/session_bus.py. Owning handoff: handoffs/active/session-bus-thin-dispatcher.md. Single-writer ownership is a protocol property enforced by the CLI's `validate` lint, NOT by this schema, so writer violations report distinctly from structural failures.",
+  "definitions": {
+    "msg": {
+      "$id": "#msg",
+      "title": "session_bus.msg.v1",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "id",
+        "ts",
+        "from",
+        "to",
+        "kind"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "session_bus.msg.v1"
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^msg-[0-9]{8}T[0-9]{6}Z-[0-9]+-[A-Za-z0-9._-]+$",
+          "description": "msg-<compact-utc>-<seq>-<writer>, e.g. msg-20260727T182214Z-1-claude-main. Lexicographically sortable; deliberately free of offset punctuation so the id is a single clean token."
+        },
+        "ts": {
+          "type": "string",
+          "minLength": 1
+        },
+        "from": {
+          "type": "string",
+          "minLength": 1,
+          "description": "roster id"
+        },
+        "to": {
+          "type": "string",
+          "minLength": 1,
+          "description": "roster id or '*'"
+        },
+        "kind": {
+          "enum": [
+            "task-assign",
+            "task-complete",
+            "status",
+            "finding",
+            "decision-request",
+            "token-request",
+            "ack",
+            "nudge",
+            "defect",
+            "requeue",
+            "reprioritize",
+            "saturation",
+            "lease-revoke",
+            "task-propose"
+          ]
+        },
+        "corr_id": {
+          "type": "string"
+        },
+        "task_id": {
+          "type": "string"
+        },
+        "requires_ack": {
+          "type": "boolean",
+          "default": false
+        },
+        "ack_deadline_s": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "priority": {
+          "type": "string",
+          "pattern": "^P[0-4]$"
+        },
+        "payload": {
+          "type": "object",
+          "description": "kind-specific; see per-kind rules below"
+        },
+        "relayed_src": {
+          "type": "string",
+          "description": "Set by the coordinator-daemon when it relays an agent-authored outbox message into a recipient inbox: the source msg id. Carries the dedupe key so relay is idempotent across ticks (defect C2, 2026-07-28). Absent on daemon-generated messages."
+        },
+        "needs_routing_to": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "STRUCTURAL routing intent (2026-07-29): the roster ids this message must REACH, beyond the transport `to`. Added because two routed messages were missed when routing intent lived as prose inside `payload` and a context-economy truncation cut exactly the sentence carrying it. Prose is not a routing channel: tools act on this field. Entries must be roster ids (append refuses unknowns). A message with this field appears in each named agent's `triage` standing queue until that agent dispositions it by corr_id from its own outbox — advancing a cursor never clears it."
+        },
+        "action_required": {
+          "type": "boolean",
+          "description": "STRUCTURAL action intent (2026-07-29): the routed-to agents (needs_routing_to, else a concrete `to`) must ACT, not merely receive. Stays in their `triage` queue until dispositioned by an outbox row with matching corr_id that is either a substantive kind (anything but a bare ack) or an ack with payload.disposition in {done, declined, handed-off, superseded}. A bare ack marks it acked-but-unactioned and it KEEPS appearing: acknowledgment is receipt, not action. `append` refuses action_required on to='*' with needs_routing_to unset — intent with no addressee is the failure shape this field exists to kill."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "task-assign"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "task_id",
+              "payload"
+            ],
+            "properties": {
+              "payload": {
+                "type": "object",
+                "required": [
+                  "lane",
+                  "lease_expires_ts",
+                  "epoch"
+                ],
+                "properties": {
+                  "spec_ref": {
+                    "type": "string"
+                  },
+                  "inline_spec": {
+                    "type": "object"
+                  },
+                  "lane": {
+                    "enum": [
+                      "cpu",
+                      "gpu",
+                      "none"
+                    ]
+                  },
+                  "lease_expires_ts": {
+                    "type": "string"
+                  },
+                  "epoch": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "token-request"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "payload"
+            ],
+            "properties": {
+              "payload": {
+                "type": "object",
+                "required": [
+                  "gate_id",
+                  "block_ref",
+                  "validated"
+                ],
+                "description": "Pre-validation is MANDATORY: an operator command that fails is a defect row attributed to the requesting agent.",
+                "properties": {
+                  "gate_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "block_ref": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "validated": {
+                    "type": "object",
+                    "required": [
+                      "cmd",
+                      "dry_run_exit",
+                      "dry_run_evidence"
+                    ],
+                    "properties": {
+                      "cmd": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "dry_run_exit": {
+                        "type": "integer"
+                      },
+                      "dry_run_evidence": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "reprioritize"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "payload"
+            ],
+            "properties": {
+              "payload": {
+                "type": "object",
+                "required": [
+                  "task_id",
+                  "new_priority",
+                  "scope"
+                ],
+                "properties": {
+                  "task_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "new_priority": {
+                    "type": "string",
+                    "pattern": "^P[0-4]$"
+                  },
+                  "scope": {
+                    "enum": [
+                      "own-lane",
+                      "cross-main"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "lease-revoke"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "task_id",
+              "payload"
+            ],
+            "properties": {
+              "payload": {
+                "type": "object",
+                "required": [
+                  "reason"
+                ],
+                "description": "R4 \u2014 request that a holder give its lease back. Authority is checked against config.yaml authority.lease_grant; an unauthorised sender is rejected with a defect row. Revocation is ALWAYS quiesce-and-drain at the holder's next boundary (fabric axiom 4) \u2014 never a kill.",
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "yield_to": {
+                    "type": "string",
+                    "description": "task_id or priority class this yields to"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "task-propose"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "task_id",
+              "payload"
+            ],
+            "properties": {
+              "payload": {
+                "type": "object",
+                "required": [
+                  "lane",
+                  "gating",
+                  "spec_ref",
+                  "summary"
+                ],
+                "description": "How work ENTERS the queue. Agents never write queue.jsonl \u2014 they propose, and the coordinator-daemon transcribes (pure bookkeeping, no judgment). gating is mandatory here for the same reason it is mandatory on the row: without it a lease revocation has no defined fallback set.",
+                "properties": {
+                  "lane": {
+                    "enum": [
+                      "cpu",
+                      "gpu",
+                      "none"
+                    ]
+                  },
+                  "gating": {
+                    "enum": [
+                      "cpu",
+                      "gpu",
+                      "both",
+                      "none"
+                    ]
+                  },
+                  "spec_ref": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "owning handoff (+ checkbox anchor) \u2014 the spec stays OUT of the row"
+                  },
+                  "summary": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "priority": {
+                    "type": "string",
+                    "pattern": "^P[0-4]$"
+                  },
+                  "priority_class": {
+                    "enum": [
+                      "production-live",
+                      "operator-directed",
+                      "background-churn"
+                    ]
+                  },
+                  "contention_class": {
+                    "enum": [
+                      "exclusive-contiguous",
+                      "resumable"
+                    ]
+                  },
+                  "role_affinity": {
+                    "type": "string"
+                  },
+                  "est_wall_clock_h": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "replay_eligible": {
+                    "type": "boolean"
+                  },
+                  "classification": {
+                    "type": "string",
+                    "description": "how lane/gating were decided \u2014 'heuristic' means provisional"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "queue_row": {
+      "$id": "#queue_row",
+      "title": "session_bus.queue.v1",
+      "description": "Appended by the coordinator-daemon ONLY. Fold is latest-row-per-task_id-wins (batch_ledger.reconcile semantics). Agents propose and report; they never write this file.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "ts",
+        "task_id",
+        "status",
+        "lane",
+        "gating",
+        "epoch"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "session_bus.queue.v1"
+        },
+        "ts": {
+          "type": "string",
+          "minLength": 1
+        },
+        "task_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+        },
+        "status": {
+          "enum": [
+            "READY",
+            "ASSIGNED",
+            "CLAIMED",
+            "RUNNING",
+            "DONE_PASS",
+            "DONE_MARGINAL_OBS",
+            "FAILED",
+            "INFRA_BLOCKED",
+            "HELD_OP_GATE",
+            "STALE_REQUEUED",
+            "CANCELLED"
+          ]
+        },
+        "lane": {
+          "enum": [
+            "cpu",
+            "gpu",
+            "none"
+          ],
+          "description": "none = code/doc work, always schedulable"
+        },
+        "gating": {
+          "enum": [
+            "cpu",
+            "gpu",
+            "both",
+            "none"
+          ],
+          "description": "R4 prerequisite \u2014 REQUIRED. Without it a lease revocation has no defined fallback set and the keep-working rule cannot be honoured."
+        },
+        "contention_class": {
+          "enum": [
+            "exclusive-contiguous",
+            "resumable"
+          ],
+          "description": "R5 pausability. exclusive-contiguous = decision-gating timing run, never paused."
+        },
+        "priority_class": {
+          "enum": [
+            "production-live",
+            "operator-directed",
+            "background-churn"
+          ]
+        },
+        "origin": {
+          "type": "string"
+        },
+        "depends_on": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "operator_gates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "priority": {
+          "type": "string",
+          "pattern": "^P[0-4]$"
+        },
+        "est_wall_clock_h": {
+          "type": "number",
+          "minimum": 0
+        },
+        "owner": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "assign_msg_id": {
+          "type": "string"
+        },
+        "epoch": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "daemon generation counter; fencing"
+        },
+        "claim_ts": {
+          "type": "string"
+        },
+        "lease_expires_ts": {
+          "type": "string"
+        },
+        "heartbeat_grace_s": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_attempts": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "spec_ref": {
+          "type": "string",
+          "description": "spec stays OUT of the row"
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "era_stamp": {
+          "type": "string"
+        },
+        "failure_reason": {
+          "type": "string"
+        },
+        "routing_annotation": {
+          "type": "object",
+          "description": "from triage; advisory only"
+        },
+        "replay_eligible": {
+          "type": "boolean",
+          "description": "R9 \u2014 result obtainable by deterministic replay over banked outputs: needs no lane, no claim, no token."
+        },
+        "role_affinity": {
+          "type": "string",
+          "description": "R3 \u2014 the stack role whose resource profile this task resembles, used to look the task up in the MEASURED contention matrix (per-role-pair verdicts). Distinct from contention_class, which is the pausability axis. Absent means co-residency is not applicable to this task, not that it is permitted."
+        },
+        "revoking": {
+          "type": "boolean",
+          "description": "R4 \u2014 the coordinator-agent has asked for this lease back. The task keeps its current status because it IS still running; the holder stops accepting new work and releases at its next boundary (axiom 4). A revoking task is never re-assigned while still held."
+        }
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "$ref": "#/definitions/msg"
+    },
+    {
+      "$ref": "#/definitions/queue_row"
+    }
+  ]
+}

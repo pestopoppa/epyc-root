@@ -1,0 +1,155 @@
+# GPU-Drafter Control Redesign
+
+**Status**: NEW / SCOPING (opened 2026-07-18 from the v7 lever audit). Design + α-measurement
+only — **no serving bench without operator approval** (`feedback_no_concurrent_inference`).
+**Owner handoff**: this file. **Parents**: [gpu-drafter-mi200-investigation.md](gpu-drafter-mi200-investigation.md),
+[mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md) (Axis-B).
+
+## Thesis
+
+The straightforward GPU-drafter lanes are **measured dead**. On 2026-07-17:
+
+- **Stage-1** (CPU-target + MI210 external drafter): usable acceptance (508/508) but
+  **0.915× decode / 0.911× wall** — the external drafter overhead isn't repaid.
+- **Stage-2** (co-resident GPU frontdoor + drafter): MI210 no-spec already 101.64 t/s;
+  native MTP regressed to 0.948×, external drafter to **0.355×**.
+
+Root cause is structural: **every production target ships a near-free embedded/native MTP
+head**, which dominates any separate-drafter scheme (qwen precedent: MTP 41.9 ≫ ext-draft
+~18 < plain 31). The explicit conclusion in the roadmap is: *"the next Axis-B path is not
+'enable Stage-1/2'; it is a different drafter/control design or quant-asymmetric same-model
+drafting."* This track owns that redesign so it doesn't fall between handoffs.
+
+## What "different control design" could mean (candidates, α-gated)
+
+| Design | Mechanism | Why it might beat the failed lanes | First gate |
+|---|---|---|---|
+| **Quant-asymmetric same-model self-spec** | Aggressive-IQ drafter (IQ1/IQ2_XXS, maybe REAP'd) on GPU + high-quant (Q8/Q4) verifier on CPU | **N5-free by construction** (identical vocab / M-RoPE / GDN); CPU verify launders quality; graceful fallback if IQ2-serving parity fails | measure α (drafter→target acceptance) **first** — [[feedback_measure_alpha_before_specdec_investment]] |
+| **Adaptive-K / cascade drafting** | Vary draft depth per-token by confidence; cascade a cheap→richer drafter | The fixed-depth external lanes over-draft; adaptive-K prunes wasted verify | α-vs-depth curve on the real corpus |
+| **Teleport-composed drafting** | Reuse the AXA-2 re-prefill+catch-up path as the drafter transport | Amortizes the CPU weight read (no findings-02 penalty) when the target overflows to CPU | needs AXA-2 v1 landed; composed-spec state `speculative.cpp:3063` |
+
+**Extreme-scale target** (the reason to bother): Qwen3.5-397B-A17B / GLM-5.2-class at *full
+CPU quality* + GPU-drafted speed — same-model IQ2 (~124 GB) / IQ1 (~74 GB) don't fit 64 GB
+HBM, so **REAP + IQ1 (~56 GB)** is *required* for a same-model GPU drafter, or a smaller
+same-family drafter (35B/122B qwen35 at Q8) trading α for fit.
+
+## First actions
+
+- [x] **DR-0 — α measurement for quant-asymmetric self-spec ✅ 2026-07-20**: measure drafter→target
+  acceptance for an aggressive-IQ GPU drafter vs the CPU high-quant target on the real task
+  corpus, BEFORE any serving build (the N5-alpha gate already cleared `n5_spec_on` 376/376,
+  but that was the *alignment* check, not the quant-asymmetric acceptance). Operator-gated bench.
+  - [x] **DR-0a — procure/build/register the aggressive same-model IQ drafter artifact**:
+    completed by inference-research commit `b696241` (`qwen35_122b_iq2m` registry row) plus
+    the bounded MI210 smoke/context summaries. Local
+    `/mnt/raid0/llm/models/Qwen3.5-122B-A10B-MTP-GGUF/UD-IQ2_M/Qwen3.5-122B-A10B-UD-IQ2_M.gguf`
+    is 37.60 GiB, same MTP family, fits MI210, returned exact JSON in the server smoke, and
+    produced complete context rows. This closes the missing-artifact blocker only; DR-0 still
+    needs an operator-approved acceptance/economics run against the high-quant CPU verifier. ✅ 2026-07-19
+  - [x] **DR-0c — acceptance/economics run sheet prepared ✅ 2026-07-19**:
+    `docs/reference/mi210-axa-dr0-run-sheets-2026-07-19.md` pins the task classes, evidence
+    fields, and pass rule `E(alpha,K) > F(K)+H(K)` for the next quant-asymmetric run. This is
+    design prep only; the actual DR-0 run remains MI210/`P-GPU-1` gated.
+  - [x] **DR-0 negative scheduling check ✅ 2026-07-18**: attempted to schedule the bounded
+    MI210 measurement, found the missing-artifact blocker, and stopped rather than inventing a
+    serving implementation. Fallback GPU time was used for a separate Qwen3.6-27B n-gram smoke
+    (`data/ngram_gpu_smoke_20260718T221549Z/`), which is observation-only and does not close DR-0.
+  - [x] **DR-0d — live quant-asymmetric run completed ✅ 2026-07-20**:
+    corrected reasoning-off artifact
+    `/mnt/raid0/llm/epyc-inference-research/data/dr0_quant_asym_self_spec/dr0_quant_asym_self_spec_20260720T043000Z_reasoning_off/`
+    plus report
+    `/mnt/raid0/llm/epyc-inference-research/docs/data/dr0_quant_asym_self_spec_20260720.md`
+    shows the design is speed-promising but not admissible. CPU Q4 verifier baseline was
+    `6.890 t/s`; CPU Q4 + MI210 IQ2 combined measured K1 `9.959 t/s` (`1.445x`,
+    alpha `0.963`), K2 `11.335 t/s` (`1.645x`, alpha `0.928`), and K4 `12.298 t/s`
+    (`1.785x`, alpha `0.837`). Cleanup passed and postflight was quiet, but quality
+    sanity failed (`1/28`) and combined output changed on the code-review control, so
+    this is speed/alpha evidence only.
+  - [x] **DR-0e — telemetry/quality rerun completed ✅ 2026-07-20**: add or expose engine telemetry
+    that separates `F(K)` verifier work from `H(K)` coordination overhead, then rerun the
+    quant-asymmetric slice with strict prompt/schema controls and require CPU-target output
+    stability on every task before any routing/serving integration.
+    - [x] **DR-0e.1 — engine telemetry exposed and live K2 rerun completed ✅ 2026-07-20**:
+      experimental-v7 `llama-server` now emits `spec_verify_steps`, `spec_draft_ms`,
+      `spec_verify_ms`, `spec_process_ms`, `spec_sample_accept_ms`, and
+      `spec_accept_by_depth` inside response `timings` when `draft_n > 0`. Reduced K2
+      artifact:
+      `/mnt/raid0/llm/epyc-inference-research/data/dr0_quant_asym_self_spec/dr0_quant_asym_self_spec_20260720T050531Z_telemetry_k2/`.
+      Combined CPU Q4 + MI210 IQ2 K2 measured `10.694 t/s` vs CPU baseline `7.333 t/s`,
+      alpha `0.891`, `F(K)=39.889s`, and `H(K)=0.740s`; cleanup passed. This closes
+      the telemetry gap for single-slot DR-0e runs, not the admission gate.
+    - [x] **DR-0e.2 — strict quality/target-stability repair completed ✅ 2026-07-20**:
+      inference-research commits `e0347ff3`, `531a4e83`, and `61a21d0a` repaired the
+      DR-0e task slice and runner gates. Final full K sweep artifact
+      `/mnt/raid0/llm/epyc-inference-research/data/dr0_quant_asym_self_spec/dr0_quant_asym_self_spec_20260720T060423Z_dr0e2_full_k_sweep_final/`
+      passed quality (`28/28`), output stability (all combined K1/K2/K4 task hashes match
+      CPU baseline), and cleanup. CPU Q4 baseline was `7.083 t/s`; combined K1/K2/K4 were
+      `9.888` / `11.407` / `11.847 t/s` (`1.396x` / `1.610x` / `1.672x`) with alpha
+      `0.945` / `0.900` / `0.787`; observed F/H rows were K1 `39.040s/0.545s`, K2
+      `33.667s/0.657s`, and K4 `32.280s/0.781s`.
+- [x] **DR-2 — serving/routing design for quant-asymmetric self-spec keep-candidate ✅ 2026-07-20**:
+  [docs/reference/quant-asymmetric-self-spec-serving-design-2026-07-20.md](../../docs/reference/quant-asymmetric-self-spec-serving-design-2026-07-20.md)
+  selects K2 as the first default-off serving candidate (`1.610x` vs CPU baseline, alpha
+  `0.900`) because K4 adds only `3.85%` throughput while dropping alpha to `0.787`.
+  The design keeps the lane research-only until broader task-class admission and
+  production-named `P-GPU-1` certification pass, and explicitly avoids IQ1_M download
+  solely for DR-0 because IQ2_M already passed the strict drafter gate.
+- [ ] **DR-3 — broader K2 admission runner/package**: build the dry-run-first K2
+  admission runner and package from the DR-2 design: wider task slice, CPU-target
+  equivalence/equality checks, long-output/context bands, MI210 lease/cleanup proof,
+  frontdoor opportunity-cost measurement, and post-promotion `P-GPU-1` certification
+  hook. No live serving route or NumericSwarm surface until this passes.
+  - [x] **DR-3a — dry-run package scaffold ✅ 2026-07-20**:
+    inference-research `scripts/benchmark/dr3_quant_asym_k2_admission_prep.py`
+    emits `manifest.json`, `task_packet.jsonl`, `commands.sh`, `operator_run.sh`,
+    and `summary.json` for fixed K2, 8K/16K context bands, six broader task
+    classes, CPU-target equivalence, lease/cleanup, frontdoor opportunity-cost,
+    and production-named `P-GPU-1` gates. Dry artifact:
+    `/mnt/raid0/llm/epyc-inference-research/data/dr3_quant_asym_k2_admission/dr3_quant_asym_k2_admission_20260720T063100Z_codex_dryrun/`;
+    focused tests passed (`5 passed`).
+  - [x] **DR-3b — live admission executor + 8K smoke ✅ 2026-07-20**:
+    inference-research `scripts/benchmark/dr3_quant_asym_k2_admission_runner.py`
+    materializes broader task rows, runs fresh CPU-baseline and combined-K2
+    servers, scores quality/equivalence by declared row rule, records cleanup,
+    and keeps serving/NumericSwarm disabled. Corrected 8K smoke artifact
+    `/mnt/raid0/llm/epyc-inference-research/data/dr3_quant_asym_k2_admission/dr3_quant_asym_k2_admission_20260720T071200Z_live_smoke_ctx8192_r1_v2/`
+    passed quality (`12/12`), output stability, context coverage, and cleanup;
+    CPU baseline `7.185 t/s`, combined K2 `11.104 t/s` (`1.545x`, alpha `0.876`),
+    `observation_grade=true`, `decision_grade=false`.
+  - [x] **DR-3c — default 8K+16K admission package ✅ 2026-07-20**:
+    artifact
+    `/mnt/raid0/llm/epyc-inference-research/data/dr3_quant_asym_k2_admission/dr3_quant_asym_k2_admission_20260720T071816Z_dr3c_default_ctx8192_16384_r1/`
+    passed quality (`24/24`), output stability, context coverage for `8192` and
+    `16384`, and cleanup. Combined K2 vs CPU baseline: 8K `10.535` vs `6.980 t/s`
+    (`1.509x`, alpha `0.876`, `408/466` drafts accepted); 16K `10.429` vs
+    `6.979 t/s` (`1.494x`, alpha `0.879`, `420/478` accepted). Still
+    observation-grade and non-serving.
+  - [x] **DR-3d — frontdoor opportunity-cost gate ✅ 2026-07-20**:
+    inference-research `scripts/benchmark/dr3_frontdoor_opportunity_cost_gate.py`
+    ran resident frontdoor alone, DR-3 K2 active, and frontdoor after
+    eviction/reload. Artifact
+    `/mnt/raid0/llm/epyc-inference-research/data/dr3_frontdoor_opportunity_cost/dr3_frontdoor_opportunity_cost_20260720T074853Z_live_ctx8192_r1/`
+    passed as observation-grade: frontdoor `93.690 -> 94.157 t/s`
+    after reload (`1.005x`), DR-3 K2 active `11.701 t/s`, alpha `1.000`,
+    cleanup pass, `decision_grade=false`, serving/NumericSwarm still disabled.
+  - [ ] **DR-3e — production-named P-GPU-1 certification**: after the 2026-07-20
+    v7 cutover, rerun the required GPU claims under `production-consolidated-v7`
+    before any serving route or NumericSwarm K surface.
+- [x] **DR-1 — economics model ✅ 2026-07-18**: break-even model recorded at
+  [docs/reference/gpu-drafter-break-even-model-2026-07-18.md](../../docs/reference/gpu-drafter-break-even-model-2026-07-18.md).
+  Key result: external Stage-1/2 failed despite `α=1.0`, so their blocker is
+  overhead/control cost, not acceptance. Future drafter lanes must satisfy
+  `E(α,K) > F(K)+H(K)` on paper before any serving build.
+
+## Cross-links
+
+- α-alignment baseline (N5) + Stage-1/2 negatives: [gpu-drafter-mi200-investigation.md](gpu-drafter-mi200-investigation.md),
+  [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md) Axis-B.
+- Teleport transport: AXA-2 in the mi210 roadmap.
+- Dead lanes (do not revive as-is): tree-draft/DySpec, external-drafter Stage-1/2
+  ([tree-draft-forward-port-plan.md](tree-draft-forward-port-plan.md)).
+
+## Reporting
+
+Update this handoff first; if DR-0/DR-1 show no path beats native MTP, close as
+confirm-negative and record in the inference-acceleration-index.

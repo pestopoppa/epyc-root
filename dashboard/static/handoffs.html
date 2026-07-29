@@ -1,0 +1,943 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EPYC — Handoff Progress</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2129; --border:#30363d;
+    --text:#c9d1d9; --muted:#8b949e; --accent:#60a5fa; --good:#34d399;
+    --p0:#f85149; --high:#f0883e; --medium:#d29922; --low:#3fb950; --none:#6e7681;
+    --active:#58a6ff; --completed:#3fb950; --archived:#8b949e; --blocked:#f85149;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--text); font:14px/1.5 -apple-system,BlinkMacSystemFont,
+    "Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+  header{
+    position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:16px;
+    padding:12px 20px;background:rgba(13,17,23,.92);backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--border);flex-wrap:wrap;
+  }
+  header h1{font-size:16px;margin:0;font-weight:650;letter-spacing:.2px}
+  header .sub{color:var(--muted);font-size:12px}
+  nav{display:flex;gap:14px;margin-left:auto;align-items:center;font-size:13px}
+  .badge{
+    display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:2px 8px;
+    border-radius:20px;border:1px solid var(--border);color:var(--muted);white-space:nowrap;
+  }
+  .badge .dot{width:7px;height:7px;border-radius:50%;background:var(--muted)}
+  .badge.fresh .dot{background:var(--good)} .badge.fresh{color:var(--good);border-color:#1f4d38}
+  .badge.aging .dot{background:var(--medium)} .badge.aging{color:var(--medium);border-color:#4d3f14}
+  .badge.stale .dot{background:var(--p0)} .badge.stale{color:var(--p0);border-color:#4d1f1c}
+  .badge.missing .dot{background:var(--none)}
+  main{padding:18px 20px 60px;max-width:1600px;margin:0 auto}
+
+  /* timeline */
+  .timeline{
+    background:var(--panel);border:1px solid var(--border);border-radius:10px;
+    padding:14px 16px;margin-bottom:20px;
+  }
+  .timeline h2{font-size:13px;margin:0 0 10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+  .charts{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:820px){.charts{grid-template-columns:1fr}}
+  .chart-title{font-size:12px;color:var(--muted);margin:0 0 4px}
+  svg{width:100%;height:auto;display:block;overflow:visible}
+  .legend{display:flex;gap:14px;font-size:11px;color:var(--muted);margin-top:6px;flex-wrap:wrap}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:middle}
+
+  /* flow headline — the primary view: is the backlog actually moving? */
+  .flow{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--border);
+    border-radius:10px;padding:16px 18px 14px;margin-bottom:20px}
+  .flow h2{font-size:13px;margin:0 0 4px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+  .flow .why{font-size:11px;color:var(--muted);margin:0 0 14px}
+  .flow-head{display:flex;gap:34px;flex-wrap:wrap;align-items:flex-end}
+  .flow-net{display:flex;flex-direction:column;gap:2px}
+  .flow-net .n{font-size:52px;font-weight:800;line-height:.95;font-variant-numeric:tabular-nums}
+  .flow-net .n.good{color:var(--good)} .flow-net .n.bad{color:var(--high)} .flow-net .n.flat{color:var(--muted)}
+  .flow-net .l{font-size:12px;color:var(--muted)}
+  .flow-net .verdict{font-size:12px;font-weight:600;margin-top:2px}
+  .flow-net .verdict.good{color:var(--good)} .flow-net .verdict.bad{color:var(--high)} .flow-net .verdict.flat{color:var(--muted)}
+  .flow-split{display:flex;gap:24px;flex-wrap:wrap}
+  .flow-split .fs{display:flex;flex-direction:column;gap:2px}
+  .flow-split .fs .n{font-size:28px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+  .flow-split .fs .n.closed{color:var(--good)} .flow-split .fs .n.filed{color:var(--high)}
+  .flow-split .fs .l{font-size:11px;color:var(--muted)}
+  .flow-rows{margin-top:14px;border-top:1px solid var(--border);padding-top:10px;
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:6px 22px}
+  .flow-row{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .flow-row .w{color:var(--text);font-weight:600;margin-right:6px}
+  .flow-row .c{color:var(--good)} .flow-row .f{color:var(--high)}
+  .flow-row .nt.good{color:var(--good);font-weight:600}
+  .flow-row .nt.bad{color:var(--high);font-weight:600}
+  .flow-row .nt.flat{color:var(--muted);font-weight:600}
+  .flow-spark{display:flex;align-items:flex-end;gap:2px;height:34px;margin-top:12px}
+  .flow-spark .b{flex:1;min-width:3px;display:flex;flex-direction:column;justify-content:flex-end;height:100%}
+  .flow-spark .b i{display:block;border-radius:1px}
+  .flow-foot{font-size:11px;color:var(--muted);margin-top:8px}
+
+  /* backlog banner */
+  .backlog{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--border);
+    border-radius:10px;padding:14px 18px;margin-bottom:20px}
+  .backlog h2{font-size:13px;margin:0 0 12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+  .bk-stats{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px}
+  .bk-stat{display:flex;flex-direction:column;gap:2px}
+  .bk-stat .n{font-size:26px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+  .bk-stat .n.warn{color:var(--high)} .bk-stat .n.good{color:var(--good)}
+  .bk-stat .l{font-size:11px;color:var(--muted)}
+  .bk-bar{height:12px;background:#0d1117;border:1px solid var(--border);border-radius:7px;overflow:hidden}
+  .bk-bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--good),#2ea043);transition:width .4s}
+  .bk-progress{display:flex;align-items:center;gap:12px}
+  .bk-progress .bk-bar{flex:1}
+  .bk-progress .pct{
+    font-size:13px;font-weight:600;color:var(--good);min-width:158px;text-align:right;
+    display:flex;flex-direction:column;align-items:flex-end;gap:1px;line-height:1.15
+  }
+  .bk-progress .pct .pct-main{font-size:13px;font-weight:700;color:var(--good)}
+  .bk-progress .pct .pct-sub{font-size:11px;font-weight:500;color:var(--muted)}
+  .bk-activity{font-size:11px;color:var(--muted);margin-top:8px}
+  .bk-activity .warn-note{color:var(--high)}
+  .bk-priority{display:flex;flex-wrap:wrap;gap:8px 12px;margin-bottom:8px}
+  .bk-priority .title{width:100%;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .bk-priority .item{display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border:1px solid var(--border);border-radius:999px;font-size:11px;color:var(--muted)}
+  .bk-priority .item .pri{color:var(--text);font-weight:600}
+  .bk-priority .item .meta{color:var(--muted)}
+  .bk-priority .item.pri-P0{border-color:var(--p0)} .bk-priority .item.pri-P0 .pri{color:var(--p0)}
+  .bk-priority .item.pri-HIGH{border-color:#5a3a1a} .bk-priority .item.pri-HIGH .pri{color:var(--high)}
+  .bk-priority .item.pri-MEDIUM .pri{color:var(--medium)}
+  .bk-priority .item.pri-LOW .pri{color:var(--low)}
+  .bk-stall{font-size:11px;color:var(--muted);margin-bottom:8px}
+  .dead-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .dead-item{border:1px solid var(--border);background:var(--panel2);color:var(--muted);border-radius:6px;
+    padding:4px 7px;font:inherit;font-size:11px;cursor:pointer;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dead-item:hover{border-color:var(--accent);color:var(--text)}
+
+  /* autopilot outcome — steering card (mirrors an exported contract, :8000-owned) */
+  .outcome{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--border);
+    border-radius:10px;padding:14px 18px;margin-bottom:20px}
+  .outcome h2{font-size:13px;margin:0 0 12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;flex-wrap:wrap}
+  .oc-degraded{font-size:12.5px;color:var(--muted);line-height:1.55}
+  .oc-degraded a{font-weight:600}
+  .oc-status{display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:2px 9px;border-radius:999px;
+    border:1px solid var(--border);color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.4px}
+  .oc-status.ok{color:var(--good);border-color:#1f4d38}
+  .oc-status.attention,.oc-status.outcome_stalled{color:var(--high);border-color:#5a3a1a}
+  .oc-status.stalled{color:var(--p0);border-color:#4d1f1c}
+  .oc-stats{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-end;margin-bottom:8px}
+  .oc-stat{display:flex;flex-direction:column;gap:2px}
+  .oc-stat .n{font-size:22px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+  .oc-stat .n.warn{color:var(--high)} .oc-stat .n.bad{color:var(--p0)} .oc-stat .n.good{color:var(--good)}
+  .oc-stat .l{font-size:11px;color:var(--muted)}
+  .oc-blockers{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:4px}
+  .oc-blockers li{font-size:11.5px;color:var(--high);border-left:3px solid var(--high);padding:2px 0 2px 8px}
+  .oc-notice{font-size:10.5px;color:var(--muted);margin-top:10px;line-height:1.5}
+
+  /* kanban */
+  .kanban{display:grid;grid-template-columns:repeat(4,minmax(240px,1fr));gap:14px;align-items:start}
+  @media(max-width:1100px){.kanban{grid-template-columns:repeat(2,minmax(240px,1fr))}}
+  @media(max-width:620px){.kanban{grid-template-columns:1fr}}
+  .column{background:var(--panel);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;min-height:120px}
+  .column>h3{
+    font-size:13px;margin:0;padding:10px 12px;border-bottom:1px solid var(--border);
+    display:flex;align-items:center;gap:8px;position:sticky;top:57px;background:var(--panel);
+    border-radius:10px 10px 0 0;z-index:5;
+  }
+  .column>h3 .swatch{width:9px;height:9px;border-radius:50%}
+  .column[data-state=active] .swatch{background:var(--active)}
+  .column[data-state=blocked] .swatch{background:var(--blocked)}
+  .column[data-state=completed] .swatch{background:var(--completed)}
+  .column[data-state=archived] .swatch{background:var(--archived)}
+  .column .count{margin-left:auto;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+  .cards{padding:10px;display:flex;flex-direction:column;gap:8px;max-height:calc(100vh - 160px);overflow-y:auto}
+  .cards::-webkit-scrollbar{width:8px}.cards::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+  .card{
+    background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:9px 10px;
+    cursor:pointer;transition:border-color .12s,transform .06s;
+    border-left:3px solid var(--none);
+  }
+  /* Priority-colored left edge — reads at a glance across every column. */
+  .card.pri-P0{border-left-color:var(--p0)}
+  .card.pri-HIGH{border-left-color:var(--high)}
+  .card.pri-MEDIUM{border-left-color:var(--medium)}
+  .card.pri-LOW{border-left-color:var(--low)}
+  .card.pri-NONE{border-left-color:var(--none)}
+  .card:hover{border-color:var(--accent)} .card:active{transform:translateY(1px)}
+
+  /* Priority group header inside the Active & Blocked columns — mirrors the
+     backlog table rows (per-group handoff + open/done counts). */
+  .pri-group{display:flex;align-items:baseline;gap:8px;padding:6px 2px 3px;margin-top:4px;
+    border-top:1px solid var(--border);border-left:3px solid var(--none);padding-left:8px;
+    position:sticky;top:88px;background:var(--panel);z-index:4}
+  .pri-group:first-child{margin-top:0;border-top:none}
+  .pri-group .lab{font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase}
+  .pri-group .cnt{font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .pri-group.pri-P0{border-left-color:var(--p0)} .pri-group.pri-P0 .lab{color:var(--p0)}
+  .pri-group.pri-HIGH{border-left-color:var(--high)} .pri-group.pri-HIGH .lab{color:var(--high)}
+  .pri-group.pri-MEDIUM{border-left-color:var(--medium)} .pri-group.pri-MEDIUM .lab{color:var(--medium)}
+  .pri-group.pri-LOW{border-left-color:var(--low)} .pri-group.pri-LOW .lab{color:var(--low)}
+  .pri-group.pri-NONE{border-left-color:var(--none)} .pri-group.pri-NONE .lab{color:var(--muted)}
+  .card .ttl{font-size:12.5px;font-weight:600;line-height:1.35;margin-bottom:5px;word-break:break-word}
+  .card .meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+  .chip{font-size:10px;padding:1px 6px;border-radius:10px;border:1px solid var(--border);color:var(--muted);white-space:nowrap}
+  .chip.pri-P0{color:#fff;background:var(--p0);border-color:var(--p0)}
+  .chip.pri-HIGH{color:var(--high);border-color:#5a3a1a}
+  .chip.pri-MEDIUM{color:var(--medium);border-color:#4d3f14}
+  .chip.pri-LOW{color:var(--low);border-color:#1f4d24}
+  .chip.pri-NONE{display:none}
+  .chip.date{color:var(--muted)}
+  .chip.mark{color:var(--good);border-color:#1f4d38}
+  /* lifecycle (shelved-work) signal — a conservative derived hint, never gating */
+  .chip.lc{text-transform:uppercase;letter-spacing:.3px;font-size:9px;border-style:dashed}
+  .chip.lc-parked{color:var(--none);border-color:var(--none)}
+  .chip.lc-superseded{color:var(--medium);border-color:#4d3f14}
+  .card.lifecycle-parked,.card.lifecycle-superseded{opacity:.5}
+  .card.lifecycle-parked:hover,.card.lifecycle-superseded:hover{opacity:1}
+  .pri-group .parked-note{color:var(--none);font-style:italic}
+  .bar{height:5px;background:#0d1117;border-radius:3px;overflow:hidden;border:1px solid var(--border)}
+  .bar>span{display:block;height:100%;background:var(--good)}
+  .bar.est>span{background:repeating-linear-gradient(90deg,var(--medium),var(--medium) 4px,transparent 4px,transparent 8px)}
+  .progress-row{display:flex;align-items:center;gap:7px}
+  .progress-row .lbl{font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:34px;text-align:right}
+  .progress-row .bar{flex:1}
+  .card .blk{font-size:10.5px;color:var(--blocked);margin-top:4px}
+  .empty{color:var(--muted);font-size:12px;padding:14px;text-align:center}
+
+  /* modal */
+  .modal{position:fixed;inset:0;z-index:50;display:none;align-items:flex-start;justify-content:center;
+    background:rgba(1,4,9,.72);padding:40px 16px;overflow-y:auto}
+  .modal.open{display:flex}
+  .modal-body{background:var(--panel);border:1px solid var(--border);border-radius:12px;
+    width:min(900px,100%);max-height:calc(100vh - 80px);display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .modal-head{padding:16px 18px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--panel);border-radius:12px 12px 0 0}
+  .modal-head h2{margin:0 0 8px;font-size:16px;line-height:1.35;padding-right:30px}
+  .modal-head .meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .modal .close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--muted);
+    font-size:24px;line-height:1;cursor:pointer;padding:2px 6px;border-radius:6px}
+  .modal .close:hover{color:var(--text);background:var(--panel2)}
+  .modal-scroll{overflow-y:auto;padding:16px 20px}
+  .md{font-size:13.5px;line-height:1.6;word-wrap:break-word}
+  .md h1,.md h2,.md h3,.md h4{line-height:1.3;margin:18px 0 8px;font-weight:650}
+  .md h1{font-size:19px;border-bottom:1px solid var(--border);padding-bottom:5px}
+  .md h2{font-size:16px;border-bottom:1px solid var(--border);padding-bottom:4px}
+  .md h3{font-size:14.5px} .md h4{font-size:13.5px;color:var(--muted)}
+  .md p{margin:8px 0} .md ul,.md ol{margin:8px 0;padding-left:22px} .md li{margin:3px 0}
+  .md code{background:#0d1117;border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-size:12px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .md pre{background:#0d1117;border:1px solid var(--border);border-radius:8px;padding:12px;overflow-x:auto;margin:10px 0}
+  .md pre code{background:none;border:none;padding:0}
+  .md a{word-break:break-all}
+  .md blockquote{margin:8px 0;padding:2px 12px;border-left:3px solid var(--border);color:var(--muted)}
+  .md hr{border:none;border-top:1px solid var(--border);margin:14px 0}
+  .md table{border-collapse:collapse;margin:10px 0;display:block;overflow-x:auto;max-width:100%}
+  .md th,.md td{border:1px solid var(--border);padding:5px 9px;text-align:left;font-size:12.5px;vertical-align:top}
+  .md th{background:var(--panel2);font-weight:600}
+  .md .task{list-style:none;margin-left:-18px}
+  .md .task .box{color:var(--muted);margin-right:6px} .md .task.done .box{color:var(--good)}
+  .task-summary{display:flex;flex-wrap:wrap;gap:5px 16px;margin-bottom:12px}
+  .task-summary .t{font-size:12.5px} .task-summary .t.done{color:var(--muted);text-decoration:line-through}
+  .task-summary .t .box{color:var(--muted);margin-right:5px} .task-summary .t.done .box{color:var(--good)}
+  .loading{color:var(--muted);padding:20px;text-align:center}
+</style>
+</head>
+<body>
+<header>
+  <h1>Handoff Progress</h1>
+  <span class="sub" id="subline">project-wide work across active · blocked · completed · archived</span>
+  <nav>
+    <span class="badge" id="board-badge"><span class="dot"></span><span>board</span></span>
+    <a href="/kernel" title="MI210 kernel-R&D loop dashboard">Kernel-R&D</a>
+    <a id="autopilot-link" href="#" title="autopilot / live-inference dashboard">autopilot ↗</a>
+  </nav>
+</header>
+
+<main>
+  <section class="flow">
+    <h2>Flow — is the backlog moving?</h2>
+    <p class="why">Tasks closed vs newly filed, from handoff commits. Net = filed − closed;
+      <b>negative is good</b> (backlog shrinking). A completion % can't tell a stalled backlog
+      from a fast treadmill — this can.</p>
+    <div class="flow-head" id="flow-head"><span class="muted">loading…</span></div>
+    <div class="flow-spark" id="flow-spark"></div>
+    <div class="flow-rows" id="flow-rows"></div>
+    <div class="flow-foot" id="flow-foot"></div>
+  </section>
+
+  <section class="backlog">
+    <h2>Outstanding backlog — how far from done <span class="muted" style="text-transform:none;font-weight:400;letter-spacing:0">(context — see Flow above for movement)</span></h2>
+    <div class="bk-stats" id="backlog-stats"><span class="muted">loading…</span></div>
+    <div class="bk-priority" id="backlog-priority"></div>
+    <div class="bk-stall" id="backlog-stall"></div>
+    <div class="bk-progress">
+      <div class="bk-bar"><span id="backlog-fill" style="width:0%"></span></div>
+      <span class="pct" id="backlog-pct"></span>
+    </div>
+    <div class="bk-activity" id="backlog-activity"></div>
+  </section>
+
+  <section class="outcome" id="outcome-card">
+    <h2>Autopilot outcome — is the loop producing value?
+      <span class="badge" id="outcome-badge" style="text-transform:none;font-weight:400;margin-left:8px"><span class="dot"></span><span>contract</span></span>
+    </h2>
+    <div id="outcome-body"><span class="muted">loading…</span></div>
+  </section>
+
+  <section class="timeline">
+    <h2>Progress over time
+      <span class="badge" id="timeline-badge" style="text-transform:none;font-weight:400;margin-left:8px"><span class="dot"></span><span>timeline</span></span>
+    </h2>
+    <div class="charts">
+      <div>
+        <p class="chart-title">Task flow — newly filed vs completed per week <span id="tasks-total" class="muted"></span></p>
+        <svg id="chart-tasks" viewBox="0 0 600 200" role="img" aria-label="tasks newly filed vs completed per week"></svg>
+        <div class="legend">
+          <span><i style="background:var(--completed)"></i>completed</span>
+          <span><i style="background:var(--high)"></i>newly filed</span>
+        </div>
+      </div>
+      <div>
+        <p class="chart-title">Handoffs over time</p>
+        <svg id="chart-state" viewBox="0 0 600 200" role="img" aria-label="handoff counts over time"></svg>
+        <div class="legend">
+          <span><i style="background:var(--active)"></i>active (outstanding)</span>
+          <span><i style="background:var(--completed)"></i>completed</span>
+          <span><i style="background:var(--archived)"></i>archived</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="kanban" id="kanban">
+    <div class="column" data-state="active"><h3><span class="swatch"></span>Active<span class="count"></span></h3><div class="cards"></div></div>
+    <div class="column" data-state="blocked"><h3><span class="swatch"></span>Blocked<span class="count"></span></h3><div class="cards"></div></div>
+    <div class="column" data-state="completed"><h3><span class="swatch"></span>Completed<span class="count"></span></h3><div class="cards"></div></div>
+    <div class="column" data-state="archived"><h3><span class="swatch"></span>Archived<span class="count"></span></h3><div class="cards"></div></div>
+  </div>
+</main>
+
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="modal-body" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <button class="close" id="modal-close" aria-label="close">×</button>
+      <h2 id="m-title">…</h2>
+      <div class="meta" id="m-meta"></div>
+    </div>
+    <div class="modal-scroll">
+      <div id="m-tasks" class="task-summary"></div>
+      <div id="m-body" class="md"><div class="loading">loading…</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const $ = (s,r=document)=>r.querySelector(s);
+const el = (t,cls,txt)=>{const e=document.createElement(t); if(cls)e.className=cls; if(txt!=null)e.textContent=txt; return e;};
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+// autopilot dashboard lives on the orchestrator (:8000); same host, different port.
+$("#autopilot-link").href = `${location.protocol}//${location.hostname}:8000/dashboard`;
+
+async function getJSON(url){
+  const r = await fetch(url, {cache:"no-store"});
+  if(!r.ok && r.status!==404) throw new Error(url+" -> "+r.status);
+  return r.json();
+}
+function setBadge(id, cls){
+  const b=$(id); if(!b) return;
+  b.classList.remove("fresh","aging","stale","missing"); b.classList.add(cls||"fresh");
+}
+
+/* ---------------- board ---------------- */
+function progressRow(c){
+  const wrap = el("div","progress-row");
+  if(c.total>0){
+    const pct = Math.round(100*c.done/c.total);
+    const bar = el("div","bar"+(c.progress_source==="phases"?" est":""));
+    const span = el("span"); span.style.width = pct+"%"; bar.appendChild(span);
+    wrap.appendChild(bar);
+    wrap.appendChild(el("span","lbl",`${c.done}/${c.total}`));
+  } else if(c.progress_source==="markers" && c.done>0){
+    wrap.appendChild(el("span","chip mark",`✅ ${c.done}`));
+  } else {
+    return null;
+  }
+  return wrap;
+}
+function cardEl(c){
+  const card = el("div","card pri-"+(c.priority||"NONE")+(c.lifecycle?" lifecycle-"+c.lifecycle:"")); card.tabIndex=0; card.dataset.id=c.id;
+  card.appendChild(el("div","ttl",c.title||c.id));
+  const meta = el("div","meta");
+  if(c.priority && c.priority!=="NONE") meta.appendChild(el("span","chip pri-"+c.priority,c.priority));
+  if(c.lifecycle) meta.appendChild(el("span","chip lc lc-"+c.lifecycle, c.lifecycle));
+  // Recency chip: prefer the derived activity date (git/mtime-aware) over the raw
+  // frontmatter dates, and label it by where the date came from.
+  let d = c.activity, src = c.activity_source;
+  if(!d){ d = c.updated||c.created; src = c.updated?"updated":(c.created?"created":null); }
+  if(d){
+    const lbl = {git:"edited ", wip:"wip ", updated:"upd ", created:"new "}[src] || "";
+    meta.appendChild(el("span","chip date",lbl+d));
+  }
+  if(meta.children.length) card.appendChild(meta);
+  const pr = progressRow(c); if(pr) card.appendChild(pr);
+  if(c.blocked_on) card.appendChild(el("div","blk","⛔ "+c.blocked_on));
+  const open = ()=>openModal(c.id, c.title);
+  card.addEventListener("click", open);
+  card.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault(); open();}});
+  return card;
+}
+// Priority buckets in canonical order, matching the backend sort + backlog table.
+const PRI_ORDER = ["P0","HIGH","MEDIUM","LOW","NONE"];
+function groupByPriority(cards){
+  const m = new Map();
+  for(const c of cards){ const p=c.priority||"NONE"; (m.get(p)||m.set(p,[]).get(p)).push(c); }
+  // Canonical order first, then any unexpected priority label after it.
+  const order = [...PRI_ORDER.filter(p=>m.has(p)), ...[...m.keys()].filter(p=>!PRI_ORDER.includes(p))];
+  return order.map(p=>[p, m.get(p)]);
+}
+function priGroupHead(pri, group){
+  const head = el("div","pri-group pri-"+pri);
+  head.appendChild(el("span","lab", pri));
+  let open=0, done=0, tracked=0, parkedN=0, parkedOpen=0;
+  for(const c of group){
+    const o = (c.progress_source==="checkboxes") ? (c.total-c.done) : 0;
+    if(c.progress_source==="checkboxes"){ open+=o; done+=c.done; tracked++; }
+    if(c.lifecycle){ parkedN++; parkedOpen+=o; }
+  }
+  const n = group.length;
+  let cnt = `${n} handoff${n===1?"":"s"}`;
+  if(tracked) cnt += ` · ${open} open / ${done} done`;
+  head.appendChild(el("span","cnt", cnt));
+  // Surface the shelved slice right in the header so it doesn't read as live.
+  if(parkedN){
+    head.appendChild(el("span","cnt parked-note",
+      ` · ${parkedN} parked/superseded (${parkedOpen} open)`));
+  }
+  return head;
+}
+function renderBoard(data){
+  const cols = data.columns||{};
+  for(const state of ["active","blocked","completed","archived"]){
+    const colEl = $(`.column[data-state=${state}]`);
+    const list = colEl.querySelector(".cards");
+    const cards = cols[state]||[];
+    colEl.querySelector(".count").textContent = cards.length;
+    list.innerHTML="";
+    if(!cards.length){ list.appendChild(el("div","empty","—")); continue; }
+    // Active/Blocked: group by priority with a counted section header (cards
+    // already arrive priority-sorted from the backend). Completed/Archived keep
+    // their most-recent-first ordering and only carry the colored edge.
+    if(state==="active" || state==="blocked"){
+      for(const [pri, group] of groupByPriority(cards)){
+        list.appendChild(priGroupHead(pri, group));
+        for(const c of group) list.appendChild(cardEl(c));
+      }
+    } else {
+      for(const c of cards) list.appendChild(cardEl(c));
+    }
+  }
+  setBadge("#board-badge", (data._freshness&&data._freshness.staleness_class)||"fresh");
+  const gen = data.generated_at ? " · scanned " + data.generated_at.replace("T"," ").replace("Z"," UTC") : "";
+  $("#subline").textContent =
+    `${data.counts.active} active · ${data.counts.blocked} blocked · ${data.counts.completed} completed · ${data.counts.archived} archived${gen}`;
+  renderBacklog(data.backlog||{}, data.activity_today);
+  renderFlow(data.activity_window, data.activity_today);
+}
+
+/* ---------------- flow headline ----------------
+   Net = filed − closed. Negative = backlog shrinking = good, so the colour is
+   inverted relative to the raw magnitude. Same source as activity_today (git log
+   -p over handoffs/), just bucketed per day — no second source of truth. */
+function netCls(n){ return n<0 ? "good" : (n>0 ? "bad" : "flat"); }
+function netStr(n){ return (n>0?"+":"") + n; }
+function flowVerdict(n){
+  if(n<0) return "backlog shrinking";
+  if(n>0) return "backlog growing — treadmill";
+  return "breaking even";
+}
+function renderFlow(win, act){
+  const head=$("#flow-head"), rows=$("#flow-rows"), spark=$("#flow-spark");
+  if(!head) return;
+  const roll = (win && win.rollups) || {};
+  // Prefer the 7d roll-up as the headline; today alone is too noisy.
+  const primary = roll["7d"] || roll["1d"] ||
+    (act ? {days:1, boxes_checked:act.boxes_checked, boxes_added:act.boxes_added,
+            net:(act.boxes_added||0)-(act.boxes_checked||0), commits:act.commits,
+            handoffs_touched:act.handoffs_touched} : null);
+  head.innerHTML = "";
+  if(!primary){ head.innerHTML = '<span class="muted">flow unavailable (no git history)</span>'; return; }
+  const net = primary.net!=null ? primary.net : (primary.boxes_added-primary.boxes_checked);
+  const cls = netCls(net);
+  const nd = el("div","flow-net");
+  nd.innerHTML = '<span class="n '+cls+'">'+esc(netStr(net))+'</span>'+
+    '<span class="l">net tasks over '+esc(primary.days)+' days (filed − closed)</span>'+
+    '<span class="verdict '+cls+'">'+esc(flowVerdict(net))+'</span>';
+  head.appendChild(nd);
+  const sp = el("div","flow-split");
+  sp.innerHTML =
+    '<div class="fs"><span class="n closed">'+esc(primary.boxes_checked)+'</span><span class="l">tasks closed ('+esc(primary.days)+'d)</span></div>'+
+    '<div class="fs"><span class="n filed">'+esc(primary.boxes_added)+'</span><span class="l">tasks newly filed ('+esc(primary.days)+'d)</span></div>'+
+    '<div class="fs"><span class="n">'+esc(primary.commits)+'</span><span class="l">handoff commits ('+esc(primary.days)+'d)</span></div>'+
+    '<div class="fs"><span class="n">'+esc(primary.handoffs_touched)+'</span><span class="l">handoffs touched ('+esc(primary.days)+'d)</span></div>';
+  head.appendChild(sp);
+
+  // Roll-up rows: today / 7d / 14d, so the trend is visible next to the headline.
+  if(rows){
+    rows.innerHTML = "";
+    const labels = {"1d":"today", "7d":"last 7 days", "14d":"last 14 days"};
+    for(const k of ["1d","7d","14d"]){
+      const r = roll[k]; if(!r) continue;
+      const n = r.net!=null ? r.net : (r.boxes_added-r.boxes_checked);
+      const d = el("div","flow-row");
+      d.innerHTML = '<span class="w">'+esc(labels[k])+'</span>'+
+        '<span class="c">'+esc(r.boxes_checked)+' closed</span> · '+
+        '<span class="f">'+esc(r.boxes_added)+' filed</span> · net '+
+        '<span class="nt '+netCls(n)+'">'+esc(netStr(n))+'</span>';
+      rows.appendChild(d);
+    }
+    if(act && act.commits===0){
+      const d = el("div","flow-row");
+      d.innerHTML = '<span class="muted">no handoff commits yet today</span>';
+      rows.appendChild(d);
+    }else if(act && act.boxes_checked===0 && act.commits>0){
+      const d = el("div","flow-row");
+      d.innerHTML = '<span class="nt bad">today: prose-only updates — no checkboxes flipped</span>';
+      rows.appendChild(d);
+    }
+  }
+
+  // Per-day sparkline: closed above the axis (green), filed below (amber).
+  if(spark){
+    spark.innerHTML = "";
+    const days = Array.isArray(win && win.per_day) ? win.per_day.slice().reverse() : [];
+    const max = days.reduce((m,r)=>Math.max(m, r.boxes_checked||0, r.boxes_added||0), 0) || 1;
+    for(const r of days){
+      const b = el("div","b");
+      const hc = Math.round(16*(r.boxes_checked||0)/max);
+      const hf = Math.round(16*(r.boxes_added||0)/max);
+      b.innerHTML = '<i style="height:'+hc+'px;background:var(--good)"></i>'+
+                    '<i style="height:1px;background:#30363d"></i>'+
+                    '<i style="height:'+hf+'px;background:var(--high)"></i>';
+      b.title = r.date+": "+(r.boxes_checked||0)+" closed, "+(r.boxes_added||0)+" filed (net "+
+                netStr(r.net!=null?r.net:((r.boxes_added||0)-(r.boxes_checked||0)))+")";
+      spark.appendChild(b);
+    }
+  }
+}
+function renderBacklog(bk, act){
+  const stats = $("#backlog-stats"); if(!stats) return;
+  const priorityWrap = $("#backlog-priority");
+  const stallWrap = $("#backlog-stall");
+
+  const addItem = (n, l, cls="") => {
+    const s = el("div","bk-stat");
+    s.innerHTML = '<span class="n '+cls+'">'+esc(n)+"</span><span class=\"l\">"+esc(l)+"</span>";
+    stats.appendChild(s);
+  };
+
+  const items = [
+    {n: bk.open_handoffs, l: "handoffs outstanding", cls: "warn"},
+    {n: bk.open_tasks, l: "open tasks (active+blocked)", cls: "warn"},
+    {n: bk.open_tasks_done, l: "tasks done in open handoffs", cls: "good"},
+    {n: bk.all_tasks_done, l: "tasks completed (all tracked)", cls: "good"},
+    {n: bk.open_untracked_handoffs, l: "outstanding without a checklist", cls: ""},
+  ];
+  stats.innerHTML = "";
+  for(const it of items){
+    if(it.n==null) continue;
+    addItem(it.n, it.l, it.cls);
+  }
+  if(priorityWrap){
+    priorityWrap.innerHTML = "";
+    const buckets = Array.isArray(bk.priority_buckets) ? bk.priority_buckets : [];
+    if(buckets.length){
+      const title = el("div","title","");
+      title.textContent = "priority buckets";
+      priorityWrap.appendChild(title);
+      for(const b of buckets){
+        const open = (b.open_tasks_total || 0) - (b.open_tasks_done || 0);
+        const bits = [];
+        bits.push((b.open_handoffs||0)+" handoff"+(b.open_handoffs===1?"":"s"));
+        if((b.open_tasks_total||0) > 0){
+          bits.push((open||0)+" open task"+((open===1)?"":"s")+
+                    " / "+b.open_tasks_done+" done");
+        }
+        if((b.open_untracked_handoffs||0) > 0){
+          bits.push(b.open_untracked_handoffs+" untracked");
+        }
+        const item = el("span","item pri-"+(b.priority || "NONE"));
+        const pri = el("span","pri", b.priority || "NONE");
+        item.appendChild(pri);
+        const meta = el("span","meta", bits.join(" · "));
+        item.appendChild(meta);
+        priorityWrap.appendChild(item);
+      }
+    }
+  }
+
+  if(stallWrap){
+    const over30 = (bk.dead_lane&&bk.dead_lane.over_30) || 0;
+    const over90 = (bk.dead_lane&&bk.dead_lane.over_90) || 0;
+    const unknown = (bk.dead_lane&&bk.dead_lane.unknown_activity) || 0;
+    const candidates = (bk.dead_lane&&Array.isArray(bk.dead_lane.candidates)) ? bk.dead_lane.candidates : [];
+    const total = bk.open_handoffs || 0;
+    if(total > 0){
+      const parts = [];
+      if(over90){ parts.push(`${over90} untouched >90d`); }
+      if(over30){ parts.push(`${over30} untouched >30d`); }
+      if(parts.length){
+        let text = `dead-lane: ${parts.join(" · ")}`;
+        if(unknown){ text += ` · ${unknown} missing activity date`; }
+        stallWrap.textContent = text;
+      }else if(unknown){
+        stallWrap.textContent = `dead-lane: ${unknown} missing activity date`;
+      }else{
+        stallWrap.textContent = "dead-lane: 0";
+      }
+      if(candidates.length){
+        const list = el("div","dead-list");
+        for(const c of candidates){
+          const age = c.age_days==null ? "no date" : `${c.age_days}d`;
+          const pri = c.priority && c.priority!=="NONE" ? `${c.priority} · ` : "";
+          const item = el("button","dead-item",`${pri}${age} · ${c.title || c.id}`);
+          item.type = "button";
+          item.addEventListener("click", ()=>openModal(c.id, c.title || c.id));
+          list.appendChild(item);
+        }
+        stallWrap.appendChild(list);
+      }
+    } else {
+      stallWrap.textContent = "";
+    }
+  }
+
+  const pctOpen = bk.pct_open_done;
+  $("#backlog-fill").style.width = (pctOpen==null?0:pctOpen)+"%";
+  const pctEl = $("#backlog-pct");
+  if(pctEl){
+    pctEl.innerHTML = "";
+    if(pctOpen==null){
+      pctEl.textContent = "—";
+    }else{
+      pctEl.appendChild(el("span","pct-main", Number(pctOpen).toFixed(1)+"% done · open scope"));
+    }
+    // Keep BOTH ratios available and unambiguously distinguished: open scope
+    // (active+blocked handoffs) vs all scope (incl. completed/archived).
+    if(bk.pct_all_done!=null){
+      pctEl.appendChild(el("span","pct-sub", Number(bk.pct_all_done).toFixed(1)+"% done · all scope"));
+    }
+  }
+
+  // Today's committed activity: the % above only moves on checkbox flips, so
+  // name the prose-only condition explicitly instead of looking frozen.
+  const actEl = $("#backlog-activity");
+  if(actEl){
+    if(!act){
+      actEl.textContent = "";
+    }else if(act.commits === 0){
+      actEl.textContent = "today: no handoff commits yet";
+    }else{
+      let msg = `today: ${act.commits} handoff commit${act.commits===1?"":"s"} · `+
+                `${act.handoffs_touched} handoff${act.handoffs_touched===1?"":"s"} touched · `+
+                `${act.boxes_checked} task${act.boxes_checked===1?"":"s"} checked off · `+
+                `${act.boxes_added} added`;
+      actEl.innerHTML = esc(msg) + (act.boxes_checked===0
+        ? ' <span class="warn-note">— prose-only updates; no checkboxes flipped, so the % above cannot move</span>' : "");
+    }
+  }
+}
+async function loadBoard(){
+  try{ renderBoard(await getJSON("/api/handoff_board")); }
+  catch(e){ setBadge("#board-badge","stale"); console.error(e); }
+}
+
+/* ---------------- autopilot outcome (steering) ----------------
+   Mirrors a file-backed contract PRODUCED BY the orchestrator loop (:8000); the
+   hub never reaches that loop's live state, so an absent export degrades honestly
+   to a "see :8000" card rather than fabricating outcome numbers. */
+function ocNum(v){ return (typeof v==="number"&&isFinite(v)) ? v : "—"; }
+function ocPct(rateObj){
+  if(!rateObj || rateObj.rate==null) return "—";
+  return (rateObj.rate*100).toFixed(0)+"%";   // rate is a fraction 0..1
+}
+function ocStat(n, l, cls){
+  return '<div class="oc-stat"><span class="n '+(cls||"")+'">'+esc(n)+
+    '</span><span class="l">'+esc(l)+'</span></div>';
+}
+function renderOutcome(d){
+  const body=$("#outcome-body"); if(!body) return;
+  const op = d.outcome_progress || {};
+  const st = op.status || "missing";
+  setBadge("#outcome-badge", (d._freshness&&d._freshness.staleness_class)||"missing");
+  const notice = d.observation_notice || "";
+  const ap = `${location.protocol}//${location.hostname}:8000/dashboard`;
+
+  // Honest degradation: no export, or the exporter reported no journal.
+  if(["missing","disabled","unknown"].includes(st) || d.error){
+    const why = d.error ? esc(d.error)
+      : (st==="disabled" ? "outcome tracking is disabled in the export."
+      : "the exporter found no autopilot journal.");
+    body.innerHTML =
+      '<div class="oc-degraded">No outcome contract to mirror — '+why+
+      ' The autopilot loop’s live keepable / wasted-eval / learning-excluded rates and '+
+      'frontier/baseline-promotion stall counters, plus every steering action '+
+      '(pause · rewind · promote), live on the '+
+      '<a href="'+esc(ap)+'" target="_blank" rel="noopener">orchestrator dashboard (:8000) ↗</a>. '+
+      'This hub only mirrors a file-backed export the loop does not write yet.</div>'+
+      (notice?'<div class="oc-notice">'+esc(notice)+'</div>':"");
+    return;
+  }
+
+  const rates = op.rates || {};
+  const win = rates.recent_window_trials;
+  const tsf = op.trials_since_frontier, maxf = op.max_trials_since_frontier;
+  const tsp = op.trials_since_promotion, maxp = op.max_trials_since_promotion;
+  const frontierStalled = (tsf!=null && maxf!=null && maxf>=0 && tsf>maxf) ||
+    (op.latest_frontier_trial_id==null && op.latest_trial_id!=null);
+  const promoStalled = (tsp!=null && maxp!=null && maxp>=0 && tsp>maxp) ||
+    (op.latest_promotion_trial_id==null && op.latest_trial_id!=null);
+  const we = rates.wasted_eval_rate, le = rates.learning_excluded_rate;
+
+  const statusCls = ["ok","attention","outcome_stalled"].includes(st) ? st : "attention";
+  let h = '<span class="oc-status '+esc(statusCls)+'">outcome: '+esc(st)+'</span>';
+
+  h += '<div class="oc-stats">';
+  h += ocStat(ocNum(op.latest_trial_id), "latest trial");
+  h += ocStat(ocNum(tsf)+(maxf!=null?' / '+maxf:''), "trials since frontier", frontierStalled?"bad":"");
+  h += ocStat(ocNum(tsp)+(maxp!=null?' / '+maxp:''), "trials since promotion", promoStalled?"bad":"");
+  h += ocStat(ocNum(op.baseline_promotions), "baseline promotions", (op.baseline_promotions===0)?"warn":"good");
+  h += '</div>';
+
+  h += '<div class="oc-stats">';
+  h += ocStat(ocPct(rates.keepable_rate), "keepable", "good");
+  h += ocStat(ocPct(we), "wasted-eval", (we&&we.rate>0)?"warn":"");
+  h += ocStat(ocPct(le), "learning-excluded", (le&&le.rate>0)?"warn":"");
+  if(win!=null){
+    h += '<div class="oc-stat"><span class="n" style="font-size:13px;color:var(--muted)">last '+
+      esc(ocNum(win))+'</span><span class="l">rate window (trials)</span></div>';
+  }
+  h += '</div>';
+
+  const blockers = Array.isArray(op.blockers)?op.blockers:[];
+  if(blockers.length){
+    h += '<ul class="oc-blockers">';
+    for(const b of blockers) h += '<li>'+esc(b)+'</li>';
+    h += '</ul>';
+  }
+  if(notice) h += '<div class="oc-notice">'+esc(notice)+'</div>';
+  body.innerHTML = h;
+}
+async function loadOutcome(){
+  try{ renderOutcome(await getJSON("/api/outcome")); }
+  catch(e){
+    setBadge("#outcome-badge","stale");
+    $("#outcome-body").innerHTML='<div class="oc-degraded">failed to load outcome contract</div>';
+    console.error(e);
+  }
+}
+
+/* ---------------- modal ---------------- */
+const modal = $("#modal");
+function closeModal(){ modal.classList.remove("open"); modal.setAttribute("aria-hidden","true"); }
+function openModal(id, title){
+  modal.classList.add("open"); modal.setAttribute("aria-hidden","false");
+  $("#m-title").textContent = title||id;
+  $("#m-meta").innerHTML=""; $("#m-tasks").innerHTML=""; $("#m-body").innerHTML='<div class="loading">loading…</div>';
+  loadDetail(id);
+}
+$("#modal-close").addEventListener("click", closeModal);
+modal.addEventListener("click", e=>{ if(e.target===modal) closeModal(); });
+document.addEventListener("keydown", e=>{ if(e.key==="Escape") closeModal(); });
+
+async function loadDetail(id){
+  let d;
+  try{ d = await getJSON("/api/handoff_detail?id="+encodeURIComponent(id)); }
+  catch(e){ $("#m-body").innerHTML='<div class="loading">failed to load</div>'; return; }
+  if(d.error){ $("#m-body").innerHTML='<div class="loading">'+esc(d.error)+'</div>'; return; }
+  $("#m-title").textContent = d.title||id;
+  const meta=$("#m-meta");
+  meta.innerHTML="";
+  if(d.priority && d.priority!=="NONE") meta.appendChild(el("span","chip pri-"+d.priority,d.priority));
+  meta.appendChild(el("span","chip date","state: "+d.state));
+  if(d.created) meta.appendChild(el("span","chip date","created "+d.created));
+  if(d.updated) meta.appendChild(el("span","chip date","updated "+d.updated));
+  if(d.total>0) meta.appendChild(el("span","chip mark",`${d.done}/${d.total} tasks`));
+  // task summary (checkbox files only)
+  const ts=$("#m-tasks"); ts.innerHTML="";
+  if(d.tasks && d.tasks.length){
+    for(const t of d.tasks){
+      const item=el("span","t"+(t.done?" done":""));
+      item.innerHTML='<span class="box">'+(t.done?"☑":"☐")+'</span>'+esc(t.text);
+      ts.appendChild(item);
+    }
+  }
+  $("#m-body").innerHTML = mdToHtml(d.body||"");
+}
+
+/* ---------------- minimal markdown -> html (offline, no deps) ---------------- */
+function inlineMd(s){
+  s = esc(s);
+  // Protect inline-code spans BEFORE emphasis/link processing so markdown
+  // metacharacters inside code (e.g. `a * b`) are not reinterpreted.
+  const codes = [];
+  s = s.replace(/`([^`]+)`/g,(m,c)=>{ codes.push(c); return "\u0000"+(codes.length-1)+"\u0000"; });
+  s = s.replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>");
+  s = s.replace(/(^|[^*])\*([^*\n]+)\*/g,"$1<em>$2</em>");
+  s = s.replace(/\[([^\]]+)\]\(([^)\s]+)[^)]*\)/g,(m,t,h)=>{
+    if(/^javascript:/i.test(h)) return t;
+    // h is already escaped by esc() above — do NOT escape again (would double-encode &).
+    const safe = /^(https?:\/\/|\/|#|\.\.?\/)/i.test(h) ? h : "#";
+    return '<a href="'+safe+'" target="_blank" rel="noopener">'+t+'</a>';
+  });
+  s = s.replace(/\u0000(\d+)\u0000/g,(m,i)=>"<code>"+codes[+i]+"</code>");
+  return s;
+}
+function mdToHtml(md){
+  const lines = String(md).replace(/\r/g,"").split("\n");
+  let out=[], i=0, inCode=false, codeBuf=[];
+  const flushCode=()=>{ out.push("<pre><code>"+esc(codeBuf.join("\n"))+"</code></pre>"); codeBuf=[]; };
+  while(i<lines.length){
+    let line=lines[i];
+    // fenced code
+    const fence=line.match(/^\s*```/);
+    if(fence){ if(inCode){ inCode=false; flushCode(); } else { inCode=true; } i++; continue; }
+    if(inCode){ codeBuf.push(line); i++; continue; }
+    // table: a header row followed by a |---| separator
+    if(/^\s*\|/.test(line) && i+1<lines.length && /^\s*\|?[\s:|-]+\|[\s:|-]*$/.test(lines[i+1]) && lines[i+1].includes("-")){
+      const rows=[];
+      while(i<lines.length && /^\s*\|/.test(lines[i])){ rows.push(lines[i]); i++; }
+      out.push(renderTable(rows)); continue;
+    }
+    // headings
+    const h=line.match(/^(#{1,6})\s+(.*)$/);
+    if(h){ const lv=h[1].length; out.push(`<h${lv}>`+inlineMd(h[2])+`</h${lv}>`); i++; continue; }
+    // hr
+    if(/^\s*([-*_])\1\1+\s*$/.test(line)){ out.push("<hr>"); i++; continue; }
+    // blockquote
+    if(/^\s*>\s?/.test(line)){
+      const buf=[]; while(i<lines.length && /^\s*>\s?/.test(lines[i])){ buf.push(lines[i].replace(/^\s*>\s?/,"")); i++; }
+      out.push("<blockquote>"+mdToHtml(buf.join("\n"))+"</blockquote>"); continue;
+    }
+    // lists (grouped)
+    if(/^\s*([-*+]|\d+\.)\s+/.test(line)){
+      const ordered=/^\s*\d+\.\s+/.test(line);
+      const items=[];
+      while(i<lines.length && /^\s*([-*+]|\d+\.)\s+/.test(lines[i])){
+        let it=lines[i].replace(/^\s*([-*+]|\d+\.)\s+/,"");
+        const cb=it.match(/^\[([ xX])\]\s*(.*)$/);
+        if(cb){ const done=cb[1].toLowerCase()==="x";
+          items.push('<li class="task'+(done?" done":"")+'"><span class="box">'+(done?"☑":"☐")+"</span>"+inlineMd(cb[2])+"</li>");
+        } else items.push("<li>"+inlineMd(it)+"</li>");
+        i++;
+      }
+      out.push((ordered?"<ol>":"<ul>")+items.join("")+(ordered?"</ol>":"</ul>")); continue;
+    }
+    // blank
+    if(/^\s*$/.test(line)){ i++; continue; }
+    // paragraph (gather until blank / block start)
+    const buf=[line]; i++;
+    while(i<lines.length && !/^\s*$/.test(lines[i]) && !/^\s*(#{1,6}\s|[-*+]\s|\d+\.\s|>|\|| {0,3}```)/.test(lines[i])){
+      buf.push(lines[i]); i++;
+    }
+    out.push("<p>"+inlineMd(buf.join(" "))+"</p>");
+  }
+  if(inCode) flushCode();
+  return out.join("\n");
+}
+function splitRow(r){ return r.trim().replace(/^\|/,"").replace(/\|\s*$/,"").split("|").map(c=>c.trim()); }
+function renderTable(rows){
+  if(rows.length<2) return "";
+  const head=splitRow(rows[0]);
+  const body=rows.slice(2).map(splitRow);
+  let h="<table><thead><tr>"+head.map(c=>"<th>"+inlineMd(c)+"</th>").join("")+"</tr></thead><tbody>";
+  for(const r of body){ h+="<tr>"+r.map(c=>"<td>"+inlineMd(c)+"</td>").join("")+"</tr>"; }
+  return h+"</tbody></table>";
+}
+
+/* ---------------- timeline charts (hand-rolled SVG) ---------------- */
+function svgNS(tag,attrs){ const e=document.createElementNS("http://www.w3.org/2000/svg",tag);
+  for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
+function barChart(svg, weeks){
+  const W=600,H=200,pad={l:34,r:8,t:10,b:36};
+  svg.innerHTML="";
+  if(!weeks.length){ svg.appendChild(svgNS("text",{x:W/2,y:H/2,fill:"#8b949e","text-anchor":"middle","font-size":12})).textContent="no data"; return; }
+  const comp=w=>(w.completed!=null?w.completed:w.tasks_completed)||0;
+  const filed=w=>(w.newly_filed!=null?w.newly_filed:w.opened)||0;
+  const max=Math.max(1,...weeks.map(w=>Math.max(comp(w),filed(w))));
+  const iw=W-pad.l-pad.r, ih=H-pad.t-pad.b, bw=iw/weeks.length;
+  for(let g=0;g<=2;g++){ const val=Math.round(max*g/2); const y=pad.t+ih-(ih*g/2);
+    svg.appendChild(svgNS("line",{x1:pad.l,y1:y,x2:W-pad.r,y2:y,stroke:"#21262d","stroke-width":1}));
+    const t=svgNS("text",{x:pad.l-5,y:y+3,fill:"#8b949e","font-size":9,"text-anchor":"end"}); t.textContent=val; svg.appendChild(t);
+  }
+  // completed bars
+  weeks.forEach((w,idx)=>{
+    const bh=ih*comp(w)/max, x=pad.l+idx*bw+bw*0.15, y=pad.t+ih-bh;
+    const rect=svgNS("rect",{x,y,width:bw*0.7,height:Math.max(0,bh),fill:"#3fb950",rx:1});
+    const tt=svgNS("title"); tt.textContent=`${w.week}: ${comp(w)} completed · ${filed(w)} newly filed`; rect.appendChild(tt);
+    svg.appendChild(rect);
+    if(idx%Math.ceil(weeks.length/8||1)===0){
+      const t=svgNS("text",{x:pad.l+idx*bw+bw/2,y:H-pad.b+14,fill:"#8b949e","font-size":8,"text-anchor":"middle"});
+      t.textContent=w.week.replace(/^\d+-/,""); svg.appendChild(t);
+    }
+  });
+  // newly filed line overlay; old artifacts fall back to legacy opened.
+  const pts=weeks.map((w,idx)=>`${(pad.l+idx*bw+bw/2).toFixed(1)},${(pad.t+ih-ih*filed(w)/max).toFixed(1)}`).join(" ");
+  svg.appendChild(svgNS("polyline",{points:pts,fill:"none",stroke:"#f0883e","stroke-width":1.6,"stroke-linejoin":"round"}));
+}
+function lineChart(svg, series){
+  const W=600,H=200,pad={l:34,r:8,t:10,b:24};
+  svg.innerHTML="";
+  if(!series.length){ svg.appendChild(svgNS("text",{x:W/2,y:H/2,fill:"#8b949e","text-anchor":"middle","font-size":12})).textContent="no data"; return; }
+  const keys=[["active","#58a6ff"],["completed","#3fb950"],["archived","#8b949e"]];
+  const max=Math.max(1,...series.flatMap(p=>keys.map(([k])=>p[k]||0)));
+  const iw=W-pad.l-pad.r, ih=H-pad.t-pad.b, n=series.length;
+  const X=idx=> n<=1?pad.l:pad.l+iw*idx/(n-1);
+  const Y=v=> pad.t+ih-(ih*v/max);
+  for(let g=0;g<=2;g++){ const val=Math.round(max*g/2); const y=pad.t+ih-(ih*g/2);
+    svg.appendChild(svgNS("line",{x1:pad.l,y1:y,x2:W-pad.r,y2:y,stroke:"#21262d","stroke-width":1}));
+    const t=svgNS("text",{x:pad.l-5,y:y+3,fill:"#8b949e","font-size":9,"text-anchor":"end"}); t.textContent=val; svg.appendChild(t);
+  }
+  for(const [k,color] of keys){
+    const pts=series.map((p,idx)=>`${X(idx).toFixed(1)},${Y(p[k]||0).toFixed(1)}`).join(" ");
+    svg.appendChild(svgNS("polyline",{points:pts,fill:"none",stroke:color,"stroke-width":1.8,"stroke-linejoin":"round"}));
+  }
+  // x-axis end labels
+  const first=series[0].date, last=series[series.length-1].date;
+  const lt=svgNS("text",{x:pad.l,y:H-6,fill:"#8b949e","font-size":8}); lt.textContent=first; svg.appendChild(lt);
+  const rt=svgNS("text",{x:W-pad.r,y:H-6,fill:"#8b949e","font-size":8,"text-anchor":"end"}); rt.textContent=last; svg.appendChild(rt);
+}
+async function loadTimeline(){
+  let d;
+  try{ d = await getJSON("/api/handoff_timeline"); }
+  catch(e){ setBadge("#timeline-badge","stale"); return; }
+  barChart($("#chart-tasks"), d.tasks_weekly||[]);
+  lineChart($("#chart-state"), d.series||[]);
+  const completed=(d.totals&&d.totals.tasks_completed)||0;
+  const filed=(d.totals&&((d.totals.tasks_newly_filed!=null)
+    ?d.totals.tasks_newly_filed:d.totals.tasks_opened))||0;
+  $("#tasks-total").textContent = (completed||filed)
+    ?`(${completed} completed · ${filed} newly filed)`:"";
+  // Intake belongs next to the flow headline too: a completion line without an
+  // intake line is exactly the blindness this dashboard had.
+  const foot = $("#flow-foot");
+  if(foot){
+    foot.textContent = (completed||filed)
+      ? `all tracked history: ${filed} tasks newly filed · ${completed} completed `
+        + `(net ${filed-completed>0?"+":""}${filed-completed}) — see the weekly task-flow chart below`
+      : "";
+  }
+  setBadge("#timeline-badge", (d._freshness&&d._freshness.staleness_class)||"fresh");
+}
+
+/* ---------------- boot ---------------- */
+loadBoard(); loadTimeline(); loadOutcome();
+setInterval(loadBoard, 45000);
+setInterval(loadTimeline, 120000);
+setInterval(loadOutcome, 60000);
+</script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+{
+  "answers": [
+    {
+      "run_task": "4",
+      "run_task_lg": "4",
+      "task_id": "tm7-smoke-1"
+    },
+    {
+      "run_task": "A common placeholder text.",
+      "run_task_lg": "A common placeholder text.",
+      "task_id": "tm7-smoke-2"
+    },
+    {
+      "run_task": "Paris",
+      "run_task_lg": "Paris",
+      "task_id": "tm7-smoke-3"
+    },
+    {
+      "run_task": "def add(a, b): \"Return the sum of two numbers.\"",
+      "run_task_lg": "def add(a, b): \"Return the sum of two numbers.\"",
+      "task_id": "tm7-smoke-4"
+    }
+  ],
+  "arm_success_ok": [
+    true,
+    true,
+    true,
+    true
+  ],
+  "n_fail": 0,
+  "n_parity_chain_coverage_fail": 0,
+  "n_pass": 4,
+  "n_tasks": 4,
+  "n_trace_coverage_fail": 4,
+  "output_equivalence_ok": [
+    true,
+    true,
+    true,
+    true
+  ],
+  "overall": "PASS",
+  "parity_chain_lengths": [
+    {
+      "run_task": 1,
+      "run_task_lg": 1
+    },
+    {
+      "run_task": 1,
+      "run_task_lg": 1
+    },
+    {
+      "run_task": 1,
+      "run_task_lg": 1
+    },
+    {
+      "run_task": 1,
+      "run_task_lg": 1
+    }
+  ],
+  "parity_chain_sources": [
+    {
+      "run_task": "result_role_history",
+      "run_task_lg": "result_role_history"
+    },
+    {
+      "run_task": "result_role_history",
+      "run_task_lg": "result_role_history"
+    },
+    {
+      "run_task": "result_role_history",
+      "run_task_lg": "result_role_history"
+    },
+    {
+      "run_task": "result_role_history",
+      "run_task_lg": "result_role_history"
+    }
+  ],
+  "stamp": "20260721T040534Z",
+  "task_ids": [
+    "tm7-smoke-1",
+    "tm7-smoke-2",
+    "tm7-smoke-3",
+    "tm7-smoke-4"
+  ],
+  "trace_chain_lengths": [
+    {
+      "run_task": 0,
+      "run_task_lg": 0
+    },
+    {
+      "run_task": 0,
+      "run_task_lg": 0
+    },
+    {
+      "run_task": 0,
+      "run_task_lg": 0
+    },
+    {
+      "run_task": 0,
+      "run_task_lg": 0
+    }
+  ]
+}

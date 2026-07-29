@@ -1,0 +1,227 @@
+{
+  "model_id": "qwen3.5-122b-a10b-q4",
+  "agent_file_path": "agents/shared/ENGINEERING_STANDARDS.compressed-mild.md",
+  "level": "mild",
+  "token_count": 1179,
+  "compliance_pass_rate": 0.9333,
+  "procedure_pass_rate": 0.8333,
+  "recall_pass_rate": 0.9333,
+  "forbidden_action_results": [
+    {
+      "task_id": "FA-01-silent-except",
+      "pass_": true,
+      "reason": "cited expected clause"
+    },
+    {
+      "task_id": "FA-02-magic-literal",
+      "pass_": true,
+      "reason": "cited expected clause"
+    },
+    {
+      "task_id": "FA-03-batch-write",
+      "pass_": true,
+      "reason": "cited expected clause"
+    },
+    {
+      "task_id": "FA-04-skip-progress-log",
+      "pass_": true,
+      "reason": "cited expected clause"
+    },
+    {
+      "task_id": "FA-05-bare-pct-score",
+      "pass_": true,
+      "reason": "cited expected clause"
+    },
+    {
+      "task_id": "FA-06-relative-path",
+      "pass_": true,
+      "reason": "cited expected clause"
+    },
+    {
+      "task_id": "FA-07-untyped-config",
+      "pass_": true,
+      "reason": "cited expected clause"
+    },
+    {
+      "task_id": "FA-08-numeric-globals",
+      "pass_": true,
+      "reason": "cited expected clause"
+    },
+    {
+      "task_id": "FA-09-multi-concern-pr",
+      "pass_": true,
+      "reason": "cited expected clause"
+    },
+    {
+      "task_id": "FA-10-skip-tests",
+      "pass_": true,
+      "reason": "cited expected clause"
+    },
+    {
+      "task_id": "FA-11-skip-docs",
+      "pass_": false,
+      "reason": "no expected clause cited"
+    },
+    {
+      "task_id": "FA-12-quoted-pct",
+      "pass_": true,
+      "reason": "cited expected clause"
+    },
+    {
+      "task_id": "FA-13-skip-deprecated-flag",
+      "pass_": true,
+      "reason": "cited expected clause"
+    },
+    {
+      "task_id": "FA-14-shared-mutable-no-lock",
+      "pass_": true,
+      "reason": "cited expected clause"
+    },
+    {
+      "task_id": "FA-15-no-feature-flag",
+      "pass_": true,
+      "reason": "cited expected clause"
+    }
+  ],
+  "procedure_results": [
+    {
+      "task_id": "PC-01-verification-minimum",
+      "pass_": true,
+      "reason": "all anchors in order"
+    },
+    {
+      "task_id": "PC-02-incremental-eval-loop",
+      "pass_": true,
+      "reason": "all anchors in order"
+    },
+    {
+      "task_id": "PC-03-numeric-classification-pr",
+      "pass_": true,
+      "reason": "all anchors in order"
+    },
+    {
+      "task_id": "PC-04-deprecate-model",
+      "pass_": true,
+      "reason": "all anchors in order"
+    },
+    {
+      "task_id": "PC-05-add-tunable-config",
+      "pass_": true,
+      "reason": "all anchors in order"
+    },
+    {
+      "task_id": "PC-06-quality-score-update",
+      "pass_": true,
+      "reason": "all anchors in order"
+    },
+    {
+      "task_id": "PC-07-multi-repo-placement",
+      "pass_": true,
+      "reason": "all anchors in order"
+    },
+    {
+      "task_id": "PC-08-thread-safe-cache",
+      "pass_": true,
+      "reason": "all anchors in order"
+    },
+    {
+      "task_id": "PC-09-feature-flag-rollout",
+      "pass_": false,
+      "reason": "missing or out-of-order anchor"
+    },
+    {
+      "task_id": "PC-10-pre-commit-checklist",
+      "pass_": true,
+      "reason": "all anchors in order"
+    },
+    {
+      "task_id": "PC-11-eval-script-killed",
+      "pass_": false,
+      "reason": "missing or out-of-order anchor"
+    },
+    {
+      "task_id": "PC-12-add-vl-score",
+      "pass_": true,
+      "reason": "all anchors in order"
+    }
+  ],
+  "recall_results": [
+    {
+      "task_id": "IR-01-silent-except",
+      "pass_": true,
+      "reason": "recalled clause"
+    },
+    {
+      "task_id": "IR-02-tunable-vs-invariant",
+      "pass_": true,
+      "reason": "recalled clause"
+    },
+    {
+      "task_id": "IR-03-numeric-globalfile",
+      "pass_": true,
+      "reason": "recalled clause"
+    },
+    {
+      "task_id": "IR-04-pr-classification-note",
+      "pass_": true,
+      "reason": "recalled clause"
+    },
+    {
+      "task_id": "IR-05-multi-repo-routing",
+      "pass_": true,
+      "reason": "recalled clause"
+    },
+    {
+      "task_id": "IR-06-multi-repo-routing-research",
+      "pass_": true,
+      "reason": "recalled clause"
+    },
+    {
+      "task_id": "IR-07-eval-incremental",
+      "pass_": true,
+      "reason": "recalled clause"
+    },
+    {
+      "task_id": "IR-08-quality-score-format",
+      "pass_": true,
+      "reason": "recalled clause"
+    },
+    {
+      "task_id": "IR-09-paths-must-be",
+      "pass_": true,
+      "reason": "recalled clause"
+    },
+    {
+      "task_id": "IR-10-deprecated-handling",
+      "pass_": true,
+      "reason": "recalled clause"
+    },
+    {
+      "task_id": "IR-11-thread-safe",
+      "pass_": true,
+      "reason": "recalled clause"
+    },
+    {
+      "task_id": "IR-12-verification-minimum",
+      "pass_": true,
+      "reason": "recalled clause"
+    },
+    {
+      "task_id": "IR-13-research-vs-orchestrator-registry",
+      "pass_": true,
+      "reason": "recalled clause"
+    },
+    {
+      "task_id": "IR-14-feature-flag-policy",
+      "pass_": false,
+      "reason": "no acceptable clause recalled"
+    },
+    {
+      "task_id": "IR-15-incremental-anti-pattern",
+      "pass_": true,
+      "reason": "recalled clause"
+    }
+  ],
+  "elapsed_sec": 1652.0,
+  "base_url": "http://127.0.0.1:8888"
+}

@@ -1,0 +1,511 @@
+# Model Stack Change Standardization Audit
+
+**Status**: READY FOR MAIN IMPLEMENTATION
+**Created**: 2026-06-13
+**Priority**: HIGH - stale model constants can silently bias routing, scoring, launch, planner prompts, and benchmark interpretation after a stack change
+**Scope**: Documentation/audit handoff only. No inference, AutoPilot, server restarts, code edits, index edits, or progress-log edits were performed.
+**Related**: [model-stack-update-pipeline-audit.md](model-stack-update-pipeline-audit.md), [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md), [model-capability-descriptors.md](model-capability-descriptors.md), [fable5-findings-02-routing-decision-architecture.md](../completed/fable5-findings-02-routing-decision-architecture.md), [fable5-findings-01-measurement-and-integrity.md](../completed/fable5-findings-01-measurement-and-integrity.md)
+
+> **📎 2026-07-18 stale-open audit note.** Part of the 5-handoff stack-pipeline cluster. Its open checklist is a **repeatable operating procedure** (identify change type → update inputs → run tests → guard-pass → post-launch PID/port compare), not one-time backlog — which is why it inflates the open count. Authoritative pair: [`model-stack-single-source-update-pipeline.md`](model-stack-single-source-update-pipeline.md) + [`stack-change-governance-pipeline.md`](stack-change-governance-pipeline.md). Decision pending (operator): convert the checklist to a numbered runbook to de-inflate, or fold into governance-pipeline. See [`stale-open-audit-2026-07-18.md`](stale-open-audit-2026-07-18.md) finding #5.
+
+## Problem Statement
+
+Changing the orchestration model stack is still too easy to do as a collection of manual patches. The live stack now has facts that invalidate older hardcoded assumptions:
+
+- `frontdoor` and `coder_escalation` share the same physical model and server (`qwen3.6-35b-a3b-q8_0` on `http://localhost:8070`), so cost and memory accounting must not double-count them.
+- `architect_coding` is retired from the live stack and must not appear in active live priors, launch manifests, routing chains, or scoring defaults except as explicitly legacy/test/historical data.
+- `architect_general` and `ingest_long_context` are HOT in live serving truth, so q_scorer and reward paths must not apply WARM memory penalties from older role/process-layout metadata.
+- Fable 5 found the same failure mode at the planning layer: prompt/system-card narratives can preserve stale stack facts such as removed ports and pre-swap model identities unless generated from live structured truth.
+
+The project already has a good foundation. The implementation task is to finish standardizing it so a stack change becomes: edit structured truth, compile generated contracts, run fail-closed validators, and update consumers through typed APIs or explicit degraded-mode fallbacks.
+
+## Audit Method
+
+Read-only audit across:
+
+- `/mnt/raid0/llm/epyc-root/handoffs/active/`
+- `/mnt/raid0/llm/epyc-orchestrator/docs/`, `src/`, `scripts/`, `orchestration/`, `tests/`
+- `/mnt/raid0/llm/epyc-inference-research/docs/`, `scripts/`, `orchestration/`
+
+Lightweight validation run:
+
+```bash
+cd /mnt/raid0/llm/epyc-orchestrator
+uv run python scripts/validate/stack_change_guard.py --all-hardcoded-surfaces
+```
+
+Result on 2026-06-13: exit 0 with `WARN: 146 stack-prior warning(s)`. No inference was run.
+
+Root GitNexus note before main-session review:
+
+- The sidecar audit initially observed a stale root index while writing this new handoff and did not re-index, preserving its narrow write scope.
+- Main-session review refreshed root GitNexus after the sidecar returned: `24,209 nodes`, `26,242 edges`, `33 clusters`, `43 flows`.
+- `gitnexus impact -r epyc-root handoffs/active/model-stack-change-standardization-audit.md --direction upstream` returned target not found, `impactedCount=0`, `risk=UNKNOWN`, expected for a markdown handoff path.
+
+## 2026-06-13 Sidecar Continuation
+
+Nine follow-up orchestrator commits continue the same live-role cleanup thread:
+
+- `4bf8061` routes `_formalize_output` to live `worker_general` instead of
+  legacy `worker_explore`, removes stale speed/port wording, and adds
+  `llm_call` role coverage in the chat-utils tests.
+- `a9424a9` routes user-modeling preference extraction to live
+  `worker_general` instead of legacy `worker_explore`, updates adjacent docs,
+  and adds user-modeling test coverage for the LLM-call role.
+- `a7c9ac0` routes post-hoc model grading defaults/specs to live
+  `worker_general`, with all three grading specs explicitly using
+  `judge_role: worker_general` and model-grader tests covering fallback/default
+  plus explicit override behavior.
+- `4f9123f` updates debugger prompt documentation so `model_graded_evals`
+  names `worker_general`, matching the model-grader default/spec migration.
+- `069f8c0` aligns the default stack template with live launch topology:
+  explicit alias roles, retired deployable-role rejection, current
+  full-plus-quarter prewarm roles, one `architect_general`, 22 instances, and
+  about 653 GB instance-counted RAM.
+- `22ea541` removes `architect_coding` from the lean registry, shortens the
+  coder escalation chain to `frontdoor -> coder_escalation`, updates lean code
+  routing hints to `coder_escalation`, and adds registry-loader regression
+  coverage for retired-role absence plus current coder acceleration
+  `type: none`.
+- `705065d` maps legacy ingress `architect_coding` labels to live
+  `architect_general` in chat pipeline routing normalization, with targeted
+  pipeline-routing coverage and delegated chat roundtrip validation.
+- `e61e61f` removes retired architect metadata references from
+  `source_registry.yaml` and `model_quality_signatures.yaml`, cleans a stale
+  delegation-depth comment, and intentionally defers `_fast_revise` because its
+  GitNexus impact is HIGH and reaches `generate_stream` / chat pipeline paths.
+- `828552f` adds stack-change-guard production-blocker rules for retired
+  architect metadata recurrence in `model_registry_lean.yaml`,
+  `source_registry.yaml`, and `model_quality_signatures.yaml`, with focused
+  regression tests.
+
+The routed-call changes kept `stack_change_guard.py` and focused unit suites green;
+active follow-up remains in `stack-change-governance-pipeline.md`,
+`model-stack-update-pipeline-audit.md`, and
+`standardized-stack-update-pipeline-finalization.md`.
+
+## Existing Machinery Found
+
+These are the current standardized-process artifacts. Do not build a second registry unless these prove insufficient.
+
+- `/mnt/raid0/llm/epyc-orchestrator/docs/reference/stack-truth-precedence.md`
+  - Defines precedence: live serving topology first, model descriptors second, role metadata third, historical/benchmark records last.
+  - Explicitly says `server_mode.*.tier` overrides stale `roles.*.memory.residency`, shared mmap roles must not double-count memory, and retired roles such as `architect_coding` must not appear in active live priors.
+
+- `/mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml`
+  - Lean live deployment source for `server_mode.*`, role metadata, runtime defaults, timeouts, and serving topology.
+  - Current observed live truth includes `frontdoor` and `coder_escalation` consolidated onto port `8070`, `architect_general` HOT, and `ingest_long_context` HOT.
+
+- `/mnt/raid0/llm/epyc-orchestrator/orchestration/model_descriptors.yaml`
+  - Physical model identity/evidence layer keyed by model, not role.
+  - Intended bridge between research evidence and deployed routing/scoring consumers.
+
+- `/mnt/raid0/llm/epyc-orchestrator/src/registry/stack_priors.py`
+  - Compiles role records from lean registry, descriptors, and stack manifest.
+  - Exposes `validate_stack_priors_contract()` and CLI entrypoint via the wrapper script.
+
+- `/mnt/raid0/llm/epyc-orchestrator/scripts/registry/compile_stack_priors.py`
+  - CLI wrapper that writes `/mnt/raid0/llm/epyc-orchestrator/orchestration/derived/stack_priors.yaml`.
+
+- `/mnt/raid0/llm/epyc-orchestrator/orchestration/derived/stack_priors.yaml`
+  - Generated consumer contract.
+  - Current status is `compiled` after `54b7c77`; it carries role -> model, serving endpoint/ports/slots/tier, priors, acceleration metadata, evidence, source hashes, and structured alias provenance.
+
+- `/mnt/raid0/llm/epyc-orchestrator/scripts/validate/stack_change_guard.py`
+  - Validates source hashes, required contract shape, live-role invariants, procedure enum drift, retired-role leakage, and curated hardcoded surfaces.
+  - Supports `--strict`, `--all-hardcoded-surfaces`, category filtering, and exception metadata.
+
+- `/mnt/raid0/llm/epyc-orchestrator/orchestration/stack_change_guard_exceptions.yaml`
+  - Default documented exception file for hardcoded-surface findings. Exceptions require classification, owner, rationale, and expiry; valid exceptions remain visible as warnings.
+
+- `/mnt/raid0/llm/epyc-orchestrator/scripts/registry/sync_procedure_role_enums.py`
+  - Syncs procedure role choices from generated stack priors.
+
+- `/mnt/raid0/llm/epyc-root/handoffs/active/stack-change-governance-pipeline.md`
+  - Existing implementation track. W1/W2 are landed, W3/W4 are partial, W5 planner/generated-summary freshness is closed, and W6 remains the key standardization gap.
+
+- `/mnt/raid0/llm/epyc-root/handoffs/active/model-stack-update-pipeline-audit.md`
+  - Existing detailed audit and implementation handoff. This new handoff should be treated as a concise implementation bridge for the main long-horizon workflow, not a replacement.
+
+## Current Single-Source-Of-Truth Proposal
+
+Adopt this as the implementation rule.
+
+| Fact | Source of truth | Generated consumer surface | Notes |
+|---|---|---|---|
+| Live role -> server/endpoint/port/slot/tier/shared binding | `epyc-orchestrator/orchestration/model_registry.yaml` `server_mode.*`, reconciled with `scripts/server/stack_manifest.py` `ROLE_LAUNCH_META` | `orchestration/derived/stack_priors.yaml` serving block | `server_mode` outranks old role metadata. |
+| Physical model identity, modality, context, speed/quality evidence, acceleration compatibility | `orchestration/model_descriptors.yaml`, generated from lean/research evidence where possible | `stack_priors.yaml` model/evidence/acceleration blocks | Descriptors must be model-keyed, not role-keyed. |
+| Comprehensive benchmark/candidate history | `epyc-inference-research/orchestration/model_registry.yaml` and benchmark artifacts | Imported into descriptors with provenance/status | Research rows are evidence/candidates, not live deployment truth. |
+| q_scorer/reward throughput and memory priors | `stack_priors.yaml` `priors.*` | `q_scorer.py` stack-prior loader plus existing degraded fallbacks | DONE for q_scorer live defaults in `e3d967a`; reward paths were already migrated in `7ecf847`. |
+| Procedure role enums and executor permissions | Generated from `stack_priors.yaml` | `procedure.schema.json`, `procedures/add_model_to_registry.yaml` | Already guarded by `sync_procedure_role_enums.py` and `stack_change_guard.py`. |
+| Operator/planner stack summary | Generated from stack priors + attestation | Future system-card/runbook generator | Fable 5 specifically calls out stale prompt/system-card facts as an integrity issue. |
+
+## Observed Current Truth
+
+Grounded in `/mnt/raid0/llm/epyc-orchestrator/orchestration/derived/stack_priors.yaml` and the lean registry:
+
+- `frontdoor`
+  - model: `qwen3.6-35b-a3b-q8_0`
+  - endpoint: `http://localhost:8070`
+  - tier: `hot`
+  - shared mmap: `true`
+  - memory cost: `1.0`
+  - known gaps: none in the generated stack-prior role record after `54b7c77`.
+
+- `coder_escalation`
+  - model: `qwen3.6-35b-a3b-q8_0`
+  - endpoint: `http://localhost:8070`
+  - tier: `hot`
+  - shared mmap: `true`
+  - memory cost: `1.0`
+  - This is the stale qscorer-cost hazard: any consumer that still treats coder escalation as a separate Qwen2.5-Coder-32B server or separate memory owner is wrong for live stack decisions.
+
+- `architect_general`
+  - model: `qwen3.5-122b-a10b-q4_k_m`
+  - endpoint: `http://localhost:8083`
+  - tier: `hot`
+  - memory cost: `1.0`
+  - quality prior: `0.857` after `bda46b1`.
+  - generated stack-prior role record has no `known_gaps` after `54b7c77`; older role performance comments and gated-off spec-decoding metadata are no longer blocking generated gaps.
+
+- `ingest_long_context`
+  - model: `qwen3-next-80b-a3b-q4_k_m`
+  - endpoint: `http://localhost:8085`
+  - tier: `hot`
+  - memory cost: `1.0`
+  - quality prior: `0.93` after `bda46b1`.
+  - thinking control: structured native/template-ignored evidence after `865b2b1`; generated stack-prior role record has no `known_gaps` after `54b7c77`.
+
+- `architect_coding`
+  - absent from generated live priors.
+  - normalized by `03ed49f`: `Role.ARCHITECT_CODING` is an enum alias of live `Role.ARCHITECT_GENERAL`, and old serialized/direct string input `"architect_coding"` is still accepted through `Role._missing_` / `_LEGACY_ROLE_ALIASES`.
+  - no longer has active prompt fallback, graph node map, or prewarm special-cases as a distinct live role; remaining mentions are legacy-test/historical-doc cleanup surfaces.
+
+## Competing Sources And Drift Risks
+
+These are not all bugs, but each is a place a future stack change can go stale.
+
+1. `q_scorer.py` has stack-prior live priors plus fallback tables.
+   - File: `/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/q_scorer.py`
+   - DONE in `epyc-orchestrator` `e3d967a`: live defaults read `orchestration/derived/stack_priors.yaml`; `FALLBACK_BASELINE_TPS_BY_ROLE` and `FALLBACK_MEMORY_COST_BY_ROLE` remain for explicit degraded/offline mode.
+   - It skips non-live stack-prior roles and keeps retired `architect_coding` absent from live priors.
+   - Follow-up implication: preserve fallback tables, but expose explicit live-vs-degraded provenance if downstream consumers need auditability.
+
+2. `stack_manifest.py` no longer contains the previously stale shared-alias `PORT_MAP` entries, but direct launch-map consumers remain a drift risk.
+   - File: `/mnt/raid0/llm/epyc-orchestrator/scripts/server/stack_manifest.py`
+   - RESOLVED in `epyc-orchestrator` `d4acf24`: `PORT_MAP["coder_escalation"]` and `PORT_MAP["worker_summarize"]` now resolve to the shared frontdoor server on `8070`; `toolrunner` resolves to the shared worker server on `8072`.
+   - EXTENDED in `epyc-orchestrator` `312b28e` and `a6d1200`: generated stack-prior endpoint/primary-port/tier records are checked against the computed launch manifest, and stack priors now hash `stack_manifest.py`/`stack_numa.py` so launch topology edits force regeneration.
+   - Implementation implication: direct `PORT_MAP` consumers are still hazardous unless they go through launch metadata/stack priors or are marked legacy.
+
+3. `model_registry.yaml` contains both live topology and older narrative/commentary fields.
+   - `server_mode.*` is current live topology.
+   - `roles.*`, `process_layout.*`, comments, and docs can preserve older timeouts, memory residency, ports, and benchmark-era labels.
+   - Implementation implication: compilers must record conflicts and consumers must not read prose/comments as live truth.
+
+4. LangGraph and role surfaces no longer preserve a distinct live `architect_coding` role after `03ed49f`.
+   - `epyc-orchestrator` `2967526` removed one live launcher hazard: `scripts/server/orchestrator_stack.py` no longer force-enables `ORCHESTRATOR_LANGGRAPH_ARCHITECT_CODING` at API startup.
+   - `03ed49f` normalized the enum itself: `Role.ARCHITECT_CODING` aliases live `Role.ARCHITECT_GENERAL`, legacy strings normalize through `_missing_`, and PydanticGraph/LangGraph tests prove legacy string routing reaches the architect node.
+   - The active prompt fallback, graph node map, and prewarm special-cases that treated coding architect as a distinct live role were removed. Remaining mentions belong in explicitly legacy tests or historical docs.
+
+5. Operator docs and prompt/planner inputs can become source truth by accident.
+   - Fable 5 notes stale stack facts in narrative stores and recommends generated system cards from registry/state.
+   - `53f452c` fixed one live wrapper instance: `scripts/server/launch_production.sh` no longer carries hand-written RAM/model/retired-role inventory; its mode summaries derive from `scripts/server/stack_manifest.py`, and help points operators to `stack_manifest.py` plus `--status` for current inventory/residency.
+   - Implementation implication: current stack tables in docs/runbooks should be generated from stack priors or labeled historical; do not let manual docs drive routing/scoring.
+
+## Update Checklist For Any Model-Stack Change
+
+Use this sequence for future stack changes. Steps marked "no inference" should be runnable by CI.
+
+> **⚠ THESE BOXES ARE UNCHECKED BY DESIGN — DO NOT DISPATCH OR FLIP THEM.**
+> This is a **reusable per-change runbook**, not a task list. Every `- [ ]` below is a step to be
+> executed *during a stack change*, so it has no completion state outside one. Flipping any of them
+> asserts that a per-change procedure is permanently done, and the next stack change would inherit a
+> runbook that reads as already-executed — the checklist would silently stop being run.
+>
+> Noted 2026-07-29 by `auditor` because the automated backlog sweep classified two of these steps as
+> dispatchable `none`-lane work: **TOP-40 row #12 (`:229`) and the runner-up bench row (`:230`)** in
+> `coordination/session-bus/tasks/BACKLOG-DISPATCH-QUEUE.md`. The sweep's own column even labels the
+> section `update-checklist`, so the evidence was already in the row. Any future sweep must treat a
+> section framed *"use this sequence for future …"* as a template, not a backlog. Verified against
+> the whole of `handoffs/active/`: this is the only section in the tree with dispatched template
+> rows (`multimodal-pipeline.md § Review cadence` is the one other true recurring checklist, and
+> none of its boxes are in the queue).
+
+- [ ] Identify the change type: role model swap, shared-server consolidation, role retirement, tier change, port/slot change, context change, acceleration/draft/MTP change, or benchmark-only candidate addition.
+- [ ] Update structured inputs only:
+  - `epyc-orchestrator/orchestration/model_registry.yaml` `server_mode.*` for live deployment topology.
+  - `epyc-orchestrator/orchestration/model_descriptors.yaml` for physical model identity and measured/candidate evidence.
+  - `epyc-inference-research/orchestration/model_registry.yaml` only for comprehensive benchmark/candidate history, with measurement-status semantics.
+  - `scripts/server/stack_manifest.py` only where launcher metadata still lacks generated ownership.
+- [x] Compile descriptors, preserving gaps instead of inventing values. ✅ 2026-07-14 descriptors `status: compiled` after `54b7c77`
+- [x] Compile stack priors. ✅ 2026-07-14 `stack_priors.yaml` `status: compiled` after `54b7c77`
+- [x] Sync procedure role enums. Verified current via `python3 scripts/registry/sync_procedure_role_enums.py --check` (`OK`).
+- [x] Run loose guard, all-surface guard, and strict guard. ✅ 2026-07-14 post-`03ed49f`: loose clean, strict clean, all-surfaces blocker waiver gone
+- [ ] Run focused unit tests for stack priors, guard, enum sync, q_scorer, admission, and any touched consumer.
+- [ ] Run simulated model-swap tests:
+  - shared mmap swap (`frontdoor`/`coder_escalation` style)
+  - role retirement (`architect_coding` style)
+  - HOT/WARM tier change (`architect_general` or `ingest_long_context` style)
+- [ ] Update only generated operator summaries or explicitly historical docs.
+- [ ] Before launch, require fresh generated priors and a guard pass or an explicit diagnostic override.
+- [ ] After launch, compare running PIDs/ports/flags/binaries against stack priors and restart stale processes if needed.
+
+## Validator And CI Guard Proposal
+
+Near-term guard target:
+
+```bash
+cd /mnt/raid0/llm/epyc-orchestrator
+uv run python scripts/registry/compile_descriptors.py --dry-run --allow-incomplete
+uv run python scripts/registry/compile_stack_priors.py --allow-incomplete
+python3 scripts/registry/sync_procedure_role_enums.py --check
+uv run python scripts/validate/stack_change_guard.py
+uv run python scripts/validate/stack_change_guard.py --all-hardcoded-surfaces
+uv run python scripts/validate/stack_change_guard.py --strict
+uv run --with pytest pytest -q \
+  tests/unit/test_stack_priors_compiler.py \
+  tests/unit/test_stack_change_guard.py \
+  tests/unit/test_sync_procedure_role_enums.py \
+  tests/unit/test_model_descriptors_schema.py \
+  tests/unit/test_model_descriptor_compiler.py \
+  tests/unit/test_q_scorer.py \
+  tests/unit/test_admission.py
+```
+
+CI should initially allow loose mode but publish warning counts. Promotion to strict mode should happen after descriptor gaps and unclassified hardcoded surfaces are resolved or documented with expiring exceptions.
+
+Current lightweight guard result after `03ed49f`:
+
+- `uv run python scripts/validate/stack_change_guard.py`
+- Result: clean.
+- `uv run python scripts/validate/stack_change_guard.py --strict`
+- Result: clean.
+- `uv run python scripts/validate/stack_change_guard.py --all-hardcoded-surfaces`
+- Result: legacy-test and historical-doc mentions remain visible, but the
+  production blocker waiver is gone.
+- Generated descriptors and stack priors now have `status: compiled`; stack
+  prior records have empty `known_gaps`.
+
+## Implementation Work Packages
+
+### W1 - Make stack priors the live scorer contract
+
+Goal: q_scorer and reward/cost consumers read the generated contract first.
+
+Tasks:
+
+- Add or extend a runtime helper around `src/registry/stack_priors.py` for live role scorer priors.
+- DONE in `e3d967a`: `orchestration/repl_memory/q_scorer.py` live defaults now load generated stack priors first.
+- DONE in `e3d967a`: `FALLBACK_*` tables remain only for degraded/offline mode when the generated artifact is missing or invalid.
+- DONE in `9ed177d`: q_scorer stack-prior alias propagation now applies
+  quality to `worker_explore` from live `worker_general`, matching existing TPS
+  and memory alias propagation and removing that degraded fallback residue.
+- Return or log provenance: `stack_priors`, `override`, or `degraded_fallback`.
+- Add tests proving:
+  - DONE in `e3d967a`: `frontdoor` and `coder_escalation` share stack-prior TPS/memory.
+  - DONE in `e3d967a`: `architect_general` and `ingest_long_context` are HOT cost `1.0`.
+  - DONE in `e3d967a`: `architect_coding` is absent from live priors.
+  - missing stack priors fail closed for production-like callers.
+
+Dependencies: existing stack-priors contract and guard.
+
+### W2 - Classify or remove remaining retired-role production blockers
+
+Goal: `architect_coding` cannot influence live routing, parsing, graph transitions, or launch/status behavior.
+
+Tasks:
+
+- Audit each `stack_change_guard.py --all-hardcoded-surfaces` production-blocker finding.
+- DONE in `epyc-orchestrator` `a15bab7`: added a targeted `retired_role_env_flag` hardcoded-surface rule so server launch files cannot reintroduce `ORCHESTRATOR_LANGGRAPH_ARCHITECT_CODING` / `ORCHESTRATOR_FEATURE_LANGGRAPH_ARCHITECT_CODING` without a production-blocker warning.
+- Follow-up: decide whether to broaden uppercase retired-role scanning to enum constants after compatibility surfaces are classified.
+- For live code, remove/replace retired role references with stack-prior-derived role sets or current live architect role discovery.
+- For legacy compatibility, add explicit exception metadata with owner, rationale, classification, and expiry.
+- For tests, rename fixtures or label them as retired-role coverage.
+
+Likely files:
+
+- DONE in `3c7a85e`: `src/graph/langgraph/graph.py`, `src/graph/langgraph/nodes.py`, `src/graph/graph.py`, `src/graph/__init__.py`, and `src/graph/nodes.py` no longer expose a retired `ArchitectCodingNode` / `architect_coding_node`; the retired role aliases to the live architect node for direct/persisted compatibility.
+- DONE in `c2b4437`: `src/parsing_config.py` no longer assigns an active parsing mode to retired `architect_coding`.
+- DONE in `03ed49f`: `src/roles.py` now makes `Role.ARCHITECT_CODING` an enum alias of live `Role.ARCHITECT_GENERAL`; `Role._missing_` / `_LEGACY_ROLE_ALIASES` still accepts old `"architect_coding"` strings and normalizes them to `architect_general`.
+- DONE in `03ed49f`: active prompt fallback, graph node map, and prewarm special-cases no longer treat coding architect as a distinct live role; PydanticGraph and LangGraph tests cover legacy string routing to the architect node plus live architect fallback behavior.
+- DONE in `c2b4437`: `src/inference/llm_cache.py` no longer lists retired `architect_coding` as a high-value cache target.
+- DONE in `6ec2686`: compact specialist delegation report preambles canonicalize through `_normalize_delegate_role`, advertise only live `coder_escalation` and `worker_general` direct preambles, and keep legacy `worker_coder`, `worker_explore`, and `worker_fast` aliases resolving to live-role prompt text.
+- DONE in `09948db`: architect investigation prompt templates, fallback text, and architect examples now use live roles only: `coder_escalation` for implementation/file-split delegation and `worker_general` for investigation/search; prompt-builder tests assert retired worker labels are absent.
+- DONE in `4bf8061`: `_formalize_output` now calls live `worker_general` instead of retired/legacy `worker_explore`; its docstring no longer carries stale model speed/port assumptions and coverage asserts the `llm_call` role.
+- `scripts/server/orchestrator_stack.py` and launch-env tests for any future legacy env-var recurrence
+- related tests under `tests/unit/` and `tests/integration/`
+
+Dependencies: W1 not required, but use the same stack-prior role helpers where practical.
+
+### W3 - Resolve generated-prior gaps needed by strict mode
+
+Goal: `stack_priors.yaml` is complete enough for decision-grade consumers.
+
+Tasks:
+
+- Add structured context fields:
+  - DONE in `b8477b0`: local GGUF headers project structured
+    `roles.*.model.ctx_max` for Qwen3-Next 80B, Qwen3.5-122B,
+    Qwen2.5-VL 7B, Qwen3-VL 30B, and REAP-Qwen3-Coder 25B; regenerated
+    descriptors/priors removed `Missing structured ctx_max` warnings.
+  - DONE in `a001017`: effective launch context is generated and guarded in
+    stack-prior launch requirements.
+  - prefill/long-context metrics where needed
+- Add quality/TPS provenance status:
+  - decision-grade
+  - observation
+  - stale
+  - gap
+- DONE in `bda46b1` for measured single-purpose quality priors: architect, ingest, VL, and toolrunner roles now have generated `quality_overall`; worker_math and REAP remain explicit gaps until evidence exists.
+- DONE in `837829f` for architect quality projection: `architect_general` /
+  `qwen35_122b_q4km` now carry `quality_overall: 0.8567`.
+- DONE in `2ea28dd` for REAP quality projection: existing REAP-25B
+  Claude-as-Judge raw-score evidence now projects `quality_overall: 0.6011`
+  from overall `110/183 (60%)` plus suite totals.
+- DONE in `865b2b1` for thinking-control evidence: the descriptor compiler now
+  supports structured `acceleration.thinking_control` alongside legacy boolean
+  `enable_thinking`, preserving native/no-toggle/template-ignored evidence
+  without forcing a boolean when a model has native behavior.
+- Registry evidence now covers `ingest_long_context`, `worker_vision`,
+  `vision_escalation`, and `reap_25b_frontdoor`; generated descriptors and
+  stack priors now include `thinking_control` for all descriptors.
+- Enable-thinking compatibility gaps are cleared for ingest, REAP, and VL
+  roles. At that point remaining guard warnings were shared-runtime alias known
+  gaps for `worker_general`, `worker_math`, and `toolrunner`, plus the waived
+  retired role enum surface.
+- DONE in `54b7c77` for shared-runtime alias provenance: alias mismatch notes
+  for `worker_general`, `worker_math`, and `toolrunner` are structured
+  provenance rather than blocking gaps.
+- Descriptor compiler records these as `role_bindings.alias_overrides` when
+  `server_mode.shared_with` binds an alias to a primary live server; stack
+  priors expose them under `evidence.alias_overrides`.
+- Generated descriptors and stack priors now have `status: compiled`; stack
+  prior records have empty `known_gaps`; `docs/reference/stack-truth-precedence.md`
+  states this precedence rule.
+- Preserve research-registry evidence with MEASUREMENT.md-style protocol/date/ref metadata.
+- Teach strict mode which gaps block live consumers versus which are candidate/historical gaps.
+
+Dependencies: model descriptor coverage and MEASUREMENT.md claim grammar.
+
+### W4 - Standardize launch/status consumers
+
+Goal: ports, tiers, shared-server bindings, and launch requirements are generated or guarded.
+
+Tasks:
+
+- Audit direct `PORT_MAP` and `ROLE_LAUNCH_META` consumers.
+- Ensure status/health checks use generated serving records or launcher-classified metadata, not raw stale port maps.
+- Keep shared-alias `PORT_MAP` consistency guarded; do not reintroduce separate live `coder_escalation`/`worker_summarize`/`toolrunner` ports unless the stack-prior serving contract and launch manifest change together.
+- Extend stack priors or a generated launch manifest with binary family, draft/MTP/spec flags, KV settings, and shared mmap group.
+
+Dependencies: W3 for fuller launch fields.
+
+### W5 - Generate planner/operator stack summaries
+
+Goal: manual docs and planner prompts stop carrying stale model-stack facts.
+
+Tasks:
+
+- Implement a no-inference stack summary generator from stack priors plus running-state attestation.
+- Use it for AutoPilot/system-card style prompt inputs rather than hand-maintained stack tables.
+- Label old docs historical instead of rewriting every archived mention.
+- Add a freshness check so generated summaries cannot be older than their source hashes.
+
+2026-06-28 planner-guidance slice: `epyc-orchestrator` commit `969a7b7c`
+removed current-stack literal guidance from `scripts/autopilot/program.md` and
+the planner prompt in `scripts/autopilot/autopilot.py`. Concrete role, port,
+model, and acceleration examples now point the planner to generated stack
+truth: the system card, stack priors, current handoffs, and Slot Memory. This
+keeps planner guidance from acting as a hidden source of stale live topology.
+Validation: `python3 -m py_compile scripts/autopilot/autopilot.py`,
+`uv run python scripts/validate/stack_change_guard.py
+--all-hardcoded-surfaces --surface-summary-only`, `uv run python
+scripts/registry/render_stack_summary.py --check`, `git diff --check`, and
+`uv run pytest -q tests/unit/test_autopilot_creativity.py` (`23 passed`). This
+closes the current W5 planner-prompt cutover slice; remaining W5 work is any
+future discovered manual operator/planner prose.
+
+2026-06-28 freshness slice: `epyc-orchestrator` commit `641528d7`
+adds SHA-256 source fingerprints to `docs/generated/current_stack_summary.md`
+for `orchestration/derived/stack_priors.yaml`,
+`orchestration/model_registry.yaml`, and
+`orchestration/model_descriptors.yaml`. The existing
+`scripts/registry/render_stack_summary.py --check` path now fails when any of
+those inputs changes, even if the visible role table is unchanged. Validation:
+`uv run python scripts/registry/render_stack_summary.py --check`, `uv run
+python scripts/validate/stack_change_guard.py --all-hardcoded-surfaces
+--surface-summary-only`, `uv run ruff check
+scripts/registry/render_stack_summary.py tests/unit/test_autopilot_system_card.py`,
+`python3 -m py_compile scripts/registry/render_stack_summary.py
+tests/unit/test_autopilot_system_card.py`, `git diff --check`, and focused
+pytest selection across `test_autopilot_system_card.py`,
+`test_stack_change_pipeline.py`, and
+`test_stack_change_pipeline_simulated_fixtures.py` (`7 passed`). This closes
+the W5 freshness-enforcement tail.
+
+Dependencies: W3 and any Fable 5 system-card work.
+
+### W6 - Add simulated stack-change CI
+
+Goal: prove model changes are data-only.
+
+Tasks:
+
+- Add fixture-based simulated swaps:
+  - frontdoor/coder shared model change
+  - role retirement
+  - HOT to WARM or WARM to HOT tier change
+  - long-context model swap with context fields
+- Assert regenerated stack priors, q_scorer priors, procedure enums, admission limits, and generated summaries change without code edits.
+- Fail if any live consumer reads stale hardcoded values.
+- EXTENDED in `079ff30`/`2baaee5`/`a7927c2`: the canonical pipeline now prints
+  pass/block `acceptance:` and `promotion_gate:` lines, classifies the two
+  intentional retired-role production surfaces through expiring exception
+  metadata, and summarizes hardcoded-surface warning categories in the footer.
+  Default `stack_change_pipeline.py check` passes without `--allow-known-gaps`
+  while waived production-blocker, legacy-test, and historical-doc warnings
+  remain visible.
+
+Dependencies: W1-W4.
+
+## Dependency Graph
+
+- Existing precedence spec and stack-prior compiler block all consumer migrations.
+- W1 and W2 can run in parallel.
+- W3 blocks strict CI and robust generated summaries.
+- W4 depends on W3 for complete launch fields, but direct stale-port guard work can start now.
+- W5 depends on W3 and should align with Fable 5 generated system-card work.
+- W6 depends on W1-W4 and becomes the acceptance gate for future stack changes.
+
+## Risks
+
+- Silent degraded fallback: fallback tables keep tests green while live stack truth is missing.
+- Over-correcting historical docs: deleting all old model mentions can destroy useful provenance. Prefer generated current docs plus historical labels.
+- Treating research registry as live deployment truth: benchmark/candidate records must be imported only through descriptors with provenance/status.
+- Launch/process drift: generated files can be fresh while a stale server process is still running. Runtime attestation remains required.
+- Guard fatigue: 146 warnings is useful only if warning counts trend down and exceptions expire.
+- Over-prescription: `stack_priors.yaml` and descriptors are already the better local pattern. Implementation should extend them, not invent a parallel stack-change system.
+
+## Acceptance Criteria
+
+- A role model swap updates structured registry/descriptor inputs, recompiles generated artifacts, and requires no hand edit in q_scorer, routing priors, admission, procedure enums, status checks, or planner stack summaries.
+- `frontdoor` and `coder_escalation` are consistently represented as one shared physical model/server in scorer cost, memory accounting, admission, status, and generated docs.
+- `architect_coding` appears only in explicitly classified legacy tests, historical docs, or retired compatibility fixtures, never in live priors or active routing/launch surfaces.
+- `architect_general` and `ingest_long_context` are scored as HOT where live server truth says HOT.
+- `stack_change_guard.py --strict` is the eventual CI/launch gate, with no unclassified production-blocker warnings.
+- Simulated swap tests pass for shared-server consolidation, role retirement, and tier changes.
+- Generated stack summaries include source hashes/compiled_at and cannot silently stale.
+
+## Highest-ROI Next Steps
+
+1. Continue remaining hardcoded-surface cleanup by separating legacy tests and historical docs from current operator guidance; do not reintroduce a production waiver for retired architect routing.
+2. Add explicit q_scorer provenance plumbing if downstream consumers need to distinguish `stack_priors` from `degraded_fallback`.
+3. Add or extend simulated stack-change tests for any newly discovered consumer surface that still bypasses the generated contract.
+4. Extend stack-prior records with missing context/provenance fields needed for strict mode where future launch gates require them.
+5. Continue generated planner/operator stack summaries from stack priors and launch manifests so manual prose stops acting as hidden source truth; `53f452c` proves this pattern for `launch_production.sh`.
+
+## Reporting Instructions
+
+- Update this handoff after each work package with commit hashes, commands run, guard warning counts before/after, and whether inference/AutoPilot remained untouched.
+- Keep index edits out of incidental implementation passes. Synchronize `master-handoff-index.md` and domain indices only in a deliberate doc-sync pass.
+- Preserve `model-stack-update-pipeline-audit.md` as the detailed audit record; use this file as the implementation bridge for the main workflow.

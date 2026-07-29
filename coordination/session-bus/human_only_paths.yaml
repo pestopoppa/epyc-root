@@ -1,0 +1,57 @@
+# Human-only write paths — the trust boundary, as data.
+#
+# THIS FILE IS HUMAN-AMENDMENT-ONLY. It defines what requires an operator
+# signature, so an agent able to edit it could widen its own authority. Three
+# things enforce that, in layers:
+#
+#   1. scripts/hooks/check_trust_boundary_edit.sh refuses Write/Edit to this
+#      file and to its .sha256 pin (PreToolUse — blocks before the edit lands).
+#   2. human_only_paths.sha256 pins the content. `session_bus.py validate`
+#      compares them and fails on drift, so a change made outside the hook
+#      (a direct shell write, another tool) is still detected after the fact.
+#   3. The coordinator-daemon's audit pass emits a `defect` record on drift.
+#
+# Amending it is deliberate: edit this file, then rewrite the pin with
+#   sha256sum coordination/session-bus/human_only_paths.yaml | awk '{print $1}' \
+#     > coordination/session-bus/human_only_paths.sha256
+# Both steps are operator actions. An agent that finds itself needing to amend
+# this file should raise a token-request instead.
+schema_version: session_bus.human_only_paths.v1
+
+# ---------------------------------------------------------------------------
+# MECHANICALLY CHECKABLE — real paths, verified to exist 2026-07-27. A diff
+# touching any of these requires a granted operator token.
+# ---------------------------------------------------------------------------
+paths:
+  - repo: epyc-root
+    glob: "MEASUREMENT.md"
+    why: "instrument constitution; the measurement trust boundary itself"
+  - repo: epyc-root
+    glob: "agents/shared/MEASUREMENT_POLICY.md"
+    why: "the agent-facing digest of that boundary; amending it amends the rules"
+  - repo: epyc-orchestrator
+    glob: "orchestration/instrument_eras.yaml"
+    why: "era registry rows — historical numbers are era-labelled, never edited"
+  - repo: epyc-orchestrator
+    glob: "orchestration/autopilot_baseline.yaml"
+    why: "AutoPilot baseline applies are an enumerated human-only write"
+
+# Branch-scoped rather than path-scoped: any commit landing on a frozen
+# production kernel branch. Additionally requires the four-step promotion
+# workflow, not merely a token.
+branches:
+  - repo: epyc-llama
+    glob: "production-consolidated-*"
+    why: "frozen production kernels; version past them, never patch in place"
+    extra_requirement: "four-step experimental->promotion workflow"
+
+# ---------------------------------------------------------------------------
+# NOT GLOB-CHECKABLE — real boundaries that no path pattern captures. Listed so
+# they are not silently forgotten, and explicitly marked unenforceable by the
+# audit so nobody mistakes a clean audit for full coverage.
+# ---------------------------------------------------------------------------
+conceptual:
+  - "eval tower / scoring semantics (spread across scorers and harnesses)"
+  - "safety gates"
+  - "host reboots and kernel/boot configuration"
+  - "privileged system-wide changes affecting stability"

@@ -1,0 +1,73 @@
+{
+  "contract": {
+    "aggregation": [
+      "median",
+      "median_absolute_deviation"
+    ],
+    "binary": "/mnt/raid0/llm/llama.cpp/build/bin/llama-server",
+    "cold_cache_preparation": {
+      "after_clean_host_gate": true,
+      "before_server_start": true,
+      "drop_caches": 3,
+      "sync": true
+    },
+    "cpu_list": "0-47,96-143",
+    "ctx": 32768,
+    "durable_publish": "fsync_files_and_staging_dir_then_parent_before_and_after_atomic_rename",
+    "ignore_eos": true,
+    "measured_reps": 5,
+    "metric": "llama-server timings.predicted_per_second",
+    "metric_direction": "higher_is_better",
+    "model": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "n_predict": 512,
+    "native_mtp_draft_max": 4,
+    "np": 1,
+    "per_request_witness": {
+      "exclusive_inference_process_tree": true,
+      "thread_affinity": {
+        "before_after_witness_exact": true,
+        "expected_cpu_list": "0-47,96-143",
+        "no_thread_outside_expected": true,
+        "observation": "stable /proc task snapshots immediately before and after each request; not continuous scheduler tracing",
+        "snapshot_tid_set_unchanged": true,
+        "thread_union_exact": true,
+        "worker_thread_union_exact": true
+      }
+    },
+    "physical_regions": [
+      "q0",
+      "q1"
+    ],
+    "protocol_id": "FG-4b/A4-CPU-optimized-server-v1",
+    "required_finish_reason": "length",
+    "threads": 96,
+    "ubatch": 8192,
+    "warmup": {
+      "consecutive_samples": 3,
+      "max_attempts": 8,
+      "relative_tolerance": 0.05,
+      "tokens": 64
+    }
+  },
+  "human_amendment": {
+    "path": "/mnt/raid0/llm/epyc-root/MEASUREMENT.md",
+    "sha256": "9c78ab20ea8855ebcf90512b18c30070ee0ded5ef3636a9a900855e180429423"
+  },
+  "instrument": {
+    "path": "scripts/benchmark/fg4b_a4_cpu_optimized_reanchor.py",
+    "repository": "https://github.com/pestopoppa/epyc-inference-research.git",
+    "repository_commit": "006801b96de6a427a5c73a380fe5ff15260d33be",
+    "repository_tree": "60554ceb49ef26b9d685d61d8816d0650957f027"
+  },
+  "instrument_sha256": "e77415acf226e67d0fcf09652e24a19a70bc9a5bdad9df5da6d66b6bd0538de9",
+  "protocol_id": "FG-4b/A4-CPU-optimized-server-v1",
+  "reviewed_at": "2026-07-29T10:59:11.415273+00:00",
+  "reviewer": "RATIFY-P-BENCH-4-FG4B-AFFINITY-20260729",
+  "schema": "epyc.fg4b_a4_cpu_optimized_server_protocol_review.v1",
+  "status": "ratified",
+  "supersedes": {
+    "receipt_path": "artifacts/operator/ratify_pbench4_fg4b_server_native_20260729T055435Z.json",
+    "receipt_sha256": "8da155e451f94720878d1fc7ffc53c190d8eabb96b106b15ffb32794528c154e",
+    "status": "superseded_provenance_only"
+  }
+}

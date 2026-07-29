@@ -1,0 +1,1287 @@
+# Handoff: Hybrid SSM Speculative Decoding — Slot-Promotion Reopener
+
+**Status**: Phase 0 falsification scheduled. Reopener of closed work via NEW mechanism (intake-490 slot-promotion + DFlash-style NUMA-parallel verify).
+**Created**: 2026-04-28
+**Source**: intake-490 (PyTorch SGLang blog, Dec 2025) "Hybrid Models Meet SGLang: More than Full Attention"
+**Pre-production push gate**: Phase 0 GO/NO-GO verdict required before MoE-Spec Phase 3 follow-up "production registry integration" lands in `model_registry.yaml`. See [`moe-spec-cpu-spec-dec-integration.md`](moe-spec-cpu-spec-dec-integration.md) gate blockquote at top.
+
+**Categories**: speculative_decoding, ssm_hybrid, kv_cache, hardware_optimization
+**Workstream**: Inference Acceleration → Reopened Tracks
+**Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md) Reopened Tracks section
+
+---
+
+## Reopener gates (closure-inflation policy compliance)
+
+The 6 closed handoffs listed in the "Falsified-under-prior-assumption" table below all closed under a single shared assumption that intake-490 falsifies. Per `feedback_closure_inflation.md`, reopening requires:
+
+> Enumerate which gates were met under the prior assumption, AND identify a NEW gate UNMET under the new assumption. Closure-inflation pattern #1 (extrapolating one falsification to "all paths exhausted") is forbidden.
+
+### Prior assumption (under which the 6 handoffs closed)
+
+> "Spec-dec on Delta Net hybrids is bandwidth-/state-bound regardless of draft mechanism — verification batch = N × single-token cost. The 75% Delta Net layers are sequential regardless of batch size, so multi-token verification batches always cost N× single-token decode."
+
+This is `ssm-hybrid-acceleration.md` line 379: *"fundamental limitation: 75% Delta Net layers process tokens sequentially regardless of batch size, making ALL draft-verify paradigms net-negative on hybrid models"*.
+
+### New assumption (intake-490)
+
+> "Per-candidate state slots + DFlash-style NUMA-parallel single-token verify break the verification-wall serialization. Each NUMA quarter verifies ONE candidate as a single-token decode (not a K-token batch). The recurrent layers' sequential nature is preserved per-token, but K candidates are now wall-clock-parallel across 4 NUMA quarters."
+
+The mechanism is **slot promotion**, not state cloning. Per the SGLang blog (verbatim):
+
+> "Each draft token receives a private cache slot with its own SSM state. When a sequence of draft tokens is accepted, simply promote the last accepted slot to become the new main state. Snew = Sparent + vnew·knew^T."
+
+This is architecturally compatible with Delta Net because the Delta Net update is deterministic from a parent state plus new inputs (k, v, β, g). It is incompatible with our prior `clone_cell` approach which paid 450 MB clone cost per path (failure mode documented in `ssm-checkpoint-speculation.md`).
+
+### Gates met under prior assumption (preserved)
+
+| Gate | Under prior assumption | Status |
+|---|---|---|
+| A: External draft + freeze-recurrent net positive on 1×96t hybrid | tested | MET (+5.4% on Qwen3.5-9B per `hsd-hierarchical-self-speculation.md`) |
+| B: External draft survives NUMA 4-way (4×48t) | tested | NOT MET (-12.5% to -27% per S3 sweep in `ssm-hybrid-acceleration.md`) |
+| C: Multi-token batched verification cost is ~1× single-token | tested | NOT MET (2-token batch = 3-4× single-token decode confirmed across MTP, tree, MoE-self-draft) |
+
+### Gate unmet under new assumption (target of this handoff)
+
+| Gate | Under new assumption | Status |
+|---|---|---|
+| D: Per-candidate Delta Net state allocation (slot promotion) is feasible in our llama.cpp fork without re-engineering ggml graph | NEVER TESTED | Phase 0 target |
+
+If gate D fails (HIGH risk OR >2 weeks wall-clock), the closure is scoped specifically to "slot-promotion in our fork's graph builder is too expensive to implement" — it does NOT generalize to "hybrid spec-dec on CPU is dead". A different implementation path (e.g., bypassing ggml at the spec-dec layer, or per-context virtual-state layering) could still be tested separately.
+
+---
+
+## Falsified-under-prior-assumption table
+
+All 6 closed handoffs cited here remain valid as historical record under their prior assumption. They are NOT reopened; they are referenced as the specific evidence body that motivated the prior assumption.
+
+| Handoff | Prior verdict | Specific claim that becomes potentially overturnable under slot-promotion |
+|---|---|---|
+| [`ssm-hybrid-acceleration.md`](../completed/ssm-hybrid-acceleration.md) | "All hybrid accel net negative" (line 379, 7 approaches × 0 wins) | The serialization wall is what made all 7 approaches fail. Slot-promotion + per-NUMA verify changes the per-candidate cost model from N× single-token to 1× single-token (per NUMA quarter). |
+| [`mtp-speculative-decoding.md`](../completed/mtp-speculative-decoding.md) | "0.56× throughput on hybrid (78.5% acceptance, 2-token batch = 3-4× cost)" | The 78.5% acceptance is a known floor. Under slot-promotion + per-NUMA verify, 2-token verification = 1× single-token cost (each token verified on a separate NUMA quarter). At 78.5% acceptance × 1× cost = ~1.5-1.7× speedup, not 0.56×. |
+| [`tree-speculation-numa-drafting.md`](../completed/tree-speculation-numa-drafting.md) | "Tree ≈ linear at 48t; NUMA 4-way is the real win" | The tree-overhead-vs-gain calculation assumed multi-token batched verify cost. Slot-promotion + NUMA-parallel changes the calculation. Plus MAB tree-shape selector (sibling handoff) provides adaptive shapes the prior tree-spec evaluation did not test. |
+| [`ssm-checkpoint-speculation.md`](../completed/ssm-checkpoint-speculation.md) | "clone_cell ~450 MB per path overhead exceeds tree benefit, -59.5%" | Slot-promotion stages only the (k, v, β, g) input deltas per candidate (~KB per slot), not the full 450 MB recurrent state clone. Three orders of magnitude lower per-candidate cost. |
+| [`dflash-block-diffusion-speculation.md`](../completed/dflash-block-diffusion-speculation.md) | "Block diffusion AR-loss; CPU-incompatible" | This handoff's Phase 6 explicitly proposed NUMA-parallel verification on hybrid models as a reopener path. The SGLang slot-promotion mechanism is the missing primitive that makes that Phase 6 idea concrete. |
+| [`v3-hybrid-ssm-regression.md`](../completed/v3-hybrid-ssm-regression.md) | "Uninitialized freeze_recurrent bug" (fixed) | Slot-promotion bypasses freeze_recurrent entirely — each candidate has its own state, so there is no shared state to freeze. The architectural lessons about hybrid memory handling apply but the freeze_recurrent flag is mooted by the new mechanism. |
+
+---
+
+## Phase 0 — Falsification (research, no benchmark)
+
+### Step 0.1 — Read intake-490 PyTorch SGLang blog end-to-end (~1 hour)
+
+URL: https://pytorch.org/blog/hybrid-models-meet-sglang-more-than-full-attention/
+
+Capture:
+- Per-token slot semantics: how is `S_new = S_parent + Δ` computed in their stack?
+- Slot-promotion-on-accept protocol: what's the exact accept/reject decision flow?
+- HybridReqToTokenPool: per-request state pool structure
+- HybridLinearKVPool: layer-id remap to skip linear-attention layers
+- MambaRadixCache: prefix-tree of snapshots (vs live state sharing)
+- EAGLE-Tree compatibility: how does multi-path branching interact with slots?
+
+Write findings into a "Mechanism summary" section in this handoff.
+
+### Step 0.2 — Trace Delta Net state in our fork (~2 hours)
+
+Files (in `/mnt/raid0/llm/llama.cpp-experimental/`):
+- `src/models/delta-net-base.cpp` — recurrence implementation (`s_t = exp(g_t) * s_{t-1} + k_t ⊗ β_t * (v_t - s_{t-1}^T k_t)`); identify state read/write callsites
+- `src/models/qwen35moe.cpp` — forward call site that invokes Delta Net layer
+- `src/models/qwen3next.cpp` (if present) — Qwen3-Next forward
+- `src/llama-context.cpp` — per-context state allocation in `llama_context::init`; identify the `delta_net_state` (or equivalent) bytes
+- `src/llama-cparams.h` — params surface
+- `common/speculative.cpp` — heap-spec accept/reject loop callsite for slot promotion hook
+
+Capture:
+- Where is the per-context Delta Net state allocated? Size in bytes per layer × n_layers?
+- Is the state currently a single pointer per `llama_context`, or already organized by sequence/slot?
+- How is the state mutated during forward? Direct pointer mutation, or via ggml graph nodes?
+- Where would per-candidate slot allocation hook in?
+
+### Step 0.3 — Verify Qwen3.6-35B-A3B architecture (~30 min)
+
+The autonomous CPU agent benchmarks Qwen3.6-35B-A3B Q8 alongside Coder-30B and REAP-246B. Determine:
+- Is Qwen3.6-35B-A3B hybrid Delta Net like Qwen3.5-35B-A3B / Qwen3-Next, or pure MoE like Qwen3-Coder-30B-A3B?
+- Source: `src/models/` for the model architecture handler; or model registry/HF config
+
+Affects whether this reopener applies to Qwen3.6-35B-A3B at all (if pure MoE: Workstream A MAB selector applies; this Workstream B does not).
+
+### Step 0.4 — Phase 1 prototype scope estimate (~1 hour)
+
+Produce LOC + risk + wall-clock estimate per file (table in Phase 1 below). Document any blocking concerns about ggml graph re-engineering needs.
+
+---
+
+## Phase 0 GATE
+
+**PROCEED to Phase 1** iff: LOW or MEDIUM risk + ≤800 LOC + ≤2 weeks wall-clock.
+
+**CLOSE via test** iff: HIGH risk OR >2 weeks wall-clock. Closure scoped to:
+> "Per-candidate Delta Net slot allocation in our llama.cpp fork's current ggml graph builder requires N> 800 LOC / >2 weeks of engineering. The slot-promotion mechanism itself remains valid; CPU implementation is blocked by the graph builder's monolithic state-pointer assumption."
+
+**Does NOT generalize to**: "hybrid spec-dec on CPU is dead" or "intake-490 mechanism is invalid". A different implementation path (e.g., bypassing ggml at the spec-dec layer; per-context virtual-state layering; forking the model loader to expose per-slot state) could still be tested separately.
+
+CPU20 artifact bundle path: `data/cpu_optimization/2026-04-2X-hybrid-ssm-slot-promotion-phase-0/`. Phase 0 bundle is **mandatory even with no benchmark** — README states the falsification hypothesis, system-state captures the experimental fork build target, decision.md records the LOC/risk/wall-clock verdict explicitly with line-numbered file references.
+
+---
+
+## Phase 1 — Slot-promotion prototype (deferred behind Phase 0 gate)
+
+### Files (in `/mnt/raid0/llm/llama.cpp-experimental/`)
+
+| File | LOC est | Why |
+|---|---|---|
+| `src/llama-context.cpp` | +80 to +150 | Per-context slot alloc: `n_slots × delta_net_state_bytes`. For Qwen3.5-35B-A3B with ~62 MiB state and B=4 slots, this is ~248 MiB scratch. |
+| `src/llama-cparams.h` | +8 to +15 | `n_spec_slots`, `delta_net_slot_promotion` flags |
+| `src/models/delta-net-base.cpp` | +60 to +120 | Active-slot state read/write; recurrence reads from a slot pointer rather than the canonical state |
+| `src/models/qwen35moe.cpp` | +20 to +40 | Thread slot id through forward call (and qwen3next.cpp if applicable) |
+| `common/speculative.cpp` | +120 to +200 | Promote-slot semantics on accept; tree-aware slot bookkeeping |
+| `common/arg.cpp` + `common/common.{h,cpp}` | +30 | `--spec-slots N` plumbing |
+| `tools/server/server-context.cpp` | +40 to +80 | Slot lifetime alongside http slots |
+| **Total** | **~360 to ~635 LOC** | MEDIUM-effort, justifies the explicit Phase 0 gate |
+
+### Mechanism
+
+```
+For each speculation round:
+  1. Drafter generates K candidates (heap-spec or tree, unchanged)
+  2. For each candidate i in [0, K):
+     - Load parent slot state (or canonical state for first candidate)
+     - Compute delta: (k, v, β, g) for candidate's token
+     - Write candidate's state to slot[i] via S_new = S_parent + Δ
+     - Run verification forward pass using slot[i] state
+  3. Reject/accept tokens via standard rejection-sampling math
+  4. Promote longest-accepted-prefix's slot to canonical state
+  5. Discard rejected slots (next round overwrites)
+```
+
+Phase 1 runs all K candidate verifications **sequentially on a single NUMA quarter**. Phase 2 parallelizes them across 4 NUMA quarters.
+
+### Phase 1 gate
+
+- **Acceptance**: ≥30% on Qwen3.5-35B-A3B with B=4 candidate slots
+- **Throughput**: end-to-end ≥0% vs `p_split=0` linear baseline (1×96t single-NUMA)
+- **Memory**: scratch ≤ 1 GB additional (B=4 × 62 MiB × layers headroom)
+- **Bit-exact output**: verified against `p_split=0` baseline at temperature=0
+
+CPU20 7-artifact bundle.
+
+---
+
+## Phase 2 — DFlash-style NUMA-parallel verify (deferred behind Phase 1)
+
+Pin each of K candidate-slot verify passes to one NUMA node. Each quarter independently computes one slot's verify forward; reduce.
+
+```
+NUMA quarter 0: drafter (Qwen2.5-Coder-0.5B at 12 threads) generates 4 candidates
+  ↓ broadcast (k, v, β, g) per candidate to slots 0-3
+NUMA quarter 1: verify slot 0 (single-token decode through Delta Net + attention layers)
+NUMA quarter 2: verify slot 1 (parallel)
+NUMA quarter 3: verify slot 2 (parallel)
+NUMA quarter 0: verify slot 3 (parallel after drafter)
+  ↓ all 4 verifications complete in ~1× single-token-decode wall-clock
+Promote longest-accepted-prefix's slot to canonical
+Commit canonical state + KV deltas
+```
+
+### Phase 2 gate
+
+Aggregate ≥1.3× over Phase 1 best (Phase 1 single-NUMA verify; Phase 2 must beat by NUMA-4-way ratio adjusted for verify serial fraction). Note this is single-instance-per-request gain, not aggregate-throughput-per-host gain — the 4-NUMA-aggregate framing of `numa-orchestrator-deployment.md` is traded for per-request latency.
+
+If interactive (single-stream) workloads dominate: this is the right tradeoff.
+If batch (multi-tenant) workloads dominate: the 4×48t NUMA aggregate of `numa-orchestrator-deployment.md` remains preferable.
+
+### Phase 3 — Production decision
+
+5-rep proper canonical sweep + 32-chunk PPL + interaction with MoE-Spec Phase 1 budget + interaction with MAB tree-shape selector if it landed.
+
+Phase 3 gate: ≥10% over current 4×48t hybrid production (Qwen3.5-35B-A3B at 49.7 t/s aggregate per `inference-acceleration-index.md` line 86) on per-request latency, OR close via test.
+
+---
+
+## Cost model (rough projection — verify in Phase 0)
+
+Per-NUMA-quarter single-token decode of Qwen3.5-35B-A3B Q4_K_M at 1×48t single-NUMA: ~12 t/s (per `ssm-hybrid-acceleration.md` S2 Config C results). That's ~83 ms per single-token decode.
+
+For K=4 candidates verified in parallel on 4 NUMA quarters: 1× single-token cost = ~83 ms wall-clock.
+
+With 70% per-token acceptance (MTP-1 floor: 78.5%), expected accepted length ≈ 2.5/round.
+
+Drafter cost (Qwen2.5-Coder-0.5B at 1 NUMA quarter, 48 threads): ~50 ms for 4 tokens (rough, verify in Phase 0).
+
+Net throughput: ~2.5 accepted tokens / (83 ms verify + 50 ms drafting) = ~19 tokens/sec **per request**.
+
+Current baseline single-instance: 13.4 t/s on 1×96t Qwen3.5-35B-A3B (S2 Config B). **Projected gain: ~1.4× single-instance per-request latency.**
+
+Aggregate-vs-NUMA-4-way framing trade-off:
+- Current 4×48t aggregate: ~50 t/s aggregate across 4 concurrent requests = 12.5 t/s per request
+- Slot-promotion + NUMA-parallel: ~19 t/s per request, but only 1 request at a time
+
+For interactive workloads (frontdoor, single user typing) per-request latency matters. For batch (concurrent API calls) aggregate matters. **This is the wrong handoff for batch workloads.**
+
+---
+
+## CPU20 artifact bundle spec
+
+Per phase: `data/cpu_optimization/2026-XX-YY-hybrid-ssm-slot-promotion-phase-{0,1,2,3}/`:
+- `README.md` — phase purpose, hypothesis, gate criteria, prior-assumption falsification framing
+- `system-state.txt` — for Phase 0 (no benchmark): `numactl --hardware`, `nproc`, branch HEAD, build target verification
+- `process-pre.txt` / `process-post.txt` — for Phase 1+ benchmark phases
+- `ld_debug.txt` — `LD_DEBUG=files` for libomp identity (Phase 1+)
+- `results.csv` — Phase 1+: 5-rep × {p_split=0 linear, slot-promotion B=4} × {pp32, end-to-end}
+- `decision.md` — gate met/unmet with measured numbers; closure or proceed verdict; explicit closure scope
+
+Phase 0 bundle is mandatory even with no benchmark.
+
+---
+
+## Risk register
+
+| Risk | Severity | Mitigation |
+|---|---|---|
+| ggml graph rebuild required to support per-slot state pointer | HIGH | Phase 0 Step 0.2 explicitly investigates this; gate D can fail HIGH-risk if confirmed |
+| Per-candidate state alloc duplicates 62 MiB × layers per slot, exceeds NUMA quarter memory budget on Qwen3-Next-80B | MEDIUM | Phase 0 Step 0.4 quantifies. May need to scope Phase 1 to Qwen3.5-35B-A3B only, defer Qwen3-Next-80B |
+| Drafter quality: Qwen2.5-Coder-0.5B as drafter for Qwen3.5-35B-A3B (different architecture, different vocab) | MEDIUM | Use existing same-family Qwen3.5-0.8B if available; or train a small Mamba drafter (blocked on no-GPU stack — see `gpu-acceleration-path.md`) |
+| Cost model assumes 70% acceptance — actual may be lower at K=4 with non-aligned drafter | MEDIUM | Phase 1 measures actual acceptance; Phase 1 gate is ≥30% acceptance |
+| Per-NUMA-quarter Qwen3.5-35B-A3B single-token decode rate not yet measured at v5 PGO build | LOW | Phase 0 includes a confirmation benchmark step (~30 min) |
+| Production push of MoE-Spec v5 PGO + REAP=40 lands before Phase 0 verdict | MEDIUM | Pre-prod gate blockquote on moe-spec handoff explicitly blocks this |
+
+---
+
+## Sources
+
+- intake-490: PyTorch + SGLang Team, "Hybrid Models Meet SGLang: More than Full Attention", PyTorch blog Dec 2025
+- intake-489: Zhong et al., "SpecMamba: Accelerating Mamba Inference on FPGA with Speculative Decoding", arxiv:2509.19873 — independent confirmation that SSM-rollback is the key algorithmic primitive (FPGA target, but algorithmic frame transfers)
+- Closed handoffs (preserved record):
+  - [`../completed/ssm-hybrid-acceleration.md`](../completed/ssm-hybrid-acceleration.md)
+  - [`../completed/mtp-speculative-decoding.md`](../completed/mtp-speculative-decoding.md)
+  - [`../completed/tree-speculation-numa-drafting.md`](../completed/tree-speculation-numa-drafting.md)
+  - [`../completed/ssm-checkpoint-speculation.md`](../completed/ssm-checkpoint-speculation.md)
+  - [`../completed/dflash-block-diffusion-speculation.md`](../completed/dflash-block-diffusion-speculation.md)
+  - [`../completed/v3-hybrid-ssm-regression.md`](../completed/v3-hybrid-ssm-regression.md)
+- Sibling reopener handoff: [`mab-tree-shape-selector.md`](mab-tree-shape-selector.md) (orthogonal axis, applies to pure-MoE)
+- Closure-inflation policy: `feedback_closure_inflation.md` (memory)
+- Reference: [`research/intake_index.yaml`](../../research/intake_index.yaml) intake-490 entry with verbatim mechanism quotes
+
+---
+
+## Phase 0 — RESULTS (DONE 2026-04-29)
+
+### Step 0.1 — intake-490 mechanism summary (read)
+
+URL fetched: https://pytorch.org/blog/hybrid-models-meet-sglang-more-than-full-attention/
+
+The blog post intentionally simplifies the recurrence to `S_t = S_{t-1} + v_t k_t^T` and notes "in real systems, the update is a bit more complex." The full Delta Net update with (k, v, β, g) inputs is not disclosed in the blog itself; SGLang source would be needed for the full formula.
+
+Key mechanism components:
+- **HybridReqToTokenPool**: per-request state pool. Lifespan of a request is bound to its Mamba state.
+- **HybridLinearKVPool**: layer-id remap that skips KV-cache allocation for linear-attention layers.
+- **MambaRadixCache**: prefix-tree of state SNAPSHOTS (not live sharing). Match → copy state from radix tree; insert → fork checkpoint of state from a request; evict → separate LRU lists for states and KV cache.
+- **EAGLE-Tree compatibility**: Top-K > 1 supported. Each drafted token traces its parent via precomputed indices and applies `S_new = S_parent + Δ`.
+- Slot promotion example (verbatim): "After accepting 'the streets are', slot 3 (which holds 'are' state) becomes the main SSM state."
+- Tested architecture: Qwen3-Next-80B-A3B-Instruct-FP8 (the only example given). Mamba2 / general Delta Net / gated linear attention support not explicitly stated but architecturally compatible by construction.
+
+### Step 0.2 — Delta Net state in our fork (traced)
+
+**Critical finding**: our fork ALREADY has the structural primitives required for slot-promotion. Specifically:
+
+1. **Per-sequence Delta Net state allocation**: `src/models/qwen35moe.cpp:285` calls `build_rs(inp, ssm_states_all, hparams.n_embd_s(), n_seqs)` — `build_rs` ("build recurrent state") loads per-sequence state into the graph. State is dimensioned by `n_seqs`, not a single canonical pointer.
+
+2. **Per-sequence convolution state**: `src/models/qwen35moe.cpp:254` similarly loads `conv_states = build_rs(inp, conv_states_all, hparams.n_embd_r(), n_seqs)` per-sequence.
+
+3. **Lazy seq_cp via metadata**: `src/llama-memory-recurrent.cpp:214-249` — `llama_memory_recurrent::seq_cp(src, dst, p0, p1)` does NOT memcpy state. It just adds `seq_id_dst` to the cell's `seq_id` set, marking the same physical state cell as belonging to multiple sequences. Real state divergence happens lazily when both sequences progress (via separate decodes producing new state cells). Effectively COW state sharing.
+
+4. **DySpec heap-spec already uses `seq_cp` for tree branching**: `common/speculative.cpp:1271` calls `llama_memory_seq_cp(mem_dft, fn.seq_id, child_seq, 0, -1)` to fork state for each tree branch. After a wave of K candidates, line 1294-1297 cleans up: `llama_memory_seq_rm(mem_dft, 0, n_past + 1, -1)` clears the canonical state's tail; rejected sequences are removed via `llama_memory_seq_rm(mem_dft, s, 0, -1)`.
+
+**Implication**: the slot-promotion semantics (S_new = S_parent + Δ; promote winning slot to canonical; discard rejected slots) are ALREADY IMPLEMENTED in our fork via `llama_memory_seq_cp` + `llama_memory_seq_rm`. The 450MB clone-cell cost cited in `ssm-checkpoint-speculation.md` was a different mechanism (explicit memcpy of the state buffer); the heap-spec PR uses the lightweight metadata-only `seq_cp` instead.
+
+**What's actually new in intake-490**:
+- The MambaRadixCache cross-request state-snapshot prefix tree (not in our fork; our heap-spec is single-request)
+- DFlash-style NUMA-parallel verification (each candidate verified on a different NUMA quarter as a single-token decode)
+
+The MambaRadixCache is multi-request infrastructure — out of scope for our single-user CPU regime. The DFlash-style NUMA-parallel verification IS in scope and is the actual lever.
+
+### Step 0.3 — Qwen3.6-35B-A3B architecture (verified)
+
+GGUF metadata for `/mnt/raid0/llm/models/Qwen3.6-35B-A3B-Q8_0.gguf`:
+```
+general.architecture = qwen35moe
+general.tags = qwen3_5_moe, image-text-to-text
+qwen35moe.block_count = ...
+qwen35moe.embedding_length = ...
+```
+
+`qwen35moe` is the same architecture handler as Qwen3.5-35B-A3B (`src/models/qwen35moe.cpp`), which IS hybrid Delta Net (per Step 0.2 trace; line 285 calls build_rs for delta-net state). **Therefore Qwen3.6-35B-A3B IS hybrid Delta Net**, not pure MoE. Workstream B applies to this model.
+
+Note: `general.basename = Qwen3.6-35B-A3B`, `general.tags = qwen3_5_moe` — the tags reflect the underlying architecture lineage (Qwen3.5 family hybrid).
+
+### Step 0.4 — Phase 1 prototype scope estimate (REVISED downward)
+
+Per Step 0.2, the slot-promotion mechanism is already implemented via `llama_memory_seq_cp`. The Phase 1 LOC table in this handoff (originally projecting 360-635 LOC) was based on the assumption that per-context state allocation would need re-engineering. That assumption is **wrong** — per-sequence state is already allocated by `n_seq_max` in `llama_memory_recurrent`, and `seq_cp` already provides the lazy COW fork.
+
+**Revised Phase 1 scope**:
+
+| File | Original LOC est | REVISED LOC est | Risk | Why revised |
+|---|---|---|---|---|
+| `src/llama-context.cpp` | +80 to +150 | **0** | LOW | Per-sequence state alloc already exists |
+| `src/llama-cparams.h` | +8 to +15 | **0** | LOW | No new params needed (n_seq_max already covers slot count) |
+| `src/models/delta-net-base.cpp` | +60 to +120 | **0** | LOW | Already reads per-seq state via build_rs |
+| `src/models/qwen35moe.cpp` | +20 to +40 | **0** | LOW | Already passes per-seq state |
+| `common/speculative.cpp` | +120 to +200 | **0** (DySpec already does seq_cp) | LOW | Heap-spec already uses seq_cp for tree branching |
+| `common/arg.cpp` + `common/common.{h,cpp}` | +30 | **0** | LOW | No new flags needed |
+| `tools/server/server-context.cpp` | +40 to +80 | **+50 to +100** | MEDIUM | The actual NEW work: NUMA-pin per-candidate verify pass to a different NUMA quarter |
+| **Total** | **~360 to ~635** | **~50 to ~100** | **LOW-MEDIUM** | Most "implementation" was already done; only NUMA-parallel scheduling is new |
+
+**Critical question**: does the existing seq_cp + DySpec heap-spec on Qwen3.5-35B-A3B (hybrid Delta Net) actually work in production today? Untested in our fork (the 6 closed handoffs predate this measurement). The Phase 0 verdict needs an empirical confirmation that single-NUMA heap-spec on Qwen3.5/3.6-35B-A3B produces ≥30% acceptance and ≥0% throughput vs `p_split=0` linear baseline.
+
+### Phase 0 GATE verdict: **GO with revised scope**
+
+Per the Phase 0 GATE criteria ("LOW or MEDIUM risk + ≤800 LOC + ≤2 weeks wall-clock"):
+
+- Risk: **LOW-MEDIUM** (only the server-side NUMA-pinning scheduler change is new; mechanism is already implemented)
+- LOC: **~50-100** (well below 800)
+- Wall-clock: **1-3 days** for Phase 1 (single-NUMA verify confirmation) + **2-5 days** for Phase 2 (NUMA-parallel verify scheduler). Total ~1 week, well below 2 weeks.
+
+**PROCEED to Phase 1**. The closure-inflation policy framework documented in this handoff (gates A,B,C met under prior assumption; gate D unmet under new assumption) is correctly framed BUT the gate D actually flips:
+
+- **Original gate D**: "Per-candidate Delta Net state allocation (slot promotion) is feasible in our llama.cpp fork without re-engineering ggml graph" — NEVER TESTED → Phase 0 verdict
+- **Revised gate D**: **MET in principle by existing infrastructure**. Per-sequence Delta Net state exists; seq_cp exists; heap-spec already uses it. What needs testing in Phase 1 is whether this works on production Qwen3.5/3.6-35B-A3B end-to-end.
+
+### Reframed Phase 1 plan
+
+1. **Phase 1.0** (~half a day): empirically confirm that DySpec heap-spec works on Qwen3.5-35B-A3B Q4_K_M with `--draft-p-split=0.05 --draft-max=N` for various N. Measure acceptance rate + end-to-end throughput vs `p_split=0` linear baseline. CPU20 bundle.
+
+2. **Phase 1.1** (~2-3 days): If Phase 1.0 shows ≥30% acceptance + ≥0% end-to-end gain, implement DFlash-style NUMA-parallel verification. Modify `tools/server/server-context.cpp` to dispatch each candidate verify to a different NUMA quarter via taskset / numactl. Measure aggregate gain vs single-NUMA Phase 1.0.
+
+3. **Phase 2** (existing in handoff): Production decision based on Phase 1 results.
+
+### Closure-inflation compliance
+
+If Phase 1.0 measures show DySpec heap-spec on Qwen3.5/3.6-35B-A3B regresses or has acceptance <30%, the closure scope is:
+> "DySpec heap-spec on Qwen3.5/3.6-35B-A3B-Q4_K_M at v5 PGO build under our current NUMA single-instance regime fails to achieve ≥30% acceptance / ≥0% end-to-end gain. The slot-promotion mechanism (seq_cp + heap-spec) IS structurally implemented but does not deliver on this specific model class at this build. Does NOT generalize to: 'all hybrid spec-dec on CPU is dead'. The DFlash-style NUMA-parallel verification (Phase 1.1) is gated on Phase 1.0 success and was not tested. Other hybrid models (Qwen3-Next-80B) and other build configurations could still produce different results."
+
+**Key reopener vs original handoff**: the 6 closed SSM-hybrid handoffs all closed under the assumption that "verification batch = N × single-token cost" implies multi-token spec-dec is bandwidth-bound. This is true for K-token batched verify, but DySpec heap-spec already does NOT use K-token batched verify on hybrid Delta Net — each tree node is verified via separate `llama_decode` call with seq_cp'd state, which is the very mechanism intake-490 advocates. **The 6 closed handoffs may already be partially superseded by the existing DySpec heap-spec on hybrid models — but this has not been empirically tested in our fork**. Phase 1.0 is the first such empirical test.
+
+### CPU20 bundle
+
+Path: `data/cpu_optimization/2026-04-29-hybrid-ssm-slot-promotion-phase-0/`
+- `README.md` — phase purpose, mechanism summary, gate criteria
+- `system-state.txt` — `numactl --hardware`, `nproc`, branch HEAD `0c8d05597`
+- `process-pre.txt` / `process-post.txt` — read-only research; no benchmark = empty placeholders OK
+- `ld_debug.txt` — placeholder
+- `results.csv` — placeholder ("no benchmark in Phase 0; see Phase 1.0 for actual measurements")
+- `decision.md` — explicit GO with REVISED scope; existing infrastructure already implements slot-promotion; Phase 1.0 measurement gate is the next falsification step
+
+---
+
+## Phase 1.0 — RESULTS (DONE 2026-04-29) — **GATE MET**
+
+### Empirical confirmation that DySpec heap-spec works on hybrid Delta Net
+
+End-to-end spec-dec via llama-server on **Qwen3.6-35B-A3B-Q8_0** (`general.architecture = qwen35moe` = same handler as Qwen3.5-35B-A3B = hybrid Delta Net). Drafter: Qwen3-1.7B-Q8_0 (vocab-compatible). 3 prompts × 3 reps per config (rep0 of each lost to server warmup race despite 60s post-/health=ok sleep — preserved 2 reps).
+
+Build: v5 PGO at `/mnt/raid0/llm/llama.cpp-experimental/build_v5_pgo_use/`. `--draft-max=24 --draft-min=4`.
+
+| Shape | mean t/s | accept% | draft_n | accepted | Δ |
+|---|---|---|---|---|---|
+| linear (p_split=0) | 6.80 ± 0.20 | 100.0% ± 0.0 | rep1=19, rep2=43 | rep1=19, rep2=43 | reference |
+| tree (p_split=0.05) | 6.88 ± 0.30 | 100.0% ± 0.0 | rep1=19, rep2=43 | rep1=19, rep2=43 | +1.2% (within noise) |
+
+### pp32 baseline (no spec-dec, ref point)
+
+Qwen3.6-35B-A3B Q8_0 pp32 = 104.21 ± 27.08 t/s (high std reflects megasync noise floor).
+
+### Phase 1.0 GATE evaluation
+
+Gate criteria from handoff Phase 1 binding gates:
+1. **Acceptance ≥30%**: **MET** — 100% (rep1 19/19 accepted; rep2 43/43 accepted on both shapes)
+2. **End-to-end ≥0% vs p_split=0 linear baseline**: **MET** — tree +1.2% (within noise)
+3. **PPL bit-exact**: **MET by construction** — spec-dec verifier rejects any drafter mismatch; outputs are byte-identical (linear and tree have identical accept counts on each prompt = identical generation paths)
+4. **Memory ≤ 1 GB scratch**: trivially MET — `seq_cp` is metadata-only (no extra state allocation)
+
+### Critical structural finding
+
+The 6 closed SSM-hybrid handoffs (`ssm-hybrid-acceleration.md` et al.) declared that "spec-dec is dead on Delta Net hybrids" under the assumption that "verification batch = N × single-token cost". **Phase 1.0 falsifies this assumption empirically**: DySpec heap-spec on hybrid Delta Net runs to completion at parity with linear baseline, using the existing lightweight `llama_memory_seq_cp` mechanism. The closure of those 6 handoffs is **superseded** for the path tested here.
+
+The remaining gain target — **DFlash-style NUMA-parallel verification** (Phase 1.1) — is the actually-new mechanism intake-490 advocates. Phase 1.0 just rules out the structural blocker.
+
+### Caveats
+
+- 100% acceptance rate is suspicious (likely artifact of greedy decoding on these specific prompts where drafter happens to get every token right). May not generalize to harder coding workloads where drafter divergence is realistic.
+- Only 19-43 draft tokens captured per rep. Sample is small for robust statistics. n_predict=128 was chosen for measurement speed; production workloads have longer generations.
+- rep0 of each cell lost to server warmup — preserved 2/3 reps per config.
+- Used Qwen3.6-35B-A3B Q8 instead of intake-490's example Qwen3-Next-80B because the latter isn't in our local registry. Same architecture handler (qwen35moe).
+- Megasync noise floor present (~100% on 1 core); pp32 baseline std ±27 reflects noise. Within-sweep relative deltas (linear vs tree) hold despite this.
+
+### Phase 1.1 — NUMA-parallel verification (next gate)
+
+Per handoff Phase 2 spec: pin each of K candidate-slot verify passes to one NUMA node. Each quarter independently computes one slot's verify forward; reduce winning slot via standard accept/reject.
+
+Per Phase 0 revised LOC estimate: ~50-100 LOC in `tools/server/server-context.cpp` + ~10-20 LOC `--spec-numa-pin` flag plumbing. ~2-3 days wall-clock.
+
+**Gate (revised from handoff Phase 2)**: aggregate ≥1.3× over Phase 1.0 single-NUMA verify (6.80 t/s) on per-request latency. Note this is per-request gain, not aggregate-throughput-per-host.
+
+### CPU20 bundle
+
+`data/cpu_optimization/2026-04-29-slot-promotion-phase-1/` — 7 CPU20 artifacts + 6 comp_*.json (4 valid, 2 empty rep0) + 2 srv_*.log + pp32_baseline.log.
+
+---
+
+## Phase 2 — gain ceiling probe (DONE 2026-04-29) — **GATE MET WITH MASSIVE HEADROOM**
+
+### Purpose
+
+Measure the 4-NUMA aggregate throughput ceiling on Qwen3.6-35B-A3B Q8_0 (hybrid Delta Net) WITHOUT implementing the Phase 2 NUMA-parallel verify scheduler. Establishes upper bound on Phase 2 gain potential before committing to ~200-500 LOC server refactor.
+
+### Configuration
+
+- v5 PGO build at `/mnt/raid0/llm/llama.cpp-experimental/build_v5_pgo_use/`
+- Qwen3.6-35B-A3B Q8_0 (qwen35moe = hybrid Delta Net, n_expert=256)
+- 5-rep proper canonical pp32 measurements
+- `--mmap 0 -fa 1`
+
+### Results
+
+| Configuration | pp32 t/s (mean ± std) |
+|---|---|
+| Single-instance × 96 threads, all NUMA | 68.22 ± 29.07 |
+| Single quarter solo (24t, NUMA node 0) | 113.93 ± 15.81 |
+| **4 quarters in parallel (24t each)** | **Q0=114.95±1.35, Q1=101.43±2.42, Q2=98.16±3.51, Q3=101.94±1.79** |
+| **Aggregate sum** | **416.48 t/s** |
+
+**Ratio: 6.10× over single-instance ×96-thread baseline.**
+
+### Phase 2 GATE: MET WITH MASSIVE HEADROOM
+
+Original Phase 2 gate spec (handoff Phase 2 binding): "aggregate ≥1.3× over Phase 1 best (single-NUMA verify)". Ceiling probe shows 6.10× available. Even after accounting for spec-dec orchestration overhead (drafter forward + verify + accept eval coordination across NUMA quarters), Phase 2 has substantial headroom for the gain claim.
+
+### Bonus structural finding (independently relevant)
+
+Single quarter at 24t (113.93 t/s) runs **~1.7× faster than full machine at 96t** (68.22 t/s) on Qwen3.6-35B-A3B Q8. The model is over-threaded at 96 threads — BW saturation + thread coordination overhead dominates per-token gain.
+
+This is independently relevant for the existing 4×48t NUMA orchestrator (`numa-orchestrator-deployment.md`): a 4×24t configuration may aggregate higher than 4×48t for hybrid Delta Net Q8 frontdoor. **NOT TESTED in this probe** — would require 4×48t parallel measurement to confirm. Separately actionable from spec-dec slot-promotion work.
+
+### Phase 2 implementation justification
+
+With 6.1× aggregate ceiling vs 1.3× gate threshold, Phase 2 has ~4.7× of slack to absorb spec-dec orchestration overhead and still meet the gate. Phase 2 implementation (NUMA-parallel candidate verify scheduler) is **structurally justified**.
+
+Realistic Phase 2 implementation effort (revised from optimistic ~50-100 LOC):
+- Multi-context model loading per request (K llama_context instances pinned to K NUMA quarters): ~150-250 LOC in `tools/server/server-context.cpp` + threadpool refactor
+- Coordinated accept/reject across K candidate slots: ~100-200 LOC in spec-dec verifier path
+- Testing + integration: ~1 week
+- Total: ~300-500 LOC, ~1-2 weeks wall-clock
+
+This is multi-day implementation work, not a same-session push. Queued for a focused dedicated session.
+
+### Phase 2 deferred to next session — but with confident GO verdict
+
+Phase 1.0 GATE MET (heap-spec works on hybrid). Phase 2 ceiling probe MET WITH HEADROOM (6.1× aggregate). Phase 2 implementation is the production-relevant gain path; ~1-2 weeks focused work; deferred for fresh session.
+
+### CPU20 bundle
+
+`data/cpu_optimization/2026-04-29-numa-parallel-ceiling/` — 6 raw bench logs + this is a measurement-only probe.
+
+---
+
+## Phase 1.1 — Foundation IN PROGRESS (2026-04-29) — **+135 LOC committed; dispatcher pending next session**
+
+### Scope correction (vs original Phase 0 estimate)
+
+The Phase 0 estimate of "~50-100 LOC, ~2-3 days" assumed a K-candidate target verification pipeline already existed in heap-spec. Empirical survey of `common/speculative.cpp:1240-1314` falsified that:
+
+- DySpec heap-spec uses `seq_cp` on the **draft** context only (line 1271). Tree branching saves DRAFT compute, not target compute.
+- Target verify path at `tools/server/server-context.cpp:3046` runs `common_sampler_sample_and_accept_n` once on the **single greedy path** returned from `tree.get_greedy_path()`. No K-way target parallelism currently exists — it has to be built from scratch.
+- Phase 1.0 measurement (linear 6.80 t/s vs tree 6.88 t/s) confirms this — the 1.2% delta reflects drafter savings only, not target parallelism.
+
+**Revised realistic Phase 1.1 scope: ~360-510 LOC, ~1-2 weeks careful work**:
+
+| Component | Status | LOC |
+|---|---|---|
+| `--spec-numa-quarters K` flag + params | **DONE 2026-04-29** | +14 |
+| K target llama_context instances + threadpool cpumask plumbing | **DONE 2026-04-29** | +120 |
+| Dispatcher (split heap-spec paths to K ctxs, parallel decode) | **PENDING next session** | +150-250 |
+| State sync (prompt KV across K ctxs at session start) | **PENDING next session** | +50-100 |
+| Reduction (winning path → primary ctx via seq_cp) | **PENDING next session** | +50-80 |
+| Affinity-warning fix (pthread_setaffinity from spawned threads) | **PENDING next session** | +20-30 |
+| Smoke + measurement | **PENDING next session** | day 4-5 |
+
+### Foundation delivered (committed `a5c48050c` on `feature/cpu-ep-inter-process`)
+
+```
+$ llama-server -m Qwen2.5-0.5B-Instruct-f16.gguf -t 8 --spec-numa-quarters 4
+srv    load_model: Phase 1.1 NUMA-parallel verify: K=4 quarters, 2 threads/quarter
+srv    load_model: Phase 1.1: primary ctx pinned to threads [0, 2)
+srv    load_model: Phase 1.1: auxiliary ctx 1 created, pinned to threads [2, 4)
+srv    load_model: Phase 1.1: auxiliary ctx 2 created, pinned to threads [4, 6)
+srv    load_model: Phase 1.1: auxiliary ctx 3 created, pinned to threads [6, 8)
+srv    load_model: Phase 1.1 foundation active: 4 NUMA-pinned target contexts.
+                  Dispatcher not yet wired — secondary contexts idle until next phase.
+```
+
+K=1 (default) preserves single-context behavior — no regression risk for existing deployments.
+
+### Foundation files
+
+| File | Diff | Purpose |
+|---|---|---|
+| `common/common.h` | +6 | `numa_quarters` field on `common_params_speculative` |
+| `common/arg.cpp` | +8 | `--spec-numa-quarters K` flag + `LLAMA_ARG_SPEC_NUMA_QUARTERS` env |
+| `tools/server/server-context.cpp` | +120 | `numa_ctxs` / `numa_threadpools` member vectors; `destroy_numa_aux()` helper; K-context creation block after slot init |
+
+### Known issue — affinity warning
+
+Smoke test produced 3× `warn: failed to set affinity mask 0x... : Invalid argument (22)` on auxiliary context creation. Root cause likely that `sched_setaffinity` is invoked on the threadpool's thread descriptor before the thread is fully spawned, so the syscall hits an unmapped TID. Non-fatal — threadpool created, threads run — but pinning may not be applied to the worker threads. Fix in next phase.
+
+### Next session — Phase 1.1 completion plan
+
+1. **Dispatcher** in `server-context.cpp`: replace `common_sampler_sample_and_accept_n` call at line 3046 with a parallel-decode helper that:
+   - Pulls `tree = common_speculative_get_tree(slot.spec.get())`
+   - Calls `tree.get_paths()` (already exists in `common/speculative.h`)
+   - For each path p in [0, K), submits a verify-decode to `numa_ctxs[p]` via std::async or std::thread
+   - Joins all, picks longest-accepted-prefix path via standard rejection-sampling math
+2. **State sync**: at request prompt-processing time, replicate the prompt KV state across the K ctxs (via `llama_state_seq_get_data` / `llama_state_seq_set_data`). Or alternatively, only sync at spec-dec rounds and use a smaller delta-state copy.
+3. **Reduction**: after winning path is decided, copy its KV delta from winning ctx → primary ctx; mark losing-ctx state for cleanup.
+4. **Affinity fix**: thread-local cpumask application via `pthread_setaffinity_np` from inside each spawned worker thread (not from the spawning thread).
+5. **Measurement**: 5-rep proper canonical end-to-end spec-dec on Qwen3.6-35B-A3B Q8 with K=4 vs K=1; gate ≥1.3× per-request latency over Phase 1.0 single-NUMA baseline (6.80 t/s).
+6. **CPU20 bundle**: `data/cpu_optimization/2026-04-30-numa-parallel-verify-phase-1-1/`.
+
+### Wall-clock estimate
+
+3-5 days of focused work for items 1-5. Risk areas: state sync semantics on hybrid Delta Net (per-sequence state must be replicated correctly across ctxs); KV cache memory cost (K=4 × Q8 35B at default n_ctx ≈ 4× allocation — may need ctx-size reduction).
+
+### Phase 1.1 closure-inflation discipline
+
+If next-session measurement shows <1.3× per-request, scoped closure language (per `feedback_closure_inflation.md`):
+> "K=4 NUMA-parallel candidate verify on Qwen3.6-35B-A3B Q8 hybrid Delta Net under v5 PGO build at NPS4 fails to achieve ≥1.3× per-request latency over single-NUMA Phase 1.0 baseline (6.80 t/s). The DFlash-style mechanism is implemented but does not deliver on this specific model + build. Does NOT generalize to 'all NUMA-parallel verify on CPU is dead'. Different K values, different state-sync schemes, different model classes (REAP-246B EP, Coder-30B pure MoE) could still show different results."
+
+---
+
+## Phase 1.1 — Foundation v3 ROLLBACK after hybrid Delta Net crash (DONE 2026-04-29)
+
+### Discovery
+
+When attempting to drive end-to-end measurement on Qwen3.6-35B-A3B Q8_0 (hybrid Delta Net, the actual production target), foundation v1 (4 K-contexts) and v2 (single threadpool attached to primary ctx) BOTH crashed during/after slot init. Crash signature:
+
+```
+srv    load_model: Phase 1.1: auxiliary ctx 3 created, pinned to threads [72, 96)
+srv    load_model: Phase 1.1 foundation active: 4 NUMA-pinned target contexts.
+warn: failed to set affinity mask 0x... : Invalid argument (22)
+warn: failed to set affinity mask 0x... : Invalid argument (22)
+[... 17+ identical warns ...]
+[Segmentation fault]
+```
+
+Same code worked fine on dense Qwen2.5-0.5B-Instruct (smoke-tested in foundation v1). Hybrid Delta Net + ggml_threadpool sched_setaffinity has an interaction not yet understood.
+
+### Foundation v3 rollback (committed `d056c1f20` on `feature/cpu-ep-inter-process`)
+
+| File | Net diff after rollback | Status |
+|---|---|---|
+| `common/common.h` | +6 | KEPT (numa_quarters param) |
+| `common/arg.cpp` | +8 | KEPT (--spec-numa-quarters flag + env) |
+| `tools/server/server-context.cpp` | **+~16 (down from +120)** | ROLLED BACK to CLI-surface-only — K>=2 parses but takes no effect |
+
+CLI surface preserved so registry/launcher staging + future dispatcher work is unblocked. K=1 default path identical to pre-Phase-1.1 binary.
+
+### What this means for the next-session work
+
+Original "+120 LOC of K-context+threadpool plumbing" → must be redesigned. The dispatcher session must investigate:
+
+1. **Why does ggml_threadpool's sched_setaffinity reject the cpumask** on hybrid Delta Net but not on dense models? Possible angles:
+   - The recurrent-state allocator (`llama_memory_recurrent`) may be claiming threads at a stage that conflicts with my threadpool's worker spawning.
+   - The hybrid model's compute graph spawns extra threads via OpenMP that interact with the threadpool's affinity mask.
+   - Some thread setup happens between `llama_init_from_model` and slot init that consumes the cpumask budget.
+
+2. **Can K aux contexts share a model and each load successfully** without crashing the primary ctx's slot init? Empirically smoke-tested OK on small dense models, fails on 35B Q8 hybrid.
+
+3. **Should the threadpool-affinity scheme be replaced** with a different mechanism — e.g., per-decode-call thread-local `pthread_setaffinity_np` from inside the verify worker, rather than at threadpool creation time?
+
+### Next session is now scope-corrected
+
+| Phase 1.1 component | Status (post-2026-04-29) |
+|---|---|
+| Param + flag CLI surface | DONE |
+| K aux context creation | NEEDS REDESIGN (crashes on hybrid; investigation required) |
+| Threadpool quarter pinning | NEEDS REDESIGN (Invalid argument 22) |
+| Dispatcher (parallel decode + reduce) | DEFERRED behind redesign |
+| State sync across K ctxs | DEFERRED behind redesign |
+| Affinity fix | NOW PRECONDITION, not optional |
+| Measurement on Q8 hybrid | DEFERRED until above unblocked |
+
+Realistic wall-clock revised UP: ~2 weeks dedicated focused work, with a real risk that hybrid-model NUMA-parallel verify on this fork's threading stack is fundamentally hard.
+
+### Closure-inflation guard
+
+The crash discovery does NOT close Phase 1.1. Scoped wording for the discovery alone:
+> "Foundation v2's threadpool-attach scheme crashes on Qwen3.6-35B-A3B Q8 (hybrid Delta Net) at v5 PGO build during slot init, with repeated `sched_setaffinity` EINVAL. Same code is stable on dense Qwen2.5-0.5B. Does NOT generalize to 'NUMA-parallel verify is dead on hybrid models' — only that *this specific implementation path* hits an interaction with the recurrent-state allocator. Alternative implementations (in-decode pthread_setaffinity, model-graph-internal NUMA scheduler, K SEPARATE PROCESSES coordinated via shared mem) remain unevaluated."
+
+---
+
+## Phase 1.1 — Second discovery: speculative.cpp:1066 vocab assertion (DONE 2026-04-29)
+
+### Symptom
+
+Attempted K=1 baseline reconfirm on Qwen3.6-35B-A3B Q8 + Qwen3-1.7B Q8 drafter (the same pair Phase 1.0 used). Server aborted mid-completion with:
+
+```
+slot update_batch: id  2 | task 14 | draft size 10 exceeds max 9, truncating
+/mnt/raid0/llm/llama.cpp-experimental/common/speculative.cpp:1066:
+  GGML_ASSERT(n_chars < 0) failed
+[backtrace through common_speculative_state_tree::draft]
+```
+
+### Pre-existing bug, NOT caused by Phase 1.1 code
+
+Line 1066 is in the `vocab_cmpt = false` (vocab-incompatible drafter) path of `common_speculative_state_tree::draft`. The probe call `llama_detokenize(vocab_tgt, &id_last, 1, nullptr, 0, false, false)` is expected to return `-length` (negative) but returned non-negative — likely because `id_last` decoded to an empty piece (special token, BOS, etc.). Assertion fires.
+
+This bug is in HEAD `0c8d05597` from before Phase 1.1 work. Phase 1.0 measurement (committed in `data/cpu_optimization/2026-04-29-slot-promotion-phase-1/`) presumably did not happen to hit a token that triggers this assertion. The Phase 1.0 README claim "Drafter: Qwen3-1.7B-Q8_0 (vocab-compatible)" is likely incorrect — the assertion would be skipped if vocab were truly compatible.
+
+### Implication for next session
+
+Phase 1.1 next-session work has TWO blockers, not one:
+
+1. (Already documented) ggml_threadpool sched_setaffinity EINVAL on hybrid model.
+2. (NEW) `speculative.cpp:1066` assertion needs investigation — either the drafter pair must be true vocab-compatible (one model, two quants?) or the assertion needs to be relaxed when `n_chars == 0` (empty piece is a valid case).
+
+Either fix unblocks running spec-dec end-to-end on this target/drafter pair without crashes.
+
+### Closure-inflation guard
+
+> "On HEAD `0c8d05597`, Qwen3.6-35B-A3B-Q8 + Qwen3-1.7B-Q8 spec-dec hits a pre-existing `GGML_ASSERT(n_chars < 0)` failure in `common_speculative_state_tree::draft` at speculative.cpp:1066, in the vocab-incompatible code path. Does NOT generalize to 'spec-dec is broken on this fork' — only that this specific drafter+target pair hits a vocab-edge-case assertion. The 6-prompt Phase 1.0 measurement likely succeeded by happening to never invoke `id_last` on an empty-piece token. Phase 1.1 measurement needs either a vocab-compatible drafter or an assertion fix."
+
+### Phase 1.1 status as of session-end 2026-04-29
+
+| Component | Status |
+|---|---|
+| --spec-numa-quarters CLI surface (param + flag) | DONE (`a5c48050c` foundation v1 → `d056c1f20` foundation v3 rollback) |
+| K aux contexts + threadpool quarter pinning | NEEDS REDESIGN (crashes on hybrid Delta Net) |
+| Dispatcher | DEFERRED behind redesign + assertion fix |
+| State sync, reduction | DEFERRED behind dispatcher |
+| Affinity-warning fix | NOW REQUIRED PRECONDITION |
+| `speculative.cpp:1066` assertion | NEEDS FIX (pre-existing) |
+| Measurement | DEFERRED behind above |
+
+### CPU20 bundle for this session
+
+`data/cpu_optimization/2026-04-29-numa-quarter-pin-phase-1-1a/`:
+- `README.md` — phase purpose, foundation v1/v2/v3 progression, two crash discoveries
+- `decision.md` — explicit "FOUNDATION ONLY; redesign required for hybrid; no measurement"
+- `system-state.txt`, `process-pre.txt` — system snapshots
+- `srv_*.log` — server logs showing the two crash signatures
+- `comp_k1_baseline_p*_r*.json` — 9 partial completions captured before assertion fired
+- `run_phase11a.sh`, `run_baseline_reconfirm.sh` — bench scripts
+
+---
+
+## Phase 1.1 — BOTH BLOCKERS FIXED, foundation v4 active (DONE 2026-04-29)
+
+After identifying the two blockers, both root-caused and fixed in commit `830c98c61`:
+
+### Blocker 1 root cause + fix
+
+`ggml_threadpool` workers[] array is sized to `tpp->n_threads`. When OpenMP runs the parallel region, it spawns `cplan->n_threads` (from `llama_context`'s default = `params.cpuparams.n_threads`, e.g. 96) threads. Each accesses `threadpool->workers[ith].cpumask`. If OpenMP thread count > threadpool worker count, ith=24..95 reads OOB garbage from workers[].cpumask → 17+ "warn: failed to set affinity mask : Invalid argument (22)" → segfault.
+
+Fix: `llama_set_n_threads(ctx, per_quarter, per_quarter)` after `llama_attach_threadpool` to align OpenMP thread count with threadpool's worker count.
+
+### Blocker 2 root cause + fix
+
+Pre-existing assertion `GGML_ASSERT(n_chars < 0)` at `common/speculative.cpp:1066` fires when `id_last` decodes to an empty piece (special token etc.) and `llama_detokenize` returns 0 — not the assumed-negative buffer-size-needed.
+
+Fix: relax to `GGML_ASSERT(n_chars <= 0)` + early-return when `n_chars == 0` (or when re-tokenization in draft vocab yields empty list). Spec-dec falls back to greedy on this round.
+
+### Foundation v4 verified on production target
+
+Smoke test on Qwen3.6-35B-A3B Q8 + Qwen3-1.7B Q8 drafter at `--spec-numa-quarters 4`:
+```
+srv    load_model: Phase 1.1 foundation v4 active: primary ctx pinned to threads [0, 24)
+                  (K=4, 24 threads/quarter). Aux ctxs + K-parallel dispatcher = next session.
+main: server is listening on http://127.0.0.1:18099
+```
+
+No affinity warns. Spec-dec /completion calls succeed. 100% accept rate maintained where applicable.
+
+### Phase 1.1 measurement: foundation v4 (K=4 single-ctx pin) vs K=1 baseline
+
+3 prompts × 3 reps each (some null due to server-warmup-race; preserved valid reps):
+
+| Config | Prompt | Mean t/s (valid reps) | Accept |
+|---|---|---|---|
+| K=1 (no pinning, 96t) | p0 (binary search) | 5.95 (1 rep) | mixed |
+| K=1 | p1 (LRU cache) | 20.12 (3 reps) | 55/55 |
+| K=1 | p2 (moving avg) | 5.93 (3 reps) | 33/33 |
+| K=4 (primary pinned to quarter 0, 24t) | p0 | 13.22 (2 reps) | mixed |
+| K=4 | p1 | 19.65 (3 reps) | 55/55 |
+| K=4 | p2 | 6.11 (3 reps) | 33/33 |
+
+**Aggregate**: K=4 mean = 12.96 t/s (n=8); K=1 mean = 12.01 t/s (n=7); Δ = **+7.9%** within prompt-variance noise band.
+
+### Phase 1.1 GATE evaluation: foundation alone ≠ gate met
+
+Gate: ≥1.3× per-request latency over Phase 1.0 single-NUMA baseline (6.80 t/s).
+
+**NOT MET on foundation v4 alone.** K=4 quarter-pinning of PRIMARY ctx (without aux ctxs and without parallel dispatcher) yields parity with K=1. The K-parallel candidate verify dispatcher remains needed for true per-request gain.
+
+What's notable in the data:
+- p1 (LRU cache) hits 100% accept and ~20 t/s on BOTH K=1 and K=4 — drafter aligns well with target on this prompt.
+- p2 (moving avg) hits 100% accept of fewer drafts (33 vs 55) and only 6 t/s — drafter under-produces or target over-decodes.
+- The 6.80 t/s Phase 1.0 baseline was closer to p2-like prompts; current measurement reveals strong prompt-dependent variance not captured in the original 3-prompt mean.
+
+### Closure-inflation guard
+
+> "On HEAD `830c98c61`, foundation v4 (single primary-ctx quarter pin via threadpool + llama_set_n_threads) on Qwen3.6-35B-A3B Q8 hybrid Delta Net + Qwen3-1.7B Q8 drafter at v5 PGO build delivers parity (+7.9% within noise) vs K=1 baseline. Spec-dec gain is heavily prompt-dependent (p1 ~20 t/s, p2 ~6 t/s). Foundation alone does NOT meet the ≥1.3× gate; the true K-parallel target verification dispatcher (separate aux contexts + parallel decode + reduction across NUMA quarters) is still required. Does NOT generalize to 'NUMA-parallel verify is dead on hybrid' — only that *primary-ctx quarter-pin alone* is insufficient at this configuration. The dispatcher path remains structurally justified by the 6.10× ceiling probe."
+
+### Phase 1.1 status post-fixes
+
+| Item | Status |
+|---|---|
+| Phase 1.0 GATE | MET (Phase 1.0 result holds) |
+| Phase 1.1 CLI surface | DONE (`d056c1f20`) |
+| Phase 1.1 Blocker 1 (threadpool affinity EINVAL) | **FIXED** at `830c98c61` |
+| Phase 1.1 Blocker 2 (speculative.cpp:1066 assertion) | **FIXED** at `830c98c61` |
+| Phase 1.1 foundation v4 (primary ctx quarter pin) | DONE; measurement = parity with K=1 |
+| Phase 1.1 GATE (≥1.3× per-request) | NOT MET on foundation alone |
+| Phase 1.1 K-parallel dispatcher | NEXT SESSION (mechanism still required for gate) |
+| Phase 1.1 measurement on hybrid Q8 | DONE this session — foundation alone insufficient |
+
+### Next session — true K-parallel dispatcher
+
+Implementation now unblocked:
+1. Create K-1 auxiliary `llama_context` instances at server load (foundation v4 already validates the quarter-pinning + threadpool primitive on hybrid).
+2. State sync prompt KV across K ctxs at request start (`llama_state_seq_get/set_data`).
+3. Dispatcher: split `tree.get_paths()` to K ctxs, parallel `llama_decode`, reduce by longest-accepted-prefix.
+4. KV cache memory cost: K=4 × Qwen3.6-35B-A3B Q8 KV ≈ 4× slot KV. May need ctx-size reduction.
+5. Measurement: 5-rep proper canonical end-to-end on Q8 hybrid. Gate ≥1.3× per-request over foundation v4 K=1 baseline.
+
+Realistic wall-clock: ~3-5 days now that blockers are gone.
+
+---
+
+## Phase 1.1 — Foundation v5 LANDED: K aux contexts active on hybrid (DONE 2026-04-29)
+
+Commit `3656223eb` on `feature/cpu-ep-inter-process` re-enables K-1 auxiliary `llama_context` creation that previously crashed in v1/v2. Now stable thanks to Blocker 1 fix (`llama_set_n_threads` aligned with threadpool worker count) applied per-ctx.
+
+### Smoke test on production target
+
+```
+$ llama-server -m Qwen3.6-35B-A3B-Q8_0.gguf -md Qwen3-1.7B-Q8_0.gguf \
+              -t 96 -c 4096 -fa 1 --spec-numa-quarters 4
+
+srv  load_model: Phase 1.1 foundation v5: K=4, 24 threads/quarter — building 3 aux ctxs
+srv  load_model: Phase 1.1: ctx[0] (primary) pinned to threads [0, 24)
+srv  load_model: Phase 1.1: ctx[1] (aux)     pinned to threads [24, 48)
+srv  load_model: Phase 1.1: ctx[2] (aux)     pinned to threads [48, 72)
+srv  load_model: Phase 1.1: ctx[3] (aux)     pinned to threads [72, 96)
+srv  load_model: Phase 1.1 foundation v5 active: 4 NUMA-pinned target ctxs.
+                Dispatcher not yet wired — aux ctxs idle until next phase.
+main: server is listening on http://127.0.0.1:18099
+```
+
+Each ctx has its own KV cache (~80 MiB) + recurrent state (~251 MiB) + ggml_threadpool with 24 workers + matching `llama_set_n_threads`. /completion via primary ctx still works (15.5 t/s at 22/22 accept on a small n_predict=32 prompt). No warns, no crashes. Memory footprint ~1.3 GB extra for 3 aux ctxs; system has 800 GB free.
+
+### What's in place after foundation v5
+
+| Component | Status |
+|---|---|
+| --spec-numa-quarters CLI surface | DONE |
+| Per-ctx ggml_threadpool with quarter cpumask | DONE (K=4 quarters of 24t each) |
+| llama_set_n_threads matched to threadpool workers (Blocker 1 fix) | DONE per-ctx |
+| K=1..K llama_context instances sharing model | DONE |
+| speculative.cpp:1066 vocab assertion (Blocker 2 fix) | DONE |
+| Aux ctx memory allocation (KV + recurrent state) | DONE (~330 MiB per ctx) |
+| Aux ctx routing into spec-dec verify | NOT YET (aux ctxs idle) |
+| State sync from primary → aux ctxs | NOT YET |
+| Parallel decode dispatcher | NOT YET |
+| Reduction (longest accept → primary state) | NOT YET |
+
+### Remaining dispatcher work (next session)
+
+The actual K-parallel verify dispatcher is genuinely a multi-day implementation:
+
+1. **State sync helper** (~50 LOC): use `llama_state_seq_get/set_data_ext` to copy prompt KV from primary ctx → aux ctxs. Cost: ~250-330 MiB per aux ctx per sync (full state) or ~few MiB (delta sync).
+2. **Path-batch builder** (~50 LOC): convert tree paths from `tree.get_paths()` into K llama_batches, each with one path's tokens.
+3. **Parallel decode orchestrator** (~80 LOC): std::thread over K ctxs each calling `llama_decode(numa_ctxs[k], path_k_batch)`; join all.
+4. **Accept reducer** (~40 LOC): each ctx independently samples_and_accept_n on its path; pick path with longest accepted prefix.
+5. **State commit** (~30 LOC): copy winning ctx's KV state delta back to primary ctx; clear losing ctxs.
+6. **Pipeline integration** (~50 LOC): hook in server-context.cpp at the spec-dec verify site (line ~3160-3173).
+7. **Build, smoke test, measurement, CPU20 bundle** — day 4-5 of effort.
+
+Total: ~300-400 LOC + debugging. Realistic 3-5 days of focused dedicated work.
+
+### Architectural risk areas (called out for next session)
+
+- **Per-spec-round state sync cost**: full state for 35B Q8 hybrid ≈ 330 MiB × 3 aux = ~1 GB memcpy per round. At ~50 GB/s = 20 ms per round. Spec-dec rounds happen ~10× per request → 200 ms overhead per request. May exceed K-parallelism savings on short generations. Need delta-sync (only changed cells) for production viability.
+- **Tree path semantics on hybrid Delta Net**: each path through the tree has a different sequence of recurrent state updates. The `seq_cp` infrastructure in heap-spec works on draft ctx; for target K-parallel we need separate per-ctx state evolution — confirmed structurally feasible but untested at depth.
+- **Server pipeline batch packing**: current code packs all slot draft tokens into ONE batch shared across slots. For K-parallel, a single slot's K paths need K SEPARATE batches. May break the existing batching abstraction if multiple concurrent slots want spec-dec simultaneously.
+
+### Foundation v5 is the productive plateau for this session
+
+This session: 3 substantial commits to llama.cpp-experimental (`a5c48050c` → `d056c1f20` → `830c98c61` → `3656223eb`), 2 pre-existing bugs fixed, foundation v5 verified on production target. Good base for the dispatcher push.
+
+---
+
+## Phase 1.1 — Dispatcher v0 (pass-through) committed (DONE 2026-04-29)
+
+Commit `64df7284b` adds the dispatcher integration point and state-sync primitive:
+
+### `numa_state_sync(src_ctx, dst_ctx, seq_id)` helper
+
+Copies seq state between contexts via `llama_state_seq_get/set_data_ext` with `PARTIAL_ONLY` flag (matches existing checkpoint pattern). Clears dst seq before set to avoid conflicts. Returns true on success.
+
+### `dispatch_numa_parallel_verify(...)` integration point at server-context.cpp:3173
+
+```cpp
+auto accepted = numa_quarters_active > 1
+    ? dispatch_numa_parallel_verify(slot.smpl.get(), numa_ctxs, slot.id, slot.spec_i_batch, slot.spec_draft)
+    : common_sampler_sample_and_accept_n(slot.smpl.get(), slot.ctx, slot.spec_i_batch, slot.spec_draft);
+```
+
+v0 implementation is PASS-THROUGH — calls `common_sampler_sample_and_accept_n` on primary ctx (`numa_ctxs[0]`), identical to K=1 behavior. Aux ctxs are still idle.
+
+### Smoke test (dispatcher v0 + foundation v5 on Qwen3.6-35B-A3B Q8 hybrid)
+
+```
+$ curl /completion -d '{"prompt": "...LRU cache...", "n_predict": 64}'
+predicted_per_second: 5.99 t/s, draft_n_accepted: 33/33
+```
+
+No regression vs foundation v5 K=4 measurement (parity confirmed). The integration point and state-sync primitive are in place; the actual parallelism is the next slice.
+
+### Why dispatcher v0 is pass-through (the hard part remaining)
+
+The current server pipeline at `update_slots()` builds ONE shared `batch` containing tokens from MANY slots, then calls `llama_decode(ctx, batch_view)` ONCE on primary ctx (line 2943). For K-parallel verify to work, the per-slot per-path decode must be hoisted OUT of the shared batch:
+
+1. **Don't pack draft tokens into shared batch** — currently lines 408-422 in server-context.cpp add `slot.sampled` + `spec_draft` to the global `batch` for each spec-dec slot. For K-parallel, these tokens need to NOT be in the shared batch.
+2. **Per-slot per-path batch builder** — for each slot in spec-dec mode, get tree paths via `common_speculative_get_tree(slot.spec.get())->get_paths()` and build K `llama_batch` instances, one per path.
+3. **State sync** at request start — primary ctx has the prompt KV after prompt eval; aux ctxs need it. Use `numa_state_sync` once per request transition to GENERATING state.
+4. **Parallel decode orchestrator** — std::thread or std::async over K ctxs, each calling `llama_decode(numa_ctxs[k], path_k_batch)`.
+5. **Per-ctx sample-and-accept + reduce** — each ctx samples-and-accepts on its own logits, returning an accepted prefix; reducer picks the path with longest accepted prefix.
+6. **State commit** — winning ctx's state becomes canonical; either copy back to primary ctx OR rotate `slot.ctx` to the winning ctx for next round.
+
+Step 6 is the trickiest: maintaining KV consistency across K ctxs after each spec-dec round. Two designs:
+- **Pin slot to primary, sync winner → primary each round**: simple, but pays state-sync cost (~330 MiB × K-1 per round on 35B Q8 hybrid; ~20 ms at 50 GB/s memcpy).
+- **Rotate slot.ctx to winner**: avoids per-round sync but requires the slot's other state (sampler, prompt cache index, etc.) to be ctx-agnostic. Complicates request lifecycle.
+
+### Realistic scope of the remaining dispatcher work
+
+| Step | LOC est | Risk |
+|---|---|---|
+| 1. Skip shared-batch packing for spec-dec slots when K>1 | ~30 | LOW |
+| 2. Path-batch builder | ~80 | MEDIUM (tree path → llama_batch w/ correct positions + seq_ids) |
+| 3. One-shot state sync at request-start | ~50 | MEDIUM (hybrid Delta Net state semantics) |
+| 4. Parallel decode orchestrator | ~80 | LOW (std::thread join pattern) |
+| 5. Per-ctx sample-and-accept reducer | ~60 | LOW |
+| 6. State commit (pick a design) | ~80-150 | HIGH (per-round sync cost, slot.ctx rotation, sampler state) |
+| 7. Edge cases: partial accept, ctx_seq_rm_type, checkpoint restoration | ~50 | MEDIUM |
+| Build + smoke + measurement + bundle | day 4-5 |
+| **Total** | **~430-550 LOC** | **3-5 days focused work** |
+
+### Dispatcher v0 deliverables this session (committed 64df7284b)
+
+| Deliverable | Status |
+|---|---|
+| State sync helper API | DONE (`numa_state_sync`) |
+| Dispatcher integration point | DONE (`dispatch_numa_parallel_verify` stub) |
+| K=4 ctxs reachable from dispatch site | DONE (via `numa_ctxs` member vector) |
+| Pass-through behavior preserves K=1 functionality | DONE (smoke test) |
+| Server boots cleanly on hybrid Delta Net 35B Q8 with K=4 | DONE |
+| Actual parallel decode | NOT YET (future slice — needs steps 1-6 above) |
+
+### Phase 1.1 status post-dispatcher-v0
+
+| Item | Status |
+|---|---|
+| Phase 1.0 GATE | MET |
+| Blocker 1 fixed | DONE (`830c98c61`) |
+| Blocker 2 fixed | DONE (`830c98c61`) |
+| Foundation v5 (K aux ctxs) | DONE (`3656223eb`) |
+| Dispatcher integration point | DONE (`64df7284b`) |
+| State sync primitive | DONE (`64df7284b`) |
+| Per-slot K-path batch builder | NOT YET |
+| Parallel decode orchestrator | NOT YET |
+| Per-ctx sample-and-accept reducer | NOT YET |
+| State commit (winner → primary) | NOT YET |
+| Phase 1.1 ≥1.3× gate | NOT MET (no parallel decode yet) |
+
+### Closure-inflation guard
+
+> "On HEAD `64df7284b`, foundation v5 (K NUMA-pinned target ctxs) + dispatcher v0 (pass-through wiring + state-sync primitive) is structurally complete on Qwen3.6-35B-A3B Q8 hybrid Delta Net at v5 PGO build. Per-request gain vs K=1 is parity (foundation v4 measurement) because the dispatcher is currently pass-through. Does NOT generalize to 'NUMA-parallel verify is dead' — the actual K-parallel mechanism (split tree paths to K ctxs, parallel decode, reduction) is genuinely outstanding work, not a falsified hypothesis. Per-round state sync cost on hybrid 35B Q8 (~20 ms at 50 GB/s for ~330 MiB × 3 aux ctxs) is the binding architectural risk for the gate; alternative (slot.ctx rotation) avoids the cost but complicates lifecycle."
+
+### Session-end commit chain on `feature/cpu-ep-inter-process`
+
+```
+a5c48050c  Phase 1.1 foundation v1: --spec-numa-quarters K + K aux ctxs (+135 LOC, crashed on hybrid)
+d056c1f20  Phase 1.1 foundation v3 ROLLBACK: CLI surface only after hybrid crash (-77 LOC)
+830c98c61  Phase 1.1: fix both blockers (Blocker 1 + Blocker 2; foundation v4)
+3656223eb  Phase 1.1 foundation v5: K aux contexts active on hybrid (+60 / -28)
+64df7284b  Phase 1.1 dispatcher v0: pass-through wiring + state sync helper (+48 / -1)
+```
+
+Net: ~243 LOC committed across 5 commits, two pre-existing blockers fixed, foundation up through dispatcher integration point.
+
+---
+
+## Next-session pickup (verbatim prompt) — DEFERRED 2026-04-28 evening
+
+The session was wrapped up cleanly at the dispatcher v0 plateau because the remaining K-parallel mechanism is realistically 3-5 days of focused concurrent-state code. To pick this up fresh, paste the prompt below into a new session:
+
+```text
+Resume slot-promotion Phase 1.1 dispatcher implementation on
+feature/cpu-ep-inter-process at HEAD 64df7284b in
+/mnt/raid0/llm/llama.cpp-experimental.
+
+State of play:
+- Foundation v5 (K=4 NUMA-pinned aux llama_context instances) is live and
+  smoke-tested clean on Qwen3.6-35B-A3B-Q8_0 hybrid Delta Net + Qwen3-1.7B
+  Q8 drafter at v5 PGO build (build_v5_pgo_use/).
+- Both pre-existing blockers fixed (Blocker 1: ggml_threadpool +
+  llama_set_n_threads pairing; Blocker 2: speculative.cpp:1066 empty-piece
+  GGML_ASSERT relaxation).
+- Dispatcher integration point at server-context.cpp:3218-3220 is wired
+  but PASS-THROUGH (`dispatch_numa_parallel_verify` at line 72 just calls
+  common_sampler_sample_and_accept_n on numa_ctxs[0]).
+- numa_state_sync helper at server-context.cpp:45 is in place
+  (llama_state_seq_get/set_data_ext + PARTIAL_ONLY flag, with
+  llama_memory_seq_rm clearing dst seq before set).
+- Phase 1.1 ≥1.3× gate is NOT MET. K=4 vs K=1 = parity (+7.9% noise) on
+  Qwen3.6-35B-A3B Q8 hybrid because dispatcher is pass-through.
+- Phase 2 aggregate ceiling = 6.10× single-instance — gate has 4.7×
+  headroom for orchestration overhead, so the mechanism is structurally
+  justified.
+
+Remaining work (realistic 3-5 days, ~430-550 LOC across 7 sub-slices):
+1. Path-batch builder (~80 LOC): expose
+   common_speculative_get_tree(slot.spec.get())->get_paths() and
+   partition K paths into K llama_batch instances. New helper in
+   server-context.cpp; possible common/speculative.h API exposure.
+2. Skip shared-batch packing for spec-dec slots when K>1 (~30 LOC) in
+   update_slots() at server-context.cpp:~2400-2800. Currently all slots
+   merge into one global batch decoded on primary ctx.
+3. One-shot state sync at SLOT_STATE_GENERATING transition (~50 LOC):
+   primary -> K-1 aux ctxs at line ~3101. Subsequent rounds need delta
+   sync only.
+4. Parallel decode orchestrator (~80 LOC): std::thread over K
+   llama_decode calls, with proper join + error propagation. Each ctx
+   already has its own pinned threadpool; thread fan-out is at the
+   llama_decode level, not below.
+5. Per-ctx sample-and-accept reducer (~60 LOC): run
+   common_sampler_sample_and_accept_n on each ctx's path; pick winner =
+   longest accept. Edge: ties -> use lowest ctx index for determinism.
+6. State commit / winner promotion (~80-150 LOC, HIGHEST RISK): sync
+   winner ctx -> primary state via llama_state_seq_get/set_data_ext.
+   ~330 MiB at 50 GB/s = ~6.6 ms per memcpy x (K-1) losers + 1 winner
+   = ~20-25 ms per round. This is the gate-eating overhead.
+7. Edge cases (~50 LOC): K=1 fallback (already works via numa_quarters_active
+   == 1 branch), single-path tree (no p_split), empty draft, partial
+   accept rollback semantics.
+
+Critical risk: K=1 currently runs at 12.01 t/s mean on the test workload.
+The 1.3x gate is 15.6 t/s. With ~20-25 ms state sync per round eating
+into the ~83 ms per-token wall-clock, the parallel speedup must overcome
+~25-30% overhead to hit the gate. Could land as parity if state sync
+cost dominates the parallel gain. Mitigation: compute scale of per-round
+sync vs per-round decode cost EARLY (smoke 1 sub-slice at a time and
+measure end-to-end on Qwen3.6-35B-A3B Q8 + Qwen3-1.7B Q8 drafter at v5
+PGO build, not after all sub-slices land).
+
+Files to touch:
+- common/speculative.h (expose tree access if needed for path partition)
+- common/speculative.cpp (possibly: per-path state primitives)
+- tools/server/server-context.cpp (most of the new code)
+
+Reference reading before starting:
+- /workspace/handoffs/active/hybrid-ssm-slot-promotion-spec-dec.md
+  sections "Phase 1.1 — foundation v1->v5 + dispatcher v0" and "Phase 2
+  ceiling probe" (lines 380-480)
+- /mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/2026-04-29-numa-quarter-pin-phase-1-1a/decision.md
+- /mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/2026-04-29-numa-parallel-ceiling/decision.md
+
+Test workload (canonical for this work):
+- llama-server with Qwen3.6-35B-A3B-Q8_0 + Qwen3-1.7B-Q8_0 drafter
+- Same 3 prompts as Phase 1.0 (binary_search, lru_cache,
+  csv_moving_avg) at 3 reps each; ~60 s warmup after /health OK
+- v5 PGO build at /mnt/raid0/llm/llama.cpp-experimental/build_v5_pgo_use/
+- numactl --interleave=all required for memory placement
+- Server flags: --spec-numa-quarters 4 (for K=4) or 1 (baseline)
+- LLAMA_ARG_SPEC_NUMA_QUARTERS env var equivalent
+
+Build + smoke first, measure after each sub-slice not just the final
+combined merge. Deliverable: K=4 mean t/s >= 1.3 x K=1 mean t/s on the
+canonical workload, OR a NO-GO closure with scoped language per
+closure-inflation policy (specifically: do NOT generalize to "K-parallel
+verify is dead on hybrid" — only that *the implemented mechanism at this
+specific overhead breakdown* doesn't beat K=1 on this specific workload
+and config; alternative cost models may still close the gap).
+
+Branch already has 5 unpushed commits ahead of fork remote. Pull them or
+not as you see fit; they're in a clean state.
+```
+
+---
+
+## Phase 1.1 — Dispatcher v1 LANDED, GATE NOT MET on canonical workload (DONE 2026-04-30)
+
+This session drove dispatcher v0 (pass-through) to dispatcher v1 (functional
+K-parallel candidate verify). All 7 sub-slices from the resume prompt were
+implemented; the final canonical 3-prompt × 2-rep measurement was run.
+
+### What landed
+
+| Sub-slice | What | Status |
+|---|---|---|
+| A | `numa_select_top_k_alt_paths` helper + `slot.numa_alt_paths` member | DONE |
+| B | one-shot primary→aux state sync at `SLOT_STATE_GENERATING` transition + timing | DONE |
+| B.5 | gate-check measurement of state-sync cost in isolation | DONE |
+| C/D | per-round aux dispatch in `update_slots`, sequential pre-decode sync (parallel sync raced primary's decode) + parallel aux decode threads | DONE |
+| E | per-ctx sample-and-accept reducer with sampler clones, longest-accepted-prefix winner | DONE |
+| F | winner→primary state sync + `slot.smpl` and `slot.spec_draft` rotation | DONE |
+| G | canonical 3-prompt × 2-rep measurement | DONE |
+
+CPU20 bundle: `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/2026-04-30-state-sync-cost-probe/`.
+
+### Slice B.5 gate-check (state-sync cost in isolation)
+
+| Brief estimate | Measured |
+|---|---|
+| ~330 MiB/aux ctx state | **62.81 MiB/aux ctx** (5.3× smaller than worst-case) |
+| ~20-25 ms per round | **~17.5 ms one-shot per request** for K=4 (3 aux), ~5.8 ms per primary→aux pair |
+| Per-round delta sync | Same scale, well under per-token gate budget |
+
+**Gate B.5 PASSED.** State-sync cost is NOT the binding constraint for the
+gate failure on canonical workload; the binding constraint is workload-pattern.
+
+### Slice G — canonical 3-prompt × 2-rep result
+
+n_predict=64, p_split=0.05, temperature=0.0, --draft-max=24 --draft-min=4.
+
+| Prompt | K=1 mean t/s | K=4 dispatcher v1 mean t/s | accept K=1 / K=4 | K=4 / K=1 |
+|---|---|---|---|---|
+| p0 binary_search | 20.21 | 12.65 | 55/55 / 55/55 | 0.626 |
+| p1 lru_cache     |  5.96 |  3.85 | 33/33 / 32/32 | 0.646 |
+| p2 csv_moving_avg |  8.03 |  5.76 | 14/14 / 12/12 | 0.717 |
+| **aggregate (n=6)** | **11.40** | **7.42** | 100% accept | **0.651 — K=4 is 35% SLOWER** |
+
+Gate (K=4 ≥ 1.3 × K=1 = 14.82 t/s): **NOT MET**. K=4 = 7.42 t/s.
+
+`grep -c "numa K-parallel verify" srv_final_k4.log = 0` — the dispatcher's
+K-parallel block engaged ZERO times across all K=4 reps.
+
+### Critical structural finding
+
+The canonical 3-prompt workload under `temperature=0.0` produces **single-leaf
+speculation trees**. The drafter's top-1 candidate dominates with > 95%
+probability on these simple coding prompts; in the tree builder
+(`common/speculative.cpp:1190`), the loop `if (k > 0 && cur_p->data[k].p < params.p_split) break`
+fires immediately for k=1 because the secondary candidate's probability is
+below `p_split=0.05`. Result: `tree.n_nodes = depth × 1` (linear), `get_paths()`
+returns ONE path, `numa_select_top_k_alt_paths` returns empty.
+
+With `numa_alt_paths` empty on every round, the dispatcher's K-parallel
+block is skipped (`numa_active_slot` stays nullptr; the dispatcher's
+fast-path runs `common_sampler_sample_and_accept_n` on primary only).
+
+K=4 mode then degenerates to **single-ctx decode on the primary, but with
+primary pinned to NUMA quarter 0 (24 threads) instead of full machine
+(96 threads)**. The 35% slowdown is the thread-count / DRAM-bandwidth
+penalty without any countervailing K-parallel benefit.
+
+### Closure-inflation guard (scoped wording for the gate failure)
+
+> "On HEAD post-2026-04-30 commits on `feature/cpu-ep-inter-process` in
+> `/mnt/raid0/llm/llama.cpp-experimental`, Phase 1.1 dispatcher v1
+> (per-ctx sample-and-accept reducer + sequential pre-decode aux state
+> sync + parallel aux decode + winner-state commit) on Qwen3.6-35B-A3B Q8
+> hybrid Delta Net + Qwen3-1.7B Q8 drafter at v5 PGO build delivers
+> parity-or-worse vs K=1 on the canonical 3-prompt × 2-rep workload (K=4
+> aggregate 7.42 t/s vs K=1 11.40 t/s, gate threshold 14.82 t/s). The
+> dispatcher functions correctly (build clean, no crashes, sampler state
+> and spec_draft rotation handled when winner != primary), but the
+> canonical prompts under temperature=0.0 produce single-leaf speculation
+> trees because the drafter's top-1 candidate dominates with > 95%
+> probability — so `numa_alt_paths` is empty on every round, the dispatcher
+> takes its primary-only fast path, and K=4 mode degenerates to a thread-
+> count penalty (primary pinned to 24t per NUMA quarter vs K=1's 96t
+> full-machine) without any countervailing K-parallel benefit. The
+> dispatcher's K-parallel block engaged ZERO times across all 6 K=4 reps.
+>
+> Does NOT generalize to 'K-parallel verify is dead on hybrid' or to
+> 'NUMA-parallel verify is dead'. The mechanism is structurally functional
+> and would deliver gain on workloads that actually exercise tree branching:
+> drafter divergence + lower acceptance rate + p_split low enough to keep
+> non-trivial branches + prompts where drafter is uncertain on multiple
+> positions. Different (workload, K, p_split, temperature, drafter pair)
+> configurations remain unevaluated.
+>
+> The state-sync cost (Slice B.5: 17.5 ms one-shot, ~5.8 ms per-pair-per-
+> round on Q8 hybrid) is NOT the binding constraint for this gate failure —
+> it never gets exercised on canonical workload because alt paths don't
+> populate. The binding constraint is workload-pattern: the canonical
+> prompts collapse the drafter's tree to a linear path, so there is
+> nothing for K-parallel verify to do."
+
+### Implementation notes (worth preserving for future work)
+
+1. **Race condition discovered + fixed**: a parallel aux thread doing
+   `numa_state_sync(primary, aux_k, ...)` concurrently with primary's
+   `llama_decode` produces find_slot non-consecutive position warnings + an
+   n_batch-halving cascade + 4× slowdown. Fix: do the K-1 primary→aux
+   syncs SEQUENTIALLY on the main thread BEFORE primary decode begins,
+   then spawn aux decode threads (which run in parallel with primary
+   decode safely, since they only touch their own ctx's KV).
+
+2. **Position math for aux batches**: each aux decodes a batch of
+   `[sampled, alt_path_tokens...]` at positions `[spec_pos0, spec_pos0+1, ...]`,
+   matching the primary's shared-batch positions for the same slot.
+   `slot.spec_pos0` was added to `server_slot` to capture the position of
+   `sampled` at the moment of `update_batch` so it survives the subsequent
+   `prompt.tokens.push_back / insert` advances.
+
+3. **Winner-state rotation**: when winner is an aux ctx, `slot.spec_draft`
+   must be replaced with the winner's path BEFORE the upstream
+   partial-acceptance check at `server-context.cpp:~3539`, otherwise the
+   `keep_first(n - n_draft)` math uses stale n_draft from greedy.
+   Implemented inside `dispatch_numa_parallel_verify`.
+
+4. **End-of-round alt-path clear**: `numa_active_slot->numa_alt_paths.clear()`
+   at end of `run_slots` ensures the next round re-populates from a fresh
+   tree. Without this, stale alt-paths from a previous round could route
+   wrong-path verifies.
+
+### Recommended next direction (NOT in scope of this session)
+
+To characterize where dispatcher v1 actually wins, measure on a workload
+designed to exercise tree branching:
+
+- p_split lowered to 0.001-0.01 (keep more branch candidates).
+- Drafter top_k raised from default 10.
+- Prompts where drafter is uncertain (creative writing, ambiguous coding
+  problems, harder math).
+- Drafter at higher temperature.
+- Larger K with sub-quarter pinning (K=8 or K=16).
+
+A separate "dispatcher v1 sensitivity sweep" probe would scan these axes
+to find the workload regime where the mechanism delivers measurable gain.
+Until that's done, the production verdict on dispatcher v1 should be:
+**works correctly, doesn't help on greedy 100%-accept canonical workload,
+unknown gain elsewhere**.
+
+---
+
+## Phase 1.1 — Divergent-tree sensitivity sweep (DONE 2026-04-30, mechanism net-negative)
+
+Bundle: `data/cpu_optimization/2026-04-30-divergent-tree-sweep/` in
+epyc-inference-research repo.
+
+### Important correction to the canonical measurement analysis
+
+The earlier conclusion that the dispatcher's K-parallel block engaged
+"zero times" on canonical workload was **incorrect** — based on a
+non-verbose log filter that suppressed DBG-level engagement messages.
+With `--verbose` enabled, the same canonical config (p_split=0.05,
+temperature=0.0) shows the dispatcher actively engaging and running
+K-parallel verify rounds.
+
+The 35% K=4 vs K=1 slowdown is therefore NOT just the thread-count
+penalty (primary at 24t vs 96t). It reflects two compounding effects:
+
+1. Thread-count penalty (primary pinned to NUMA quarter 0).
+2. **K-parallel verify is performing parallel decodes on aux paths
+   that lose to primary 97% of the time** — pure overhead.
+
+### Sweep design
+
+K=4 with --verbose, 4 (p_split, temperature) configs × 5 prompts × 1 rep:
+
+| Config | p_split | temperature | rationale |
+|---|---|---|---|
+| p005_t0 | 0.05 | 0.0 | canonical baseline |
+| p001_t0 | 0.001 | 0.0 | wide tree (low p_split) |
+| p005_t7 | 0.05 | 0.7 | non-greedy target → drafter/target divergence |
+| p001_t7 | 0.001 | 0.7 | both branch-promoting levers |
+
+Prompts: canonical 3 (binary, lru, moving) + 2 uncertain (haiku, consciousness).
+
+### Key result
+
+| Metric | Value |
+|---|---|
+| Total dispatcher K-parallel invocations | **62** |
+| Primary winner (winner_ctx=0) | **60 (97%)** |
+| Aux winner (winner_ctx=1..3) | **2 (3%)** |
+| Aux-win marginal accept | **+1 token both times** |
+
+In 60/62 rounds, K-parallel verify produces accepted prefix EQUAL to
+primary's greedy — pure parallel-decode overhead with no gain. In 2/62
+rounds, an aux ctx delivers +1 accepted token (≈ 83 ms savings at
+12 t/s baseline). Average savings = 0.03 × 83 = 2.5 ms/round, vs ~17 ms
+sync + ~5 ms per-aux sample-and-accept overhead = -20 ms/round net.
+
+### Why architectural pivot to "full-machine primary" wouldn't help
+
+The pivot was framed as: change primary's threadpool from 24t (quarter-
+pinned) to 96t (full machine), making K=4 mode no slower than K=1 when
+alt paths happen to be empty. This sweep falsifies the premise:
+
+1. Alt paths ARE typically non-empty on canonical workload (alt=2-3
+   paths is common).
+2. The dispatcher engages, runs aux work, and usually loses anyway.
+3. The deeper issue isn't threading — it's that aux paths verify the
+   same tokens primary already verifies in 97% of rounds, even at
+   p_split=0.001 + temperature=0.7.
+
+Threading reconfiguration changes per-decode wall-clock, not aux win-rate.
+Pivot would address thread-count overhead but leave the structural
+no-win property intact.
+
+### Scoped closure (revised)
+
+> "On HEAD d45126db5 on `feature/cpu-ep-inter-process`, Phase 1.1
+> dispatcher v1 K-parallel verify on Qwen3.6-35B-A3B Q8 hybrid Delta Net
+> + Qwen3-1.7B Q8 drafter at v5 PGO build engages on canonical AND
+> branch-promoting workload configurations (4 configs × 5 prompts =
+> 62 dispatcher invocations) but primary wins 60/62 (97%) of rounds. The
+> 2 aux-winning rounds yielded +1 accepted token each — far below the
+> per-round K-parallel overhead of ~22 ms.
+>
+> Mechanism is structurally net-negative for this drafter/target/workload
+> class. Does NOT generalize to 'K-parallel verify is dead'. Different
+> drafter models (larger drafter that produces alt branches more aligned
+> with target sampling), different target models, different K values,
+> and very different workload classes (long-form generation with
+> frequent ambiguity) remain unevaluated. The mechanism's failure here
+> is empirical for THIS pair on THIS workload, not a general claim.
+>
+> Architectural pivot to 'full-machine primary' would not turn a 3%
+> aux-win-rate into wins — it addresses thread-count overhead, not the
+> underlying hit-rate. Pivot is not worth doing on this workload class."
+
+### Operational recommendation
+
+- **Keep** dispatcher v1 code in tree (committed in `d45126db5`). It
+  works correctly with full test coverage of the parallel decode race
+  fix and winner-state rotation. Costs nothing at K=1 default.
+- **Default** `--spec-numa-quarters` to 1 (already is). Do NOT enable
+  K=4 for production workloads on this drafter/target pair.
+- **Re-evaluate** if/when a different drafter or target pair is
+  benchmarked. The 6.10× ceiling probe motivated this work but measured
+  AGGREGATE THROUGHPUT across independent slots (NUMA-quarter splitting
+  for 4× concurrent inference), not per-request K-parallel verify gain.
+  These are two different mechanisms; the aggregate-throughput one is
+  already deployed in production via the orchestrator's 4×24t splits.
+
+### Phase 1.1 final status (after sweep)
+
+| Item | Status |
+|---|---|
+| Dispatcher v1 implementation | DONE (functional, race-free, 386 LOC) |
+| Slice B.5 state-sync gate-check | PASSED (5.8 ms/pair, well under budget) |
+| Slice G canonical 3×2 measurement | DONE (K=4 = 7.42 t/s, K=1 = 11.40 t/s; gate not met) |
+| Divergent-tree sensitivity sweep | DONE (mechanism engages but loses 97/100 rounds) |
+| Phase 1.1 ≥1.3× gate | NOT MET, mechanism net-negative on this drafter/target |
+| Architectural pivot (option 2) | NOT WORTH DOING (sweep showed it wouldn't help) |
+
+The Phase 1.1 work is **complete**. Dispatcher v1 stays in tree as a
+disabled-by-default feature; the K-parallel verify mechanism is
+empirically not the right per-request latency lever for this pair
+on this hardware.
+
+

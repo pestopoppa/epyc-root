@@ -1,0 +1,45 @@
+{
+  "artifact_sha256": {
+    "artifacts/operator/e8_quality_pool_regenerator.py": "0b2e8644c43ef33a8c9c65fc911e884bc175dd8f756e2a9aebe642b7e4695832",
+    "artifacts/operator/e8_quality_source_amendment.py": "3ba9f286e0fe87ac4187a76f8b9abc9bd9bed0a9e1a548399a459eb6923d8ff5",
+    "artifacts/operator/e8_quality_source_protocol_amendment_20260726.md": "ba29ba647a39f7b2934e90c42b6af8815945ec6505bfc087fb5ab4c8ee346379",
+    "tests/test_e8_quality_source_protocol_amendment.py": "1b3f1bcb09d16e6ad2763ab817254c9b744b586f80c844ee5d47ab8691f824b5"
+  },
+  "decision": "AMEND-E8-QUALITY-SCORER-SOURCE-20260726",
+  "era": "E8",
+  "operator_token": "AMEND-E8-QUALITY-SCORER-SOURCE-20260726",
+  "prestate_sha256": {
+    "activated_pool": "9b433fa7f9d067c076f41fff18637c0246bfeab331dfc7f7052244e6db3238af",
+    "pool_builder": "8b708848ee5d72c495c30c6d25df53169c1b05f656bfdf205e7a0b75ea65c62f",
+    "pool_build_driver": "38414e3e8735d3dfe7e5ab164405dd972c7570b877443c4160d74a0261c37980",
+    "runner": "a04c727376d787420e922c8f33417e88db8a731ac7330a1440a5155235dfaa5f",
+    "source_long": "6cc43761e2bac65d0065f28f1ebccdcb2871f3f2c176a12e309243f323214dbe",
+    "source_real": "bfaed14783aa5d5d33871a0740e7e2abe626daea26f7552e730124e3686012f4"
+  },
+  "protocol_id": "e8_quality_full_pool_tier_baseline.v2",
+  "repairs": [
+    {
+      "field": "scoring_config.extract_pattern",
+      "from": "\\d+",
+      "id": "real_suite_v1_0043",
+      "source": "benchmarks/prompts/debug/real_suite_v1.yaml",
+      "suite": "real_suite_v1",
+      "to": "(\\d+)"
+    },
+    {
+      "field": "scoring_config.extract_pattern",
+      "from": "\\d+",
+      "id": "needle_039",
+      "source": "benchmarks/prompts/debug/long_context.yaml",
+      "suite": "long_context",
+      "to": "(\\d+)"
+    }
+  ],
+  "repository_heads": {
+    "epyc_inference_research": "a1e8ec3ff745dacbce4220bb305975635f4384d5",
+    "epyc_orchestrator": "3f21d760362293328f480ab390499ceb3657987d",
+    "epyc_root": "f581868c150c9da1995fe935d9aeaa3b66bf23cc"
+  },
+  "schema": "epyc.operator_e8_quality_source_protocol_amendment_proposal.v1",
+  "status": "proposal_only_unattested"
+}
