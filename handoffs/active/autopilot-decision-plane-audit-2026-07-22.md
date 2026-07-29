@@ -287,6 +287,36 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
   finalizer inference remain open.** A c1 retry timeout remains a governed 300-second-budget
   decision; do not silently raise its timeout. This task does not authorize baseline application or
   publication.
+  - [x] **Final-C1 capacityfix ordinals collected, but not admitted** ✅ 2026-07-29 — the ratified
+    capacityfix source namespace
+    `/mnt/raid0/llm/epyc-root/artifacts/operator/e8_quality_baseline_v5_partial_r2_final_c1_capacityfix_20260729T112433Z`
+    contains clean generated sidecars for ordinal `97` / `leval_codeU_269`, SHA-256
+    `352a5c0bfe3f03bfb3c52a8d6ff345acda413f7ac48a69dcfc2da7bf3a1e50ba`, and ordinal `279` /
+    `leval_review_summ_382`, SHA-256
+    `bd89f9e4d7e0a114518a7a0a729b5ea6322ea21e02728f9fc6795db40992a424`. The source tree is
+    `b0a19752ad2fdbcd293a59ea448a7d801ea620282f735c624d559d3c423ca9b9`. This preserves the
+    generated requests only; no final evidence, inference completion, state apply, or publication
+    occurred.
+  - [ ] **Integrate scorer-isolation before deterministic-score replay, then re-run the bounded
+    deterministic completion** — reviewed scorer isolation is orchestrator branch
+    `codex/debug-scorer-isolation-20260729`, commit `79f3d2f35ddd00d21dc2fab235ff269db7c7dec7`.
+    Its private per-invocation workspaces prevent BigCodeBench code-execution collisions. The
+    successor replay is branch `codex/e8-bcb190-score-fix-20260729`, commit `8bc6eaa9`; it must be
+    integrated second and reviewed against the isolation commit. Do not run new generation before
+    deterministic replay of saved outputs is exhausted.
+  - [ ] **Resolve the saved-output BigCodeBench score divergence fail-closed** — completion attempt
+    `...deterministic_completion_20260729T124832Z` correctly refused admission because ordinal
+    `418` / `bcb_BigCodeBench/190` stored `false` while deterministic code scoring returned `true`.
+    Classification: the old scorer used shared `/mnt/raid0/llm/tmp` execution state, allowing a
+    colliding `test.db`; the stored false has no execution witness. The correction ledger must bind
+    source bytes, scorer source hashes, per-row before/after verdicts, and corrected sidecars before
+    any new completion run.
+  - [ ] **Repair the historical producer-pin and abort-terminalization recurrence before final
+    E8 promotion** — independent review found that older producer namespaces can still be selected
+    without a runtime `run_seal.json`, and the offline one-namespace terminal bridge does not make
+    future producer aborts terminal by construction. Wire the copy-only terminalizer into each
+    producer abort epilogue and require a pinned source seal for admission; verify the live
+    race-retry publication path is structurally valid before publishing a replacement bundle.
 - [ ] **E8 quality baseline reseed/apply** — human-only protocol/source/apply scripts are
   prepared and parked. The earlier v4 collection is historical, non-decision evidence after the
   fixed-vector context defect. A first v5 launch failed before inference because its detached
