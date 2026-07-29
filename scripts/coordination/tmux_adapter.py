@@ -811,8 +811,7 @@ def codex_runtime_state(pid: int) -> tuple[str | None, str]:
             rollouts.append(target)
     if not rollouts:
         return None, f"pid {pid} holds no rollout file open"
-    state, why = codex_state_from_rollouts(rollouts)
-    return state, f"pid {pid}: {why}"
+    return codex_state_from_rollouts(rollouts)
 
 
 def codex_state_from_rollouts(rollouts: list[Path]) -> tuple[str | None, str]:
