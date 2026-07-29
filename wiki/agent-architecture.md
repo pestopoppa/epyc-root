@@ -858,3 +858,123 @@ found by asking that question, not by reading the tests.
 _Sources: `handoffs/active/session-bus-thin-dispatcher.md` § M5 → C6, C9, C10, C14, C16, C19;
 `progress/2026-07/2026-07-28.md`; `progress/2026-07/2026-07-29.md`; commits `bf1adb94`, `536839d3`,
 `42884724`, `97955ac8`._
+
+## Compiled Update — 2026-07-29: the harness is a first-class, re-targetable layer — and a merged fix is not a running fix
+
+**Confidence**: verified for the first-party coordination findings (each observed
+by running the system); **observation-grade** for the external harness figures,
+which are n=1 per cell on closed frontier models and gate nothing.
+
+### Harness decomposition and the Harness Card
+
+Two independent taxonomies converge on making the scaffold an auditable object
+rather than an implementation detail. A six-dimension decomposition — **context
+assembly / tool interaction / generation control / orchestration / memory
+management / output processing** — is extended by a seven-layer variant that adds
+**Observability** and **Governance**, and both propose a **Harness Card** as a
+disclosure schema. The adopted action is an audit table recording, per dimension,
+which parts of our Layer-B surface are **editable** versus **hard-coded** — a
+table, not a code change.
+[`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) §HS-6
+
+### Re-targetability outranks per-model tuning (operator, 2026-07-29)
+
+The fleet is upgraded as better open-weight models land, so **harness policy must
+survive a freeze change**. This is a standing selection criterion: a design that
+expresses run-level policy as an **editable natural-language document** with
+mechanisms in code ranks **above** a model-specific experience bank, even when
+the latter has the stronger headline numbers. Anything proposing to bake
+per-model behaviour into the harness is measured against this criterion first.
+[`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) §HS-7
+
+The measured reductions attached to the policy-as-document pattern —
+60.10k→2.90k tokens / 68→3 files; 47.50k→1.40k / 5→1; 10.50k→0.80k / 3→1 — are
+to be carried as **design**, not as numbers: every arm ran on a closed frontier
+mini model. The open transfer question is whether an **open-weight** model can
+*interpret* such a policy document faithfully; their own adherence metrics
+(Workflow Preservation, Stage Coverage, Ordered Workflow, Artifact Contract, Tool
+Call Success, Information Handoff Recall) score adherence **without** a benchmark
+score, so drift is measurable on saved traces and is deterministic-replay
+eligible. Their own red flag: **Information Handoff Recall drops to 0.32/0.55
+under parent-child execution even on a frontier model** — the exact topology our
+sub-agent delegation uses.
+[`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) §HS-8, §HS-9
+
+### Capability versus harness — both halves or neither
+
+A one-step **model** swap buys ≈**3.6×** the full textual→verification harness
+ladder and a one-step **reasoning-budget** bump ≈**2.0×**; but at **fixed** model
+and effort a harness *revision* moved **+7.23**, larger than the entire
+5.08-point architecture spread at that setting. Harness engineering at frozen
+capability is **first-order, not marginal**, and this is the direct empirical
+support for the re-targetability position above. The previously relayed "~6×
+more bought by capability than architecture" reading was **wrong** — the figure
+behind it was the verification-minus-simplification margin, **one rung of the
+ladder**, not the architecture axis.
+[`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) §HS-12;
+[`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) §Records corrected
+
+### "Present-but-uninstructed": a mechanism in a repo carries no measured result
+
+A verification primitive (`plan_executor.py` — simulate the plan in the induced
+world model, execute step-by-step, compare predicted versus observed state after
+each non-terminal step, halt and dump artifacts on the first divergence) exists
+in a published agent system, but **none of that system's agent-facing prompts
+mentions it or requires its use**. It is therefore not what the paper measured
+and no reported number attaches to it. Reading a capability off a repository's
+file listing is unsound in the same way reading a fine-tune's architecture off
+its `config.json` is (see [Speculative Decoding](speculative-decoding.md)):
+**presence is not participation**. The pattern is still worth mining — pure
+Python, no GPU, no Docker — but as an implementable design we would have to
+measure ourselves.
+[`agent-world-env-synthesis.md`](../handoffs/active/agent-world-env-synthesis.md) §Research Intake Update 2026-07-29
+
+### A merged fix and a running fix are different states
+
+Three separate **activation gaps** landed on one file in a single day: a fix was
+committed, reviewed and tested, and remained **inert** because the long-running
+coordinator daemon carrying the old code had not been restarted. "Landed" and
+"active" are two states and only the **process owner** can close the second.
+Corollaries recorded from the same arc:
+
+- **Derive state from what is observable, never from a field somebody must
+  maintain.** Reachability now consults liveness (a live window in the tmux
+  session, else heartbeat freshness) rather than roster metadata; a roster row is
+  a durable identity and a session is not.
+- **Deliver-plus-warn, never refuse.** An inbox row is durable and a merely
+  offline agent drains it on return, so bouncing on staleness converts transient
+  offline into message loss — the opposite-polarity error. A false warning costs
+  one visible line; false silence costs the defect.
+- **A warning needs a reader.** The first fix wrote the defect notice to an
+  advisory ledger that is delivered to no one, so the defect had two layers: a
+  message in an inbox nobody drains, and a notice about it in a ledger nobody
+  reads. The notice now also lands in the inbox of the party that can act on it.
+  Idempotency is keyed on the notice's **own durable trace**, not on the ledger,
+  because the ledger is written by the tick loop and any direct caller would
+  re-notify on every pass.
+- **Fail-closed startup dependencies belong on the reboot checklist.** The spawn
+  adapter refuses when it cannot count live mains, and never creates its own tmux
+  session by design — so after a reboot, spawning is dead until an operator
+  creates the session by hand. That refusal reads like a defect and is not one.
+  The wrong "fix" — treating an unreadable tmux as zero mains — hands out
+  occupied slots.
+
+[`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) §C15/C17/C18/C20 and the post-reboot handover block
+
+### Model choice is not the lever for a protocol gap
+
+The multi-file coding shortfall remains diagnosed as a **protocol/tooling gap,
+not a capability gap**, and the 2026-07-29 intake explicitly declines to reopen
+the model-swap question on its back; the only thing pinned is *which artifact*
+to use **if** a coder-role A/B is ever authorized for other reasons — and even
+then, a spec-dec variant must not be bundled into a quality A/B, because that
+confounds two axes.
+[`multi-file-coding-completion-capability.md`](../handoffs/active/multi-file-coding-completion-capability.md) §2026-07-29 rider
+
+### Source References
+
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — HS-6 (six/seven-dimension decomposition, Harness Card), HS-7 (re-targetability as a standing criterion), HS-8/HS-9 (policy-as-document reductions; open-weight interpretation unestablished), HS-12 (both halves of the capability-vs-harness figure)
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — C18 liveness/observability polarity and the "warning needs a reader" second half; C20 fail-closed reboot dependency; C15 key-conflation hazard; C17 scope resolution
+- [`agent-world-env-synthesis.md`](../handoffs/active/agent-world-env-synthesis.md) — plan-executor divergence halt as a present-but-uninstructed mechanism; TaleSuite/Jericho as a public long-horizon eval
+- [`multi-file-coding-completion-capability.md`](../handoffs/active/multi-file-coding-completion-capability.md) — protocol-gap diagnosis stands; artifact choice conditional on an authorized A/B
+- [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — the corrected capability-over-architecture decomposition; staged-files-ride-along attribution hazard

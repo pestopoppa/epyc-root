@@ -653,3 +653,87 @@ roughly half the headline.
 _Sources: `docs/chapters/10-advanced-speculative-decoding.md` (corrected `aa026750`);
 `handoffs/completed/dflash-block-diffusion-speculation.md`;
 `handoffs/active/intake-derived-work-2026-07-25.md` ID-28..ID-34._
+
+## Compiled Update — 2026-07-29: verifying a draft/MTP head is a weight-map question, never a config question
+
+**Confidence**: verified — every claim below is a direct artifact read (weight
+maps, tensor counts, byte-level hashes) rather than a reported number.
+
+### `config.json` is UNSOUND for verifying a fine-tune's architecture
+
+One checkpoint retains `"mtp_num_hidden_layers": 1` while shipping **zero** `mtp.*`
+weights. A config-level check therefore reports the MTP head "preserved" and is
+**wrong**. A second checkpoint in the same sweep is missing **785 `mtp.*`
+tensors** relative to upstream while its config still declares the head. The
+reusable rule: **any capability claim about an HF fine-tune** — MTP head, draft
+head, vision tower, tied embeddings — **must be verified against
+`model.safetensors.index.json`** (or GGUF tensor counts), never against
+`config.json` alone. This is the same failure family as the standing
+tensor-count-not-file-size rule below: a declared property is not a shipped
+property.
+[`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) §2026-07-29 Stage-4
+
+### The two durable artifact facts for the KAT-Coder-V2.5-Dev candidate
+
+- **Tokenizer is byte-identical to the deployed frontdoor** — `sha256
+  5f9e4d49…cb42` on `tokenizer.json`, with matching `vocab.json` / `merges.txt`.
+  The **exact-tokenizer precondition for speculative decoding is therefore
+  SATISFIED** and needs no re-derivation.
+- **The MTP head is REMOVED**: `mtp_num_hidden_layers` 1→0 and **zero**
+  `nextn`/`mtp` tensors across **31,333 weight-map entries**. That is a
+  **regression versus our live frontdoor GGUF**, which carries `blk.40.nextn.*`.
+  Adopting this checkpoint in the frontdoor lane would silently drop the
+  native-MTP path — a spec-dec loss **no quality bench would surface**.
+
+[`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) §2026-07-29 Stage-4
+
+### The GGUF header gate, restated
+
+For the Qwen3.6-27B family the MTP presence test is a **24-byte ranged header
+read**: tensor count **851 = no MTP, 866 = MTP** (the +15 being the
+`blk.64.nextn.*` block), corroborated by the KV key
+`qwen35.nextn_predict_layers`. **File-size reasoning is unsound** — one
+fine-tune's Q4_K_M is 722 MB *smaller* than our non-MTP Q4_K_M and still has MTP.
+
+### MTP is not a fine-tune feature — hold it constant across arms
+
+At byte level, one fine-tune's entire 451 MB layer-64 block is **identical** to
+our local MTP Q8_0 artifact, as are `token_embd.weight`, `output.weight` and
+`output_norm.weight`; the differing set is exactly the **256 LoRA target
+modules** (r=64, α=128, merged scaling 2.0), and a control tensor genuinely
+differs, so the offset arithmetic is sound. Consequences: MTP must be held
+constant across arms rather than credited to the fine-tune; the mismatch is a
+genuine **co-trained-head versus modified-trunk** problem, predicted worst on
+exactly the early tokens the fine-tune targets; and the reported accept-lengths
+are statistically indistinguishable from base. A related hazard: our two local
+Q4_K_M artifacts are **not a clean pair** (different quantizer recipes, the MTP
+one being the *smaller* file), so any MTP-vs-non-MTP benchmark on those two is
+confounded.
+
+The zero-delta half of that byte-level result is independently useful: ~600
+non-LoRA tensors are **exactly** zero-delta, which makes them a free measurement
+of the Q8 dequant noise floor for any GGUF weight-delta geometry probe — the
+quantity that decides whether such a probe is trustworthy at all.
+[`architect-model-selection-bench.md`](../handoffs/active/architect-model-selection-bench.md) §zero-inference weight-delta geometry
+
+### Do not bundle a spec-dec variant into a quality A/B
+
+If a coder-role quality A/B is ever authorized, the MTP variant of the candidate
+must be **excluded**: a base-trunk MTP head on a fine-tuned trunk is a separate,
+unmeasured question, and including it confounds the quality axis with a spec-dec
+axis.
+[`multi-file-coding-completion-capability.md`](../handoffs/active/multi-file-coding-completion-capability.md) §2026-07-29 rider
+
+### Relevance is asymmetric between planes
+
+For the hybrid-attention family in this sweep, MTP is real on the MI210
+(measured optimum **53.1 t/s at `--spec-draft-n-max 4`, 1.82×**) while the CPU
+plane is **architecturally foreclosed** (48 of 64 layers are Gated DeltaNet;
+0.56× measured on the sibling). "MTP" appearing in a filename must never read as
+a reopen trigger for the parked CPU handoff.
+
+### Source References
+
+- [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — the `config.json`-is-unsound rule; KAT-Coder tokenizer hash and removed MTP head; GGUF header gate (tensor count, not file size); byte-level ThinkingCap MTP identity; CPU/GPU relevance asymmetry
+- [`architect-model-selection-bench.md`](../handoffs/active/architect-model-selection-bench.md) — the zero-delta non-LoRA tensor set as a dequant noise-floor control for weight-delta geometry; MTP held constant across bench arms
+- [`multi-file-coding-completion-capability.md`](../handoffs/active/multi-file-coding-completion-capability.md) — the exclusion of the MTP variant from any authorized quality A/B

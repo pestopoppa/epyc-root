@@ -265,3 +265,85 @@ Sources: intake-703 (Kimi-K2.7-Code-GGUF, MoonViT fork-unsupported — verified)
 **The vision_escalation MiniCPM-o cutover decision was operationalized into a reusable, gate-checked runbook rather than resolved.** Per operator directive ("when ready, promotion into the stack must be deterministic, not bespoke"), a 7-step promotion runbook was drafted and adversarially verified (5-agent workflow, 6 corrections applied): (1) master-registry rebind — the registry edit target is deliberately the **master** registry (`epyc-inference-research`), not the lean file, because the 2026-07-18 rebind was a lean hand-edit that got silently clobbered on the next stack start once lean-registry auto-compile went default-on; (2) `stack_change_pipeline.py update` + `check` green; (3) the 8087 server swap via the new 2026-07-23 additive `--numa-mode both` promotion path (skip-healthy, no-outage — see [Inference Serving](inference-serving.md)); (4) a **§H contention-matrix recert for the changed lane** — the runbook exists precisely to close the gap the 2026-07-17 rebind left open (it shipped without recertifying the matrix); (5) live-affinity + realized-first attestation; (6) a three-layer smoke via the actual eval path (direct fixture probe, EvalTower-forced-role probe, modality-fence check — scoring only `message.content`, never `reasoning_content`, since default reasoning mode scores 0/4 on these fixtures); (7) rollback = the same runbook run toward the safe-alias state. All steps are model-agnostic mechanics — the runbook executes whichever candidate the operator names, substituting only the model/path/mmproj block and the expected-throughput band. Model choice remains open: MiniCPM-o-4.5 Q4 validated 2026-07-18 (110–127 t/s MI210 decode, 4/4 K35 fixed-fixture quality, 8/8 mixed-service co-residency matrix) vs the current Qwen2.5-VL-7B safe alias, which measured *faster* on a 2026-07-19 long-decode slice (118.50 vs 109.18 t/s) — so the decision is genuinely quality-tied-on-speed, not merely execution-pending. A CPU-side MiniCPM-o vs Qwen2.5-VL bench (speed + K35-fixture quality) was queued for the idle window to inform the final call; the GPU leg is the operator's own session. [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md), [vision-escalation-minicpmo-promotion.md](../docs/runbooks/vision-escalation-minicpmo-promotion.md)
 
 **A quantitative demand/capability trigger gate now governs the long-open "should `worker_vision` recollect to 4 quarters" question, replacing an unmeasured "in principle."** Baseline measurement (7.9-day tap window, 2026-07-15→23): 399 `worker_vision` requests, **all** eval-tower-driven (`batch_id` non-null); **zero** organic traffic; `vision_escalation` saw zero events of any kind in the same window. The gate has two independent trigger conditions (either fires it): **Trigger A (demand)** — sustained organic arrival ≥2 req/min over any 30-min window on ≥3 distinct days within 14 days, AND in-flight depth >2 (saturating the current single quarter's 2 slots) for >10% of samples; **Trigger B (capability)** — a new candidate VL model passes the K35 quality gate at parity-or-better *and* a certified-affinity quarter-pair co-run bench shows aggregate ≥1.2× with no pair <1.0× (n≥8, CV≤5% — tightening the prior J5 vision re-bench, which was direction-robust but diagnostic-grade at 5/8 pairs CV>5%), plus a demand floor of ≥0.5 req/min. **Whichever trigger fires, the gate is SUSPENDED if a persistent-live MI210 vision lane goes into production** — one GPU vision stream (110–127 t/s) is 4–10× a CPU quarter stream, so any GPU cutover makes CPU-side quartering moot except as a GPU-retirement fallback. Consequence flagged: the routing modality fence only went live 2026-07-23 (vision was previously routing-dead, 0/376), so **all demand data at or before that date — including the 7.9-day baseline above — undercounts true organic demand**; the first valid post-fence reading is 2026-08-06. [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md) §Trigger Gate
+
+## Compiled Update — 2026-07-29: ERNIE keeps the quality axis, Z-Image is a latency question, and the blank-PNG defect has a candidate fix
+
+**Confidence**: verified for the artifact/source-tree facts (which model headers
+carry which ROCm mitigation, what our pinned checkout contains, what the deployed
+binary was built from); **observation-grade** for the benchmark scores, which are
+vendor self-reports on both sides.
+
+### LongText-Bench comparability RESOLVED — and what that does not settle
+
+Same benchmark, same splits, aggregation = EN/ZH arithmetic mean. The incumbent
+vendor's own model card carries a three-column table that **includes the
+competitor and reproduces the competitor's per-split numbers exactly** — which is
+what makes the comparison legitimate rather than a vendor-vs-vendor mismatch.
+Harmonized ranking:
+
+**ERNIE-Image-Turbo 0.9655 (with prompt enhancer) > ERNIE 0.9639 (without) >
+Z-Image base 0.9355 > Z-Image-Turbo 0.9215** — the incumbent leads by **4.4
+points**, and leads **even without its prompt enhancer**.
+
+This resolves **comparability only**. It does **not** validate the 0.9655 figure:
+both sides are vendor self-reports, and the 20-prompt local EN/ZH typography
+spot-check remains the only instrument that can settle validity. That open
+question therefore survives the dive rather than being closed by it.
+[`ernie-image-turbo-evaluation.md`](../handoffs/active/ernie-image-turbo-evaluation.md) §2026-07-29 corrections, §Remaining Operational Question 2
+
+### Consequence: the alternative is a latency candidate, decoupled from quality
+
+Because the quality question on the axis the role was selected for is already
+answered against it, Z-Image-Turbo is scoped as a **latency candidate only** (6B
+vs 8B, GGUF 2.59–6.58 GB, apache-2.0, runnable on today's binary) against the
+~3 min @1024² CPU problem. Any trial repeats the local Q8-vs-Q4 A/B and is never
+framed as a quality swap. Noted alongside it: a rank-32 distill-patch LoRA (476
+BF16 tensors across all 34 blocks) is a **Base↔Turbo conversion mechanism**, but
+alpha-scaling for step-vs-quality is an **untested hypothesis** and the backend's
+LoRA key resolution for that architecture is **unverified**.
+[`multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) §Research Intake Update 2026-07-29
+
+### The "stale backend" premise is struck — no upgrade is needed to trial anything
+
+Our pinned image backend already contains the alternative model's implementation
+(a 646-line header plus its documentation, fully wired through the model
+dispatch, version enum, name conversion and RoPE id generation), and the deployed
+gfx90a server binary **was compiled from that source**. The claimed
+**ERNIE-regression risk of a forced backend upgrade collapses with the premise**:
+no upgrade is required to trial a second model, so nothing touches the live role.
+The separate currency question (~202 commits / ~2.7 months behind upstream, tree
+clean) is real but non-blocking.
+
+### Candidate FIX for the MI210 1024² blank-PNG defect
+
+Upstream ran a **ROCm f16-overflow campaign** on 2026-07-10 (two PRs) covering
+four model families and the shared FeedForward — and **the deployed image model's
+header appears in neither PR**, making it the only model in the family with
+**zero ROCm overflow mitigation**. The candidate fix mirrors that pattern:
+ROCm-guarded `set_force_prec_f32(true)` on the attention out-projection and the
+feed-forward second linear (the setters already exist locally), rebuild the HIP
+tree for gfx90a, and re-run the failing case at fixed seed across 896 / 960 /
+1024. Supporting inference: `--vae-tiling`, `--vae-on-cpu` and CPU-RNG were
+already ruled out, which points **away from the VAE and at the DiT emitting
+non-finite latents**, and a failure threshold sitting between 896 and 960 is what
+accumulation overflow looks like. **This is a candidate fix, not a diagnosis** —
+and it needs no new model and no new weights.
+[`gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) §2026-07-29 Stage-2 dive
+
+### A durable control-selection rule: controls must be mitigation-matched
+
+The proposal to run the alternative model as a **diagnostic control** for the
+blank-PNG bug is **withdrawn as confounded**: its header carries an explicit ROCm
+workaround that the deployed model lacks entirely, so a passing run says nothing
+about the failing model's code path. If a second model is wanted as a control it
+must be **mitigation-matched** — here, the family member whose guard is
+Vulkan-only at our pin. Generalization: a control differing from the subject in
+*the very dimension under test* is not a control.
+[`gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) §Control-probe note;
+[`ernie-image-turbo-evaluation.md`](../handoffs/active/ernie-image-turbo-evaluation.md) §2026-07-29 corrections
+
+### Source References
+
+- [`ernie-image-turbo-evaluation.md`](../handoffs/active/ernie-image-turbo-evaluation.md) — struck stale-backend premise (header present at the pinned commit, deployed binary built from it); LongText-Bench harmonization and the surviving validity question; withdrawal of the confounded control
+- [`multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — Z-Image-Turbo scoped as a latency-only candidate; the distill-patch LoRA conversion mechanism and its untested assumptions
+- [`gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) — the ROCm f16-overflow campaign gap and the f32-precision candidate fix; the mitigation-matched-control rule

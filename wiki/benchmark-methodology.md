@@ -882,3 +882,127 @@ number.
 
 Sources: `scripts/analysis/escalation_prediction_probe.py`, `scripts/analysis/comp_region_probe.py`,
 `handoffs/active/learned-routing-controller.md`, `progress/2026-07/2026-07-27.md`.
+
+## Compiled Update — 2026-07-29: eval-instrument correctness, the (model, scaffold) unit of report, and external-figure provenance
+
+**Confidence**: verified for the first-party code/host findings (each closed by
+executing the failure, not by reading the code); **observation-grade** for every
+external figure quoted below, per MEASUREMENT.md. Both handoff records were
+written by the same session that produced the fixes, so the *narrative* is
+single-source — what is independently corroborated is the execution evidence
+(9/9 and 14/14 checks) and the host measurements the fixes rest on.
+
+### Two live correctness defects in the scoring/agentic-SWE path — both were doc/impl divergences
+
+The scoring stack asserted two guarantees it did not provide. Neither would have
+been found by inspection of the documentation, because the documentation was the
+thing that was wrong.
+
+1. **`subprocess.run(timeout=…)` kills only the DIRECT child.** Descendants
+   survive the timeout as orphans, so a scored snippet that forks keeps running
+   on the box after its trial is recorded. Fix: `start_new_session=True` plus
+   `os.killpg(os.getpgid(proc.pid), SIGKILL)` on the timeout path. Verified by
+   execution (9/9 checks) including the real orphan case — a detached grandchild
+   that previously outlived the timeout.
+   [`scoring-infra-standardization.md`](../handoffs/active/scoring-infra-standardization.md) §2a-iii
+
+2. **No `/testbed` state reset between agentic-SWE trials**, so a crashed or
+   dirty trial silently contaminated its successor and the "clean at base"
+   assumption written into the protocol had never been verified. Fix:
+   `DockerEnv.reset_testbed(base_commit)` called **fail-closed at the top of
+   `run_instance`** (on error: status `testbed_reset_failed`, zero turns, empty
+   patch — a silently-failed reset is exactly the contamination being fixed).
+   Verified by execution (14/14 checks).
+   [`scoring-infra-standardization.md`](../handoffs/active/scoring-infra-standardization.md) §2b-agentic-0
+
+### `RLIMIT_NPROC` is the wrong mechanism for bounding a scorer — not merely unimplemented
+
+`RLIMIT_NPROC` is enforced **per real UID, not per process tree**. This host runs
+**~9,534 threads under uid 1000** (5,688 of them llama-server), so any per-scorer
+cap fails the child's *first* fork under normal fleet load — and fails
+**nondeterministically** as load varies, turning the scorer into an instrument
+whose results track how busy the box is. The correct mechanism is cgroup v2
+**`pids.max`** on the scorer's own subtree (counts only its own descendants,
+unaffected by co-tenants), paired with `cpuset.cpus`/`memory.max` pinned to the
+eval quadrant (cpuset 112-119) so the whole bound is enforced at the cgroup
+rather than per process. Verified available on this host: `pids` controller
+present, child cgroup creatable, needs `+pids` in `cgroup.subtree_control`.
+Generalization: **a per-process resource limit is not a per-subtree resource
+limit**, and choosing the wrong one produces an instrument that is silently
+load-dependent.
+
+### `git clean -fdx` is wrong in a SWE-bench testbed
+
+The reset uses `git reset --hard <base_commit> && git clean -fd` — the omission
+of `-x` is deliberate. `-x` also deletes **ignored** files, which in a SWE-bench
+testbed include the `.egg-info`/build artifacts left by `pip install -e .`;
+deleting those breaks imports and **manufactures false failures**. `reset --hard`
+rather than `checkout -- .` so that an agent *commit* is undone too. The
+regression test asserts the ignored artifact survives and the agent commit is
+rolled back.
+
+### An agentic-coding score is a property of the (model, scaffold) pair
+
+The strongest evidence in this batch for treating the harness as part of the
+instrument: at **fixed model and fixed reasoning effort**, a harness *revision*
+(v1.2→v1.5) moved the score **+7.23**, which is **larger than the entire
+5.08-point architecture spread at that same setting**; a published table shows a
+6.8-point spread across three scaffolds on one model and one benchmark, with the
+ranking against a competitor **flipping** between scaffolds. The counterweight
+must always travel with the other half (a one-step model swap buys ≈3.6× the
+full harness ladder, a reasoning-budget bump ≈2.0×): quoting either alone misuses
+the number in one direction or the other. Grade: n=1 per cell, closed frontier
+models, public demonstration set → **OBSERVATION only**; it gates nothing.
+[`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) §HS-12
+
+Consequence adopted as a disclosure standard (six points, all required before any
+external SWE-bench figure is quoted in a decision context): harness identity +
+version pinned; **the model-harness pair as the unit of report**; denominator +
+split; dataset mutation disclosed; n/reps/seeds; contamination posture.
+[`scoring-infra-standardization.md`](../handoffs/active/scoring-infra-standardization.md) §2b-swe-hygiene
+
+Corollary on commensurability: a vendor-self-reported **67.0% SWE-bench Verified
+(335/500, thinking-off, n=1)** is **not commensurable** with our sealed
+SWE-oracle-40 row (`23/40`) — different instrument, different denominator,
+different scaffold. It may not be set beside an authority row.
+[`architect-model-selection-bench.md`](../handoffs/active/architect-model-selection-bench.md) §2026-07-29 intake dive
+
+### Provenance downgrades that kill four external figures
+
+- **A vendor uplift claim dies when the vendor's own baseline is reconstructed.**
+  One fine-tune's reported +5.00/+6.00/+5.33 rests on a baseline running ~10pp
+  *under* the base model's official published numbers — so the claimed uplift is
+  **smaller than the vendor-vs-vendor gap on the identical base model**, and the
+  headline 69.40 sits *below* the base model's published 73.4.
+- **Public-set provenance.** All PRO-LONG numbers are on the ARC-AGI-3 **public**
+  set, which the benchmark's own authors state is "emphatically not a valid
+  measure of progress" and will "never" appear on their leaderboard; the harness
+  is to high confidence one those authors measured showing extreme bimodality
+  (97.1% / 0.0%). Keep the internal ablations; discount the SOTA framing.
+- **A triple-confounded ablation is non-citable.** AREX's +11.8pt ACU figure has
+  no masking arm, no arm separating observation-dropping from the learned
+  summary, and its "w/o ACU" is an **OOD ablation of a model explicitly trained
+  on that very capability**.
+  [`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) §CF-3c
+- **A "full-context" control that is not one.** The external RLM comparison
+  (n=200, single run, **no variance reported**) implements its full-context arm
+  as sliding-window 200k / 50k-overlap plus LLM aggregation, not one prefill — so
+  it is not the clean long-context control it is cited as.
+  [`rlm-contested-claims-self-evaluation.md`](../handoffs/active/rlm-contested-claims-self-evaluation.md) §E3a
+
+### A cross-arm parse-failure gap is a scoring artifact — verify the parser per model
+
+One model family emits **JSON inside `<tool_call>`**, not the XML
+`<function=…><parameter=…>` form its base family uses, and the chat template
+differs between two siblings of the same family (6,994 B vs 4,718 B). Verify the
+tool-call parser **per model, not per family**, before any agentic arm: a
+cross-arm parse-failure gap reads as a quality gap.
+
+### Source References
+
+- [`scoring-infra-standardization.md`](../handoffs/active/scoring-infra-standardization.md) — 2a-iii (process-group kill; `RLIMIT_NPROC` rejected with the per-UID rationale), 2a-iii-followon (cgroup v2 `pids.max`), 2b-agentic-0 (fail-closed testbed reset; `-fd` not `-fdx`), 2b-agentic-1 (per-model parser pin), 2b-swe-hygiene (six-point disclosure standard)
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — HS-12 corrected capability-vs-harness decomposition and its counterweight; HS-10 harness randomization as an evaluation-side pattern
+- [`architect-model-selection-bench.md`](../handoffs/active/architect-model-selection-bench.md) — non-commensurability of the vendor full-500 SWE-bench figure with the sealed SWE-oracle-40 authority row
+- [`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) — AREX ACU non-citability; ARC-AGI-3 public-set provenance downgrade
+- [`rlm-contested-claims-self-evaluation.md`](../handoffs/active/rlm-contested-claims-self-evaluation.md) — E3a: the external long-context arm is not a clean control
+- [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — "Two live bugs found in our own code", execution-verification tallies, host thread census

@@ -1,5 +1,13 @@
 # Project Wiki — Knowledge Index
 
+**Manifest reconciled**: 2026-07-29 — the 21 sources changed since the
+2026-07-29T10:16Z compile (19 active handoffs, 1 blocked handoff, 1 progress
+log, almost all of them the output of a single 24-entry research-intake batch)
+were synthesized into ten articles. The pass is **correction-weighted**: nine of
+the batch's nineteen deep dives overturned the record they were checking, and in
+every case the corrected version is what was compiled, not the original claim.
+Prior 2026-07-26 note retained below.
+
 **Manifest reconciled**: 2026-07-26 — the seven changed checkpoint sources
 were synthesized into Benchmark Methodology, Multimodal, and Inference Serving.
 The update records capture-integrity requirements, bounded MiniCPM-o evidence,
@@ -8,7 +16,8 @@ completion claims.
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-07-26 (incremental — merged 7 checkpoint sources into Benchmark Methodology, Multimodal, and Inference Serving: lossless v4 capture and agentic trajectory eligibility; MiniCPM-o M-1 observation/M-2 pinned-interface closure; and frozen-v8 E8 rebaseline sequencing. The Laguna prompt-fix/Docker score, E8 numeric completion, quality apply, and 27B observations remain open. Earlier 2026-07-24 pass merged 14 sources into 7 articles.)
+**Last compiled**: 2026-07-29 (incremental — merged 21 changed sources into 10 articles: Benchmark Methodology (eval-instrument correctness, the (model, scaffold) unit of report, four provenance downgrades), Agent Architecture (harness re-targetability; merged ≠ running), Memory-Augmented (store shape, budget-conditional retrieval, the missing per-window curve), Context Management (mandatory masking anchor, verbatim-log A/B, total-token accounting), Speculative Decoding (weight-map verification over config), Knowledge Management (the correction pass and the Stage-2b intake gate), Search & Retrieval (the struck GGUF-availability premise), Multimodal (LongText-Bench comparability + the ROCm f32 candidate fix), Training & Distillation (the inverted Experience-Distillation premise), LLM Prompting (GEPA-class optimizer of record + the compile cost line). `routing_intelligence` was NOT updated — its single new source does not meet the 3-source minimum in the manifest's `writer_evidence_policy`. Prior 2026-07-26 note follows.)
+**Previously compiled**: 2026-07-26 (incremental — merged 7 checkpoint sources into Benchmark Methodology, Multimodal, and Inference Serving: lossless v4 capture and agentic trajectory eligibility; MiniCPM-o M-1 observation/M-2 pinned-interface closure; and frozen-v8 E8 rebaseline sequencing. The Laguna prompt-fix/Docker score, E8 numeric completion, quality apply, and 27B observations remain open. Earlier 2026-07-24 pass merged 14 sources into 7 articles.)
 **Articles**: 26 compiled, 4 stub categories
 **Total sources**: 590+ scanned documents across 6 source types; 2026-07-24 pass merged 14 changed/new sources into 7 articles; 2026-07-21 pass merged 28 changed/new sources into 2 articles; 2026-07-20 pass merged 23 changed/new sources into 8 articles; 2026-07-05 pass merged 49 changed/new sources into 10 articles; 2026-06-21 pass merged 36 changed/new sources into 21 articles
 
@@ -106,6 +115,9 @@ python3 .claude/skills/project-wiki/scripts/query_wiki.py "<category>" --human
 | ~~`rag_alternatives`~~ | — | Promoted to full article 2026-04-28 → [RAG Alternatives](rag-alternatives.md) |
 | ~~`safety`~~ | — | Promoted to full article 2026-06-13 → [Safety](safety.md) |
 | `swarm_techniques` | 7 | Partially covered by [Agent Architecture](agent-architecture.md) and [Autonomous Research](autonomous-research.md) |
+
+**2026-07-29 sources held back for insufficient corroboration (not compiled this pass):**
+- `routing_intelligence` — the only new source is [`routing-intelligence.md`](../handoffs/active/routing-intelligence.md) §RI-CMP-1, filing a purpose-built prompt-router encoder as a `monitor_only` comparator against the MLP learned-routing controller. One source, and the entry is explicitly *not* a work item. It fails the manifest's `minimum_source_references: 3`, so it is recorded in [Search & Retrieval](search-retrieval.md) as a cross-reference only rather than driving a routing-intelligence update.
 
 **2026-07-20 single-source stubs (not promoted to their own section this pass):**
 - `cost_aware_routing` / `agent_architecture` — the [scaffold CoT cost-lever autopilot deployment](../handoffs/active/scaffold-autopilot-cost-lever-deployment.md) is a DESIGN handoff (episodic-memory-gated composite scaffold-then-nothink route; caps a beneficiary's CPU-decode tokens ~20-50×, quality benefit is headroom-conditional). All numbers are OBSERVATION-grade; nothing implemented. Its findings are already reflected in [Cost-Aware Routing](cost-aware-routing.md) (CoT scaffold-transplant falsified as a capability transplant, deployed only as a gated cost lever).

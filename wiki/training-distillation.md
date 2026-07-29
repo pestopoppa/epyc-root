@@ -187,3 +187,92 @@ The 2026-07-02 cross-model LoRA-transfer / hypernetwork-adapter cluster (intake-
 **For FastDraft drafter training** (intake-624): for a 14B→1.5B drafter on rented cloud GPU, the v1 recipe candidate is intake-644's two-stage (cold-start SFT + overlap-restricted OPD); for ≤2B targets specifically, intake-645's RKL-on-error TRACE variant may dominate. TIP Soft-OR (intake-642) is reasonable but bench against both.
 
 Sources: `research/intake_index.yaml` intake-639/642/643/644/645 + parked arxiv:2605.11182/2603.25562 · [`handoffs/active/reasoning-compression.md` §2026-05-28](../handoffs/active/reasoning-compression.md) · [`handoffs/active/08-doc-to-lora-prototype.md` §Research-Intake-Update](../handoffs/active/08-doc-to-lora-prototype.md) · `progress/2026-05/2026-05-28.md` §research-intake-batch.
+
+## Compiled Update — 2026-07-29: the Experience-Distillation premise inverts — the data is the lever, not the objective
+
+**Confidence**: verified against the source's own tables (the readings below were
+checked against the primary paper, not a summary); the figures themselves remain
+**observation-grade** external results under MEASUREMENT.md.
+
+### Premise correction: this paper SUPPORTS dataset distillation
+
+An earlier reading treated arXiv 2607.21051 ("Experience Distillation") as
+evidence **against** the dataset-distillation thesis. That framing was
+**inverted**. The paper's own ablations put the weight on the **data**, not the
+objective:
+
+- **Table 6** — the distillation *objective* is worth **~2pp** versus plain
+  cross-entropy.
+- **Table 7** — a teacher **prompting** change is worth **~38pp**.
+
+Experience Distillation is therefore SFT on a **hindsight-conditioned,
+regenerated corpus** — structurally the same shape as our own P2→P3→P4 pipeline,
+with a concrete data-construction recipe attached. It is a **recipe source, not a
+refutation**.
+[`swarm-dataset-distillation.md`](../handoffs/blocked/swarm-dataset-distillation.md) §Premise correction
+
+**Two qualifiers that must travel with any number lifted from it:**
+
+1. The headline **64.8% is same-task RETENTION**; out-of-distribution transfer is
+   **+4.22pp**. Do not quote 64.8% as capability or transfer evidence.
+2. The paper is **UNSIZED** — it publishes **no model size, no GPU count and no
+   compute figure at all**. Any GPU-gated scoping built on it rests on a guess;
+   mark the gap rather than imputing a scale.
+
+**Three importable levers**, all text-space, all executable on frozen models with
+no GPU: **hindsight conditioning**; an **enhanced teacher-reasoning prompt**; and
+**branch packing** (>10× time reduction at equal-or-better quality).
+
+### A reverse-KL / on-policy-distillation negative worth keeping as a guardrail
+
+The same source's Table 5 records GICL at **9.1% / 0.4%** against forward-KL's
+**96.7% / 98.4%** — which rules out the currently fashionable on-policy-distillation
+approach for **context-dependent** capabilities. Filed as a standing guardrail on
+any future weight-space work rather than as a result we would cite forward.
+[`gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) §2026-07-29 Stage-2 dive
+
+### The weight-space RL training half is DECLINED, not bridged
+
+A first-party RL-training adapter exists for one harness candidate, and the
+question of whether to preserve compatibility with it was live. The dive settles
+it: llama.cpp has **none of the seven control endpoints** that path requires
+(`/get_world_size`, `/pause`, `/resume`, `/init_weight_transfer_engine`,
+`/start_weight_update`, `/update_weights`, `/finish_weight_update`), and the
+reference weight-transfer module **hard-imports a vLLM NCCL engine**. Our stack
+could therefore only ever act as a **frozen off-policy sampler**, which defeats
+the async-GRPO premise outright — on top of separate-GPU, FSDP2-only and no
+PEFT/LoRA path. The adapter's *existence* stays as a decision-matrix column;
+the training capability is declined.
+[`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) §HS-5 caveat
+
+### A merged LoRA fine-tune is inspectable at byte level — and its zero-delta set is free instrumentation
+
+Byte-level comparison against the shared base established that one fine-tune is
+**exactly** base + **256 LoRA target modules** (r=64, α=128, merged scaling 2.0),
+matching the upstream merge report. The consequence for measurement is the useful
+part: **~600 non-LoRA tensors are exactly zero-delta**, so any weight-delta
+geometry probe over quantized artifacts gets a **free ground-truth measurement of
+the dequant noise floor** — the quantity that decides whether such a probe is
+trustworthy at all. A second free control: two fine-tunes that are independent
+siblings off the same base should show a lineage statistic near 0 and flat; if it
+drifts to 1.0 anyway, the statistic is an artifact rather than a finding.
+[`architect-model-selection-bench.md`](../handoffs/active/architect-model-selection-bench.md) §zero-inference weight-delta geometry
+
+### Reconstruct the baseline before crediting any fine-tune delta
+
+A vendor's reported uplift of **+5.00 / +6.00 / +5.33** collapsed when its own
+baseline was compared to the base model's **official published numbers**: the
+vendor baseline runs **~10pp under** official, so the claimed uplift is **smaller
+than the vendor-vs-vendor gap on the identical base model**, and the vendor's
+headline 69.40 sits *below* the base model's published 73.4. This is a general
+screen for any published fine-tune improvement — the delta is only meaningful
+relative to a baseline you can independently locate.
+[`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) §dive table
+
+### Source References
+
+- [`swarm-dataset-distillation.md`](../handoffs/blocked/swarm-dataset-distillation.md) — the inverted premise (Table 6 ~2pp objective vs Table 7 ~38pp prompting); same-task retention vs OOD transfer; the UNSIZED flag; the three importable data-construction levers
+- [`gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) — the reverse-KL / on-policy-distillation negative recorded as a weight-space guardrail
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — HS-5: the weight-space RL training half declined on missing control endpoints and a hard vLLM dependency
+- [`architect-model-selection-bench.md`](../handoffs/active/architect-model-selection-bench.md) — byte-level LoRA merge structure and the zero-delta tensor set as free noise-floor instrumentation
+- [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — the vendor-baseline reconstruction that killed a published uplift claim

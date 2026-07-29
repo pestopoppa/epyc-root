@@ -351,3 +351,114 @@ be named, because an unexplained `superseded` is unfalsifiable.
 
 _Sources: `.claude/skills/research-intake/SKILL.md`; `references/intake-schema.md` § Verification
 lifecycle; `references/session-persistence.md` § Steering ledger; `progress/2026-07/2026-07-25.md`._
+
+## Compiled Update — 2026-07-29: a stale record is an active liability — the correction pass
+
+**Confidence**: verified — each correction below was settled against a primary
+artifact (a file at a pinned commit, a repository listing, a weight map, a
+paper's own table), not against a secondary summary. **Caveat on independence**:
+the corrections and the records they correct were both produced by this project,
+and in several cases by the same session; what is independently checkable is the
+artifact each correction cites.
+
+### The batch outcome makes the point
+
+Of the 19 intake entries selected for deep dives in this batch, **9 were
+overturned** and 10 verified. The dives changed decisions rather than merely
+enriching records — a framing was inverted, a vendor uplift claim died, a
+drop-in candidate was killed, one entry was found to be substantially fabricated
+at Stage 1, another had been read from a stale version, and a ranking this repo
+had restated was found to be backwards. **The corrections are the durable
+knowledge; the original claims are not.**
+[`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) §"The dives changed decisions, not just records"
+
+### Verify a negative before asserting absence
+
+Two records asserted a capability gap that did not exist, and both were actively
+mis-scoping live work:
+
+- A handoff line asserted a retrieval model was framework-only with "no GGUF /
+  llama.cpp / Transformers / ONNX". **Three GGUF repositories exist**, one of
+  them published **five months before that line was written**, and our frozen
+  production tree already supports the path end to end. The stale line was
+  pricing a live evaluation as "stand up a new serving stack" when it is a
+  one-line server invocation. See [Search & Retrieval](search-retrieval.md).
+- An intake entry claimed our pinned image-backend checkout lacks support for a
+  model. The pinned commit contains that model's implementation header (646
+  lines) and its documentation, and the deployed GPU binary was **built from that
+  source**. Struck in both the entry's `recommended_actions` and its
+  `verdict_justification`.
+
+The generalized rule — never assert "absent" or "identical" from one encoding,
+one key, or one file listing — is the same one that governs architecture
+verification: read the artifact that would have to contain the thing.
+[`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) §Open Question 1 (corrected);
+[`ernie-image-turbo-evaluation.md`](../handoffs/active/ernie-image-turbo-evaluation.md) §2026-07-29 corrections
+
+### Verify architecture from the weight map, not the declaration
+
+A config-level check reports a model's draft head "preserved" while the model
+ships **zero** such tensors. Any architecture claim about a fine-tune must be
+settled against `model.safetensors.index.json` or GGUF tensor counts. Full rule
+and evidence: [Speculative Decoding](speculative-decoding.md).
+[`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) §2026-07-29 Stage-4
+
+### Two intake-pipeline failure modes with named remedies
+
+- **Stage-1 fabrication.** One entry's Stage-1 body contained a product name
+  appearing **zero times** in the paper, process metrics that do not exist, and a
+  verifier result with its **sign inverted** (+8.40 recorded as −8.4). The body
+  was rebuilt from primary source at Stage 2. Follow-on filed: audit the single
+  non-dived entry in the batch for the same mode. The structural lesson is that a
+  Stage-1 summary is **unverified by construction** and must be labelled as such
+  until a dive touches the primary source.
+- **Stale-version reads.** Another entry was summarized from a v1 while the live
+  v2 had released code under Apache-2.0, added an open-weight arm, and — decisive
+  — the authors had **downgraded their own headline 34.2% → 20%**. Both "direct
+  tensions" recorded at Stage 1 were wrong. Always resolve to the live version
+  before recording tensions against internal work.
+
+[`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) §dive table
+
+### Cite by identifier, not by title; and check the cross-reference resolves
+
+Two distinct hazards surfaced in one batch. First, a paper from the same week
+carries a **near-identical title** to one of the anchors, so anyone re-fetching
+by title lands on the wrong document — cite the arXiv ID.
+[`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) §Dedup hazard.
+Second, a handoff *and* its deep dive both cite an intake ID as their subject's
+entry, and that ID belongs to an entirely different entry; **no row for the
+actual subject exists at all**. A citation that resolves to *something* is not a
+citation that resolves to the *right* thing.
+
+### Process amendment: the dive-surfaced source gate
+
+The research-intake skill gained a **Stage 2b** gate: dives must emit the list of
+new sources they surface, the operator selects from it, and those run as a
+combined Stage-1+2 pass **before Stage 3 opens** — plus a fifth Stage-3
+completeness gate and a separate entry cap. Motivating failure, from this batch:
+four papers were raised only at Stage 3 and had to be bolted on as a
+post-approval round, so the rest of the plan was authored without their findings
+— and one of them **partly deflated the very entry whose dive had surfaced it**.
+
+### Two record-keeping hazards worth carrying
+
+- **Staged-files ride-along.** Index rows authored by this session were swept
+  into a *parallel* session's commit. Content survived intact; only attribution
+  moved. On a shared tree, authorship is not established by who wrote the lines.
+- **Prose is invisible to the dashboard.** A hardening item recorded only as
+  prose inside another checkbox did not count toward progress; it was converted
+  to its own `- [ ]` line during this pass. Any edit recording completed work
+  must flip a checkbox, not narrate.
+
+[`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) §Note on attribution;
+[`scoring-infra-standardization.md`](../handoffs/active/scoring-infra-standardization.md) §2a-iv
+
+### Source References
+
+- [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — batch outcome (24 entries, 19 dives, 9 overturned), the per-entry overturn table, records corrected, the skill amendment, and the attribution note
+- [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — the five-month-stale capability assertion and its live mis-scoping effect
+- [`ernie-image-turbo-evaluation.md`](../handoffs/active/ernie-image-turbo-evaluation.md) — struck "stale backend" premise; the unresolved-cross-reference finding
+- [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — weight-map-over-config verification rule
+- [`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) — near-identical-title dedup hazard; cite by arXiv ID
+- [`scoring-infra-standardization.md`](../handoffs/active/scoring-infra-standardization.md) — prose-to-checkbox conversion during the same pass

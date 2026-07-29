@@ -345,3 +345,115 @@ Sources: [episodic-memory integrity handoff](../handoffs/active/episodic-memory-
 [`dry-run.log`](../artifacts/episodic-memory-reseed-20260727/dry-run.log),
 [`apply.log`](../artifacts/episodic-memory-reseed-20260727/apply.log), and
 [`cosine-acceptance.log`](../artifacts/episodic-memory-reseed-20260727/cosine-acceptance.log).
+
+## Compiled Update — 2026-07-29: agent-experience memory — store shape, budget-conditional retrieval, and the curve nobody has measured
+
+**Confidence**: the design conclusions are **verified** in the sense of resting on
+convergent independent evidence plus a first-party falsification precedent; every
+external number is **observation-grade** under MEASUREMENT.md and gates nothing.
+Note that these items were filed by a single session across four handoffs — the
+corroboration is between the *external sources*, not between our own records.
+
+### Store shape: append-only, raw trajectory retained alongside the derived item
+
+The strongest design signal in the batch is a convergence from opposite
+directions: one external system arrives at "keep the raw trajectory alongside the
+derived `{title, description, content}` item" **by construction**, and our own
+prior work arrives at it **by falsification**. This settles a previously open
+question in the autopilot distiller: **promotion must NOT remove raw
+trajectories from L1.** The dual-layer experience bank is therefore scoped as an
+**additive upper layer** over the existing per-case store (SQLite + FTS5); what
+is missing is pattern distillation and similarity retrieval, and since FTS5 is
+lexical this needs an embedding column (BGE servers already resident on
+`:8090-8095`). The reference design leaves its own retrieval parameters and
+eviction policy undefined — those are our decisions, and an unbounded bank is a
+real hazard for a long-running autopilot.
+[`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) §UTM-M1, §UTM-M2
+
+**Auditable `delete` is the structural differentiator.** A three-verb write API
+(`insert` / `update` / `delete`) plus a mandatory "When NOT to Use" section on
+every stored record maps onto the existing `APPEND`/`CREATE`/`UPSERT` surface;
+the missing verb is the **auditable delete**, and first-class deletion rather
+than implicit decay is what separates the systems that worked in these
+comparisons from the heuristic-management systems that underperformed.
+[`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) §UTM-M3
+
+### Retrieval: k is a measured parameter, and it must be budget-conditional
+
+Do not port cosine-top-1. Two convergent facts: the k-ablation **loses half the
+benefit by k=4** (49.7 / 46.0 / 45.5 / 44.4), and the one independent 35B
+replication **failed specifically at the retriever** after an embedder swap —
+which is exactly the substitution we would make with local BGE. Any sweep needs
+**k=1** and **episodic-only** control arms.
+[`engram-conditional-memory.md`](../handoffs/active/engram-conditional-memory.md) §Research Intake Update 2026-07-29
+
+More consequentially, **k must be a fraction of remaining window budget, not a
+fixed integer**. An independent third-party benchmark on a different backbone
+finds **six of fifteen memory methods scoring BELOW the no-memory baseline at a
+128K budget** (worst: −7.0pp), with the count of sub-baseline methods running
+3 / 4 / 3 at 16K / 32K / 64K and **doubling at 128K**. The mechanism is
+**context-budget competition** — injected memory displacing live history — and it
+**must not be conflated** with our own recorded late-decay-from-store-growth
+failure. Two different diseases; conflating them produces the wrong fix. Design
+consequences: inject retrieved items only while live history occupies more than a
+fraction of the window and **inject nothing once the untruncated history fits**;
+cap injection as a fraction of remaining budget; and add a **no-memory control
+arm** to every memory A/B — six published methods lose to no-memory at 128K and
+**would have shipped undetected without one**.
+[`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) §UTM-M6–M9;
+[`engram-conditional-memory.md`](../handoffs/active/engram-conditional-memory.md) §budget-conditional rider
+
+### Budget the write gate DOWN, not up
+
+The admission judge in one system measures at **72.7% accuracy** and the paper's
+own simulation shows ground-truth labels buy only **+4.8pp of a 13.4pp effect**,
+with judge accuracy in the **70–90% band forming a plateau**. Therefore the
+distiller's write gate should use the **cheapest adequate local judge** — not an
+eval-tower call, not a frontier model. A second system reinforces this: its
+advantage comes from the auditable three-verb write API, not from an expensive
+admission judge. **Contrast**: in a third system the admission test *is*
+load-bearing. The two gate different things, so do not generalize one budget to
+the other.
+[`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) §AP-29a
+
+### Correction — do not carry "best overall" forward
+
+An independent benchmark places the memory system whose **schema** we are
+adopting **LAST of 13** on Cross-Episode Knowledge (Easy split); the earlier
+"second behind ACE" reading recorded in this repo was **wrong**. It *is* best
+among memory methods on In-Episode Execution at 16K/32K/128K — but even there a
+**plain long-context baseline beats all fifteen methods**. Keep the store-shape
+adoption; drop the ranking claim wherever it appears. (The same source carries an
+unflagged defect of its own: one table's 64K column duplicates a different
+table's progress-score column, invalidating that paper's 64K conclusions — so
+even the corrected ranking is quoted only at the budgets that survive.)
+[`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) §UTM-M10;
+[`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) §dive table
+
+### The measurement that does not exist — an EPYC-original deliverable
+
+**No paper in this set reports a per-window (non-cumulative) success-rate versus
+store-size curve** — and one of them concedes the gap in its own Future Work. The
+published figures are **cumulative**, and a cumulative curve is *structurally
+incapable* of showing late decay: the per-window curve can fall while the
+cumulative curve still rises. Building that instrument is blocked on no external
+dependency and is required in any memory A/B before an adoption decision.
+[`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) §UTM-M5
+
+### Retrieval alongside grep, not instead of it
+
+A widely-relayed reading of an agent-retrieval paper — "14.92 / 9.84 / 8.33"
+treated as retrieval scores — is wrong: those are **counts of grep/rg/find shell
+invocations**, and the same paper's Table 2 has the **dense retriever winning**
+(90.0/86.0 vs 89.0/83.0). The transferable finding is **behavioural
+substitution**: it argues for retrieval *alongside* grep, not against an
+embedding index.
+[`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) §2026-07-29 dive corrections
+
+### Source References
+
+- [`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) — UTM-M1..M10: store shape, additive layering over `src/trace/`, three-verb write API, the missing per-window instrument, 128K context-budget competition, and the ranking correction
+- [`engram-conditional-memory.md`](../handoffs/active/engram-conditional-memory.md) — utility-aware retrieval over the adopted schema; k-ablation and the replication that failed at the retriever; budget-conditional k
+- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) — AP-29a write-gate budget and the judge-accuracy plateau; the CORE contrast
+- [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — corrected retriever reading (call counts, not scores)
+- [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — dive-outcome table incl. the duplicated-column defect in the ranking source

@@ -326,3 +326,105 @@ Sources: [`research/deep-dives/2026-06-12-turbovec-vector-index.md`](../research
 
 - **Internal KB-RAG K1–K7 is now CERTIFIED (2026-06-13), superseding the 2026-06-15 "certification planning" framing.** The 70-case certification pool (50 HotpotQA-template + 20 LoCoMo-template) was run as a clean-window parallel sweep (420 rows, all evidence files present). The aggregate recall@10 winner is `recency_w0.1_s90_rerank_w0.3` at 0.6298 (3 missed-all-evidence cases), but `recency_w0.3_s90` is within the declared 2pp noise band at 0.6167 and is the **only** config with **0 missed-all-evidence** cases — so it is the safe default candidate, while the rerank winner is reserved for workloads that explicitly optimize first-evidence rank / recall@3. This retires the earlier caveat that the 20-case seed numbers (`recency_w0.1_s90` at 0.6417) were "calibration only" — the seed value over-reported relative to the certification pool, confirming why the seed suite was never the decision basis. K9 cross-encoder rerank stays measure-first (it raises recall@3 but misses 3–5 all-evidence cases on the certified pool); K11 FTS5 lexical signal is implemented default-off pending its own sweep. Source: [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md) K7 certification result.
 - **MRAgent (intake-698) is a retrieval-*policy* comparator for KB-RAG's parked self-correcting two-pass retrieval, not a deployable component.** It reframes retrieval as **active reconstruction** — interleaving LLM reasoning with memory access and doing **evidence-conditioned retrieval-path pruning** over a Cue-Tag-Content associative graph, rather than the static retrieve-then-reason pipeline that ColBERT/MaxSim reranking implements. Reported LongMemEval 86.76% vs Mem0 53.01% and ~118k tokens vs 245k–3,268k for baselines. **Cloud-LLM-bound** (Gemini-2.5-Flash / Claude-Sonnet-4.5 for both graph construction and retrieval reasoning), no CPU/local/quantized path, and it actually loses to Mem0 on LoCoMo multi-hop F1 (43.69 vs 45.17) — so accuracy/token figures are observations, not decision-gating. The **transferable lever is token-cost discipline via path-pruning**: it is a second instance of the same deferred-pending-a-consumer-signal pattern that parked KB-RAG's self-correcting two-pass retrieval, and belongs alongside that note as a comparative datapoint. Source: intake-698 (arxiv:2606.06036); [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md).
+
+## Compiled Update — 2026-07-29: the LFM2.5-ColBERT path is open — which makes it a scope question, not a cost question
+
+**Confidence**: verified for the availability and code-path facts (repository
+listings, conversion/registration sites and graph builders read at our frozen v8
+pin); **observation-grade** for every vendor benchmark number quoted.
+
+### Correction: the "no GGUF / llama.cpp" premise was false, and had been false for five months
+
+The record held that the Liquid late-interaction retriever required a specific
+Python indexing framework and had **no GGUF / llama.cpp / Transformers / ONNX /
+MLX** path. This is **false for the 2.5 generation, and was already false for the
+1.x generation when the line was written**: **three GGUF repositories exist** —
+`LFM2.5-ColBERT-350M-GGUF` and `LFM2.5-Embedding-350M-GGUF` (both 2026-06-16) and
+`LFM2-ColBERT-350M-GGUF` (**2026-01-05**, roughly five months before the claim was
+recorded). Each ships **seven quants** (BF16/F16/Q4_0/Q4_K_M/Q5_K_M/Q6_K/Q8_0)
+plus reference `colbert-rerank.py` / `dense-retrieve.py` scripts driving
+`llama-server /embedding` with **client-side MaxSim** — i.e. the same
+late-interaction shape our existing plumbing uses.
+
+The backbone is **bidirectional** (`Lfm2BidirectionalModel`; 17 layers = 10 conv
++ 6 attention + 1 dense), not causal as previously assumed. **Our frozen v8 tree
+already supports it end to end with no kernel work**: the conversion script
+registers `Lfm2Model`/`Lfm2BidirectionalModel` onto a ColBERT model class with
+`add_causal_attention(False)` and a `dense_2` projection; the C++ side has the
+non-causal symmetric-padded conv path and a dense-output graph builder. The run
+path is the vendor's one-liner: `llama-server -hf … --embeddings`. One gap is
+deliberately **not** closed — the *encoder* architecture
+(`Lfm2BidirectionalForMaskedLM`) is unregistered, and buys nothing until an
+encoder workload exists.
+[`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) §Open Question 1 (corrected 2026-07-29)
+
+### The counterweight the swap case never had
+
+Correcting the availability claim does **not** make the swap attractive. On the
+vendor's own numbers, against our certified incumbent GTE-ModernColBERT-v1:
+
+| Axis | Candidate | Incumbent | Delta |
+|---|---|---|---|
+| English NDCG@10 | 0.687 | 0.680 | **+0.7pp — inside our declared 2pp noise floor** |
+| MKQA-11 Recall@20 | 0.748 | 0.754 | **−0.6pp — the incumbent is ahead** |
+| Multilingual AVG | 0.605 | 0.489 | +11.6pp |
+| Arabic | 0.551 | 0.309 | +24.2pp |
+| Korean | 0.590 | 0.368 | +22.2pp |
+
+**The large gaps are entirely multilingual, and our KB corpus is English
+markdown.** Expected gain is therefore ~zero unless we index non-English sources.
+The correct conversion is from *swap candidate* to a **bounded probe on the
+existing K7 70-case pool, gated on the 2pp noise floor** — and the open question
+becomes one of **scope** (do we intend to index non-English material?) rather
+than one of **cost**.
+
+Licensing note recorded at the same time: the open license conditions commercial
+use on a **$10M annual-revenue threshold** — non-binding at our scale, but not
+the unrestricted license the vendor's blog describes.
+
+### Retrieval alongside grep — a correction with the sign reversed
+
+A relayed reading treated "14.92 / 9.84 / 8.33" as retrieval scores arguing
+against an embedding index. They are **counts of `grep`/`rg`/`find` shell
+invocations**, and the same paper's Table 2 has the **dense retriever winning**
+(90.0/86.0 vs 89.0/83.0). The transferable finding is **behavioural
+substitution** — agents reach for shell search when retrieval is absent — which
+argues for retrieval **alongside** grep, not against the index. Correct this
+before it informs index design.
+[`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) §2026-07-29 dive corrections
+
+### Lexical full-text search is not similarity retrieval
+
+The trace store's existing per-case layer is SQLite + **FTS5**, which is lexical.
+The pattern-distillation/experience layer being designed on top of it needs a
+genuine **embedding column** — the BGE servers already resident on `:8090-8095`
+are the available substrate. Recording this because "we already have search"
+(meaning FTS5) is the kind of statement that silently converts a similarity
+requirement into a keyword one.
+[`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) §UTM-M2
+
+### Treat an embedder substitution as a first-class experimental change
+
+The one independent replication of an external memory system **failed
+specifically at the retriever** after an embedder swap — precisely the
+substitution we would make when porting a published design onto local BGE. Paired
+with the k-ablation losing **half its benefit by k=4** (49.7 / 46.0 / 45.5 /
+44.4), the operational rule is that retrieval depth and embedder identity are
+**measured parameters of the port**, not implementation details of it.
+[`engram-conditional-memory.md`](../handoffs/active/engram-conditional-memory.md) §Research Intake Update 2026-07-29
+
+### A purpose-built prompt-router encoder, filed as a comparator only
+
+The same model family ships a purpose-built **prompt-router encoder**. It is
+recorded as a `monitor_only` **comparator** for what a dedicated router head buys
+over our MLP learned-routing controller — explicitly **not** a replacement
+candidate, because opening it as one would fork an already-unfinished program
+(Phase 1 complete, Phases 1.5–3 outstanding).
+[`routing-intelligence.md`](../handoffs/active/routing-intelligence.md) §RI-CMP-1
+
+### Source References
+
+- [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — the struck PyLate/PLAID-only premise; three GGUF repos and the seven-quant/reference-script surface; the v8 conversion + graph-builder support chain; the English-vs-multilingual counterweight; K-eval re-scope; corrected grep-count reading
+- [`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) — FTS5 is lexical; the embedding column the experience layer needs; BGE servers on `:8090-8095`
+- [`engram-conditional-memory.md`](../handoffs/active/engram-conditional-memory.md) — the replication that failed at the retriever after an embedder swap; k-ablation decay
+- [`routing-intelligence.md`](../handoffs/active/routing-intelligence.md) — the prompt-router encoder filed as a `monitor_only` comparator

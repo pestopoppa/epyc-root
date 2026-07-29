@@ -133,3 +133,77 @@ The completed study asked whether a small, fast reasoner's chain-of-thought, **i
 - [Progress 2026-07-06 — CoT study complete](../progress/2026-07/2026-07-06-cot-study-complete.md) -- three-arch × three-lever close-out (GPQA scaffold quality +25pp/−0/no-op table; verifier 3-bench marginal; deployment implication)
 - [Reasoning that Travels (arXiv:2605.28913)](https://arxiv.org/abs/2605.28913) -- transplanted reasoning is a capability amplifier not substitute; success tracks the receiver's latent capability (the literature match for the scaffold headroom-conditionality)
 - [GenRM / GenPRM verifier literature](https://arxiv.org/abs/2408.15240) -- generative verifier best-of-N (GenRM 2408.15240; GenPRM 2504.00891 — a 1.5B PRM beats GPT-4o as a judge); the "reasoner does its own task" mode, marginal on our systematic-error workloads
+
+## Compiled Update — 2026-07-29: prompt and policy text as the optimized artifact — and what a compile costs
+
+**Confidence**: the cost line and the optimizer-of-record decision are
+**verified** as project decisions with cited derivations; every external score
+below is **observation-grade** under MEASUREMENT.md and gates nothing on its own.
+
+### The prompt-optimizer of record is GEPA-class, and it makes compile-small / deploy-large viable
+
+The decisive property is **cross-model transfer**: prompts optimized on a
+**Qwen3-8B** scored **+9.00 aggregate on GPT-4.1-Mini**, beating every optimizer
+tuned *directly* on that larger model. That is what makes **compiling on a cheap
+local model and deploying to a larger one** economically viable on a CPU-first
+host — the compile does not have to run against the deployment target.
+Correspondingly, **BootstrapFewShot\*** is marked **superseded** for 2026-era
+instruct models, and **MIPROv2** buys only **+2.6** on Qwen3-8B while
+**regressing** on AIME/LiveBench.
+[`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) §AP-29c
+
+### The standing cost line for any prompt-program compilation
+
+10–20 trials over 150–300 validation examples ≈ **1.5k–6k program runs ≈ 5k–25k
+LM calls** (independently cross-checked at 1,839–7,051 rollouts). On this host
+that is **hours to days per compile**, so a compile is budgeted as a
+**region-locked campaign** and **never** as a background task. Any proposal that
+treats prompt optimization as free is priced against this line.
+[`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) §HS-11
+
+### Prompt text is where the effect lives — a measured 19× over the training objective
+
+The sharpest evidence in this batch that prompt engineering is the load-bearing
+lever rather than a finishing touch comes from a distillation paper's own
+ablations: the **training objective** is worth **~2pp** over plain cross-entropy,
+while a change to the **teacher prompt** is worth **~38pp**. The mechanism is
+different from ours but the ordering is the finding — when an approach couples a
+prompting change to an algorithmic change, attribute carefully before adopting
+the algorithm. Full context in
+[Training & Distillation](training-distillation.md).
+[`swarm-dataset-distillation.md`](../handoffs/blocked/swarm-dataset-distillation.md) §Premise correction
+
+### Run-level policy as an editable natural-language document
+
+A harness design expressing run-level policy as an editable **document** (with
+mechanisms left in code) reports reductions of **60.10k→2.90k tokens / 68→3
+files**, **47.50k→1.40k / 5→1**, and **10.50k→0.80k / 3→1** across three agent
+systems. **Carry the design, not the numbers** — every arm ran on a closed
+frontier mini model. The genuinely novel transfer question is whether an
+**open-weight** model can *interpret* such a policy faithfully; nothing in the
+source establishes it. Usefully, their adherence metrics (Workflow Preservation,
+Stage Coverage, Ordered Workflow, Artifact Contract, Tool Call Success,
+Information Handoff Recall) score **policy adherence without a benchmark score**,
+so drift is measurable on **saved traces** and is deterministic-replay eligible —
+a probe that costs no new inference. Their own red flag travels with it:
+**Information Handoff Recall drops to 0.32/0.55 under parent-child execution even
+on a frontier model.**
+[`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) §HS-8, §HS-9
+
+### A judge prompt's accuracy has a plateau — budget it accordingly
+
+An LLM-judge write gate measures at **72.7% accuracy**, and the source's own
+simulation shows ground-truth labels buy only **+4.8pp of a 13.4pp effect**, with
+the **70–90% band forming a plateau**. The prompting consequence is direct: spend
+the **cheapest adequate local model** on judge prompts of this shape rather than
+escalating to a frontier call. This does **not** generalize to every gate — where
+an admission test is genuinely load-bearing the budget argument reverses, so the
+plateau finding is scoped to the gate it was measured on.
+[`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) §AP-29a
+
+### Source References
+
+- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) — AP-29c (GEPA-class optimizer of record; cross-model transfer; MIPROv2/BootstrapFewShot superseded) and AP-29a (judge-accuracy plateau and the cheapest-adequate-judge rule)
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — HS-11 compile cost line; HS-8/HS-9 policy-as-document reductions, the open-weight interpretation gap, and the replay-eligible adherence metrics
+- [`swarm-dataset-distillation.md`](../handoffs/blocked/swarm-dataset-distillation.md) — the ~2pp objective vs ~38pp teacher-prompting decomposition
+- [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — session record of the dive that produced the prompting-over-objective correction

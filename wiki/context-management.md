@@ -307,3 +307,99 @@ The consult-reuses-DCP design recorded above (2026-05-31) is now implemented: or
 - **Our CF-3c compaction-quality instrument was measuring the inverse of its stated purpose, and was switched off besides.** `CompactionQualityMonitor` (`src/graph/session_log.py:563`) is gated behind `role_aware_compaction` AND `helpfulness_scoring`, both `FeatureSpec(..., False, False, ...)` (`src/features.py:152,154`), so zero production telemetry existed. Worse, compaction overwrites the segment in place (`session_summary.py:276`, `seg.consolidated = f"[Compacted] {first_sentence}"`) and the reference-miss check then extracted identifiers **from that surviving stub** — so it could only fire for content compaction KEPT and never for content compaction DESTROYED, which is the entire failure mode it exists to detect. Fixed 2026-07-21 to compare identifiers present in `seg.granular_blocks` (retained for audit) but absent from the stub, with two regression tests that fail against the previous behavior in both directions (missed loss, and false positive on preserved content). Sources: [context-folding-progressive.md](../handoffs/active/context-folding-progressive.md), [progress 2026-07-21](../progress/2026-07/2026-07-21.md), `src/graph/session_summary.py`.
 
 - **Our production history is already more aggressive than any policy the paper tested, which reframes the open question.** `build_granular_summary` retains a **60-character** output preview per turn — raw observations are never kept — and `src/context_compression.py` already implements a keep-latest-8-with-summary hybrid (`TOOL_OUTPUT_AGE_THRESHOLD = 8`, protected-zone first-3/last-5, errors preserved verbatim). So a seven-policy bake-off would largely re-derive a committed design; the decision-relevant question is narrower: does the protected-zone LLM-summary half earn its keep over stub-only trimming, and what is the right age threshold. Note also the paper's cost framing does not transfer — its expensive arms are threshold-triggered whole-trajectory compaction (21.7 → 53-69 tool calls), whereas the hybrid's real cost is unfinished trajectories, so summarization should be judged against `repl_max_turns` rate rather than token spend. Sources: [context-folding-progressive.md](../handoffs/active/context-folding-progressive.md), [tool-output-compression.md](../handoffs/active/tool-output-compression.md), [repl-turn-efficiency.md](../handoffs/active/repl-turn-efficiency.md).
+
+## Compiled Update — 2026-07-29: the masking anchor, verbatim-log-plus-grep, and total-token accounting
+
+**Confidence**: verified for the first-party code-surface audit (which store
+truncates, which does not, and which `peek`/`grep` variant is live);
+**observation-grade** for all external compaction figures — every arm in both
+source papers is a closed frontier model, so the transfer question is entirely
+ours.
+
+### An observation-masking arm is the mandatory anchor, and neither source ran one
+
+Neither of the two agentic-compaction papers driving this batch ran a masking or
+truncation baseline — verified in both papers **and in one of their released
+codebases**. Without that anchor **no learned-compression result is
+interpretable**, including any we produce, and our own prior intake already holds
+that masking carries most of the benefit. This is now a hard precondition on the
+CF-3c arm set rather than a nice-to-have.
+[`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) §CF-3c
+
+### Agent-initiated compaction is four pieces, not a tool schema
+
+Scoping the agent-triggered arm as "add two tools" understates it. It requires:
+(1) `manage_context` / `query_memory` JSON schemas; (2) a memory-tools system
+prompt; (3) an in-band **`[CURRENT CONTEXT TOKEN: N]` meter injected into the last
+tool message each turn**; and (4) a summarizer/querier call path. **Without the
+meter the agent cannot self-trigger at all** — the trigger signal has to be in
+the context, not in the runtime. A further unreported ablation exists in the
+released code (disabling the archive query) that would isolate the value of the
+lossless archive from the compression policy; the authors implemented it and
+omitted the result.
+[`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) §CF-3c
+
+### Instrument TOTAL tokens per episode, not peak
+
+The reported compaction win is a **peak** figure, while the same system raises
+tool calls **1.6–2.4×** and adds a summarizer call per compression plus a
+full-archive-ingesting querier call per retrieval. On a **prefill-bound CPU
+host**, flatter peaks at twice the calls may be a net throughput **loss**. Any
+compression A/B here reports total tokens per episode and wall-clock.
+[`tool-output-compression.md`](../handoffs/active/tool-output-compression.md) §2026-07-29
+
+### The compaction-default question: verbatim append-only log + grep vs summarize-and-compact
+
+Both sources argue for a verbatim, append-only trajectory log read back with
+`grep`/Python in place of threshold-triggered summarize-and-compact. The
+first-party A/B must run on our own models, must report **wall-clock** (neither
+paper reports latency), and must include a **log-growth / grep-latency curve** —
+the axis both papers assert ("tractable for logs over 100k+ lines") and neither
+measures. The scoring axis is deterministic-replay eligible.
+
+**The gap is not verbatim storage.** Audited: the episodic memory store is
+*already* untruncated and recently hardened (`memories` table; `action` /
+`context` / `outcome` as plain `TEXT`; no truncation at the write chokepoint).
+What truncates is the REPL processing journal (`output_preview[:200]`,
+`error_message[:300]`, `tool_calls[:5]`). What is **missing** is any single
+chronological artifact spanning a whole trajectory that a `grep` can walk. A
+second half of the same audit matters for the read side: one `peek`/`grep`
+implementation is **file-capable** while another is **context-only** (no
+`file_path`), so if the latter sits on a live path the spill pointer we already
+emit is **unfollowable there**. The archive-query API itself needs **no embedding
+model, no vector index and no chunking** — verbatim JSON archived by integer key,
+read back by one recall call — which maps directly onto the existing
+`_spill_if_truncated()` pointer machinery.
+[`tool-output-compression.md`](../handoffs/active/tool-output-compression.md) §2026-07-29
+
+### Long-context memory injection competes with the conversation
+
+A distinct failure mode, filed here because it changes compaction policy rather
+than store design: at a **128K** budget, six of fifteen memory methods score
+**below** a no-memory baseline, and the mechanism is **context-budget
+competition**, not store growth. The compaction-side consequence is that
+retrieval injection must be **budget-conditional** — inject nothing once the
+untruncated history fits the window — and capped as a fraction of remaining
+budget rather than a fixed k. Detail in
+[Memory-Augmented Systems](memory-augmented.md).
+[`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) §UTM-M6–M8;
+[`engram-conditional-memory.md`](../handoffs/active/engram-conditional-memory.md) §budget-conditional rider
+
+### Two hygiene rules this batch forced
+
+- **A non-termination counter is mandatory in any compaction arm.** One source
+  reports none; the other structurally cannot — budget exhaustion silently
+  returns the highest-confidence answer instead of an NA, so failures are scored
+  as answers.
+- **Cite compaction sources by arXiv ID, never by title.** A *different* paper
+  from the same week carries a near-identical title to one of the two anchors,
+  and anyone re-fetching by title lands on the wrong one.
+
+[`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) §CF-3c, §Dedup hazard
+
+### Source References
+
+- [`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) — mandatory masking anchor; the four pieces of agent-initiated compaction; the unreported archive-query ablation; non-termination counter; ARC-AGI-3 provenance downgrade; the title-collision dedup hazard
+- [`tool-output-compression.md`](../handoffs/active/tool-output-compression.md) — verbatim-log vs summarize-and-compact A/B design; total-vs-peak token instrumentation; the truncation audit (episodic store vs REPL journal) and the file-capable vs context-only `peek`/`grep` split
+- [`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) — 128K context-budget competition and its budget-conditional injection consequences
+- [`engram-conditional-memory.md`](../handoffs/active/engram-conditional-memory.md) — k as a fraction of remaining window budget rather than a fixed integer
