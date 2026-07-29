@@ -29,7 +29,20 @@ Do not restart the Lightning Attention port. The historical ledger preserves the
 
 ## Outstanding Tasks
 
-- [ ] **LQ-1 role decision**: decide whether Ring-mini remains active as `q_scorer`, routing classifier, math specialist, same-family drafter candidate, or parked reference. Record the role and owner in this file.
+- [x] **LQ-1 role decision**: **parked architecture reference** (owner: Inference
+  Acceleration / this handoff) ✅ 2026-07-29. This is a production-role decision,
+  not a claim that the port or model is broken. The Q4 artifact remains on disk and
+  current v8 production/experimental sources retain the `bailingmoe` architecture,
+  but it is Tier C, cold, and unpinned; no active stack configuration selects it.
+  The last complete quality review is historical (2026-05-04) and scored 59/90
+  (65.6%), with 7 empty responses and a regression when the output budget was
+  enlarged. The Qwen drafter route is already a hard no-go (different tokenizer
+  and impossible acceptance/throughput math); neither a current q-scorer/routing
+  comparison nor a compatible Ring-flash target exists. Do not assign it a live
+  role from the AIME spot check or old review alone. Reopen only with (a) a
+  specified same-tokenizer Ring-flash candidate, or (b) an owned, current-era
+  q-scorer/routing A/B against the incumbent; either condition then starts LQ-2
+  or LQ-3 respectively.
 - [ ] **LQ-2 broader quality eval**: if keeping a math/reasoning role, run a focused AIME/MATH/GPQA-style bundle with `reasoning_budget=0`, exact prompt templates, and explicit safety exclusions.
 - [ ] **LQ-3 Ring-flash drafter check**: only if a compatible Ring-flash target is available. Measure acceptance-adjusted throughput; raw Ring-mini t/s is not enough.
 - [ ] **LQ-4 profile-gated L5 decision**: only profile after LQ-1/2/3 gives a reason to keep the model. Promote a dedicated op only when the profile proves a material bottleneck.

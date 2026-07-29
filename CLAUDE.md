@@ -70,10 +70,13 @@ Audit trail in `logs/agent_audit.log`. Analysis: `scripts/utils/agent_log_analyz
 
 ## Measurement & Claims
 
-The [measurement constitution](MEASUREMENT.md) is authoritative; use its agent digest,
-[MEASUREMENT_POLICY.md](agents/shared/MEASUREMENT_POLICY.md), for claim grammar, historical-era
-handling, codified benchmark recipes, deterministic replay, and consolidated ratification. The
-measurement trust boundary remains human-amendment-only.
+`/workspace/MEASUREMENT.md` is the instrument constitution (adopted 2026-06-12). The short form:
+- A decision-gating number = `(metric, protocol-id, n/reps, date, attestation ref)`. A number without a protocol citation is an **observation** — usable for hypotheses, never to gate keep/revert/deploy/promote/buy/close decisions.
+- **Historical numbers**: era-label first (`epyc-orchestrator/orchestration/instrument_eras.yaml`), then apply the verb — retro-certified → use; demoted-to-prior → hypothesis only (re-measure if it must gate); retired-view → consult the era-appropriate rebuilt view. Never edit historical records to "fix" them — append.
+- Benchmarks run only via the codified recipes (`bench_canonical.sh`/`canonical_recipe.py`) with operator approval; agent digest at `agents/shared/MEASUREMENT_POLICY.md`.
+- **Deterministic replay before regeneration** (operator-ratified 2026-07-27): if a result is obtainable by deterministically rescoring/transforming saved inference outputs, ALWAYS do that instead of re-running inference; rebaseline only the axis that changed. Full rule: `agents/shared/MEASUREMENT_POLICY.md` → *Deterministic replay before regeneration*.
+- **Consolidated apply-time ratification** (operator-ratified 2026-07-27): evidence collection/validation never waits on a human signature; the human signs ONCE per trust boundary, at apply time, over a consolidated evidence bundle. Failed validations repair + re-present the same token — never a new chain. Never gate unrelated work on a pending boundary token. Full rule: `agents/shared/MEASUREMENT_POLICY.md` → *Consolidated apply-time ratification*.
+- The measurement trust boundary (MEASUREMENT.md, eval tower, scoring, safety gates, era registry rows) is human-amendment-only.
 
 ## Session Management
 
@@ -147,5 +150,5 @@ Documents in `handoffs/archived/`, `handoffs/completed/`, `progress/`, and `CHAN
 
 ## Operator Decision Requests
 
-Use the canonical [operator decision-package contract](agents/shared/OPERATING_CONSTRAINTS.md#operator-decision-requests).
-Pure factual gaps (a missing credential or ambiguous reference) may be asked directly.
+- **Never ask the operator an open-ended question when escalating a decision.** Every request for input is a decision package: 2–4 concrete options with tradeoffs (cost / risk / time / quality / reversibility) and supporting data, a recommendation with reasoning, and the default outcome if no choice is made. Claude Code sessions deliver this via the AskUserQuestion tool (recommended option first, labeled "(Recommended)"). Full contract: `agents/shared/OPERATING_CONSTRAINTS.md` → *Operator Decision Requests*.
+- Pure factual gaps (missing credential, ambiguous reference) may be asked directly.

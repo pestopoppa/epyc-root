@@ -4,8 +4,16 @@ This file is the top-level contract for agents working in the EPYC project.
 
 ## Project Structure
 
-Use the canonical [repository map](../CLAUDE.md#repository-map) and dependency map
-(`.claude/dependency-map.json`) for cross-repository placement and coupling.
+This project spans four repositories:
+
+| Repo | Purpose | Key Content |
+|------|---------|-------------|
+| **epyc-root** (this repo) | Governance, coordination | agents/, hooks, skills, handoffs, progress |
+| **epyc-orchestrator** | Production orchestration | `src/`, `tests/`, `orchestration/` (runtime) |
+| **epyc-inference-research** | Research & benchmarks | `benchmarks/`, `research/`, `scripts/benchmark/`, full model registry |
+| **epyc-llama** | llama.cpp fork | Custom patches, kernel work |
+
+Cross-repo dependency map: `.claude/dependency-map.json`
 
 ## Scope
 
@@ -38,7 +46,7 @@ Use the canonical [repository map](../CLAUDE.md#repository-map) and dependency m
 - Never silently swallow exceptions.
 - Keep changes small, testable, and documented.
 - Decisions gate on **claims**, not observations: a performance/quality number must cite a `MEASUREMENT.md` protocol; historical numbers are era-labeled first (`agents/shared/MEASUREMENT_POLICY.md`). Never edit historical records to "fix" them — append.
-- Operator input requests follow the canonical [decision-package contract](shared/OPERATING_CONSTRAINTS.md#operator-decision-requests).
+- Operator input requests are decision packages — 2–4 options with tradeoffs + data, a recommendation, and the default outcome — never open-ended questions (`agents/shared/OPERATING_CONSTRAINTS.md` → *Operator Decision Requests*).
 
 ## Output Contract
 

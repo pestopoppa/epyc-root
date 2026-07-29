@@ -26,7 +26,14 @@
 
 ## Placement Rules (Multi-Repo)
 
-Use the canonical [repository map](../../CLAUDE.md#repository-map) before placing a file.
+This project spans four repositories. Place files in the correct one:
+
+| Content | Repository |
+|---------|-----------|
+| Orchestrator code (`src/`, `tests/`, `orchestration/`) | `epyc-orchestrator` |
+| Benchmarks, research, model registry (full) | `epyc-inference-research` |
+| Governance, hooks, agents, handoffs, progress | `epyc-root` (this repo) |
+| llama.cpp patches and builds | `epyc-llama` |
 
 Within `epyc-orchestrator`:
 - Feature flags: `src/features.py`
@@ -42,10 +49,7 @@ Within `epyc-root`:
 
 ## Kernel Workflow (Production Immutability)
 
-Production kernels are frozen: do not modify, rebase, build, or commit to them without
-explicit operator authorization. Kernel work uses a fresh `llama.cpp-experimental` branch and
-ships only by versioning past production. The full workflow and its motivating failure are
-canonical in [CLAUDE.md](../../CLAUDE.md#experimental-kernel-workflow--production-kernel-immutability).
+Production llama.cpp kernels (`production-consolidated-v8`, future `-v9`, …) are **FROZEN** — never modify, rebase, build, or commit to them without explicit operator authorization. All kernel / inference-research / benchmarking work happens on `llama.cpp-experimental`; features ship by *versioning past* production, never by patching it in place. Every kernel effort, in order: (1) pull **fresh** production → experimental (so all production optimizations — iqk AVX-512 GEMM, CPU forward-ports, server work — are already present; never fork long-lived from an old tip), (2) build, (3) validate no GPU/CPU regressions vs production, (4) deploy as a new production version. The experimental kernel must be the FULL build (fresh production + new features) before promotion — never reconciled via cherry-picks at promotion time, or the combined changes ship unvalidated and bench numbers miss our own opts. Authoritative policy + motivating failure: `CLAUDE.md` → *Experimental Kernel Workflow & Production-Kernel Immutability*.
 
 ## Incremental Persistence (Mandatory for Eval/Benchmark Scripts)
 
