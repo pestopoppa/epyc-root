@@ -31,7 +31,7 @@ Promotion rule:
 
 ## Objective
 
-Adopt MindDR's three-agent role-specialization pattern (Planning + DeepSearch + Report) as a `deep_research_mode` in the EPYC orchestrator. Phase 1 is prompt-level only — zero-infra, falsifiable under the existing eval tower, and expected to deliver ≥+5pp quality uplift on research-like queries vs current direct-answer mode. Phase 2 adds the paper's four-stage RL recipe (SFT → Search-RL → Report-RL → preference alignment) when DGX Spark becomes available. Phase 3 conditionally refactors the orchestrator's Tier-B architect split into a role-by-pipeline-stage architecture if Phase 1 uplift proves durable.
+Adopt MindDR's three-agent role-specialization pattern (Planning + DeepSearch + Report) as a `deep_research_mode` in the EPYC orchestrator. Phase 1 is prompt-level only — zero-infra, falsifiable under the existing eval tower, and expected to deliver ≥+5pp quality uplift on research-like queries vs current direct-answer mode. Phase 2 adds the paper's four-stage RL recipe (SFT → Search-RL → Report-RL → preference alignment) only with a separately approved training plan; MI210 capacity exists, but that does not authorize training. Phase 3 conditionally refactors the orchestrator's Tier-B architect split into a role-by-pipeline-stage architecture if Phase 1 uplift proves durable.
 
 ## Research Context
 
@@ -49,7 +49,7 @@ Adopt MindDR's three-agent role-specialization pattern (Planning + DeepSearch + 
 - Four-stage training (SFT cold-start + Search-RL with GSPO/GRPO + Report-RL with DAPO + preference alignment via DPO + Self-SFT) is the recipe.
 - Multi-dimensional rubric evaluation (reasoning trajectory, tool calls, outline, content) is superior to single RACE metric.
 - Production deployment at Li Auto validates the architecture at scale.
-- BrowseComp-ZH 45.7%, WideSearch 46.5%, xbench-DS 75.0%, MindDR Bench 51.8 (SOTA).
+- BrowseComp-ZH 45.7%, WideSearch 46.5%, xbench-DS 75.0%, MindDR Bench 51.8 (reported observations; public-search contamination can inflate external anchors).
 
 ## Phased Adoption
 
@@ -157,7 +157,7 @@ Phase 2 GPU training (MD-10..13) is gated on **MI210/gfx90a training viability**
 ## Tier 2b Contradicting-Evidence Flag
 
 - MindDR Bench (51.8 SOTA) is self-curated from Li Auto assistant logs — read as deployment evidence, not generalization evidence
-- Public-benchmark numbers (BrowseComp 45.7, WideSearch 46.5, xbench-DS 75.0) are the reliable anchors
+- Public-benchmark numbers (BrowseComp 45.7, WideSearch 46.5, xbench-DS 75.0) are observation-grade anchors only; search-time contamination can be comparable to the promotion margin
 - No open-source release of weights or training code located
 - Li Auto commercial context: internal benchmark selection may be tuned to their deployment
 
@@ -204,5 +204,5 @@ Before committing to Phase 2 training recipe, run WebSearch for "MindDeepResearc
     - **MD-9's external anchors ARE affected.** This handoff designates BrowseComp 45.7 / WideSearch 46.5 / xbench-DS 75.0 as "the reliable anchors" for the adoption case, against a **+5pp promotion gate**. Up-to-4pp of such published numbers can be contamination — comparable in size to our own gate. Those anchors should be demoted from "reliable" to observation-grade.
   - Caveats: preprint, not peer-reviewed; the benchmark set is clinical/medical-heavy so generalization to BrowseComp/GAIA-style open-web benchmarks is asserted rather than demonstrated; "up to 4%" is an upper bound, not a mean; the lead affiliation also produces one of the benchmarked agents (though it is the primary contaminated subject, so the bias does not flatter them).
 
-- [ ] MD-9 candidate: demote the external BrowseComp/WideSearch/xbench-DS anchors from "reliable" to observation-grade in the adoption case, given contamination inflation is comparable to the +5pp gate. [intake-877]
+- [x] **MD-9 external-anchor demotion:** BrowseComp/WideSearch/xbench-DS are now explicitly observation-grade, not reliable adoption anchors; their possible search-time contamination is comparable to the +5pp promotion margin. The local MD-8 sentinel remains a distinct non-verbatim, trajectory-auditable evaluation surface. ✅ 2026-07-29
 - [ ] Operator-review candidate: capture search trajectories (query, URL, snippet) on deep-research eval runs so question-context / answer leakage can be audited post hoc — our SearxNG JSON path already returns `engines[]`/`score`, making this nearly free. [intake-877]
