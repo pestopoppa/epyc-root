@@ -447,7 +447,7 @@ re-grep before assigning.
 - L456 | none | M | N | - | Session-sticky routing state + per-request hybrid | routing.py
 - L457 | none | L | N | - | Make action space model x thinking-level | routing.py, q_scorer.py
 - L489 | none | S | Y | operator ruling (human-amendment-only) | Operator defines which regret the 5% gate means | handoff
-- L492 | none | S | Y | - | **READY** Standing prohibition: no epsilon-greedy counterfactual manufacture | handoff
+- L492 | none | S | Y | - | **CLOSED 2026-07-29** — 386K counterfactuals already exist; production-degrading epsilon-greedy manufacture is strictly dominated | handoffs/active/decision-aware-routing.md:492 (root `bc4a7aa7`)
 - L534 | none | S | N | - | Re-scope DAR-3/4/5 as triage gate, not policy | handoff
 - L536 | none | M | N | - | Design graded reward on the decisive subset | repl_memory/q_reward.py
 - L549 | none | M | N | - | Redesigned reward must carry speed axis | repl_memory/q_reward.py
