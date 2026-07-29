@@ -222,6 +222,27 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
     **Combined: 64 of 982 boxes certified (6.5%), 22 LIVE (34%).** Both strata independently land
     near one-third live, which is the first evidence that the ~1/3 figure may be robust — but 6.5%
     coverage is not a basis for a fleet number, and it should not be quoted as one yet.
+  - **TRANCHE 3 — the "cheap exact reduction" I recommended DOES NOT EXIST. Third negative of the
+    same shape.** ✅ measured 2026-07-29 (`auditor`). I proposed de-duplicating index-pointer rows as
+    a mechanical reduction needing no reading. Measured across all 8 index files (65 open boxes):
+    * **exact-text cross-file duplicates: 0.** Index rows *summarise* their owner's row in different
+      words, so the same text-matching that failed for staleness fails for duplication.
+    * **12 rows explicitly name an owner file.** Checking each against its owner: only the ID-level
+      test ("every id named in the index row is `[x]` in the owner, none still open") is suggestive,
+      and it yields **2 candidates**, of which **1 is confirmed stale by reading**:
+      `cpu-inference-optimization-index.md:120` tracks *"B1-B5 in a quiet window"* while
+      `iqk-iquant-enablement.md` has B1–B5 all `- [x]` (2026-07-25/26) and Status **"PROMOTED AND
+      FROZEN IN v8"**. **That is a genuine already-done-but-open row — the category the audit wanted
+      and could not find.**
+    * **The signal I thought was strongest is WRONG.** "Index row names an owner with zero open
+      boxes" looked decisive; `research-evaluation-index.md:84` disproves it — its owner
+      `frontier-f1-real-task-corpus.md` has 0 open boxes but Status **IN PROGRESS**, because that
+      handoff tracks in prose. Owner-has-no-boxes means *"the owner does not use checkboxes"* at
+      least as often as it means *"the work is done"*. Recorded because acting on it would have
+      wrongly closed live work.
+    **CONCLUSION FOR THE AUDIT: every cheap mechanical route has now been tried and failed** — exact
+    text staleness (0), cross-file duplication (0), index-pointer de-duplication (~1 confirmed of
+    65). Reading is the only route, and its rate is now measured. Stop looking for a shortcut.
   - [ ] **REMAINS OPEN:** read-certify the remaining ~918. That is the only route left and it is a bounded but
     large job; it should be split across mains by handoff, not attempted in one session.
 

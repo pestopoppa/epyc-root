@@ -1,6 +1,6 @@
 {
   "agent": "auditor",
   "state": "working",
-  "task_id": "stale-cert-tranche-2",
-  "ts": "2026-07-29T17:52:34+00:00"
+  "task_id": "dedup-index-pointers",
+  "ts": "2026-07-29T17:56:46+00:00"
 }
