@@ -14,8 +14,8 @@ _Reuses the built harness (`/mnt/raid0/llm/tmp/cot-g1/`, SCAFFOLD-PREFIX mode) a
   Frozen-scorer replay had zero mismatches across all 5 x 48 saved outputs: receiver-nothink
   `25/48`, Qwable standalone `40/48`, Qwable-prefix `42/48`, FF-prefix `41/48`, and TC-prefix
   `43/48`. Generator differences are statistically null. Qwable-prefix used `32,768` context versus
-  `16,384` for the other prefix arms, so it cannot support a causal generator ranking; FF dominates
-  the accuracy/tokens/compute observation surface, while TC is only +1 against Qwable-prefix at
+  `16,384` for the other prefix arms, so it cannot support a causal generator ranking; FF is
+  dominated by Qwable-prefix on accuracy, tokens, and compute, while TC is only +1 against it at
   3.25x compute with a null paired delta. This closes deterministic analysis only. **No deployment,
   lineup, registry, or generator-selection rule changes.**
 - [ ] **G3-4 — future decision instrument (separate from G3-3).** Select and run a decision-grade,
