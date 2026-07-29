@@ -17,6 +17,9 @@ except ImportError:
 ROOT = Path(__file__).resolve().parents[4]  # epyc-root
 RESEARCH = ROOT / "research"
 INDEX_PATH = RESEARCH / "intake_index.yaml"
+CROSS_REFERENCE_MAP_PATH = (
+    ROOT / ".claude" / "skills" / "research-intake" / "references" / "cross-reference-map.md"
+)
 
 REQUIRED_FIELDS = {
     "id", "arxiv_id", "url", "source_type", "title", "categories",
@@ -259,9 +262,62 @@ def validate_index(entries: list[dict], valid_categories: set[str],
     return errors
 
 
+def validate_cross_reference_map(map_path: Path, crossref_dirs: dict) -> list[str]:
+    """Verify Markdown targets listed in the intake cross-reference map.
+
+    Only Category-to-File Mapping rows are inspected.  The File Locations section
+    is documentation about directories, not a source of references.  The map has
+    historically used both bare handoff names and ``completed/name.md`` forms, so
+    both are resolved against the configured handoff roots.
+    """
+    if not map_path.exists():
+        return [f"cross-reference-map: not found at {map_path}"]
+
+    errors = []
+    row_pattern = re.compile(
+        r"^\s*-\s+\*\*(Chapters|Handoffs|Experiments)\*\*:\s*(.*)$"
+    )
+    reference_pattern = re.compile(r"`([^`]+\.md)`")
+
+    in_category_mapping = False
+    for line in map_path.read_text().splitlines():
+        if line.startswith("## Category → File Mapping"):
+            in_category_mapping = True
+            continue
+        if in_category_mapping and line.startswith("## "):
+            break
+        if not in_category_mapping:
+            continue
+        row = row_pattern.match(line)
+        if not row:
+            continue
+        ref_type, content = row.groups()
+        for ref in reference_pattern.findall(content):
+            if ref_type == "Chapters":
+                found = (crossref_dirs["chapters"] / ref).is_file()
+            elif ref_type == "Experiments":
+                found = (crossref_dirs["experiments"] / ref).is_file()
+            else:
+                ref_path = Path(ref)
+                if ref_path.parts and ref_path.parts[0] in {
+                    "active", "completed", "archived"
+                }:
+                    found = (ROOT / "handoffs" / ref_path).is_file()
+                else:
+                    found = any((directory / ref_path).is_file()
+                                for directory in crossref_dirs["handoffs"])
+            if not found:
+                errors.append(
+                    f"cross-reference-map: {ref_type.lower()} '{ref}' not found"
+                )
+
+    return errors
+
+
 def main() -> int:
     errors = []
     config = load_wiki_config()
+    crossref_dirs = _get_crossref_dirs(config)
 
     # Validate taxonomy
     taxonomy_path = _get_taxonomy_path(config)
@@ -280,6 +336,8 @@ def main() -> int:
         valid_categories.update(aliases.values())
         print(f"INFO: Loaded {len(aliases)} category aliases from SCHEMA.md")
 
+    errors.extend(validate_cross_reference_map(CROSS_REFERENCE_MAP_PATH, crossref_dirs))
+
     # Validate index
     if not INDEX_PATH.exists():
         print(f"WARNING: Index not found at {INDEX_PATH} — skipping index validation")
@@ -295,7 +353,6 @@ def main() -> int:
     if not entries:
         print("WARNING: Index is empty")
     else:
-        crossref_dirs = _get_crossref_dirs(config)
         errors.extend(validate_index(entries, valid_categories, crossref_dirs))
 
     if errors:
