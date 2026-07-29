@@ -84,31 +84,31 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 7 | ~~`intake-derived-work-2026-07-25.md:87`~~ **✅ CLOSED 2026-07-29** | P3 process defects | none | S | `scripts/validate/`, research-intake cross-reference-map | Add path-resolution check for the intake cross-reference map |
 | 8 | `agentic-rocm-kernel-authoring.md:78` | progress-checklist | none | S | `research/deep-dives/…geak-synthesis.md` | GEAK-family freshness sweep at each audit |
 | 9 | ~~`gpu-acceleration-path.md:531`~~ **✅ CLOSED 2026-07-29** | 2026-07-29 fix | none | S | `gpu-acceleration-path.md` | Record reverse-KL on-policy-distillation negative as guardrail |
-| 10 | `tool-use-eval-contract.md:366` | intake 2026-07-21 | none | S | sentinel prompt definitions | Adopt negative-constraint + stated-consequence sentinel pattern |
+| 10 | ~~`tool-use-eval-contract.md:366`~~ **✅ CLOSED 2026-07-29** | intake 2026-07-21 | none | S | sentinel prompt definitions | Adopt negative-constraint + stated-consequence sentinel pattern |
 | 11 | ~~`gpu-serving-tie-in-program.md:143`~~ **✅ CLOSED 2026-07-29** | P5 | none | S | `heterogeneous-slot-fabric-residency.md` | Add GPU host threads as a modeled slot-fabric consumer |
-| 12 | `model-stack-change-standardization-audit.md:229` | update-checklist | none | S | `tests/unit/` priors/guard/enum-sync/q_scorer suites | Run focused unit tests for priors, guard, scorer, admission |
-| 13 | `eval-tower-verification.md:522` | de-anchoring | none | S | `autopilot.py:1431`, `paired_stats.py` | Unify autopilot's 2nd McNemar producer onto `verdict_from_result` |
+| 12 | ~~`model-stack-change-standardization-audit.md:229`~~ **TEMPLATE — DO NOT DISPATCH 2026-07-29** | update-checklist | none | S | `tests/unit/` priors/guard/enum-sync/q_scorer suites | Run focused unit tests for priors, guard, scorer, admission |
+| 13 | ~~`eval-tower-verification.md:522`~~ **✅ CLOSED 2026-07-29** | de-anchoring | none | S | `autopilot.py:1431`, `paired_stats.py` | Unify autopilot's 2nd McNemar producer onto `verdict_from_result` |
 | 14 | ~~`minddr-deep-research-mode.md:207`~~ **✅ CLOSED 2026-07-29** | search-time contamination | none | S | `minddr-deep-research-mode.md` | Demote BrowseComp/WideSearch/xbench anchors to observation-grade |
-| 15 | `engram-conditional-memory.md:379` | retrieval-policy rider | none | S | `engram-…md`, `unified-trace-memory-service.md` | Correct the ReasoningBank ranking claim in retrieval notes |
-| 16 | `unified-trace-memory-service.md:211` | UTM-M4 | none | S | `src/trace/harness_schema.py` | Mine ReasoningBank repo for its 3 prompts + JSON schema |
-| 17 | `autopilot-decision-plane-audit-2026-07-22.md:399` | deliverables | none | S | `q_scorer.py`, `episodic_store.py` | Apply find-or-update to `_update_escalation_memory` append-only rows |
-| 18 | `orchestration-robustness-audit-2026-07-11.md:240` | faiss orphans | none | S | `orchestration/repl_memory/faiss_store.py` | Startup sweep unlinking old unopened faiss tmp orphans |
-| 19 | `autopilot-control-plane-integration.md:23` | AP-3b.2 | none | S | `autopilot-control-plane-integration.md` | Decide whether draft-tree belongs in AP-3 |
-| 20 | `speculative-decoding-mtp-refresh.md:236` | intake 2a | none | S | `models/*.gguf` headers | Tensor-count header gate for the DavidAU Qwen3.6-27B MTP GGUFs |
-| 21 | `agent-file-prose-compression.md:244` | intake 2a | none | S | `agent-file-prose-compression.md` | Re-source `/doctor` behaviour from the CLI before speccing |
-| 22 | `learned-routing-controller.md:1613` | deep-dive correction | none | S | (guardrail note) | Standing guardrail: do not import intake-866 equivalence framing |
-| 23 | `document-parser-table-bench.md:144` | consequence | none | S | (guardrail note) | Guardrail: no MinerU/GLM-OCR downloads as odl_bench swaps |
+| 15 | ~~`engram-conditional-memory.md:379`~~ **✅ CLOSED 2026-07-29** | retrieval-policy rider | none | S | `engram-…md`, `unified-trace-memory-service.md` | Correct the ReasoningBank ranking claim in retrieval notes |
+| 16 | ~~`unified-trace-memory-service.md:211`~~ **✅ CLOSED 2026-07-29** | UTM-M4 | none | S | `src/trace/harness_schema.py` | Mine ReasoningBank repo for its 3 prompts + JSON schema |
+| 17 | ~~`autopilot-decision-plane-audit-2026-07-22.md:399`~~ **✅ CLOSED 2026-07-29** | deliverables | none | S | `q_scorer.py`, `episodic_store.py` | Apply find-or-update to `_update_escalation_memory` append-only rows |
+| 18 | ~~`orchestration-robustness-audit-2026-07-11.md:240`~~ **✅ CLOSED 2026-07-29** | faiss orphans | none | S | `orchestration/repl_memory/faiss_store.py` | Startup sweep unlinking old unopened faiss tmp orphans |
+| 19 | ~~`autopilot-control-plane-integration.md:23`~~ **✅ CLOSED 2026-07-29** | AP-3b.2 | none | S | `autopilot-control-plane-integration.md` | Decide whether draft-tree belongs in AP-3 |
+| 20 | ~~`speculative-decoding-mtp-refresh.md:236`~~ **✅ CLOSED 2026-07-29** | intake 2a | none | S | `models/*.gguf` headers | Tensor-count header gate for the DavidAU Qwen3.6-27B MTP GGUFs |
+| 21 | ~~`agent-file-prose-compression.md:244`~~ **✅ CLOSED 2026-07-29** | intake 2a | none | S | `agent-file-prose-compression.md` | Re-source `/doctor` behaviour from the CLI before speccing |
+| 22 | ~~`learned-routing-controller.md:1613`~~ **✅ CLOSED 2026-07-29** | deep-dive correction | none | S | (guardrail note) | Standing guardrail: do not import intake-866 equivalence framing |
+| 23 | ~~`document-parser-table-bench.md:144`~~ **✅ CLOSED 2026-07-29** | consequence | none | S | (guardrail note) | Guardrail: no MinerU/GLM-OCR downloads as odl_bench swaps |
 | 24 | `scorer-fork-drift-audit-2026-07-22.md:257` | residual tasks | none | S | `scripts/benchmark/seeding_legacy.py` | Guard or delete the legacy ComparativeResult reward-injection path |
-| 25 | `autopilot-continuous-optimization.md:1529` | AP-32 | none | S | `wiki/agent-architecture.md`, `strategy_store.py` | Strike unmeasured +1.1% claim; guard the dead linter |
-| 26 | `architect-model-selection-bench.md:330` | follow-up tooling | none | S | `scripts/bench/gpu_lib.sh`, `run_arm.sh`, `run_budget.sh` | Promote scratchpad GPU driver scripts into the repo |
+| 25 | ~~`autopilot-continuous-optimization.md:1529`~~ **✅ CLOSED 2026-07-29** | AP-32 | none | S | `wiki/agent-architecture.md`, `strategy_store.py` | Strike unmeasured +1.1% claim; guard the dead linter |
+| 26 | ~~`architect-model-selection-bench.md:330`~~ **✅ CLOSED 2026-07-29** | follow-up tooling | none | S | `scripts/bench/gpu_lib.sh`, `run_arm.sh`, `run_budget.sh` | Promote scratchpad GPU driver scripts into the repo |
 | 27 | ~~`context-folding-progressive.md:113`~~ **✅ CLOSED 2026-07-29** | deep-dive correction | none | S | `context-folding-progressive.md` | Record do-not-prioritize decision for ContextRot harness replication |
-| 28 | `scoring-infra-standardization.md:184` | intake 2a | none | S | `research/intake_index.yaml`, `benchmarks/instruction_precision` | Adopt six-point SWE-bench disclosure standard for intake-916/917/924 |
-| 29 | `tool-output-compression.md:442` | intake 2026-07-21 | none | S | `scripts/utils/compress_tool_output.py` | Bias Phase-3d fallback chain toward observation-dropping first |
-| 30 | `decision-aware-routing.md:185` | DAR-5 | none | S | `learned-routing-controller.md` | Document cold-start note for LRC P5 onboarding |
-| 31 | `ernie-image-turbo-evaluation.md:139` | progress-checklist | none | S | `research/deep-dives/` ernie dive | Record LongText-Bench harmonized ranking in the deep dive |
-| 32 | `intake-derived-work-2026-07-25.md:166` | P1b DFlash | none | S | capability registry yaml | Re-triage the stale dflash registry `forbid` row |
-| 33 | `model-stack-single-source-update-pipeline.md:325` | outstanding | none | S | `seeding_rewards.py`, `corpus_quality_gate.py`, `kv_compress.py` | Keep 3 re-audited surfaces unchurned absent a new duplicated fact |
-| 34 | `unified-trace-memory-service.md:219` | UTM-M6 | none | S | `research/intake_index.yaml` | File EvoMemBench 128K context-competition as a distinct failure mode |
+| 28 | ~~`scoring-infra-standardization.md:184`~~ **✅ CLOSED 2026-07-29** | intake 2a | none | S | `research/intake_index.yaml`, `benchmarks/instruction_precision` | Adopt six-point SWE-bench disclosure standard for intake-916/917/924 |
+| 29 | ~~`tool-output-compression.md:442`~~ **✅ CLOSED 2026-07-29** | intake 2026-07-21 | none | S | `scripts/utils/compress_tool_output.py` | Bias Phase-3d fallback chain toward observation-dropping first |
+| 30 | ~~`decision-aware-routing.md:185`~~ **✅ CLOSED 2026-07-29** | DAR-5 | none | S | `learned-routing-controller.md` | Document cold-start note for LRC P5 onboarding |
+| 31 | ~~`ernie-image-turbo-evaluation.md:139`~~ **✅ CLOSED 2026-07-29** | progress-checklist | none | S | `research/deep-dives/` ernie dive | Record LongText-Bench harmonized ranking in the deep dive |
+| 32 | ~~`intake-derived-work-2026-07-25.md:166`~~ **✅ CLOSED 2026-07-29** | P1b DFlash | none | S | capability registry yaml | Re-triage the stale dflash registry `forbid` row |
+| 33 | ~~`model-stack-single-source-update-pipeline.md:325`~~ **✅ CLOSED 2026-07-29** | outstanding | none | S | `seeding_rewards.py`, `corpus_quality_gate.py`, `kv_compress.py` | Keep 3 re-audited surfaces unchurned absent a new duplicated fact |
+| 34 | ~~`unified-trace-memory-service.md:219`~~ **✅ CLOSED 2026-07-29** | UTM-M6 | none | S | `research/intake_index.yaml` | File EvoMemBench 128K context-competition as a distinct failure mode |
 | 35 | `rao-redel-substrate-spike.md:432` | intake 2026-07-21 | none | M | `orchestration/repl_memory/episodic_store.py` | Adopt SkyRL parent/child rollout-tree accounting shape |
 | 36 | `reviewer-calibration-accounting.md:30` | RC | none | M | `src/trace/review_ledger.py` | Persist full rubric + per-item grades in corpus rows |
 | 37 | `llamacpp-v6-consolidation.md` (F1 fold, re-grep: file shifted) | Stage-2 parity F1 | none | M | `llama.cpp-v6 ggml/src/ggml-cpu/ops.cpp` | Fold f1-paged-attn branch into v6, off-by-default |
@@ -164,7 +164,7 @@ re-grep before assigning.
 - L241 | none | M | N | - | AFC-P5.0 lossless structural deletion pass before Phase-5 compression | CLAUDE.md, agents/shared/*.md
 - L242 | cpu | L | N | operator approval + host-quiet window | AFC-P5.1 falsify vendor 80%-cut claim through compliance gate | tests/compliance/agent_file/live_runner.py
 - L243 | none | M | N | - | AFC-P5.2 de-duplicate four triple-stated policies, fix v6/v7 drift | agents/shared/ENGINEERING_STANDARDS.md, CLAUDE.md
-- L244 | none | S | Y | - | Re-source /doctor behaviour from the CLI before speccing | handoff
+- L244 | none | S | Y | - | **CLOSED 2026-07-29** — Codex CLI evidence limits `/doctor` to diagnostics, not rewriting | Re-source /doctor behaviour from the CLI before speccing | handoff
 
 ## agent-world-env-synthesis.md (7)
 - L278 | none | M | Y | - | Implement plan-executor divergence halt in SolvabilityGate | env_synth/verifier_builder.py
@@ -199,7 +199,7 @@ re-grep before assigning.
 - L187 | gpu | L | N | deprioritized by operator (~4pp MDE) | GPU arms full n=198 gpqa_diamond_cot primary CoT measure | artifacts/architect-bench-gpu-20260720/
 - L188 | gpu | M | N | - | MMLU-Pro control re-run under hardened protocol | dataset_adapters.py
 - L329 | none | L | Y | - | Interleaved-per-question sequential runner with e-process stopping | bench runner, architect-bench-runbook.md
-- L330 | none | S | Y | - | Promote scratchpad GPU driver scripts into the repo | scripts/bench/gpu_lib.sh, run_arm.sh
+- L330 | none | S | Y | - | **CLOSED 2026-07-29** — repo-relative sourcing, required v8 kernel label, and corrected 184-191 pinning | Promote scratchpad GPU driver scripts into the repo | scripts/bench/gpu_lib.sh, run_arm.sh
 - L332 | gpu | L | N | Phase 1 completion | Resolve Phase-1 decision tree; conditionally build and run A5 | artifacts/architect-bench-gpu-20260720/
 - L333 | gpu | L | N | Phase 1 decision + operator approval | Phase 2 tool-using planning bench on surviving arms | SWE agentic scorer
 - L334 | none | S | N | Phase 1/2 results | Record architect decision, route to AXA-1 + registry | handoff, model_registry.yaml
@@ -236,7 +236,7 @@ re-grep before assigning.
 - L1524 | none | S | Y | AP-19b live run first | AP-42 decide the gepa package pin (0.0.26 vs main) | pyproject.toml
 - L1525 | none | M | Y | AP-19b live evidence | AP-21 re-open gepa_ratio decision on corrected journal facts | autopilot_state.json
 - L1526 | none | M | N | - | AP-29 gate: design episodic-only control arm distiller must beat | knowledge_distiller.py
-- L1529 | none | S | Y | - | AP-32 strike unmeasured +1.1% claim; guard dead linter | wiki/agent-architecture.md, strategy_store.py
+- L1529 | none | S | Y | - | **CLOSED 2026-07-29** — handoff AP-32 records diagnostic-only regression guard and removal of the external-paper-only claim | AP-32 strike unmeasured +1.1% claim; guard dead linter | wiki/agent-architecture.md, strategy_store.py
 - L1530 | none | S | Y | - | Retarget utility-weighted-retrieval concern to live MemRL retriever | repl_memory/retriever.py
 - L1536 | none | M | N | AP-29 gate | AP-29a budget write gate to cheapest adequate local judge | knowledge_distiller.py
 - L1537 | none | M | Y | - | AP-29b replay-compare lexicographic vs scalarized objective selection | autopilot_journal.jsonl
@@ -245,7 +245,7 @@ re-grep before assigning.
 ## autopilot-control-plane-integration.md (4)
 - L18 | cpu | L | N | AP-3b source proof; spec-dec quality clearance | AP-3 register restart-scoped spec-dec + per-role KV knobs | config_applicator.py, stack_priors.py
 - L21 | cpu | M | N | launch probes need llama-server | AP-3b source-prove remaining launch fields | config_applicator.py
-- L23 | none | S | Y | - | AP-3b.2 decide whether draft-tree belongs in AP-3 | handoff
+- L23 | none | S | Y | - | **CLOSED 2026-07-29** — current draft-tree degenerates to linear drafting; no independent tree controls exist | AP-3b.2 decide whether draft-tree belongs in AP-3 | handoff
 - L24 | cpu | M | N | server-wired EA/evict fields not source-proven | AP-3c expose Expected-Attention launch policy | config_applicator.py
 
 ## autopilot-dashboard-fidelity-audit-2026-07-22.md (9)
@@ -268,7 +268,7 @@ re-grep before assigning.
 - L324 | cpu | L | N | final-C1/finalizer inference + single human apply | Collect complete v5 evidence bundle, then human-only apply | autopilot_state.json baseline_state
 - L348 | none | L | Y | other owners; export_rlvr_environment.py mid-edit | Non-owned H2/H3/M1-M6/F2 audit findings | structural_lab.py, actions.py
 - L398 | none | M | N | **STALE?** likely superseded by 2026-07-23 H4 deploy | Operator runs migrate-swap-flag-remeasure deploy plan | consolidate_q_append_only.py
-- L399 | none | S | Y | - | Apply find-or-update to _update_escalation_memory rows | q_scorer.py, episodic_store.py
+- L399 | none | S | Y | - | **CLOSED 2026-07-29** — flag-gated escalation identity is exact reason + transition; routing/escalation partitions remain isolated | Apply find-or-update to _update_escalation_memory rows | q_scorer.py, episodic_store.py
 - L402 | cpu | L | N | per-token logprobs not persisted | EV-CONF-2 answer-span confidence + re-baseline math AUROC | eval sidecar writer, ESC-7 draft §5
 - L483 | none | M | Y | - | Hermeticize live host lock seams and mock timing waits | test_dispatch_placement_state_machine.py
 
@@ -437,7 +437,7 @@ re-grep before assigning.
 - L182 | none | L | N | gated behind reward redesign | Learned d-dim model identity vector | bilinear_scorer.py
 - L183 | none | M | N | needs DAR-5.2 | Concatenate IRT 2-D output onto BGE embedding | irt_scorer.py
 - L184 | none | M | Y | needs DAR-5.2/5.3 | Offline A/B versus frozen DAR-4 on val set | scripts/analysis/
-- L185 | none | S | Y | - | **READY** Document cold-start note for LRC P5 onboarding | learned-routing-controller.md
+- L185 | none | S | Y | - | **CLOSED 2026-07-29** — DAR-5.5 records spec-only initialization, observed-outcome refinement, and the reward-redesign prerequisite | Document cold-start note for LRC P5 onboarding | learned-routing-controller.md
 - L213 | none | M | Y | DAR-6 frozen per fable5-findings-02 | Build 0-1 injection-risk trigger score for fanout | src/classifiers/
 - L216 | cpu | L | N | inference gate J14 + operator approval | Two-arm injection-suite A/B: escalation vs swarm fanout | src/swarm_fanout.py
 - L409 | cpu | L | N | eval-tower P8 calibration gate + J10 | Calibrated uncertainty escalation signal orthogonal to Q | difficulty_signal.py
@@ -489,7 +489,7 @@ re-grep before assigning.
 - L70 | none | S | Y | Phase C English-only table TEDS | Decide table path: ODL, hybrid, or PaddleOCR wholesale | handoff
 - L71 | none | M | Y | Phase-D decision | Consider MinerU2.5-Pro / GLM-OCR only if PaddleOCR underperforms | handoff
 - L72 | cpu | L | Y | - | Domain-transfer check on real orchestrator-ingested PDF corpus | odl_bench/, local PDF corpus
-- L144 | none | S | Y | - | **READY** Guardrail: no MinerU/GLM-OCR downloads as odl_bench swaps | ?
+- L144 | none | S | Y | - | **CLOSED 2026-07-29** — both require a separately scoped multi-call pipeline harness before any download or benchmark | Guardrail: no MinerU/GLM-OCR downloads as odl_bench swaps | ?
 - L145 | none | M | Y | PaddleOCR-VL pipeline proof | Scope MinerU2.5-Pro-2605 as separate pipeline-harness project | ?
 
 ## dynamic-stack-concurrency.md (6)
@@ -503,7 +503,7 @@ re-grep before assigning.
 ## engram-conditional-memory.md (6)
 - L377 | cpu | L | N | co-owned with unified-trace-memory-service store/schema | Layer CORE utility-aware retrieval over ReasoningBank schema | src/trace retrieval module
 - L378 | cpu | M | N | depends on retrieval design (L377) | Make k budget-conditional; sweep with no-memory control arm | retrieval sweep harness
-- L379 | none | S | Y | - | **READY** Correct the ReasoningBank ranking claim in retrieval notes | handoff, unified-trace-memory-service.md
+- L379 | none | S | Y | - | **CLOSED 2026-07-29** — records last-of-13 Cross-Episode Easy and retains schema rather than rank as the transferable signal | Correct the ReasoningBank ranking claim in retrieval notes | handoff, unified-trace-memory-service.md
 - L385 | gpu | L | N | GPU budget authorization; gfx90a training viability | Allocate GPU, run frozen-vs-cotrained SmolLM-1.7B proxy | engram package, training driver
 - L386 | gpu | L | N | needs GPU allocation (L385) | Build canonicalizer, train both configs, 30% recovery gate | scripts/build_canonicalizer.py
 - L387 | gpu | L | N | Gate B0 pass required | File retrofit spike handoff, start Qwen3.6 Phase 1-4 surgery | engram-retrofit-qwen36-spike.md
@@ -515,7 +515,7 @@ re-grep before assigning.
 - L316 | cpu | L | N | needs reseeded store + live traffic | M-12 memory-on vs memory-off A/B that never existed | episodic_store.py, benchmarks/
 
 ## ernie-image-turbo-evaluation.md (5)
-- L139 | none | S | Y | - | **READY** Record LongText-Bench harmonized ranking in deep dive | research/deep-dives/ ernie
+- L139 | none | S | Y | - | **CLOSED 2026-07-29** — deep dive reconciles the EN/ZH mean ordering and preserves the vendor-self-report qualifier | Record LongText-Bench harmonized ranking in deep dive | research/deep-dives/ ernie
 - L142 | cpu | M | N | inference window / operator approval | Run content-filter audit live and review outputs | content-filter audit harness ed6f65f5
 - L143 | cpu | M | N | inference availability | 20-prompt EN/ZH typography spot-check vs 0.9655 claim | spot-check prompt set
 - L144 | gpu | L | N | MI210 window | GPU rebench of 8-step distilled DiT on MI210 | ROCm/HIP DiT path
@@ -562,7 +562,7 @@ re-grep before assigning.
 - L497 | cpu | L | N | inference-batch loop slot | Offline A/B: show-candidate vs commit-first judge FPR | judge harness, stat_tests.py
 - L498 | none | S | Y | three absent-source suites download (operator ask) | Attach web-egress check to any GAIA eval run | suites.py, dataset_adapters.py
 - L500 | none | L | N | E5 NUMA x batch mapping; next EV-4-class run | Node-partitioned cross-fleet arm-parallelism for rebaselines | eval runner, contention_matrix.yaml
-- L522 | none | S | Y | - | **READY** Unify autopilot 2nd McNemar producer onto verdict_from_result | autopilot.py:1431, paired_stats.py
+- L522 | none | S | Y | - | **CLOSED 2026-07-29** — sequential baseline payload uses `verdict_from_result`, observation-only and non-gating | Unify autopilot 2nd McNemar producer onto verdict_from_result | autopilot.py:1431, paired_stats.py
 - L545 | cpu | M | N | needs EV-10a gate live | Single-artifact admission prefilter re-attempting originating failure | skill_efficacy.py
 - L546 | cpu | L | N | dataset acquisition + exec-sandbox harness | FrontierCS 10-problem floor probe on one production arm | new FrontierCS adapter, suites.py
 
@@ -814,7 +814,7 @@ re-grep before assigning.
 - L150 | cpu | L | N | needs matching gemma-4 target weights | Measure gemma-4 DFlash drafter against worker_general | gemma-4-26B DFlash drafter
 - L155 | none | S | N | - | Record Qwen3.5-122B DFlash watch item; scope acceptance-only | speculative-decoding-mtp-refresh.md
 - L163 | none | S | N | parallel v8 session holds laguna edits | Downgrade quant-noise root cause to hypothesis | laguna-s21-cpu-port.md
-- L166 | none | S | Y | - | **READY** Re-triage stale dflash registry forbid row | capability registry yaml
+- L166 | none | S | Y | - | **CLOSED 2026-07-29** — full registry retains registration gate but removes the stale runtime-availability forbid | Re-triage stale dflash registry forbid row | capability registry yaml
 - L169 | none | S | N | - | Record headless non-causal target-locked DFlash architecture fact | laguna-…md, speculative-…md
 - L179 | none | M | N | - | Recover dropped RLM negatives incl prefill-to-decode conversion | repl-turn-efficiency.md, intake_index.yaml
 - L189 | none | M | N | - | Promote open-weight RLM system prompt + partitioning constants | repl-turn-efficiency.md
@@ -901,7 +901,7 @@ re-grep before assigning.
 - L854 | none | L | Y | P6.2 pass (deferred) | P6.3.1 port TinyRecursiveModels to CPU-only training mode | train_verifier_head.py
 - L855 | none | M | N | P6.3.1 | P6.3.2 apply Augmented-HRM augmentation recipe | train_verifier_head.py
 - L856 | none | M | N | P6.3.2 | P6.3.3 A/B recursive verifier vs P6.2 MLP, Brier gate | train_verifier_head.py
-- L1613 | none | S | Y | - | **READY** Standing guardrail: do not import intake-866 equivalence framing | ?
+- L1613 | none | S | Y | - | **CLOSED 2026-07-29** — retains only the directly testable nearest-success feature; no equivalence-class claim enters policy or acceptance criteria | Standing guardrail: do not import intake-866 equivalence framing | ?
 
 ## lightning-attention-port.md (4)
 - L32 | none | S | N | owner/operator role decision | LQ-1 decide Ring-mini role or park as architecture reference | handoff, model_registry.yaml
@@ -1004,7 +1004,7 @@ re-grep before assigning.
 ## model-stack-change-standardization-audit.md (7) — per-change procedural checklist
 - L219 | none | S | N | fires per stack change | Identify the model-stack change type before touching inputs | ?
 - L220 | none | S | N | L219 change-type identification | Update structured registry/descriptor inputs only | model_registry.yaml, stack_manifest.py
-- L229 | none | S | Y | - | **READY** Run focused unit tests for priors, guard, scorer, admission | tests/unit/ suites
+- L229 | none | S | Y | - | **TEMPLATE — DO NOT DISPATCH** — execute only during a concrete stack change; the owning runbook checkbox remains intentionally open | Run focused unit tests for priors, guard, scorer, admission | tests/unit/ suites
 - L230 | none | M | Y | - | Run simulated mmap-swap, retirement, tier-change tests | tests/ simulated swap fixtures
 - L234 | none | S | N | - | Update only generated summaries or explicitly historical docs | docs/runbooks/
 - L235 | none | S | N | pre-launch gate | Require fresh priors + guard pass before any launch | stack-change gate, stack_priors.yaml
@@ -1013,7 +1013,7 @@ re-grep before assigning.
 ## model-stack-single-source-update-pipeline.md (7)
 - L320 | none | M | Y | - | Preserve env override precedence + degraded fallbacks in migrations | src/config/models.py, stack_priors.py
 - L322 | none | L | N | needs concrete duplicated-fact trigger | Migrate remaining high-risk P2 consumers | stack_change_surface_manifest.yaml
-- L325 | none | S | Y | - | **READY** Keep three re-audited surfaces unchurned | seeding_rewards.py, corpus_quality_gate.py, kv_compress.py
+- L325 | none | S | Y | - | **CLOSED 2026-07-29** — audited generated-prior primary path and degraded fallbacks; no duplicated fact warrants churn | Keep three re-audited surfaces unchurned | seeding_rewards.py, corpus_quality_gate.py, kv_compress.py
 - L330 | none | M | N | needs a newly migrated consumer to witness | Broaden W4 swap-CI as migrated consumers create witnesses | test_stack_priors_compiler.py
 - L348 | none | S | Y | operator enablement/reload/attestation decision | Keep X-MAS production routing default-off | X-MAS policy config
 - L350 | none | S | Y | - | Keep short_term_memory.md under review as live run state | scripts/autopilot/short_term_memory.md
@@ -1088,7 +1088,7 @@ re-grep before assigning.
 - L159 | none | M | Y | approval token ERA_FENCED_BLACKLIST_PURGE_2026_07_11 | P0.3 era-fenced blacklist purge + lever re-exploration | blacklist_purge_plan.py
 - L184 | none | S | Y | file is root:root 0444; needs operator/sudo | Add seq_p0_2_bridge consent or apply formal amendment | orchestration/authority_consent.json
 - L198 | none | L | Y | HIGH blast radius (22 upstream impacts) | W1 consolidate remaining runtime-facts readers | orchestrator_runtime_facts.json readers
-- L240 | none | S | Y | - | **READY** Startup sweep unlinking old unopened faiss tmp orphans | repl_memory/faiss_store.py
+- L240 | none | S | Y | - | **CLOSED 2026-07-29** — startup janitor excludes open inodes and is best-effort, with six focused tests | Startup sweep unlinking old unopened faiss tmp orphans | repl_memory/faiss_store.py
 - L241 | none | S | N | depends on L240 sweep + 24h age | Sweep the 7 remaining 5.1GB tmp files once aged out | repl_memory/sessions/*.tmp
 
 ## outer-coordinator-learned-head.md (6) — a clean self-contained scoping arc, all `none`-lane
@@ -1349,7 +1349,7 @@ re-grep before assigning.
 - L152 | none | M | Y | arms' results land (2b-confirm) | Replace runbook P2 placeholder with built coding ladder | architect-bench-runbook.md
 - L158 | cpu | L | N | - | Run tool-use eval through orchestrator live REPL loop | agentic_swe_harness.py, src/graph/
 - L162 | cpu | M | Y | Jackrong-family bench scheduled | Pin and verify per-model tool-call parser before Jackrong bench | scripts/benchmark/, model_registry.yaml
-- L166 | none | S | Y | - | **READY** Adopt six-point SWE-bench disclosure standard for intake-916/917/924 | architect-bench-runbook.md, intake_index.yaml
+- L166 | none | S | Y | - | **CLOSED 2026-07-29** — handoff 2b-swe-hygiene applies all six fields to intake-916/917/924 | Adopt six-point SWE-bench disclosure standard for intake-916/917/924 | architect-bench-runbook.md, intake_index.yaml
 - L182 | none | M | N | spaCy lemmatizer dependency | Add ordered_subsequence verifier to canonical answer_scoring | answer_scoring.py, its test
 - L183 | none | S | N | verifier (L182) | Implement both Ordered Rate and Coverage-with-order metrics | answer_scoring.py
 - L184 | none | S | Y | - | **READY** Record ACL-2025 provenance + 4-bit-vs-API leaderboard confound | intake_index.yaml, benchmarks/instruction_precision
@@ -1420,7 +1420,7 @@ re-grep before assigning.
 - L233 | none | S | Y | - | **READY** Scope acceptance-only comparison for 122B DFlash drafter | handoff
 - L234 | none | S | N | - | Record settled DFlash architecture facts | handoff, research/deep-dives/
 - L235 | none | S | N | - | Record provenance/qualifiers for published DFlash speedup numbers | handoff
-- L236 | none | S | Y | - | **READY** Tensor-count header gate for DavidAU Qwen3.6-27B MTP GGUFs | models/*.gguf headers
+- L236 | none | S | Y | - | **CLOSED 2026-07-29** — 851 vs 866 tensors plus `qwen35.nextn_predict_layers` key; file size is non-evidence | Tensor-count header gate for DavidAU Qwen3.6-27B MTP GGUFs | models/*.gguf headers
 - L237 | none | S | N | - | Record ThinkingCap MTP head is stock; flag confounded Q4_K_M pair | handoff
 - L244 | none | S | N | - | Record KAT-Coder tokenizer-match + removed-MTP artifact facts | handoff, research/intake
 - L245 | none | S | N | - | Adopt safetensors-index preflight rule over config.json checks | handoff, feedback rule file
@@ -1474,7 +1474,7 @@ re-grep before assigning.
 - L451 | none | M | Y | - | Map query_memory read API onto existing spill-pointer machinery | graph/helpers.py, episodic_store.py
 
 ## tool-use-eval-contract.md (1)
-- L366 | none | S | Y | - | **READY** Adopt negative-constraint + stated-consequence sentinel pattern | sentinel prompt definitions
+- L366 | none | S | Y | - | **CLOSED 2026-07-29** — epyc-orchestrator `e6b989b9`; handoff records `tests/test_tool_sentinels.py` 8/8 | Adopt negative-constraint + stated-consequence sentinel pattern | sentinel prompt definitions
 
 ## tq3-quantization-evaluation.md (13)
 - L61 | cpu | M | N | upstream PR #21089 unmerged | Test TBQ3_0 KV cache on Qwen2.5-Coder-32B context extension | llama.cpp build, llama-bench
@@ -1515,9 +1515,9 @@ re-grep before assigning.
 - L208 | none | M | Y | AP-29 gate in autopilot-continuous-optimization | UTM-M1 adopt append-only store shape retaining raw trajectories | src/trace/store.py
 - L209 | none | M | N | - | UTM-M2 scope additive dual-layer experience bank | src/trace/store.py, harness_schema.py
 - L210 | none | M | Y | - | UTM-M3 add auditable delete verb + When-NOT-to-Use to skill records | repl_memory/memory_actions.py
-- L211 | none | S | Y | - | **READY** UTM-M4 mine ReasoningBank repo for 3 prompts and JSON schema | src/trace/harness_schema.py
+- L211 | none | S | Y | - | **CLOSED 2026-07-29** — source audit records success/failure, judge, MaTTS prompts and `induce_memory.py` JSONL shape | UTM-M4 mine ReasoningBank repo for 3 prompts and JSON schema | src/trace/harness_schema.py
 - L215 | cpu | L | Y | explicitly unblocked | UTM-M5 build per-window success-rate-vs-store-size curve instrument | scripts/analysis/, data/trace/events.sqlite
-- L219 | none | S | Y | - | **READY** UTM-M6 file EvoMemBench 128K context-competition failure mode | handoff, intake_index.yaml
+- L219 | none | S | Y | - | **CLOSED 2026-07-29** — records fixed-update-schedule context-budget competition as distinct from accumulated-store late decay | UTM-M6 file EvoMemBench 128K context-competition failure mode | handoff, intake_index.yaml
 - L220 | none | M | N | - | UTM-M7 make retrieval injection budget-conditional | navigation.py, src/retrieval/
 - L221 | none | M | N | - | UTM-M8 cap injection as fraction of remaining budget | navigation.py, src/retrieval/
 - L222 | cpu | M | Y | operator gate (MEASUREMENT human amendment) | UTM-M9 add no-memory control arm to every memory A/B | MEASUREMENT.md, eval-tower row config
