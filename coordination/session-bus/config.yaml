@@ -44,12 +44,21 @@ roster:
   # session in this slot drains it rather than needing it re-relayed.
   - {id: mainB,             role: main,              lanes: [gpu, none],      endpoint: "tmux:agent:mainB",      drain: boundary}   # was `claude-gpu-lane` until 2026-07-29
   # Added by coordinator-agent 2026-07-28 on operator direction. Fable 5 at xhigh effort,
-  # READ-ONLY auditor of the E8 harness contract set. Rationale: three consecutive failed-closed
-  # cycles each surfaced a DIFFERENT defect in a different layer (snapshot publisher binding,
-  # watcher abort path, runner sealed-question contract), so codex is discovering contract
-  # violations one run-cycle at a time. A fresh reviewer reading the whole harness at once can
-  # find the remainder statically. lanes: [none] — it must never take an inference lane or a
-  # region claim; codex owns E8 and the tail regeneration still to come.
+  # Originally spawned 2026-07-28 as a READ-ONLY auditor of the E8 harness contract set:
+  # three consecutive failed-closed cycles had each surfaced a DIFFERENT defect in a different
+  # layer (snapshot publisher binding, watcher abort path, runner sealed-question contract), so
+  # the inference main was discovering contract violations one run-cycle at a time, and a fresh
+  # reviewer reading the whole harness at once could find the remainder statically.
+  #
+  # NO LONGER READ-ONLY, corrected 2026-07-29. It adopted C-OWN — the session-bus delivery plane,
+  # including `tmux_adapter.py` and the whole C-series — which makes implementing fixes part of
+  # its job, not a deviation from it. It has since landed C29/C30b/C31/C33/C34. The stale
+  # "READ-ONLY" wording was found by a charter audit and is corrected here rather than left to
+  # contradict MAIN-GOALS.md. Its second standing duty is auditing other mains' completed work,
+  # which is the counterweight that makes "prefer finishing whole items over polishing" safe.
+  #
+  # lanes: [none] STILL HOLDS and is unchanged: it must never take an inference lane or a region
+  # claim. Owning the delivery plane is not a licence to contend for the host.
   - {id: auditor,           role: reviewer,          lanes: [none],           endpoint: "tmux:agent:auditor",    drain: boundary}
   # Added by coordinator-agent 2026-07-29 on operator direction: 293 tasks closed in the last 7
   # days against a target of 1000+, and the binding constraint is idle mains, not throughput per
