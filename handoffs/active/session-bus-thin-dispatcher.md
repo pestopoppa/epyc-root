@@ -739,8 +739,30 @@ freezes/cutovers, host reboots).
   - [ ] **M5c — standing instructions do not reach running sessions.** A CLAUDE.md rule added at
     21:43Z left an active agent on its 19:45Z heartbeat. Recorded in `BUS_PROTOCOL.md`; the open
     task is for coordinator-agent to nudge running mains to *re-read* on every such change.
-  - [ ] **C9 — `cmd_spawn` caps a daily action count, not live concurrency.** *Observed
-    2026-07-28.* `caps.max_spawns_per_day` is enforced by counting `kind == "spawn"` rows in
+  - [x] **C9 — `cmd_spawn` caps a daily action count, not live concurrency.** ✅ 2026-07-28 —
+    `cmd_spawn` now counts LIVE roster-member windows in `tmux.live_session`; closing an idle main
+    returns its slot immediately. `live_mains()` maps each roster row to the window that can carry
+    it — its id, or the window component of a tmux endpoint where they differ (`codex` lives in
+    `codex-inference`) — and intersects that with `tmux list-windows`; a window-INDEX endpoint
+    (`tmux:agent:3`) contributes no name, an undercount in the refusing direction. **Fail-closed:**
+    tmux unreachable, the live session absent, or a roster with no ids all return `None`, never an
+    empty set — "I could not count" is not "nothing is running", which is the exact shape of C3,
+    C6 and C8. Spawning a main that is already live is also refused (one identity, one window).
+    **Key decision, stated:** `caps.max_spawns_per_day` is **refused, not read as a fallback** —
+    its `6` authorised six spawn ACTIONS in a day, and re-reading that as six SIMULTANEOUS mains
+    would grant concurrency nobody approved, i.e. a fail-open. The old key alone now exits
+    `EX_MISCONFIG` with the one-line config edit spelled out. `caps.max_concurrent_mains: 4` set
+    by operator decision 2026-07-28 (one slot above the then-steady state of 3 live mains).
+    The daily ledger count survives in `probe` as `spawns_today_history_only` and gates nothing.
+    Tests: 10 new cases in `tests/test_tmux_adapter.py` (40 passed) including an end-to-end
+    disposable-session proof that closing a window returns the slot, plus 4 new cases in the
+    standalone `scripts/coordination/tests/test_tmux_adapter.py` (37/37).
+    *Found while doing it:* that standalone suite had been **red at HEAD** since the C6 change —
+    it is not pytest-collected, so nobody re-ran it — and for the same reason the C6 review
+    flagged: its nudge fixture cleared the screen on submit, deleting the transcript echo the
+    post-Enter check must observe. Same fixture bug, second file. Fixed; see the C6 entry's
+    testing rule. **Anyone touching this module: run BOTH suites.**
+    <details><summary>Original filing (2026-07-28)</summary> `caps.max_spawns_per_day` is enforced by counting `kind == "spawn"` rows in
     `coordination/session-bus/adapter-ledger.jsonl` whose `ts` starts with today's date — a rate
     limit on the spawn action, not a bound on simultaneously-live mains. Killing or closing a main
     never returns its slot. Observed with three spawn rows for the day (`codex-bus-tests`
@@ -768,6 +790,7 @@ freezes/cutovers, host reboots).
     *Context, not part of the fix:* the operator raised the cap 3 → 6 in
     `coordination/session-bus/config.yaml` on 2026-07-28 as interim headroom. That bump is not the
     fix and does not close this item.
+    </details>
   Original list: Claude Stop/SessionStart drain hook
   (clone `*_context.sh`) · send-keys adapter behind `OP-SENDKEYS-CODEX` (OFF; rate-limited;
   idle-pane check) · hybrid triage (dead-agent drafts + routing annotations; budget-capped;

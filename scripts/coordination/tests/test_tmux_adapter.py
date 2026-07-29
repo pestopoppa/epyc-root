@@ -51,8 +51,10 @@ def load(bus_root: Path):
 
 def write_config(bus_root: Path, roster: list[dict], *, sendkeys="on", spawn_cap=3,
                  live_session: str | None = None) -> dict:
+    # C9 (2026-07-28): the cap is CONCURRENCY — live roster-member windows — not
+    # spawn actions per day. `max_spawns_per_day` is refused, not reinterpreted.
     cfg = {"roster": roster, "flags": {"codex_sendkeys": sendkeys},
-           "caps": {"max_spawns_per_day": spawn_cap},
+           "caps": {"max_concurrent_mains": spawn_cap},
            "tmux": {"live_session": live_session or SESSION,
                     "allow_session_creation": False}}
     import yaml
@@ -148,9 +150,14 @@ def test_live() -> None:
         bus = Path(d)
         m = load(bus)
         try:
+            # The echoed input line must SURVIVE submission: post-Enter verification
+            # requires the transcript echo as positive evidence (C6, 2026-07-28), and
+            # a fixture that clears the screen on submit deletes the very signal under
+            # test — it would pass an adapter that cannot tell a submission from a
+            # swallowed Enter. This fixture did exactly that until 2026-07-28.
             tmux("new-session", "-d", "-s", SESSION, "-n", "quiet",
                  "sh", "-c", "printf '\\033[999;1H'; IFS= read -r line; "
-                 "printf '\\033[2J\\033[HSUBMITTED\\n'; sleep 300")
+                 "printf 'SUBMITTED\\n'; sleep 300")
             # `sh -c` as SEPARATE args, not one string. The default shell here is
             # fish, which rejects bash loop syntax — passing the loop as a single
             # arg created the window and fish killed it instantly, so this case
@@ -228,7 +235,11 @@ def test_live() -> None:
             check(not p["nudge_ok"], "a dead or vanished pane is never nudge_ok")
 
             # ---- spawn ----
-            write_config(bus, [{"id": "quiet", "endpoint": f"tmux:{SESSION}"}], spawn_cap=1)
+            # spawn_cap is headroom here so the refusal below is attributable to the
+            # missing roster row and not to the C9 concurrency cap, which is checked
+            # first: `quiet` is a live window, so cap=1 would have refused anyway and
+            # the case would have passed for the wrong reason.
+            write_config(bus, [{"id": "quiet", "endpoint": f"tmux:{SESSION}"}], spawn_cap=9)
 
             class S:
                 agent = "nope"; command = "true"; dry_run = True
@@ -255,7 +266,35 @@ def test_live() -> None:
             check("spawned" in out.split(), "the pane exists after its files (order matters)")
 
             rc = m.cmd_spawn(S())
-            check(rc == 2, "spawn refuses once the daily cap is reached")
+            check(rc == 2, "spawn refuses to duplicate a main that is already live (C9)")
+
+            # C9: the cap counts LIVE mains, so closing one returns its slot at once.
+            # Under the old daily-action cap this stayed refused for the rest of the day.
+            tmux("kill-window", "-t", f"{SESSION}:spawned")
+            time.sleep(0.5)
+            for rel in ("inbox/spawned.jsonl", "outbox/spawned.jsonl",
+                        "heartbeats/spawned.json", "cursors/spawned.json"):
+                (bus / rel).unlink(missing_ok=True)
+            rc = m.cmd_spawn(S())
+            check(rc == 0, f"closing a main returns its slot immediately (rc={rc})")
+            tmux("kill-window", "-t", f"{SESSION}:spawned")
+
+            # C9 fail-closed: an uncountable live set must refuse, never assume zero.
+            write_config(bus, [{"id": "spawned", "endpoint": f"tmux:{SESSION}"}],
+                         spawn_cap=9, live_session="definitely-not-a-live-session")
+            rc = m.cmd_spawn(S())
+            check(rc == 2, "an unreachable live session refuses rather than counting zero (C9)")
+
+            # C9: the superseded daily key is refused, not silently reinterpreted.
+            import yaml as _yaml
+            legacy = {"roster": [{"id": "spawned", "endpoint": f"tmux:{SESSION}"}],
+                      "flags": {"codex_sendkeys": "on"},
+                      "caps": {"max_spawns_per_day": 6},
+                      "tmux": {"live_session": SESSION, "allow_session_creation": False}}
+            (bus / "config.yaml").write_text(_yaml.safe_dump(legacy), encoding="utf-8")
+            rc = m.cmd_spawn(S())
+            check(rc == 3, f"caps.max_spawns_per_day alone is a misconfiguration, not a cap "
+                           f"(rc={rc})")
 
             # ---- operator requirement: one live session, windows only ----
             print("\n  -- live-session enforcement --")
@@ -283,7 +322,7 @@ def test_live() -> None:
                 agent = "ghostsess"; command = "true"; dry_run = True
             rc = m.cmd_spawn(S4())
             check(rc == 2, "spawn refuses a live_session that does not exist rather than "
-                           "creating one")
+                           "creating one (now caught at the C9 live-count stage, fail-closed)")
 
             write_config(bus, [{"id": "win-ok", "endpoint": f"tmux:{SESSION}"}],
                          spawn_cap=3, live_session=SESSION)

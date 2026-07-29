@@ -3,7 +3,7 @@
 
 Owning handoff: handoffs/active/session-bus-thin-dispatcher.md (M5)
 Gate:           OP-SENDKEYS-CODEX — granted by the operator 2026-07-27
-Caps:           flags.codex_sendkeys, caps.max_spawns_per_day (operator set 3)
+Caps:           flags.codex_sendkeys, caps.max_concurrent_mains (live windows, C9)
 
 DELIBERATELY TINY, per the handoff. Two verbs that touch tmux, one that only
 looks. Everything else about coordination lives on the bus.
@@ -114,6 +114,12 @@ _INLINE_PICKER_TRIGGER = "@"
 # How far back from the cursor a paste banner can sit on the composer line.
 _BLOB_LOOKBACK_CHARS = 200
 _FRAGMENT_CHARS = 60
+
+# C9, 2026-07-28. The spawn cap bounds SIMULTANEOUS mains, not spawn actions per
+# day; see live_mains(). The old key is refused rather than reinterpreted — see
+# resolve_spawn_cap().
+CAP_KEY = "max_concurrent_mains"
+LEGACY_CAP_KEY = "max_spawns_per_day"
 
 
 def _now() -> str:
@@ -361,6 +367,90 @@ def ledger_rows() -> list[dict]:
     return out
 
 
+def roster_window_names(config: dict) -> dict[str, str]:
+    """window name -> roster id, for every roster row that can own a window.
+
+    Two names can denote the same main and both must count, because both occur in
+    the live config: a window named after the roster id (`coordinator-agent`), and
+    the window component of a tmux endpoint where it differs from the id (roster
+    id `codex` lives in window `codex-inference`, renamed by the operator to
+    disambiguate it from `codex-bus-tests`).
+
+    An endpoint that names a window INDEX (`tmux:agent:3`) contributes nothing
+    here — an index is not a name — so such a main is only counted when its window
+    is also named after its id. That is a deliberate undercount in the direction
+    that refuses spawns, never one that invents capacity.
+    """
+    names: dict[str, str] = {}
+    for entry in config.get("roster") or []:
+        if not isinstance(entry, dict):
+            continue
+        rid = str(entry.get("id") or "").strip()
+        if not rid:
+            continue
+        names.setdefault(rid, rid)
+        ep = str(entry.get("endpoint") or "")
+        if ep.startswith("tmux:"):
+            parts = ep.split(":")
+            if len(parts) >= 3 and parts[2] and not parts[2].isdigit():
+                names[parts[2]] = rid
+    return names
+
+
+def live_mains(config: dict) -> tuple[set[str] | None, str]:
+    """Roster ids whose window is live in ``tmux.live_session``. None => unknown.
+
+    C9 (2026-07-28). The cap this feeds used to be enforced by counting `spawn`
+    rows in the ledger for the current date, which is a rate limit on an ACTION,
+    not a bound on live mains: killing or closing a main never returned its slot,
+    so three spawn rows blocked further spawns while only two mains were alive.
+    What actually costs something is simultaneity — compute, context, coordinator
+    attention — so the count is taken from the live window list, and closing an
+    idle session gives the slot straight back (which the session-lifecycle rule in
+    OPERATING_CONSTRAINTS.md tells sessions to do).
+
+    NONE MEANS UNKNOWN AND CALLERS MUST REFUSE. tmux unreachable, the live session
+    absent, or a roster with no ids all yield None rather than an empty set. An
+    empty set is a positive statement ("no mains are live, all slots free") and
+    inferring it from a failed query is precisely the fail-open shape of C3, C6
+    and C8 in this same module.
+    """
+    expected = roster_window_names(config)
+    if not expected:
+        return None, "config.yaml roster has no ids — cannot tell a main's window from any other"
+    live = str((config.get("tmux") or {}).get("live_session") or "agent")
+    rc, out = _tmux("list-windows", "-t", live, "-F", "#{window_name}")
+    if rc != 0:
+        return None, (f"cannot list windows of the live session {live!r}: {out}. Refusing rather "
+                      f"than assuming no mains are running.")
+    present = {line.strip() for line in out.splitlines() if line.strip()}
+    ids = {rid for name, rid in expected.items() if name in present}
+    return ids, f"{len(ids)} roster main(s) live in session {live!r}"
+
+
+def resolve_spawn_cap(caps: dict) -> tuple[int | None, str]:
+    """(cap, reason). None => refuse; the cap is unresolvable, not zero.
+
+    ``max_spawns_per_day`` is NOT read as a fallback, deliberately. It is not a
+    renamed key, it is a different measurement: the operator's `6` authorised six
+    spawn ACTIONS in a day, and silently re-reading it as six SIMULTANEOUS mains
+    would grant concurrency nobody approved — a fail-open, in the one module whose
+    entire defect history is fail-opens. So the old key alone refuses, with the
+    one-line config edit it needs spelled out.
+    """
+    if CAP_KEY in caps:
+        try:
+            return int(caps[CAP_KEY]), f"caps.{CAP_KEY}"
+        except (TypeError, ValueError):
+            return None, f"caps.{CAP_KEY} is {caps[CAP_KEY]!r}, which is not a number"
+    if LEGACY_CAP_KEY in caps:
+        return None, (f"caps.{CAP_KEY} is not set and caps.{LEGACY_CAP_KEY} is NOT read as a "
+                      f"fallback: it counted spawn actions per day, not simultaneous mains, so "
+                      f"its value authorises a different thing. Set caps.{CAP_KEY} explicitly "
+                      f"(operator decision) and delete the old key.")
+    return None, f"caps.{CAP_KEY} is not set"
+
+
 def record(kind: str, agent: str, detail: str) -> None:
     LEDGER.parent.mkdir(parents=True, exist_ok=True)
     with LEDGER.open("a", encoding="utf-8") as fh:
@@ -372,7 +462,8 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float) -> dict:
     """Every guard signal, with an explicit blocker list. Pure — acts on nothing."""
     flags, caps = config.get("flags") or {}, config.get("caps") or {}
     authorised = str(flags.get("codex_sendkeys")).strip().lower() in {"1", "true", "yes", "on"}
-    spawn_cap = int(caps.get("max_spawns_per_day") or 0)
+    spawn_cap, cap_reason = resolve_spawn_cap(caps)
+    live_ids, live_reason = live_mains(config)
 
     target, why = resolve_target(config, agent)
     hb, hb_age = heartbeat(agent)
@@ -393,6 +484,8 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float) -> dict:
 
     today = datetime.now(timezone.utc).date().isoformat()
     rows = ledger_rows()
+    # HISTORY, NOT A GATE (C9). Kept because "how much spawning happened today" is
+    # useful context; it enforces nothing. The gate is the live count above.
     spawns_today = sum(1 for r in rows if r.get("kind") == "spawn" and r.get("ts", "").startswith(today))
     last_nudge = max((r["ts"] for r in rows if r.get("kind") == "nudge" and r.get("agent") == agent),
                      default=None)
@@ -447,7 +540,11 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float) -> dict:
             blockers.append(f"heartbeat is {hb_age:.0f}s stale (> {hb_max_age:.0f}s)")
 
     return {"agent": agent, "target": target, "target_reason": why,
-            "authorised": authorised, "spawn_cap": spawn_cap, "spawns_today": spawns_today,
+            "authorised": authorised, "spawn_cap": spawn_cap, "spawn_cap_reason": cap_reason,
+            "spawn_cap_key": CAP_KEY,
+            "live_mains": sorted(live_ids) if live_ids is not None else None,
+            "live_mains_count": len(live_ids) if live_ids is not None else None,
+            "live_mains_reason": live_reason, "spawns_today_history_only": spawns_today,
             "pane_dead": dead, "window_quiet_for_s": quiet_for,
             "session_attached": attached, "quiet_check": quiet_check,
             "heartbeat_state": (hb or {}).get("state"), "heartbeat_age_s": hb_age,
@@ -472,7 +569,12 @@ def cmd_probe(args: argparse.Namespace) -> int:
     print(f"quiet-check      {p['quiet_check']}")
     print(f"heartbeat        {p['heartbeat_state']} (age {age:.0f}s)" if age is not None
           else "heartbeat        (none)")
-    print(f"spawns today     {p['spawns_today']}/{p['spawn_cap']}")
+    live_n = p["live_mains_count"]
+    cap = p["spawn_cap"]
+    print(f"live mains       {live_n if live_n is not None else '(unreadable — spawn refuses)'}"
+          f"/{cap if cap is not None else '(unset — spawn refuses)'}"
+          f"  [{p['spawn_cap_key']}]  {', '.join(p['live_mains'] or []) or '-'}")
+    print(f"spawns today     {p['spawns_today_history_only']} (history only, enforces nothing)")
     sn = p["seconds_since_last_nudge"]
     print(f"last nudge       {sn:.0f}s ago" if sn is not None else "last nudge       (never)")
     print(f"submission check {p['submission_verification']}")
@@ -595,19 +697,38 @@ def cmd_spawn(args: argparse.Namespace) -> int:
     exist yet comes up with nowhere to write, and its first drain fails. The roster
     row must already exist: deciding that a new main SHOULD exist is judgment, and
     judgment belongs to coordinator-agent, not here.
+
+    The cap is CONCURRENCY (C9): live roster-member windows, not spawn actions per
+    day. Closing an idle main returns its slot immediately. Every branch below that
+    cannot establish the live count refuses.
     """
     config = load_config()
     caps = config.get("caps") or {}
-    cap = int(caps.get("max_spawns_per_day") or 0)
-    today = datetime.now(timezone.utc).date().isoformat()
-    used = sum(1 for r in ledger_rows()
-               if r.get("kind") == "spawn" and r.get("ts", "").startswith(today))
+    cap, cap_reason = resolve_spawn_cap(caps)
+    if cap is None:
+        print(f"REFUSING: {cap_reason}", file=sys.stderr)
+        return EX_MISCONFIG
     if cap <= 0:
-        print(f"REFUSING: caps.max_spawns_per_day is {cap}", file=sys.stderr)
+        print(f"REFUSING: {cap_reason} is {cap}", file=sys.stderr)
         return EX_BLOCKED
-    if used >= cap:
-        print(f"REFUSING: {used}/{cap} spawns already used today", file=sys.stderr)
+
+    ids, live_reason = live_mains(config)
+    if ids is None:
+        # FAIL CLOSED. "I could not count" is not "nothing is running".
+        print(f"REFUSING: cannot determine how many mains are live, so the concurrency cap "
+              f"cannot be enforced: {live_reason}", file=sys.stderr)
         return EX_BLOCKED
+    if args.agent in ids:
+        print(f"REFUSING: {args.agent!r} is already live in the session. Spawning it again would "
+              f"create a second window with the same name for one roster identity.",
+              file=sys.stderr)
+        return EX_BLOCKED
+    if len(ids) >= cap:
+        print(f"REFUSING: {len(ids)}/{cap} mains already live ({', '.join(sorted(ids))}). "
+              f"This is a concurrency cap — close an idle main and the slot returns "
+              f"immediately.", file=sys.stderr)
+        return EX_BLOCKED
+    used = len(ids)
 
     target, why = resolve_target(config, args.agent)
     entry = roster_entry(config, args.agent)
@@ -679,7 +800,7 @@ def cmd_spawn(args: argparse.Namespace) -> int:
         print(f"new-window failed: {out}", file=sys.stderr)
         return EX_MISCONFIG
     record("spawn", args.agent, f"window {session}:{args.agent} cmd={launch}")
-    print(f"spawned {args.agent} as window {session}:{args.agent} ({used + 1}/{cap} today)")
+    print(f"spawned {args.agent} as window {session}:{args.agent} ({used + 1}/{cap} mains live)")
     return 0
 
 

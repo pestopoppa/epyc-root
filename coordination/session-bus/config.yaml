@@ -66,15 +66,22 @@ flags:
 
 caps:
   max_headless_workers: 0
-  # Raised 3 -> 6 by operator direction 2026-07-28. NOTE THE SEMANTICS: cmd_spawn counts
-  # spawn EVENTS in adapter-ledger.jsonl for today, not live windows — so killing a main does
-  # NOT return its slot. On 2026-07-28 three spawns were used while only two mains were alive,
-  # blocking further spawns. The operator's expectation (and the better design) is a CONCURRENCY
-  # cap on simultaneous live mains, which is what actually costs compute, context and attention.
-  # A daily action cap instead penalises churn and perversely discourages closing an idle
-  # session — cutting against the lifecycle rule that says "nothing assignable -> close it".
-  # Filed as a task; this bump is headroom in the meantime, not the fix.
-  max_spawns_per_day: 6
+  # C9 FIXED 2026-07-28. `cmd_spawn` now counts LIVE roster-member windows in
+  # tmux.live_session, so closing an idle main returns its slot immediately —
+  # which is what the session-lifecycle rule asks sessions to do. The superseded
+  # `max_spawns_per_day` counted spawn EVENTS per day: killing a main never
+  # returned its slot, and on 2026-07-28 three spawn rows blocked further spawns
+  # while only two mains were alive.
+  #
+  # The old key is REFUSED, not read as a fallback: its 6 authorised six spawn
+  # ACTIONS in a day, and re-reading that as six SIMULTANEOUS mains would grant
+  # concurrency nobody approved — a fail-open, in the module whose defect history
+  # (C3, C6, C8) is entirely fail-opens. Setting this key is the migration.
+  #
+  # 4 = one free slot above the steady state of 3 live mains (codex,
+  # coordinator-agent, claude-gpu-lane). Operator decision, 2026-07-28.
+  # An uncountable live set (tmux unreachable, session absent) REFUSES.
+  max_concurrent_mains: 4
   triage_calls_per_day: 0
 
 leases:

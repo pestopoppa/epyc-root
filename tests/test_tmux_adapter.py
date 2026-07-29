@@ -410,7 +410,7 @@ def test_c6_nudge_submits_in_throwaway_session(tmp_path: Path) -> None:
     adapter.LEDGER = bus_root / "adapter-ledger.jsonl"
     (bus_root / "config.yaml").write_text(json.dumps({
         "roster": [{"id": "shell", "endpoint": f"tmux:{session}:shell"}],
-        "flags": {"codex_sendkeys": "on"}, "caps": {"max_spawns_per_day": 0},
+        "flags": {"codex_sendkeys": "on"}, "caps": {"max_concurrent_mains": 0},
         "tmux": {"live_session": session, "allow_session_creation": False},
     }), encoding="utf-8")
     (bus_root / "heartbeats" / "shell.json").write_text(json.dumps({
@@ -458,7 +458,7 @@ def test_c6_refuses_when_the_pane_never_accepts_the_text(tmp_path: Path) -> None
     adapter.LEDGER = bus_root / "adapter-ledger.jsonl"
     (bus_root / "config.yaml").write_text(json.dumps({
         "roster": [{"id": "shell", "endpoint": f"tmux:{session}:shell"}],
-        "flags": {"codex_sendkeys": "on"}, "caps": {"max_spawns_per_day": 0},
+        "flags": {"codex_sendkeys": "on"}, "caps": {"max_concurrent_mains": 0},
         "tmux": {"live_session": session, "allow_session_creation": False},
     }), encoding="utf-8")
     (bus_root / "heartbeats" / "shell.json").write_text(json.dumps({
@@ -476,6 +476,235 @@ def test_c6_refuses_when_the_pane_never_accepts_the_text(tmp_path: Path) -> None
 
         assert adapter.cmd_nudge(Args()) == adapter.EX_MISCONFIG
         assert not adapter.LEDGER.exists()
+    finally:
+        _tmux("kill-session", "-t", session)
+        assert _tmux("has-session", "-t", session).returncode != 0
+
+
+# --------------------------------------------------------------------------
+# C9 — the spawn cap bounds SIMULTANEOUS mains, not spawn actions per day.
+#
+# The defect: `caps.max_spawns_per_day` counted `spawn` rows in the ledger for
+# today, so killing a main never returned its slot. Observed 2026-07-28 with
+# three spawn rows and only two mains alive — further spawns refused at 3/3 with
+# real capacity to spare, which also penalises the lifecycle rule that says an
+# idle session should be closed.
+#
+# The one thing these must never do is fail OPEN: C3, C6 and C8 in this same
+# module were all fail-open defects, so an uncountable live set refuses.
+# --------------------------------------------------------------------------
+
+C9_CONFIG = {
+    "roster": [
+        # Roster id and window name differ — the live config's `codex` lives in
+        # window `codex-inference`. Counting window names against roster ids
+        # naively would miss it and invent a free slot.
+        {"id": "codex", "endpoint": "tmux:agent:codex-inference"},
+        {"id": "coordinator-agent", "endpoint": "monitor:file"},
+        {"id": "claude-gpu-lane", "endpoint": "tmux:agent"},
+        {"id": "retired-main", "endpoint": "monitor:file"},
+    ],
+    "tmux": {"live_session": "agent", "allow_session_creation": False},
+    "caps": {"max_concurrent_mains": 6},
+}
+
+# htop/btop/fish are windows in the same session and are NOT mains.
+C9_WINDOWS = "codex-inference\nhtop\nbtop\nfish\ncoordinator-agent\nclaude-gpu-lane"
+
+
+def _c9_adapter(tag: str, monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+                windows: str | None = C9_WINDOWS, config: dict | None = None):
+    """An adapter whose tmux answers list-windows from a string. None => failure."""
+    adapter = _load("c9_" + tag)
+    adapter.LEDGER = tmp_path / "adapter-ledger.jsonl"
+    monkeypatch.setattr(adapter, "load_config", lambda: config or C9_CONFIG)
+
+    def fake_tmux(*args: str) -> tuple[int, str]:
+        if args[0] == "list-windows":
+            if windows is None:
+                return 1, "can't find session: agent"
+            return 0, windows
+        if args[0] == "has-session":
+            return 0, ""
+        return 0, ""
+
+    monkeypatch.setattr(adapter, "_tmux", fake_tmux)
+    return adapter
+
+
+class _SpawnArgs:
+    agent = "new-main"
+    command = "true"
+    dry_run = True
+
+
+def test_live_mains_counts_roster_windows_including_renamed_ones(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    adapter = _c9_adapter("count", monkeypatch, tmp_path)
+    ids, why = adapter.live_mains(C9_CONFIG)
+    assert ids == {"codex", "coordinator-agent", "claude-gpu-lane"}
+    assert "3 roster main(s) live" in why
+    # Neither a tool window nor a roster row with no window is a live main.
+    assert "htop" not in ids and "retired-main" not in ids
+
+
+def test_a_window_index_endpoint_is_not_read_as_a_window_name(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """`tmux:agent:3` names an index. Counting a window literally named "3" would
+    be wrong; the row still counts if a window carries its id."""
+    config = {"roster": [{"id": "indexed", "endpoint": "tmux:agent:3"}],
+              "tmux": {"live_session": "agent"}, "caps": {"max_concurrent_mains": 2}}
+    adapter = _c9_adapter("index", monkeypatch, tmp_path, windows="3\nindexed", config=config)
+    assert adapter.roster_window_names(config) == {"indexed": "indexed"}
+    assert adapter.live_mains(config)[0] == {"indexed"}
+
+
+def test_killing_a_main_returns_its_slot_even_with_spawns_in_the_ledger(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """THE C9 defect. Three spawn rows today, two mains alive, cap 3 => allowed."""
+    config = dict(C9_CONFIG, caps={"max_concurrent_mains": 3})
+    adapter = _c9_adapter("slotback", monkeypatch, tmp_path,
+                          windows="codex-inference\nclaude-gpu-lane", config=config)
+    today = datetime.now(timezone.utc).date().isoformat()
+    adapter.LEDGER.write_text("".join(
+        json.dumps({"ts": f"{today}T0{i}:00:00+00:00", "kind": "spawn",
+                    "agent": a, "detail": "d"}) + "\n"
+        for i, a in enumerate(("codex-bus-tests", "claude-gpu-lane", "fable-auditor"))),
+        encoding="utf-8")
+    config["roster"].append({"id": "new-main", "endpoint": "tmux:agent"})
+    try:
+        assert adapter.cmd_spawn(_SpawnArgs()) == 0        # would have been 2 before C9
+        assert "would create window agent:new-main" in capsys.readouterr().out
+    finally:
+        config["roster"].pop()
+
+
+def test_spawn_refuses_at_the_concurrency_cap(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+        capsys: pytest.CaptureFixture[str]) -> None:
+    config = dict(C9_CONFIG, caps={"max_concurrent_mains": 3},
+                  roster=C9_CONFIG["roster"] + [{"id": "new-main", "endpoint": "tmux:agent"}])
+    adapter = _c9_adapter("atcap", monkeypatch, tmp_path, config=config)
+    assert adapter.cmd_spawn(_SpawnArgs()) == adapter.EX_BLOCKED
+    err = capsys.readouterr().err
+    assert "3/3 mains already live" in err
+    assert "close an idle main and the slot returns" in err
+
+
+def test_spawn_refuses_to_duplicate_a_main_that_is_already_live(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+        capsys: pytest.CaptureFixture[str]) -> None:
+    adapter = _c9_adapter("dup", monkeypatch, tmp_path)
+
+    class Args(_SpawnArgs):
+        agent = "claude-gpu-lane"
+    assert adapter.cmd_spawn(Args()) == adapter.EX_BLOCKED
+    assert "already live" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize(("windows", "expect_in_err"), [
+    (None, "cannot determine how many mains are live"),        # tmux/session gone
+])
+def test_an_uncountable_live_set_fails_closed(
+        windows: str | None, expect_in_err: str, monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """tmux unreachable or the session absent must REFUSE, never assume zero.
+
+    "I could not count" is not "nothing is running". C3, C6 and C8 in this module
+    were all fail-open defects; this is the branch that would have been a fourth.
+    """
+    adapter = _c9_adapter("failclosed", monkeypatch, tmp_path, windows=windows)
+    assert adapter.live_mains(C9_CONFIG)[0] is None
+    assert adapter.cmd_spawn(_SpawnArgs()) == adapter.EX_BLOCKED
+    assert expect_in_err in capsys.readouterr().err
+
+
+def test_an_empty_roster_is_uncountable_rather_than_zero(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    config = {"roster": [], "tmux": {"live_session": "agent"},
+              "caps": {"max_concurrent_mains": 3}}
+    adapter = _c9_adapter("noroster", monkeypatch, tmp_path, config=config)
+    ids, why = adapter.live_mains(config)
+    assert ids is None and "no ids" in why
+
+
+def test_the_legacy_daily_key_is_refused_not_reinterpreted(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """DECIDED: the old key fails closed for one release, it is not read.
+
+    `max_spawns_per_day: 6` authorised six spawn ACTIONS in a day. Reading that
+    same 6 as six SIMULTANEOUS mains would grant concurrency the operator never
+    approved — more permissive than the old behaviour, i.e. a fail-open, which is
+    the one thing this module may not add. The fix is a one-line config edit.
+    """
+    config = dict(C9_CONFIG, caps={"max_spawns_per_day": 6})
+    adapter = _c9_adapter("legacy", monkeypatch, tmp_path, config=config)
+    cap, why = adapter.resolve_spawn_cap(config["caps"])
+    assert cap is None
+    assert "is NOT read as a fallback" in why
+    assert adapter.cmd_spawn(_SpawnArgs()) == adapter.EX_MISCONFIG
+    assert "max_concurrent_mains" in capsys.readouterr().err
+
+
+def test_an_absent_or_unparseable_cap_refuses(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    adapter = _load("c9_capmissing")
+    assert adapter.resolve_spawn_cap({})[0] is None
+    assert adapter.resolve_spawn_cap({"max_concurrent_mains": "lots"})[0] is None
+    assert adapter.resolve_spawn_cap({"max_concurrent_mains": 6})[0] == 6
+
+
+def test_probe_reports_live_mains_and_marks_the_daily_count_as_history(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    adapter = _c9_adapter("probe", monkeypatch, tmp_path)
+    adapter.BUS_ROOT = tmp_path
+    p = adapter.probe(C9_CONFIG, "codex", 0.0, 900.0)
+    assert p["live_mains_count"] == 3
+    assert p["spawn_cap_key"] == "max_concurrent_mains"
+    assert "spawns_today_history_only" in p and "spawns_today" not in p
+
+
+@pytest.mark.skipif(not shutil.which("tmux"), reason="tmux unavailable")
+def test_c9_closing_a_window_returns_the_slot_in_a_throwaway_session(tmp_path: Path) -> None:
+    """End-to-end proof against real tmux, in a disposable session.
+
+    Spawn to the cap, then CLOSE one main: the next spawn must succeed. Under the
+    ledger-counting cap it stayed refused for the rest of the day.
+    """
+    session = f"c9-cap-test-{os.getpid()}-{uuid.uuid4().hex[:8]}"
+    assert session != "agent"
+    adapter = _load(session.replace("-", "_"))
+    bus_root = tmp_path / "bus"
+    for directory in ("heartbeats", "outbox", "inbox", "cursors"):
+        (bus_root / directory).mkdir(parents=True, exist_ok=True)
+    adapter.BUS_ROOT = bus_root
+    adapter.LEDGER = bus_root / "adapter-ledger.jsonl"
+    (bus_root / "config.yaml").write_text(json.dumps({
+        "roster": [{"id": "main-a", "endpoint": f"tmux:{session}"},
+                   {"id": "main-b", "endpoint": f"tmux:{session}"}],
+        "flags": {"codex_sendkeys": "on"}, "caps": {"max_concurrent_mains": 1},
+        "tmux": {"live_session": session, "allow_session_creation": False},
+    }), encoding="utf-8")
+    try:
+        created = _tmux("new-session", "-d", "-s", session, "-n", "holder", "sleep 300")
+        assert created.returncode == 0, created.stderr
+
+        class A:
+            agent = "main-a"
+            command = "sleep 300"
+            dry_run = False
+        assert adapter.cmd_spawn(A()) == 0                       # 0/1 live -> allowed
+
+        class B(A):
+            agent = "main-b"
+        assert adapter.cmd_spawn(B()) == adapter.EX_BLOCKED      # 1/1 live -> refused
+
+        assert _tmux("kill-window", "-t", f"{session}:main-a").returncode == 0
+        assert adapter.cmd_spawn(B()) == 0                       # slot returned
+        names = _tmux("list-windows", "-t", session, "-F", "#{window_name}").stdout.split()
+        assert "main-b" in names and "main-a" not in names
     finally:
         _tmux("kill-session", "-t", session)
         assert _tmux("has-session", "-t", session).returncode != 0

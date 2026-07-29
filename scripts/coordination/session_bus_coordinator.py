@@ -1025,8 +1025,11 @@ def capability_status(config: dict) -> dict[str, dict]:
     return {
         "codex_sendkeys": {
             "authorised": state(flags.get("codex_sendkeys")),
-            "cap": int(caps.get("max_spawns_per_day") or 0),
-            "cap_name": "max_spawns_per_day",
+            # C9 (2026-07-28): concurrency, not a daily action count. The old
+            # max_spawns_per_day is NOT read as a fallback — it authorised a
+            # different measurement — so an unset cap reports 0 and spawn refuses.
+            "cap": int(caps.get("max_concurrent_mains") or 0),
+            "cap_name": "max_concurrent_mains",
             "implemented": True,       # scripts/coordination/tmux_adapter.py (M5, 2026-07-27)
             "gate": "OP-SENDKEYS-CODEX",
         },
