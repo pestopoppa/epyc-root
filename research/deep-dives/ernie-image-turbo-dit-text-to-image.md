@@ -103,7 +103,17 @@ X-Omni paper leaderboard:
 | HiDream-I1-Full | 0.284 |
 | Kolors | 0.294 |
 
-**Qualifier:** ERNIE-Turbo's 0.9655 is **self-reported on the model card**, not re-validated by the X-Omni team. Treat as Baidu-claimed-leadership pending independent re-run.
+**2026-07-29 harmonized comparison:** this is a legitimate *cross-model ordering* rather than an
+apples-to-oranges card comparison: Baidu's ERNIE card includes Z-Image on the same LongTextBench
+splits and reproduces Z-Image's per-split values exactly; the aggregate is the EN/ZH arithmetic
+mean in each source. The aligned order is **ERNIE-Image-Turbo 0.9655 (with PE) > ERNIE-Image
+0.9639 (without PE) > Z-Image-base 0.9355 > Z-Image-Turbo 0.9215**. Thus ERNIE leads Z-Image-Turbo
+by **0.044 (4.4 score points)** even without its prompt enhancer. This establishes comparative
+positioning only.
+
+**Qualifier:** ERNIE-Turbo's 0.9655 is still **vendor self-reported**, not independently re-validated
+by the X-Omni team. The harmonized ordering does not validate the absolute score; a local EN/ZH
+typography spot-check remains the relevant validation before treating the claim as deployment-grade.
 
 ### 3.3 Counter-intuitive prompt-enhancer effect
 
