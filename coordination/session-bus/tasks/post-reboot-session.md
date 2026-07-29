@@ -161,11 +161,14 @@ repair, and the ratification wrapper's own verdict is *FIX-FIRST — do not sign
 lane is **built, inert, not activated**; E5 W1-W4 are unrun, so every carried-forward number is
 observation-grade.
 
-- [ ] **Satisfy `requires_human_or_measured_review` on the four compiled pages.** The manifest's
-  `writer_evidence_policy` sets it `true`; these pages are model-compiled and have **not** had that
-  review, and no per-section review-flag banners were added (recent passes on the same pages did
-  not use them either, so this is a standing convention-vs-policy gap, not a new lapse). Either add
-  the banners or record an operator decision that convention suffices.
+**`requires_human_or_measured_review` — DECIDED, convention suffices (operator, 2026-07-29).**
+The manifest's `writer_evidence_policy` sets it `true`, and the four pages compiled on 2026-07-29
+are model-compiled without that review; no per-section review-flag banners were added, matching
+what recent passes on the same pages did. The operator was presented the choice — add the banners,
+or record that convention suffices — and chose **convention**. So this is settled, not pending: do
+not re-open it as a defect, do not retrofit banners to these pages, and do not treat the absent
+review as blocking any downstream use of them. If the policy field itself should change to match
+practice, that is a separate proposal against the manifest, not a fix to these four pages.
 
 ## 3. Artifact-update obligation when E5 W1-W4 land
 
