@@ -1,6 +1,6 @@
 {
   "agent": "auditor",
   "state": "working",
-  "task_id": "dedup-index-pointers",
-  "ts": "2026-07-29T17:56:46+00:00"
+  "task_id": "p2-5l-stack-numa-doc-debt",
+  "ts": "2026-07-29T18:01:43+00:00"
 }

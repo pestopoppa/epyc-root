@@ -143,7 +143,25 @@ config change with a rehearsed rollback, never a rebuild.
   on" — and the current placement has never been compared against the side that could be free.
   - [x] **P2-5j protocol design** ✅ 2026-07-29 — [four-arm, placement-aware execution protocol](../../docs/design/p2-5j-host-thread-placement-sweep-protocol.md) filed before any inference: historical `184-191` and `88-95`, plus device-local Q0B physical `40-47` and SMT `136-143`; fixed `np=8 × 8192` serving shape; P-GPU-1, `n=10`, randomized paired blocks, explicit falsification, and optional observation-only I-vs-Ls mini-probe. The protocol reuses canonical recipe imports without applying the all-host prefix that would erase the tested placement. **The sweep remains open and is gated on P2-2c plus Steps 0–7/operator inference authorization.**
 - [x] **P2-5k — GPU host-thread fabric gap recorded ✅ 2026-07-29**: epyc-root `724130a2` added the required gap paragraph at [`heterogeneous-slot-fabric-residency.md`](heterogeneous-slot-fabric-residency.md#gap-filed-2026-07-29-fable-auditor-via-claude-gpu-lane--gpu-host-threads-are-an-implicit-consumer-with-no-slot) (lines 114–135). The separate gated `gpu-host` implementation remains open there.
-- [ ] **P2-5l (NEW 2026-07-29; doc-debt, file owner) — `stack_numa.py` carries two stale comments that misstate the machine.** Line 26 claims **2 NUMA nodes**; `numactl -H` shows **4** (NPS4, one node per quarter). The `12.19 t/s` comment is likewise stale. Neither changes behaviour, but a misdocumented topology invariant is how the next placement defect gets built — the same failure this program has hit repeatedly. Owner is the orchestrator file owner, not this lane; filed rather than edited to avoid mixing a comment fix into an unmerged crash-window branch.
+- [x] **P2-5l (NEW 2026-07-29; doc-debt, file owner) — `stack_numa.py` carries two stale comments that misstate the machine.** Line 26 claims **2 NUMA nodes**; `numactl -H` shows **4** (NPS4, one node per quarter). The `12.19 t/s` comment is likewise stale. Neither changes behaviour, but a misdocumented topology invariant is how the next placement defect gets built — the same failure this program has hit repeatedly. Owner is the orchestrator file owner, not this lane; filed rather than edited to avoid mixing a comment fix into an unmerged crash-window branch.
+  **✅ 2026-07-29 — topology half DONE (`auditor`), orchestrator `ae40ee8b`; t/s half DECLINED, see below.**
+  Header corrected to 4 nodes (NPS4) / ~290 GB each / node 0 = cpus 0-23 + 96-119, re-derived from
+  `numactl -H` on this host. **The tell that made it worth fixing:** the block CONTRADICTED the
+  `NUMA_Q*` quarter definitions directly beneath it, which were and are correct — verified
+  mechanically, each of Q0A/Q0B/Q1A/Q1B expands to a cpu set that is a subset of exactly one real
+  node (0/1/2/3). The code always described the real machine; only its own header did not.
+  **The stated reason for filing rather than editing does NOT apply, verified:**
+  `tierc-10d-crash-window-durability` is still unmerged but touches 7 files, none of them
+  `stack_numa.py`, so a comment fix there cannot conflict with it. If the file owner disagrees this
+  is one revert.
+  - [ ] **DECLINED, back to the filer: the two `12.19 t/s` comments (≈:104, :237).** P2-5l calls them
+    "likewise stale". They are MEASUREMENT RECORDS, and `MEASUREMENT.md` says append rather than
+    edit; I cannot certify them stale without re-running the bench, which is not mine to run. Needs
+    someone with a measurement window, or an append-only correction note.
+  - [ ] **Residual noted, not acted on: the quarter NAMES still encode the old 2-node model.**
+    `NUMA_Q0A`/`Q0B` read as "halves of node 0" and `Q1A`/`Q1B` as "halves of node 1", but they map
+    to nodes 0/1 and 2/3. Renaming is a refactor with real blast radius across the launcher and
+    should go through a `gitnexus impact` pass first — filed rather than done.
 - [ ] **P2-5m (NEW 2026-07-29; free, do at next P-SHED-1 touch) — shape A1 reporting per-role so it doubles as carve-out cost evidence.** Arm A1 already measures exactly the residual contention any SMT carve-out would need priced (GPU host threads on SMT siblings of 88-95 vs Q1B tenants on the physical cores). Archiving A1 **per-role** rather than aggregate means the reservation decision reuses it **free** instead of commissioning a second campaign. Also, independent of everything above: **P-SHED-1 should pin every q3 co-tenant state PER ARM as a declared input** — hidden arm differences confound A1 whichever tenant they involve (this is the one residual from P2-5h that survives on independent grounds).
 
 ## Dependency graph
