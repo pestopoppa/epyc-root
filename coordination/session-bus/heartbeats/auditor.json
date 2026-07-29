@@ -1,6 +1,6 @@
 {
   "agent": "auditor",
   "state": "working",
-  "task_id": "stale-pin-sweep",
-  "ts": "2026-07-29T18:18:57+00:00"
+  "task_id": "backlog-next",
+  "ts": "2026-07-29T18:23:44+00:00"
 }
