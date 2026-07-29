@@ -166,6 +166,13 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
     safety-gated general-autonomy design, and the residual LM-repair lane is
     explicitly inference-gated. `backlog_live_uncertified = 931` for this
     dated read-through slice; `backlog_not_a_task = 36` is unchanged.
+  - **READ-CERTIFIED 2026-07-29 (mainB, 2 rows):**
+    `bep-dcp-falsification-harness.md` is actively dirty under another owner.
+    Its two remaining rows are a host-quiet deploy-attestation-plus-inference
+    gate and optional J8 provenance. Both are **inference-gated**, not current
+    E5-safe dispatch. `backlog_live_uncertified = 929` for this dated
+    read-through slice; `backlog_not_a_task = 36` is unchanged. No owner
+    handoff was edited.
   - **TRANCHE 1 READ-CERTIFIED 2026-07-29 (`auditor`) — 19 boxes, the single-open-box handoffs.**
     Read each box with its section, `Status:` header and following context. Result:
     | verdict | n | meaning |
