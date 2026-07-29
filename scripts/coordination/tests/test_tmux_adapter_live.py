@@ -454,6 +454,27 @@ def test_live() -> None:
             check(not (bus / "inbox/c25.jsonl").exists(),
                   "a refused spawn creates no bus files")
 
+            # C30(b) against REAL tmux, which is the only place this can be proven:
+            # `new-window` exits 0 and the window is reaped moments later. A spawned
+            # codex pane died exactly this way on a CLI update prompt and cmd_spawn
+            # reported success. `true` reproduces the reaping in ~0.3s (measured
+            # 2026-07-28), well inside SPAWN_SETTLE_S.
+            print("\n  -- C30(b) spawn survival --")
+            write_config(bus, [{"id": "c30", "endpoint": f"tmux:{SESSION}:c30-window"}],
+                         spawn_cap=9)
+
+            class S30:
+                agent = "c30"; command = "true"; dry_run = False
+            rc = m.cmd_spawn(S30())
+            check(rc == 2, f"a window whose command exits immediately is NOT a success (rc={rc})")
+            died = [r for r in ledger(m) if r["kind"] == "spawn-died"]
+            check(len(died) == 1, f"C30(b): the death is recorded ({len(died)})")
+            check(not [r for r in ledger(m) if r["kind"] == "spawn" and r["agent"] == "c30"],
+                  "C30(b): and NO spawn row claims a live window")
+            for rel in ("inbox/c30.jsonl", "outbox/c30.jsonl",
+                        "heartbeats/c30.json", "cursors/c30.json"):
+                (bus / rel).unlink(missing_ok=True)
+
             # C9 fail-closed: an uncountable live set must refuse, never assume zero.
             write_config(bus, [{"id": "spawned", "endpoint": f"tmux:{SESSION}"}],
                          spawn_cap=9, live_session="definitely-not-a-live-session")

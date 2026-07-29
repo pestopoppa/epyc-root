@@ -91,6 +91,11 @@ MAX_NUDGE_MESSAGE_CHARS = 4000
 NUDGE_CHUNK_CHARS = 400
 NUDGE_CHUNK_DELAY_S = 0.15
 DEFAULT_NUDGE_SETTLE_S = 0.25
+# C30(b): how long a freshly spawned window must SURVIVE before spawn reports success.
+# `new-window` exit 0 only means tmux accepted the request. A spawned codex pane died
+# instantly on an update prompt and spawn still reported success. Module-level so tests
+# can drive it to 0 — a suite that sleeps for real is a suite people stop running.
+SPAWN_SETTLE_S = 2.0
 # Bounded polls, so a slow redraw is a wait rather than a false refusal.
 _VERIFY_TIMEOUT_S = 2.0
 _VERIFY_POLL_S = 0.1
@@ -1065,6 +1070,28 @@ def cmd_spawn(args: argparse.Namespace) -> int:
     if rc != 0:
         print(f"new-window failed: {out}", file=sys.stderr)
         return EX_MISCONFIG
+    # C30(b) (2026-07-29): `new-window` exit 0 means TMUX ACCEPTED THE REQUEST, not that
+    # anything is running in the window. A spawned `codex` pane died instantly and
+    # silently because the CLI presented an update prompt on start; the window vanished,
+    # cmd_spawn still reported success, and only a manual `tmux list-windows` revealed
+    # it. Polarity: a false success is worse than a false failure HERE, because the four
+    # bus files are already written, so the identity now looks provisioned-and-live to
+    # everything downstream — including the C24 heartbeat reset and the concurrency cap.
+    # So the window is re-checked after it has had a moment to die.
+    time.sleep(SPAWN_SETTLE_S)
+    rc_v, live_now = _tmux("list-windows", "-t", session, "-F", "#{window_name}")
+    if rc_v == 0 and window not in live_now.split():
+        record("spawn-died", args.agent,
+               f"window {session}:{window} vanished within {SPAWN_SETTLE_S:.0f}s of creation",
+               command=launch)
+        print(f"REFUSING to report success: window {session}:{window} was created but is already "
+              f"GONE {SPAWN_SETTLE_S:.0f}s later — the command exited immediately. Run it by hand "
+              f"to see why (a CLI update prompt on start is the known cause). Command was: "
+              f"{launch}", file=sys.stderr)
+        print(f"NOTE: the four bus files for {args.agent!r} were already written and are LEFT IN "
+              f"PLACE — they are correct and a retry reuses them. Nothing is draining them.",
+              file=sys.stderr)
+        return EX_BLOCKED
     record("spawn", args.agent, f"window {session}:{window} cmd={launch}")
     # VERIFY THE TARGET, do not trust it. The whole point of C25 is that a spawn which
     # believes it succeeded while the endpoint resolves elsewhere is silently

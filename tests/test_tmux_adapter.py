@@ -520,13 +520,23 @@ def _c9_adapter(tag: str, monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
     """An adapter whose tmux answers list-windows from a string. None => failure."""
     adapter = _load("c9_" + tag)
     adapter.LEDGER = tmp_path / "adapter-ledger.jsonl"
+    # C30(b) added a post-spawn survival re-check. Unit tests must never sleep for it —
+    # a suite that waits 2s per spawn is a suite people stop running.
+    adapter.SPAWN_SETTLE_S = 0.0
     monkeypatch.setattr(adapter, "load_config", lambda: config or C9_CONFIG)
+    spawned: list[str] = []
 
     def fake_tmux(*args: str) -> tuple[int, str]:
         if args[0] == "list-windows":
             if windows is None:
                 return 1, "can't find session: agent"
-            return 0, windows
+            # C30(b): a window this fake CREATED must then be visible, or every spawn
+            # test reads as "the window died instantly" and passes for the wrong reason.
+            extra = "".join(f"\n9\t{n}" for n in spawned)
+            return 0, windows + extra
+        if args[0] == "new-window":
+            spawned.append(args[args.index("-n") + 1])
+            return 0, ""
         if args[0] == "has-session":
             return 0, ""
         return 0, ""
@@ -1115,3 +1125,111 @@ def test_c31_an_unparseable_nudge_ts_does_not_wedge_nudging(
         {"ts": "not-a-timestamp", "kind": "nudge", "agent": "new-main", "detail": "corrupt"},
     ])
     assert p["seconds_since_last_nudge"] is None
+
+
+# ---------------------------------------------------------------- C30(b) spawn survival
+
+
+def _c30_adapter(tag: str, monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+                 windows_after: str):
+    """Adapter whose `list-windows` answers differently AFTER new-window is called."""
+    adapter = _load("c30_" + tag)
+    adapter.LEDGER = tmp_path / f"ledger_{tag}.jsonl"
+    adapter.BUS_ROOT = tmp_path / f"bus_{tag}"
+    (adapter.BUS_ROOT / "heartbeats").mkdir(parents=True)
+    adapter.SPAWN_SETTLE_S = 0.0                      # never sleep in a unit test
+    monkeypatch.setattr(adapter, "load_config", lambda: _C24_SPAWN_CONFIG)
+    state = {"spawned": False}
+
+    def fake_tmux(*args: str) -> tuple[int, str]:
+        if args[0] == "list-windows":
+            return 0, (windows_after if state["spawned"] else "0\tsomething-else")
+        if args[0] == "new-window":
+            state["spawned"] = True
+            return 0, ""
+        if args[0] == "has-session":
+            return 0, ""
+        if args[0] == "display-message":
+            return 0, "0\tnew-main"
+        return 0, ""
+
+    monkeypatch.setattr(adapter, "_tmux", fake_tmux)
+    return adapter
+
+
+def test_c30b_spawn_refuses_success_when_the_window_died_immediately(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """C30(b): `new-window` exit 0 says tmux ACCEPTED the request, not that anything is
+    running. A spawned codex pane died instantly on a CLI update prompt; the window
+    vanished, cmd_spawn reported success, and only a manual list-windows revealed it.
+
+    Polarity: a false success is worse than a false failure here, because the four bus
+    files are already written, so the identity looks provisioned-and-live to everything
+    downstream — including the C24 heartbeat reset and the concurrency cap.
+    """
+    adapter = _c30_adapter("died", monkeypatch, tmp_path, windows_after="0\tsomething-else")
+
+    class A(_SpawnArgs):
+        agent = "new-main"
+        command = "true"
+        dry_run = False
+
+    rc = adapter.cmd_spawn(A())
+
+    assert rc == 2, "a window that is already gone is not a successful spawn"
+    rows = [json.loads(l) for l in adapter.LEDGER.read_text().splitlines() if l.strip()]
+    kinds = [r["kind"] for r in rows]
+    assert "spawn-died" in kinds
+    assert "spawn" not in kinds, "a spawn row would make the ledger claim a live window"
+
+
+def test_c30b_a_surviving_window_still_reports_success(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """The positive control — without it, 'refuse when it died' is satisfied by
+    refusing always."""
+    adapter = _c30_adapter("lived", monkeypatch, tmp_path, windows_after="0\tnew-main")
+
+    class A(_SpawnArgs):
+        agent = "new-main"
+        command = "sleep 300"
+        dry_run = False
+
+    assert adapter.cmd_spawn(A()) == 0
+    rows = [json.loads(l) for l in adapter.LEDGER.read_text().splitlines() if l.strip()]
+    assert [r["kind"] for r in rows] == ["spawn"]
+
+
+def test_c30b_an_unreadable_window_list_does_not_manufacture_a_failure(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Deliberate asymmetry. Elsewhere in this module an unreadable signal fails CLOSED,
+    but here the window and all four bus files already exist: reporting failure on a
+    transient tmux hiccup would send an operator to tear down a healthy session. The
+    check only fires on POSITIVE evidence of absence."""
+    adapter = _load("c30_unreadable")
+    adapter.LEDGER = tmp_path / "ledger_u.jsonl"
+    adapter.BUS_ROOT = tmp_path / "bus_u"
+    (adapter.BUS_ROOT / "heartbeats").mkdir(parents=True)
+    adapter.SPAWN_SETTLE_S = 0.0
+    monkeypatch.setattr(adapter, "load_config", lambda: _C24_SPAWN_CONFIG)
+    state = {"spawned": False}
+
+    def fake_tmux(*args: str) -> tuple[int, str]:
+        if args[0] == "list-windows":
+            if state["spawned"]:
+                return 1, "lost server"
+            return 0, "0\tsomething-else"
+        if args[0] == "new-window":
+            state["spawned"] = True
+            return 0, ""
+        return 0, ""
+
+    monkeypatch.setattr(adapter, "_tmux", fake_tmux)
+
+    class A(_SpawnArgs):
+        agent = "new-main"
+        command = "sleep 300"
+        dry_run = False
+
+    assert adapter.cmd_spawn(A()) == 0
+    rows = [json.loads(l) for l in adapter.LEDGER.read_text().splitlines() if l.strip()]
+    assert [r["kind"] for r in rows] == ["spawn"]

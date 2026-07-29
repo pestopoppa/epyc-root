@@ -1467,8 +1467,22 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   a few seconds after creation before reporting success. Note the polarity: a false success here is
   worse than a false failure, because the four bus files are already written and the identity now
   looks provisioned-and-live to everything downstream, including the C24 heartbeat reset.
-- [ ] **C31 — the nudge rate limit is keyed to the roster ID, not the window instance, so a
-  re-spawned main is silenced by nudges sent to a window that no longer exists.** *Observed
+- [x] **C31 — the nudge rate limit is keyed to the roster ID, not the window instance, so a
+  re-spawned main is silenced by nudges sent to a window that no longer exists.** ✅ 2026-07-29 —
+  `auditor`, commit `66f60536`. The limit now only counts nudges sent AFTER the newest `spawn`
+  ledger row for that agent, so it is keyed on (agent, window instance). The spawn epoch comes from
+  the ledger the adapter already writes — no new state file, and nothing that can disagree with one.
+  Timestamps are PARSED rather than string-compared, so a future `_now()` format change cannot
+  silently break the ordering. Two deliberate fail-safe choices: a window created outside
+  `cmd_spawn` leaves no spawn row and keeps the whole-history limit (the windows this adapter knows
+  least about keep their guard), and an unparseable nudge ts is skipped exactly as before rather
+  than being widened into a permanent block — a corrupt ledger row that wedged nudging fleet-wide
+  would be strictly worse than one missed rate limit. `probe` now reports
+  `nudges_this_window_instance` and `spawned_at`. 6 tests; the load-bearing one is the positive
+  control, because "ignore old nudges" is otherwise satisfied by ignoring ALL of them, which deletes
+  the rate limit rather than re-keying it. **The C24 coupling noted in this row is now closed on
+  both sides** — C24 stops a re-spawned main being heartbeat-blocked, C31 stops it being
+  rate-limit-blocked instead. *Observed
   2026-07-29 during bring-up.* `probe` computes `seconds_since_last_nudge` as the newest
   `kind == "nudge"` ledger row for that **agent id** (`tmux_adapter.py:559-560`), and `cmd_nudge`
   refuses below `--min-interval-s` (default 600, `tmux_adapter.py:685-687, 923`). After a window was
