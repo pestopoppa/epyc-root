@@ -734,6 +734,21 @@ nobody re-reads:
   The two structural options (a `corr_ids: [...]` list on one message, or a bulk-disposition verb in
   `drain --triage`) remain **open and unimplemented** — they change the contract, which is not this
   lane's to change unilaterally.
+  - [ ] **REOPENED 2026-07-29 — "the workaround is discipline" HAS NOW FAILED IN PRACTICE, twice in
+    ten minutes, hours after the rule was codified.** Measured from one careful main (`mainA`): 3
+    byte-identical payloads at 17:41Z (payload sha `ad177aa188e8`), then 6 more at 17:44Z whose
+    payloads are identical and differ ONLY in `corr_id`. **Nine identical payloads in ten minutes.**
+    **Why discipline cannot fix it, and this is my error not the sender's:** the protocol requires
+    ONE `corr_id` per item to clear triage, so a main holding a single disposition for N routed items
+    has **no compliant way to send it once**. The rule I wrote into `BUS_PROTOCOL.md` — *"write it
+    once and reference it"* — is **not performable**, because no mechanism to reference it exists.
+    **And the fan-out multiplies it:** each of those 6 acks carried `needs_routing_to` including
+    `auditor` though 5 answered `inference`, so N dispositions × M routing targets = N×M triage
+    entries fleet-wide.
+    Escalated with a concrete design: allow `corr_ids: [...]` alongside the scalar `corr_id` and have
+    the triage clearer treat a row as clearing every id it lists — backward compatible, schema
+    addition plus a few lines in the matcher. **Schema is a contract, so it is not mine to change
+    unilaterally**; if approved, implementing it is mine since C23 is in the C-series I own.
 - [x] **C11 — the independent review C9's own filing called for was never paid.** ✅ 2026-07-29 —
   paid by `auditor` as part of the C24 review (they touch the same invariant, exactly as the brief
   directed). The review attacked C9's central claim — can `live_mains()` return a set missing a
