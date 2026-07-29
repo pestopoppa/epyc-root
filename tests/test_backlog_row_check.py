@@ -297,3 +297,60 @@ def test_an_open_blocking_child_is_reported_before_a_closed_one(tmp_path: Path) 
     assert code == 2
     assert "h.md:4" in reasons[0] and "BLOCKED on HG-1" in reasons[0]
     assert "still OPEN" in reasons[1]
+
+
+# ---------------------------------------------------------------------------
+# PROHIBITIONS. A fourth measured failure, and the first one this tool had
+# already been built to prevent and still missed.
+# ---------------------------------------------------------------------------
+
+def test_a_bare_prohibition_is_a_standing_constraint(tmp_path: Path) -> None:
+    """THE REAL INCIDENT, 2026-07-29. `document-parser-table-bench.md:144` — "**Do not
+    download MinerU2.5-Pro or GLM-OCR as `odl_bench` model swaps**" — was served by the
+    dispatch queue as row #23 and closed with the commit message "close OCR download
+    guardrail row". The old rule needed verb AND standing condition, and a prohibition
+    carries no condition, so it scored as a WEAK HINT and the row was dispatched."""
+    body = ("**Do not download MinerU2.5-Pro or GLM-OCR as `odl_bench` model swaps** — "
+            "the harness invokes models single-pass")
+    p = _handoff(tmp_path, f"## Guardrails\n- [ ] {body}\n")
+    code, reasons = _classify_row(p, 2)
+    assert code == 2
+    assert "PROHIBITION" in reasons[0]
+    assert "cannot finish not-doing" in reasons[0]
+
+
+@pytest.mark.parametrize("body", [
+    "Never patch a production kernel in place",
+    "Do NOT run the epsilon-greedy exploration to manufacture counterfactuals",
+    "Don't import the intake-866 equivalence framing",
+])
+def test_prohibition_forms_all_refuse(tmp_path: Path, body: str) -> None:
+    p = _handoff(tmp_path, f"## Tasks\n- [ ] {body}\n")
+    assert _classify_row(p, 2)[0] == 2, body
+
+
+@pytest.mark.parametrize("body", [
+    "Avoid duplicating the config across both registries",
+    "Prefer the codified recipe constants over remembered values",
+    # NB: no standing condition here. "Refrain … *until* the first is retired" is
+    # correctly refused by the older verb+condition rule, which this control is not
+    # about — the first draft used that phrasing and failed for the right reason.
+    "Refrain from adding a second scorer",
+])
+def test_softer_negatives_stay_in_the_weak_tier(tmp_path: Path, body: str) -> None:
+    """THE OVER-REFUSAL CONTROL. "Avoid duplicating the config" really can be a one-off
+    cleanup with a completion state. Only unambiguous negative imperatives refuse;
+    marking real work undispatchable is the costlier error."""
+    p = _handoff(tmp_path, f"## Tasks\n- [ ] {body}\n")
+    code, reasons = _classify_row(p, 2)
+    assert code == 0, body
+    assert any("WEAK HINT" in r for r in reasons), "must still be flagged for a human read"
+
+
+def test_a_task_that_merely_mentions_not_doing_something_is_still_dispatchable(
+        tmp_path: Path) -> None:
+    """The prohibition must open the row. A task whose BODY discusses a constraint is
+    still a task — anchoring on `^` is what keeps this from swallowing real work."""
+    p = _handoff(tmp_path, "## Tasks\n"
+                 "- [ ] Add a guard so the applicator does not restart a live role\n")
+    assert _classify_row(p, 2)[0] == 0

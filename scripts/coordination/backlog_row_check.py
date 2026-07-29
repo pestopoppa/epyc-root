@@ -66,6 +66,18 @@ _RULE_COND = re.compile(
     r"\b(whenever|until|unless|only where|as migrated|each time|every time|"
     r"when resuming|before adding|opportunistically|as long as|going forward)\b", re.I)
 _GUARD = re.compile(r"UNCHECKED BY DESIGN|STANDING CONSTRAINTS?|DO NOT DISPATCH", re.I)
+# A PROHIBITION is a standing constraint on its own, with no standing condition needed:
+# you cannot finish not-doing something. Requiring `_RULE_COND` as well missed the real
+# case on 2026-07-29 — `document-parser-table-bench.md:144`, "**Do not download
+# MinerU2.5-Pro or GLM-OCR as `odl_bench` model swaps**", was served by the dispatch
+# queue as row #23 and closed with the commit message "close OCR download guardrail
+# row". Checking it asserts a permanent prohibition is permanently satisfied, and the
+# next reader sees a settled question rather than a live rule.
+#
+# Deliberately NARROW: only unambiguous negative imperatives. `avoid`/`refrain`/`prefer`
+# stay in the weak tier, because "Avoid duplicating the config" really can be a one-off
+# cleanup, and marking real work undispatchable is the costlier error.
+_PROHIBITION = re.compile(r"^\**\s*(never|do not|don't|do NOT)\b", re.I)
 # A section can disclaim execution by the reader without being a template. Measured
 # 2026-07-29: `stale-open-audit-2026-07-18.md` § "Recommendations (follow-up tasks —
 # no checkbox flips on the audited handoffs)" holds six rows, FOUR of which direct
@@ -240,6 +252,11 @@ def classify(path: Path, lineno: int, state: str, body: str, head: str) -> tuple
                        f"({disclaimer.group(0).strip()!r} in § {head}). Rows here often direct work "
                        f"at ANOTHER owner — verify it is yours before claiming. Not a refusal: such "
                        f"sections mix owner-directed rows with ones that really are yours.")
+    if _PROHIBITION.match(body):
+        return 2, [f"the BOX TEXT is a PROHIBITION, which has no completion state — you cannot "
+                   f"finish not-doing something: {body[:90]!r}",
+                   "checking it asserts a permanent constraint is permanently satisfied, and the "
+                   "next reader sees a settled question instead of a live rule"]
     strong = bool(_RULE_VERB.match(body)) and bool(_RULE_COND.search(body))
     if strong:
         return 2, [f"the BOX TEXT is standing-constraint shaped (continuous imperative + a standing "
