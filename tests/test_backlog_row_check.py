@@ -263,3 +263,37 @@ def test_child_boxes_past_eof_is_not_an_error(tmp_path: Path) -> None:
     """Anchor rot points past the end of a shrunken file; that must not raise."""
     p = _handoff(tmp_path, "## Tasks\n- [ ] a row\n")
     assert brc.child_boxes(p, 9999) == []
+
+
+def test_a_closed_child_that_records_a_RESOLVED_block_does_not_refuse(tmp_path: Path) -> None:
+    """Measured false positive: `gpu-serving-tie-in-program.md:75` has the child
+    "whisper is BLOCKED … ✅ RESOLVED-BY-DECISION 2026-07-29: operator chose W3".
+    Closing that child WAS the resolution. Refusing here withholds ready work."""
+    p = _handoff(tmp_path, "## Tasks\n"
+                 "- [ ] P2-2 land the two-tenant set\n"
+                 "  - [x] **whisper is BLOCKED** ✅ RESOLVED-BY-DECISION: operator chose W3 (defer)\n")
+    assert _classify_row(p, 2)[0] == 0
+
+
+def test_a_closed_child_merely_narrating_a_gate_does_not_refuse(tmp_path: Path) -> None:
+    """Second measured false positive: "gated on" inside the prose of a DELIVERED
+    protocol design (`gpu-serving-tie-in-program.md:138`). On a closed child only an
+    outstanding-outcome phrasing counts, because closing usually means it was worked."""
+    p = _handoff(tmp_path, "## Tasks\n"
+                 "- [ ] P2-5j host-thread placement sweep\n"
+                 "  - [x] **P2-5j protocol design** ✅ filed; the arms are gated on placement\n")
+    assert _classify_row(p, 2)[0] == 0
+
+
+def test_an_open_blocking_child_is_reported_before_a_closed_one(tmp_path: Path) -> None:
+    """`reviewer-escalation-…:22` carries a closed child hedging "actionable when it
+    unblocks" AND an open one stating "HG-3 is BLOCKED on HG-1, contrary to the
+    dispatch queue". First-found surfaced the hedge and buried the citable fact."""
+    p = _handoff(tmp_path, "## Tasks\n"
+                 "- [ ] **HG-3 — Protected-action list**\n"
+                 "  - [x] Scoping audit ✅ — corrected here so HG-3 is actionable when it unblocks\n"
+                 "  - [ ] **HG-3 is BLOCKED on HG-1, contrary to the dispatch queue.**\n")
+    code, reasons = _classify_row(p, 2)
+    assert code == 2
+    assert "h.md:4" in reasons[0] and "BLOCKED on HG-1" in reasons[0]
+    assert "still OPEN" in reasons[1]

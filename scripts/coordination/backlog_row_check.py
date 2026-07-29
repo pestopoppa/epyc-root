@@ -140,6 +140,42 @@ _BLOCKER = re.compile(
     r"human-amendment token|\bdo not start\b|post-reboot only|when it unblocks|\bgated on\b",
     re.I)
 
+# A CLOSED child is scored much more strictly, because closing it usually means the
+# block was WORKED, not that the row became ready. Measured on the only four rows in
+# the backlog that trip the broad pattern: 2 were real, 2 were closed children that
+# merely NARRATE a block —
+#   * "whisper is BLOCKED … ✅ RESOLVED-BY-DECISION: operator chose W3 (defer)"
+#   * "gated on" occurring in the prose of a delivered protocol design
+# — and refusing those two would have withheld dispatchable work. So on a closed
+# child only an OUTSTANDING-OUTCOME phrasing counts, and explicit resolution wins
+# outright. The one real closed-child block reads "await operator signature", which
+# is exactly the outstanding-outcome shape.
+_BLOCKER_CLOSED = re.compile(
+    r"\bawait(s|ing|ed)?\s+(the\s+)?(operator|signature|sign-off|ratification)|"
+    r"pending\s+(operator|human|signature|sign-off)", re.I)
+_RESOLVED = re.compile(
+    r"\bresolved\b|no longer blocked|\bunblocked\b|block (is |was )?cleared|"
+    r"resolved-by-decision", re.I)
+
+
+def blocking_children(path: Path, lineno: int) -> list[tuple[int, str, str]]:
+    """Children that actually block the row, OPEN ones first.
+
+    Open-first matters: `reviewer-escalation-and-human-gate-policy.md:22` has a closed
+    child hedging "actionable when it unblocks" AND an open one stating "HG-3 is
+    BLOCKED on HG-1, contrary to the dispatch queue". Reporting the first child found
+    surfaced the hedge and buried the citable fact.
+    """
+    out = []
+    for n, st, body in child_boxes(path, lineno):
+        if st == "x":
+            if _RESOLVED.search(body) or not _BLOCKER_CLOSED.search(body):
+                continue
+        elif not _BLOCKER.search(body):
+            continue
+        out.append((n, st, body))
+    return sorted(out, key=lambda c: c[1] == "x")
+
 
 def child_boxes(path: Path, lineno: int) -> list[tuple[int, str, str]]:
     """(lineno, state, body) for the boxes indented BENEATH the row at `lineno`.
@@ -180,7 +216,7 @@ def classify(path: Path, lineno: int, state: str, body: str, head: str) -> tuple
     if section_is_guarded(path, lineno):
         return 2, [f"the enclosing section (§ {head}) carries an explicit DO-NOT-DISPATCH guard — "
                    f"this is a reusable checklist or a standing constraint, not a task"]
-    blocking = [(n, st, b) for n, st, b in child_boxes(path, lineno) if _BLOCKER.search(b)]
+    blocking = blocking_children(path, lineno)
     if blocking:
         n, st, b = blocking[0]
         # A CLOSED blocking child is not "the block cleared" — it is usually the
