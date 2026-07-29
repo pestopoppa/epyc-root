@@ -34,6 +34,7 @@ already has bare-letter handling).
       truncated-boxed regressions. Research `bc33cb76`.
 - [ ] **1b. Migrate research consumers** to import the canonical lib; delete each duplicate extractor; test
       each. (score_benchmarks, lib/scorer, score_aa_omniscience, xmas_*, short_mk_voting, adapters.)
+  - [x] **1b.1 short-m@k multiple-choice vote extraction** ✅ 2026-07-29 (research `53eb754c`; 11 focused tests): replaced its local multiple-choice regex cascade with canonical `extract_letter_answer`; preserves final-answer precedence and adds the verbose-final-line regression.
 - [x] **1c-audit. Orchestrator scoring + tool-use audit (read-only, subagent).** ✅ 2026-07-24 — report:
       [`research/deep-dives/2026-07-24-autopilot-scoring-tooluse-audit.md`](../../research/deep-dives/2026-07-24-autopilot-scoring-tooluse-audit.md)
       (59 file:line citations). **Verdicts:** (Q1) **memrl reward NOT AFFECTED** — the live TD reward does zero
@@ -149,9 +150,12 @@ already has bare-letter handling).
       these models' training windows). Pull a newer LiveCodeBench release (v5/v6 date-window) for a
       post-cutoff hard slice; re-validate oracle; compare to the current window's scores (a large drop =
       contamination signal on the old window).
-- [ ] **2e. Runbook: replace the P2 placeholder with the built coding ladder** (HumanEval=validation rung →
-      LCB-hard → BCB-hard → SWE-oracle → agentic; validate-on-canonical/gold gates; model-major residency +
-      SMT-sibling affinity for GPU serving) once the arms' results land.
+- [x] **2e. Runbook: replace the P2 placeholder with the built coding ladder** ✅ 2026-07-29 —
+      [`architect-bench-runbook.md`](../../docs/reference/architect-bench-runbook.md) now distinguishes
+      HumanEval validation → LCB-hard → BCB-hard → SWE-oracle → agentic, retains canonical/gold gates, and
+      separates built harnesses from the still operator-gated live agentic run. It also records model-major,
+      one-at-a-time GPU residency with current SMT-sibling affinity, so host placement cannot be misread as
+      a model result.
       *(Declined as separate tasks: model-major driver restructure — captured in
       [[feedback_mi210_host_threads_smt_siblings]] and folds into 2e; promoting the SWE scripts from
       artifacts/ into scripts/benchmark/ — already covered by the standing runbook §10 promotion task.)*
@@ -192,5 +196,6 @@ gate (production reward path / agentic build). See [[project_architect_model_sel
 _Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25.md`](intake-derived-work-2026-07-25.md)._
 
 - [ ] Add an **`ordered_subsequence`** verifier to the canonical `answer_scoring` library: given an ordered concept list, lemmatize the completion and check all concepts appear as an ordered subsequence; return graded coverage in [0,1] plus a binary all-in-order flag. Must land in the canonical library — not an 11th bespoke scorer — with unit tests for lemma-boundary and repeated-concept cases.
+  - [ ] **Dependency decision (2026-07-29):** the research benchmark environment has no `spacy` installation or pinned English model, while the canonical scorer intentionally has only stdlib import dependencies. Do not silently substitute stemming for the specified lemmatization. Choose either a pinned, reproducible lemmatizer dependency with model/data provenance, or explicitly amend this task to a documented dependency-free lexical verifier; then add the helper without changing the critical generic `score_response()` dispatcher (GitNexus: 60 exact upstream impacts, CRITICAL).
 - [ ] **Implement BOTH Ordered Rate and Coverage-with-order, not one.** An earlier note called them redundant; the dive **overturned** that — they diverge by up to **26.5 pts** on weak models (Qwen2-0.5B 30.84 vs 57.34; Phi3-mini 49.54 vs 62.04) and converge only at 405B, so both carry distinct signal exactly in the small/quantized regime we care about.
 - [ ] Source is **ACL 2025 Main and an Outstanding Paper** (arXiv 2506.15629) — our 43-question `instruction_precision` suite has **no ordering/sequence verifier of any kind**. Known fragility: spaCy-lemmatization dependence (same class as the substring/comma brittleness). **Confound to record**: the paper's leaderboard runs 32 open models at 4-bit against full-precision API arms — do not cite that table itself as quant-quality evidence.
