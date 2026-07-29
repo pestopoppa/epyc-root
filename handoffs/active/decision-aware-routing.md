@@ -182,7 +182,7 @@ Source: intake-496 (LLM Bandit) — IRT (Item Response Theory) score predictor +
 - [ ] **DAR-5.2**: Replace hard-coded `v_model = [baseline_tps, baseline_quality, memory_cost, param_count_log, is_moe, quant_bits]` in DAR-4 bilinear scorer with a learned d-dim model identity vector `v_model ∈ ℝ^d` (d=8 starting point), initialized from the hard-coded spec values, then trained jointly with the bilinear weights.
 - [ ] **DAR-5.3**: Augment `v_prompt` with the IRT 2-D output concatenated to the BGE embedding. New `v_prompt = [BGE_embedding | irt_difficulty | irt_discrimination]`.
 - [ ] **DAR-5.4**: A/B against frozen-DAR-4 (hard-coded features) on val set. Decision gate: if IRT+identity-vectors improves routing accuracy by ≥ 2 points val acc, promote to default.
-- [ ] **DAR-5.5**: Note for future onboarding — the learned model identity vector for a *new* model can be cold-started from spec features (initialization step from DAR-5.2), then refined via the LRC P5 IRT-stratified onboarding workflow.
+- [x] **DAR-5.5**: Future-onboarding note ✅ 2026-07-29 — initialize a new model's learned identity vector from its declared spec features only after DAR-4/DAR-5 are re-authorized on the fixed reward; this is an initialization, never an admission or routing-default decision. Refine it only through LRC P5.2's promotion-grade **observed-outcome** IRT run, not label-proxy scores; P5.2 currently rejects its cached label-proxy result and P5.3 remains conditional on P5.2's acceptance gate. The current DAR-5 prerequisite is the reward redesign (including the wall-clock axis), so no cold-start execution follows from this note.
 
 **Files**: New `irt_scorer.py`, modify `bilinear_scorer.py` from DAR-4, `q_scorer.py` (config).
 
