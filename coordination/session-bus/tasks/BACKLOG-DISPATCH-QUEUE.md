@@ -719,7 +719,7 @@ re-grep before assigning.
 - L40 | none | M | Y | HS-2 ROI verdict LOW — dormant | HS-3 survey ACP-speaking open harnesses as extra candidates | handoff, acp-roi-analysis-2026-07.md
 - L41 | none | M | N | **operator decision (HS-4 is operator-owned)** | HS-4 harness-selection gate: Hermes vs OpenCode vs ACP | handoff, hermes-outer-shell.md
 - L134 | none | S | N | - | HS-5 add weight-space RL adapter column to decision matrix | handoff
-- L136 | none | S | N | - | Record Fractal as outer-loop orchestrator, not an HS-4 candidate | handoff
+- L136 | none | S | N | - | **CLOSED 2026-07-29** — already recorded as outer-loop, not HS-4, with containment/trial boundary | handoffs/active/harness-selection-and-integration.md:149 (root `c942728e`)
 - L142 | none | L | N | - | HS-6 audit Layer-B against six/seven-dimension harness taxonomy | handoff, orchestrator layer-B sources
 - L143 | none | S | N | - | HS-7 record re-targetable-harness principle as standing criterion | handoff
 - L144 | none | L | Y | - | HS-8 extract run-level policy into editable NLAH-style document | agents/shared/, new policy doc
