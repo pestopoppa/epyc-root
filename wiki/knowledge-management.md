@@ -431,6 +431,44 @@ entry, and that ID belongs to an entirely different entry; **no row for the
 actual subject exists at all**. A citation that resolves to *something* is not a
 citation that resolves to the *right* thing.
 
+**Resolved 2026-07-29** (`intake-937` created; all 6 references repointed). The
+failure mode generalises, and it is worth stating in its sharpest form: **a
+missing index entry is loud; a wrongly-pointed one is silent.** The subject here
+was not obscure — it was the *deployed production model*, with a deep dive, an
+active handoff, and a live serving path. What was missing was only the index row,
+and because two documents cited a plausible-looking ID, every reader who checked
+was *reassured* by an unrelated CPU-matmul blog entry. It survived from
+deployment until a dive on a competing model happened to grep the index rather
+than trust the handoff — i.e. it was caught by accident, not by any control.
+
+Two durable consequences. (1) **Validators check resolution, not correctness.**
+`validate_intake.sh` confirms that referenced handoff files exist; nothing checks
+that a cited intake ID is the *right* entry. Cross-reference validity needs a
+periodic sweep, and "the link works" must never be read as "the link is right."
+(2) **Repointing is not a find-and-replace.** Three of the six references were
+verdict-*promotion* instructions ("promote to `new_opportunity` once GPU lands")
+that are nonsense against an already-deployed row — both triggers had fired
+months earlier. Each repoint carried an inline dated note, so the superseded ID
+stays traceable instead of being silently erased.
+
+### Never round-trip a whole document to append to it
+
+Persisting 24 new entries via `yaml.safe_load` → `safe_dump` **destroyed the
+index header comments** and reflowed all 18,935 lines, presenting a 24-entry
+addition as a whole-file rewrite. Comments are not part of the YAML data model,
+so a round-trip discards them without error — the operation *succeeds* while
+losing information, which is why nothing caught it. Recovery required verifying
+all 912 pre-existing entries field-by-field to prove no semantic change rode
+along (none did), and the reformat is not reversible once pushed.
+
+The fix is preventive: **append as text**. Exercised on the very next write, the
+same operation produced **101 lines added, 0 removed**, header intact, validator
+green. Two orders of magnitude less churn for identical semantics. Worth carrying
+beyond YAML — any serialize-parse-reserialize cycle over a human-maintained file
+silently drops whatever the parser does not model (comments, key order,
+formatting, anchors), and a reviewer facing a whole-file diff cannot see the
+actual change.
+
 ### Process amendment: the dive-surfaced source gate
 
 The research-intake skill gained a **Stage 2b** gate: dives must emit the list of
@@ -458,7 +496,8 @@ post-approval round, so the rest of the plan was authored without their findings
 
 - [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — batch outcome (24 entries, 19 dives, 9 overturned), the per-entry overturn table, records corrected, the skill amendment, and the attribution note
 - [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — the five-month-stale capability assertion and its live mis-scoping effect
-- [`ernie-image-turbo-evaluation.md`](../handoffs/active/ernie-image-turbo-evaluation.md) — struck "stale backend" premise; the unresolved-cross-reference finding
+- [`ernie-image-turbo-evaluation.md`](../handoffs/active/ernie-image-turbo-evaluation.md) — struck "stale backend" premise; the cross-reference defect and its 2026-07-29 resolution (`intake-937`, 4 of the 6 repoints, 3 needing rewording rather than an ID swap)
+- [`research/deep-dives/ernie-image-turbo-dit-text-to-image.md`](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md) — the other 2 repoints; a pre-deployment assessment whose premises production later falsified
 - [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — weight-map-over-config verification rule
 - [`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) — near-identical-title dedup hazard; cite by arXiv ID
 - [`scoring-infra-standardization.md`](../handoffs/active/scoring-infra-standardization.md) — prose-to-checkbox conversion during the same pass

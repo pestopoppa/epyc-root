@@ -129,6 +129,13 @@ enhancer**. This does **NOT** validate ERNIE's own 0.9655: both sides are vendor
 ## Progress checklist
 
 - [x] Production functional on CPU via sd-server Q8 + conv-direct; Q4 rejected (text corruption) ✅
+- [x] **File the missing intake row and close the `intake-528` mis-citation** ✅ 2026-07-29 — the deployed
+      `image_generate` model had NO index row for its entire deployed life, while this handoff (4 places)
+      and the deep dive (2) cited `intake-528`, which is "Effort Engine (bucketMul)". Created `intake-937`
+      (`already_integrated`, dive-verified) and repointed all 6 references with inline dated correction
+      notes. A *missing* entry is loud; a *wrongly-pointed* one is silent — every reader who checked the
+      citation was reassured, and it survived until a Z-Image dive grepped the index instead of trusting
+      the handoff. Cross-ref citations are now worth a periodic sweep, not just a per-entry check.
 - [ ] Record the LongText-Bench resolution in the deep dive (§ benchmark positioning) — harmonized ranking,
       identical splits, EN/ZH-mean aggregation, ERNIE +4.4 over Z-Image-Turbo even w/o prompt enhancer; and
       that ERNIE's own 0.9655 remains vendor-self-reported (see the 2026-07-29 section above)

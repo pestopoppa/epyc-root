@@ -342,8 +342,45 @@ Vulkan-only at our pin. Generalization: a control differing from the subject in
 [`gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) §Control-probe note;
 [`ernie-image-turbo-evaluation.md`](../handoffs/active/ernie-image-turbo-evaluation.md) §2026-07-29 corrections
 
+### A pre-deployment assessment ages badly in specific, predictable ways
+
+The deployed image model's deep dive was written as a **pre-deployment**
+assessment; filing its intake row 12 weeks later (`intake-937`, 2026-07-29)
+forced a line-by-line reconciliation against production reality. Four of its
+premises had rotted, and the *pattern* of rot is the transferable part:
+
+- **Backend premise struck.** The dive planned around a Python inference stack
+  and flagged "upstream support unverified" as an open question. Upstream had
+  in fact shipped native support (441 lines), and that has been the production
+  serving path since the week after the dive. **Availability questions expire
+  fastest** on fast-moving projects — the dive's own §"scan the upstream source
+  before planning the port" lesson applied to itself one section later.
+- **Latency forecast falsified.** Predicted 30–120 s/image on this host;
+  production measures ~188 s at 1024²/8 steps — optimistic by 1.6–6×. Retired,
+  not adjusted: a forecast that missed by that margin has no residual value.
+- **Hardware extrapolation dead.** An entire section extrapolated to a machine
+  that was never acquired. The actual accelerator is a different vendor
+  entirely. **Extrapolations to unpurchased hardware should be dated and
+  quarantined**, because they read as measurements to later readers.
+- **A hypothesis the dive itself doubted was confirmed.** It called the
+  "distilled models amplify quantization damage" claim community folklore and
+  judged it *partially falsified* for this regime, on the strength of a
+  competitor's A/B. Our own A/B then confirmed it for this model — the cheaper
+  quant bought 17% wall-clock and corrupted in-image text, i.e. degradation
+  landed precisely on the model's signature differentiator. Both survive: the
+  higher quant is safe as predicted, *and* the cliff arrives on the
+  text-rendering axis exactly where the dive hypothesised.
+
+One disagreement remains **open**, not resolved: the dive describes a bespoke
+128-channel VAE with portability implications, while the bundle actually
+deployed ships a VAE from a different model family. Neither vendor card names
+the VAE, so no source can adjudicate — recorded as open rather than settled in
+either direction.
+
 ### Source References
 
-- [`ernie-image-turbo-evaluation.md`](../handoffs/active/ernie-image-turbo-evaluation.md) — struck stale-backend premise (header present at the pinned commit, deployed binary built from it); LongText-Bench harmonization and the surviving validity question; withdrawal of the confounded control
+- [`ernie-image-turbo-evaluation.md`](../handoffs/active/ernie-image-turbo-evaluation.md) — struck stale-backend premise (header present at the pinned commit, deployed binary built from it); LongText-Bench harmonization and the surviving validity question; withdrawal of the confounded control; the 2026-07-29 intake-row filing
+- [`research/deep-dives/ernie-image-turbo-dit-text-to-image.md`](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md) — the pre-deployment assessment itself: the backend premise, the CPU latency forecast, the retired hardware extrapolation, the quantization-damage hypothesis, and the unresolved VAE identity
+- [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — the six folded corrections and the vendor-default-resolution sting (the GPU defect blanks the first resolution the vendor recommends)
 - [`multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — Z-Image-Turbo scoped as a latency-only candidate; the distill-patch LoRA conversion mechanism and its untested assumptions
 - [`gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) — the ROCm f16-overflow campaign gap and the f32-precision candidate fix; the mitigation-matched-control rule
