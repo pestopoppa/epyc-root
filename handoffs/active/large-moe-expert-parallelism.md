@@ -42,7 +42,18 @@ The critical correction is that historical EP wins were polluted by baseline cho
   - at least 3 reps, CPU20 process hygiene, recorded build/commit/env, and PPL/quality gate.
 - [ ] **CPU15-ROOT — Bottleneck proof before new mechanism work**: if pursuing >150B again, start from CPU24/perf-record evidence and show why the proposed mechanism attacks memory-stalled compute kernels. Do not restart 2DH/all-to-all or L3aaN just because EP history exists.
 - [ ] **CPU15-UPSTREAM — Upstream only after positive target**: upstream `ep_dispatcher` or EP hooks only if a CPU20 canonical target demonstrates stable gain. General bugfixes such as repack/mbind fixes belong in the kernel/env-flag inventory, not this handoff.
-- [ ] **CPU15-MOESPEC — Compatibility note**: if MoE-Spec modifies expert dispatch on a model where EP is experimentally enabled, mask/budget selection must happen before EP broadcast so all workers see the same expert IDs.
+- [x] **CPU15-MOESPEC — Compatibility note** ✅ 2026-07-29: if MoE-Spec
+  modifies expert dispatch on a model where EP is experimentally enabled, the
+  authoritative process must construct the budgeted expert-id set (and any
+  per-token mask) **before** EP broadcast. Broadcast that serialized selection
+  to every worker; workers may shard execution but must not independently
+  re-score, re-budget, re-rank, or silently fill omitted experts. A future
+  combined implementation must make the selection deterministic for a given
+  router input, attach a selection hash/count to the dispatch record, and fail
+  closed on a worker-side hash or shape mismatch. This is a correctness
+  ordering rule only: it neither enables `GGML_EP_*` nor supplies a throughput
+  claim. Any combined experiment remains gated on CPU15-REVAL and must compare
+  EP-off/EP-on with the identical pre-broadcast selection.
 
 ## Dependency Graph
 
