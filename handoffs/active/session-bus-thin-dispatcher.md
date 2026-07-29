@@ -709,7 +709,7 @@ nobody re-reads:
   `tmux_adapter.py:437` recording that it was deleted as dead code on 2026-07-29 and that its
   invariant (the undercount polarity) moved to `live_mains`. Confirmed by grep — zero definitions,
   zero callers. The row is closed rather than worked, per coordinator direction.
-- [ ] **C23 (NEW) — triage disposition should not require an identical payload per `corr_id`.**
+- [x] **C23 (NEW) — triage disposition should not require an identical payload per `corr_id`.** ✅ 2026-07-29 — protocol-shape disposition verified against `BUS_PROTOCOL.md` C23 rule and commit `01142ba5`; deliberately no adapter workaround.
   Found by doing it wrong on 2026-07-29: clearing 19 routed items needs one message per `corr_id`,
   so a session with a single disposition for all of them emits the **same ~1.5 KB payload 19 times**.
   Audited and worth stating precisely, because the obvious diagnosis is wrong: there is **no
