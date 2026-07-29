@@ -140,6 +140,16 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
     (and prohibited during E5), not dispatchable. `backlog_live_uncertified =
     950` for this dated read-through slice; `backlog_not_a_task = 36` is
     unchanged. No owner handoff was edited.
+  - **READ-CERTIFIED 2026-07-29 (mainB, 8 rows):**
+    `autopilot-dashboard-fidelity-audit-2026-07-22.md` has eight clearly
+    non-dispatchable boxes: two server/process-owner fixes, an E8 campaign
+    counter reconciliation, a human-amendment era-row commit, the
+    inference-owned cold-guard, two deferred stretch panels, and the deferred
+    grouped provenance/attribution surfaces. These are **owned, E8/E5-gated,
+    human-only, or deferred**, not current independent work. The separate hub
+    percentage-presentation box remains unclassified for its owner.
+    `backlog_live_uncertified = 942` for this dated read-through slice;
+    `backlog_not_a_task = 36` is unchanged.
   - **TRANCHE 1 READ-CERTIFIED 2026-07-29 (`auditor`) — 19 boxes, the single-open-box handoffs.**
     Read each box with its section, `Status:` header and following context. Result:
     | verdict | n | meaning |
