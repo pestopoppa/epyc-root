@@ -27,6 +27,32 @@ All commands run from the repo root `/workspace` (= `/mnt/raid0/llm/epyc-root`).
 
 ## Phase 0 — post-reboot reality check
 
+### 0a. Read the post-reboot brief FIRST — before any command
+
+```bash
+cat coordination/session-bus/tasks/post-reboot-session.md
+```
+
+**This is the one file that tells you where the fleet left off.** `rebuild` in Phase 2 reconstructs
+the bus *mechanism* — queue rows, tokens, cursors, unread depth — but the bus carries no record of
+*what the last session was in the middle of*, which gate a campaign is parked behind, or which
+decisions the operator already made. That lives only here. Reconstructing state from bus files
+alone (BUS_PROTOCOL rule 9) is what makes you **addressable**; this brief is what makes you
+**useful**. Skipping it produces a coordinator that correctly reports an empty queue and has no
+idea a decision-grade campaign is one command from resuming.
+
+It carries, at minimum: bringup order (including **C20** — `tmux new-session -d -s agent` before
+anything spawns), the queued work with its gating, standing operator decisions already made,
+artifact-update obligations with the URL that must not be re-minted, inherited bus defects, and
+each closed session's handover of where it stopped.
+
+The brief is a **pointer document** — when a section names a handoff, go read that handoff. And it
+is **written by the outgoing coordinator, at wrap-up**: if you are the one going to sleep, updating
+it is your job, not a courtesy. A brief that describes the fleet two sessions ago is worse than
+none, because it is trusted.
+
+### 0b. Reality check
+
 Harmless when it is not a post-reboot start. Run all of it; record every answer for the report.
 
 ```bash
@@ -122,7 +148,10 @@ decision-request / `token-request` **before** any idle-agent dispatch. Origin: 2
 critical "stop reloading the API" request sat unread 47 minutes while the coordinator dispatched
 routine work.
 
-**2. Missing mains → propose, never auto-spawn.** List roster mains whose endpoint window is not in
+**2. Missing mains → propose, never auto-spawn.** Expect **every** main to be missing after a
+reboot — the 2026-07-29 wind-down closed all of them deliberately, so an empty `agent` session is
+the normal post-reboot shape, not an anomaly, and the spawn plan is the whole fleet rather than a
+gap-fill. List roster mains whose endpoint window is not in
 `tmux list-windows -t agent`, and produce a **spawn plan** for the operator including spawns used
 today against `caps.max_spawns_per_day` (`coordination/session-bus/config.yaml`):
 

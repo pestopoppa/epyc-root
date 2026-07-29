@@ -1,6 +1,6 @@
 {
   "agent": "coordinator-agent",
   "state": "working",
-  "task_id": "wiki-gate-cleanup-routing",
-  "ts": "2026-07-28T13:03:06+00:00"
+  "task_id": "boundary-drain",
+  "ts": "2026-07-28T16:21:58+00:00"
 }

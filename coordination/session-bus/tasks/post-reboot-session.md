@@ -14,8 +14,36 @@ Authoritative sources, cited rather than duplicated below:
 - `progress/2026-07/2026-07-29.md` — claude-main's handover, "Deferred / open" section (OD-A,
   OD-D, OD-E).
 
-If any of the above is mid-write by another live agent when you go to read it, note that and move
-on rather than blocking on it — other sessions may still be active across the reboot boundary.
+Nothing is mid-write. **Every session was closed by the operator before the reboot** (2026-07-29
+~13:30Z): `codex`, `claude-gpu-lane`, `fable-auditor`, `codex-bus-tests`, `claude-main` — all
+wrapped, committed and pushed first, then closed; `coordinator-agent` last. So expect an **empty
+`agent` tmux session** and zero live mains on arrival. That is the intended shape, not a fault, and
+it means the spawn plan you present is the whole fleet rather than a gap-fill.
+
+**Branch state at close — five branches remain unmerged and are yours to reconcile.** A
+wrap-up promotion sweep on 2026-07-29 merged every branch that merged cleanly and carried real
+content. What is left is *only* the conflicting set, deliberately not auto-resolved:
+
+| Repo | Branch | Why it did not land |
+|---|---|---|
+| epyc-root | `codex-wrapup-precompact-20260729` | doc conflict in `master-handoff-index.md` + `progress/2026-07/2026-07-29.md` |
+| epyc-orchestrator | `codex/e8-consolidated-wrapper-20260728` (9 commits) | code conflict |
+| epyc-orchestrator | `codex/e8-abort-terminal-seals-20260729` (3) | code conflict |
+| epyc-orchestrator | `codex/e8-typed-provenance-20260729` | code conflict |
+| epyc-orchestrator | `e8-v5-runtime-root-20260727` (7) | code conflict |
+| epyc-orchestrator | `tierc-10d-crash-window-durability` | code conflict |
+
+All five are E8-harness or E8-adjacent, i.e. the same repair chain codex left mid-sequence — so
+reconcile them **in codex's stated order** (scorer isolation → replay successor → dual binding),
+not by branch date. Three epyc-root `codex/e8-*` ratifier branches merged cleanly but produced a
+**zero-byte diff** (duplicate commits already on main) and were therefore *not* pushed — treat them
+as already landed and delete rather than re-merge. `spec-dec-mtp-refresh-2026-06-22` is fully
+merged (0 unique, 307 behind); it is a stale label, not pending work. Five orchestrator
+`dependabot/uv/*` branches are open and untouched by this sweep.
+
+**All three repos were at `0` unpushed at close.** `epyc-root` main tip `b998b0b5` (plus the
+operator-signed `MEASUREMENT.md` amendment `e6b84496`), `epyc-orchestrator` main `f7a02d94`,
+`epyc-inference-research` untouched.
 
 ---
 
@@ -82,6 +110,29 @@ Do not run anything below out of order relative to its stated gate.
 - This is P1-2 in the GPU program's Phase 1 (`gpu-serving-tie-in-program.md`): "fresh-uptime,
   quiet-window per protocol, no deadline — the reboot resets the window."
 
+### E8 quality baseline — codex's handover, and the critical path
+
+**Everything downstream is parked behind this.** P0-1 (the E8 baseline signature) gates AutoPilot
+resume (P1-3), which gates the P2-5f duty-cycle measurement, which gates the shed-batch decision
+rule. codex owned it and closed with the tail unfinished. Its verbatim handover, in its stated
+order — **do not reorder these three**:
+
+1. **Integrate scorer isolation first.**
+2. **Replay the successor second.**
+3. **Fix the historical-receipt / runtime-helper dual binding**, and only then rerun the audit.
+
+State at close: 279 rows clean, sidecar
+`bd89f9e4d7e0a114518a7a0a729b5ea6322ea21e02728f9fc6795db40992a424`. **Incomplete** — no
+deterministic completion, no finalizer inference, no baseline application, and no publication
+occurred. Race rows 97 / 203 / 279 remain retained for race-only retry and must never be silently
+promoted to clean rows. Failed evidence is immutable; nothing was applied.
+
+Before rerunning anything, read `fable-auditor`'s static contract audit findings in
+`coordination/session-bus/outbox/fable-auditor.jsonl` (task `e8-harness-contract-audit`) — six
+tier-A fail-open contracts, the two CRITICAL ones verified closed at pinned commit `182ccef6`.
+The point of that audit was to replace codex's serial run-discover-fix loop with one static pass;
+re-running before reading it re-enters the loop the audit exists to end.
+
 ### P1-3 — AutoPilot resume (`gpu-serving-tie-in-program.md` Phase 1)
 - Gated on **P0-1, the E8 baseline signature**. Preconditions are already fixed and merged
   (tiny-n hard-gate guard `4d329002`, kv_compaction per-role skip `24fa1399`). Fresh-reseeded
@@ -96,6 +147,19 @@ Do not run anything below out of order relative to its stated gate.
   against. Wait for AutoPilot to be running representatively, not just running.
 
 ---
+
+### Wiki compilation backlog — deferred three wrap-ups running, now a task
+
+- [ ] **Compile the 7 queued wiki sources** once the campaigns they describe reach a terminal
+  state. `python3 .claude/skills/project-wiki/scripts/compile_sources.py` reports `total_new: 7`
+  (5 active handoffs, today's progress file, `docs/reference/p2-2-tenant-landing-readiness-20260729.md`).
+  `.last_compile` was deliberately **not** touched, so they requeue rather than being marked
+  compiled. The reason for deferral is substantive, not scheduling: six of seven describe campaigns
+  that are **incomplete** — E8 has no baseline signature, the GPU lane is unactivated — and the
+  wiki writer policy demands `verified` confidence with review. Compiling durable knowledge out of
+  an unfinished campaign mints claims that later have to be retracted. **Do this after the E8
+  signature lands, not before.** The two earlier deferrals cited other sessions being mid-write;
+  that justification expired when the fleet was closed, which is why it is a checkbox now.
 
 ## 3. Artifact-update obligation when E5 W1-W4 land
 
@@ -129,8 +193,13 @@ Source markdown/HTML: `artifacts/operator/e5_w0_preliminary_results.md` /
 
 The GPU shadow lane is built (`gpu-serving-tie-in-program.md` P2-6 landed, P2-4 review done) but
 **not switched on**. Remaining before any activation:
-- **P2-2** — tenants land: dense-27B (stock first) + MiniCPM-o (parked promotion runbook
-  §Steps 1-6) + whisper.
+- **P2-2** — tenants land. **RESCOPED to two tenants by operator decision W3 (2026-07-29)**:
+  dense-27B (stock first) + MiniCPM-o (parked promotion runbook §Steps 1-6). **Whisper is no longer
+  part of P2-2** — it was refiled as **P2-9**, downstream of the bake-off, with W1 recommended and
+  W2 explicitly ruled out (no clone, no HIP build, no GGUF download). Current state: **P2-2a
+  dense-27B VERIFIED LANDED**; **P2-2b** MiniCPM-o artifacts verified and its Step-1 proposal
+  pre-validated; **P2-2c** (MiniCPM-o Steps 1-6) is the **sole open task**, post-reboot by the
+  runbook's own P7 rule, and still needs the runbook **P1 operator grant**. P2-2 is **NOT closed**.
 - Activation choreography, Steps 0-7 (`docs/gpu-shadow-lane.md`), operator-gated.
 - **Phase 3** — P3-1 shadow bake-off (stock-27B vs FF, scored separately per duty), P3-2 tenancy
   decision package to the operator, **P3-3** operator three-gates sign-off — required before any
@@ -193,6 +262,17 @@ P2-2/Steps 0-7 outside the decided sequence above.
   C9's own filing called for is still unpaid. Not urgent (the change is fail-closed on every
   branch it cannot evaluate, both suites green) but a second pair of eyes is cheap now and
   expensive later. This is a coordinator-daemon-owned call, not something to self-resolve.
+- **C-OWN — the C-series is UNOWNED.** `claude-gpu-lane` was re-tasked off it and then closed, so
+  C6/C9/C10/C14/C16/C18/C21 and all of `tmux_adapter.py` have no owner. Filed as `C-OWN` in
+  `handoffs/active/session-bus-thin-dispatcher.md` (~line 678). **Re-assigning this is the first
+  bus-side thing a new coordinator should put in a spawn plan** — the delivery plane you depend on
+  to do your own job is currently maintained by nobody.
+- **C22** — `roster_window_names()` is dead code still carrying the last-writer-wins idiom
+  (handoff ~line 682). The reviewer's residual from the C6 fix.
+- **C23** — triage disposition has no bulk-clear granularity, so N routed items produce N identical
+  payloads (handoff ~line 687). Protocol shape, not a send bug — do not "fix" it in the adapter.
+- **C11** review debt (below) and **C22/C23** are all cheap now and expensive later; they are the
+  natural first assignment for whoever takes C-OWN.
 - **C18a** — `codex-bus-tests` is still listed with `role: main` and no session. Non-urgent: the
   liveness check works correctly regardless of whether this roster field is maintained, but it's
   stale bookkeeping worth fixing when convenient.

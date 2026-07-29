@@ -418,6 +418,27 @@ freezes/cutovers, host reboots).
   pre-merge hook, in coordinator-agent, or by hand without any of them inheriting write authority.
   Tests: `scripts/coordination/tests/test_merge_gate.py`, 25/25, including the drifted-pin refusal
   end-to-end and its restoration.
+- [x] **R6b — coordinator-agent instantiated and made re-instantiable.** ✅ 2026-07-29 — R6 built
+  the authority; this ran it for a full campaign and turned what was learned into a cold start.
+  Deliverables: `agents/coordinator-agent.md` (the role — mission, guardrails, the never-sign /
+  never-tick / never-edit-`human_only_paths.yaml` boundary) and `.claude/skills/coordinator-agent/`
+  (the cold start: Phase 0 reality check → 1 addressable → 2 recover-from-files → **report** → 3
+  triage, with the ordering marked non-negotiable because the failure mode is dispatching before
+  the operator has seen true state).
+  **The rule the campaign actually paid for is Workflow step 1, DRAIN BEFORE YOU SPEAK**: the
+  coordinator's cursor sat 33 messages behind — including a hard block needing an operator
+  signature and a completed audit carrying two CRITICAL findings — while the delivery machinery
+  (daemon relay, C8 boundary detection, the severity watcher) worked correctly the whole time. The
+  inbox was simply never read. Every fix that session shipped was in the delivery plane; the defect
+  was in the last hop, bus → operator, which is judgment and cannot be mechanised — so it is a
+  standing rule on every reply, not a startup step.
+- [x] **R6c — post-reboot brief promoted to a first-class coordinator artifact.** ✅ 2026-07-29 —
+  `coordination/session-bus/tasks/post-reboot-session.md` is now read in **Phase 0a, before any
+  command**, and maintaining it at wrap-up is the outgoing coordinator's stated duty. Rationale:
+  `rebuild` reconstructs the bus *mechanism* (queue, tokens, cursors, unread depth) but the bus
+  carries no record of what a session was in the middle of or which gate a campaign is parked
+  behind. Without the brief a fresh coordinator correctly reports an empty queue while a
+  decision-grade campaign sits one command from resuming.
 
   **Built elsewhere: git hygiene as enforced rules** — path-scoped adds and fetch-before-commit are
   R7a's `check_commit_hygiene.py`, not prose.
