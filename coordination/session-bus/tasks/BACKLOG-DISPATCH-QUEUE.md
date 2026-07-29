@@ -106,7 +106,7 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 29 | ~~`tool-output-compression.md:442`~~ **✅ CLOSED 2026-07-29** | intake 2026-07-21 | none | S | `scripts/utils/compress_tool_output.py` | Bias Phase-3d fallback chain toward observation-dropping first |
 | 30 | `decision-aware-routing.md:185` | DAR-5 | none | S | `learned-routing-controller.md` | Document cold-start note for LRC P5 onboarding |
 | 31 | ~~`ernie-image-turbo-evaluation.md:139`~~ **✅ CLOSED 2026-07-29** | progress-checklist | none | S | `research/deep-dives/` ernie dive | Record LongText-Bench harmonized ranking in the deep dive |
-| 32 | `intake-derived-work-2026-07-25.md:166` | P1b DFlash | none | S | capability registry yaml | Re-triage the stale dflash registry `forbid` row |
+| 32 | ~~`intake-derived-work-2026-07-25.md:166`~~ **✅ CLOSED 2026-07-29** | P1b DFlash | none | S | capability registry yaml | Re-triage the stale dflash registry `forbid` row |
 | 33 | `model-stack-single-source-update-pipeline.md:325` | outstanding | none | S | `seeding_rewards.py`, `corpus_quality_gate.py`, `kv_compress.py` | Keep 3 re-audited surfaces unchurned absent a new duplicated fact |
 | 34 | `unified-trace-memory-service.md:219` | UTM-M6 | none | S | `research/intake_index.yaml` | File EvoMemBench 128K context-competition as a distinct failure mode |
 | 35 | `rao-redel-substrate-spike.md:432` | intake 2026-07-21 | none | M | `orchestration/repl_memory/episodic_store.py` | Adopt SkyRL parent/child rollout-tree accounting shape |
@@ -814,7 +814,7 @@ re-grep before assigning.
 - L150 | cpu | L | N | needs matching gemma-4 target weights | Measure gemma-4 DFlash drafter against worker_general | gemma-4-26B DFlash drafter
 - L155 | none | S | N | - | Record Qwen3.5-122B DFlash watch item; scope acceptance-only | speculative-decoding-mtp-refresh.md
 - L163 | none | S | N | parallel v8 session holds laguna edits | Downgrade quant-noise root cause to hypothesis | laguna-s21-cpu-port.md
-- L166 | none | S | Y | - | **READY** Re-triage stale dflash registry forbid row | capability registry yaml
+- L166 | none | S | Y | - | **CLOSED 2026-07-29** — full registry retains registration gate but removes the stale runtime-availability forbid | Re-triage stale dflash registry forbid row | capability registry yaml
 - L169 | none | S | N | - | Record headless non-causal target-locked DFlash architecture fact | laguna-…md, speculative-…md
 - L179 | none | M | N | - | Recover dropped RLM negatives incl prefill-to-decode conversion | repl-turn-efficiency.md, intake_index.yaml
 - L189 | none | M | N | - | Promote open-weight RLM system prompt + partitioning constants | repl-turn-efficiency.md
