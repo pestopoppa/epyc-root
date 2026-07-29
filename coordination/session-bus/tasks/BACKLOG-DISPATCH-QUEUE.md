@@ -86,7 +86,7 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 9 | ~~`gpu-acceleration-path.md:531`~~ **✅ CLOSED 2026-07-29** | 2026-07-29 fix | none | S | `gpu-acceleration-path.md` | Record reverse-KL on-policy-distillation negative as guardrail |
 | 10 | ~~`tool-use-eval-contract.md:366`~~ **✅ CLOSED 2026-07-29** | intake 2026-07-21 | none | S | sentinel prompt definitions | Adopt negative-constraint + stated-consequence sentinel pattern |
 | 11 | ~~`gpu-serving-tie-in-program.md:143`~~ **✅ CLOSED 2026-07-29** | P5 | none | S | `heterogeneous-slot-fabric-residency.md` | Add GPU host threads as a modeled slot-fabric consumer |
-| 12 | `model-stack-change-standardization-audit.md:229` | update-checklist | none | S | `tests/unit/` priors/guard/enum-sync/q_scorer suites | Run focused unit tests for priors, guard, scorer, admission |
+| 12 | ~~`model-stack-change-standardization-audit.md:229`~~ **TEMPLATE — DO NOT DISPATCH 2026-07-29** | update-checklist | none | S | `tests/unit/` priors/guard/enum-sync/q_scorer suites | Run focused unit tests for priors, guard, scorer, admission |
 | 13 | `eval-tower-verification.md:522` | de-anchoring | none | S | `autopilot.py:1431`, `paired_stats.py` | Unify autopilot's 2nd McNemar producer onto `verdict_from_result` |
 | 14 | ~~`minddr-deep-research-mode.md:207`~~ **✅ CLOSED 2026-07-29** | search-time contamination | none | S | `minddr-deep-research-mode.md` | Demote BrowseComp/WideSearch/xbench anchors to observation-grade |
 | 15 | ~~`engram-conditional-memory.md:379`~~ **✅ CLOSED 2026-07-29** | retrieval-policy rider | none | S | `engram-…md`, `unified-trace-memory-service.md` | Correct the ReasoningBank ranking claim in retrieval notes |
@@ -1004,7 +1004,7 @@ re-grep before assigning.
 ## model-stack-change-standardization-audit.md (7) — per-change procedural checklist
 - L219 | none | S | N | fires per stack change | Identify the model-stack change type before touching inputs | ?
 - L220 | none | S | N | L219 change-type identification | Update structured registry/descriptor inputs only | model_registry.yaml, stack_manifest.py
-- L229 | none | S | Y | - | **READY** Run focused unit tests for priors, guard, scorer, admission | tests/unit/ suites
+- L229 | none | S | Y | - | **TEMPLATE — DO NOT DISPATCH** — execute only during a concrete stack change; the owning runbook checkbox remains intentionally open | Run focused unit tests for priors, guard, scorer, admission | tests/unit/ suites
 - L230 | none | M | Y | - | Run simulated mmap-swap, retirement, tier-change tests | tests/ simulated swap fixtures
 - L234 | none | S | N | - | Update only generated summaries or explicitly historical docs | docs/runbooks/
 - L235 | none | S | N | pre-launch gate | Require fresh priors + guard pass before any launch | stack-change gate, stack_priors.yaml
