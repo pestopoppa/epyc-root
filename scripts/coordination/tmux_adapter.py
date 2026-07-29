@@ -48,6 +48,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import time
@@ -621,6 +622,299 @@ def resolve_spawn_cap(caps: dict) -> tuple[int | None, str]:
                       f"its value authorises a different thing. Set caps.{CAP_KEY} explicitly "
                       f"(operator decision) and delete the old key.")
     return None, f"caps.{CAP_KEY} is not set"
+
+
+# ---------------------------------------------------------------- C36 runtime liveness
+#
+# THE ROOT DEFECT C35 ONLY MITIGATED. The heartbeat is written BY the agent, so an
+# agent that has stopped cannot say so — and `probe` refuses every nudge on
+# `state == "working"`. That is the deadlock. C35's pane-quiescence override treats
+# the symptom with a heuristic ("a working TUI redraws a spinner"); this reads a
+# signal the RUNTIME writes, which is true even when the agent is wedged, because it
+# is STATE rather than a timestamp.
+#
+# Operator-approved as Option B of docs/design/agent-session-control-surface.md, which
+# ranks 14 candidate signals with measurements. Option A (driving Codex over
+# app-server JSON-RPC) is NOT approved and is not implemented here; read-only status
+# only. Measured 2026-07-29: Option A is in any case 0% available today — no
+# app-server runs and none of the four live Codex TUIs was launched with `--remote`,
+# so adopting it would require restarting every Codex main.
+#
+# POLARITY, which is the whole game in this module: this NEVER manufactures an `idle`.
+# Every failure path returns None = UNAVAILABLE, and None falls back to the previous
+# behaviour (heartbeat + C35). An unreadable runtime is not an idle runtime.
+_ROLLOUT_TERMINAL = {"task_complete", "turn_aborted"}
+_BACKENDS = ("codex", "claude")
+
+
+def _proc_children(pid: int) -> list[int]:
+    try:
+        raw = Path(f"/proc/{pid}/task/{pid}/children").read_text(encoding="utf-8")
+    except OSError:
+        return []
+    out = []
+    for tok in raw.split():
+        try:
+            out.append(int(tok))
+        except ValueError:
+            continue
+    return out
+
+
+def _proc_descendants(pid: int, depth: int = 3) -> list[int]:
+    seen, frontier = [pid], [pid]
+    for _ in range(depth):
+        nxt: list[int] = []
+        for p in frontier:
+            nxt += _proc_children(p)
+        if not nxt:
+            break
+        seen += nxt
+        frontier = nxt
+    return seen
+
+
+def _proc_names(pid: int) -> tuple[str, str]:
+    """(exe basename, argv[0] basename) — both, because neither alone is reliable."""
+    try:
+        exe = os.path.basename(os.path.realpath(f"/proc/{pid}/exe"))
+    except OSError:
+        exe = ""
+    try:
+        raw = Path(f"/proc/{pid}/cmdline").read_bytes().split(b"\0")
+        argv0 = os.path.basename(raw[0].decode("utf-8", "replace")) if raw else ""
+    except (OSError, IndexError):
+        argv0 = ""
+    return exe, argv0
+
+
+def _pane_pid_for(config: dict, agent: str) -> tuple[int | None, str]:
+    """The pane pid of this roster id's window. (pid, why); None => could not resolve.
+
+    THE WINDOW COMES FROM THE ENDPOINT, NOT FROM THE ROSTER ID — and this function
+    exists because the first draft of C36 assumed `window_name == agent` and silently
+    lost `coordinator-agent`, whose endpoint is `tmux:agent:coordinator`. That is C25
+    exactly, repeated inside the fix for a different defect one hour after C25 landed.
+    The lesson generalises: any new code that locates a main's window must go through
+    the endpoint, so the rule lives here once instead of being re-derived per caller.
+    Fallback when the endpoint carries no window component mirrors `resolve_target`:
+    a window named after the roster id.
+    """
+    entry = roster_entry(config, agent)
+    if not entry:
+        return None, f"{agent!r} has no roster row"
+    kind, value, error = parse_endpoint_window(str(entry.get("endpoint") or ""))
+    if error:
+        return None, f"{agent!r}: {error}"
+    live = str((config.get("tmux") or {}).get("live_session") or "agent")
+    rc, out = _tmux("list-windows", "-t", live, "-F", "#{window_index}\t#{window_name}\t#{pane_pid}")
+    if rc != 0:
+        return None, f"cannot list windows of {live!r}: {out}"
+    for line in out.splitlines():
+        parts = line.split("\t")
+        if len(parts) != 3:
+            continue
+        index, name, pid = (p.strip() for p in parts)
+        hit = (name == agent) if kind is None else (
+            name == value if kind == "name" else index == value)
+        if hit:
+            try:
+                return int(pid), f"window {name!r} (pane {pid})"
+            except ValueError:
+                return None, f"unreadable pane pid {pid!r} for window {name!r}"
+    want = agent if kind is None else value
+    return None, f"no window {want!r} in session {live!r} for roster id {agent!r}"
+
+
+def agent_backend(config: dict, agent: str) -> tuple[str | None, str]:
+    """Which CLI is this roster id actually running? (backend, why). None => unknown.
+
+    IDENTIFIED, NOT INFERRED, and the distinction decides whether this is safe. The
+    backend is read from the EXECUTABLE / argv[0] basename of a descendant of the
+    window's pane pid — `codex` or `claude` — never from a substring of the shell's
+    `-c` string. Measured 2026-07-29: mains are launched as `fish -c codex -m …` and
+    `fish -c cd /workspace && claude`, so a substring test would misread a main
+    launched as `claude --resume codex-notes`. Verified across all 9 live windows:
+    4 codex, 3 claude, and htop/btop correctly UNKNOWN.
+    RATIONALE FOR DOING THIS AT ALL: the 2026-07-29 rename made roster ids deliberately
+    model-agnostic so a main can move between backends, and C30(a) — the roster row
+    carrying its own launch command — is still open. A roster field would be better
+    (it survives a re-spawn without a process walk) and this defers to one when it
+    lands. Until then this is positive identification, not a guess.
+    AMBIGUITY REFUSES. Both backends visible under one window, or neither, returns
+    None, and None means the caller falls back — never that the agent is idle.
+    """
+    entry = roster_entry(config, agent)
+    declared = str((entry or {}).get("backend") or "").strip().lower()
+    if declared in _BACKENDS:
+        return declared, f"roster row declares backend {declared!r} (C30a)"
+    if declared:
+        return None, (f"roster row declares backend {declared!r}, which is not one of "
+                      f"{list(_BACKENDS)} — refusing to guess")
+
+    pane_pid, why_pid = _pane_pid_for(config, agent)
+    if pane_pid is None:
+        return None, why_pid
+
+    found: dict[str, int] = {}
+    for p in _proc_descendants(pane_pid):
+        exe, argv0 = _proc_names(p)
+        for backend in _BACKENDS:
+            if backend in (exe, argv0) or exe.startswith(backend) or argv0.startswith(backend):
+                found.setdefault(backend, p)
+    if len(found) == 1:
+        backend, p = next(iter(found.items()))
+        return backend, f"{backend!r} identified from pid {p} under pane {pane_pid}"
+    if not found:
+        return None, (f"no {' or '.join(_BACKENDS)} process under pane {pane_pid} for "
+                      f"{agent!r} — not a backed main, or it has exited")
+    return None, (f"AMBIGUOUS: both {sorted(found)} run under pane {pane_pid} for {agent!r}; "
+                  f"refusing rather than picking one")
+
+
+def codex_runtime_state(pid: int) -> tuple[str | None, str]:
+    """('idle'|'active'|None, why) from the Codex rollout terminal record.
+
+    The runtime appends every turn's records to
+    `$CODEX_HOME/sessions/YYYY/MM/DD/rollout-<ts>-<uuid>.jsonl`; a turn that has ENDED
+    leaves `event_msg/task_complete` or `event_msg/turn_aborted` as the file's last
+    record. Verified over the whole corpus: 400 files sampled from 4,233 gave 400/400
+    terminal. `task_complete` is a stable resting tail — the record that follows it is
+    only ever `task_started` or `thread_settings_applied`, never the frequent mid-turn
+    `token_count` — so a settled file does not later look busy again.
+    THE SUBAGENT FD IS THE TRAP, AND IT IS LIVE. A parent codex process keeps the fds
+    of FINISHED subagent rollouts open. Measured 2026-07-29 16:38Z on pid 257808:
+    fd 39 -> a subagent rollout reading `task_complete`, fd 45 -> its own user rollout
+    reading `custom_tool_call`. Reading the wrong fd reports IDLE for an agent that is
+    mid-tool-call, which is precisely the nudge this module exists to prevent. So the
+    user rollout is selected by `thread_source`, and anything else is refused.
+    `thread_source` ABSENT FAILS CLOSED, deliberately. 8 corpus files (April-May, older
+    cli_version) carry no such field. Treating absent as "user" would re-open the trap
+    above for any file whose provenance we cannot read; treating it as "not user" costs
+    only a fallback to the heartbeat. Today's fleet all carry the field, so this costs
+    nothing now and cannot misread later.
+    """
+    fd_dir = Path(f"/proc/{pid}/fd")
+    try:
+        fds = list(fd_dir.iterdir())
+    except OSError as exc:
+        return None, f"cannot read /proc/{pid}/fd: {exc}"
+
+    rollouts: list[Path] = []
+    for fd in fds:
+        try:
+            target = Path(os.path.realpath(fd))
+        except OSError:
+            continue
+        if target.suffix == ".jsonl" and target.name.startswith("rollout-") \
+                and "sessions" in target.parts:
+            rollouts.append(target)
+    if not rollouts:
+        return None, f"pid {pid} holds no rollout file open"
+    state, why = codex_state_from_rollouts(rollouts)
+    return state, f"pid {pid}: {why}"
+
+
+def codex_state_from_rollouts(rollouts: list[Path]) -> tuple[str | None, str]:
+    """The classification half, split out from the /proc lookup so it is testable.
+
+    Separating these is not cosmetic: every interesting failure mode of this signal —
+    subagent selection, absent `thread_source`, a torn tail — lives here, and none of
+    it can be exercised through a real `/proc/<pid>/fd`.
+    """
+    user: list[Path] = []
+    for path in rollouts:
+        try:
+            with path.open("r", encoding="utf-8", errors="replace") as fh:
+                head = fh.readline()
+            meta = json.loads(head).get("payload") or {}
+        except (OSError, json.JSONDecodeError, AttributeError):
+            continue                      # unreadable provenance is never assumed to be ours
+        source = meta.get("thread_source")
+        if isinstance(source, str) and source != "subagent":
+            user.append(path)
+    if not user:
+        return None, (f"{len(rollouts)} rollout(s) open but none declares a non-subagent "
+                      f"thread_source — refusing rather than reading a subagent's state as the main's")
+    if len(user) > 1:
+        return None, (f"{len(user)} user rollouts ({sorted(q.name for q in user)}); "
+                      f"refusing rather than picking one")
+
+    path = user[0]
+    for attempt in (1, 2):
+        last = _last_line(path)
+        if last is None:
+            return None, f"cannot read {path.name}"
+        try:
+            payload = json.loads(last).get("payload") or {}
+        except json.JSONDecodeError:
+            if attempt == 1:
+                time.sleep(0.05)          # a torn tail under live append: retry once, then refuse
+                continue
+            return None, (f"last record of {path.name} is not parseable JSON after a retry — "
+                          f"treating as unknown rather than guessing a state")
+        kind = payload.get("type")
+        if kind in _ROLLOUT_TERMINAL:
+            return "idle", f"{path.name} ends in {kind!r}"
+        return "active", f"{path.name} ends in {kind!r}, not a turn-terminal record"
+    return None, "unreachable"
+
+
+def _last_line(path: Path) -> str | None:
+    """Last non-empty line, read from the END so cost is independent of file size.
+
+    Rollouts reach 40 MB; reading them whole every probe would put a multi-megabyte
+    read on the nudge path. Measured: seeking is sub-millisecond against a 6.7 MB file.
+    """
+    try:
+        with path.open("rb") as fh:
+            fh.seek(0, os.SEEK_END)
+            end = fh.tell()
+            block, buf = 4096, b""
+            while end > 0:
+                step = min(block, end)
+                end -= step
+                fh.seek(end)
+                buf = fh.read(step) + buf
+                lines = [ln for ln in buf.split(b"\n") if ln.strip()]
+                if len(lines) >= 1 and (end == 0 or len(buf.split(b"\n")) > 2):
+                    return lines[-1].decode("utf-8", "replace")
+                block *= 4
+            return None
+    except OSError:
+        return None
+
+
+def runtime_liveness(config: dict, agent: str) -> tuple[str | None, str]:
+    """('idle'|'active'|None, why) — liveness as reported by the RUNTIME, not the agent.
+
+    None means UNAVAILABLE and the caller must fall back to the previous guard chain.
+    It never means idle: an unreadable runtime is not an idle runtime, and this module's
+    entire defect history (C3, C6, C8, C24, C27, C34) is fail-opens.
+    """
+    backend, why = agent_backend(config, agent)
+    if backend is None:
+        return None, f"backend unknown: {why}"
+    if backend == "codex":
+        pane_pid, why_pid = _pane_pid_for(config, agent)
+        if pane_pid is None:
+            return None, f"codex: {why_pid}"
+        # Only the musl `codex` binary holds rollout fds — not the `node` wrapper and
+        # not `codex-code-mode-host`. Measured 2026-07-29.
+        last = "no codex pid under the pane"
+        for p in _proc_descendants(pane_pid):
+            exe, argv0 = _proc_names(p)
+            if "codex" in (exe, argv0):
+                state, detail = codex_runtime_state(p)
+                if state is not None:
+                    return state, f"codex rollout (pid {p}): {detail}"
+                last = detail
+        return None, f"codex: {last}"
+    # Claude: signal #3 (`claude agents --json` / ~/.claude/sessions/<pid>.json) is not
+    # wired yet — it is being verified separately, and an unverified signal on the
+    # delivery plane is worth less than an honest UNAVAILABLE.
+    return None, (f"backend {backend!r}: no runtime signal implemented yet — falling back to the "
+                  f"heartbeat guard chain")
 
 
 def record(kind: str, agent: str, detail: str, **fields: object) -> None:

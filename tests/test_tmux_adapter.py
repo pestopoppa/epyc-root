@@ -1554,3 +1554,155 @@ def test_c35_an_overriding_nudge_is_recorded_as_such_in_the_ledger(
     assert adapter2.cmd_nudge(_Args()) == 0
     row2 = json.loads(adapter2.LEDGER.read_text().splitlines()[-1])
     assert "heartbeat_override" not in row2, "a normal nudge row is unchanged on disk"
+
+
+# ---------------------------------------------------------------- C36 runtime liveness
+
+
+def _rollout(tmp_path: Path, name: str, *, thread_source: str | None, last_type: str,
+             torn: bool = False) -> Path:
+    """A rollout file with a session_meta line-1 and a chosen terminal record."""
+    d = tmp_path / "sessions" / "2026" / "07" / "29"
+    d.mkdir(parents=True, exist_ok=True)
+    meta: dict = {"id": name, "session_id": "s-1"}
+    if thread_source is not None:
+        meta["thread_source"] = thread_source
+    lines = [json.dumps({"timestamp": "t", "type": "session_meta", "payload": meta}),
+             json.dumps({"timestamp": "t", "type": "event_msg",
+                         "payload": {"type": "task_started"}})]
+    tail = json.dumps({"timestamp": "t", "type": "event_msg", "payload": {"type": last_type}})
+    lines.append(tail[:len(tail) // 2] if torn else tail)
+    p = d / f"rollout-2026-07-29T00-00-00-{name}.jsonl"
+    p.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return p
+
+
+@pytest.mark.parametrize("last_type,expected", [
+    ("task_complete", "idle"),
+    ("turn_aborted", "idle"),
+    ("token_count", "active"),
+    ("custom_tool_call", "active"),
+])
+def test_c36_terminal_record_decides_idle_vs_active(
+        tmp_path: Path, last_type: str, expected: str) -> None:
+    """C36 signal #2. Verified over the corpus: 400 files sampled from 4,233 ended in
+    `task_complete` or `turn_aborted` — 400/400. `token_count` is the frequent mid-turn
+    tail, so seeing it means BUSY, not ambiguous."""
+    adapter = _load(f"c36_{last_type}")
+    r = _rollout(tmp_path, "u", thread_source="user", last_type=last_type)
+    state, why = adapter.codex_state_from_rollouts([r])
+    assert state == expected, why
+
+
+def test_c36_a_finished_subagent_rollout_never_speaks_for_the_main(tmp_path: Path) -> None:
+    """THE TRAP, and it is live on this host. A parent codex process keeps the fds of
+    FINISHED subagent rollouts open. Measured 2026-07-29 16:38Z on pid 257808: one fd
+    read `task_complete` while its own user rollout read `custom_tool_call`. Reading
+    the wrong fd reports IDLE for an agent mid-tool-call — precisely the nudge this
+    module exists to prevent."""
+    adapter = _load("c36_subagent")
+    sub = _rollout(tmp_path, "sub", thread_source="subagent", last_type="task_complete")
+    user = _rollout(tmp_path, "usr", thread_source="user", last_type="custom_tool_call")
+
+    state, why = adapter.codex_state_from_rollouts([sub, user])
+
+    assert state == "active", f"the subagent's task_complete must not win: {why}"
+    assert "usr" in why
+
+
+def test_c36_subagent_only_refuses_rather_than_answering(tmp_path: Path) -> None:
+    adapter = _load("c36_subonly")
+    sub = _rollout(tmp_path, "sub", thread_source="subagent", last_type="task_complete")
+    state, why = adapter.codex_state_from_rollouts([sub])
+    assert state is None and "non-subagent" in why
+
+
+def test_c36_absent_thread_source_fails_CLOSED(tmp_path: Path) -> None:
+    """8 corpus files (older cli_version) carry no `thread_source` at all. Treating
+    absent as "user" would re-open the subagent trap for any file whose provenance
+    cannot be read; treating it as not-user costs only a fallback to the heartbeat."""
+    adapter = _load("c36_nosource")
+    r = _rollout(tmp_path, "old", thread_source=None, last_type="task_complete")
+    state, why = adapter.codex_state_from_rollouts([r])
+    assert state is None, f"absent thread_source must not be read as a user thread: {why}"
+
+
+def test_c36_two_user_rollouts_refuse_rather_than_pick(tmp_path: Path) -> None:
+    adapter = _load("c36_twouser")
+    a = _rollout(tmp_path, "u1", thread_source="user", last_type="task_complete")
+    b = _rollout(tmp_path, "u2", thread_source="user", last_type="token_count")
+    state, why = adapter.codex_state_from_rollouts([a, b])
+    assert state is None and "refusing rather than picking one" in why
+
+
+def test_c36_a_torn_tail_reports_unknown_never_a_state(tmp_path: Path) -> None:
+    """1,800 reads under live append gave 0 parse failures, but the longest record is
+    192 KB — past any single-write atomicity guarantee — so a torn tail cannot be
+    proven impossible. Unknown falls back; it never becomes idle."""
+    adapter = _load("c36_torn")
+    r = _rollout(tmp_path, "u", thread_source="user", last_type="task_complete", torn=True)
+    state, why = adapter.codex_state_from_rollouts([r])
+    assert state is None and "not parseable" in why
+
+
+def test_c36_pane_pid_is_resolved_through_the_ENDPOINT_not_the_roster_id(
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    """C25, repeated INSIDE C36 one hour after C25 landed, and caught by smoke-testing
+    against the live fleet: the first draft assumed `window_name == agent` and silently
+    lost `coordinator-agent`, whose endpoint is `tmux:agent:coordinator`. Any new code
+    that locates a main's window must go through the endpoint."""
+    adapter = _load("c36_endpoint")
+    config = {"roster": [{"id": "coordinator-agent", "endpoint": "tmux:agent:coordinator"}],
+              "tmux": {"live_session": "agent"}}
+    monkeypatch.setattr(adapter, "_tmux",
+                        lambda *a: (0, "0\tcoordinator\t4242\n1\tmainA\t99"))
+
+    pid, why = adapter._pane_pid_for(config, "coordinator-agent")
+
+    assert pid == 4242, why
+
+
+def test_c36_backend_ambiguity_refuses_and_absence_is_unknown(
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    """Identification, not inference — and when it cannot identify, it says so. None
+    means the caller falls back; it never means the agent is idle."""
+    adapter = _load("c36_ambig")
+    config = {"roster": [{"id": "m", "endpoint": "tmux:agent:m"}], "tmux": {"live_session": "agent"}}
+    monkeypatch.setattr(adapter, "_tmux", lambda *a: (0, "0\tm\t100"))
+    monkeypatch.setattr(adapter, "_proc_descendants", lambda pid, depth=3: [100, 101])
+
+    monkeypatch.setattr(adapter, "_proc_names", lambda p: ("codex", "codex") if p == 100
+                        else ("claude", "claude"))
+    backend, why = adapter.agent_backend(config, "m")
+    assert backend is None and "AMBIGUOUS" in why
+
+    monkeypatch.setattr(adapter, "_proc_names", lambda p: ("fish", "fish"))
+    backend, why = adapter.agent_backend(config, "m")
+    assert backend is None and "not a backed main" in why
+
+
+def test_c36_a_declared_roster_backend_wins_and_a_bogus_one_refuses() -> None:
+    """C30(a) forward-compat: when the roster carries `backend:` it is authoritative,
+    because a field survives a re-spawn without a process walk. A value that is not a
+    known backend REFUSES rather than falling through to the process scan — a roster
+    that says something we cannot honour is a config error, not a hint."""
+    adapter = _load("c36_declared")
+    ok = {"roster": [{"id": "m", "endpoint": "tmux:agent:m", "backend": "codex"}]}
+    assert adapter.agent_backend(ok, "m")[0] == "codex"
+    bad = {"roster": [{"id": "m", "endpoint": "tmux:agent:m", "backend": "gpt5"}]}
+    backend, why = adapter.agent_backend(bad, "m")
+    assert backend is None and "refusing to guess" in why
+
+
+def test_c36_claude_backend_reports_UNAVAILABLE_not_idle(
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    """The signal for Claude mains is not wired yet. An honest UNAVAILABLE falls back
+    to the existing guard chain; an unverified signal on the delivery plane would be
+    worth less than nothing."""
+    adapter = _load("c36_claude")
+    config = {"roster": [{"id": "m", "endpoint": "tmux:agent:m", "backend": "claude"}],
+              "tmux": {"live_session": "agent"}}
+    state, why = adapter.runtime_liveness(config, "m")
+    assert state is None
+    assert "idle" not in why.replace("no runtime signal", "")
+    assert "falling back" in why
