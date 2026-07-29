@@ -725,19 +725,24 @@ When resuming this handoff:
 > silently stops being run.
 >
 > Noted 2026-07-29 by `auditor` during a sweep of `handoffs/active/` prompted by the automated
-> backlog sweep classifying steps like these as dispatchable `none`-lane work. **THIS SECTION HAS ALREADY BEEN CORRUPTED:** two boxes were flipped to `[x]` on 2026-07-29 via BACKLOG-DISPATCH-QUEUE TOP-40 rows #1 and #2 — whose own *Handoff §* column reads `pickup-checklist`. `Check llama.cpp upstream for new CPU ukernel PRs` is precisely a step that must re-run at each pickup, because upstream moves; it now reads as done. Repair proposed on the bus, not applied unilaterally.
+> backlog sweep classifying steps like these as dispatchable `none`-lane work. **THIS SECTION WAS CORRUPTED AND REPAIRED:** two boxes were flipped to `[x]` on 2026-07-29 via BACKLOG-DISPATCH-QUEUE TOP-40 rows #1 and #2 — whose own *Handoff §* column reads `pickup-checklist`. `Check llama.cpp upstream for new CPU ukernel PRs` is precisely a step that must re-run at each pickup, because upstream moves. The dated observations from that pickup are retained below; the repeatable procedure remains unchecked.
 
 
 - [ ] Re-read this doc end-to-end including the 2026-04-23 audit update block.
 - [ ] Check `master-handoff-index.md` and `cpu-inference-optimization-index.md` for any status changes since 2026-04-23.
-- [x] Check llama.cpp upstream for any new CPU ukernel PRs (this handoff may be partially obsoleted). ✅ 2026-07-29 — unmerged x86 Q4_Kx8/Q8_K GEMV candidates [#23309](https://github.com/ggml-org/llama.cpp/pull/23309) and [#23793](https://github.com/ggml-org/llama.cpp/pull/23793) are experimental-watchlist items only: Intel/small-model author observations, overlapping `repack.cpp` changes, and no v8 production action. #25390 is a merged generic scalar-tail fix to review only on a future upstream forward-port.
+- [ ] Check llama.cpp upstream for any new CPU ukernel PRs (this handoff may be partially obsoleted).
 - [ ] Check for any new Justine Tunney / tinyBLAS Zen 5 benchmarks.
 - [ ] **Work in `/mnt/raid0/llm/llama.cpp-experimental`, never the production `llama.cpp` tree.** Start every new experiment from the current frozen production tip (`production-consolidated-v8` / `67a433bf4` as of 2026-07-29), then create a fresh experimental branch; do not revive the obsolete v4 anchor.
 - [ ] **Measure tinyBLAS on/off as first Phase 0 step** (`GGML_USE_LLAMAFILE` macro); that delta changes the remaining headroom calculation.
-- [x] **TIDE early-exit paths confirmed dormant ✅ 2026-07-29**: fork commits `143ded626`, `c4e06b01e`, and `59d2012b2` are not reachable from frozen production `production-consolidated-v8` (`67a433bf4`); current `common/`, `src/`, `ggml/`, `tools/`, and `examples/` contain no `TIDE`, `n_layer_exit`, or early-exit implementation. Baseline therefore cannot enable TIDE.
+- [ ] Confirm TIDE early-exit paths are dormant before any baseline.
 - [ ] Run Phase 0 baseline measurements — do not skip the profiling gate (DeltaNet >40% abandon threshold).
 - [ ] Start a new `progress/YYYY-MM/YYYY-MM-DD.md` entry before Phase 1 work begins.
 - [ ] Update this handoff's Status field as phases close.
+
+**Last pickup (2026-07-29) found:**
+
+- The upstream review found unmerged x86 Q4_Kx8/Q8_K GEMV candidates [#23309](https://github.com/ggml-org/llama.cpp/pull/23309) and [#23793](https://github.com/ggml-org/llama.cpp/pull/23793). They remain experimental-watchlist items only: the observations are Intel/small-model-specific, overlap `repack.cpp`, and require no v8 production action. [#25390](https://github.com/ggml-org/llama.cpp/pull/25390) is a merged generic scalar-tail fix to review only on a future upstream forward-port.
+- Fork commits `143ded626`, `c4e06b01e`, and `59d2012b2` were not reachable from frozen production `production-consolidated-v8` (`67a433bf4`); `common/`, `src/`, `ggml/`, `tools/`, and `examples/` contained no `TIDE`, `n_layer_exit`, or early-exit implementation. The baseline therefore could not enable TIDE at that pickup.
 
 ## 2026-04-26 update — kill-switch added
 
