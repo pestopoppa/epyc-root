@@ -35,6 +35,7 @@ already has bare-letter handling).
 - [ ] **1b. Migrate research consumers** to import the canonical lib; delete each duplicate extractor; test
       each. (score_benchmarks, lib/scorer, score_aa_omniscience, xmas_*, short_mk_voting, adapters.)
   - [x] **1b.1 short-m@k multiple-choice vote extraction** ✅ 2026-07-29 (research `53eb754c`; 11 focused tests): replaced its local multiple-choice regex cascade with canonical `extract_letter_answer`; preserves final-answer precedence and adds the verbose-final-line regression.
+  - [x] **1b.2 X-MAS function-axis multiple-choice scoring** ✅ 2026-07-29 (research `5ed43e1e`; targeted scorer tests): replaced its local standalone-letter regex with canonical `extract_letter_answer`; preserved the runner's bespoke substring/rubric paths. The one-cell summary fixture now explicitly requests partial-summary mode, so the full module test file validates the intended partial-run behavior.
 - [x] **1c-audit. Orchestrator scoring + tool-use audit (read-only, subagent).** ✅ 2026-07-24 — report:
       [`research/deep-dives/2026-07-24-autopilot-scoring-tooluse-audit.md`](../../research/deep-dives/2026-07-24-autopilot-scoring-tooluse-audit.md)
       (59 file:line citations). **Verdicts:** (Q1) **memrl reward NOT AFFECTED** — the live TD reward does zero
