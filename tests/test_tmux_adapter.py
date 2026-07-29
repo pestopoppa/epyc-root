@@ -1706,3 +1706,116 @@ def test_c36_claude_backend_reports_UNAVAILABLE_not_idle(
     assert state is None
     assert "idle" not in why.replace("no runtime signal", "")
     assert "falling back" in why
+
+
+def _c36_probe(tag: str, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, *,
+               runtime: tuple[str | None, str], hb_state: str, hb_age_s: float = 0.0,
+               window_quiet_s: float = 0.0) -> dict:
+    """probe() with the runtime source injected and everything else green.
+
+    `window_quiet_s` is explicit and defaults to 0 (pane ACTIVE right now) so the C35
+    quiescence override does NOT fire. An earlier draft of this helper fed
+    `window_activity = 99999999`, i.e. a pane quiet since 1973, which silently made C35
+    override the heartbeat in every case and meant the pre-C36 fallback tests were not
+    testing the fallback at all — the same fixture-removes-the-signal shape as the C24
+    and C30b harnesses.
+    """
+    adapter = _load(tag)
+    adapter.BUS_ROOT = tmp_path / f"bus_{tag}"
+    (adapter.BUS_ROOT / "heartbeats").mkdir(parents=True)
+    hbp = adapter.BUS_ROOT / "heartbeats" / "m.json"
+    hbp.write_text(json.dumps({"agent": "m", "state": hb_state, "task_id": "t",
+                               "ts": datetime.now(timezone.utc).isoformat(timespec="seconds")}))
+    if hb_age_s:
+        old = __import__("time").time() - hb_age_s
+        os.utime(hbp, (old, old))
+    activity = int(__import__("time").time() - window_quiet_s)
+    monkeypatch.setattr(adapter, "_tmux", lambda *a: (
+        (0, "0\tm") if a[0] == "list-windows" else (0, f"0\t{activity}\t1")))
+    monkeypatch.setattr(adapter, "resolve_target", lambda c, ag: ("agent:m", "verified"))
+    config = {"roster": [{"id": "m", "endpoint": "tmux:agent:m"}],
+              "flags": {"codex_sendkeys": "on"}, "caps": {"max_concurrent_mains": 6},
+              "tmux": {"live_session": "agent"}}
+    return adapter.probe(config, "m", 0.0, 900.0, runtime_fn=lambda c, ag: runtime)
+
+
+def test_c36_runtime_ACTIVE_blocks_even_when_the_heartbeat_says_idle(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """The protection the pre-C36 guard did not have AT ALL. A main whose heartbeat
+    wrongly reads `idle` while it is mid-generation was previously nudged without
+    hesitation — the heartbeat was the only thing consulted, and it was wrong."""
+    p = _c36_probe("c36w_active", monkeypatch, tmp_path,
+                   runtime=("active", "rollout ends in 'token_count'"), hb_state="idle")
+
+    assert any("runtime says ACTIVE" in b for b in p["blockers"]), p["blockers"]
+    assert p["nudge_ok"] is False
+    assert p["runtime_decided"] is True
+
+
+def test_c36_runtime_IDLE_clears_a_working_heartbeat(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """The deadlock itself: `state == working` refused every nudge, and the agent that
+    would have to update it is the one that has stopped. Measured live 2026-07-29 —
+    mainD's heartbeat read `working` while its runtime read idle."""
+    p = _c36_probe("c36w_idle", monkeypatch, tmp_path,
+                   runtime=("idle", "rollout ends in 'task_complete'"), hb_state="working")
+
+    assert not [b for b in p["blockers"] if "heartbeat" in b], p["blockers"]
+    assert p["nudge_ok"] is True
+    assert p["runtime_state"] == "idle"
+
+
+def test_c36_runtime_IDLE_also_clears_a_STALE_heartbeat(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Staleness is a property of the SELF-REPORT, and the runtime has already said the
+    agent is at its prompt. CLAUDE.md records the converse hazard from 2026-07-27: a
+    live session mid-generation carrying a 2h-stale heartbeat. Once the runtime decides,
+    neither staleness nor freshness of the self-report is evidence about anything."""
+    p = _c36_probe("c36w_stale", monkeypatch, tmp_path,
+                   runtime=("idle", "rollout ends in 'task_complete'"),
+                   hb_state="idle", hb_age_s=7200)
+
+    assert not [b for b in p["blockers"] if "stale" in b], p["blockers"]
+    assert p["nudge_ok"] is True
+
+
+def test_c36_UNAVAILABLE_changes_nothing_the_pre_C36_chain_decides(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """THE COMPLIANT PATH, which is the one a fail-open would hide in. An unreadable
+    runtime must leave the previous guard exactly as it was — it must not become an
+    implicit `idle`, and it must not start refusing mains it used to serve."""
+    blocked = _c36_probe("c36w_unavail_w", monkeypatch, tmp_path,
+                         runtime=(None, "backend 'claude': no runtime signal implemented yet"),
+                         hb_state="working")
+    assert any("heartbeat says working" in b for b in blocked["blockers"])
+    assert blocked["nudge_ok"] is False
+    assert blocked["runtime_decided"] is False
+    assert blocked["runtime_state"] is None
+
+    allowed = _c36_probe("c36w_unavail_i", monkeypatch, tmp_path,
+                         runtime=(None, "unreadable"), hb_state="idle")
+    assert allowed["nudge_ok"] is True, "an UNAVAILABLE runtime must not refuse a healthy main"
+
+
+def test_c36_runtime_never_overrides_the_OTHER_guards(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """`do_not_break`: C36 replaces the heartbeat's AUTHORITY, not the guard chain. A
+    runtime `idle` must not talk past an unresolvable target or a disabled gate."""
+    adapter = _load("c36w_others")
+    adapter.BUS_ROOT = tmp_path / "bus_others"
+    (adapter.BUS_ROOT / "heartbeats").mkdir(parents=True)
+    (adapter.BUS_ROOT / "heartbeats" / "m.json").write_text(json.dumps(
+        {"agent": "m", "state": "idle", "task_id": None,
+         "ts": datetime.now(timezone.utc).isoformat(timespec="seconds")}))
+    monkeypatch.setattr(adapter, "_tmux", lambda *a: (0, ""))
+    config = {"roster": [{"id": "m", "endpoint": "tmux:agent:m"}],
+              "flags": {"codex_sendkeys": "off"},          # gate OFF
+              "caps": {"max_concurrent_mains": 6}, "tmux": {"live_session": "agent"}}
+
+    p = adapter.probe(config, "m", 0.0, 900.0,
+                      runtime_fn=lambda c, ag: ("idle", "rollout ends in 'task_complete'"))
+
+    assert p["nudge_ok"] is False
+    assert any("codex_sendkeys is off" in b for b in p["blockers"]), p["blockers"]
+    assert any("refusing" in b.lower() or "resolve" in b.lower() for b in p["blockers"]), \
+        f"an unresolvable target must still block: {p['blockers']}"

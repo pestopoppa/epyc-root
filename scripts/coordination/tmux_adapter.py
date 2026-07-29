@@ -933,12 +933,17 @@ def record(kind: str, agent: str, detail: str, **fields: object) -> None:
 
 
 def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float,
-          hb_override_quiet_s: float = DEFAULT_HEARTBEAT_OVERRIDE_QUIET_S) -> dict:
+          hb_override_quiet_s: float = DEFAULT_HEARTBEAT_OVERRIDE_QUIET_S,
+          runtime_fn=None) -> dict:
     """Every guard signal, with an explicit blocker list. Pure — acts on nothing.
 
     `hb_override_quiet_s` is the C35 quiescence override (see the constant). It
     is keyword-defaulted so the four-positional-argument call sites and tests
     that predate it keep working unchanged.
+
+    C36: `runtime_fn` injects the runtime-liveness source (default
+    `runtime_liveness`), so tests can drive every branch without a live TUI —
+    the same seam-injection the coordinator uses for `nudge_fn`.
     """
     flags, caps = config.get("flags") or {}, config.get("caps") or {}
     authorised = str(flags.get("codex_sendkeys")).strip().lower() in {"1", "true", "yes", "on"}
@@ -947,6 +952,10 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float,
 
     target, why = resolve_target(config, agent)
     hb, hb_age = heartbeat(agent)
+    # C36: the RUNTIME's answer, obtained before any heartbeat reasoning, because from
+    # here on the heartbeat is a corroborator and not the authority. `None` means the
+    # runtime could not be read and the pre-C36 chain below decides unchanged.
+    runtime_state, runtime_reason = (runtime_fn or runtime_liveness)(config, agent)
 
     dead = quiet_for = None
     attached = None
@@ -1080,7 +1089,31 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float,
     # entirely rather than meaning "override always", so a mis-set 0 is inert.
     hb_override_applied = False
     hb_override_reason: str | None = None
-    if hb is None:
+
+    # ---- C36: when the runtime has an answer, it DECIDES and the heartbeat corroborates ----
+    #
+    # Both directions are acted on and both are reported, the way C35 reports its
+    # override even when it did not fire:
+    #
+    #   runtime ACTIVE -> BLOCK, whatever the heartbeat says. This is a protection the
+    #     pre-C36 guard did not have at all: a main whose heartbeat wrongly reads
+    #     `idle` while it is mid-generation was previously nudged without hesitation.
+    #   runtime IDLE   -> the heartbeat's `working` and its staleness both stop being
+    #     blockers. The agent is demonstrably at its prompt; a self-report that says
+    #     otherwise, or that stopped being written, is exactly the stale claim this
+    #     defect is about. (Measured 2026-07-27: a live session mid-generation carried
+    #     a 2h-stale heartbeat, and 2026-07-29: mainD read `working` while its runtime
+    #     read idle.)
+    #   runtime None   -> UNAVAILABLE. Change nothing; the pre-C36 chain below decides.
+    #
+    # Note what this does NOT touch: pane_dead, the quiet check, target resolution, the
+    # rate limit and the auth flag are all evaluated above and stand unchanged. C36
+    # replaces the heartbeat's authority, not the guard chain.
+    if runtime_state == "active":
+        blockers.append(f"runtime says ACTIVE — {runtime_reason}")
+    elif runtime_state == "idle":
+        pass                      # heartbeat blockers below are skipped entirely
+    elif hb is None:
         blockers.append("no heartbeat — cannot tell if the agent is thinking; fail closed")
     else:
         if str(hb.get("state")) == "working":
@@ -1124,6 +1157,14 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float,
             "heartbeat_override_quiet_s": hb_override_quiet_s,
             "heartbeat_override_applied": hb_override_applied,
             "heartbeat_override_reason": hb_override_reason,
+            # C36: reported ALWAYS, including when the runtime had no answer, so a
+            # reader can tell "the runtime cleared this main" from "the runtime was
+            # unavailable and the heartbeat decided" — and can see which mains are
+            # covered at all. An UNAVAILABLE that looks like an absent field is how a
+            # silent degradation hides.
+            "runtime_state": runtime_state,
+            "runtime_reason": runtime_reason,
+            "runtime_decided": runtime_state is not None,
             "seconds_since_last_nudge": since_nudge,
             # C31: surfaced so a refusal can be read as "this WINDOW was nudged", not
             # "this id was nudged at some point in its history".
@@ -1149,8 +1190,15 @@ def cmd_probe(args: argparse.Namespace) -> int:
     print(f"window quiet     {q:.0f}s" if q is not None else "window quiet     (unreadable)")
     age = p["heartbeat_age_s"]
     print(f"quiet-check      {p['quiet_check']}")
-    print(f"heartbeat        {p['heartbeat_state']} (age {age:.0f}s)" if age is not None
-          else "heartbeat        (none)")
+    # C36: printed BEFORE the heartbeat, because when it has an answer it is the one
+    # that decided and the heartbeat below is corroboration. `UNAVAILABLE` is printed
+    # too — a reader must be able to see that this main is NOT covered by the runtime
+    # signal, rather than infer it from a missing line.
+    print(f"runtime          {str(p.get('runtime_state') or 'UNAVAILABLE').upper()}"
+          f" — {p.get('runtime_reason')}")
+    print(f"heartbeat        {p['heartbeat_state']} (age {age:.0f}s)"
+          f"{'  [corroborator: the runtime decided]' if p.get('runtime_decided') else ''}"
+          if age is not None else "heartbeat        (none)")
     # C35: printed whenever the heartbeat said `working`, in BOTH directions. An
     # override that fired silently would make `probe` disagree with `nudge`, which
     # is precisely the surprise this line exists to prevent.

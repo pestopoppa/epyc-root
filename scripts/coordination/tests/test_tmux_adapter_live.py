@@ -543,6 +543,50 @@ def test_live() -> None:
                         "heartbeats/c30.json", "cursors/c30.json"):
                 (bus / rel).unlink(missing_ok=True)
 
+            # ---- C36: THE PREMISE, asserted against the REAL corpus ----
+            # The dispatch asks for this explicitly: "assert the PREMISE as a live test
+            # so a future CLI change fails loudly instead of silently degrading."
+            # C36's Codex signal rests on one claim about a file format we do not own —
+            # that a finished turn leaves `task_complete`/`turn_aborted` as the last
+            # record. If a CLI upgrade renames or reorders that, `codex_state_from_rollouts`
+            # would quietly start reporting every settled agent as ACTIVE (the safe
+            # direction, but it silently disables the fix). This fails instead.
+            print("\n  -- C36 premise against the live rollout corpus --")
+            import glob as _glob
+            home = Path(os.environ.get("CODEX_HOME", str(Path.home() / ".codex")))
+            rollouts = sorted(_glob.glob(str(home / "sessions" / "*" / "*" / "*" / "rollout-*.jsonl")))
+            if not rollouts:
+                check(True, "C36 premise: no rollout corpus on this host — skipped, not assumed")
+            else:
+                import json as _json
+                terminal = {"task_complete", "turn_aborted"}
+                seen, parsed, kinds = 0, 0, {}
+                for f in rollouts[-120:]:
+                    try:
+                        last = None
+                        for ln in Path(f).read_text(errors="replace").splitlines():
+                            if ln.strip():
+                                last = ln
+                        if last is None:
+                            continue
+                        seen += 1
+                        k = (_json.loads(last).get("payload") or {}).get("type")
+                        parsed += 1
+                        kinds[k] = kinds.get(k, 0) + 1
+                    except Exception:
+                        continue
+                hits = sum(v for k, v in kinds.items() if k in terminal)
+                check(parsed > 0, f"C36 premise: rollout tails are parseable JSON ({parsed}/{seen})")
+                # Live TUIs mid-turn legitimately end non-terminal, so this is a
+                # MAJORITY claim, not a universal one — stated as measured, and the
+                # 2026-07-29 corpus reading was 400/400 over finished files.
+                check(hits > parsed * 0.5,
+                      f"C36 premise: `task_complete`/`turn_aborted` still dominate rollout tails "
+                      f"({hits}/{parsed}); other tails seen: "
+                      f"{sorted(k for k in kinds if k not in terminal)[:6]}")
+                check("session_meta" in Path(rollouts[-1]).read_text(errors="replace")[:4096],
+                      "C36 premise: line 1 is still a session_meta record")
+
             # C9 fail-closed: an uncountable live set must refuse, never assume zero.
             write_config(bus, [{"id": "spawned", "endpoint": f"tmux:{SESSION}"}],
                          spawn_cap=9, live_session="definitely-not-a-live-session")
