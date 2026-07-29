@@ -125,7 +125,7 @@ Source markdown/HTML: `artifacts/operator/e5_w0_preliminary_results.md` /
 
 ---
 
-## 4. GPU lane activation — OPEN OPERATOR DECISION, do not resolve it unilaterally
+## 4. GPU lane activation — DECIDED (operator, 2026-07-29)
 
 The GPU shadow lane is built (`gpu-serving-tie-in-program.md` P2-6 landed, P2-4 review done) but
 **not switched on**. Remaining before any activation:
@@ -147,10 +147,40 @@ in a wrong placement and invalidating the measured serving-shape lineage that ev
 (ceiling tables, P2-5c shed-batch arms) is built on. **Sequencing: do not carve q3, and do not
 flip the activation switch, before P2-5j runs.**
 
-A structured options package on this has been requested from fable-auditor. **The operator
-chooses the placement and the activation timing — this brief records the tension, not a verdict.**
-Do not activate the lane, carve q3, or advance past P2-2/Steps 0-7 without an explicit operator
-decision on P2-5j's findings first.
+**DECIDED: HYBRID — option C, "sign-off last."** Chosen by the operator 2026-07-29 via
+AskUserQuestion in the `fable-auditor` session, from the options package filed on bus task_id
+`lane-activation-decision-package`. The full option text with costs, risks and reversibility is
+reconstructible from that bus record. Decided sequence:
+
+1. **P2-2 tenant landing first** — non-contending (disk + VRAM work), and a prerequisite of every
+   measurement path since the sweep needs a tenant to serve.
+2. **Steps 0–7 activation choreography.**
+3. **P3-1/P3-2 shadow bake-off starts immediately on the INCUMBENT 184-191 placement** — tenant
+   selection is placement-relative and transfers; the P3-2 decision package must carry a
+   **placement-pending caveat on absolute latency and token-economics numbers**.
+4. **P2-5j placement sweep folds into the P2-5c campaign** as already filed.
+5. **Placement + carve (O2+O1 default per the standing topology package) + residency decided
+   TOGETHER at the verdict.**
+6. **P3-3 production sign-off LAST**, on the final placement — production never inherits a moving
+   placement.
+
+Optional early-warning attachment: a 2-arm mini-probe (incumbent vs one node-1 candidate, one
+shape, estimated 2–4h).
+
+Two clarifications from the package that correct earlier framing in this section:
+- Activating on the current placement does **not** invalidate the measured serving-shape
+  lineage — it **uses** it. Re-derivation cost triggers only if the sweep later moves the threads,
+  and it triggers then regardless of whether activation came first. What activation-first actually
+  risks is narrower: bake-off absolute numbers and production sign-off minted on a
+  possibly-suboptimal placement, raising the procedural price of moving later.
+- P2-5g (finer-region minting) does **not** change sequencing. Every carve variant is downstream
+  of the sweep by P2-5j's own gate, and carve economics matter only at residency-verdict time. It
+  blocks neither activation nor bake-off.
+
+The tension narrative above (P2-5j never having compared device-local placements, and the risk of
+baking in a wrong placement) remains valid background for *why* the sequence above is what it
+is — it is no longer an open question. Do not activate the lane, carve q3, or advance past
+P2-2/Steps 0-7 outside the decided sequence above.
 
 ---
 
