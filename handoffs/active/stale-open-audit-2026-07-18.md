@@ -173,6 +173,12 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
     E5-safe dispatch. `backlog_live_uncertified = 929` for this dated
     read-through slice; `backlog_not_a_task = 36` is unchanged. No owner
     handoff was edited.
+  - **READ-CERTIFIED 2026-07-29 (mainB, 2 rows):**
+    `capability-registry-and-promotion.md` leaves W3/W4 behind the
+    evidence-plane ledger, shadow attestation, and a monthly promotion pass.
+    Both are **evidence-gated**, not current independent work.
+    `backlog_live_uncertified = 927` for this dated read-through slice;
+    `backlog_not_a_task = 36` is unchanged.
   - **TRANCHE 1 READ-CERTIFIED 2026-07-29 (`auditor`) — 19 boxes, the single-open-box handoffs.**
     Read each box with its section, `Status:` header and following context. Result:
     | verdict | n | meaning |
