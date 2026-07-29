@@ -87,7 +87,7 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 10 | ~~`tool-use-eval-contract.md:366`~~ **✅ CLOSED 2026-07-29** | intake 2026-07-21 | none | S | sentinel prompt definitions | Adopt negative-constraint + stated-consequence sentinel pattern |
 | 11 | ~~`gpu-serving-tie-in-program.md:143`~~ **✅ CLOSED 2026-07-29** | P5 | none | S | `heterogeneous-slot-fabric-residency.md` | Add GPU host threads as a modeled slot-fabric consumer |
 | 12 | ~~`model-stack-change-standardization-audit.md:229`~~ **TEMPLATE — DO NOT DISPATCH 2026-07-29** | update-checklist | none | S | `tests/unit/` priors/guard/enum-sync/q_scorer suites | Run focused unit tests for priors, guard, scorer, admission |
-| 13 | `eval-tower-verification.md:522` | de-anchoring | none | S | `autopilot.py:1431`, `paired_stats.py` | Unify autopilot's 2nd McNemar producer onto `verdict_from_result` |
+| 13 | ~~`eval-tower-verification.md:522`~~ **✅ CLOSED 2026-07-29** | de-anchoring | none | S | `autopilot.py:1431`, `paired_stats.py` | Unify autopilot's 2nd McNemar producer onto `verdict_from_result` |
 | 14 | ~~`minddr-deep-research-mode.md:207`~~ **✅ CLOSED 2026-07-29** | search-time contamination | none | S | `minddr-deep-research-mode.md` | Demote BrowseComp/WideSearch/xbench anchors to observation-grade |
 | 15 | ~~`engram-conditional-memory.md:379`~~ **✅ CLOSED 2026-07-29** | retrieval-policy rider | none | S | `engram-…md`, `unified-trace-memory-service.md` | Correct the ReasoningBank ranking claim in retrieval notes |
 | 16 | ~~`unified-trace-memory-service.md:211`~~ **✅ CLOSED 2026-07-29** | UTM-M4 | none | S | `src/trace/harness_schema.py` | Mine ReasoningBank repo for its 3 prompts + JSON schema |
@@ -562,7 +562,7 @@ re-grep before assigning.
 - L497 | cpu | L | N | inference-batch loop slot | Offline A/B: show-candidate vs commit-first judge FPR | judge harness, stat_tests.py
 - L498 | none | S | Y | three absent-source suites download (operator ask) | Attach web-egress check to any GAIA eval run | suites.py, dataset_adapters.py
 - L500 | none | L | N | E5 NUMA x batch mapping; next EV-4-class run | Node-partitioned cross-fleet arm-parallelism for rebaselines | eval runner, contention_matrix.yaml
-- L522 | none | S | Y | - | **READY** Unify autopilot 2nd McNemar producer onto verdict_from_result | autopilot.py:1431, paired_stats.py
+- L522 | none | S | Y | - | **CLOSED 2026-07-29** — sequential baseline payload uses `verdict_from_result`, observation-only and non-gating | Unify autopilot 2nd McNemar producer onto verdict_from_result | autopilot.py:1431, paired_stats.py
 - L545 | cpu | M | N | needs EV-10a gate live | Single-artifact admission prefilter re-attempting originating failure | skill_efficacy.py
 - L546 | cpu | L | N | dataset acquisition + exec-sandbox harness | FrontierCS 10-problem floor probe on one production arm | new FrontierCS adapter, suites.py
 
