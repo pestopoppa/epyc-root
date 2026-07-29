@@ -282,6 +282,37 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
   validation, and abort paths terminalize as ineligible audit evidence. **This is not E8
   terminalization:** structured timeout provenance remains an instrument-correctness blocker before
   fresh final-C1/finalizer evidence, the consolidated human receipt, or baseline application.
+- [x] **E8 final-C1 capacity-fix ordinal generation** ✅ 2026-07-29 — under the ratified
+  sequential `c1`/`q3` capacity-fix receipt, the two authorized generation obligations completed
+  cleanly in
+  `artifacts/operator/e8_quality_baseline_v5_partial_r2_final_c1_capacityfix_20260729T112433Z`:
+  ordinal `97` (`leval_codeU_269`, sidecar SHA-256
+  `352a5c0bfe3f03bfb3c52a8d6ff345acda413f7ac48a69dcfc2da7bf3a1e50ba`) and ordinal
+  `279` (`leval_review_summ_382`, sidecar SHA-256
+  `bd89f9e4d7e0a114518a7a0a729b5ea6322ea21e02728f9fc6795db40992a424`). No retry,
+  timeout increase, baseline mutation, or admission occurred. The writer then failed closed in
+  deterministic completion; `writer_abort.json` is
+  `epyc.e8_quality_writer_abort.v1`, `terminal_aborted_no_admission`, with
+  `no_auto_retry=true` and `no_admission=true`. The namespace remains immutable audit evidence,
+  not final-C1 evidence.
+- [ ] **E8 lineage-composition deterministic completion successor** — repair the completion
+  helper so its complete sealed 500-row journal resolves all authoritative immutable sidecars,
+  rather than reading only its latest recovery sidecars. The failed capacity-fix namespace has an
+  exact missing set of `418` ordinal provenances: `112` `imported_generation`, `295`
+  `predecessor_generation`, and `11` `scorer_replay`. Build a no-inference successor with exact
+  source/abort/sidecar pins, strict qid/question-id and nonpartial/nondegraded validation,
+  byte-identical journal responses, atomic publication, and a typed success/failure run seal;
+  leave the aborted source untouched.
+- [ ] **E8 universal abort terminalization** — wire the copy-only terminalizer into the
+  `except` epilogue of every E8 runner (`v5`, reseed, resume, race-retry, mixed-tail repair,
+  final-C1, and finalizer), with tests proving each injected failure publishes a durable terminal
+  `run_seal.json`. The bounded offline terminal bridge is insufficient: each future abort would
+  otherwise create another unsealed namespace requiring a bespoke recovery ceremony.
+- [ ] **E8 staged-input eligibility and race-retry layout repair** — prohibit finalization from
+  accepting an unsealed `.staging-*` namespace merely because it is hash-pinned, and classify/fix
+  the published race-retry layout that is structurally unvalidatable as committed. Confirm the
+  live publication path before any successor/finalizer run; do not treat review prose as a
+  runtime seal.
 - [ ] **E8 c1 required race/finalizer path** — execute only the protocol-required race/finalizer
   path against the repaired, revalidated instrument. **Structured timeout provenance and final-C1/
   finalizer inference remain open.** A c1 retry timeout remains a governed 300-second-budget
@@ -298,9 +329,11 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
   `e8_quality_baseline_v5_partial_r2_recovery_20260728T135608Z` after FG-2V released q0. Its
   later mixed-tail/c1 successor completed its six focused c1 requests but failed closed before
   race admission on a journal/sidecar coherence mismatch; the immutable evidence is retained.
-  The coherence-admission and race-retry atomic-publication instruments are complete; structured
-  timeout provenance and final-C1/finalizer inference remain the immediate prerequisites to
-  finalization.
+  The coherence-admission and race-retry atomic-publication instruments are complete. The two
+  latest final-C1 ordinals are clean but their namespace is terminal-aborted for the
+  lineage-composition defect recorded above; deterministic successor completion plus universal
+  abort/staging-layout repairs, then fresh finalizer inference, remain the immediate prerequisites
+  to finalization.
   Do not apply or publish a baseline until that complete v5 evidence bundle and its single
   consolidated human trust-boundary action are ready.
 - [x] **E8-LAUNCH-RACE — scope failed-start cleanup to the wrapper-owned launch** ✅ 2026-07-26.
