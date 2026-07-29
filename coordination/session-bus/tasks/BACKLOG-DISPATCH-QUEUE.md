@@ -94,7 +94,7 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 17 | `autopilot-decision-plane-audit-2026-07-22.md:399` | deliverables | none | S | `q_scorer.py`, `episodic_store.py` | Apply find-or-update to `_update_escalation_memory` append-only rows |
 | 18 | `orchestration-robustness-audit-2026-07-11.md:240` | faiss orphans | none | S | `orchestration/repl_memory/faiss_store.py` | Startup sweep unlinking old unopened faiss tmp orphans |
 | 19 | `autopilot-control-plane-integration.md:23` | AP-3b.2 | none | S | `autopilot-control-plane-integration.md` | Decide whether draft-tree belongs in AP-3 |
-| 20 | `speculative-decoding-mtp-refresh.md:236` | intake 2a | none | S | `models/*.gguf` headers | Tensor-count header gate for the DavidAU Qwen3.6-27B MTP GGUFs |
+| 20 | ~~`speculative-decoding-mtp-refresh.md:236`~~ **✅ CLOSED 2026-07-29** | intake 2a | none | S | `models/*.gguf` headers | Tensor-count header gate for the DavidAU Qwen3.6-27B MTP GGUFs |
 | 21 | ~~`agent-file-prose-compression.md:244`~~ **✅ CLOSED 2026-07-29** | intake 2a | none | S | `agent-file-prose-compression.md` | Re-source `/doctor` behaviour from the CLI before speccing |
 | 22 | ~~`learned-routing-controller.md:1613`~~ **✅ CLOSED 2026-07-29** | deep-dive correction | none | S | (guardrail note) | Standing guardrail: do not import intake-866 equivalence framing |
 | 23 | ~~`document-parser-table-bench.md:144`~~ **✅ CLOSED 2026-07-29** | consequence | none | S | (guardrail note) | Guardrail: no MinerU/GLM-OCR downloads as odl_bench swaps |
@@ -1420,7 +1420,7 @@ re-grep before assigning.
 - L233 | none | S | Y | - | **READY** Scope acceptance-only comparison for 122B DFlash drafter | handoff
 - L234 | none | S | N | - | Record settled DFlash architecture facts | handoff, research/deep-dives/
 - L235 | none | S | N | - | Record provenance/qualifiers for published DFlash speedup numbers | handoff
-- L236 | none | S | Y | - | **READY** Tensor-count header gate for DavidAU Qwen3.6-27B MTP GGUFs | models/*.gguf headers
+- L236 | none | S | Y | - | **CLOSED 2026-07-29** — 851 vs 866 tensors plus `qwen35.nextn_predict_layers` key; file size is non-evidence | Tensor-count header gate for DavidAU Qwen3.6-27B MTP GGUFs | models/*.gguf headers
 - L237 | none | S | N | - | Record ThinkingCap MTP head is stock; flag confounded Q4_K_M pair | handoff
 - L244 | none | S | N | - | Record KAT-Coder tokenizer-match + removed-MTP artifact facts | handoff, research/intake
 - L245 | none | S | N | - | Adopt safetensors-index preflight rule over config.json checks | handoff, feedback rule file
