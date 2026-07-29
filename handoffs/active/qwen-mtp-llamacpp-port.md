@@ -1,6 +1,6 @@
 # Qwen MTP llama.cpp Port (PR #22673 + #22400)
 
-**Status**: cherry-pick BLOCKED, but the **fresh-upstream-build path is VERIFIED WORKING (2026-06-22)** — Qwen dense MTP runs on CPU at ~2× via a fresh `origin/master` build (see ✅ section below). #22400 ported (b139eba138). **#22673 cherry-pick is INFEASIBLE** — model-framework generation gap (see finding below). The cheap-port path is dead; landing Qwen MTP in *our fork* needs reimplementation, but standing up Qwen MTP at all is now a solved, proven operation via a fresh upstream build.
+**Status**: ACTIVE/GATED — the native Qwen MTP surface already exists on fresh v8 experimental; historical v5 cherry-pick evidence is preserved below but is not a resume path. P6b remains operator-gated; P7 is optional.
 
 ## ✅ Upgrade verified (2026-06-22) — fresh upstream build runs Qwen dense MTP on CPU
 
@@ -42,7 +42,13 @@ Land mainline llama.cpp Qwen MTP self-speculation (`--spec-type draft-mtp` / `--
 
 > **GATING**: do NOT invest the full #22673 reconciliation until the **gemma-4-31B dense gate-bench (T1 in the parent handoff)** shows CPU MTP actually delivers on a dense model. Qwen3.6 is pure-MoE-A3B (worst CPU-MTP case; 26B-A4B measured only 1.06×). The dense bench is the cheap proof-point that justifies this port. This handoff is the "how", staged behind that "whether".
 
-## Current state (verified 2026-06-22)
+## Current state (refreshed 2026-07-29; historical 2026-06-22 evidence below)
+
+- Production is frozen `production-consolidated-v8` (`67a433bf4`); any renewed work starts by refreshing `llama.cpp-experimental` from that production tip. Do not build or modify production.
+- The fresh experimental tree already contains the `draft-mtp` / MTP-context / Qwen graph surface, so neither the v5 branch nor PR #22673 cherry-pick is a current prerequisite.
+- P6b still needs the exact Q4 no-spec versus Q4-MTP Qwen3.6-35B-A3B pair under its operator-approved protocol. Existing Q8 observations do not close it.
+
+## Historical state (verified 2026-06-22)
 
 - Branch `feature/mtp-qwen36-port` created from a **fresh `production-consolidated-v5`** (a6c793fc66, = production HEAD), per operator instruction (keeps our CPU/NUMA optimizations apples-to-apples for the eventual bench).
 - **PR #22400 (`4e732e0a6`, GDN partial seq_rm — the dependency): PORTED.** Commit `b139eba138`. 26/28 files auto-merged; 2 conflicts (`tools/server/server-context.cpp`, `tests/test-backend-ops.cpp`) resolved to the upstream side (new GDN 3-D delta-net state + MTP-aware draft-context path). **Does NOT build standalone** — server-context.cpp now references the newer speculative API (`COMMON_SPECULATIVE_TYPE_DRAFT_MTP`, `LLAMA_CONTEXT_TYPE_MTP`) that #22673 provides.
@@ -82,8 +88,8 @@ Our fork's speculative subsystem is an **older API generation** than PR #22673's
 - [x] **P4** `src/models/qwen35.cpp` / `qwen35moe.cpp` + `src/llama-arch.*` + `conversion/qwen.py`: the Qwen MTP graph (nextn layer) + metadata loader. ✅ 2026-07-11
 - [x] **P5** Resolve the remaining backend/test/doc files to compile; `cmake -B build && cmake --build build -j$(nproc)` (CPU: `-DGGML_CUDA=OFF`). ✅ 2026-07-11
 - [x] **P6a** Verify help surface: `llama-server --help` / `llama-speculative --help` show `--spec-type draft-mtp` + `--spec-draft-n-max`. ✅ 2026-07-11
-- [ ] **P6b** Operator-gated model load + gate bench on `unsloth/Qwen3.6-35B-A3B-MTP-GGUF`; then the parent T3/T4 benches.
-- [ ] **P7 (optional, post-#22673): FR-Spec draft LM-head vocab-trim** (intake-740). Restrict the native-MTP draft LM-head projection to a frequency-ranked top-32,768 subset of the 248,320 vocab (target verifies full vocab) → **lossless (byte-identical at temp=0)**, cutting the draft-head `mul_mat_vec_q` kernel ~85%. Verified upstream on `qwen35.cpp` (this port's P4 target); ~30 lines reusing `eagle3.cpp` d2t + `ggml_set_rows`. CAVEATS: (a) our fork's EAGLE3 is an **inert stub** (`// TODO PR-18039`), so the d2t machinery may not exist in-fork — this likely **rides the #22673 reconciliation, not free**; (b) build an **EPYC-workload-matched frequency map** from our own coder/prose traffic (the author's code-tuned map regressed prose); (c) expect only **+1-3% end-to-end** on BW-bound decode despite the −85% kernel cut → measure end-to-end before adopting.
+- [ ] **P6b** Operator-gated fresh-v8-experimental model-load + gate bench on `unsloth/Qwen3.6-35B-A3B-MTP-GGUF`, with matched Q4 no-spec vs Q4-MTP artifacts; then the parent T3/T4 benches.
+- [ ] **P7 (optional): FR-Spec draft LM-head vocab-trim** (intake-740), only after P6b and only from the fresh v8 experimental surface. Build an EPYC-workload-matched frequency map, retain byte-exact temp-0 validation, and measure end-to-end before adopting; historical #22673/EAGLE3 reconciliation assumptions do not apply.
 
 ## Constraints
 - **Historical experimental repo note.** At this checkpoint, `verify_llama_cpp.sh` enforced `production-consolidated-v5`; that is now superseded by the v6 cutover and the 2026-07-20 `production-consolidated-v7` promotion. Do not promote or resume from this old branch; start any renewed Qwen-MTP work from current production into `llama.cpp-experimental`.

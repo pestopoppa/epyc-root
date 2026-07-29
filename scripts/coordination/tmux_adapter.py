@@ -927,14 +927,43 @@ def cmd_spawn(args: argparse.Namespace) -> int:
     # C8/C18 — a main unreachable for want of a working liveness signal rather than a
     # delivery path; here the path resolves and the signal lies about it.
     #
-    # WHY THIS IS SAFE, and exactly what it leans on: cmd_spawn has already refused
-    # above when `args.agent in ids` (C9). Reaching this line therefore PROVES the id
-    # is not live, which proves its heartbeat is stale — so overwriting it destroys no
-    # signal anyone is maintaining. The proof is only as good as `live_mains()`: an
-    # UNDERCOUNT there (the C14 capacity-inventing direction) would let this reset a
-    # genuinely live main's heartbeat and re-open it to a mid-generation nudge. That is
-    # why `live_mains` overcounts where it has a choice and refuses when it cannot
-    # count — this write is one of the things depending on it. Do not weaken it.
+    # WHY THIS IS SAFE — and this is NOT the argument the first version of this comment
+    # made (corrected 2026-07-29 after independent review). It said: cmd_spawn refused
+    # above when `args.agent in ids`, so reaching this line PROVES the id is not live;
+    # then conceded "the proof is only as good as live_mains()". The concession is the
+    # whole problem, because live_mains CAN UNDERCOUNT WITHOUT REFUSING. Demonstrated
+    # against the real session: rename a window without updating config.yaml (drift
+    # trigger #1) and a genuinely live main drops out of `ids` while live_mains returns
+    # a SMALLER SET, not None. `args.agent in ids` then passes and this line resets a
+    # live main's heartbeat. Naming live_mains as the dependency is therefore naming a
+    # guarantee that does not exist.
+    #
+    # The reset is safe anyway, for a different reason. THIS is the invariant, and it
+    # is the one that must not be weakened:
+    #
+    #     AN IDENTITY `live_mains` CANNOT SEE IS AN IDENTITY `resolve_target`
+    #     CANNOT REACH.
+    #
+    # Their matching rules coincide. `tmux:s:<name>` resolves iff a window of that name
+    # exists — which is also what live_mains counts; `tmux:s` with no window component
+    # resolves iff a window named after the roster id exists — live_mains' other clause.
+    # So resolve_target-success IMPLIES live_mains-counts-it, and by contraposition
+    # undercount IMPLIES no nudge target. `not target` is itself a probe() blocker, so
+    # the nudge cannot be delivered at all. The heartbeat is not the last line of
+    # defence here; resolve_target is.
+    #
+    # The hazard is otherwise entirely real, which is why the containment matters: this
+    # write sets state:idle with a fresh ts, clearing BOTH heartbeat blockers at once,
+    # and on a DETACHED session — the normal overnight state — quiet_check is skipped
+    # by design, leaving the heartbeat as the sole deciding guard. If a nudge could be
+    # delivered it would land mid-generation.
+    #
+    # The invariant used to be EMERGENT: a coincidence of two independent
+    # implementations, undocumented and untested, that anyone loosening resolve_target
+    # would silently break. C32 was exactly that breach — index endpoints skipped
+    # verification, so an id could be uncounted AND resolvable. It is now pinned by
+    # test_c24_undercount_implies_resolve_target_refuses. If you add a fallback or a
+    # best-effort match to resolve_target, that test is what will tell you.
     #
     # The cursor stays only-if-absent, deliberately: it is a read POSITION, not a
     # liveness claim. Resetting it to 0 would re-deliver every message the identity has

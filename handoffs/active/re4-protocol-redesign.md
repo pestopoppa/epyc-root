@@ -1,7 +1,7 @@
 # RE-4 / K-LCM-1 — LongCoT-Mini Protocol Redesign (design + harness SPEC)
 
-**Status:** DESIGN (no inference, no execution). Deliverable of the RE-4 protocol-repair task.
-**Owning entry:** `coordination/inference-batch/entries/20-eval-tower.yaml` → `RE-4-longcot-mini-calibration` (currently terminal `INFRA_BLOCKED` / quarantined `protocol_blocked/floor_saturated`).
+**Status:** ACTIVE/GATED — runner v2 and entry v2 landed 2026-07-21; no inference is authorized by this design note.
+**Owning entry:** `coordination/inference-batch/entries/20-eval-tower.yaml` → `RE-4-longcot-mini-calibration` (v2 applied; re-attest current v8 topology before the quiet-window probe).
 **Owning handoff:** `handoffs/active/inference-batch-loop.md` (open task line: *"RE-4 protocol repair"*).
 **Measurement grade:** OBSERVATION (non-saturated research benchmark; hypothesis-only, never a keep/revert/deploy/promote gate). Scoring stays deterministic — **NO LLM-judge** (MEASUREMENT.md).
 **Runner code change required:** **YES** — the fix is *structural* (a second, forced-final-answer HTTP turn), so this doc SPECs it for a follow-on implementation pass rather than editing the runner in place.
@@ -144,7 +144,7 @@ Structural change → **implement in a follow-on pass** (not in this design task
 
 - [x] **RE-4.0 — implement runner v2** ✅ 2026-07-21 (research `9323213d`: two-phase + seed + token accounting + probe selection; 7 tests; v1 byte-identical) (follow-on pass): apply §6 to `longcot_mini_stack_runner.py` + add the four tests; run the new unit tests (no inference). Land on the research repo.
 - [x] **RE-4.1 — apply entry v2 spec** ✅ 2026-07-21 (protocol_id v2, two-phase command, probe gate prepended, est 12h; recompiled) (§5) to `20-eval-tower.yaml` (loop owner; recompile the batch entry). Protocol id → `…v2`.
-- [ ] **RE-4.2 — non-saturation probe** (operator quiet-window, v7 quarter stack, autopilot stopped): frontdoor-only, two-phase, `R=4096`, 30 stratified rows. Score with `score_longcot_run.py`. **Gate:** overall accuracy ∈ (10%, 90%) AND marker presence ~100%. If floor → re-probe `R=8192` (§4 escalation); if ceiling → `DONE_MARGINAL_OBS`, stop.
+- [ ] **RE-4.2 — non-saturation probe** (operator quiet-window, current v8 topology re-attested, autopilot stopped): frontdoor-only, two-phase, `R=4096`, 30 stratified rows. Score with `score_longcot_run.py`. **Gate:** overall accuracy ∈ (10%, 90%) AND marker presence ~100%. If floor → re-probe `R=8192` (§4 escalation); if ceiling → `DONE_MARGINAL_OBS`, stop.
 - [ ] **RE-4.3 — full reference run** (only if RE-4.2 in-band): both roles, two-phase, `R=4096`, all 402 rows. Record per-model deterministic accuracy vs. the 90% saturation line, per-domain, canary-leak count (separately), mean reasoning tokens, `phase2_used` rate. Apply the existing entry gate fork.
 - [ ] **RE-4.4 — reasoning-budget ladder** (follow-on curve; the reasoning-compression signal): re-run the 402 rows at `R∈{512,1024,2048,4096}` (both roles). Emit accuracy(R) per role/domain and the **rescue set** (items wrong at low R, correct at high R) per `feedback_accuracy_token_tradeoff_rescue_metric`. Observation-grade.
 - [ ] **RE-4.5 — package + ledger**: package artifacts to `coordination/inference-batch/bundles/RE-4/`; write the terminal ledger row (`DONE_PASS` / `DONE_MARGINAL_OBS` per the fork); flip `K-LCM-1` only on `DONE_PASS`. Update `handoffs/active/inference-batch-loop.md` "RE-4 protocol repair" checkbox.

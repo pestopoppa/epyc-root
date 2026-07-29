@@ -1,6 +1,6 @@
 # Proposal — Auto-enable AutoPilot authority on strict-readiness-pass
 
-**Status**: PROPOSAL — needs operator approval before any implementation. Crosses the `MEASUREMENT.md` trust boundary (authority enablement), so it is human-amendment-only; this document exists to make that decision deliberate.
+**Status**: SUPERSEDED — archive proposed 2026-07-29. The operator-ratified consolidated apply-time signature model supersedes auto-enable; authority consent remains explicit and human-owned.
 **Created**: 2026-06-28
 **Owning handoff**: [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md) (owns the authority cutover bundle) · related [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md)
 **Author context**: requested after the W6 gaming alarm cleared (calibrated in orchestrator `d4eae8b9`) and strict readiness began passing (`restart_ready=True`, all cutover gates green, 2026-06-28).
@@ -96,4 +96,5 @@ authority_controller(state):
 
 ## Progress checklist
 
-- [ ] BLOCKED: operator approval of trust-boundary gate required before any implementation
+- [x] BLOCKED: operator approval of trust-boundary gate required before any implementation — superseded by the 2026-07-27 consolidated apply-time ratification policy; no `AUTOPILOT_AUTHORITY_AUTOENABLE` controller exists. ✅ 2026-07-29
+- [ ] **Archive disposition proposal:** move this superseded proposal to `handoffs/completed/` after operator acknowledgement; preserve it as the rejected auto-enable design and retain the explicit-consent baseline (`baseline_ledger.py` / `authority_consent.py`, orchestrator `e03c9f41`).

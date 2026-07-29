@@ -787,3 +787,148 @@ def test_c9_closing_a_window_returns_the_slot_in_a_throwaway_session(tmp_path: P
     finally:
         _tmux("kill-session", "-t", session)
         assert _tmux("has-session", "-t", session).returncode != 0
+
+
+# ---------------------------------------------------------------- C24 containment
+
+
+def _tmux_semantics(windows: list[tuple[str, str]], *, current: int = 0,
+                    session: str = "agent"):
+    """A tmux stand-in that reproduces the two behaviours that make C24 subtle.
+
+    Fidelity is the point — a fake that simply fails on a miss would make the
+    invariant below pass vacuously, and the real failures came from tmux SUCCEEDING:
+
+      * `display-message -t sess:<miss>` exits **0** and falls back to the session's
+        CURRENT window (measured 2026-07-27); and
+      * with the session absent it exits **0 with EMPTY output** (measured
+        2026-07-29) — which is what the pre-C32 digit exemption turned into a
+        positive, "(verified)" resolution.
+    """
+    def fake_tmux(*args: str) -> tuple[int, str]:
+        if args[0] == "has-session":
+            return (0, "") if args[-1] == session else (1, f"can't find session: {args[-1]}")
+        if args[0] == "list-windows":
+            if args[args.index("-t") + 1] != session:
+                return 1, f"can't find session: {args[args.index('-t') + 1]}"
+            return 0, "\n".join(f"{i}\t{n}" for i, n in windows)
+        if args[0] == "display-message":
+            target = args[args.index("-t") + 1]
+            sess, _, want = target.partition(":")
+            if sess != session:
+                return 0, ""                       # exits 0, says nothing
+            for i, n in windows:
+                if want in (i, n):
+                    return 0, f"{i}\t{n}"
+            i, n = windows[current]                # tmux's silent fallback
+            return 0, f"{i}\t{n}"
+        return 0, ""
+    return fake_tmux
+
+
+_C24_WINDOWS = [("0", "operator"), ("1", "codex-inference"), ("2", "htop")]
+
+# Every way live_mains is known to lose sight of a live main, plus the C32 shape.
+_C24_DRIFT = [
+    ("renamed-window-stale-endpoint", "tmux:agent:codex-OLDNAME"),
+    ("endpoint-names-absent-window", "tmux:agent:gone"),
+    ("no-window-component-no-matching-name", "tmux:agent"),
+    ("index-endpoint-out-of-range", "tmux:agent:99"),
+    ("pane-suffixed-window-gone", "tmux:agent:gone.0"),
+]
+# NOT in the list: `tmux:some-other-session:<name>`. live_mains applies the endpoint
+# match even across sessions, deliberately — "where there is a choice, OVERCOUNT" —
+# so that is the safe direction, and it gets its own test below rather than being
+# quietly dropped from the drift set.
+
+
+@pytest.mark.parametrize("label,endpoint", _C24_DRIFT, ids=[d[0] for d in _C24_DRIFT])
+def test_c24_undercount_implies_resolve_target_refuses(
+        monkeypatch: pytest.MonkeyPatch, label: str, endpoint: str) -> None:
+    """C24's real containment invariant, pinned.
+
+    `cmd_spawn` overwrites a stale heartbeat having "proved" the id is not live via
+    `args.agent in ids`. That proof is NOT sound — live_mains can undercount without
+    refusing — so the reset really can land on a genuinely live main, clearing both
+    heartbeat blockers at once on a detached session where quiet_check is skipped.
+
+    What makes it safe is not live_mains but this:
+
+        an identity live_mains cannot see is an identity resolve_target cannot reach
+
+    so the nudge has no target and `not target` blocks it. Until 2026-07-29 that held
+    only by coincidence between two independent implementations — undocumented and
+    untested. C32 was a live breach of it. Anyone adding a fallback or a best-effort
+    match to resolve_target must fail here.
+    """
+    adapter = _load(f"c24_{label}")
+    monkeypatch.setattr(adapter, "_tmux", _tmux_semantics(_C24_WINDOWS))
+    config = {"roster": [{"id": "codex", "endpoint": endpoint}],
+              "tmux": {"live_session": "agent"}, "caps": {"max_concurrent_mains": 3}}
+
+    ids, why = adapter.live_mains(config)
+    assert ids is not None, f"scenario must UNDERCOUNT, not refuse outright ({why})"
+    assert "codex" not in ids, "fixture no longer reproduces an undercount"
+
+    target, target_why = adapter.resolve_target(config, "codex")
+    assert target is None, (
+        f"CONTAINMENT BROKEN: 'codex' is uncounted by live_mains yet resolvable to "
+        f"{target!r} ({target_why}). cmd_spawn will reset its heartbeat AND a nudge "
+        f"can now be delivered to it mid-generation.")
+
+
+def test_c24_containment_test_is_not_vacuous(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The positive control. Without it the invariant above would also be satisfied
+    by a resolve_target that refuses everything, which would pass while delivering
+    nothing — the opposite-polarity failure."""
+    adapter = _load("c24_control")
+    monkeypatch.setattr(adapter, "_tmux", _tmux_semantics(_C24_WINDOWS))
+    config = {"roster": [{"id": "codex", "endpoint": "tmux:agent:codex-inference"}],
+              "tmux": {"live_session": "agent"}, "caps": {"max_concurrent_mains": 3}}
+
+    assert adapter.live_mains(config)[0] == {"codex"}
+    target, why = adapter.resolve_target(config, "codex")
+    assert target == "agent:codex-inference", why
+
+
+def test_c24_index_endpoint_no_longer_breaches_containment(
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    """C32 as a C24 regression, stated as the pair that must never both hold.
+
+    `tmux:agent:99` was uncounted by live_mains AND resolved — reported as
+    "(verified)" — because the verification exempted digit components. That is the
+    one measured counterexample to the invariant, and it is what a nudge to the
+    operator's own window looked like.
+    """
+    adapter = _load("c24_c32")
+    monkeypatch.setattr(adapter, "_tmux", _tmux_semantics(_C24_WINDOWS))
+    config = {"roster": [{"id": "codex", "endpoint": "tmux:agent:99"}],
+              "tmux": {"live_session": "agent"}, "caps": {"max_concurrent_mains": 3}}
+
+    ids, _ = adapter.live_mains(config)
+    target, why = adapter.resolve_target(config, "codex")
+
+    assert "codex" not in ids
+    assert target is None and "INDEX" in why
+    # And the fake really does reproduce tmux's fallback, or the case proves nothing.
+    assert adapter._tmux("display-message", "-p", "-t", "agent:99", "x") == (0, "0\toperator")
+
+
+def test_c24_cross_session_endpoint_overcounts_and_still_refuses(
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    """The other polarity, asserted so nobody 'fixes' it into the dangerous one.
+
+    An endpoint naming a different session is counted live by live_mains (its
+    matching is deliberately session-blind: overcounting refuses a spawn that might
+    have been allowed, undercounting grants one that should not be) while
+    resolve_target refuses it. Both errors point the safe way — no heartbeat reset,
+    no nudge — and that asymmetry is a design choice, not an oversight.
+    """
+    adapter = _load("c24_cross")
+    monkeypatch.setattr(adapter, "_tmux", _tmux_semantics(_C24_WINDOWS))
+    config = {"roster": [{"id": "codex", "endpoint": "tmux:some-other-session:codex-inference"}],
+              "tmux": {"live_session": "agent"}, "caps": {"max_concurrent_mains": 3}}
+
+    assert adapter.live_mains(config)[0] == {"codex"}, "overcount is the SAFE direction"
+    target, why = adapter.resolve_target(config, "codex")
+    assert target is None, why

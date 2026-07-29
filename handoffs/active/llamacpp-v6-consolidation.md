@@ -1,5 +1,11 @@
 # llama.cpp v6 Consolidation — production-consolidated-v6
 
+> **Historical / superseded 2026-07-29:** production is frozen on
+> `production-consolidated-v8`; do not modify or build this v6 branch. Any future
+> kernel work starts from fresh v8 in `llama.cpp-experimental`. The remaining F1
+> v6-fold checkbox below is retired rather than executable; see
+> `handoffs/completed/v6-iqk-promotion.md` for the cutover record.
+
 **Status**: Stage 1 DONE + functionally verified (committed, NOT promoted). Stage 2 parity backlog + post-reboot bench gate the promotion. **2026-06-26 v6 cutover: registry/launcher/governance config converged onto production-consolidated-v6 (now incl. iqk kernels); the gemma worker IS being consolidated onto v6 (the 2026-06-25 "do NOT cut gemma to v6" verdict is SUPERSEDED — see below). Live throughput + garbage verification PENDING (operator deploy gate). Tracking: `handoffs/active/v6-iqk-promotion.md`.**
 **Last updated**: 2026-06-26
 
@@ -74,7 +80,7 @@ Production builds ALL use `GGML_OPENMP=ON` — verified across every `/mnt/raid0
 Production-deployed features still on v5 only. **For EACH: first check whether upstream `f8cc15f16` now provides it natively** (several likely do).
 
 - [x] **Paged attention** (`GGML_OP_FLASH_ATTN_EXT_PAGED` + `ops.cpp` impl + `ggml.h` enum/OP_COUNT) — commits `6843e1274..18b2ebfde`. CHECK upstream native flash-attn first (may be UPSTREAM-NATIVE now). ✅ 2026-07-14 F1 RESOLVED+VERIFIED 2026-06-24 (branch `f1-paged-attn` `112022a0b`; see F1-RESOLUTION)
-- [ ] Fold `f1-paged-attn` (`112022a0b`) into `production-consolidated-v6` — low-risk, opt-in/off-by-default (remaining F1 step)
+- [x] **RETIRED — do not fold `f1-paged-attn` (`112022a0b`) into `production-consolidated-v6`.** ✅ 2026-07-29 — v6 is a historical superseded production version; the frozen v8 immutability contract prohibits this in-place patch. Re-evaluate only as an experimental candidate freshly based on v8, under its own regression protocol.
 - [x] **KV compaction stack** — Attention-Matching (`f1cf9bd9f` / `042ca88b1` / `45b4849ac`) + Expected-Attention (`894e048e3`, the deployed default compactor) — `src/llama-graph.cpp`, server integration. ✅ 2026-07-14 F2/F3 DONE + BEHAVIORALLY VALIDATED (`3f9df4bd3`; knorm legacy scorer deliberately not ported)
 - [x] **Hadamard KV smoothing** (`ea6ab859c`, production config) — CHECK upstream #21038. The Hadamard FWHT hint IS already in v6 via upstream → may be PARITY-already-present. ✅ 2026-07-14 ALREADY-NATIVE in v6, no port needed
 - [x] **IMROPE seq_add/seq_div + K-shift** for qwen35moe hybrids (`935e9bbbd`) — required for the deployed Qwen3.5 hybrid (architect). ✅ 2026-07-14 F5 DONE + VALIDATED incl. 122B deep validation (`00fe78602`)

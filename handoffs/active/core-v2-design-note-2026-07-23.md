@@ -1,6 +1,6 @@
 # Designed T1 eval core — `core_v2` — design note & operator promotion checklist
 
-**Date**: 2026-07-23 · **Status**: BUILT, **vl-AMENDED (2026-07-23)**, validated, **NOT promoted** (operator gate is intact — see checklist).
+**Date**: 2026-07-23 · **Status**: SUPERSEDED/COMPLETED — `core_v2` was operator-applied as E4 on 2026-07-23 (orchestrator `f60646e9`); archive proposed 2026-07-29. The checklist below is retained only as historical evidence.
 **Artifact**: `epyc-orchestrator/benchmarks/prompts/core_v2.jsonl` (1 metadata row + 50 question rows).
 **Amendment (2026-07-23)**: `vl` is now INCLUDED (was whole-suite excluded on the then-believed 0/376 record).
 A 20-question vl truth slice through the real eval path scored **20/20 correct, 0 errors** — see
@@ -152,15 +152,15 @@ The metadata row carries this exclusion block verbatim (with rationale) for audi
 ## 6. OPERATOR CHECKLIST — promotion (human-owned; do NOT let an agent perform these)
 
 The measurement trust boundary (instrument-era registry) is **human-amendment-only** (MEASUREMENT.md §5).
-Activation is deliberately blocked until the operator appends the row below.
+Historical resolution: the operator applied the E4/core_v2 boundary on 2026-07-23; the retained checklist records that completed promotion rather than instructions for a new activation.
 
-- [ ] **Review** `benchmarks/prompts/core_v2.jsonl` (metadata + 50 items) and this note, incl. the **`vl` INCLUSION**
+- [x] **Review** `benchmarks/prompts/core_v2.jsonl` (metadata + 50 items) and this note, incl. the **`vl` INCLUSION** ✅ 2026-07-23
       (§4 + "vl INCLUSION — decision reversal") — confirm vl-in-core, the 1-item slot count, and the bigcodebench
       demotion; and **review the STALE `vl` suite-level "0/376" row in `instrument_eras.yaml`** (human-amendment-only,
-      untouched here — decide whether to correct it).
-- [ ] **Append the quality/core era row** to `epyc-orchestrator/orchestration/instrument_eras.yaml` under `eras:`
+      untouched here — decide whether to correct it). ✅ 2026-07-23
+- [x] **Append the quality/core era row** to `epyc-orchestrator/orchestration/instrument_eras.yaml` under `eras:` ✅ 2026-07-23
       (this is the "E4 opens when the instrument repair lands…" row reserved at `instrument_eras.yaml:118-120`,
-      adapted to the current E5/E6/E7 era world). **READY TO PASTE** (set `from` to the activation moment):
+      adapted to the current E5/E6/E7 era world). **HISTORICAL PASTE BLOCK** (used at the activation moment). ✅ 2026-07-23
 
 ```yaml
   - id: E4-quality-core-v2
@@ -182,16 +182,18 @@ Activation is deliberately blocked until the operator appends the row below.
       Pairs with the E7-eval-instrument (scope eval_quality) scorer/pool boundary.
 ```
 
-- [ ] **Re-run the validator** after appending (must flip to promotion-ready):
+- [x] **Re-run the validator** ✅ 2026-07-23 — after appending (must flip to promotion-ready):
       `uv run python scripts/autopilot/core_v2_promotion_report.py --core-id core_v2 --core-path benchmarks/prompts/core_v2.jsonl --eras-path orchestration/instrument_eras.yaml --json`
-      → expect `promotion_ready: true`, empty `blockers`.
-- [ ] **Launch autopilot with** `AUTOPILOT_T1_CORE_ID=core_v2` (the eval tower resolves the file at
+      → expect `promotion_ready: true`, empty `blockers`. ✅ 2026-07-23
+- [x] **Launch autopilot** ✅ 2026-07-23 — with `AUTOPILOT_T1_CORE_ID=core_v2` (the eval tower resolves the file at
       `benchmarks/prompts/core_v2.jsonl` automatically; `AUTOPILOT_T1_CORE_PATH` is only needed for a non-default
       location). Optional: enable the W6 rotating audit block (`AUTOPILOT_W6_AUDIT_BLOCK=1`) so fresh pool items
-      accrue per-item difficulty stats toward a future empirical `core_v3` refresh.
-- [ ] **Restart** so the running process picks up the env (a stale process keeps the legacy sampler).
-- [ ] **Verify live**: first T1 trial's `eval_details` shows `core_id=core_v2`,
-      `core_selection=designed_core`, `n_questions=50`.
+      accrue per-item difficulty stats toward a future empirical `core_v3` refresh. ✅ 2026-07-23
+- [x] **Restart** so the running process picks up the env (a stale process keeps the legacy sampler). ✅ 2026-07-23
+- [x] **Verify live** ✅ 2026-07-23: first T1 trial's `eval_details` shows `core_id=core_v2`,
+      `core_selection=designed_core`, `n_questions=50`. ✅ 2026-07-23
+
+- [ ] **Archive disposition proposal:** move this completed/superseded design note to `handoffs/completed/` after operator acknowledgement; retain it as promotion evidence, not as an active checklist.
 
 **Refresh policy**: `core_v2` is frozen. Any item swap bumps to `core_v3` with a new era row (never edit this
 one). Once the audit block has accrued per-item solve stats over this era, an empirical medium-difficulty
