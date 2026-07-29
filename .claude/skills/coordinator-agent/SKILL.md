@@ -57,6 +57,13 @@ one yourself.** Daemon/watchdog lifecycle after a reboot is an operator action.
 say so *explicitly and prominently* in the report: measurements taken against a quiesced host can
 be artifacts, so any bench or timing result collected while AutoPilot is down is suspect.
 
+**The pre-reboot side is equally the coordinator's duty.** This phase describes waking up after a
+reboot already happened; going to sleep before the next one is not delegated to nobody. Before any
+reboot request reaches the operator, every main — including coordinator-agent itself — must have
+completed a wrap-up (checkboxes flipped with evidence, mid-flight findings filed, work committed
+AND pushed) and the coordinator must have confirmed that state before relaying the request. See
+`agents/shared/OPERATING_CONSTRAINTS.md` → *Pre-reboot wrap-up is mandatory, not checkpoint-gated*.
+
 ## Phase 1 — become addressable
 
 ```bash

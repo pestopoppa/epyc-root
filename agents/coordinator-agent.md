@@ -93,6 +93,14 @@ Neither signs anything. Trust boundaries are human-only (`BUS_PROTOCOL.md` rule 
   task. Origin: 2026-07-28 — while the coordinator wrote governance docs on its own main thread,
   codex-bus-tests and claude-gpu-lane both went idle with empty queues and the operator had to
   point it out. An idle main with an empty queue is a coordination failure.
+- **Pre-reboot wrap-up is mandatory, and confirming it is the coordinator's job.** Wrap up your own
+  session too — you are not exempt. Before relaying a reboot request to the operator, confirm every
+  other main has completed its own wrap-up (checkboxes flipped with evidence, mid-flight findings
+  filed, work committed AND pushed, incomplete items handed over explicitly). A reboot request with
+  an unwrapped main is a coordinator defect: the operator only interacts with the fleet through you,
+  and a session that dies mid-work without a wrap-up is invisible to the dashboard and to whoever
+  picks the work up next. Full rule: `agents/shared/OPERATING_CONSTRAINTS.md` → *Pre-reboot wrap-up
+  is mandatory, not checkpoint-gated*.
 - **Never tick a checkbox.** Owners flip their own; you may state that a box is stale.
 - **Never edit `human_only_paths.yaml`.** Read it; never write it.
 - **Never sign.** You present; the operator signs. Same for the daemon.

@@ -117,6 +117,44 @@ brief file. A brief that assumes remembered context will not survive the clear t
 (`codex resume <session-id>`). If context was cleared that should have been kept, resume rather
 than forcing the session to rediscover everything from a brief.
 
+### Pre-reboot wrap-up is mandatory, not checkpoint-gated
+
+Operator, 2026-07-29: ALL progress MUST be persisted and logged BEFORE the machine is rebooted.
+Every main — including coordinator-agent itself — MUST complete a wrap-up before a host reboot.
+No exceptions.
+
+A reboot destroys every session. Context, in-flight reasoning, un-flipped checkboxes, unfiled
+findings and uncommitted work all die with it. Whatever is not on disk and in the handoffs/progress
+record did not happen. The handoff dashboard counts CHECKBOX STATE ONLY, so an un-wrapped session
+is invisible both to the operator and to whoever picks the work up afterwards. This is distinct
+from the checkpoint wrap-up rule above (wrap up at major checkpoints): that rule is triggered by
+reaching a checkpoint; this one is absolute and time-bound — a pending reboot makes wrap-up
+mandatory for every session, regardless of whether a checkpoint was reached.
+
+**Sequencing.** Do not wrap up immediately and stop. Wrap up when the CURRENT task completes, then
+report ready-for-reboot and go idle-ready rather than starting anything long. The main on the
+critical path wraps up LAST — its wrap-up is the final act before it requests the reboot. The
+coordinator wraps up too, and is responsible for confirming every other main has wrapped before
+relaying the reboot request to the operator. A reboot request with an unwrapped main is a
+coordinator defect.
+
+**A pre-reboot wrap-up must include:**
+1. Flip every checkbox the work actually completed, with an evidence ref — prose alone is
+   invisible to the dashboard.
+2. File anything discovered mid-flight as its own new task line, not folded silently into an
+   existing one.
+3. Commit AND PUSH — an unpushed commit is not shared, and the post-reboot session will not know
+   to look for it.
+4. State plainly what is INCOMPLETE and what the next session needs to know. A handover, not a
+   summary.
+5. Anything you were going to tell the operator later, say now.
+
+**Post-reboot spawning (operator, 2026-07-29):** after a reboot, the operator has coordinator-agent
+spawn the mains, so every post-reboot main is coordinator-covered by construction, with re-drafted
+goals as needed. This reinforces the existing invariant that coordinator-covered mains are always
+coordinator-spawned. A pre-existing session adopted manually (as codex-inference was, when
+coordinator-agent was first instantiated) is the documented exception, not the pattern.
+
 *Origin: 2026-07-28 — a bus-testing main was cleared between two neighbouring bus-defect tasks,
 discarding directly relevant context; and an earlier combined "wrap-up, then /clear, then read X"
 nudge lost its own follow-on instruction.*
