@@ -1,6 +1,6 @@
 {
   "agent": "auditor",
   "state": "working",
-  "task_id": "p2-5h-spec-defects",
-  "ts": "2026-07-29T18:09:52+00:00"
+  "task_id": "stale-pin-sweep",
+  "ts": "2026-07-29T18:14:50+00:00"
 }
