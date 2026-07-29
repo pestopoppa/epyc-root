@@ -1,6 +1,6 @@
 # TASK BRIEF — codex — post-reboot E8 resume + stack ownership
 
-**Roster id:** `codex` · **Lane:** cpu · **Assigned by:** coordinator-agent, 2026-07-29
+**Roster id:** `inference` · **Lane:** cpu · **Assigned by:** coordinator-agent, 2026-07-29
 **Operator decisions this brief executes:** bringup order = *daemon+supervisor, then codex owns
 stack bringup*; CPU lane = *E8 and E5 run concurrently on separate mains, arbitrated by
 region-lock*; lost tokens = *codex re-validates, coordinator re-presents*.
@@ -9,7 +9,7 @@ region-lock*; lost tokens = *codex re-validates, coordinator re-presents*.
 
 1. `coordination/session-bus/tasks/post-reboot-session.md` — the fleet handover. It is a pointer
    document; follow its pointers.
-2. `coordination/session-bus/outbox/fable-auditor.jsonl`, task `e8-harness-contract-audit` — six
+2. `coordination/session-bus/outbox/auditor.jsonl`, task `e8-harness-contract-audit` — six
    tier-A fail-open contracts, the two CRITICAL ones verified closed at pinned commit `182ccef6`.
    **Read this BEFORE re-running any E8 harness step.** The audit exists to replace the serial
    run-discover-fix loop; re-running first re-enters the loop it was built to end.
@@ -124,8 +124,8 @@ Three epyc-root `codex/e8-*` ratifier branches merged clean but produced a **zer
 At **every** task boundary:
 
 ```bash
-python3 scripts/coordination/session_bus.py drain --agent codex --triage
-python3 scripts/coordination/session_bus.py append --agent codex \
+python3 scripts/coordination/session_bus.py drain --agent inference --triage
+python3 scripts/coordination/session_bus.py append --agent inference \
   --target heartbeat --json '{"state":"working","task_id":"<current>"}'
 ```
 
@@ -152,3 +152,24 @@ To coordinator-agent, on task_id `e8-p0-1-resume`:
 
 Checkbox discipline: any edit recording completed work flips `- [ ]` → `- [x]` with an inline
 `✅ 2026-07-29`. Prose status is invisible to the dashboard.
+
+---
+
+## ROSTER RENAME — 2026-07-29 14:45Z (operator direction)
+
+Roster ids are now **model-agnostic**, so a main can be re-spawned on a different backend (or a
+local model) without its identity changing:
+
+| was | now | owns |
+|---|---|---|
+| `codex` | **`inference`** | inference tasks; currently the stack owner + E8 P0-1 |
+| `fable-auditor` | **`auditor`** | miscellaneous tasks; the DEFAULT main for auditing other mains' work |
+| `claude-main` | **`mainA`** | whatever handoff/backlog work is dispatched to it |
+| `claude-gpu-lane` | **`mainB`** | whatever handoff/backlog work is dispatched to it |
+
+`coordinator-agent` keeps its id (it is the authority name in `authority.cross_main` /
+`lease_grant`, not a session label); its window is `agent:coordinator`.
+
+Your four bus files were moved with `git mv` and their internal `agent` fields rewritten, so your
+history followed you — nothing was orphaned. **Use your NEW id verbatim in every bus command.**
+Older briefs and `post-reboot-session.md` still name the old ids; that is history, read it as such.

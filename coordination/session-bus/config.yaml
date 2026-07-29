@@ -10,7 +10,7 @@ roster:
   # correctly REFUSED to guess a pane rather than typing into the wrong one — so the window
   # is now named explicitly. Roster id stays `codex`: it is the identity every existing
   # queue row, cursor, inbox and outbox is keyed on, and renaming it would orphan all of them.
-  - {id: codex,             role: main,              lanes: [cpu, gpu, none], endpoint: "tmux:agent:codex-inference", drain: boundary}
+  - {id: inference,         role: main,              lanes: [cpu, gpu, none], endpoint: "tmux:agent:inference",  drain: boundary}   # was `codex` until 2026-07-29
   # RETIRED 2026-07-28: the operator closed its tmux window (agent:claude_A). The row was kept,
   # not deleted — queue rows, cursors and its inbox/outbox are all keyed on this identity, and
   # removing it would orphan that history.
@@ -22,8 +22,12 @@ roster:
   # would orphan all of it AND leave the old row drawing "LOOKS DEAD" advisories forever.
   # endpoint monitor:file -> tmux:agent:claude-main so it can actually be nudged: monitor:file has
   # no push delivery, which `validate` flags precisely because assigned work rots unread there.
-  - {id: claude-main,       role: main,              lanes: [cpu, none],      endpoint: "tmux:agent:claude-main", drain: boundary}
-  - {id: coordinator-agent, role: coordinator-agent, lanes: [none],           endpoint: "monitor:file", drain: push}
+  - {id: mainA,             role: main,              lanes: [cpu, none],      endpoint: "tmux:agent:mainA",      drain: boundary}   # was `claude-main` until 2026-07-29
+  # Renamed window 0 `claude` -> `coordinator` and re-pointed monitor:file -> tmux 2026-07-29:
+  # monitor:file has NO push delivery, which `validate` flagged precisely because assigned
+  # work rots unread there. The id stays `coordinator-agent` — it is the authority name in
+  # authority.cross_main and lease_grant, not a session label.
+  - {id: coordinator-agent, role: coordinator-agent, lanes: [none],           endpoint: "tmux:agent:coordinator", drain: push}
   # Added by coordinator-agent 2026-07-28. Test authoring for the session bus itself
   # (zero coverage found: no file under tests/ references session_bus, while the bus is
   # now load-bearing for coordination). lanes:[none] — this main must never take an
@@ -38,7 +42,7 @@ roster:
   # P2-2 tenant landing starts PRE-reboot rather than deferring. Re-using the same roster id
   # deliberately — its inbox still holds the undelivered lane-activation decision, so a fresh
   # session in this slot drains it rather than needing it re-relayed.
-  - {id: claude-gpu-lane,   role: main,              lanes: [gpu, none],      endpoint: "tmux:agent:claude-gpu-lane",   drain: boundary}
+  - {id: mainB,             role: main,              lanes: [gpu, none],      endpoint: "tmux:agent:mainB",      drain: boundary}   # was `claude-gpu-lane` until 2026-07-29
   # Added by coordinator-agent 2026-07-28 on operator direction. Fable 5 at xhigh effort,
   # READ-ONLY auditor of the E8 harness contract set. Rationale: three consecutive failed-closed
   # cycles each surfaced a DIFFERENT defect in a different layer (snapshot publisher binding,
@@ -46,7 +50,7 @@ roster:
   # violations one run-cycle at a time. A fresh reviewer reading the whole harness at once can
   # find the remainder statically. lanes: [none] — it must never take an inference lane or a
   # region claim; codex owns E8 and the tail regeneration still to come.
-  - {id: fable-auditor,     role: reviewer,          lanes: [none],           endpoint: "tmux:agent:fable-auditor",   drain: boundary}
+  - {id: auditor,           role: reviewer,          lanes: [none],           endpoint: "tmux:agent:auditor",    drain: boundary}   # was `fable-auditor` until 2026-07-29
 
 authority:
   within_lane: [self]

@@ -1,11 +1,11 @@
-# TASK BRIEF — fable-auditor — adopt C-OWN (the session-bus delivery plane)
+# TASK BRIEF — auditor — adopt C-OWN (the session-bus delivery plane)
 
-**Roster id:** `fable-auditor` · **Lane:** none (never takes an inference lane) ·
+**Roster id:** `auditor` · **Lane:** none (never takes an inference lane) ·
 **Assigned by:** coordinator-agent, 2026-07-29
 
 ## 0. Why you, and why now
 
-`claude-gpu-lane` was re-tasked off the session-bus C-series and then closed, and it explicitly
+`mainB` was re-tasked off the session-bus C-series and then closed, and it explicitly
 refused to inherit the series under a different mandate. So **C6 / C9 / C10 / C11 / C14 / C16 /
 C18 / C21 / C22 / C23 and all of `scripts/coordination/tmux_adapter.py` currently have no owner.**
 Filed as **C-OWN** in `handoffs/active/session-bus-thin-dispatcher.md` (~line 678).
@@ -19,7 +19,7 @@ Read `handoffs/active/session-bus-thin-dispatcher.md` (the C-series ledger) and
 
 ## 1. PRIORITY 1 — the undelivered token-request defect (HIGH)
 
-**Two `token-request` messages from `codex` never reached the coordinator's inbox and never
+**Two `token-request` messages from `inference` never reached the coordinator's inbox and never
 reached `tokens/token-queue.md`.** The triage report found them only by outbox scan, annotating
 each: *"NOT in your inbox — found by outbox scan; the relay may never have delivered it."*
 
@@ -59,7 +59,7 @@ Do not repair the two gates themselves — codex is re-validating and re-filing 
 run kept its dead predecessor's heartbeat. `cmd_nudge` then refuses on `state == working` and on
 age, and the fresh session cannot clear either — it has not been told to drain, and it cannot be
 told, because the telling is what the guard refuses. Measured at 14:20Z: **all three pre-existing
-roster ids were undeliverable**; `codex` on both state *and* age, its heartbeat still reading
+roster ids were undeliverable**; `inference` on both state *and* age, its heartbeat still reading
 `working` on `e8-deterministic-completion-repair` from a session that no longer existed.
 
 **Already fixed by coordinator-agent** — heartbeat now written unconditionally, cursor deliberately
@@ -76,7 +76,7 @@ undercount — the C14 capacity-inventing direction — that fix can reset a gen
 heartbeat and re-open it to a mid-generation nudge.** Say plainly whether that hazard is real.
 
 **C25 — `cmd_spawn` and `resolve_target` disagree on the window name for one identity.** Spawn
-names the window `args.agent` (`codex`); `resolve_target` verifies the roster endpoint's window
+names the window `args.agent` (`inference`); `resolve_target` verifies the roster endpoint's window
 (`codex-inference`). So a spawned main is undeliverable until renamed. Worked around at 14:18Z with
 `tmux rename-window -t agent:codex codex-inference` (probe-verified), but that is a manual step
 whose omission silently breaks delivery. Real fix: derive the window name from the endpoint.
@@ -99,7 +99,7 @@ Both are filed on the bus: `coordination/session-bus/outbox/coordinator-agent.js
 - **C23** — triage disposition has no bulk-clear granularity, so N routed items produce N identical
   payloads. **This is protocol shape, not a send bug — do not "fix" it in the adapter.** It is not
   hypothetical: **19 byte-identical `triage-disposition-post-standdown` payloads are sitting in the
-  coordinator's triage queue right now — 40% of a 48-item queue is one message.** `claude-gpu-lane`
+  coordinator's triage queue right now — 40% of a 48-item queue is one message.** `mainB`
   self-diagnosed it correctly before closing: 19 distinct corr_ids, 19 distinct message ids,
   relayed 1:1, no duplicate-send bug; the defect is that clearing triage requires one corr_id per
   item while the payload was identical across all of them. Standing rule it adopted, worth
@@ -111,9 +111,9 @@ Both are filed on the bus: `coordination/session-bus/outbox/coordinator-agent.js
 
 ## 4. Constraints
 
-- **Lane `none`, always.** Never take an inference lane; `codex` (E8) and `claude-main` (E5) are
+- **Lane `none`, always.** Never take an inference lane; `inference` (E8) and `mainA` (E5) are
   both on the CPU and you must not contend with them.
-- **Single writer.** Write only `outbox/`, `heartbeats/`, `cursors/` for `fable-auditor`.
+- **Single writer.** Write only `outbox/`, `heartbeats/`, `cursors/` for `auditor`.
   `queue.jsonl` and every `inbox/*` belong to the coordinator-daemon.
 - **Never suppress error output on bus writes.** A silenced schema rejection is indistinguishable
   from success — the same fail-open class as C3/C6/C8.
@@ -129,10 +129,31 @@ Both are filed on the bus: `coordination/session-bus/outbox/coordinator-agent.js
 At every task boundary:
 
 ```bash
-python3 scripts/coordination/session_bus.py drain --agent fable-auditor --triage
-python3 scripts/coordination/session_bus.py append --agent fable-auditor \
+python3 scripts/coordination/session_bus.py drain --agent auditor --triage
+python3 scripts/coordination/session_bus.py append --agent auditor \
   --target heartbeat --json '{"state":"working","task_id":"<current>"}'
 ```
 
 Report to coordinator-agent on task_id `c-own-adoption`. File each disposition as a finding on the
 bus, with `needs_routing_to` / `action_required` set structurally.
+
+---
+
+## ROSTER RENAME — 2026-07-29 14:45Z (operator direction)
+
+Roster ids are now **model-agnostic**, so a main can be re-spawned on a different backend (or a
+local model) without its identity changing:
+
+| was | now | owns |
+|---|---|---|
+| `codex` | **`inference`** | inference tasks; currently the stack owner + E8 P0-1 |
+| `fable-auditor` | **`auditor`** | miscellaneous tasks; the DEFAULT main for auditing other mains' work |
+| `claude-main` | **`mainA`** | whatever handoff/backlog work is dispatched to it |
+| `claude-gpu-lane` | **`mainB`** | whatever handoff/backlog work is dispatched to it |
+
+`coordinator-agent` keeps its id (it is the authority name in `authority.cross_main` /
+`lease_grant`, not a session label); its window is `agent:coordinator`.
+
+Your four bus files were moved with `git mv` and their internal `agent` fields rewritten, so your
+history followed you — nothing was orphaned. **Use your NEW id verbatim in every bus command.**
+Older briefs and `post-reboot-session.md` still name the old ids; that is history, read it as such.
