@@ -495,6 +495,13 @@ Deep-dive at [`/workspace/research/deep-dives/granite-embedding-97m-r2-evaluatio
 
 For S5 specifically: the dense first-stage choice in front of ColBERT will come out of this bench; defer S5 architecture decisions until Phase B completes.
 
+**Phase-C correction (2026-07-29):** Phase B is complete. Granite records
+0.9222 NDCG@10 versus BGE-M3's 0.9150, at 1.614s versus 7.037s wall-clock
+(4.36× lower), satisfying the bench's Granite promotion rule. If S5 activates
+a multilingual dense candidate stage before ColBERT, use Granite as its default
+encoder; this does not unblock S5's separate AR-3/decontamination requirements
+or alter the current snippet-only pipeline.
+
 ## Research Intake Update — 2026-06-10
 
 ### New Related Research

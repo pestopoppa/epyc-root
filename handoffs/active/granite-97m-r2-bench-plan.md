@@ -1,6 +1,6 @@
 # Granite-97M-r2 Multilingual Embedder Bench Plan
 
-**Status**: Phase A-fast fallback corpus + dry-run harness landed and re-verified 2026-06-20; HF model artifacts and conversion env staged; warm/default-off orchestrator embedder recipes landed 2026-06-20; conversion preflight/command emitter landed 2026-06-28; GGUF conversion/quantization completed 2026-07-03; server smoke + Phase B retrieval/latency bench PASS 2026-07-20; Phase C downstream retriever decision remains open
+**Status**: Phase A-fast fallback corpus + dry-run harness landed and re-verified 2026-06-20; HF model artifacts and conversion env staged; warm/default-off orchestrator embedder recipes landed 2026-06-20; conversion preflight/command emitter landed 2026-06-28; GGUF conversion/quantization completed 2026-07-03; server smoke + Phase B retrieval/latency bench PASS 2026-07-20; Phase C conditionally promotes Granite as the dense first-stage default when a multilingual KB/web consumer activates (2026-07-29)
 **Created**: 2026-04-30 (post-intake-519 deep-dive)
 **Updated**: 2026-07-20
 **Categories**: search_retrieval, knowledge_management, rag_alternatives, local_inference
@@ -162,6 +162,16 @@ Measures: t/doc encode latency, NDCG@10, recall@10, recall@50, per-context-lengt
 
 Granite clears the inference-batch pass rule for this Phase B slice: smoke passed, recall@10/50 held or improved against the references, and wall-clock was lower than all references. The open Phase C decision is whether this fallback-corpus result is sufficient for first-stage dense retriever promotion, or whether the deferred 32K-context/reranker extension must run first.
 
+**Phase C decision (2026-07-29) — conditional adopt Granite-97M-r2.** On the
+`BULK-K-EMB-1` fallback corpus, Granite's NDCG@10 is **0.9222** versus BGE-M3's
+**0.9150** (within the stated 3pp rule), with **1.614s** wall-clock versus
+**7.037s** (4.36× lower). It therefore wins the handoff's first row. This is a
+**consumer-activation default**, not a running-service change: use Granite for
+the first multilingual dense stage when KB-RAG, web research, or SearXNG adds
+one; retain the existing English BGE and ColBERT paths until then. The fallback
+corpus does not establish a 32K or mixed-language-web claim, so those remain
+extension measurements rather than promotion prerequisites.
+
 **No concurrent inference allowed without per-run approval** (memory `feedback_no_concurrent_inference.md`). Coordinate with autopilot/benchmarking to ensure exclusive EPYC access.
 
 #### B-1: Throughput bench — 1000 docs per model
@@ -230,4 +240,4 @@ After Phase B completes, update:
 - [x] GGUF conversion/quantization for Granite/e5-base/BGE-M3 (2026-07-03) ✅
 - [x] Embedder load/vector smoke for warm recipes on ports 8096/8097/8098 ✅ 2026-07-20
 - [x] Phase B fallback-corpus throughput + quality/NDCG execution ✅ 2026-07-20 (`BULK-K-EMB-1`, `granite_97m_r2_phaseB.json`)
-- [ ] Phase C decision + update internal-kb-rag / colbert-reranker / searxng handoffs
+- [x] Phase C decision + update internal-kb-rag / colbert-reranker / searxng handoffs ✅ 2026-07-29 — conditionally adopt Granite-97M-r2 as the first multilingual dense-stage default; no existing service is swapped or launched.

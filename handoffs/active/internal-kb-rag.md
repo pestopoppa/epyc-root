@@ -155,11 +155,18 @@ ColBERT encoder (shared)                           │
   - Action: when the K-track moves from stub to design phase, A/B Granite-97M-r2 vs (a) BGE-M3 (quality ceiling), (b) multilingual-e5-base (size-matched competitor), on a curated slice of CLAUDE.md + handoff content. Measure NDCG@10 + per-doc encode latency on EPYC.
   - Verdict: `worth_investigating`. Cross-ref `colbert-reranker-web-research.md` 2026-04-30 update — same model, evaluated for the web-research side of the dense-then-rerank stack.
 
-#### Deep-dive refinement (2026-04-30) — bench plan persisted, K2 is the gate
+#### Deep-dive refinement (2026-04-30; corrected 2026-07-29) — bench plan persisted
 
 Deep-dive at [`/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md`](../../research/deep-dives/granite-embedding-97m-r2-evaluation.md). Bench handoff at [`granite-97m-r2-bench-plan.md`](granite-97m-r2-bench-plan.md).
 
 **Critical infra finding**: there is **no production multilingual retrieval today** — only English-only BGE-large-en-v1.5 routing pool on `:8090–:8095` (`/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/parallel_embedder.py`). Granite-97m-r2 (or any multilingual embedder) would be **net-new infrastructure**, not a swap-in.
+
+**Phase-C correction (2026-07-29):** K1–K7 are certified, so the old “K2 is
+the gate” wording is stale. `BULK-K-EMB-1` gives Granite 0.9222 NDCG@10 versus
+BGE-M3 0.9150 at 4.36× lower wall-clock (1.614s versus 7.037s). Adopt Granite
+as the default **if** this KB track activates a multilingual dense first stage;
+do not replace the certified English ColBERT/BGE path or claim 32K performance
+from this fallback-corpus result.
 
 **The bench cannot run with "K-track activation" as the gate** — it needs the **K2 chunker output** specifically, since the eval corpus depends on having chunked KB content. The bench handoff includes a fallback eval-corpus path (100 code snippets from `epyc-orchestrator/src/` + 30 NL queries with manual labels, ~half day) that does NOT require K2, so the bench can run earlier if a K2-blocked K-track scope is undesirable. Decide which path to take when this handoff exits stub status.
 

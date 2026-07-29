@@ -314,6 +314,13 @@ AGPL-3.0 license — no issue for self-hosted internal tool use (no distribution
 
 Bench handoff at [`granite-97m-r2-bench-plan.md`](granite-97m-r2-bench-plan.md). For SearXNG SX-5/6 specifically: the dense first-stage choice (granite-97m-r2 vs BGE-M3 vs multilingual-e5-base) will come out of that bench. Defer SX-5 dense-stage decisions until Phase B completes. Note that the bench's eval corpus is currently planned as code-snippets-plus-handoffs, NOT mixed-language web snippets — if SearXNG-specific quality matters, add a SearXNG-output slice to the bench's eval-corpus engineering (Phase A-4).
 
+**Phase-C correction (2026-07-29):** Phase B selected Granite conditionally:
+0.9222 NDCG@10 versus BGE-M3's 0.9150 at 4.36× lower wall-clock (1.614s versus
+7.037s). If SX-5 introduces a multilingual dense first stage, Granite is the
+default encoder. This does not change SX-5/SX-6 activation gates or establish
+mixed-language-web quality; a SearXNG-output extension slice is still required
+before making that stronger claim.
+
 ## Research Intake Update — 2026-05-04
 
 ### New Related Research
