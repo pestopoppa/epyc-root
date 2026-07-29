@@ -84,6 +84,22 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
 - [x] Cross-link the MI210 GPU speed campaign into `qwen36-27b-cpu-feasibility` (parked-on-CPU ≠ dead model) ✅ 2026-07-18
 - [x] Surface the fired reopen-triggers (gpu-drafter MI210-gate, minddr DGX→MI210, sarathi batched-decode E1/E2) with dated notes + reactivate `- [ ]` tasks in each handoff ✅ 2026-07-18
 - [ ] Re-anchor GEMV to its 2 live graph-fusion tasks; move the deprioritized SIMD Phase 0–5 plan to a closed appendix
+  - **VERIFIED 2026-07-29 (`auditor`), handed to the CPU-lane owner — NOT executed here**, because this
+    section is headed *"no checkbox flips on the audited handoffs"* and the move would effectively close
+    26 boxes. **The recommendation is correct and the target handoff says so itself:** line 5 reads
+    *"Priority: ~~MEDIUM~~ DEPRIORITIZED for the SIMD ukernel; but the barrier/op-count sub-lever is
+    RE-ELEVATED"*, and its verdict section adds *"Not pursued. ROI doesn't beat the production-side
+    alternative"* and *"CPU2 closes here for Q8 specifically — the 4.4 t/s ceiling is genuinely
+    architecture-bound"*, with two graph-rewrite probes recorded as disproved.
+    **Measured:** 36 open boxes in that file — 10 are the Pickup Checklist (a reusable template, guarded
+    separately today), and **26 are Phases 0–5 of the very plan the header calls deprioritized.**
+    The two live anchors to keep: the barrier/op-count sub-lever, and the qwen35 DeltaNet fusable
+    cluster `wqkv + wqkv_gate + ssm_beta + ssm_alpha` named in the verdict.
+    **This is the cleanest `stale by supersession` case found so far** — not *already done* but
+    *overtaken by the handoff's own recorded verdict* — and it is invisible to every mechanical
+    detector tried today, because each box's own text reads fine and only the header and verdict
+    elsewhere in the file contradict it. 26 boxes in one file is why the ~1/3-live estimate looks
+    plausible.
 - [ ] Close/relocate the LANDED/SUPERSEDED handoffs (v6-consolidation → completed; kb-rag K1–K7 certified; x-mas → telemetry-watch)
 - [ ] Split `learned-routing-controller` and `decision-aware-routing`: live rollout/backlog vs frozen-behind-unfired-gate expansion
 - [x] Stack-cluster soft-consolidation (corrected on verification — NOT a clean "retire 3"): superseded `standardized-stack-update-pipeline-finalization` (W4 co-tracked); kept `model-stack-update-pipeline-audit` LIVE (2 orphan boxes); flagged `model-stack-change-standardization-audit` as a repeatable runbook ✅ 2026-07-18
