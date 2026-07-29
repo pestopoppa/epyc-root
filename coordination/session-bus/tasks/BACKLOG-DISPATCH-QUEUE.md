@@ -102,7 +102,7 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 25 | ~~`autopilot-continuous-optimization.md:1529`~~ **✅ CLOSED 2026-07-29** | AP-32 | none | S | `wiki/agent-architecture.md`, `strategy_store.py` | Strike unmeasured +1.1% claim; guard the dead linter |
 | 26 | `architect-model-selection-bench.md:330` | follow-up tooling | none | S | `scripts/bench/gpu_lib.sh`, `run_arm.sh`, `run_budget.sh` | Promote scratchpad GPU driver scripts into the repo |
 | 27 | ~~`context-folding-progressive.md:113`~~ **✅ CLOSED 2026-07-29** | deep-dive correction | none | S | `context-folding-progressive.md` | Record do-not-prioritize decision for ContextRot harness replication |
-| 28 | `scoring-infra-standardization.md:184` | intake 2a | none | S | `research/intake_index.yaml`, `benchmarks/instruction_precision` | Adopt six-point SWE-bench disclosure standard for intake-916/917/924 |
+| 28 | ~~`scoring-infra-standardization.md:184`~~ **✅ CLOSED 2026-07-29** | intake 2a | none | S | `research/intake_index.yaml`, `benchmarks/instruction_precision` | Adopt six-point SWE-bench disclosure standard for intake-916/917/924 |
 | 29 | ~~`tool-output-compression.md:442`~~ **✅ CLOSED 2026-07-29** | intake 2026-07-21 | none | S | `scripts/utils/compress_tool_output.py` | Bias Phase-3d fallback chain toward observation-dropping first |
 | 30 | `decision-aware-routing.md:185` | DAR-5 | none | S | `learned-routing-controller.md` | Document cold-start note for LRC P5 onboarding |
 | 31 | `ernie-image-turbo-evaluation.md:139` | progress-checklist | none | S | `research/deep-dives/` ernie dive | Record LongText-Bench harmonized ranking in the deep dive |
@@ -1349,7 +1349,7 @@ re-grep before assigning.
 - L152 | none | M | Y | arms' results land (2b-confirm) | Replace runbook P2 placeholder with built coding ladder | architect-bench-runbook.md
 - L158 | cpu | L | N | - | Run tool-use eval through orchestrator live REPL loop | agentic_swe_harness.py, src/graph/
 - L162 | cpu | M | Y | Jackrong-family bench scheduled | Pin and verify per-model tool-call parser before Jackrong bench | scripts/benchmark/, model_registry.yaml
-- L166 | none | S | Y | - | **READY** Adopt six-point SWE-bench disclosure standard for intake-916/917/924 | architect-bench-runbook.md, intake_index.yaml
+- L166 | none | S | Y | - | **CLOSED 2026-07-29** — handoff 2b-swe-hygiene applies all six fields to intake-916/917/924 | Adopt six-point SWE-bench disclosure standard for intake-916/917/924 | architect-bench-runbook.md, intake_index.yaml
 - L182 | none | M | N | spaCy lemmatizer dependency | Add ordered_subsequence verifier to canonical answer_scoring | answer_scoring.py, its test
 - L183 | none | S | N | verifier (L182) | Implement both Ordered Rate and Coverage-with-order metrics | answer_scoring.py
 - L184 | none | S | Y | - | **READY** Record ACL-2025 provenance + 4-bit-vs-API leaderboard confound | intake_index.yaml, benchmarks/instruction_precision
