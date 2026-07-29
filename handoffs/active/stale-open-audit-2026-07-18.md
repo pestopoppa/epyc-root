@@ -132,6 +132,14 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
     **operator-gated**, not live engineering work. `backlog_live_uncertified
     = 952` for this dated read-through slice; `backlog_not_a_task = 36` is
     unchanged.
+  - **READ-CERTIFIED 2026-07-29 (mainB, 2 rows):**
+    `autopilot-control-plane-integration.md` remains actively owned/dirty;
+    its AP-3 restart-scoped spec-decode/KV work requires quality-cleared
+    composed configurations and a sequential reload. The residual source-proof
+    subtask is part of that same restart policy. Both are **campaign-gated**
+    (and prohibited during E5), not dispatchable. `backlog_live_uncertified =
+    950` for this dated read-through slice; `backlog_not_a_task = 36` is
+    unchanged. No owner handoff was edited.
   - [ ] **REMAINS OPEN:** read-certify the 955. That is the only route left and it is a bounded but
     large job; it should be split across mains by handoff, not attempted in one session.
 
