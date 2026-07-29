@@ -38,7 +38,7 @@ Backburner monitoring. PR #21038 remains merged and auto-enabled in production v
 ### PR #21089 — CPU TurboQuant KV Cache (TBQ3_0/TBQ4_0)
 - **What**: 3-bit and 4-bit KV cache quantization with CPU kernels
 - **Impact**: 5.2x KV cache compression with minimal PPL loss. Extends effective context length
-- **Status**: CLOSED UNMERGED upstream 2026-06-02 (GitHub PR metadata checked 2026-07-29); no TBQ code entered the local production tree.
+- **Status**: Open PR, under review
 - **URL**: https://github.com/ggml-org/llama.cpp/pull/21089
 
 ### ChunkKV (arXiv:2502.00299) — Training-Free KV Compression
@@ -85,7 +85,7 @@ during the E5 host hold.
 ## Action Items
 
 - [x] Watch PR #21038 for merge — ✅ LANDED 2026-04-01 as commit `744c0c731`, auto-enables in v3
-- [x] Evaluate PR #21089 when merged — test TBQ3_0 KV cache on Qwen2.5-Coder-32B context extension ✅ 2026-07-29 — upstream closed the PR unmerged on 2026-06-02 (no `mergedAt`; last update 2026-06-03), and the local tree contains no #21089/TBQ commit. No build, benchmark, or runtime action was taken. Reopen only for a new upstream PR or a merged successor.
+- [ ] Evaluate PR #21089 when merged — test TBQ3_0 KV cache on Qwen2.5-Coder-32B context extension
 - [x] Read ChunkKV paper — assess if implementable in llama.cpp ✅ 2026-07-29 — experimental-only
   feasibility memo above: the required existing substrate is server-side Expected-Attention eviction,
   but a faithful ChunkKV port requires observed-prefill attention capture and ordered chunk selection;
@@ -195,7 +195,7 @@ Batch intake (8 URLs + 3 reference-chased papers). The Bonsai family extends int
   - Also note exllamav3's own author concedes GGUF i-quants "hold up well" against SOTA formats, so the headroom over what we already run is modest.
 
 - [ ] Operator-review candidate (bounded measurement, NOT a deployment): rebuild on `llama.cpp-experimental` with the iqk trellis kernels un-stubbed and `llama-bench` IQ4_KT/IQ3_KT against production Q4_K_M under the canonical baseline protocol, paired with a correctness/garbage check. Production `production-consolidated-v6` is FROZEN — experimental branch only. Gating question is narrow: does per-weight Viterbi decode cost exceed the bandwidth it saves at our operating point? [intake-873]
-- [x] Coordinate the sub-2-bit angle with [angelslim-techniques-evaluation.md](angelslim-techniques-evaluation.md) rather than opening a parallel track. ✅ 2026-07-29 — ownership is now explicit: this handoff retains KV-cache/TurboQuant/trellis investigation; AngelSlim retains QAT weight-quant/STQ1_0 and its public reference artifacts. Both remain experimental-only and deployment-deferred; they share rebuild infrastructure, not a benchmark or promotion claim. [intake-873]
+- [ ] Coordinate the sub-2-bit angle with [angelslim-techniques-evaluation.md](angelslim-techniques-evaluation.md) rather than opening a parallel track. [intake-873]
 
 ## Deep-Dive Correction — 2026-07-21 (Trellis is NOT a flag flip; but our IQ-quant kernels ARE stubbed under a model we deploy)
 

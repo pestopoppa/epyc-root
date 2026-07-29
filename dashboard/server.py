@@ -57,6 +57,7 @@ _STATIC = Path(__file__).resolve().parent / "static"
 STATIC_HTML = _STATIC / "handoffs.html"
 KERNEL_HTML = _STATIC / "kernel.html"
 BUS_HTML = _STATIC / "bus.html"
+BENCHMARKS_HTML = _STATIC / "benchmarks.html"
 
 # Kernel-R&D dashboard contract — produced by epyc-inference-research's kernel-R&D
 # loop (kernel_store.py export); the hub only READS it (self-contained data
@@ -76,6 +77,7 @@ KERNEL_DASHBOARD_JSON = Path(os.environ.get(
 AUTOPILOT_OUTCOME_JSON = Path(os.environ.get(
     "AUTOPILOT_OUTCOME_JSON",
     "/mnt/raid0/llm/tmp/autopilot/outcome_contract.json"))
+BENCHMARK_ARTIFACT_INVENTORY = REPO / "data" / "benchmark_artifact_inventory.json"
 
 # Timeline freshness thresholds (handoffs move on a human/commit cadence).
 _TIMELINE_WARN_S = 6 * 3600
@@ -757,6 +759,12 @@ def outcome_payload() -> dict:
     data["_freshness"] = _outcome_contract_freshness(data)
     return data
 
+def benchmark_artifacts_payload() -> dict:
+    try:
+        return json.loads(BENCHMARK_ARTIFACT_INVENTORY.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return {"status": "not_built", "path": str(BENCHMARK_ARTIFACT_INVENTORY)}
+
 
 def health_payload() -> dict:
     """Fold the board (live) + timeline + kernel + outcome artifacts into one line."""
@@ -819,6 +827,8 @@ class _Handler(BaseHTTPRequestHandler):
                 self._send_html(KERNEL_HTML)
             elif route == "/bus":
                 self._send_html(BUS_HTML)
+            elif route == "/benchmarks":
+                self._send_html(BENCHMARKS_HTML)
             elif route == "/health":
                 self._send_json({"status": "ok"})
             elif route == "/api/handoff_board":
@@ -838,6 +848,8 @@ class _Handler(BaseHTTPRequestHandler):
                 self._send_json(queue_payload())
             elif route == "/api/outcome":
                 self._send_json(outcome_payload())
+            elif route == "/api/benchmark_artifacts":
+                self._send_json(benchmark_artifacts_payload())
             elif route == "/api/health":
                 self._send_json(health_payload())
             else:
