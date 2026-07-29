@@ -156,3 +156,110 @@ def test_an_ordinary_section_gets_no_ownership_warning(tmp_path: Path) -> None:
                                  "Outstanding Tasks")
     assert code == 0
     assert not any("OWNERSHIP" in r for r in reasons)
+
+
+# ---------------------------------------------------------------------------
+# CHILD-BOX BLOCKERS. The third measured failure: the dispatch queue derived its
+# blocker column from PARENT boxes only, so rows whose block was recorded one
+# indent down were served in the top-40 "fire at an idle main immediately" bench.
+# ---------------------------------------------------------------------------
+
+def _handoff(tmp_path: Path, body: str) -> Path:
+    p = tmp_path / "h.md"
+    p.write_text(body, encoding="utf-8")
+    return p
+
+
+def _classify_row(path: Path, lineno: int) -> tuple[int, list[str]]:
+    boxes = {n: (st, b, h) for n, st, b, h in brc._boxes(path)}
+    st, b, h = boxes[lineno]
+    return brc.classify(path, lineno, st, b, h)
+
+
+def test_open_blocking_child_refuses_the_parent(tmp_path: Path) -> None:
+    """The HG-3 shape, measured verbatim: a child box that says the row is blocked
+    while the parent reads as ready."""
+    p = _handoff(tmp_path, "## Tasks\n"
+                 "- [ ] **HG-3 — Protected-action list** aligned with existing SafetyGate\n"
+                 "  - [ ] **HG-3 is BLOCKED on HG-1, contrary to the dispatch queue.**\n")
+    code, reasons = _classify_row(p, 2)
+    assert code == 2
+    assert "BLOCKED BY A CHILD BOX" in reasons[0]
+    assert "h.md:3" in reasons[0]
+    assert "still OPEN" in reasons[1]
+
+
+def test_closed_blocking_child_still_refuses(tmp_path: Path) -> None:
+    """The instrument-era shape: the prerequisite LANDED (`[x]` token authored) but its
+    outcome — the operator signature — is still outstanding. A closed blocking child is
+    not evidence the block cleared, and reading it that way re-serves the row."""
+    p = _handoff(tmp_path, "## Tasks\n"
+                 "- [ ] Record the instrument-era boundary for reward values\n"
+                 "  - [x] **Pre-validated human-amendment token authored**: await operator signature\n")
+    code, reasons = _classify_row(p, 2)
+    assert code == 2
+    assert "CLOSED" in reasons[1] and "not that the block cleared" in reasons[1]
+
+
+def test_ordinary_children_do_not_refuse_the_parent(tmp_path: Path) -> None:
+    """THE OVER-REFUSAL CONTROL. Most rows have children and almost none are blocked.
+    A screen that refused any row with subtasks would be useless — and refusing real
+    work is the exact failure this tool was built to avoid."""
+    p = _handoff(tmp_path, "## Tasks\n"
+                 "- [ ] Port the ~50-line Hermes SQLite reader\n"
+                 "  - [ ] Write the reader\n"
+                 "  - [x] Decide against the letta dependency\n")
+    code, reasons = _classify_row(p, 2)
+    assert code == 0, reasons
+
+
+def test_a_blocked_sibling_does_not_block_this_row(tmp_path: Path) -> None:
+    """SCOPE CONTROL. The walk must stop at the next same-indent box. Bleeding into the
+    following row would refuse a dispatchable task because its NEIGHBOUR is blocked —
+    turning a fix for under-refusal into a worse over-refusal."""
+    p = _handoff(tmp_path, "## Tasks\n"
+                 "- [ ] A genuinely dispatchable row\n"
+                 "- [ ] A different row\n"
+                 "  - [ ] BLOCKED on the operator\n")
+    assert _classify_row(p, 2)[0] == 0, "the blocked NEIGHBOUR bled into this row"
+    assert _classify_row(p, 3)[0] == 2, "the row that really owns that child was let through"
+
+
+def test_the_walk_stops_at_the_next_heading(tmp_path: Path) -> None:
+    p = _handoff(tmp_path, "## Tasks\n"
+                 "- [ ] A dispatchable row\n"
+                 "## Blocked work\n"
+                 "  - [ ] await operator signature\n")
+    assert _classify_row(p, 2)[0] == 0
+
+
+@pytest.mark.parametrize("child", [
+    "Count the tokens in each prompt",
+    "Review the operator runbook for typos",
+    "Add a blocked-state column to the dashboard",
+])
+def test_blocker_pattern_is_narrow_enough_to_miss_incidental_words(
+        tmp_path: Path, child: str) -> None:
+    """`token`, `operator` and `blocked`-as-a-noun appear constantly in this backlog.
+    A loose pattern would refuse real work, so these must all stay dispatchable."""
+    p = _handoff(tmp_path, f"## Tasks\n- [ ] A dispatchable row\n  - [ ] {child}\n")
+    assert _classify_row(p, 2)[0] == 0, child
+
+
+def test_closed_parent_still_wins_over_the_child_screen(tmp_path: Path) -> None:
+    """Ordering: an already-closed row is reported as closed, not as blocked. The
+    reader needs the actionable reason, and `- [x]` is the end of the story."""
+    p = _handoff(tmp_path, "## Tasks\n- [ ] x\n".replace("- [ ] x", "- [x] Done already") + "  - [ ] BLOCKED on something\n")
+    code, reasons = _classify_row(p, 2)
+    assert code == 2 and "already CLOSED" in reasons[0]
+
+
+def test_child_boxes_on_a_non_checkbox_line_returns_empty(tmp_path: Path) -> None:
+    p = _handoff(tmp_path, "## Tasks\nnot a checkbox\n  - [ ] await operator signature\n")
+    assert brc.child_boxes(p, 2) == []
+
+
+def test_child_boxes_past_eof_is_not_an_error(tmp_path: Path) -> None:
+    """Anchor rot points past the end of a shrunken file; that must not raise."""
+    p = _handoff(tmp_path, "## Tasks\n- [ ] a row\n")
+    assert brc.child_boxes(p, 9999) == []

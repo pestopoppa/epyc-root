@@ -21,8 +21,18 @@ dispatch queue, and both cost real work:
      affected, in sections titled "Update Checklist For Any …", "Rules For New Tests",
      "Reopen Checklist" — and, with no signal at all, "Outstanding Work".
 
-The reusable lesson, learned the slow way over three separate findings: **the tell is
-the BOX TEXT, not the section heading.** Heading-based screening failed twice.
+  3. BLOCKERS RECORDED ONE INDENT DOWN. The queue derived its blocker column from
+     PARENT boxes only, but a session that tries a row and finds it blocked writes
+     what it found in a CHILD box. Measured 2026-07-29 against the queue's own
+     top-40 "fire at an idle main immediately" bench: of the nine rows still listed
+     as open, five were already closed, two were blocked by a child, and one was
+     genuinely dispatchable. One blocking child reads, verbatim, "HG-3 is BLOCKED on
+     HG-1, contrary to the dispatch queue" — the correction had already been written
+     into the handoff, and the queue never picked it up.
+
+The reusable lesson, learned the slow way over four separate findings: **the tell is
+the BOX TEXT, not the section heading — and sometimes it is the CHILD box, not the
+row.** Heading-based screening failed twice; parent-only screening failed once.
 
 This tool is ADVISORY and read-only. It changes nothing, and it is deliberately not
 wired into `session_bus.py claim` — a screen that silently refuses a claim would be a
@@ -115,6 +125,53 @@ def section_is_guarded(path: Path, lineno: int) -> bool:
     return bool(_GUARD.search("\n".join(lines[start:lineno])))
 
 
+# Blocking language, deliberately NARROW. A loose pattern here would refuse real
+# work, which is the failure this tool exists to avoid — so it matches explicit
+# blocking constructs only, not any mention of an operator or a token. ("token"
+# alone is not enough: a row about tokenizers is not a row awaiting a signature.)
+# `\bblocked\b` alone was too loose: it refused "Add a blocked-state column to the
+# dashboard", where the word is an adjective in the row's SUBJECT. Real blocks in this
+# backlog are written "BLOCKED on X" or "is blocked", so require the preposition.
+_BLOCKER = re.compile(
+    r"\bblocked\s+(on|by|until|behind)\b|\bis\s+blocked\b|"
+    r"\bawait(s|ing|ed)?\s+(the\s+)?(operator|signature|sign-off|ratification)|"
+    r"pending\s+(operator|human|signature|sign-off)|"
+    r"operator\s+(signature|sign-off|decision|review)\s+(pending|required|awaited)|"
+    r"human-amendment token|\bdo not start\b|post-reboot only|when it unblocks|\bgated on\b",
+    re.I)
+
+
+def child_boxes(path: Path, lineno: int) -> list[tuple[int, str, str]]:
+    """(lineno, state, body) for the boxes indented BENEATH the row at `lineno`.
+
+    The row's own subtree only: stops at the first box at the same or lesser indent,
+    and at the next heading. Deeper prose and continuation lines are skipped rather
+    than ending the walk, because a blocked row's explanation is usually a paragraph
+    under the child that states the block.
+    """
+    lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    if lineno > len(lines):
+        return []
+    m = re.match(r"(\s*)- \[([ xX])\]", lines[lineno - 1])
+    if not m:
+        return []
+    indent = len(m.group(1))
+    out: list[tuple[int, str, str]] = []
+    for j in range(lineno, len(lines)):
+        line = lines[j]
+        if not line.strip():
+            continue
+        if line.startswith("#"):
+            break
+        km = re.match(r"(\s*)- \[([ xX])\]", line)
+        cur = len(line) - len(line.lstrip())
+        if km and cur <= indent:
+            break
+        if km:
+            out.append((j + 1, km.group(2).strip().lower(), line.strip()[6:].strip()))
+    return out
+
+
 def classify(path: Path, lineno: int, state: str, body: str, head: str) -> tuple[int, list[str]]:
     """(exit_code, reasons). Advisory: it explains, it does not decide for you."""
     reasons = []
@@ -123,6 +180,22 @@ def classify(path: Path, lineno: int, state: str, body: str, head: str) -> tuple
     if section_is_guarded(path, lineno):
         return 2, [f"the enclosing section (§ {head}) carries an explicit DO-NOT-DISPATCH guard — "
                    f"this is a reusable checklist or a standing constraint, not a task"]
+    blocking = [(n, st, b) for n, st, b in child_boxes(path, lineno) if _BLOCKER.search(b)]
+    if blocking:
+        n, st, b = blocking[0]
+        # A CLOSED blocking child is not "the block cleared" — it is usually the
+        # prerequisite being done while its OUTCOME is still outstanding (the
+        # measured case: "token authored ✅ … Await operator signature"). So both
+        # states refuse, and the wording says which one the reader is looking at.
+        state_note = ("that child is still OPEN, so the block is live"
+                      if st != "x" else
+                      "that child is CLOSED — usually the prerequisite landed while its "
+                      "outcome is still outstanding, not that the block cleared. Read it")
+        return 2, [f"BLOCKED BY A CHILD BOX at {path.name}:{n} — the row itself reads as ready, "
+                   f"but one indent down: {b[:130]!r}",
+                   f"{state_note}",
+                   "parent-only screening is exactly how the dispatch queue served blocked rows "
+                   "as immediately dispatchable; this tool descends one level"]
     lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
     start = max((i for i, l in enumerate(lines[:lineno]) if l.startswith("#")), default=0)
     disclaimer = _OWNER_DISCLAIM.search("\n".join(lines[start:start + 3]))
