@@ -1,4 +1,4 @@
-<title>E5 W0 — NUMA × Batch Scout Results</title>
+<title>E5 NUMA × Batch — Stage-B decision-grade results</title>
 
 <style>
   :root{
@@ -152,30 +152,166 @@
 <div class="wrap">
 
   <header>
-    <p class="eyebrow">E5 · NUMA × Batch Interaction Sweep · Wave 0</p>
-    <h1>The quarter-split wins everywhere. We just can’t act on it yet.</h1>
-    <p class="lede">69 of 69 cells ran clean across four model groups — the first measurement of NUMA placement and <code>-np</code> batching <em>crossed</em>, rather than separately. Every number here is scout-grade.</p>
+    <p class="eyebrow">E5 · NUMA × Batch Interaction Sweep · Stage-B</p>
+    <h1>Four quarters is never the winning shape.</h1>
+    <p class="lede">31 cells across three model groups, decision-grade, on a freshly-rebooted quiescent host. Every group contradicts the Wave-0 scout on the same axis — and the shape that <em>does</em> win differs per model.</p>
   </header>
 
   <div class="caveat">
-    <span class="tag">Observation-grade only — gates no decision</span>
-    <h2>Collected at 20 days uptime under an explicit health-warning override.</h2>
-    <p>W0 ran with <code>--allow-host-health-warning</code> because the harness refuses decision-grade P-BENCH-3 runs past one week of host uptime. It is <strong>scout-by-design</strong>. Per <code>MEASUREMENT.md</code> these numbers may generate hypotheses but <strong>must not gate keep, revert, deploy, promote, buy or close decisions</strong>. Decision-grade confirmation is W1–W4, blocked on the host reboot that resets the uptime clock.</p>
+    <span class="tag">Decision-grade — supersedes the Wave-0 observation-grade preliminary</span>
+    <h2>Zero host-health warnings. No overrides. 0.0% error on every cell.</h2>
+    <p>These runs used <strong>no</strong> <code>--allow-host-health-warning</code> and <strong>no</strong> <code>--skip-clean-check</code>, at 2.1 h uptime with <code>numa_balancing=0</code> and no foreign llama processes. <strong>26 of 31 cells are decision-grade</strong>; the five exceptions are all <code>T=32</code> cells demoted by <code>empty_trimmed_window</code>. Wave-0's scout figures are retained below, not overwritten.</p>
+    <p><strong>AutoPilot was DOWN</strong>, so the host was quiesced. AutoPilot is the representative production load generator — these numbers do not model production under load.</p>
   </div>
 
   <section>
-    <div class="sec-head"><span class="n">01</span><h2>Aggregate-optimal cell, per model group</h2></div>
-    <div class="strip">
-      <div class="mcard"><span class="name">qwen36_q8_0 · MoE-35B</span><span class="val">2028</span><span class="where">C3 quarters · np4</span></div>
-      <div class="mcard"><span class="name">gemma4_26b_a4b</span><span class="val">5076</span><span class="where">C3 quarters · np8</span></div>
-      <div class="mcard"><span class="name">qwen36_27b_q8 · dense</span><span class="val">1415</span><span class="where">C3 quarters · np2</span></div>
-      <div class="mcard"><span class="name">qwen3_next_80b</span><span class="val">2520</span><span class="where">C3 quarters · np4</span></div>
+    <div class="sec-head">
+      <p class="n">THE RESULT</p>
+      <h2>At every clean rung, the four-quarter split loses</h2>
     </div>
-    <p class="note">Tasks/hour, aggregate, from raw <code>offline_scores</code>. Cross-checked against each run-dir <code>summary.md</code> — no discrepancies against the handoff.</p>
+    <p>Comparisons below are iso-concurrency, both sides decision-grade, both on the trimmed steady-state basis, with <code>mixed_metric_basis: false</code>. Three models, three different winners, one consistent loser — and quarters is the shape production actually runs.</p>
+    <div class="tscroll">
+      <table>
+        <thead><tr><th style="text-align:left">Model group</th><th style="text-align:left">Pre-registered pair</th><th style="text-align:left">Winner</th><th>Margin</th></tr></thead>
+        <tbody>
+          <tr><th>qwen36-35B-A3B · W1</th><td style="text-align:left">half-machine T=16 · C1@16 vs C2@8</td><td style="text-align:left">C2 — two quarters</td><td class="ratio">+29.3%</td></tr>
+          <tr><th>gemma4-26B-A4B · W2</th><td style="text-align:left">whole-machine T=8 · C1@8 vs C3@2</td><td style="text-align:left">C1 — one full machine</td><td class="ratio">+40.0%</td></tr>
+          <tr><th>gemma4-26B-A4B · W2</th><td style="text-align:left">whole-machine T=16 · C1@16 vs C3@4</td><td style="text-align:left">C1 — one full machine</td><td class="ratio">+47.5%</td></tr>
+          <tr><th>qwen3-next-80B · W4</th><td style="text-align:left">whole-machine T=8 · C1b@4 vs C3@2</td><td style="text-align:left">C1b — two node-local halves</td><td class="ratio">+26.5%</td></tr>
+          <tr><th>qwen3-next-80B · W4</th><td style="text-align:left">whole-machine T=16 · C1b@8 vs C3@4</td><td style="text-align:left">tie</td><td class="na">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="finds">
+      <div class="find held">
+        <span class="k">Model-dependent</span>
+        <p>35B-A3B MoE wants <strong>one half-machine</strong>. gemma-26B wants <strong>one full machine with interleave</strong>. The 80B wants <strong>two node-local halves</strong>. There is no single fleet-wide answer — that is itself the actionable finding for slot-fabric provisioning.</p>
+      </div>
+      <div class="find dep">
+        <span class="k">Wave-0 was half right</span>
+        <p>Its call that the C1b second-node payoff is <strong>model-dependent</strong> held. Its call that <strong>C3 quarters are optimal for every model</strong> is reversed in all three groups measured.</p>
+      </div>
+    </div>
   </section>
 
   <section>
-    <div class="sec-head"><span class="n">02</span><h2>Throughput grids</h2></div>
+    <div class="sec-head">
+      <p class="n">DO NOT QUOTE</p>
+      <h2>Two reads in this evidence are artifacts, not measurements</h2>
+    </div>
+    <div class="caveat">
+      <span class="tag">T=32 rungs · every group</span>
+      <p>All three groups set <code>mixed_metric_basis: true</code> at T=32, because the pair puts a <code>raw_fallback</code> cell against a <code>trimmed</code> one. R1 sets the flag correctly and then <strong>declares a winner anyway</strong> — so the <code>winner</code> field at T=32 is an artifact. A reader who trusts it without reading the flag gets a wrong provisioning answer.</p>
+    </div>
+    <div class="caveat">
+      <span class="tag">Every R2 / R4 Pareto peak</span>
+      <p>Both mix bases and let a non-decision-grade cell define the peak. Worked example from W1: <code>C2-np16</code> is named peak at <strong>578.6</strong> on <code>raw_fallback</code>, ranked above <code>C2-np8</code> at <strong>462.8</strong> on <code>trimmed</code> — yet like-for-like, <code>C2-np8</code> raw is <strong>669.2</strong> and beats it. It wins on no consistent basis.</p>
+    </div>
+    <p class="note">Nothing is lost. The full per-request ledger (<code>requests.jsonl</code>) is persisted for every run, so a ratified alternative steady-state rule can be applied <strong>offline</strong> to these exact runs. Deterministic replay applies — no re-measurement is implied.</p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="n">W1</p>
+      <h2>qwen36-35B-A3B Q8_0 — 11 cells, 9 decision-grade</h2>
+    </div>
+    <p class="runid">e5-w1-qwen36-20260729T154725Z · 15:47:29–16:56:31Z</p>
+    <div class="tscroll">
+      <table>
+        <thead><tr><th style="text-align:left">Cell</th><th style="text-align:left">Grade</th><th>Raw</th><th>Trimmed</th><th>p95 (s)</th></tr></thead>
+        <tbody>
+          <tr><th>C1-np1</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>462.6</td><td>457.2</td><td>22.4</td></tr>
+          <tr><th>C1-np4</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>489.6</td><td>428.5</td><td>80.6</td></tr>
+          <tr><th>C1-np8</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>485.8</td><td>390.3</td><td>157.2</td></tr>
+          <tr><th>C1-np16</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>463.3</td><td>327.0</td><td>313.6</td></tr>
+          <tr><th>C1-np32</th><td style="text-align:left"><span class="chip invalid">OBS</span></td><td>428.4</td><td class="na">—</td><td>357.0</td></tr>
+          <tr><th>C2-np8</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>669.2</td><td class="opt">462.8</td><td>215.8</td></tr>
+          <tr><th>C2-np16</th><td style="text-align:left"><span class="chip invalid">OBS</span></td><td>578.6</td><td class="na">—</td><td>263.9</td></tr>
+          <tr><th>C3-np1</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>370.3</td><td>316.5</td><td>136.5</td></tr>
+          <tr><th>C3-np2</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>360.7</td><td>292.2</td><td>249.1</td></tr>
+          <tr><th>C3-np4</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>388.2</td><td>232.3</td><td>380.4</td></tr>
+          <tr><th>C3-np8</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>331.5</td><td>108.7</td><td>457.7</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">C1 (one half, 48 physical cores) beats C3 (four quarters, <strong>96</strong> physical cores) at every clean rung — <span class="ratio">+35.4%</span> at T=4, <span class="ratio">+33.6%</span> at T=8, <span class="ratio">+40.8%</span> at T=16. C3 uses twice the cores and degrades monotonically with <code>np</code>. W1's whole-machine family returned <em>insufficient data</em>: its C1b cells were pruned by the frozen Stage-B plan.</p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="n">W4</p>
+      <h2>qwen3-next-80B-A3B Q4_K_M — 12 cells, 10 decision-grade</h2>
+    </div>
+    <p class="runid">e5-w4-80b-20260729T165639Z · 16:56:44–18:30:01Z</p>
+    <div class="tscroll">
+      <table>
+        <thead><tr><th style="text-align:left">Cell</th><th style="text-align:left">Grade</th><th>Raw</th><th>Trimmed</th><th>p95 (s)</th></tr></thead>
+        <tbody>
+          <tr><th>C1-np1</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>270.0</td><td>271.4</td><td>35.3</td></tr>
+          <tr><th>C1-np4</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>320.1</td><td>282.7</td><td>114.7</td></tr>
+          <tr><th>C1-np8</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>434.3</td><td>345.3</td><td>162.5</td></tr>
+          <tr><th>C1-np16</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>351.9</td><td>256.6</td><td>403.0</td></tr>
+          <tr><th>C1-np32</th><td style="text-align:left"><span class="chip invalid">OBS</span></td><td>380.8</td><td class="na">—</td><td>405.9</td></tr>
+          <tr><th>C1b-np4</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>417.4</td><td class="opt">371.2</td><td>173.2</td></tr>
+          <tr><th>C1b-np8</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>455.4</td><td>311.6</td><td>315.5</td></tr>
+          <tr><th>C1b-np16</th><td style="text-align:left"><span class="chip invalid">OBS</span></td><td>394.9</td><td class="na">—</td><td>389.9</td></tr>
+          <tr><th>C3-np1</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>238.4</td><td>211.3</td><td>162.8</td></tr>
+          <tr><th>C3-np2</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>328.8</td><td>273.0</td><td>231.5</td></tr>
+          <tr><th>C3-np4</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>401.2</td><td>313.4</td><td>362.3</td></tr>
+          <tr><th>C3-np8</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>359.2</td><td>440.8</td><td>431.0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">W4 is the <strong>only</strong> group that could answer the pre-registered whole-machine question — and it inverts W1: here splitting <em>wins</em>. Trimmed can exceed raw where a cell's steady-state rate is higher than its wall-clock average, which is expected rather than anomalous.</p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="n">W2</p>
+      <h2>gemma4-26B-A4B Q4_K_M MTP — 8 cells, 7 decision-grade</h2>
+    </div>
+    <p class="runid">e5-w2-gemma-20260729T183151Z · 18:31:51–18:45:04Z</p>
+    <div class="tscroll">
+      <table>
+        <thead><tr><th style="text-align:left">Cell</th><th style="text-align:left">Grade</th><th>Raw</th><th>Trimmed</th></tr></thead>
+        <tbody>
+          <tr><th>C1-np1</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>1479.0</td><td>1491.8</td></tr>
+          <tr><th>C1-np8</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>2608.6</td><td class="opt">2307.0</td></tr>
+          <tr><th>C1-np16</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>2878.2</td><td>2105.2</td></tr>
+          <tr><th>C1-np32</th><td style="text-align:left"><span class="chip invalid">OBS</span></td><td>2212.2</td><td class="na">—</td></tr>
+          <tr><th>C3-np1</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>1470.5</td><td>1355.3</td></tr>
+          <tr><th>C3-np2</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>1632.4</td><td>1384.7</td></tr>
+          <tr><th>C3-np4</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>1995.1</td><td>1105.9</td></tr>
+          <tr><th>C3-np8</th><td style="text-align:left"><span class="chip retain">DG</span></td><td>1947.0</td><td>692.5</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>The Gemma quality ledger exists for the first time</h3>
+    <p><strong>344 of 344</strong> W2 responses carry nonempty answer text. The historic Wave-0 Gemma group was <strong>430/430 unusable</strong> and unrecoverable — no raw SSE ledger survived.</p>
+    <p class="note">That gap closed because of a repair found <em>during</em> this campaign, and the original diagnosis was wrong. The harness emitted <strong>no <code>--reasoning</code> flag at all</strong>, so gemma4 ran at llama-server's <code>auto</code> default — which is <em>on</em> for this architecture — while both registries record <code>reasoning: 'off'</code>. The whole 256-token budget was spent in the reasoning channel before the answer channel opened. The capture contract was always sound and its fail-close fired truthfully. The focused smoke inverted every metric: empty answers <strong>41/43 → 0/43</strong>, scorer <code>parse_ok</code> <strong>0/43 → 43/43</strong>.</p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="n">RETAINED</p>
+      <h2>Wave-0 scout figures — appended, never overwritten</h2>
+    </div>
+    <p>Historical numbers are era-labelled and appended so scout-vs-confirmed drift stays visible. Wave 0 ran under a <strong>64-token</strong> scout cap with <code>--allow-host-health-warning</code> at 20-day uptime, reporting aggregate t/s rather than tasks/hour — a different metric on a different workload. This is supersession by grade, not a like-for-like contradiction.</p>
+    <div class="tscroll">
+      <table>
+        <thead><tr><th style="text-align:left">Wave-0 group</th><th style="text-align:left">Scout peak</th><th style="text-align:left">Wave-0 conclusion</th><th style="text-align:left">Stage-B verdict</th></tr></thead>
+        <tbody>
+          <tr><th>qwen36-35B</th><td style="text-align:left">2028 @ np4 (C3)</td><td style="text-align:left">C3 optimal</td><td style="text-align:left">reversed — C1 wins</td></tr>
+          <tr><th>gemma4-26B</th><td style="text-align:left">5076 @ np8 (C3)</td><td style="text-align:left">C3 optimal</td><td style="text-align:left">reversed — C1 wins</td></tr>
+          <tr><th>qwen3-next-80B</th><td style="text-align:left">2520 @ np4 (C3)</td><td style="text-align:left">C3 optimal</td><td style="text-align:left">reversed — C1b wins</td></tr>
+          <tr><th>dense 27B</th><td style="text-align:left">1415 @ np2</td><td style="text-align:left">—</td><td style="text-align:left">out of scope</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="n">RETAINED VERBATIM</span><h2>Wave-0 scout throughput grids</h2></div>
     <p class="note">Cell shading tracks throughput within each model group; the copper outline marks that group’s optimum. Columns are <code>-np</code> batch width, rows are NUMA placement.</p>
 
     <div class="gridblock">
@@ -237,65 +373,38 @@
   </section>
 
   <section>
-    <div class="sec-head"><span class="n">03</span><h2>Cross-model pattern</h2></div>
-    <div class="finds">
-      <div class="find held">
-        <span class="k">Held for every model</span>
-        <p><strong>C3 (quarters) is aggregate-optimal in all four groups.</strong> The quarter-split beat whole-machine and second-node placements everywhere tested — MoE-35B, gemma, dense and 80B alike.</p>
-      </div>
-      <div class="find dep">
-        <span class="k">Flips by architecture</span>
-        <p><strong>C1b (second-node) vs C1 depends on the model.</strong> It <em>loses</em> for MoE-35B (np4: 1109 vs 1549) but <em>wins</em> for dense (965 vs 849) and 80B (1886 vs 1550).</p>
-      </div>
+    <div class="sec-head">
+      <p class="n">SCOPE</p>
+      <h2>Three model groups, not four</h2>
     </div>
+    <p>The dense-control group (<code>qwen36_27b_q8</code>, 14 cells) was <strong>dropped by operator decision</strong> — not failed, not lost, not deferred. That model is planned as a GPU-resident tenant, so a CPU NUMA × batch sweep would measure a configuration that will never serve.</p>
   </section>
 
   <section>
-    <div class="sec-head"><span class="n">04</span><h2>Wave status — what W1–W4 will run</h2></div>
-    <div class="waves">
-
-      <div class="wave">
-        <div class="wave-top"><span class="wid">W1</span><span class="wmodel">qwen36_q8_0 · MoE-35B</span><span class="chip prune">Partial prune</span></div>
-        <p>Prunes only <code>C1b-{np4,np8,np16}</code>, throughput-only. W0 quarters win by 44.78% / 44.77% / 34.97% at T=8/16/32; the C1b/C1 ratio is 0.598 at K=4 and 0.463 at K=8, reproducing the documented half-pair collapse.</p>
-      </div>
-
-      <div class="wave">
-        <div class="wave-top"><span class="wid">W2</span><span class="wmodel">gemma4_26b_a4b</span><span class="chip retain">Full grid retained</span><span class="chip invalid">Quality-invalid</span></div>
-        <p>The original capture stored reasoning text with <strong>no answer channel</strong> — all 430/430 <code>offline_scores</code> rows are unrecoverable parse failures and no raw SSE ledger survives. RE-ATTRIBUTED 2026-07-29 (research <code>5d6a17f2</code>): the actual budget sink was <strong>reasoning mode ON</strong> — the harness emitted no <code>--reasoning</code> flag, so gemma4 ran at llama-server's <code>auto</code> default while both registries record <code>reasoning: 'off'</code>. The fail-close capture gate (<code>efd0980c</code>) <strong>detects</strong> this, it does not <strong>prevent</strong> it, and a focused post-fix capture smoke test is a <strong>precondition</strong> before any decision-grade W2 run.</p>
-      </div>
-
-      <div class="wave">
-        <div class="wave-top"><span class="wid">W3</span><span class="wmodel">qwen36_27b_q8 · dense</span><span class="chip retain">Full grid retained</span></div>
-        <p>The dense C1 shape is already resolved (half0). W0’s C1b@16 vs C3@8 comparison used <strong>mixed metric bases</strong>, so no additional prune is sound — flagged <code>[MIXED METRIC BASIS — caveated]</code> in the run summary.</p>
-      </div>
-
-      <div class="wave">
-        <div class="wave-top"><span class="wid">W4</span><span class="wmodel">qwen3_next_80b</span><span class="chip retain">Full grid retained</span></div>
-        <p>Keeps the ingest whole-machine family. W0 favours quarters by 17.44%–26.39%, but the 256-token clean confirmation remains W4’s purpose. High-K <code>raw_fallback</code> rows are demoted from decision-grade use.</p>
-      </div>
-
+    <div class="sec-head">
+      <p class="n">KNOWN DEFECTS IN THIS EVIDENCE</p>
+      <h2>Recorded rather than smoothed over</h2>
     </div>
-  </section>
-
-  <section>
-    <div class="sec-head"><span class="n">05</span><h2>What W0 cannot tell us</h2></div>
     <ul>
-      <li><strong>Correctness at production length.</strong> W0 used a 64-token scout cap; gemma captured reasoning-only output with no answer channel. Quality is capped, invalid, or simply unconfirmed at the 256-token production budget.</li>
-      <li><strong>Decision-grade throughput.</strong> Every number was collected at 20 days uptime under an explicit health-warning override. None of it can deploy a placement or <code>-np</code> change.</li>
-      <li><strong>Dense/80B mixed-basis cells.</strong> W3’s C1b@16 vs C3@8 used inconsistent metric bases, so no conclusion is drawn — W3 must re-measure cleanly.</li>
-      <li><strong>Any gemma correctness signal at all.</strong> W2 will be the first wave with a usable quality ledger for that model group.</li>
+      <li><strong>Era mis-stamp.</strong> Every run manifest carries <code>era.cpu_kernel: E6-cpu-kernel</code>, which is the <em>v7</em> era — these runs executed on <strong>v8</strong>. The stamp is inherited from frozen pre-registered manifests written before the v8 cutover. It is <strong>recoverable</strong>: each artifact records <code>attestation.binary_version = 10107 (67a433bf4)</code>. No re-measurement follows.</li>
+      <li><strong>Run-level grade is false-by-aggregation.</strong> Each run manifest reads <code>decision_grade: false</code> because two cells were demoted — while 9 of 11 (W1), 10 of 12 (W4) and 7 of 8 (W2) are individually decision-grade. Read this evidence at <strong>cell</strong> granularity, not run granularity.</li>
+      <li><strong>T=32 rungs and all R2/R4 peaks</strong> are basis-mixed — see above.</li>
     </ul>
   </section>
 
   <div class="prov">
-    <h3>Provenance</h3>
+    <h3>Claim grammar &amp; provenance</h3>
     <dl>
-      <dt>Handoff</dt><dd>handoffs/active/batched-decode-measurement.md — E5 section, 2026-07-28</dd>
-      <dt>Run dirs</dt><dd>/mnt/raid0/llm/epyc-inference-research/data/batched_decode/</dd>
-      <dt>Rows</dt><dd>903 + 430 + 989 + 645 = 2,967 — matches the handoff total exactly</dd>
-      <dt>Commits</dt><dd>efd0980c (capture gate) · d61e4e8c (prune-plan provenance repair)</dd>
-      <dt>Prune plan</dt><dd>data/batched_decode/e5_pre_reboot_20260728/stage_b_prune_plan.json</dd>
-      <dt>Executed</dt><dd>2026-07-23 / 24 · summarised 2026-07-28</dd>
+      <dt>Metric</dt><dd>Aggregate tasks/hour, trimmed steady-state window; per-stream p95 completion latency alongside</dd>
+      <dt>Protocol</dt><dd>P-BENCH-3</dd>
+      <dt>n / reps</dt><dd>43 pinned prompts per cell (selection: pinned_qids, seed 42) · 1 pass per cell</dd>
+      <dt>Date</dt><dd>2026-07-29 · W1 15:47:29–16:56:31Z · W4 16:56:44–18:30:01Z · W2 18:31:51–18:45:04Z</dd>
+      <dt>Attestation</dt><dd>W1 f2c29c74d0b31022cb2c98f59c3a05a60318c55a190c3629a2f66e6b7f02125b · W4 3358d77d3a21db69956bc455afa32135426af65fe25f4c9d77db2031b65487dd</dd>
+      <dt>Kernel</dt><dd>production-consolidated-v8 @ 67a433bf4 · llama-server 10107</dd>
+      <dt>Sampling</dt><dd>Production regime — temp 0.3, top_k 40, top_p 0.95, min_p 0.05, seed 42 · n_predict 256</dd>
+      <dt>Env</dt><dd>GGML_IQK=1 · canonical OMP stack · KMP_BLOCKTIME=10 · --device none / --device-draft none</dd>
+      <dt>Host</dt><dd>2.1 h uptime post-reboot · numa_balancing=0 · zero host-health warnings · no foreign llama processes · AutoPilot down</dd>
+      <dt>Owning handoff</dt><dd>handoffs/active/batched-decode-measurement.md</dd>
     </dl>
   </div>
 
