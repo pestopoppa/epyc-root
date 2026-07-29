@@ -363,4 +363,4 @@ The **parent** half is already implemented: `final_schema_validation` (2026-05-2
   - Also reusable: an explicit articulation of REPL turn semantics (`:137-140`) — you cannot call `extract_section()` on `search()` output in the same block because you have not seen the output yet, and never call `FINAL_VAR` in the same block as an extraction. Our sentinel prompts do not currently state this.
   - Zero inference cost to adopt; it is prompt text, not code.
 
-- [ ] Candidate fix for the comment-only-REPL blocker: adopt the negative-constraint + stated-consequence pattern (one block, no narration, no comments, drop-consequence named) into the sentinel prompts. [intake-868]
+- [x] Candidate fix for the comment-only-REPL blocker: adopt the negative-constraint + stated-consequence pattern (one block, no narration, no comments, drop-consequence named) into the sentinel prompts. [intake-868] ✅ 2026-07-29 — orchestrator `e6b989b9` adds the explicit discard-and-score-incorrect consequence to every executable-only sentinel prompt; `tests/test_tool_sentinels.py` passes 8/8 with no AutoPilot restart or inference.
