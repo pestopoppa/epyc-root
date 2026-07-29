@@ -429,7 +429,15 @@ Three RLM-lineage sources arrived together. **None of them overturns the pinned 
 - **Standing counter-evidence (unchanged, and still the strongest datapoint):** intake-547 — depth-0 86.6% vs depth-1 60.0% on Kimi K2 OOLONG, base models at 100.0% on S-NIAH degrading under depth-1, and ~96x wall-clock inflation at depth 2. RLM gains appear only where the base model scores ~0.0%, i.e. **recursion rescues failing models rather than improving competent ones.**
 
 - [ ] Substrate-decision input: the current evidence supports keeping `max_depth` at 0-1 for competent models and reserving recursion for near-zero-baseline cases; revisit only if a controlled local A/B contradicts intake-547. [intake-866, intake-547]
-- [ ] Design input: the SkyRL parent/child rollout-tree model (parent_rid/depth/child_index with reward propagation) is a reusable accounting shape for nested sub-agents here, usable without adopting any RL. [intake-868]
+- [ ] Design input: the SkyRL parent/child rollout-tree model (`parent_rid` /
+  `depth` / `child_index` with reward propagation) is a reusable accounting
+  shape for nested sub-agents here, usable without adopting any RL. **Staleness
+  audit 2026-07-29:** current `EpisodicStore` already persists the five-class
+  `sub_decision` axis but has no tree-linkage fields; do not mistake that label
+  for rollout accounting. The required additive SQLite migration and
+  backward-compatible read/write surface have HIGH blast radius (83 upstream
+  dependants; 29 direct), so scope and independently review that schema change
+  before implementation. [intake-868]
 
 ### Correction 2026-07-21 — depth should be CONDITIONAL, not a pinned default (operator challenge)
 
