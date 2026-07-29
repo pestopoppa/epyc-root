@@ -91,7 +91,7 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 14 | ~~`minddr-deep-research-mode.md:207`~~ **✅ CLOSED 2026-07-29** | search-time contamination | none | S | `minddr-deep-research-mode.md` | Demote BrowseComp/WideSearch/xbench anchors to observation-grade |
 | 15 | ~~`engram-conditional-memory.md:379`~~ **✅ CLOSED 2026-07-29** | retrieval-policy rider | none | S | `engram-…md`, `unified-trace-memory-service.md` | Correct the ReasoningBank ranking claim in retrieval notes |
 | 16 | ~~`unified-trace-memory-service.md:211`~~ **✅ CLOSED 2026-07-29** | UTM-M4 | none | S | `src/trace/harness_schema.py` | Mine ReasoningBank repo for its 3 prompts + JSON schema |
-| 17 | `autopilot-decision-plane-audit-2026-07-22.md:399` | deliverables | none | S | `q_scorer.py`, `episodic_store.py` | Apply find-or-update to `_update_escalation_memory` append-only rows |
+| 17 | ~~`autopilot-decision-plane-audit-2026-07-22.md:399`~~ **✅ CLOSED 2026-07-29** | deliverables | none | S | `q_scorer.py`, `episodic_store.py` | Apply find-or-update to `_update_escalation_memory` append-only rows |
 | 18 | ~~`orchestration-robustness-audit-2026-07-11.md:240`~~ **✅ CLOSED 2026-07-29** | faiss orphans | none | S | `orchestration/repl_memory/faiss_store.py` | Startup sweep unlinking old unopened faiss tmp orphans |
 | 19 | ~~`autopilot-control-plane-integration.md:23`~~ **✅ CLOSED 2026-07-29** | AP-3b.2 | none | S | `autopilot-control-plane-integration.md` | Decide whether draft-tree belongs in AP-3 |
 | 20 | ~~`speculative-decoding-mtp-refresh.md:236`~~ **✅ CLOSED 2026-07-29** | intake 2a | none | S | `models/*.gguf` headers | Tensor-count header gate for the DavidAU Qwen3.6-27B MTP GGUFs |
@@ -268,7 +268,7 @@ re-grep before assigning.
 - L324 | cpu | L | N | final-C1/finalizer inference + single human apply | Collect complete v5 evidence bundle, then human-only apply | autopilot_state.json baseline_state
 - L348 | none | L | Y | other owners; export_rlvr_environment.py mid-edit | Non-owned H2/H3/M1-M6/F2 audit findings | structural_lab.py, actions.py
 - L398 | none | M | N | **STALE?** likely superseded by 2026-07-23 H4 deploy | Operator runs migrate-swap-flag-remeasure deploy plan | consolidate_q_append_only.py
-- L399 | none | S | Y | - | Apply find-or-update to _update_escalation_memory rows | q_scorer.py, episodic_store.py
+- L399 | none | S | Y | - | **CLOSED 2026-07-29** — flag-gated escalation identity is exact reason + transition; routing/escalation partitions remain isolated | Apply find-or-update to _update_escalation_memory rows | q_scorer.py, episodic_store.py
 - L402 | cpu | L | N | per-token logprobs not persisted | EV-CONF-2 answer-span confidence + re-baseline math AUROC | eval sidecar writer, ESC-7 draft §5
 - L483 | none | M | Y | - | Hermeticize live host lock seams and mock timing waits | test_dispatch_placement_state_machine.py
 
