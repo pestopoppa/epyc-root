@@ -304,6 +304,15 @@ failure caught in amber.
         activated the guards. Live semantic check: `ntotal=58749`, `id_map=58749`, `desync=0`,
         round-trip 500/500, and mean cosine **0.9824** over 8 samples. Focused memory tests passed;
         the integrated checkpoint ran 322 E8 tests plus those focused memory tests.
+  - [x] M-17k — **Generic missing-service health visibility.** ✅ 2026-07-29. The independent
+        re-audit found that dead services could vanish from automated status when their launch-state
+        row was missing. Orchestrator `b63e03e5` now reconciles current manifest-declared
+        non-optional services against the state file and reports a distinct `state-missing` status
+        as `healthy` or `unavailable`; inactive warm roles remain absent by design. The existing
+        optional-auxiliary row continues to expose Whisper as `unavailable_optional`, and declared
+        NextPLAID services can no longer disappear silently. **44 focused stack tests** passed,
+        with Ruff and `git diff --check` clean. This closes the health-observability residual; it
+        does not change the production lineup or the episodic-store acceptance result.
 - [ ] M-12 — Run the memory-on vs memory-off A/B that **has never existed** in either repo. This is
       the only thing that will answer "does episodic retrieval help" with evidence.
 

@@ -274,6 +274,14 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
   tests**; Ruff, `py_compile`, and `git diff --check` were clean. This is publication-path hardening
   only: it neither executes final-C1/finalizer inference nor produces evidence, a receipt, an apply,
   or a published baseline.
+- [x] **E8 original Tier-A post-fix audit** ✅ 2026-07-29 — independent re-audit against
+  orchestrator `1de17552` passed **202 focused tests** and verified all six original Tier-A
+  fail-open findings closed: the validator recomputes decision aggregates from canonical ledgers,
+  sealed rows bind their real question identity and reject partial/degraded reuse, recovery requires
+  execution proof, finalization is pinned to the reviewed tree, successor selection cannot weaken
+  validation, and abort paths terminalize as ineligible audit evidence. **This is not E8
+  terminalization:** structured timeout provenance remains an instrument-correctness blocker before
+  fresh final-C1/finalizer evidence, the consolidated human receipt, or baseline application.
 - [ ] **E8 c1 required race/finalizer path** — execute only the protocol-required race/finalizer
   path against the repaired, revalidated instrument. **Structured timeout provenance and final-C1/
   finalizer inference remain open.** A c1 retry timeout remains a governed 300-second-budget

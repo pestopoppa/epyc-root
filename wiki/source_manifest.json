@@ -8,11 +8,11 @@
     "research": 135
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-07-29T07:42:34Z",
+  "last_compile": "2026-07-29T08:00:02Z",
   "mode": "full",
-  "scan_time": "2026-07-29T07:42:34Z",
+  "scan_time": "2026-07-29T08:00:17Z",
   "schema_version": 1,
-  "source_set_hash": "fccfdebdbd94649c2c49b81078ffd7e86570f664beabc1eb3eaad4df76863fbd",
+  "source_set_hash": "a7699ad7a58c9257310c0a66c83ea422efdfc9f8c119c785a08b7cda6eb7db27",
   "sources": [
     {
       "content_hash": "9eb9296ef6b1e1d8bb4164b3b8acd4899325e705edd8d018b638c3ad8b3126e1",
@@ -111,10 +111,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "e77060c8beb8ab14d05a8e6409c71c51701283f34f0fcbc7d3b9c6bac78e01d2",
-      "modified": "2026-07-29T07:41:56Z",
+      "content_hash": "c5614d95e94b0c3608869a51f6513cfa7ad18e97105aae41680735be9f9ca6c5",
+      "modified": "2026-07-29T07:59:05Z",
       "path": "handoffs/active/autopilot-decision-plane-audit-2026-07-22.md",
-      "size": 61617,
+      "size": 62381,
       "title": "Autopilot Decision-Plane Adversarial Audit \u2014 2026-07-22",
       "type": "handoff-active"
     },
@@ -295,10 +295,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4ac3b1d50eec95d2098c0130bb38c13164586ba85c01a52898701d10fea84960",
-      "modified": "2026-07-29T07:23:52Z",
+      "content_hash": "2f9bb7f9400dcfec69c9dfc9f9dee5cefcf9603acc09dbf359aea86fd1dcdcda",
+      "modified": "2026-07-29T07:59:05Z",
       "path": "handoffs/active/episodic-memory-integrity.md",
-      "size": 29425,
+      "size": 30289,
       "title": "Episodic Memory Integrity \u2014 2026-07-05 corruption, root cause and repair",
       "type": "handoff-active"
     },
@@ -5663,10 +5663,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "4cb44dec22b90d5ad3475cb789ec03baf1f75b9ab5a5e5649c93740a0ae37b13",
-      "modified": "2026-07-29T07:41:56Z",
+      "content_hash": "29b115a7346b4f2255a0931511b4c810defe0a0240648f611a308acf10a7040e",
+      "modified": "2026-07-29T07:59:05Z",
       "path": "progress/2026-07/2026-07-29.md",
-      "size": 2930,
+      "size": 4279,
       "title": "Progress \u2014 2026-07-29",
       "type": "progress"
     },
