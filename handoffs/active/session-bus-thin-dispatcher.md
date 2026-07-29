@@ -818,17 +818,30 @@ freezes/cutovers, host reboots).
       command exited is genuinely not a live main, and the adapter counting it as dead is correct.
       3 consecutive clean runs after the fix.
     Anyone touching `tmux_adapter.py` still runs **both** suites — the header of each says so.
-  - [ ] **C16 — a bare repo-wide `pytest` cannot run, which is why C10 could hide.** Measured
-    2026-07-28: `pytest` from `/workspace` collects 2200 tests and then **aborts with 46
-    collection errors**, so there is no routine whole-repo run for anything to be red in. The
-    errors are not this repo's: `repos/` holds the child repos (symlinked, own suites, own deps)
-    and `*.bak-*` stale backups; `tests/compliance/agent_file/test_runner.py` is a known error
-    owned elsewhere. With `--ignore=repos --ignore=tests/compliance` collection is **clean at 560
-    tests**, including the renamed live suite. Proposed fix: a `pytest.ini` with `norecursedirs`
-    covering `repos` and `*.bak-*`, leaving the compliance error loudly visible to its owner.
-    **Deliberately not done in this session** — it changes test behaviour for every parallel
-    session while an operator freeze and an in-flight C9 review are running, and C10 is fully
-    fixed without it. Wants ~10 minutes and one operator nod.
+  - [x] **C16 — a bare repo-wide `pytest` cannot run, which is why C10 could hide.** ✅ 2026-07-28
+    — `pytest.ini` + two package markers. Before: `pytest` from `/workspace` collected 2200 tests
+    and **aborted with 46 collection errors**, so there was no whole-repo run for anything to be
+    red in. After: **576 collected, 0 collection errors, 0.8 s**, and the run completes.
+    - 45 of the 46 were `repos/` — the child repos reached by symlink, plus `*.bak-*` backups.
+      They own their suites and their dependencies. `norecursedirs` excludes them from
+      *recursion* only, so `pytest repos/epyc-orchestrator/tests` still works on purpose.
+    - The 46th was `tests/compliance`, and the cause was not the obvious one. Its modules import
+      themselves absolutely (`from tests.compliance.agent_file...`), which is required by the
+      documented `python -m tests.compliance.agent_file.runner` CLI, so rewriting them to relative
+      imports would have broken that CLI. But `tests/` had no `__init__.py`, and **a namespace
+      package loses to a regular package anywhere on sys.path regardless of order** — so `tests`
+      resolved to `/mnt/raid0/llm/epyc-orchestrator/tests/__init__.py`, reached through this venv.
+      `pythonpath = .` alone does not fix that; `tests/__init__.py` +
+      `tests/compliance/__init__.py` do. The documented CLI was broken by the same cause and now
+      imports.
+    - **Nothing is hidden.** No test is suppressed, deselected or xfailed. The 53 collected cases
+      in the codex-owned E8 files (`test_e8_quality_baseline_v4_wrapper`,
+      `test_e8_quality_source_protocol_amendment`, `test_ratify_pbench4_fg4b_*`) are collected and
+      still fail — that is the intended outcome. **The goal was a run that is honestly red, not a
+      green one.**
+    - **First whole-repo run:** `5 failed, 571 passed, 2 warnings in 189.05s`. The five are exactly
+      the pre-existing E8 reds; no new failure introduced, none hidden. Codex owns those; do not
+      "fix" them from this lane.
   - [ ] **C11 — C9 landed without the independent review its own filing required.** The C9 entry
     says the change "wants an independent review before it lands, not a same-session self-merge",
     and it was implemented and committed (`8cbe50c0`) by the same session that had just reviewed
