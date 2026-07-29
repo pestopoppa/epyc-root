@@ -46996,3 +46996,104 @@
     Q5 n/REPS/SEEDS — ABSENT throughout. Single unreplicated run; every number is an OBSERVATION.
 
     Q6 PER-WINDOW DECAY INSTRUMENT — ABSENT, and this is the paper''s most important negative for us. Despite the ''Evo'' name and the budget sweep there is NO success-rate-vs-store-size and NO per-episode-index curve anywhere. After ReasoningBank, CORE and now EvoMemBench, NO paper in the set reports it. The measurement that would settle whether append-only trace memory decays as our store grows does not exist in the literature and remains an EPYC-original deliverable. Building it is not blocked on anyone.'
+
+- id: intake-937
+  arxiv_id: null
+  url: https://huggingface.co/unsloth/ERNIE-Image-Turbo-GGUF
+  source_type: repo
+  title: unsloth/ERNIE-Image-Turbo-GGUF - GGUF quantizations of Baidu ERNIE-Image-Turbo, an 8B DMD+RL-distilled 8-step single-stream text-to-image DiT
+  authors:
+  - Unsloth AI (quantizer/repackager)
+  - Baidu ERNIE Team (upstream)
+  categories:
+  - multimodal
+  - quantization
+  - local_inference
+  - training_distillation
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  discovered_via: input
+  ingested_date: '2026-07-29'
+  verdict: already_integrated
+  verification: dive-verified
+  key_claims:
+  - '[assigned source + upstream card, verified 2026-07-29] ERNIE-Image-Turbo is an ~8B single-stream Diffusion Transformer text-to-image model, Apache-2.0, distilled from the 50-step ERNIE-Image base and "optimized by DMD and RL" to run in 8 inference steps at guidance scale 1.0. Both cards use exactly that wording; neither documents the RL half (no reward model, no reward signal, no algorithm).'
+  - '[assigned source, verified] The GGUF ladder spans Q2_K 3.18 GB through Q8_0 8.69 GB to BF16/F16 16.1 GB (Q3_K_S/M, Q4_0/1/K_S/K_M, Q5_0/1/K_S/K_M, Q6_K in between), plus UD- dynamic variants at a 13-25% size premium over their vanilla peers.'
+  - '[upstream card, verified] LongText-Bench: ERNIE-Image-Turbo w/ PE EN 0.9675 / ZH 0.9636 (avg 0.9655); w/o PE EN 0.9602 / ZH 0.9675 (avg 0.9639). Prompt enhancer raises the EN split and the average but LOWERS the ZH split.'
+  - '[upstream card, verified] GENEval Overall 0.8667 w/o prompt enhancer, 0.8510 w/ PE - the enhancer HURTS GENEval while helping LongText-Bench, so it is a per-scene setting, not always-on.'
+  - '[EPYC-local, verified] Deployed in production as the `image_generate` / `image_worker` role: Q8_0 GGUF on stable-diffusion.cpp `sd-server` with `--vae-conv-direct`, fronted by a Hermes plugin that displaces the disabled FAL cloud tool. sd.cpp carries native ERNIE support at `src/ernie_image.hpp` (441 lines) - no ComfyUI in the serving path.'
+  - '[EPYC-local, verified] Q4_K_M was REJECTED for production on 2026-05-07: a 17% wall-clock win came with visible Korean-text-rendering corruption at 832x1248 / 8 steps, same prompt and seed - i.e. degradation landed precisely on the model''s signature differentiator. This A/B was run on CPU, pre-MI210.'
+  techniques:
+  - DMD / DMD2 distribution-matching distillation (DMD2 inferred from timing; Baidu says only "DMD")
+  - undocumented RL polish pass ("higher aesthetics")
+  - few-step diffusion sampling (8 steps, CFG 1.0)
+  - single-stream Diffusion Transformer (shared trunk, cross-attention to text)
+  - LLM-as-text-encoder conditioning (Mistral3-class, ~3B)
+  - separate distilled prompt-enhancer LM (Ministral3-class, ~3B, 26 layers)
+  - post-training GGUF quantization of diffusion weights (k-quants + Unsloth Dynamic 2.0)
+  - VAE conv-direct execution path in stable-diffusion.cpp
+  reported_results:
+  - 'Upstream/vendor self-report: LongText-Bench 0.9655 avg w/ PE (EN 0.9675 / ZH 0.9636); GENEval Overall 0.8667 w/o PE, 0.8510 w/ PE; 8 inference steps vs 50 for the base; recommended resolutions 1024x1024, 848x1264, 1264x848, 768x1376, 896x1200, 1376x768, 1200x896.'
+  - 'Cross-model, comparability CONFIRMED 2026-07-29: LongText-Bench ERNIE-Image-Turbo 0.9655 (w/ PE) > ERNIE-Image-Turbo 0.9639 (w/o PE) > Z-Image base 0.9355 > Z-Image-Turbo 0.9215. Same benchmark, same splits, EN/ZH arithmetic mean. Legitimate because Baidu''s own card carries a three-column table that INCLUDES the competitor and reproduces Z-Image''s per-split numbers exactly. The incumbent leads the challenger by 4.4 points, and leads even without its prompt enhancer.'
+  - 'EPYC-local wall-clock (observation-grade, no protocol id): 2.54x speedup swapping ComfyUI -> sd-server at production scale, ~188 s vs ~478 s at 1024^2 / 8 steps on CPU; 512^2 / 4 steps in 65 s on the old ComfyUI path. `--vae-conv-direct` was the high-ROI flag (7.1x on the VAE stage alone). Standing limitation: ~3 min per image at 1024^2 on CPU - batch-grade, not interactive.'
+  - 'Deep-dive CPU forecast MISSED: research/deep-dives §5.2 predicted 30-120 s/image on the EPYC 9655; the measured production point is ~188 s at 1024^2. The forecast was optimistic and should not be reused.'
+  - 'Q4_K_M A/B (2026-05-07, CPU, pre-MI210): 17% wall-clock win, visible Korean-text corruption. Rejected. Q4 file deleted post-test. No FID / CLIP / human-preference numbers were produced - this was a seeded visual A/B.'
+  - 'MI210 (gfx90a) HIP build: blank white PNGs at 1024^2; 512 / 768 / 896 render correctly. Open production defect.'
+  referenced_arxiv_ids:
+  - '2311.18828'
+  - '2405.14867'
+  - '2212.09748'
+  - '2310.11513'
+  - '2507.22058'
+  - '2512.16853'
+  handoffs_created: []
+  handoffs_updated:
+  - ernie-image-turbo-evaluation.md
+  - multimodal-pipeline.md
+  cross_references:
+    chapters: []
+    handoffs:
+    - ernie-image-turbo-evaluation.md
+    - multimodal-pipeline.md
+    - gpu-acceleration-path.md
+    - hermes-outer-shell.md
+    - pipeline-integration-index.md
+    experiments: []
+    intake_entries:
+    - intake-918
+    - intake-928
+    - intake-929
+  contradicting_evidence:
+  - 'The headline LongText-Bench 0.9655 is a BAIDU SELF-REPORT on Baidu''s own scorecard, never re-validated by the X-Omni team that owns the benchmark. The 2026-07-29 dive resolved only its cross-model COMPARABILITY against Z-Image, not its VALIDITY. The 20-prompt local EN/ZH typography spot-check remains the only thing that can settle it and is still open on the handoff.'
+  - 'GENEval is saturated and drifting: GenEval-2 (arXiv:2512.16853) measures up to 17.7% divergence from human judgment for current frontier models, and systematically over-rewards models trained with prompt rewriters - which describes ERNIE-Image-Turbo exactly. Read 0.8667 as "frontier-tier on a saturated benchmark", not as a win.'
+  - 'Vendor-bias applies on both sides of the ERNIE-vs-Z-Image comparison: Baidu''s numbers and Alibaba Tongyi''s numbers are both self-reports. The comparison is internally consistent, not independently corroborated.'
+  - 'The "distilled models amplify quantization damage" hypothesis was community folklore with no controlled study when the deep dive was written, and secondary sources cited FLUX.1-schnell at 4 steps (a harsher regime than ERNIE''s 8). Our own Q4_K_M A/B then CONFIRMED it for this model - but only on one prompt, one resolution, one seed, on CPU.'
+  - 'Possible baked-in content filtering: Baidu''s prior ERNIE-ViLG had heavy political-content censorship. No empirical filter testing has been run on ERNIE-Image-Turbo. The audit harness exists (orchestrator ed6f65f5) but has never been run with --execute.'
+  novelty_justification: 'Filed retroactively for an already-deployed artifact, so it cannot be novel to the stack - but it is not a `duplicate` either: the URL and the model are absent from the index entirely (a case-insensitive sweep for "ernie" returns only two incidental mentions inside the unrelated UniRL entry). Medium rather than low because this row is the ORIGIN of the few-step-distilled-bilingual-text-DiT class in this compendium - intake-918/928/929 (the Z-Image lineage, dived 2026-07-29) explicitly position themselves against it as "the same shape of artifact" - and because the DMD+undocumented-RL recipe and the 128-latent-channel VAE are architectural points held nowhere else. Not high: the technique family (DMD, few-step distillation) is now covered in depth by intake-929.'
+  relevance_justification: 'This is not a candidate, it is the running system. ERNIE-Image-Turbo Q8_0 is the live backend of the `image_generate` production role, serving through stable-diffusion.cpp sd-server and a Hermes plugin, with a dedicated active handoff (ernie-image-turbo-evaluation.md), registry rows in both the lean and comprehensive model registries, and an open production defect on the GPU path. It is also the incumbent against which every image-generation alternative (Z-Image-Turbo, FLUX.1-schnell, Qwen-Image 2.0) is being judged.'
+  verdict_justification: '`already_integrated` is the only honest verdict: the model is deployed, wired end-to-end (frontdoor task_type=image -> image_worker role -> SDServerClient -> sd-server), and has displaced the cloud FAL adapter it was evaluated to replace. Not `new_opportunity` or `adopt_component` - both describe a prospective adoption, and the adoption completed in May 2026; the handoff''s own instruction to "promote to new_opportunity once GPU lands" was already stale by the time this row was written. Not `worth_investigating`: the investigation produced a deployment. Not `superseded`: the only live challenger, Z-Image-Turbo, LOSES on the axis ERNIE was selected for (LongText-Bench 0.9215 vs 0.9655, same benchmark and splits) and no local measurement contradicts that. `already_integrated` does NOT mean settled - two quality questions (self-report validation, content-filter audit) and one production defect (MI210 blank PNGs) remain open on the handoff.'
+  recommended_actions:
+  - '[verified-open] Validate the 0.9655 LongText-Bench self-report with the 20-prompt local EN/ZH typography spot-check already specified on the handoff, at fixed seed/dimensions/steps. This is the load-bearing selection axis and it currently rests entirely on the vendor''s word. The 2026-07-29 comparability finding does NOT discharge it.'
+  - '[verified-open] Fix the MI210 blank-white-PNG defect at 1024^2. `ernie_image.hpp` received NO ROCm f16-overflow mitigation from upstream PRs #1771/#1772 (2026-07-10) - it appears in neither, while z_image/qwen_image/krea2/boogu did get guards. The candidate fix (mirror #1772''s `set_force_prec_f32(true)` pattern into ErnieImageAttention::to_out.0 and ErnieImageFeedForward::linear_fc2, guarded on ROCm) is filed on gpu-acceleration-path.md. Note the sting: 1024x1024 is the FIRST resolution Baidu''s card recommends, so the defect blanks the vendor-default setting.'
+  - '[verified-open] Run the content-filter audit live with `--execute` (harness ready in orchestrator ed6f65f5, 10 cases) and review outputs for refusal, silent transform, unsafe output, or error. This has been "ready but never run" since the audit was prepared.'
+  - '[unverified] Do NOT revisit Q4_K_M for latency without re-running the text-rendering A/B. The 2026-05-07 rejection was measured on CPU pre-MI210, so it does not automatically transfer to a GPU serving path - but the mechanism (few-step schedules cannot average out dequant noise; see intake-929''s CA-engine/DM-shield decomposition) predicts the same failure mode there.'
+  - '[unverified] Treat the deep dive''s CPU latency forecast (§5.2, 30-120 s/image) as retired - production measured ~188 s at 1024^2. Do not reuse it, and do not reuse the §5.1 DGX Spark extrapolation either: the Spark was never acquired and the MI210 is the actual GPU.'
+  notes: 'ROW CREATED RETROACTIVELY 2026-07-29 for an artifact deployed since 2026-05. credibility_score 2 (Medium tier), scored on the assigned source: not peer-reviewed (+0); released within 12 months (+1); major lab / known contributor - Baidu upstream, Unsloth a known quantizer (+1); commercial bias, all headline numbers are vendor self-reports (-1); independent corroboration (+1) from exactly one direction - the cross-vendor LongText-Bench split reproduction confirmed on 2026-07-29 - NOT from any re-run of ERNIE''s own score. Not null, because unlike intake-918 this card does carry empirical claims (GENEval and LongText-Bench tables). ARTIFACT vs UPSTREAM: `url` points at the Unsloth GGUF repo because that is what we actually run; the Baidu card (https://huggingface.co/baidu/ERNIE-Image-Turbo) is the source of every benchmark number and the licence. PARAMETER COUNT: both cards say "8B" flat; the deep dive establishes that 8B is DiT-ONLY and the full pipeline additionally carries a ~3B Mistral3-class text encoder, a ~3B Ministral3-class prompt enhancer and a VAE. Anyone sizing memory from the card headline will under-count by roughly 6B. LOADER: the GGUF declares `general.architecture=wan`, which is why the ComfyUI-GGUF path loaded it at all - but that path is rollback-only now; sd.cpp''s native `src/ernie_image.hpp` is the serving path. SIZE UNITS: on-disk file is 8,694,907,584 bytes = 8.69 GB decimal = 8.10 GiB - the handoff''s "8.1 GB" and the card''s "8.69 GB" are the same file, not two variants. SEE intake-918 (Z-Image-Turbo, the live challenger), intake-928 (Z-Image paper, LongText-Bench source numbers) and intake-929 (Decoupled-DMD, the mechanistic account of why a distilled DiT degrades non-uniformly under quantization).'
+  dive_corrections: 'ENTRY CREATED 2026-07-29 TO CLOSE A CROSS-REFERENCE DEFECT. Both handoffs/active/ernie-image-turbo-evaluation.md and research/deep-dives/ernie-image-turbo-dit-text-to-image.md cited intake-528 as the ERNIE-Image-Turbo intake row. intake-528 is in fact "Effort Engine: a possibly new algorithm for LLM Inference (bucketMul)" (Kolinko blog, 2024-03-26) - an entirely unrelated CPU-matmul entry. State plainly: the deployed production `image_generate` model had NO index row for its entire deployed life (2026-05-06 onward), while two documents confidently pointed a reader at someone else''s entry. A case-insensitive sweep for "ernie" across research/intake_index.yaml returned only two incidental hits inside the unrelated UniRL entry, confirming the absence rather than a naming variance. Both documents were repointed to intake-937 on 2026-07-29, each carrying an inline note of the correction and its date so the old ID remains traceable rather than silently erased.
+
+    DEEP-DIVE CORRECTIONS FOLDED IN (dive written 2026-05-06 as a PRE-deployment assessment; several of its premises have since been overtaken by production reality):
+
+    1. STRUCK - "Backend is NOT llama.cpp ... plan to use ComfyUI-GGUF as the primary backend" and the §4.1 open question "ERNIE arch support in upstream city96 ComfyUI-GGUF is unverified". stable-diffusion.cpp ships NATIVE ERNIE support (`src/ernie_image.hpp`, 441 lines, verified present in our pinned checkout) and sd-server has been the production backend since 2026-05-07. ComfyUI is rollback-only.
+
+    2. STRUCK - §5.2 "Realistic EPYC 9655 expectation: 30-120 s/image". Measured production point is ~188 s at 1024^2 / 8 steps. The forecast was optimistic by roughly 1.6-6x and must not be reused.
+
+    3. RETIRED - all of §5.1 (DGX Spark GB10 extrapolations, 6-12 s BF16 / 3-5 s NVFP4). The Spark was never acquired. The GPU is an MI210 (gfx90a, 64 GB HBM2e, landed 2026-07-02), and the ERNIE rebench on it is still outstanding. Any Spark number in the dive is dead extrapolation.
+
+    4. RESOLVED - §4.4''s "distilled-model quantization penalty" hypothesis, which the dive itself called "community folklore not measured" and judged "partially falsified for the regime ERNIE-Turbo lives in" on the strength of a Z-Image-Turbo BF16/Q8/FP8 A/B. Our own 2026-05-07 A/B CONFIRMED the penalty for this model at Q4_K_M (Korean-text corruption for a 17% win). Both statements survive: Q8 is safe as the dive predicted, and the Q8->Q4 cliff arrives on the text-rendering axis exactly as §4.4 hypothesised. intake-929 supplies a candidate mechanism (CFG-Augmentation as an under-regularized high-frequency signal in few-step distilled generators) - flagged there as the analyst''s inference, not a paper claim.
+
+    5. DISAGREEMENT WITH THE LIVE ARTIFACT, UNRESOLVED - §1 describes the VAE as a "non-standard 128-channel latent ... Specifics undocumented", with "portability implications" for anyone porting outside diffusers. But the ComfyUI asset bundle actually downloaded for this deployment ships the VAE as `vae/flux2-vae.safetensors` sourced from Comfy-Org/ERNIE-Image, i.e. a FLUX.2-family VAE rather than a bespoke Baidu one. Neither the Unsloth card nor the Baidu card names the VAE at all, so the card cannot adjudicate. The dive''s portability warning is weakened but not disproven; treat the VAE identity as OPEN.
+
+    6. CARD FACTS THE DIVE OMITS - Baidu''s card specifies guidance scale 1.0 and a recommended-resolution list led by 1024x1024 (then 848x1264, 1264x848, 768x1376, 896x1200, 1376x768, 1200x896). Two consequences: the MI210 blank-PNG defect blanks the vendor-DEFAULT resolution, and the dive''s §3.3 framing that the prompt enhancer simply "raises LongTextBench" hides a per-split reversal - PE raises EN (0.9602 -> 0.9675) but LOWERS ZH (0.9675 -> 0.9636). The averages differ by only 0.0016; the ZH split moves 4x that much in the opposite direction.
+
+    7. NO DISAGREEMENT FOUND on the load-bearing numbers: the Unsloth card and the Baidu card agree with the dive on GENEval 0.8667 w/o PE and 0.8510 w/ PE, on LongText-Bench 0.9655 w/ PE and 0.9639 w/o PE, on Apache-2.0, on 8 steps distilled from a 50-step base via "DMD and RL", and on the full quant ladder (Q2_K 3.18 GB -> Q8_0 8.69 GB -> BF16 16.1 GB). The RL half remains undocumented on both cards, exactly as the dive reports.'

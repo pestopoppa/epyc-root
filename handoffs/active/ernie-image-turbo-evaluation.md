@@ -14,7 +14,13 @@ Evaluate Baidu's ERNIE-Image-Turbo (8B distilled DiT, Apache 2.0) as a self-host
 
 | Intake ID | Title | Relevance | Verdict |
 |---|---|---|---|
-| intake-528 | unsloth/ERNIE-Image-Turbo-GGUF (8B DiT distilled, Apache 2.0) | medium | worth_investigating → promote to new_opportunity once GPU lands |
+| intake-937 | unsloth/ERNIE-Image-Turbo-GGUF (8B DiT distilled, Apache 2.0) | high | already_integrated (deployed as the `image_generate` backend) |
+
+> **Intake-ID correction, 2026-07-29.** This handoff and the deep dive previously cited **intake-528**.
+> That ID belongs to an unrelated entry (Kolinko, *"Effort Engine: a possibly new algorithm for LLM
+> Inference (bucketMul)"*, 2024-03-26) — ERNIE-Image-Turbo had **no intake row at all** for its entire
+> deployed life. The row was created on 2026-07-29 as **intake-937**, filed directly at
+> `already_integrated`. All references below have been repointed.
 
 Deep dive: [`research/deep-dives/ernie-image-turbo-dit-text-to-image.md`](../../research/deep-dives/ernie-image-turbo-dit-text-to-image.md) — full architecture, distillation method (DMD + undocumented RL polish), benchmark positioning (GENEval saturated, LongTextBench load-bearing), GGUF tooling semantics, perf expectations on Spark vs CPU, alternatives shortlist, and the variant-selection rationale.
 
@@ -75,12 +81,12 @@ Resolved questions:
 - **Variant decision**: download **Q8_0 (8.69 GB) only**, skip BF16 and UD- variants for now. Reasoning lives in deep dive §9 — short version: Q8 is the production runtime, and the case for BF16 as a calibration reference was over-engineered against evidence (SECourses' Z-Image-Turbo A/B already shows Q8 ≡ BF16 in quality on a comparable distilled DiT). HF doesn't expire — pull BF16 later only if Q8 wobbles on actual ERNIE-Turbo prompts.
 - **Backend is NOT llama.cpp** — out-of-band from EPYC's inference stack. Runs through diffusers (`ErnieImagePipeline`), SGLang, or ComfyUI-GGUF. Plan to use ComfyUI-GGUF as the primary backend (smallest VRAM footprint, native to the Unsloth release).
 - **CPU smoke-test**: technically possible at 30–120 s/image (deep dive §5.2) via diffusers on CPU but not interactive. Useful only to validate the model loads and produces outputs; not a deployment path. **Not** worth deploying via stable-diffusion.cpp port unless we want to do non-trivial llama.cpp engineering for a tool that's better served on GPU.
-- **`feedback_dont_dismiss_creative_uses` memory** is what prevented this from being marked `not_applicable` at intake — the legitimate reframing is "self-hosted T2I to replace disabled FAL cloud tool, gated on GPU." Promote intake-528 verdict to `new_opportunity` once GPU acquisition is on the immediate roadmap.
+- **`feedback_dont_dismiss_creative_uses` memory** is what prevented this from being marked `not_applicable` at intake — the legitimate reframing is "self-hosted T2I to replace disabled FAL cloud tool, gated on GPU." That reframing was vindicated — the model shipped to production on CPU without waiting for a GPU, so the intake row filed on 2026-07-29 (`intake-937`) skipped `new_opportunity` entirely and went straight to `already_integrated`.
 
 ## Files
 
 - Deep dive: `research/deep-dives/ernie-image-turbo-dit-text-to-image.md`
-- Intake: `research/intake_index.yaml` → `intake-528`
+- Intake: `research/intake_index.yaml` → `intake-937`
 - Upstream model: https://huggingface.co/unsloth/ERNIE-Image-Turbo-GGUF
 - Upstream Baidu model: https://huggingface.co/baidu/ERNIE-Image-Turbo
 - Eventual download target: `/mnt/raid0/llm/models/diffusion/ernie-image-turbo-gguf/`
@@ -91,7 +97,7 @@ After any work in this handoff:
 1. Update the **Status of Prep** table.
 2. If the loader-compatibility verification (Q1) resolves, document the result here and unblock downstream work.
 3. If Q8-vs-BF16 A/B is run, append the result to the deep dive (§4.4 and §9) and update the variant recommendation if needed.
-4. When this handoff transitions from `stub` to `active` (image-generation enters scope OR GPU lands), promote intake-528 to `new_opportunity`.
+4. Keep `intake-937` in sync with this handoff. Its verdict is already `already_integrated` (the stub→active transition and the GPU arrival both fired long ago); what still needs pushing back into the index are *outcome* changes — the LongText-Bench self-report validation, the content-filter audit result, the MI210 rebench, or a decision to displace ERNIE with an alternative (which would move the row to `superseded`).
 5. If superseded by an alternative (FLUX.1-schnell, Qwen-Image 2.0), move to `handoffs/completed/` with a one-paragraph closing note explaining the choice.
 
 ## 2026-07-29 — intake Stage-2 dive corrections (intake-918 / intake-928)

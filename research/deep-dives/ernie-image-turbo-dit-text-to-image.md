@@ -1,6 +1,6 @@
 # Deep Dive: ERNIE-Image-Turbo (Baidu, 8B distilled DiT text-to-image)
 
-**Intake ID**: intake-528
+**Intake ID**: intake-937 _(corrected 2026-07-29 — this dive originally cited `intake-528`, which is in fact an unrelated entry: Kolinko, "Effort Engine: a possibly new algorithm for LLM Inference (bucketMul)", 2024-03-26. ERNIE-Image-Turbo had no intake row at all until `intake-937` was created on 2026-07-29.)_
 **Date**: 2026-05-06
 **Status**: Pre-deployment assessment — model not yet downloaded
 **Trigger**: User asked whether image generation should join the toolkit; Q8 vs BF16 decision pending
@@ -273,7 +273,7 @@ Rationale:
 
 ## Cross-references
 
-- [`research/intake_index.yaml`](../intake_index.yaml) — intake-528
+- [`research/intake_index.yaml`](../intake_index.yaml) — intake-937 (created 2026-07-29; supersedes the mis-cited `intake-528` — see the header note)
 - [`handoffs/active/ernie-image-turbo-evaluation.md`](../../handoffs/active/ernie-image-turbo-evaluation.md) — testing handoff (created alongside this deep dive)
 - [`handoffs/active/multimodal-pipeline.md`](../../handoffs/active/multimodal-pipeline.md) — image generation is currently out of scope but this is the natural future home
 - [`handoffs/active/hermes-outer-shell.md`](../../handoffs/active/hermes-outer-shell.md) — `image_generate (FAL)` cloud tool currently disabled; ERNIE-Image-Turbo is a self-hosted replacement candidate

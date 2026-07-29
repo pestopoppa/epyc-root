@@ -38,7 +38,7 @@
     "intake-931",
     "intake-932"
   ],
-  "next_intake_id": 937,
+  "next_intake_id": 938,
   "expansion_count": 8,
   "expansion_cap": 10,
   "notes": "12-URL batch (11 operator-submitted + 1 added mid-turn). Dedup sweep run UNBOUNDED 2026-07-29 over 909 entries / 527 arxiv_ids / 895 urls: ZERO primary arxiv_id or url collisions for all 12. 8 expansion entries (intake-925..932) reference-chased from intake-916/918/919/921; all 8 verified non-primary in the index (referenced only inside other entries' reference lists, which per the companion-artifact rule is not a collision). Tier-2b cheap contradiction pass run on 8 claims. PERSIST FIX: 9 handoff cross-refs were written with completed//blocked/ path prefixes and failed the validator, which resolves BARE filenames across handoffs/{active,completed,archived}; prefixes were stripped from list items only (prose untouched) and the validator then returned exit 0 / 932 entries.",
@@ -261,6 +261,7 @@
     "code_fix_1_rlimit_nproc": "DONE 2026-07-29 \u2014 SUBSTITUTED after the operator was shown the finding. RLIMIT_NPROC is per-UID and this host runs 9,534 threads as uid 1000 (5,688 llama-server), so any per-scorer cap would fail the child's first fork and would fail NONDETERMINISTICALLY with fleet load. Operator chose process-group kill + honest docstring. Implemented start_new_session=True + os.killpg on timeout (closing a CONFIRMED orphan leak subprocess.run's timeout path left open) and corrected the docstring to state why RLIMIT_NPROC is wrong here and that cgroup v2 pids.max is the correct mechanism (verified available). 9/9 execution checks pass.",
     "code_fix_2_testbed_reset": "DONE 2026-07-29 \u2014 DockerEnv.reset_testbed(base_commit) added, called fail-closed at the top of run_instance (status testbed_reset_failed, zero turns, empty patch). Uses `git reset --hard <base> && git clean -fd`. DELIBERATE DEVIATION from the plan text: -x omitted, because it also deletes IGNORED files incl. the .egg-info/build artifacts left by `pip install -e .`, which would break imports and manufacture false failures. 14/14 execution checks pass, including that the ignored artifact survives and an agent COMMIT is undone.",
     "tier4_intakes": "DONE \u2014 intake-933..936 persisted, all dive-verified/overturned. Two agents returned out-of-range schema values (credibility 8 and 66; novelty 'significant'); normalized per rubric and recorded in each entry's notes.",
-    "remaining": "handoff writes (Tier 0-3), master-index rows, handoffs_updated/created backfill on intake-913..936"
+    "remaining": "handoff writes (Tier 0-3), master-index rows, handoffs_updated/created backfill on intake-913..936",
+    "od_b_resolved": "2026-07-29 \u2014 intake-937 created for ERNIE-Image-Turbo (the deployed image_generate model, which had NO index row for its entire deployed life); 6 mis-citations of intake-528 repointed across the handoff and the deep dive, each with an inline dated correction note."
   }
 }
