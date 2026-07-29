@@ -667,6 +667,39 @@ freezes/cutovers, host reboots).
   mid-assignment showing epoch fencing, and operator touching only token-queue checkboxes — plus
   M3's advisory-accuracy evidence, on which M4's go/no-go rests. The switch stays at `manual`
   until then. Rollback: `authority: advisory`.
+> ### POST-REBOOT HANDOVER — `claude-gpu-lane`, closed 2026-07-29 (read this first)
+>
+> This lane owned the `tmux_adapter.py` / session-bus hardening arc (C6, C9, C10, C14, C16, C18)
+> and does not survive the reboot. Everything below is committed and pushed; nothing is in flight.
+>
+> **Do this before anything else, or spawning is dead:**
+> 1. `tmux new-session -d -s agent` — nothing creates it, and `cmd_spawn` fails closed without it
+>    (**C20**). This is not optional and not a defect when you see the refusal.
+> 2. Restart the coordinator-daemon — it is a process, not state. It was at epoch 9 pre-reboot.
+> 3. Every heartbeat will be stale and no window will be live, so **routed messages to
+>    not-yet-restarted mains will emit "LOOKS DEAD" advisories**. That is the C18 warning working,
+>    not a fault; it is deduped per (msg, recipient) so it cannot flood. It goes quiet as mains come
+>    back up.
+>
+> **Two live decisions this lane deliberately did NOT make for you:**
+> - **C15** — `caps.max_concurrent_mains` is **4** and reads 4/4. It was NOT raised to 6: that 6
+>   belonged to the superseded daily-action key, and re-reading it as concurrency is exactly what
+>   `resolve_spawn_cap()` refuses to do in code. Name a number; it is a one-line change. Post-reboot
+>   the live count starts at 0, so this does not block bring-up — it bites once four mains are up.
+> - **C18(a)** — `codex-bus-tests` is still `role: main` with no session. Non-urgent now: the
+>   liveness check detects it regardless of whether anyone maintains the field.
+>
+> **What is verified vs what is asserted.** Verified by running it: the whole-repo suite (2 failed,
+> 616 passed **from the canonical root**; the two are codex-owned stale expectations), both adapter
+> suites and both bus suites (96 passed), the reboot spawn blocker, and the daemon epoch. Asserted
+> but not re-run since: nothing.
+>
+> **Testing rules this arc produced — they are why the above numbers mean anything:**
+> a fixture must not delete the signal under test; a suite whose entry points cannot fail is worse
+> than an uncollected one; quote the invocation path with any tally (`/workspace` and the canonical
+> root give different answers, deliberately — C19); and derive state from what is observable, never
+> from a field somebody must maintain (C14/C18 polarity).
+
 - [ ] **M5 — flag-gated extensions** (each independent). *Send-keys/spawn BUILT ✅ 2026-07-27*
   after the operator granted `OP-SENDKEYS-CODEX` with `max_spawns_per_day: 3`:
   `scripts/coordination/tmux_adapter.py` (probe/nudge/spawn). Fail-closed; refuses to
@@ -947,7 +980,10 @@ freezes/cutovers, host reboots).
     **Immediate question, independent of the fix:** is `claude` a main needing a roster row, or an
     operator shell? If it is a main, `config.yaml` is stale and the concurrency count is
     understating the fleet today.
-  - [ ] **C18 — a routed message to a dead session is dropped silently.** *Observed 2026-07-29.*
+  - [x] **C18 — a routed message to a dead session is dropped silently.** ✅ 2026-07-29 —
+    detection landed (`528435fc` fan-out + defect advisories; liveness check in `e428bceb`,
+    record `92348b68`), activated at daemon **epoch 9** (pid 1795713, 11:19:51Z). The data
+    cleanup (a) remains as its own line below. *Original filing:*
     `msg-20260729T092520Z-15-claude-gpu-lane` routed to `[fable-auditor, codex-bus-tests]`;
     `fable-auditor` received it, `codex-bus-tests` no longer exists (no tmux window, heartbeat 16.4h
     stale) and its share vanished with no defect, no bounce, nothing. `append` validates that a
@@ -976,10 +1012,10 @@ freezes/cutovers, host reboots).
     config never probes the real session, so unit tests cannot read whichever windows happen to be
     up. Four regression tests including the exact 2026-07-29 miss (rostered, non-retired, 17 h
     stale, no window → warned AND delivered). Suites: 48 passed.
-    - [ ] **ACTIVATION for (b): the daemon running at epoch 8 predates this change**, so the
-      liveness warning is inert until the daemon's owner restarts it — exactly the gap that made
-      `528435fc` inert for an hour, now recurring one layer down. Not restarting it myself:
-      restarts are the daemon owner's, and this lane is barred from them. Owner: coordinator-agent.
+    - [x] **ACTIVATION for (b)** ✅ 2026-07-29 — operator restarted the daemon to **epoch 9**
+      (pid 1795713, started 11:19:51Z, after `e428bceb`), so the liveness warning is live, not
+      inert. Two activation gaps in one day on the same file: **a merged fix and a running fix are
+      different states**, and only the process owner can close the second.
     (a) data — still open: `codex-bus-tests` remains `role: main`. Now non-urgent, since (b)
     detects it regardless of whether anyone remembers to set the field.
     *Precision + polarity note (fable-auditor, wrap-up 2026-07-29):* post-`528435fc` the rostered
@@ -1007,6 +1043,23 @@ freezes/cutovers, host reboots).
       drift-trigger list**, so that text was re-homed onto `live_mains` (the function whose
       arithmetic the invariant is about) BEFORE the deletion — otherwise the cleanup would have
       deleted the correction that `8d865ea2` exists to preserve. 48 passed.
+  - [ ] **C20 — after a reboot, `tmux_adapter.py spawn` cannot spawn ANYTHING until someone
+    creates the `agent` tmux session by hand. THIS IS ON THE REBOOT CRITICAL PATH.** *Verified
+    2026-07-29 by running `live_mains` against an absent session.* With no tmux server or no
+    `agent` session, `live_mains` returns `None` ("cannot list windows of the live session"), so
+    `cmd_spawn` refuses with `EX_BLOCKED` — correct fail-closed behaviour, and
+    `tmux.allow_session_creation: false` means the adapter will **never** create the session
+    itself (an operator requirement from 2026-07-27: every main is a WINDOW in the one live
+    session, and this module never calls `new-session`).
+    So the post-reboot sequence has a mandatory first step that nothing in the code will do for
+    you: **`tmux new-session -d -s agent`** (plus restarting the coordinator-daemon, which is a
+    process and does not survive either). Until then every spawn attempt refuses with a message
+    about being unable to count live mains — which reads like a defect and is not one.
+    Decide deliberately, do not paper over it: either the operator/coordinator creates the session
+    as a documented reboot step (recommended — it keeps `allow_session_creation: false`, which is
+    what stops a stray spawn from inventing its own session), or that flag is flipped with an
+    explicit decision recorded. Do NOT "fix" this by making an unreadable tmux count as zero mains:
+    that is the C14 polarity error and it hands out occupied slots.
   - [ ] **C15 — `caps.max_concurrent_mains: 4` is saturated at 4/4. STILL 4, not 6** — checked
     2026-07-29, and the "already raised to 6" recollection is a **key conflation**, which is worth
     recording because it is the exact hazard C9 was about. The 3 → 6 bump (`9b6c4f13`) raised
