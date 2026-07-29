@@ -81,7 +81,24 @@ After any CF task, update this active handoff with command, dataset/log source, 
   - Caveats: BrowseComp is a 100-sample split (a 4.4pp gap ≈ 4 questions — our per-suite gate-resolution caveat applies); the model-dependence claim is n=2; the 98.7% judge-agreement figure lacks chance correction (see intake-876); live-web contamination may account for up to 4pp (intake-877). All numbers are OBSERVATIONS under MEASUREMENT.md.
   - Usable asset: the harness talks OpenAI-compatible endpoints and its **local-search arm (BrowseComp-Plus + embedding retrieval) is self-hostable against our BGE servers** — the cheapest path to re-measuring under our own protocol.
 
-- [ ] CF-3c design input: frame the compaction A/B around the seven-policy ablation, prioritizing observation-dropping and treating summarization as the marginal arm to be justified, not the default. [intake-869, intake-274]
+- [x] CF-3c design input: frame the compaction A/B around the seven-policy ablation, prioritizing observation-dropping and treating summarization as the marginal arm to be justified, not the default. ✅ 2026-07-29 — **corrected to match the live path:** `ContextCompressor` performs deterministic type-aware stubbing only; `openai_compat.py` consumes that result directly and no caller invokes an LLM summarizer. The first runnable comparison is therefore `no compaction` versus protected-zone deterministic stubbing, with the threshold pre-registered; an LLM-summary arm is a separate future feature, not a currently available control. [intake-869, intake-274]
+
+#### CF-3c A/B frame (2026-07-29)
+
+Run only after the monitor is persisted and the operator's shadow-telemetry enable decision below:
+
+1. **A0 — no compaction:** preserve the same conversation/prompt construction without the
+   `context_compression` feature.
+2. **A1(k) — current implementation:** protected first/last zones plus deterministic file-read/REPL
+   stubs, with `TOOL_OUTPUT_AGE_THRESHOLD=k`; pre-register a small bounded set of `k` values rather
+   than treating the current `8` as evidence.
+3. **A2 — future, only if implemented:** A1 plus a separately introduced LLM summary component. It
+   must earn an incremental benefit over A1; it cannot be described as a test of today's code.
+
+Hold the workload, model, prompt construction and turn cap fixed. Record reference-loss, give-up,
+and no-answer/max-turns rates together; a lower apparent rot rate paired with more unfinished
+trajectories is a loss. This changes no runtime configuration and authorizes no inference while E5
+holds the host.
 - [ ] CF candidate: add give-up-rate and uncertain-incorrect-rate as compaction-quality dimensions alongside reference misses. [intake-869]
 - [ ] CF candidate: the `keep_k_latest_wo_reasoning` arm is a direct cheap test for the retain-historical-thinking-blocks question owned by [reasoning-compression.md](reasoning-compression.md). [intake-869]
 
@@ -109,7 +126,10 @@ Supersedes the ordering in the 2026-07-21 intake section above. A deep dive on i
 - [x] **Fix the inverted detector (one line, highest value here) ✅ 2026-07-29**: implemented by epyc-orchestrator `921f71d1` in `src/graph/session_summary.py`, with regression coverage in `tests/unit/test_session_summary.py`; the completed duplicate is recorded below.
 - [ ] Persist `CompactionQualityMonitor` (add to the state projection at `graph/langgraph/state.py:207` + a writer) — currently dies with the session.
 - [ ] Add give-up-rate AND **no-answer / max-turns rate** as production dimensions. Detectors already exist in `src/pipeline_monitor/anomaly.py` (`detect_repl_max_turns` = the paper's NA exactly; `detect_assistant_help_request` ≈ give-up; `detect_self_doubt_loop` ≈ hedging) — the work is joining them to compaction state, not writing them. Scope **uncertain-incorrect to the eval tower only** — it needs a correctness label that does not exist in production.
-- [ ] Replace the seven-policy bake-off with the narrower question our code actually poses: does the protected-zone LLM-summary half of `ContextCompressor` earn its keep over stub-only trimming, and what is the right `TOOL_OUTPUT_AGE_THRESHOLD`? That is a 2×k sweep on existing code.
+- [ ] Replace the seven-policy bake-off with the narrower question our code actually poses: does
+  protected-zone deterministic stubbing beat no compaction, and what is the right
+  `TOOL_OUTPUT_AGE_THRESHOLD`? That is the A0/A1(k) sweep above. An LLM-summary arm requires a
+  separately implemented component and is not an existing-code comparison.
 - [x] Do NOT prioritize running the ContextRot harness. ✅ 2026-07-29 — current Stage-2 evidence confirms the only self-hostable arm (BrowseComp-Plus) has a ~1pp-or-negative summarization effect; its paid `SERPER_API_KEY` and missing license also fail the open-source-only constraint. If reopened, reproduce only the behavioral rot/NA signature, never the underpowered accuracy delta.
 - [x] **Self-hostable/BGE correction recorded ✅ 2026-07-29**: the shipped embeddings are Qwen3-Embedding-8B-specific (4096-dim, 821MB, bf16); using BGE would require re-embedding all 100,195 docs and would break comparability. Source-backed intake/deep-dive correction: epyc-root `2102c0f05`.
 

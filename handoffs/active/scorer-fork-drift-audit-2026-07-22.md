@@ -254,5 +254,34 @@ mocked responses + targeted pytest). All 61 targeted seeding-scorer tests pass;
 
 ## Residual tasks (filed at 2026-07-22 wrap-up)
 - [ ] Unify the `_inband_error_text` / `_forced_role_serving_mismatch` local copies (seeding `3bfe2584`) with eval_tower's originals into one shared module (currently two deliberate copies)
-- [ ] `seeding_legacy.py:~331` deprecated ComparativeResult path carries the pre-guard reward-injection pattern (currently unused by the live driver) — guard it or delete the legacy path
+- [ ] `seeding_legacy.py:~331` deprecated ComparativeResult path carries the pre-guard reward-injection pattern — guard it or delete the legacy path
+  - **AUDITED 2026-07-29 (`auditor`). THE PREMISE OF THIS ROW IS FALSE — "currently unused by the
+    live driver" is wrong, and the correct disposition is GUARD, not delete.** Evidence, all in
+    `epyc-orchestrator` (the file moved there in `49e9ce56`; this row and the dispatch queue both
+    still say the research repo):
+    1. **`run_batch` is the DEFAULT path, not a dead one.** `seed_specialist_routing.py` calls it at
+       `:1430` (continuous mode) and `:1479` (one-shot). The `--3way` branch at `:1173` *returns* at
+       `:1385`, so **every invocation WITHOUT `--3way` falls through to the legacy path.**
+       `run_batch:458` → `evaluate_question` (`:569`) → the unguarded `score_answer_deterministic`
+       at `:331` and `_inject_rewards_http` at `:412`.
+    2. **The "unused" reading came from `# noqa: F401` on the import block.** That is a blanket
+       suppression over seven names, not evidence about any one of them — and five of the seven are
+       demonstrably used (`run_batch` ×3, `print_batch_summary` ×3, `print_stats` ×2,
+       `_deduplicate_roles` ×2, `_build_role_mode_combos` ×2). Reading a blanket lint suppression as
+       a reachability claim is the same shape as `feedback_verify_negatives_before_concluding_absence`.
+    3. **The guard gap is total, not partial.** `grep -c '_inband_error_text|_forced_role_serving_mismatch'`
+       → `seeding_eval.py` (3-way) has all three B7 guards incl. the REL-1 scorer-unavailability
+       catch at `:374`; **`seeding_legacy.py` has ZERO.**
+    4. **Something pinned actually uses it.** `tests/unit/test_offline_reward_pairwise_holdout_expansion_plan.py:392`
+       pins the collection command template for the offline-reward pairwise holdout expansion plan
+       as `seed_specialist_routing.py --suites … --modes direct --sample-size … --strict-modes
+       --dry-run --output …` — **no `--3way`**. So that plan's evidence is scored through the
+       unguarded path. `--dry-run` suppresses `_inject_rewards_http` (`:406`, `if not dry_run`) but
+       NOT the scoring at `:331`, so the exposure is scoring semantics, not reward injection.
+  - [ ] **ESCALATED, NOT PATCHED — needs an operator/coordinator call before the guard lands.**
+    Two reasons this auditor did not simply apply the B7 guards: (a) CLAUDE.md names **scoring** as
+    part of the measurement trust boundary, which is human-amendment-only; (b) the E5 and E8
+    campaigns are live on these scripts right now (`mainA` on `e5-stage-b-campaign`, `inference` on
+    `e8-deterministic-replay-readiness`), and changing what the default path scores mid-campaign
+    would alter measurement semantics under running work. Filed on the bus with options.
 - [ ] Research-repo `debug_scorer.py` is fully pre-B7 (10/10 defect classes, off routing path) — port B7 or stamp research benchmarks scored with it as pre-B7-scorer era
