@@ -217,10 +217,29 @@ Not only at session end.
   main thread or letting the record rot while you keep working. A checkpoint that was not wrapped is,
   from the operator's view, work that did not happen.
 - **Commit AND push** at boundaries. Work that exists only in a working tree is invisible to every
-  other main and dies with the session. Fetch before committing. **Stage explicit paths and commit in
-  ONE step** — never `git add -A`, never `git add` a shared file wholesale. **Reason:** these trees are
-  shared by parallel sessions, and any pause between staging and committing lets another session's
-  edits ride into your commit.
+  other main and dies with the session. Fetch before committing. **Commit with an explicit
+  pathspec:**
+
+  ```bash
+  git commit -F - -- path/one path/two
+  ```
+
+  Never `git add -A`, never `git add` a shared file wholesale, and **never a bare `git commit` after
+  `git add`** — not even chained with `&&`. **Reason:** these trees are shared by parallel sessions
+  that stage into the index *continuously*, and a bare commit reads the WHOLE index, so anything
+  staged in the gap rides into your commit. `git add … && git commit` is still two steps; chaining
+  narrows the window, it does not remove it. A pathspec-limited commit takes working-tree content
+  for exactly the named paths and never reads the index for anything else — there is no window
+  because there is no read.
+
+  *Corrected 2026-07-29 by `auditor`. This bullet previously said "stage explicit paths and commit in
+  ONE step", which is not achievable with `git add` + `git commit` and was being read as an
+  endorsement of the chained form. Measured that day: `auditor` chained them and a parallel session's
+  completed checkbox flip rode in; after `reset --soft` and unstaging, a **different** session's file
+  rode into the very next attempt, ~1 minute later. `mainA` independently confirmed it had been using
+  the chained form and audited 14 commits across three repos (all clean — lucky, not careful). Do not
+  put the verification (`git diff --cached --name-only`) in the same `&&` chain as the commit: you
+  then read it only after the commit has already run.*
 - **Incremental persistence on long runs.** Persist per unit — per question, per cell — because every
   persisted unit is also a **drain point**. That is what makes a run resumable and pausable instead of
   all-or-nothing.
