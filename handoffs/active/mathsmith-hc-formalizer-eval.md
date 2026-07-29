@@ -96,6 +96,7 @@ The canonicalizer proposal (`epyc-inference-research/research/MATHSMITH_CANONICA
 - Registry has stale `forbid: speculative_decoding` on both entries (Q4_K_M already has verified spec decode results)
 - Q8_0 speed anomaly (3.3 t/s for an 8B model, should be 12-15+ t/s) — likely mradermacher GGUF conversion issue, never root-caused
 - No A/B comparison of formalize-then-solve vs direct solve exists
+- **HC formalizer contract is unproven:** the [HC model card](https://huggingface.co/Jasaxion/MathSmith-HC-Problem-Synthesizer-Qwen3-8B) describes `<rationale>` / `<problem>` generation, while `src/formalizer.py` accepts only JSON containing `problem_type` and injects a `FormalizationIR`. Do not register HC as a replacement formalizer or run its S3/S4 arms until an approved local artifact passes a dedicated contract probe under the existing prompt, or an adapter is separately specified and tested.
 
 ## Work Items
 
@@ -106,6 +107,7 @@ The canonicalizer proposal (`epyc-inference-research/research/MATHSMITH_CANONICA
 ### S2: HC artifact availability and quantization path
 - [x] Run the free/local artifact scan path: `huggingface-cli scan-cache` was unavailable because `huggingface-cli` is not installed; fallback local cache search under `~/.cache/huggingface` and `/root/.cache/huggingface` found no `MathSmith`/`Jasaxion`/HC artifacts; `/mnt/raid0/llm/models` contains only `MathSmith-Hard-Problem-Synthesizer-Qwen3-8B.Q4_K_M.gguf`. **Decision**: no local HC artifact exists, so S2 cannot advance without operator/network action. ✅ 2026-07-14
 - [x] Operator/network availability check: inspect HF for pre-made GGUFs or upstream weights for `Jasaxion/MathSmith-HC-Problem-Synthesizer-Qwen3-8B`. ✅ 2026-07-29 — the [upstream repository](https://huggingface.co/Jasaxion/MathSmith-HC-Problem-Synthesizer-Qwen3-8B) is public, Apache-2.0, and exposes the Qwen3-8B HC BF16/safetensors weights; the public [GGUF mirror](https://huggingface.co/mradermacher/MathSmith-HC-Problem-Synthesizer-Qwen3-8B-GGUF) documents `Q4_K_M` and exposes `Q4_K_S` / `IQ4_XS` artifacts. This was a read-only availability check only: no artifact was downloaded, loaded, converted, benchmarked, or registered.
+- [x] HC-to-FormalizationIR schema preflight ✅ 2026-07-29 — the public HC card declares `<rationale>` / `<problem>` output, whereas `src/formalizer.py::_parse_formalizer_output()` accepts only JSON objects containing `problem_type`; the current injection path then requires variables, constraints, objective, edge cases, and acceptance criteria. Compatibility is therefore unproven, not implied by the shared Qwen3-8B base. The first approved local run must be a zero-question contract probe; only a passing `FormalizationIR` result (or a separately specified and tested adapter) unlocks S3/S4.
 - [ ] If the repo exists but no GGUF is available, convert from HF weights: `convert_hf_to_gguf.py` + `llama-quantize` for Q4_K_M and Q8_0
 - [ ] Verify speed is normal (12-15+ t/s for Q8_0) — if so, confirms mradermacher conversion was the old speed bug
 - [ ] Benchmark on existing formalizer test suite (summary.csv rows 15-16 baseline)
@@ -119,7 +121,7 @@ The canonicalizer proposal (`epyc-inference-research/research/MATHSMITH_CANONICA
 ### S4: A/B benchmark — formalize-then-solve vs direct solve
 - [ ] Design test protocol using new `aime` suite (60 questions, AIME2024+2025) and `olympiadbench` suite (674 questions)
 - [ ] Pipeline A (baseline): solver model receives raw problem, produces answer
-- [ ] Pipeline B (formalizer): MathSmith-HC formalizes → solver receives formalized problem → answer
+- [ ] Pipeline B (formalizer): only after the HC contract probe passes, MathSmith-HC formalizes → solver receives formalized problem → answer
 - [ ] Solver candidates: Qwen2.5-Math-7B, Qwen3-8B, current production worker
 - [ ] Measure: accuracy delta, latency overhead, total pipeline time
 - [ ] Key question: does formalization help more on harder problems (AIME > OlympiadBench > MATH-500)?
