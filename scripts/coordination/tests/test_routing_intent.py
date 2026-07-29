@@ -32,9 +32,17 @@ from scripts.coordination.session_bus import main  # noqa: E402
 BUS_SRC = REPO_ROOT / "coordination" / "session-bus"
 
 # Real roster ids (from the copied config.yaml) so validate's roster checks work.
-SENDER = "claude-gpu-lane"
-TARGET = "fable-auditor"
-OTHER = "codex"
+#
+# 2026-07-29: these were `claude-gpu-lane` / `fable-auditor` / `codex` and the roster
+# rename to model-agnostic ids turned this ENTIRE FILE red — 16 failed, 0 passed —
+# without anyone noticing, because nothing runs it on a schedule and `append` had
+# already started enforcing the roster. A suite that is red for an unrelated reason
+# stops being read at all, so `make_bus` now asserts these against the copied config
+# and fails with one pointed message instead of sixteen confusing ones.
+SENDER = "mainB"
+TARGET = "auditor"
+OTHER = "inference"
+RETIRED = "codex-bus-tests"      # rostered but role: retired — a distinct case from absent
 DAEMON = "coordinator-daemon"
 
 LONG_MARKER = "NEEDLE-" + "x" * 3000 + "-ENDNEEDLE"
@@ -47,6 +55,18 @@ def make_bus(tmp_path: Path) -> Path:
     for area in ("inbox", "outbox", "heartbeats", "cursors"):
         for f in (root / area).glob("*"):
             f.unlink()
+    import yaml as _yaml
+    roster = (_yaml.safe_load((root / "config.yaml").read_text(encoding="utf-8")) or {}).get("roster") or []
+    by_id = {str(r.get("id")): r for r in roster if isinstance(r, dict)}
+    missing = [a for a in (SENDER, TARGET, OTHER, RETIRED) if a not in by_id]
+    assert not missing, (
+        f"fixture ids {missing} are no longer on the roster in {BUS_SRC}/config.yaml "
+        f"(have: {sorted(by_id)}). A roster RENAME silently reddens this whole file; "
+        f"update the SENDER/TARGET/OTHER/RETIRED constants above.")
+    assert by_id[RETIRED].get("role") == "retired", (
+        f"fixture assumption: {RETIRED!r} is the rostered-but-RETIRED case, but its role "
+        f"is {by_id[RETIRED].get('role')!r}. Pick another retired row or the "
+        f"retired-vs-absent distinction stops being tested.")
     for agent in (SENDER, TARGET, OTHER):
         (root / "inbox" / f"{agent}.jsonl").touch()
         (root / "outbox" / f"{agent}.jsonl").touch()
@@ -368,7 +388,7 @@ def test_daemon_relay_flags_unreachable_routing_recipient_never_drops_silently(t
     root = make_bus(tmp_path)
     # Direct outbox writes simulate authoring BEFORE the roster drifted:
     # append would refuse both targets today (non-roster / retired).
-    for seq, routed_to in enumerate(["ghost-agent-removed", "claude-main"], start=1):
+    for seq, routed_to in enumerate(["ghost-agent-removed", RETIRED], start=1):
         _append_jsonl(root / "outbox" / f"{SENDER}.jsonl", {
             "schema_version": MSG_SCHEMA_VERSION, "ts": "2026-07-29T09:00:00+00:00",
             "id": f"msg-20260729T090000Z-{seq}-{SENDER}", "from": SENDER,
@@ -376,18 +396,18 @@ def test_daemon_relay_flags_unreachable_routing_recipient_never_drops_silently(t
             "needs_routing_to": [routed_to], "payload": {"n": seq}})
 
     roster = yaml.safe_load((root / "config.yaml").read_text())["roster"]
-    assert any(r.get("id") == "claude-main" and r.get("role") == "retired" for r in roster), \
-        "fixture assumption: claude-main is the rostered-but-retired case"
+    assert any(r.get("id") == RETIRED and r.get("role") == "retired" for r in roster), \
+        f"fixture assumption: {RETIRED} is the rostered-but-retired case"
 
     advisory = relay_outbox_messages(root, roster, epoch=0)
     defects = {a["unreachable"]: a for a in advisory
                if a.get("kind") == "defect" and a.get("unreachable")}
-    assert set(defects) == {"ghost-agent-removed", "claude-main"}
+    assert set(defects) == {"ghost-agent-removed", RETIRED}
     assert "not a roster id" in defects["ghost-agent-removed"]["detail"]
-    assert "retired" in defects["claude-main"]["detail"]
+    assert "retired" in defects[RETIRED]["detail"]
     assert defects["ghost-agent-removed"]["relayed_src"] == f"msg-20260729T090000Z-1-{SENDER}"
     assert not (root / "inbox" / "ghost-agent-removed.jsonl").exists()
-    assert not (root / "inbox" / "claude-main.jsonl").exists()
+    assert not (root / "inbox" / f"{RETIRED}.jsonl").exists()
     coord = (root / "inbox" / "coordinator-agent.jsonl").read_text().strip().splitlines()
     assert len(coord) == 2, "addressable recipients still get their delivery"
 
@@ -403,7 +423,7 @@ def test_append_refuses_routing_to_a_retired_roster_row(tmp_path, capsys):
     root = make_bus(tmp_path)
     code, _out, err = append_msg(root, capsys, SENDER, "outbox", {
         "kind": "status", "to": "coordinator-agent",
-        "needs_routing_to": ["claude-main"], "payload": {}})
+        "needs_routing_to": [RETIRED], "payload": {}})
     assert code == 1
     assert "retired" in err
 
