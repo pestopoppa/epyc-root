@@ -942,10 +942,22 @@ freezes/cutovers, host reboots).
     `fable-auditor` received it, `codex-bus-tests` no longer exists (no tmux window, heartbeat 16.4h
     stale) and its share vanished with no defect, no bounce, nothing. `append` validates that a
     `needs_routing_to` entry is a roster ID — but a roster row outlives the session, so ID validity
-    is not reachability. fable-auditor is making unreachable recipients emit a defect; this item
-    tracks it from this lane and is closed by that work. Audit done here: of 16 outbox rows only 2
-    carry `needs_routing_to`, and `codex-bus-tests` was the only unreachable recipient among them —
-    re-sent to `coordinator-agent` as `msg-20260729T100100Z-18-claude-gpu-lane`.
+    is not reachability. Audit done here: of 16 outbox rows only 2 carry `needs_routing_to`, and
+    `codex-bus-tests` was the only unreachable recipient among them — re-sent to
+    `coordinator-agent` as `msg-20260729T100100Z-18-claude-gpu-lane`.
+    **Half-closed by `528435fc`, and the remaining half is the case that actually bit.** The relay
+    now fans out on `needs_routing_to` and raises a `defect` advisory for an unreachable recipient —
+    but only when the id is *not a roster id* or its *role is `retired`*
+    (`session_bus_coordinator.py:1288-1291`). `codex-bus-tests` is neither: it is still
+    `role: main` in `config.yaml:25`, while its window is gone and its heartbeat is **16.7 h
+    stale**. So the exact message that was dropped today would still be dropped silently.
+    Two ways to finish it, and they are not exclusive:
+    (a) **data** — set `codex-bus-tests` to `role: retired` (coordinator/operator call; the row must
+    be kept, not deleted, since its cursors and history are keyed on the identity);
+    (b) **code** — make the reachability test consult *liveness* (heartbeat freshness, or window
+    presence in `tmux.live_session`) rather than roster metadata alone, since a roster row is a
+    durable identity and a session is not. Without (b), every future dead-but-not-yet-retired main
+    reopens this hole.
   - [ ] **C15 — `caps.max_concurrent_mains: 4` is saturated at 4/4.** Set 2026-07-28 against a
     then-steady state of 3 live mains; a `fable-auditor` window brought it to 4 within the hour,
     so the next spawn needs a main closed. Working as designed — a closed main now returns its

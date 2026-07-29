@@ -808,3 +808,53 @@ live. "I could not determine X" must return unknown and refuse, never an empty s
 _Sources: `handoffs/active/session-bus-thin-dispatcher.md` § M5 → C6, C9, C10–C15;
 `progress/2026-07/2026-07-28.md`; `scripts/coordination/tmux_adapter.py` (commits `8033f039`,
 `e0deeaf7`, `8cbe50c0`); `coordination/session-bus/tasks/bus-c6-verification-followup.md`._
+
+## Three ways a test suite reports coverage it does not have (2026-07-29)
+
+Companion to the TUI-transport section above: same module, same week. Hardening one small
+grant-gated adapter surfaced three distinct mechanisms by which a green result meant nothing. They
+are worth naming because none of them looks like a bug — each looks like a passing suite.
+
+**1. A fixture that deletes the signal under test.** Post-submit verification had to observe that
+both TUIs echo a submitted message into the transcript. The end-to-end fixture cleared the screen on
+submit (`\033[2J\033[H` after `read`). No real TUI does that, and the echo is exactly what the
+predicate reads — so the fixture would have passed an implementation that cannot distinguish a
+submission from a swallowed Enter. **Audit what a fixture removes, not only what it reproduces.**
+The same bug was then found in a second file the next day, which is how you know the rule
+generalises.
+
+**2. A suite that cannot fail.** A standalone suite recorded results by appending `(ok, why)` tuples
+to a module-global list that only its `main()` inspected; its two pytest-visible functions returned
+`None`. Collected, it would have reported PASS with every check failing. It was also *uncollectable*
+— it shared a basename with another test file and neither directory was a package, so pytest raised
+`import file mismatch`, **a collection ERROR that aborts the entire run** rather than skipping one
+file. Uncollected-and-red for a day; the repair had to make it both collected *and* capable of
+failing, in that order.
+
+**3. A result that depends on where you stand.** Two agents reported different pass/fail counts for
+the same commit with the same interpreter. Cause: `/workspace` and `/mnt/raid0/llm/epyc-root` are one
+tree (same `.git` inode), but ratifier scripts compare the invocation path against the *literal*
+canonical root as a trust-boundary guard. From one name the guard passes and the suite is green;
+from the other it fires and three tests fail on the wrong refusal message. Path-dependence also
+changed *what ran* (615 vs 618 tests) and how long it took, because the guard short-circuits a
+network validation. **The guard was left alone** — a production ratifier declining to accept a
+second name for the production root is the check working. The fix is to quote the invocation path
+with any tally, not to loosen the boundary.
+
+**The structural precondition for all three.** A bare repo-wide `pytest` collected 2200 tests and
+then aborted on 46 collection errors, so there was no whole-repo run for anything to be red *in*.
+Fixing that (exclude non-repo trees from recursion; make an unimportable package importable) is what
+turned "green" into a claim with a denominator. One subtlety worth keeping: `tests/` had no
+`__init__.py`, and **a namespace package loses to a regular package found anywhere on `sys.path`,
+regardless of order** — so `import tests.compliance` resolved to a *different repository's* `tests`
+package reached through a shared venv. Putting the repo root first on `sys.path` does not fix that;
+only making the directory a real package does.
+
+**Transferable rule.** A passing suite is evidence only if you can state what would have made it
+fail. For each of the three: delete the echo → the predicate still passes (bad); flip a check to
+False → the test still passes (bad); run from the other path → the count changes (bad). Each was
+found by asking that question, not by reading the tests.
+
+_Sources: `handoffs/active/session-bus-thin-dispatcher.md` § M5 → C6, C9, C10, C14, C16, C19;
+`progress/2026-07/2026-07-28.md`; `progress/2026-07/2026-07-29.md`; commits `bf1adb94`, `536839d3`,
+`42884724`, `97955ac8`._
