@@ -159,10 +159,11 @@ already has bare-letter handling).
       cheaper first rung: run a tool-use eval **through the orchestrator's live REPL loop**
       (`call_orchestrator_forced(force_role="architect_general", force_mode="repl")`) — exercises the production
       tool path with no new harness; full SWE-bench (per-instance repo envs) remains the big build.
-- [ ] **2b-agentic-1. Pin and verify the tool-call parser before any Jackrong-family bench.** That family emits
-      JSON inside `<tool_call>`, **NOT** Qwen's XML `<function=…><parameter=…>` form, and the chat template
-      differs between v2 (6,994 B) and Coder (4,718 B). Verify **per model, not per family** — a cross-arm
-      parse-failure gap reads as a quality gap ([[feedback_parse_failure_rate_is_a_scoring_artifact]]).
+- [x] **2b-agentic-1. Pin and verify the tool-call parser before any Jackrong-family bench.** ✅ 2026-07-29 —
+      `epyc-orchestrator` commit `22c476dd` parses direct JSON inside `<tool_call>` and preserves the existing
+      OpenAI-array path. Separate fixtures pin the v2 (6,994 B) and Coder (4,718 B) wire contract to executable
+      `CALL()` code; `134` prompt-builder tests and ruff pass. Qwen XML remains deliberately unparsed, so a
+      cross-arm parse failure cannot silently become a quality gap ([[feedback_parse_failure_rate_is_a_scoring_artifact]]).
 - [x] **2b-swe-hygiene. Adopt the six-point SWE-bench disclosure standard** ✅ 2026-07-29 — harness identity + version pinned;
       the **model-harness pair** as the unit of report; denominator + split; dataset mutation disclosed;
       n/reps/seeds; contamination posture. Applied below to intake-916/917/924. No external SWE-bench figure
