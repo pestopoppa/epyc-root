@@ -107,7 +107,7 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 30 | `decision-aware-routing.md:185` | DAR-5 | none | S | `learned-routing-controller.md` | Document cold-start note for LRC P5 onboarding |
 | 31 | ~~`ernie-image-turbo-evaluation.md:139`~~ **✅ CLOSED 2026-07-29** | progress-checklist | none | S | `research/deep-dives/` ernie dive | Record LongText-Bench harmonized ranking in the deep dive |
 | 32 | ~~`intake-derived-work-2026-07-25.md:166`~~ **✅ CLOSED 2026-07-29** | P1b DFlash | none | S | capability registry yaml | Re-triage the stale dflash registry `forbid` row |
-| 33 | `model-stack-single-source-update-pipeline.md:325` | outstanding | none | S | `seeding_rewards.py`, `corpus_quality_gate.py`, `kv_compress.py` | Keep 3 re-audited surfaces unchurned absent a new duplicated fact |
+| 33 | ~~`model-stack-single-source-update-pipeline.md:325`~~ **✅ CLOSED 2026-07-29** | outstanding | none | S | `seeding_rewards.py`, `corpus_quality_gate.py`, `kv_compress.py` | Keep 3 re-audited surfaces unchurned absent a new duplicated fact |
 | 34 | `unified-trace-memory-service.md:219` | UTM-M6 | none | S | `research/intake_index.yaml` | File EvoMemBench 128K context-competition as a distinct failure mode |
 | 35 | `rao-redel-substrate-spike.md:432` | intake 2026-07-21 | none | M | `orchestration/repl_memory/episodic_store.py` | Adopt SkyRL parent/child rollout-tree accounting shape |
 | 36 | `reviewer-calibration-accounting.md:30` | RC | none | M | `src/trace/review_ledger.py` | Persist full rubric + per-item grades in corpus rows |
@@ -1013,7 +1013,7 @@ re-grep before assigning.
 ## model-stack-single-source-update-pipeline.md (7)
 - L320 | none | M | Y | - | Preserve env override precedence + degraded fallbacks in migrations | src/config/models.py, stack_priors.py
 - L322 | none | L | N | needs concrete duplicated-fact trigger | Migrate remaining high-risk P2 consumers | stack_change_surface_manifest.yaml
-- L325 | none | S | Y | - | **READY** Keep three re-audited surfaces unchurned | seeding_rewards.py, corpus_quality_gate.py, kv_compress.py
+- L325 | none | S | Y | - | **CLOSED 2026-07-29** — audited generated-prior primary path and degraded fallbacks; no duplicated fact warrants churn | Keep three re-audited surfaces unchurned | seeding_rewards.py, corpus_quality_gate.py, kv_compress.py
 - L330 | none | M | N | needs a newly migrated consumer to witness | Broaden W4 swap-CI as migrated consumers create witnesses | test_stack_priors_compiler.py
 - L348 | none | S | Y | operator enablement/reload/attestation decision | Keep X-MAS production routing default-off | X-MAS policy config
 - L350 | none | S | Y | - | Keep short_term_memory.md under review as live run state | scripts/autopilot/short_term_memory.md
