@@ -721,7 +721,7 @@ re-grep before assigning.
 - L134 | none | S | N | - | HS-5 add weight-space RL adapter column to decision matrix | handoff
 - L136 | none | S | N | - | **CLOSED 2026-07-29** — already recorded as outer-loop, not HS-4, with containment/trial boundary | handoffs/active/harness-selection-and-integration.md:149 (root `c942728e`)
 - L142 | none | L | N | - | HS-6 audit Layer-B against six/seven-dimension harness taxonomy | handoff, orchestrator layer-B sources
-- L143 | none | S | N | - | HS-7 record re-targetable-harness principle as standing criterion | handoff
+- L143 | none | S | N | - | **CLOSED 2026-07-29** — standing HS-4 re-targetability criterion and acceptance evidence are recorded | handoffs/active/harness-selection-and-integration.md:156,190-207
 - L144 | none | L | Y | - | HS-8 extract run-level policy into editable NLAH-style document | agents/shared/, new policy doc
 - L145 | cpu | L | Y | needs HS-8 policy document first | HS-9 probe whether open-weight models interpret NL policy faithfully | saved traces, eval harness
 - L146 | none | M | Y | - | HS-10 file harness randomization as evaluation-side pattern | scoring-infra-standardization.md
