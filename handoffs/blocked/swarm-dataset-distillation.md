@@ -133,6 +133,32 @@ The single largest design decision. The narrow domain governs every downstream c
   - Reported results: +9.4% ALFWorld / +7.0% Search-QA / +10.2% WebShop-Acc over GRPO (Qwen2.5/3 families).
   - Delta from current approach: Swarm-dataset-distillation focuses on data assembly for downstream model improvement, not on policy training. SDAR documented here as a forward pointer for if/when a future agent-RL training track materializes (e.g. via cloud-GPU rental). No current action; keep on the parked-reference list.
 
+## Research Intake Update — 2026-07-29 (Experience Distillation, arXiv 2607.21051)
+
+### Premise correction — this paper SUPPORTS dataset distillation
+
+An earlier reading treated arXiv 2607.21051 ("Experience Distillation") as evidence *against*
+the dataset-distillation thesis. That framing was inverted. The paper's own ablations put the
+weight on the **data**, not the objective:
+
+- **Table 6** — the distillation *objective* is worth **~2pp** versus plain cross-entropy.
+- **Table 7** — a teacher **prompting** change is worth **~38pp**.
+
+Experience Distillation is therefore SFT on a hindsight-conditioned, regenerated corpus — the same
+shape as P2→P3→P4 in this handoff, with a concrete data-construction recipe attached. It is a
+recipe source, not a refutation.
+
+**Two qualifiers that must travel with any number lifted from this paper:**
+
+1. The headline **64.8% is same-task retention**. The out-of-distribution transfer number is
+   **+4.22pp**. Do not quote 64.8% as capability or transfer evidence.
+2. The paper is **UNSIZED**: it publishes **no model size, no GPU count and no compute figure at
+   all**. Any GPU-gated scoping built on it would rest on a guess — mark the gap explicitly rather
+   than imputing a scale.
+
+- [ ] Correct the premise: arXiv 2607.21051's own Table 6 shows the distillation objective is worth ~2pp vs plain cross-entropy while a teacher PROMPTING change is worth ~38pp (Table 7). Experience Distillation IS SFT on a hindsight-conditioned regenerated corpus, so this paper SUPPORTS dataset distillation with a recipe attached rather than refuting it. Carry the same-task-retention (64.8%) vs OOD-transfer (+4.22pp) distinction and the UNSIZED flag into any downstream scoping.
+- [ ] Import the three data-construction levers (hindsight conditioning; enhanced teacher-reasoning prompt; branch packing, >10× time reduction at equal-or-better quality). All text-space, all run on frozen models, no GPU.
+
 ## Progress checklist
 
 - [ ] BLOCKED: gated on strand-rust-coder-rustevo2-verification Phase B Pass@1

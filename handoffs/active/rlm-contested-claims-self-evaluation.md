@@ -77,6 +77,15 @@ this repo, and settle two that nobody owns at all.
       at zero added inference. Keep this line only as the pointer; **no arm runs here.**
 - [ ] E3 — Add the **non-RLM long-context baseline arm** that neither source has. Without it, no
       depth number can say whether recursion beats simply sending the context.
+  - [ ] E3a — **Rider (2026-07-29 intake): intake-925 Table 1 supplies BOTH arms E3 says neither
+        source has** — RLM vs a coding agent (same GPT-5 backbone, same n=200 subset) **and RLM vs
+        GPT-5 full-context**, where **RLM LOSES by 7.00 points on LongBench (54.00 vs 61.00)** and
+        ties on Oolong-Real (23.07 vs 22.45). Same-backbone deltas: Oolong-Syn 64.38→71.75;
+        Oolong-Real 23.07→33.73; LongBench 54.00→61.50; NQ 55.33→56.00 (a tie). It is **external, so
+        it cannot gate** — its use is to sharpen E3's hypothesis and give us a comparison target
+        before we spend a CPU window. Caveats that must travel with it: **n=200, single run, no
+        variance**, and the "full context" arm is **sliding-window 200k / 50k-overlap plus LLM
+        aggregation, not one prefill** — so it is not the clean long-context control E3 still owes.
 - [ ] E4 — Write the resolution into `rao-redel-substrate-spike.md` § caveat and master-index N17 as
       first-party evidence — or explicitly record that ours agrees with the external reproduction.
 

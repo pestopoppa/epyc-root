@@ -370,6 +370,14 @@ After any phase of either track:
   - **Delta from current approach:** the architecture is a *pretraining* choice (not retrofittable onto our GGUF production models) and all numbers are GPU-measured (8×H800) — so this is **adopt_patterns** (scaling-law justification for Track B), not a deployable technique. n-gram-embedding-in-host-DRAM remains a fit for our 1.1 TB DDR5 / 460 GB/s node (Track B thesis).
   - **⚠ Contradiction to carry forward:** the paper's chat **MATH500 = 96.8%** is contradicted by our Q4_K_M CPU eval of LongCat-Flash-Lite (**math 0/6 STRUCTURAL**, intake-502/504). Treat the paper's downstream numbers as observations, and re-check whether the gap is quant penalty vs harness/structural (per feedback_verify_test_method_before_calling_it_a_bug).
 
+## Research Intake Update — 2026-07-29 (retrieval-policy rider: CORE utility-aware retrieval over a ReasoningBank schema)
+
+_Via `/research-intake` Stage-4 (intake-888 CORE, intake-930 ReasoningBank, intake-936 EvoMemBench). **Scope note:** this rider is about **agent-experience memory retrieval**, not the n-gram lookup tables of Tracks A/B above — it was routed here by the approved Stage-3 plan. The store/schema half is co-owned by [`unified-trace-memory-service.md`](unified-trace-memory-service.md) § "Research Intake Update — 2026-07-29"; keep the two in sync. All external figures are OBSERVATION-grade under MEASUREMENT.md._
+
+- [ ] **Do NOT port cosine-top-1 retrieval. Layer CORE's (intake-888) utility-aware retrieval over ReasoningBank's schema.** Convergent evidence: the k-ablation loses **half the benefit by k=4** (49.7 / 46.0 / 45.5 / 44.4), and the one independent 35B replication **failed specifically at the RETRIEVER** after an embedder swap — exactly the substitution we would make with local BGE. Treat **k as a measured parameter**, with **k=1** and **episodic-only** control arms.
+- [ ] **Rider on the k-parameter above: k must be BUDGET-CONDITIONAL, not fixed.** intake-936 (independent, DeepSeek-V3.2 backbone) finds six of fifteen memory methods scoring **below** the no-memory baseline at a **128K** budget — mechanism is **context-budget competition**, not store growth (do **not** conflate with intake-899). So the retrieval sweep must vary k **as a fraction of remaining window budget**, and include a no-memory control arm, or it will select a k that is optimal only at short context.
+- [ ] **Do not carry "ReasoningBank is best overall" into the retrieval design.** intake-936 places it **LAST of 13** on Cross-Episode Knowledge (Easy split) — the earlier "second behind ACE" reading was wrong. It is best-among-memory-methods on In-Episode Execution at 16K/32K/128K, but a **long-context baseline beats all fifteen** there. Its **schema/store shape** is what we are adopting; its ranking is not evidence for its retrieval policy.
+
 ## Progress checklist
 
 - [x] Track A LongCat CPU probe closed NEGATIVE (Phases 0-6 complete, deep-dive + intake-504 recorded) ✅

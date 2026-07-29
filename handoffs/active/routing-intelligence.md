@@ -116,6 +116,17 @@ DAR-6.5 unconditional J14 A/B pass
 - [ ] **RI-JS-1** — monitor J-space interpretability tools for open-weight model compatibility
 - [ ] **RI-JS-2** — evaluate geometric routing as an augmentation to MemRL embedding retrieval
 
+## Research Intake Update — 2026-07-29: LFM2.5-Encoder-350M-Prompt-Router
+
+**Filed as a `monitor_only` comparator, not a work item.** The MLP learned-routing controller
+(Phase 1 complete; Phases 1.5–3 unfinished) owns the routing-classifier line — see
+[`learned-routing-controller.md`](learned-routing-controller.md). LFM2.5-Encoder-350M-Prompt-Router
+is a purpose-built prompt-router encoder and is therefore a useful external reference point for what
+a dedicated router head buys over our MLP; it is **not** a replacement candidate, and opening it as
+one would fork an already-unfinished program.
+
+- [ ] **RI-CMP-1** — file LFM2.5-Encoder-350M-Prompt-Router as a `monitor_only` comparator against the MLP learned-routing controller. Do NOT open a work item: Phases 1.5-3 are unfinished and this is a comparator, not a replacement.
+
 ## Reporting Instructions
 
 - Update [`routing-and-optimization-index.md`](routing-and-optimization-index.md) P6 after RI-10/11/12 status changes.

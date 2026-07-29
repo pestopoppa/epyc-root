@@ -1,89 +1,266 @@
 {
-  "session_started": "2026-07-28",
+  "session_started": "2026-07-29",
   "stage": 4,
-  "stage1_completed": "2026-07-28",
+  "stage1_completed": "2026-07-29",
   "processed_urls": [
-    "https://arxiv.org/abs/1807.03819",
-    "https://arxiv.org/abs/2405.16039",
-    "https://arxiv.org/abs/2410.20672",
-    "https://arxiv.org/abs/2502.05171",
-    "https://arxiv.org/abs/2507.10524",
-    "https://arxiv.org/abs/2607.13491",
-    "https://arxiv.org/abs/2607.16051",
-    "operator-submitted://looped-transformers-overview-2026-07-28",
-    "https://arxiv.org/abs/2507.02199",
-    "https://arxiv.org/abs/2511.07384",
-    "https://arxiv.org/abs/2404.02258"
+    "https://arxiv.org/abs/2607.21051",
+    "https://arxiv.org/html/2607.23809v1",
+    "https://github.com/earthtojake/text-to-cad",
+    "https://modelscope.ai/papers/2607.05471",
+    "https://modelscope.ai/models/Kwaipilot/KAT-Coder-V2.5-Dev",
+    "https://huggingface.co/Comfy-Org/z_image_turbo",
+    "https://arxiv.org/html/2607.20064v2",
+    "https://www.liquid.ai/blog/lfm2-5-encoders",
+    "https://arxiv.org/html/2607.14159v1",
+    "https://arxiv.org/html/2607.21461v2",
+    "https://github.com/kvcache-ai/AgentENV",
+    "https://huggingface.co/KyleHessling1/Qwopus3.6-27B-Fusion-GGUF"
   ],
   "entries_created": [
-    "intake-902",
-    "intake-903",
-    "intake-904",
-    "intake-905",
-    "intake-906",
-    "intake-907",
-    "intake-908",
-    "intake-909",
-    "intake-910",
-    "intake-911",
-    "intake-912"
+    "intake-913",
+    "intake-914",
+    "intake-915",
+    "intake-916",
+    "intake-917",
+    "intake-918",
+    "intake-919",
+    "intake-920",
+    "intake-921",
+    "intake-922",
+    "intake-923",
+    "intake-924",
+    "intake-925",
+    "intake-926",
+    "intake-927",
+    "intake-928",
+    "intake-929",
+    "intake-930",
+    "intake-931",
+    "intake-932"
   ],
-  "next_intake_id": 913,
-  "expansion_count": 3,
+  "next_intake_id": 937,
+  "expansion_count": 8,
   "expansion_cap": 10,
-  "notes": "7-URL arXiv batch on the recurrent-depth / looped-transformer lineage plus one operator-submitted overview document (mid-turn addition). Dedup sweep run unbounded 2026-07-28: zero primary arxiv_id/url collisions; 1807.03819, 2410.20672, 2502.05171 appear only in referenced_arxiv_ids of intake-420/555/582/636 (not collisions). Prior session (2026-07-27, intake-901) completed Stage 4; fresh session started, ID sequence continued at 902.",
+  "notes": "12-URL batch (11 operator-submitted + 1 added mid-turn). Dedup sweep run UNBOUNDED 2026-07-29 over 909 entries / 527 arxiv_ids / 895 urls: ZERO primary arxiv_id or url collisions for all 12. 8 expansion entries (intake-925..932) reference-chased from intake-916/918/919/921; all 8 verified non-primary in the index (referenced only inside other entries' reference lists, which per the companion-artifact rule is not a collision). Tier-2b cheap contradiction pass run on 8 claims. PERSIST FIX: 9 handoff cross-refs were written with completed//blocked/ path prefixes and failed the validator, which resolves BARE filenames across handoffs/{active,completed,archived}; prefixes were stripped from list items only (prose untouched) and the validator then returned exit 0 / 932 entries.",
   "steering_ledger": [
     {
       "seq": 1,
       "stage": 1,
-      "verbatim": "Add this to the intake list also: \"**Looped Transformers: Reusing Model Parameters for Scalable Reasoning Through Recurrent Depth** [full ~8KB overview document; summarized under operator_submitted_documents.looped-transformers-overview-2026-07-28; verbatim retained in conversation transcript 2026-07-28]\"",
+      "verbatim": "Please add this intake also to your workflow: https://huggingface.co/KyleHessling1/Qwopus3.6-27B-Fusion-GGUF",
       "disposition": "planned",
-      "plan_ref": "Item 1 (lineage section) + Item 2 (intake-909 note)",
-      "stage1_response": "Processed as an 8th intake source (inline; pasted text, no fetch). The document claims identities for the two 2026 papers (2607.13491 = DeepLoop, loop-aware DeepNorm scaling; 2607.16051 = Loopie, layer-wise A-A-A-B-B-B looping + MoE reinvestment). These identifications were deliberately NOT forwarded to the sub-agents fetching those IDs, so their fetch-derived identification is an independent check against this document. All figures in the document (e.g. Huginn 3.5B/800B tokens, 50B-equivalent) are stage1-unverified claims of the overview, to be reconciled against the per-paper entries."
+      "plan_ref": "intake-924 persisted; carried to Stage-3 plan as a bench-arm candidacy decision"
     },
     {
       "seq": 2,
       "stage": 2,
-      "verbatim": "Agreed. But also deep dive 903, 904, and 910.",
+      "verbatim": "deep dive everything EXCEPT 915",
       "disposition": "planned",
-      "plan_ref": "Stage-2 dive set = {903, 904, 905, 906, 908, 910, 911}",
-      "stage2_response": "Operator approved the ranked dive set (908, 905, 911, 906) and expanded it with 903 (MoEUT), 904 (RRT), 910 (Huginn latent-CoT probe, now a standalone dive rather than folded into 905). All seven dispatched 2026-07-28."
+      "plan_ref": "Stage-2 dive set = all 20 batch entries minus intake-915 = {913,914,916,917,918,919,920,921,922,923,924,925,926,927,928,929,930,931,932} (19 entries)",
+      "stage2_response": "Dispatched as 12 dive agents grouped by lineage: 913 | 914+922 | 916+917+932 | 918+928+929 | 919+925 | 920 | 921+926 | 923 | 924 | 927 | 930 | 931. intake-915 explicitly NOT dived per operator."
     },
     {
       "seq": 3,
       "stage": 2,
-      "verbatim": "\"908 | reasoning-compression.md | Smoke-test Loopie-6B-A0.6B-preview via transformers/vLLM on CPU vs Ouro-2.6B-Thinking\" - why do we care about these models?",
-      "disposition": "declined",
-      "plan_ref": "Item 4 row 1 (smoke test declined: artifacts dead; replaced by watch task)",
-      "stage2_response": "Answered in-session (see reply 2026-07-28): we do not care about them as production candidates; we care because (a) reasoning-compression.md maintains a standing watch on looped/latent-reasoning models as potential small-role candidates (Ouro was filed as a CPU-verifier idea, intake-332), (b) the lineage's promise \u2014 test-time compute knob converting loops into quality without parameter growth \u2014 matches our routed multi-role stack shape, and (c) a smoke test is the cheapest way to convert credibility-1 self-reported claims into first-party evidence before any investment. The honest caveat from intake-902's own justification stands: looping cuts parameter FOOTPRINT, not per-token DRAM traffic, so the CPU-decode-BW win is unproven \u2014 which is precisely what a smoke test would measure. Whether the smoke-test actionable survives into the Stage-3 plan is for the operator after dives land."
+      "verbatim": "wasn't this recently fixed in the episodic memory store so that later distillations can be quite rich?",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "note": "CORRECT. Verified: episodic_store.py memories table has untruncated action/context/outcome TEXT. My claim conflated it with session_log.py. No plan item needed; the PRO-LONG gap narrows to 'no single chronological grep-able artifact', which IS a plan item."
+    },
+    {
+      "seq": 4,
+      "stage": 2,
+      "verbatim": "our fleet will be upgraded slowly over time as better open-weight models are released. The point is to have a harness flexible enough to adjust to whatever fleet we freeze at any moment in time.",
+      "disposition": "planned",
+      "plan_ref": "P-H1 (re-targetable harness principle) \u2014 reframes 926 above 921 as the adoption target"
+    },
+    {
+      "seq": 5,
+      "stage": 2,
+      "verbatim": "so z-image turbo isn't expected to generate images better than ernie already can?",
+      "disposition": "planned",
+      "plan_ref": "P-IMG1 \u2014 answered: not on the measured axis; UNKNOWN on general quality (no ERNIE GenEval/DPG counterpart exists). Filed as a scoped gap, not a swap."
+    },
+    {
+      "seq": 6,
+      "stage": 2,
+      "verbatim": "We should upgrade the model to Q5_0 then.",
+      "disposition": "planned",
+      "plan_ref": "P-IMG2 \u2014 filed as a SCOPED A/B, not a switch. My enabling rationale was retracted (our Q4_K_M A/B was CPU; #1385 is ROCm), and Q5_0<Q8 is a precision downgrade. The narrower legacy-vs-k-quant question on CPU is still worth testing."
+    },
+    {
+      "seq": 7,
+      "stage": 2,
+      "verbatim": "67% on SWE bench blows our current 27B candidates out of the water. We should probably collect this model and run the architect bench on it.",
+      "disposition": "planned",
+      "plan_ref": "P-CODER1 \u2014 collect + bench Qwopus3.6-27B-Coder MTP-Q8_0. CAVEAT filed with it: 67.0% is SWE-bench Verified full-500 vendor n=1, NOT commensurable with our sealed SWE-oracle-40 23/40."
+    },
+    {
+      "seq": 8,
+      "stage": 2,
+      "verbatim": "This Qwopus merge Fusion model is much more interesting then since it implements a novel geometric weight merging operation. Could be interesting to look into when we find the time.",
+      "disposition": "planned",
+      "plan_ref": "P-MERGE1 \u2014 zero-inference weight-delta geometry probe. NOTE the operation is plain lerp; what is untested is whether the depth-alpha DIAGNOSTIC has content."
+    },
+    {
+      "seq": 9,
+      "stage": 2,
+      "verbatim": "so you're saying that there's nothing we could reverse-engineer as part of experimental kernel development?",
+      "disposition": "planned",
+      "plan_ref": "P-KERN1 \u2014 I overstated. Expert Deferral is NOT AMX-dependent and is the transferable candidate."
+    },
+    {
+      "seq": 10,
+      "stage": 2,
+      "verbatim": "agentic_swe_harness.py performs no /testbed state reset between trials ... this seems like an important gap to fix.",
+      "disposition": "planned",
+      "plan_ref": "P-SWE1 \u2014 prerequisite correctness fix"
+    },
+    {
+      "seq": 11,
+      "stage": 2,
+      "verbatim": "should the rebuild be done as part of this session's exploratory process?",
+      "disposition": "planned",
+      "plan_ref": "DONE IN STAGE 2 \u2014 intake-926 body rebuilt 2026-07-29; residual risk now confined to non-dived entries (only intake-915)."
+    },
+    {
+      "seq": 12,
+      "stage": 3,
+      "verbatim": "\"The genuinely novel contribution is Expert Deferral - async CPU-GPU overlap for MoE, raising CPU utilization from <75% to ~100% for up to 1.45x throughput at &lt;=0.5% accuracy drop (SOSP'25).\" - super interesting research thread.",
+      "disposition": "planned",
+      "plan_ref": "P-KERN1 \u2014 elevated to a named research thread on operator interest"
+    },
+    {
+      "seq": 13,
+      "stage": 3,
+      "verbatim": "lets kick off stage 3",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "note": "procedural"
     }
   ],
-  "operator_submitted_documents": {
-    "looped-transformers-overview-2026-07-28": {
-      "title": "Looped Transformers: Reusing Model Parameters for Scalable Reasoning Through Recurrent Depth",
-      "received": "2026-07-28",
-      "channel": "operator paste, mid-turn during Stage 1",
-      "provenance": "unstated \u2014 reads as a synthesized technical overview; no URL, no author byline; final line says content is 'drawn from the technical overview of looped Transformer research'",
-      "summary_of_claims": [
-        "Looped/recurrent-depth/latent-reasoning models reuse a shared layer block iterated in depth; ~4x parameter reduction at comparable FLOPs/latency",
-        "UT (1807.03819) is the ancestor: shared transition function + ACT halting; did not dominate due to compute-vs-parameter tradeoff at matched FLOPs, timing vs the scaling era, encoder-decoder-only evaluation, modest gains",
-        "Modern designs: prelude/core/coda partition, truncated backprop through time, randomly sampled loop count r replacing learned ACT halting; r is a continuous inference-time quality knob",
-        "Huginn (Geiping et al. 2502.05171): 3.5B/800B tokens, unrolled depth matches up to ~50B-parameter-equivalent reasoning on certain benchmarks, latent-space reasoning without CoT tokens",
-        "MoEUT (2405.16039): loops fine-grained expert groups to restore capacity; Relaxed Recursive Transformers (2410.20672): per-step LoRA adapters on shared block; MoR (2507.10524): token-level routing to recursion depth + KV-sharing variant",
-        "DeepLoop (2607.13491): loop-aware DeepNorm scaling exponent fixing training instability from weight reuse [IDENTITY UNVERIFIED]",
-        "Loopie (2607.16051): layer-wise looping (A-A-A-B-B-B) + reduced stored depth + MoE reinvestment, claimed to surpass compute-matched vanilla Transformer [IDENTITY UNVERIFIED]"
-      ]
+  "open_operator_decisions": [
+    {
+      "id": "OD-A",
+      "topic": "KTransformers ingest-or-reaffirm-the-kill",
+      "detail": "kvcache-ai KTransformers has NEVER been ingested as its own intake entry (only 4 incidental mentions inside other entries) and was affirmatively killed in handoffs/active/fable5-window2-findings-02-heterogeneous-gpu.md as 'dead weight' on a simulators-are-dead-weight argument that did not evaluate the runtime. It is the closest public match to this hardware profile. Tier-2b ALSO found the index's 'KTransformers publishes NO benchmarks' claim is NO LONGER TRUE. Per the never-dismiss-without-asking rule this is an operator decision, not a self-authorized rejection."
+    },
+    {
+      "id": "OD-B",
+      "topic": "intake-528 / ERNIE cross-reference defect",
+      "detail": "handoffs/active/ernie-image-turbo-evaluation.md (lines 17,78,83,94) and research/deep-dives/ernie-image-turbo-dit-text-to-image.md (lines 3,276) both cite intake-528 as the ERNIE-Image-Turbo entry, but intake-528 is 'Effort Engine (bucketMul)'. Verified: NO intake row for ERNIE exists at all. The deployed image_generate model is unindexed. Correction needs operator approval."
+    },
+    {
+      "id": "OD-C",
+      "topic": "internal-kb-rag.md line 92 stale claim",
+      "detail": "Asserts the Liquid ColBERT is PyLate/PLAID-only with no GGUF/llama.cpp/ONNX. True of the older LFM2-ColBERT-350M, but LFM2.5-ColBERT-350M-GGUF and LFM2.5-Embedding-350M-GGUF exist since 2026-06-16 with 7 quants + reference rerank scripts, changing the pending K-eval from a PyLate stand-up to a llama-server GGUF exercise."
+    },
+    {
+      "id": "OD-D",
+      "topic": "frozen-v8 converter vs deep-dive discrepancy",
+      "detail": "convert_hf_to_gguf.py in the frozen v8 tree is ~296 lines with NO Lfm2 registration, contradicting the 2026-05-29 lfm2 deep dive's claim that @ModelBase.register('Lfm2MoeForCausalLM') is present. Does not change any Stage-1 conclusion; the deep-dive finding may be stale. Needs a separate look."
+    },
+    {
+      "id": "OD-E",
+      "topic": "audit sibling Stage-1 entries for the 926 fabrication mode",
+      "detail": "The 926 failure was CONFIDENT FABRICATION OF A FULL RESULTS TABLE, not partial extraction. Entries produced by the same Stage-1 expansion pass (intake-925, 927) and any other multi-paper sub-agent output should be spot-checked against primary source before Stage 3 relies on them. NOTE: 925 and 927 were both independently dived and their tables re-verified, so the residual risk is concentrated in non-dived entries \u2014 of which only intake-915 remains."
     }
+  ],
+  "tier2b_contradiction_pass": {
+    "raises_dive_priority": [
+      "intake-914 + intake-922 (agent-initiated compression vs observation masking, arXiv 2508.21433)",
+      "intake-921 (harness evolution rebuttal, arXiv 2607.12227, published 2 days prior)",
+      "intake-916 + intake-917 + intake-924 (SWE-bench Verified reporting hygiene - recommend ONE combined dive)"
+    ],
+    "lowers_dive_priority": [
+      "intake-913 (naive-trajectory-SFT-fails is closer to published consensus than contested)"
+    ],
+    "unverified_in_stage1": [
+      "intake-920 (only vendor-authored surfaces found)",
+      "intake-924 (zero third-party discussion found)",
+      "intake-919 (no replication yet; paper ~1 week old)"
+    ]
   },
-  "stage2_completed": "2026-07-28",
-  "dives_completed": {
-    "intake-903": "dive-verified (all claims confirmed; peri-LN scale caveat, ~6.5B-token regime, no checkpoints)",
-    "intake-904": "dive-verified (ICLR 2025; cred 3->4; 2.66x throughput = oracle-exit SIMULATION; TIDE link downgraded to partial)",
-    "intake-905": "dive-verified (NeurIPS 2025 spotlight; 50B = FLOPs arithmetic not parity; mechanism evidence uneven \u2014 self-spec-dec has ZERO numbers)",
-    "intake-906": "dive-verified (135M-scale LOSS omitted at Stage 1; 2.06x = bespoke H100 harness; checkpoints Google-Drive 360M only)",
-    "intake-908": "dive-OVERTURNED (weights/code links DEAD; v1 IMO/IPhO gold silently retracted in v2; compute-matched = wall-clock only, own-reproduction baseline)",
-    "intake-910": "dive-verified (figures were GSM8K not arithmetic; probe supports narrow reading only; 905 contradicting_evidence narrowed)",
-    "intake-911": "dive-verified (conversion cost OVERTURNED as in-reach: 26-52B tokens cluster-scale; novelty high->medium \u2014 RRT is prior art; cred 2->3; checkpoints consumable)"
+  "prior_sessions": [
+    {
+      "session_started": "2026-07-28",
+      "stage4_completed": "2026-07-28",
+      "entries_created": [
+        "intake-902",
+        "intake-903",
+        "intake-904",
+        "intake-905",
+        "intake-906",
+        "intake-907",
+        "intake-908",
+        "intake-909",
+        "intake-910",
+        "intake-911",
+        "intake-912"
+      ],
+      "notes": "recurrent-depth / looped-transformer batch; completed through Stage 4"
+    }
+  ],
+  "stage2_dive_set": [
+    "intake-913",
+    "intake-914",
+    "intake-916",
+    "intake-917",
+    "intake-918",
+    "intake-919",
+    "intake-920",
+    "intake-921",
+    "intake-922",
+    "intake-923",
+    "intake-924",
+    "intake-925",
+    "intake-926",
+    "intake-927",
+    "intake-928",
+    "intake-929",
+    "intake-930",
+    "intake-931",
+    "intake-932"
+  ],
+  "stage2_not_dived": [
+    "intake-915 (operator-excluded)"
+  ],
+  "stage2_completed": "2026-07-29",
+  "stage2_outcome": {
+    "dives_run": 12,
+    "entries_dived": 19,
+    "dive_overturned": [
+      "intake-913",
+      "intake-917",
+      "intake-922",
+      "intake-925",
+      "intake-926",
+      "intake-928",
+      "intake-930",
+      "intake-931",
+      "intake-932"
+    ],
+    "dive_verified": [
+      "intake-914",
+      "intake-916",
+      "intake-918",
+      "intake-919",
+      "intake-920",
+      "intake-921",
+      "intake-923",
+      "intake-924",
+      "intake-927",
+      "intake-929"
+    ],
+    "not_dived": [
+      "intake-915 (operator-excluded)"
+    ],
+    "headline": "intake-926 was substantially FABRICATED at Stage 1 (TRAE nonexistent, verifier sign inverted, process metrics and the ~90%-child-agent figure absent). Corrected in-index at Stage 2 per the skill's immediate-correction rule. Sibling entries from the same batch should be audited before Stage 3 relies on them.",
+    "intake_926_rebuilt": "2026-07-29 \u2014 body rebuilt from primary source in Stage 2 per the immediate-correction rule; fabricated values retained ONLY in dive_corrections + notes as the audit trail. reported_results/key_claims/techniques/contradicting_evidence/verdict_justification/recommended_actions all replaced."
   },
-  "stage4_completed": "2026-07-28"
+  "stage4_progress": {
+    "code_fix_1_rlimit_nproc": "DONE 2026-07-29 \u2014 SUBSTITUTED after the operator was shown the finding. RLIMIT_NPROC is per-UID and this host runs 9,534 threads as uid 1000 (5,688 llama-server), so any per-scorer cap would fail the child's first fork and would fail NONDETERMINISTICALLY with fleet load. Operator chose process-group kill + honest docstring. Implemented start_new_session=True + os.killpg on timeout (closing a CONFIRMED orphan leak subprocess.run's timeout path left open) and corrected the docstring to state why RLIMIT_NPROC is wrong here and that cgroup v2 pids.max is the correct mechanism (verified available). 9/9 execution checks pass.",
+    "code_fix_2_testbed_reset": "DONE 2026-07-29 \u2014 DockerEnv.reset_testbed(base_commit) added, called fail-closed at the top of run_instance (status testbed_reset_failed, zero turns, empty patch). Uses `git reset --hard <base> && git clean -fd`. DELIBERATE DEVIATION from the plan text: -x omitted, because it also deletes IGNORED files incl. the .egg-info/build artifacts left by `pip install -e .`, which would break imports and manufacture false failures. 14/14 execution checks pass, including that the ignored artifact survives and an agent COMMIT is undone.",
+    "tier4_intakes": "DONE \u2014 intake-933..936 persisted, all dive-verified/overturned. Two agents returned out-of-range schema values (credibility 8 and 66; novelty 'significant'); normalized per rubric and recorded in each entry's notes.",
+    "remaining": "handoff writes (Tier 0-3), master-index rows, handoffs_updated/created backfill on intake-913..936"
+  }
 }

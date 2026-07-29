@@ -59,7 +59,7 @@ Recommended next slice:
 ## Remaining Operational Questions
 
 1. **Content-filter audit live run.** Baidu's prior model ERNIE-ViLG had heavy political-content censorship. The no-inference harness is ready in orchestrator `ed6f65f5` (`scripts/diffusion/ernie_content_filter_audit.py`) with 10 cases across political-neutral, copyrighted-character, NSFW-boundary, bilingual-text, and sensitive-current-event categories. Next clean window: run it with `--execute` and review outputs for refusal, silent transform, unsafe output, or error.
-2. **LongTextBench self-reported score validation.** ERNIE-Turbo's 0.9655 is on Baidu's own scorecard, not re-validated by the X-Omni team. Re-run a curated 20-prompt local set covering EN/ZH typography stress cases before relying on the leadership claim.
+2. **LongTextBench self-reported score validation.** ERNIE-Turbo's 0.9655 is on Baidu's own scorecard, not re-validated by the X-Omni team. Re-run a curated 20-prompt local set covering EN/ZH typography stress cases before relying on the leadership claim. **Still open after the 2026-07-29 dive** — that dive resolved only the *cross-model comparability* of the number (see the 2026-07-29 section below), not its validity.
 3. **Spark performance reality check.** Deep dive §5.1 extrapolates 6–12 s/image at BF16, 3–5 s at NVFP4 from FLUX-schnell numbers. Re-bench on actual hardware once Spark lands; the 8-step distilled DiT has no published Spark numbers.
 4. **Alternative re-evaluation.** If LongTextBench-ZH is not actually needed by the product, FLUX.1-schnell (12B, 4-step, Apache 2.0, mature ecosystem) is the simpler default. Re-litigate the choice against actual product requirements before committing.
 
@@ -94,9 +94,38 @@ After any work in this handoff:
 4. When this handoff transitions from `stub` to `active` (image-generation enters scope OR GPU lands), promote intake-528 to `new_opportunity`.
 5. If superseded by an alternative (FLUX.1-schnell, Qwen-Image 2.0), move to `handoffs/completed/` with a one-paragraph closing note explaining the choice.
 
+## 2026-07-29 — intake Stage-2 dive corrections (intake-918 / intake-928)
+
+_Via `/research-intake` Stage-2 2026-07-29. Two record corrections that bear on this handoff's backend and its selection axis._
+
+**1. The "stale backend" premise is STRUCK — our pinned checkout already supports Z-Image.** The Stage-1
+assertion that `/mnt/raid0/llm/stable-diffusion.cpp` at `90e87bc` (2026-05-06) has **no** z_image support is
+**FALSE**: that checkout contains `src/z_image.hpp` (**646 lines**) and `docs/z_image.md`, fully wired
+(`diffusion_model.hpp:479` `ZImageModel`, `model.h:45` `VERSION_Z_IMAGE`, `stable-diffusion.cpp:502-507`,
+`name_conversion.cpp:621`, `rope.hpp:627` `gen_z_image_ids`), and **`build-hip/bin/sd-server` (gfx90a, built
+2026-07-19) was compiled from that source** — Z-Image runs on today's binary, no rebuild required. Consequently
+the **claimed ERNIE-regression risk of a forced backend upgrade collapses with it**: no upgrade is needed to
+trial a second model, so nothing touches the live ERNIE role. (We are ~202 commits / ~2.7 months behind
+upstream, tree clean — that is a separate, non-blocking currency question.)
+*Also withdrawn:* using Z-Image as a diagnostic control for the MI210 blank-PNG bug is **confounded** —
+`z_image.hpp:51-53` carries an explicit ROCm workaround that `ernie_image.hpp` lacks entirely. A
+mitigation-matched control would be `qwen_image` (Vulkan-only guard at our pin). The ERNIE ROCm-f32 patch
+candidate is tracked on `gpu-acceleration-path.md`, not here.
+
+**2. LongText-Bench comparability RESOLVED — the incumbent leads on its own selection axis.** Same benchmark,
+same splits, aggregation = EN/ZH arithmetic mean. Baidu's own ERNIE-Image-Turbo card carries a three-column
+table that **includes the competitor and reproduces Z-Image's per-split numbers exactly** — which is what makes
+the comparison legitimate. Harmonized: **ERNIE-Image-Turbo 0.9655 (w/ PE) > ERNIE 0.9639 (w/o PE) > Z-Image
+base 0.9355 > Z-Image-Turbo 0.9215** — ERNIE leads by **4.4 points**, and leads **even without its prompt
+enhancer**. This does **NOT** validate ERNIE's own 0.9655: both sides are vendor self-reports, and the
+20-prompt local spot-check (Remaining Operational Question 2) still stands as the only thing that can.
+
 ## Progress checklist
 
 - [x] Production functional on CPU via sd-server Q8 + conv-direct; Q4 rejected (text corruption) ✅
+- [ ] Record the LongText-Bench resolution in the deep dive (§ benchmark positioning) — harmonized ranking,
+      identical splits, EN/ZH-mean aggregation, ERNIE +4.4 over Z-Image-Turbo even w/o prompt enhancer; and
+      that ERNIE's own 0.9655 remains vendor-self-reported (see the 2026-07-29 section above)
 - [ ] Run content-filter audit live with --execute (harness ready in orchestrator ed6f65f5) and review outputs
 - [ ] Run 20-prompt local LongTextBench-style EN/ZH typography spot-check to validate 0.9655 self-report
 - [ ] GPU/MI210 rebench of the 8-step distilled DiT via ROCm/HIP path (operator-approved, measure-not-extrapolate)

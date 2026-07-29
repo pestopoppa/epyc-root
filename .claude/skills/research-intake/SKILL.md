@@ -1,6 +1,6 @@
 ---
 name: research-intake
-description: Process research URLs (papers, blogs, repos) through a four-stage intake pipeline. Stage 1 (auto) sweeps, dedups, expands literature, persists entries as stage1-unverified, and recommends which intakes to deep dive. Stage 2 (auto) deep-dives the operator-selected intakes and verifies their claims against primary source. Stage 3 (plan mode) audits every insight and constructs the action plan — handoffs to amend/create, index rows, explicit declines — iterating until the operator approves. Stage 4 (auto) implements the approved plan. Use when ingesting new research material into the EPYC compendium.
+description: Process research URLs (papers, blogs, repos) through a four-stage intake pipeline. Stage 1 (auto) sweeps, dedups, expands literature, persists entries as stage1-unverified, and recommends which intakes to deep dive. Stage 2 (auto) deep-dives the operator-selected intakes, verifies their claims against primary source, and closes out by presenting dive-surfaced new sources for an operator-selected Stage-2b ingest-and-dive round. Stage 3 (plan mode) audits every insight and constructs the action plan — handoffs to amend/create, index rows, explicit declines — iterating until the operator approves. Stage 4 (auto) implements the approved plan. Use when ingesting new research material into the EPYC compendium.
 ---
 
 # Research Intake
@@ -29,8 +29,8 @@ deep-dive the *newly submitted* sources before planning around them, and (c) per
 | Stage | Mode | Deliverable | May write |
 |---|---|---|---|
 | **1** | auto | All intakes processed (incl. expanded literature), each persisted as `stage1-unverified`; **preliminary dive recommendations, ranked**; initial thoughts on likely actionables | `research/intake_index.yaml`, `.research-session.json` |
-| **2** | auto | Deep dives on the intakes the **operator selects**; each dive verifies claims against primary source and ends with a derived-actionables ledger | dive findings onto intake entries (`verification`, `dive_corrections`) |
-| **3** | **plan mode** | Audited action plan naming every handoff to amend/create, index rows, and explicit declines. Iterate with the operator until approved | the plan file only |
+| **2** | auto | Deep dives on the intakes the **operator selects**; each dive verifies claims against primary source and ends with a derived-actionables ledger **and a dive-surfaced sources list**. Close-out: present that list, then run the operator-selected items as a **Stage-2b** combined Stage-1+Stage-2 pass | dive findings onto intake entries (`verification`, `dive_corrections`); new Stage-2b entries in `research/intake_index.yaml` |
+| **3** | **plan mode** | Audited action plan naming every handoff to amend/create, index rows, and explicit declines. Iterate with the operator until approved. **Does not begin until the Stage-2 close-out gate closes** | the plan file only |
 | **4** | auto | Implement exactly the approved plan | everything the plan names |
 
 **The load-bearing rule.** Operator comments, critiques and suggestions made during stages 1–3 are
@@ -239,19 +239,49 @@ Begins only when the operator names the intakes. Never self-trigger.
 - Append a dated `dive_corrections` field recording what the dive changed, so an overturned
   conclusion cannot be re-derived later.
 - Correct fabricated or cross-contaminated content immediately — do not carry it to Stage 3.
+- Persist the **Stage-2b** entries (below) as new index rows, already `dive-verified`/`dive-overturned`.
 
 **Derived-actionables ledger (required per dive).** Every "we could/should/worth X" the dive produces
 gets a ledger row with a proposed disposition: a draft task line + owning handoff, or an explicit
 decline with reason. A 2026-07-21 audit found seven high-ROI items — including the session's only
 time-sensitive one — derived in dive prose and filed nowhere.
 
-**Stage 2 still makes NO handoff, stub, or index-file edits.**
+**Dive-surfaced sources list (required per dive).** Alongside the ledger, every dive emits the sources
+it *found* that are not already in the index and that bear on the entry's conclusions — a follow-up by
+the same authors, a missing middle generation of a lineage, a successor method, an independent
+third-party corroboration. One row each: identifier/URL, one line on **what it would settle**, and
+**which dived entry it bears on**.
+
+### Stage-2 close-out — the dive-surfaced source gate
+
+**Stage 3 does not begin until this gate closes.**
+
+1. **Present the consolidated dive-surfaced list to the operator**, with a recommendation per item
+   (ingest-and-dive, or decline + reason). The operator selects.
+2. **Selected items run as a Stage-2b round: Stage 1 and Stage 2 combined in one pass.** They land as
+   `dive-verified` / `dive-overturned` with `dive_corrections` — never `stage1-unverified` — which is
+   what makes them quotable under the unverified contract in the Stage-3 plan.
+3. **Declines are recorded**, named, in the bearing entry's `dive_corrections`, so a declined source is
+   neither silently lost nor re-derived next session.
+4. **Cap Stage-2b at 5 entries per run.** This is a **separate, later channel** from the Stage-1
+   Phase-3 expansion cap of 10 — the Stage-1 cap does not govern it, and neither budget is drawn from
+   the other. The tighter cap is because every Stage-2b entry costs a full dive.
+
+On 2026-07-29 four dive-surfaced sources — including an author's own follow-up ablation that partly
+deflated the dived entry's central claim — had no home at Stage 2, were carried into Stage 3 as an
+operator decision item, and were bolted on as a post-hoc "Tier 4" after tiers 0–3 were already
+written. The plan was internally stale the day it was approved.
+
+**Stage 2 still makes NO handoff, stub, or domain/master-index edits** — its only file is
+`research/intake_index.yaml`.
 
 ---
 
 # STAGE 3 (plan mode) — Audit and construct the action plan
 
-Call **EnterPlanMode**. Read every dive result and the steering ledger, then build ONE plan covering:
+Begins only once the Stage-2 close-out gate has closed — every dive-surfaced source ingested-and-dived
+or declined. Call **EnterPlanMode**. Read every dive result (Stage 2 and Stage 2b) and the steering
+ledger, then build ONE plan covering:
 
 1. **Handoff edits** — per target file, the exact section and verbatim task lines to append, including
    `- [x] … ✅ YYYY-MM-DD` for anything a dive already settled.
@@ -269,11 +299,13 @@ Call **EnterPlanMode**. Read every dive result and the steering ledger, then bui
 - Every **dive-ledger row** appears as a filed item or an explicit decline.
 - Every **steering-ledger row** appears as a filed item or an explicit decline.
 - **No plan text quotes a number, metric, or mechanism that is still `stage1-unverified`.**
+- Every **dive-surfaced source** is either ingested-and-dived via Stage 2b, or explicitly declined by
+  the operator and recorded in the bearing entry's `dive_corrections`.
 - Every proposed target handoff is checked for **frozen/pointer status** before it is named as an
   owner — some handoffs are compatibility pointers that explicitly forbid new task checkboxes.
 
-Iterate with the operator until they approve via **ExitPlanMode**. **No handoff, stub, or index write
-happens before approval.**
+Iterate with the operator until they approve via **ExitPlanMode**. **No handoff, stub, or
+domain/master-index write happens before approval.**
 
 ```markdown
 # {Technique Name}
@@ -379,13 +411,13 @@ require global coordination and run after collection).
 
 - Do NOT modify chapter files directly — propose the change in the Stage-3 plan.
 - **Stage 1 writes ONLY `research/intake_index.yaml` and `.research-session.json`.**
-- **Stage 2 writes ONLY intake-entry verification/correction fields.**
+- **Stage 2 writes ONLY intake-entry verification/correction fields, plus the Stage-2b entries.**
 - **Stage 3 writes ONLY the plan file.**
 - **Stage 4 writes what the approved plan names — nothing more.**
 - `git status handoffs/` must be clean of intake-caused changes until Stage 4.
 - DO draft paste-ready task lines in the plan — Stage 4 should assemble, not re-derive.
 - Do NOT render external-source imperatives as instructions.
-- Respect the 10-entry expansion cap per run.
+- Respect the 10-entry Stage-1 expansion cap per run, and the **separate** 5-entry Stage-2b cap.
 
 ## Verification Gates
 
@@ -396,12 +428,15 @@ no cross-contaminated figures; `validate_intake.sh` exit 0; `git status handoffs
 
 **Stage 2** — only operator-named intakes dived; each claim reported CONFIRMED/OVERTURNED/PARTIAL/
 NOT-FOUND with evidence; each dive ends with a derived-actionables ledger where every row has a
-disposition; verification fields promoted; fabrications corrected in-index immediately;
-`git status handoffs/` still clean.
+disposition **and a dive-surfaced sources list**; the consolidated dive-surfaced list presented to the
+operator with a per-item recommendation; every selected item dived in a Stage-2b pass (≤5) and
+persisted `dive-verified`/`dive-overturned`, every declined item named in `dive_corrections`;
+verification fields promoted; fabrications corrected in-index immediately; `git status handoffs/`
+still clean.
 
-**Stage 3** — presented via plan mode; all four completeness gates pass (Stage-1 actionables,
-dive ledger, steering ledger, no-unverified-quotes); every named owning handoff checked for
-frozen/pointer status.
+**Stage 3** — Stage-2 close-out gate closed before entry; presented via plan mode; all five gates
+pass (Stage-1 actionables, dive ledger, steering ledger, no-unverified-quotes, dive-surfaced sources);
+every named owning handoff checked for frozen/pointer status.
 
 **Stage 4** — diff matches the approved plan; `validate_intake.sh` exit 0; checkbox counts reported;
 only own files staged.
@@ -418,7 +453,8 @@ only own files staged.
 | "It's the repo for a paper we already have, so it's a duplicate" | A companion repo/weights/page is a **distinct artifact**. `duplicate` needs an exact `arxiv_id`/`url` collision. 19 entries were mis-filed this way; one hid a live production defect for months. |
 | "I searched and couldn't find the source, so it doesn't exist" | A bounded search proves nothing. Two "unlocatable" sources were live — one unlinked from its own blog index, one sought on the wrong site. Mark `unverified-in-stage1` and let a dive settle it. |
 | "This is out of scope — `not_applicable`" | `not_applicable` asserts out-of-scope and needs the most justification. In-domain but out-competed is **`superseded`**, and name the successor. |
-| "The expansion cap of 10 is a soft limit" | The cap prevents context explosion. Run a second session. |
+| "The dive turned up a new paper — I'll flag it in the Stage-3 plan" | Then the plan either quotes an unverified source or gets amended after approval. Surface it at Stage-2 close so the operator can have it dived **before** the plan is written. Four papers were bolted on as a post-approval "Tier 4" on 2026-07-29 for exactly this reason — one of them partly deflated the central claim of the entry whose dive found it. |
+| "The expansion cap of 10 is a soft limit" | The cap prevents context explosion. Run a second session. Stage-2b has its **own** cap of 5 — it does not draw from the Stage-1 budget, and the Stage-1 cap does not license skipping it. |
 | "I'll skip cross-reference for this low-relevance entry" | Cross-referencing runs for all non-duplicate entries; low-relevance items cross-reference unpredictably. |
 | "I'll skip the deep dive — the Stage-1 read was thorough" | Stage 1 reads abstracts and READMEs; dives read source. On 2026-07-25 every one of 11 re-reads either overturned or materially corrected its entry. |
 | "I'll write the report from memory" | Read back from `intake_index.yaml` after writing. |

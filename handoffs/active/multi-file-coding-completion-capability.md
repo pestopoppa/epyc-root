@@ -281,6 +281,12 @@ re-use as evidence): `data/bep_sandbox/results-readfix7/`.
 first + needs operator host-quiet approval; restore J6 afterward. The `:8070` backend outage that
 contaminated `results-readfix7` is itself a reminder to preflight backend health before scoring.
 
+## 2026-07-29 — intake Stage-4 rider: artifact choice IF a coder-role A/B is ever authorized
+
+_Via `/research-intake` Stage-4 (intake-916/917). **Not** a reopening of the model-swap question — the diagnosis above stands and model choice remains MOOT for the BEP-2 protocol gap. This only pins the artifact to use if a coder-role quality A/B is authorized for other reasons._
+
+- [ ] **If a coder-role A/B is authorized, use bartowski's Q8_0 (34.38 GB) for a quant-matched run against the incumbent 35.21 GB frontdoor.** This avoids a bf16 download plus conversion (~100 GB against ~180 GB free, with `/mnt/raid0/llm` at 95%). **Do NOT bundle the APEX-MTP variant into the quality A/B** — a base-trunk MTP head on a fine-tuned trunk is a separate, unmeasured question and would confound the quality axis with a spec-dec axis.
+
 ## Progress checklist
 
 - [x] Diagnosis: protocol/tooling gap not capability (one-shot ablation 5/5) ✅

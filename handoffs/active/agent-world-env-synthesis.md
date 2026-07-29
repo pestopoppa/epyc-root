@@ -256,6 +256,28 @@ One pattern lifted from `strukto-ai/mirage` source audit. Apply when designing t
   - Reported results: Codex CLI + GPT-5.2 at 63%; Terminus 2 + Claude Opus 4.5 at 58% on TB Core v0.1.1
   - Delta: When DGX Spark arrives and the environment-synthesis pipeline is live, TB Core v0.1.1 is the natural first external capability calibration target — run our trained agent against the 89 fixed tasks to measure absolute task-completion rate on a human-verified fixed benchmark.
 
+## Research Intake Update — 2026-07-29
+
+### New Related Research
+
+- **Plan-executor divergence halt (arXiv 2605.05138)** — a Phase-1-compatible verification primitive
+  for synthesized tasks: simulate the plan in the induced world model, execute step-by-step, compare
+  predicted vs observed state after each non-terminal step, and halt + dump artifacts on the first
+  divergence. Pure Python; no GPU, no Docker. Fits the AW-4 SolvabilityGate / `verifier_builder.py`
+  surface directly.
+  - **Caveat (intake-934 dive, 2026-07-29) — mine the pattern, do NOT cite it as a measured result.**
+    In that paper's own verification variant `plan_executor.py` exists, but **"none of the
+    agent-facing prompts mentions the plan executor or requires its use"**. The online plan-gating
+    primitive is present-but-uninstructed: it is not what the paper measured, so no reported number
+    attaches to it. Treat it as an implementable design we would have to measure ourselves.
+- **TaleSuite / Jericho** (Balances, Detective, Enter, Inhumane, Library, Reverb) — a PUBLIC
+  long-horizon agent eval reachable independently of arXiv 2607.21051's method, with a ready
+  frontier reference row for calibration. Complements the AppWorld DEFER above: no 3–5 day
+  integration, no trace-dataset dependency.
+
+- [ ] Mine the plan-executor divergence halt from arXiv 2605.05138: simulate the plan in the induced model, execute step-by-step, compare predicted vs observed state after each non-terminal step, halt and dump artifacts on first divergence. Pure Python, no GPU/Docker, Phase-1 compatible. Pattern only — the source's own prompts never instruct the executor, so it carries no measured result.
+- [ ] Evaluate TaleSuite/Jericho (Balances, Detective, Enter, Inhumane, Library, Reverb) as a PUBLIC long-horizon agent eval — reachable independently of arXiv 2607.21051's method, with a ready frontier reference row.
+
 ## Progress checklist
 
 - [x] AW-1..AW-5 env_synth module, 5th-species wiring, gap diagnosis, safety gate, EvalTower projection (NIB2-44) ✅

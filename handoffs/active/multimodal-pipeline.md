@@ -509,6 +509,22 @@ Operator directive: the MiniCPM-o/MI210 vision_escalation lane stays parked ("ig
 - [x] **Write the vision_escalation → MiniCPM-o promotion runbook** ✅ 2026-07-23 — persisted at [docs/runbooks/vision-escalation-minicpmo-promotion.md](../../docs/runbooks/vision-escalation-minicpmo-promotion.md) (drafted + adversarially verified by workflow; 6 corrections applied; data-only + 3 constant lines, registry edit goes to the MASTER). Original spec: a single documented, gate-checked sequence covering (1) registry vision_escalation rebind (model + mmproj + HIP runtime lane, reversing the 2026-07-19 `91cf4033`/`dacd15a2` safe-alias rollback); (2) `stack_change_pipeline.py update` + `check` green; (3) rolling server swap on 8087 via `orchestrator_stack.py` (the 2026-07-23 additive `--numa-mode both` promotion path in `stack_commands.py` is the pattern: explicit-arg authority, skip-healthy, no-outage); (4) §H contention-matrix recert for the changed lane (the 2026-07-17 rebind shipped WITHOUT recert — flagged in v7-promotion.md:38 — the runbook must close that gap, not repeat it); (5) live-affinity + realized-first attestation; (6) smoke via the eval path (image + text probe) with the modality fence verified; (7) rollback = the same runbook with the safe-alias registry state. Prior evidence to cite: MiniCPM-o validation 2026-07-18 (110-127 t/s, 4/4 quality, 8/8 service matrix) vs the alias faster on the 07-19 long-decode slice — the runbook executes whichever model the operator picks; it is model-agnostic mechanics.
 
 
+## Research Intake Update — 2026-07-29 (Z-Image-Turbo)
+
+### New Related Research — Z-Image-Turbo, a LATENCY candidate only
+
+**Decoupled from quality by construction.** On the bilingual in-image text axis (LongText-Bench,
+same benchmark, same splits, EN/ZH mean) the incumbent **ERNIE-Image-Turbo leads 0.9655 vs
+Z-Image-Turbo 0.9215** — and Baidu's own model card reproduces Z-Image's per-split numbers exactly,
+which is what makes the comparison legitimate rather than a vendor-vs-vendor mismatch. So the
+quality question on the axis `image_generate` was selected for is already answered against Z-Image;
+the only open question is wall-clock. Scope any trial accordingly: latency, never a quality swap.
+(The quality-side resolution and the ERNIE swap decline live in
+[`ernie-image-turbo-evaluation.md`](ernie-image-turbo-evaluation.md) — not this handoff.)
+
+- [ ] Keep Z-Image-Turbo as a LATENCY candidate only, decoupled from quality (6B vs 8B, GGUF 2.59-6.58 GB, apache-2.0, runnable on today's binary) against the ~3 min @1024² CPU problem. Any trial must repeat the Q8-vs-Q4 A/B locally.
+- [ ] Note the rank-32 distill-patch LoRA (476 BF16 tensors over all 34 blocks) as a Base↔Turbo conversion mechanism; alpha-scaling for step-vs-quality is an UNTESTED hypothesis, and sd.cpp `lora.hpp` key resolution for z_image is unverified.
+
 ## Trigger Gate: worker_vision 4×-quarters recollection
 
 **Status**: Recollection held OPEN "in principle" (operator, stack-lineup-dossier-2026-07-23 item 7). This gate defines the two conditions under which it converts to action. Until either trips, the 2026-05-24 revert stands and `test_worker_vision_stays_single_instance` stays pinned.
