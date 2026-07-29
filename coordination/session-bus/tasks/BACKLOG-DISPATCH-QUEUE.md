@@ -105,7 +105,7 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 28 | ~~`scoring-infra-standardization.md:184`~~ **✅ CLOSED 2026-07-29** | intake 2a | none | S | `research/intake_index.yaml`, `benchmarks/instruction_precision` | Adopt six-point SWE-bench disclosure standard for intake-916/917/924 |
 | 29 | ~~`tool-output-compression.md:442`~~ **✅ CLOSED 2026-07-29** | intake 2026-07-21 | none | S | `scripts/utils/compress_tool_output.py` | Bias Phase-3d fallback chain toward observation-dropping first |
 | 30 | `decision-aware-routing.md:185` | DAR-5 | none | S | `learned-routing-controller.md` | Document cold-start note for LRC P5 onboarding |
-| 31 | `ernie-image-turbo-evaluation.md:139` | progress-checklist | none | S | `research/deep-dives/` ernie dive | Record LongText-Bench harmonized ranking in the deep dive |
+| 31 | ~~`ernie-image-turbo-evaluation.md:139`~~ **✅ CLOSED 2026-07-29** | progress-checklist | none | S | `research/deep-dives/` ernie dive | Record LongText-Bench harmonized ranking in the deep dive |
 | 32 | `intake-derived-work-2026-07-25.md:166` | P1b DFlash | none | S | capability registry yaml | Re-triage the stale dflash registry `forbid` row |
 | 33 | `model-stack-single-source-update-pipeline.md:325` | outstanding | none | S | `seeding_rewards.py`, `corpus_quality_gate.py`, `kv_compress.py` | Keep 3 re-audited surfaces unchurned absent a new duplicated fact |
 | 34 | `unified-trace-memory-service.md:219` | UTM-M6 | none | S | `research/intake_index.yaml` | File EvoMemBench 128K context-competition as a distinct failure mode |
@@ -515,7 +515,7 @@ re-grep before assigning.
 - L316 | cpu | L | N | needs reseeded store + live traffic | M-12 memory-on vs memory-off A/B that never existed | episodic_store.py, benchmarks/
 
 ## ernie-image-turbo-evaluation.md (5)
-- L139 | none | S | Y | - | **READY** Record LongText-Bench harmonized ranking in deep dive | research/deep-dives/ ernie
+- L139 | none | S | Y | - | **CLOSED 2026-07-29** — deep dive reconciles the EN/ZH mean ordering and preserves the vendor-self-report qualifier | Record LongText-Bench harmonized ranking in deep dive | research/deep-dives/ ernie
 - L142 | cpu | M | N | inference window / operator approval | Run content-filter audit live and review outputs | content-filter audit harness ed6f65f5
 - L143 | cpu | M | N | inference availability | 20-prompt EN/ZH typography spot-check vs 0.9655 claim | spot-check prompt set
 - L144 | gpu | L | N | MI210 window | GPU rebench of 8-step distilled DiT on MI210 | ROCm/HIP DiT path
