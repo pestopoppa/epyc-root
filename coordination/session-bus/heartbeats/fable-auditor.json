@@ -1,6 +1,6 @@
 {
   "agent": "fable-auditor",
-  "state": "working",
+  "state": "idle",
   "task_id": "e8-harness-contract-audit",
-  "ts": "2026-07-28T19:48:58+00:00"
+  "ts": "2026-07-28T20:24:21+00:00"
 }

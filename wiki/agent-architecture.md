@@ -760,3 +760,51 @@ carrying `api_base` instead.
 
 _Sources: `handoffs/active/autopilot-continuous-optimization.md` § 2026-07-25;
 `handoffs/active/intake-derived-work-2026-07-25.md` ID-1; `progress/2026-07/2026-07-25.md`._
+
+## Driving another agent's TUI is a transport with no delivery receipt (2026-07-28)
+
+Coordinating N agent mains on one host eventually needs one main to *say something* to another.
+Where the peer is an interactive TUI (Claude Code, Codex CLI) in a tmux pane, the transport is
+`tmux send-keys` — and it has no acknowledgement. tmux reports whether the *keystrokes* were
+delivered to the pane, never whether the TUI *accepted* them, so the naive implementation reports
+success for a message that is sitting unsubmitted in someone's composer. Three fix attempts on
+`scripts/coordination/tmux_adapter.py` produced a transferable model.
+
+**Measured TUI behaviour** (disposable sessions, 2026-07-28; Codex CLI v0.145.0, Claude Code
+v2.1.220). One `send-keys -l` call is rendered as typed text below a length threshold and as a
+*paste attachment* at or above it: Codex 1000 → typed, 1001 → `[Pasted Content 1001 chars]`;
+Claude 800 → typed, 805 → `[Pasted text #n]`. Above the threshold content is also **lost** — Codex
+truncates such blobs at 1024 chars, so 1498- and 2998-char bursts both render as 1024. Splitting
+the message into 400-char chunks with a **0.15 s gap** renders as ordinary typed text with no blob
+and no loss, verified to 12,000 chars on both TUIs; a 0 s gap re-coalesces into one burst and blobs
+again. The gap, not the chunk size, is the load-bearing part.
+
+**The verification predicate.** The terminal cursor sits at the end of pending input in both TUIs,
+and overlays (plan confirmations, agent pickers, file pickers) render *below* it — so "everything
+up to the cursor" is a stable anchor that a row-window heuristic is not. Matching must be
+whitespace-insensitive because both TUIs soft-wrap the composer and a wrap can fall inside the
+matched fragment. Both TUIs **echo a submitted message into the transcript**, so "the text is still
+visible" is the *success* rendering, not a failure — a pane-wide search for the message inverts the
+verdict on every good send.
+
+**Absence is not delivery — the rule that generalises.** Post-Enter, "the message is no longer at
+the cursor" is *not* proof it was submitted: an Enter consumed by a completion overlay rewrites or
+extends the composer and leaves a pane byte-for-byte identical to success. Success must be
+*positive* evidence (the transcript echo), and where a mode makes the outcome undecidable the input
+is refused up front rather than classified after the fact — messages containing `@` or starting
+with `/ ! #` never get typed, since those put the composer in a mode where Enter accepts a
+completion or, for `!` in Claude Code, **executes a shell command** in the peer's session.
+
+**Cap what costs something.** The same adapter capped spawns with a daily action count, so closing
+an idle main never returned its slot — punishing exactly the lifecycle behaviour the system asks
+for. Concurrency caps belong on the live resource (windows that exist now), not on the rate of the
+action that creates it.
+
+**Fail-closed is a per-branch property, not a posture.** Four defects in this one file (C3, C6, C8,
+C9) were all the same shape: a query that could not be answered was treated as a benign answer —
+missing inbox → drain succeeded, unreadable pane → nudge confirmed, failed window list → zero mains
+live. "I could not determine X" must return unknown and refuse, never an empty set or a zero.
+
+_Sources: `handoffs/active/session-bus-thin-dispatcher.md` § M5 → C6, C9, C10–C15;
+`progress/2026-07/2026-07-28.md`; `scripts/coordination/tmux_adapter.py` (commits `8033f039`,
+`e0deeaf7`, `8cbe50c0`); `coordination/session-bus/tasks/bus-c6-verification-followup.md`._

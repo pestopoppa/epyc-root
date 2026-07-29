@@ -791,6 +791,44 @@ freezes/cutovers, host reboots).
     `coordination/session-bus/config.yaml` on 2026-07-28 as interim headroom. That bump is not the
     fix and does not close this item.
     </details>
+  - [ ] **C10 — the standalone adapter suite is not collected, so it rots unrun.**
+    `scripts/coordination/tests/test_tmux_adapter.py` is a script with a `main()`, not pytest
+    cases, so no routine run touches it. It was **red at HEAD** from the C6 change (2026-07-28)
+    until C9 the same day, and only because C9 happened to touch the same module. It carries
+    coverage the pytest suite does not (real send-keys against a live pane, rate limiting, dead
+    panes, live-session enforcement), so deleting it would lose real signal. Wire it into pytest —
+    or, if its ~25s of `sleep` is why it was kept out, mark it `@pytest.mark.slow` and run it in
+    the same job that runs the other slow suites. Until then any change to `tmux_adapter.py`
+    must run **both** suites by hand.
+  - [ ] **C11 — C9 landed without the independent review its own filing required.** The C9 entry
+    says the change "wants an independent review before it lands, not a same-session self-merge",
+    and it was implemented and committed (`8cbe50c0`) by the same session that had just reviewed
+    C6 — on direct operator instruction, which supersedes the handoff's own procedure, but the
+    review debt is real and unpaid. A second pair of eyes on `live_mains` / `resolve_spawn_cap` /
+    `cmd_spawn` is cheap now and expensive after something spawns wrongly. Not urgent: the change
+    is fail-closed on every branch it cannot evaluate, and both suites are green.
+  - [ ] **C12 — the nudge fragment can collide with the transcript.** Post-Enter success is "the
+    60-char tail is on the pane but not at the cursor". If an identical fragment is already in the
+    scrollback (the same nudge sent earlier, or an agent echoing the text), an Enter that never
+    submitted could still find it and read as success. The 600s rate limit makes a same-text
+    repeat unlikely and the failure needs a *second* fault to matter, which is why it is filed
+    rather than fixed. Closing it properly means anchoring the echo to a position *below* the
+    pre-Enter cursor rather than anywhere on the pane.
+  - [ ] **C13 — nudge refuses `@` anywhere in the message, which is broader than the hazard.**
+    The trigger is a picker opening on an `@`-prefixed *token*; the guard refuses the character
+    anywhere, so an email address or an `@`-mention in otherwise-fine prose is rejected. Chosen
+    deliberately — a false refusal costs a rephrase, a false accept fires Enter into a picker —
+    but if it proves annoying in practice, narrow it to `@` at a token start and keep the rest.
+  - [ ] **C14 — a window-INDEX endpoint is invisible to the concurrency count.** `live_mains`
+    matches window *names*; an endpoint like `tmux:agent:3` contributes none, so that main counts
+    only if a window also carries its id. The bias is safe (undercount → refuse sooner, never
+    invent capacity) and no live roster row uses an index today. Resolve indices to names via
+    `list-windows -F '#{window_index}\t#{window_name}'` if such a row ever appears.
+  - [ ] **C15 — `caps.max_concurrent_mains: 4` is saturated at 4/4.** Set 2026-07-28 against a
+    then-steady state of 3 live mains; a `fable-auditor` window brought it to 4 within the hour,
+    so the next spawn needs a main closed. Working as designed — a closed main now returns its
+    slot immediately — but the operator may want 5 for one free slot. Operator decision; not a
+    defect.
   Original list: Claude Stop/SessionStart drain hook
   (clone `*_context.sh`) · send-keys adapter behind `OP-SENDKEYS-CODEX` (OFF; rate-limited;
   idle-pane check) · hybrid triage (dead-agent drafts + routing annotations; budget-capped;
