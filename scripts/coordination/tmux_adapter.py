@@ -552,11 +552,19 @@ def resolve_spawn_cap(caps: dict) -> tuple[int | None, str]:
     return None, f"caps.{CAP_KEY} is not set"
 
 
-def record(kind: str, agent: str, detail: str) -> None:
+def record(kind: str, agent: str, detail: str, **fields: object) -> None:
+    """Append one adapter action to the ledger.
+
+    2026-07-29: `**fields` exists so a row can carry STRUCTURED evidence rather than
+    only a prose `detail`. It was added for the C24 heartbeat reset, where the thing
+    worth keeping is the value that was destroyed — see cmd_spawn. `None` values are
+    dropped so an absent field never renders as a claim that it was null.
+    """
     LEDGER.parent.mkdir(parents=True, exist_ok=True)
+    row: dict[str, object] = {"ts": _now(), "kind": kind, "agent": agent, "detail": detail}
+    row.update({k: v for k, v in fields.items() if v is not None})
     with LEDGER.open("a", encoding="utf-8") as fh:
-        fh.write(json.dumps({"ts": _now(), "kind": kind, "agent": agent,
-                             "detail": detail}, sort_keys=True) + "\n")
+        fh.write(json.dumps(row, sort_keys=True) + "\n")
 
 
 def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float) -> dict:
@@ -972,11 +980,32 @@ def cmd_spawn(args: argparse.Namespace) -> int:
     hb_rel = f"heartbeats/{args.agent}.json"
     hb_path = BUS_ROOT / hb_rel
     hb_existed = hb_path.exists()
+    hb_prior: dict | None = None
+    if hb_existed:
+        try:
+            loaded = json.loads(hb_path.read_text(encoding="utf-8"))
+            hb_prior = loaded if isinstance(loaded, dict) else {"unparseable": str(loaded)[:200]}
+        except (OSError, json.JSONDecodeError) as exc:
+            hb_prior = {"unreadable": str(exc)[:200]}
     hb_path.parent.mkdir(parents=True, exist_ok=True)
     hb_path.write_text(json.dumps(
         {"agent": args.agent, "state": "idle", "task_id": None, "ts": _now()},
         indent=2) + "\n", encoding="utf-8")
     created.append(hb_rel + (" (reset: stale predecessor)" if hb_existed else ""))
+    if hb_existed:
+        # C24 (2026-07-29): OVERWRITING A LIVENESS SIGNAL MUST LEAVE A TRACE.
+        # The reset only announced itself on stdout, which nothing keeps — so the
+        # single most consequential thing this command does, destroying the evidence
+        # of what a previous session was doing, was the one thing the ledger did not
+        # record. The prior VALUE is captured, not just the fact of the write: if the
+        # containment argument above is ever wrong, this row is what shows a `working`
+        # heartbeat on a real task was cleared, and by which spawn.
+        #
+        # Written HERE, not after new-window: the heartbeat is already gone by this
+        # line, so a later failure must not be able to swallow the record of it.
+        record("heartbeat-reset", args.agent,
+               f"reset stale predecessor heartbeat at {hb_rel} before spawning",
+               overwrote=hb_prior)
 
     for rel, payload in (
             (f"cursors/{args.agent}.json", {"agent": args.agent, "offset": 0, "ts": _now()}),):

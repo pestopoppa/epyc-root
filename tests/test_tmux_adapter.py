@@ -932,3 +932,78 @@ def test_c24_cross_session_endpoint_overcounts_and_still_refuses(
     assert adapter.live_mains(config)[0] == {"codex"}, "overcount is the SAFE direction"
     target, why = adapter.resolve_target(config, "codex")
     assert target is None, why
+
+
+_C24_SPAWN_CONFIG = {
+    "roster": [{"id": "new-main", "endpoint": "tmux:agent:new-main"}],
+    "tmux": {"live_session": "agent", "allow_session_creation": False},
+    "caps": {"max_concurrent_mains": 6},
+}
+
+
+def test_c24_a_fresh_spawn_records_no_heartbeat_reset(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Only an OVERWRITE is a ledger event. A first spawn destroys nothing, and a
+    reset row for it would make the signal unreadable exactly when it matters."""
+    adapter = _c9_adapter("hbfresh", monkeypatch, tmp_path, windows="0\tsomething-else",
+                          config=_C24_SPAWN_CONFIG)
+    adapter.BUS_ROOT = tmp_path / "bus"
+    (adapter.BUS_ROOT / "heartbeats").mkdir(parents=True)
+
+    class A(_SpawnArgs):
+        agent = "new-main"
+        dry_run = False
+
+    assert adapter.cmd_spawn(A()) == 0
+    rows = [json.loads(l) for l in adapter.LEDGER.read_text().splitlines() if l.strip()]
+    assert [r["kind"] for r in rows] == ["spawn"]
+
+
+def test_c24_reset_is_recorded_even_when_the_window_fails_to_start(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """The heartbeat is destroyed BEFORE new-window runs, so a later failure must
+    not be able to swallow the record of it — otherwise the one case where you most
+    need to know a liveness signal was cleared is the case that leaves no trace."""
+    adapter = _c9_adapter("hbfail", monkeypatch, tmp_path, windows="0\tsomething-else",
+                          config=_C24_SPAWN_CONFIG)
+    adapter.BUS_ROOT = tmp_path / "bus"
+    hb = adapter.BUS_ROOT / "heartbeats" / "new-main.json"
+    hb.parent.mkdir(parents=True)
+    hb.write_text(json.dumps({"agent": "new-main", "state": "working",
+                              "task_id": "task-from-a-dead-session",
+                              "ts": "2020-01-01T00:00:00+00:00"}))
+    inner = adapter._tmux
+    monkeypatch.setattr(adapter, "_tmux",
+                        lambda *a: (1, "no space") if a[0] == "new-window" else inner(*a))
+
+    class A(_SpawnArgs):
+        agent = "new-main"
+        dry_run = False
+
+    assert adapter.cmd_spawn(A()) == 3, "the spawn itself fails"
+    rows = [json.loads(l) for l in adapter.LEDGER.read_text().splitlines() if l.strip()]
+    resets = [r for r in rows if r["kind"] == "heartbeat-reset"]
+    assert len(resets) == 1
+    assert resets[0]["overwrote"]["state"] == "working"
+    assert resets[0]["overwrote"]["task_id"] == "task-from-a-dead-session"
+    assert json.loads(hb.read_text())["state"] == "idle", "and the heartbeat really is gone"
+
+
+def test_c24_an_unreadable_predecessor_heartbeat_still_records_the_reset(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """A corrupt heartbeat is the LEAST safe thing to overwrite silently."""
+    adapter = _c9_adapter("hbcorrupt", monkeypatch, tmp_path, windows="0\tsomething-else",
+                          config=_C24_SPAWN_CONFIG)
+    adapter.BUS_ROOT = tmp_path / "bus"
+    hb = adapter.BUS_ROOT / "heartbeats" / "new-main.json"
+    hb.parent.mkdir(parents=True)
+    hb.write_text("{not json")
+
+    class A(_SpawnArgs):
+        agent = "new-main"
+        dry_run = False
+
+    assert adapter.cmd_spawn(A()) == 0
+    rows = [json.loads(l) for l in adapter.LEDGER.read_text().splitlines() if l.strip()]
+    resets = [r for r in rows if r["kind"] == "heartbeat-reset"]
+    assert len(resets) == 1 and "unreadable" in resets[0]["overwrote"]

@@ -401,6 +401,17 @@ def test_live() -> None:
             # the respawned session re-reads everything its predecessor already drained.
             check(json.loads(cur.read_text())["offset"] == 4242,
                   "C24: spawn preserves the inherited cursor offset")
+            # Overwriting a liveness signal must leave a trace, and the trace must
+            # carry the VALUE destroyed — the fact of the write alone would not show
+            # that a `working` heartbeat on a real task had been cleared.
+            resets = [r for r in ledger(m) if r["kind"] == "heartbeat-reset"]
+            check(len(resets) == 1, f"C24: the reset is recorded in the ledger ({len(resets)})")
+            check(bool(resets) and resets[0].get("overwrote", {}).get("state") == "working",
+                  f"C24: the ledger keeps the state it destroyed "
+                  f"({resets[0].get('overwrote') if resets else None})")
+            check(bool(resets) and resets[0]["overwrote"].get("task_id")
+                  == "task-from-a-dead-session",
+                  "C24: and the task the dead session claimed to be running")
             tmux("kill-window", "-t", f"{SESSION}:spawned")
 
             # C25: the spawned window is named from the ENDPOINT, not the roster id.
