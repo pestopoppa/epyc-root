@@ -136,8 +136,17 @@ outcome.
     last state `k=40 E_quality=11.5507 lambda=0.5 r_eff=11`.
 - [ ] SEQ-A — Sticky `refuted` label (above).
 - [ ] SEQ-B — Frozen baseline-promotion gate (above).
-- [ ] SEQ-4 — Re-examine the 9 candidates whose refutation does not survive the relaxed budget.
-      They were removed from consideration by an allocation heuristic, not by evidence.
+- [x] SEQ-4 — Re-examine the 9 candidates whose refutation does not survive the relaxed budget. ✅ 2026-07-29 — deterministic re-adjudication in [`readjudicate_sequential_20260728.json`](../../epyc-orchestrator/orchestration/reports/readjudicate_sequential_20260728.json) confirms all nine under the same era-fenced `core_v1` evidence; none reaches `confirm_e=20.0`.
+
+      **Disposition:** `70902e4b665474e7` (E=11.5507, ~9 trials estimated) and
+      `dd793a6ee43ce718` (E=8.7048, ~10 estimated) are the only credible continuation
+      candidates, and are already represented by the SEQ-3 era-gated paths above. The
+      remaining seven do not create an independent retry: `85c3dcf25823c537` needs an
+      estimated ~30 trials; `db866b4a9fa37e03` ~55; `45129cc6ee5bac29` ~69;
+      `4b6b454ea4f884fd` ~263; `3055f1e32fac0316` ~1699; and
+      `b738287be98c3372` / `80aa44d93a242af5` were falling (growth <1). Those estimates
+      are not forecasts; all are historical-`core_v1` priors and cannot be continued
+      without the SEQ-3a bridge ruling or the clean SEQ-3b E8 restart.
 
 ## Why this is independent of the episodic-memory work
 
