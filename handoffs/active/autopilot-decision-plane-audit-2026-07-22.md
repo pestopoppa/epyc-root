@@ -265,9 +265,18 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
   The integrated E8 suite passed **322 tests**. This is an instrument/integration checkpoint only:
   it does **not** terminalize or ratify E8, collect a complete evidence bundle, apply a baseline, or
   publish one.
+- [x] **E8 race-retry atomic-publication hardening** ✅ 2026-07-29 — orchestrator main
+  `d24bc44f` and `1de17552` close the race-retry publication instrument: the producer writes only
+  to a private sibling staging namespace, both producer and finalizer enforce the shared staged-tree
+  validation, the producer validates before and after tree `fsync`, rechecks the immutable source
+  bindings before its atomic no-replace publish, and records a durable abort plus no-replace
+  quarantine when a post-publish durability step fails. The main-thread E8 suite passed **325
+  tests**; Ruff, `py_compile`, and `git diff --check` were clean. This is publication-path hardening
+  only: it neither executes final-C1/finalizer inference nor produces evidence, a receipt, an apply,
+  or a published baseline.
 - [ ] **E8 c1 required race/finalizer path** — execute only the protocol-required race/finalizer
-  path against the repaired, revalidated instrument. **Structured timeout provenance and race-retry
-  atomic publication remain open.** A c1 retry timeout remains a governed 300-second-budget
+  path against the repaired, revalidated instrument. **Structured timeout provenance and final-C1/
+  finalizer inference remain open.** A c1 retry timeout remains a governed 300-second-budget
   decision; do not silently raise its timeout. This task does not authorize baseline application or
   publication.
 - [ ] **E8 quality baseline reseed/apply** — human-only protocol/source/apply scripts are
@@ -281,9 +290,9 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
   `e8_quality_baseline_v5_partial_r2_recovery_20260728T135608Z` after FG-2V released q0. Its
   later mixed-tail/c1 successor completed its six focused c1 requests but failed closed before
   race admission on a journal/sidecar coherence mismatch; the immutable evidence is retained.
-  The coherence-admission instrument repair is complete; the required race/finalizer path,
-  including structured timeout provenance and race-retry atomic publication, remains the immediate
-  prerequisite to finalization.
+  The coherence-admission and race-retry atomic-publication instruments are complete; structured
+  timeout provenance and final-C1/finalizer inference remain the immediate prerequisites to
+  finalization.
   Do not apply or publish a baseline until that complete v5 evidence bundle and its single
   consolidated human trust-boundary action are ready.
 - [x] **E8-LAUNCH-RACE — scope failed-start cleanup to the wrapper-owned launch** ✅ 2026-07-26.
