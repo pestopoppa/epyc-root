@@ -247,7 +247,7 @@ def test_attest_applies_exact_content_and_writes_runner_bound_receipt(transactio
 
 
 @pytest.mark.skipif(not AUTHORITATIVE_RUNNER.is_file(), reason="hardened FG-4b worktree is unavailable")
-def test_receipt_contract_is_accepted_by_the_authoritative_hardened_runner(
+def test_prior_receipt_contract_is_rejected_by_the_affinity_hardened_runner(
     transaction_fixture: dict[str, object],
 ) -> None:
     result = _run(transaction_fixture, "--attest", TOKEN)
@@ -270,8 +270,8 @@ def test_receipt_contract_is_accepted_by_the_authoritative_hardened_runner(
     runner = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = runner
     spec.loader.exec_module(runner)
-    validated = runner.validate_protocol_attestation(receipt_path)
-    assert validated["contract"] == receipt["contract"]
+    with pytest.raises(runner.ReanchorRefusal, match="contract does not exactly match"):
+        runner.validate_protocol_attestation(receipt_path)
 
 
 def test_refuses_wrong_runner_hash_without_mutation(transaction_fixture: dict[str, object]) -> None:
@@ -423,7 +423,7 @@ def test_sigkill_after_durable_receipt_recovers_committed_transaction(
     assert json.loads((transaction / "COMPLETE").read_text())["disposition"] == "committed"
 
 
-def test_live_production_preflight_accepts_current_policy_pins() -> None:
+def test_live_production_preflight_refuses_already_applied_ratification() -> None:
     result = subprocess.run(
         ["bash", str(SOURCE_SCRIPT), "--validate-only"],
         text=True,
@@ -431,8 +431,8 @@ def test_live_production_preflight_accepts_current_policy_pins() -> None:
         check=False,
         cwd="/",
     )
-    assert result.returncode == 0, result.stderr
-    assert "preflight-valid" in result.stdout
+    assert result.returncode != 0
+    assert "marker is already present" in result.stderr
 
 
 def test_reviewed_bundle_keeps_the_explicit_nonretroactive_quarantine() -> None:

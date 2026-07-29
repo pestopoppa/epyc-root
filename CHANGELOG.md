@@ -898,3 +898,5 @@
     - continues run normally when recovered.
   - File:
     - `scripts/nightshift/run_wrapper.sh`
+
+- Ratified `P-BENCH-4` for prospective FG-4b single-instance server-native speculative decode; it pins the reviewed runner contract and preserves prior FG-4b observations as non-decision-grade.
