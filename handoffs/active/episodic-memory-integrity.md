@@ -1,13 +1,14 @@
 # Episodic Memory Integrity — 2026-07-05 corruption, root cause and repair
 
-**Status**: active — **CLEARED FOR SEEDING (M-18 full-surface audit, 2026-07-28).** Write path
-FIXED and proven self-healing in production; reseed DONE; standing integrity gate (M-17) blocks
-AutoPilot on a broken store and runs in `health_check.sh`; the degenerate-vector guarantee extends
-to **every** store via `FAISSEmbeddingStore.add()` (episodic, SkillBank, StrategyStore — commit
-`82fbf276`). Live state 2026-07-28: episodic `ntotal=58386 desync=0`, round-trip 500/500,
-degenerate 0/500, **semantic self-match 0.9956** (0.5505 during the incident); strategy store
-1424/1424/1424 coherent, 0 degenerate; skills a clean post-purge slate. Remaining items are
-follow-on analysis (M-15), the re-distil (M-11a, inference-gated), and the never-run A/B (M-12).
+**Status**: active — **CLEARED FOR SEEDING (M-18 full-surface audit, 2026-07-28; semantic gate
+verified live 2026-07-29).** Write path FIXED and proven self-healing in production; reseed DONE;
+standing integrity gate (M-17) blocks AutoPilot on a broken store and runs in `health_check.sh`.
+The degenerate-vector guarantee extends to **every** store via `FAISSEmbeddingStore.add()`
+(episodic, SkillBank, StrategyStore — commit `82fbf276`). Live state 2026-07-29: episodic
+`ntotal=58749 desync=0`, round-trip 500/500, degenerate 0/500, **semantic self-match mean
+cosine 0.9824 over 8 samples** (0.5505 during the incident); strategy store 1424/1424/1424
+coherent, 0 degenerate; skills a clean post-purge slate. Remaining items are follow-on analysis
+(M-15), the re-distil (M-11a, inference-gated), and the never-run A/B (M-12).
 **Created**: 2026-07-27
 **Priority**: HIGH — this subsystem underpins routing, MemRL and SkillBank
 **Categories**: agent_architecture, memory_augmented, routing_intelligence
@@ -295,6 +296,14 @@ failure caught in amber.
         exact comparison, now **0 false positives over 3,000 live BGE vectors**; and I first wrote
         that hash vectors are "maximally diverse and defeat `vector_diversity`", which is wrong —
         at 89% all-zero they collapse, and that check *would* fire.
+  - [x] M-17j — **Semantic health + Q-score poisoning guard live checkpoint.** ✅ 2026-07-29.
+        Orchestrator main contains `93d8349b` and `ec087da1`: the health check requires the
+        repository Python and a completed semantic self-match rather than silently skipping it;
+        external Q-score updates reject fallback/degenerate embeddings and require exact normalized
+        objective, task-type, and action identity after FAISS candidate lookup. An API-only reload
+        activated the guards. Live semantic check: `ntotal=58749`, `id_map=58749`, `desync=0`,
+        round-trip 500/500, and mean cosine **0.9824** over 8 samples. Focused memory tests passed;
+        the integrated checkpoint ran 322 E8 tests plus those focused memory tests.
 - [ ] M-12 — Run the memory-on vs memory-off A/B that **has never existed** in either repo. This is
       the only thing that will answer "does episodic retrieval help" with evidence.
 

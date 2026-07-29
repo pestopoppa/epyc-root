@@ -4,13 +4,23 @@
 
 ## G3 — Scaffold-generator A/B: FF + TC vs Qwable (+ the pending standalone control) — first post-campaign GPU experiment
 
-_Reuses the built harness (`/mnt/raid0/llm/tmp/cot-g1/`, SCAFFOLD-PREFIX mode) and the validated conditional deploy rule (reasoning-bound task + receiver latent capability). GPQA-48-class scale, single MI210 sidecar — small. Run `g3-gpqa-20260728T070247Z-manual2` and its v3 matched-control successor are terminal OBSERVATIONS; G3-0/G3-1/G3-2/G3-3a execution is complete, while G3-3 remains open for the deployment-rule verdict. No role, lineup, registry, or deployment action is implied._
+_Reuses the built harness (`/mnt/raid0/llm/tmp/cot-g1/`, SCAFFOLD-PREFIX mode) and the validated conditional deploy rule (reasoning-bound task + receiver latent capability). GPQA-48-class scale, single MI210 sidecar — small. Run `g3-gpqa-20260728T070247Z-manual2` and its v3 matched-control successor are terminal OBSERVATIONS; G3-0 through G3-3a and the G3-3 saved-output replay are complete. The default remains no deployment decision: a future decision instrument is separate. No role, lineup, registry, or deployment action is implied._
 
 - [x] **G3 prerequisite — exact Qwable IQ4_XS artifact restored and verified** ✅ 2026-07-28 — `Qwable-v1.IQ4_XS.gguf` is present at the pinned HF revision `f35ea1502056a2886dd88fb8a29272f8f3c9c3a5`, `18,939,313,056` bytes, SHA-256 `3921bb8f1fc26ddd80ee97d0f48ccf507bd1dab04dbe4fc475e2eae65a05f460`. Durable restore receipt: `/mnt/raid0/llm/tmp/cot-g1/g3_20260728/restore_qwable_iq4xs.log`. This restores the fixed control artifact only; it does not execute G3.
 - [x] **G3-0 — Qwable-standalone GPQA control** ✅ 2026-07-28 — terminal arm `40/48` (`83.33%`), `214,234` generator tokens; frozen-scorer replay exactly matches all stored item judgments. This completes the standalone arm, but does not resolve relay vs amplification because the bundle has no matched Qwable-prefix receiver arm.
 - [x] **G3-1 — FF-non-MTP as generator** ✅ 2026-07-28 — terminal prefix arm `41/48` (`85.42%`), `311,346` generator + `11,932` receiver = `323,278` total tokens (`1.509x` Qwable-standalone tokens); frozen-scorer replay exactly matches.
 - [x] **G3-2 — TC as generator** ✅ 2026-07-28 — terminal prefix arm `43/48` (`89.58%`), `207,610` generator + `8,983` receiver = `216,593` total tokens (`1.011x` Qwable-standalone tokens); frozen-scorer replay exactly matches. This is the highest point estimate in this screen, not a selection verdict.
-- [ ] **G3-3 — verdict + deploy-rule update** — controls are now available, but a deployment verdict remains open: compare receiver-nothink `25/48`, Qwable-prefix `42/48`, FF-prefix `41/48`, TC-prefix `43/48`, their paired rescue/regression and token-cost surfaces, and retain observation-only status until the appropriate decision instrument is selected. No production-generator selection follows from this checkpoint alone.
+- [x] **G3-3 — deterministic saved-output replay and observation closeout.** ✅ 2026-07-29.
+  Frozen-scorer replay had zero mismatches across all 5 x 48 saved outputs: receiver-nothink
+  `25/48`, Qwable standalone `40/48`, Qwable-prefix `42/48`, FF-prefix `41/48`, and TC-prefix
+  `43/48`. Generator differences are statistically null. Qwable-prefix used `32,768` context versus
+  `16,384` for the other prefix arms, so it cannot support a causal generator ranking; FF dominates
+  the accuracy/tokens/compute observation surface, while TC is only +1 against Qwable-prefix at
+  3.25x compute with a null paired delta. This closes deterministic analysis only. **No deployment,
+  lineup, registry, or generator-selection rule changes.**
+- [ ] **G3-4 — future decision instrument (separate from G3-3).** Select and run a decision-grade,
+  context-matched generator/receiver instrument only if a concrete deployment decision is proposed.
+  Do not regenerate or continue deterministic analysis of the sealed G3 artifacts.
 - [x] **G3-3a — matched-control + stop-reason repair** ✅ 2026-07-28 — v3 preserved the sealed 48-item input/scorer and imported the valid v2 rows without regeneration: receiver-nothink `25/48` (all 48 imported), Qwable-prefix `42/48` (5 imported + 43 fresh). The previous context failure is durably prevented: full rendered-prefix preflight found worst case `16,444 + 4,096 = 20,540` tokens and selected the bounded `32,768` context. Raw responses retain llama-server `stop_type` (`eos`/`word`/`limit`); teardown and `COMPLETE` are present. Artifact: `/mnt/raid0/llm/tmp/cot-g1/g3_20260728/successors/g3-gpqa-20260728T070247Z-manual2-controls-v3/` (`prepared.json` SHA-256 `508242ea57bf6b7505626215a110cd8fabf11ef6c217834a971f1af5dcf1a25c`, raw attempts `9af5d10764901394ab7c7167e6bfe5e357eac90b1d31e3a5467eafa838fff8bb`).
 
 ### G3 terminal observation — 2026-07-28 (GPQA-48, seed 42)
@@ -27,7 +37,10 @@ Paired overlap is weak evidence: Qwable vs FF has `4/5` directional discordances
 
 **Stop/truncation caveat:** Qwable generator finishes are `42 stop / 6 length`; FF and TC generator finishes are `21/27` and `35/13`. For both prefix arms the terminal rows label all `48/48` receiver responses `length` and `truncated=true`, although receiver token maxima are only `1,090` (FF) and `1,046` (TC), with `0/96` responses reaching the `4,096` cap. The runner defines receiver `stop` only when `stopped_eos=true` and maps every other stop mechanism to `length`; these flags therefore do not demonstrate cap truncation. Prefix terminal `truncated` also omits generator-length termination.
 
-**Contract boundary:** G3-0/G3-1/G3-2 execution landed, but G3-3 did not. Without matched receiver-nothink and Qwable-prefix controls, rescue rate and generator-only effects are not identifiable; do not pick a generator or update deployment rules from this bundle.
+**Contract boundary:** G3-0 through G3-3 execution and deterministic replay landed. The matched
+controls make the saved-output conclusion complete, but their unequal prefix contexts and null
+paired generator deltas do not identify a deployment choice. Do not pick a generator or update
+deployment rules from this bundle.
 
 ### G3-3a matched-control successor — 2026-07-28
 
@@ -37,8 +50,8 @@ the `4,096` output reserve before loading the model, selected `32,768`, and then
 43 missing Qwable-prefix rows. It retained 48 valid receiver-nothink and five valid Qwable-prefix v2
 rows. Results are receiver-nothink **25/48** and Qwable-prefix **42/48**. The source-ledger hashes,
 full raw response capture, and clean teardown are bound in `prepared.json`; these repair the previous
-loss channel without changing test scoring. G3-3 is now a verdict task, not an evidence-collection
-blocker.
+loss channel without changing test scoring. G3-3 is now an observation closeout, not an
+evidence-collection blocker or deployment verdict.
 
 > **STUDY COMPLETE — 2026-07-06.** The pure-GPU research screen is closed. Net finding: the scaffold is a **robust, architecture-independent CPU-cost lever** (caps a large CPU-hosted beneficiary's own-reasoning CPU-decode from ~3,000–9,000 tokens to ~100–175 = a **20–50× reduction**, reasoning offloaded to the GPU reasoner) with **headroom-conditional** quality (rescues weak-and-overthinking beneficiaries — sparse-MoE 35B 48→73%, dense-GDN 27B 6→9; no-ops the already-saturated gemma-31B 8=8); verifier/selector best-of-N is **marginal** on this stack (errors are systematic, not stochastic). Close-out: [`../../progress/2026-07/2026-07-06-cot-study-complete.md`](../../progress/2026-07/2026-07-06-cot-study-complete.md). **Deployment into autopilot is now a separate DESIGN handoff → [scaffold-autopilot-cost-lever-deployment.md](scaffold-autopilot-cost-lever-deployment.md)** (episodic-memory-gated; DESIGN-only, operator + live-autopilot-agent gated). This handoff is retained **active** as the evidence record its siblings link to; the detailed arc below is the historical research record.
 
