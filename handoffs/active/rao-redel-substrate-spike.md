@@ -429,15 +429,36 @@ Three RLM-lineage sources arrived together. **None of them overturns the pinned 
 - **Standing counter-evidence (unchanged, and still the strongest datapoint):** intake-547 — depth-0 86.6% vs depth-1 60.0% on Kimi K2 OOLONG, base models at 100.0% on S-NIAH degrading under depth-1, and ~96x wall-clock inflation at depth 2. RLM gains appear only where the base model scores ~0.0%, i.e. **recursion rescues failing models rather than improving competent ones.**
 
 - [x] Substrate-decision input: keep `max_depth` at 0-1 for competent models and reserve recursion for near-zero-baseline cases; revisit only if a controlled local A/B contradicts intake-547. ✅ 2026-07-29 — this is a planning default, not a performance claim: the controlled counter-evidence in intake-547 remains stronger than intake-866's unmeasured framing, and no local A/B has contradicted it. [intake-866, intake-547]
-- [ ] Design input: the SkyRL parent/child rollout-tree model (`parent_rid` /
+- [x] Design input: the SkyRL parent/child rollout-tree model (`parent_rid` /
   `depth` / `child_index` with reward propagation) is a reusable accounting
-  shape for nested sub-agents here, usable without adopting any RL. **Staleness
-  audit 2026-07-29:** current `EpisodicStore` already persists the five-class
-  `sub_decision` axis but has no tree-linkage fields; do not mistake that label
-  for rollout accounting. The required additive SQLite migration and
-  backward-compatible read/write surface have HIGH blast radius (83 upstream
-  dependants; 29 direct), so scope and independently review that schema change
-  before implementation. [intake-868]
+  shape for nested sub-agents here, usable without adopting any RL. **Scoped
+  2026-07-29:** `EpisodicStore` already persists the five-class `sub_decision`
+  axis but has no tree-linkage fields; do not mistake that label for rollout
+  accounting. The implementation is an additive SQLite migration plus a
+  backward-compatible read/write surface, and requires independent review
+  before code lands. ✅ 2026-07-29 [intake-868]
+
+  - **Minimal data contract:** nullable `rollout_id`, immediate
+    `parent_memory_id`, non-negative `depth`, and non-negative `child_index`.
+    `rollout_id` identifies one root-to-leaf execution; `parent_memory_id`
+    identifies the direct parent (not a model or task id). A root has NULL
+    parent and depth 0. Existing rows remain NULL on all four fields.
+  - **Reward semantics:** retain each event's observed `q_value`; compute any
+    parent/child credit aggregation in a read-only query or a separately named
+    derived report. Do not overwrite parent or child rewards during this
+    accounting migration.
+  - **Compatibility surface:** extend the `MemoryEntry` model, `store` and
+    `store_immediate` keyword-only inputs, and every projection used by
+    `retrieve_by_similarity`, `get_by_id`, and `get_all_memories`. Additive
+    DDL must be idempotent on fresh and pre-existing databases, with legacy
+    NULL rows round-tripping unchanged; index only `(rollout_id, depth,
+    child_index)` after a query-plan justification.
+  - **Required independent review before implementation:** verify the DDL,
+    all writer/read projections, FAISS/SQLite consistency and concurrent
+    migration behavior; add fresh/migrated/legacy/round-trip tests. The
+    current graph index is stale but still classifies `EpisodicStore` HIGH
+    blast radius (77 upstream, 27 direct), so this design deliberately makes
+    no code change.
 
 ### Correction 2026-07-21 — depth should be CONDITIONAL, not a pinned default (operator challenge)
 
