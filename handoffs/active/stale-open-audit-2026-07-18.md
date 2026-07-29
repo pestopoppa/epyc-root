@@ -184,7 +184,32 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
     with exactly one box left is usually a finished one carrying a parked tail. **Do NOT extrapolate
     ~50% to the remaining 936.** The rate must be re-measured on multi-box handoffs before it means
     anything fleet-wide.
-  - [ ] **REMAINS OPEN:** read-certify the remaining ~936. That is the only route left and it is a bounded but
+  - **TRANCHE 2 READ-CERTIFIED 2026-07-29 (`auditor`) — 45 boxes, STRATIFIED multi-box sample**
+    (one median-size file from each of the 2-3 / 4-8 / 9-20 / 21+ buckets:
+    `objective-task-rate-goodput` 2, `integration-test-coverage` 5, `hermes-agent-index` 11,
+    `gpu-serving-tie-in-program` 27). Per-box verdicts recorded in the commit.
+    | verdict | n | % |
+    |---|---|---|
+    | **LIVE NOW** | 13 | 29% |
+    | PHASE — real work, later phase of an active program | 7 | 16% |
+    | **DUP-INDEX — already counted in its owning handoff** | 6 | 13% |
+    | GATED-DEP — blocked on a named dependency | 6 | 13% |
+    | NOT-A-TASK — standing policy | 5 | 11% |
+    | GATED-OP — waiting on an operator | 5 | 11% |
+    | GATED / PARKED | 3 | 7% |
+    **MY PREDICTED BIAS WAS WRONG, IN DIRECTION.** I said single-box handoffs were biased toward
+    residue and warned against extrapolating tranche 1's low live-rate. The stratified multi-box
+    sample came back **lower still — 29% live vs tranche 1's 47%.** The reason is visible once read:
+    large handoffs are *program plans*, not task lists. `gpu-serving-tie-in-program` alone carries 27
+    boxes of which most are later-phase or operator-gated. So the caution was right but the arrow
+    pointed the wrong way, and I am recording that rather than quietly dropping the earlier warning.
+    **THIRD NEW CATEGORY: DUP-INDEX.** 6 of 45 (13%) are index-pointer rows duplicating the owning
+    handoff's row (`hermes-agent-index:99/101/107/108/109/111`). The collision map names several as
+    C2 duplicates; this confirms they **inflate the open-box total**, since both copies count.
+    **Combined: 64 of 982 boxes certified (6.5%), 22 LIVE (34%).** Both strata independently land
+    near one-third live, which is the first evidence that the ~1/3 figure may be robust — but 6.5%
+    coverage is not a basis for a fleet number, and it should not be quoted as one yet.
+  - [ ] **REMAINS OPEN:** read-certify the remaining ~918. That is the only route left and it is a bounded but
     large job; it should be split across mains by handoff, not attempted in one session.
 
 > All verdicts above are **observations** for backlog-hygiene decisions, not measurement-gating numbers. No production kernel, registry, or handoff checkbox was modified by this audit.
