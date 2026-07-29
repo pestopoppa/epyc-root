@@ -108,7 +108,7 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 31 | ~~`ernie-image-turbo-evaluation.md:139`~~ **✅ CLOSED 2026-07-29** | progress-checklist | none | S | `research/deep-dives/` ernie dive | Record LongText-Bench harmonized ranking in the deep dive |
 | 32 | ~~`intake-derived-work-2026-07-25.md:166`~~ **✅ CLOSED 2026-07-29** | P1b DFlash | none | S | capability registry yaml | Re-triage the stale dflash registry `forbid` row |
 | 33 | ~~`model-stack-single-source-update-pipeline.md:325`~~ **✅ CLOSED 2026-07-29** | outstanding | none | S | `seeding_rewards.py`, `corpus_quality_gate.py`, `kv_compress.py` | Keep 3 re-audited surfaces unchurned absent a new duplicated fact |
-| 34 | `unified-trace-memory-service.md:219` | UTM-M6 | none | S | `research/intake_index.yaml` | File EvoMemBench 128K context-competition as a distinct failure mode |
+| 34 | ~~`unified-trace-memory-service.md:219`~~ **✅ CLOSED 2026-07-29** | UTM-M6 | none | S | `research/intake_index.yaml` | File EvoMemBench 128K context-competition as a distinct failure mode |
 | 35 | `rao-redel-substrate-spike.md:432` | intake 2026-07-21 | none | M | `orchestration/repl_memory/episodic_store.py` | Adopt SkyRL parent/child rollout-tree accounting shape |
 | 36 | `reviewer-calibration-accounting.md:30` | RC | none | M | `src/trace/review_ledger.py` | Persist full rubric + per-item grades in corpus rows |
 | 37 | `llamacpp-v6-consolidation.md` (F1 fold, re-grep: file shifted) | Stage-2 parity F1 | none | M | `llama.cpp-v6 ggml/src/ggml-cpu/ops.cpp` | Fold f1-paged-attn branch into v6, off-by-default |
@@ -1517,7 +1517,7 @@ re-grep before assigning.
 - L210 | none | M | Y | - | UTM-M3 add auditable delete verb + When-NOT-to-Use to skill records | repl_memory/memory_actions.py
 - L211 | none | S | Y | - | **READY** UTM-M4 mine ReasoningBank repo for 3 prompts and JSON schema | src/trace/harness_schema.py
 - L215 | cpu | L | Y | explicitly unblocked | UTM-M5 build per-window success-rate-vs-store-size curve instrument | scripts/analysis/, data/trace/events.sqlite
-- L219 | none | S | Y | - | **READY** UTM-M6 file EvoMemBench 128K context-competition failure mode | handoff, intake_index.yaml
+- L219 | none | S | Y | - | **CLOSED 2026-07-29** — records fixed-update-schedule context-budget competition as distinct from accumulated-store late decay | UTM-M6 file EvoMemBench 128K context-competition failure mode | handoff, intake_index.yaml
 - L220 | none | M | N | - | UTM-M7 make retrieval injection budget-conditional | navigation.py, src/retrieval/
 - L221 | none | M | N | - | UTM-M8 cap injection as fraction of remaining budget | navigation.py, src/retrieval/
 - L222 | cpu | M | Y | operator gate (MEASUREMENT human amendment) | UTM-M9 add no-memory control arm to every memory A/B | MEASUREMENT.md, eval-tower row config
