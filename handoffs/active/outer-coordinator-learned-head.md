@@ -88,7 +88,28 @@ The mismatch is in the action-space — our outer loop does *more* than `(model,
 
 Goal: produce a written scope document that answers the questions below. No code, no models, no benchmarks. Deliverable is a section appended to this handoff, reviewed by the user, before OC-1+ phases are even drafted.
 
-- [ ] **OC-0.1** Enumerate the per-turn decisions Claude makes in the autopilot loop today. Read `scripts/autopilot/` and the autopilot handoff to inventory: which model to dispatch to, when to plan vs execute, when to compact context, when to verify, when to terminate. Produce a table.
+### OC-0.1 — committed autopilot decision inventory (2026-07-29)
+
+This is an inventory, not a proposal to learn or automate any row. It was read
+from the committed `scripts/autopilot/autopilot.py` / `actions.py` controller
+surface; concurrent worktree changes were intentionally excluded. The apparent
+"Claude decision" is often a constrained choice already made by deterministic
+code, a SafetyGate, or an operator boundary.
+
+| Decision in one controller turn | Current chooser / mechanism | Non-negotiable constraint | Initial OC classification |
+|---|---|---|---|
+| Which experiment/action type to propose (`seed_batch`, numeric, prompt/code mutation, structural experiment, deep eval, compact, rollback, etc.) | Planner proposal, normally through the draft-critique provider path | Universal schema validation, allowed action types, feature/dependency state, blacklist and dirty-target fences run before dispatch | Context-dependent candidate; action *family* may be learnable, but not the guards |
+| Which role/model/task mix to evaluate for a seeder batch | Seeder receives the selected action plus active-role/stack-prior context | Active registry roles and placement/availability checks bound the selectable pool; this is not a free model catalogue | Context-dependent candidate, but only after the inner-pool role surface is stable |
+| Which one-variable numeric surface and parameter to probe | Planner or deterministic numeric fallback | One explicit parameter, operator-suppressed surface list, apply failure/no-change handling, and live config validation | Mixed: fallback rotation is uniform; parameter choice is context-dependent |
+| Whether a proposed action is admissible at all | Deterministic dispatcher, SafetyGate, blacklist/retry logic, sequential-evidence gates | Must never be delegated to a learned head: fail-closed validation, trust/era fences, cleanliness checks, and retry caps are enforcement | Uniform rule / retain deterministic |
+| Whether to replace a blocked/repeated/blacklisted proposal with a seed or replayable numeric fallback | Deterministic fallback helpers informed by blacklist and trial counter | Avoid repeat no-op loops; W8/sequence requirements must preserve replayable evidence | Mostly uniform rule; policy parameters can be measured later |
+| Whether to force baseline-reference, fresh-eval, higher-tier, coverage, or frontier-rerun work | Deterministic sequential/outcome/coverage-pressure helpers | These actions preserve estimand, paired evidence, and minimum coverage rather than maximize a one-turn score | Uniform rule / retain deterministic |
+| Whether to apply, keep, revert, or roll back a mutation/config/flag action | Action handler plus SafetyGate, local gate checks, simplicity checks, and checkpoint restore | A learned head may suggest; it cannot bypass quality, attestation, rollback, or baseline-update authority | Context-dependent suggestion only; acceptance stays gated |
+| Whether to compact a slot / manage context and when to checkpoint | Explicit `slot_compact` action plus interval/shutdown checkpoint logic | Compaction inputs and checkpoint durability are operational safeguards, not an unconstrained planner preference | Split: candidate compaction timing may be contextual; durability rules uniform |
+| Whether to retain and surface prior strategy/convention memory | Bounded StrategyStore retrieval and planner-prompt construction | Visibility, bounds, provenance, and no-crash fallback behavior are deterministic | Context-dependent retrieval/ranking candidate, not free-form memory authority |
+| Whether to stop, pause, or escalate for review | Loop caps on meta/skip/rejected drafts plus operator/authority gates and terminal checkpointing | Operator boundaries, trust-boundary writes, and loud-stop conditions remain human/deterministic | Uniform rule / retain deterministic; only risk prediction could be learned |
+
+- [x] **OC-0.1** Enumerate the per-turn decisions Claude makes in the autopilot loop today. Read `scripts/autopilot/` and the autopilot handoff to inventory: which model to dispatch to, when to plan vs execute, when to compact context, when to verify, when to terminate. Produce a table. ✅ 2026-07-29 — committed controller inventory above; it separates planner suggestions from the deterministic/human gates that must remain outside any learned head.
 - [ ] **OC-0.2** For each decision in the table, mark whether it is (a) routinely-uniform (Claude always picks the same option in similar contexts — codifiable), (b) genuinely-context-dependent (would need a learned head), or (c) currently-arbitrary (needs a clearer rule before being learned).
 - [ ] **OC-0.3** Identify the fitness signal: what quantity would the learned head be optimising? Per-task pass rate is too narrow for an autopilot loop. Possible candidates: pass-rate × token-cost, time-to-completion, autopilot trial success, eval-tower aggregate score across a session.
 - [ ] **OC-0.4** Cost-benefit estimate: how many Claude tokens per autopilot run today, and what fraction is spent on the decisions the head would replace? If <20%, defer indefinitely. If >50%, this becomes a real candidate.
