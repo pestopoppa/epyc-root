@@ -90,7 +90,7 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 13 | `eval-tower-verification.md:522` | de-anchoring | none | S | `autopilot.py:1431`, `paired_stats.py` | Unify autopilot's 2nd McNemar producer onto `verdict_from_result` |
 | 14 | ~~`minddr-deep-research-mode.md:207`~~ **✅ CLOSED 2026-07-29** | search-time contamination | none | S | `minddr-deep-research-mode.md` | Demote BrowseComp/WideSearch/xbench anchors to observation-grade |
 | 15 | `engram-conditional-memory.md:379` | retrieval-policy rider | none | S | `engram-…md`, `unified-trace-memory-service.md` | Correct the ReasoningBank ranking claim in retrieval notes |
-| 16 | `unified-trace-memory-service.md:211` | UTM-M4 | none | S | `src/trace/harness_schema.py` | Mine ReasoningBank repo for its 3 prompts + JSON schema |
+| 16 | ~~`unified-trace-memory-service.md:211`~~ **✅ CLOSED 2026-07-29** | UTM-M4 | none | S | `src/trace/harness_schema.py` | Mine ReasoningBank repo for its 3 prompts + JSON schema |
 | 17 | `autopilot-decision-plane-audit-2026-07-22.md:399` | deliverables | none | S | `q_scorer.py`, `episodic_store.py` | Apply find-or-update to `_update_escalation_memory` append-only rows |
 | 18 | ~~`orchestration-robustness-audit-2026-07-11.md:240`~~ **✅ CLOSED 2026-07-29** | faiss orphans | none | S | `orchestration/repl_memory/faiss_store.py` | Startup sweep unlinking old unopened faiss tmp orphans |
 | 19 | ~~`autopilot-control-plane-integration.md:23`~~ **✅ CLOSED 2026-07-29** | AP-3b.2 | none | S | `autopilot-control-plane-integration.md` | Decide whether draft-tree belongs in AP-3 |
@@ -1515,7 +1515,7 @@ re-grep before assigning.
 - L208 | none | M | Y | AP-29 gate in autopilot-continuous-optimization | UTM-M1 adopt append-only store shape retaining raw trajectories | src/trace/store.py
 - L209 | none | M | N | - | UTM-M2 scope additive dual-layer experience bank | src/trace/store.py, harness_schema.py
 - L210 | none | M | Y | - | UTM-M3 add auditable delete verb + When-NOT-to-Use to skill records | repl_memory/memory_actions.py
-- L211 | none | S | Y | - | **READY** UTM-M4 mine ReasoningBank repo for 3 prompts and JSON schema | src/trace/harness_schema.py
+- L211 | none | S | Y | - | **CLOSED 2026-07-29** — source audit records success/failure, judge, MaTTS prompts and `induce_memory.py` JSONL shape | UTM-M4 mine ReasoningBank repo for 3 prompts and JSON schema | src/trace/harness_schema.py
 - L215 | cpu | L | Y | explicitly unblocked | UTM-M5 build per-window success-rate-vs-store-size curve instrument | scripts/analysis/, data/trace/events.sqlite
 - L219 | none | S | Y | - | **CLOSED 2026-07-29** — records fixed-update-schedule context-budget competition as distinct from accumulated-store late decay | UTM-M6 file EvoMemBench 128K context-competition failure mode | handoff, intake_index.yaml
 - L220 | none | M | N | - | UTM-M7 make retrieval injection budget-conditional | navigation.py, src/retrieval/
