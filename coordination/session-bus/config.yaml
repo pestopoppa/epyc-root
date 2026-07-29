@@ -22,13 +22,16 @@ roster:
   # (zero coverage found: no file under tests/ references session_bus, while the bus is
   # now load-bearing for coordination). lanes:[none] — this main must never take an
   # inference lane, so it cannot contend with the codex main running G3/E8.
-  - {id: codex-bus-tests,   role: main,              lanes: [none],           endpoint: "tmux:agent",   drain: boundary}
+  - {id: codex-bus-tests,   role: retired,           lanes: [],               endpoint: "tmux:agent:codex-bus-tests",   drain: boundary}
   # Added by coordinator-agent 2026-07-28 on operator direction, after codex reported the MI210
   # idle with all legacy campaign GPU inference terminal. Owns gpu-serving-tie-in-program P2-1
   # (role-agnostic resident lane) and P2-3 (Stage-0 hardening). lanes:[none, gpu] — it may hold
   # the GPU lane, but NEVER cpu: the codex main runs CPU-side E8/G3 work and P1-2's E5 grid has
   # a ~2026-07-31 deadline on this host.
-  - {id: claude-gpu-lane,   role: main,              lanes: [gpu, none],      endpoint: "tmux:agent",   drain: boundary}
+  # STOOD DOWN 2026-07-29T12:40Z, operator-approved. Wrapped and verified before closing:
+  # tierc-10d-crash-window-durability pushed, 0 unpushed in orchestrator and epyc-root, 0 unread.
+  # Row kept, not deleted — queue rows, cursors and its inbox/outbox are keyed on this identity.
+  - {id: claude-gpu-lane,   role: retired,           lanes: [],               endpoint: "tmux:agent:claude-gpu-lane",   drain: boundary}
   # Added by coordinator-agent 2026-07-28 on operator direction. Fable 5 at xhigh effort,
   # READ-ONLY auditor of the E8 harness contract set. Rationale: three consecutive failed-closed
   # cycles each surfaced a DIFFERENT defect in a different layer (snapshot publisher binding,
@@ -36,7 +39,7 @@ roster:
   # violations one run-cycle at a time. A fresh reviewer reading the whole harness at once can
   # find the remainder statically. lanes: [none] — it must never take an inference lane or a
   # region claim; codex owns E8 and the tail regeneration still to come.
-  - {id: fable-auditor,     role: reviewer,          lanes: [none],           endpoint: "tmux:agent",   drain: boundary}
+  - {id: fable-auditor,     role: reviewer,          lanes: [none],           endpoint: "tmux:agent:fable-auditor",   drain: boundary}
 
 authority:
   within_lane: [self]
@@ -81,7 +84,10 @@ caps:
   # 4 = one free slot above the steady state of 3 live mains (codex,
   # coordinator-agent, claude-gpu-lane). Operator decision, 2026-07-28.
   # An uncountable live set (tmux unreachable, session absent) REFUSES.
-  max_concurrent_mains: 4
+  # Raised 4 -> 7 by coordinator-agent 2026-07-29 on operator direction: parallelise the
+  # withheld tier-B/tier-C audit findings across additional mains ahead of the reboot.
+  # Concurrency semantics (C9): counts LIVE roster windows, so closing a main returns its slot.
+  max_concurrent_mains: 7
   triage_calls_per_day: 0
 
 leases:
