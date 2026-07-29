@@ -111,6 +111,31 @@ tightly-gated GPU residency (the danger was VRAM *scarcity*).
 - `K_gpu` and per-instance `-np` sizing.
 - Residency-scheduler home: autopilot's Phase-2 actuator vs a distinct orchestrator-runtime component.
 
+### GAP (filed 2026-07-29, fable-auditor via claude-gpu-lane) — GPU **host threads** are an implicit consumer with no slot
+
+This design models the GPU as a **placement target** and `q0..q3` as the CPU resource set. It does
+not model the CPU threads the GPU lane's own **host submission threads** occupy (measured shape:
+8 threads, currently logical 184-191). Today they are an **implicit consumer**: they consume CPU
+threads with no slot, no lease and no epoch, so the daemon's quiesce-drain machinery cannot cover
+them, and the lane's true CPU footprint is invisible to the fabric that is supposed to arbitrate it.
+
+**This needs zero parallel machinery** — the ratified frame already fits: extend the resource set
+(`q0..q3` **+ `gpu-host`**) and give the lane's host threads a slot-shaped roster entry with a
+lease, exactly like any other tenant. Leases sit above the flock per the contract, so the existing
+axioms hold unchanged.
+
+Recorded now, **built later**: this is the durable home for whichever host-thread reservation wins
+(a `gpu-host` region name, or a static SMT carve on the hosting quarter), and that choice is not
+due until the lane-residency verdict. The point of filing it now is that **the fabric must not be
+finalised without it** — a resource set that omits a known consumer will read as complete.
+
+⚠ Do not assume the reservation lands on `q3`: the MI210 is **NUMA node 1**-attached
+(sysfs `numa_node=1`), so today's 184-191 placement is already cross-node and device-local
+candidates were never measured. See `gpu-serving-tie-in-program.md` → **P2-5j**, which must run
+before any carve is minted.
+
+- [ ] Model GPU host threads as a fabric slot (`gpu-host`) — design only, gated on the residency verdict
+
 ## Task list (all GATED — post-v7-promotion + post-E5; nothing starts before then)
 - [x] Architecture designed + reconciled against the live placement fabric ✅ 2026-07-20
 - [ ] **Consume E5** — set the CPU (N,K) provisioning + resolve the lanes question from the sweep
