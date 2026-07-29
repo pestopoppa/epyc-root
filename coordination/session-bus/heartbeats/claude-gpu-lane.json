@@ -1,6 +1,6 @@
 {
   "agent": "claude-gpu-lane",
-  "state": "working",
+  "state": "idle",
   "task_id": "P2-2-tenant-landing",
-  "ts": "2026-07-29T12:56:59+00:00"
+  "ts": "2026-07-29T13:05:05+00:00"
 }
