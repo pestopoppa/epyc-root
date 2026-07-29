@@ -96,7 +96,7 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 19 | `autopilot-control-plane-integration.md:23` | AP-3b.2 | none | S | `autopilot-control-plane-integration.md` | Decide whether draft-tree belongs in AP-3 |
 | 20 | `speculative-decoding-mtp-refresh.md:236` | intake 2a | none | S | `models/*.gguf` headers | Tensor-count header gate for the DavidAU Qwen3.6-27B MTP GGUFs |
 | 21 | `agent-file-prose-compression.md:244` | intake 2a | none | S | `agent-file-prose-compression.md` | Re-source `/doctor` behaviour from the CLI before speccing |
-| 22 | `learned-routing-controller.md:1613` | deep-dive correction | none | S | (guardrail note) | Standing guardrail: do not import intake-866 equivalence framing |
+| 22 | ~~`learned-routing-controller.md:1613`~~ **✅ CLOSED 2026-07-29** | deep-dive correction | none | S | (guardrail note) | Standing guardrail: do not import intake-866 equivalence framing |
 | 23 | ~~`document-parser-table-bench.md:144`~~ **✅ CLOSED 2026-07-29** | consequence | none | S | (guardrail note) | Guardrail: no MinerU/GLM-OCR downloads as odl_bench swaps |
 | 24 | `scorer-fork-drift-audit-2026-07-22.md:257` | residual tasks | none | S | `scripts/benchmark/seeding_legacy.py` | Guard or delete the legacy ComparativeResult reward-injection path |
 | 25 | ~~`autopilot-continuous-optimization.md:1529`~~ **✅ CLOSED 2026-07-29** | AP-32 | none | S | `wiki/agent-architecture.md`, `strategy_store.py` | Strike unmeasured +1.1% claim; guard the dead linter |
@@ -901,7 +901,7 @@ re-grep before assigning.
 - L854 | none | L | Y | P6.2 pass (deferred) | P6.3.1 port TinyRecursiveModels to CPU-only training mode | train_verifier_head.py
 - L855 | none | M | N | P6.3.1 | P6.3.2 apply Augmented-HRM augmentation recipe | train_verifier_head.py
 - L856 | none | M | N | P6.3.2 | P6.3.3 A/B recursive verifier vs P6.2 MLP, Brier gate | train_verifier_head.py
-- L1613 | none | S | Y | - | **READY** Standing guardrail: do not import intake-866 equivalence framing | ?
+- L1613 | none | S | Y | - | **CLOSED 2026-07-29** — retains only the directly testable nearest-success feature; no equivalence-class claim enters policy or acceptance criteria | Standing guardrail: do not import intake-866 equivalence framing | ?
 
 ## lightning-attention-port.md (4)
 - L32 | none | S | N | owner/operator role decision | LQ-1 decide Ring-mini role or park as architecture reference | handoff, model_registry.yaml
