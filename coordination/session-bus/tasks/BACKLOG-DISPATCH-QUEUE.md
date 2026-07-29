@@ -99,7 +99,7 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 22 | `learned-routing-controller.md:1613` | deep-dive correction | none | S | (guardrail note) | Standing guardrail: do not import intake-866 equivalence framing |
 | 23 | `document-parser-table-bench.md:144` | consequence | none | S | (guardrail note) | Guardrail: no MinerU/GLM-OCR downloads as odl_bench swaps |
 | 24 | `scorer-fork-drift-audit-2026-07-22.md:257` | residual tasks | none | S | `scripts/benchmark/seeding_legacy.py` | Guard or delete the legacy ComparativeResult reward-injection path |
-| 25 | `autopilot-continuous-optimization.md:1529` | AP-32 | none | S | `wiki/agent-architecture.md`, `strategy_store.py` | Strike unmeasured +1.1% claim; guard the dead linter |
+| 25 | ~~`autopilot-continuous-optimization.md:1529`~~ **✅ CLOSED 2026-07-29** | AP-32 | none | S | `wiki/agent-architecture.md`, `strategy_store.py` | Strike unmeasured +1.1% claim; guard the dead linter |
 | 26 | `architect-model-selection-bench.md:330` | follow-up tooling | none | S | `scripts/bench/gpu_lib.sh`, `run_arm.sh`, `run_budget.sh` | Promote scratchpad GPU driver scripts into the repo |
 | 27 | ~~`context-folding-progressive.md:113`~~ **✅ CLOSED 2026-07-29** | deep-dive correction | none | S | `context-folding-progressive.md` | Record do-not-prioritize decision for ContextRot harness replication |
 | 28 | `scoring-infra-standardization.md:184` | intake 2a | none | S | `research/intake_index.yaml`, `benchmarks/instruction_precision` | Adopt six-point SWE-bench disclosure standard for intake-916/917/924 |
@@ -236,7 +236,7 @@ re-grep before assigning.
 - L1524 | none | S | Y | AP-19b live run first | AP-42 decide the gepa package pin (0.0.26 vs main) | pyproject.toml
 - L1525 | none | M | Y | AP-19b live evidence | AP-21 re-open gepa_ratio decision on corrected journal facts | autopilot_state.json
 - L1526 | none | M | N | - | AP-29 gate: design episodic-only control arm distiller must beat | knowledge_distiller.py
-- L1529 | none | S | Y | - | AP-32 strike unmeasured +1.1% claim; guard dead linter | wiki/agent-architecture.md, strategy_store.py
+- L1529 | none | S | Y | - | **CLOSED 2026-07-29** — handoff AP-32 records diagnostic-only regression guard and removal of the external-paper-only claim | AP-32 strike unmeasured +1.1% claim; guard dead linter | wiki/agent-architecture.md, strategy_store.py
 - L1530 | none | S | Y | - | Retarget utility-weighted-retrieval concern to live MemRL retriever | repl_memory/retriever.py
 - L1536 | none | M | N | AP-29 gate | AP-29a budget write gate to cheapest adequate local judge | knowledge_distiller.py
 - L1537 | none | M | Y | - | AP-29b replay-compare lexicographic vs scalarized objective selection | autopilot_journal.jsonl
