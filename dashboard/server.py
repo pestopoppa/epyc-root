@@ -11,7 +11,8 @@ Routes
 ------
 GET /                        the kanban page (static HTML, re-read per request)
 GET /health                 ``{"status":"ok"}`` for the stack health probe
-GET /api/handoff_board       compact cards for all four columns (live scan, TTL-cached)
+GET /api/handoff_board       compact cards for all four columns + backlog ratios +
+                             flow (activity_today, activity_window) — live scan, TTL-cached
 GET /api/handoff_detail?id=  full card + scrubbed markdown body (lazy modal load)
 GET /api/handoff_timeline    the git-derived timeline artifact (+ freshness)
 GET /api/kernel              the kernel-R&D dashboard contract (+ freshness)
@@ -34,7 +35,7 @@ import subprocess
 import sys
 import threading
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -109,6 +110,16 @@ _ACT_UNCHECKED_RE = re.compile(r"^\s*[-*] \[ \]")
 
 _ACT_EMPTY = {"commits": 0, "handoffs_touched": 0, "boxes_checked": 0, "boxes_added": 0}
 
+# Trailing-window flow. A completion PERCENTAGE cannot distinguish "nothing is
+# happening" from "running hard on a treadmill" — when new ``- [ ]`` lines are
+# filed about as fast as old ones are checked, the ratio sits still while a lot
+# of work happens. So the board headlines FLOW (closed / filed / net) over a
+# trailing window, derived from the SAME git-log-over-handoffs/ source as
+# ``activity_today`` — just bucketed per day instead of folded to one number.
+_ACT_WINDOW_DAYS = 14
+_ACT_ROLLUPS = (1, 7, 14)
+_ACT_DAY_RE = re.compile(r"^commit:[0-9a-fA-F]+\|(\d{4}-\d{2}-\d{2})$")
+
 
 def _parse_semantic_timestamp(value: object) -> float | None:
     """Parse an ISO-8601 timestamp to Unix epoch seconds."""
@@ -166,6 +177,90 @@ def _activity_today() -> dict:
     if proc.returncode != 0:
         return dict(_ACT_EMPTY)
     return _parse_activity_log(proc.stdout)
+
+
+def _parse_activity_log_by_day(text: str) -> list[dict]:
+    """Fold ``git log --format=commit:%H|%ad -p`` output into PER-DAY counters.
+
+    Same counting rules as :func:`_parse_activity_log` (added ``[x]`` = closed,
+    added ``[ ]`` = filed), bucketed by the commit's local date so a trailing
+    window can be rolled up without a second scanner. Returns newest-day-first.
+    Each row carries a ``_touched`` set of handoff paths, which
+    :func:`_activity_window` unions per window and then strips.
+    """
+    days: dict[str, dict] = {}
+    cur: dict | None = None
+    for line in text.splitlines():
+        m = _ACT_DAY_RE.match(line)
+        if m:
+            cur = days.setdefault(m.group(1), {
+                "date": m.group(1), "commits": 0, "_touched": set(),
+                "boxes_checked": 0, "boxes_added": 0})
+            cur["commits"] += 1
+            continue
+        if cur is None:
+            continue
+        if line.startswith("diff --git "):
+            pm = _ACT_DIFF_PATH_RE.match(line)
+            if pm:
+                cur["_touched"].add(pm.group(1))
+        elif line.startswith("+") and not line.startswith("+++"):
+            body = line[1:]
+            if _ACT_CHECKED_RE.match(body):
+                cur["boxes_checked"] += 1
+            elif _ACT_UNCHECKED_RE.match(body):
+                cur["boxes_added"] += 1
+    return sorted(days.values(), key=lambda r: r["date"], reverse=True)
+
+
+def _activity_rollup(rows: list[dict], days: int, today: str) -> dict:
+    """Sum the last ``days`` calendar days (ending ``today``) of per-day rows."""
+    start = (datetime.fromisoformat(today).date()
+             - timedelta(days=days - 1)).isoformat()
+    sel = [r for r in rows if start <= r["date"] <= today]
+    touched: set[str] = set()
+    for r in sel:
+        touched |= r.get("_touched", set())
+    closed = sum(r["boxes_checked"] for r in sel)
+    filed = sum(r["boxes_added"] for r in sel)
+    return {"days": days, "since": start,
+            "commits": sum(r["commits"] for r in sel),
+            "handoffs_touched": len(touched),
+            "boxes_checked": closed, "boxes_added": filed,
+            "net": filed - closed}
+
+
+def _activity_window(days: int = _ACT_WINDOW_DAYS) -> dict:
+    """Per-day + rolled-up handoff flow over a trailing window.
+
+    ``net`` is filed − closed: NEGATIVE means the backlog shrank (good). Same
+    best-effort contract as :func:`_activity_today` — degrades to empty rollups
+    on any git failure rather than 500ing the board.
+    """
+    today = datetime.now().date().isoformat()
+    empty = {"window_days": days, "today": today, "per_day": [],
+             "rollups": {f"{n}d": {"days": n, "since": today, "commits": 0,
+                                   "handoffs_touched": 0, "boxes_checked": 0,
+                                   "boxes_added": 0, "net": 0}
+                         for n in _ACT_ROLLUPS}}
+    try:
+        proc = subprocess.run(
+            ["git", "-C", str(REPO), "log", f"--since={days} days ago",
+             "--date=format:%Y-%m-%d", "--format=commit:%H|%ad", "-p",
+             "--", "handoffs/"],
+            capture_output=True, text=True, timeout=30, check=False)
+    except (OSError, subprocess.SubprocessError):
+        return empty
+    if proc.returncode != 0:
+        return empty
+    rows = _parse_activity_log_by_day(proc.stdout)
+    rollups = {f"{n}d": _activity_rollup(rows, n, today) for n in _ACT_ROLLUPS}
+    per_day = [{k: v for k, v in r.items() if k != "_touched"}
+               | {"handoffs_touched": len(r["_touched"]),
+                  "net": r["boxes_added"] - r["boxes_checked"]}
+               for r in rows]
+    return {"window_days": days, "today": today,
+            "per_day": per_day, "rollups": rollups}
 
 
 def _read_kernel_contract() -> dict:
@@ -270,6 +365,7 @@ def board_payload(*, force: bool = False) -> dict:
                 file_activity=_load_file_activity(),
                 dirty_ids=_dirty_handoff_ids())
             _board_cache["activity_today"] = _activity_today()
+            _board_cache["activity_window"] = _activity_window()
             _board_cache_ts = now
         payload = dict(_board_cache)
     payload["_freshness"] = {"staleness_class": "fresh", "source": "live-scan"}

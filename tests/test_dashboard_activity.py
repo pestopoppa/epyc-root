@@ -80,6 +80,131 @@ class ParseActivityLogTest(unittest.TestCase):
             self.assertGreaterEqual(v, 0)
 
 
+DAY_SAMPLE = """\
+commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa|2026-07-29
+diff --git a/handoffs/active/foo.md b/handoffs/active/foo.md
++++ b/handoffs/active/foo.md
+-- [ ] port the kernel
++- [x] port the kernel
++- [ ] validate on MI210
++- [ ] write the report
+commit:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb|2026-07-28
+diff --git a/handoffs/active/foo.md b/handoffs/active/foo.md
++- [x] older close
+diff --git a/handoffs/active/bar.md b/handoffs/active/bar.md
++- [x] another close
+commit:cccccccccccccccccccccccccccccccccccccccc|2026-07-20
+diff --git a/handoffs/active/baz.md b/handoffs/active/baz.md
++- [ ] filed long ago
+"""
+
+
+class ParseActivityLogByDayTest(unittest.TestCase):
+    """Per-day bucketing must reproduce the same counting rules as the
+    single-number fold — it is the SAME git source, only bucketed."""
+
+    def setUp(self):
+        self.rows = server._parse_activity_log_by_day(DAY_SAMPLE)
+        self.by_date = {r["date"]: r for r in self.rows}
+
+    def test_newest_day_first(self):
+        self.assertEqual([r["date"] for r in self.rows],
+                         ["2026-07-29", "2026-07-28", "2026-07-20"])
+
+    def test_per_day_counters(self):
+        d = self.by_date["2026-07-29"]
+        self.assertEqual(d["commits"], 1)
+        self.assertEqual(d["boxes_checked"], 1)
+        self.assertEqual(d["boxes_added"], 2)
+        self.assertEqual(d["_touched"], {"handoffs/active/foo.md"})
+        d = self.by_date["2026-07-28"]
+        self.assertEqual(d["boxes_checked"], 2)
+        self.assertEqual(d["boxes_added"], 0)
+        self.assertEqual(len(d["_touched"]), 2)
+
+    def test_empty_log(self):
+        self.assertEqual(server._parse_activity_log_by_day(""), [])
+
+    def test_lines_before_first_commit_are_ignored(self):
+        self.assertEqual(server._parse_activity_log_by_day("+- [x] orphan"), [])
+
+
+class ActivityRollupTest(unittest.TestCase):
+    def setUp(self):
+        self.rows = server._parse_activity_log_by_day(DAY_SAMPLE)
+
+    def test_one_day_window_matches_today_only(self):
+        r = server._activity_rollup(self.rows, 1, "2026-07-29")
+        self.assertEqual(r["since"], "2026-07-29")
+        self.assertEqual((r["boxes_checked"], r["boxes_added"]), (1, 2))
+
+    def test_net_is_filed_minus_closed(self):
+        r = server._activity_rollup(self.rows, 1, "2026-07-29")
+        self.assertEqual(r["net"], 1)          # 2 filed − 1 closed: backlog grew
+        r = server._activity_rollup(self.rows, 7, "2026-07-29")
+        self.assertEqual((r["boxes_checked"], r["boxes_added"]), (3, 2))
+        self.assertEqual(r["net"], -1)         # negative: backlog shrank
+
+    def test_window_excludes_days_outside_it(self):
+        r7 = server._activity_rollup(self.rows, 7, "2026-07-29")
+        self.assertEqual(r7["commits"], 2)     # the 07-20 commit is out of range
+        r14 = server._activity_rollup(self.rows, 14, "2026-07-29")
+        self.assertEqual(r14["commits"], 3)
+        self.assertEqual(r14["since"], "2026-07-16")
+
+    def test_handoffs_touched_is_unioned_not_summed(self):
+        # foo.md appears on both 07-29 and 07-28; bar.md only on 07-28.
+        r = server._activity_rollup(self.rows, 7, "2026-07-29")
+        self.assertEqual(r["handoffs_touched"], 2)
+
+    def test_empty_rollup_is_zeroed(self):
+        r = server._activity_rollup([], 7, "2026-07-29")
+        self.assertEqual(
+            (r["commits"], r["boxes_checked"], r["boxes_added"], r["net"]),
+            (0, 0, 0, 0))
+
+
+class ActivityWindowLiveTest(unittest.TestCase):
+    """Smoke the real git path and lock the today-consistency invariant: the 1d
+    roll-up is the SAME source as ``activity_today``, so their box counts agree."""
+
+    def test_shape_and_rollups(self):
+        w = server._activity_window()
+        self.assertEqual(w["window_days"], server._ACT_WINDOW_DAYS)
+        self.assertEqual(set(w["rollups"]),
+                         {f"{n}d" for n in server._ACT_ROLLUPS})
+        for r in w["rollups"].values():
+            self.assertEqual(r["net"], r["boxes_added"] - r["boxes_checked"])
+            for k in ("commits", "boxes_checked", "boxes_added", "handoffs_touched"):
+                self.assertIsInstance(r[k], int)
+                self.assertGreaterEqual(r[k], 0)
+
+    def test_per_day_rows_have_no_internal_set(self):
+        for row in server._activity_window()["per_day"]:
+            self.assertNotIn("_touched", row)
+            self.assertIsInstance(row["handoffs_touched"], int)
+            self.assertEqual(row["net"], row["boxes_added"] - row["boxes_checked"])
+
+    def test_one_day_rollup_agrees_with_activity_today(self):
+        w = server._activity_window()
+        today = server._activity_today()
+        one = w["rollups"]["1d"]
+        self.assertEqual(one["boxes_checked"], today["boxes_checked"])
+        self.assertEqual(one["boxes_added"], today["boxes_added"])
+        self.assertEqual(one["commits"], today["commits"])
+
+
+class BoardPayloadFlowTest(unittest.TestCase):
+    def test_board_exposes_both_ratios_and_flow(self):
+        payload = server.board_payload(force=True)
+        self.assertIn("activity_window", payload)
+        self.assertIn("rollups", payload["activity_window"])
+        # Both scopes must stay distinguishable — open scope vs all scope.
+        bk = payload["backlog"]
+        self.assertIn("pct_open_done", bk)
+        self.assertIn("pct_all_done", bk)
+
+
 class KernelFreshnessTests(unittest.TestCase):
     """Regression lock: the kernel badge classifies DATA recency (max runs[].ts),
     never the export-file / ``generated_at`` proxy (the audited 'fresh forever'

@@ -50,6 +50,36 @@
   .legend{display:flex;gap:14px;font-size:11px;color:var(--muted);margin-top:6px;flex-wrap:wrap}
   .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:middle}
 
+  /* flow headline — the primary view: is the backlog actually moving? */
+  .flow{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--border);
+    border-radius:10px;padding:16px 18px 14px;margin-bottom:20px}
+  .flow h2{font-size:13px;margin:0 0 4px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+  .flow .why{font-size:11px;color:var(--muted);margin:0 0 14px}
+  .flow-head{display:flex;gap:34px;flex-wrap:wrap;align-items:flex-end}
+  .flow-net{display:flex;flex-direction:column;gap:2px}
+  .flow-net .n{font-size:52px;font-weight:800;line-height:.95;font-variant-numeric:tabular-nums}
+  .flow-net .n.good{color:var(--good)} .flow-net .n.bad{color:var(--high)} .flow-net .n.flat{color:var(--muted)}
+  .flow-net .l{font-size:12px;color:var(--muted)}
+  .flow-net .verdict{font-size:12px;font-weight:600;margin-top:2px}
+  .flow-net .verdict.good{color:var(--good)} .flow-net .verdict.bad{color:var(--high)} .flow-net .verdict.flat{color:var(--muted)}
+  .flow-split{display:flex;gap:24px;flex-wrap:wrap}
+  .flow-split .fs{display:flex;flex-direction:column;gap:2px}
+  .flow-split .fs .n{font-size:28px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+  .flow-split .fs .n.closed{color:var(--good)} .flow-split .fs .n.filed{color:var(--high)}
+  .flow-split .fs .l{font-size:11px;color:var(--muted)}
+  .flow-rows{margin-top:14px;border-top:1px solid var(--border);padding-top:10px;
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:6px 22px}
+  .flow-row{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .flow-row .w{color:var(--text);font-weight:600;margin-right:6px}
+  .flow-row .c{color:var(--good)} .flow-row .f{color:var(--high)}
+  .flow-row .nt.good{color:var(--good);font-weight:600}
+  .flow-row .nt.bad{color:var(--high);font-weight:600}
+  .flow-row .nt.flat{color:var(--muted);font-weight:600}
+  .flow-spark{display:flex;align-items:flex-end;gap:2px;height:34px;margin-top:12px}
+  .flow-spark .b{flex:1;min-width:3px;display:flex;flex-direction:column;justify-content:flex-end;height:100%}
+  .flow-spark .b i{display:block;border-radius:1px}
+  .flow-foot{font-size:11px;color:var(--muted);margin-top:8px}
+
   /* backlog banner */
   .backlog{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--border);
     border-radius:10px;padding:14px 18px;margin-bottom:20px}
@@ -64,7 +94,7 @@
   .bk-progress{display:flex;align-items:center;gap:12px}
   .bk-progress .bk-bar{flex:1}
   .bk-progress .pct{
-    font-size:13px;font-weight:600;color:var(--good);min-width:98px;text-align:right;
+    font-size:13px;font-weight:600;color:var(--good);min-width:158px;text-align:right;
     display:flex;flex-direction:column;align-items:flex-end;gap:1px;line-height:1.15
   }
   .bk-progress .pct .pct-main{font-size:13px;font-weight:700;color:var(--good)}
@@ -226,8 +256,19 @@
 </header>
 
 <main>
+  <section class="flow">
+    <h2>Flow — is the backlog moving?</h2>
+    <p class="why">Tasks closed vs newly filed, from handoff commits. Net = filed − closed;
+      <b>negative is good</b> (backlog shrinking). A completion % can't tell a stalled backlog
+      from a fast treadmill — this can.</p>
+    <div class="flow-head" id="flow-head"><span class="muted">loading…</span></div>
+    <div class="flow-spark" id="flow-spark"></div>
+    <div class="flow-rows" id="flow-rows"></div>
+    <div class="flow-foot" id="flow-foot"></div>
+  </section>
+
   <section class="backlog">
-    <h2>Outstanding backlog — how far from done</h2>
+    <h2>Outstanding backlog — how far from done <span class="muted" style="text-transform:none;font-weight:400;letter-spacing:0">(context — see Flow above for movement)</span></h2>
     <div class="bk-stats" id="backlog-stats"><span class="muted">loading…</span></div>
     <div class="bk-priority" id="backlog-priority"></div>
     <div class="bk-stall" id="backlog-stall"></div>
@@ -404,6 +445,88 @@ function renderBoard(data){
   $("#subline").textContent =
     `${data.counts.active} active · ${data.counts.blocked} blocked · ${data.counts.completed} completed · ${data.counts.archived} archived${gen}`;
   renderBacklog(data.backlog||{}, data.activity_today);
+  renderFlow(data.activity_window, data.activity_today);
+}
+
+/* ---------------- flow headline ----------------
+   Net = filed − closed. Negative = backlog shrinking = good, so the colour is
+   inverted relative to the raw magnitude. Same source as activity_today (git log
+   -p over handoffs/), just bucketed per day — no second source of truth. */
+function netCls(n){ return n<0 ? "good" : (n>0 ? "bad" : "flat"); }
+function netStr(n){ return (n>0?"+":"") + n; }
+function flowVerdict(n){
+  if(n<0) return "backlog shrinking";
+  if(n>0) return "backlog growing — treadmill";
+  return "breaking even";
+}
+function renderFlow(win, act){
+  const head=$("#flow-head"), rows=$("#flow-rows"), spark=$("#flow-spark");
+  if(!head) return;
+  const roll = (win && win.rollups) || {};
+  // Prefer the 7d roll-up as the headline; today alone is too noisy.
+  const primary = roll["7d"] || roll["1d"] ||
+    (act ? {days:1, boxes_checked:act.boxes_checked, boxes_added:act.boxes_added,
+            net:(act.boxes_added||0)-(act.boxes_checked||0), commits:act.commits,
+            handoffs_touched:act.handoffs_touched} : null);
+  head.innerHTML = "";
+  if(!primary){ head.innerHTML = '<span class="muted">flow unavailable (no git history)</span>'; return; }
+  const net = primary.net!=null ? primary.net : (primary.boxes_added-primary.boxes_checked);
+  const cls = netCls(net);
+  const nd = el("div","flow-net");
+  nd.innerHTML = '<span class="n '+cls+'">'+esc(netStr(net))+'</span>'+
+    '<span class="l">net tasks over '+esc(primary.days)+' days (filed − closed)</span>'+
+    '<span class="verdict '+cls+'">'+esc(flowVerdict(net))+'</span>';
+  head.appendChild(nd);
+  const sp = el("div","flow-split");
+  sp.innerHTML =
+    '<div class="fs"><span class="n closed">'+esc(primary.boxes_checked)+'</span><span class="l">tasks closed ('+esc(primary.days)+'d)</span></div>'+
+    '<div class="fs"><span class="n filed">'+esc(primary.boxes_added)+'</span><span class="l">tasks newly filed ('+esc(primary.days)+'d)</span></div>'+
+    '<div class="fs"><span class="n">'+esc(primary.commits)+'</span><span class="l">handoff commits ('+esc(primary.days)+'d)</span></div>'+
+    '<div class="fs"><span class="n">'+esc(primary.handoffs_touched)+'</span><span class="l">handoffs touched ('+esc(primary.days)+'d)</span></div>';
+  head.appendChild(sp);
+
+  // Roll-up rows: today / 7d / 14d, so the trend is visible next to the headline.
+  if(rows){
+    rows.innerHTML = "";
+    const labels = {"1d":"today", "7d":"last 7 days", "14d":"last 14 days"};
+    for(const k of ["1d","7d","14d"]){
+      const r = roll[k]; if(!r) continue;
+      const n = r.net!=null ? r.net : (r.boxes_added-r.boxes_checked);
+      const d = el("div","flow-row");
+      d.innerHTML = '<span class="w">'+esc(labels[k])+'</span>'+
+        '<span class="c">'+esc(r.boxes_checked)+' closed</span> · '+
+        '<span class="f">'+esc(r.boxes_added)+' filed</span> · net '+
+        '<span class="nt '+netCls(n)+'">'+esc(netStr(n))+'</span>';
+      rows.appendChild(d);
+    }
+    if(act && act.commits===0){
+      const d = el("div","flow-row");
+      d.innerHTML = '<span class="muted">no handoff commits yet today</span>';
+      rows.appendChild(d);
+    }else if(act && act.boxes_checked===0 && act.commits>0){
+      const d = el("div","flow-row");
+      d.innerHTML = '<span class="nt bad">today: prose-only updates — no checkboxes flipped</span>';
+      rows.appendChild(d);
+    }
+  }
+
+  // Per-day sparkline: closed above the axis (green), filed below (amber).
+  if(spark){
+    spark.innerHTML = "";
+    const days = Array.isArray(win && win.per_day) ? win.per_day.slice().reverse() : [];
+    const max = days.reduce((m,r)=>Math.max(m, r.boxes_checked||0, r.boxes_added||0), 0) || 1;
+    for(const r of days){
+      const b = el("div","b");
+      const hc = Math.round(16*(r.boxes_checked||0)/max);
+      const hf = Math.round(16*(r.boxes_added||0)/max);
+      b.innerHTML = '<i style="height:'+hc+'px;background:var(--good)"></i>'+
+                    '<i style="height:1px;background:#30363d"></i>'+
+                    '<i style="height:'+hf+'px;background:var(--high)"></i>';
+      b.title = r.date+": "+(r.boxes_checked||0)+" closed, "+(r.boxes_added||0)+" filed (net "+
+                netStr(r.net!=null?r.net:((r.boxes_added||0)-(r.boxes_checked||0)))+")";
+      spark.appendChild(b);
+    }
+  }
 }
 function renderBacklog(bk, act){
   const stats = $("#backlog-stats"); if(!stats) return;
@@ -500,7 +623,12 @@ function renderBacklog(bk, act){
     if(pctOpen==null){
       pctEl.textContent = "—";
     }else{
-      pctEl.appendChild(el("span","pct-main", pctOpen+"% open backlog"));
+      pctEl.appendChild(el("span","pct-main", Number(pctOpen).toFixed(1)+"% done · open scope"));
+    }
+    // Keep BOTH ratios available and unambiguously distinguished: open scope
+    // (active+blocked handoffs) vs all scope (incl. completed/archived).
+    if(bk.pct_all_done!=null){
+      pctEl.appendChild(el("span","pct-sub", Number(bk.pct_all_done).toFixed(1)+"% done · all scope"));
     }
   }
 
@@ -793,6 +921,15 @@ async function loadTimeline(){
     ?d.totals.tasks_newly_filed:d.totals.tasks_opened))||0;
   $("#tasks-total").textContent = (completed||filed)
     ?`(${completed} completed · ${filed} newly filed)`:"";
+  // Intake belongs next to the flow headline too: a completion line without an
+  // intake line is exactly the blindness this dashboard had.
+  const foot = $("#flow-foot");
+  if(foot){
+    foot.textContent = (completed||filed)
+      ? `all tracked history: ${filed} tasks newly filed · ${completed} completed `
+        + `(net ${filed-completed>0?"+":""}${filed-completed}) — see the weekly task-flow chart below`
+      : "";
+  }
   setBadge("#timeline-badge", (d._freshness&&d._freshness.staleness_class)||"fresh");
 }
 
