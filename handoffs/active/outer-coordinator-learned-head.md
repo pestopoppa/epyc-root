@@ -1,8 +1,8 @@
 # Outer-Coordinator Learned Head (Claude-driven loop)
 
-**Status**: REFRESHED 2026-07-28 — SCOPING/PARKING ONLY; no implementation and no OC-1 draft until dependency gates or a measured Claude-loop bottleneck exist
+**Status**: TERMINAL `not_pursued` 2026-07-29 — OC-0 completed; no implementation or OC-1 draft is justified without a measured Claude-loop bottleneck and decision-level provenance
 **Created**: 2026-04-26 (via Trinity deep-dive — intake-474, ICLR 2026)
-**Updated**: 2026-07-28 (parked-status review; dependency and measured-bottleneck triggers remain closed)
+**Updated**: 2026-07-29 (OC-0 terminal disposition)
 **Priority**: SPECULATIVE (long-term; do not start before tri-role + DAR + LRC Phase 4 land)
 **Categories**: agent_architecture, autonomous_research, routing_intelligence
 **Related**: [tri-role-coordinator-architecture.md](tri-role-coordinator-architecture.md), [meta-harness-optimization.md](meta-harness-optimization.md), [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md)
@@ -28,6 +28,24 @@ either local trigger.
 - **Disposition**: remain active but parked. Do not start OC-0 or draft OC-1;
   re-review only when a dependency gate lands or a measured outer-loop
   bottleneck is attached.
+
+## Terminal OC-0 disposition — `not_pursued` (2026-07-29)
+
+OC-0.1 through OC-0.6 are complete. They separate the few contextual proposal
+choices from deterministic or human enforcement, define a same-era outcome
+vector, and compare the published design space. The decisive result is
+negative: no durable planner/critic token ledger exists, so the replaceable
+token fraction cannot be estimated honestly; current quality/provenance data
+also cannot support a trainable decision label. This is insufficient evidence
+to enter OC-1, not evidence that a learned head is ineffective.
+
+**Decision:** close as `not_pursued — insufficient ROI evidence and blocking
+provenance`, with no code, model, benchmark, or control-plane change. Reopen
+only on a new, durable observation package containing per-decision provider
+usage, realized outcome linkage, and current-era paired quality evidence. The
+physical move to `handoffs/completed/` is deferred solely until concurrent
+writers release the active handoffs that link here; moving now would break
+their live references.
 
 ## 2026-05-28 Audit Reset — Executor Start Here
 
@@ -188,7 +206,7 @@ observation metric, not a promotion or deployment gate.
   Deliverable: this table appended to the OC-0 scope document, with explicit framing as competitive intelligence per user feedback (2026-04-28). Output is a markdown sub-section, no code. ~1 session.
 
 
-- [ ] **OC-0.5** Decide whether to escalate to OC-1+ (write the rest of this handoff) or to close as `not_pursued — insufficient ROI / blocking dependencies`. The OC-0.6 design-space-reference table is one input to this decision, alongside OC-0.1–0.4 (decision inventory + fitness signal + cost-benefit). Either outcome is fine; the scoping is the deliverable.
+- [x] **OC-0.5** Decide whether to escalate to OC-1+ (write the rest of this handoff) or to close as `not_pursued — insufficient ROI / blocking dependencies`. The OC-0.6 design-space-reference table is one input to this decision, alongside OC-0.1–0.4 (decision inventory + fitness signal + cost-benefit). Either outcome is fine; the scoping is the deliverable. ✅ 2026-07-29 — `not_pursued`: no observed planner/critic token ledger, no replaceable-token fraction, and no current decision-level provenance; reopen only with the named observation package.
 
 **Gate**: OC-0 must complete and be reviewed before any OC-1+ work is drafted. If escalated, OC-1+ phases will be written based on OC-0's scope.
 
