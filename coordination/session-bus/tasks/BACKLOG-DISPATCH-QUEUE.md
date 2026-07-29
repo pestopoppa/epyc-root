@@ -104,7 +104,7 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 27 | ~~`context-folding-progressive.md:113`~~ **✅ CLOSED 2026-07-29** | deep-dive correction | none | S | `context-folding-progressive.md` | Record do-not-prioritize decision for ContextRot harness replication |
 | 28 | ~~`scoring-infra-standardization.md:184`~~ **✅ CLOSED 2026-07-29** | intake 2a | none | S | `research/intake_index.yaml`, `benchmarks/instruction_precision` | Adopt six-point SWE-bench disclosure standard for intake-916/917/924 |
 | 29 | ~~`tool-output-compression.md:442`~~ **✅ CLOSED 2026-07-29** | intake 2026-07-21 | none | S | `scripts/utils/compress_tool_output.py` | Bias Phase-3d fallback chain toward observation-dropping first |
-| 30 | `decision-aware-routing.md:185` | DAR-5 | none | S | `learned-routing-controller.md` | Document cold-start note for LRC P5 onboarding |
+| 30 | ~~`decision-aware-routing.md:185`~~ **✅ CLOSED 2026-07-29** | DAR-5 | none | S | `learned-routing-controller.md` | Document cold-start note for LRC P5 onboarding |
 | 31 | ~~`ernie-image-turbo-evaluation.md:139`~~ **✅ CLOSED 2026-07-29** | progress-checklist | none | S | `research/deep-dives/` ernie dive | Record LongText-Bench harmonized ranking in the deep dive |
 | 32 | ~~`intake-derived-work-2026-07-25.md:166`~~ **✅ CLOSED 2026-07-29** | P1b DFlash | none | S | capability registry yaml | Re-triage the stale dflash registry `forbid` row |
 | 33 | ~~`model-stack-single-source-update-pipeline.md:325`~~ **✅ CLOSED 2026-07-29** | outstanding | none | S | `seeding_rewards.py`, `corpus_quality_gate.py`, `kv_compress.py` | Keep 3 re-audited surfaces unchurned absent a new duplicated fact |
@@ -437,7 +437,7 @@ re-grep before assigning.
 - L182 | none | L | N | gated behind reward redesign | Learned d-dim model identity vector | bilinear_scorer.py
 - L183 | none | M | N | needs DAR-5.2 | Concatenate IRT 2-D output onto BGE embedding | irt_scorer.py
 - L184 | none | M | Y | needs DAR-5.2/5.3 | Offline A/B versus frozen DAR-4 on val set | scripts/analysis/
-- L185 | none | S | Y | - | **READY** Document cold-start note for LRC P5 onboarding | learned-routing-controller.md
+- L185 | none | S | Y | - | **CLOSED 2026-07-29** — DAR-5.5 records spec-only initialization, observed-outcome refinement, and the reward-redesign prerequisite | Document cold-start note for LRC P5 onboarding | learned-routing-controller.md
 - L213 | none | M | Y | DAR-6 frozen per fable5-findings-02 | Build 0-1 injection-risk trigger score for fanout | src/classifiers/
 - L216 | cpu | L | N | inference gate J14 + operator approval | Two-arm injection-suite A/B: escalation vs swarm fanout | src/swarm_fanout.py
 - L409 | cpu | L | N | eval-tower P8 calibration gate + J10 | Calibrated uncertainty escalation signal orthogonal to Q | difficulty_signal.py
