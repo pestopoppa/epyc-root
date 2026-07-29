@@ -77,7 +77,7 @@ this repo, and settle two that nobody owns at all.
       at zero added inference. Keep this line only as the pointer; **no arm runs here.**
 - [ ] E3 — Add the **non-RLM long-context baseline arm** that neither source has. Without it, no
       depth number can say whether recursion beats simply sending the context.
-  - [ ] E3a — **Rider (2026-07-29 intake): intake-925 Table 1 supplies BOTH arms E3 says neither
+  - [x] E3a — **Rider (2026-07-29 intake) ✅ 2026-07-29**: epyc-root `683f70de` incorporated intake-925 Table 1, which supplies BOTH arms E3 says neither
         source has** — RLM vs a coding agent (same GPT-5 backbone, same n=200 subset) **and RLM vs
         GPT-5 full-context**, where **RLM LOSES by 7.00 points on LongBench (54.00 vs 61.00)** and
         ties on Oolong-Real (23.07 vs 22.45). Same-backbone deltas: Oolong-Syn 64.38→71.75;
