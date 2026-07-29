@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# BUS-GATE: REPIN-E8-V4-INTEGRITY-AND-AMENDMENT-TEST-20260729
 """One-signature ceremony: re-pin the E8 v4 integrity trio + the amendment test chain.
 
 PREPARED 2026-07-29 by fable-auditor (task prepare-v4-manifest-repin); APPLY ONLY
@@ -446,8 +447,22 @@ def main(argv: list[str] | None = None) -> int:
         for p in post:
             print(f"  {p}", file=sys.stderr)
         return 1
+    # BUS-GATE receipt (operator convention, 2026-07-29): a successful apply
+    # writes <name>.receipt.json so the coordinator-daemon join can tell an
+    # applied gate from an unrun or abandoned one.
+    receipt_path = root / "scripts/operator/prepare_e8_integrity_repin_20260729.receipt.json"
+    receipt_path.parent.mkdir(parents=True, exist_ok=True)
+    receipt_path.write_text(json.dumps({
+        "schema": "epyc.bus_gate_receipt.v1",
+        "bus_gate": TOKEN,
+        "status": "applied",
+        "applied_targets": applied,
+        "orch_commit": args.orch_commit,
+        "root_commit": args.root_commit,
+        "chain": "coherent",
+    }, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(f"applied {len(applied)} target(s); chain verified COHERENT; backups at "
-          f"*.{STAMP}")
+          f"*.{STAMP}; receipt: {receipt_path}")
     return 0
 
 
@@ -500,6 +515,8 @@ def selftest() -> int:
                   "refusal path is a PASS only if drift was reported; see above. "
                   "Re-run when the orch tree is quiescent for the full proof.")
             return 1
+        receipt = copy_root / "scripts/operator/prepare_e8_integrity_repin_20260729.receipt.json"
+        assert receipt.is_file(), "BUS-GATE receipt must be written on successful apply"
         print("== selftest 4: post-apply verify ==")
         assert run("--verify") == 0
         print("== selftest 5: idempotent re-apply ==")
