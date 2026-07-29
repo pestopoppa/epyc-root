@@ -95,7 +95,7 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 18 | `orchestration-robustness-audit-2026-07-11.md:240` | faiss orphans | none | S | `orchestration/repl_memory/faiss_store.py` | Startup sweep unlinking old unopened faiss tmp orphans |
 | 19 | `autopilot-control-plane-integration.md:23` | AP-3b.2 | none | S | `autopilot-control-plane-integration.md` | Decide whether draft-tree belongs in AP-3 |
 | 20 | `speculative-decoding-mtp-refresh.md:236` | intake 2a | none | S | `models/*.gguf` headers | Tensor-count header gate for the DavidAU Qwen3.6-27B MTP GGUFs |
-| 21 | `agent-file-prose-compression.md:244` | intake 2a | none | S | `agent-file-prose-compression.md` | Re-source `/doctor` behaviour from the CLI before speccing |
+| 21 | ~~`agent-file-prose-compression.md:244`~~ **✅ CLOSED 2026-07-29** | intake 2a | none | S | `agent-file-prose-compression.md` | Re-source `/doctor` behaviour from the CLI before speccing |
 | 22 | ~~`learned-routing-controller.md:1613`~~ **✅ CLOSED 2026-07-29** | deep-dive correction | none | S | (guardrail note) | Standing guardrail: do not import intake-866 equivalence framing |
 | 23 | ~~`document-parser-table-bench.md:144`~~ **✅ CLOSED 2026-07-29** | consequence | none | S | (guardrail note) | Guardrail: no MinerU/GLM-OCR downloads as odl_bench swaps |
 | 24 | `scorer-fork-drift-audit-2026-07-22.md:257` | residual tasks | none | S | `scripts/benchmark/seeding_legacy.py` | Guard or delete the legacy ComparativeResult reward-injection path |
@@ -164,7 +164,7 @@ re-grep before assigning.
 - L241 | none | M | N | - | AFC-P5.0 lossless structural deletion pass before Phase-5 compression | CLAUDE.md, agents/shared/*.md
 - L242 | cpu | L | N | operator approval + host-quiet window | AFC-P5.1 falsify vendor 80%-cut claim through compliance gate | tests/compliance/agent_file/live_runner.py
 - L243 | none | M | N | - | AFC-P5.2 de-duplicate four triple-stated policies, fix v6/v7 drift | agents/shared/ENGINEERING_STANDARDS.md, CLAUDE.md
-- L244 | none | S | Y | - | Re-source /doctor behaviour from the CLI before speccing | handoff
+- L244 | none | S | Y | - | **CLOSED 2026-07-29** — Codex CLI evidence limits `/doctor` to diagnostics, not rewriting | Re-source /doctor behaviour from the CLI before speccing | handoff
 
 ## agent-world-env-synthesis.md (7)
 - L278 | none | M | Y | - | Implement plan-executor divergence halt in SolvabilityGate | env_synth/verifier_builder.py
