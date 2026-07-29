@@ -93,6 +93,63 @@ def test_validate_only_is_cwd_independent_and_uses_the_exact_runner(transaction_
     assert (root / "CHANGELOG.md").read_bytes() == transaction_fixture["changelog"]
 
 
+def test_test_mode_refuses_canonical_root_and_global_lock(transaction_fixture: dict[str, object]) -> None:
+    canonical_root = _run(
+        transaction_fixture,
+        "--validate-only",
+        EPYC_ROOT=str(ROOT),
+    )
+    assert canonical_root.returncode != 0
+    assert "test mode refuses the canonical root" in canonical_root.stderr
+    global_lock = _run(
+        transaction_fixture,
+        "--validate-only",
+        P_BENCH_4_AFFINITY_TRUST_LOCK="/run/lock/epyc-measurement-trust-boundary.lock",
+    )
+    assert global_lock.returncode != 0
+    assert "test mode refuses the global trust lock" in global_lock.stderr
+
+
+@pytest.mark.parametrize(
+    "override",
+    [
+        "P_BENCH_4_AFFINITY_EXPECTED_COMMIT",
+        "P_BENCH_4_AFFINITY_TEST_STAMP",
+        "P_BENCH_4_AFFINITY_TEST_FAULT",
+    ],
+)
+def test_production_rejects_inherited_test_overrides_before_execution(override: str) -> None:
+    result = subprocess.run(
+        ["bash", str(SOURCE_SCRIPT), "--validate-only"],
+        text=True,
+        capture_output=True,
+        check=False,
+        cwd="/",
+        env=os.environ | {override: "after_both_policy_replaces"},
+    )
+    assert result.returncode not in {-signal.SIGKILL, 137}
+    assert result.returncode != 0
+    assert f"production rejects test override environment: {override}" in result.stderr
+
+
+def test_production_test_mode_cannot_use_the_canonical_root() -> None:
+    result = subprocess.run(
+        ["bash", str(SOURCE_SCRIPT), "--validate-only"],
+        text=True,
+        capture_output=True,
+        check=False,
+        cwd="/",
+        env=os.environ
+        | {
+            "P_BENCH_4_AFFINITY_TEST_MODE": "1",
+            "EPYC_ROOT": str(ROOT),
+            "P_BENCH_4_AFFINITY_TRUST_LOCK": "/tmp/pbench4-adversarial.lock",
+        },
+    )
+    assert result.returncode not in {-signal.SIGKILL, 137}
+    assert "test mode refuses the canonical root" in result.stderr
+
+
 def test_attest_publishes_runner_bound_superseding_receipt(transaction_fixture: dict[str, object]) -> None:
     result = _run(transaction_fixture, "--attest", TOKEN, P_BENCH_4_AFFINITY_TEST_STAMP="20260729T120000Z")
     assert result.returncode == 0, result.stderr
@@ -219,3 +276,21 @@ def test_interrupted_recovery_reenters_and_rolls_back_known_partial_state(
     assert final_recovery.returncode == 0, final_recovery.stderr
     assert (root / "MEASUREMENT.md").read_bytes() == transaction_fixture["measurement"]
     assert (root / "CHANGELOG.md").read_bytes() == transaction_fixture["changelog"]
+
+
+def test_ordinary_transaction_error_recovers_before_the_command_exits(
+    transaction_fixture: dict[str, object],
+) -> None:
+    root = transaction_fixture["root"]
+    failed = _run(
+        transaction_fixture,
+        "--attest",
+        TOKEN,
+        P_BENCH_4_AFFINITY_TEST_STAMP="20260729T120016Z",
+        P_BENCH_4_AFFINITY_TEST_ERROR="after_both_policy_replaces",
+    )
+    assert failed.returncode != 0
+    assert "test-only transaction error" in failed.stderr
+    assert (root / "MEASUREMENT.md").read_bytes() == transaction_fixture["measurement"]
+    assert (root / "CHANGELOG.md").read_bytes() == transaction_fixture["changelog"]
+    assert json.loads((_transactions(root)[0] / "COMPLETE").read_text())["state"] == "rolled-back-recovered"

@@ -7,17 +7,23 @@ SCRIPT_PATH="$(realpath -e -- "${BASH_SOURCE[0]}")"
 SCRIPT_DIR="$(dirname -- "$SCRIPT_PATH")"
 DEFAULT_ROOT="$(realpath -e -- "$SCRIPT_DIR/../..")"
 TEST_MODE="${P_BENCH_4_AFFINITY_TEST_MODE:-0}"
+CANONICAL_ROOT="/mnt/raid0/llm/epyc-root"
+CANONICAL_TRUST_LOCK="/run/lock/epyc-measurement-trust-boundary.lock"
 ROOT="$DEFAULT_ROOT"
 RESEARCH="/mnt/raid0/llm/epyc-inference-research"
 RUNNER_ROOT="/mnt/raid0/llm/worktrees/fg4b-optimized-server-20260728"
 TRUST_LOCK="/run/lock/epyc-measurement-trust-boundary.lock"
 PYTHON="/usr/bin/python3"
 
+fail() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
+
 if [[ "$TEST_MODE" == "1" ]]; then
     ROOT="${EPYC_ROOT:-$ROOT}"
     RESEARCH="${EPYC_RESEARCH:-$RESEARCH}"
     RUNNER_ROOT="${P_BENCH_4_AFFINITY_RUNNER_ROOT:-$RUNNER_ROOT}"
     TRUST_LOCK="${P_BENCH_4_AFFINITY_TRUST_LOCK:-$TRUST_LOCK}"
+    [[ "$(realpath -e -- "$ROOT")" != "$CANONICAL_ROOT" ]] || fail "test mode refuses the canonical root"
+    [[ "$(realpath -m -- "$TRUST_LOCK")" != "$CANONICAL_TRUST_LOCK" ]] || fail "test mode refuses the global trust lock"
 fi
 
 AMENDMENT="$ROOT/artifacts/operator/pbench4_fg4b_affinity_witness_amendment_20260729.md"
@@ -54,7 +60,6 @@ if [[ "$TEST_MODE" == "1" ]]; then
     EXPECTED_PRIOR_RECEIPT_SHA256="${P_BENCH_4_AFFINITY_EXPECTED_PRIOR_RECEIPT_SHA256:-$EXPECTED_PRIOR_RECEIPT_SHA256}"
 fi
 
-fail() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
 sha256() { sha256sum -- "$1" | awk '{print $1}'; }
 require_hash() { [[ -f "$2" ]] && [[ "$(sha256 "$2")" == "$1" ]] || fail "SHA-256 mismatch for $2"; }
 
@@ -64,6 +69,22 @@ case "${1:-}" in
     --attest) [[ $# == 2 && "$2" == "$TOKEN" ]] || { usage; exit 2; }; MODE="attest" ;;
     *) usage; exit 2 ;;
 esac
+
+if [[ "$TEST_MODE" != "1" ]]; then
+    [[ -z "${P_BENCH_4_AFFINITY_TEST_MODE+x}" ]] || fail "production rejects test mode environment"
+    for name in \
+        EPYC_ROOT EPYC_RESEARCH P_BENCH_4_AFFINITY_RUNNER_ROOT P_BENCH_4_AFFINITY_TRUST_LOCK \
+        P_BENCH_4_AFFINITY_EXPECTED_REPOSITORY P_BENCH_4_AFFINITY_EXPECTED_COMMIT \
+        P_BENCH_4_AFFINITY_EXPECTED_TREE P_BENCH_4_AFFINITY_EXPECTED_RUNNER_SHA256 \
+        P_BENCH_4_AFFINITY_EXPECTED_AMENDMENT_SHA256 P_BENCH_4_AFFINITY_EXPECTED_MEASUREMENT_SHA256 \
+        P_BENCH_4_AFFINITY_EXPECTED_AMENDED_MEASUREMENT_SHA256 \
+        P_BENCH_4_AFFINITY_EXPECTED_CHANGELOG_SHA256 \
+        P_BENCH_4_AFFINITY_EXPECTED_AMENDED_CHANGELOG_SHA256 \
+        P_BENCH_4_AFFINITY_EXPECTED_PRIOR_RECEIPT_SHA256 P_BENCH_4_AFFINITY_TEST_FAULT \
+        P_BENCH_4_AFFINITY_TEST_ERROR P_BENCH_4_AFFINITY_TEST_STAMP; do
+        [[ -z "${!name+x}" ]] || fail "production rejects test override environment: $name"
+    done
+fi
 
 [[ "$PATH" == "/usr/bin:/bin" && -x "$PYTHON" ]] || fail "trusted execution path is invalid"
 [[ "$TEST_MODE" == "1" || "$ROOT" == "/mnt/raid0/llm/epyc-root" ]] || fail "production root is not canonical"
@@ -91,7 +112,7 @@ exec 8<>"$TRUST_LOCK"
     "$RUNNER_ROOT/$RUNNER_REL" "$EXPECTED_REPOSITORY" "$EXPECTED_COMMIT" "$EXPECTED_TREE" \
     "$EXPECTED_RUNNER_SHA256" "$EXPECTED_MEASUREMENT_SHA256" "$EXPECTED_CHANGELOG_SHA256" \
     "$EXPECTED_AMENDED_MEASUREMENT_SHA256" "$EXPECTED_AMENDED_CHANGELOG_SHA256" \
-    "$PRIOR_RECEIPT_REL" "$EXPECTED_PRIOR_RECEIPT_SHA256" "$TOKEN" <<'PY'
+    "$PRIOR_RECEIPT_REL" "$EXPECTED_PRIOR_RECEIPT_SHA256" "$TOKEN" "$TEST_MODE" <<'PY'
 import hashlib
 import importlib.util
 import json
@@ -106,7 +127,8 @@ from pathlib import Path
 (mode, root, measurement, changelog, amendment, tx_parent, runner_path, repository,
  commit, tree, runner_sha256, measurement_sha256, changelog_sha256,
  amended_measurement_sha256, amended_changelog_sha256,
- prior_receipt, prior_sha256, token) = sys.argv[1:]
+ prior_receipt, prior_sha256, token, test_mode) = sys.argv[1:]
+test_mode = test_mode == "1"
 root = Path(root)
 measurement = Path(measurement)
 changelog = Path(changelog)
@@ -156,8 +178,12 @@ def remove_receipt(path: Path) -> None:
         os.close(parent_fd)
 
 def fault(point: str) -> None:
-    if os.environ.get("P_BENCH_4_AFFINITY_TEST_FAULT") == point:
+    if test_mode and os.environ.get("P_BENCH_4_AFFINITY_TEST_FAULT") == point:
         os.kill(os.getpid(), signal.SIGKILL)
+
+def test_error(point: str) -> None:
+    if test_mode and os.environ.get("P_BENCH_4_AFFINITY_TEST_ERROR") == point:
+        raise RuntimeError(f"test-only transaction error at {point}")
 
 def contract() -> dict:
     return {
@@ -281,7 +307,7 @@ if mode == "validate":
     print("preflight-valid")
     raise SystemExit(0)
 
-stamp = os.environ.get("P_BENCH_4_AFFINITY_TEST_STAMP") or datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+stamp = (os.environ.get("P_BENCH_4_AFFINITY_TEST_STAMP") if test_mode else None) or datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
 if len(stamp) != 16 or not stamp.endswith("Z") or not stamp[:8].isdigit() or not stamp[9:15].isdigit() or stamp[8] != "T":
     raise SystemExit("invalid receipt timestamp")
 destination = root / "artifacts/operator" / f"ratify_pbench4_fg4b_affinity_witness_{stamp}.json"
@@ -306,11 +332,12 @@ try:
     fault("after_first_policy_replace")
     replace(changelog, changelog_candidate)
     fault("after_both_policy_replaces")
+    test_error("after_both_policy_replaces")
     validate(staged_receipt)
     data = staged_receipt.read_bytes()
     fd = os.open(destination, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0), 0o644)
     try:
-        partial = os.environ.get("P_BENCH_4_AFFINITY_TEST_FAULT") == "after_partial_receipt_create"
+        partial = test_mode and os.environ.get("P_BENCH_4_AFFINITY_TEST_FAULT") == "after_partial_receipt_create"
         view = memoryview(b"partial" if partial else data)
         while view:
             view = view[os.write(fd, view):]
@@ -322,6 +349,7 @@ try:
     fault("after_valid_receipt_publish_before_complete")
     write_json(tx / "COMPLETE", {"state": "committed"})
 except BaseException:
+    recover_pending()
     raise
 print(f"ratified: {destination}")
 PY
