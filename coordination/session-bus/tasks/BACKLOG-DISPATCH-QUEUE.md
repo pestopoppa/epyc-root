@@ -412,7 +412,7 @@ re-grep before assigning.
 - L721 | none | S | Y | - | Re-read handoff end-to-end incl. 2026-04-23 audit block | handoff
 - L722 | none | S | Y | - | Check master + CPU indices for status changes | master-handoff-index.md
 - L723 | none | S | Y | - | **READY** Check llama.cpp upstream for new CPU ukernel PRs | (research)
-- L724 | none | S | Y | - | **READY** Check for new Justine Tunney tinyBLAS Zen 5 benchmarks | (research)
+- L724 | none | S | Y | - | **CLOSED 2026-07-29** — primary-source sweep found no Zen 5-specific tinyBLAS benchmark; Zen 4 remains the only cited hardware prior | handoffs/active/cpu-shape-specialized-gemv-decode.md
 - L725 | none | S | N | - | Anchor experimental worktree on production branch before starting | /mnt/raid0/llm/llama.cpp-experimental
 - L726 | cpu | M | N | SIMD lever deprioritized | Measure tinyBLAS on/off as first Phase 0 step | llamafile/sgemm.cpp
 - L727 | none | S | Y | - | **READY** Confirm TIDE early-exit code paths dormant | fork commits 143ded626 etc

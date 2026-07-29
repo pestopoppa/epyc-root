@@ -731,7 +731,7 @@ When resuming this handoff:
 - [ ] Re-read this doc end-to-end including the 2026-04-23 audit update block.
 - [ ] Check `master-handoff-index.md` and `cpu-inference-optimization-index.md` for any status changes since 2026-04-23.
 - [ ] Check llama.cpp upstream for any new CPU ukernel PRs (this handoff may be partially obsoleted).
-- [ ] Check for any new Justine Tunney / tinyBLAS Zen 5 benchmarks.
+- [x] Check for any new Justine Tunney / tinyBLAS Zen 5 benchmarks. ✅ 2026-07-29 — no Zen 5-specific tinyBLAS benchmark was found in the primary project sources searched: the current [llamafile repository](https://github.com/mozilla-ai/llamafile) and its open pull-request list contain no Zen 5 benchmark result, while Tunney's cited prior-art article remains Zen 4. This is an absence result, not a performance claim; retain the existing Zen 4 prior as the only cited hardware result and do not infer Zen 5 speedup from it. Sources checked 2026-07-29: [llamafile repository](https://github.com/mozilla-ai/llamafile), [open pull requests](https://github.com/mozilla-ai/llamafile/pulls), and [Tunney's matmul article](https://justine.lol/matmul/).
 - [ ] **Work in `/mnt/raid0/llm/llama.cpp-experimental`, never the production `llama.cpp` tree.** Start every new experiment from the current frozen production tip (`production-consolidated-v8` / `67a433bf4` as of 2026-07-29), then create a fresh experimental branch; do not revive the obsolete v4 anchor.
 - [ ] **Measure tinyBLAS on/off as first Phase 0 step** (`GGML_USE_LLAMAFILE` macro); that delta changes the remaining headroom calculation.
 - [ ] Confirm TIDE early-exit paths are dormant before any baseline.
