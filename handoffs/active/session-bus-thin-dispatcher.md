@@ -1074,7 +1074,19 @@ freezes/cutovers, host reboots).
       drift-trigger list**, so that text was re-homed onto `live_mains` (the function whose
       arithmetic the invariant is about) BEFORE the deletion — otherwise the cleanup would have
       deleted the correction that `8d865ea2` exists to preserve. 48 passed.
-  - [ ] **C21 — `check_pytest_safety.sh` matches `-n <num>` anywhere in a compound command.**
+  - [x] **C21 — `check_pytest_safety.sh` matched `-n <num>` anywhere in a compound command.**
+    ✅ 2026-07-29 — scoped to the invocation. The match is now segment- and quote-aware
+    (`scripts/hooks/pytest_worker_scan.py`, called by the hook): quoted runs are blanked because
+    their contents are data, the command is split on shell separators because a later pipeline
+    stage is a different program, and **heredoc bodies are blanked too** — found when the guard
+    blocked its own test fixture, which listed `-n auto` as example data. That is the third face
+    of one bug: it was matching TEXT, not INVOCATIONS. Detection of `pytest` stays deliberately
+    generous about position, so `xargs pytest -n 64` and `timeout 900 python -m pytest -n 32`
+    are still caught; only the scope narrowed. Fails CLOSED — if python3 is missing or the
+    scanner errors, it falls back to the original broad match and refuses rather than guessing.
+    14 scanner cases + 18 tests in `tests/hooks/test_pytest_worker_scan.py`; end-to-end the real
+    false positive now exits 0 and `pytest -n 40` still exits 2.
+    *Original filing:*
     *Observed 2026-07-29.* A command combining pytest with `sed -n 340,360p` was blocked as
     "pytest -n 340 is too many workers" — the guard scans the whole command string rather than the
     pytest segment, so an unrelated `-n` in a later stage trips it. Harmless today (split the
