@@ -1645,6 +1645,68 @@ def _is_operator_item(row: dict) -> bool:
     return False
 
 
+def unevidenced_operator_outbox(bus_root: Path, roster: list[dict]) -> list[dict]:
+    """C27c: operator items sitting in OUTBOXES with no evidence anyone consumed them.
+
+    WHY THE INBOX SCAN IS NOT ENOUGH. `pending_operator_actions` is the last-hop net
+    for "a human signature is needed", and it read exactly one set: the coordinator's
+    unread INBOX rows. But a message only reaches that inbox if the relay put it
+    there — and `_NO_RELAY_KINDS` guaranteed a `token-request` never could. The net
+    was searching a set that structurally cannot contain the thing it looks for.
+    Both 2026-07-29 gates were invisible to it for that reason, for hours, while the
+    mechanism built to catch precisely this reported nothing.
+
+    A last-hop net that depends on the hop before it having worked is not a net. So
+    this reads the SENDERS' own files, which is the earliest durable evidence that
+    exists and the one thing no delivery bug can erase.
+
+    EVIDENCE, not delivery — an item is considered handled when ANY of these hold,
+    because each means something downstream actually saw it:
+      * it was relayed (some inbox carries `relayed_src == id`) — the inbox path
+        owns it from there, and this also stops the two paths double-escalating;
+      * it is a token-request whose `gate_id` is already in `token-queue.md` — the
+        operator can see it, which is the entire objective;
+      * some outbox carries `corr_id == id` — somebody answered it.
+
+    Deliberately NOT evidence: the coordinator having read it. Read-and-dropped is
+    the failure this catches, and the read cursor cannot tell the two apart.
+
+    Measured against the live bus at authorship: 24 operator-kind outbox rows, 3
+    unevidenced — two of them the lost gates, one a routed defect. The narrowness is
+    the point; a high-false-positive signal here would be worse than none.
+    """
+    ids = [str(e.get("id", "")).strip() for e in roster
+           if isinstance(e, dict) and str(e.get("id", "")).strip()]
+    relayed: set[str] = set()
+    answered: set[str] = set()
+    for aid in ids:
+        for row in _read_jsonl(bus_root / "inbox" / f"{aid}.jsonl")[0]:
+            if row.get("relayed_src"):
+                relayed.add(str(row["relayed_src"]))
+        for row in _read_jsonl(bus_root / "outbox" / f"{aid}.jsonl")[0]:
+            if row.get("corr_id"):
+                answered.add(str(row["corr_id"]))
+    try:
+        presented = (bus_root / "tokens" / "token-queue.md").read_text(encoding="utf-8")
+    except OSError:
+        presented = ""
+
+    out: list[dict] = []
+    for aid in ids:
+        for row in _read_jsonl(bus_root / "outbox" / f"{aid}.jsonl")[0]:
+            mid = str(row.get("id") or "")
+            if not mid or not _is_operator_item(row):
+                continue
+            if mid in relayed or mid in answered:
+                continue
+            payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
+            gate = payload.get("gate_id")
+            if gate and str(gate) in presented:
+                continue
+            out.append(row)
+    return out
+
+
 def scan_operator_receipts(bus_root: Path, roster: list[dict], epoch: int,
                            *, artifact_dir: Path | None = None) -> list[dict]:
     """(a) Operator scripts that declare a gate nobody ever asked the operator for.
@@ -1767,7 +1829,24 @@ def pending_operator_actions(bus_root: Path, roster: list[dict], epoch: int,
                          "action": "skipped — unread not computable, NOT treated as empty"})
         return advisory
 
+    # C27c: the second input. Failures of the hop BEFORE this one are invisible to
+    # `unread`, so the net also reads the senders' own outboxes. Tagged, because a
+    # reader must be able to tell "the coordinator sat on it" from "it never got
+    # there" — those have different repairs.
+    try:
+        stranded = unevidenced_operator_outbox(bus_root, roster)
+    except Exception as exc:  # noqa: BLE001 — FAIL CLOSED, same as the unread read above
+        advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                         "kind": "operator-outbox-unreadable", "check": "pending-operator-action",
+                         "detail": str(exc),
+                         "action": "outbox scan skipped — NOT treated as empty"})
+        stranded = []
+
     overdue, bypass_due = [], []
+    for row in stranded:
+        age = _msg_age_s(row, now)
+        if age is not None and age >= _OPERATOR_BYPASS_DEADLINE_S:
+            bypass_due.append((dict(row, _c27_undelivered=True), age))
     for row in unread:
         if not _is_operator_item(row):
             continue
@@ -1825,12 +1904,19 @@ def pending_operator_actions(bus_root: Path, roster: list[dict], epoch: int,
             continue
         payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
         detail = str(payload.get("detail") or payload.get("event") or row.get("kind"))
+        if row.get("_c27_undelivered"):
+            where = (f"**never reached `coordinator-agent`'s inbox at all** and shows no sign of "
+                     f"having been consumed anywhere. It has sat in `outbox/{row.get('from')}"
+                     f".jsonl` for {age / 3600.0:.1f}h. This is a DELIVERY failure, not a triage "
+                     f"backlog — repairing the coordinator's attention will not clear it")
+        else:
+            where = (f"has sat unread in `coordinator-agent`'s inbox for {age / 3600.0:.1f}h, past "
+                     f"the bypass deadline. The coordinator is in the loop for judgement; it must "
+                     f"not be a single point of failure for transporting *a human signature is "
+                     f"needed*")
         blocks.append(
             f"\n### {marker}\n\n"
-            f"**Daemon escalation — not a gate, no checkbox.** An operator-decision item has sat "
-            f"unread in `coordinator-agent`'s inbox for {age / 3600.0:.1f}h, past the bypass "
-            f"deadline. The coordinator is in the loop for judgement; it must not be a single "
-            f"point of failure for transporting *a human signature is needed*.\n\n"
+            f"**Daemon escalation — not a gate, no checkbox.** An operator-decision item {where}.\n\n"
             f"- message: `{mid}` (`{row.get('kind')}`) from `{row.get('from')}`\n"
             f"- task: `{row.get('task_id') or '-'}`\n"
             f"- detail: {detail}\n"

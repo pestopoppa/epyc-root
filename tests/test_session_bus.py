@@ -1350,3 +1350,131 @@ def test_c27_unvalidated_request_is_a_defect_at_manual_authority_too(bus_root: P
     assert [r["check"] for r in rows] == ["token-prevalidation"]
     assert "RATIFY-BARE-20260729" not in (
         bus_root / "tokens" / "token-queue.md").read_text(encoding="utf-8")
+
+
+# ------------------------------------------- C27c: the net reads outboxes too
+
+
+def test_c27c_undelivered_token_request_escalates_from_the_outbox(bus_root: Path) -> None:
+    """C27c: the last-hop net must not depend on the hop before it having worked.
+
+    Regression for the exact 2026-07-29 shape: a well-formed token-request that never
+    reached the coordinator's inbox, so the mechanism built to catch "a human
+    signature went unseen" reported nothing for hours.
+    """
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "outbox" / "alice.jsonl",
+            _op_msg("token-request", mid="m-lost", ts=_iso(6 * 3600),
+                    gate_id="RATIFY-LOST-20260729"))
+    nudge = _RecordingNudge()
+
+    rows = coordinator.pending_operator_actions(
+        bus_root, _stuck_roster(), epoch=1, nudge_fn=nudge, now=_T0,
+        artifact_dir=bus_root / "no-such-dir")
+
+    text = (bus_root / "tokens" / "token-queue.md").read_text(encoding="utf-8")
+    assert f"{coordinator._OPERATOR_ESCALATION_MARKER} m-lost" in text
+    assert "never reached" in text and "DELIVERY failure" in text
+    assert [r["kind"] for r in rows] == ["operator-bypass-escalated"]
+    # NEVER a checkbox: the daemon relays, only the operator signs.
+    assert "- [ ]" not in text.split(coordinator._OPERATOR_ESCALATION_MARKER, 1)[1]
+
+
+def test_c27c_relayed_item_is_not_escalated_twice(bus_root: Path) -> None:
+    """Evidence, not delivery. A relayed message belongs to the inbox path."""
+    _provision(bus_root, *AGENTS)
+    src = _op_msg("token-request", mid="m-relayed", ts=_iso(6 * 3600))
+    _append(bus_root / "outbox" / "alice.jsonl", src)
+    relayed = _op_msg("token-request", mid="m-inbox-copy", ts=_iso(6 * 3600))
+    relayed["relayed_src"] = "m-relayed"
+    _append(bus_root / "inbox" / "coordinator-agent.jsonl", relayed)
+    nudge = _RecordingNudge()
+
+    coordinator.pending_operator_actions(
+        bus_root, _stuck_roster(), epoch=1, nudge_fn=nudge, now=_T0,
+        artifact_dir=bus_root / "no-such-dir")
+
+    text = (bus_root / "tokens" / "token-queue.md").read_text(encoding="utf-8")
+    assert f"{coordinator._OPERATOR_ESCALATION_MARKER} m-relayed" not in text
+    assert text.count(coordinator._OPERATOR_ESCALATION_MARKER) == 1
+
+
+def test_c27c_presented_gate_is_evidence_enough(bus_root: Path) -> None:
+    """A gate the operator can already see needs no escalation — that IS the goal."""
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "outbox" / "alice.jsonl",
+            _op_msg("token-request", mid="m-shown", ts=_iso(9 * 3600),
+                    gate_id="RATIFY-SHOWN-20260729"))
+    tq = bus_root / "tokens" / "token-queue.md"
+    tq.write_text(tq.read_text(encoding="utf-8") + "\n### RATIFY-SHOWN-20260729\n", encoding="utf-8")
+
+    rows = coordinator.pending_operator_actions(
+        bus_root, _stuck_roster(), epoch=1, nudge_fn=_RecordingNudge(), now=_T0,
+        artifact_dir=bus_root / "no-such-dir")
+
+    assert rows == []
+    assert coordinator._OPERATOR_ESCALATION_MARKER not in tq.read_text(encoding="utf-8")
+
+
+def test_c27c_answered_item_is_evidence_enough(bus_root: Path) -> None:
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "outbox" / "alice.jsonl",
+            _op_msg("defect", mid="m-answered", ts=_iso(9 * 3600)))
+    # The answerer must itself be on the roster passed in — evidence is gathered
+    # from roster members' files, exactly as every other scan in this module is.
+    _append(bus_root / "outbox" / "coordinator-agent.jsonl",
+            _message("coordinator-agent", "alice", "ack", seq=9, corr_id="m-answered"))
+
+    rows = coordinator.pending_operator_actions(
+        bus_root, _stuck_roster(), epoch=1, nudge_fn=_RecordingNudge(), now=_T0,
+        artifact_dir=bus_root / "no-such-dir")
+
+    assert rows == []
+
+
+def test_c27c_fresh_and_non_operator_outbox_traffic_stay_quiet(bus_root: Path) -> None:
+    """The narrowness is the point: a noisy net gets normalised, which is the
+    original failure mode."""
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "outbox" / "alice.jsonl",
+            _op_msg("token-request", mid="m-fresh", ts=_iso(60)))
+    _append(bus_root / "outbox" / "alice.jsonl",
+            _op_msg("status", mid="m-chatter", ts=_iso(9 * 3600), detail="fyi"))
+
+    rows = coordinator.pending_operator_actions(
+        bus_root, _stuck_roster(), epoch=1, nudge_fn=_RecordingNudge(), now=_T0,
+        artifact_dir=bus_root / "no-such-dir")
+
+    assert rows == []
+    assert coordinator._OPERATOR_ESCALATION_MARKER not in (
+        bus_root / "tokens" / "token-queue.md").read_text(encoding="utf-8")
+
+
+def test_c27c_outbox_escalation_is_idempotent(bus_root: Path) -> None:
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "outbox" / "alice.jsonl",
+            _op_msg("token-request", mid="m-once", ts=_iso(9 * 3600)))
+
+    for _ in range(3):
+        coordinator.pending_operator_actions(
+            bus_root, _stuck_roster(), epoch=1, nudge_fn=_RecordingNudge(), now=_T0,
+            artifact_dir=bus_root / "no-such-dir")
+
+    text = (bus_root / "tokens" / "token-queue.md").read_text(encoding="utf-8")
+    assert text.count(f"{coordinator._OPERATOR_ESCALATION_MARKER} m-once") == 1
+
+
+def test_c27c_unreadable_outbox_is_skipped_not_read_as_empty(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """FAIL CLOSED: 'I could not scan' is never 'nothing is waiting'."""
+    _provision(bus_root, *AGENTS)
+
+    def boom(*_a, **_k):
+        raise RuntimeError("outbox unreadable")
+
+    monkeypatch.setattr(coordinator, "unevidenced_operator_outbox", boom)
+    rows = coordinator.pending_operator_actions(
+        bus_root, _stuck_roster(), epoch=1, nudge_fn=_RecordingNudge(), now=_T0,
+        artifact_dir=bus_root / "no-such-dir")
+
+    assert [r["kind"] for r in rows] == ["operator-outbox-unreadable"]
