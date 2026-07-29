@@ -150,6 +150,16 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
     percentage-presentation box remains unclassified for its owner.
     `backlog_live_uncertified = 942` for this dated read-through slice;
     `backlog_not_a_task = 36` is unchanged.
+  - **READ-CERTIFIED 2026-07-29 (mainB, 7 rows):**
+    `autopilot-sequential-allocation.md` has seven non-dispatchable decision
+    or campaign gates: the SEQ-A/SEQ-B policy changes and their explicit
+    operator decisions are measurement-trust-boundary work; SEQ-3 requires
+    either that ruling or an E8 clean re-run, which itself waits for the
+    fail-closed E8 rebaseline. These are **human-only or E8-gated**, not
+    current independent work. The deterministic SEQ-4 re-examination and two
+    summary-pointer boxes remain unclassified. `backlog_live_uncertified =
+    935` for this dated read-through slice; `backlog_not_a_task = 36` is
+    unchanged.
   - **TRANCHE 1 READ-CERTIFIED 2026-07-29 (`auditor`) — 19 boxes, the single-open-box handoffs.**
     Read each box with its section, `Status:` header and following context. Result:
     | verdict | n | meaning |
