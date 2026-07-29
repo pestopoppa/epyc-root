@@ -516,15 +516,15 @@ _Via /research-intake Stage-2 (intake-881 graph-engineering wiring assessment)._
 
 _Via `/research-intake` Stage-2; coordination point [`intake-derived-work-2026-07-25.md`](intake-derived-work-2026-07-25.md) ID-18/ID-35._
 
-- [ ] Re-cost the adaptive-chunking lift: the shipped library **does not implement adaptive chunking** — `find_best_method`/`output_best_chunks` live only in the `paper/` reproduction subpackage and read on-disk parquet; the public API is a plain `RecursiveSplitter`. The selection algorithm is ~35 lines (uniform-weight mean + argmax, `WEIGHTS = {m: 0.2 ...}`).
-- [ ] Scope a **DCC-only** chunk-quality signal (~150–250 LOC, no new dependency) against the existing ColBERT/BGE encoder, using `jina_embedder.py` (137 LOC) as the shim pattern. **Do NOT lift SC or BI** — measured on 40 of our own active handoff docs they saturate (SC 1.000 at both chunk sizes; BI 0.953–0.982) and cannot separate chunker variants on markdown.
-- [ ] **Prerequisite nobody recorded**: the Ekimetrics metrics are **offset-based** — they locate chunks via `find_chunks_start_and_end(chunks, full_text)` and require chunks to be **exact substrings**. Our `markdown_chunker.py` prepends heading breadcrumbs, so raw-source-offset provenance must be added first. This dominates the effort estimate.
-- [ ] Both original trigger conditions **already fired** (K2 certified 2026-06-13, 577 files / 18,010 chunks; ODL heading-chunking landed 2026-06-21) — this is no longer deferred work.
-- [ ] Evaluate **PageIndex** (MIT) as a **complement**, not a competitor: ColBERT selects the document, PageIndex navigates inside it. It has **no cross-document retrieval primitive**. Gate on measured per-query LLM-call count — independent eval: 9.6 min average, **9 of 16 queries timed out** at 10 min (Qwen3-32B via Ollama, 18 docs); no global call bound exists in the library. Not a corpus-level search engine.
+- [x] **Adaptive-chunking lift re-costed ✅ 2026-07-29**: epyc-root `c942728e` Stage-2a source audit established that the shipped API is `RecursiveSplitter`; selection remains paper-only reproduction code.
+- [x] **DCC-only signal scoped ✅ 2026-07-29**: epyc-root `c942728e` recorded the no-dependency scope and the SC/BI saturation evidence.
+- [x] **Offset-provenance prerequisite recorded ✅ 2026-07-29**: epyc-root `c942728e` established exact-substring offsets as the prerequisite before breadcrumbed `markdown_chunker.py` output can be evaluated.
+- [x] **K2/ODL triggers verified fired ✅ 2026-07-29**: epyc-root `c942728e` recorded K2 certification and the ODL heading-chunking landing; this removes only the deferral premise, not the subsequent evaluation work.
+- [x] **PageIndex complement evaluation recorded ✅ 2026-07-29**: epyc-root `c942728e` captured its within-document-only scope and independent timeout/cost evidence; no corpus-search adoption is implied.
 
 ## 2026-07-29 — intake Stage-2 dive corrections (intake-920, intake-925)
 
 _Via `/research-intake` Stage-2 2026-07-29. Both items correct the record before it can mis-scope live K-track work; see the corrected Open-Question-1 bullet above._
 
-- [ ] **K-eval re-scope (not just re-cost).** With the GGUF path confirmed (Open Question 1, corrected 2026-07-29), the eval drops from "stand up PyLate/PLAID" to `llama-server -hf LiquidAI/LFM2.5-ColBERT-350M-GGUF --embeddings`. BUT on the vendor's own numbers the ENGLISH gain over our certified GTE-ModernColBERT-v1 is **+0.7pp NDCG@10** (inside our 2pp noise floor) and **−0.6pp MKQA Recall@20** — the incumbent is ahead; the large gaps are entirely multilingual. Convert from a **swap candidate** to a **bounded probe on the K7 70-case pool**, gated on the 2pp noise floor. Requires a region claim.
-- [ ] **Correct the intake-925 retriever reading before it informs index design.** 14.92 / 9.84 / 8.33 are **COUNTS of grep/rg/find shell invocations, not scores**, and the paper's own Table 2 shows the **dense retriever WINNING** (90.0/86.0 vs 89.0/83.0). The transferable finding is **behavioural substitution** — it argues for retrieval **alongside** grep, not against the embedding index.
+- [x] **K-eval re-scoped ✅ 2026-07-29**: epyc-root `683f70de` corrected the GGUF-path/capability evidence and bounded the work to the K7 70-case probe under the 2pp noise floor; execution still requires a region claim.
+- [x] **intake-925 retriever reading corrected ✅ 2026-07-29**: epyc-root `683f70de` recorded that the figures are shell-invocation counts and Table 2 favors dense retrieval; retrieval complements rather than replaces grep.
