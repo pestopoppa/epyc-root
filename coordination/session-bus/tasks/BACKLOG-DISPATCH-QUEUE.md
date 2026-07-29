@@ -1,13 +1,15 @@
 # BACKLOG DISPATCH QUEUE — pre-vetted work for idle mains
 
-**Generated 2026-07-29** (repo tip `4dc445a2`). Read-only sweep. This file is the ONLY artifact written;
-no handoff, checkbox, `queue.jsonl`, inbox, outbox, heartbeat or cursor was touched.
+**Generated 2026-07-29** (sweep taken at repo tip `4dc445a2`). Read-only sweep. This file is the ONLY
+artifact this session wrote; no handoff, checkbox, `queue.jsonl`, inbox, outbox, heartbeat or cursor was
+touched, and this session ran no `git commit`. (A coordinator session committed an in-progress copy of
+this file as `7adca72d` mid-write; the content below is the finished version.)
 
 ## Counts
 
 | Metric | Value |
 |---|---|
-| Unchecked `- [ ]` tasks in `handoffs/active/` | **1103** at sweep start / **1094** at write time (see *Volatility* below) |
+| Unchecked `- [ ]` tasks in `handoffs/active/` | **1103** at sweep start → **1082** at verification (mains are burning it live — see *Volatility*) |
 | Files carrying them | **153** of 177 |
 | **`none`-lane AND unblocked → DISPATCHABLE RIGHT NOW** | **~232** |
 | `none`-lane but blocked | ~430 |
@@ -45,7 +47,18 @@ them by navigation; they are included here):
 4. **Some unchecked rows are already done in prose** (checkbox never flipped). Ten confirmed-stale rows
    are flagged inline with `STALE?`. There are probably more.
 
-## Volatility — re-grep before you dispatch
+## ⚠ Volatility — this queue is being consumed WHILE you read it
+
+**Verified 2026-07-29, minutes after first write: 8 of the original TOP 40 were already closed by live
+mains, and total unchecked fell 1103 → 1082.** Struck-through rows below are those confirmed-closed
+entries, left in place so the next reader can see the burn rate rather than a silently shrinking table.
+`llamacpp-v6-consolidation.md` also had lines inserted, shifting its anchors.
+
+**Operating rule for the coordinator: line numbers are a hint, task text is the identity.**
+Before assigning any row, run `grep -n '^\s*- \[ \]' <handoff>` and match on the description, not the
+line. A row that has vanished is a row someone finished.
+
+## Volatility — the two owned handoffs
 
 Two handoffs changed *while this sweep ran*: a live main closed 9 tasks in
 `opendataloader-pipeline-integration.md` (22→17) and `repl-turn-efficiency.md` (13→9), and both files
@@ -62,20 +75,20 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 
 | # | Task (path:line) | Handoff § | Lane | Size | Files touched | What it is |
 |---|---|---|---|---|---|---|
-| 1 | `cpu-shape-specialized-gemv-decode.md:723` | pickup-checklist | none | S | (research only) | Check llama.cpp upstream for new CPU ukernel PRs |
-| 2 | `cpu-shape-specialized-gemv-decode.md:727` | pickup-checklist | none | S | fork commits 143ded626/c4e06b01e/59d2012b2 | Confirm TIDE early-exit paths dormant before any baseline |
-| 3 | `stale-open-audit-2026-07-18.md:92` | recommendations | none | S | dashboard backlog banner config | Publish corrected live-backlog figure (~544, board over-counts) |
+| 1 | ~~`cpu-shape-specialized-gemv-decode.md:723`~~ **✅ CLOSED 2026-07-29** | pickup-checklist | none | S | (research only) | Check llama.cpp upstream for new CPU ukernel PRs |
+| 2 | ~~`cpu-shape-specialized-gemv-decode.md:727`~~ **✅ CLOSED 2026-07-29** | pickup-checklist | none | S | fork commits 143ded626/c4e06b01e/59d2012b2 | Confirm TIDE early-exit paths dormant before any baseline |
+| 3 | ~~`stale-open-audit-2026-07-18.md:92`~~ **✅ CLOSED 2026-07-29** | recommendations | none | S | dashboard backlog banner config | Publish corrected live-backlog figure (~544, board over-counts) |
 | 4 | `decision-aware-routing.md:613` | speed-axis | none | S | `orchestration/instrument_eras.yaml` | Record instrument-era boundary row for reward values |
 | 5 | `rlm-contested-claims-self-evaluation.md:68` | tasks | none | S | niah scorer module | Format-robust NIAH scorer (strict + lenient) |
 | 6 | `reviewer-escalation-and-human-gate-policy.md:22` | tasks | none | S | SafetyGate protected-action config | Align protected-action list with existing SafetyGate |
-| 7 | `intake-derived-work-2026-07-25.md:87` | P3 process defects | none | S | `scripts/validate/`, research-intake cross-reference-map | Add path-resolution check for the intake cross-reference map |
+| 7 | ~~`intake-derived-work-2026-07-25.md:87`~~ **✅ CLOSED 2026-07-29** | P3 process defects | none | S | `scripts/validate/`, research-intake cross-reference-map | Add path-resolution check for the intake cross-reference map |
 | 8 | `agentic-rocm-kernel-authoring.md:78` | progress-checklist | none | S | `research/deep-dives/…geak-synthesis.md` | GEAK-family freshness sweep at each audit |
-| 9 | `gpu-acceleration-path.md:531` | 2026-07-29 fix | none | S | `gpu-acceleration-path.md` | Record reverse-KL on-policy-distillation negative as guardrail |
+| 9 | ~~`gpu-acceleration-path.md:531`~~ **✅ CLOSED 2026-07-29** | 2026-07-29 fix | none | S | `gpu-acceleration-path.md` | Record reverse-KL on-policy-distillation negative as guardrail |
 | 10 | `tool-use-eval-contract.md:366` | intake 2026-07-21 | none | S | sentinel prompt definitions | Adopt negative-constraint + stated-consequence sentinel pattern |
-| 11 | `gpu-serving-tie-in-program.md:143` | P5 | none | S | `heterogeneous-slot-fabric-residency.md` | Add GPU host threads as a modeled slot-fabric consumer |
+| 11 | ~~`gpu-serving-tie-in-program.md:143`~~ **✅ CLOSED 2026-07-29** | P5 | none | S | `heterogeneous-slot-fabric-residency.md` | Add GPU host threads as a modeled slot-fabric consumer |
 | 12 | `model-stack-change-standardization-audit.md:229` | update-checklist | none | S | `tests/unit/` priors/guard/enum-sync/q_scorer suites | Run focused unit tests for priors, guard, scorer, admission |
 | 13 | `eval-tower-verification.md:522` | de-anchoring | none | S | `autopilot.py:1431`, `paired_stats.py` | Unify autopilot's 2nd McNemar producer onto `verdict_from_result` |
-| 14 | `minddr-deep-research-mode.md:207` | search-time contamination | none | S | `minddr-deep-research-mode.md` | Demote BrowseComp/WideSearch/xbench anchors to observation-grade |
+| 14 | ~~`minddr-deep-research-mode.md:207`~~ **✅ CLOSED 2026-07-29** | search-time contamination | none | S | `minddr-deep-research-mode.md` | Demote BrowseComp/WideSearch/xbench anchors to observation-grade |
 | 15 | `engram-conditional-memory.md:379` | retrieval-policy rider | none | S | `engram-…md`, `unified-trace-memory-service.md` | Correct the ReasoningBank ranking claim in retrieval notes |
 | 16 | `unified-trace-memory-service.md:211` | UTM-M4 | none | S | `src/trace/harness_schema.py` | Mine ReasoningBank repo for its 3 prompts + JSON schema |
 | 17 | `autopilot-decision-plane-audit-2026-07-22.md:399` | deliverables | none | S | `q_scorer.py`, `episodic_store.py` | Apply find-or-update to `_update_escalation_memory` append-only rows |
@@ -88,7 +101,7 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 24 | `scorer-fork-drift-audit-2026-07-22.md:257` | residual tasks | none | S | `scripts/benchmark/seeding_legacy.py` | Guard or delete the legacy ComparativeResult reward-injection path |
 | 25 | `autopilot-continuous-optimization.md:1529` | AP-32 | none | S | `wiki/agent-architecture.md`, `strategy_store.py` | Strike unmeasured +1.1% claim; guard the dead linter |
 | 26 | `architect-model-selection-bench.md:330` | follow-up tooling | none | S | `scripts/bench/gpu_lib.sh`, `run_arm.sh`, `run_budget.sh` | Promote scratchpad GPU driver scripts into the repo |
-| 27 | `context-folding-progressive.md:113` | deep-dive correction | none | S | `context-folding-progressive.md` | Record do-not-prioritize decision for ContextRot harness replication |
+| 27 | ~~`context-folding-progressive.md:113`~~ **✅ CLOSED 2026-07-29** | deep-dive correction | none | S | `context-folding-progressive.md` | Record do-not-prioritize decision for ContextRot harness replication |
 | 28 | `scoring-infra-standardization.md:184` | intake 2a | none | S | `research/intake_index.yaml`, `benchmarks/instruction_precision` | Adopt six-point SWE-bench disclosure standard for intake-916/917/924 |
 | 29 | `tool-output-compression.md:442` | intake 2026-07-21 | none | S | `scripts/utils/compress_tool_output.py` | Bias Phase-3d fallback chain toward observation-dropping first |
 | 30 | `decision-aware-routing.md:185` | DAR-5 | none | S | `learned-routing-controller.md` | Document cold-start note for LRC P5 onboarding |
@@ -98,10 +111,19 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 34 | `unified-trace-memory-service.md:219` | UTM-M6 | none | S | `research/intake_index.yaml` | File EvoMemBench 128K context-competition as a distinct failure mode |
 | 35 | `rao-redel-substrate-spike.md:432` | intake 2026-07-21 | none | M | `orchestration/repl_memory/episodic_store.py` | Adopt SkyRL parent/child rollout-tree accounting shape |
 | 36 | `reviewer-calibration-accounting.md:30` | RC | none | M | `src/trace/review_ledger.py` | Persist full rubric + per-item grades in corpus rows |
-| 37 | `llamacpp-v6-consolidation.md:77` | Stage-2 parity F1 | none | M | `llama.cpp-v6 ggml/src/ggml-cpu/ops.cpp` | Fold f1-paged-attn branch into v6, off-by-default |
+| 37 | `llamacpp-v6-consolidation.md` (F1 fold, re-grep: file shifted) | Stage-2 parity F1 | none | M | `llama.cpp-v6 ggml/src/ggml-cpu/ops.cpp` | Fold f1-paged-attn branch into v6, off-by-default |
 | 38 | `granite-97m-r2-bench-plan.md:233` | Phase C | none | M | `internal-kb-rag.md`, `colbert-…md`, `searxng-…md` | Phase C retriever promotion decision + downstream handoff updates |
 | 39 | `frontier-f1-real-task-corpus.md:115` | W2c | none | M | `scripts/tasks/harvest_tasks.py`, its unit test | Port ~50-line Hermes SQLite reader instead of a letta dependency |
 | 40 | `benchmark-results-dashboard.md:47` | Phase 1 | none | S | `dashboard/`, both `model_registry.yaml` | Enumerate models on the system from both registries |
+
+**Straight swap-ins for the 8 struck rows above (verified still open at 2026-07-29 verification):**
+`decision-aware-routing.md:492` (standing prohibition, S/Y) · `intake-derived-work-2026-07-25.md:45`
+(strike +1.1% claim, S/Y) · `intake-derived-work-2026-07-25.md:53` (do-not-trim guardrail, S/Y) ·
+`model-stack-single-source-update-pipeline.md:350` (short_term_memory review, S/Y) ·
+`model-stack-single-source-update-pipeline.md:352` (keep logs out of active indices, S/Y) ·
+`unified-trace-memory-service.md:226` (ReasoningBank standing, S/Y) ·
+`rlm-contested-claims-self-evaluation.md:80` (fold intake-925 Table 1, S/Y) ·
+`speculative-decoding-mtp-refresh.md:233` (scope 122B DFlash acceptance-only, S/Y)
 
 **Runner-up bench (also `none`+unblocked+parallel-safe, use when the top 40 are claimed):**
 `decision-aware-routing.md:492` · `decision-aware-routing.md:614` · `rlm-…:80` ·
@@ -767,3 +789,876 @@ re-grep before assigning.
 - L211 | none | M | Y | **stack-freeze lift** | Wire patch pre-gate into live escalation dispatch | patch_pre_gate.py
 - L263 | none | S | Y | operator/loop-owner decision | Promote or decline ContextRot signature probe entry | inference-batch/entries/
 
+## intake-derived-work-2026-07-25.md (34) — richest `none`-lane vein in the repo, but P3b rows collide on intake_index.yaml
+- L26 | none | M | Y | task ID-1 (now closed) | Decide gepa dependency pin; re-run integration tests | pyproject.toml, test_gepa_integration.py
+- L33 | none | M | Y | needs post-ID-1 gepa_optimize trials | Re-open AP-21 gepa_ratio 0.30 decision | autopilot.py, autopilot_state.json
+- L39 | cpu | L | N | - | Gate KnowledgeDistiller on episodic-only control arm | knowledge_distiller.py, autopilot.py
+- L45 | none | S | Y | - | **READY** Strike unmeasured +1.1% claim; precondition-gate audit | wiki/agent-architecture.md, strategy_store.py
+- L50 | none | M | Y | - | Re-point memory-degradation evidence at live MemRL retriever | repl_memory/retriever.py
+- L53 | none | S | Y | - | **READY** Record do-not-trim guardrail against vendor 80% claim | agent-file-prose-compression.md, CLAUDE.md
+- L63 | none | M | Y | - | Add ordered_subsequence verifier with both graded metrics | answer_scoring.py, test_answer_scoring.py
+- L66 | cpu | M | Y | needs sandboxed exec path | FrontierCS 10-problem floor probe on one arm | eval-tower-verification.md
+- L69 | cpu | L | Y | - | Evaluate behavior-conditioned inference; score total pipeline tokens | reasoning-compression.md
+- L87 | none | S | Y | - | **READY** Add path-resolution check for intake cross-reference map | scripts/validate/, cross-reference-map.md
+- L92 | none | M | Y | - | Backfill handoffs_updated or stop treating as coverage | research/intake_index.yaml
+- L95 | none | S | N | parallel v8 cutover session | Fix stale v6 kernel-immutability duplicate in agent file | agents/shared/ENGINEERING_STANDARDS.md
+- L98 | none | M | N | - | Lossless structural de-dup of always-loaded governance surface | CLAUDE.md
+- L105 | none | L | Y | no container host approved | Extract Fractal containment design; non-USD cost basis | mi210-kernel-rnd-loop-proposal.md
+- L109 | none | M | Y | download pending | Header-gate DavidAU Qwen3.6-27B MTP GGUF twins | speculative-decoding-mtp-refresh.md
+- L114 | none | M | Y | no license on GGUF repo | Rewrite ThinkingCap A/B; hold MTP constant across arms | architect-model-selection-bench.md
+- L125 | none | S | N | task ID-7 + parallel v8 session | Offer graded ordered-coverage IF probe to v8 IQ arms | tq3-quantization-evaluation.md
+- L128 | cpu | L | Y | - | Gate PageIndex adoption on measured per-query cost | internal-kb-rag.md, opendataloader-…md
+- L132 | none | M | Y | - | Port ~50-line SQLite trajectory reader instead of adopting library | frontier-f1-…md, unified-trace-…md
+- L136 | none | M | Y | operator decision | Decline TRL bridge; keep GPU-free OpenEnv trace-capture half | harness-selection-…md
+- L147 | none | S | N | - | Retire obsolete no-llama.cpp-DFlash blocker across handoffs | speculative-decoding-mtp-refresh.md
+- L150 | cpu | L | N | needs matching gemma-4 target weights | Measure gemma-4 DFlash drafter against worker_general | gemma-4-26B DFlash drafter
+- L155 | none | S | N | - | Record Qwen3.5-122B DFlash watch item; scope acceptance-only | speculative-decoding-mtp-refresh.md
+- L163 | none | S | N | parallel v8 session holds laguna edits | Downgrade quant-noise root cause to hypothesis | laguna-s21-cpu-port.md
+- L166 | none | S | Y | - | **READY** Re-triage stale dflash registry forbid row | capability registry yaml
+- L169 | none | S | N | - | Record headless non-causal target-locked DFlash architecture fact | laguna-…md, speculative-…md
+- L179 | none | M | N | - | Recover dropped RLM negatives incl prefill-to-decode conversion | repl-turn-efficiency.md, intake_index.yaml
+- L189 | none | M | N | - | Promote open-weight RLM system prompt + partitioning constants | repl-turn-efficiency.md
+- L194 | none | S | N | - | Re-point both RLM entries; record lineage separation | research/intake_index.yaml
+- L196 | none | S | N | - | Correct intake-578 reversed no-GGUF claim | intake_index.yaml, gpu-acceleration-path.md
+- L199 | none | S | N | - | Index-hygiene one-liners: verdicts, notes, backfills, edges | research/intake_index.yaml
+- L208 | none | M | Y | - | Cross-link llm-as-a-verifier to reviewer plane confidence | reviewer-calibration-accounting.md
+- L211 | none | M | N | - | Correct false chunker-ABC claim; re-cost to DCC reimplementation | internal-kb-rag.md, intake_index.yaml
+- L218 | none | S | N | - | Relabel Firecrawl not_applicable to superseded; fix record errors | intake_index.yaml, searxng-…md
+
+## integration-test-coverage.md (5) — standing rules, not one-shot items
+- L34 | none | S | N | - | Keep mocked integration tests separate from real inference tests | tests/ layout
+- L35 | none | S | N | - | Label inference-backed tests so normal CI can skip them | tests/, pyproject.toml markers
+- L36 | cpu | M | N | llama-server test fixture availability | Live-server fixtures: port, startup, teardown, stale-process checks | tests/conftest.py
+- L37 | none | S | N | - | Avoid broad fixture rewrites without a failing contract test | tests/conftest.py
+- L38 | none | S | Y | - | Check git status and test layout before adding code | tests/ (read-only)
+
+## internal-interaction-lifecycle.md (5)
+- L250 | cpu | L | N | autopilot trial window | Broaden T2/T3 shadow calibration of always-consult vs targeted | review_consult_gate.py
+- L253 | none | M | N | needs 1 week P3-3 shadow data | Enable enforcement one signal at a time with rollback gate | review_consult_gate.py, src/features.py
+- L261 | none | L | Y | P3 exit gate (30% advice value) | Instrument five consult integration-quality metrics | review_consult_gate.py
+- L268 | none | M | N | task P4-1 metrics | Add separate consult_reward head to MemRL, unblended | repl_memory/q_reward.py
+- L270 | none | S | Y | needs 4 weeks P4 metrics | Quarterly keep/tune/disable review per consult skill | handoff
+
+## internal-kb-rag.md (15)
+- L87 | none | L | Y | deferred: needs measured wiki-cross-link gap | K8 wikilink learning-loop scorer | src/retrieval/, wiki/INDEX.md
+- L222 | none | S | N | HOPE-vs-Ekimetrics side-by-side from opendataloader Phase 2 | Bookmark Ekimetrics 5-metric impl as K7 eval scaffolding | handoff
+- L223 | none | S | N | conditional: future K2 design review | Cite HOPE independence finding when defending K2 chunking | handoff
+- L310 | cpu | M | Y | llama.cpp PR #22836 upstream | Confirm STQ1_0 1.25-bit GGUF loads or pick fallback | models/hy-mt2-1.8b/
+- L311 | none | S | Y | download pending | Download Hy-MT2-1.8B weights | models/hy-mt2-1.8b/
+- L312 | cpu | S | N | weights download (L311) | Verify Hy-MT2 chat template and sampling launch recipe | scripts/benchmark/
+- L313 | none | S | Y | operator approval (per-run inference) | Obtain explicit per-run operator approval before pipeline run | ?
+- L314 | none | M | Y | - | Freeze 40-snippet stratified sample set with provenance log | data/mt_eval/samples.jsonl
+- L519 | none | S | N | - | Re-cost adaptive-chunking lift; library ships no adaptive selection | handoff
+- L520 | cpu | M | N | offset provenance prerequisite (L521) | Scope DCC-only chunk-quality signal against existing encoder | markdown_chunker.py, colbert_encoder.py
+- L521 | none | M | N | - | Add raw-source-offset provenance so chunks are exact substrings | markdown_chunker.py, its unit test
+- L522 | none | S | N | - | Record both trigger conditions fired; work no longer deferred | handoff
+- L523 | cpu | M | Y | measured per-query LLM-call bound (9/16 timed out) | Evaluate PageIndex as intra-document complement to ColBERT | scripts/kb_rag/, kb_rag.py
+- L529 | cpu | L | N | requires a region claim | Bounded LFM2.5-ColBERT probe on K7 70-case pool | k7_cert_cases.json, colbert_encoder.py
+- L530 | none | S | N | - | Correct intake-925 retriever reading before it informs index design | handoff, intake_index.yaml
+
+## intra-process-tensor-parallel-decode.md (5) — dormant, no reopen trigger
+- L24 | none | S | N | no reopen trigger established | State a new topology/workload trigger justifying CPU1 reopen | handoff
+- L25 | cpu | M | N | reopen trigger (L24) | Apply P-BENCH protocols before any throughput claim | MEASUREMENT.md, bench scripts
+- L26 | cpu | M | N | reopen trigger (L24) | Reproduce canonical baseline for target model and topology | bench_canonical.sh
+- L27 | cpu | L | N | canonical baseline (L26) | Prove bottleneck is locality/barrier not DRAM-channel dominated | ggml-cpu/, perf artifacts
+- L28 | none | S | N | profile result (L27) | Choose smallest next action: archive, probe, or redesigned TP | handoff
+
+## iqk-iquant-enablement.md (4)
+- L105 | cpu | L | N | operator inference approval; quiet window | T2 bench IQ4_KT vs Q4_K_M in ik_llama as instrument | ik_llama.cpp scratch build
+- L106 | cpu | L | N | T2 must reach 95% tg128 gate | T3 port trellis KT types only if T2 clears gate | ggml-cpu/iqk/, CMakeLists.txt
+- L140 | none | M | Y | - | Scope 1-bit family: vendoring, types, enums, missing traits | iqk_gemm_1bit.cpp, iqk_stubs.cpp
+- L237 | cpu | L | N | quiet window; v8 frozen (post-v8 tranche) | Prefill-headroom bundle: func16, Q8_K_R16, fused MoE, flash-attn | iqk_gemm_iquants.cpp, iqk_mul_mat.cpp
+
+## laguna-s21-cpu-port.md (2)
+- L97 | none | M | Y | - | **READY** L-8 fold ad-hoc GPU smoke artifact into runner or delete | laguna_pgpu1_dflash_runner.py
+- L120 | cpu | L | N | no CPU-resident Laguna role decision pending | L-9P conditional bounded four-cell CPU throughput/config discovery | laguna_q4_cpu_config_discovery.py
+
+## large-moe-expert-parallelism.md (5)
+- L37 | none | M | Y | - | CPU15-DISP reconcile deployment docs with downgraded EP verdict | cpu-inference-optimization-index.md
+- L38 | cpu | L | N | CPU20 protocol + operator bench window | CPU15-REVAL fresh canonical no-EP/config/EP matrix, 3 reps | ep-dispatcher.cpp
+- L43 | cpu | L | N | CPU24 perf-record evidence, >150B target | CPU15-ROOT bottleneck proof before new mechanism work | ggml-cpu.c, perf artifacts
+- L44 | none | L | Y | CPU15-REVAL positive target | CPU15-UPSTREAM upstream ep_dispatcher only after positive gain | ep-dispatcher.cpp
+- L45 | none | S | Y | MoE-Spec Phase 0 | CPU15-MOESPEC ordering note: mask/budget before EP broadcast | ggml-cpu.c, moe-spec handoff
+
+## learned-routing-controller.md (21)
+- L92 | none | L | Y | EPD-1/EPD-3 outcome-label defects | Re-run escalation probe after outcome label repaired | scripts/graph_router/, episodic_store.py
+- L197 | none | M | N | - | Decide: update outcome with q_value or demote label | episodic_store.py
+- L217 | cpu | L | N | needs BGE embed fleet window | Re-embed or partition store under one text convention | repair_episodic_embeddings.py
+- L301 | cpu | L | N | 2026-06-12 routing-expansion guard | P1.5.2 collect 1000+ logit-probe requests | llama_server.py, data/logit_probe.jsonl
+- L302 | none | M | Y | P1.5.2 collection | P1.5.3 train 512-param linear probe, evaluate accuracy | scripts/graph_router/
+- L303 | none | S | Y | P1.5.3 | P1.5.4 decision gate 80%/60% on logit probe accuracy | handoff
+- L311 | cpu | M | N | needs live /hidden-states server test | P2.3 collect mean-pooled hidden states per attention layer | llama.cpp-experimental server
+- L312 | none | M | Y | P2.3 data | P2.4 train per-layer linear probes, find best layer | scripts/graph_router/
+- L313 | none | M | Y | P2.4 | P2.5 learned attention pooling if layers complementary | scripts/graph_router/
+- L314 | none | S | Y | P2.4/P2.5 | P2.6 decision gate 90%/80% to enter Phase 3 | handoff
+- L318 | none | M | N | Phase 2 gate P2.6 | P3.1 swap BGE embedding for hidden-state features in MLP | routing_classifier.py
+- L319 | none | M | N | P3.1 | P3.2 remove BGE model from inference path | src/backends/, orchestrator_stack.py
+- L320 | none | L | N | P3.1 | P3.3 migrate episodic store schema to hidden-state vectors | episodic_store.py
+- L379 | none | L | Y | trainable BGE-large ckpt + full torch env | P4 SVD-scale fine-tuning trial on extractor backbone | scripts/graph_router/, /mnt/raid0/llm/hf/
+- L380 | cpu | L | N | needs cold-start surface + eval-tower fitness oracle | P4 sep-CMA-ES cold-start spike, ~10h overnight ES | eval_tower.py, scripts/graph_router/
+- L393 | cpu | L | N | needs promotion-grade observed-outcome IRT scorer | P5.2 rerun cold-start acceptance gate with observed outcomes | irt_cold_start_ab.py, irt_scorer.py
+- L394 | none | M | N | P5.2 decision gate | P5.3 ship onboarding CLI + document cold-start workflow | tools/onboard_specialist.py
+- L854 | none | L | Y | P6.2 pass (deferred) | P6.3.1 port TinyRecursiveModels to CPU-only training mode | train_verifier_head.py
+- L855 | none | M | N | P6.3.1 | P6.3.2 apply Augmented-HRM augmentation recipe | train_verifier_head.py
+- L856 | none | M | N | P6.3.2 | P6.3.3 A/B recursive verifier vs P6.2 MLP, Brier gate | train_verifier_head.py
+- L1613 | none | S | Y | - | **READY** Standing guardrail: do not import intake-866 equivalence framing | ?
+
+## lightning-attention-port.md (4)
+- L32 | none | S | N | owner/operator role decision | LQ-1 decide Ring-mini role or park as architecture reference | handoff, model_registry.yaml
+- L33 | cpu | L | Y | LQ-1 must keep a math/reasoning role | LQ-2 focused AIME/MATH/GPQA eval at reasoning_budget=0 | eval bundle artifacts
+- L34 | cpu | L | Y | no compatible Ring-flash target exists | LQ-3 Ring-flash drafter acceptance-adjusted throughput check | llama.cpp fork
+- L35 | cpu | L | Y | LQ-1/2/3 outcome (profile-gated) | LQ-4 profile-gated decision on dedicated L5 op | GGML_OP_LIGHTNING_ATTN path
+
+## llama-cpp-dsa-contribution.md (4)
+- L231 | gpu | L | Y | low priority | D4 root-cause flaky HIP bf16 LIGHTNING_INDEXER failure | ggml-cuda lightning-indexer, test-backend-ops.cpp
+- L245 | none | L | N | runtime proof dense-mask scales with full KV | D2 sparse-attention upstream contribution | DSA attention path, glm4.cpp
+- L246 | none | L | N | D2 real-sparse or new profile | D3 AVX-512BW Lightning Indexer CPU kernel | ggml-cpu lightning-indexer
+- L247 | cpu | L | Y | GLM-5.2 UD-IQ2_M download pending | GLM-5.2 754B activation: download, verify, load-smoke | models/GLM-5.2-UD-IQ2_M
+
+## llamacpp-v6-consolidation.md (6)
+- L~77 (SHIFTED — re-grep) | none | M | Y | - | **READY** F1 fold paged-attn branch into v6, off-by-default | llama.cpp-v6 ops.cpp, ggml.h
+- L100 | none | M | Y | operator review | Verify SWA slot-reuse fixes against upstream SWA | llama.cpp-v6 llama-kv-cache*.cpp
+- L101 | none | S | Y | operator review | Decide fate of --moe-n-expert hard-mask CLI tool | llama.cpp-v6 common/arg.cpp
+- L102 | none | L | Y | eval-gated; not in deployed registry | Decide on Differential-Transformer-V2 arch port | llama-model.cpp, convert_hf_to_gguf.py
+- L97 | none | M | Y | operator review | Decide fate of streaming KV context-shift controls | llama.cpp-v6 server.cpp
+- L98 | none | M | N | operator review; depends on F1 fold (L77) | Assess paged-attn overlap with upstream flash-attn | ops.cpp, ggml.h
+
+## log-linear-gated-deltanet-readiness.md (3) — all external upstream watches
+- L70 | none | S | Y | upstream release (external) | Check for public pretrained Log-Linear GDN checkpoint | handoff
+- L71 | none | S | Y | upstream repo state (external) | Confirm reference repo ships inference code | handoff
+- L72 | none | S | Y | upstream documentation (external) | Confirm architecture documented enough for GGUF converter | handoff
+
+## loops-and-dashboards-audit-2026-07-05.md (1)
+- L316 | cpu | L | N | **blocks OP-1**; owned by eval-tower/inference session | Root-cause real_suite_v1 run-instability, raise power below MDE 0.15 | eval_suite_discriminability.py
+
+## master-handoff-index.md (3)
+- L444 | none | S | N | operator ratification (human-amendment-only) | G1 ratify P-GPU-1 measurement trust boundary | MEASUREMENT.md
+- L446 | gpu | L | Y | G1 P-GPU-1 ratification | G3 frontdoor residency bench under P-GPU-1 to Gate R | mi210-speed-campaign-summary.md
+- L447 | gpu | L | Y | G0 and M4 verdicts | Fleet placement order: embedder/vision, op-offload prefill, drafters | mi210-big-model-…md
+
+## mathsmith-hc-formalizer-eval.md (16)
+- L108 | none | S | Y | operator/network approval | Check HF for MathSmith-HC GGUFs or upstream weights | ?
+- L109 | none | L | N | HF weights download pending | Convert HF weights to Q4_K_M and Q8_0 GGUFs | convert_hf_to_gguf.py
+- L110 | cpu | S | N | needs HC GGUF (L109) | Verify Q8_0 decode speed normal, confirm old conversion bug | scripts/benchmark/, summary.csv
+- L111 | cpu | M | N | needs HC GGUF (L109) | Benchmark HC on existing formalizer test suite baseline | summary.csv rows 15-16
+- L114 | cpu | M | N | needs HC-8B GGUF | Test Qwen3-0.6B as drafter for HC-8B | model_registry.yaml
+- L115 | cpu | M | N | needs HC-8B GGUF | Test Qwen3-1.7B as drafter for HC-8B | model_registry.yaml
+- L116 | cpu | S | N | needs L114/L115 drafter runs | Compare against Q4_K_M spec-decode n3 16.1 t/s ceiling | summary.csv
+- L117 | cpu | M | N | ShortCoT artifact download pending | Evaluate MathSmith-HC-1.7B-ShortCoT drafter | model_registry.yaml
+- L120 | none | M | Y | - | Design A/B protocol on aime and olympiadbench suites | dataset_adapters.py
+- L121 | cpu | M | N | operator inference approval | Run baseline arm: solver answers raw problem directly | scripts/benchmark/
+- L122 | cpu | L | N | needs HC artifact (L109) | Run formalizer arm: HC formalizes then solver answers | src/features.py input_formalizer
+- L123 | cpu | M | N | solver availability + inference approval | Run A/B across three solver candidates | model_registry.yaml
+- L124 | none | S | Y | needs S4 pipeline runs | Report accuracy delta, latency overhead, total pipeline time | scripts/analysis/
+- L125 | none | S | Y | needs S4 runs across difficulty tiers | Analyze whether formalization gain scales with difficulty | scripts/analysis/
+- L126 | none | M | Y | needs S4 runs | Report per-problem formalizer+solver token cost vs baseline | scripts/analysis/
+- L127 | none | M | Y | - | Swap exact-match for Math-Verify answer comparison | dataset_adapters.py, eval scorer
+
+## memento-block-reasoning-compression.md (5)
+- L190 | gpu | L | N | peft/trl not installed; training window | S2 Stage-1 format-learning smoke on Qwen3-0.6B | memento_sft.py
+- L191 | gpu | L | N | Stage-1 smoke passing | S2 Qwen3-1.7B LoRA validation, promote/stop decision | memento_sft.py
+- L192 | gpu | L | N | env install + GPU training window | Install peft/trl, run the real Stage-1 SFT job | memento_sft.py
+- L193 | none | M | Y | BLOCKED on S2 pass | S3 wire block-masking inference-time feature flag | orchestrator_stack.py
+- L194 | cpu | L | N | BLOCKED on S2 pass | S3 Fold/Unfold toggle + short-m@k voting + Hadamard stacking | orchestrator_stack.py
+
+## mi210-big-model-and-acceleration-roadmap.md (6)
+- L127 | gpu | L | N | DR-3e P-GPU-1 certification outstanding | Complete broader K2 admission runner/package | dr3_…runner.py
+- L156 | gpu | L | N | P-GPU-1 protocol + post-cutover operator gate | DR-3e rerun GPU claims under production kernel | dr3_*, data/dr3_*
+- L159 | gpu | L | N | operator-gated; expert skew deprioritized | GLM-5.2 endgame expert-offload / REAP+IQ2 path | ?
+- L161 | gpu | L | Y | K28.5 prototype gate | K28 default-off fused chunked GDN kernel for long prefill | gated_delta_net.cu
+- L230 | gpu | L | N | needs cheap proof raising Phase-0 ceiling | K28.5 gate fused-recurrence prototype | gated_delta_net.cu
+- L261 | gpu | L | Y | MI210 window + operator mid-stream quant decision | AXA-2 design/validate CPU→GPU re-prefill teleport cutover v1 | teleport.py, gpu_lease.py
+
+## mi210-kernel-rnd-loop-proposal.md (4) — ORPHAN-adjacent
+- L74 | none | M | N | - | Wire Pareto frontier + rewind-purge into kernel strategy store | scripts/kernel_rnd/kernel_store.py
+- L75 | none | L | N | Phase 1 store wiring | Build nightshift outer planner + inner sweep-eval-Pareto loop | kernel_sweep.sh, scripts/nightshift/
+- L76 | gpu | L | N | Phases 1-2 + operator GPU window | Run L3-MoE/L15 MMQ-family param sweep through the loop | ggml-cuda/mmq.cu, kernel_eval.sh
+- L81 | none | L | N | Phase 1 strategy store | Build Phase 2 verify loop on OpenHyra Experience Bank pattern | kernel_store.py
+
+## mi210-mfma-compute-bound-paths.md (1)
+- L47 | none | S | Y | measurement gate failed both paths | Reopen MFMA kernel build only if a compute-bound path appears | ggml-cuda/mmq.cu, fattn*
+
+## mi210-q8-dequant-gemv-roofline.md (3)
+- L77 | gpu | L | N | operator-gated IQ2-vs-Q8 bench | Quantize 122B to IQ2 proxy; bench IQ2 vs Q8 decode/PPL | build-hip/, ggml-cuda/mmvq.cu
+- L78 | gpu | L | N | only if coalescing measured poor (deemed healthy) | SoA-repack lever for Q8 weight layout | mmvq.cu, quantize.cu
+- L79 | gpu | L | N | separate bet, not prioritized | Optional stream-K K-splitting for Q8-MMQ aggregate case | ggml-cuda/mmq.cu
+
+## mi210-speed-campaign-summary.md (1)
+- L70 | gpu | L | Y | **STALE?** MI-KB-1 declined harness (gfx942-only) | Run KernelBench baseline over v6 production kernel | kernel_eval.sh
+
+## minddr-deep-research-mode.md (10)
+- L13 | gpu | L | N | **gfx90a/ROCm training stack unverified** | Run gfx90a MI210 training-viability smoke for Phase 2 | ROCm/TRL smoke script
+- L177 | none | M | Y | MD-9 not yet run | Consider PaperBench-style source-fidelity axis in MD-9 rubric | deep_research_sentinel.yaml
+- L182 | cpu | L | N | inference window + search backend availability | MD-9 A/B sentinel suite with deep_research_mode 0/1 | deep_research_sentinel.yaml, src/graph/minddr/
+- L183 | none | S | N | MD-9 must pass first | One-line dispatcher wiring for research-like route | chat.py dispatcher, minddr/graph.py
+- L184 | none | M | Y | owned by eval-tower EV-9 | EV-9 multi-dimensional rubric scoring for non-structural MD-9 | rubric_scoring.py, safety_gate.py
+- L185 | gpu | L | N | gfx90a training-viability smoke (L13) | Phase 2 MD-10..MD-13 four-stage RL specialization | ?
+- L186 | none | L | N | durable >=5pp uplift over 3 weeks | Phase 3 MD-14 architect_planning/search/report role refactor | orchestrator_stack.py
+- L195 | none | L | N | operator-review gate | Add rubric-as-execution-interface Review stage + adherence dimension | minddr/nodes.py, prompts/
+- L207 | none | S | Y | - | **READY** Demote BrowseComp/WideSearch/xbench anchors to observation-grade | handoff
+- L208 | none | M | Y | operator-review gate | Capture search trajectories for post-hoc leakage audit | SearxNG tool wrapper
+
+## model-capability-descriptors.md (1)
+- L40 | cpu | L | N | DAR-1 regret replay >=5% AND per-question eval vectors | Unified cascade: calibrated bilinear predictor + omega | model_descriptors.yaml, q_scorer.py
+
+## model-stack-change-standardization-audit.md (7) — per-change procedural checklist
+- L219 | none | S | N | fires per stack change | Identify the model-stack change type before touching inputs | ?
+- L220 | none | S | N | L219 change-type identification | Update structured registry/descriptor inputs only | model_registry.yaml, stack_manifest.py
+- L229 | none | S | Y | - | **READY** Run focused unit tests for priors, guard, scorer, admission | tests/unit/ suites
+- L230 | none | M | Y | - | Run simulated mmap-swap, retirement, tier-change tests | tests/ simulated swap fixtures
+- L234 | none | S | N | - | Update only generated summaries or explicitly historical docs | docs/runbooks/
+- L235 | none | S | N | pre-launch gate | Require fresh priors + guard pass before any launch | stack-change gate, stack_priors.yaml
+- L236 | none | S | N | post-launch of the stack | Compare live PIDs/ports/flags against priors, restart stale | stack_manifest.py --status
+
+## model-stack-single-source-update-pipeline.md (7)
+- L320 | none | M | Y | - | Preserve env override precedence + degraded fallbacks in migrations | src/config/models.py, stack_priors.py
+- L322 | none | L | N | needs concrete duplicated-fact trigger | Migrate remaining high-risk P2 consumers | stack_change_surface_manifest.yaml
+- L325 | none | S | Y | - | **READY** Keep three re-audited surfaces unchurned | seeding_rewards.py, corpus_quality_gate.py, kv_compress.py
+- L330 | none | M | N | needs a newly migrated consumer to witness | Broaden W4 swap-CI as migrated consumers create witnesses | test_stack_priors_compiler.py
+- L348 | none | S | Y | operator enablement/reload/attestation decision | Keep X-MAS production routing default-off | X-MAS policy config
+- L350 | none | S | Y | - | Keep short_term_memory.md under review as live run state | scripts/autopilot/short_term_memory.md
+- L352 | none | S | Y | - | Keep completed implementation logs out of active indices | progress/, handoffs indices
+
+## model-stack-update-pipeline-audit.md (3) — ORPHAN
+- L628 | none | M | Y | conditional on promotion-gate coverage proving insufficient | Add direct benchmark runtime enforcement | stack guard, promotion gate
+- L631 | none | M | N | operator gate; native ctx_max not populated | Make null ctx_model_max a compile-blocking strict known-gap | model descriptors, model_registry.yaml
+- L632 | none | L | N | - | Untangle scripts.server import cycle causing fail-open flake | runtime_facts_manifest.py, stack_paths.py
+
+## moe-spec-cpu-spec-dec-integration.md (1)
+- L404 | cpu | L | N | quiet window (no-concurrent-inference) | Live-MTP MoE verifier B-sweep with bit-exact guard | common/speculative.cpp
+
+## multi-file-coding-completion-capability.md (4)
+- L288 | cpu | L | N | coder-role A/B authorization; disk at 95% | Use bartowski Q8_0 for quant-matched coder-role A/B | model_registry.yaml, models dir
+- L295 | none | M | N | needs clean-window A/B evidence + operator | Decide when routine coding edits auto-route to edit-mode | capability_registry.yaml, chat.py
+- L296 | cpu | L | N | host-quiet window; pause J6 autopilot | Clean-window A/B over >=50 routine edit tasks with three gates | bep_edit_mode_wiring.py, bep_ab.py
+- L297 | none | S | N | needs A/B evidence + one shadowed trial | Promote edit_transaction_auto_routing toward autopilot | capability_registry.yaml
+
+## multimodal-pipeline.md (11)
+- L177 | cpu | M | N | needs ratified ASR/MOS instrument or operator audition | M-2Q establish intelligibility/quality acceptance for TTS WAV | artifacts/minicpm-o-phase1-v8-…/m2-tts/
+- L178 | gpu | L | N | **AutoPilot E8 baseline reseed must complete first** | M-3 execute vision role-swap via three-gates discipline | model_registry.yaml, promotion runbook
+- L324 | cpu | M | Y | TTS deprioritized; Path D remains primary | Prototype FastAPI wrapper for Qwen3-TTS on port 8110 | ?
+- L325 | cpu | M | N | depends on the Path-C prototype | Benchmark Qwen3-TTS VRAM and latency on EPYC | ?
+- L326 | none | S | N | prototype + benchmark | Add feature-flagged worker_tts role to model registry | model_registry.yaml
+- L327 | none | M | Y | - | Design voice-cloning guardrails before enabling TTS | docs/, handoff
+- L406 | none | S | Y | **STALE?** Qwen3.5-Omni is API-only, no weights | Estimate CPU cost of ARIA audio-codec path on one NUMA node | handoff
+- L503 | none | S | Y | upstream Alibaba weight release pending | Monitor for Qwen-Audio-3.0 open-weights/GGUF release | handoff
+- L525 | cpu | M | N | operator trial approval + quiet window | Trial Z-Image-Turbo as latency-only candidate with Q8-vs-Q4 A/B | model_registry.yaml
+- L526 | none | S | N | sd.cpp lora.hpp z_image key resolution unverified | Record rank-32 distill LoRA as Base↔Turbo conversion mechanism | sd.cpp lora.hpp
+- L624 | cpu | L | N | queued after A2/RP-5; stack-down bench window | Bench MiniCPM-o Q4 CPU lane vs Qwen2.5-VL, decide promotion | artifacts/minicpm-o-*, runbook
+
+## multiscreen-attention-evaluation.md (4)
+- L320 | cpu | L | Y | download pending + inference window | HRM-1 fair HRM-Text-1B head-to-head vs Qwen3.5-1.7B | models/HRM-Text-1B, transformers CPU harness
+- L321 | none | M | Y | HRM-1 result | HRM-2 decide llama.cpp investment vs transformers CPU | handoff, log-linear-gated-deltanet-readiness.md
+- L322 | none | S | Y | HRM-1 must land first | HRM-3 defer any HRM production role assignment | handoff, model_registry.yaml
+- L347 | none | S | Y | no cheap-first/edge/triage role opened | LFM2-1 standing no-bench/no-port posture for LFM2.5 | handoff
+
+## non-inference-backlog.md (2)
+- L56 | none | L | Y | DS-E1 evidence (Package B throughput, RI-10, DS-5) | NIB2-18 implement DS-6 QuarterScheduler after evidence | stack_templates.py, stack_numa.py
+- L94 | none | M | Y | NIB2-32 live verdict | NIB2-46 STOP Phase 0 instrumentation: reserved token + hidden-state hook | llama.cpp server.cpp, src/graph/
+
+## numa-prefill-decode-disaggregation.md (1)
+- L76 | none | S | Y | xGMI KV-transfer falsification; multi-tenant shift | Reopen only on multi-tenant shift | handoff
+
+## objective-task-rate-goodput.md (2)
+- L46 | none | M | N | operator flip decision (Option C tripwire armed) | W3 flip live dominance to 3-D task_rate vector, retire t/s | tier_specs.py, pareto_archive.py
+- L75 | cpu | L | N | next instrument era; batching integration | W5 add sparse/steady/burst offered-load profiles | eval_tower.py, tier_specs.py
+
+## opendataloader-pipeline-integration.md (17) — **LIVE / OWNED, DO NOT DISPATCH** (line numbers shifted this session)
+- L159 | gpu | L | N | needs full-set ODL re-baseline (L613) | LightOnOCR vs docling-fast as structural/table parser candidate | odl_bench/, pdf_router.py
+- L160 | gpu | S | N | L159 parser-quality comparison | Measure LightOnOCR latency inside parser-quality comparison only | odl_bench/
+- L161 | none | M | N | benchmark-backed routing-policy evidence | Three-way routing: ODL local, ODL hybrid, LightOnOCR | pdf_router.py, document_preprocessor.py
+- L163 | cpu | L | N | external 200-PDF corpus (local ceiling 51) | Compare our pipeline vs ODL/docling/marker on 200 PDFs | pdf_fastpath_probe.py
+- L164 | none | S | Y | L163 comparison run | Publish 200-PDF comparison results in progress log | progress/
+- L405 | none | S | Y | Git LFS dataset download pending | Clone opendataloader-bench repo with 200 LFS PDFs | /mnt/raid0/llm/opendataloader-bench/
+- L410 | gpu | L | N | L405 clone; dataset absent | Baseline pdftotext+LightOnOCR pipeline on 200 PDFs | odl_bench/, pdf_router.py
+- L464 | none | S | N | conditional: cost becomes bottleneck | Cite W-RAC as prior art in Phase 2 design | handoff
+- L512 | cpu | M | N | Phase 3 benchmark integration | Add intrinsic chunk-quality scores alongside NID/TEDS/MHS | odl_bench/
+- L534 | cpu | M | N | liteparse dependency missing (51/51 fail) | Bench LiteParse vs ODL-local vs pdftotext | pdf_fastpath_probe.py
+- L535 | none | S | N | L534 bench outcome | Route dense-table/scanned docs away from LiteParse | pdf_router.py
+- L557 | gpu | L | N | PaddleOCR-VL arm voided (L615) | Compare LightOnOCR table-competent arm vs ODL/PaddleOCR | odl_bench/paddleocr_vl.py
+- L613 | cpu | L | N | - | Re-baseline ODL end-to-end on full 1651-page OmniDocBench | odl_bench/, datasets/omnidocbench/
+- L615 | gpu | L | N | PaddlePaddle PaddleOCRVL pipeline not installed | Void and re-run PaddleOCR-VL arm through real pipeline | odl_bench/paddleocr_vl.py
+- L616 | gpu | L | N | GGUF/architecture pre-check + intake entries | P1 evaluate MinerU2.5-Pro and GLM-OCR | intake_index.yaml, odl_bench/
+- L617 | gpu | L | N | model download; experimental branch only | P2 add Unlimited-OCR single-pass arm at Q5_K_M | odl_bench/, models/
+- L629 | cpu | M | Y | PageIndex unbounded per-query LLM calls | Probe ODL markdown into PageIndex md_to_tree consumer | document_chunker.py
+
+## orchestration-robustness-audit-2026-07-11.md (7)
+- L155 | none | S | Y | operator run/pause decision | P0.1 operator decides run or pause for autopilot candidate species | start_fable_authority_daemon.py
+- L156 | none | M | Y | **operator signature (MEASUREMENT human amendment)** | P0.2 sign P2 amendment bundle, discriminability gate, P3 canary | p0_2_amendment_bundle_inputs*.json
+- L159 | none | M | Y | approval token ERA_FENCED_BLACKLIST_PURGE_2026_07_11 | P0.3 era-fenced blacklist purge + lever re-exploration | blacklist_purge_plan.py
+- L184 | none | S | Y | file is root:root 0444; needs operator/sudo | Add seq_p0_2_bridge consent or apply formal amendment | orchestration/authority_consent.json
+- L198 | none | L | Y | HIGH blast radius (22 upstream impacts) | W1 consolidate remaining runtime-facts readers | orchestrator_runtime_facts.json readers
+- L240 | none | S | Y | - | **READY** Startup sweep unlinking old unopened faiss tmp orphans | repl_memory/faiss_store.py
+- L241 | none | S | N | depends on L240 sweep + 24h age | Sweep the 7 remaining 5.1GB tmp files once aged out | repl_memory/sessions/*.tmp
+
+## outer-coordinator-learned-head.md (6) — a clean self-contained scoping arc, all `none`-lane
+- L91 | none | M | N | - | OC-0.1 inventory per-turn autopilot decisions into a table | scripts/autopilot/, handoff
+- L92 | none | S | N | OC-0.1 table | OC-0.2 classify each decision uniform/context-dependent/arbitrary | handoff
+- L93 | none | M | N | - | OC-0.3 identify fitness signal the learned head optimises | handoff
+- L94 | none | M | N | autopilot per-run token telemetry | OC-0.4 cost-benefit estimate of Claude tokens replaced | scripts/autopilot/digest.py
+- L95 | none | M | N | - | OC-0.6 populate learned-coordinator design-space reference table | handoff
+- L106 | none | S | N | OC-0.1..0.4 + OC-0.6 | OC-0.5 decide escalate to OC-1+ or close not_pursued | handoff
+
+## per-request-reasoning-budget.md (4)
+- L208 | cpu | M | N | needs running server | Step 3 force close-think at budget=0 for hybrid SSM | reasoning-budget.cpp, llama-context.cpp
+- L209 | cpu | M | N | Step 3 (L208) | Step 4 verify budget cap and no pure-MoE regression | reasoning-budget.cpp, server-task.cpp
+- L210 | none | M | Y | - | Thread thinking.budget_tokens through ChatRequest per role | ChatRequest model, orchestrator API
+- L211 | none | M | Y | - | Design stop-signal abstraction for CGR/SpecExit exit hooks | reasoning-budget.cpp
+
+## pipeline-integration-index.md (9) — index pointers
+- L99 | gpu | L | Y | MI210 landed, unblocked | P0.5 prompt-enhancer, content-filter, typography, GPU DiT rebench | ernie-image-turbo-evaluation.md
+- L100 | cpu | L | Y | - | P1 benchmark-backed ODL hybrid-vs-baseline + routing policy | pdf_router.py, opendataloader-…md
+- L102 | cpu | L | Y | - | P2 Leanstral expert profiling, REAP prune, end-to-end proof | leanstral-architecture-analysis.md
+- L103 | cpu | L | Y | - | P3 benchmark first viable TTS path with RTF/WER evidence | multimodal-pipeline.md
+- L104 | cpu | M | Y | pending in owning multimodal-pipeline handoff | MiniCPM-O Phase 1 testing carried from retired vision row | multimodal-pipeline.md, src/vision/
+- L105 | none | M | Y | needs measured wiki cross-link gap | P5 deferred K8 wikilink scorer | src/retrieval/, internal-kb-rag.md
+- L106 | cpu | L | Y | inference-window gated | P5 AutoWiki model-backed page writer | internal-kb-rag.md, src/retrieval/
+- L107 | none | S | N | decision-only from existing sweep | Decide recency_w0.3_s90 default-retrieval-weight promotion | src/retrieval/ default weights
+- L108 | cpu | M | N | inference-window gated; measure-first | Measure K11 FTS5 lexical signal before default-weight promotion | src/retrieval/ FTS5 signal
+
+## prompt-construction-determinism.md (2)
+- L67 | cpu | L | N | clean window co-scheduled with N13 post-reboot bench | D3 manual canonical bench certifying sampling-quality changes 1-3 | bench_canonical.sh, canonical_recipe.py
+- L68 | none | S | N | needs D3; human-amendment surface | D4 author sampling-determinism autopilot_quality era row | instrument_eras.yaml
+
+## qwen-mtp-llamacpp-port.md (2) — ORPHAN
+- L85 | cpu | L | N | operator gate + parent T1 dense gate-bench | P6b operator-gated model load and MTP gate bench | build-ap-mtp, Qwen3.6-35B-A3B-MTP-GGUF
+- L86 | cpu | L | N | rides #22673 reconciliation; needs EPYC frequency map | P7 FR-Spec draft LM-head vocab-trim, measure end-to-end | qwen35.cpp, speculative.cpp, eagle3.cpp
+
+## qwen36-27b-cpu-feasibility.md (4) — PARKED
+- L115 | cpu | M | N | PARKED — reopen only if 27B is a real role candidate | P1 CPU throughput probe single-instance + NUMA-4-way Q4_K_M | scripts/benchmark/, model_registry.yaml
+- L116 | cpu | L | N | PARKED — same reopen trigger | P2 coder-escalation quality A/B vs Qwen2.5-Coder-32B | scripts/benchmark/, dataset_adapters.py
+- L117 | none | S | N | task P1 | Append measured P1 throughput + baseline comparison | handoff
+- L118 | none | S | N | task P2 | Append agentic score table; propose registry swap if gates pass | handoff, model_registry.yaml
+
+## rao-redel-substrate-spike.md (9)
+- L414 | cpu | L | N | operator approval; no delegating workload | Run naturally-delegating workload A/B before Step 3 | rao_redel_step2_ab.py
+- L415 | none | S | Y | operator decision | Push/PR sub-decision-taxonomy branch | subdecision_taxonomy.py, episodic_store.py
+- L416 | none | L | N | delegation-positive re-test (L414) | Step 3 conditional substrate replacement, 400-800 LoC | repl_executor.py
+- L431 | none | S | Y | superseded by 07-21 correction | Keep max_depth 0-1 default, recursion only for failing baselines | repl_executor.py
+- L432 | none | M | Y | - | **READY** Adopt SkyRL parent/child rollout-tree accounting shape | episodic_store.py
+- L445 | none | M | Y | - | Reframe depth as conditional surface gated on predicted failure | handoff, repl_executor.py
+- L446 | none | L | N | needs learned-routing-controller surface | Build escalation-prediction surface jointly with COMP_r probe | src/classifiers/
+- L447 | none | M | N | needs escalation surface (L446) | Gate depth escalation on expected value | repl_executor.py
+- L453 | none | M | Y | source/licence check | Evaluate adopting OOLONG suite adapter sized to depth question | dataset_adapters.py, BENCHMARKS.md
+
+## re4-protocol-redesign.md (5) — ORPHAN
+- L147 | cpu | M | N | operator quiet window; autopilot stopped | RE-4.2 frontdoor 30-row non-saturation probe at R=4096 | longcot_mini_stack_runner.py
+- L148 | cpu | L | N | RE-4.2 in-band; runner parity L151 | RE-4.3 full 402-row two-phase reference run both roles | longcot_mini_stack_runner.py
+- L149 | cpu | L | N | RE-4.3 complete | RE-4.4 reasoning-budget ladder at R 512 to 4096 | longcot_mini_stack_runner.py
+- L150 | none | S | N | RE-4.3/4.4 artifacts | RE-4.5 package artifacts, write terminal ledger row | inference-batch/bundles/RE-4/
+- L151 | none | M | N | must precede RE-4.3 | Verify runner persistence, confidence provenance, infra-error exclusion | longcot_mini_stack_runner.py
+
+## reasoning-compression.md (9)
+- L96 | none | M | Y | difficulty-signal re-validation n>=100 | Implement enforce mode routing easy→worker, hard→architect | difficulty_signal.py, classifier_config.yaml
+- L98 | cpu | L | Y | model server availability | Generate SEAL control vectors for Qwen3-32B (Action 8) | generate_pairs.py, eval_cvectors.py
+- L103 | cpu | L | Y | shared with context-folding Phase 2 | Summarizer quality assessment via judge eval across model tiers | eval_trimr.py pattern
+- L246 | cpu | L | Y | must be re-scoped per RC-RE-1; needs E7 tower | RC-RE-2 validate compression safety on held-out reasoning suites | eval tower suites
+- L611 | none | S | N | - | Add Tier-0 pre-compressed-checkpoint rung seeded with ThinkingCap | handoff
+- L612 | cpu | L | Y | - | Add Behavior-Conditioned Inference as Tier-1 candidate and measure | trace store, eval_metrics.py
+- L613 | cpu | M | N | BCI candidate build (L612) | Score total pipeline tokens, not decode-only, for BCI claim | eval_metrics.py
+- L614 | none | M | N | BCI adoption (L612) | Held-out validation gate + append-only behavior handbook guardrails | behavior handbook store
+- L631 | none | S | Y | upstream Loopie artifact release pending | Loopie artifact watch: recheck HF/GitHub before port planning | intake_index.yaml, handoff
+
+## reasoning-effort-levels.md (19)
+- L103 | gpu | L | N | operator inference approval (P-GPU-1) | TB-1 sweep max_tokens per stack model, find truncation knee | v7_quality_gate_runner.py
+- L109 | none | M | Y | needs TB-1 curves | Test single mostly-ok budget captures 90% of max accuracy | architect_bench_analyze.py
+- L113 | none | S | Y | needs TB-1 knees | Audit live reasoning_budget ceilings against measured knees | model_registry.yaml
+- L116 | gpu | L | N | needs TB-1 and E-2 | Measure 2-D effort x budget grid per model | v7_quality_gate_runner.py
+- L140 | none | M | Y | operator gate (production config) | Plumb per-request max_tokens/reasoning_budget as router tunable | chat_pipeline/, model_registry.yaml
+- L186 | gpu | L | N | - | Finish v8 np×L grids + prefill-to-depth RAG instrument | artifacts/np_context_study_v8_20260727/
+- L204 | gpu | L | N | needs v8 grids terminal | Prefill-to-depth variant + extract per-model kv_bytes/token | artifacts/np_context_study_v8_…/
+- L212 | cpu | L | N | CPU lineage window (session split) | A2 CPU 122B-Q4 np×context batching-collapse surface | study_np_context*.sh
+- L215 | none | L | N | needs kv_per_token constants (TB-6-exec d) | VRAM+bandwidth-aware admission control | chat_pipeline/routing.py
+- L242 | none | L | N | GPU joining orchestration stack (operator gate) | Wire np×budget surface into router as serving policy | orchestrator_stack.py
+- L317 | gpu | M | N | operator inference approval | Test whether 122B loops on architect workload vs boxed prompts | probe_reppen.sh
+- L321 | none | S | Y | operator gate (registry change) | Add per-model repeat_penalty 1.1 default for 122B-A10B | model_registry.yaml
+- L324 | cpu | L | N | CPU quiet window (A2 arm) | Clean Q4-vs-IQ2 parity read with repetition fence on | v7_quality_gate_runner.py
+- L332 | gpu | L | N | operator inference approval | E-2 sweep effort levels per model, build Pareto curve | v7_quality_gate_runner.py
+- L341 | none | M | Y | needs E-2 curves | Score effort levels by rescue-rate not mean accuracy | architect_bench_analyze.py
+- L345 | none | M | Y | needs E-2 frontdoor+architect curves | E-4 set per-role defaults as (model × level) pairs | model_registry.yaml
+- L351 | none | M | Y | - | **READY** Add validator flagging stale effort level after model swap | model_registry.yaml, scripts/registry/
+- L356 | none | L | Y | needs E-4 + difficulty signal | Router picks effort level from assessed task difficulty | difficulty_signal.py, routing.py
+- L369 | gpu | M | N | operator inference approval | Retest reasoning-budget cap on non-saturated olympiadbench_numeric | run_budget.sh, e6_budget_analyze.py
+
+## repl-session-memory-maturity.md (6)
+- L77 | none | L | Y | not scheduled; needs real DataFrame workload | Typed columnar DataFrame codec instead of pickle allowlist | state.py, safe_pickle.py
+- L140 | none | M | N | task D-c1 measurement | Carry executed code log into resume preamble | state.py, repl_executor.py
+- L145 | none | M | N | needs T3 live-traffic slice | Instrument resumed sessions for preamble size, re-derivation | repl_executor.py, state.py
+- L151 | none | S | Y | task D-c1 | Decide or close D-c on measured numbers | handoff
+- L153 | none | L | N | - | Agent-facing annotate/pin curation layer over auto-save | state.py, repl_executor.py
+- L162 | none | S | Y | task D-c1 | Decide whether to raise 12/8 resume truncation defaults | state.py
+
+## repl-turn-efficiency.md (9) — **LIVE / OWNED, DO NOT DISPATCH**
+- L18 | cpu | L | N | - | S4 Omega A/B: turns, token cost, accuracy delta | src/repl_environment/, agents/*.md
+- L84 | none | S | Y | **WITHDRAWN** by 2026-07-21 correction | Port interval-F1 span scorer (do not port) | debug_scorer.py
+- L106 | cpu | M | N | - | Strategy-prompt-length ablation across existing agent roles | agents/*.md, eval harness
+- L107 | cpu | M | Y | - | Audit REPL prompt construction and slot prefix-cache hit rate | context.py, llama-server /slots
+- L114 | none | S | Y | - | Record standing caution on RLM prefill-to-decode conversion | handoff
+- L115 | none | M | N | - | Adopt Main Model Token Efficiency metric for scaffold A/Bs | eval tower metrics module
+- L116 | none | S | Y | - | Compare RLM budget constants against our REPL constants | src/repl_environment/ config
+- L118 | cpu | M | N | rides S4 Omega A/B | Add intake-537 open-weight RLM prompt as third arm | agents/ prompts
+- L119 | cpu | M | N | - | Measure root vs sub-agent prefix-cache hit rates separately | /slots telemetry, context.py
+
+## repo-readiness-scorer.md (2)
+- L414 | none | L | Y | - | Close remaining root L5.self_optimizing_loop 13-item queue | repo_readiness_scorer.py
+- L415 | none | L | Y | - | Raise epyc-llama from L3 to L4 across six readiness criteria | epyc-llama docs/CI surfaces
+
+## research-evaluation-index.md (11) — index pointers
+- L80 | cpu | S | N | EV-11b ECE-binning operator decision | Math-Verify scoring re-baseline after scorer flip | eval_tower.py
+- L81 | none | M | N | serving-path freeze | Execution-free patch verifier live-dispatch gate wiring | patch_pre_gate.py
+- L82 | cpu | M | N | - | Build review-finding-F1 suite from intake-658 | eval suite yaml, eval_tower.py
+- L84 | none | S | N | owner handoff frontier-f1 | Fold Simula double-critic into F1-DGM scoping | frontier-f1-real-task-corpus.md
+- L151 | cpu | L | N | W8 keepable-candidate evidence + operator cutover | N2 per-question ledger + sequential verdict readiness | sequential_verdict.py
+- L152 | cpu | L | N | live promotion-eval evidence for W8 | N1+N4 evidence-plane instrument repair tails | eval_tower.py
+- L153 | cpu | L | N | inference gate EV-4/5/8; EV-9 judge selection | Eval-tower tails EV-4/5/8/9/10 + MD-9 A/B | eval_tower.py
+- L154 | cpu | M | N | observation accrual (1 of 100 compressed calls) | P4e rollout decision + repo-readiness remediation | tool-output compression module
+- L156 | cpu | L | N | - | AP-16 token-bloat probe, ledger wiring, W2 close | eval_tower.py
+- L158 | cpu | M | N | Gemma4 MTP serving fix | Granite Phase C decision + K-ROPE-1 matrix | embedder bench config
+- L159 | none | S | N | - | Reasoning-compression tails and monitoring-only watches | reasoning-compression.md
+
+## retrain-routing-models.md (3)
+- L125 | cpu | M | N | operator rollout decision + clean window | Operator: run --keep-enabled bracket to enable live routing | routing_classifier_rollout_window.py
+- L126 | none | L | Y | Fable 5 freeze gate (DAR-1 regret >=5%) | Step 4/5 GAT and SkillBank retrains | train_graph_router.py, distillation/pipeline.py
+- L127 | none | S | N | steps 4/5 + rollout decision | Step 7 delete handoff once retrain sequence completes | handoff, master-handoff-index.md
+
+## reviewer-calibration-accounting.md (5)
+- L27 | none | S | Y | **operator PR (MEASUREMENT human-amendment-only)** | Land P-REV-1 blocks into MEASUREMENT | MEASUREMENT.md
+- L29 | cpu | L | N | operator gate OP-6a/6b via RCP-W1 | RC-8 shadow self-review baseline on corpus v1; first FA/FR | reviewer_calibration_report.py
+- L30 | none | M | Y | - | **READY** Persist full rubric + per-item grades in corpus rows | src/trace/review_ledger.py
+- L105 | none | S | N | operator PR; do before RC-6a | Add chance-corrected agreement + confusion matrix to P-REV-1 | MEASUREMENT.md
+- L106 | none | S | N | operator PR | Declare tie/abstention estimand and report its rate | MEASUREMENT.md
+
+## reviewer-control-plane-index.md (7) — H0 rollups over 9 leaves
+- L28 | none | L | N | - | P1/M1 trace materialization, durable resume, schemas, GBNF gating | src/trace/store.py, validate_ir.py
+- L29 | cpu | L | N | P1/M1 | P2/M2 shadow decision plane, rubric reviewer, 50-q replay | sequential_verdict.py, gate_runner.py
+- L30 | gpu | L | N | G1 P-GPU-1 ratification | P3 GLM reviewer gates, kernel follow-ups, GPU bets 1-4 | gemma-challenge-…md
+- L31 | cpu | L | N | M2 | P4/M3 knob registration, Pareto axes, screening driver, tournament | eval_tower.py, src/features.py
+- L32 | none | L | N | M3 | P5/M4 escalation policy from curves, escalate-default, gated rebuttal | src/roles.py, runtime_flags.json
+- L87 | none | M | N | operator PR (human-amendment-only) | Add Cohen kappa + prevalence disclosure to P-REV-1 draft | MEASUREMENT.md
+- L88 | none | S | N | operator PR (same P-REV-1 window) | Declare tie/abstention estimand explicitly | MEASUREMENT.md
+
+## reviewer-decision-plane.md (1)
+- L32 | cpu | L | Y | shadow reviewer window; feeds H-LB baseline | RD-12 per-decision latency/token accounting + 50-question replay | review_service.py, src/autopilot_core/
+
+## reviewer-escalation-and-human-gate-policy.md (8)
+- L20 | none | M | N | H4/H5 reliability curves do not exist yet | Per-domain confidence threshold policy from calibration curves | policy config
+- L21 | none | S | N | HG-1 thresholds; H3 RD-3 events | Verifier-disagreement escalation rule for conclusive gates | reviewer policy module, SafetyGate
+- L22 | none | S | Y | - | **READY** Protected-action list aligned with existing SafetyGate | SafetyGate protected-action config
+- L23 | none | S | Y | operator decision (OP bundle cadence) | Escalation-precision human-audit sampling cadence protocol | handoff
+- L24 | none | M | Y | - | Server-side escalation fields and x_* override | src/api /v1 response models
+- L25 | cpu | L | N | offline A/B must show signed net-flip | Optional two-sided single rebuttal round pre-escalation | reviewer loop, A/B harness
+- L26 | none | S | Y | HS-4 harness selection (FROZEN) | Harness-side escalation UX, frozen pointer only | harness-selection-…md
+- L27 | cpu | L | N | P-AB-1 + P-REV-1 + H-LB LB-6 budget gate | Policy A/B and promotion of escalation thresholds | A/B harness, promotion gate
+
+## reviewer-latency-and-sampling-budget.md (7)
+- L20 | cpu | M | N | needs H3 RD-12 replay baseline | LB-1 reproduce and attribute review-latency throughput regression | eval_tower.py, proactive_delegation/
+- L22 | none | M | N | - | LB-3 remaining k% sampling, quick_mode tiering, fan-out effort rules | proactive_delegation/, review_plane_knobs.yaml
+- L23 | cpu | L | N | LB-3 policies + clean bench window | LB-4 paired throughput A/B per sampling policy under P-AB-1 | eval_tower.py, review_plane_knobs.yaml
+- L25 | none | S | N | **operator gate OP-5(b) threshold value** | LB-6 budget gate: metric drafted, threshold still unpicked | review_plane_knobs.yaml
+- L27 | none | S | N | **operator decision OP-5b (§A00)** | LB-6b operator picks one of three candidate gate thresholds | operator decision queue §A00
+- L28 | cpu | L | N | needs H4 instrument + H5 anchor arms | LB-7 M3 baseline floor: full plane vs single augmented LLM | eval_tower.py, A0/A1 arms
+- L29 | none | S | Y | LB-4/LB-7 numbers not yet measured | LB-8 publish standing numbers into the H0 index section | reviewer-control-plane-index.md
+
+## reviewer-model-ablations.md (8) — all downstream of RM-3/RM-4
+- L37 | gpu | L | N | A4g needs skew profile; Ref needs operator budget | RM-2 complete A4g hot-expert + external Ref judge arms | data/reviewer_model_ablations/
+- L42 | cpu | L | N | placement-queue-not-/chat transport discipline | RM-3 define screening-tier protocol and Pareto promotion rule | screening_tier_runner.py
+- L47 | gpu | L | N | RM-3 promotions + operator bench window | RM-4 confirmation-tier paired N>=100 with Holm correction | sequential_verdict.py
+- L48 | gpu | L | Y | folds into RM-4 protocol | RM-5 six content-bias injection probes; score robustness rate | scripts/benchmark/
+- L49 | gpu | M | Y | leading arm from RM-4 | RM-6 RA-8 field-order A/B: evidence-first vs verdict-first GBNF | screening_tier_runner.py
+- L50 | gpu | M | Y | winning pair from RM-4 | RM-7 ablate with/without verifier-request access | scripts/benchmark/
+- L51 | none | M | N | RM-4 and RM-7 results | RM-8 write report; annotate registry with calibration profiles | model_registry.yaml
+- L52 | gpu | M | Y | A4 failed 2026-07-19 | RM-9 deferred A5 reviewer-as-architect GLM-5.2 solo arm | data/reviewer_model_ablations/
+
+## reviewer-trace-materialization.md (1)
+- L28 | cpu | M | Y | TM-7 parity closed; gates H4 | TM-8 coverage gate: 50-question replay, phase tags, executor-model-id | review_service.py, src/trace/query.py
+
+## rlm-contested-claims-self-evaluation.md (6)
+- L60 | cpu | L | N | inference availability (CPU window) | E1 measure Base vs Depth-1 on synthetic NIAH | fast-rlm niah_benchmark.py
+- L68 | none | S | Y | - | **READY** Format-robust scorer, or strict plus lenient scoring | niah scorer module
+- L71 | none | S | Y | rescoped to repl-session-memory-maturity D-c1 | Pointer only; no synthetic REPL-memory arm here | repl-session-memory-maturity.md
+- L78 | cpu | L | N | inference availability; E1 first | E3 add non-RLM long-context baseline arm | fast-rlm _harness.py
+- L80 | none | S | Y | - | Fold intake-925 Table 1 into E3 hypothesis | handoff, research/intake_index.yaml
+- L89 | none | S | Y | needs E1/E3 first-party results | Write depth resolution into spike caveat and N17 | rao-redel-substrate-spike.md
+
+## rocm-verify-profile-backend.md (8)
+- L27 | none | M | Y | - | Pin GEAK/Apex/AgentKernelArena commits, check licenses, draft env recipe | research/deep-dives/…geak-synthesis.md
+- L28 | gpu | L | N | operator GPU approval (P-GPU-1) | Install torch-ROCm, reproduce GEAK-eval + AgentKernelArena | scripts/kernel_rnd/
+- L29 | gpu | L | N | MI210 bring-up | Harden oracle with exploit defenses and unseen-shape generator | c6_reward_integrity.py
+- L30 | gpu | L | N | MI210 bring-up | Gate reward on vendor baseline, add E2E hot-patch exit gate | scripts/kernel_rnd/
+- L31 | gpu | L | N | MI210 bring-up; rocprof-compute gfx90a subset | Derive usable gfx90a profiler-metric signal, three fallback tiers | scripts/kernel_rnd/
+- L32 | gpu | L | N | C2/C3 hardening complete | Seed suites with EPYC ops, A/B controllers as adapters | scripts/kernel_rnd/
+- L33 | gpu | L | N | Triton loop working | Add HIP arm toward hand-HIP kernels for llama.cpp fork | llama.cpp-mi210-hip/
+- L58 | none | M | Y | host access outside devcontainer | Verify real sandbox backend on host, drop unsandboxed override | c6_reward_integrity.py
+
+## routing-and-optimization-index.md (9) — index pointers
+- L25 | none | M | Y | **STALE?** owning handoff marks this `[x]` 2026-07-22 | COMP_r leave-one-objective-out AUC probe | retriever.py, routing_classifier.py
+- L31 | none | L | Y | EP probe refuted; needs EP-5 label fix | Develop escalation-prediction surface with competence feature | learned-routing-controller.md
+- L651 | none | M | N | **operator-signed P0.1-P0.3 era-fence amendment** | Evidence-plane readiness/authority gates; stop accruing W8 | evidence-plane-ledger-…md
+- L652 | none | M | Y | - | Stack-change SSoT upkeep; broaden swap-CI witness surfaces | scripts/validate/, model_registry.yaml
+- L653 | none | L | Y | - | Offline reward-oracle eval on 20260707T015010Z collection rows | scripts/autopilot/, reports/
+- L655 | cpu | L | N | enforce-arm factuality lift | Routing canaries and classifier rollout | factual_risk.py, classifier_config.yaml
+- L656 | cpu | L | N | quiesce window | Dynamic stack, within-role placement, contention probes | orchestrator_stack.py, round_robin.py
+- L657 | cpu | L | Y | P1 tier ahead of it | Delegation/context/edit harness DCP-5/J7 + BEP bake | scripts/autopilot/, src/api/
+- L658 | cpu | L | Y | DAR/tri-role/OC frozen | Research-derived routing experiments, web tails, Fusion design | program.md, src/tools/web/
+
+## routing-intelligence.md (9)
+- L22 | cpu | L | N | hold: factuality_no_enforce_lift packet | RI-10 shadow-to-enforce canary decision on factual-risk control | ri10_canary_decision_report.py
+- L30 | cpu | M | N | RI-10 pass | RI-11 expand enforce to frontdoor 100% + worker_general | classifier_config.yaml, factual_risk.py
+- L31 | cpu | M | N | RI-11 pass | RI-12 global enforce + dashboard and q-scorer updates | classifier_config.yaml
+- L32 | cpu | L | N | only if RI-10 suggests band/threshold change | RI-9b fresh threshold/Pareto sweep | seed_specialist_routing.py
+- L33 | none | S | N | J14 swarm-fanout A/B gate (DAR-6) | RI-13 injection-risk classifier fork | handoff
+- L34 | none | S | N | learned-routing-controller P5.2 pass | RI-X document new-model cold-start onboarding contract | handoff, onboard_specialist.py
+- L116 | none | S | N | upstream J-space open-weight availability | RI-JS-1 monitor J-space tools for open-weight compatibility | handoff
+- L117 | cpu | L | N | RI-JS-1; substrate unavailable for open weights | RI-JS-2 evaluate geometric routing augmenting MemRL retrieval | repl_memory/, src/classifiers/
+- L128 | none | S | N | - | RI-CMP-1 file prompt-router encoder as monitor_only comparator | intake_index.yaml, handoff
+
+## sarathi-serve-cpu-evaluation.md (2)
+- L14 | cpu | L | N | operator bench window (E2 trigger already fired) | Re-evaluate chunked prefill for the eval-batch serving class | llama-server -ub sweep
+- L141 | none | S | N | trigger materialized 2026-07-18; awaits re-promotion | Re-promote handoff status on the fired workload shift | handoff, master-handoff-index.md
+
+## scaffold-autopilot-cost-lever-deployment.md (12)
+- L104 | none | S | N | live autopilot agent holds daemon | T0.1 get daemon handback + operator go-ahead recorded | handoff
+- L109 | gpu | M | N | T0.1 approval; MI210 residency Gate R | T0.2 host Qwable reasoner as stack-managed GPU service | orchestrator_stack.py, model_registry.yaml
+- L112 | gpu | L | N | T0.2 | T1.1 build scaffold-then-nothink composite executor | chat_pipeline/, llama_server.py
+- L113 | none | M | Y | T1.1 | T1.2 wire composite as a think_harder reasoning-effort rung | src/graph/think_harder.py
+- L116 | gpu | L | N | T1.1 | T2.1 extend cost_metrics with GPU second-device term | q_reward.py, eval_tower.py
+- L117 | none | S | Y | T2.1 | T2.2 decide/document composite route cost_tier assignment | eval_tower.py, safety_gate.py
+- L120 | none | M | Y | - | **READY** T3.1 add scaffold_eligible sub_decision + difficulty-keyed retrieval | subdecision_taxonomy.py, episodic_store.py
+- L121 | none | M | N | T2.1 and T3.1 | T3.2 feed composite outcomes into Q-value updates | q_reward.py, episodic_store.py
+- L124 | none | L | Y | T3.1 signal shape | T4.1 replay traces offline to build eligibility table | journal_snapshot_replay.py
+- L125 | none | S | N | T0.1 operator approval | T4.2 add placeholder scaffold_then_nothink capability row | capability_registry.yaml
+- L128 | none | M | Y | operator protocol approval | T5.1 codify P-QUAL-T1 quality-parity + blended-cost deploy protocol | MEASUREMENT.md
+- L129 | gpu | L | N | T5.1 gate + W4 preconditions | T5.2 shadow canary on eligible classes, then promote | capability_registry.yaml
+
+## scorer-fork-drift-audit-2026-07-22.md (3)
+- L256 | none | M | N | eval_tower.py single-writer (inference-batch loop) | Unify duplicated in-band-error and forced-role guard helpers | seeding_scoring.py, eval_tower.py
+- L257 | none | S | Y | - | **READY** Guard or delete legacy ComparativeResult reward-injection path | seeding_legacy.py
+- L258 | none | M | Y | - | Port B7 to research debug_scorer or stamp pre-B7 era | research debug_scorer.py
+
+## scoring-infra-standardization.md (17)
+- L35 | none | L | Y | - | Migrate research consumers to canonical answer_scoring; delete dup extractors | score_benchmarks.py, lib/scorer/
+- L48 | none | L | Y | operator gate (production reward path) | Vendor canonical contract into orchestrator; fix truncation bias | review_service.py, debug_scorer.py
+- L82 | none | M | N | needs +pids in cgroup.subtree_control (root) | Bound scorer process/thread count via cgroup v2 pids.max | code_exec_scorer.py
+- L87 | none | M | N | bwrap package install | Wrap code_exec_scorer in bubblewrap sandbox with unshare-net | code_exec_scorer.py
+- L104 | gpu | L | N | sequenced after 2b-laguna (operator) | Expand SWE gold slice 40 to 150+; rerun A3/A4 | artifacts/architect-code-eval-20260724/
+- L107 | gpu | L | N | operator gate: llama.cpp kernel upgrade | Bring up Laguna-S-2.1, spec-dec sweep, SWE-oracle rung | model_registry.yaml, models/Laguna-S-2.1-GGUF/
+- L130 | gpu | S | N | 2b-agentic-smoke | Re-verify testbed clean-at-base assumption on second trial | agentic_swe_harness.py
+- L133 | gpu | M | N | GPU free post-Laguna kernel work | Live smoke of agentic harness then 10-instance pilot | agentic_swe_harness.py
+- L144 | none | M | Y | operator + discriminativeness evidence | Prepare E7 eval-pool registration options package | instrument_eras.yaml, architect-bench-runbook.md
+- L148 | gpu | L | Y | LCB v5/v6 dataset download | Pull post-cutoff LiveCodeBench window; re-validate oracle | dataset_adapters.py, data/
+- L152 | none | M | Y | arms' results land (2b-confirm) | Replace runbook P2 placeholder with built coding ladder | architect-bench-runbook.md
+- L158 | cpu | L | N | - | Run tool-use eval through orchestrator live REPL loop | agentic_swe_harness.py, src/graph/
+- L162 | cpu | M | Y | Jackrong-family bench scheduled | Pin and verify per-model tool-call parser before Jackrong bench | scripts/benchmark/, model_registry.yaml
+- L166 | none | S | Y | - | **READY** Adopt six-point SWE-bench disclosure standard for intake-916/917/924 | architect-bench-runbook.md, intake_index.yaml
+- L182 | none | M | N | spaCy lemmatizer dependency | Add ordered_subsequence verifier to canonical answer_scoring | answer_scoring.py, its test
+- L183 | none | S | N | verifier (L182) | Implement both Ordered Rate and Coverage-with-order metrics | answer_scoring.py
+- L184 | none | S | Y | - | **READY** Record ACL-2025 provenance + 4-bit-vs-API leaderboard confound | intake_index.yaml, benchmarks/instruction_precision
+
+## searxng-search-backend.md (7) — L353-355 all edit the SAME deep-dive note
+- L208 | cpu | M | N | AR-3 Package D | SX-5 load test via web_research sentinel suite | config/searxng/settings.yml, research.py
+- L209 | cpu | S | N | AR-3 warmup trial quality data | SX-6 swap SearXNG to default after regression check | src/tools/web/search.py
+- L220 | none | M | N | needs Camofox (intake-524) | CA-6 wire escalate_to_camofox from _is_blocked_page | src/tools/web/research.py
+- L353 | none | S | N | - | Relabel intake-364/365 verdict not_applicable→superseded | research intake registry
+- L354 | none | S | N | - | Correct two outdated Firecrawl self-host objections | firecrawl-vs-crawl4ai deep dive
+- L355 | none | S | N | - | Strengthen decisive objection: compose grew to seven services | firecrawl-vs-crawl4ai deep dive
+- L356 | none | M | N | CA-6 / Camofox | Consider ranked engine-waterfall instead of substring blocklist | src/tools/web/research.py
+
+## security-review-skill.md (1)
+- L60 | none | M | Y | intentionally deferred; no enforcement workflow | CI gate + PR-summary min-severity integration | .claude/skills/security-review/SKILL.md
+
+## session-bus-thin-dispatcher.md (26) — the fleet's own control plane; most rows edit tmux_adapter.py
+- L313 | cpu | S | Y | operator deferred 2026-07-27 | R1a real llama-bench smoke acquiring/holding/releasing a region claim | region_lock_cli.py, bench_canonical.sh
+- L536 | none | M | N | M5 triage hook (flag-gated, triage:off) | R9 automate replay-eligibility classification | session_bus.py, session_bus_coordinator.py
+- L602 | none | L | Y | needs a working day of elapsed soak | M3 collect would-assign vs actual-choice accuracy evidence | advisory.jsonl, coordinator.py
+- L655 | none | M | N | - | M3d widen queue seeding per-handoff so advisory evidence is meaningful | seed_queue.py, queue.jsonl
+- L659 | none | L | N | M3 advisory-accuracy evidence + 48h soak | M4 48h zero-idle soak, induced stall, epoch-fencing restart | config.yaml, tokens/token-queue.md
+- L699 | none | S | Y | coordinator re-assignment call | C-OWN assign a new owner for the unowned C-series arc | handoff, config.yaml
+- L703 | none | S | N | **STALE?** deletion recorded done 2026-07-29 | C22 delete dead roster_window_names | tmux_adapter.py
+- L708 | none | M | N | BUS_PROTOCOL.md owner | C23 allow bulk corr_id disposition | BUS_PROTOCOL.md, session_bus.py
+- L762 | none | L | Y | per-feature operator flag grants | M5 remaining extensions: drain hook, hybrid triage, headless workers | .claude/settings.json, tmux_adapter.py
+- L825 | none | S | N | operator decision on interval value | M5a ratify or change 600s --min-interval-s default | tmux_adapter.py, config.yaml
+- L827 | none | S | Y | operator disposition | M5b disposition preserved roster-orphan heartbeat/outbox artifacts | heartbeats/, outbox/
+- L831 | none | M | N | - | M5c nudge running mains to re-read changed standing instructions | BUS_PROTOCOL.md, tmux_adapter.py
+- L938 | none | S | Y | **needs an independent reviewer, not the author** | C11 review live_mains/resolve_spawn_cap/cmd_spawn | tmux_adapter.py
+- L945 | none | M | N | - | C12 anchor post-Enter echo below pre-Enter cursor | tmux_adapter.py, test_tmux_adapter_live.py
+- L952 | none | S | N | deferred pending real annoyance evidence | C13 narrow @ nudge refusal to token-start only | tmux_adapter.py
+- L1099 | none | S | Y | daemon owner restart / post-reboot | C18 restart daemon so unreachable-recipient notice activates | session_bus_coordinator.py, bus_supervisor.sh
+- L1146 | none | S | Y | operator decision (reboot step vs flag flip) | C20 decide documented tmux new-session reboot step | BUS_PROTOCOL.md, config.yaml
+- L1163 | none | S | N | **operator must state a number** | C15 raise max_concurrent_mains from saturated 4/4 | config.yaml
+- L1222 | none | S | Y | needs an independent reviewer, not the author | C24 review whether live_mains can omit a genuinely live id | tmux_adapter.py
+- L1226 | none | S | N | - | C25 derive spawned window name from endpoint, not roster id | tmux_adapter.py:899, :311-335
+- L1244 | none | S | N | - | C26 add pid-liveness and uptime checks to daemon status | session_bus_coordinator.py:2233-2240
+- L1258 | none | M | N | M4 authority still manual | C27 find why token-requests never became token-queue blocks | coordinator.py, tokens/token-queue.md
+- L1279 | none | M | N | - | C28 track relay completion in daemon-owned ledger by message identity | coordinator.py, inbox/
+- L1294 | none | S | N | warn-vs-refuse choice must be recorded | C29 make drain --agent enforce roster id like append does | session_bus.py:692-729
+- L1307 | none | M | N | - | C30 record launch backend in roster; verify spawned window survives | tmux_adapter.py:899-931, config.yaml
+- L1325 | none | M | N | must land with C24 fix | C31 key nudge rate limit on window instance, not roster id | tmux_adapter.py:559-560, :685-687
+
+## shape-keyed-contention-gating.md (2)
+- L29 | none | S | Y | do not land while a calibration run is live | Echo GateDecision fields into /chat response metadata | contention_gate.py, concurrency_aware.py
+- L30 | cpu | L | N | operator bench approval + quiet window | Implement re-bench sample_fn drive loop on codified recipe | shapekeyed_step2_smoke.py, run_paired_ab.py
+
+## sliders-local-validation.md (9) — handoff is PARKED pending an operator go
+- L16 | none | S | Y | **operator decision** | Operator decides whether to evaluate SLIDERS now or stay parked | handoff
+- L55 | none | M | Y | operator go (handoff parked) | 0.1 catalogue every GPT-4.1 call site in upstream SLIDERS repo | data/sliders_validation/01_call_site_catalog.md
+- L56 | none | M | N | task 0.1 | 0.2 substitute OpenAI client with local Coder-30B adapter | 02_substitution_diff.md, scratch/sliders/
+- L57 | cpu | L | N | task 0.2 + EDGAR reachability | 0.3 run SLIDERS end-to-end on FinQ5 with Coder-30B | 03_finq5_results.json
+- L63 | none | S | N | task 0.3 results | Write Phase 0 gate verdict: not_viable_local or go_phase_1 | 04_phase0_verdict.md
+- L70 | cpu | L | N | Phase 0 GO verdict | 1.1 run SLIDERS+Coder-30B on 10-question FinanceBench subset | scratch/sliders/
+- L71 | cpu | M | Y | Phase 0 GO verdict | 1.2 run ColBERT chunk-RAG baseline on same 10 questions | internal-kb-rag K7 pipeline
+- L72 | none | S | N | tasks 1.1 and 1.2 | Decide if SLIDERS beats ColBERT by 5pp threshold | data/sliders_validation/
+- L76 | none | M | Y | Phase 1 escalation | Write scoping doc for SLIDERS as KB-RAG K3/K4 alternative | handoff
+
+## speculative-decoding-mtp-refresh.md (14) — L231..L245 are record-keeping rows, all edit this handoff
+- L96 | cpu | L | N | artifact-blocked: no matching Q4/Q4-MTP pair + P6b gate | T4 gate-bench Qwen3.6-35B-A3B MTP for frontdoor/coder | llama.cpp-experimental, models/
+- L212 | none | S | Y | - | **READY** Audit whether MTP A/B sweeps enough depths for non-monotonic optimum | md_self_draft_ab.py
+- L218 | cpu | M | N | GLM-5.2 higher-bpw artifact not landed (H-Q1) | Piggyback cheap alpha(IQ2_M→IQ3_XXS) measurement on H-Q1 download | ?
+- L223 | cpu | L | N | Q8_0 128GB download pending disk free | Bench DFlash accept-rate on Laguna across three target quants | models/laguna/, data/dflash_accept/
+- L224 | none | M | Y | gated on the DFlash accept-rate bench above | Scope the draft-dflash spec-path port from the laguna fork | common/speculative.cpp
+- L231 | none | S | N | - | Retire the obsolete "DFlash has no llama.cpp/CPU path" framing | handoffs/active/*.md
+- L232 | cpu | L | N | target-weight provenance match + L-6 acceptance floor | Measure z-lab gemma-4-26B DFlash drafter vs worker_general | models/gemma-4-26B-A4B-DFlash
+- L233 | none | S | Y | - | **READY** Scope acceptance-only comparison for 122B DFlash drafter | handoff
+- L234 | none | S | N | - | Record settled DFlash architecture facts | handoff, research/deep-dives/
+- L235 | none | S | N | - | Record provenance/qualifiers for published DFlash speedup numbers | handoff
+- L236 | none | S | Y | - | **READY** Tensor-count header gate for DavidAU Qwen3.6-27B MTP GGUFs | models/*.gguf headers
+- L237 | none | S | N | - | Record ThinkingCap MTP head is stock; flag confounded Q4_K_M pair | handoff
+- L244 | none | S | N | - | Record KAT-Coder tokenizer-match + removed-MTP artifact facts | handoff, research/intake
+- L245 | none | S | N | - | Adopt safetensors-index preflight rule over config.json checks | handoff, feedback rule file
+
+## stack-change-governance-pipeline.md (1)
+- L70 | none | L | N | - | Migrate remaining consumers to generated stack priors or degraded fallbacks | stack_change_surface_manifest.yaml
+
+## stale-open-audit-2026-07-18.md (6) — ORPHAN; this is the meta-audit of the backlog itself
+- L86 | none | M | Y | - | Re-anchor GEMV to live graph-fusion tasks, appendix the SIMD plan | cpu-shape-specialized-gemv-decode.md
+- L87 | none | M | N | - | Close/relocate LANDED and SUPERSEDED handoffs to completed | handoffs/completed/, x-mas-text-routing.md
+- L88 | none | M | Y | - | Split live rollout backlog from frozen gated expansion | learned-routing-controller.md, decision-aware-routing.md
+- L90 | none | L | N | operator gate | Hard-archive stack cluster, migrate orphan boxes, repoint links | handoffs/completed/
+- L92 | none | S | Y | - | **READY** Publish corrected live-backlog figure of about 544 | dashboard backlog banner config
+- L93 | none | L | Y | - | Extend audit to ~105 un-flagged handoffs for exact live count | handoff
+
+## standardized-stack-update-pipeline-finalization.md (5)
+- L201 | none | M | N | SS-BENCH-GATE-b (durable fix) | Stack reload must gate on running CPU bench | scripts/orchestrator_stack.py
+- L217 | none | M | N | - | Pin fleet and sidecars off CPU bench cores | orchestrator_stack.py, NUMA/core-pin config
+- L232 | none | L | N | opportunistic — only on new GitNexus impact finding | Continue high-risk consumer migrations to generated truth | stack-change surface manifest
+- L243 | none | L | N | opportunistic expansion as consumers migrate | Finish W4 swap-CI coverage for representative stack changes | test_stack_change_pipeline_simulated_fixtures.py
+- L261 | none | S | N | - | Keep bench, launch, preflight wired to canonical gate | stack_change_pipeline.py, orchestrator_stack.py
+
+## strand-rust-coder-rustevo2-verification.md (3)
+- L258 | cpu | L | N | **USER APPROVAL REQUIRED per-run** | Sequential single-instance RustEvo2 bench of three models | rustevo2_bench_preflight.py
+- L259 | none | M | N | Phase B results | Build score table + decision matrix, isolate fine-tune delta | RustEvo2 score artifacts
+- L260 | none | S | Y | Phase C disposition | Push GO/NO-GO into intake-616, flip distillation status | swarm-dataset-distillation.md
+
+## streaming-llm-baseline.md (4)
+- L114 | cpu | L | N | operator inference window; v7/v8 promotion | Run 4-axis sweep: 3 workloads x 3 budgets x 2 models | epyc-llama fork, scripts/benchmark/
+- L115 | none | M | Y | needs 4-axis sweep data | Evaluate loss thresholds per workload, track per-head entropy | scripts/analysis/
+- L116 | none | S | Y | needs measured floor from sweep | Demote or promote KV-cluster handoffs against the measured floor | attention-matching-kv-compaction.md
+- L117 | none | S | Y | operator input on open questions | Resolve K_sink/K_win values, F16 KV scope, PBKV ordering | handoff
+
+## summary-token-attention-readiness.md (4) — all four are external-trigger watches
+- L77 | none | S | N | external checkpoint release (none exists) | Gate A: KSA/GSA-style checkpoint for a served model family | handoff, intake_index.yaml
+- L78 | none | S | N | upstream llama.cpp PR pending | Gate B: llama.cpp top-k chunk masking or summary KV support | handoff
+- L79 | none | S | N | GPU/CPT budget acquisition | Gate C: GPU acquisition enabling our own continued pretraining | handoff
+- L80 | none | S | N | major-lab model adoption (external) | Gate D: major lab adopts summary-token attention by default | handoff
+
+## tidar-one-pass-variant-b.md (3)
+- L23 | cpu | L | N | no Q4_K_M-quantizable TiDAR-class checkpoint exists | W2 checkpoint gate + Q4 quality delta go/no-go verdict | quantized TiDAR GGUF
+- L24 | none | L | N | W2 go verdict | W3 unified causal+bidirectional one-pass draft+verify ggml op | llama.cpp-experimental ggml mask op
+- L25 | cpu | M | N | W3 implementation | W4 canonical decode bench vs AR baseline + memo | bench artifacts, decision memo
+
+## tool-output-compression.md (6)
+- L417 | none | S | Y | awaiting_minimum_observations (100 calls) | Per-command rollout decision once P4c telemetry reaches minimum | tool_compression_topups.py
+- L442 | none | S | Y | - | **READY** Bias Phase-3d fallback chain toward observation-dropping | compress_tool_output.py
+- L448 | cpu | L | N | prerequisite artifact (L449) | First-party A/B: verbatim-append log vs summarize-and-compact | scripts/benchmark/, context_compression.py
+- L449 | none | L | N | - | Produce grep-able trajectory artifact; audit live peek/grep impls | session_log.py, file_exploration.py
+- L450 | none | M | Y | - | Instrument total (not peak) tokens per episode in A/B | session_log.py, scripts/analysis/
+- L451 | none | M | Y | - | Map query_memory read API onto existing spill-pointer machinery | graph/helpers.py, episodic_store.py
+
+## tool-use-eval-contract.md (1)
+- L366 | none | S | Y | - | **READY** Adopt negative-constraint + stated-consequence sentinel pattern | sentinel prompt definitions
+
+## tq3-quantization-evaluation.md (13)
+- L61 | cpu | M | N | upstream PR #21089 unmerged | Test TBQ3_0 KV cache on Qwen2.5-Coder-32B context extension | llama.cpp build, llama-bench
+- L62 | none | M | Y | - | **READY** Read ChunkKV paper, assess llama.cpp implementability | handoff, research notes
+- L63 | none | S | Y | upstream adoption + multi-model benchmarks | Revisit TQ3_1S weight quant only under four named conditions | handoff
+- L89 | none | S | Y | upstream PR #22836 unmerged | Monitor llama.cpp PR #22836 STQ1_0 kernel for merge | model-probe-scoreboard.md
+- L90 | cpu | M | N | PR #22836 merge + Hy-MT1.5 download | Canonical llama-bench Hy-MT1.5-1.8B 1.25bit vs Q4_K_M | model-probe-scoreboard.md
+- L91 | none | S | Y | no QAT pipeline / sub-4-bit not in scope | Defer Tequila and DAQ until QAT or sub-4-bit deployment | handoff
+- L127 | none | S | Y | operator decision | Operator decides lossless exponent-coding spike vs close thread | handoff
+- L153 | none | S | Y | operator review + named prompt/producer fix | Parked Bonsai Q1_0/Q2_g64/Q2_0 reopen only on named fix | model-probe-scoreboard.md
+- L164 | cpu | L | N | operator gate; owner moved to iqk-iquant-enablement | Bounded llama-bench of un-stubbed trellis IQ4_KT/IQ3_KT | CMakeLists.txt, iqk_stubs.cpp
+- L165 | none | S | Y | - | Coordinate sub-2-bit angle with AngelSlim handoff | angelslim-techniques-evaluation.md
+- L184 | none | M | N | ownership moved to iqk-iquant-enablement B1-B5 | Un-stub iqk iquant kernels for IQ2_XXS/IQ3_XXS/IQ2_S | iqk_stubs.cpp, iqk_dispatch.cpp
+- L185 | cpu | L | N | operator inference approval; owner iqk T1-T3 | Measure IQ4_KT vs Q4_K_M and IQ2_KT vs IQ2_XXS in ik tree | ik_llama.cpp bench harness
+- L186 | none | L | N | gated on STEP 2 win | Port trellis KT quant types into v7 tree if Step 2 wins | ggml-common.h, iqk_gemm_ktquants.cpp
+
+## tri-role-coordinator-architecture.md (9) — TR-4/TR-5 FROZEN behind the DAR-regret gate
+- L98 | none | M | N | **TR-4/5 frozen (DAR-regret gate)** | Compose assigned role with model selection in routing | chat_pipeline/routing.py
+- L99 | none | M | N | TR-4/5 frozen | Give each role its own prompt template in consumers | seeding_types.py, chat_utils.py
+- L100 | none | M | N | TR-4/5 frozen | Let multi-turn sessions read and adapt prior turn role | routing.py, chat_utils.py
+- L101 | none | M | N | TR-4/5 frozen | Short-circuit dispatch when Verifier returns ACCEPT | chat_pipeline/routing.py
+- L105 | none | M | Y | TR-4 wiring incomplete; TR-5 frozen | Define role-sensitive benchmark suite for the A/B | eval_tower.py, dataset_adapters.py
+- L106 | cpu | L | N | TR-4 complete; TR-5 frozen | Run paired N=200/arm A/B with ROLE_AWARE_ROUTING on/off | role_taxonomy.py, eval_tower.py
+- L107 | none | S | Y | needs TR-5.2 results | Apply +2pp promotion gate or document negative result | handoff, reports/
+- L176 | none | M | Y | - | **READY** Cross-reference EvoScientist memory modules for StrategyStore | research/deep-dives/, repl_memory/
+- L177 | none | M | Y | - | Evaluate EvoScientist distillation separation for Evolution Manager | research/deep-dives/, handoff
+
+## triattention-kv-selection.md (4)
+- L24 | cpu | L | N | bulk-inference campaign window | S8 sweep keep_ratio/layer_weights per role, persist Pareto profiles | epyc-orchestrator/src/, kv_compress.py
+- L25 | none | M | N | S8 stable role profiles | S9 wire learned KV profiles into orchestrator auto-trigger | epyc-orchestrator/src/, program.md
+- L26 | cpu | L | Y | optional comparator | S2 TriAttention concentration validation | llama-kv-compress.cpp
+- L27 | cpu | L | Y | S8 + production compression need | S3 stack KV selection with quantization, or alternatives | llama-kv-compress.h/.cpp
+
+## unified-trace-memory-service.md (13)
+- L110 | none | M | Y | Hermes production-use gate | T7 optional Hermes session ingest into normalized trace events | src/trace/ingest_hermes.py
+- L187 | cpu | L | Y | operator-review candidate; BGE embedders :8090-8095 | Add RRF(k=60) hybrid fusing FTS5 lexical with vector index | src/trace/navigation.py, store.py
+- L200 | none | L | Y | operator-review candidate | Importance-scored background consolidation pass | repl_memory/memory_actions.py
+- L208 | none | M | Y | AP-29 gate in autopilot-continuous-optimization | UTM-M1 adopt append-only store shape retaining raw trajectories | src/trace/store.py
+- L209 | none | M | N | - | UTM-M2 scope additive dual-layer experience bank | src/trace/store.py, harness_schema.py
+- L210 | none | M | Y | - | UTM-M3 add auditable delete verb + When-NOT-to-Use to skill records | repl_memory/memory_actions.py
+- L211 | none | S | Y | - | **READY** UTM-M4 mine ReasoningBank repo for 3 prompts and JSON schema | src/trace/harness_schema.py
+- L215 | cpu | L | Y | explicitly unblocked | UTM-M5 build per-window success-rate-vs-store-size curve instrument | scripts/analysis/, data/trace/events.sqlite
+- L219 | none | S | Y | - | **READY** UTM-M6 file EvoMemBench 128K context-competition failure mode | handoff, intake_index.yaml
+- L220 | none | M | N | - | UTM-M7 make retrieval injection budget-conditional | navigation.py, src/retrieval/
+- L221 | none | M | N | - | UTM-M8 cap injection as fraction of remaining budget | navigation.py, src/retrieval/
+- L222 | cpu | M | Y | operator gate (MEASUREMENT human amendment) | UTM-M9 add no-memory control arm to every memory A/B | MEASUREMENT.md, eval-tower row config
+- L226 | none | S | Y | - | UTM-M10 correct ReasoningBank standing everywhere | handoff, intake_index.yaml
+
+## within-role-placement-state-machine.md (9)
+- L377 | cpu | L | N | operator approval + inference measurement window | WP-6/WP-7 ratify matrix re-bench + per-role dispatcher rollout | concurrency_aware.py, contention_matrix.yaml
+- L380 | cpu | M | N | quiet host + operator bench approval | Higher-sample vision_escalation re-bench to ratify clean allow | data/contention_matrix/
+- L381 | none | M | Y | - | **READY** Wire missing kv_migration_direction_total + thrash_skipped counters | concurrency_aware.py, api metrics route
+- L403 | cpu | L | N | lineup+recert event, 0.5-1.5h quiet host | WP-9 move frontdoor/ingest half instances onto distinct NUMA halves | stack_numa.py, contention_matrix.yaml
+- L404 | cpu | M | N | operator lever on matrix-measured status + recert | WP-10 add worker_math NUMA_CONFIG entry and recertify | stack_numa.py
+- L408 | none | M | N | ESC-8 disarm agent owns writer fix | WP-14 fix runtime-facts writer recording phantom full lineup | runtime_facts_manifest.py
+- L410 | none | S | Y | or confirm WP-12 deletes the reader on land | WP-14 harden stack_templates default-full env reader | src/config/stack_templates.py
+- L412 | none | M | Y | - | **READY** WP-11 add PID-liveness stale-holder sweep at lock acquisition | src/runtime/cpu_region_lock.py
+- L413 | none | L | N | GATED on WP-6/WP-7 dispatcher ratification | WP-8 largest-disjoint-subset max-safe-concurrency for eval fanout | instance_topology.py
+
+## wp12-fleet-layer-design.md (1)
+- L240 | none | L | N | soak completion + operator retires flag-off rollback | Retire legacy per-role build path and its guard tests | ServerURLsConfig, test_full_slot_demotion.py
+
+## x-mas-text-routing.md (1)
+- L49 | none | S | Y | - | **READY** Monitor post-enable telemetry for regressions and guard bypasses | xmas_winner_table.yaml, fable5_gate_report.py
+
+## yarn-context-extension-research.md (1)
+- L105 | none | S | Y | no concrete >32K workload requirement | Reactivate YaRN research when a >32K workload appears | handoff
+
+---
+
+# BLOCKED — DO NOT DISPATCH
+
+Grouped by the thing that must move first. Anything here will bounce if you assign it.
+
+## B1. Operator signature / trust-boundary write (human-amendment-only)
+Nothing an agent does can clear these. They need the operator personally.
+
+| Gate | What it unblocks | Rows waiting |
+|---|---|---|
+| **E8 quality-baseline ratification** (`gpu-serving-tie-in-program.md:48`, needs Codex's merged wrapper tree first) | The entire post-v8 campaign: AutoPilot resume, all model-stack/lineup/registry change | `autopilot-decision-plane-…:223,285,300,307,314,324` · `gpu-serving-…:64,66,90` · `autopilot-continuous-optimization.md:4` · `autopilot-sequential-allocation.md:127` · `multimodal-pipeline.md:178` · `eval-tower-loop-robustness-…:140` |
+| **P0.1–P0.3 / rate-axis era-fence amendment** (`orchestration-robustness-…:156,159,184`) | Promotion is unreachable *by construction* until signed | `evidence-plane-ledger-…:337` · `routing-and-optimization-index.md:651` · `research-evaluation-index.md:151,152` · `fable5-…-03:71` |
+| **P-REV-1 MEASUREMENT blocks** (`reviewer-calibration-accounting.md:27,105,106` · `reviewer-control-plane-index.md:87,88`) | Any decision-grade reviewer-calibration claim | `glm52-reviewer-capability-gates.md:121,127,233` · `inference-batch-loop.md:204` · `reviewer-escalation-…:27` |
+| **P-GPU-1 ratification** (`master-handoff-index.md:444` · `fable5-…-03:65`) — *note: several handoffs believe this already happened 2026-07-19; reconcile before dispatching* | GPU claims as decision-grade | `master-handoff-index.md:446` · `reviewer-control-plane-index.md:30` · `agentic-rocm-…:73` · `gpu-drafter-control-redesign.md:97,135` · `mi210-big-model-…:127,156` |
+| **OP-5(b) H-LB budget threshold** | Any enforce-mode in the reviewer plane | `reviewer-latency-…:25,27` · `reviewer-escalation-…:27` |
+| **OP-6(a)+(b) quiet-window approval** | The whole reviewer-plane baseline window | `bulk-inference-campaign.md:624,625,626` · `inference-batch-loop.md:195,196` · `reviewer-calibration-accounting.md:29` |
+| **Era-registry row appends** (`instrument_eras.yaml`) | core_v2 promotion, throttle-gate rescope, sampling determinism | `core-v2-design-note-…:157,161` · `batched-decode-measurement.md:520` · `prompt-construction-determinism.md:68` · `evidence-plane-instrument-repair.md:93` |
+| **Misc operator decisions** | — | `glm52-…:159` (GC-4 residency) · `harness-selection-…:41` (HS-4) · `sliders-local-validation.md:16` · `tq3-…:127` · `autopilot-authority-…:99` · `session-bus-…:1163` (C15 number) · `objective-task-rate-goodput.md:46` · `decision-aware-routing.md:489` · `autopilot-sequential-allocation.md:78,99` · `agent-file-prose-compression.md:233` · `dynamic-stack-concurrency.md:42` (root edit) · `orchestration-robustness-…:155` |
+
+## B2. Inference availability / quiet window (CPU)
+Serialized behind the CPU lane. ~280 rows. The heaviest clusters:
+- **E5 NUMA×batch sweep** (`batched-decode-measurement.md:26,521,522` · `gpu-serving-…:65`) gates
+  `heterogeneous-slot-fabric-residency.md:141` and, through it, most of the slot-fabric arc (L142–L148).
+- **Hermes live validation** — all 11 rows of `hermes-outer-shell.md` plus `hermes-agent-index.md:99,101,107,108,109,111,112,114`.
+- **Eval-tower inference tails** — `eval-tower-verification.md:180,185,193,217,251,257,413,414,427,429,431,489,497,545,546`.
+- **Reviewer-plane windows** — `reviewer-model-ablations.md` (all 8), `reviewer-latency-…:20,23,28`, `reviewer-decision-plane.md:32`.
+
+## B3. GPU lane (MI210)
+~160 rows, all behind the GPU lane's own sequence (P2-2c → Steps 0-7 → P3 bake-off).
+Whole handoffs that are 100% GPU-gated: `mi210-q8-dequant-gemv-roofline` · `gpu-drafter-mi200-investigation` ·
+`gpu-drafter-control-redesign` · `memento-block-reasoning-compression` (S2 training) ·
+`fable5-window2-findings-05c` (the 13 lever rows).
+**Single highest-leverage GPU unblock: the gfx90a training-viability smoke** (`minddr-…:13`) — one probe
+that unblocks `frontier-f3-data-flywheel.md:33`, `engram-conditional-memory.md:385-387`,
+`minddr-…:185`, and the EV-9 judge model.
+
+## B4. Build / artifact / download gates
+- **stack-freeze lift** → `inference-batch-loop.md:208,210,211` · `research-evaluation-index.md:81`
+- **upstream llama.cpp PRs** — #22836 (STQ1_0): `tq3-…:89,90` · `angelslim-…:73,81,94` · `internal-kb-rag.md:310`; #21089 (TBQ3_0): `tq3-…:61`
+- **downloads pending** — GLM-5.2 UD-IQ2_M (`llama-cpp-dsa-contribution.md:247`) · Laguna Q8 128GB (`speculative-…:223`) · MathSmith-HC (`mathsmith-…:109`) · Hy-MT2-1.8B (`internal-kb-rag.md:311`) · opendataloader-bench LFS (`opendataloader-…:405`) · Augment-v1 golden set (`eval-tower-verification.md:431`) · HRM-Text-1B (`multiscreen-…:320`) · Qwopus3.6-27B-Coder (`architect-…:503`)
+- **host/root actions** — cgroup `pids` subtree (`scoring-infra-…:82`) · bwrap install (`scoring-infra-…:87`) · `perf` not installed (`cpu-shape-…:519`) · rocprof on MI210 (`agentic-rocm-…:76`) · earlyoom root edit (`dynamic-stack-concurrency.md:42`) · `authority_consent.json` is root:root 0444 (`orchestration-robustness-…:184`)
+
+## B5. Frozen / parked by design — do not "unblock" these, they are deliberate
+`tri-role-coordinator-architecture` TR-4/TR-5 (DAR-regret gate) · `decision-aware-routing` DAR-3/4/5/6 ·
+`cpu-shape-specialized-gemv-decode` Phases 0-4 (E3 SIMD NO-GO) · `qwen36-27b-cpu-feasibility` (PARKED) ·
+`sliders-local-validation` (PARKED) · `intra-process-tensor-parallel-decode` (dormant, no reopen trigger) ·
+`yarn-context-extension-research` · `numa-prefill-decode-disaggregation` · `summary-token-attention-readiness`
+(4 external-trigger watches) · `log-linear-gated-deltanet-readiness` (3 upstream watches) ·
+`mi210-mfma-compute-bound-paths` (measurement gate failed both paths).
+
+## B6. Blocked on another *agent's* uncommitted work
+- `intake-derived-work-…:95,125,163` — the parallel v8-cutover session holds `laguna-s21-cpu-port.md` and `ENGINEERING_STANDARDS.md` edits.
+- `gpu-serving-…:144` — unmerged crash-window branch owns `stack_numa.py`.
+- `within-role-placement-…:408` / `autopilot-dashboard-…:267` — ESC-8 disarm agent owns `runtime_facts_manifest.py`.
+- `session-bus-…:938,1222` — C11/C24 explicitly require a reviewer who is **not** the author.
+- `scaffold-autopilot-…:104` — a live autopilot agent still holds the daemon.
+
+---
+
+# COLLISION MAP
+
+Two mains must never hold two rows from the same block at once.
+
+## C1. Hot shared files — one main at a time
+| File | Rows that write it |
+|---|---|
+| `research/intake_index.yaml` | `intake-derived-work-…:92,194,196,199,218` · `searxng-…:353` · `context-folding-…:114,142,143` · `gpu-acceleration-path.md:524,531` · `internal-kb-rag.md:530` · `speculative-…:244` · `routing-intelligence.md:128` · `reasoning-compression.md:631` · `unified-trace-…:219,226` · `scoring-infra-…:184` |
+| `scripts/autopilot/eval_tower.py` | **single-writer, owned by the inference-batch `/loop`** — `eval-tower-verification` (most rows) · `research-evaluation-index:153,156` · `scorer-fork-drift-…:256` · `reviewer-latency-…:20,23,28` · `fable5-…-03:71` · `objective-task-rate-…:75` · `scaffold-…:116,129` · `tri-role-…:105,106` |
+| `scripts/coordination/tmux_adapter.py` | `session-bus-…:703,762,825,831,938,945,952,1222,1226,1307,1325` — the whole C-series. Serialize. |
+| `orchestration/model_registry.yaml` | `reasoning-effort-levels:113,321,345` · `architect-…:334` · `multimodal-…:326` · `scoring-infra-…:107` · `lightning-attention-port.md:32` · `qwen36-…:118` · `mathsmith-…:114,115,117,123` · `reviewer-model-ablations.md:51` · `heterogeneous-…:142` |
+| `orchestration/instrument_eras.yaml` | `decision-aware-routing.md:613` · `core-v2-…:161` · `autopilot-dashboard-…:286` · `prompt-construction-determinism.md:68` · `fable5-…-03:69` · `scoring-infra-…:144` · `evidence-plane-instrument-repair.md:93` |
+| `/workspace/MEASUREMENT.md` | **human-amendment-only** — `reviewer-calibration-…:27,105,106` · `reviewer-control-plane-index.md:87,88` · `master-handoff-index.md:444` · `fable5-…-03:65` · `eval-tower-verification.md:487,488` · `scaffold-…:128` · `unified-trace-…:222` |
+| `orchestration/repl_memory/episodic_store.py` | `learned-routing-…:92,197,320` · `episodic-memory-integrity.md:316` · `rao-redel-…:415,432` · `decision-aware-routing.md:124,125` · `scaffold-…:120,121` · `autopilot-decision-plane-…:399` · `tool-output-compression.md:451` |
+| `src/dashboard/dashboard.py` | `autopilot-dashboard-…:283,289,324,325,326` — 5 rows, one file. |
+| `scripts/server/orchestrator_stack.py` | `standardized-stack-…:201,217` · `heterogeneous-…:144` · `core-v2-…:192` · `memento-…:193,194` · `learned-routing-…:319` · `reasoning-effort-levels:242` · `scaffold-…:109` · `eval-tower-verification.md:194` |
+| `research/deep-dives/firecrawl-vs-crawl4ai-…md` | `searxng-…:354,355` — 2 rows, same note. |
+| `src/tools/web/research.py` | `colbert-…:263,283` · `searxng-…:208,220,356` |
+| `ggml/src/ggml-cpu/zen5-ukernel.cpp` | `cpu-shape-…:531,543,544,558,559,560,561,575` |
+| `ggml/src/ggml-cuda/mmvq.cu` | `fable5-…-05c:210,213,218` · `mi210-q8-…:78` |
+| `CLAUDE.md` / `agents/shared/*` | `intake-derived-work-…:53,95,98` · `agent-file-prose-compression.md:241,243` · `harness-selection-…:144` |
+| `handoffs/active/fable5-…-05c…md` | its own 9 taxonomy rows L223-L231 — **all one file**, dispatch as ONE task |
+| `handoffs/active/speculative-decoding-mtp-refresh.md` | its own L231,233,234,235,236,237,244,245 record rows + `intake-derived-work-…:109,147,155,169` |
+
+## C2. Cross-handoff DUPLICATES — the same unit of work filed twice. Dispatch ONE.
+- `inference-acceleration-index.md:412` ≡ `qwen-mtp-llamacpp-port.md:85` (P6b gate-bench)
+- `inference-acceleration-index.md:380,381` ≡ `llama-cpp-dsa-contribution.md:245` (D2 sparse attention)
+- `research-evaluation-index.md:81` ≡ `backlog-roi-audit-…:16` (execution-free patch verifier)
+- `research-evaluation-index.md:82` ≡ `backlog-roi-audit-…:17` ≡ `eval-tower-verification.md:429` (review-F1 suite)
+- `research-evaluation-index.md:84` ≡ `backlog-roi-audit-…:19` (Simula → F1-DGM)
+- `intake-derived-work-…:63` ≡ `scoring-infra-…:182` (ordered_subsequence verifier)
+- `intake-derived-work-…:66` ≡ `eval-tower-verification.md:546` (FrontierCS floor probe)
+- `intake-derived-work-…:132` ≡ `frontier-f1-real-task-corpus.md:115` (SQLite trajectory reader)
+- `intake-derived-work-…:33` ≡ `autopilot-continuous-optimization.md:1525` (AP-21 gepa_ratio)
+- `intake-derived-work-…:39` ≡ `autopilot-continuous-optimization.md:1526` (AP-29 control arm)
+- `intake-derived-work-…:45` ≡ `autopilot-continuous-optimization.md:1529` (AP-32 +1.1% claim)
+- `intake-derived-work-…:50` ≡ `autopilot-continuous-optimization.md:1530` (MemRL retriever retarget)
+- `intake-derived-work-…:109` ≡ `speculative-decoding-mtp-refresh.md:236` (DavidAU header gate)
+- `intake-derived-work-…:150` ≡ `speculative-decoding-mtp-refresh.md:232` (gemma-4 DFlash bench)
+- `intake-derived-work-…:155` ≡ `speculative-decoding-mtp-refresh.md:233` (122B DFlash watch)
+- `intake-derived-work-…:147` ≡ `speculative-decoding-mtp-refresh.md:231` (retire DFlash blocker)
+- `intake-derived-work-…:196` ≡ `gpu-acceleration-path.md:524` (intake-578 correction)
+- `intake-derived-work-…:218` ≡ `searxng-…:353` (Firecrawl relabel)
+- `reviewer-control-plane-index.md:87,88` ≡ `reviewer-calibration-accounting.md:105,106` (P-REV-1 kappa/estimand)
+- `eval-tower-loop-robustness-…:140` ≡ the H2.v8 contention remeasure also cited in `master-handoff-index`
+- `routing-and-optimization-index.md:25` — **STALE**: `learned-routing-controller.md:1608` already marks it `[x]`
+- `document-parser-table-bench.md:63,64` ≡ `opendataloader-…:613` (full-set ODL re-baseline) — spun out, both still open
+- `cpu-inference-optimization-index.md:120,121,122` ≡ `iqk-iquant-enablement.md:105,106,140` (index pointer vs owner)
+- `hermes-agent-index.md:99,101` ≡ `hermes-outer-shell.md:311,322` (reference client validation)
+- `hermes-agent-index.md:107` ≡ `repl-turn-efficiency.md:18` (S4 Omega A/B)
+
+## C3. Safe concurrent groups (verified disjoint file sets)
+These four bundles can run on four mains simultaneously:
+- **G-A doc/provenance**: `intake-derived-work-…:45,53,87` + `gpu-acceleration-path.md:531` + `minddr-…:207`
+- **G-B orchestrator code**: `orchestration-robustness-…:240` + `within-role-placement-…:412` + `autopilot-decision-plane-…:399`
+- **G-C trace/memory**: `unified-trace-…:211` + `engram-…:379` + `reviewer-calibration-accounting.md:30`
+- **G-D kernel/bench desk work**: `cpu-shape-…:723,727` + `llamacpp-v6-consolidation.md:77` + `laguna-s21-cpu-port.md:97`
+
+*(Do not mix G-A with the `research/intake_index.yaml` rows in C1 — G-A's three rows were chosen because they touch different files.)*
