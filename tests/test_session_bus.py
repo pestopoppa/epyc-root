@@ -8,7 +8,9 @@ working agent sessions read that directory concurrently.
 from __future__ import annotations
 
 import json
+import os
 import shutil
+import time
 from pathlib import Path
 
 import pytest
@@ -548,3 +550,93 @@ def test_c8_endpoint_lint_absent_config_warns_without_raising(
 def test_c8_boundary_state_is_daemon_owned(bus_root: Path) -> None:
     """C8: persisted boundary history has the same single writer as inboxes."""
     assert bus.required_writer(bus_root, bus_root / "boundary_state.json") == bus.COORDINATOR_DAEMON
+
+
+# --------------------------------------------------------------------------
+# C18 code half — reachability is OBSERVED, not declared.
+# --------------------------------------------------------------------------
+
+def test_c18_routed_to_a_dead_but_rostered_agent_warns_and_still_delivers(
+        bus_root: Path) -> None:
+    """The exact 2026-07-29 miss: a roster row outlives its session.
+
+    `codex-bus-tests` was still `role: main` with no window and a 16.7 h stale
+    heartbeat, so the roster-metadata test called it reachable and the routed
+    message went to an inbox nobody drains, in silence. Reachability now comes
+    from what is observable.
+
+    Delivery still happens: an inbox row is durable and a merely-offline agent
+    drains it on return, so refusing would turn transient offline into message
+    loss — the opposite-polarity error. The sender is WARNED instead.
+    """
+    _provision(bus_root, *AGENTS)
+    row = _message("alice", "coordinator-agent", seq=1, task_id="t",
+                   needs_routing_to=["bob"], action_required=True)
+    _append(bus_root / "outbox" / "alice.jsonl", row)
+    roster = json.loads((bus_root / "config.yaml").read_text())["roster"]
+    # bob is rostered and NOT retired — the case the roster-metadata test missed.
+    assert {r["id"]: r.get("role") for r in roster}.get("bob") != "retired"
+    hb = bus_root / "heartbeats" / "bob.json"
+    old = time.time() - 17 * 3600
+    os.utime(hb, (old, old))
+
+    advisory = coordinator.relay_outbox_messages(bus_root, roster, epoch=1)
+
+    dead = [a for a in advisory if a.get("unreachable") == "bob"]
+    assert len(dead) == 1, "a dead-but-rostered recipient must be flagged exactly once"
+    assert "LOOKS DEAD" in dead[0]["detail"] and "stale" in dead[0]["detail"]
+    # ...and the message is still on bob's inbox, recoverable if bob returns.
+    assert [r["relayed_src"] for r in _read_jsonl(bus_root / "inbox" / "bob.jsonl")] == [row["id"]]
+
+    # Deduped per (msg, recipient) against the DURABLE ledger, which the tick loop
+    # writes — so persist it as the daemon would before asserting no re-flood.
+    # (Without this the second pass legitimately re-flags: the dedupe key lives on
+    # disk precisely so a daemon restart cannot re-flood either.)
+    with (bus_root / "advisory.jsonl").open("a", encoding="utf-8") as fh:
+        for entry in advisory:
+            fh.write(json.dumps(entry, sort_keys=True) + "\n")
+    assert coordinator.relay_outbox_messages(bus_root, roster, epoch=1) == []
+
+
+def test_c18_a_fresh_heartbeat_is_not_flagged(bus_root: Path) -> None:
+    """The warning must not fire on a live agent — that would train people to ignore it."""
+    _provision(bus_root, *AGENTS)
+    row = _message("alice", "coordinator-agent", seq=2, task_id="t",
+                   needs_routing_to=["bob"])
+    _append(bus_root / "outbox" / "alice.jsonl", row)
+    roster = json.loads((bus_root / "config.yaml").read_text())["roster"]
+    advisory = coordinator.relay_outbox_messages(bus_root, roster, epoch=1)
+    assert [a for a in advisory if a.get("unreachable")] == []
+    assert len(_read_jsonl(bus_root / "inbox" / "bob.jsonl")) == 1
+
+
+def test_c18_a_live_window_suppresses_a_stale_heartbeat_warning() -> None:
+    """Window presence beats heartbeat age: a healthy session goes quiet mid-generation.
+
+    Observed 2026-07-27 — a live main's heartbeat was 2 h stale while it was
+    working. If staleness alone could flag, the warning would fire on healthy
+    agents and stop being read.
+    """
+    entry = {"id": "codex", "endpoint": "tmux:agent:codex-inference"}
+    states = {"codex": {"age_s": 99 * 3600}}
+    assert coordinator._looks_dead("codex", entry, states, {"codex-inference"}, "agent") is None
+    # Same agent, same staleness, no window -> flagged.
+    why = coordinator._looks_dead("codex", entry, states, {"htop"}, "agent")
+    assert why and "stale" in why and "no live window" in why
+
+
+def test_c18_unknown_window_state_still_warns_rather_than_going_quiet() -> None:
+    """If tmux cannot be read the window signal is unavailable — warn anyway.
+
+    The advisory is deduped per (msg, recipient), so a false warning costs one
+    visible line while false silence costs the defect this exists to close.
+    """
+    why = coordinator._looks_dead("gone", {"id": "gone"}, {"gone": {"age_s": 99 * 3600}},
+                                  None, "tmux unreadable: boom")
+    assert why and "window state unknown" in why
+
+
+def test_c18_no_tmux_config_never_probes_the_real_session() -> None:
+    """A caller without config must not read whichever windows happen to be up."""
+    windows, why = coordinator._live_window_names({})
+    assert windows is None and "no tmux.live_session declared" in why

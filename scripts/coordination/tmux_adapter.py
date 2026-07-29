@@ -367,59 +367,6 @@ def ledger_rows() -> list[dict]:
     return out
 
 
-def roster_window_names(config: dict) -> dict[str, str]:
-    """window name -> roster id, for every roster row that can own a window.
-
-    Two names can denote the same main and both must count, because both occur in
-    the live config: a window named after the roster id (`coordinator-agent`), and
-    the window component of a tmux endpoint where it differs from the id (roster
-    id `codex` lives in window `codex-inference`, renamed by the operator to
-    disambiguate it from `codex-bus-tests`).
-
-    A roster row whose live window matches NEITHER name is invisible to the count,
-    and that is a **fail-open, not a safe bias** — corrected 2026-07-28, having
-    been documented backwards here and in commit `8033f039`/`8cbe50c0` (both said
-    "an undercount in the direction that refuses spawns, never one that invents
-    capacity", which is the opposite of what the arithmetic does).
-
-    THE POLARITY, EXPLICITLY. `cmd_spawn` refuses when ``len(ids) >= cap``. Missing
-    a live main makes ``len(ids)`` SMALLER, so the comparison passes when it should
-    not: an undercount RELAXES the cap and hands out slots that are already
-    occupied. It also weakens the ``args.agent in ids`` duplicate check, so the
-    invisible main can be spawned a second time. Undercount = invent capacity.
-    Overcount would be the conservative direction. Nothing here overcounts.
-
-    THE DRIFT TRIGGERS, so the next reader can recognise one:
-      * **an operator renames a window without updating `config.yaml`** — not
-        hypothetical, it is the `codex` → window `codex-inference` rename of
-        2026-07-28, which only stayed counted because the endpoint was updated
-        with it. Had it not been, `codex` would have gone uncounted while running;
-      * **window-INDEX endpoints** (`tmux:agent:3`) — an index is not a name and is
-        skipped here, so such a row is counted only if a window happens to carry
-        its id;
-      * **pane-suffixed components** (`tmux:agent:win.0`) — the `.0` is a pane, so
-        the string never equals a `#{window_name}` and the row silently misses.
-
-    None of these is currently live in `config.yaml` — checked — which is why this
-    stands as a documented residual (C14) rather than an open hole. Closing it
-    means resolving indices via `list-windows -F '#{window_index}\t#{window_name}'`
-    and REFUSING when a roster row cannot be resolved to a window at all, rather
-    than treating unresolvable as absent.
-    """
-    names: dict[str, str] = {}
-    for entry in config.get("roster") or []:
-        if not isinstance(entry, dict):
-            continue
-        rid = str(entry.get("id") or "").strip()
-        if not rid:
-            continue
-        names.setdefault(rid, rid)
-        kind, value, _err = parse_endpoint_window(str(entry.get("endpoint") or ""))
-        if kind == "name":
-            names[value] = rid
-    return names
-
-
 def parse_endpoint_window(endpoint: str) -> tuple[str | None, str | None, str | None]:
     """Split a roster endpoint's window component. Returns ``(kind, value, error)``.
 
@@ -480,6 +427,23 @@ def live_mains(config: dict) -> tuple[set[str] | None, str]:
     interpretable but matches no live window is simply NOT LIVE (the normal state of
     a retired or closed main) and costs nothing. Only endpoints this cannot READ
     refuse.
+
+    THE POLARITY, EXPLICITLY — it was documented BACKWARDS until 2026-07-28, here
+    and in commit messages `8033f039`/`8cbe50c0`, which said "an undercount in the
+    direction that refuses spawns, never one that invents capacity". `cmd_spawn`
+    refuses when ``len(ids) >= cap``, so missing a live main makes ``len(ids)``
+    SMALLER: an undercount RELAXES the cap and hands out an occupied slot, and it
+    weakens the ``args.agent in ids`` duplicate check too. Undercount = invent
+    capacity. (This paragraph used to live on `roster_window_names`, deleted as
+    dead code 2026-07-29 — the invariant outlives the function that carried it.)
+
+    THE DRIFT TRIGGERS, so the next reader recognises one on sight:
+      * **an operator renames a window without updating `config.yaml`** — not
+        hypothetical: the `codex` → `codex-inference` rename of 2026-07-28 stayed
+        counted ONLY because the endpoint moved with it;
+      * **window-INDEX endpoints** (`tmux:agent:3`) — resolved since C14;
+      * **pane-suffixed components** (`tmux:agent:win.0`) — resolved since C14;
+      * **a live window NO roster row claims** — still open, tracked as C17.
 
     WHERE THERE IS A CHOICE, OVERCOUNT. A roster id is counted live if a window
     carries its id OR its endpoint's window resolves — both are checked, and the

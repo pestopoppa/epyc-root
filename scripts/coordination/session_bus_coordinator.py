@@ -53,6 +53,7 @@ import fcntl
 import json
 import os
 import signal
+import subprocess
 import sys
 import time
 from datetime import datetime, timedelta, timezone
@@ -176,6 +177,78 @@ def _lane_snapshot() -> dict:
     snapshot["gpu_busy"] = _UNKNOWN_IS_BUSY if gpu_busy is None else bool(gpu_busy)
     snapshot["none_busy"] = False  # lane:none is always schedulable by definition
     return snapshot
+
+
+# C18 (2026-07-29). How long a recipient's heartbeat may be silent before a routed
+# message to it is worth warning about. NOT a liveness SLA — a main can legitimately
+# idle for hours — which is why it is far above the stall-ladder grace and why a live
+# window suppresses the warning entirely.
+_RECIPIENT_LOOKS_DEAD_S = 4 * 3600.0
+
+
+def _live_window_names(config: dict) -> tuple[set[str] | None, str]:
+    """Window names in `tmux.live_session`, or (None, why) if untellable.
+
+    None means UNKNOWN, never "no windows". Callers must not read an unreadable
+    tmux as proof that everyone is dead — the C14 polarity lesson applied here.
+    """
+    live = str((config.get("tmux") or {}).get("live_session") or "").strip()
+    if not live:
+        # No declared session: do NOT fall back to a default and probe the real
+        # tmux. A caller that did not supply config (every unit test) must not
+        # reach the live `agent` session and read whichever windows happen to be
+        # up — that is a test reaching into production state, and it would make
+        # the result depend on who is logged in.
+        return None, "no tmux.live_session declared"
+    try:
+        proc = subprocess.run(["tmux", "list-windows", "-t", live, "-F", "#{window_name}"],
+                              capture_output=True, text=True, timeout=10)
+    except (OSError, subprocess.SubprocessError) as exc:
+        return None, f"tmux unreadable: {exc}"
+    if proc.returncode != 0:
+        return None, f"tmux could not list session {live!r}: {(proc.stderr or '').strip()}"
+    return {w.strip() for w in (proc.stdout or "").split() if w.strip()}, live
+
+
+def _looks_dead(aid: str, entry: dict, states: dict[str, dict],
+                windows: set[str] | None, windows_why: str) -> str | None:
+    """Reason a rostered recipient looks dead, or None if it looks alive.
+
+    C18 (2026-07-29): REACHABILITY IS OBSERVED, NOT DECLARED. The first version of
+    this check asked the roster whether a recipient was `retired` — a field a human
+    must remember to maintain — so `codex-bus-tests` stayed "reachable" for 16.7 h
+    after its session ended, and a message routed to it was dropped in silence.
+    A roster row is a durable IDENTITY; a session is not, and only the session can
+    read an inbox. Same lesson as C14: derive state from what is observable.
+
+    Two signals, and the window is decisive:
+      * a live window in `tmux.live_session` means alive, full stop — heartbeats go
+        stale on a healthy session mid-generation (observed 2026-07-27), so window
+        presence must be able to SUPPRESS a stale-heartbeat warning;
+      * otherwise a heartbeat silent past _RECIPIENT_LOOKS_DEAD_S is the evidence.
+
+    If tmux is unreadable the window signal is unavailable, and this still warns on
+    a stale heartbeat rather than going quiet: the advisory is deduped per
+    (msg, recipient), so the cost of a false warning is one visible line, while the
+    cost of false silence is the defect this exists to close.
+    """
+    endpoint = str(entry.get("endpoint") or "")
+    candidates = {aid}
+    if endpoint.startswith("tmux:"):
+        parts = endpoint.split(":")
+        if len(parts) >= 3 and parts[2].strip():
+            candidates.add(parts[2].strip().split(".", 1)[0])
+    if windows is not None and (candidates & windows):
+        return None
+    age = (states.get(aid) or {}).get("age_s")
+    if age is None:
+        detail = "has no readable heartbeat"
+    elif age > _RECIPIENT_LOOKS_DEAD_S:
+        detail = f"heartbeat is {age / 3600.0:.1f}h stale"
+    else:
+        return None
+    where = "no live window" if windows is not None else f"window state unknown ({windows_why})"
+    return f"{detail} and {where}"
 
 
 def _agent_states(bus_root: Path, roster: list[dict]) -> dict[str, dict]:
@@ -1220,7 +1293,8 @@ def redeliver_unacked_messages(bus_root: Path, roster: list[dict], epoch: int) -
     return advisory
 
 
-def relay_outbox_messages(bus_root: Path, roster: list[dict], epoch: int) -> list[dict]:
+def relay_outbox_messages(bus_root: Path, roster: list[dict], epoch: int,
+                          config: dict | None = None) -> list[dict]:
     """Deliver agent-authored, explicitly-addressed outbox messages to inboxes.
 
     Defect C2 (2026-07-28): _append_inbox was only ever called with messages the
@@ -1236,6 +1310,11 @@ def relay_outbox_messages(bus_root: Path, roster: list[dict], epoch: int) -> lis
     ids = [str(e.get("id", "")).strip() for e in roster if str(e.get("id", "")).strip()]
     roles = {str(e.get("id", "")).strip(): str(e.get("role") or "").strip()
              for e in roster if isinstance(e, dict) and str(e.get("id", "")).strip()}
+    roster_by_id = {str(e.get("id", "")).strip(): e for e in roster
+                    if isinstance(e, dict) and str(e.get("id", "")).strip()}
+    # C18 code half: liveness inputs, read ONCE per relay pass rather than per message.
+    states = _agent_states(bus_root, roster)
+    live_windows, live_windows_why = _live_window_names(config or {})
     delivered_src: dict[str, set[str]] = {}
     for aid in ids:
         rows, _ = _read_jsonl(bus_root / "inbox" / f"{aid}.jsonl")
@@ -1301,6 +1380,25 @@ def relay_outbox_messages(bus_root: Path, roster: list[dict], epoch: int) -> lis
                                       f"still go to its addressable recipients."})
                         already_flagged.add((src, rid))
                     continue
+                # C18 code half (2026-07-29): the row exists and is not retired, but
+                # DOES ANYONE ANSWER TO IT? Delivery still happens — an inbox row is
+                # durable and a merely-offline agent drains it on return, so refusing
+                # here would convert transient offline into message loss, the
+                # opposite-polarity error (fable-auditor's caution). The sender is
+                # warned instead, once per (msg, recipient).
+                dead_why = _looks_dead(rid, roster_by_id.get(rid) or {}, states,
+                                       live_windows, live_windows_why)
+                if dead_why and (src, rid) not in already_flagged:
+                    advisory.append({
+                        "schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                        "epoch": epoch, "kind": "defect", "agent": sender,
+                        "relayed_src": src, "unreachable": rid,
+                        "detail": f"outbox msg {src} routes to {rid!r}, which LOOKS DEAD "
+                                  f"({dead_why}). It WAS delivered to that inbox and will be "
+                                  f"read if the session returns, but nothing is draining it "
+                                  f"now — do not assume this reached a reader. Retire the "
+                                  f"roster row or route to a live agent."})
+                    already_flagged.add((src, rid))
                 targets.append(rid)
             for target in targets:
                 if src in delivered_src.get(target, set()):
@@ -1459,7 +1557,7 @@ def tick(bus_root: Path, epoch: int, *, dry_run: bool = False) -> list[dict]:
     # evidence must be restated against the decision property, not the file count.
     if not dry_run:
         roster = [r for r in (config.get("roster") or []) if isinstance(r, dict)]
-        advice += relay_outbox_messages(bus_root, roster, epoch)
+        advice += relay_outbox_messages(bus_root, roster, epoch, config)
         # C8: boundary surfacing must outlive any single coordinator session, so
         # it runs here (the always-on tier) rather than in a session-local poller.
         advice += detect_task_boundaries(bus_root, roster, epoch)

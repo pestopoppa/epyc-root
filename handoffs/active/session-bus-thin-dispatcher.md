@@ -903,7 +903,12 @@ freezes/cutovers, host reboots).
     Latent, not live: no roster row triggered any of these shapes, and the real config resolves to
     the same 4 mains before and after. 40 → 46 tests in `tests/test_tmux_adapter.py`; 48 across
     both suites.
-  - [ ] **C19 — the whole-repo test result depends on WHICH PATH you invoke it from.** *Measured
+  - [x] **C19 — the whole-repo test result depends on WHICH PATH you invoke it from.** ✅ CLOSED
+    2026-07-29 by owner decision: **codex retains the literal canonical-root guard deliberately**,
+    as a trust-boundary property — a production ratifier must not accept a second name for the
+    production root. So this is intended strictness, not drift, and the resolution is procedural:
+    quote the invocation path with any tally and prefer the canonical root (`pytest.ini` says so at
+    the top). *Original measurement below for the record.* *Measured
     2026-07-29, and it is why two sessions reported different truths about the same commit.* Same
     tree, same commit, same interpreter:
     `cd /mnt/raid0/llm/epyc-root && pytest tests/test_ratify_pbench4_fg4b_*` → **28 passed**;
@@ -918,8 +923,13 @@ freezes/cutovers, host reboots).
     for the owner of those scripts (codex / measurement, NOT this lane): should the guard compare
     `realpath` so one physical tree gives one answer, or is binding to the literal path the
     intended strictness? Either answer is fine; the current silent divergence is not.
-  - [ ] **C17 — a live window that NO roster row claims is silently excluded from the count, and
-    there is one right now.** *Found 2026-07-29 while auditing routed bus messages.* C14 closed the
+  - [x] **C17 — a live window that NO roster row claims is silently excluded from the count.**
+    ✅ CLOSED 2026-07-29 by operator answer on the bus: the `claude` window is **operator-owned and
+    out of scope**, and coordinator-covered mains are **always coordinator-spawned**, so an
+    unattributed window can never be one. The exclusion is therefore correct, not a fail-open: the
+    count is of coordinator-managed mains, and a window outside that set is not a slot the cap
+    governs. No `tmux.non_main_windows` key is needed. *Original filing below for the record.*
+    ~~Filed as a live fail-open:~~ *Found 2026-07-29 while auditing routed bus messages.* C14 closed the
     **row → window** direction (a roster row whose endpoint could not be read). This is the
     **window → row** direction, and it is live rather than latent: session `agent` holds a window
     named `claude` that no roster row claims (`claude-main` is RETIRED with a `monitor:file`
@@ -954,10 +964,24 @@ freezes/cutovers, host reboots).
     Two ways to finish it, and they are not exclusive:
     (a) **data** — set `codex-bus-tests` to `role: retired` (coordinator/operator call; the row must
     be kept, not deleted, since its cursors and history are keyed on the identity);
-    (b) **code** — make the reachability test consult *liveness* (heartbeat freshness, or window
-    presence in `tmux.live_session`) rather than roster metadata alone, since a roster row is a
-    durable identity and a session is not. Without (b), every future dead-but-not-yet-retired main
-    reopens this hole.
+    (b) **code — DONE ✅ 2026-07-29.** `_looks_dead()` + `_live_window_names()` in
+    `session_bus_coordinator.py`: reachability is now **observed**, not declared. A live window in
+    `tmux.live_session` means alive and SUPPRESSES the warning (a healthy main's heartbeat goes
+    stale mid-generation — observed 2026-07-27, so staleness alone would fire on healthy agents and
+    train people to ignore it); otherwise a heartbeat silent past 4 h is the evidence. Polarity per
+    fable-auditor's caution: **deliver-plus-warn, never refuse** — an inbox row is durable and a
+    merely-offline agent drains it on return, so bouncing would convert transient offline into
+    message loss. If tmux is unreadable the warning still fires (deduped per (msg, recipient)):
+    a false warning costs one visible line, false silence costs the defect. A caller with no
+    config never probes the real session, so unit tests cannot read whichever windows happen to be
+    up. Four regression tests including the exact 2026-07-29 miss (rostered, non-retired, 17 h
+    stale, no window → warned AND delivered). Suites: 48 passed.
+    - [ ] **ACTIVATION for (b): the daemon running at epoch 8 predates this change**, so the
+      liveness warning is inert until the daemon's owner restarts it — exactly the gap that made
+      `528435fc` inert for an hour, now recurring one layer down. Not restarting it myself:
+      restarts are the daemon owner's, and this lane is barred from them. Owner: coordinator-agent.
+    (a) data — still open: `codex-bus-tests` remains `role: main`. Now non-urgent, since (b)
+    detects it regardless of whether anyone remembers to set the field.
     *Precision + polarity note (fable-auditor, wrap-up 2026-07-29):* post-`528435fc` the rostered
     non-retired case is no longer *dropped* — it is durably DELIVERED to an inbox nothing drains
     (recoverable if the session revives; invisible to the sender either way). For (b), prefer
@@ -971,18 +995,30 @@ freezes/cutovers, host reboots).
       retired targets at authoring; regression reproduces the exact 09:50Z miss. NOTE: the commit
       message and two in-code comments originally said "C16"; comments corrected to C18 at
       wrap-up — the pushed commit message is immutable, this line is the record. ✅ 2026-07-29
-    - [ ] ACTIVATION GAP: the running coordinator-daemon predates `528435fc`, so fan-out is
-      delivery-inert until the daemon's owner restarts it at a boundary it chooses (reload freeze
-      until E8 terminal; fable-auditor barred from restarts). Until then routed delivery still
-      depends on the triage outbox-scan and hand-forwarding. Owner: coordinator-agent to schedule.
-    - [ ] Delete dead `roster_window_names()` in `tmux_adapter.py` — zero callers after C14
-      (`42884724`), still carries the last-writer-wins collision idiom; one-line cleanup so a
-      future caller cannot inherit the bug (fable-auditor C14 review residual).
-  - [ ] **C15 — `caps.max_concurrent_mains: 4` is saturated at 4/4.** Set 2026-07-28 against a
-    then-steady state of 3 live mains; a `fable-auditor` window brought it to 4 within the hour,
-    so the next spawn needs a main closed. Working as designed — a closed main now returns its
-    slot immediately — but the operator may want 5 for one free slot. Operator decision; not a
-    defect.
+    - [x] ACTIVATION GAP CLOSED ✅ 2026-07-29 — the operator restarted the daemon (**epoch 8**,
+      pid 1659843, started 10:06:18Z, i.e. after `528435fc` at 10:02Z) and verified fan-out live: a
+      message addressed to `coordinator-agent` with `needs_routing_to` for `claude-gpu-lane` and
+      `fable-auditor` reached both. Routed delivery no longer depends on the triage outbox-scan.
+      *The lesson generalises and it applies to this very entry:* a merged fix is inert until the
+      long-running process carrying it is restarted, so "landed" and "active" are two states, and
+      the second one needs an owner. See the activation note on the code half below.
+    - [x] Delete dead `roster_window_names()` in `tmux_adapter.py` ✅ 2026-07-29 — zero callers
+      confirmed before deleting. **Its docstring carried the corrected polarity statement and the
+      drift-trigger list**, so that text was re-homed onto `live_mains` (the function whose
+      arithmetic the invariant is about) BEFORE the deletion — otherwise the cleanup would have
+      deleted the correction that `8d865ea2` exists to preserve. 48 passed.
+  - [ ] **C15 — `caps.max_concurrent_mains: 4` is saturated at 4/4. STILL 4, not 6** — checked
+    2026-07-29, and the "already raised to 6" recollection is a **key conflation**, which is worth
+    recording because it is the exact hazard C9 was about. The 3 → 6 bump (`9b6c4f13`) raised
+    `max_spawns_per_day`, the DAILY-ACTION key, and C9 (`8cbe50c0`) **superseded** that key with
+    `max_concurrent_mains: 4` — the value chosen by operator decision at the time, against a
+    then-steady state of 3 live mains. `git log -L` on the line shows no later change; the working
+    tree is clean; `probe` reads **4/4** (`claude-gpu-lane`, `codex`, `coordinator-agent`,
+    `fable-auditor`). So the saturation is current, not stale.
+    I did not set it to 6, deliberately: re-reading the old 6 as a concurrency figure is precisely
+    what `resolve_spawn_cap()` refuses to do in code — six spawn ACTIONS per day is not six
+    SIMULTANEOUS mains, and doing it by hand would grant capacity no decision covers. **Operator:
+    say a number and it changes in one line.**
   Original list: Claude Stop/SessionStart drain hook
   (clone `*_context.sh`) · send-keys adapter behind `OP-SENDKEYS-CODEX` (OFF; rate-limited;
   idle-pane check) · hybrid triage (dead-agent drafts + routing annotations; budget-capped;
