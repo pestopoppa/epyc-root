@@ -84,7 +84,7 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 7 | ~~`intake-derived-work-2026-07-25.md:87`~~ **✅ CLOSED 2026-07-29** | P3 process defects | none | S | `scripts/validate/`, research-intake cross-reference-map | Add path-resolution check for the intake cross-reference map |
 | 8 | `agentic-rocm-kernel-authoring.md:78` | progress-checklist | none | S | `research/deep-dives/…geak-synthesis.md` | GEAK-family freshness sweep at each audit |
 | 9 | ~~`gpu-acceleration-path.md:531`~~ **✅ CLOSED 2026-07-29** | 2026-07-29 fix | none | S | `gpu-acceleration-path.md` | Record reverse-KL on-policy-distillation negative as guardrail |
-| 10 | `tool-use-eval-contract.md:366` | intake 2026-07-21 | none | S | sentinel prompt definitions | Adopt negative-constraint + stated-consequence sentinel pattern |
+| 10 | ~~`tool-use-eval-contract.md:366`~~ **✅ CLOSED 2026-07-29** | intake 2026-07-21 | none | S | sentinel prompt definitions | Adopt negative-constraint + stated-consequence sentinel pattern |
 | 11 | ~~`gpu-serving-tie-in-program.md:143`~~ **✅ CLOSED 2026-07-29** | P5 | none | S | `heterogeneous-slot-fabric-residency.md` | Add GPU host threads as a modeled slot-fabric consumer |
 | 12 | `model-stack-change-standardization-audit.md:229` | update-checklist | none | S | `tests/unit/` priors/guard/enum-sync/q_scorer suites | Run focused unit tests for priors, guard, scorer, admission |
 | 13 | `eval-tower-verification.md:522` | de-anchoring | none | S | `autopilot.py:1431`, `paired_stats.py` | Unify autopilot's 2nd McNemar producer onto `verdict_from_result` |
@@ -1474,7 +1474,7 @@ re-grep before assigning.
 - L451 | none | M | Y | - | Map query_memory read API onto existing spill-pointer machinery | graph/helpers.py, episodic_store.py
 
 ## tool-use-eval-contract.md (1)
-- L366 | none | S | Y | - | **READY** Adopt negative-constraint + stated-consequence sentinel pattern | sentinel prompt definitions
+- L366 | none | S | Y | - | **CLOSED 2026-07-29** — epyc-orchestrator `e6b989b9`; handoff records `tests/test_tool_sentinels.py` 8/8 | Adopt negative-constraint + stated-consequence sentinel pattern | sentinel prompt definitions
 
 ## tq3-quantization-evaluation.md (13)
 - L61 | cpu | M | N | upstream PR #21089 unmerged | Test TBQ3_0 KV cache on Qwen2.5-Coder-32B context extension | llama.cpp build, llama-bench
