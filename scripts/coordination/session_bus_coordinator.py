@@ -2479,13 +2479,48 @@ def daemon_liveness(hb: dict) -> tuple[bool | None, str]:
     return True, f"pid {pid} is alive"
 
 
+def boot_time(proc: Path = Path("/proc/uptime")) -> float | None:
+    """Unix time the host booted, or None where that is not knowable."""
+    try:
+        return time.time() - float(proc.read_text(encoding="utf-8").split()[0])
+    except (OSError, ValueError, IndexError):
+        return None
+
+
+def heartbeat_predates_boot(mtime: float, *, slack_s: float = 60.0) -> bool | None:
+    """Was this heartbeat last written BEFORE the host booted? None => unknowable.
+
+    C26's second check, and it closes what `daemon_liveness` cannot. A pid check
+    answers "does a process with that number exist", not "is it MY process" — and
+    across a reboot pid numbering restarts, so the recorded pid can be recycled onto
+    something entirely unrelated and report alive. That is not hypothetical here:
+    C26 was raised from a post-reboot cold start reading `pid=1928027`, and the only
+    reason it read as dead is that the number happened not to be re-issued.
+
+    A heartbeat written before boot cannot describe a running process, whatever the
+    pid says. `slack_s` absorbs clock adjustment around boot rather than pretending
+    the two clocks are exact.
+    """
+    boot = boot_time()
+    if boot is None:
+        return None
+    return mtime < boot - slack_s
+
+
 def cmd_status(args: argparse.Namespace) -> int:
     bus_root = Path(args.bus_root)
     hb_path = _heartbeat_path(bus_root)
     try:
         hb = json.loads(hb_path.read_text(encoding="utf-8"))
-        age = time.time() - hb_path.stat().st_mtime
+        mtime = hb_path.stat().st_mtime
+        age = time.time() - mtime
         alive, why = daemon_liveness(hb)
+        if heartbeat_predates_boot(mtime) and alive is not False:
+            # The pid check is OVERRIDDEN, not merely supplemented: it is the check
+            # that is wrong in this case, because it is answering about a recycled
+            # number rather than about this daemon.
+            alive, why = False, (f"{why}, but the heartbeat was last written BEFORE this host "
+                                 f"booted — the pid is recycled, not this daemon")
         state = str(hb.get("state"))
         # The heartbeat's own claim is never overwritten — it is EVIDENCE, and the
         # record of what the last daemon believed is worth keeping. It is annotated.

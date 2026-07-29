@@ -1545,3 +1545,42 @@ def test_p1b_liveness_recognises_a_process_owned_by_someone_else(
     monkeypatch.setattr(coordinator.os, "kill", denied)
     alive, why = coordinator.daemon_liveness({"pid": 12345})
     assert alive is True and "another user" in why
+
+
+def test_c26_a_prboot_heartbeat_is_stale_even_when_its_pid_is_alive(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """C26's second check. A pid check answers "does a process with that number
+    exist", not "is it MY process" — and pid numbering restarts at boot, so a
+    recorded pid can be recycled onto something unrelated and report alive. The
+    heartbeat is written before boot, so it cannot describe a running process.
+    """
+    hb_path = coordinator._heartbeat_path(bus_root)
+    coordinator._write_atomic(hb_path, {
+        "agent": coordinator.COORDINATOR_DAEMON, "state": "working", "task_id": None,
+        "ts": "2026-07-29T12:00:00+00:00", "epoch": 11, "note": "advisory",
+        "pid": os.getpid()})                          # a genuinely LIVE pid
+    boot = coordinator.boot_time()
+    assert boot is not None, "this host exposes /proc/uptime"
+    os.utime(hb_path, (boot - 3600, boot - 3600))
+
+    assert coordinator.main(["--bus-root", str(bus_root), "status"]) == 0
+    out = capsys.readouterr().out
+
+    assert "DAEMON IS NOT RUNNING" in out
+    assert "recycled" in out
+
+
+def test_c26_boot_check_is_unknowable_not_false_without_proc_uptime(tmp_path: Path) -> None:
+    """Where boot time cannot be read the answer is None, and cmd_status then leaves
+    the pid verdict alone — 'I cannot tell' never becomes 'it is fine'."""
+    assert coordinator.boot_time(tmp_path / "no-such-uptime") is None
+
+
+def test_c26_a_post_boot_heartbeat_is_not_flagged(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    coordinator._write_heartbeat(bus_root, epoch=13, state="working", note="advisory")
+
+    assert coordinator.main(["--bus-root", str(bus_root), "status"]) == 0
+    out = capsys.readouterr().out
+
+    assert "state=working" in out and "recycled" not in out
