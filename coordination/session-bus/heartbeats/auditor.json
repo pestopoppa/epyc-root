@@ -1,6 +1,6 @@
 {
   "agent": "auditor",
   "state": "working",
-  "task_id": "gemv-reanchor",
-  "ts": "2026-07-29T18:28:43+00:00"
+  "task_id": "triage",
+  "ts": "2026-07-29T18:32:05+00:00"
 }
