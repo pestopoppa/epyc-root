@@ -54,9 +54,14 @@ device-local placement question is **unmeasured** and is labelled as such below.
   preparation only: all four W0 runs now carry **observation-grade** `offline_scores.jsonl`
   with provenance (2,967 saved responses) and a Stage-B prune plan
   (`stage_b_prune_plan.json`, SHA-256 `9b4d4f03…96b8`). W2's Gemma group is **invalid for
-  any quality interpretation** — the original capture stored reasoning text with no answer
-  channel, giving 430/430 parse failures with no raw SSE ledger, unrecoverable — and W4's
-  high-K `raw_fallback` rows are demoted from decision-grade use.
+  any quality interpretation** — 430/430 parse failures with no raw SSE ledger,
+  unrecoverable — and W4's high-K `raw_fallback` rows are demoted from decision-grade use.
+  **Re-attributed 2026-07-29** (research `5d6a17f2`): the capture parser bug was real and
+  is fixed, but the token budget was consumed because the harness emitted no `--reasoning`
+  flag, so gemma4 ran at llama-server's `auto` default (ON for `arch=gemma4`) while both
+  model registries record `reasoning: 'off'` — the runs were not on the production recipe.
+  The capture fail-close **detects** that, it does not **prevent** it; without
+  `--reasoning off` a W2 run fails closed again at ~41/43.
   [batched-decode-measurement](../handoffs/active/batched-decode-measurement.md)
 
 - **A decision-grade CPU anchor did land for the A4 optimized-serving shape, and it is

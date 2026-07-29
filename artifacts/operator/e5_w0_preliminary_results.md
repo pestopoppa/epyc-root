@@ -85,7 +85,7 @@ dense C1 shape question is **RESOLVED**.
 | Wave | Model | Prune decision | Reason |
 |---|---|---|---|
 | **W1** | qwen36_q8_0 (MoE-35B) | Prunes only `C1b-{np4,np8,np16}` (throughput-only) | W0 whole-machine C3 wins by 44.78% / 44.77% / 34.97% at T=8/16/32; C1b/C1 ratio is 0.598 at K=4 and 0.463 at K=8, reproducing the documented half-pair collapse. |
-| **W2** | gemma4_26b_a4b | **Full grid retained** | Retain full-vs-quarter family for clean 256-token confirmation despite W0 C3 wins of 36.24%-43.77%. **QUALITY-INVALID for interpretation**: original capture stored reasoning text without an answer channel — all 430/430 offline_scores rows are unrecoverable parse failures, no raw SSE ledger survives. A fail-close capture gate (commit `efd0980c`) prevents recurrence from W2 onward; a focused post-fix capture smoke test is a precondition before any decision-grade W2 run. |
+| **W2** | gemma4_26b_a4b | **Full grid retained** | Retain full-vs-quarter family for clean 256-token confirmation despite W0 C3 wins of 36.24%-43.77%. **QUALITY-INVALID for interpretation**: original capture stored reasoning text without an answer channel — all 430/430 offline_scores rows are unrecoverable parse failures, no raw SSE ledger survives. RE-ATTRIBUTED 2026-07-29 (research `5d6a17f2`): the actual budget sink was **reasoning mode ON** — the harness emitted no `--reasoning` flag, so gemma4 ran at llama-server's `auto` default while both registries record `reasoning: 'off'`. The fail-close capture gate (`efd0980c`) **detects** this, it does not **prevent** it; a focused post-fix capture smoke test is a precondition before any decision-grade W2 run. |
 | **W3** | qwen36_27b_q8 (dense) | **Full grid retained** | Dense C1 shape is already resolved (half0). W0's C1b@16 vs C3@8 comparison used mixed metric bases, so no additional prune is sound (flagged `[MIXED METRIC BASIS — caveated]` in the run summary). |
 | **W4** | qwen3_next_80b | **Full grid retained** | Keep the ingest whole-machine family: W0 favors C3 by 17.44%-26.39%, but the 256-token clean confirmation remains the operator-scheduled W4 purpose. High-K `raw_fallback` rows are demoted from decision-grade use (per the handoff's W0-summarizer entry; not separately itemized in the prune-plan JSON). |
 
@@ -122,7 +122,7 @@ dense C1 shape question is **RESOLVED**.
     `e5-w0-qwen36-rerun1-20260723T191759Z`) but are not the canonical `W0_qwen` source in the
     prune plan — the `-nothink` dir is.
 - **Prune plan**: `data/batched_decode/e5_pre_reboot_20260728/stage_b_prune_plan.json` in the
-  research repo. SHA-256 `9b4d4f034e3da01cbaaa652838aa9bb481855853180e8deb2dfafc27d69396b8` —
+  research repo. SHA-256 `cabd10bd0fe52ed04ca28e314ad0ab8d505de9e5db571115d16c48d0832daee8` —
   confirmed matching the handoff's pinned value.
   - Superseded predecessor hash recorded in-file:
     `06b0abb2ca7abaf004ce56658a8c3753ea719ebdc4f1b50bec65a015954d4f8b` (predecessor file does not

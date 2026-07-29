@@ -1,0 +1,313 @@
+<title>E5 W0 — NUMA × Batch Scout Results</title>
+
+<style>
+  :root{
+    --paper:#F4F3EF; --sunk:#EBE9E3; --line:#D8D5CC;
+    --ink:#16181D; --ink-2:#4A4E57; --ink-3:#787D87;
+    --copper:#A85F2E; --teal:#2C6B67; --rust:#96453A; --ochre:#9A7328;
+    --heat-lo:#CFD6D5; --heat-hi:#A85F2E;
+    --card:#FFFFFF;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+    --serif:"Iowan Old Style","Charter","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --paper:#101319; --sunk:#171B23; --line:#282E39;
+      --ink:#E6E4DF; --ink-2:#A7ACB6; --ink-3:#767C88;
+      --copper:#D08A4F; --teal:#5FA8A2; --rust:#C9756A; --ochre:#C9A253;
+      --heat-lo:#232A34; --heat-hi:#D08A4F;
+      --card:#161A21;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#101319; --sunk:#171B23; --line:#282E39;
+    --ink:#E6E4DF; --ink-2:#A7ACB6; --ink-3:#767C88;
+    --copper:#D08A4F; --teal:#5FA8A2; --rust:#C9756A; --ochre:#C9A253;
+    --heat-lo:#232A34; --heat-hi:#D08A4F;
+    --card:#161A21;
+  }
+  :root[data-theme="light"]{
+    --paper:#F4F3EF; --sunk:#EBE9E3; --line:#D8D5CC;
+    --ink:#16181D; --ink-2:#4A4E57; --ink-3:#787D87;
+    --copper:#A85F2E; --teal:#2C6B67; --rust:#96453A; --ochre:#9A7328;
+    --heat-lo:#CFD6D5; --heat-hi:#A85F2E;
+    --card:#FFFFFF;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--sans); font-size:16px; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1000px; margin:0 auto; padding:56px 28px 96px; display:flex; flex-direction:column; gap:44px}
+
+  .eyebrow{
+    font-family:var(--mono); font-size:11.5px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--ink-3); margin:0 0 10px;
+  }
+  h1{
+    font-family:var(--serif); font-weight:600; font-size:clamp(30px,4.4vw,44px);
+    line-height:1.12; margin:0 0 14px; text-wrap:balance; letter-spacing:-.01em;
+  }
+  h2{
+    font-family:var(--serif); font-weight:600; font-size:23px; line-height:1.25;
+    margin:0 0 4px; text-wrap:balance;
+  }
+  h3{
+    font-family:var(--mono); font-weight:600; font-size:12.5px; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--ink-2); margin:0 0 12px;
+  }
+  p{margin:0; max-width:68ch; color:var(--ink-2)}
+  .lede{font-size:17.5px; color:var(--ink-2); max-width:66ch}
+  strong{color:var(--ink); font-weight:600}
+  code{font-family:var(--mono); font-size:.87em; background:var(--sunk); padding:1px 5px; border-radius:3px; color:var(--ink)}
+
+  .caveat{
+    border:1px solid var(--ochre); border-left-width:5px; border-radius:4px;
+    background:color-mix(in srgb, var(--ochre) 8%, var(--paper));
+    padding:22px 26px; display:flex; flex-direction:column; gap:10px;
+  }
+  .caveat .tag{
+    font-family:var(--mono); font-size:11.5px; letter-spacing:.13em; text-transform:uppercase;
+    color:var(--ochre); font-weight:700;
+  }
+  .caveat h2{font-size:20px; margin:0}
+  .caveat p{max-width:74ch; color:var(--ink-2)}
+
+  section{display:flex; flex-direction:column; gap:18px}
+  .sec-head{display:flex; flex-direction:column; gap:2px}
+  .sec-head .n{font-family:var(--mono); font-size:11.5px; color:var(--copper); letter-spacing:.1em}
+
+  .strip{display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px}
+  .mcard{
+    background:var(--card); border:1px solid var(--line); border-radius:5px;
+    padding:16px 18px; display:flex; flex-direction:column; gap:7px;
+  }
+  .mcard .name{font-family:var(--mono); font-size:12px; color:var(--ink-2); letter-spacing:.02em}
+  .mcard .val{
+    font-family:var(--mono); font-size:29px; font-weight:600; color:var(--copper);
+    font-variant-numeric:tabular-nums; line-height:1;
+  }
+  .mcard .where{font-size:13px; color:var(--ink-3)}
+
+  .gridblock{display:flex; flex-direction:column; gap:9px}
+  .runid{font-family:var(--mono); font-size:11.5px; color:var(--ink-3); word-break:break-all}
+  .tscroll{overflow-x:auto; border:1px solid var(--line); border-radius:5px; background:var(--card)}
+  table{border-collapse:collapse; width:100%; font-variant-numeric:tabular-nums}
+  th,td{padding:9px 13px; text-align:right; font-family:var(--mono); font-size:13px; white-space:nowrap}
+  thead th{
+    font-size:11px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3);
+    font-weight:600; border-bottom:1px solid var(--line); text-align:right;
+  }
+  tbody th{
+    text-align:left; font-weight:500; color:var(--ink-2); font-size:12.5px;
+    border-right:1px solid var(--line);
+  }
+  tbody tr+tr th, tbody tr+tr td{border-top:1px solid color-mix(in srgb,var(--line) 55%,transparent)}
+  td.v{color:var(--ink); background:color-mix(in srgb, var(--heat-hi) calc(var(--t,0) * 46%), var(--heat-lo))}
+  td.opt{outline:2px solid var(--copper); outline-offset:-2px; font-weight:700}
+  td.na{color:var(--ink-3); background:transparent}
+  .note{font-size:13.5px; color:var(--ink-2); max-width:74ch}
+  .ratio{color:var(--copper); font-weight:600; font-family:var(--mono)}
+
+  .finds{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:14px}
+  .find{border:1px solid var(--line); border-left-width:4px; border-radius:4px; background:var(--card); padding:15px 18px; display:flex; flex-direction:column; gap:6px}
+  .find.held{border-left-color:var(--teal)}
+  .find.dep{border-left-color:var(--copper)}
+  .find .k{font-family:var(--mono); font-size:11px; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3)}
+  .find p{font-size:14.5px}
+
+  .waves{display:flex; flex-direction:column; gap:11px}
+  .wave{border:1px solid var(--line); border-radius:5px; background:var(--card); padding:16px 19px; display:flex; flex-direction:column; gap:8px}
+  .wave-top{display:flex; align-items:center; gap:11px; flex-wrap:wrap}
+  .wid{font-family:var(--mono); font-weight:700; font-size:15px; color:var(--ink)}
+  .wmodel{font-family:var(--mono); font-size:12.5px; color:var(--ink-3)}
+  .chip{
+    font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase;
+    padding:3px 9px; border-radius:99px; font-weight:700; border:1px solid;
+  }
+  .chip.retain{color:var(--teal); border-color:var(--teal); background:color-mix(in srgb,var(--teal) 10%,transparent)}
+  .chip.prune{color:var(--copper); border-color:var(--copper); background:color-mix(in srgb,var(--copper) 10%,transparent)}
+  .chip.invalid{color:var(--rust); border-color:var(--rust); background:color-mix(in srgb,var(--rust) 12%,transparent)}
+  .wave p{font-size:14px; max-width:80ch}
+
+  ul{margin:0; padding-left:20px; color:var(--ink-2); display:flex; flex-direction:column; gap:9px; max-width:74ch}
+  li{font-size:14.5px}
+  li strong{color:var(--ink)}
+
+  .prov{border-top:1px solid var(--line); padding-top:22px; display:flex; flex-direction:column; gap:9px}
+  .prov dl{margin:0; display:grid; grid-template-columns:auto 1fr; gap:5px 20px; font-size:13px}
+  .prov dt{font-family:var(--mono); font-size:11.5px; color:var(--ink-3); letter-spacing:.05em; text-transform:uppercase}
+  .prov dd{margin:0; font-family:var(--mono); font-size:12.5px; color:var(--ink-2); word-break:break-all}
+
+  @media (max-width:640px){
+    .wrap{padding:36px 18px 72px; gap:34px}
+    .prov dl{grid-template-columns:1fr; gap:2px 0}
+    .prov dt{margin-top:8px}
+  }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">E5 · NUMA × Batch Interaction Sweep · Wave 0</p>
+    <h1>The quarter-split wins everywhere. We just can’t act on it yet.</h1>
+    <p class="lede">69 of 69 cells ran clean across four model groups — the first measurement of NUMA placement and <code>-np</code> batching <em>crossed</em>, rather than separately. Every number here is scout-grade.</p>
+  </header>
+
+  <div class="caveat">
+    <span class="tag">Observation-grade only — gates no decision</span>
+    <h2>Collected at 20 days uptime under an explicit health-warning override.</h2>
+    <p>W0 ran with <code>--allow-host-health-warning</code> because the harness refuses decision-grade P-BENCH-3 runs past one week of host uptime. It is <strong>scout-by-design</strong>. Per <code>MEASUREMENT.md</code> these numbers may generate hypotheses but <strong>must not gate keep, revert, deploy, promote, buy or close decisions</strong>. Decision-grade confirmation is W1–W4, blocked on the host reboot that resets the uptime clock.</p>
+  </div>
+
+  <section>
+    <div class="sec-head"><span class="n">01</span><h2>Aggregate-optimal cell, per model group</h2></div>
+    <div class="strip">
+      <div class="mcard"><span class="name">qwen36_q8_0 · MoE-35B</span><span class="val">2028</span><span class="where">C3 quarters · np4</span></div>
+      <div class="mcard"><span class="name">gemma4_26b_a4b</span><span class="val">5076</span><span class="where">C3 quarters · np8</span></div>
+      <div class="mcard"><span class="name">qwen36_27b_q8 · dense</span><span class="val">1415</span><span class="where">C3 quarters · np2</span></div>
+      <div class="mcard"><span class="name">qwen3_next_80b</span><span class="val">2520</span><span class="where">C3 quarters · np4</span></div>
+    </div>
+    <p class="note">Tasks/hour, aggregate, from raw <code>offline_scores</code>. Cross-checked against each run-dir <code>summary.md</code> — no discrepancies against the handoff.</p>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="n">02</span><h2>Throughput grids</h2></div>
+    <p class="note">Cell shading tracks throughput within each model group; the copper outline marks that group’s optimum. Columns are <code>-np</code> batch width, rows are NUMA placement.</p>
+
+    <div class="gridblock">
+      <h3>qwen36_q8_0 — MoE-35B</h3>
+      <p class="runid">e5-w0-qwen36-nothink-20260723T194901Z · 903 rows</p>
+      <div class="tscroll"><table data-min="988" data-max="2028">
+        <thead><tr><th style="text-align:left">Placement</th><th>np1</th><th>np2</th><th>np4</th><th>np8</th><th>np16</th><th>np32</th></tr></thead>
+        <tbody>
+          <tr><th>C1 whole-machine</th><td class="v">1359</td><td class="v">1505</td><td class="v">1549</td><td class="v">1610</td><td class="v">1734</td><td class="v">1528</td></tr>
+          <tr><th>C1b second-node</th><td class="v">988</td><td class="v">1120</td><td class="v">1109</td><td class="v">1198</td><td class="v">1154</td><td class="na">—</td></tr>
+          <tr><th>C2</th><td class="v">1540</td><td class="v">1729</td><td class="v">1826</td><td class="v">1718</td><td class="v">1707</td><td class="na">—</td></tr>
+          <tr><th>C3 quarters</th><td class="v">1682</td><td class="v">1909</td><td class="v opt">2028</td><td class="v">1774</td><td class="na">—</td><td class="na">—</td></tr>
+        </tbody>
+      </table></div>
+      <p class="note">np16 whole-machine used <code>kv_unified</code>.</p>
+    </div>
+
+    <div class="gridblock">
+      <h3>gemma4_26b_a4b_q4km_mtp</h3>
+      <p class="runid">e5-w0-gemma-20260723T203422Z · 430 rows</p>
+      <div class="tscroll"><table data-min="1515" data-max="5076">
+        <thead><tr><th style="text-align:left">Placement</th><th>np1</th><th>np2</th><th>np4</th><th>np8</th></tr></thead>
+        <tbody>
+          <tr><th>C1 whole-machine</th><td class="v">1515</td><td class="v">2018</td><td class="v">2127</td><td class="v">2475</td></tr>
+          <tr><th>C3 quarters</th><td class="v">3246</td><td class="v">4129</td><td class="v">4448</td><td class="v opt">5076</td></tr>
+        </tbody>
+      </table></div>
+      <p class="note">C1 also ran np16 → 2854 and np32 → 2879. At iso-concurrency T=32, C3-np8 over C1-np32 is <span class="ratio">1.78×</span>. <strong>All 10 cells are quality-invalid</strong> — the speed figures survive only as scout throughput signal. See W2 below.</p>
+    </div>
+
+    <div class="gridblock">
+      <h3>qwen36_27b_q8 — dense</h3>
+      <p class="runid">e5-w0-dense-20260723T204720Z · 989 rows</p>
+      <div class="tscroll"><table data-min="574" data-max="1415">
+        <thead><tr><th style="text-align:left">Placement</th><th>np1</th><th>np2</th><th>np4</th><th>np8</th><th>np16</th><th>np32</th></tr></thead>
+        <tbody>
+          <tr><th>C1 full-machine</th><td class="v">574</td><td class="v">808</td><td class="v">849</td><td class="v">611</td><td class="v">781</td><td class="v">810</td></tr>
+          <tr><th>C1 half0</th><td class="v">751</td><td class="na">—</td><td class="na">—</td><td class="v">814</td><td class="na">—</td><td class="na">—</td></tr>
+          <tr><th>C1b second-node</th><td class="v">836</td><td class="v">939</td><td class="v">965</td><td class="v">1009</td><td class="v">984</td><td class="na">—</td></tr>
+          <tr><th>C2</th><td class="v">819</td><td class="v">1009</td><td class="v">1085</td><td class="v">1027</td><td class="v">926</td><td class="na">—</td></tr>
+          <tr><th>C3 quarters</th><td class="v">1225</td><td class="v opt">1415</td><td class="v">1407</td><td class="v">1334</td><td class="na">—</td><td class="na">—</td></tr>
+        </tbody>
+      </table></div>
+      <p class="note">Paired probes settle the dense C1 shape: <strong>half0 beats full-machine at both K=1</strong> (751 vs 574) <strong>and K=8</strong> (814 vs 611). Question <strong>resolved</strong>.</p>
+    </div>
+
+    <div class="gridblock">
+      <h3>qwen3_next_80b</h3>
+      <p class="runid">e5-w0-80b-20260723T221055Z · 645 rows</p>
+      <div class="tscroll"><table data-min="1162" data-max="2520">
+        <thead><tr><th style="text-align:left">Placement</th><th>np1</th><th>np2</th><th>np4</th><th>np8</th><th>np16</th><th>np32</th></tr></thead>
+        <tbody>
+          <tr><th>C1 whole-machine</th><td class="v">1162</td><td class="v">1434</td><td class="v">1550</td><td class="v">1669</td><td class="v">1700</td><td class="v">1556</td></tr>
+          <tr><th>C1b second-node</th><td class="v">1377</td><td class="v">1659</td><td class="v">1886</td><td class="v">2013</td><td class="v">1905</td><td class="na">—</td></tr>
+          <tr><th>C3 quarters</th><td class="v">1897</td><td class="v">2275</td><td class="v opt">2520</td><td class="v">2386</td><td class="na">—</td><td class="na">—</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="n">03</span><h2>Cross-model pattern</h2></div>
+    <div class="finds">
+      <div class="find held">
+        <span class="k">Held for every model</span>
+        <p><strong>C3 (quarters) is aggregate-optimal in all four groups.</strong> The quarter-split beat whole-machine and second-node placements everywhere tested — MoE-35B, gemma, dense and 80B alike.</p>
+      </div>
+      <div class="find dep">
+        <span class="k">Flips by architecture</span>
+        <p><strong>C1b (second-node) vs C1 depends on the model.</strong> It <em>loses</em> for MoE-35B (np4: 1109 vs 1549) but <em>wins</em> for dense (965 vs 849) and 80B (1886 vs 1550).</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="n">04</span><h2>Wave status — what W1–W4 will run</h2></div>
+    <div class="waves">
+
+      <div class="wave">
+        <div class="wave-top"><span class="wid">W1</span><span class="wmodel">qwen36_q8_0 · MoE-35B</span><span class="chip prune">Partial prune</span></div>
+        <p>Prunes only <code>C1b-{np4,np8,np16}</code>, throughput-only. W0 quarters win by 44.78% / 44.77% / 34.97% at T=8/16/32; the C1b/C1 ratio is 0.598 at K=4 and 0.463 at K=8, reproducing the documented half-pair collapse.</p>
+      </div>
+
+      <div class="wave">
+        <div class="wave-top"><span class="wid">W2</span><span class="wmodel">gemma4_26b_a4b</span><span class="chip retain">Full grid retained</span><span class="chip invalid">Quality-invalid</span></div>
+        <p>The original capture stored reasoning text with <strong>no answer channel</strong> — all 430/430 <code>offline_scores</code> rows are unrecoverable parse failures and no raw SSE ledger survives. RE-ATTRIBUTED 2026-07-29 (research <code>5d6a17f2</code>): the actual budget sink was <strong>reasoning mode ON</strong> — the harness emitted no <code>--reasoning</code> flag, so gemma4 ran at llama-server's <code>auto</code> default while both registries record <code>reasoning: 'off'</code>. The fail-close capture gate (<code>efd0980c</code>) <strong>detects</strong> this, it does not <strong>prevent</strong> it, and a focused post-fix capture smoke test is a <strong>precondition</strong> before any decision-grade W2 run.</p>
+      </div>
+
+      <div class="wave">
+        <div class="wave-top"><span class="wid">W3</span><span class="wmodel">qwen36_27b_q8 · dense</span><span class="chip retain">Full grid retained</span></div>
+        <p>The dense C1 shape is already resolved (half0). W0’s C1b@16 vs C3@8 comparison used <strong>mixed metric bases</strong>, so no additional prune is sound — flagged <code>[MIXED METRIC BASIS — caveated]</code> in the run summary.</p>
+      </div>
+
+      <div class="wave">
+        <div class="wave-top"><span class="wid">W4</span><span class="wmodel">qwen3_next_80b</span><span class="chip retain">Full grid retained</span></div>
+        <p>Keeps the ingest whole-machine family. W0 favours quarters by 17.44%–26.39%, but the 256-token clean confirmation remains W4’s purpose. High-K <code>raw_fallback</code> rows are demoted from decision-grade use.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="n">05</span><h2>What W0 cannot tell us</h2></div>
+    <ul>
+      <li><strong>Correctness at production length.</strong> W0 used a 64-token scout cap; gemma captured reasoning-only output with no answer channel. Quality is capped, invalid, or simply unconfirmed at the 256-token production budget.</li>
+      <li><strong>Decision-grade throughput.</strong> Every number was collected at 20 days uptime under an explicit health-warning override. None of it can deploy a placement or <code>-np</code> change.</li>
+      <li><strong>Dense/80B mixed-basis cells.</strong> W3’s C1b@16 vs C3@8 used inconsistent metric bases, so no conclusion is drawn — W3 must re-measure cleanly.</li>
+      <li><strong>Any gemma correctness signal at all.</strong> W2 will be the first wave with a usable quality ledger for that model group.</li>
+    </ul>
+  </section>
+
+  <div class="prov">
+    <h3>Provenance</h3>
+    <dl>
+      <dt>Handoff</dt><dd>handoffs/active/batched-decode-measurement.md — E5 section, 2026-07-28</dd>
+      <dt>Run dirs</dt><dd>/mnt/raid0/llm/epyc-inference-research/data/batched_decode/</dd>
+      <dt>Rows</dt><dd>903 + 430 + 989 + 645 = 2,967 — matches the handoff total exactly</dd>
+      <dt>Commits</dt><dd>efd0980c (capture gate) · d61e4e8c (prune-plan provenance repair)</dd>
+      <dt>Prune plan</dt><dd>data/batched_decode/e5_pre_reboot_20260728/stage_b_prune_plan.json</dd>
+      <dt>Executed</dt><dd>2026-07-23 / 24 · summarised 2026-07-28</dd>
+    </dl>
+  </div>
+
+</div>
+
+<script>
+  for (const table of document.querySelectorAll('table[data-min]')) {
+    const min = Number(table.dataset.min), max = Number(table.dataset.max);
+    const span = (max - min) || 1;
+    for (const cell of table.querySelectorAll('td.v')) {
+      const v = Number(cell.textContent.trim());
+      if (Number.isFinite(v)) cell.style.setProperty('--t', ((v - min) / span).toFixed(3));
+    }
+  }
+</script>

@@ -87,9 +87,18 @@ because neither campaign has produced one.
   land the banner must be *rewritten* (not just the numbers), that the W0 figures must
   be **retained alongside** rather than edited to agree, and that the artifact must be
   republished to the same URL. W0's Gemma group is separately unusable for quality —
-  430/430 parse failures from a capture that stored reasoning text with no answer
-  channel, with no raw SSE ledger, unrecoverable — and a focused post-fix capture smoke
-  must pass before any decision-grade W2 run.
+  430/430 parse failures with no raw SSE ledger, unrecoverable — and a focused post-fix
+  capture smoke must pass before any decision-grade W2 run. The cause was
+  **re-attributed 2026-07-29** (research `5d6a17f2`): the capture parser bug was real
+  and is fixed, but what consumed the budget is that the harness emitted no
+  `--reasoning` flag, so gemma4 ran at llama-server's `auto` default (ON for
+  `arch=gemma4`) while both model registries record `reasoning: 'off'` — W0/W2 were not
+  running the production recipe they exist to mirror. A re-run smoke reproduced it:
+  41/43 `response_capture_missing_answer_text`, every one HTTP 200 with `predicted_n`
+  exactly 256, empty `response_text` and 599–1174 chars of `reasoning_text` ending
+  mid-sentence, against a clean llama-server log. The capture fail-close **detects**,
+  it does not **prevent**; without `--reasoning off` a W2 run fails closed again at
+  ~41/43.
   [batched-decode-measurement](../handoffs/active/batched-decode-measurement.md)
 
 - **Decision-grade and deployable are different states, and the record now says which
