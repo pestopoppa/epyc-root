@@ -93,7 +93,7 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 16 | `unified-trace-memory-service.md:211` | UTM-M4 | none | S | `src/trace/harness_schema.py` | Mine ReasoningBank repo for its 3 prompts + JSON schema |
 | 17 | `autopilot-decision-plane-audit-2026-07-22.md:399` | deliverables | none | S | `q_scorer.py`, `episodic_store.py` | Apply find-or-update to `_update_escalation_memory` append-only rows |
 | 18 | `orchestration-robustness-audit-2026-07-11.md:240` | faiss orphans | none | S | `orchestration/repl_memory/faiss_store.py` | Startup sweep unlinking old unopened faiss tmp orphans |
-| 19 | `autopilot-control-plane-integration.md:23` | AP-3b.2 | none | S | `autopilot-control-plane-integration.md` | Decide whether draft-tree belongs in AP-3 |
+| 19 | ~~`autopilot-control-plane-integration.md:23`~~ **✅ CLOSED 2026-07-29** | AP-3b.2 | none | S | `autopilot-control-plane-integration.md` | Decide whether draft-tree belongs in AP-3 |
 | 20 | ~~`speculative-decoding-mtp-refresh.md:236`~~ **✅ CLOSED 2026-07-29** | intake 2a | none | S | `models/*.gguf` headers | Tensor-count header gate for the DavidAU Qwen3.6-27B MTP GGUFs |
 | 21 | ~~`agent-file-prose-compression.md:244`~~ **✅ CLOSED 2026-07-29** | intake 2a | none | S | `agent-file-prose-compression.md` | Re-source `/doctor` behaviour from the CLI before speccing |
 | 22 | ~~`learned-routing-controller.md:1613`~~ **✅ CLOSED 2026-07-29** | deep-dive correction | none | S | (guardrail note) | Standing guardrail: do not import intake-866 equivalence framing |
@@ -245,7 +245,7 @@ re-grep before assigning.
 ## autopilot-control-plane-integration.md (4)
 - L18 | cpu | L | N | AP-3b source proof; spec-dec quality clearance | AP-3 register restart-scoped spec-dec + per-role KV knobs | config_applicator.py, stack_priors.py
 - L21 | cpu | M | N | launch probes need llama-server | AP-3b source-prove remaining launch fields | config_applicator.py
-- L23 | none | S | Y | - | AP-3b.2 decide whether draft-tree belongs in AP-3 | handoff
+- L23 | none | S | Y | - | **CLOSED 2026-07-29** — current draft-tree degenerates to linear drafting; no independent tree controls exist | AP-3b.2 decide whether draft-tree belongs in AP-3 | handoff
 - L24 | cpu | M | N | server-wired EA/evict fields not source-proven | AP-3c expose Expected-Attention launch policy | config_applicator.py
 
 ## autopilot-dashboard-fidelity-audit-2026-07-22.md (9)
