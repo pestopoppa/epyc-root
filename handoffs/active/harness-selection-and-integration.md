@@ -131,8 +131,21 @@ Therefore:
 
 _Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25.md`](intake-derived-work-2026-07-25.md)._
 
-- [ ] **HS-5 — add a "weight-space RL adapter exists?" column to the HS-4 decision matrix.** OpenCode = **YES** (first-party `opencode_env` in huggingface/OpenEnv plus a complete TRL AsyncGRPO example, both landed 2026-07-24); Hermes = NO; ACP-speakers = NO. Decision input only — cooperation surface (HS-1b/HS-1c, both SUFFICIENT) remains the primary axis. It is ~zero cost to preserve now and an expensive retrofit later.
+- [x] **HS-5 — add a "weight-space RL adapter exists?" column to the HS-4 decision matrix.** OpenCode = **YES** (first-party `opencode_env` in huggingface/OpenEnv plus a complete TRL AsyncGRPO example, both landed 2026-07-24); Hermes = NO; ACP-speakers = NO. Decision input only — cooperation surface (HS-1b/HS-1c, both SUFFICIENT) remains the primary axis. It is ~zero cost to preserve now and an expensive retrofit later. ✅ 2026-07-29 — matrix below records the adapter surface separately from current-host feasibility; HS-4 remains operator-owned.
   - **Caveat, dive-verified**: the training half is **not reachable on our hardware and should be declined, not bridged**. llama.cpp has **none** of the seven vLLM control endpoints (`/get_world_size`, `/pause`, `/resume`, `/init_weight_transfer_engine`, `/start_weight_update`, `/update_weights`, `/finish_weight_update`) and `weight_transfer.py:25` hard-imports the vLLM NCCL engine, so it could only ever be a **frozen off-policy sampler** — defeating AsyncGRPO's premise. Plus separate-GPU, FSDP2-only and no PEFT/LoRA path.
+
+### HS-5 trainability axis for the operator-owned HS-4 comparison
+
+| Candidate | Weight-space RL adapter exists? | Current-host feasibility | Selection meaning |
+|---|---|---|---|
+| Hermes | No first-party adapter identified. | Not applicable without authoring a new training/control-plane stack. | No trainability option to preserve; cooperation remains the primary comparison axis. |
+| OpenCode | **Yes** — first-party `opencode_env` and a TRL AsyncGRPO example. | **No**: its vLLM/NCCL/FSDP2, separate-GPU, full-parameter training path cannot run on the current llama.cpp/MI210 posture. Only its GPU-free trace-capture half is presently relevant. | Preserve this as a future option, not as a reason to bridge or select OpenCode now. |
+| ACP-speaking candidates | No first-party weight-space adapter identified in the HS-4 candidate surface. | No established compatible training path. | ACP remains a dormant UI/interoperability path, not a trainability advantage. |
+
+This is a decision input, not a promotion score or an HS-4 decision. The source and the
+current-host decline are recorded in [`intake-derived-work-2026-07-25.md`](intake-derived-work-2026-07-25.md)
+ID-20 (`c942728e`); any future training proposal must re-establish a compatible control plane and
+separate-GPU posture rather than treating an adapter example as deployment evidence.
 - [x] **Record Fractal (plasma-ai) as an OUTER-LOOP orchestrator that drives harnesses, NOT an HS-4 candidate** — it owns no HTTP client and exposes no `base_url`, delegating all model access to a spawned vendor CLI. Free inheritance from HS-1c: a Fractal node running `--agent=opencode` reaches the Orch via `opencode.json` `options.baseURL`, so local-model operation needs no fork of either project. ✅ 2026-07-29 — already recorded with containment/trial boundary in [`intake-derived-work-2026-07-25.md`](intake-derived-work-2026-07-25.md) ID-14, evidence commit `c942728e`; trial remains separate and not authorized on this host.
 
 ## 2026-07-29 — intake Stage-4: harness taxonomy, NLAH re-targetability, and the corrected capability-vs-harness ratio
