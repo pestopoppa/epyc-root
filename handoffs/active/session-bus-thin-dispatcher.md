@@ -1410,9 +1410,16 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   **LIVE INSTANCE, not hypothetical:** `mainA` filed `E5-THROTTLE-SCOPE-ERA-ROW-20260729` at
   2026-07-29 **15:18:28Z** with `action_required: true` and `needs_routing_to: [coordinator-agent]`,
   carrying `apply_command` + a top-level `dry_run_evidence` rather than the
-  `validated: {cmd, dry_run_exit}` object the relay reads. **Verified: the SCHEMA ACCEPTS that
-  shape; the relay does not.** The request was genuinely pre-validated and stranded anyway — a THIRD
-  lost signature request beyond C27's two, by a different mechanism. Fix: the notice goes to
+  `validated: {cmd, dry_run_exit}` object the relay reads. A THIRD lost signature request beyond
+  C27's two, by a different mechanism.
+  **CORRECTION 2026-07-29 (same session):** this row and commit `e428d70f` originally stated
+  *"the SCHEMA ACCEPTS that shape; the relay does not."* **That was wrong.** It was measured under
+  `/usr/bin/python3`, where `validate_row` silently degrades to a six-required-key check — the exact
+  fail-open now filed as **C34**. Under the venv interpreter the daemon actually uses, the schema
+  **REJECTS** it too (`payload: 'validated' is a required property`). The C33 fix and its tests are
+  unchanged and still needed; only the stated cause was wrong, and it understated the problem — the
+  real question is not "why does the relay disagree with the schema" but "how did a schema-invalid
+  row get written at all", which is C34. Fix: the notice goes to
   `coordinator-agent`'s inbox (drained every task boundary), deduped once per `gate_id` against its
   own durable evidence, naming the concrete repair; `relay_tokens` now carries `gate_id`/`msg_id` as
   FIELDS so the notice never parses prose out of `detail`.
@@ -1420,7 +1427,38 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     Failing at the author is the right place; today a schema-valid gate can be structurally
     unpresentable. **This is a CONTRACT change and is deliberately NOT made here** — it is a
     coordinator/operator call, and tightening it invalidates `mainA`'s existing row, which would
-    have to be re-filed. Escalated on the bus with options.
+    have to be re-filed. Escalated on the bus with options. **Superseded in part by C34:** the
+    schema already requires `validated`; what failed is that authoring never applied the schema.
+- [x] **C34 (NEW) — the two sides of the bus run different validators, and only one says so.**
+  ✅ 2026-07-29 — `auditor`, commit `25eb2b0a`. Found while measuring `advisory.jsonl` growth.
+  `validate_row` degrades to a six-required-key check when `jsonschema` is unavailable — documented
+  and deliberate — but **on the SUCCESS path it returned silently**, so "validated" and "checked six
+  keys exist" were indistinguishable to the caller. That distinction is the whole ballgame, because
+  the two sides run different interpreters: **agents author with `python3
+  scripts/coordination/session_bus.py append ...`**, the command `CLAUDE.md`, `BUS_PROTOCOL.md` and
+  every task brief specify, and `/usr/bin/python3` has **no jsonschema**; the coordinator-daemon runs
+  under the orchestrator venv, which has 4.26.0, so relay applies the FULL schema. A message passes
+  authoring, is refused at relay, and is never delivered — the write succeeded, the send did not,
+  and nobody is told.
+  **MEASURED: 217 of 341 live outbox rows (64%) are in exactly that state**, because the roster
+  rename added `_renamed_from` to migrated rows and the schema forbids additional properties. 12 are
+  operator items — including BOTH C27 gates and three of `mainA`'s. The warning is now unconditional
+  on stderr; it does NOT refuse, because refusing would break every agent on the documented command
+  with no interpreter to switch to mid-task, trading a silent gap for a total outage.
+  Second half, same commit: **the schema-invalid defect had no dedupe** — the one defect path in
+  `relay_outbox_messages` that appended unconditionally (C18's branch has keyed on `already_flagged`
+  since it was written). An outbox row is never repaired by the daemon (single writer), so an invalid
+  row is invalid forever. Measured: 249 distinct shapes re-emitted per tick, **~20,000 advisory
+  rows/hour**, 33,074 `defect` rows in a **38.5 MiB** `advisory.jsonl` that `already_flagged` then
+  re-reads IN FULL every tick, on the daemon's hot path. 4 tests.
+  - [ ] **OPEN — make the two sides agree, and unstick the 217 rows.** Two coupled contract calls,
+    escalated with options: (i) which interpreter is authoritative for authoring (pin the venv in the
+    documented command, install jsonschema for the system python, or ship a wrapper); (ii) whether
+    `_renamed_from` should be permitted by the schema (it is provenance the rename deliberately
+    added to preserve history) or stripped from the 217 rows. **Until one is chosen those 217 rows,
+    including both C27 gates, remain un-relayable to any inbox.** Note the C27a/C27c fixes DO still
+    present the two gates to `token-queue.md` — `relay_tokens` reads outboxes directly and does not
+    validate — so the operator path is unblocked even while the inbox path is not. Verified.
 - [ ] **C28 — relay is tracked by destination FILE, not by message identity, so moving an inbox
   re-floods it.** *Observed 2026-07-29 during the roster rename.* Renaming the roster ids meant
   `git mv inbox/<old>.jsonl inbox/<new>.jsonl`; the running daemon then re-delivered its **entire
@@ -1436,7 +1474,22 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   identity (`relayed_src` in a daemon-owned ledger), not by re-reading the file it was delivered
   into — the same "derive it from what the thing itself leaves behind, in a place the operation
   cannot erase" rule C18's second half already applied to notice idempotency.
-- [ ] **C29 — `drain --agent <non-roster-id>` fails OPEN.** *Verified 2026-07-29 with
+- [x] **C29 — `drain --agent <non-roster-id>` fails OPEN.** ✅ 2026-07-29 — `auditor`, commit
+  `e510a091`. **The gap was WIDER than filed: three verbs take an identity and never validated it.**
+  `drain` (exit 0, printed another agent's mail, advanced a cursor); **`triage`, which is the worse
+  half** — `routed_view` filters on membership, so an unknown id matched nothing and got
+  `(triage: no routed messages awaiting <id>)` at exit 0, indistinguishable from "you are clear",
+  turning the LOUDEST signal on this bus into a silent all-clear for a stale or typo'd id; and
+  `cursor`, where `required_writer` accepts any stem under `cursors/` and so answers "may this agent
+  write this path", never "is this agent real" (`cursor --agent another-ghost --set 5` exited 0 and
+  created the file). All three now use `_require_roster_id`.
+  **REFUSE, not warn — the deliberate choice this row asked to be recorded.** A warning leaves the
+  cursor advance in place, which silently CONSUMES another agent's mail: the read is the damage, not
+  the exit code. The mid-rename hazard is real but measured-bounded — no automated caller uses a
+  stale id (the daemon interpolates roster-derived ids) and the only stale reference is one line in
+  an archived task file. The identity check runs BEFORE the C3 file check and does not replace it:
+  telling someone to `provision` a non-roster id sends them to a command that also refuses, so both
+  messages survive and are pinned. 9 tests. *Verified 2026-07-29 with
   `drain --agent codex` after `codex` had been renamed out of the roster.* `cmd_drain`
   (`session_bus.py:692-729`) checks only that the inbox FILE exists (the C3 fix) — it never calls
   `_require_roster_id`. So an unknown id with a leftover inbox exits **0**, prints messages, advances
@@ -1450,7 +1503,7 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   (and the deliberate choice between warn and refuse should be recorded, since refusing changes
   behaviour for anyone mid-rename).
 - [ ] **C30 — the backend a main runs on is invisible to the bus, and spawn reports success for a
-  window that died a second later.** Two halves of one gap:
+  window that died a second later.** Two halves of one gap — **(b) is DONE, (a) is still open:**
   (a) **The launch command is not roster data.** `cmd_spawn --command` defaults to
   `cd /workspace && claude` (`tmux_adapter.py:931`) and no roster row carries a launch command, so
   which backend an identity runs on lives only in the head of whoever types the spawn. That was
@@ -1467,6 +1520,24 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   a few seconds after creation before reporting success. Note the polarity: a false success here is
   worse than a false failure, because the four bus files are already written and the identity now
   looks provisioned-and-live to everything downstream, including the C24 heartbeat reset.
+  **✅ 2026-07-29 (b) only — `auditor`, commit `dfb775f7`.** `cmd_spawn` re-checks the window list
+  after `SPAWN_SETTLE_S` (2s, module-level so tests drive it to 0), records `spawn-died`, returns
+  EX_BLOCKED and writes NO `spawn` row, so the ledger never claims a live window that is not there.
+  The message states that the four bus files are LEFT IN PLACE and a retry reuses them. One
+  deliberate asymmetry, tested: an UNREADABLE window list does NOT manufacture a failure — elsewhere
+  in this module an unreadable signal fails closed, but here the window and bus files already exist
+  and a transient tmux hiccup must not send an operator to tear down a healthy session, so the check
+  fires only on positive evidence of absence. Proven against REAL tmux (`true` is reaped in ~0.3s,
+  well inside the settle window) — the only place it can be. 3 unit tests + 3 live checks.
+  **Reusable finding: the shared C9 test harness was pinning a false pass.** Its fake tmux answered
+  `list-windows` from a fixed string and never showed a window it had just created, so every spawn
+  test would have read as "the window died instantly". It now reflects its own `new-window` calls.
+  - [ ] **(a) STILL OPEN — the launch command belongs in the roster row as data.** `cmd_spawn
+    --command` defaults to `claude` and no roster row carries a launch command, so
+    which backend an identity runs on lives only in the head of whoever types the spawn. The
+    2026-07-29 rename made roster ids deliberately model-agnostic precisely so a main can move
+    between backends — **the thing the rename made variable is the thing the bus does not record.**
+    This is a ROSTER SCHEMA change (a contract), so it is escalated rather than taken.
 - [x] **C31 — the nudge rate limit is keyed to the roster ID, not the window instance, so a
   re-spawned main is silenced by nudges sent to a window that no longer exists.** ✅ 2026-07-29 —
   `auditor`, commit `66f60536`. The limit now only counts nudges sent AFTER the newest `spawn`
