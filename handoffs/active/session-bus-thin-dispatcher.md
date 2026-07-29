@@ -1018,6 +1018,22 @@ freezes/cutovers, host reboots).
       different states**, and only the process owner can close the second.
     (a) data — still open: `codex-bus-tests` remains `role: main`. Now non-urgent, since (b)
     detects it regardless of whether anyone remembers to set the field.
+    - [x] **SECOND HALF: the warning needed a reader too** ✅ 2026-07-29. After (b), a routed
+      message to a dead agent was delivered-and-warned — but the warning was an `advisory.jsonl`
+      row, and **advisory rows are delivered to no one**; `status` prints the last five on demand.
+      So the defect had two layers: a message in an inbox nobody drains, and a notice about it in a
+      ledger nobody reads. The notice now also goes to **coordinator-agent's inbox**, a channel
+      drained at every task boundary, because coordinator-agent is the party that can retire the
+      roster row or re-route the work. Delivery to the dead recipient is UNCHANGED — this adds a
+      reader, it does not refuse, bounce or withhold (fable-auditor's polarity note, honoured).
+      Idempotency is keyed on **the notice's own durable trace** (a matching row already in
+      coordinator-agent's inbox), not on the advisory ledger: the ledger is written by the tick
+      loop, so any direct caller — every unit test, and any future one — would have re-notified on
+      every pass. Same rule the module applies to liveness: derive it from what the thing itself
+      leaves behind. Two regression tests; 96 passed across the affected suites.
+    - [ ] **ACTIVATION for the second half: the daemon at epoch 9 predates it.** Third activation
+      gap on this file in one day. The notice is inert until the daemon's owner restarts it —
+      or, most likely, until the post-reboot restart picks it up for free. Not this lane's to do.
     *Precision + polarity note (fable-auditor, wrap-up 2026-07-29):* post-`528435fc` the rostered
     non-retired case is no longer *dropped* — it is durably DELIVERED to an inbox nothing drains
     (recoverable if the session revives; invisible to the sender either way). For (b), prefer
@@ -1043,6 +1059,13 @@ freezes/cutovers, host reboots).
       drift-trigger list**, so that text was re-homed onto `live_mains` (the function whose
       arithmetic the invariant is about) BEFORE the deletion — otherwise the cleanup would have
       deleted the correction that `8d865ea2` exists to preserve. 48 passed.
+  - [ ] **C21 — `check_pytest_safety.sh` matches `-n <num>` anywhere in a compound command.**
+    *Observed 2026-07-29.* A command combining pytest with `sed -n 340,360p` was blocked as
+    "pytest -n 340 is too many workers" — the guard scans the whole command string rather than the
+    pytest segment, so an unrelated `-n` in a later stage trips it. Harmless today (split the
+    commands and it passes) and the guard errs toward refusing, which is the right direction for a
+    memory-safety check on a 192-thread box — but it will keep surprising people. Scope the match
+    to the pytest invocation.
   - [ ] **C20 — after a reboot, `tmux_adapter.py spawn` cannot spawn ANYTHING until someone
     creates the `agent` tmux session by hand. THIS IS ON THE REBOOT CRITICAL PATH.** *Verified
     2026-07-29 by running `live_mains` against an absent session.* With no tmux server or no

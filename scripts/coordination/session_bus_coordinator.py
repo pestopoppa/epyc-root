@@ -1315,6 +1315,12 @@ def relay_outbox_messages(bus_root: Path, roster: list[dict], epoch: int,
     # C18 code half: liveness inputs, read ONCE per relay pass rather than per message.
     states = _agent_states(bus_root, roster)
     live_windows, live_windows_why = _live_window_names(config or {})
+    # C18 second half: which (msg, dead-recipient) pairs coordinator-agent has already
+    # been told about, read from its inbox — the notice's own durable trace.
+    _ca_rows, _ = _read_jsonl(bus_root / "inbox" / f"{COORDINATOR_AGENT}.jsonl")
+    notified = {(str(r.get("relayed_src")), str((r.get("payload") or {}).get("unreachable")))
+                for r in _ca_rows
+                if r.get("kind") == "defect" and (r.get("payload") or {}).get("unreachable")}
     delivered_src: dict[str, set[str]] = {}
     for aid in ids:
         rows, _ = _read_jsonl(bus_root / "inbox" / f"{aid}.jsonl")
@@ -1389,15 +1395,39 @@ def relay_outbox_messages(bus_root: Path, roster: list[dict], epoch: int,
                 dead_why = _looks_dead(rid, roster_by_id.get(rid) or {}, states,
                                        live_windows, live_windows_why)
                 if dead_why and (src, rid) not in already_flagged:
+                    detail = (f"outbox msg {src} routes to {rid!r}, which LOOKS DEAD "
+                              f"({dead_why}). It WAS delivered to that inbox and will be "
+                              f"read if the session returns, but nothing is draining it "
+                              f"now — do not assume this reached a reader. Retire the "
+                              f"roster row or route to a live agent.")
                     advisory.append({
                         "schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
                         "epoch": epoch, "kind": "defect", "agent": sender,
-                        "relayed_src": src, "unreachable": rid,
-                        "detail": f"outbox msg {src} routes to {rid!r}, which LOOKS DEAD "
-                                  f"({dead_why}). It WAS delivered to that inbox and will be "
-                                  f"read if the session returns, but nothing is draining it "
-                                  f"now — do not assume this reached a reader. Retire the "
-                                  f"roster row or route to a live agent."})
+                        "relayed_src": src, "unreachable": rid, "detail": detail})
+                    # C18 second half (2026-07-29): the WARNING needed a reader too.
+                    # Advisory rows land in advisory.jsonl and are delivered to nobody —
+                    # `status` prints the last five on demand. So the message was a
+                    # durable-but-unread sink AND the notice about it was another one,
+                    # one level up. Push it into coordinator-agent's inbox, which IS
+                    # drained at every task boundary, because coordinator-agent is the
+                    # party that can retire the roster row or re-route the work.
+                    # Deduped by the same (src, rid) ledger key as the advisory, so a
+                    # daemon restart cannot re-deliver it either.
+                    # Idempotency is keyed on the NOTICE'S OWN durable evidence — a row
+                    # already in coordinator-agent's inbox — not on the advisory ledger.
+                    # The ledger is written by the tick loop, so a caller that only calls
+                    # relay (every unit test, and any future direct caller) would re-notify
+                    # on every pass. Derive the dedupe from what the delivery itself leaves
+                    # behind: the same rule this module applies to liveness.
+                    if COORDINATOR_AGENT in ids and (src, rid) not in notified:
+                        _append_inbox(bus_root, [{
+                            "to": COORDINATOR_AGENT, "kind": "defect",
+                            "relayed_src": src,
+                            "payload": {"unreachable": rid, "from_agent": sender,
+                                        "detail": detail,
+                                        "action": f"retire {rid!r}'s roster row, or re-route "
+                                                  f"the work to a live agent"}}], epoch)
+                        notified.add((src, rid))
                     already_flagged.add((src, rid))
                 targets.append(rid)
             for target in targets:

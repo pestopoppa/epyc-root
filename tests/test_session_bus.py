@@ -640,3 +640,58 @@ def test_c18_no_tmux_config_never_probes_the_real_session() -> None:
     """A caller without config must not read whichever windows happen to be up."""
     windows, why = coordinator._live_window_names({})
     assert windows is None and "no tmux.live_session declared" in why
+
+
+def test_c18_the_warning_itself_reaches_a_drained_channel(bus_root: Path) -> None:
+    """C18 second half: a warning nobody reads is another silent sink.
+
+    The advisory row lands in advisory.jsonl, which is delivered to no one and
+    printed only by `status` on demand. So the original defect had two layers: a
+    message in an inbox nobody drains, and a notice about it in a ledger nobody
+    reads. coordinator-agent is the party that can retire the roster row or
+    re-route, and it drains its inbox at every boundary — so the notice goes there.
+
+    Delivery to the dead recipient is UNCHANGED. This adds a reader; it does not
+    refuse, bounce, or withhold anything (fable-auditor's polarity note).
+    """
+    _provision(bus_root, *AGENTS)
+    row = _message("alice", "coordinator-agent", seq=9, task_id="t",
+                   needs_routing_to=["bob"], action_required=True)
+    _append(bus_root / "outbox" / "alice.jsonl", row)
+    roster = json.loads((bus_root / "config.yaml").read_text())["roster"]
+    hb = bus_root / "heartbeats" / "bob.json"
+    old = time.time() - 17 * 3600
+    os.utime(hb, (old, old))
+
+    coordinator.relay_outbox_messages(bus_root, roster, epoch=1)
+
+    notices = [r for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+               if r.get("kind") == "defect" and (r.get("payload") or {}).get("unreachable")]
+    assert len(notices) == 1, "coordinator-agent must be told, in a channel it drains"
+    assert notices[0]["payload"]["unreachable"] == "bob"
+    assert notices[0]["payload"]["from_agent"] == "alice"
+    assert "retire" in notices[0]["payload"]["action"]
+    # The mail still went to bob: warn, never withhold.
+    assert [r["relayed_src"] for r in _read_jsonl(bus_root / "inbox" / "bob.jsonl")] == [row["id"]]
+
+
+def test_c18_the_notice_is_not_re_sent_on_every_tick(bus_root: Path) -> None:
+    """Idempotent against its OWN evidence, not against a ledger someone else writes.
+
+    Keying this on advisory.jsonl would re-notify on every pass for any caller that
+    does not persist advisories — which is every direct caller, including the tests.
+    """
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "outbox" / "alice.jsonl",
+            _message("alice", "coordinator-agent", seq=10, task_id="t",
+                     needs_routing_to=["bob"]))
+    roster = json.loads((bus_root / "config.yaml").read_text())["roster"]
+    old = time.time() - 17 * 3600
+    os.utime(bus_root / "heartbeats" / "bob.json", (old, old))
+
+    for _ in range(3):
+        coordinator.relay_outbox_messages(bus_root, roster, epoch=1)
+
+    notices = [r for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+               if r.get("kind") == "defect" and (r.get("payload") or {}).get("unreachable")]
+    assert len(notices) == 1, f"one notice per (msg, recipient), got {len(notices)}"
