@@ -28,7 +28,14 @@ Explore reasoning token compression techniques that can reduce inference cost fo
 
 ## Approach Taxonomy
 
-Three families of techniques, ordered by implementation effort:
+Four families of techniques, ordered by implementation effort:
+
+### Tier 0 — Pre-compressed checkpoint (zero training; no new inference infrastructure)
+- **ThinkingCap-Qwen3.6-27B** (intake-892): a weights-level reasoning-compression candidate, not an
+  inference-time effort/budget dial. Treat its reported token and accuracy deltas as an **observation**:
+  the vendor is the only source, its 12 out-of-domain cells are directionally adverse in 8 cases, and
+  the GGUF repository declares no license. Any candidate comparison must hold the existing MTP setup
+  constant and independently measure an accuracy-per-total-token trade-off before registry admission.
 
 ### Tier 1 — Zero-training (inference-time only)
 - **TrimR** (intake-127): Verifier prunes reasoning tokens at inference. Compatible with our existing scorer infrastructure. **Highest priority — deploy immediately.**
@@ -608,7 +615,7 @@ Poly-EPO (arXiv 2604.17654) and Polychromic Objectives for RL (arXiv 2509.25424)
 
 _Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25.md`](intake-derived-work-2026-07-25.md)._
 
-- [ ] Add a **Tier-0 (zero-training, zero-inference-infra): adopt a pre-compressed checkpoint** rung to the taxonomy, seeded with ThinkingCap-Qwen3.6-27B. Record as an **observation** (vendor self-reported, no independent corroboration); note its own table is 8-of-12 negative out-of-domain and the repo declares no license.
+- [x] Add a **Tier-0 (zero-training, zero-inference-infra): adopt a pre-compressed checkpoint** rung to the taxonomy, seeded with ThinkingCap-Qwen3.6-27B. Record as an **observation** (vendor self-reported, no independent corroboration); note its own table is 8-of-12 negative out-of-domain and the repo declares no license. ✅ 2026-07-29 — taxonomy entry added above with the admission constraints, grounded in committed `research/intake_index.yaml` intake-892 (vendor results, directional counter-evidence, and license finding).
 - [ ] Add **Behavior-Conditioned Inference** (arXiv 2509.13237) as a Tier-1 candidate: extract named procedural "behaviors" from our own successful traces, retrieve k into context, measure output-token delta at fixed accuracy. Best-instrumented paper in the batch (5 seeds MATH, 80 runs AIME, temp 0.6/top-p 0.95).
 - [ ] **Corrected cost story — measure before believing.** The 46% is **"up to"**, output-tokens-only, with no accuracy figure at that operating point, and the **input-side cost is admitted but never measured** (`"involves a larger number of input tokens due to the inclusion of retrieved behaviors"`; **k=40** behaviors/query on AIME). Their defence — *"no autoregressive generation required on the input side"* — is a **GPU-prefill argument that inverts on a bandwidth-bound-decode / compute-bound-prefill CPU stack**. Score **total pipeline tokens** (retrieved-behavior prefill + decode), never decode alone.
 - [ ] Two guardrails ride along: behaviors are **model-extracted** (SkillsBench −1.3 pp caution ⇒ held-out validation gate mandatory), and a behavior handbook is itself an **accumulating store** ⇒ build append-only with raw traces retained (arXiv 2605.12978).
