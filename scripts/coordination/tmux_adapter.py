@@ -831,7 +831,6 @@ def cmd_spawn(args: argparse.Namespace) -> int:
         return EX_BLOCKED
     used = len(ids)
 
-    target, why = resolve_target(config, args.agent)
     entry = roster_entry(config, args.agent)
     if not entry:
         print(f"REFUSING: {args.agent!r} has no roster row. Adding one is coordinator-agent's "
@@ -868,12 +867,44 @@ def cmd_spawn(args: argparse.Namespace) -> int:
                  "will not create one. Start the session first."), file=sys.stderr)
         return EX_BLOCKED
 
+    # C25 (2026-07-29): THE WINDOW NAME COMES FROM THE ENDPOINT, NOT FROM THE ROSTER ID.
+    #
+    # `new-window -n args.agent` created `agent:inference` while the roster endpoint
+    # was `tmux:agent:codex-inference`, so `resolve_target` verified a window the
+    # spawn had not created and returned None: EVERY spawned main whose endpoint names
+    # a different window was undeliverable from birth. Worked around by hand at
+    # 14:18Z with `tmux rename-window` — a manual step whose omission silently breaks
+    # delivery, which is the same shape as C24 one layer over.
+    #
+    # This is also what removes drift trigger #1 for name endpoints (spawn and
+    # endpoint can no longer disagree), and drift trigger #1 is what the C24
+    # containment argument in this function depends on.
+    #
+    # An INDEX endpoint is REFUSED rather than guessed at. tmux assigns the index; a
+    # spawn cannot promise the new window lands on the one the endpoint names, and
+    # producing a window whose index does not match is precisely the undeliverable
+    # state this fixes. Refusing is recoverable — the operator names the window in
+    # the endpoint and re-runs. (See C32 for why an unverified index is worse still.)
+    kind, value, ep_error = parse_endpoint_window(ep)
+    if ep_error:
+        print(f"REFUSING: {ep_error}", file=sys.stderr)
+        return EX_MISCONFIG
+    if kind == "index":
+        print(f"REFUSING: endpoint {ep!r} names window INDEX {value!r}. tmux assigns indexes, so "
+              f"this adapter cannot guarantee the new window lands on it, and a mismatch makes "
+              f"the main undeliverable from birth. Name the window in the endpoint "
+              f"(tmux:{session}:<name>) and re-run.", file=sys.stderr)
+        return EX_MISCONFIG
+    # No window component means `resolve_target` falls back to matching a window named
+    # after the roster id, so that is exactly what the spawn must create.
+    window = value if kind == "name" else args.agent
+
     if args.dry_run:
         would = [r for r in (f"inbox/{args.agent}.jsonl", f"outbox/{args.agent}.jsonl",
                              f"heartbeats/{args.agent}.json", f"cursors/{args.agent}.json")
                  if not (BUS_ROOT / r).exists()]
         print(f"would create {len(would)} bus file(s): {', '.join(would) or 'none (all present)'}")
-        print(f"would create window {session}:{args.agent} running: {args.command}")
+        print(f"would create window {session}:{window} running: {args.command}")
         print("(--dry-run: nothing written, no window created)")
         return 0
 
@@ -928,12 +959,22 @@ def cmd_spawn(args: argparse.Namespace) -> int:
     print(f"bus files ready ({len(created)} created: {', '.join(created) or 'all pre-existing'})")
 
     launch = args.command
-    rc, out = _tmux("new-window", "-t", session, "-n", args.agent, launch)
+    rc, out = _tmux("new-window", "-t", session, "-n", window, launch)
     if rc != 0:
         print(f"new-window failed: {out}", file=sys.stderr)
         return EX_MISCONFIG
-    record("spawn", args.agent, f"window {session}:{args.agent} cmd={launch}")
-    print(f"spawned {args.agent} as window {session}:{args.agent} ({used + 1}/{cap} mains live)")
+    record("spawn", args.agent, f"window {session}:{window} cmd={launch}")
+    # VERIFY THE TARGET, do not trust it. The whole point of C25 is that a spawn which
+    # believes it succeeded while the endpoint resolves elsewhere is silently
+    # undeliverable; saying so here is the difference between a bad spawn and a bad
+    # spawn nobody notices. Not fatal — the window and the bus files are real, and
+    # killing them on a resolution miss would destroy a working session over a config
+    # error the operator can fix in one line.
+    target, why = resolve_target(config, args.agent)
+    if target is None:
+        print(f"WARNING: window {session}:{window} was created, but {args.agent!r} still does not "
+              f"resolve: {why}. It will not receive nudges until this is fixed.", file=sys.stderr)
+    print(f"spawned {args.agent} as window {session}:{window} ({used + 1}/{cap} mains live)")
     return 0
 
 

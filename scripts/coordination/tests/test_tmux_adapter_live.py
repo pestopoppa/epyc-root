@@ -403,6 +403,46 @@ def test_live() -> None:
                   "C24: spawn preserves the inherited cursor offset")
             tmux("kill-window", "-t", f"{SESSION}:spawned")
 
+            # C25: the spawned window is named from the ENDPOINT, not the roster id.
+            # `new-window -n args.agent` produced `agent:inference` while the endpoint
+            # said `tmux:agent:codex-inference`, so resolve_target verified a window the
+            # spawn had not created and every such main was undeliverable FROM BIRTH.
+            # Fixed by hand at 14:18Z with `tmux rename-window` — a manual step whose
+            # omission silently breaks delivery.
+            #
+            # The assertion that matters is the SECOND one. Checking only the window
+            # name would pass an adapter that names it correctly and still cannot be
+            # reached; deliverability is the property, the name is the mechanism.
+            print("\n  -- C25 spawn/endpoint window-name agreement --")
+            class S25:
+                agent = "c25"; command = "sleep 300"; dry_run = False
+            cfg25 = write_config(bus, [{"id": "c25", "endpoint": f"tmux:{SESSION}:c25-window"}],
+                                 spawn_cap=9)
+            rc = m.cmd_spawn(S25())
+            check(rc == 0, f"spawn with a window-naming endpoint returns 0 (rc={rc})")
+            _rc, wins25 = tmux("list-windows", "-t", SESSION, "-F", "#{window_name}")
+            check("c25-window" in wins25.split(),
+                  f"the window carries the ENDPOINT's name, not the roster id ({wins25.split()})")
+            check("c25" not in wins25.split(),
+                  "and NOT the roster id — that window is what made spawned mains unreachable")
+            t25, why25 = m.resolve_target(m.load_config(), "c25")
+            check(t25 is not None,
+                  f"THE POINT: a freshly spawned main is deliverable immediately ({t25}: {why25})")
+            tmux("kill-window", "-t", f"{SESSION}:c25-window")
+            time.sleep(0.5)
+            for rel in ("inbox/c25.jsonl", "outbox/c25.jsonl",
+                        "heartbeats/c25.json", "cursors/c25.json"):
+                (bus / rel).unlink(missing_ok=True)
+
+            # An INDEX endpoint is refused: tmux assigns indexes, so a spawn cannot
+            # promise the window lands on the one the endpoint names, and a mismatch is
+            # exactly the undeliverable-from-birth state above. Refusing is recoverable.
+            write_config(bus, [{"id": "c25", "endpoint": f"tmux:{SESSION}:4"}], spawn_cap=9)
+            rc = m.cmd_spawn(S25())
+            check(rc == 3, f"spawn REFUSES a window-index endpoint rather than guessing (rc={rc})")
+            check(not (bus / "inbox/c25.jsonl").exists(),
+                  "a refused spawn creates no bus files")
+
             # C9 fail-closed: an uncountable live set must refuse, never assume zero.
             write_config(bus, [{"id": "spawned", "endpoint": f"tmux:{SESSION}"}],
                          spawn_cap=9, live_session="definitely-not-a-live-session")
