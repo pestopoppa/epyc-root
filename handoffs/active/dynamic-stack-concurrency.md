@@ -40,6 +40,23 @@ Do not restart DS-6 or DS-7 from first principles. The historical ledger contain
 earlyoom is deployed and verified live ([`../completed/earlyoom-oom-protection.md`](../completed/earlyoom-oom-protection.md)); these optional residuals now live here because this handoff owns the preventive ceilings and stack-lifecycle concerns earlyoom complements:
 
 - [ ] **Optional `--ignore` tweak**: add `claude|codex` to earlyoom's `--ignore` regex (e.g. `'^(llama-server|sd-server|claude|codex)$'` in `/etc/default/earlyoom`) to shield agent sessions — under `--sort-by-rss` a `claude`/`codex` session can otherwise be a victim before a small runaway. Non-blocking; operator edit + `systemctl restart earlyoom`.
+  **VERIFIED 2026-07-29 (`auditor`) — premise CONFIRMED, prescription CORRECTED, still operator-only.**
+  *Live config (pid 3761):* `earlyoom -M 41943040,20971520 -s 100,100 -r 60 --sort-by-rss --ignore
+  '^(llama-server|sd-server)$' --prefer '^llama-bench$'`. So `--sort-by-rss` is on and the ignore list
+  does **not** cover `claude|codex`. Premise holds.
+  **The prescription as written cannot be followed from any agent session, and neither step exists:**
+  `/etc/default/earlyoom` **does not exist** on this host, and this container **is not booted with
+  systemd** (`systemctl` → *"System has not been booted with systemd as init system (PID 1)"*), so
+  `systemctl restart earlyoom` cannot work here. earlyoom is **PPID 1, started 13:41:48 at host boot**
+  — it lives outside the container entirely. This is a HOST-side operator action; the file/command
+  pair in the row would send whoever picks it up on a hunt for things that are not there.
+  **The rationale is stronger than the row states, measured:** thresholds are ~40 GB warn / ~20 GB kill
+  (`-M 41943040,20971520` KiB) against **1133 GB total, 1115 GB available**. The largest non-ignored
+  processes are `megasync` 1.1 GB and `claude` 0.7/0.6/0.6 GB, `codex` 0.4/0.4/0.3/0.3 GB. So if
+  earlyoom ever fires, the memory is held by the **ignored** llama-servers, and `--sort-by-rss` would
+  select a ~0.7 GB agent session against a ~20 GB deficit — **a futile kill that destroys a main
+  without relieving the pressure.** That, not "agents are victims", is the argument for the tweak.
+  *Not applied: host-side, operator-owned, and a restart briefly leaves the host unprotected.*
 - [ ] **Open question — pause-loads-after-kill hook**: earlyoom has no built-in post-kill backoff (issue #309); mlock'd pages free slowly, so it can kill several processes in ~100 ms succession before headroom is reflected. Is a pause-new-model-loads hook (triggered by the `-N` audit hook's sentinel, or by the autopilot) worth wiring into `orchestrator_stack.py`?
 - [ ] **Open question — pre-kill `-P` hook**: worth firing the autopilot host-health remediation (drop_caches/throttle-check) *before* a kill? Risk: a pre-kill script that itself allocates under memory pressure is dangerous — must be allocation-free if used.
 
