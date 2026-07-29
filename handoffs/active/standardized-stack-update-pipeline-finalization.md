@@ -229,7 +229,8 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   unless `stack_change_guard.py` / `stack_change_pipeline.py` is run with
   `--allow-production-blocker-waivers`, leaving any accepted emergency waiver
   visible as `hardcoded_surface.waived.production_blocker`.
-- [ ] Continue high-risk consumer migrations only after focused GitNexus impact
+- [ ] *(STANDING CONSTRAINT — not a dispatchable task; do not flip. `auditor` 2026-07-29.)*
+      Continue high-risk consumer migrations only after focused GitNexus impact
   checks. Use the stack-change surface manifest to pick the next consumer.
   Latest completed slices: Orchestrator `95a23aa` canonicalized the
   generated-stack-docs raw-registry degraded fallback, `523cb02` made AutoPilot
@@ -258,7 +259,8 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   Orchestrator `91cb03bf` adds `tool_chains=[]` to the fixture. Combined with
   the prior `083e2736` (stale ingest topology fixture expectation), full
   promotion-gate is now `181 passed`, pipeline `summary: ok`. ✅ 2026-07-07
-- [ ] Keep direct benchmark, production launch, and AutoPilot preflight wired to
+- [ ] *(STANDING CONSTRAINT — not a dispatchable task; do not flip. `auditor` 2026-07-29.)*
+      Keep direct benchmark, production launch, and AutoPilot preflight wired to
   the canonical gate; no new bypasses.
 
 ## Operating Rules

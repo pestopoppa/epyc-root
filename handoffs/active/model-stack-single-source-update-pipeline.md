@@ -317,6 +317,20 @@ Any future stack update should be accepted only when these hold:
 
 ## Outstanding Work
 
+> **⚠ THESE SIX BOXES ARE STANDING CONSTRAINTS, NOT TASKS — DO NOT DISPATCH OR FLIP THEM.**
+> Every open box in this section is a rule with no completion state: *"Preserve … **whenever**
+> migrating"*, *"Continue … **only where**"*, *"Keep production routing default-off **until** an
+> explicit operator decision"*, *"Keep … **under review**"*, *"Keep completed logs out of active
+> indices"*, *"Broaden … **opportunistically as** consumers create new surfaces"*. Checking one
+> asserts that an ongoing constraint has been permanently satisfied, after which the constraint
+> stops being applied.
+>
+> Noted 2026-07-29 by `auditor`. **The heading gives no warning** — "Outstanding Work" reads like a
+> task list, and three of these rows (`:320`, and the two now at `:353`/`:355`) are offered as
+> dispatchable in `BACKLOG-DISPATCH-QUEUE.md`'s runner-up bench. The reliable tell is the BOX TEXT
+> — a continuous imperative plus a standing condition — not the section title.
+
+
 - [ ] Preserve env override precedence and explicit degraded fallbacks whenever
   migrating config, runtime, benchmark, or prompt consumers.
 - [ ] Continue migrating remaining high-risk P2 consumers only where a concrete
