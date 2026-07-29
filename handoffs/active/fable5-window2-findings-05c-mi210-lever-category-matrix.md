@@ -202,8 +202,17 @@ Ordered highest-ROI-first. Each item: **one decisive experiment** → **acceptan
 - [x] **FA-decode A/B on the MoE frontdoor** (L22) ✅ 2026-07-06 — MEASURED (35B-A3B-Q8): −fa0 single-stream (99.64>94.68, +5.2%) / −fa1 aggregate B≥16 (342.3>333.0 @B32, +2.8%). MoE crossover holds but MARGINAL (GDN suppresses the attention fraction FA targets; gemma-26B pure-MoE was +16%). Coherence PASS.
 - [x] **Tree-draft GPU re-test** (L11) ✅ 2026-07-06 — DySpec Phase 1a ported + validated on the v7-candidate (engine bit-identical to linear draft) then **SHELVED**: external-drafter tree is DOMINATED by embedded MTP on every stack target (qwen-27B MTP 41.9 vs tree ~18 < plain 31), and GLM-5.2 also ships an MTP head → no MTP-less niche remains. Native-GLM-MTP forward-graph port is the better future lever (gated on GLM-5.2 runnability). See [tree-draft-forward-port-plan.md](tree-draft-forward-port-plan.md).
 - [ ] **EAGLE-3 on pure-dense** (L10) — needs a trained head + relax `target_layer_ids_n==3`; also gemma-MoE untested.
-- [ ] **Corpus-static n-gram (−lcs)** (L13) — build chunk-and-merge bigram cache from a few-GB code slice, vocab-locked; then A/B.
-- [ ] **Sub-4-bit capacity/throughput** (L15) — only after a CDNA2 sub-4-bit dequant kernel exists; PPL/eval-parity gate.
+- [x] **Corpus-static n-gram (−lcs)** (L13) — build chunk-and-merge bigram cache from a few-GB code slice, vocab-locked; then A/B.
+  ✅ **CLOSED 2026-07-29 (read-certification, `auditor`) — retired by the operator, and the input no longer exists.**
+  `handoffs/completed/corpus-augmented-prompt-lookup-revalidation.md:179-187`: CPL-4b *"Retired by operator decision after CPL-4
+  … corpus has been deleted"*, and CPL-5 records the operator *"declined the optional static n-gram experiment before reclaiming
+  disk"* (651 GB). Same mechanism (`llama-lookup-create -lcs`, chunk-and-merge). This row cannot be run as written.
+- [x] **Sub-4-bit capacity/throughput** (L15) — only after a CDNA2 sub-4-bit dequant kernel exists; PPL/eval-parity gate.
+  ✅ **CLOSED 2026-07-29 (read-certification, `auditor`) — both stated gates were met on 2026-07-05.** The precondition was already
+  satisfied (IQ1/IQ2/IQ3/Q2_K/Q3_K are MMQ-supported, `MUL_MAT_ID 789/789`). Capacity/throughput:
+  `progress/2026-07/2026-07-05-mi210-capability-kernel-rnd.md:23-24` — 122B UD-IQ2_M fully GPU-resident, 47/64 GB, 43.7 t/s single /
+  148.7 agg @B32, PPL 5.02. Eval-parity gate: `progress/2026-07/2026-07-05-mi210-residency-and-cot-reframe.md:12` — 212-question
+  deterministic **paired** eval, judge-free, IQ2 163/212 = Q4 163/212, Δ0.0pp, McNemar p=1.000.
 - [ ] **GPU-draft / CPU-target spec** (L18) — for overflow-to-CPU MoE (122B, GLM-5.2 IQ2) and CPU-target GDN roles.
 
 **[H] = needs a build, then measure.**
@@ -215,7 +224,12 @@ Ordered highest-ROI-first. Each item: **one decisive experiment** → **acceptan
 - [ ] **MFMA compute-bound kernels** (L7) — prefill / DiT denoise / ViT encoder / high-batch expert GEMM; profile-gated (high VALUBusy + low MfmaUtil).
 - [x] **GDN occupancy + recurrent-state traffic/layout** (L20) ✅ 2026-07-14 — bf16-state BUILT + GO (`496e2f098`): +21.5%@B32 (drift+isolation PASS), deployed on frontdoor + architect. Occupancy sub-lever was NO-GO; bf16-state is the win.
 - [ ] **Q4_K dequant efficiency** (L21) — ~+43% → ~47 t/s single-stream, quality-gated.
-- [ ] **mmid MoE dispatch threshold** (L1-MoE) — the deferred production-relevant MoE analog; most valuable at 256-expert sparsity.
+- [x] **mmid MoE dispatch threshold** (L1-MoE) — the deferred production-relevant MoE analog; most valuable at 256-expert sparsity.
+  ✅ **CLOSED 2026-07-29 (read-certification, `auditor`) — built, run, and falsified.**
+  `progress/2026-07/2026-07-03-mi210-qwen36-27b-speed-campaign.md:131`: *"L1-MoE mmid-dispatch lever = MEASURED NEGATIVE (do not
+  build)"* — forcing experts to MMQ inverts the dense fix (B2 −30%, B4 −21%, B8 −10.5%; controls B≥16 ±0.4%), and
+  `get_mmvq_mmid_max_batch_cdna` default=8 is already optimal. This document's own line 160 records the same falsification.
+  **Residual moved, not lost:** the *256-expert sparsity* clause was never measured and belongs to the ultra-sparse MoE row below.
 - [ ] **Diffusion serving path + all DiT levers** (§3.5) — no path exists yet.
 - [ ] **Auxiliary baselines (BGE encode, VL prefill)** (§3.6) — no aux model ever benchmarked; the entire Aux column is currently deductive.
 

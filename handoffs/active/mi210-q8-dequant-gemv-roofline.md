@@ -74,6 +74,9 @@ Raise **single-stream** GPU decode throughput for the qwen35/Q8 family toward th
 - [x] nwarps 2->4 (+4.6%, committed 5dc116130) ✅
 - [x] async weight-prefetch raw.buffer.load.lds (+3.3%, committed 7c28056b7) ✅
 - [x] L3-MoE compact-LDS occupancy rewrite (BUILT + FALSIFIED, NO-GO) ✅
-- [ ] L15 sub-4-bit: quantize 122B->IQ2 proxy + operator-gated IQ2-vs-Q8 bench (measurement PENDING)
+- [x] L15 sub-4-bit: quantize 122B->IQ2 proxy + operator-gated IQ2-vs-Q8 bench ✅ **2026-07-29 — the "PENDING" predates the run.**
+  Both halves landed 2026-07-05: 122B UD-IQ2_M GPU-resident at 43.7 t/s single / 148.7 agg @B32, PPL 5.02
+  (`progress/2026-07/2026-07-05-mi210-capability-kernel-rnd.md:23-24`), and the IQ2-vs-Q4 paired eval returned Δ0.0pp,
+  McNemar p=1.000 (`progress/2026-07/2026-07-05-mi210-residency-and-cot-reframe.md:12`). Certified by read-certification (`auditor`).
 - [ ] SoA-repack lever (only if coalescing measured poor - currently deemed healthy)
 - [ ] Optional stream-K K-splitting for Q8-MMQ aggregate (separate bet)
