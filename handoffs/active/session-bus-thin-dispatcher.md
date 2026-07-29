@@ -744,7 +744,8 @@ freezes/cutovers, host reboots).
     returns its slot immediately. `live_mains()` maps each roster row to the window that can carry
     it — its id, or the window component of a tmux endpoint where they differ (`codex` lives in
     `codex-inference`) — and intersects that with `tmux list-windows`; a window-INDEX endpoint
-    (`tmux:agent:3`) contributes no name, an undercount in the refusing direction. **Fail-closed:**
+    (`tmux:agent:3`) contributes no name — an undercount, which **relaxes** the cap (see C14; this
+    line originally said the opposite). **Fail-closed on an unreadable count:**
     tmux unreachable, the live session absent, or a roster with no ids all return `None`, never an
     empty set — "I could not count" is not "nothing is running", which is the exact shape of C3,
     C6 and C8. Spawning a main that is already live is also refused (one identity, one window).
@@ -861,11 +862,26 @@ freezes/cutovers, host reboots).
     anywhere, so an email address or an `@`-mention in otherwise-fine prose is rejected. Chosen
     deliberately — a false refusal costs a rephrase, a false accept fires Enter into a picker —
     but if it proves annoying in practice, narrow it to `@` at a token start and keep the rest.
-  - [ ] **C14 — a window-INDEX endpoint is invisible to the concurrency count.** `live_mains`
-    matches window *names*; an endpoint like `tmux:agent:3` contributes none, so that main counts
-    only if a window also carries its id. The bias is safe (undercount → refuse sooner, never
-    invent capacity) and no live roster row uses an index today. Resolve indices to names via
-    `list-windows -F '#{window_index}\t#{window_name}'` if such a row ever appears.
+  - [ ] **C14 — a roster row whose window is unmatchable is invisible to the concurrency count,
+    and that INVENTS capacity.** *Polarity corrected 2026-07-28 — this item, the
+    `roster_window_names` docstring, and the `8033f039`/`8cbe50c0` commit messages all originally
+    claimed the opposite ("an undercount in the direction that refuses spawns, never one that
+    invents capacity"). It is backwards.* `cmd_spawn` refuses when `len(ids) >= cap`, so missing a
+    live main makes `len(ids)` **smaller**, the comparison passes when it should not, and a slot
+    that is actually occupied is handed out. It also weakens the `args.agent in ids` duplicate
+    check, so the invisible main can be spawned twice. **Undercount = fail-open**, in the module
+    whose entire defect history (C3, C6, C8, C9) is fail-opens — which is exactly how the next one
+    gets built when the invariant is documented backwards.
+    Three drift triggers, none live in `config.yaml` today (checked), which is why this is a
+    documented residual rather than an open hole:
+    (a) **an operator renames a window without updating the endpoint** — the real
+    `codex` → `codex-inference` rename of 2026-07-28 stayed counted *only* because the endpoint was
+    updated with it; (b) **window-INDEX endpoints** (`tmux:agent:3`) — an index is not a name;
+    (c) **pane-suffixed components** (`tmux:agent:win.0`) — `.0` is a pane, so the string never
+    equals a `#{window_name}`.
+    Fix: resolve indices via `list-windows -F '#{window_index}\t#{window_name}'`, and **REFUSE when
+    a roster row cannot be resolved to a window at all** rather than treating unresolvable as
+    absent — same rule the uncountable-set branch already follows.
   - [ ] **C15 — `caps.max_concurrent_mains: 4` is saturated at 4/4.** Set 2026-07-28 against a
     then-steady state of 3 live mains; a `fable-auditor` window brought it to 4 within the hour,
     so the next spawn needs a main closed. Working as designed — a closed main now returns its
