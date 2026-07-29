@@ -1,3 +1,0 @@
-RE-4 post-abort process check
-patterns=longcot_mini_re4_grammar_20260721T013833Z,longcot_mini_stack_runner.py,run_batch_entry_execute_20260721T013833Z
-matches=0

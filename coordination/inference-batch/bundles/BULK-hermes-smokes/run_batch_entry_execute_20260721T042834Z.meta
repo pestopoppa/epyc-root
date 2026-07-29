@@ -1,4 +1,0 @@
-start_utc=2026-07-21T04:33:21Z
-entry=/mnt/raid0/llm/epyc-root/coordination/inference-batch/bundles/BULK-hermes-smokes/batch_entry_BULK-hermes-smokes_20260721T042834Z.json
-rerun_after=stream_pipefail_harness_fix
-end_utc=2026-07-21T04:33:39Z

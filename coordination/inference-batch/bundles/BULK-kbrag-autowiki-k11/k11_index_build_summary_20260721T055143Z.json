@@ -1,7 +1,0 @@
-{
-  "freshness_before": "/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/eval/k11_index_freshness_before.json",
-  "index_dir": "/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/index",
-  "ok": true,
-  "reason": "index_already_fresh",
-  "rebuild_performed": false
-}

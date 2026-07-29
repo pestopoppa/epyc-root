@@ -1,2 +1,0 @@
-loadavg(1m)=1.75  loadavg/cores=0.01  cpu_freq=1998/1998 MHz (100%)  page_cache=869014 MB  mem_avail=762626 MB  mlocked=156829 MB  llama_pss=316349 MB  llama_private_dirty=154406 MB
-OK — no throttle detected
