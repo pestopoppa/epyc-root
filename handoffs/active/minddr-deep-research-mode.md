@@ -10,7 +10,7 @@
 
 > **🔔 Reopen-trigger FIRED (Phase 2) — 2026-07-18 stale-open audit.** The hardware-acquisition wait is cleared: the DGX-Spark path is dead and the **MI210 is present (2026-07-02)**. The 2026-07-29 preflight found no pinned gfx90a training runtime, so the viability smoke remains blocked on provisioning plus a quiet-window lease. (MD-9 A/B remains the live Phase-1 gate, still inference-window-gated.) See [`stale-open-audit-2026-07-18.md`](stale-open-audit-2026-07-18.md).
 
-- [ ] Phase-2: run a gfx90a (MI210) training-viability smoke now that the hardware gate flipped (was DGX-blocked) — **BLOCKED 2026-07-29**: GPU is idle and visible, but both project uv environments lack `torch`, `transformers`, `accelerate`, `trl`, `peft`, and `datasets`; requires a pinned gfx90a-compatible training environment, not an ad-hoc install.
+- [ ] Phase-2: run a gfx90a (MI210) training-viability smoke now that the hardware gate flipped (was DGX-blocked) — **BLOCKED 2026-07-29**: GPU is idle and visible, but both project uv environments lack `torch`, `transformers`, `accelerate`, `trl`, `peft`, and `datasets`; requires a pinned gfx90a-compatible training environment, not an ad-hoc install. **Countermanded until E5 Stage-B releases the host:** a Python ROCm trainer is currently invisible to E5's process/SMT-affinity gates and could silently contaminate its decision-grade CPU cells.
 
 ## 2026-05-28 Audit Reset — Executor Start Here
 
