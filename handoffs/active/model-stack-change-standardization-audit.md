@@ -216,6 +216,21 @@ These are not all bugs, but each is a place a future stack change can go stale.
 
 Use this sequence for future stack changes. Steps marked "no inference" should be runnable by CI.
 
+> **⚠ THESE BOXES ARE UNCHECKED BY DESIGN — DO NOT DISPATCH OR FLIP THEM.**
+> This is a **reusable per-change runbook**, not a task list. Every `- [ ]` below is a step to be
+> executed *during a stack change*, so it has no completion state outside one. Flipping any of them
+> asserts that a per-change procedure is permanently done, and the next stack change would inherit a
+> runbook that reads as already-executed — the checklist would silently stop being run.
+>
+> Noted 2026-07-29 by `auditor` because the automated backlog sweep classified two of these steps as
+> dispatchable `none`-lane work: **TOP-40 row #12 (`:229`) and the runner-up bench row (`:230`)** in
+> `coordination/session-bus/tasks/BACKLOG-DISPATCH-QUEUE.md`. The sweep's own column even labels the
+> section `update-checklist`, so the evidence was already in the row. Any future sweep must treat a
+> section framed *"use this sequence for future …"* as a template, not a backlog. Verified against
+> the whole of `handoffs/active/`: this is the only section in the tree with dispatched template
+> rows (`multimodal-pipeline.md § Review cadence` is the one other true recurring checklist, and
+> none of its boxes are in the queue).
+
 - [ ] Identify the change type: role model swap, shared-server consolidation, role retirement, tier change, port/slot change, context change, acceleration/draft/MTP change, or benchmark-only candidate addition.
 - [ ] Update structured inputs only:
   - `epyc-orchestrator/orchestration/model_registry.yaml` `server_mode.*` for live deployment topology.
