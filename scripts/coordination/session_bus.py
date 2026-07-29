@@ -342,31 +342,62 @@ def routed_view(bus_root: Path, agent: str) -> dict[str, list[dict]]:
 
 
 def print_triage(bus_root: Path, agent: str) -> None:
-    """Print the standing queue IN FULL — never truncated. A message a tool has
-    shortened for context economy is exactly how today's two were lost."""
+    """Print the standing queue IN FULL, in a TRUNCATION-EVIDENT frame.
+
+    A message a tool shortened for context economy is exactly how the two
+    2026-07-29 routed messages were lost — so this report is built to make any
+    downstream truncation VISIBLY wrong rather than quietly lossy: every item
+    sits between numbered BEGIN/END fences carrying its byte count and body
+    sha256, and the report ends with a COMPLETE trailer. A copy missing an END
+    fence or the trailer is provably cut; a fence whose byte count or digest
+    disagrees with its body is provably altered.
+    """
+    import hashlib
+
     view = routed_view(bus_root, agent)
     pending, acked = view["pending"], view["acked_awaiting_action"]
     if not pending and not acked:
         print(f"(triage: no routed messages awaiting {agent})")
         return
+
+    total = len(pending) + len(acked)
+    body_bytes = 0
+    index = 0
+
+    def fenced(entry: dict, section: str) -> None:
+        nonlocal index, body_bytes
+        index += 1
+        body = json.dumps(entry["row"], indent=2, sort_keys=True)
+        body_bytes += len(body.encode("utf-8"))
+        digest = hashlib.sha256(body.encode("utf-8")).hexdigest()[:16]
+        print(f"--- BEGIN ROUTED MESSAGE {index}/{total} id={logical_id(entry['row'])} "
+              f"section={section} bytes={len(body.encode('utf-8'))} sha256={digest} ---")
+        undelivered = ("" if entry["delivered"] else
+                       "   [NOT in your inbox — found by outbox scan; the relay may never "
+                       "have delivered it]")
+        print(f"via: {' + '.join(entry['sources'])}{undelivered}")
+        print(body)
+        print(f"--- END ROUTED MESSAGE {index}/{total} id={logical_id(entry['row'])} ---")
+
+    print(f"== TRIAGE STANDING QUEUE for {agent}: {total} item(s). REPRODUCED IN FULL — "
+          f"DO NOT TRUNCATE OR SUMMARIZE: a shortened copy of this report loses routed "
+          f"intent (the 2026-07-29 failure shape). Every item has an END fence; the report "
+          f"ends with a COMPLETE trailer. ==")
     if pending:
-        print(f"== TRIAGE: {len(pending)} message(s) routed to {agent}, awaiting disposition "
-              f"— IN FULL, never truncated ==")
+        print(f"-- {len(pending)} awaiting disposition --")
         for entry in pending:
-            undelivered = ("" if entry["delivered"] else
-                           "   [NOT in your inbox — found by outbox scan; the relay may never "
-                           "have delivered it]")
-            print(f"-- {logical_id(entry['row'])}  via {' + '.join(entry['sources'])}{undelivered}")
-            print(json.dumps(entry["row"], indent=2, sort_keys=True))
+            fenced(entry, "pending")
     if acked:
-        print(f"== TRIAGE: {len(acked)} action_required message(s) ACKED but NOT actioned "
-              f"(a bare ack is receipt, not action) ==")
+        print(f"-- {len(acked)} action_required ACKED but NOT actioned (a bare ack is "
+              f"receipt, not action) --")
         for entry in acked:
-            print(f"-- {logical_id(entry['row'])}")
-            print(json.dumps(entry["row"], indent=2, sort_keys=True))
+            fenced(entry, "acked-awaiting-action")
     print(f"triage: to clear an item, append to YOUR outbox a row with corr_id=<its id> — any "
           f"substantive kind, or kind=ack with payload.disposition in "
           f"{sorted(TERMINAL_DISPOSITIONS)}. Advancing your cursor never clears this list.")
+    print(f"== TRIAGE REPORT COMPLETE: {total} item(s), {body_bytes} body bytes. A copy of "
+          f"this report missing any END fence or this trailer has been TRUNCATED and has "
+          f"lost routed intent. ==")
 
 
 def _check_routing_intent(bus_root: Path, row: dict) -> None:

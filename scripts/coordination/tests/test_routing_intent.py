@@ -268,3 +268,76 @@ def test_append_warns_at_authoring_time_too(tmp_path, capsys):
         "payload": {"note": "please relay this to fable-auditor for action"}})
     assert code == 0, "prose lint is advisory — the append itself succeeds"
     assert "WARN" in err and "needs_routing_to" in err
+
+
+# ------------------------------------------------- 4. daemon relay preservation
+
+
+def test_daemon_relay_preserves_routing_fields_verbatim(tmp_path, capsys):
+    """Adoption note 1 of 407d715f, verified end to end: relay_outbox_messages
+    re-stamps only the envelope (id, ts) — needs_routing_to, action_required,
+    the original author, and the payload must all survive delivery unmodified.
+    A routing field that vanishes in transit is worse than no field, because
+    the sender believes it was routed."""
+    import yaml
+    from scripts.coordination.session_bus_coordinator import relay_outbox_messages
+
+    root = make_bus(tmp_path)
+    code, _out, err = append_msg(root, capsys, SENDER, "outbox", {
+        "kind": "nudge", "to": TARGET, "needs_routing_to": [TARGET],
+        "action_required": True, "payload": {"detail": "must survive transit"}})
+    assert code == 0, err
+    original = json.loads(
+        (root / "outbox" / f"{SENDER}.jsonl").read_text().strip().splitlines()[-1])
+
+    roster = yaml.safe_load((root / "config.yaml").read_text())["roster"]
+    advisory = relay_outbox_messages(root, roster, epoch=0)
+
+    inbox_rows = [json.loads(line) for line in
+                  (root / "inbox" / f"{TARGET}.jsonl").read_text().strip().splitlines()]
+    delivered = [r for r in inbox_rows if r.get("relayed_src") == original["id"]]
+    assert delivered, f"relay did not deliver the routed message; advisory: {advisory}"
+    row = delivered[0]
+    assert row["needs_routing_to"] == [TARGET], "needs_routing_to dropped in transit"
+    assert row["action_required"] is True, "action_required dropped in transit"
+    assert row["from"] == SENDER, "author must be preserved, only the envelope is new"
+    assert row["payload"] == original["payload"]
+    assert row["id"] != original["id"], "delivered copy gets a fresh envelope id"
+
+    # Idempotent across ticks: a second relay adds nothing.
+    relay_outbox_messages(root, roster, epoch=1)
+    again = (root / "inbox" / f"{TARGET}.jsonl").read_text().strip().splitlines()
+    assert len(again) == len(inbox_rows)
+
+    # And triage folds the outbox original + delivered copy into ONE logical
+    # message, dispositionable by the copy's id.
+    code, out, _err = run(root, capsys, "triage", "--agent", TARGET)
+    assert out.count("must survive transit") == 1
+
+
+# ------------------------------------------------- 5. truncation-evident output
+
+
+def test_triage_output_is_truncation_evident(tmp_path, capsys):
+    """Adoption note 2 of 407d715f: a truncated copy of the triage report must
+    be VISIBLY wrong (unbalanced BEGIN/END fences, missing COMPLETE trailer),
+    never quietly lossy."""
+    root = make_bus(tmp_path)
+    append_msg(root, capsys, SENDER, "outbox", {
+        "kind": "finding", "to": "*", "needs_routing_to": [TARGET],
+        "payload": {"detail": LONG_MARKER}})
+
+    code, out, _err = run(root, capsys, "triage", "--agent", TARGET)
+    assert code == 0
+    assert out.count("BEGIN ROUTED MESSAGE") == 1
+    assert out.count("END ROUTED MESSAGE") == 1
+    assert "TRIAGE REPORT COMPLETE" in out
+    assert "DO NOT TRUNCATE" in out
+    assert LONG_MARKER in out
+
+    # A context-economy cut (the 2026-07-29 failure shape) is now self-evident:
+    # the long body dominates the report, so any prefix cut strands a BEGIN
+    # fence without its END and drops the trailer.
+    cut = out[: len(out) // 2]
+    assert cut.count("BEGIN ROUTED MESSAGE") > cut.count("END ROUTED MESSAGE")
+    assert "TRIAGE REPORT COMPLETE" not in cut
