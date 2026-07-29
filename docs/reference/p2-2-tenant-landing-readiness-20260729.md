@@ -10,7 +10,7 @@
 
 **All three D2 tenants are already on disk. P2-2 requires zero downloads** — so the documented `curl -C -` resume-corruption hazard is not on this critical path at all.
 
-Two of three are landing-verified. The third (**whisper**) has a **capability blocker** that D2 did not anticipate and that needs an operator decision — see §3.
+Two of three are landing-verified. The third (**whisper**) has a **capability blocker** that D2 did not anticipate — see §3. **The operator resolved it 2026-07-29 with W3 (defer): P2-2 is rescoped to the two verified tenants and whisper is refiled as P2-9, downstream of the bake-off** (§5).
 
 ---
 
@@ -103,7 +103,9 @@ The `~1.6GB` in D2 is **the disk footprint of the CTranslate2 directory** — i.
 
 The cost is therefore opportunity, not correctness: the lane is carrying a reservation for a tenant that may never arrive.
 
-### 3e. Decision needed (not decided here)
+### 3e. Decision — **operator chose W3 (defer), 2026-07-29**
+
+**Outcome: P2-2 is rescoped to the two verified tenants; whisper is refiled as P2-9, downstream of the bake-off. W2 is explicitly ruled out for now — no whisper.cpp clone, no HIP build, no GGUF download.** The W1-vs-W2 question itself stays open and is decided later, with the bake-off numbers in hand. The options as put to the operator:
 
 This is an operator call and is being routed as a decision package rather than resolved unilaterally, because every option changes what "P2-2 complete" means:
 
@@ -111,7 +113,7 @@ This is an operator call and is being routed as a decision package rather than r
 - **W2 — port whisper to whisper.cpp on HIP.** Clone + HIP build + a ~1.6 GB `ggml-large-v3-turbo` download, a new launcher, and a transcription-parity check against the current CPU service before anything swaps. Real work, a new download (reboot-hazard class), and a quality re-validation — none of it on the P3 bake-off critical path.
 - **W3 — defer whisper, land the two verified tenants now.** Mark P2-2 complete for dense-27B + MiniCPM-o, file whisper as its own item downstream of the bake-off. Keeps D11's sequencing moving at full speed.
 
-**Recommendation: W3 now, W1 as the likely eventual verdict.** W3 unblocks the decided D11 sequence immediately without pre-committing the tenant-set question; W1 is where the evidence points, since the only thing whisper gains from the GPU is throughput on a service that is already meeting its duty on CPU — but that is a judgement the operator should make with the bake-off numbers in hand, not before them. **Default if no choice is made: W3**, which forecloses nothing.
+**Recommendation given: W3 now, W1 as the likely eventual verdict — and W3 is what the operator chose.** W3 unblocks the decided D11 sequence immediately without pre-committing the tenant-set question; W1 is where the evidence points, since the only thing whisper gains from the GPU is throughput on a service that is already meeting its duty on CPU — but that is a judgement the operator should make with the bake-off numbers in hand, not before them. **Default if no choice is made: W3**, which forecloses nothing.
 
 ---
 
@@ -120,7 +122,16 @@ This is an operator call and is being routed as a decision package rather than r
 | Tenant | State | Blocking on |
 |---|---|---|
 | dense-27B stock | **verified landed** (bytes + sha re-hashed, tenancy row already correct) | nothing — residency is an activation-time act |
-| MiniCPM-o | **artifacts verified; promotion proposal pre-validated** | P1 operator grant + P7 fleet up (i.e. post-reboot) |
-| whisper | **blocked — capability gap** | operator decision W1/W2/W3 (§3e) |
+| MiniCPM-o | **artifacts verified; promotion proposal pre-validated** | P1 operator grant + P7 fleet up (i.e. post-reboot) — **the sole remaining P2-2 task** |
+| whisper | **out of P2-2 scope — deferred by operator choice W3** | refiled as **P2-9**, downstream of the P3 bake-off |
 
 **Interruption safety**: nothing started by this pass must survive the reboot. All three verification results are recorded above; every one is reproducible from scratch in minutes by re-hashing.
+
+
+---
+
+## 5. Post-decision state (2026-07-29, after the operator's W3)
+
+- **P2-2 rescoped to two tenants.** dense-27B stock is landed and verified; MiniCPM-o's promotion (P2-2c) is the sole remaining task and is post-reboot by the runbook's own P7 rule.
+- **Whisper refiled as P2-9**, downstream of the bake-off, with W1 (stay on CPU, amend D2) as the standing recommendation and **W2 explicitly ruled out for now** — no clone, no HIP build, no `ggml` GGUF download.
+- **The fail-safe note is now where a VRAM reader will actually hit it**: a banner at the head of `epyc-orchestrator/orchestration/gpu_shadow_lane_np_ceiling.yaml` (commit `66165717`, comment-only — 170 lane tests pass, Stage-0 smoke `pass`). It exists to block the obvious wrong reaction to §3: *"whisper isn't landing, so free up its 1.6 GiB."* Those rows are conservative, not wrong, and reclaiming the headroom is a ceiling amendment gated downstream of P2-5j.
