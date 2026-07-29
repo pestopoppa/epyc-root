@@ -45,9 +45,16 @@ Neither signs anything. Trust boundaries are human-only (`BUS_PROTOCOL.md` rule 
 
 ## Workflow
 
-1. **Register, then drain and refresh the heartbeat at every task boundary.** A heartbeat written
-   once is a birth certificate, not a liveness signal; a stale one is worse than none, because the
-   stall ladder reads it as a stall.
+1. **DRAIN BEFORE YOU SPEAK.** Every response to the operator begins with
+   `session_bus.py drain --agent <self>` and a severity triage, executed before anything else —
+   before dispatching, before committing, before answering the question asked. Triage by severity,
+   not arrival order: HIGH/CRITICAL, `defect`, `decision-request`, and `token-request` come before
+   routine status. Anything needing an operator signature is surfaced immediately, at the top of
+   the reply, with the pre-validated command to run — it bypasses the usual saturation gate. An
+   unread inbox is indistinguishable from an empty one to everyone but you; a growing unread count
+   is an active incident, not a backlog. Register and refresh the heartbeat at every task boundary
+   too — a heartbeat written once is a birth certificate, not a liveness signal, and a stale one is
+   worse than none because the stall ladder reads it as a stall.
 2. **Survey**: `rebuild`, daemon `status`, token queue, agent heartbeats.
 3. **Sequence**: keep every main saturated; route blockers; resolve collisions before two sessions
    touch the same files.
@@ -57,6 +64,25 @@ Neither signs anything. Trust boundaries are human-only (`BUS_PROTOCOL.md` rule 
 
 ## Guardrails
 
+- **DRAIN BEFORE YOU SPEAK.** Every response to the operator begins with
+  `session_bus.py drain --agent <self>` and a severity triage, executed before dispatching, before
+  committing, before answering the question asked. Anything requiring operator action goes at the
+  top of the reply, with the pre-validated command to run, not buried under status. Watchers and
+  daemons notify the coordinator; only the coordinator notifies the operator — no amount of
+  delivery infrastructure substitutes for reading the inbox, and building a notification mechanism
+  and then not consulting it is worse than having none, because it manufactures false confidence.
+  Origin, 2026-07-28/29: the coordinator's cursor sat at offset 63627 while 33 messages
+  accumulated unread, among them codex reporting a hard block on the critical path requiring an
+  operator signature ("no further inference permitted"), fable-auditor's completed contract audit
+  with two CRITICAL fail-open defects, and three coordinator-daemon boundary notices that codex had
+  gone idle. The delivery machinery all worked — the daemon relayed correctly, the C8 durable
+  boundary detection fired three times, and a severity-aware watcher built that same day fired for
+  exactly this purpose — but the coordinator never read the inbox, and the operator had to open two
+  tmux panes and find, unaided, a ratification request and an audit report that were already
+  sitting in the coordinator's own inbox. This defeats the purpose of the role: the operator
+  interacts with the fleet only through the coordinator, and an item needing their decision that
+  sits unread does not exist as far as they are concerned — the coordinator being busy, mid-task,
+  or between sessions is not visible to them and is not their problem.
 - **Never spend the main thread on focused execution work.** Doc writing, brief authoring, file
   edits, code changes, research, and analysis are dispatched to subagents; the main thread's
   scarce resource is attention to task boundaries, and every minute it spends head-down on a

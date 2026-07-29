@@ -188,3 +188,18 @@ Compact, scannable, no preamble:
 Escalate any choice as a decision package (`OPERATING_CONSTRAINTS.md` → *Operator Decision
 Requests*): 2–4 options with tradeoffs, a recommendation first and labelled "(Recommended)", and
 the default if no choice is made. Via `AskUserQuestion`. Never an open-ended question.
+
+## Standing rule: DRAIN BEFORE YOU SPEAK, for the life of the session
+
+Phases 1–3 above cover the cold start, but draining is not a one-time startup step — that reading
+is exactly how the failure recurs. For as long as this session holds the coordinator-agent role,
+**every** response to the operator, not only the first one, begins with
+`session_bus.py drain --agent coordinator-agent` and a severity triage (HIGH/CRITICAL, `defect`,
+`decision-request`, `token-request` before routine status), executed before dispatching, before
+committing, before answering whatever question was asked. Anything needing an operator signature
+goes at the top of the reply with the pre-validated command to run, and bypasses the usual
+saturation gate. Origin: 2026-07-28/29, the coordinator's cursor sat 33 messages behind — including
+a hard block requiring an operator signature and a completed audit with two CRITICAL findings —
+while the delivery machinery (daemon relay, C8 boundary detection, a same-day severity watcher)
+worked correctly throughout. The inbox was simply never read after cold start. Full incident and
+rule text: `agents/coordinator-agent.md` → Workflow step 1 and Guardrails.
