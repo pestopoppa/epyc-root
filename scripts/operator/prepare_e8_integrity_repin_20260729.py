@@ -10,13 +10,19 @@ envelopes drifted for structural reasons and both need exactly one signature:
      INTEGRITY_SHA256 pin inside the v4 ratify wrapper, and the expected-set
      list in tests/test_e8_quality_baseline_v4_wrapper.py. 2/6 artifacts had
      drifted at preparation time and more were expected while tier-A landed.
-  B. amendment test chain — tests/test_e8_quality_source_protocol_amendment.py
-     is hash-pinned INSIDE the ratified amendment manifest, so its red-test fix
+  B. amendment chain — tests/test_e8_quality_source_protocol_amendment.py was
+     hash-pinned INSIDE the ratified amendment manifest, so its red-test fix
      (exit-code-agnostic live guard + hermetic exit-0 twin; see
      scripts/operator/patches/amendment_test_exitcode_agnostic_20260729.patch)
-     could never be a one-file change: patching the test forces an
-     artifact_sha256 re-pin in the amendment manifest, which forces the
-     MANIFEST_SHA256 re-pin in the amendment script.
+     could never be a one-file change. OPERATOR DECISION 2026-07-29
+     (unbind-the-checker): the trust envelope binds the INSTRUMENT (script,
+     helper, decision doc), never the instrument's CHECKER (the test suite) —
+     this was the repo's only manifest pinning a test file, and doing so made
+     red-test hygiene operator-gated. The ceremony therefore REMOVES the test
+     entry from artifact_sha256, patches the helper's hardcoded expected set
+     (scripts/operator/patches/amendment_helper_unbind_checker_20260729.patch),
+     re-pins the helper's own manifest entry, and cascades the manifest hash
+     into the amendment script's MANIFEST_SHA256.
 
 Design contract (operator-directed):
   * PINS BY GIT CONTENT — every artifact hash is computed from
@@ -72,7 +78,9 @@ AMEND_MANIFEST_REL = (
 )
 AMEND_SCRIPT_REL = "artifacts/operator/amend_e8_quality_source_protocol_20260726.sh"
 AMEND_TEST_REL = "tests/test_e8_quality_source_protocol_amendment.py"
+AMEND_HELPER_REL = "artifacts/operator/e8_quality_source_amendment.py"
 PATCH_REL = "scripts/operator/patches/amendment_test_exitcode_agnostic_20260729.patch"
+HELPER_PATCH_REL = "scripts/operator/patches/amendment_helper_unbind_checker_20260729.patch"
 
 ALL_TARGET_RELS = [
     V4_MANIFEST_REL,
@@ -81,6 +89,7 @@ ALL_TARGET_RELS = [
     AMEND_MANIFEST_REL,
     AMEND_SCRIPT_REL,
     AMEND_TEST_REL,
+    AMEND_HELPER_REL,
 ]
 
 ORCH_PREFIX = "/mnt/raid0/llm/epyc-orchestrator/"
@@ -127,6 +136,42 @@ def replace_exactly_once(text: str, old: str, new: str, label: str) -> str:
         raise RepinError(f"{label}: expected exactly 1 occurrence of the current "
                          f"value, found {count} — refusing to guess")
     return text.replace(old, new, 1)
+
+
+def stage_patch(root: Path, patch_rel: str, target_rel: str) -> bytes:
+    """Return the target's post-patch bytes. Drift-refusing and idempotent:
+    refuses when the patch neither applies nor is already applied."""
+    patch_path = root / patch_rel
+    if not patch_path.is_file():
+        raise RepinError(f"ceremony patch missing: {patch_path}")
+    target = root / target_rel
+    check = subprocess.run(
+        ["git", "-C", str(root), "apply", "--check", str(patch_path)],
+        capture_output=True, text=True, check=False,
+    )
+    already = subprocess.run(
+        ["git", "-C", str(root), "apply", "--check", "--reverse", str(patch_path)],
+        capture_output=True, text=True, check=False,
+    )
+    if check.returncode != 0 and already.returncode != 0:
+        raise RepinError(
+            f"{patch_rel} neither applies nor is already applied — {target_rel} "
+            f"drifted; regenerate the patch. git apply --check said: "
+            f"{check.stderr.strip()}"
+        )
+    if check.returncode != 0:
+        return target.read_bytes()
+    with tempfile.TemporaryDirectory(dir="/mnt/raid0/llm/tmp") as tmp:
+        staged = Path(tmp) / target_rel
+        staged.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(target, staged)
+        applied = subprocess.run(
+            ["git", "apply", str(patch_path)],
+            capture_output=True, text=True, check=False, cwd=tmp,
+        )
+        if applied.returncode != 0:
+            raise RepinError(f"staging {patch_rel} failed: {applied.stderr}")
+        return staged.read_bytes()
 
 
 def compute_plan(root: Path, orch: Path, orch_commit: str, root_commit: str) -> dict:
@@ -188,52 +233,33 @@ def compute_plan(root: Path, orch: Path, orch_commit: str, root_commit: str) -> 
     new_test_text = test_text.replace(block.group(0), generated, 1)
 
     # Amendment chain: patched test -> manifest artifact_sha256 -> script pin.
-    patch_path = root / PATCH_REL
-    if not patch_path.is_file():
-        raise RepinError(f"amendment patch missing: {patch_path}")
-    amend_test_path = root / AMEND_TEST_REL
-    check = subprocess.run(
-        ["git", "-C", str(root), "apply", "--check", str(patch_path)],
-        capture_output=True, text=True, check=False,
-    )
-    already = subprocess.run(
-        ["git", "-C", str(root), "apply", "--check", "--reverse", str(patch_path)],
-        capture_output=True, text=True, check=False,
-    )
-    if check.returncode != 0 and already.returncode != 0:
-        raise RepinError(
-            "amendment test patch neither applies nor is already applied — the "
-            f"test file drifted; regenerate the patch. git apply --check said: "
-            f"{check.stderr.strip()}"
-        )
-    patch_already_applied = check.returncode != 0
-    if patch_already_applied:
-        new_amend_test_bytes = amend_test_path.read_bytes()
-    else:
-        with tempfile.TemporaryDirectory(dir="/mnt/raid0/llm/tmp") as tmp:
-            staged = Path(tmp) / AMEND_TEST_REL
-            staged.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(amend_test_path, staged)
-            applied = subprocess.run(
-                ["git", "apply", str(patch_path)],
-                capture_output=True, text=True, check=False, cwd=tmp,
-            )
-            if applied.returncode != 0:
-                raise RepinError(f"staging the amendment patch failed: {applied.stderr}")
-            new_amend_test_bytes = staged.read_bytes()
+    new_amend_test_bytes = stage_patch(root, PATCH_REL, AMEND_TEST_REL)
     new_amend_test_hash = sha256_bytes(new_amend_test_bytes)
+    new_helper_bytes = stage_patch(root, HELPER_PATCH_REL, AMEND_HELPER_REL)
+    new_helper_hash = sha256_bytes(new_helper_bytes)
 
     amend_manifest_path = root / AMEND_MANIFEST_REL
     amend_manifest = json.loads(amend_manifest_path.read_text(encoding="utf-8"))
-    old_test_pin = amend_manifest.get("artifact_sha256", {}).get(AMEND_TEST_REL)
-    if not isinstance(old_test_pin, str):
-        raise RepinError("amendment manifest does not pin the test file — wrong file?")
-    amend_manifest_text = amend_manifest_path.read_text(encoding="utf-8")
-    new_amend_manifest_text = amend_manifest_text
-    if old_test_pin != new_amend_test_hash:
+    binding = amend_manifest.get("artifact_sha256")
+    if not isinstance(binding, dict) or AMEND_HELPER_REL not in binding:
+        raise RepinError("amendment manifest artifact binding is missing — wrong file?")
+    new_amend_manifest_text = amend_manifest_path.read_text(encoding="utf-8")
+    # UNBIND THE CHECKER (operator decision 2026-07-29): the trust envelope
+    # binds the instrument, never the instrument's checker. Remove the test
+    # entry entirely; idempotent when already absent.
+    old_test_pin = binding.get(AMEND_TEST_REL)
+    if isinstance(old_test_pin, str):
+        entry = f',\n    "{AMEND_TEST_REL}": "{old_test_pin}"'
+        if new_amend_manifest_text.count(entry) != 1:
+            raise RepinError("amendment manifest test entry not found in the "
+                             "expected trailing position — refusing byte surgery")
+        new_amend_manifest_text = new_amend_manifest_text.replace(entry, "", 1)
+    # The helper is patched by this same ceremony, so its pin is recomputed.
+    old_helper_pin = binding[AMEND_HELPER_REL]
+    if old_helper_pin != new_helper_hash:
         new_amend_manifest_text = replace_exactly_once(
-            amend_manifest_text, old_test_pin, new_amend_test_hash,
-            "amendment manifest test-file pin")
+            new_amend_manifest_text, old_helper_pin, new_helper_hash,
+            "amendment manifest helper pin")
     new_amend_manifest_hash = sha256_bytes(new_amend_manifest_text.encode("utf-8"))
 
     amend_script_path = root / AMEND_SCRIPT_REL
@@ -257,6 +283,7 @@ def compute_plan(root: Path, orch: Path, orch_commit: str, root_commit: str) -> 
         AMEND_MANIFEST_REL: new_amend_manifest_text.encode("utf-8"),
         AMEND_SCRIPT_REL: new_amend_script_text.encode("utf-8"),
         AMEND_TEST_REL: new_amend_test_bytes,
+        AMEND_HELPER_REL: new_helper_bytes,
     }
     changed = {rel: (root / rel).read_bytes() != data for rel, data in desired.items()}
     return {
@@ -295,8 +322,13 @@ def verify_chain(root: Path, orch: Path, orch_commit: str, root_commit: str) -> 
                 problems.append(f"test expected set != manifest keys "
                                 f"(test-only greening shape): {sorted(listed ^ set(artifacts))}")
         amend_manifest = json.loads((root / AMEND_MANIFEST_REL).read_text(encoding="utf-8"))
-        if amend_manifest["artifact_sha256"][AMEND_TEST_REL] != sha256_file(root / AMEND_TEST_REL):
-            problems.append("amendment manifest test-file pin != live test bytes")
+        amend_binding = amend_manifest["artifact_sha256"]
+        if AMEND_TEST_REL in amend_binding:
+            problems.append("amendment manifest still binds the CHECKER (test file) "
+                            "— operator decision 2026-07-29 is instrument-only binding")
+        for rel, digest in amend_binding.items():
+            if not (root / rel).is_file() or sha256_file(root / rel) != digest:
+                problems.append(f"amendment manifest[{rel}] != live bytes")
         amend_script_text = (root / AMEND_SCRIPT_REL).read_text(encoding="utf-8")
         spin = re.search(r'^MANIFEST_SHA256="([0-9a-f]{64})"$', amend_script_text, re.M)
         if not spin or spin.group(1) != sha256_file(root / AMEND_MANIFEST_REL):
@@ -424,7 +456,9 @@ def selftest() -> int:
     real_root = CANONICAL_ROOT
     with tempfile.TemporaryDirectory(dir="/mnt/raid0/llm/tmp") as tmp:
         copy_root = Path(tmp) / "root"
-        rels = ALL_TARGET_RELS + [PATCH_REL] + [
+        rels = ALL_TARGET_RELS + [PATCH_REL, HELPER_PATCH_REL] + [
+            "artifacts/operator/e8_quality_pool_regenerator.py",
+            "artifacts/operator/e8_quality_source_protocol_amendment_20260726.md",
             # the four root-relative v4 artifacts, so the copy's manifest resolves
             "artifacts/operator/apply_e8_quality_baseline_state.py",
             "artifacts/operator/e8_context_replacement_map_candidate_relaxed_20260727.json",

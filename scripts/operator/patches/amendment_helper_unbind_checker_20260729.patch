@@ -1,0 +1,19 @@
+diff --git a/artifacts/operator/e8_quality_source_amendment.py b/artifacts/operator/e8_quality_source_amendment.py
+--- a/artifacts/operator/e8_quality_source_amendment.py
++++ b/artifacts/operator/e8_quality_source_amendment.py
+@@ -420,11 +420,14 @@ def validate_manifest(
+             raise AmendmentError(f"pre-state hash changed: {name}")
+ 
+     artifacts = manifest.get("artifact_sha256")
++    # 2026-07-29 operator decision (unbind-the-checker): the trust envelope
++    # binds the INSTRUMENT, never the instrument's CHECKER (the test suite) —
++    # this was the repo's only manifest pinning a test file, and doing so made
++    # red-test hygiene operator-gated.
+     expected_artifacts = {
+         "artifacts/operator/e8_quality_source_amendment.py",
+         "artifacts/operator/e8_quality_pool_regenerator.py",
+         "artifacts/operator/e8_quality_source_protocol_amendment_20260726.md",
+-        "tests/test_e8_quality_source_protocol_amendment.py",
+     }
+     if not isinstance(artifacts, dict) or set(artifacts) != expected_artifacts:
+         raise AmendmentError("manifest artifact binding is missing")
