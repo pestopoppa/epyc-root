@@ -1,6 +1,6 @@
 {
   "agent": "auditor",
   "state": "working",
-  "task_id": "backlog-clean-row",
-  "ts": "2026-07-29T18:40:26+00:00"
+  "task_id": "index-pointer-sweep",
+  "ts": "2026-07-29T18:43:58+00:00"
 }
