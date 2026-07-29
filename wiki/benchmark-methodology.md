@@ -1006,3 +1006,49 @@ cross-arm parse-failure gap reads as a quality gap.
 - [`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) — AREX ACU non-citability; ARC-AGI-3 public-set provenance downgrade
 - [`rlm-contested-claims-self-evaluation.md`](../handoffs/active/rlm-contested-claims-self-evaluation.md) — E3a: the external long-context arm is not a clean control
 - [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — "Two live bugs found in our own code", execution-verification tallies, host thread census
+
+## The crash-window brick class: how an evidence namespace becomes permanently unusable (2026-07-29)
+
+An evidence pipeline that writes durable artifacts has a failure mode distinct from "the run
+failed": the run's *namespace* is left in a state no code can read and no rerun can replace. Six
+E8 collection cycles were lost to this class in one day. Three instances, all the same shape —
+**a window in which the on-disk state asserts something the pipeline cannot yet back**:
+
+1. **Double-write of a completion marker.** A helper wrote `r2_complete.json` with
+   `status: complete`, and each caller then re-read, updated and rewrote the same path with the
+   watcher/claim/scorer evidence. A crash between the two writes left a marker claiming completion
+   while missing the evidence every reader requires — and because the marker existed, the
+   overwrite guards refused to let a rerun rebuild it. *Fix: one authoritative writer.* The helper
+   takes the caller's extra fields and performs the single write, so the marker never exists in a
+   partial state. Note the fix had to convert **four** call sites; a returns-only refactor would
+   have silently broken three of them.
+
+2. **In-place truncating write.** A local `_write_json` opened the destination `O_CREAT|O_TRUNC`
+   and wrote in place, so a crash mid-write left a zero-length or half-written JSON *at the real
+   path*. Readers then fail on decode, and the same overwrite guards make the namespace
+   unrecoverable. *Fix: write-temp → fsync → `os.replace` → fsync-dir.* The codebase already had
+   exactly that helper — the bug was a second, weaker implementation of an operation it had
+   correct, so the repair **deleted** code. Worth generalising: when you find an unsafe primitive,
+   check whether the safe one already exists before writing a third.
+
+3. **Seal before publish.** A `run_seal.json` recording `status: complete` was written into the
+   *staging* directory and only then atomically published. A crash in that window left staging
+   asserting completeness for a bundle that was never published; because the publish is
+   `RENAME_NOREPLACE`, a rerun could neither publish over it nor trust it. *Fix: seal after
+   publish.*
+
+**The generalisable rule is about which residual window you keep, not about eliminating it.**
+"Make the two atomic together" was unavailable — `renameat2` moves one directory, and no primitive
+publishes a tree and writes a file in one step. So the design question becomes: *of the crash
+windows you cannot remove, which leaves a state that is **detectable and completable**?*
+Published-but-unsealed is both (bundle present, seal absent; every input the seal hashes is already
+durable, so re-sealing is deterministic). Sealed-but-unpublished is neither. Sequencing so the
+survivor is the recoverable state is the achievable property.
+
+**Two checks that made the reorder safe**, and which generalise to any publish-then-annotate
+change: the publish did **not** chmod the destination read-only (so the post-publish write
+succeeds), and the seal was **already excluded from its own bundle hash** (so moving it changes no
+hash anywhere). Both were verified before the reorder, not after.
+
+_Sources: `handoffs/active/session-bus-thin-dispatcher.md`; `progress/2026-07/2026-07-29.md`;
+epyc-orchestrator branch `tierc-10d-crash-window-durability` (`8cdf14f9`)._
