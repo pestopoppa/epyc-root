@@ -1570,6 +1570,63 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   600s default as an implementer's guess rather than an operator decision — C31 is about the KEY,
   not the value, and the two are independent.)*
 
+- [x] **C35 — a `working` heartbeat wedges a session forever, because the code that would clear it
+  is the code that has stopped running.** ✅ 2026-07-29 — `claude`, commit `7a159781`. `cmd_nudge`
+  refused whenever the target's heartbeat said `state: working`. That guard is right in principle —
+  typing into a pane mid-generation corrupts whatever is running there — but a main that FINISHES a
+  unit and settles at its prompt very often still says `working`, and it cannot clear the flag
+  because clearing it requires being told to, which is exactly what the guard refuses.
+  `--heartbeat-max-age` does **not** rescue it: the refusal keys on STATE, not age, so a
+  five-second-old heartbeat wedges the session just as hard as an ancient one. *Measured 2026-07-29:
+  the operator hand-relayed into panes at least four times in one day, including into `mainA` while
+  it held the ENTIRE machine for an exclusive E5 decision-grade window — the most expensive possible
+  idle state, since nothing else can use the host either. One stretch saw ten consecutive nudge
+  attempts refused against a session provably sitting at an empty prompt.*
+  **Fix:** pane quiescence now outvotes a `working` heartbeat past a long threshold, behind a new
+  `--heartbeat-override-quiet-s` (default 120). Both TUIs redraw a spinner with an elapsed-seconds
+  counter while generating, so a window quiet for minutes is strong evidence the session is settled
+  at its prompt regardless of what it claims. This is the same reasoning the existing `--quiet-s`
+  check already encodes, at a 6x longer and therefore much safer horizon.
+  **Calibrated before implementing, in disposable `tuiok-*` sessions created and killed by the
+  measurement — the live `agent` session was never written to.** A window emitting 5x/second never
+  exceeded **1s** of apparent quiet across the full matrix of {detached, attached} x {background,
+  active}, while an idle window aged monotonically (35→51s, 54→70s, 73→90s, 84→139s). 120s is thus
+  ~120x the largest gap ever seen on a window that was genuinely producing output. Corroborated
+  read-only against the live session: working mains and the redrawing htop/btop windows sat at 0-2s
+  while two settled mains showed 209s and 211s.
+  **Two earlier attempts at this same measurement were wrong**, both worth knowing before anyone
+  re-measures: (a) the default shell here is fish, so a bash-syntax loop handed to `tmux new-window`
+  dies instantly while `new-window` still exits 0 — C30(b) met again in the measurement rather than
+  in production; (b) `automatic-rename` renames a window to its running command, after which a
+  NAME-based target stops resolving and `display-message` silently falls back to the session's
+  CURRENT window, so several windows report one window's numbers. Both artefacts produce the same
+  false reading — "a busy window looks quiet" — which would have argued *against* this override.
+  **Scope is deliberately narrow.** The override suppresses the `state == working` blocker and
+  nothing else: pane existence, `pane_dead`, the normal quiet check, the rate limit, the
+  authorisation flag and target resolution all still refuse independently, and every unreadable
+  input fails closed (an unparseable `window_activity`, a `display-message` failure, a dead pane, a
+  missing heartbeat). A non-positive threshold disables the override entirely rather than meaning
+  "override always", so a mis-set 0 is inert. **Staleness stays a separate blocker on purpose** — it
+  is already tunable with `--heartbeat-max-age`, whereas state was not tunable at all, and that
+  asymmetry is the whole defect. `probe` reports the override in BOTH directions, so a refusal is
+  explained and a human is never surprised by a nudge the guard "should" have refused; an overriding
+  nudge also writes `heartbeat_override` + `window_quiet_for_s` into the ledger, while an ordinary
+  nudge row is unchanged on disk. 17 stubbed tests + 11 live-pane checks. The load-bearing ones are
+  the mid-generation case (a real, still-emitting pane keeps its `working` heartbeat believed) and
+  the live PREMISE check, which asserts the empirical claim the design rests on rather than assuming
+  it — if a future tmux or TUI stops moving `window_activity`, that check fails loudly instead of
+  the operator discovering it as a corrupted pane. Verified by mutation: inverting the threshold
+  comparison, removing the recency check, and turning the 0-disable into "always override" each turn
+  a test red.
+  *Follow-up, NOT done here (needs its own row + owner):* the `attached is False` branch of the
+  existing quiet-check claims `window_activity` "does not track output" while detached, citing a
+  2026-07-27 measurement. **That claim is falsified** by the calibration above — detached tracking
+  works, and is now pinned by a live check in a detached throwaway session. The comment has been
+  corrected in place, but the *behaviour* it guards (skipping the normal `--quiet-s` blocker when
+  detached) was left exactly as it was, since C35's brief was the heartbeat blocker alone. Removing
+  that skip would make the quiet-check STRICTER and close a real fail-open; it should be measured
+  and filed on its own rather than smuggled in here.
+
 ## Decision gates
 
 - `OP-SENDKEYS-CODEX` (send-keys nudging) — operator grant, evidence-driven, default OFF.
