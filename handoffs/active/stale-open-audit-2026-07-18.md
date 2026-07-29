@@ -117,6 +117,14 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
     `backlog_not_a_task = 36`, `audit_date = 2026-07-29`, `audit_source = auditor / exact parse of
     handoffs/active`, `certification_method = none available automatically — requires read-through`.
     Reproduce with `scripts/coordination/backlog_row_check.py` per row.
+  - **READ-CERTIFIED 2026-07-29 (mainB, 2 rows):**
+    `agent-collab-rnd-harness.md` has two optional spikes, neither a current
+    live task: the orx/OpenCode vehicle is explicitly gated on operator
+    interest, and the OpenHyra adapter additionally requires an external
+    container plus an unsandboxed opt-in. Both remain valid future work but
+    are **gated**, not dispatchable (and E5 separately prohibits their local
+    llama workload). `backlog_live_uncertified = 953` for this dated
+    read-through slice; `backlog_not_a_task = 36` is unchanged.
   - [ ] **REMAINS OPEN:** read-certify the 955. That is the only route left and it is a bounded but
     large job; it should be split across mains by handoff, not attempted in one session.
 
