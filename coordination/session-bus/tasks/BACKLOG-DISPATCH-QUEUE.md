@@ -725,7 +725,7 @@ re-grep before assigning.
 - L144 | none | L | Y | - | HS-8 extract run-level policy into editable NLAH-style document | agents/shared/, new policy doc
 - L145 | cpu | L | Y | needs HS-8 policy document first | HS-9 probe whether open-weight models interpret NL policy faithfully | saved traces, eval harness
 - L146 | none | M | Y | - | **CLOSED 2026-07-29** — evaluation-only randomization pattern plus P4.6 NULL counterexample recorded; no run was added | handoffs/active/harness-selection-and-integration.md:159,209
-- L147 | none | S | N | - | HS-11 record DSPy/GEPA compile budget as standing cost line | handoff
+- L147 | none | S | N | - | **CLOSED 2026-07-29** — standing 5k-25k LM-call cost line is recorded and cross-linked | handoffs/active/harness-selection-and-integration.md:160; wiki/llm-prompting.md:160-162
 - L148 | none | S | N | - | HS-12 carry corrected capability-vs-harness figures with counterweight | handoff, wiki/
 
 ## hermes-agent-index.md (11) — index pointers into hermes-outer-shell / repl-turn-efficiency
