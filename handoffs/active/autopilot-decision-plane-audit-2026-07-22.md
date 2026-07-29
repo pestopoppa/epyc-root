@@ -316,7 +316,11 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
     without a runtime `run_seal.json`, and the offline one-namespace terminal bridge does not make
     future producer aborts terminal by construction. Wire the copy-only terminalizer into each
     producer abort epilogue and require a pinned source seal for admission; verify the live
-    race-retry publication path is structurally valid before publishing a replacement bundle.
+    race-retry publication path is structurally valid before publishing a replacement bundle. The
+    immediate audit blocker is at `complete_e8_quality_baseline_v5_final_c1.py:139-166`: the
+    ratified receipt binds the original producer helper while the live audit requires the current
+    helper hash. Preserve the historical receipt pin and bind the runtime helper separately; never
+    weaken or replace the original provenance check.
 - [ ] **E8 quality baseline reseed/apply** — human-only protocol/source/apply scripts are
   prepared and parked. The earlier v4 collection is historical, non-decision evidence after the
   fixed-vector context defect. A first v5 launch failed before inference because its detached
