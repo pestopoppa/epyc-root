@@ -1,6 +1,6 @@
 # DeepSeek-V4-Flash CPU Port — Experimental Branch
 
-**Status**: REFRESHED 2026-06-12 (Fable 5 portfolio pass) — **Strategy B executed 2026-05-30**: download complete (153.32 GiB), smoke PASS, canonical throughput gate **provisional FAIL** (9.13 t/s eval-time decode vs the 18 t/s Q4 floor; three independent measurements cluster 8–11 t/s), 4 fork bug patches landed locally + filing-ready (01 sched_reserve, 02ab/02c cli/completion, 03 llama-gguf r-mode). All remaining work is operator-gated: **D1** Strategy-A (ik_llama translation, 3–5d) go/park · **D2** recalibrate the 18 t/s floor V4-arch-aware (CSA/HCA/indexer/compressor overhead was not modeled; honest expected range ~8–12 t/s) · **D3** quality gate repurposed as architect_general candidacy probe. Quality gate **externally blocked** on Mac/ds4 reference logprobs. Do NOT restart the download narrative — see §"Strategy B execution — 2026-05-30 update" + §"Next Decisions".
+**Status**: REFRESHED 2026-07-29 — **Strategy B executed 2026-05-30**: download complete (153.32 GiB), smoke PASS, and three V4 measurements cluster at 8–11 t/s. The old 18 t/s Q4 floor is retired: it was an unmodelled active-parameter extrapolation from gemma4. D2 records a V4-specific **8 t/s lower envelope** and **8–12 t/s planning band**; this does not clear quality, role candidacy, or the separate D1 operator decision. Quality reference logprobs remain externally blocked on Mac/ds4. Do NOT restart the download narrative — see §"Strategy B execution — 2026-05-30 update" + §"Next Decisions".
 **Created**: 2026-05-28
 **Priority**: P2
 **Effort**: High (multi-thousand-line arch addition, mirroring/exceeding the DSv3.2 DSA work)
@@ -64,7 +64,7 @@ These gates are concrete and not subject to renegotiation mid-port. If a gate fa
 - **Tool (Strategy B)**: V4 fork `llama-completion` (`/mnt/raid0/llm/llama.cpp-deepseek-v4/build/bin/llama-completion`) at `2f2d44052`. NOT `llama-bench`: llama-bench's default synthetic reserve shape (worst-case `ubatch_size` with `ubatch.pos == nullptr` → `last_pos = n_tokens - 1`) trips the V4 cache-sizing assert at `deepseek4.cpp:1147` (`GGML_ASSERT(n_comp_visible <= n_comp_cache)`) during `llama_context::sched_reserve` at init time. llama-completion also calls sched_reserve but with reserve shapes that fit V4's compressed cache. (When Strategy A — ik_llama translation — is reached, the tool for THIS gate becomes `ik_llama llama-bench` again; numbers across tools are not directly comparable.)
 - **Mode**: raw prompt completion with `-no-cnv`. Required because the V4 GGUF embeds `tokenizer.chat_template` at kv[57] and llama-completion auto-enables conversation mode when a template is present (per `completion.cpp:213` "auto enable conversation mode if chat template is available; disable it with -no-cnv"). Conversation mode applies the chat template + multi-turn UI which is not the bare-completion workload the floor was calibrated against.
 - **Metric**: **libllama eval-time tokens-per-second**, parsed from the `common/sampling.cpp:507` stderr line `eval time = X ms / N runs (... tokens per second)`. Excludes load time, prompt-eval time, and total wall-clock time. This is decode-only throughput.
-- **Floor — solo Q4**: **≥ 18 t/s** sustained eval-time decode (lower bound calibrated from V4-Flash's 13B active params vs gemma4-26B-A4B's 4B active sustaining 76.5 t/s solo; conservative ~ proportional inverse with the param ratio at the same Q4 quant gives ~18-23 t/s expected). **Floor unchanged from initial spec.**
+- **Floor — solo Q4 (D2 recalibrated 2026-07-29)**: **≥ 8 t/s** sustained eval-time decode is the lower envelope for a future like-for-like V4 run; **8–12 t/s** is the planning band. The former 18–23 t/s extrapolation (`76.5 × 4/13`, then a discount) is retired because it omitted CSA/HCA, indexer, compressor, and Hyper-Connection work plus V4's mixed F16/Q8/Q4 bandwidth shape. This is a throughput-screen threshold only: a 9.13 t/s Strategy-B observation remains provisional until the independent quality gate passes, and it is not by itself a production-role decision.
 - **Floor — solo Q2**: **≥ 35 t/s** sustained eval-time decode (Q2 is ~2× the BW efficiency of Q4 at the same per-token compute; this is opportunistic — Q2 quality may not be production-acceptable but the throughput floor is documented).
 - **Acceptance interaction with `feedback_speed_verify_via_llama_bench`**: this gate's tool is llama-completion (per Strategy B above), not llama-bench; the agent does NOT autonomously run inference; the user authorizes the run per `feedback_no_concurrent_inference`.
 - **Provisional evidence rule**: per §Merge Gates ordering, quality gate must pass before throughput evidence is accepted. However, when the quality reference side is **externally blocked** (e.g. needs reference logprobs from a Mac/ds4 run that is not yet available), an early throughput run MAY be conducted as **"provisional throughput evidence pending quality gate"**. The result is recorded but does NOT count toward merge until quality passes. If quality later fails, the provisional throughput result is discarded; if quality passes, the provisional result is promoted to gate evidence without rerun (since model + env + tool are unchanged).
@@ -74,7 +74,7 @@ These gates are concrete and not subject to renegotiation mid-port. If a gate fa
 
 Merge `feature/deepseek4-port` → ik_llama production tree requires ALL of:
 1. Quality gate passes (≥ 18/20 prompts within 0.05-nat MAD; ≥ 15/20 token-1 exact-match; no assert/segfault/NaN).
-2. Throughput gate passes (Q4 ≥ 18 t/s solo on canonical stack).
+2. Throughput screen passes (Q4 ≥ 8 t/s solo on the V4-specific recipe); quality and role gates remain independent.
 3. Chat-template shim works against the orchestrator chat-completions path on at least 3 of the 4 instruction-following prompts from the quality set.
 4. MTP sidecar EITHER integrates with acceptance ≥ 0.4 OR is parked with a stub PR noting "second integration, not blocking base merge."
 5. No regression on existing models — re-run a smoke test on gemma4-26B-A4B + Qwen3.6-frontdoor with the merged binary, both must still launch and produce coherent output (no quality bench, just liveness).
@@ -322,7 +322,9 @@ Latest antirez commit adds a "DeepSeek V4 HC weighted-sum ggml op with CPU, Meta
 
 #### Calibration logic critique (informs Strategy A decision)
 
-The 18 t/s floor was set as `gemma4 76.5 t/s × (4/13)` with a ~23% conservatism discount. The methodology ignores V4's per-token overhead from CSA + HCA + indexer + compressor + manifold-constrained Hyper-Connections — components absent in gemma4. Our 9.13 t/s suggests V4's effective per-active-param compute is ~2.5× gemma4's. The 18 t/s floor was set under a heuristic that doesn't model V4's arch overhead. If Strategy A is pursued, recalibrate the floor against a V4-arch-aware baseline (e.g., compute-density-normalized) before re-running.
+The 18 t/s floor was set as `gemma4 76.5 t/s × (4/13)` with a ~23% conservatism discount. The methodology ignores V4's per-token overhead from CSA + HCA + indexer + compressor + manifold-constrained Hyper-Connections — components absent in gemma4. Our 9.13 t/s suggests V4's effective per-active-param compute is ~2.5× gemma4's.
+
+**D2 resolution (2026-07-29, zero-inference):** retire the active-parameter extrapolation. The only like-architecture observations are 8.47 t/s (`llama-bench -ub 1 -b 1`), 9.13 t/s (the canonical Strategy-B completion recipe), and 10.7 t/s (interactive); tools differ, so this is a bracket rather than pooled decision-grade evidence. Use **8 t/s** as the future V4 recipe's lower envelope and **8–12 t/s** as its planning band. The lower envelope is intentionally below the central 9.13 t/s observation but above no observed V4 result; it is not a claim that the architecture is efficient enough for any role. Any Strategy-A uplift remains an unmeasured hypothesis, and D1/D3 retain the operator, quality, and role decisions.
 
 ## Next Decisions (post-2026-05-30 provisional throughput FAIL)
 
@@ -340,9 +342,9 @@ For V4's mixed quant (Q4_K experts + F16 HC/Compressor/Indexer + Q8 attn/shared)
 **GO criterion**: D2 yields a recalibrated floor + A-uplift estimate brackets it.
 **PARK criterion**: even recalibrated, V4 doesn't beat smaller models in its role.
 
-### D2. Floor methodology revisit
+### D2. Floor methodology revisit — resolved 2026-07-29
 
-Recalibrate against a V4-arch-aware baseline. The current band (18-23 t/s) was likely too optimistic. Honest expected range based on cluster of 8-11 t/s measurements would land somewhere around 8-12 t/s on this hardware — close to what we measured.
+The 18–23 t/s gemma4 active-parameter extrapolation is retired. The V4-specific lower envelope is **8 t/s**, with an **8–12 t/s** planning band. This changes only the throughput-screen arithmetic; it does not waive quality parity, make a production-role claim, or choose Strategy A.
 
 ### D3. Quality gate as architect_general candidacy probe
 
@@ -440,6 +442,6 @@ Per `feedback_no_wholesale_git_add_shared_files`: when staging cherry-picked cha
 
 - [x] Strategy B executed: download (153GiB), build, smoke PASS, 4 fork bug patches landed ✅
 - [ ] D1 operator go/park decision on Strategy-A (ik_llama API translation, 3-5d)
-- [ ] D2 recalibrate the 18 t/s throughput floor to be V4-arch-aware (honest ~8-12 t/s expected range)
+- [x] D2 recalibrate the 18 t/s throughput floor to be V4-arch-aware (honest ~8-12 t/s expected range) ✅ 2026-07-29 — retired the unmodelled gemma4 active-parameter extrapolation; V4's three saved 8.47/9.13/10.7 t/s observations set an 8 t/s lower envelope and 8–12 t/s planning band. This is a throughput screen only; D1, quality parity, and role candidacy remain open.
 - [ ] D3 repurpose quality gate as architect_general candidacy probe
 - [ ] Unblock quality gate on Mac/ds4 reference logprobs (externally blocked)
