@@ -968,7 +968,13 @@ freezes/cutovers, host reboots).
     named `claude` that no roster row claims (`claude-main` is RETIRED with a `monitor:file`
     endpoint and its historical window was `claude_A`). `live_mains` reports 4 —
     `claude-gpu-lane`, `codex`, `coordinator-agent`, `fable-auditor` — and `claude` is attributed
-    to nobody. **If that window is a main, the cap is really 5/4 and a slot has been invented**;
+    to nobody. ~~**If that window is a main, the cap is really 5/4 and a slot has been
+    invented**~~ — **RETRACTED 2026-07-29**: that framing is wrong. `max_concurrent_mains`
+    governs COORDINATOR-SPAWNED mains, and an operator-owned session outside the roster is a
+    different CATEGORY, not a shortfall — the count measures exactly what it should. The one
+    genuine signal that survives is narrower and is C14's: a *roster* main whose window was
+    renamed away from both its id and its endpoint, which WAS coordinator-spawned and does
+    belong under the cap;
     the count resolves the ambiguity in the capacity-inventing direction, which is the one this
     module keeps getting wrong.
     Why it was not simply fixed with C14: an unattributed window is indistinguishable from a tool
