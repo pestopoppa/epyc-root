@@ -489,7 +489,7 @@ Consequences for the frozen phases, stated plainly:
 - [ ] **OPERATOR DECISION (frozen gate — human-amendment-only, not an agent edit):** does fable5-02's ">=5% regret" criterion mean *selector self-consistency regret* (current implementation, definitionally ~0) or *counterfactual outcome regret* (~8.1-8.4pp)? Nothing is unfrozen pending this ruling.
 - [x] Reward-saturation audit (zero inference, ~1 session): invert `q = 0.5 + r/2` on `update_count=0` rows, histogram reward by role and task_class. **Decision flip:** if per-decision reward entropy <1 bit AND role-conditional means differ <2pp, close DAR-3/4/5 as `not_pursued — signal-bound` rather than leaving them frozen behind a metric that can never fire. ✅ 2026-07-22
 - [x] Write-path audit: is `update_count=0` on 99.69% of rows intentional (append-only replay buffer per the LRC design) or a dedup defect? Verify DAR-2 is live-*effective*, not just live-ON. ✅ 2026-07-22
-- [ ] Do NOT run DAR-3's 10% epsilon-greedy exploration to manufacture counterfactuals — 386K of them already exist in the store for free. Degrading production to collect what we already hold is strictly dominated.
+- [x] Do NOT run DAR-3's 10% epsilon-greedy exploration to manufacture counterfactuals ✅ 2026-07-29 — epyc-root `bc4a7aa7` established that 386K already exist in the store for free; degrading production to collect what we already hold is strictly dominated.
 - [x] Raise the 200-char `objective` truncation before any counterfactual/competence analysis is run at promotion grade (runtime embedding path is NOT truncated, so live routing is unaffected). ✅ 2026-07-22
 
 ### Reward-Saturation Audit — EXECUTED 2026-07-21 (zero inference; read-only SQLite over episodic.db)
