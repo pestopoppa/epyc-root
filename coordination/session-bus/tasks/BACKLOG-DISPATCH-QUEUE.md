@@ -720,7 +720,7 @@ re-grep before assigning.
 - L41 | none | M | N | **operator decision (HS-4 is operator-owned)** | HS-4 harness-selection gate: Hermes vs OpenCode vs ACP | handoff, hermes-outer-shell.md
 - L134 | none | S | N | - | **CLOSED 2026-07-29** — HS-4 matrix records the adapter axis separately from current-host feasibility; operator ownership unchanged | handoffs/active/harness-selection-and-integration.md:134,137-145
 - L136 | none | S | N | - | **CLOSED 2026-07-29** — already recorded as outer-loop, not HS-4, with containment/trial boundary | handoffs/active/harness-selection-and-integration.md:149 (root `c942728e`)
-- L142 | none | L | N | - | HS-6 audit Layer-B against six/seven-dimension harness taxonomy | handoff, orchestrator layer-B sources
+- L142 | none | L | N | - | **CLOSED 2026-07-29** — completed source-only Layer-B audit and seven-layer Harness Card; no runtime change | handoffs/active/harness-selection-and-integration.md:155,166-189
 - L143 | none | S | N | - | **CLOSED 2026-07-29** — standing HS-4 re-targetability criterion and acceptance evidence are recorded | handoffs/active/harness-selection-and-integration.md:156,190-207
 - L144 | none | L | Y | - | HS-8 extract run-level policy into editable NLAH-style document | agents/shared/, new policy doc
 - L145 | cpu | L | Y | needs HS-8 policy document first | HS-9 probe whether open-weight models interpret NL policy faithfully | saved traces, eval harness
