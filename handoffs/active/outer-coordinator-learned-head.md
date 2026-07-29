@@ -109,9 +109,42 @@ code, a SafetyGate, or an operator boundary.
 | Whether to retain and surface prior strategy/convention memory | Bounded StrategyStore retrieval and planner-prompt construction | Visibility, bounds, provenance, and no-crash fallback behavior are deterministic | **Currently arbitrary.** Retrieval exists, but no outcome-backed ranking rule yet distinguishes useful from merely available memory. |
 | Whether to stop, pause, or escalate for review | Loop caps on meta/skip/rejected drafts plus operator/authority gates and terminal checkpointing | Operator boundaries, trust-boundary writes, and loud-stop conditions remain human/deterministic | **Uniform.** Retain deterministic/human control; only a future risk predictor is a candidate. |
 
+### OC-0.3 — fitness signal: a gated outcome vector, not a scalar reward (2026-07-29)
+
+The candidate target is the **next eligible experiment outcome vector**, not
+per-task pass rate and not the existing Pareto score copied into a new learner:
+
+```text
+eligibility = realized outcome_status=ok
+              AND no bug_corrupted_by/supersession
+              AND same named protocol + instrument era + tier
+
+label = (quality delta, task-rate/latency efficiency, reliability,
+         controller-token cost, elapsed wall time)
+```
+
+Quality, efficiency, and reliability stay a **per-tier Pareto vector** rather
+than being scalarized: the committed controller already represents its runtime
+objectives as `(quality, speed, -cost, reliability)` and has a shadow
+task-rate vector. A future offline coordinator may learn a ranking only among
+eligible, same-tier outcomes; it may not convert a quality/safety loss into a
+cheaper-action win. Controller-token cost and end-to-end elapsed time are
+recorded as required evaluation dimensions, not substitutes for quality.
+
+This is deliberately **not a train-now label**. The current journal is useful
+for outcome eligibility and realized trial metadata, but the decision-plane
+audit records missing historical eval-core/content-hash provenance, a
+constant-valued quality core identifier, and no reliable per-decision
+controller-token attribution. Before OC-1, the minimum data contract is: one
+stable action/decision id; planner and critic token counts; realized (not
+intended) apply/revert outcome; protocol/era/core/dataset identity; paired
+quality result; and explicit exclusion reasons. Until then, this vector can
+guide only offline schema work and must not drive action selection, promotion,
+or a learned-head claim.
+
 - [x] **OC-0.1** Enumerate the per-turn decisions Claude makes in the autopilot loop today. Read `scripts/autopilot/` and the autopilot handoff to inventory: which model to dispatch to, when to plan vs execute, when to compact context, when to verify, when to terminate. Produce a table. ✅ 2026-07-29 — committed controller inventory above; it separates planner suggestions from the deterministic/human gates that must remain outside any learned head.
 - [x] **OC-0.2** For each decision in the table, mark whether it is (a) routinely-uniform (Claude always picks the same option in similar contexts — codifiable), (b) genuinely-context-dependent (would need a learned head), or (c) currently-arbitrary (needs a clearer rule before being learned). ✅ 2026-07-29 — classification is in the OC-0.1 table; enforcement and evidence-maintenance rows are uniform, proposal/routing/compaction timing are contextual candidates, and StrategyStore retrieval ranking is currently arbitrary.
-- [ ] **OC-0.3** Identify the fitness signal: what quantity would the learned head be optimising? Per-task pass rate is too narrow for an autopilot loop. Possible candidates: pass-rate × token-cost, time-to-completion, autopilot trial success, eval-tower aggregate score across a session.
+- [x] **OC-0.3** Identify the fitness signal: what quantity would the learned head be optimising? Per-task pass rate is too narrow for an autopilot loop. Possible candidates: pass-rate × token-cost, time-to-completion, autopilot trial success, eval-tower aggregate score across a session. ✅ 2026-07-29 — selected the same-era, same-tier eligible outcome vector above; it remains an offline-only candidate pending decision-level provenance and token attribution.
 - [ ] **OC-0.4** Cost-benefit estimate: how many Claude tokens per autopilot run today, and what fraction is spent on the decisions the head would replace? If <20%, defer indefinitely. If >50%, this becomes a real candidate.
 - [ ] **OC-0.6** **Design-space-reference table (NEW 2026-04-28, from intake-474 + intake-493)**: populate a comparison table of published learned-coordinator architectures inside the OC-0 deliverable. **Framing — this is competitive intelligence, not a list of architectures EPYC is committing to copy. The table answers "what are others publishing in this design space?" so OC-0.5 can decide informedly, NOT "which one do we replicate?"** Two rows minimum:
 
