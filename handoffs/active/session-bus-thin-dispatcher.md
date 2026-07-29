@@ -756,7 +756,8 @@ freezes/cutovers, host reboots).
     The daily ledger count survives in `probe` as `spawns_today_history_only` and gates nothing.
     Tests: 10 new cases in `tests/test_tmux_adapter.py` (40 passed) including an end-to-end
     disposable-session proof that closing a window returns the slot, plus 4 new cases in the
-    standalone `scripts/coordination/tests/test_tmux_adapter.py` (37/37).
+    standalone suite, since renamed to `scripts/coordination/tests/test_tmux_adapter_live.py`
+    (37/37 — but see C10: that run was flaky-green on one C9 check).
     *Found while doing it:* that standalone suite had been **red at HEAD** since the C6 change —
     it is not pytest-collected, so nobody re-ran it — and for the same reason the C6 review
     flagged: its nudge fixture cleared the screen on submit, deleting the transcript echo the
@@ -791,15 +792,43 @@ freezes/cutovers, host reboots).
     `coordination/session-bus/config.yaml` on 2026-07-28 as interim headroom. That bump is not the
     fix and does not close this item.
     </details>
-  - [ ] **C10 — the standalone adapter suite is not collected, so it rots unrun.**
-    `scripts/coordination/tests/test_tmux_adapter.py` is a script with a `main()`, not pytest
-    cases, so no routine run touches it. It was **red at HEAD** from the C6 change (2026-07-28)
-    until C9 the same day, and only because C9 happened to touch the same module. It carries
-    coverage the pytest suite does not (real send-keys against a live pane, rate limiting, dead
-    panes, live-session enforcement), so deleting it would lose real signal. Wire it into pytest —
-    or, if its ~25s of `sleep` is why it was kept out, mark it `@pytest.mark.slow` and run it in
-    the same job that runs the other slow suites. Until then any change to `tmux_adapter.py`
-    must run **both** suites by hand.
+  - [x] **C10 — the standalone adapter suite is not collected, so it rots unrun.** ✅ 2026-07-28.
+    Renamed `scripts/coordination/tests/test_tmux_adapter.py` →
+    **`test_tmux_adapter_live.py`** (`git mv`, history preserved) and made its entry points
+    assert. It is now collected and green: `pytest tests/test_tmux_adapter.py
+    scripts/coordination/tests/test_tmux_adapter_live.py` → **42 passed**.
+    Two distinct defects, both worse than "not collected":
+    - **The basename collided.** It shared `test_tmux_adapter.py` with `tests/`, and neither
+      directory is a package, so pytest derived the module name `test_tmux_adapter` for both and
+      raised `import file mismatch` — a collection ERROR that **interrupts the entire run**, not a
+      skip. Any attempt to run both suites together aborted, so in practice only the `tests/` one
+      was ever run, and this file sat RED at HEAD for a day after the C6 change.
+    - **Collected would have been WORSE than uncollected.** `check()` only appended to a
+      module-global list that `main()` inspected; `test_unit`/`test_live` returned `None`. Under
+      pytest they would have reported **PASS with every check failing** — manufactured green
+      evidence. Each entry point now asserts over the checks it recorded (sliced by start index,
+      so `test_live` cannot inherit `test_unit`'s failures), and `_skip()` yields a real pytest
+      skip when tmux is unreachable instead of a silent pass. Verified by injecting a failing
+      check: the assertion fires.
+    - **A third defect fell out: the spawn fixture was racy.** Real spawns used `command="true"`,
+      which exits at once — measured, tmux reaps the window within ~0.3 s — so every check needing
+      the spawned main to *be live* raced the reaper. The C9 duplicate-refusal check failed on the
+      very next run after landing; **the "37/37" first quoted for C9 was flaky-green.** Fixture
+      now spawns `sleep 300`. This is a fixture defect, not an adapter defect: a window whose
+      command exited is genuinely not a live main, and the adapter counting it as dead is correct.
+      3 consecutive clean runs after the fix.
+    Anyone touching `tmux_adapter.py` still runs **both** suites — the header of each says so.
+  - [ ] **C16 — a bare repo-wide `pytest` cannot run, which is why C10 could hide.** Measured
+    2026-07-28: `pytest` from `/workspace` collects 2200 tests and then **aborts with 46
+    collection errors**, so there is no routine whole-repo run for anything to be red in. The
+    errors are not this repo's: `repos/` holds the child repos (symlinked, own suites, own deps)
+    and `*.bak-*` stale backups; `tests/compliance/agent_file/test_runner.py` is a known error
+    owned elsewhere. With `--ignore=repos --ignore=tests/compliance` collection is **clean at 560
+    tests**, including the renamed live suite. Proposed fix: a `pytest.ini` with `norecursedirs`
+    covering `repos` and `*.bak-*`, leaving the compliance error loudly visible to its owner.
+    **Deliberately not done in this session** — it changes test behaviour for every parallel
+    session while an operator freeze and an in-flight C9 review are running, and C10 is fully
+    fixed without it. Wants ~10 minutes and one operator nod.
   - [ ] **C11 — C9 landed without the independent review its own filing required.** The C9 entry
     says the change "wants an independent review before it lands, not a same-session self-merge",
     and it was implemented and committed (`8cbe50c0`) by the same session that had just reviewed

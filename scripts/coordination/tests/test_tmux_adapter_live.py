@@ -1,5 +1,13 @@
 #!/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python
-"""Tests for scripts/coordination/tmux_adapter.py (M5).
+"""LIVE-PANE tests for scripts/coordination/tmux_adapter.py (M5).
+
+Companion to `tests/test_tmux_adapter.py`, which covers the predicates against
+stubbed panes. THIS file drives a real tmux pane end to end: send-keys into a
+live composer, the rate limit, a busy window, a dead pane, spawn, and the spawn
+cap. Neither suite subsumes the other — **run both when you touch the adapter.**
+
+    python -m pytest tests/test_tmux_adapter.py \
+                     scripts/coordination/tests/test_tmux_adapter_live.py
 
 SAFETY: never touches the live `agent` session. Every tmux case runs in a
 throwaway session named `busadapter-test-<pid>`, killed on exit even on failure,
@@ -10,7 +18,23 @@ Two groups:
   unit  — resolve_target/probe against synthetic configs; no tmux at all
   live  — nudge, rate limit, busy-window refusal, dead pane, spawn, spawn cap
 
-Usage: scripts/coordination/tests/test_tmux_adapter.py [--unit-only]
+WHY THIS FILE WAS INVISIBLE, AND WHY IT IS NAMED `_live` (C10, 2026-07-28). It was
+`scripts/coordination/tests/test_tmux_adapter.py` — the SAME basename as
+`tests/test_tmux_adapter.py`. Neither directory is a package, so pytest derived the
+module name `test_tmux_adapter` for both and aborted any run that reached both with
+`import file mismatch` — a collection ERROR that interrupts the whole session, not a
+skip. In practice nobody ran it, and it sat RED at HEAD for a day after the C6
+change while every quoted "green" came from the pytest path alone. The unique
+basename is the fix; do not rename it back.
+
+AND THE CHECKS NOW ASSERT. `check()` only appended to a module-global list that
+`main()` inspected, so under pytest `test_unit`/`test_live` returned None and
+reported PASS **no matter how many checks failed** — collected-but-always-green,
+which is worse than uncollected because it manufactures false evidence. Each entry
+point now asserts over the checks IT recorded.
+
+Usage: scripts/coordination/tests/test_tmux_adapter_live.py [--unit-only]
+       (or via pytest, as above — both paths report the same failures)
 """
 
 from __future__ import annotations
@@ -36,6 +60,30 @@ RESULTS: list[tuple[bool, str]] = []
 def check(ok: bool, why: str) -> None:
     RESULTS.append((bool(ok), why))
     print(f"  {'PASS' if ok else 'FAIL'}  {why}")
+
+
+def _assert_checks(start: int, label: str) -> None:
+    """Fail the calling test if any check IT recorded failed.
+
+    Sliced from ``start`` rather than reading all of RESULTS: the list is a module
+    global shared by both entry points, so without the slice `test_live` would
+    inherit `test_unit`'s failures and one defect would be reported twice.
+
+    Without this, pytest saw two functions that return None and always passed.
+    """
+    failed = [why for ok, why in RESULTS[start:] if not ok]
+    assert not failed, (f"{len(failed)} of {len(RESULTS) - start} checks failed in {label}:"
+                        + "".join(f"\n  - {why}" for why in failed))
+
+
+def _skip(reason: str) -> None:
+    """Skip under pytest; degrade to a printed note when run as a script."""
+    try:
+        import pytest
+    except ImportError:
+        print(f"== SKIPPED: {reason} ==")
+        return
+    pytest.skip(reason, allow_module_level=False)
 
 
 def load(bus_root: Path):
@@ -90,6 +138,7 @@ def tmux(*args: str) -> tuple[int, str]:
 
 
 def test_unit() -> None:
+    start = len(RESULTS)
     print("== unit: target resolution and guard blockers (no tmux) ==")
     with tempfile.TemporaryDirectory() as d:
         bus = Path(d)
@@ -136,14 +185,17 @@ def test_unit() -> None:
         # every unit case must be nudge_ok False; a green path needs real tmux
         check(not p["nudge_ok"], "no unit configuration is ever nudge_ok")
 
+    _assert_checks(start, "unit")
+
 
 # ------------------------------------------------------------------ live group
 
 
 def test_live() -> None:
+    start = len(RESULTS)
     rc, _ = tmux("-V")
     if rc != 0:
-        print("== live: SKIPPED (no tmux reachable) ==")
+        _skip("no tmux reachable")
         return
     print(f"== live: real tmux in throwaway session {SESSION} ==")
     with tempfile.TemporaryDirectory() as d:
@@ -256,6 +308,13 @@ def test_live() -> None:
             check(not created, f"--dry-run creates NO bus files (found {created})")
 
             S.dry_run = False
+            # A LONG-LIVED command, deliberately. `true` exits at once and tmux
+            # reaps the window within ~0.3s (measured 2026-07-28), so every check
+            # below that needs the spawned main to BE LIVE was a race against the
+            # reaper — the C9 duplicate-refusal check passed or failed depending on
+            # scheduling, and the "37/37" first quoted for it was flaky-green. A
+            # fixture that cannot hold the state it asserts is not a test.
+            S.command = "sleep 300"
             rc = m.cmd_spawn(S())
             created = [f for f in ("inbox/spawned.jsonl", "outbox/spawned.jsonl",
                                    "heartbeats/spawned.json", "cursors/spawned.json")
@@ -334,14 +393,21 @@ def test_live() -> None:
             tmux("kill-session", "-t", SESSION)
             print(f"  (throwaway session {SESSION} killed)")
 
+    _assert_checks(start, "live")
+
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--unit-only", action="store_true")
     args = ap.parse_args()
-    test_unit()
-    if not args.unit_only:
-        test_live()
+    # The entry points now raise on failure (so pytest sees it). As a script we
+    # want the FULL tally, not the first failing group, so both groups run and the
+    # summary below is what decides the exit code.
+    for group in (test_unit,) if args.unit_only else (test_unit, test_live):
+        try:
+            group()
+        except AssertionError:
+            pass
     failed = [w for ok, w in RESULTS if not ok]
     print(f"\n{len(RESULTS) - len(failed)}/{len(RESULTS)} passed")
     for w in failed:
