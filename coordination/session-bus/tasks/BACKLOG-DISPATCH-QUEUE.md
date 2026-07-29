@@ -103,7 +103,7 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 26 | `architect-model-selection-bench.md:330` | follow-up tooling | none | S | `scripts/bench/gpu_lib.sh`, `run_arm.sh`, `run_budget.sh` | Promote scratchpad GPU driver scripts into the repo |
 | 27 | ~~`context-folding-progressive.md:113`~~ **✅ CLOSED 2026-07-29** | deep-dive correction | none | S | `context-folding-progressive.md` | Record do-not-prioritize decision for ContextRot harness replication |
 | 28 | `scoring-infra-standardization.md:184` | intake 2a | none | S | `research/intake_index.yaml`, `benchmarks/instruction_precision` | Adopt six-point SWE-bench disclosure standard for intake-916/917/924 |
-| 29 | `tool-output-compression.md:442` | intake 2026-07-21 | none | S | `scripts/utils/compress_tool_output.py` | Bias Phase-3d fallback chain toward observation-dropping first |
+| 29 | ~~`tool-output-compression.md:442`~~ **✅ CLOSED 2026-07-29** | intake 2026-07-21 | none | S | `scripts/utils/compress_tool_output.py` | Bias Phase-3d fallback chain toward observation-dropping first |
 | 30 | `decision-aware-routing.md:185` | DAR-5 | none | S | `learned-routing-controller.md` | Document cold-start note for LRC P5 onboarding |
 | 31 | `ernie-image-turbo-evaluation.md:139` | progress-checklist | none | S | `research/deep-dives/` ernie dive | Record LongText-Bench harmonized ranking in the deep dive |
 | 32 | `intake-derived-work-2026-07-25.md:166` | P1b DFlash | none | S | capability registry yaml | Re-triage the stale dflash registry `forbid` row |
