@@ -1728,3 +1728,74 @@ def test_c29_an_unprovisioned_rostered_id_still_gets_the_C3_bootstrap_message(
     err = capsys.readouterr().err
     assert "no inbox for 'alice'" in err and "provision" in err
     assert "not a roster id" not in err
+
+
+# ------------------------------------------- C34: the two sides ran different validators
+
+
+def test_c34_schema_invalid_defect_is_flagged_once_not_every_tick(bus_root: Path) -> None:
+    """C34: this was the ONE defect path in relay that appended unconditionally.
+
+    An outbox row is never repaired by the daemon (single writer), so an invalid row is
+    invalid forever and re-reporting it every 45s says nothing new. Measured: the roster
+    rename added `_renamed_from` to 217 rows, which the schema forbids, so 249 distinct
+    shapes were re-emitted every tick — ~20,000 advisory rows/hour into a 38.5 MiB file
+    that `already_flagged` re-reads IN FULL every tick, on the daemon's hot path.
+    """
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "outbox" / "alice.jsonl", {
+        "id": "malformed-source", "to": "bob", "kind": "finding"})
+    roster = json.loads((bus_root / "config.yaml").read_text())["roster"]
+
+    first = coordinator.relay_outbox_messages(bus_root, roster, epoch=1)
+    for entry in first:
+        _append(bus_root / "advisory.jsonl", entry)      # what the tick loop does
+    second = coordinator.relay_outbox_messages(bus_root, roster, epoch=1)
+
+    assert [r.get("check") for r in first] == ["outbox-schema"]
+    assert first[0]["relayed_src"] == "malformed-source"
+    assert second == [], "45s ticks must not re-report a row that cannot change"
+    assert _read_jsonl(bus_root / "inbox" / "bob.jsonl") == [], "and it is still not relayed"
+
+
+def test_c34_partial_validation_warns_on_the_SUCCESS_path_too(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """C34: without jsonschema, `validate_row` checked 6 keys and returned SILENTLY, so
+    "validated" and "checked six keys exist" were indistinguishable to the caller.
+
+    That distinction is the whole ballgame: agents author with `python3 ...` (no
+    jsonschema — the 6-key check) while the daemon runs under the orchestrator venv
+    (full schema). A message can pass authoring and be refused at relay, and nobody is
+    told. 217 of 341 live outbox rows were in exactly that state.
+    """
+    monkeypatch.setattr(bus, "_validator", lambda *_a: None)
+    row = _message("alice", "bob", "finding", seq=1)
+    row["_renamed_from"] = "someone-else"        # full schema forbids extra properties
+
+    bus.validate_row(bus_root, row, "msg")       # must NOT raise — it is a degradation
+
+    err = capsys.readouterr().err
+    assert "jsonschema is unavailable" in err
+    assert "required keys ONLY" in err
+    assert "coordinator-daemon DOES validate in full" in err
+
+
+def test_c34_partial_validation_still_raises_on_a_missing_required_key(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """The warning must not replace the check it warns about."""
+    monkeypatch.setattr(bus, "_validator", lambda *_a: None)
+
+    with pytest.raises(bus.BusError, match="missing required field"):
+        bus.validate_row(bus_root, {"schema_version": "x", "id": "y"}, "msg")
+    assert "jsonschema is unavailable" in capsys.readouterr().err
+
+
+def test_c34_full_validation_stays_silent(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """The positive control: when validation is real, it must not cry wolf — a warning
+    on every valid row is a warning nobody reads."""
+    pytest.importorskip("jsonschema")
+    bus.validate_row(bus_root, _message("alice", "bob", "finding", seq=1), "msg")
+    assert capsys.readouterr().err == ""

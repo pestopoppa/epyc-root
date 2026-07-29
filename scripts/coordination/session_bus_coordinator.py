@@ -2154,10 +2154,28 @@ def relay_outbox_messages(bus_root: Path, roster: list[dict], epoch: int,
             try:
                 validate_row(bus_root, row, "msg")
             except Exception as exc:  # noqa: BLE001
-                advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
-                                 "epoch": epoch, "kind": "defect", "agent": sender,
-                                 "detail": f"outbox msg {src} is schema-invalid and was NOT "
-                                           f"relayed: {exc}"})
+                # C34 (2026-07-29): DEDUPED. This branch appended unconditionally on
+                # every tick, and it is the one defect path in this function that did —
+                # C18's unreachable-recipient branch has keyed on `already_flagged`
+                # since it was written. An outbox row is never repaired by the daemon
+                # (single writer), so an invalid row is invalid forever and re-reporting
+                # it every 45s is pure noise about a fact that has not changed.
+                #
+                # Measured before the fix: the roster rename added `_renamed_from` to
+                # 217 migrated rows, which the schema forbids, so 249 distinct
+                # (row, reason) shapes were re-emitted every tick — ~20,000 advisory
+                # rows/hour, 33,074 `defect` rows in a 38.5 MiB advisory.jsonl that
+                # `already_flagged` then re-reads IN FULL every tick. A ledger that
+                # grows 20k rows/hour to say nothing new makes every real defect in it
+                # unfindable, and it is read on the daemon's hot path.
+                if (str(src), "schema-invalid") not in already_flagged:
+                    advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                                     "epoch": epoch, "kind": "defect", "agent": sender,
+                                     "relayed_src": src, "unreachable": "schema-invalid",
+                                     "check": "outbox-schema",
+                                     "detail": f"outbox msg {src} is schema-invalid and was NOT "
+                                               f"relayed: {exc}"})
+                    already_flagged.add((str(src), "schema-invalid"))
                 continue
             if stranded is not None:
                 handler, runs_at = stranded

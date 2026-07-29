@@ -168,12 +168,40 @@ def _validator(schema: dict, definition: str):
 def validate_row(bus_root: Path, row: dict, definition: str) -> None:
     """Raise BusError on a structural violation. Degrades to a required-key
     check when jsonschema is unavailable, and says so rather than passing
-    silently."""
+    silently.
+
+    C34 (2026-07-29): IT ONLY SAID SO WHEN IT FAILED. On the success path the partial
+    check returned silently, so "validated" and "checked six keys exist" were
+    indistinguishable to the caller — and that distinction is the whole ballgame here,
+    because the two sides of this bus run different interpreters:
+
+      * agents author with `python3 scripts/coordination/session_bus.py append ...`,
+        the command CLAUDE.md, BUS_PROTOCOL.md and every task brief specify.
+        `/usr/bin/python3` has NO jsonschema, so authoring gets the 6-key check;
+      * the coordinator-daemon runs under the orchestrator venv, which HAS jsonschema
+        (4.26.0), so `relay_outbox_messages` applies the FULL schema.
+
+    So a message can pass authoring and be REJECTED at relay, and it is then never
+    delivered — the write succeeded, the send did not, and nobody is told. Measured
+    2026-07-29: 217 of 341 live outbox rows (64%) are in exactly that state, 12 of
+    them operator items including both gates from C27 and three from `mainA`.
+
+    The warning is unconditional and goes to stderr, because a degradation nobody sees
+    is not a degradation anyone acts on. It does NOT refuse: refusing would break every
+    agent on the documented command with no interpreter to switch to mid-task, which
+    trades a silent gap for a total outage. Making the two sides agree is a separate,
+    escalated decision.
+    """
     validator = _validator(_load_schema(bus_root), definition)
     if validator is None:
         required = {"msg": ["schema_version", "id", "ts", "from", "to", "kind"],
                     "queue_row": ["schema_version", "ts", "task_id", "status", "lane",
                                   "gating", "epoch"]}[definition]
+        print(f"session_bus: WARNING — jsonschema is unavailable under {sys.executable}, so this "
+              f"{definition} was checked for {len(required)} required keys ONLY, not against "
+              f"session_bus.schema.json. The coordinator-daemon DOES validate in full and will "
+              f"refuse to relay a row this partial check let through. Re-run with an interpreter "
+              f"that has jsonschema to validate properly.", file=sys.stderr)
         missing = [k for k in required if k not in row]
         if missing:
             raise BusError(f"missing required field(s) {missing} (jsonschema unavailable — "
