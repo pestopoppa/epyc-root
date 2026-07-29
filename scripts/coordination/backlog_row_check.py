@@ -56,6 +56,19 @@ _RULE_COND = re.compile(
     r"\b(whenever|until|unless|only where|as migrated|each time|every time|"
     r"when resuming|before adding|opportunistically|as long as|going forward)\b", re.I)
 _GUARD = re.compile(r"UNCHECKED BY DESIGN|STANDING CONSTRAINTS?|DO NOT DISPATCH", re.I)
+# A section can disclaim execution by the reader without being a template. Measured
+# 2026-07-29: `stale-open-audit-2026-07-18.md` § "Recommendations (follow-up tasks —
+# no checkbox flips on the audited handoffs)" holds six rows, FOUR of which direct
+# work at other owners and TWO of which extend the audit itself. Two separate rows
+# were claimed out of it before the disclaimer was noticed.
+#
+# This WARNS, it does not refuse — refusing would have been wrong for the two rows
+# that genuinely belong to the reader. The distinction ("does this modify an audited
+# artifact, or extend the audit?") needs a human; the tool's job is to make sure the
+# disclaimer is seen at all, since it lives in the HEADING and not in the row.
+_OWNER_DISCLAIM = re.compile(
+    r"no checkbox flips|owner is |owning lane|for the owner|hand(ed)? to the owner|"
+    r"follow-up tasks|operator-gated|human-owned|recommendations?\s*\(", re.I)
 
 
 def claim_key(text: str) -> str:
@@ -110,6 +123,14 @@ def classify(path: Path, lineno: int, state: str, body: str, head: str) -> tuple
     if section_is_guarded(path, lineno):
         return 2, [f"the enclosing section (§ {head}) carries an explicit DO-NOT-DISPATCH guard — "
                    f"this is a reusable checklist or a standing constraint, not a task"]
+    lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    start = max((i for i, l in enumerate(lines[:lineno]) if l.startswith("#")), default=0)
+    disclaimer = _OWNER_DISCLAIM.search("\n".join(lines[start:start + 3]))
+    if disclaimer:
+        reasons.append(f"OWNERSHIP: the enclosing section disclaims execution by the reader "
+                       f"({disclaimer.group(0).strip()!r} in § {head}). Rows here often direct work "
+                       f"at ANOTHER owner — verify it is yours before claiming. Not a refusal: such "
+                       f"sections mix owner-directed rows with ones that really are yours.")
     strong = bool(_RULE_VERB.match(body)) and bool(_RULE_COND.search(body))
     if strong:
         return 2, [f"the BOX TEXT is standing-constraint shaped (continuous imperative + a standing "

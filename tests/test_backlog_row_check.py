@@ -126,3 +126,33 @@ def test_ambiguous_text_refuses_rather_than_picking(
 
     assert brc.main(["--row", "audit the thing"]) == 4
     assert "AMBIGUOUS" in capsys.readouterr().err
+
+
+def test_a_section_that_disclaims_reader_execution_warns_but_does_not_refuse(
+        tmp_path: Path) -> None:
+    """Measured 2026-07-29: stale-open-audit § "Recommendations (follow-up tasks — no
+    checkbox flips on the audited handoffs)" holds six rows, FOUR directing work at
+    other owners and TWO extending the audit itself. Two rows were claimed out of it
+    before the disclaimer — which lives in the HEADING, not the row — was noticed.
+
+    It must WARN, never refuse: refusing would have been wrong for the two rows that
+    genuinely belong to the reader, and marking real work undispatchable is the
+    costlier error."""
+    f = _md(tmp_path, "## Recommendations (follow-up tasks — no checkbox flips on the "
+                      "audited handoffs)\n\n- [ ] Re-anchor GEMV to its live tasks\n")
+    code, reasons = brc.classify(f, 3, "", "Re-anchor GEMV to its live tasks",
+                                 "Recommendations (follow-up tasks — no checkbox flips on the "
+                                 "audited handoffs)")
+
+    assert code == 0, "must stay dispatchable — the section mixes owners"
+    assert any("OWNERSHIP" in r for r in reasons)
+    assert any("verify it is yours" in r for r in reasons)
+
+
+def test_an_ordinary_section_gets_no_ownership_warning(tmp_path: Path) -> None:
+    """The positive control: a warning on every row is a warning nobody reads."""
+    f = _md(tmp_path, "## Outstanding Tasks\n\n- [ ] Download ThinkPRM-1.5B and quantize\n")
+    code, reasons = brc.classify(f, 3, "", "Download ThinkPRM-1.5B and quantize",
+                                 "Outstanding Tasks")
+    assert code == 0
+    assert not any("OWNERSHIP" in r for r in reasons)
