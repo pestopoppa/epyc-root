@@ -11,12 +11,18 @@ roster:
   # is now named explicitly. Roster id stays `codex`: it is the identity every existing
   # queue row, cursor, inbox and outbox is keyed on, and renaming it would orphan all of them.
   - {id: codex,             role: main,              lanes: [cpu, gpu, none], endpoint: "tmux:agent:codex-inference", drain: boundary}
-  # RETIRED 2026-07-28: the operator closed its tmux window (agent:claude_A). The row is kept,
+  # RETIRED 2026-07-28: the operator closed its tmux window (agent:claude_A). The row was kept,
   # not deleted — queue rows, cursors and its inbox/outbox are all keyed on this identity, and
-  # removing it would orphan that history. `lanes: []` means the daemon will never assign to it.
-  # Its 2 undelivered inbox messages are moot: the stage_b_prune_plan task-assign was reassigned
-  # to codex-bus-tests and completed. Endpoint left as-is so the C8 lint keeps it visible.
-  - {id: claude-main,       role: retired,           lanes: [],               endpoint: "monitor:file", drain: push}
+  # removing it would orphan that history.
+  #
+  # REVIVED 2026-07-29 post-reboot by coordinator-agent, on the operator's standing rule "always
+  # reuse main aliases after reboot". It owns E5 W1-W4 (the NUMA×batch sweep) on the cpu lane.
+  # A `role: retired` row is a re-usable slot, not a tombstone: reviving the identity keeps its
+  # outbox history, cursor and triage corr_ids attached to the same name, whereas a fresh alias
+  # would orphan all of it AND leave the old row drawing "LOOKS DEAD" advisories forever.
+  # endpoint monitor:file -> tmux:agent:claude-main so it can actually be nudged: monitor:file has
+  # no push delivery, which `validate` flags precisely because assigned work rots unread there.
+  - {id: claude-main,       role: main,              lanes: [cpu, none],      endpoint: "tmux:agent:claude-main", drain: boundary}
   - {id: coordinator-agent, role: coordinator-agent, lanes: [none],           endpoint: "monitor:file", drain: push}
   # Added by coordinator-agent 2026-07-28. Test authoring for the session bus itself
   # (zero coverage found: no file under tests/ references session_bus, while the bus is
@@ -28,10 +34,11 @@ roster:
   # (role-agnostic resident lane) and P2-3 (Stage-0 hardening). lanes:[none, gpu] — it may hold
   # the GPU lane, but NEVER cpu: the codex main runs CPU-side E8/G3 work and P1-2's E5 grid has
   # a ~2026-07-31 deadline on this host.
-  # STOOD DOWN 2026-07-29T12:40Z, operator-approved. Wrapped and verified before closing:
-  # tierc-10d-crash-window-durability pushed, 0 unpushed in orchestrator and epyc-root, 0 unread.
-  # Row kept, not deleted — queue rows, cursors and its inbox/outbox are keyed on this identity.
-  - {id: claude-gpu-lane,   role: retired,           lanes: [],               endpoint: "tmux:agent:claude-gpu-lane",   drain: boundary}
+  # RE-ACTIVATED 2026-07-29T12:47Z on operator direction (reversing the 12:40Z stand-down):
+  # P2-2 tenant landing starts PRE-reboot rather than deferring. Re-using the same roster id
+  # deliberately — its inbox still holds the undelivered lane-activation decision, so a fresh
+  # session in this slot drains it rather than needing it re-relayed.
+  - {id: claude-gpu-lane,   role: main,              lanes: [gpu, none],      endpoint: "tmux:agent:claude-gpu-lane",   drain: boundary}
   # Added by coordinator-agent 2026-07-28 on operator direction. Fable 5 at xhigh effort,
   # READ-ONLY auditor of the E8 harness contract set. Rationale: three consecutive failed-closed
   # cycles each surfaced a DIFFERENT defect in a different layer (snapshot publisher binding,

@@ -852,10 +852,42 @@ def cmd_spawn(args: argparse.Namespace) -> int:
             p.parent.mkdir(parents=True, exist_ok=True)
             p.write_text("", encoding="utf-8")
             created.append(rel)
+    # C24 (2026-07-29): the HEARTBEAT is written unconditionally; the CURSOR is not.
+    #
+    # Seeding the heartbeat only-if-absent made every RE-spawned roster id inherit its
+    # dead predecessor's heartbeat, so the new session was unreachable from birth:
+    # cmd_nudge refuses on `state == working` and on age, and the fresh session cannot
+    # clear either — it has not been told to drain, and it cannot be told, because the
+    # telling is what the guard refuses. Measured post-reboot 2026-07-29: all three
+    # pre-existing ids were undeliverable, `codex` on BOTH state and age (its heartbeat
+    # still read `working` on a task whose session no longer existed). Same family as
+    # C8/C18 — a main unreachable for want of a working liveness signal rather than a
+    # delivery path; here the path resolves and the signal lies about it.
+    #
+    # WHY THIS IS SAFE, and exactly what it leans on: cmd_spawn has already refused
+    # above when `args.agent in ids` (C9). Reaching this line therefore PROVES the id
+    # is not live, which proves its heartbeat is stale — so overwriting it destroys no
+    # signal anyone is maintaining. The proof is only as good as `live_mains()`: an
+    # UNDERCOUNT there (the C14 capacity-inventing direction) would let this reset a
+    # genuinely live main's heartbeat and re-open it to a mid-generation nudge. That is
+    # why `live_mains` overcounts where it has a choice and refuses when it cannot
+    # count — this write is one of the things depending on it. Do not weaken it.
+    #
+    # The cursor stays only-if-absent, deliberately: it is a read POSITION, not a
+    # liveness claim. Resetting it to 0 would re-deliver every message the identity has
+    # already processed, and a spawned session inheriting its predecessor's read
+    # position is correct — that is how it picks up what it missed.
+    hb_rel = f"heartbeats/{args.agent}.json"
+    hb_path = BUS_ROOT / hb_rel
+    hb_existed = hb_path.exists()
+    hb_path.parent.mkdir(parents=True, exist_ok=True)
+    hb_path.write_text(json.dumps(
+        {"agent": args.agent, "state": "idle", "task_id": None, "ts": _now()},
+        indent=2) + "\n", encoding="utf-8")
+    created.append(hb_rel + (" (reset: stale predecessor)" if hb_existed else ""))
+
     for rel, payload in (
-            (f"heartbeats/{args.agent}.json",
-             {"agent": args.agent, "state": "idle", "task_id": None, "ts": _now()}),
-            (f"cursors/{args.agent}.json", {"agent": args.agent, "offset": 0, "ts": _now()})):
+            (f"cursors/{args.agent}.json", {"agent": args.agent, "offset": 0, "ts": _now()}),):
         p = BUS_ROOT / rel
         if not p.exists():
             p.parent.mkdir(parents=True, exist_ok=True)

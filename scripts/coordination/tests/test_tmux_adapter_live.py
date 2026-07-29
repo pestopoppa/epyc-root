@@ -337,6 +337,39 @@ def test_live() -> None:
             rc = m.cmd_spawn(S())
             check(rc == 0, f"closing a main returns its slot immediately (rc={rc})")
             tmux("kill-window", "-t", f"{SESSION}:spawned")
+            time.sleep(0.5)
+
+            # C24: a RE-spawned id must not inherit its dead predecessor's heartbeat.
+            # The bug this pins was invisible above because that block deletes all four
+            # bus files first — which is exactly the case a reboot does NOT produce. The
+            # real post-reboot shape is the files surviving with a `working` state on a
+            # task whose session is gone, and cmd_nudge then refusing on state AND age,
+            # with the fresh session unable to clear either.
+            hb = bus / "heartbeats/spawned.json"
+            hb.write_text(json.dumps({"agent": "spawned", "state": "working",
+                                      "task_id": "task-from-a-dead-session",
+                                      "ts": "2020-01-01T00:00:00+00:00"}) + "\n")
+            cur = bus / "cursors/spawned.json"
+            cur.write_text(json.dumps({"agent": "spawned", "offset": 4242,
+                                       "ts": "2020-01-01T00:00:00+00:00"}) + "\n")
+            rc = m.cmd_spawn(S())
+            check(rc == 0, f"spawn over a stale heartbeat returns 0 (rc={rc})")
+            after = json.loads(hb.read_text())
+            check(after["state"] == "idle",
+                  f"C24: spawn RESETS an inherited heartbeat to idle (got {after['state']!r})")
+            check(after["task_id"] is None,
+                  f"C24: the dead session's task_id is cleared (got {after['task_id']!r})")
+            check(not after["ts"].startswith("2020"),
+                  f"C24: the heartbeat ts is refreshed (got {after['ts']!r})")
+            cfg_c24 = m.load_config()
+            p_c24 = m.probe(cfg_c24, "spawned", 0.0, 900.0)
+            check(not any("heartbeat" in r for r in p_c24["blockers"]),
+                  f"C24: a freshly spawned main is not heartbeat-blocked ({p_c24['blockers']})")
+            # The cursor is a read POSITION, not a liveness claim — it must SURVIVE, or
+            # the respawned session re-reads everything its predecessor already drained.
+            check(json.loads(cur.read_text())["offset"] == 4242,
+                  "C24: spawn preserves the inherited cursor offset")
+            tmux("kill-window", "-t", f"{SESSION}:spawned")
 
             # C9 fail-closed: an uncountable live set must refuse, never assume zero.
             write_config(bus, [{"id": "spawned", "endpoint": f"tmux:{SESSION}"}],
