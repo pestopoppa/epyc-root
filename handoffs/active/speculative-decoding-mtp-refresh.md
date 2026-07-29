@@ -7,13 +7,13 @@
 
 ## Objective
 
-Decide which remaining MTP (multi-token-prediction) speculative-decoding paths are worth operator benches now that production has moved to `production-consolidated-v7` with native MTP/NEXTN support, and now that the Qwen/native MTP surface has a built experimental checkpoint. The open work is no longer "does our fork have MTP at all"; it is per-model deploy evidence under the v7 native runtime or a future refreshed experimental line started from current production. **All numbers here are OBSERVATIONS (MEASUREMENT.md) — none gate a keep/deploy decision; the operator runs all benches.**
+Decide which remaining MTP (multi-token-prediction) speculative-decoding paths are worth operator benches now that production is frozen at `production-consolidated-v8` with native MTP/NEXTN support, and now that the Qwen/native MTP surface has a built experimental checkpoint. The open work is no longer "does our fork have MTP at all"; it is per-model deploy evidence under the v8 native runtime or a future refreshed experimental line started from current production. **All numbers here are OBSERVATIONS (MEASUREMENT.md) — none gate a keep/deploy decision; the operator runs all benches.**
 
-## Current State Correction (updated 2026-07-20)
+## Current State Correction (updated 2026-07-29)
 
-- Production has moved past both the June v5/ik split and the July v7 promotion. Current production is the single `production-consolidated-v7` llama.cpp tree at `6ad45fa3ff` / binary `10098`: upstream native MTP/NEXTN speculative decoding + EPYC CPU forward-ports + iqk AVX-512 GEMM kernels + the validated v7 promotion set. `ik_llama.cpp` remains deprecated as a separate production binary.
-- The June dense-Gemma measurements below remain useful observations, but future benches/deploy decisions must use the production v7 native flag surface (`--spec-type draft-mtp`, `--spec-draft-n-max`) or a successor refreshed experimental branch started from `production-consolidated-v7`. Do not revive the separate ik runtime except to reproduce historical results.
-- `worker_general` Gemma4-26B-A4B still uses Google's official assistant head; the architecture question is no longer "mainline vs ik" but draft depth / sampling / quality under v7 and, for future Qwen work, whether any remaining MTP port belongs in `llama.cpp-experimental`.
+- Production has moved past the June v5/ik split and the July v7 promotion. Current production is the single frozen `production-consolidated-v8` llama.cpp tree at `67a433bf45a8a091d83b4ea0b32ff0735fd51800` / binary `10107`; `ik_llama.cpp` remains deprecated as a separate production binary.
+- The June dense-Gemma measurements below remain useful observations, but future benches/deploy decisions must use the v8 native flag surface (`--spec-type draft-mtp`, `--spec-draft-n-max`) or a successor experimental branch freshly started from v8. Do not revive the separate ik runtime except to reproduce historical results.
+- `worker_general` Gemma4-26B-A4B still uses Google's official assistant head; the architecture question is no longer "mainline vs ik" but draft depth / sampling / quality under v8 and, for future Qwen work, whether any remaining MTP port belongs in `llama.cpp-experimental`.
 
 ## Historical State (verified 2026-06-22; superseded by v6 cutover)
 
