@@ -598,12 +598,27 @@ def relay_tokens(bus_root: Path, reports: dict[str, list[dict]], latest: dict[st
     agent's duty — a request lacking dry-run evidence is a DEFECT, not something
     to quietly relay, because presenting a command that fails is an agent defect
     by policy.
+
+    C27 (2026-07-29): THE TWO OUTPUTS ARE INDEPENDENTLY IDEMPOTENT. Until this
+    change `gate in existing` short-circuited the whole iteration, so the block and
+    the HELD_OP_GATE row shared one guard. That was harmless only while this ran
+    exactly once per tick. It no longer does: the BLOCK is now relayed from the
+    always-on tier (`relay_token_blocks`) because transporting "a human signature
+    is needed" is transport, while HOLDING a task on that gate is a scheduling
+    decision and stays assign-only. With the old guard the always-on write would
+    have consumed the gate and the assign-tier pass would then have emitted no
+    queue row at all — the fix would have silently broken gating. The block guard
+    now suppresses only the block; the row keeps its own (`status != HELD_OP_GATE`).
+
+    `seen` additionally dedupes WITHIN one pass. `existing` is read once, so two
+    requests carrying the same gate_id in one sweep used to append it twice.
     """
     tq = bus_root / "tokens" / "token-queue.md"
     existing = tq.read_text(encoding="utf-8") if tq.exists() else ""
     blocks: list[str] = []
     rows: list[dict] = []
     defects: list[dict] = []
+    seen: set[str] = set()
 
     for tid, msgs in reports.items():
         for msg in msgs:
@@ -621,17 +636,21 @@ def relay_tokens(bus_root: Path, reports: dict[str, list[dict]], latest: dict[st
                                 "detail": f"token-request {gate} lacks dry-run evidence; "
                                           f"presenting an unvalidated command is an agent defect"})
                 continue
-            if gate in existing:
-                continue
-            blocks.append(
-                f"\n### {gate}\n\n"
-                f"- [ ] **{gate}** — requested by `{msg.get('from')}` for task `{tid}`\n"
-                f"  - block ref: `{payload.get('block_ref', '-')}`\n"
-                f"  - command (pre-validated, dry-run exit "
-                f"`{validated.get('dry_run_exit')}`):\n"
-                f"    ```\n    {validated.get('cmd')}\n    ```\n"
-                f"  - dry-run evidence: {validated.get('dry_run_evidence')}\n"
-            )
+            if gate in existing or gate in seen:
+                self_block = None            # already presented; the hold below still applies
+            else:
+                seen.add(gate)
+                self_block = (
+                    f"\n### {gate}\n\n"
+                    f"- [ ] **{gate}** — requested by `{msg.get('from')}` for task `{tid}`\n"
+                    f"  - block ref: `{payload.get('block_ref', '-')}`\n"
+                    f"  - command (pre-validated, dry-run exit "
+                    f"`{validated.get('dry_run_exit')}`):\n"
+                    f"    ```\n    {validated.get('cmd')}\n    ```\n"
+                    f"  - dry-run evidence: {validated.get('dry_run_evidence')}\n"
+                )
+            if self_block is not None:
+                blocks.append(self_block)
             row = latest.get(tid)
             if row and row.get("status") not in TERMINAL_STATES and row.get("status") != "HELD_OP_GATE":
                 rows.append({"schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(),
@@ -640,6 +659,50 @@ def relay_tokens(bus_root: Path, reports: dict[str, list[dict]], latest: dict[st
                              "epoch": epoch, "owner": row.get("owner"),
                              "operator_gates": sorted(set((row.get("operator_gates") or []) + [gate]))})
     return blocks, rows + defects
+
+
+def relay_token_blocks(bus_root: Path, config: dict, epoch: int) -> list[dict]:
+    """C27 (2026-07-29): present operator gates at EVERY authority, not just `assign`.
+
+    THE DEFECT THIS CLOSES. `relay_tokens` is the only writer of `token-queue.md`
+    gate blocks, and it was reachable only from `apply_assignment`, which runs under
+    `authority: assign`. The live config is `manual`. `token-request` was
+    simultaneously listed in `_NO_RELAY_KINDS` *because* `relay_tokens` was its
+    handler-of-record — so the exclusion was justified by a handler that the
+    configured authority never reached, and the message went nowhere at all. Two
+    real operator signature requests
+    (`RATIFY-P-BENCH-4-FG4B-AFFINITY-20260729`, `RATIFY-E8-FINAL-C1-RETRY-CAPACITYFIX-20260729`,
+    filed 2026-07-29 10:18Z and 11:16Z) were lost this way; `token-queue.md` read
+    "Pending token requests: (none)" the whole time, so a coordinator following the
+    documented cold-start procedure exactly would conclude no gates were waiting.
+    Worse than a dropped message: a dropped *signature request*.
+
+    WHY THIS IS TRANSPORT AND NOT JUDGMENT — the test every always-on tier member
+    must pass. Relaying a token-request GRANTS NOTHING. It writes an unchecked
+    `- [ ]` into a file the operator reads, and the operator still signs. It expands
+    no authority and touches no trust boundary, exactly as argued in-code for C2,
+    C19 and C20. HOLDING the requesting task on that gate is the opposite — that is
+    a scheduling decision — so the `HELD_OP_GATE` queue rows stay assign-only and
+    are deliberately not emitted here (`latest={}` yields none). The daemon's bright
+    line is unmoved: at `manual` it still writes no queue rows.
+
+    Cheap and idempotent: `relay_tokens` dedupes on `gate_id` against the file, so
+    the assign-tier call later in the same tick re-reads it, finds the gate present,
+    and appends nothing — while still emitting its own hold row.
+    """
+    roster = [r for r in (config.get("roster") or []) if isinstance(r, dict)]
+    reports = _outbox_reports(bus_root, roster)
+    blocks, extra = relay_tokens(bus_root, reports, {}, epoch)
+    advisory: list[dict] = [item for item in extra if item.get("kind") == "defect"]
+    if blocks:
+        tq = bus_root / "tokens" / "token-queue.md"
+        tq.parent.mkdir(parents=True, exist_ok=True)
+        with tq.open("a", encoding="utf-8") as fh:
+            fh.writelines(blocks)
+        advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                         "kind": "tokens-relayed", "count": len(blocks),
+                         "tier": "always-on"})
+    return advisory
 
 
 def process_revocations(config: dict, latest: dict[str, dict], reports: dict[str, list[dict]],
@@ -2159,6 +2222,12 @@ def tick(bus_root: Path, epoch: int, *, dry_run: bool = False) -> list[dict]:
         # inbox is transport, not a scheduling decision — and delegates the
         # actual send-keys, with all its guards, to tmux_adapter.py.
         advice += resolve_stuck_agents(bus_root, roster, epoch)
+        # C27: the FIRST hop of that same path, and the one that was missing.
+        # `pending_operator_actions` below is the net for an operator item the
+        # coordinator failed to present; this is the presentation itself. It ran
+        # only under `assign` authority until 2026-07-29, which is why two real
+        # signature requests were never presented at all — see relay_token_blocks.
+        advice += relay_token_blocks(bus_root, config, epoch)
         # C20: the last hop, bus -> operator. Runs at every authority for the same
         # reason relay does — transporting "a human signature is needed" is not a
         # scheduling decision, and its absence is what every one of the seven

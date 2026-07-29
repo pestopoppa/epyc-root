@@ -1147,3 +1147,121 @@ def test_c20_receipt_superseded_and_token_queue_all_exempt(bus_root: Path, tmp_p
 
     rows = coordinator.scan_operator_receipts(bus_root, _stuck_roster(), epoch=1, artifact_dir=art)
     assert rows == []
+
+
+# ------------------------------------------- C27 first hop: outbox -> token-queue.md
+
+
+def _token_request(sender: str = "alice", *, gate: str, task_id: str = "task-1",
+                   seq: int = 1, validated: bool = True) -> dict:
+    """The exact shape of the two 2026-07-29 requests that were never presented."""
+    payload: dict[str, object] = {"gate_id": gate, "block_ref": "handoffs/active/x.md#L1"}
+    if validated:
+        payload["validated"] = {"cmd": "bash artifacts/operator/ratify.sh",
+                                "dry_run_exit": 0,
+                                "dry_run_evidence": "artifacts/operator/ratify.dryrun.log"}
+    return _message(sender, "coordinator-agent", "token-request", seq=seq,
+                    task_id=task_id, needs_routing_to=["coordinator-agent"],
+                    action_required=True, payload=payload)
+
+
+def test_c27_token_request_is_presented_at_manual_authority(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """C27: the live config is `manual`; a gate filed there MUST still reach the operator.
+
+    Regression for the 2026-07-29 loss of RATIFY-P-BENCH-4-FG4B-AFFINITY-20260729 and
+    RATIFY-E8-FINAL-C1-RETRY-CAPACITYFIX-20260729 — both well-formed, both routed to
+    coordinator-agent, both action_required, neither ever written to token-queue.md.
+    """
+    _provision(bus_root, *AGENTS)
+    _quiet_tick_seams(monkeypatch)
+    assert coordinator._authority(coordinator._load_config(bus_root)) == "manual"
+    _append(bus_root / "outbox" / "alice.jsonl", _token_request(gate="RATIFY-THING-20260729"))
+
+    coordinator.tick(bus_root, epoch=1)
+
+    assert "RATIFY-THING-20260729" in (bus_root / "tokens" / "token-queue.md").read_text(
+        encoding="utf-8")
+
+
+def test_c27_presentation_writes_no_queue_row_at_manual_authority(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Transport, not judgment. Presenting a gate must not HOLD the task."""
+    _provision(bus_root, *AGENTS)
+    _quiet_tick_seams(monkeypatch)
+    _append(bus_root / "queue.jsonl", _queue("task-1", status="RUNNING", owner="alice"))
+    _append(bus_root / "outbox" / "alice.jsonl", _token_request(gate="RATIFY-HOLD-20260729"))
+    before = _read_jsonl(bus_root / "queue.jsonl")
+
+    coordinator.tick(bus_root, epoch=1)
+
+    assert "RATIFY-HOLD-20260729" in (bus_root / "tokens" / "token-queue.md").read_text(
+        encoding="utf-8")
+    assert _read_jsonl(bus_root / "queue.jsonl") == before, \
+        "at manual authority the daemon presents the gate but decides nothing"
+
+
+def test_c27_presentation_is_idempotent_across_ticks(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    _provision(bus_root, *AGENTS)
+    _quiet_tick_seams(monkeypatch)
+    _append(bus_root / "outbox" / "alice.jsonl", _token_request(gate="RATIFY-ONCE-20260729"))
+
+    for _ in range(3):
+        coordinator.tick(bus_root, epoch=1)
+
+    text = (bus_root / "tokens" / "token-queue.md").read_text(encoding="utf-8")
+    assert text.count("### RATIFY-ONCE-20260729") == 1
+
+
+def test_c27_two_requests_sharing_a_gate_id_append_one_block(bus_root: Path) -> None:
+    """`existing` is read once per pass, so in-pass dedupe needs its own guard."""
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "outbox" / "alice.jsonl", _token_request(gate="RATIFY-DUP-20260729"))
+    _append(bus_root / "outbox" / "bob.jsonl",
+            _token_request("bob", gate="RATIFY-DUP-20260729", task_id="task-2", seq=2))
+    config = json.loads((bus_root / "config.yaml").read_text(encoding="utf-8"))
+
+    coordinator.relay_token_blocks(bus_root, config, epoch=1)
+
+    text = (bus_root / "tokens" / "token-queue.md").read_text(encoding="utf-8")
+    assert text.count("### RATIFY-DUP-20260729") == 1
+
+
+def test_c27_always_on_presentation_does_not_swallow_the_hold_row(bus_root: Path) -> None:
+    """The regression the C27 restructure exists to prevent.
+
+    `relay_tokens` used to guard block AND queue row behind one `gate in existing`
+    check. Once the always-on tier writes the block first, the assign-tier pass would
+    then find the gate present and emit NO HELD_OP_GATE row — silently converting a
+    presented gate into an unheld task. Block and row are now independently idempotent.
+    """
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "queue.jsonl", _queue("task-1", status="RUNNING", owner="alice"))
+    _append(bus_root / "outbox" / "alice.jsonl", _token_request(gate="RATIFY-BOTH-20260729"))
+    config = json.loads((bus_root / "config.yaml").read_text(encoding="utf-8"))
+    roster = [r for r in config["roster"]]
+
+    coordinator.relay_token_blocks(bus_root, config, epoch=1)          # always-on tier
+    reports = coordinator._outbox_reports(bus_root, roster)
+    blocks, extra = coordinator.relay_tokens(                          # assign tier, same tick
+        bus_root, reports, coordinator.fold_queue(bus_root), epoch=1)
+
+    assert blocks == [], "the block was already presented; do not duplicate it"
+    holds = [r for r in extra if r.get("status") == "HELD_OP_GATE"]
+    assert [h["task_id"] for h in holds] == ["task-1"]
+    assert holds[0]["operator_gates"] == ["RATIFY-BOTH-20260729"]
+
+
+def test_c27_unvalidated_request_is_a_defect_at_manual_authority_too(bus_root: Path) -> None:
+    """A defect that only fires under `assign` is a defect nobody sees."""
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "outbox" / "alice.jsonl",
+            _token_request(gate="RATIFY-BARE-20260729", validated=False))
+    config = json.loads((bus_root / "config.yaml").read_text(encoding="utf-8"))
+
+    rows = coordinator.relay_token_blocks(bus_root, config, epoch=1)
+
+    assert [r["check"] for r in rows] == ["token-prevalidation"]
+    assert "RATIFY-BARE-20260729" not in (
+        bus_root / "tokens" / "token-queue.md").read_text(encoding="utf-8")
