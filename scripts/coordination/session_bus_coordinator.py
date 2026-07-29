@@ -2444,13 +2444,56 @@ def cmd_run(args: argparse.Namespace) -> int:
     return 0
 
 
+def daemon_liveness(hb: dict) -> tuple[bool | None, str]:
+    """Is the pid in the daemon heartbeat actually alive? ``None`` => unknowable.
+
+    P1b (2026-07-29): `cmd_status` printed `state` straight from the heartbeat JSON
+    and there was NO pid check anywhere in this module. `cmd_run` writes "idle" only
+    on a CLEAN exit, so any crash, `kill -9`, or host reboot leaves `state: working`
+    on disk forever. Observed during the 2026-07-29 post-reboot cold start: the
+    record read `epoch=11 pid=1928027 age=2157s`, naming a PID that did not exist,
+    and `status` reported the dead daemon as `working` — which nearly had the cold
+    start conclude the bus was being serviced when nothing was running. The pid was
+    already in the record; it just was not read.
+
+    `os.kill(pid, 0)` sends no signal and only asks whether the process exists.
+    ``PermissionError`` means it exists under another uid — alive, not absent. An
+    unusable or missing pid returns None: "I cannot tell" is reported as such, never
+    silently rendered as either alive or dead.
+    """
+    pid = hb.get("pid")
+    try:
+        pid = int(pid)
+    except (TypeError, ValueError):
+        return None, "heartbeat carries no usable pid"
+    if pid <= 0:
+        return None, f"heartbeat pid {pid!r} is not a process id"
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False, f"pid {pid} does not exist"
+    except PermissionError:
+        return True, f"pid {pid} exists (owned by another user)"
+    except OSError as exc:
+        return None, f"pid {pid} liveness unknown: {exc}"
+    return True, f"pid {pid} is alive"
+
+
 def cmd_status(args: argparse.Namespace) -> int:
     bus_root = Path(args.bus_root)
     hb_path = _heartbeat_path(bus_root)
     try:
         hb = json.loads(hb_path.read_text(encoding="utf-8"))
         age = time.time() - hb_path.stat().st_mtime
-        print(f"state={hb.get('state')} epoch={hb.get('epoch')} pid={hb.get('pid')} "
+        alive, why = daemon_liveness(hb)
+        state = str(hb.get("state"))
+        # The heartbeat's own claim is never overwritten — it is EVIDENCE, and the
+        # record of what the last daemon believed is worth keeping. It is annotated.
+        if alive is False:
+            state = f"{state} (STALE — DAEMON IS NOT RUNNING: {why})"
+        elif alive is None:
+            state = f"{state} (unverified: {why})"
+        print(f"state={state} epoch={hb.get('epoch')} pid={hb.get('pid')} "
               f"age={age:.0f}s note={hb.get('note')!r}")
     except Exception:  # noqa: BLE001
         print("no coordinator-daemon heartbeat")

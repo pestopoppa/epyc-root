@@ -1478,3 +1478,70 @@ def test_c27c_unreadable_outbox_is_skipped_not_read_as_empty(
         artifact_dir=bus_root / "no-such-dir")
 
     assert [r["kind"] for r in rows] == ["operator-outbox-unreadable"]
+
+
+# ------------------------------------------- P1b: a dead daemon must not read `working`
+
+
+def _pid_exists(pid: int) -> bool:
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except (PermissionError, OSError):
+        return True
+    return True
+
+
+def test_p1b_status_marks_a_dead_daemon_stale_not_working(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """P1b: cmd_run writes "idle" only on a CLEAN exit, so a crash or a reboot leaves
+    `state: working` on disk forever. The 2026-07-29 cold start read exactly that —
+    epoch=11 pid=1928027 age=2157s naming a PID that did not exist — and nearly
+    concluded the bus was being serviced while nothing was running."""
+    # Do not ASSUME a high pid is free — pid_max is 4194304 on this host, so a
+    # hardcoded constant is a coin flip that fails on a busy machine. Probe for one
+    # that genuinely does not exist, and fail loudly if none does.
+    dead = next((p for p in range(4_194_303, 4_190_000, -1)
+                 if not _pid_exists(p)), None)
+    assert dead is not None, "no free pid to test with"
+    coordinator._write_atomic(coordinator._heartbeat_path(bus_root), {
+        "agent": coordinator.COORDINATOR_DAEMON, "state": "working", "task_id": None,
+        "ts": "2026-07-29T12:00:00+00:00", "epoch": 11, "note": "advisory", "pid": dead})
+
+    assert coordinator.main(["--bus-root", str(bus_root), "status"]) == 0
+    out = capsys.readouterr().out
+
+    assert "DAEMON IS NOT RUNNING" in out
+    assert f"pid={dead}" in out, "the evidence itself is preserved, only annotated"
+
+
+def test_p1b_status_leaves_a_live_daemon_unannotated(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    coordinator._write_heartbeat(bus_root, epoch=12, state="working", note="advisory")
+
+    assert coordinator.main(["--bus-root", str(bus_root), "status"]) == 0
+    out = capsys.readouterr().out
+
+    assert "state=working" in out
+    assert "STALE" not in out and "unverified" not in out
+
+
+@pytest.mark.parametrize("pid", [None, "", "not-a-pid", 0, -1])
+def test_p1b_unusable_pid_is_reported_unknown_never_guessed(pid: object) -> None:
+    """'I cannot tell' is reported as such. Rendering it as either alive or dead is
+    the fail-open/fail-closed guess this whole module exists to refuse."""
+    alive, why = coordinator.daemon_liveness({"state": "working", "pid": pid})
+    assert alive is None and why
+
+
+def test_p1b_liveness_recognises_a_process_owned_by_someone_else(
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    """PermissionError means the process EXISTS under another uid — alive, not absent.
+    Reading it as absent would report a healthy daemon as dead."""
+    def denied(_pid: int, _sig: int) -> None:
+        raise PermissionError(1, "Operation not permitted")
+
+    monkeypatch.setattr(coordinator.os, "kill", denied)
+    alive, why = coordinator.daemon_liveness({"pid": 12345})
+    assert alive is True and "another user" in why
