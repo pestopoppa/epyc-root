@@ -447,5 +447,26 @@ _Via `/research-intake` Stage-2 2026-07-29 (intake-913…932 batch). ACM (intake
 
 - [ ] **First-party A/B: verbatim-append trajectory log + grep/Python read, vs current summarize-and-compact.** Run on OUR models (frontdoor Qwen3.6-35B-A3B, architect Qwen3.5-122B). This is the transfer test neither PRO-LONG nor its antecedent offers — every arm in both is a closed frontier model. MUST report **WALL-CLOCK** (neither paper reports latency) and MUST include a **log-growth / grep-latency curve** — the axis both papers assert ("tractable for logs over 100k+ lines") and neither measures. Deterministic-replay-eligible on the scoring axis.
 - [ ] **Prerequisite: produce a single chronological, grep-able trajectory artifact per task** — and audit which `peek`/`grep` implementation is live. **The gap is NOT verbatim storage.** Our episodic memory store is *already* untruncated and recently hardened: `orchestration/repl_memory/episodic_store.py`, `memories` table, with `action` / `context` / `outcome` as plain `TEXT` columns and no truncation at the write chokepoint. What does truncate is the REPL processing journal — `src/graph/session_log.py` (`output_preview[:200]`, `error_message[:300]`, `tool_calls[:5]`) — and what is missing is any *one* chronological artifact spanning a whole trajectory that a `grep` can walk. Second half of the audit: `src/repl_environment/file_exploration.py` has file-capable `_peek`/`_grep` while `src/restricted_executor.py`'s variants are CONTEXT-ONLY (no `file_path`) — if the latter sits on a live path, the `peek(99999, file_path=…)` pointer that `_spill_if_truncated()` emits is unfollowable there.
-- [ ] Instrument **TOTAL** tokens per episode (not peak) in any compression A/B. ACM reports peak only while raising tool calls 1.6-2.4×, plus a summarizer call per compression and a full-archive-ingesting querier call per retrieval. On a prefill-bound CPU host, flatter peaks at 2× the calls may be a net throughput LOSS.
+- [x] Instrument **TOTAL** tokens per episode (not peak) in any compression A/B. ✅ 2026-07-29 — `src/graph/session_log.py` now accepts optional observed `input_tokens` / `output_tokens` per turn and aggregates episode `total_input_tokens`, `total_output_tokens`, `total_tokens`, and `token_observed_turns`. Missing usage stays explicit (`None` / observed-turn denominator), never silently zero; generated session logs expose per-turn totals when present. Focused suite `tests/unit/test_session_log.py` 52 passed. This is a telemetry primitive only; the first-party A/B remains open and any result is observation-grade until protocolled. ACM reports peak only while raising tool calls 1.6-2.4×, plus a summarizer call per compression and a full-archive-ingesting querier call per retrieval. On a prefill-bound CPU host, flatter peaks at 2× the calls may be a net throughput LOSS.
 - [ ] Map `query_memory` onto the existing `_spill_if_truncated()` pointer machinery. VERIFIED: ACM's memory needs NO embedding model, NO vector index, NO chunking — verbatim JSON archived by integer key, read back via one LLM recall call. This is a read API over spill pointers we already write (`helpers.py:320-355`).
+  **SCOPED 2026-07-29 (`auditor`) — machinery verified, one MISMATCH to resolve before implementing, and
+  the row's code reference is wrong.**
+  *Reference correction:* `_spill_if_truncated` lives at **`src/graph/file_artifacts.py:47-73`**, not
+  `helpers.py:320-355` — helpers.py only re-exports it (`:39-42`) and calls it (`:727`, `:730`);
+  `helpers.py:320-355` is unrelated `<<<TOOL_OUTPUT>>>` block-matching code.
+  *What the pointer machinery actually is:* the full text is written to
+  `/mnt/raid0/llm/tmp/{safe_task_id}_{label}_t{turn}.txt` and the model is handed a pointer string
+  `[... N chars truncated; full {label}: peek(99999, file_path="…")]`. So the archive is keyed by the
+  **triple (task_id, label, turn), encoded as a filesystem path**.
+  *THE MISMATCH:* ACM's model — and this row's own wording — is *"verbatim JSON archived by **integer
+  key**"*. The existing spill has no integer key and no index; the path IS the key. So `query_memory`
+  cannot be a thin read over what is already written. It needs one of:
+  (a) a per-task manifest mapping `int -> spill path` written at spill time (smallest change, keeps
+  the path as truth); (b) renaming spills to a monotonic integer per task (breaks the existing
+  `peek(...)` pointers already in transcripts); or (c) `query_memory(task_id, label, turn)` — no
+  integer key at all, matching what exists and dropping ACM's key convention.
+  **(a) is recommended:** it adds an index without invalidating any pointer already emitted, and the
+  spill write is the only place that needs to change.
+  *Left unimplemented deliberately:* this is a new agent-facing read API, not a fix — it wants the key
+  decision above made first, and a design that adds an index is a different-sized change from the
+  "thin read API" the row assumes.
