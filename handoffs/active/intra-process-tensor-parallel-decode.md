@@ -21,6 +21,16 @@ This handoff is active as a reference and reopen gate, not as an implementation 
 
 ## Reopen Checklist
 
+> **⚠ THESE BOXES ARE UNCHECKED BY DESIGN — DO NOT DISPATCH OR FLIP THEM.**
+> This is a **per-reopen procedure**, not a task list. Every `- [ ]` below is a step to be executed *if and when this work is reopened*, so it has no completion
+> state outside one. Flipping any of them asserts that a repeating procedure is permanently
+> done, and the next reader inherits a checklist that reads as already-executed — so the step
+> silently stops being run.
+>
+> Noted 2026-07-29 by `auditor` during a sweep of `handoffs/active/` prompted by the automated
+> backlog sweep classifying steps like these as dispatchable `none`-lane work. It is additionally conditional on a reopen trigger that has not occurred, so the boxes are not merely repeating — they are not yet applicable at all.
+
+
 - [ ] State the new trigger: 2-socket hardware, NPS/L3aaN topology change, multi-tenant workload, prefill-heavy serving, or another concrete reason single-session saturation matters again.
 - [ ] Apply the `/workspace/MEASUREMENT.md` P-BENCH protocols (historical CPU20 record: [cpu-benchmark-rigor-and-revalidation.md](../completed/cpu-benchmark-rigor-and-revalidation.md)) before making any throughput claim.
 - [ ] Reproduce the current canonical baseline for the target model/topology.

@@ -31,6 +31,16 @@ The integration scaffolding and earlier coverage tranches are historical. Do not
 
 ## Rules For New Tests
 
+> **⚠ THESE BOXES ARE UNCHECKED BY DESIGN — DO NOT DISPATCH OR FLIP THEM.**
+> These are **standing rules for writing tests**, not tasks. Every `- [ ]` below is a step to be executed *whenever a new test is written*, so it has no completion
+> state outside one. Flipping any of them asserts that a repeating procedure is permanently
+> done, and the next test author inherits a checklist that reads as already-executed — so the step
+> silently stops being run.
+>
+> Noted 2026-07-29 by `auditor` during a sweep of `handoffs/active/` prompted by the automated
+> backlog sweep classifying steps like these as dispatchable `none`-lane work. Row `:38` of this section is in the queue's runner-up bench. `Keep mocked integration tests separate from real inference tests` has no completion state — it is policy.
+
+
 - [ ] Keep mocked integration tests separate from real inference tests.
 - [ ] Label inference-backed tests so normal CI can skip them.
 - [ ] Include port selection, startup, teardown, and stale-process checks for live-server fixtures.

@@ -718,6 +718,16 @@ Every phase must pass:
 
 When resuming this handoff:
 
+> **⚠ THESE BOXES ARE UNCHECKED BY DESIGN — DO NOT DISPATCH OR FLIP THEM.**
+> This is a **per-pickup procedure**, not a task list. Every `- [ ]` below is a step to be executed *every time this handoff is picked up*, so it has no completion
+> state outside one. Flipping any of them asserts that a repeating procedure is permanently
+> done, and the next reader inherits a checklist that reads as already-executed — so the step
+> silently stops being run.
+>
+> Noted 2026-07-29 by `auditor` during a sweep of `handoffs/active/` prompted by the automated
+> backlog sweep classifying steps like these as dispatchable `none`-lane work. **THIS SECTION HAS ALREADY BEEN CORRUPTED:** two boxes were flipped to `[x]` on 2026-07-29 via BACKLOG-DISPATCH-QUEUE TOP-40 rows #1 and #2 — whose own *Handoff §* column reads `pickup-checklist`. `Check llama.cpp upstream for new CPU ukernel PRs` is precisely a step that must re-run at each pickup, because upstream moves; it now reads as done. Repair proposed on the bus, not applied unilaterally.
+
+
 - [ ] Re-read this doc end-to-end including the 2026-04-23 audit update block.
 - [ ] Check `master-handoff-index.md` and `cpu-inference-optimization-index.md` for any status changes since 2026-04-23.
 - [x] Check llama.cpp upstream for any new CPU ukernel PRs (this handoff may be partially obsoleted). ✅ 2026-07-29 — unmerged x86 Q4_Kx8/Q8_K GEMV candidates [#23309](https://github.com/ggml-org/llama.cpp/pull/23309) and [#23793](https://github.com/ggml-org/llama.cpp/pull/23793) are experimental-watchlist items only: Intel/small-model author observations, overlapping `repack.cpp` changes, and no v8 production action. #25390 is a merged generic scalar-tail fix to review only on a future upstream forward-port.
