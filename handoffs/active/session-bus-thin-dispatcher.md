@@ -1649,6 +1649,34 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   for Claude mains** — a main burned 17% CPU sitting at its prompt because its subagents run
   in-process. Option A (running Codex mains as `--remote` clients and injecting turns over JSON-RPC)
   is **not** approved; read-only status queries only.
+  - [x] **Signal #2 (rollout terminal record) VERIFIED, with four corrections that change the
+    implementation.** ✅ 2026-07-29 — `auditor`. The claim's substance holds and is *stronger* than
+    the design doc states, but taking it verbatim would have produced a wrong implementation:
+    1. **"64/64 correct on today's rollouts" conflates two claims.** 60 of 64 end terminal; the
+       other 4 are live TUIs mid-turn — the signal correctly reporting *busy*. Defensible as
+       classification accuracy, false as "64 ended terminal". **The corpus number is much better and
+       the doc undersells itself: 400 random files from the full 4,233 → 385 `task_complete` +
+       15 `turn_aborted` = 400/400.**
+    2. **n is 7, not 64.** 57 of today's rollouts are *subagent* files; the population the signal
+       serves — user sessions one might nudge — had n=7 today.
+    3. **`thread_source == 'user'` is UNSAFE.** 8 corpus files (older `cli_version`) carry no such
+       field at all and an equality test misclassifies them. Use `!= 'subagent'` or fail closed on
+       absence.
+    4. **THE LOAD-BEARING ONE — the parent holds FINISHED subagent fds open.** Measured 16:38Z on
+       live pid 257808 (`mainD`): fd 39 → a subagent rollout reading `task_complete`, fd 45 → its
+       own user rollout reading `custom_tool_call`. **Picking the wrong fd reports "idle" for an
+       agent that is mid-tool-call, and that unsafe reading is available on a live pid right now.**
+       The `thread_source` filter is not hygiene; it is the guard.
+    Minor: a session's subagent files can sit in a date directory containing **no** parent user
+    file (a 31-file group today), so resolve the parent through the fd, never by scanning a date
+    dir; and only the musl `codex` binary holds rollout fds (`node` wrappers and
+    `codex-code-mode-host` hold none).
+    *Robustness, measured:* `tail -n 1` is size-independent (~10 ms; sub-ms in-process) and 1,800
+    reads under live append gave **0** parse failures — but the longest record today is 192 KB, past
+    any single-write atomicity guarantee, so a torn tail cannot be *proven* impossible. Retry once,
+    then report unknown and fail closed. The property the signal rests on does hold:
+    `task_complete` is a **stable resting tail**, only ever followed by `task_started` or
+    `thread_settings_applied`, never by the frequent mid-turn `token_count`.
   - [ ] **BLOCKED-ON / dependency: C30(a).** C36 must branch on which backend a roster id runs, and
     C30(a) — still open — is exactly *"the backend a main runs on is invisible to the bus"*. The
     2026-07-29 model-agnostic rename made backend a runtime property that nothing records. Escalated
