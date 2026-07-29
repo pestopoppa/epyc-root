@@ -114,7 +114,7 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 37 | `llamacpp-v6-consolidation.md` (F1 fold, re-grep: file shifted) | Stage-2 parity F1 | none | M | `llama.cpp-v6 ggml/src/ggml-cpu/ops.cpp` | Fold f1-paged-attn branch into v6, off-by-default |
 | 38 | ~~`granite-97m-r2-bench-plan.md:233`~~ **✅ CLOSED 2026-07-29** | Phase C | none | M | `internal-kb-rag.md`, `colbert-…md`, `searxng-…md` | Phase C retriever promotion decision + downstream handoff updates |
 | 39 | `frontier-f1-real-task-corpus.md:115` | W2c | none | M | `scripts/tasks/harvest_tasks.py`, its unit test | Port ~50-line Hermes SQLite reader instead of a letta dependency |
-| 40 | `benchmark-results-dashboard.md:47` | Phase 1 | none | S | `dashboard/`, both `model_registry.yaml` | Enumerate models on the system from both registries |
+| 40 | ~~`benchmark-results-dashboard.md:47`~~ **✅ CLOSED 2026-07-29** | Phase 1 | none | S | `dashboard/`, both `model_registry.yaml` | Enumerate models on the system from both registries |
 
 **Straight swap-ins for the 8 struck rows above (verified still open at 2026-07-29 verification):**
 `decision-aware-routing.md:492` (standing prohibition, S/Y) · `intake-derived-work-2026-07-25.md:45`
@@ -306,7 +306,7 @@ re-grep before assigning.
 - L43 | cpu | M | N | inference-gated, opt-in | BEP-4 cheap-worker LM repair lane when apply fails | batch_edit_runner.py, graph/helpers.py
 
 ## benchmark-results-dashboard.md (7)
-- L47 | none | S | Y | - | Enumerate models on the system from both registries | dashboard/, model_registry.yaml x2
+- L47 | none | S | Y | - | **CLOSED 2026-07-29** — read-only inventory emits 166 deduplicated model/quant records while retaining source role references | Enumerate models on the system from both registries | dashboard/, model_registry.yaml x2
 - L48 | none | L | N | - | Ingest summary/results artifacts into a per-model view | dashboard/ ingest module
 - L50 | none | L | N | - | Filterable table + per-model drill-down page on :8100 | dashboard/server.py, static/
 - L51 | none | M | N | - | Tag every number with MEASUREMENT grade and kernel/era | dashboard render, instrument_eras.yaml
