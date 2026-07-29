@@ -4,18 +4,6 @@
 
 Umbrella repository for cross-repo coordination and governance. No application code lives here — orchestrator code is in `epyc-orchestrator`, research in `epyc-inference-research`, llama.cpp patches in `epyc-llama`.
 
-## Repository Map
-
-All repos are already cloned on this machine. Use the absolute paths below.
-
-| Repo | Absolute Path | Purpose |
-|------|---------------|---------|
-| epyc-root (this) | `/mnt/raid0/llm/epyc-root` | Governance, agents, hooks, handoffs, progress |
-| epyc-orchestrator | `/mnt/raid0/llm/epyc-orchestrator` | Production orchestration (`src/`, `tests/`) |
-| epyc-inference-research | `/mnt/raid0/llm/epyc-inference-research` | Benchmarks, seeding, model registry, research |
-| epyc-llama | `/mnt/raid0/llm/llama.cpp` | Custom llama.cpp fork (production-consolidated-v8 — single kernel) |
-| hermes-agent (upstream) | `/mnt/raid0/llm/hermes-agent` | Agent frontend (Nous Research, not a child repo) |
-
 **2026-07-25 v8 final freeze**: production now runs on ONE kernel, **production-consolidated-v8** (canonical tree `/mnt/raid0/llm/llama.cpp`, frozen at `67a433bf45a8a091d83b4ea0b32ff0735fd51800`, `llama-server --version` reports `10107`). Final ratification is [`artifacts/operator/ratify_v8_final_freeze_20260725.json`](artifacts/operator/ratify_v8_final_freeze_20260725.json), SHA-256 `e7fce2c5cd720940fc84b669f57b78a61589fd8baef9b4e03030ed0dc4a3175b`. v7 (`6ad45fa3ff6718c07c000061dbc6e29c1771f6e3`, binary `10098`) is the rollback/history anchor. `scripts/session/verify_llama_cpp.sh` enforces the current production branch. The earlier 2026-06-26 v6 cutover consolidated the gemma worker off the separate `ik_llama.cpp` binary — **ik_llama.cpp is fully deprecated as a serving path; there is no second binary** (the tree remains on disk as a reference/measurement instrument only).
 
 **iqk coverage (v8)**: `GGML_IQK=1` accelerates the supported K/legacy quant types plus IQ2/IQ3 and IQ4_XS. **IQ1 remains stubbed and non-accelerated**. See [`handoffs/active/tq3-quantization-evaluation.md`](handoffs/active/tq3-quantization-evaluation.md).
@@ -30,53 +18,13 @@ All repos are already cloned on this machine. Use the absolute paths below.
 
 The experimental kernel MUST be the FULL build (fresh production + all new features) BEFORE promotion — NOT reconciled via cherry-picks at promotion time. REASON: a complete experimental kernel lets you regression-test the whole thing against production before deploying; deferring the production-merge (cherry-picking iqk/CPU work in at promotion) means those combined changes were never validated together, so regressions slip in unverified. Bench numbers must also come from the full experimental candidate binary — a bench build missing our own GPU opts is not the real spec. **Motivating failure:** the GPU-opts branch forked from v6 on 2026-06-22, but the iqk port landed on production 2026-06-25; because step 1 (fresh-pull) was skipped and the branch was never re-synced, it silently lacked the entire iqk subsystem (0 of 8 `GGML_IQK` references) — on track to "become v7" missing a core CPU-performance subsystem. Discovered + rectified 2026-07-06.
 
-Key scripts by repo:
-- **Seeding/benchmarking**: `/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/` (seed_specialist_routing.py, seeding_*.py)
-- **Server management**: `/mnt/raid0/llm/epyc-orchestrator/scripts/server/` (orchestrator_stack.py)
-- **Model registry (full)**: `/mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml`
-- **Model registry (lean)**: `/mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml`
-- **Hermes setup**: `/mnt/raid0/llm/epyc-root/scripts/hermes/` (setup, config, launch script)
+## Working-tree identity
 
 **Single source of truth**: `/workspace/repos/<name>` is a symlink to `/mnt/raid0/llm/<name>` (or `/mnt/raid0/llm/llama.cpp` for `epyc-llama`). Both paths refer to the same physical tree — parallel agent sessions touching either path operate on the same clone, branch, and staging area. Always-good identity: `stat -c %i /workspace/repos/<name>/.git` equals `stat -c %i /mnt/raid0/llm/<name>/.git`.
 
 For fresh setups: `scripts/clone-repos.sh` creates these symlinks (and falls back to a fresh `git clone` only if no canonical tree exists under `/mnt/raid0/llm/`). Idempotent — re-running converts any pre-existing plain-dir clone in `/workspace/repos/` into a symlink, after moving the old tree to `<name>.bak-<timestamp>`. Use `DRY_RUN=1 scripts/clone-repos.sh` to preview.
 
 **If you see divergent commits between `/workspace/repos/<name>` and `/mnt/raid0/llm/<name>`**: the symlink was replaced by a real clone (a parallel agent ran `git clone` directly into the repos path, or `clone-repos.sh` predates the 2026-05-22 fix). Push any unique commits from both sides, then re-run `scripts/clone-repos.sh` to re-link. The script will back up the divergent clone before symlinking — verify the backup contains nothing unique before deleting.
-
-## Dependency Map
-
-See `.claude/dependency-map.json` for formal coupling edges between repos. Key relationships:
-- **orchestrator -> llama**: Binary dependency (launches llama-server)
-- **orchestrator -> research**: Data dependency (registry references benchmark results)
-- **research -> llama**: Binary dependency (benchmarks invoke llama binaries)
-- **root -> orchestrator**: Validation dependency (hooks validate artifacts)
-
-## Governance Infrastructure
-
-### Hooks (`scripts/hooks/`)
-Pre/post tool-use hooks for Claude Code sessions. These enforce:
-- Filesystem path safety (`check_filesystem_path.sh`)
-- Agent file schema validation (`agents_schema_guard.sh`)
-- Agent reference validation (`agents_reference_guard.sh`)
-- Pytest memory safety (`check_pytest_safety.sh`)
-
-### Validation (`scripts/validate/`)
-Governance validators that run across repos:
-- Agent structure validation
-- CLAUDE.md matrix consistency
-- Document drift detection
-- Numeric literal auditing
-
-### Agent Files (`agents/`)
-Agent role definitions using thin-map architecture:
-- `shared/` — Common standards (engineering, operating constraints, workflows)
-- Role overlays — Per-agent specialization files
-
-### Skills (`.claude/skills/`)
-Reusable Claude Code skill definitions for common workflows.
-
-### Commands (`.claude/commands/`)
-Slash command definitions for Claude Code sessions.
 
 ## Handoff Workflow
 
@@ -136,25 +84,6 @@ Audit trail in `logs/agent_audit.log`. Analysis: `scripts/utils/agent_log_analyz
 - `scripts/session/health_check.sh` — System health
 - `scripts/session/verify_llama_cpp.sh` — Check llama.cpp branch safety
 - `scripts/nightshift/` — Autonomous overnight run infrastructure
-
-## Web Search Routing
-
-Two web-search paths are available in this session:
-
-1. **Built-in `WebSearch` tool** — Anthropic-hosted, opaque engine selection, US-only. Best for one-shot lookups where a single result suffices.
-2. **`bash scripts/search/searx.sh '<query>'`** — self-hosted SearxNG at `localhost:8888`, returns structured JSON with `engines[]`, `score`, `unresponsive_engines[]`. Best for engine-diversity / multilingual / bulk queries.
-
-**Prefer SearxNG when**:
-- Running ≥3 web searches in one phase (literature expansion, cluster surveys).
-- Querying non-English content (Chinese-lab papers, EU/JP sources).
-- Engine-consensus matters (consistent hits across DDG / Brave / Wikipedia / Qwant).
-- You will pipe results through `jq` / `grep` before using them.
-
-**Stick with `WebSearch` when**:
-- One-shot factual lookup; the auto-summary is fine.
-- SearxNG health check fails (script exits 2).
-
-Health-check / fallback semantics: `searx.sh` exits 2 with a fallback message if `localhost:8888` is unreachable or the endpoint returns valid JSON that is not a SearXNG payload with a `.results` array. On exit 2, switch to `WebSearch` for that query. Do not probe `localhost:8090` for `/search`; ports `8090-8095` are BGE embedding servers and return llama-server 404s for SearXNG paths.
 
 ## Historical Documentation Warning
 
@@ -223,30 +152,3 @@ Documents in `handoffs/archived/`, `handoffs/completed/`, `progress/`, and `CHAN
 
 - **Never ask the operator an open-ended question when escalating a decision.** Every request for input is a decision package: 2–4 concrete options with tradeoffs (cost / risk / time / quality / reversibility) and supporting data, a recommendation with reasoning, and the default outcome if no choice is made. Claude Code sessions deliver this via the AskUserQuestion tool (recommended option first, labeled "(Recommended)"). Full contract: `agents/shared/OPERATING_CONSTRAINTS.md` → *Operator Decision Requests*.
 - Pure factual gaps (missing credential, ambiguous reference) may be asked directly.
-
-<!-- gitnexus:start -->
-<!-- gitnexus:keep -->
-# GitNexus — Code Intelligence
-
-Indexed as **epyc-root** (29981 symbols, 34306 relationships, 139 execution flows). Use the `gitnexus` CLI; `gitnexus-*` skills auto-surface in the Skill tool.
-
-**Re-index when stale:** `scripts/gitnexus-analyze.sh` — NOT bare `gitnexus analyze` (re-installs skills into a nested subdir). The wrapper takes a nonblocking per-repo lock at `/tmp/gitnexus-<repo>-analyze.lock`; exit `75` means another analyze is already running, so wait/retry rather than deleting `.gitnexus/` metadata. Interrupted incremental metadata should force GitNexus' normal rebuild path.
-
-## Required before editing
-
-- Run `gitnexus impact <symbol> --direction upstream`. Report blast radius + risk to the user. STOP and warn if HIGH or CRITICAL.
-- Run `gitnexus status` once per session; re-analyze via wrapper if stale.
-
-## Required for renames / refactors
-
-- Run `gitnexus context <symbol>` to enumerate every caller/file BEFORE editing. Find-and-replace alone is unsafe.
-- See the `gitnexus-refactoring` skill for the full workflow.
-
-## Skills (invoke via Skill tool)
-
-`gitnexus-exploring` · `gitnexus-impact-analysis` · `gitnexus-debugging` · `gitnexus-refactoring` · `gitnexus-guide` · `gitnexus-cli`
-
-## Additional CLI
-
-`gitnexus query <concept>` (execution flows) · `gitnexus cypher <query>` (graph) · `gitnexus wiki` (docs)
-<!-- gitnexus:end -->
