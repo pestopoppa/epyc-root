@@ -720,7 +720,7 @@ When resuming this handoff:
 
 - [ ] Re-read this doc end-to-end including the 2026-04-23 audit update block.
 - [ ] Check `master-handoff-index.md` and `cpu-inference-optimization-index.md` for any status changes since 2026-04-23.
-- [ ] Check llama.cpp upstream for any new CPU ukernel PRs (this handoff may be partially obsoleted).
+- [x] Check llama.cpp upstream for any new CPU ukernel PRs (this handoff may be partially obsoleted). ✅ 2026-07-29 — unmerged x86 Q4_Kx8/Q8_K GEMV candidates [#23309](https://github.com/ggml-org/llama.cpp/pull/23309) and [#23793](https://github.com/ggml-org/llama.cpp/pull/23793) are experimental-watchlist items only: Intel/small-model author observations, overlapping `repack.cpp` changes, and no v8 production action. #25390 is a merged generic scalar-tail fix to review only on a future upstream forward-port.
 - [ ] Check for any new Justine Tunney / tinyBLAS Zen 5 benchmarks.
 - [ ] **Work in `/mnt/raid0/llm/llama.cpp-experimental`, never the production `llama.cpp` tree.** Ensure the experimental worktree is anchored on `production-consolidated-v4` (or successor) before starting.
 - [ ] **Measure tinyBLAS on/off as first Phase 0 step** (`GGML_USE_LLAMAFILE` macro); that delta changes the remaining headroom calculation.

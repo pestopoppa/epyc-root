@@ -89,7 +89,8 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
 - [x] Stack-cluster soft-consolidation (corrected on verification — NOT a clean "retire 3"): superseded `standardized-stack-update-pipeline-finalization` (W4 co-tracked); kept `model-stack-update-pipeline-audit` LIVE (2 orphan boxes); flagged `model-stack-change-standardization-audit` as a repeatable runbook ✅ 2026-07-18
 - [ ] Stack-cluster HARD-archive (operator-gated): git-mv the superseded + runbook docs to `completed/`, migrate the audit's 2 orphan-live boxes (`ctx_model_max`, tap/policy-hint) into the SSoT, repoint the ~10 inbound index links
 - [x] Surface the SLIDERS reopen precondition (KB-RAG K7 certified 2026-06-13) as a fired-but-needs-operator-decision note ✅ 2026-07-18
-- [ ] Publish the corrected live-backlog number (≈544) to the dashboard backlog banner as the trusted figure
+- [ ] Refresh the audited live-backlog count before publishing a dashboard banner. The historical `≈544` figure is not a current trusted number: 2026-07-29 parser scan reports raw `1083` open tasks; applying the audit's dated `134` confirmed-stale deductions yields only **≤949 provisional**, not an exact live count. Do not change parser/API semantics or publish the old figure.
+- [ ] **NEW 2026-07-29 — Extend the stale-open audit to an exact current live/stale partition, then present a derived dashboard field with audit date and source.** The original 22 audited handoffs now contain 208 open tasks (vs 173 at audit time); current lifecycle parsing identifies only 58 high-precision parked/superseded rows, so neither source can certify the remaining 949-or-fewer tasks as live.
 - [ ] Extend the audit to the ~105 un-flagged open handoffs to convert "≤544" into an exact live count
 
 > All verdicts above are **observations** for backlog-hygiene decisions, not measurement-gating numbers. No production kernel, registry, or handoff checkbox was modified by this audit.
