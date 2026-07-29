@@ -91,8 +91,10 @@ def main() -> int:
     print()
     print(
         f"`check_readme_freshness.py` flagged {len(findings)} of "
-        f"{len(OWNED_REPOS)} owned READMEs. Rewrites are tracked in the "
-        "`handoffs/active/readme-refresh.md` handoff."
+        f"{len(OWNED_REPOS)} owned READMEs. Refreshing them is part of the "
+        "/wrap-up routine itself (step 4b) — there is no owning handoff, and "
+        "there should not be: this is a recurring obligation with no terminal "
+        "state, so it cannot be 'completed'."
     )
     print()
     for repo, issues in findings:

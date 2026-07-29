@@ -91,7 +91,16 @@ The script flags any owned-repo README that:
 - has not been modified in **≥60 days** (commit-date, not file mtime), OR
 - does not link to both `wiki/` AND `research/` (the two knowledge-base entry points a GitHub visitor needs).
 
-If anything fires, include the warning verbatim in your wrap-up output under a `## README freshness warnings` heading so the operator sees it. **Do not auto-fix** — the rewrite cadence is the operator's call (the `readme-refresh.md` handoff in `handoffs/active/` tracks scheduled rewrites). If everything passes, omit the section.
+If anything fires, include the warning verbatim in your wrap-up output under a `## README freshness warnings` heading, **and refresh the flagged READMEs as part of this wrap-up.** If everything passes, omit the section.
+
+**This routine owns the response — do not route it to a handoff.** A handoff is a finite work item with checkboxes and a terminal state; README freshness is a recurring obligation that has none, so it can only ever be closed wrongly. That is exactly what happened: `readme-refresh.md` was a legitimate one-shot ("all 3 READMEs are 5 weeks stale"), it *introduced this detector* on completion, and was then correctly archived to `handoffs/completed/` — leaving the alarm firing at a routing target that no longer existed. Both owned READMEs then drifted to 66 days before anyone acted (2026-07-29). Prior wrap-ups printed the warning and deferred to the dead handoff, which read as "the operator will decide" and meant nobody did.
+
+Refreshing means a **refresh, not a rewrite** — these READMEs have a deliberate discoverability-first shape; keep their structure and voice. Two hard rules:
+
+- **Verify every factual claim against the repo before writing it.** A README that confidently misstates current state is worse than a stale one. If you cannot verify something, leave the existing text alone rather than guessing.
+- **Prefer linking to the authoritative doc over restating it.** Restated content is precisely what rots — a section whose whole purpose is to age (e.g. "Recent Results (last 60 days)") is a standing liability, so point at `progress/` and the master index rather than re-enumerating.
+
+The `wiki/` and `research/` links are load-bearing (the checker re-tests them) — never drop or rename them.
 
 ### 5. Wiki Compilation
 

@@ -1,8 +1,8 @@
 # epyc-root
 
-Cross-repo governance, knowledge base, and coordination for the EPYC local-inference project — a CPU-only production multi-model orchestration system running on a single AMD EPYC 9655 (96C/192T, 1.13 TB DDR5-5600).
+Cross-repo governance, knowledge base, and coordination for the EPYC local-inference project — a CPU-first production multi-model orchestration system running on a single AMD EPYC 9655 (96C/192T, 1.13 TB DDR5-5600), with an AMD Instinct MI210 as a second serving lane since 2026-07-02.
 
-This umbrella repo holds the project's **knowledge base, research intake, handoff workflow, agent definitions, and governance tooling**. Application code lives in three sibling repos (orchestrator, research, llama.cpp fork).
+This umbrella repo holds the project's **knowledge base, research intake, handoff workflow, agent definitions, measurement constitution, and governance tooling**. Application code lives in three sibling repos (orchestrator, research, llama.cpp fork).
 
 ---
 
@@ -12,12 +12,14 @@ If you're new to the project, these four indices are the entry points:
 
 | Index | What's there | Size |
 |---|---|---|
-| **[wiki/INDEX.md](wiki/INDEX.md)** | 30 compiled wiki articles synthesizing every research thread, organized by topic (speculative decoding, KV cache, routing, autonomous research, …). Each article cites its sources. | 30 articles · 292 sources |
-| **[handoffs/active/master-handoff-index.md](handoffs/active/master-handoff-index.md)** | Single entry point for active work. Prioritized queue, domain sub-indices (CPU inference, inference acceleration, routing, pipeline integration, research evaluation, hermes-agent). | 95 active handoffs |
-| **[research/deep-dives/](research/deep-dives/)** | Long-form analyses of individual papers / techniques. Authored when a topic warrants more than an intake entry. | 105 deep-dives |
-| **[research/intake_index.yaml](research/intake_index.yaml)** | Triaged list of every paper/repo/technique evaluated against the EPYC constraints. Each entry has a verdict (`adopt` / `worth_investigating` / `not_applicable`) and a credibility score. | 595 intake entries |
+| **[wiki/INDEX.md](wiki/INDEX.md)** | Compiled wiki articles synthesizing every research thread, organized by topic (speculative decoding, KV cache, routing, autonomous research, …). Each article cites its sources. | 29 articles · 749 sources scanned (2026-07-29 compile) |
+| **[handoffs/active/master-handoff-index.md](handoffs/active/master-handoff-index.md)** | Single entry point for active work. Prioritized queue, domain sub-indices (CPU inference, inference acceleration, routing, pipeline integration, research evaluation, hermes-agent, reviewer control plane). | 175 active handoffs |
+| **[research/deep-dives/](research/deep-dives/)** | Long-form analyses of individual papers / techniques. Authored when a topic warrants more than an intake entry. | 138 deep-dives |
+| **[research/intake_index.yaml](research/intake_index.yaml)** | Triaged list of every paper/repo/technique evaluated against the EPYC constraints. Each entry has a verdict (`adopt` / `worth_investigating` / `not_applicable`) and a credibility score. | 936 intake entries |
 
-**Daily progress logs** live in [`progress/YYYY-MM/`](progress/) (manual session logs + autopilot daily digests, ~13 entries per month).
+**Daily progress logs** live in [`progress/YYYY-MM/`](progress/) (manual session logs + autopilot daily digests).
+
+**Searching the knowledge base**: prefer the `kb-search` skill ([`.claude/skills/kb-search/`](.claude/skills/kb-search/)) over blind grep — a ColBERT-backed semantic index over `wiki/`, `handoffs/`, `research/`, and `progress/` that returns ranked chunks with file path and heading breadcrumb.
 
 ---
 
@@ -28,27 +30,30 @@ The codebase is split across three sibling repos; this one is governance-only.
 | Repo | Path on this machine | Purpose |
 |---|---|---|
 | epyc-root (this) | `/mnt/raid0/llm/epyc-root` | Governance, knowledge base, handoffs, agents, hooks |
-| [epyc-orchestrator](https://github.com/pestopoppa/epyc-orchestrator) | `/mnt/raid0/llm/epyc-orchestrator` | Production orchestration: 20 llama-server ports, AutoPilot, routing, REPL, MemRL |
-| [epyc-inference-research](https://github.com/pestopoppa/epyc-inference-research) | `/mnt/raid0/llm/epyc-inference-research` | Benchmarks, 57K question pool, 30+ eval suites, model registry |
-| [llama.cpp](https://github.com/pestopoppa/llama.cpp) (fork) | `/mnt/raid0/llm/llama.cpp` | Custom llama.cpp fork — current branch `production-consolidated-v5` |
+| [epyc-orchestrator](https://github.com/pestopoppa/epyc-orchestrator) | `/mnt/raid0/llm/epyc-orchestrator` | Production orchestration: multi-model llama-server fleet, AutoPilot, routing, REPL, MemRL |
+| [epyc-inference-research](https://github.com/pestopoppa/epyc-inference-research) | `/mnt/raid0/llm/epyc-inference-research` | Benchmarks, 79K-question eval pool across 38 suites, model registry |
+| [llama.cpp](https://github.com/pestopoppa/llama.cpp) (fork) | `/mnt/raid0/llm/llama.cpp` | Custom llama.cpp fork — production branch `production-consolidated-v8`, **frozen** at `67a433bf4` |
+
+Production runs **one** kernel. `production-consolidated-v8` is frozen and is never patched in place — new kernel work happens on `llama.cpp-experimental` branches and is promoted as a new version. `scripts/session/verify_llama_cpp.sh` enforces the current production branch.
 
 `scripts/clone-repos.sh` sets up `/workspace/repos/<name>` symlinks pointing to the canonical paths above.
 
 ---
 
-## Recent Results (last 60 days)
+## Recent Results
+
+The two most recent months. The running record is [`progress/`](progress/); what is currently live is the [master handoff index](handoffs/active/master-handoff-index.md).
 
 | Date | Win | Where to read |
 |---|---|---|
-| 2026-05-24 | **Autopilot exogenous-restart resilience** — operator-initiated orchestrator/llama reloads no longer pollute the experiment journal. Fleet markers + watcher + WAL-style crash recovery; 60/60 tests | [completed handoff](handoffs/completed/autopilot-exogenous-restart-resilience.md) |
-| 2026-05-23 | **Constrained-creativity planner upgrade** — stagnation-gated rich prompt + 3-axis rubric + persisted falsifier sidecar | [research/deep-dives/2026-05-23-creativity-constrained-tail-search.md](research/deep-dives/2026-05-23-creativity-constrained-tail-search.md) |
-| 2026-05-21 | **Learned routing controller wired end-to-end** — 92% → 98.7% classifier accuracy on fresh data; production wiring gap discovered + fixed | [handoffs/active/learned-routing-controller.md](handoffs/active/learned-routing-controller.md) |
-| 2026-05-09 | **OMP idle-spin fix** — gemma4 MTP cores 95% → 0% via `KMP_BLOCKTIME=10`; frontdoor decode +78% | [wiki/inference-serving.md](wiki/inference-serving.md) |
-| 2026-05-08 | **worker_general → gemma4-26B-A4B MTP** — +18pp tool_compliance, +36% throughput, 76.5 t/s solo via ik_llama.cpp PR #1744 | [wiki/moe-optimization.md](wiki/moe-optimization.md) |
-| 2026-05-06 | **Qwen3.6 production upgrade complete** — frontdoor + coder_escalation + worker_summarize all share Qwen3.6-35B-A3B Q8 GGUF; 157 GB warm-tier reclaimed | [handoffs/active/qwen36-production-upgrade.md](handoffs/active/qwen36-production-upgrade.md) |
-| 2026-04-24 | **NPS4 + CCD + Q8 8×8 AVX-512BW kernel** — single-instance 48-thread best at 46.6 t/s for 30B-A3B Q4_K_M; +31.8% at single-thread | [wiki/hardware-optimization.md](wiki/hardware-optimization.md) |
-
-The full 2026-04+ run sits in [`progress/2026-04/`](progress/2026-04/) and [`progress/2026-05/`](progress/2026-05/).
+| 2026-07-26 | **`production-consolidated-v8` frozen** at `67a433bf4` (`llama-server` version `10107`) — a *capability* release (Laguna arch, iqk IQ2/IQ3, DFlash thread-safety), not a performance one. Paired quality gate: worker and architect each ran 200 MMLU-Pro + 195 GPQA on v7 and v8 with zero errors; both exact ties | [progress/2026-07/2026-07-26.md](progress/2026-07/2026-07-26.md) |
+| 2026-07-21 | **Eval instrument overhaul** — question pool rebuilt from 53k questions / 21 suites to 79k / 41; B7 scorer ratified; real-confidence gating landed | [handoffs/active/eval-tower-architecture-audit-2026-07-20.md](handoffs/active/eval-tower-architecture-audit-2026-07-20.md) |
+| 2026-07-20 | **`production-consolidated-v7` cutover** at `6ad45fa3ff` (version `10098`) — quarter-mode stack live, final live smoke `21/21`, promotion gate `183 passed` | [handoffs/active/v7-promotion.md](handoffs/active/v7-promotion.md) |
+| 2026-07-19 | **`P-GPU-1` ratified into MEASUREMENT.md** — GPU throughput claims now require a production-named kernel plus mandatory `rocm-smi` clock/power/temp attestation before and after. Every prior experimental GPU number is observation-grade until re-run | [MEASUREMENT.md](MEASUREMENT.md) |
+| 2026-07-02 | **AMD Instinct MI210 brought online** (gfx90a / CDNA2, 64 GB HBM2e). Vulkan proven architecturally impossible on the compute-only MI200 family — ROCm/HIP is the path. First-touch observation: gemma4-31B Q4_K_M `30.01 → 43.25 t/s` with native MTP (1.44×, 59.7% draft acceptance) | [progress/2026-07/2026-07-02-mi210.md](progress/2026-07/2026-07-02-mi210.md) |
+| 2026-06-26 | **v6 + iqk single-kernel cutover** — the iqk AVX-512 GEMM ported into our fork; the gemma worker at `42.78 t/s` now *beats* the separate ik_llama.cpp binary (`38.63`, +11%), so ik_llama.cpp was deprecated as a serving path. gemma-4-31B prefill `155.9 → 232.5 t/s` (+49%), output byte-identical | [handoffs/completed/v6-iqk-promotion.md](handoffs/completed/v6-iqk-promotion.md) |
+| 2026-06-25 | **Native-MTP max-optimization sweep** across the stack — frontdoor Qwen3.6-35B-A3B Q8 `20.7 → 41.8 t/s` (+103%, 0.82 draft acceptance); architect Qwen3.5-122B-A10B `10.96 → 20.75 t/s` (+89%) | [progress/2026-06/2026-06-25.md](progress/2026-06/2026-06-25.md) |
+| 2026-06-12 | **MEASUREMENT.md adopted** as the instrument constitution, out of the Fable 5 architecture review. A claim = `(metric, protocol-id, n/reps, date, host-attestation ref)`; anything else is an observation and may not gate a decision | [MEASUREMENT.md](MEASUREMENT.md) · [fable5-findings-00](handoffs/completed/fable5-findings-00-executive-summary.md) |
 
 ---
 
@@ -59,50 +64,62 @@ epyc-root/
 ├── README.md                      # this file
 ├── CLAUDE.md                      # AI assistant guide (governance, repo map, common rules)
 ├── AGENTS.md                      # cross-agent shared standards
+├── MEASUREMENT.md                 # ★ instrument constitution — how numbers become claims
 │
 ├── wiki/                          # ★ Compiled knowledge base
 │   ├── INDEX.md                   #   topic-organized article list (start here)
-│   ├── SCHEMA.md                  #   taxonomy (30 categories, 34 aliases)
+│   ├── SCHEMA.md                  #   taxonomy (categories + aliases)
+│   ├── source_manifest.json       #   what was scanned into the last compile
 │   ├── speculative-decoding.md    #   one .md per category, citing every source
 │   ├── kv-cache.md
-│   ├── ... (28 more)
+│   ├── ... (27 more)
 │
 ├── research/                      # ★ Research intake + deep-dives
-│   ├── intake_index.yaml          #   triaged paper/repo list (595 entries)
-│   ├── deep-dives/                #   long-form analyses (105 files)
+│   ├── intake_index.yaml          #   triaged paper/repo list (936 entries)
+│   ├── deep-dives/                #   long-form analyses (138 files)
 │   ├── taxonomy.yaml              #   research taxonomy
-│   └── multilingual_ingest_test/  #   per-thread experiment data
+│   ├── recommendations.yaml       #   standing recommendations
+│   └── fixtures/                  #   per-thread experiment data
 │
 ├── handoffs/                      # ★ Cross-repo work tracking
-│   ├── active/                    #   in-progress (95 active)
+│   ├── active/                    #   in-progress (175 active)
 │   │   ├── master-handoff-index.md       # ←── prioritized queue across all domains
 │   │   ├── cpu-inference-optimization-index.md
 │   │   ├── inference-acceleration-index.md
 │   │   ├── routing-and-optimization-index.md
 │   │   ├── pipeline-integration-index.md
 │   │   ├── research-evaluation-index.md
+│   │   ├── reviewer-control-plane-index.md
 │   │   └── hermes-agent-index.md
-│   ├── completed/                 #   finished (62 entries)
+│   ├── completed/                 #   finished (154 entries)
 │   └── blocked/                   #   waiting on dependencies
 │
 ├── progress/                      # ★ Daily session logs + autopilot digests
 │   └── YYYY-MM/YYYY-MM-DD.md
 │
+├── coordination/                  # Multi-session coordination
+│   └── session-bus/               #   file bus: BUS_PROTOCOL.md, inbox/outbox, heartbeats
+│
+├── artifacts/                     # Operator ratification receipts + campaign artifacts
+│
 ├── agents/                        # Per-role agent file overlays
-│   └── shared/                    #   common standards (engineering, ops, workflows)
+│   └── shared/                    #   common standards (engineering, ops, measurement policy)
 │
 ├── scripts/
 │   ├── hooks/                     # Pre/post tool-use hooks for Claude Code sessions
 │   ├── validate/                  # Governance validators
 │   ├── session/                   # session_init, health_check, verify_llama_cpp
+│   ├── coordination/              # session_bus.py + coordinator daemon
+│   ├── dashboard/                 # handoff dashboard hub
 │   ├── nightshift/                # autonomous overnight runs
+│   ├── operator/                  # operator-facing ratification tooling
 │   ├── utils/                     # agent_log.sh, log analyzers
 │   └── search/                    # SearXNG bash bridge (`searx.sh`)
 │
-├── docs/                          # Operational docs (recovery, hardware, agents)
+├── docs/                          # Operational docs (infrastructure, runbooks, recovery, reference)
 │
 └── .claude/
-    ├── skills/                    # Reusable Claude Code skills
+    ├── skills/                    # Reusable Claude Code skills (kb-search, research-intake, ...)
     ├── commands/                  # Slash commands (/wrap-up, /research-intake, ...)
     └── dependency-map.json        # Formal cross-repo coupling edges
 ```
@@ -113,11 +130,26 @@ epyc-root/
 
 ### Research intake
 
-Every paper / repo / technique evaluated for the EPYC stack goes through `/research-intake` → entry in `research/intake_index.yaml` with verdict + credibility score. Promising ones get a `research/deep-dives/<topic>.md` long-form analysis. Compiled knowledge lands in `wiki/<category>.md` via the [`project-wiki` skill](.claude/skills/project-wiki/SKILL.md).
+Every paper / repo / technique evaluated for the EPYC stack goes through `/research-intake`, a **four-stage** pipeline ([skill](.claude/skills/research-intake/SKILL.md)):
+
+1. **Stage 1** — sweep, dedup, expand literature; every entry persisted as `stage1-unverified` in `research/intake_index.yaml`, with ranked deep-dive recommendations.
+2. **Stage 2** — deep-dive the operator-selected entries, verifying each claim against primary source. Each dive emits a derived-actionables ledger *and* a dive-surfaced sources list.
+3. **Stage 2b** (the *dive-surfaced source gate*) — sources discovered **during** a dive are presented to the operator and the selected ones ingested-and-dived in a combined pass, **before** planning. Stage 3 may not begin until every dive-surfaced source is ingested or explicitly declined.
+4. **Stage 3** (plan mode) — audited action plan naming every handoff to amend/create, index row, and explicit decline; iterated until the operator approves. **Stage 4** implements exactly that plan.
+
+Operator comments during stages 1–3 are *context, not authorization*, and are logged verbatim to a steering ledger. Promising entries get a `research/deep-dives/<topic>.md` long-form analysis; compiled knowledge lands in `wiki/<category>.md` via the [`project-wiki` skill](.claude/skills/project-wiki/SKILL.md).
+
+### Measurement discipline
+
+[`MEASUREMENT.md`](MEASUREMENT.md) is the instrument constitution. A decision-gating number is `(metric, protocol-id, n/reps, date, host-attestation ref)`; a number without a protocol citation is an **observation** — fine for hypotheses, never for gating keep/revert/deploy/promote decisions. Benchmarks run only via the codified recipes (`bench_canonical.sh` / `canonical_recipe.py`). Historical numbers are era-labelled via `instrument_eras.yaml` rather than edited. The agent-facing digest is [`agents/shared/MEASUREMENT_POLICY.md`](agents/shared/MEASUREMENT_POLICY.md).
 
 ### Handoff workflow
 
-Work items flow `active/` → `completed/`. The `master-handoff-index.md` is the prioritized queue. Each handoff is **actionable**: it lists the change, the gate criteria, the rollback plan, and the success metric. Completed handoffs are extracted into wiki articles before archival.
+Work items flow `active/` → `completed/`. The `master-handoff-index.md` is the prioritized queue. Each handoff is **actionable**: it lists the change, the gate criteria, the rollback plan, and the success metric. Progress is tracked by checkbox state, not prose — a completed task flips `- [ ]` → `- [x]`. Completed handoffs are extracted into wiki articles before archival.
+
+### Session coordination
+
+Multiple agent sessions run concurrently against the same trees. They coordinate through a file-based **session bus** — inbox/outbox/heartbeat JSONL under [`coordination/session-bus/`](coordination/session-bus/), driven by `scripts/coordination/session_bus.py`. Contract: [`coordination/session-bus/BUS_PROTOCOL.md`](coordination/session-bus/BUS_PROTOCOL.md).
 
 ### Session lifecycle
 
@@ -144,7 +176,11 @@ Audit trail in `logs/agent_audit.log`; query via `scripts/utils/agent_log_analyz
 
 ## Hardware
 
-Single AMD EPYC 9655 "Turin", 96 cores / 192 threads (Zen 5), 12-channel DDR5-5600 ECC (1.13 TB, ~460 GB/s aggregate bandwidth), NPS4 NUMA. CPU-only inference — no GPU. DGX Spark (GB10) is the planned GPU complement; not yet acquired.
+Single AMD EPYC 9655 "Turin", 96 cores / 192 threads (Zen 5), 12-channel DDR5-5600 ECC (1.13 TB, ~460 GB/s aggregate bandwidth), 4 NUMA nodes (NPS4), 2× 2 TB NVMe in RAID0.
+
+Since **2026-07-02** the box also carries one **AMD Instinct MI210** (gfx90a / CDNA2, 64 GB HBM2e) on ROCm 6.2, used via HIP — no Vulkan ICD supports the compute-only MI200 family. Inference remains CPU-first; the MI210 is a second serving lane and the GPU-kernel research substrate. (The DGX Spark once floated as the GPU complement was never acquired.)
+
+Details: [`docs/infrastructure/01-hardware-system.md`](docs/infrastructure/01-hardware-system.md) · [`wiki/hardware-optimization.md`](wiki/hardware-optimization.md).
 
 ---
 
