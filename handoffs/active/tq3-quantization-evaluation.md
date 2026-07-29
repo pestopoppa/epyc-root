@@ -47,6 +47,33 @@ Backburner monitoring. PR #21038 remains merged and auto-enabled in production v
 - **Why it matters**: Works on existing pretrained models — directly applicable to our stack
 - **URL**: https://arxiv.org/abs/2502.00299
 
+#### 2026-07-29 feasibility assessment
+
+**Disposition: technically implementable as an experimental llama.cpp candidate; do not treat it as
+an existing-server toggle or a production patch.** ChunkKV selects complete contiguous chunks from
+the observed-query attention matrix, retains a recent observe window, and reuses selected indices
+across adjacent layers. The paper evaluates chunk sizes 3–30 and reports 10 as its robust default
+([paper §3.2–3.3](https://arxiv.org/html/2502.00299#S3),
+[§4.4](https://arxiv.org/html/2502.00299#S4)). Its published quality and throughput figures are
+observations on different models/runtimes, not an EPYC decision claim.
+
+The production tree already contains the adjacent substrate: `src/llama-kv-compress.cpp` is compiled
+and the server's `POST /slots/{id}?action=compact` path performs idle-slot Expected-Attention eviction.
+That is **not a faithful ChunkKV implementation**. Expected Attention derives a future-attention proxy
+from raw K/V; ChunkKV requires the actual attention scores from the final prefill queries. Summing the
+existing per-token proxy into chunks would be a useful *ChunkEA* derivative, but must not be reported
+as reproducing the paper. The server also deliberately leaves evicted positions gapped because its
+prompt/checkpoint state tracks logical positions independently; eviction creates reusable KV capacity,
+not an allocated-buffer shrink or immediate logical-context extension.
+
+If scheduled, start from fresh production on `llama.cpp-experimental`, never the frozen production
+tree: (1) capture the bounded observe-window attention scores at prefill, (2) implement ordered
+top-k chunk selection plus recent-window protection, (3) reuse indices only behind a per-model
+ablation, and (4) compare Full KV / current Expected Attention / faithful ChunkKV on a long-context
+retrieval and quality suite with the same cache budget. This is an experimental-kernel feature and
+needs its own operator-approved measurement window; no implementation or model run is authorized
+during the E5 host hold.
+
 ## Research Context
 
 | Intake ID | Title | Relevance | Verdict |
@@ -59,7 +86,13 @@ Backburner monitoring. PR #21038 remains merged and auto-enabled in production v
 
 - [x] Watch PR #21038 for merge — ✅ LANDED 2026-04-01 as commit `744c0c731`, auto-enables in v3
 - [ ] Evaluate PR #21089 when merged — test TBQ3_0 KV cache on Qwen2.5-Coder-32B context extension
-- [ ] Read ChunkKV paper — assess if implementable in llama.cpp
+- [x] Read ChunkKV paper — assess if implementable in llama.cpp ✅ 2026-07-29 — experimental-only
+  feasibility memo above: the required existing substrate is server-side Expected-Attention eviction,
+  but a faithful ChunkKV port requires observed-prefill attention capture and ordered chunk selection;
+  do not equate the two.
+- [ ] Prototype faithful ChunkKV only on a fresh `llama.cpp-experimental` tree after an
+  operator-approved long-context measurement window; compare it with Full KV and the existing
+  Expected-Attention compactor at equal cache budgets before considering promotion.
 - [ ] Revisit TQ3_1S weight quant only if: upstream adopts + multi-model benchmarks + Q4_K_M comparison + CPU kernels
 
 ---
