@@ -1847,10 +1847,45 @@ def pending_operator_actions(bus_root: Path, roster: list[dict], epoch: int,
     return advisory
 
 
-# Kinds the daemon already consumes through another path; relaying them too would
-# double-count. token-request -> relay_tokens (token-queue.md); task-propose /
-# task-complete -> transcribe (queue.jsonl).
-_NO_RELAY_KINDS = {"token-request", "task-propose", "task-complete"}
+# C27 (2026-07-29): kind -> (handler-of-record, is that handler REACHABLE here?).
+#
+# This was a bare set — `_NO_RELAY_KINDS = {"token-request", "task-propose",
+# "task-complete"}` — of kinds the relay skipped "because the daemon already
+# consumes them through another path". It was right about which handler owned each
+# kind and NEVER CHECKED THAT ANY OF THEM RUNS:
+#   * token-request -> relay_tokens, then reachable only from apply_assignment
+#     (assign-only) while the live config is `manual`;
+#   * task-complete -> transcribe, likewise inside apply_assignment;
+#   * task-propose  -> intake_proposals, reachable ONLY from the manual `intake`
+#     CLI. `tick` has never called it at any authority.
+# So a declaration was used to justify removing a kind from the general path, and
+# the declaration's own premise was never tested against the CONFIGURED authority.
+# Two operator signature requests were lost this way on 2026-07-29 (see
+# relay_token_blocks); C27a fixed token-request's handler, this fixes the class.
+#
+# THE RULE, and why it is not a bare skip: when the handler is unreachable the
+# message is RELAYED NORMALLY and a defect is emitted. Delivery is transport, so
+# duplicating a message into an inbox costs a read; dropping it costs a gate. The
+# asymmetry is the whole argument. This also restores the C18 discipline stated
+# twenty lines below — "an unreachable recipient is a defect advisory, never a
+# silent drop" — which the old bare `continue` contradicted, including for
+# `needs_routing_to`, whose fan-out sits AFTER the skip and was therefore inert for
+# exactly the three kinds that most needed it.
+#
+# ADDING A KIND HERE IS A CLAIM YOU MUST BE ABLE TO DEFEND: name the function that
+# consumes it and state the authorities at which that function actually runs.
+_RELAY_HANDLERS: dict[str, tuple[str, str]] = {
+    # kind: (handler-of-record, authority at which it runs; "*" = every authority)
+    "token-request": ("relay_token_blocks", "*"),
+    "task-complete": ("transcribe", "assign"),
+    "task-propose": ("intake_proposals", "never — `intake` CLI only, never from tick"),
+}
+# Retained as the derived view, so `validate` and any external reader that asks
+# "which kinds does relay skip?" get an answer that depends on the live authority
+# instead of a constant that was wrong for two of its three members.
+def no_relay_kinds(authority: str) -> set[str]:
+    return {kind for kind, (_h, at) in _RELAY_HANDLERS.items()
+            if at == "*" or at == authority}
 _ACK_REDELIVERY_REASON = "ack-deadline elapsed"
 
 
@@ -1933,6 +1968,8 @@ def relay_outbox_messages(bus_root: Path, roster: list[dict], epoch: int,
     recipient's inbox is scanned for those before delivering.
     """
     ids = [str(e.get("id", "")).strip() for e in roster if str(e.get("id", "")).strip()]
+    authority = _authority(config or {})
+    skip_kinds = no_relay_kinds(authority)
     roles = {str(e.get("id", "")).strip(): str(e.get("role") or "").strip()
              for e in roster if isinstance(e, dict) and str(e.get("id", "")).strip()}
     roster_by_id = {str(e.get("id", "")).strip(): e for e in roster
@@ -1968,8 +2005,14 @@ def relay_outbox_messages(bus_root: Path, roster: list[dict], epoch: int,
         for row in rows:
             to, kind = row.get("to"), row.get("kind")
             src = row.get("id")
-            if not to or not src or kind in _NO_RELAY_KINDS:
+            if not to or not src:
                 continue
+            if kind in skip_kinds:
+                continue          # its handler runs at this authority; relaying would double-count
+            # C27: declared handler, but NOT reachable here. Relay it (below) AND say so
+            # once per message — a silent `continue` is how the two 2026-07-29 gates
+            # vanished. Flagged against the sender because the row is theirs to see.
+            stranded = _RELAY_HANDLERS.get(str(kind))
             targets = [a for a in ids if a != sender] if to == "*" else (
                 [to] if to in ids and to != sender else [])
             # Never propagate an invalid row. Relay is a fan-out, so delivering a
@@ -1985,6 +2028,22 @@ def relay_outbox_messages(bus_root: Path, roster: list[dict], epoch: int,
                                  "detail": f"outbox msg {src} is schema-invalid and was NOT "
                                            f"relayed: {exc}"})
                 continue
+            if stranded is not None:
+                handler, runs_at = stranded
+                flag_key = (str(src), f"handler:{handler}")
+                if flag_key not in already_flagged:
+                    advisory.append({
+                        "schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                        "epoch": epoch, "kind": "defect", "agent": sender,
+                        "relayed_src": src, "unreachable": f"handler:{handler}",
+                        "check": "relay-handler-reachability",
+                        "detail": f"outbox msg {src} is a {kind!r}, whose handler-of-record "
+                                  f"{handler!r} runs at authority {runs_at!r} but this daemon is "
+                                  f"at {authority!r}. Nothing would have consumed it, so it was "
+                                  f"RELAYED to its addressees instead of skipped. Fix the "
+                                  f"handler's reachability or the authority — do not silence "
+                                  f"this by re-excluding the kind."})
+                    already_flagged.add(flag_key)
             # C18 (2026-07-29): needs_routing_to DELIVERS. Until this change the
             # relay fanned out on `to` alone, so a message routed to codex but
             # addressed to coordinator-agent reached codex NEVER — the field read

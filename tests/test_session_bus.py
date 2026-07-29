@@ -161,15 +161,100 @@ def test_c2_relay_preserves_author_fans_out_and_is_idempotent(bus_root: Path) ->
     assert len(_read_jsonl(bus_root / "inbox" / "bob.jsonl")) == 2
 
 
-@pytest.mark.parametrize("kind", sorted(coordinator._NO_RELAY_KINDS))
-def test_c2_no_relay_kinds_are_not_fanned_out(bus_root: Path, kind: str) -> None:
-    """C2: messages consumed by a dedicated path cannot be duplicated by relay."""
+@pytest.mark.parametrize("kind", sorted(coordinator.no_relay_kinds("manual")))
+def test_c2_kinds_with_a_reachable_handler_are_not_fanned_out(bus_root: Path, kind: str) -> None:
+    """C2: messages consumed by a dedicated path cannot be duplicated by relay.
+
+    C27 (2026-07-29) narrowed this. It used to parametrize over a CONSTANT set and so
+    asserted the silent drop of `task-complete` and `task-propose` at manual
+    authority as correct behaviour — the test encoded the defect. The skip set is now
+    derived from the authority, and this covers only kinds whose handler really runs.
+    """
     _provision(bus_root, *AGENTS)
     row = _message("alice", "bob", kind, seq=1, task_id="task-1")
     _append(bus_root / "outbox" / "alice.jsonl", row)
     roster = json.loads((bus_root / "config.yaml").read_text())["roster"]
     assert coordinator.relay_outbox_messages(bus_root, roster, epoch=1) == []
     assert _read_jsonl(bus_root / "inbox" / "bob.jsonl") == []
+
+
+_PROPOSE_PAYLOAD = {"lane": "none", "gating": "none", "spec_ref": "handoffs/active/x.md",
+                    "summary": "a proposed unit of work"}
+
+
+@pytest.mark.parametrize("kind", ["task-complete", "task-propose"])
+def test_c27_kind_whose_handler_cannot_run_here_is_relayed_and_flagged(
+        bus_root: Path, kind: str) -> None:
+    """C27: an unreachable handler must never produce a bare silent `continue`.
+
+    `transcribe` runs only under `assign`; `intake_proposals` only from the manual
+    `intake` CLI, never from `tick`. At the live `manual` authority neither consumes
+    anything, so excluding these kinds dropped them outright. Duplicating a message
+    into an inbox costs a read; dropping one costs a gate.
+    """
+    _provision(bus_root, *AGENTS)
+    row = _message("alice", "bob", kind, seq=1, task_id="task-1",
+                   **({"payload": _PROPOSE_PAYLOAD} if kind == "task-propose" else {}))
+    _append(bus_root / "outbox" / "alice.jsonl", row)
+    roster = json.loads((bus_root / "config.yaml").read_text())["roster"]
+
+    advisory = coordinator.relay_outbox_messages(bus_root, roster, epoch=1)
+
+    assert [r["relayed_src"] for r in _read_jsonl(bus_root / "inbox" / "bob.jsonl")] == [row["id"]]
+    defects = [r for r in advisory if r.get("check") == "relay-handler-reachability"]
+    assert len(defects) == 1
+    assert defects[0]["relayed_src"] == row["id"]
+    assert "manual" in defects[0]["detail"]
+
+
+def test_c27_task_complete_is_skipped_again_once_its_handler_runs(bus_root: Path) -> None:
+    """The map is authority-derived, not a second constant: at `assign`, transcribe
+    consumes task-complete, so relaying it too WOULD double-count."""
+    _provision(bus_root, *AGENTS)
+    row = _message("alice", "bob", "task-complete", seq=1, task_id="task-1")
+    _append(bus_root / "outbox" / "alice.jsonl", row)
+    config = json.loads((bus_root / "config.yaml").read_text())
+    config["coordinator_daemon"]["authority"] = "assign"
+
+    advisory = coordinator.relay_outbox_messages(bus_root, config["roster"], epoch=1,
+                                                 config=config)
+
+    assert advisory == []
+    assert _read_jsonl(bus_root / "inbox" / "bob.jsonl") == []
+    assert coordinator.no_relay_kinds("assign") == {"token-request", "task-complete"}
+    assert coordinator.no_relay_kinds("manual") == {"token-request"}
+
+
+def test_c27_handler_defect_is_flagged_once_not_every_tick(bus_root: Path) -> None:
+    """45s ticks must not flood advisory.jsonl with the same reachability defect."""
+    _provision(bus_root, *AGENTS)
+    row = _message("alice", "bob", "task-propose", seq=1, task_id="task-1",
+                   payload=_PROPOSE_PAYLOAD)
+    _append(bus_root / "outbox" / "alice.jsonl", row)
+    roster = json.loads((bus_root / "config.yaml").read_text())["roster"]
+
+    first = coordinator.relay_outbox_messages(bus_root, roster, epoch=1)
+    for entry in first:
+        _append(bus_root / "advisory.jsonl", entry)     # what the tick loop does
+    second = coordinator.relay_outbox_messages(bus_root, roster, epoch=1)
+
+    assert [r.get("check") for r in first].count("relay-handler-reachability") == 1
+    assert [r.get("check") for r in second].count("relay-handler-reachability") == 0
+
+
+def test_c27_needs_routing_to_now_delivers_for_a_stranded_kind(bus_root: Path) -> None:
+    """The C18 fan-out sits AFTER the skip, so it was inert for exactly the three
+    kinds that most needed it — including every `action_required` token-request."""
+    _provision(bus_root, *AGENTS)
+    row = _message("alice", "bob", "task-complete", seq=1, task_id="task-1",
+                   needs_routing_to=["coordinator-agent"], action_required=True)
+    _append(bus_root / "outbox" / "alice.jsonl", row)
+    roster = json.loads((bus_root / "config.yaml").read_text())["roster"]
+
+    coordinator.relay_outbox_messages(bus_root, roster, epoch=1)
+
+    routed = _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+    assert [r["relayed_src"] for r in routed if r.get("relayed_src")] == [row["id"]]
 
 
 def test_c2_invalid_outbox_row_is_defect_not_delivery(bus_root: Path) -> None:
