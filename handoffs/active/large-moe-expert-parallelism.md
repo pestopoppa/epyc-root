@@ -34,7 +34,7 @@ The critical correction is that historical EP wins were polluted by baseline cho
 
 ## Outstanding Tasks
 
-- [ ] **CPU15-DISP — Reconcile deployment-facing docs**: keep `cpu-inference-optimization-index.md`, `cpu-kernel-env-flags-inventory.md`, `../completed/nps-reboot-runbook.md` (archived 2026-06-12), and MoE-Spec cross-refs aligned with the downgraded EP verdict. No document should claim EP is production-wired for frontdoor without a current CPU20 canonical matrix.
+- [x] **CPU15-DISP — Reconcile deployment-facing docs ✅ 2026-07-29**: verified the deployment inventory keeps every `GGML_EP_*` flag default-off with no production role wiring; its frontdoor stanza and CPU15 table both require CPU15-REVAL. The CPU index links CPU15 only as a gated evaluation, and MoE-Spec says its EP interaction is theoretical unless CPU15-REVAL explicitly re-enables it. The archived NPS reboot runbook is preserved as history and already carries the CPU15 correction: its old frontdoor reference is historical and cannot justify production wiring.
 - [ ] **CPU15-REVAL — Fresh canonical matrix if reopening**: before enabling EP anywhere, run:
   - baseline canonical no-EP;
   - canonical config change without EP;
