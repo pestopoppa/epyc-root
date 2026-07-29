@@ -179,6 +179,13 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
     Both are **evidence-gated**, not current independent work.
     `backlog_live_uncertified = 927` for this dated read-through slice;
     `backlog_not_a_task = 36` is unchanged.
+  - **READ-CERTIFIED 2026-07-29 (mainB, 1 row):**
+    `colbert-reranker-web-research.md` is dirty under another owner, but its
+    primary S5 request-path reranker row is **prose-closed** by the
+    representative 55-synthesized-page `<10%` irrelevant-page NO-GO. It is a
+    stale checkbox, not live work; the owner file was intentionally untouched.
+    `backlog_live_uncertified = 926` for this dated read-through slice;
+    `backlog_not_a_task = 36` is unchanged.
   - **TRANCHE 1 READ-CERTIFIED 2026-07-29 (`auditor`) — 19 boxes, the single-open-box handoffs.**
     Read each box with its section, `Status:` header and following context. Result:
     | verdict | n | meaning |
