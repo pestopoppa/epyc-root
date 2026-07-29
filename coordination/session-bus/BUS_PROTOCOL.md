@@ -183,6 +183,51 @@ still unread at 90 minutes, into a **daemon escalation block appended to `tokens
 a file the operator already reads. The coordinator is in the loop for JUDGEMENT; it must not be a
 single point of failure for TRANSPORT of "a human signature is needed". The block is idempotent on
 message id and carries **no checkbox**: the daemon relays, only the operator signs (rule 1).
+**Since C27 it also scans OUTBOXES** for operator items with no evidence anyone consumed them
+(not relayed, not answered by `corr_id`, gate not in the token queue), and tags the escalation by
+which hop failed — "never reached the inbox" and "sat unread" have different repairs. A last-hop
+net that depends on the hop before it having worked is not a net.
+
+## Gate presentation is transport, and transport runs at every authority (C27, 2026-07-29)
+
+Two operator SIGNATURE REQUESTS filed on 2026-07-29 were never presented to anyone:
+`RATIFY-P-BENCH-4-FG4B-AFFINITY-20260729` (10:18Z) and
+`RATIFY-E8-FINAL-C1-RETRY-CAPACITYFIX-20260729` (11:16Z). Both well-formed, both
+`needs_routing_to: [coordinator-agent]`, both `action_required`. `token-queue.md` read
+*"Pending token requests: (none)"* throughout, so **a coordinator following the documented cold
+start exactly would conclude no gates were waiting.** Not a lost message — a lost request for a
+human signature.
+
+Cause: `relay_tokens`, the only writer of gate blocks, ran only inside `apply_assignment`
+(`authority: assign`) while the live config is `manual`; and `token-request` was excluded from the
+always-on relay *because `relay_tokens` was named as its handler*. An exclusion was justified by a
+handler the configured authority never reached.
+
+The standing rules that follow:
+
+- **Presenting a gate is TRANSPORT.** It writes an unchecked `- [ ]` into a file the operator
+  reads. It grants nothing, expands no authority, touches no trust boundary — the operator still
+  signs. So it runs at EVERY authority, beside C2 relay, C19 rescue and C20. **Holding the
+  requesting task on that gate is a scheduling decision** and stays `assign`-only. The daemon's
+  bright line is unmoved: at `manual` it still writes no queue rows.
+- **An exclusion from the general path is a claim you must be able to defend**: name the function
+  that consumes the kind AND the authorities at which that function actually runs. When the handler
+  is unreachable the message is **relayed normally and a defect is emitted** — never a silent
+  `continue`. Duplicating a message into an inbox costs a read; dropping one costs a gate.
+- Consequence worth remembering: the `needs_routing_to` fan-out sits *after* that exclusion, so
+  the field this protocol says DELIVERS was inert for exactly the kinds that most needed it.
+
+## A repeated payload across N corr_ids is bus noise by construction (C23, 2026-07-29)
+
+Clearing triage requires one disposition per `corr_id`. When the same payload answers N routed
+items, that produces N byte-identical messages — 19 identical `triage-disposition-post-standdown`
+rows once made up 40% of a 48-item queue. This is **protocol shape, not a send bug**: 19 distinct
+corr_ids, 19 distinct ids, relayed 1:1. Do not "fix" it in `tmux_adapter.py`.
+
+Standing rule: **before writing the same payload against a second `corr_id`, write it once and
+reference it.** A disposition that is genuinely per-item carries per-item content; if it does not,
+the items wanted one answer and the queue should say so rather than repeat it. A reader who cannot
+tell N answers from one answer repeated N times has lost the signal the queue exists to carry.
 
 **Operator-script receipt convention (proposed; the scanner is inert until adopted).** A script in
 `artifacts/operator/` may declare its gate with a header line `# BUS-GATE: <gate-id>`. On a

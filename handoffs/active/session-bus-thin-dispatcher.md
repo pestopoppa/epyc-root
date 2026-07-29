@@ -696,15 +696,19 @@ C-series forward**, and said so explicitly on the bus rather than letting the wo
 implicitly-owned. These three are filed here so they exist as tasks, not as prose in a bus message
 nobody re-reads:
 
-- [ ] **C-OWN — the C-series needs a new owner.** C6/C9/C10/C14/C16/C18/C21 and the `tmux_adapter.py`
-  hardening arc are currently **unowned**. Everything landed is committed and pushed; nothing is in
-  flight. Re-assignment is a coordinator call. The two decisions the lane deliberately left open
-  (C15 spawn cap, C18(a) `codex-bus-tests` role) are in the handover block below and remain open.
-- [ ] **C22 (NEW) — `roster_window_names()` is dead code still carrying the last-writer-wins idiom.**
-  Zero callers after C14, but it still contains the `names[value] = rid` shape the C9 review flagged
-  as a collision bug. Delete it. Reviewer's own framing (`fable-auditor`, msg-20260729T100449Z-18):
-  left in place it "waits to hand the collision bug to a future caller." One-line cleanup, not
-  blocking, and cheap enough that it should not survive another wrap-up.
+- [x] **C-OWN — the C-series needs a new owner.** ✅ 2026-07-29 — **adopted by roster id `auditor`**
+  (coordinator assignment, brief `coordination/session-bus/tasks/auditor-c-own-20260729.md`).
+  C6/C9/C10/C14/C16/C18/C21 and the `tmux_adapter.py` hardening arc now have an owner. Round 2
+  landed C24-review + C25 + C26 + C27(a/b/c) + C32 and the C24 ledger row, each committed with its
+  tests. The two decisions the lane deliberately left open (C15 spawn cap, C18(a) `codex-bus-tests`
+  role) are in the handover block below and **remain open — they are operator/coordinator calls,
+  not this owner's to close.**
+- [x] **C22 (NEW) — `roster_window_names()` is dead code still carrying the last-writer-wins idiom.**
+  ✅ 2026-07-29 — **CLOSED, already fixed; deliberately NOT re-fixed.** Verified by `auditor`: the
+  function is gone, and the only remaining occurrence of the name is a docstring line at
+  `tmux_adapter.py:437` recording that it was deleted as dead code on 2026-07-29 and that its
+  invariant (the undercount polarity) moved to `live_mains`. Confirmed by grep — zero definitions,
+  zero callers. The row is closed rather than worked, per coordinator direction.
 - [ ] **C23 (NEW) — triage disposition should not require an identical payload per `corr_id`.**
   Found by doing it wrong on 2026-07-29: clearing 19 routed items needs one message per `corr_id`,
   so a session with a single disposition for all of them emits the **same ~1.5 KB payload 19 times**.
@@ -716,6 +720,36 @@ nobody re-reads:
   repeated payload across N `corr_id`s is bus noise by construction, so bodies must be per-item or
   terse. Belongs to whoever owns `BUS_PROTOCOL.md`; not edited here because the contract is not
   this lane's to change.
+  **✅ 2026-07-29 — dispositioned by `auditor` as PROTOCOL SHAPE, not an adapter bug, and codified
+  rather than coded around.** The diagnosis stands and was NOT re-fixed in `tmux_adapter.py`. The
+  standing rule is now written into `coordination/session-bus/BUS_PROTOCOL.md` → *A repeated payload
+  across N corr_ids is bus noise by construction*: before writing the same payload against a second
+  `corr_id`, write it once and reference it; a disposition that is genuinely per-item carries
+  per-item content, and if it does not, the items wanted one answer. A reader who cannot tell N
+  answers from one answer repeated N times has lost the signal the queue exists to carry.
+  **One honest caveat on the evidence:** the "19 identical payloads" count is taken from the prior
+  report, not independently re-derived — scanning `outbox/claude-gpu-lane.jsonl` for the
+  `triage-disposition-post-standdown` marker returned 0 at audit time (the roster rename moved the
+  file). The DIAGNOSIS is confirmed from the protocol shape itself and does not depend on the count.
+  The two structural options (a `corr_ids: [...]` list on one message, or a bulk-disposition verb in
+  `drain --triage`) remain **open and unimplemented** — they change the contract, which is not this
+  lane's to change unilaterally.
+- [x] **C11 — the independent review C9's own filing called for was never paid.** ✅ 2026-07-29 —
+  paid by `auditor` as part of the C24 review (they touch the same invariant, exactly as the brief
+  directed). The review attacked C9's central claim — can `live_mains()` return a set missing a
+  genuinely live id? — and found that **it can**, which corrects a safety argument that had been
+  stated wrongly twice in this module. See the C24 review sub-row for the finding, the replacement
+  invariant, and the test that pins it. Commit `3d509613`.
+- [x] **C17 — a live window no roster row claims.** ✅ 2026-07-29 — **no action, correctly
+  categorised.** `htop` and `btop` are live operator-owned windows in the `agent` session. Per
+  `live_mains`' matching rules they are never counted and never cause a refusal, so they are a
+  different CATEGORY, not an undercount. Surface them as informational; never refuse on them.
+- [x] **C18a — `codex-bus-tests` carries `role: retired` with a stale heartbeat.** ✅ 2026-07-29 —
+  **bookkeeping, confirmed, no delivery risk.** Heartbeat `idle`, age ~21 h. `role == "retired"`
+  already makes the relay treat it as an unreachable routing recipient
+  (`session_bus_coordinator.py:1937`), so the staleness is cosmetic. Note this is distinct from the
+  still-open C18(a) *decision* about what that roster row should ultimately be — that is a
+  coordinator call and is unchanged.
 
 > ### POST-REBOOT HANDOVER — `claude-gpu-lane`, closed 2026-07-29 (read this first)
 >
@@ -1224,12 +1258,41 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   the shape **a reboot does NOT produce** — the real post-reboot shape is the four files surviving
   with a `working` state on a dead pid. Same family as the C6/C9 fixture rule: a fixture that
   removes the precondition under test passes an implementation that cannot handle it.
-  - [ ] **C24 review — needs an independent reviewer, not the author.** The safety argument above
-    is a *proof obligation on another function*, which is precisely the kind of reasoning that has
-    been wrong twice in this module already (C9's undercount sentence, C14's polarity). Review
-    should attack one question: can `live_mains()` return a set missing a genuinely live id?
-- [ ] **C25 — `cmd_spawn` names the window after the roster ID, `resolve_target` verifies the
-  window named by the ENDPOINT, and nothing reconciles them.** *Observed live 2026-07-29 during
+  - [x] **C24 review — needs an independent reviewer, not the author.** ✅ 2026-07-29 — `auditor`,
+    commits `3d509613` (comment + invariant test) and `2eb51796` (ledger). **Answer to the one
+    question: YES, `live_mains()` CAN return a set missing a genuinely live id, without refusing.**
+    Demonstrated against the real session — rename a window without updating `config.yaml` (its own
+    drift trigger #1) and a live main drops out of `ids` while the function returns a SMALLER SET,
+    not `None`. So `args.agent in ids` passes and the reset lands on a live main. **The safety
+    argument above names a guarantee that does not exist and is hereby corrected.** The reset is
+    safe for a different reason: *an identity `live_mains` cannot see is an identity
+    `resolve_target` cannot reach* — their matching rules coincide, so undercount implies no nudge
+    target, and `not target` is itself a `probe()` blocker. resolve_target, not the heartbeat, is
+    the last line of defence. The hazard is otherwise real: the write clears BOTH heartbeat blockers
+    at once, and on a DETACHED session (the normal overnight state) `quiet_check` is skipped by
+    design. **Verdict: ship C24 — it replaces a certain, 3/3-reproducible failure with one that is
+    separately blocked.** The invariant was emergent, undocumented and untested; now pinned by
+    `test_c24_undercount_implies_resolve_target_refuses` over 5 drift shapes, with a positive
+    control (a resolve_target that refused everything would otherwise satisfy it) and an assertion
+    that the fake reproduces tmux's rc=0 fallback rather than failing on a miss. Mutation-checked.
+    One live counterexample was found and fixed — see **C32**. This also pays **C11**.
+  - [x] **C24 ledger — the reset must leave a durable trace.** ✅ 2026-07-29 — commit `2eb51796`.
+    The reset announced itself only on stdout, so the most consequential thing `cmd_spawn` does —
+    destroying the evidence of what a previous session was doing — was the one action the ledger did
+    not record. `record()` gained `**fields`; the row keeps the VALUE overwritten (state, task_id,
+    ts), not merely the fact, and is written BEFORE `new-window` so a later failure cannot swallow
+    it.
+- [x] **C25 — `cmd_spawn` names the window after the roster ID, `resolve_target` verifies the
+  window named by the ENDPOINT, and nothing reconciles them.** ✅ 2026-07-29 — `auditor`, commit
+  `a59a8ac5`. The window name is now derived from the endpoint via `parse_endpoint_window`; an INDEX
+  endpoint is REFUSED rather than guessed at (tmux assigns indexes, so a spawn cannot promise the
+  window lands on the one the endpoint names, and a mismatch is exactly this defect). The dead
+  `target, why = resolve_target(...)` assignment at `cmd_spawn:802` is deleted and the call
+  reinstated where it earns its keep — AFTER the window exists, verifying the spawned main actually
+  resolves, warning rather than aborting since the window and bus files are real by then. 6 checks;
+  the load-bearing one asserts DELIVERABILITY, not the window name, because asserting the name would
+  pass an adapter that names it correctly and still cannot be reached. Side benefit: this removes
+  drift trigger #1 for name endpoints, which the C24 containment argument depends on. *Observed live 2026-07-29 during
   post-reboot bring-up.* Spawn creates the window with `-n args.agent`
   (`tmux_adapter.py:899`), while `resolve_target` takes the window component of the endpoint and
   **verifies it** (`tmux_adapter.py:311-335`, the C6 anti-guess check). For roster id `codex` with
@@ -1246,8 +1309,16 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   window was still counted and the concurrency cap held. Only the send path broke. Do not "fix" this
   by relaxing the endpoint verification in `resolve_target` — that check is C6, and its failure mode
   is typing into someone else's pane.
-- [ ] **C26 — the coordinator-daemon's `status` reports a live daemon from a stale state file, with
-  no PID check.** *Verified 2026-07-29 with `ps -p`.* Post-reboot the daemon was dead, and
+- [x] **C26 — the coordinator-daemon's `status` reports a live daemon from a stale state file, with
+  no PID check.** ✅ 2026-07-29 — `auditor`, commits `9ffd094f` (pid) and `a75c7e90` (boot time).
+  BOTH checks the row asked for landed. `daemon_liveness()` is tristate: `PermissionError` means the
+  process exists under another uid (alive, not absent), and an unusable pid returns None and prints
+  "(unverified)" — "I cannot tell" is never rendered as either alive or dead. `heartbeat_predates_boot()`
+  closes what the pid check cannot: `os.kill(pid, 0)` answers "does a process with that number
+  exist", not "is it MY process", and pid numbering restarts at boot, so a recycled pid would have
+  made the fix a fresh fail-open in the very scenario that raised this. That verdict OVERRIDES the
+  pid check rather than supplementing it. The heartbeat's own claim is annotated, never overwritten —
+  what the last daemon believed is evidence worth keeping. 8 tests. *Verified 2026-07-29 with `ps -p`.* Post-reboot the daemon was dead, and
   `session_bus_coordinator.py status` printed
   `state=working epoch=11 pid=1928027 age=2157s` — for a PID that **did not exist**. `cmd_status`
   (`session_bus_coordinator.py:2233-2240`) reads `heartbeats/coordinator-daemon.json` and prints
@@ -1260,7 +1331,7 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   uptime**, since a heartbeat older than the boot cannot describe a running process. Report
   `state=STALE (pid N not running)` rather than the recorded state. Same family as C3/C18: a
   recorded claim is not an observation.
-- [ ] **C27 — two operator SIGNATURE REQUESTS were never relayed, and the documented cold start
+- [x] **C27 — two operator SIGNATURE REQUESTS were never relayed, and the documented cold start
   would have reported no gates pending. Cross-ref: PRIORITY 1 in
   `coordination/session-bus/tasks/auditor-c-own-20260729.md`.** *Verified 2026-07-29 by direct file
   inspection.* Two well-formed `token-request` messages from `codex`, both `to: coordinator-agent`,
@@ -1281,6 +1352,55 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   `token-queue.md` block (M4 specifies the transform, `authority` is still `manual`), and whether
   the answer is "the code is inert at this authority level" — in which case the DOCUMENTED cold
   start is wrong to treat `token-queue.md` as complete, and must scan outboxes until M4 is live.
+  **✅ 2026-07-29 — `auditor`. ROOT CAUSE, and it is worse than "not relayed": at `authority:
+  manual`, `kind: token-request` had NO DELIVERY PATH AT ALL and was dropped silently, by
+  construction. The daemon being down is not the explanation** — reproduced with the daemon healthy
+  (`artifacts/bus-audit-20260729/repro_token_drop.py`). Three mechanisms composed: (1)
+  `_NO_RELAY_KINDS` excluded the kind from the only always-on path, acted on with a bare `continue`
+  — no advisory, no defect, no trace; (2) the "other path" that justified the exclusion,
+  `relay_tokens`, was reachable only from `apply_assignment`, gated on `authority == "assign"`,
+  while `config.yaml` is `manual`; (3) the C20 safety net — built for exactly "a human signature
+  request went unseen" — scanned the coordinator's INBOX, which step (1) guarantees can never
+  contain a `token-request`. **The last-hop net was searching a set that structurally cannot contain
+  what it looks for.** Corroboration: `tokens-relayed` and `operator-bypass-escalated` each appear
+  **0 times in all 31,405 advisory records**. Answers to the four questions in the brief: the
+  transform is `relay_tokens` → `apply_assignment:2074-2078`; **the RELAY dropped them**, not the
+  transcription (it renders a correct block when invoked) and not the queue render (nothing was ever
+  written to render); **not a durability defect** — both functions are stateless full-outbox rescans
+  deduped on `gate_id`/`relayed_src`, so nothing was lost; **`task-complete` and `task-propose` can
+  be lost identically** and were verified so by the same harness (`transcribe` is also assign-only;
+  `intake_proposals` is reachable ONLY from the manual `intake` CLI — `tick` has never called it at
+  any authority). Fixed in three commits, each with its tests: `91dafa1e` presentation moves to the
+  always-on tier (transport, not judgment — the HELD_OP_GATE rows stay assign-only, and
+  `relay_tokens`' block and row are now INDEPENDENTLY idempotent, without which the always-on write
+  would have silently swallowed the hold row); `31129b7b` `_RELAY_HANDLERS` maps kind →
+  (handler, authority-it-runs-at) and relays + emits a defect when the handler is unreachable;
+  `ef5598f5` gives C20 an outbox input. Measured before wiring: 24 operator-kind outbox rows live, 3
+  unevidenced — two of them these gates. Standing rules codified in `BUS_PROTOCOL.md`.
+  - [x] **The old test asserted the defect.** ✅ 2026-07-29 —
+    `test_c2_no_relay_kinds_are_not_fanned_out` parametrized over the CONSTANT set, so it pinned the
+    silent drop of `task-complete` and `task-propose` at manual authority as correct behaviour.
+    Rewritten against the authority-derived set.
+- [x] **C32 (NEW) — `resolve_target` exempted INDEX endpoints from its own verification and reported
+  the result as "(verified)".** ✅ 2026-07-29 — `auditor`, commit `9c714eed`. Found while paying the
+  C24 review. The check read `if got.strip() != want and not want.isdigit()` — it compared every
+  endpoint against the window NAME and waived the comparison for numeric components, because an
+  index never equals a name. So for index endpoints it **trusted the string**, which is the precise
+  thing the function exists to prevent (its own comment records the 2026-07-27 measurement and says
+  trusting it "would have let send-keys hit the wrong pane"), and then returned a **false
+  attestation**. Measured, worse than first reported: `display-message -p -t sess:7 '#{window_name}'`
+  exits **0 with EMPTY output** when the session does not exist at all, so `tmux:no-such-session:7`
+  was attested as verified; for an out-of-range index in a live session tmux falls back to window 0
+  — the operator's own window — and a nudge would have typed into it.
+  **This was the one live counterexample to C24's containment invariant**: uncounted by
+  `live_mains` AND resolvable, which is exactly the pair that must never both hold. Latent, not
+  live — no roster row uses an index endpoint today, but C14 lists `tmux:agent:3` as a supported
+  resolved form and no test used one, which is how the exemption survived.
+  Fix: request `#{window_index}\t#{window_name}` in one call and verify against the component that
+  was actually named; an unreadable reply refuses rather than attests. **The unit-group fixture
+  pinned the bug** — `check(t == "sess:7", "explicit window in endpoint resolves")` asserted a
+  verified resolution for an absent session; corrected, and the live group gained real index
+  coverage. A refusal is recoverable by asking again; a false "verified" is not.
 - [ ] **C28 — relay is tracked by destination FILE, not by message identity, so moving an inbox
   re-floods it.** *Observed 2026-07-29 during the roster rename.* Renaming the roster ids meant
   `git mv inbox/<old>.jsonl inbox/<new>.jsonl`; the running daemon then re-delivered its **entire
