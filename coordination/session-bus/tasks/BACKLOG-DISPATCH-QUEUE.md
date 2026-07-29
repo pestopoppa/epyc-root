@@ -718,7 +718,7 @@ re-grep before assigning.
 ## harness-selection-and-integration.md (11)
 - L40 | none | M | Y | HS-2 ROI verdict LOW — dormant | HS-3 survey ACP-speaking open harnesses as extra candidates | handoff, acp-roi-analysis-2026-07.md
 - L41 | none | M | N | **operator decision (HS-4 is operator-owned)** | HS-4 harness-selection gate: Hermes vs OpenCode vs ACP | handoff, hermes-outer-shell.md
-- L134 | none | S | N | - | HS-5 add weight-space RL adapter column to decision matrix | handoff
+- L134 | none | S | N | - | **CLOSED 2026-07-29** — HS-4 matrix records the adapter axis separately from current-host feasibility; operator ownership unchanged | handoffs/active/harness-selection-and-integration.md:134,137-145
 - L136 | none | S | N | - | **CLOSED 2026-07-29** — already recorded as outer-loop, not HS-4, with containment/trial boundary | handoffs/active/harness-selection-and-integration.md:149 (root `c942728e`)
 - L142 | none | L | N | - | HS-6 audit Layer-B against six/seven-dimension harness taxonomy | handoff, orchestrator layer-B sources
 - L143 | none | S | N | - | **CLOSED 2026-07-29** — standing HS-4 re-targetability criterion and acceptance evidence are recorded | handoffs/active/harness-selection-and-integration.md:156,190-207
