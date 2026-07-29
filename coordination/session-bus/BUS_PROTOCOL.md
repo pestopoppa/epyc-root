@@ -163,3 +163,33 @@ busy-wait or bypass while probing; do other coordination work between probes (ru
 blocking on a human too). Full procedure, threshold reasoning, and origin incident:
 `agents/coordinator-agent.md` → Guardrails.
 sees them at its next drain (defect C8, 2026-07-28).
+
+## Stuck-agent rescue and the last hop to the operator (C19 / C20, 2026-07-29)
+
+**Stuck-agent rescue (C19).** The coordinator-daemon detects, every tick, any roster member with
+`unread > 0` past its cursor whose heartbeat says `idle`, is absent, or is stale beyond one hour,
+and nudges it to drain **through `tmux_adapter.py`** — never with raw `send-keys`. An adapter
+refusal (rate limit, quiet-check, unresolvable window, gate off) is a legitimate outcome: it is
+recorded in `advisory.jsonl` and retried later, never routed around. A non-tmux endpoint
+(`monitor:file`) cannot be nudged at all and is surfaced as `stuck-unreachable`. An agent that was
+nudged and whose unread count *and* cursor are unchanged is not asleep — it is refusing to drain;
+that escalates (`stuck-refusing-drain`) instead of being nudged forever. State lives in the
+daemon-owned `stuck_state.json`, so a daemon restart does not re-nudge everybody. Unread that
+cannot be computed (missing inbox, unreadable cursor, malformed JSONL) is **never** read as zero.
+
+**The last hop (C20).** Delivery is mechanical; bus → *operator* was not. Unread `token-request` /
+`defect` / CRITICAL items in `coordinator-agent`'s inbox age into a nudge at 30 minutes and, if
+still unread at 90 minutes, into a **daemon escalation block appended to `tokens/token-queue.md`** —
+a file the operator already reads. The coordinator is in the loop for JUDGEMENT; it must not be a
+single point of failure for TRANSPORT of "a human signature is needed". The block is idempotent on
+message id and carries **no checkbox**: the daemon relays, only the operator signs (rule 1).
+
+**Operator-script receipt convention (proposed; the scanner is inert until adopted).** A script in
+`artifacts/operator/` may declare its gate with a header line `# BUS-GATE: <gate-id>`. On a
+successful apply it writes `<script-name>.receipt.json` beside itself; when a successor is
+generated, the superseded script gets `<script-name>.superseded`. The daemon then flags any
+declaring script whose gate appears in neither the token queue nor any outbox `token-request` and
+which has neither marker — i.e. a ratification that was printed at a human but never *filed*. No
+script declares `BUS-GATE` today, so the check emits nothing; adopting the convention is an
+operator decision, and without it the join has no ground truth (an earlier attempt mis-flagged 11
+of 25 scripts, because superseded and repaired scripts never receive receipts).

@@ -1222,6 +1222,487 @@ def detect_task_boundaries(bus_root: Path, roster: list[dict], epoch: int) -> li
              "transition": n["payload"]["transition"]} for n in notices]
 
 
+# --------------------------------------------------------- stuck-agent rescue
+#
+# C19 (2026-07-29). An agent that goes IDLE before draining its inbox stays that
+# way forever: the work is delivered, unread, and nothing wakes it. Observed
+# repeatedly, most recently `claude-gpu-lane` sitting idle on 14 unread messages
+# until a human noticed. The coordinator-agent's 7-minute prompt loop is not a
+# fix — it depends on a session's attention, misses windows, and dies with the
+# session. Detection belongs here for the same reason C8's boundary surfacing
+# does: the daemon ticks every 45s, already reads heartbeats and cursors, is kept
+# alive by bus_supervisor.sh, and outlives every coordinator session.
+#
+# WHAT THIS DOES NOT DO. It does not send keys. It calls tmux_adapter.py, which
+# owns the grant (OP-SENDKEYS-CODEX / flags.codex_sendkeys) and every guard
+# (quiet-check, heartbeat state, rate limit, submission verification). An adapter
+# refusal is a LEGITIMATE outcome recorded as an advisory and retried on a later
+# tick — never routed around. A daemon that learns to bypass its own guards is a
+# far worse failure mode than a stuck agent.
+_STUCK_STATE = "stuck_state.json"
+# Heartbeat silence that, combined with unread mail, counts as stuck even without
+# an explicit `idle`. Above the stall-ladder grace: a main may legitimately be
+# quiet for a long while, and the adapter's own heartbeat guards decide the rest.
+_STUCK_HEARTBEAT_STALE_S = 3600.0
+# Never nudge one agent more often than this. Matches tmux_adapter's own default
+# --min-interval-s, and is passed THROUGH to the adapter so the adapter enforces
+# it independently of this file's bookkeeping.
+_STUCK_MIN_NUDGE_INTERVAL_S = 600.0
+# An agent that was nudged and whose (unread, cursor) is unchanged is refusing to
+# drain — a different problem from being asleep, and nudging it forever is noise.
+# Escalating advisories are emitted no more often than this.
+_STUCK_ESCALATION_INTERVAL_S = 1800.0
+# A guard refusal is retried, but not on every 45s tick: an endpoint the adapter
+# structurally cannot resolve (`tmux:agent` with no matching window) would
+# otherwise spawn a subprocess and write an advisory row every tick, forever.
+_STUCK_REFUSAL_RETRY_S = 300.0
+_STUCK_NUDGE_MESSAGE = (
+    "Bus: you have {unread} unread inbox message(s) and are idle. Run "
+    "scripts/coordination/session_bus.py drain --agent {agent} now, act on what it "
+    "delivers, and refresh your heartbeat."
+)
+
+
+def _tmux_nudge(agent: str, message: str, min_interval_s: float) -> tuple[int, str]:
+    """Shell out to the adapter. Isolated so tests can substitute it wholesale."""
+    script = Path(__file__).resolve().parent / "tmux_adapter.py"
+    try:
+        proc = subprocess.run(
+            [sys.executable, str(script), "nudge", "--agent", agent,
+             "--message", message, "--min-interval-s", str(min_interval_s)],
+            capture_output=True, text=True, timeout=120,
+        )
+    except Exception as exc:  # noqa: BLE001 — an unrunnable adapter is a refusal
+        return 3, f"adapter invocation failed: {exc}"
+    return proc.returncode, ((proc.stdout or "") + (proc.stderr or "")).strip()
+
+
+def _unread_state_rows(bus_root: Path, aid: str) -> tuple[list[dict], int]:
+    """(unread_rows, cursor_offset). Raises if it cannot be computed.
+
+    FAIL CLOSED. A missing inbox, a missing/unreadable cursor or malformed JSONL
+    must NOT read as "zero unread" — every prior defect in this module (C3, C6,
+    C8) was a fail-open, and "no unread" is precisely the answer that makes a
+    stuck agent invisible. The caller skips the agent and says so in an advisory.
+    """
+    cursor_path = bus_root / "cursors" / f"{aid}.json"
+    raw = json.loads(cursor_path.read_text(encoding="utf-8"))
+    offset = int(raw["offset"])
+    inbox = bus_root / "inbox" / f"{aid}.jsonl"
+    if not inbox.exists():
+        raise FileNotFoundError(f"{inbox} does not exist")
+    rows, _ = _read_jsonl(inbox, offset)   # raises BusError on malformed JSONL
+    return rows, offset
+
+
+def _unread_state(bus_root: Path, aid: str) -> tuple[int, int]:
+    """(unread_count, cursor_offset), same fail-closed contract."""
+    rows, offset = _unread_state_rows(bus_root, aid)
+    return len(rows), offset
+
+
+def resolve_stuck_agents(bus_root: Path, roster: list[dict], epoch: int,
+                         *, nudge_fn=None, now: float | None = None) -> list[dict]:
+    """Detect agents idle on unread mail and nudge them to drain.
+
+    Predicate: `unread > 0` AND (heartbeat state is `idle` OR the heartbeat is
+    unreadable/absent OR its age exceeds _STUCK_HEARTBEAT_STALE_S). An agent
+    reporting `working`/`draining` with a fresh heartbeat is NOT stuck — it will
+    drain at its next boundary, which is the protocol.
+
+    De-duplication is durable, in a daemon-owned state file, so a daemon restart
+    does not re-nudge everybody: per agent we keep the last nudge timestamp and
+    the (unread, cursor) pair it was sent against.
+    """
+    nudge = nudge_fn or _tmux_nudge
+    now = time.time() if now is None else now
+    state_path = bus_root / _STUCK_STATE
+    try:
+        prev = json.loads(state_path.read_text(encoding="utf-8"))
+        if not isinstance(prev, dict):
+            prev = {}
+    except Exception:  # noqa: BLE001 — absent or corrupt reads as "no history"
+        prev = {}
+
+    states = _agent_states(bus_root, roster)
+    advisory: list[dict] = []
+    new_state = dict(prev)
+
+    def row(kind: str, aid: str, **extra) -> None:
+        advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                         "epoch": epoch, "kind": kind, "check": "stuck-agent",
+                         "agent": aid, **extra})
+
+    for entry in roster:
+        aid = str(entry.get("id", "")).strip()
+        if not aid or aid == COORDINATOR_DAEMON:
+            continue
+        endpoint = str(entry.get("endpoint") or "").strip()
+        rec = dict(prev.get(aid) or {})
+
+        try:
+            unread, offset = _unread_state(bus_root, aid)
+        except Exception as exc:  # noqa: BLE001
+            # NOT zero. Skipped, loudly, and deduped so a permanently missing
+            # file does not write a row every 45s.
+            sig = f"unreadable:{exc.__class__.__name__}"
+            if rec.get("last_detect_sig") != sig:
+                row("stuck-state-unreadable", aid, detail=str(exc),
+                    action="skipped — unread not computable, NOT treated as zero")
+            rec["last_detect_sig"] = sig
+            new_state[aid] = rec
+            continue
+
+        st = states.get(aid) or {}
+        hb_state = str(st.get("state") or "").strip()
+        hb_age = st.get("age_s")
+        stale = hb_age is None or hb_age > _STUCK_HEARTBEAT_STALE_S
+        stuck = unread > 0 and (hb_state == "idle" or not hb_state or stale)
+
+        if not stuck:
+            rec["last_detect_sig"] = f"clear:{unread}:{offset}"
+            new_state[aid] = rec
+            continue
+
+        sig = f"stuck:{unread}:{offset}"
+        if rec.get("last_detect_sig") != sig:
+            row("stuck-detected", aid, unread=unread, cursor_offset=offset,
+                heartbeat_state=hb_state or None, heartbeat_age_s=hb_age,
+                endpoint=endpoint)
+        rec["last_detect_sig"] = sig
+
+        # (6) A monitor:file endpoint has no push channel — there is nothing to
+        # send keys to. Surfacing it is the whole remedy available; attempting a
+        # nudge would only manufacture a guaranteed adapter refusal.
+        if not endpoint.startswith("tmux:"):
+            last = rec.get("last_unreachable_ts")
+            if last is None or now - float(last) >= _STUCK_ESCALATION_INTERVAL_S:
+                row("stuck-unreachable", aid, unread=unread, endpoint=endpoint or None,
+                    detail="stuck on unread mail but the endpoint is not tmux, so it "
+                           "cannot be nudged (defect C8's shape)",
+                    action="operator/coordinator-agent must reach it out of band")
+                rec["last_unreachable_ts"] = now
+            new_state[aid] = rec
+            continue
+
+        # (4) Refusing to drain: we nudged, and neither the unread count nor the
+        # cursor moved. Nudging again would not help — this is a different defect
+        # and it escalates rather than repeating.
+        nudged_sig = rec.get("last_nudge_sig")
+        if nudged_sig == f"{unread}:{offset}":
+            last_esc = rec.get("last_escalation_ts")
+            if last_esc is None or now - float(last_esc) >= _STUCK_ESCALATION_INTERVAL_S:
+                rec["escalations"] = int(rec.get("escalations") or 0) + 1
+                row("stuck-refusing-drain", aid, unread=unread, cursor_offset=offset,
+                    escalation=rec["escalations"],
+                    detail=f"nudged {int(rec.get('nudges') or 0)} time(s); unread and cursor "
+                           f"unchanged since. The agent is not asleep — it is not draining.",
+                    action="coordinator-agent/operator intervention")
+                rec["last_escalation_ts"] = now
+            new_state[aid] = rec
+            continue
+
+        last_nudge_ts = rec.get("last_nudge_ts")
+        if last_nudge_ts is not None and now - float(last_nudge_ts) < _STUCK_MIN_NUDGE_INTERVAL_S:
+            new_state[aid] = rec          # rate limited; retried on a later tick
+            continue
+
+        last_refusal = rec.get("last_refusal_ts")
+        if last_refusal is not None and now - float(last_refusal) < _STUCK_REFUSAL_RETRY_S:
+            new_state[aid] = rec       # backing off a refused attempt; retried later
+            continue
+
+        message = _STUCK_NUDGE_MESSAGE.format(unread=unread, agent=aid)
+        rc, out = nudge(aid, message, _STUCK_MIN_NUDGE_INTERVAL_S)
+        if rc == 0:
+            rec["last_nudge_ts"] = now
+            rec["last_nudge_sig"] = f"{unread}:{offset}"
+            rec["nudges"] = int(rec.get("nudges") or 0) + 1
+            row("stuck-nudged", aid, unread=unread, cursor_offset=offset,
+                nudges=rec["nudges"], detail=out[-500:])
+        else:
+            # A guard said no. That is the system working; record the divergence
+            # between "detected stuck" and "resolved" and try again later.
+            rec["last_refusal_ts"] = now
+            row("stuck-nudge-refused", aid, unread=unread, exit_code=rc,
+                detail=out[-500:] or "adapter refused with no output",
+                action="guard refusal respected; retried on a later tick")
+        new_state[aid] = rec
+
+    if new_state != prev:
+        _write_atomic(state_path, new_state)
+    return advisory
+
+
+# ------------------------------------------------- the last hop: bus -> operator
+#
+# C20 (2026-07-29). The delivery plane is mechanical; the LAST HOP is not. Seven
+# documented failures share one shape: an operator-decision item existed durably
+# and NO machine was responsible for a human seeing it within a bounded time.
+# Twice a ratification command was printed into a pane and never filed as a
+# token-request, so the coordinator's drain was legitimately empty and the
+# OPERATOR found it by reading tmux. Once, 33 messages sat unread — including
+# "Human amendment required. No further inference permitted".
+#
+# The load-bearing idea is (c): the coordinator-agent is in the loop for
+# JUDGEMENT, and that must not make it a single point of failure for TRANSPORT
+# of "a human signature is needed". So after a second, longer deadline the daemon
+# writes the notice straight into tokens/token-queue.md — a file the operator
+# already reads — as a clearly marked daemon escalation. It NEVER writes or
+# alters a checkbox: relaying blocks is the daemon's existing role under rule 1,
+# flipping a box is the operator's and only the operator's.
+_OPERATOR_STATE = "operator_escalation_state.json"
+# Kinds that mean a human is waiting. Deliberately narrow: a normalised warning
+# is the failure mode this whole mechanism exists to avoid.
+_OPERATOR_ITEM_KINDS = {"token-request", "defect"}
+_OPERATOR_NUDGE_DEADLINE_S = 1800.0      # 30 min unread -> nudge the coordinator
+_OPERATOR_BYPASS_DEADLINE_S = 5400.0     # 90 min unread -> bypass to the operator
+_OPERATOR_NUDGE_RETRY_S = 900.0
+_OPERATOR_ESCALATION_MARKER = "DAEMON-ESCALATION"
+# (a) THE RECEIPT CONVENTION, and why it is inert today.
+#
+# A prior attempt to join operator scripts against the token queue flagged 11 of
+# 25 as "unrun". That was not a scanner bug — it was missing ground truth:
+# superseded and repaired scripts never receive receipts, and string-matching
+# --validate-only output guesses at each script's vocabulary. A high-false-
+# positive signal here would be worse than none, because normalised warnings are
+# precisely how the seven failures happened.
+#
+# So the join is defined against an EXPLICIT convention and scans nothing that
+# has not opted in:
+#   * a script declares its gate with a header line `# BUS-GATE: <gate-id>`;
+#   * a successful apply writes `<script-name>.receipt.json` beside it;
+#   * a superseded script gets `<script-name>.superseded`, minted when its
+#     successor is generated.
+# No script in artifacts/operator/ declares BUS-GATE today, so this emits
+# nothing until the convention is adopted — which is an operator decision, not
+# one the daemon makes for them. Documented in BUS_PROTOCOL.md.
+_BUS_GATE_DECLARATION = "# BUS-GATE:"
+_OPERATOR_ARTIFACT_DIR = REPO_ROOT / "artifacts" / "operator"
+
+
+def _msg_age_s(row: dict, now: float) -> float | None:
+    try:
+        ts = datetime.fromisoformat(str(row.get("ts")))
+    except (TypeError, ValueError):
+        return None
+    if ts.tzinfo is None:
+        ts = ts.replace(tzinfo=timezone.utc)
+    return now - ts.timestamp()
+
+
+def _is_operator_item(row: dict) -> bool:
+    payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
+    if row.get("kind") in _OPERATOR_ITEM_KINDS:
+        return True
+    for key in ("severity", "priority"):
+        if str(payload.get(key) or row.get(key) or "").strip().upper() == "CRITICAL":
+            return True
+    return False
+
+
+def scan_operator_receipts(bus_root: Path, roster: list[dict], epoch: int,
+                           *, artifact_dir: Path | None = None) -> list[dict]:
+    """(a) Operator scripts that declare a gate nobody ever asked the operator for.
+
+    The obligation being enforced is EMISSION: the producing agent should have
+    filed a `token-request`. Printing a ratification command into a pane is the
+    defect; detecting it afterwards is the consolation prize. Exempt: a script
+    with a receipt (applied), a `.superseded` marker (replaced), or whose gate is
+    already in the token queue or in some outbox token-request.
+    """
+    directory = artifact_dir or _OPERATOR_ARTIFACT_DIR
+    advisory: list[dict] = []
+    if not directory.is_dir():
+        return advisory
+    try:
+        token_text = (bus_root / "tokens" / "token-queue.md").read_text(encoding="utf-8")
+    except Exception as exc:  # noqa: BLE001 — fail closed: no queue, no exemptions to check
+        return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                 "kind": "operator-receipt-scan-skipped", "check": "operator-receipt",
+                 "detail": f"token-queue.md unreadable: {exc}"}]
+
+    requested: set[str] = set()
+    producer_of: dict[str, str] = {}
+    for entry in roster:
+        aid = str(entry.get("id", "")).strip()
+        if not aid:
+            continue
+        try:
+            rows, _ = _read_jsonl(bus_root / "outbox" / f"{aid}.jsonl")
+        except Exception:  # noqa: BLE001 — an unreadable outbox proves no request
+            continue
+        for row in rows:
+            payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
+            if row.get("kind") == "token-request" and payload.get("gate_id"):
+                requested.add(str(payload["gate_id"]))
+            for name in ("script", "artifact", "path", "cmd"):
+                val = payload.get(name)
+                if isinstance(val, str) and val.endswith(".sh"):
+                    producer_of.setdefault(Path(val).name, aid)
+
+    notices: list[dict] = []
+    seen_notices = set()
+    try:
+        inbox_rows, _ = _read_jsonl(bus_root / "inbox" / f"{COORDINATOR_AGENT}.jsonl")
+        seen_notices = {str((r.get("payload") or {}).get("gate_id")) for r in inbox_rows
+                        if (r.get("payload") or {}).get("event") == "unrequested-operator-gate"}
+    except Exception:  # noqa: BLE001
+        seen_notices = set()
+
+    for script in sorted(directory.glob("*.sh")):
+        try:
+            text = script.read_text(encoding="utf-8", errors="replace")
+        except Exception as exc:  # noqa: BLE001
+            advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                             "epoch": epoch, "kind": "operator-receipt-unreadable",
+                             "check": "operator-receipt", "script": script.name,
+                             "detail": str(exc)})
+            continue
+        gate = ""
+        for line in text.splitlines():
+            if line.strip().startswith(_BUS_GATE_DECLARATION):
+                gate = line.split(":", 1)[1].strip()
+                break
+        if not gate:
+            continue  # has not opted into the convention; nothing is known, so nothing is claimed
+        if script.with_suffix(".sh.receipt.json").exists() or (
+                script.parent / f"{script.name}.receipt.json").exists():
+            continue
+        if (script.parent / f"{script.name}.superseded").exists():
+            continue
+        if gate in token_text or gate in requested:
+            continue
+        subject = producer_of.get(script.name, "unattributed (all sessions share one git identity)")
+        advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                         "kind": "defect", "check": "operator-receipt", "subject": subject,
+                         "script": script.name, "gate_id": gate,
+                         "detail": f"{script.name} declares gate {gate}, which appears in neither "
+                                   f"the token queue nor any outbox token-request, and it has no "
+                                   f"receipt or superseded marker. The producing agent owed a "
+                                   f"token-request."})
+        if gate not in seen_notices:
+            notices.append({"to": COORDINATOR_AGENT, "kind": "defect",
+                            "payload": {"event": "unrequested-operator-gate", "gate_id": gate,
+                                        "script": str(script), "producer": subject,
+                                        "detail": "an operator script declares a gate that was "
+                                                  "never presented to the operator"}})
+            seen_notices.add(gate)
+    if notices:
+        _append_inbox(bus_root, notices, epoch)
+    return advisory
+
+
+def pending_operator_actions(bus_root: Path, roster: list[dict], epoch: int,
+                             *, nudge_fn=None, now: float | None = None,
+                             artifact_dir: Path | None = None) -> list[dict]:
+    """(b) + (c): unread operator-decision items age into a nudge, then a bypass."""
+    nudge = nudge_fn or _tmux_nudge
+    now = time.time() if now is None else now
+    advisory: list[dict] = []
+    advisory += scan_operator_receipts(bus_root, roster, epoch, artifact_dir=artifact_dir)
+
+    state_path = bus_root / _OPERATOR_STATE
+    try:
+        prev = json.loads(state_path.read_text(encoding="utf-8"))
+        if not isinstance(prev, dict):
+            prev = {}
+    except Exception:  # noqa: BLE001
+        prev = {}
+    state = dict(prev)
+
+    # FAIL CLOSED. If the coordinator's unread set cannot be computed we do NOT
+    # read that as "nothing is waiting" — that is exactly the shape of the
+    # failure this exists to catch.
+    try:
+        unread, _ = _unread_state_rows(bus_root, COORDINATOR_AGENT)
+    except Exception as exc:  # noqa: BLE001
+        advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                         "kind": "operator-backlog-unreadable", "check": "pending-operator-action",
+                         "agent": COORDINATOR_AGENT, "detail": str(exc),
+                         "action": "skipped — unread not computable, NOT treated as empty"})
+        return advisory
+
+    overdue, bypass_due = [], []
+    for row in unread:
+        if not _is_operator_item(row):
+            continue
+        age = _msg_age_s(row, now)
+        if age is None:
+            advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                             "epoch": epoch, "kind": "operator-item-undatable",
+                             "check": "pending-operator-action", "msg_id": row.get("id"),
+                             "detail": "unread operator item has no parseable ts; "
+                                       "escalating on the next readable pass"})
+            continue
+        if age >= _OPERATOR_BYPASS_DEADLINE_S:
+            bypass_due.append((row, age))
+        if age >= _OPERATOR_NUDGE_DEADLINE_S:
+            overdue.append((row, age))
+
+    # (c) step 1 — nudge the coordinator. Its endpoint is `monitor:file` today, so
+    # the adapter WILL refuse; that refusal is recorded rather than worked around,
+    # and it is defect C8's shape: an unreachable agent holding operator-critical
+    # mail. The bypass below is what makes that survivable.
+    if overdue:
+        last = state.get("__nudge__", {}).get("ts")
+        if last is None or now - float(last) >= _OPERATOR_NUDGE_RETRY_S:
+            rc, out = nudge(COORDINATOR_AGENT,
+                            f"Bus: {len(overdue)} operator-decision item(s) have been unread in "
+                            f"your inbox past the deadline. Drain and present them now.",
+                            _OPERATOR_NUDGE_RETRY_S)
+            state["__nudge__"] = {"ts": now, "rc": rc}
+            advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                             "epoch": epoch,
+                             "kind": "operator-backlog-nudged" if rc == 0
+                                     else "operator-backlog-unreachable",
+                             "check": "pending-operator-action", "agent": COORDINATOR_AGENT,
+                             "overdue": len(overdue), "exit_code": rc, "detail": out[-500:]})
+
+    # (c) step 2 — bypass. Append a clearly marked, checkbox-free notice block to
+    # a file the operator already checks. Idempotent on the message id, exactly as
+    # relay_tokens is idempotent on gate_id, so repeated ticks cannot spam it.
+    tq = bus_root / "tokens" / "token-queue.md"
+    try:
+        existing = tq.read_text(encoding="utf-8") if tq.exists() else ""
+    except Exception as exc:  # noqa: BLE001
+        advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                         "kind": "operator-bypass-unavailable", "check": "pending-operator-action",
+                         "detail": f"token-queue.md unreadable: {exc}"})
+        if state != prev:
+            _write_atomic(state_path, state)
+        return advisory
+
+    blocks: list[str] = []
+    for row, age in bypass_due:
+        mid = str(row.get("id") or "")
+        marker = f"{_OPERATOR_ESCALATION_MARKER} {mid}"
+        if not mid or marker in existing:
+            continue
+        payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
+        detail = str(payload.get("detail") or payload.get("event") or row.get("kind"))
+        blocks.append(
+            f"\n### {marker}\n\n"
+            f"**Daemon escalation — not a gate, no checkbox.** An operator-decision item has sat "
+            f"unread in `coordinator-agent`'s inbox for {age / 3600.0:.1f}h, past the bypass "
+            f"deadline. The coordinator is in the loop for judgement; it must not be a single "
+            f"point of failure for transporting *a human signature is needed*.\n\n"
+            f"- message: `{mid}` (`{row.get('kind')}`) from `{row.get('from')}`\n"
+            f"- task: `{row.get('task_id') or '-'}`\n"
+            f"- detail: {detail}\n"
+        )
+        state.setdefault("escalated", {})[mid] = now
+        advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                         "kind": "operator-bypass-escalated", "check": "pending-operator-action",
+                         "msg_id": mid, "msg_kind": row.get("kind"), "age_s": age})
+    if blocks:
+        with tq.open("a", encoding="utf-8") as fh:
+            fh.writelines(blocks)
+    if state != prev:
+        _write_atomic(state_path, state)
+    return advisory
+
+
 # Kinds the daemon already consumes through another path; relaying them too would
 # double-count. token-request -> relay_tokens (token-queue.md); task-propose /
 # task-complete -> transcribe (queue.jsonl).
@@ -1592,6 +2073,16 @@ def tick(bus_root: Path, epoch: int, *, dry_run: bool = False) -> list[dict]:
         # it runs here (the always-on tier) rather than in a session-local poller.
         advice += detect_task_boundaries(bus_root, roster, epoch)
         advice += redeliver_unacked_messages(bus_root, roster, epoch)
+        # C19: an agent idle on unread mail is stuck forever unless something
+        # wakes it. Runs at EVERY authority — waking an agent to read its own
+        # inbox is transport, not a scheduling decision — and delegates the
+        # actual send-keys, with all its guards, to tmux_adapter.py.
+        advice += resolve_stuck_agents(bus_root, roster, epoch)
+        # C20: the last hop, bus -> operator. Runs at every authority for the same
+        # reason relay does — transporting "a human signature is needed" is not a
+        # scheduling decision, and its absence is what every one of the seven
+        # documented last-hop failures had in common.
+        advice += pending_operator_actions(bus_root, roster, epoch)
 
     if authority == "assign" and not dry_run:
         # M4. In manual/advisory mode this branch never runs, so the daemon keeps

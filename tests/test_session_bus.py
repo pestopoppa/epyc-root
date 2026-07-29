@@ -695,3 +695,381 @@ def test_c18_the_notice_is_not_re_sent_on_every_tick(bus_root: Path) -> None:
     notices = [r for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
                if r.get("kind") == "defect" and (r.get("payload") or {}).get("unreachable")]
     assert len(notices) == 1, f"one notice per (msg, recipient), got {len(notices)}"
+
+
+# --------------------------------------------------------- C19 stuck-agent rescue
+
+
+def _stuck_roster(*, endpoint: str = "tmux:agent:alice") -> list[dict]:
+    return [
+        {"id": "alice", "role": "main", "lanes": ["none"], "endpoint": endpoint},
+        {"id": "coordinator-agent", "role": "coordinator-agent", "lanes": ["none"],
+         "endpoint": "monitor:file"},
+    ]
+
+
+class _RecordingNudge:
+    """Stand-in for tmux_adapter.py. NO test may reach a real tmux window."""
+
+    def __init__(self, rc: int = 0, out: str = "nudged") -> None:
+        self.rc, self.out, self.calls = rc, out, []
+
+    def __call__(self, agent: str, message: str, min_interval_s: float) -> tuple[int, str]:
+        self.calls.append((agent, message, min_interval_s))
+        return self.rc, self.out
+
+
+def _unread(root: Path, agent: str, n: int) -> None:
+    for i in range(n):
+        _append(root / "inbox" / f"{agent}.jsonl",
+                _message("coordinator-daemon", agent, seq=100 + i))
+
+
+def _kinds(rows: list[dict], agent: str = "alice") -> list[str]:
+    return [r["kind"] for r in rows if r.get("agent") == agent]
+
+
+def test_c19_idle_agent_with_unread_is_detected_and_nudged(bus_root: Path) -> None:
+    _provision(bus_root, "alice", "coordinator-agent")
+    _unread(bus_root, "alice", 3)
+    _heartbeat(bus_root, "alice", "idle")
+    nudge = _RecordingNudge()
+
+    rows = coordinator.resolve_stuck_agents(bus_root, _stuck_roster(), epoch=1,
+                                            nudge_fn=nudge, now=1000.0)
+
+    assert [c[0] for c in nudge.calls] == ["alice"]
+    assert "drain --agent alice" in nudge.calls[0][1]
+    assert nudge.calls[0][2] == coordinator._STUCK_MIN_NUDGE_INTERVAL_S
+    assert _kinds(rows) == ["stuck-detected", "stuck-nudged"]
+    assert (bus_root / "stuck_state.json").exists()
+
+
+def test_c19_working_agent_is_not_stuck(bus_root: Path) -> None:
+    _provision(bus_root, "alice", "coordinator-agent")
+    _unread(bus_root, "alice", 5)
+    _heartbeat(bus_root, "alice", "working", task_id="t-1")
+    nudge = _RecordingNudge()
+
+    rows = coordinator.resolve_stuck_agents(bus_root, _stuck_roster(), epoch=1,
+                                            nudge_fn=nudge, now=1000.0)
+
+    assert nudge.calls == []
+    assert _kinds(rows) == []
+
+
+def test_c19_idle_agent_with_no_unread_is_not_stuck(bus_root: Path) -> None:
+    _provision(bus_root, "alice", "coordinator-agent")
+    _heartbeat(bus_root, "alice", "idle")
+    nudge = _RecordingNudge()
+
+    rows = coordinator.resolve_stuck_agents(bus_root, _stuck_roster(), epoch=1,
+                                            nudge_fn=nudge, now=1000.0)
+
+    assert nudge.calls == []
+    assert _kinds(rows) == []
+
+
+def test_c19_stale_heartbeat_with_unread_counts_as_stuck(bus_root: Path) -> None:
+    """Silence is not proof of health when mail is sitting unread."""
+    _provision(bus_root, "alice", "coordinator-agent")
+    _unread(bus_root, "alice", 1)
+    _heartbeat(bus_root, "alice", "working", task_id="t-1")
+    old = time.time() - (coordinator._STUCK_HEARTBEAT_STALE_S + 600)
+    os.utime(bus_root / "heartbeats" / "alice.json", (old, old))
+    nudge = _RecordingNudge()
+
+    rows = coordinator.resolve_stuck_agents(bus_root, _stuck_roster(), epoch=1,
+                                            nudge_fn=nudge, now=1000.0)
+
+    assert [c[0] for c in nudge.calls] == ["alice"]
+    assert "stuck-nudged" in _kinds(rows)
+
+
+def test_c19_rate_limit_suppresses_a_second_nudge(bus_root: Path) -> None:
+    _provision(bus_root, "alice", "coordinator-agent")
+    _unread(bus_root, "alice", 2)
+    _heartbeat(bus_root, "alice", "idle")
+    nudge = _RecordingNudge()
+    roster = _stuck_roster()
+
+    coordinator.resolve_stuck_agents(bus_root, roster, epoch=1, nudge_fn=nudge, now=1000.0)
+    # New mail arrives (so this is not the refusing-to-drain path), immediately.
+    _unread(bus_root, "alice", 1)
+    rows = coordinator.resolve_stuck_agents(bus_root, roster, epoch=1, nudge_fn=nudge, now=1100.0)
+
+    assert len(nudge.calls) == 1, "rate limit must hold within min-interval"
+    assert "stuck-nudged" not in _kinds(rows)
+
+    # Past the interval, with the state still divergent, it nudges again.
+    rows = coordinator.resolve_stuck_agents(
+        bus_root, roster, epoch=1, nudge_fn=nudge,
+        now=1000.0 + coordinator._STUCK_MIN_NUDGE_INTERVAL_S + 1)
+    assert len(nudge.calls) == 2
+    assert "stuck-nudged" in _kinds(rows)
+
+
+def test_c19_agent_that_will_not_drain_escalates_instead_of_nudging_forever(
+        bus_root: Path) -> None:
+    _provision(bus_root, "alice", "coordinator-agent")
+    _unread(bus_root, "alice", 2)
+    _heartbeat(bus_root, "alice", "idle")
+    nudge = _RecordingNudge()
+    roster = _stuck_roster()
+
+    coordinator.resolve_stuck_agents(bus_root, roster, epoch=1, nudge_fn=nudge, now=1000.0)
+    # Nothing changed: unread identical, cursor unmoved.
+    later = 1000.0 + coordinator._STUCK_ESCALATION_INTERVAL_S + 1
+    rows = coordinator.resolve_stuck_agents(bus_root, roster, epoch=1, nudge_fn=nudge, now=later)
+
+    assert len(nudge.calls) == 1, "a refusing agent is escalated, not re-nudged"
+    esc = [r for r in rows if r["kind"] == "stuck-refusing-drain"]
+    assert len(esc) == 1 and esc[0]["escalation"] == 1
+
+    # And the escalation itself is rate-limited, not emitted every 45s tick.
+    rows = coordinator.resolve_stuck_agents(bus_root, roster, epoch=1, nudge_fn=nudge,
+                                            now=later + 60)
+    assert [r for r in rows if r["kind"] == "stuck-refusing-drain"] == []
+
+
+def test_c19_unreadable_state_is_skipped_never_read_as_zero_unread(bus_root: Path) -> None:
+    """Fail closed: the whole defect class here is 'no unread' hiding a stuck agent."""
+    _provision(bus_root, "alice", "coordinator-agent")
+    _heartbeat(bus_root, "alice", "idle")
+    (bus_root / "inbox" / "alice.jsonl").write_text("{not json\n", encoding="utf-8")
+    nudge = _RecordingNudge()
+    roster = _stuck_roster()
+
+    rows = coordinator.resolve_stuck_agents(bus_root, roster, epoch=1, nudge_fn=nudge, now=1000.0)
+    assert nudge.calls == []
+    assert _kinds(rows) == ["stuck-state-unreadable"]
+
+    # A missing cursor is equally unreadable, and equally not zero.
+    (bus_root / "inbox" / "alice.jsonl").write_text("", encoding="utf-8")
+    _unread(bus_root, "alice", 4)
+    (bus_root / "cursors" / "alice.json").unlink()
+    rows = coordinator.resolve_stuck_agents(bus_root, roster, epoch=1, nudge_fn=nudge, now=2000.0)
+    assert nudge.calls == []
+    assert _kinds(rows) == ["stuck-state-unreadable"]
+
+
+def test_c19_non_tmux_endpoint_is_surfaced_unreachable_not_nudged(bus_root: Path) -> None:
+    _provision(bus_root, "alice", "coordinator-agent")
+    _unread(bus_root, "coordinator-agent", 2)
+    _heartbeat(bus_root, "coordinator-agent", "idle")
+    nudge = _RecordingNudge()
+
+    rows = coordinator.resolve_stuck_agents(bus_root, _stuck_roster(), epoch=1,
+                                            nudge_fn=nudge, now=1000.0)
+
+    assert nudge.calls == [], "monitor:file has no push channel — never send keys at it"
+    assert _kinds(rows, "coordinator-agent") == ["stuck-detected", "stuck-unreachable"]
+
+
+def test_c19_adapter_refusal_is_recorded_and_retried_never_bypassed(bus_root: Path) -> None:
+    _provision(bus_root, "alice", "coordinator-agent")
+    _unread(bus_root, "alice", 2)
+    _heartbeat(bus_root, "alice", "idle")
+    refusing = _RecordingNudge(rc=2, out="REFUSING to nudge: window produced output 3s ago")
+    roster = _stuck_roster()
+
+    rows = coordinator.resolve_stuck_agents(bus_root, roster, epoch=1, nudge_fn=refusing,
+                                            now=1000.0)
+    assert [r["kind"] for r in rows if r["kind"] == "stuck-nudge-refused"]
+    state = json.loads((bus_root / "stuck_state.json").read_text())
+    assert "last_nudge_ts" not in state["alice"], "a refusal is not a nudge"
+
+    # A refusal backs off (an unresolvable endpoint must not spawn a subprocess
+    # every 45s tick) but is genuinely retried afterwards — never bypassed.
+    coordinator.resolve_stuck_agents(bus_root, roster, epoch=1, nudge_fn=refusing, now=1045.0)
+    assert len(refusing.calls) == 1
+    coordinator.resolve_stuck_agents(
+        bus_root, roster, epoch=1, nudge_fn=refusing,
+        now=1000.0 + coordinator._STUCK_REFUSAL_RETRY_S + 1)
+    assert len(refusing.calls) == 2
+
+
+def test_c19_detection_advisory_is_deduped_across_ticks(bus_root: Path) -> None:
+    _provision(bus_root, "alice", "coordinator-agent")
+    _unread(bus_root, "alice", 2)
+    _heartbeat(bus_root, "alice", "idle")
+    nudge = _RecordingNudge()
+    roster = _stuck_roster()
+
+    first = coordinator.resolve_stuck_agents(bus_root, roster, epoch=1, nudge_fn=nudge, now=1000.0)
+    second = coordinator.resolve_stuck_agents(bus_root, roster, epoch=1, nudge_fn=nudge, now=1045.0)
+
+    assert "stuck-detected" in _kinds(first)
+    assert "stuck-detected" not in _kinds(second), "45s ticks must not flood advisory.jsonl"
+
+
+# ------------------------------------------- C20 last hop: bus -> operator
+
+
+def _op_msg(kind: str, *, mid: str, ts: str, **payload) -> dict:
+    row = _message("alice", "coordinator-agent", kind, seq=1)
+    row["id"] = mid
+    row["ts"] = ts
+    row["payload"] = payload or {"detail": "human signature required"}
+    return row
+
+
+_T0 = 1_800_000_000.0
+
+
+def _iso(offset_s: float) -> str:
+    from datetime import datetime, timezone as _tz
+    return datetime.fromtimestamp(_T0 - offset_s, _tz.utc).isoformat(timespec="seconds")
+
+
+def test_c20_fresh_operator_item_is_not_escalated(bus_root: Path) -> None:
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "inbox" / "coordinator-agent.jsonl",
+            _op_msg("token-request", mid="m-1", ts=_iso(60)))
+    nudge = _RecordingNudge()
+
+    rows = coordinator.pending_operator_actions(
+        bus_root, _stuck_roster(), epoch=1, nudge_fn=nudge, now=_T0,
+        artifact_dir=bus_root / "no-such-dir")
+
+    assert nudge.calls == []
+    assert rows == []
+    assert coordinator._OPERATOR_ESCALATION_MARKER not in \
+        (bus_root / "tokens" / "token-queue.md").read_text()
+
+
+def test_c20_overdue_item_nudges_the_coordinator_and_records_unreachable(
+        bus_root: Path) -> None:
+    """monitor:file has no push, so the adapter refuses — that IS defect C8's shape."""
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "inbox" / "coordinator-agent.jsonl",
+            _op_msg("token-request", mid="m-1", ts=_iso(3600)))
+    refusing = _RecordingNudge(rc=2, out="REFUSING: endpoint is not tmux")
+
+    rows = coordinator.pending_operator_actions(
+        bus_root, _stuck_roster(), epoch=1, nudge_fn=refusing, now=_T0,
+        artifact_dir=bus_root / "no-such-dir")
+
+    assert [c[0] for c in refusing.calls] == ["coordinator-agent"]
+    assert [r["kind"] for r in rows] == ["operator-backlog-unreachable"]
+    # Not yet past the bypass deadline: the token queue is untouched.
+    assert coordinator._OPERATOR_ESCALATION_MARKER not in \
+        (bus_root / "tokens" / "token-queue.md").read_text()
+
+
+def test_c20_bypass_appends_a_checkboxless_block_and_is_idempotent(bus_root: Path) -> None:
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "inbox" / "coordinator-agent.jsonl",
+            _op_msg("defect", mid="m-42", ts=_iso(4 * 3600),
+                    detail="Human amendment required. No further inference permitted"))
+    nudge = _RecordingNudge(rc=2, out="refused")
+    tq = bus_root / "tokens" / "token-queue.md"
+
+    for _ in range(3):
+        rows = coordinator.pending_operator_actions(
+            bus_root, _stuck_roster(), epoch=1, nudge_fn=nudge, now=_T0,
+            artifact_dir=bus_root / "no-such-dir")
+    text = tq.read_text(encoding="utf-8")
+
+    assert text.count(f"{coordinator._OPERATOR_ESCALATION_MARKER} m-42") == 1
+    assert "Human amendment required" in text
+    # NEVER a checkbox: the daemon relays, only the operator signs.
+    assert "- [ ]" not in text.split(coordinator._OPERATOR_ESCALATION_MARKER, 1)[1]
+    assert "- [x]" not in text.split(coordinator._OPERATOR_ESCALATION_MARKER, 1)[1]
+
+
+def test_c20_read_items_are_never_escalated(bus_root: Path) -> None:
+    _provision(bus_root, *AGENTS)
+    inbox = bus_root / "inbox" / "coordinator-agent.jsonl"
+    _append(inbox, _op_msg("token-request", mid="m-1", ts=_iso(9 * 3600)))
+    (bus_root / "cursors" / "coordinator-agent.json").write_text(
+        json.dumps({"agent": "coordinator-agent", "offset": inbox.stat().st_size}),
+        encoding="utf-8")
+    nudge = _RecordingNudge()
+
+    rows = coordinator.pending_operator_actions(
+        bus_root, _stuck_roster(), epoch=1, nudge_fn=nudge, now=_T0,
+        artifact_dir=bus_root / "no-such-dir")
+
+    assert rows == [] and nudge.calls == []
+
+
+def test_c20_non_operator_traffic_does_not_escalate(bus_root: Path) -> None:
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "inbox" / "coordinator-agent.jsonl",
+            _op_msg("status", mid="m-9", ts=_iso(9 * 3600), detail="fyi"))
+    nudge = _RecordingNudge()
+
+    rows = coordinator.pending_operator_actions(
+        bus_root, _stuck_roster(), epoch=1, nudge_fn=nudge, now=_T0,
+        artifact_dir=bus_root / "no-such-dir")
+
+    assert rows == [] and nudge.calls == []
+
+
+def test_c20_unreadable_backlog_is_skipped_not_read_as_empty(bus_root: Path) -> None:
+    _provision(bus_root, *AGENTS)
+    (bus_root / "inbox" / "coordinator-agent.jsonl").write_text("{oops\n", encoding="utf-8")
+    nudge = _RecordingNudge()
+
+    rows = coordinator.pending_operator_actions(
+        bus_root, _stuck_roster(), epoch=1, nudge_fn=nudge, now=_T0,
+        artifact_dir=bus_root / "no-such-dir")
+
+    assert [r["kind"] for r in rows] == ["operator-backlog-unreadable"]
+    assert nudge.calls == []
+
+
+def test_c20_receipt_scan_is_inert_without_the_declaration(bus_root: Path, tmp_path: Path) -> None:
+    """No false positives: a script that has not opted in tells us nothing."""
+    art = tmp_path / "operator"
+    art.mkdir()
+    (art / "ratify_thing.sh").write_text("#!/bin/bash\necho hi\n", encoding="utf-8")
+    _provision(bus_root, *AGENTS)
+
+    rows = coordinator.scan_operator_receipts(bus_root, _stuck_roster(), epoch=1,
+                                              artifact_dir=art)
+    assert rows == []
+
+
+def test_c20_declared_gate_never_presented_is_a_defect_against_the_producer(
+        bus_root: Path, tmp_path: Path) -> None:
+    art = tmp_path / "operator"
+    art.mkdir()
+    (art / "ratify_thing.sh").write_text(
+        "#!/bin/bash\n# BUS-GATE: OP-THING-2026\necho hi\n", encoding="utf-8")
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "outbox" / "alice.jsonl",
+            _message("alice", "coordinator-agent", "status", seq=3,
+                     payload={"script": str(art / "ratify_thing.sh")}))
+    roster = [{"id": "alice", "role": "main", "endpoint": "tmux:agent:alice"},
+              {"id": "coordinator-agent", "role": "coordinator-agent", "endpoint": "monitor:file"}]
+
+    rows = coordinator.scan_operator_receipts(bus_root, roster, epoch=1, artifact_dir=art)
+
+    assert [r["kind"] for r in rows] == ["defect"]
+    assert rows[0]["subject"] == "alice" and rows[0]["gate_id"] == "OP-THING-2026"
+    notices = [r for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+               if (r.get("payload") or {}).get("event") == "unrequested-operator-gate"]
+    assert len(notices) == 1
+
+    # Idempotent: the coordinator is notified once per gate, not every 45s.
+    coordinator.scan_operator_receipts(bus_root, roster, epoch=1, artifact_dir=art)
+    notices = [r for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+               if (r.get("payload") or {}).get("event") == "unrequested-operator-gate"]
+    assert len(notices) == 1
+
+
+def test_c20_receipt_superseded_and_token_queue_all_exempt(bus_root: Path, tmp_path: Path) -> None:
+    art = tmp_path / "operator"
+    art.mkdir()
+    for name, gate in (("a.sh", "OP-A"), ("b.sh", "OP-B"), ("c.sh", "OP-C")):
+        (art / name).write_text(f"#!/bin/bash\n# BUS-GATE: {gate}\n", encoding="utf-8")
+    (art / "a.sh.receipt.json").write_text("{}", encoding="utf-8")
+    (art / "b.sh.superseded").write_text("replaced by c.sh\n", encoding="utf-8")
+    _provision(bus_root, *AGENTS)
+    tq = bus_root / "tokens" / "token-queue.md"
+    tq.write_text(tq.read_text(encoding="utf-8") + "\n- [ ] **OP-C** pending\n", encoding="utf-8")
+
+    rows = coordinator.scan_operator_receipts(bus_root, _stuck_roster(), epoch=1, artifact_dir=art)
+    assert rows == []
