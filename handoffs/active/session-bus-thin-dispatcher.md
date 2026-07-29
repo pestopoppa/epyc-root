@@ -1401,6 +1401,26 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   pinned the bug** — `check(t == "sess:7", "explicit window in endpoint resolves")` asserted a
   verified resolution for an absent session; corrected, and the live group gained real index
   coverage. A refusal is recoverable by asking again; a false "verified" is not.
+- [x] **C33 (NEW) — a `token-request` refused for lack of dry-run evidence tells nobody.**
+  ✅ 2026-07-29 — `auditor`, commit `e428d70f`. Found while verifying C27a against a throwaway copy
+  of the live bus. `relay_tokens` correctly refuses to present an unvalidated command (agent defect
+  by policy) but reported the refusal ONLY as an advisory row — and `advisory.jsonl` is delivered to
+  nobody. So a gate can be filed, be schema-valid, be silently never presented, **and the notice
+  about that be a second durable-but-unread sink one level up.** C18's second half exactly.
+  **LIVE INSTANCE, not hypothetical:** `mainA` filed `E5-THROTTLE-SCOPE-ERA-ROW-20260729` at
+  2026-07-29 **15:18:28Z** with `action_required: true` and `needs_routing_to: [coordinator-agent]`,
+  carrying `apply_command` + a top-level `dry_run_evidence` rather than the
+  `validated: {cmd, dry_run_exit}` object the relay reads. **Verified: the SCHEMA ACCEPTS that
+  shape; the relay does not.** The request was genuinely pre-validated and stranded anyway — a THIRD
+  lost signature request beyond C27's two, by a different mechanism. Fix: the notice goes to
+  `coordinator-agent`'s inbox (drained every task boundary), deduped once per `gate_id` against its
+  own durable evidence, naming the concrete repair; `relay_tokens` now carries `gate_id`/`msg_id` as
+  FIELDS so the notice never parses prose out of `detail`.
+  - [ ] **OPEN — align the schema with the relay contract so `append` refuses at AUTHORING time.**
+    Failing at the author is the right place; today a schema-valid gate can be structurally
+    unpresentable. **This is a CONTRACT change and is deliberately NOT made here** — it is a
+    coordinator/operator call, and tightening it invalidates `mainA`'s existing row, which would
+    have to be re-filed. Escalated on the bus with options.
 - [ ] **C28 — relay is tracked by destination FILE, not by message identity, so moving an inbox
   re-floods it.** *Observed 2026-07-29 during the roster rename.* Renaming the roster ids meant
   `git mv inbox/<old>.jsonl inbox/<new>.jsonl`; the running daemon then re-delivered its **entire
