@@ -322,11 +322,14 @@ Any future stack update should be accepted only when these hold:
 - [ ] Continue migrating remaining high-risk P2 consumers only where a concrete
   duplicated model/role/serving fact or duplicated stack-prior traversal still
   exists; avoid broad renderer rewrites unless there is a narrow helper seam.
-- [ ] Treat `scripts.benchmark.seeding_rewards`,
+- [x] Treat `scripts.benchmark.seeding_rewards`,
   `scripts.benchmark.corpus_quality_gate`, and `scripts.autopilot.kv_compress`
   as re-audited surfaces: the current implementations already keep generated
   stack priors primary with explicit degraded fallback. Do not churn them unless
-  a concrete duplicated live fact reappears.
+  a concrete duplicated live fact reappears. ✅ 2026-07-29 — current audit
+  confirms each imports generated stack-prior helpers for normal operation;
+  each fallback remains explicitly marked degraded and derives from the
+  manifest rather than copied live model/endpoint facts.
 - [ ] Broaden W4 swap-CI opportunistically as migrated consumers create new
   witness surfaces; do not add abstract fixture coverage without a migrated
   consumer to prove. Latest re-audits: the simulated vision swap already covers
