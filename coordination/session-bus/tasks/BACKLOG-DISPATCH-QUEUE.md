@@ -666,7 +666,7 @@ re-grep before assigning.
 - L510 | none | M | Y | operator FUND-OR-CLOSE decision | DFlash/DDTree HIP re-scope: confirm-negative vs MTP-less niche | handoff, gpu-drafter-mi200-investigation.md
 - L511 | gpu | L | Y | - | Splitwise GPU-prefill/CPU-decode KV handoff probe | llama.cpp server KV handoff path
 - L517 | gpu | L | Y | needs maintained server/parser path | Diffusion-aware constrained decode or maintained admission path | examples/diffusion/diffusion.cpp
-- L524 | none | S | Y | - | **READY** Record intake-578 deployment fact is now backwards | research/intake_index.yaml
+- L524 | none | S | Y | - | **CLOSED 2026-07-29** — dated correction preserves the source snapshot; local GGUF/dream runnability reversed the old premise while content control remains open | handoffs/active/gpu-acceleration-path.md:524 (root `c942728e`)
 - L530 | gpu | M | Y | - | Patch ERNIE ROCm f32 matmul precision; re-test 896/960/1024 | ernie_image.hpp, ggml_extend.hpp
 - L531 | none | S | Y | - | **READY** Record reverse-KL on-policy-distillation negative as guardrail | handoff, research/intake_index.yaml
 
