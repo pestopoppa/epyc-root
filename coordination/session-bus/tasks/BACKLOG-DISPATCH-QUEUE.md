@@ -795,7 +795,7 @@ re-grep before assigning.
 - L39 | cpu | L | N | - | Gate KnowledgeDistiller on episodic-only control arm | knowledge_distiller.py, autopilot.py
 - L45 | none | S | Y | - | **READY** Strike unmeasured +1.1% claim; precondition-gate audit | wiki/agent-architecture.md, strategy_store.py
 - L50 | none | M | Y | - | Re-point memory-degradation evidence at live MemRL retriever | repl_memory/retriever.py
-- L53 | none | S | Y | - | **READY** Record do-not-trim guardrail against vendor 80% claim | agent-file-prose-compression.md, CLAUDE.md
+- L53 | none | S | Y | - | **CLOSED 2026-07-29** — vendor claim is anecdotal; no local trimming without the compliance gate | handoffs/active/intake-derived-work-2026-07-25.md:53-61 (root `c942728e`)
 - L63 | none | M | Y | - | Add ordered_subsequence verifier with both graded metrics | answer_scoring.py, test_answer_scoring.py
 - L66 | cpu | M | Y | needs sandboxed exec path | FrontierCS 10-problem floor probe on one arm | eval-tower-verification.md
 - L69 | cpu | L | Y | - | Evaluate behavior-conditioned inference; score total pipeline tokens | reasoning-compression.md
