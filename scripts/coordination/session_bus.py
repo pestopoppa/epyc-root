@@ -673,6 +673,13 @@ def _cursor_get(bus_root: Path, agent: str) -> int:
 
 def cmd_cursor(args: argparse.Namespace) -> int:
     bus_root = Path(args.bus_root)
+    # C29: `required_writer` below accepts ANY stem under `cursors/`, so it answers
+    # "may this agent write this path" and never "is this agent real". Verified
+    # 2026-07-29: `cursor --agent another-ghost --set 5` exited 0 and created
+    # `cursors/another-ghost.json`. A cursor is a read POSITION for an identity; one
+    # for an identity that does not exist is a claim about nobody, and it makes the
+    # ghost look provisioned to anything that lists that directory.
+    _require_roster_id(bus_root, args.agent)
     path = _cursor_path(bus_root, args.agent)
     owner = required_writer(bus_root, path)
     if owner != args.agent:
@@ -693,6 +700,26 @@ def cmd_drain(args: argparse.Namespace) -> int:
     """Print this agent's inbox past its cursor and advance. The one-liner
     agents run at every task boundary."""
     bus_root = Path(args.bus_root)
+    # C29 (2026-07-29): the two halves of this CLI disagreed about whether an identity
+    # must EXIST. `append --agent <ghost>` fails closed with the valid id list, while
+    # this checked only that the inbox FILE exists (the C3 guard) — so an unknown id
+    # with a leftover inbox exited 0, printed messages addressed to somebody else,
+    # advanced a cursor, and never said the identity has no roster row. Reproduced:
+    # exit 0, 10 rows printed, `cursors/<ghost>.json` created.
+    #
+    # Not academic, and C28 is why: relay RECREATES old-id inboxes, so the
+    # file-exists check passes for exactly the ids that no longer exist. A session
+    # still using its pre-rename id drains a ghost inbox cleanly, sees "no new
+    # messages", and concludes it is up to date — the precise C3 failure, one identity
+    # check short of being fixed.
+    #
+    # REFUSE rather than warn, deliberately. A warning would leave the cursor advance
+    # in place, which silently CONSUMES another agent's mail — the read is the damage,
+    # not the exit code. The mid-rename hazard the defect note raises is real but
+    # measured-bounded: no automated caller uses a stale id (the daemon interpolates
+    # roster-derived ids), and the only stale reference is one line in an archived
+    # task file.
+    _require_roster_id(bus_root, args.agent)
     inbox = bus_root / "inbox" / f"{args.agent}.jsonl"
 
     # C3: fail CLOSED on an unprovisioned route. _read_jsonl returns empty for a
@@ -733,7 +760,16 @@ def cmd_triage(args: argparse.Namespace) -> int:
     """The routing standing queue. Never reads or writes cursors: a routed
     message cannot be consumed by draining — only a corr_id disposition from the
     target's own outbox clears it."""
-    print_triage(Path(args.bus_root), args.agent)
+    bus_root = Path(args.bus_root)
+    # C29, and this is the WORSE half. `routed_view` filters on
+    # `agent in routing_targets(row)`, so an unknown id matches nothing and this printed
+    # the reassuring `(triage: no routed messages awaiting <id>)` — exit 0, indistinguishable
+    # from "you are clear". The triage report is designed to be the LOUDEST signal on
+    # this bus, the one thing that survives a broken delivery path; a typo'd or stale id
+    # turned it into a silent all-clear. Verified 2026-07-29: `triage --agent
+    # totally-bogus-id` exited 0 with no diagnostic at all.
+    _require_roster_id(bus_root, args.agent)
+    print_triage(bus_root, args.agent)
     return 0
 
 

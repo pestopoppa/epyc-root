@@ -1641,3 +1641,90 @@ def test_c33_a_presentable_gate_produces_no_notice(bus_root: Path) -> None:
                 if (r.get("payload") or {}).get("event") == "token-request-not-presented"]
     assert "RATIFY-FINE-20260729" in (
         bus_root / "tokens" / "token-queue.md").read_text(encoding="utf-8")
+
+
+# ------------------------------------------- C29: identity checks, consistently
+
+
+@pytest.mark.parametrize("argv", [
+    ["drain", "--agent", "ghost"],
+    ["drain", "--agent", "ghost", "--triage"],
+    ["triage", "--agent", "ghost"],
+    ["cursor", "--agent", "ghost", "--set", "5"],
+    ["cursor", "--agent", "ghost"],
+])
+def test_c29_identity_taking_verbs_refuse_a_non_roster_id(
+        bus_root: Path, capsys: pytest.CaptureFixture[str], argv: list[str]) -> None:
+    """C29: the two halves of this CLI disagreed about whether an identity must EXIST.
+
+    `append --agent ghost` failed CLOSED with the valid id list; drain, triage and
+    cursor took an identity and never validated it. Now they all use the same helper
+    and say the same thing.
+    """
+    assert bus.main(["--bus-root", str(bus_root), *argv]) == 1
+    err = capsys.readouterr().err
+    assert "not a roster id" in err
+    assert "alice" in err, "the refusal must list the valid ids, as append's does"
+
+
+def test_c29_drain_on_a_ghost_inbox_refuses_and_advances_nothing(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """The reachable production shape: C28 relay RECREATES old-id inboxes, so the
+    file-exists check passed for exactly the ids that no longer exist. A session still
+    using its pre-rename id drained a ghost inbox cleanly, saw "no new messages", and
+    concluded it was up to date — the precise C3 failure, one identity check short.
+
+    Refusing rather than warning is the point: a warning leaves the CURSOR ADVANCE in
+    place, which silently consumes another agent's mail. The read is the damage.
+    """
+    _provision(bus_root, *AGENTS)
+    ghost_inbox = bus_root / "inbox" / "ghost.jsonl"
+    _append(ghost_inbox, _message("alice", "bob", "finding", seq=1, task_id="not-yours"))
+
+    assert bus.main(["--bus-root", str(bus_root), "drain", "--agent", "ghost"]) == 1
+    out = capsys.readouterr()
+
+    assert "not a roster id" in out.err
+    assert "not-yours" not in out.out, "a ghost id must not be shown another agent's mail"
+    assert not (bus_root / "cursors" / "ghost.json").exists(), \
+        "and must not leave a cursor behind"
+    assert ghost_inbox.exists(), "existing evidence is surfaced, never deleted (C7)"
+
+
+def test_c29_triage_no_longer_answers_a_ghost_with_an_all_clear(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """The worse half. `routed_view` filters on membership, so an unknown id matched
+    nothing and got `(triage: no routed messages awaiting <id>)` — exit 0,
+    indistinguishable from "you are clear". Triage is designed to be the LOUDEST signal
+    on this bus, the one that survives a broken delivery path; a stale or typo'd id
+    turned it into a silent all-clear."""
+    _provision(bus_root, *AGENTS)
+
+    assert bus.main(["--bus-root", str(bus_root), "triage", "--agent", "ghost"]) == 1
+    out = capsys.readouterr()
+
+    assert "no routed messages awaiting" not in out.out
+    assert "not a roster id" in out.err
+
+
+def test_c29_rostered_ids_are_entirely_unaffected(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """The positive control: fail-closed must not become fail-shut."""
+    _provision(bus_root, *AGENTS)
+
+    assert bus.main(["--bus-root", str(bus_root), "drain", "--agent", "alice"]) == 0
+    assert bus.main(["--bus-root", str(bus_root), "triage", "--agent", "alice"]) == 0
+    assert bus.main(["--bus-root", str(bus_root), "cursor", "--agent", "alice"]) == 0
+    assert bus.main(["--bus-root", str(bus_root), "cursor", "--agent", "alice", "--set", "0"]) == 0
+    capsys.readouterr()
+
+
+def test_c29_an_unprovisioned_rostered_id_still_gets_the_C3_bootstrap_message(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """The identity check must run BEFORE the file check but must not replace it — the
+    two failures have different repairs, and telling someone to `provision` an id that
+    is not on the roster sends them to a command that also refuses."""
+    assert bus.main(["--bus-root", str(bus_root), "drain", "--agent", "alice"]) == 2
+    err = capsys.readouterr().err
+    assert "no inbox for 'alice'" in err and "provision" in err
+    assert "not a roster id" not in err
