@@ -958,6 +958,26 @@ freezes/cutovers, host reboots).
     presence in `tmux.live_session`) rather than roster metadata alone, since a roster row is a
     durable identity and a session is not. Without (b), every future dead-but-not-yet-retired main
     reopens this hole.
+    *Precision + polarity note (fable-auditor, wrap-up 2026-07-29):* post-`528435fc` the rostered
+    non-retired case is no longer *dropped* — it is durably DELIVERED to an inbox nothing drains
+    (recoverable if the session revives; invisible to the sender either way). For (b), prefer
+    deliver-plus-WARN-advisory (`delivered but heartbeat is Nh stale`) over refuse-on-staleness:
+    refusal would bounce messages to a merely-offline agent that today drains them on return —
+    converting transient offline into message loss, the opposite-polarity error.
+    - [x] Relay fan-out + unreachable-recipient defect advisories landed (fable-auditor,
+      `528435fc`): delivery to every `needs_routing_to` id IN ADDITION to `to`, per-recipient
+      idempotent via `relayed_src`; unreachable = roster row gone OR role `retired`, defect
+      advisory deduped once per (msg, recipient) against `advisory.jsonl`; `append` refuses
+      retired targets at authoring; regression reproduces the exact 09:50Z miss. NOTE: the commit
+      message and two in-code comments originally said "C16"; comments corrected to C18 at
+      wrap-up — the pushed commit message is immutable, this line is the record. ✅ 2026-07-29
+    - [ ] ACTIVATION GAP: the running coordinator-daemon predates `528435fc`, so fan-out is
+      delivery-inert until the daemon's owner restarts it at a boundary it chooses (reload freeze
+      until E8 terminal; fable-auditor barred from restarts). Until then routed delivery still
+      depends on the triage outbox-scan and hand-forwarding. Owner: coordinator-agent to schedule.
+    - [ ] Delete dead `roster_window_names()` in `tmux_adapter.py` — zero callers after C14
+      (`42884724`), still carries the last-writer-wins collision idiom; one-line cleanup so a
+      future caller cannot inherit the bug (fable-auditor C14 review residual).
   - [ ] **C15 — `caps.max_concurrent_mains: 4` is saturated at 4/4.** Set 2026-07-28 against a
     then-steady state of 3 live mains; a `fable-auditor` window brought it to 4 within the hour,
     so the next spawn needs a main closed. Working as designed — a closed main now returns its

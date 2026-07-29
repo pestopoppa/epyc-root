@@ -197,9 +197,13 @@ Documents in `handoffs/archived/`, `handoffs/completed/`, `progress/`, and `CHAN
 - **Long-horizon throughput contract (operator, 2026-07-27):** (1) *Run-first bias* — observation-grade evidence runs on the current validated instrument and fixes on failure; multi-pass adversarial review is reserved for decision-grade gates and trust-boundary artifacts, max ONE independent review per new instrument before its first run. (2) *Saturation scheduling* — maintain a deep-enough work queue that CPU and GPU always have a running task; on ANY block (operator token, review, build), immediately start the next queued item. (3) *Boundary tokens are presented only while compute is saturated* (see MEASUREMENT_POLICY → Consolidated apply-time ratification). (4) A failed operator-presented command is an agent defect; pre-validate end-to-end.
 
 - **Bus drain (session bus M1, 2026-07-27):** at every task boundary, run
-  `scripts/coordination/session_bus.py drain --agent <your-roster-id>` and act on assignments and
-  nudges; write acks and status to **your own** outbox (`outbox/<your-id>.jsonl`). Never write
-  another agent's file — `queue.jsonl` and `inbox/*` belong to the coordinator-daemon. Contract:
+  `scripts/coordination/session_bus.py drain --agent <your-roster-id> --triage` and act on
+  assignments and nudges; write acks and status to **your own** outbox (`outbox/<your-id>.jsonl`).
+  The `--triage` section (2026-07-29) is the standing queue of messages ROUTED to you
+  (`needs_routing_to` / `action_required`) — cursor-independent and printed in full; clear an item
+  by responding from your outbox with `corr_id` set (a bare ack clears reach-only routing but not
+  an action_required item). Never write another agent's file — `queue.jsonl` and `inbox/*` belong
+  to the coordinator-daemon. Contract:
   [`coordination/session-bus/BUS_PROTOCOL.md`](coordination/session-bus/BUS_PROTOCOL.md).
 - **Coordinating other sessions?** Your role file is
   [`agents/coordinator-agent.md`](agents/coordinator-agent.md) — cross-main sequencing, decision

@@ -1241,7 +1241,7 @@ def relay_outbox_messages(bus_root: Path, roster: list[dict], epoch: int) -> lis
         rows, _ = _read_jsonl(bus_root / "inbox" / f"{aid}.jsonl")
         delivered_src[aid] = {r["relayed_src"] for r in rows if r.get("relayed_src")}
 
-    # C16 dedupe: an unreachable routing recipient is flagged ONCE per (msg, rid),
+    # C18 dedupe: an unreachable routing recipient is flagged ONCE per (msg, rid),
     # not once per tick — the pair is looked up in the durable advisory ledger the
     # tick loop writes, so a restart does not re-flood it either.
     already_flagged: set[tuple[str, str]] = set()
@@ -1275,7 +1275,7 @@ def relay_outbox_messages(bus_root: Path, roster: list[dict], epoch: int) -> lis
                                  "detail": f"outbox msg {src} is schema-invalid and was NOT "
                                            f"relayed: {exc}"})
                 continue
-            # C16 (2026-07-29): needs_routing_to DELIVERS. Until this change the
+            # C18 (2026-07-29): needs_routing_to DELIVERS. Until this change the
             # relay fanned out on `to` alone, so a message routed to codex but
             # addressed to coordinator-agent reached codex NEVER — the field read
             # like delivery and was only a hint, which is the shape that misleads.
