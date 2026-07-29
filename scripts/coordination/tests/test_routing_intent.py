@@ -315,6 +315,99 @@ def test_daemon_relay_preserves_routing_fields_verbatim(tmp_path, capsys):
     assert out.count("must survive transit") == 1
 
 
+def test_daemon_relay_fans_out_needs_routing_to_in_addition_to_to(tmp_path, capsys):
+    """Regression for the 2026-07-29T09:50Z miss: a finding with
+    to=coordinator-agent and needs_routing_to=[codex] reached codex NEVER,
+    because the relay fanned out on `to` alone. The routed recipient must now
+    receive delivery IN ADDITION to `to` — never instead — with both fields
+    verbatim and per-recipient idempotence."""
+    import yaml
+    from scripts.coordination.session_bus_coordinator import relay_outbox_messages
+
+    root = make_bus(tmp_path)
+    code, _out, err = append_msg(root, capsys, TARGET, "outbox", {
+        "kind": "finding", "to": "coordinator-agent", "needs_routing_to": [OTHER],
+        "action_required": True, "payload": {"headline": "the 0950 shape"}})
+    assert code == 0, err
+    original = json.loads(
+        (root / "outbox" / f"{TARGET}.jsonl").read_text().strip().splitlines()[-1])
+
+    roster = yaml.safe_load((root / "config.yaml").read_text())["roster"]
+    relay_outbox_messages(root, roster, epoch=0)
+
+    def inbox(agent: str) -> list[dict]:
+        path = root / "inbox" / f"{agent}.jsonl"
+        if not path.exists():
+            return []
+        return [json.loads(line) for line in path.read_text().strip().splitlines() if line]
+
+    routed = [r for r in inbox(OTHER) if r.get("relayed_src") == original["id"]]
+    assert routed, "the routed recipient received NOTHING — the 09:50 defect"
+    assert routed[0]["needs_routing_to"] == [OTHER]
+    assert routed[0]["action_required"] is True
+    assert routed[0]["payload"] == original["payload"]
+    assert routed[0]["from"] == TARGET
+    addressed = [r for r in inbox("coordinator-agent") if r.get("relayed_src") == original["id"]]
+    assert addressed, "fan-out must be IN ADDITION to `to`, never instead"
+
+    # Per-recipient idempotence: a second tick delivers nothing new anywhere.
+    before = {a: len(inbox(a)) for a in (OTHER, "coordinator-agent")}
+    relay_outbox_messages(root, roster, epoch=1)
+    assert {a: len(inbox(a)) for a in (OTHER, "coordinator-agent")} == before
+
+
+def test_daemon_relay_flags_unreachable_routing_recipient_never_drops_silently(tmp_path, capsys):
+    """A needs_routing_to entry whose roster row is gone (post-authoring drift)
+    or retired must produce a defect advisory naming message and recipient —
+    once, not once per tick — while the addressable recipients still get their
+    delivery."""
+    import yaml
+    from scripts.coordination.session_bus import MSG_SCHEMA_VERSION, _append_jsonl
+    from scripts.coordination.session_bus_coordinator import relay_outbox_messages
+
+    root = make_bus(tmp_path)
+    # Direct outbox writes simulate authoring BEFORE the roster drifted:
+    # append would refuse both targets today (non-roster / retired).
+    for seq, routed_to in enumerate(["ghost-agent-removed", "claude-main"], start=1):
+        _append_jsonl(root / "outbox" / f"{SENDER}.jsonl", {
+            "schema_version": MSG_SCHEMA_VERSION, "ts": "2026-07-29T09:00:00+00:00",
+            "id": f"msg-20260729T090000Z-{seq}-{SENDER}", "from": SENDER,
+            "to": "coordinator-agent", "kind": "finding",
+            "needs_routing_to": [routed_to], "payload": {"n": seq}})
+
+    roster = yaml.safe_load((root / "config.yaml").read_text())["roster"]
+    assert any(r.get("id") == "claude-main" and r.get("role") == "retired" for r in roster), \
+        "fixture assumption: claude-main is the rostered-but-retired case"
+
+    advisory = relay_outbox_messages(root, roster, epoch=0)
+    defects = {a["unreachable"]: a for a in advisory
+               if a.get("kind") == "defect" and a.get("unreachable")}
+    assert set(defects) == {"ghost-agent-removed", "claude-main"}
+    assert "not a roster id" in defects["ghost-agent-removed"]["detail"]
+    assert "retired" in defects["claude-main"]["detail"]
+    assert defects["ghost-agent-removed"]["relayed_src"] == f"msg-20260729T090000Z-1-{SENDER}"
+    assert not (root / "inbox" / "ghost-agent-removed.jsonl").exists()
+    assert not (root / "inbox" / "claude-main.jsonl").exists()
+    coord = (root / "inbox" / "coordinator-agent.jsonl").read_text().strip().splitlines()
+    assert len(coord) == 2, "addressable recipients still get their delivery"
+
+    # Once per (msg, recipient): with the first advisories persisted (as the
+    # daemon tick does), a second tick re-flags nothing.
+    for row in advisory:
+        _append_jsonl(root / "advisory.jsonl", row)
+    second = relay_outbox_messages(root, roster, epoch=1)
+    assert not [a for a in second if a.get("unreachable")]
+
+
+def test_append_refuses_routing_to_a_retired_roster_row(tmp_path, capsys):
+    root = make_bus(tmp_path)
+    code, _out, err = append_msg(root, capsys, SENDER, "outbox", {
+        "kind": "status", "to": "coordinator-agent",
+        "needs_routing_to": ["claude-main"], "payload": {}})
+    assert code == 1
+    assert "retired" in err
+
+
 # ------------------------------------------------- 5. truncation-evident output
 
 

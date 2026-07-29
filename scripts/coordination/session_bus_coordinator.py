@@ -1234,10 +1234,23 @@ def relay_outbox_messages(bus_root: Path, roster: list[dict], epoch: int) -> lis
     recipient's inbox is scanned for those before delivering.
     """
     ids = [str(e.get("id", "")).strip() for e in roster if str(e.get("id", "")).strip()]
+    roles = {str(e.get("id", "")).strip(): str(e.get("role") or "").strip()
+             for e in roster if isinstance(e, dict) and str(e.get("id", "")).strip()}
     delivered_src: dict[str, set[str]] = {}
     for aid in ids:
         rows, _ = _read_jsonl(bus_root / "inbox" / f"{aid}.jsonl")
         delivered_src[aid] = {r["relayed_src"] for r in rows if r.get("relayed_src")}
+
+    # C16 dedupe: an unreachable routing recipient is flagged ONCE per (msg, rid),
+    # not once per tick — the pair is looked up in the durable advisory ledger the
+    # tick loop writes, so a restart does not re-flood it either.
+    already_flagged: set[tuple[str, str]] = set()
+    try:
+        advisory_rows, _ = _read_jsonl(bus_root / "advisory.jsonl")
+        already_flagged = {(str(r.get("relayed_src")), str(r.get("unreachable")))
+                          for r in advisory_rows if r.get("unreachable")}
+    except Exception:  # noqa: BLE001 — a torn ledger must not stop delivery
+        pass
 
     advisory: list[dict] = []
     for sender in ids:
@@ -1262,6 +1275,33 @@ def relay_outbox_messages(bus_root: Path, roster: list[dict], epoch: int) -> lis
                                  "detail": f"outbox msg {src} is schema-invalid and was NOT "
                                            f"relayed: {exc}"})
                 continue
+            # C16 (2026-07-29): needs_routing_to DELIVERS. Until this change the
+            # relay fanned out on `to` alone, so a message routed to codex but
+            # addressed to coordinator-agent reached codex NEVER — the field read
+            # like delivery and was only a hint, which is the shape that misleads.
+            # Fan-out is IN ADDITION to `to`, never instead: the coordinator stays
+            # in the loop by design. An unreachable recipient (roster row gone, or
+            # role retired) is a defect advisory, never a silent drop — a routing
+            # field that silently discards is worse than none.
+            for rid in (row.get("needs_routing_to") or []):
+                rid = str(rid)
+                if rid == sender or rid in targets:
+                    continue
+                if rid not in ids or roles.get(rid) == "retired":
+                    reason = ("not a roster id" if rid not in ids
+                              else "roster role is 'retired'")
+                    if (src, rid) not in already_flagged:
+                        advisory.append({
+                            "schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                            "epoch": epoch, "kind": "defect", "agent": sender,
+                            "relayed_src": src, "unreachable": rid,
+                            "detail": f"outbox msg {src} routes to unreachable recipient "
+                                      f"{rid!r} ({reason}) and was NOT delivered to it. Fix "
+                                      f"needs_routing_to or the roster row; the message DID "
+                                      f"still go to its addressable recipients."})
+                        already_flagged.add((src, rid))
+                    continue
+                targets.append(rid)
             for target in targets:
                 if src in delivered_src.get(target, set()):
                     continue

@@ -400,6 +400,20 @@ def print_triage(bus_root: Path, agent: str) -> None:
           f"lost routed intent. ==")
 
 
+def _roster_roles(bus_root: Path) -> dict[str, str]:
+    """id -> role for every roster row. Same fail-closed posture as _roster_ids."""
+    try:
+        import yaml
+        cfg = yaml.safe_load((bus_root / "config.yaml").read_text(encoding="utf-8")) or {}
+    except Exception as exc:  # noqa: BLE001
+        raise BusError(f"could not read config.yaml roster: {exc}") from exc
+    roster = cfg.get("roster") if isinstance(cfg, dict) else None
+    if not isinstance(roster, list):
+        raise BusError("config.yaml roster is missing or malformed")
+    return {str(r.get("id", "")).strip(): str(r.get("role") or "").strip()
+            for r in roster if isinstance(r, dict) and str(r.get("id", "")).strip()}
+
+
 def _check_routing_intent(bus_root: Path, row: dict) -> None:
     """Fail-closed authoring checks for the structural routing fields."""
     targets = row.get(ROUTING_FIELD)
@@ -410,6 +424,13 @@ def _check_routing_intent(bus_root: Path, row: dict) -> None:
             raise BusError(
                 f"{ROUTING_FIELD} names non-roster id(s) {unknown} — routing intent must be "
                 f"resolvable or it is prose in disguise (have: {', '.join(sorted(roster))})")
+        roles = _roster_roles(bus_root)
+        retired = sorted(t for t in {str(t) for t in targets} if roles.get(t) == "retired")
+        if retired:
+            raise BusError(
+                f"{ROUTING_FIELD} names retired roster row(s) {retired} — nothing drains a "
+                f"retired agent's inbox, so routing there is a silent discard with extra "
+                f"steps. Route to the live owner of that scope instead.")
     if row.get(ACTION_FIELD) and not targets and str(row.get("to") or "*") == "*":
         raise BusError(
             f"{ACTION_FIELD} is set but the message has no concrete addressee (to='*' and "
