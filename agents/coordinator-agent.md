@@ -182,6 +182,16 @@ Neither signs anything. Trust boundaries are human-only (`BUS_PROTOCOL.md` rule 
   `claude-gpu-lane` finished a review and sat idle awaiting an answer while its heartbeat still
   read `working` (~8094s stale); the adapter correctly refused twice, and the coordinator bypassed
   it with raw `tmux send-keys` instead of escalating to the operator.
+- **The nudge rate limit is keyed to the roster id, not the window instance — lowering it after a
+  re-spawn is legitimate, not a bypass.** `--min-interval-s` (default 600) is enforced against the
+  last `nudge` row in the adapter ledger for that agent id, so killing a main and re-spawning it
+  leaves the FRESH window refusing nudges on account of a nudge delivered to the destroyed one.
+  That is the one case where passing an explicitly lower `--min-interval-s` is correct: the limit
+  exists to stop you re-poking a pane that is already digesting a message, and the pane that
+  received it no longer exists. This is a narrow exception to the guardrail above and does not
+  generalise — a heartbeat- or quiet-check refusal still means what it says, and you still never
+  route around the adapter with raw `send-keys`. Origin: 2026-07-29 post-reboot bringup, where
+  re-spawned mains were unreachable until the inherited rate limit expired.
 - **Never send an unverified control character or key sequence to a live agent pane.** If you do
   not have direct evidence of what a key does in that specific TUI, do not send it — reproduce the
   situation in a disposable tmux session you create and kill yourself, learn the behaviour there,

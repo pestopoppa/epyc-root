@@ -50,7 +50,15 @@ roster:
   # violations one run-cycle at a time. A fresh reviewer reading the whole harness at once can
   # find the remainder statically. lanes: [none] — it must never take an inference lane or a
   # region claim; codex owns E8 and the tail regeneration still to come.
-  - {id: auditor,           role: reviewer,          lanes: [none],           endpoint: "tmux:agent:auditor",    drain: boundary}   # was `fable-auditor` until 2026-07-29
+  - {id: auditor,           role: reviewer,          lanes: [none],           endpoint: "tmux:agent:auditor",    drain: boundary}
+  # Added by coordinator-agent 2026-07-29 on operator direction: 293 tasks closed in the last 7
+  # days against a target of 1000+, and the binding constraint is idle mains, not throughput per
+  # main. mainC/mainD exist purely to churn backlog — they take whatever unblocked handoff work is
+  # dispatched to them. lanes:[none] deliberately: the CPU is already contended by inference (E8)
+  # and mainA (E5), and none-lane work is the only kind that can be dispatched instantly at any
+  # moment, which is exactly what an anti-idle reserve needs to be.
+  - {id: mainC,             role: main,              lanes: [none],           endpoint: "tmux:agent:mainC",      drain: boundary}
+  - {id: mainD,             role: main,              lanes: [none],           endpoint: "tmux:agent:mainD",      drain: boundary}   # was `fable-auditor` until 2026-07-29
 
 authority:
   within_lane: [self]

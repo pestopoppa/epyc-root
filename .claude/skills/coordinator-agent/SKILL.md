@@ -41,8 +41,9 @@ alone (BUS_PROTOCOL rule 9) is what makes you **addressable**; this brief is wha
 **useful**. Skipping it produces a coordinator that correctly reports an empty queue and has no
 idea a decision-grade campaign is one command from resuming.
 
-It carries, at minimum: bringup order (including **C20** — `tmux new-session -d -s agent` before
-anything spawns), the queued work with its gating, standing operator decisions already made,
+It carries, at minimum: bringup order (including **C20** — the `agent` tmux session must exist
+before anything spawns; see 0b for the non-destructive form), the queued work with its gating,
+standing operator decisions already made,
 artifact-update obligations with the URL that must not be re-minted, inherited bus defects, and
 each closed session's handover of where it stopped.
 
@@ -56,12 +57,20 @@ none, because it is trusted.
 Harmless when it is not a post-reboot start. Run all of it; record every answer for the report.
 
 ```bash
-# tmux session that every tmux roster endpoint points into
-tmux has-session -t agent && tmux list-windows -t agent
+# tmux session that every tmux roster endpoint points into. C20: nothing recreates it
+# after a reboot and cmd_spawn fails closed without it (allow_session_creation: false).
+# Create it ONLY if absent, and NEVER kill or re-create an existing one — on 2026-07-29
+# the session was already up, holding this coordinator's own window; re-creating it
+# would have destroyed every live main in it.
+tmux has-session -t agent 2>/dev/null || tmux new-session -d -s agent
+tmux list-windows -t agent -F '#{window_name}'
 
-# coordinator-daemon liveness + advice, and its watchdog
+# coordinator-daemon liveness + advice, and its watchdog. Bracketed pattern deliberately
+# — see the warning below.
 python3 scripts/coordination/session_bus_coordinator.py status
-pgrep -af 'bus_supervisor\.sh'
+pgrep -af 'session_bus_coordi[n]ator'
+pgrep -af 'bus_superviso[r]\.sh'
+scripts/coordination/bus_supervisor.sh status
 
 # production kernel identity (non-zero exit = mismatch, stop and report)
 scripts/session/verify_llama_cpp.sh
@@ -76,8 +85,29 @@ python3 /mnt/raid0/llm/epyc-orchestrator/scripts/server/orchestrator_stack.py st
 pgrep -af '[a]utopilot\.py'
 ```
 
-If the daemon is not running or `bus_supervisor.sh` is absent, **report it — do not start either
-one yourself.** Daemon/watchdog lifecycle after a reboot is an operator action.
+**Bringing up the daemon and its watchdog is YOUR job, not an escalation.** They are part of the
+coordinator-agent spawn — operator correction, 2026-07-29, verbatim, against an earlier version of
+this skill that told you to report and wait: *"no they're not. They're part of the coordinator-agent
+spawn"*. If the daemon is dead, start the **supervisor**:
+
+```bash
+nohup /mnt/raid0/llm/epyc-root/scripts/coordination/bus_supervisor.sh \
+  > /mnt/raid0/llm/epyc-root/logs/bus_supervisor.out 2>&1 &
+```
+
+Starting the supervisor is *sufficient* — do not launch the daemon by hand. The supervisor polls
+the daemon's own heartbeat and relaunches a dead daemon itself; it is idempotent (a second copy
+self-exits). Verified 2026-07-29: supervisor PID 14518 relaunched daemon PID 14553 within 8s, and
+`bus_supervisor.sh status` then reported health OK. A daemon restart **increments the epoch**, so
+the relaunch is self-announcing — a higher epoch in the next `status` is the confirmation, not an
+anomaly to investigate.
+
+**`status` output is not proof of life.** On 2026-07-29 it reported `state=working epoch=11
+pid=1928027 age=2157s` for a daemon that had died in the reboot: the state file is on disk and
+outlives the process that wrote it. **Always confirm with `ps -p <pid>` before believing it.**
+Equally, use a **bracketed** process pattern — a naive `pgrep -af 'session_bus_coordinator'`
+matches your own shell's command line and "finds" a daemon that is not running. Both traps were hit
+on the first cold start of this role.
 
 **AutoPilot is load-bearing.** It is the representative production load generator. If it is down,
 say so *explicitly and prominently* in the report: measurements taken against a quiesced host can
@@ -151,16 +181,63 @@ routine work.
 **2. Missing mains → propose, never auto-spawn.** Expect **every** main to be missing after a
 reboot — the 2026-07-29 wind-down closed all of them deliberately, so an empty `agent` session is
 the normal post-reboot shape, not an anomaly, and the spawn plan is the whole fleet rather than a
-gap-fill. List roster mains whose endpoint window is not in
-`tmux list-windows -t agent`, and produce a **spawn plan** for the operator including spawns used
-today against `caps.max_spawns_per_day` (`coordination/session-bus/config.yaml`):
+gap-fill. List roster mains whose endpoint window is not in `tmux list-windows -t agent`, and
+produce a **spawn plan** for the operator counting **live mains against
+`caps.max_concurrent_mains`** (`coordination/session-bus/config.yaml`, currently 7):
 
 ```bash
-grep '"kind": "spawn"' coordination/session-bus/adapter-ledger.jsonl | grep -c "$(date -u +%Y-%m-%d)"
+python3 scripts/coordination/tmux_adapter.py probe --agent <id>   # prints "live mains N/cap [max_concurrent_mains]"
 ```
+
+The cap counts **live roster windows**, not spawn events, so closing an idle main returns its slot
+immediately — which is exactly what the session-lifecycle rule asks sessions to do. Do **not** count
+`caps.max_spawns_per_day` or grep the adapter ledger for spawn rows: that key is **deliberately
+refused** by the adapter rather than read as a fallback (the C9 migration — it counted spawn
+EVENTS per day, so killing a main never returned its slot, and on 2026-07-28 three spawn rows
+blocked further spawns while only two mains were alive). Ledger spawn counts are **history only and
+enforce nothing** — `probe` prints them with exactly that label.
+
+**Roster ids are model-agnostic as of 2026-07-29.** Renamed on operator direction: `codex` →
+**`inference`** (owns inference tasks), `fable-auditor` → **`auditor`** (miscellaneous work, and the
+DEFAULT main for auditing other mains' work), `claude-main` → **`mainA`** and `claude-gpu-lane` →
+**`mainB`** (both take dispatched handoff/backlog work). `coordinator-agent` keeps its id — it is
+the authority name in `authority.cross_main` / `lease_grant`, not a session label — and its window
+is `agent:coordinator`. Reason: an id pinned to its model meant re-spawning a main on a different
+backend, or on a local model as weekly token budgets may require, forced either a misleading name or
+a new identity.
+
+**ALWAYS REUSE MAIN ALIASES AFTER REBOOT** (standing operator rule). Re-spawn under the existing
+roster id — re-pointing its role, lanes and endpoint as needed — rather than minting a new one. The
+id is the identity every queue row, cursor, inbox, outbox and triage `corr_id` is keyed on; a fresh
+alias orphans all of it and leaves the old row drawing "LOOKS DEAD" advisories forever. A
+`role: retired` row is a **re-usable slot, not a tombstone**.
 
 **The operator decides.** Do not run `tmux_adapter.py spawn` on your own initiative. When
 authorised, `tmux_adapter.py spawn --agent <id> --dry-run` first.
+
+**Rename the window to the ENDPOINT immediately after spawn.** `cmd_spawn` names the new window
+after the **roster id**, while `resolve_target` verifies the **endpoint's** window name. When the
+two differ the main spawns successfully and is then undeliverable: on 2026-07-29 `codex` (endpoint
+`tmux:agent:codex-inference`) came up as window `codex` and every nudge refused. Filed as **C25**;
+until it is fixed, always follow a spawn with
+
+```bash
+tmux rename-window -t agent:<id> <endpoint-window-name>
+python3 scripts/coordination/tmux_adapter.py probe --agent <id>   # confirm the target RESOLVES
+```
+
+**Then verify the pane is still alive.** `cmd_spawn` reports success on `new-window` exit 0 and
+nothing more. On 2026-07-29 a codex pane died instantly and silently because the CLI presented an
+update prompt at startup — spawn reported success and the window was simply gone. A few seconds
+after every spawn, confirm the window still exists and capture the pane to confirm the agent reached
+its prompt:
+
+```bash
+tmux list-windows -t agent -F '#{window_name}'
+tmux capture-pane -p -t agent:<window> | tail -20
+```
+
+If a CLI needs updating, update it **before** spawning, not after a mystery failure.
 
 **3. Dispatch or close idle mains** per the session-lifecycle rule (authority:
 `OPERATING_CONSTRAINTS.md`): related next task → keep context and dispatch; disjoint → wrap up,
@@ -186,6 +263,12 @@ python3 scripts/coordination/tmux_adapter.py nudge --agent <id> --message '<text
   *cosmetic*: submit it and follow with a correction. Both lessons learned the hard way 2026-07-28.
 - Identity before keystrokes: never send keys to a pane whose agent identity is inferred rather
   than confirmed, nor into a pane holding operator-typed input.
+- **Never swallow a refusal reason.** A retry loop that pipes `nudge` through `grep -q 'nudged'`
+  hides *why* the adapter refused. On 2026-07-29 that concealed a rate-limit refusal and burned
+  several minutes chasing the wrong cause. Always surface the refusal text.
+- After killing and re-spawning a main you will hit the `--min-interval-s` rate limit inherited from
+  the destroyed window; lowering it in that specific case is legitimate, not a bypass. Rule and
+  reasoning: `agents/coordinator-agent.md` → the nudge-refusal guardrail.
 
 ### Boundaries you must not cross
 
@@ -207,8 +290,9 @@ python3 scripts/coordination/tmux_adapter.py nudge --agent <id> --message '<text
 
 Compact, scannable, no preamble:
 
-1. **Post-reboot reality** — tmux `agent` session + live windows; coordinator-daemon (running?
-   epoch? supervised?); `verify_llama_cpp.sh` verdict; region-lock holders; stack health (name the
+1. **Post-reboot reality** — tmux `agent` session + live windows (and whether you created it or
+   found it); coordinator-daemon (running? epoch? supervised? — say if you restarted it, and at
+   which epoch); `verify_llama_cpp.sh` verdict; region-lock holders; stack health (name the
    dead/stopped components); **AutoPilot up or down, called out explicitly if down**.
 2. **Bus state** — queue rows by status and lane; live non-terminal tasks; per-agent
    state / task / unread depth; trust-boundary integrity.
@@ -217,9 +301,12 @@ Compact, scannable, no preamble:
 4. **Inbox severity items** — anything HIGH/CRITICAL/defect/decision-request, oldest first, with
    how long it sat unread.
 5. **Pending operator tokens** — from `token-queue.md`, with what each unblocks.
-6. **Proposed spawn plan** — missing mains, spawns used today vs `max_spawns_per_day`. Awaiting
-   operator decision.
+6. **Proposed spawn plan** — missing mains, live mains vs `caps.max_concurrent_mains`, and the
+   existing roster id each will be revived under. Awaiting operator decision.
 7. **Proposed dispatch plan** — per idle main: keep-context / wrap-up+clear / close, and the task.
+   The operator's standing expectation is that you keep **every** main saturated with backlog work,
+   so name what each main is being dispatched *to* — reporting that a main exists, or that it is
+   idle and available, is not a dispatch plan.
 
 Escalate any choice as a decision package (`OPERATING_CONSTRAINTS.md` → *Operator Decision
 Requests*): 2–4 options with tradeoffs, a recommendation first and labelled "(Recommended)", and

@@ -1178,6 +1178,168 @@ nobody re-reads:
   `DRAFT-UNREVIEWED`) · headless workers via `claude_via_devc.sh` under caps. Accept: per
   feature as specced. Rollback: per-flag disable.
 
+### C24–C31 — defects surfaced by the FIRST cold-start coordinator instantiation (2026-07-29)
+
+2026-07-29 was the first time the `coordinator-agent` role was instantiated **from scratch after a
+host reboot**, via the `/coordinator-agent` skill, rather than continuing in a session that had
+watched the fleet grow. That is a different code path in practice even though it is the same code:
+nothing was live, every heartbeat was a survivor of a dead process, every window had to be
+re-created, and the roster ids had to be re-spawned onto identities that already had history. Eight
+defects fell out of it. They belong to **C-OWN** (adopted by roster id `auditor`) and they are filed
+here rather than in the cold-start brief because the brief is read once and this file is the ledger.
+The through-line is the one this module keeps re-learning: **a reboot does not produce a clean
+slate, it produces a fleet of stale artifacts that every liveness predicate reads as live.**
+
+- [x] **C24 — `cmd_spawn` seeded the heartbeat only-if-absent, so every RE-spawned roster id was
+  unreachable from birth.** ✅ 2026-07-29 — commit `42f27e69`. The seeding loop wrote all four bus
+  files under `if not p.exists()`, which is correct for an inbox/outbox/cursor and catastrophic for
+  a heartbeat: a heartbeat is a **liveness claim**, and a re-spawned identity inherited its dead
+  predecessor's. The trap closes on itself — `cmd_nudge` refuses on `state == working` and refuses
+  on age (`tmux_adapter.py:604-609`), and the fresh session cannot clear either, because it has not
+  been told to drain and it **cannot be told: the telling is what the guard refuses**. Measured
+  post-reboot: **all three pre-existing roster ids were undeliverable**, `codex` (now `inference`)
+  on BOTH state and age, its heartbeat still reading `working` on
+  `e8-deterministic-completion-repair` from a session that no longer existed.
+  Fix: the heartbeat is now written **unconditionally** (`tmux_adapter.py:855-890`); the cursor is
+  deliberately still only-if-absent, because a cursor is a read POSITION, not a liveness claim —
+  resetting it would re-deliver everything the identity already drained.
+  **Polarity, stated because the whole fix rests on it:** overwriting a heartbeat is safe only
+  because `cmd_spawn` refuses when `args.agent in ids` (`tmux_adapter.py:790`) and therefore
+  *proves* the id is not live before it reaches the write. That proof is exactly as strong as
+  `live_mains()` never undercounting. **If `live_mains()` can undercount — the C14
+  capacity-inventing direction — this fix can reset a LIVE main's heartbeat and re-open it to a
+  mid-generation nudge.** C24 and C14 are now coupled: a future change that relaxes `live_mains`
+  toward undercounting does not just invent a slot, it silences a working agent's own guard.
+  5 assertions added to `scripts/coordination/tests/test_tmux_adapter_live.py` (state reset to
+  idle, `task_id` cleared, `ts` refreshed, the re-spawned main is not heartbeat-blocked, and the
+  cursor offset is PRESERVED); suite 43/43 green at fix time.
+  **Why the pre-existing re-spawn test missed it, which is the reusable part:** the C9 slot-return
+  case at `test_tmux_adapter_live.py:332-338` deletes all four bus files before re-spawning. With
+  the files gone, only-if-absent and unconditional are indistinguishable. That deletion is exactly
+  the shape **a reboot does NOT produce** — the real post-reboot shape is the four files surviving
+  with a `working` state on a dead pid. Same family as the C6/C9 fixture rule: a fixture that
+  removes the precondition under test passes an implementation that cannot handle it.
+  - [ ] **C24 review — needs an independent reviewer, not the author.** The safety argument above
+    is a *proof obligation on another function*, which is precisely the kind of reasoning that has
+    been wrong twice in this module already (C9's undercount sentence, C14's polarity). Review
+    should attack one question: can `live_mains()` return a set missing a genuinely live id?
+- [ ] **C25 — `cmd_spawn` names the window after the roster ID, `resolve_target` verifies the
+  window named by the ENDPOINT, and nothing reconciles them.** *Observed live 2026-07-29 during
+  post-reboot bring-up.* Spawn creates the window with `-n args.agent`
+  (`tmux_adapter.py:899`), while `resolve_target` takes the window component of the endpoint and
+  **verifies it** (`tmux_adapter.py:311-335`, the C6 anti-guess check). For roster id `codex` with
+  endpoint `tmux:agent:codex-inference`, spawn therefore created a window named `codex` and every
+  subsequent nudge refused with "does not resolve" — correctly, since the adapter must never guess
+  a pane. Worked around by hand with `tmux rename-window`; that workaround is not a fix, it is a
+  step nobody will remember next reboot. Real fix: **derive the spawned window name from the
+  endpoint**, not from the id, so the two agree by construction rather than by an operator
+  remembering they differ. (Today's roster resolves the mismatch away — `inference` has endpoint
+  `tmux:agent:inference` — which makes this latent again and is exactly why it should be fixed
+  while the failure is still remembered.)
+  **Polarity: this is delivery-only, not a capacity bug.** `live_mains()` counts an id live if a
+  window carries its **id OR its resolved endpoint** (C14's deliberate overcount), so the mismatched
+  window was still counted and the concurrency cap held. Only the send path broke. Do not "fix" this
+  by relaxing the endpoint verification in `resolve_target` — that check is C6, and its failure mode
+  is typing into someone else's pane.
+- [ ] **C26 — the coordinator-daemon's `status` reports a live daemon from a stale state file, with
+  no PID check.** *Verified 2026-07-29 with `ps -p`.* Post-reboot the daemon was dead, and
+  `session_bus_coordinator.py status` printed
+  `state=working epoch=11 pid=1928027 age=2157s` — for a PID that **did not exist**. `cmd_status`
+  (`session_bus_coordinator.py:2233-2240`) reads `heartbeats/coordinator-daemon.json` and prints
+  `state`/`epoch`/`pid` verbatim, deriving `age` from the file mtime; it never asks whether the pid
+  is alive. This is a fail-open on the one command a cold start uses to answer "is the control
+  plane up?" — **a coordinator that trusted `status` would have concluded the daemon was healthy
+  and moved on, leaving relay, ACK redelivery and C8 boundary surfacing all dead while the dashboard
+  said working.** Two cheap checks close it, and both should be present: verify the pid is alive
+  (`os.kill(pid, 0)` / `/proc/<pid>`), and refuse to report a live state when `age` exceeds **system
+  uptime**, since a heartbeat older than the boot cannot describe a running process. Report
+  `state=STALE (pid N not running)` rather than the recorded state. Same family as C3/C18: a
+  recorded claim is not an observation.
+- [ ] **C27 — two operator SIGNATURE REQUESTS were never relayed, and the documented cold start
+  would have reported no gates pending. Cross-ref: PRIORITY 1 in
+  `coordination/session-bus/tasks/auditor-c-own-20260729.md`.** *Verified 2026-07-29 by direct file
+  inspection.* Two well-formed `token-request` messages from `codex`, both `to: coordinator-agent`,
+  both with `needs_routing_to: ["coordinator-agent"]` and `action_required: true`:
+  `msg-20260729T101827Z-64-codex` (`RATIFY-P-BENCH-4-FG4B-AFFINITY-20260729`, 10:18:27Z) and
+  `msg-20260729T111638Z-68-codex` (`RATIFY-E8-FINAL-C1-RETRY-CAPACITYFIX-20260729`, 11:16:38Z).
+  Neither reached `inbox/coordinator-agent.jsonl` (grep count for both token names: **0**) and
+  neither reached `tokens/token-queue.md`, whose *Pending token requests* section reads
+  `_(none …)_` at line 40-42. `rebuild` reports "2 pending", which sounds reassuring and refers to
+  the unrelated M5 flags. The triage report found both **only by outbox scan**, annotating each
+  *"NOT in your inbox — found by outbox scan; the relay may never have delivered it"*.
+  **Why this is the worst one in the batch:** it is the C3/C6/C8 fail-open family one layer up. Not
+  a lost message — a lost *request for a human signature*. A coordinator following the cold-start
+  procedure exactly, reading `token-queue.md` as the authority it is documented to be, concludes
+  **no gates are waiting** while two ratifications sit unsigned in a sender's outbox. The
+  outbox-scan triage is what saved it, and triage is a backstop, not the channel.
+  Investigation must land on where in the relay path a `token-request` is supposed to become a
+  `token-queue.md` block (M4 specifies the transform, `authority` is still `manual`), and whether
+  the answer is "the code is inert at this authority level" — in which case the DOCUMENTED cold
+  start is wrong to treat `token-queue.md` as complete, and must scan outboxes until M4 is live.
+- [ ] **C28 — relay is tracked by destination FILE, not by message identity, so moving an inbox
+  re-floods it.** *Observed 2026-07-29 during the roster rename.* Renaming the roster ids meant
+  `git mv inbox/<old>.jsonl inbox/<new>.jsonl`; the running daemon then re-delivered its **entire
+  relay history** into freshly recreated old-id inboxes. Measured in the preserved copies under
+  `coordination/session-bus/archive/pre-rename-20260729/`: 16 / 13 / 22 / 17 rows across the four
+  ids (`claude-gpu-lane`, `claude-main`, `codex`, `fable-auditor`). *(The in-session recollection of
+  "22-39 rows each" is not what the archived files measure; the counts above are what is on disk
+  today, and the archive is the record.)* The idempotency key is `relayed_src` **checked against the
+  destination file**, so an absent or truncated destination reads as "never relayed". Consequence,
+  stated generally because the rename is not the only trigger: **any operation that moves,
+  truncates, rotates or restores an inbox re-floods it**, including a well-intentioned cleanup or a
+  log rotation. Fix direction: track relay completion in daemon-owned state keyed on the message
+  identity (`relayed_src` in a daemon-owned ledger), not by re-reading the file it was delivered
+  into — the same "derive it from what the thing itself leaves behind, in a place the operation
+  cannot erase" rule C18's second half already applied to notice idempotency.
+- [ ] **C29 — `drain --agent <non-roster-id>` fails OPEN.** *Verified 2026-07-29 with
+  `drain --agent codex` after `codex` had been renamed out of the roster.* `cmd_drain`
+  (`session_bus.py:692-729`) checks only that the inbox FILE exists (the C3 fix) — it never calls
+  `_require_roster_id`. So an unknown id with a leftover inbox exits **0**, prints messages, advances
+  a cursor, and never says the identity has no roster row. By contrast `append --agent codex` fails
+  **CLOSED** with the valid id list (`session_bus.py:450` → `_require_roster_id`, 141-145). The two
+  halves of the same CLI disagree about whether an identity must exist.
+  This is not academic and C28 is why: relay **recreates** old-id inboxes, so the file-exists check
+  passes for exactly the ids that no longer exist. A session that keeps using its pre-rename id
+  drains a ghost inbox cleanly, sees "no new messages", and concludes it is up to date — the precise
+  C3 failure, one identity-check short of being fixed. A drain on an unknown id must warn loudly
+  (and the deliberate choice between warn and refuse should be recorded, since refusing changes
+  behaviour for anyone mid-rename).
+- [ ] **C30 — the backend a main runs on is invisible to the bus, and spawn reports success for a
+  window that died a second later.** Two halves of one gap:
+  (a) **The launch command is not roster data.** `cmd_spawn --command` defaults to
+  `cd /workspace && claude` (`tmux_adapter.py:931`) and no roster row carries a launch command, so
+  which backend an identity runs on lives only in the head of whoever types the spawn. That was
+  tolerable while ids were named after their backend; it is **not** tolerable now, because the
+  2026-07-29 rename made roster ids deliberately **model-agnostic** (`inference`, `mainA`, `mainB`,
+  `auditor`) precisely so a main can move between backends — including onto a local model. The thing
+  the rename made variable is the thing the bus does not record. It belongs in the roster row as
+  data, next to `endpoint` and `lanes`.
+  (b) **Spawn confirms `new-window` exit 0, not a surviving window.** A spawned `codex` pane died
+  instantly and silently because the codex CLI presented an update prompt on start; the window
+  vanished, `cmd_spawn` still reported success, and only a manual `tmux list-windows` revealed it.
+  `cmd_spawn` returns on the `new-window` return code (`tmux_adapter.py:899-901`) — which reports
+  that tmux accepted the request, not that anything is running in it. Verify the window still exists
+  a few seconds after creation before reporting success. Note the polarity: a false success here is
+  worse than a false failure, because the four bus files are already written and the identity now
+  looks provisioned-and-live to everything downstream, including the C24 heartbeat reset.
+- [ ] **C31 — the nudge rate limit is keyed to the roster ID, not the window instance, so a
+  re-spawned main is silenced by nudges sent to a window that no longer exists.** *Observed
+  2026-07-29 during bring-up.* `probe` computes `seconds_since_last_nudge` as the newest
+  `kind == "nudge"` ledger row for that **agent id** (`tmux_adapter.py:559-560`), and `cmd_nudge`
+  refuses below `--min-interval-s` (default 600, `tmux_adapter.py:685-687, 923`). After a window was
+  killed and re-spawned, nudges to the **fresh** window were refused for the remainder of the 600s
+  window because a nudge had gone to the **destroyed** one minutes earlier. The rate limit exists to
+  avoid pestering a working session; a session that did not exist when the earlier nudge was sent
+  cannot have been pestered by it. Fix: killing or re-spawning a main resets its nudge ledger entry
+  (or the limit keys on (id, window-instance) — a spawn epoch per identity, mirroring the daemon's
+  epoch fencing). Same root cause as C24 one field over: **state keyed to an identity outlives the
+  session that identity named**, and every predicate that reads it inherits the lie.
+  Note the interaction, since both landed in the same hour: C24 makes a re-spawned main *not*
+  heartbeat-blocked, and C31 then rate-limit-blocks it anyway. Fixing one without the other leaves
+  the fresh session unreachable, which is the symptom C24 exists to remove. *(M5a already flags the
+  600s default as an implementer's guess rather than an operator decision — C31 is about the KEY,
+  not the value, and the two are independent.)*
+
 ## Decision gates
 
 - `OP-SENDKEYS-CODEX` (send-keys nudging) — operator grant, evidence-driven, default OFF.
