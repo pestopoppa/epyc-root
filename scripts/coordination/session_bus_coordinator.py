@@ -1277,6 +1277,51 @@ def _tmux_nudge(agent: str, message: str, min_interval_s: float) -> tuple[int, s
     return proc.returncode, ((proc.stdout or "") + (proc.stderr or "")).strip()
 
 
+# C21 (2026-07-29). The stuck predicate is ENTIRELY heartbeat-derived, and agents
+# let heartbeats go stale in BOTH directions — an agent mid-generation left
+# `state: idle` behind. Observed live: fable-auditor was flagged stuck 4x while
+# its pane was plainly generating; the adapter's own quiet-check refused, so no
+# agent was wrongly interrupted, but `stuck-detected` stopped being a usable
+# signal. The pane is the more trustworthy witness, so cross-check it before
+# spending a detection or a nudge.
+#
+# `esc to interrupt` is the marker, deliberately NOT tmux_adapter.probe's
+# window_activity quiet-check: the quiet-check is defeated by cosmetic TUI
+# redraw (an idle pane that re-renders reads as busy), so it cannot answer "is
+# it working". The literal marker is rendered by both TUIs only while a turn is
+# in flight and has held up all day.
+_PANE_BUSY_MARKER = "esc to interrupt"
+
+
+def _pane_generating(agent: str, roster: list[dict]) -> tuple[Optional[bool], str]:
+    """(True | False | None, detail). None = the pane could not be read.
+
+    Read-only: `tmux capture-pane -p`. Target resolution is delegated to
+    tmux_adapter.resolve_target(), which already verifies that an endpoint's
+    window component resolves to the window it names (tmux silently falls back
+    to the session's current window on a miss) — reimplementing endpoint parsing
+    here is exactly how the wrong pane gets read.
+    """
+    try:
+        from scripts.coordination import tmux_adapter  # lazy: keeps import cheap/safe
+        target, reason = tmux_adapter.resolve_target({"roster": roster}, agent)
+    except Exception as exc:  # noqa: BLE001 — an unusable adapter is "unreadable"
+        return None, f"could not resolve a tmux target: {exc}"
+    if not target:
+        return None, f"could not resolve a tmux target: {reason}"
+    try:
+        proc = subprocess.run(["tmux", "capture-pane", "-p", "-t", target],
+                              capture_output=True, text=True, timeout=15)
+    except Exception as exc:  # noqa: BLE001
+        return None, f"capture-pane on {target} failed: {exc}"
+    if proc.returncode != 0:
+        return None, f"capture-pane on {target} exited {proc.returncode}: " \
+                     f"{(proc.stderr or proc.stdout or '').strip()[:200]}"
+    if _PANE_BUSY_MARKER in (proc.stdout or "").lower():
+        return True, f"pane {target} shows {_PANE_BUSY_MARKER!r}"
+    return False, f"pane {target} shows no generation marker"
+
+
 def _unread_state_rows(bus_root: Path, aid: str) -> tuple[list[dict], int]:
     """(unread_rows, cursor_offset). Raises if it cannot be computed.
 
@@ -1302,7 +1347,8 @@ def _unread_state(bus_root: Path, aid: str) -> tuple[int, int]:
 
 
 def resolve_stuck_agents(bus_root: Path, roster: list[dict], epoch: int,
-                         *, nudge_fn=None, now: float | None = None) -> list[dict]:
+                         *, nudge_fn=None, pane_fn=None,
+                         now: float | None = None) -> list[dict]:
     """Detect agents idle on unread mail and nudge them to drain.
 
     Predicate: `unread > 0` AND (heartbeat state is `idle` OR the heartbeat is
@@ -1310,11 +1356,17 @@ def resolve_stuck_agents(bus_root: Path, roster: list[dict], epoch: int,
     reporting `working`/`draining` with a fresh heartbeat is NOT stuck — it will
     drain at its next boundary, which is the protocol.
 
+    C21: because that predicate is purely heartbeat-derived and heartbeats go
+    stale in both directions, a tmux agent's pane is cross-checked before any
+    detection or nudge. A pane that is generating — or that cannot be read —
+    suppresses the nudge with a `stuck-suppressed-pane-active` advisory.
+
     De-duplication is durable, in a daemon-owned state file, so a daemon restart
     does not re-nudge everybody: per agent we keep the last nudge timestamp and
     the (unread, cursor) pair it was sent against.
     """
     nudge = nudge_fn or _tmux_nudge
+    pane = pane_fn or _pane_generating
     now = time.time() if now is None else now
     state_path = bus_root / _STUCK_STATE
     try:
@@ -1363,6 +1415,35 @@ def resolve_stuck_agents(bus_root: Path, roster: list[dict], epoch: int,
             rec["last_detect_sig"] = f"clear:{unread}:{offset}"
             new_state[aid] = rec
             continue
+
+        # C21 pane cross-check. Every path into `stuck` above is heartbeat-derived,
+        # so the pane always gets the deciding vote before we spend a detection.
+        #
+        # FAIL CLOSED = SUPPRESS. An unreadable pane (tmux down, session/window
+        # gone, capture failed) resolves to "do not nudge", NOT "nudge anyway":
+        #   - if the window is genuinely gone the adapter refuses the nudge
+        #     anyway, so suppressing costs one advisory row and nothing else;
+        #   - nudging a busy agent is precisely the harm being removed here, and
+        #     an unreadable pane cannot rule that out.
+        # Suppression is never silent and never permanent: the advisory is
+        # emitted, and the next tick re-reads the pane, so a transient tmux
+        # failure self-heals while a truly idle agent is nudged one tick later.
+        if endpoint.startswith("tmux:"):
+            active, detail = pane(aid, roster)
+            if active is not False:
+                psig = f"pane-suppressed:{unread}:{offset}"
+                if rec.get("last_detect_sig") != psig:
+                    row("stuck-suppressed-pane-active", aid, unread=unread,
+                        cursor_offset=offset, heartbeat_state=hb_state or None,
+                        heartbeat_age_s=hb_age, endpoint=endpoint,
+                        pane_active=active, detail=detail,
+                        action=("pane is generating — heartbeat is stale, not the agent"
+                                if active else
+                                "pane unreadable — failing closed to suppression, "
+                                "re-checked next tick"))
+                rec["last_detect_sig"] = psig
+                new_state[aid] = rec
+                continue
 
         sig = f"stuck:{unread}:{offset}"
         if rec.get("last_detect_sig") != sig:

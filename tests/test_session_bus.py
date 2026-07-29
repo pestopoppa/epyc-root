@@ -719,6 +719,24 @@ class _RecordingNudge:
         return self.rc, self.out
 
 
+@pytest.fixture(autouse=True)
+def _never_touch_real_tmux(monkeypatch: pytest.MonkeyPatch) -> None:
+    """No test may run `tmux capture-pane`. Default stub: pane idle (not generating)."""
+    monkeypatch.setattr(coordinator, "_pane_generating",
+                        lambda agent, roster: (False, "stubbed idle pane"))
+
+
+class _RecordingPane:
+    """Stand-in for the C21 pane cross-check. ``active`` may be True/False/None."""
+
+    def __init__(self, active: bool | None) -> None:
+        self.active, self.calls = active, []
+
+    def __call__(self, agent: str, roster: list[dict]) -> tuple[bool | None, str]:
+        self.calls.append(agent)
+        return self.active, f"stubbed pane for {agent}"
+
+
 def _unread(root: Path, agent: str, n: int) -> None:
     for i in range(n):
         _append(root / "inbox" / f"{agent}.jsonl",
@@ -743,6 +761,62 @@ def test_c19_idle_agent_with_unread_is_detected_and_nudged(bus_root: Path) -> No
     assert nudge.calls[0][2] == coordinator._STUCK_MIN_NUDGE_INTERVAL_S
     assert _kinds(rows) == ["stuck-detected", "stuck-nudged"]
     assert (bus_root / "stuck_state.json").exists()
+
+
+def test_c21_active_pane_suppresses_the_nudge(bus_root: Path) -> None:
+    """The live false positive: heartbeat says idle, the pane is generating."""
+    _provision(bus_root, "alice", "coordinator-agent")
+    _unread(bus_root, "alice", 1)
+    _heartbeat(bus_root, "alice", "idle")
+    nudge, pane = _RecordingNudge(), _RecordingPane(True)
+
+    rows = coordinator.resolve_stuck_agents(bus_root, _stuck_roster(), epoch=1,
+                                            nudge_fn=nudge, pane_fn=pane, now=1000.0)
+
+    assert nudge.calls == []
+    assert pane.calls == ["alice"]
+    assert _kinds(rows) == ["stuck-suppressed-pane-active"]
+    assert rows[0]["pane_active"] is True
+    # Deduped: the same (unread, cursor) does not write a row every 45s tick.
+    again = coordinator.resolve_stuck_agents(bus_root, _stuck_roster(), epoch=1,
+                                             nudge_fn=nudge, pane_fn=pane, now=1045.0)
+    assert _kinds(again) == []
+
+
+def test_c21_idle_pane_still_nudges(bus_root: Path) -> None:
+    """The genuine path must not be weakened."""
+    _provision(bus_root, "alice", "coordinator-agent")
+    _unread(bus_root, "alice", 2)
+    _heartbeat(bus_root, "alice", "idle")
+    nudge, pane = _RecordingNudge(), _RecordingPane(False)
+
+    rows = coordinator.resolve_stuck_agents(bus_root, _stuck_roster(), epoch=1,
+                                            nudge_fn=nudge, pane_fn=pane, now=1000.0)
+
+    assert [c[0] for c in nudge.calls] == ["alice"]
+    assert _kinds(rows) == ["stuck-detected", "stuck-nudged"]
+
+
+def test_c21_unreadable_pane_fails_closed_to_suppression(bus_root: Path) -> None:
+    """Unreadable pane => suppress, visibly, and re-check on the next tick."""
+    _provision(bus_root, "alice", "coordinator-agent")
+    _unread(bus_root, "alice", 1)
+    _heartbeat(bus_root, "alice", "idle")
+    nudge, pane = _RecordingNudge(), _RecordingPane(None)
+
+    rows = coordinator.resolve_stuck_agents(bus_root, _stuck_roster(), epoch=1,
+                                            nudge_fn=nudge, pane_fn=pane, now=1000.0)
+
+    assert nudge.calls == []
+    assert _kinds(rows) == ["stuck-suppressed-pane-active"]
+    assert rows[0]["pane_active"] is None
+
+    # Not permanent: once the pane is readable and idle, the nudge happens.
+    rows = coordinator.resolve_stuck_agents(bus_root, _stuck_roster(), epoch=1,
+                                            nudge_fn=nudge, pane_fn=_RecordingPane(False),
+                                            now=1045.0)
+    assert [c[0] for c in nudge.calls] == ["alice"]
+    assert _kinds(rows) == ["stuck-detected", "stuck-nudged"]
 
 
 def test_c19_working_agent_is_not_stuck(bus_root: Path) -> None:
