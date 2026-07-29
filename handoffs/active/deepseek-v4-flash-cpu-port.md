@@ -352,6 +352,8 @@ V4-Flash may not clear the worker_general throughput target, but architect_gener
 
 Cost: reference logprobs are externally blocked. If reference side has no near-term path, parking the quality gate is honest.
 
+**D3 disposition (2026-07-29):** retain the existing 20-prompt logprob-parity gate as an **architect-general candidacy probe**, not a merge or worker-general gate. The saved Strategy-B capture establishes only a provisional 9.13 t/s decode observation; it does not establish role fitness. The runnable protocol is `v4_quality_gate_runner.py` + `v4_quality_gate_compare.py` against the versioned prompt set, with runtime failures, missing prompts, too-short captures, MAD, and token-1 mismatches fail-closed (34 deterministic comparator tests pass). A future result can nominate V4 for an explicitly approved architect comparison only if reference parity passes; it cannot promote the fork, change production, or override D1. Until reference logprobs exist, D3's correct state is **protocol ready / candidacy unproven**.
+
 ### Notes carried forward from 2026-05-28 session
 
 - ik_llama branch `feature/deepseek4-port` preserved at `c04881fc0` (= `production-gemma4-mtp` tip). Used if/when Option A activates.
@@ -443,5 +445,5 @@ Per `feedback_no_wholesale_git_add_shared_files`: when staging cherry-picked cha
 - [x] Strategy B executed: download (153GiB), build, smoke PASS, 4 fork bug patches landed ✅
 - [ ] D1 operator go/park decision on Strategy-A (ik_llama API translation, 3-5d)
 - [x] D2 recalibrate the 18 t/s throughput floor to be V4-arch-aware (honest ~8-12 t/s expected range) ✅ 2026-07-29 — retired the unmodelled gemma4 active-parameter extrapolation; V4's three saved 8.47/9.13/10.7 t/s observations set an 8 t/s lower envelope and 8–12 t/s planning band. This is a throughput screen only; D1, quality parity, and role candidacy remain open.
-- [ ] D3 repurpose quality gate as architect_general candidacy probe
+- [x] D3 repurpose quality gate as architect_general candidacy probe ✅ 2026-07-29 — role-scoped the existing 20-prompt parity protocol: it may nominate a future architect-general comparison only after reference parity passes. Saved 9.13 t/s is provisional throughput evidence, not candidacy; reference logprobs remain externally blocked. Comparator suite: 34 deterministic tests pass.
 - [ ] Unblock quality gate on Mac/ds4 reference logprobs (externally blocked)
