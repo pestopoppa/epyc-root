@@ -1,6 +1,6 @@
 # MathSmith HC Formalizer Evaluation & A/B Testing
 
-**Status**: refreshed 2026-07-14 — active; local/free artifact scan complete, but blocked on missing local HC artifact plus operator/network availability check
+**Status**: refreshed 2026-07-29 — active; the HC artifact is publicly available, but not local. Acquisition/conversion and every benchmark remain operator-approved follow-ons.
 **Created**: 2026-03-20 (via research intake)
 **Updated**: 2026-07-14
 **Categories**: training_distillation, benchmark_methodology
@@ -60,7 +60,7 @@ Local-only artifact discovery is complete. The result is negative for MathSmith 
 - Direct local cache inspection under `~/.cache/huggingface` and `/root/.cache/huggingface` found no `MathSmith`, `Jasaxion`, or HC artifact paths.
 - `/mnt/raid0/llm/models` contains the existing baseline artifact `MathSmith-Hard-Problem-Synthesizer-Qwen3-8B.Q4_K_M.gguf` and no HC variant.
 
-**Decision**: S2 cannot move forward locally. This handoff remains blocked on an operator-approved network/availability check and, if the repo exists, a later acquisition or conversion step. No inference, benchmark, download, or stack action is justified from the local evidence collected on 2026-07-14.
+**Decision**: S2 could not move forward locally on 2026-07-14. Public availability was subsequently confirmed on 2026-07-29; the remaining gate is operator-approved acquisition or conversion. No inference, benchmark, download, or stack action followed the availability check.
 
 ## Objective
 
@@ -105,7 +105,7 @@ The canonicalizer proposal (`epyc-inference-research/research/MATHSMITH_CANONICA
 
 ### S2: HC artifact availability and quantization path
 - [x] Run the free/local artifact scan path: `huggingface-cli scan-cache` was unavailable because `huggingface-cli` is not installed; fallback local cache search under `~/.cache/huggingface` and `/root/.cache/huggingface` found no `MathSmith`/`Jasaxion`/HC artifacts; `/mnt/raid0/llm/models` contains only `MathSmith-Hard-Problem-Synthesizer-Qwen3-8B.Q4_K_M.gguf`. **Decision**: no local HC artifact exists, so S2 cannot advance without operator/network action. ✅ 2026-07-14
-- [ ] Operator/network availability check: inspect HF for pre-made GGUFs or upstream weights for `Jasaxion/MathSmith-HC-Problem-Synthesizer-Qwen3-8B`
+- [x] Operator/network availability check: inspect HF for pre-made GGUFs or upstream weights for `Jasaxion/MathSmith-HC-Problem-Synthesizer-Qwen3-8B`. ✅ 2026-07-29 — the [upstream repository](https://huggingface.co/Jasaxion/MathSmith-HC-Problem-Synthesizer-Qwen3-8B) is public, Apache-2.0, and exposes the Qwen3-8B HC BF16/safetensors weights; the public [GGUF mirror](https://huggingface.co/mradermacher/MathSmith-HC-Problem-Synthesizer-Qwen3-8B-GGUF) documents `Q4_K_M` and exposes `Q4_K_S` / `IQ4_XS` artifacts. This was a read-only availability check only: no artifact was downloaded, loaded, converted, benchmarked, or registered.
 - [ ] If the repo exists but no GGUF is available, convert from HF weights: `convert_hf_to_gguf.py` + `llama-quantize` for Q4_K_M and Q8_0
 - [ ] Verify speed is normal (12-15+ t/s for Q8_0) — if so, confirms mradermacher conversion was the old speed bug
 - [ ] Benchmark on existing formalizer test suite (summary.csv rows 15-16 baseline)
