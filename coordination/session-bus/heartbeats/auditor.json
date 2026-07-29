@@ -1,6 +1,6 @@
 {
   "agent": "auditor",
-  "state": "idle",
-  "task_id": null,
-  "ts": "2026-07-29T15:55:10+00:00"
+  "state": "working",
+  "task_id": "scorer-fork-drift-residual",
+  "ts": "2026-07-29T16:00:14+00:00"
 }
