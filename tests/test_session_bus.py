@@ -1584,3 +1584,60 @@ def test_c26_a_post_boot_heartbeat_is_not_flagged(
     out = capsys.readouterr().out
 
     assert "state=working" in out and "recycled" not in out
+
+
+# ------------------------------------------- C33: a refused gate must reach a reader
+
+
+def test_c33_unpresentable_gate_notifies_the_coordinator(bus_root: Path) -> None:
+    """C33: `relay_tokens` correctly refuses to present an unvalidated command, but the
+    refusal was reported ONLY to advisory.jsonl, which is delivered to nobody. So a gate
+    could be filed, be schema-valid, be silently never presented, and the notice about
+    that be a second unread sink one level up. Live instance: mainA's
+    E5-THROTTLE-SCOPE-ERA-ROW-20260729, filed 2026-07-29 15:18Z with `action_required`,
+    carrying `apply_command` + top-level `dry_run_evidence` instead of `validated`.
+    """
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "outbox" / "alice.jsonl",
+            _token_request(gate="RATIFY-NOEVID-20260729", validated=False))
+    config = json.loads((bus_root / "config.yaml").read_text(encoding="utf-8"))
+
+    rows = coordinator.relay_token_blocks(bus_root, config, epoch=1)
+
+    assert [r["check"] for r in rows] == ["token-prevalidation"]
+    assert rows[0]["gate_id"] == "RATIFY-NOEVID-20260729"
+    notices = [r for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+               if (r.get("payload") or {}).get("event") == "token-request-not-presented"]
+    assert len(notices) == 1
+    assert notices[0]["payload"]["gate_id"] == "RATIFY-NOEVID-20260729"
+    assert notices[0]["payload"]["from_agent"] == "alice"
+    assert "re-file" in notices[0]["payload"]["action"]
+
+
+def test_c33_notice_is_sent_once_per_gate_not_every_tick(bus_root: Path) -> None:
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "outbox" / "alice.jsonl",
+            _token_request(gate="RATIFY-NOEVID-20260729", validated=False))
+    config = json.loads((bus_root / "config.yaml").read_text(encoding="utf-8"))
+
+    for _ in range(3):
+        coordinator.relay_token_blocks(bus_root, config, epoch=1)
+
+    notices = [r for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+               if (r.get("payload") or {}).get("event") == "token-request-not-presented"]
+    assert len(notices) == 1, "45s ticks must not flood the coordinator's inbox"
+
+
+def test_c33_a_presentable_gate_produces_no_notice(bus_root: Path) -> None:
+    """The notice means 'this gate is NOT in front of the operator'. A presented gate
+    must not produce one, or the signal stops meaning anything."""
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "outbox" / "alice.jsonl", _token_request(gate="RATIFY-FINE-20260729"))
+    config = json.loads((bus_root / "config.yaml").read_text(encoding="utf-8"))
+
+    coordinator.relay_token_blocks(bus_root, config, epoch=1)
+
+    assert not [r for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+                if (r.get("payload") or {}).get("event") == "token-request-not-presented"]
+    assert "RATIFY-FINE-20260729" in (
+        bus_root / "tokens" / "token-queue.md").read_text(encoding="utf-8")

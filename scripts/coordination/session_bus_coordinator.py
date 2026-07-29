@@ -633,6 +633,9 @@ def relay_tokens(bus_root: Path, reports: dict[str, list[dict]], latest: dict[st
                 defects.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
                                 "epoch": epoch, "kind": "defect", "check": "token-prevalidation",
                                 "subject": msg.get("from"),
+                                # C33: carried as a FIELD, not only inside the prose, so the
+                                # notice built from this row does not have to parse `detail`.
+                                "gate_id": gate, "msg_id": msg.get("id"),
                                 "detail": f"token-request {gate} lacks dry-run evidence; "
                                           f"presenting an unvalidated command is an agent defect"})
                 continue
@@ -691,9 +694,51 @@ def relay_token_blocks(bus_root: Path, config: dict, epoch: int) -> list[dict]:
     and appends nothing — while still emitting its own hold row.
     """
     roster = [r for r in (config.get("roster") or []) if isinstance(r, dict)]
+    ids = [str(e.get("id", "")).strip() for e in roster if str(e.get("id", "")).strip()]
     reports = _outbox_reports(bus_root, roster)
     blocks, extra = relay_tokens(bus_root, reports, {}, epoch)
     advisory: list[dict] = [item for item in extra if item.get("kind") == "defect"]
+
+    # C33 (2026-07-29): A REFUSED GATE MUST REACH A READER.
+    #
+    # `relay_tokens` refuses to present a token-request without dry-run evidence —
+    # correct, presenting an unvalidated command is an agent defect by policy. But the
+    # refusal was reported ONLY as an advisory row, and advisory.jsonl is delivered to
+    # nobody; `status` prints the last five on demand. So a gate could be filed, be
+    # schema-valid, be silently never presented, AND the notice about it be a second
+    # durable-but-unread sink one level up. That is C18's second half exactly, and the
+    # same repair applies: push it into coordinator-agent's inbox, which IS drained at
+    # every task boundary, because coordinator-agent is the party that can get the
+    # requester to re-file.
+    #
+    # Live instance at authorship: mainA filed `E5-THROTTLE-SCOPE-ERA-ROW-20260729` at
+    # 2026-07-29 15:18Z with `action_required: true`, carrying `apply_command` and a
+    # top-level `dry_run_evidence` rather than the `validated: {cmd, dry_run_exit}`
+    # object this reads. The SCHEMA accepts that shape; the relay does not. So the
+    # request was genuinely pre-validated and still stranded, with nobody told.
+    # Aligning the schema with the relay contract — so `append` refuses at authoring
+    # time, which is the right place — is a CONTRACT change and is escalated
+    # separately, not decided here.
+    seen_notice: set[str] = set()
+    if COORDINATOR_AGENT in ids:
+        _ca_rows, _ = _read_jsonl(bus_root / "inbox" / f"{COORDINATOR_AGENT}.jsonl")
+        seen_notice = {str((r.get("payload") or {}).get("gate_id")) for r in _ca_rows
+                       if (r.get("payload") or {}).get("event") == "token-request-not-presented"}
+        for item in advisory:
+            gate = str(item.get("gate_id") or "")
+            if not gate or gate in seen_notice:
+                continue
+            _append_inbox(bus_root, [{
+                "to": COORDINATOR_AGENT, "kind": "defect",
+                "payload": {"event": "token-request-not-presented", "gate_id": gate,
+                            "from_agent": item.get("subject"),
+                            "detail": item.get("detail"),
+                            "action": f"{gate} is NOT in token-queue.md and the operator has not "
+                                      f"been asked. Have {item.get('subject')!r} re-file it with "
+                                      f"payload.validated = {{cmd, dry_run_exit, dry_run_evidence}}"}}],
+                          epoch)
+            seen_notice.add(gate)
+
     if blocks:
         tq = bus_root / "tokens" / "token-queue.md"
         tq.parent.mkdir(parents=True, exist_ok=True)
