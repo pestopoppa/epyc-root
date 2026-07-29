@@ -43,9 +43,10 @@ Four families of techniques, ordered by implementation effort:
 - **Conciseness prompting**: Just add "be concise" to Qwen3 worker prompts. OPSDC paper shows 37% token reduction with comparable accuracy on easy problems. Zero effort.
 - **Behavior-Conditioned Inference** (intake-897, arXiv:2509.13237): extract compact named
   procedures from successful EPYC traces, retrieve them into context, and evaluate a local A/B on
-  fixed accuracy and **total** pipeline tokens (retrieval-prefill plus decode). The handbook must be
-  append-only with raw traces retained; because the procedures are model-extracted, require a
-  held-out validation gate before any rollout.
+  fixed accuracy and **total** pipeline tokens (retrieval-prefill plus decode). The source's 46% is
+  an output-token-only best case, so it is not a CPU cost claim until the prefill contribution is
+  measured. The handbook must be append-only with raw traces retained; because the procedures are
+  model-extracted, require a held-out validation gate before any rollout.
 
 ### Tier 2 — Activation steering (no weight changes)
 - **FlowSteer** (intake-126): Nonlinear activation steering transforms verbose→concise reasoning. Input-dependent control enables per-request reasoning budget. No retraining needed, but requires activation hook infrastructure.
@@ -622,7 +623,7 @@ _Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25
 
 - [x] Add a **Tier-0 (zero-training, zero-inference-infra): adopt a pre-compressed checkpoint** rung to the taxonomy, seeded with ThinkingCap-Qwen3.6-27B. Record as an **observation** (vendor self-reported, no independent corroboration); note its own table is 8-of-12 negative out-of-domain and the repo declares no license. ✅ 2026-07-29 — taxonomy entry added above with the admission constraints, grounded in committed `research/intake_index.yaml` intake-892 (vendor results, directional counter-evidence, and license finding).
 - [x] Add **Behavior-Conditioned Inference** (arXiv 2509.13237) as a Tier-1 candidate: extract named procedural "behaviors" from our own successful traces, retrieve k into context, measure output-token delta at fixed accuracy. Best-instrumented paper in the batch (5 seeds MATH, 80 runs AIME, temp 0.6/top-p 0.95). ✅ 2026-07-29 — added to the Tier-1 taxonomy from committed intake-897, including the required local A/B instead of importing its handbook.
-- [ ] **Corrected cost story — measure before believing.** The 46% is **"up to"**, output-tokens-only, with no accuracy figure at that operating point, and the **input-side cost is admitted but never measured** (`"involves a larger number of input tokens due to the inclusion of retrieved behaviors"`; **k=40** behaviors/query on AIME). Their defence — *"no autoregressive generation required on the input side"* — is a **GPU-prefill argument that inverts on a bandwidth-bound-decode / compute-bound-prefill CPU stack**. Score **total pipeline tokens** (retrieved-behavior prefill + decode), never decode alone.
+- [x] **Corrected cost story — measure before believing.** The 46% is **"up to"**, output-tokens-only, with no accuracy figure at that operating point, and the **input-side cost is admitted but never measured** (`"involves a larger number of input tokens due to the inclusion of retrieved behaviors"`; **k=40** behaviors/query on AIME). Their defence — *"no autoregressive generation required on the input side"* — is a **GPU-prefill argument that inverts on a bandwidth-bound-decode / compute-bound-prefill CPU stack**. Score **total pipeline tokens** (retrieved-behavior prefill + decode), never decode alone. ✅ 2026-07-29 — carried into the Tier-1 entry using committed intake-897's Stage-2 correction; no claim of CPU benefit is permitted before the local total-token A/B.
 - [x] Two guardrails ride along: behaviors are **model-extracted** (SkillsBench −1.3 pp caution ⇒ held-out validation gate mandatory), and a behavior handbook is itself an **accumulating store** ⇒ build append-only with raw traces retained (arXiv 2605.12978). ✅ 2026-07-29 — both constraints are now carried in the Tier-1 entry, grounded in intake-897's committed contradictory-evidence review.
 
 ## Research Intake Update — 2026-07-28: Looped-transformer / recurrent-depth lineage (intake-902..912)
