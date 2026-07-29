@@ -268,5 +268,23 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
     65). Reading is the only route, and its rate is now measured. Stop looking for a shortcut.
   - [ ] **REMAINS OPEN:** read-certify the remaining ~918. That is the only route left and it is a bounded but
     large job; it should be split across mains by handoff, not attempted in one session.
+    - [x] **Tranche 3 — the 6 orphan handoffs, complete: 18 of 18 boxes certified, 0 DEAD ✅ 2026-07-29 (`auditor`)**
+      (`agent-collab-rnd-harness`, `autopilot-authority-autoenable-proposal`, `core-v2-design-note-2026-07-23`,
+      `qwen-mtp-llamacpp-port`, `re4-protocol-redesign`, `stale-open-audit-2026-07-18`).
+      **The result falsifies the premise I picked them on.** I chose the orphans expecting a high stale
+      rate — linked from no index, so nothing finds them by navigation and nothing has been pruning them.
+      Not one row is dead. Every one is live and *gated*: 4 on an operator decision, 6 on an inference
+      window, 2 on a predecessor row, the rest on a named owner. **Orphan status is not staleness**; it is
+      an indexing defect with a different fix — link these from an index rather than audit them for rot.
+      Prior tranches for comparison: T1 47% live (n=19), T2 29% (n=45), T3 **100%** (n=18).
+    - [x] **`re4-protocol-redesign.md:151` sharpened rather than closed ✅ 2026-07-29** — the row asks to verify
+      the RE-4 runner has (a) incremental per-question persistence and (b) confidence capture with
+      `confidence_is_real` provenance. Verified against
+      `epyc-inference-research/scripts/benchmark/longcot_mini_stack_runner.py`: **(a) is already satisfied** —
+      `_write_role_result` (:452) is called per question inside the loop at :560, writes atomically via
+      tmp+replace, and :521 resumes from persisted rows. **(b) is genuinely unmet** — `confidence` appears
+      nowhere in the file (the sole `conf` hit is `config_name` at :469; checked a second spelling before
+      concluding absence). So the row stays open but is now scoped to (b) alone. Not patched here: RE-4 is
+      the CPU lineage's, and that runner is measurement-instrument code.
 
 > All verdicts above are **observations** for backlog-hygiene decisions, not measurement-gating numbers. No production kernel, registry, or handoff checkbox was modified by this audit.
