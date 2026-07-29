@@ -78,11 +78,11 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 1 | ~~`cpu-shape-specialized-gemv-decode.md:723`~~ **✅ CLOSED 2026-07-29** | pickup-checklist | none | S | (research only) | Check llama.cpp upstream for new CPU ukernel PRs |
 | 2 | ~~`cpu-shape-specialized-gemv-decode.md:727`~~ **✅ CLOSED 2026-07-29** | pickup-checklist | none | S | fork commits 143ded626/c4e06b01e/59d2012b2 | Confirm TIDE early-exit paths dormant before any baseline |
 | 3 | ~~`stale-open-audit-2026-07-18.md:92`~~ **✅ CLOSED 2026-07-29** | recommendations | none | S | dashboard backlog banner config | Publish corrected live-backlog figure (~544, board over-counts) |
-| 4 | `decision-aware-routing.md:613` | speed-axis | none | S | `orchestration/instrument_eras.yaml` | Record instrument-era boundary row for reward values |
-| 5 | `rlm-contested-claims-self-evaluation.md:68` | tasks | none | S | niah scorer module | Format-robust NIAH scorer (strict + lenient) |
-| 6 | `reviewer-escalation-and-human-gate-policy.md:22` | tasks | none | S | SafetyGate protected-action config | Align protected-action list with existing SafetyGate |
+| 4 | ~~`decision-aware-routing.md:613`~~ **⛔ BLOCKED 2026-07-29 — awaits operator signature on `RATIFY-E9-ROUTING-REWARD-ERA-20260729` (mainB); target is a human-only path** | speed-axis | none | S | `orchestration/instrument_eras.yaml` | Record instrument-era boundary row for reward values |
+| 5 | ~~`rlm-contested-claims-self-evaluation.md:68`~~ **✅ CLOSED 2026-07-29** | tasks | none | S | niah scorer module | Format-robust NIAH scorer (strict + lenient) |
+| 6 | ~~`reviewer-escalation-and-human-gate-policy.md:22`~~ **⛔ BLOCKED 2026-07-29 — its own child box reads "HG-3 is BLOCKED on HG-1, contrary to the dispatch queue"** | tasks | none | S | SafetyGate protected-action config | Align protected-action list with existing SafetyGate |
 | 7 | ~~`intake-derived-work-2026-07-25.md:87`~~ **✅ CLOSED 2026-07-29** | P3 process defects | none | S | `scripts/validate/`, research-intake cross-reference-map | Add path-resolution check for the intake cross-reference map |
-| 8 | `agentic-rocm-kernel-authoring.md:78` | progress-checklist | none | S | `research/deep-dives/…geak-synthesis.md` | GEAK-family freshness sweep at each audit |
+| 8 | ~~`agentic-rocm-kernel-authoring.md:78`~~ **✅ CLOSED 2026-07-29** | progress-checklist | none | S | `research/deep-dives/…geak-synthesis.md` | GEAK-family freshness sweep at each audit |
 | 9 | ~~`gpu-acceleration-path.md:531`~~ **✅ CLOSED 2026-07-29** | 2026-07-29 fix | none | S | `gpu-acceleration-path.md` | Record reverse-KL on-policy-distillation negative as guardrail |
 | 10 | ~~`tool-use-eval-contract.md:366`~~ **✅ CLOSED 2026-07-29** | intake 2026-07-21 | none | S | sentinel prompt definitions | Adopt negative-constraint + stated-consequence sentinel pattern |
 | 11 | ~~`gpu-serving-tie-in-program.md:143`~~ **✅ CLOSED 2026-07-29** | P5 | none | S | `heterogeneous-slot-fabric-residency.md` | Add GPU host threads as a modeled slot-fabric consumer |
@@ -98,7 +98,7 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 21 | ~~`agent-file-prose-compression.md:244`~~ **✅ CLOSED 2026-07-29** | intake 2a | none | S | `agent-file-prose-compression.md` | Re-source `/doctor` behaviour from the CLI before speccing |
 | 22 | ~~`learned-routing-controller.md:1613`~~ **✅ CLOSED 2026-07-29** | deep-dive correction | none | S | (guardrail note) | Standing guardrail: do not import intake-866 equivalence framing |
 | 23 | ~~`document-parser-table-bench.md:144`~~ **✅ CLOSED 2026-07-29** | consequence | none | S | (guardrail note) | Guardrail: no MinerU/GLM-OCR downloads as odl_bench swaps |
-| 24 | `scorer-fork-drift-audit-2026-07-22.md:257` | residual tasks | none | S | `scripts/benchmark/seeding_legacy.py` | Guard or delete the legacy ComparativeResult reward-injection path |
+| 24 | ~~`scorer-fork-drift-audit-2026-07-22.md:257`~~ **✅ CLOSED 2026-07-29** | residual tasks | none | S | `scripts/benchmark/seeding_legacy.py` | Guard or delete the legacy ComparativeResult reward-injection path |
 | 25 | ~~`autopilot-continuous-optimization.md:1529`~~ **✅ CLOSED 2026-07-29** | AP-32 | none | S | `wiki/agent-architecture.md`, `strategy_store.py` | Strike unmeasured +1.1% claim; guard the dead linter |
 | 26 | ~~`architect-model-selection-bench.md:330`~~ **✅ CLOSED 2026-07-29** | follow-up tooling | none | S | `scripts/bench/gpu_lib.sh`, `run_arm.sh`, `run_budget.sh` | Promote scratchpad GPU driver scripts into the repo |
 | 27 | ~~`context-folding-progressive.md:113`~~ **✅ CLOSED 2026-07-29** | deep-dive correction | none | S | `context-folding-progressive.md` | Record do-not-prioritize decision for ContextRot harness replication |
@@ -110,20 +110,43 @@ No two rows in this table touch the same file, so all 40 can run concurrently.
 | 33 | ~~`model-stack-single-source-update-pipeline.md:325`~~ **✅ CLOSED 2026-07-29** | outstanding | none | S | `seeding_rewards.py`, `corpus_quality_gate.py`, `kv_compress.py` | Keep 3 re-audited surfaces unchurned absent a new duplicated fact |
 | 34 | ~~`unified-trace-memory-service.md:219`~~ **✅ CLOSED 2026-07-29** | UTM-M6 | none | S | `research/intake_index.yaml` | File EvoMemBench 128K context-competition as a distinct failure mode |
 | 35 | `rao-redel-substrate-spike.md:432` | intake 2026-07-21 | none | M | `orchestration/repl_memory/episodic_store.py` | Adopt SkyRL parent/child rollout-tree accounting shape |
-| 36 | `reviewer-calibration-accounting.md:30` | RC | none | M | `src/trace/review_ledger.py` | Persist full rubric + per-item grades in corpus rows |
+| 36 | ~~`reviewer-calibration-accounting.md:30`~~ **✅ CLOSED 2026-07-29 (RC-9)** | RC | none | M | `src/trace/review_ledger.py` | Persist full rubric + per-item grades in corpus rows |
 | 37 | `llamacpp-v6-consolidation.md` (F1 fold, re-grep: file shifted) | Stage-2 parity F1 | none | M | `llama.cpp-v6 ggml/src/ggml-cpu/ops.cpp` | Fold f1-paged-attn branch into v6, off-by-default |
 | 38 | ~~`granite-97m-r2-bench-plan.md:233`~~ **✅ CLOSED 2026-07-29** | Phase C | none | M | `internal-kb-rag.md`, `colbert-…md`, `searxng-…md` | Phase C retriever promotion decision + downstream handoff updates |
-| 39 | `frontier-f1-real-task-corpus.md:115` | W2c | none | M | `scripts/tasks/harvest_tasks.py`, its unit test | Port ~50-line Hermes SQLite reader instead of a letta dependency |
+| 39 | ~~`frontier-f1-real-task-corpus.md:115`~~ **✅ CLOSED 2026-07-29** | W2c | none | M | `scripts/tasks/harvest_tasks.py`, its unit test | Port ~50-line Hermes SQLite reader instead of a letta dependency |
 | 40 | ~~`benchmark-results-dashboard.md:47`~~ **✅ CLOSED 2026-07-29** | Phase 1 | none | S | `dashboard/`, both `model_registry.yaml` | Enumerate models on the system from both registries |
 
-**Straight swap-ins for the 8 struck rows above (verified still open at 2026-07-29 verification):**
-`decision-aware-routing.md:492` (standing prohibition, S/Y) · `intake-derived-work-2026-07-25.md:45`
-(strike +1.1% claim, S/Y) · `intake-derived-work-2026-07-25.md:53` (do-not-trim guardrail, S/Y) ·
-`model-stack-single-source-update-pipeline.md:350` (short_term_memory review, S/Y) ·
-`model-stack-single-source-update-pipeline.md:352` (keep logs out of active indices, S/Y) ·
-`unified-trace-memory-service.md:226` (ReasoningBank standing, S/Y) ·
-`rlm-contested-claims-self-evaluation.md:80` (fold intake-925 Table 1, S/Y) ·
-`speculative-decoding-mtp-refresh.md:233` (scope 122B DFlash acceptance-only, S/Y)
+**⚠ RE-VERIFIED 2026-07-29 by `auditor` — this bench is spent.** Of the nine rows above
+still listed as open: **5 were already closed, 2 are blocked, 1 is dispatchable**
+(`rao-redel-substrate-spike.md:432`), and #37 carries no line anchor. Do not pull from this
+table without screening; promote the next bench instead.
+
+**The old "straight swap-ins" list is WITHDRAWN — 0 of its 8 rows were valid** (5 already
+closed, 2 pointing at prose continuation lines, 1 inference-gated). Its header claimed
+"verified still open at 2026-07-29 verification"; the five closures all carry `✅ 2026-07-29`,
+so they closed after the list was written and it was never refreshed. Worse, its two
+anchor-rot entries are continuation prose of `model-stack-single-source-update-pipeline.md:347`,
+which sits under a banner at L320 reading **"THESE SIX BOXES ARE STANDING CONSTRAINTS, NOT
+TASKS — DO NOT DISPATCH OR FLIP THEM"** — a banner that names this queue's runner-up bench by
+hand. The queue was offering standing constraints as dispatchable work.
+
+**VERIFIED-DISPATCHABLE replacements (checked box-by-box 2026-07-29, all `- [ ]`, none blocked):**
+`intake-derived-work-2026-07-25.md:63` · `backlog-roi-audit-2026-07-14.md:16` ·
+`autopilot-continuous-optimization.md:1537` · `scaffold-autopilot-cost-lever-deployment.md:120` ·
+`scoring-infra-standardization.md:35` · `repo-readiness-scorer.md:414,415` ·
+`per-request-reasoning-budget.md:210,211` · `deepseek-v4-flash-cpu-port.md:443` ·
+`routing-and-optimization-index.md:652,653` · `rao-redel-substrate-spike.md:432`
+
+Sized S/M in this queue but each fans out to a program, so treat as entry points, not atomic
+tasks: `routing-and-optimization-index.md:652,653`, `per-request-reasoning-budget.md:210,211`,
+`repo-readiness-scorer.md:414,415`, `backlog-roi-audit-2026-07-14.md:16`.
+
+**Runner-up bench health (73 unique refs audited 2026-07-29): 48% already closed, 27% anchor
+rot, 5% blocked, 19% dispatchable.** Two independent defects compound — the blocker column was
+derived from PARENT boxes only, so child preconditions and ownership handoffs are invisible;
+and anchors were not re-grepped after the 2026-07-29 edit wave. Screen every row before
+claiming: `scripts/coordination/backlog_row_check.py --ref <file.md:LINE>` (advisory,
+read-only, now descends into child boxes).
 
 **Runner-up bench (also `none`+unblocked+parallel-safe, use when the top 40 are claimed):**
 `decision-aware-routing.md:492` · `decision-aware-routing.md:614` · `rlm-…:80` ·
