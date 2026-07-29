@@ -669,6 +669,15 @@ freezes/cutovers, host reboots).
   until then. Rollback: `authority: advisory`.
 > ### POST-REBOOT HANDOVER — `claude-gpu-lane`, closed 2026-07-29 (read this first)
 >
+> **Tier-C rank 10(d) crash-window fixes are on a PUSHED BRANCH, not in /tmp.**
+> `epyc-orchestrator` branch **`tierc-10d-crash-window-durability`** (`8cdf14f9`, off
+> `origin/main` `182ccef6`). Reviewed and tested, **deliberately not merged**: the diff touches
+> `final_c1_retry.py` and `race_retry.py`, which codex is live in. Apply when its run is terminal.
+> This is the STORAGE-DURABILITY half of 10(d); codex owns the control-flow half (universal
+> abort-seal). They meet at exactly one place — `race_retry.execute`, lines ~1285-1307 — where my
+> hunk is mechanical (build `marker_extra`, drop the load-update-rewrite) and touches no race
+> logic. Tests: 380 passed + 5 skipped across the e8/v5/seal/c1 selection.
+>
 > This lane owned the `tmux_adapter.py` / session-bus hardening arc (C6, C9, C10, C14, C16, C18)
 > and does not survive the reboot. Everything below is committed and pushed; nothing is in flight.
 >
