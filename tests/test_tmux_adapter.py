@@ -509,7 +509,10 @@ C9_CONFIG = {
 }
 
 # htop/btop/fish are windows in the same session and are NOT mains.
-C9_WINDOWS = "codex-inference\nhtop\nbtop\nfish\ncoordinator-agent\nclaude-gpu-lane"
+# `#{window_index}\t#{window_name}`, the real -F format: C14 resolves index
+# endpoints too, so the count can no longer be taken from names alone.
+C9_WINDOWS = ("0\tcodex-inference\n1\thtop\n2\tbtop\n3\tfish\n"
+              "4\tcoordinator-agent\n5\tclaude-gpu-lane")
 
 
 def _c9_adapter(tag: str, monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
@@ -548,15 +551,91 @@ def test_live_mains_counts_roster_windows_including_renamed_ones(
     assert "htop" not in ids and "retired-main" not in ids
 
 
-def test_a_window_index_endpoint_is_not_read_as_a_window_name(
+def test_a_window_index_endpoint_now_resolves_against_the_index(
         monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    """`tmux:agent:3` names an index. Counting a window literally named "3" would
-    be wrong; the row still counts if a window carries its id."""
+    """C14: `tmux:agent:3` is an INDEX and is resolved as one.
+
+    Before C14 it contributed no name, so a main living at `tmux:agent:3` was
+    invisible to the count — which lowers `len(ids)` and hands out an occupied
+    slot. The window here is named `other`, so only index resolution can find it.
+    """
     config = {"roster": [{"id": "indexed", "endpoint": "tmux:agent:3"}],
               "tmux": {"live_session": "agent"}, "caps": {"max_concurrent_mains": 2}}
-    adapter = _c9_adapter("index", monkeypatch, tmp_path, windows="3\nindexed", config=config)
-    assert adapter.roster_window_names(config) == {"indexed": "indexed"}
+    adapter = _c9_adapter("index", monkeypatch, tmp_path, windows="3\tother", config=config)
+    assert adapter.parse_endpoint_window("tmux:agent:3") == ("index", "3", None)
     assert adapter.live_mains(config)[0] == {"indexed"}
+    # An index that matches nothing live is simply not live — not a refusal.
+    adapter2 = _c9_adapter("index2", monkeypatch, tmp_path, windows="9\tother", config=config)
+    assert adapter2.live_mains(config)[0] == set()
+
+
+def test_a_pane_suffixed_endpoint_resolves_to_its_window(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """C14: `.0` is a pane, not a window — strip it, then resolve name or index."""
+    adapter = _load("c14_pane")
+    assert adapter.parse_endpoint_window("tmux:agent:win.0") == ("name", "win", None)
+    assert adapter.parse_endpoint_window("tmux:agent:3.1") == ("index", "3", None)
+    config = {"roster": [{"id": "paned", "endpoint": "tmux:agent:win.0"}],
+              "tmux": {"live_session": "agent"}, "caps": {"max_concurrent_mains": 2}}
+    a2 = _c9_adapter("pane", monkeypatch, tmp_path, windows="0\twin", config=config)
+    assert a2.live_mains(config)[0] == {"paned"}
+
+
+@pytest.mark.parametrize("endpoint", ["tmux:agent:a:b", "tmux:agent:.0"])
+def test_an_unreadable_endpoint_refuses_the_whole_count(
+        endpoint: str, monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """C14's core: uninterpretable is NOT absent.
+
+    Skipping a row this cannot parse would shrink the count, which RELAXES the cap
+    and hands out a slot that is occupied — the capacity-inventing direction. So an
+    endpoint that cannot be read refuses the entire count, and spawn refuses with it.
+    """
+    config = {"roster": [{"id": "readable", "endpoint": "tmux:agent"},
+                         {"id": "broken", "endpoint": endpoint}],
+              "tmux": {"live_session": "agent"}, "caps": {"max_concurrent_mains": 5}}
+    adapter = _c9_adapter("unreadable" + str(len(endpoint)), monkeypatch, tmp_path,
+                          windows="0\treadable", config=config)
+    ids, why = adapter.live_mains(config)
+    assert ids is None
+    assert "broken" in why and "treating the row as absent" in why
+    assert adapter.cmd_spawn(_SpawnArgs()) == adapter.EX_BLOCKED
+    assert "cannot determine how many mains are live" in capsys.readouterr().err
+
+
+def test_ambiguous_window_ownership_refuses(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Two roster rows claiming one window: which main is live is a guess."""
+    config = {"roster": [{"id": "one", "endpoint": "tmux:agent:shared"},
+                         {"id": "shared", "endpoint": "tmux:agent"}],
+              "tmux": {"live_session": "agent"}, "caps": {"max_concurrent_mains": 5}}
+    adapter = _c9_adapter("ambig", monkeypatch, tmp_path, windows="0\tshared", config=config)
+    ids, why = adapter.live_mains(config)
+    assert ids is None and "ambiguous" in why
+
+
+def test_an_unparseable_window_row_refuses_rather_than_counting(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """A list-windows line without the tab is unreadable, not an empty session."""
+    adapter = _c9_adapter("badrow", monkeypatch, tmp_path, windows="no-tab-here")
+    ids, why = adapter.live_mains(C9_CONFIG)
+    assert ids is None and "unreadable list-windows row" in why
+
+
+def test_dead_panes_are_not_excluded_from_the_count(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """fable-auditor's caution: never subtract windows on a pane_dead read.
+
+    A dead pane still holds a window. Excluding those would shrink the count, and
+    if the pane_dead read ever misreported, the error polarity would flip back
+    toward inventing capacity. The adapter must not consult pane_dead here at all.
+    """
+    adapter = _load("c14_deadpane")
+    source = ADAPTER_PATH.read_text()
+    live_mains_src = source.split("def live_mains(")[1].split("\ndef ")[0]
+    assert "pane_dead" not in live_mains_src.split('"""')[2], \
+        "live_mains must not filter on pane_dead — that is the capacity-inventing direction"
+    assert adapter.live_mains.__doc__ and "DEAD PANES STILL COUNT" in adapter.live_mains.__doc__
 
 
 def test_killing_a_main_returns_its_slot_even_with_spawns_in_the_ledger(
@@ -565,7 +644,7 @@ def test_killing_a_main_returns_its_slot_even_with_spawns_in_the_ledger(
     """THE C9 defect. Three spawn rows today, two mains alive, cap 3 => allowed."""
     config = dict(C9_CONFIG, caps={"max_concurrent_mains": 3})
     adapter = _c9_adapter("slotback", monkeypatch, tmp_path,
-                          windows="codex-inference\nclaude-gpu-lane", config=config)
+                          windows="0\tcodex-inference\n5\tclaude-gpu-lane", config=config)
     today = datetime.now(timezone.utc).date().isoformat()
     adapter.LEDGER.write_text("".join(
         json.dumps({"ts": f"{today}T0{i}:00:00+00:00", "kind": "spawn",

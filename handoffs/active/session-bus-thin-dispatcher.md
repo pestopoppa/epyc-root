@@ -862,8 +862,8 @@ freezes/cutovers, host reboots).
     anywhere, so an email address or an `@`-mention in otherwise-fine prose is rejected. Chosen
     deliberately — a false refusal costs a rephrase, a false accept fires Enter into a picker —
     but if it proves annoying in practice, narrow it to `@` at a token start and keep the rest.
-  - [ ] **C14 — a roster row whose window is unmatchable is invisible to the concurrency count,
-    and that INVENTS capacity.** *Polarity corrected 2026-07-28 — this item, the
+  - [x] **C14 — a roster row whose window is unmatchable is invisible to the concurrency count,
+    and that INVENTS capacity.** ✅ 2026-07-28 — *Polarity corrected 2026-07-28 — this item, the
     `roster_window_names` docstring, and the `8033f039`/`8cbe50c0` commit messages all originally
     claimed the opposite ("an undercount in the direction that refuses spawns, never one that
     invents capacity"). It is backwards.* `cmd_spawn` refuses when `len(ids) >= cap`, so missing a
@@ -879,9 +879,30 @@ freezes/cutovers, host reboots).
     updated with it; (b) **window-INDEX endpoints** (`tmux:agent:3`) — an index is not a name;
     (c) **pane-suffixed components** (`tmux:agent:win.0`) — `.0` is a pane, so the string never
     equals a `#{window_name}`.
-    Fix: resolve indices via `list-windows -F '#{window_index}\t#{window_name}'`, and **REFUSE when
-    a roster row cannot be resolved to a window at all** rather than treating unresolvable as
-    absent — same rule the uncountable-set branch already follows.
+    **FIXED ✅ 2026-07-28.** `live_mains` now lists with
+    `-F '#{window_index}\t#{window_name}'` and `parse_endpoint_window()` resolves all three shapes:
+    an index against `#{window_index}`, a pane suffix by stripping `.<pane>` and resolving the
+    remainder, and an endpoint with more `:` parts than `tmux:<session>[:<window>]` as an outright
+    **refusal**. Four refusing branches, each tested:
+    (i) an endpoint that cannot be READ refuses the whole count — *uninterpretable is not absent*,
+    since skipping the row shrinks the count and frees an occupied slot;
+    (ii) two roster rows claiming one window refuses (which main is live would be a guess);
+    (iii) a `list-windows` row without the tab refuses rather than being read as an empty session;
+    (iv) the pre-existing unreadable/absent-session branch is unchanged.
+    **Kept usable:** a row that is interpretable but matches no live window is simply NOT LIVE —
+    the normal state of a retired or closed main — and costs nothing. Only unreadable endpoints
+    refuse.
+    **Where there was a choice, it overcounts:** an id is counted live if a window carries its id
+    OR its endpoint resolves, and the endpoint match applies even across sessions. Overcounting
+    refuses a spawn that might have been allowed; undercounting grants one that must not be. Only
+    the first is recoverable by asking again.
+    **`pane_dead` is deliberately NOT consulted** (fable-auditor's caution): a dead pane still holds
+    a window, and excluding those would shrink the count — flipping the error polarity back toward
+    inventing capacity if the `pane_dead` read ever misreported. There is a test asserting
+    `live_mains` contains no `pane_dead` filter, so a future "optimisation" trips it.
+    Latent, not live: no roster row triggered any of these shapes, and the real config resolves to
+    the same 4 mains before and after. 40 → 46 tests in `tests/test_tmux_adapter.py`; 48 across
+    both suites.
   - [ ] **C15 — `caps.max_concurrent_mains: 4` is saturated at 4/4.** Set 2026-07-28 against a
     then-steady state of 3 live mains; a `fable-auditor` window brought it to 4 within the hour,
     so the next spawn needs a main closed. Working as designed — a closed main now returns its

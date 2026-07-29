@@ -414,12 +414,45 @@ def roster_window_names(config: dict) -> dict[str, str]:
         if not rid:
             continue
         names.setdefault(rid, rid)
-        ep = str(entry.get("endpoint") or "")
-        if ep.startswith("tmux:"):
-            parts = ep.split(":")
-            if len(parts) >= 3 and parts[2] and not parts[2].isdigit():
-                names[parts[2]] = rid
+        kind, value, _err = parse_endpoint_window(str(entry.get("endpoint") or ""))
+        if kind == "name":
+            names[value] = rid
     return names
+
+
+def parse_endpoint_window(endpoint: str) -> tuple[str | None, str | None, str | None]:
+    """Split a roster endpoint's window component. Returns ``(kind, value, error)``.
+
+    ``kind`` is ``"name"``, ``"index"``, or ``None`` when the endpoint carries no
+    window component (``tmux:agent``, or a non-tmux endpoint like ``monitor:file``).
+    A non-None ``error`` means the endpoint cannot be INTERPRETED, and every caller
+    must refuse on it — see live_mains() for why that is not the same as "the row
+    has no live window".
+
+    C14 (2026-07-28). Three endpoint shapes used to fall through as "no window",
+    which made the row invisible to the concurrency count and therefore INVENTED
+    capacity (an undercount lowers ``len(ids)`` and relaxes the cap):
+      * ``tmux:agent:3``     — a window INDEX. Now resolved against #{window_index}.
+      * ``tmux:agent:win.0`` — a PANE suffix. The pane is stripped; the window part
+                               is then a name or an index like any other.
+      * ``tmux:a:b:c``       — not a shape this understands at all. Refuses.
+    """
+    if not endpoint.startswith("tmux:"):
+        return None, None, None
+    parts = endpoint.split(":")
+    if len(parts) > 3:
+        return None, None, (f"endpoint {endpoint!r} has more ':'-separated parts than "
+                            f"tmux:<session>[:<window>] allows; refusing to guess which is the "
+                            f"window")
+    if len(parts) < 3 or not parts[2].strip():
+        return None, None, None
+    component = parts[2].strip()
+    if "." in component:                       # window.pane — the pane is not our unit
+        component = component.split(".", 1)[0].strip()
+        if not component:
+            return None, None, (f"endpoint {endpoint!r} names a pane with no window; refusing to "
+                                f"guess which window it means")
+    return ("index" if component.isdigit() else "name"), component, None
 
 
 def live_mains(config: dict) -> tuple[set[str] | None, str]:
@@ -439,17 +472,64 @@ def live_mains(config: dict) -> tuple[set[str] | None, str]:
     empty set is a positive statement ("no mains are live, all slots free") and
     inferring it from a failed query is precisely the fail-open shape of C3, C6
     and C8 in this same module.
+
+    C14 (2026-07-28): UNINTERPRETABLE IS NOT ABSENT. A row whose endpoint cannot be
+    parsed refuses the whole count, because silently skipping it is the
+    capacity-inventing direction — fewer counted mains means a slot handed out that
+    is already occupied. Note the distinction that keeps spawn usable: a row that is
+    interpretable but matches no live window is simply NOT LIVE (the normal state of
+    a retired or closed main) and costs nothing. Only endpoints this cannot READ
+    refuse.
+
+    WHERE THERE IS A CHOICE, OVERCOUNT. A roster id is counted live if a window
+    carries its id OR its endpoint's window resolves — both are checked, and the
+    endpoint match is applied even when it names a different session. Overcounting
+    refuses a spawn that might have been allowed; undercounting grants one that
+    should not be. Only the first is recoverable by asking again.
+
+    DEAD PANES STILL COUNT (fable-auditor, 2026-07-28). `pane_dead` is deliberately
+    not consulted. A dead pane still holds a window, and if the `pane_dead` read
+    ever misreported, excluding those windows would shrink the count — flipping the
+    error back toward inventing capacity. The conservative reading of a window whose
+    state is uncertain is that it occupies a slot.
     """
-    expected = roster_window_names(config)
-    if not expected:
+    roster = [e for e in (config.get("roster") or []) if isinstance(e, dict) and
+              str(e.get("id") or "").strip()]
+    if not roster:
         return None, "config.yaml roster has no ids — cannot tell a main's window from any other"
     live = str((config.get("tmux") or {}).get("live_session") or "agent")
-    rc, out = _tmux("list-windows", "-t", live, "-F", "#{window_name}")
+    rc, out = _tmux("list-windows", "-t", live, "-F", "#{window_index}\t#{window_name}")
     if rc != 0:
         return None, (f"cannot list windows of the live session {live!r}: {out}. Refusing rather "
                       f"than assuming no mains are running.")
-    present = {line.strip() for line in out.splitlines() if line.strip()}
-    ids = {rid for name, rid in expected.items() if name in present}
+    windows: list[tuple[str, str]] = []
+    for line in out.splitlines():
+        if not line.strip():
+            continue
+        index, tab, name = line.partition("\t")
+        if not tab:
+            return None, (f"unreadable list-windows row {line!r} for session {live!r} — refusing "
+                          f"rather than counting a window list this cannot parse")
+        windows.append((index.strip(), name.strip()))
+
+    ids: set[str] = set()
+    owners: dict[str, set[str]] = {}          # window name -> roster ids claiming it
+    for entry in roster:
+        rid = str(entry.get("id")).strip()
+        kind, value, error = parse_endpoint_window(str(entry.get("endpoint") or ""))
+        if error:
+            return None, (f"roster row {rid!r}: {error}. Refusing rather than treating the row as "
+                          f"absent — an uncounted live main frees a slot that is occupied.")
+        for index, name in windows:
+            if name == rid or (kind == "name" and name == value) or \
+                    (kind == "index" and index == value):
+                ids.add(rid)
+                owners.setdefault(name, set()).add(rid)
+    ambiguous = {name: rids for name, rids in owners.items() if len(rids) > 1}
+    if ambiguous:
+        detail = "; ".join(f"{name!r} claimed by {sorted(rids)}" for name, rids in ambiguous.items())
+        return None, (f"window ownership is ambiguous in session {live!r} ({detail}) — refusing, "
+                      f"because guessing which main is live is guessing how many slots are free")
     return ids, f"{len(ids)} roster main(s) live in session {live!r}"
 
 
