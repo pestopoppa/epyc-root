@@ -74,6 +74,188 @@ Keep: §1.1 measure-first staging (with the shrunken menu above); §7.1 env repo
 - **Custom HIP dequant kernels (conditional)** — only if M1 lands in the 1.3–1.8× band; target the Q4_K/Q8 MMQ dequant gap (14 roofline points measured between Q8 and Q4_K). Accept: +15% tg on the residency bench, op-for-op parity vs `test-backend-ops`.
 - **GPU eval lane in the campaign scheduler (R14)** — Accept: clean-window manifest entries carry a `substrate: gpu|cpu` field; GPU-lane items run while the CPU stack serves; the quiesce window shrinks to CPU-topology probes only (shape-keyed bracket, J2/J3, E1).
 
+## Rider — OD-A: KTransformers Expert Deferral, and the scope of the §1.4/§6 demotion (2026-07-29)
+
+Additive to §1.4, §2 (capability matrix row "MoE expert placement") and §5-M2. Filed by `mainA` on
+operator direction (OD-A, `progress/2026-07/2026-07-29.md:485-487`). **Nothing here reverses a
+verdict in this document.** It records that the demotion was scoped to *simulators* and never
+evaluated the runtime technique, and it specifies what would decide the technique on its merits.
+
+### R-A1. What was actually demoted
+
+`:14` demotes "KTransformers/HybriMoE/Fiddler **simulators**"; `:69` demotes "HybriMoE/Fiddler/
+KTransformers **reproduction**" beside "the MoE cache-policy simulator suite". The `(handoff §4)`
+pointer at `:14` resolves to `tmp/epyc_mi210_hybrid_inference_handoff.md:458` (Workstream B), whose
+only matching work item is `:581` "Implement in `simulator/moe_cache_policy.py`". The KTransformers
+**runtime** was described in a different section of that handoff — `:190-203`, §2.3, "prior art for
+heterogeneous runtime design / possible integration substrate" — which this document never cites or
+engages. The load-bearing argument at `:14` is *substrate selection* (vLLM 0.10.1 is dead on gfx90a
+⇒ the fork is the substrate), and it is sound. It simply does not reach a scheduling technique.
+
+This document makes **no** claim that KTransformers is slow, unportable, AMX-bound or unbenchmarked.
+The AMX argument that is often attached to it post-dates this document by 26 days
+(`research/intake_index.yaml:45706`, 2026-07-29) and is the *rebuttal* package, not the basis.
+
+**KTransformers has never been ingested** — zero entries across 937 in `research/intake_index.yaml`.
+
+### R-A2. The technique, from primary source
+
+SOSP'25, peer-reviewed, [DOI 10.1145/3731569.3764843](https://dl.acm.org/doi/10.1145/3731569.3764843);
+implementation read at `kvcache-ai/ktransformers@a8062bfa` (v0.6.4), Apache-2.0.
+
+Shared experts → GPU, routed experts → CPU. At layer `k` the top-k routed experts are split by
+routing score: the highest-scoring `topk − n_deferred` are computed immediately; the lowest-scoring
+remainder are launched but **not waited on**, and their output — computed on layer `k−1`'s
+activations — is accumulated into layer `k+1`'s MoE output. Residual connections absorb the delay.
+The deferral distance is **exactly one MoE layer** (`buffer_depth = 2`, hardcoded); only the *count*
+of deferred experts is tunable. The async vehicle is `cudaLaunchHostFunc`/`hipLaunchHostFunc` — a
+host callback enqueued on the inference stream — over a lock-free queue whose `sync(allow_n_pending)`
+returns while deferred work is still running.
+
+**Decode-only by design** (paper §4.1, explicit): in prefill a token batch touches nearly all
+experts, so both halves of the split hit almost every expert, roughly doubling memory traffic and
+cancelling the benefit.
+
+### R-A3. Three corrections to the OD-A premise as handed to me
+
+1. **"≤0.5% accuracy drop" is the aggressive setting, not the default.** The figure is DeepSeek-V3
+   on LiveBench at **6 deferred of top-8** (paper §6.3). The shipped `kt-kernel` README grades 5–7 as
+   "may introduce noticeable accuracy loss; use with care" and the CLI **defaults to 2**. It is a
+   tunable quality/speed tradeoff, not a quality-neutral one. The suite scores (Table 2) are
+   single-run without CIs or seeds on ≤200-problem benchmarks — observation-grade by our own grammar.
+2. **"Not AMX-dependent" is correct, and the reason is stronger than assumed.** Deferral is
+   ISA-agnostic Python on a shared base class (`kt-kernel/python/experts_base.py`); all five CPU
+   backends inherit it, including `LLAMAFILE` (AVX2) and an AMD BLIS/AOCL path. More to the point:
+   deferral runs **only in decode**, and the paper's own Fig. 14b / §6.4 report AVX-512 *beating* AMX
+   in decode (AMX tile setup is overhead at low arithmetic intensity). The phase where deferral
+   applies is the phase where our missing AMX is least relevant.
+3. **The speed claim is narrow.** Up to **1.45×** decode, batch-1, decode-only, zero prefill benefit.
+   Fig. 10 saturates fast: 2 deferred → −19% layer time, 3 → −26%, **4 → no further benefit** (CPU
+   saturated). The system-level 1.25–4.09× figures are KTransformers-vs-llama.cpp totals, not
+   deferral.
+
+### R-A4. Why the near-uniform routing-skew verdict does not bind this
+
+`mi210-big-model-and-acceleration-roadmap.md:254` gates expert-hybrid offload on a routing-skew
+profile, and the 2026-07-17 production-representative GLM-5.2 pass came back near-uniform globally
+(19,123,200 selections, `top_32=15.19%`, entropy `0.9987`, Gini `0.0664`). That verdict is sound for
+what it tested: **hot-expert caching**, where a cacheable hot set must justify streaming weights over
+PCIe. Deferral is not a caching scheme — experts stay resident in CPU RAM and only **activations**
+cross PCIe (~10 KB, ~1 µs per crossing per `gpu-drafter-mi200-investigation.md:132,137`). Routing
+skew is orthogonal to it. This is a genuine gap in the existing gate, not a reason to reopen caching.
+
+### R-A5. What it would take on our stack — and why it is not a port
+
+The capability-matrix row at `:26` ("MoE expert placement — EXISTS, static-at-load") understates the
+constraint. Verified in `production-consolidated-v8` @`67a433bf4`:
+
+- **CPU and GPU never run concurrently.** `ggml-backend.cpp:1665` drains the GPU
+  (`ggml_backend_synchronize`) before every CPU split; `ggml-cuda.cu:786,794` are blocking
+  copies; `ggml-backend.cpp:1678` calls a CPU `graph_compute` that blocks (`ggml-cpu.cpp:190`).
+  Per-layer cost is additive: `t_gpu_attn + t_d2h + t_cpu_ffn + t_h2d`.
+- **The CPU backend has no async surface at all** — `ggml-cpu.cpp:197-209` leaves `synchronize`,
+  `event_record`, `event_wait` NULL, and `ggml-cpu.cpp:395-400` reports `.async = false,
+  .events = false` (verified directly). Cross-backend event waits are explicitly unimplemented
+  (`ggml-cuda.cu:2189-2200` aborts).
+- **The existing pipeline machinery cannot be reused.** `llama-context.cpp:400-405` requires
+  `n_devices() > 1` (we have one MI210) **and** `!has_tensor_overrides()` — and any
+  `-ot`/`-cmoe`/`-ncmoe` sets that true (`llama-model.cpp:1044`, verified). The flag that creates the
+  CPU-expert split is the same flag that disables pipelining. Even enabled it pipelines across
+  micro-batches and excludes CPU backends by construction.
+- **Only decode is in scope for us too**, for a different reason: op-offload is HIP-active with
+  threshold ubatch ≥ 32 (`ggml-cuda.cu:5348`), and for `MUL_MAT_ID` the batch size *is* `n_tokens`,
+  so prefill already pulls experts back onto the GPU. This independently agrees with the paper.
+
+**The important structural point:** within one MoE layer the chain is straight-line
+(attn → router → experts → residual → next attn), so there is *no independent work to overlap*.
+Fixing the scheduler alone buys **zero**. Deferral is precisely the graph-level restructuring that
+manufactures the independent work a concurrent scheduler could then exploit — the two are
+complements, and both are required. That is the real shape of the effort, and it is why "port a
+30-line scheduling rule" understates it by an order of magnitude.
+
+Scope of a real attempt, on `llama.cpp-experimental` → v9 per the kernel workflow, never on frozen
+v8: (a) emit deferred-expert graph nodes consuming layer `k−1` activations, per architecture, in the
+model build path; (b) build a genuinely async CPU backend; (c) make the scheduler dependency-aware
+(`ggml_backend_sched_split` at `ggml-backend.cpp:764` carries no dependency metadata and `:1549` is a
+flat sequential loop). (b) is the deep one and it touches **every CPU-only serving path** — which is
+all of production today.
+
+### R-A6. What already ships, and what is already measured
+
+Static CPU-expert offload is **not** the gap: `-ot` (`arg.cpp:2524`), `-cmoe` (`:2530`), `-ncmoe`
+(`:2537`) all exist, applied once at load (`llama-model-loader.cpp:1164-1180`), matching
+`LLM_FFN_EXPS_REGEX` (`common/common.h:1076`, verified) — which correctly does **not** match
+`*_shexp`, so shared experts stay GPU-side, the same placement the paper uses. We have already run
+it: Hy3-IQ1_M (~92 GB, over-HBM) hybrid `--cpu-moe --fit on` measured **11.51 t/s decode vs 5.21 t/s
+CPU-only (2.2×)**, 5/6 tasks both lanes (`speculative-decoding-mtp-refresh.md:190`, observation-grade).
+
+Capacity is a non-issue and should stop being discussed: our four MoE models are **90–97% expert
+weight**, so the GPU-side residue is 2.5–6.2 GiB of weights plus KV — ~5.2 / ~5.5 / ~3.0 / ~12.3 GiB
+for qwen36-35B-Q8 / gemma4-26B-Q4KM / qwen3next-80B / qwen35-122B against 64 GB. All four at once fit
+in ~26 GiB.
+
+### R-A7. Falsifiers — what would kill this
+
+- **F1 (primary, and cheap).** The overlap ceiling is `min(t_gpu, t_cpu) / (t_gpu + t_cpu)` per
+  layer. That ratio is **unmeasured** and is directly measurable from a static `-cmoe` run with
+  per-split timing. If the GPU side is small relative to CPU expert time, the ceiling is small and
+  no amount of kernel work redeems it. KTransformers' own Fig. 10 saturating at 3–4 deferred experts
+  says the CPU becomes binding quickly even on their hardware.
+- **F2.** If M2 (§5, `:60`) fails its own pre-agreed `≥1.5×` gate, family B closes and deferral has
+  no host to attach to.
+- **F3.** PCIe round-trip latency × 2 × n_layers per token could consume the overlap. We have **no
+  measured H2D/D2H bandwidth anywhere in either repo**; the KB figures contradict each other
+  (`gpu-acceleration-path.md:16` "~64 GB/s H2D" is the bidirectional aggregate misapplied to one
+  direction, `:306` says "PCIe 5.0", `heterogeneous-slot-fabric-residency.md:72` says "~26 GB/s").
+  Measured link state this session: `0000:43:00.0` `LnkCap`/`LnkSta` = **16 GT/s x16 (Gen4)**.
+- **F4.** Quality at a deferral count that actually buys speed (≥3–4). Must clear our own eval tower,
+  not the paper's single-run suites.
+- **F5 (the one that should scare us).** An async CPU backend regressing ordinary CPU-only serving.
+  Production is CPU-only today; a change to CPU backend async semantics risks the thing that pays the
+  bills for a decode-only, batch-1, GPU-lane-only upside.
+
+Vendor-side risk worth recording: the one shipped correctness bug in deferral was an **intermittent
+data race on shared pinned buffers** on the `LLAMAFILE` (AMX-free) backend — the exact path an
+AMX-free host would use — fixed in `e7d1c1d` with a permanent repro harness retained in-tree. And
+issue [#1612](https://github.com/kvcache-ai/ktransformers/issues/1612) ("AMX only?") has sat open and
+unanswered since 2025-11-15. The non-Intel/non-CUDA corner is the least-exercised one, and it is ours.
+ROCm support is labelled Beta, developed on gfx1100 and gfx936; **no evidence of anyone running it on
+gfx90a**, and `torch==2.9.1` is an exact pin.
+
+### R-A8. Recommendation
+
+**Do not authorize kernel work.** Run F1 first — it is one instrumented `-cmoe` decode run and it
+decides the entire question before anything is built. F3 is a ~30-line `hipcc` microbenchmark
+(`rocm-bandwidth-test` is **not** installed; `hipcc` is) and closes the largest measurement vacuum in
+this whole area regardless of OD-A's outcome. Both are small, and both produce evidence that is
+useful even if deferral is declined.
+
+Explicitly **not** recommended: adopting KTransformers as a runtime. That means a forked SGLang
+running parallel to v8, against this document's own sound "the fork is the substrate" finding.
+
+### R-A9 — Tasks
+
+- [x] OD-A researched against primary sources; demotion scope established as simulator-only ✅ 2026-07-29
+- [ ] **F1 — per-split GPU/CPU timing under static `-cmoe`** on one MoE model; report
+      `min(t_gpu,t_cpu)/(t_gpu+t_cpu)` per layer. Decision rule to pre-register before running.
+      **This gates everything else in this rider.** Needs the GPU lane (region `q3` lock, P2-1b).
+- [ ] **F3 — measure H2D/D2H PCIe bandwidth** (`hipcc` microbenchmark; `rocm-bandwidth-test` absent).
+      Independently valuable; corrects three contradictory KB figures.
+- [ ] **M2 `-ncmoe` sweep** (§5 `:60`) — designed, still unrun; bounds the synchronous baseline.
+- [ ] **OPERATOR DECISION — ingest-or-reaffirm KTransformers** (`intake_index.yaml:45670`). It has
+      never been ingested. Per the never-dismiss-without-asking rule this is not a self-authorized
+      call, and no intake row was created by this rider.
+- [ ] **OPERATOR DECISION — instrument-era / gate amendment.** If F1 justifies proceeding, `:26`
+      ("static-at-load") and `mi210-big-model-and-acceleration-roadmap.md:254` (skew gate) need
+      amending to record that the skew verdict tested caching, not overlap.
+- [ ] Registry defects found mid-flight (unrelated to OD-A, filed here so they are not lost):
+      `epyc-inference-research/orchestration/model_registry.yaml:1520` records
+      `baseline_experts: 8` for `qwen3next`, but the GGUF says `expert_used_count = 10`
+      (`expert_count = 512`); the 122B row records `size_gb: 69` against 72.88 GiB actually on disk.
+- [ ] `gpu-acceleration-path.md:306` states PCIe 5.0; the link is measured Gen4 x16. `:16`'s
+      "~64 GB/s H2D" is the bidirectional aggregate applied to one direction.
+
 ## Progress checklist
 
 - [x] Findings deliverable produced (M0-M5; M0 CLOSED 2026-07-03) ✅
+- [x] OD-A rider filed — KTransformers Expert Deferral scoped, costed, falsifiers named ✅ 2026-07-29
