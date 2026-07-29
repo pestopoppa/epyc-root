@@ -325,11 +325,43 @@ def resolve_target(config: dict, agent: str) -> tuple[str | None, str]:
         # returned data for a different window. Trusting the string would have let
         # send-keys hit the wrong pane, which is the precise failure this module
         # claims to prevent.
-        rc, got = _tmux("display-message", "-p", "-t", f"{session}:{want}", "#{window_name}")
+        #
+        # C32 (2026-07-29): AN INDEX IS VERIFIED AGAINST #{window_index}, NOT EXEMPTED.
+        # This check used to read `if got.strip() != want and not want.isdigit()`,
+        # comparing every endpoint against the window NAME and then waiving the
+        # comparison for numeric ones because an index never equals a name. So for
+        # index endpoints it trusted the string — the exact thing the paragraph above
+        # says it must not — and reported the result as "(verified)", a FALSE
+        # ATTESTATION. Measured: `display-message -p -t agent:99` returns rc=0 having
+        # fallen back to window index 0, so `tmux:agent:99` resolved to the operator's
+        # own window and a nudge would have typed into it.
+        #
+        # It also punched the one hole in C24's containment. `cmd_spawn` overwrites a
+        # stale heartbeat on the strength of `live_mains()` having refused to count
+        # the id; that is safe only because an identity `live_mains` cannot see is one
+        # `resolve_target` cannot reach either (see cmd_spawn). An index endpoint broke
+        # exactly that pairing — uncounted AND resolvable — which re-opened a live main
+        # to a mid-generation nudge. Latent, not live: no roster row uses an index
+        # endpoint today, but C14 lists `tmux:agent:3` as a supported resolved form.
+        # A refusal is always recoverable by asking again; a false attestation is not.
+        rc, got = _tmux("display-message", "-p", "-t", f"{session}:{want}",
+                        "#{window_index}\t#{window_name}")
         if rc != 0:
             return None, f"target {session}:{want} does not resolve: {got}"
-        if got.strip() != want and not want.isdigit():
-            return None, (f"target {session}:{want!r} resolved to window {got.strip()!r} — tmux "
+        got_index, tab, got_name = got.strip().partition("\t")
+        if not tab:
+            return None, (f"unreadable display-message reply {got.strip()!r} for {session}:{want} "
+                          f"— refusing rather than attesting a target this cannot verify")
+        got_index, got_name = got_index.strip(), got_name.strip()
+        if want.isdigit():
+            if got_index != want:
+                return None, (f"target {session}:{want!r} resolved to window INDEX {got_index!r} "
+                              f"(name {got_name!r}) — tmux falls back to the current window on a "
+                              f"miss. Refusing rather than typing into the wrong pane.")
+            return f"{session}:{want}", (f"endpoint names window index {want} "
+                                         f"(verified, currently named {got_name!r})")
+        if got_name != want:
+            return None, (f"target {session}:{want!r} resolved to window {got_name!r} — tmux "
                           f"falls back to the current window on a miss. Refusing rather than "
                           f"typing into the wrong pane.")
         return f"{session}:{want}", f"endpoint names window {want!r} (verified)"

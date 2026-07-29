@@ -158,11 +158,22 @@ def test_unit() -> None:
         # The "refusing to guess" wording belongs to the no-matching-WINDOW path,
         # which needs a session that exists; asserted in the live group instead.
 
+        # C32 (2026-07-29): THIS CHECK USED TO ASSERT A FALSE ATTESTATION. It read
+        # `check(t == "sess:7", ...)` — a POSITIVE resolution, reported by the module
+        # as "(verified)", for a window index in a session that does not exist. That
+        # is not a wrong expectation about an edge case; it is the fixture pinning the
+        # bug. Measured cause: `display-message -p -t sess:7 '#{window_name}'` exits
+        # **0 with empty output** when the session is absent, and the old
+        # `and not want.isdigit()` clause waived the mismatch comparison for numeric
+        # window components — so every index endpoint skipped verification entirely.
+        # A refusal is recoverable by asking again; a false "verified" is not.
         cfg = write_config(bus, [{"id": "a", "endpoint": "tmux:sess:7"}])
         t, why = m.resolve_target(cfg, "a")
-        check(t == "sess:7", f"explicit window in endpoint resolves ({t})")
+        check(t is None, f"index endpoint in an ABSENT session is refused, not 'verified' ({t}: {why})")
 
-        # blocker composition — target resolves, so only the state guards can fire
+        # blocker composition. The target does NOT resolve here (no tmux), so `not
+        # target` is a blocker too; these assert that each state guard ALSO fires,
+        # which is what the composition is about.
         cfg = write_config(bus, [{"id": "a", "endpoint": "tmux:sess:7"}], sendkeys="off")
         set_heartbeat(m, "a", "idle")
         p = m.probe(cfg, "a", 20.0, 900.0)
@@ -238,6 +249,27 @@ def test_live() -> None:
             t3, why3 = m.resolve_target(cfg_bad, "x")
             check(t3 is None, "explicit-but-nonexistent window is REFUSED, not silently "
                               "redirected to tmux's current window")
+
+            # C32: index endpoints get the SAME verification as names, against
+            # #{window_index}. C14 lists `tmux:agent:3` as a supported resolved form,
+            # and nothing here exercised one — which is how the exemption survived.
+            rc_i, idx_out = tmux("list-windows", "-t", SESSION,
+                                 "-F", "#{window_index}\t#{window_name}")
+            by_name = dict(reversed(line.split("\t", 1)) for line in idx_out.splitlines() if "\t" in line)
+            quiet_idx = by_name.get("quiet")
+            check(quiet_idx is not None, f"quiet window has a readable index ({idx_out!r})")
+            if quiet_idx is not None:
+                cfg_idx = {"roster": [{"id": "quiet", "endpoint": f"tmux:{SESSION}:{quiet_idx}"}]}
+                t4, why4 = m.resolve_target(cfg_idx, "quiet")
+                check(t4 == f"{SESSION}:{quiet_idx}" and "index" in why4 and "quiet" in why4,
+                      f"a CORRECT index endpoint resolves and names the window it verified ({why4})")
+
+            # The measured 2026-07-29 counterexample: tmux exits 0 for an out-of-range
+            # index, falling back to the current window. Refusing is the only safe read.
+            cfg_99 = {"roster": [{"id": "quiet", "endpoint": f"tmux:{SESSION}:99"}]}
+            t5, why5 = m.resolve_target(cfg_99, "quiet")
+            check(t5 is None and "INDEX" in why5,
+                  f"out-of-range index endpoint is REFUSED, never attested as verified ({t5}: {why5})")
 
             # The quiet-check only works while a client is ATTACHED; a throwaway
             # test session is detached, so assert the honest behaviour in each case
