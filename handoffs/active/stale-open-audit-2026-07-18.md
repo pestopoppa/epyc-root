@@ -140,7 +140,25 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
     (and prohibited during E5), not dispatchable. `backlog_live_uncertified =
     950` for this dated read-through slice; `backlog_not_a_task = 36` is
     unchanged. No owner handoff was edited.
-  - [ ] **REMAINS OPEN:** read-certify the 955. That is the only route left and it is a bounded but
+  - **TRANCHE 1 READ-CERTIFIED 2026-07-29 (`auditor`) — 19 boxes, the single-open-box handoffs.**
+    Read each box with its section, `Status:` header and following context. Result:
+    | verdict | n | meaning |
+    |---|---|---|
+    | **LIVE** | 9 | genuine outstanding work (PC-4, W8b, W3 fine-tunes, `real_suite_v1`, MoE B-sweep, RD-12, TM-8, W4 consumer migration, post-soak cleanup) |
+    | **PARKED — explicit reopen trigger, not fired** | 6 | `mi210-mfma:47` *reopen only if a new compute-bound path appears*; `numa-prefill-decode:76` *reopen on multi-tenant shift*; `yarn-context-extension:105` *reactivate when …*; `security-review-skill:60` *intentionally deferred*; `model-capability-descriptors:40` *GATED tail, IF ever opened*; `gpu-cot-scaffold-sidecar:21` *only if a deployment decision is proposed* |
+    | **OPERATOR / HUMAN-OWNED** | 2 | both are *"archive after operator acknowledgement"* rows |
+    | **STALE BY OBSOLESCENCE** | 1 | `mi210-speed-campaign-summary:70` — *"run KernelBench over current v6 production kernel"*; v6 is two generations stale (v8 is production), so the task as written names a target that no longer exists |
+    | **STANDING ACTIVITY** | 1 | `x-mas-text-routing:51` — *"monitor post-enable live telemetry"*; ongoing, not completable |
+    **Two categories the audit did not enumerate, both found here:** *stale by obsolescence* (the task
+    still stands but names a superseded target — it is neither done nor doable as written) and
+    *parked with a named reopen trigger* (dormant by design; counting it as backlog overstates the
+    live queue).
+    **SAMPLING BIAS, stated because it would otherwise mislead:** 10 of 19 in this tranche are not
+    live work, but single-open-box handoffs are **structurally biased toward residue** — a handoff
+    with exactly one box left is usually a finished one carrying a parked tail. **Do NOT extrapolate
+    ~50% to the remaining 936.** The rate must be re-measured on multi-box handoffs before it means
+    anything fleet-wide.
+  - [ ] **REMAINS OPEN:** read-certify the remaining ~936. That is the only route left and it is a bounded but
     large job; it should be split across mains by handoff, not attempted in one session.
 
 > All verdicts above are **observations** for backlog-hygiene decisions, not measurement-gating numbers. No production kernel, registry, or handoff checkbox was modified by this audit.
