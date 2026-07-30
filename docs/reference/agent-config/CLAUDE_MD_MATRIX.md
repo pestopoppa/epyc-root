@@ -27,6 +27,9 @@ only the root file while six sub-repo agent files existed unaccounted.
 | `repos/epyc-llama/CLAUDE.md` | Upstream ggml-org stub in the FROZEN production kernel | **DO NOT EDIT.** Project overlay staged at `docs/reference/agent-config/llama-tree-overlay/`; baked in at next promotion (AFC-P6.20) |
 | `repos/epyc-llama/AGENTS.md` | Upstream contribution policy | **DO NOT EDIT.** Scoped by the staged overlay (upstream-PR prep only) |
 
+Known-untracked in the frozen tree (operator-blessed 2026-07-30, relocate at v9 bake):
+`.gitnexusignore`, `tools/math-tools/` — both pre-freeze; no effect on HEAD-pin/verifier.
+
 ## Related Governance Files
 
 | Path | Purpose |

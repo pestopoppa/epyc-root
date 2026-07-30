@@ -316,8 +316,37 @@ gate) remains separately gated on the live_runner compliance evidence.
 - [x] AFC-P6.21 Nested gitnexus subtree resolved ✅ 2026-07-30 — the nested copies were NEWER
   (Jul 10 `run.cjs` runner vs May 22 `npx` at top level), so the newer content was PROMOTED to
   the canonical top-level skills and the nest deleted (not just rm'd — content preserved)
-- [ ] AFC-P6.22 Operator hygiene call: untracked `.gitnexusignore` + `tools/math-tools/` inside
-  the frozen v8 tree — remove or bless (audit D8 note). OPERATOR-ONLY (frozen tree)
+- [x] AFC-P6.22 Frozen-tree untracked files BLESSED by operator decision ✅ 2026-07-30 — both
+  predate the freeze (`tools/math-tools/` 38MB vendored ODE libs, 06-26; `.gitnexusignore`
+  07-22, prevents GitNexus parse-thrash on that tree); neither affects the HEAD-pin or
+  verifier. Documented as known-untracked in the audit doc + CLAUDE matrix; relocation folded
+  into the v9 overlay-bake step (AFC-P6.20)
+
+## AFC-P5.E — n=30 expansion package (operator decision 2026-07-30: expansion BEFORE rollout)
+
+Operator chose the n=30 eval expansion before any compressed-variant rollout. Zero-inference
+prep surfaced an instrument blocker: **12 of 42 existing tasks (FA-05/06/12/13,
+IR-06/08/09/10/13, PC-04/06/12) probe Model-Registry-Standards content that MOVED out of
+ENGINEERING_STANDARDS on 2026-07-30** (now at
+`repos/epyc-inference-research/docs/reference/models/REGISTRY_STANDARDS.md`). Running the suite
+unrepaired against the new source scores those as spurious failures. Task-pool changes are an
+instrument change → suite version bump.
+
+- [ ] AFC-P5.E1 Repair the 12 stale tasks: either retarget them at REGISTRY_STANDARDS.md as a
+  second agent-file under test, or replace with tasks probing current ES content. Bump suite
+  version (`agent_file_compliance_v2`); record the boundary here
+- [ ] AFC-P5.E2 Author the expansion to n=30 per class (+15 forbidden-action, +15 recall,
+  +18 procedure) against the POST-restructure sources (ES + SESSION_LIFECYCLE.md is now a
+  legitimate second target); Q-scorer-blind scoring preserved
+- [ ] AFC-P5.E3 Run the campaign: per model (worker_30B v2, worker_fast, frontdoor,
+  architect_general, ingest_long_context) × level (none/mild/medium/aggressive) via
+  `tests/compliance/agent_file/live_runner.py`; sequential single-server launches under a held
+  `region-lock` claim (stack currently DOWN pending NUMA remediation — launch bench-style
+  servers, never the production stack); incremental per-task persistence; artifacts under
+  `data/compliance/<date>-n30-curve/`
+- [ ] AFC-P5.E4 Re-take the rollout decision on the n=30 evidence (gate:
+  compliance ≥0.95× baseline, procedure ≥0.95×, recall ≥0.90 absolute; post-restructure savings
+  are mild 1.6% / medium 20% / aggressive 39% of words — factor that into worth-it)
 
 **P2 — dedup + extraction (modularization):**
 - [x] AFC-P6.11 D6 duplication set collapsed ✅ 2026-07-30 — canonical homes: checkbox +

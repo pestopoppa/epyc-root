@@ -49,7 +49,7 @@ them, violating its own "constitution wins" rule. Fixed in the v2 draft (ledger 
   **v3**, rebuilt 2026-04-09.
 - `agents/README.md:29-35` model routing = Haiku/Sonnet/Opus only; no Codex
   terra/luna, no Fable — contradicts CLAUDE.md §Codex Delegation Policy.
-- `agents/research-writer-guide.md`: targets nonexistent research_report.md; `@research-writer`
+- **agents/research-writer-guide.md** (retired 2026-07-30): targets nonexistent research_report.md; `@research-writer`
   invocation machinery (`.claude/agents/`) doesn't exist; near-duplicates
   `docs/guides/agent-workflows/research-writer.md` which it itself calls canonical; zero content
   consumers. Retirement candidate on four grounds.
@@ -69,7 +69,7 @@ them, violating its own "constitution wins" rule. Fixed in the v2 draft (ledger 
   `.claude/skills/agent-file-architecture/scripts/validate_agents.py` and
   `scripts/validate/validate_agents_{structure,references}.py` (all pass).
 - Three different exclusion lists: `.claude/skills/agent-file-architecture/references/schema.md` + structure validator exclude
-  `agents/research-writer-guide.md`; the PreToolUse hook `agents_schema_guard.sh` does NOT — any future
+  **agents/research-writer-guide.md** (retired 2026-07-30); the PreToolUse hook `agents_schema_guard.sh` does NOT — any future
   edit to that file is hook-blocked.
 - `.claude/commands/agent-files.md` says "exactly these headers"; the validator checks presence
   only; most role files carry extra H2s — compliant with one surface, not the other.
@@ -136,8 +136,10 @@ SHA), so mitigation is layered: FROZEN warnings added to both sibling repos'
 Related-Repositories blocks; `.claude/commands/agent-governance.md` corrected (it claimed
 llama.cpp governance rides `repos/epyc-llama/CLAUDE.md` — a dead channel); a project overlay
 gets baked into `llama.cpp-experimental` at the next promotion so v9 ships freeze-aware agent
-files (AFC-P6.20). Also noted: the frozen v8 tree carries untracked files (`.gitnexusignore`,
-`tools/math-tools/`) — operator hygiene call (AFC-P6.22).
+files (AFC-P6.20). The tree's untracked files (`.gitnexusignore`, `tools/math-tools/` — both
+pre-freeze, 07-22/06-26) were **BLESSED by operator decision 2026-07-30**: they stay, are
+recorded here and in the CLAUDE matrix as known-untracked, and get relocated at the v9
+overlay bake (AFC-P6.22 closed).
 
 **D9 — orchestrator CLAUDE.md architecture rot (fixed same day).** The architecture diagram was
 the most decayed block audited anywhere: `REPLExecutor` (nonexistent; real:
