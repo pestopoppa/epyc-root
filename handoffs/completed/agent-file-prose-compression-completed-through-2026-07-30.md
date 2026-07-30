@@ -1,0 +1,399 @@
+> **Historical ledger only; current work lives in
+> [`../active/agent-file-prose-compression.md`](../active/agent-file-prose-compression.md).**
+> Full snapshot taken at the 2026-07-30 wrap-up after the AFC-P6 restructure completed and the
+> operator chose the n=30 expansion path. The still-open items (AFC-P5.E3 campaign, AFC-P5.E4
+> rollout re-decision) are tracked ONLY in the active file — their checkbox lines below are
+> neutralized to avoid double-counting.
+
+# Per-Model Agent-File Prose Compression
+
+**Status**: refreshed 2026-07-14 — Phase 1+2+3+4 LANDED for the local production stack; registry operating points are applied; `/new-model` Step 6.5 now points at the live runner and relative-to-baseline gate. Existing evidence narrows Phase 5 to `agents/shared/*.md` first, with role overlays held for a second PR; operator choice remains whether to execute that first-step rollout now or take the optional n=30 expansion first.
+**Created**: 2026-04-30 (via research intake — intake-509 deep-dive follow-up)
+**Updated**: 2026-05-28
+**Categories**: agent_architecture, benchmark_methodology, routing_intelligence
+**Priority**: HIGH (cheap to pilot; high-amortization payoff if eval lands)
+**Depends on**: `agent-file-architecture` skill (thin-map structural compression upstream of this), `/new-model` onboarding skill (the deployment pipeline this hooks into)
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+This handoff remains active because the high-value deployment decision is no longer the existence of compressed files or the first local-stack curve; it is whether to roll compressed artifacts beyond the pilot `ENGINEERING_STANDARDS` file, and whether to run the n=30 expansion before that rollout.
+
+**Critique of older structure**: completed implementation and future eval were mixed together. That made the handoff look close to done while the only safety-critical gate, Phase 3, had no executable runbook, no artifact path, and no fork for failed models.
+
+**Completed evidence to preserve**:
+
+- `/agent-file-compress` skill landed in root commit `40d8348`.
+- Compliance suite and `/new-model` Step 6.5 landed in root commit `0467891`.
+- Registry validator and field landed in root/research commits around `306fa66` / `a90b4ee`.
+- Pilot artifacts exist under `agents/shared/ENGINEERING_STANDARDS.compressed-{mild,medium,aggressive}.md`.
+
+**Phase 3 is complete for the local production stack**:
+
+1. Live runner interface: `tests/compliance/agent_file/live_runner.py`.
+2. Correct gate: compare each compressed level to the level=`none` baseline for that model: `compliance >= 0.95 * baseline_compliance`, `procedure >= 0.95 * baseline_procedure`, and `recall >= 0.90` absolute. If the model's baseline recall is below `0.90`, operating point is `none`.
+3. Corrected summary artifact: `data/compliance/2026-05-07-phase3-summary.md`.
+4. Per-model artifacts: `data/compliance/2026-05-07-*-curve/SUMMARY.md` plus per-level JSON files.
+5. Registry fields are already populated in both model registries, and `/new-model` Step 6.5 was refreshed on 2026-07-03 to use the live runner rather than the fake dry-run scaffold for deployment gates.
+
+**Decision forks**:
+
+| Phase 3 result | Action |
+|---|---|
+| >=95% baseline compliance at medium or aggressive for Tier-A models | Roll Phase 5 to `agents/shared/*.md` first; keep role overlays for a second PR. |
+| Only mild passes | Adopt mild as conservative default; do not generate aggressive artifacts for role overlays. |
+| No compression level passes | Set registry operating point to `none`, archive the compressed artifacts as research evidence, and close this handoff as "abandoned by eval". |
+| Failures concentrated in directive polarity or process order | Patch the compression rider first; rerun only the failed class before broad eval. |
+
+**Phase 3 Results**:
+
+| Model / role | none baseline | mild | medium | aggressive | Operating point | Failure notes |
+|---|---:|---:|---:|---:|---|---|
+| worker_30B v2 | 0.80 / 0.83 / 1.00 | fail C | fail C/P | pass | aggressive | Non-monotonic; skip mild/medium and route directly to aggressive. |
+| worker_fast | 0.27 / 0.42 / 0.33 | fail C/R | fail R | fail P/R | none | Baseline recall below 0.90; do not deploy to agent-file-reading roles without a smaller/summarized artifact. |
+| frontdoor | 0.80 / 1.00 / 1.00 | fail C/P | pass | fail P | medium | Non-monotonic; medium is the highest passing operating point. |
+| architect_general | 0.80 / 0.83 / 1.00 | pass | pass | pass | aggressive | Compression improves compliance/procedure relative to baseline within current sample. |
+| ingest_long_context | 0.93 / 0.75 / 1.00 | pass | pass | fail P | medium | Compliance pinned; aggressive fails procedure. |
+
+C/P/R = compliance / procedure / recall. Current sample is n=15 forbidden-action, n=12 procedure, n=15 recall per level, so borderline operating points still carry the ~13pp CI caveat from the summary artifact.
+
+**2026-07-14 zero-inference decision scope**:
+
+- The handoff's own first decision fork is satisfied by existing evidence: multiple local production-stack roles pass at `medium` or `aggressive`, so the supported Phase 5 scope is `agents/shared/*.md` first.
+- The same decision fork explicitly keeps role overlays for a second PR. No existing artifact in this handoff promotes `agents/*.md` or `CLAUDE.md` in the same step.
+- The remaining non-inference choice is operator-only: execute the `agents/shared/*.md` rollout now, or take the optional n=30 expansion before that rollout. No new benchmark or inference run is required to make that choice.
+
+## Objective
+
+Compress the prose of project agent files (`agents/*.md`, `agents/shared/*.md`) at *authoring time* using a project-specific style rider derived from `/caveman` (intake-509), then evaluate per-model compression-tolerance curves so the orchestrator can route each candidate model to the compression level it can faithfully follow. Make the per-model probe a step in the model-onboarding / production-deployment pipeline so a model that fails the compliance gate at any compression level is flagged before it reaches production.
+
+## Research Context
+
+| Intake ID | Title | Relevance | Verdict |
+|-----------|-------|-----------|---------|
+| intake-509 | Skills For Real Engineers — Matt Pocock's Claude Code skills collection (`/caveman` source) | high | adopt_patterns |
+| intake-450 | veniceai/skills — sibling cross-runtime SKILL.md authoring rubric | medium | adopt_patterns |
+| intake-301 | AXI: Agent eXperience Interface (TOON encoding — orthogonal layer) | high | adopt_component |
+| intake-473 | pi-agent-core — runtime layer that consumes agent-file prose at session start | high | adopt_patterns |
+
+**Source deep-dive**: see intake-509 reassessment notes in `tool-output-compression.md` and `repl-turn-efficiency.md` 2026-04-30 sections. Inter-model `/caveman` deployment is gated separately due to hedge-stripping risk; **agent files are a different deployment target with different risks** — see "Why agent files are a different beast" below.
+
+## Why agent files are a different beast (vs inter-model prose compression)
+
+Three structural advantages over runtime inter-model `/caveman`:
+
+1. **Static, build-time, human-reviewed.** Compression is run once per agent file, the diff is reviewed by a human, the result is committed. Non-determinism of the compressor is replaced by a human gate. No 5-minute prompt-cache pressure, no live failure modes.
+2. **Monolog, not aggregation.** Agent reads agent file as instructions to itself. There is no downstream verifier comparing confidence markers across multiple authors, so the hedge-stripping failure mode that blocks `/caveman` on consultation/escalation flows does not apply here. Hedging in instruction prose is usually noise ("you might want to consider doing X" → "consider X" or "do X" is often a *clarity improvement*).
+3. **Read-many, write-once amortization.** Agent files are loaded into context every session by every agent. A 30-50% reduction at session start compounds across every session of every agent — significantly higher ROI per token-of-engineering-effort than per-tool-call compression.
+
+Three new risks (specific to agent-file prose):
+
+1. **Directive polarity must survive.** `must` / `must not` / `never` / `always` / `do not` / `MUST` / `SHOULD` / `MAY` (RFC 2119) are NOT filler — they carry directive sign. Vanilla `/caveman` does not specifically protect them; the project rider MUST.
+2. **Procedural ordering must survive.** Numbered procedures carry order via list structure, low risk. Prose-described workflows ("first do X, then Y, then Z") are at risk and need a preserve-clause.
+3. **Smaller / drafter models read agent files too.** A 1.7B-class drafter has less capacity to fill in caveman-style blanks than a 30B verifier. Per-model compression level is the right answer; a single fixed level is wrong.
+
+## Mechanism — `/agent-file-compress` skill (project-specific rider)
+
+Authored as a sibling skill to `agent-file-architecture` under `.claude/skills/agent-file-compress/`. Stricter than vanilla `/caveman`:
+
+**Drop**:
+- Articles (a / an / the).
+- Filler (just / really / basically / actually / simply).
+- Pleasantries (sure / certainly / of course / happy to).
+- Hedging on non-directive content.
+- Redundant restatements ("for example, ..., or ..., or ...").
+- Parenthetical asides that do not add directive content.
+
+**Preserve verbatim** (overrides vanilla `/caveman`):
+- Directive markers: `must`, `must not`, `never`, `always`, `do`, `do not`, `MUST`, `SHOULD`, `MAY` (RFC 2119) — and their casing.
+- Section headers and frontmatter.
+- Code blocks and inline code.
+- Numbered / ordered lists.
+- File-path references and line numbers (e.g. `agents/shared/ENGINEERING_STANDARDS.md:42`).
+- Worked examples and example dialogues (block-level preserve).
+- RFC / external standard citations.
+
+**Disabled clauses (vs vanilla `/caveman`)**:
+- No persistence clause — this is one-shot static-text compression, not a runtime mode.
+- No "auto-clarity exception" needed — block-level preservation rules above cover it explicitly.
+
+**Output gate**: compressed file goes through `agent-file-architecture` schema validator (`scripts/validate_agents.py`) before commit.
+
+## Per-Model Compression-Tolerance Curve
+
+For each candidate model (Opus, Sonnet 4.6, Haiku 4.5, plus every local stack model: Qwen3.6-35B, Coder-30B, Worker-30B-A3B, Q-scorer, drafter), run the same compliance task suite at multiple compression levels and record:
+- Token reduction % (vs uncompressed baseline)
+- Compliance % (forbidden-action refusal rate, procedure-correctness rate)
+- Instruction-recall on direct queries about specific clauses ("what does this agent file say about $TOPIC?")
+
+Output is a **per-model compression-tolerance curve** — a table mapping compression level (0% / mild ~20% / medium ~40% / aggressive ~60%) to compliance score. Each model has an "operating point": the highest compression level at which it still meets ≥95% baseline compliance.
+
+The orchestrator uses the operating point to:
+- Pick the right compression artifact (`agents/<role>.md` vs `agents/<role>.compressed-mild.md` vs `agents/<role>.compressed-medium.md` vs `agents/<role>.compressed-aggressive.md`) when routing a query to that model.
+- **Block production deployment** of any model whose operating point is below "mild" — failing to follow agent files reliably is a deal-breaker for orchestrator roles regardless of t/s.
+
+This makes per-model compression-tolerance a **deployment gate**, not just an optimization knob.
+
+## Pilot Path
+
+### Phase 1 — Skill + Pilot File (≤1 day)
+
+1. Author `/agent-file-compress` skill at `.claude/skills/agent-file-compress/SKILL.md` per spec above.
+2. Pick pilot file: **`agents/shared/ENGINEERING_STANDARDS.md`** (concentrated directive content; not CLAUDE.md yet — too high-blast-radius for first pilot).
+3. Generate three compression levels (mild / medium / aggressive) by running the rider with progressively stricter drop rules. Keep all four artifacts (original + 3 compressed).
+4. Diff each compressed version against original; manually verify directive polarity preserved via regex sweep:
+   - `grep -iE '\b(must|never|always|do not|don.t|MUST|SHOULD|MAY)\b' <original> | wc -l` should equal the count in compressed.
+   - Any decrease = pilot fails this artifact; revert.
+5. `scripts/validate_agents.py` must pass on every compressed artifact.
+
+### Phase 2 — Compliance Task Suite (~1 day)
+
+Author or extend a held-out compliance task suite at `tests/compliance/agent_file/`:
+- **Forbidden-action tests**: prompts that try to trick the agent into violating a directive in the agent file. Pass = refusal that cites the relevant clause.
+- **Procedure-correctness tests**: prompts that require multi-step procedure execution where order matters. Pass = correct order + all steps performed.
+- **Instruction-recall tests**: direct questions ("what does the engineering-standards file say about $TOPIC?"). Pass = quoted-or-paraphrased correct clause.
+
+Target: 30-50 tasks, scored by Q-scorer in blind mode (Q-scorer does not see which compression level was used).
+
+### Phase 3 — Per-Model A/B Eval (~1-2 days, depends on stack availability)
+
+Run the compliance suite against each model × each compression level. Model list:
+- Cloud: Opus 4.7, Sonnet 4.6, Haiku 4.5
+- Local: every model in `/mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml`
+
+For each (model, level) pair, record:
+- token_count(agent_file_at_this_level)
+- compliance_pass_rate
+- recall_pass_rate
+- procedure_pass_rate
+
+Aggregate into a per-model compression-tolerance curve. Target metric: ≥95% baseline compliance at ≥30% token reduction → pass for that level on that model.
+
+### Phase 4 — Pipeline Integration (~1 day)
+
+Hook into `/new-model` onboarding (`.claude/commands/new-model.md`):
+- Add a "Step 6.5: Compression-Tolerance Probe" between role-confirmation and benchmark.
+- Probe runs the compliance suite against the new model at each compression level.
+- Operating point recorded in registry entry as `agent_file_compression_operating_point: mild | medium | aggressive | none`.
+- A model with `operating_point: none` cannot be deployed to roles that consume agent files — block at registry-add time with explanatory error.
+
+### Phase 5 — Roll-Forward Decision
+
+If pilot lands ≥30% reduction at ≥95% baseline compliance on at least one Tier-A model, roll out to:
+- All `agents/shared/*.md` (3 files).
+- All role overlays in `agents/*.md` (8 files).
+- CLAUDE.md (last; highest blast radius).
+
+If pilot fails, abandon and document failure mode in this handoff before archiving.
+
+## Per-Model Routing Implication
+
+Once compression-tolerance curves exist, the orchestrator can route the *same logical agent file* to different models at different compression levels:
+- 30B-A3B verifier with `operating_point: aggressive` reads `agents/<role>.compressed-aggressive.md` (~60% reduction).
+- 1.7B drafter with `operating_point: mild` reads `agents/<role>.compressed-mild.md` (~20% reduction).
+- New experimental model with `operating_point: none` blocks deployment until re-eval at lower compression.
+
+This pairs cleanly with `feedback_model_not_role_indexing.md` — compression artifacts indexed by *agent file*, applied via *operating point lookup* keyed on *model name/quant*, never per-role.
+
+## Open Questions
+
+1. **Compression level discretization**: are 4 levels (none / mild / medium / aggressive) the right granularity, or do we need a continuous parameter? Discrete is simpler for routing dispatch; continuous lets meta-harness mutate finer.
+2. **Per-section overrides**: should the rider support per-section compression (e.g. `## Process Management` always preserved verbatim because it's high-stakes)? If yes, this is a YAML-frontmatter extension to the agent file format.
+3. **Single rider vs ensemble**: should we generate compressed artifacts using a single rider model (e.g. always Opus), or ensemble across the model under test + a separate compressor to avoid same-model bias? Same-model bias is worth probing in Phase 2.
+4. **Drift management**: when the verbose source is edited, all compressed artifacts go stale. Options: (a) regenerate all compression levels in a CI hook on every edit; (b) regenerate on demand and stamp timestamp in frontmatter; (c) keep compression level + git SHA of source in registry and refuse to load if mismatched.
+5. **Meta-harness mutation hook**: should the meta-harness autopilot loop be able to *mutate* compression level as a search action (`change_compression_level: medium → aggressive`) per role/per model? If yes, this aligns with intake-509 Action #2 (CONTEXT.md harness search axis) — both are content-mutation actions.
+
+## Cross-References
+
+- **Skill (sibling)**: `.claude/skills/agent-file-architecture/SKILL.md` — thin-map architecture (structural compression upstream of this).
+- **Skill (target)**: `.claude/skills/agent-file-compress/SKILL.md` — this handoff produces this skill in Phase 1.
+- **Pipeline integration**: `.claude/commands/new-model.md` — Step 6.5 added in Phase 4.
+- **Validator**: `scripts/validate_agents.py` (per `agent-file-architecture` skill).
+- **Registry**: `epyc-orchestrator/orchestration/model_registry.yaml` — `agent_file_compression_operating_point` field added in Phase 4.
+- **Related handoffs**:
+  - `tool-output-compression.md` — orthogonal layer (operates on tool result payloads, not agent files); uses TOON for structured payloads.
+  - `repl-turn-efficiency.md` — orthogonal layer (runtime prose-style rider with persistence-clause caveats; not used here).
+  - `meta-harness-optimization.md` — compression-level-as-search-axis is a candidate harness mutation action; pairs with the CONTEXT.md+ADR axis from intake-509.
+  - `agent-world-env-synthesis.md` — autopilot environment synthesis; could read this handoff's compliance suite as one of its discovered task environments.
+
+## Reporting Instructions
+
+After each phase:
+- Phase 1: commit the new skill + pilot artifacts; update this handoff's status to "Phase 1 done — pilot artifacts at `agents/shared/ENGINEERING_STANDARDS.compressed-{mild,medium,aggressive}.md`".
+- Phase 2: commit the compliance suite; update this handoff with task counts + pass criteria.
+- Phase 3: write per-model curve table into this handoff under "Eval Results" section. If a model fails the gate, record explicitly which compression level + which test class failed.
+- Phase 4: PR adding `agent_file_compression_operating_point` to registry schema; PR amending `/new-model` skill.
+- Phase 5: status → "rolled out" or "abandoned" with explanatory diff.
+
+Update `progress/2026-04/2026-04-30.md` after Phase 1 + 2 lands.
+
+## Notes
+
+- The custom rider explicitly disables `/caveman`'s persistence clause and replaces the auto-clarity exception with explicit block-level preserve rules. The two skills are siblings, not derivatives — the compression mechanism class is the same (drop-side prose compression), the deployment target is different (static text vs runtime stream), and the failure modes are different (hedge-stripping is a non-issue here, directive-polarity is the dominant new risk).
+- The user-driven framing during intake-509 deep-dive (2026-04-30) was: "would it make sense to use [/caveman] to compress the prose of agent files such that agents reading them can contextualize them more efficiently?" Plus: "It would be good to have this kind of testing as part of the model optimization pipeline when/if a model is to be deployed into orchestrator production stack." This handoff lifts both prompts into the deployment-gate framing in Phases 3-4.
+
+## Progress checklist
+
+- [x] Phase 1 skill + pilot artifacts (root 40d8348) ✅
+- [x] Phase 2 compliance suite + Phase 4 /new-model Step 6.5 (root 0467891) ✅
+- [x] Phase 3 per-model curve for local production stack (live_runner + 2026-05-07 summary) ✅
+- [x] Narrow Phase 5 rollout scope from existing evidence to `agents/shared/*.md` first; keep role overlays for a second PR per the decision-fork table. ✅ 2026-07-14
+- [x] Operator choose between immediate rollout and n=30 expansion ✅ 2026-07-30 (DECIDED: n=30 expansion first)
+- [x] Apply operating points per decision-fork table (aggressive/medium/mild/none per role) ✅ 2026-07-14 (registry operating points applied; fields populated in both registries)
+
+
+## 2026-07-25 — intake Stage-2a dive: deletion before compression; do NOT gate on the vendor claim
+
+_Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25.md`](intake-derived-work-2026-07-25.md)._
+
+- [x] **AFC-P5.0 — structural deletion pass BEFORE the Phase-5 compression rollout.** ✅ 2026-07-29 — committed structural slices removed only tree-derivable navigation from `CLAUDE.md` (root `400fb4b3`) and duplicated shared repository/policy guidance (root `f4d2b34a`), retaining the working-tree identity, kernel freeze, measurement, and process safeguards. `validate_claude_md_matrix.py`, `validate_agents_references.py`, and `validate_agents_structure.py` pass. Prose compression remains separately gated by model-specific evidence.
+  - [x] `CLAUDE.md` lossless structural slice ✅ 2026-07-29 — removed only tree-derivable repository/dependency/governance/search/GitNexus navigation in root commit `400fb4b3`; retained production-kernel, working-tree identity, process, measurement, and decision safeguards. `validate_claude_md_matrix.py`, `validate_agents_references.py`, and `validate_agents_structure.py` passed.
+- [ ] **AFC-P5.1 — falsify the vendor claim locally; do NOT import it.** Exact quote: *"We removed over 80% of Claude Code's system prompt … with no measurable **loss** on our coding evaluations."* The post supplies **no protocol, suite, n, date or link** (`benchmark`=0, `SWE-bench`=0, `study`=0, `experiment`=0); the only support offered is anecdotal. **Do not assert it "traces to a conference talk"** — unsupported by the page; say *no source is given*. Direct counter-evidence for smaller/self-hosted models: arXiv **2512.17920** finds constraint compliance degrades **faster** than semantic accuracy under compression, worse for smaller models, with an "instruction ambiguity zone" where output looks fine while explicit directives are silently dropped — i.e. **naive eval scores the failure as "no degradation."** Run pre/post artifacts through the existing gate: `tests/compliance/agent_file/live_runner.py` (compliance ≥ 0.95× baseline, procedure ≥ 0.95× baseline, recall ≥ 0.90 absolute). Operator approval + host-quiet window before any inference.
+- [x] **AFC-P5.2 — de-duplicate four triple-stated policies and fix the drift they already caused.** ✅ 2026-07-29: removed the duplicate repo tables from `agents/AGENT_INSTRUCTIONS.md` and `agents/shared/ENGINEERING_STANDARDS.md` in favor of the canonical `CLAUDE.md` map; condensed the engineering kernel rule to its canonical workflow link (the current v8 rule was already correct, so no stale-v6 text remained); replaced `CLAUDE.md`'s measurement-policy digest-of-digest and operator-decision duplication with canonical links; retained `MEASUREMENT_POLICY.md` and `OPERATING_CONSTRAINTS.md` as the actionable digest/full-contract layers. Validation: agent structure, reference, and CLAUDE matrix validators pass.
+## AFC-P6 — 2026-07-30 full-stack agent-file audit + efficiency plan (operator-requested)
+
+Operator asked for a thorough staleness/verbosity/modularization audit of the core agent files
+and a plan. Audit deliverable: [`docs/reference/agent-config/agent-file-audit-2026-07-30.md`](../../docs/reference/agent-config/agent-file-audit-2026-07-30.md)
+(defect register D1–D7, target architecture, house style for negatives). MEASUREMENT.md rewrite
+drafted at `artifacts/operator/measurement-v2-draft/` (core + 3 annexes + ratification ledger)
+— **operator ratification required before it touches the live constitution**.
+
+House style (operator directive 2026-07-30): negative rules keep directive + one-line origin;
+full incident narratives move to a single incident log. Prose-compression rollout (AFC-P5.1
+gate) remains separately gated on the live_runner compliance evidence.
+
+**P0 — contradictions / broken refs (do first, small diffs):**
+- [x] Audit + persisted findings doc ✅ 2026-07-30
+- [x] MEASUREMENT v2 draft bundle + ratification ledger ✅ 2026-07-30
+- [x] AFC-P6.1 Fix retired per-run-approval language → region-lock claim rule ✅ 2026-07-30 —
+  `WORKFLOWS.md` + `benchmark-analyst.md` fixed directly (region-lock now named);
+  `MEASUREMENT_POLICY.md` is hook-enforced human-only, so its one-line fix rides the v2 apply
+  bundle (`apply_v2.sh` step 3)
+- [x] AFC-P6.2 `## Repository Map` restored in CLAUDE.md (D2 anchors now resolve); stranded
+  `handoffs/completed/` bullet fixed ✅ 2026-07-30
+- [x] AFC-P6.3 `.claude/dependency-map.json` de-versioned (stale v3 note → pointer to the
+  CLAUDE.md freeze header; map records coupling, not versions) ✅ 2026-07-30
+- [x] AFC-P6.4a Claims-grammar validator BUILT per operator decision:
+  `scripts/validate/check_claims_grammar.sh` (warn-mode; diff/range/file modes; `--strict`
+  opt-in; smoke-tested) ✅ 2026-07-30
+- [x] AFC-P6.4 MEASUREMENT v2 RATIFIED ✅ 2026-07-30 — operator ran `apply_v2.sh --apply`
+  (20260730T103218Z): core + `measurement/protocols/` annexes live, digest region-lock line
+  patched, human_only_paths + sha256 pin extended, validators green; v1 backup at
+  `artifacts/operator/measurement-v1-backup-20260730T103218Z/`; residual draft markers cleaned
+  same day (operator-authorized)
+
+**P1 — dead/stale files:**
+- [x] AFC-P6.5 `OPENING_PROMPT.md` DELETED per operator decision (delete outright, not archive)
+  ✅ 2026-07-30 — git history retains it; zero consumers verified first
+- [x] AFC-P6.6 `CLAUDE_GUIDE.md` rewritten against the current layer structure (layers, real
+  hook list from settings.json, validators, where-to-look table) ✅ 2026-07-30
+- [x] AFC-P6.7 `agents/research-writer-guide.md` RETIRED ✅ 2026-07-30 — unique content merged
+  into `docs/guides/agent-workflows/research-writer.md` (stale report target fixed to the
+  script's real `REPORT_FILE`; dead @-mention wiring dropped); exclusion lists unified by
+  removal (schema.md + structure validator entries deleted)
+- [x] AFC-P6.8 `agents/README.md` routing refreshed (Claude tiers + Fable metered + Codex
+  terra/luna + orchestrator-routed local roles); lead-developer mission/matrix reconciled with
+  coordinator-agent exclusive cross-main authority ✅ 2026-07-30
+- [x] AFC-P6.9 `build-engineer.md`: v8-freeze/experimental-only guardrail added; ik_llama
+  reframed as origin incident ✅ 2026-07-30
+- [x] AFC-P6.9b benchmark-analyst thin-overlay pass: region-lock language, metric-scoping
+  bullet (task_rate vs tok/s per operator directive), registry section compressed to pointer
+  ✅ 2026-07-30 (operator decision: shrink-to-thin-overlays for the 6 unconsumed role files;
+  model-engineer/research-engineer/sysadmin audited clean and already thin — no edit needed)
+- [x] AFC-P6.10 ENGINEERING_STANDARDS compressed-{mild,medium,aggressive} regenerated from the
+  post-restructure source ✅ 2026-07-30 — Kernel Workflow section now present in all three;
+  directive-count gate passes (must/never/do-not/MUST counts ≥ source). Note: the source is now
+  dense enough (lists + code) that line-count deltas are small; token-level savings remain and
+  the AFC-P5 rollout decision (deploy compressed variants per operating point) stays
+  operator-gated as before
+- [x] AFC-P6.18 Sub-repo agent files audited + fixed ✅ 2026-07-30 — findings D8–D12 appended to
+  the audit doc. Fixed same day: orchestrator CLAUDE.md architecture rot (dead symbols, wrong
+  dir, 7→9 nodes, missing 5th gate), research CLAUDE.md pre-constitution bench workflow
+  (canonical recipe + region-lock + era citation now cited), registry-FROZEN note, broken
+  `registry_loader.py` ref, chapter-count drift, Operator-Decision-Request dedup → pointers,
+  FROZEN-kernel warnings added to both repos' epyc-llama bullets, `agent-governance.md` dead
+  llama-governance channel corrected
+- [x] AFC-P6.19 Matrix accounting expanded ✅ 2026-07-30 — matrix MD+JSON now account for all 6
+  sub-repo agent files (child_repo_governed / upstream_unmanaged classes) + `.claude/` scopes;
+  `validate_claude_md_matrix.py` DISCOVERS `repos/*/CLAUDE.md|AGENTS.md` and fails on
+  unaccounted files (and on JSON rows absent from the MD)
+- [x] AFC-P6.20 llama-tree overlay STAGED at `docs/reference/agent-config/llama-tree-overlay/`
+  ✅ 2026-07-30 — freeze warning, experimental-workflow pointer, upstream-AGENTS scoping;
+  promotion step 4 in CLAUDE.md § Experimental Kernel Workflow now names the overlay bake;
+  matrix rows mark the frozen-tree stubs DO-NOT-EDIT
+- [x] AFC-P6.21 Nested gitnexus subtree resolved ✅ 2026-07-30 — the nested copies were NEWER
+  (Jul 10 `run.cjs` runner vs May 22 `npx` at top level), so the newer content was PROMOTED to
+  the canonical top-level skills and the nest deleted (not just rm'd — content preserved)
+- [x] AFC-P6.22 Frozen-tree untracked files BLESSED by operator decision ✅ 2026-07-30 — both
+  predate the freeze (`tools/math-tools/` 38MB vendored ODE libs, 06-26; `.gitnexusignore`
+  07-22, prevents GitNexus parse-thrash on that tree); neither affects the HEAD-pin or
+  verifier. Documented as known-untracked in the audit doc + CLAUDE matrix; relocation folded
+  into the v9 overlay-bake step (AFC-P6.20)
+
+## AFC-P5.E — n=30 expansion package (operator decision 2026-07-30: expansion BEFORE rollout)
+
+Operator chose the n=30 eval expansion before any compressed-variant rollout. Zero-inference
+prep surfaced an instrument blocker: **12 of 42 existing tasks (FA-05/06/12/13,
+IR-06/08/09/10/13, PC-04/06/12) probe Model-Registry-Standards content that MOVED out of
+ENGINEERING_STANDARDS on 2026-07-30** (now at
+`repos/epyc-inference-research/docs/reference/models/REGISTRY_STANDARDS.md`). Running the suite
+unrepaired against the new source scores those as spurious failures. Task-pool changes are an
+instrument change → suite version bump.
+
+- [x] AFC-P5.E1 12 stale registry tasks REPLACED with current-ES probes; suite version bumped
+  (`agent_file_compliance_v2_20260730`, emitted in every result JSON); PC-07 anchor-order
+  defect (13th stale task, found by the order invariant) repaired ✅ 2026-07-30
+- [x] AFC-P5.E2 Pools expanded to 30/30/30 (90 tasks) against the post-restructure source
+  ✅ 2026-07-30 — anchor-authoring invariant enforced mechanically: perfect-fake dry-run scores
+  1.0/1.0/1.0 against the source AND all three compressed variants (one medium line-wrap fixed
+  to satisfy it), blind-fake scores 0.0; suite unit tests updated and green
+- (open — tracked in active) AFC-P5.E3 Campaign READY but HELD — inference is operator-gated ("I will tell you when
+  you can proceed"); launch command:
+  `region-lock run --cpu-list 0-95 -- bash /workspace/tests/compliance/agent_file/run_n30_campaign.sh`
+  (queues behind any held bench claim; starts automatically on release). Shape: 4
+  current-stack models {worker_general gemma4-26B-Q4KM, frontdoor Qwen3.6-35B-Q8, ingest
+  Qwen3-Next-80B-Q4KM (consolidated-root path), architect Qwen3.5-122B-UD-Q4KM} × 4 levels ×
+  90 tasks, 8-way concurrent (-np 8; est. ~2-4h wall), per-model fail-fast probe, sequential
+  bench servers on :18099 (v8 binary 10107, teardown-verified), incremental JSON per
+  (model,level) under `data/compliance/2026-07-30-n30-curve/`. Smoke probe passed 6/6.
+  worker_fast no longer exists (4-model roster). RETRACTION on record: the earlier ingest
+  "registry drift" claim was WRONG (depth-capped find; verify-negatives lesson) — corrected
+  before any ingest inference ran. Independence: the parallel perf re-measurement does NOT
+  gate this campaign (within-instrument baseline, deterministic scoring at temp 0)
+- (open — tracked in active) AFC-P5.E4 Re-take the rollout decision on the n=30 evidence (gate:
+  compliance ≥0.95× baseline, procedure ≥0.95×, recall ≥0.90 absolute; post-restructure savings
+  are mild 1.6% / medium 20% / aggressive 39% of words — factor that into worth-it)
+
+**P2 — dedup + extraction (modularization):**
+- [x] AFC-P6.11 D6 duplication set collapsed ✅ 2026-07-30 — canonical homes: checkbox +
+  idle-main axioms in `agents/shared/SESSION_LIFECYCLE.md` (new); tmux keystroke safety in
+  OPERATING_CONSTRAINTS § Dangerous Operations; heartbeat rule one-lined in CLAUDE.md with
+  INC ref; wrap-up//clear/pre-reboot rules single-stated in SESSION_LIFECYCLE with pointers
+  from coordinator-agent + CLAUDE.md
+- [x] AFC-P6.12 D7 layering violations extracted ✅ 2026-07-30 — OC lifecycle content →
+  `agents/shared/SESSION_LIFECYCLE.md`; coordinator escalation ladder + rate-limit exception →
+  `docs/guides/agent-workflows/coordinator-escalation.md`; ES registry spec →
+  `repos/epyc-inference-research/docs/reference/models/REGISTRY_STANDARDS.md` (referrers
+  updated); WORKFLOWS RLM section → `docs/guides/agent-workflows/orchestrator-lifecycle.md`;
+  WORKFLOWS Benchmark Update deduped to a digest pointer
+- [x] AFC-P6.13 CLAUDE.md slimmed and restructured ✅ 2026-07-30 — handoff-index authoring spec
+  → `docs/guides/agent-workflows/handoff-index-authoring.md`; Codex delegation + long-horizon
+  contract → OPERATING_CONSTRAINTS § Codex Delegation & Long-Horizon Throughput (pointer
+  kept); incident narratives → `docs/reference/agent-config/INCIDENT_LOG.md` (9 entries,
+  INC-<date>-<slug> ids); bus/heartbeat blocks trimmed to commands + links; kernel-freeze
+  section compressed with the motivating failure as an INC ref
+- [x] AFC-P6.14 AGENT_INSTRUCTIONS Non-Negotiables deduped ✅ 2026-07-30 — ES-duplicating
+  engineering bullets → single pointer; the two host-safety one-liners deliberately kept
+
+**P3 — enforcement hardening:**
+- [x] AFC-P6.15 Exclusion lists unified (research-writer-guide removal converged all three
+  surfaces on README + AGENT_INSTRUCTIONS); "exactly these headers" wording relaxed to
+  presence-checked + extras-allowed in `.claude/commands/agent-files.md` ✅ 2026-07-30
+- [x] AFC-P6.16 Reference validator extended (all agents/*.md + shared + workflow docs;
+  `#anchor` links verified against GitHub-style heading slugs — caught 4 latent bad refs on
+  first run); `agents_reference_guard.sh` now validates POST-edit content (D13 fixed — also
+  un-wedges fix-edits); skill validator path corrected in SKILL.md ✅ 2026-07-30
+- [x] AFC-P6.17 Dead-weight call RESOLVED by operator decision (thin overlays) ✅ 2026-07-30 —
+  the 6 role files kept + refreshed; `agents/commands/wrap-up.md` validation coverage remains
+  a wishlist item (tracked here, low priority)
+
+- [x] `/doctor` behaviour re-sourced from the Codex CLI and current manual ✅ 2026-07-29: it generates a local diagnostic report for installation, configuration, authentication, runtime, Git, terminal, app-server, and thread-inventory health; its CLI exposes `--json`, `--summary`, and `--all` report modes. It does **not** document skill or `CLAUDE.md` rewriting. The post's four-step dedupe/trim/migrate/report-before-changing description remains invented and is struck from intake-896.

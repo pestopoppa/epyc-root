@@ -2,8 +2,60 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-07-29 (adds the coordinator-daemon/coordinator-agent split, structural bus routing, and the recurring polarity defect class; prior transport-only coordinator acceptance retained)
-**Sources**: 67+ documents
+**Last compiled**: 2026-07-30 (adds the full-stack agent-file audit and restructure: layered context architecture, incident-log house style, enforcement hardening, and the frozen-tree governance gap; prior coordination-plane update retained)
+**Sources**: 70+ documents
+
+## Compiled Update — 2026-07-30 the agent-file stack: audited, restructured, enforced
+
+An operator-requested full audit of the agent-context surface (root entry files,
+`agents/` role layer, `agents/shared/` policy layer, sub-repo CLAUDE/AGENTS files,
+MEASUREMENT constitution) produced a 13-defect register (D1–D13) and a same-day
+restructure that landed net −214 lines while ADDING three canonical documents.
+Confidence: `verified` — every defect was fact-checked against repo ground truth
+before filing, and every fix was validated by the (newly hardened) validators.
+
+### Key Findings (2026-07-30)
+
+- **The context architecture is now explicitly layered**: per-session auto-load
+  (root `CLAUDE.md`, with `AGENTS.md` symlinked; sub-repo CLAUDE.md for sessions
+  rooted there) → read-order shared policy (`agents/shared/`, now including the
+  extracted `SESSION_LIFECYCLE.md` as the canonical home of the wrap-up//clear/
+  pre-reboot/idle-main axioms) → thin role overlays → on-demand operational docs
+  (`docs/guides/agent-workflows/`). Duplication that had accreted across five
+  files per rule (checkbox discipline ×5, idle-main ×5) collapsed to single
+  canonical statements with pointers.
+  [agent-file-audit-2026-07-30](../docs/reference/agent-config/agent-file-audit-2026-07-30.md)
+- **Negative rules keep their teeth, not their narratives.** House style
+  (operator-directed): every incident-derived prohibition retains its directive
+  plus a one-line `origin: INC-<id>` pointer; the full blow-by-blow lives in a
+  single incident log (9 entries at creation). The rule survives compression;
+  the story stops taxing every session's context.
+  [INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md)
+- **The worst finding was an inversion of protection**: the FROZEN production
+  llama.cpp tree — the highest-stakes tree in the project — had *only* upstream
+  ggml-org agent files, which invite building in the tree and mandate the
+  opposite commit conventions. It cannot be fixed in place (HEAD is pinned by
+  the freeze verifier), so a project overlay is staged for bake-in at the next
+  kernel promotion, and both sibling repos' auto-load files now carry FROZEN
+  warnings. The governance matrix was expanded from one governed file to the
+  full discovered surface, with a validator that discovers `repos/*/CLAUDE.md`
+  and fails on unaccounted files.
+  [CLAUDE_MD_MATRIX](../docs/reference/agent-config/CLAUDE_MD_MATRIX.md)
+- **Enforcement now validates what agents will write, not what they wrote.** The
+  reference guard was rebuilt to reconstruct and scan POST-edit content (its
+  pre-edit scan both missed newly-introduced bad references and wedged the very
+  edit that fixed one); the reference validator gained `#anchor` slug checking
+  (GitHub-style, including the double-hyphen-for-`&` subtlety) and caught four
+  latent bad references on its first run.
+  [agent-file-prose-compression](../handoffs/active/agent-file-prose-compression.md)
+- **The compliance suite is a deployment-gate instrument and drifts like one.**
+  Restructuring the source file silently invalidated 29% of the suite's tasks
+  (they probed content that moved out) — caught in zero-inference prep, fixed as
+  a versioned instrument bump (`agent_file_compliance_v2_20260730`, 30/30/30
+  pools) with a mechanical anchor invariant: the perfect-fake must score 1.0 at
+  every compression level, so a live failure measures the model, never anchor
+  availability.
+  [agent-file-prose-compression](../handoffs/active/agent-file-prose-compression.md)
 
 ## Compiled Update — 2026-07-29 the coordination plane: two tiers, and one defect class
 

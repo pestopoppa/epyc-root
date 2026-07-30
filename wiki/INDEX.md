@@ -1,5 +1,18 @@
 # Project Wiki — Knowledge Index
 
+**Manifest reconciled**: 2026-07-30 (scoped pass) — of 109 changed sources, the
+*settled* knowledge from the day's agent-file/measurement track was compiled into
+**Agent Architecture** (full-stack agent-file audit D1–D13, layered context
+architecture, incident-log house style, enforcement hardening, frozen-tree
+governance gap) and **Benchmark Methodology** (MEASUREMENT v2 core+annex
+ratification, §1 metric scoping, P-BENCH-PLACEMENT-1, the retracted April
+exemplar). The ~83 in-flight campaign handoff sources (NUMA/N24, batched-decode,
+E5/E8) were **deliberately deferred, not compiled**: their numbers were revised
+the same day (several suspended banners), and compiling mid-revision would mint
+claims needing retraction — the exact failure the 2026-07-29 status-weighted
+pass was designed to avoid. `.last_compile` NOT advanced, so the deferred
+sources re-surface at the next controlled pass. Prior notes retained below.
+
 **Manifest reconciled**: 2026-07-29 (third pass, backlog clearance) — the 7 sources
 queued since the 12:24Z compile, and deferred by three consecutive wrap-ups, were
 compiled into four articles: **Inference Serving** (the GPU shadow lane — built,

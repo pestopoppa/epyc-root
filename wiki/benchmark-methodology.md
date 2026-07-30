@@ -2,8 +2,53 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-07-29 (records that the E8 quality baseline still has NO signature and no applied baseline, and that E5 has no decision-grade cell; prior 2026-07-27 leakage traps and 2026-07-26 capture-integrity updates retained)
-**Sources**: 97+ documents
+**Last compiled**: 2026-07-30 (MEASUREMENT v2 ratified: core + annex constitution, explicit metric scoping, P-BENCH-PLACEMENT-1 registered, P-BENCH-3 conformed, retracted April exemplar replaced; prior E8/E5 status update retained)
+**Sources**: 100+ documents
+
+## Compiled Update — 2026-07-30 the constitution restructured, and a placement protocol born from a defect
+
+MEASUREMENT.md v2 was operator-ratified (apply 20260730T103218Z): a lean core
+constitution plus three protocol-family annexes under `measurement/protocols/`,
+all inside the same human-only trust boundary (`human_only_paths.yaml` extended
+and re-pinned). Confidence: `verified` — the ratification receipts, the delta
+ledger, and the same-day conformance amendment are all in-repo.
+
+### Key Findings (2026-07-30)
+
+- **Metric scoping is now explicit (§1)**: `task_rate` is the autopilot-objective
+  axis and the only speed metric where tokens aren't commensurable across arms;
+  tokens/s is the instrument-level, fully decision-grade metric for model/kernel
+  benches. v1's "t/s is telemetry only" was always scoped to the autopilot
+  objective — v2 says so. Same-day lesson: a new scoping section over legacy
+  protocol cards needs a reconciliation pass — P-BENCH-3's carried-over tasks/h
+  mandate contradicted §1 until a conformance amendment (found by a parallel
+  session, verified, ratified) made tok/s primary with tasks/h as a secondary
+  orchestration readout, never the ranking key.
+  [MEASUREMENT.md](../MEASUREMENT.md)
+- **v2 fixed a governance inversion**: two operator-ratified 2026-07-27 policies
+  (deterministic replay before regeneration; consolidated apply-time
+  ratification) lived only in the agent digest while the constitution — whose
+  own rule is "the constitution wins" — never absorbed them. The stale era-table
+  copy (missing E4-qcore/E6/E7/E8) was replaced by a pointer to the append-only
+  registry, and the phantom claims-grammar validator was built for real
+  (warn-mode, diff-scoped).
+  [RATIFICATION_LEDGER](../artifacts/operator/measurement-v2-draft/RATIFICATION_LEDGER.md)
+- **P-BENCH-PLACEMENT-1 exists because every other protocol was satisfied while
+  production served at a fraction of canonical speed** (the 2026-07-30 NUMA
+  placement defect): placement — CPU affinity, NUMA memory policy, mmap mode,
+  instance count, slot concurrency — was an axis P-BENCH-1/2/3 simply did not
+  constrain. Its gates encode the day's hard lessons: first-touch-only
+  interleave makes warm re-tests silently re-measure the previous arm's
+  placement; shared mmap places pages once for the whole fleet (start-order
+  dependence); a wall-clock rate is never a decode rate; every arm runs the
+  production acceleration recipe.
+  [bench-cpu annex](../measurement/protocols/bench-cpu.md)
+- **Exemplars are claims too.** The §3 grammar exemplar (`27.06 t/s`, April) was
+  retracted on evidence — it predated the NPS4 reboot and its source CSV was a
+  spec-off baseline posing as a production figure — and replaced by a
+  production-recipe P-BENCH-PLACEMENT-1 figure with the retraction preserved
+  inline as an append-style comment.
+  [ratify_p_bench_placement_1_v2.sh](../artifacts/operator/ratify_p_bench_placement_1_v2.sh)
 
 ## Compiled Update — 2026-07-29 two campaigns that have produced instruments, not results
 

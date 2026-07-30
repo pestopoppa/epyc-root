@@ -62,7 +62,7 @@ These handoffs are still active but currently sit behind specific evidence, mode
 
 | Handoff | Current role | Next action |
 |---|---|---|
-| [agent-file-prose-compression.md](agent-file-prose-compression.md) | Static agent-file compression pilot; Phase 1-4 are landed for the local production stack, with registry operating points applied. | Decide Phase 5 rollout scope or run the optional n=30 expansion before broad compressed-artifact rollout. |
+| [agent-file-prose-compression.md](agent-file-prose-compression.md) | Compacted 2026-07-30: AFC-P6 agent-file restructure complete; suite v2 (30/30/30) landed; operator chose n=30-expansion-before-rollout. Completed history in the dated sibling under `../completed/`. | Run the HELD n=30 campaign when the operator releases inference (AFC-P5.E3), then re-take the rollout decision on that evidence (E4). |
 | [integration-test-coverage.md](integration-test-coverage.md) | Active test-gap backlog after Phases 1-4 compaction. | Add narrow integration tests only when a current failing surface or coverage tranche justifies it. |
 | [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | Formalizer evaluation gate. | Check model artifacts, then run the S4 mini-protocol. |
 | [per-request-reasoning-budget.md](per-request-reasoning-budget.md) | Hybrid SSM/MoE reasoning-budget investigation. | Steps 3-4 need a running server; keep code changes gated by reproduction. |
