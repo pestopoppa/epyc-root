@@ -339,15 +339,20 @@ instrument change → suite version bump.
   ✅ 2026-07-30 — anchor-authoring invariant enforced mechanically: perfect-fake dry-run scores
   1.0/1.0/1.0 against the source AND all three compressed variants (one medium line-wrap fixed
   to satisfy it), blind-fake scores 0.0; suite unit tests updated and green
-- [~] AFC-P5.E3 Campaign RUNNING (launched 2026-07-30 ~13:45Z under a held region-lock claim
-  on q0-q3, role=bench): 4 current-stack models {worker_general gemma4-26B-Q4KM, frontdoor
-  Qwen3.6-35B-Q8, ingest Qwen3-Next-80B-IQ2_M, architect Qwen3.5-122B-UD-Q4KM} × 4 levels ×
-  90 tasks via `tests/compliance/agent_file/run_n30_campaign.sh` (sequential bench-style
-  servers on :18099, v8 binary 10107, teardown-verified); smoke probe passed 6/6 at ~19s/task;
-  incremental JSON per (model,level) under `data/compliance/2026-07-30-n30-curve/`. NOTE:
-  worker_fast no longer exists (retired with the worker swap); registry drift found — ingest
-  registry path names Q4_K_M but only IQ2_M exists on disk (campaign uses IQ2_M, flag for
-  registry maintenance)
+- [~] AFC-P5.E3 Campaign QUEUED behind the parallel `shapes-prodopt` bench claim (relaunched
+  2026-07-30 ~14:00Z; region-lock q0-q3 role=bench serializes us — starts automatically on
+  release): 4 current-stack models {worker_general gemma4-26B-Q4KM, frontdoor Qwen3.6-35B-Q8,
+  ingest Qwen3-Next-80B-Q4KM, architect Qwen3.5-122B-UD-Q4KM} × 4 levels × 90 tasks via
+  `tests/compliance/agent_file/run_n30_campaign.sh` (sequential bench-style servers on :18099,
+  v8 binary 10107, teardown-verified); smoke probe passed 6/6 at ~19s/task; incremental JSON
+  per (model,level) under `data/compliance/2026-07-30-n30-curve/`. worker_fast no longer
+  exists (retired with the worker swap — 4-model roster). RETRACTION: the earlier "registry
+  drift" claim about the ingest path was WRONG — the Q4_K_M exists under the
+  `lmstudio/models/` root (my find was depth-capped; verify-negatives lesson); campaign
+  corrected to the production Q4_K_M artifact before any ingest inference ran. Independence
+  note: the parallel session's performance-number re-measurement does NOT gate this campaign —
+  the compliance gate's baseline is within-instrument (each model's own level=none score),
+  deterministic scoring at temp 0
 - [ ] AFC-P5.E4 Re-take the rollout decision on the n=30 evidence (gate:
   compliance ≥0.95× baseline, procedure ≥0.95×, recall ≥0.90 absolute; post-restructure savings
   are mild 1.6% / medium 20% / aggressive 39% of words — factor that into worth-it)
