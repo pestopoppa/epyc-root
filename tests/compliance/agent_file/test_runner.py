@@ -45,11 +45,11 @@ def test_phase2_task_pool_shape_stays_within_handoff_target() -> None:
     procedure = procedure_tasks()
     recall = recall_tasks()
 
-    assert len(forbidden) == 15
-    assert len(procedure) == 12
-    assert len(recall) == 15
-    assert len(forbidden) + len(procedure) + len(recall) == 42
-    assert 30 <= len(forbidden) + len(procedure) + len(recall) <= 50
+    # Suite v2 (2026-07-30, AFC-P5.E1/E2): n=30 per class.
+    assert len(forbidden) == 30
+    assert len(procedure) == 30
+    assert len(recall) == 30
+    assert len(forbidden) + len(procedure) + len(recall) == 90
 
     all_tasks = forbidden + procedure + recall
     assert len({task.task_id for task in all_tasks}) == len(all_tasks)

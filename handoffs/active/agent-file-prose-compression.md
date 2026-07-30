@@ -332,18 +332,22 @@ ENGINEERING_STANDARDS on 2026-07-30** (now at
 unrepaired against the new source scores those as spurious failures. Task-pool changes are an
 instrument change → suite version bump.
 
-- [ ] AFC-P5.E1 Repair the 12 stale tasks: either retarget them at REGISTRY_STANDARDS.md as a
-  second agent-file under test, or replace with tasks probing current ES content. Bump suite
-  version (`agent_file_compliance_v2`); record the boundary here
-- [ ] AFC-P5.E2 Author the expansion to n=30 per class (+15 forbidden-action, +15 recall,
-  +18 procedure) against the POST-restructure sources (ES + SESSION_LIFECYCLE.md is now a
-  legitimate second target); Q-scorer-blind scoring preserved
-- [ ] AFC-P5.E3 Run the campaign: per model (worker_30B v2, worker_fast, frontdoor,
-  architect_general, ingest_long_context) × level (none/mild/medium/aggressive) via
-  `tests/compliance/agent_file/live_runner.py`; sequential single-server launches under a held
-  `region-lock` claim (stack currently DOWN pending NUMA remediation — launch bench-style
-  servers, never the production stack); incremental per-task persistence; artifacts under
-  `data/compliance/<date>-n30-curve/`
+- [x] AFC-P5.E1 12 stale registry tasks REPLACED with current-ES probes; suite version bumped
+  (`agent_file_compliance_v2_20260730`, emitted in every result JSON); PC-07 anchor-order
+  defect (13th stale task, found by the order invariant) repaired ✅ 2026-07-30
+- [x] AFC-P5.E2 Pools expanded to 30/30/30 (90 tasks) against the post-restructure source
+  ✅ 2026-07-30 — anchor-authoring invariant enforced mechanically: perfect-fake dry-run scores
+  1.0/1.0/1.0 against the source AND all three compressed variants (one medium line-wrap fixed
+  to satisfy it), blind-fake scores 0.0; suite unit tests updated and green
+- [~] AFC-P5.E3 Campaign RUNNING (launched 2026-07-30 ~13:45Z under a held region-lock claim
+  on q0-q3, role=bench): 4 current-stack models {worker_general gemma4-26B-Q4KM, frontdoor
+  Qwen3.6-35B-Q8, ingest Qwen3-Next-80B-IQ2_M, architect Qwen3.5-122B-UD-Q4KM} × 4 levels ×
+  90 tasks via `tests/compliance/agent_file/run_n30_campaign.sh` (sequential bench-style
+  servers on :18099, v8 binary 10107, teardown-verified); smoke probe passed 6/6 at ~19s/task;
+  incremental JSON per (model,level) under `data/compliance/2026-07-30-n30-curve/`. NOTE:
+  worker_fast no longer exists (retired with the worker swap); registry drift found — ingest
+  registry path names Q4_K_M but only IQ2_M exists on disk (campaign uses IQ2_M, flag for
+  registry maintenance)
 - [ ] AFC-P5.E4 Re-take the rollout decision on the n=30 evidence (gate:
   compliance ≥0.95× baseline, procedure ≥0.95×, recall ≥0.90 absolute; post-restructure savings
   are mild 1.6% / medium 20% / aggressive 39% of words — factor that into worth-it)

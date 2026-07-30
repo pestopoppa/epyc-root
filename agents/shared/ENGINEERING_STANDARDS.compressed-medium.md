@@ -46,8 +46,8 @@ Within `epyc-root`:
 ## Kernel Workflow (Production Immutability)
 
 Production kernels frozen: do not modify, rebase, build, or commit to them without explicit
-operator authorization. Kernel work: fresh `llama.cpp-experimental` branch; ship by versioning
-past production. Full workflow:
+operator authorization. Kernel work: fresh `llama.cpp-experimental` branch;
+ship by versioning past production. Full workflow:
 [CLAUDE.md](../../CLAUDE.md#experimental-kernel-workflow--production-kernel-immutability).
 
 ## Incremental Persistence (Mandatory for Eval/Benchmark Scripts)

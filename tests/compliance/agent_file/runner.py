@@ -40,6 +40,12 @@ from tests.compliance.agent_file.procedure_correctness import all_tasks as proce
 LLMCall = Callable[[str, str], str]
 """(agent_file_text, prompt) -> model response text."""
 
+SUITE_VERSION = "agent_file_compliance_v2_20260730"
+"""Instrument version. v2 (2026-07-30, AFC-P5.E1/E2): registry-format tasks
+removed (content moved to the research repo), pools expanded to 30/30/30
+against the post-restructure ENGINEERING_STANDARDS. Results are comparable
+only within a suite version."""
+
 
 @dataclass
 class TaskResult:
@@ -78,6 +84,7 @@ class SuiteResult:
 
     def to_dict(self) -> dict:
         return {
+            "suite_version": SUITE_VERSION,
             "model_id": self.model_id,
             "agent_file_path": self.agent_file_path,
             "level": self.level,
