@@ -105,7 +105,7 @@ wall window.
 ## P-BENCH-3 — Batched/slot decode (the CPU14/E1/E2 regime)
 
 Single instance, `-np N` sweep {1,2,4,8,16}, fixed question batch; metrics = aggregate
-tasks/hour AND per-stream p50/p95 latency, reported per-N. Required before any batched-serving
+aggregate + per-stream decode tok/s (primary, per MEASUREMENT.md §1 — a `-np` sweep measures a MODEL INSTANCE) AND per-stream p50/p95 latency, reported per-N; tasks/hour retained as a secondary orchestration-facing readout, never as the ranking key. Required before any batched-serving
 or batched-kernel claim. (This regime previously had no protocol — that absence is why it stayed
 an evidence vacuum.)
 
@@ -185,3 +185,52 @@ reserialized object.
 **Grammar**: `A4 server-native speculative decode <median> tok/s, MAD <mad> [P-BENCH-4, n=5,
 YYYY-MM-DD, attest <receipt>]`. Prospective; authorizes neither an automatic registry edit nor
 any keep/revert/deploy/promote decision without the separately applicable gate.
+
+## P-BENCH-PLACEMENT-1 — NUMA placement and concurrency
+
+Ratified 2026-07-30. Direction: higher-better, **tok/s** (per §1: this measures a model
+instance, not an orchestrator configuration).
+
+**Scope.** Any decision-gating throughput number that varies with, or depends on, CPU
+affinity, NUMA memory policy, mmap mode, instance count, or slot concurrency.
+Composite: `P-BENCH-1` governs the single-instance decode arm, `P-BENCH-2` the
+multi-instance aggregate, `P-BENCH-3` any batched-slot rung. This protocol governs
+**placement** and its interaction with concurrency — which none of them constrain, and
+that gap is why the 2026-07-30 defect was reachable.
+
+**Full contract.** `epyc-inference-research/docs/protocols/numa-placement-measurement-protocol.md`
+
+**Mandatory gates.**
+1. Cpuset expanded against the live NPS4 node map. A multi-node cpuset with no `numactl`
+   policy is a REJECT, not a warning.
+2. `drop_caches` before every placement arm, `cache_state` recorded, warm arms paired with
+   cold. `numactl --interleave` binds at FIRST TOUCH only, so a warm arm silently
+   re-measures the previous arm's placement.
+3. Measured per-instance `pages_by_node` and `local_fraction` from `/proc/<pid>/numa_maps`,
+   ARMED regardless of mmap mode. `--membind` under shared mmap is rejected as a placement
+   arm — pages are placed once by the first faulter and later instances inherit that
+   placement regardless of their own binding. Shared-mmap fleet arms record instance start
+   order, because throughput depends on it.
+4. Decode rate from `predicted_n` / `predicted_ms` only. A wall-clock rate is never a
+   decode rate. Report per-stream and system-wide separately, with a skip audit.
+5. Achieved concurrency measured per rung against nominal, and floored.
+6. **Every arm runs the role's PRODUCTION acceleration recipe** (speculative decoding,
+   draft model, draft_max) as recorded in the registry. A spec-dec-off baseline is not a
+   production-usable figure and may not be reported as a headline; if a baseline is needed
+   to isolate an effect, it is labelled as such and quoted alongside, never instead.
+
+**Arms.** A0 production as-wired · A1 same cpuset + correct interleave · A2 full machine +
+`interleave=all` · A3 N-instance fleet, shared mmap · A4 N-instance fleet, `--no-mmap`.
+Interleaved; all five required. A1 is the bridge cell — drop it and policy is confounded
+with cpuset.
+
+**Anchor gate.** `np=1` is measured FIRST and compared against a recorded production anchor
+for that model. Outside band ⇒ the run is VOID and may not be reported.
+
+**Reps.** Per `P-BENCH-1`; report median + MAD.
+
+A run missing measured locality is observation-grade at best and can never gate a decision.
+No pre-ratification placement artifact may be retro-certified under this protocol.
+
+**Claim grammar.**
+`<value> tok/s <per-stream|aggregate(T=n)>, spec-dec <on|off>, arm <A0..A4> [P-BENCH-PLACEMENT-1, n=<reps>, <date>, attest <ref>]`

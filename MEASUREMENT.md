@@ -51,8 +51,9 @@ Status: ✅ ratified, 📋 staged (operator-apply).
 | P-BENCH-1 | Canonical single-instance CPU decode (llama-bench) | decode t/s (↑) | ✅ | B |
 | P-BENCH-PREFILL-1 | Canonical single-instance CPU prefill | prefill t/s (↑) | ✅ 2026-07-24 (+07-25 amend) | B |
 | P-BENCH-2 | Multi-instance / aggregate, production-shaped | aggregate decode t/s (↑) | ✅ | B |
-| P-BENCH-3 | Batched/slot decode (`-np N` sweep) | tasks/h + p50/p95 latency | ✅ | B |
+| P-BENCH-3 | Batched/slot decode (`-np N` sweep) | aggregate + per-stream decode tok/s (↑) primary, per §1; p50/p95 latency (↓); tasks/h retained secondary | ✅ | B |
 | P-BENCH-4 | Single-instance server-native spec-dec (FG-4b) | decode t/s (↑) | ✅ (+affinity superseding amend) | B |
+| P-BENCH-PLACEMENT-1 | CPU affinity / NUMA memory policy / mmap mode / instance count / slot concurrency | aggregate + per-stream decode tok/s (↑) | ✅ 2026-07-30 | B |
 | P-QUAL-T1 | Autopilot trial-gate quality (production instrument card) | suite score | ✅ | Q |
 | P-QUAL-PROMO | Promotion / generalization quality | e-value | ✅ | Q |
 | P-AB-1 | Orchestrator A/B (routing, prompts, features) | paired effect | ✅ | Q |
@@ -66,7 +67,15 @@ Status: ✅ ratified, 📋 staged (operator-apply).
 
 ## 3. Claim grammar & examples
 
-- ✅ `frontdoor decode 27.06 t/s [P-BENCH-2, n=5, 2026-04-26, attest a3f2]`
+- ✅ `frontdoor decode 40.22 tok/s per-stream, spec-dec on (draft-mtp n_max 4), arm A2 [P-BENCH-PLACEMENT-1, n=3, 2026-07-30, attest epyc-inference-research/data/numa_placement/20260730-P-BENCH-PLACEMENT-1/prodopt_results.txt]`
+  <!-- Replaced 2026-07-30. The prior exemplar, `frontdoor decode 27.06 t/s
+  [P-BENCH-2, n=5, 2026-04-26, attest a3f2]`, was the NUMA_NODE0-arm figure from the
+  2026-04-17 head-to-head, invalid twice over: it predates the 2026-04-24 NPS4 reboot
+  (when `0-47,96-143` genuinely was one NUMA node) and its source CSV records
+  `spec == "baseline"`. The replacement is deliberately a PRODUCTION-RECIPE figure
+  (spec-dec on), not a baseline. Grammar note: ✅ marks the FIELDS as complete; rep
+  adequacy for a decision is still judged by the owning protocol's reps rule — this
+  n=3 figure is an anchor; effect claims against it need reps per P-BENCH-1. -->
 - ✅ `config 9bd1 confirmed +2q on core_v2 [P-QUAL-T1/seq-v1, E=24.3, k=5, 2026-06-20]`
 - ✅ `4/5 toolrunner sentinel pass [P-SMOKE-1, 2026-07-11]`
 - ❌ `+17% with EP flags` (no protocol, no reps — this exact claim later collapsed to +1.6%
