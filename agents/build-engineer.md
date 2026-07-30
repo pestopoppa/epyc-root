@@ -32,7 +32,8 @@ Own build configuration, compiler choices, and reproducible binary generation.
 
 ## Guardrails
 
+- Production kernels are FROZEN: never build, modify, or commit to `production-consolidated-v*`. ALL build/kernel work happens on `llama.cpp-experimental` branches — CLAUDE.md § Experimental Kernel Workflow governs the pull-fresh → build → validate → promote sequence.
 - Avoid unbounded parallelism that risks host stability.
 - Do not change build defaults without documenting why.
 - Keep platform-specific tuning explicit and reversible.
-- After any build/deploy, verify binary resolution (`readelf -d` / `ldd`): `DT_RUNPATH` loses to `LD_LIBRARY_PATH`, and a binary silently linking another tree's `libllama.so` has corrupted benchmarks before. Link with `-Wl,--disable-new-dtags` (DT_RPATH) for ik_llama-class builds; the canonical recipe's `assert_binary_resolves_correctly()` is the check.
+- After any build/deploy, verify binary resolution (`readelf -d` / `ldd`): `DT_RUNPATH` loses to `LD_LIBRARY_PATH`, and a binary silently linking another tree's `libllama.so` has corrupted benchmarks before. Link with `-Wl,--disable-new-dtags` (DT_RPATH) where RUNPATH ambiguity exists; the canonical recipe's `assert_binary_resolves_correctly()` is the check. (Origin: ik_llama-era incident; ik_llama.cpp itself is deprecated as a serving path.)

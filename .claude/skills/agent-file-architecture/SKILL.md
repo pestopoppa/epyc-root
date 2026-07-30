@@ -22,7 +22,7 @@ Do not use when:
 
 1. Apply the role schema in `references/schema.md`.
 2. Use migration guidance in `references/migration.md`.
-3. Run `scripts/validate_agents.py`.
+3. Run `python3 .claude/skills/agent-file-architecture/scripts/validate_agents.py` (wraps both `scripts/validate/validate_agents_structure.py` and `scripts/validate/validate_agents_references.py`).
 4. If validation fails, fix schema or references before finalizing.
 
 ## Boundaries
@@ -42,7 +42,7 @@ Do not use when:
 - Gate: Migration complete before Step 3.
 
 ### Step 3 — Run Validation
-- Evidence: `scripts/validate_agents.py` returns exit code 0 (runs both structure and reference validators).
+- Evidence: `.claude/skills/agent-file-architecture/scripts/validate_agents.py` returns exit code 0 (runs both structure and reference validators).
 - Gate: Exit code 0 from both sub-validators.
 
 ### Step 4 — Fix and Re-validate

@@ -33,7 +33,7 @@ Manage model conversion, quantization, and target-draft compatibility for reliab
 ## Registry Standards
 
 When adding or updating model entries in `model_registry.yaml`:
-- All scoring fields (`quality_score`, `vl_score`, `blind_score`) must use canonical format: `{pct: <float>, raw: "<n/m>"}` — see `agents/shared/ENGINEERING_STANDARDS.md` § Model Registry Standards.
+- All scoring fields (`quality_score`, `vl_score`, `blind_score`) must use canonical format: `{pct: <float>, raw: "<n/m>"}` — see `repos/epyc-inference-research/docs/reference/models/REGISTRY_STANDARDS.md`.
 - Set per-model serving config (`use_chat_api`, `reasoning`, `kv_cache`, `sampling.repeat_penalty`) before benchmarking — models that require chat templates will produce empty output via `/completion`.
 - Use absolute paths for model files, never relative.
 - Deprecated models keep their entry with `deprecated: true` and a reason note.

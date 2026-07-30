@@ -26,14 +26,7 @@
 
 ## Placement Rules (Multi-Repo)
 
-This project spans four repositories. Place files in the correct one:
-
-| Content | Repository |
-|---------|-----------|
-| Orchestrator code (`src/`, `tests/`, `orchestration/`) | `epyc-orchestrator` |
-| Benchmarks, research, model registry (full) | `epyc-inference-research` |
-| Governance, hooks, agents, handoffs, progress | `epyc-root` (this repo) |
-| llama.cpp patches and builds | `epyc-llama` |
+Use the canonical [repository map](../../CLAUDE.md#repository-map) before placing a file.
 
 Within `epyc-orchestrator`:
 - Feature flags: `src/features.py`
@@ -49,7 +42,10 @@ Within `epyc-root`:
 
 ## Kernel Workflow (Production Immutability)
 
-Production llama.cpp kernels (`production-consolidated-v8`, future `-v9`, …) are **FROZEN** — never modify, rebase, build, or commit to them without explicit operator authorization. All kernel / inference-research / benchmarking work happens on `llama.cpp-experimental`; features ship by *versioning past* production, never by patching it in place. Every kernel effort, in order: (1) pull **fresh** production → experimental (so all production optimizations — iqk AVX-512 GEMM, CPU forward-ports, server work — are already present; never fork long-lived from an old tip), (2) build, (3) validate no GPU/CPU regressions vs production, (4) deploy as a new production version. The experimental kernel must be the FULL build (fresh production + new features) before promotion — never reconciled via cherry-picks at promotion time, or the combined changes ship unvalidated and bench numbers miss our own opts. Authoritative policy + motivating failure: `CLAUDE.md` → *Experimental Kernel Workflow & Production-Kernel Immutability*.
+Production kernels are frozen: do not modify, rebase, build, or commit to them without
+explicit operator authorization. Kernel work uses a fresh `llama.cpp-experimental` branch and
+ships only by versioning past production. The full workflow and its motivating failure are
+canonical in [CLAUDE.md](../../CLAUDE.md#experimental-kernel-workflow--production-kernel-immutability).
 
 ## Incremental Persistence (Mandatory for Eval/Benchmark Scripts)
 
@@ -81,42 +77,10 @@ with open(checkpoint, "a") as ckpt:
 
 ## Model Registry Standards
 
-The research model registry (`epyc-inference-research/orchestration/model_registry.yaml`) is the comprehensive benchmark record. All scoring fields must use the canonical format:
-
-### Scoring Fields
-
-All `quality_score`, `vl_score`, and `blind_score` fields use an inline YAML map:
-
-```yaml
-quality_score: {pct: 65.4, raw: "159/243"}   # standard: pct + raw fraction
-vl_score: {pct: 92.0, raw: "11/12"}          # same format for vision-language
-blind_score: {pct: 36.0}                      # raw omitted when fraction unavailable
-blind_score: {pct: null, note: "not scored"}  # null pct with note for unscored entries
-```
-
-- `pct` (float): percentage score — native YAML float for programmatic comparison. Use `null` when no single score applies.
-- `raw` (string, optional): numerator/denominator fraction when available.
-- `note` (string, optional): replaces `raw` for special cases (unscored, multi-config annotations).
-- Supplementary context (rescored dates, scale descriptions) goes in YAML inline comments.
-
-**Anti-patterns** (never use):
-```yaml
-quality_score: 60.5              # bare float — missing raw fraction
-quality_score: 66/69 (96%)       # unquoted string — YAML parse error risk
-quality_score: "36%"             # quoted string — not programmatically comparable
-vl_score: "11/12 (92%)"         # quoted string — mixed format
-```
-
-### Registry Scope
-
-- **Research registry** (`epyc-inference-research`): comprehensive benchmark record — all tested models, all quants, deprecated entries preserved with notes.
-- **Orchestrator registry** (`epyc-orchestrator`): active stack only — lean, production-facing.
-
-### Model Entry Requirements
-
-- Paths must be absolute (not relative to any base).
-- Per-model serving config (`use_chat_api`, `reasoning`, `kv_cache`, `sampling`) must be set before benchmarking.
-- Deprecated models retain their entry with a `deprecated: true` flag and reason in comments.
+Canonical registry format spec (scoring-field `{pct, raw}` map, registry scope, entry
+requirements) lives with the registry it governs:
+`repos/epyc-inference-research/docs/reference/models/REGISTRY_STANDARDS.md` (moved 2026-07-30 —
+repo-local file-format spec, not cross-repo engineering policy).
 
 ## Debugging Discipline (Observe Before Diagnosing)
 

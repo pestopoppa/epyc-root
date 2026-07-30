@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Validate CLAUDE.md governance matrix artifacts."""
+"""Validate CLAUDE.md governance matrix artifacts.
+
+Strengthened 2026-07-30 (audit D11): besides checking the required governed rows, the
+validator now DISCOVERS agent-policy files (CLAUDE.md / AGENTS.md at the root and in
+repos/*/) and fails when a discovered file is not accounted for in the JSON matrix
+(governed, child_repo_governed, upstream_unmanaged, related, or an excluded-class prefix).
+"""
 
 from __future__ import annotations
 
@@ -13,6 +19,29 @@ MATRIX_JSON = ROOT / "docs/reference/agent-config/claude_md_matrix.json"
 REQUIRED_GOVERNED = {
     "CLAUDE.md",
 }
+
+ACCOUNT_SECTIONS = (
+    "governed",
+    "child_repo_governed",
+    "upstream_unmanaged",
+    "related",
+)
+
+
+def discover() -> list[str]:
+    found: list[str] = []
+    for name in ("CLAUDE.md", "AGENTS.md"):
+        if (ROOT / name).exists():
+            found.append(name)
+    repos = ROOT / "repos"
+    if repos.is_dir():
+        for repo in sorted(repos.iterdir()):
+            if ".bak-" in repo.name or not repo.is_dir():
+                continue
+            for name in ("CLAUDE.md", "AGENTS.md"):
+                if (repo / name).exists():
+                    found.append(f"repos/{repo.name}/{name}")
+    return found
 
 
 def main() -> int:
@@ -34,6 +63,28 @@ def main() -> int:
     missing = sorted(REQUIRED_GOVERNED - governed)
     if missing:
         print("missing from json matrix:", ", ".join(missing))
+        return 1
+
+    accounted = {
+        entry.get("path")
+        for section in ACCOUNT_SECTIONS
+        for entry in data.get(section, [])
+    }
+    prefixes = [c.get("prefix", "") for c in data.get("excluded_classes", [])]
+    unaccounted = [
+        path
+        for path in discover()
+        if path not in accounted and not any(path.startswith(p) for p in prefixes if p)
+    ]
+    if unaccounted:
+        print("agent-policy files not accounted for in the matrix:")
+        for p in unaccounted:
+            print("-", p)
+        return 1
+
+    md_missing = [p for p in accounted if p and p not in text]
+    if md_missing:
+        print("json rows absent from md matrix:", ", ".join(sorted(md_missing)))
         return 1
 
     print("claude md matrix validation passed")

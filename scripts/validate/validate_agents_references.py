@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-"""Validate local markdown references in agent governance files."""
+"""Validate local markdown references in agent governance files.
+
+Scope (extended 2026-07-30, audit D2/D13 follow-up):
+- every role/shared file under agents/ (not just the fixed governance set)
+- docs/guides/agent-workflows/*.md
+- anchor-bearing links (path.md#anchor): the file must exist AND the anchor must
+  match a heading in it (GitHub-style slug), so a deleted section is caught.
+"""
 
 from __future__ import annotations
 
@@ -8,7 +15,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 
-SCAN_FILES = [
+FIXED_FILES = [
     ROOT / "agents" / "README.md",
     ROOT / "agents" / "AGENT_INSTRUCTIONS.md",
     ROOT / "docs" / "guides" / "agent-workflows" / "INDEX.md",
@@ -17,8 +24,33 @@ SCAN_FILES = [
     ROOT / ".claude" / "commands" / "agent-governance.md",
 ]
 
+
+def scan_files() -> list[Path]:
+    files = list(FIXED_FILES)
+    files += sorted((ROOT / "agents").glob("*.md"))
+    files += sorted((ROOT / "agents" / "shared").glob("*.md"))
+    files += sorted((ROOT / "docs" / "guides" / "agent-workflows").glob("*.md"))
+    seen: set[Path] = set()
+    out: list[Path] = []
+    for f in files:
+        if f not in seen:
+            seen.add(f)
+            out.append(f)
+    return out
+
+
 CODE_REF = re.compile(r"`([^`]+\.md)`")
-MD_LINK = re.compile(r"\[[^\]]+\]\(([^)]+\.md)\)")
+MD_LINK = re.compile(r"\[[^\]]+\]\(([^)#]+\.md)\)")
+ANCHOR_LINK = re.compile(r"\[[^\]]+\]\(([^)#]+\.md)#([^)]+)\)")
+HEADING = re.compile(r"^#{1,6}\s+(.*)$", re.MULTILINE)
+
+
+def slugify(heading: str) -> str:
+    # GitHub-style: lowercase, drop punctuation, EACH space becomes a hyphen
+    # (so "A & B" -> "a--b" — do not collapse runs).
+    s = re.sub(r"[*`_]", "", heading.strip().lower())
+    s = re.sub(r"[^a-z0-9 -]", "", s)
+    return s.replace(" ", "-")
 
 
 def resolve(ref: str, src: Path) -> Path:
@@ -37,7 +69,7 @@ def resolve(ref: str, src: Path) -> Path:
 
 def main() -> int:
     missing: list[str] = []
-    for path in SCAN_FILES:
+    for path in scan_files():
         if not path.exists():
             missing.append(f"missing file: {path.relative_to(ROOT)}")
             continue
@@ -51,6 +83,18 @@ def main() -> int:
                 continue
             if not target.exists():
                 missing.append(f"{path.relative_to(ROOT)} -> {ref}")
+        for ref, anchor in sorted(set(ANCHOR_LINK.findall(text))):
+            target = resolve(ref, path)
+            if str(target) == "/dev/null":
+                continue
+            if not target.exists():
+                missing.append(f"{path.relative_to(ROOT)} -> {ref}#{anchor}")
+                continue
+            slugs = {slugify(h) for h in HEADING.findall(target.read_text(encoding="utf-8"))}
+            if anchor not in slugs:
+                missing.append(
+                    f"{path.relative_to(ROOT)} -> {ref}#{anchor} (anchor not found)"
+                )
 
     if missing:
         print("agent reference validation failed")

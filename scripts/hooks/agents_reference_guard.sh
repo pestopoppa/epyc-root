@@ -22,8 +22,29 @@ if [[ ! -f "$FILE_PATH" ]]; then
   exit 0
 fi
 
-# Extract likely local markdown links from inline code spans.
-mapfile -t refs < <(rg -o '`[^`]+\.md`' "$FILE_PATH" | tr -d '`' | sed 's/:.*$//' | sort -u)
+# Validate the POST-edit content, not the pre-edit disk state (audit D13,
+# 2026-07-30): reconstruct what the file will contain after this Write/Edit,
+# then scan that. Pre-state scanning both missed newly-introduced bad refs and
+# wedged the very edit that fixes an existing bad ref.
+POST_TEXT=$(printf '%s' "$INPUT" | python3 -c '
+import json, sys, pathlib
+inp = json.load(sys.stdin)
+ti = inp.get("tool_input", {})
+path = pathlib.Path(ti.get("file_path", ""))
+if "content" in ti:                      # Write
+    sys.stdout.write(ti["content"])
+elif "old_string" in ti:                 # Edit
+    text = path.read_text(encoding="utf-8") if path.is_file() else ""
+    old, new = ti["old_string"], ti.get("new_string", "")
+    if ti.get("replace_all"):
+        text = text.replace(old, new)
+    else:
+        text = text.replace(old, new, 1)
+    sys.stdout.write(text)
+else:
+    sys.stdout.write(path.read_text(encoding="utf-8") if path.is_file() else "")
+')
+mapfile -t refs < <(printf '%s' "$POST_TEXT" | { rg -o '`[^`]+\.md`' || true; } | tr -d '`' | sed 's/:.*$//' | sort -u)
 
 file_dir=$(dirname "$FILE_PATH")
 missing=()

@@ -11,7 +11,6 @@ AGENTS = ROOT / "agents"
 EXCLUDED = {
     "README.md",
     "AGENT_INSTRUCTIONS.md",
-    "research-writer-guide.md",
 }
 REQUIRED = [
     "## Mission",

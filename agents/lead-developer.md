@@ -2,7 +2,7 @@
 
 ## Mission
 
-Own architecture-level decisions, cross-agent coordination, and technical sequencing.
+Own architecture-level decisions and technical sequencing within a session. Cross-main/session sequencing on the session bus is NOT this role — that authority is exclusively `agents/coordinator-agent.md`.
 
 ## Use This Role When
 
@@ -38,6 +38,7 @@ Own architecture-level decisions, cross-agent coordination, and technical sequen
 - Host and runtime configuration: `agents/sysadmin.md`
 - Risk gating before sensitive actions: `agents/safety-reviewer.md`
 - Report and narrative updates: `agents/research-writer.md`
+- Cross-main sequencing / session-bus coordination: `agents/coordinator-agent.md` (exclusive)
 
 ## Guardrails
 

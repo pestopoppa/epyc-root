@@ -13,4 +13,3 @@ Exclusions:
 
 - `agents/README.md`
 - `agents/AGENT_INSTRUCTIONS.md`
-- `agents/research-writer-guide.md`

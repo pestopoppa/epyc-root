@@ -1,44 +1,58 @@
+<!-- Generated 2026-07-30 from ENGINEERING_STANDARDS.md (post AFC-P6 restructure). Level: aggressive.
+     Rider: agent-file-compress — directive markers, headers, code blocks, lists, paths preserved verbatim. -->
+
 # Engineering Standards
 
 ## Code Invariants
 
 - Typed boundaries for external data.
 - Enums/constants, not ad hoc strings.
-- Gate optional features via feature flags.
+- Feature flags gate optional features.
 - Log exceptions with context; do not use silent `except: pass`.
 - Thread-safe paths for shared mutable state.
 
 ## Numerical Parameter Policy
 
-Two classes: `tunable` (runtime controls) and `invariant` (semantic limits/hard boundaries).
-
-- `tunable` values must live in typed config/dataclass surfaces; env override when operationally relevant.
-- `invariant` values must be named constants (global or subsystem-local), not magic literals.
-- Do not consolidate numerics into one global file; preserve subsystem ownership.
-- PRs adding numerics should include classification note (`tunable` vs `invariant`).
+- Two classes: `tunable` (runtime controls) / `invariant` (stable limits).
+- `tunable` must live in typed config/dataclass + env override.
+- `invariant` must be named constants, not magic literals.
+- Do not consolidate numbers into one global file; subsystems own tunables.
+- PRs adding numerics: classification note (`tunable` vs `invariant`).
 
 ## Change Style
 
-- One concern per change.
-- Reuse before adding.
-- Place per existing layout.
+- One concern per change. Reuse before adding. Place per existing layout.
 
 ## Placement Rules (Multi-Repo)
 
-| Content | Repository |
-|---------|-----------|
-| Orchestrator code (`src/`, `tests/`, `orchestration/`) | `epyc-orchestrator` |
-| Benchmarks, research, model registry (full) | `epyc-inference-research` |
-| Governance, hooks, agents, handoffs, progress | `epyc-root` (this repo) |
-| llama.cpp patches and builds | `epyc-llama` |
+[Repository map](../../CLAUDE.md#repository-map) first.
 
-`epyc-orchestrator`: `src/features.py` (flags); `src/roles.py` + registry (roles/routing); `src/api/` (API/services/state); `tests/unit/`, `tests/integration/`.
+`epyc-orchestrator`:
+- Feature flags: `src/features.py`
+- Roles/routing: `src/roles.py` + model registry
+- API: `src/api/`
+- Tests: `tests/unit/` and `tests/integration/`
 
-`epyc-root`: `agents/`; `agents/shared/` (cross-repo); `scripts/validate/`; `docs/`.
+`epyc-root`:
+- Agents: `agents/`
+- Cross-repo policy: `agents/shared/`
+- Validation: `scripts/validate/`
+- Design rationale: `docs/`
+
+## Kernel Workflow (Production Immutability)
+
+Production kernels frozen: do not modify, rebase, build, or commit without explicit operator
+authorization. Kernel work: fresh `llama.cpp-experimental`; version past production.
+[CLAUDE.md](../../CLAUDE.md#experimental-kernel-workflow--production-kernel-immutability).
 
 ## Incremental Persistence (Mandatory for Eval/Benchmark Scripts)
 
-Inference scripts **MUST** persist incrementally: append each result to JSONL/CSV immediately after scoring — not in a batch. Killed/crashed runs must leave partial results on disk. Per-item progress logging (`log.info("[%d/%d] ...")`). The "summary" output is aggregation, not primary store.
+Inference scripts **MUST** persist incrementally:
+
+- Append each result to JSONL/CSV checkpoint immediately — never batch at end.
+- Summary = aggregation of checkpoint, not primary store.
+- Killed run must leave usable partials on disk.
+- Per-item progress logging (`log.info("[%d/%d] ...")`).
 
 **Anti-pattern** (never do this):
 ```python
@@ -61,47 +75,20 @@ with open(checkpoint, "a") as ckpt:
 
 ## Model Registry Standards
 
-Research registry (`epyc-inference-research/orchestration/model_registry.yaml`): comprehensive benchmark record. Scoring fields must use canonical format.
+Spec: `repos/epyc-inference-research/docs/reference/models/REGISTRY_STANDARDS.md`.
 
-### Scoring Fields
+## Debugging Discipline (Observe Before Diagnosing)
 
-`quality_score`, `vl_score`, `blind_score` use inline YAML map:
-
-```yaml
-quality_score: {pct: 65.4, raw: "159/243"}   # standard: pct + raw fraction
-vl_score: {pct: 92.0, raw: "11/12"}          # same format for vision-language
-blind_score: {pct: 36.0}                      # raw omitted when fraction unavailable
-blind_score: {pct: null, note: "not scored"}  # null pct with note for unscored entries
-```
-
-- `pct` (float): percentage; `null` if no single score.
-- `raw` (string, optional): numerator/denominator.
-- `note` (string, optional): replaces `raw` for special cases.
-- Supplementary context → YAML inline comments.
-
-**Anti-patterns** (never use):
-```yaml
-quality_score: 60.5              # bare float — missing raw fraction
-quality_score: 66/69 (96%)       # unquoted string — YAML parse error risk
-quality_score: "36%"             # quoted string — not programmatically comparable
-vl_score: "11/12 (92%)"         # quoted string — mixed format
-```
-
-### Registry Scope
-
-- **Research**: comprehensive — all models, all quants, deprecated preserved.
-- **Orchestrator**: active stack only — lean.
-
-### Model Entry Requirements
-
-- Paths must be absolute.
-- Per-model serving config (`use_chat_api`, `reasoning`, `kv_cache`, `sampling`) must be set before benchmarking.
-- Deprecated entries retain `deprecated: true` + reason.
-
-## Debugging Discipline
-
-Observe before diagnosing: no root cause asserted (or written to a handoff/index as fact) without the primitive datum (actual output/error/state) — unverified = hypothesis, never a finding. "Not observable" only after enumerating all artifacts (`find` tap/trace/session), not just the one log you know. Cap blind fixes at one, then observe. Coherent narrative ≠ evidence (closure inflation).
+- **Observe before diagnosing.** Do not state root cause until primitive datum seen (output /
+  error / state). Unverified mechanism = **hypothesis**; never propagate it as a finding.
+- **"Not observable" requires having looked everywhere** — enumerate all artifacts first.
+- **Cap blind fixes at one.** Failed fix → observability, not another fix.
+- **A coherent failure narrative is a yellow flag, not reassurance.**
 
 ## Verification Minimum
 
-Syntax-check, run targeted tests, confirm feature-flag behavior, update docs. Validate the real path — a stub bypassing real inference/REPL/IO proves nothing; do one real end-to-end call (canary) before "ready".
+1. Syntax check modified Python.
+2. Targeted tests.
+3. Confirm feature-flag behavior.
+4. Update docs on interface change.
+5. **Validate the real path, not a proxy** — one real end-to-end canary before "ready".

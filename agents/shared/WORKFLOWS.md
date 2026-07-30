@@ -29,11 +29,10 @@
 
 ## Benchmark Update
 
-1. Confirm operator approval + host-health preflight (`agents/shared/MEASUREMENT_POLICY.md`).
-2. Run via the codified recipe (`bench_canonical.sh`/`canonical_recipe.py`, epyc-inference-research) with explicit config capture; reps per `MEASUREMENT.md` (≥5 for ≥5% claims, ≥10 for ≤2%).
-3. Record results + anomalies with the claim grammar `(metric, protocol-id, n, date, attest)`.
-4. Compare against the era-matched baseline only (`instrument_eras.yaml`, epyc-orchestrator orchestration/); never across instrument eras.
-5. Update `repos/epyc-inference-research/docs/reference/benchmarks/RESULTS.md` when appropriate.
+Measurement policy is canonical in `agents/shared/MEASUREMENT_POLICY.md` (region claim, codified
+recipes, reps, claim grammar, era labeling) — follow it, don't restate it. Workflow-specific
+step: update `repos/epyc-inference-research/docs/reference/benchmarks/RESULTS.md` when a run
+changes the master table.
 
 ## Handoff Closure And Roadmap Refresh
 
@@ -43,10 +42,7 @@
 4. Record evidence in `CHANGELOG.md` and progress log (`progress/YYYY-MM/`) with exact commands/tests used; performance/quality numbers use the claim grammar (`agents/shared/MEASUREMENT_POLICY.md`).
 5. Move handoff from `handoffs/active/` to `handoffs/completed/` only after docs + trackers + evidence are in place.
 
-## Orchestration Stabilization Closure (RLM)
+## Orchestrator Lifecycle
 
-1. For orchestrator lifecycle work in `epyc-orchestrator`, prefer API-only reload: `python3 scripts/server/orchestrator_stack.py reload orchestrator`.
-2. In restricted environments, socket-based health/probe commands may require escalated execution; treat sandbox `PermissionError` on local sockets as an environment constraint, not an orchestration regression.
-3. Validate fixes with both unit coverage and contention probes; lock/delegation changes are not complete until seeded contention runs confirm no stale lock holders.
-4. Treat response diagnostics as first-class acceptance criteria: `delegation_diagnostics.break_reason`, `budget_diagnostics.*`, and `error_code` must be explicit on bounded failures.
-5. Keep roadmap status synchronized with evidence.
+Operational guidance for orchestrator lifecycle/stabilization work:
+`docs/guides/agent-workflows/orchestrator-lifecycle.md`.

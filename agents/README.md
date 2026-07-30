@@ -28,9 +28,9 @@ This directory is organized for agent legibility and low drift.
 
 ## Model Routing (Task-Based)
 
-- `Haiku`: routine execution, data collection, simple edits.
-- `Sonnet`: most engineering, synthesis, and implementation.
-- `Opus`: novel architecture, hard debugging, high-stakes technical arbitration.
+- Claude sessions: `Haiku` routine execution / `Sonnet` most engineering / `Opus` novel architecture and hard debugging. `Fable` is metered — reserve for architect-grade work.
+- Codex sessions: smallest capable `gpt-5.6-terra` or `gpt-5.6-luna` at the lowest adequate effort (CLAUDE.md § Codex Delegation Policy).
+- Local stack roles route via the orchestrator's frozen registry, never hand-picked per task.
 
 Rule: start with the cheapest model likely to succeed, escalate only when blocked.
 

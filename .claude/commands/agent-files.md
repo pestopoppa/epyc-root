@@ -17,7 +17,8 @@ Refactor or create role files under `agents/` using the canonical schema and sha
 
 ## Role Schema
 
-Each role file must contain exactly these section headers:
+Each role file must contain these section headers (validators and the schema hook check
+presence; additional role-specific `##` sections are allowed):
 
 - `## Mission`
 - `## Use This Role When`

@@ -4,6 +4,45 @@
       "path": "CLAUDE.md",
       "scope": "project_root",
       "action": "maintain"
+    },
+    {
+      "path": "AGENTS.md",
+      "scope": "project_root_symlink",
+      "action": "keep symlinked to CLAUDE.md (check_agent_file_symlink.sh)"
+    }
+  ],
+  "child_repo_governed": [
+    {
+      "path": "repos/epyc-orchestrator/CLAUDE.md",
+      "scope": "child_repo",
+      "action": "maintain in child repo; AGENTS.md symlinks to it"
+    },
+    {
+      "path": "repos/epyc-orchestrator/AGENTS.md",
+      "scope": "child_repo_symlink",
+      "action": "keep symlinked to CLAUDE.md"
+    },
+    {
+      "path": "repos/epyc-inference-research/CLAUDE.md",
+      "scope": "child_repo",
+      "action": "maintain in child repo; AGENTS.md symlinks to it"
+    },
+    {
+      "path": "repos/epyc-inference-research/AGENTS.md",
+      "scope": "child_repo_symlink",
+      "action": "keep symlinked to CLAUDE.md"
+    }
+  ],
+  "upstream_unmanaged": [
+    {
+      "path": "repos/epyc-llama/CLAUDE.md",
+      "scope": "upstream_frozen_tree",
+      "action": "DO NOT EDIT (frozen production kernel; upstream ggml-org stub). Project overlay staged at docs/reference/agent-config/llama-tree-overlay/ bakes in at next promotion (AFC-P6.20)"
+    },
+    {
+      "path": "repos/epyc-llama/AGENTS.md",
+      "scope": "upstream_frozen_tree",
+      "action": "DO NOT EDIT (upstream contribution policy; scoped by the staged overlay)"
     }
   ],
   "related": [
@@ -24,6 +63,18 @@
     {
       "prefix": "backups/",
       "classification": "archival"
+    },
+    {
+      "prefix": "repos/epyc-orchestrator/.claude/",
+      "classification": "harness_local"
+    },
+    {
+      "prefix": "repos/epyc-inference-research/.claude/",
+      "classification": "harness_local"
+    },
+    {
+      "prefix": "repos/epyc-inference-research/scripts/benchmark/.claude/",
+      "classification": "harness_local_nested_scope"
     }
   ]
 }
