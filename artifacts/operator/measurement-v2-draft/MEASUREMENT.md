@@ -1,5 +1,5 @@
-<!-- RATIFIED by operator 20260730T103218Z — see RATIFICATION_LEDGER in the apply bundle.
-     Applied via apply_v2.sh --apply; delta record: artifacts/operator/measurement-v2-draft/RATIFICATION_LEDGER.md.
+<!-- ⚠️ DRAFT v2 — NOT RATIFIED. Proposed rewrite of /workspace/MEASUREMENT.md (2026-07-30).
+     The live constitution remains authoritative until the operator ratifies this bundle.
      Every semantic difference vs v1 is enumerated in RATIFICATION_LEDGER.md in this directory.
      Amendments: human-only, PR-reviewed, append-or-version. The autopilot may READ, never edit. -->
 
@@ -190,6 +190,6 @@ call, not contamination.
 
 ## CHANGELOG
 
-- 2026-07-30 — v2 restructure RATIFIED (operator apply 20260730T103218Z): core + `measurement/protocols/` annex split; metric-scoping section
+- 2026-07-30 — v2 restructure DRAFT: core + `protocols/` annex split; metric-scoping section
   added; stale era-table copy replaced by registry pointer; P-GPU-1 placeholder/ratified blocks
-  merged. Full delta: `artifacts/operator/measurement-v2-draft/RATIFICATION_LEDGER.md`.
+  merged. Full delta: `RATIFICATION_LEDGER.md`. NOT RATIFIED.

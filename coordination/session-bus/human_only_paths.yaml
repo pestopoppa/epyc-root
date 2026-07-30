@@ -29,6 +29,9 @@ paths:
   - repo: epyc-root
     glob: "agents/shared/MEASUREMENT_POLICY.md"
     why: "the agent-facing digest of that boundary; amending it amends the rules"
+  - repo: epyc-root
+    glob: "measurement/protocols/*.md"
+    why: "MEASUREMENT v2 protocol annexes — same trust boundary as the core constitution"
   - repo: epyc-orchestrator
     glob: "orchestration/instrument_eras.yaml"
     why: "era registry rows — historical numbers are era-labelled, never edited"

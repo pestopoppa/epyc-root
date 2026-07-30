@@ -17,7 +17,7 @@ A decision-gating number = `(metric, protocol-id, n/reps, date, attestation ref)
 ## Producing new numbers
 
 - **Throughput**: only via the codified recipes — `bench_canonical.sh` / `canonical_recipe.py` (epyc-inference-research). Never hand-typed bench commands. Reps: ≥5 for ≥5% claims, ≥10 for ≤2%. `-fa 1` explicit. Binary-resolution check is part of the recipe.
-- **Before any bench**: hold the region claim for the run's footprint via `region-lock` (`bench_canonical.sh` acquires it automatically and refuses to run unlocked). Concurrency alone is never grounds for a human gate — operator approval only where `operator_gates[]` names a trust boundary (`OPERATING_CONSTRAINTS.md` → Inference and Benchmarks, amended 2026-07-27). Host-health preflight (uptime ≤1wk → drop_caches + NUMA-interleave rewarm; ≥1wk → reboot required); `pgrep` zombie check.
+- **Before any bench**: explicit operator approval (another agent may be benchmarking; concurrent runs silently poison both); host-health preflight (uptime ≤1wk → drop_caches + NUMA-interleave rewarm; ≥1wk → reboot required); `pgrep` zombie check.
 - **Quality**: the autopilot eval tower is a versioned instrument (core id, n, quantum, MDE) — single-trial deltas below 2 question-flips are never conclusions; see MEASUREMENT.md P-QUAL-*. Known-dead instrument items are listed in `instrument_eras.yaml`.
 - **A/B**: N ≥ 100/arm for production-role decisions; classify every failure by reason (infra vs model) and report the infra rate next to the effect.
 - **Registry writes**: throughput/quality fields carry structured `measured: {date, protocol}` provenance (free-text comments are the legacy witness — do not destroy them in reformats).
