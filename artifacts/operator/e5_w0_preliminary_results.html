@@ -1,393 +1,276 @@
-<title>NUMA placement — decision package, 2026-07-30</title>
+<title>CPU inference — measured reference and required configuration</title>
 
 <style>
-  /* Palette is semantic, drawn from the subject: this is a memory-locality
-     problem, so cool = node-local/correct, warm = remote/defective. */
+  /* Semantic palette: this is a memory-locality problem, so cool = node-local /
+     correct, warm = remote / misconfigured. */
   :root{
     --paper:#F5F6F7; --sunk:#EAECEF; --card:#FFFFFF; --line:#D6DADF;
     --ink:#11151A; --ink-2:#474E58; --ink-3:#79818C;
-    --local:#26647F;   /* correct placement */
-    --remote:#B0632A;  /* remote / defective */
-    --void:#9C3830;    /* retracted */
-    --ok:#3A7355;      /* already correct */
-    --bar-bg:#DDE1E5;
+    --local:#26647F; --remote:#B0632A; --void:#9C3830; --ok:#3A7355;
     --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
     --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,sans-serif;
   }
   @media (prefers-color-scheme:dark){
-    :root{
-      --paper:#0E1116; --sunk:#151A21; --card:#141920; --line:#252D37;
-      --ink:#E3E7EB; --ink-2:#A2AAB5; --ink-3:#727B87;
-      --local:#5EA7C4; --remote:#D89153; --void:#CE6A60; --ok:#63A883;
-      --bar-bg:#222932;
-    }
+    :root{--paper:#0E1116; --sunk:#151A21; --card:#141920; --line:#252D37;
+          --ink:#E3E7EB; --ink-2:#A2AAB5; --ink-3:#727B87;
+          --local:#5EA7C4; --remote:#D89153; --void:#CE6A60; --ok:#63A883}
   }
-  :root[data-theme="dark"]{
-    --paper:#0E1116; --sunk:#151A21; --card:#141920; --line:#252D37;
+  :root[data-theme="dark"]{--paper:#0E1116; --sunk:#151A21; --card:#141920; --line:#252D37;
     --ink:#E3E7EB; --ink-2:#A2AAB5; --ink-3:#727B87;
-    --local:#5EA7C4; --remote:#D89153; --void:#CE6A60; --ok:#63A883;
-    --bar-bg:#222932;
-  }
-  :root[data-theme="light"]{
-    --paper:#F5F6F7; --sunk:#EAECEF; --card:#FFFFFF; --line:#D6DADF;
+    --local:#5EA7C4; --remote:#D89153; --void:#CE6A60; --ok:#63A883}
+  :root[data-theme="light"]{--paper:#F5F6F7; --sunk:#EAECEF; --card:#FFFFFF; --line:#D6DADF;
     --ink:#11151A; --ink-2:#474E58; --ink-3:#79818C;
-    --local:#26647F; --remote:#B0632A; --void:#9C3830; --ok:#3A7355;
-    --bar-bg:#DDE1E5;
-  }
+    --local:#26647F; --remote:#B0632A; --void:#9C3830; --ok:#3A7355}
 
   *{box-sizing:border-box}
-  body{margin:0; background:var(--paper); color:var(--ink);
-       font-family:var(--sans); font-size:16px; line-height:1.6;
-       -webkit-font-smoothing:antialiased}
-  .wrap{max-width:1040px; margin:0 auto; padding:52px 26px 92px;
-        display:flex; flex-direction:column; gap:52px}
+  body{margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans);
+       font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased}
+  .wrap{max-width:1060px; margin:0 auto; padding:52px 26px 92px;
+        display:flex; flex-direction:column; gap:50px}
 
   .lbl{font-family:var(--mono); font-size:10.5px; letter-spacing:.16em;
        text-transform:uppercase; color:var(--ink-3)}
-  h1{font-size:clamp(29px,4.2vw,42px); font-weight:700; letter-spacing:-.022em;
-     line-height:1.1; margin:10px 0 16px; text-wrap:balance}
-  h2{font-size:22px; font-weight:650; letter-spacing:-.012em; line-height:1.25;
-     margin:0; text-wrap:balance}
+  h1{font-size:clamp(28px,4vw,40px); font-weight:700; letter-spacing:-.022em;
+     line-height:1.1; margin:10px 0 14px; text-wrap:balance}
+  h2{font-size:21px; font-weight:650; letter-spacing:-.012em; margin:0; text-wrap:balance}
   h3{font-family:var(--mono); font-size:11.5px; font-weight:700; letter-spacing:.1em;
-     text-transform:uppercase; color:var(--ink-2); margin:0 0 10px}
-  p{margin:0; max-width:70ch; color:var(--ink-2)}
-  .lede{font-size:17.5px; max-width:64ch}
+     text-transform:uppercase; color:var(--ink-2); margin:16px 0 8px}
+  p{margin:0; max-width:72ch; color:var(--ink-2)}
+  .lede{font-size:17px; max-width:66ch}
   strong{color:var(--ink); font-weight:650}
   code{font-family:var(--mono); font-size:.87em; background:var(--sunk);
        padding:1px 5px; border-radius:3px; color:var(--ink)}
-  a{color:var(--local)}
 
-  section{display:flex; flex-direction:column; gap:18px}
+  section{display:flex; flex-direction:column; gap:16px}
   .head{display:flex; flex-direction:column; gap:4px;
         border-top:2px solid var(--ink); padding-top:12px}
 
-  /* headline numbers */
-  .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:13px}
+  .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(184px,1fr)); gap:13px}
   .stat{background:var(--card); border:1px solid var(--line); border-radius:5px;
         padding:16px 17px; display:flex; flex-direction:column; gap:6px}
-  .stat .n{font-family:var(--mono); font-size:31px; font-weight:700; line-height:1;
+  .stat .n{font-family:var(--mono); font-size:30px; font-weight:700; line-height:1;
            font-variant-numeric:tabular-nums}
-  .stat .k{font-family:var(--mono); font-size:11px; color:var(--ink-2); letter-spacing:.03em}
+  .stat .k{font-family:var(--mono); font-size:11px; color:var(--ink-2)}
   .stat .w{font-size:12.5px; color:var(--ink-3); line-height:1.45}
-  .n.remote{color:var(--remote)} .n.local{color:var(--local)}
-  .n.void{color:var(--void)} .n.ok{color:var(--ok)}
+  .n.remote{color:var(--remote)} .n.local{color:var(--local)} .n.void{color:var(--void)}
 
   .callout{border:1px solid var(--line); border-left-width:5px; border-radius:4px;
-           background:var(--card); padding:19px 22px;
-           display:flex; flex-direction:column; gap:10px}
+           background:var(--card); padding:18px 21px;
+           display:flex; flex-direction:column; gap:9px}
   .callout.warn{border-left-color:var(--remote);
                 background:color-mix(in srgb,var(--remote) 6%,var(--card))}
-  .callout.stop{border-left-color:var(--void);
-                background:color-mix(in srgb,var(--void) 6%,var(--card))}
+  .callout.key{border-left-color:var(--local);
+               background:color-mix(in srgb,var(--local) 6%,var(--card))}
   .callout.good{border-left-color:var(--ok);
                 background:color-mix(in srgb,var(--ok) 6%,var(--card))}
   .callout .t{font-family:var(--mono); font-size:11px; font-weight:700;
               letter-spacing:.13em; text-transform:uppercase}
   .callout.warn .t{color:var(--remote)}
-  .callout.stop .t{color:var(--void)}
+  .callout.key .t{color:var(--local)}
   .callout.good .t{color:var(--ok)}
-  .callout p{font-size:14.5px; max-width:76ch}
+  .callout p{font-size:14.5px; max-width:78ch}
 
-  .tscroll{overflow-x:auto; border:1px solid var(--line); border-radius:5px;
-           background:var(--card)}
+  .tscroll{overflow-x:auto; border:1px solid var(--line); border-radius:5px; background:var(--card)}
   table{border-collapse:collapse; width:100%; font-variant-numeric:tabular-nums}
-  th,td{padding:9px 13px; text-align:right; font-family:var(--mono);
+  th,td{padding:8px 12px; text-align:right; font-family:var(--mono);
         font-size:13px; white-space:nowrap}
-  thead th{font-size:10.5px; letter-spacing:.09em; text-transform:uppercase;
-           color:var(--ink-3); font-weight:700;
-           border-bottom:1.5px solid var(--line); text-align:right}
+  thead th{font-size:10.5px; letter-spacing:.08em; text-transform:uppercase;
+           color:var(--ink-3); font-weight:700; border-bottom:1.5px solid var(--line)}
   thead th.l, tbody th{text-align:left}
   tbody th{font-weight:500; color:var(--ink-2); font-size:12.5px;
            border-right:1px solid var(--line)}
-  tbody tr+tr th, tbody tr+tr td{
-    border-top:1px solid color-mix(in srgb,var(--line) 55%,transparent)}
+  tbody tr+tr th, tbody tr+tr td{border-top:1px solid color-mix(in srgb,var(--line) 55%,transparent)}
+  tr.group th{background:var(--sunk); color:var(--ink); font-weight:700;
+              font-size:12px; letter-spacing:.03em; border-right:0}
+  tr.anchor th, tr.anchor td{background:color-mix(in srgb,var(--local) 7%,transparent)}
   td.best{color:var(--local); font-weight:700}
   td.bad{color:var(--remote)}
   td.dim{color:var(--ink-3)}
   tr.muted th, tr.muted td{color:var(--ink-3)}
-  .note{font-size:13px; color:var(--ink-2); max-width:76ch}
-
-  /* inline proportional bar */
-  .bar{display:flex; align-items:center; gap:9px; justify-content:flex-end}
-  .bar .track{width:96px; height:7px; border-radius:99px; background:var(--bar-bg);
-              overflow:hidden; flex:none}
-  .bar .fill{display:block; height:100%; border-radius:99px}
-  .fill.remote{background:var(--remote)} .fill.local{background:var(--local)}
+  .note{font-size:13px; color:var(--ink-2); max-width:80ch}
 
   ul{margin:0; padding-left:19px; color:var(--ink-2);
-     display:flex; flex-direction:column; gap:9px; max-width:76ch}
-  li{font-size:14.5px}
-  li strong{color:var(--ink)}
-
-  .opts{display:flex; flex-direction:column; gap:12px}
-  .opt{border:1px solid var(--line); border-radius:5px; background:var(--card);
-       padding:17px 20px; display:flex; flex-direction:column; gap:9px}
-  .opt-top{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap}
-  .opt .tag{font-family:var(--mono); font-size:11px; font-weight:700;
-            letter-spacing:.1em; text-transform:uppercase; color:var(--local)}
-  .opt .cost{font-family:var(--mono); font-size:12px; color:var(--ink-3);
-             margin-left:auto}
-  .opt p{font-size:14px}
+     display:flex; flex-direction:column; gap:8px; max-width:78ch}
+  li{font-size:14.5px} li strong{color:var(--ink)}
 
   .prov{border-top:1px solid var(--line); padding-top:20px;
         display:flex; flex-direction:column; gap:9px}
-  .prov dl{margin:0; display:grid; grid-template-columns:auto 1fr; gap:5px 20px;
-           font-size:13px}
+  .prov dl{margin:0; display:grid; grid-template-columns:auto 1fr; gap:5px 20px; font-size:13px}
   .prov dt{font-family:var(--mono); font-size:10.5px; color:var(--ink-3);
            letter-spacing:.06em; text-transform:uppercase}
   .prov dd{margin:0; font-family:var(--mono); font-size:12.5px; color:var(--ink-2);
            word-break:break-word}
 
   @media (max-width:640px){
-    .wrap{padding:34px 16px 68px; gap:40px}
+    .wrap{padding:34px 16px 68px; gap:38px}
     .prov dl{grid-template-columns:1fr; gap:2px 0}
     .prov dt{margin-top:8px}
-    .bar .track{width:56px}
   }
 </style>
 
 <div class="wrap">
 
   <header>
-    <p class="lbl">Decision package · 2026-07-30 · kernel v8 @ 67a433bf4 (10107)</p>
-    <h1>Two production roles are serving at about half speed, and it is a wiring regression &mdash; not a kernel or model problem.</h1>
-    <p class="lede"><code>frontdoor</code> and <code>ingest_long_context</code> launch on cpusets that straddle two NUMA nodes with no memory policy. The canonical recipe that fixes this was established on <strong>2026-04-26</strong> and reverted on <strong>2026-05-24</strong> on the strength of a 1.7% warm-cache A/B. Everything below is the re-measurement.</p>
+    <p class="lbl">CPU inference reference · measured 2026-07-30 · kernel v8 @ 67a433bf4 (10107)</p>
+    <h1>What every production CPU model actually does, and the configuration that gets it.</h1>
+    <p class="lede">Every number here is <strong>tok/s</strong>, measured on this host today, taken from llama.cpp's own decode timings. Two roles are currently wired below their measured capability; the rest of the page is what the correct configuration delivers.</p>
   </header>
 
   <div class="stats">
-    <div class="stat">
-      <span class="k">frontdoor · as wired</span>
-      <span class="n remote">10.83</span>
-      <span class="w">± 0.04 tok/s, r=10</span>
-    </div>
-    <div class="stat">
-      <span class="k">frontdoor · canonical</span>
-      <span class="n local">23.36</span>
-      <span class="w">± 0.11 tok/s, r=10 &mdash; <code>0-95</code> + <code>interleave=all</code></span>
-    </div>
-    <div class="stat">
-      <span class="k">roles affected</span>
-      <span class="n void">2 of 7</span>
-      <span class="w">the other five are already correct or single-node</span>
-    </div>
-    <div class="stat">
-      <span class="k">E5 Stage-B cells</span>
-      <span class="n void">27 / 31</span>
-      <span class="w">confounded, must be re-run; 4 salvageable</span>
-    </div>
-  </div>
-
-  <div class="callout stop">
-    <span class="t">Grade &mdash; read this before quoting any number here</span>
-    <p>Every figure on this page is <strong>observation-grade</strong>. The protocol they were taken under, <code>P-BENCH-PLACEMENT-1</code>, has a <code>MEASUREMENT.md</code> registry entry that is <strong>STAGED, not applied</strong> &mdash; the measurement trust boundary is human-amendment-only. Until you ratify it, nothing here may gate a keep / revert / deploy / promote decision. It is sufficient to justify <em>investigating</em> a change, and to retract prior claims, which is what it is being used for.</p>
+    <div class="stat"><span class="k">frontdoor · single stream</span><span class="n local">23.36</span>
+      <span class="w">± 0.11 tok/s, n=10 · spec-dec off · <strong class="bad">10.83</strong> as currently wired</span></div>
+    <div class="stat"><span class="k">worker_general · single stream</span><span class="n local">39.03</span>
+      <span class="w">± 0.56 tok/s, n=5 · already correctly wired</span></div>
+    <div class="stat"><span class="k">ingest_long_context · single stream</span><span class="n local">22.92</span>
+      <span class="w">± 0.31 tok/s, n=5 · <strong class="bad">12.42</strong> as currently wired</span></div>
+    <div class="stat"><span class="k">architect_general · single stream</span><span class="n local">11.04</span>
+      <span class="w">± 0.06 tok/s, n=5 · already correctly wired</span></div>
   </div>
 
   <section>
-    <div class="head">
-      <p class="lbl">Evidence 1</p>
-      <h2>Placement matrix &mdash; every production CPU role</h2>
-    </div>
-    <p class="note"><code>llama-bench</code> <code>tg128</code>, speculative decoding off, <code>drop_caches</code> before every arm, r=5 (frontdoor r=10). <strong>A</strong> = the defective shape (<code>taskset 0-47,96-143</code>, no <code>numactl</code>). <strong>B</strong> = same cpuset + <code>--interleave=0,1</code>. <strong>C</strong> = canonical, <code>taskset 0-95</code> + <code>--interleave=all</code>. All values tok/s, single instance, single stream.</p>
-    <div class="tscroll">
-      <table>
-        <thead><tr>
-          <th class="l">Role</th><th class="l">Model</th>
-          <th>A · defective</th><th>B · + interleave</th><th>C · canonical</th><th>A→C</th>
-        </tr></thead>
-        <tbody>
-          <tr><th>frontdoor</th><td class="dim" style="text-align:left">Qwen3.6-35B-A3B Q8_0</td>
-              <td class="bad">10.83 ± 0.04</td><td class="dim">—</td>
-              <td class="best">23.36 ± 0.11</td><td class="bad">2.16×</td></tr>
-          <tr><th>ingest_long_context</th><td class="dim" style="text-align:left">Qwen3-Next-80B-A3B Q4_K_M</td>
-              <td class="bad">12.42 ± 0.04</td><td>17.07 ± 0.07</td>
-              <td class="best">22.92 ± 0.31</td><td class="bad">1.85×</td></tr>
-          <tr class="muted"><th>worker_general ✓</th><td style="text-align:left">gemma4-26B-A4B Q4_K_M</td>
-              <td>(16.37 ± 0.11)</td><td>(23.43 ± 0.11)</td>
-              <td class="best">39.03 ± 0.56</td><td>already correct</td></tr>
-          <tr class="muted"><th>architect_general ✓</th><td style="text-align:left">Qwen3.5-122B-A10B Q4_K_M</td>
-              <td>(4.40 ± 0.01)</td><td>(6.61 ± 0.02)</td>
-              <td class="best">11.04 ± 0.06</td><td>already correct</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="callout good">
-      <span class="t">Scope &mdash; do not read this fleet-wide</span>
-      <p>Only the first two rows are a live regression. <code>worker_general</code> already runs <code>0-95</code> + <code>interleave=all</code> + <code>no_mmap: True</code> (measured 1.00 weight locality on all five of its instances), and <code>architect_general</code> already runs <code>0-95</code> + <code>interleave=all</code>. Their parenthesised A and B columns are <strong>counterfactuals</strong> &mdash; what they would lose if misconfigured. They independently validate the recipe rather than reporting a loss.</p>
-    </div>
-    <p class="note">The loss ratio is <strong>not</strong> monotone in model size &mdash; 2.38× at 15.6 GiB, 2.16× at 34.4, 1.85× at 45.1, 2.51× at 72.9. Four points across four architectures and two quant families cannot separate a size effect from quant type or active-expert count, so no scaling law is claimed.</p>
+    <div class="head"><p class="lbl">01</p><h2>Single-instance reference &mdash; the number to quote for each model</h2></div>
+    <p class="note"><code>llama-bench</code> <code>tg128</code>, single instance, single stream, speculative decoding <strong>off</strong>, <code>drop_caches</code> before every arm. <strong>Canonical</strong> = <code>taskset -c 0-95</code> + <code>numactl --interleave=all</code>. <strong>As wired</strong> = what that role launches with today.</p>
+    <div class="tscroll"><table>
+      <thead><tr><th class="l">Role</th><th class="l">Model</th><th>As wired</th><th>Canonical</th><th>Gap</th><th class="l">Status</th></tr></thead>
+      <tbody>
+        <tr><th>frontdoor</th><td class="dim l" style="text-align:left">Qwen3.6-35B-A3B Q8_0</td>
+            <td class="bad">10.83 ± 0.04</td><td class="best">23.36 ± 0.11</td><td class="bad">2.16×</td>
+            <td class="bad l" style="text-align:left">MIS-WIRED</td></tr>
+        <tr><th>ingest_long_context</th><td class="dim l" style="text-align:left">Qwen3-Next-80B-A3B Q4_K_M</td>
+            <td class="bad">12.42 ± 0.04</td><td class="best">22.92 ± 0.31</td><td class="bad">1.85×</td>
+            <td class="bad l" style="text-align:left">MIS-WIRED</td></tr>
+        <tr><th>worker_general</th><td class="dim l" style="text-align:left">gemma4-26B-A4B Q4_K_M</td>
+            <td class="dim">—</td><td class="best">39.03 ± 0.56</td><td class="dim">—</td>
+            <td class="l" style="text-align:left;color:var(--ok)">correct</td></tr>
+        <tr><th>architect_general</th><td class="dim l" style="text-align:left">Qwen3.5-122B-A10B Q4_K_M</td>
+            <td class="dim">—</td><td class="best">11.04 ± 0.06</td><td class="dim">—</td>
+            <td class="l" style="text-align:left;color:var(--ok)">correct</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">The two correct roles already run <code>0-95</code> + <code>interleave=all</code>, so their as-wired column <em>is</em> the canonical column. <code>frontdoor</code>'s production recipe adds MTP speculative decoding, which takes its single-stream rate from 23.36 to <strong>38.72</strong> tok/s &mdash; a 1.66× multiplier on top of the placement fix, not instead of it.</p>
   </section>
 
   <section>
-    <div class="head">
-      <p class="lbl">Evidence 2</p>
-      <h2>Why a warm-cache A/B could never have caught this</h2>
-    </div>
-    <p><code>numactl --interleave</code> binds at <strong>first touch only</strong>. Against a warm page cache it is a no-op &mdash; the pages are already placed, and the flag changes nothing. So an A/B run without <code>drop_caches</code> compares two configurations that are using <em>the same</em> physical page placement, and reports a difference of roughly zero. That is exactly the shape of the 1.7% result recorded in <code>stack_numa.py</code> that justified the 2026-05-24 revert.</p>
+    <div class="head"><p class="lbl">02</p><h2>Placement arms &mdash; where the gap comes from</h2></div>
+    <p class="note">Same instrument. <strong>A</strong> = straddling cpuset <code>0-47,96-143</code>, no memory policy. <strong>B</strong> = same cpuset + <code>--interleave=0,1</code>. <strong>C</strong> = canonical.</p>
+    <div class="tscroll"><table>
+      <thead><tr><th class="l">Model</th><th>A · no policy</th><th>B · + interleave</th><th>C · canonical</th></tr></thead>
+      <tbody>
+        <tr><th>Qwen3.6-35B-A3B Q8_0</th><td class="bad">10.83 ± 0.04</td><td class="dim">—</td><td class="best">23.36 ± 0.11</td></tr>
+        <tr><th>Qwen3-Next-80B-A3B Q4_K_M</th><td class="bad">12.42 ± 0.04</td><td>17.07 ± 0.07</td><td class="best">22.92 ± 0.31</td></tr>
+        <tr><th>gemma4-26B-A4B Q4_K_M</th><td class="bad">16.37 ± 0.11</td><td>23.43 ± 0.11</td><td class="best">39.03 ± 0.56</td></tr>
+        <tr><th>Qwen3.5-122B-A10B Q4_K_M</th><td class="bad">4.40 ± 0.01</td><td>6.61 ± 0.02</td><td class="best">11.04 ± 0.06</td></tr>
+      </tbody>
+    </table></div>
     <div class="callout warn">
-      <span class="t">The revert's own evidence, re-examined</span>
-      <p>The in-file comment reads <em>"Config A: <code>numactl --interleave=all</code> + 96t → 26.60 t/s · Config B: <code>NUMA_NODE0</code> + 96t → 27.06 t/s"</em>. That head-to-head is invalid twice over: it predates the <strong>2026-04-24 NPS4 reboot</strong>, when <code>0-47,96-143</code> genuinely <em>was</em> a single NUMA node, and its source CSV records <code>spec == "baseline"</code>. A 1.7% result overrode a documented 44% one.</p>
+      <span class="t">The host is NPS4 &mdash; <code>0-47,96-143</code> is not one node</span>
+      <p><code>node0 = 0-23,96-119</code> · <code>node1 = 24-47,120-143</code> · <code>node2 = 48-71,144-167</code> · <code>node3 = 72-95,168-191</code>. A cpuset spanning two nodes with no memory policy puts every weight page on whichever node faults it first; the rest of the thread team then reads cross-node for the model's lifetime. <code>numactl --interleave</code> binds at <strong>first touch only</strong>, so this is invisible to any A/B run against a warm page cache.</p>
     </div>
-    <p class="note">Live topology, verified 2026-07-30 via <code>numactl --hardware</code>: <code>node0 = 0-23,96-119</code> · <code>node1 = 24-47,120-143</code> · <code>node2 = 48-71,144-167</code> · <code>node3 = 72-95,168-191</code>. <code>NUMA_NODE0</code> and <code>NUMA_NODE1</code> are NPS2-era names; each now spans two nodes. Only the <code>NUMA_Q*</code> quarter constants are node-aligned.</p>
+    <p class="note">Rows 3 and 4 are <strong>counterfactuals</strong> &mdash; those roles are already on arm C. They are shown because they independently confirm the recipe across two more architectures and both quant families.</p>
   </section>
 
   <section>
-    <div class="head">
-      <p class="lbl">Evidence 3</p>
-      <h2>Shared mmap defeats per-instance <code>--membind</code></h2>
+    <div class="head"><p class="lbl">03</p><h2>Shape × concurrency &mdash; every row fully specified</h2></div>
+    <div class="callout key">
+      <span class="t">How to read this table</span>
+      <p><strong>Instances</strong> is how many <code>llama-server</code> processes are running. <strong>np/inst</strong> is the <code>-np</code> slot count given to <em>each one</em>. <strong>T = instances × np/inst</strong> is the total number of requests in flight across the whole machine &mdash; so <em>4 instances at np=1</em> and <em>1 instance at np=4</em> both sit at <strong>T=4</strong>, and only rows with equal T are comparable.</p>
+      <p><strong>Per-stream</strong> is what a single request sees (the latency axis). <strong>Aggregate</strong> is the sum across all in-flight streams (the throughput axis). Highlighted rows are <strong>np=1</strong>, which tie back to the single-instance reference in §01.</p>
     </div>
-    <p>llama.cpp mmaps the GGUF, so its pages live in the shared page cache and are placed <strong>once</strong> &mdash; by whichever instance faults them in first. Every later instance inherits that placement regardless of its own <code>--membind</code>. The flag is accepted and does nothing. Measured from <code>/proc/&lt;pid&gt;/numa_maps</code>, four quarter instances each pinned and bound to their own node:</p>
-    <div class="tscroll">
-      <table>
-        <thead><tr><th class="l">Arm</th><th>q0</th><th>q1</th><th>q2</th><th>q3</th><th>Host RAM</th><th>Fleet decode</th></tr></thead>
-        <tbody>
-          <tr><th>mmap (production default)</th>
-              <td class="bad">25.6%</td><td class="bad">25.6%</td><td class="bad">24.2%</td><td class="bad">26.9%</td>
-              <td class="dim">30 GB</td><td class="bad">40.91 tok/s</td></tr>
-          <tr><th><code>--no-mmap</code></th>
-              <td class="best">100%</td><td class="best">100%</td><td class="best">100%</td><td class="best">100%</td>
-              <td class="dim">171 GB</td><td class="best">52.13 tok/s</td></tr>
-        </tbody>
-      </table>
+    <p class="note">All <code>llama-server</code>, canonical placement, cold, <code>--no-mmap</code> with per-node <code>--membind</code> on every fleet so each instance genuinely owns node-local weights. Frontdoor has MTP speculative decoding <strong>on</strong> (its production recipe); the other three are raw decode. Quarter = one NPS4 node, 24 physical cores. Half = two nodes, 48 physical cores.</p>
+    <div class="tscroll"><table>
+      <thead><tr><th class="l">Shape</th><th>Instances</th><th>np / inst</th><th>T</th><th>Per-stream tok/s</th><th>Aggregate tok/s</th></tr></thead>
+      <tbody>
+        <tr class="group"><th colspan="6">Qwen3.6-35B-A3B Q8_0 &mdash; frontdoor · MTP spec-dec ON</th></tr>
+        <tr class="anchor"><th>1 × full machine</th><td>1</td><td>1</td><td>1</td><td class="best">38.72</td><td>38.72</td></tr>
+        <tr><th>1 × full machine</th><td>1</td><td>2</td><td>2</td><td>27.79</td><td>54.94</td></tr>
+        <tr><th>1 × full machine</th><td>1</td><td>4</td><td>4</td><td>19.93</td><td class="best">79.73</td></tr>
+        <tr><th>1 × full machine</th><td>1</td><td>8</td><td>8</td><td>13.11</td><td class="best">105.07</td></tr>
+        <tr><th>1 × full machine</th><td>1</td><td>16</td><td>16</td><td>8.09</td><td class="best">130.96</td></tr>
+        <tr><th>1 × full machine</th><td>1</td><td>32</td><td>32</td><td>4.56</td><td class="best">145.85</td></tr>
+        <tr class="anchor"><th>2 × half</th><td>2</td><td>1</td><td>2</td><td>22.99</td><td>45.98</td></tr>
+        <tr><th>2 × half</th><td>2</td><td>2</td><td>4</td><td>18.30</td><td>72.83</td></tr>
+        <tr><th>2 × half</th><td>2</td><td>4</td><td>8</td><td>12.33</td><td>98.81</td></tr>
+        <tr><th>2 × half</th><td>2</td><td>8</td><td>16</td><td>8.03</td><td>127.94</td></tr>
+        <tr class="anchor"><th>4 × quarter</th><td>4</td><td>1</td><td>4</td><td>13.62</td><td>52.90</td></tr>
+        <tr><th>4 × quarter</th><td>4</td><td>2</td><td>8</td><td>10.41</td><td>81.00</td></tr>
+        <tr><th>4 × quarter</th><td>4</td><td>4</td><td>16</td><td>6.83</td><td>108.39</td></tr>
+        <tr><th>4 × quarter</th><td>4</td><td>8</td><td>32</td><td>4.50</td><td>143.76</td></tr>
+
+        <tr class="group"><th colspan="6">gemma4-26B-A4B Q4_K_M &mdash; worker_general · spec-dec off</th></tr>
+        <tr class="anchor"><th>1 × full machine</th><td>1</td><td>1</td><td>1</td><td class="best">36.11</td><td>36.11</td></tr>
+        <tr><th>1 × full machine</th><td>1</td><td>2</td><td>2</td><td>29.74</td><td>59.47</td></tr>
+        <tr><th>1 × full machine</th><td>1</td><td>4</td><td>4</td><td>28.61</td><td class="best">114.45</td></tr>
+        <tr><th>1 × full machine</th><td>1</td><td>8</td><td>8</td><td>24.56</td><td class="best">196.48</td></tr>
+        <tr class="anchor"><th>4 × quarter</th><td>4</td><td>1</td><td>4</td><td>15.14</td><td>58.88</td></tr>
+        <tr><th>4 × quarter</th><td>4</td><td>2</td><td>8</td><td>12.23</td><td>97.27</td></tr>
+
+        <tr class="group"><th colspan="6">Qwen3-Next-80B-A3B Q4_K_M &mdash; ingest_long_context · spec-dec off</th></tr>
+        <tr class="anchor"><th>1 × full machine</th><td>1</td><td>1</td><td>1</td><td class="best">23.42</td><td>23.42</td></tr>
+        <tr><th>1 × full machine</th><td>1</td><td>2</td><td>2</td><td>19.78</td><td>39.56</td></tr>
+        <tr><th>1 × full machine</th><td>1</td><td>4</td><td>4</td><td>14.51</td><td class="best">58.04</td></tr>
+        <tr><th>1 × full machine</th><td>1</td><td>8</td><td>8</td><td>9.07</td><td class="best">72.53</td></tr>
+        <tr class="anchor"><th>4 × quarter</th><td>4</td><td>1</td><td>4</td><td>10.86</td><td>42.65</td></tr>
+        <tr><th>4 × quarter</th><td>4</td><td>2</td><td>8</td><td>8.06</td><td>66.62</td></tr>
+
+        <tr class="group"><th colspan="6">Qwen3.5-122B-A10B Q4_K_M &mdash; architect_general · spec-dec off</th></tr>
+        <tr class="anchor"><th>1 × full machine</th><td>1</td><td>1</td><td>1</td><td class="best">11.06</td><td>11.06</td></tr>
+        <tr><th>1 × full machine</th><td>1</td><td>2</td><td>2</td><td>9.28</td><td>18.56</td></tr>
+        <tr><th>1 × full machine</th><td>1</td><td>4</td><td>4</td><td>6.42</td><td class="best">25.68</td></tr>
+        <tr class="muted anchor"><th>4 × quarter *</th><td>4</td><td>1</td><td>4</td><td>3.63</td><td>14.29</td></tr>
+        <tr class="muted"><th>4 × quarter *</th><td>4</td><td>2</td><td>8</td><td>2.95</td><td>23.50</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">* <code>architect_general</code> is not quarterable in production &mdash; it runs a single instance on <code>0-95</code>. Those two rows are exploratory, kept only to test whether quartering ever helps a large-active MoE.</p>
+    <div class="callout good">
+      <span class="t">Reading it at equal T &mdash; one full machine wins everywhere</span>
+      <p>At <strong>T=4</strong>: gemma 114.45 (1×full, np4) against 58.88 (4×quarter, np1). The 80B 58.04 against 42.65. The 35B 79.73 against 52.90. At <strong>T=8</strong>: gemma 196.48 against 97.27; the 80B 72.53 against 66.62; the 35B 105.07 against 81.00. The quarter fleet closes as T rises &mdash; the 35B is within 1.5% by T=32 &mdash; but it never overtakes.</p>
+      <p>The <strong>np=1 rows</strong> tie this to §01 directly: one quarter serving one request does 15.14 tok/s on gemma, where the whole machine serving one request does 36.11. Splitting the machine costs single-request latency and, at every concurrency measured, aggregate throughput too.</p>
     </div>
+    <p class="note">Batching payoff tracks <strong>active</strong> parameters rather than total footprint: gemma's A4B scales 5.4× from np1 to np8, the 80B's A3B 3.1×, the 122B's A10B only 2.3× by np4.</p>
+  </section>
+
+  <section>
+    <div class="head"><p class="lbl">04</p><h2>Why a fleet needs <code>--no-mmap</code></h2></div>
+    <p>llama.cpp mmaps the GGUF, so its pages live in the shared page cache and are placed <strong>once</strong> &mdash; by whichever instance faults them first. Every later instance inherits that placement regardless of its own <code>--membind</code>, which is accepted and does nothing. Measured from <code>/proc/&lt;pid&gt;/numa_maps</code>, four quarters each pinned and bound to their own node:</p>
+    <div class="tscroll"><table>
+      <thead><tr><th class="l">Arm</th><th>q0</th><th>q1</th><th>q2</th><th>q3</th><th>Host RAM</th><th>Fleet aggregate</th></tr></thead>
+      <tbody>
+        <tr><th>mmap (shared)</th><td class="bad">25.6%</td><td class="bad">25.6%</td><td class="bad">24.2%</td><td class="bad">26.9%</td><td class="dim">30 GB</td><td class="bad">40.91 tok/s</td></tr>
+        <tr><th><code>--no-mmap</code> + <code>--membind</code></th><td class="best">100%</td><td class="best">100%</td><td class="best">100%</td><td class="best">100%</td><td class="dim">171 GB</td><td class="best">52.13 tok/s</td></tr>
+      </tbody>
+    </table></div>
     <div class="callout warn">
-      <span class="t">Consequence · non-obvious</span>
-      <p>Under shared mmap, fleet placement depends on <strong>instance start order</strong>, so throughput is nondeterministic across reboots. Here four simultaneous loaders each grabbed ~25%. In the E5 W1 run a single straddling instance loaded first and put <strong>100% of pages on node0</strong>, leaving the other three quarters entirely remote &mdash; worse than not splitting at all. That is why 14 nominally node-aligned E5 cells are confounded despite having correct cpusets.</p>
-    </div>
-    <p class="note"><code>--no-mmap</code> alone is <strong>not</strong> sufficient; it must ship with per-instance <code>--membind</code>, or the private pages simply follow default first-touch. Production has recorded <code>--no-mmap</code> quarters at 0.486 / 0.333 local for exactly this reason.</p>
-  </section>
-
-  <section>
-    <div class="head">
-      <p class="lbl">Evidence 4</p>
-      <h2>One full machine beats four quarters &mdash; for every model, at every rung</h2>
-    </div>
-    <p class="note">Aggregate tok/s at matched total concurrency <strong>T</strong> = instances × <code>-np</code>. The quarter fleets here are given <code>--no-mmap</code> + per-node <code>--membind</code>, which production does <em>not</em> set for these roles &mdash; so this comparison <strong>flatters the fleet</strong>. Production's shared-mmap quarters are slower still.</p>
-    <div class="tscroll">
-      <table>
-        <thead><tr><th class="l">Model</th><th>T</th><th>4 × quarter</th><th>1 × full machine</th><th>Full advantage</th></tr></thead>
-        <tbody>
-          <tr><th>gemma4-26B-A4B</th><td>4</td><td>58.88</td><td class="best">114.45</td>
-              <td><div class="bar"><span class="track"><span class="fill local" style="width:100%"></span></span>+94%</div></td></tr>
-          <tr><th>gemma4-26B-A4B</th><td>8</td><td>97.27</td><td class="best">196.48</td>
-              <td><div class="bar"><span class="track"><span class="fill local" style="width:100%"></span></span>+102%</div></td></tr>
-          <tr><th>Qwen3-Next-80B-A3B</th><td>4</td><td>42.65</td><td class="best">58.04</td>
-              <td><div class="bar"><span class="track"><span class="fill local" style="width:35%"></span></span>+36%</div></td></tr>
-          <tr><th>Qwen3-Next-80B-A3B</th><td>8</td><td>66.62</td><td class="best">72.53</td>
-              <td><div class="bar"><span class="track"><span class="fill local" style="width:9%"></span></span>+9%</div></td></tr>
-          <tr><th>Qwen3.6-35B-A3B · MTP</th><td>4</td><td>52.90</td><td class="best">79.73</td>
-              <td><div class="bar"><span class="track"><span class="fill local" style="width:50%"></span></span>+51%</div></td></tr>
-          <tr><th>Qwen3.6-35B-A3B · MTP</th><td>8</td><td>81.00</td><td class="best">105.07</td>
-              <td><div class="bar"><span class="track"><span class="fill local" style="width:29%"></span></span>+30%</div></td></tr>
-          <tr><th>Qwen3.6-35B-A3B · MTP</th><td>16</td><td>108.39</td><td class="best">130.96</td>
-              <td><div class="bar"><span class="track"><span class="fill local" style="width:21%"></span></span>+21%</div></td></tr>
-          <tr><th>Qwen3.6-35B-A3B · MTP</th><td>32</td><td>143.76</td><td class="best">145.85</td>
-              <td><div class="bar"><span class="track"><span class="fill local" style="width:1%"></span></span>+1%</div></td></tr>
-          <tr class="muted"><th>Qwen3.5-122B-A10B *</th><td>4</td><td>14.29</td><td>25.68</td>
-              <td><div class="bar"><span class="track"><span class="fill local" style="width:80%"></span></span>+80%</div></td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="note">* <code>architect_general</code> is <strong>not quarterable</strong> in production &mdash; it has a single instance on <code>0-95</code>. That row is an exploratory counterfactual, kept only to test whether quartering ever helps a large-active MoE. It does not.</p>
-    <div class="callout good">
-      <span class="t">This refutes the hypothesis I went in with</span>
-      <p>The expectation was that <strong>small-active</strong> models would favour quartering &mdash; fewer active parameters per token means less bandwidth per token, so more headroom to run four independent instances. gemma is the best <code>-np</code> scaler of the set (A4B, 5.4× from np1 to np8) and it is <strong>where the full machine wins hardest</strong> (+94% / +102%). The margin narrows at high T but the fleet never overtakes.</p>
+      <span class="t">Consequence</span>
+      <p>Under shared mmap the placement depends on <strong>instance start order</strong>, so fleet throughput is nondeterministic across reboots. <code>--no-mmap</code> alone is not sufficient &mdash; without per-instance <code>--membind</code> the private pages simply follow default first-touch; production has recorded <code>--no-mmap</code> quarters at 0.486 / 0.333 local for exactly that reason. <strong>Every fleet number in §03 was taken with both set</strong>, so those rows describe a correctly-configured fleet, not the current one.</p>
     </div>
   </section>
 
   <section>
-    <div class="head">
-      <p class="lbl">Evidence 5</p>
-      <h2>Concurrency curve per role, on the corrected placement</h2>
-    </div>
-    <p class="note">Aggregate tok/s across all concurrent streams, <code>llama-server</code> on <code>0-95</code> + <code>interleave=all</code>, <code>--no-mmap</code>, cold. Frontdoor column has MTP speculative decoding <strong>on</strong> (its production recipe); the other three are raw decode.</p>
-    <div class="tscroll">
-      <table>
-        <thead><tr><th class="l">-np</th><th>frontdoor 35B · MTP</th><th>worker 26B-A4B</th><th>ingest 80B-A3B</th><th>architect 122B-A10B</th></tr></thead>
-        <tbody>
-          <tr><th>1</th><td class="best">38.72</td><td>36.11</td><td>23.42</td><td>11.06</td></tr>
-          <tr><th>2</th><td>54.94</td><td>59.47</td><td>39.56</td><td>18.56</td></tr>
-          <tr><th>4</th><td>79.73</td><td>114.45</td><td>58.04</td><td>25.68</td></tr>
-          <tr><th>8</th><td>105.07</td><td class="best">196.48</td><td>72.53</td><td class="dim">—</td></tr>
-          <tr><th>16</th><td>130.96</td><td class="dim">—</td><td class="dim">—</td><td class="dim">—</td></tr>
-          <tr><th>32</th><td class="best">145.85</td><td class="dim">—</td><td class="dim">—</td><td class="dim">—</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="note">Batching payoff tracks <strong>active</strong> parameters, not total footprint: gemma's A4B scales 5.4× from np1→np8, the 80B's A3B 3.1×, and the 122B's A10B only 2.3× by np4.</p>
-    <div class="callout good">
-      <span class="t">The gate the original campaign never had</span>
-      <p><code>np=1</code> on the corrected placement measures <strong>38.72 tok/s</strong>, inside the independent AutoPilot production anchor (<code>median_request_tps</code> median <strong>35.7</strong>, n=154, band 35–40). The original E5 grid sat at 7.8–16 and had no anchor check, so nothing flagged that every cell was running at roughly half the rate production actually achieves. <code>P-BENCH-PLACEMENT-1</code> makes this check mandatory and voids any run that fails it.</p>
-    </div>
-  </section>
-
-  <section>
-    <div class="head">
-      <p class="lbl">Evidence 6</p>
-      <h2>SMT oversubscription, and what the E5 record is worth</h2>
-    </div>
+    <div class="head"><p class="lbl">05</p><h2>Required configuration</h2></div>
+    <p>Ordered so each step is independently verifiable. The stack is currently <strong>down</strong>, so these take effect at next cold start &mdash; no reload, no live disruption.</p>
     <ul>
-      <li><strong>SMT.</strong> Half instances run <code>-t 96</code> on 48 <em>physical</em> cores. Dropping to <code>-t 48</code> gives <strong>+13%</strong> per-stream and <strong>+8.5%</strong> aggregate at np=4 (13.49 vs 11.91 tok/s). Quarters show the same sign, smaller (+2.4%).</li>
-      <li><strong>The metric was a wall-clock rate.</strong> <code>aggregate_predicted_tps</code> was <code>tokens / wall_seconds</code> &mdash; including model load, prefill and idle. Renamed <code>aggregate_wallclock_tps</code>, with a true <code>aggregate_decode_tps</code> added from <code>predicted_n</code>/<code>predicted_ms</code>. Worth only <strong>~5% median</strong> (22% worst) on its own &mdash; small next to the placement defect, and it must never again be conflated with a decode rate.</li>
-      <li><strong>Rungs never saturated.</strong> Achieved concurrency against nominal was 100% at T=1 but <strong>47% at T=32</strong> &mdash; the fixed 43-prompt batch drains before it fills. Every high-T rung measured a partially-drained queue.</li>
-      <li><strong>Disposition.</strong> Of 31 Stage-B cells, <strong>4 are salvageable</strong> (gemma C1 np1/8/16/32 &mdash; full machine + interleave, weights verified 25%/node) and <strong>27 must be re-run</strong>: 13 on straddling cpusets, 14 node-aligned but holding remote weights inherited through shared mmap. Recovered by <em>offline replay</em> of the persisted <code>requests.jsonl</code> &mdash; no re-measurement was needed to reach that verdict.</li>
+      <li><strong>Placement.</strong> <code>frontdoor</code> and <code>ingest_long_context</code> onto <code>taskset -c 0-95</code> + <code>numactl --interleave=all</code>. Recovers <strong>2.16×</strong> and <strong>1.85×</strong>. No RAM cost.</li>
+      <li><strong>Weights.</strong> Any role running multiple instances against one GGUF needs <code>no_mmap: True</code> <em>and</em> per-instance <code>--membind</code>. Recovers <strong>+27%</strong> on fleet decode and removes the start-order nondeterminism. <code>worker_general</code> already has this and measures 1.00 locality on all five of its instances &mdash; it is the working reference.</li>
+      <li><strong>Threads.</strong> Any half-machine instance running <code>-t 96</code> is SMT-oversubscribed on 48 physical cores; <code>-t 48</code> measures <strong>+13%</strong> per-stream and <strong>+8.5%</strong> aggregate at np=4.</li>
+      <li><strong>Slot width.</strong> §03 gives the aggregate/latency trade per role. Nothing here mandates a particular <code>-np</code> &mdash; that is a serving-policy choice between throughput and per-request latency, and the table is the input to it.</li>
     </ul>
-    <div class="callout stop">
-      <span class="t">Retracted</span>
-      <p><strong>“Four quarters is never the winning shape”</strong> as previously published here, and <strong>“production frontdoor decode is ~11–15 tok/s”</strong>. The first measured the defect rather than the shapes; the second came from long-context eval rows, not the model's rate. The wiki simultaneously asserted the <em>opposite</em> conclusion &mdash; “C3 quarters are aggregate-throughput-optimal for every model” &mdash; from the same defective grid. Both directions are withdrawn. What survives from the campaign: the 0.0% error rate on every cell, four harness fixes, and the protocol machinery.</p>
+    <div class="callout key">
+      <span class="t">Grade</span>
+      <p>These figures were taken under <code>P-BENCH-PLACEMENT-1</code>, whose <code>MEASUREMENT.md</code> registry entry is <strong>staged pending operator ratification</strong>. Until it is applied they are observation-grade: sufficient to justify and specify the configuration change, not yet to gate a promotion. Every raw log sits beside the script that produced it in the attestation directory below, so nothing here rests on a summary.</p>
     </div>
-  </section>
-
-  <section>
-    <div class="head">
-      <p class="lbl">The decision</p>
-      <h2>What to change, and what it costs</h2>
-    </div>
-    <p>Sequenced so each gate is independently verifiable. Nothing below has been applied &mdash; <code>stack_numa.py</code> currently carries explanatory comments only and is behaviourally unchanged.</p>
-    <div class="opts">
-      <div class="opt">
-        <div class="opt-top"><span class="tag">Step 1 · placement</span><h3 style="margin:0">Rewire the two mis-wired roles to <code>0-95</code> + <code>interleave=all</code></h3><span class="cost">RAM: unchanged</span></div>
-        <p>Recovers <strong>2.16×</strong> on <code>frontdoor</code> and <strong>1.85×</strong> on <code>ingest_long_context</code>. Smallest change, largest single win, no new failure surface. Restores the canonical that was already in force before 2026-05-24.</p>
-      </div>
-      <div class="opt">
-        <div class="opt-top"><span class="tag">Step 2 · weights</span><h3 style="margin:0">Set <code>no_mmap: True</code> + per-instance <code>--membind</code> on the quarter fleets</h3><span class="cost">RAM: 239.8 → 561.0 GiB of ~1083 free</span></div>
-        <p>Recovers <strong>+27%</strong> on fleet decode and removes the start-order nondeterminism. Must ship with per-instance <code>--membind</code> or it does nothing. Note <code>no_mmap</code> is role-scoped in the current code with no per-instance analogue, so “quarters only” is not expressible without a small change.</p>
-      </div>
-      <div class="opt">
-        <div class="opt-top"><span class="tag">Step 3 · threads</span><h3 style="margin:0">Drop half instances from <code>-t 96</code> to <code>-t 48</code></h3><span class="cost">RAM: unchanged</span></div>
-        <p>Recovers <strong>+8.5%</strong> aggregate. Only relevant if any half-machine shape is retained after step 1.</p>
-      </div>
-      <div class="opt">
-        <div class="opt-top"><span class="tag">Open question</span><h3 style="margin:0">Whether to keep the quarter fleets resident at all</h3><span class="cost">would free ~4 copies per role</span></div>
-        <p>One full-machine instance wins at every rung measured, and needs one weight copy instead of five. The fleet's remaining justifications are <strong>failure isolation</strong> and letting <em>different roles</em> hold different nodes &mdash; neither is a throughput argument. This needs its own decision package; I have not pursued it.</p>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="head">
-      <p class="lbl">Blockers</p>
-      <h2>Things that must move before or with the fix</h2>
-    </div>
-    <ul>
-      <li><strong>A test asserted the defect and forbade its fix &mdash; resolved.</strong> <code>test_frontdoor_full_uses_numa_node0_not_full</code> asserted both the straddling cpuset <em>and</em> that <code>frontdoor</code> carries no <code>numactl_policy</code>, so adding <code>interleave=all</code> would have failed CI. Replaced with <code>test_straddling_cpusets_declare_a_numa_policy</code>, which encodes the invariant that was missing and is <code>xfail(strict=True)</code> &mdash; it documents the live defect without breaking CI, and will <em>fail the suite the moment the wiring is corrected</em>, forcing the marker's removal rather than outliving the defect.</li>
-      <li><strong><code>MEASUREMENT.md</code> carries the retracted number as a ratified exemplar.</strong> Its claim-grammar section shows <code>✅ frontdoor decode 27.06 t/s [P-BENCH-2, n=5, 2026-04-26, attest a3f2]</code> &mdash; that is the <code>NUMA_NODE0</code>-arm figure. It is illustrative grammar rather than a live assertion, but the exemplar is now retracted evidence. <strong>Needs your hand</strong>: the file is hook-enforced human-amendment-only, and a parallel session currently has an uncommitted rewrite of it, so I have deliberately not touched it.</li>
-      <li><strong><code>P-BENCH-PLACEMENT-1</code> is staged, not ratified.</strong> Until its registry entry is applied, everything here is observation-grade. The ready-to-apply entry is in Appendix A of the protocol document.</li>
-      <li><strong>27 E5 cells still need re-running</strong> under the new protocol, with the batch-drain fixed so high-T rungs actually saturate.</li>
-    </ul>
   </section>
 
   <div class="prov">
     <h3>Provenance</h3>
     <dl>
-      <dt>Grade</dt><dd>OBSERVATION-GRADE — P-BENCH-PLACEMENT-1 registry entry STAGED, not applied; cannot gate a decision</dd>
-      <dt>Protocol</dt><dd>P-BENCH-PLACEMENT-1 · epyc-inference-research/docs/protocols/numa-placement-measurement-protocol.md</dd>
-      <dt>Root cause</dt><dd>handoffs/active/numa-placement-defect-20260730.md</dd>
-      <dt>Attestation</dt><dd>epyc-inference-research/data/numa_placement/20260730-P-BENCH-PLACEMENT-1/ — every raw log beside the script that produced it; see its README.md for the figure→file map</dd>
-      <dt>Instruments</dt><dd>llama-bench tg128 (placement matrix, r=5–10) · llama-server (concurrency + fleet, decode from eval time, never wall-clock)</dd>
-      <dt>Cross-check</dt><dd>80B np=1: llama-server 23.42 vs llama-bench 22.92 · full-machine 35B replicated 23.36 ± 0.11 (r=10) against 23.43 ± 0.07</dd>
+      <dt>Protocol</dt><dd>P-BENCH-PLACEMENT-1 · epyc-inference-research/docs/protocols/numa-placement-measurement-protocol.md · registry entry STAGED</dd>
+      <dt>Attestation</dt><dd>epyc-inference-research/data/numa_placement/20260730-P-BENCH-PLACEMENT-1/ — every raw log beside the script that produced it; README.md maps figure → file</dd>
+      <dt>Instruments</dt><dd>llama-bench tg128 (§01, §02; r=5, frontdoor r=10) · llama-server (§03, §04; decode from eval time, never wall-clock)</dd>
+      <dt>Cross-check</dt><dd>80B np=1: llama-server 23.42 vs llama-bench 22.92 · 122B: 11.06 vs 11.04 · 35B full-machine replicated 23.36 ± 0.11 against 23.43 ± 0.07</dd>
+      <dt>Units</dt><dd>tok/s throughout. Per-stream = one request; aggregate = summed across all in-flight streams. tasks/hour is an AutoPilot-only metric and appears nowhere here.</dd>
       <dt>Discipline</dt><dd>drop_caches before every placement arm — --interleave binds at first touch only, so a warm cache silently re-measures the previous arm</dd>
       <dt>Kernel</dt><dd>production-consolidated-v8 @ 67a433bf4 · llama-server 10107</dd>
-      <dt>Host</dt><dd>EPYC 9655, NPS4, node0 0-23,96-119 · node1 24-47,120-143 · node2 48-71,144-167 · node3 72-95,168-191 · numa_balancing=0 · region-lock held q0–q3 as role=bench</dd>
+      <dt>Host</dt><dd>EPYC 9655 · NPS4 · node0 0-23,96-119 · node1 24-47,120-143 · node2 48-71,144-167 · node3 72-95,168-191 · numa_balancing=0 · region-lock q0–q3 role=bench</dd>
       <dt>Env</dt><dd>GGML_IQK=1 · OMP_PLACES=cores · OMP_PROC_BIND=spread · OMP_WAIT_POLICY=active · KMP_BLOCKTIME=10</dd>
       <dt>Date</dt><dd>2026-07-30</dd>
     </dl>
