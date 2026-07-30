@@ -72,11 +72,23 @@ cd "$ROOT"
 for model in "${ORDER[@]}"; do
   path="${MODELS[$model]}"
   log "--- model $model : loading $path"
-  taskset -c 0-95 "$BIN" -m "$path" --port "$PORT" -t 96 -c 8192 -fa 1 -np 1 \
+  taskset -c 0-95 "$BIN" -m "$path" --port "$PORT" -t 96 -c 32768 -fa 1 -np 8 \
     --jinja --no-webui >> "$OUT/$model.server.log" 2>&1 &
   SERVER_PID=$!
   if ! wait_health 1800; then log "ERROR: $model failed to become healthy; skipping"; teardown; continue; fi
   log "$model healthy (pid=$SERVER_PID)"
+
+  # Per-model config probe: 2 tasks/pool at level=none; a broken serving config
+  # (template, np, ctx) must fail HERE, not after 360 wasted calls.
+  if ! python3 tests/compliance/agent_file/live_runner.py \
+      --base-url "$URL" --model-id "$model-probe" \
+      --agent-file "${FILES[none]}" --level none \
+      --max-tokens 512 --temperature 0.0 --timeout 600 \
+      --max-tasks 2 --concurrency 2 \
+      --output "$OUT/${model}.probe.json" >> "$LOG" 2>&1; then
+    log "ERROR: $model config probe FAILED; skipping model"; teardown; continue
+  fi
+  log "$model probe ok"
 
   for level in "${LEVELS[@]}"; do
     outfile="$OUT/${model}-${level}.json"
@@ -86,6 +98,7 @@ for model in "${ORDER[@]}"; do
         --base-url "$URL" --model-id "$model" \
         --agent-file "${FILES[$level]}" --level "$level" \
         --max-tokens 512 --temperature 0.0 --timeout 600 \
+        --concurrency 8 \
         "${EXTRA_ARGS[@]}" \
         --output "$outfile" >> "$LOG" 2>&1; then
       log "done $model/$level"
@@ -102,6 +115,8 @@ import json, sys
 from pathlib import Path
 rows = []
 for f in sorted(Path(sys.argv[1]).glob('*-*.json')):
+    if f.name.endswith('.probe.json'):
+        continue
     d = json.load(open(f))
     rows.append((d['model_id'], d['level'], d['token_count'],
                  d['compliance_pass_rate'], d['procedure_pass_rate'], d['recall_pass_rate']))

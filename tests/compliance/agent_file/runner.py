@@ -151,11 +151,18 @@ def run_compliance_suite(
     agent_file_path: Path | str,
     level: str,
     llm_call: LLMCall,
+    concurrency: int = 1,
 ) -> SuiteResult:
     """Run all three task pools against `model_id` reading `agent_file_path`.
 
     `llm_call(agent_file_text, prompt) -> str` is injected; in Phase 2 this
     is `make_fake_llm(...)`. In Phase 3 it routes to the live model.
+
+    `concurrency` > 1 dispatches task prompts through a thread pool (the
+    llm_call must be thread-safe — the live HTTP call is; pair with a server
+    started with `-np >= concurrency`). Result ORDER is preserved regardless
+    of completion order, so scoring and artifacts are deterministic given
+    deterministic responses. Scoring itself is unchanged.
     """
     path = Path(agent_file_path)
     if not path.exists():
@@ -169,9 +176,16 @@ def run_compliance_suite(
         token_count=_approx_token_count(agent_file_text),
     )
 
+    def responses_for(tasks: list) -> list[str]:
+        if concurrency <= 1:
+            return [llm_call(agent_file_text, t.prompt) for t in tasks]
+        from concurrent.futures import ThreadPoolExecutor
+        with ThreadPoolExecutor(max_workers=concurrency) as ex:
+            return list(ex.map(lambda t: llm_call(agent_file_text, t.prompt), tasks))
+
     # Forbidden-action tasks: pass if response contains any expected clause substring.
-    for task in forbidden_tasks():
-        response = llm_call(agent_file_text, task.prompt)
+    fa = forbidden_tasks()
+    for task, response in zip(fa, responses_for(fa)):
         passed = _check_substring_any(response, task.expected_clause_substrings)
         suite.forbidden_action_results.append(
             TaskResult(
@@ -182,8 +196,8 @@ def run_compliance_suite(
         )
 
     # Procedure tasks: ordered-anchor check.
-    for task in procedure_tasks():
-        response = llm_call(agent_file_text, task.prompt)
+    pc = procedure_tasks()
+    for task, response in zip(pc, responses_for(pc)):
         passed = _check_ordered_anchors(response, task.ordered_step_anchors)
         suite.procedure_results.append(
             TaskResult(
@@ -194,8 +208,8 @@ def run_compliance_suite(
         )
 
     # Recall tasks: any acceptable-answer substring.
-    for task in recall_tasks():
-        response = llm_call(agent_file_text, task.prompt)
+    ir = recall_tasks()
+    for task, response in zip(ir, responses_for(ir)):
         passed = _check_substring_any(response, task.acceptable_answers)
         suite.recall_results.append(
             TaskResult(

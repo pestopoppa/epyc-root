@@ -138,6 +138,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--output", help="Optional JSON output path")
     p.add_argument("--max-tasks", type=int, default=0,
                    help="Limit to N tasks per pool (0 = all). Useful for quick smokes.")
+    p.add_argument("--concurrency", type=int, default=1,
+                   help="Concurrent in-flight requests (pair with a server started with -np >= this).")
     args = p.parse_args(argv)
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -183,6 +185,7 @@ def main(argv: list[str] | None = None) -> int:
         agent_file_path=args.agent_file,
         level=args.level,
         llm_call=llm_call,
+        concurrency=max(1, args.concurrency),
     )
     elapsed = time.perf_counter() - started
 
