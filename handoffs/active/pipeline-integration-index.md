@@ -64,7 +64,7 @@ K-RAG / ColBERT shared encoder
 
 ## Cross-Cutting Concerns
 
-- Pipeline models compete with production NUMA quarters and RAM. Check live stack state before loading vision, Lean, TTS, or PDF sidecars.
+- Pipeline models compete with the production NUMA fleet and RAM. Check live stack state before loading vision, Lean, TTS, or PDF sidecars. **⚠ Updated 2026-07-30: quarters are RETIRED** — every quarterable role is now **1 full + 2 halves** (full `0-95`; half A `0-47,96-143` = nodes 0,1, **GPU-disjoint**; half B `48-95,144-191` = nodes 2,3, **GPU co-tenant**), and ports `8280 8380 8282 8382 8385 8485` are freed. Schedule sidecars that must not collide with the GPU lane on **half A**. The vision pair now carries explicit `membind=1` / `membind=3` because the two roles share ONE GGUF and, under shared mmap, only one of them could ever be node-local. See [numa-topology-cutover-resume-20260730.md](numa-topology-cutover-resume-20260730.md).
 - Pipeline ports must not collide with production stack ports. Current known targets: vision `8086/8087`, ASR `9000`, TTS `9002`.
 - PDF work splits into born-digital fast-path extraction and structural extraction. Do not let LiteParse evidence erase ODL's table/heading/figure role without a structural benchmark.
 - KB-RAG and ColBERT web reranking should share encoder plumbing where practical; keep archive content out of the default corpus unless an explicit historical-retrieval mode exists.

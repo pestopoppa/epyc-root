@@ -662,6 +662,7 @@ general form of **T8**, which stated the same requirement for one role.
 Production runs `-c 32768` = **12.5 %** of what the hardware allows; `architect_general` halves
 that again to `8192`/request via `slots: 2`. **Consequence: context can be provisioned at
 maximum and managed by a compaction policy above the server, rather than rationed at launch.**
+Filed as **T12**.
 Attestation: `ctxalloc.sh` / `ctxalloc_results.txt` / `maxctx.py` / `ctxcurve.sh` / `ctxparse.py`.
 
 ---
@@ -872,6 +873,20 @@ primary artefact.
       `gemma-4-26B-A4B-it-Q4_K_M-current.gguf` where `worker_general` serves
       `gemma-4-26B-A4B-it-ORIG-Q4_K_M.gguf`). Resolve each role's GGUF through the live registry
       chain and diff it against whatever any open handoff quotes for that role.
+- [ ] **T12 — Re-decide `-c` provisioning now that its cost is measured at ~zero.** Production
+      runs `-c 32768` = **12.5 %** of the 262,144-token window every deployed model was trained
+      for, and `architect_general` halves that again to **8192/request** via `slots: 2` — a
+      rationing decision made when the cost was assumed, not measured. Measured 2026-07-30:
+      `-c` allocation costs **no decode speed** (35B `40.44` at `-c 8192` vs `40.49` at
+      `-c 262144`) and **little resident RAM** (gemma4 +6 GB for a 63.8 GiB KV reservation),
+      because **KV pages fault lazily** — and `--mlock` does **not** pin them (verified in
+      llama.cpp source). Every deployed model fits its full trained window on even a *quarter*.
+      **RAM is not the binding constraint.** So the question is whether context should be
+      provisioned at maximum and managed by a **compaction policy above the server** rather than
+      rationed at launch. This is a lineup-level decision with a residency bill, like T2 — do not
+      flip it per-role. Sequence it **after** the N25 cutover commit; it changes the launch
+      command and therefore forces another recompile. Attestation: `ctxalloc.sh` /
+      `ctxalloc_results.txt` / `maxctx.py` in the attestation directory.
 
 ### Opened 2026-07-30 by the topology change — OWNED ELSEWHERE, do not re-file here
 
