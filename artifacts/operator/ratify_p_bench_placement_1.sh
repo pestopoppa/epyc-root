@@ -2,22 +2,31 @@
 # Operator ratification — MEASUREMENT.md trust boundary (human-amendment-only).
 #
 # Written by mainA 2026-07-30 but NOT executed: MEASUREMENT.md and
-# measurement/protocols/ are the measurement trust boundary and are
-# human-amendment-only, so an agent must not apply these itself.
+# measurement/protocols/ are human-amendment-only, so an agent must not apply
+# these itself.
 #
-# THREE amendments, all justified by measurements taken 2026-07-30:
-#   A. register P-BENCH-PLACEMENT-1 (new protocol; placement is an axis none of
-#      P-BENCH-1/2/3 constrain, which is why the 2026-07-30 defect was reachable)
-#   B. correct P-BENCH-3's metric from "tasks/h" to decode tok/s, per the
-#      operator ruling that tasks/hour is an AutoPilot-only metric
-#   C. replace the claim-grammar exemplar that cites retracted evidence
+# THREE amendments:
 #
-# CAUTION — the trust boundary is mid-restructure by another session:
-#   * MEASUREMENT.md has uncommitted modifications
-#   * measurement/protocols/ is entirely UNTRACKED (created 2026-07-30 10:32)
-# This script therefore VERIFIES its expected context before touching anything
-# and aborts if that session has moved things. It is idempotent: re-running
-# after a successful pass is a no-op.
+#   A. Register P-BENCH-PLACEMENT-1. Placement — CPU affinity, NUMA memory
+#      policy, mmap mode, instance count — is an axis that P-BENCH-1/2/3 do not
+#      constrain. That gap is why the 2026-07-30 defect was reachable: every
+#      individual protocol was satisfied while two roles served at ~half speed.
+#
+#   B. Make P-BENCH-3 conform to the ALREADY-RATIFIED §1. This is NOT a new
+#      policy. MEASUREMENT.md v2 §1 "Metric scoping" already states that
+#      tokens/s is the instrument-level metric for `P-BENCH-*` and that
+#      task_rate is the autopilot objective axis. But the P-BENCH-3 registry row
+#      still reads "tasks/h + p50/p95 latency", and bench-cpu.md still mandates
+#      "tasks/hour AND per-stream p50/p95". A batched/slot -np sweep measures a
+#      MODEL INSTANCE, so by §1 it ranks on tok/s. tasks/h is RETAINED as a
+#      secondary orchestration-facing readout — this is a reordering to match
+#      ratified policy, not a removal.
+#
+#   C. Replace the claim-grammar exemplar that cites retracted evidence.
+#
+# CAUTION — MEASUREMENT.md was ratified today (apply_v2.sh, 20260730T103218Z)
+# but is still UNCOMMITTED, and measurement/protocols/ is untracked. This script
+# verifies its expected context and aborts if anything moved. Idempotent.
 set -euo pipefail
 cd /workspace
 
@@ -27,20 +36,21 @@ fail() { echo "ABORT: $*" >&2; exit 1; }
 
 # ---- context checks -------------------------------------------------------
 [ -f "$M" ]     || fail "$M not found"
-[ -f "$ANNEX" ] || fail "$ANNEX not found — the annex layout changed; re-derive this patch"
+[ -f "$ANNEX" ] || fail "$ANNEX not found — annex layout changed; re-derive this patch"
 
+grep -q '^## 1. Metric scoping' "$M" \
+  || fail "§1 Metric scoping not found — this patch assumes MEASUREMENT.md v2; re-derive"
 grep -q '^| P-BENCH-4 | Single-instance server-native spec-dec' "$M" \
-  || fail "registry index row for P-BENCH-4 not found in the expected form — table was restructured"
+  || fail "P-BENCH-4 registry row not in the expected form — table restructured"
 grep -q '^| P-BENCH-3 | Batched/slot decode' "$M" \
-  || fail "P-BENCH-3 row not found in the expected form"
+  || fail "P-BENCH-3 registry row not in the expected form"
 grep -q '^- ✅ `frontdoor decode 27.06 t/s' "$M" \
   || fail "the 27.06 exemplar is not where expected — already amended, or section moved"
 
-echo "context OK — applying three amendments to the measurement trust boundary"
+echo "context OK — applying three amendments"
 
 python3 - <<'PY'
-import pathlib, sys
-
+import pathlib
 m = pathlib.Path("MEASUREMENT.md"); t = m.read_text()
 
 # --- A. register P-BENCH-PLACEMENT-1, immediately after P-BENCH-4 ----------
@@ -52,38 +62,56 @@ if "P-BENCH-PLACEMENT-1" not in t:
                   if l.startswith("| P-BENCH-4 | Single-instance server-native spec-dec"))
     t = t.replace(anchor, anchor + row, 1)
 
-# --- B. P-BENCH-3 metric: tasks/h is an AutoPilot-only metric --------------
+# --- B. P-BENCH-3 conforms to §1: tok/s primary, tasks/h retained ----------
 old3 = "| P-BENCH-3 | Batched/slot decode (`-np N` sweep) | tasks/h + p50/p95 latency |"
 new3 = ("| P-BENCH-3 | Batched/slot decode (`-np N` sweep) | aggregate + per-stream "
-        "decode tok/s (↑); p50/p95 latency (↓) |")
+        "decode tok/s (↑) primary, per §1; p50/p95 latency (↓); tasks/h retained secondary |")
 if old3 in t:
     t = t.replace(old3, new3, 1)
 
-# --- C. claim-grammar exemplar citing retracted evidence -------------------
+# --- C. exemplar citing retracted evidence --------------------------------
 old_ex = "- ✅ `frontdoor decode 27.06 t/s [P-BENCH-2, n=5, 2026-04-26, attest a3f2]`"
-new_ex = ("- ✅ `frontdoor decode 23.36 ± 0.11 tok/s per-stream, spec-dec off "
-          "[P-BENCH-PLACEMENT-1 arm A2, n=10, 2026-07-30, attest "
+new_ex = ("- ✅ `frontdoor decode 40.22 tok/s per-stream, spec-dec on (draft-mtp n_max 4) "
+          "[P-BENCH-PLACEMENT-1 arm A2, n=3, 2026-07-30, attest "
           "data/numa_placement/20260730-P-BENCH-PLACEMENT-1/]`\n"
           "  <!-- Replaced 2026-07-30. The prior exemplar, `frontdoor decode 27.06 t/s\n"
-          "  [P-BENCH-2, n=5, 2026-04-26, attest a3f2]`, was the NUMA_NODE0-arm figure from\n"
-          "  the 2026-04-17 head-to-head. That head-to-head is invalid twice over: it\n"
-          "  predates the 2026-04-24 NPS4 reboot (when `0-47,96-143` genuinely was one NUMA\n"
-          "  node) and its source CSV records `spec == \"baseline\"`. Grammar unchanged; only\n"
-          "  the illustration was retracted evidence. -->")
+          "  [P-BENCH-2, n=5, 2026-04-26, attest a3f2]`, was the NUMA_NODE0-arm figure from the\n"
+          "  2026-04-17 head-to-head, which is invalid twice over: it predates the 2026-04-24\n"
+          "  NPS4 reboot (when `0-47,96-143` genuinely was one NUMA node) and its source CSV\n"
+          "  records `spec == \"baseline\"`. The replacement is deliberately a PRODUCTION-RECIPE\n"
+          "  figure (spec-dec on), not a baseline: a baseline number is not production-usable\n"
+          "  and must not be the exemplar of a well-formed claim. -->")
 if old_ex in t:
     t = t.replace(old_ex, new_ex, 1)
 
 m.write_text(t)
-print("MEASUREMENT.md: amendments A, B, C applied")
+print("MEASUREMENT.md: A, B, C applied")
 PY
 
-# ---- D. normative text into annex B --------------------------------------
+# ---- B (cont.) — same conformance fix in the annex ------------------------
+python3 - <<'PY'
+import pathlib, re
+p = pathlib.Path("measurement/protocols/bench-cpu.md"); t = p.read_text()
+old = "tasks/hour AND per-stream p50/p95 latency, reported per-N."
+new = ("aggregate + per-stream decode tok/s (primary, per MEASUREMENT.md §1 — a `-np` sweep "
+       "measures a MODEL INSTANCE) AND per-stream p50/p95 latency, reported per-N; tasks/hour "
+       "retained as a secondary orchestration-facing readout, never as the ranking key.")
+if old in t:
+    t = t.replace(old, new, 1); p.write_text(t); print("bench-cpu.md: P-BENCH-3 metric conformed to §1")
+elif "never as the ranking key" in t:
+    print("bench-cpu.md: already conformed")
+else:
+    raise SystemExit("ABORT: P-BENCH-3 metric sentence not found in annex — re-derive")
+PY
+
+# ---- A (cont.) — normative text into annex B -----------------------------
 if ! grep -q "P-BENCH-PLACEMENT-1" "$ANNEX"; then
   cat >> "$ANNEX" <<'ANNEXEOF'
 
 ## P-BENCH-PLACEMENT-1 — NUMA placement and concurrency
 
-Ratified 2026-07-30. Direction: higher-better, **tok/s**.
+Ratified 2026-07-30. Direction: higher-better, **tok/s** (per §1: this measures a model
+instance, not an orchestrator configuration).
 
 **Scope.** Any decision-gating throughput number that varies with, or depends on, CPU
 affinity, NUMA memory policy, mmap mode, instance count, or slot concurrency.
@@ -108,6 +136,10 @@ that gap is why the 2026-07-30 defect was reachable.
 4. Decode rate from `predicted_n` / `predicted_ms` only. A wall-clock rate is never a
    decode rate. Report per-stream and system-wide separately, with a skip audit.
 5. Achieved concurrency measured per rung against nominal, and floored.
+6. **Every arm runs the role's PRODUCTION acceleration recipe** (speculative decoding,
+   draft model, draft_max) as recorded in the registry. A spec-dec-off baseline is not a
+   production-usable figure and may not be reported as a headline; if a baseline is needed
+   to isolate an effect, it is labelled as such and quoted alongside, never instead.
 
 **Arms.** A0 production as-wired · A1 same cpuset + correct interleave · A2 full machine +
 `interleave=all` · A3 N-instance fleet, shared mmap · A4 N-instance fleet, `--no-mmap`.
@@ -125,12 +157,12 @@ No pre-ratification placement artifact may be retro-certified under this protoco
 **Claim grammar.**
 `<value> tok/s <per-stream|aggregate(T=n)>, spec-dec <on|off>, arm <A0..A4> [P-BENCH-PLACEMENT-1, n=<reps>, <date>, attest <ref>]`
 ANNEXEOF
-  echo "$ANNEX: normative text appended"
+  echo "$ANNEX: P-BENCH-PLACEMENT-1 normative text appended"
 fi
 
 echo
 echo "=== review before committing ==="
-git --no-pager diff -- "$M" | head -60
+git --no-pager diff -- "$M" | head -70
 echo
-echo "measurement/protocols/ is UNTRACKED — 'git status' it before staging so you do not"
-echo "sweep in the parallel session's in-flight restructure."
+echo "NOTE: measurement/protocols/ is UNTRACKED and MEASUREMENT.md is uncommitted"
+echo "(v2 was applied today at 10:32). 'git status' before staging."
