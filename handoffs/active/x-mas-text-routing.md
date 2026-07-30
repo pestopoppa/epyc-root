@@ -8,6 +8,8 @@
 **History**: [x-mas-text-routing-history-through-2026-06-19.md](../archived/x-mas-text-routing-history-through-2026-06-19.md) preserves the completed scaffold/sweep/A-B chronology compacted out of this active handoff.
 **Source deep-dive**: [`/workspace/research/deep-dives/2026-05-19-latent-mas-cluster.md`](../../research/deep-dives/2026-05-19-latent-mas-cluster.md)
 
+**Current-runtime correction (verified 2026-07-29):** the historical enforce cutover remains recorded below, but the current `classifier_config.yaml` has `xmas_routing.mode: shadow` (with a 2026-07-16 rollback note requiring fresh speed/quality revalidation). No API listener and no AutoPilot process were present, and the newest X-MAS A/B artifact is 2026-07-03; post-enable enforcement telemetry therefore does not currently exist to monitor. Leave the monitoring checkbox open until a future verified enforce interval has live records. The read-only Fable5 report is additionally blocked by a runtime-facts circular import, so it cannot certify the live path until repaired.
+
 ## Objective
 
 Replicate the X-MAS (intake-557, arxiv:2505.16997, `github.com/MASWorks/X-MAS`) domain x function optimal-model methodology on the EPYC production stack, build a domain/function winner table, and only route live traffic through it if held-out production evidence beats current routing without unacceptable latency or domain regressions.

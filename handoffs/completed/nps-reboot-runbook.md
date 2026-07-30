@@ -10,6 +10,21 @@
 
 **Reopen triggers**: none. **L3aaN is do-not-re-propose without a new mechanism** (per `project_l3aan_reverted`); any future NPS-mode change gets a fresh runbook with fresh baselines.
 
+> ### Correction note — added 2026-07-30 (annotation only; tables below unchanged)
+>
+> Rows in the sweep tables that label `0-47,96-143` as **"node 0"** are pre-NPS4 labels and are
+> wrong for the machine as it has run since the 2026-04-24/25 reboot this runbook gated. Post-
+> reboot topology: `node0 = 0-23,96-119`, `node1 = 24-47,120-143`, `node2 = 48-71,144-167`,
+> `node3 = 72-95,168-191`. `0-47,96-143` therefore **straddles node0+node1**, and
+> `48-95,144-191` straddles node2+node3. The `stack_numa.py` constants `NUMA_NODE0`/`NUMA_NODE1`
+> carry the same stale names.
+>
+> Worth reading forward: the very table below already shows the straddling shape **losing** to
+> the whole machine (`0-95, -t 96` = **49.34** peak vs `0-47,96-143, -t 96` = 44.63). That
+> direction was re-confirmed on 2026-07-30 against the two production roles still wired to the
+> straddling cpuset — see [`numa-placement-defect-20260730.md`](../active/numa-placement-defect-20260730.md)
+> (observation-grade; `P-BENCH-PLACEMENT-1` registry entry STAGED, not applied).
+
 ---
 
 **Status**: scheduled (pending user-initiated reboot window)
@@ -47,7 +62,7 @@ Capture these numbers so post-reboot regressions are detectable.
 | taskset 0-23, -t 24 | 44.32 |
 | taskset 0-47, -t 48 | 45.80 |
 | taskset 0-95, -t 96 (all 96 phys, no SMT) | **49.34** (peak) |
-| taskset 0-47,96-143, -t 96 (node 0 phys+HT) | 44.63 |
+| taskset 0-47,96-143, -t 96 (labelled "node 0 phys+HT" — see correction note) | 44.63 |
 | taskset 0-143, -t 144 (crosses NUMA) | 25.74 bimodal |
 | --numa distribute --mlock, -t 192 | 18.69 bimodal |
 

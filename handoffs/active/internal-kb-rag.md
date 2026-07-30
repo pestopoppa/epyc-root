@@ -226,7 +226,7 @@ Three patterns lifted from `strukto-ai/mirage` source audit. Apply at design tim
 
 ### Next Actions
 
-- [ ] Bookmark the Ekimetrics MIT 5-metric implementation as candidate eval scaffolding for K7 — gate adoption on the HOPE-vs-Ekimetrics side-by-side that opendataloader Phase 2 work will produce on PDF-extracted text. The markdown-input case here is similar enough that the metric-validity verdict from there should transfer with a small re-check on markdown fixtures.
+- [x] Bookmark the Ekimetrics MIT 5-metric implementation as candidate eval scaffolding for K7 ✅ 2026-07-29 — already indexed as [`intake-580`](../../research/intake_index.yaml) and documented above with its MIT core, the FMRE non-commercial dependency caveat, and the lack of a reusable chunker interface. Adoption remains gated on the HOPE-vs-Ekimetrics side-by-side from opendataloader Phase 2; this records the source only and adopts no metric or harness.
 - [ ] When defending K2's heading-aware chunking choice in any future review, cite HOPE's independence finding as empirical support rather than relying on the "natural for markdown" argument alone.
 
 ## Research Intake Update — 2026-05-21

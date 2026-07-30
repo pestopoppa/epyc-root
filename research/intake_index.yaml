@@ -3155,7 +3155,7 @@
     - src/graph/helpers.py
     - src/features.py
     handoffs:
-    - rlm-orchestrator-roadmap.md
+    - repl-turn-efficiency.md
     chapters:
     - 04-radix-attention.md
     - 08-cost-aware-rewards.md
@@ -3204,7 +3204,7 @@
     - src/graph/session_log.py
     - src/features.py
     handoffs:
-    - rlm-orchestrator-roadmap.md
+    - repl-turn-efficiency.md
     - reasoning-compression.md
   notes: 'Context-Folding''s procedural branching maps to our worker escalation pattern. The 10x context reduction via folding is more aggressive than our session_compaction. FoldGRPO''s process rewards for decomposition could improve our MemRL routing decisions — rewarding effective task splitting rather than just final outcome. Key difference from RLM: Context-Folding uses RL to learn WHEN to fold; RLM uses code-based decomposition. Both are complementary.
 
@@ -10897,7 +10897,7 @@
   novelty: medium
   relevance: high
   credibility_score: null
-  verdict: not_applicable
+  verdict: superseded
   discovered_via: null
   expanded_from: null
   ingested_date: '2026-04-14'
@@ -10916,11 +10916,13 @@
   handoffs_updated:
   - searxng-search-backend.md
   handoffs_created: []
+  verdict_justification: '2026-07-29 correction: Firecrawl is an in-scope self-hostable AGPL-3.0 option, but is superseded for EPYC by the deployed Crawl4AI path (intake-372) on license, single-container operational footprint, and self-hosted browser capability. This is a disposition correction, not an adoption reopening.'
   notes: 'Firecrawl GitHub organization — web data API ecosystem for AI. Main repo (TypeScript, AGPL-3.0) is the flagship scraping tool. MCP server enables Claude Code integration. Already listed as a disabled cloud tool in hermes-outer-shell.md.
 
     RELEVANCE TO EPYC: Complementary to SearXNG (search aggregation). Firecrawl handles deep page scraping while SearXNG handles search. MCP server could enhance research intake pipeline for JS-heavy pages. However, AGPL-3.0 license and cloud-first design conflict with our self-hosted infrastructure philosophy. Crawl4AI (intake-372) is the self-hosted alternative worth evaluating first.
 
     '
+  dive_corrections: '2026-07-29 record repair: the prior not_applicable label was wrong because Firecrawl documents self-hosting through SELF_HOST.md and docker compose, with local `/v1/scrape` and `/v1/crawl`; it can configure `/search` against SearXNG via SEARXNG_ENDPOINT/ENGINES/CATEGORIES and AI extraction against OpenAI-compatible or Ollama endpoints via OPENAI_BASE_URL/OLLAMA_BASE_URL/MODEL_NAME. Those facts do not overturn the outcome. Fire-engine anti-bot support remains cloud-only; the current compose has seven services (including optional FoundationDB and its initializer) and explicitly reserves 4 CPU/8 GB for API plus 2 CPU/4 GB for Playwright. Crawl4AI (intake-372) is already deployed and smoke-validated as the simpler Apache-2.0 local path. Keep Firecrawl''s ranked engine-waterfall as a possible CA-6 design pattern, not a component-adoption reason.'
 - id: intake-365
   arxiv_id: null
   url: https://www.firecrawl.dev/
@@ -21536,6 +21538,7 @@
   novelty_justification: 'RLM paradigm, REPL sandbox, pass-by-reference subagents, FINAL(variable) vs FINAL(string), and asyncio fan-out are all in the intake index via intake-153 and its DSPy/vRLM/predict-rlm descendants. The blog is not an independent corroborating source: its author is also the fast-rlm author and links that repo in-body, making it a design explainer for intake-783.'
   relevance_justification: 'RLM is an active EPYC workstream. The live mechanism owner is repl-turn-efficiency.md; context-folding, meta-harness, and conversation-management retain their related ownership.'
   verdict_justification: 'already_integrated. Use this as intake-783 design rationale and as a source of the open-weight-tuned prompt/verbatim-slice pattern; do not treat it as an independent benchmark or open a duplicate investigation handoff.'
+  dive_corrections: '2026-07-29 recovery: the article includes a complete open-source-oriented RLM system prompt, repurposed from the paper with few-shot and failure-reduction instructions tested by the author on MiniMax-M2.7 and GLM-5.1. Portable operating constants: sub-LLM input around 100K characters; subagent output returned as a variable and inspected through bounded REPL prints (about 200 words); up to ten documents per subcall; a stated around-500K-character subagent ceiling; and parallel independent calls via asyncio.gather. The prompt directs variable-backed composition, deliberate context inspection, instructions before passed context, and parallel rather than sequential child calls. Its asserted ~90% subagent KV-cache-hit rate is a source claim, not EPYC evidence; root turns can still be cache-hostile. This is a prompt/pattern artifact, not a benchmark result.'
 - id: intake-538
   arxiv_id: '2605.14037'
   url: https://arxiv.org/abs/2605.14037
@@ -23943,6 +23946,7 @@
   novelty_justification: Duplicate of intake-576 as a research source — same release. Recorded separately because it is the actionable artifact registry (which sizes exist, which formats, what the API surface looks like) and is the URL a future intake would re-discover; URL-level dedup integrity requires the explicit entry. Listed model sizes/formats are the only original content beyond intake-576.
   relevance_justification: Inherits intake-576 relevance (medium). The model registry data points (7 variants, BF16-only, no GGUF) are the immediately load-bearing facts for any future deployment decision.
   verdict_justification: superseded by intake-576. All technique analysis and scoring lives in the primary entry; this is the artifact catalog.
+  dive_corrections: '2026-07-29 stale-catalog correction: the 2026-05-20 collection snapshot was BF16-only and named no llama.cpp path, but it is no longer an availability statement for this host. A third-party/local `nemotron-diffusion-14b-Q8_0.gguf` (14,359,313,600 bytes; present since 2026-07-10) is available, and the experimental-v7 Dream loader fix at `ed4091266` (2026-07-18) made it runnable through `llama-diffusion-cli`; `test-llama-archs --arch dream` and CPU/MI210 smoke paths passed. Observation-grade local throughput rows are MI210 pp512 1700.42 / tg512 69.05 and CPU pp512 157.57 / tg256 2.69. This does not establish role readiness: the diffusion CLI parses `--grammar` and `-j` but uses its own sampler chain, leaving strict JSON/GBNF/schema-const/line-copy at 0/4. The active blocker is content control or a maintained constrained decode/server path, not GGUF availability or loading.'
 - id: intake-579
   arxiv_id: '2603.25333'
   url: https://huggingface.co/papers/2603.25333
@@ -38083,7 +38087,7 @@
   - repl-turn-efficiency.md
   handoffs_created: []
   notes: 'already_integrated: core RLM paradigm is tracked via intake-153 (arxiv:2512.24601, ~80% implemented in EPYC REPL sandbox). This is an independent Prime Intellect implementation in verifiers, not fast-rlm; the shared arXiv ancestor does not establish a direct lineage. One forward item worth operator flag (not auto-adopt): Prime Intellect RL-train-the-scaffold direction, complementary to autopilot-continuous-optimization and intake-154 FoldGRPO.'
-  dive_corrections: '2026-07-29: primary-source dive corrected the prior promotional summary. The DeepDive claim is GLM-4.6-only and reverses under tips; the Oolong aggregate is driven by the real subset while synth is worse, with an API-rejection artifact in the plain-LLM denominator. The source has plot images only: n=50 prompts × one rollout, one shared seed, untuned defaults, and no confidence intervals. These are observation-grade claims, not decision gates.'
+  dive_corrections: '2026-07-29 conflation-audit recovery. The earlier promotional summary omitted operational negatives: the RLM converts mainly compute-bound long-context prefill into bandwidth-bound decode because it writes code to solve and again to emit the answer, adverse on EPYC''s bandwidth-saturated decode plane; the post says RLM increases wall-clock time significantly in every reported environment. Its largest Oolong synth-with-labels win used zero sub-LM calls (regular expressions over the context variable), evidence for deterministic data-by-reference rather than recursive fan-out. Mechanism constants: depth 1, 8,192-character REPL output cap, 120-second sub-call timeout (300/600 seconds did not help), tools available only to sub-LLMs, and state-variable termination. Main Model Token Efficiency (mean reward / mean main-model trajectory tokens, normalized to no scaffold) is the portable accounting metric needed to prevent hidden sub-call cost. The DeepDive almost-doubling claim is GLM-4.6-only and reverses under tips; GPT-5-mini was worse with RLM absent tips. Oolong''s margin is real-subset-specific while synth loses, and plain-LLM API rejections were counted as zero tokens. The source has plot images only: n=50 prompts × one rollout, one shared seed, untuned defaults, and no confidence intervals. These are observation-grade claims, not decision gates.'
   ingested_date: '2026-07-11'
 - id: intake-804
   arxiv_id: '2607.05391'
@@ -38133,6 +38137,7 @@
     handoffs:
     - autopilot-continuous-optimization.md
     - eval-tower-verification.md
+    - reviewer-calibration-accounting.md
     experiments: []
     intake_entries:
     - intake-362
@@ -38140,7 +38145,8 @@
   credibility_score: 3
   contradicting_evidence:
   - Prior intake (362/363) noted logprob-reliability and LLM-judge bias caveats; reference implementation is Gemini/Vertex-AI-specific (closed API), so local adoption requires re-implementing scoring via llama.cpp logprob extraction.
-  handoffs_updated: []
+  handoffs_updated:
+  - reviewer-calibration-accounting.md
   handoffs_created: []
   notes: 'already_integrated / novelty duplicate: same framework already captured as intake-362 (Notion) + intake-363 (GitHub repo, 2026-04-14) with near-identical Terminal-Bench V2 (86.5 vs 86.4) and SWE-Bench Verified (78.2 vs 77.8). This is the canonical arXiv write-up. RECOMMENDED FOLLOW-UP (operator): attach arxiv_id 2607.05391 + confirmed author list to intake-362/363 as canonical citation, and record the two added benchmarks (RoboRewardBench 87.4, MedAgentBench 73.3).'
   ingested_date: '2026-07-11'

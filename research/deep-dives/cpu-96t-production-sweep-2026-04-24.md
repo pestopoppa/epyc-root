@@ -1,6 +1,6 @@
 # 96t Single-Instance Production Sweep (2026-04-24)
 
-**Parent task**: #10 — Production sweep: adopt 96t-single-NUMA-node operating point
+**Parent task**: #10 — Production sweep: adopt the 96t single-instance operating point (the task was originally named "96t-single-NUMA-node"; that name is a misnomer, as this document's own correction section explains)
 **Status**: SWEEP COMPLETE — recommendation is **model-dependent**, not universal
 **Host**: quiet EPYC 9655, load avg <1, zero-reboot knobs applied (THP always, numa_balancing off, 1GB hugepage)
 **Builds**: `/mnt/raid0/llm/llama.cpp-experimental/build-llamafile-on` (HEAD `9e048fbc1`, tinyBLAS on, `-march=native`)
@@ -14,6 +14,20 @@ The 2026-04-23 deep-dive (`cpu-optimization-phase0-baseline.md`) and wiki update
   - node 0 cpus: `0-47, 96-143` (physical + hyperthreads)
   - node 1 cpus: `48-95, 144-191`
 - `taskset -c 0-95` = **96 physical cores across BOTH nodes** (all physical, no SMT), not "node 0 only."
+
+> **Second correction — added 2026-07-30.** The two-node map immediately above was accurate on
+> 2026-04-24 (NPS2) and became stale the next day. The NPS2 → NPS4 reboot executed 2026-04-24/25
+> gave the host **four** nodes: `node0 = 0-23,96-119`, `node1 = 24-47,120-143`,
+> `node2 = 48-71,144-167`, `node3 = 72-95,168-191`. So `0-47,96-143` now straddles node0+node1
+> and `48-95,144-191` straddles node2+node3 — and `taskset -c 0-95` is 96 physical cores across
+> **all four** nodes. `stack_numa.py`'s `NUMA_NODE0`/`NUMA_NODE1` constants still carry the NPS2
+> names; only its `NUMA_Q*` quarters are node-aligned. Canonical single-instance placement is
+> `taskset -c 0-95` + `numactl --interleave=all` — note that the sweep below used **no** memory
+> policy, so its 96t arms are not the canonical shape. Re-measured 2026-07-30 with the policy in
+> place, the Qwen3.6-35B-A3B Q8_0 row's sign **reverses** (`10.83 ± 0.04` on the straddling
+> `0-47,96-143` shape vs `23.36 ± 0.11` at canonical full machine). Observation-grade:
+> `P-BENCH-PLACEMENT-1` registry entry is STAGED, not applied. See
+> `handoffs/active/numa-placement-defect-20260730.md`.
 - The +26% was a comparison across two different model registry numbers and partially across different sessions (page cache state differed). Apples-to-apples on the same session today: 30B-A3B Q4 at 24t = 44.32, at 96t physical = 49.34 → **+11%**, not +26%.
 
 ## Corrected finding: 96t-all-physical vs 48t-half-node is model-dependent

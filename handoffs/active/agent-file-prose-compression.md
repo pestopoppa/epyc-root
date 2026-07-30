@@ -241,5 +241,115 @@ _Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25
 - [x] **AFC-P5.0 — structural deletion pass BEFORE the Phase-5 compression rollout.** ✅ 2026-07-29 — committed structural slices removed only tree-derivable navigation from `CLAUDE.md` (root `400fb4b3`) and duplicated shared repository/policy guidance (root `f4d2b34a`), retaining the working-tree identity, kernel freeze, measurement, and process safeguards. `validate_claude_md_matrix.py`, `validate_agents_references.py`, and `validate_agents_structure.py` pass. Prose compression remains separately gated by model-specific evidence.
   - [x] `CLAUDE.md` lossless structural slice ✅ 2026-07-29 — removed only tree-derivable repository/dependency/governance/search/GitNexus navigation in root commit `400fb4b3`; retained production-kernel, working-tree identity, process, measurement, and decision safeguards. `validate_claude_md_matrix.py`, `validate_agents_references.py`, and `validate_agents_structure.py` passed.
 - [ ] **AFC-P5.1 — falsify the vendor claim locally; do NOT import it.** Exact quote: *"We removed over 80% of Claude Code's system prompt … with no measurable **loss** on our coding evaluations."* The post supplies **no protocol, suite, n, date or link** (`benchmark`=0, `SWE-bench`=0, `study`=0, `experiment`=0); the only support offered is anecdotal. **Do not assert it "traces to a conference talk"** — unsupported by the page; say *no source is given*. Direct counter-evidence for smaller/self-hosted models: arXiv **2512.17920** finds constraint compliance degrades **faster** than semantic accuracy under compression, worse for smaller models, with an "instruction ambiguity zone" where output looks fine while explicit directives are silently dropped — i.e. **naive eval scores the failure as "no degradation."** Run pre/post artifacts through the existing gate: `tests/compliance/agent_file/live_runner.py` (compliance ≥ 0.95× baseline, procedure ≥ 0.95× baseline, recall ≥ 0.90 absolute). Operator approval + host-quiet window before any inference.
-- [ ] **AFC-P5.2 — de-duplicate four triple-stated policies and fix the drift they already caused.** (a) **Kernel immutability**: `agents/shared/ENGINEERING_STANDARDS.md:52` still reads `production-consolidated-v6`, future `-v7` after the 2026-07-20 v7 cutover — the duplicate has **already drifted**, and will get staler as v8 lands. (The three `.compressed-*` variants do not carry the stale text.) (b) four-repo map stated 3×. (c) measurement policy stated 3× (constitution → digest → digest-of-digest). (d) Operator Decision Requests stated 2×. This is local EPYC proof of the state-it-once rule, independent of any vendor claim.
+- [x] **AFC-P5.2 — de-duplicate four triple-stated policies and fix the drift they already caused.** ✅ 2026-07-29: removed the duplicate repo tables from `agents/AGENT_INSTRUCTIONS.md` and `agents/shared/ENGINEERING_STANDARDS.md` in favor of the canonical `CLAUDE.md` map; condensed the engineering kernel rule to its canonical workflow link (the current v8 rule was already correct, so no stale-v6 text remained); replaced `CLAUDE.md`'s measurement-policy digest-of-digest and operator-decision duplication with canonical links; retained `MEASUREMENT_POLICY.md` and `OPERATING_CONSTRAINTS.md` as the actionable digest/full-contract layers. Validation: agent structure, reference, and CLAUDE matrix validators pass.
+## AFC-P6 — 2026-07-30 full-stack agent-file audit + efficiency plan (operator-requested)
+
+Operator asked for a thorough staleness/verbosity/modularization audit of the core agent files
+and a plan. Audit deliverable: [`docs/reference/agent-config/agent-file-audit-2026-07-30.md`](../../docs/reference/agent-config/agent-file-audit-2026-07-30.md)
+(defect register D1–D7, target architecture, house style for negatives). MEASUREMENT.md rewrite
+drafted at `artifacts/operator/measurement-v2-draft/` (core + 3 annexes + ratification ledger)
+— **operator ratification required before it touches the live constitution**.
+
+House style (operator directive 2026-07-30): negative rules keep directive + one-line origin;
+full incident narratives move to a single incident log. Prose-compression rollout (AFC-P5.1
+gate) remains separately gated on the live_runner compliance evidence.
+
+**P0 — contradictions / broken refs (do first, small diffs):**
+- [x] Audit + persisted findings doc ✅ 2026-07-30
+- [x] MEASUREMENT v2 draft bundle + ratification ledger ✅ 2026-07-30
+- [x] AFC-P6.1 Fix retired per-run-approval language → region-lock claim rule ✅ 2026-07-30 —
+  `WORKFLOWS.md` + `benchmark-analyst.md` fixed directly (region-lock now named);
+  `MEASUREMENT_POLICY.md` is hook-enforced human-only, so its one-line fix rides the v2 apply
+  bundle (`apply_v2.sh` step 3)
+- [x] AFC-P6.2 `## Repository Map` restored in CLAUDE.md (D2 anchors now resolve); stranded
+  `handoffs/completed/` bullet fixed ✅ 2026-07-30
+- [x] AFC-P6.3 `.claude/dependency-map.json` de-versioned (stale v3 note → pointer to the
+  CLAUDE.md freeze header; map records coupling, not versions) ✅ 2026-07-30
+- [x] AFC-P6.4a Claims-grammar validator BUILT per operator decision:
+  `scripts/validate/check_claims_grammar.sh` (warn-mode; diff/range/file modes; `--strict`
+  opt-in; smoke-tested) ✅ 2026-07-30
+- [x] AFC-P6.4 MEASUREMENT v2 RATIFIED ✅ 2026-07-30 — operator ran `apply_v2.sh --apply`
+  (20260730T103218Z): core + `measurement/protocols/` annexes live, digest region-lock line
+  patched, human_only_paths + sha256 pin extended, validators green; v1 backup at
+  `artifacts/operator/measurement-v1-backup-20260730T103218Z/`; residual draft markers cleaned
+  same day (operator-authorized)
+
+**P1 — dead/stale files:**
+- [x] AFC-P6.5 `OPENING_PROMPT.md` DELETED per operator decision (delete outright, not archive)
+  ✅ 2026-07-30 — git history retains it; zero consumers verified first
+- [x] AFC-P6.6 `CLAUDE_GUIDE.md` rewritten against the current layer structure (layers, real
+  hook list from settings.json, validators, where-to-look table) ✅ 2026-07-30
+- [x] AFC-P6.7 `agents/research-writer-guide.md` RETIRED ✅ 2026-07-30 — unique content merged
+  into `docs/guides/agent-workflows/research-writer.md` (stale report target fixed to the
+  script's real `REPORT_FILE`; dead @-mention wiring dropped); exclusion lists unified by
+  removal (schema.md + structure validator entries deleted)
+- [x] AFC-P6.8 `agents/README.md` routing refreshed (Claude tiers + Fable metered + Codex
+  terra/luna + orchestrator-routed local roles); lead-developer mission/matrix reconciled with
+  coordinator-agent exclusive cross-main authority ✅ 2026-07-30
+- [x] AFC-P6.9 `build-engineer.md`: v8-freeze/experimental-only guardrail added; ik_llama
+  reframed as origin incident ✅ 2026-07-30
+- [x] AFC-P6.9b benchmark-analyst thin-overlay pass: region-lock language, metric-scoping
+  bullet (task_rate vs tok/s per operator directive), registry section compressed to pointer
+  ✅ 2026-07-30 (operator decision: shrink-to-thin-overlays for the 6 unconsumed role files;
+  model-engineer/research-engineer/sysadmin audited clean and already thin — no edit needed)
+- [x] AFC-P6.10 ENGINEERING_STANDARDS compressed-{mild,medium,aggressive} regenerated from the
+  post-restructure source ✅ 2026-07-30 — Kernel Workflow section now present in all three;
+  directive-count gate passes (must/never/do-not/MUST counts ≥ source). Note: the source is now
+  dense enough (lists + code) that line-count deltas are small; token-level savings remain and
+  the AFC-P5 rollout decision (deploy compressed variants per operating point) stays
+  operator-gated as before
+- [x] AFC-P6.18 Sub-repo agent files audited + fixed ✅ 2026-07-30 — findings D8–D12 appended to
+  the audit doc. Fixed same day: orchestrator CLAUDE.md architecture rot (dead symbols, wrong
+  dir, 7→9 nodes, missing 5th gate), research CLAUDE.md pre-constitution bench workflow
+  (canonical recipe + region-lock + era citation now cited), registry-FROZEN note, broken
+  `registry_loader.py` ref, chapter-count drift, Operator-Decision-Request dedup → pointers,
+  FROZEN-kernel warnings added to both repos' epyc-llama bullets, `agent-governance.md` dead
+  llama-governance channel corrected
+- [x] AFC-P6.19 Matrix accounting expanded ✅ 2026-07-30 — matrix MD+JSON now account for all 6
+  sub-repo agent files (child_repo_governed / upstream_unmanaged classes) + `.claude/` scopes;
+  `validate_claude_md_matrix.py` DISCOVERS `repos/*/CLAUDE.md|AGENTS.md` and fails on
+  unaccounted files (and on JSON rows absent from the MD)
+- [x] AFC-P6.20 llama-tree overlay STAGED at `docs/reference/agent-config/llama-tree-overlay/`
+  ✅ 2026-07-30 — freeze warning, experimental-workflow pointer, upstream-AGENTS scoping;
+  promotion step 4 in CLAUDE.md § Experimental Kernel Workflow now names the overlay bake;
+  matrix rows mark the frozen-tree stubs DO-NOT-EDIT
+- [x] AFC-P6.21 Nested gitnexus subtree resolved ✅ 2026-07-30 — the nested copies were NEWER
+  (Jul 10 `run.cjs` runner vs May 22 `npx` at top level), so the newer content was PROMOTED to
+  the canonical top-level skills and the nest deleted (not just rm'd — content preserved)
+- [ ] AFC-P6.22 Operator hygiene call: untracked `.gitnexusignore` + `tools/math-tools/` inside
+  the frozen v8 tree — remove or bless (audit D8 note). OPERATOR-ONLY (frozen tree)
+
+**P2 — dedup + extraction (modularization):**
+- [x] AFC-P6.11 D6 duplication set collapsed ✅ 2026-07-30 — canonical homes: checkbox +
+  idle-main axioms in `agents/shared/SESSION_LIFECYCLE.md` (new); tmux keystroke safety in
+  OPERATING_CONSTRAINTS § Dangerous Operations; heartbeat rule one-lined in CLAUDE.md with
+  INC ref; wrap-up//clear/pre-reboot rules single-stated in SESSION_LIFECYCLE with pointers
+  from coordinator-agent + CLAUDE.md
+- [x] AFC-P6.12 D7 layering violations extracted ✅ 2026-07-30 — OC lifecycle content →
+  `agents/shared/SESSION_LIFECYCLE.md`; coordinator escalation ladder + rate-limit exception →
+  `docs/guides/agent-workflows/coordinator-escalation.md`; ES registry spec →
+  `repos/epyc-inference-research/docs/reference/models/REGISTRY_STANDARDS.md` (referrers
+  updated); WORKFLOWS RLM section → `docs/guides/agent-workflows/orchestrator-lifecycle.md`;
+  WORKFLOWS Benchmark Update deduped to a digest pointer
+- [x] AFC-P6.13 CLAUDE.md slimmed and restructured ✅ 2026-07-30 — handoff-index authoring spec
+  → `docs/guides/agent-workflows/handoff-index-authoring.md`; Codex delegation + long-horizon
+  contract → OPERATING_CONSTRAINTS § Codex Delegation & Long-Horizon Throughput (pointer
+  kept); incident narratives → `docs/reference/agent-config/INCIDENT_LOG.md` (9 entries,
+  INC-<date>-<slug> ids); bus/heartbeat blocks trimmed to commands + links; kernel-freeze
+  section compressed with the motivating failure as an INC ref
+- [x] AFC-P6.14 AGENT_INSTRUCTIONS Non-Negotiables deduped ✅ 2026-07-30 — ES-duplicating
+  engineering bullets → single pointer; the two host-safety one-liners deliberately kept
+
+**P3 — enforcement hardening:**
+- [x] AFC-P6.15 Exclusion lists unified (research-writer-guide removal converged all three
+  surfaces on README + AGENT_INSTRUCTIONS); "exactly these headers" wording relaxed to
+  presence-checked + extras-allowed in `.claude/commands/agent-files.md` ✅ 2026-07-30
+- [x] AFC-P6.16 Reference validator extended (all agents/*.md + shared + workflow docs;
+  `#anchor` links verified against GitHub-style heading slugs — caught 4 latent bad refs on
+  first run); `agents_reference_guard.sh` now validates POST-edit content (D13 fixed — also
+  un-wedges fix-edits); skill validator path corrected in SKILL.md ✅ 2026-07-30
+- [x] AFC-P6.17 Dead-weight call RESOLVED by operator decision (thin overlays) ✅ 2026-07-30 —
+  the 6 role files kept + refreshed; `agents/commands/wrap-up.md` validation coverage remains
+  a wishlist item (tracked here, low priority)
+
 - [x] `/doctor` behaviour re-sourced from the Codex CLI and current manual ✅ 2026-07-29: it generates a local diagnostic report for installation, configuration, authentication, runtime, Git, terminal, app-server, and thread-inventory health; its CLI exposes `--json`, `--summary`, and `--all` report modes. It does **not** document skill or `CLAUDE.md` rewriting. The post's four-step dedupe/trim/migrate/report-before-changing description remains invented and is struck from intake-896.

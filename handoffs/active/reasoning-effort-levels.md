@@ -348,7 +348,7 @@ has NONE at either quant**, and our bench matched that, so the loop would occur 
       is the hard case — interactive, and it pays the token cost most, so it wants the **knee** of its own
       curve, not the top. Note the architect and reviewer currently share one model (122B-A10B-IQ2), so
       they share one curve but may sit at different points on it.
-- [ ] **E-7 — Re-calibration trigger.** Make the invariant enforceable, not aspirational: a model swap,
+- [x] **E-7 — Re-calibration trigger.** ✅ 2026-07-29. Make the invariant enforceable, not aspirational: a model swap,
       quant change, or kernel promotion **invalidates** that model's certified levels. Record each curve
       with its `(model, quant, kernel/era)` stamp and add a validator that flags a role whose bound model
       no longer matches the model its effort level was certified against. Same failure mode the registry

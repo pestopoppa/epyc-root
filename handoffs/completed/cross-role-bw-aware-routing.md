@@ -6,6 +6,39 @@
 **Source data**: `/workspace/tmp/contention_matrix_results.txt`, `/workspace/tmp/contention_matrix_v2_results.txt`, `/workspace/tmp/contention_matrix_v3_results.txt`, `/workspace/tmp/teardown_bench.log`
 **Shipped code**: `orchestration/contention_matrix.yaml`, `src/scheduling/{contention.py,contention_gate.py}`, `src/runtime/cpu_region_lock.py:active_region_holders()`, `src/api/models/requests.py:ChatRequest.{max_queue_wait_ms,migration_budget_ms}`, `src/llm_primitives/{inference.py,primitives.py}` integration, `src/backends/concurrency_aware.py:{_compute_quarter_preference,kv_migration_status}`, `scripts/server/contention_matrix.py`, `scripts/validate/check_contention_matrix_fresh.py`, `scripts/benchmark/seeding_orchestrator.py` (Phase C autopilot stamping). **135/135 unit tests passing.**
 
+> ### ⚠ Correction note — added 2026-07-30 (historical record; body left as written)
+>
+> This document treats `NUMA_NODE0` (`0-47,96-143`) and `NUMA_NODE1` (`48-95,144-191`) as **single
+> NUMA nodes** — the topology column of the pair matrix below, the Phase D "opposite NUMA half"
+> rule, and the preferred-quarter-order table all rest on that premise. **The premise is false on
+> this host.** Since the 2026-04-24 NPS4 reboot the machine has four nodes —
+> `node0 = 0-23,96-119`, `node1 = 24-47,120-143`, `node2 = 48-71,144-167`,
+> `node3 = 72-95,168-191` — so `NUMA_NODE0` spans `node0`+`node1` and `NUMA_NODE1` spans
+> `node2`+`node3`. The names are NPS2-era artefacts. Only the `NUMA_Q*` quarter constants are
+> node-aligned, and those parts of this document remain correct.
+>
+> What this changes, and what it does not:
+> - The **cpuset-overlap** logic (which quarters share cores with which "full") is unaffected —
+>   it is arithmetic on core ids, not on node identity. Phase D's preference tables still pick
+>   non-overlapping quarters.
+> - The **memory-locality rationale** ("prefer idle quarters on the opposite NUMA half", "both
+>   NUMA_NODE0" as an explanation for the 0.37 ratio) is **not established** by node identity as
+>   claimed; a `NUMA_NODE0` instance is not node-local to anything.
+> - The measured contention **ratios** below were taken with the roles wired as they were and are
+>   retained verbatim. They were, however, measured against `frontdoor` and `ingest_long_context`
+>   running at roughly half their canonical speed (see below), so the sequential-aggregate
+>   denominators are depressed and the ratios should not be re-used as absolute capacity numbers.
+>
+> Related 2026-07-30 measurement (`llama-bench` tg128, spec-dec off, `drop_caches` per arm,
+> kernel `production-consolidated-v8` / binary `10107`): `frontdoor` as-wired `10.83 ± 0.04` tok/s
+> vs `23.36 ± 0.11` at canonical full machine `taskset -c 0-95` + `numactl --interleave=all`
+> (**2.16×**); `ingest_long_context` `12.42 → 22.92` (**1.85×**). Only those two roles are
+> mis-wired — `worker_general` and `architect_general` already use `0-95` + `interleave=all`.
+> **Observation-grade**: protocol `P-BENCH-PLACEMENT-1` has a MEASUREMENT.md registry entry that
+> is **STAGED, not applied**, so none of this may gate a keep/revert/deploy/promote decision, and
+> the `stack_numa.py` wiring change is **not authorised**. Full analysis:
+> [`numa-placement-defect-20260730.md`](../active/numa-placement-defect-20260730.md).
+
 ## Executive Summary
 
 The 2026-05-24 frontdoor throughput drop was not a launcher regression. A clean-stack teardown bench shows frontdoor solo at **24.94 t/s**. The observed 4-10 t/s happens when autopilot or another caller decodes a high-contention role at the same time.
@@ -63,7 +96,11 @@ Measurement convention:
 
 13 primary-instance cross-role pairs have complete measurements. The six-role matrix would contain 15 pairs; `ingest_long_context + worker_vision` and `architect_general + worker_vision` are not complete in the current artifacts and should be treated as unknown.
 
-| Pair | Topology | Seq agg | Par agg | Ratio | Policy |
+> *2026-07-30: read the "Topology" column as **cpusets**, not nodes. `NUMA_NODE0` = `0-47,96-143`
+> spans NPS4 node0+node1; `NUMA_NODE1` = `48-95,144-191` spans node2+node3. See the correction
+> note at the top of this file.*
+
+| Pair | Topology (cpuset labels) | Seq agg | Par agg | Ratio | Policy |
 |---|---|---:|---:|---:|---|
 | frontdoor + ingest_long_context | both NUMA_NODE0 | 19.52 | 7.30 | **0.37** | block |
 | frontdoor + architect_general | NUMA_NODE0 + NUMA_FULL | 16.96 | 8.52 | **0.50** | block |
@@ -258,12 +295,18 @@ Once the gate is in place, improve `ConcurrencyAwareBackend` selection:
 - For frontdoor/ingest full on NUMA_NODE0, prefer Q1A/Q1B before Q0A/Q0B.
 - Do not schedule `full + all 4 quarters` as a normal mode; the matrix shows it loses.
 
+> **2026-07-30 correction to this rule's stated rationale.** "Opposite NUMA half" is not a NUMA
+> statement on this host: `NUMA_NODE0` = `0-47,96-143` spans NPS4 `node0`+`node1` and
+> `NUMA_NODE1` = `48-95,144-191` spans `node2`+`node3`. The preference order below is still the
+> right one, but it is justified by **cpuset disjointness** (no shared physical cores), not by
+> node locality. See the correction note at the top of this file.
+
 Preferred quarter order:
 
 | Active full instance | Preferred quarter order |
 |---|---|
-| Full on NUMA_NODE0 (`0-47,96-143`) | q3 -> q2 -> q1 -> q0 |
-| Full on NUMA_NODE1 (`48-95,144-191`) | q0 -> q1 -> q3 -> q2 |
+| Full on NUMA_NODE0 (`0-47,96-143` — spans NPS4 node0+node1, **not** one node) | q3 -> q2 -> q1 -> q0 |
+| Full on NUMA_NODE1 (`48-95,144-191` — spans NPS4 node2+node3, **not** one node) | q0 -> q1 -> q3 -> q2 |
 | Full on NUMA_FULL (`0-95`) | any; no truly disjoint quarter exists |
 
 This phase should include tests for deterministic preference order and fallback when preferred quarters are busy.

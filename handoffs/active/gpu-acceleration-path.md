@@ -96,7 +96,7 @@ Speculative decoding on Qwen3.5 hybrids is **dead on CPU** (exhaustively tested 
 5. Compare against llama.cpp baseline on same hardware (no speculation) to measure actual speedup
 6. If viable, evaluate for Qwen3.5-35B-A3B and larger models
 
-**Key difference from our CPU experiments:** This is vLLM-native, not llama.cpp. The entire speculation pipeline (diffusion drafting, tree verification, KV cache management) is GPU-optimized. Our llama.cpp DFlash port was fighting the wrong battle — GPU is the natural habitat for block diffusion speculation.
+**Key difference from our CPU experiments:** The cited community benchmark is vLLM-native and its full DDTree pipeline is GPU-optimized. This is no longer a llama.cpp-availability blocker: upstream merged `draft-dflash` in PR #22105 (2026-06-28), and production carries the 2026-07-18 forward-port. GPU remains the natural habitat for block diffusion speculation because the CPU failure is sequential Delta Net verification cost, not missing DFlash or GGUF support.
 
 ## Research Context
 

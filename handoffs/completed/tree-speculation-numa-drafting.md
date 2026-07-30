@@ -62,11 +62,22 @@ Full data: `epyc-inference-research/docs/chapters/10-advanced-speculative-decodi
 ## Background
 
 ### EPYC 9655 Hardware
-- 2 NUMA nodes, 48 physical cores each (96 physical total)
-- SMT enabled: 192 logical CPUs (node0: 0-47,96-143; node1: 48-95,144-191)
+
+> **Correction note — added 2026-07-30 (annotation only; historical record below left as
+> written).** This block describes the **NPS2** BIOS mode that was live when this work ran
+> (2026-03). Since the 2026-04-24 NPS4 reboot the machine has **4 NUMA nodes of 24 physical
+> cores each**: `node0 = 0-23,96-119`, `node1 = 24-47,120-143`, `node2 = 48-71,144-167`,
+> `node3 = 72-95,168-191`, ~115 GB/s each. The ranges below (`0-47,96-143` / `48-95,144-191`)
+> each **straddle two** NPS4 nodes today. `stack_numa.py`'s `NUMA_NODE0`/`NUMA_NODE1` constants
+> are the same NPS2-era names and are likewise not single nodes; only its `NUMA_Q*` quarters are
+> node-aligned. Do not carry the two-node model forward from this document. See
+> [`numa-placement-defect-20260730.md`](../active/numa-placement-defect-20260730.md).
+
+- 2 NUMA nodes, 48 physical cores each (96 physical total) — **NPS2-era; now 4 nodes of 24, see above**
+- SMT enabled: 192 logical CPUs (NPS2 node0: 0-47,96-143; NPS2 node1: 48-95,144-191)
 - `-t 48` per draft worker uses physical cores only (correct for llama.cpp compute-bound work; SMT siblings add marginal throughput for memory-bound inference)
-- `-t 96` spans both nodes' physical cores
-- ~230 GB/s memory bandwidth per node (~460 GB/s total)
+- `-t 96` spans all physical cores (both NPS2 nodes / all four NPS4 nodes)
+- ~230 GB/s memory bandwidth per NPS2 node (~460 GB/s total; under NPS4 that is ~115 GB/s per node)
 - Verification is bandwidth-bound for f16 models (1.69x at N=64) but NOT for Q4_K_M (4-5x at N=64) — see empirical data below
 
 ### Current State

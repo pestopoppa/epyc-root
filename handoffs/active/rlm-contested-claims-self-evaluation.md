@@ -65,9 +65,11 @@ this repo, and settle two that nobody owns at all.
       move in opposite directions with depth, so a combined cost metric would hide the finding.
       Pre-declare n, reps and the kill criterion before running; n=20 single-run cannot resolve these
       effect sizes.
-  - [ ] E1a — Use a **format-robust scorer**, or score twice (strict + lenient) and report both. The
+  - [x] E1a — Use a **format-robust scorer**, or score twice (strict + lenient) and report both. The
         single most-cited number in this literature is a formatting artifact; do not reproduce that
-        mistake.
+        mistake. ✅ 2026-07-29 — `scripts/benchmark/niah_scorer.py` provides raw exact-match strict
+        scoring plus documented Unicode/case/whitespace-normalized substring lenient scoring; both
+        results are returned for every response and must be reported together.
 - [ ] E2 — **RESCOPED 2026-07-27 (operator): do not replicate this synthetically.** The original plan
       was a ≥3-rep ON/OFF arm against the source's n=1 table. The source's own caveat — the code dump
       stays cheap only when follow-ups add a line or two, and *"a session where every query does heavy

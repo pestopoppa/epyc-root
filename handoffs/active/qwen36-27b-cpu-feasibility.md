@@ -57,12 +57,12 @@ This matches existing Qwen3.5-27B measurements since architecture class is ident
 
 Measure single-instance and NUMA-4-way decode throughput on `unsloth/Qwen3.6-27B-GGUF` Q4_K_M.
 
-- Single-instance: 96-thread numactl single-NUMA-node configuration, target ~7.5–9 t/s
+- Single-instance: canonical 96-thread **whole-machine** configuration (`taskset -c 0-95` + `numactl --interleave=all`), target ~7.5–9 t/s. *(Corrected 2026-07-30: this read "96-thread numactl single-NUMA-node". A NUMA node on this NPS4 host is 24 physical cores, so a 96-thread single-node run is impossible; `stack_numa.py`'s `NUMA_NODE0`/`NUMA_NODE1` names are NPS2-era and each span two nodes.)*
 - NUMA-4-way: 4×48-thread taskset configuration with `--mlock` + `numactl --membind`, target ~30 t/s aggregate
 - Persist results (per `feedback_incremental_persistence`)
 - Compare against:
   - Qwen3.5-27B baseline (validates architecture-class equivalence)
-  - Production `worker_general` (30B-A3B Q4_K_M @ 49.1 t/s 96t-single-node — `project_96t_single_node_operating_point`)
+  - Production `worker_general` (30B-A3B Q4_K_M @ 49.1 t/s at 96t whole-machine `0-95` — `project_96t_single_node_operating_point`; the memory key's "single node" name is the same 2026-07-30 misnomer)
 
 **Decision gate**: if measured throughput is materially below the BW-roofline projection (e.g. <5 t/s single-instance), abandon further evaluation.
 

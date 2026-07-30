@@ -94,11 +94,15 @@ q8_0 model arithmetic error. Remaining items:
   normalized-vector and computed-sum validator; focused Laguna runner tests pass. Before the
   repair, `bed4a1d4` disclosed "JSON `sum` … must be 1.0", so that sub-check did not test
   computation even though the normalized values 0/0.2/0.3/0.5 remained independently checked.
-- [ ] **L-8 (hygiene) — promote the ad-hoc GPU smoke artifact to a script.** The
-  `epyc.laguna_iq2_dflash_candidate_smoke.final_postrepair.v1` summary schema is written by
-  no script under `scripts/` — bespoke one-off, honestly labeled non-gating, but
-  unreproducible. Fold it into `laguna_pgpu1_dflash_runner.py` or delete after the formal
-  P-GPU-1 run supersedes it.
+- [x] **L-8 (hygiene) — promote the ad-hoc GPU smoke artifact to a script.** ✅ 2026-07-29 — research
+  commit `5fd85268` makes the compatibility projection durable: `laguna_pgpu1_dflash_runner.py`
+  deterministically emits `candidate_smoke_summary.json` with schema
+  `epyc.laguna_iq2_dflash_candidate_smoke.v2` from formal-run results. It retains the historic
+  smoke's per-cell prompt/semantic/completion/cleanup evidence and DFlash acceptance totals, but
+  is explicitly `non_gating` and `observation_only`; it cannot create a promotion or performance
+  verdict. Reproduced with `/mnt/raid0/llm/epyc-orchestrator/.venv/bin/pytest -q
+  scripts/benchmark/test_laguna_pgpu1_dflash_runner.py`: 52 passed. No GPU process, production
+  server, or production-kernel tree was touched.
 - [x] **L-9 (post-v8 candidate bench) — Laguna Q4_K_M CPU quant-axis screen** ✅ 2026-07-27.
   The operator decoupled this arm from E8 and authorized a paired quality shortcut instead
   of an expensive full-suite discovery. Harness readiness remained complete:

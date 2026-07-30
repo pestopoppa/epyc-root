@@ -478,25 +478,35 @@ Composition: TP × GEMV ukernel × system tuning multiply up to the 460 GB/s BW 
 
 What this does NOT replace: the NUMA 4-way multi-instance deployment for concurrent sessions stays. TP sharding changes what "full-speed instance" means; the ConcurrencyAwareBackend routing architecture is unchanged.
 
-## 2026-04-23 late-session update — CPU2 falsified, 96t-single-node opportunity found
+## 2026-04-23 late-session update — CPU2 falsified, 96t whole-machine opportunity found
+
+> **Label correction 2026-07-30** (annotation; no measurement changed): this section originally
+> called the 96-thread arm "96t pinned to NUMA node 0". `taskset -c 0-95` is **all 96 physical
+> cores of the whole machine**, not one node — a node on this NPS4 host is 24 physical cores
+> (`node0 = 0-23,96-119` … `node3 = 72-95,168-191`), and even under the NPS2 BIOS live in April a
+> node was `0-47,96-143`. The `stack_numa.py` names `NUMA_NODE0` / `NUMA_NODE1` carry the same
+> NPS2-era misnomer and each span two NPS4 nodes. The 49.11 t/s result is therefore a
+> **full-machine** number, consistent with the 2026-07-30 finding that canonical placement is
+> `taskset -c 0-95` + `numactl --interleave=all`. See
+> [`numa-placement-defect-20260730`](../handoffs/active/numa-placement-defect-20260730.md).
 
 Phase 0 of the CPU optimization pickup (see `hardware-optimization.md` §2026-04-23 late-session) changes the serving story in two ways:
 
 1. **The 1.75× ukernel factor in the composition above is falsified by measurement**. AVX-512VNNI port of the hottest Q8_0 decode function (`ggml_vec_dot_q8_0_q8_0`) delivered +1.7% end-to-end at 96t (not 1.46×), because quantized decode is BW-bound on this hardware — perf samples inside the dot loop are DRAM-wait, not ALU-bound. Revised composition is 2.5× TP × **1.0× ukernel** × 1.25× tuning = 3.1× single-instance. Still valuable; just smaller.
 
-2. **A new single-instance operating point emerged: 96t pinned to NUMA node 0.** On Qwen3-Coder-30B-A3B Q4_K_M (canonical baseline), 96t taskset = **49.11 t/s** (quiet host, stddev 0.08) vs production worker_general 1×24t = 39.1 t/s. **+26% single-session decode with zero code change.** Worth a production sweep before the CPU1 TP-sharding Phase 1 prototype (because: simpler to deploy, 0-cost validation, independent of CPU1 outcome).
+2. **A new single-instance operating point emerged: 96t on the whole machine** *(originally written "96t pinned to NUMA node 0" — see the correction above).* On Qwen3-Coder-30B-A3B Q4_K_M (canonical baseline), 96t taskset = **49.11 t/s** (quiet host, stddev 0.08) vs production worker_general 1×24t = 39.1 t/s. **+26% single-session decode with zero code change.** Worth a production sweep before the CPU1 TP-sharding Phase 1 prototype (because: simpler to deploy, 0-cost validation, independent of CPU1 outcome).
 
 | Config | Qwen3-Coder-30B-A3B Q4_K_M t/s | Notes |
 |---|---|---|
 | 1×24t (worker_general current) | 39.1 | Production |
 | 1×48t | 39.6 | Barrier-bound, no gain over 24t |
-| **1×96t taskset 0–95 (node 0)** | **49.11** | **+26% vs current production; unmeasured before today** |
+| **1×96t taskset 0–95 (whole machine, all physical cores)** | **49.11** | **+26% vs current production; unmeasured before today** |
 | 4×48t NUMA-pinned (frontdoor style) | 95.8 aggregate | Aggregate throughput across 4 sessions |
 | 1×192t `--numa distribute --mlock` | 18.7 | Cross-NUMA penalty dominates |
 
 CPU1 TP-sharding (gate passed) would close the 49→95 single-session gap via CCD-local weight sharding + per-CCD pools + reduction-during-barrier-window prefetch. CPU4 per-CCD sync primitive (promoted to HIGH on the 32–45% barrier-cost measurement) is an independent lever that could recover barrier idle time.
 
-Action for `dynamic-stack-concurrency.md` / routing owner: benchmark 1×96t single-node under realistic concurrent load; verify KV scaling; verify multi-instance aggregate doesn't regress if adopted as a single-session fast path. Task #10 tracks.
+Action for `dynamic-stack-concurrency.md` / routing owner: benchmark 1×96t whole-machine (`0-95` + `interleave=all`) under realistic concurrent load; verify KV scaling; verify multi-instance aggregate doesn't regress if adopted as a single-session fast path. Task #10 tracks.
 
 ## 2026-04-24 — Concurrent-split sweep dominates: +110% production throughput available
 
@@ -667,6 +677,11 @@ The model is systematically **overconfident on wrong short answers** (e.g. `529`
 `ConcurrencyAwareBackend` (`epyc-orchestrator/src/backends/concurrency_aware.py`) and `ContentionGate` (`src/scheduling/contention_gate.py`) admit and place requests by lock availability + NUMA disjointness, but they do NOT model the within-role full↔quarter cpuset overlap relation. For each role with `full + N quarters` deployed, the dispatcher tries full first (via non-blocking try-acquire), then falls through to NUMA-disjoint quarters first, overlapping quarters last. The `same_role` matrix verdict in `orchestration/contention_matrix.yaml` is a single `allow / block / n/a` value with no instance-pair granularity — it was measured for quarters-only co-placement, not full+quarter.
 
 Concrete failure modes per role (cpu_list source: `scripts/server/stack_numa.py:NUMA_CONFIG`):
+
+> *2026-07-30: `NUMA_NODE0` (`0-47,96-143`) and `NUMA_NODE1` (`48-95,144-191`) are NPS2-era names
+> and are **not** single NUMA nodes — each spans two of this host's four NPS4 nodes
+> (`node0 = 0-23,96-119` … `node3 = 72-95,168-191`). The overlap arithmetic in the table below is
+> unaffected (it is core-id disjointness, not node identity), but read the labels as cpusets.*
 
 | Role | Full cpu_list | Disjoint quarters | Safe-without-migration N |
 |---|---|---|---|

@@ -26,23 +26,38 @@ Key values from `system-state-audit.txt`:
 
 All runs use `llama-bench` with `GGML_USE_LLAMAFILE=ON` (immaterial per §CPU7 finding but held constant) and `taskset` for thread pinning up to 144t; 192t uses `--numa distribute -mmp 1`.
 
+> **CPU-SET LABEL CORRECTION — added 2026-07-30 (annotation only; no measurement changed).**
+> The "node 0" labels in the table below are **wrong**, and were wrong on the day they were
+> written. `0-95` is all 96 **physical cores of the whole machine**, not one NUMA node — under
+> the NPS2 BIOS live on 2026-04-23 a node was `0-47,96-143`; since the 2026-04-24 NPS4 reboot a
+> node is a quarter (`node0 = 0-23,96-119`, `node1 = 24-47,120-143`, `node2 = 48-71,144-167`,
+> `node3 = 72-95,168-191`). Corrected reading of each row: `0-23` = one NPS4 node's physical
+> cores; `0-47` = two nodes' physical cores; `0-95` = **all four nodes' physical cores**
+> (this is today's canonical full-machine placement, minus the `numactl --interleave=all` that
+> the canonical recipe adds); `0-143` = all physical cores + half the SMT siblings.
+> Consequence: the 49.11 t/s "peak" is a **full-machine** number and is *consistent with* the
+> 2026-07-30 finding that a correctly-placed full-machine instance is the strongest
+> single-instance shape — it was never evidence for single-node pinning. The `stack_numa.py`
+> constants `NUMA_NODE0 = "0-47,96-143"` / `NUMA_NODE1 = "48-95,144-191"` carry the same
+> NPS2-era misnomer. See `handoffs/active/numa-placement-defect-20260730.md`.
+
 | Config | CPU set | Threads | avg t/s | stddev | Notes |
 |---|---|---|---|---|---|
-| t024 | 0–23 (node 0 Q0A) | 24 | **40.76** | 0.105 | Matches production worker_explore 39.1 t/s closely |
-| t048 | 0–47 (node 0 half) | 48 | **39.59** | 0.208 | Minor regression vs 24t — barrier cost exceeds BW gain |
-| t096 (loaded) | 0–95 (full node 0) | 96 | 47.91 | 0.26 | Original run; host load 6–170 |
-| **t096 (quiet)** | 0–95 (full node 0) | 96 | **49.11** | **0.08** | **PEAK CONFIRMED.** Full 6-channel DDR5 node-local BW. Stddev tightens from 0.26 → 0.08 on quiet host. |
-| t144 | 0–143 (node 0 + half node 1) | 144 | **25.74** | **18.50** (bimodal 12.66 / 38.83) | NUMA crossing disaster — weight pages split unevenly |
+| t024 | 0–23 (Q0A = one NPS4 node) | 24 | **40.76** | 0.105 | Matches production worker_explore 39.1 t/s closely |
+| t048 | 0–47 (two nodes' physical cores) | 48 | **39.59** | 0.208 | Minor regression vs 24t — barrier cost exceeds BW gain |
+| t096 (loaded) | 0–95 (**whole machine**, all physical cores) | 96 | 47.91 | 0.26 | Original run; host load 6–170 |
+| **t096 (quiet)** | 0–95 (**whole machine**, all physical cores) | 96 | **49.11** | **0.08** | **PEAK CONFIRMED.** Full 12-channel DDR5 BW across all nodes. Stddev tightens from 0.26 → 0.08 on quiet host. *(2026-07-30: originally described as "node-local BW" — it is not node-local; it is whole-machine.)* |
+| t144 | 0–143 (all physical cores + half the SMT siblings) | 144 | **25.74** | **18.50** (bimodal 12.66 / 38.83) | Oversubscription + uneven weight-page placement |
 | **t192 (quiet)** | all cores `--numa distribute --mlock` | 192 | **18.69** | **7.23** (bimodal 13.58 / 23.81) | Production registry number was 14.2 t/s for this config. Our number is +31% vs registry but **still bimodal** — first sample slow (page-in), second sample faster. Needs more samples + warm page cache for a clean number. |
 
 ### The 96t/192t ratio: **2.63×**
 
-Running on a single NUMA node with half the threads is **2.63× faster** than running on the full machine with all threads for single-instance decode on this model. This is the gap CPU1 (intra-process TP-sharding) is trying to close. Compare against the 6.7× aggregate speedup from 4×48t NUMA-pinned multi-instance (95.8 t/s) — the single-instance TP ceiling is bounded by that aggregate, and the 49.11 → ~95 trajectory would represent 80% of the aggregate ceiling in a single session.
+Running on all 96 **physical** cores is **2.63× faster** than running on all 192 SMT threads for single-instance decode on this model. *(2026-07-30 correction: this sentence read "running on a single NUMA node with half the threads" — both arms are whole-machine; the difference is physical cores vs SMT threads, not node-local vs cross-node.)* This is the gap CPU1 (intra-process TP-sharding) is trying to close. Compare against the 6.7× aggregate speedup from 4×48t NUMA-pinned multi-instance (95.8 t/s) — the single-instance TP ceiling is bounded by that aggregate, and the 49.11 → ~95 trajectory would represent 80% of the aggregate ceiling in a single session.
 
 ### Interpretation
 
 1. **48t is barrier-limited, not BW-limited.** Adding threads 25–48 to a single node 0 half barely moves throughput (40.8 → 39.6) — within noise on the regression side. This tells us barrier and thread-pool overhead at the per-layer sync points costs about as much as the extra compute/BW the added threads supply.
-2. **96t single-socket is the peak for single-instance.** Using all of node 0 (full 6-channel BW + more FMAs) brings +21% vs 48t and +18% vs 24t. This config is *not* how production runs (production uses 4×48t pinned for aggregate), and suggests a natural single-instance operating point that wasn't previously measured.
+2. **96t whole-machine (all physical cores) is the peak for single-instance.** *(2026-07-30: was "96t single-socket … using all of node 0" — `0-95` is every node's physical cores, not node 0.)* Using all 96 physical cores (full 12-channel BW + more FMAs) brings +21% vs 48t and +18% vs 24t. This config is *not* how production runs (production uses 4×48t pinned for aggregate), and suggests a natural single-instance operating point that wasn't previously measured.
 3. **Crossing NUMA boundaries without proper sharding is catastrophic.** 144t spans 1.5 NUMA nodes. The per-sample bimodality (12.66 and 38.83 t/s) indicates weights pages landed unevenly — one sample got lucky, the other didn't. The 18.5 stddev is the kind of thing that breaks production SLAs.
 4. **This baseline reshapes CPU1 (TP-sharding) framing.** The original TP claim was "1×192t is 20–50% of hardware capability." Our measurement: 96t single-node is nearly optimal for single-instance; the gap to fill is 96t → full-machine, not 48t → full-machine. That's still plenty of TP opportunity, but the target is different.
 
@@ -224,8 +239,8 @@ The original CPU2 "GO" recommendation below is preserved for historical context 
 ### CPU1 (TP-sharding) — **GO, HIGHEST PRIORITY NOW** (promoted from among others after CPU2 falsification)
 
 - **Gate passed** per Phase 0 criteria; see §3d/gate-decision block.
-- Original framing: "close gap between 48t-barrier-bound and full-machine." Revised: **close gap between 96t-single-node peak (49.11 t/s) and multi-instance aggregate (95.8 t/s at 4×48t NUMA)** — factor of ~2× achievable.
-- 192t on full machine is worse than 96t single-node (18.7 vs 49.1). The full-machine TP story requires per-CCD weight locality + smaller barriers — which is exactly what `intra-process-tensor-parallel-decode.md` proposes.
+- Original framing: "close gap between 48t-barrier-bound and full-machine." Revised: **close gap between the 96t whole-machine physical-core peak (49.11 t/s) and multi-instance aggregate (95.8 t/s at 4×48t NUMA)** — factor of ~2× achievable. *(2026-07-30: "96t-single-node" corrected to "96t whole-machine physical-core"; `0-95` is not one node. The 95.8 t/s aggregate is also **not** matched-concurrency against the 49.11 single-instance figure — see the 2026-07-30 T-matched data in `handoffs/active/numa-placement-defect-20260730.md`, observation-grade.)*
+- 192t (all SMT threads) is worse than 96t (all physical cores) — 18.7 vs 49.1. The full-machine TP story requires per-CCD weight locality + smaller barriers — which is exactly what `intra-process-tensor-parallel-decode.md` proposes.
 - **Barrier cost (32–45% of cycles) is now a known quantity**, not speculative. CPU4 (per-CCD sync primitive) delivers direct returns.
 
 ### CPU4 (per-CCD sync primitive) — **PROMOTED TO HIGH standalone**
@@ -236,6 +251,8 @@ Originally MED priority ("part of CPU3 Phase 3"). Based on 32–45% barrier-cost
 
 Not a gate — informational. Time permitting before Step 5/6 starts, do a synthetic barrier-cost-per-thread curve to inform CPU4 primitive design choice (atomic counter vs tree reduce vs tournament).
 
-### 96t-single-node operating point deserves production attention
+### 96t whole-machine operating point deserves production attention
 
-Independent of CPU1/2/3/4, the 96t-node0-pinned config delivers 49.11 t/s on Qwen3-Coder-30B-A3B Q4_K_M — a config that production doesn't currently use. The production worker_explore config is 1×24t (39.1 t/s). Running 1×96t single-node (saturating one NUMA node) as a production option could deliver +26% single-session decode without any code change. Recommend a follow-up production-sweep to verify this holds under realistic load.
+*(Heading and body corrected 2026-07-30: was "96t-single-node … 96t-node0-pinned … saturating one NUMA node". The config is `taskset -c 0-95` = all 96 physical cores across all four NPS4 nodes.)*
+
+Independent of CPU1/2/3/4, the 96t whole-machine config (`taskset -c 0-95`) delivers 49.11 t/s on Qwen3-Coder-30B-A3B Q4_K_M — a config that production doesn't currently use. The production worker_explore config is 1×24t (39.1 t/s). Running 1×96t on the whole machine (canonically paired with `numactl --interleave=all`) as a production option could deliver +26% single-session decode without any code change. Recommend a follow-up production-sweep to verify this holds under realistic load.

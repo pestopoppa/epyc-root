@@ -200,7 +200,7 @@ Start gate for the entire backlog: **CPU3 Phase 0 baseline measurement** — `pe
 
 Phase 0 ran end-to-end on 2026-04-23 in `llama.cpp-experimental` on `cpu-optimization/backlog-2026-04-23` (HEAD `9e048fbc1`). Key measurements and decisions:
 
-- **Thread sweep** on Qwen3-Coder-30B-A3B Q4_K_M (`-p 0 -n 64 -r 3`, quiet host): 24t=40.8 t/s, 48t=39.6, **96t node 0 pinned = 49.1 (PEAK)**, 144t cross-NUMA=25.7 bimodal, 192t `--numa distribute`=18.7 bimodal.
+- **Thread sweep** on Qwen3-Coder-30B-A3B Q4_K_M (`-p 0 -n 64 -r 3`, quiet host): 24t=40.8 t/s, 48t=39.6, **96t whole-machine (`taskset -c 0-95`, all physical cores) = 49.1 (PEAK)**, 144t cross-NUMA=25.7 bimodal, 192t `--numa distribute`=18.7 bimodal.
 - **perf profile Qwen3.6-27B Q8_0 @ 96t (4.41 t/s)**: 63.43% `ggml_vec_dot_q8_0_q8_0`, 32.34% libomp spin/barrier, 0.11% DeltaNet (`gated_delta_net` + `ssm_conv` combined — refutes the feared DeltaNet-dominates gate).
 - **CPU2 Phase 1 Target #1 implemented and tested**: ported `ggml_vec_dot_q8_0_q8_0` from AVX2 (256-bit) to AVX-512VNNI (512-bit) using existing `mul_sum_i8_pairs_acc_int32x16` helper. Disassembly confirmed `vpdpbusd %zmm` in new path. Measured +1.7% at 96t / −3.6% at 1t — projection of 1.46× falsified. Cause: perf cycles inside the dot loop are DRAM-wait, not ALU. Change reverted.
 - **Promotions based on measurement**:
@@ -208,7 +208,7 @@ Phase 0 ran end-to-end on 2026-04-23 in `llama.cpp-experimental` on `cpu-optimiz
   - CPU4 (per-CCD sync primitive) promoted from MED-bundled to HIGH standalone on measured 32–45% barrier cost.
   - CPU2 (GEMV ukernels on quantized decode) deprioritized.
 - **CPU3 zero-reboot knobs applied via user sudo**: THP→always, numa_balancing=0, 1GB hugepage on node 1. Net within noise on canonical workload.
-- **96t-single-NUMA-node operating point** emerged as actionable: +26% vs production worker_general (1×24t, 39.1 t/s) with no code change. Worth a production sweep separately from CPU1.
+- **96t whole-machine operating point** emerged as actionable: +26% vs production worker_general (1×24t, 39.1 t/s) with no code change. Worth a production sweep separately from CPU1. *(Label corrected 2026-07-30: originally "96t-single-NUMA-node". The config is `taskset -c 0-95` = all 96 physical cores across all four NPS4 nodes, not one node; canonical placement adds `numactl --interleave=all`. Same misnomer as `stack_numa.py`'s `NUMA_NODE0`/`NUMA_NODE1`, which each span two nodes.)*
 
 See `research/deep-dives/cpu-optimization-phase0-baseline.md` for full analysis + revised gate decisions. Auto-memory entry `feedback_cpu_decode_bw_bound.md` captures the lesson: when perf shows high overhead inside a quantized-decode inner dot loop on this hardware, those samples are typically DRAM-wait cycles; a cheap wider-SIMD A/B test resolves the question in hours before committing to shape-specialized ukernel work.
 

@@ -137,12 +137,18 @@ Whether this is as cheap as the IQ-quant un-stub is **unverified** and must be c
 is scheduled — the IQ-quant case was cheap for a specific reason (native enum values, kernel
 already vendored), and that reason has to be re-established here rather than assumed:
 
-- [ ] **B6 — Scope the 1bit family.** Confirm (a) `iqk_gemm_1bit.cpp` is vendored in our tree,
-  (b) which types its `set_kernels`/`convert` switches actually implement, (c) whether those are
-  native ggml enum values (`IQ1_S=19`, `IQ1_M=29` are native; ik-only `_R4` variants are not), and
-  (d) whether it needs block structs or `type_traits` rows we lack — the KT failure mode. If all
-  four come back clean it is the same one-day shape as B1-B5 and should ride the same build. If any
-  come back dirty, file it separately rather than bundling it into this promotion.
+- [x] **B6 — Scope the 1bit family.** ✅ 2026-07-29 static source audit at frozen
+  `production-consolidated-v8` `67a433bf45a8a091d83b4ea0b32ff0735fd51800`: (a)
+  `ggml-cpu/iqk/iqk_gemm_1bit.cpp` is vendored but omitted from the CPU CMake source list; (b) both
+  architecture variants implement the native `IQ1_S` and `IQ1_M` cases in
+  `iqk_set_kernels_1bit` and `iqk_convert_1bit_q80_r8` (the latter routes exactly those two types);
+  (c) they are native `GGML_TYPE_IQ1_S=19` / `GGML_TYPE_IQ1_M=29`; and (d) their
+  `block_iq1_s`/`block_iq1_m` plus core and CPU `type_traits` already exist. The source also carries
+  ik-only `_R4`/BN paths, but `iqk_ext_types.h`/`iqk_ext_blocks.h` already provide their compile-only
+  shims, so enabling the standard pair needs no enum, block-layout, or traits change. **Conclusion:
+  clean same-shape candidate as B1-B5**; stage only on a fresh experimental branch and retain the
+  normal build/correctness/measurement gates. No build, server, benchmark, or production-tree change
+  was made by this audit.
 - NOTE: the payoff is narrower than B1-B5 — one model, 82 tensors — so do not let it block B5.
 
 ### B. Why the KT/trellis gate belongs in `ik_llama.cpp`, not our tree (operator question)

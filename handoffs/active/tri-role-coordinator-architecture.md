@@ -173,8 +173,8 @@ This handoff isolates the *single biggest empirical lever* in Trinity's ablation
 
 **Action**: Cross-reference EvoScientist memory module patterns for our persistent memory work. Monitor AI Scientist for autonomous research pipeline validation.
 
-- [ ] **TR-ES-1** — cross-reference EvoScientist memory modules for StrategyStore enrichment
-- [ ] **TR-ES-2** — evaluate EvoScientist's knowledge distillation separation for our Evolution Manager species
+- [x] **TR-ES-1** — cross-reference EvoScientist memory modules for StrategyStore enrichment ✅ 2026-07-29. EvoScientist's **Experimentation Memory** is the relevant analogue: ESE distills engineer trajectories and retrieves one strategy by embedding similarity. Map that narrowly to StrategyStore's derived strategy view, while retaining EPYC's stronger invariants: raw trajectory/event provenance remains append-only, reads are policy-gated, and write-side provenance validation rejects ungrounded non-operator strategies. Do **not** copy EvoScientist's LLM-summary-only source of truth or fixed `k=1`; its Ideation Memory belongs to the separate planner/idea layer, not StrategyStore. This is an architecture cross-reference only—no retrieval policy, store schema, or runtime behavior changes.
+- [x] **TR-ES-2** — evaluate EvoScientist's knowledge distillation separation for our Evolution Manager species ✅ 2026-07-29. Adopt only the separation-of-duties shape: an observer/distiller must remain separate from proposal generation and execution. EPYC already represents that boundary with its uninstantiated `KnowledgeDistiller`/Evolution Manager path; it has zero non-test callers. Do not wire it to write derived strategies or feed retrieval yet: first run it as shadow/observer-only and prove it beats AP-29's episodic-only retain-and-delete control arm. Keep raw events append-only and derived outputs provenance- and policy-gated. EvoScientist's LLM-only summaries, fixed cadence, and reported outcomes are paper observations, not EPYC performance evidence; no runtime, cadence, retrieval, or schema change follows from this evaluation.
 
 ## Research Intake Update — 2026-04-28
 

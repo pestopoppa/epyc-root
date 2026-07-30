@@ -50,13 +50,13 @@ model X?" without artifact archaeology.
 - [x] Filterable table + per-model drill-down, served as a sibling page on :8100 ✅ 2026-07-29 — `/benchmarks` filters model/quant rows client-side and exposes each saved artifact path; its data comes exclusively from the offline path-keyed contract at `/api/benchmark_artifacts`.
 - [x] Tag every number with its **MEASUREMENT grade** (observation vs decision) and kernel/era, so the
       surface can't launder an observation into a gate. ✅ 2026-07-29 — artifact drill-down displays its saved grade and kernel; era is explicitly `not inferred` unless a future read-only resolver can map it unambiguously from the human-owned registry. No dashboard value is promoted by display.
-- [ ] Handle sparse coverage gracefully (models with partial / no benchmarks show what exists, not an
-      error) — the operator explicitly wants "at least what we have."
+- [x] Handle sparse coverage gracefully (models with partial / no benchmarks show what exists, not an
+      error) ✅ 2026-07-29 — the artifact builder emits all 158 registry records with model paths; 152 have an explicit empty artifact list and remain filterable in `/benchmarks`, while unmatched artifacts remain separately counted rather than guessed onto a model.
 
 ## Phase 2 — archival database (stretch, low priority)
 
-- [ ] Persist ingested results into a queryable store (SQLite) for historical / cross-era queries.
-- [ ] Backfill from existing artifacts.
+- [x] Persist ingested results into a queryable store (SQLite) for historical / cross-era queries. ✅ 2026-07-29 — `scripts/dashboard/export_benchmark_artifact_sqlite.py` exports the read-only artifact contract to `data/benchmark_artifacts.sqlite`; bounded validation returns 154 rows. It stores reported kernel/grade/timestamp without inferring era or certifying evidence.
+- [x] Backfill from existing artifacts. ✅ 2026-07-29 — recursive read-only scan covered current saved JSON under research `artifacts/`: 154 explicitly path-matched records loaded into both JSON/SQLite views, with 1,341 unmatched records retained for later provenance work rather than discarded or guessed.
 
 ## Non-goals
 

@@ -27,7 +27,7 @@ Two dive results reshape the report's design. First, **overcorrection dominates*
   - [ ] **RC-6a — operator PR + sign-off** (human-amendment-only): land the drafted P-REV-1 blocks into `MEASUREMENT.md` §1/§2/§3 via PR-reviewed amendment with a one-line CHANGELOG (append-or-version). Until merged, every reviewer FA/FR/yield/CR number stays an **observation** and MUST NOT gate any keep/revert/deploy/promote decision in H5/H7.
 - [x] **RC-7 — Evidence-plane alignment** ✅ 2026-07-17 (docstring alignment note + `to_question_ledger_row()` adapter stub — decision≈question): per-decision rows follow per-question-ledger conventions (decision ≈ question); cross-ref both handoffs.
 - [ ] **RC-8 — Baseline run**: current self-review (architect alias) in shadow on corpus v1 — the first FA/FR numbers. **Broken-grader guardrail**: read transcripts before trusting a surprising number (CORE-Bench 42→95% was grader repair, not model change).
-- [ ] **RC-9 — Rubric persistence**: store full rubric + per-item grades in corpus rows, not just verdicts (rubric-generator distillation > classifier — intake-834); if the instrument changes later, append eras per `instrument_eras.yaml` conventions. **Staleness audit 2026-07-29:** the current ledger has `rubric_version` only, with no rubric/grade payload; its append writer has HIGH impact (analysis, tests, Autopilot, and trace modules), so implement this as a separately reviewed additive schema + backward-compatible writer/read change rather than altering the shared ledger opportunistically.
+- [x] **RC-9 — Rubric persistence** ✅ 2026-07-29 (`review_ledger.v2`; focused validation: 94 passed, 1 expected skip): full rubric and per-item grade snapshots now persist in nullable canonical-JSON `rubric_json` / `per_item_grades_json` columns. The additive migration preserves pre-RC-9 rows; legacy writers remain valid, and readers retain raw forensic columns while exposing decoded `rubric` / `per_item_grades` aliases. This is an accounting schema change only — no reviewer metric or instrument claim was produced. **Staleness audit 2026-07-29:** the prior ledger had `rubric_version` only, with no rubric/grade payload; its append writer has HIGH impact (analysis, tests, Autopilot, and trace modules), so this was implemented as a separately reviewed additive schema + backward-compatible writer/read change.
 
 ## Dependency Graph
 
@@ -57,7 +57,7 @@ Flip checkboxes `✅ YYYY-MM-DD`; corpus versions and first FA/FR numbers record
 
 ## Evidence Base (intake)
 
-intake-836 FR≫FA asymmetry + rationale-vs-cause · intake-837 Consistency Rate · intake-844 Recall/OverPrediction plan-grading template · intake-845 executable oracles + corpus mining rules · intake-846 pass^k + broken-grader guardrail · intake-834 rubric persistence + decision bands · audit doc 2026-07-16 · dataset manifest B13.
+intake-836 FR≫FA asymmetry + rationale-vs-cause · intake-837 Consistency Rate · intake-844 Recall/OverPrediction plan-grading template · intake-845 executable oracles + corpus mining rules · intake-846 pass^k + broken-grader guardrail · intake-834 rubric persistence + decision bands · intake-804 continuous verifier confidence source · audit doc 2026-07-16 · dataset manifest B13.
 
 ## P-REV-1 Draft Amendment Text (for operator PR — MEASUREMENT.md is human-amendment-only)
 
@@ -104,3 +104,9 @@ Copy-paste-ready blocks for the operator to land in `MEASUREMENT.md` via a PR-re
 
 - [ ] Operator-review candidate (RC-6a, do BEFORE the PR lands): add a chance-corrected agreement statistic + a declared tie/abstention estimand + confusion-matrix publication to the P-REV-1 claim grammar; pair kappa with marginal/prevalence disclosure per the kappa-paradox caveat. Human-amendment-only — operator PR, not an agent edit. [intake-876]
 - [ ] Operator-review candidate (GC-external-1a): declare the tie/abstention estimand explicitly and report its rate, rather than skipping malformed/tie rows as cleaning. [intake-876]
+
+## Research Intake Cross-Link — 2026-07-29 (intake-804; confidence source, not a re-verdict)
+
+- [`intake-804`](../../research/intake_index.yaml) is the canonical arXiv write-up of LLM-as-a-Verifier (also tracked as intake-362/363 in the eval tower). Its central empirical claim is that a **continuous score formed from scoring-token logit expectations** can rank and calibrate solutions better than discrete judgments. The reviewer plane currently emits discrete typed decisions with scalar `confidence ∈ [0,1]` (RA-1) and reports Brier/ECE (RC-4/RM-2), so this is directly relevant as a **candidate confidence source**.
+- Scope boundary: use it to evaluate an alternate confidence construction against the existing ledger/corpus and calibration panel; do not replace the typed decision, alter a threshold, or infer a reviewer-quality improvement from the paper. Any measured comparison remains an observation until the P-REV-1 instrument and its required evidence are satisfied.
+- Local-enabler boundary: the 2026-07-21 `completion_probabilities_geomean` path and `confidence_is_real` fail-closed gate make local extraction/evaluation possible; their existence is not evidence that this source is calibrated for reviewer decisions. Preserve objective-verifier precedence and cross-family separation.

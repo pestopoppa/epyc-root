@@ -78,8 +78,8 @@ So removing line 98 alone changes nothing. The matrix is already the measurement
 ## Invariants (bake these in)
 
 1. **Overlap is computed from canonical region sets, never inferred from a shape's label.** `full` is not an overlap predicate. Per `instance_topology.py`: regions are quarter labels `q0,q1,q2,q3`; node0-half = `{q0,q1}`, node1-half = `{q2,q3}`, full = `{q0,q1,q2,q3}`. Role primary shapes differ:
-   - `frontdoor` (8070), `ingest_long_context` (8085) primary = **node0-half** `{q0,q1}` (`0-47,96-143`)
-   - `vision_escalation` (8087) primary = **node1-half** `{q2,q3}` (`48-95,144-191`)
+   - `frontdoor` (8070), `ingest_long_context` (8085) primary = **lower half** `{q0,q1}` (`0-47,96-143`) — *2026-07-30: previously written "node0-half"; `q0` and `q1` are two **separate** NPS4 nodes (`node0 = 0-23,96-119`, `node1 = 24-47,120-143`), so this cpuset is not node-local. The region-set logic is unaffected.*
+   - `vision_escalation` (8087) primary = **upper half** `{q2,q3}` (`48-95,144-191`) — *likewise spans NPS4 node2+node3, not "node1"*
    - `architect_general` (8083), `worker_general` (8072) "full" = **all four** `{q0,q1,q2,q3}` (`0-95`)
    - `worker_vision` (8086) = sub-quarter `q0B` (`24-47,120-143`)
    Use `get_instance_regions()` / `regions_overlap()` / `regions_for(role, idx)` as the single source of truth (already derived from `stack_numa.NUMA_CONFIG`).

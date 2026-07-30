@@ -2,8 +2,70 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-07-29 (corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
+**Last compiled**: 2026-07-30 (**retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
 **Sources**: 93+ documents
+
+## Compiled Update — 2026-07-30 (NUMA placement defect; the E5 quarters-vs-full verdict is RETRACTED)
+
+Two of the 2026-07-24 findings below are **withdrawn, not revised**. The E5 W0 grid measured
+every "full/half" placement through `stack_numa.py`'s `NUMA_NODE0 = "0-47,96-143"` — an
+**NPS2-era name that spans two NPS4 nodes** — launched with no `numactl` policy, so the
+big-instance arms were priced at roughly half their true speed while the quarter arms
+(which *are* node-aligned) were priced correctly. Every "quarters win" conclusion drawn
+from that grid is an artefact of the handicap, not a result.
+
+Live NPS4 topology, re-read 2026-07-30: `node0 = 0-23,96-119`, `node1 = 24-47,120-143`,
+`node2 = 48-71,144-167`, `node3 = 72-95,168-191`. Only the `NUMA_Q*` quarter constants are
+node-aligned. Canonical single-instance placement is full machine `taskset -c 0-95` +
+`numactl --interleave=all`.
+
+Confidence: **`observation` for every corrected number below.** The protocol that would make
+them decision-grade — `P-BENCH-PLACEMENT-1`
+(`epyc-inference-research/docs/protocols/numa-placement-measurement-protocol.md`) — has a
+MEASUREMENT.md registry entry that is **STAGED, not applied**. Nothing in this section may
+gate a keep / revert / deploy / promote decision.
+
+### Key Findings (2026-07-30)
+
+- **RETRACTED: "C3 (4×quarters) is aggregate-throughput-optimal for every model."** At
+  *matched total concurrency* `T`, one full-machine instance beats four quarters at every
+  rung measured: `T=4` **79.7 vs 52.9**, `T=8` **105.1 vs 81.0**, `T=16` **131.0 vs 108.4**,
+  `T=32` **145.9 vs 143.8** aggregate tok/s. The 2026-07-24 comparison was not `T`-matched
+  and its full/half arms carried the straddling-cpuset handicap. Observation-grade.
+  [numa-placement-defect-20260730](../handoffs/active/numa-placement-defect-20260730.md)
+
+- **RETRACTED: "the dense-27B 1×big shape question is resolved — NODE0-local half beats
+  full-machine+interleave, and the April 2026 cache-locality finding reproduces."** The
+  "NODE0-local half" was never node-local: `0-47,96-143` straddles `node0`+`node1`. The
+  April 2026-04-17 head-to-head it claimed to reproduce is **not valid evidence** — it
+  predates the 2026-04-24 NPS4 reboot (when that cpuset genuinely *was* one node) and its
+  source CSV records `spec == "baseline"`, i.e. speculative decoding OFF. The dense-27B
+  shape question is **re-opened, not resolved**.
+
+- **Both directions of this claim have been asserted from the same defective grid.** This
+  wiki previously said quarters/half win; the published operator artifact previously said
+  the opposite. Neither disagreement was informative — both were readings of a grid whose
+  big-instance arms were handicapped, so the sign of the comparison was set by which arm a
+  given pass happened to emphasise, not by the machine.
+
+- **Two production roles are genuinely mis-wired; the fleet is not.** `frontdoor`
+  (Qwen3.6-35B-A3B-Q8_0) measures `10.83 ± 0.04` tok/s as wired vs `23.36 ± 0.11` at
+  canonical placement (**2.16×**, `llama-bench` tg128, spec-dec off, `r=10`, `drop_caches`
+  before every arm, kernel `production-consolidated-v8` / binary `10107`);
+  `ingest_long_context` (Qwen3-Next-80B-Q4_K_M) measures `12.42 → 22.92` (**1.85×**).
+  `worker_general` and `architect_general` already run `0-95` + `interleave=all` and are
+  **correct** — this is a two-role defect and must never be stated fleet-wide.
+
+- **Shared mmap makes fleet placement depend on instance START ORDER.** GGUF pages are
+  placed once, by whichever instance faults them in first; later instances inherit that
+  placement regardless of their own `--membind`. Four quarters measured
+  **25.6 / 25.6 / 24.2 / 26.9 %** node-local under shared mmap vs **100 % each** under
+  `--no-mmap`, with fleet decode `40.91 → 52.13` tok/s. A quarter fleet therefore does
+  *not* reliably get interleaved pages — it gets whatever the first loader chose.
+
+- **The `stack_numa.py` wiring change is NOT authorised.** The file carries corrected
+  comments only and is deliberately behaviourally unchanged, pending the inference owner
+  and the stack gates.
 
 ## Compiled Update — 2026-07-29 (GPU topology ground truth; E5 still scout-only)
 
@@ -106,11 +168,40 @@ The E5 NUMA×batch sweep (design frozen 2026-07-23) executed its W0 non-decision
 
 ### Key Findings (2026-07-24)
 
-- **E5 W0 scout: 69/69 cells clean, and "one big batched server vs quarter-batched servers" resolves to quarters-win, universally, at scout scale.** All four model groups (`qwen36_q8_0` 35B-A3B frontdoor, `gemma4-26B-A4B` worker, `qwen36_27b_q8` dense-27B control, `qwen3_next_80b` ingest) completed. **C3 (4×quarters) is aggregate-throughput-optimal for every model**: qwen36 2028 tasks/hr @np4, gemma 5076 @np8 (1.78× the interleaved full at iso-total=32), dense-27B 1415 @np2, 80B 2520 @np4. This directly answers E5's pre-registered R1 "crossover" question at scout resolution: no model shows a big-instance win at any measured K. [batched-decode-measurement](../handoffs/active/batched-decode-measurement.md), [progress 2026-07-24](../progress/2026-07/2026-07-24.md)
+- **⚠ RETRACTED 2026-07-30 — do not cite this bullet.** The grid it summarises measured its
+  full/half arms through the straddling `NUMA_NODE0 = "0-47,96-143"` cpuset with no `numactl`
+  policy, handicapping them by up to 2.16×; the quarter arms were node-aligned and unhandicapped.
+  At matched total concurrency one full-machine instance **wins at every rung** (T=4 79.7 vs 52.9;
+  T=8 105.1 vs 81.0; T=16 131.0 vs 108.4; T=32 145.9 vs 143.8 tok/s — observation-grade,
+  `P-BENCH-PLACEMENT-1` registry entry STAGED not applied). See
+  [Compiled Update — 2026-07-30](#compiled-update--2026-07-30-numa-placement-defect-the-e5-quarters-vs-full-verdict-is-retracted)
+  and [numa-placement-defect-20260730](../handoffs/active/numa-placement-defect-20260730.md).
+  Original text retained below for the record:
+
+- ~~**E5 W0 scout: 69/69 cells clean, and "one big batched server vs quarter-batched servers" resolves to quarters-win, universally, at scout scale.**~~ All four model groups (`qwen36_q8_0` 35B-A3B frontdoor, `gemma4-26B-A4B` worker, `qwen36_27b_q8` dense-27B control, `qwen3_next_80b` ingest) completed. ~~**C3 (4×quarters) is aggregate-throughput-optimal for every model**~~ (RETRACTED 2026-07-30): qwen36 2028 tasks/hr @np4, gemma 5076 @np8 (1.78× the interleaved full at iso-total=32), dense-27B 1415 @np2, 80B 2520 @np4. This directly answers E5's pre-registered R1 "crossover" question at scout resolution: no model shows a big-instance win at any measured K. [batched-decode-measurement](../handoffs/active/batched-decode-measurement.md), [progress 2026-07-24](../progress/2026-07/2026-07-24.md)
+
+- **⚠ SUSPENDED 2026-07-30 (same defective grid).** Both "half" arms in this bullet are the
+  straddling `0-47,96-143` / `48-95,144-191` cpusets with no `numactl` policy, so the C1b-vs-C1
+  comparison is between two handicapped shapes and its direction is not trustworthy. Treat as
+  hypothesis pending re-measurement under `P-BENCH-PLACEMENT-1`.
 
 - **The 2×half whole-machine provisioning candidate (C1b) is confirmed MODEL-DEPENDENT, not universally negative.** For the 35B-A3B MoE frontdoor model, C1b loses to the single-half C1 (1198 vs 1610 tasks/hr) — reproducing the 2026-05-26 dual-half negative result (co-run ≈0.5×, memory-channel contention) on the current v7 kernel. But **C1b wins for the dense 27B control (1009 vs 849) and the 80B SSM-hybrid ingest arm (2013 vs 1700)** — the opposite direction. This falsifies the assumption that the dual-half penalty generalizes: it is specific to the small-active-MoE shape, and dense/large models profit from the second NUMA-local half. This is new information the single 2026-05-26 measurement (frontdoor-shaped model only) could not have shown. [batched-decode-measurement](../handoffs/active/batched-decode-measurement.md)
 
-- **The dense-27B "1×big" shape question is resolved: NODE0-local half beats the full-machine+interleave instance, at both low and high concurrency.** Scout pair-answer: half0 **751/814** tasks/hr (K=1/K=8) vs full-machine+interleave **574/611** — the April 2026 cache-locality finding (half wins for ~35B-class models because cache locality beats channel parallelism) reproduces for the dense-27B control on v7. Stage-B for the dense arm now adopts half0 as its C1 anchor. [batched-decode-measurement](../handoffs/active/batched-decode-measurement.md)
+- **⚠ RETRACTED 2026-07-30 — the dense-27B shape question is RE-OPENED, not resolved.** The
+  arm labelled "NODE0-local half" was never node-local: `0-47,96-143` straddles `node0`+`node1`
+  on this NPS4 host and ran with no `numactl` policy, so its full-machine comparator was the
+  only correctly-placed arm in the pair. The "April 2026 cache-locality finding" it claimed to
+  reproduce is **invalid twice over**: the 2026-04-17 head-to-head predates the 2026-04-24 NPS4
+  reboot (the cpuset genuinely *was* one node then), and its source CSV records
+  `spec == "baseline"` (speculative decoding OFF). Directly-measured, T-matched replacement
+  data has the full-machine instance ahead at every concurrency rung (observation-grade,
+  `P-BENCH-PLACEMENT-1` STAGED not applied). Do **not** adopt half0 as a Stage-B C1 anchor.
+  Original text retained for the record:
+  ~~"The dense-27B '1×big' shape question is resolved: NODE0-local half beats the
+  full-machine+interleave instance, at both low and high concurrency. Scout pair-answer: half0
+  751/814 tasks/hr (K=1/K=8) vs full-machine+interleave 574/611 — the April 2026 cache-locality
+  finding reproduces for the dense-27B control on v7. Stage-B for the dense arm now adopts half0
+  as its C1 anchor."~~ [batched-decode-measurement](../handoffs/active/batched-decode-measurement.md), [numa-placement-defect-20260730](../handoffs/active/numa-placement-defect-20260730.md)
 
 - **Cross-architecture np×context throughput surface (GPU-only, all three architect candidates): batching is fundamentally architecture-dependent, and the earlier "don't batch long-context" rule was over-generalized from a single outlier arm.** Extending the initial 122B-IQ2-only np×context sweep to the 27B-dense (A3) and 35B-A3B (A4) candidates, each at its own max-opt MTP depth (see [Speculative Decoding](speculative-decoding.md)): peak aggregate decode t/s ranks **A4 (small-active MoE) ≫ A3 (dense) > A1 (large-active IQ2 MoE)** at every batched operating point (e.g. at a 2k-token budget: 243@np32 / 153@np16 / 103@np32). **A1 is the sole outlier**, with both a universal np=2 dip AND a long-context batching collapse (net-negative at a 32k-token budget: np4=45.7 < np1=52.0 t/s); A3 and A4 both batch robustly (2.2–3.4×) at every measured budget up to 32k. The np=2 dip and the long-context collapse are therefore **A1-specific** (confounded across IQ2 quant / MTP-depth-2 / large-active-param count), not generic properties of MoE or of long context as first reported. Mechanism: dense models batch well via weight-reuse amortization (read weights once, apply across np tokens); MoE's fewer-active-params advantage only pays off at high np where expert reuse kicks in — exactly where A4 climbs to np=32 and A3 plateaus around np=8. Router rule, now per-architecture rather than universal: A1 never batch past np=8 (never np=2; np=1 at ≥32k budget); A3 batch all budgets, sweet spot np=8; A4 batch aggressively at all budgets up to np=32+. Binding constraint throughout is memory **bandwidth**, not VRAM capacity — KV read per decode step scales with context×active-slots and MoE requests scatter across experts, so aggregate throughput can drop as concurrency rises at large context even with plenty of VRAM headroom. [reasoning-effort-levels](../handoffs/active/reasoning-effort-levels.md) §TB-6-exec, [progress 2026-07-23](../progress/2026-07/2026-07-23.md)
 
@@ -158,7 +249,7 @@ New CPU-prefill and GPU-kernel evidence sharpens the roofline picture: **CPU dec
 
 The entire project is built around the AMD EPYC 9655 "Turin" processor: 96 physical cores (192 threads), 1.13 TB DDR5-5600 ECC across 12 memory channels (~460 GB/s theoretical bandwidth), and true 512-bit AVX-512 (not Intel's double-pumped variant). The storage layer is a 2x Solidigm P44 Pro 2TB NVMe RAID0 array delivering 12.5 GB/s sequential reads, enabling a 280 GB model to be mmap'd in about 22 seconds.
 
-The single most impactful optimization discovered in this project is NUMA-aware CPU pinning. The EPYC 9655 has 2 NUMA nodes (cores 0-47 and 48-95, with hyperthreads 96-191), each with ~566 GB of RAM. Running a model naively across all 192 threads yields dramatically worse performance than NUMA-pinned instances. For the 35B-A3B frontdoor model, 4 independent instances on NUMA quarters (48 threads each) achieved 49.66 t/s aggregate -- a 6.9x improvement over the 7.25 t/s baseline. This is a config-only change requiring zero code modifications. The production stack now runs 4-way NUMA quarters for frontdoor (~50.8 t/s) and coder_escalation (~43.3 t/s), with single-node pinning for larger models.
+The single most impactful optimization discovered in this project is NUMA-aware CPU pinning. The EPYC 9655 runs **NPS4 — 4 NUMA nodes** since the 2026-04-24 reboot (`node0 = 0-23,96-119`, `node1 = 24-47,120-143`, `node2 = 48-71,144-167`, `node3 = 72-95,168-191`; ~290 GB each). *(Corrected 2026-07-30: this paragraph previously read "2 NUMA nodes (cores 0-47 and 48-95, with hyperthreads 96-191), each with ~566 GB of RAM" — an NPS2-era description that survived the reboot. The `stack_numa.py` constants `NUMA_NODE0 = "0-47,96-143"` and `NUMA_NODE1 = "48-95,144-191"` inherit the same stale naming and each span **two** NPS4 nodes; only the `NUMA_Q*` quarter constants are node-aligned.)* Running a model naively across all 192 threads yields dramatically worse performance than NUMA-pinned instances. For the 35B-A3B frontdoor model, 4 independent instances on NUMA quarters (48 threads each) achieved 49.66 t/s aggregate -- a 6.9x improvement over the 7.25 t/s baseline. **That 6.9× is a comparison against the 192-thread naive baseline, not against a correctly-placed full-machine instance**; at matched total concurrency a single `taskset -c 0-95` + `numactl --interleave=all` instance beats four quarters at every measured rung (see [Compiled Update — 2026-07-30](#compiled-update--2026-07-30-numa-placement-defect-the-e5-quarters-vs-full-verdict-is-retracted); observation-grade, `P-BENCH-PLACEMENT-1` STAGED not applied). Canonical single-instance placement is therefore full machine `0-95` + `interleave=all`, **not** "single-node pinning".
 
 Three runtime settings are non-negotiable: OMP_NUM_THREADS=1 (llama.cpp handles its own parallelism; nested OpenMP can halve throughput), numactl --interleave=all for single-instance models (distributes data across all 12 channels), and using only physical cores (hyperthreading hurts inference due to cache contention). The production stack uses taskset -c for NUMA pinning since numactl --membind is blocked in the container environment, relying on first-touch memory policy instead.
 
@@ -492,7 +583,9 @@ Phase 0 feasibility gate criteria from `intra-process-tensor-parallel-decode.md`
 - Gate (a): 192t single-instance <60% of 460 GB/s roofline → measured 18.7 t/s × ~2 GB/token = **8% of roofline**, PASS by huge margin.
 - Gate (b): barrier cost >15% of per-token time → measured **32–45%** of cycles in libomp spin/barrier at 96t (`0x0000000000026580` family unresolved in perf), PASS.
 
-Phase 1 prototype is gated GO. 96t single-node / 192t full-machine throughput ratio = **2.63×** (49.11 / 18.7) is the concrete closing target for CCD-local weight sharding.
+Phase 1 prototype is gated GO. 96t / 192t throughput ratio = **2.63×** (49.11 / 18.7) is the concrete closing target for CCD-local weight sharding.
+
+> **Naming correction 2026-07-30**: the 49.11 t/s arm was `taskset -c 0-95`, i.e. **all 96 physical cores of the whole machine** — not "one NUMA node". Under the NPS2 BIOS live on 2026-04-23 a node was `0-47,96-143`; under today's NPS4 a node is a quarter (`0-23,96-119` etc.). The "96t single-node" label used throughout this and neighbouring 2026-04 sections is a misnomer for the full-machine physical-core placement. The measurement is unaffected; the ratio is 96 physical cores vs 192 SMT threads, both whole-machine.
 
 ### CPU4 per-CCD sync primitive — PROMOTED to HIGH standalone
 

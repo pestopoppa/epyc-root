@@ -324,7 +324,7 @@ This represents a **third TTS path** alongside Path A (Qwen3-TTS C++ port, block
 - [ ] Prototype: FastAPI wrapper around `Qwen3TTSModel.from_pretrained()` on port 8110
 - [ ] Benchmark VRAM and latency on EPYC hardware
 - [ ] Add `worker_tts` role to model_registry.yaml (gated behind feature flag)
-- [ ] Design voice cloning guardrails before enabling
+- [x] Design voice cloning guardrails before enabling ✅ 2026-07-29 — **default deny; no cloning is enabled by this design.** Any future `worker_tts` must accept a reference only through an enrolled `voice_id`, not arbitrary request audio. Enrollment requires the rightsholder's recorded authorization, scope (approved uses, expiry, and languages), a SHA-256 of the source asset, and a revocable owner record; retain only the minimum needed reference material under a defined retention/deletion path. Refuse minors, public figures, and any voice lacking an auditable authorization record; do not accept prompts that request imitation of a named/identifiable person or an "in the style of" substitute. Each generated asset must carry synthetic-audio disclosure plus request/voice/authorization/model hashes in an access-controlled audit record; do not log raw reference audio or text more broadly than the approved retention policy. Before any feature-flag enable, require: authorization and expiry enforcement, negative/refusal tests, per-voice revocation and emergency global disable, rate limits, operator-visible audit/review path, and a signed operator decision covering the serving boundary. This is an operational control design, not a legal-compliance determination.
 
 ## Research Intake Update — 2026-03-17
 

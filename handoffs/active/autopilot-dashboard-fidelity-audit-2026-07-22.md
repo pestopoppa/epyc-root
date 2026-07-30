@@ -316,11 +316,14 @@ warm/explicit-only and not normally launched, so "expected down" slightly overst
   raised pre-LM-call; optimizer provenance broken) or suppress the panel until ≥1 post-fix
   GEPA trial exists; tooltip carries the provenance caveat. Panels stamp era + generated_at
   per the freshness contract.
-- [ ] **[E8-TRIALS-COLD-GUARD] Enforce restart/cold eligibility in future frontier
+- [x] **[E8-TRIALS-COLD-GUARD] Enforce restart/cold eligibility in future frontier
   terminalizers**: reject or quarantine restart-surface evidence until an affirmative
   prewarm/cache-warm predicate is present, and persist the predicate in the terminalization
   receipt. The 2026-07-27 retrospective clears E8 factually; it does not establish this
-  forward instrument control.
+  forward instrument control. ✅ 2026-07-29: terminalization v2 computes an exact
+  per-generation `cache_warm_state == warm` predicate from saved sidecars, binds it into both
+  transition and completion receipt, and quarantines any cold/missing evidence. The pinned v1
+  historical verifier remains available only with its original terminalizer hash.
 - [ ] **[H1] Circuit-breaker / forced-role-fallback panel** — deferred (stretch).
 - [ ] **[H2] REL-1 eval error-rate surface** — deferred (stretch).
 - [ ] **[H3] Contention-panel per-worker provenance**, **[M1] region_locks held-set
