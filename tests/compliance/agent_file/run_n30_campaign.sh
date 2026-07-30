@@ -17,7 +17,7 @@ log() { echo "$(date -u +%FT%TZ) $*" | tee -a "$LOG"; }
 declare -A MODELS=(
   [worker_general-gemma4-26B-A4B-Q4KM]="/mnt/raid0/llm/models/gemma-4-26B-A4B-it-ORIG-Q4_K_M.gguf"
   [frontdoor-Qwen3.6-35B-A3B-Q8]="/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf"
-  [ingest-Qwen3-Next-80B-Q4KM]="/mnt/raid0/llm/lmstudio/models/lmstudio-community/Qwen3-Next-80B-A3B-Instruct-GGUF/Qwen3-Next-80B-A3B-Instruct-Q4_K_M.gguf"
+  [ingest-Qwen3-Next-80B-Q4KM]="/mnt/raid0/llm/models/lmstudio-community/Qwen3-Next-80B-A3B-Instruct-GGUF/Qwen3-Next-80B-A3B-Instruct-Q4_K_M.gguf"
   [architect-Qwen3.5-122B-UD-Q4KM]="/mnt/raid0/llm/models/Qwen3.5-122B-A10B-MTP-GGUF/UD-Q4_K_M/Qwen3.5-122B-A10B-UD-Q4_K_M-00001-of-00003.gguf"
 )
 # Deterministic order: small->large so early results land fast.
