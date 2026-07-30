@@ -5,10 +5,26 @@ halves of that were wrong at higher `n`. The loss is **~2×, not ~3×** (the 3×
 with a ±49% error bar), and it is **two named roles, not "production CPU inference"** — the other
 two production CPU roles are already correctly wired. See the amendment note below.*
 
-**Status**: OPEN — diagnosis COMPLETE and measured; **no production wiring change is authorised**.
+**Status**: OPEN — diagnosis COMPLETE and measured; the **wiring fix is now WRITTEN (uncommitted,
+not reloaded)** — see [Topology change applied](#topology-change-applied-2026-07-30--quarters-retired-1-full--2-halves).
 Five distinct defects found, three of them in live production wiring (D1–D3), two in the E5
 measurement harness (D4–D5). The corrected reference numbers below are observation-grade
 (`n=1–2` reps) and are the input to a re-measurement, not a promotion.
+
+> **Amended 2026-07-30 (second pass, session `mainA`).** Three things changed after the text
+> below was written, and the text below is **retained verbatim** per the append-only rule:
+> 1. **`P-BENCH-PLACEMENT-1` is RATIFIED**, not STAGED (epyc-root `07b7dcab`; registered in
+>    `MEASUREMENT.md` §2 + annex `measurement/protocols/bench-cpu.md`). **T9 CLOSED.** Every
+>    "observation-grade because the protocol is STAGED" statement below is superseded — figures
+>    measured under the protocol now carry its grade. The `n=1–2` rep caveat on the `np`-ladder
+>    and shape tables still stands on its own.
+> 2. **The wiring fix is applied in the working tree.** Quarters are retired; every quarterable
+>    role is **1 full + 2 halves**, every instance carries a declared memory policy, and `-t`
+>    equals the physical core count everywhere. **UNCOMMITTED and NOT RELOADED** — the reload
+>    still belongs to the session that owns the inference.
+> 3. **A new, larger lever was found while measuring: `ngram-mod`** — up to **2.80×** on
+>    `frontdoor` at realistic context, and the **only** speculation `ingest_long_context` can
+>    have. See [ngram speculation](#ngram-speculation--a-larger-lever-than-the-placement-fix-on-two-roles).
 
 > **Amended 2026-07-30.** The placement matrix has since been completed across **all four
 > production CPU roles** at `r=5` (`r=10` for `frontdoor`), on the production model artefact for
@@ -30,6 +46,11 @@ Stage-B cells.
 (claim grammar, era stamping, region-lock) · protocol **`P-BENCH-PLACEMENT-1`**
 (`epyc-inference-research/docs/protocols/numa-placement-measurement-protocol.md`, STAGED).
 All measurement below ran under a held `region-lock` on `q0..q3` as `role='bench'`.
+**Sibling — the cutover-resume half (row N25)**:
+[numa-topology-cutover-resume-20260730.md](numa-topology-cutover-resume-20260730.md). **This
+document is the DIAGNOSIS; that one is the RESUME STATE of the landing** (blocker, in-flight
+runs, P0/P1/P2 queue). Cross-reference it; do **not** duplicate its task rows here — two
+checkbox copies of one task give the dashboard two sources of truth.
 **Related**: [batched-decode-measurement.md](batched-decode-measurement.md) — the **owner of the
 E5 campaign**; its `⛔ SUSPENDED PENDING RE-MEASUREMENT (2026-07-30)` banner is the authoritative
 suspension notice and this document is its root-cause backing · [within-role-placement-state-machine.md](within-role-placement-state-machine.md)
@@ -66,16 +87,34 @@ node2 = 48-71,144-167   node3 = 72-95,168-191
 | | |
 |---|---|
 | **Protocol** | `P-BENCH-PLACEMENT-1` — `epyc-inference-research/docs/protocols/numa-placement-measurement-protocol.md` |
-| **Protocol status** | **STAGED — NOT APPLIED.** Its `MEASUREMENT.md` registry entry (protocol Appendix A) is written and waiting on the operator. |
+| **Protocol status** | ~~**STAGED — NOT APPLIED.** Its `MEASUREMENT.md` registry entry (protocol Appendix A) is written and waiting on the operator.~~ **RATIFIED 2026-07-30** by the operator — epyc-root `07b7dcab`, registered in `MEASUREMENT.md` §2 plus the annex `measurement/protocols/bench-cpu.md`. The protocol's own file still said `STAGED` after ratification; corrected in research `0a7f767d`. **T9 CLOSED.** |
 | **Attestation** | `epyc-inference-research/data/numa_placement/20260730-P-BENCH-PLACEMENT-1/` — all raw logs **plus the exact script that produced each figure**, committed. `README.md` in that directory carries the figure → file map and the per-figure rep counts. |
 | **Era** | `production-consolidated-v8` @ `67a433bf45a8a091d83b4ea0b32ff0735fd51800`, `llama-server --version` = `10107`, host NPS4 |
 
-**Consequence of STAGED: everything measured under this protocol is observation-grade until the
-operator ratifies the registry entry.** Per `MEASUREMENT.md` §4 and `MEASUREMENT_POLICY.md` →
-*Trust boundary*, the measurement trust boundary is human-amendment-only. Until that amendment
+~~**Consequence of STAGED: everything measured under this protocol is observation-grade until the
+operator ratifies the registry entry.**~~ Per `MEASUREMENT.md` §4 and `MEASUREMENT_POLICY.md` →
+*Trust boundary*, the measurement trust boundary is human-amendment-only. ~~Until that amendment
 lands, no number in this document — including the completed four-role matrix, including the
-`n=10` `frontdoor` figures — may gate a keep / revert / deploy / promote decision. They may inform
-design, scoping and prioritisation, which is exactly what they are used for here.
+`n=10` `frontdoor` figures — may gate a keep / revert / deploy / promote decision.~~
+
+> **RESOLVED 2026-07-30 — the amendment landed.** The operator ratified `P-BENCH-PLACEMENT-1`
+> (epyc-root `07b7dcab`). Figures measured **under the protocol** — the four-role matrix and the
+> `n=10` `frontdoor` figures — are no longer held back by protocol status. Two caveats survive
+> and are independent of ratification:
+> - The `np`-ladder, shape-sweep and fleet tables in *Corrected reference numbers* are still
+>   `n=1–2` reps. **Rep count is its own gate.**
+> - `P-BENCH-PLACEMENT-1`'s **anchor gate is mandatory and three of four roles have no anchor**
+>   (only `frontdoor`'s exists: median `35.7` tok/s, `n=154`, band 35–40, from AutoPilot
+>   production traffic). Those three roles cannot pass the gate until an anchor exists — a true
+>   statement about our evidence, not a blocker to route around. Tracked as **N25 P2-2**.
+> - Several §7 thresholds are still **TBD**, and *a gate whose threshold is unset cannot fail*.
+>   Proposed values with derivations: `artifacts/operator/ratification_queue_20260730.md`.
+>   Tracked as **N25 P2-3**.
+
+Concurrently ratified: **`P-BENCH-3` conformed to `MEASUREMENT.md` §1** — tok/s primary,
+tasks/hour **retained** as secondary. Note precisely what changed: tasks/hour was **not removed**.
+§1 already said `task_rate` is the AutoPilot objective axis and tok/s the instrument-level metric
+for `P-BENCH-*`; the registry row simply contradicted it.
 
 ---
 
@@ -474,6 +513,196 @@ this role is known only in IQ2_M shape.
 
 ---
 
+## Topology change applied (2026-07-30) — quarters retired, 1 full + 2 halves
+
+> **State: WRITTEN IN THE WORKING TREE, UNCOMMITTED, NOT RELOADED.** This supersedes the
+> *Authorisation status* section below for the *authoring* of the change. It does **not**
+> authorise a reload: per `OPERATING_CONSTRAINTS.md` → *Inference and Benchmarks*, the reload is
+> executed by the session that owns the inference, at a moment it chooses. **A clean-`git archive
+> HEAD` A/B measured 30 net-new test failures across 14 files, two of them inside
+> `PROMOTION_GATE_TARGETS` — the promotion gate is RED and the stack cannot start until they are
+> fixed (N25 P0-1).**
+>
+> **The commit is separately BLOCKED**, and the ordering is forced, not negotiable: changing the
+> cpusets moved the live topology hash to `bc28e15d` while `orchestration/contention_matrix.yaml`
+> records `8c8cfcbb13d2611d`; the pre-commit hook (`check_contention_matrix_fresh.py:89`) refuses
+> on that; and the **only** refresh path (`contention_matrix.py run`) needs a **live stack and
+> runs inference**. So: runs finish → tests green → cold-start → re-bench → commit.
+> **Resume state, in-flight runs, and the full cutover queue live in
+> [`numa-topology-cutover-resume-20260730.md`](numa-topology-cutover-resume-20260730.md) (N25)** —
+> this section records the *finding*; that document records *where the landing is*.
+
+Every quarterable role is now **one full instance plus two halves**. Every instance carries a
+**declared memory policy**, and `-t` equals the cpuset's **physical** core count:
+
+| shape | cpuset | `numactl` policy | `-t` |
+|---|---|---|---:|
+| FULL | `0-95` | `interleave=all` | 96 |
+| HALF A — nodes 0,1 (**GPU-disjoint**) | `0-47,96-143` | `interleave=0,1` | 48 |
+| HALF B — nodes 2,3 (**GPU co-tenant**) | `48-95,144-191` | `interleave=2,3` | 48 |
+
+| role | full | half A | half B |
+|---|---:|---:|---:|
+| `frontdoor` | 8070 | 8080 | 8180 |
+| `worker_general` | 8072 | 8082 | 8182 |
+| `ingest_long_context` | 8085 | 8185 | 8285 |
+| `architect_general` | 8083 | — | — (full-only) |
+
+**Ports freed**: `8280` · `8380` · `8282` · `8382` · `8385` · `8485`.
+
+Landed in the same pass:
+
+* **`no_mmap: true` declared in the MASTER registry** for `frontdoor`, `coder_escalation`,
+  `architect_general`, `ingest_long_context`, `worker_vision`, `vision_escalation`.
+  `worker_general` already carried it (and already measured 1.00 locality). This is the **T2**
+  decision, taken as a registry-data change — see the RAM-budget caveats in cross-cutting
+  concern 3.
+* **`eval_batch_frontdoor` (18070) corrected.** It was `-t 96` on a cpuset holding **48 physical
+  cores**, *and* `interleave=all` on a **two-node** cpuset — two independent errors in one
+  instance. Now `-t 48` + `interleave=0,1`.
+* **Vision pair given explicit `membind=1` / `membind=3`.** `worker_vision` and
+  `vision_escalation` are **two roles on two different nodes sharing ONE GGUF** — the exact D2
+  shape. Under shared mmap only one of them could ever have been node-local.
+* **`ingest_long_context` given a `placement_policy` for the first time.** It had **none**, so it
+  defaulted to `SOLO_PREFER_FULL` — a single solo request could take **all four region locks**
+  and serialize the machine. That is the DISPATCH-A shape recorded 2026-07-21.
+* **`src/fleet.py`** now **derives** its degraded-mode fallback ports from `NUMA_CONFIG` instead
+  of hardcoded 5-port lists; **`src/config/models.py`** no longer advertises the freed ports.
+
+**Invariants verified programmatically across the whole of `NUMA_CONFIG`**: (1) no straddling
+cpuset without a declared memory policy; (2) `-t` == physical core count. Both hold for every
+instance. This closes **T6**.
+
+### `architect_general` — role definition (operator, 2026-07-30)
+
+Read this before "fixing" its all-region hold. `architect_general` is a **reasoning-boost /
+critic** role, invoked in select circumstances only: autopilot planning when running fully local,
+and dedicated high-value focused reasoning sessions. It is **not** a general serving role.
+
+Its single full instance on `0-95` holds **all four region locks**, so while it runs it
+serializes the entire CPU topology. **That is INHERENT AND ACCEPTED, not a defect** — there is no
+sub-full shape to demote to, and a 122B at Q4_K_M has nothing smaller to be. Do **not** add a
+`placement_policy` to it; the other roles' `burst_prefer_*` exists because they *have* splits.
+
+The expectation is that **autopilot learns to mostly disregard it**, because the whole-machine
+lock is expensive relative to the reasoning gain on most requests. For that to be *learnable*,
+the cost must be **ATTRIBUTABLE** — an unattributable whole-machine slowdown is precisely the
+shape that produced the mislearned `dual-half-negative` prior. Hence **N25 P1-8**: land
+`region_lock_wait_s_by_holder` telemetry **before** exposing any routing knob for this role.
+
+---
+
+## ngram speculation — a larger lever than the placement fix on two roles
+
+*Discovered 2026-07-30 while measuring placement. Attestation: `ngram.sh` / `ngram2.sh` /
+`ngram_results.txt` / `ngram2_results.txt` / `mkreal.py` in the attestation directory.*
+
+Production launches **`--spec-type draft-mtp` alone**. The registry has carried
+`ngram_candidate_spec_type: ngram-mod,draft-mtp` as a **never-deployed candidate**.
+
+Measured on **realistic text** — real repository source, **10.6 % repeated 5-grams**:
+
+| model / role | prompt | `draft-mtp` | `ngram-mod,draft-mtp` | speedup |
+|---|---:|---:|---:|---:|
+| Qwen3.6-35B-A3B — `frontdoor` | 14,059 tok | 24.92 (accept `.505`) | **69.89** (accept `.755`) | **2.80×** |
+| Qwen3.6-35B-A3B — `frontdoor` | 53,730 tok | 12.46 | 18.71 | **1.50×** |
+| Qwen3-Next-80B — `ingest_long_context` | — | 17.40 | **20.06** (accept `.812`) | **1.15×** |
+| gemma4-26B-A4B — `worker_general` (accept `.754`) | — | — | — | **no gain** |
+| Qwen3.5-122B-A10B — `architect_general` (accept `.650`) | — | — | — | **no gain** |
+
+**Qwen3-Next-80B carries `acceleration: {type: none}`** because its SSM hybrid has **no
+draft-model path**. `ngram-mod` requires no draft model. **It is the only speculation that role
+can have** — which reframes the long-standing "not viable on CPU" verdict for it from *no
+speculation* to *no draft-model speculation*.
+
+> ### PRINCIPLE — record the rule, not just the numbers
+>
+> **ngram's benefit is inversely proportional to the incumbent drafter's acceptance rate.** It
+> fills headroom, and there is none when the drafter is already strong. That one rule predicts
+> every row above: `.505` accept → `2.80×`; `.812` accept (no incumbent at all) → a real but
+> modest `1.15×`; `.754` and `.650` incumbents → nothing.
+
+**Methodological correction against this session's own first pass.** The first measurement used
+**synthetic filler** — **99.7 % repeated 5-grams, 23 distinct tokens across 8,736 words** — and
+returned `2.52×`. That is **nearly worthless as evidence**: it measures the filler, not the
+workload. Real repository text confirmed the *direction* but **moved the number**. Any ngram
+claim must carry its corpus **and its repeated-5-gram fraction**.
+
+A **GPU ngram sweep (36 cells)** and the remaining **CPU half-shape arms** are **IN FLIGHT and
+NOT reportable**. Do not quote a GPU ngram figure from this handoff yet.
+
+---
+
+## Context depth is a missing term in the claim grammar
+
+Same model, same recipe, same placement — `frontdoor` Qwen3.6-35B-A3B Q8_0:
+
+| prompt depth | decode tok/s | draft acceptance |
+|---:|---:|---:|
+| 28 tok | **40.22** | 0.746 |
+| 570 tok | 28.96 | 0.500 |
+| 8,754 tok | 25.18 | 0.478 |
+| 34,938 tok | **17.23** | 0.429 |
+
+A **2.3× spread driven purely by depth**, compounded because acceptance decays with it. **The
+ratified claim-grammar exemplar carries the 28-token figure and has no depth field** — so it
+repeats the retracted `27.06` exemplar's failure mode by a different mechanism. Flagged for
+ratification (**N25 P2-4**; `artifacts/operator/ratification_queue_20260730.md` §A). This is the
+general form of **T8**, which stated the same requirement for one role.
+
+### Context allocation is nearly free — capacity is not the binding constraint
+
+| finding | measurement |
+|---|---|
+| `-c` allocation costs **no decode speed** | 35B: `40.44` tok/s at `-c 8192` vs `40.49` at `-c 262144` |
+| `-c` allocation costs **little resident RAM** | gemma4 grew **+6 GB** for a **63.8 GiB** KV reservation — KV pages fault **lazily** |
+| `--mlock` does **NOT** pin KV | verified **in llama.cpp source**, not inferred from behaviour |
+| every deployed model fits its **full 262,144-token trained window** | true even on a *quarter* instance |
+
+Production runs `-c 32768` = **12.5 %** of what the hardware allows; `architect_general` halves
+that again to `8192`/request via `slots: 2`. **Consequence: context can be provisioned at
+maximum and managed by a compaction policy above the server, rather than rationed at launch.**
+Attestation: `ctxalloc.sh` / `ctxalloc_results.txt` / `maxctx.py` / `ctxcurve.sh` / `ctxparse.py`.
+
+---
+
+## Measurement-program repairs landed 2026-07-30
+
+* **`MRG-1` model-registration runbook** —
+  `epyc-inference-research/docs/protocols/model-registration-runbook.md`. It is a **GATE, not a
+  guide**: a model that has not completed **Steps 0–9 is NOT REGISTERED** and must not hold a
+  production role. Its **14 unset values are listed as TBD rather than invented** — proposals in
+  the ratification queue (**N25 P2-3**).
+* **Attestation rewritten** —
+  `epyc-inference-research/data/numa_placement/20260730-P-BENCH-PLACEMENT-1/` now holds **52+
+  files with every raw log beside the script that produced it**, plus a **caveats section naming
+  the rows that are unsafe to reuse**.
+* **`artifacts/operator/ratification_queue_20260730.md`** — proposed values for every TBD, each
+  with its derivation and the failure it would have caught. Rationale: **a gate whose threshold
+  is unset cannot fail.**
+* **Harness metric correction (extends D4).** `aggregate_predicted_tps` was
+  `tokens / wall_seconds` → renamed **`aggregate_wallclock_tps`**, true **`aggregate_decode_tps`**
+  added. **tasks/hour had been *deciding*** — R1 winners, R2 peaks, R4 optima, `best_np` and the
+  saturation knee all ranked on it. **All now rank on tok/s.**
+
+---
+
+## GPU — self-correction: a working ROCm binary DOES exist
+
+This session claimed earlier that **no ROCm binary existed**. **That was wrong**, from three bad
+inferences:
+
+1. **backends are `dlopen`ed, not linked** — so `ldd` proves nothing about backend availability;
+2. **17 KB is normal** — the production binary is the same size;
+3. **`--list-devices` was empty only because `LD_LIBRARY_PATH` was unset.**
+
+The v8 HIP build works: `ROCm0: AMD Instinct MI210`, version `10107` (`67a433bf4`) — **the same
+SHA production serves on CPU**. **ngram IS supported on GPU.** Recorded here because the failure
+mode is reusable: three independent negative inferences, none of which was verified against the
+primary artefact.
+
+---
+
 ## Tasks
 
 ### Done
@@ -515,9 +744,61 @@ this role is known only in IQ2_M shape.
       `epyc-inference-research/docs/protocols/numa-placement-measurement-protocol.md`, with its
       `MEASUREMENT.md` registry entry **staged** in Appendix A ✅ 2026-07-30
 
+#### Second pass, 2026-07-30 (session `mainA`)
+
+- [x] **Retire quarters; re-shape every quarterable role to 1 full + 2 halves**, each with a
+      declared memory policy and `-t` == physical core count. Ports: `frontdoor`
+      8070/8080/8180, `worker_general` 8072/8082/8182, `ingest_long_context` 8085/8185/8285,
+      `architect_general` 8083 (full-only); freed 8280/8380/8282/8382/8385/8485.
+      **Uncommitted, not reloaded** ✅ 2026-07-30
+- [x] **Correct `eval_batch_frontdoor` (18070)** — was `-t 96` on 48 physical cores **and**
+      `interleave=all` on a two-node cpuset; now `-t 48` + `interleave=0,1` ✅ 2026-07-30
+- [x] **Give the vision pair explicit `membind=1` / `membind=3`** — two roles on two different
+      nodes sharing ONE GGUF, so under shared mmap only one could ever be node-local ✅ 2026-07-30
+- [x] **Give `ingest_long_context` a `placement_policy`** — it had none, so it defaulted to
+      `SOLO_PREFER_FULL`, letting one solo request take all four region locks and serialize the
+      machine (the DISPATCH-A shape, 2026-07-21) ✅ 2026-07-30
+- [x] **Derive `src/fleet.py` degraded-mode fallback ports from `NUMA_CONFIG`** instead of
+      hardcoded 5-port lists; stop `src/config/models.py` advertising the freed ports ✅ 2026-07-30
+- [x] **Verify both wiring invariants programmatically across all of `NUMA_CONFIG`** — no
+      straddling cpuset without a memory policy; `-t` == physical core count ✅ 2026-07-30
+- [x] **Record the `architect_general` role definition** (operator): reasoning-boost/critic for
+      autopilot planning and dedicated high-value reasoning sessions; its all-region hold is
+      **inherent and accepted**, not a defect ✅ 2026-07-30
+- [x] **Repair the stack-change gate — twice in one day, from two different sessions.** A commit
+      touching any `REQUIRED_SOURCE_ARTIFACTS` file silently blocks
+      `orchestrator_stack.py start` until priors are recompiled, with no warning at commit time
+      (orchestrator `418810ef`, `002079d7`) ✅ 2026-07-30
+- [x] **Replace the test that asserted the defective wiring AND forbade its fix** —
+      `test_frontdoor_full_uses_numa_node0_not_full` → `test_straddling_cpusets_declare_a_numa_policy`,
+      `xfail(strict=True)` so it fails loudly once the invariant holds (orchestrator `78e9d109`) ✅ 2026-07-30
+- [x] **Correct `P-BENCH-PLACEMENT-1`'s own status line** — the protocol file still declared
+      itself STAGED after the operator ratified it (research `0a7f767d`) ✅ 2026-07-30
+- [x] **Rewrite the attestation index** — 52+ files, every raw log beside the script that
+      produced it, plus a caveats section naming rows unsafe to reuse ✅ 2026-07-30
+- [x] **File `artifacts/operator/ratification_queue_20260730.md`** — proposed values, with
+      derivations, for every TBD in `P-BENCH-PLACEMENT-1` §7 and `MRG-1` §5, because a gate whose
+      threshold is unset cannot fail ✅ 2026-07-30
+- [x] **Write `MRG-1`**, `epyc-inference-research/docs/protocols/model-registration-runbook.md`
+      — a **gate**, not a guide: Steps 0–9 incomplete ⇒ NOT REGISTERED ⇒ must not hold a
+      production role. 14 unset values listed as TBD rather than invented ✅ 2026-07-30
+- [x] **Measure the ngram lever** on all four production CPU models, on realistic text
+      (10.6 % repeated 5-grams), after discarding a synthetic-filler first pass ✅ 2026-07-30
+- [x] **Measure the context-depth curve and the `-c` allocation cost** — 2.3× decode spread by
+      depth; `-c` costs no speed and little RAM; `--mlock` does not pin KV (verified in
+      llama.cpp source) ✅ 2026-07-30
+
 ### Open
 
-- [ ] **T1 — Fix the `stack_numa.py` wiring.** ⚠ **NOT AUTHORISED YET.** Requires the inference
+- [x] **T1 — Fix the `stack_numa.py` wiring.** ✅ 2026-07-30 — **WRITTEN, uncommitted, NOT
+      RELOADED.** Quarters retired; every quarterable role is 1 full + 2 halves; every instance
+      carries a declared memory policy; `-t` == physical core count everywhere; NPS2-era
+      constants superseded by `NUMA_FULL` / `NUMA_HALF_A` / `NUMA_HALF_B`. The D3 `-t 48` vs
+      `-t 96` question is decided per shape (48 on halves, 96 on full). **What remains is not
+      T1**: the test suite (**N25 P0-1**) and the reload with its three gates (**N25 P0-3**). Original
+      text retained below.
+  - *(Original text, superseded — retained per the append-only rule.)* ⚠ **NOT AUTHORISED YET.**
+      Requires the inference
       owner, the three stack gates (pipeline-green ≠ starts ≠ live==config), and a reload executed
       *by the session that owns the inference, at a moment it chooses*. Scope: `frontdoor` idx0
       and `ingest_long_context` idx0 off the straddling `NUMA_NODE0`; rename or retire the
@@ -528,14 +809,22 @@ this role is known only in IQ2_M shape.
       not what it is fixing. Expected gain on the two in scope: **`frontdoor` `10.83` → `23.36`
       (`2.16×`)**, **`ingest_long_context` `12.42` → `22.92` (`1.85×`)** — observation-grade until
       T9, so these size the change, they do not gate it.
-- [ ] **T2 — Decide `--no-mmap` for quarter fleets.** +27% fleet decode against **+141 GB** host
-      RAM for the 35B quad. Needs a lineup-level RAM budget decision, not a local one — a
-      role-by-role `no_mmap` flip changes the whole machine's residency envelope.
+- [x] **T2 — Decide `--no-mmap` for quarter fleets.** ✅ 2026-07-30 — **DECIDED: declare it.**
+      `no_mmap: true` is now set in the MASTER registry for `frontdoor`, `coder_escalation`,
+      `architect_general`, `ingest_long_context`, `worker_vision`, `vision_escalation`
+      (`worker_general` already had it). The quarter framing is moot — quarters are retired.
+      Original text: *+27% fleet decode against **+141 GB** host RAM for the 35B quad; needs a
+      lineup-level RAM budget decision, not a local one.* The +141 GB figure was for a 4×quarter
+      fleet; the 1-full + 2-half topology has a **different residency envelope**, and the actual
+      post-reload RSS is unmeasured — verify it as part of **N25 P0-3**, not before.
 - [ ] **T3 — Re-run the 27 confounded E5 cells** on declared placement. Per model the grid must
       include **full machine `0-95` + `--interleave=all`**, which *was not in the Stage-B grid at
       all* except as gemma's C1 — and which won today for both `qwen36_q8_0` and
       `qwen3_next_80b`. Either drop caches between placement shapes or launch every instance under
       an explicit policy, so placement is **declared, never inherited**.
+      *(Amended 2026-07-30: the re-run must conform to **`P-BENCH-PLACEMENT-1`**, now ratified,
+      and its grid must use the **new 1-full + 2-half shapes** — the old quarter arms no longer
+      exist. **27 of 31 cells** still outstanding.)*
 - [ ] **T4 — Fix the E5 batch drain (D5)** so the high-`T` rungs actually saturate: more prompts,
       or a closed-loop arrival process holding occupancy at `T`. Without this the `T ≥ 16` rungs
       remain uninterpretable even on corrected placement.
@@ -543,9 +832,18 @@ this role is known only in IQ2_M shape.
       `required = no_mmap and len(expected_nodes) == 1`, so under mmap it observes and reports
       but never fails. It should fail a single-node instance whose `local_fraction` is below
       threshold regardless of mmap.
-- [ ] **T6 — Audit the remaining roles for straddling cpusets** and for `numactl_policy: none` on
-      any multi-node cpuset. `NUMA_NODE0`/`NUMA_NODE1` are referenced from more than the two roles
-      named here; every reference needs the NPS4 re-reading.
+      *(Amended 2026-07-30 — the predicate **self-disarms twice**, and the second way now matters
+      more: `len(expected_nodes) == 1` means it never arms on a **multi-node** instance, and
+      after the topology change **every** instance is multi-node. The **operator has chosen
+      hard-fail**. BLOCKED on ratifying **`INTERLEAVE_TOLERANCE`** (proposed ±25% relative, i.e.
+      each node within `[0.75/n, 1.25/n]`) — there is no multi-node analogue of the single-node
+      equality check without it. See **N25 P2-3**.)*
+- [x] **T6 — Audit the remaining roles for straddling cpusets** and for `numactl_policy: none` on
+      any multi-node cpuset ✅ 2026-07-30 — done as a **programmatic invariant check over all of
+      `NUMA_CONFIG`**, not a manual read: (1) no straddling cpuset without a declared memory
+      policy, (2) `-t` == physical core count. Both hold for every instance. The audit is what
+      surfaced the `eval_batch_frontdoor` double error and the vision pair's shared-GGUF
+      collision.
 - [x] **T7 — Replicate the `23.43 ± 0.07` full-machine figure.** ~~It is currently one 3-rep
       `llama-bench` invocation with no independent repeat (the script arm labelled as its repeat
       is mislabelled and actually repeats the straddle+interleave arm).~~ **CLOSED** — an
@@ -556,12 +854,14 @@ this role is known only in IQ2_M shape.
       registry and in any handoff that quotes a tok/s for it. The 9–12 vs 15–25 split is entirely
       a context-length effect. *(Amended 2026-07-30: the rule stands; the 9–12 / 15–25 bands
       themselves are IQ2_M and must be re-derived on Q4_K_M — T10.)*
-- [ ] **T9 — Operator ratification of `P-BENCH-PLACEMENT-1`.** The protocol is written and its
-      `MEASUREMENT.md` registry entry is **STAGED in the protocol's Appendix A, not applied**. The
-      measurement trust boundary is human-amendment-only, so until the operator applies it,
-      **every figure in this document is observation-grade by construction** and cannot gate a
-      keep / revert / deploy / promote decision — including T1. Present the registry entry as a
-      decision package; do not self-apply.
+- [x] **T9 — Operator ratification of `P-BENCH-PLACEMENT-1`.** ✅ 2026-07-30 — **RATIFIED** by
+      the operator (epyc-root `07b7dcab`): registered in `MEASUREMENT.md` §2 plus the annex
+      `measurement/protocols/bench-cpu.md`. `P-BENCH-3` was conformed to §1 in the same pass
+      (tok/s primary, tasks/hour **retained** as secondary — it was **not** removed). The
+      protocol's own file still said STAGED afterwards; corrected in research `0a7f767d`.
+      **Grade is no longer blocked by protocol status** — but see **N25 P2-2** (three of four roles
+      have no anchor to satisfy the mandatory anchor gate) and **N25 P2-3** (several §7 thresholds are
+      still TBD, and a gate whose threshold is unset cannot fail).
 - [ ] **T10 — Re-run the `ingest_long_context` decode-vs-context curve on the production Q4_K_M
       artefact.** The existing 3-placement × 3-prompt-length curve is IQ2_M (24.27 GiB), which no
       role serves. Only the `tg128` point exists on Q4_K_M (45.08 GiB). Needed before any
@@ -572,6 +872,44 @@ this role is known only in IQ2_M shape.
       `gemma-4-26B-A4B-it-Q4_K_M-current.gguf` where `worker_general` serves
       `gemma-4-26B-A4B-it-ORIG-Q4_K_M.gguf`). Resolve each role's GGUF through the live registry
       chain and diff it against whatever any open handoff quotes for that role.
+
+### Opened 2026-07-30 by the topology change — OWNED ELSEWHERE, do not re-file here
+
+> **These are filed as checkboxes in
+> [`numa-topology-cutover-resume-20260730.md`](numa-topology-cutover-resume-20260730.md)
+> (master-index row **N25**), which is the cutover-resume half of this work.** They are listed
+> here **without checkboxes on purpose** — duplicating them would give the handoff dashboard two
+> sources of truth for the same task and double-count the queue. **This document is the
+> diagnosis; N25 is the resume state.** Track completion there.
+
+| Actionable opened by this session | Owned by |
+|---|---|
+| Fix the tests that break under the new topology — a clean-`git archive HEAD` A/B measured **30 net-new failures across 14 files**, 2 inside `PROMOTION_GATE_TARGETS`; **stack start is gated on them** | N25 **P0-1** |
+| Drop the now-XPASSing `xfail(strict=True)` on `test_straddling_cpusets_declare_a_numa_policy` | N25 **P0-2** |
+| Cold-start, re-bench the contention matrix, commit + push all three repos | N25 **P0-3** |
+| Make the `placement_policy` enum vocabulary shape-agnostic (it is quarter-shaped) | N25 **P1-1** |
+| Arm the `affinity_preflight` hard-fail (**= T5 above**) | N25 **P1-2** |
+| **Supersede — never edit** — the `dual-half-negative` seed prior, which forbids the deployed topology | N25 **P1-3** |
+| Land `region_lock_wait_s_by_holder` telemetry **before** any autopilot routing knob | N25 **P1-8** |
+| Delete-candidate `scripts/server/quarter_scheduler.py` (403 ln, 0 runtime importers) | N25 **P1-9** |
+| Pre-commit check for `REQUIRED_SOURCE_ARTIFACTS` staleness (fired twice today, two sessions) | N25 **P1-10** |
+| Re-run the 27 confounded E5 cells (**= T3 above**) | N25 **P2-1** |
+| Production anchors for the three roles that have none | N25 **P2-2** |
+| Ratify the TBD thresholds, incl. `INTERLEAVE_TOLERANCE` which blocks T5 | N25 **P2-3** |
+| Context-depth field in the claim grammar (generalises **T8**) | N25 **P2-4** |
+| Fold the ngram result into the production recipe | N25 **P2-5** + [speculative-decoding-mtp-refresh.md](speculative-decoding-mtp-refresh.md) **NG1–NG5** |
+| Report the in-flight GPU ngram sweep (36 cells) | [speculative-decoding-mtp-refresh.md](speculative-decoding-mtp-refresh.md) **NG4** |
+
+N25 additionally owns five defects this handoff never named — `stack_templates/default.yaml` as a
+**fourth** hand-maintained copy of the topology (**P1-4**), the missing
+`registry_validator` cross-check of `numa_ports` against `NUMA_CONFIG` that **allowed months of
+drift** (**P1-5**), `eval_tower.py`'s `stack_numa_mode == "quarter"` test that **silently
+collapses eval fan-out to 1** under a half fleet (**P1-6**), `vision_escalation`'s **phantom
+5-port fleet** (**P1-7**), and the contention matrix's inability to see the **GPU shadow lane**
+(**P1-11**).
+
+**Correction to this session's own count**: an early read put the breakage at "~22 tests". The
+measured clean-HEAD A/B is **30 net-new failures across 14 files**. Cite 30.
 
 ---
 
@@ -607,6 +945,27 @@ T9 operator ratification of P-BENCH-PLACEMENT-1  [orthogonal — gates GRADE, no
 
 T10 Q4_K_M context curve ──> T8 prompt-length-carrying claims for ingest_long_context
 ```
+
+### Second pass, 2026-07-30 — what changed in this graph, and where the rest of it lives
+
+The head of the graph above has resolved: **T1 (wiring) is WRITTEN**, **T2 (`no_mmap`) is
+DECIDED**, **T6 (invariant audit) and T7/T9 are CLOSED**. What replaces them is a *landing*
+sequence, not a diagnosis sequence, and it is owned by
+**[`numa-topology-cutover-resume-20260730.md`](numa-topology-cutover-resume-20260730.md) §3** —
+read that graph, not a second copy here. Three orderings from it bear directly on tasks that
+remain in *this* document:
+
+* **`N25 P2-3` (ratify `INTERLEAVE_TOLERANCE`) unblocks `T5`.** A multi-node locality check has
+  nothing to check against until the tolerance exists. More generally: until the TBDs are
+  ratified, `P-BENCH-PLACEMENT-1`'s gates cannot reject anything.
+* **`N25 P2-2` (production anchors) is what lets `T3`'s re-run pass the mandatory anchor gate**
+  for the three roles that have none.
+* **`N25 P0-1` (tests) → `N25 P0-3` (cold-start, re-bench, commit) gates everything downstream of
+  the wiring change**, including the RSS measurement that closes T2's residency tail and the
+  contention-matrix refresh that cross-cutting concern 4 depends on.
+
+`T4`, `T8`, `T10` and `T11` are unaffected by the cutover and keep their original ordering above:
+**`T5`, `T4` and `T11` remain zero-inference and unblocked, and `T11` still belongs before `T3`.**
 
 * **T5 and T4 are zero-inference and unblocked** — land them before T3 so the re-run is guarded
   and interpretable. T5 in particular is what would have caught D2 the first time.
@@ -674,6 +1033,16 @@ T10 Q4_K_M context curve ──> T8 prompt-length-carrying claims for ingest_lon
    > production has recorded `--no-mmap` quarters at `0.486` / `0.333` local, so `--membind` must
    > land with it. Evidence: `no_mmap_budget.md` in the attestation directory.
 
+   > **AMENDED 2026-07-30 (second pass) — the `false` list is now empty for CPU serving roles.**
+   > `no_mmap: true` is declared in the MASTER registry for `frontdoor`, `coder_escalation`,
+   > `architect_general`, `ingest_long_context`, `worker_vision` and `vision_escalation`; the
+   > "roles that resolve to `false`" sentence above is superseded. Two consequences: the
+   > "`--no-mmap` on quarters only is not expressible" limitation is **moot** (quarters are
+   > retired), and the **+141 GB** figure was measured on a 4×quarter fleet — the 1-full +
+   > 2-half topology has a different residency envelope and its actual RSS is **unmeasured**
+   > (N25 P0-3). The `--membind` companion requirement still holds for the vision pair, which is why
+   > they were given explicit `membind=1` / `membind=3`.
+
 4. **Any co-resident model changes the arithmetic.** These are single-model measurements taken
    under a held region-lock. The mode-exclusivity contract (full XOR quarters per role) and the
    cross-role contention matrix both bear on what the corrected numbers mean for a *populated*
@@ -703,6 +1072,20 @@ T10 Q4_K_M context curve ──> T8 prompt-length-carrying claims for ingest_lon
    run the winning configuration**; those ratios describe a loss that is *not happening*. Any
    summary, dashboard row, escalation or artifact quoting this table must carry the two-role
    scope. Presenting a fleet-wide "~2× on all CPU roles" would be a false claim about production.
+
+9. **Do not present the ngram result as fleet-wide either.** (*Added 2026-07-30.*) `ngram-mod`
+   helps **two** roles and does nothing for the other two, and the reason is mechanical: **its
+   benefit is inversely proportional to the incumbent drafter's acceptance rate.** `frontdoor`
+   at `.505` accept gains `2.80×`; `worker_general` at `.754` and `architect_general` at `.650`
+   gain nothing. Quote the principle with the number, or the next reader will try to deploy it
+   everywhere. Also carry the **corpus**: the same measurement on synthetic filler (99.7 %
+   repeated 5-grams) read `2.52×` and was nearly worthless — an ngram claim without its
+   repeated-5-gram fraction is not a claim.
+
+10. **Every decode number in this document now needs a context depth attached.** (*Added
+    2026-07-30.*) The same role/recipe/placement spans `40.22 → 17.23` tok/s from 28 to ~35k
+    tokens, with acceptance decaying `0.746 → 0.429`. A tok/s without a depth is a number
+    without a workload. N25 P2-4 makes this a grammar requirement; until it lands, do it by hand.
 
 ---
 
@@ -745,6 +1128,23 @@ T10 Q4_K_M context curve ──> T8 prompt-length-carrying claims for ingest_lon
 
 ## ⚠ Authorisation status of the production change
 
+> ### SUPERSEDED 2026-07-30 (second pass) — read this first
+>
+> The section below describes the state of `stack_numa.py` **earlier on 2026-07-30**, when it
+> carried comments only. It is retained verbatim per the append-only rule. **Current state:**
+>
+> * The wiring change **is written** — quarters retired, 1 full + 2 halves, a declared memory
+>   policy on every instance, `-t` == physical cores everywhere. See
+>   [Topology change applied](#topology-change-applied-2026-07-30--quarters-retired-1-full--2-halves).
+> * It is **UNCOMMITTED** and **NOT RELOADED**. **30 net-new test failures across 14 files (N25 P0-1)**, two of them
+>   inside `PROMOTION_GATE_TARGETS` — the promotion gate is red, so the stack cannot start.
+> * **The reload is still not self-authorising.** Per `OPERATING_CONSTRAINTS.md` → *Inference and
+>   Benchmarks*, it is executed by the session that owns the inference, at a moment it chooses.
+>   Tracked as **N25 P0-3**, with the three stack gates and a post-reload live-affinity verification.
+> * The **grade** objection in the original text is resolved: `P-BENCH-PLACEMENT-1` is ratified
+>   (T9 closed). What remains gating *promotion of specific numbers* is the missing anchors
+>   (N25 P2-2) and the unset thresholds (N25 P2-3), not protocol status.
+
 **The `stack_numa.py` production wiring change is NOT authorised.** As of 2026-07-30 the file
 carries **comments only** — a `CONSEQUENCE, measured` block, the retraction of the 2026-04-17
 head-to-head, and an explicit note that the wiring is *"intentionally left UNCHANGED until [the
@@ -773,6 +1173,21 @@ production exactly as it is and keep the defect documented.
 | `/mnt/raid0/llm/epyc-orchestrator/scripts/server/orchestrator_stack.py` | Launch-command builder; emits `--no-mmap` from the `no_mmap` cache prior |
 | `/mnt/raid0/llm/epyc-orchestrator/src/registry/stack_priors.py` | `_role_no_mmap_prior()` — the T2 knob (data, not code) |
 | `/mnt/raid0/llm/epyc-orchestrator/scripts/server/affinity_preflight.py` | **T5 site.** `_summarize_numa_maps()` (weight-page placement read); the `required` predicate at line 195 |
+
+### Sites opened by the 2026-07-30 topology change
+
+| Path | Role |
+|---|---|
+| `/mnt/raid0/llm/epyc-orchestrator/scripts/server/stack_numa.py` | **T1 landed here** (uncommitted). `NUMA_FULL` / `NUMA_HALF_A` / `NUMA_HALF_B` supersede the NPS2-era `NUMA_NODE0`/`NUMA_NODE1`; carries the `architect_general` role definition and the **N25 P1-8** telemetry note |
+| `/mnt/raid0/llm/epyc-orchestrator/src/fleet.py` | Degraded-mode fallback ports now **derived** from `NUMA_CONFIG` (was hardcoded 5-port lists) |
+| `/mnt/raid0/llm/epyc-orchestrator/src/config/models.py` | No longer advertises the freed ports |
+| `/mnt/raid0/llm/epyc-orchestrator/scripts/registry/stack_change_pipeline.py` | `PROMOTION_GATE_TARGETS` — **N25 P0-1**: two of the 30 net-new failures live under this gate; also the `REQUIRED_SOURCE_ARTIFACTS` staleness trap (**N25 P1-10**) |
+| `/mnt/raid0/llm/epyc-orchestrator/scripts/server/quarter_scheduler.py` | **N25 P1-9 delete candidate** — 403 lines, zero runtime importers, now factually wrong |
+| `/mnt/raid0/llm/epyc-orchestrator/scripts/autopilot/operator_seed_strategies.yaml` | **N25 P1-3** — `dual-half-negative` (`confidence: high`) forbids the deployed topology; SUPERSEDE, do not edit |
+| `/mnt/raid0/llm/epyc-orchestrator/tests/unit/test_build_server_command_helpers.py` · `tests/unit/test_orchestrator_stack_threads.py` | **N25 P0-1 / P0-2** — the two `PROMOTION_GATE_TARGETS` failures and the XPASSing replacement assertion. `test_worker_general_numa_policy_is_full_instance_only` **encodes the defect as a requirement** — retire it, do not repair it |
+| `/mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml` | MASTER registry — where `no_mmap: true` and `ngram_candidate_spec_type` are declared |
+| `/workspace/artifacts/operator/ratification_queue_20260730.md` | **N25 P2-4 / N25 P2-3** — proposed values for every TBD threshold, with derivations |
+| `/mnt/raid0/llm/epyc-inference-research/docs/protocols/model-registration-runbook.md` | **`MRG-1`** — the registration gate (Steps 0–9); its §5 TBDs feed N25 P2-3 |
 
 ### Measurement harness
 

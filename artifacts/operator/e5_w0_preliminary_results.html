@@ -107,13 +107,13 @@
   </header>
 
   <div class="stats">
-    <div class="stat"><span class="k">worker_general · gemma4-26B-A4B</span><span class="n">56.86</span>
+    <div class="stat"><span class="k">worker_general · gemma4-26B-A4B <strong>Q4_K_M</strong></span><span class="n">56.86</span>
       <span class="w">tok/s single stream · draft-mtp + assistant-v6 · accept 0.866</span></div>
-    <div class="stat"><span class="k">frontdoor · Qwen3.6-35B-A3B</span><span class="n">40.22</span>
+    <div class="stat"><span class="k">frontdoor · Qwen3.6-35B-A3B <strong>Q8_0</strong></span><span class="n">40.22</span>
       <span class="w">tok/s single stream · draft-mtp self-draft · accept 0.746</span></div>
-    <div class="stat"><span class="k">architect_general · Qwen3.5-122B</span><span class="n">24.00</span>
+    <div class="stat"><span class="k">architect_general · Qwen3.5-122B-A10B <strong>Q4_K_M</strong></span><span class="n">24.00</span>
       <span class="w">tok/s single stream · draft-mtp self-draft · accept 0.831</span></div>
-    <div class="stat"><span class="k">ingest_long_context · Qwen3-Next-80B</span><span class="n">22.92</span>
+    <div class="stat"><span class="k">ingest_long_context · Qwen3-Next-80B-A3B <strong>Q4_K_M</strong></span><span class="n">22.92</span>
       <span class="w">tok/s single stream · no speculation path exists for this arch</span></div>
   </div>
 
@@ -187,7 +187,7 @@
     <div class="tscroll"><table>
       <thead><tr><th class="l">Shape</th><th>inst</th><th>np</th><th>T</th><th>Per-stream</th><th>Aggregate</th><th>Accept</th></tr></thead>
       <tbody>
-        <tr class="group"><th colspan="7">gemma4-26B-A4B — worker_general</th></tr>
+        <tr class="group"><th colspan="7">gemma4-26B-A4B <strong>Q4_K_M</strong> — worker_general</th></tr>
         <tr class="anchor"><th>1 × full</th><td>1</td><td>1</td><td>1</td><td class="best">56.90</td><td>56.90</td><td class="dim">0.866</td></tr>
         <tr><th>1 × full</th><td>1</td><td>2</td><td>2</td><td>54.90</td><td class="best">109.80</td><td class="dim">0.866</td></tr>
         <tr><th>1 × full</th><td>1</td><td>4</td><td>4</td><td>42.06</td><td class="best">168.24</td><td class="dim">0.832</td></tr>

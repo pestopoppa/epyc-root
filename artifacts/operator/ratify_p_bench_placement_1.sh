@@ -1,4 +1,15 @@
 #!/bin/bash
+# ============================================================================
+# SUPERSEDED — DO NOT RUN.
+#
+# Replaced by ratify_p_bench_placement_1_v2.sh, which the operator ratified at
+# commit 07b7dcab on 2026-07-30. The amendments below are ALREADY APPLIED;
+# re-running this would be a no-op at best (its context checks now fail) and
+# confusing at worst. Retained only as the authoring record of the finding.
+#
+# What v2 changed relative to this file: the exemplar's attest path is fully
+# qualified to .../prodopt_results.txt, and a rep-adequacy clause was added.
+# ============================================================================
 # Operator ratification — MEASUREMENT.md trust boundary (human-amendment-only).
 #
 # Written by mainA 2026-07-30 but NOT executed: MEASUREMENT.md and

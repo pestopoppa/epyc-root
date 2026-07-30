@@ -33,9 +33,60 @@ Decide which remaining MTP (multi-token-prediction) speculative-decoding paths a
 | **Qwen3-Next-80B (ingest)** | SSM-MoE hybrid | native MTP (GPU/vLLM only) | **not viable on CPU** | only GGUF attempt (quivent) = net-negative 0.43×; verification wall holds |
 | **gemma-4-26B-A4B (worker_general)** | MoE A4B | mainline/v6 native gemma4 MTP (#23398 lineage) | **not stale on head; v6-native now** | our head = official; production now uses the consolidated v6 native MTP path, not the separate ik fork. Cheap open check remains `draft_max` / `--spec-draft-n-max` 2→3→4 sweep under operator-approved bench conditions. |
 
+## ngram speculation — measured 2026-07-30, and it changes two verdict rows
+
+> **Read this before the verdict table above.** The table's framing is *draft-model* speculation.
+> **`ngram-mod` needs no draft model**, so two rows the table closes are re-opened by it.
+> Production launches `--spec-type draft-mtp` **alone**; the MASTER registry has carried
+> `ngram_candidate_spec_type: ngram-mod,draft-mtp` as a **never-deployed candidate**.
+> Root-cause context and attestation: [numa-placement-defect-20260730.md](numa-placement-defect-20260730.md)
+> → *ngram speculation*. Era `production-consolidated-v8` @ `67a433bf4` (binary `10107`),
+> protocol `P-BENCH-PLACEMENT-1` (ratified 2026-07-30), region-lock held as `role='bench'`.
+
+Measured on **realistic text** — real repository source, **10.6 % repeated 5-grams**:
+
+| model / role | prompt | `draft-mtp` | `ngram-mod,draft-mtp` | speedup |
+|---|---:|---:|---:|---:|
+| Qwen3.6-35B-A3B — `frontdoor` / `coder_escalation` | 14,059 tok | 24.92 (accept `.505`) | **69.89** (accept `.755`) | **2.80×** |
+| Qwen3.6-35B-A3B | 53,730 tok | 12.46 | 18.71 | **1.50×** |
+| Qwen3-Next-80B — `ingest_long_context` | — | 17.40 | **20.06** (accept `.812`) | **1.15×** |
+| gemma4-26B-A4B — `worker_general` (accept `.754`) | — | — | — | **no gain** |
+| Qwen3.5-122B-A10B — `architect_general` (accept `.650`) | — | — | — | **no gain** |
+
+**PRINCIPLE: ngram's benefit is inversely proportional to the incumbent drafter's acceptance
+rate.** It fills headroom, and there is none when the drafter is already strong. That single rule
+predicts all five rows — and it means the "MoE CPU spec-dec is low-EV because expert verification
+dominates" verdict is **about draft-model speculation specifically**, not about speculation.
+
+**Verdict-table amendments (2026-07-30):**
+
+* **Qwen3.6-35B-A3B (frontdoor + coder_escalation)** — the row reads "operator-gated low-EV bench
+  only, pure-MoE-A3B = worst CPU-MTP case". That stands **for MTP**. With `ngram-mod` stacked in
+  front of it the same role measures **2.80× at 14k tokens**. The low-EV verdict does **not**
+  transfer to the ngram path.
+* **Qwen3-Next-80B (ingest)** — the row reads "not viable on CPU", and the registry carries
+  `acceleration: {type: none}` because its **SSM hybrid has no draft-model path**. `ngram-mod`
+  requires no draft model: **it is the only speculation this role can have**, and it measures
+  `17.40 → 20.06` with `.812` acceptance. Re-read the verdict as *no draft-model speculation*,
+  not *no speculation*.
+* **gemma4-26B-A4B and Qwen3.5-122B-A10B** — unchanged. Measured **no gain**; their incumbent
+  drafters already have the acceptance.
+
+**Methodological caveat that must travel with any ngram number.** A first pass used **synthetic
+filler** — 99.7 % repeated 5-grams, 23 distinct tokens across 8,736 words — and returned `2.52×`.
+That is nearly worthless as evidence: it measures the filler, not the workload. Real repository
+text confirmed the *direction* but **moved the number**. **Every ngram claim must carry its
+corpus and its repeated-5-gram fraction.**
+
 ## Outstanding Tasks (priority order)
 
 - [x] **T1 — gate-bench gemma-4-31B DENSE: DONE 2026-06-22 (host quiesced).** Result **~1.84× at draft_max=3** (see Results below). Speed win confirmed + survives noise; **corrects the prior single-run ~2.98× to ~1.84×**. Remaining for Tier-B promotion: multi-prompt reps + the quality (Leviathan byte-exact) suite + acceptance-rate capture. Operator decision: promote `gemma4_31b_q4km_mtp` only after the quality pass.
+- [x] **NG0 — measure `ngram-mod,draft-mtp` against `draft-mtp` on all four production CPU models**, on realistic text after discarding a synthetic-filler first pass ✅ 2026-07-30
+- [ ] **NG1 — deploy `--spec-type ngram-mod,draft-mtp` on `frontdoor` + `coder_escalation`.** Measured **2.80×** at 14k tokens, **1.50×** at 53.7k. Needs: a quality/bit-exactness pass (speculation must not change output — pair speed with a correctness check), the depth at which the gain is quoted, and the reload gates. **Deploy is not self-authorising** — the reload belongs to the session that owns the inference.
+- [ ] **NG2 — deploy `ngram-mod` on `ingest_long_context` (Qwen3-Next-80B).** `1.15×`, `.812` acceptance, and it is **the only speculation an SSM hybrid with no draft-model path can have**. Update the registry's `acceleration: {type: none}` so it stops reading as "this role cannot be accelerated".
+- [ ] **NG3 — do NOT deploy ngram on `worker_general` or `architect_general`**, and record why in the registry rather than leaving it to be rediscovered: measured no gain, consistent with the acceptance-headroom principle (`.754` and `.650` incumbents). *(This is a decline, filed as a task so the next reader does not re-run it.)*
+- [ ] **NG4 — report the in-flight GPU ngram sweep (36 cells).** ngram **is** supported on GPU, and the v8 HIP build works (`ROCm0: AMD Instinct MI210`, version `10107` / `67a433bf4` — the same SHA production serves on CPU). The sweep was running at session close and is **NOT reportable**; do not quote a GPU ngram figure until it lands.
+- [ ] **NG5 — carry corpus + repeated-5-gram fraction on every ngram claim**, in this handoff, the registry, and any index row that quotes one. Synthetic filler inflated the same measurement to a nearly meaningless `2.52×`.
 
 ## Results — gemma-4-31B dense MTP gate-bench (2026-06-22)
 
