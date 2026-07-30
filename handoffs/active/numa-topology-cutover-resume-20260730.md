@@ -492,3 +492,103 @@ relying on it long-term):
   Do NOT fix inline during the cutover — changing a safety gate's semantics
   mid-migration should be a reviewed change.
 
+
+---
+
+## UPDATE 2026-07-30 evening — ngram RETRACTED; artifact rebuilt; vision measured
+
+### The ngram finding is withdrawn (this supersedes every ngram row above)
+
+`--spec-type ngram-mod` buys **nothing**. The "2.80× at depth" result committed
+earlier today was a harness artifact.
+
+**Mechanism.** Each cell launched ONE server and sent the SAME prompt r times at
+`temperature=0.3, seed=42`. Run 1 generates answer X; the server retains X in the
+slot KV. Run 2 sends the identical prompt, hits the prompt cache
+(`prompt eval = 4 tokens`), and `ngram-mod` — which drafts by matching text already
+in context — copies its own previous answer verbatim. Mean accepted draft length
+3.58 → 15.88; acceptance → 1.000.
+
+**The control was already in the data.** Sorting all 68 cell logs by run2÷run1:
+every cell inflated >1.15× is an ngram arm; all 25 `draft-mtp`-only and `none`
+cells are flat at 0.92–1.08×. `draft-mtp` drafts from weights, so a warm context
+cannot help it.
+
+**Corrected (run 1 only), 16 model × depth × device cells: gain spans −17.4 % to
++2.7 %, centred on zero.** 35B CPU: 24.85 vs 24.86. `ngram-mod` alone is far worse
+than MTP everywhere (122B CPU: 9.38 vs 15.76).
+
+- [x] Retraction committed to research `84067a6e` (raw logs left unedited) ✅ 2026-07-30
+- [x] Memory `feedback_ngram_fills_weak_drafter_headroom` rewritten as a retraction ✅ 2026-07-30
+- [x] Artifact rebuilt on corrected numbers ✅ 2026-07-30
+- [ ] **Cancel the queued `acceleration.spec_type` per-role field.** It was queued
+  off the retracted finding. Nothing justifies enabling ngram on any role.
+- [ ] Re-scope NG1–NG5 in `speculative-decoding-mtp-refresh.md` — they were filed
+  against the retracted result.
+- [ ] Fold the four P-BENCH-PLACEMENT-1 amendments (no repeated-prompt replication
+  for context-reading drafters; mandatory non-context control arm; report n/min/max
+  never a bare median; `accept=1.000` is a bug report) into MEASUREMENT.md proper.
+
+### Confirmatory re-run IN FLIGHT
+
+`/mnt/raid0/llm/tmp/ngramfix.sh` → `ngramfix_results.txt`, under a q0–q3 lock.
+3 DISTINCT prompts per rep (disjoint corpus slices, `mkdistinct.py`), per-rep
+values printed, `draft-mtp` control in every group. 12 cells: 35B CPU full + 27B
+GPU × d8k/d16k × 3 arms. **If a cell still climbs monotonically rep0→rep2, the
+harness fix failed and that cell is void** — the script flags this inline.
+
+### Vision pair measured — the last unbenchmarked stack model
+
+Qwen2.5-VL-7B-Instruct Q4_K_M, node1, 24t, `membind=1`. Same GGUF serves
+`worker_vision` and `vision_escalation`, so this characterises both.
+
+| depth | spec=none | spec=ngram-mod |
+|---|---|---|
+| 3.5k | 7.31 (min 7.20 max 7.47) | 9.18 — **artifact**, min 7.42 = the none arm |
+| 14.1k | 5.36 (min 5.32 max 5.41) | 6.29 — **artifact**, min 5.29 |
+| 27.6k | 4.03 (n=3, consistent) | not run |
+
+- [ ] **NEW FINDING — VL-7B cannot serve deep context on a quarter.** Prefill on 24
+  threads runs at ~27.5 tok/s, so a 27.6k prompt needs ~14 min and the first rep
+  blew a 900 s client timeout. `g32k` was abandoned as guaranteed-void rather than
+  burn an hour. If either vision role is expected to take long-context work, it
+  needs more cores or GPU residency — this is a real capacity limit, not a bench
+  artifact.
+- [ ] **Harness parser bug:** depth is read from the FIRST `prompt eval time` line.
+  When rep 1 times out before logging one, a later cache-warm incremental count is
+  reported instead (observed: `prompt=2926` where true resident context was
+  27,586, per `stop processing: n_tokens`). Read depth from `n_tokens` instead.
+
+### Test progress — 6 of 35 topology failures closed
+
+Both fixed guards had the defect as their passing condition, so the correction
+necessarily failed them; replaced, not adjusted. **Uncommitted** — the pre-commit
+gate blocks ALL commits to this repo, including test-only ones, until the
+contention matrix is refreshed.
+
+- [x] `test_placement_policy` — split ABSENT (→default) from UNRECOGNISED (→raises) ✅ 2026-07-30
+- [x] `test_stack_numa` — frontdoor[0] asserts `NUMA_FULL` + `interleave=all`, not
+  the NPS2-era `NUMA_NODE0`; policy-less-prefix test rebuilt on a fixture; added
+  `test_every_live_role_declares_a_memory_policy` ✅ 2026-07-30
+- [ ] Remaining 29: `test_gate_seam_wiring` (9), `test_scheduling_contention_gate`
+  (5), `test_stack_priors_compiler` (4), `test_scheduling_contention` (3),
+  `test_stack_templates_v2` (3), `test_quarter_stack_smoke` (3),
+  `test_gpu_shadow_lane_p2` (1), `test_model_descriptors_schema` (1).
+  Most funnel into the contention matrix or into quarter-shaped fixtures.
+- [ ] `NUMA_NODE0` / `NUMA_Q0A` are now referenced **only by tests and comments** —
+  no production path reads them. Deletion candidates once fixtures stop naming them.
+
+### Operational lesson — do not re-arm a chain you have not positively identified
+
+I concluded `full_last` was dead from `pgrep -af "full_last|region_lock"` and
+re-armed it. It was alive: `cpu_chain.sh` was sitting in a `bash until … sleep 30`
+loop whose command line contains neither pattern. Both then ran; they serialized
+correctly on the region lock so nothing was poisoned, but full_last executed twice
+(~15 min wasted) and the second pass **truncated `full_last_results.txt`** via its
+`: > "$OUT"`. Recovered only because the file had been copied to
+`/mnt/raid0/llm/tmp/preserved/` beforehand.
+
+- [ ] Before re-arming any chained job, enumerate waiters by their **script name**
+  (`pgrep -f cpu_chain.sh`), not by the tag of the job they will eventually launch.
+- [ ] Bench harnesses should append or write to a run-stamped file, never truncate
+  a shared results path at startup.
