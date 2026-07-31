@@ -894,3 +894,52 @@ An earlier note recorded the operator's directive too broadly. The correction:
   use a role, not just *whether* two may co-run.
 - [ ] Note this regression is independent of ngram — it reproduces on `draft-mtp`
   alone, so it is a scheduling/batching property, not a speculative-decoding one.
+
+### RATIFIED DESIGN 2026-07-31 — contention matrix becomes THREE artifacts (option B)
+
+Operator agreed. Replaces the single BLOCK/ALLOW pair matrix, which conflated three
+different kinds of thing and is why 58 of 78 pairs were being benchmarked to
+rediscover set intersection.
+
+- [ ] **(1) Placement feasibility — DERIVED, never measured.** Pure cpuset
+  intersection, regenerated from `stack_numa.py` on every topology change. Zero
+  inference, cannot go "stale" in a way a benchmark fixes. half A (q0+q1) vs half B
+  (q2+q3) = disjoint, may co-run. full (0-95) intersects both halves = exclusive.
+  **This artifact is what a pre-commit gate may consult** — it removes the standing
+  block on the orchestrator repo.
+- [ ] **(2) Per-role capacity curve — `tok/s = f(np, context_depth)` per role x shape.**
+  Self-interference, NOT a pair property. **N curves, not N².** This is what the
+  half/full headline runs actually produce. Answers "how should I use this role",
+  and is the prior a router trains from.
+- [ ] **(3) Cross-role interference coefficients — small and SPARSE.** Only for pairs
+  feasible under (1) that genuinely share a resource: the GPU shadow lane vs q3
+  tenants, cross-node memory bandwidth. A handful of scalars, not 78 cells.
+- [ ] Layer online learning (option C) on top later: (2) supplies the cold-start
+  prior, (3)'s coefficients are what production telemetry refines.
+- [ ] **Open design question for the operator**: store (2) as a raw table (exact at
+  measured points, needs interpolation) or a fitted parametric form (differentiable,
+  trainable, but imposes a shape)? Leaning parametric with the raw table retained as
+  attestation — depends on how the router consumes priors.
+
+### Benchmark harness efficiency — STOP RELOADING MODELS (operator, 2026-07-31)
+
+`full_headline.sh` reloaded per (model x depth x np) = **24 loads**, with the 122B at
+73 GB each time. Wrong by construction:
+
+- `-np` sets the slot CEILING. **One server at `-np 4` serves 1, 2 or 4 concurrent
+  requests**, and depth is a property of the prompt, not the server.
+- Correct shape: **one hot server per model** (4 loads), vary concurrency by how many
+  requests you fire, vary depth by which prompt you send.
+- [ ] Rewrite `full_headline.sh` on this pattern before the next full-machine window.
+- **NOT contradicted by the preload finding**: keeping ONE server hot and reusing it
+  is correct; loading FOUR different models concurrently is what poisons measurements
+  (an idle llama-server burns 47 of 48 cores under `OMP_WAIT_POLICY=active`, proven at
+  `halfa_headline_results.v3_preload_POISONED.json`). Hot-and-sequential, not
+  preloaded-and-parallel.
+
+### Queue reordered 2026-07-31 (operator)
+
+- [ ] Full-instance headlines were running the **composed** recipe on 24 cells while
+  the coding test that ADJUDICATES that recipe had not run. Killed and re-ordered:
+  coding test (~30 min, q0+q1) settles the recipe -> then ONE full-machine window on
+  the decided recipe, hot instances.
