@@ -587,7 +587,14 @@ The functional gemma-worker launch params that are NOT spec-grammar (`--jinja` f
 
 ### Per-role MTP / NEXTN map on v6
 
-The production stack uses two distinct self/external speculative mechanisms, both native to v6 and both engaged via `--spec-type draft-mtp` + `--spec-draft-n-max N`:
+> **Recipe truth (2026-07-31).** The `--spec-type` values in this section are the
+> MTP *mechanism* map, not the launched recipe. Production launches the COMPOSED
+> recipe `--spec-type ngram-mod,draft-mtp`. **Canonical source:** the
+> `speculative_decoding_policy` block at the top of
+> `epyc-inference-research/orchestration/model_registry.yaml`. Do not infer the
+> recipe from this table.
+
+The production stack uses two distinct self/external speculative mechanisms, both native to v6, whose MTP component is engaged via `draft-mtp` + `--spec-draft-n-max N` (composed with `ngram-mod` at launch):
 
 | Role(s) | Target model | Draft mechanism | Notes |
 |---|---|---|---|
@@ -605,7 +612,7 @@ because its current production MTP path uses a separate assistant-draft GGUF.
 
 ### ngram / prompt-lookup decoding (zero-RAM fallback — OFF in prod today, fully supported in v6)
 
-v6 fully supports **draft-model-free** speculative decoding (ngram / prompt-lookup), including **server-side**, via `--spec-type ngram-simple | ngram-cache | ngram-map-k | ngram-mod`. This drafts continuation tokens by matching the recent context against n-grams already present in the prompt/KV (and, for the cache/map variants, a running suffix structure) — no drafter weights, no extra model load, hence **zero additional RAM**. It is **OFF across the production stack today** (every spec-enabled role uses native MTP/NEXTN; the n-gram path is not engaged for any live role). Its documented role is the **architect's zero-RAM fallback**: when a NEXTN/MTP self-draft head is unavailable or RAM-constrained for a large architect target, ngram/prompt-lookup gives a no-extra-memory speculation path that is especially effective on repetitive / templated / long-context-quoting workloads where the next tokens frequently recur in-context. This is a v6 capability statement, not a measured production result — acceptance on EPYC architect traffic has not yet been benched.
+v6 fully supports **draft-model-free** speculative decoding (ngram / prompt-lookup), including **server-side**, via `--spec-type ngram-simple | ngram-cache | ngram-map-k | ngram-mod`. This drafts continuation tokens by matching the recent context against n-grams already present in the prompt/KV (and, for the cache/map variants, a running suffix structure) — no drafter weights, no extra model load, hence **zero additional RAM**. **CORRECTED 2026-07-31 — the previous sentence here ("It is OFF across the production stack today … the n-gram path is not engaged for any live role") was WRONG and directly contradicted this same page's Key Findings.** Production launches the COMPOSED recipe `--spec-type ngram-mod,draft-mtp` on every role with a working draft path, so the n-gram path **is** engaged in production. The composed recipe costs ~−1.6% on ordinary text and that cost is deliberately accepted for the repetitive-context upside. **Canonical source (do not restate, link):** the `speculative_decoding_policy` block at the top of `epyc-inference-research/orchestration/model_registry.yaml`. Its documented role is the **architect's zero-RAM fallback**: when a NEXTN/MTP self-draft head is unavailable or RAM-constrained for a large architect target, ngram/prompt-lookup gives a no-extra-memory speculation path that is especially effective on repetitive / templated / long-context-quoting workloads where the next tokens frequently recur in-context. This is a v6 capability statement, not a measured production result — acceptance on EPYC architect traffic has not yet been benched.
 
 **2026-07-04 update — the corpus-backed static-cache option is retired.** The one candidate source for a `--lookup-cache-static` build (the 651GB local code corpus) failed its prompt-injection clean-window A/B and was deleted with operator approval before any large static n-gram cache was built; the `build_static_ngram_cache.py` scaffold survives as code history only. The in-context ngram/prompt-lookup fallback described above is unaffected (it needs no corpus), but a corpus-derived static cache would now require recreating a corpus under a fresh handoff + protocol. See [corpus-augmented-prompt-lookup-revalidation.md](../handoffs/completed/corpus-augmented-prompt-lookup-revalidation.md).
 

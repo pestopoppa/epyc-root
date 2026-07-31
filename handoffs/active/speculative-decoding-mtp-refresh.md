@@ -66,8 +66,19 @@ Decide which remaining MTP (multi-token-prediction) speculative-decoding paths a
 
 > **Read this before the verdict table above.** The table's framing is *draft-model* speculation.
 > **`ngram-mod` needs no draft model**, so two rows the table closes are re-opened by it.
-> Production launches `--spec-type draft-mtp` **alone**; the MASTER registry has carried
-> `ngram_candidate_spec_type: ngram-mod,draft-mtp` as a **never-deployed candidate**.
+> ⛔ **CORRECTED 2026-07-31.** The struck sentence below was wrong on both counts.
+> ~~Production launches `--spec-type draft-mtp` **alone**; the MASTER registry has carried
+> `ngram_candidate_spec_type: ngram-mod,draft-mtp` as a **never-deployed candidate**.~~
+> Composed `ngram-mod,draft-mtp` **is** the production recipe (operator standing decision);
+> it was deployed by K16 on 2026-07-16 with live cmdlines verified, then silently
+> un-deployed by research commit `2370025f` (2026-07-19), which demoted `spec_type` back to
+> `draft-mtp` and moved the composed value into the sidecar `ngram_candidate_spec_type`.
+> That sidecar field is now **RETIRED** and the registry carries the composed recipe directly.
+> **Canonical source — link, do not restate:** the `speculative_decoding_policy` block at the
+> top of `epyc-inference-research/orchestration/model_registry.yaml`.
+> Note this correction is independent of the 2.80× retraction above: the composed recipe is
+> carried for its repetitive-context upside at an accepted ~−1.6% ordinary-text cost, **not**
+> because of the retracted speedup.
 > Root-cause context and attestation: [numa-placement-defect-20260730.md](numa-placement-defect-20260730.md)
 > → *ngram speculation*. Era `production-consolidated-v8` @ `67a433bf4` (binary `10107`),
 > protocol `P-BENCH-PLACEMENT-1` (ratified 2026-07-30), region-lock held as `role='bench'`.

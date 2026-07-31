@@ -1272,3 +1272,39 @@ first; it is the index for everything below.
 | `/workspace/handoffs/active/master-handoff-index.md` | Dispatch; §A row for this defect |
 | `/workspace/MEASUREMENT.md` · `/workspace/agents/shared/MEASUREMENT_POLICY.md` | Claim grammar, era handling, append-only annotation rule, region-lock |
 | `/workspace/agents/shared/OPERATING_CONSTRAINTS.md` | *Inference and Benchmarks* — reload ownership (why T1 is not self-authorising) |
+
+---
+
+## SUPERSEDING NOTE — 2026-07-31 · speculative recipe (append-only correction)
+
+This file is append-only, so the text above is left unedited. Two things in it are
+now known to be wrong and MUST NOT be actioned:
+
+1. **The `ngram-mod` 2.80× result is RETRACTED.** (`:25-27` top amendment block,
+   `:607` table, `:613`, `:622`, `:915`, `:1094`.) It was a warm-context self-copy
+   artifact — the same prompt replayed against a warm server let `ngram-mod` copy
+   its own previous answer out of retained context (draft len 3.58 → 15.88,
+   acceptance → 1.000). Corrected gain: **−4.2% to +1.3%**. `ngram-mod` *alone*
+   costs 23–31%. The instruction at `:915` to "fold the ngram result into the
+   production recipe" is **cancelled**. Retraction of record: research
+   `84067a6e`, `data/numa_placement/20260730-P-BENCH-PLACEMENT-1/RETRACTION-ngram-20260730.md`.
+   Recurrence incident: `docs/reference/agent-config/INCIDENT_LOG.md` →
+   `INC-20260731-warm-server-repeat-prompt-recurrence`.
+
+2. **"Production launches `--spec-type draft-mtp` alone … never-deployed
+   candidate" (`:600-601`) is FACTUALLY WRONG.** Composed `ngram-mod,draft-mtp`
+   is the production recipe by standing operator decision. It was deployed by K16
+   on 2026-07-16 (live worker cmdlines verified on 8072/8082/8182/8282/8382) and
+   then silently un-deployed by research commit `2370025f` (2026-07-19), which
+   reverted `spec_type` to `draft-mtp` and moved the composed value into the
+   sidecar `ngram_candidate_spec_type`. That sidecar is now RETIRED.
+
+   These two points are INDEPENDENT. The composed recipe is carried for its
+   repetitive-context upside at an accepted **~−1.6%** ordinary-text cost — *not*
+   because of the retracted 2.80×. Retracting the speedup does not retract the
+   recipe.
+
+**Canonical source — link, do not restate:** the `speculative_decoding_policy`
+block at the top of `epyc-inference-research/orchestration/model_registry.yaml`.
+It also carries the BASELINE / OPTIMUM / CANDIDATE grammar and the
+Qwen3-Next-80B `--spec-type none` = OPTIMUM (not baseline) exception.
