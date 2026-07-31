@@ -943,3 +943,27 @@ rediscover set intersection.
   the coding test that ADJUDICATES that recipe had not run. Killed and re-ordered:
   coding test (~30 min, q0+q1) settles the recipe -> then ONE full-machine window on
   the decided recipe, hot instances.
+
+### Capacity curve storage — FITTED PARAMETRIC (operator ruling 2026-07-31)
+
+Artifact (2) of the three-artifact contention design stores as a **fitted parametric
+form**, not a raw lookup table: cheap derivatives, which the router/autopilot can use
+directly for gradient-based placement decisions.
+
+- [ ] Fit per role x shape. Retain the raw measured points as **attestation**
+  alongside the coefficients — the fit is the interface, the table is the evidence.
+  A claim cites the measurement, not the curve.
+- [ ] **The form MUST carry an np x depth interaction term. A separable form
+  `A * f(depth) * g(np)` CANNOT express what we measured.** At ~15k with np=2 on a
+  half instance the *aggregate* falls BELOW the np=1 single stream (gemma 18.59 vs
+  20.75; Qwen3.6 15.44 vs 22.18; 122B 7.97 vs 10.76; Qwen3-Next 13.77 vs 15.81).
+  A separable model forces aggregate monotone-increasing in np, so it would predict
+  a speed-up exactly where we measure a regression — and the router would then
+  batch precisely where it should not.
+- [ ] Suggested starting shape, 3-4 params per role x shape:
+  `per_stream(np, d) = A / ((1 + d/d0) * (1 + (np-1)/k(d)))` with `k` itself
+  depth-dependent (concurrency tolerance shrinks as context grows). `aggregate =
+  np * per_stream`, which is then free to turn over. Validate the fit reproduces the
+  measured regression before adopting it.
+- [ ] Report fit residuals per role. A form that smooths away the turnover is worse
+  than a table, because it is confidently wrong in the region the router cares about.
