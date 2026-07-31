@@ -1300,3 +1300,40 @@ speech kernels. Both landed.
 
 Stack unaffected by any of the above and still serving: 12/12 healthy, 18 processes,
 `--spec-type draft-mtp` with ngram in zero processes, live inference confirmed.
+
+## ADDENDUM 2 (22:00–23:00Z) — W1's kernel blocker is CLOSED
+
+- [x] **Every role's binary is resolved from its declared DEVICE** ✅ 2026-07-31 —
+      orchestrator `b060dd56`. The architecture was already right and one derivation
+      was missing: `stack_priors` emits a per-role `binary_path` from `binary_dir`,
+      the launcher reads it, and `stack_commands.py:485` verifies live matches
+      declared — but `binary_dir` came only from an explicit registry override, so
+      every role without one fell through to a CPU-only literal, including any role
+      a registry edit had just moved to the GPU.
+      `_backend_for_role()` now maps device ROCm*/cuda*/gpu* → gpu backend, else cpu,
+      resolved through `kernel_paths`. Verified both directions: `device: ROCm0` →
+      `build-hip/bin/llama-server`, `device: none`/absent → `build/bin/llama-server`.
+      All ten live roles now carry an explicit backend-resolved binary_path.
+      Caught a near-miss: `env_policy`/`kmp_blocktime` key off `binary_dir` being
+      truthy, so always-populating it would have flipped every role from `canonical`
+      to `binary_override_strip_ggml` with KMP_BLOCKTIME=10. Explicit override and
+      derived default are now distinguished; env policy is unchanged and asserted.
+
+- [x] **Kernel freeze scope is derived, not curated** ✅ 2026-07-31 — orchestrator
+      `4e8bf1f0`, runbook epyc-root `e19d458f`
+      ([`docs/reference/kernel-freeze-runbook.md`](../../docs/reference/kernel-freeze-runbook.md)).
+      The models that must show no regression for backend B are exactly those whose
+      roles resolve to B in the compiled priors — a projection, so it cannot go stale
+      the way a curated list does. `scripts/validate/kernel_freeze_scope.py`.
+      **This is what makes the four kernels independently upgradable.** Today: cpu
+      serves 10 roles across 5 DISTINCT models (bench the models, not the roles —
+      several share one server); gpu/stt/tts serve none and gate on nothing from the
+      stack. Promotion is a symlink move; rollback is repointing to the archived
+      target. Neither registry changes, ever.
+
+**W1's remaining blockers are now only D1–D4 and the stale anchors** (master moved
+`96aa90f6` → `596a1e24`). The CPU-only-binary blocker is gone: a role declaring
+`device: ROCm0` gets the HIP build automatically.
+
+Stack verified unaffected throughout: 12/12 healthy, `--spec-type draft-mtp`, live
+inference confirmed after every commit.
