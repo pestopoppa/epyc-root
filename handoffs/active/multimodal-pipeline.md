@@ -126,7 +126,7 @@ Artifacts on disk:
 - `/mnt/raid0/llm/models/Qwen3-TTS-12Hz-0.6B-Talker-Q4_K_M.gguf`
 - `/mnt/raid0/llm/models/Qwen3-TTS-12Hz-0.6B-CodePredictor-Q8_0.gguf`
 - `/mnt/raid0/llm/models/qwen3-tts-sidecar.bin`
-- C++ binary: `/mnt/raid0/llm/llama.cpp-experimental/build/bin/llama-tts-qwen3`
+- C++ binary: ⛔ **PATH IS DEAD (verified 2026-07-31).** `/mnt/raid0/llm/llama.cpp-experimental/build/bin/llama-tts-qwen3` **does not exist**. The only surviving copy is `/mnt/raid0/llm/llama.cpp-experimental-preserved-20260724T135832Z/build-archive-2026-04-23/bin/llama-tts-qwen3` (418 KB, built 2026-04-23), and it **fails to run**: `no backends are loaded` even with `LD_LIBRARY_PATH` and `GGML_BACKEND_PATH` pointed at its own `.so`s. Worse, **the C++ SOURCE no longer exists anywhere on this host** — no `tts-qwen3*.cpp`, no `tools/tts-qwen3/` source dir, and branch `feature/qwen3-tts-support` in the production tree contains **none** of it (its tip is upstream commit `079feab9e`). Only stale CMake artifacts survive under the preserved tree's `build-*/tools/tts-qwen3/`. **This accelerator cannot be rebuilt from what is on disk.** It is also in a `-preserved-<timestamp>` directory, i.e. exactly the kind of path that gets reclaimed. USE THE PYTORCH PATH INSTEAD — `scripts/voice/tts_server.py` is a complete PyTorch implementation needing no C++ binary (see below).
 - Branch: `feature/qwen3-tts-support` in llama.cpp-experimental
 
 **Next debug step**: Generate PyTorch reference codec tokens, compare vs C++ token-by-token to find divergence point.

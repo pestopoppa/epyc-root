@@ -33,6 +33,35 @@ Decide which remaining MTP (multi-token-prediction) speculative-decoding paths a
 | **Qwen3-Next-80B (ingest)** | SSM-MoE hybrid | native MTP (GPU/vLLM only) | **not viable on CPU** | only GGUF attempt (quivent) = net-negative 0.43×; verification wall holds |
 | **gemma-4-26B-A4B (worker_general)** | MoE A4B | mainline/v6 native gemma4 MTP (#23398 lineage) | **not stale on head; v6-native now** | our head = official; production now uses the consolidated v6 native MTP path, not the separate ik fork. Cheap open check remains `draft_max` / `--spec-draft-n-max` 2→3→4 sweep under operator-approved bench conditions. |
 
+## ngram speculation — **RETRACTED 2026-07-31 · DO NOT DEPLOY**
+
+> ### ⛔ EVERYTHING IN THIS SECTION IS WITHDRAWN
+>
+> The `2.80×` / `1.50×` / `+15%` figures below are a **measurement artifact**, not a lever.
+> Each cell launched ONE server and sent the **SAME prompt** r times at `temperature=0.3, seed=42`.
+> Run 1 generates answer X; the server retains X in the slot KV; run 2 hits the prompt cache
+> (`prompt eval = 4 tokens`) and `ngram-mod` — which drafts by **matching text already in context** —
+> copies its own previous answer verbatim. Mean accepted draft length `3.58 → 15.88`; acceptance → `1.000`.
+>
+> **The control was in the data the whole time:** sorting all 68 cell logs by run2÷run1, *every* cell
+> inflated >1.15× is an ngram arm, and *all 25* `draft-mtp`-only/`none` cells sit flat at 0.92–1.08×.
+> `draft-mtp` drafts from weights, so a warm context cannot help it.
+>
+> **Corrected numbers.** Run-1-only, 16 model×depth×device cells: **−17.4% to +2.7%, centred on zero**
+> (35B CPU @14k: 24.85 vs 24.86). Independent re-run with **3 DISTINCT prompts per rep**
+> (`/mnt/raid0/llm/tmp/ngramfix_results.txt`): composed-vs-`draft-mtp` **−4.2% to +1.3%**;
+> `ngram-mod` **alone costs 23–31%**.
+>
+> **Still true:** `ngram-mod` needs no draft model, so it remains the only speculative path
+> *available* to `ingest_long_context`. It simply does not buy anything measurable.
+>
+> Retraction of record: research `84067a6e` →
+> `data/numa_placement/20260730-P-BENCH-PLACEMENT-1/RETRACTION-ngram-20260730.md`.
+> Master index row **N26**. Prompt screening was necessary but **not sufficient** — the prompts were
+> clean real text at 6–17% repeated 5-grams; the contamination came from the **generation**.
+>
+> The original text is retained below **unedited**, as the record of what was believed and why.
+
 ## ngram speculation — measured 2026-07-30, and it changes two verdict rows
 
 > **Read this before the verdict table above.** The table's framing is *draft-model* speculation.
@@ -82,11 +111,11 @@ corpus and its repeated-5-gram fraction.**
 
 - [x] **T1 — gate-bench gemma-4-31B DENSE: DONE 2026-06-22 (host quiesced).** Result **~1.84× at draft_max=3** (see Results below). Speed win confirmed + survives noise; **corrects the prior single-run ~2.98× to ~1.84×**. Remaining for Tier-B promotion: multi-prompt reps + the quality (Leviathan byte-exact) suite + acceptance-rate capture. Operator decision: promote `gemma4_31b_q4km_mtp` only after the quality pass.
 - [x] **NG0 — measure `ngram-mod,draft-mtp` against `draft-mtp` on all four production CPU models**, on realistic text after discarding a synthetic-filler first pass ✅ 2026-07-30
-- [ ] **NG1 — deploy `--spec-type ngram-mod,draft-mtp` on `frontdoor` + `coder_escalation`.** Measured **2.80×** at 14k tokens, **1.50×** at 53.7k. Needs: a quality/bit-exactness pass (speculation must not change output — pair speed with a correctness check), the depth at which the gain is quoted, and the reload gates. **Deploy is not self-authorising** — the reload belongs to the session that owns the inference.
-- [ ] **NG2 — deploy `ngram-mod` on `ingest_long_context` (Qwen3-Next-80B).** `1.15×`, `.812` acceptance, and it is **the only speculation an SSM hybrid with no draft-model path can have**. Update the registry's `acceleration: {type: none}` so it stops reading as "this role cannot be accelerated".
-- [ ] **NG3 — do NOT deploy ngram on `worker_general` or `architect_general`**, and record why in the registry rather than leaving it to be rediscovered: measured no gain, consistent with the acceptance-headroom principle (`.754` and `.650` incumbents). *(This is a decline, filed as a task so the next reader does not re-run it.)*
-- [ ] **NG4 — report the in-flight GPU ngram sweep (36 cells).** ngram **is** supported on GPU, and the v8 HIP build works (`ROCm0: AMD Instinct MI210`, version `10107` / `67a433bf4` — the same SHA production serves on CPU). The sweep was running at session close and is **NOT reportable**; do not quote a GPU ngram figure until it lands.
-- [ ] **NG5 — carry corpus + repeated-5-gram fraction on every ngram claim**, in this handoff, the registry, and any index row that quotes one. Synthetic filler inflated the same measurement to a nearly meaningless `2.52×`.
+- [x] **NG1 — ~~deploy `ngram-mod,draft-mtp` on `frontdoor` + `coder_escalation`~~ CANCELLED ✅ 2026-07-31.** The 2.80×/1.50× were the self-copy artifact; re-measured gain is **−1.9% / −1.5%** on this model. **Do not deploy.** Original text: Needs: a quality/bit-exactness pass (speculation must not change output — pair speed with a correctness check), the depth at which the gain is quoted, and the reload gates. **Deploy is not self-authorising** — the reload belongs to the session that owns the inference.
+- [x] **NG2 — ~~deploy `ngram-mod` on `ingest_long_context`~~ CANCELLED ✅ 2026-07-31** (artifact; +3.3% at r=1 is inside noise). The registry note that `acceleration: {type: none}` means *no draft-model path* rather than *no speculation possible* is still worth making. Original text: `1.15×`, `.812` acceptance, and it is **the only speculation an SSM hybrid with no draft-model path can have**. Update the registry's `acceleration: {type: none}` so it stops reading as "this role cannot be accelerated".
+- [x] **NG3 — do NOT deploy ngram ANYWHERE ✅ 2026-07-31** (generalised from two roles to all roles by the retraction). Original text:, and record why in the registry rather than leaving it to be rediscovered: measured no gain, consistent with the acceptance-headroom principle (`.754` and `.650` incumbents). *(This is a decline, filed as a task so the next reader does not re-run it.)*
+- [x] **NG4 — GPU sweep landed and was RE-SCORED run-1-only ✅ 2026-07-31.** 27B GPU: `draft-mtp` 47.79/40.46/39.20/31.97 vs `+ngram` 47.80/40.36/39.61/31.98 across 2k/8k/16k/32k — a wash. 122B IQ2 @16.5k: **−17.4%**. Original text: ngram **is** supported on GPU, and the v8 HIP build works (`ROCm0: AMD Instinct MI210`, version `10107` / `67a433bf4` — the same SHA production serves on CPU). The sweep was running at session close and is **NOT reportable**; do not quote a GPU ngram figure until it lands.
+- [ ] **NG5 — carry corpus + repeated-5-gram fraction on every ngram claim — STILL OPEN, and now known INSUFFICIENT.** These prompts passed screening at 6–17% repeated 5-grams and were still contaminated, because the copied text was the model's own *generation*. The rule must extend to: never replicate a context-reading drafter against a live server on a repeated prompt, and always run a non-context control arm. Original text:, in this handoff, the registry, and any index row that quotes one. Synthetic filler inflated the same measurement to a nearly meaningless `2.52×`.
 
 ## Results — gemma-4-31B dense MTP gate-bench (2026-06-22)
 

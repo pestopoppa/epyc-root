@@ -119,7 +119,15 @@ Ports:
 physical `88-95` = region **q3**, which is inside **half B**. Any CPU work that
 must not collide with the GPU lane goes on half A.
 
-### 1.4 Runs in flight — DO NOT DISTURB
+### 1.4 Runs in flight — ~~DO NOT DISTURB~~ **ALL COMPLETE as of 2026-07-31; regions are FREE**
+
+> ✅ **Nothing is in flight.** Every run listed below finished 2026-07-30 20:21–22:21 and all four regions
+> released. `region-lock status` shows q0–q3 free. **Do NOT wait on these; do not re-arm them.**
+> Results: `gpungram_results.txt` 36/36 · `halfa_live`/`halfa_rest` DONE · `full_last_results.txt` 3/3 arms
+> (a copy is preserved at `/mnt/raid0/llm/tmp/preserved/` — the chain ran twice and the duplicate
+> truncated the live file once) · `ngramfix_results.txt` 12/12 DONE 22:21.
+> **Also complete and NOT in this table:** the vision-model comparison
+> (`/mnt/raid0/llm/tmp/vlquality_results.json`, 2026-07-31) — see §RESULTS below.
 
 Check with `scripts/region-lock status` before anything.
 
@@ -275,7 +283,8 @@ the machine.
       17.23 at 35k** — a 2.3× spread driven purely by depth — and **the ratified
       exemplar carries the 28-token figure with no depth term**. Proposal is
       drafted in §A of the ratification queue.
-- [ ] **P2-5. Fold the ngram result into the production recipe once the sweeps
+- [x] **P2-5. ~~Fold the ngram result into the production recipe~~ — CANCELLED ✅ 2026-07-31.** The 2.80× was a warm-context self-copy artifact (see the RETRACTION section below and master index N26). Confirmatory re-run with 3 distinct prompts per rep: **−4.2% to +1.3%**; `ngram-mod` alone costs **23–31%**. **No `acceleration.spec_type` field is to be added.** Original text follows:
+  > **P2-5. Fold the ngram result into the production recipe once the sweeps
       land.** Measured CPU gain: **2.80× on Qwen3.6-35B at 14k tokens**
       (acceptance `.505 → .755`) and **+15% on Qwen3-Next-80B, which currently has
       NO speculation at all**. gemma and the 122B gained nothing — do not apply it
@@ -592,3 +601,100 @@ correctly on the region lock so nothing was poisoned, but full_last executed twi
   (`pgrep -f cpu_chain.sh`), not by the tag of the job they will eventually launch.
 - [ ] Bench harnesses should append or write to a run-stamped file, never truncate
   a shared results path at startup.
+
+---
+
+## UPDATE 2026-07-31 — vision models evaluated; speech stack mapped; ngram retraction propagated
+
+### Vision: MiniCPM-o is NOT a vision upgrade — the promotion case is dead on vision grounds
+
+42 questions (OCRBench + ChartQA), all arms on the MI210, best quant present on disk.
+Raw: `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vlquality.py`.
+
+| model · quant | strict | re-scored (true) |
+|---|---|---|
+| Qwen3-VL-30B-A3B **Q4_K_M** | 35/42 | **36/42** |
+| Qwen2.5-VL-7B **Q4_K_M** (incumbent) | 29/42 | **35/42** |
+| Qwen3-VL-8B **Q8_0** | 31/42 | 33/42 |
+| MiniCPM-o-4.5 **Q8_0** | 31/42 | 31/42 |
+| Qwen3-VL-4B **Q8_0** | 28/42 | 29/42 |
+
+- [x] Ran the comparison the M-1 n=10 could never resolve ✅ 2026-07-31
+- [ ] **Supersede the MiniCPM-o promotion premise in `multimodal-pipeline.md`** (`:153` "Test Path B first",
+  `:165` M-1 `+12.5pp`, `:204-210` vendor table, `:255`, `:509`) and in
+  `docs/reference/model-probe-scoreboard.md:64,98` ("**Yes** candidate"). MiniCPM-o lands **31/42, below the
+  35/42 incumbent**. Note honestly that M-1 was `p=1.0` / `observation_only_unratified`, so this **supersedes on
+  power**, it does not statistically contradict.
+- [ ] **Record the two scorer artifact classes.** (a) comma/unit — `63,086` vs `63086`, `0.11 kWh` vs `0.11`;
+  (b) **LaTeX whitespace** — `\frac { 1 } { x + y }` vs `\frac{1}{x + y}`. Both required offline re-scoring.
+  The incumbent's strict score was depressed by 6 and Qwen3-VL-8B's by 2. **A bespoke scorer reproduced a
+  brittleness we already fixed once in `debug_scorer.py`.**
+- [ ] **Carry the saturation caveat on every one of these numbers.** OCRBench+ChartQA is precisely the family
+  where Qwen3-VL was **never claimed** to improve (published: DocVQA +0.4, ChartQA +2.3, AI2D +1.8, OCRBench
+  **+8** against the *independent* OpenVLM baseline of 888 — not the +32 the vendor card implies). Its real
+  gains are MathVision **+28.8**, MMMU-Pro **+17.6**, MMMU **+11.0**, OmniDocBench **−45% edit distance**.
+  Without this caveat the table reads as a Qwen3-VL regression, which it is not.
+- [ ] **MiniCPM-o encodes images at ~750 tokens, FIXED.** `--image-max-tokens 4096` and `--image-min-tokens 3000`
+  are both **no-ops** for it (verified). Qwen2.5-VL spends **4103** on the same image. Architectural
+  (~64 tokens/slice, capped slice count) — do not re-litigate by burning MI210 time.
+- [ ] **MiniCPM-o needs `enable_thinking=false` (API) / `--reasoning off` (server) or it scores 0** — it emits
+  `reasoning_content` and an **EMPTY** `content`. Reproduced twice today: 1600 tokens of reasoning, no answer.
+- [ ] **`Qwen3-VL-2B-Instruct-GGUF/` is EMPTY** — download or delete the directory. It is also the *only* model
+  in the family with independent third-party verification, which we therefore cannot use.
+- [ ] Qwen3-VL benchmark tables on the HF cards are **JPEG images**, not text — "official model card" there means
+  a marketing graphic. Weight accordingly.
+
+### Speech: whisper IS deployed; TTS is not wired; the C++ TTS accelerator source is LOST
+
+- [x] Corrected a false negative: whisper **is** on disk and **is** a managed service ✅ 2026-07-31 —
+  `faster-whisper large-v3` 2.9 GB + `large-v3-turbo` 1.6 GB at `/mnt/raid0/llm/cache/huggingface/hub/`,
+  launched by `orchestrator_stack.py:2123 start_whisper()` → `scripts/voice/start_whisper_server.sh`, port 9000.
+  (Missed initially because they are CTranslate2 in `cache/`, not GGML in `models/`.)
+- [ ] **P0 — wire `start_tts()` into `orchestrator_stack.py`.** There is `start_whisper` (:2123), `start_sd_server`
+  (:2067), `start_document_formalizer` (:2015), `start_handoff_dashboard` (:2176) — and **no TTS**. Operator
+  stated 2026-07-31 that this gets fixed today. **The only prior trace is an ARCHIVED box**
+  (`handoffs/archived/qwen3-tts-voice-synthesis.md:433`); `multimodal-pipeline.md:20` shows the gap only as
+  ASCII art (`→ ❌ NO TTS OUTPUT`), which the dashboard cannot see.
+- [ ] **Install the 5 missing deps for the PyTorch TTS path**: `soundfile`, `fastapi`, `uvicorn`, `librosa`,
+  `scipy`. Present already: `torch 2.6.0+cpu` and `transformers 5.5.1` in
+  `/mnt/raid0/llm/venvs/llama-gguf-convert`. **Use a dedicated voice venv** — do not accrete a service's
+  dependencies onto a GGUF-converter env.
+- [ ] **Do not rebuild the C++ accelerator — its source is gone.** See `multimodal-pipeline.md:129` (patched).
+  `tts_server.py` is full PyTorch and needs no C++ binary: Talker + CodePredictor + Decoder, ~0.9× real-time at
+  48 CPU threads.
+- [ ] **The existing voice stack is invisible to the active handoffs.** `scripts/voice/` already contains
+  `tts_server.py`, `create_tts_sidecar.py`, `validate_tts_e2e.py`, `whisper_server.py`, `transcribe_batch.py`,
+  `test_latency.py`, `start_whisper_server.sh` — named **only** in archived docs. Meanwhile
+  `multimodal-pipeline.md:324` still tells a reader to *"Prototype: FastAPI wrapper around
+  `Qwen3TTSModel.from_pretrained()`"* — i.e. build from scratch what already exists.
+
+### VRAM: speech costs the GPU nothing, which removes MiniCPM-o's last argument
+
+| stack | size |
+|---|---|
+| MiniCPM-o omni (LLM Q8_0 + vision + audio + tts + proj) | **10.84 GB** |
+| Dedicated Qwen3-TTS-12Hz-0.6B (Talker + CodePredictor Q8_0) | **1.14 GB** |
+| delta for speech alone | **9.70 GB** |
+
+- [ ] **Feed this into `gpu-serving-tie-in-program.md` D2 / P2-9** (`phase2_resident_set` budgets). The PyTorch TTS
+  path runs on **CPU** (`torch 2.6.0+cpu`) — **zero GPU VRAM**. Combined with MiniCPM-o losing on vision, there
+  is no remaining justification for spending ~10 GB of contested MI210 on it.
+
+### ngram retraction propagated into the record ✅ 2026-07-31
+
+- [x] `master-handoff-index.md` **N26 rewritten as a retraction**; N25's P2-debt deploy sentence cancelled ✅
+- [x] `speculative-decoding-mtp-refresh.md` — ⛔ banner added; **NG1–NG4 cancelled**, NG5 re-scoped ✅
+- [x] `inference-acceleration-index.md` — retraction banner above the stale row ✅
+- [x] `numa-topology-cutover-resume-20260730.md` **P2-5 cancelled**; §1.4 in-flight banner corrected ✅
+- [ ] `numa-placement-defect-20260730.md:25-27` and its ngram section still carry the 2.80×. That file is
+  **append-only by its own rule** — add a dated superseding note at the end, do **not** edit in place.
+- [ ] **The confirmatory re-run's own caveat**: 5 of 12 cells carry the harness's `MONOTONE CLIMB` flag — **but so
+  does a `draft-mtp` CONTROL cell** (27B GPU d16k: 33.08→36.71→37.55), which cannot be contaminated by a drafter
+  it does not use. The flag catches ordinary warm-up; it means "inspect", not "void". Fix the detector before
+  reusing it.
+
+### Test/commit state unchanged
+
+- [ ] 6 of 35 topology test failures fixed and **still uncommitted** — the pre-commit gate blocks *all* commits to
+  `epyc-orchestrator`, test-only included, until the contention matrix is refreshed. **97 failures total** across
+  the suite (the 35 are the topology subset); the denominator was never recorded until now.
