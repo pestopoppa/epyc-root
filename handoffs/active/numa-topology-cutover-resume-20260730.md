@@ -967,3 +967,54 @@ directly for gradient-based placement decisions.
   measured regression before adopting it.
 - [ ] Report fit residuals per role. A form that smooths away the turnover is worse
   than a table, because it is confidently wrong in the region the router cares about.
+
+### GPU co-residency MEASURED 2026-07-31 — all four models fit; idle residency is free
+
+Curiosity measurement, **no gate attached** (operator explicit). Artifact:
+`/mnt/raid0/llm/tmp/gpu_coresidency_results.json`, logs `/mnt/raid0/llm/tmp/gpu_coresidency/`.
+
+27B decode tok/s, 256 tok/rep, `ignore_eos`, a DISTINCT prompt per rep, 27B at **full
+`-c 262144`** q8_0 KV:
+
+| state | n | min | median | max | VRAM | delta |
+|---|---|---|---|---|---|---|
+| alone | 3 | 30.854 | **30.870** | 30.913 | 36.70 GiB | — |
+| others resident, IDLE | 3 | 30.868 | **30.872** | 30.892 | 62.40 GiB | **+0.006%** |
+| others ACTIVELY working | 3 | 19.496 | **19.810** | 20.224 | 62.58 GiB | **−35.8%** |
+| recovery (loads stopped, still resident) | 2 | 30.745 | 30.757 | 30.769 | 62.59 GiB | −0.37% |
+
+- [x] **Idle residency costs ZERO** — state-2 range sits entirely inside state-1's, GPU
+  0% busy. **This validates the resident-set premise behind the P1-11 directive**: the
+  load/unload bandwidth cost that motivated hard exclusion does not arise. ✅ 2026-07-31
+- [x] **It fits at full 262k**: steady state **62.59 of 63.98 GiB, 1.40 GiB spare** ✅
+- [ ] **The 58.30 GiB budget UNDER-PREDICTED by 4.29 GiB.** Cause: **VRAM grows on first
+  EXECUTION, not at load** — vision/whisper/TTS compute buffers allocate on first
+  inference (61.66 → 62.59 GiB). **Any resident-set budget built from load-time figures
+  runs ~1 GiB optimistic.** Correct the budgeting method, not just the number.
+- [ ] **−35.8% under active load is a WORST-CASE FLOOR, not a duty cycle** — the stress
+  was 128 transcriptions + 6 vision queries + 19 syntheses in 39.6 s at 100% GPU. The
+  recovery control returning to 30.76 proves it is contention, fully reversible, not
+  drift. **This is the cost coefficient artifact (3) of the contention design wants —
+  a number to expose, not a veto.**
+- [ ] **Qwen3-TTS has NO server mode** — made resident via a long-lived
+  `--stream-by-line -o -` process blocked on a FIFO. `--stream-by-line` streams ONLY
+  with `-o -`; with `-o <file>` it waits for stdin EOF and never synthesizes. A
+  production TTS service needs that pattern or a server wrapper. **Blocks TTS being
+  wired into `orchestrator_stack.py`.**
+- Side latencies: vision 1.66 s alone → ~4.0 s contended; whisper 0.21 s on an 11 s
+  clip; TTS RTF 0.191.
+- [ ] **The frozen production `llama.cpp/build/bin` is CPU-ONLY** — no `libggml-hip.so`.
+  GPU work must use `llama.cpp/build-hip/bin` (same commit `67a433bf4`, version 10107).
+- [ ] **Linkage trap is version-mismatched, not just wrong-tree**: bare `ldd` on
+  `qwen-tts` pulls `libggml-base`/`cpu` from production at **0.16.0** while its own
+  `libggml-hip` is **0.17.0**. The three trees are 0.16.0 / 0.18.0 / 0.17.0 — each needs
+  its own dir prepended. `verify_ggml_linkage.sh` passes all three once done.
+
+### STILL IN FLIGHT at compaction — ngram on long-context CODING
+
+`/mnt/raid0/llm/tmp/ngram_coding_results.json`. Decides composed vs `draft-mtp` alone.
+12 tokenizer-verified prompts/model (3 extend-refactor, 3 port, 3 fill-in, 3 prose
+control), 15k–30k band, arm order REVERSED between models so drift cannot bias both.
+Early arm-A signal: acceptance 0.556 (prose) → 0.734 (code), mean accepted draft length
+3.20 → 3.88. **Full-machine headline window is deliberately queued BEHIND this** so it
+runs once, on the decided recipe, with hot instances (one server per model at `-np 4`).
