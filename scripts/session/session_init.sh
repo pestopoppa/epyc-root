@@ -80,6 +80,33 @@ else
 fi
 
 # ============================================
+# 0.55 VERIFY SPEECH KERNELS (STT + TTS)
+# ============================================
+# whisper.cpp and qwentts.cpp are frozen at production-speech-v1 and carry
+# load-bearing gfx90a/ROCm-6.2 patches. The failure mode this catches is SILENT:
+# a stray checkout or rebuild reverts GPU support and the binary still starts,
+# still answers, and still reports success while executing on CPU — a HIP-built
+# whisper-cli was observed printing "use gpu = 1" while running full-CPU.
+# You would notice as "speech feels slow", never as an error.
+echo ""
+echo "--- Verifying speech kernels ---"
+SPEECH_VERIFY="$SCRIPT_DIR/verify_speech_kernels.sh"
+if [[ -x "$SPEECH_VERIFY" ]]; then
+  if ! "$SPEECH_VERIFY"; then
+    echo ""
+    echo "⛔ WARNING: speech kernel verification failed!"
+    echo "   STT/TTS may be running on CPU while reporting GPU."
+    echo "   Do NOT publish speech measurements until resolved."
+    echo ""
+    agent_observe "speech_kernels" "VERIFICATION FAILED - branch drift or binary mismatch"
+  else
+    agent_observe "speech_kernels" "production-speech-v1 verified (whisper.cpp + qwentts.cpp)"
+  fi
+else
+  echo "  Speech verification script not found (skip in dev environments)"
+fi
+
+# ============================================
 # 0.6 VERIFY DEPENDENCIES (UV)
 # ============================================
 echo ""
