@@ -863,3 +863,34 @@ Harness for the TTS leg: `/mnt/raid0/llm/tmp/tts_bench.sh`.
   TTFA 67.9 ms, 0.86× RT CPU via `qwentts.cpp`). The remaining unfinalized arm is
   **Qwen3-ASR**, whose 72.14 % WER is a configuration defect with a named suspect (the
   Q8_0 audio projector). See [`multimodal-pipeline.md`](multimodal-pipeline.md) S-6..S-10.
+
+### P1-11 CORRECTED 2026-07-31 — what is exclusive vs what is a tunable surface
+
+An earlier note recorded the operator's directive too broadly. The correction:
+
+**STILL HARD-EXCLUSIVE — do not model these as tunable:**
+- [ ] **Co-resident half instances**: half A (q0+q1) and half B (q2+q3) of the SAME
+  role are mutually exclusive with each other where their cpusets intersect.
+- [ ] **Half vs full**: a full instance (0-95) overlaps BOTH halves by construction.
+  Full and either half are mutually exclusive. This is set intersection, not
+  contention measurement — it is derivable and must never consume inference.
+
+**TUNABLE SURFACE — this is the part that changes:**
+- [ ] **The GPU lane vs half B / full is NOT mutual exclusion.** Its contention is
+  bandwidth-driven, and the case that actually hurts is models being **loaded and
+  unloaded** from the GPU. The resident-set design keeps GPU models loaded, so that
+  case does not arise. Heavy concurrent prompting of GPU models may still cost
+  something — that cost is a **value to expose, not a boolean to block on**.
+- [ ] Emit a **cost surface autopilot can optimize and the orchestration router can
+  be trained on**, not a BLOCK/ALLOW verdict.
+
+**EXTENSION (operator, same conversation): bake in the other axes.**
+- [ ] Concurrency at depth is a measured **regression**, not merely a slowdown: at
+  ~15k with np=2 on a half instance, one stream runs 4.7-9.7x the other and the
+  **aggregate falls BELOW the np=1 single stream** (gemma 18.59 vs 20.75; Qwen3.6
+  15.44 vs 22.18; 122B 7.97 vs 10.76; Qwen3-Next 13.77 vs 15.81). Headline numbers
+  already carry context-depth effects. The matrix should carry **(role, shape,
+  concurrency, context depth) -> expected cost**, so the router can decide *how* to
+  use a role, not just *whether* two may co-run.
+- [ ] Note this regression is independent of ngram — it reproduces on `draft-mtp`
+  alone, so it is a scheduling/batching property, not a speculative-decoding one.
