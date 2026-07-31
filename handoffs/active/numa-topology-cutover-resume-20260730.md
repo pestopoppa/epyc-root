@@ -1018,3 +1018,109 @@ control), 15k–30k band, arm order REVERSED between models so drift cannot bias
 Early arm-A signal: acceptance 0.556 (prose) → 0.734 (code), mean accepted draft length
 3.20 → 3.88. **Full-machine headline window is deliberately queued BEHIND this** so it
 runs once, on the decided recipe, with hot instances (one server per model at `-np 4`).
+
+---
+
+# SESSION APPEND 2026-07-31 (18:00–20:00Z) — groundwork landed, wiring NOT started
+
+**Read this first if you are picking up.** The role reshaping is **entirely unapplied**.
+What landed today is the layer underneath it: the facts the stack will be built from are
+now trustworthy, where before they were not. Verified against the live registry at 20:00Z:
+
+| target | actual today |
+|---|---|
+| `worker_vision` + `vision_escalation` → Qwen3-VL-30B-A3B Q4_K_M, GPU, unified on 8086 | still Qwen2.5-VL-7B, CPU, two roles |
+| `architect_general` + `coder_escalation` → Qwen3.6-27B dense Q8, GPU, 8083 | still 122B / still frontdoor's 35B |
+| `architect_critic` → 122B, CPU, 8074, tier hot, routable **and** consultable | role ABSENT from the registry |
+| TTS as a managed service | 0 references in `orchestrator_stack.py` |
+| STT → whisper.cpp GPU | still launches faster-whisper CT2 on 9000 |
+| spec recipe `draft-mtp` | `stack_priors.yaml` still carries **38** `ngram-mod` occurrences |
+
+## Landed and pushed today
+
+- [x] ggml linkage fixed across all four kernels ✅ 2026-07-31 — root `136894e8`, research `94cf8d6c`.
+      Found that the production HIP binary loaded **all seven** libs from the CPU-only tree with
+      `libggml-hip.so.0` absent entirely: it was silently a CPU binary. **Any GPU shadow-lane
+      number taken before this is a CPU number.** Co-residency is unaffected (its harness set the
+      path itself and recorded `ggml_linkage_verified: true`).
+- [x] Speech kernels frozen, forked and genuinely off-host ✅ 2026-07-31 — `production-speech-v1`
+      on `pestopoppa/whisper.cpp` (`b307379`), `pestopoppa/qwentts.cpp` (`2c1b518`),
+      `pestopoppa/ggml` (`b86f660`). Submodule off detached HEAD. Bundles at
+      `/mnt/raid0/llm/kernel-freeze-bundles/`. Before this the patches were uncommitted
+      working-tree state; a `git checkout` would have destroyed GPU speech.
+- [x] Spec recipe REVERSED to `draft-mtp`, ngram nowhere ✅ 2026-07-31 — research `a126e43d`.
+      35B long-context coding 0/12; gemma produced **zero drafts on 9/12** (byte-identical arms);
+      80B ngram-alone acceptance 1.6–4.7% (SSM state cannot fork). No role left for the lane.
+- [x] Throughput priors corrected ✅ 2026-07-31 — `df4c8e37`, `96aa90f6`. Also quarantined four
+      **Qwen3-235B** figures that had sat unlabelled in `architect_general`'s block since the
+      2026-03-19 swap; one of them (8.21) was read as the 122B's throughput and propagated.
+- [x] `server_mode.frontdoor.shared_with` restored ✅ 2026-07-31 — `596a1e24`. Was `[]` while two
+      roles serve on 8070. Answered the drift guard with **data**, not by updating the guard.
+- [x] `MEASUREMENT.md` §3 torn bullet repaired ✅ 2026-07-31 — `13383c49` (operator-run).
+- [x] Artifact: IQ2_M-as-Q4_K_M retraction + missing VL throughput ✅ 2026-07-31.
+- [x] Scoped the orchestrator pre-commit hook ✅ 2026-07-31 — was unconditional, so it blocked
+      every commit and pressured people toward `--no-verify`, which also skips PII + hermes-drift.
+- [x] Qwen3-VL-30B-A3B decode measured ✅ 2026-07-31 — `category=OPTIMUM`, MI210, spec none:
+      **102.18 tok/s** @ 17–19 tok, **70.71** @ 10,984 tok (n=3 each, server-reported depths).
+      A second figure exists — **112.20**, median of 250 MMMU image+text turns. Both real,
+      different workloads. **Do not pick one silently; record both with conditions.**
+
+## OUTSTANDING — hard sequence, do not reorder
+
+- [ ] **W1. Apply the role reshaping edit list.** Persisted at workflow run `wf_7d5f6816-a67`
+      (adversarially verified). Touches BOTH `server_mode:` (638) and `roles:` (1249) in master.
+      Found a structural gap: **`server_mode` has no vision row at all**, so `shared_with` — the
+      binding `stack_priors.py:683-685` reads to resolve an alias to its process — has nowhere to
+      live. Vision unification needs a NEW row, not an edited one.
+      **Each role's prior must move in the SAME commit as its model repoint.** A prior correct for
+      the old model is wrong the instant the model changes; splitting them is how every stale prior
+      corrected today was minted. `frontdoor.shared_with` must become `[worker_summarize]` in the
+      same commit that moves `coder_escalation`.
+- [ ] **W2. Era plumbing for `cost` BEFORE regenerating.** `active_instrument_eras` exists only for
+      `eval_quality`; `baseline_state.cost` is a bare `0.5` with no era field, and
+      `safety_gate.py:1193`'s own docstring says it is *"inert (always False) when no active era is
+      set."* Cost is exactly the dimension the q_scorer normalizer moves (+65% frontdoor, +48%
+      worker, +97% architect_general). Marking a boundary without this is a comment with no
+      enforcement. Add `active_instrument_eras.cost`, stamp `baseline_state.cost_era`, clone the
+      staleness check at `safety_gate.py:782/1020/1087/1193`. Mechanism is live and exercised —
+      `eval_quality_era` is E7 against an active E8 right now.
+      Rescore was **declined** on facts: `strategy_store.db` is 0 bytes and `warm_start.py` has no
+      journal references, so nothing replays old-normalization scores.
+- [ ] **W3. Regenerate `derived/stack_priors.yaml`.** The single dependency all three propagation
+      failures collapse into — spec recipe, throughput priors and topology all land here and none
+      land before. ~5 of the 23 red tests go green on their own.
+- [ ] **W4. Build `AUX_SERVICES` + per-service `LD_LIBRARY_PATH`, then register whisper.cpp and
+      `tts-server`.** Not skippable: both env composers are prepend-only and every `start_*` begins
+      at `os.environ.copy()`, so neither service can currently be told to ignore the global path.
+      Ports: STT keeps 9000 (implementation swap); TTS on 9002 (verified free and smoke-tested).
+- [ ] **W5. Fix the `reload` defect first** — `reload whisper` / `reload sd_server` kill the service
+      and fail to restart it (`stack_manifest.py:60-61` → `stack_commands.py:1669` →
+      `orchestrator_stack.py:1651`). Any new service added the same way inherits it.
+- [ ] **W6. Fix the seven fail-open guards.** Runnable proofs in `/mnt/raid0/llm/tmp/guard-audit/`.
+      Live now: `stack_change_guard.py:1000` skips the context assertion for **0/22 roles checked**
+      while still reporting 22 targets — invisible. Also `:829` (errors 12→0), `:962` (model-path
+      coverage 10/10→8/10), `:1184`, `:1669`. **The correct pattern already exists in the same file**
+      at `:1188` and `:1724` — inconsistently applied, so the fix is small.
+- [ ] **W7. Make the ratify scripts emit a receipt.** `MEASUREMENT.md:138-145` requires a
+      consolidated bundle with evidence hashes and an exact state diff; none of the three 2026-07
+      ratifications emitted one. These scripts amend the file defining what a valid verification is,
+      using a verification weaker than that definition. Fixing this closes the class permanently.
+- [ ] **W8. Contention matrix — schema first, regenerate last.** Mining of existing measurements is
+      persisted (`wf_d3095ecd-19e`). Define the raw per-cell vector BEFORE the sweep so feasibility,
+      the non-separable capacity fit and interference coefficients all derive offline; a reduction is
+      a lossy commitment. Operator constraint: **do not re-bench anything already measured.**
+- [ ] **W9. Do NOT bulk-green the 23 tests.** At least 5 are correct tests reporting real defects —
+      3 assert `--spec-type == draft-mtp` and receive the falsified composed recipe (they go green at
+      W3); 2 are the alias drift guards. A bulk pass would encode the falsified recipe into the suite
+      and erase the alias signal. Fix data first.
+- [ ] **W10. Reconcile the two Qwen3-VL throughput figures** (102.18 text-only vs 112.20 MMMU
+      image+text) into the registry with conditions attached, not as one scalar.
+
+## Operational notes
+
+- Shared clone: use the explicit three-path `rm` on orphaned pack files, **never `git gc`** — a full
+  repack can disrupt live sessions.
+- `git add -- artifacts/operator/` hangs: it recurses the huge `.e8_quality_baseline_*.staging-*`
+  dirs. Stage exact file paths.
+- The scoped pre-commit hook now blocks only topology/contention paths — W1 and W3 WILL be blocked
+  by it, correctly, until the matrix is fresh. That ordering is intentional.
