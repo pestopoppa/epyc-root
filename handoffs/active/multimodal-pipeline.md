@@ -55,7 +55,7 @@
 
 | Modality | Status | Blocker |
 |----------|--------|---------|
-| **STT (ASR)** | Production | faster-whisper large-v3-turbo on port 9000, int8, 2.8x RT |
+| **STT (ASR)** | Production | faster-whisper large-v3-turbo on port 9000, int8. ~~2.8x RT~~ **CORRECTED 2026-07-31 by first local measurement** (LibriSpeech test-clean, n=100): **WER 2.35%** (lower=better) · **xRT is length-dependent and the single figure was meaningless** — wall time is ~constant at **4.18s + 0.010xaudio_s**, i.e. a **~4.2s FIXED per-request floor** (whisper pads to 30s mel windows). Median xRT 0.80x for <5s utterances, 1.49x for 5-10s, 2.89x for 10-20s, 7.22x on a 57s clip. **The 4.2s floor makes CPU whisper unusable for conversational voice regardless of xRT.** Artifact: `/mnt/raid0/llm/tmp/stt_wer_results.json`, harness `stt_wer.py`. |
 | **Vision** | Live-server analyzer path, tool registry, API endpoint smoke, and OpenAI-compatible `image_url` data-URL bridge passed | No active blocker; remote-image fetching or multi-image support would be a new feature |
 | **TTS** | Blocked | Qwen3-TTS llama.cpp port outputs noise; ~~MiniCPM-O TTS untested~~ → MiniCPM-O TTS **abandoned 2026-07-31**; use the dedicated CPU Qwen3-TTS path (`scripts/voice/tts_server.py`) |
 | ~~**Multimodal (MiniCPM-O)**~~ | **DEPRECATED + DELETED 2026-07-31** | Not a blocker — closed. Vision 31/42 vs incumbent 35/42; speech superseded by dedicated Qwen3-TTS + Qwen3-ASR. See banner above. |
