@@ -177,6 +177,19 @@ From `/research-intake` deep-dive of factory.ai docs + earlyoom (intake-657/658/
 
 ---
 
+## 2026-07-31 supplement — three defects found while settling the modalities
+
+All three are zero-inference. They surfaced during the vision/speech campaign but belong to nobody's
+handoff, which is exactly how items of this shape get lost.
+
+- [x] **NIB2-57** (**HIGH**): **Four throughput priors were 32–40% low and the router was deciding on them** ✅ 2026-07-31 (epyc-inference-research `5dfc339e`). frontdoor / coder_escalation / worker_summarize `24.3 → 40.22`; worker_general `38.46 → 56.86`. Root cause is a **silent fallback**: all four had `baseline_tps == optimized_tps`, and the router reads `optimized_tps` with an `or baseline_tps` default — so an *unmeasured* prior is indistinguishable from a *measured* one at the read site. `baseline_tps` is now `null` for the 35B roles: not measured, and not fabricated.
+- [ ] **NIB2-57a**: **Make the unmeasured-prior case loud rather than silent.** The `or baseline_tps` fallback is the mechanism that let NIB2-57 persist; a prior that has never been measured should fail closed or warn, not quietly stand in for a measured one. Audit every other reader of `optimized_tps` for the same pattern.
+- [x] **NIB2-58** (**HIGH**): **`LD_LIBRARY_PATH` landmine — a fresh HIP build silently loads the FROZEN production ggml** ✅ guard landed 2026-07-31 (epyc-inference-research `7f310022`). `/etc/environment:5` and `devcontainer.json:57` put the production `build/bin` **early** in `LD_LIBRARY_PATH`, so a fresh HIP whisper build resolved the production **CPU-only** ggml, found no GPU, and ran full-CPU **while printing `use gpu = 1`**. Guard at `scripts/utils/verify_ggml_linkage.sh` reproduces it — 3 of 5 libraries came from the wrong tree.
+- [ ] **NIB2-58a**: **Wire `verify_ggml_linkage.sh` into every ggml build path on this host**, not just the whisper one. The guard currently exists but must be *invoked*; **every future ggml build on this host is exposed** until it is. A landed fix whose entry point is never called is the classic derived-actionable failure shape.
+- [ ] **NIB2-59** (**MED**, governance): **Resolve the measurement trust-boundary contradiction.** `agents/shared/MEASUREMENT_POLICY.md:79` says changes are human-PR-reviewed amendments, while `MEASUREMENT.md:117-119`'s boundary membership **omits the digest**. As written, nobody — human or agent — can tell whether an agent is permitted to edit the digest. **Needs an operator ruling**, not an agent decision, because the trust boundary is human-amendment-only and self-amending it would beg the question.
+
+---
+
 ## Cross-references
 
 Canonical sources (always verify status in these files first):

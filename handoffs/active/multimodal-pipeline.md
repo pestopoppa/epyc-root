@@ -294,12 +294,36 @@ Do not rebuild the C++ accelerator — its source is lost and it never worked.
 - [x] **S-3 — build `qwentts.cpp` with HIP for gfx90a** ✅ 2026-07-31 — required one line: `ggml/src/ggml-cuda/vendors/hip.h` FP8 guard `60200000` → `60300000` (OCP `__hip_fp8_e4m3` is ROCm ≥6.3; we run 6.2.0-66 which has only `_fnuz`). **Third-party repo; production kernel untouched; no experimental-kernel handoff needed.**
 - [x] **S-4 — verify Qwen3-ASR serves on the MI210 without a kernel change** ✅ 2026-07-31 — it does; frozen v8 already ships `tools/mtmd/models/qwen3a.cpp` + `libmtmd.so.0.0.10107`.
 - [x] **S-5 — make STT survive a network outage** ✅ 2026-07-31 — `local_files_only` + `HF_HUB_OFFLINE`/`TRANSFORMERS_OFFLINE`, escape hatch `WHISPER_ALLOW_DOWNLOAD=1`; loads in 1.42 s offline. (`epyc-inference-research/scripts/voice/`.)
-- [ ] **S-6 — GPU TTS bench — IN FLIGHT** (queued on the q3 GPU lane behind the vision run) → `/mnt/raid0/llm/tmp/tts_bench_results.txt`, harness `/mnt/raid0/llm/tmp/tts_bench.sh`. **No result yet; quote nothing.** The hypothesis under test is that GPU collapses the 64 % `CodecDecode` share.
-- [ ] **S-7 — retest Qwen3-ASR with the bf16 audio projector.** `mmproj-Qwen3-ASR-1.7B-bf16.gguf` (0.60 GB) is on disk and **untested**; the Q8_0 projector is the named suspect for **WER 72.14 %** and the `????????` degeneration past ~11 s. Context is ruled out (8k → 65536 changed WER by <0.01). This is the cheapest next experiment in the speech lane.
-- [ ] **S-8 — if the bf16 projector does not fix it, bisect the >11 s degeneration** by utterance length against the persisted per-utterance rows, before drawing any model-quality conclusion. Raw kept for offline re-scoring: `/mnt/raid0/llm/tmp/stt_wer_results.json`; GPU harness `/mnt/raid0/llm/tmp/asr_gpu_wer.py`.
+- [x] **S-6 — GPU TTS bench** ✅ 2026-07-31 — the hypothesis held, and then some. **xRT 0.86× → 5.47×** (6.4×), **TTFA 67.9 → 37.8 ms**, round-trip WER 1.49 % (0.0 % on the canonical sentence; under `--greedy` the GPU and CPU transcripts are *identical*). `CodecDecode` fell from **64 % → 10.4 %** of total wall — 39× faster per audio-second. New bottleneck: `CodePredictor` at 65.5 %.
+- [x] **S-6a — fix the gfx90a `ARGSORT` defect that blocked the GPU path** ✅ 2026-07-31 — at `ne0=2048` it launched **2048 threads per block against gfx90a's 1024-thread cap**, 705× per utterance. Fixed with a thread-strided bitonic sort in the qwentts.cpp ggml fork. `test-backend-ops` now passes ARGSORT **74/74** and TOP_K **292/292**; it previously passed 46/46 and 170/170 **with the failing shapes silently skipped**, which is why a green suite hid the bug. **HIP graphs were never a separate defect** — the graph-capture abort was downstream of the invalid argsort launch; graphs now work, are **13.2 % faster**, and produce bit-identical output. Production kernel untouched (`67a433bf4`).
+- [x] **S-7 — retest Qwen3-ASR with the bf16 audio projector** ✅ 2026-07-31 — **superseded; the projector was not the cause.** Extended normalization moved WER only 29.36 % → 28.88 %, so it is not a scoring artifact either. The real mechanism is a **degenerate repetition loop on 21 of 100 rows contributing 94.7 % of all errors**, duration-correlated (0 % of rows under 3 s, 50 % at 7–30 s). Clean rows score **2.27 %** — the model is sound, the deployment is broken.
+- [x] **S-8 — bisect the degeneration by utterance length** ✅ 2026-07-31 — done as part of S-7 above; the duration correlation is the bisection result.
 - [ ] **S-9 — wire `start_tts()` into `orchestrator_stack.py`** (port 9002 reserved). Capability now exists; only the service wiring is missing. Blocked on nothing except an inference-owning session's boundary.
-- [ ] **S-10 — decide whether Qwen3-ASR augments or replaces whisper**, once S-7/S-8 close. The stake is whisper's **~4.2 s fixed per-request floor** (it pads to 30 s mel windows) vs Qwen3-ASR's observed **2.14 s median wall/request** on the utterances that worked. Do not decide before the WER defect is resolved — a 72 % WER cannot be traded against latency.
-- [ ] **S-11 — register the Qwen3-TTS GGUF pair and the `qwentts.cpp` tree** in the model manifest/registry so the speech stack stops being discoverable only from progress logs. Applies MRG-1 (the registration gate every stack model must pass).
+- [x] **S-10 — decide whether Qwen3-ASR augments or replaces whisper** ✅ 2026-07-31 — **neither. Qwen3-ASR is DROPPED.** `whisper.cpp large-v3-turbo f16` on the MI210 wins outright: WER **2.35 %** (identical to the CPU incumbent), wall **median 0.124 s / max 0.218 s** versus the incumbent's 4.240 s median — the GPU *maximum* is **19× below the incumbent's minimum**. Encode 3751 ms → 110 ms. 2.56 GB VRAM, and it frees 48 CPU cores. Greedy decoding, not beam-5; `large-v3-turbo`, not `large-v3`. **The ~4.2 s fixed floor is gone**, which removes the entire reason Qwen3-ASR was being considered — so its deployment defect is moot and will not be debugged.
+- [ ] **S-11 — register the Qwen3-TTS GGUF pair and the `qwentts.cpp` tree** in the model manifest/registry so the speech stack stops being discoverable only from progress logs. Applies MRG-1 (the registration gate every stack model must pass). Record the pins: qwentts.cpp `abab6b3b`, ggml fork `c044c6f0`, binary md5 `5b858d75614dfd2f696071212ae8f2e4`.
+- [ ] **S-12 — register `whisper.cpp large-v3-turbo f16` (MI210) as the STT model** and retire the CPU whisper path from the stack definition. Same MRG-1 gate as S-11.
+- [ ] **S-13 — carry the qwentts.cpp fork as a PINNED VERSIONED DEPENDENCY, not a merge.** Operator decision 2026-07-31: do **not** merge it into our llama.cpp; running our patched fork indefinitely is acceptable. This task is the pin record + the guard that stops a future session "consolidating" it into the production tree.
+- [ ] **S-14 — upstream the gfx90a argsort fix** (thread-strided bitonic sort) to the qwentts.cpp / ggml fork as wrap-up hygiene. Operator-sanctioned; no dependency on our own kernel cycle.
+- [ ] **S-15 — set `max_tokens ≥ 1024` on the vision role.** A `max_tokens=128` cap silently penalised reasoning models during vision evaluation (3 parse failures for the incumbent vs **41 and 50** for the Qwen3-VL arms — truncated mid-reasoning and scored wrong). Even at 2048 the Qwen3-VL models emit no letter on ~9 % of hard questions, so 1024 is a floor, not a target. This is a **production config change**, not an evaluation-harness change.
+- [ ] **S-16 — promote `Qwen3-VL-30B-A3B Q4_K_M` to the vision role** and retire `Qwen2.5-VL-7B`. Evidence below (§ vision decision). Register per MRG-1; depends on S-15 landing first, or the promotion inherits the truncation defect.
+- [ ] **S-17 — audit the GPU resident-set budget before any further GPU model lands.** 27B Q8_0 (27.0) + Qwen3-VL-30B-A3B (21.0) + whisper (2.6) + Qwen3-TTS (1.2) ≈ **51.8 GB of 64**, leaving ~12 GB for KV — the 27B tops out near **90k tokens** on `q8_0` KV. A KV-quantization quality test is in flight to establish whether `q4_0` buys ~180k; do not add a fifth resident model before it reports.
+
+#### Vision decision — SETTLED 2026-07-31
+
+MMMU val, 250 stratified multiple-choice questions, identical rows for every arm, `temp=0.2`, `seed=42`.
+Raw: `/mnt/raid0/llm/tmp/vision_final_results.json`.
+
+| arm | accuracy | vs incumbent | McNemar p | VRAM |
+|---|---|---|---|---|
+| **Qwen3-VL-30B-A3B Q4_K_M** | **63.6 %** | **+11.2 pp** | **0.0011** | 21.0 GB |
+| Qwen3-VL-8B | 57.2 % | +4.8 pp | 0.21 (n.s.) | — |
+| Qwen3-VL-4B | 54.0 % | +1.6 pp | 0.72 (n.s.) | — |
+| Qwen2.5-VL-7B (incumbent) | 52.4 % | — | — | — |
+
+Only the 30B-A3B is statistically separable from the incumbent. **The 8B and 4B are not, and must not
+be described as upgrades.**
+
+- [x] **V-1 — the 42-question OCRBench+ChartQA suite MIS-RANKED the field** ✅ 2026-07-31 — the incumbent placed **2nd** there and **last** on MMMU; the 8B inverted between the two suites. This is stronger than the usual saturation caveat: a saturated suite does not merely fail to separate arms, it can **order them wrongly**, so a decision taken on it is potentially backwards rather than merely under-powered. Every conclusion previously drawn from the 42q suite is retracted as a *ranking*.
 
 ---
 

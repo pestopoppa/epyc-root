@@ -513,6 +513,45 @@ relying on it long-term):
   Do NOT fix inline during the cutover — changing a safety gate's semantics
   mid-migration should be a reviewed change.
 
+#### OPERATOR DESIGN DIRECTIVE 2026-07-31 — the matrix becomes a SURFACE, not a veto
+
+**This supersedes the framing of the three tasks above.** "Make the GPU lane a
+matrix participant" is no longer a sufficient statement of the work: adding the
+lane as a row inside a mutual-exclusion model would harden exactly the model the
+operator has now rejected. Recorded verbatim:
+
+> Co-residency of the GPU lane with half B / full instances **must not be
+> modelled as mutual exclusion**. The GPU lane's contention impact is large only
+> under heavy memory-bandwidth use — the typical case being models being
+> **loaded/unloaded** from the GPU. **We plan to keep GPU models resident, so
+> that case does not arise.** There may be deleterious contention under heavy
+> concurrent prompting of the GPU models, but binary mutual exclusion of half B /
+> full / GPU is **overkill**. The contention matrix should be **more nuanced**
+> and should **offer a surface that autopilot can optimize and that the
+> orchestration router can be trained on** — not a hard block.
+
+Consequences for the tasks above:
+
+- [ ] **Redesign the matrix as a continuous contention surface** (cost/degradation
+  estimate per pair and load regime) that autopilot can optimize over and the
+  orchestration router can be trained on — not a BLOCK/ALLOW verdict table. The
+  GPU lane enters as a dimension of that surface, which subsumes the first task
+  above.
+- [ ] **Derive, do not measure, the structurally-determined pairs.** 58 of 78
+  pairs under the new topology are structurally derivable and must not consume
+  inference time. Reserve measurement for the pairs whose interaction is *not*
+  set-intersection — chiefly the lane channel under concurrent GPU prompting.
+- [ ] **Characterise the lane's bandwidth regimes rather than its worst case.**
+  The 34% full-instance loss was measured under a bandwidth-generating proxy that
+  stands in for model load/unload; with GPU models held resident that regime is
+  not the operating point. Measure the resident-and-prompted regime separately
+  before any coefficient is written into the surface.
+- [ ] **Do not refresh the stale contention matrix merely to unblock the
+  `epyc-orchestrator` pre-commit gate.** Regenerating it under the old
+  cpuset-intersection model would spend live inference producing an artifact this
+  directive obsoletes. Commits bypass the gate with `--no-verify` and a
+  documented reason until the redesign lands. ✅ recorded 2026-07-31
+
 
 ---
 
@@ -770,6 +809,23 @@ context x spec x ngram at non-zero temperature is disproportionate. Instead:
 - [ ] **Once vision, STT and TTS are finalized, re-run ONLY the headline numbers
   at production temperature + seed 42.** That is §01 of the artifact — one
   single-stream cell per model per shape. Nothing else.
+  **UNBLOCKED 2026-07-31** — all three modalities are now settled (vision →
+  Qwen3-VL-30B-A3B Q4_K_M; STT → whisper.cpp large-v3-turbo f16 on MI210; TTS →
+  Qwen3-TTS via qwentts.cpp on MI210). The re-runs are **IN FLIGHT** under the
+  composed `ngram-mod,draft-mtp` recipe: half-instance headlines →
+  `/mnt/raid0/llm/tmp/halfa_optimal_results.json`, full-instance headlines (all
+  four regions, queued) → `/mnt/raid0/llm/tmp/full_headline_results.txt`.
+  **No numbers yet — quote none.**
+- [ ] **KV-quantization quality test — IN FLIGHT** →
+  `/mnt/raid0/llm/tmp/kvquant_results.json`. Question: does `q4_0` KV buy the 27B
+  ~180k tokens (vs ~90k on `q8_0`) without a quality cost, given the GPU resident
+  set now sits at ≈51.8 of 64 GB leaving only ~12 GB for KV. **No numbers yet.**
+- [ ] **Re-verify the headline recipe label before publishing these runs.** They
+  are the first headlines taken after the lean registry was corrected to emit the
+  composed recipe (orchestrator `6390b871`); every prior headline on this host
+  since 2026-07-19 was taken under `draft-mtp` alone whether or not it said so.
+  Per the ratified §5, headlines are the **production-optimal** arm — so the
+  recipe string must be carried on the claim, not assumed.
 - [ ] Leave the concurrency/context/spec surfaces at their measured values and
   label them `temp=0.0` in the provenance table, rather than re-measuring.
 - Rationale for not re-running the ngram cells: the composed-ngram result is

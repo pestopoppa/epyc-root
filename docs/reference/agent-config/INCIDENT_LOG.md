@@ -92,3 +92,36 @@ copied text is the model's own **generation**, not the prompt. Rule fed: never r
 context-reading drafter against a live server on a repeated prompt, and always include a
 non-context control arm (`draft-mtp` or `none`) **structurally in the harness** rather than as
 operator discipline — NG5/SW-2 in `handoffs/active/speculative-decoding-mtp-refresh.md`.
+
+## INC-20260731-stale-config-outranked-operator-decision
+The operator's standing decision is the **composed** spec recipe `ngram-mod,draft-mtp`. The committed
+lean registry still carried `draft-mtp` alone (a regression introduced by `2370025f` on 2026-07-19,
+which moved the composed value into an unread sidecar key `ngram_candidate_spec_type`). **Twice in one
+session an agent let the committed config override the operator's restated decision**, then propagated
+the wrong recipe into fresh agent briefs — the root cause of several wasted benchmark runs. The trap
+is that a config artifact *looks* authoritative: it is versioned, reviewed, and greppable, while an
+operator decision lives in conversation. Rule fed: when a config artifact and a live operator decision
+disagree, **the artifact is the thing that is wrong** — fix the artifact and re-verify the emitted
+command line, never silently adopt the artifact's value. Verification here meant confirming the
+launcher actually emits `ngram-mod,draft-mtp`, because a latent exact-equality test in
+`stack_priors.py` would otherwise have silently disabled speculation entirely (epyc-orchestrator
+`2874ed73`).
+
+## INC-20260731-optimum-misread-as-baseline
+Qwen3-Next-80B was **wrongly excluded from a headline results table** because it runs without
+speculative decoding — it was recorded as a "baseline" arm and filtered out of production-optimal
+comparisons. It has no draft path at all, so running without speculation *is* its OPTIMUM. A model is
+not disqualified from a headline by lacking a lever it cannot have. Rule fed: the OPTIMUM / BASELINE /
+CANDIDATE grammar ratified the same day (epyc-root `0b92049e`, `MEASUREMENT.md` §3) exists precisely
+for this case — classify an arm by whether it is that model's best achievable configuration, not by
+which features are switched on.
+
+## INC-20260731-acceptance-dilution-under-composed-recipe
+Under a composed recipe, `draft_n` counts proposals from **both** proposers, so the reported
+acceptance rate is mechanically diluted relative to a `draft-mtp`-alone run of the same model. This
+was briefly read as a regression. It is not a fault, it is the definition of the metric changing.
+Related mechanism confirmed the same session: `--spec-draft-n-max` is a **soft budget, not a cap**
+under a composed recipe (mean accepted run length 2.36–2.67 measured at `n_max=2`), and
+`ngram_mod_n_max` is a separate, independent knob. Rule fed: an acceptance-rate gate calibrated on
+draft-mtp-alone numbers will wrongly reject correctly-configured composed setups — gates on
+speculation metrics must declare the recipe they were calibrated against.
