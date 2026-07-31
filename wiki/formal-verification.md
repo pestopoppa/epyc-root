@@ -71,3 +71,74 @@ Verina (intake-234) provides a benchmarking framework for verifiable code genera
 - [intake-235](https://mistral.ai/news/leanstral) Leanstral intake entry -- Initial evaluation and verdict
 - [MathSmith HC formalizer eval handoff](/workspace/handoffs/active/mathsmith-hc-formalizer-eval.md) -- Formalizer-overthinking connection (arxiv:2504.06514), Math-Verify integration (intake-377), MathQ-Verify question quality (intake-379)
 - [Strand-Rust-Coder RustEvo2 verification](../handoffs/active/strand-rust-coder-rustevo2-verification.md) -- independent gate for Fortytwo's Rust specialist model and downstream dataset-distillation work
+
+---
+
+## Fail-open verification: when a check passes on the condition it detects
+
+**Confidence: verified** (measured reproductions, 2026-07-31)
+
+A guard that returns success when it *cannot evaluate* its condition is worse than no guard:
+it converts an unknown risk into a false assurance, and everything downstream is built on it.
+Seven instances were identified in a single working day across the orchestrator's validation
+layer and two operator ratification scripts.
+
+### The shape
+
+Every instance collapses two distinct outcomes into one output:
+
+> *"the property holds"* and *"I could not evaluate the property"*
+
+Two variants recur. **Presence-checking**: a script verifies that its own edit arrived rather
+than that the edited artifact is still coherent. **Neutral-return on exception**: a helper
+returns `{}` / `None` / `[]` when an import or parse fails, and the caller reads the empty
+value as "no violations".
+
+### Two screens that catch the class
+
+1. **Can I make this check pass by *deleting* the thing it inspects?** If yes, it is
+   fail-open. Worked examples: `_launch_manifest_targets` passes by deleting the import; a
+   binary-hash verifier passes by rebuilding the binary; a marker grep passes by renaming the
+   tree.
+2. **Did I verify *the* consumer, or just *a* consumer?** The first screen misses a distinct
+   failure — tracing a consumer chain and stopping one hop early, where every check confirms a
+   true statement about a function not on the live path. Remedy: resolve fallback chains at
+   runtime and print the source label. A config surface with fallbacks and no source label has
+   that absence as its first bug.
+
+### Two rules
+
+- **Inability-to-evaluate is a THIRD outcome.** Emit `PASS` / `FAIL` / `COULD-NOT-CHECK`,
+  loudly and non-zero.
+- **Verify the post-state, not the presence of your edit.**
+
+### Measured blast radius
+
+| guard | effect when it fires | measured |
+|---|---|---|
+| `stack_change_guard.py:829` | promotion gate goes clean | targets 22→0, errors 12→0 |
+| `stack_change_guard.py:1000` | context assertion skipped everywhere | 0/22 roles checked, target count unchanged so invisible |
+| `stack_change_guard.py:962` | model-path coverage drops | poisoned paths detected 10/10 → 8/10 |
+
+A byte-hash integrity check does **not** cover this: during an import failure the source file
+is byte-identical and unimportable simultaneously, so the hash stays green while the thing it
+certifies cannot load.
+
+### Self-referential case
+
+A script that amends the document defining what a valid verification *is* must itself meet that
+definition. Three 2026-07 measurement ratifications amended `MEASUREMENT.md` — whose §138-145
+requires a consolidated bundle with evidence hashes and an exact state diff — and none emitted a
+receipt. One of them tore a wrapped bullet in half and its own grep-for-my-marker check passed.
+
+**The correct pattern usually already exists nearby.** In `stack_change_guard.py` the identical
+`return []` idiom at `:1188` is *not* fail-open, because a second reader independently re-checks
+and appends an error; `:1724` does it right for another artifact. The defect is an
+inconsistently applied technique, not a missing one — which makes the fix small.
+
+### Sources
+
+- `handoffs/active/numa-topology-cutover-resume-20260730.md` (W6, W7) — 2026-07-31
+- `progress/2026-07/2026-07-31.md` — session 18:00–20:00Z, measured reproductions
+- `/mnt/raid0/llm/tmp/guard-audit/` — six runnable proof scripts (`prove_failopen.py`, `prove2-5.py`)
+- epyc-root `13383c49` — repair of the torn `MEASUREMENT.md` bullet whose verification passed
