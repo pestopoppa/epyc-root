@@ -5,7 +5,7 @@
 `upstream-published` (a paper's own numbers, on the paper's hardware), `projected-unmeasured` (an extrapolation
 authored here and never run), and `locally-measured` (run on this host, with an artifact). A projected number
 may never carry `verified`. Retagged 2026-07-31.
-**Last compiled**: 2026-07-26 (adds bounded M-1 observation and M-2 pinned-interface closure; prior promotion runbook and demand gate retained)
+**Last compiled**: 2026-07-31 (session 3: MMMU val settles the vision role on Qwen3-VL-30B-A3B Q4_K_M and retires MiniCPM-o-4.5 as a candidate entirely — deprecated, weights deleted; whisper.cpp large-v3-turbo on MI210 settles STT and Qwen3-ASR is dropped; the post-ARGSORT-fix TTS numbers supersede the pre-fix reading two sections below; earlier 2026-07-26 note: adds bounded M-1 observation and M-2 pinned-interface closure; prior promotion runbook and demand gate retained)
 **Sources**: 42+ documents (added 2026-07-24 the vision_escalation MiniCPM-o promotion runbook and the worker_vision quantitative trigger gate; 2026-07-17 MiniCPM-o/frontdoor service-matrix activation evidence, Qwen3-VL-30B escalation defect mitigation, and PaddleOCR-VL document-specialist checkpoint; 2026-06-22 vision-pipeline live-server registration + the TTS path-elimination matrix; 2026-06-05 LocateAnything/Gemma 4 benchmark-first update; 2026-06-21 Kimi-K2.7-Code MoonViT / UniRL intake merge)
 
 ## Compiled Update — 2026-07-26 bounded MiniCPM-o evidence
@@ -104,11 +104,11 @@ Gemma 4 (intake-251/252) introduces Any-to-Any multimodal models (text+image+aud
 
 ## Open Questions
 
-- Is MiniCPM-O 4.5's built-in TTS quality competitive with standalone Qwen3-TTS? (Untested)
-- Can Qwen3-VL-8B (with tool calling) replace Qwen2.5-VL-7B as `worker_vision`?
+- ~~Is MiniCPM-O 4.5's built-in TTS quality competitive with standalone Qwen3-TTS? (Untested)~~ **MOOT 2026-07-31**: MiniCPM-o-4.5 is deprecated and its weights deleted; see the 2026-07-31 Compiled Update below.
+- Can Qwen3-VL-8B (with tool calling) replace Qwen2.5-VL-7B as `worker_vision`? **PARTIALLY ANSWERED 2026-07-31**: on MMMU val the 8B is not statistically separable from the incumbent (p=0.21) — see the 2026-07-31 Compiled Update.
 - When will Gemma 4 GGUF conversion be available in llama.cpp?
 - Does the vision pipeline's OpenAI-compat multimodal support (parsing image_url in message content) need to be completed before production use?
-- What is the VRAM impact of running MiniCPM-O alongside existing model stack?
+- ~~What is the VRAM impact of running MiniCPM-O alongside existing model stack?~~ **MOOT 2026-07-31**: MiniCPM-o-4.5 is deprecated and its weights deleted; see the 2026-07-31 Compiled Update below.
 - Can VoxCPM2's tokenizer-free approach produce better quality than Qwen3-TTS's discrete codebook approach?
 - Does ZipVoice-Distill's 0.657 SIM-o (speaker similarity) meet EPYC's voice-cloning quality bar? Qwen3-TTS reaches 0.789; the gap is meaningful for voice-identity use cases. [luxtts-cpu-tts-candidate.md]
 - If Path D passes RTF threshold, is the 48kHz Vocos head upgrade (LuxTTS's main addition over upstream) worth the ~1.3× overhead? Requires A/B test on same text+reference. [luxtts-cpu-tts-candidate.md]
@@ -464,6 +464,12 @@ is what keeps this from being filed as "Qwen3-ASR is bad" — the
 Where it did work it was roughly twice as fast per request as the incumbent (median 2.14 s vs
 whisper's ~4.2 s floor), which is why the defect is worth resolving rather than abandoning.
 
+**Superseded later the same day (2026-07-31) — see the session-3 Compiled Update below.** The
+Q8_0-audio-projector hypothesis above did not hold; the WER figure also moved (72.14 % here →
+29.36 % in the later retest). The verdict changed from "worth resolving" to **DROPPED**: the real
+mechanism is a duration-correlated degenerate repetition loop, not a quantization or context defect,
+and whisper.cpp's own numbers (below) removed the incentive to keep debugging it.
+
 ### STT: an optional role failing silently is worse than a required role failing loudly
 
 `whisper_server.py` passed a model **name**, not a path, so `faster-whisper` resolved it through
@@ -518,3 +524,129 @@ request, and its sole justification (the repetitive-context upside) was retracte
 - [`inference-acceleration-index.md`](../handoffs/active/inference-acceleration-index.md) — the structural-fact banner above the retracted ngram row
 - [`master-handoff-index.md`](../handoffs/active/master-handoff-index.md) — row **N28**
 - [`progress/2026-07/2026-07-31.md`](../progress/2026-07/2026-07-31.md) — §10, with the exact line numbers and the README-echo explanation
+
+## Compiled Update — 2026-07-31 (session 3): vision role settled on MMMU, MiniCPM-o retired, speech finalized after the gfx90a ARGSORT fix
+
+**Confidence: verified — measured on this host, with persisted artifacts for every number below.**
+
+### MiniCPM-o-4.5 is deprecated and its weights are deleted
+
+The multi-month `vision_escalation` candidacy this page has tracked since 2026-07-17 (the MI210
+`--reasoning off` lane, the 2026-07-23/24 deterministic promotion runbook, the 2026-07-26 bounded
+M-1 observation) is **closed, not merely paused**. A 42-question OCRBench+ChartQA re-score, each
+model at its best on-disk quantization, found MiniCPM-o-4.5 a **downgrade versus the deployed
+incumbent**:
+
+| model | score |
+|---|---|
+| Qwen3-VL-30B-A3B Q4_K_M | 36/42 |
+| Qwen2.5-VL-7B (incumbent) | 35/42 |
+| Qwen3-VL-8B Q8_0 | 33/42 |
+| **MiniCPM-o-4.5 Q8_0** | **31/42** |
+| Qwen3-VL-4B Q8_0 | 29/42 |
+
+The earlier "+10pp" paired observation (M-1, n=10, 2026-07-26 Compiled Update above) does not
+survive re-verification: it rested on exactly one discordant question that was a scoring artifact
+(the incumbent answered `0.11 kWh` where the accepted answer was `0.11`, `vl_chart_test_0563`);
+corrected, the arms tie 7/10. The remaining argument for MiniCPM-o was its bundled speech stack —
+also moot, since a dedicated Qwen3-TTS-12Hz-0.6B (1.14 GB, CPU-only, zero GPU VRAM) and Qwen3-ASR
+(served by the frozen v8 kernel with **zero kernel change**) replace the ~9.70 GB speech delta
+inside MiniCPM-o's 22 GB omni bundle. Operator-authorized: deprecate, then delete (in that order,
+to leave no dangling reference behind the 22 GB `rm`); storage reclaimed.
+
+### Vision role settled: Qwen3-VL-30B-A3B Q4_K_M wins MMMU val; the 8B and 4B are not separable from the incumbent
+
+MMMU val, 250 stratified multiple-choice questions, identical rows for every arm, `temp=0.2`,
+`seed=42`:
+
+| arm | accuracy | vs incumbent | McNemar p | VRAM |
+|---|---|---|---|---|
+| **Qwen3-VL-30B-A3B Q4_K_M** | **63.6%** | **+11.2pp** | **0.0011** | 21.0 GB |
+| Qwen3-VL-8B | 57.2% | +4.8pp | 0.21 (n.s.) | — |
+| Qwen3-VL-4B | 54.0% | +1.6pp | 0.72 (n.s.) | — |
+| Qwen2.5-VL-7B (incumbent) | 52.4% | — | — | — |
+
+Raw: `/mnt/raid0/llm/tmp/vision_final_results.json`. Only the 30B-A3B is statistically separable
+from the incumbent — **the 8B and 4B must not be described as upgrades.**
+
+Two methodology findings surfaced by this run are compiled in full on
+[Benchmark Methodology](benchmark-methodology.md); summarized here because they directly gate this
+decision: (1) the **earlier 42-question OCRBench+ChartQA suite (the same one that retired MiniCPM-o
+above) mis-ranked the field** — it placed the incumbent 2nd where MMMU placed it last, and the 8B
+inverted between the two suites, so a saturated suite can order arms **wrongly**, not merely fail to
+separate them; (2) a **`max_tokens=128` cap silently penalised the Qwen3-VL models** (3 parse
+failures for the incumbent vs 41 and 50 for the Qwen3-VL arms — truncated mid-reasoning and scored
+wrong), and even at `max_tokens=2048` those models emit no letter on ~9% of hard questions, so **the
+vision role requires `max_tokens ≥ 1024`**.
+
+### STT settled: whisper.cpp large-v3-turbo f16 on MI210; Qwen3-ASR DROPPED
+
+| metric | CPU incumbent | MI210 whisper.cpp | |
+|---|---|---|---|
+| WER | 2.35% | **2.35%** | identical |
+| wall median | 4.240 s | **0.124 s** | 34× |
+| wall max | — | **0.218 s** | GPU max is **19× below the incumbent's minimum** |
+| encode | 3751 ms | **110 ms** | 34× |
+| VRAM | — | 2.56 GB | frees 48 CPU cores |
+
+Greedy decoding (not beam-5), `large-v3-turbo` (not `large-v3`). **The ~4.2 s fixed floor is gone** —
+that floor (30 s mel padding, paid regardless of utterance length) is precisely what disqualified CPU
+whisper for conversational voice, and is the whole reason this arm was worth running.
+
+**Qwen3-ASR is DROPPED**, superseding the provisional reading two sections above. Its 29.36% WER is
+**not** a scoring artifact — extended normalization moved it only to 28.88%. It is a **degenerate
+repetition loop on 21 of 100 rows contributing 94.7% of all errors**, duration-correlated (0% of
+rows under 3 s, 50% at 7–30 s). Clean rows score 2.27% — the *model* is sound and the *deployment* is
+broken. Moot either way: whisper.cpp is faster with a far tighter tail, so debugging the projector
+has no payoff.
+
+### TTS settled: Qwen3-TTS-12Hz-0.6B Q8_0 via qwentts.cpp on MI210 — the post-ARGSORT-fix numbers
+
+These numbers **supersede** the pre-fix CPU-only reading in the "TTS is solved" Compiled Update
+above (xRT 0.86×, `CodecDecode` 64%) — that section recorded the *before* state; this is the *after*
+state on the same host, same model, following the gfx90a kernel fix below.
+
+| metric | before (CPU) | after (MI210, fixed) | |
+|---|---|---|---|
+| xRT | 0.86× | **5.47×** | 6.4× |
+| TTFA | 67.9 ms | **37.8 ms** | |
+| `CodecDecode` share of total | 64% | **10.4%** | 39× faster per audio-second |
+| round-trip WER | 0.0% (canonical sentence) | **1.49%** (broader set; 0.0% on the canonical sentence) | |
+
+Under `--greedy`, GPU and CPU transcripts are **identical**. New bottleneck is `CodePredictor` at
+65.5%.
+
+Getting there required a real kernel fix in the **third-party fork**, not our production kernel: an
+**ARGSORT defect on gfx90a** (`ne0=2048` launched 2048 threads per block against gfx90a's
+1024-thread cap, 705× per utterance) was masked by a test suite that silently skipped the failing
+shapes. Full mechanism, the fix, and the HIP-graphs consequence are compiled on
+[Hardware Optimization](hardware-optimization.md) — not repeated here to avoid drift between the two
+pages.
+
+**Pins**: qwentts.cpp `abab6b3b`, ggml fork `c044c6f0`, binary md5 `5b858d75614dfd2f696071212ae8f2e4`.
+Production llama.cpp kernel untouched (`67a433bf4`). **Operator decision: keep qwentts.cpp as a
+pinned versioned dependency — do NOT merge it into our llama.cpp.** Running the patched fork
+indefinitely is acceptable.
+
+### Resulting GPU resident set
+
+| resident | GB |
+|---|---|
+| 27B Q8_0 | 27.0 |
+| Qwen3-VL-30B-A3B | 21.0 |
+| whisper.cpp large-v3-turbo | 2.6 |
+| Qwen3-TTS | 1.2 |
+| **total** | **≈51.8 of 64** |
+
+≈12 GB left for KV → the 27B tops out near **90k tokens** on `q8_0` KV. A KV-quantization quality
+test was in flight at compile time to establish whether `q4_0` buys ~180k without a quality cost —
+no number recorded here for it.
+
+### Source References
+
+- [`progress/2026-07/2026-07-31.md`](../progress/2026-07/2026-07-31.md) — §15 (all four sub-findings: vision, STT, TTS, resident set), §20 process lessons
+- [`multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — the MMMU table, the S-6/S-6a/S-7 task closures, the S-17 resident-set budget task, and the ✅ vision/STT/TTS status banners
+- [`docs/reference/model-probe-scoreboard.md`](../docs/reference/model-probe-scoreboard.md) — the superseded "Yes candidate" rows corrected with the 42q table; Qwen3-VL-30B-A3B added and unpaused
+- [`docs/runbooks/vision-escalation-minicpmo-promotion.md`](../docs/runbooks/vision-escalation-minicpmo-promotion.md) — DEPRECATED banner; runbook mechanics survive as a model-agnostic reference pattern
+- [Hardware Optimization](hardware-optimization.md) — the gfx90a ARGSORT defect mechanism, the fix, and the HIP-graphs consequence
+- [Benchmark Methodology](benchmark-methodology.md) — the saturated-suite mis-ranking and `max_tokens` truncation findings in full

@@ -2,8 +2,62 @@
 
 **Category**: `local_inference`
 **Confidence**: verified
-**Last compiled**: 2026-07-20 (adds the deployed-lane throughput table, the living model-probe scoreboard + stop-list, and the CPU-prefill local lever; earlier 2026-07-19 note: adds v7 promotion boundary, GLM reviewer residency decision, and post-promotion P-GPU-1 certification)
+**Last compiled**: 2026-07-31 (adds the ggml-linkage landmine: `LD_LIBRARY_PATH` ordering silently loads the frozen production CPU-only ggml into fresh HIP builds, producing full-CPU runs that self-report `use gpu = 1`; every future ggml build on this host is exposed; earlier 2026-07-20 note: adds the deployed-lane throughput table, the living model-probe scoreboard + stop-list, and the CPU-prefill local lever; earlier 2026-07-19 note: adds v7 promotion boundary, GLM reviewer residency decision, and post-promotion P-GPU-1 certification)
 **Sources**: 36 documents
+
+## Compiled Update — 2026-07-31: a `LD_LIBRARY_PATH` ordering landmine silently redirects fresh ggml builds to the frozen production kernel
+
+**Confidence: verified** — reproduced by a standing guard script; direct artifact read of the two
+offending config lines.
+
+### The mechanism
+
+`/etc/environment:5` and `.devcontainer/devcontainer.json:57` both place the **frozen production**
+kernel's `build/bin` early in `LD_LIBRARY_PATH`, on the reasoning that production tooling needs to
+find the production libraries there. The unintended consequence: **any freshly built ggml-based
+binary on this host** — whisper.cpp, `qwentts.cpp`, `llama.cpp-experimental` — resolves
+`libggml-base` / `libggml` / `libggml-cpu` from the **production tree first**, ahead of its own build
+directory, unless the invocation explicitly overrides the search order.
+
+This is exactly what happened building the HIP whisper leg of the 2026-07-31 speech work (see
+[Multimodal](multimodal.md)): a HIP-built `whisper-cli` loaded the production **CPU-only** ggml,
+found no GPU backend, and ran the entire job on CPU — **while printing `use gpu = 1`**, because that
+flag reports what was *requested*, not what was actually loaded. GPU backends are `dlopen`ed at
+runtime and are therefore invisible to `ldd`, which is why this survives casual review: the binary
+launches, reports a device, and produces plausible numbers.
+
+### Why this is worse than an ordinary misconfiguration
+
+The failure mode is **silent and produces plausible output**. A CPU-only fallback that crashed, or
+that logged a visible warning, would be caught immediately. This one does neither — it is the same
+"fail-open default conceals its own corruption" shape as other host-hygiene incidents on this project,
+applied to shared library resolution instead of a service flag. Had nobody checked, CPU numbers would
+have been published and labelled GPU.
+
+### The guard, and the fix
+
+`scripts/utils/verify_ggml_linkage.sh` reproduces the defect: of the five ggml-family shared
+libraries a freshly built binary needs, **3 of 5 resolve from the production tree** even in a build
+that also correctly picks up `libggml-hip.so.0` from its own directory — a mixed state that still
+initializes and still reports a device, which is precisely why it is easy to miss on casual review.
+The fix is **per-invocation** (prepend the project's own `build/bin` ahead of the production path for
+that one command), **not** editing `/etc/environment` — production tooling genuinely depends on
+finding the production libraries there by default, so the global ordering is not itself wrong, only
+unsafe to inherit unmodified into a fresh build's environment.
+
+### The generalizable rule
+
+**Every future ggml build on this host is exposed to this**, not just the ones already discovered.
+Any session building whisper.cpp, an experimental llama.cpp branch, or any other ggml-based project
+on this host must run `scripts/utils/verify_ggml_linkage.sh` (or equivalently prepend its own
+`build/bin`) before trusting a "GPU" number from that binary — `use gpu = 1` in the log is not
+evidence the GPU backend was actually loaded.
+
+### Source References
+
+- `epyc-inference-research` commit `7f310022` — commit message cites `INC-20260731-ggml-linkage-silent-cpu-fallback`; the `verify_ggml_linkage.sh` guard and its 3-of-5 reproduction (as of this compile, that incident ID is not yet a filed heading in `docs/reference/agent-config/INCIDENT_LOG.md` — the commit is the primary record)
+- [`progress/2026-07/2026-07-31.md`](../progress/2026-07/2026-07-31.md) — §18, the landmine summary and the "every future ggml build is exposed" scope statement
+- [Multimodal](multimodal.md) — the HIP whisper build this defect was first caught on, and the corrected STT measurement it fed into
 
 ## Current Production — 2026-07-26
 

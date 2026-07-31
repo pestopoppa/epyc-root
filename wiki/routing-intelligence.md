@@ -2,7 +2,7 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-07-14 (planner spend-breaker hardening, PID-age-verified preflight gate, runtime-facts-backed stack-service truth)
+**Last compiled**: 2026-07-31 (corrects four throughput priors routing was deciding on — 32-40% low, an unmeasured `optimized_tps` silently indistinguishable from a measured one; records the operator directive that the cross-role contention matrix must become an optimizable surface rather than a mutual-exclusion veto; earlier 2026-07-14 note: planner spend-breaker hardening, PID-age-verified preflight gate, runtime-facts-backed stack-service truth)
 **Sources**: 68+ documents (added 2026-07-14 runtime-facts-backed stack-service truth; 2026-07-05 RI-10 decision-ready + hold_quality_unscored packet, N9 MLP rollout attestation bracket, episodic FAISS 95.7% repair; 2026-07-04 X-MAS enforce cutover, deterministic canary sampler, DAR-4b null sweep, A9 source-reward passthrough; prior 2026-07-04 RI-10 arm-attributed canary status refresh, 2026-07-03 RI-10 gate hardening and DAR-1 current replay, 2026-06-26 LRC P4.5 executed [null result])
 
 ## Summary
@@ -581,3 +581,70 @@ winner table plus route-mutation tests.
   Interim: alias truth lives in registry `shared_with` (see
   `epyc-orchestrator/docs/runbooks/role-alias-change-runbook.md` for the change procedure and
   the five layers an alias touches).
+
+## An unmeasured throughput prior was indistinguishable from a measured one, and routing decided on it (2026-07-31)
+
+**Confidence: verified** — direct registry-diff read; the fix is a landed commit.
+
+### Four priors were 32-40% low because `optimized_tps` had never actually been optimized
+
+`epyc-inference-research` `5dfc339e` corrected four `model_registry.yaml` throughput priors that
+routing reads directly:
+
+| role | old (`baseline_tps` / `optimized_tps`) | corrected `optimized_tps` | delta |
+|---|---|---|---|
+| `frontdoor` | 24.3 / 24.3 | **40.22** | ~40% low |
+| `coder_escalation` | 24.3 / 24.3 | **40.22** | ~40% low |
+| `worker_summarize` | 24.3 / 24.3 | **40.22** | ~40% low |
+| `worker_general` | 38.46 / 38.46 | **56.86** | ~32% low |
+
+All four entries had `baseline_tps == optimized_tps` — the tell that `optimized_tps` had never been
+re-measured after whatever optimization it was supposed to represent. **The router and cost model
+read `optimized_tps`, falling back silently to `baseline_tps` with no label change when the field is
+absent** — so an unmeasured prior masquerading as an optimized one is structurally indistinguishable
+from a genuinely measured one at the read site. Routing had been making placement/escalation
+decisions on figures **32-40% below** the ratified production optima for three roles for an unknown
+prior duration. `baseline_tps` is now explicitly `null` for the Qwen3.6-35B-backed roles (`frontdoor`,
+`coder_escalation`, `worker_summarize`) rather than invented — no spec-dec-off measurement of those
+roles exists, so the field records that honestly instead of filling it with a guess. `worker_general`
+(gemma) does have a measured spec-off baseline (37.63) and keeps it, tagged `category=BASELINE` per
+the [Benchmark Methodology](benchmark-methodology.md) OPTIMUM/BASELINE/CANDIDATE grammar ratified the
+same day — diagnostic only, never a promotion or routing-decision arm.
+
+### The generalizable failure mode
+
+A silent fallback (`optimized_tps or baseline_tps`) is a convenience for the read site and a trap for
+governance: it means "this number was optimized" and "this number was never touched" render
+identically to every downstream consumer. Any prior field with a silent fallback to an
+earlier-stage value needs either a `measured: bool` companion field or a `null` default that fails
+loudly, not a same-shape number that quietly stands in.
+
+## Operator design directive: the contention matrix must become an optimizable surface, not a mutual-exclusion veto (2026-07-31)
+
+Recorded verbatim because it reframes an open task rather than closing one — filed against
+`handoffs/active/numa-topology-cutover-resume-20260730.md` task N25 P1-11 ("make the GPU lane a
+matrix participant"):
+
+> Co-residency of the GPU lane with half B / full instances must not be modelled as mutual
+> exclusion. The GPU lane's contention impact is large only under heavy memory-bandwidth use — the
+> typical case being models being loaded/unloaded from the GPU. We plan to keep GPU models resident,
+> so that case does not arise. There may be deleterious contention under heavy concurrent prompting
+> of the GPU models, but binary mutual exclusion of half B / full / GPU is overkill. The contention
+> matrix should be more nuanced and should offer a surface that autopilot can optimize and that the
+> orchestration router can be trained on — not a hard block.
+
+This raises the bar on P1-11: the matrix's current model is **cpuset-intersection-only**, which
+simultaneously **over-measures** (5 of 15 previously-committed pairs are structurally derivable from
+the cpusets alone and need no live inference to resolve) and **under-represents** (the GPU lane is
+not a row in the matrix at all, despite being exactly the resource this directive is about). Under
+the topology in place after the NUMA cutover, **58 of 78 pairs are structurally derivable** and
+should not consume inference time to measure. The router-facing consequence for this page: once the
+matrix exposes a graded surface rather than a boolean veto, it becomes a candidate input feature for
+the routing/placement decision rather than a hard filter applied before routing runs at all.
+
+### Source References
+
+- [`progress/2026-07/2026-07-31.md`](../progress/2026-07/2026-07-31.md) — §18 (the four-prior correction table and the silent-fallback mechanism) and §17 (the operator directive, quoted verbatim, and the 58/78-derivable-pairs figure)
+- `epyc-inference-research` commit `5dfc339e` — the `model_registry.yaml` diff: four corrected priors, `baseline_tps: null` for the 35B roles, the P-BENCH-PLACEMENT-1 attestation
+- [`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-topology-cutover-resume-20260730.md) — task N25 P1-11, superseded in framing by the operator directive
+- [Benchmark Methodology](benchmark-methodology.md) — the OPTIMUM/BASELINE/CANDIDATE grammar under which `worker_general`'s retained baseline is tagged `category=BASELINE`

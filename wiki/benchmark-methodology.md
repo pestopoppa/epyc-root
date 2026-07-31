@@ -2,8 +2,67 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-07-30 (MEASUREMENT v2 ratified: core + annex constitution, explicit metric scoping, P-BENCH-PLACEMENT-1 registered, P-BENCH-3 conformed, retracted April exemplar replaced; prior E8/E5 status update retained)
+**Last compiled**: 2026-07-31 (adds three methodology results from the vision-role evaluation: a saturated suite can order arms WRONGLY not just fail to separate them; an output-length cap silently penalises reasoning models; a model with no draft path running unaccelerated is at its OPTIMUM, never a BASELINE — the concrete case the OPTIMUM/BASELINE/CANDIDATE grammar was ratified to prevent; earlier 2026-07-30 note: MEASUREMENT v2 ratified: core + annex constitution, explicit metric scoping, P-BENCH-PLACEMENT-1 registered, P-BENCH-3 conformed, retracted April exemplar replaced; prior E8/E5 status update retained)
 **Sources**: 100+ documents
+
+## Compiled Update — 2026-07-31: a saturated suite can rank arms wrongly, an output cap can silently fail reasoning models, and "no draft path" is an OPTIMUM not a BASELINE
+
+**Confidence: verified** — the vision-suite comparison and the truncation counts are direct
+measurements with persisted artifacts; the OPTIMUM/BASELINE/CANDIDATE grammar is an operator-ratified
+constitutional amendment.
+
+### A saturated benchmark can order arms WRONGLY, not merely fail to separate them
+
+The earlier 42-question OCRBench+ChartQA vision suite (used through 2026-07-30 to evaluate
+`vision_escalation` candidates — see [Multimodal](multimodal.md)) placed the incumbent Qwen2.5-VL-7B
+**2nd**; the same-day 250-question MMMU val run placed it **last**. Qwen3-VL-8B **inverted** between
+the two suites as well. This is a stronger claim than the standing "saturated benchmarks fail to
+separate arms" caution: **a saturated suite can order arms in the wrong direction**, so a decision
+taken on it is not merely under-powered — it can be actively backwards. The 42-question suite is
+retired for ranking purposes; MMMU val (250 stratified questions, identical rows per arm) is the
+instrument now used for this role. [Multimodal](multimodal.md) carries the full vision-role decision
+this methodology finding gates.
+
+### An output-length cap silently penalises reasoning models
+
+The same vision evaluation ran a production `max_tokens=128` cap that produced **3** parse failures
+for the incumbent versus **41** and **50** for the two Qwen3-VL candidate arms — the reasoning models
+were being truncated mid-reasoning and scored as wrong, not as genuinely incorrect. Raising the cap
+to `max_tokens=2048` still leaves those models emitting no letter on **~9%** of hard questions. The
+generalizable rule: an output-length cap tuned for a non-reasoning incumbent is not a neutral
+harness parameter when a reasoning-capable candidate is added to the same suite — it becomes a
+hidden thumb on the scale that specifically penalises the newer arm. The vision role's production
+config now requires `max_tokens ≥ 1024`.
+
+### A model with no draft path running without speculation is at its OPTIMUM, not a BASELINE
+
+Separately, a spec-decoding headline table wrongly excluded Qwen3-Next-80B on the reasoning that it
+was "unaccelerated," i.e. treated its `--spec-type none` run as a non-production baseline rather than
+what it actually is: the best configuration available for a model that has no draft path at all.
+This is the concrete case that motivated an operator-ratified amendment to `MEASUREMENT.md` (`epyc-root`
+`0b92049e`, 2026-07-31): the §3 claim grammar now requires every reported measurement to declare
+`category=OPTIMUM | BASELINE | CANDIDATE`, with an explicit rule that **if no draft path exists, the
+unaccelerated run IS the OPTIMUM** and belongs in the headline table, never in a baseline addendum.
+§5 was amended in parallel: **promotion is decided on the production-optimal configuration alone**,
+a `BASELINE`-category regression is not a promotion blocker and must not be cited as one, and a gate
+that blocks on a non-production arm is defective and must be repaired, not waived. This directly
+narrowed `bench-cpu.md`: its 28 `llama-bench` prefill cells could previously veto a kernel whose
+*production* throughput had improved, even though `llama-bench` cannot exercise speculative decoding
+at all and so never measured the production recipe in the first place — those cells now record and
+report but do not block. The agent digest (`agents/shared/MEASUREMENT_POLICY.md`) gained the
+category rule it had entirely lacked before this amendment.
+
+**Open governance question, unresolved as of this compile**: `MEASUREMENT_POLICY.md:79` states
+amendments are human-PR-reviewed, while `MEASUREMENT.md`'s trust-boundary membership (§5, "read-only
+for autonomous optimization processes") does not name the digest itself. As written, it is not
+determinable whether an agent may edit the digest. Needs an operator ruling.
+
+### Source References
+
+- [`progress/2026-07/2026-07-31.md`](../progress/2026-07/2026-07-31.md) — §15a (the 42q-vs-MMMU ranking inversion and the `max_tokens` truncation counts), §18 (the MEASUREMENT.md ratification summary), §20 (the "OPTIMUM not BASELINE" process lesson naming Qwen3-Next-80B)
+- [`MEASUREMENT.md`](../MEASUREMENT.md) — §3 the OPTIMUM/BASELINE/CANDIDATE claim grammar (with the Qwen3-Next-80B `--spec-type none` exemplar), §5 the production-optimal-alone promotion rule and the `bench-cpu.md` narrowing, CHANGELOG entry dated 2026-07-31
+- [`multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — task V-1 (the suite mis-ranking) and S-15 (the `max_tokens ≥ 1024` production-config task)
+- [Multimodal](multimodal.md) — the full MMMU vision-role decision this section's methodology findings gate
 
 ## Compiled Update — 2026-07-30 the constitution restructured, and a placement protocol born from a defect
 

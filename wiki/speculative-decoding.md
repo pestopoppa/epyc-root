@@ -2,7 +2,7 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-07-24 (adds the per-model GPU MTP-depth optimum for all three architect candidates and the architecture-dependent spec-dec × batching interaction; earlier 2026-07-20 note: adds the external-drafter-dead / native-MTP-dominant finding, the surviving quant-asymmetric self-spec redesign, and the K28 fused-GDN-kernel research; earlier 2026-07-19 note: adds v7 promotion/reviewer decoupling, repaired native GLM-MTP evidence, and the lossless-only release boundary; 2026-07-04/05/06 MI210/spec-sheet subsections remain flagged where noted)
+**Last compiled**: 2026-07-31 (adds the composed-recipe reconciliation — production was not launching the operator's `ngram-mod,draft-mtp` recipe since `2370025f`, the naive fix would have disabled speculation entirely, fixed by `2874ed73`+`6390b871` — plus the soft-budget/independent-knob/acceptance-dilution mechanism findings and the draft-max sweep; earlier 2026-07-29 note: verifying a draft/MTP head is a weight-map question, not a config question; earlier 2026-07-24 note: adds the per-model GPU MTP-depth optimum for all three architect candidates and the architecture-dependent spec-dec × batching interaction; earlier 2026-07-20 note: adds the external-drafter-dead / native-MTP-dominant finding, the surviving quant-asymmetric self-spec redesign, and the K28 fused-GDN-kernel research; earlier 2026-07-19 note: adds v7 promotion/reviewer decoupling, repaired native GLM-MTP evidence, and the lossless-only release boundary; 2026-07-04/05/06 MI210/spec-sheet subsections remain flagged where noted)
 **Sources**: 63+ documents
 
 ## Compiled Update — 2026-07-24
@@ -614,6 +614,11 @@ because its current production MTP path uses a separate assistant-draft GGUF.
 
 v6 fully supports **draft-model-free** speculative decoding (ngram / prompt-lookup), including **server-side**, via `--spec-type ngram-simple | ngram-cache | ngram-map-k | ngram-mod`. This drafts continuation tokens by matching the recent context against n-grams already present in the prompt/KV (and, for the cache/map variants, a running suffix structure) — no drafter weights, no extra model load, hence **zero additional RAM**. **CORRECTED 2026-07-31 — the previous sentence here ("It is OFF across the production stack today … the n-gram path is not engaged for any live role") was WRONG and directly contradicted this same page's Key Findings.** Production launches the COMPOSED recipe `--spec-type ngram-mod,draft-mtp` on every role with a working draft path, so the n-gram path **is** engaged in production. The composed recipe costs ~−1.6% on ordinary text and that cost is deliberately accepted for the repetitive-context upside. **Canonical source (do not restate, link):** the `speculative_decoding_policy` block at the top of `epyc-inference-research/orchestration/model_registry.yaml`. Its documented role is the **architect's zero-RAM fallback**: when a NEXTN/MTP self-draft head is unavailable or RAM-constrained for a large architect target, ngram/prompt-lookup gives a no-extra-memory speculation path that is especially effective on repetitive / templated / long-context-quoting workloads where the next tokens frequently recur in-context. This is a v6 capability statement, not a measured production result — acceptance on EPYC architect traffic has not yet been benched.
 
+**Timing note (2026-07-31, later the same day):** the composed recipe was in fact **not** what the
+launcher emitted between 2026-07-19 and 2026-07-31 — see the "production spec recipe" Compiled
+Update at the end of this page for the full reconciliation (the sidecar-key regression, the latent
+membership-test bug the naive fix would have hit, and the fix commits).
+
 **2026-07-04 update — the corpus-backed static-cache option is retired.** The one candidate source for a `--lookup-cache-static` build (the 651GB local code corpus) failed its prompt-injection clean-window A/B and was deleted with operator approval before any large static n-gram cache was built; the `build_static_ngram_cache.py` scaffold survives as code history only. The in-context ngram/prompt-lookup fallback described above is unaffected (it needs no corpus), but a corpus-derived static cache would now require recreating a corpus under a fresh handoff + protocol. See [corpus-augmented-prompt-lookup-revalidation.md](../handoffs/completed/corpus-augmented-prompt-lookup-revalidation.md).
 
 **Cross-references**: [`handoffs/active/v6-iqk-promotion.md`](../handoffs/active/v6-iqk-promotion.md) (cutover tracking + gate status) · [`handoffs/active/iqk-port.md`](../handoffs/active/iqk-port.md) (iqk kernel integration + MTP-composition A/B) · [`progress/2026-06/2026-06-26.md`](../progress/2026-06/2026-06-26.md) · the 2026-06-25 full-stack MTP sweep table near the top of this page (v6-candidate numbers, pre-deploy-gate).
@@ -744,3 +749,74 @@ a reopen trigger for the parked CPU handoff.
 - [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — the `config.json`-is-unsound rule; KAT-Coder tokenizer hash and removed MTP head; GGUF header gate (tensor count, not file size); byte-level ThinkingCap MTP identity; CPU/GPU relevance asymmetry
 - [`architect-model-selection-bench.md`](../handoffs/active/architect-model-selection-bench.md) — the zero-delta non-LoRA tensor set as a dequant noise-floor control for weight-delta geometry; MTP held constant across bench arms
 - [`multi-file-coding-completion-capability.md`](../handoffs/active/multi-file-coding-completion-capability.md) — the exclusion of the MTP variant from any authorized quality A/B
+
+## Compiled Update — 2026-07-31: production was NOT running the operator's composed recipe, and the naive fix would have been worse than the bug
+
+**Confidence: verified** — every commit, tensor/config fact, and sweep number below is a direct
+artifact read or a measured run with a persisted summary file.
+
+### The gap: a sidecar key nothing read
+
+**The operator's standing decision is the composed recipe `--spec-type ngram-mod,draft-mtp`** (see
+the "Timing note" above this section). Since epyc-inference-research commit `2370025f`
+(2026-07-19), the launcher instead emitted `--spec-type draft-mtp` **alone**: that commit reverted
+`spec_type` and moved the composed value into a sidecar key, `ngram_candidate_spec_type`, that
+nothing in the launch path read. An earlier audit pass had already fixed the *research* registry —
+but the stack does not compile from that file. The real source is the **lean**
+`epyc-orchestrator/orchestration/model_registry.yaml`, which still carried `draft-mtp` on six
+entries, both sidecar keys, and a stray, undiscussed fourth variant, `spec_type: ngram-simple`, on
+`qwen36_q8_0` — the model backing **both** `frontdoor` and `coder_escalation`.
+
+### The naive fix would have made things strictly worse
+
+`stack_priors.py` tested `spec_type_prior == "draft-mtp"` by **exact string equality**. Simply
+writing the composed value `"ngram-mod,draft-mtp"` into the registry — without touching that test —
+would have **failed** the equality check and fallen through to the **DISABLED** speculation branch:
+`frontdoor` and `architect_general` would have launched with **no speculation at all**, strictly
+worse than the `draft-mtp`-alone status quo the fix was meant to repair. This is the second
+compounding fault; the first pass to fix production would have introduced a regression, not a
+repair. Fixed with a membership test (epyc-orchestrator `2874ed73`); the registry data itself was
+corrected in `6390b871`. **Verified after both fixes**: the launcher emits `ngram-mod,draft-mtp` for
+`frontdoor` / `worker_general` / `architect_general`, and `enabled=False` for
+`ingest_long_context`. `stack_change_pipeline check` went from **42 errors → 2**, both remaining
+errors being live-process drift (orchestrator API :8000, whisper :9000), not configuration.
+
+### Mechanism findings that generalize past this one incident
+
+- **`--spec-draft-n-max` is a soft budget, not a cap, under a composed recipe.** Mean accepted run
+  length measured **2.36–2.67 at `n_max=2`** — i.e. the composed recipe routinely accepts *more*
+  tokens per round than the configured max, because `ngram-mod` and `draft-mtp` are two independent
+  proposers feeding one acceptance loop. Any policy written on the assumption that `n_max` bounds the
+  draft is wrong under composition.
+- **`ngram_mod_n_max` is a separate, independent knob**, untouched by the `--spec-draft-n-max` sweep
+  below — the two proposers' depth budgets do not share a control.
+- **Acceptance-rate dilution under a composed recipe is expected, not a fault.** `draft_n` counts
+  proposals from **both** proposers, so the reported acceptance rate is mechanically lower than a
+  `draft-mtp`-alone run of the same model. An acceptance gate calibrated on draft-mtp-alone numbers
+  will wrongly reject a correctly-configured composed setup; any such gate must declare which recipe
+  it was calibrated against. See [Benchmark Methodology](benchmark-methodology.md) for the sibling
+  finding that a model with no draft path running unaccelerated is at its OPTIMUM, not a BASELINE —
+  the same "what looks like a regression is actually the correct reading" shape.
+
+### Draft-max sweep (half A, composed recipe, production sampling)
+
+| model | verdict | evidence |
+|---|---|---|
+| gemma | keep `n_max=2` | unchanged from the existing default |
+| **Qwen3.6-35B** | `n_max` 4→3 gives **+9.8%** | 3/3 paired prompts, acceptance **0.470→0.538** — directional (n=3), wants confirmation before a registry edit |
+| 122B (architect) | keep `n_max=4` | — |
+| all models | `n_max` 6 and 8 are clearly bad | — |
+
+**The 122B violates the expected acceptance-falls-with-n_max relation** — its acceptance *rises* at
+`n_max=6` instead of falling, the opposite of the single-proposer monotonicity assumption. Working
+explanation: a composed recipe shifts the branch mix between the two proposers as the budget grows,
+so a rule tuned on a single-proposer (`draft-mtp`-alone) sweep does not survive composition. This
+matters because that monotonicity assumption is load-bearing for any future autopilot search over
+`n_max`.
+
+### Source References
+
+- [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — tasks SR-1 through SR-7: the sidecar-key regression, the membership-test fix, the soft-budget/independent-knob/acceptance-dilution mechanism findings, and the draft-max sweep table
+- [`progress/2026-07/2026-07-31.md`](../progress/2026-07/2026-07-31.md) — §16 (the reconciliation narrative and the `stack_change_pipeline check` 42→2 figure) and §18 (the draft-max sweep and the 122B monotonicity violation)
+- `epyc-orchestrator` commits `2874ed73` (membership-test fix) and `6390b871` (lean-registry data fix) — direct commit reads
+- [Benchmark Methodology](benchmark-methodology.md) — the OPTIMUM/BASELINE/CANDIDATE grammar that the acceptance-dilution finding parallels

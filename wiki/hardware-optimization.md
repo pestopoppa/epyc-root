@@ -2,8 +2,59 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-07-30 (**retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
+**Last compiled**: 2026-07-31 (adds the gfx90a ARGSORT kernel defect on the third-party qwentts.cpp fork — a green test suite that silently skipped the failing shapes, and the HIP-graph-capture abort on that fork that was downstream of it, not a separate bug; earlier 2026-07-30 note: **retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
 **Sources**: 93+ documents
+
+## Compiled Update — 2026-07-31 (gfx90a ARGSORT defect: a green test suite hid an invalid kernel launch)
+
+**Confidence: verified — measured on this host, third-party repo, production kernel untouched.**
+
+Fixing TTS on the MI210 (see [Multimodal](multimodal.md) for the end-to-end speech-stack story)
+required a real kernel fix, but not to *our* kernel: the third-party `qwentts.cpp` / vendored `ggml`
+fork carried a gfx90a `ARGSORT` defect that also explained an unrelated, previously-unresolved HIP
+graph-capture abort on the same fork.
+
+### The defect: a thread-count launch bug that a "passing" test suite could not see
+
+At `ne0=2048`, the fork's `ARGSORT` kernel launched **2048 threads per block against gfx90a's
+1024-thread-per-block hardware cap** — an invalid launch, repeated **705× per synthesized
+utterance**. `test-backend-ops` reported ARGSORT **46/46** and TOP_K **170/170** passing throughout,
+because the failing shapes were **silently skipped**, not exercised. A green suite is not evidence
+the covered shapes are the shapes that matter in production — this is the same class of trap as a
+filtered log masking a working codepath, mirrored onto a test harness that filters the *inputs*
+instead. The fix was a **thread-strided bitonic sort**, gated to the shapes that exceed the
+1024-thread cap. Post-fix, `test-backend-ops` passes ARGSORT **74/74** and TOP_K **292/292** — the
+count increase itself is the evidence that previously-skipped shapes are now exercised, not just that
+existing cases still pass.
+
+### HIP graphs were never a separate bug
+
+The MI210 HIP-graph-capture abort on this fork — previously an open, unexplained failure — was
+**downstream of the invalid ARGSORT launch**, not an independent graph-capture defect. With ARGSORT
+fixed, graph capture on this fork works, is **13.2% faster**, and produces **bit-identical output**.
+This generalizes the production-kernel finding immediately below (2026-07-11): HIP graphs are a clean
+win once the underlying kernels are launch-valid; when they are not, the graph-capture layer is where
+the failure surfaces, which can misdirect debugging toward "graphs are broken" when the actual defect
+is upstream of graph capture entirely.
+
+### Scope: a third-party fork, not the production kernel
+
+This defect and fix live entirely inside `/mnt/raid0/llm/qwentts.cpp`'s vendored `ggml` (fork pin
+`c044c6f0`), never in the frozen `production-consolidated-v8` tree (`67a433bf4`, untouched
+throughout). Per the experimental-kernel workflow in `CLAUDE.md`, that four-step workflow (pull
+fresh production → build → validate → deploy as a new production version) governs **our** kernel
+tree; a patch inside a third-party repo's vendored copy is not in that tree and required no
+experimental-kernel handoff. The operator's decision is to carry `qwentts.cpp` as a **pinned
+versioned dependency** (pins: qwentts.cpp `abab6b3b`, ggml fork `c044c6f0`, binary md5
+`5b858d75614dfd2f696071212ae8f2e4`) rather than merge it into the production llama.cpp fork; see
+[Multimodal](multimodal.md) for the full TTS measurement story this defect unblocked (xRT 0.86×→5.47×,
+`CodecDecode` share 64%→10.4%).
+
+### Source References
+
+- [`progress/2026-07/2026-07-31.md`](../progress/2026-07/2026-07-31.md) — §15c, the ARGSORT mechanism, the 74/74 / 292/292 counts, and the 13.2% HIP-graphs figure
+- [`multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — task S-6a (the ARGSORT fix closure) and S-3 (the one-line FP8-guard patch, a related but distinct third-party build fix on the same fork)
+- [`master-handoff-index.md`](../handoffs/active/master-handoff-index.md) — row **N27** (speech)
 
 ## Compiled Update — 2026-07-30 (NUMA placement defect; the E5 quarters-vs-full verdict is RETRACTED)
 
