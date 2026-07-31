@@ -1086,9 +1086,13 @@ now trustworthy, where before they were not. Verified against the live registry 
       `eval_quality_era` is E7 against an active E8 right now.
       Rescore was **declined** on facts: `strategy_store.db` is 0 bytes and `warm_start.py` has no
       journal references, so nothing replays old-normalization scores.
-- [ ] **W3. Regenerate `derived/stack_priors.yaml`.** The single dependency all three propagation
-      failures collapse into — spec recipe, throughput priors and topology all land here and none
-      land before. ~5 of the 23 red tests go green on their own.
+- [x] **W3. Regenerate `derived/stack_priors.yaml`** ✅ 2026-07-31 — orchestrator `ed891211`.
+      The single dependency all three propagation failures collapse into — spec recipe, throughput
+      priors and topology all landed here. 5 of the 23 red tests went green on their own (23 → 18).
+      **Required a missing hop this list did not have:** the pipeline regenerates from the LEAN
+      registry and never recompiles lean from master, so `registry_compiler --force` must run FIRST
+      or the pipeline reports success over stale input. Stack restarted and verified live on
+      `--spec-type draft-mtp`, ngram in zero processes. See SESSION APPEND (20:00–21:00Z).
 - [ ] **W4. Build `AUX_SERVICES` + per-service `LD_LIBRARY_PATH`, then register whisper.cpp and
       `tts-server`.** Not skippable: both env composers are prepend-only and every `start_*` begins
       at `os.environ.copy()`, so neither service can currently be told to ignore the global path.
@@ -1124,3 +1128,136 @@ now trustworthy, where before they were not. Verified against the live registry 
   dirs. Stage exact file paths.
 - The scoped pre-commit hook now blocks only topology/contention paths — W1 and W3 WILL be blocked
   by it, correctly, until the matrix is fresh. That ordering is intentional.
+
+---
+
+# SESSION APPEND 2026-07-31 (20:00–21:00Z) — W3 LANDED AND LIVE; W1 BLOCKED ON A BINARY PATH
+
+**Read this first if you are picking up.** The derived layer is now correct and the stack is
+running on it. The role reshaping (W1) is still entirely unapplied, and I stopped short of it
+deliberately — see the blocker below, which is structural rather than a matter of care.
+
+## W3 COMPLETE — and a missing hop the prior append did not have
+
+W3 was not one step. `stack_change_pipeline.py update` regenerates descriptors and stack priors
+**from the LEAN registry**, and nothing inside it recompiles lean from master. Running the pipeline
+alone reports `descriptors: updated / stack_priors: updated / guard: ok` while re-emitting the stale
+values, because its input was stale. That is a fail-quiet of exactly the shape this handoff has been
+cataloguing: a green result computed over the wrong input.
+
+The sequence that actually works:
+
+```bash
+cd /mnt/raid0/llm/epyc-orchestrator
+.venv/bin/python -m src.registry.registry_compiler --force            # master -> lean
+ORCHESTRATOR_STACK_NUMA_MODE=both \
+  .venv/bin/python scripts/registry/stack_change_pipeline.py update   # lean -> descriptors -> priors
+```
+
+The explicit `ORCHESTRATOR_STACK_NUMA_MODE=both` is required and correct: the compiler refuses to
+guess the realized mode with the fleet down rather than defaulting to `full` (ESC-8 kill chain A4),
+and `both` is the intended full+2-halves lineup.
+
+- [x] **W3. Regenerate the derived layer** ✅ 2026-07-31 — orchestrator `ed891211`.
+      Lean registry recompiled from master, then descriptors + priors + operator summary.
+      Landed: spec recipe `draft-mtp` on all five launching roles; q_scorer cost priors
+      frontdoor/coder_escalation 24.3 → **40.22**, worker_general 38.46 → **56.86**,
+      architect_general 12.19 → **24.00**, all live-resolved with `source=stack_priors`;
+      half-fleet topology carried through. Gates: `guard ok`, `guard_strict ok`,
+      `stack_manifest_registry ok`, `q_scorer_priors ok`.
+      Tests **23 → 18**: all three `assert 'ngram-mod,draft-mtp' == 'draft-mtp'` witnesses pass, and
+      both alias drift guards are answered. Remaining 18 are the topology-literal set plus one
+      unrelated — W9 still applies, do not bulk-green them.
+
+- [x] **Two W9 tests replaced (not adjusted)** ✅ 2026-07-31 — orchestrator `a3cfe65e`.
+      `test_worker_general_numa_policy_is_full_instance_only` asserted the halves carry **no**
+      numactl policy — the defect, not the contract — replaced with
+      `test_every_instance_interleaves_over_only_the_nodes_it_spans` (full → `interleave=all`,
+      half A → `0,1`, half B → `2,3`). `test_eval_batch_frontdoor_command_uses_pbench3_serving_shape`
+      asserted `-t 96` on port 18070, which now sits on `NUMA_HALF_A` (48 physical cores) → `48`.
+      Its `--spec-type draft-mtp` assertion was left alone and annotated: it was correct all along.
+
+## STACK IS UP AND VERIFIED ON THE CORRECTED RECIPE
+
+Started `--numa-mode both`. Verified from `/proc/<pid>/cmdline` on every live server — not from
+config, not from the launcher's intent:
+
+```
+--port 8070  --spec-type draft-mtp   ngram_occurrences=0     frontdoor  (full)
+--port 8080  --spec-type draft-mtp   ngram_occurrences=0     frontdoor  (half A)
+--port 8180  --spec-type draft-mtp   ngram_occurrences=0     frontdoor  (half B)
+--port 8072  --spec-type draft-mtp   ngram_occurrences=0     worker     (full)
+--port 8082  --spec-type draft-mtp   ngram_occurrences=0     worker     (half A)
+--port 8182  --spec-type draft-mtp   ngram_occurrences=0     worker     (half B)
+--port 8083  --spec-type draft-mtp   ngram_occurrences=0     architect_general
+```
+
+The composed recipe is gone from production. The half fleet is live.
+
+### The gate refused the first launch, correctly, and what that means
+
+`[stack-change-gate] FATAL: gate exited 1; refusing launch`. Every **config** gate was green; the
+only failure was `runtime_attestation: live process drift` on two ports:
+
+- `:8000` — the orchestrator API (uvicorn, 6 workers, running 23h)
+- `:9000` — `whisper_server.py` faster-whisper CT2 (running 12h)
+
+Both predate the session and are exactly the services **W4** exists to bring under management. I
+started with `ORCHESTRATOR_SKIP_STACK_CHANGE_GATE=1` on the judgement that the blocker is unrelated
+to what launches. **That judgement should be reviewed.** The honest reading is that the gate has no
+way to say "aux service unmanaged" separately from "unsafe to launch", so it fails at the same
+severity for both — and the escape hatch is the only available response. W4 removes the need; until
+then this bypass will recur on every start, which is how bypasses become habitual.
+
+## W1 IS BLOCKED — and not on care or on the open decisions
+
+The edit list is real and complete: **76 edits, E1–E76**, recovered from workflow `wf_7d5f6816-a67`
+and decoded byte-exactly to `/tmp/claude-1000/-workspace/26b5f442-13c1-4501-8997-1c2fb9e1c509/scratchpad/editlist.md`
+(97,339 bytes, md5 `dbdbb11d35e5beb3957dec7695088853`). Anchors are against master at `96aa90f6`,
+md5 `c6a4d2b50e203140d344b436c8f1ab22`, 9876 lines — **re-verify that md5 before applying; master
+has since moved to `596a1e24`, so every anchor needs re-derivation.**
+
+**The hard blocker (`COULD NOT VERIFY` #8), now confirmed on disk:**
+
+```
+/mnt/raid0/llm/llama.cpp/build/bin/     libggml-base.so  libggml-cpu.so  libggml.so     <- CPU ONLY
+/mnt/raid0/llm/llama.cpp/build-hip/bin/ libggml-hip.so.0.16.0                           <- the GPU one
+```
+
+W1's core moves are GPU moves — `architect_general` + `coder_escalation` → 27B dense Q8 on ROCm0,
+`worker_vision` + `vision_escalation` → Qwen3-VL-30B on ROCm0. **No registry field names the binary
+path**, and the launcher uses `build/bin`, which has no HIP backend. Applying W1 as written would
+repoint four roles to GPU and launch every one of them on the CPU binary — silently, since a missing
+HIP backend does not error, it just runs on CPU. That is the same failure class as the ggml linkage
+incident fixed this morning.
+
+**W1 therefore needs, before any registry edit:** a binary-path field in the registry (or a
+per-role launcher override) plus the manifest work, landing together. `stack_manifest.py:130-135`
+**raises at module import** on a half-edit — it takes down priors compilation and the launcher
+rather than degrading.
+
+Also still open and unchanged: **D1–D4** in the edit list (architect_critic tier; how aggressive the
+`reasoning` chain triggers should be; whether frontdoor keeps `coder`; the duplicate B3 hint), plus
+`COULD NOT VERIFY` #2 (three hardcoded `_RUNTIME_SELECTED_ROLE_ALIASES` tables override the registry
+at runtime), #4 (`architect_critic` is not a `Role` enum member → an arm with permanently zero
+training rows, which the operator forbade), and #5 (`config_applicator.py:557-562` can write
+`ngram-mod,draft-mtp` straight back into the block W1 edits).
+
+`COULD NOT VERIFY` #6 has **cleared**: no session is benching on q0/q1 now (host idle apart from
+`earlyoom`), so the contention-matrix constraint on E67/E58 is no longer a live-collision risk —
+though the matrix is still stale and W8 still applies.
+
+## Revised order for the next session
+
+1. **W4/W5** — makes the gate pass honestly and stops the bypass becoming routine. W5 first: the
+   `reload` defect means any service registered the same way inherits a kill-without-restart.
+2. **Binary-path plumbing** — the prerequisite W1 did not know it had. Without it no GPU role move
+   is real.
+3. **W1** — re-derive anchors against current master first; land registry + manifest + `roles.py` +
+   the three alias tables in one commit.
+4. W6 (guards), W7 (ratify receipts), W2 (cost era), W8 (matrix), W10 (VL figures).
+
+W2 was **deprioritized deliberately**: the operator ruled past autopilot metrics deprecated, and the
+facts support it — `strategy_store.db` is 0 bytes and `warm_start.py` has no journal references, so
+nothing replays old-normalization scores across the boundary the q_scorer correction created. The
+era plumbing is still worth building for future comparisons; it is no longer urgent.
