@@ -24,7 +24,7 @@
   ],
   "postStartCommand": "sudo groupmod -g $(stat -c '%g' /var/run/docker.sock) docker 2>/dev/null || true",
   "containerEnv": {
-    "LD_LIBRARY_PATH": "/opt/AMD/aocc-compiler-5.0.0/lib:/mnt/raid0/llm/llama.cpp/build/bin:/mnt/raid0/llm/llama.cpp-dflash/build/bin:/opt/rocm/lib",
+    "LD_LIBRARY_PATH": "/opt/AMD/aocc-compiler-5.0.0/lib:/opt/rocm/lib",
     "OMP_NUM_THREADS": null
   },
   "remoteEnv": {
