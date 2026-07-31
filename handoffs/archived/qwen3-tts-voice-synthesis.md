@@ -1,8 +1,27 @@
 # Qwen3-TTS Voice Synthesis Integration
 
+> ## ✅ 2026-07-31 — THIS BLOCKER IS RESOLVED. Archived file; do NOT resurrect it.
+>
+> This handoff was archived at **Phase 4 BLOCKED** ("unintelligible noise"), with a documented next
+> step — diff C++ vs PyTorch codec tokens — that was **never executed and is now cancelled**.
+>
+> **The blocker is resolved by a different route.** Our port hand-rolled the **codec half**; upstream
+> **`qwentts.cpp`** (ServeurpersoCom) implements the full stack — Talker, MTP CodePredictor, speaker
+> encoder, and the complete SEANet / ConvNeXt / DAC codec. On this host, CPU, Qwen3-TTS-0.6B-base
+> Q8_0 + qwen-tokenizer-12hz Q8_0: **round-trip WER 0.0 %** (synthesized, then transcribed back with
+> the incumbent whisper, word-perfect — the intelligibility check this file never got to run),
+> **TTFA 67.9 ms**, 0.86× real-time, with `CodecDecode` at **64 %** of wall.
+>
+> The C++ accelerator this file was built around is additionally **unrecoverable**: `llama-tts-qwen3`
+> source is gone from the host and the surviving 2026-04-23 binary fails with
+> `no backends are loaded`.
+>
+> **Current work lives in [`../active/multimodal-pipeline.md`](../active/multimodal-pipeline.md)**
+> (✅ TTS banner + the S-1..S-11 speech task block). This file remains **historical ledger only**.
+
 **Goal**: Add TTS to the orchestrator voice stack via Qwen3-TTS, ported to llama.cpp GGUF for CPU inference.
 
-**Status**: Phase 4 BLOCKED — C++ binary generates codec tokens at 1.5x RT, but **audio output is unintelligible noise**. Whisper transcription confirms garbled output. Need PyTorch reference comparison to find divergence.
+**Status**: ~~Phase 4 BLOCKED~~ **RESOLVED 2026-07-31 via upstream `qwentts.cpp`** — see the banner above. Historical status: C++ binary generates codec tokens at 1.5x RT, but **audio output is unintelligible noise**. Whisper transcription confirms garbled output. ~~Need PyTorch reference comparison to find divergence.~~ (Divergence explained structurally: the hand-rolled codec half.)
 
 **Priority**: MEDIUM — Fills the last missing piece (TTS) in the voice pipeline
 

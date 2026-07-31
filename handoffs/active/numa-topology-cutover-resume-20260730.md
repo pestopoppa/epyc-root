@@ -663,6 +663,26 @@ Raw: `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vl
 
 ### Speech: whisper IS deployed; TTS is not wired; the C++ TTS accelerator source is LOST
 
+> **UPDATE 2026-07-31 (later same day) — TTS now WORKS, and the recommended path changed.**
+> Upstream **`qwentts.cpp`** (`/mnt/raid0/llm/qwentts.cpp` @ `abab6b3`) implements the full stack
+> including the codec our port hand-rolled, and produced this host's **first working speech
+> synthesis**: **round-trip WER 0.0 %**, **TTFA 67.9 ms**, 0.86× real-time on CPU, with
+> `CodecDecode` at **64 %** of wall (Talker 1313.7 ms, CodePredictor 1091.8 ms). Weights:
+> `/mnt/raid0/llm/models/Qwen3-TTS-qwentts/` (1.19 GB, Q8_0 pair). It also builds with **HIP for
+> gfx90a** after a one-line FP8 guard fix in a **third-party** repo — the frozen production kernel
+> is untouched and **no experimental-kernel handoff is required**.
+>
+> **Consequences for the tasks below**: P0 (`start_tts()`) is unchanged and still open, but its
+> subject is now `qwentts.cpp` rather than the PyTorch server; the **5-dep install becomes optional**
+> (it belongs to the PyTorch fallback, which needs no deps under the C++ path); and "the C++
+> accelerator" that must not be rebuilt is **ours**, not this one. Owning detail + task block S-1..S-11:
+> [`multimodal-pipeline.md`](multimodal-pipeline.md).
+>
+> **STT also stopped depending on the network** the same day: `whisper_server.py` resolved a model
+> *name* through `huggingface_hub` on every cold start and failed **silently** (it is in
+> `OPTIONAL_AUXILIARY_ROLES`). Now pinned offline with a `WHISPER_ALLOW_DOWNLOAD=1` escape hatch;
+> loads in 1.42 s with no network.
+
 - [x] Corrected a false negative: whisper **is** on disk and **is** a managed service ✅ 2026-07-31 —
   `faster-whisper large-v3` 2.9 GB + `large-v3-turbo` 1.6 GB at `/mnt/raid0/llm/cache/huggingface/hub/`,
   launched by `orchestrator_stack.py:2123 start_whisper()` → `scripts/voice/start_whisper_server.sh`, port 9000.
@@ -672,13 +692,16 @@ Raw: `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vl
   stated 2026-07-31 that this gets fixed today. **The only prior trace is an ARCHIVED box**
   (`handoffs/archived/qwen3-tts-voice-synthesis.md:433`); `multimodal-pipeline.md:20` shows the gap only as
   ASCII art (`→ ❌ NO TTS OUTPUT`), which the dashboard cannot see.
-- [ ] **Install the 5 missing deps for the PyTorch TTS path**: `soundfile`, `fastapi`, `uvicorn`, `librosa`,
-  `scipy`. Present already: `torch 2.6.0+cpu` and `transformers 5.5.1` in
-  `/mnt/raid0/llm/venvs/llama-gguf-convert`. **Use a dedicated voice venv** — do not accrete a service's
-  dependencies onto a GGUF-converter env.
-- [ ] **Do not rebuild the C++ accelerator — its source is gone.** See `multimodal-pipeline.md:129` (patched).
-  `tts_server.py` is full PyTorch and needs no C++ binary: Talker + CodePredictor + Decoder, ~0.9× real-time at
-  48 CPU threads.
+- [ ] ~~**Install the 5 missing deps for the PyTorch TTS path**~~ — **DOWNGRADED to optional 2026-07-31.**
+  `soundfile`, `fastapi`, `uvicorn`, `librosa`, `scipy` are needed only by the **PyTorch fallback** (Path C).
+  The measured path is `qwentts.cpp`, a C++ binary with no Python runtime deps. Do this only if Path C is
+  actually chosen. If it is: present already are `torch 2.6.0+cpu` and `transformers 5.5.1` in
+  `/mnt/raid0/llm/venvs/llama-gguf-convert`, and you must **use a dedicated voice venv** — do not accrete a
+  service's dependencies onto a GGUF-converter env.
+- [x] **Do not rebuild the C++ accelerator — its source is gone** ✅ 2026-07-31 — and it is now moot: the
+  accelerator in question is **ours**, and upstream `qwentts.cpp` supersedes it outright with a correct codec.
+  Historical note: `tts_server.py` is full PyTorch and needs no C++ binary (Talker + CodePredictor + Decoder,
+  ~0.9× real-time at 48 CPU threads — an **estimate**, never measured, where `qwentts.cpp` measures 0.86× RT).
 - [ ] **The existing voice stack is invisible to the active handoffs.** `scripts/voice/` already contains
   `tts_server.py`, `create_tts_sidecar.py`, `validate_tts_e2e.py`, `whisper_server.py`, `transcribe_batch.py`,
   `test_latency.py`, `start_whisper_server.sh` — named **only** in archived docs. Meanwhile
@@ -722,3 +745,50 @@ Raw: `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vl
 - [ ] 6 of 35 topology test failures fixed and **still uncommitted** — the pre-commit gate blocks *all* commits to
   `epyc-orchestrator`, test-only included, until the contention matrix is refreshed. **97 failures total** across
   the suite (the 35 are the topology subset); the denominator was never recorded until now.
+
+### Temperature methodology — SCOPED, do not over-apply (operator ruling 2026-07-31)
+
+Every benchmark run 2026-07-30/31 used `temperature=0.0`. Production serves at
+non-zero (vision roles `0.2`; Qwen3-TTS defaults `0.9`). Standing rule is
+production temperature + fixed seed, so those runs are formally off-recipe.
+
+**Operator ruling: do NOT re-run the matrix.** Re-running batch x concurrency x
+context x spec x ngram at non-zero temperature is disproportionate. Instead:
+
+- [ ] **Once vision, STT and TTS are finalized, re-run ONLY the headline numbers
+  at production temperature + seed 42.** That is §01 of the artifact — one
+  single-stream cell per model per shape. Nothing else.
+- [ ] Leave the concurrency/context/spec surfaces at their measured values and
+  label them `temp=0.0` in the provenance table, rather than re-measuring.
+- Rationale for not re-running the ngram cells: the composed-ngram result is
+  −1.6% mean across four cells; temperature is not a plausible sign-flip for a
+  drafter-composition effect, and the design decision to carry ngram is made on
+  the repetitive-context argument, not on that margin.
+- **Greedy is not merely unrepresentative — it has its own failure mode.**
+  `temperature=0.0` sent Qwen3-ASR into a degenerate repetition loop
+  (`finish_reason: length`, 400 tokens collapsing to 1 word). Any future
+  sampling-sensitive benchmark starts at production temperature.
+
+### Production-temperature re-runs — IN FLIGHT 2026-07-31 (paths only, NO numbers)
+
+The re-runs the ruling above authorises are **executing now**. Recorded as paths so a
+later reader can find them; **no result exists yet and none may be quoted**.
+
+| track | lane | output path | state at wrap-up |
+|---|---|---|---|
+| Vision model finalization on MMMU at production temperature | q3 (GPU) | `/mnt/raid0/llm/tmp/vision_final_results.json` | running — file exists, being written |
+| TTS GPU bench (`qwentts.cpp`), queued behind the vision run | q3 (GPU) | `/mnt/raid0/llm/tmp/tts_bench_results.txt` | queued — file not yet created |
+| Half-instance headline numbers at production temperature | q0+q1 (CPU) | `/mnt/raid0/llm/tmp/halfa_headline_results.json` | running — file not yet created |
+
+Harness for the TTS leg: `/mnt/raid0/llm/tmp/tts_bench.sh`.
+
+- [ ] **When each track lands, fold its result into §01 of the artifact and flip the
+  headline task above.** Until then every index row quoting a headline number must
+  carry the `temp=0.0` label — the re-run has been *started*, not *completed*, and a
+  half-updated provenance table is worse than a consistently-labelled stale one.
+- [ ] **TTS is no longer a blocker on this gate — it is a measured capability.** The
+  ruling's precondition "once vision, STT and TTS are finalized" reads differently now:
+  STT is measured (WER 2.35 %, ~4.2 s floor) and TTS is measured (round-trip WER 0.0 %,
+  TTFA 67.9 ms, 0.86× RT CPU via `qwentts.cpp`). The remaining unfinalized arm is
+  **Qwen3-ASR**, whose 72.14 % WER is a configuration defect with a named suspect (the
+  Q8_0 audio projector). See [`multimodal-pipeline.md`](multimodal-pipeline.md) S-6..S-10.

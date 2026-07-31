@@ -390,3 +390,131 @@ either direction.
 - [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — the six folded corrections and the vendor-default-resolution sting (the GPU defect blanks the first resolution the vendor recommends)
 - [`multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — Z-Image-Turbo scoped as a latency-only candidate; the distill-patch LoRA conversion mechanism and its untested assumptions
 - [`gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) — the ROCm f16-overflow campaign gap and the f32-precision candidate fix; the mitigation-matched-control rule
+
+## Compiled Update — 2026-07-31: TTS is solved, and the fix was to stop writing our own codec
+
+**Confidence: verified (measured on this host).** The long-standing TTS blocker — archived at
+`Phase 4 BLOCKED` with the note that our Qwen3-TTS llama.cpp port "produced unintelligible noise" —
+is resolved. It was **not** resolved by the debug step the handoff documented (diff C++ vs PyTorch
+codec tokens, never executed, now cancelled). It was resolved by discarding our port.
+
+### The generalizable lesson: we hand-rolled the half that broke
+
+Qwen3-TTS is two halves — an LM half (Talker + MTP CodePredictor) and a **codec half**
+(SEANet / ConvNeXt / DAC vocoder). Our port implemented the LM half against llama.cpp's existing
+machinery and hand-rolled the codec. The noise came from the hand-rolled half. Upstream
+**`qwentts.cpp`** (ServeurpersoCom) implements **both**, including the speaker encoder, and works
+first try.
+
+This is the same shape as several entries already in this page — the LocateAnything PBD analysis
+("a GGUF would run only the AR-fallback path, forfeiting the ~2.5× that is the model's entire
+value") and the Qwen3-TTS MTP-codec precedent it explicitly cites. The recurring rule:
+
+> **When a model's value lives in a custom decode loop or a neural codec, porting the transformer
+> half buys nothing. Check whether someone has already ported the whole thing before writing any of
+> it.**
+
+The cost of not checking here was months of a blocked handoff plus a C++ accelerator whose source
+was subsequently lost — and which, it turns out, never worked.
+
+### Measured — first working speech synthesis on this host, ever
+
+CPU, `Qwen3-TTS-0.6B-base` Q8_0 + `qwen-tokenizer-12hz` Q8_0 (1.19 GB total):
+
+| metric | value | why it matters |
+|---|---|---|
+| **round-trip WER** | **0.0 %** | synthesized a sentence, transcribed it back with the incumbent whisper, word-perfect. This *is* the intelligibility check the archived handoff never ran — the one that would have caught the noise. |
+| **TTFA** | **67.9 ms** | time to first audio; viable for streaming voice |
+| total wall | 6820.7 ms for 5.84 s audio = **0.86× real-time** | faster than real-time on CPU alone |
+| **`CodecDecode`** | **4362.9 ms = 64 % of wall** | the bottleneck is the **convnet vocoder, not the LM** |
+| Talker / CodePredictor | 1313.7 ms / 1091.8 ms | together only 35 % |
+
+**The profile is the finding.** A speech stack whose cost is 64 % convnet is a *GPU* workload, not
+an LM-optimization workload — which inverts where effort should go. A GPU bench was in flight at
+compile time; no number is recorded here for it.
+
+### A third-party patch is not a kernel change — and the distinction is worth stating
+
+Building `qwentts.cpp` with HIP for gfx90a needed exactly one line: its vendored
+`ggml/src/ggml-cuda/vendors/hip.h` guarded FP8 on `HIP_VERSION >= 60200000`, but the OCP-format
+`__hip_fp8_e4m3` type only exists from **ROCm 6.3**. This host runs **6.2.0-66**, which ships only
+`__hip_fp8_e4m3_fnuz` — so the header included `hip_fp8.h` and then typedef'd a nonexistent type
+(`error: unknown type name '__hip_fp8_e4m3'`). Raising the guard to `60300000` is free here because
+**gfx90a has no FP8 hardware**; kernels gate on `FP8_AVAILABLE` and fall back.
+
+The governance point: the experimental-kernel workflow (fresh-pull → build → validate → deploy as a
+new production version) governs **our** kernel tree. A patch inside a third-party repo's vendored
+copy is not in that tree, touches no production binary, and requires no experimental-kernel handoff.
+Production `production-consolidated-v8` @ `67a433bf4` was untouched throughout.
+
+### ASR: "it runs" and "it works" are different findings
+
+`ggml-org/Qwen3-ASR-1.7B-GGUF` serves on the MI210 through `llama-server` with **zero kernel
+change** — the frozen v8 kernel already ships `tools/mtmd/models/qwen3a.cpp` and
+`libmtmd.so.0.0.10107`. That is a real, verified capability finding.
+
+Its **WER 72.14 % is not a model verdict.** The failure has a signature that rules out quality:
+utterances over ~11 s degenerate to literal `????????` while short ones transcribe perfectly, and
+raising context 8k → 65536 changed WER by less than 0.01. A length-thresholded cliff with a
+context-insensitive response is a **configuration** defect. Named suspect: the Q8_0-quantized audio
+projector (the bf16 projector exists and is untested). Recording the *reason* rather than the number
+is what keeps this from being filed as "Qwen3-ASR is bad" — the
+`feedback_classify_eval_failures_by_reason` discipline applied to a serving config.
+
+Where it did work it was roughly twice as fast per request as the incumbent (median 2.14 s vs
+whisper's ~4.2 s floor), which is why the defect is worth resolving rather than abandoning.
+
+### STT: an optional role failing silently is worse than a required role failing loudly
+
+`whisper_server.py` passed a model **name**, not a path, so `faster-whisper` resolved it through
+`huggingface_hub` and reached out to the network on **every cold start**. Because whisper sits in
+`OPTIONAL_AUXILIARY_ROLES`, the failure mode was **silent**: no network, no speech, no error anyone
+would see. Fixed with `local_files_only=True` plus `HF_HUB_OFFLINE`/`TRANSFORMERS_OFFLINE`, gated
+behind an explicit `WHISPER_ALLOW_DOWNLOAD=1`; cold load is 1.42 s offline.
+
+The durable lesson generalizes past speech: **a model referenced by name is a network dependency**,
+and combining that with fail-silent optionality produces an outage nobody detects. Pair with
+`feedback_fail_open_defaults_conceal_their_own_corruption`.
+
+### Source References
+
+- [`multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — the ✅ TTS-unblocked banner, Path E vs Path C, and the S-1..S-11 speech task block (S-7 bf16 projector, S-9 `start_tts()` wiring, S-10 whisper-vs-Qwen3-ASR decision)
+- [`../handoffs/archived/qwen3-tts-voice-synthesis.md`](../handoffs/archived/qwen3-tts-voice-synthesis.md) — the archived `Phase 4 BLOCKED` record, now carrying a resolution pointer; retained as historical ledger, explicitly not resurrected
+- [`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-topology-cutover-resume-20260730.md) — §Speech (the whisper false-negative correction, the `start_tts()` gap, the lost accelerator source) and the scoped temperature ruling that governs the in-flight production-temperature re-runs
+- [`progress/2026-07/2026-07-31.md`](../progress/2026-07/2026-07-31.md) — full session record: measurements, the FP8 guard diff, the ASR failure signature, and the two operational incidents
+- [`master-handoff-index.md`](../handoffs/active/master-handoff-index.md) — rows **N27** (speech) and **N28** (speculative decoding is launch-fixed)
+
+## Compiled Update — 2026-07-31: speculative decoding has no per-request surface on v8
+
+**Confidence: verified (read from frozen production source; not empirically probed).**
+
+Filed here because it constrains every pipeline that hoped to vary drafting per request. On
+`production-consolidated-v8` @ `67a433bf4`:
+
+- **`--spec-type` is launch-only** (`common/arg.cpp:3935`). Which drafters are active is fixed when
+  the server starts.
+- **The per-request fields are compiled out.** `tools/server/server-schema.cpp` registers
+  `speculative.n_max` (208), `n_min` (212), `p_min` (216), `speculative.type` (220) and
+  `ngram_size_n`/`size_m`/`min_hits` (226/229/232) — **inside `#if 0`, opened at 206 and closed at
+  234**, under the upstream comment *"to keep things simple, we disable speculative parameter
+  adjustments for now"*.
+
+**The trap that makes this worth compiling.** `tools/server/README.md` shows `speculative.n_max` in
+JSON at three places (768-820, 917-967, 982-1032) — but those are **`generation_settings` echoes of
+the launch defaults**, not accepted request fields. Reading the schema registration and the README
+together produces a confident, wrong conclusion that the knob is live. This is
+`feedback_verify_negatives_before_concluding_absence` in mirror image: a *positive* existence claim
+built from two artifacts that each look like evidence and neither of which is.
+
+Consequences: autopilot cannot dial the draft budget per call, cannot skip drafting for a single
+request, and cannot disable ngram selectively (that needs separate server instances). Enabling any
+of it is a kernel change — a new production version through the four-step workflow, never a patch to
+the frozen tree. The composed recipe's ~1.6 % cost is therefore unconditional on every drafted
+request, and its sole justification (the repetitive-context upside) was retracted the previous day.
+
+### Source References
+
+- [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — the source-read section and tasks SW-1..SW-4 (SW-2 confirms against a live server; SW-3 decides whether a per-request surface is worth carrying into v9)
+- [`inference-acceleration-index.md`](../handoffs/active/inference-acceleration-index.md) — the structural-fact banner above the retracted ngram row
+- [`master-handoff-index.md`](../handoffs/active/master-handoff-index.md) — row **N28**
+- [`progress/2026-07/2026-07-31.md`](../progress/2026-07/2026-07-31.md) — §10, with the exact line numbers and the README-echo explanation

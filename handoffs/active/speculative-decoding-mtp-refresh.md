@@ -107,6 +107,47 @@ That is nearly worthless as evidence: it measures the filler, not the workload. 
 text confirmed the *direction* but **moved the number**. **Every ngram claim must carry its
 corpus and its repeated-5-gram fraction.**
 
+## What is and is NOT runtime-switchable — read from source 2026-07-31 (v8, `67a433bf4`)
+
+Operator question, answered from the frozen production source rather than from a benchmark.
+
+**`--spec-type` is LAUNCH-ONLY.** Which drafters are active is fixed at server start
+(`common/arg.cpp:3935`). **Autopilot cannot switch drafter per request.**
+
+**⚠ CORRECTION to the working assumption — the per-request draft-budget fields are COMPILED OUT.**
+It is easy to read `tools/server/server-schema.cpp` and conclude the budget is per-request: the file
+*does* register `speculative.n_max` (line 208), `speculative.n_min` (212), `speculative.p_min` (216),
+`speculative.type` (220) and `speculative.ngram_size_n/size_m/min_hits` (226/229/232). **But the
+entire block is inside `#if 0` opened at line 206 and closed at line 234**, under the upstream
+comment at line 205:
+
+```
+// TODO: to keep things simple, we disable speculative parameter adjustments for now
+```
+
+So on the production binary **there is no per-request speculative surface at all**. The
+`speculative.n_max` keys visible in `tools/server/README.md` (768-820, 917-967, 982-1032) are
+**`generation_settings` echoes of the launch defaults**, not accepted request fields — which is
+precisely how this gets misread. A grep of `tools/server/*.cpp` confirms no other per-request parsing
+path exists.
+
+**Consequences (all four matter for autopilot design):**
+
+1. Autopilot **cannot** dial the draft budget per call on v8, and **cannot** send `n_max: 0` to skip
+   drafting for one request. Enabling that is a **kernel change** — i.e. a new production version
+   built and validated per CLAUDE.md's four-step workflow, never a patch to the frozen tree.
+2. Even if the fields were live, `n_max: 0` would kill **both** arms together. **ngram cannot be
+   disabled selectively** — selective ngram requires **separate server instances**.
+3. The composed recipe's **~1.6 % cost is therefore paid on every drafted request, unconditionally**.
+   Its whole justification was the repetitive-context upside — and that upside is **retracted** (see
+   the ⛔ section above). Nothing is left on the benefit side of that trade.
+4. Any future "per-request drafting policy" design must budget for a kernel change *first*, not
+   assume a config knob.
+
+**Not empirically probed.** No request was sent — three measurement tracks were live on the host.
+The claim rests on source at the exact lines cited; SW-2 below closes the loop cheaply when a lane
+is free.
+
 ## Outstanding Tasks (priority order)
 
 - [x] **T1 — gate-bench gemma-4-31B DENSE: DONE 2026-06-22 (host quiesced).** Result **~1.84× at draft_max=3** (see Results below). Speed win confirmed + survives noise; **corrects the prior single-run ~2.98× to ~1.84×**. Remaining for Tier-B promotion: multi-prompt reps + the quality (Leviathan byte-exact) suite + acceptance-rate capture. Operator decision: promote `gemma4_31b_q4km_mtp` only after the quality pass.
@@ -115,6 +156,10 @@ corpus and its repeated-5-gram fraction.**
 - [x] **NG2 — ~~deploy `ngram-mod` on `ingest_long_context`~~ CANCELLED ✅ 2026-07-31** (artifact; +3.3% at r=1 is inside noise). The registry note that `acceleration: {type: none}` means *no draft-model path* rather than *no speculation possible* is still worth making. Original text: `1.15×`, `.812` acceptance, and it is **the only speculation an SSM hybrid with no draft-model path can have**. Update the registry's `acceleration: {type: none}` so it stops reading as "this role cannot be accelerated".
 - [x] **NG3 — do NOT deploy ngram ANYWHERE ✅ 2026-07-31** (generalised from two roles to all roles by the retraction). Original text:, and record why in the registry rather than leaving it to be rediscovered: measured no gain, consistent with the acceptance-headroom principle (`.754` and `.650` incumbents). *(This is a decline, filed as a task so the next reader does not re-run it.)*
 - [x] **NG4 — GPU sweep landed and was RE-SCORED run-1-only ✅ 2026-07-31.** 27B GPU: `draft-mtp` 47.79/40.46/39.20/31.97 vs `+ngram` 47.80/40.36/39.61/31.98 across 2k/8k/16k/32k — a wash. 122B IQ2 @16.5k: **−17.4%**. Original text: ngram **is** supported on GPU, and the v8 HIP build works (`ROCm0: AMD Instinct MI210`, version `10107` / `67a433bf4` — the same SHA production serves on CPU). The sweep was running at session close and is **NOT reportable**; do not quote a GPU ngram figure until it lands.
+- [x] **SW-1 — answer the operator's runtime-switchability question from source** ✅ 2026-07-31 — `--spec-type` is launch-only; the per-request `speculative.*` fields exist in `server-schema.cpp` but sit inside `#if 0` (206-234) and are **not compiled in**. See the section above.
+- [ ] **SW-2 — confirm SW-1 against a live server** when a lane is free and no protected bench region is held: POST a completion carrying `speculative.n_max` and verify the server neither honours nor rejects it (unknown fields are dropped). Cheap; closes a source-only claim. **Do not run this against a warm server on a repeated prompt** — that is the exact shape that produced the retracted ngram result twice.
+- [ ] **SW-3 — decide whether a per-request draft-budget surface is worth carrying into v9.** Enabling the `#if 0` block is a kernel change, so it must ride a full experimental → validate → new-production cycle, never a patch to the frozen v8 tree. Inputs: (a) with ngram retracted, is there any remaining request class where skipping the draft pays? (b) does the ~1.6 % unconditional cost of the composed recipe justify the change on its own? File the answer here even if it is "no", so the question is not rediscovered.
+- [ ] **SW-4 — record in the registry that composed spec-dec is launch-fixed**, so a future reader does not design an autopilot policy around a knob that does not exist. Pairs with the NG3 decline note.
 - [ ] **NG5 — carry corpus + repeated-5-gram fraction on every ngram claim — STILL OPEN, and now known INSUFFICIENT.** These prompts passed screening at 6–17% repeated 5-grams and were still contaminated, because the copied text was the model's own *generation*. The rule must extend to: never replicate a context-reading drafter against a live server on a repeated prompt, and always run a non-context control arm. Original text:, in this handoff, the registry, and any index row that quotes one. Synthetic filler inflated the same measurement to a nearly meaningless `2.52×`.
 
 ## Results — gemma-4-31B dense MTP gate-bench (2026-06-22)

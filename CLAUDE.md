@@ -77,6 +77,7 @@ The [measurement constitution](MEASUREMENT.md) is authoritative (protocol annexe
 
 ## Process Management
 
+- **Kill only PIDs you captured yourself. NEVER `pkill`/`pgrep` on a name pattern on this host** — it is a shared box, so any name pattern is a wildcard over other sessions' processes, and a guard process's argv necessarily contains the names it guards (origin: INC-20260731-broad-process-pattern-kills — `llama-server -m` killed another agent's server twice, and `earlyoom` died because its command line contains `--ignore ^(llama-server|sd-server)$`).
 - After killing a process, **verify it is dead** (`ps -p <pid>`); escalate SIGTERM → SIGKILL; never report success until confirmed.
 - Before declaring a fix deployed to a long-lived process, check the running process isn't stale (`ps -o lstart -p <pid>` vs file mtimes); restart if needed.
 - **API reload vs full stack**: orchestrator API (uvicorn :8000) restarts via `orchestrator_stack.py reload orchestrator` — do NOT reload the whole stack. API-only: do NOT stop autopilot (it reconnects). Full stack: stop autopilot first.

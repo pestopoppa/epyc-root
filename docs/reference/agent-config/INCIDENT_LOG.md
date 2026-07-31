@@ -71,3 +71,24 @@ During post-reboot bringup, re-spawned mains were unreachable until the nudge ra
 inherited from their destroyed predecessors expired — the limit keys on roster id, not window
 instance. Rule fed: the narrow lower `--min-interval-s` exception
 (`docs/guides/agent-workflows/coordinator-escalation.md`).
+
+## INC-20260731-broad-process-pattern-kills
+A broad process pattern (`llama-server -m`) used to "clean up" a benchmark killed **another agent's
+running server — twice in one day**. Separately, `earlyoom` was killed by a pattern sweep because
+its own command line contains `--ignore ^(llama-server|sd-server)$`: the pattern matched the guard
+process whose entire job is protecting the fleet from OOM kills. Both were recovered. The failure is
+structural, not careless — on a shared box any name-based pattern is a wildcard over other sessions'
+processes, and a guard's argv necessarily contains the names it guards. Rule fed: kill only PIDs you
+captured yourself; never `pkill`/`pgrep` on a name pattern on this host (CLAUDE.md § Process
+Management; `agents/shared/OPERATING_CONSTRAINTS.md` § Inference and Benchmarks).
+
+## INC-20260731-warm-server-repeat-prompt-recurrence
+Hours after the `ngram-mod` 2.80× result was retracted as a warm-context self-copy artifact, a new
+benchmark (the speculative-toggle test) **repeated ONE prompt against a warm server again** and
+reproduced the exact same artifact. It was caught before publication and the numbers were discarded.
+The lesson is that the retraction did not generalize on its own: the earlier fix was written as
+prompt *screening* (repeated-5-gram fraction), which is necessary but not sufficient, because the
+copied text is the model's own **generation**, not the prompt. Rule fed: never replicate a
+context-reading drafter against a live server on a repeated prompt, and always include a
+non-context control arm (`draft-mtp` or `none`) **structurally in the harness** rather than as
+operator discipline — NG5/SW-2 in `handoffs/active/speculative-decoding-mtp-refresh.md`.

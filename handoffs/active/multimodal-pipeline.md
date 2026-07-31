@@ -1,10 +1,54 @@
 # Multimodal Pipeline: Vision + TTS + ASR
 
 **Created**: 2026-02-18 (consolidated from `vision-pipeline.md` + `qwen3-tts-voice-synthesis.md` + `minicpm-o-4_5-integration.md`)
-**Status**: Mixed — Vision live-server/tool/API/OpenAI-compat path validated, TTS blocked, ~~MiniCPM-O testing pending~~ **MiniCPM-O DEPRECATED + DELETED 2026-07-31**
+**Status**: Mixed — Vision live-server/tool/API/OpenAI-compat path validated, ~~TTS blocked~~ **TTS SOLVED 2026-07-31 (qwentts.cpp, round-trip WER 0.0%)**, ~~MiniCPM-O testing pending~~ **MiniCPM-O DEPRECATED + DELETED 2026-07-31**, **ASR arm opened 2026-07-31 (Qwen3-ASR on MI210, config-broken)**
 **Priority**: LOW
 
 ---
+
+> ## ✅ TTS UNBLOCKED — 2026-07-31 — first working speech synthesis on this host, ever
+>
+> **The long-standing TTS blocker is resolved.** It was NOT resolved by the documented next step
+> (diff C++ vs PyTorch codec tokens); it was resolved by replacing our port with the upstream one.
+>
+> **Root cause of the noise.** Our home-rolled Qwen3-TTS llama.cpp port hand-rolled the **codec
+> half**. Upstream **`qwentts.cpp`** (ServeurpersoCom) implements the **full** stack — Talker, MTP
+> CodePredictor, speaker encoder, and the complete SEANet / ConvNeXt / DAC codec. The unintelligible
+> output came from the half we wrote ourselves. Cloned to `/mnt/raid0/llm/qwentts.cpp` (upstream tip
+> `abab6b3`); builds **CPU** and now also **HIP for gfx90a**.
+>
+> **Measured — CPU, Qwen3-TTS-0.6B-base Q8_0 + qwen-tokenizer-12hz Q8_0** (1.19 GB total,
+> `/mnt/raid0/llm/models/Qwen3-TTS-qwentts/`):
+>
+> | metric | value |
+> |---|---|
+> | **round-trip WER** (synthesize → transcribe with the incumbent whisper) | **0.0 % — word-perfect** |
+> | **TTFA** (time to first audio) | **67.9 ms** — viable for streaming voice |
+> | total wall for 5.84 s of audio | 6820.7 ms = **0.86× real-time** |
+> | **`CodecDecode`** | **4362.9 ms = 64 % of total — THE bottleneck** |
+> | Talker | 1313.7 ms |
+> | CodePredictor | 1091.8 ms |
+>
+> The round-trip WER **is** the intelligibility check the archived handoff never got to run. The
+> bottleneck is the **convnet vocoder, not the LM** — precisely the workload a GPU targets.
+>
+> **A GPU TTS bench is IN FLIGHT** (queued on the q3 GPU lane) → `/mnt/raid0/llm/tmp/tts_bench_results.txt`;
+> harness `/mnt/raid0/llm/tmp/tts_bench.sh`. **No numbers exist yet — do not quote any.**
+>
+> **The one patch required is NOT a kernel change.** `qwentts.cpp/ggml/src/ggml-cuda/vendors/hip.h`
+> guarded FP8 on `HIP_VERSION >= 60200000`, but the OCP-format `__hip_fp8_e4m3` type only exists from
+> **ROCm 6.3**; we run **6.2.0-66**, which ships only `__hip_fp8_e4m3_fnuz` → `error: unknown type
+> name '__hip_fp8_e4m3'`. Guard raised to `60300000`; free for us because **gfx90a has no FP8
+> hardware**. This is a **third-party repo**. The frozen production kernel `production-consolidated-v8`
+> @ `67a433bf4` is **untouched** and **no experimental-kernel handoff is needed** — CLAUDE.md's
+> four-step workflow governs *our* kernel tree, which this patch is not in.
+>
+> **Do not revive the old C++ accelerator.** `llama-tts-qwen3` source is gone from the host; only a
+> 2026-04-23 binary survives and it fails with `no backends are loaded`. Stock `llama-tts` misreads
+> the weights as OuteTTS and emits unrelated tokens with no WAV.
+>
+> Historical blocker record: [`../archived/qwen3-tts-voice-synthesis.md`](../archived/qwen3-tts-voice-synthesis.md)
+> (archived — carries a pointer to this resolution; do **not** resurrect it).
 
 > ## ⛔ SUPERSEDING NOTE — 2026-07-31 — MiniCPM-o is DEPRECATED; weights DELETED
 >
@@ -56,16 +100,20 @@
 | Modality | Status | Blocker |
 |----------|--------|---------|
 | **STT (ASR)** | Production | faster-whisper large-v3-turbo on port 9000, int8. ~~2.8x RT~~ **CORRECTED 2026-07-31 by first local measurement** (LibriSpeech test-clean, n=100): **WER 2.35%** (lower=better) · **xRT is length-dependent and the single figure was meaningless** — wall time is ~constant at **4.18s + 0.010xaudio_s**, i.e. a **~4.2s FIXED per-request floor** (whisper pads to 30s mel windows). Median xRT 0.80x for <5s utterances, 1.49x for 5-10s, 2.89x for 10-20s, 7.22x on a 57s clip. **The 4.2s floor makes CPU whisper unusable for conversational voice regardless of xRT.** Artifact: `/mnt/raid0/llm/tmp/stt_wer_results.json`, harness `stt_wer.py`. |
-| **Vision** | Live-server analyzer path, tool registry, API endpoint smoke, and OpenAI-compatible `image_url` data-URL bridge passed | No active blocker; remote-image fetching or multi-image support would be a new feature |
-| **TTS** | Blocked | Qwen3-TTS llama.cpp port outputs noise; ~~MiniCPM-O TTS untested~~ → MiniCPM-O TTS **abandoned 2026-07-31**; use the dedicated CPU Qwen3-TTS path (`scripts/voice/tts_server.py`) |
+| **STT — offline** | **FIXED 2026-07-31** | `whisper_server.py` passed a model **NAME**, so `huggingface_hub` reached huggingface.co on every cold start; whisper is in `OPTIONAL_AUXILIARY_ROLES` so it failed **silently**. Now `local_files_only=True` in `whisper_server.py` + `HF_HUB_OFFLINE=1`/`TRANSFORMERS_OFFLINE=1` in `start_whisper_server.sh`, both overridable only by an explicit `WHISPER_ALLOW_DOWNLOAD=1`. Verified: loads in **1.42 s** with no network. Repo: `epyc-inference-research`. |
+| **ASR (Qwen3-ASR, GPU)** | Runs; **configuration broken** | `ggml-org/Qwen3-ASR-1.7B-GGUF` serves on the MI210 via `llama-server` with **ZERO kernel change** — the frozen v8 kernel already ships `tools/mtmd/models/qwen3a.cpp` + `libmtmd.so.0.0.10107` (verified). **WER 72.14 % is NOT a model verdict**: every utterance over ~11 s degenerates to literal `????????` while short ones transcribe perfectly, and 8k→65536 context changed nothing (WER identical to 2 d.p.). **Next suspect: the Q8_0-quantized audio projector**; the bf16 projector is on disk and untested. Where it worked: xRT **4.02**, wall/request median **2.14 s** vs whisper's 4.2 s floor. |
+| **Vision** | Live-server analyzer path, tool registry, API endpoint smoke, and OpenAI-compatible `image_url` data-URL bridge passed | No active blocker; remote-image fetching or multi-image support would be a new feature. **A vision finalization run on MMMU at production temperature is IN FLIGHT** → `/mnt/raid0/llm/tmp/vision_final_results.json` (no numbers yet). |
+| **TTS** | ~~Blocked~~ **WORKING 2026-07-31** | Resolved via upstream **`qwentts.cpp`** — round-trip **WER 0.0 %**, **TTFA 67.9 ms**, 0.86× real-time on CPU; `CodecDecode` is 64 % of wall. See the ✅ banner above. Our own port's noise came from its hand-rolled codec half. ~~MiniCPM-O TTS untested~~ → MiniCPM-O TTS **abandoned 2026-07-31**. |
 | ~~**Multimodal (MiniCPM-O)**~~ | **DEPRECATED + DELETED 2026-07-31** | Not a blocker — closed. Vision 31/42 vs incumbent 35/42; speech superseded by dedicated Qwen3-TTS + Qwen3-ASR. See banner above. |
 
 ```
-Current voice loop:
-  Mic → Whisper(9000) → text → LLM(8080) → response text → ❌ NO TTS OUTPUT
+Current voice loop (2026-07-31):
+  Mic → Whisper(9000) → text → LLM(8080) → response text → TTS ✅ WORKS (qwentts.cpp, CPU, offline)
+                                                              ⚠ not yet a managed service
 
-Target:
-  Mic → Whisper(9000) → text → LLM(8080) → response text → TTS(9002) → Speaker
+Remaining gap is WIRING, not capability:
+  - no start_tts() in orchestrator_stack.py  (port 9002 reserved)
+  - GPU TTS bench in flight (CodecDecode is 64% of wall — the GPU target)
 ```
 
 ---
@@ -158,9 +206,17 @@ curl -X POST localhost:8000/v1/vision/analyze \
 
 ## 2. TTS: Two Competing Paths
 
-### Path A: Qwen3-TTS via llama.cpp (BLOCKED)
+### Path A: Qwen3-TTS via llama.cpp (~~BLOCKED~~ → **SUPERSEDED 2026-07-31 by Path E, `qwentts.cpp`**)
 
-**Status**: C++ binary generates codec tokens at 1.5x RT, but audio output is unintelligible noise.
+> **SUPERSEDED 2026-07-31 — and the blocker is EXPLAINED, not merely bypassed.** Path A is our
+> home-rolled port. It hand-rolled the **codec half**, which is where the noise came from. Upstream
+> **`qwentts.cpp`** implements the full stack (Talker + MTP CodePredictor + speaker encoder +
+> complete SEANet/ConvNeXt/DAC codec) and produces **round-trip WER 0.0 %** on this host. The
+> documented "diff C++ vs PyTorch codec tokens" debug step is therefore **cancelled** — it would
+> debug code we no longer need. Path A's binary is additionally unrebuildable (source lost). See the
+> ✅ banner at the top of this file.
+
+**Status (historical)**: C++ binary generates codec tokens at 1.5x RT, but audio output is unintelligible noise.
 
 Architecture (3 sub-models):
 - **Talker**: 28-layer Qwen3-style transformer (0.6B) — standard tensor layout, GGUF-convertible
@@ -174,7 +230,7 @@ Artifacts on disk:
 - C++ binary: ⛔ **PATH IS DEAD (verified 2026-07-31).** `/mnt/raid0/llm/llama.cpp-experimental/build/bin/llama-tts-qwen3` **does not exist**. The only surviving copy is `/mnt/raid0/llm/llama.cpp-experimental-preserved-20260724T135832Z/build-archive-2026-04-23/bin/llama-tts-qwen3` (418 KB, built 2026-04-23), and it **fails to run**: `no backends are loaded` even with `LD_LIBRARY_PATH` and `GGML_BACKEND_PATH` pointed at its own `.so`s. Worse, **the C++ SOURCE no longer exists anywhere on this host** — no `tts-qwen3*.cpp`, no `tools/tts-qwen3/` source dir, and branch `feature/qwen3-tts-support` in the production tree contains **none** of it (its tip is upstream commit `079feab9e`). Only stale CMake artifacts survive under the preserved tree's `build-*/tools/tts-qwen3/`. **This accelerator cannot be rebuilt from what is on disk.** It is also in a `-preserved-<timestamp>` directory, i.e. exactly the kind of path that gets reclaimed. USE THE PYTORCH PATH INSTEAD — `scripts/voice/tts_server.py` is a complete PyTorch implementation needing no C++ binary (see below).
 - Branch: `feature/qwen3-tts-support` in llama.cpp-experimental
 
-**Next debug step**: Generate PyTorch reference codec tokens, compare vs C++ token-by-token to find divergence point.
+**Next debug step**: ~~Generate PyTorch reference codec tokens, compare vs C++ token-by-token to find divergence point.~~ **CANCELLED 2026-07-31** — superseded by `qwentts.cpp`, which already ships a correct codec. The divergence point is known structurally (our hand-rolled codec half); the diff has nothing left to teach.
 
 ```bash
 # Quick test (codec tokens only)
@@ -213,12 +269,37 @@ running on **CPU** at zero GPU VRAM. ASR is already production (faster-whisper l
 port 9000, a managed service via `orchestrator_stack.py start_whisper()`), and Qwen3-ASR is
 supported by the frozen v8 kernel.
 
-**Revised recommendation**: the TTS path is the existing `scripts/voice/tts_server.py` (full
-PyTorch: Talker + CodePredictor + Decoder, ~0.9× real-time at 48 CPU threads). The real gap is
-that `start_tts()` was never wired into `orchestrator_stack.py` — tracked as P0 in
-[`numa-topology-cutover-resume-20260730.md`](numa-topology-cutover-resume-20260730.md) §Speech,
-along with the 5 missing deps (`soundfile`, `fastapi`, `uvicorn`, `librosa`, `scipy`, in a
-dedicated voice venv). Do not rebuild the C++ accelerator — its source is lost.
+~~**Revised recommendation**: the TTS path is the existing `scripts/voice/tts_server.py` (full
+PyTorch: Talker + CodePredictor + Decoder, ~0.9× real-time at 48 CPU threads).~~ — **SUPERSEDED
+2026-07-31 by Path E (`qwentts.cpp`), which is MEASURED where the PyTorch path is only estimated.**
+
+### Path E: upstream `qwentts.cpp` — **THE PATH (measured 2026-07-31)**
+
+| | Path E (`qwentts.cpp`) | Path C (`scripts/voice/tts_server.py`) |
+|---|---|---|
+| implementation | upstream C++/GGML, full stack incl. codec | our PyTorch wrapper |
+| measured on this host | **yes** — WER 0.0 %, TTFA 67.9 ms, 0.86× RT | **no** — ~0.9× RT is an *estimate* |
+| runtime deps | none beyond the build | `soundfile`, `fastapi`, `uvicorn`, `librosa`, `scipy` + a venv |
+| GPU | HIP/gfx90a builds (bench in flight) | CPU torch only |
+
+Path C is retained as a fallback, not the recommendation. The real remaining gap is **wiring**:
+`start_tts()` was never added to `orchestrator_stack.py` (port 9002 reserved) — tracked as P0 in
+[`numa-topology-cutover-resume-20260730.md`](numa-topology-cutover-resume-20260730.md) §Speech.
+Do not rebuild the C++ accelerator — its source is lost and it never worked.
+
+### Speech tasks — opened 2026-07-31
+
+- [x] **S-1 — explain the Qwen3-TTS noise** ✅ 2026-07-31 — our port hand-rolled the codec half (SEANet/ConvNeXt/DAC); upstream `qwentts.cpp` implements it. Structural explanation, no token diff needed.
+- [x] **S-2 — get working speech synthesis on this host** ✅ 2026-07-31 — `qwentts.cpp` @ `abab6b3`, CPU, Qwen3-TTS-0.6B-base Q8_0 + qwen-tokenizer-12hz Q8_0 (1.19 GB): **round-trip WER 0.0 %**, **TTFA 67.9 ms**, 6820.7 ms for 5.84 s audio = **0.86× RT**. `CodecDecode` 4362.9 ms = **64 %** of wall; Talker 1313.7 ms; CodePredictor 1091.8 ms.
+- [x] **S-3 — build `qwentts.cpp` with HIP for gfx90a** ✅ 2026-07-31 — required one line: `ggml/src/ggml-cuda/vendors/hip.h` FP8 guard `60200000` → `60300000` (OCP `__hip_fp8_e4m3` is ROCm ≥6.3; we run 6.2.0-66 which has only `_fnuz`). **Third-party repo; production kernel untouched; no experimental-kernel handoff needed.**
+- [x] **S-4 — verify Qwen3-ASR serves on the MI210 without a kernel change** ✅ 2026-07-31 — it does; frozen v8 already ships `tools/mtmd/models/qwen3a.cpp` + `libmtmd.so.0.0.10107`.
+- [x] **S-5 — make STT survive a network outage** ✅ 2026-07-31 — `local_files_only` + `HF_HUB_OFFLINE`/`TRANSFORMERS_OFFLINE`, escape hatch `WHISPER_ALLOW_DOWNLOAD=1`; loads in 1.42 s offline. (`epyc-inference-research/scripts/voice/`.)
+- [ ] **S-6 — GPU TTS bench — IN FLIGHT** (queued on the q3 GPU lane behind the vision run) → `/mnt/raid0/llm/tmp/tts_bench_results.txt`, harness `/mnt/raid0/llm/tmp/tts_bench.sh`. **No result yet; quote nothing.** The hypothesis under test is that GPU collapses the 64 % `CodecDecode` share.
+- [ ] **S-7 — retest Qwen3-ASR with the bf16 audio projector.** `mmproj-Qwen3-ASR-1.7B-bf16.gguf` (0.60 GB) is on disk and **untested**; the Q8_0 projector is the named suspect for **WER 72.14 %** and the `????????` degeneration past ~11 s. Context is ruled out (8k → 65536 changed WER by <0.01). This is the cheapest next experiment in the speech lane.
+- [ ] **S-8 — if the bf16 projector does not fix it, bisect the >11 s degeneration** by utterance length against the persisted per-utterance rows, before drawing any model-quality conclusion. Raw kept for offline re-scoring: `/mnt/raid0/llm/tmp/stt_wer_results.json`; GPU harness `/mnt/raid0/llm/tmp/asr_gpu_wer.py`.
+- [ ] **S-9 — wire `start_tts()` into `orchestrator_stack.py`** (port 9002 reserved). Capability now exists; only the service wiring is missing. Blocked on nothing except an inference-owning session's boundary.
+- [ ] **S-10 — decide whether Qwen3-ASR augments or replaces whisper**, once S-7/S-8 close. The stake is whisper's **~4.2 s fixed per-request floor** (it pads to 30 s mel windows) vs Qwen3-ASR's observed **2.14 s median wall/request** on the utterances that worked. Do not decide before the WER defect is resolved — a 72 % WER cannot be traded against latency.
+- [ ] **S-11 — register the Qwen3-TTS GGUF pair and the `qwentts.cpp` tree** in the model manifest/registry so the speech stack stops being discoverable only from progress logs. Applies MRG-1 (the registration gate every stack model must pass).
 
 ---
 
@@ -385,7 +466,8 @@ python3 scripts/utils/check_draft_compatibility.py \
 ## Decisions Needed
 
 1. ~~**Vision upgrade**: MiniCPM-O 4.5 vs Qwen3-VL-8B for `worker_vision`? Qwen3-VL has tool calling edge (+0.663 BFCL).~~ **ANSWERED 2026-07-31: neither.** Measured 42q OCRBench+ChartQA — MiniCPM-o 31/42, Qwen3-VL-8B 33/42, both *below* the incumbent Qwen2.5-VL-7B at 35/42. `worker_vision` stays on Qwen2.5-VL. The only arm that beat it is **Qwen3-VL-30B-A3B Q4_K_M at 36/42**; a +1-question margin on 42 questions is not on its own a promotion case, so if this is revisited it needs a wider suite (MathVision / MMMU-Pro / OmniDocBench, where Qwen3-VL's real gains are) before any lineup action.
-2. ~~**TTS path**: Debug Qwen3-TTS C++ port vs test MiniCPM-O native TTS first?~~ **ANSWERED 2026-07-31: neither.** MiniCPM-o is deleted, and the C++ accelerator's source is lost so it cannot be rebuilt. The path is the existing pure-PyTorch `scripts/voice/tts_server.py` on CPU. Remaining work is wiring `start_tts()` into `orchestrator_stack.py` and installing 5 deps into a dedicated voice venv.
+2. ~~**TTS path**: Debug Qwen3-TTS C++ port vs test MiniCPM-O native TTS first?~~ **ANSWERED 2026-07-31: neither — the answer is upstream `qwentts.cpp` (Path E).** MiniCPM-o is deleted, and our own C++ accelerator's source is lost (and never worked). `qwentts.cpp` is **measured working on this host** — round-trip WER 0.0 %, TTFA 67.9 ms, 0.86× RT on CPU — where the PyTorch `scripts/voice/tts_server.py` figure was only ever an estimate. Path C is now the fallback. Remaining work is wiring `start_tts()` into `orchestrator_stack.py` (S-9) and the in-flight GPU bench (S-6).
+5. **NEW 2026-07-31 — does Qwen3-ASR replace whisper?** OPEN, and deliberately not answerable yet: Qwen3-ASR serves on the MI210 with zero kernel change and is ~2× faster per request where it works, but its current WER is 72.14 % from a configuration defect. Decide only after S-7/S-8. Tracked as S-10.
 3. **Port allocation**: 8088 for `audio_worker`? 8086 stays Qwen2.5-VL or gets replaced? — **partially answered 2026-07-31**: 8086 **stays Qwen2.5-VL** (it won the 42q comparison). The `audio_worker` port question is still open but is now a Qwen3-ASR / whisper question, not a MiniCPM-o one.
 4. ~~**llama.cpp-omni**: When to build the fork? Blocks all MiniCPM-O audio features.~~ **ANSWERED 2026-07-31: never, for this purpose.** The fork existed solely to unlock MiniCPM-o audio/TTS. With MiniCPM-o deprecated and deleted there is nothing behind that gate. (The pinned detached derivative and its M-2 observation artifacts remain as historical record.)
 
