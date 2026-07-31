@@ -81,6 +81,7 @@ Status: ✅ ratified, 📋 staged (operator-apply).
 - ❌ `+17% with EP flags` (no protocol, no reps — this exact claim later collapsed to +1.6%
   under P-BENCH-1)
 - Comparisons only within a protocol + instrument version. Cross-protocol comparisons are
+  analysis, labeled as such.
 - **Category (required)**: every reported measurement declares exactly one of
   `category=OPTIMUM` · `category=BASELINE` · `category=CANDIDATE`.
   - `OPTIMUM` — the best configuration AVAILABLE for that model/role. If no
@@ -96,7 +97,6 @@ Status: ✅ ratified, 📋 staged (operator-apply).
   spec none is optimal) [P-BENCH-1, n=5, 2026-07-31, attest …]`
   ❌ `frontdoor decode 24.92 tok/s, spec-dec off` (no category; reads as a headline,
   is a BASELINE)
-  analysis, labeled as such.
 - Per-protocol grammar extensions (e.g. `P-PAIRED` verdict rows, `P-SHED-1` f/stress fields)
   are defined in each protocol's annex entry.
 
