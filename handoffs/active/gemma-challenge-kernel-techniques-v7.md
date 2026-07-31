@@ -40,6 +40,19 @@ K32/K33 external-draft path; K24 base-decode "regression" ruled a host artifact 
   rows, MiniCPM-o/frontdoor mixed-service matrix, and the controlled MiniCPM-o live smoke
   (`K35.13f`). Remaining K35 work is optional parser/stress follow-up only, not release-blocking
   matrix evidence or the already-landed source/config/live-smoke path.
+  - **SUPERSEDING NOTE 2026-07-31 — applies to every K35 MiniCPM-o item in this file (K35.4,
+    K35.5, K35.11–K35.14, K35.13a/c/d/f).** MiniCPM-o is **DEPRECATED and its weights DELETED**.
+    The K35 throughput, co-residency, service-tax and service-matrix measurements below are
+    **not retracted** — they were real and correctly reported. What is retracted is the
+    **conclusion drawn from them**: K35.11's "first fast quality-clean higher-speed escalation
+    candidate", K35.13's activation policy, and K35.14's "MiniCPM-o preferred" ranking all rested
+    on a **4-question** fixed OCR/chart fixture set, which every candidate passed `4/4` and which
+    therefore could not discriminate on quality at all. On **42** questions (OCRBench + ChartQA,
+    MI210, best-on-disk quant per arm) MiniCPM-o scores **31/42** against the Qwen2.5-VL-7B
+    incumbent's **35/42**. The 2026-07-18 activation policy is **REVOKED**; `vision_escalation`
+    stays Qwen2.5-VL-7B. Raw: `/mnt/raid0/llm/tmp/vlquality_results.json`. **Methodological
+    lesson worth keeping:** a saturated fixture set (everyone `4/4`) reads as "quality-clean" but
+    is really "no signal" — it silently converts a quality gate into a speed ranking.
 - A2 — **OP-2 CLOSED ✅ 2026-07-19**: v6+iqk live throughput+garbage verify and the clean
   canonical CPU decode bench passed; B1 was skipped as `not_staged`, and B4/D3.1 closed no-go.
 - A3 — **`P-GPU-1` ratification CLOSED ✅ 2026-07-19**: `/workspace/MEASUREMENT.md` now

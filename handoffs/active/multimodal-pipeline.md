@@ -1,8 +1,53 @@
 # Multimodal Pipeline: Vision + TTS + ASR
 
 **Created**: 2026-02-18 (consolidated from `vision-pipeline.md` + `qwen3-tts-voice-synthesis.md` + `minicpm-o-4_5-integration.md`)
-**Status**: Mixed — Vision live-server/tool/API/OpenAI-compat path validated, TTS blocked, MiniCPM-O testing pending
+**Status**: Mixed — Vision live-server/tool/API/OpenAI-compat path validated, TTS blocked, ~~MiniCPM-O testing pending~~ **MiniCPM-O DEPRECATED + DELETED 2026-07-31**
 **Priority**: LOW
+
+---
+
+> ## ⛔ SUPERSEDING NOTE — 2026-07-31 — MiniCPM-o is DEPRECATED; weights DELETED
+>
+> **Everything in this file that presents MiniCPM-o-4.5 as a live candidate is superseded.**
+> The `/mnt/raid0/llm/models/MiniCPM-o-4_5-gguf/` tree (22 GB) has been deleted; nothing here
+> is runnable without a re-download from `openbmb/MiniCPM-o-4_5-gguf`. Individual dated
+> corrections are inline at §2 Recommendation, §3 Phase-1 (M-1), §3 vendor table, §Open
+> Questions, and §MiniCPM-o promotion runbook. Historical text is left intact.
+>
+> **Vision — it is a downgrade, not an upgrade.** 42 questions (OCRBench + ChartQA), MI210,
+> each arm at the best quant on disk, scored offline with a unit/whitespace-normalizing scorer:
+>
+> | model · quant | accuracy |
+> |---|---|
+> | Qwen3-VL-30B-A3B Q4_K_M | **36/42** |
+> | Qwen2.5-VL-7B Q4_K_M (incumbent) | **35/42** |
+> | Qwen3-VL-8B Q8_0 | 33/42 |
+> | **MiniCPM-o-4.5 Q8_0** | **31/42** |
+> | Qwen3-VL-4B Q8_0 | 29/42 |
+>
+> Raw `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vlquality.py`.
+> Full context in [`numa-topology-cutover-resume-20260730.md`](numa-topology-cutover-resume-20260730.md)
+> §"UPDATE 2026-07-31 — vision models evaluated".
+>
+> **The M-1 evidence does not survive.** The `+10pp` was ONE discordant question and that
+> question was a **scoring artifact** — the incumbent answered `0.11 kWh` where the accepted
+> answer was `0.11` (`vl_chart_test_0563`). Corrected, the arms tied 7/10. Honest framing:
+> M-1 was `p=1.0` / `observation_only_unratified`, so the 42q run **supersedes on power** — it
+> does not statistically contradict a result that never reached significance.
+>
+> **Read the 42q table with its caveat.** OCRBench+ChartQA is precisely the family where
+> Qwen3-VL was *never* claimed to improve much (published vs the independent OpenVLM baseline:
+> DocVQA +0.4, ChartQA +2.3, AI2D +1.8, OCRBench +8). Its real gains are MathVision +28.8,
+> MMMU-Pro +17.6, MMMU +11.0, OmniDocBench −45% edit distance. Without this caveat the table
+> reads as a Qwen3-VL regression, which it is not.
+>
+> **Speech — the last argument is also gone.** A dedicated Qwen3-TTS-12Hz-0.6B (Talker +
+> CodePredictor Q8_0) is **1.14 GB** and already on disk, the PyTorch TTS path runs on **CPU**
+> (`torch 2.6.0+cpu`, zero GPU VRAM), and Qwen3-ASR is already supported by the frozen v8
+> kernel. MiniCPM-o's omni stack was **10.84 GB** resident — a **9.70 GB** delta for speech
+> alone, on contested MI210. Note also that `scripts/voice/` **already contains** `tts_server.py`,
+> `create_tts_sidecar.py`, `validate_tts_e2e.py` — the Path-A/B/C/D framing below predates that
+> discovery.
 
 ---
 
@@ -12,8 +57,8 @@
 |----------|--------|---------|
 | **STT (ASR)** | Production | faster-whisper large-v3-turbo on port 9000, int8, 2.8x RT |
 | **Vision** | Live-server analyzer path, tool registry, API endpoint smoke, and OpenAI-compatible `image_url` data-URL bridge passed | No active blocker; remote-image fetching or multi-image support would be a new feature |
-| **TTS** | Blocked | Qwen3-TTS llama.cpp port outputs noise; MiniCPM-O TTS untested |
-| **Multimodal (MiniCPM-O)** | Downloaded, untested | Needs Phase 1 testing |
+| **TTS** | Blocked | Qwen3-TTS llama.cpp port outputs noise; ~~MiniCPM-O TTS untested~~ → MiniCPM-O TTS **abandoned 2026-07-31**; use the dedicated CPU Qwen3-TTS path (`scripts/voice/tts_server.py`) |
+| ~~**Multimodal (MiniCPM-O)**~~ | **DEPRECATED + DELETED 2026-07-31** | Not a blocker — closed. Vision 31/42 vs incumbent 35/42; speech superseded by dedicated Qwen3-TTS + Qwen3-ASR. See banner above. |
 
 ```
 Current voice loop:
@@ -140,7 +185,14 @@ OMP_NUM_THREADS=48 numactl --interleave=all /mnt/raid0/llm/llama.cpp-experimenta
   -p "Hello world." --max-frames 5 --temp 0.9 --seed 42 -t 48
 ```
 
-### Path B: MiniCPM-O 4.5 Built-in TTS (UNTESTED)
+### Path B: MiniCPM-O 4.5 Built-in TTS (~~UNTESTED~~ → **ABANDONED 2026-07-31**)
+
+> **ABANDONED 2026-07-31.** Path B is closed: MiniCPM-o is deprecated and its weights are
+> deleted. M-2/M-2QA did prove the mechanics (a structurally valid 24 kHz mono PCM16 WAV,
+> ASR-transcribed back to the requested sentence), so the vendor numbers below were never
+> falsified — Path B is dropped on **cost**, not on failure. Carrying it meant carrying the
+> whole 22 GB omni bundle for a model that loses on vision, versus a dedicated 1.14 GB
+> Qwen3-TTS already on disk that runs on CPU. Retained below as the historical record.
 
 MiniCPM-O has CosyVoice2 TTS built in. Key numbers:
 - TTS Long English WER: **3.37%** (CosyVoice2 standalone: 14.80%)
@@ -150,19 +202,57 @@ MiniCPM-O has CosyVoice2 TTS built in. Key numbers:
 **Caveat**: Audio features require `llama.cpp-omni` fork, NOT mainline llama.cpp. See Section 3 below.
 
 ### Recommendation
-Test Path B (MiniCPM-O) first — it's a complete package (ASR+TTS+Vision in one model). If audio quality is good, it may obviate the need for the Qwen3-TTS llama.cpp port entirely. Only resume Path A debugging if Path B fails or has unacceptable latency.
+~~Test Path B (MiniCPM-O) first — it's a complete package (ASR+TTS+Vision in one model). If audio quality is good, it may obviate the need for the Qwen3-TTS llama.cpp port entirely. Only resume Path A debugging if Path B fails or has unacceptable latency.~~
+
+**SUPERSEDED 2026-07-31 — do NOT test Path B first; do not test it at all.** MiniCPM-o is
+deprecated and its weights are deleted. The "complete package" argument is what justified
+carrying a 22 GB omni bundle (10.84 GB resident), and it no longer pays: the vision half is a
+*downgrade* (31/42 vs the 35/42 incumbent) and the speech half is beaten on footprint by a
+dedicated **1.14 GB** Qwen3-TTS-12Hz-0.6B already on disk — a 9.70 GB saving for speech alone,
+running on **CPU** at zero GPU VRAM. ASR is already production (faster-whisper large-v3-turbo,
+port 9000, a managed service via `orchestrator_stack.py start_whisper()`), and Qwen3-ASR is
+supported by the frozen v8 kernel.
+
+**Revised recommendation**: the TTS path is the existing `scripts/voice/tts_server.py` (full
+PyTorch: Talker + CodePredictor + Decoder, ~0.9× real-time at 48 CPU threads). The real gap is
+that `start_tts()` was never wired into `orchestrator_stack.py` — tracked as P0 in
+[`numa-topology-cutover-resume-20260730.md`](numa-topology-cutover-resume-20260730.md) §Speech,
+along with the 5 missing deps (`soundfile`, `fastapi`, `uvicorn`, `librosa`, `scipy`, in a
+dedicated voice venv). Do not rebuild the C++ accelerator — its source is lost.
 
 ---
 
-## 3. MiniCPM-O 4.5 (Multimodal: Vision + ASR + TTS)
+## 3. MiniCPM-O 4.5 (Multimodal: Vision + ASR + TTS) — ⛔ DEPRECATED + DELETED 2026-07-31
 
 **9B dense model** (Qwen3-8B backbone + SigLip2 + Whisper-medium + CosyVoice2). Apache 2.0.
+
+> **⛔ SECTION CLOSED 2026-07-31.** Phase-1 reached its verdict and the verdict is **no**.
+> Weights deleted (22 GB reclaimed); recoverable only by re-download from
+> `openbmb/MiniCPM-o-4_5-gguf`. M-1/M-2/M-2QA are retained below as completed history; the
+> remaining open items (M-2Q, M-3) are **CANCELLED** — see their lines.
 
 ### Phase-1 role assessment — operator-sequenced 2026-07-26 (GPU lane, AFTER the Laguna IQ2 architect bench)
 
 Serving viability is already proven: MiniCPM-o smoked **4/4 on MI210 at 114.8–126.9 t/s decode** in the v7 final-cutover vision matrix (2026-07-19, `data/v7_final_cutover_smoke/vision_*/summary.json`). What has NEVER been produced is quality evidence vs the incumbent — that is this assessment:
 
+**RESOLVED 2026-07-31 — the quality evidence was produced and it is negative.** Serving
+viability was never the open question; it was answered and then over-weighted. On 42 questions
+(OCRBench + ChartQA, MI210, best-on-disk quant per arm) MiniCPM-o Q8_0 scored **31/42** against
+the Qwen2.5-VL-7B incumbent's **35/42**, ranking 4th of 5 arms behind Qwen3-VL-30B-A3B (36/42)
+and Qwen3-VL-8B (33/42). Phase 1 is closed as a **decline**.
+
 - [x] **M-1 — paired vision eval vs Qwen2.5-VL** ✅ 2026-07-26 — same-image/same-prompt objective-scored live observation in `artifacts/minicpm-o-phase1-v8-20260726/live-20260726T174112Z-O98PrJ/`: `worker_vision` MiniCPM-o `6/8` vs Qwen2.5-VL `5/8` (`+12.5pp`, exact two-sided McNemar `p=1.0`); `vision_escalation` MiniCPM-o `7/10` vs `6/10` (`+10pp`, `p=1.0`). This is `observation_only_unratified`; it asserts no decision threshold and takes **no lineup action**.
+  - **⛔ SUPERSEDED 2026-07-31 — both margins are scoring artifacts, not quality.** The
+    `vision_escalation` `+10pp` rested on exactly **one** discordant question out of ten
+    (`vl_chart_test_0563`): the incumbent answered `0.11 kWh` where the accepted answer was
+    `0.11`, and the scorer's `normalized_exact_accepted_alternative` method failed it on the
+    unit. Corrected, the two **tied 7/10**. Re-verifiable from the persisted rows —
+    `escalation-{baseline,candidate}-scored.json` carry a `score.pass` field per case; all nine
+    other cases agree. The `worker_vision` `+12.5pp` is one question out of eight and is
+    equally powerless. Honest framing: M-1 was `p=1.0` and `observation_only_unratified`, so the
+    42-question run **supersedes on power** — it does not statistically contradict a result that
+    never reached significance. This is the second time a bespoke scorer reproduced a
+    comma/unit brittleness already fixed once in `debug_scorer.py`.
 - [x] **M-2 — TTS Path-B feasibility test** ✅ 2026-07-27 — the pinned `llama.cpp-omni` server route completed CPU-only (`-ngl 0`, Token2Wav on CPU): exactly one HTTP-200 for init/prefill/decode, exact requested text at the TTS boundary, three generated WAV segments, and a structurally valid final 24 kHz mono PCM16 WAV (`0.68s`, `32,684` bytes, SHA-256 `9032de1ccc74d850cd25d47d9605c68354d77510c51f3d4c04191f10adcca9e3`). The completed run was sealed by deterministic recovery after a runner cleanup/reaping defect; **no inference was regenerated**. Evidence: `epyc-inference-research/artifacts/minicpm-o-phase1-v8-20260726/m2-tts/runs/20260727T170914Z/capture.json`. Classification is observation-only: this proves the Path-B mechanics, not intelligibility, quality, latency, MI210 behavior, or lineup suitability.
 - [x] **M-2 pinned-interface feasibility** ✅ 2026-07-26 — the initial CLI-only probe at llama.cpp-omni `5202b7b2f4d11f50b9f996161e7a2f8b8571b890` was correctly blocked because that CLI exposed neither text-prompt input nor output-WAV. The 2026-07-27 M-2 successor used the pinned server's reviewed HTTP route; the original blocked artifact remains historical evidence: `epyc-inference-research/artifacts/minicpm-o-phase1-v8-20260726/M2_OMNI_FEASIBILITY_PROBE.md`.
 - [x] **M-2QA — automated ASR intelligibility observation** ✅ 2026-07-27 — deterministic concatenation of the three sequential 24 kHz mono PCM16 chunks produced a `2.52s` utterance; cached local `faster-whisper-large-v3-turbo` on CPU transcribed it as `The mini CPM audio path is working.`, matching the requested sentence apart from capitalization. An independent replay reproduced the transcript and exact concatenated PCM payload SHA-256 `4b21d6175b95d59b65b605dc30dafc37596077c6c1c116038d7e8a5fee20802b`. Evidence: `epyc-inference-research/artifacts/minicpm-o-phase1-v8-20260726/m2-tts/asr-observation-20260727T173748Z/` at research commit `11a698f3`. This is an unratified automated intelligibility signal only, not MOS, voice quality, latency, production readiness, or lineup evidence.
@@ -174,11 +264,15 @@ Serving viability is already proven: MiniCPM-o smoked **4/4 on MI210 at 114.8–
   Evidence: `epyc-inference-research/artifacts/minicpm-o-phase1-v8-20260726/m2-tts/derivative-cli-observation-20260728T090347Z-v2-q2-2955758/observation.json`.
   This is a structural output-contract observation only, not a quality, intelligibility, latency,
   GPU, lineup, registry, service, deployment, or production claim.
-- [ ] **M-2Q — intelligibility/quality acceptance**: use an operator-audible or separately ratified ASR/MOS-style instrument before claiming the emitted WAV is acceptable speech. The structural M-2 observation does not answer this question.
-- [ ] **M-3 — role-swap gate**: any actual lineup change is a stack-model change → REQUIRES the AutoPilot E8 baseline reseed to be complete first, then routes through the three-gates discipline (pipeline-green ≠ starts ≠ live==config) + orchestrator_stack lifecycle. Evidence gathering (M-1/M-2) is NOT gated and may run as soon as the GPU lane reaches it.
+- [x] **M-2Q — intelligibility/quality acceptance** — **CANCELLED ✅ 2026-07-31**. Reason: the model is deprecated and its weights are deleted, so there is no WAV to accept and no reason to spend an operator-audible/MOS instrument on it. MiniCPM-o's TTS is not the TTS path — a dedicated 1.14 GB Qwen3-TTS-12Hz-0.6B on CPU is. If an intelligibility/MOS instrument is built, build it against `scripts/voice/tts_server.py`. (Original text: use an operator-audible or separately ratified ASR/MOS-style instrument before claiming the emitted WAV is acceptable speech. The structural M-2 observation does not answer this question.)
+- [x] **M-3 — role-swap gate** — **CANCELLED ✅ 2026-07-31**. Reason: there is no role swap to gate. The 42q vision result (31/42 vs the incumbent's 35/42) means promoting MiniCPM-o would be a quality regression, so the lineup change it gated will never be proposed. The three-gates discipline itself is unaffected and still governs any future vision change — which should be evaluated against Qwen3-VL-30B-A3B Q4_K_M (36/42), the only arm measured above the incumbent. (Original text: any actual lineup change is a stack-model change → REQUIRES the AutoPilot E8 baseline reseed to be complete first, then routes through the three-gates discipline (pipeline-green ≠ starts ≠ live==config) + orchestrator_stack lifecycle.)
 
-### Files Downloaded
-Location: `/mnt/raid0/llm/models/MiniCPM-o-4_5-gguf/`
+### Files Downloaded — ⛔ ALL DELETED 2026-07-31
+
+**The entire `/mnt/raid0/llm/models/MiniCPM-o-4_5-gguf/` tree (22 GB) was deleted 2026-07-31.**
+The table below is historical. Recoverable only by re-download from `openbmb/MiniCPM-o-4_5-gguf`.
+
+Location: ~~`/mnt/raid0/llm/models/MiniCPM-o-4_5-gguf/`~~ (removed)
 
 | File | Size | Purpose |
 |------|------|---------|
@@ -201,6 +295,32 @@ Also downloaded: `Qwen3-VL-8B-Instruct` (5.03 GB + mmproj) as direct competitor 
 
 ### Vision Benchmarks vs Current Models
 
+**⛔ SUPERSEDED 2026-07-31 by a local measurement.** The table below is *vendor-published*
+numbers, and it is what made MiniCPM-o look like a vision upgrade (OpenCompass 77.6 vs 70.5,
+MathVista 80.1 vs 68.2). Measured on our own hardware against our own suite, the ordering
+**inverts**. Local result — 42 questions (OCRBench + ChartQA), MI210, each arm at the best
+quant present on disk, scored offline with a unit/whitespace-normalizing scorer:
+
+| model · quant | local 42q accuracy |
+|---|---|
+| Qwen3-VL-30B-A3B Q4_K_M | **36/42** |
+| Qwen2.5-VL-7B Q4_K_M (incumbent, port 8086) | **35/42** |
+| Qwen3-VL-8B Q8_0 | 33/42 |
+| **MiniCPM-o-4.5 Q8_0** | **31/42** |
+| Qwen3-VL-4B Q8_0 | 29/42 |
+
+Raw `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vlquality.py`.
+Two caveats that keep this honest: **(a)** our suite is OCRBench+ChartQA, the *narrowest* slice
+of what these models do — vendor OpenCompass/MathVista claims are not directly refuted, they are
+simply not what we measured; **(b)** MiniCPM-o encodes images at ~750 tokens (architecturally
+fixed — `--image-max-tokens`/`--image-min-tokens` are verified no-ops for it) where Qwen2.5-VL
+spends 4103 on the same image, so part of the gap is input fidelity, not reasoning. Neither
+caveat rescues it: what the stack needs is OCR/chart accuracy, and it is 4 below the incumbent.
+Also note MiniCPM-o scores **0** unless run with `enable_thinking=false` / `--reasoning off` —
+it emits `reasoning_content` with an empty `content`.
+
+Historical vendor table (retained):
+
 | Benchmark | MiniCPM-o 4.5 | Qwen2.5-VL-7B (port 8086) | Qwen3-VL-8B |
 |-----------|---|---|---|
 | OpenCompass | **77.6** | 70.5 | 76.5 |
@@ -208,6 +328,11 @@ Also downloaded: `Qwen3-VL-8B-Instruct` (5.03 GB + mmproj) as direct competitor 
 | DocVQA | 94.7 | **95.7** | **96.1** |
 | OCRBench | 876 | 864 | **896** |
 | Tool calling | None | None | **0.663** |
+
+Caution on the Qwen3-VL side of any such table: the benchmark tables on the Qwen3-VL HF cards
+are **JPEG images**, not text — a marketing graphic, not a machine-readable claim. Against the
+*independent* OpenVLM baseline the Qwen3-VL OCRBench gain is **+8**, not the +32 the card
+implies.
 
 ### Eval Resource: MMLBD-C (Corrected Long-Document Benchmark)
 
@@ -230,6 +355,13 @@ LightOn released **MMLBD-C**, a manually corrected version of MMLongBenchDoc tha
 3. ⏸️ Defer Qwen3-0.6B draft/spec-decode testing for Qwen3-VL until a concrete
    chart-fixture or role-gap fix reopens the Qwen3-VL lane; do not run another
    speed-only extra-vision probe while MiniCPM-o is the leading escalation path.
+   - **SUPERSEDED 2026-07-31**: MiniCPM-o is deprecated/deleted and is no longer the
+     leading escalation path — the premise of this deferral is void. The 42q result
+     also *reopens the Qwen3-VL lane*: **Qwen3-VL-30B-A3B Q4_K_M scored 36/42**, above
+     the 35/42 incumbent (Qwen3-VL-8B at 33/42 stays closed). Step 2's ranking above is
+     likewise superseded — it rested on 4 fixed K35 fixtures, and on 42 questions the
+     order inverts. Note the deferral's *other* half still holds: this must not become
+     another speed-only probe, and a +1-question margin is not a promotion case.
 
 **Phase 2** (spec decode investigation):
 ```bash
@@ -252,10 +384,10 @@ python3 scripts/utils/check_draft_compatibility.py \
 
 ## Decisions Needed
 
-1. **Vision upgrade**: MiniCPM-O 4.5 vs Qwen3-VL-8B for `worker_vision`? Qwen3-VL has tool calling edge (+0.663 BFCL).
-2. **TTS path**: Debug Qwen3-TTS C++ port vs test MiniCPM-O native TTS first?
-3. **Port allocation**: 8088 for `audio_worker`? 8086 stays Qwen2.5-VL or gets replaced?
-4. **llama.cpp-omni**: When to build the fork? Blocks all MiniCPM-O audio features.
+1. ~~**Vision upgrade**: MiniCPM-O 4.5 vs Qwen3-VL-8B for `worker_vision`? Qwen3-VL has tool calling edge (+0.663 BFCL).~~ **ANSWERED 2026-07-31: neither.** Measured 42q OCRBench+ChartQA — MiniCPM-o 31/42, Qwen3-VL-8B 33/42, both *below* the incumbent Qwen2.5-VL-7B at 35/42. `worker_vision` stays on Qwen2.5-VL. The only arm that beat it is **Qwen3-VL-30B-A3B Q4_K_M at 36/42**; a +1-question margin on 42 questions is not on its own a promotion case, so if this is revisited it needs a wider suite (MathVision / MMMU-Pro / OmniDocBench, where Qwen3-VL's real gains are) before any lineup action.
+2. ~~**TTS path**: Debug Qwen3-TTS C++ port vs test MiniCPM-O native TTS first?~~ **ANSWERED 2026-07-31: neither.** MiniCPM-o is deleted, and the C++ accelerator's source is lost so it cannot be rebuilt. The path is the existing pure-PyTorch `scripts/voice/tts_server.py` on CPU. Remaining work is wiring `start_tts()` into `orchestrator_stack.py` and installing 5 deps into a dedicated voice venv.
+3. **Port allocation**: 8088 for `audio_worker`? 8086 stays Qwen2.5-VL or gets replaced? — **partially answered 2026-07-31**: 8086 **stays Qwen2.5-VL** (it won the 42q comparison). The `audio_worker` port question is still open but is now a Qwen3-ASR / whisper question, not a MiniCPM-o one.
+4. ~~**llama.cpp-omni**: When to build the fork? Blocks all MiniCPM-O audio features.~~ **ANSWERED 2026-07-31: never, for this purpose.** The fork existed solely to unlock MiniCPM-o audio/TTS. With MiniCPM-o deprecated and deleted there is nothing behind that gate. (The pinned detached derivative and its M-2 observation artifacts remain as historical record.)
 
 ---
 
@@ -267,10 +399,12 @@ python3 -c "from src.vision.pipeline import get_pipeline; print('OK')"
 pytest tests/vision/ -v
 
 # MiniCPM-O vision test (mainline, no audio)
-/mnt/raid0/llm/llama.cpp/build/bin/llama-mtmd-cli \
-  -m /mnt/raid0/llm/models/MiniCPM-o-4_5-gguf/MiniCPM-o-4_5-Q4_K_M.gguf \
-  --mmproj /mnt/raid0/llm/models/MiniCPM-o-4_5-gguf/vision/mmproj.gguf \
-  -p "Describe this image in detail" --image /path/to/test.jpg
+# ⛔ WILL NOT RUN — 2026-07-31: MiniCPM-o is deprecated and /mnt/raid0/llm/models/MiniCPM-o-4_5-gguf/
+# was deleted (22 GB). Both -m and --mmproj paths below no longer exist. Retained as history.
+# /mnt/raid0/llm/llama.cpp/build/bin/llama-mtmd-cli \
+#   -m /mnt/raid0/llm/models/MiniCPM-o-4_5-gguf/MiniCPM-o-4_5-Q4_K_M.gguf \
+#   --mmproj /mnt/raid0/llm/models/MiniCPM-o-4_5-gguf/vision/mmproj.gguf \
+#   -p "Describe this image in detail" --image /path/to/test.jpg
 
 # Qwen3-TTS debug (if resuming Path A)
 cd /mnt/raid0/llm/llama.cpp-experimental && git branch --show-current
@@ -314,7 +448,7 @@ The deep-dive confirms Qwen3-TTS cannot run through llama-server (audio codec de
 | License | Apache 2.0 |
 | Serving | PyTorch + FastAPI wrapper on port 8110 |
 
-This represents a **third TTS path** alongside Path A (Qwen3-TTS C++ port, blocked) and Path B (MiniCPM-O built-in TTS, untested):
+This represents a **third TTS path** alongside Path A (Qwen3-TTS C++ port, blocked) and Path B (MiniCPM-O built-in TTS, untested) — **note 2026-07-31: Path B is ABANDONED (MiniCPM-o deprecated/deleted) and Path A is unrebuildable (C++ accelerator source lost). Path C, the Qwen3-TTS PyTorch sidecar, is the surviving path and is already implemented at `scripts/voice/tts_server.py`:**
 
 - **Path C**: Run Qwen3-TTS-0.6B as a standalone PyTorch sidecar service. No llama.cpp dependency. FastAPI wrapper accepting text + voice config, returning streaming audio. Feature-flagged behind `ORCHESTRATOR_TTS_ENABLED`.
 
@@ -364,7 +498,7 @@ This represents a **third TTS path** alongside Path A (Qwen3-TTS C++ port, block
   - Relevance: directly addresses the BLOCKED TTS component. Bundles 5 engines behind a unified interface with AMD ROCm + CPU backends.
   - Key technique: unified multi-engine adapter, sentence-boundary auto-chunking with crossfade for unlimited-length synthesis, Spotify pedalboard DSP post-processing chain.
   - Reported results: LuxTTS claim of ~1GB VRAM and 150x realtime on CPU at 48kHz (self-reported). Chatterbox Turbo with inline paralinguistic tags.
-  - Delta from current approach: adds a **Path D** (CPU-native LuxTTS) option beyond current Path A (Qwen3-TTS llama.cpp — noise), Path B (MiniCPM-O — untested), Path C (Qwen3-TTS PyTorch sidecar).
+  - Delta from current approach: adds a **Path D** (CPU-native LuxTTS) option beyond current Path A (Qwen3-TTS llama.cpp — noise), Path B (MiniCPM-O — untested), Path C (Qwen3-TTS PyTorch sidecar). **Amended 2026-07-31: Path B is ABANDONED (MiniCPM-o deprecated/deleted) and Path A is unrebuildable (source lost); the live comparison is now Path C (implemented, `scripts/voice/tts_server.py`) vs Path D.**
 
 - **[intake-401] "LuxTTS — Lightweight ZipVoice-Distilled TTS with 48kHz Voice Cloning"** (HF: YatharthS/LuxTTS, discovered via voicebox)
   - Relevance: **strongest candidate for unblocking TTS on CPU-only EPYC**. Distilled ZipVoice (arxiv:2506.13053) with 4 flow-matching steps, <1GB VRAM, faster-than-realtime CPU claim.
@@ -486,7 +620,7 @@ Watch list: SHANKS (arxiv:2510.06917) is sibling not supersession — different 
 
 - **[intake-682] "unsloth/gemma-4-12b-it-GGUF"** (HF) — just-released, **benchmark candidate**
   - Relevance: dense 12B-it sibling of the deployed gemma-4-26B-A4B MoE worker_general; encoder-free unified text+image+audio+video GGUF. **llama.cpp already supports gemma-4 vision (PR #21309) and audio (PR #21421)**, so a multimodal spike is feasible.
-  - Operator-raised angles are now parked unless they answer a concrete role gap: (a) **vision-escalation substitute** only if MiniCPM-o / worker_vision misses a fixture or service requirement; (b) **frontdoor substitute** only with a text-quality hypothesis, not a speed-only multimodal curiosity. NOTE: Google card numbers are only a weak prior — the frontdoor Qwen3.6 is *itself* multimodal, and on a BW-bound CPU host a dense 12B (reads ~12B params/token) likely decodes slower than the ~3B-active MoE frontdoor (measured 25.17 t/s). Any reopened probe must append to the model-probe scoreboard.
+  - Operator-raised angles are now parked unless they answer a concrete role gap: (a) **vision-escalation substitute** only if MiniCPM-o / worker_vision misses a fixture or service requirement **[amended 2026-07-31: MiniCPM-o is deprecated/deleted — read this gate as `worker_vision` (Qwen2.5-VL-7B, 35/42) alone. It is now a *measured* bar: a substitute must beat 35/42 on the 42q OCRBench+ChartQA set, or answer a gap that set does not cover]**; (b) **frontdoor substitute** only with a text-quality hypothesis, not a speed-only multimodal curiosity. NOTE: Google card numbers are only a weak prior — the frontdoor Qwen3.6 is *itself* multimodal, and on a BW-bound CPU host a dense 12B (reads ~12B params/token) likely decodes slower than the ~3B-active MoE frontdoor (measured 25.17 t/s). Any reopened probe must append to the model-probe scoreboard.
   - Caveat: the "drafter for the 26B-A4B" framing is structurally invalid (needs the purpose-built 4-layer ~500M Gemma4Assistant head; no deployed dense Gemma-4 target). Verdict: parked until a concrete vision/frontdoor role-gap hypothesis exists.
 
 ## Research Intake Update — 2026-06-12
@@ -502,9 +636,21 @@ Watch list: SHANKS (arxiv:2510.06917) is sibling not supersession — different 
   - Verdict **not_applicable** (nothing to port to the CPU/llama.cpp path), but **not hard-rejected** per research-intake policy. Direct parallel to intake-432 (Qwen3.5-Omni), where the same API-only / no-CPU-path pattern led to non-adoption.
 - [ ] Monitor-hook (operator-review candidate): watch for a **Qwen-Audio-3.0 open-weights / GGUF** release via this handoff's existing Alibaba audio/omni monitoring loop (alongside Qwen3-Omni-30B-A3B); re-intake the primary technical release note if/when Alibaba publishes weights or details.
 
-### MiniCPM-o deterministic promotion runbook (filed 2026-07-23, operator-directed)
+### MiniCPM-o deterministic promotion runbook (filed 2026-07-23, operator-directed) — ⛔ SUBJECT CANCELLED 2026-07-31
 
-Operator directive: the MiniCPM-o/MI210 vision_escalation lane stays parked ("ignore for now") — but **when ready, promotion into the stack must be deterministic, not bespoke**.
+> **SUPERSEDED 2026-07-31.** The runbook was written and delivered (below, ✅ 2026-07-23) —
+> that deliverable stands. What is cancelled is its **subject**: the MiniCPM-o promotion will
+> never be executed. MiniCPM-o measured **31/42** on 42q OCRBench+ChartQA against the
+> Qwen2.5-VL incumbent's **35/42**, so the promotion would have been a quality regression, and
+> the weights have been deleted (runbook precondition **P4 "artifacts on disk" can no longer
+> be satisfied**). The runbook file now carries a DEPRECATED banner.
+>
+> **The mechanics remain the reference pattern** — State-A/State-B choreography,
+> edit-the-MASTER-registry rule, contention-matrix recert, rollback anchor — and are cited as
+> such by `epyc-orchestrator/scripts/server/gpu_shadow_lane.py`. Reuse the *steps* for any
+> future vision tenant; do not reuse the MiniCPM-o literals.
+
+Operator directive: the MiniCPM-o/MI210 vision_escalation lane stays parked ("ignore for now") — but **when ready, promotion into the stack must be deterministic, not bespoke**. — **CLOSED 2026-07-31: "when ready" never arrives; the lane is not parked but cancelled.**
 
 - [x] **Write the vision_escalation → MiniCPM-o promotion runbook** ✅ 2026-07-23 — persisted at [docs/runbooks/vision-escalation-minicpmo-promotion.md](../../docs/runbooks/vision-escalation-minicpmo-promotion.md) (drafted + adversarially verified by workflow; 6 corrections applied; data-only + 3 constant lines, registry edit goes to the MASTER). Original spec: a single documented, gate-checked sequence covering (1) registry vision_escalation rebind (model + mmproj + HIP runtime lane, reversing the 2026-07-19 `91cf4033`/`dacd15a2` safe-alias rollback); (2) `stack_change_pipeline.py update` + `check` green; (3) rolling server swap on 8087 via `orchestrator_stack.py` (the 2026-07-23 additive `--numa-mode both` promotion path in `stack_commands.py` is the pattern: explicit-arg authority, skip-healthy, no-outage); (4) §H contention-matrix recert for the changed lane (the 2026-07-17 rebind shipped WITHOUT recert — flagged in v7-promotion.md:38 — the runbook must close that gap, not repeat it); (5) live-affinity + realized-first attestation; (6) smoke via the eval path (image + text probe) with the modality fence verified; (7) rollback = the same runbook with the safe-alias registry state. Prior evidence to cite: MiniCPM-o validation 2026-07-18 (110-127 t/s, 4/4 quality, 8/8 service matrix) vs the alias faster on the 07-19 long-decode slice — the runbook executes whichever model the operator picks; it is model-agnostic mechanics.
 
@@ -604,6 +750,13 @@ SUSPENDED whenever a certified MI210 vision lane is persistent-live (see below)
 
 State (dossier §Chain + item 3): MiniCPM-o-4.5 on MI210 fully validated 2026-07-18 (110–127 t/s, 4/4 quality, co-residency, 8/8 service matrix), rolled back 2026-07-19 to the CPU safe alias; the alias itself ran *faster* on MI210 long-decode (118.5 vs 109.2 t/s). The cutover is **decision-pending, not execution-pending**, with a deterministic promotion runbook task filed in multimodal-pipeline.md §"MiniCPM-o deterministic promotion runbook".
 
+**SUPERSEDED 2026-07-31 — the decision was made and it is NO.** MiniCPM-o is deprecated and its
+weights are deleted; the MiniCPM-o cutover will not happen (42q OCRBench+ChartQA: 31/42 vs the
+incumbent's 35/42). Consequences for the rule below: the **MiniCPM-o branch of the trigger is
+dead**, but the *alias-on-GPU* branch is **not** — moving Qwen2.5-VL itself onto the MI210 lane
+remains a live option and would still suspend this gate. So this section stays open, with a
+narrower trigger. The "4–10× a CPU quarter stream" arithmetic is model-agnostic and unaffected.
+
 - One MI210 vision stream ≈ 110–127 t/s ≈ **4–10× a CPU quarter stream**. The marginal capacity of +3 CPU quarters (~+2–4 req/min, +16 GB mlock, new region-lock pressure on node0/Q0) is dwarfed by a single GPU lane (~15–40 req/min at the same S).
 - **Rule**: if the operator executes any persistent-live MI210 vision cutover (MiniCPM-o *or* the alias-on-GPU variant), this gate is **SUSPENDED** — overflow vision demand routes to the GPU escalation lane instead, and the CPU 4×q case survives only as (i) GPU-lane retirement/contention fallback, or (ii) an operator-mandated CPU-resilience requirement (a different gate, operator-defined).
 - **Caveat to re-verify at trip time**: the MI210 currently hosts the operator's Qwen3.5-122B UD-IQ2_M architect experiment (the port-18072 process — external, not a stack lane). Co-residency was validated 2026-07-18, but GPU headroom must be re-confirmed on the day either trigger trips.
@@ -621,4 +774,4 @@ The pin encodes a *decision*, so un-pinning = superseding the decision with an a
 ### Review cadence
 
 Re-run A1–A3 at each stack-review checkpoint (or ≥ every 14 days), first valid post-fence reading **2026-08-06**. If two consecutive checkpoints read λ ≈ 0 organic *and* the MI210 cutover executes, recommend converting "open in principle" → "closed: superseded by GPU lane" to the operator.
-- [ ] **MiniCPM-o CPU assessment + promotion decision** (operator-directed 2026-07-23/24, queued after A2/RP-5): bench MiniCPM-o-4.5 Q4 on a CPU lane (bench port, bench posture while the stack is down) vs the current Qwen2.5-VL-7B worker — speed + K35-fixture quality — then DECIDE promotion per the runbook: vision_escalation only, or BOTH worker_vision (replacing Qwen2.5-VL) and vision_escalation. **CPU leg only — the operator runs the GPU leg in their parallel session**; the promotion call joins both evidence sets.
+- [x] **MiniCPM-o CPU assessment + promotion decision** — **CANCELLED ✅ 2026-07-31**. Reason: the promotion decision was resolved on GPU evidence before the CPU leg ran, and the answer is **do not promote**. On 42q OCRBench+ChartQA (MI210, best-on-disk quant per arm) MiniCPM-o scored 31/42 vs the Qwen2.5-VL-7B incumbent's 35/42 — a quality downgrade for both `worker_vision` and `vision_escalation`. A CPU speed bench cannot reverse a quality deficit, and the weights have been deleted, so the CPU leg is moot. `worker_vision` and `vision_escalation` both stay on Qwen2.5-VL-7B. (Original text: bench MiniCPM-o-4.5 Q4 on a CPU lane vs the current Qwen2.5-VL-7B worker — speed + K35-fixture quality — then DECIDE promotion per the runbook: vision_escalation only, or BOTH. CPU leg only — the operator runs the GPU leg in their parallel session.)

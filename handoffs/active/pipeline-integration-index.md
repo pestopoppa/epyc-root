@@ -100,8 +100,8 @@ After completing a row:
 - [ ] P1 ODL/PDF: benchmark-backed hybrid-vs-baseline comparison + routing policy (sidecar viable on :5002)
 - [x] P1 Quiet-window PDF structural corpus probe (AutoPilot-idle evidence step) ✅ 2026-07-07
 - [ ] P2 Lean 4: Leanstral expert profiling -> REAP prune -> end-to-end proof pipeline
-- [ ] P3 Multimodal TTS: benchmark first viable path (Qwen3-TTS/MiniCPM-O/ZipVoice) with RTF/WER evidence
-- [ ] P3/multimodal-pipeline: MiniCPM-O Phase 1 testing (pending in owning handoff; carried from retired P0 vision row)
+- [ ] P3 Multimodal TTS: benchmark first viable path (~~Qwen3-TTS/MiniCPM-O/ZipVoice~~ → **Qwen3-TTS PyTorch sidecar / ZipVoice** — MiniCPM-O struck 2026-07-31, deprecated + weights deleted) with RTF/WER evidence
+- [x] P3/multimodal-pipeline: MiniCPM-O Phase 1 testing — **CANCELLED ✅ 2026-07-31**. Phase 1 reached its verdict in the owning handoff and the verdict is a decline: MiniCPM-o scored 31/42 on 42q OCRBench+ChartQA vs the Qwen2.5-VL-7B incumbent's 35/42, so it is a vision downgrade; its speech case is superseded by a dedicated 1.14 GB CPU Qwen3-TTS plus existing whisper/Qwen3-ASR. Weights deleted (22 GB). No further Phase-1 testing will occur.
 - [ ] P5 Internal KB-RAG: deferred K8 wikilink scorer once measured cross-link gap exists
 - [ ] P5 KB-RAG: AutoWiki model-backed page writer — only remaining core gap [inference-window gated]
 - [ ] P5 KB-RAG: recency_w0.3_s90 default-retrieval-weight promotion decision (decision-only unless re-measurement needed)

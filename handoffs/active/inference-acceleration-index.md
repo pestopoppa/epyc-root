@@ -99,7 +99,11 @@ replacements need an exact-tip promotion gate, not more reviewer work.
 - A1 **K35 finalize CLOSED ✅ 2026-07-18** — consolidated throughput-vs-context release
   artifact now includes vision throughput/quality/memory rows and the MiniCPM-o/frontdoor
   mixed-service matrix; the MiniCPM-o source/config flip and controlled live smoke are
-  implemented/verified, while remaining K35 work is optional parser/stress follow-up only. →
+  implemented/verified, while remaining K35 work is optional parser/stress follow-up only.
+  **Note 2026-07-31**: the MiniCPM-o rows in this and the two K35 service/text-matrix rows below
+  remain valid *throughput* evidence, but MiniCPM-o is now **DEPRECATED with its weights
+  DELETED** — it scored 31/42 vs the Qwen2.5-VL-7B incumbent's 35/42 on 42q OCRBench+ChartQA,
+  so none of these rows supports a role flip and the 2026-07-18 activation policy is revoked. →
   [gemma-challenge-kernel-techniques-v7.md](gemma-challenge-kernel-techniques-v7.md).
 - A2 **OP-2 canonical-bench window CLOSED ✅ 2026-07-19** — run package drafted at
   [docs/reference/op-2-canonical-bench-window-package-2026-07-18.md](../../docs/reference/op-2-canonical-bench-window-package-2026-07-18.md)

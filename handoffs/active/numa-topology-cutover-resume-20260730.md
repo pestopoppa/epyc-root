@@ -620,11 +620,20 @@ Raw: `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vl
 | Qwen3-VL-4B **Q8_0** | 28/42 | 29/42 |
 
 - [x] Ran the comparison the M-1 n=10 could never resolve ✅ 2026-07-31
-- [ ] **Supersede the MiniCPM-o promotion premise in `multimodal-pipeline.md`** (`:153` "Test Path B first",
+- [x] **Supersede the MiniCPM-o promotion premise in `multimodal-pipeline.md`** (`:153` "Test Path B first",
   `:165` M-1 `+12.5pp`, `:204-210` vendor table, `:255`, `:509`) and in
   `docs/reference/model-probe-scoreboard.md:64,98` ("**Yes** candidate"). MiniCPM-o lands **31/42, below the
   35/42 incumbent**. Note honestly that M-1 was `p=1.0` / `observation_only_unratified`, so this **supersedes on
-  power**, it does not statistically contradict.
+  power**, it does not statistically contradict. ✅ **2026-07-31 — DONE, and escalated to full deprecation +
+  weight deletion under explicit operator authorization.** All five `multimodal-pipeline.md` sites plus the
+  scoreboard's two sites are superseded in place (history retained, dated corrections appended). Additionally:
+  master registry entry `minicpm_o_45_local_multimodal` marked `deprecated: true` with the measured table as
+  `deprecated_reason`; the promotion runbook carries a ⛔ DEPRECATED banner; `gpu-serving-tie-in-program.md`
+  **P2-2c cancelled** and D2 reduced to one tenant; `stack_numa.py:429` and `gpu_shadow_lane.py:6` corrected;
+  cancelled checkboxes flipped across 12 active handoffs. **The 22 GB `/mnt/raid0/llm/models/MiniCPM-o-4_5-gguf/`
+  tree is DELETED** — reversible only by re-download from `openbmb/MiniCPM-o-4_5-gguf`. The M-1 artifact was
+  re-verified before acting: exactly one of ten cases is discordant (`vl_chart_test_0563`, incumbent `0.11 kWh`
+  vs accepted `0.11`), confirming the scoring-artifact diagnosis.
 - [ ] **Record the two scorer artifact classes.** (a) comma/unit — `63,086` vs `63086`, `0.11 kWh` vs `0.11`;
   (b) **LaTeX whitespace** — `\frac { 1 } { x + y }` vs `\frac{1}{x + y}`. Both required offline re-scoring.
   The incumbent's strict score was depressed by 6 and Qwen3-VL-8B's by 2. **A bespoke scorer reproduced a
@@ -634,11 +643,19 @@ Raw: `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vl
   **+8** against the *independent* OpenVLM baseline of 888 — not the +32 the vendor card implies). Its real
   gains are MathVision **+28.8**, MMMU-Pro **+17.6**, MMMU **+11.0**, OmniDocBench **−45% edit distance**.
   Without this caveat the table reads as a Qwen3-VL regression, which it is not.
-- [ ] **MiniCPM-o encodes images at ~750 tokens, FIXED.** `--image-max-tokens 4096` and `--image-min-tokens 3000`
+- [x] **MiniCPM-o encodes images at ~750 tokens, FIXED.** `--image-max-tokens 4096` and `--image-min-tokens 3000`
   are both **no-ops** for it (verified). Qwen2.5-VL spends **4103** on the same image. Architectural
   (~64 tokens/slice, capped slice count) — do not re-litigate by burning MI210 time.
-- [ ] **MiniCPM-o needs `enable_thinking=false` (API) / `--reasoning off` (server) or it scores 0** — it emits
+  ✅ **RECORDED 2026-07-31** in `multimodal-pipeline.md` §"Vision Benchmarks vs Current Models" as caveat (b) on
+  the 42q table, so the input-fidelity confound travels with the number. Now moot for re-litigation purposes —
+  the weights are deleted — but kept because it explains *why* a model with better vendor benchmarks lost here.
+- [x] **MiniCPM-o needs `enable_thinking=false` (API) / `--reasoning off` (server) or it scores 0** — it emits
   `reasoning_content` and an **EMPTY** `content`. Reproduced twice today: 1600 tokens of reasoning, no answer.
+  ✅ **RECORDED 2026-07-31** in `multimodal-pipeline.md` §"Vision Benchmarks vs Current Models" and preserved in
+  the `vlquality.py` harness comment. Moot for MiniCPM-o itself (deleted), but the **class** is not: it is the
+  same failure the K35 gate hit in 2026-07 (`0/4` on default reasoning mode), and it generalises to any
+  reasoning-mode VLM — a scorer reading `message.content` sees an empty string and reports a quality failure
+  that is really a protocol failure.
 - [ ] **`Qwen3-VL-2B-Instruct-GGUF/` is EMPTY** — download or delete the directory. It is also the *only* model
   in the family with independent third-party verification, which we therefore cannot use.
 - [ ] Qwen3-VL benchmark tables on the HF cards are **JPEG images**, not text — "official model card" there means
@@ -676,9 +693,16 @@ Raw: `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vl
 | Dedicated Qwen3-TTS-12Hz-0.6B (Talker + CodePredictor Q8_0) | **1.14 GB** |
 | delta for speech alone | **9.70 GB** |
 
-- [ ] **Feed this into `gpu-serving-tie-in-program.md` D2 / P2-9** (`phase2_resident_set` budgets). The PyTorch TTS
+- [x] **Feed this into `gpu-serving-tie-in-program.md` D2 / P2-9** (`phase2_resident_set` budgets). The PyTorch TTS
   path runs on **CPU** (`torch 2.6.0+cpu`) — **zero GPU VRAM**. Combined with MiniCPM-o losing on vision, there
   is no remaining justification for spending ~10 GB of contested MI210 on it.
+  ✅ **2026-07-31 — DONE.** D2 amended in place to a **one-tenant** set (dense-27B only): MiniCPM-o struck as
+  deprecated/deleted, whisper already deferred by W3. **P2-2c cancelled** and **P2-2 closed**. The
+  `phase2_resident_set` rows in `gpu_shadow_lane_np_ceiling.yaml` were deliberately NOT edited — same fail-safe
+  logic the whisper finding used: a reservation for a tenant that never arrives makes the budgets *conservative*,
+  so nothing over-authorises. Both reclaims (~7 GB MiniCPM-o + ~1.6 GiB whisper) are queued for
+  ceiling-amendment time downstream of P2-5j. Note the orchestrator repo could not be committed (pre-commit
+  contention-matrix gate), but `np_ceiling.yaml` needed no edit, so nothing is left uncommitted on this item.
 
 ### ngram retraction propagated into the record ✅ 2026-07-31
 

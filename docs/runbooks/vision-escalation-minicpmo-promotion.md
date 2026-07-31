@@ -1,7 +1,59 @@
 <!-- Persisted 2026-07-23 from the op7-residuals workflow (5 agents: drafter +
 adversarial verifier); the verifier's 6 corrections are applied inline. -->
 
+> # ⛔ DEPRECATED — 2026-07-31 — DO NOT EXECUTE
+>
+> **The promotion this runbook describes is CANCELLED, and the MiniCPM-o weights it
+> depends on have been DELETED from disk.** Precondition **P4 ("Artifacts on disk")
+> can no longer be satisfied: `/mnt/raid0/llm/models/MiniCPM-o-4_5-gguf/` no longer
+> exists. Recovery would require a re-download from `openbmb/MiniCPM-o-4_5-gguf`.
+>
+> **Why.** Measured 2026-07-31 on the MI210 — 42 questions (OCRBench + ChartQA), each
+> model at the best quantization present on disk, scored offline with a
+> unit/whitespace-normalizing scorer:
+>
+> | model · quant | accuracy |
+> |---|---|
+> | Qwen3-VL-30B-A3B Q4_K_M | **36/42** |
+> | Qwen2.5-VL-7B Q4_K_M (incumbent, State A) | **35/42** |
+> | Qwen3-VL-8B Q8_0 | 33/42 |
+> | **MiniCPM-o-4.5 Q8_0** | **31/42** |
+> | Qwen3-VL-4B Q8_0 | 29/42 |
+>
+> Promoting MiniCPM-o would have been a **quality downgrade** against the very State-A
+> alias this runbook rolls back to. Raw per-question results
+> `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vlquality.py`.
+>
+> **The evidence that motivated it does not survive.** The earlier "+10pp" (M-1, n=10)
+> was **one** discordant question, and that question was a **scoring artifact** — the
+> incumbent answered `0.11 kWh` where the accepted answer was `0.11` (case
+> `vl_chart_test_0563`). Corrected, the two models tied **7/10**. Verify at
+> `epyc-inference-research/artifacts/minicpm-o-phase1-v8-20260726/live-20260726T174112Z-O98PrJ/escalation-{baseline,candidate}-scored.json`
+> (rows carry `score.pass`). The throughput evidence cited below stands; it was never
+> the binding constraint, and the 2026-07-19 slice already had Qwen2.5-VL *faster*.
+>
+> **The speech rationale is also dead.** A dedicated Qwen3-TTS-12Hz-0.6B (1.14 GB) is
+> already on disk and Qwen3-ASR is already supported by the frozen v8 kernel, versus
+> MiniCPM-o's 22 GB bundle (~9.13 GB of which was a duplicate LLM backbone plus the
+> vision tower measured above).
+>
+> **What is still usable here.** The Step 1–7 *mechanics* — the State-A/State-B
+> choreography, edit-the-MASTER-registry rule, quiesce/reload discipline, rollback
+> anchor — are model-agnostic and remain the reference pattern (this is why
+> `epyc-orchestrator/scripts/server/gpu_shadow_lane.py` still cites this file). If
+> `vision_escalation` is ever revisited, the forward candidate is **Qwen3-VL-30B-A3B
+> Q4_K_M** (36/42, the only arm measured above the incumbent) — substitute its
+> `model/path/mmproj/sha256/device/runtime` block per the model-agnostic note below.
+> Do not reuse the MiniCPM-o literals.
+>
+> Registry entry `minicpm_o_45_local_multimodal` in the master registry is marked
+> `deprecated: true` and retained as the audit trail.
+
 # Runbook — Deterministic `vision_escalation` → MiniCPM-o Promotion (port 8087, MI210)
+
+**⛔ DEPRECATED 2026-07-31 — see the banner above. Everything below is retained as
+the historical record and as a model-agnostic mechanics reference. Do not execute it
+for MiniCPM-o.**
 
 **Filed**: 2026-07-23, per operator directive in `handoffs/active/multimodal-pipeline.md:488` ("when ready, promotion into the stack must be deterministic, not bespoke").
 **Status**: PARKED until operator grant. This document is mechanics only — it executes whichever model the operator picks.
