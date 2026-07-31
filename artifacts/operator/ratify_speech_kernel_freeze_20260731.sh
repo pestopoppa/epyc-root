@@ -219,7 +219,11 @@ import sys
 path, wc, qc = sys.argv[1], sys.argv[2][:9], sys.argv[3][:9]
 s = open(path, encoding="utf-8").read()
 
-if "production KERNEL SET" in s:
+# Marker must match the LITERAL text inserted below. The inserted string carries
+# markdown bold ("production **KERNEL SET**"), so grepping for "production KERNEL
+# SET" never matches — that bug aborted the 2026-07-31 16:21 run AFTER it had
+# already written everything, and would have double-inserted on a re-run.
+if "2026-07-31 speech-kernel freeze" in s:
     print("  already amended — skipping")
     sys.exit(0)
 
@@ -325,7 +329,7 @@ fi
 
 echo
 echo "=== verification ==="
-grep -qF "production KERNEL SET" "$ROOT/CLAUDE.md" && say "OK   CLAUDE.md carries the kernel-set doctrine" || abort "CLAUDE.md amendment missing"
+grep -qF "2026-07-31 speech-kernel freeze" "$ROOT/CLAUDE.md" && say "OK   CLAUDE.md carries the kernel-set doctrine" || abort "CLAUDE.md amendment missing"
 [ -f "$JSON" ] && say "OK   ratification artifact present" || abort "ratification artifact missing"
 if [ "$SKIP_VERIFIER" != "1" ]; then
   bash "$ROOT/scripts/session/verify_speech_kernels.sh" || true

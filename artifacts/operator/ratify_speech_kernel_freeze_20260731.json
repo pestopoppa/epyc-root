@@ -1,0 +1,61 @@
+{
+  "ratification": "speech-kernel-freeze-v1",
+  "date_utc": "2026-07-31T16:22:43Z",
+  "supersedes": null,
+  "scope": "Extends the production-kernel freeze from llama.cpp alone to the production KERNEL SET.",
+  "decision_package": "artifacts/operator/speech-kernel-freeze-amendment-20260731.md",
+  "kernels": {
+    "llama_cpp": {
+      "tree": "/mnt/raid0/llm/llama.cpp",
+      "branch": "production-consolidated-v8",
+      "commit": "67a433bf45a8a091d83b4ea0b32ff0735fd51800",
+      "ggml": "0.16.0",
+      "binary_version": "10107",
+      "ratification": "artifacts/operator/ratify_v8_final_freeze_20260725.json",
+      "note": "unchanged by this ratification; recorded for completeness"
+    },
+    "whisper_cpp": {
+      "tree": "/mnt/raid0/llm/whisper.cpp",
+      "branch": "production-speech-v1",
+      "commit": "b307379226d93d9c5ed790d7cea0626613c0ef4b",
+      "ggml": "0.18.0",
+      "binary": "/mnt/raid0/llm/whisper.cpp/build/bin/whisper-server",
+      "binary_sha256": "82aa8b569b7c8ee031f7a8bba6b21425b760654ea05e1d99991067d5d9bd9c7b",
+      "gpu": "HIP / gfx90a (MI210)",
+      "load_bearing_patch": "ggml/src/ggml-cuda/vendors/hip.h — FP8 guard 60200000 -> 60300000 for ROCm 6.2",
+      "measurements_anchored": {
+        "model": "whisper large-v3-turbo f16",
+        "wer_pct": 2.35,
+        "latency_s_11s_clip": 0.21
+      }
+    },
+    "qwentts_cpp": {
+      "tree": "/mnt/raid0/llm/qwentts.cpp",
+      "branch": "production-speech-v1",
+      "commit": "2c1b5182e7e9f1acaa04405ff21747d8a7acf4d5",
+      "ggml_submodule_commit": "b86f660238dcc1a83b7cbf5a72d355a965de9245",
+      "ggml": "0.17.0",
+      "binary": "/mnt/raid0/llm/qwentts.cpp/build/tts-server",
+      "binary_sha256": "369fc2f1de88e41f4459e1f56c0e962035e20984acf0ea2d4678f602232ff654",
+      "gpu": "HIP / gfx90a (MI210)",
+      "load_bearing_patch": "ggml/src/ggml-cuda/argsort.{cu,cuh} — thread-strided bitonic sort within the gfx90a 1024 threads/block limit; vendors/hip.h FP8 guard",
+      "measurements_anchored": {
+        "model": "Qwen3-TTS 12hz talker 0.6B Q8_0 + tokenizer 12hz Q8_0",
+        "rtf": 0.169,
+        "roundtrip_wer_pct": 1.49
+      }
+    }
+  },
+  "ggml_version_spread": {
+    "note": "Three generations coexist. This is why per-launcher LD_LIBRARY_PATH isolation is load-bearing rather than cosmetic.",
+    "llama_cpp": "0.16.0",
+    "qwentts_cpp": "0.17.0",
+    "whisper_cpp": "0.18.0",
+    "related_fix": "root 136894e8 / research 94cf8d6c — removed the CPU-only llama.cpp dirs from the global LD_LIBRARY_PATH"
+  },
+  "not_changed": [
+    "No kernel rebuilt, rebased or modified",
+    "MEASUREMENT.md and measurement/protocols/* untouched",
+    "The four-step experimental kernel workflow is unchanged"
+  ]
+}

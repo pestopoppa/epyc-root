@@ -12,6 +12,8 @@ Umbrella repository for cross-repo coordination and governance. No application c
 | epyc-orchestrator | `/workspace/repos/epyc-orchestrator` | Orchestrator, API, autopilot, registries |
 | epyc-inference-research | `/workspace/repos/epyc-inference-research` | Benchmarks, canonical recipes, research |
 | epyc-llama | `/workspace/repos/epyc-llama` → `/mnt/raid0/llm/llama.cpp` | Production llama.cpp kernel tree (FROZEN) |
+| epyc-whisper | `/mnt/raid0/llm/whisper.cpp` | Production STT kernel (FROZEN, `production-speech-v1`) |
+| epyc-qwentts | `/mnt/raid0/llm/qwentts.cpp` | Production TTS kernel (FROZEN, `production-speech-v1`) |
 
 Coupling edges: `.claude/dependency-map.json`.
 
@@ -20,6 +22,8 @@ Coupling edges: `.claude/dependency-map.json`.
 **iqk coverage (v8)**: `GGML_IQK=1` accelerates supported K/legacy quants plus IQ2/IQ3 and IQ4_XS; **IQ1 remains stubbed**. See [`handoffs/active/tq3-quantization-evaluation.md`](handoffs/active/tq3-quantization-evaluation.md).
 
 ### Experimental Kernel Workflow & Production-Kernel Immutability
+
+**2026-07-31 speech-kernel freeze**: the freeze covers a production **KERNEL SET**, not one kernel — `llama.cpp` @ `production-consolidated-v8`, `whisper.cpp` @ `production-speech-v1` (`b30737922`, ggml 0.18.0, STT), `qwentts.cpp` @ `production-speech-v1` (`2c1b5182e`, ggml 0.17.0, TTS). Ratification: [`artifacts/operator/ratify_speech_kernel_freeze_20260731.json`](artifacts/operator/ratify_speech_kernel_freeze_20260731.json). Both speech kernels carry load-bearing gfx90a/ROCm-6.2 patches that were UNCOMMITTED until this ratification. The three trees run three different ggml generations, so **every launcher must set its own `LD_LIBRARY_PATH`** and prove it with `scripts/utils/verify_ggml_linkage.sh` — a binary that inherits another tree's ggml runs silently wrong. `scripts/session/verify_speech_kernels.sh` enforces the speech branches.
 
 **Production kernels are FROZEN.** `production-consolidated-v8` (and future `-v9`, …) must NEVER be modified, rebased, built, or committed to unless the operator EXPLICITLY authorizes it. We *version past* production — never patch it in place. ALL kernel/benchmarking work happens on `llama.cpp-experimental` branches. Every new kernel feature follows four steps, in order:
 
