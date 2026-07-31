@@ -1261,3 +1261,42 @@ W2 was **deprioritized deliberately**: the operator ruled past autopilot metrics
 facts support it — `strategy_store.db` is 0 bytes and `warm_start.py` has no journal references, so
 nothing replays old-normalization scores across the boundary the q_scorer correction created. The
 era plumbing is still worth building for future comparisons; it is no longer urgent.
+
+## ADDENDUM (21:00–22:00Z) — the compile chain and the kernel layer
+
+Operator ruling: fix the compile chain before W1, and extend the kernel layer to the
+speech kernels. Both landed.
+
+- [x] **Compile is now a pure function of its declared inputs** ✅ 2026-07-31 —
+      orchestrator `596e2189`. `compile(master, role assignments, topology) -> lean ->
+      derived`. Three deviations closed: (1) the pipeline never recompiled lean from
+      master — added as its FIRST step, in check and update; (2) topology was PROBED
+      from the running fleet, so identical inputs produced different artifacts
+      depending on machine state — now declared in `orchestration/stack_topology.yaml`,
+      with the probe demoted to a backstop; (3) check and update resolved the mode
+      separately and could disagree — one resolver now, and it reports its source.
+      Verified both directions: clean shell → `acceptance: no-inference checks passed`
+      (first fully green clean-shell run; it was 39 errors this morning); master
+      mutated by one comment → `lean_registry: stale`, exit 1.
+      A false positive was caught and fixed before shipping — the pipeline's active-role
+      set carries `eval_batch_frontdoor`, which the lean projection does not, so the
+      cache key never matched and the step reported stale on every run.
+
+- [x] **Production kernels resolve by backend, not by path** ✅ 2026-07-31 —
+      orchestrator `c1a004bf`, layer at `/mnt/raid0/llm/kernels/`.
+      `production/{cpu,gpu,stt,tts}` symlinks; `src/registry/kernel_paths.py` resolves
+      them and RAISES on an unresolvable backend rather than falling back. Upgrading a
+      kernel = archive the old target under a dated name, repoint the symlink,
+      re-verify linkage — **neither registry and no launcher changes.**
+      The three ggml generations stay separated: verified through the stable path that
+      each backend loads its own ggml, `libggml-hip.so.0` present on gpu/stt/tts and
+      correctly absent on cpu.
+
+- [ ] **Migrate hardcoded `llama.cpp/build/bin` call sites to `kernel_paths.backend_dir()`.**
+      **W1 REMAINS UNSAFE UNTIL THIS IS DONE.** `c1a004bf` makes the correct thing
+      available; it does not yet stop the wrong thing. Until the launcher asks for a
+      backend, a registry edit moving a role to the GPU still lands it on the CPU-only
+      build, silently.
+
+Stack unaffected by any of the above and still serving: 12/12 healthy, 18 processes,
+`--spec-type draft-mtp` with ngram in zero processes, live inference confirmed.
