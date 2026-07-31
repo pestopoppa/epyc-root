@@ -8,6 +8,24 @@ This digest exists so a session can act correctly without reading the full const
 
 A decision-gating number = `(metric, protocol-id, n/reps, date, attestation ref)`. A number without a protocol citation is an **observation**: usable for hypotheses, never for keep/revert/deploy/promote/buy/close decisions.
 
+## Category — declare one, always
+
+Every number you report declares exactly one category. Conflating these is the single most
+expensive recurring measurement defect in this project.
+
+| Category | What it is | Where it may appear |
+|---|---|---|
+| `OPTIMUM` | Best config AVAILABLE for that model. **If no draft path exists, the unaccelerated run IS the optimum** (Qwen3-Next-80B: `--spec-type none`). | Headline tables. The ONLY category a promotion may be decided on. |
+| `BASELINE` | An optimization the model HAS, switched off. Diagnostic. | *Addendum — baselines* only. Never a headline. |
+| `CANDIDATE` | Measured, not adopted. | Labelled as such, never as "what production runs". |
+
+**Promotion is decided on the production-optimal configuration alone.** A BASELINE regression
+is not a blocker and must not be cited as one; a BASELINE improvement is not an argument.
+If an instrument cannot run the production recipe, its numbers are recorded, not enforced.
+
+Do not exclude a role from a headline because "speculation is off" — check first whether a
+draft path exists at all. If none does, that row is an OPTIMUM and belongs in the table.
+
 ## Historical numbers — era-label first, then apply the verb
 
 1. Era-label it (`instrument_eras.yaml`): pre-canonical CPU bench (E0)? pre-speed-fix autopilot speed (E2, ×0.5 deinflate by `pareto_epoch_ts` timestamp — NEVER by `speed_metric_mode`, which is identical across the fix)? pre-tool-era quality (E3a)? which T1 n (E3b, by `details.total`)?

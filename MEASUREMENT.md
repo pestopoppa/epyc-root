@@ -81,6 +81,21 @@ Status: ✅ ratified, 📋 staged (operator-apply).
 - ❌ `+17% with EP flags` (no protocol, no reps — this exact claim later collapsed to +1.6%
   under P-BENCH-1)
 - Comparisons only within a protocol + instrument version. Cross-protocol comparisons are
+- **Category (required)**: every reported measurement declares exactly one of
+  `category=OPTIMUM` · `category=BASELINE` · `category=CANDIDATE`.
+  - `OPTIMUM` — the best configuration AVAILABLE for that model/role. If no
+    speculative draft path exists for the model, the unaccelerated run IS its
+    OPTIMUM (e.g. Qwen3-Next-80B-A3B `--spec-type none`); such a row is a headline
+    row, NOT a baseline.
+  - `BASELINE` — an optimization the model HAS, deliberately switched off.
+    Diagnostic only. Appears only under *Addendum — baselines*. Never a headline.
+  - `CANDIDATE` — measured, not adopted. Must be labelled so it is never mistaken
+    for what production runs.
+  An unlabelled measurement is not decision-grade.
+  ✅ `ingest_long_context decode 10.12 tok/s, category=OPTIMUM (no draft path exists;
+  spec none is optimal) [P-BENCH-1, n=5, 2026-07-31, attest …]`
+  ❌ `frontdoor decode 24.92 tok/s, spec-dec off` (no category; reads as a headline,
+  is a BASELINE)
   analysis, labeled as such.
 - Per-protocol grammar extensions (e.g. `P-PAIRED` verdict rows, `P-SHED-1` f/stress fields)
   are defined in each protocol's annex entry.
@@ -103,6 +118,15 @@ Status: ✅ ratified, 📋 staged (operator-apply).
   CHANGELOG block at the end of this core file. Superseding amendments name what they supersede.
 - **Trust boundary**: this file, its `protocols/` annexes, the era registry, the eval tower, and
   scoring contracts are read-only for autonomous optimization processes (program.md).
+- **Promotion is decided on the production-optimal configuration alone.** A regression in a
+  `BASELINE`-category measurement is NOT a promotion blocker and MUST NOT be cited as one;
+  a `BASELINE` improvement is NOT a promotion argument. Baselines are recorded to quantify
+  what an already-adopted optimization buys, and appear only in an addendum. A gate that
+  blocks on a non-production arm is defective and is repaired, not waived. Where an
+  instrument cannot exercise the role's registered production recipe (e.g. `llama-bench`
+  cannot drive speculative decoding), its cells are RECORDED and reported alongside and
+  MUST NOT by themselves block promotion. Supersedes the protocol-scoped statement at
+  `measurement/protocols/bench-cpu.md:216-220`, which is generalised by this clause.
 - **Deterministic replay before regeneration** *(operator-ratified 2026-07-27; absorbed into the
   constitution by this v2 — previously lived only in the digest)*: if a result can be obtained
   without inference — by deterministically rescoring or transforming previously saved outputs —
@@ -202,3 +226,8 @@ call, not contamination.
 - 2026-07-30 — v2 restructure RATIFIED (operator apply 20260730T103218Z): core + `measurement/protocols/` annex split; metric-scoping section
   added; stale era-table copy replaced by registry pointer; P-GPU-1 placeholder/ratified blocks
   merged. Full delta: `artifacts/operator/measurement-v2-draft/RATIFICATION_LEDGER.md`.
+- 2026-07-31 — AMENDMENT: measurement categories `OPTIMUM`/`BASELINE`/`CANDIDATE` added to §3
+  claim grammar; promotion-on-production-optimal clause added to §5 Governance, superseding the
+  protocol-scoped rule at `measurement/protocols/bench-cpu.md:216-220`; `bench-cpu.md:91-92`
+  narrowed so non-production-recipe cells record but do not block. Origin: repeated wasted
+  measurement runs from conflating a spec-off BASELINE with a no-draft-path OPTIMUM.

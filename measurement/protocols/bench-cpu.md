@@ -88,8 +88,12 @@ policy remain part of the attestation.
   may be < 0.95, and at least one must be ≥ 1.05 — else insufficient release utility.
 - Model-load, correctness/coherence, numerical-safety, attribution, or cleanup failure = FAIL
   regardless of throughput.
-- Every required cell must pass before promotion; a failed cell blocks pending repair or an
-  explicit operator waiver.
+- Every required cell must pass before promotion **where that cell's configuration is the
+  role's registered production recipe**. Cells measured under a non-production configuration
+  (including any instrument that cannot exercise the role's registered acceleration) are
+  RECORDED and reported alongside, and MUST NOT by themselves block promotion; a regression
+  confined to such cells is a disclosed observation, not a gate failure. A failed
+  production-recipe cell blocks pending repair or an explicit operator waiver.
 
 **Grammar**: `CPU prefill <value> tok/s [P-BENCH-PREFILL-1, n=<reps>, YYYY-MM-DD, attest <ref>]`.
 
