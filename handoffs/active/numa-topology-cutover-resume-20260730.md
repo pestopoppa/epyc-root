@@ -119,10 +119,22 @@ Ports:
 physical `88-95` = region **q3**, which is inside **half B**. Any CPU work that
 must not collide with the GPU lane goes on half A.
 
-### 1.4 Runs in flight — ~~DO NOT DISTURB~~ **ALL COMPLETE as of 2026-07-31; regions are FREE**
+### 1.4 Runs in flight — the 2026-07-30 batch is COMPLETE, but a NEW batch is LIVE (2026-07-31)
 
-> ✅ **Nothing is in flight.** Every run listed below finished 2026-07-30 20:21–22:21 and all four regions
-> released. `region-lock status` shows q0–q3 free. **Do NOT wait on these; do not re-arm them.**
+> ## ⛔ 2026-07-31 09:35Z — DO NOT COLD-START THE STACK. THREE NEW TRACKS ARE RUNNING.
+>
+> **This supersedes the "nothing is in flight" banner below, which refers only to the 2026-07-30
+> batch.** A resuming agent that reads that banner, sees "regions free", and proceeds to §0 check 2
+> → cold-start would **destroy three live measurement runs**. Always trust
+> `scripts/region-lock status` over any banner in this file, including this one.
+>
+> Live now: vision MMMU finalization (q3), TTS GPU bench (q3, queued behind it), half-instance
+> headline numbers (q0+q1). Paths and state: §"Production-temperature re-runs — IN FLIGHT
+> 2026-07-31" near the end of this document. **No results from them may be quoted.**
+
+> ✅ **The 2026-07-30 batch is complete.** Every run listed below finished 2026-07-30 20:21–22:21 and all four regions
+> released at that time. **Do NOT wait on these; do not re-arm them.** (This statement was accurate when
+> written and is scoped to the runs in the table below — it is **not** a current statement about the machine.)
 > Results: `gpungram_results.txt` 36/36 · `halfa_live`/`halfa_rest` DONE · `full_last_results.txt` 3/3 arms
 > (a copy is preserved at `/mnt/raid0/llm/tmp/preserved/` — the chain ran twice and the duplicate
 > truncated the live file once) · `ngramfix_results.txt` 12/12 DONE 22:21.
@@ -776,11 +788,14 @@ later reader can find them; **no result exists yet and none may be quoted**.
 
 | track | lane | output path | state at wrap-up |
 |---|---|---|---|
-| Vision model finalization on MMMU at production temperature | q3 (GPU) | `/mnt/raid0/llm/tmp/vision_final_results.json` | running — file exists, being written |
-| TTS GPU bench (`qwentts.cpp`), queued behind the vision run | q3 (GPU) | `/mnt/raid0/llm/tmp/tts_bench_results.txt` | queued — file not yet created |
-| Half-instance headline numbers at production temperature | q0+q1 (CPU) | `/mnt/raid0/llm/tmp/halfa_headline_results.json` | running — file not yet created |
+| Vision model finalization on MMMU at production temperature | q3 (GPU) | `/mnt/raid0/llm/tmp/vision_final_results.json` | running — being written |
+| TTS GPU bench (`qwentts.cpp`), queued behind the vision run | q3 (GPU) | `/mnt/raid0/llm/tmp/tts_bench_results.txt` | running — being written (queue released during this wrap-up) |
+| Half-instance headline numbers at production temperature | q0+q1 (CPU) | `/mnt/raid0/llm/tmp/halfa_headline_results.json` | running — being written |
 
 Harness for the TTS leg: `/mnt/raid0/llm/tmp/tts_bench.sh`.
+
+**All three output files existed and were still being written at wrap-up close (09:35Z).** A file existing is NOT a completed run: nothing here was read, and **no number from any of these three tracks appears anywhere in this wrap-up.** The next session must confirm each run terminated normally before quoting it.
+
 
 - [ ] **When each track lands, fold its result into §01 of the artifact and flip the
   headline task above.** Until then every index row quoting a headline number must
