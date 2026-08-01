@@ -56,6 +56,80 @@ Verina (intake-234) provides a benchmarking framework for verifiable code genera
 - **Math-Verify for benchmark answer validation**: intake-377 (HuggingFace Math-Verify) provides robust mathematical expression comparison with LaTeX parsing, symbolic simplification, and matrix equivalence. Current exact-match scoring underestimates model capability by ~66% on math expressions. Integration caveats: `verify(gold, pred)` is NOT symmetric, NOT thread-safe (`signal.alarm()`), and open intervals `(1,2)` convert to `Tuple(1,2)`. Applicable to MathSmith S4 A/B benchmark and Goedel-CP evaluation. [mathsmith-hc-formalizer-eval.md](../handoffs/active/mathsmith-hc-formalizer-eval.md)
 - **Question quality filtering for eval**: intake-379 (MathQ-Verify) provides a 5-stage pipeline for validating question quality. Flawed questions with missing premises also waste compute by triggering solver overthinking. Stage 5 (completeness) hurts F1 by +0.57pp -- deploy stages 1-4 only. [mathsmith-hc-formalizer-eval.md](../handoffs/active/mathsmith-hc-formalizer-eval.md)
 
+
+
+## Incomplete-checklist verification: when the check is correct but does not cover enough
+
+**Confidence: verified** (three measured instances, 2026-08-01)
+
+A sibling of the fail-open class, and harder to find. A fail-open guard returns the wrong
+*answer*; an incomplete-checklist guard returns the right answer to **too small a question**. It
+never lies, it just never looks. Nothing is duplicated, so a de-duplication or refactoring pass
+walks straight past it, and no amount of reviewing what *is* checked can reveal what is absent.
+
+### The shape
+
+A **producer** emits N facts. A **verifier** iterates a hand-maintained list of M < N of them.
+The gap is invisible because both sides are individually correct and the output is green.
+
+### Three measured instances, one day
+
+| checklist | producer emitted | verifier checked | consequence |
+|---|---|---|---|
+| runtime attestation fields | every declared launch field | all **except `device`** | a 27B declared on ROCm0 ran on 24 CPU threads with the GPU at 0%, reporting `healthy / attest ok`; VRAM 13 MB of 68.7 GB |
+| `REQUIRED_SOURCE_ARTIFACTS` | 9 source pins | a hardcoded **7** | two newly declared config artifacts were pinned and **never verified** — mutating them changed no verdict |
+| `RETIRED_LIVE_ROLES` | a table stale in every value | grep for **one** known-bad role name | passed a file whose 4/4 rows described a fleet retired ~3 months earlier at throughputs 1.4×–11× too low |
+
+The third is the sharpest: name-matching cannot detect a table that is stale in every **value**
+while naming only **current** roles. The guard was structurally incapable of the finding.
+
+### The remedy generalises
+
+**Derive the checklist, not just the values.** Iterate the producer's own keys, so a fact added
+upstream is verified automatically with nobody needing to remember. Keep the hand-written list as
+a **floor** — required entries must still be present — so a producer that silently *stops*
+emitting one is still caught. Coverage is gained without losing any.
+
+For the value-staleness variant, the durable form is a **comparison against the compiled
+artifact**, not a grep for known-bad strings. A rule that compares catches drift nobody enumerated
+in advance. Deployed as `stale_role_fact_table`, it fired on first run against a live launch
+surface where every row named a current role — including a `frontdoor` entry pointing at a
+**non-MTP** GGUF that would have silently disabled speculative decoding.
+
+### A related sub-pattern: the hardcoded lookup KEY
+
+The value is properly derived; the **key** is not.
+
+```python
+coder_escalation: str = field(default_factory=lambda: _server_url_default("frontdoor"))
+```
+
+This calls the derived resolver and looks locally correct — which is why it survives every "is
+this value derived?" audit. It faithfully returns the right answer to the **wrong role**, and it
+broke the moment that role was repointed. Detection is mechanical: compare each field name
+against the literal key it looks up, and treat every mismatch as suspect. Four were found this
+way; three were byte-identical when derived (legitimate aliases the resolver already handles) and
+one was a real defect that had silently survived a whole model cutover.
+
+**Rule: the field name IS the key.** Alias resolution belongs inside the resolver, which already
+reads the registry's `shared_with` relation — a call site that names another role has taken that
+decision away from the data.
+
+### Screen
+
+Add to the two fail-open screens a third:
+
+3. **Is my checklist derived from the producer, or written by hand?** If hand-written, the
+   question is not whether the entries are right but what is *missing* — and that cannot be
+   answered by reading the list.
+
+### Sources
+
+- `progress/2026-08/2026-08-01.md` — W1 cutover session, three instances with measured blast radius
+- `handoffs/active/numa-topology-cutover-resume-20260730.md` — NEW section, 2026-08-01
+- epyc-orchestrator `a517793c` — all three remedies plus `stale_role_fact_table`
+- `/mnt/raid0/llm/tmp/launcher-refactor-proof/` — byte-equality snapshot proving the extraction changed no value
+
 ## Related Categories
 
 - [MoE Optimization](moe-optimization.md) -- Leanstral is a prime REAP pruning candidate with 128 routed experts

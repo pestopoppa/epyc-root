@@ -1067,7 +1067,8 @@ now trustworthy, where before they were not. Verified against the live registry 
 
 ## OUTSTANDING — hard sequence, do not reorder
 
-- [ ] **W1. Apply the role reshaping edit list.** Persisted at workflow run `wf_7d5f6816-a67`
+- [x] **W1. Apply the role reshaping edit list.** ✅ 2026-08-01 — research `fd7a2cdb` + orchestrator `a517793c`. Anchors re-derived by exact-text match (61 unique / 11 prose-range / 4 hand-derived, zero overlaps), not by line arithmetic. Registry + manifest + NUMA + roles.py + all three alias tables landed together.
+      ORIGINAL NOTE: Persisted at workflow run `wf_7d5f6816-a67`
       (adversarially verified). Touches BOTH `server_mode:` (638) and `roles:` (1249) in master.
       Found a structural gap: **`server_mode` has no vision row at all**, so `shared_with` — the
       binding `stack_priors.py:683-685` reads to resolve an alias to its process — has nowhere to
@@ -1117,8 +1118,76 @@ now trustworthy, where before they were not. Verified against the live registry 
       3 assert `--spec-type == draft-mtp` and receive the falsified composed recipe (they go green at
       W3); 2 are the alias drift guards. A bulk pass would encode the falsified recipe into the suite
       and erase the alias signal. Fix data first.
-- [ ] **W10. Reconcile the two Qwen3-VL throughput figures** (102.18 text-only vs 112.20 MMMU
+- [x] **W10. Reconcile the two Qwen3-VL throughput figures** ✅ 2026-08-01 — both recorded with conditions; separately found the ratified MMMU-250 result was sitting under `mmmu_val_250`, a key the descriptor compiler does not read, so the role was reported as having NO quality evidence. Renamed to `vl_score`.
+      ORIGINAL NOTE: (102.18 text-only vs 112.20 MMMU
       image+text) into the registry with conditions attached, not as one scalar.
+
+
+## NEW — discovered while applying W1 (2026-08-01)
+
+- [x] **The launcher disabled every device it had just resolved.** ✅ 2026-08-01 —
+      `_append_cpu_only_device_args` appended `--device none --device-draft none` to EVERY
+      default-builder role and `_build_role_command` never read `flags["device"]`. `architect_general`
+      ran a 27B dense on 24 CPU threads with the GPU at 0% while reporting healthy + attest ok.
+      VRAM 13 MB -> 53.6 GB after the fix.
+- [x] **`device`/`device_draft` added to runtime attestation, both directions.** ✅ 2026-08-01 —
+      the table checked every declared field EXCEPT device, which is why the above was invisible.
+      An UNDECLARED device now asserts `none`, so a CPU role landing on a GPU is caught too.
+- [x] **One-input refactor (phase 1).** ✅ 2026-08-01 — `stack_manifest.py` 919→667 and
+      `stack_numa.py` 613→452 are thin loaders over `orchestration/launch_manifest.yaml` +
+      `orchestration/stack_topology.yaml`, no fallback tables. Byte-identical proof, sha256
+      `3894a3a3…` before and after. Both artifacts pinned in `source_artifacts`.
+- [x] **`REQUIRED_SOURCE_ARTIFACTS` verified 7 pins while the compiler emitted 9.** ✅ 2026-08-01 —
+      the two new declared artifacts were pinned and NEVER verified; mutating `launch_manifest.yaml`
+      changed no verdict. Now iterates the producer's own keys; literal kept as a floor. Teeth
+      confirmed by mutation.
+- [x] **`RETIRED_LIVE_ROLES` derived (42 names) instead of a 1-name grep.** ✅ 2026-08-01 — plus a
+      new `stale_role_fact_table` rule that compares launch surfaces against compiled priors. It
+      fired on first run against `stack_templates/default.yaml`, where `frontdoor` pointed at the
+      NON-MTP GGUF — silently disabling draft-mtp.
+- [x] **Device-aware feasibility.** ✅ 2026-08-01 — `src/scheduling/device_model.py`; CPU instances
+      claim regions exclusively, GPU roles claim VRAM; exclusions name their resource. Shape-aware
+      admission stays behind both flags (default off), 3628 verdicts swept, 0 mismatches.
+- [x] **Contention matrix re-benched for the new topology.** ✅ 2026-08-01 — `171f86f9`, 15 pairs,
+      ZERO catastrophic. `architect_general`+`ingest` went 0.66 **block** → **1.40 allow**;
+      every GPU-involving pair is concurrency-positive.
+- [x] **Five dead-config items removed.** ✅ 2026-08-01 — `model_quality_signatures.yaml`,
+      `model_registry_lean.yaml`, `delegator._escalate_role` (a 5th ladder copy with a self-loop,
+      a null hop and a DOWNGRADE), `quarter_stack_smoke.EXPECTED_CHAT_PORTS`, and three
+      `src/orchestration/` paths that have never existed.
+- [x] **The registry claimed the 27B was unmeasured. It was not.** ✅ 2026-08-01 — frozen 4-arm
+      authority (sha256 `f440680d…`) has arm A3 == this exact GGUF at 23/40 (57.5%) SWE-bench
+      Verified, top arm, +20.0 pp over the 122B IQ2. Recorded with instrument + comparators +
+      shape caveat; `quality_score` deliberately still null (different instrument).
+
+### Outstanding after W1
+
+- [ ] **Phase 2 of the one-input refactor: derive what master already declares.** Highest-value
+      target is `slots` — the launcher has NO table and computes `1 if role in SERIAL_ROLES else 2`,
+      which disagrees with the registry for 4 of 7 roles (frontdoor 1 vs 2, architect_critic 1 vs 2,
+      coder_escalation 2 vs 1, worker_general 2 vs 1). Also `architect_general`'s `device` is
+      declared ONLY in master with no launcher-side declaration — precisely the surface the
+      `--device none` incident ran through. `shared_with` for `worker` disagrees (legacy
+      `worker_explore` alias exists launcher-side only).
+- [ ] **`q_scorer_priors` fails: `architect_general` / `coder_escalation` quality source is
+      `degraded_fallback`.** The router scores them with a FABRICATED quality number rather than
+      none. Deliberately not auto-declared in `accepted_gaps.yaml` — laundering a fail-open fallback
+      under a waiver is exactly what that mechanism exists to prevent. Options: make q_scorer refuse
+      for null-quality roles, or close the root gap by running the judge suite.
+- [ ] **Run the canonical 79-question judge suite on Qwen3.6-27B.** This is the root close for both
+      the three accepted gaps (expiring 2026-09-01) and the `q_scorer` degraded fallback.
+- [ ] **`stack_templates/default.yaml` has 9 errors the launch gate never sees.**
+      `validate_template()` reports them (missing `architect_critic`, `vision_escalation` on retired
+      8087, `coder_escalation` aliasing frontdoor, quarter-port rows for quarters retired
+      2026-07-30) but the pipeline never invokes that validator. Wire it into the gate.
+- [ ] **`validate_model_paths()` validates files the stack does not launch** — its own hardcoded
+      path list (frontdoor GGUF, architect/ingest dirs) no longer matches the declared models, and
+      both stale files still exist on disk so it returns clean. Derive from
+      `stack_priors.roles.*.serving.launch.requirements`.
+- [ ] **`autopilot.py:5589` `_MODEL_SIGNATURES_PATH` names a deleted file.** Harmless today (the
+      arg is ignored) but should be removed with its call-site arg.
+- [ ] **`NON_QUARTERABLE` still names `architect_general`** in `contention_matrix.py` — now inert
+      (one instance either way); comment corrected, set not changed.
 
 ## Operational notes
 
@@ -1292,7 +1361,8 @@ speech kernels. Both landed.
       each backend loads its own ggml, `libggml-hip.so.0` present on gpu/stt/tts and
       correctly absent on cpu.
 
-- [ ] **Migrate hardcoded `llama.cpp/build/bin` call sites to `kernel_paths.backend_dir()`.**
+- [x] **Migrate hardcoded `llama.cpp/build/bin` call sites to `kernel_paths.backend_dir()`.** ✅ 2026-08-01 — and the deeper half: `LD_LIBRARY_PATH` outranks `RUNPATH`, so the HIP binary was loading CPU-only ggml from the ambient path. `ld_library_path` now derives from the same backend that chose `binary_dir`.
+      ORIGINAL NOTE:
       **W1 REMAINS UNSAFE UNTIL THIS IS DONE.** `c1a004bf` makes the correct thing
       available; it does not yet stop the wrong thing. Until the launcher asks for a
       backend, a registry edit moving a role to the GPU still lands it on the CPU-only
@@ -1362,30 +1432,35 @@ ADDENDUM 2 and converts the loose conclusions in those appends into task lines.
 
 ### W1's remaining blockers, as tasks
 
-- [ ] **W1-a. Obtain the D1–D4 operator rulings.** `architect_critic` tier; how aggressive the
+- [x] **W1-a. Obtain the D1–D4 operator rulings.** ✅ 2026-08-01 — D1 hot · D2 NARROW (`explicit_request` only) · D3 `coder` removed · D4 delete the unreachable duplicate. Plus two rulings the work surfaced: GPU host lane = `184-191` `-t 8` SHARED; matrix refresh = device-awareness first, then bench.
+      ORIGINAL NOTE: `architect_critic` tier; how aggressive the
       `reasoning` chain triggers should be; whether `frontdoor` keeps `coder`; the duplicate B3
       hint. Package them per the operator decision-package contract — options, tradeoffs,
       recommendation — rather than asking four separate questions.
-- [ ] **W1-b. Re-derive all 76 edit-list anchors against current master.** The list is recovered
+- [x] **W1-b. Re-derive all 76 edit-list anchors against current master.** ✅ 2026-08-01 — tooling `/mnt/raid0/llm/tmp/w1-26b5f442/w1_resolve.py`. Two applier bugs found by the work: substring-anchored edits were being whole-line replaced (fixed by moving to character offsets), and 10 unquoted scalars containing `": "` broke YAML — the list was adversarially verified for content but never parsed.
+      ORIGINAL NOTE: The list is recovered
       intact at `scratchpad/editlist.md` (97,339 bytes, md5
       `dbdbb11d35e5beb3957dec7695088853`), but its anchors are against master `96aa90f6`
       (md5 `c6a4d2b50e203140d344b436c8f1ab22`, 9,876 lines) and master has moved to `596a1e24`.
       **Do not generate the edits mechanically**: master carries load-bearing provenance comments
       that a YAML round-trip destroys, which is why the original list used line anchors. This needs
       a session with the context budget to verify each anchor.
-- [ ] **W1-c. Run `w1_preflight.py` immediately before applying**, not once at planning time — two
+- [x] **W1-c. Run `w1_preflight.py` immediately before applying** ✅ 2026-08-01 — run at apply time. Its clean-tree check was itself defective: it forbade the repo's documented idiom (pathspec-limited commits in a shared clone), so it now blocks only on collisions with W1's OWN targets and reports unrelated dirt.
+      ORIGINAL NOTE:, not once at planning time — two
       of its four checks (repos clean, GPU headroom) are state, not facts.
 
 ### Derived from the 20:00–23:00Z window — filed so they are not lost in prose
 
-- [ ] **Review the `ORCHESTRATOR_SKIP_STACK_CHANGE_GATE=1` bypass taken at this session's start.**
+- [x] **Review the `ORCHESTRATOR_SKIP_STACK_CHANGE_GATE=1` bypass taken at this session's start.** ✅ 2026-08-01 — reviewed and RESOLVED structurally: `orchestration/accepted_gaps.yaml` gives the gate a severity distinction (declared+unexpired → warning, undeclared or expired → error, stale declaration itself reported). The bypass had by then been taken four consecutive times.
+      ORIGINAL NOTE:
       The gate failed only on `runtime_attestation: live process drift` for `:8000` (orchestrator
       API) and `:9000` (faster-whisper CT2) — both predating the session, both exactly what **W4**
       exists to manage. The gate cannot say *"aux service unmanaged"* separately from *"unsafe to
       launch"*, so it fails at the same severity for both and the escape hatch is the only
       available response. **Until W4 lands this bypass recurs on every start**, which is how a
       bypass becomes habitual. Either W4 lands or the gate gains a severity distinction.
-- [ ] **Do not conflate `architect_general`'s two throughput priors.** **24.00** is the 122B's
+- [x] **Do not conflate `architect_general`'s two throughput priors.** ✅ 2026-08-01 — prior moved in the SAME commit as the model repoint, as required.
+      ORIGINAL NOTE: **24.00** is the 122B's
       production-optimal figure and is what the derived layer correctly carries today; **47.79** is
       the 27B's and becomes correct only *after* W1 repoints the role. The prior must move in the
       **same commit** as the model repoint — splitting them is how every stale prior corrected this

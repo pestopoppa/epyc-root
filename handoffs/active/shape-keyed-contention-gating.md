@@ -275,3 +275,62 @@ Add a single placement-aware decision function and route both callers through it
 - Stack is UP (started this session, all 35 components healthy, `[1.5]` prewarm validated — NUMA balance 26/24.6/24.6/24.6%).
 - J6 autopilot soak RUNNING: daemon `autopilot.py start --no-controller --max-trials 2000`, state at `orchestration/autopilot_state.json` (NOT scripts/autopilot/), resumed at trial_counter=124. Log `logs/autopilot_relaunch15_*.log`. **Do NOT touch/restart autopilot or stack without explicit operator permission** (two standing CRITICAL constraints).
 - [../archived/shape-keyed-contention-gating-B-RESUME-history-through-2026-06-20.md](../archived/shape-keyed-contention-gating-B-RESUME-history-through-2026-06-20.md) Part B admit_set scaffolding resume checkpoint
+
+---
+
+## APPEND 2026-08-01 — W1 falsified a LOCKED decision; artifact 1 landed
+
+**Read before executing anything above.** The W1 cutover (epyc-orchestrator `a517793c`) invalidated
+one of this handoff's *Decisions locked* entries and three of its Invariant-1 shape facts.
+
+- [x] **Corrected: `architect_general` is NO LONGER "strictly solo".** ✅ 2026-08-01 — the locked
+      decision read *"its only feasible instance is whole-machine, so every candidate placement
+      overlaps any other holder."* It is now Qwen3.6-27B on MI210 with an **8-thread GPU host lane**
+      (`184-191`, `membind=3`). It went from the least co-residency-friendly heavy role to one of the
+      most: measured `architect_general`+`ingest` moved **0.66 block → 1.40 allow**, +`frontdoor`
+      0.90 → **1.43**, +`worker_general` 0.91 → **1.57**. The whole-machine blocker did not vanish —
+      it was renamed `architect_critic` (:8074, full `0-95`, `interleave=all`). Every place this plan
+      reasons about "architect_general the whole-machine blocker" now means `architect_critic`.
+- [x] **Corrected: Invariant 1 shape table.** ✅ 2026-08-01 — `vision_escalation` (:8087, `{q2,q3}`)
+      no longer exists as a process; it is an alias on `worker_vision`'s :8086.
+      `architect_general` "full" `{q0,q1,q2,q3}` is now the GPU host lane. `worker_vision` moved off
+      the node-1 quarter onto the same shared lane.
+- [x] **Corrected: the topology guard's assumed hash.** ✅ 2026-08-01 — this plan assumes
+      `df373c79cc4af06f`. Live is now `171f86f9`, and the matrix has been re-benched for it
+      (15 pairs, **zero catastrophic**).
+- [x] **`seam_admit`'s docstring was STALE and dangerously so.** ✅ 2026-08-01 — it read *"SCAFFOLDING:
+      not yet called by the gate/seeder"*, which stopped being true on 2026-05-31 when the
+      dispatch-side caller landed. The real chain is `concurrency_aware.py:1334` →
+      `ContentionGate.admit()` → `evaluate()` (`contention_gate.py:312`) → `seam_admit`. It is
+      inert-by-FLAG, not unreachable-by-wiring. A stale "dead code" comment on a live path tells the
+      next auditor to skip the thing that actually runs.
+- [x] **Artifact 1 (device-aware feasibility) landed.** ✅ 2026-08-01 —
+      `src/scheduling/device_model.py`. See the rider:
+      [`contention-model-device-and-load-axes-rider.md`](contention-model-device-and-load-axes-rider.md).
+      Flags stay default-off; 3628 verdicts swept against the prior module with 0 mismatches.
+
+**Honest finding worth keeping.** On the *live* topology the device-aware model changes no
+feasibility verdict — `184-191` is SMT-siblings-only and `parse_cpu_list` strips cores ≥96, so the
+GPU roles already had EMPTY region sets and the cpuset-only model was right **by accident**. It was
+one topology edit from being wrong: on the counterfactual 24-thread node-3 quarter (which W1
+originally wired), the old model excluded 10 sets it should have admitted (18/102 → 28/92). What
+changed live is that the answer is now *derived* and every exclusion names its resource.
+
+### Still open here
+
+- [ ] **`enumerate_feasible` gating was a category error** — it hard-refused on a stale matrix, but
+      the feasibility model reads no measured cell. Now warns and proceeds, stamping
+      `consumed_by_this_model: false`. The N-way path still refuses, correctly.
+- [ ] **Bridge residual 1** — echo `GateDecision` (`admitted`/`waited_s`/`decision`/
+      `candidate_topology_idx`) into `/chat` response metadata so the ROUTE-A1 smoke MEASURES the
+      verdict instead of inferring it from a 503 timeout.
+- [ ] **Bridge residual 2** — bind the re-bench `sample_fn` to the codified bench recipe.
+- [ ] **`shapekeyed_step2_smoke.py:718` `_drive_admit_overlap_probes` is a `NotImplementedError`
+      stub**, and its `DEFAULT_ANCHOR_IDX`/`DEFAULT_PROBE_ROLES` are stale (anchor idx 0 for
+      `ingest_long_context` is the FULL 0-95, not the `{q0,q1}` half; `vision_escalation` has no
+      instance) — so every candidate overlaps the anchor and the admit-vs-queue signal the smoke
+      exists to measure is structurally unobtainable, while it still "reports".
+- [ ] **Contention still has no VRAM gate at admission** — `vram_fit` is exported and unused;
+      rider Q3 (admission-time vs launch-time) is unratified.
+- [ ] **`select_backfill_candidate` stays device-unaware** — deliberately, since resolving there is
+      a live-behaviour change Part C has not authorized.
