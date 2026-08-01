@@ -2,8 +2,8 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-07-29 (adds the GPU shadow lane — built, inert, unactivated — and P2-2 tenant landing; prior frozen-v8 E8 rebaseline posture and fleet/lineup updates retained)
-**Sources**: 66 documents
+**Last compiled**: 2026-08-01 (adds stack compilation as a pure function of declared inputs, backend-resolved kernel binaries, and derived kernel-freeze scope; prior GPU shadow lane / frozen-v8 E8 posture retained)
+**Sources**: 68 documents
 
 ## Compiled Update — 2026-07-29 GPU shadow lane: built, inert, NOT activated
 
@@ -885,3 +885,110 @@ the fleet is realized and the mode is derivable) is the **sanctioned** path, not
 
 _Sources: `handoffs/active/esc8-stack-restart-landmine-audit-2026-07-22.md` § 2026-07-25;
 `epyc-orchestrator ed6288ea`._
+
+
+## Compiling the stack: the derived layer is the only thing production reads (2026-07-31)
+
+Confidence: `verified` — every claim below was checked against the live process table
+(`/proc/<pid>/cmdline`), the compiled artifacts on disk, or an executed pipeline run, not
+against config or intent.
+
+**The load-bearing fact: the master registry is not what launches anything.** Production
+serves from `orchestration/derived/stack_priors.yaml`, which is compiled. Three separate
+correct edits to master — a spec-recipe reversal made on falsification evidence, four
+throughput-prior corrections, and the NUMA topology cutover — all landed in master and **none
+reached the launcher**, because the step that would carry them was silently skipped for days.
+
+### The fail-quiet that caused it
+
+`scripts/registry/stack_change_pipeline.py update` regenerated descriptors and priors **from
+the lean registry**, and nothing in it recompiled lean from master. Run alone it printed
+`descriptors: updated / stack_priors: updated / guard: ok` while re-emitting the stale values
+verbatim: a green result computed over the wrong input. The blast radius was not academic —
+production was one `start` away from launching a composed `ngram-mod,draft-mtp` recipe that had
+already been falsified and reversed in master, where `ngram-mod` alone costs 23–31%.
+
+**Generalization worth carrying**: a pipeline that verifies *the artifact it wrote* rather than
+*the artifact its consumer reads* cannot detect a stale input. This is the same class as the
+seven fail-open guards catalogued in [`formal-verification`](formal-verification.md); this one
+just had production reach.
+
+### Compile is now a pure function of its declared inputs
+
+`compile(master, role assignments, topology) -> lean -> derived`. Three deviations were closed:
+
+1. **`registry_compiler --force` is now the pipeline's first step**, in both `check` and
+   `update` — the missing hop, no longer something a human must remember.
+2. **Topology is declared, not probed.** It previously came from a probe of the *running*
+   fleet, so identical inputs produced different artifacts depending on machine state. It now
+   lives in `orchestration/stack_topology.yaml` and the live probe is a **backstop**, not the
+   decision-maker. This directly retires the cold-start pathology recorded in the 2026-07-25
+   section above: the compile no longer needs a realized fleet to know what to build.
+3. **One mode resolver.** `check` and `update` resolved NUMA mode separately and could
+   disagree; there is now a single resolver that reports its source.
+
+Verified both directions: clean shell → `acceptance: no-inference checks passed` (the first
+fully-green clean-shell run; it was **39 errors** the same morning), and master mutated by one
+comment → `lean_registry: stale`, exit 1. A false positive was caught before shipping — the
+pipeline's active-role set carries `eval_batch_frontdoor`, which the lean projection does not,
+so the cache key never matched and the step reported stale on every run.
+
+### Binaries resolve by backend, so a role's kernel follows its declared device
+
+Four kernels, three ggml generations (llama.cpp 0.16.0, whisper.cpp 0.18.0, qwentts.cpp
+0.17.0). A stable layer at `/mnt/raid0/llm/kernels/production/{cpu,gpu,stt,tts}` plus
+`src/registry/kernel_paths.py` resolves them and **raises** on an unresolvable backend rather
+than falling back. `_backend_for_role()` maps device `ROCm*`/`cuda*`/`gpu*` → gpu, else cpu;
+`stack_priors` emits a per-role `binary_path` and the launcher verifies live matches declared.
+
+**Why this was urgent rather than tidy**: `llama.cpp/build/bin` has **no `libggml-hip.so`** —
+it is a CPU-only build. Before this change no registry field named a binary path and the
+launcher used `build/bin` unconditionally, so a registry edit moving a role to the GPU would
+have launched it on the CPU binary **silently**, because a missing HIP backend does not error.
+Four roles were queued for exactly that move.
+
+A near-miss inside the same change is instructive: `env_policy`/`kmp_blocktime` key off
+`binary_dir` being *truthy*, so always-populating it would have flipped every role from
+`canonical` to `binary_override_strip_ggml` with `KMP_BLOCKTIME=10`. **Deriving a value that
+was previously a sentinel changes the meaning of every check that tested it for presence.**
+Explicit override and derived default are now distinguished and the env policy is asserted
+unchanged.
+
+### Kernel freeze scope is a projection, not a list
+
+The question a freeze must answer is narrow: *which models must show no regression before this
+kernel may serve?* A curated list goes stale the moment a role is repointed, and a stale gate
+is worse than none because it passes while testing the wrong thing. The correct set is derived:
+**the models that matter for backend B are exactly the models whose roles resolve to B in the
+compiled priors** (`scripts/validate/kernel_freeze_scope.py`).
+
+**This is what makes the four kernels independently upgradable.** A whisper.cpp upgrade cannot
+regress a role that never calls whisper.cpp, so it is not gated on one. At the 2026-07-31
+snapshot: `cpu` serves 10 roles across **5 distinct models** (bench the *models*, not the roles
+— several roles share one server); `gpu`, `stt` and `tts` serve none, so a freeze for those
+gates on nothing from the stack and needs only its own functional evidence.
+
+Promotion is a symlink move and rollback is repointing to the archived target — **neither
+registry changes, and no launcher changes**. The binary name is deliberately unchanged, which
+is what lets the orchestration apparatus keep working untouched. Changing *which* backend a
+role uses is a topology change, not a kernel freeze, and gates on the stack-change pipeline
+instead.
+
+### Two operational residues
+
+- **Byte-hash pins on source files do their job and must be refreshed as part of the edit.**
+  The priors pin `orchestrator_stack.py`'s SHA-256; adding one function staled the artifact
+  immediately. That is correct behaviour, not friction.
+- **The stack-change gate cannot distinguish "aux service unmanaged" from "unsafe to launch".**
+  It refused a launch on `runtime_attestation: live process drift` for two long-running
+  services (`:8000` orchestrator API, `:9000` faster-whisper) while every config gate was
+  green, and the only available response was `ORCHESTRATOR_SKIP_STACK_CHANGE_GATE=1`. A gate
+  whose sole failure response is a blanket bypass trains the bypass. Bringing those services
+  under management is tracked as W4/W5.
+
+_Sources: `handoffs/active/numa-topology-cutover-resume-20260730.md` § SESSION APPEND
+2026-07-31 (20:00–21:00Z), ADDENDUM, ADDENDUM 2, ADDENDUM 3;
+`docs/reference/kernel-freeze-runbook.md`;
+`artifacts/audit/orchestration-wiring-audit-20260731.md` (epyc-root `5d4d05a6`);
+`progress/2026-07/2026-07-31.md` § Session 20:00–23:00Z;
+`epyc-orchestrator` `ed891211`, `596e2189`, `c1a004bf`, `b060dd56`, `4e8bf1f0`, `ca5f3e81`._

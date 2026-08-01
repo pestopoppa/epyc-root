@@ -1337,3 +1337,63 @@ Stack unaffected by any of the above and still serving: 12/12 healthy, 18 proces
 
 Stack verified unaffected throughout: 12/12 healthy, `--spec-type draft-mtp`, live
 inference confirmed after every commit.
+
+## ADDENDUM 3 (wrap-up 2026-07-31) — W1 has a preflight gate; the remaining blockers are named
+
+Nothing here supersedes the three appends above; this only records what landed after
+ADDENDUM 2 and converts the loose conclusions in those appends into task lines.
+
+- [x] **W1 preflight gate** ✅ 2026-07-31 — epyc-root `3927b2f9`,
+      [`scripts/operator/w1_preflight.py`](../../scripts/operator/w1_preflight.py).
+      A **gate, not an applier** — it deliberately does not edit the registry. Verifies the four
+      preconditions W1 actually has, all now checkable because the compiler derives what used to be
+      restated by hand: the three target model artifacts exist on disk; GPU has ≥50 GiB free
+      (27B Q8 ~29 + VL-30B Q4 ~18); the `gpu` kernel backend resolves through the stable layer;
+      both repos are clean so an apply cannot mix with unrelated work. Also provides
+      backup/rollback for the files W1 touches.
+      It was first written with an `--apply` that printed *"not implemented"* — the exact fail-quiet
+      shape this handoff has spent the day cataloguing — so the flag was **removed rather than
+      stubbed**.
+- [x] **Priors source hashes refreshed after the backend-resolution edit** ✅ 2026-07-31 —
+      orchestrator `ca5f3e81`. `orchestrator_stack.py` gained `_kernel_server_binary()` in
+      `b060dd56` and the priors pin that file's SHA-256, so the artifact went stale the moment the
+      code changed. The byte-hash pin did exactly its job. Pipeline back to
+      `acceptance: no-inference checks passed`.
+
+### W1's remaining blockers, as tasks
+
+- [ ] **W1-a. Obtain the D1–D4 operator rulings.** `architect_critic` tier; how aggressive the
+      `reasoning` chain triggers should be; whether `frontdoor` keeps `coder`; the duplicate B3
+      hint. Package them per the operator decision-package contract — options, tradeoffs,
+      recommendation — rather than asking four separate questions.
+- [ ] **W1-b. Re-derive all 76 edit-list anchors against current master.** The list is recovered
+      intact at `scratchpad/editlist.md` (97,339 bytes, md5
+      `dbdbb11d35e5beb3957dec7695088853`), but its anchors are against master `96aa90f6`
+      (md5 `c6a4d2b50e203140d344b436c8f1ab22`, 9,876 lines) and master has moved to `596a1e24`.
+      **Do not generate the edits mechanically**: master carries load-bearing provenance comments
+      that a YAML round-trip destroys, which is why the original list used line anchors. This needs
+      a session with the context budget to verify each anchor.
+- [ ] **W1-c. Run `w1_preflight.py` immediately before applying**, not once at planning time — two
+      of its four checks (repos clean, GPU headroom) are state, not facts.
+
+### Derived from the 20:00–23:00Z window — filed so they are not lost in prose
+
+- [ ] **Review the `ORCHESTRATOR_SKIP_STACK_CHANGE_GATE=1` bypass taken at this session's start.**
+      The gate failed only on `runtime_attestation: live process drift` for `:8000` (orchestrator
+      API) and `:9000` (faster-whisper CT2) — both predating the session, both exactly what **W4**
+      exists to manage. The gate cannot say *"aux service unmanaged"* separately from *"unsafe to
+      launch"*, so it fails at the same severity for both and the escape hatch is the only
+      available response. **Until W4 lands this bypass recurs on every start**, which is how a
+      bypass becomes habitual. Either W4 lands or the gate gains a severity distinction.
+- [ ] **Do not conflate `architect_general`'s two throughput priors.** **24.00** is the 122B's
+      production-optimal figure and is what the derived layer correctly carries today; **47.79** is
+      the 27B's and becomes correct only *after* W1 repoints the role. The prior must move in the
+      **same commit** as the model repoint — splitting them is how every stale prior corrected this
+      session was minted.
+- [ ] **Fold `kernel_freeze_scope.py` into the promotion checklist** for the next kernel freeze, so
+      the regression scope is derived at freeze time rather than restated. Runbook:
+      [`docs/reference/kernel-freeze-runbook.md`](../../docs/reference/kernel-freeze-runbook.md).
+
+Repo hygiene surfaced by this window is filed as **NIB2-60..63** in
+[`non-inference-backlog.md`](non-inference-backlog.md) — not acted on here because a stack start
+was in flight and several items touch the shared clone.

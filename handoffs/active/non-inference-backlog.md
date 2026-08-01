@@ -188,6 +188,17 @@ handoff, which is exactly how items of this shape get lost.
 - [ ] **NIB2-58a**: **Wire `verify_ggml_linkage.sh` into every ggml build path on this host**, not just the whisper one. The guard currently exists but must be *invoked*; **every future ggml build on this host is exposed** until it is. A landed fix whose entry point is never called is the classic derived-actionable failure shape.
 - [ ] **NIB2-59** (**MED**, governance): **Resolve the measurement trust-boundary contradiction.** `agents/shared/MEASUREMENT_POLICY.md:79` says changes are human-PR-reviewed amendments, while `MEASUREMENT.md:117-119`'s boundary membership **omits the digest**. As written, nobody — human or agent — can tell whether an agent is permitted to edit the digest. **Needs an operator ruling**, not an agent decision, because the trust boundary is human-amendment-only and self-amending it would beg the question.
 
+## 2026-07-31 supplement 2 — repo hygiene surfaced by the orchestration-wiring window
+
+Identified during the 20:00–23:00Z wiring window and **deliberately not acted on**: a stack start was
+in flight and several of these touch the shared clone. All zero-inference. Measured figures, not
+estimates.
+
+- [ ] **NIB2-60** (MED): **1.4 GB of orphaned git pack files in `/workspace/.git/objects/pack/`.** `git count-objects -v` reports `garbage: 3` — `tmp_pack_hhZMcY` (414 MB), `tmp_pack_QlMjgI`, `tmp_pack_WJ8KfU`. Remove by **explicit three-path `rm`** on those exact filenames. **Never `git gc`** on this repo: `/workspace` and `/mnt/raid0/llm/epyc-root` are one clone shared by parallel sessions, and a full repack can disrupt a live session mid-operation.
+- [ ] **NIB2-61** (LOW): **`llama.log` and `main.log` are tracked at the repo root.** Both are runtime logs and both currently show as deleted in the working tree while their tracked entries remain, so every session sees a dirty tree it did not cause — and `w1_preflight.py` gates on a clean tree. Untrack and gitignore.
+- [ ] **NIB2-62** (LOW): **`.devcontainer/Dockerfile.orig` is untracked merge residue.** Delete or, if it is a deliberate reference copy, name it so and track it.
+- [ ] **NIB2-63** (MED): **~4.5 GB of `repos/*.bak-2026-05-22*` clones hold ZERO unique commits.** `repos/epyc-llama.bak-2026-05-22-141927`, `repos/epyc-orchestrator.bak-2026-05-22`, `repos/epyc-inference-research.bak-2026-05-22` (and the identical set under `/mnt/raid0/llm/epyc-root/repos/`, which is the same paths through the symlink — count the space once). Verified: nothing in them is absent from the live clones. **Re-verify uniqueness immediately before deleting**, not from this record — the check is cheap and the deletion is not reversible.
+
 ---
 
 ## Cross-references
