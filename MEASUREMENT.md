@@ -143,6 +143,21 @@ Status: ✅ ratified, 📋 staged (operator-apply).
   failed validation re-presents the SAME apply token with updated hashes — never a restarted
   chain. Boundary tokens are presented only while compute is saturated; unrelated work never
   gates on a pending token. Operator-presented commands must be pre-validated end-to-end.
+- **Evidence must be DURABLE, not merely hashed** *(operator-ratified 2026-08-02)*: a
+  ratification bundle records evidence hashes, but a hash over an artifact that no longer
+  exists proves nothing — there is nothing left to check it against. Evidence backing any
+  ratified or production-affecting claim MUST therefore live inside a repository, under
+  `epyc-inference-research/data/<campaign>/`, with a `SHA256SUMS` and a README stating what
+  was measured, when, and which claim it backs. Scratch paths (`/mnt/raid0/llm/tmp/...`) are
+  valid for work in progress and MUST NOT appear as the evidence citation of a ratified
+  claim. Artifacts too large to carry (multi-GiB imatrix files, build trees) are recorded
+  hash-and-provenance-only, and the citation says so explicitly rather than pointing at a
+  blob that is not there. Enforced by `scripts/validate/check_evidence_durability.py`, which
+  fails on any citation resolving outside the repository or to a missing path.
+  *Origin: on 2026-08-02 the master registry was found citing 158 unique scratch paths,
+  including the MMMU-250 result that gated a live vision model cutover. 152 still existed and
+  4.0 MiB carried nearly all of them — full exposure, no loss yet. The gap was constitutional
+  rather than clerical: §5 mandated the hash and was silent on where the artifact must live.*
 - **Validators**: `scripts/validate/check_claims_grammar.sh` (warn-mode; scans new handoff/index
   diffs for uncited decision-flavored numbers — built 2026-07-30 per ledger L5); journal rows
   carry `protocol_id`; the ATTESTATION artifact (findings-04 §B) is the `attest <id>` referent.
@@ -222,6 +237,13 @@ call, not contamination.
 4. **New measurements** — cite a protocol from §2. No protocol → observation, not claim.
 
 ## CHANGELOG
+
+- **2026-08-02 (v2.x)** — §5 gains **evidence durability**: evidence for a ratified claim must
+  live in-repo under `epyc-inference-research/data/<campaign>/` with hashes and a README;
+  scratch paths may not be the citation of record. Closes a gap where the constitution
+  required evidence hashes but never required the evidence to survive. Enforced by
+  `scripts/validate/check_evidence_durability.py`.
+
 
 - 2026-07-30 — v2 restructure RATIFIED (operator apply 20260730T103218Z): core + `measurement/protocols/` annex split; metric-scoping section
   added; stale era-table copy replaced by registry pointer; P-GPU-1 placeholder/ratified blocks
