@@ -86,6 +86,27 @@ is_timestamp_or_log_line() {
   echo "$line" | grep -qE '\b1[5-9][0-9]{8}([0-9]{3}([0-9]{3})?)?\b' && return 0
   # Log severity keywords
   echo "$line" | grep -qiE '\b(info|warn|error|debug|trace)[: ]' && return 0
+  # llama-server log lines. ADDED 2026-08-02 — narrowly, after this rule produced
+  # ~170 false positives while committing benchmark evidence.
+  #
+  # Two independent misses, both real gaps rather than bad luck:
+  #   * llama-server prints a SINGLE-LETTER severity ("... I slot ..."), so the
+  #     keyword rule above never fires on it.
+  #   * its `t_last` slot counters are monotonic values starting 13..., not
+  #     wall-clock epochs, so the 1[5-9] epoch shape above never matches either.
+  # Net effect: every `t_last = 1304678976466` read as a candidate account number.
+  #
+  # Deliberately keyed on llama-server's whole line PREFIX shape
+  # (`<s>.<ms>.<us>.<ns> <LEVEL> `), not on a looser digit rule: a broad "long
+  # digit runs in logs are fine" exemption would be a real weakening, since logs
+  # are exactly where a leaked token tends to land.
+  echo "$line" | grep -qE '^[0-9]+\.[0-9]{2}\.[0-9]{3}\.[0-9]{3} [IWEDT] ' && return 0
+  # Self-describing numeric JSON fields. ADDED 2026-08-02.
+  # A digit run whose own KEY says it is a byte count, size or duration is not an
+  # account number: `"total_shard_bytes": 238577580768` is a 238 GB model shard.
+  # Keyed on the field NAME rather than the value's shape, so it cannot be widened
+  # into "long numbers in JSON are fine" — the key has to assert the semantics.
+  echo "$line" | grep -qE '"[a-z0-9_]*(bytes|size|_ns|_us|_ms|elapsed|duration)"[[:space:]]*:[[:space:]]*[0-9]{12,19}\b' && return 0
   return 1
 }
 
