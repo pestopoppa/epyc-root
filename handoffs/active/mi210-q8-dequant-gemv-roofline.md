@@ -100,12 +100,23 @@ Use the **achievable** column for headroom and campaign sizing (it is the real r
 column for any cross-vendor comparison, and say which one you used — a utilisation quoted without its
 denominator is not a number.
 
-**The E8M0 three-way divergence is now instrumented** ✅ 2026-08-03. `CONFORMANCE-VECTORS-1` is
-ratified and its first vectors ship at `epyc-inference-research/conformance/` — three contracts (MX
-spec NaN / ggml `+Inf` / ggml-half 2^127), a consumer that passes 10/10 bit-exact, and a matrix that
-marks every **backend** row `ASSERTED` because no compiled backend has been executed yet. The
-divergence is **documented-divergent, not a defect**: `validate_e_e8m0` rejects `0xFF` at load, so it
-is unreachable in practice.
+**The E8M0 divergence is instrumented, and its first classification was WRONG** ✅ 2026-08-03.
+`CONFORMANCE-VECTORS-1` ships at `epyc-inference-research/conformance/` (research `33f7076b`): three
+contracts, harnesses that **execute the real CPU and HIP decoders** (27 values, gfx90a, all matching),
+and 15 tests. Three backend rows are now **VERIFIED** rather than asserted — including the HIP row,
+where which branch of `#if CUDART_VERSION >= 12080` is taken was previously *inferred* from source and
+is now *observed* on the card.
+
+**RETRACTED: "documented-divergent, not a defect."** That rested on `validate_e_e8m0` rejecting
+`0xFF` at load — but that gate runs only under `check_tensors`, which **defaults to false** and is
+passed by none of our launchers. And it is not dead code: **both paths are live.** CPU MXFP4 uses
+fused `_half`; GPU MXFP4 uses `full(e) * 0.5f`. They agree everywhere except `0xFF`, where
+`+Inf × 0.5` is still `+Inf` while the fused half gives a finite 2^127.
+
+**What actually bounds it is weaker: we serve no MXFP4 model** — a property of the fleet, not the
+code. So the claim is now *checked*: a sentinel fails the moment an MXFP4 model enters the registry
+or lands on disk, carrying the remediation options. Recommendation is to rely on the sentinel now and
+pass `--check-tensors` the moment an MXFP4 model is proposed.
 
 **Free incidental finding in our own CPU tree, filed here because it is the same IQ2 sign path:**
 `iqk_gemm_iquants.cpp` contains an AVX512-VPOPCNTDQ routine deriving IQ2 signs arithmetically with **zero
