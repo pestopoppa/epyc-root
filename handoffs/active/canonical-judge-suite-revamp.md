@@ -4,7 +4,7 @@
 **Created**: 2026-08-03
 **Categories**: benchmark_methodology, evaluation, routing
 **Related (owns adjacent work — do NOT duplicate)**: [`scoring-infra-standardization.md`](scoring-infra-standardization.md) (Track 2 owns the exec-scorer + coding ladder + LCB contamination refresh), [`architect-model-selection-bench.md`](architect-model-selection-bench.md) (owns the architect keep/drop verdict and its SWE/LCB arms), [`eval-tower-verification.md`](eval-tower-verification.md) (owns E-era eval-pool registration)
-**Tracked in**: [`research-evaluation-index.md`](research-evaluation-index.md) — *index row NOT yet added; adding it needs operator approval (CLAUDE.md → Agents & Automation).*
+**Tracked in**: [`research-evaluation-index.md`](research-evaluation-index.md) — index row added 2026-08-03 (operator-approved).
 
 ## Problem
 
