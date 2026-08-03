@@ -908,3 +908,4 @@
 - 2026-08-03: CENSORING-1 ratified.
 - 2026-08-03: P-AK-SEARCH-1-A1 ratified.
 - 2026-08-03: CONFORMANCE-VECTORS-1 ratified.
+- 2026-08-03: Annex K narrowing cross-reference added under P-AK-SEARCH-1, completing the P-AK-SEARCH-1-A1 apply per the annex admission test.

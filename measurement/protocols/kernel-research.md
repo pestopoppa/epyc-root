@@ -39,6 +39,8 @@ used to relocate an existing protocol.
 
 ## P-AK-SEARCH-1 — Kernel-candidate search authority (RATIFIED 2026-08-03)
 
+**NARROWED 2026-08-03 by `P-AK-SEARCH-1-A1`** (this annex, below): a banked candidate additionally requires a mechanism explanation backed by bytes, FLOPs, counters or a clean A/B; and a backend-capability claim additionally requires both correctness and performance evidence. This protocol as stated below is purely statistical and does not carry either requirement on its own.
+
 **Purpose.** This protocol permits an automated kernel-research controller to **rank, retain,
 abandon, branch, and compose candidates inside experimental worktrees**, on the basis of measurements
 taken on those experimental candidates. It is the narrow lift of the consumption prohibition at
