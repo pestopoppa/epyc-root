@@ -58,3 +58,5 @@ conceptual:
   - "safety gates"
   - "host reboots and kernel/boot configuration"
   - "privileged system-wide changes affecting stability"
+  - "AutoKernel evaluator immutability against non-agent writes — the PreToolUse layer sees agent tool calls only, so a daemon or a candidate subprocess bypasses it entirely; the enforcing layer is OS-level (separate uid or read-only bind mount), and no glob can express it"
+  - "glob: entries in the paths: block above were DECLARATIVE ONLY until 2026-08-03: the matcher in scripts/hooks/check_trust_boundary_edit.sh quoted its right-hand side, which disables bash pattern matching, so measurement/protocols/*.md matched nothing and Annexes B/Q/G were agent-writable through Write/Edit while the guard reported success. Literal entries were unaffected and always blocked, which is why the defect survived every prior test. REPAIRED in epyc-root 6f1c4a8b (RHS unquoted) with scripts/hooks/test_check_trust_boundary_edit.sh asserting both directions against the live gate list. A future editor must not re-quote it"

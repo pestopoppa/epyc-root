@@ -15,8 +15,8 @@ Everything else exists to make that rule cheap to follow.
 
 **Document layout (v2).** This core file holds the constitution: claim grammar, metric scoping,
 protocol index, noise table, governance, and retroactivity. Full normative protocol text lives in
-three annexes in `measurement/protocols/`, which carry the SAME trust boundary and amendment rules as this
-file — they are the constitution, filed by family, not commentary on it. Daily-use guidance for
+four annexes in `measurement/protocols/`, which carry the SAME trust boundary and amendment rules as this
+file — they are the constitution, filed by family or instrument class, not commentary on it. Daily-use guidance for
 sessions is the digest at `agents/shared/MEASUREMENT_POLICY.md`; when in doubt, this file and its
 annexes win.
 
@@ -43,7 +43,8 @@ confirmed-direction errors have burned debugging time before (CLAUDE.md §Debugg
 ## 2. Protocol registry (index)
 
 Full normative text: **B** = `measurement/protocols/bench-cpu.md`, **Q** =
-`measurement/protocols/quality-eval.md`, **G** = `measurement/protocols/gpu-cross-device.md`.
+`measurement/protocols/quality-eval.md`, **G** = `measurement/protocols/gpu-cross-device.md`,
+**K** = `measurement/protocols/kernel-research.md`.
 Status: ✅ ratified, 📋 staged (operator-apply).
 
 | Protocol | Scope | Metric (direction) | Status | Annex |
@@ -64,6 +65,7 @@ Status: ✅ ratified, 📋 staged (operator-apply).
 | P-GPU-1 | MI210 GPU canonical throughput | t/s (↑) | ✅ 2026-07-19 | G |
 | P-SHED-1 | Cross-device shed trade (CPU→GPU displacement) | net task_rate (↑) | ✅ | G |
 | P-DFLASH-LINEUP-1 | DFlash lineup enablement (per-lane) | acceptance + t/s ratio (↑) | ✅ 2026-07-25 | G |
+| P-AK-SEARCH-1 | Kernel-candidate search inside experimental worktrees, per-backend | search verdict — **not a claim**; direction carried per record | ✅ 2026-08-03 | K |
 
 ## 3. Claim grammar & examples
 
@@ -215,6 +217,7 @@ that ARE constitutional:
 | Per-question eval corpora | 3187 + 1818 rows | Both demote as item-difficulty priors feeding core_v2 | 3way set era-labeled externally by date (no scoring_method fields) |
 | Strategy store / STM / planner narrative | 1424+ entries | Findings-01 Phase 4 (provenance or regeneration) | Narrative citing a demoted number fails provenance |
 | Agent memory | 49/108 files carry numbers | Pointers, not claims; sessions re-verify per memory-recall caveat | |
+| Kernel-research strategy store (`scripts/kernel_rnd/kernel_store.py` SQLite; rows written before 2026-08-03) | pre-ratification rows | demote-to-prior (:180-182) + quarantine | Narrows the `Strategy store / STM / planner narrative` ruling above for these rows only — their evaluator never gated on coherence, so correctness labels were emitted without an anchor comparison and are not verdicts. Quarantined from every correct-only frontier and readiness computation; a lineage decision resting only on them gets a re-measure ticket (:164-166). Rows of that corpus written by the routing planner or the STM are NOT affected. |
 
 **Known limits (accepted)**: (a) historical journal rows lack per-question IDs — old T1 quality
 is era-comparable only within (n, era); the per-question ledger starts clean at E4. (b) episodic
@@ -226,7 +229,9 @@ rows and dated backups, is kept: `autopilot_journal.{jsonl,tsv}.run3-poisoned` (
 multi-arch "Probe A" first pass (its own re-run's decision.md: "almost entirely contamination");
 the two corrupted `thinking_deepseek_*_baseline` runs in `REBENCHMARK_NEEDED.md`. Disk-hygiene
 candidates (~1.2GB superseded embedding blobs under `repl_memory/sessions/`) are an operator
-call, not contamination.
+call, not contamination. Autonomous-loop reclamation of the enumerated expirable
+classes is governed by §5 *"Evidence retention and reclamation"*; this list is otherwise closed and
+confers no authority beyond its own enumeration.
 
 ## 7. Quick-reference: what to do when you encounter a number
 

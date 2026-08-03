@@ -20,6 +20,11 @@ ONLY be produced on a **production-named kernel** (`production-consolidated-vN`;
 MUST NOT gate any keep / revert / deploy / promote / buy / close decision and MUST NOT be
 consumed by AutoPilot or any automated optimizer.
 
+*Narrowed for in-worktree candidate search only by `P-AK-SEARCH-1` (Annex K, ratified 2026-08-03).
+The decision-grade clause above is unchanged, and the consumption clause continues to bind every
+consumer other than the AutoKernel controller that produced the record, within the campaign that
+produced it.*
+
 **Required evidence fields — ALL mandatory; a claim missing ANY field is an observation.**
 1. **Hardware state** — GPU model, gfx target, ROCm runtime + driver, visible device id,
    `llama-server --version`, llama.cpp commit + clean/dirty; `rocm-smi` clocks, power,
