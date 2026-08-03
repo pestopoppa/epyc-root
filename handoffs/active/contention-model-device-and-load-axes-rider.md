@@ -194,7 +194,7 @@ judgement over measured values and is the one restated constant in the artifact.
 
 ### Open defect found at 2026-08-02 wrap-up — `slots_by_port` is compile-mode-scoped
 
-- [ ] **Make `runtime.cache.slots_by_port` independent of the compile-time NUMA mode.**
+- [x] **Make `runtime.cache.slots_by_port` independent of the compile-time NUMA mode.** ✅ 2026-08-03 — fixed in epyc-orchestrator `9e14c069`; `status` now reports NO attestation warnings.
       `orchestrator_stack.py status` reports four attestation warnings against
       CORRECTLY-launched servers:
 
@@ -225,5 +225,11 @@ judgement over measured values and is the one restated constant in the artifact.
       `_stack_manifest_info` path) — a lazy import inside the function is likely
       required.
 
-      NOT a functional break: launches are correct, only the attestation
-      expectation is wrong. Deferred at wrap-up rather than fixed unverified.
+      RESOLVED. `declared_slots_by_port()` is merged in as a mode-independent
+      FLOOR, with mode-scoped values winning on conflict (verified: a launch
+      view resolving 8080 to 9 keeps 9 while the floor supplies 8070/8180).
+      Alias roles needed host inheritance too — they have no NUMA_CONFIG entry
+      of their own, so server_8082/8182 still attested against 16 until the
+      alias inherited its host's declared map. The lazy import mirrors
+      `_launch_runtime_record`'s existing pattern, so the circular-import risk
+      was already solved in this module.
