@@ -1,5 +1,12 @@
 # Proposal: MI210 Kernel R&D as a semi-autonomous loop (planner/critic → hypothesis → verify → authorize)
 
+> **SUPERSEDED AS LOOP OWNER 2026-08-01.** The system-wide, fully autonomous controller,
+> tiered evaluation, checkpoint trigger, and automatic-release design now live in
+> [`autokernel-research-loop.md`](autokernel-research-loop.md). This file remains the historical
+> MI210 scaffold record and should not receive new controller/release architecture. Backend-specific
+> MI210 evaluator findings may continue in `agentic-rocm-kernel-authoring.md` and
+> `rocm-verify-profile-backend.md`.
+
 **Status**: **APPROVED 2026-07-04 — building. Phase 0 (`kernel_eval.sh`) ✅ BUILT + VALIDATED + committed** (research `48f990f`). **Phase 3 (dashboard page) ✅ BUILT 2026-07-05 by the dashboard-hub session**: the epyc-root hub serves `/kernel` (OBSERVATION-disciplined; Pareto correct-only, best-per-model, run log with MemUnitStalled/Busy mechanism deltas, freshness), reading a self-contained JSON contract produced by the loop-owned `kernel_store.py export` (wired into `kernel_sweep.sh`); seeded + previewing against the real `prefetch-validate` row. **Phases 1–2 remain open** (Phase 1 strategy store: `kernel_store.py` + `export` exist; Phase 2 nightshift loop: not built). Now a buildable handoff (see Build plan). The measure/authorize trust boundary (MEASUREMENT.md, human-amendment-only) is respected by the authorize ceiling below: autonomous only up to experimental-tree commits + OBSERVATIONS; production push is operator-only. **Created**: 2026-07-04 (operator raised: "should sessions like this become another form of autopilot… planner/critic → hypothesis → verify → authorize, like the orchestration-optimization loop?").
 **Context**: this GPU speed campaign (findings-05b, findings-05c, the three mi210 kernel handoffs) is the manual instance of exactly this loop — we're running it by hand right now.
 
@@ -71,7 +78,8 @@ Single-GPU serialization ⇒ one experiment at a time (unlike the orchestration 
 
 - [x] Phase 0 kernel_eval.sh verify layer (BUILT + VALIDATED, research 48f990f) ✅
 - [x] Phase 3 dashboard page :8100/kernel (BUILT 2026-07-05) ✅
-- [ ] Phase 1 kernel strategy store SQLite (kernel_store.py exists; Pareto/rewind wiring open)
+- [x] Phase 1 kernel strategy store SQLite + Pareto/purge/rewind wiring (research `133017de`,
+  `a1f38cd7`) ✅ 2026-07-17
 - [ ] Phase 2 the nightshift loop (outer planner/critic + inner sweep->kernel_eval.sh->Pareto)
 - [ ] First real workload: L3-MoE/L15 MMQ-family param sweep through the loop
 

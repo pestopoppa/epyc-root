@@ -1,0 +1,2636 @@
+# AutoKernel — Autonomous System-Wide Kernel Research Loop
+
+**Status:** DESIGN COMPLETE / AUDITED 2026-08-02 — implementation not started
+**Priority:** HIGH after the current production-topology work settles
+**Owner:** Inference Acceleration
+**Runtime owner repository:** `epyc-inference-research`
+**Parent index:** [Inference Acceleration — Active Index](inference-acceleration-index.md)
+**Source draft:** [`docs/reference/autokernel/system-wide-inference-kernel-optimization-draft.md`](../../docs/reference/autokernel/system-wide-inference-kernel-optimization-draft.md)
+(SHA-256 `af2fd586d3b1e3b58b038fcc0a0c7d5def22d70b45dbdc54bd64799b082e7b8b`; moved out of `tmp/` on
+2026-08-02 because `tmp/*` is gitignored and `MEASUREMENT.md:146-156` forbids scratch citations)
+**Supersedes as loop owner:** [`mi210-kernel-rnd-loop-proposal.md`](mi210-kernel-rnd-loop-proposal.md)
+**Absorbed 2026-08-02:** the bootstrap-corpus design pass (now §19) and the full design audit
+(findings folded into §§2–15; the standalone audit document is retired)
+**Consumes rather than replaces:** [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md),
+[`rocm-verify-profile-backend.md`](rocm-verify-profile-backend.md),
+[`agent-collab-rnd-harness.md`](agent-collab-rnd-harness.md),
+[`kernel-freeze-runbook.md`](../../docs/reference/kernel-freeze-runbook.md)
+**Production baseline at authoring:** `production-consolidated-v8` at
+`67a433bf45a8a091d83b4ea0b32ff0735fd51800`; the production kernel set is frozen.
+
+---
+
+## 0. Purpose and outcome
+
+This is the build specification for turning the partially built MI210 kernel-R&D scaffold into a
+genuinely autonomous, system-wide kernel **research** loop whose output is a continuously maintained,
+always-validated best-known kernel per source tree — which the operator promotes to production on
+request.
+
+The finished system must be able to:
+
+1. inspect current production behaviour and profiler evidence;
+2. generate falsifiable optimization hypotheses;
+3. edit and build isolated experimental kernel trees;
+4. reject wrong, unstable, contaminated, or dishonest candidates before speed can matter;
+5. learn from every outcome, including failures and negative results;
+6. accumulate compatible improvements into a **champion lineage** without repeatedly paying for the
+   full release matrix;
+7. keep that champion rebased on the current production tip and green at all times;
+8. on operator request, seal the champion and run the one full kernel-freeze evaluation; and
+9. hand the operator a pre-validated release package — evidence bundle plus transaction plan — that
+   they ratify and execute through the existing human freeze path.
+
+**AutoKernel never freezes or cuts over production.** That decision, and the four trust-boundary
+writes it entails, remain human (§1.3, §3.3).
+
+The exhaustive optimization catalog in the source draft remains useful. This handoff owns the loop
+that will execute that catalog and, in §19, the distillation of that catalog into loop memory.
+
+---
+
+## 1. Executive decisions
+
+### 1.1 One release truth: T3 is the kernel-freeze evaluator, run on request
+
+The final AutoKernel evaluation and the kernel-freeze evaluation are **the same program**. There is
+one release truth, not an AutoKernel score later reinterpreted by a separate promotion ceremony.
+
+That does not mean running it per candidate. AutoKernel needs two evaluation products:
+
+- a cheap, stable **research evaluator** (T0–T2) used continuously to rank experimental candidates
+  and maintain the champion; and
+- a comprehensive, stable **release evaluator** (T3) run when the operator requests a freeze.
+
+The research evaluator is a proxy for search efficiency and may never authorize a production
+release by itself.
+
+### 1.2 AutoKernel maintains a champion, it does not chase a trigger
+
+Per source tree, AutoKernel maintains a **champion lineage**: the current best complete set of
+compatible, correct changes, anchored on the current production tip and green through T2.
+
+The `+25% point / +20% lower-bound` figure from the original design is demoted from an automatic
+release trigger to a **readiness signal** the loop reports to the operator ("champion is now
++X%/LCB +Y% versus the production anchor on these cells"). Removing the trigger removes three
+problems at once: the multiplicity of peeking at a threshold every round, the winner's-curse
+inflation of a selected estimate, and the tension between long accumulation and the fresh-anchor
+invariant (§4, invariant 1). Accumulation is now the normal state, and re-anchoring happens at freeze time,
+which is when production actually moves.
+
+### 1.3 Freeze and cutover remain human — AutoKernel prepares, never signs
+
+**Revised 2026-08-02 (operator).** The earlier design targeted a one-time delegation to a release
+broker with unattended freeze and eventually unattended cutover. That is withdrawn as too
+aggressive, and the audit shows it was also more expensive than it looked: an automatic freeze
+crosses **four** human-only trust boundaries, not one.
+
+`MEASUREMENT.md:140-142` enumerates human-only writes as *"era-registry rows, this constitution and
+its annexes, AutoPilot baseline-state applies, production freezes/cutovers, host reboots"* — repeated
+in `MEASUREMENT_POLICY.md:71-73`, `OPERATING_CONSTRAINTS.md:36`, and `BUS_PROTOCOL.md:38-41`. A
+kernel freeze touches:
+
+1. **the freeze/cutover itself**;
+2. **era-registry rows** — `orchestration/instrument_eras.yaml`, separately pinned in
+   `human_only_paths.yaml:35-37`. The v8 cutover wrote three rows: `E8-cpu-kernel`,
+   `E8-autopilot-speed`, `E8` (`instrument_eras.yaml:140-172`). Because `MEASUREMENT.md:233` requires
+   every number to be era-labelled, a freeze whose era row is unwritten produces evidence nobody can
+   interpret;
+3. **AutoPilot baseline applies** — `orchestration/autopilot_baseline.yaml`, pinned at
+   `human_only_paths.yaml:38-40`. The E8 precedent is explicit: the cutover *"opens a fail-closed E8
+   AutoPilot rebaseline hold … until an **operator-ratified** E8 quality-baseline reseed writes fresh
+   values and windows"* (`instrument_eras.yaml:166-172`);
+4. **the pinned list itself** — `human_only_paths.yaml:42-49` is branch-pattern-scoped
+   (`production-consolidated-*`, *"any commit landing on a frozen production kernel branch"*), so a
+   newly created `production-consolidated-v9` matches the moment it exists, and baking the agent-file
+   overlay into it is a commit on a protected branch. Amending that list also requires rewriting
+   `human_only_paths.sha256`, and `config.yaml:164` sets `on_pin_mismatch: refuse`.
+
+Under the revised model none of these need delegation. AutoKernel's release-side job ends at a
+**release package**: a sealed candidate, a T3 verdict bundle, a rollback plan, and a pre-validated
+command sequence. The operator executes the freeze, writes the era rows, and ratifies the AutoPilot
+rebaseline, exactly as for v8 and the speech freeze.
+
+This also dissolves the reload-ownership conflict (§3.3): `OPERATING_CONSTRAINTS.md:41` requires that
+*"if a session owns the inference, any orchestrator API or stack reload … must be executed BY THAT
+SESSION, at a moment it chooses; it is never forced upon that session's workflow from outside"*. An
+operator-driven cutover is scheduled by whoever owns inference. An autonomous broker restart would
+have been the incident the rule was written for.
+
+### 1.4 Full compute, separated authority
+
+"Full access to system resources" means the research actor may use all authorized CPU, GPU, memory,
+models, source trees, compilers, profilers, and storage. It does not mean the same process may
+rewrite the measurement constitution, the evaluator that scores it, the sealed bundle after
+evaluation, a frozen production branch, or any production symlink.
+
+Compute access and certification authority are different capabilities.
+
+### 1.5 Three source trees, four production binaries — campaigns are per backend, freezes are per tree
+
+The production kernel *set* is four binaries but only **three source trees**:
+
+| Production binary | Stable path | Source tree | Frozen branch |
+|---|---|---|---|
+| `cpu` | `/mnt/raid0/llm/kernels/production/cpu` → `llama.cpp/build/bin` | `llama.cpp` | `production-consolidated-v8` |
+| `gpu` | `…/production/gpu` → `llama.cpp/build-hip/bin` | `llama.cpp` | `production-consolidated-v8` |
+| `stt` | `…/production/stt` → `whisper.cpp/build/bin` | `whisper.cpp` | `production-speech-v1` |
+| `tts` | `…/production/tts` → `qwentts.cpp/build` | `qwentts.cpp` | `production-speech-v1` |
+
+CPU and GPU **share one tree and one frozen branch**. They can be *researched* independently — a
+change in `ggml-cpu` does not reach the HIP binary — but they cannot be *frozen* independently, and a
+change in shared ggml core reaches both. Therefore:
+
+- campaigns are per **backend** (`llama_cpu`, `llama_gpu`, `whisper_stt`, `qwentts_tts`,
+  `serving_runtime`) and may run independently;
+- champions are per **source tree**, so `llama_cpu` and `llama_gpu` campaigns converge on one llama
+  champion; and
+- freeze scope is the **union of backends served by the tree**, narrowed only by the mechanically
+  derived affected-surface manifest (§6.4). A CPU-only change still owes a GPU non-regression check
+  unless the manifest proves the GPU binary is byte-identical.
+
+Note the `tts` symlink points at `build`, not `build/bin` like the other three. Adapters must not
+assume uniformity.
+
+Build one domain-agnostic controller with backend adapters. Do not build a GPU-only controller and
+clone it. Do not force scheduler or registry changes through a kernel-freeze transaction merely
+because the same planner discovered them — `serving_runtime` uses a stack-change release adapter.
+
+### 1.6 The objective is per-backend, per-phase non-inferiority plus improvement
+
+**Revised 2026-08-02 (operator).** The original production-weighted composite across CPU, GPU, STT
+and TTS cells is withdrawn. It was forbidden twice over:
+
+- `MEASUREMENT.md:83-84` — *"Comparisons only within a protocol + instrument version. Cross-protocol
+  comparisons are analysis, labeled as such."* A scalar folding P-BENCH-1, P-BENCH-PREFILL-1 and
+  P-GPU-1 cells is analysis, and cannot gate a release.
+- `gpu-cross-device.md:106-111` — *"**The net is measured directly, never reconstructed.** … Measuring
+  GPU gain and CPU loss separately and subtracting is FORBIDDEN: it compounds both halves' noise
+  (rate CV ≈ 9.1% each) and measures the halves under conditions that do not co-occur."*
+
+The replacement objective, per backend:
+
+> At the **production-optimal** recipe for every protected cell, both **prefill** and **decode**
+> throughput must be non-inferior to the production anchor, and at least one must improve.
+
+Consequences:
+
+- each phase is judged under its own protocol (P-BENCH-1 decode, P-BENCH-PREFILL-1 prefill, P-GPU-1
+  for MI210), so nothing crosses a protocol boundary;
+- "maximally optimized" is load-bearing: baseline/off-recipe cells stay diagnostic and never justify
+  or veto a release (§4, invariant 15);
+- a **phase trade** — a small prefill regression buying a large decode gain — is permitted only as a
+  pre-declared campaign exception naming the exact regression band, the exact expected gain, and the
+  roles affected, and it is an operator decision at freeze time, not a controller decision. Expected
+  to be rare;
+- cross-backend roll-ups may be *reported* to the operator as a labelled analysis view. They never
+  gate.
+
+---
+
+## 2. What exists today
+
+The current scaffold is useful but is not an autonomous research loop. Every row below was
+mechanically re-verified on 2026-08-02.
+
+| Surface | Current artifact | What is real | What remains missing or stale |
+|---|---|---|---|
+| Experimental evaluator | [`kernel_eval.sh`](../../repos/epyc-inference-research/scripts/kernel_rnd/kernel_eval.sh) | 230-line MI210 evaluator; build/op-test/coherence/A-B/profile path; historically validated on the async-prefetch experiment | **Emits `"status":"OK"` unconditionally (`:223`) and marks any non-empty generation `coherent` (`:112-113`) while the baseline compare only runs with `--baseline-env` (`:114-117`) — so coherence never gates the record**; gates GPU exclusivity by `rocm-smi --showpids` idle sensing (`gpu_idle()`, `:77-82`), the exact pattern §10.4 forbids; uses raw `llama-bench` (`:123-124`) with no codified recipe; no region/device claim; no PPL gate; only `MUL_MAT` (`:93`); fixed shapes (`NGEN=128`, `-p 0`, so prefill is never measured); default `OUT`/`BUILD_DIR` point at `/mnt/raid0/llm/tmp/mi210-build/campaign/`, **which does not exist** |
+| Parameter sweep | [`kernel_sweep.sh`](../../repos/epyc-inference-research/scripts/kernel_rnd/kernel_sweep.sh) | 64 lines; serial execution of a TSV of pre-selected env variants; ingests results and refreshes dashboard | Does not generate hypotheses, edit source, manage worktrees, select next points, schedule resources, or run unattended campaigns |
+| Strategy store | [`kernel_store.py`](../../repos/epyc-inference-research/scripts/kernel_rnd/kernel_store.py) | SQLite ingest, correct-only Pareto view, export, dry-run-default purge/rewind; 11 unit tests pass | **`:81` admits `coherence in ("byte-identical","coherent")` into the correct-only Pareto, so the frontier is already contaminated by anchor-less runs**; natural key `(label, ts, git_sha)` (`:47`) cannot reconstruct a candidate; no patch/source snapshot, parent lineage, evaluator hash, resource receipt, campaign objective, or affected-surface map; failures stored but not fed to the planner; destructive purge conflicts with an all-outcomes history; unclosed-file `ResourceWarning` at `:88` |
+| Reward integrity | [`c6_reward_integrity.py`](../../repos/epyc-inference-research/scripts/kernel_rnd/c6_reward_integrity.py) | 975 lines; anti-TOCTOU snapshot, trusted evaluator, correctness-before-latency, run manifest, resume-drift and locking primitives; **`test_c6_reward_integrity.py` passes 24/24** | Not connected to llama.cpp candidate worktrees or `kernel_eval.sh`; host sandbox availability unresolved |
+| Generic task contract | [`task_descriptor.py`](../../repos/epyc-inference-research/scripts/rnd_harness/task_descriptor.py) | Domain-agnostic task descriptor and known-good baseline concept | No importer anywhere except its own test; no AutoKernel schema or controller uses it |
+| Dashboard | [`dashboard/static/kernel.html`](../../dashboard/static/kernel.html), [`dashboard/server.py`](../../dashboard/server.py) | Read-only `/kernel` page (`server.py:826`), `/api/kernel` (`:843`), freshness warn 3 d / stale 14 d, absence-tolerant | Default `KERNEL_DASHBOARD_JSON` points into the missing campaign directory, so the page has nothing to render; schema exposes a partial Pareto, not campaign state, champion status, resource use, or release readiness |
+| Scope derivation | [`kernel_freeze_scope.py`](../../repos/epyc-orchestrator/scripts/validate/kernel_freeze_scope.py) | 117 lines; derives production-role rows per backend from `stack_priors.yaml`; backend classified by build-path substring | Produces role rows, not a deduplicated release plan; no affected op/shape coverage, candidate-only capability rows, test recipe IDs, non-inferiority thresholds, or evaluator commands |
+| Freeze procedure | [`kernel-freeze-runbook.md`](../../docs/reference/kernel-freeze-runbook.md) | Correct high-level rule: derive scope, compare candidate with frozen production, verify linkage, version past production | Prose only; no reusable release-gate runner or bundle schema; no waiver concept |
+| Historical release transaction | [`freeze_v8_production_20260725.sh`](../../artifacts/operator/freeze_v8_production_20260725.sh) | Strong evidence hashing, identity checks, quality bindings, transaction and rollback patterns; **hash-pinned operator-waiver verification at `:214`, `:248`, `:268`** | 1,234-line release-specific script with hard-coded v8 artifacts; not a generic evaluator |
+| Stable kernel paths | `/mnt/raid0/llm/kernels/production/{cpu,gpu,stt,tts}` | All four symlinks exist | `archive/` exists and is **empty**; no generic candidate install/seal transaction uses the layer |
+| Nightshift | [`scripts/nightshift/`](../../scripts/nightshift) | General guarded wrappers | No AutoKernel service, campaign queue, checkpoint/resume, resource broker integration, or supervisor |
+
+### 2.1 Scaffold validation performed
+
+No inference, kernel build, production edit, or process reload was performed.
+
+- `bash -n` passes for `kernel_eval.sh` and `kernel_sweep.sh`.
+- `python3 -m unittest scripts/kernel_rnd/test_kernel_store.py` → 11 tests, OK.
+- `python3 -m unittest scripts/kernel_rnd/test_c6_reward_integrity.py` → **24 tests, OK**. The earlier
+  note that "the system Python lacks pytest so the C6 suite was not rerun" was wrong: the suite is
+  plain `unittest` and its docstring says *"Run standalone (no pytest needed)"*. The real environment
+  gaps are that pytest is injected unpinned via `Makefile:37-38` (`uv run --with pytest`) rather than
+  declared in `pyproject.toml`/`uv.lock`, there is **no CI** (`.github/workflows/` does not exist),
+  and neither `kernel_rnd` suite is in `PYTEST_SMOKE`. `OPERATING_CONSTRAINTS.md:17-19` also forbids
+  `pytest -n auto` on this host.
+- Research HEAD contains the Phase-1 store and mechanical inner sweep (`133017de`), purge/rewind
+  (`a1f38cd7`), and C6 (`2d5b1f6e`). Older prose claiming all of Phase 1/2/C6 is absent is stale.
+
+### 2.2 The important status correction
+
+The **mechanical inner sweep exists**. The **autonomous outer loop does not**.
+
+No controller reads profiler evidence, proposes a source change, asks a critic to falsify it, edits an
+isolated tree, selects the next experiment from history, maintains a champion, or constructs a release
+package. Calling `kernel_sweep.sh` "Phase 2" blurred this and is why the scaffold looked closer to
+completion than it is.
+
+### 2.3 What to reuse from orchestration AutoPilot
+
+Reuse the proven control-plane patterns; do not run as another species inside the live routing
+optimizer. Objectives, mutation authority, resource costs, artifact sizes, and correctness
+consequences are too different.
+
+| Orchestration surface | AutoKernel disposition | Reason |
+|---|---|---|
+| `planner_coordinator.py` | Reuse provider arbitration, draft/critic separation, circuit-breaker, fallback, spend-breaker behind an AutoKernel proposal schema | Controller mechanics transfer; routing actions/prompts do not |
+| `planner_providers.py` | Reuse provider adapters and structured-output plumbing | Lets Claude/Codex/local controllers A/B without evaluator changes — which requires §7.2's `controller` block to be recorded |
+| `autopilot_supervisor.py` | Reuse singleton/supervisor/signal/restart patterns in a separate AutoKernel service | Long-horizon execution with independent state and failure domains |
+| `state_lock.py`, `state_store.py`, `run_manifest.py` | Reuse atomic state, lock, manifest, resume-drift patterns | Strong base for reconstructible campaign control |
+| `experiment_journal.py`, journal shards/snapshots | Reuse append/snapshot/replay concepts **including shard rotation and all-shard reads**; implement the kernel event schema separately | Kernel records must bind source/binaries/profiles/resources and retain all failures |
+| `phase_status.py`, `phase_health_report.py`, restart advisor | Reuse phase/health/status semantics with kernel-specific terminal states | Prevents another opaque nightshift process |
+| `pareto_archive.py`, `StrategyStore` | Reuse algorithms and retrieval lessons only; build derived views over the AutoKernel journal | Never share or mutate live routing AutoPilot memory/state |
+| `worktree_manager.py` | **Do not reuse.** Build a strict kernel worktree manager | Verified: `apply_file():87-89` writes the mutation into the **main repo** (*"Copy to main repo for live eval"*); `accept():100-101` git-adds and commits into the main repo; `reject():111-117` restores from an **in-memory** dict `_applied_files`, so a crash between apply and reject leaves the main repo mutated with no recovery path. See §14 AK0 for filing this as an AutoPilot defect |
+| `actions.py`, routing `SafetyGate`, EvalTower | Do not reuse as kernel action/evaluation engines | Schemas, metrics, baselines, and authorization paths are routing-specific |
+| AutoPilot checkpoint/restore and rewind history | Reuse the operational lessons: stop via supervised signal, rewind every derived surface, keep primary evidence, test restart at every critical section | These scars transfer directly |
+
+The seam is a small shared control library or copied-and-hardened primitives with explicit ownership —
+not imports from the live `autopilot.py` monolith. AutoKernel releases change AutoPilot's speed era,
+but the two loops must not share a writable journal, Pareto archive, or baseline state.
+
+### 2.4 Repository ownership
+
+The AutoKernel runtime is owned by **`epyc-inference-research`** — consistent with its declared
+purpose (`AGENTS.md`), the existing `kernel_rnd`/`rnd_harness` scaffolding, and the canonical benchmark
+constructors, prompts, and evidence stores the loop consumes.
+
+| Repository | AutoKernel responsibility |
+|---|---|
+| **`epyc-inference-research`** | **Owns the runtime:** planner/critic/controller, journal, prior importer, seed compiler, evaluators, campaign state, backend adapters, reducers, candidate/evidence artifacts, dashboard data contract |
+| `epyc-root` | Measurement/governance protocols, this handoff, ratification receipts, cross-repo indices, release-authority policy. Does not own the running loop |
+| `epyc-llama`, speech kernel repos | Supply frozen production anchors and isolated experimental worktrees. Do not own controller memory or evaluation policy |
+| `epyc-orchestrator` | Resource claims, compiled production facts, lifecycle boundaries, release/cutover integration. Does not own the planner or journal |
+
+Future runtime path: `epyc-inference-research/scripts/kernel_rnd/autokernel/`, with large immutable
+artifacts under the repository's evidence root (§3.7). Cross-repo helpers are called through versioned
+interfaces, never copied into the orchestrator.
+
+### 2.5 What AutoPilot cost this project to learn
+
+AutoPilot is the closest analogue AutoKernel has: an autonomous optimization loop that has been
+running here for months. Its scars were swept on 2026-08-02 across the incident log, twenty-one
+autopilot/evidence-plane/eval-tower audits, the autopilot package's own "why this exists" comments,
+and the progress record. Most of what it learned, AutoKernel already encodes — warm-cache gaming,
+host drift, journal shard reads, owned-process lifecycle, evidence durability, deterministic replay.
+The table below is only what it **did not**, with the scar that proves the risk is real and where the
+design now answers it.
+
+| # | AutoPilot scar | AutoKernel gap it exposed | Now addressed |
+|---|---|---|---|
+| 1 | `pause` was a silent no-op for months (`autopilot.py:7012`), and a latch-less halt was restarted straight back into the same locked state (`:8094`) | Control commands were listed as *requests* with no acknowledgement contract and no operator-initiated stop state. A human's ability to stop the loop was asserted, never tested | §4 invariant 19, §8.10 `OPERATOR_STOP_REQUESTED`, §15.1 ignored-command fault injection |
+| 1b | AutoPilot's one venture into autonomous **source** mutation destroyed a production module — `src/escalation.py`, 454 lines to 3, 11+ hours of API downtime — and the mutation was **syntactically valid** (`progress/2026-04/2026-04-04.md:5`) | AutoKernel's core activity is the thing that failed. Its T0 gated *behaviour* — compile, ops, determinism — but nothing gated **source integrity**, and "it compiles" is a far weaker signal in C++ than "it imports" is in Python | §8.5.1 source-integrity gates; §12 symbol-removal and repair-compounding rows |
+| 2 | The recurrence vector was the planner's own **free text** in the primary journal — scrubbing derived stores was futile because the planner re-read and re-distilled its own prose each trial; one instance ran 81 more trials on the same false story after the code fix | An append-only journal makes this *worse*, not better: prose cannot be scrubbed and is re-consumed forever | §5.5 narrative/outcome separation and retrieval-scope supersession; §7.2 `narrative` is non-retrievable by default |
+| 3 | The loop froze in a `meta_action_loop` of paid no-ops **narrating an infrastructure failure that did not exist**; separately ran 1,200 iterations against a dead API; and 119 identical invalid actions were rejected without ever reaching the planner (`actions.py:207`) | `PLATEAU_STOP` conflates "search exhausted" with "planner broken", and filtered proposals vanish | §8.10 `PLANNER_DEGRADED`; §8.4 filtered proposals are journaled as `PROPOSAL_SKIPPED` and fed back |
+| 4 | ~38 metered draft/critique cycles spent then discarded because due-checks ran *after* drafting; a $250 budget that was only a status string; and a spend breaker whose naive form **stopped the loop** | Cost was a stop threshold, never an attributed ledger — cost-per-banked-win unauditable | §7.2 `realized_cost`, §12 zero-yield row, §9.1 cheap checks before metered drafting, breaker forces local planning rather than halting |
+| 5 | 8 of 1,055 trials were of a type the gate could promote; 0 of 121 refutations came from futility rather than budget — all while every surface read "active, blockers: []" | Both controls and the T3 dry-run test the gate's ability to **reject**. Nothing tests its ability to **promote**, so `EXHAUSTED_SURFACE` is indistinguishable from a dead gate | §15.2 fourth control is a **historical-win replay** that must promote; §18 discovery statistics |
+| 6 | A single-axis noise gate discarded 8 of 11 excluded trials that were **non-dominated**; the naive fix (admit everything) poisoned frontier geometry with speed noise | Banking is single-signal on throughput; capacity, variance, and load time only appear at T2, so a throughput-neutral capacity win is filtered before anyone sees it | §9.6 multi-signal banking with robust-median-per-fingerprint |
+| 7 | A full-machine health gate applied to partial-machine cells would have demoted 19/45 including a whole pre-registered family — **irreparable**, because only the aggregate was persisted | `correctness`, `quality`, `stability` are opaque blobs in the evaluation event, and no cell declares its scope denominator | §7.4 raw vectors and `scope_denominator`; §12 gate-scope row |
+| 8 | The loop died silently at trial 1302 and stayed dead ~23 h with every dashboard reporting "active" | §2's own row already records that today's `/kernel` page is *absence-tolerant over a missing directory* — it renders clean when its producer is dead | §14 AK6 freshness envelope, panel→producer registry, `/health` fold, restart chaos test |
+| 9 | A restart came up with an **empty frontier and nothing objected** — 232 trials, ~16 days of compute, lost. `pareto_archive.py:198` now raises rather than starting | Derived-views-rebuild-from-events is the right architecture, but BOOTSTRAP had no cardinality check | §8.2 step 10 consistency assertion with an explicit rebase escape |
+| 10 | Twice in one session a committed artifact overrode the operator's restated decision; the ruling was *"the artifact is the thing that is wrong"* — and a contradictory pair is open in the tree right now | The suppression ledger has receipts but no contradiction detection, and it is exactly the artifact class that looks most authoritative | §19.2 contradiction detection against live operator decisions and sibling entries |
+| 11 | Closure inflation is this project's most-repeated habit: 10 instances found and fixed, then **9 more with explicit awareness of the rule** | A stop state literally named `EXHAUSTED_SURFACE`, emitted by an LLM-driven loop, with no enumeration requirement | §8.10 sub-scope enumeration; "exhausted" and "all paths" are reserved words |
+| 12 | *"Which code scores your eval depends on which eval ran first in the process"* — same-named modules across repos, `sys.path` mutated at import; and a seed-42-forever holdout the project named as an open overfitting surface | §3.6 protects the evaluator from *tampering*; the scarier defect is **ambient** import identity. AutoKernel imports across three repos | §5.4 runtime source-label attestation; §12 holdout rotation |
+
+Two of these — items 2 and 5 — are the ones that would have been expensive to discover late. Everything
+else is a hardening; those two are structural.
+
+### 2.6 Substrate that does not exist yet
+
+These are prerequisites, not integrations. Each has a task in §14.
+
+| Missing substrate | Evidence | Blocks |
+|---|---|---|
+| **Cross-process GPU device claim** | `region-lock` is CPU-only (`region_lock_cli.py:290-291`, `--regions`/`--cpu-list`, no device option); every on-disk lock is `cpu_region.<role>.<q>.lock`; `src/gpu_lease.py:1` is a *process-local* `threading.Condition` lease (`:63-69`) used only by `axa2_live_cutover_bundle.py:535` | Invariant 4.8 on GPU; every `llama_gpu` T1+ |
+| **Codified microbenchmark recipe** | `OPERATING_CONSTRAINTS.md:38` requires *all* throughput numbers to go through `bench_canonical.sh`/`canonical_recipe.py`; no constructor exists for operator-level microbenchmarks | T1a on every backend |
+| **Storage/retention plane** | `/mnt/raid0` is 96% full (162G free of 3.7T); `epyc-inference-research/data/` is 118G; 13 existing llama worktrees total 41G (`llama.cpp-experimental` 13G, its preserved copy 15G) | Any long campaign |
+| **Bus identity for a daemon** | `BUS_PROTOCOL.md:72-74` makes an undeclared gating lane a hard validation failure; rule 8 revocation needs a roster holder | Revocation, escalation, stuck detection |
+| **Sanctioned no-`pgrep` preflight** | `bench-cpu.md:16-17` and `gpu-cross-device.md:27-30` mandate name-pattern process checks; CLAUDE.md bans them | Every protocol-conformant measurement |
+| **Affected-surface derivation** | Nothing today maps a diff to ops/dispatch predicates | Freeze scope, composition, §6.4 |
+
+---
+
+## 3. Governance: what AutoKernel needs, and what it no longer needs
+
+Removing autonomous freeze (§1.3) removes the largest amendment. What remains is smaller and mostly
+GPU-specific.
+
+### 3.0 The GPU protocol has two clauses, and they bite at different times
+
+`gpu-cross-device.md:16-21` contains two distinct prohibitions that are easy to conflate. Separating
+them decides what must be ratified before what:
+
+| Clause | What it forbids | When it bites | Resolved by |
+|---|---|---|---|
+| **Consumption** | *"MUST NOT be consumed by AutoPilot or any automated optimizer"* | **Every GPU T1 round, from the first campaign.** This is what stops AutoKernel ranking GPU candidates at all | `P-AK-SEARCH-1` (§3.1) |
+| **Decision-grade** | a decision-grade claim may only be produced on a production-named kernel | **Only when a llama.cpp freeze needs new GPU evidence** (§3.2) | P-GPU-1 sealed-candidate amendment |
+
+The consumption clause is the urgent one: without `P-AK-SEARCH-1`, GPU research cannot legally begin,
+and AK3's exit criterion ("T1 may legally guide search") is unreachable. The circularity is the
+patient one, and §3.2 narrows when it applies at all.
+
+### 3.1 Search authority — narrower than first assumed
+
+The prohibition on an automated optimizer consuming experimental measurements exists in **exactly one
+place**: `gpu-cross-device.md:16-21`, scoped at `:12-14` to *"all decision-gating GPU (MI210 / gfx90a /
+HIP) throughput, spec-dec, and residency numbers"*:
+
+> Measurements on any experimental / candidate / fork kernel … are **OBSERVATIONS ONLY**: they MUST
+> NOT gate any keep / revert / deploy / promote / buy / close decision and MUST NOT be consumed by
+> AutoPilot or any automated optimizer.
+
+No CPU, quality, or speech protocol contains that clause. For those backends the governing rule is the
+general one (`MEASUREMENT.md:9-11`), which bans *gating decisions*, not *ranking inside a worktree*.
+`kernel_store.py:10-11` correctly repeats the GPU restriction.
+
+**Required resolution:** ratify a stable `P-AK-SEARCH-1` whose narrow authority is to rank, retain,
+abandon, or branch candidates **inside experimental worktrees**; never edit production state; never
+certify a release; never edit its own evaluator or scoring contract; and emit only protocol-bound
+search records. Its GPU section is the load-bearing part; its CPU/speech sections mainly codify reps,
+noise floors, stopping rules, and record grammar. One-time instrument, not an amendment per experiment.
+
+It lives in **Annex K (kernel research and release)**, a fourth annex created for it — operator-approved
+2026-08-02 (§14 AK0). It fits none of B/Q/G: it is cross-backend, and it is a search instrument rather
+than a measurement family. Drafted at
+[`Annex-K-kernel-research-and-release.draft.md`](../../artifacts/operator/autokernel-policy-draft/Annex-K-kernel-research-and-release.draft.md);
+its numeric bindings are deliberately left blocked on the AK3 controls rather than guessed.
+
+### 3.2 P-GPU-1's pre-promotion circularity — GPU-scoped, but reachable from a CPU campaign
+
+P-GPU-1 permits decision-grade GPU results only on an already production-named kernel, so a candidate
+cannot produce the evidence needed to decide whether it should become production
+(`gpu-cross-device.md:16-19`, `:44-48`, `:50-53`). The v8 process handled this with a provisional
+promotion followed by production-era certification.
+
+The **CPU half is already solved** and needs no amendment: `bench-cpu.md:38-44` defines candidate
+release identity (*"Candidate = clean committed tree whose binary reports that commit. MUST record:
+branch, commit, dirty status, binary + shared-library SHA256s, the exact `build:` line …, `ldd`, model
+path/size/SHA256, complete argv, environment, date, attestation ref"*), and `:83-88` defines a full CPU
+kernel-promotion decision rule with ratio bands (≥0.98 PASS, <0.95 FAIL) and a pooling rule.
+P-BENCH-PREFILL-1 is a candidate-versus-production protocol by construction.
+
+**It is not, however, "only a problem when we freeze a GPU kernel."** CPU and GPU share `llama.cpp`
+and one frozen branch (§1.5), so *any* llama freeze produces a new binary on both paths. A CPU-only
+champion still creates `production-consolidated-vN`, and the `gpu` symlink resolves into that same
+tree's `build-hip`. The circularity is therefore reachable from a CPU-only campaign whenever the
+change touches shared ggml core.
+
+**Backend-unchanged escape.** A backend owes candidate-grade evidence only if *its* binary changed.
+Where it did not, the incumbent's evidence transfers by identity, that backend's cells drop from the
+matrix with a receipt, and the circularity never arises. This makes genuinely CPU-local campaigns
+cheap and confines the amendment's blast radius to changes that actually reach the HIP build.
+
+The test is **not** naive byte-identity of the built binary. llama.cpp/ROCm builds embed build IDs,
+timestamps, and absolute paths, so a freshly built binary is essentially never byte-identical to one
+built months earlier in a different directory — a test formulated that way would never fire. It is
+two-stage:
+
+1. **Source-closure identity (the gate).** Obtain the backend's build-target dependency closure from
+   the build system itself (CMake/Ninja depfiles), never a hand-maintained list or a directory-prefix
+   guess. Diff `production_base..candidate` restricted to that closure. Unchanged iff the diff is
+   empty **and** toolchain, flags, and build environment are identical. Deterministic, cheap, and
+   independent of build reproducibility.
+2. **Normalized binary confirmation (required before dropping cells).** Rebuild the production base
+   commit in the candidate's build environment so both share one non-determinism regime, then compare
+   normalized hashes of `.text`, `.rodata`, `.data.rel.ro`, and the dynamic symbol table, excluding
+   `.comment`, `.note.gnu.build-id`, and debug sections.
+
+Disagreement between the stages is a **hard finding**, never a silent preference for the cheaper
+answer: the closure is wrong or the build is non-deterministic, the backend owes full evidence, and the
+discrepancy is filed against the build-identity machinery. Transfer additionally requires the
+incumbent's evidence to still be in scope — same models and recipes, same topology hash, no era
+boundary crossed for that backend.
+
+Full text: [`artifacts/operator/autokernel-policy-draft/P-GPU-1-sealed-candidate-amendment.draft.md`](../../artifacts/operator/autokernel-policy-draft/P-GPU-1-sealed-candidate-amendment.draft.md) §4.
+
+**Required resolution:** amend P-GPU-1 (or add a GPU section to `P-KERNEL-FREEZE-1`) defining a
+**sealed candidate** as eligible for release-gating GPU evidence before cutover, binding: production
+base commit; clean full candidate commit; complete source tree and agent-file overlay; toolchain
+identity; binary and linked-library hashes; immutable evaluator hash; derived scope manifest; and
+evidence directory hash tree. The CPU-side bindings are a restatement of `bench-cpu.md:38-44` and
+should cite it rather than duplicate it.
+
+### 3.3 Freeze, cutover, era rows, baseline applies, reload ownership — all stay human
+
+See §1.3 for the four boundaries. Under the revised model **no authority amendment is required.**
+What is required instead is that the design *stop implying* otherwise:
+
+- the release-side component is a **packager**, not a broker (§11);
+- the loop's terminal success state is `RELEASE_PACKAGE_READY`, not `FREEZE_ELIGIBLE`;
+- the era row and AutoPilot rebaseline are **outputs of the package as drafts for the operator**, never
+  writes; and
+- cutover scheduling is routed to whoever owns inference, per `OPERATING_CONSTRAINTS.md:41`, through
+  the session bus (§3.6).
+
+### 3.4 Claim grammar must be expressible in the schemas
+
+`MEASUREMENT.md:13` — *"A claim = (metric, protocol-id, n/reps, date, host-attestation ref)"*;
+`:85-95` — *"**Category (required)**: every reported measurement declares exactly one of
+`category=OPTIMUM` · `BASELINE` · `CANDIDATE` … An unlabelled measurement is not decision-grade."*
+
+The evaluation event must carry `category`, `n`/`reps`, `protocol_id`, `attestation_ref`, and
+`metric_direction`, or §18's prose duty ("never record an observation as a release claim") is
+unenforceable. See §7.4.
+
+### 3.5 The `pgrep` contradiction must be resolved before any protocol-conformant run
+
+CLAUDE.md bans `pkill`/`pgrep` on a name pattern. `bench-cpu.md:16-17` mandates *"no concurrent
+inference (`pgrep llama` zombie check…)"* as a P-BENCH-1 precondition, `MEASUREMENT_POLICY.md:38`
+repeats it, and `gpu-cross-device.md:27-30` requires *"`llama-server` / AutoPilot / KFD PID checks
+before and after"*. As written, the evaluator cannot satisfy the protocol it must run under.
+
+**Resolution (recommended):** two-stage.
+
+1. **Interim** — a single audited read-only wrapper, `scripts/utils/inference_preflight.sh`, which
+   enumerates matching PIDs, reports them, and **never signals**. It becomes the only sanctioned
+   name-pattern reader in the codebase. The CLAUDE.md ban's origin (INC-20260731) was broad
+   *pattern kills*; a read-only enumerator at one audited call site has a different blast radius,
+   but it must be that one call site, not `pgrep` sprinkled through the evaluator.
+2. **Target** — replace the check with region-lock/device-claim holder witness plus owned-cgroup
+   enumeration, and ratify that substitute into P-BENCH-1/P-GPU-1 as an equivalent precondition. This
+   depends on the GPU claim (§2.5) existing.
+
+### 3.6 Evaluator immutability needs enforcement a daemon cannot bypass
+
+The trust boundary is enforced in three layers around `human_only_paths.yaml`: a PreToolUse hook
+(`scripts/hooks/check_trust_boundary_edit.sh`, wired at `.claude/settings.json:76`), a `.sha256` pin
+checked by `session_bus.py validate`, and a coordinator-daemon audit emitting a `defect` on drift.
+
+**Layer 1 blocks agent tool writes only.** AutoKernel is a daemon; a candidate binary is a subprocess.
+Neither passes through a PreToolUse hook, and layers 2–3 detect after the fact.
+
+**Required:** (a) add the AutoKernel evaluator bundle, `P-AK-SEARCH-1`, `P-KERNEL-FREEZE-1`, and the
+threshold/objective policy to `human_only_paths.yaml`; (b) give the evaluator OS-level protection —
+separate uid or read-only bind mount — for the actor's and the candidate's execution context; (c) if
+AutoKernel discovers a missing coverage class it records `EVALUATOR_COVERAGE_GAP`, blocks release for
+that lineage, continues unrelated research, and may draft an amendment bundle. It may not modify the
+live evaluator.
+
+### 3.7 Evidence durability
+
+`MEASUREMENT.md:146-156` (operator-ratified 2026-08-02) requires evidence behind any ratified or
+production-affecting claim to live in-repo under `epyc-inference-research/data/<campaign>/` with a
+`SHA256SUMS` and a README, forbids scratch paths (`/mnt/raid0/llm/tmp/...`) as the citation of record,
+and requires oversized artifacts to be recorded hash-and-provenance-only *with the citation saying so*.
+Enforced by `epyc-inference-research/scripts/validate/check_evidence_durability.py` (note: that path is
+in the **research** repo, not epyc-root as `MEASUREMENT.md:155` implies).
+
+Known exposure to clear before AK1 hashes anything:
+
+- the source draft was gitignored under `tmp/*` and never committed → **moved 2026-08-02** to
+  `docs/reference/autokernel/system-wide-inference-kernel-optimization-draft.md`;
+- the GPU decision surface `/mnt/raid0/llm/tmp/claude-artifacts/np_context_v8_decision.html`
+  (SHA-256 `816ad5cd…`, verified) is still a scratch citation and must be copied into the research
+  repo's evidence root, its new locator recorded, and its backing bundles tracked;
+- `epyc-inference-research/artifacts/np_context_study_20260723/` has **zero tracked files**; the v8
+  sibling tracks only its 5 driver scripts;
+- `docs/design/p2-5j-host-thread-placement-sweep-protocol.md` — required by seed G1 — was **deleted
+  from git** by unrelated commit `27fbfce5`; all of `docs/design/` is untracked; a byte-identical copy
+  survives at `artifacts/audit/untracked-backup-20260729/design/`. Already logged at
+  `artifacts/audit/backlog-closure-correctness-20260729.md:78`;
+- this handoff and its index rows are untracked while `master-handoff-index.md:459` (committed)
+  already links them.
+
+**Required:** AK1 records a **durability class** per artifact — *carried-in-git*,
+*durable-untracked*, or *hash-and-provenance-only* — so a verifier can distinguish a defect from an
+expected absence, and extends `check_evidence_durability.py` (currently scoped to the model registry)
+to cover the AutoKernel import manifest and evidence citations.
+
+---
+
+## 4. Non-negotiable invariants
+
+1. **Fresh production base.** Every campaign is anchored on the current production tip. The champion
+   lineage is re-anchored at every freeze; between freezes, production does not move, so accumulation
+   is not drift.
+2. **Full candidate promotion.** Release evidence is produced by the same full candidate that is
+   frozen; no promotion-time cherry-pick reconciliation.
+3. **Frozen means immutable.** No actor builds in or modifies any production tree.
+4. **Evaluator independence.** Actor, evaluator, and release packager are distinct authority domains
+   even on one host, enforced at the OS level (§3.6).
+5. **No autonomous freeze or cutover.** AutoKernel produces a release package; a human executes it.
+6. **Correctness is lexicographically first.** Speed, energy, or simplicity cannot compensate for a
+   correctness, quality, integrity, or stability failure.
+7. **All outcomes are durable.** Failures, crashes, timeouts, rejected proposals, negative results, and
+   invalidated runs remain in an append-only event journal, in-repo, with a recorded durability class.
+8. **Derived views may rewind; evidence does not disappear.** Pareto/frontier/champion state rebuilds
+   from events. "Purge" is a supersession/tombstone event, never deletion of a primary record.
+9. **Resources are acquired, not observed.** Every CPU/GPU benchmark or profiler run holds the
+   appropriate region/device claim. Idle sensing is never a claim.
+10. **Owned-process lifecycle only.** The loop tracks PIDs/cgroups it launched, quiesces them at a
+    boundary, verifies termination, and never signals by name pattern.
+11. **Deterministic replay before regeneration.** Saved outputs, profiles, and raw samples are
+    rescored without inference when the generation path remains valid.
+12. **Determinism class is an interface.** A candidate may not silently change same-seed run-to-run
+    bitwise stability; a change of class is a declared, release-relevant property.
+13. **One conceptual mutation per proposal.** Parameter sweeps may generate many points; a source
+    proposal must remain falsifiable and revertible.
+14. **No estimated percentage by narration.** Readiness is computed from records by a deterministic
+    controller; the LLM may request, never declare.
+15. **Production recipes gate.** Baseline/off-recipe cells are diagnostic and never veto or justify a
+    release.
+16. **Default-off until release.** Experimental paths retain a fallback/kill switch unless the change
+    is structurally inseparable and the campaign explicitly carries that risk class.
+17. **No evaluator self-modification.** Changes under the measurement trust boundary stop release
+    eligibility until separately reviewed.
+18. **Declared equals traced.** The affected-surface manifest is mechanically derived and
+    dynamically confirmed; the actor's declaration is a scored prediction, never a scope input.
+19. **Control is verified, not requested.** Every operator control — pause, drain, abort, stop —
+    is acknowledged in the journal, latched on disk, and re-read from disk at the top of each
+    iteration under the write lock. A halt survives restart until an operator resumes. An unacked
+    control command is a hard failure, not a slow one.
+20. **The planner does not re-consume its own prose as fact.** Machine-readable outcome and planner
+    narrative are separate fields; narrative is not retrievable into a later planning context by
+    default, and a superseded belief can be removed from retrieval without being removed from the
+    record.
+
+---
+
+## 5. Target architecture
+
+```text
+                 immutable constitution + evaluator bundle
+                                   |
+                                   v
+ production/registry facts -> campaign compiler -> planner -> critic
+                                   |              |
+                                   |              v
+                                   |         proposal record
+                                   |              |
+                                   v              v
+                         isolated worktree <- actor/executor
+                                   |
+                          build + candidate record
+                                   |
+                                   v
+                  T0/T1 trusted research evaluator
+                                   |
+                        append-only experience journal
+                                   |
+                       champion promotion guard  --(occasional)--> T2 lineage estimator
+                                   |                                        |
+                                   v                                        v
+                          champion lineage (per tree) <--------- readiness signal to operator
+                                   |
+                        [ OPERATOR REQUESTS FREEZE ]
+                                   |
+                                   v
+                          seal release candidate
+                                   |
+                                   v
+                     T3 kernel-freeze evaluator
+                                   |
+                          release verdict bundle
+                        (+ operator waiver, if any)
+                                   |
+                                   v
+                          release PACKAGE assembler
+                     (transaction plan, rollback plan,
+                      draft era row, draft rebaseline,
+                      pre-validated command sequence)
+                                   |
+                                   v
+                    OPERATOR executes freeze + cutover
+                                   |
+                                   v
+                       T4 post-cutover verification
+```
+
+### 5.1 Constitution plane — epyc-root
+
+Human-amendment-only: `MEASUREMENT.md` and protocol annexes; search and release protocol definitions;
+evaluator bundle hashes; the freeze transaction contract; era/reconciliation requirements; the evidence
+retention rule (§3.7, §5.8); and this handoff. The actor has read access only.
+
+### 5.2 Campaign/control plane — epyc-inference-research
+
+Campaign compiler and state machine; planner/critic prompts and controller adapters; proposal schema
+and validators; worktree/build orchestration clients; trusted T0/T1/T2 evaluator entry points;
+experience journal and derived views; champion guard and readiness estimator; candidate sealer;
+release-package assembler; dashboard export contract. The core controller is domain-agnostic; backend
+adapters supply build, correctness, profiling, workload, and release hooks.
+
+### 5.3 Source/authoring plane — experimental trees only
+
+Each campaign receives a dedicated worktree under `/mnt/raid0/llm/`, created from the fresh production
+tip, **namespaced** `llama.cpp-ak-<campaign_id>` so it cannot collide with the 13 pre-existing
+worktrees or with another session's `llama.cpp-experimental` (currently on
+`experimental-v8-refresh-20260724`). Because `/workspace/repos/<name>` and `/mnt/raid0/llm/<name>` are
+one clone, all commits are pathspec-limited and branch names are namespaced `ak/<campaign_id>/…`.
+
+The actor may read and edit candidate source, commit on the campaign branch, build in a campaign-local
+build directory, run targeted static/unit/op tests through controlled entry points, and abandon,
+branch, or restore candidates through recorded worktree operations. The actor never writes the
+canonical production tree, the shared staging area outside its pathspec, or a release bundle.
+
+### 5.4 Evaluation plane — trusted runner
+
+The evaluator reads a sealed candidate snapshot; resolves the exact immutable evaluator version;
+acquires resources; captures host/binary/model/runtime identity; runs tier-specific correctness and
+performance work; independently recomputes scores; emits hash-bound records; and has no authority to
+modify candidate source or production state. The C6 primitives belong here, wired to real worktrees and
+CPU/GPU resource controls.
+
+It also emits a **runtime source-label attestation**: the resolved path and content hash of every module
+actually loaded, captured at run time rather than inferred from the import statement. AutoPilot learned
+this expensively — same-named modules in two repositories with `sys.path` mutated at import and again
+lazily at runtime, so *which code scored an eval depended on which eval ran first in the process*, while
+provenance still recorded the intended scorer. AutoKernel imports across three repositories; this
+attestation is what makes "the evaluator that actually ran" a checkable fact rather than an assumption.
+
+### 5.5 Evidence and memory plane
+
+1. `events.jsonl` is append-only and fsync-per-event, **sharded with rotation only past all cursors**
+   (the `BUS_PROTOCOL.md:32-34` pattern); every reader reads all shards.
+2. Candidate source snapshots and patch bundles are content-addressed.
+3. SQLite is a rebuildable index/view, never the primary record.
+4. Pareto, best-per-regime, champion, failed-mechanism, do-not-repeat, and readiness views derive from
+   the journal.
+5. A context synthesizer writes the planner's "state of the search" brief from both wins and failures.
+6. **Machine record and planner narrative are separate fields, and narrative is not retrievable by
+   default.** AutoPilot's worst contamination lived in planner-authored free text inside the primary
+   journal: the loop re-read its own prose each round, regenerated a false story, and re-distilled it
+   into new strategies, so scrubbing every derived store never stuck — one instance ran 81 further
+   trials on the same false story after the code fix landed. An append-only journal makes that failure
+   *worse*, not better. Outcomes, verdicts, and receipts are therefore structured fields; prose lives
+   in a `narrative` field the retrieval layer excludes unless a proposal cites it by event id.
+7. **Retrieval-scope supersession.** A superseded belief is removed from *retrieval* while remaining in
+   the *record* — a `RETRIEVAL_SUPERSEDED` event, never a deletion. This preserves invariants 7 and 8
+   while giving the loop a way to stop believing something, which an immutable log otherwise lacks.
+8. Everything lands under `epyc-inference-research/data/<campaign>/` with `SHA256SUMS` and a README,
+   with a durability class per artifact (§3.7).
+
+The next round must learn from failed candidates, not only from the correct Pareto frontier.
+
+### 5.6 Release plane — sealer, evaluator, packager
+
+- **Seal:** convert a champion worktree into a content-addressed, immutable release candidate.
+- **Evaluate:** run the full freeze program; produce a pass/fail bundle, admitting operator waivers.
+- **Package:** assemble the transaction plan, rollback plan, draft era row, draft AutoPilot rebaseline,
+  and a pre-validated command sequence for the operator.
+
+Never combine these into one LLM-owned shell session. The packager holds no authority and performs no
+production write, in any mode.
+
+### 5.7 Resource plane — orchestrator integration
+
+Stable APIs for: CPU region claims; **exclusive GPU device claim** (to be built, §2.5, §14 AK2);
+host-health tier and reboot-required state; contention/co-residency policy; disk headroom; process/cgroup
+ownership; production inference ownership and drain boundaries; safe cache preparation; profiler
+privilege; pause/drain/resume. The session bus carries scheduling intent and revocation; the actual
+exclusion source remains region-lock/device locks. A heartbeat is not a lease — but the absence of a
+heartbeat means nothing can revoke you (§3.6, §14 AK2).
+
+### 5.8 Storage plane
+
+`/mnt/raid0` is 96% full with 162G free; `data/` is 118G; existing llama worktrees total 41G. Invariant
+7 says evidence is never evicted, and `MEASUREMENT.md:223-229` makes reclamation an operator decision
+(*"Disk-hygiene candidates … are an operator call, not contamination"*). Without a plane, the loop
+halts on a full disk within a handful of campaigns.
+
+Design:
+
+| Class | Contents | Policy |
+|---|---|---|
+| **Permanent, in-repo** | events, reduced metrics, patches/diffs, hashes, manifests, README/SHA256SUMS | Never deleted |
+| **Permanent, large** | champion binaries; incumbent production binaries for N−1 and N−2 (§10.5) | Never deleted; hash-and-provenance cited |
+| **Expirable** | rejected-candidate build trees, worktrees of retired campaigns, raw profiler traces older than the lineage they informed | Expiry rule ratified once in AK0; every deletion writes a tombstone event carrying the artifact hash and reason |
+| **Never stored** | candidate outputs used as a correctness oracle | — |
+
+Plus a per-campaign quota, a `DISK_PRESSURE` stop state, and a headroom precondition in BOOTSTRAP.
+
+---
+
+## 6. Required exposed surfaces
+
+The planner sees structured facts and controlled actions, not a giant prompt of unverified prose.
+
+| Surface | Read contract | Action contract | Key guard |
+|---|---|---|---|
+| Production identity | backend, tree, branch, commit, binary/library hashes, version, overlay hash | none | fails if production dirty or identity mismatched |
+| Experimental lineage | campaign base, parent candidate, commit graph, dirty/build state, champion pointer | create worktree, apply patch, commit, restore, fork | path allowlist; production paths denied; namespaced branches |
+| Source map | symbols, files, call graph, op registrations, dispatch predicates, existing tests | search/read only for planner; edit through actor | snapshot hash binds proposal context |
+| Build | toolchain, presets, cache, target binaries, expected outputs | configure/build targeted or full, campaign build only | no production build dir; output hash receipt |
+| Correctness | exact op shapes, reference outputs, state/rollback cases, PPL/quality sentinels, determinism class | run declared test groups | evaluator-owned test list; candidate cannot skip |
+| Workloads | compiled role priors, model/quant/context/spec recipes, observed shape histogram, co-residency lineup | derive sentinel/release matrices | matrix derives from current facts and evaluator version |
+| Profiler | supported gfx90a/CPU counters, counter quality, prior profiles, wall-share map | targeted trace/counter run | mechanism prediction predeclared; unsupported counter explicit |
+| Performance | canonical recipe IDs, cache state, reps, samples, variance | T1/T2/T3 evaluation request | runner constructs argv from a codified recipe; actor cannot hand-type a bench command |
+| Host/resource | topology hash, NUMA/GPU attachment, region/device holders, thermals, uptime, memory, disk | acquire/release claim, request quiescence, prep cache | acquisition receipt mandatory; reboot is operator authority |
+| Process lifecycle | exact launched cgroup/PIDs and start times; preflight enumeration via the single audited wrapper (§3.5) | terminate owned scope, verify dead | no name-pattern signalling; stale process is a hard failure |
+| Experience | all proposals, diffs, results, failures, mechanisms, supersessions | append event, derive views, synthesize context | primary log append-only, fsynced, sharded |
+| Release | sealed candidate, evaluator bundle, derived scope, incumbent rollback, active waivers | request T3, request package assembly | actor cannot write release status, production link, era row, or baseline |
+| Observability | campaign phase, budget, frontier, failures, champion readiness, resource state | pause/drain/resume/abort request | deterministic controller owns state transition |
+
+### 6.1 Planner source context
+
+- current campaign objective and production-weighted role exposure;
+- production base and candidate diff summary;
+- per-op/shape wall share and mechanism classification;
+- compiler/backend constraints for the target hardware;
+- existing dispatch/fallback behaviour;
+- recent correct frontier and the current champion;
+- recent failures grouped by mechanism;
+- do-not-repeat matches from active/completed handoffs, with receipts;
+- oracle coverage — whether a declared oracle already implements the idea (§6.5);
+- evaluator coverage and confidence;
+- remaining experiment/compute/storage budget;
+- known candidate interactions; and
+- exact tool/action affordances available this round.
+
+The synthesizer cites event IDs and source/profiler receipts. It may summarize; it may not invent a
+state transition. External or imported content is rendered in provenance-tagged quarantine form
+(`OPERATING_CONSTRAINTS.md:27-31`) and never in an instruction position.
+
+### 6.2 Actor tools
+
+Search/read source; patch files; invoke build targets; run bounded non-measurement developer tests;
+inspect compiler diagnostics; request trusted evaluator tiers; record rationale; commit a conceptual
+candidate. Generic shell is acceptable inside the isolated authoring environment. Host mutation,
+resource acquisition, benchmarks, privileged profilers, and release operations go through auditable
+wrappers.
+
+### 6.3 Critic surfaces
+
+The critic gets the proposal, source context, affected-surface map, oracle coverage, and prior failures
+before the actor runs, and answers structured questions:
+
+- Is the hypothesis falsifiable?
+- Does the proposed measurement distinguish the claimed mechanism from alternatives?
+- Are exact target and non-target shapes identified?
+- Is a faster-but-wrong path plausible?
+- Does an existing dispatch/path in **our tree** already implement this?
+- **Does a declared oracle already implement this, and is porting cheaper than authoring?**
+- Is the proposal actually one conceptual change?
+- Can the claimed end-to-end value exceed the measured wall-share ceiling?
+- Is the resource cost proportional to expected information gain?
+- Does it repeat a recorded negative without new evidence — and does that negative carry a receipt?
+
+The critic may reject or revise. It cannot waive evaluator gates. Prefer a different provider/model
+from the planner; a critic sharing the planner's blind spots mostly agrees.
+
+### 6.4 Affected-surface derivation — mechanical, then traced
+
+Freeze scope, lineage composition, and sentinel selection all key off the affected-surface manifest.
+If the actor declares it, the actor controls its own release scope. Therefore:
+
+1. **Static derivation** — diff → touched files → symbols → op registrations → dispatch predicates →
+   affected backends. Over-approximation is expected and acceptable (a shared-header change implies
+   the whole tree until proven otherwise).
+2. **Dynamic confirmation** — T0 runs the op suite under a dispatch trace and records which kernels
+   actually executed. This reuses the no-fallback instrumentation T0 already needs.
+3. **Reconciliation** — `derived ⊇ traced` must hold; `traced ⊄ derived` is a hard candidate failure.
+   The actor's declaration is retained as a scored prediction and fed to the critic, never used as a
+   scope input.
+
+### 6.5 Oracle registry
+
+Declared, read-only reference implementations the loop may study and port from:
+
+| Oracle | Path | Use |
+|---|---|---|
+| `ik_llama.cpp` | `/mnt/raid0/llm/ik_llama.cpp` | deprecated as a serving path, retained as a reference/measurement instrument; source of the iqk lineage |
+| upstream `llama.cpp` | remote | upstream fixes and optimizations the fork has not taken |
+| vLLM and similar | read-only | design oracle for algorithms; never for unsupported instructions |
+
+Rules: never build or measure a production claim from an oracle tree; a port is a normal candidate and
+pays T0–T3 identically; every port records the oracle commit and a license/attribution check. The
+project's largest recent kernel gain came from porting and enabling iqk (`iqk-port`,
+`iqk/enable-iquants-v7-20260721`; +33–43% prefill era), so this is a first-class campaign kind, not a
+footnote.
+
+---
+
+## 7. Data contracts
+
+### 7.1 Campaign manifest
+
+```yaml
+schema: epyc.autokernel.campaign.v2
+campaign_id: ak-<backend>-<objective>-<date>
+backend: llama_gpu          # llama_cpu | llama_gpu | whisper_stt | qwentts_tts | serving_runtime
+source_tree: llama.cpp      # llama.cpp | whisper.cpp | qwentts.cpp
+production_anchor:
+  repo: /mnt/raid0/llm/llama.cpp
+  branch: production-consolidated-v8
+  commit: 67a433bf45a8a091d83b4ea0b32ff0735fd51800
+objective:
+  rule: per_phase_non_inferiority_plus_improvement
+  phases: [prefill, decode]
+  protocol_by_phase: {prefill: P-BENCH-PREFILL-1, decode: P-BENCH-1}
+  recipe_class: production_optimal
+  phase_trade_exception: null      # pre-declared {regressing_phase, band, expected_gain, roles} or null
+  target_regimes: []
+scope:
+  affected_ops: []                 # filled by derivation, never by the planner
+  affected_arch_classes: []
+  derived_role_manifest_sha256: "..."
+policy_ref:                        # authority/thresholds live in the human-only policy plane
+  search_protocol: P-AK-SEARCH-1/v1
+  release_protocol: P-KERNEL-FREEZE-1/v1
+  policy_bundle_sha256: "..."
+budgets:
+  max_wall_hours: 0
+  max_gpu_hours: 0
+  max_cpu_region_hours: 0
+  max_candidates: 0
+  max_controller_tokens: 0
+  max_storage_gb: 0
+readiness_reporting:
+  reference_point_gain: 0.25       # ADVISORY signal to the operator, not a trigger
+  reference_lcb_gain: 0.20
+stop_policy:
+  plateau_rounds: 0
+  max_consecutive_integrity_failures: 0
+  max_consecutive_build_failures: 0
+  max_command_retries: 3           # OPERATING_CONSTRAINTS.md:44-46
+```
+
+The compiler, not the planner, fills production identity, protocol IDs, scope hash, and policy
+reference. The planner may propose objective details before campaign start; it may not mutate them
+mid-campaign. **No campaign manifest ever carries a freeze or cutover authority flag** — there is no
+such authority to carry.
+
+### 7.2 Proposal manifest
+
+```yaml
+schema: epyc.autokernel.proposal.v2
+proposal_id: akp-...
+campaign_id: ak-...
+parent_candidate_id: akc-...
+controller:                        # so controller A/B is computable after the fact
+  provider: "..."
+  model_id: "..."
+  effort: "..."
+  prompt_bundle_sha256: "..."
+  sampling_params: {}
+  context_manifest_sha256: "..."
+realized_cost:                     # attributed, not merely budgeted (§12 zero-yield row)
+  controller_tokens: 0
+  build_seconds: 0
+  evaluator_wall_seconds: 0
+  gpu_seconds: 0
+  cpu_region_seconds: 0
+  storage_gb: 0
+hypothesis: "..."
+narrative: "..."                   # planner prose. NOT retrievable into a later planning context
+                                   # by default; the fields above are the machine record (§5.5)
+change_class: dispatcher           # parameter | dispatcher | arithmetic | layout | fusion |
+                                   # moe_scheduling | recurrent | scheduler_policy | oracle_port |
+                                   # core_header  <- own risk tier, see §8.5.1
+declared_symbol_deltas:            # symbols/registrations this change intends to add, remove, or
+  added: []                        # change arity on. Anything outside this set that the binary
+  removed: []                      # diff finds is a hard T0 failure, not a warning
+  arity_changed: []
+campaign_kind: source_change       # config | dispatch | layout | fusion | scheduler | capability |
+                                   # oracle_port
+oracle_reference:                  # required when campaign_kind == oracle_port
+  oracle: null
+  commit: null
+  license_check: null
+novelty_basis:
+  prior_event_ids: []
+  source_receipts: []
+  do_not_repeat_matches: []
+expected_information_gain: 0.0
+target: {regimes: [], ops: [], shapes: [], models: []}
+non_target: {regimes: [], shapes: []}
+mechanism_prediction:
+  bottleneck_before: memory_latency
+  expected_counter_changes: {}
+  expected_wall_share_ceiling: 0.0
+  wall_share_receipt_id: "..."     # the measured ceiling this is checked against
+change:
+  predicted_affected_surface: []   # scored prediction only; never a scope input (§6.4)
+  files_and_symbols: []
+  conceptual_change: "..."
+  parameter_surface: {}
+  estimated_diff_size: 0
+risks: {correctness: [], numerical: [], state_or_rollback: [], resource: [], integrity: []}
+fallback: {dispatch_guard: "...", kill_switch: "..."}
+evaluation_plan:
+  required_t0: []
+  required_t1: []
+  conditional_t2: []
+  profiler_questions: []
+resource_request: {lane: gpu, expected_minutes: 0, expected_storage_gb: 0}
+stop_condition: "..."
+critic_verdict: {status: pending, reasons: []}
+```
+
+Every field is machine-validated before resource acquisition. A proposal without a falsifiable counter,
+a wall-share prediction, or a `change_class` that maps to a cheap suite (§9.5) is rejected before it
+consumes a benchmark window.
+
+### 7.3 Candidate record
+
+Must make the artifact reproducible: campaign/proposal/parent IDs; worktree and source commit;
+clean/dirty state; patch bundle/source snapshot hash; production base ancestry proof;
+compiler/toolchain/build command and logs; binary/library hashes and linkage proof; feature
+flags/dispatch predicate; **derived and traced affected-surface manifests**; determinism class;
+evaluator version/hash; resource and host receipts; storage footprint and durability classes; raw
+evaluation event IDs; derived verdicts; controller provenance (inherited from the proposal); champion
+status; status/supersession reason.
+
+The current natural key `(label, ts, git_sha)` is insufficient.
+
+### 7.4 Evaluation event
+
+```yaml
+schema: epyc.autokernel.evaluation_event.v2
+event_id: ake-...
+campaign_id: ak-...
+candidate_id: akc-...
+tier: T1
+claim_grammar:                     # MEASUREMENT.md:13, :85-95
+  category: CANDIDATE              # OPTIMUM | BASELINE | CANDIDATE
+  protocol_id: P-AK-SEARCH-1/v1
+  metric: decode_tokens_per_s
+  metric_direction: higher_better
+  reps: 0
+  attestation_ref: "..."
+evaluator: {id: P-AK-SEARCH-1/v1, bundle_sha256: "..."}
+artifact: {source_sha256: "...", binary_sha256: "...", linkage_sha256: "..."}
+anchor:                            # every ratio needs its denominator bound
+  binary_sha256: "..."
+  linkage_sha256: "..."
+  measurement_event_ids: []
+scope_manifest_sha256: "..."
+host_receipt: "..."
+resource_claim_receipt: "..."
+co_residency: single               # single | co_resident:<lineup_id>
+correctness: {}                    # per-case vector, not a rolled-up verdict
+quality: {}                        # per-question vector where applicable
+stability: {}                      # per-iteration vector
+scope_denominator:                 # what this cell actually measured, so a gate refuses a scope
+  machine_subset: full             # mismatch instead of silently applying a full-machine
+  numa_nodes: []                   # threshold to a partial-machine cell
+  devices: []
+  cores: 0
+determinism: {class: bitwise_stable, same_seed_repeat_runs: 0}
+performance:
+  raw_samples: []
+  paired_blocks: 0
+  estimate: null
+  uncertainty: null                # e-process evidence value / MDE, not an ad-hoc LCB
+mechanism: {}
+integrity_flags: []
+status: pass                       # pass | fail | inconclusive | invalid | timeout | crash | rejected
+supersedes: []
+created_at: "..."
+```
+
+Derived scores are reproducible from raw samples. The candidate cannot supply its own trusted score.
+
+### 7.5 Champion record
+
+```yaml
+schema: epyc.autokernel.champion.v1
+source_tree: llama.cpp
+anchor_commit: 67a433bf45a8a091d83b4ea0b32ff0735fd51800
+branch: ak/champion/llama-20260802
+member_candidates: []              # ordered, each with its own candidate record
+combined_candidate_id: akc-...     # the composed artifact, re-measured as a whole
+last_t0: {event_id: "...", status: pass}
+last_t1: {event_id: "...", status: pass}
+last_t2: {event_id: "...", status: pass}
+readiness:
+  by_backend:
+    llama_cpu: {prefill: {...}, decode: {...}}
+    llama_gpu: {prefill: {...}, decode: {...}}
+  reference_signal: "point +X% / LCB +Y% versus anchor on N cells"
+affected_surface_union_sha256: "..."
+storage_gb: 0
+blocking_conditions: []            # e.g. EVALUATOR_COVERAGE_GAP, open phase-trade exception
+```
+
+### 7.6 Release package
+
+Produced only on operator request. Contains: the sealed candidate identity; the T3 verdict bundle;
+any active operator waivers (§10.4); the derived release plan; the transaction plan and rollback plan;
+a **draft** era-registry row; a **draft** AutoPilot rebaseline note; the linkage verification results;
+and a pre-validated command sequence for the operator. It contains no production write and no
+authority claim.
+
+---
+
+## 8. Planner/critic/executor cycle
+
+### 8.1 State machine
+
+```text
+BOOTSTRAP
+  -> DISCOVER
+  -> SELECT_TARGET
+  -> PROPOSE
+  -> PRE_RUN_CRITIC
+  -> MUTATE
+  -> BUILD
+  -> T0_GATE
+  -> T1_SEARCH_EVAL
+  -> POST_RUN_CRITIC
+  -> BANK_EVENT
+  -> UPDATE_SEARCH_STATE
+  -> CHAMPION_GUARD
+       -> next DISCOVER/SELECT_TARGET round
+       -> optional T2_LINEAGE_ESTIMATOR -> update readiness signal
+  -> [on operator freeze request] SEAL -> T3_RELEASE_GATE -> PACKAGE
+  -> CONTINUE | PLATEAU_STOP | BUDGET_STOP | DISK_PRESSURE | BLOCKED_INSTRUMENT | RELEASE_PACKAGE_READY
+```
+
+Every transition is explicit and journaled. The LLM produces proposals and interpretations; a
+deterministic controller disposes gates and stop conditions.
+
+### 8.2 BOOTSTRAP
+
+1. verify all production kernels and current production identities;
+2. identify the current kernel set and toolchain/linkage generations;
+3. derive campaign scope from compiled stack priors and the declared objective;
+4. verify evaluator and protocol bundle hashes;
+5. verify resource broker, **GPU device claim**, and sandbox availability;
+6. verify storage headroom against the campaign's `max_storage_gb`;
+7. create a fresh namespaced worktree from production;
+8. build or bind the known-good anchor;
+9. run positive/neutral/negative/**A-A** evaluator controls without changing production;
+10. initialize the append-only journal and derived views, then **assert consistency between them** — if
+    the journal holds candidates but a rebuilt view comes up empty, or cardinalities disagree, BOOTSTRAP
+    refuses to start rather than proceeding on an empty frontier. AutoPilot lost 232 trials and roughly
+    16 days of compute to a restart that came up empty with nothing objecting; a deliberate rebase
+    passes an explicit escape flag rather than being silently indistinguishable from that failure;
+11. register on the session bus (roster id, heartbeat, lane declaration); and
+12. emit `READY` only when the entire chain is reconstructible after restart.
+
+### 8.3 DISCOVER and SELECT_TARGET
+
+Discovery is evidence collection, not automatic source mutation. It compiles production role and
+workload exposure; captured real-graph shapes; per-op wall share; bandwidth/compute/launch/sync
+classifications; CPU NUMA/locality or GPU occupancy/memory/launch counters; existing fast paths and
+dispatch coverage; measured wall-share ceilings; oracle coverage; and existing handoff/negative-ledger
+matches.
+
+Selection follows the hierarchy: placement and launch configuration → dispatcher → autotuning →
+layout/repack → operator fusion → work scheduling → new kernel → scheduler architecture → alternate
+engine. A cheaper layer may be skipped only with an evidence receipt showing why it cannot explain the
+measured gap.
+
+### 8.4 PROPOSE and PRE_RUN_CRITIC
+
+The planner produces proposal manifests; the controller filters schema/novelty/budget violations; the
+critic tries to falsify the highest-value proposal. **A filtered proposal is journaled as
+`PROPOSAL_SKIPPED` with its reason, fingerprinted, and fed into the next planning context** — never a
+bare discard. AutoPilot dispatched 119 identical invalid actions whose rejection message named the
+exact fix, and none of it ever reached the planner; a repeated fingerprint auto-blacklists and a run of
+them trips `PLANNER_DEGRADED`. Cheap deterministic checks run **before** metered drafting, not after —
+the reverse ordering cost roughly 38 draft-and-critique cycles that were paid for and then thrown
+away. Selection ranks **expected information gain first**,
+then expected performance value — a cheap experiment that cleanly distinguishes two mechanisms can
+outrank a speculative large patch.
+
+Rejected before mutation when: expected end-to-end gain exceeds its own wall-share ceiling without a
+fusion explanation; no correctness oracle covers the affected path; target shapes do not occur in a
+real graph and the campaign is not explicitly microkernel-only; the same mechanism was falsified under
+matching conditions **by an entry carrying a receipt**; the resource or storage estimate exceeds
+budget; the change crosses a repo/release domain the backend adapter does not own; or the proposed
+evaluator step would require changing the evaluator.
+
+### 8.5 MUTATE and BUILD
+
+The actor applies the conceptual change in the campaign worktree. The controller records preimage,
+diff, tool calls, commit, and build outputs. Build must enforce: no production-tree path; no production
+build directory; clean production ancestry; namespaced branch; pathspec-limited commits; bounded build
+parallelism; campaign-local caches/output; compiler and dependency identity; exact output hashes; full
+process cleanup on timeout/failure.
+
+Compilation failures are valuable outcomes. They go to the journal and the correction prompt.
+
+#### 8.5.1 Source-integrity gates — the C++ analogue of AutoPilot's four layers
+
+AutoPilot's one attempt at autonomous source mutation destroyed a production module with an edit that
+passed `ast.parse()`. The project's answer was four layers: syntax, a >60% shrinkage reject, public-name
+preservation, and a live `importlib` round-trip. **None of those four transfer directly**, because
+AutoKernel edits compiled C++/HIP rather than interpreted Python — there is no import round-trip, and
+"it compiles" is a much weaker claim than "it imports". A kernel edit that drops a template
+specialization, deletes a case from a dispatch switch, or removes an op registration compiles cleanly
+and silently changes behaviour for every shape nobody happened to test.
+
+Every candidate therefore passes these before it is eligible for T0's behavioural gates:
+
+1. **Symbol and registration preservation.** Diff the exported symbol table, the op-registration
+   tables, and the dispatch predicates between the anchor binary and the candidate binary. Any
+   **removal or arity change not declared in the proposal** is a hard failure. This is the direct C++
+   analogue of public-name preservation, and it is the check that would have caught the class of edit
+   that destroyed `escalation.py`.
+2. **Clean build from the recorded snapshot.** T0 compiles from the content-addressed source snapshot
+   in a fresh build directory — never from the actor's incremental tree. An incremental build can link
+   stale objects and hide the error that the snapshot would surface, which would make the actor's
+   build state part of the artifact.
+3. **Semantic diff conformance.** The diff must touch only files and symbols within the declared
+   surface, contain no unrelated deletions, and stay inside the change-class size envelope. Invariant
+   13 says one conceptual mutation; this is what enforces it rather than trusting it.
+4. **Repair starts from a clean parent.** A bounded repair attempt re-checks out the parent candidate
+   and re-applies, never continuing on the failed attempt's tree. Repairs are capped per proposal;
+   exceeding the cap is a `PLANNER_DEGRADED` signal, not another retry. AutoPilot's scar here was a
+   loop compounding edits onto an already-corrupted file.
+
+**Core-header risk tier.** A change to shared ggml core or to a widely-included header is not a large
+edit — it is a *different kind* of edit, because its reach is every op in both the CPU and GPU builds.
+`change_class: core_header` forces full-tree affected surface regardless of the textual diff size,
+forces the binary-comparison stage of §3.2 for every backend the tree serves, and marks the candidate
+`REQUIRES_HUMAN_CODE_REVIEW` regardless of the §10.6 complexity ceiling.
+
+**The candidate binary is the real privilege boundary, not the actor's shell.** §6.2 grants generic
+shell inside the worktree, which a C++ build needs. But the loop then *compiles code it wrote and
+executes it* with GPU access on a shared host. Path allowlists on the agent's tools do not constrain
+the syscalls of the binary those tools produced. Candidate execution therefore runs under the same
+sandbox and owned-cgroup regime as the evaluator, with no write access outside the campaign tree and
+no ability to signal processes it does not own — and until that is verified on the real host (§14 AK2),
+AutoKernel does not run unattended.
+
+### 8.6 T0_GATE
+
+Run on every source candidate:
+
+- **the §8.5.1 source-integrity gates — symbol and registration preservation, clean build from the
+  recorded snapshot, semantic diff conformance — which run before any behavioural check**;
+- schema and diff policy, including the diff-complexity ceiling (§10.6);
+- static/compile checks;
+- **mandatory ASAN/UBSAN build and targeted run for any change touching memory or threading**;
+- targeted backend-op unit shapes;
+- exact reference comparisons where defined;
+- unseen/boundary shapes for dispatch changes;
+- dispatch trace for affected-surface confirmation (§6.4) and no-fallback proof;
+- state, rollback, teardown, and race tests where relevant;
+- determinism-class check: same seed, same input, repeated runs, bitwise stability versus anchor;
+- binary/linkage identity; and
+- anti-reward-hacking/integrity checks.
+
+Any failure ends speed ranking for that candidate. A bounded repair is a new candidate record.
+
+### 8.7 T1_SEARCH_EVAL
+
+See §9.2–9.4. T1 emits a search verdict, not a release verdict, and never runs the production role
+matrix or promotion-quality suite.
+
+### 8.8 POST_RUN_CRITIC and memory update
+
+Classifies hypothesis confirmed/refuted/inconclusive; mechanism confirmed/refuted/unavailable; speed
+signal versus noise; wall-share translation from op to graph; target and non-target behaviour; likely
+interaction with the current champion; next discriminating experiment; durable do-not-repeat lesson
+**with its receipt**. The deterministic controller checks the classification against the raw gates. The
+event, snapshot, and context update are fsynced before the next round.
+
+### 8.9 Champion maintenance
+
+Three concepts stay separate: **frontier candidates** (correct, non-dominated), **the champion**
+(one compatible composed lineage per source tree), and **experiments** (diagnostic branches that may
+never accumulate).
+
+Only changes with reconciled affected-surface maps may be combined. After combining, rerun T0/T1 on the
+combined full candidate; never infer composition by multiplying local speedups. Retain diversity across
+mechanism classes so one noisy early win does not collapse the search to a single family.
+
+When the operator freezes a new production version, the champion is **re-anchored**: members already in
+production are dropped, the remainder is rebased on the new tip, and its T1/T2 evidence is invalidated
+and re-measured. That cost is explicit and budgeted; it is the price of §4's fresh-production-base invariant.
+
+**The anchor can also move without a freeze, and the loop must notice.** An emergency kernel hot-fix,
+a rollback to the previous version, or any operator action that repoints a production symlink or
+advances a frozen branch leaves every in-flight champion silently forked from a dead anchor, with T1
+and T2 evidence that is stale in a way no gate would catch — every ratio in the journal has a
+denominator that no longer exists.
+
+Therefore the controller re-verifies **anchor identity at every campaign boundary**, not only at
+freeze: production branch, commit, and the binary plus linkage hashes of every backend the tree serves,
+compared against the values recorded at BOOTSTRAP. Any mismatch raises `ANCHOR_MOVED`, which:
+
+1. halts new candidate work for that source tree immediately — no further measurement against a
+   denominator that has changed;
+2. marks every T1/T2 evidence record for the affected backends `superseded_by_anchor_move`, carrying
+   the old and new anchor identities, rather than deleting them;
+3. preserves candidate source, patches, and correctness results, which remain valid — only the
+   *comparisons* died, not the work;
+4. re-anchors per §8.9 and re-measures; and
+5. emits an operator notice, because an unexpected anchor move usually means something happened that
+   the loop should not silently absorb.
+
+This is cheap to implement and closes the one way the champion model can be quietly wrong.
+
+### 8.10 Stop and recovery
+
+Deterministic stop states:
+
+- `RELEASE_PACKAGE_READY` — package assembled and handed to the operator;
+- `ANCHOR_MOVED` — production identity changed outside a loop-initiated freeze; comparisons are
+  superseded, work is preserved, re-anchor and re-measure (§8.9);
+- `PLATEAU_STOP` — no meaningful readiness improvement across the configured window. Emitting it
+  requires the same enumeration `EXHAUSTED_SURFACE` does;
+- `PLANNER_DEGRADED` — the controller is repeating no-ops, dispatching invalid actions, narrating a
+  condition the receipts contradict, or looping against an unavailable dependency. Distinct from
+  plateau: plateau means the search is done, degraded means the searcher is broken, and conflating
+  them once cost this project months of paid no-ops;
+- `OPERATOR_STOP_REQUESTED` — an operator control was received; the loop acknowledges in the journal,
+  latches on disk, drains at the next boundary, and stays stopped across restart until resumed;
+- `BUDGET_STOP` — wall/resource/candidate/token budget exhausted;
+- `DISK_PRESSURE` — storage headroom below the campaign floor;
+- `EXHAUSTED_SURFACE` — every eligible hierarchy layer measured or falsified. **Emitting it requires
+  enumerating what was closed and what was not:** "closed for sub-scope X (gates A, B, C met);
+  sub-scope Y deferred (gates D, E un-run)". Bare "exhausted" and "all paths" are reserved words the
+  validator rejects — closure inflation is this project's most-repeated documented habit, surviving
+  even explicit awareness of the rule;
+- `EVALUATOR_COVERAGE_GAP` — release blocked for the affected lineage, research continues on covered
+  surfaces. **It has an owner and a deadline, or it becomes a permanent silent block:** the gap is
+  raised as a decision package naming the missing coverage class, the lineage it blocks, and the
+  drafted amendment; if it is still open at the next campaign boundary it escalates, and a gap open
+  across two consecutive freeze cycles is reported as a program-level defect rather than a standing
+  condition;
+- `RESOURCE_UNAVAILABLE` — persist and drain, never busy-wait;
+- `HOST_REBOOT_REQUIRED` — no decision-grade measurement proceeds (§10.7);
+- `INTEGRITY_STOP` — repeated tamper/reward-hacking signal;
+- `OPERATOR_INPUT_REQUIRED` — rendered as a four-part decision package (§18).
+
+The LLM may request a stop. The controller owns disposition from records.
+
+---
+
+## 9. Tiered evaluation and cost control
+
+| Tier | Frequency | Purpose | Typical work | May do |
+|---|---|---|---|---|
+| **T0 — correctness/build** | Every source candidate | Eliminate broken artifacts before speed work | build, sanitizer, targeted ops, reference/unseen shapes, dispatch trace, state/rollback, determinism, linkage, integrity | admit to T1 or fail |
+| **T1 — search** | Every T0-pass candidate or selected param point | Guide local search cheaply | microbench, tiny real graph, paired blocks, targeted profiler, sentinel shapes | rank/retain/abandon experimental candidates under `P-AK-SEARCH-1` |
+| **T2 — lineage estimator** | Occasionally, on the composed champion | Estimate per-backend per-phase standing with bounded uncertainty | medium sentinel matrix, stronger reps, broader non-target set, co-residency cell, mechanism confirmation | update the readiness signal; never freeze |
+| **T3 — kernel-freeze gate** | **On operator request only** | Decide whether the sealed champion is a releasable new kernel version | full derived tree scope, release reps, correctness/quality/stability/linkage/capacity, transaction dry-run | emit release PASS / FAIL / PASS_WITH_WAIVER bundle |
+| **T4 — post-cutover verification** | After the operator's freeze and cutover | Confirm live activation and detect stale processes | role canary, health, API/speech smoke, linkage, process start-time check, multi-day watch window | recommend keep or rollback to the operator |
+
+### 9.1 Cheap-evaluation rules
+
+- Incremental compile and targeted tests are allowed; release builds are not done per candidate.
+- Profile only the target kernels/counters needed to test the hypothesis.
+- Prefer captured real shapes over broad synthetic grids.
+- Cache model identity and immutable inputs; never cache a candidate output as a correctness oracle.
+- Save raw outputs and samples so reducers can replay without inference.
+- Promote from op-level to real-graph measurement only when the op result and measured wall share imply
+  plausible end-to-end value.
+- Promote from T1 to T2 only after the full composed champion — not one isolated patch — passes T0/T1.
+- Run T3 once per sealed fingerprint. A retry requires a new evidence-affecting fingerprint or a
+  deterministic replay/repair of the failed stage.
+
+### 9.2 Statistical method — use the project's sanctioned machinery
+
+The constitution never uses the term "LCB". What it sanctions is:
+
+- **E-processes for rate claims.** `MEASUREMENT.md:30-32` — *"Noise reference CV ≈ 9.1%: all rate
+  claims go through the non-inferiority / improvement e-process, never a single trial."*
+  `gpu-cross-device.md:146-150` — *"n ≥ 10 paired blocks. **MDE computed and published WITH the result,
+  not after seeing it.**"* E-processes are anytime-valid, which is exactly what a loop that looks at
+  its evidence every round requires.
+- **Pre-committed stopping rules.** `MEASUREMENT.md:136-137` — *"Pre-commit a stopping rule before any
+  bench campaign."* `MEASUREMENT_POLICY.md:59-61` — name the table that is FINAL and the decision each
+  outcome triggers.
+- **Reps.** `bench-cpu.md:21-22` — *"≥5 for ≥5% effects; ≥10 for ≤2% effects; report median + MAD."*
+  P-BENCH-PREFILL-1 requires ≥10 reps per arm for a release non-inferiority claim.
+- **Bounded extension only.** `bench-cpu.md:85-86` — a ratio in [0.95, 0.98) buys *one* fresh
+  reversed-order pair, pooled to a pre-declared threshold. Contrast P-BENCH-4
+  (`bench-cpu.md:174-178`): *"exactly five … no retry, replace, discard, or pooling."*
+- **Order control.** Arms interleaved and order-randomized (`gpu-cross-device.md:136-138`); reversed
+  order on retry (`bench-cpu.md:48-49`).
+- **Anchor gate.** `bench-cpu.md:231-233` — *"`np=1` is measured FIRST and compared against a recorded
+  production anchor … Outside band ⇒ the run is VOID and may not be reported."*
+
+`P-AK-SEARCH-1` therefore supplies: an e-process construction for every rate comparison; a
+pre-committed stopping rule per campaign; per-tier reps consistent with the P-BENCH-1 rule; an anchor
+gate so a drifted host voids rather than reports; and a **selection/confirmation split** so the
+evidence that promotes a candidate into the champion is not the same evidence that reports readiness.
+`architect_bench_analyze.py:54 bootstrap_ci()` is a usable seeded paired bootstrap for fixed samples but
+does not address sequential looks.
+
+Controls are four, not three (§15.2): positive, neutral, negative, and **A/A** (anchor versus anchor),
+run periodically rather than once — A/A is what calibrates the false-positive rate and catches host
+drift mid-campaign.
+
+### 9.3 T1a — target operator discriminator
+
+1. run only captured target shapes that occur in the selected real workload;
+2. interleave candidate and anchor measurements in paired blocks;
+3. begin at the protocol's minimum sample and extend only by the pre-committed rule;
+4. apply successive halving for parameter surfaces — broad shallow pass, retain the best fraction, add
+   samples only to survivors;
+5. measure the exact predicted mechanism counters, not a whole-profiler sweep; and
+6. stop early when the candidate cannot clear the campaign's contribution floor.
+
+Argv is constructed by the codified microbenchmark recipe (§2.5), never hand-typed.
+
+### 9.4 T1b — tiny real-graph translation, T1c — selective mechanism receipt
+
+An operator win advances only when `operator wall share × operator gain` can make a meaningful graph
+contribution. Then run one production-representative model/quant/shape that actually dispatches the
+changed path; a bounded prompt/decode or prefill slice; counterbalanced candidate/anchor samples; a
+deterministic output, numerical, PPL, or state sentinel appropriate to the change; and one or a few
+non-target sentinels around the dispatcher boundary.
+
+T1c runs only when the proposal predicts a counter movement, T1a/T1b shows a bankable signal, or the
+result is ambiguous between two mechanisms. Capture the target kernel and named counters only. A failed
+mechanism prediction withholds the mechanism bonus and normally makes the result inconclusive until the
+mismatch is explained.
+
+### 9.5 Change-class-specific cheap suites
+
+Selected deterministically from `proposal.change_class`.
+
+| Change class | Cheap correctness | Cheap performance/mechanism | Mandatory sentinel |
+|---|---|---|---|
+| Parameter/autotune | existing op tests; configuration bounds | successive-halving microbench | neighbouring shapes and incumbent default |
+| Dispatcher | target, boundary, unseen shapes; path trace | per-path microbench + branch/launch trace | known positive and known negative cells |
+| Arithmetic kernel | reference/random/adversarial shapes; numeric margin | target op paired A/B + predicted counter | alternate quant/dtype and awkward dimensions |
+| Layout/repack | encode/decode or load-time equivalence; metadata validation | kernel A/B plus load time, VRAM/RAM, cache-line traffic | tiny real graph and context-capacity budget |
+| Fusion/graph | exact intermediate/final result; alias/lifetime checks | node/launch/barrier delta + tiny real graph | unfused shapes and variable-shape path |
+| MoE scheduling | route/scatter/reduce correctness, skew cases | expert histogram, occupancy/reuse, batched graph | batch one and saturated batch |
+| Recurrent/stateful | committed/speculative state and rejection rollback | bounded decode/prefill sequence + state traffic | rejection, transition, and concurrency sequence |
+| Scheduler/policy | deterministic event simulation and invariant checks | short variable-arrival replay | latency/SLO and completion-churn cases |
+| Oracle port | full reference parity against the oracle's own tests plus ours | same as the underlying change class | the oracle's own negative cases |
+
+### 9.6 Banking a result
+
+T1 decides whether to reject, retain as diagnostic, bank as a correct conditional change, extend
+sampling, or compose into the champion. Banking requires a correct real-path dispatch, green sentinels,
+and either the predicted mechanism or a recorded explanation, plus **either** a throughput signal above
+the calibrated floor **or** a non-dominated improvement on another banked axis: context capacity, VRAM
+or RAM headroom, model load time, or run-to-run variance.
+
+Single-signal banking would filter a throughput-neutral capacity win before anyone could see it — and
+capacity is what makes the large models on this host runnable at all. AutoPilot learned both halves of
+this: a single-axis noise gate discarded 8 of 11 excluded trials that were in fact non-dominated, *and*
+the naive fix of admitting everything poisoned the frontier with speed noise. The working form is one
+robust-median representative per stable configuration fingerprint, with dominance judged on the median
+rather than on any single run. Small correct changes are retained even when they cannot move the
+readiness signal alone.
+
+### 9.7 T2 — composed-champion estimator
+
+Runs on the **composed champion**, never by adding local percentages. Trigger when compatible winners
+have accumulated and interaction is the dominant uncertainty, when the readiness signal could plausibly
+change materially, or when a predeclared capability objective becomes runnable.
+
+T2 uses a medium, production-weighted sentinel matrix: one or a few roles per affected
+architecture/regime; stronger paired repetitions than T1; broader dispatcher-boundary and non-target
+sentinels; **at least one co-resident cell** for `llama_cpu`; capacity (VRAM/RAM/context) deltas;
+cumulative mechanism confirmation; champion versus the sealed production anchor. It omits the full
+role/model matrix, broad quality suite, long stability soak, release build, transaction dry-run, and
+canary.
+
+### 9.8 Capability objectives
+
+Some changes unlock a workload that previously could not run, so a throughput ratio is undefined. They
+enter the readiness signal only through a predeclared capability objective: the required model/role
+becomes runnable at the declared context/concurrency; correctness and quality floors pass; resource
+budget fits; and the utility model was fixed at campaign start, not invented after observing the
+candidate.
+
+---
+
+## 10. The kernel-freeze evaluation program (T3)
+
+Run when the operator requests a freeze for a source tree.
+
+### 10.1 One generated plan, not a curated matrix
+
+The release plan compiler starts from compiled stack priors, then joins: source tree and the backends it
+serves; stable production kernel paths; distinct production models and roles; quant, context, KV,
+speculation, concurrency, placement, and **co-residency** recipes; architecture class; observed op/shape
+coverage; the reconciled affected-surface manifest; backend-specific protocol IDs and thresholds;
+correctness/quality transfer eligibility; capacity floors; linkage/toolchain requirements; and canary
+requirements. It deduplicates equivalent cells without losing which roles they protect.
+
+`kernel_freeze_scope.py` is the seed for this compiler, not the finished compiler.
+
+### 10.2 Release-gate phases
+
+1. **Identity/preflight** — immutable production and sealed-candidate identity, clean ancestry,
+   evaluator hash, host health, resources, storage, rollback target, active waivers. **Includes the
+   per-backend unchanged test (§3.2):** for each backend the tree serves, run stage 1 (source-closure
+   diff) and, when it reports unchanged, stage 2 (normalized comparison against an anchor rebuild in
+   the candidate's environment). Confirmed unchanged **and** incumbent evidence still in scope ⇒ that
+   backend's cells drop with a transfer receipt naming the incumbent artifacts and their hashes.
+   Changed, or the two stages disagree ⇒ that backend owes full candidate-grade evidence under its own
+   protocol, and a stage disagreement is additionally filed as a build-identity defect.
+2. **Build/linkage** — full candidate build outside production; overlay present; binary/library hashes;
+   ABI/backend inventory; correct per-tree `LD_LIBRARY_PATH` proven by
+   the research repo's `scripts/utils/verify_ggml_linkage.sh` (it lives in
+   **epyc-inference-research**, not epyc-root — CLAUDE.md cites it unqualified, same defect class as
+   the durability validator's path in `MEASUREMENT.md:155`).
+3. **Backend correctness** — exact and unseen op shapes, no silent fallback, NaN/numerical bounds,
+   state/rollback, teardown/race, real-model coherence, determinism class.
+4. **Performance matrix** — candidate versus production on derived production-optimal recipes, per
+   phase, under the phase's own protocol and release reps, including co-resident cells.
+5. **Quality** — deterministic output parity where expected; otherwise PPL/numerical and focused quality
+   parity. Transfer banked quality across kernel eras once paired parity proves transfer.
+6. **Stability** — repeated load/unload, concurrency/mixed prefill-decode where affected, memory growth,
+   profiler/runtime errors, cleanup.
+7. **Capacity and utility** — VRAM/RAM/context-capacity non-inferiority; every protected cell within its
+   fixed floor; the §1.6 per-phase rule satisfied, or an operator-approved phase-trade exception
+   present.
+8. **Transaction dry-run** — exact next version, branch/tag, install path, archive/rollback link,
+   symlink diff, service impact, era actions, receipt paths.
+9. **Seal verdict** — hash the protocol, plan, raw evidence, reducers, validation results, active
+   waivers, and the exact transaction into one release bundle.
+
+### 10.3 What to reuse
+
+P-BENCH-1 and P-BENCH-PREFILL-1 for llama CPU; P-GPU-1 for MI210 after §3.2's sealed-candidate repair;
+backend-specific STT/TTS protocols to be defined; deterministic replay and quality-transfer rules from
+the constitution; the research repo's `verify_ggml_linkage.sh`; derived stack priors and stable
+backend paths; and
+transaction/rollback patterns from the v8 and speech freeze artifacts.
+
+**Do not reuse blindly:** `kernel_eval.sh` raw commands as a release instrument; the v8 script's
+hard-coded artifact list; observation-only historical speed numbers; a hand-curated "important models"
+list; GPU idle sensing as a device claim; name-pattern process signalling; a baseline/off-recipe
+regression as a production veto; or quality reruns when deterministic replay or proven era transfer
+answers the question.
+
+### 10.4 Operator waivers are a first-class input
+
+A binary PASS/FAIL gate would have blocked v8. The v8 ratification records
+`promotion_decision: false`, preserved as *"a non-automatic matrix verdict"*, released as *"an
+operator-attested release decision"* with `q8_claim: "none; campaign-scoped WAIVE-Q8 remains binding
+and v8 makes no Q8 non-regression claim"*. The waiver is a schema'd object —
+`epyc.cpu_prefill_v8.operator_waiver.v1` — carrying decision, protocol, protocol-changed flag,
+candidate/production heads, an exact scope (excluded model, excluded pairs, remaining matched pairs), a
+reason, and a `consequences` list naming the forfeited claims. `freeze_v8_production_20260725.sh` gates
+on it at `:214`, `:248`, and `:268`.
+
+Generalize it: `epyc.autokernel.operator_waiver.v1`, human-only, stored under the trust-boundary path
+set, hash-pinned into the T3 bundle, carrying scope, reason, forfeited claims, protocol binding,
+campaign binding, and an expiry/reopen predicate. T3 emits `PASS` / `FAIL` / `PASS_WITH_WAIVER`. A
+waived cell suppresses the corresponding claim in the release receipt. The evaluator verifies the
+waiver's hash and predicate; it never judges its merits.
+
+**Calibration note for AK5:** the T3 dry-run against preserved v8 artifacts should *predict a FAIL*
+without the waiver. If it passes, the compiler is wrong.
+
+### 10.5 Incumbent builds are archived, not merely rebuildable
+
+The v8 quality gate compared against a preserved binary
+(`/mnt/raid0/llm/llama.cpp-v7-build-backup-6ad45fa3ff/cpu-bin/llama-server`). Rebuilding an old commit
+under a drifted toolchain does not reproduce that binary. `/mnt/raid0/llm/kernels/archive/` is empty.
+The freeze transaction must archive the incumbent's built binaries and linked libraries for N−1 and
+ideally N−2, budgeted under §5.8.
+
+### 10.6 Diff-complexity ceiling
+
+Even without delegated authority, LLM-authored kernel C++/HIP should not reach a release package
+unreviewed at arbitrary size. Each backend adapter declares a complexity/blast-radius ceiling (diff
+size, files touched, whether shared ggml core is modified). Above it, the package is marked
+`REQUIRES_HUMAN_CODE_REVIEW` and says so on its first page.
+
+### 10.7 Host-uptime ceiling
+
+`bench-cpu.md:17-19` and `OPERATING_CONSTRAINTS.md:39` set the host-health tier: uptime ≤1 week
+requires `drop_caches` plus NUMA-interleave re-warm; ≥1 week requires a reboot. `drop_caches` is
+privileged and *"a failed cache action invalidates the arm"* (`bench-cpu.md:148-149`). Reboots are
+operator-only, and `SESSION_LIFECYCLE.md:43-55` makes pre-reboot wrap-up mandatory including commit and
+push. **Any decision-grade unattended campaign is therefore capped at roughly one week of host
+uptime.** The loop must request the reboot as a decision package, persist fully, and resume.
+
+---
+
+## 11. From champion to production
+
+### 11.1 Four words that must stay distinct
+
+- **Candidate:** mutable experimental lineage.
+- **Champion:** the composed, always-green best lineage per source tree.
+- **Sealed release candidate:** immutable full build plus evidence target.
+- **Frozen version and cutover:** operator actions.
+
+### 11.2 The release packager
+
+On an operator freeze request the packager may: seal the champion; run T3 through the trusted
+evaluator; assemble the verdict bundle; compute the next version and full transaction plan; compute the
+rollback plan and verify the archive target; draft the era-registry row and the AutoPilot rebaseline
+note; pre-validate every operator command end-to-end (`MEASUREMENT.md:138-145` requires exactly this);
+and present a four-part decision package.
+
+It may not: edit source; rebuild the candidate outside the sealed build; change protocols, thresholds,
+or scope; waive failed evidence; touch any production branch, symlink, era registry, or baseline file;
+or execute any command it drafted.
+
+### 11.3 Cutover is scheduled by whoever owns inference
+
+`OPERATING_CONSTRAINTS.md:41` — a reload *"must be executed BY THAT SESSION, at a moment it chooses…
+route the request via coordinator-agent to the owning session"*. The package therefore contains a
+cutover *request*, routed on the bus, never an action.
+
+### 11.4 Cross-system effects after the operator freezes
+
+A new llama kernel changes orchestrator speed priors and AutoPilot's speed era even when model quality
+is identical. The package must therefore enumerate, as drafts for operator execution: the kernel-era
+event and its registry row; which throughput priors to invalidate or rederive; which quality evidence
+transfers; targeted re-anchors instead of whole eval regeneration; derived stack-fact recompilation;
+and the rollback identity exposed to the orchestrator. Scheduler/runtime campaigns use the stack-change
+adapter and must not impersonate a kernel-era freeze.
+
+### 11.5 Post-cutover watch window
+
+T4 validates activation — the right binary is live, linkage is correct, no process is stale, the role
+canary and API/speech smoke pass. It answers "did the cutover work", which is not the same question as
+"was the cutover right". A kernel regression that survives T3's matrix and T4's canary is by
+construction one that only a production workload and a longer horizon expose. The watch window is
+where that surfaces, and now that the operator performs the cutover it is the last automatic safety
+net in the path.
+
+**Duration.** Default 7 days of production traffic, or until the affected roles have each served a
+declared minimum volume — whichever is later. A window that expires on a quiet weekend has observed
+nothing.
+
+**What is compared.** Live telemetry against the pre-cutover era, per affected role:
+
+| Signal | Source | Direction |
+|---|---|---|
+| decode and prefill throughput at production recipes | orchestrator/serving telemetry | regression is the alarm |
+| per-request p50/p95 latency | serving telemetry | regression is the alarm |
+| error, timeout, and fallback rates | server logs and backend receipts | any increase is the alarm |
+| memory growth and VRAM/RAM headroom over the window | host and device sampling | drift toward the residency floor is the alarm |
+| quality proxies already collected on production traffic | evidence plane | regression is the alarm |
+| crash, restart, and stale-process events | supervisor | any occurrence is the alarm |
+
+**Comparison method.** Era-labelled, as `MEASUREMENT.md:233` requires — the pre-cutover baseline is
+the incumbent era's recorded distribution, not a remembered number. Production telemetry is
+observational and uncontrolled, so the window uses the standing noise reference and MDE rather than
+pretending to protocol grade: it produces **a recommendation, never a claim**. A signal outside its
+band raises a decision package; it does not itself revert anything.
+
+**Thresholds and ownership.** Bands are set per role at package assembly time from the incumbent era's
+observed distribution, and named in the package so they are fixed before the window opens rather than
+chosen after seeing the data. The window is owned by whoever executed the cutover; AutoKernel computes
+and reports, and the rollback anchor stays live and verified for the whole window. Closing the window
+is an explicit action that records the verdict — an unclosed window is an open question, not a pass.
+
+### 11.6 The stack-change release path (`serving_runtime`)
+
+Scheduler, batching, admission, and KV-policy work shares the research loop but must not travel the
+kernel-freeze path (§1.5, AK-D9). Its release path was previously named but never described; this
+specifies it.
+
+**What already exists.** `epyc-orchestrator/scripts/validate/stack_change_guard.py` validates generated
+stack priors against current source artifacts — registry, descriptors, derived priors, and a manifest
+of hardcoded consumer surfaces, with an exceptions file and accepted-gaps list. That is the
+config-consistency half, and it is real. The behavioural half does not exist.
+
+**The three gates, which are distinct and none implies the next.** A change is released only when all
+three pass, in order:
+
+1. **Pipeline green** — `stack_change_guard.py` passes: derived priors are consistent with source,
+   no retired role is live, no consumer surface is stale.
+2. **The stack starts** — every affected service comes up under `orchestrator_stack.py`, sequentially,
+   with correct per-tree `LD_LIBRARY_PATH` proven by the linkage verifier.
+3. **Live equals config** — the running processes match the intended configuration: right binary,
+   right flags, right affinity, verified against live state rather than against the topology hash or
+   the config file that was supposed to produce it.
+
+**What `serving_runtime` adds on top.** A serving change alters *how work is scheduled*, not how a
+kernel computes, so its evidence differs from a kernel release in three ways:
+
+- the metric is **`task_rate`, not tokens/s** — `MEASUREMENT.md:23-30` makes these authoritative in
+  their own scopes and forbids substituting one for the other, and a scheduler change is exactly the
+  case where tokens are not commensurable across arms;
+- the workload is **variable-arrival replay**, not fixed-shape benchmarking (the P0.2 separation in
+  §19.6), with latency and SLO cells as first-class outputs rather than secondary;
+- the comparison is against the **pinned production configuration** at its production-optimal recipe,
+  and a reload gates on that pinned bench — autopilot being down is not the gate.
+
+**What it does not touch.** No new kernel version, no frozen branch, no era row for kernel speed. A
+serving change may still invalidate throughput priors and therefore require an AutoPilot rebaseline,
+which remains an operator action. The `serving_runtime` adapter MUST refuse the kernel-freeze path
+outright rather than degrading to it (§12).
+
+---
+
+## 12. Failure and abuse model
+
+| Failure mode | Required defense |
+|---|---|
+| Candidate edits evaluator/tests | evaluator read from a hash-pinned bundle outside the actor's worktree, protected at the OS level (§3.6); resume drift fails closed |
+| Candidate returns fake timing/score | trusted evaluator independently times and reduces an immutable snapshot |
+| **Candidate under-declares its affected surface to shrink release scope** | scope is mechanically derived and dynamically traced; `traced ⊄ derived` is a hard failure; the declaration is a scored prediction only (§6.4) |
+| Candidate detects only test shapes | unseen/boundary shapes, captured real-shape holdout, dispatch audit, anti-cheating red-team |
+| Candidate silently falls back to CPU/reference | backend trace/op receipt and no-fallback assertions |
+| Faster but numerically wrong | correctness/quality/state gates before any speed ranking |
+| **Candidate silently changes determinism class** | same-seed repeat-run bitwise check in T0; class change is a declared release property (§4, invariant 12) |
+| Optional baseline lets "coherent" pass | T1+ requires an explicit immutable anchor; no-baseline is `INVALID`, never correct. **Already realized in the current scaffold — see §2 and §14 AK1 quarantine task** |
+| PPL/output drift hidden by tail compare | full bounded output hashes/vectors plus task-appropriate PPL/numerical checks |
+| Warm-cache/repeated-prompt gaming | distinct prompts, cache-state receipts, fixed budgets, cache-disabled direct-kernel cells |
+| Summed local gains inflate readiness | compare the composed champion directly with the sealed anchor |
+| Profiler metric moves but wall time does not | mechanism bonus never substitutes for real graph gain |
+| Op microbenchmark wins on unused shapes | captured real-shape and dispatch-coverage requirement |
+| **Peeking at a threshold every round inflates false positives** | anytime-valid e-process, pre-committed stopping rule, selection/confirmation split (§9.2) |
+| **Host drift creates a false win** | A/A control, anchor gate that VOIDs, counterbalanced pairs, host-health tier, contamination invalidation |
+| Stale production base | ancestry guard at campaign start and seal; re-anchor at freeze (§8.9) |
+| **Anchor moves outside a freeze (hot-fix, rollback) and every ratio loses its denominator** | anchor identity re-verified at every campaign boundary; `ANCHOR_MOVED` supersedes comparisons, preserves source and correctness results, forces re-anchor, and notifies the operator (§8.9) |
+| Long-lived branch accumulates obsolete code | champion re-anchoring, campaign expiry, worktree reclamation |
+| Store loses negative history on rewind | append-only sharded journal; supersession events; rebuild derived views |
+| Resource collision poisons results | region/device claim held for the full run; host/resource receipts |
+| **No GPU claim exists to hold** | build one (§2.5, §14 AK2); until then no GPU T1 runs |
+| Loop kills another session | cgroup/PID ownership; quiesce-and-drain; single audited read-only preflight (§3.5) |
+| Hung build/bench leaks process | owned cgroup timeout, TERM→KILL escalation, verified empty before the next event |
+| **Disk exhaustion halts or corrupts a campaign** | quota, retention classes, tombstoned expiry, `DISK_PRESSURE` (§5.8) |
+| Evaluator coverage lags new op/model | `EVALUATOR_COVERAGE_GAP`; release blocked; amendment drafted separately |
+| Full release evaluation loops repeatedly | sealed-fingerprint idempotence and failed-gate cooldown |
+| Package describes the wrong artifact | source/binary/evidence/transaction hashes joined; no rebuild in the packager |
+| Cutover serves a stale process | process start time versus binary/link target; T4 live identity |
+| Bad release degrades the live stack | incumbent archive pointer, canary, watch window, transactional rollback |
+| **Adversarial or external content steers the planner** | external content rendered only in provenance-tagged quarantine blocks, never in an instruction position (`OPERATING_CONSTRAINTS.md:27-31`); imported priors carry source hashes |
+| **A wrong suppression silently closes a research family** | every `HARD_CONSTRAINT`/`MATCHED_NEGATIVE`/`SUPERSEDED_FACT` needs a receipt bound to the current production commit, re-verified on anchor move (§19.3) |
+| Alternate engine/scheduler change crosses domain | backend adapter refuses the kernel-freeze path and routes to the stack-change gate |
+| **A syntactically valid edit silently deletes a specialization, dispatch case, or op registration** | symbol/registration-table diff against the anchor binary; an undeclared removal or arity change is a hard failure (§8.5.1) — the direct precedent is AutoPilot destroying `escalation.py` with an edit that parsed cleanly |
+| **The compiled candidate writes or signals outside its campaign scope at run time** | candidate execution runs under the evaluator's sandbox and owned-cgroup regime; the actor's tool allowlist does not constrain the binary those tools produced (§8.5.1) |
+| **A repair compounds edits onto an already-broken tree** | repair re-checks out the clean parent and re-applies; repairs are capped per proposal and exceeding the cap raises `PLANNER_DEGRADED` (§8.5.1) |
+| **A core-header change is treated as a small edit because its diff is small** | `change_class: core_header` forces full-tree surface, per-backend binary comparison, and human review regardless of diff size (§8.5.1) |
+| **An operator control is silently ignored** | controls acknowledged in the journal, latched on disk, re-read each iteration under the write lock; an unacked control is a hard failure; fault-injected in §15.1 (invariant 19) |
+| **The planner regenerates a false belief from its own prose** | narrative separated from the machine record and excluded from retrieval by default; `RETRIEVAL_SUPERSEDED` removes a belief from retrieval without deleting the record (§5.5, invariant 20) |
+| **The loop is broken but looks merely plateaued** | `PLANNER_DEGRADED` distinct from `PLATEAU_STOP`; filtered proposals journaled as `PROPOSAL_SKIPPED`, fingerprinted, and fed back rather than discarded |
+| **Budget consumed by a proposal class that structurally cannot bank** | `realized_cost` attributed per proposal; discovery statistics reported per §18; cheap deterministic checks run before metered drafting |
+| **The gate can still reject but can no longer promote, and reads as "exhausted"** | fourth control is a historical-win replay that MUST promote (§15.2); `EXHAUSTED_SURFACE` requires sub-scope enumeration |
+| **A full-machine threshold applied to a partial-machine cell** | every evaluation event declares its `scope_denominator`; a gate whose scope exceeds the cell's refuses rather than demoting (§7.4) |
+| **Ambient import identity decides which code scored the run** | evaluator emits a runtime source-label attestation of the modules actually loaded across all three repos, bound into the evaluation event (§5.4) |
+| **The holdout is overfit because it never rotates** | captured-shape holdout and control seeds rotate on a declared schedule; a never-rotated holdout is an evaluator coverage defect |
+| **A ledger entry contradicts a live operator decision** | contradiction detection at compile time against live decisions and sibling entries; a contradicting entry becomes `conflicted`, never authoritative (§19.2) |
+
+---
+
+## 13. Backend adapter responsibilities
+
+### 13.1 `llama_gpu`
+gfx90a build/toolchain/linkage; HIP op/reference/unseen-shape tests; full residency/fallback detection;
+rocprof/rocprof-compute support with counter-availability declaration; batch-one, batched, prefill,
+decode, context, speculation, and state/rollback recipes; P-GPU search/release adapters; MI210 device
+claim, thermal, VRAM, and process receipts. Shares the llama champion with `llama_cpu`.
+
+### 13.2 `llama_cpu`
+Exact EPYC topology and compiler/libomp linkage; CPU op/reference/race/teardown tests; perf-counter
+preflight and NUMA/locality evidence; canonical decode/prefill/batched/placement recipe adapters;
+**co-resident lineup cells**; CPU-region claims, cache preparation, host-health requirements;
+multi-role non-inferiority rules. Shares the llama champion with `llama_gpu`.
+
+### 13.3 `whisper_stt`
+Independent tree and ggml generation; STT correctness corpus and output normalization; RTF/latency/
+throughput and memory stability; audio input identity; linkage and service smoke; backend-specific
+release protocol.
+
+### 13.4 `qwentts_tts`
+Independent tree and ggml generation; text/audio identity and deterministic/numerical checks;
+intelligibility/quality proxy and human-independent safety floor; first-audio latency, RTF, throughput,
+stability; linkage and service smoke; backend-specific release protocol. Note the production symlink
+points at `build`, not `build/bin`.
+
+### 13.5 `serving_runtime`
+Fixed-shape kernel versus continuous-serving separation; scheduler, KV, batching, admission,
+graph-cache and latency objectives; orchestrator/llama-server worktree ownership mapping; production
+role/canary scope; task-rate versus tokens/s metric discipline per `MEASUREMENT.md:23-30`. Its release
+path is the three-gate stack-change path specified in **§11.6**, built on
+`stack_change_guard.py` — not the kernel-freeze path, which the adapter MUST refuse rather than
+degrade to.
+
+---
+
+## 14. Implementation sequence
+
+Front-loaded with contracts and negative controls. Do not start a live autonomous campaign because a
+planner prompt exists.
+
+### 14.0 Sizing, and the slice that pays for itself
+
+**Unit and assumptions.** Sizing is in *focused sessions* of the kind that produced the v8 and speech
+freeze work — agent-driven, long-horizon, one coherent deliverable per session. Bands are planning
+aids, not commitments; they assume no parallel campaigns, no host contention, and that the operator
+reviews at phase boundaries rather than continuously. LOC bands count implementation plus tests.
+
+| Phase | Deliverables | LOC band | Needs inference/GPU | Sessions |
+|---|---|---|---|---|
+| AK0 | 4 remaining drafts + ledger + attestation prep | ~0 (prose) | no | 2–3 + operator review cycles |
+| AK1 | 7 schemas, sharded journal, corpus importer, storage plane, validators, quarantine, durability fixes | 3–5k | no | 8–12 |
+| AK2 | worktree managers, build layout, **GPU device claim**, preflight wrapper, cgroup control, bus registration | 2–3k | claim-contention tests only | 5–8 |
+| AK3 | evaluator API, affected-surface derivation + trace, correctness surfaces, ASAN path, codified microbench recipe, e-process reducer, red-team, four controls | 3–4k | **yes — first phase that does** | 8–12 |
+| AK4 | state machine, context compiler, planner/critic adapters, selection, composition, guards | 2–3k | controller tokens | 6–10 |
+| AK5 | T2 scope/weights, readiness, release-plan compiler, T3 runner, waiver verification, v8 dry-run | 2–3k | yes | 6–10 |
+| AK6 | packager, refusal tests, fault injection, dashboard contract | 1–2k | no | 4–6 |
+| AK7 | first supervised freeze | ~0 | yes, plus a real freeze window | 1–2 + operator time |
+| AK8 | serving-runtime adapter, research queue activation | 1–2k | yes | 4–6 |
+| AK9 | speech protocols and adapters (see below) | 2–3k | yes | 6–10 |
+
+**Roughly 50–75 focused sessions end to end.** That is a program, not a task, and it should be
+budgeted as one. The corpus import in AK1 and the control calibration in AK3 are the two most likely
+to overrun, because both are bounded by how much project history exists rather than by how much code
+gets written.
+
+#### The minimum viable slice — AK1 + AK2 + AK3
+
+**AK1–AK3 is a standalone deliverable, and it should be planned as the first release of AutoKernel
+rather than as scaffolding for AK4.** It costs 21–32 sessions and delivers, without any autonomous
+planner:
+
+- a **trusted tiered evaluator** that requires an explicit immutable anchor, gates on coherence,
+  proves no-fallback by dispatch trace, runs the sanitizer path, and cannot be tampered with by the
+  thing it measures — replacing a 230-line script that today emits `"status":"OK"` unconditionally;
+- a **durable event journal** with the project's kernel/inference research imported as typed priors,
+  seeds, and a receipted negative ledger, so a human session can ask "has this been tried, under what
+  regime, and what happened" and get an answer with citations;
+- **safe worktree, build, resource, and process discipline**, including the cross-process GPU device
+  claim that does not exist anywhere today and that every future GPU benchmark on this host wants
+  regardless of AutoKernel.
+
+Every one of those is immediately usable by the human-driven kernel sessions that have been running
+the MI210 and CPU campaigns by hand — which is the same loop AutoKernel automates. If AK4 onward is
+never built, the project still keeps a better evaluator, a searchable research memory, and a GPU
+claim. Name this slice explicitly in planning so it can succeed on its own terms.
+
+**Kill criterion for the program.** If, after AK3 plus two full campaigns, the loop has produced no
+bankable correct change and no retired research family, stop and reassess rather than continuing into
+AK4. The evaluator and journal remain valuable independently; the planner is the part that has to
+earn its keep.
+
+#### Operator moments, and how they batch
+
+Every signature costs a context switch, and the constitution's own doctrine is that the human signs
+**once, at apply time, over a consolidated bundle** — protocol plus evidence hashes plus validation
+results plus the exact state diff (`MEASUREMENT.md:138-145`), presented as one attestation listing
+each item so lines can be struck (`MEASUREMENT_POLICY.md:77-78`). The phase order is therefore
+arranged so that operator moments fall on phase boundaries and are as few as the trust boundaries
+allow.
+
+**There are exactly three, and every other phase requires none.** AK1, AK2, AK4, AK6, AK8, and AK9
+need no operator signature at all; nobody should insert an approval gate into them.
+
+| Moment | When | What it carries | Its validation evidence |
+|---|---|---|---|
+| **Attestation 1 — search authorization** | after AK3 | Annex K creation + core-file layout/registry deltas, `P-AK-SEARCH-1`, the `pgrep` substitute, the evidence-retention rule, the `human_only_paths.yaml` additions and its `.sha256` rewrite | AK1–AK3 deliverables plus the four calibrated controls |
+| **Attestation 2 — release authorization** | after AK5, before the first freeze | P-GPU-1 sealed-candidate amendment, `epyc.autokernel.operator_waiver.v1` | **the AK5 dry-run against preserved v8 and speech artifacts** — already planned, so this attestation costs no new compute |
+| **A freeze** | AK7, and each freeze after | see below | the T3 bundle |
+
+**A freeze is one apply bundle, not four ceremonies.** This is the structural change worth making.
+A kernel freeze crosses four human-only boundaries (§1.3) — the freeze/cutover transaction, the
+era-registry rows, the AutoPilot baseline apply, and any touch of the pinned path list. Left
+unstructured, that is four artifacts the operator assembles and sequences by hand, every time. The
+release package (§7.6, §11.2) instead assembles **one pre-validated apply bundle covering all four**,
+presented as a single attestation with strikeable lines and a single apply token. On a validation
+failure the same token is re-presented with updated hashes rather than restarting the chain, exactly
+as `MEASUREMENT.md:138-145` prescribes.
+
+This turns a recurring four-ceremony cost into one, and it is the difference between a freeze being an
+afternoon and a freeze being a morning of assembling artifacts.
+
+**Two ordering constraints that cannot be batched away.**
+
+1. **Attestation 2 must precede the first real T3 run**, not accompany it. T3's evidence is only
+   decision-grade if produced *under* a ratified protocol, so ratifying alongside the package it
+   validated would be circular. The AK5 dry-run exists precisely so attestation 2 has validation
+   evidence without a live T3.
+2. **The `human_only_paths.yaml` edit and its `.sha256` rewrite are one item, not two.**
+   `config.yaml:164` sets `on_pin_mismatch: refuse`, so the pair must land together or the bus
+   refuses. Present them as a single strikeable line.
+
+**Build the bundle assembler once, use it three times.** Pre-validation — running every operator
+command in dry-run and producing the exact state diff before presentation — is a build task, not a
+ceremony task. AK6's packager needs it for freezes; AK0's two attestations need the same thing. Write
+one assembler in AK6 and have AK0's attestations use it, rather than hand-assembling the policy
+bundles and then building the machine separately.
+
+**Batch the non-boundary decisions too.** Operator decisions that are *not* trust-boundary writes —
+the annex question, a phase-trade exception, an `EVALUATOR_COVERAGE_GAP` resolution, a reboot request
+— accumulate to the next phase boundary and are presented together as decision packages, rather than
+interrupting mid-phase. The only exception is an `INTEGRITY_STOP`, which surfaces immediately.
+
+#### Freeze cadence — assumption, operator-settable
+
+Sizing above assumes **freeze on readiness or quarterly, whichever comes first**. The tradeoff:
+
+- *Longer cadence* accumulates more value per freeze and pays the freeze ceremony less often, but the
+  champion drifts further from the anchor, the re-anchor cost at §8.9 grows, and more of the loop's
+  work sits unreleased and therefore unvalidated in production.
+- *Shorter cadence* keeps the champion close to production and exercises the release path — the
+  highest-risk code — more often, but each freeze costs a T3 run, an era row, an AutoPilot rebaseline,
+  and a cutover window.
+
+Because a freeze is now operator-initiated, this is a policy you set rather than a parameter the loop
+optimizes. It belongs in the campaign policy plane, not in a campaign manifest.
+
+**Sequencing note.** AK1–AK3 produce no search decisions and need no new authority, so they proceed in
+parallel with AK0's drafting — `MEASUREMENT.md:139` requires that *"evidence collection and validation
+never wait on a human signature"* and `MEASUREMENT_POLICY.md:79-81` forbids gating unrelated work on a
+pending token. The single ratification is presented once AK1–AK3 have produced the validation evidence
+that makes the bundle reviewable.
+
+### Phase AK0 — policy package (drafted in parallel with AK1–AK3)
+
+- [x] Audit the source draft against the current scaffold, freeze path, measurement constitution, and
+  production kernel-set rules ✅ 2026-08-01
+- [x] Write this owning build handoff and supersession map ✅ 2026-08-01
+- [x] Full design audit; corrections folded into §§2–15; freeze authority withdrawn ✅ 2026-08-02
+- [x] Move the source draft out of gitignored `tmp/` to a durable tracked path ✅ 2026-08-02
+- [x] Establish the staging area with its sequencing plan —
+  [`artifacts/operator/autokernel-policy-draft/README.md`](../../artifacts/operator/autokernel-policy-draft/README.md),
+  which carries the two-attestation split, the per-item blocking table, the bundle-contents checklist
+  every attestation must satisfy, and the note on why filenames there omit their `.md` extension.
+  `measurement/protocols/*` is hook-blocked, and the v2 restructure precedent is
+  `artifacts/operator/measurement-v2-draft/` ✅ 2026-08-02
+- [x] Draft the P-GPU-1 sealed-candidate amendment skeleton (§3.2), with every artifact-dependent
+  binding marked `[BLOCKED-ON AKn]` and the corrected two-stage backend-unchanged test ✅ 2026-08-02 —
+  [`P-GPU-1-sealed-candidate-amendment.draft.md`](../../artifacts/operator/autokernel-policy-draft/P-GPU-1-sealed-candidate-amendment.draft.md)
+
+**Two attestations, not one (AK-D20).** `MEASUREMENT_POLICY.md:77-78` asks that queued boundary items
+be batched into one attestation with strikeable lines. That guards against a per-experiment
+ratification cycle; it does not require items whose referents appear months apart to share a
+signature, and forcing them together would ratify release bindings against schema sketches under an
+append-or-version constitution. Each attestation is presented only when every item's referent exists
+and has been validated.
+
+**Attestation 1 — search authorization (present after AK3).** Unblocks autonomous research; every
+referent exists once AK1–AK3 land.
+
+- [x] **Annex question resolved (operator, 2026-08-02): create Annex K (kernel research and release)**
+  as a fourth annex under `measurement/protocols/`. `P-AK-SEARCH-1` fits none of the three declared
+  families (`MEASUREMENT.md:15-20`) — it is cross-backend and a *search* instrument rather than a
+  measurement family. Splitting it across B/Q/G would fragment one instrument across three amendment
+  histories and obscure that its authority is narrow, unified, and revocable in one place. Annex
+  creation is a layout change, so the layout paragraph and registry deltas ride inside attestation 1
+  ✅ 2026-08-02
+- [x] Draft Annex K plus the `P-AK-SEARCH-1` skeleton — scope, authority grant and its limits,
+  preconditions, statistical requirements, record grammar, void conditions — with numeric bindings
+  marked `[BLOCKED-ON AKn]` ✅ 2026-08-02 —
+  [`Annex-K-kernel-research-and-release.draft.md`](../../artifacts/operator/autokernel-policy-draft/Annex-K-kernel-research-and-release.draft.md)
+- [ ] Fill `P-AK-SEARCH-1`'s numeric bindings from the four controls — e-process threshold, per-backend
+  noise floor, minimum block counts. **These must be calibrated, not guessed:** ratifying invented
+  thresholds into an append-or-version protocol is the mistake the draft-early/ratify-last sequencing
+  exists to prevent.
+- [ ] Draft the `pgrep` substitute (§3.5) as an equivalent P-BENCH-1/P-GPU-1 precondition.
+- [ ] Draft the evidence-retention rule for expirable classes (§5.8) — needed because
+  `MEASUREMENT.md:223-229` puts reclamation under operator authority.
+- [ ] Prepare the `human_only_paths.yaml` additions (evaluator bundle, both protocol IDs,
+  objective/threshold policy) and the accompanying `.sha256` rewrite as operator actions.
+- [ ] Assemble attestation 1 through the AK6 bundle assembler: RATIFICATION_LEDGER of every semantic
+  delta, the `MEASUREMENT.md` CHANGELOG line, the §2 registry key and row, and a pre-validated
+  end-to-end command sequence presented as one attestation with strikeable lines.
+
+**Attestation 2 — release authorization (present before the first freeze, after AK5).**
+
+- [ ] Fill the sealed-candidate amendment's `[BLOCKED-ON]` bindings from the delivered artifacts.
+- [ ] Draft `epyc.autokernel.operator_waiver.v1`, generalized from
+  `epyc.cpu_prefill_v8.operator_waiver.v1` (§10.4). The draft schema suffices for AK5's dry-run; only
+  a real freeze needs it ratified.
+
+**Both attestations must carry** the amended text appended to its owning annex (never a silent edit),
+a one-line `MEASUREMENT.md` CHANGELOG entry, an explicit supersession naming the prior receipt path
+and SHA-256, a `RATIFICATION_LEDGER.md` enumerating every semantic delta, a §2 protocol-registry row
+per new ID, in-repo evidence hashes, a pre-validated end-to-end command sequence, and presentation as
+one attestation listing each item separately.
+
+- [ ] File `worktree_manager.py`'s in-memory-restore data-loss bug (§2.3) as a defect against the
+  AutoPilot owner with the exact repro. Do not fix it from here.
+
+**Exit (attestation 1):** the search loop can legally learn from experimental results, and no freeze
+authority has been delegated to any process.
+**Exit (attestation 2):** the release gate can legally evaluate a sealed candidate, and the operator
+can act on a waiver-bearing verdict.
+
+### Phase AK1 — contracts, event substrate, and bootstrap corpus (no inference)
+
+- [ ] Implement versioned campaign/proposal/candidate/evaluation/champion/release-package schemas
+  (§7), including claim grammar, anchor binding, `inconclusive`, `change_class`, controller provenance,
+  expected information gain, determinism class, and co-residency.
+- [ ] Implement typed research-prior, campaign-seed, constraint/negative, and legacy-import events
+  (§19).
+- [ ] Enumerate and content-hash the historical knowledge source manifest across root/research
+  handoffs, artifacts, evidence reports, progress pointers, current source, and research intake.
+- [ ] **Quarantine the existing `kernel_store.py` rows** as `legacy_unverified`: `kernel_eval.sh`
+  never gated on coherence, so the correct-only Pareto is contaminated. Check whether any raw
+  artifacts survive (the campaign output directory is missing, so likely none); re-derive only rows
+  with surviving evidence and an explicit anchor. Exclude the rest from every planner retrieval.
+- [ ] Mark `kernel_eval.sh` deprecated-and-unrunnable so no further contaminated rows are produced
+  before AK3 replaces it.
+- [ ] Atomize the source draft and historical research without upgrading evidence grade; link
+  duplicates, contradictions, confounds, supersessions, transfer limits, and reopen predicates.
+- [ ] Require a receipt on every suppressing ledger entry, bound to the current production commit,
+  re-verified on anchor move (§19.3).
+- [ ] Compile the three derived memory products and prove regime-matched retrieval for fixed
+  planner/critic fixtures.
+- [ ] Add validators refusing mutable evaluator IDs, stale production anchors, undeclared change
+  classes, actor-supplied scope, missing fallbacks, and unbounded resource/storage requests.
+- [ ] Replace SQLite-as-source with fsync append-only **sharded** events plus content-addressed
+  snapshots; retain SQLite as a rebuildable view; readers read all shards.
+- [ ] Add supersession/tombstone events; deprecate destructive primary-record purge.
+- [ ] Add failure/mechanism/do-not-repeat/context/champion views consumed by the planner.
+- [ ] Implement the storage plane: durability classes, per-campaign quota, retention classes,
+  tombstoned expiry, `DISK_PRESSURE`.
+- [ ] Land the evidence root under `epyc-inference-research/data/<campaign>/` with `SHA256SUMS` and
+  README; extend `check_evidence_durability.py` to cover AutoKernel citations.
+- [ ] Clear the §3.7 durability exposures: copy the np_context decision surface out of
+  `/mnt/raid0/llm/tmp/`, track the two np_context study bundles, restore the P2-5j protocol to git.
+- [ ] Add deterministic reconstruction test from journal plus immutable artifacts only.
+- [ ] Fix the `kernel_store.py:88` file-handle warning; add both `kernel_rnd` suites to
+  `PYTEST_SMOKE`; pin pytest in `pyproject.toml`/`uv.lock` rather than injecting it via `--with`.
+
+**Exit:** crash/restart/rewind never loses a candidate or its negative lesson; the loop starts with the
+project's prior knowledge rather than an empty memory; no contaminated legacy row can reach the planner.
+
+### Phase AK2 — worktree, build, resource, process, and bus control (mostly no inference)
+
+- [ ] Build backend worktree managers that start from the current production tip, namespace worktrees
+  (`llama.cpp-ak-<campaign_id>`) and branches (`ak/<campaign_id>/…`), use pathspec-limited commits in
+  the shared clone, and categorically deny production source/build paths.
+- [ ] Build candidate-local build/cache layout and full build identity receipts.
+- [ ] **Build the cross-process MI210 device claim** — the single largest missing substrate:
+  - [ ] Decide the mechanism: an on-disk lock under the same root as `cpu_region.*.lock`, keyed by
+    device (`gpu.mi210_0.lock`), holding owner id, PID, start time, campaign id, expiry, and purpose.
+  - [ ] Acquire is atomic (`O_CREAT|O_EXCL` plus `flock`), never advisory-by-convention.
+  - [ ] Liveness is PID plus process-start-time, not a heartbeat, so a stale lock from a dead holder is
+    detectably reclaimable and a live holder is never stolen from.
+  - [ ] Crash recovery: a lock whose PID is gone or whose start time mismatches is reclaimable after a
+    grace period, and the reclamation is journaled.
+  - [ ] Revocation follows `BUS_PROTOCOL.md:47-51` — mark `revoking`, holder drains at its boundary,
+    an ignored revocation surfaces as a `defect`, never a forcible steal.
+  - [ ] Extend `region_lock_cli.py` with a device verb, or add a sibling CLI sharing its lock root;
+    do not fork the lock semantics.
+  - [ ] Retire `src/gpu_lease.py`'s process-local lease for cross-process use, or clearly scope it as
+    intra-process only, and migrate `axa2_live_cutover_bundle.py:535`.
+  - [ ] Emit a claim receipt id that lands in every evaluation event.
+  - [ ] Acceptance: two processes contend and the second blocks or fails cleanly; a killed holder's
+    lock is reclaimable and the reclamation is journaled; a live holder is never preempted forcibly; a
+    revoke drains within the declared bound; `kernel_eval.sh`'s `gpu_idle()` is deleted, not wrapped.
+- [ ] Integrate CPU region claims and co-residency policy.
+- [ ] Build the single audited read-only preflight wrapper (§3.5) and remove every other name-pattern
+  process read from the loop.
+- [ ] Run every candidate process in an owned scope/cgroup with PID/start-time receipts and verified
+  teardown.
+- [ ] Integrate host-health/reboot-required and cache-preparation states, including the one-week
+  uptime ceiling and the reboot decision package (§10.7).
+- [ ] Register AutoKernel on the session bus: roster id, heartbeat at every task boundary, outbox,
+  lane declaration (`cpu`/`gpu`/`both`/`none`) on every queued unit, revoke handling, C19/C20
+  visibility, and a re-read-instructions checkpoint so a long-lived service does not run indefinitely
+  on its startup copy (`BUS_PROTOCOL.md:76-90`).
+- [ ] Wire `scripts/utils/agent_log.sh` task start/decision/end logging, and log rollback commands
+  before any system-affecting step (`OPERATING_CONSTRAINTS.md:22-25`).
+- [ ] Verify the C6 sandbox on the real host; remove unsandboxed operation from live AutoKernel.
+- [ ] Extend the sandbox to **candidate binary execution**, not just the evaluator: no write access
+  outside the campaign tree, no signalling processes it does not own, owned cgroup with verified
+  teardown. The loop compiles code it authored and then runs it with GPU access on a shared host;
+  the actor's tool allowlist does not constrain that binary's syscalls (§8.5.1).
+- [ ] Add resource starvation/drain/resume tests and campaign checkpointing.
+
+**Exit:** the controller can safely author, build, acquire and release CPU **and GPU** resources, be
+revoked, and be seen — without inference or production mutation.
+
+### Phase AK3 — trusted tiered evaluator
+
+- [ ] Replace `kernel_eval.sh` behind a typed evaluator API; do not grow the old shell script.
+- [ ] Require an explicit anchor for every performance/coherence comparison; no-baseline is `INVALID`.
+- [ ] Make status a computed verdict, never an unconditional literal.
+- [ ] Build the codified operator-microbenchmark recipe constructor so T1 argv is constructed, and
+  bind it to a recipe id `P-AK-SEARCH-1` can cite.
+- [ ] Implement the affected-surface derivation and dispatch-trace reconciliation (§6.4).
+- [ ] Implement the §8.5.1 source-integrity gates: symbol/registration-table extraction and diffing
+  against the anchor binary, clean-build-from-snapshot enforcement, semantic diff conformance, the
+  `core_header` risk tier, and repair-from-clean-parent with a per-proposal cap.
+- [ ] Red-team those gates specifically: a candidate that deletes a template specialization, one that
+  drops a dispatch case, one that removes an op registration, and one whose incremental tree compiles
+  while its snapshot does not. Each must fail before any behavioural check runs.
+- [ ] Add full correctness surfaces: relevant ops including `MUL_MAT_ID`, exact/unseen shapes,
+  PPL/numerical margin, state/rollback, no-fallback, determinism class, real-model smoke, cleanup.
+- [ ] Add the mandatory ASAN/UBSAN path for memory/threading changes and the diff-complexity ceiling.
+- [ ] Record absolute single-stream, batched/aggregate, latency, variability, capacity, mechanism, and
+  numeric correctness margins where the campaign requires them.
+- [ ] Implement T0/T1/T2 adapters for llama CPU/GPU first; STT/TTS after their protocols exist.
+- [ ] Implement the e-process reducer, pre-committed stopping rule enforcement, and the anchor gate.
+- [ ] Red-team the evaluator with deliberately wrong, test-shape-specialized, fake-score, fallback,
+  cache-gaming, scope-under-declaring, and timeout/leak candidates.
+- [ ] Add four controls: positive, neutral, degraded-negative, and periodic **A/A**.
+
+**Exit:** controls reach their expected deterministic states, the actor cannot tamper with the
+evaluator or its own scope, and T1 may legally guide search.
+
+### Phase AK4 — planner/critic/controller
+
+- [ ] Implement the explicit state machine and journal every transition.
+- [ ] Build the structured source/profile/workload/negative-history/oracle context compiler with
+  quarantined rendering of external content.
+- [ ] Build planner and pre-/post-run critic adapters; prefer distinct providers for the two roles.
+- [ ] Enforce proposal schema, one-concept rule, wall-share ceiling, novelty, budget, hierarchy, and
+  the oracle question.
+- [ ] Build store-guided next-experiment selection using information gain plus expected value.
+- [ ] Build champion composition and mandatory combined-candidate reevaluation.
+- [ ] Implement deterministic stop/plateau/budget/storage/integrity/evaluator-gap guards.
+- [ ] Add planner regression fixtures proving it consults failures and does not repeat known negatives.
+
+**Exit:** a mock campaign moves from source/profile facts through proposals, corrections, negative
+memory, and champion maintenance without human steering.
+
+### Phase AK5 — readiness estimator and release gate
+
+- [ ] Implement per-backend, per-phase T2 scope and weights from compiled facts, including the
+  co-resident cell and capacity deltas.
+- [ ] Implement the readiness signal and its coverage/non-target/mechanism guards. It reports; it does
+  not trigger.
+- [ ] Implement the capability objective with an immutable campaign-start utility model.
+- [ ] Extend `kernel_freeze_scope.py` into a complete deduplicated release-plan compiler keyed by
+  source tree and reconciled affected surface, with the two-stage per-backend unchanged test (§3.2):
+  build-system-derived source-closure diff as the gate, normalized comparison against an anchor
+  rebuild as confirmation, transfer receipts for dropped cells, and a filed defect when the stages
+  disagree.
+- [ ] Implement the generic T3 runner and release-bundle schema across CPU/GPU llama first.
+- [ ] Implement `PASS_WITH_WAIVER` and waiver hash/predicate verification.
+- [ ] Port v8/speech transaction integrity patterns into generic validation — not hard-coded evidence.
+- [ ] Dry-run the T3 compiler/validator against preserved v8 and speech freeze artifacts; **expect the
+  v8 dry-run to FAIL without its waiver** and treat that as calibration.
+- [ ] Add failed-gate replay/cooldown/idempotence behaviour.
+
+**Exit:** a sealed fixture champion yields one reproducible PASS/FAIL/PASS_WITH_WAIVER bundle and
+cannot retrigger the expensive gate unchanged.
+
+### Phase AK6 — release packager and operator handoff
+
+- [ ] Implement the packager: transaction plan, rollback plan, draft era row, draft AutoPilot
+  rebaseline note, linkage results, and a pre-validated command sequence.
+- [ ] Prove it refuses missing hashes, evaluator drift, dirty ancestry, reused version names,
+  incumbent modification, and an incomplete rollback.
+- [ ] Reconstruct the expected v8 and speech transactions from fixtures without applying them.
+- [ ] Route the cutover request through the bus to whoever owns inference (§11.3).
+- [ ] Render the package as a four-part decision package (`OPERATING_CONSTRAINTS.md:69-78`).
+- [ ] Run an end-to-end campaign that stops at a validated package with zero production writes.
+- [ ] Run repeated restart/crash/resource-preemption/tamper fault injections.
+- [ ] Give the operator surface a freshness and health contract, not just data. Today's `/kernel` page is
+  **absence-tolerant over a missing directory** — it renders clean when its producer is dead, which is
+  the exact shape of AutoPilot dying at trial 1302 and staying dead ~23 h with every dashboard green.
+  Required: a per-panel freshness envelope, an SSOT panel→producer registry whose test fails when a
+  panel has no registered source, a `/health` fold, a transport watchdog, and a restart chaos test.
+- [ ] Replace the `/kernel` dashboard JSON contract. The existing one exposes a partial Pareto and
+  nothing else; the new contract carries campaign phase, champion membership and readiness, per-backend
+  standing, storage and budget headroom, open blocking conditions (`EVALUATOR_COVERAGE_GAP`,
+  `ANCHOR_MOVED`, phase-trade exceptions), resource claims held, and release-package state. Version the
+  contract explicitly, keep it absence-tolerant as the current page is, preserve the freshness envelope,
+  and point `KERNEL_DASHBOARD_JSON` at a durable path rather than the missing scratch directory.
+
+**Exit:** campaigns produce correct, idempotent, operator-executable release packages and never write
+production.
+
+### Phase AK7 — first supervised freeze
+
+- [ ] Operator requests a freeze on a real champion; AutoKernel produces the package.
+- [ ] Operator executes the freeze, era rows, and rebaseline; AutoKernel records the receipts.
+- [ ] Run T4 post-cutover verification and the watch window.
+- [ ] Re-anchor the champion onto the new tip and re-measure (§8.9); record the true cost.
+- [ ] Post-mortem the package: what the operator had to add, correct, or reject. Fold back into §10.
+
+**Exit:** one production version has been created from an AutoKernel champion, with reconstructible
+evidence, and the loop has re-anchored cleanly.
+
+### Phase AK8 — serving-runtime adapter and research queue activation
+
+- [ ] Build the serving-runtime adapter against the three-gate stack-change path (§11.6), reusing
+  `stack_change_guard.py` for gate 1 and adding the behavioural half: variable-arrival replay,
+  `task_rate` rather than tokens/s, latency and SLO cells as first-class outputs, comparison against
+  the pinned production configuration.
+- [ ] Prove the adapter **refuses** the kernel-freeze path rather than degrading to it.
+- [ ] Populate campaigns from the §19.8 seed queue after fresh profiling.
+- [ ] Activate `oracle_port` campaigns; consider an upstream-delta scanner once the manual path works.
+- [ ] Seed external kernel-authoring suites only after license, gfx90a, honest baseline, quarantine,
+  and evaluator-integrity gates pass.
+- [ ] Retire/supersede narrower loop handoffs once their remaining tasks are owned here or by a
+  backend leaf.
+
+### Phase AK9 — speech backends
+
+Split out of AK8 because it is not one bullet. `whisper.cpp` and `qwentts.cpp` have **no measurement
+protocol of any kind** — `measurement/protocols/` contains nothing for STT or TTS — so this phase
+authors two protocol families from scratch, which is work comparable to Annex K, plus two adapters.
+It also carries the ggml-generation hazard: the three trees run three ggml generations, so every
+launcher sets its own `LD_LIBRARY_PATH` and proves it, or a binary silently runs against another
+tree's ggml.
+
+- [ ] Author the STT protocol: correctness corpus and output normalization (what counts as a
+  transcription match), real-time factor, latency, throughput, memory stability, audio input identity,
+  and the release decision rule.
+- [ ] Author the TTS protocol: text/audio identity, deterministic and numerical checks, an
+  intelligibility/quality proxy with a human-independent floor, first-audio latency, RTF, throughput,
+  stability, and the release decision rule.
+- [ ] Decide each protocol's annex placement at drafting time, per the §14 AK0 precedent.
+- [ ] Build the `whisper_stt` and `qwentts_tts` adapters on their own experimental trees.
+- [ ] Wire linkage verification through the research repo's `scripts/utils/verify_ggml_linkage.sh` for
+  every candidate build and every T3 phase-2 check.
+- [ ] Extend the release-plan compiler to the speech trees — note these two *are* independently
+  freezable, unlike CPU and GPU (§1.5).
+
+---
+
+## 15. Acceptance program
+
+### 15.1 No-inference acceptance
+
+Schema mutation/fuzz tests; journal/view reconstruction after a crash at every transition; worktree
+path-escape and production-path denial; shared-clone branch-collision and pathspec containment;
+evaluator hash/source drift refusal; candidate snapshot symlink/FIFO/hardlink/TOCTOU attacks; fake
+self-reported score ignored; **actor scope under-declaration detected**; release version collision and
+incumbent-modification refusal; resource-claim contention, revocation and drain/resume behaviour; **operator-control fault injection — a pause, drain, or
+abort the loop fails to acknowledge, latch, or survive a restart against is a hard failure, not a slow
+one**; journal-versus-derived-view cardinality disagreement at BOOTSTRAP;
+**GPU device-claim contention, stale-lock reclamation, and non-preemption**; owned-process
+TERM→KILL→verified-empty; storage quota and tombstoned expiry; package idempotence and rollback-plan
+completeness.
+
+### 15.2 Controlled evaluator acceptance
+
+Five fixed controls: **positive** (a known correct optimization with a real bounded mechanism);
+**neutral** (a correct change whose effect distributes around zero); **negative** (deliberately
+fast-looking but wrong, cheating, falling back, or cached); **A/A** (anchor versus anchor); and
+**historical-win replay** — a real past improvement, the iqk port being the obvious candidate,
+replayed end to end through T0–T2 and, at release rehearsal, T3, which **must promote**.
+
+The fifth exists because the other four all test the gate's ability to *reject*. Nothing else tests its
+ability to *accept*, and without that `EXHAUSTED_SURFACE` and `PLATEAU_STOP` are indistinguishable from
+a gate that has quietly stopped passing anything. AutoPilot ran 1,055 trials of which 8 were even of a
+promotable type, while every surface reported "active, blockers: []".
+
+Required: positive ranks above anchor under T1; neutral does not spuriously advance; negative never
+receives a speed rank; A/A produces no significant effect at the declared rate, and its failure voids
+the measurement window; **the historical-win replay promotes, and a failure to promote is a gate defect
+rather than a research finding**; all five remain correctly classified after restart/replay; the actor
+cannot alter the control definitions; and holdout shapes and control seeds rotate on their declared
+schedule.
+
+### 15.3 Planner acceptance
+
+On a fixed fixture the planner/controller must propose a falsifiable target tied to the profile;
+survive compile and correctness failures; consume failure memory in the next proposal; not reopen a
+matching do-not-repeat item without new evidence; check the oracle registry before authoring; respect
+the optimization hierarchy; combine compatible winners and remeasure the composed champion; report
+readiness against the anchor without declaring it; and stop on plateau/budget/storage/evaluator gap
+without human prompting.
+
+### 15.4 Release acceptance
+
+T3 derives the correct distinct production model/recipe scope for the source tree; every metric binds
+raw samples, protocol, category, reps, host/resource receipt, binary/linkage, model, anchor, and
+evaluator; production-optimal cells gate and diagnostic baseline cells do not; per-phase non-inferiority
+is evaluated under each phase's own protocol; quality replay/transfer avoids unnecessary inference; a
+failed cell produces a stable failure bundle and cooldown; a waiver is verified by hash and predicate
+and suppresses exactly its claims; a passing bundle reconstructs the exact next-version transaction; the
+package contains a verified rollback anchor and never writes production; T4 detects a stale running
+process and requires a controlled restart before success.
+
+### 15.5 Definition of complete
+
+AutoKernel is complete when an unattended campaign can start from the current production tip, author
+novel source changes, learn from failures, conserve evaluation cost, maintain a green champion, report
+honest readiness, and — on request — produce one sealed, fully evidenced, operator-executable release
+package, with reconstructible evidence and without the actor modifying its judge, its scope, or its
+production target.
+
+---
+
+## 16. Initial campaign policy
+
+Do not hard-code the source draft's ranked kernel list into the controller. At first activation:
+
+1. regenerate the current production roofline and wall-share map;
+2. assign at least 90% of the target campaign's wall time to measured mechanism classes **where the
+   required counters are actually available**;
+3. compile the current do-not-repeat ledger with receipts;
+4. select one bounded backend/regime campaign;
+5. validate the loop on the positive/neutral/negative/A-A controls; and
+6. only then allow novel research.
+
+The draft's most important research families remain hypotheses to re-rank against fresh evidence, not a
+permanent execution order: GPU low-bit GEMV/layout and persistent/grouped MoE; GPU LM-head/sampling,
+graph, recurrent, mixed-KV, and joint speculation policy; CPU NUMA/locality, operator-cluster fusion,
+persistent teams, grouped MoE, LM-head, and hybrid quantization; continuous batching, paged KV, and
+capability dispatch; and alternate-engine capability audits as design oracles.
+
+---
+
+## 17. Decision log
+
+| ID | Decision | Rationale |
+|---|---|---|
+| AK-D1 | One stable T3 program is both the final AutoKernel evaluation and the kernel-freeze evaluator | Prevents search/promotion truth divergence |
+| AK-D2 | T0/T1/T2 are separate cheaper research tiers | Full release evaluation per change would dominate compute cost |
+| AK-D3 | **Superseded 2026-08-02.** The +25%/+20% figure is a readiness signal, not a trigger | Removes threshold peeking, winner's-curse inflation, and the accumulation-versus-fresh-anchor tension |
+| AK-D4 | Readiness is computed deterministically; the LLM may request only | Prevents narrative estimates from spending the release matrix |
+| AK-D5 | Actor, evaluator, and packager have separate authority, enforced at the OS level | Full compute access must not imply self-grading; hook-based enforcement does not reach a daemon |
+| AK-D6 | **Superseded 2026-08-02 (operator).** No delegated auto-freeze; AutoKernel produces a release package and a human executes it | An automatic freeze crosses four human-only boundaries, including era rows and the AutoPilot rebaseline, and would preempt the inference owner's reload authority |
+| AK-D7 | Append-only sharded event journal is primary; SQLite/Pareto is derived | Failures and superseded candidates remain durable and reconstructible |
+| AK-D8 | One core loop with backend adapters | Avoids a GPU-only architecture and duplicated safety logic |
+| AK-D9 | Scheduler/runtime research uses the same controller but a stack-change release adapter | Scheduler wins are not kernel freezes |
+| AK-D10 | Evaluator changes remain human-amendment-only | The optimizer cannot rewrite its judge |
+| AK-D11 | Campaigns are per backend; champions and freezes are per **source tree** | CPU and GPU share `llama.cpp` and one frozen branch; only whisper and qwentts are independently freezable |
+| AK-D12 | Objective is per-backend, per-phase non-inferiority plus improvement at production-optimal recipes | A cross-device composite is forbidden by `MEASUREMENT.md:83-84` and `gpu-cross-device.md:106-111` |
+| AK-D13 | Operator waivers are a first-class T3 input | v8 shipped on `promotion_decision: false` plus a hash-pinned scoped waiver; a binary gate would have blocked it |
+| AK-D14 | The affected-surface manifest is derived and traced, never declared | Otherwise the actor sets its own release scope |
+| AK-D15 | Statistics use the sanctioned e-process, pre-committed stopping rule, and anchor gate | "LCB" appears nowhere in the constitution; e-processes are anytime-valid, which a per-round guard requires |
+| AK-D16 | `oracle_port` is a first-class campaign kind | The largest recent kernel gain was the iqk port, not de-novo authoring |
+| AK-D17 | Evidence is durable and classified, not merely hashed | `MEASUREMENT.md:146-156`, ratified 2026-08-02 |
+| AK-D18 | A backend owes new evidence only if its binary changed, tested by build-system source closure and confirmed by normalized comparison against an anchor rebuild — **not** by naive byte-identity, which never fires because builds embed IDs, timestamps, and paths | Confines the P-GPU-1 circularity to changes that reach the HIP build, and makes CPU-local campaigns cheap despite the shared tree |
+| AK-D19 | The GPU consumption clause is urgent; the decision-grade circularity is patient | The former blocks every GPU T1 round and AK3's exit; the latter blocks only a freeze that needs new GPU evidence |
+| AK-D20 | **Two attestations, not one:** "search authorization" after AK3, "release authorization" before the first freeze | Batching guards against a per-experiment ratification cycle; it does not require items whose referents appear months apart to share a signature, and forcing them together would ratify release bindings against schema sketches under an append-or-version constitution |
+| AK-D21 | **AK1+AK2+AK3 is a standalone deliverable**, planned as AutoKernel's first release rather than as scaffolding, with a program kill criterion after AK3 plus two campaigns | Evaluator, journal, and GPU claim are useful to human-driven sessions immediately; the planner is the part that must earn its keep, and a 50–75 session program needs an honest early exit |
+| AK-D22 | Anchor identity is re-verified at **every campaign boundary**, not only at freeze; `ANCHOR_MOVED` supersedes comparisons while preserving source and correctness results | A hot-fix or rollback between freezes otherwise leaves every ratio in the journal with a denominator that no longer exists, undetected |
+| AK-D23 | `serving_runtime` releases through the three-gate stack-change path (§11.6) on `stack_change_guard.py`, measured in `task_rate` under variable arrival | Pipeline-green, starts, and live-equals-config are distinct and none implies the next; tokens/s is not substitutable for task_rate in scheduler scope |
+| AK-D24 | Speech is its own phase (AK9), not an AK8 bullet | `measurement/protocols/` contains nothing for STT or TTS — two protocol families must be authored from scratch, comparable in size to Annex K |
+| AK-D29 | Source-integrity gates run **before** behavioural gates: symbol/registration preservation, clean build from snapshot, semantic diff conformance, repair from clean parent | AutoPilot's one autonomous source mutation destroyed a module with a syntactically valid edit; none of its four Python defenses transfer to compiled C++, where "it compiles" is far weaker than "it imports" |
+| AK-D30 | `core_header` is its own change class and risk tier, not a size band | A small textual diff to shared ggml core reaches every op in both the CPU and GPU builds |
+| AK-D26 | Planner narrative is separated from the machine record and excluded from retrieval by default; supersession can be retrieval-scoped | AutoPilot's worst contamination regenerated from its own prose inside an append-only journal, where scrubbing derived stores never stuck |
+| AK-D27 | A fifth control — historical-win replay that MUST promote — joins positive/neutral/negative/A-A | The other four test rejection; nothing tested acceptance, leaving a dead gate indistinguishable from an exhausted surface |
+| AK-D28 | A freeze is one pre-validated apply bundle covering all four boundary writes, not four ceremonies | The doctrine is one signature over a consolidated bundle; four hand-assembled artifacts per freeze is the avoidable recurring cost |
+| AK-D25 | Freeze cadence defaults to **on readiness or quarterly, whichever comes first**, as an operator policy rather than a loop parameter | Cadence trades accumulated value per freeze against champion drift, re-anchor cost, and how often the highest-risk code is exercised |
+
+---
+
+## 18. Reporting, escalation, and ownership
+
+1. Update this handoff's checkbox at the same commit that lands the work; append `✅ YYYY-MM-DD`.
+2. Put backend-specific evidence in the owning backend leaf; keep controller/release status here.
+3. Update [inference-acceleration-index.md](inference-acceleration-index.md) only when priority,
+   dependency, or phase changes.
+4. Append `progress/YYYY-MM/YYYY-MM-DD.md` after each significant phase.
+5. Never record an observation as a release claim; cite the active protocol, category, reps, and
+   attestation.
+6. **The running loop does not write handoffs, index rows, or intake entries.** CLAUDE.md restricts
+   those to explicit approval, and `MEASUREMENT.md:164-166` routes demoted numbers to
+   `handoffs/active/measurement-debt/`. AutoKernel emits bus artifacts and decision packages; a session
+   lands them.
+7. Every operator escalation — `OPERATOR_INPUT_REQUIRED`, `EVALUATOR_COVERAGE_GAP`, a reboot request,
+   a phase-trade exception, a release package — is rendered as Context / Options / Recommendation /
+   Default.
+8. Emit a periodic operator digest: what was learned, what was rejected and why, what is banked in the
+   champion, current readiness, storage and budget standing.
+9. **Report discovery statistics, not just outcomes.** T1-banked → survived T2 → survived T3; refuted by
+   futility versus refuted by budget exhaustion; realized cost per banked change; proposals filtered
+   before dispatch, by reason. AutoPilot's most expensive blind spot was that 0 of 121 refutations came
+   from futility — every one came from the budget rule — and no surface said so.
+9. At completion, extract stable architecture/runbook material to `docs/`, move this handoff to
+   `handoffs/completed/`, and remove its active-index row.
+
+### Key implementation locations
+
+- **Runtime owner:** `epyc-inference-research`.
+- Controller/evaluator/journal/importer/store: `epyc-inference-research/scripts/kernel_rnd/autokernel/`
+  and `scripts/rnd_harness/`.
+- Canonical benchmark recipes: `epyc-inference-research/scripts/benchmark/`.
+- Evidence root: `epyc-inference-research/data/<campaign>/` with `SHA256SUMS` and README.
+- Resource claims: `epyc-orchestrator/scripts/region-lock` (CPU) plus the new device claim (§14 AK2).
+- Compiled production scope: `epyc-orchestrator/orchestration/derived/stack_priors.yaml`.
+- Kernel path resolution: `epyc-orchestrator/src/registry/kernel_paths.py`.
+- Scope compiler seed: `epyc-orchestrator/scripts/validate/kernel_freeze_scope.py`.
+- Release policy and receipts: epyc-root `measurement/`, `docs/reference/`, `artifacts/operator/`.
+- Dashboard: epyc-root `dashboard/`.
+- Experimental source: namespaced worktrees under `/mnt/raid0/llm/`.
+- Production source: read-only to every AutoKernel component.
+
+---
+
+## 19. Bootstrap corpus — seeding the loop with what the project already knows
+
+Absorbed 2026-08-02 from the separate bootstrap-corpus design pass. Without this, AutoKernel starts as
+an amnesiac system and spends its first months rediscovering work already done.
+
+### 19.0 Decisions
+
+1. **Import every idea from the draft; do not make every idea an executable hypothesis.** The draft is
+   a source of design priors. Each idea is atomized, audited against current source and project
+   history, and assigned a disposition before the planner may spend resources on it.
+2. **Import historical project research as typed legacy events.** Inherit prior wins, failures,
+   conditional results, confounds, and reopen predicates without pretending AutoKernel ran them.
+3. **Keep three compiled memory products:** a research-prior catalog, an executable campaign-seed
+   queue, and a do-not-repeat/constraint ledger — all derived from one append-only journal.
+4. **Never upgrade evidence during import.** An observation stays an observation; a source audit stays
+   a source audit. Only protocol-bound evidence keeps decision authority.
+5. **Suppressing entries carry a higher bar than the wins they block** (§19.3). A win needs
+   protocol-bound evidence and mechanism confirmation; a negative that closes a whole family must not
+   be allowed in on confident prose.
+
+### 19.1 The journal is not an idea list
+
+```text
+source draft + historical handoffs + artifacts + source audits + external research
+                                  |
+                                  v
+                    append-only typed import events
+                                  |
+                +-----------------+------------------+
+                |                 |                  |
+                v                 v                  v
+       research-prior catalog  campaign seeds  constraint/negative ledger
+                |                 |                  |
+                +-----------------+------------------+
+                                  |
+                                  v
+                     planner context compiler
+                                  |
+                                  v
+                  new proposal/candidate/eval events
+```
+
+Legacy imports never populate the live Pareto frontier and never masquerade as candidate evaluations.
+
+**Research-prior catalog.** A prior is one atomic, scoped statement: a possible mechanism; a mechanism
+supported or refuted by prior evidence; an implementation pattern; a known optimized path already in
+source; a workload/regime fact; an evaluator/correctness requirement; a transfer restriction; or an
+unresolved contradiction. One prose section often becomes several priors — draft item G2 becomes
+separate records for batch-one workgroup sizing, asynchronous prefetch, execution layout, activation
+quantization reuse, persistent execution, and the already-refuted generic Q8 dequant premise.
+
+```yaml
+schema: epyc.autokernel.research_prior.v1
+prior_id: akr-...
+family: gpu.low_bit_gemv
+statement: "..."
+claim_type: design_hypothesis  # mechanism_fact | result | negative | constraint | source_fact
+disposition: untested          # supported | refuted | conditional | superseded | conflicted
+regime:
+  backend: llama_gpu
+  hardware: gfx90a
+  architecture_class: dense
+  phase: decode
+  batch_band: batch_one
+  quant: q8_0
+mechanism: memory_level_parallelism
+evidence_grade: design_prior   # source_verified | observation | protocol_bound | imported_claim
+era: null
+source:
+  repo: epyc-root
+  path: handoffs/active/...
+  locator: "section/line/event"
+  content_sha256: "..."
+  durability_class: carried_in_git   # carried_in_git | durable_untracked | hash_and_provenance_only
+applicability: {requires: [], excludes: []}
+transfer_limits: []
+reopen_when: []
+contradicts: []
+supersedes: []
+seed_eligibility: measurement_first
+imported_at: "..."
+```
+
+`design_prior` means "worth considering", not "probably true". Source and content hash let a later
+importer detect drift without silently rewriting history.
+
+**Executable campaign seeds.** A seed exists only when the question, regime, prerequisite, cheap
+discriminator, correctness oracle, and resource ceiling are known.
+
+```yaml
+schema: epyc.autokernel.campaign_seed.v1
+seed_id: aks-...
+derived_from_prior_ids: []
+question: "Does ... under ...?"
+backend_adapter: llama_gpu
+campaign_kind: source_change   # config | dispatch | layout | fusion | scheduler | capability | oracle_port
+change_class: dispatcher       # selects the §9.5 cheap suite
+target_regime: {}
+prerequisites: {source_receipts: [], profile_receipts: [], evaluator_features: []}
+cheap_discriminator:
+  tier: T1
+  target_shapes: []
+  anchor: production
+  mechanism_counters: []
+  recipe_id: "..."             # codified recipe, never a hand-typed command
+expected_counter_direction: {}
+wall_share_ceiling: null
+correctness_oracles: []
+non_target_sentinels: []
+estimated_cost_class: small
+estimated_storage_gb: 0
+status: blocked_measurement    # ready | blocked_* | exhausted | retired
+reopen_predicates: []
+```
+
+The queue is a derived view. Reprioritization never alters the prior or experiment history.
+
+### 19.2 Do-not-repeat and constraint ledger
+
+Not every negative is permanent.
+
+| Class | Meaning | Planner behaviour |
+|---|---|---|
+| `HARD_CONSTRAINT` | Hardware, policy, correctness, or ownership prohibition | Reject matching proposal |
+| `MATCHED_NEGATIVE` | Mechanism falsified in a matching regime with adequate evidence | Reject unless an explicit reopen predicate is newly satisfied |
+| `CONDITIONAL_NEGATIVE` | Failed only for named shapes/models/batches/eras | Exclude matched cells; other regimes remain eligible |
+| `CONFOUNDED_RESULT` | Unusable because identity, placement, cache, or baseline was wrong | Do not learn its sign; preserve as a trap; require a repaired experiment |
+| `SUPERSEDED_FACT` | Current source or production behaviour invalidates the old premise | Do not execute the stale proposal; regenerate from current source/profile |
+| `LOW_VALUE` | Plausible but below the wall-share/effort threshold | Deprioritize; reopen on changed exposure or implementation cost |
+
+Each entry requires exact match dimensions and a `reopen_when` predicate. "Do not repeat" without
+regime identity is dangerous because this project repeatedly observes sign changes across architecture,
+substrate, batch, context, and quant.
+
+**Contradiction detection is mandatory at compile time.** An entry is checked against live operator
+decisions and against sibling entries; anything that contradicts either becomes `conflicted` and is
+never authoritative. This is not hypothetical: twice in one session an agent let a committed artifact
+override the operator's restated decision, and the ruling was that *the artifact is the thing that is
+wrong*. A machine-maintained suppression ledger is versioned, greppable, and receipted — which makes it
+the most authoritative-looking artifact in the system and therefore the most dangerous one to leave
+unchecked.
+
+### 19.3 The receipt rule for suppressing entries
+
+A wrong suppression is invisible: nothing ever tests it again. Therefore every `HARD_CONSTRAINT`,
+`MATCHED_NEGATIVE`, and `SUPERSEDED_FACT` must carry:
+
+- a **source receipt** — commit plus path plus line, or an artifact hash — not a confident sentence;
+- a **binding to the production commit** it was verified against; and
+- **re-verification on anchor move** — when the champion is re-anchored after a freeze, every
+  source-derived suppression is re-checked, and a suppression whose receipt no longer resolves reverts
+  to `conflicted` rather than continuing to block.
+
+Required evidence grade scales with breadth: a family-wide suppression needs `source_verified` or
+`protocol_bound`; a single-cell exclusion may rest on an observation.
+
+This rule applies directly to the §19.4 audit verdicts below. Statements such as "CDNA2 already uses
+stream-K in the relevant MMQ path", "generic HIP graph enablement is already implemented and measured",
+and "generic Q8 dequant is a stale premise because the path is integer-native" are the exact entries
+that will close research families, and they enter the ledger only once each carries a receipt.
+
+### 19.4 Journal event types for bootstrap knowledge
+
+```text
+LEGACY_SOURCE_DISCOVERED   PRIOR_ATOMIZED           CONSTRAINT_COMPILED
+LEGACY_EVIDENCE_IMPORTED   PRIOR_SOURCE_VERIFIED    SEED_COMPILED
+PRIOR_SUPERSEDED           PRIOR_CONTRADICTION_LINKED  SEED_BLOCKED / SEED_REOPENED
+```
+
+### 19.5 Importing the project's historical research
+
+Relevant knowledge spans active/completed/archived/blocked handoffs in `epyc-root`; ratified
+measurement artifacts and preserved raw run bundles; dated progress files as discovery pointers rather
+than automatic truth; the compiled wiki and deep dives; `epyc-inference-research/docs/data`,
+`docs/experiments`, `docs/design`, benchmark results, model registry, and research analyses; kernel
+commit history and saved negative patches; the research-intake index and external source records; and
+current production/experimental source audits.
+
+**Import precedence** — when sources disagree, link the contradiction rather than overwriting, and
+apply this order for executable decisions:
+
+1. current source and immutable artifact identity;
+2. current ratified protocol-bound evidence;
+3. preserved raw evidence with reconstructible identity;
+4. active/completed handoff interpretation tied to those artifacts;
+5. observation-grade run summaries;
+6. progress/archived prose;
+7. external literature and design priors.
+
+Higher precedence does not delete lower-precedence history; it determines which fact the context
+compiler presents as current and which as superseded or uncertain.
+
+**Distillation pipeline:** enumerate (content-hashed source manifest — never let an LLM pick a few
+memorable handoffs and call the corpus complete) → route by backend/architecture/op/regime/mechanism/
+evidence type → atomize one statement per prior with its exact locator → verify statements about what
+code already does against current source → grade, retaining the source's measurement authority → resolve
+duplicates, contradictions, supersessions, confounds, transfer boundaries → compile ledgers with exact
+matches, reopen predicates, and receipts → compile seeds only where the missing evidence and cheapest
+discriminator are explicit → freeze a hashed bootstrap snapshot → continuously ingest new material by
+the same typed path, never by ad-hoc Markdown scraping mid-campaign.
+
+Automation is acceptable because imported priors gain no release authority. Ambiguous records become
+`conflicted` or `imported_claim`, never silently resolved.
+
+**Retrieval per proposal round:** exact regime-matched hard constraints and negatives; current source
+facts and dispatch behaviour; top mechanism-matched supported/refuted priors; adjacent-regime transfer
+warnings; current champion interactions; oracle coverage; and a small novelty set from untested design
+priors. Every returned item carries IDs and source locators, and the critic receives the same matched
+negatives so the planner cannot omit inconvenient history.
+
+### 19.6 Audit of the draft's optimization program
+
+**Baseline and diagnosis**
+
+| Draft family | Distilled disposition | AutoKernel treatment |
+|---|---|---|
+| **P0.1 exact operator roofline** | Correct and foundational — an instrument-building task, not a candidate optimization. Existing CPU/GPU profiles reduce the blank space but do not form one current v8 cross-regime map | Compile a production-anchor profile manifest and wall-share map before novel campaigns; refresh affected cells after a freeze, never the whole system per candidate |
+| **P0.2 fixed-shape vs continuous serving** | Correct separation; kernel and scheduler effects have historically been conflated | Make benchmark class part of evaluator identity: fixed-shape feeds kernel campaigns, variable-request feeds `serving_runtime` |
+| **P0.3 normalized scoreboard** | Correct derived view, but must not be a hand-maintained source of truth | Derive from journal events and capability rows; bind every row to regime and candidate identity |
+
+**GPU families.** Current anchors: [MI210 speed-campaign summary](mi210-speed-campaign-summary.md),
+[Q8/GEMV roofline](mi210-q8-dequant-gemv-roofline.md),
+[graph techniques](gemma-challenge-kernel-techniques-v7.md),
+[acceleration index](inference-acceleration-index.md).
+
+| Draft family | Audit verdict | Seed disposition |
+|---|---|---|
+| **G1 host/PCIe/pinned-memory NUMA** | Strong, cheap, still relevant. A four-arm P2-5j placement protocol already exists — consume it, do not reinvent a duplicate sweep. **Note: that protocol was deleted from git (§3.7) and must be restored before the seed is executable** | `READY_EXISTING_PROTOCOL`, config/placement campaign; import current MI210 node attachment and historical placement confounds |
+| **G2 batch-one low-bit GEMV** | Too broad as written. Generic Q8 dequant is a stale premise (integer-native path); generic megakernel and several speculation/prefetch variants have matching negative or conditional history; workgroup sizing and prior prefetch changes are legacy priors, not patches to replay on v8. Layout/coalescing and MLP questions remain conditional on a fresh profile | Split into atomic priors; seed only current-profile gaps — coalescing/layout if cache-line evidence is poor, or another gfx90a MLP lever if the production path still exposes it |
+| **G3 GPU-native low-bit layouts** | Sound high-upside family, but only if metadata traffic, cache-line use, unpack cost, or occupancy is currently deficient. Startup time and VRAM/context cost are first-class outputs | `MEASUREMENT_FIRST`; T1 starts with load/repack accounting plus captured GEMV/MMQ shapes, then one tiny real graph |
+| **G4 persistent grouped MoE** | Valid high-effort family for batched MoE; must be distinguished from the persistent stream-K MMQ path already present. "Persistent" alone is not novelty | `CONDITIONAL_HIGH_EFFORT`; require routing/expert wall share, grid/occupancy evidence, and a target batched regime before source work |
+| **G5 stream-K/split-K** | Broad premise superseded — CDNA2 already uses stream-K in the relevant MMQ path; compact-LDS was negative. A narrow higher-persistent-grid-count experiment remains conditional with a small ceiling | Import generic stream-K as `SUPERSEDED_FACT` **with a receipt**; retain the exact residual as `LOW_VALUE_CONDITIONAL` with its existing reopen gate |
+| **G6 shared-expert fusion** | Plausible only where shared/routed scheduling and accumulation have material wall share; overlaps G4 | Compile as sub-seeds under grouped-MoE campaigns after wall-share discovery |
+| **G7 LM head/logits/top-k/sampling** | Good portable family spanning projection and exact/distributional sampling correctness; atomize rather than propose one giant fusion | `MEASUREMENT_FIRST`; profile tail share, then isolate projection, partial top-k, and sampler fusion seeds |
+| **G8 shape-bucketed HIP graphs** | Generic graph enablement already implemented and measured; some graph-key/onegraph variants were neutral, conditional, or deferred. Surviving question is exact shape-recapture/launch-gap evidence for a named workload | Mark generic capture `ALREADY_SUPPORTED` **with a receipt**; seed only when a shape histogram shows costly misses in an uncovered family |
+| **G9 recurrent/GDN/SSM decode fusion** | Valid architecture-specific family, but history already rejects an occupancy rewrite and supports a state-format lever in particular regimes. Targeted fusion needs current per-block wall share and strict rollback/state tests | `CONDITIONAL`; import both the positive state-format prior and the occupancy negative. Never seed a generic GDN optimization |
+| **G10 chunked recurrent prefill** | Already owned by [`k28-fused-chunked-gdn-kernel-research.md`](k28-fused-chunked-gdn-kernel-research.md) (active; Phase-0 ceiling run 2026-07-20, no fused recurrence kernel written) with extensive correctness prerequisites | `OWNED_EXISTING_SEED`; ingest K28's state, gates, and reopen conditions as the canonical seed lineage |
+| **G11 mixed-KV specialized attention** | One of the clearest remaining concrete gaps: the default path can fall back on mixed q4/f16 while blanket all-quant support harms protected homogeneous paths | `READY_AFTER_PROTOCOL`; seed a dedicated mixed-format path with no-fallback proof and homogeneous f16/f16 and q4/q4 sentinels |
+| **G12 joint speculation-depth/batch/context policy** | Strong and cheap, but a serving/config policy rather than a kernel source freeze; prior results prove the sign is regime-specific | `READY_SERVING_ADAPTER`; search the existing parameter surface cheaply and release through `serving_runtime` |
+| **G13 vLLM capability audit** | Useful design oracle, but a broad rerun is stale work — earlier local audits already separated dense-control advantages from gfx90a/model blockers | Import the existing capability result; reopen only on a source-version, supported-model, quant, or gfx90a capability change. Port algorithms via `oracle_port` (§6.5), never unsupported instructions |
+
+**CPU families.** Current anchors: [CPU optimization index](cpu-inference-optimization-index.md),
+[prefill compute](cpu-prefill-compute-large-models.md), and the research repository's preserved CPU
+optimization reports.
+
+| Draft family | Audit verdict | Seed disposition |
+|---|---|---|
+| **C1 exact DDR/NUMA roofline** | Correct discovery prerequisite. Existing work proves placement, mmap/first-touch, batch, prefill, and decode cannot share one CPU verdict | Compile current v8 regime facts; refresh only campaign-relevant cells; mark superseded pre-NPS4 and confounded placement results |
+| **C2 operator-cluster fusion** | Highest-value source family, but must be profile-selected; decode and prefill have different ceilings, and existing barrier/CONCAT work plus rejected subprototypes provide rich priors | `READY_PROFILE_SELECTED`; seed exact clusters with graph-node/barrier prediction, not "fuse CPU ops" generically |
+| **C3 persistent CPU thread team** | Plausible but large and race-prone; should follow local fusion/dispatch work only if residual OpenMP/barrier share remains material | `BLOCKED_BY_C2_RESIDUAL`; cheap first experiment is a scheduler/barrier trace or bounded prototype, then race/teardown stress |
+| **C4 expert-local NUMA placement** | Valid question, but historical private/shared results include a later-discovered mmap/first-touch confound and topology changes; import as confounded/superseded, never learned as a negative sign | `REBASE_AND_MEASURE_FIRST`; require current topology, explicit allocation policy, routing skew, and production anchor |
+| **C5 grouped CPU MoE** | Strong only for batched/eval/prefill regimes; existing eval-batch evidence means the workload trigger is real, and batch-one must not be a sentinel for expected gain | `READY_BATCHED_REGIME`; seed after the exact target workload and expert-token histogram are compiled |
+| **C6 CPU prefill continuation** | Useful catalog, but substantially overlaps C2, C7, and the existing PC-4 lineage ([`cpu-prefill-compute-large-models.md:152`](cpu-prefill-compute-large-models.md), PC-4 open); several subideas already profiled or rejected | Import as a family; compile only unresolved PC-4 successors. Do not create a second catch-all prefill campaign |
+| **C7 automatic CONCAT dispatcher** | Concrete and high-readiness: a default-off path and positive/negative regime split already exist in the current production lineage | `READY_POSITIVE_CONTROL`; ideal early campaign for learning a safe dispatcher with prefill positives and decode regression sentinels |
+| **C8 CPU LM head/sampling** | Plausible and portable with G7 but profile-gated; full-logit avoidance changes observable sampling behaviour unless exact requirements are explicit | `MEASUREMENT_FIRST`; separate projection and sampler seeds |
+| **C9 tensor-class hybrid quantization** | Valuable system idea, but partly an artifact/quality optimization rather than a kernel-only mutation; it changes residency and quality as well as dispatch | Keep as an adjacent `artifact_quantization` family; require an immutable quality objective and a separate release adapter before activation |
+
+**Serving and scheduler families**
+
+| Draft family | Audit verdict | Seed disposition |
+|---|---|---|
+| **S1 token-budget continuous batching** | Strong and partly scaffolded; existing eval-batch work imports as prior evidence, remaining question is representative reliability/latency and production policy | `OWNED_EXISTING_SERVING_SEED`; `serving_runtime`, never kernel freeze |
+| **S2 block/paged KV** | Legitimate architecture project when KV reservation/copying limits concurrency or context; not a cheap generic optimization absent that profile | `CAPABILITY_GATED`; first seed is allocator/KV traffic and capacity measurement, not a rewrite |
+| **S3 capability registry** | Required infrastructure, not a performance hypothesis; existing orchestrator registry work supplies patterns but does not replace a kernel capability surface | Implement as controller/evaluator substrate; it should compile valid dispatch regions from evidence |
+
+**Autoresearch sections A1–A6** are controller requirements, not campaign seeds: A1 → immutable
+campaign objectives and backend adapters; A2 → superseded by §7.2's fuller proposal schema; A3 → the
+T0–T3 state machine; A4 → lexicographic correctness/quality/stability before performance; A5 →
+evaluator-owned cache and prompt policy; A6 → the §8.3 planner hierarchy enforced by source/profile
+receipts.
+
+### 19.7 Resolved local source material
+
+The draft's two presentation references resolve to local records:
+
+- **E5 CPU/NUMA results** — `artifacts/operator/e5_w0_preliminary_results.html`, SHA-256
+  `dcd8aba913bd1296406098338e578079ae47678e2494539aaecfb6376ee54c37` (verified 2026-08-02; tracked and
+  committed). Its sibling markdown declares itself *"SUPERSEDED AND NON-AUTHORITATIVE — 2026-07-30 …
+  Do not read it as the record"* and is imported only as a `SUPERSEDED_FACT`, never as generation or
+  claim authority.
+- **GPU model-selection surface** — `/mnt/raid0/llm/tmp/claude-artifacts/np_context_v8_decision.html`,
+  SHA-256 `816ad5cdd532634edb48f608321fb6ffc3d5546c3ff74aa6c7b54cf0655e6e2b` (verified 2026-08-02),
+  backed by `epyc-inference-research/artifacts/np_context_study_v8_20260727/` and
+  `.../np_context_study_20260723/`. **This is a scratch path and therefore not a valid citation under
+  `MEASUREMENT.md:146-156`; the file must be copied into the research evidence root and both backing
+  bundles tracked before AK1 hashes the manifest** (§3.7). The v8 bundle currently tracks only its 5
+  driver scripts; the 2026-07-23 bundle tracks nothing.
+
+AutoKernel imports content-hashed local files only, never hosted presentation links, and follows claims
+through to the research bundles and measurement artifacts. HTML surfaces are discovery/presentation
+records, not independent evidence authority.
+
+### 19.8 Recommended bootstrap seed queue
+
+Every draft idea enters the prior catalog; the initial *executable* queue is:
+
+1. **P0 current-v8 workload/shape/wall-share compiler** — fills missing instrument facts and prevents
+   stale-premise source work.
+2. **C7 CONCAT dispatcher** — known default-off substrate, regime-specific positives and negatives, and
+   strong correctness coverage make it an excellent positive control for planner/critic logic.
+3. **G1 host-thread/pinned-memory placement** — existing protocol, no kernel source mutation, a clean
+   test of config search plus resource discipline (restore the protocol to git first).
+4. **G11 dedicated mixed-KV kernel/dispatch** — concrete fallback defect with protected homogeneous
+   sentinels.
+5. **C2 exact profile-selected operator cluster** — first genuine CPU source-authoring campaign.
+6. **G7/C8 output-tail profile** — decides whether projection or sampler work earns a source seed.
+7. **G3 low-bit execution-layout discriminator** — only on cells whose current counters support it.
+8. **C5/G4 grouped MoE scheduling** — after real batch/expert histograms are compiled.
+9. **G9/G10 recurrent work** — through the existing K28 and state/rollback gates.
+10. **S1/G12 serving policy campaigns** — through the serving adapter when that release path exists.
+
+A bootstrap/acceptance sequence, not a permanent research priority. Fresh profiles and production
+workload exposure re-rank it.
+
+### 19.9 Bootstrap acceptance criteria
+
+- Every P0/G1–G13/C1–C9/S1–S3/A1–A6 draft section maps to at least one typed prior or controller
+  requirement.
+- Every performance-relevant active/completed historical handoff is present in the source manifest or
+  explicitly excluded with a reason; the same holds for the research repository's evidence directories
+  and the kernel trees' commit history.
+- Imported observations, claims, source facts, and design hypotheses retain distinct evidence grades.
+- **Every suppressing entry carries a receipt bound to the current production commit** (§19.3).
+- Known stream-K, graph, Q8, GDN, NUMA, CONCAT, prefill, speculation, and batching corrections are
+  retrievable under their exact regime.
+- Contradictions and confounded historical results are visible to both planner and critic.
+- No legacy import enters the live candidate Pareto frontier; no `legacy_unverified` store row is
+  retrievable at all (§14 AK1).
+- Every executable seed names its cheapest discriminator, codified recipe id, correctness oracle,
+  non-target sentinels, resource and storage class, and reopen/stop predicate.
+- A fixed fixture reconstructs all priors, seeds, and ledgers byte-for-byte from the event journal.
+- **A held-out recall probe passes.** Byte-for-byte reconstruction proves *determinism*, not
+  *coverage* — it cannot tell you the importer missed an entire class of sources. Before the corpus is
+  declared complete, hold out a probe set of facts known to exist in the project record, spanning
+  every source class the manifest claims (root handoffs, research-repo evidence directories, ratified
+  artifacts, kernel commit history, intake records, and current source audits) and every disposition
+  class (a supported prior, a matched negative, a confounded result, a superseded fact, an
+  already-supported source fact). Run the compiled retrieval for each under its own regime. A probe
+  item that does not surface is a coverage defect in the importer, not a retrieval tuning problem, and
+  it names the source class to re-enumerate. Record the probe set and its results in the bootstrap
+  snapshot so the same test reruns after every corpus refresh.
+- The planner context remains bounded, cites every retrieved item by ID and source locator, and renders
+  external content in quarantine form.
+- T1 positive/neutral/negative/A-A controls calibrate sampling and noise floors before novel research.
