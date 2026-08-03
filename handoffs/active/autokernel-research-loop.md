@@ -2124,8 +2124,7 @@ can act on a waiver-bearing verdict.
 - [x] Add deterministic reconstruction test from journal plus immutable artifacts only. ✅ 2026-08-03 (journal + integration suites)
 - [ ] Fix the `kernel_store.py:88` file-handle warning; add both `kernel_rnd` suites to
   `PYTEST_SMOKE`; pin pytest in `pyproject.toml`/`uv.lock` rather than injecting it via `--with`.
-- [x] **Measure achievable MI210 bandwidth (STREAM/BabelStream-class) — §8.3.1's second denominator now
-  EXISTS** ✅ 2026-08-03. **1433.3 GB/s achievable = 87.5% of the 1638 GB/s datasheet peak**; triad 1371.1;
+- [x] **Measure achievable MI210 bandwidth (STREAM/BabelStream-class) — §8.3.1's second denominator now EXISTS** ✅ 2026-08-03. **1433.3 GB/s achievable = 87.5% of the 1638 GB/s datasheet peak**; triad 1371.1;
   p20–p80 within ~1.2%; correctness PASS. Instrument `epyc-inference-research`
   `scripts/benchmark/mi210_achievable_bandwidth.sh`, receipt
   `data/mi210-achievable-bandwidth/20260803T124401Z/receipt.json`
