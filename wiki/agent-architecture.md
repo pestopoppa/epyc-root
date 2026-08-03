@@ -1386,10 +1386,19 @@ row ever written.
   that is 100% NULL across 59k rows is a capability that does not exist.
 - **Hook the chokepoint, not the call sites.** Live emission was attached to `Journal.record()`
   because every path crosses it — completed trials, skips, and the crash placeholder alike.
-- **Leave NULL where NULL is correct.** Two sibling columns were deliberately not filled:
-  `assigned_role` is a tri-role axis whose readers already normalise NULL to a default, and
-  `sub_decision` NULL *means* "not a sub-decision". Filling them would have looked like more work
-  and made the data worse.
+- **~~Leave NULL where NULL is correct.~~ RETRACTED 2026-08-03.** This bullet originally claimed
+  two sibling columns were *deliberately* left NULL — `assigned_role` because "readers already
+  normalise NULL to a default", and `sub_decision` because "NULL *means* not a sub-decision". Both
+  claims were wrong, and they were wrong in the most expensive direction: they explained away two
+  more instances of the very defect the page is about.
+  `chat_pipeline/routing.py:333` states `assigned_role` is populated **regardless** of the
+  `ROLE_AWARE_ROUTING` flag precisely so TR-3.3 can use the shadow telemetry to decide promotion —
+  so 0/59,337 means that decision has never had data. `sub_decision` has a column, an index, a
+  dataclass field, a `store()` parameter, an INSERT binding, a passing test, a written-but-never-run
+  backfill script, and **zero producers**.
+  The lesson that survives is the opposite one: *"NULL is correct here"* is a claim requiring the
+  same evidence as any other. Check what the writer was **specified** to do before concluding that
+  absence is intentional.
 
 ### And a bound that measures the wrong quantity
 
@@ -1401,3 +1410,52 @@ too-small bound should be conservative, never a no-op.
 _Sources: `progress/2026-08/2026-08-03.md`; `handoffs/active/autopilot-continuous-optimization.md`;
 `handoffs/active/episodic-memory-integrity.md`; epyc-orchestrator `bc1da61f`, `5acd7214`,
 `c05bc415`._
+
+## The defect class reproduces itself inside the sweep sent to fix it
+
+On 2026-08-03 a 21-agent sweep was dispatched specifically to close "built but never invoked"
+defects. Independent adversarial verifiers then tried to refute each agent's claim. Eight of nine
+verdicts came back PARTIAL, and the pattern in the failures was the same defect, one level up:
+
+- The **speed-era provenance stamp** — written to make a cross-era throughput floor detectable — was
+  placed ~170 lines *after* an early `return` that always fires in the current production state. It
+  can never execute. Net effect: the throughput floor is now demoted to a warning indefinitely, with
+  no in-code path to re-arm it. The agent's own summary asserted "a reseed closes the hold
+  naturally."
+- The **`assigned_role` fix** wired the create path. Production sets `ORCHESTRATOR_Q_TD_WRITE=1` and
+  takes the find-or-update branch, which returns before `store()`. That branch fires ~11x more often
+  than create (668,070 updates vs 59,337 rows). The column stayed 0/59,337. No test caught it,
+  because the flag is read at import time and is 0 under pytest — **the test environment could not
+  express the production configuration.**
+- The **vision panel** was reported `status: fixed` with zero changes to the renderer
+  (`grep -ci image dashboard.html` -> 0).
+- The **runtime-flag drift checker**, built to detect configuration that does not match reality,
+  grades declared-vs-live but never wired-vs-unwired. It reported a flag as blocking drift that has
+  zero consumer modules anywhere.
+
+### Why verification has to be adversarial, and separate
+
+Every one of those agents ran tests, and the tests passed. The gap was never "did it run?" but
+"does the thing that runs it reach production?" A verifier prompted to *refute*, reading the diff
+rather than the summary, and asking **"which branch does production actually take?"**, found in
+minutes what the implementer had missed while looking at green output.
+
+Three questions did the work:
+
+1. **Which branch does production take?** Not which branch is correct — which one the live env vars
+   select. Check the flag's value in the running process, not the default in the code.
+2. **Can the test environment even express the production configuration?** If a flag is read at
+   import time and pytest sets it to 0, no test in that suite can cover the production path.
+3. **Does the fix reach the consumer, or only a consumer?** A value that reaches `metrics_snapshot()`
+   but never the dashboard has not reached the operator.
+
+### The corollary for a sweep's own output
+
+A parallel sweep's reports are evidence to be checked, not results to be banked. Two reports carried
+`status: fixed` for deliverables that were provably untouched, and one carried a summary claim
+(`"is the sole live writer"`) that was false. Reading the diff rather than the report is not
+pedantry — it is the only way the report's own defect class gets caught.
+
+_Sources: `progress/2026-08/2026-08-03.md`; `handoffs/active/autopilot-continuous-optimization.md`
+(§"Backlog sweep 2026-08-03"); epyc-orchestrator `7fd2dde5`, `8b79026e`; workflow run
+`wf_a44f600b-c02` (21 agents, 8 PARTIAL / 1 CONFIRMED)._
