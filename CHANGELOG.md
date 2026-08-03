@@ -903,3 +903,8 @@
 
 - Ratified the P-BENCH-4 FG-4b affinity-witness superseding amendment; it binds stable all-thread request-boundary snapshots to the hardened runner and retains the prior receipt as superseded provenance.
 - 2026-08-03: MI210-SUBSTRATE-CONSTANTS-1 ratified — peak FLOPS, achievable HBM bandwidth and PCIe H2D/D2H measured; ridge stated on both bases with a binding no-mixing rule.
+- 2026-08-03: AGGREGATION-SPEEDUP-1 ratified.
+- 2026-08-03: PAIRED-CI-1 ratified.
+- 2026-08-03: CENSORING-1 ratified.
+- 2026-08-03: P-AK-SEARCH-1-A1 ratified.
+- 2026-08-03: CONFORMANCE-VECTORS-1 ratified.

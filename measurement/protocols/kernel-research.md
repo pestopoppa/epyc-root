@@ -424,3 +424,26 @@ existing corpus**. The standing of the pre-ratification kernel-research strategy
 core-file §6b matter and is addressed, if the operator so chooses, by a separate strikeable line in
 the same package (`RATIFICATION_PACKAGE.md` item 7), which appends to `MEASUREMENT.md` §6b rather
 than ruling from inside an annex.
+
+## P-AK-SEARCH-1-A1 — mechanism and capability clauses (RATIFIED 2026-08-03)
+
+Appended to Annex K as a narrowing of `P-AK-SEARCH-1`, which it does not restate or replace.
+
+**Clause 1 — mechanism plausibility.** A banked candidate requires an explanation backed by bytes,
+FLOPs, counters, or a clean A/B. *“It got faster and I don’t know why” is a reason to keep measuring,
+not to land.* `P-AK-SEARCH-1` as ratified is purely statistical — pass the e-process, clear φ, publish
+the MDE — which permits banking a candidate nobody can explain. This clause is directly
+anti-reward-hacking and is the cheapest available strengthening of the C6 differentiator.
+
+**Clause 2 — capability-claim gate.** Do not claim that a backend supports a kernel, dtype, quant or
+performance tier unless that backend has **both correctness and performance evidence**. This governs
+what may be *said* about a backend, not how it is measured — structurally different from every other
+gate in this constitution, and the gap this project has actually tripped on: three different answers
+for one decode edge case across seven backend sites, undetected because nothing compared them.
+
+**Adopted as SHAPE, not as thresholds.** The source of these clauses pairs them with fixed literal
+thresholds (land at ≥3% median, or ≥8–10% with added complexity) and **no statistical test at all** —
+median and p20/p80 only. That is materially weaker than `P-AK-SEARCH-1`’s anytime-valid e-processes and
+published MDE. **Importing those literals would be a downgrade dressed as an adoption.** They are
+explicitly not adopted.
+
