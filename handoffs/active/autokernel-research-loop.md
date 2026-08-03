@@ -2228,28 +2228,28 @@ revoked, and be seen — without inference or production mutation.
 
 ### Phase AK3 — trusted tiered evaluator
 
-- [ ] Replace `kernel_eval.sh` behind a typed evaluator API; do not grow the old shell script.
-- [ ] Require an explicit anchor for every performance/coherence comparison; no-baseline is `INVALID`.
-- [ ] Make status a computed verdict, never an unconditional literal.
-- [ ] Build the codified operator-microbenchmark recipe constructor so T1 argv is constructed, and
-  bind it to a recipe id `P-AK-SEARCH-1` can cite.
-- [ ] Implement the affected-surface derivation and dispatch-trace reconciliation (§6.4).
-- [ ] Implement the §8.5.1 source-integrity gates: symbol/registration-table extraction and diffing
+- [x] Replace `kernel_eval.sh` behind a typed evaluator API; do not grow the old shell script. ✅ 2026-08-03 (evaluator/api.py; verdict cannot be stamped)
+- [x] Require an explicit anchor for every performance/coherence comparison; no-baseline is `INVALID`. ✅ 2026-08-03 (anchor-less is INVALID)
+- [x] Make status a computed verdict, never an unconditional literal. ✅ 2026-08-03 (re-derived in __post_init__; VerdictTampering)
+- [x] Build the codified operator-microbenchmark recipe constructor so T1 argv is constructed, and
+  bind it to a recipe id `P-AK-SEARCH-1` can cite. ✅ 2026-08-03 (evaluator/recipes.py)
+- [x] Implement the affected-surface derivation and dispatch-trace reconciliation (§6.4). ✅ 2026-08-03 (evaluator/surface.py)
+- [x] Implement the §8.5.1 source-integrity gates: symbol/registration-table extraction and diffing
   against the anchor binary, clean-build-from-snapshot enforcement, semantic diff conformance, the
-  `core_header` risk tier, and repair-from-clean-parent with a per-proposal cap.
-- [ ] Red-team those gates specifically: a candidate that deletes a template specialization, one that
+  `core_header` risk tier, and repair-from-clean-parent with a per-proposal cap. ✅ 2026-08-03 (evaluator/integrity.py)
+- [x] Red-team those gates specifically: a candidate that deletes a template specialization, one that
   drops a dispatch case, one that removes an op registration, and one whose incremental tree compiles
-  while its snapshot does not. Each must fail before any behavioural check runs.
-- [ ] Add full correctness surfaces: relevant ops including `MUL_MAT_ID`, exact/unseen shapes,
-  PPL/numerical margin, state/rollback, no-fallback, determinism class, real-model smoke, cleanup.
-- [ ] Add the mandatory ASAN/UBSAN path for memory/threading changes and the diff-complexity ceiling.
-- [ ] Record absolute single-stream, batched/aggregate, latency, variability, capacity, mechanism, and
-  numeric correctness margins where the campaign requires them.
-- [ ] Implement T0/T1/T2 adapters for llama CPU/GPU first; STT/TTS after their protocols exist.
-- [ ] Implement the e-process reducer, pre-committed stopping rule enforcement, and the anchor gate.
-- [ ] Red-team the evaluator with deliberately wrong, test-shape-specialized, fake-score, fallback,
-  cache-gaming, scope-under-declaring, and timeout/leak candidates.
-- [ ] Add four controls: positive, neutral, degraded-negative, and periodic **A/A**.
+  while its snapshot does not. Each must fail before any behavioural check runs. ✅ 2026-08-03 (in the AK3 red-team pass)
+- [x] Add full correctness surfaces: relevant ops including `MUL_MAT_ID`, exact/unseen shapes,
+  PPL/numerical margin, state/rollback, no-fallback, determinism class, real-model smoke, cleanup. ✅ 2026-08-03 (evaluator/correctness.py; anchor triple bound on all 5 evidence surfaces)
+- [x] Add the mandatory ASAN/UBSAN path for memory/threading changes and the diff-complexity ceiling. ✅ 2026-08-03
+- [x] Record absolute single-stream, batched/aggregate, latency, variability, capacity, mechanism, and
+  numeric correctness margins where the campaign requires them. ✅ 2026-08-03 (correctness + statistics)
+- [x] Implement T0/T1/T2 adapters for llama CPU/GPU first; STT/TTS after their protocols exist. ✅ 2026-08-03 (STT/TTS deferred to AK9 as designed)
+- [x] Implement the e-process reducer, pre-committed stopping rule enforcement, and the anchor gate. ✅ 2026-08-03 (evaluator/statistics.py; alpha derived, none supplied)
+- [x] Red-team the evaluator with deliberately wrong, test-shape-specialized, fake-score, fallback,
+  cache-gaming, scope-under-declaring, and timeout/leak candidates. ✅ 2026-08-03
+- [x] Add four controls: positive, neutral, degraded-negative, and periodic **A/A**. ✅ 2026-08-03 (five — the accept-side historical-win replay joined them)
 - [ ] **Emit a PRE-CORRECTNESS PROGRESS LADDER, not a single failure verdict.** Today every non-verifying
   candidate is an equal failure, which is exactly the regime where most MI210 candidates die — so the
   search has no gradient where it needs one most. Rank `hipcc-fail < runtime-fail < wrong-output`
@@ -2268,21 +2268,21 @@ evaluator or its own scope, and T1 may legally guide search.
 
 ### Phase AK4 — planner/critic/controller
 
-- [ ] Implement the explicit state machine and journal every transition.
-- [ ] Build the structured source/profile/workload/negative-history/oracle context compiler with
-  quarantined rendering of external content.
-- [ ] Build planner and pre-/post-run critic adapters; prefer distinct providers for the two roles.
-- [ ] Implement **operator hypotheses and still-open hypothesis tracking** (§8.4.0): the operator-facing
+- [x] Implement the explicit state machine and journal every transition. ✅ 2026-08-03 (controller/state_machine.py; journal-then-act)
+- [x] Build the structured source/profile/workload/negative-history/oracle context compiler with
+  quarantined rendering of external content. ✅ 2026-08-03 (controller/context.py)
+- [x] Build planner and pre-/post-run critic adapters; prefer distinct providers for the two roles. ✅ 2026-08-03 (controller/planner.py + critic.py, fake-provider tested)
+- [x] Implement **operator hypotheses and still-open hypothesis tracking** (§8.4.0): the operator-facing
   channel, the mandatory falsifier, `design_prior` grading that origin cannot raise, re-surfacing the
   open set each round, and resolution journaled as confirmed/refuted/inconclusive with its evidence.
   Test that an operator hypothesis is rejected by the critic when it repeats a receipted negative —
-  authorship is not evidence.
-- [ ] Enforce proposal schema, one-concept rule, wall-share ceiling, novelty, budget, hierarchy, and
-  the oracle question.
-- [ ] Build store-guided next-experiment selection using information gain plus expected value.
-- [ ] Build champion composition and mandatory combined-candidate reevaluation.
-- [ ] Implement deterministic stop/plateau/budget/storage/integrity/evaluator-gap guards.
-- [ ] Add planner regression fixtures proving it consults failures and does not repeat known negatives.
+  authorship is not evidence. ✅ 2026-08-03 (controller/hypotheses.py)
+- [x] Enforce proposal schema, one-concept rule, wall-share ceiling, novelty, budget, hierarchy, and
+  the oracle question. ✅ 2026-08-03 (controller/selection.py)
+- [x] Build store-guided next-experiment selection using information gain plus expected value. ✅ 2026-08-03 (incl. harvest/explore phases)
+- [x] Build champion composition and mandatory combined-candidate reevaluation. ✅ 2026-08-03 (controller/composition.py)
+- [x] Implement deterministic stop/plateau/budget/storage/integrity/evaluator-gap guards. ✅ 2026-08-03 (controller/guards.py; 13 stop states)
+- [x] Add planner regression fixtures proving it consults failures and does not repeat known negatives. ✅ 2026-08-03
 - [ ] **Settle WHICH gate form this loop uses — the literature does not, and we should not inherit the
   ambiguity silently.** Two capable groups made OPPOSITE choices within the same family: intake-939's
   winner is the **collapsed conjunction** (correct-but-slow → full failure reward), while intake-974
@@ -2290,6 +2290,23 @@ evaluator or its own scope, and T1 may legally guide search.
   the comparison the other needs. **We can run it at ~zero GPU cost** via offline replay over banked
   candidate records — the two forms are different scoring functions over the same stored outcomes.
   Operator approval required before it becomes a fitness change; the replay itself is free.
+- [ ] **Add `KIND_STATE_TRANSITION` to `journal.py` and rewire the controller's `TransitionRecorder`.**
+  `journal.KINDS` is a closed vocabulary with no state-transition kind, and `journal.py` was outside
+  AK4's write scope, so non-stop transitions land in a sibling `TransitionLedger` with the same
+  durability discipline, written under `Journal.write_lock()` so ordering stays total. Co-opting
+  `KIND_STOP_STATE` was correctly rejected: `Views.stop_states` is a derived view other planes read,
+  and reusing it would make that view stop meaning "this campaign stopped". One-line wiring change
+  behind the existing seam.
+- [ ] **Re-derive that a capture actually ran against the anchor it names.** The five T0 evidence
+  surfaces now bind the anchor triple and refuse a replay mismatch, but the recorded identity is still
+  the *producer's declaration* — `produced_by` is checked and nothing re-derives it. This binds an
+  honest producer's replay, not a dishonest producer's capture. Acceptable while the producer is the
+  trusted evaluator the actor cannot modify; revisit if that assumption weakens.
+- [ ] **Apply the AutoPilot operator-hypothesis integration patch** — epyc-orchestrator
+  `scripts/autopilot/OPERATOR_HYPOTHESES_INTEGRATION.md`; module and tests committed in `536ea87f`.
+  Six anchor points in `autopilot.py`, quoted verbatim and pinned to that file's SHA-256. **Owner:
+  whoever holds `autopilot.py`** — not applied here because that repo had a live session. Until it is
+  applied the channel exists and passes 25 tests, but the planner never reads it.
 
 **Exit:** a mock campaign moves from source/profile facts through proposals, corrections, negative
 memory, and champion maintenance without human steering.
